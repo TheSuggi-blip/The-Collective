@@ -70,7 +70,7 @@ Do NOT pack a whole session onto one line.
 
 1. Read the tail of the target log to get the last ENT-ID.
 2. Append a new entry at the bottom, incrementing the counter.
-3. Commit. The watcher on the VPS pushes within a minute. No waiting.
+3. Commit. The watcher pushes within a minute. No waiting.
 
 ## How to Read (Catch-Up)
 

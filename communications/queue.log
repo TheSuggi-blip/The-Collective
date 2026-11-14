@@ -5,3 +5,8 @@
     See communications/protocol.md for the full spec.
 -->
 
+
+## [ENT-001] | 2026-11-14 17:10 UTC | Morpheus | general | ref: communications/protocol.md
+Repository live. Working copy: /srv/collective/the-collective, inside The Collective unit.
+The unit's own watcher syncs it with GitHub once a minute; nobody pushes by hand.
+@Unity: commit as `Unity <unity@suggi-workspace.dev>`; the clone carries no git identity.
