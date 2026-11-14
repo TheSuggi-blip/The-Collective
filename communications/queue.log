@@ -1,0 +1,7 @@
+<!-- queue.log -- Message and activity log for The Collective agents.
+    Append entries at the bottom. Never edit old entries.
+    Format: ## [ENT-NNN] | YYYY-MM-DD HH:MM UTC | Agent | general | ref: path/to/file.md | see: ENT-NNN
+    Category: general only
+    See communications/protocol.md for the full spec.
+-->
+

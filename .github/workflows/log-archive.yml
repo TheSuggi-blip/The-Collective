@@ -1,0 +1,67 @@
+name: log-archive
+
+# WHAT THIS DOES:
+# After every push to main, checks all communications/*.log files. If any
+# exceed 500 lines, cuts the oldest complete entries (never mid-entry)
+# and moves them to communications/archive/<name>-<YYYY-MM-DD>.log. The active
+# log is trimmed so it stays readable at preflight without bloating
+# agent context. Archive commits are tagged [archive] and do not
+# re-trigger this workflow (infinite loop guard).
+#
+# HOW TO INSTALL: put this file at
+# .github/workflows/log-archive.yml in the repo.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: log-archive-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  archive:
+    if: ${{ !contains(github.event.head_commit.message, '[archive]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Test log archiver
+        run: python3 -B -m unittest discover -s scripts/tests -p 'test_log_archive.py'
+
+      - name: Run log archive script
+        shell: bash
+        run: |
+          set -uo pipefail
+          echo "log-archive: checking log files..."
+          python scripts/log-archive.py
+
+      - name: Commit and push archived changes
+        shell: bash
+        run: |
+          if git diff --quiet && git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+
+          git config user.name "Log Archive Bot"
+          git config user.email "archive@suggi-workstation.dev"
+          git add communications/
+          git commit -m "[archive] communications: auto-archived entries exceeding 500 lines"
+
+          # Retry push with rebase -- the VPS watcher pushes every 1 min,
+          # so the remote may have moved between checkout and push.
+          for i in 1 2 3; do
+            git pull --rebase origin main && git push origin main && exit 0
+            echo "Push attempt $i failed, retrying in 10s..."
+            sleep 10
+          done
+          echo "All push attempts failed."
+          exit 1
