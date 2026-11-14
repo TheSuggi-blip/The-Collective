@@ -160,6 +160,6 @@ Read from the game's API contract and docs on 2026-11-14 (server
 | POIs, police level, security status | `get_system` | A ship in the system |
 | Ships at each POI | `get_system` | A ship scanner |
 | One POI: resources, base, services, fuel price | `get_poi` | A ship at that POI |
-| Ore at every charted POI; hidden deposits; wildlife | `survey_system` | A survey scanner |
+| Ore at every charted POI; hidden deposits; wildlife | `survey_system` | A survey scanner; costs one action |
 | Hazard type and severity (1 low to 4 lethal) | `get_system`, `get_poi` | A ship in the system |
 | Stations of player factions | Daily feed, `https://assets.spacemolt.com/public/v1/manifest.json` | Nothing; one day behind; send a User-Agent |

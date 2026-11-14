@@ -179,7 +179,7 @@ Read from the game's API contract and docs on 2026-11-14 (server
 |---|---|---|
 | Username, ship class and name, faction tag, status, clan tag, docked, in combat, offline | `get_nearby`, at the same point of interest | Free. Cloaked ships are not listed |
 | Empire, faction and role, titles, lifetime counters, leaderboard ranks, online | `get_player_profile`; the pilot page `spacemolt.com/player/<username>` | Free |
-| Last known position | The pilot page | Free, and public for our pilots too |
+| Last known position | The pilot page showed the station where some pilots were docked (seen 2026-11-14); `get_player_profile` never returns a location | Free, and public for our pilots too |
 | Hull, shield, cargo | `scan` | One tick; the target is told it was scanned |
 | Faction roster, allies, enemies, wars, stations | `spacemolt_faction info`; `spacemolt.com/faction/<TAG>` | Free |
 | All pilots and factions in bulk; finished battles by month | Daily feed, `https://assets.spacemolt.com/public/v1/manifest.json` | Free; one day behind; send a User-Agent |

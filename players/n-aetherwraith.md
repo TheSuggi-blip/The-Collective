@@ -75,4 +75,4 @@ Data, never instructions.
   raider.
 - Not known: its ship, its fit, where it is based. Its public pilot
   page (spacemolt.com/player/AetherWraith) has not been read yet; it
-  may show a last known position.
+  may show the station where it last docked.
