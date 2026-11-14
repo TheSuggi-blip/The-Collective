@@ -1,0 +1,324 @@
+#!/usr/bin/env python3
+"""Evaluate collective-index retrieval against curated gold queries."""
+
+import json
+import math
+import re
+import sys
+import time
+from pathlib import Path, PurePosixPath
+
+import yaml
+
+SCRIPT_DIR = Path(__file__).resolve().parent
+REPO_ROOT = SCRIPT_DIR.parent
+EVAL_K = 20
+
+sys.path.insert(0, str(SCRIPT_DIR))
+from query import cfg, combine, deduplicate_files, dense_search, load_index, sparse_search
+
+
+def load_gold_queries():
+    """Load gold queries from gold-queries.yaml."""
+    with open(SCRIPT_DIR / "gold-queries.yaml") as handle:
+        data = yaml.safe_load(handle) or {}
+    return data.get("queries", [])
+
+
+def gold_files(query: dict) -> list[str]:
+    """Return a query's relevance set, accepting the legacy singular key."""
+    if "gold_files" in query:
+        files = query["gold_files"]
+    elif "gold_file" in query:
+        files = [query["gold_file"]]
+    else:
+        raise ValueError("missing gold_files")
+    if not isinstance(files, list) or not files:
+        raise ValueError("gold_files must be a non-empty list")
+    if any(not isinstance(path, str) or not path.strip() for path in files):
+        raise ValueError("gold_files entries must be non-empty strings")
+    return files
+
+
+def validate_gold_queries(queries: list, indexed_files: set[str] | None = None) -> list:
+    """Validate schema, path confinement, existence, and index membership."""
+    if not queries:
+        raise ValueError("no gold queries found")
+
+    errors = []
+    seen_ids = set()
+    seen_questions = set()
+    normalized = []
+    root = REPO_ROOT.resolve()
+
+    for position, query in enumerate(queries, start=1):
+        if not isinstance(query, dict):
+            errors.append(f"entry {position}: expected a mapping")
+            continue
+
+        qid = query.get("qid")
+        question = query.get("question")
+        domain = query.get("domain")
+        if not isinstance(qid, str) or not re.fullmatch(r"[a-z][a-z0-9-]*", qid):
+            errors.append(f"entry {position}: invalid qid")
+        elif qid in seen_ids:
+            errors.append(f"{qid}: duplicate qid")
+        else:
+            seen_ids.add(qid)
+
+        if not isinstance(question, str) or not question.strip():
+            errors.append(f"{qid or position}: question is required")
+        elif question in seen_questions:
+            errors.append(f"{qid}: duplicate question")
+        else:
+            seen_questions.add(question)
+
+        if not isinstance(domain, str) or not domain.strip():
+            errors.append(f"{qid or position}: domain is required")
+
+        try:
+            files = gold_files(query)
+        except ValueError as exc:
+            errors.append(f"{qid or position}: {exc}")
+            continue
+
+        if len(files) != len(set(files)):
+            errors.append(f"{qid or position}: duplicate gold file")
+
+        for relative in files:
+            pure = PurePosixPath(relative)
+            if ("\x00" in relative or "\\" in relative or pure.is_absolute()
+                    or ".." in pure.parts or str(pure) != relative):
+                errors.append(f"{qid or position}: unsafe path {relative!r}")
+                continue
+            target = (REPO_ROOT / relative).resolve()
+            try:
+                target.relative_to(root)
+            except ValueError:
+                errors.append(f"{qid or position}: path escapes repository: {relative}")
+                continue
+            if not target.is_file():
+                errors.append(f"{qid or position}: missing gold file: {relative}")
+            elif target.stat().st_size == 0:
+                errors.append(f"{qid or position}: empty gold file: {relative}")
+            elif indexed_files is not None and relative not in indexed_files:
+                errors.append(f"{qid or position}: gold file is not indexed: {relative}")
+
+        item = dict(query)
+        item.pop("gold_file", None)
+        item["gold_files"] = files
+        normalized.append(item)
+
+    if errors:
+        raise ValueError("Invalid gold queries:\n- " + "\n- ".join(errors))
+    return normalized
+
+
+def _relevant(gold: str | list[str]) -> set[str]:
+    return {gold} if isinstance(gold, str) else set(gold)
+
+
+def recall_at_k(gold: str | list[str], results: list, k: int = EVAL_K) -> float:
+    """Return the fraction of relevant files found in the top-k results."""
+    relevant = _relevant(gold)
+    unique = deduplicate_files(results, top_k=k)
+    found = {result["file"] for result in unique} & relevant
+    return len(found) / len(relevant)
+
+
+def success_at_k(gold: str | list[str], results: list, k: int) -> float:
+    """Return 1.0 when any relevant file is among the top-k files."""
+    relevant = _relevant(gold)
+    unique = deduplicate_files(results, top_k=k)
+    return float(any(result["file"] in relevant for result in unique))
+
+
+def reciprocal_rank(gold: str | list[str], results: list) -> float:
+    """Return reciprocal rank of the first relevant result."""
+    relevant = _relevant(gold)
+    for rank, result in enumerate(deduplicate_files(results, len(results)), start=1):
+        if result["file"] in relevant:
+            return 1.0 / rank
+    return 0.0
+
+
+def ndcg_at_k(gold: str | list[str], results: list, k: int = EVAL_K) -> float:
+    """Return binary-relevance nDCG at k for one or more relevant files."""
+    relevant = _relevant(gold)
+    unique = deduplicate_files(results, top_k=k)
+    dcg = sum(
+        1.0 / math.log2(rank + 1)
+        for rank, result in enumerate(unique, start=1)
+        if result["file"] in relevant
+    )
+    ideal_count = min(len(relevant), k)
+    idcg = sum(1.0 / math.log2(rank + 1) for rank in range(1, ideal_count + 1))
+    return dcg / idcg if idcg else 0.0
+
+
+def compare_runs(current: list, baseline: list) -> dict:
+    """Compare two runs question by question (reciprocal rank, current minus baseline).
+
+    The interval is the 95% range of the mean difference (normal approximation);
+    a change is real only when the interval excludes zero.
+    """
+    base = {row["qid"]: row["rr"] for row in baseline}
+    if {row["qid"] for row in current} != set(base):
+        raise ValueError("baseline was run on a different question set")
+    diffs = [row["rr"] - base[row["qid"]] for row in current]
+    count = len(diffs)
+    mean = sum(diffs) / count
+    spread = math.sqrt(sum((diff - mean) ** 2 for diff in diffs) / max(count - 1, 1))
+    margin = 1.96 * spread / math.sqrt(count)
+    return {
+        "queries": count,
+        "mrr_diff": round(mean, 4),
+        "interval": [round(mean - margin, 4), round(mean + margin, 4)],
+        "better": sum(diff > 0 for diff in diffs),
+        "worse": sum(diff < 0 for diff in diffs),
+    }
+
+
+def prepare_eval():
+    """Load the index and fail closed on an invalid gold set."""
+    chunks, vectors = load_index()
+    indexed_files = {chunk["file"] for chunk in chunks}
+    queries = validate_gold_queries(load_gold_queries(), indexed_files)
+    return queries, chunks, vectors
+
+
+def require_hybrid(dense: list, sparse: list) -> None:
+    """Require both retrieval branches before scoring the hybrid pipeline."""
+    if not dense:
+        raise ValueError("dense retrieval returned no candidates")
+    if not sparse:
+        raise ValueError("BM25 retrieval returned no candidates")
+
+
+def require_reranked(results: list) -> None:
+    """With the reranker on, refuse a run whose results were not reranked."""
+    if cfg.get("reranker", {}).get("enabled") and "rerank_score" not in results[0]:
+        raise ValueError("reranker is on but gave no scores")
+
+
+def run_eval(verbose: bool = False):
+    """Run the production retrieval path against all gold queries."""
+    queries, chunks, vectors = prepare_eval()
+    recall_sum = 0.0
+    mrr_sum = 0.0
+    ndcg_sum = 0.0
+    complete = 0
+    top = {1: 0, 3: 0, 5: 0}
+    details = []
+    sparse_search("warm up", chunks, top_k=1)  # keyword statistics are built once, outside the timing
+    started = time.perf_counter()
+
+    for query in queries:
+        dense = dense_search(query["question"], None, chunks, vectors, top_k=EVAL_K)
+        sparse = sparse_search(query["question"], chunks, top_k=EVAL_K)
+        require_hybrid(dense, sparse)
+        results = combine(query["question"], dense, sparse, chunks, top_k=EVAL_K)
+        require_reranked(results)
+
+        relevant = query["gold_files"]
+        recall = recall_at_k(relevant, results)
+        rr = reciprocal_rank(relevant, results)
+        ndcg = ndcg_at_k(relevant, results)
+        found = [result["file"] for result in deduplicate_files(results, EVAL_K)
+                 if result["file"] in set(relevant)]
+        complete += int(recall == 1.0)
+        for k in top:
+            top[k] += int(success_at_k(relevant, results, k))
+        recall_sum += recall
+        mrr_sum += rr
+        ndcg_sum += ndcg
+        details.append({
+            "qid": query["qid"],
+            "question": query["question"],
+            "gold_files": relevant,
+            "found": found,
+            "recall": round(recall, 4),
+            "rr": round(rr, 4),
+            "ndcg": round(ndcg, 4),
+        })
+
+        if verbose:
+            status = "PASS" if recall == 1.0 else "PARTIAL" if recall else "MISS"
+            print(f"{status} {query['qid']}: recall={recall:.2f} "
+                  f"RR={rr:.4f} nDCG={ndcg:.4f}")
+            print(f"  Q: {query['question'][:80]}...")
+            for path in found:
+                print(f"  -> {path}")
+            print()
+
+    count = len(queries)
+    seconds = (time.perf_counter() - started) / count
+    recall = recall_sum / count
+    mrr = mrr_sum / count
+    ndcg = ndcg_sum / count
+    print("---")
+    print(f"Queries: {count}")
+    print(f"Top-1/3/5: {top[1]} / {top[3]} / {top[5]}")
+    print(f"Complete@{EVAL_K}: {complete}/{count}")
+    print(f"Recall@{EVAL_K}: {recall:.1%}")
+    print(f"MRR:       {mrr:.4f}")
+    print(f"nDCG@{EVAL_K}:   {ndcg:.4f}")
+    print(f"Reranker:  {'on' if cfg.get('reranker', {}).get('enabled') else 'off'}")
+    print(f"Seconds per query: {seconds:.2f}")
+    print("PASS" if recall >= 0.80 else "FAIL: recall below 80%")
+
+    output = {
+        "queries": count,
+        "top1": top[1],
+        "top3": top[3],
+        "top5": top[5],
+        "complete_at_20": complete,
+        "recall_at_20": round(recall, 4),
+        "mrr": round(mrr, 4),
+        "ndcg_at_20": round(ndcg, 4),
+        "reranker": bool(cfg.get("reranker", {}).get("enabled")),
+        "seconds_per_query": round(seconds, 2),
+        "results": details,
+    }
+    out_path = SCRIPT_DIR / "eval-results.json"
+    with open(out_path, "w") as handle:
+        json.dump(output, handle, indent=2)
+    print(f"\nDetailed results: {out_path}")
+    return recall
+
+
+if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--verbose", "-v", action="store_true")
+    parser.add_argument("--validate-only", action="store_true")
+    parser.add_argument("--baseline", metavar="RESULTS_JSON",
+                        help="compare this run with an earlier eval-results.json")
+    parser.add_argument("--rerank", choices=["on", "off"],
+                        help="run with the reranker on or off instead of the config setting")
+    args = parser.parse_args()
+    if args.rerank:
+        cfg.setdefault("reranker", {})["enabled"] = args.rerank == "on"
+    try:
+        if args.validate_only:
+            queries, _, _ = prepare_eval()
+            print(f"GOLD SET PASS: {len(queries)} valid queries")
+            sys.exit(0)
+        baseline = None
+        if args.baseline:  # read first: this run rewrites eval-results.json
+            with open(args.baseline) as handle:
+                baseline = json.load(handle)["results"]
+        score = run_eval(verbose=args.verbose)
+        if baseline is not None:
+            with open(SCRIPT_DIR / "eval-results.json") as handle:
+                change = compare_runs(json.load(handle)["results"], baseline)
+            low, high = change["interval"]
+            verdict = "clear gain" if low > 0 else "clear loss" if high < 0 else "no clear difference"
+            print(f"Against baseline: MRR {change['mrr_diff']:+.4f} "
+                  f"(95% interval {low:+.4f} to {high:+.4f}); better {change['better']}, "
+                  f"worse {change['worse']} of {change['queries']}: {verdict}")
+    except (OSError, ValueError, KeyError) as exc:
+        print(f"GOLD SET FAIL: {exc}")
+        sys.exit(1)
+    sys.exit(0 if score >= 0.80 else 1)

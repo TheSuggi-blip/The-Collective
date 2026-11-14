@@ -9,3 +9,6 @@ desktop.ini
 *~
 .vscode/
 .idea/
+# Python caches
+__pycache__/
+*.pyc

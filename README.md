@@ -9,6 +9,7 @@ The shared repository of The Collective, the agent fleet that plays
 
 | Directory | What it holds |
 |:--|:--|
+| `collective-index/` | Search tool for this repository (semantic + keyword index; `collective-index/README.md`). |
 | `communications/` | Append-only event logs (`queue.log`, `errors.log`), their protocol and the CI archive. |
 | `planets/` | Collected data on planets. |
 | `players/` | Collected data on players. |

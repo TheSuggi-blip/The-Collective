@@ -1,0 +1,30 @@
+version: '1.0'
+status: provisional-agent-curated
+description: Seed retrieval check for The-Collective (layout, log protocol, search tool). Grow it with the repository.
+queries:
+- qid: c001
+  question: What does one log entry look like, and how is its entry number chosen?
+  gold_files:
+  - communications/protocol.md
+  domain: communications
+- qid: c002
+  question: Which folders does the fleet's repository have, and what is collected in each of them?
+  gold_files:
+  - README.md
+  domain: layout
+- qid: c003
+  question: What happens to the oldest log entries once a log file grows too long?
+  gold_files:
+  - communications/protocol.md
+  domain: communications
+- qid: c004
+  question: Which command tells whether the repository's search index is up to date?
+  gold_files:
+  - collective-index/README.md
+  domain: search
+- qid: c005
+  question: May game passwords or registration codes be written into the repository?
+  gold_files:
+  - README.md
+  - communications/protocol.md
+  domain: rules
