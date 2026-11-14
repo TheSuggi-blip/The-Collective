@@ -85,3 +85,11 @@ jobs:
           # Suspect rounded timestamps (ending in 00Z) get a warning.
           # Invalid formats and duplicates fail the build.
           bash scripts/validate-ids.sh
+
+      - name: Validate intel files (planets/, players/)
+        shell: bash
+        run: |
+          # Every data file in planets/ and players/ must follow its folder's
+          # BLUEPRINT.md. The gate's own tests run first.
+          python3 -B -m unittest discover -s scripts/tests -p 'test_validate_intel.py'
+          python3 scripts/validate-intel.py
