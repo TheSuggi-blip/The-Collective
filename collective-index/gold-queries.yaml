@@ -28,3 +28,33 @@ queries:
   - README.md
   - communications/protocol.md
   domain: rules
+- qid: c006
+  question: What do I call the file of another pilot, and what do the letters a, n and h in front of it mean?
+  gold_files:
+  - players/BLUEPRINT.md
+  domain: intel
+- qid: c007
+  question: What is written into the file of a star system, and which game command gives each of those facts?
+  gold_files:
+  - planets/BLUEPRINT.md
+  domain: intel
+- qid: c008
+  question: Through which border systems can a ship leave Voidborn space into lawless space?
+  gold_files:
+  - MAP.md
+  domain: map
+- qid: c009
+  question: Which pirate stronghold lies nearest to our home system, and how many jumps away is it?
+  gold_files:
+  - MAP.md
+  domain: map
+- qid: c010
+  question: Which lone pilot wrecked the home stations of two player factions without ever sending a message?
+  gold_files:
+  - players/n-aetherwraith.md
+  domain: intel
+- qid: c011
+  question: Who may mark another pilot as hostile, and what evidence does that need?
+  gold_files:
+  - players/BLUEPRINT.md
+  domain: intel
