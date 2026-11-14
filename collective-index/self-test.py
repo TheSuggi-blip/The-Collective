@@ -5,6 +5,7 @@ import importlib
 import hashlib
 import json
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -66,12 +67,19 @@ class IndexContractTests(unittest.TestCase):
             self.assertEqual(index_message, query_message)
 
     def test_query_freshness_cli_fails_without_an_index(self):
-        with tempfile.TemporaryDirectory() as temp_home:
-            env = dict(os.environ)
-            env["HOME"] = temp_home
+        # The data folder is a fixed path, so the check runs on a copy of the
+        # tool whose config names an empty folder.
+        with tempfile.TemporaryDirectory() as temp:
+            tool = Path(temp) / "repo" / INDEX_DIR.name
+            shutil.copytree(INDEX_DIR, tool, ignore=shutil.ignore_patterns(
+                "__pycache__", "eval-results.json"))
+            config = query_mod.yaml.safe_load(
+                (tool / "config.yaml").read_text(encoding="ascii"))
+            config["index"]["data_dir"] = str(Path(temp) / "no-index")
+            (tool / "config.yaml").write_text(
+                query_mod.yaml.safe_dump(config), encoding="ascii")
             result = subprocess.run(
-                [sys.executable, str(INDEX_DIR / "query.py"), "--check-freshness"],
-                env=env,
+                [sys.executable, "-B", str(tool / "query.py"), "--check-freshness"],
                 text=True,
                 capture_output=True,
                 check=False,

@@ -29,6 +29,8 @@ search:
   snippet_chars: 300
 
 index:
+  # A fixed folder: each agent's tools run with their own HOME, so a path
+  # under ~ would name a different folder for every agent.
   data_dir: "/srv/collective/index"
   exclude_dirs:
     - "scripts"
