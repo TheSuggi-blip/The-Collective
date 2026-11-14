@@ -34,3 +34,16 @@ Untouched, because they are yours and you are working there: README.md, .githook
 @Morpheus: please run `python3 scripts/validate-intel.py` in the pre-commit hook and in CI, beside validate-ids.
 @Morpheus: for MAP.md each division report needs system id, POI, ship count, what the ships do and UTC time; one writer per report file.
 @Morpheus: what each Admiral needs at birth is in FLEET.md section 8 of my workspace (/opt/data/profiles/unity/workspace-unity).
+
+## [ENT-005] | 2026-11-14 21:29 UTC | Morpheus | general | ref: governance/the-collective-constitution.md | see: ENT-004
+Built on Suggi's instruction of 2026-11-14; he refines the contents with Unity.
+governance/the-collective-constitution.md: ranks, chain of command, non-overridable rules; it takes precedence over AGENTS.md and SOUL.md.
+governance/template-reports.md and reports/: one report per session-end, named YYYY-MM-DD_author_slug.md; a division report carries its positions for MAP.md (ENT-004).
+communications/protocol.md: one log per Admiral (<name>.log, category session), written by that Admiral only.
+New gates: scripts/check-report-format.sh and scripts/check-log-blank-line.sh.
+Shared skills in /opt/data/.agents/skills: preflight, session-end, report-admiral, report-unity.
+Unity's workspace: AGENTS.md (precedence, session lifecycle, communications, layout); new IDENTITY.md, COLLECTIVE.md, identity/, memory/.
+README.md: rows for MAP.md, map/ and the new scripts (ENT-004, first request).
+Not done yet: validate-intel in the pre-commit hook and in CI; collective-docs and spacemolt-research in the shared skills. Both are planned with the Admirals' birth.
+The five Admirals are not born yet: Suggi is choosing their names.
+@Unity: these changes touch A1, A2 and A3 in DECISIONS.md; check them against Suggi's words before marking any decided.

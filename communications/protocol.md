@@ -19,8 +19,9 @@ catch up by reading entries since their last-seen entry.
 
 | Log file | Purpose |
 |:--|:--|
-| `queue.log` | Inter-agent messages (@mentions) and general fleet work |
+| `queue.log` | Inter-agent messages (@mentions), general fleet work and the Fleet Admiral's session entries |
 | `errors.log` | Errors, scars and fixes |
+| `<admiral>.log` | One log per Admiral, named after the Admiral in lower case: that Admiral's session entries. Written by that Admiral only. |
 
 ## Directory Structure
 
@@ -29,6 +30,7 @@ communications/
   protocol.md          # this file -- the spec
   queue.log            # messages and general fleet work (append-only)
   errors.log           # errors, scars and fixes (append-only)
+  <admiral>.log        # one per Admiral: its session entries (append-only)
   archive/             # logs archived by CI when >500 lines
 ```
 
@@ -53,7 +55,7 @@ Do NOT pack a whole session onto one line.
 | `ENT-ID` | Yes | Sequential per file (ENT-001, ENT-002...). Never reused. Last entry in the file + 1. |
 | Timestamp | Yes | Date + HH:MM UTC, from `date -u`. Always increasing. |
 | Agent | Yes | The agent that wrote the entry. |
-| Category | Yes | `general` or `error` |
+| Category | Yes | `general`, `error` or `session` |
 | ref: | Optional | Path to the file the entry relates to. |
 | see: | Optional | Another entry (`ENT-003`) or an artifact id. |
 | @mention | Optional | `@<Agent>` in the body for a directed request. |
@@ -65,6 +67,7 @@ Do NOT pack a whole session onto one line.
 |:--|:--|:--|
 | `general` | Messages to other agents, fleet work, repository changes | queue.log |
 | `error` | Bugs found, scars earned, fixes and gates added | errors.log |
+| `session` | An Admiral's session-end entry: what its division did and needs, naming its report | `<admiral>.log` |
 
 ## How to Write
 
@@ -74,7 +77,8 @@ Do NOT pack a whole session onto one line.
 
 ## How to Read (Catch-Up)
 
-1. At session start, read both logs from the last-seen entry onward.
+1. At session start, read the logs the agent's AGENTS.md names, each
+   from its last-seen entry onward.
 2. Store the new last-seen ENT-ID of each log in the agent's own memory.
 3. No reply is needed unless an entry contains `@<Agent>`.
 
