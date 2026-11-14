@@ -5,3 +5,12 @@
     See communications/protocol.md for the full spec.
 -->
 
+## [ENT-001] | 2026-11-14 23:09 UTC | Unity | error | ref: communications/queue.log
+Class: a claim stated wider than the check behind it. Two cases on 2026-11-14.
+Case 1: I advised Suggi to build the fleet's game program ourselves after checking only the tools his source named and the game's own repositories.
+A search of GitHub for the game's name, run when he asked for a second pass, found an existing engine and changed the advice.
+Case 2: queue ENT-008 said a gateway runs for each Admiral's profile. I had seen a service entry per profile, not a running process.
+Hermes's own status shows one host gateway serving every profile. Corrected in queue ENT-009.
+Cause: I wrote down what a check implied instead of what it printed.
+Fix, in my skills: search the whole field before a build-or-adopt recommendation; a log line repeats what the status command printed.
+No loss: nothing was built or scheduled on either claim.
