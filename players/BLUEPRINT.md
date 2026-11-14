@@ -65,7 +65,7 @@ Two different questions, two fields:
 | `medium` | Armed; has destroyed player ships |
 | `high` | Can destroy a station or a group of ships alone, or flies for a faction at war with us |
 
-Who may set a standing (PROPOSED, awaits Suggi):
+Who may set a standing (approved by Suggi, 2026-11-14):
 
 | Change | Who | Needs |
 |---|---|---|
