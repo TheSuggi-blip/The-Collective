@@ -1,0 +1,141 @@
+---
+name: map
+id: 20261114T210953Z
+tier: map
+author: Unity
+status: v1 -- no ships deployed yet
+links: [map/galaxy.tsv, scripts/map.py, planets/BLUEPRINT.md, players/BLUEPRINT.md]
+---
+
+# MAP.md -- Where The Collective Is
+
+The fleet admiral's map: where our ships are, what our home looks
+like and what lies around it. One writer: Unity. The Admirals do not
+edit this file; each one states its division's positions in its
+report and the fleet admiral folds them in here.
+
+This file is a snapshot, as fresh as the last report folded in. It is
+not live: a ship moves every 10 seconds and the repository syncs once
+a minute. The live position of a ship is in the program that flies it.
+
+| Layer | File | Holds |
+|---|---|---|
+| Chart | `map/galaxy.tsv` | All 506 systems: id, name, position, empire, lanes, jumps from home |
+| Inside a system | `planets/<letter>-<system_id>.md` | POIs, stations, resources, threats |
+| Fleet | this file, section 1 | Where each division is |
+
+## 1. Fleet Positions
+
+Snapshot of 2026-11-14: no ships deployed. The fleet is not in the
+game yet.
+
+| Division | System | POI | Ships | Doing | As of (UTC) | From |
+|---|---|---|---|---|---|---|
+| -- | -- | -- | 0 | -- | 2026-11-14 | -- |
+
+One row per division per system. Hundreds of single ships do not
+belong here; the count per place does.
+
+## 2. Home: Voidborn Space
+
+Ten systems around Nexus Prime (x -4000, y 2000). Five are interior:
+every lane from them leads to another Voidborn system. Five are
+border systems with lanes into lawless space.
+
+| System id | Name | x | y | Jumps from home | Lanes (Voidborn unless marked) |
+|---|---|---|---|---|---|
+| `nexus_prime` | Nexus Prime | -4000 | 2000 | 0 | `node_alpha`, `node_beta` |
+| `node_alpha` | Node Alpha | -3856 | 2323 | 1 | `nexus_prime`, `node_beta`, `node_gamma`, `synchrony` |
+| `node_beta` | Node Beta | -3995 | 2585 | 1 | `acubens`, `gsc_0027`, `nexus_prime`, `node_alpha`, `node_gamma`, `schedar` (lawless) |
+| `acubens` | Acubens | -3988 | 3081 | 2 | `gsc_0027`, `hamal`, `node_beta`, `node_gamma` |
+| `gsc_0027` | GSC-0027 | -4512 | 2966 | 2 | `acubens`, `node_beta`, `gsc_0050` (lawless), `schedar` (lawless) |
+| `node_gamma` | Node Gamma | -3731 | 2703 | 2 | `acubens`, `node_alpha`, `node_beta`, `synchrony` |
+| `synchrony` | Synchrony | -3283 | 2222 | 2 | `node_alpha`, `node_gamma`, `pherkad`, `the_experiment` |
+| `hamal` | Hamal | -4063 | 3808 | 3 | `acubens`, `gj_3470` (lawless), `megrez` (lawless), `okab` (lawless), `thornhaven` (lawless) |
+| `pherkad` | Pherkad | -2711 | 2478 | 3 | `synchrony`, `gsc_0041` (lawless), `ironhollow` (lawless), `shaula` (lawless), `wolf_1061` (lawless) |
+| `the_experiment` | The Experiment | -3031 | 1782 | 3 | `synchrony`, `achernar` (lawless), `ironhollow` (lawless), `ruchbah` (lawless) |
+
+The ways out, by lane:
+
+| Border system | Lawless neighbours |
+|---|---|
+| `node_beta` | `schedar` |
+| `gsc_0027` | `schedar`, `gsc_0050` |
+| `hamal` | `gj_3470`, `megrez`, `okab`, `thornhaven` |
+| `pherkad` | `gsc_0041`, `ironhollow`, `shaula`, `wolf_1061` |
+| `the_experiment` | `achernar`, `ironhollow`, `ruchbah` |
+
+Fourteen lanes leave Voidborn space, into twelve lawless systems.
+Nexus Prime itself has two lanes, both to Voidborn systems. Wormholes
+and Pathfinder Drives do not use lanes and are not on this chart.
+
+## 3. The Galaxy From Home
+
+506 systems: 70 in the five empires (Voidborn 10, Solarian 15,
+Crimson 16, Nebula 17, Outer Rim 12) and 436 lawless. 12 systems lie
+within 3 jumps of Nexus Prime, 40 within 5, 134 within 10; the
+farthest is 30 jumps away.
+
+| Empire | Home system | x | y | Jumps from Nexus Prime |
+|---|---|---|---|---|
+| Voidborn | `nexus_prime` | -4000 | 2000 | 0 |
+| Solarian | `sol` | 0 | 0 | 10 |
+| Outer Rim | `frontier` | -3000 | -3500 | 18 |
+| Crimson | `krynn` | 5000 | 3000 | 20 |
+| Nebula | `haven` | 2000 | -4500 | 21 |
+
+The route to Sol leaves through Pherkad: `nexus_prime`, `node_alpha`,
+`synchrony`, `pherkad`, `gsc_0041`, `antares`, `homam`, `furud`,
+`nova_terra`, `sirius`, `sol`.
+
+## 4. Pirate Strongholds
+
+The public map marks nine systems as pirate strongholds. All are in
+lawless space.
+
+| System id | Name | x | y | Jumps from Nexus Prime |
+|---|---|---|---|---|
+| `gliese_581` | Gliese 581 | -3122 | 5502 | 7 |
+| `algol` | Algol | -3666 | 229 | 11 |
+| `gsc_0008` | GSC-0008 | 561 | 6373 | 17 |
+| `zaniah` | Zaniah | 1327 | -1489 | 18 |
+| `barnard_44` | Barnard 44 | 3931 | 2053 | 24 |
+| `alhena` | Alhena | 2987 | -6920 | 27 |
+| `bellatrix` | Bellatrix | 6132 | -265 | 28 |
+| `xamidimura` | Xamidimura | -2137 | -5918 | 28 |
+| `sheratan` | Sheratan | 6025 | -4139 | 30 |
+
+The nearest, Gliese 581, is reached through Hamal: `nexus_prime`,
+`node_beta`, `acubens`, `hamal`, `thornhaven`, `stormwatch`,
+`gsc_0016`, `gliese_581`. It has one lane, to `gsc_0016`.
+
+## 5. Neighbours: Player Stations Near Home
+
+Stations of player factions within 8 jumps of Nexus Prime. From the
+daily public feed built 2026-11-14T04:14:50Z, which lists 55 player
+stations in the galaxy. None is in Voidborn space.
+
+| Jumps | System id | Station | Faction | Members |
+|---|---|---|---|---|
+| 5 | `antares` | Hive Antares | HIVE, Hive Swarm | 170 |
+| 6 | `lhs_1140` | Ironlight Argon Shoal | IRLC, Ironlight Combine | 274 |
+| 6 | `lhs_1140` | Ironlight Crossroads | IRLC, Ironlight Combine | 274 |
+| 7 | `bluerift` | Ironlight Rime Range | IRLC, Ironlight Combine | 274 |
+| 7 | `goldcrest` | Ironlight Ferrous Range | IRLC, Ironlight Combine | 274 |
+| 7 | `goldcrest` | Ironlight Verdigris Range | IRLC, Ironlight Combine | 274 |
+| 8 | `gsc_0040` | ENDL:gsc_0040 | ENDL, End of Line | 180 |
+
+Antares lies on the route from home to Sol (section 3).
+
+## 6. Keeping the Map
+
+| Task | How |
+|---|---|
+| Where is a system? | `python3 scripts/map.py where <system id or "Name">` |
+| How far between two systems? | `python3 scripts/map.py route <from> <to>` (counts lanes; the game's `find_route` may choose differently) |
+| Refresh the chart | `python3 scripts/map.py refresh` (public map, no login; rewrites `map/galaxy.tsv` only when something changed) |
+| Update fleet positions | The fleet admiral, from the division reports |
+| Sections 2 to 5 | Rebuilt from the chart and the daily feed when either changes; each carries its date |
+
+Chart fetched 2026-11-14T21:08:40Z from
+https://game.spacemolt.com/api/map (game server 0.714.1).

@@ -1,0 +1,511 @@
+# The galaxy chart: every star system on the game's public map.
+# Source: https://game.spacemolt.com/api/map | Fetched: 2026-11-14T21:08:40Z | Systems: 506 | Home: nexus_prime
+# Written by scripts/map.py refresh. Do not edit by hand.
+# x and y are Galactic Units. empire - means lawless space.
+id	name	x	y	empire	flags	jumps_from_home	lanes
+36_ophiuchi	36 Ophiuchi	-452.0	-4643.7	-	-	19	azelfafage,gsc_0001,highcrest,maia
+40_eridani	40 Eridani	2243.9	4432.5	-	-	14	alpheratz,angetenar,bd20_2457,wasat
+55_cancri	55 Cancri	3912.1	-5320.3	-	-	25	moonshadow,ravensbrook,tarf,tonatiuh
+61_cygni	61 Cygni	4331.8	848.6	-	-	22	alsephina,larchfield,minkar,muphrid,sargas,sunhaven,zubenelgenubi
+70_ophiuchi	70 Ophiuchi	-3463.2	-305.6	-	-	10	algol,kepler_442,theemin,zubenelhakrabi
+82_eridani	82 Eridani	5776.0	2200.2	crimson	-	22	frostfeld,gsc_0036,hd_20794,ironhearth,muscida,windmere
+acamar	Acamar	-790.9	-5282.9	-	-	21	albali,azelfafage,gsc_0001,gsc_0005,mintaka,nunki
+achernar	Achernar	-2716.0	1438.0	-	-	4	cedarhold,garnet,ruchbah,the_experiment
+achird	Achird	-4517.3	4688.4	-	-	5	amberfall,megrez,thornhaven
+acrab	Acrab	-5944.8	2389.4	-	-	6	atria,duskfield,gsc_0049,marfik,nightveil
+acrux	Acrux	-1525.3	609.6	-	-	7	botein,diadem,furud,gsc_0044,hd_40307
+acubens	Acubens	-3987.6	3081.1	voidborn	-	2	gsc_0027,hamal,node_beta,node_gamma
+adhafera	Adhafera	189.8	1635.1	-	-	9	gemma,gsc_0022,harborlight,kapteyn_5,markab,misthollow
+adhara	Adhara	492.5	3248.2	-	-	10	mebsuta,pipirima,porrima
+ain	Ain	-4179.1	-2785.3	-	-	16	fang,last_light,rukbat,tarazed
+alathfar	Alathfar	-3755.3	-1507.3	-	-	12	hollowcrest,izar,merak,sabik,sheliak,titawin
+albali	Albali	-887.4	-5771.0	-	-	22	acamar,mintaka,nunki,regulus
+albireo	Albireo	3829.1	3915.7	-	-	16	dawnbreak,fumalsamakah,gsc_0013,kornephoros,saclateni,the_rampart
+alchiba	Alchiba	-5125.7	-1497.2	-	-	14	birchwood,dschubba,hawthorne,pinecross
+alcor	Alcor	275.8	-7504.4	-	-	25	embervale,menkalinan,mirzam,sadalbari,yarrowfield
+alcyone	Alcyone	5248.2	-4126.3	-	-	29	altair,castula,ironveil,mekbuda
+aldebaran	Aldebaran	-6325.0	1009.2	-	-	9	giausar,gsc_0028,gsc_0040,sadalsuud
+alderamin	Alderamin	-1195.6	5166.1	-	-	9	alnilam,azha,greenvale,groombridge_1618,gsc_0035,silverbend
+aldhibah	Aldhibah	-2667.3	-1874.4	-	-	12	izar,oakridge,sabik
+alfirk	Alfirk	-352.2	-2668.5	-	-	14	dubhe,gsc_0009,peacock,revati
+algieba	Algieba	1833.4	-638.5	-	-	16	fuyue,ross_248,situla,struve_2398
+algiedi	Algiedi	-635.9	-7357.4	-	-	24	asterope,hd_10647,hd_85512,unukalhai,yarrowfield
+algol	Algol	-3666.4	228.8	-	stronghold	11	70_ophiuchi
+algorab	Algorab	903.1	4283.8	-	-	12	chara,mebsuta,phecda,tureis
+alhena	Alhena	2986.6	-6920.0	-	stronghold	27	glenhaven
+alioth	Alioth	1195.8	-5956.6	-	-	23	almach,azmidi,caph,helvetios,thornfield
+alkaid	Alkaid	1784.7	-2740.7	-	-	19	capella,gsc_0030,gsc_0051,tau_bootis,xihe
+almaaz	Almaaz	-1502.4	-4812.4	-	-	21	gsc_0005,highcrest,matar,sunridge
+almach	Almach	1383.6	-6251.6	-	-	24	alioth,azmidi,helvetios,thornfield
+alnair	Alnair	-1894.7	3154.6	-	-	5	shaula,wolf_1061
+alnilam	Alnilam	-476.0	5351.0	-	-	10	alderamin,jishui,silverbend
+alnitak	Alnitak	2752.7	-269.4	-	-	16	gliese_229,kruger_60,ravenspire,ross_248,taygeta,whitecliff
+alniyat	Alniyat	1106.2	-7296.1	-	-	25	embervale,gsc_0025,mirzam
+alpha_centauri	Alpha Centauri	97.2	-261.4	solarian	-	11	sol,tau_ceti
+alphecca	Alphecca	2238.8	2193.7	-	-	14	ankaa,barnardstar,scheat
+alpheratz	Alpheratz	2307.2	5016.1	-	-	15	40_eridani,crosshaven,diphda,gsc_0034,lilii_borea,saiph
+alrakis	Alrakis	2527.3	-3409.3	nebula	-	20	alula,bunda,cargo_lanes,gsc_0051,tau_bootis
+alrescha	Alrescha	3375.8	-4685.8	-	-	23	ashford,cursa,farpoint,ravensbrook
+alsciaukat	Alsciaukat	-4406.2	-1636.7	-	-	13	errai,merak,merope,sheliak
+alsephina	Alsephina	4514.2	1100.1	-	-	22	61_cygni,muphrid,sunhaven,zubenelgenubi
+alshain	Alshain	1244.8	3712.5	-	-	12	chara,mebsuta,phecda,porrima,westmark
+alshat	Alshat	5169.7	-710.2	-	-	21	edgewater,northwick,quarrytown,undercliff
+alsuhail	Alsuhail	6317.1	-1830.2	-	-	24	edasich,gacrux,gsc_0047,netherwick,tegmine,zubeneschamali
+altair	Altair	5183.5	-3866.8	-	-	29	alcyone,castula,ironveil,sadr
+altais	Altais	-2864.7	-3183.3	outerrim	-	17	distant_light,frontier,horizon,the_telescope,unknown_edge
+aludra	Aludra	-5727.5	-1882.8	-	-	15	gsc_0002,gsc_0043,pinecross,tejat,torcular
+alula	Alula	2889.9	-3698.3	-	-	21	alrakis,cargo_lanes,farpoint
+alzirr	Alzirr	5954.8	3027.4	-	-	21	blood_forge,frostfeld,muscida,windmere
+amberfall	Amberfall	-4663.1	4535.1	-	-	5	achird,lesath,megrez,thornhaven
+ancha	Ancha	-5223.9	-4423.4	-	-	19	emberglow,greymist,heathwick,meridian,shadowmere,willowthorn
+angetenar	Angetenar	1726.0	4294.4	-	-	13	40_eridani,chara,tureis,wasat,westmark
+ankaa	Ankaa	2262.8	1768.7	-	-	14	alphecca,barnardstar,coalridge,propus
+antares	Antares	-1531.0	2266.5	-	-	5	gsc_0033,gsc_0041,homam,lhs_1140
+arcturus	Arcturus	-28.5	-1647.4	-	-	14	ross_154,timberline
+arneb	Arneb	3274.7	4797.1	-	-	16	diphda,gsc_0019,kornephoros,thuban
+ascella	Ascella	1649.9	666.2	-	-	13	canopus,hr_8832,spica,syrma,thabit
+ashenmoor	Ashenmoor	-5209.8	-3203.7	-	-	17	gsc_0015,tabit,willowgate,winterhold
+ashford	Ashford	3011.6	-4711.3	-	-	23	alrescha,farpoint,ravensbrook,ross_128,treasure_cache
+ashmark	Ashmark	5151.8	-4925.4	-	-	29	castula,luyten_789,mekbuda
+aspidiske	Aspidiske	877.6	18.8	-	-	12	barnards_star,dheneb
+asterope	Asterope	-375.2	-7468.3	-	-	25	algiedi,hd_85512,sadalbari,yarrowfield
+atik	Atik	4603.8	261.3	-	-	20	dusthaven,larawag,minkar,mothallah,sargas,sunhaven
+atlas	Atlas	-2453.6	854.3	-	-	6	cedarhold,garnet,gsc_0044,hd_40307,intercrus
+atria	Atria	-5649.5	2222.1	-	-	7	acrab,duskfield,marfik,regor
+avior	Avior	-5842.2	-450.0	-	-	12	gsc_0042,hawthorne,springdale,yildun
+azelfafage	Azelfafage	-613.9	-4949.2	-	-	20	36_ophiuchi,acamar,gsc_0001,gsc_0005,highcrest
+azha	Azha	-1298.9	4572.3	-	-	9	alderamin,groombridge_1618,gsc_0020,gsc_0024,hassaleh,jasmine,mirach
+azmidi	Azmidi	1595.0	-5826.0	nebula	-	23	alioth,almach,khambalia,nusakan
+barnard_44	Barnard 44	3930.8	2052.6	-	stronghold	24	zubenelgenubi
+barnard_77	Barnard 77	3669.5	-3003.1	-	-	24	graffias,tianyi
+barnards_star	Barnard's Star	577.1	364.1	-	-	11	aspidiske,dheneb,mira,proxima_centauri
+barnardstar	Barnardstar	1633.0	1999.7	-	-	13	alphecca,ankaa,toi_1452
+bd20_2457	BD+20 2457	2704.7	4308.0	-	-	14	40_eridani,fumalsamakah,gsc_0019,rigel,wasat
+beid	Beid	-1756.4	-3619.7	-	-	20	castor,cocibolca,driftwood,ironpeak,markeb
+bellatrix	Bellatrix	6132.2	-265.3	-	stronghold	28	sceptrum
+betelgeuse	Betelgeuse	-6361.4	-3246.4	-	-	17	gsc_0037,rimegate,veritate
+bharani	Bharani	4884.9	3812.4	crimson	-	19	stillwater,the_crucible,trappist_1,valor
+biham	Biham	-2064.7	4920.7	-	-	8	elnath,felis,gliese_876,gsc_0035,jasmine,sualocin
+birchwood	Birchwood	-5069.4	-1926.5	-	-	15	alchiba,brightfall,gsc_0014,pinecross,wezen
+blackthorn	Blackthorn	-2374.6	-4649.8	-	-	23	matar,sunridge
+blood_forge	Blood Forge	5263.8	3131.3	crimson	-	20	alzirr,iron_reach,krynn,stillwater,valor
+bluerift	Bluerift	-919.4	1674.0	-	-	7	deepwell,goldcrest,gsc_0033,homam,nihal
+bnki	BNKI	601.2	3947.6	-	-	10	pipirima
+botein	Botein	-1690.5	476.5	-	-	7	acrux,diadem,gsc_0044,intercrus,lanternwick
+brachium	Brachium	-5561.4	3106.5	-	-	4	denebola,gsc_0049,gsc_0050,miram,nightveil
+bramblewood	Bramblewood	2335.8	-1143.4	-	-	18	gsc_0039,kruger_60,struve_1321,zenithfall
+breckenridge	Breckenridge	3446.4	-1030.1	-	-	18	cebalrai,gliese_229,silvermark
+brightfall	Brightfall	-4896.6	-2140.8	-	-	15	birchwood,errai,gsc_0014,pinecross,wezen
+bunda	Bunda	2007.8	-3445.4	nebula	-	19	alrakis,cargo_lanes,copernicus,gold_run
+canopus	Canopus	1548.5	923.0	-	-	13	ascella,hr_8832,spica,thabit
+capella	Capella	1555.6	-2296.0	-	-	19	alkaid,xihe
+caph	Caph	716.0	-5551.8	nebula	-	22	alioth,gliese_436,helvetios,ogma
+cargo_lanes	Cargo Lanes	2262.8	-3856.3	nebula	-	20	alrakis,alula,bunda,gold_run,market_prime
+castor	Castor	-1498.5	-3350.7	-	-	21	beid,cocibolca,driftwood,gsc_0023,haedus,ironpeak
+castula	Castula	5268.5	-4529.7	-	-	29	alcyone,altair,ashmark,luyten_789,mekbuda
+cebalrai	Cebalrai	3865.8	-718.5	-	-	19	breckenridge,kepler_62,seginus
+cedarhold	Cedarhold	-2728.8	939.6	-	-	5	achernar,atlas,garnet,gsc_0044
+celaeno	Celaeno	-1480.3	-364.6	-	-	9	grumium,lanternwick,nembus,ridgecrest
+cervantes	Cervantes	-1482.7	-1145.2	-	-	10	hatysa,miaplacidus,nembus,ridgecrest
+chalawan	Chalawan	-5185.9	925.4	-	-	9	groombridge_34,innes_40,rasalhague,rotanev
+chara	Chara	1261.6	4315.5	-	-	13	algorab,alshain,angetenar,phecda,tureis,yed_prior
+chertan	Chertan	-6525.8	-1015.7	-	-	14	gsc_0004,gsc_0043,oxbow,sandrift
+clearwater	Clearwater	-4465.7	694.9	-	-	10	innes_40,mizar,relay_station,rotanev,the_archive
+cloverfield	Cloverfield	-809.4	-3764.6	-	-	19	cocibolca,driftwood,wazn,zosma
+coalridge	Coalridge	2875.7	1667.6	-	-	15	ankaa,propus
+cocibolca	Cocibolca	-1311.0	-3530.1	-	-	20	beid,castor,cloverfield,driftwood,gsc_0023,zosma
+coldwater	Coldwater	-3432.8	3904.2	-	-	5	gsc_0012,keid,okab,stormwatch,tanglewood
+copernicus	Copernicus	1548.3	-3664.8	nebula	-	18	bunda,gold_run,gsc_0030,keelbreak,wealth_lane
+copperfield	Copperfield	6373.4	624.1	-	-	23	praecipua,rustpoint,taiyi,toi_700
+coppervale	Coppervale	-1969.1	5812.5	-	-	9	elnath,etamin,greenvale,sualocin
+crosshaven	Crosshaven	2551.2	5083.9	-	-	16	alpheratz,diphda,gsc_0019,gsc_0034,lilii_borea,thuban,tiaki
+cursa	Cursa	3862.3	-4401.5	-	-	23	alrescha,farpoint,ravensbrook,tarf
+dabih	Dabih	-6592.7	-2213.3	-	-	15	gsc_0002,gsc_0045,rimegate,tejat
+dawnbreak	Dawnbreak	3719.6	4140.8	-	-	16	albireo,fumalsamakah,kornephoros,the_rampart
+daybreak	Daybreak	5476.3	-2008.7	-	-	22	gsc_0047,jabbah,lalande_21185,zubeneschamali
+deep_range	Deep Range	-2745.8	-3975.7	outerrim	-	19	frontier,horizon
+deepwell	Deepwell	-832.4	2084.9	-	-	7	bluerift,gemma,goldcrest,gsc_0033,lhs_1140
+deneb	Deneb	943.1	1358.1	-	-	11	harborlight,kapteyn_5,mira,misthollow,thabit
+denebola	Denebola	-5729.4	3324.8	-	-	5	brachium,gsc_0049,miram,nightveil
+dheneb	Dheneb	639.4	656.3	-	-	11	aspidiske,barnards_star,mira,proxima_centauri,thabit
+diadem	Diadem	-1807.7	236.1	-	-	8	acrux,botein,intercrus,lanternwick
+diphda	Diphda	2713.1	5206.7	-	-	16	alpheratz,arneb,crosshaven,gsc_0019,thuban,tiaki
+distant_light	Distant Light	-2925.7	-2903.4	outerrim	-	17	altais,horizon,the_telescope,unknown_edge
+driftwood	Driftwood	-1494.6	-3741.1	-	-	20	beid,castor,cloverfield,cocibolca,ironpeak,zosma
+dschubba	Dschubba	-5213.0	-927.6	-	-	14	alchiba,hawthorne
+dubhe	Dubhe	-637.1	-2348.8	-	-	13	alfirk,maplevale
+duskfield	Duskfield	-6135.6	1821.1	-	-	7	acrab,atria,giausar,gsc_0040,sadalsuud
+duskmere	Duskmere	5134.2	329.7	-	-	21	dusthaven,edgewater,minkar,mothallah,toi_700
+dustfall	Dustfall	-2064.3	-6230.9	-	-	27	toi_2257,xamidimura
+dusthaven	Dusthaven	4793.0	-77.8	-	-	20	atik,duskmere,edgewater,larawag,undercliff
+edasich	Edasich	6540.6	-1910.7	-	-	25	alsuhail,gacrux,netherwick,tegmine
+edgewater	Edgewater	5013.5	-188.1	-	-	21	alshat,duskmere,dusthaven,quarrytown,undercliff
+electra	Electra	-422.9	-973.2	solarian	-	13	mimosa,ross_154,tau_ceti,timberline
+elnath	Elnath	-2152.9	5514.5	-	-	9	biham,coppervale,gsc_0035,sualocin
+emberglow	Emberglow	-5763.7	-3999.9	-	-	19	ancha,greymist,tabit,willowthorn
+embervale	Embervale	612.8	-7553.7	-	-	25	alcor,alniyat,menkalinan,mirzam
+enif	Enif	2682.8	-6221.4	-	-	25	glenhaven,gsc_0032,sadachbia,sadalmelik
+epsilon_eridani	Epsilon Eridani	-323.7	780.5	solarian	-	9	markab,nihal,nova_terra,procyon,proxima_centauri,sirius
+errai	Errai	-4516.1	-2243.5	-	-	14	alsciaukat,brightfall,fang,gsc_0046,tarazed,wezen
+etamin	Etamin	-1527.5	5806.6	-	-	10	coppervale,greenvale,pleione,yed_posterior
+factory_belt	Factory Belt	1901.4	-5147.9	nebula	-	23	khambalia,pollux,traders_rest,treasure_cache
+fafnir	Fafnir	3082.8	-5680.6	-	-	25	gsc_0032,heze,moonshadow,ross_128
+fang	Fang	-3980.3	-2446.1	-	-	15	ain,errai,gsc_0046,last_light,tidewater
+farpoint	Farpoint	3391.5	-4183.2	-	-	22	alrescha,alula,ashford,cursa,graffias
+felis	Felis	-2560.1	4632.2	-	-	7	biham,gliese_876,gsc_0016,gsc_0021,sualocin,tanglewood
+first_step	First Step	-2334.9	-3308.0	outerrim	-	18	horizon,markeb,the_telescope,void_gate
+flintrock	Flintrock	1057.0	5930.7	-	-	16	gsc_0008,millhaven,skyreach,violethall
+fomalhaut	Fomalhaut	-597.9	6224.8	-	-	12	jishui,pleione,yed_posterior
+foxglove	Foxglove	4988.2	-3036.5	-	-	28	inquill,ironveil,sadr
+frontier	Frontier	-3000.0	-3500.0	outerrim	home	18	altais,deep_range,horizon
+frostfeld	Frostfeld	5642.4	2496.8	crimson	-	21	82_eridani,alzirr,gsc_0036,hd_20794,ironhearth,muscida,the_anvil,windmere
+frostpeak	Frostpeak	47.4	-3920.0	-	-	18	kurhah,maia,stonecrest,wazn
+fulu	Fulu	-6956.7	126.2	-	-	10	gsc_0006,gsc_0028
+fumalsamakah	Fumalsamakah	3274.4	3838.3	-	-	15	albireo,bd20_2457,dawnbreak,rasalgethi,rigel,ross_614,saclateni
+furud	Furud	-1130.4	1015.1	solarian	-	7	acrux,homam,nihal,nova_terra
+fuyue	Fuyue	1867.4	-95.3	-	-	15	algieba,hr_8832,ross_248,struve_2398,taygeta
+gacrux	Gacrux	6513.7	-2245.1	-	-	25	alsuhail,edasich,netherwick,paikauhale,tegmine
+garnet	Garnet	-2477.6	1335.9	-	-	5	achernar,atlas,cedarhold,hd_40307,ruchbah
+gemma	Gemma	-325.2	1916.5	-	-	8	adhafera,deepwell,goldcrest,gsc_0022
+giausar	Giausar	-6504.1	1432.0	-	-	8	aldebaran,duskfield,gsc_0028,gsc_0040,sadalsuud
+gienah	Gienah	-2335.4	-1029.5	-	-	10	hatysa,nembus,oakridge,ridgecrest
+gj_1214	GJ 1214	-3739.7	-4591.9	-	-	20	gsc_0003
+gj_3470	GJ 3470	-4548.2	3751.6	-	-	4	gsc_0038,hamal,lesath,megrez
+glenhaven	Glenhaven	2429.1	-6783.9	-	-	26	alhena,enif,naos,sadachbia
+gliese_229	Gliese 229	3120.3	-420.8	-	-	17	alnitak,breckenridge,ravenspire,whitecliff
+gliese_436	Gliese 436	1089.0	-5151.2	nebula	-	21	caph,khambalia,ogma,the_levy,traders_rest
+gliese_581	Gliese 581	-3122.2	5502.1	-	stronghold	7	gsc_0016
+gliese_667	Gliese 667	455.4	-6743.4	-	-	24	gsc_0025,menkalinan,poerava,sadalbari
+gliese_876	Gliese 876	-2221.0	4464.2	-	-	7	biham,felis,gsc_0021,gsc_0024,gsc_0035,jasmine
+gold_run	Gold Run	2039.2	-3896.3	nebula	-	19	bunda,cargo_lanes,copernicus,market_prime,wealth_lane
+goldcrest	Goldcrest	-612.9	2168.7	-	-	7	bluerift,deepwell,gemma,gsc_0017,gsc_0033,lhs_1140
+graffias	Graffias	3716.6	-3638.2	-	-	23	barnard_77,farpoint,tianyi
+greenvale	Greenvale	-1368.0	5478.2	-	-	10	alderamin,coppervale,etamin,pleione
+greymist	Greymist	-5493.0	-4492.5	-	-	19	ancha,emberglow,shadowmere,willowthorn
+groombridge_1618	Groombridge 1618	-830.3	4547.6	-	-	10	alderamin,azha,gsc_0020,jadecove,mirach,silverbend
+groombridge_34	Groombridge 34	-5077.3	1579.2	-	-	8	chalawan,innes_40,regor
+grumium	Grumium	-1206.1	-380.2	solarian	-	9	celaeno,lacaille_9352,lanternwick,ridgecrest
+gsc_0001	GSC-0001	-206.5	-5208.3	-	-	20	36_ophiuchi,acamar,azelfafage,mintaka
+gsc_0002	GSC-0002	-6106.7	-2128.2	-	-	15	aludra,dabih,gsc_0045,tejat,torcular
+gsc_0003	GSC-0003	-3978.4	-4680.4	-	-	19	gj_1214,navi,wolf_359
+gsc_0004	GSC-0004	-6949.5	-1081.9	-	-	14	chertan,oxbow,sandrift
+gsc_0005	GSC-0005	-1066.0	-5075.2	-	-	21	acamar,almaaz,azelfafage,highcrest,nunki,sunridge
+gsc_0006	GSC-0006	-6701.2	59.5	-	-	10	fulu,gsc_0028,gsc_0042
+gsc_0007	GSC-0007	6914.3	-556.2	-	-	27	redmarsh,sceptrum
+gsc_0008	GSC-0008	561.2	6373.1	-	stronghold	17	flintrock
+gsc_0009	GSC-0009	327.5	-2838.0	-	-	15	alfirk,peacock,pinewatch,revati,zibal
+gsc_0010	GSC-0010	1978.1	5948.6	-	-	17	gsc_0034,lilii_borea,saiph,violethall
+gsc_0011	GSC-0011	4024.4	-1769.8	-	-	20	gsc_0018,kepler_62,silvermark,upsilon_andromedae
+gsc_0012	GSC-0012	-3031.8	3741.2	-	-	5	coldwater,gsc_0021,gsc_0031,keid,wolf_1061
+gsc_0013	GSC-0013	3815.1	3216.1	-	-	17	albireo,ross_614,saclateni,the_rampart
+gsc_0014	GSC-0014	-5127.1	-2462.3	-	-	16	birchwood,brightfall,pinecross,wezen
+gsc_0015	GSC-0015	-4999.1	-3153.9	-	-	16	ashenmoor,tarazed,willowgate,winterhold
+gsc_0016	GSC-0016	-2989.6	4842.6	-	-	6	felis,gliese_581,stormwatch,tanglewood
+gsc_0017	GSC-0017	-228.9	2756.0	-	-	8	goldcrest,gudja,hd_147513,rastaban
+gsc_0018	GSC-0018	3926.4	-2281.1	-	-	20	gsc_0011,silvermark,upsilon_andromedae
+gsc_0019	GSC-0019	2830.9	4754.8	-	-	15	arneb,bd20_2457,crosshaven,diphda,thuban
+gsc_0020	GSC-0020	-1101.1	4112.6	-	-	10	azha,groombridge_1618,hassaleh,jadecove,mirach
+gsc_0021	GSC-0021	-2582.5	3934.1	-	-	6	felis,gliese_876,gsc_0012,gsc_0031
+gsc_0022	GSC-0022	-45.4	1852.9	-	-	9	adhafera,gemma,kapteyn_5,markab
+gsc_0023	GSC-0023	-987.6	-3056.1	-	-	20	castor,cocibolca,haedus,sulafat
+gsc_0024	GSC-0024	-1789.5	4335.3	-	-	8	azha,gliese_876,gsc_0035,hassaleh,jasmine,mirach
+gsc_0025	GSC-0025	757.7	-6759.2	-	-	24	alniyat,gliese_667,helvetios,menkalinan,mirzam,thornfield
+gsc_0026	GSC-0026	-4296.4	-6071.8	-	-	22	libertas,sarin
+gsc_0027	GSC-0027	-4512.0	2966.0	voidborn	-	2	acubens,gsc_0050,node_beta,schedar
+gsc_0028	GSC-0028	-6665.1	755.9	-	-	9	aldebaran,fulu,giausar,gsc_0006
+gsc_0029	GSC-0029	4673.3	-5514.6	-	-	27	luyten_789,tonatiuh
+gsc_0030	GSC-0030	1252.1	-3047.7	-	-	18	alkaid,copernicus,keelbreak,xihe
+gsc_0031	GSC-0031	-2772.2	3805.0	-	-	5	gsc_0012,gsc_0021,keid,wolf_1061
+gsc_0032	GSC-0032	3008.3	-5934.5	-	-	26	enif,fafnir,heze,moonshadow
+gsc_0033	GSC-0033	-1117.3	1772.6	-	-	6	antares,bluerift,deepwell,goldcrest,homam
+gsc_0034	GSC-0034	2286.6	5541.2	-	-	16	alpheratz,crosshaven,gsc_0010,lilii_borea,saiph,tiaki
+gsc_0035	GSC-0035	-1841.9	4943.9	-	-	8	alderamin,biham,elnath,gliese_876,gsc_0024,jasmine,sualocin
+gsc_0036	GSC-0036	5805.5	1870.4	-	-	22	82_eridani,frostfeld,ironhearth,muscida
+gsc_0037	GSC-0037	-5963.4	-2979.1	-	-	17	betelgeuse,rimegate,tejat,veritate
+gsc_0038	GSC-0038	-4831.9	3777.7	-	-	5	gj_3470,lesath,megrez,miram
+gsc_0039	GSC-0039	2694.6	-1735.1	-	-	19	bramblewood,nekkar,struve_1321,zenithfall
+gsc_0040	GSC-0040	-5975.0	1239.8	-	-	8	aldebaran,duskfield,giausar,sadalsuud
+gsc_0041	GSC-0041	-2099.3	2386.4	-	-	4	antares,ironhollow,pherkad,shaula
+gsc_0042	GSC-0042	-6200.7	-71.1	-	-	11	avior,gsc_0006,springdale,yildun
+gsc_0043	GSC-0043	-6187.4	-1553.7	-	-	14	aludra,chertan,gsc_0045,oxbow,torcular
+gsc_0044	GSC-0044	-2086.0	722.1	-	-	6	acrux,atlas,botein,cedarhold,hd_40307,intercrus
+gsc_0045	GSC-0045	-6341.7	-1737.4	-	-	14	dabih,gsc_0002,gsc_0043,oxbow,torcular
+gsc_0046	GSC-0046	-3924.8	-2189.0	-	-	14	errai,fang,last_light,sabik,tidewater
+gsc_0047	GSC-0047	5716.8	-1866.8	-	-	23	alsuhail,daybreak,jabbah,zubeneschamali
+gsc_0048	GSC-0048	-190.3	-5888.9	-	-	22	kepler_186,luyten_726,mintaka,poerava
+gsc_0049	GSC-0049	-5893.9	3072.7	-	-	5	acrab,brachium,denebola,nightveil
+gsc_0050	GSC-0050	-5155.2	2999.8	-	-	3	brachium,gsc_0027,miram,schedar
+gsc_0051	GSC-0051	2281.5	-2785.3	-	-	20	alkaid,alrakis,segin,tau_bootis
+gudja	Gudja	-269.5	3162.5	-	-	8	gsc_0017,hd_147513,pipirima,rastaban
+hadar	Hadar	5333.0	1262.9	-	-	23	muphrid
+haedus	Haedus	-1701.9	-3021.2	-	-	20	castor,gsc_0023,kochab,sulafat,void_gate
+hamal	Hamal	-4062.8	3808.5	voidborn	-	3	acubens,gj_3470,megrez,okab,thornhaven
+harborlight	Harborlight	406.9	1271.3	-	-	10	adhafera,deneb,kapteyn_5,markab,misthollow
+hassaleh	Hassaleh	-1289.4	3988.5	-	-	9	azha,gsc_0020,gsc_0024,jadecove,mirach
+hatysa	Hatysa	-1913.8	-1081.2	-	-	10	cervantes,gienah,nembus,oakridge,ridgecrest
+haven	Haven	2000.0	-4500.0	nebula	home	21	market_prime,traders_rest
+hawthorne	Hawthorne	-5562.9	-1125.3	-	-	13	alchiba,avior,dschubba,oxbow
+hd_10647	HD 10647	-1129.9	-6809.9	-	-	23	algiedi,longshore,regulus,unukalhai
+hd_147513	HD 147513	-815.8	2949.4	-	-	7	gsc_0017,gudja,lhs_1140,rastaban
+hd_20794	HD 20794	5033.8	2125.8	crimson	-	21	82_eridani,frostfeld,ironhearth,the_anvil
+hd_40307	HD 40307	-1919.2	1175.7	-	-	6	acrux,atlas,garnet,gsc_0044
+hd_85512	HD 85512	-330.5	-7005.2	-	-	25	algiedi,asterope,menkalinan,sadalbari,unukalhai,yarrowfield
+heathwick	Heathwick	-4764.6	-4556.7	-	-	19	ancha,meridian,navi,shadowmere,wolf_359
+helvetios	Helvetios	810.4	-6190.3	-	-	23	alioth,almach,caph,gsc_0025,thornfield
+heze	Heze	3457.4	-5937.9	-	-	26	fafnir,gsc_0032,moonshadow
+highcrest	Highcrest	-882.6	-4541.6	-	-	20	36_ophiuchi,almaaz,azelfafage,gsc_0005,zosma
+hollowcrest	Hollowcrest	-3363.9	-1181.2	-	-	11	alathfar,merak,theemin,titawin
+homam	Homam	-1361.9	1612.5	-	-	6	antares,bluerift,furud,gsc_0033
+horizon	Horizon	-2636.3	-3359.7	outerrim	-	18	altais,deep_range,distant_light,first_step,frontier,the_telescope
+hr_8832	HR 8832	1769.9	342.6	-	-	14	ascella,canopus,fuyue,syrma,taygeta
+innes_40	Innes 40	-4608.2	1205.7	-	-	9	chalawan,clearwater,groombridge_34,relay_station,rotanev,the_archive
+inquill	Inquill	5466.0	-2835.3	-	-	27	foxglove,ironveil,paikauhale,sadr
+intercrus	Intercrus	-2183.3	413.6	-	-	7	atlas,botein,diadem,gsc_0044,kitalpha
+iron_reach	Iron Reach	4606.5	2934.5	crimson	-	19	blood_forge,krynn,the_anvil,the_crucible
+ironhearth	Ironhearth	5377.7	2360.1	crimson	-	21	82_eridani,frostfeld,gsc_0036,hd_20794,muscida,the_anvil
+ironhollow	Ironhollow	-2454.3	2029.1	-	-	4	gsc_0041,pherkad,ruchbah,the_experiment
+ironpeak	Ironpeak	-1881.4	-3867.5	-	-	20	beid,castor,driftwood,markeb
+ironveil	Ironveil	5373.3	-3535.8	-	-	28	alcyone,altair,foxglove,inquill,quartzfield,sadr
+ivorygate	Ivorygate	2075.6	2942.5	-	-	13	nashira,scheat,subra,toi_1452
+izar	Izar	-3146.7	-1936.6	-	-	13	alathfar,aldhibah,sabik,tidewater
+jabbah	Jabbah	5411.4	-1811.2	-	-	22	daybreak,gsc_0047,lalande_21185,vega,zubeneschamali
+jadecove	Jadecove	-586.5	3927.7	-	-	10	groombridge_1618,gsc_0020,hassaleh,menkent
+jasmine	Jasmine	-1712.6	4620.9	-	-	8	azha,biham,gliese_876,gsc_0024,gsc_0035,mirach
+jishui	Jishui	-91.7	5753.5	-	-	11	alnilam,fomalhaut
+kapteyn_5	Kapteyn 5	474.3	1610.3	-	-	10	adhafera,deneb,gsc_0022,harborlight,misthollow
+keelbreak	Keelbreak	962.8	-3239.4	-	-	17	copernicus,gsc_0030,xihe,zibal
+keid	Keid	-3380.9	3665.9	-	-	5	coldwater,gsc_0012,gsc_0031,okab
+kepler_186	Kepler-186	-443.4	-6178.9	-	-	22	gsc_0048,luyten_726,mintaka,regulus
+kepler_442	Kepler-442	-2892.3	-366.6	-	-	9	70_ophiuchi,kitalpha,lacaille_8760,theemin
+kepler_62	Kepler-62	4334.8	-1216.5	-	-	20	cebalrai,gsc_0011,quarrytown,upsilon_andromedae
+khambalia	Khambalia	1651.4	-5368.7	nebula	-	22	azmidi,factory_belt,gliese_436,pollux,traders_rest
+kitalpha	Kitalpha	-2353.3	-246.6	-	-	8	intercrus,kepler_442,lacaille_8760,nembus
+kochab	Kochab	-1730.5	-2545.2	-	-	19	haedus,starfall,sulafat,void_gate
+kornephoros	Kornephoros	3792.4	4639.8	-	-	17	albireo,arneb,dawnbreak,thuban
+kruger_60	Kruger 60	2585.9	-934.0	-	-	17	alnitak,bramblewood,ross_248,struve_1321,zenithfall
+krynn	Krynn	5000.0	3000.0	crimson	home	20	blood_forge,iron_reach,the_anvil,valor
+kurhah	Kurhah	-66.3	-3661.9	-	-	17	frostpeak,maia,wazn,zibal
+lacaille_8760	Lacaille 8760	-2684.5	-148.6	-	-	9	kepler_442,kitalpha,theemin
+lacaille_9352	Lacaille 9352	-766.1	-128.1	solarian	-	9	grumium,nova_terra,sirius
+lalande_21185	Lalande 21185	4944.3	-1723.0	-	-	21	daybreak,jabbah,upsilon_andromedae
+lanternwick	Lanternwick	-1563.3	-120.8	-	-	8	botein,celaeno,diadem,grumium
+larawag	Larawag	4357.5	-141.5	-	-	19	atik,dusthaven,seginus,undercliff
+larchfield	Larchfield	3695.6	1170.5	-	-	22	61_cygni,sargas,zubenelgenubi
+last_light	Last Light	-3650.4	-2627.3	outerrim	-	15	ain,fang,gsc_0046,tidewater,unknown_edge
+lesath	Lesath	-4939.0	4055.2	-	-	5	amberfall,gj_3470,gsc_0038,megrez
+lhs_1140	LHS 1140	-972.7	2605.8	-	-	6	antares,deepwell,goldcrest,hd_147513,rastaban
+libertas	Libertas	-4379.2	-5466.1	-	-	21	gsc_0026,navi,summervale
+lilii_borea	Lilii Borea	1928.6	5227.7	-	-	16	alpheratz,crosshaven,gsc_0010,gsc_0034,saiph
+longshore	Longshore	-1494.6	-6832.2	-	-	24	hd_10647
+luyten_726	Luyten 726	-108.2	-6301.3	-	-	23	gsc_0048,kepler_186,poerava,unukalhai
+luyten_789	Luyten 789	5263.0	-5176.8	-	-	28	ashmark,castula,gsc_0029,mekbuda
+maia	Maia	-5.7	-4223.0	-	-	18	36_ophiuchi,frostpeak,kurhah,stonecrest,wazn
+maplevale	Maplevale	-899.2	-1802.0	-	-	12	dubhe,miaplacidus,ross_154
+marfik	Marfik	-5582.4	2440.4	-	-	6	acrab,atria,nightveil,regor
+markab	Markab	-98.6	1273.1	solarian	-	9	adhafera,epsilon_eridani,gsc_0022,harborlight,nihal,procyon
+markeb	Markeb	-1956.7	-3444.8	outerrim	-	19	beid,first_step,ironpeak,void_gate
+market_prime	Market Prime	2254.1	-4181.9	nebula	-	20	cargo_lanes,gold_run,haven
+matar	Matar	-1836.6	-4617.1	-	-	22	almaaz,blackthorn,sunridge
+mebsuta	Mebsuta	1018.8	3661.1	-	-	11	adhara,algorab,alshain,phecda,porrima,westmark
+megrez	Megrez	-4313.9	4035.9	-	-	4	achird,amberfall,gj_3470,gsc_0038,hamal,lesath,okab,thornhaven
+mekbuda	Mekbuda	5139.9	-4696.2	-	-	29	alcyone,ashmark,castula,luyten_789
+menkalinan	Menkalinan	199.1	-6971.7	-	-	24	alcor,embervale,gliese_667,gsc_0025,hd_85512,poerava,sadalbari,yarrowfield
+menkent	Menkent	-250.1	3915.5	-	-	10	jadecove,pipirima
+menkib	Menkib	-4409.6	-3870.3	-	-	17	mirfak,rukbat,skat,winterhold,wolf_359
+merak	Merak	-3945.3	-1256.5	-	-	12	alathfar,alsciaukat,hollowcrest,merope,sheliak,titawin,zubenelhakrabi
+meridian	Meridian	-5100.9	-5018.4	-	-	20	ancha,heathwick,navi,summervale
+merope	Merope	-4466.7	-1058.8	-	-	12	alsciaukat,merak,sheliak,zubenelhakrabi
+miaplacidus	Miaplacidus	-1061.6	-1570.1	-	-	11	cervantes,maplevale,mimosa
+millhaven	Millhaven	741.4	5624.0	-	-	16	flintrock,skyreach,talitha
+mimosa	Mimosa	-636.9	-1065.8	solarian	-	12	electra,miaplacidus,ross_154,tau_ceti
+minkar	Minkar	4739.8	600.4	-	-	21	61_cygni,atik,duskmere,mothallah,muphrid,sunhaven
+mintaka	Mintaka	-547.6	-5683.9	-	-	21	acamar,albali,gsc_0001,gsc_0048,kepler_186,nunki,regulus
+mira	Mira	768.4	830.6	-	-	12	barnards_star,deneb,dheneb,thabit
+mirach	Mirach	-1414.1	4298.9	-	-	9	azha,groombridge_1618,gsc_0020,gsc_0024,hassaleh,jasmine
+miram	Miram	-5167.4	3463.9	-	-	4	brachium,denebola,gsc_0038,gsc_0050
+mirfak	Mirfak	-4291.6	-3493.9	-	-	17	menkib,rukbat,skat,winterhold
+mirzam	Mirzam	920.8	-7448.4	-	-	25	alcor,alniyat,embervale,gsc_0025
+misthollow	Misthollow	629.3	1893.9	-	-	10	adhafera,deneb,harborlight,kapteyn_5
+mizar	Mizar	-4886.0	293.6	-	-	11	clearwater,rasalhague,saltwind,tania,yildun
+moonshadow	Moonshadow	3246.2	-5561.7	-	-	25	55_cancri,fafnir,gsc_0032,heze,ravensbrook,ross_128
+mothallah	Mothallah	5008.8	508.9	-	-	21	atik,duskmere,minkar,sunhaven
+muphrid	Muphrid	4742.7	1092.1	-	-	22	61_cygni,alsephina,hadar,minkar,zubenelgenubi
+muscida	Muscida	5901.5	2405.3	crimson	-	22	82_eridani,alzirr,frostfeld,gsc_0036,ironhearth,windmere
+naos	Naos	2095.3	-6427.7	-	-	25	glenhaven,nusakan,sadachbia,sadalmelik
+nashira	Nashira	2371.6	3004.0	-	-	14	ivorygate,rasalgethi,rigel,scheat
+navi	Navi	-4527.2	-5133.7	-	-	20	gsc_0003,heathwick,libertas,meridian,summervale
+nekkar	Nekkar	3096.9	-2077.7	-	-	20	gsc_0039,segin,silvermark
+nembus	Nembus	-2033.4	-727.5	-	-	9	celaeno,cervantes,gienah,hatysa,kitalpha,ridgecrest
+netherwick	Netherwick	6728.4	-1544.6	-	-	25	alsuhail,edasich,gacrux,redmarsh
+nexus_prime	Nexus Prime	-4000.0	2000.0	voidborn	home	0	node_alpha,node_beta
+nightveil	Nightveil	-6012.0	2837.1	-	-	5	acrab,brachium,denebola,gsc_0049,marfik
+nihal	Nihal	-533.5	1262.9	solarian	-	8	bluerift,epsilon_eridani,furud,markab,procyon
+node_alpha	Node Alpha	-3856.1	2322.6	voidborn	-	1	nexus_prime,node_beta,node_gamma,synchrony
+node_beta	Node Beta	-3995.4	2584.9	voidborn	-	1	acubens,gsc_0027,nexus_prime,node_alpha,node_gamma,schedar
+node_gamma	Node Gamma	-3730.9	2702.9	voidborn	-	2	acubens,node_alpha,node_beta,synchrony
+northwick	Northwick	5151.2	-991.1	-	-	21	alshat,quarrytown,undercliff,vega,vindemiatrix
+nova_terra	Nova Terra	-799.5	597.3	solarian	-	8	epsilon_eridani,furud,lacaille_9352,procyon,sirius
+nunki	Nunki	-1144.6	-5533.7	-	-	22	acamar,albali,gsc_0005,mintaka
+nusakan	Nusakan	1909.5	-5897.8	-	-	24	azmidi,naos,pollux,sadalmelik
+oakridge	Oakridge	-2237.2	-1722.2	-	-	11	aldhibah,gienah,hatysa
+ogma	Ogma	961.9	-4861.7	nebula	-	21	caph,gliese_436,the_levy,traders_rest
+okab	Okab	-3935.8	4009.1	-	-	4	coldwater,hamal,keid,megrez,thornhaven
+oxbow	Oxbow	-6254.7	-1062.7	-	-	13	chertan,gsc_0004,gsc_0043,gsc_0045,hawthorne,springdale
+paikauhale	Paikauhale	6049.1	-2795.3	-	-	26	gacrux,inquill,tegmine
+peacock	Peacock	237.4	-2427.9	-	-	15	alfirk,gsc_0009,pinewatch,revati
+phecda	Phecda	1017.9	4054.2	-	-	12	algorab,alshain,chara,mebsuta
+pherkad	Pherkad	-2710.6	2477.9	voidborn	-	3	gsc_0041,ironhollow,shaula,synchrony,wolf_1061
+pinecross	Pinecross	-5397.9	-1959.8	-	-	15	alchiba,aludra,birchwood,brightfall,gsc_0014
+pinewatch	Pinewatch	453.3	-2360.8	-	-	16	gsc_0009,peacock,revati
+pipirima	Pipirima	219.8	3558.2	-	-	9	adhara,bnki,gudja,menkent
+pleione	Pleione	-988.0	5899.2	-	-	11	etamin,fomalhaut,greenvale,yed_posterior
+poerava	Poerava	146.4	-6421.9	-	-	23	gliese_667,gsc_0048,luyten_726,menkalinan,sadalbari
+pollux	Pollux	2186.8	-5511.1	nebula	-	23	factory_belt,khambalia,nusakan,sadalmelik,treasure_cache
+porrima	Porrima	1169.0	3070.9	-	-	11	adhara,alshain,mebsuta,subra,toi_1452
+praecipua	Praecipua	6614.9	1293.2	-	-	24	copperfield,taiyi
+procyon	Procyon	-111.3	783.4	solarian	-	9	epsilon_eridani,markab,nihal,nova_terra,proxima_centauri
+propus	Propus	2241.4	1279.3	-	-	15	ankaa,coalridge,spica,syrma
+proxima_centauri	Proxima Centauri	223.1	693.1	-	-	10	barnards_star,dheneb,epsilon_eridani,procyon
+quarrytown	Quarrytown	4736.4	-723.8	-	-	21	alshat,edgewater,kepler_62,northwick,undercliff
+quartzfield	Quartzfield	5911.9	-3540.8	-	-	29	ironveil,sadr,sheratan
+ran	Ran	-2827.8	-6352.0	-	-	25	silverpine,toi_2257,zavijava
+rasalgethi	Rasalgethi	2712.6	3357.2	-	-	15	fumalsamakah,nashira,rigel,ross_614
+rasalhague	Rasalhague	-5108.6	304.0	-	-	10	chalawan,mizar,saltwind,tania,yildun
+rastaban	Rastaban	-530.2	3148.5	-	-	7	gsc_0017,gudja,hd_147513,lhs_1140
+ravensbrook	Ravensbrook	3494.4	-5043.6	-	-	24	55_cancri,alrescha,ashford,cursa,moonshadow,ross_128,tarf
+ravenspire	Ravenspire	3304.2	204.1	-	-	17	alnitak,gliese_229,seginus,whitecliff
+redmarsh	Redmarsh	6686.1	-1001.1	-	-	26	gsc_0007,netherwick,sceptrum
+regor	Regor	-5175.4	1956.6	-	-	7	atria,groombridge_34,marfik
+regulus	Regulus	-948.5	-6182.5	-	-	22	albali,hd_10647,kepler_186,mintaka
+relay_station	Relay Station	-4038.0	1062.0	-	-	10	clearwater,innes_40,rotanev,the_archive
+revati	Revati	-19.7	-2784.6	-	-	15	alfirk,gsc_0009,peacock,pinewatch,zibal
+ridgecrest	Ridgecrest	-1658.9	-835.0	-	-	10	celaeno,cervantes,gienah,grumium,hatysa,nembus
+rigel	Rigel	2670.0	3567.4	-	-	15	bd20_2457,fumalsamakah,nashira,rasalgethi
+rimegate	Rimegate	-6410.3	-2695.5	-	-	16	betelgeuse,dabih,gsc_0037,tejat,veritate
+ross_128	Ross 128	3050.0	-5243.1	-	-	24	ashford,fafnir,moonshadow,ravensbrook,treasure_cache
+ross_154	Ross 154	-269.1	-1637.7	-	-	13	arcturus,electra,maplevale,mimosa,timberline
+ross_248	Ross 248	2275.9	-408.4	-	-	16	algieba,alnitak,fuyue,kruger_60,struve_2398,taygeta
+ross_614	Ross 614	3341.4	3095.8	-	-	16	fumalsamakah,gsc_0013,rasalgethi,saclateni
+rotanev	Rotanev	-4586.1	996.3	-	-	10	chalawan,clearwater,innes_40,relay_station,the_archive
+ruchbah	Ruchbah	-2519.9	1693.9	-	-	4	achernar,garnet,ironhollow,the_experiment
+rukbat	Rukbat	-4199.1	-3241.1	-	-	16	ain,menkib,mirfak,skat,tarazed
+rustpoint	Rustpoint	6526.6	478.9	-	-	23	copperfield,toi_700
+sabik	Sabik	-3366.2	-1965.7	-	-	13	alathfar,aldhibah,gsc_0046,izar,tidewater
+saclateni	Saclateni	3627.3	3553.4	-	-	16	albireo,fumalsamakah,gsc_0013,ross_614,the_rampart
+sadachbia	Sadachbia	2389.3	-6226.4	-	-	25	enif,glenhaven,naos,sadalmelik
+sadalbari	Sadalbari	-9.1	-7018.7	-	-	24	alcor,asterope,gliese_667,hd_85512,menkalinan,poerava,unukalhai,yarrowfield
+sadalmelik	Sadalmelik	2360.5	-5936.1	-	-	24	enif,naos,nusakan,pollux,sadachbia
+sadalsuud	Sadalsuud	-6204.0	1379.3	-	-	8	aldebaran,duskfield,giausar,gsc_0040
+sadr	Sadr	5382.8	-3323.8	-	-	28	altair,foxglove,inquill,ironveil,quartzfield
+saiph	Saiph	1875.7	5439.3	-	-	16	alpheratz,gsc_0010,gsc_0034,lilii_borea
+saltwind	Saltwind	-4711.3	-201.0	-	-	11	mizar,rasalhague,tania
+sandrift	Sandrift	-6943.5	-735.3	-	-	15	chertan,gsc_0004
+sargas	Sargas	3980.8	593.2	-	-	21	61_cygni,atik,larchfield,sunhaven
+sarin	Sarin	-3896.0	-6250.7	-	-	23	gsc_0026,silverpine
+sceptrum	Sceptrum	6724.4	-342.6	-	-	27	bellatrix,gsc_0007,redmarsh
+scheat	Scheat	2260.4	2651.9	-	-	14	alphecca,ivorygate,nashira
+schedar	Schedar	-4685.1	2802.6	-	-	2	gsc_0027,gsc_0050,node_beta
+segin	Segin	2634.3	-2580.3	-	-	21	gsc_0051,nekkar,tau_bootis
+seginus	Seginus	3828.2	-145.2	-	-	18	cebalrai,larawag,ravenspire,whitecliff
+shadowmere	Shadowmere	-5069.5	-4158.6	-	-	18	ancha,greymist,heathwick,willowgate,willowthorn
+shaula	Shaula	-2213.7	2858.2	-	-	4	alnair,gsc_0041,pherkad,wolf_1061
+sheliak	Sheliak	-4065.3	-1433.1	-	-	12	alathfar,alsciaukat,merak,merope,titawin,zubenelhakrabi
+sheratan	Sheratan	6025.1	-4138.8	-	stronghold	30	quartzfield
+silverbend	Silverbend	-476.6	5017.8	-	-	10	alderamin,alnilam,groombridge_1618
+silvermark	Silvermark	3664.2	-1654.7	-	-	19	breckenridge,gsc_0011,gsc_0018,nekkar,upsilon_andromedae
+silverpine	Silverpine	-3219.1	-5907.9	-	-	24	ran,sarin,zavijava
+sirius	Sirius	-681.7	215.9	solarian	-	9	epsilon_eridani,lacaille_9352,nova_terra,sol
+situla	Situla	1320.2	-999.8	-	-	17	algieba,struve_2398,zaniah
+skat	Skat	-4128.4	-3903.0	-	-	17	menkib,mirfak,rukbat,wolf_359
+skyreach	Skyreach	1091.7	5315.5	-	-	15	flintrock,millhaven,talitha,yed_prior
+sol	Sol	0.0	0.0	solarian	home	10	alpha_centauri,sirius
+spica	Spica	1826.1	1103.8	-	-	14	ascella,canopus,propus,syrma
+springdale	Springdale	-6060.4	-419.5	-	-	12	avior,gsc_0042,oxbow
+starfall	Starfall	-2058.8	-2591.8	outerrim	-	18	kochab,sulafat,the_telescope,void_gate
+stillwater	Stillwater	5144.4	3764.8	crimson	-	19	bharani,blood_forge,the_crucible,trappist_1,valor
+stonecrest	Stonecrest	561.6	-4115.8	-	-	19	frostpeak,maia,the_levy
+stormwatch	Stormwatch	-3484.5	4521.5	-	-	5	coldwater,gsc_0016,tanglewood,thornhaven
+struve_1321	Struve 1321	2616.9	-1154.7	-	-	18	bramblewood,gsc_0039,kruger_60,zenithfall
+struve_2398	Struve 2398	1659.3	-534.2	-	-	16	algieba,fuyue,ross_248,situla
+sualocin	Sualocin	-2398.0	5217.2	-	-	8	biham,coppervale,elnath,felis,gsc_0035
+subra	Subra	1443.4	3014.3	-	-	12	ivorygate,porrima,toi_1452,westmark
+sulafat	Sulafat	-1646.5	-2780.7	-	-	19	gsc_0023,haedus,kochab,starfall,void_gate
+summervale	Summervale	-4979.9	-5382.9	-	-	21	libertas,meridian,navi
+sunhaven	Sunhaven	4488.5	565.4	-	-	21	61_cygni,alsephina,atik,minkar,mothallah,sargas
+sunridge	Sunridge	-1796.1	-4910.0	-	-	22	almaaz,blackthorn,gsc_0005,matar
+synchrony	Synchrony	-3283.0	2222.1	voidborn	-	2	node_alpha,node_gamma,pherkad,the_experiment
+syrma	Syrma	2262.1	799.5	-	-	14	ascella,hr_8832,propus,spica
+tabit	Tabit	-5374.4	-3653.1	-	-	18	ashenmoor,emberglow,willowgate,winterhold
+taiyi	Taiyi	6172.4	1167.9	-	-	24	copperfield,praecipua
+talitha	Talitha	451.5	5122.2	-	-	16	millhaven,skyreach
+tanglewood	Tanglewood	-3253.3	4494.7	-	-	6	coldwater,felis,gsc_0016,stormwatch
+tania	Tania	-4536.4	-100.6	-	-	11	mizar,rasalhague,saltwind
+tarazed	Tarazed	-4546.3	-2798.0	-	-	15	ain,errai,gsc_0015,rukbat,wezen
+tarf	Tarf	4181.5	-4759.4	-	-	24	55_cancri,cursa,ravensbrook
+tau_bootis	Tau Bootis	2528.5	-2771.7	-	-	20	alkaid,alrakis,gsc_0051,segin
+tau_ceti	Tau Ceti	10.9	-754.0	solarian	-	12	alpha_centauri,electra,mimosa,timberline
+taygeta	Taygeta	2135.0	-27.0	-	-	15	alnitak,fuyue,hr_8832,ross_248
+tegmine	Tegmine	6200.3	-2232.5	-	-	25	alsuhail,edasich,gacrux,paikauhale
+tejat	Tejat	-5945.4	-2325.8	-	-	16	aludra,dabih,gsc_0002,gsc_0037,rimegate,torcular
+thabit	Thabit	1158.4	879.6	-	-	12	ascella,canopus,deneb,dheneb,mira
+the_anvil	The Anvil	5031.3	2408.3	crimson	-	20	frostfeld,hd_20794,iron_reach,ironhearth,krynn
+the_archive	The Archive	-4405.8	1153.7	-	-	10	clearwater,innes_40,relay_station,rotanev
+the_crucible	The Crucible	4612.1	3516.5	crimson	-	18	bharani,iron_reach,stillwater,the_rampart,valor
+the_experiment	The Experiment	-3031.2	1781.6	voidborn	-	3	achernar,ironhollow,ruchbah,synchrony
+the_levy	The Levy	1071.8	-4569.6	nebula	-	20	gliese_436,ogma,stonecrest,wealth_lane
+the_rampart	The Rampart	4030.4	3777.1	crimson	-	17	albireo,dawnbreak,gsc_0013,saclateni,the_crucible
+the_telescope	The Telescope	-2538.5	-2831.5	outerrim	-	17	altais,distant_light,first_step,horizon,starfall,unknown_edge
+theemin	Theemin	-3061.5	-772.3	-	-	10	70_ophiuchi,hollowcrest,kepler_442,lacaille_8760
+thornfield	Thornfield	1303.6	-6554.9	-	-	24	alioth,almach,gsc_0025,helvetios
+thornhaven	Thornhaven	-3970.9	4290.7	-	-	4	achird,amberfall,hamal,megrez,okab,stormwatch
+thuban	Thuban	3202.8	5060.3	-	-	16	arneb,crosshaven,diphda,gsc_0019,kornephoros
+tiaki	Tiaki	2809.1	5717.1	-	-	17	crosshaven,diphda,gsc_0034
+tianyi	Tianyi	3571.7	-3307.2	-	-	24	barnard_77,graffias
+tidewater	Tidewater	-3592.9	-2144.0	-	-	14	fang,gsc_0046,izar,last_light,sabik
+timberline	Timberline	281.1	-1214.5	solarian	-	13	arcturus,electra,ross_154,tau_ceti
+titawin	Titawin	-3791.6	-1026.1	-	-	12	alathfar,hollowcrest,merak,sheliak,zubenelhakrabi
+toi_1452	TOI-1452	1490.3	2546.6	-	-	12	barnardstar,ivorygate,porrima,subra
+toi_2257	TOI-2257	-2455.0	-6749.9	-	-	26	dustfall,ran
+toi_700	TOI-700	5817.4	418.0	-	-	22	copperfield,duskmere,rustpoint
+tonatiuh	Tonatiuh	4148.5	-5562.2	-	-	26	55_cancri,gsc_0029
+torcular	Torcular	-6014.3	-1878.0	-	-	15	aludra,gsc_0002,gsc_0043,gsc_0045,tejat
+traders_rest	Trader's Rest	1692.4	-4911.2	nebula	-	22	factory_belt,gliese_436,haven,khambalia,ogma
+trappist_1	TRAPPIST-1	4809.1	4400.8	crimson	-	20	bharani,stillwater
+treasure_cache	Treasure Cache	2537.3	-5057.3	nebula	-	24	ashford,factory_belt,pollux,ross_128
+tureis	Tureis	1378.5	4547.7	-	-	13	algorab,angetenar,chara,yed_prior
+undercliff	Undercliff	4825.2	-423.6	-	-	20	alshat,dusthaven,edgewater,larawag,northwick,quarrytown
+unknown_edge	Unknown Edge	-3168.1	-2817.4	outerrim	-	16	altais,distant_light,last_light,the_telescope
+unukalhai	Unukalhai	-467.1	-6782.6	-	-	24	algiedi,hd_10647,hd_85512,luyten_726,sadalbari,yarrowfield
+upsilon_andromedae	Upsilon Andromedae	4314.7	-1686.4	-	-	20	gsc_0011,gsc_0018,kepler_62,lalande_21185,silvermark
+valor	Valor	5158.2	3394.0	crimson	-	19	bharani,blood_forge,krynn,stillwater,the_crucible
+vega	Vega	5664.8	-1251.3	-	-	22	jabbah,northwick,vindemiatrix,zubeneschamali
+veritate	Veritate	-6106.8	-3192.5	-	-	17	betelgeuse,gsc_0037,rimegate
+vindemiatrix	Vindemiatrix	5873.9	-1102.5	-	-	22	northwick,vega,zubeneschamali
+violethall	Violethall	1439.5	6185.2	-	-	17	flintrock,gsc_0010
+void_gate	Void Gate	-2021.9	-3142.8	outerrim	-	19	first_step,haedus,kochab,markeb,starfall,sulafat
+wasat	Wasat	2008.2	4160.7	-	-	13	40_eridani,angetenar,bd20_2457,westmark
+wazn	Wazn	-303.2	-3970.1	-	-	18	cloverfield,frostpeak,kurhah,maia
+wealth_lane	Wealth Lane	1350.6	-4117.5	-	-	19	copernicus,gold_run,the_levy
+westmark	Westmark	1659.1	3688.4	-	-	12	alshain,angetenar,mebsuta,subra,wasat
+wezen	Wezen	-4822.7	-2360.9	-	-	15	birchwood,brightfall,errai,gsc_0014,tarazed
+whitecliff	Whitecliff	3417.2	29.2	-	-	17	alnitak,gliese_229,ravenspire,seginus
+willowgate	Willowgate	-5011.8	-3753.7	-	-	17	ashenmoor,gsc_0015,shadowmere,tabit,winterhold
+willowthorn	Willowthorn	-5556.6	-4268.7	-	-	19	ancha,emberglow,greymist,shadowmere
+windmere	Windmere	6159.3	2722.8	crimson	-	22	82_eridani,alzirr,frostfeld,muscida
+winterhold	Winterhold	-4805.3	-3590.9	-	-	17	ashenmoor,gsc_0015,menkib,mirfak,tabit,willowgate
+wolf_1061	Wolf 1061	-2622.2	3200.9	-	-	4	alnair,gsc_0012,gsc_0031,pherkad,shaula
+wolf_359	Wolf 359	-4389.6	-4208.5	-	-	18	gsc_0003,heathwick,menkib,skat
+xamidimura	Xamidimura	-2136.8	-5918.1	-	stronghold	28	dustfall
+xihe	Xihe	1310.3	-2767.3	-	-	18	alkaid,capella,gsc_0030,keelbreak
+yarrowfield	Yarrowfield	-156.9	-7257.3	-	-	25	alcor,algiedi,asterope,hd_85512,menkalinan,sadalbari,unukalhai
+yed_posterior	Yed Posterior	-1103.0	6261.8	-	-	11	etamin,fomalhaut,pleione
+yed_prior	Yed Prior	1198.7	4998.4	-	-	14	chara,skyreach,tureis
+yildun	Yildun	-5474.1	89.2	-	-	11	avior,gsc_0042,mizar,rasalhague
+zaniah	Zaniah	1327.2	-1488.7	-	stronghold	18	situla
+zavijava	Zavijava	-2947.6	-5784.2	-	-	25	ran,silverpine
+zenithfall	Zenithfall	2431.4	-1355.1	-	-	18	bramblewood,gsc_0039,kruger_60,struve_1321
+zibal	Zibal	444.1	-3152.8	-	-	16	gsc_0009,keelbreak,kurhah,revati
+zosma	Zosma	-1070.0	-4084.0	-	-	20	cloverfield,cocibolca,driftwood,highcrest
+zubenelgenubi	Zubenelgenubi	4361.2	1510.1	-	-	23	61_cygni,alsephina,barnard_44,larchfield,muphrid
+zubenelhakrabi	Zubenelhakrabi	-4046.3	-719.5	-	-	11	70_ophiuchi,merak,merope,sheliak,titawin
+zubeneschamali	Zubeneschamali	5843.7	-1633.3	-	-	23	alsuhail,daybreak,gsc_0047,jabbah,vega,vindemiatrix
