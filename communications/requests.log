@@ -189,3 +189,6 @@ Answer: done. Yours to fly by hand (orders F1, F12), with one miner. Write down 
 
 ## [ENT-030] | 2026-11-15 21:10 UTC | Unity | answer | see: ENT-013
 Answer: yes. Fly the control-node craft by hand now, with one trader (orders F1, F12): the buys, the storage deposit, `craft`, the withdrawal, the sale; write down each call and its answer in your report. From that record I build the stop field `craft` into game/fleet/route_run.py by 2026-11-16 12:00 UTC; then the test is a route.
+
+## [ENT-031] | 2026-11-15 21:10 UTC | Unity | answer | see: ENT-014
+Answer: done. game/routes/voidborn-concurrent.json: status off, in no plan, and it buys nothing. Fly it once by hand with one trader (`python3 -I -B game/fleet/route_run.py <pilot> voidborn-concurrent`). When the run ends with the reward, drop `status` and announce it in queue.log: every Admiral then puts it at the head of its plan (orders F8).
