@@ -120,6 +120,17 @@ class PickTests(Tree):
         (self.data / "fleet" / "onetime.json").write_text(json.dumps([[1, "hauler-1", "Iron Supply Run", 1500], [2, "hauler-1", "Copper Requisition", 1800], "broken"]))
         self.assertEqual(self.dispatch.booked(str(self.data)), {"hauler-1": {"Iron Supply Run", "Copper Requisition"}})
 
+    def test_a_census_order_counts_for_the_route_that_lists_its_system(self):
+        routes = dict(self.dispatch.load_routes(self.root))
+        routes["frontier"] = {"id": "frontier", "kind": "census", "title": "t", "systems": ["wild", "waste"], "every_minutes": 60, "max_ships": 1}
+        plan = {"roles": {"scout": ["census", "frontier", "mine"]}}
+        pick = lambda orders: (self.dispatch.pick({"name": "scout-1", "credits": 9000, "modules": [], "docked": True}, plan, routes,
+                                                   self.state(orders=orders))[0] or {}).get("id")
+        self.assertEqual(pick({}), "census")
+        self.assertEqual(pick({"flag-1": "census wild"}), "census")              # a ship on the other census route takes no place here
+        self.assertEqual(pick({"scout-2": "census far"}), "frontier")             # this route is full: the next one
+        self.assertEqual(pick({"scout-2": "census far", "flag-1": "census waste"}), "mine")
+
     def test_a_route_the_plan_names_but_no_file_holds_is_passed_over(self):
         self.assertEqual(self.pick("miner-1")[0], "mine")
         self.assertEqual(self.pick("hauler-1")[0], None)                                          # a role without a list

@@ -1,8 +1,8 @@
 {
  "id": "voidborn-mining-missions",
  "kind": "circuit",
- "title": "Iron Supply Run, Copper Requisition and First Steps in the Void: accept at Central Nexus, mine at Acubens by way of Node Beta, hand in at Central Nexus",
- "note": "Once per pilot: 1,500 + 1,800 + 1,000 cr. The objectives count units mined: 30 iron ore and 25 copper ore at the Shadow Pocket, 15 carbon ore at the belt (1,002 carbon left on 2026-11-15 20:30 UTC: it will not last for every pilot). A pilot that has Iron Supply Run booked is skipped: seen 2026-11-15, the board does not offer the two again to a pilot that completed them. Written on Zero's requests (requests.log ENT-011, ENT-002). Forty ships at a time since 2026-11-15 21:22 UTC: the first two ships had Iron Supply Run done and Copper Requisition at 10 and 16 of 25 after one trip of the mining loop.",
+ "title": "Iron Supply Run and Copper Requisition: accept at Central Nexus, mine at Acubens by way of Node Beta, hand in at Central Nexus",
+ "note": "Once per pilot: 1,500 + 1,800 cr. The objectives count units mined: 30 iron ore and 25 copper ore at the Shadow Pocket. A pilot that has Iron Supply Run booked is skipped: seen 2026-11-15, the board does not offer the two again to a pilot that completed them. Written on Zero's requests (requests.log ENT-011). Forty ships at a time since 21:22 UTC. First Steps in the Void (15 carbon ore) left this route at 21:30 UTC: Acubens Belt holds no carbon ore (requests.log ENT-039).",
  "once": true,
  "max_ships": 40,
  "skip_if_booked": [
@@ -11,16 +11,14 @@
  ],
  "one_time": [
   "Iron Supply Run",
-  "Copper Requisition",
-  "First Steps in the Void"
+  "Copper Requisition"
  ],
  "stops": [
   {
    "at": "nexus_prime:the_core:central_nexus",
    "accept": [
     "iron_supply_run",
-    "copper_requisition",
-    "first_steps_in_the_void"
+    "copper_requisition"
    ]
   },
   {
@@ -33,13 +31,6 @@
       "Copper Requisition"
      ],
      "minutes": 25
-    },
-    {
-     "at": "acubens:acubens_belt",
-     "for": [
-      "First Steps in the Void"
-     ],
-     "minutes": 15
     }
    ]
   },

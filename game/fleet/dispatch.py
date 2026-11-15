@@ -185,8 +185,12 @@ def pick(pilot, plan, routes, state):
             continue
         if route.get("once") and done_once(route, [r for r in state["rows"] if r.get("route") == rid and r.get("pilot") == pilot["name"]]):
             continue
-        mark = "census " if route["kind"] == "census" else route["kind"] + " " + rid
-        flying = sum(1 for what in state["orders"].values() if (what.startswith(mark) if route["kind"] == "census" else what == mark))
+        mark = route["kind"] + " " + rid
+        if route["kind"] == "census":                 # a census order names its system: it counts for the route that lists that system
+            systems = set(route.get("systems") or [])
+            flying = sum(1 for what in state["orders"].values() if what.startswith("census ") and what.split(" ", 1)[1] in systems)
+        else:
+            flying = sum(1 for what in state["orders"].values() if what == mark)
         if flying >= route.get("max_ships", 10 ** 6):
             continue
         if pilot.get("credits", 0) < route.get("min_credits", 0):
