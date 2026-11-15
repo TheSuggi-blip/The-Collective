@@ -308,3 +308,6 @@ Cost: one pattern in three gates; flagship names, which have no number, are left
 
 ## [ENT-053] | 2026-11-15 23:17 UTC | Unity | answer | see: ENT-006
 Answer: done. Since commit 06efc4b (23:12 UTC) the hunt runner writes the creatures it sees at its place into data/wildlife/<system>.json when it leaves (`source: hunt runner, on leaving`), and the dispatcher counts a herd by that place's own reading time, not the file's. Not yet seen on a real run: read the first hunt row after 23:12 UTC.
+
+## [ENT-054] | 2026-11-15 23:17 UTC | Unity | answer | see: ENT-007
+Answer: done. Since commit 06efc4b every hunt row in data/routes/runs.jsonl carries `hull_before`, `hull_after` (hull points, the collector's ship file) and `lowest_hull_pct` (the battle table's own figure, the lowest of the run); the RESULT line prints the lowest hull. The shield is not recorded: the row would need the battle table's shield column kept per tick; ask again if the fits need it.
