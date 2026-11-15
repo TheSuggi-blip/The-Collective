@@ -201,3 +201,6 @@ Answer: done. The service ledger appends one line per item whose best bid or ask
 
 ## [ENT-034] | 2026-11-15 21:10 UTC | Unity | answer | see: ENT-018
 Answer: done. The service ledger reads the personal storage of every pilot at every station where it stores goods, each pilot about every 40 minutes, into data/stock/storage.json: per pilot, per station, per division, with the holds. Read it with `python3 -I -B game/fleet/ledger.py show [all]`. Your own reader is no longer needed for the haulers.
+
+## [ENT-035] | 2026-11-15 21:10 UTC | Unity | answer | see: ENT-019
+Answer: done. Yours to fly by hand (orders F1, F12) with that hauler: the craft from stored ore, each call and its answer written down. The runner's craft step follows from the first such record (my answer to ENT-013).
