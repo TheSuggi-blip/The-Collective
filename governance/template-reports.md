@@ -44,7 +44,12 @@ checklist in the report.
 - [ ] Sections: exactly the `##` headings of the report's kind, in order (Body Structure)  (PASS / HALT)
 - [ ] Situation names the period covered: from the previous report to this one  (PASS / HALT)
 - [ ] Every number is printed from a record the same section names; a number nobody measured is written "not measured"  (PASS / HALT)
-- [ ] An empty section says "None." -- it is never left out  (PASS / HALT)
+- [ ] No section is left out; a section with little to report says what was checked and what the check showed  (PASS / HALT)
+- [ ] Division report, minimum words: Situation 250, Activities 250, Problems 150, Plans 250, Suggestions 100  (PASS / HALT)
+- [ ] Fleet report, minimum words: Situation 250, Strategy 300, Divisions 300, Plans 250, Open Questions 150  (PASS / HALT)
+- [ ] `python3 -B scripts/report-words.py reports/<file>` prints `REPORT WORDS: PASS`  (PASS / HALT)
+- [ ] The words carry facts: no sentence stands in the report only to reach a minimum, nothing is invented, nothing is said twice  (PASS / HALT)
+- [ ] Suggestions (a division report) say what can be changed, each with its reason and its cost  (PASS / HALT)
 - [ ] No secrets: no password, registration code, key or token  (PASS / HALT)
 - [ ] File named `YYYY-MM-DD_author_slug.md`, in `reports/`  (PASS / HALT)
 - [ ] `bash scripts/check-report-format.sh reports/<file>` prints `REPORT FORMAT: PASS`  (PASS / HALT)
@@ -97,9 +102,38 @@ Example: `<YYYY-MM-DD>_<admiral>_<main-result-in-a-few-words>.md`
 
 Header hierarchy: `#` = title only, `##` = the section headings below,
 `###` = sub-headings inside a section where they help. Sections may
-use paragraphs, lists and tables. There is no minimum length: a
-section is as long as its facts. A section with nothing to say holds
-the single word "None."
+use paragraphs, lists and tables. No section is left out.
+
+### Minimum Length
+
+Every section has a minimum number of words (Suggi, 2026-11-15). The
+minimum is a floor: a section is as much longer as its facts need.
+
+| Section | Division report | Fleet report |
+|---|---|---|
+| Situation | 250 | 250 |
+| Activities | 250 | -- |
+| Problems | 150 | -- |
+| Strategy | -- | 300 |
+| Divisions | -- | 300 |
+| Plans | 250 | 250 |
+| Suggestions | 100 | -- |
+| Open Questions | -- | 150 |
+| Cross-links | none | none |
+
+- `--` means the section is not part of that report; `none` means the
+  section has no minimum.
+- A word is a run of characters between spaces that holds a letter or
+  a digit. Lists, tables and sub-headings inside a section count;
+  code-fence lines and table rule lines do not.
+  `python3 -B scripts/report-words.py reports/<file>` counts the words
+  of every section and reads the minimums from the table above.
+- The words carry facts. A section with little to report reaches its
+  minimum by saying what was checked and what the check showed: under
+  Problems, the losses and failed orders looked for, the records read
+  and the risks watched; under Suggestions and Open Questions, what
+  was weighed and why nothing more is proposed or asked. Nothing is
+  invented and nothing is said twice to fill a section.
 
 ### Division report (an Admiral)
 
@@ -128,9 +162,11 @@ done about it. Losses and failed orders are never left out.
 **`## Plans`** -- *What does the division do next?* Inside the orders
 in force. Say which choices the Admiral made itself.
 
-**`## Suggestions`** -- *What should the Fleet Admiral change?*
-Proposals on strategy, resources, rules or tools, each with its
-reason and what it would cost. An objection to an order belongs here.
+**`## Suggestions`** -- *What can be changed?* Read by the Fleet
+Admiral and by Suggi. Proposals on strategy, orders, resources, rules,
+tools or the way the fleet is run, each with its reason and what it
+would cost; say whose it is to decide where that is clear. An
+objection to an order belongs here.
 
 **`## Cross-links`** -- the reports and files this one builds on, by
 repository path with a short description.
@@ -150,7 +186,8 @@ why; what changed.
 **`## Divisions`** -- *What did the Admirals report?* For each
 division: what its Admiral reported, the Fleet Admiral's judgment of
 it, and an answer to every suggestion: accepted, declined or open,
-with the reason.
+with the reason. A suggestion that is Suggi's to decide is carried
+into Open Questions with the Fleet Admiral's recommendation.
 
 **`## Plans`** -- *What happens next?* What each division does next,
 and what the Fleet Admiral does herself: systems to build, diplomacy,
@@ -169,13 +206,15 @@ strategy rests on, by repository path with a short description.
 | Report as diary | "First X, then Y, then Z." The reader has to find the result alone. | Order by goal. State the result first. |
 | Numbers from memory | A typed number looks like a measured one. | Print it from the record and name the record, or write "not measured". |
 | Success-only report | "Problems: None." beside lost ships. The Fleet Admiral plans on a false picture. | Every loss and failed order goes under Problems with its cause. |
-| Suggestion without a reason | It cannot be accepted or declined, only ignored. | Say what should change, why, and what it costs. |
+| Suggestion without a reason | It cannot be accepted or declined, only ignored. | Say what can be changed, why, and what it costs. |
 | Fleet report that copies | Repeating five division reports adds nothing. | Cite them, judge them, decide. |
-| Padding | Length hides the two lines that matter. | A section is as long as its facts. |
+| Padding | Words without facts hide the lines that matter, and a minimum met with filler is a false account of the work. | Reach the minimum with what was done, measured, checked or weighed; never repeat, never invent. |
+| Thin section | "Problems: None." tells the reader nothing about what was looked at. | Say what was checked and what the check showed; every section has a minimum (Minimum Length). |
 
 ## Example -- Minimal Structure
 
-Shows the layout only. Every `<...>` is a placeholder, not data.
+Shows the layout only, not the length: every `<...>` is a placeholder,
+not data, and a real section holds at least its minimum of words.
 
 ```markdown
 ---
@@ -215,7 +254,7 @@ Source: <the record these numbers were printed from>
 
 ## Suggestions
 
-<What should change>, because <reason>; it would cost <cost>.
+<What can be changed>, because <reason>; it would cost <cost>.
 
 ## Cross-links
 
@@ -225,4 +264,4 @@ Source: <the record these numbers were printed from>
 
 ---
 
-*Last updated: 2026-11-14 by Morpheus, on Suggi's instruction. Suggi refines the contents with the Fleet Admiral.*
+*Last updated: 2026-11-15 by Unity, on Suggi's instruction: a minimum of words for every section; Suggestions say what can be changed, for the Fleet Admiral and for Suggi. Suggi refines the contents with the Fleet Admiral.*
