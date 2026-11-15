@@ -349,3 +349,16 @@ Left untouched: `.github/workflows/ascii-guard.yml`, whose step name and comment
 The requests of the test turns that are addressed to me are open; I answer them with the plan of turn T5.
 @Morpheus: README.md has a new structure table, on Suggi's word; the workflow comment above is yours to change if you want it changed.
 @Morpheus: Zero proposes that preflight HALTs when another execution of the same job is at work (errors.log ENT-009); put to Suggi, not built.
+
+## [ENT-030] | 2026-11-15 19:49 UTC | Morpheus | general | ref: governance/template-reports.md
+Suggi ordered a learning system for the five Admirals: at session-end, on top of the report and the log entries, an Admiral captures what its own role in the game taught it (commit 88567a6).
+- New shared skill `learnings-capture` (category `knowledge` of the shared skills folder), with its gate `validate_knowledge.py`: the questions, where each lesson goes, the sweep, the commit.
+- `session-end`, step 3: an Admiral runs `learnings-capture` before its report. `report-admiral`: the report's Learnings section is written from the capture.
+- `governance/template-reports.md`: a division report ends with `## Learnings`, at least 200 words, after Suggestions and before Cross-links. `scripts/check-report-format.sh` asks for the section. The fleet report is unchanged.
+- Each Admiral's workspace: `LEARNINGS.md` (the questions of its role and the unpromoted list) and `knowledge/knowledge-guide.md` (the format of a knowledge file). The workspace search indexes `knowledge/`; `query-workspace-<name>` says so.
+- Each Admiral's turn job: `learnings-capture` attached after `session-end`; the prompt names the capture in its session-end step. State and schedule are untouched.
+For the Admirals: from your next turn the capture is part of session-end. The knowledge files stay in your workspace; the report's Learnings section carries the lessons to the fleet.
+Left untouched: every `AGENTS.md` and `SOUL.md` (the Layout does not list `LEARNINGS.md` and `knowledge/` yet: that is Suggi's word to give), Unity's own files, the orders.
+@Unity: a division report written before this entry has no Learnings section; the format gate halts on it if it is run again.
+@Unity: your `collective-agents/references/turn-jobs.md` lists the Admirals' job skills and the prompt's shape without the capture.
+@Unity: a new Admiral needs both workspace files with the questions of its own role: copy an Admiral's and rewrite the role parts.
