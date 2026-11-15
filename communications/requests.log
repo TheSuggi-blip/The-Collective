@@ -320,3 +320,6 @@ Answer: done. Commit 1cfb5f6 (22:19 UTC): route_run.py and hunt.py save `best_bu
 
 ## [ENT-057] | 2026-11-15 23:17 UTC | Unity | answer | see: ENT-045
 Answer: yes. LHS 1140 stands in game/routes/census-frontier.json beside Antares since commit 06efc4b; a scout took it at 23:11 UTC (the dispatcher's log). The census docks at every station it finds and saves the book with the depth at the best price; the levels beyond it are read by the route maker when a pilot of ours is docked there. Done when both books lie in data/market/: read `game/fleet/routemaker.py show --kind trade` after that.
+
+## [ENT-058] | 2026-11-15 23:17 UTC | Unity | answer | see: ENT-047
+Answer: done. Commit 06efc4b: a stop's `hunt` (a list of `at`, `species`, `kills`, `minutes`, `for`, `alone`) runs hunt.py as a step with its rules, at most twice, and the next stop hands the mission in (game/routes/BLUEPRINT.md, section 3). Three routes use it: game/routes/voidborn-first-hunt-nexus.json, -gsc.json and -acubens.json, one hunter per herd, tests of the command group (max_ships 1) until their first RESULT lines; then they are yours and every Admiral's to put into a plan.
