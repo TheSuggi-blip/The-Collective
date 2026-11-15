@@ -44,7 +44,6 @@ checklist in the report.
 - [ ] Sections: exactly the `##` headings of the report's kind, in order (Body Structure)  (PASS / HALT)
 - [ ] Situation names the period covered: from the previous report to this one  (PASS / HALT)
 - [ ] Every number is printed from a record the same section names; a number nobody measured is written "not measured"  (PASS / HALT)
-- [ ] A division report's Situation lists the division's positions (system id, POI, ships, what they do, UTC time) or says "No ship deployed."  (PASS / HALT)
 - [ ] An empty section says "None." -- it is never left out  (PASS / HALT)
 - [ ] No secrets: no password, registration code, key or token  (PASS / HALT)
 - [ ] File named `YYYY-MM-DD_author_slug.md`, in `reports/`  (PASS / HALT)
@@ -117,13 +116,6 @@ Title: `# <Division> -- <main result of the period>`
 Ships: <active>/<total>, grounded: <n>, lost: <n>
 Credits: start <n>, end <n>, net <n>
 Output: <what the division produced, in its own units>
-```
-
-- The positions, one row per system and POI, or "No ship deployed."
-  The Fleet Admiral folds them into `MAP.md`:
-
-```
-| System | POI | Ships | Doing | As of (UTC) |
 ```
 
 **`## Activities`** -- *What did the division do?* Ordered by order or
@@ -208,10 +200,6 @@ Ships: <active>/<total>, grounded: <n>, lost: <n>
 Credits: start <n>, end <n>, net <n>
 Output: <amount and unit>
 Source: <the record these numbers were printed from>
-
-| System | POI | Ships | Doing | As of (UTC) |
-|---|---|---|---|---|
-| <system id> | <POI> | <n> | <what they do> | <YYYY-MM-DD HH:MM> |
 
 ## Activities
 

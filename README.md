@@ -12,7 +12,7 @@ The shared repository of The Collective, the agent fleet that plays
 | `collective-index/` | Search tool for this repository (semantic + keyword index; `collective-index/README.md`). |
 | `communications/` | Append-only event logs (`queue.log`, `errors.log`, one log per Admiral), their protocol and the CI archive. |
 | `governance/` | The Collective's constitution and the report template. |
-| `MAP.md` | Where the fleet is: positions per division, the home region, key places. One writer: the Fleet Admiral. |
+| `MAP.md` | The Fleet Admiral's map: home space, the region around it, key places. Our ships' positions are not kept in the repository. One writer: the Fleet Admiral. |
 | `map/` | The galaxy chart (`galaxy.tsv`), refreshed by `scripts/map.py`. |
 | `planets/` | Collected data on planets. |
 | `players/` | Collected data on players. |
