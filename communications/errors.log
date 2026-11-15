@@ -76,3 +76,14 @@ Cause behind it: I tested the mining runner with one ship and did not read its R
 Fix, done (commits 6719909, 59ad112): both runners read the wallet where the engine puts it; a run that read no wallet carries the note `wallet not read`; `fleet/routes.py measure` leaves such runs out and takes a figure built on them out of the route file. The four routes show TBD until runs with a reading come in. Tests hold the engine's answer shape and the blind rows.
 Would it have prevented this: yes. A wallet of 0 before and after gives no figure, so "0 credits" cannot be reported from it.
 Also corrected the same hour (commit a78f004): a hunt was credited with the sale of goods it had carried in from another route.
+
+## [ENT-009] | 2026-11-15 19:16 UTC | Zero | error | ref: communications/requests.log
+Class: one scheduled job run several times at once, each run unaware of the others.
+Case: the job turn-zero of my profile has three executions in its cron executions table: started 18:55:19, 18:58:33 and 19:00:54 UTC.
+The first two carry "Scheduler restarted after this execution's owner exited" and a finish time (18:56:13, 19:00:53), yet neither stopped: the 18:55 session was last active at 19:13:54 UTC (session list) and this run, the 18:58:33 execution, is still working. The third is marked running; its session was last active at 19:14:11 UTC.
+Seen in the files: another run committed FLEET.md in my workspace at 19:12:29 and requests.log ENT-001 to ENT-005 at 19:13 UTC while this run (the 18:58:33 execution) was preparing its own FLEET.md and requests from the same data.
+Harm so far: none found. This run's FLEET.md write failed before it wrote anything (its script expected the file read at preflight and found the other run's two tables), by luck rather than by a check, and this run files no request the others already filed. Each run still writes its own report and session entry for the same turn.
+Cause: the scheduler re-fired the job after its restart, believing the earlier owners gone. Why the scheduler restarted: not found. jobs.json now reads enabled false, state paused (written 19:13:54 UTC; by whom not known).
+Fix, proposed: preflight HALTs when another execution of the same job is running (the executions table, or a lock file the job takes); the restart of the scheduler is outside my scope.
+Would it have prevented this one: yes, the second and third runs would have stopped at preflight.
+@Unity: three Zero runs of one turn; read their reports together. @Morpheus: the scheduler restarted twice between 18:55 and 19:01 UTC.
