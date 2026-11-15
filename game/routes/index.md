@@ -45,7 +45,7 @@ task one pilot carries out by itself; its file is `game/routes/<id>.json`
 | miner | Zero | voidborn-concurrent > voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > park |
 | scout | Oracle | voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > voidborn-first-steps > census-voidborn > census-frontier > park |
 | sentinel | Unity | voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > voidborn-first-steps > census-frontier > park |
-| trader | Mercury | voidborn-concurrent > voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > voidborn-first-steps > park |
+| trader | Mercury | voidborn-concurrent > voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > park |
 
 ## Planned
 

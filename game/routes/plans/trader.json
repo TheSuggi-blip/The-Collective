@@ -1,13 +1,12 @@
 {
  "role": "trader",
  "owner": "Mercury",
- "note": "The routes the dispatcher tries, in this order, for a free trader pilot. Mercury keeps this file: missions that pay once first, then a route that pays, a test with `max_ships` before it enters for all, and `park` last. No route that loses money stands here to fill time (orders F8). 2026-11-15 21:35 UTC: voidborn-concurrent at the head after one hand run paid +2,952 cr with nothing bought.",
+ "note": "The routes the dispatcher tries, in this order, for a free trader pilot. Mercury keeps this file: missions that pay once first, then a route that pays, a test with `max_ships` before it enters for all, and `park` last. No route that loses money stands here to fill time (orders F8). 2026-11-15 21:35 UTC: voidborn-concurrent at the head after one hand run paid +2,952 cr with nothing bought. voidborn-first-steps out: scouting/acubens.json read carbon ore 0 (depleted) at 21:01 UTC and miner-10 flew it for -153 cr, nothing handed in (requests.log ENT-039).",
  "routes": [
   "voidborn-concurrent",
   "voidborn-substrate",
   "voidborn-missions-1",
   "voidborn-mining-missions",
-  "voidborn-first-steps",
   "park"
  ],
  "planned": [
