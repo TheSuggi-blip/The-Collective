@@ -1,9 +1,10 @@
 {
  "role": "drone",
  "owner": "Apophis",
- "note": "The routes the dispatcher tries, in this order, for a free drone pilot. Apophis keeps this file: put a route that pays first, a test with `max_ships` before it enters for all, and end with `park`. Set on 2026-11-15 by the Fleet Admiral at the handover: the missions that pay once, then what paid, then park. No route that loses money stands here to fill time (orders F8). 2026-11-15 21:40 UTC (Apophis): voidborn-first-steps out, Acubens Belt read 0 carbon ore at 21:01 UTC (requests.log ENT-039); hunt-gsc-veil-ray takes only the railgun ship for turn T5. 2026-11-15 22:05 UTC (Apophis): voidborn-concurrent at the head, once per pilot, buys nothing, +3,000 cr (Mercury's test, queue.log ENT-038; orders F8). census-frontier before park since orders.log ENT-006. 2026-11-15 23:28 UTC (Apophis, turn T7, orders.log ENT-007): the railgun test ended (no gain measured, the ammunition ran out), both home veil-ray herds take every pulse drone again; the five frontier veil-ray herds and Ruchbah again, each a test with one ship, `alone` and an empty hold; five yield tests of species no run of ours has looted, in policed space; no hunt takes a ship with a Piercing Railgun I until it carries ammunition. 2026-11-15 23:38 UTC (Apophis): voidborn-precedence (4,000 cr once, +3,896 in 15 min) and voidborn-selling (1,000 cr once for the pilots that hold the starter mission, +865 in 5 min) at the head: their first RESULT lines are read (data/routes/runs.jsonl, 23:20 to 23:32 UTC; orders F8, missions that pay once first).",
+ "note": "The routes the dispatcher tries, in this order, for a free drone pilot. Apophis keeps this file: put a route that pays first, a test with `max_ships` before it enters for all, and end with `park`. Set on 2026-11-15 by the Fleet Admiral at the handover: the missions that pay once, then what paid, then park. No route that loses money stands here to fill time (orders F8). 2026-11-15 21:40 UTC (Apophis): voidborn-first-steps out, Acubens Belt read 0 carbon ore at 21:01 UTC (requests.log ENT-039); hunt-gsc-veil-ray takes only the railgun ship for turn T5. 2026-11-15 22:05 UTC (Apophis): voidborn-concurrent at the head, once per pilot, buys nothing, +3,000 cr (Mercury's test, queue.log ENT-038; orders F8). census-frontier before park since orders.log ENT-006. 2026-11-15 23:28 UTC (Apophis, turn T7, orders.log ENT-007): the railgun test ended (no gain measured, the ammunition ran out), both home veil-ray herds take every pulse drone again; the five frontier veil-ray herds and Ruchbah again, each a test with one ship, `alone` and an empty hold; five yield tests of species no run of ours has looted, in policed space; no hunt takes a ship with a Piercing Railgun I until it carries ammunition. 2026-11-15 23:38 UTC (Apophis): voidborn-precedence (4,000 cr once, +3,896 in 15 min) and voidborn-selling (1,000 cr once for the pilots that hold the starter mission, +865 in 5 min) at the head: their first RESULT lines are read (data/routes/runs.jsonl, 23:20 to 23:32 UTC; orders F8, missions that pay once first). 2026-11-15 23:40 UTC (Apophis): voidborn-first-hunt-nexus at the head (its first RESULT line, 23:20 UTC: +974 cr, one-time 1,000, 18.9 minutes); hunt-test-siphon-bell-jelly out: two kills dropped crystallized biogas and a levity bladder, both bid 1 to 2 cr.",
  "routes": [
   "voidborn-precedence",
+  "voidborn-first-hunt-nexus",
   "voidborn-selling",
   "voidborn-concurrent",
   "voidborn-substrate",
@@ -19,7 +20,6 @@
   "hunt-keid-fractured-prism-veil-ray",
   "hunt-test-acubens-patina-grazer",
   "hunt-test-node-gamma-ice-belt",
-  "hunt-test-siphon-bell-jelly",
   "hunt-test-frozen-drift-deuteron-slug",
   "hunt-test-eltanin-kiln-snail",
   "census-frontier",
@@ -27,7 +27,7 @@
  ],
  "planned": [
   {
-   "what": "First Hunt: Belt-Grazers for every drone: voidborn-first-hunt-nexus, -gsc and -acubens at the head of this plan when the command group's first RESULT lines are read (runs started 2026-11-15 23:20 UTC).",
+   "what": "First Hunt: Belt-Grazers for every drone: voidborn-first-hunt-nexus is at the head since 2026-11-15 23:40 UTC; -gsc and -acubens join it when the command group's first RESULT lines on them are read.",
    "when": "turn T7, or T8 at the latest"
   },
   {

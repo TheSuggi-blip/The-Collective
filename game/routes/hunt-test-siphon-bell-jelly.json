@@ -2,7 +2,7 @@
  "id": "hunt-test-siphon-bell-jelly",
  "kind": "hunt",
  "title": "Yield test: bell_jelly at stellar_siphon; what a kill drops and whether a bid takes it",
- "note": "A test with one ship (orders.log ENT-007, F8 and F9): no run of ours has looted this species. The route maker read 4 of them here, 45 hull (data/routes/opportunities.json, 2026-11-15 23:12 UTC). Policed space. 2 kills a run, ranched: no hunt below 3 animals. Loot that no bid of 50 cr or more takes is stored at the station, so the row's goods show the drop. Written by Apophis 2026-11-15 23:28 UTC; it leaves the plan after its first RESULT line unless the drop sells.",
+ "note": "A test with one ship (orders.log ENT-007, F8 and F9): no run of ours has looted this species. The route maker read 4 of them here, 45 hull (data/routes/opportunities.json, 2026-11-15 23:12 UTC). Policed space. 2 kills a run, ranched: no hunt below 3 animals. Loot that no bid of 50 cr or more takes is stored at the station, so the row's goods show the drop. Written by Apophis 2026-11-15 23:28 UTC; it leaves the plan after its first RESULT line unless the drop sells. Result 2026-11-15 23:29 UTC, one run: 2 kills in 6 minutes at the place, no damage, -26 cr; the drop was 3 crystallized biogas and 1 levity bladder, bid 1 to 2 cr at our stations (ledger.py prices). Off, out of the plan at 23:40 UTC.",
  "place": "nexus_prime:stellar_siphon",
  "species": [
   "bell_jelly"
@@ -15,5 +15,6 @@
  "min_creatures": 3,
  "requires": {
   "without_module": "piercing_railgun_i"
- }
+ },
+ "status": "off"
 }
