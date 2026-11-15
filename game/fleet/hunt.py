@@ -306,7 +306,7 @@ sold = {}
 if goal('prepare-at-station', {'systemId': sell_at[0], 'poiId': sell_at[1], 'baseId': sell_at[2], 'refuel': True}) and '--keep' not in args:
     items = [i for i in (body(raw('view_market', group='spacemolt_market')).get('items') or []) if isinstance(i, dict)]
     if items:
-        rows = [{k: i.get(k) for k in ('item_id', 'item_name', 'category', 'best_buy', 'buy_quantity', 'best_sell', 'sell_quantity')} for i in items]
+        rows = [{k: i.get(k) for k in ('item_id', 'item_name', 'category', 'best_buy', 'best_buy_qty', 'buy_quantity', 'best_sell', 'best_sell_qty', 'sell_quantity')} for i in items]
         tmp = f'{MARKET}{sell_at[2]}.json.{os.getpid()}.tmp'
         with open(tmp, 'w', encoding='utf-8') as fh:
             json.dump({'base': sell_at[2], 'system': sell_at[0], 'read_at': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
@@ -317,7 +317,8 @@ if goal('prepare-at-station', {'systemId': sell_at[0], 'poiId': sell_at[1], 'bas
         if item in AMMO:
             continue
         row = book.get(item) or {}
-        bid, depth = row.get('best_buy') or 0, row.get('buy_quantity') or 0
+        bid = row.get('best_buy') or 0
+        depth = row.get('best_buy_qty') if isinstance(row.get('best_buy_qty'), (int, float)) else (row.get('buy_quantity') or 0)   # at the best price: `buy_quantity` is the total of all levels
         if isinstance(bid, (int, float)) and bid >= min_bid and depth:
             n = min(qty, depth)
             c0 = credits()

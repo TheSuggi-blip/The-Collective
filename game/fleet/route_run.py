@@ -193,7 +193,7 @@ def hand_in(done, onetime):
 def save_station(base, system):
     items = [i for i in body(raw('view_market', group='spacemolt_market')).get('items') or [] if isinstance(i, dict)]
     if items:
-        rows = [{k: i.get(k) for k in ('item_id', 'item_name', 'category', 'best_buy', 'buy_quantity', 'best_sell', 'sell_quantity')} for i in items]
+        rows = [{k: i.get(k) for k in ('item_id', 'item_name', 'category', 'best_buy', 'best_buy_qty', 'buy_quantity', 'best_sell', 'best_sell_qty', 'sell_quantity')} for i in items]
         write_json(DATA / 'market' / f'{base}.json', {'base': base, 'system': system, 'read_at': now(), 'source': 'view_market, own ship docked', 'items': rows})
     board = [m for m in body(raw('get_missions')).get('missions') or [] if isinstance(m, dict)]
     if board:
@@ -242,7 +242,8 @@ for n, stop in enumerate(ROUTE['stops']):
     book, board = save_station(base, system)
     for want in stop.get('sell') or []:
         row, have = book.get(want['item']) or {}, cargo().get(want['item'], 0)
-        bid, depth = row.get('best_buy') or 0, row.get('buy_quantity') or 0
+        bid = row.get('best_buy') or 0
+        depth = row.get('best_buy_qty') if isinstance(row.get('best_buy_qty'), (int, float)) else (row.get('buy_quantity') or 0)   # at the best price: `buy_quantity` is the total of all levels
         if have and isinstance(bid, (int, float)) and bid >= want['min_price'] and depth:
             c0 = credits()
             raw('sell', {'item_id': want['item'], 'quantity': min(have, depth)})

@@ -22,6 +22,7 @@ the scripts in `game/fleet/` fly them; nobody retypes a route into a chat.
 | `game/routes/guidebook/<division>.md` | What each division learned about its routes and its levelling; its Admiral keeps it, every member reads it |
 | `game/fleet/dispatch.py` (service `dispatch`) | Every 30 s gives each free pilot the first route of its role that is open to it |
 | `game/fleet/route_run.py`, `hunt.py`, `census.py`, `mine.py` | The runners: one pilot, one route, one row in the runs file |
+| `game/fleet/routemaker.py` (service `routemaker`) | Every ten minutes costs every way to earn that our readings show (fields, order books, boards, herds, recipes) and keeps the list in the unit's data folder. `routemaker.py show` lists the candidates of your division, best first; `routemaker.py route <id>` prints a candidate's route file, ready to be saved here as a test |
 | `python3 -B game/fleet/routes.py check` | The gate: fails on a wrong route file, a wrong plan or a stale index |
 | `python3 -B game/fleet/routes.py index` | Writes `index.md`; never by hand |
 | `python3 -B game/fleet/routes.py measure --write` | Stores what the runs measured in the route file |
@@ -34,6 +35,13 @@ the scripts in `game/fleet/` fly them; nobody retypes a route into a chat.
   the file `data/fleet/STOP`.
 - A plan file has one writer, its `owner`. A route file another
   division flies too is changed by a request to whoever wrote it.
+- A candidate of the route maker is an estimate from readings, never a
+  measurement. From candidate to plan: `routemaker.py route <id>` into
+  `game/routes/<id>.json` (it carries `max_ships` 1), your plan, the
+  gate and the index, commit; after its first runs
+  `routes.py measure --write`. A candidate that says `needs: ...`
+  cannot be flown by a runner yet: fly it by hand, or ask for the
+  step in `requests.log`.
 
 ## 2. Fields of Every Route
 
