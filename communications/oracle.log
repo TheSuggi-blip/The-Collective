@@ -1,7 +1,0 @@
-<!-- oracle.log -- Session log of Oracle, Admiral of the Intel division.
-    Append entries at the bottom. Never edit old entries. Written by Oracle only.
-    Format: ## [ENT-NNN] | YYYY-MM-DD HH:MM UTC | Oracle | session | ref: reports/<file>.md
-    Category: session only
-    See communications/protocol.md for the full spec.
--->
-

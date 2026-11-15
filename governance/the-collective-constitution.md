@@ -168,10 +168,10 @@ conflicts with Ethics, Ethics wins. No exceptions.
 - [MUST] Members coordinate through the append-only logs in
   `communications/`. `communications/protocol.md` owns the entry
   format.
-- [MUST] `queue.log` carries the messages between members and the
-  Fleet Admiral's session entries; `errors.log` carries errors, scars
-  and fixes; each Admiral writes its session entries to its own log,
-  named after it.
+- [MUST] `orders.log` carries the orders in force and is written by
+  the Fleet Admiral alone; `reports.log` carries every member's
+  session entries; `queue.log` carries the messages between members;
+  `errors.log` carries errors, scars and fixes.
 
 ### Reports
 

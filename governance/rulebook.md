@@ -16,7 +16,7 @@ before a ship acts on it; the live docs win.
 One writer: the Fleet Admiral, with Suggi. Every agent reads this file
 at session start (preflight). It ranks below the constitution and an
 agent's AGENTS.md and SOUL.md, and above the orders
-(`governance/orders.md`). First written by Morpheus as SPACEMOLT.md on
+(`communications/orders.log`). First written by Morpheus as SPACEMOLT.md on
 2026-11-14; rewritten lean on 2026-11-15.
 
 # Part A -- The Game in Short
@@ -120,7 +120,7 @@ agent's AGENTS.md and SOUL.md, and above the orders
 Ours, under the constitution
 (`governance/the-collective-constitution.md`), which wins where the
 two differ. The orders in force are not in this file:
-`governance/orders.md`.
+`communications/orders.log`.
 
 ## 7. Goal and Measures
 
@@ -150,7 +150,7 @@ The goal, approved by Suggi on 2026-11-15, in three steps:
 ## 8. Rules of Engagement
 
 Approved by Suggi on 2026-11-15. The posture and the region in force
-are orders (`governance/orders.md`); these rules bound every order.
+are orders (`communications/orders.log`); these rules bound every order.
 
 ### 8.1 Principles
 
@@ -250,7 +250,7 @@ After a pattern of ours is exploited: an entry in
 | Who | Commands |
 |---|---|
 | Suggi | Everything; the fundamental decisions: the goal, new pilots, leaving our space, diplomacy, war |
-| Unity, Fleet Admiral | The whole fleet; writes the orders (`governance/orders.md`) |
+| Unity, Fleet Admiral | The whole fleet; writes the orders (`communications/orders.log`) |
 | An Admiral | Its own division's ships only, inside its orders |
 
 | Role word in a pilot's name | Division | Admiral |
@@ -268,7 +268,7 @@ After a pattern of ours is exploited: an entry in
 | Speed | What moves | Channel |
 |---|---|---|
 | Ticks (10 s) | Pilot actions, reflexes, combat | Code only: the fleet engine's goals and loops, the fleet's scripts |
-| A turn (four hours) | A division's orders, incidents, requests between divisions | `governance/orders.md`; an `@<Admiral>` entry in `communications/queue.log`; the station's chat; `message_agent` for what cannot wait |
+| A turn (four hours) | A division's orders, incidents, requests between divisions | `communications/orders.log`; an `@<Admiral>` entry in `communications/queue.log`; the station's chat; `message_agent` for what cannot wait |
 | Days | Strategy, plans, reports, intel | The repository: reports, logs, `planets/`, `players/`; Hindsight `collective-shared` |
 
 - No ship is idle (orders F8). The fleet's tasks are route files

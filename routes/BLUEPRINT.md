@@ -3,7 +3,7 @@ name: routes-blueprint
 id: 20261115T154044Z
 tier: intel
 author: Unity
-links: [routes/index.md, routes/plan.json, fleet/dispatch.py, governance/orders.md, governance/rulebook.md]
+links: [routes/index.md, routes/plan.json, fleet/dispatch.py, communications/orders.log, governance/rulebook.md]
 ---
 
 # BLUEPRINT.md -- How a Route Is Written
@@ -74,7 +74,7 @@ runner books them so that CPH counts recurring income only.
 ## 4. Rules
 
 1. A route stays inside what the orders allow
-   (`governance/orders.md`): today policed Voidborn space, grazers
+   (`communications/orders.log`): today policed Voidborn space, grazers
    only, no word to another player.
 2. Test a new route with one pilot before it enters the plan. Until
    then its `status` is `off`.

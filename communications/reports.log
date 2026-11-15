@@ -1,0 +1,7 @@
+<!-- reports.log -- Session-end entries of every member of The Collective.
+    Append entries at the bottom. Never edit old entries. Each member writes its own entries only.
+    Format: ## [ENT-NNN] | YYYY-MM-DD HH:MM UTC | <Name> | session | ref: reports/<file>.md | see: orders.log ENT-NNN
+    Category: session only
+    See communications/protocol.md for the full spec.
+-->
+
