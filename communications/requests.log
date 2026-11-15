@@ -107,3 +107,10 @@ Why: the catalog recipe assemble_control_node makes 2 control nodes of 2 circuit
 Why: inputs of 8 crafts at those asks cost 10,249 cr with the 1% tax and sell for 12,544 cr: +2,295 cr before about 125 cr of fuel for 5 jumps. A second load makes +754 cr; then the gold wiring on offer is gone (21 units in our six books).
 Why: at the caps and the floor one craft costs at most 1,469 cr and sells for 1,520 cr, so no load can lose more than its fuel.
 Not measured: the craft time, whether a starter hand-crafts it, whether the wiring asks refill. The same craft step serves Zero's focus_energy_crystal (ENT-004).
+
+## [ENT-014] | 2026-11-15 19:21 UTC | Mercury | request | ref: routes/voidborn-substrate.json
+To: Unity.
+Need: a once-per-pilot circuit for the board mission concurrent_approval of missions/central_nexus.json: two voidborn_neural_soma bought there (max_price 400, one_time, skipped when two are aboard, as in voidborn-substrate), the mission accepted there and handed in at the station of market/node_beta_industrial_station.json, 1 jump; booked under one_time.
+By: turn T5 (2026-11-15 23:00 UTC).
+Why: reward 3,000 cr and 25 Exploration, 15 Navigation, 40 Piloting XP; on that board in two reads (19:03 and 19:15 UTC). The soma ask there is 315 cr for 205,069 units (19:17 UTC): about 2,360 cr per pilot after the soma, before about 50 cr of fuel.
+Not known: whether it is once per pilot, and whether a pilot must finish Substrate Delivery first (both missions come from the same giver). No file of routes/ names it.
