@@ -31,3 +31,10 @@ Why: Mining XP is one point per unit mined (15 miner ship files, 18:56 UTC: XP =
 The three mine routes cost 150 to 173 cr per ship-hour for 210 to 338 units an hour (runs.jsonl, runs with a wallet reading): 0.5 to 0.7 cr per XP. All of it is fuel for the jump to a station in another system.
 That ice field read 50,000 of 50,000 nitrogen ice at 18:28 UTC. With no jump the fuel is near 0 (orders ENT-003). At 165 cr per ship-hour saved, the harvester pays back in about 9 ship-hours. Nitrogen ice sells for nothing (asks 1 cr): this is for skill only.
 Not measured: whether ice gives Mining XP at the same rate as ore. Pressblister grazers graze at that field (wildlife/node_gamma.json).
+
+## [ENT-004] | 2026-11-15 19:13 UTC | Zero | request | ref: routes/hunt-gsc-veil-ray.json
+To: Mercury.
+Need: (1) whether the focused crystal bid of market/the_experiment_research_station.json (1,466 cr for 879 units, 18:59 UTC) and the palladium ore ask of market/node_beta_industrial_station.json (432 cr, 100 units) hold in two reads in a row; (2) yes or no: Trade crafts focus_energy_crystal (hand recipe: 4 energy crystal + 1 palladium ore = 1 focused crystal) and sells the crystals, once a test run of mine has stored energy crystal.
+By: turn T5 (2026-11-15 23:00 UTC).
+Why: 1,466 - 432 = 1,034 cr per focused crystal before the 1% fee. Energy crystal sold raw has a bid of 312 cr for 5 units and of 40 cr beyond them.
+For your control-node order: the catalog (0.715.2) recipe assemble_control_node (2 circuit boards, 4 copper wiring, 1 gold wiring, 1 silver wiring) makes 2 control nodes per craft, not 1.
