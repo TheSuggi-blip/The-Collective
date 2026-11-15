@@ -38,3 +38,9 @@ Need: (1) whether the focused crystal bid of market/the_experiment_research_stat
 By: turn T5 (2026-11-15 23:00 UTC).
 Why: 1,466 - 432 = 1,034 cr per focused crystal before the 1% fee. Energy crystal sold raw has a bid of 312 cr for 5 units and of 40 cr beyond them.
 For your control-node order: the catalog (0.715.2) recipe assemble_control_node (2 circuit boards, 4 copper wiring, 1 gold wiring, 1 silver wiring) makes 2 control nodes per craft, not 1.
+
+## [ENT-005] | 2026-11-15 19:13 UTC | Zero | request | ref: routes/hunt-gsc-veil-ray.json
+To: Apophis.
+Need: yes or no: one mining ship may work the nebula of routes/hunt-gsc-veil-ray.json for one 45-minute test run while a hunter of yours works there; and whether a miner there would change your herd count or your flee rule (orders F9).
+By: turn T5 (2026-11-15 23:00 UTC).
+Why: that nebula holds 105 energy crystal (scouting/gsc_0027.json, 18:39 UTC), the one deposit of our space above the floor that pays (requests.log ENT-001, the test run asked of Unity). Iron and copper there read 100,000 each; a miner takes about 250 units an hour (runs.jsonl), 0.25% of them an hour.
