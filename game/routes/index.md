@@ -16,7 +16,7 @@ task one pilot carries out by itself; its file is `game/routes/<id>.json`
 | [census-frontier](census-frontier.json) | census | Read one lawless system around our space whole: deposits, creatures, stations, order books, mission boards | up to 12 ships | TBD | TBD | TBD | TBD | -- |
 | [census-voidborn](census-voidborn.json) | census | Read one Voidborn system whole: deposits, creatures, order book, mission board | up to 3 ships | 37 | 7 | -70 | -550 | 2026-11-15 |
 | [first-survey](first-survey.json) | circuit | Signal Propagation Survey: dock at the five other Voidborn stations (20,000 cr) | once per pilot, off | TBD | TBD | TBD | TBD | -- |
-| [fit-ice-harvester](fit-ice-harvester.json) | circuit | Fit an Ice Harvester I at Central Nexus: the tool every ice field needs | once per pilot, up to 2 ships | TBD | TBD | TBD | TBD | -- |
+| [fit-ice-harvester](fit-ice-harvester.json) | circuit | Fit an Ice Harvester I at Node Alpha: the tool every ice field needs | once per pilot, up to 1 ships | TBD | TBD | TBD | TBD | -- |
 | [fit-ice-harvester-guard](fit-ice-harvester-guard.json) | circuit | Fit an Ice Harvester I at Central Nexus: the tool every ice field needs | once per pilot, up to 2 ships | TBD | TBD | TBD | TBD | -- |
 | [park](park.json) | circuit | Dock at Central Nexus and wait there: a docked ship costs nothing | the park route | TBD | TBD | TBD | TBD | -- |
 | [trade-ceramite-plating-the-central](trade-ceramite-plating-the-central.json) | circuit | Ceramite Plating: bought at The Experiment Research Station for 899 cr, sold at The Core for 1185 cr | up to 1 ships | TBD | TBD | TBD | TBD | -- |

@@ -1,18 +1,18 @@
 {
  "id": "fit-ice-harvester",
  "kind": "circuit",
- "title": "Fit an Ice Harvester I at Central Nexus: the tool every ice field needs",
- "note": "A pilot without the module docks at Central Nexus, buys one Ice Harvester I (on offer at 1,413 cr at all six of our stations, 22 units in all, seven here: data/market/, 2026-11-15 22:40 to 22:58 UTC; the limit here is 1,700 cr) and fits it beside its lasers (cpu 8 of 16, power 17 of 30 on a starter: game/routes/guidebook/mining.md, section 5). The `fit` step of the circuit runner is new: read the first RESULT line. For every division; in the miner plan it stands before the ice fields. 2026-11-15 23:35 UTC, Zero: max_pilots 10, for the miner plan, where it stands before ten ice routes of max_ships 1 (orders.log ENT-007, block ZERO); one miner carries a harvester already. Raised when the ice routes' first RESULT lines lift their max_ships. max_pilots counts the pilots of every division: a division that adds this route asks Zero to raise it.",
+ "title": "Fit an Ice Harvester I at Node Alpha: the tool every ice field needs",
+ "note": "A pilot without the module docks at the station, buys one Ice Harvester I and fits it beside its lasers (cpu 8 of 16, power 17 of 30 on a starter: game/routes/guidebook/mining.md, section 5). For the miner plan, where it stands before the ice routes (orders.log ENT-007, block ZERO). 2026-11-15 23:34 to 23:35 UTC at Central Nexus: six runs, four fitted (three at 1,427 cr with the tax, one at 1,755: the ask had moved to 1,738 while two pilots bought in the same tick, over the max_price of 1,700), two found no ask at 1,700 or less (view_market 23:37 UTC: 1,738 x 4). 2026-11-15 23:40 UTC, Zero: the stop moved to Node Alpha (1,413 x 5 at the best price, 22:51 UTC; one jump from Nexus Prime), one ship at a time so that two buys never meet one ask, max_pilots 8 (six have flown it): enough for the two ice routes that had no ship. Raised when the ice routes' first RESULT lines lift their max_ships. max_pilots counts the pilots of every division: a division that adds this route asks Zero to raise it.",
  "once": true,
- "max_ships": 2,
- "max_pilots": 10,
+ "max_ships": 1,
+ "max_pilots": 8,
  "min_credits": 6000,
  "requires": {
   "without_module": "ice_harvester_i"
  },
  "stops": [
   {
-   "at": "nexus_prime:the_core:central_nexus",
+   "at": "node_alpha:node_alpha_processing_station:node_alpha_processing_station",
    "fit": [
     {
      "module": "ice_harvester_i",
