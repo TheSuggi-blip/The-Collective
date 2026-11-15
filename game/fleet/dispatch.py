@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 """dispatch.py -- keep every pilot at work: give each free pilot the next task of its role.
 
-WHAT: every 30 s it reads the fleet's live files, the plan (game/routes/plan.json) and
+WHAT: every 30 s it reads the fleet's live files, the plans (game/routes/plans/<role>.json) and
       the route files (game/routes/<id>.json), and starts one runner per free pilot:
         circuit  -> game/fleet/route_run.py   stops with missions, buying and selling
         hunt     -> game/fleet/hunt.py        grazers at one place, loot, sell
         census   -> game/fleet/census.py      read one system whole (the stalest first)
         mine     -> game/fleet/mine.py        the engine's mining loop for a set time
-      A pilot's role is the word before the dash of its name; the plan lists,
-      per role, route ids in the order they are tried. A flagship's name has
+      A pilot's role is the word before the dash of its name; its role's plan
+      file lists route ids in the order they are tried, and the role's
+      Admiral keeps that file (division.py). A flagship's name has
       no role word: its role is in data/fleet/flagships.json
       ({pilot: {admiral, division, role}}).
 RULES:
@@ -16,7 +17,13 @@ RULES:
     for it, and it carries no fresh order file (data/fleet/orders/<pilot>.json:
     written by every runner, so two programs never drive one pilot).
   - The file data/fleet/STOP halts every start.
-  - A route is skipped for a pilot when: it is `once` and the pilot has done it
+  - A pilot with no open route is left where it is. Every plan ends with the
+    `park` route (dock at home and wait): it is given to a pilot in space and
+    never to a docked one, so a fleet without paying work costs nothing.
+  - A real pass is the service's or the Fleet Admiral's; --dry-run is free.
+  - A route is skipped for a pilot when: it is a `park` route and the pilot is
+    docked; the pilot has a reward booked (data/fleet/onetime.json) that the
+    route lists under `skip_if_booked`; it is `once` and the pilot has done it
     (or tried it twice); `max_ships` pilots fly it already; the pilot lacks a
     module the route `requires` or has fewer credits than `min_credits`; a hunt's
     place rests after a run without a kill (`rest_minutes`, default 30) or its
@@ -45,6 +52,9 @@ import subprocess
 import sys
 import time
 from pathlib import Path
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import division                                   # noqa: E402  who commands which ship, and the plan files
 
 EVERY = 30                   # seconds between two passes
 ORDER_FRESH = 20 * 60        # an order file not touched for this long is dead
@@ -115,6 +125,15 @@ def run_rows(data):
     return rows
 
 
+def booked(data):
+    """{pilot: titles of the one-time rewards booked for it} from data/fleet/onetime.json."""
+    out = {}
+    for row in read_json(Path(data) / "fleet" / "onetime.json", []):
+        if isinstance(row, list) and len(row) >= 3:
+            out.setdefault(str(row[1]), set()).add(str(row[2]))
+    return out
+
+
 def done_once(route, rows):
     """A `once` route counts as done after a whole run, or after two tries."""
     if not rows:
@@ -159,6 +178,10 @@ def pick(pilot, plan, routes, state):
     for rid in (plan.get("roles") or {}).get(role) or []:
         route = routes.get(rid)
         if not route or route.get("status") == "off":
+            continue
+        if route.get("park") and pilot.get("docked"):
+            continue
+        if set(route.get("skip_if_booked") or []) & (state.get("booked") or {}).get(pilot["name"], set()):
             continue
         if route.get("once") and done_once(route, [r for r in state["rows"] if r.get("route") == rid and r.get("pilot") == pilot["name"]]):
             continue
@@ -224,10 +247,10 @@ def one_pass(root, data, dry_run, children):
     if (Path(data) / "fleet" / "STOP").exists():
         return ["STOP file present: nothing started"]
     fleet = read_json(Path(data) / "fleet" / "fleet.json", {})
-    plan = read_json(Path(root) / "routes" / "plan.json", {})
+    plan = {"roles": division.load_plan(root)[0]}
     routes = load_routes(root)
     rows = run_rows(data)
-    state = {"now": now, "data": data, "rows": rows, "orders": fresh_orders(data, now), "rest": resting(routes, rows, now)}
+    state = {"now": now, "data": data, "rows": rows, "orders": fresh_orders(data, now), "rest": resting(routes, rows, now), "booked": booked(data)}
     named = flagships(data)
     lines = []
     for ship in fleet.get("ships") or []:
@@ -235,7 +258,7 @@ def one_pass(root, data, dry_run, children):
         if ship.get("status") != "connected" or name in state["orders"] or (ship.get("activity") or {}).get("kind") != "idle":
             continue
         detail = read_json(Path(data) / "fleet" / "ships" / ship_file(name), {})
-        pilot = {"name": name, "role": role_of(name, named), "credits": ship.get("credits", 0),
+        pilot = {"name": name, "role": role_of(name, named), "credits": ship.get("credits", 0), "docked": bool(ship.get("docked")),
                  "modules": [m.get("type") or m.get("type_id") for m in detail.get("modules") or [] if isinstance(m, dict)]}
         route, argument = pick(pilot, plan, routes, state)
         if route is None:
@@ -251,7 +274,8 @@ def one_pass(root, data, dry_run, children):
         logs = Path(data) / "routes" / "logs"
         logs.mkdir(parents=True, exist_ok=True)
         with open(logs / (name + ".log"), "w", encoding="utf-8") as log:
-            children.append(subprocess.Popen(command(route, name, argument, root), stdout=log, stderr=subprocess.STDOUT, start_new_session=True))
+            mark = dict(os.environ, FLEET_MEMBER=os.environ.get("FLEET_MEMBER") or "dispatch", FLEET_HOLD=what)    # the runner is the dispatcher's: division.py lets it pass
+            children.append(subprocess.Popen(command(route, name, argument, root), stdout=log, stderr=subprocess.STDOUT, start_new_session=True, env=mark))
     children[:] = [c for c in children if c.poll() is None]          # reap the runners that ended
     return lines
 
@@ -264,6 +288,9 @@ def main():
     parser.add_argument("--once", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
+    kind, name = division.member()
+    if not args.dry_run and not (kind == "service" or name == "Unity"):
+        sys.exit("REFUSED: a real pass starts runners for every division: it is the service's or the Fleet Admiral's. Use --dry-run.")
     children = []
     while True:
         try:

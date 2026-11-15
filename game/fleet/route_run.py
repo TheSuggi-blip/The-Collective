@@ -15,8 +15,13 @@ which pilot flies it, and where a pilot is, stays in the unit's data folder:
               "buy":    [{"item": "...", "qty": N, "max_price": N, "one_time": true}],
                                               qty = units wanted in the hold; one_time: goods for a
                                               one-time mission, their cost is booked against its reward
-              "accept": ["template_id", {"template": "...", "needs": {"item_id": N}}]}, ...]}
+              "accept": ["template_id", {"template": "...", "needs": {"item_id": N}}],
                                               needs: accept only with these goods in the hold
+              "mine":   [{"at": "system:poi", "for": ["Mission Title"], "minutes": 25}]}, ...]}
+                                              after the station's work: mine at that place with the engine's
+                                              mining loop until every named mission that is open has its
+                                              objectives done (a mission that counts units mined), at most
+                                              `minutes`; ore that fills the hold goes into storage at the stop
 At every stop, in this order: dock and refuel; hand in every mission whose
 objectives are all done; redock; hand in again; store; sell; buy; accept; save the
 station's order book and mission board (data/market, data/missions).
@@ -42,8 +47,11 @@ GATE = 'http://172.30.0.32:7580'
 OPENER = urllib.request.build_opener(urllib.request.ProxyHandler({}))
 DATA = pathlib.Path('/srv/collective/data')
 ONETIME_FILE = str(DATA / 'fleet' / 'onetime.json')
-FLOOR = 2000                                 # credits every pilot keeps (orders F7: the weekly tax)
+FLOOR = 3000                                 # credits every pilot keeps (orders F7: the weekly tax)
 pilot, route_arg = sys.argv[1], sys.argv[2]
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import division                                   # noqa: E402  the division's lock: own ships only, never a pilot another program flies
+division.require(pilot)
 verbose = '--verbose' in sys.argv
 route_path = pathlib.Path(route_arg) if route_arg.endswith('.json') else pathlib.Path(__file__).resolve().parent.parent / 'routes' / f'{route_arg}.json'
 ROUTE = json.loads(route_path.read_text(encoding='utf-8'))
@@ -279,6 +287,44 @@ for n, stop in enumerate(ROUTE['stops']):
                 say(f'accept {template}: {ok} {msg[:100]}')
                 if not ok:
                     notes.append(f'{template} not accepted')
+    for step in stop.get('mine') or []:
+        wanted = set(step.get('for') or [])
+        left = {title for title, _mid, finished in active() if not finished} & wanted
+        if not left:
+            say(f'mine at {step["at"]}: none of {sorted(wanted)} is open; skipped')
+            continue
+        mine_system, mine_poi = step['at'].split(':')
+        status, answer = 0, {}
+        for _ in range(12):                              # the goal of the step before may still be running
+            status, answer = call('POST', f'/accounts/{P}/loop', {'type': 'mining', 'options': {
+                'miningSystemId': mine_system, 'beltPoiId': mine_poi, 'sellSystemId': system, 'sellStationPoiId': poi, 'sellBaseId': base,
+                'skipMarket': True, 'depositTarget': 'personal', 'retryOnDepleted': True}})
+            if status in (200, 201) and 'error' not in answer:
+                break
+            time.sleep(15)
+        if status not in (200, 201) or 'error' in answer:
+            say(f'mine at {mine_poi}: the loop did not start: {status} {str(answer.get("error"))[:100]}')
+            notes.append(f'mine {mine_poi}: loop not started')
+            continue
+        until = time.time() + float(step.get('minutes', 25)) * 60
+        while left and time.time() < until and not (DATA / 'fleet' / 'STOP').exists():
+            time.sleep(30)
+            try:
+                os.utime(ORDER)
+            except OSError:
+                pass
+            left = {title for title, _mid, finished in active() if not finished} & wanted
+            if left and not call('GET', f'/accounts/{P}/loop')[1].get('running'):
+                notes.append(f'mine {mine_poi}: the loop ended by itself')
+                break
+        call('DELETE', f'/accounts/{P}/loop')
+        for _ in range(40):                              # let the step in flight end
+            if not call('GET', f'/accounts/{P}')[1].get('hasExecutingGoal'):
+                break
+            time.sleep(15)
+        say(f'mined at {mine_poi}: ' + ('objectives done' if not left else f'stopped, still open: {sorted(left)}'))
+        if left:
+            notes.append(f'mine {mine_poi}: objectives not done')
     if verbose:
         active()
 after = credits()

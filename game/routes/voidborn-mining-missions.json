@@ -1,0 +1,56 @@
+{
+ "id": "voidborn-mining-missions",
+ "kind": "circuit",
+ "title": "Iron Supply Run, Copper Requisition and First Steps in the Void: accept at Central Nexus, mine at Acubens by way of Node Beta, hand in at Central Nexus",
+ "note": "Once per pilot: 1,500 + 1,800 + 1,000 cr. The objectives count units mined: 30 iron ore and 25 copper ore at the Shadow Pocket, 15 carbon ore at the belt (1,002 carbon left on 2026-11-15 20:30 UTC: it will not last for every pilot). A pilot that has Iron Supply Run booked is skipped: seen 2026-11-15, the board does not offer the two again to a pilot that completed them. Written on Zero's requests (requests.log ENT-011, ENT-002). Two ships at a time until the first runs are read; then `max_ships` goes.",
+ "once": true,
+ "max_ships": 2,
+ "skip_if_booked": [
+  "Iron Supply Run",
+  "iron_supply_run+copper_requisition"
+ ],
+ "one_time": [
+  "Iron Supply Run",
+  "Copper Requisition",
+  "First Steps in the Void"
+ ],
+ "stops": [
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "accept": [
+    "iron_supply_run",
+    "copper_requisition",
+    "first_steps_in_the_void"
+   ]
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "mine": [
+    {
+     "at": "acubens:acubens_shadow_pocket",
+     "for": [
+      "Iron Supply Run",
+      "Copper Requisition"
+     ],
+     "minutes": 25
+    },
+    {
+     "at": "acubens:acubens_belt",
+     "for": [
+      "First Steps in the Void"
+     ],
+     "minutes": 15
+    }
+   ]
+  },
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "store": [
+    "iron_ore",
+    "copper_ore",
+    "carbon_ore",
+    "lead_ore"
+   ]
+  }
+ ]
+}

@@ -60,6 +60,9 @@ HOME = {'systemId': 'nexus_prime', 'poiId': 'the_core', 'baseId': 'central_nexus
 SHIPS = '/srv/collective/data/fleet/ships/'
 args = sys.argv[1:]
 pilot, system_id, poi = args[0], args[1], args[2]
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import division                                   # noqa: E402  the division's lock: own ships only, never a pilot another program flies
+division.require(pilot)
 species = set(args[args.index('--species') + 1].split(',')) if '--species' in args else None
 max_kills = int(args[args.index('--kills') + 1]) if '--kills' in args else 5
 max_minutes = int(args[args.index('--minutes') + 1]) if '--minutes' in args else 40

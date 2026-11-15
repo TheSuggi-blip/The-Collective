@@ -1,0 +1,12 @@
+{
+ "id": "park",
+ "kind": "circuit",
+ "title": "Dock at Central Nexus and wait there: a docked ship costs nothing",
+ "note": "The last route of every plan. It is given to a pilot in space that has no other open route, and never to a docked one. Since 2026-11-15 (orders F8): a ship without paying work waits docked; it does not mine at a loss.",
+ "park": true,
+ "stops": [
+  {
+   "at": "nexus_prime:the_core:central_nexus"
+  }
+ ]
+}

@@ -16,6 +16,10 @@ import urllib.request
 GATE = 'http://172.30.0.32:7580'
 OPENER = urllib.request.build_opener(urllib.request.ProxyHandler({}))
 pilot = sys.argv[1]
+import os                                         # noqa: E402
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import division                                   # noqa: E402  the division's lock: own ships only, never a pilot another program flies
+division.require(pilot)
 P = urllib.parse.quote(pilot, safe='')
 OURS = ('miner-', 'trader-', 'hauler-', 'drone-', 'scout-')
 

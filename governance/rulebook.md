@@ -274,7 +274,7 @@ After a pattern of ours is exploited: an entry in
 - No ship is idle (orders F8). The fleet's tasks are route files
   (`game/routes/`, with what our runs measured); the service `dispatch`
   gives every free pilot the first open route of its role's list
-  (`game/routes/plan.json`); a turn sets the plan again from the figures. How
+  (`game/routes/plans/<role>.json`); a turn sets the plan again from the figures. How
   to hunt, mine, trade, run missions and level: the shared skill
   `fleet-play`.
 - The repository is public and syncs about once a minute: no secret,
@@ -309,5 +309,5 @@ the official pages, with sources. Search it by meaning with the
 | `game/rules/13-not-stated.md` | What the official pages do not say |
 | `game/rules/14-sources.md` | Every page read, and when |
 | `game/rules/15-patch-notes.md` | The last releases and what they changed |
-| `game/routes/` | The fleet's tasks, one file each, with credits per ship-hour as measured; `BLUEPRINT.md`, `index.md`, `plan.json` |
+| `game/routes/` | The fleet's tasks, one file each, with credits per ship-hour as measured; `BLUEPRINT.md`, `index.md`, `plans/` (one plan per role), `guidebook/` (one per division) |
 | `game/fleet/` | The dispatcher and the runners that fly the routes; `index.md` lists every script, what it does and how to call it |

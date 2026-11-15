@@ -18,7 +18,8 @@ the scripts in `game/fleet/` fly them; nobody retypes a route into a chat.
 | Part | Does |
 |---|---|
 | `game/routes/<id>.json` | One route: what to do, for whom, and what our runs measured |
-| `game/routes/plan.json` | Per role, the routes tried in this order for a free pilot |
+| `game/routes/plans/<role>.json` | One plan per role: the routes tried in this order for a free pilot. The role's Admiral keeps it (`owner`) |
+| `game/routes/guidebook/<division>.md` | What each division learned about its routes and its levelling; its Admiral keeps it, every member reads it |
 | `game/fleet/dispatch.py` (service `dispatch`) | Every 30 s gives each free pilot the first route of its role that is open to it |
 | `game/fleet/route_run.py`, `hunt.py`, `census.py`, `mine.py` | The runners: one pilot, one route, one row in the runs file |
 | `python3 -B game/fleet/routes.py check` | The gate: fails on a wrong route file, a wrong plan or a stale index |
@@ -27,9 +28,12 @@ the scripts in `game/fleet/` fly them; nobody retypes a route into a chat.
 
 - Where a pilot is and which pilot flies which route stays in the
   unit's data folder (`data/fleet/`, `data/routes/`), never here.
-- To change what the fleet does: edit `plan.json` or a route file,
-  run the gate and the index, commit. The dispatcher reads the files
-  at its next pass. To halt every start: the file `data/fleet/STOP`.
+- To change what your division does: edit your role's plan file or a
+  route file, run the gate and the index, commit by path. The
+  dispatcher reads the files at its next pass. To halt every start:
+  the file `data/fleet/STOP`.
+- A plan file has one writer, its `owner`. A route file another
+  division flies too is changed by a request to whoever wrote it.
 
 ## 2. Fields of Every Route
 
@@ -44,6 +48,8 @@ the scripts in `game/fleet/` fly them; nobody retypes a route into a chat.
 | `min_credits` | A pilot with fewer credits is not sent |
 | `requires.module` | Only a pilot with this module fitted is sent |
 | `status` | `off`: written down, not flown |
+| `park` | true: the route that docks a ship and lets it wait. Given to a pilot in space only; the last route of every plan |
+| `skip_if_booked` | Titles of one-time rewards: a pilot that has one of them booked is not sent |
 | `measured` | Written by `routes.py measure --write`: date, runs, minutes per run, credits per run, credits per ship-hour |
 
 ## 3. The Kinds
@@ -65,8 +71,9 @@ A stop of a circuit:
 | `redock` | Undock and dock again: a delivery counts on docking |
 | `store` | Goods moved from the hold into the pilot's storage here |
 | `sell` | `item`, `min_price`: sold only into a bid at that price or more |
-| `buy` | `item`, `qty` (units wanted in the hold), `max_price`; never under the wallet floor of 2,000 cr. `one_time`: goods for a one-time mission; their cost is booked against its reward |
+| `buy` | `item`, `qty` (units wanted in the hold), `max_price`; never under the wallet floor of 3,000 cr (orders F7). `one_time`: goods for a one-time mission; their cost is booked against its reward |
 | `accept` | A template id, or `template` with `needs`: accepted only with those goods aboard |
+| `mine` | A list of `at` (system:poi), `for` (mission titles), `minutes`: after the station's work the pilot mines there with the engine's loop until the named missions' objectives are done. For missions that count units mined |
 
 `one_time` lists the mission titles whose reward is seed money: the
 runner books them so that CPH counts recurring income only.
@@ -76,8 +83,10 @@ runner books them so that CPH counts recurring income only.
 1. A route stays inside what the orders allow
    (`communications/orders.log`): today policed Voidborn space, grazers
    only, no word to another player.
-2. Test a new route with one pilot before it enters the plan. Until
-   then its `status` is `off`.
+2. Test a new route with one pilot before every pilot flies it: put it
+   into your plan with `max_ships` 1, read its RESULT line and its row
+   (`routes.py measure`), then lift the limit. A route kept for later
+   has `status` `off`.
 3. A route that buys says what the goods cost in its `note`, and sets
    `min_credits`.
 4. A hunt names its `species`. Prey above 100 hull hits back hard: a
@@ -86,11 +95,11 @@ runner books them so that CPH counts recurring income only.
 5. A hunt sets `max_ships` and `min_creatures`: a herd regrows only
    when it is hunted below its replacement rate, and it starves when
    its deposit is mined out (`game/rules/` wildlife).
-6. Each role's list in `plan.json` ends with a route that is always
-   open: a mine that is not `off` and has no `max_ships`, `once`,
-   `min_credits` or `requires`. The gate checks it. A list whose
-   routes can all fill up leaves a ship idle: on 2026-11-15 three
-   mines of 16 ships each left two traders without work.
+6. Each plan ends with a route that is always open: `park`. The gate
+   checks it. A ship with no paying route waits docked, which costs
+   nothing; it does not fly a route that loses money to fill time
+   (orders F8, Suggi 2026-11-15: mining for skill cost about 160 cr per
+   ship-hour and the ore found no buyer).
 7. A figure in `note` carries its date; `measured` is never typed by
    hand.
 

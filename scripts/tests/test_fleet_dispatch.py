@@ -30,6 +30,7 @@ ROUTES = {
     "open": {"id": "open", "kind": "mine", "title": "t", "belt": "far:rift", "station": "home:core:base"},
 }
 PLAN = {"roles": {"drone": ["missions", "whale", "rays", "mine"], "scout": ["missions", "census", "mine"], "miner": ["off-route", "mine"]}}
+OWNERS = {"drone": "Apophis", "scout": "Oracle", "miner": "Zero", "hauler": "Apollo", "trader": "Mercury"}
 
 
 class Tree(unittest.TestCase):
@@ -43,15 +44,24 @@ class Tree(unittest.TestCase):
         (self.root / "map" / "galaxy.tsv").write_text("# chart\nhome\tHome\t0\t0\tvoidborn\nfar\tFar\t1\t0\tvoidborn\n", encoding="ascii")
         for rid, route in ROUTES.items():
             (self.root / "routes" / (rid + ".json")).write_text(json.dumps(route), encoding="ascii")
-        (self.root / "routes" / "plan.json").write_text(json.dumps(PLAN), encoding="ascii")
+        self.put_plan(PLAN["roles"])
         self.dispatch, self.routes = load("dispatch"), load("routes")
         self.now = time.time()
 
-    def state(self, rows=(), orders=None, rest=None):
-        return {"now": self.now, "data": str(self.data), "rows": list(rows), "orders": orders or {}, "rest": rest or {}}
+    def put_plan(self, roles, owner=None):
+        folder = self.root / "routes" / "plans"
+        folder.mkdir(exist_ok=True)
+        for path in folder.glob("*.json"):
+            path.unlink()
+        for role, ids in roles.items():
+            (folder / (role + ".json")).write_text(json.dumps({"role": role, "owner": owner or OWNERS[role], "routes": ids}), encoding="ascii")
 
-    def pick(self, name, credits=20000, modules=(), **state):
-        route, argument = self.dispatch.pick({"name": name, "credits": credits, "modules": list(modules)}, PLAN, self.dispatch.load_routes(self.root), self.state(**state))
+    def state(self, rows=(), orders=None, rest=None, booked=None):
+        return {"now": self.now, "data": str(self.data), "rows": list(rows), "orders": orders or {}, "rest": rest or {}, "booked": booked or {}}
+
+    def pick(self, name, credits=20000, modules=(), docked=False, **state):
+        route, argument = self.dispatch.pick({"name": name, "credits": credits, "modules": list(modules), "docked": docked}, PLAN,
+                                             self.dispatch.load_routes(self.root), self.state(**state))
         return (route["id"] if route else None), argument
 
 
@@ -95,6 +105,20 @@ class PickTests(Tree):
         self.assertEqual(self.pick("scout-1", rows=done, orders={"scout-2": "census home"})[0], "mine")   # max_ships 1
         os.utime(self.data / "scouting" / "home.json", (self.now - 60, self.now - 60))
         self.assertEqual(self.pick("scout-1", rows=done)[0], "mine")                              # everything fresh
+
+    def test_a_park_route_is_for_a_pilot_in_space_and_a_booked_reward_skips_its_route(self):
+        routes = dict(self.dispatch.load_routes(self.root))
+        routes["park"] = {"id": "park", "kind": "circuit", "title": "t", "park": True, "stops": [{"at": "home:core:base"}]}
+        routes["gift"] = {"id": "gift", "kind": "circuit", "title": "t", "once": True, "skip_if_booked": ["Iron Supply Run"], "stops": [{"at": "home:core:base"}]}
+        plan = {"roles": {"hauler": ["gift", "park"]}}
+        pick = lambda docked, booked=None: (self.dispatch.pick({"name": "hauler-1", "credits": 9000, "modules": [], "docked": docked}, plan, routes,
+                                                                self.state(booked=booked))[0] or {}).get("id")
+        self.assertEqual(pick(False), "gift")
+        self.assertEqual(pick(False, {"hauler-1": {"Iron Supply Run"}}), "park")                  # the reward is booked: not flown again
+        self.assertEqual(pick(False, {"hauler-2": {"Iron Supply Run"}}), "gift")                  # another pilot's booking does not count
+        self.assertEqual(pick(True, {"hauler-1": {"Iron Supply Run"}}), None)                     # docked: it waits, nothing is started
+        (self.data / "fleet" / "onetime.json").write_text(json.dumps([[1, "hauler-1", "Iron Supply Run", 1500], [2, "hauler-1", "Copper Requisition", 1800], "broken"]))
+        self.assertEqual(self.dispatch.booked(str(self.data)), {"hauler-1": {"Iron Supply Run", "Copper Requisition"}})
 
     def test_a_route_the_plan_names_but_no_file_holds_is_passed_over(self):
         self.assertEqual(self.pick("miner-1")[0], "mine")
@@ -153,8 +177,7 @@ class PassTests(Tree):
 class RouteGateTests(Tree):
     def setUp(self):
         super().setUp()                                                                           # the gate's tree has a plan without the unknown route
-        clean = {"roles": {role: [r for r in ids if r in ROUTES] + ["open"] for role, ids in PLAN["roles"].items()}}
-        (self.root / "routes" / "plan.json").write_text(json.dumps(clean), encoding="ascii")
+        self.put_plan({role: [r for r in ids if r in ROUTES] + ["open"] for role, ids in PLAN["roles"].items()})
 
     def test_the_gate_passes_a_clean_tree_with_a_current_index(self):
         self.assertIn("game/routes/index.md is missing or stale", self.routes.check(str(self.root))[0][-1])
@@ -162,7 +185,7 @@ class RouteGateTests(Tree):
         self.assertEqual(self.routes.check(str(self.root)), ([], 6))
         first = (self.root / "routes" / "index.md").read_text(encoding="ascii")
         self.assertEqual(self.routes.index_text(str(self.root)), first)                           # same input, same bytes, same id
-        self.assertIn("| drone | missions > whale > rays > mine > open |", first)
+        self.assertIn("| drone | Apophis | missions > whale > rays > mine > open |", first)
 
     def test_each_rule_fails_alone(self):
         def errors_with(rid, change):
@@ -177,13 +200,26 @@ class RouteGateTests(Tree):
         self.assertIn("system `nowhere` is not on the chart", errors_with("rays", {"place": "nowhere:nebula"})[0])
         self.assertIn("`sell_at` must have 3 parts", errors_with("rays", {"sell_at": "home:core"})[0])
         self.assertIn("stop 1: `at` must be system:poi:base", errors_with("missions", {"stops": [{"at": "home"}]})[0])
-        (self.root / "routes" / "plan.json").write_text(json.dumps({"roles": {"drone": ["ghost", "open"]}}), encoding="ascii")
-        self.assertIn("names `ghost`, which is no route file", [e for e in self.routes.check(str(self.root))[0] if "index.md" not in e][0])
-        for last, why in (("mine", "a mine without max_ships"), ("rays", "a mine without max_ships"), ("missions", "a mine without once, min_credits")):
-            (self.root / "routes" / "plan.json").write_text(json.dumps({"roles": {"drone": ["open", last]}}), encoding="ascii")
+        self.put_plan({"drone": ["ghost", "open"]})
+        self.assertIn("game/routes/plans/drone.json: names `ghost`, which is no route file", [e for e in self.routes.check(str(self.root))[0] if "index.md" not in e][0])
+        for last, why in (("mine", "without max_ships"), ("rays", "without max_ships"), ("missions", "without once, min_credits")):
+            self.put_plan({"drone": ["open", last]})
             found = [e for e in self.routes.check(str(self.root))[0] if "index.md" not in e]
             self.assertEqual(len(found), 1, last)
-            self.assertIn("role `drone` must end with a route that is always open (%s); `%s` is not" % (why, last), found[0])
+            self.assertIn("plans/drone.json: must end with a route that is always open (the `park` route, or a mine, %s); `%s` is not" % (why, last), found[0])
+        park = {"id": "park", "kind": "circuit", "title": "t", "park": True, "stops": [{"at": "home:core:base"}]}
+        (self.root / "routes" / "park.json").write_text(json.dumps(park), encoding="ascii")
+        self.put_plan({"drone": ["open", "park"]})
+        self.assertEqual([e for e in self.routes.check(str(self.root))[0] if "index.md" not in e], [])    # the park route may end a list
+        self.put_plan({"drone": ["open", "park"]}, owner="Zero")
+        self.assertIn("`owner` must be Apophis, who commands the drone ships", [e for e in self.routes.check(str(self.root))[0] if "index.md" not in e][0])
+        self.put_plan({"drone": []})
+        self.assertIn("`routes` is empty", [e for e in self.routes.check(str(self.root))[0] if "index.md" not in e][0])
+        (self.root / "routes" / "park.json").unlink()
+        (self.root / "routes" / "plan.json").write_text("{}", encoding="ascii")
+        self.put_plan({"drone": ["open"]})
+        self.assertIn("the one plan file is gone", [e for e in self.routes.check(str(self.root))[0] if "index.md" not in e][0])
+        (self.root / "routes" / "plan.json").unlink()
 
     def test_measure_writes_a_figure_once_and_again_only_on_a_real_move(self):
         rows = [{"route": "mine", "pilot": "miner-1", "minutes": 30, "delta": -40, "credits_before": 9000, "credits_after": 8960},

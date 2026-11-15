@@ -8,7 +8,7 @@ author: Unity
 # index.md -- The Fleet's Scripts
 
 Built by `python3 -B scripts/fleet-index.py` from the docstring of every script in this
-folder; never edited by hand. Scripts listed: 9.
+folder; never edited by hand. Scripts listed: 12.
 
 - Run a script from the repository root: `python3 -I -B game/fleet/<script> <arguments>`,
   the arguments as listed under "How to Call Each".
@@ -27,10 +27,13 @@ folder; never edited by hand. Scripts listed: 9.
 
 | Script | What it does | How it is run |
 |---|---|---|
+| `board.py` | The board of a division: what each of its ships does now, its plan, what is planned, and what its runs earned. | By hand |
 | `census.py` | Read one system whole with one pilot: every place's deposits and creatures, and the station's order book and mission board. | Runner (`census` routes) |
 | `dispatch.py` | Keep every pilot at work: give each free pilot the next task of its role. | Service |
-| `gate.py` | Small client for the fleet engine's gate. | By hand |
+| `division.py` | Who commands which ship, whose plan is whose, and the check every fleet script runs before it drives a ship. | By hand |
+| `gate.py` | Small client for the fleet engine's gate, with the division's lock. | By hand |
 | `hunt.py` | Hunt grazers at one place, loot the carcasses and sell what the kills bring. | Runner (`hunt` routes) |
+| `ledger.py` | Keep the fleet's books: what we own and where it lies, and how every order book moved. | Service |
 | `loot_own.py` | Loot every carcass and wreck at the pilot's place that the pilot itself killed. | By hand |
 | `mine.py` | One pilot mines at one field for a set time, through the engine's mining loop. | Runner (`mine` routes) |
 | `route_run.py` | Fly one pilot along a route file: dock at each stop and do what the stop says. | Runner (`circuit` routes) |
@@ -38,6 +41,21 @@ folder; never edited by hand. Scripts listed: 9.
 | `sight.py` | What our ships see where they are: the pilots they meet, and a first read of a system nobody read. | Service |
 
 ## How to Call Each
+
+### `board.py`
+
+The board of a division: what each of its ships does now, its plan, what is planned, and
+what its runs earned.
+
+Run by hand.
+
+```
+board.py                    the board of the member this shell belongs to
+board.py <Member>           the board of that member (Zero, Apollo, Mercury, Apophis, Oracle, Unity)
+board.py all                every division, one block each
+--hours N                   the window of the runs table (default 4)
+--data <dir>                the unit's data folder (default /srv/collective/data)
+```
 
 ### `census.py`
 
@@ -64,18 +82,37 @@ dispatch.py --dry-run    one pass that starts nothing and prints what it would s
 --data <dir>   the unit's data folder (default /srv/collective/data)
 ```
 
+### `division.py`
+
+Who commands which ship, whose plan is whose, and the check every fleet script runs
+before it drives a ship.
+
+Run by hand.
+
+```
+division.py me                  the member this shell belongs to
+division.py of <pilot>          the member that commands the pilot
+division.py ships [<Member>]    the pilots a member commands (default: me), from the fleet's live file
+division.py may <pilot>         exit 0 when this shell may drive the pilot now; exit 1 and the reason when not
+division.py plan [<role>]       the plans in force: per role, who keeps it and its routes in order
+--data <dir>                    the unit's data folder (default /srv/collective/data)
+```
+
 ### `gate.py`
 
-Small client for the fleet engine's gate. Standard library only, no proxy.
+Small client for the fleet engine's gate, with the division's lock. Standard library
+only, no proxy.
 
 Run by hand.
 
 ```
 gate.py get <path>
-gate.py post <path> '<json body>'
-gate.py patch|delete <path> ['<json body>']
 gate.py raw <pilot> <action> ['<json params>'] [toolGroup]
 gate.py goal <pilot> <type> ['<json options>']
+gate.py post <path> '<json body>'
+gate.py patch|delete <path> ['<json body>']
+gate.py hold <pilot>
+gate.py release <pilot>
 ```
 
 ### `hunt.py`
@@ -88,6 +125,22 @@ A runner: the dispatcher starts it for a route of the kind `hunt`; by hand only 
 hunt.py <pilot> <system_id> <poi> [--species a,b] [--kills N] [--minutes M]
     [--min-bid CR] [--sell-at system:poi:base] [--max-prey-hull N]
     [--route ID] [--keep]
+```
+
+### `ledger.py`
+
+Keep the fleet's books: what we own and where it lies, and how every order book moved.
+
+A service: it runs by itself and is never started a second time.
+
+```
+ledger.py                   run forever (the service `ledger`)
+ledger.py --once            one pass over every pilot and every book, then stop (about ten minutes)
+ledger.py show [<Member>|all] [--item <item id>]
+                            the stock of a member's ships (default: the member this shell belongs to)
+ledger.py prices <item id> [--base <base id>] [--last N]
+                            the last N moves (default 20) of an item's best bid and ask
+--data <dir>                the unit's data folder (default /srv/collective/data)
 ```
 
 ### `loot_own.py`

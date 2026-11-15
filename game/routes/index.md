@@ -15,6 +15,10 @@ task one pilot carries out by itself; its file is `game/routes/<id>.json`
 |---|---|---|---|---|---|---|---|---|
 | [census-voidborn](census-voidborn.json) | census | Read one Voidborn system whole: deposits, creatures, order book, mission board | up to 3 ships | 37 | 7 | -70 | -550 | 2026-11-15 |
 | [first-survey](first-survey.json) | circuit | Signal Propagation Survey: dock at the five other Voidborn stations (20,000 cr) | once per pilot, off | TBD | TBD | TBD | TBD | -- |
+| [park](park.json) | circuit | Dock at Central Nexus and wait there: a docked ship costs nothing | the park route | TBD | TBD | TBD | TBD | -- |
+| [voidborn-concurrent](voidborn-concurrent.json) | circuit | Concurrent Approval: accept at Central Nexus, deliver two neural soma to Node Beta (3,000 cr once) | once per pilot, off | TBD | TBD | TBD | TBD | -- |
+| [voidborn-first-steps](voidborn-first-steps.json) | circuit | First Steps in the Void for a pilot that holds it: mine 15 carbon ore at Acubens Belt, hand in at Central Nexus | once per pilot, up to 2 ships | TBD | TBD | TBD | TBD | -- |
+| [voidborn-mining-missions](voidborn-mining-missions.json) | circuit | Iron Supply Run, Copper Requisition and First Steps in the Void: accept at Central Nexus, mine at Acubens by way of Node Beta, hand in at Central Nexus | once per pilot, up to 2 ships | TBD | TBD | TBD | TBD | -- |
 | [voidborn-missions-1](voidborn-missions-1.json) | circuit | Synchrony Relay Run and Crystal Delivery: two board missions in one circuit of 8 jumps | once per pilot | 146 | 22 | 6,430 | one-time | 2026-11-15 |
 | [voidborn-substrate](voidborn-substrate.json) | circuit | Substrate Delivery: two neural soma bought at Central Nexus, the mission taken at Node Alpha and handed in at Central Nexus; 2 jumps | once per pilot | 146 | 8 | 1,790 | one-time | 2026-11-15 |
 | [hunt-acubens-urchin](hunt-acubens-urchin.json) | hunt | Cinder-urchins at Acubens Shadow Pocket; radiant bile sold at Node Gamma | up to 1 ships, off | 2 | 25 | -120 | -290 | 2026-11-15 |
@@ -27,16 +31,28 @@ task one pilot carries out by itself; its file is `game/routes/<id>.json`
 | [mine-gsc-seep](mine-gsc-seep.json) | mine | Iron and copper at GSC-0027 Spacetime Seep; ore into storage at Node Beta | up to 16 ships | 48 | 45 | -120 | -160 | 2026-11-15 |
 | [mine-pherkad-rift](mine-pherkad-rift.json) | mine | Copper and iron at Pherkad Null Rift; ore into storage at Synchrony Hub | every pilot | 65 | 45 | -120 | -160 | 2026-11-15 |
 
-## The Plan
+## The Plans
 
-`plan.json`: per role, the routes the dispatcher tries in this order for a free pilot.
+`plans/<role>.json`: per role, the routes the dispatcher tries in this order for a free pilot. The role's Admiral keeps the file.
 
-| Role | Routes, first that is open |
+| Role | Kept by | Routes, first that is open |
+|---|---|---|
+| command | Unity | voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > voidborn-first-steps > park |
+| drone | Apophis | voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > voidborn-first-steps > hunt-gsc-veil-ray > hunt-hamal-veil-ray > park |
+| hauler | Apollo | voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > voidborn-first-steps > park |
+| miner | Zero | voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > voidborn-first-steps > park |
+| scout | Oracle | voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > voidborn-first-steps > census-voidborn > park |
+| sentinel | Unity | voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > voidborn-first-steps > park |
+| trader | Mercury | voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > voidborn-first-steps > park |
+
+## The Guidebooks
+
+What each division learned about its routes, its levelling and its ships; kept by its Admiral, read by every member.
+
+| Guidebook | Title |
 |---|---|
-| command | voidborn-substrate > voidborn-missions-1 > mine-acubens > mine-gsc-seep > mine-pherkad-rift |
-| drone | voidborn-substrate > voidborn-missions-1 > hunt-gsc-veil-ray > hunt-hamal-veil-ray > hunt-home-drift-ray > mine-acubens > mine-gsc-seep > mine-pherkad-rift |
-| hauler | voidborn-substrate > voidborn-missions-1 > mine-bellatrix > mine-acubens > mine-gsc-seep > mine-pherkad-rift |
-| miner | voidborn-substrate > voidborn-missions-1 > mine-acubens > mine-gsc-seep > mine-pherkad-rift |
-| scout | voidborn-substrate > voidborn-missions-1 > census-voidborn > mine-acubens > mine-gsc-seep > mine-pherkad-rift |
-| sentinel | voidborn-substrate > voidborn-missions-1 > mine-acubens > mine-gsc-seep > mine-pherkad-rift |
-| trader | voidborn-substrate > voidborn-missions-1 > mine-bellatrix > mine-acubens > mine-gsc-seep > mine-pherkad-rift |
+| [guidebook/intel.md](guidebook/intel.md) | intel.md -- Guidebook of the Intel Division |
+| [guidebook/logistics.md](guidebook/logistics.md) | logistics.md -- Guidebook of the Logistics Division |
+| [guidebook/military.md](guidebook/military.md) | military.md -- Guidebook of the Military Division |
+| [guidebook/mining.md](guidebook/mining.md) | mining.md -- Guidebook of the Mining Division |
+| [guidebook/trade.md](guidebook/trade.md) | trade.md -- Guidebook of the Trade Division |

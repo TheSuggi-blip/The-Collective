@@ -1,0 +1,12 @@
+{
+ "role": "trader",
+ "owner": "Mercury",
+ "note": "The routes the dispatcher tries, in this order, for a free trader pilot. Mercury keeps this file: put a route that pays first, a test with `max_ships` before it enters for all, and end with `park`. Set on 2026-11-15 by the Fleet Admiral at the handover: the missions that pay once, then what paid, then park. No route that loses money stands here to fill time (orders F8).",
+ "routes": [
+  "voidborn-substrate",
+  "voidborn-missions-1",
+  "voidborn-mining-missions",
+  "voidborn-first-steps",
+  "park"
+ ]
+}

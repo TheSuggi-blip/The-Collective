@@ -183,3 +183,13 @@ queries:
   gold_files:
   - game/fleet/index.md
   domain: fleet
+- qid: c038
+  question: What has the Military division learned about which hunting grounds pay and which hull and weapons a hunter needs?
+  gold_files:
+  - game/routes/guidebook/military.md
+  domain: fleet
+- qid: c039
+  question: Which file lists the routes my division's ships try in order, and how do I put a new route into it?
+  gold_files:
+  - game/routes/BLUEPRINT.md
+  domain: fleet

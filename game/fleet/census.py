@@ -33,6 +33,9 @@ DATA = pathlib.Path('/srv/collective/data')
 HOME = {'systemId': 'nexus_prime', 'poiId': 'the_core', 'baseId': 'central_nexus', 'refuel': True}
 FIELDS = ('asteroid_belt', 'ice_field', 'gas_cloud', 'nebula', 'anomaly', 'debris_field', 'comet')
 pilot, system_id = sys.argv[1], sys.argv[2]
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import division                                   # noqa: E402  the division's lock: own ships only, never a pilot another program flies
+division.require(pilot)
 P = urllib.parse.quote(pilot, safe='')
 
 

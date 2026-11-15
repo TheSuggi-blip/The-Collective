@@ -57,6 +57,9 @@ def option(args, name, default):
 def main():
     args = sys.argv[1:]
     pilot, belt, station = args[0], args[1].split(":"), args[2].split(":")
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import division                               # the division's lock: own ships only, never a pilot another program flies
+    division.require(pilot)
     minutes = float(option(args, "--minutes", "45"))
     route_id = option(args, "--route", "mine-" + belt[1])
     quoted = urllib.parse.quote(pilot, safe="")

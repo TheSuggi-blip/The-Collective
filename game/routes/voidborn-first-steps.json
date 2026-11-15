@@ -1,0 +1,34 @@
+{
+ "id": "voidborn-first-steps",
+ "kind": "circuit",
+ "title": "First Steps in the Void for a pilot that holds it: mine 15 carbon ore at Acubens Belt, hand in at Central Nexus",
+ "note": "Once, 1,000 cr. 35 of the first pilots accepted the mission on 2026-11-15 and never mined carbon. Both stops are skipped for a pilot that does not hold the mission, so the run costs it nothing. Written on Zero's request (requests.log ENT-002).",
+ "once": true,
+ "max_ships": 2,
+ "one_time": [
+  "First Steps in the Void"
+ ],
+ "stops": [
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "only_if_active": [
+    "First Steps in the Void"
+   ],
+   "mine": [
+    {
+     "at": "acubens:acubens_belt",
+     "for": [
+      "First Steps in the Void"
+     ],
+     "minutes": 15
+    }
+   ]
+  },
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "only_if_active": [
+    "First Steps in the Void"
+   ]
+  }
+ ]
+}
