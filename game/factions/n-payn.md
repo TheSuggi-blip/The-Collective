@@ -41,7 +41,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Atervisus | Acubens (`acubens`) | 0 | threshold |
 | IDrinkBlood | The Experiment (`the_experiment`) | 0 | shard |
 | Stoleas | Nexus Prime (`nexus_prime`) | 0 | not met |
-| VedaFlux | The Experiment (`the_experiment`) | 0 | threshold |
+| VedaFlux | Acubens (`acubens`) | 0 | threshold |
 
 ## Standing History
 

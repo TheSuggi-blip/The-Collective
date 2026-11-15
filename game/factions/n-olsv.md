@@ -15,7 +15,7 @@ updated: 2026-11-15
 # Our Lord And Savior [OLSV]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 36.
+Pilots of it in our space in the last 24 hours: 37.
 
 ## Identity
 
@@ -38,7 +38,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| OLS Acrux II | Synchrony (`synchrony`) | 0 | not met |
+| OLS Acrux II | Synchrony (`synchrony`) | 0 | cobble |
 | OLS Aladfar | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | OLS Alphecca | Nexus Prime (`nexus_prime`) | 0 | threshold |
 | OLS Armus | Nexus Prime (`nexus_prime`) | 0 | theoria |
@@ -69,7 +69,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | OLS Mintaka | Nexus Prime (`nexus_prime`) | 0 | threshold |
 | OLS Nahn | Synchrony (`synchrony`) | 0 | shard |
 
-And 6 more.
+And 7 more.
 
 ## Standing History
 

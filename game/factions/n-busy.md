@@ -15,7 +15,7 @@ updated: 2026-11-15
 # Busy Being Dead [BUSY]
 
 A player faction with 5 base(s) in 5 system(s); the nearest to Nexus Prime is 14 jump(s) away, in 40 Eridani (`40_eridani`).
-Pilots of it in our space in the last 24 hours: 8.
+Pilots of it in our space in the last 24 hours: 7.
 
 ## Identity
 
@@ -44,14 +44,13 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Combat Drone 013 | Pherkad (`pherkad`) | 0 | not met |
-| Combat Drone 139 | Pherkad (`pherkad`) | 0 | dialectic |
-| Combat Drone 147 | Pherkad (`pherkad`) | 0 | dialectic |
-| Combat Drone 193 | Node Beta (`node_beta`) | 0 | dialectic |
-| Combat Drone 194 | Pherkad (`pherkad`) | 0 | not met |
-| Mining Drone 121 | Node Beta (`node_beta`) | 0 | not met |
-| Mining Drone 223 | Pherkad (`pherkad`) | 0 | not met |
-| Mining Drone 276 | Pherkad (`pherkad`) | 0 | prospect |
+| Combat Drone 008 | Node Beta (`node_beta`) | 0 | not met |
+| Combat Drone 015 | Hamal (`hamal`) | 0 | opus_magna |
+| Combat Drone 161 | Synchrony (`synchrony`) | 0 | not met |
+| Combat Drone 200 | The Experiment (`the_experiment`) | 0 | not met |
+| Mining Drone 021 | Node Beta (`node_beta`) | 0 | floor_price |
+| Mining Drone 036 | Pherkad (`pherkad`) | 0 | not met |
+| Mining Drone 065 | Synchrony (`synchrony`) | 0 | not met |
 
 ## Standing History
 
