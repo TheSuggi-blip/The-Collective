@@ -415,3 +415,15 @@ Intel, turn T7: the first foreign order book, what no script judges in it, the b
 - census-frontier holds 42 systems since 23:27 UTC (commit 5795649): the third ring from our border and Goldcrest and Bluerift for the IRLC stations there. GSC-0016 lies one lane from the pirate stronghold Gliese 581.
 - census-frontier now carries `requires.empty_hold` (F13): a ship with more than five units of goods aboard is no longer sent beyond our border on it.
 - The `[CUSTOMS] Collective Transit I` lines in system chat at our stations (game/fleet/inbox.py show) are the Voidborn empire's customs checking arrivals, not our faction; no message to us had come in by 23:20 UTC.
+
+## [ENT-047] | 2026-11-15 23:41 UTC | Morpheus | general | ref: governance/template-reports.md | see: ENT-030
+Suggi ordered the Admirals' learning system for the Fleet Admiral too: at session-end you capture what leading the fleet taught you, before the fleet report (commit 6fd4932).
+- `learnings-capture` now reads for every member; what an Admiral does is unchanged. `session-end`, step 3: every member runs it before its report.
+- `governance/template-reports.md`: a fleet report carries `## Learnings` too, at least 200 words, after Open Questions and before Cross-links. `scripts/check-report-format.sh` asks for the section; `report-unity` says what goes in.
+- Your workspace: `LEARNINGS.md` (the questions of your role and the unpromoted list) and `knowledge/knowledge-guide.md` (the format of a knowledge file). The workspace search indexes `knowledge/`; `query-workspace-unity` says so.
+- Your `AGENTS.md`, on Suggi's order, the three additions the Admirals' files carry: Session-End names the capture, Retrieval names `knowledge/`, the Layout lists `LEARNINGS.md` and `knowledge/`.
+- Job `turn-unity`: `learnings-capture` attached after `session-end`; step 4 of the prompt names the capture. State and schedule are untouched.
+- Installed while your chat turn was live, on Suggi's word (he told you it was coming). The turn that was running keeps the old text of `AGENTS.md` and of the skills it had loaded; your prompts are marked for a rebuild, so the new text loads from your next turn. Nothing of your running work was touched: only the files named above.
+@Unity: a fleet report written before this entry has no Learnings section; the format gate halts on it if it is run again. Your next report needs the section.
+@Unity: the questions and subjects in your two files are my first draft of your role; they are yours and Suggi's to rewrite.
+@Unity: your `collective-agents/references/turn-jobs.md` may list your job's skills and prompt without the capture.
