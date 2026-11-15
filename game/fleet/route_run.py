@@ -37,6 +37,7 @@ import json
 import os
 import pathlib
 import re
+import subprocess
 import sys
 import time
 import urllib.error
@@ -246,9 +247,10 @@ for n, stop in enumerate(ROUTE['stops']):
         depth = row.get('best_buy_qty') if isinstance(row.get('best_buy_qty'), (int, float)) else (row.get('buy_quantity') or 0)   # at the best price: `buy_quantity` is the total of all levels
         if have and isinstance(bid, (int, float)) and bid >= want['min_price'] and depth:
             c0 = credits()
-            raw('sell', {'item_id': want['item'], 'quantity': min(have, depth)})
+            units = have if want.get('all') else min(have, depth)   # `all`: down the bid's levels too (a mission that counts units sold)
+            raw('sell', {'item_id': want['item'], 'quantity': units})
             time.sleep(11)
-            say(f'sold {min(have, depth)} {want["item"]} into a bid of {bid}: {credits() - c0:+d} cr')
+            say(f'sold {units} {want["item"]} into a bid of {bid}: {credits() - c0:+d} cr')
         elif have:
             say(f'{want["item"]}: bid {bid} x {depth} is under {want["min_price"]}: kept')
     for want in stop.get('buy') or []:
@@ -267,6 +269,31 @@ for n, stop in enumerate(ROUTE['stops']):
                 onetime[0] += spent
             if got < want['qty']:
                 notes.append(f'{want["item"]}: {got} of {want["qty"]}')
+    for want in stop.get('fit') or []:                   # a module bought here and fitted, one of its kind
+        try:
+            live = json.load(open(DATA / 'fleet' / 'ships' / ((re.sub(r'[^A-Za-z0-9_.-]', '_', pilot)[:60] or 'pilot') + '.json'), encoding='utf-8'))
+            fitted = [m.get('type') for m in live.get('modules') or [] if isinstance(m, dict)]
+        except (OSError, ValueError):
+            fitted = []
+        if want['module'] in fitted:
+            say(f'fit {want["module"]}: fitted already')
+            continue
+        if not cargo().get(want['module']):
+            if credits() - want['max_price'] * 1.01 < FLOOR:
+                say(f'fit {want["module"]}: not bought, the wallet would fall under {FLOOR} cr')
+                notes.append(f'{want["module"]}: wallet floor')
+                continue
+            ok, msg = goal('buy-items', {'items': [{'itemId': want['module'], 'maxPrice': want['max_price'], 'maxQuantity': 1}]}, tries=1)
+            say(f'buy {want["module"]} at up to {want["max_price"]}: {ok} {"" if ok else msg[:100]}')
+        if not cargo().get(want['module']):
+            notes.append(f'{want["module"]}: not bought')
+            continue
+        d = raw('install_mod', {'module_id': want['module']})
+        time.sleep(11)
+        answer = text(d)[:140].replace('\n', ' / ')
+        say(f'fit {want["module"]}: {answer}')
+        if 'nstalled' not in answer:
+            notes.append(f'{want["module"]}: not fitted')
     if stop.get('accept'):
         have = {title for title, _mid, _fin in active()}
         for entry in stop['accept']:
@@ -326,6 +353,30 @@ for n, stop in enumerate(ROUTE['stops']):
         say(f'mined at {mine_poi}: ' + ('objectives done' if not left else f'stopped, still open: {sorted(left)}'))
         if left:
             notes.append(f'mine {mine_poi}: objectives not done')
+    for step in stop.get('hunt') or []:                  # a hunt for a mission: hunt.py as a step, with its rules
+        wanted = set(step.get('for') or [])
+        left = {title for title, _mid, finished in active() if not finished} & wanted
+        if wanted and not left:
+            say(f'hunt at {step["at"]}: none of {sorted(wanted)} is open; skipped')
+            continue
+        hunt_system, hunt_poi = step['at'].split(':')
+        command = [sys.executable, '-I', '-B', str(pathlib.Path(__file__).with_name('hunt.py')), pilot, hunt_system, hunt_poi, '--step',
+                   '--kills', str(step.get('kills', 3)), '--minutes', str(step.get('minutes', 30)), '--route', ROUTE['id']]
+        command += ['--species', ','.join(step['species'])] if step.get('species') else []
+        command += ['--alone'] if step.get('alone') else []
+        for _ in range(2):                               # a grazer that fled keeps its damage: a second go ends it
+            try:
+                answer = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
+                                        timeout=(float(step.get('minutes', 30)) + 25) * 60).stdout or ''
+            except subprocess.TimeoutExpired as error:
+                answer = str(error.stdout or '') + '\nthe hunt step did not end in time'
+            print(answer.rstrip(), flush=True)
+            left = {title for title, _mid, finished in active() if not finished} & wanted
+            if not left or 'left: a ship' in answer or (DATA / 'fleet' / 'STOP').exists():
+                break
+        say(f'hunt at {hunt_poi}: ' + ('objectives done' if not left else f'stopped, still open: {sorted(left)}'))
+        if left:
+            notes.append(f'hunt {hunt_poi}: objectives not done')
     if verbose:
         active()
 after = credits()

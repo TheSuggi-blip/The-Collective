@@ -138,6 +138,10 @@ class GateTests(unittest.TestCase):
         self.assertIn("REFUSED: this shell is no member", done.stdout)
         done = self.run_gate(ZERO, "post", "/accounts/register", "{}")
         self.assertIn("REFUSED: a call that names no pilot", done.stdout)
+        done = self.run_gate(ZERO, "raw", "miner-1", "chat", '{"channel": "system", "content": "hello"}', "spacemolt_social")
+        self.assertIn("REFUSED: a word to another player is the Fleet Admiral's", done.stdout)
+        done = self.run_gate(ZERO, "post", "/accounts/miner-1/raw", '{"toolGroup": "spacemolt_social", "action": "forum_reply", "params": {}}')
+        self.assertIn("REFUSED: a word to another player", done.stdout)
         done = self.run_gate(ZERO, "delete", "/accounts/drone-3/loop")
         self.assertIn("REFUSED: drone-3 is commanded by Apophis", done.stdout)
 

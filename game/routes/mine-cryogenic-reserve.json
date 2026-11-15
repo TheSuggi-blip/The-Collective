@@ -1,0 +1,19 @@
+{
+ "id": "mine-cryogenic-reserve",
+ "kind": "mine",
+ "title": "Cryogenic Reserve: water_ice, nitrogen_ice, oxygen_ice; sold at Synchrony Hub",
+ "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 2575 cr per ship-hour, not a measurement. A test: one ship. Estimate of 2026-11-15 23:10 UTC from: {\"a_load\": [\"water_ice 32 of 32 units for 1097 cr (depth at the best price)\"], \"field\": \"nexus_prime:cryogenic_reserve\", \"jumps\": 2, \"left\": {\"nitrogen_ice\": 813, \"oxygen_ice\": 476, \"water_ice\": 809}, \"richness\": {\"nitrogen_ice\": 60, \"oxygen_ice\": 11, \"water_ice\": 70}, \"sold_at\": \"synchrony_hub\"}. Uncertain: needs the module ice_harvester_i (base value 1000 cr), not the mining laser; the rate is measured with the laser on ore. In no plan: its Admiral adds it.",
+ "belt": "nexus_prime:cryogenic_reserve",
+ "station": "synchrony:synchrony_hub:synchrony_hub",
+ "minutes": 46,
+ "max_ships": 1,
+ "sell": [
+  {
+   "item": "water_ice",
+   "min_price": 27
+  }
+ ],
+ "requires": {
+  "module": "ice_harvester_i"
+ }
+}

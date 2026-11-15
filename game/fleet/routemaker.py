@@ -466,13 +466,14 @@ def mine_candidates(world):
             jumps = world["chart"].jumps(field["system"], station["system"])
             if not book or jumps is None:
                 continue
-            income, parts, thin = 0.0, [], []
+            income, parts, thin, floors = 0.0, [], [], []
             for res in live:
                 units = cargo * res["richness"] / rich
                 sold, got, how = sell_into(world, base, res["id"], units)
                 if sold <= 0:
                     continue
                 income += got
+                floors.append({"item": res["id"], "min_price": max(1, int(0.8 * got / sold))})
                 parts.append("%s %d of %d units for %d cr (%s)" % (res["id"], sold, units, got, how))
                 if sold < units:
                     thin.append("%s: the bids take %d of %d units a load" % (res["id"], sold, units))
@@ -487,10 +488,10 @@ def mine_candidates(world):
                 if 0 < sold < 0.99 * hour:
                     thin.append("%s: the bids take %d of the %d units an hour brings" % (res["id"], sold, hour))
             if income > 0 and (best is None or per_hour > best[0]):
-                best = (per_hour, income - fuel, minutes, base, jumps, parts, thin)
+                best = (per_hour, income - fuel, minutes, base, jumps, parts, thin, floors)
         if best is None:
             continue
-        per_hour, per_run, minutes, base, jumps, parts, thin = best
+        per_hour, per_run, minutes, base, jumps, parts, thin, floors = best
         station = world["stations"][base]
         warnings = list(thin)
         low = [r["id"] for r in live if r["remaining"] < 10 * cargo * r["richness"] / rich]
@@ -508,13 +509,16 @@ def mine_candidates(world):
         cid = "mine-%s" % field["poi"].replace("_", "-")
         route = {"id": cid, "kind": "mine", "title": "%s: %s; sold at %s" % (field["name"], ", ".join(r["id"] for r in live), station["name"]),
                  "note": "Written by routemaker.py from the field's and the book's readings; an estimate of %d cr per ship-hour, not a measurement. A test: one ship."
-                         % per_hour, "belt": "%s:%s" % (field["system"], field["poi"]), "station": station["at"], "minutes": int(max(30, min(90, 2 * minutes))), "max_ships": 1}
+                         % per_hour, "belt": "%s:%s" % (field["system"], field["poi"]), "station": station["at"], "minutes": int(max(30, min(90, 2 * minutes))), "max_ships": 1,
+                 "sell": floors}
         if tool:
             route["requires"] = {"module": tool}
+        if lawless(world, field["system"]):
+            route.setdefault("requires", {})["empty_hold"] = True
         out.append(candidate(world, cid, "mine", route["title"], per_hour, per_run, minutes,
                              {"field": "%s:%s" % (field["system"], field["poi"]), "richness": {r["id"]: r["richness"] for r in live},
                               "left": {r["id"]: r["remaining"] for r in live}, "sold_at": base, "jumps": jumps, "a_load": parts},
-                             warnings + ["the mining loop stores what it mines: the sale is a circuit stop or a hand's work"], route=route, rid=rid))
+                             warnings, route=route, rid=rid))
     return out
 
 
@@ -689,6 +693,8 @@ def hunt_candidates(world):
                              "measurement. A test: one ship, the ranching rules kept." % (runs, per_hour),
                      "place": place, "species": [species], "sell_at": station["at"], "min_bid": floor, "kills": 4, "minutes": int(max(40, minutes + 15)),
                      "max_ships": 1, "min_creatures": 4}
+            if lawless(world, herd["system"]):               # beyond the police: no fight beside a foreign ship, nothing to lose aboard
+                route.update({"alone": True, "requires": {"empty_hold": True}})
             out.append(candidate(world, cid, "hunt", route["title"], per_hour, per_run, minutes,
                                  {"place": place, "herd": count, "hull": herd["hull"].get(species), "loot_a_kill": {k: round(v, 2) for k, v in drops.items()},
                                   "learned_from_runs": runs, "sold_at": base, "jumps": jumps, "four_kills": parts}, warnings, route=route, rid=rid))
@@ -704,6 +710,19 @@ def herds_named_in(world, text):
             if species.replace("_", "-") in text or species.replace("_", " ") in text:
                 found.append((count, "%d %s at %s:%s" % (count, species, herd["system"], herd["poi"])))
     return [line for _count, line in sorted(found, reverse=True)[:3]]
+
+
+def herds_for(world, text, kills, system):
+    """[(jumps, creatures, species, system, poi)] of the herds a text names that hold prey of 100 hull or less for `kills`
+    kills and two to spare, no pirate seen there: policed space first, then the nearest, then the largest."""
+    low, found = text.lower(), []
+    for herd in world["herds"]:
+        for species, count in herd["species"].items():
+            jumps = world["chart"].jumps(system, herd["system"])
+            if ((species.replace("_", "-") in low or species.replace("_", " ") in low) and count >= kills + 2
+                    and herd["hull"].get(species, 999) <= 100 and jumps is not None and not herd["pirates"]):
+                found.append((lawless(world, herd["system"]), jumps, -count, species, herd["system"], herd["poi"]))
+    return [(jumps, -count, species, where, poi) for _far, jumps, count, species, where, poi in sorted(found)]
 
 
 def mission_candidates(world):
@@ -722,7 +741,7 @@ def mission_candidates(world):
             if reward <= 0 or key in seen:
                 continue
             seen.add(key)
-            cost, jumps_total, asks, blockers, stops = 0.0, 0, [], [], []
+            cost, jumps_total, asks, blockers, stops, hunt_minutes = 0.0, 0, [], [], [], 0.0
             here = board["system"]
             for goal in mission.get("objectives") or []:
                 kind, item, qty = goal.get("type"), goal.get("item_id"), max(1, num(goal.get("quantity")))
@@ -751,7 +770,15 @@ def mission_candidates(world):
                     if not fields:
                         blockers.append("a field with %s" % item)
                 elif kind == "kill_creature":
-                    asks.append(str(goal.get("description") or "kill %d" % qty))
+                    text = str(goal.get("description") or "kill %d" % qty)
+                    spots = herds_for(world, text, qty, board["system"])
+                    asks.append(text + (". Herds: " + "; ".join("%d %s at %s:%s" % (s[1], s[2], s[3], s[4]) for s in spots[:4]) if spots else ""))
+                    if spots:
+                        stops.append(("hunt", "%s:%s" % (spots[0][3], spots[0][4]), spots[0][2], qty, 0))
+                        jumps_total += 2 * spots[0][0]
+                        hunt_minutes += 5.0 * qty + 2 * value(world, "leg_minutes")     # about five minutes a kill: two hand runs of 2026-11-15
+                    else:
+                        blockers.append("a herd of four or more for: %s" % text[:60])
                 elif kind in ("visit_system", "survey_system", "dock_at_base"):
                     asks.append(str(goal.get("description") or kind))
                     if kind == "survey_system":
@@ -775,7 +802,7 @@ def mission_candidates(world):
                         here = target
             back = world["chart"].jumps(here, board["system"]) or 0
             jumps = jumps_total + back
-            minutes = jumps * value(world, "jump_minutes") + (2 + len(stops)) * value(world, "dock_minutes") + 5
+            minutes = jumps * value(world, "jump_minutes") + (2 + len(stops)) * value(world, "dock_minutes") + 5 + hunt_minutes
             fuel = jumps * value(world, "fuel_per_jump") * value(world, "fuel_price")
             net = reward - cost - fuel
             title = str(mission.get("title") or mission.get("template_id") or "mission")
@@ -791,20 +818,25 @@ def mission_candidates(world):
             route = None
             buys = [s for s in stops if s[0] == "buy"]
             drops = [s for s in stops if s[0] in ("deliver", "dock")]
-            flyable = all(g.get("type") in ("deliver_item", "dock_at_base") for g in mission.get("objectives") or [])
-            if fixed and giver and not blockers and flyable and drops and all(world["stations"].get(s[1]) for s in buys + drops):
+            hunts = [s for s in stops if s[0] == "hunt"]
+            flyable = all(g.get("type") in ("deliver_item", "dock_at_base", "kill_creature") for g in mission.get("objectives") or [])
+            if fixed and giver and not blockers and flyable and (drops or hunts) and all(world["stations"].get(s[1]) for s in buys + drops):
                 plan = []
                 for _, where, item, qty, price in buys:
                     plan.append({"at": world["stations"][where]["at"], "skip_if_hold": {item: qty}, "buy": [{"item": item, "qty": qty, "max_price": int(price * 1.15) + 1, "one_time": True}]})
                 plan.append({"at": giver["at"], "accept": [{"template": mission["template_id"], "needs": {s[2]: s[3] for s in buys}}] if buys else [mission["template_id"]]})
+                if hunts:
+                    plan[-1]["hunt"] = [dict({"at": place, "species": [species], "kills": kills, "minutes": 35, "for": [title]},
+                                             **({"alone": True} if lawless(world, place.split(":")[0]) else {}))
+                                        for _, place, species, kills, _price in hunts]
                 for _, where, _item, _qty, _price in drops:
                     plan.append({"at": world["stations"][where]["at"], "redock": True})
-                if plan[-1]["at"] != giver["at"]:
+                if hunts or plan[-1]["at"] != giver["at"]:
                     plan.append({"at": giver["at"]})
                 route = {"id": cid, "kind": "circuit", "title": "%s: %d cr at %s" % (title, reward, giver["name"]),
                          "note": "Written by routemaker.py from the board and the order books: goods for about %d cr, reward %d cr. A test: one ship; whether the mission "
                                  "hands its goods out at the accept is not known until one accept with an empty hold." % (cost, reward),
-                         "once": True, "max_ships": 1, "one_time": [title], "stops": plan}
+                         "once": True, "max_ships": 1, "one_time": [title], "skip_if_booked": [title], "stops": plan}
                 if cost:
                     route["min_credits"] = int(cost) + 3000
             out.append(candidate(world, cid, "mission", "%s (%s)" % (title, base), 60 * net / max(minutes, 1), net, minutes,
@@ -836,6 +868,7 @@ def build(data, root, now, policed=None, look=None):
         world["wanted"] = {}
         rows = candidates(world)
     return {"written_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(now)), "what": "Ways to earn, computed from the fleet's own readings; estimates until flown",
+            "ammo": sorted(i for i, item in world["items"].items() if item.get("category") == "ammo"),
             "assumptions": world["assume"], "catalog": world["catalog_version"], "ladders_read": read,
             "read": {"fields": len(world["fields"]), "order_books": len(world["books"]), "boards": len(world["boards"]), "herds": len(world["herds"]),
                      "recipes": len(world["recipes"]), "runs": len(world["runs"])},
@@ -923,6 +956,11 @@ def main():
             now = time.time()
             fetched = refresh_catalog(data, now)
             book = build(data, ROOT, now, look=read_ladder)
+            ammo = Path(data) / "catalog" / "ammo.json"       # what counts as ammunition, for the dispatcher's `empty_hold`
+            if book["ammo"] and read_json(ammo, None) != book["ammo"]:
+                tmp = ammo.with_name("%s.%d.tmp" % (ammo.name, os.getpid()))
+                tmp.write_text(json.dumps(book["ammo"]), encoding="utf-8")
+                os.replace(tmp, ammo)
             path.parent.mkdir(parents=True, exist_ok=True)
             tmp = path.with_name("%s.%d.tmp" % (path.name, os.getpid()))
             tmp.write_text(json.dumps(book, separators=(",", ":")), encoding="utf-8")

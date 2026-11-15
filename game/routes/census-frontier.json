@@ -2,7 +2,7 @@
  "id": "census-frontier",
  "kind": "census",
  "title": "Read one lawless system around our space whole: deposits, creatures, stations, order books, mission boards",
- "note": "Kept by Oracle (orders F13). Since 2026-11-15 21:50 UTC, on Suggi's word, every division and the whole command group fly it: it stands in every plan before `park`. The list: the 27 systems within two jumps of our border, nearest first, then Atlas and Intercrus; widen it ring by ring. Lawless space: no police. A system where a ship of ours was lost leaves the list until Military has looked at it. No goods of value in the hold on the way out.",
+ "note": "Kept by Oracle (orders F13). Since 2026-11-15 21:50 UTC, on Suggi's word, every division and the whole command group fly it: it stands in every plan before `park`. The list: the 27 systems within two jumps of our border, nearest first, then Atlas and Intercrus, and LHS 1140 beside Antares for its station (Trade, requests.log ENT-045); widen it ring by ring. Lawless space: no police. A system where a ship of ours was lost leaves the list until Military has looked at it. No goods of value in the hold on the way out.",
  "systems": [
   "achernar",
   "ruchbah",
@@ -22,6 +22,7 @@
   "alnair",
   "amberfall",
   "antares",
+  "lhs_1140",
   "brachium",
   "coldwater",
   "gsc_0012",

@@ -152,6 +152,11 @@ def herd(data, route, now):
     except OSError:
         return None
     place = (read_json(path, {}).get("pois") or {}).get(poi) or {}
+    try:                                              # the place's own reading time: a hunter that left writes only its place
+        if now - calendar.timegm(time.strptime(str(place.get("read_at"))[:19], "%Y-%m-%dT%H:%M:%S")) > CENSUS_FRESH:
+            return None
+    except ValueError:
+        pass
     species = set(route.get("species") or [])
     return sum(1 for c in place.get("creatures") or [] if not species or c.get("species") in species)
 
@@ -186,6 +191,10 @@ def pick(pilot, plan, routes, state):
         if route.get("once") and done_once(route, [r for r in state["rows"] if r.get("route") == rid and r.get("pilot") == pilot["name"]]):
             continue
         mark = route["kind"] + " " + rid
+        if route.get("max_pilots"):                   # at most this many different pilots ever: those that flew it and those on it now
+            flew = {r.get("pilot") for r in state["rows"] if r.get("route") == rid} | {p for p, what in state["orders"].items() if what == mark}
+            if pilot["name"] not in flew and len(flew) >= route["max_pilots"]:
+                continue
         if route["kind"] == "census":                 # a census order names its system: it counts for the route that lists that system
             systems = set(route.get("systems") or [])
             flying = sum(1 for what in state["orders"].values() if what.startswith("census ") and what.split(" ", 1)[1] in systems)
@@ -197,6 +206,10 @@ def pick(pilot, plan, routes, state):
             continue
         need = (route.get("requires") or {}).get("module")
         if need and need not in pilot.get("modules", []):
+            continue
+        if (route.get("requires") or {}).get("empty_hold") and pilot.get("goods", 0) > 5:      # nothing to lose aboard (orders F13); five units count as nothing
+            continue
+        if (route.get("requires") or {}).get("without_module") in pilot.get("modules", []):     # the route fits this module: not for a pilot that has it
             continue
         if state["now"] < state["rest"].get(rid, 0):
             continue
@@ -222,11 +235,13 @@ def command(route, pilot, argument, root):
     if route["kind"] == "census":
         return base + [argument, "--stay", "--route", route["id"]]
     if route["kind"] == "mine":
-        return base + [route["belt"], route["station"], "--minutes", str(route.get("minutes", 45)), "--route", route["id"]]
+        sell = ",".join("%s:%d" % (s["item"], s["min_price"]) for s in route.get("sell") or [])
+        return base + [route["belt"], route["station"], "--minutes", str(route.get("minutes", 45)), "--route", route["id"]] + (["--sell-items", sell] if sell else [])
     system, poi = route["place"].split(":")
     out = base + [system, poi, "--kills", str(route.get("kills", 8)), "--minutes", str(route.get("minutes", 40)),
                   "--min-bid", str(route.get("min_bid", 100)), "--sell-at", route["sell_at"], "--route", route["id"]]
     out += ["--max-prey-hull", str(route["max_prey_hull"])] if route.get("max_prey_hull") else []
+    out += ["--alone"] if route.get("alone") else []
     return out + (["--species", ",".join(route["species"])] if route.get("species") else [])
 
 
@@ -256,6 +271,7 @@ def one_pass(root, data, dry_run, children):
     rows = run_rows(data)
     state = {"now": now, "data": data, "rows": rows, "orders": fresh_orders(data, now), "rest": resting(routes, rows, now), "booked": booked(data)}
     named = flagships(data)
+    ammo = set(read_json(Path(data) / "catalog" / "ammo.json", []) or [])      # written by routemaker.py from the game's catalog
     lines = []
     for ship in fleet.get("ships") or []:
         name = ship.get("name") or ""
@@ -263,7 +279,9 @@ def one_pass(root, data, dry_run, children):
             continue
         detail = read_json(Path(data) / "fleet" / "ships" / ship_file(name), {})
         pilot = {"name": name, "role": role_of(name, named), "credits": ship.get("credits", 0), "docked": bool(ship.get("docked")),
-                 "modules": [m.get("type") or m.get("type_id") for m in detail.get("modules") or [] if isinstance(m, dict)]}
+                 "modules": [m.get("type") or m.get("type_id") for m in detail.get("modules") or [] if isinstance(m, dict)],
+                 "goods": sum(int(c.get("quantity") or 0) for c in detail.get("cargo") or [] if isinstance(c, dict) and c.get("item") not in ammo)
+                 if isinstance(detail.get("cargo"), list) else int(ship.get("cargo_used") or 0)}
         route, argument = pick(pilot, plan, routes, state)
         if route is None:
             continue

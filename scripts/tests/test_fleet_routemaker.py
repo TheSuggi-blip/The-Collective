@@ -122,8 +122,9 @@ class CandidateTests(Tree):
         self.assertEqual(mine["basis"]["a_load"], ["ore 48 of 48 units for 576 cr (depth at the best price)", "dust 10 of 12 units for 30 cr (depth at the best price)"])
         self.assertIn("dust: the bids take 10 of 12 units a load", mine["warnings"])
         self.assertEqual((mine["route"]["belt"], mine["route"]["station"], mine["route"]["max_ships"]), ("mid:mid_belt", "mid:hub:mid_base", 1))
+        self.assertEqual(mine["route"]["sell"], [{"item": "ore", "min_price": 9}, {"item": "dust", "min_price": 2}])            # four fifths of what the bids pay now
         ice = self.one(book, "mine-wild-ice")
-        self.assertEqual(ice["route"]["requires"], {"module": "ice_harvester_i"})
+        self.assertEqual(ice["route"]["requires"], {"module": "ice_harvester_i", "empty_hold": True})                           # the harvester, and nothing to lose aboard
         self.assertTrue(any("lawless space: no police at wild" in w for w in ice["warnings"]))
         self.assertTrue(any("ice_harvester_i (base value 1000 cr)" in w for w in ice["warnings"]))
         for route in (mine["route"], ice["route"]):                                                                           # what it writes passes the route gate
@@ -167,6 +168,7 @@ class CandidateTests(Tree):
         hunt = self.one(book, "hunt-wild-cloud-glow-ray")
         self.assertEqual((hunt["basis"]["loot_a_kill"], hunt["basis"]["sold_at"], hunt["basis"]["jumps"]), ({"gel": 1.5}, "mid_base", 1))
         self.assertEqual((hunt["route"]["place"], hunt["route"]["species"], hunt["route"]["sell_at"], hunt["route"]["min_bid"]), ("wild:wild_cloud", ["glow_ray"], "mid:hub:mid_base", 240))
+        self.assertEqual((hunt["route"]["alone"], hunt["route"]["requires"]), (True, {"empty_hold": True}))                  # beyond the police
         unknown = self.one(book, "hunt-wild-cloud-odd-slug")
         self.assertEqual((unknown["per_ship_hour"], "route" in unknown), (0, False))
         self.assertIn("one test hunt", unknown["needs"])
@@ -180,6 +182,10 @@ class CandidateTests(Tree):
             {"template_id": None, "title": "Station need: gel", "rewards": {"credits": 9000}, "objectives": [
                 {"type": "deliver_item", "system_id": "home", "target_base_id": "home_base", "item_id": "gel", "quantity": 10}]},
             {"template_id": "far_look", "title": "Far Look", "rewards": {"credits": 500}, "objectives": [{"type": "visit_system", "description": "Visit Lost", "system_id": "lost"}]},
+            {"template_id": "first_hunt", "title": "First Hunt", "rewards": {"credits": 1000}, "objectives": [
+                {"type": "kill_creature", "description": "Hunt 3 Glow-Rays in a cloud", "quantity": 3}]},
+            {"template_id": "big_hunt", "title": "Big Hunt", "rewards": {"credits": 1000}, "objectives": [
+                {"type": "kill_creature", "description": "Hunt 4 Glow-Rays in a cloud", "quantity": 4}]},
             {"template_id": "unpaid", "title": "Unpaid", "rewards": {"credits": 0}, "objectives": []}]})
         self.put("fleet/onetime.json", [[1, "miner-1", "Say Hello", 4000], [2, "miner-1", "say_hello: goods bought", -100]])
         book = self.build()
@@ -192,6 +198,14 @@ class CandidateTests(Tree):
         need = self.one(book, "mission-station-need:-gel-home")
         self.assertIn("Seen: 5 glow_ray at wild:wild_cloud", need["basis"]["asks"][0])                                        # the catalog names the creature; our readings know a herd
         self.assertEqual((need["needs"], need["pilots_open"], "route" in need), ("a source of gel (a hunt: the herd is known)", None, False))
+        first = self.one(book, "mission-first-hunt-home")
+        self.assertEqual([s["at"] for s in first["route"]["stops"]], ["home:core:home_base", "home:core:home_base"])
+        self.assertEqual(first["route"]["stops"][0]["hunt"], [{"at": "wild:wild_cloud", "species": ["glow_ray"], "kills": 3, "minutes": 35, "for": ["First Hunt"], "alone": True}])
+        self.assertEqual((first["route"]["skip_if_booked"], first["basis"]["jumps"]), (["First Hunt"], 4))
+        (self.root / "routes" / (first["route"]["id"] + ".json")).write_text(json.dumps(first["route"]), encoding="ascii")
+        self.assertEqual([e for e in routes.check(str(self.root))[0] if "index.md" not in e], [])
+        big = self.one(book, "mission-big-hunt-home")                                                                       # five rays do not carry four kills and two to spare
+        self.assertEqual(("route" in big, big["needs"]), (False, "a herd of four or more for: Hunt 4 Glow-Rays in a cloud"))
         far = self.one(book, "mission-far-look-home")
         self.assertIn("a charted way to lost", far["needs"])
         self.assertFalse([c for c in book["candidates"] if "unpaid" in c["id"]])

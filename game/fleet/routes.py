@@ -75,6 +75,8 @@ def systems_of(route):
     places = []
     if route.get("kind") == "circuit":
         places += [str(s.get("at", "")) for s in route.get("stops") or [] if isinstance(s, dict)]
+        places += [str(step.get("at", "")) for s in route.get("stops") or [] if isinstance(s, dict)
+                   for key in ("mine", "hunt") for step in s.get(key) or [] if isinstance(step, dict)]
     places += [str(route.get(k, "")) for k in ("place", "sell_at", "belt", "station")]
     return [p.split(":")[0] for p in places if p] + list(route.get("systems") or [])
 
@@ -98,6 +100,11 @@ def check(root):
             for n, stop in enumerate(route.get("stops") or [], 1):
                 if not isinstance(stop, dict) or len(str(stop.get("at", "")).split(":")) != 3:
                     errors.append(where + "stop %d: `at` must be system:poi:base" % n)
+                    continue
+                for key in ("mine", "hunt"):
+                    for step in stop.get(key) or []:
+                        if not isinstance(step, dict) or len(str(step.get("at", "")).split(":")) != 2:
+                            errors.append(where + "stop %d: the `at` of a `%s` step must be system:poi" % (n, key))
         for key, parts in (("place", 2), ("belt", 2), ("sell_at", 3), ("station", 3)):
             if route.get(key) and len(str(route[key]).split(":")) != parts:
                 errors.append(where + "`%s` must have %d parts joined by a colon" % (key, parts))

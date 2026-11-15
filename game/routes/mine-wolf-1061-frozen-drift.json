@@ -1,0 +1,28 @@
+{
+ "id": "mine-wolf-1061-frozen-drift",
+ "kind": "mine",
+ "title": "Wolf 1061 Frozen Drift: water_ice, nitrogen_ice, deuterium_ice, methane_ice; sold at Node Alpha Processing Station",
+ "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 2926 cr per ship-hour, not a measurement. A test: one ship. Estimate of 2026-11-15 23:10 UTC from: {\"a_load\": [\"water_ice 27 of 27 units for 694 cr (depth at the best price)\", \"deuterium_ice 6 of 8 units for 1248 cr (depth at the best price)\", \"methane_ice 7 of 7 units for 276 cr (depth at the best price)\"], \"field\": \"wolf_1061:wolf_1061_frozen_drift\", \"jumps\": 3, \"left\": {\"deuterium_ice\": 4752, \"methane_ice\": 4000, \"nitrogen_ice\": 50000, \"water_ice\": 21518}, \"richness\": {\"deuterium_ice\": 14, \"methane_ice\": 13, \"n. Uncertain: deuterium_ice: the bids take 6 of 8 units a load; deuterium_ice: the bids take 6 of the 16 units an hour brings; lawless space: no police at wolf_1061; needs the module ice_harvester_i (base value 1000 cr), not the mining laser; the rate is measured with the laser on ore. In no plan: its Admiral adds it.",
+ "belt": "wolf_1061:wolf_1061_frozen_drift",
+ "station": "node_alpha:node_alpha_processing_station:node_alpha_processing_station",
+ "minutes": 60,
+ "max_ships": 1,
+ "sell": [
+  {
+   "item": "water_ice",
+   "min_price": 20
+  },
+  {
+   "item": "deuterium_ice",
+   "min_price": 166
+  },
+  {
+   "item": "methane_ice",
+   "min_price": 28
+  }
+ ],
+ "requires": {
+  "module": "ice_harvester_i",
+  "empty_hold": true
+ }
+}

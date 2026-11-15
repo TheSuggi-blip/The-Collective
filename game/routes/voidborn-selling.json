@@ -1,0 +1,50 @@
+{
+ "id": "voidborn-selling",
+ "kind": "circuit",
+ "title": "Market Participation: Selling: 1,000 cr once; ten liquid nitrogen bought and sold at The Experiment",
+ "note": "For the pilots that still hold the starter mission (ten units of anything sold on the exchange). Read 2026-11-15 22:23 UTC at The Experiment: liquid nitrogen on offer at 11 cr for 585 units, bid 2 cr for 500: ten units cost about 91 cr more than they bring, the mission pays 1,000 cr. A pilot that does not hold the mission passes every stop and buys nothing. Not flown yet: a test with one ship until its first RESULT line. The price limits are the stops'; when the offer is gone, pick the next item with `game/fleet/ledger.py prices` and view_market.",
+ "once": true,
+ "max_ships": 1,
+ "one_time": [
+  "Market Participation: Selling"
+ ],
+ "skip_if_booked": [
+  "market_participation_selling",
+  "Market Participation: Selling"
+ ],
+ "stops": [
+  {
+   "at": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+   "only_if_active": [
+    "Market Participation: Selling"
+   ],
+   "buy": [
+    {
+     "item": "liquid_nitrogen",
+     "qty": 10,
+     "max_price": 14,
+     "one_time": true
+    }
+   ]
+  },
+  {
+   "at": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+   "only_if_active": [
+    "Market Participation: Selling"
+   ],
+   "sell": [
+    {
+     "item": "liquid_nitrogen",
+     "min_price": 1,
+     "all": true
+    }
+   ]
+  },
+  {
+   "at": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+   "only_if_active": [
+    "Market Participation: Selling"
+   ]
+  }
+ ]
+}

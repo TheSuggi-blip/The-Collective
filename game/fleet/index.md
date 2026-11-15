@@ -8,7 +8,7 @@ author: Unity
 # index.md -- The Fleet's Scripts
 
 Built by `python3 -B scripts/fleet-index.py` from the docstring of every script in this
-folder; never edited by hand. Scripts listed: 13.
+folder; never edited by hand. Scripts listed: 14.
 
 - Run a script from the repository root: `python3 -I -B game/fleet/<script> <arguments>`,
   the arguments as listed under "How to Call Each".
@@ -33,6 +33,7 @@ folder; never edited by hand. Scripts listed: 13.
 | `division.py` | Who commands which ship, whose plan is whose, and the check every fleet script runs before it drives a ship. | By hand |
 | `gate.py` | Small client for the fleet engine's gate, with the division's lock. | By hand |
 | `hunt.py` | Hunt grazers at one place, loot the carcasses and sell what the kills bring. | Runner (`hunt` routes) |
+| `inbox.py` | Read what other pilots write to our ships and say near them, keep every message once, and file the ones that are for us. | Service |
 | `ledger.py` | Keep the fleet's books: what we own and where it lies, and how every order book moved. | Service |
 | `loot_own.py` | Loot every carcass and wreck at the pilot's place that the pilot itself killed. | By hand |
 | `mine.py` | One pilot mines at one field for a set time, through the engine's mining loop. | Runner (`mine` routes) |
@@ -110,6 +111,8 @@ Run by hand.
 gate.py get <path>
 gate.py raw <pilot> <action> ['<json params>'] [toolGroup]
 gate.py goal <pilot> <type> ['<json options>']
+gate.py goal <pilot> complete-mission '<json options>' --one-time "<mission title>"
+                                  a hand-in whose reward is paid once: booked as one-time money, as a runner books it
 gate.py post <path> '<json body>'
 gate.py patch|delete <path> ['<json body>']
 gate.py hold <pilot>
@@ -126,6 +129,24 @@ A runner: the dispatcher starts it for a route of the kind `hunt`; by hand only 
 hunt.py <pilot> <system_id> <poi> [--species a,b] [--kills N] [--minutes M]
     [--min-bid CR] [--sell-at system:poi:base] [--max-prey-hull N]
     [--route ID] [--keep]
+```
+
+### `inbox.py`
+
+Read what other pilots write to our ships and say near them, keep every message once,
+and file the ones that are for us.
+
+A service: it runs by itself and is never started a second time.
+
+```
+inbox.py                          run forever (the service `inbox`)
+inbox.py --once                   one pass over every pilot and every system, then stop
+inbox.py show [--to-us] [--channel private|system|local|faction] [--last N]
+                                  the newest messages (default 20), oldest first
+inbox.py new                      the messages to us not reported yet, and mark them reported
+inbox.py contacts [--commit]      write communications/contacts/<tag>.log from the messages to us
+--data <dir>                      the unit's data folder (default /srv/collective/data)
+--root <dir>                      the repository (default: the one this script lies in)
 ```
 
 ### `ledger.py`
@@ -161,7 +182,7 @@ One pilot mines at one field for a set time, through the engine's mining loop.
 A runner: the dispatcher starts it for a route of the kind `mine`; by hand only for a test with one free pilot.
 
 ```
-mine.py <pilot> <system:poi> <system:poi:base> [--minutes M] [--sell] [--route ID]
+mine.py <pilot> <system:poi> <system:poi:base> [--minutes M] [--sell-items item:min_price,...] [--route ID]
 ```
 
 ### `route_run.py`

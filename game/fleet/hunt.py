@@ -41,7 +41,15 @@ station of ours bids for stay aboard; the rest (not its ammo) goes into
 its storage there. --keep skips selling and stashing.
 While it runs the pilot carries an order file (the station shows it at
 work). Prints one line per step and a RESULT line, and appends one row to
-data/routes/runs.jsonl under the id given by --route (default hunt-<poi>)."""
+data/routes/runs.jsonl under the id given by --route (default hunt-<poi>).
+--alone: before every fight it looks who is at the place; where a ship that
+is not ours or a pirate stands it does not fight and leaves (beyond policed
+space a herd is shared with whoever comes: orders F2, never first, flee).
+--step: the hunt is one step of a circuit (route_run.py, a stop's `hunt`):
+the circuit's order file stands, and there is no station trip, no sale and
+no row of its own; it prints a STEP line. When it leaves, the runner writes
+the herd it sees into data/wildlife/ (the dispatcher's count), and the row
+records the hull before, after and at its lowest."""
 import atexit
 import fcntl
 import glob
@@ -69,6 +77,9 @@ max_minutes = int(args[args.index('--minutes') + 1]) if '--minutes' in args else
 min_bid = int(args[args.index('--min-bid') + 1]) if '--min-bid' in args else 50
 sell_at = args[args.index('--sell-at') + 1].split(':') if '--sell-at' in args else ['nexus_prime', 'the_core', 'central_nexus']
 route_id = args[args.index('--route') + 1] if '--route' in args else 'hunt-' + poi
+STEP = '--step' in args                      # a step of a circuit: the order file, the station and the row are the circuit's
+ALONE = '--alone' in args                    # no fight where a ship that is not ours stands
+LOW = [100]                                  # our hull at its lowest in this run, percent
 max_prey_hull = int(args[args.index('--max-prey-hull') + 1]) if '--max-prey-hull' in args else 100
 MARKET = '/srv/collective/data/market/'
 ORDER = f'/srv/collective/data/fleet/orders/{pilot}.json'
@@ -200,6 +211,38 @@ def ammo_ids():
     return {m.get('loaded_ammo_id') for m in body(raw('get_ship')).get('modules') or [] if isinstance(m, dict) and m.get('loaded_ammo_id')}
 
 
+def own_names():
+    """The pilots of our fleet; an unreadable fleet file counts every pilot as a stranger (the hunt then leaves)."""
+    try:
+        return {s.get('name') for s in json.load(open('/srv/collective/data/fleet/fleet.json', encoding='utf-8')).get('ships') or []}
+    except (OSError, ValueError):
+        return set()
+
+
+def save_herd(near):
+    """Write the creatures of this place, as the runner sees them now, into the wildlife file the dispatcher counts from."""
+    if not isinstance(near, dict) or near.get('poi_id') not in (None, poi) or not isinstance(near.get('creatures'), list):
+        return
+    path = f'/srv/collective/data/wildlife/{system_id}.json'
+    try:
+        wild = json.load(open(path, encoding='utf-8'))
+    except (OSError, ValueError):
+        wild = {'system': system_id, 'pois': {}}
+    if not isinstance(wild.get('pois'), dict):
+        wild['pois'] = {}
+    place = wild['pois'].setdefault(poi, {})
+    place.update({'read_at': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()), 'source': 'hunt runner, on leaving',
+                  'creatures': [{k: c.get(k) for k in ('species', 'name', 'role', 'hull', 'max_hull', 'in_combat')} for c in near['creatures'] if isinstance(c, dict)],
+                  'pirates': near.get('pirate_count') or 0, 'pilots': near.get('count') or 0})
+    try:
+        tmp = f'{path}.{os.getpid()}.tmp'
+        with open(tmp, 'w', encoding='utf-8') as fh:
+            json.dump(wild, fh, separators=(',', ':'))
+        os.replace(tmp, path)
+    except OSError as e:
+        say(f'herd not written: {e}')
+
+
 def in_battle():
     st = raw('status', group='spacemolt_battle')
     return bool(body(st).get('is_participant')), text(st)
@@ -223,6 +266,7 @@ def fight():
         pct = lambda value: int(value.rstrip('%')) if value.rstrip('%').isdigit() else 100
         own = next((c for c in cells if c[0] == pilot), None)
         own_hull, own_shield = (pct(own[6]), pct(own[7])) if own else (100, 100)       # the battle's own figures: fresh every tick
+        LOW[0] = min(LOW[0], own_hull)
         prey_hull = max([pct(c[6]) for c in cells if c[1] == 'creature'] or [0])
         if own_hull < 60 or (own_shield < 15 and prey_hull > 40):
             say(f'hull {own_hull}%, shield {own_shield}%, prey {prey_hull}%: fleeing')
@@ -246,11 +290,13 @@ def fight():
 
 
 before_credits, before_cargo = credits(), cargo()
+HULL_BEFORE, OWN, notes = hull()[0], own_names(), []
 if not combat_mode('external'):
     sys.exit('the engine did not take the combat mode; no hunt')
 kills, started, hunt_minutes = 0, time.time(), 0.0
-order('hunt ' + route_id)
-atexit.register(order_done)
+if not STEP:
+    order('hunt ' + route_id)
+    atexit.register(order_done)
 AMMO = ammo_ids()
 if goal('navigate-to-system', {'targetSystemId': system_id}) and goal('go-to-poi', {'targetPoiId': poi}):
     arrived = time.time()
@@ -269,6 +315,11 @@ if goal('navigate-to-system', {'targetSystemId': system_id}) and goal('go-to-poi
             say('already in a battle: taking it up')
         else:
             near = body(raw('get_nearby'))
+            others = sorted(str(row.get('username')) for row in near.get('nearby') or [] if isinstance(row, dict) and row.get('username') and row.get('username') not in OWN)
+            if ALONE and (others or near.get('pirate_count')):
+                say(f'not alone here: {others[:4]}, pirates {near.get("pirate_count") or 0}: no fight, leaving')
+                notes.append('left: a ship that is not ours was at the place')
+                break
             prey = [c for c in near.get('creatures') or [] if isinstance(c, dict) and c.get('role') == 'grazer' and not c.get('in_combat')
                     and (species is None or c.get('species') in species) and (c.get('max_hull') or c.get('hull') or 0) <= max_prey_hull]
             if not prey:
@@ -298,10 +349,14 @@ if goal('navigate-to-system', {'targetSystemId': system_id}) and goal('go-to-poi
             break
     if not in_battle()[0]:
         kills += loot_own()                          # nothing of ours is left behind
+        save_herd(body(raw('get_nearby')))           # the herd as we leave it: what the dispatcher counts for the next hunter
     hunt_minutes = (time.time() - arrived) / 60
 combat_mode('flee')
 goods = {k: v - before_cargo.get(k, 0) for k, v in cargo().items() if v - before_cargo.get(k, 0) > 0}
 say(f'goods from this hunt: {goods}')
+if STEP:
+    print(f'STEP {pilot}: kills {kills} in {hunt_minutes:.0f} min at {poi} | goods {goods} | lowest hull {LOW[0]}% | {"; ".join(notes) or "no notes"}', flush=True)
+    sys.exit(0)
 sold = {}
 if goal('prepare-at-station', {'systemId': sell_at[0], 'poiId': sell_at[1], 'baseId': sell_at[2], 'refuel': True}) and '--keep' not in args:
     items = [i for i in (body(raw('view_market', group='spacemolt_market')).get('items') or []) if isinstance(i, dict)]
@@ -350,8 +405,8 @@ try:
         fh.write(json.dumps({'route': route_id, 'kind': 'hunt', 'pilot': pilot, 'started': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(started)),
                              'minutes': round((time.time() - started) / 60, 1), 'credits_before': before_credits, 'credits_after': after,
                              'delta': after - before_credits, 'one_time': 0, 'kills': kills, 'goods': goods, 'sold': {k: list(v) for k, v in sold.items()},
-                             'notes': []}, separators=(',', ':')) + '\n')
+                             'hull_before': HULL_BEFORE, 'hull_after': hull()[0], 'lowest_hull_pct': LOW[0], 'notes': notes}, separators=(',', ':')) + '\n')
 except OSError as e:
     say(f'run row not written: {e}')
 print(f'RESULT {pilot}: kills {kills} in {hunt_minutes:.0f} min at {poi} | goods {goods} | sold at {sell_at[2]} (units, bid, credits received) {sold} '
-      f'| credits {before_credits} -> {after} ({after - before_credits:+d}) | whole trip {(time.time() - started) / 60:.0f} min', flush=True)
+      f'| credits {before_credits} -> {after} ({after - before_credits:+d}) | whole trip {(time.time() - started) / 60:.0f} min | lowest hull {LOW[0]}%{" | " + "; ".join(notes) if notes else ""}', flush=True)

@@ -8,13 +8,16 @@ the hold fresh; `release` ends it; it dies 20 minutes after the last command.
 
 Never sent for an Admiral, whatever the pilot: the auth tools (a new pilot is Suggi's
 word, orders F5), a faction command that changes anything (the faction is the Fleet
-Admiral's, F11), `self_destruct`, and any path of the engine but a pilot's raw, goal
-and loop.
+Admiral's, F11), a word to another player (chat, the forum, a petition, a status:
+orders F4), `self_destruct`, and any path of the engine but a pilot's raw, goal and
+loop.
 
 Usage:
   gate.py get <path>
   gate.py raw <pilot> <action> ['<json params>'] [toolGroup]
   gate.py goal <pilot> <type> ['<json options>']
+  gate.py goal <pilot> complete-mission '<json options>' --one-time "<mission title>"
+                                    a hand-in whose reward is paid once: booked as one-time money, as a runner books it
   gate.py post <path> '<json body>'
   gate.py patch|delete <path> ['<json body>']
   gate.py hold <pilot>
@@ -66,6 +69,10 @@ def hold_file(pilot):
     return os.path.join(division.DATA, 'fleet', 'orders', pilot + '.json')
 
 
+SPEAKS = {'chat', 'petition', 'set_status', 'forum_create_thread', 'forum_reply', 'forum_edit_thread', 'forum_edit_reply',
+          'forum_delete_thread', 'forum_delete_reply', 'forum_upvote'}      # a word to other players
+
+
 def forbidden(group, action):
     """Why an Admiral's hand may not send this command; '' when it may."""
     kind, name = division.member()
@@ -75,6 +82,8 @@ def forbidden(group, action):
         return 'the auth tools are the Fleet Admiral\'s: a new pilot is Suggi\'s word (orders F5)'
     if group == 'spacemolt_faction' and not is_read(action):
         return 'the faction is the Fleet Admiral\'s, on Suggi\'s word (orders F11)'
+    if action in SPEAKS:
+        return 'a word to another player is the Fleet Admiral\'s, on Suggi\'s word (orders F4)'
     if action == 'self_destruct':
         return 'no ship of ours is destroyed by its own hand'
     return ''
@@ -106,6 +115,23 @@ def release(pilot):
     return '%s carries no hand hold of yours (%s)' % (pilot, what or 'no order file')
 
 
+def book_onetime(pilot, title, amount):
+    """One row in data/fleet/onetime.json, under its lock: the collector keeps this money out of the steady income."""
+    import fcntl
+    path = os.path.join(division.DATA, 'fleet', 'onetime.json')
+    with open(path + '.lock', 'w') as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        try:
+            rows = json.load(open(path, encoding='utf-8'))
+        except (OSError, ValueError):
+            rows = []
+        rows.append([int(time.time()), pilot, title, amount])
+        tmp = '%s.%d.tmp' % (path, os.getpid())
+        with open(tmp, 'w', encoding='utf-8') as fh:
+            json.dump(rows[-5000:], fh, separators=(',', ':'))
+        os.replace(tmp, path)
+
+
 def engine_only():
     kind, name = division.member()
     if not (kind == 'service' or name == 'Unity'):
@@ -114,6 +140,12 @@ def engine_only():
 
 def main():
     args = sys.argv[1:]
+    once = ''
+    if '--one-time' in args:
+        at = args.index('--one-time')
+        once, args = (args[at + 1] if at + 1 < len(args) else ''), args[:at] + args[at + 2:]
+        if not once or len(args) < 3 or args[0] != 'goal' or args[2] != 'complete-mission':
+            sys.exit('gate.py: --one-time "<mission title>" goes with `goal <pilot> complete-mission` only')
     verb = args[0] if args else ''
     if verb == 'get' and len(args) == 2:
         status, text = call('get', args[1])
@@ -127,6 +159,11 @@ def main():
         take(args[1])
         options = json.loads(args[3]) if len(args) > 3 else {}
         status, text = call('post', f'/accounts/{q(args[1])}/goal', {'type': args[2], 'options': options})
+        if once:
+            paid = re.search(r'\+([\d,]+) credits', text) if status == 200 else None
+            if paid:
+                book_onetime(args[1], once, int(paid.group(1).replace(',', '')))
+            print('one-time money booked: +%s cr, %s' % (paid.group(1), once) if paid else 'not booked as one-time money: the answer names no credits')
     elif verb in ('post', 'patch', 'delete') and len(args) >= 2:
         body = json.loads(args[2]) if len(args) > 2 else (None if verb == 'delete' else {})
         found = ACCOUNT.match(args[1])

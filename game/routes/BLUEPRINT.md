@@ -55,6 +55,9 @@ the scripts in `game/fleet/` fly them; nobody retypes a route into a chat.
 | `max_ships` | At most this many pilots on it at one time |
 | `min_credits` | A pilot with fewer credits is not sent |
 | `requires.module` | Only a pilot with this module fitted is sent |
+| `max_pilots` | At most this many different pilots ever fly it (those that flew it and those on it now): for a route that buys a tool not every ship needs |
+| `requires.without_module` | Only a pilot that does not carry this module is sent: for a route that fits it |
+| `requires.empty_hold` | true: only a pilot with nothing aboard but ammunition and at most five units of goods is sent. For a route beyond policed space (orders F13): a ship lost there loses its hold |
 | `status` | `off`: written down, not flown |
 | `park` | true: the route that docks a ship and lets it wait. Given to a pilot in space only; the last route of every plan |
 | `skip_if_booked` | Titles of one-time rewards: a pilot that has one of them booked is not sent |
@@ -64,10 +67,10 @@ the scripts in `game/fleet/` fly them; nobody retypes a route into a chat.
 
 | Kind | Fields | The runner does |
 |---|---|---|
-| `circuit` | `stops`, `one_time` | Docks at each stop and there, in this order: hands in finished missions, `redock`, `store`, `sell`, `buy`, `accept`; saves the order book and the board |
-| `hunt` | `place` (system:poi), `species`, `sell_at` (system:poi:base), `min_bid`, `kills`, `minutes`, `min_creatures`, `rest_minutes`, `max_prey_hull` (default 100) | Hunts grazers of the species, loots its own carcasses, sells what a bid of `min_bid` or more takes |
+| `circuit` | `stops`, `one_time` | Docks at each stop and there, in this order: hands in finished missions, `redock`, `store`, `sell`, `buy`, `fit`, `accept`, `mine`, `hunt`; saves the order book and the board |
+| `hunt` | `place` (system:poi), `species`, `sell_at` (system:poi:base), `min_bid`, `kills`, `minutes`, `min_creatures`, `rest_minutes`, `max_prey_hull` (default 100), `alone` | Hunts grazers of the species, loots its own carcasses, sells what a bid of `min_bid` or more takes. `alone` true: before every fight it looks who is at the place and leaves without a fight when a ship that is not ours or a pirate stands there; set it on every hunt beyond policed space. On leaving it writes the herd it sees for the dispatcher's count, and its row records the hull before, after and at its lowest |
 | `census` | `systems`, `every_minutes` | Reads the stalest system whole: deposits, creatures, order book, mission board |
-| `mine` | `belt` (system:poi), `station` (system:poi:base), `minutes` | Runs the engine's mining loop for the time; the ore goes into storage |
+| `mine` | `belt` (system:poi), `station` (system:poi:base), `minutes`, `sell` | Runs the engine's mining loop for the time; the ore goes into storage at the station. With `sell` (a list of `item`, `min_price`) the run ends with a sale: the pilot docks at the station, sells those goods from its hold and its storage there into the bids at `min_price` or more, the book read before every sale, and stores the rest of its hold |
 
 A stop of a circuit:
 
@@ -78,10 +81,12 @@ A stop of a circuit:
 | `only_if_active` | Skip the stop unless one of these missions is still open |
 | `redock` | Undock and dock again: a delivery counts on docking |
 | `store` | Goods moved from the hold into the pilot's storage here |
-| `sell` | `item`, `min_price`: sold only into a bid at that price or more |
+| `sell` | `item`, `min_price`: sold only into a bid at that price or more, and no more units than stand at that best price. `all` true: every unit, down the bid's lower levels too; only for a mission that counts units sold |
 | `buy` | `item`, `qty` (units wanted in the hold), `max_price`; never under the wallet floor of 3,000 cr (orders F7). `one_time`: goods for a one-time mission; their cost is booked against its reward |
+| `fit` | A list of `module`, `max_price`: a pilot that does not carry the module buys one here and fits it (`install_mod`); never under the wallet floor |
 | `accept` | A template id, or `template` with `needs`: accepted only with those goods aboard |
 | `mine` | A list of `at` (system:poi), `for` (mission titles), `minutes`: after the station's work the pilot mines there with the engine's loop until the named missions' objectives are done. For missions that count units mined |
+| `hunt` | A list of `at` (system:poi), `species`, `kills`, `minutes`, `for` (mission titles), `alone`: after the station's work the pilot hunts there with the rules of `hunt.py` (grazers of 100 hull or less, flee under 60% hull or when a ship joins) until the named missions' objectives are done, at most twice; the next stop hands the mission in. For missions that count kills |
 
 `one_time` lists the mission titles whose reward is seed money: the
 runner books them so that CPH counts recurring income only.

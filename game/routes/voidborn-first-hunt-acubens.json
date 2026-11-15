@@ -1,0 +1,38 @@
+{
+ "id": "voidborn-first-hunt-acubens",
+ "kind": "circuit",
+ "title": "First Hunt: Belt-Grazers: 1,000 cr once and 50 Weapons XP; three belt-grazers at Acubens Shadow Pocket",
+ "note": "Accept at Node Beta Industrial Station, three belt-grazers (60 hull) at acubens:acubens_shadow_pocket (1 jump(s)) with the rules of hunt.py, hand in where accepted. Flown by hand twice by Military on 2026-11-15: 25 minutes, +922 cr after fuel, no damage (game/routes/guidebook/military.md). The `hunt` step of the circuit runner is new: a test with one ship until its first RESULT line. One hunter per herd; three herds, three routes.",
+ "once": true,
+ "max_ships": 1,
+ "one_time": [
+  "First Hunt: Belt-Grazers"
+ ],
+ "skip_if_booked": [
+  "First Hunt: Belt-Grazers"
+ ],
+ "stops": [
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "accept": [
+    "first_hunt_belt_grazers"
+   ],
+   "hunt": [
+    {
+     "at": "acubens:acubens_shadow_pocket",
+     "species": [
+      "belt_grazer"
+     ],
+     "kills": 3,
+     "minutes": 35,
+     "for": [
+      "First Hunt: Belt-Grazers"
+     ]
+    }
+   ]
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station"
+  }
+ ]
+}

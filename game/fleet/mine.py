@@ -5,7 +5,11 @@ WHAT: starts the engine's mining loop (mine until the hold is full, fly to the
       station, put the ore into the pilot's storage there, fly back), lets it
       run for --minutes, stops it, and waits until the pilot is docked or still.
       Mining trains the Mining skill and flying trains Piloting; the ore stays
-      in storage for crafting or a later sale (--sell sells it into the bids).
+      in storage for crafting or a later sale. With --sell-items the run ends
+      with a sale: the pilot docks at the station, sells the named goods from
+      its hold and from its storage there into the bids that stand at the
+      named price or more (the book is read before every sale, and no unit
+      goes under the price), and puts the rest of its hold into storage.
 RULES:
   - Stops at once when data/fleet/STOP appears.
   - The loop is the engine's: this script only starts and stops it and keeps the
@@ -13,7 +17,7 @@ RULES:
 WHY:  a ship without paying work still earns skill, and its ore feeds the workshop.
 
 USAGE:
-  mine.py <pilot> <system:poi> <system:poi:base> [--minutes M] [--sell] [--route ID]
+  mine.py <pilot> <system:poi> <system:poi:base> [--minutes M] [--sell-items item:min_price,...] [--route ID]
 
 Writes one row to data/routes/runs.jsonl (minutes, credits before and after, ore mined).
 The wallet is read from the engine's answer for the account (state.credits), the ore
@@ -48,6 +52,69 @@ def ore_of(ship):
     """Units mined so far in the collector's file of one ship, or None when it holds no count."""
     value = ((ship or {}).get("stats") or {}).get("ore_mined")
     return int(value) if isinstance(value, (int, float)) and not isinstance(value, bool) else None
+
+
+def sell_at_station(call, say, quoted, station, wanted, notes):
+    """Dock at the route's station; sell each wanted (item, min_price) from the hold, then from the storage there, into the
+    bids at min_price or more; store the rest of the hold. Returns {item: [units, credits]}."""
+    def raw(action, params, group="spacemolt"):
+        return call("POST", "/accounts/%s/raw" % quoted, {"toolGroup": group, "action": action, "params": params})[1]
+
+    def content(answer):
+        found = answer.get("structuredContent") if isinstance(answer, dict) else None
+        return found if isinstance(found, dict) else {}
+
+    def hold():
+        rows = call("GET", "/accounts/%s/state/cargo" % quoted)[1]
+        return {r.get("item_id"): r.get("quantity") or 0 for r in (rows if isinstance(rows, list) else []) if isinstance(r, dict)}
+
+    for _ in range(3):
+        status, answer = call("POST", "/accounts/%s/goal" % quoted, {"type": "prepare-at-station", "options": {
+            "systemId": station[0], "poiId": station[1], "baseId": station[2], "refuel": True}}, timeout=900)
+        if status == 200 and answer.get("success"):
+            break
+        time.sleep(15)
+    else:
+        notes.append("not docked for the sale")
+        return {}
+    wallet = lambda: credits_of(call("GET", "/accounts/" + quoted)[1]) or 0
+    sold = {}
+    for item, floor in wanted:
+        for _ in range(4):                               # the hold first, then the storage; the book is read before every sale
+            stored = {str(i.get("item_id")): int(i.get("quantity") or 0)
+                      for i in content(raw("view", {"station_id": station[2]}, "spacemolt_storage")).get("items") or [] if isinstance(i, dict)}
+            have = hold().get(item, 0) or stored.get(item, 0)
+            rows = content(raw("view_market", {"item_id": item}, "spacemolt_market")).get("items") or []
+            bids = (rows[0].get("buy_orders") if rows and isinstance(rows[0], dict) else None) or []
+            levels = [(o.get("price_each") or o.get("price") or 0, o.get("quantity") or 0) for o in bids if isinstance(o, dict)]
+            units = int(min(have, sum(q for p, q in levels if p >= floor)))
+            if units <= 0:
+                if have:
+                    say("%s: %d units, no bid at %d cr or more here (best %s): kept" % (item, have, floor, max([p for p, _q in levels] or [0])))
+                break
+            before = wallet()
+            raw("sell", {"item_id": item, "quantity": units})
+            time.sleep(11)
+            got = wallet() - before
+            say("sold %d %s: %+d cr" % (units, item, got))
+            if got <= 0:
+                notes.append("%s: a sale brought nothing" % item)
+                break
+            sold[item] = [sold.get(item, [0, 0])[0] + units, sold.get(item, [0, 0])[1] + got]
+    try:
+        with open(os.path.join(DATA, "catalog", "ammo.json"), encoding="utf-8") as handle:
+            ammo = set(json.load(handle))
+    except (OSError, ValueError):
+        ammo = set()
+    stashed = {}
+    for item, units in hold().items():                   # the rest goes into storage here: the hold is free for the next work
+        if units and item not in ammo:
+            if "error" not in raw("deposit", {"item_id": item, "quantity": units, "target": "self", "source": "cargo"}, "spacemolt_storage"):
+                stashed[item] = units
+            time.sleep(11)
+    if stashed:
+        say("stored at %s: %s" % (station[2], stashed))
+    return sold
 
 
 def option(args, name, default):
@@ -127,6 +194,10 @@ def main():
         if not account.get("hasExecutingGoal"):
             break
         time.sleep(15)
+    sold = {}
+    wanted = [(pair.split(":")[0], int(pair.split(":")[1])) for pair in option(args, "--sell-items", "").split(",") if pair.count(":") == 1]
+    if wanted and "loop not started" not in notes and not os.path.exists(os.path.join(DATA, "fleet", "STOP")):
+        sold = sell_at_station(call, say, quoted, station, wanted, notes)
     credits_after, ore_after = numbers()
     took = (time.time() - started) / 60
     if credits_before is None or credits_after is None:
@@ -135,13 +206,14 @@ def main():
     ore = None if ore_before is None or ore_after is None else ore_after - ore_before
     row = {"route": route_id, "kind": "mine", "pilot": pilot, "started": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(started)), "minutes": round(took, 1),
            "credits_before": credits_before, "credits_after": credits_after, "delta": delta, "one_time": 0,
-           "ore": ore, "notes": notes}
+           "ore": ore, "sold": sold, "notes": notes}
     os.makedirs(os.path.join(DATA, "routes"), exist_ok=True)
     with open(os.path.join(DATA, "routes", "runs.jsonl"), "a", encoding="utf-8") as handle:
         fcntl.flock(handle, fcntl.LOCK_EX)
         handle.write(json.dumps(row, separators=(",", ":")) + "\n")
-    print("RESULT %s: mined %s ore at %s in %.0f min | credits %s -> %s (%+d) | %s" % (
-        pilot, "an unread amount of" if ore is None else ore, belt[1], took, credits_before, credits_after, delta, "; ".join(notes) or "no notes"), flush=True)
+    print("RESULT %s: mined %s ore at %s in %.0f min | sold (units, credits) %s | credits %s -> %s (%+d) | %s" % (
+        pilot, "an unread amount of" if ore is None else ore, belt[1], took, sold or "nothing", credits_before, credits_after, delta,
+        "; ".join(notes) or "no notes"), flush=True)
     return 0
 
 

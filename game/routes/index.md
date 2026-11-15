@@ -16,22 +16,44 @@ task one pilot carries out by itself; its file is `game/routes/<id>.json`
 | [census-frontier](census-frontier.json) | census | Read one lawless system around our space whole: deposits, creatures, stations, order books, mission boards | up to 12 ships | TBD | TBD | TBD | TBD | -- |
 | [census-voidborn](census-voidborn.json) | census | Read one Voidborn system whole: deposits, creatures, order book, mission board | up to 3 ships | 37 | 7 | -70 | -550 | 2026-11-15 |
 | [first-survey](first-survey.json) | circuit | Signal Propagation Survey: dock at the five other Voidborn stations (20,000 cr) | once per pilot, off | TBD | TBD | TBD | TBD | -- |
+| [fit-ice-harvester](fit-ice-harvester.json) | circuit | Fit an Ice Harvester I at Central Nexus: the tool every ice field needs | once per pilot, up to 2 ships | TBD | TBD | TBD | TBD | -- |
+| [fit-ice-harvester-guard](fit-ice-harvester-guard.json) | circuit | Fit an Ice Harvester I at Central Nexus: the tool every ice field needs | once per pilot, up to 2 ships | TBD | TBD | TBD | TBD | -- |
 | [park](park.json) | circuit | Dock at Central Nexus and wait there: a docked ship costs nothing | the park route | TBD | TBD | TBD | TBD | -- |
 | [voidborn-concurrent](voidborn-concurrent.json) | circuit | Concurrent Approval: accept at Central Nexus, deliver two neural soma to Node Beta (3,000 cr once) | once per pilot | TBD | TBD | TBD | TBD | -- |
+| [voidborn-first-hunt-acubens](voidborn-first-hunt-acubens.json) | circuit | First Hunt: Belt-Grazers: 1,000 cr once and 50 Weapons XP; three belt-grazers at Acubens Shadow Pocket | once per pilot, up to 1 ships | TBD | TBD | TBD | TBD | -- |
+| [voidborn-first-hunt-gsc](voidborn-first-hunt-gsc.json) | circuit | First Hunt: Belt-Grazers: 1,000 cr once and 50 Weapons XP; three belt-grazers at Spacetime Seep | once per pilot, up to 1 ships | TBD | TBD | TBD | TBD | -- |
+| [voidborn-first-hunt-nexus](voidborn-first-hunt-nexus.json) | circuit | First Hunt: Belt-Grazers: 1,000 cr once and 50 Weapons XP; three belt-grazers at Material Harvesters | once per pilot, up to 1 ships | TBD | TBD | TBD | TBD | -- |
 | [voidborn-first-steps](voidborn-first-steps.json) | circuit | First Steps in the Void for a pilot that holds it: mine 15 carbon ore at Acubens Belt, hand in at Central Nexus | once per pilot, up to 2 ships, off | TBD | TBD | TBD | TBD | -- |
 | [voidborn-mining-missions](voidborn-mining-missions.json) | circuit | Iron Supply Run and Copper Requisition: accept at Central Nexus, mine at Acubens by way of Node Beta, hand in at Central Nexus | once per pilot, up to 40 ships | TBD | TBD | TBD | TBD | -- |
 | [voidborn-missions-1](voidborn-missions-1.json) | circuit | Synchrony Relay Run and Crystal Delivery: two board missions in one circuit of 8 jumps | once per pilot | 146 | 22 | 6,430 | one-time | 2026-11-15 |
+| [voidborn-precedence](voidborn-precedence.json) | circuit | Precedence: 4,000 cr once, a round of three of our stations | once per pilot, up to 1 ships | TBD | TBD | TBD | TBD | -- |
+| [voidborn-selling](voidborn-selling.json) | circuit | Market Participation: Selling: 1,000 cr once; ten liquid nitrogen bought and sold at The Experiment | once per pilot, up to 1 ships | TBD | TBD | TBD | TBD | -- |
 | [voidborn-substrate](voidborn-substrate.json) | circuit | Substrate Delivery: two neural soma bought at Central Nexus, the mission taken at Node Alpha and handed in at Central Nexus; 2 jumps | once per pilot | 146 | 8 | 1,790 | one-time | 2026-11-15 |
 | [hunt-acubens-urchin](hunt-acubens-urchin.json) | hunt | Cinder-urchins at Acubens Shadow Pocket; radiant bile sold at Node Gamma | up to 1 ships, off | 2 | 25 | -120 | -290 | 2026-11-15 |
+| [hunt-cedarhold-dim-lattice-veil-ray](hunt-cedarhold-dim-lattice-veil-ray.json) | hunt | veil_ray at cedarhold_dim_lattice; loot sold at The Experiment Research Station | up to 1 ships | TBD | TBD | TBD | TBD | -- |
+| [hunt-faintlight-drift-veil-ray](hunt-faintlight-drift-veil-ray.json) | hunt | veil_ray at faintlight_drift; loot sold at Node Beta Industrial Station | up to 1 ships | TBD | TBD | TBD | TBD | -- |
+| [hunt-garnet-dim-lattice-veil-ray](hunt-garnet-dim-lattice-veil-ray.json) | hunt | veil_ray at garnet_dim_lattice; loot sold at The Experiment Research Station | up to 1 ships | TBD | TBD | TBD | TBD | -- |
 | [hunt-gsc-veil-ray](hunt-gsc-veil-ray.json) | hunt | Veil-rays at GSC-0027 Prism Scatter; verdigris curd sold at Central Nexus | up to 1 ships, needs piercing_railgun_i | 7 | 24 | 1,830 | 3,350 | 2026-11-15 |
 | [hunt-hamal-veil-ray](hunt-hamal-veil-ray.json) | hunt | Veil-rays at Hamal Crystal Bloom; verdigris curd sold at Central Nexus | up to 1 ships | 5 | 23 | 1,070 | 3,120 | 2026-11-15 |
 | [hunt-home-drift-ray](hunt-home-drift-ray.json) | hunt | Drift-rays at Stellar Siphon in Nexus Prime; goods sold or stored at Central Nexus | up to 1 ships | 8 | 10 | -40 | -250 | 2026-11-15 |
 | [hunt-home-whale](hunt-home-whale.json) | hunt | Pilot-whales at Stellar Siphon in Nexus Prime; whale oil sold at Node Beta | up to 1 ships, needs piercing_railgun_i, off | 1 | 20 | 570 | 1,670 | 2026-11-15 |
+| [hunt-keid-fractured-prism-veil-ray](hunt-keid-fractured-prism-veil-ray.json) | hunt | veil_ray at keid_fractured_prism; loot sold at Node Beta Industrial Station | up to 1 ships | TBD | TBD | TBD | TBD | -- |
+| [hunt-low-charge-glint-veil-ray](hunt-low-charge-glint-veil-ray.json) | hunt | veil_ray at low_charge_glint; loot sold at Node Beta Industrial Station | up to 1 ships | TBD | TBD | TBD | TBD | -- |
 | [hunt-ruchbah-veil-ray](hunt-ruchbah-veil-ray.json) | hunt | Veil-rays at Ruchbah Broken Glass Veil (lawless); verdigris curd sold at The Experiment | up to 1 ships, off | TBD | TBD | TBD | TBD | -- |
+| [mine-achernar-frost-ring](mine-achernar-frost-ring.json) | mine | Achernar Frost Ring: water_ice, nitrogen_ice, deuterium_ice, methane_ice; sold at The Experiment Research Station | up to 1 ships, needs ice_harvester_i | TBD | TBD | TBD | TBD | -- |
 | [mine-acubens](mine-acubens.json) | mine | Iron and copper at Acubens Shadow Pocket; ore into storage at Node Beta | up to 16 ships | 48 | 45 | -120 | -160 | 2026-11-15 |
+| [mine-alnair-ice-fields](mine-alnair-ice-fields.json) | mine | Alnair Ice Fields: water_ice, nitrogen_ice, deuterium_ice; sold at Node Alpha Processing Station | up to 1 ships, needs ice_harvester_i | TBD | TBD | TBD | TBD | -- |
+| [mine-antares-ice-fields](mine-antares-ice-fields.json) | mine | Antares Ice Fields: water_ice, nitrogen_ice, deuterium_ice, helium_ice; sold at Node Alpha Processing Station | up to 1 ships, needs ice_harvester_i | TBD | TBD | TBD | TBD | -- |
 | [mine-bellatrix](mine-bellatrix.json) | mine | Wait at Bellatrix Major Belt beside Node Gamma station for whatever regrows (thorium, palladium, iridium, carbon) | up to 1 ships | 8 | 45 | 0 | 0 | 2026-11-15 |
+| [mine-cryogenic-reserve](mine-cryogenic-reserve.json) | mine | Cryogenic Reserve: water_ice, nitrogen_ice, oxygen_ice; sold at Synchrony Hub | up to 1 ships, needs ice_harvester_i | TBD | TBD | TBD | TBD | -- |
+| [mine-gsc-0041-frost-ring](mine-gsc-0041-frost-ring.json) | mine | GSC-0041 Frost Ring: water_ice, nitrogen_ice, deuterium_ice; sold at Node Alpha Processing Station | up to 1 ships, needs ice_harvester_i | TBD | TBD | TBD | TBD | -- |
 | [mine-gsc-seep](mine-gsc-seep.json) | mine | Iron and copper at GSC-0027 Spacetime Seep; ore into storage at Node Beta | up to 16 ships | 48 | 45 | -120 | -160 | 2026-11-15 |
+| [mine-intercrus-ice-fields](mine-intercrus-ice-fields.json) | mine | Intercrus Ice Fields: water_ice, nitrogen_ice; sold at The Experiment Research Station | up to 1 ships, needs ice_harvester_i | TBD | TBD | TBD | TBD | -- |
+| [mine-keid-ice-shelf](mine-keid-ice-shelf.json) | mine | Keid Ice Shelf: water_ice, deuterium_ice; sold at Node Alpha Processing Station | up to 1 ships, needs ice_harvester_i | TBD | TBD | TBD | TBD | -- |
+| [mine-node-beta-frozen-drift](mine-node-beta-frozen-drift.json) | mine | Node Beta Frozen Drift: water_ice, nitrogen_ice, deuterium_ice; sold at Node Alpha Processing Station | up to 1 ships, needs ice_harvester_i | TBD | TBD | TBD | TBD | -- |
 | [mine-pherkad-rift](mine-pherkad-rift.json) | mine | Copper and iron at Pherkad Null Rift; ore into storage at Synchrony Hub | every pilot | 65 | 45 | -120 | -160 | 2026-11-15 |
+| [mine-ruchbah-ice-belt](mine-ruchbah-ice-belt.json) | mine | Ruchbah Ice Belt: water_ice, nitrogen_ice, deuterium_ice, methane_ice; sold at The Experiment Research Station | up to 1 ships, needs ice_harvester_i | TBD | TBD | TBD | TBD | -- |
+| [mine-wolf-1061-frozen-drift](mine-wolf-1061-frozen-drift.json) | mine | Wolf 1061 Frozen Drift: water_ice, nitrogen_ice, deuterium_ice, methane_ice; sold at Node Alpha Processing Station | up to 1 ships, needs ice_harvester_i | TBD | TBD | TBD | TBD | -- |
 
 ## The Plans
 
@@ -39,12 +61,12 @@ task one pilot carries out by itself; its file is `game/routes/<id>.json`
 
 | Role | Kept by | Routes, first that is open |
 |---|---|---|
-| command | Unity | voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > voidborn-first-steps > census-frontier > park |
+| command | Unity | voidborn-concurrent > voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > voidborn-first-steps > voidborn-selling > voidborn-precedence > voidborn-first-hunt-nexus > voidborn-first-hunt-gsc > voidborn-first-hunt-acubens > mine-node-beta-frozen-drift > mine-ruchbah-ice-belt > mine-achernar-frost-ring > mine-wolf-1061-frozen-drift > mine-keid-ice-shelf > mine-cryogenic-reserve > mine-alnair-ice-fields > mine-gsc-0041-frost-ring > mine-antares-ice-fields > mine-intercrus-ice-fields > census-frontier > park |
 | drone | Apophis | voidborn-concurrent > voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > hunt-gsc-veil-ray > hunt-hamal-veil-ray > census-frontier > park |
 | hauler | Apollo | voidborn-concurrent > voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > census-frontier > park |
 | miner | Zero | voidborn-concurrent > voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > census-frontier > park |
 | scout | Oracle | voidborn-concurrent > voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > census-voidborn > census-frontier > park |
-| sentinel | Unity | voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > voidborn-first-steps > census-frontier > park |
+| sentinel | Unity | voidborn-concurrent > voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > voidborn-first-steps > voidborn-selling > voidborn-precedence > voidborn-first-hunt-nexus > voidborn-first-hunt-gsc > voidborn-first-hunt-acubens > fit-ice-harvester-guard > mine-node-beta-frozen-drift > mine-ruchbah-ice-belt > mine-achernar-frost-ring > mine-wolf-1061-frozen-drift > mine-keid-ice-shelf > mine-cryogenic-reserve > mine-alnair-ice-fields > mine-gsc-0041-frost-ring > mine-antares-ice-fields > mine-intercrus-ice-fields > census-frontier > park |
 | trader | Mercury | voidborn-concurrent > voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > census-frontier > park |
 
 ## Planned

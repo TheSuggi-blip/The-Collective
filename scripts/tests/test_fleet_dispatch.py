@@ -131,6 +131,30 @@ class PickTests(Tree):
         self.assertEqual(pick({"scout-2": "census far"}), "frontier")             # this route is full: the next one
         self.assertEqual(pick({"scout-2": "census far", "flag-1": "census waste"}), "mine")
 
+    def test_a_route_beyond_the_police_wants_an_empty_hold_and_a_hunter_that_leaves(self):
+        routes = {"far": {"id": "far", "kind": "hunt", "title": "t", "place": "far:belt", "sell_at": "home:core:base", "alone": True,
+                          "requires": {"empty_hold": True}}, "mine": dict(ROUTES["mine"])}
+        plan = {"roles": {"drone": ["far", "mine"]}}
+        pick = lambda goods: (self.dispatch.pick({"name": "drone-1", "credits": 9000, "modules": [], "docked": True, "goods": goods}, plan, routes,
+                                                 self.state())[0] or {}).get("id")
+        self.assertEqual((pick(0), pick(21)), ("far", "mine"))                                    # goods aboard: not sent out
+        self.assertIn("--alone", self.dispatch.command(routes["far"], "drone-1", None, str(self.root)))
+        self.assertNotIn("--alone", self.dispatch.command(ROUTES["rays"], "drone-1", None, str(self.root)))
+
+    def test_a_mine_route_names_what_it_sells_and_a_fitting_route_is_for_a_pilot_without_the_module(self):
+        mine = dict(ROUTES["mine"], sell=[{"item": "ice", "min_price": 20}, {"item": "gas", "min_price": 5}], requires={"without_module": "drill"})
+        self.assertEqual(self.dispatch.command(mine, "miner-1", None, str(self.root))[-2:], ["--sell-items", "ice:20,gas:5"])
+        self.assertNotIn("--sell-items", self.dispatch.command(ROUTES["mine"], "miner-1", None, str(self.root)))
+        lacks = lambda modules: (self.dispatch.pick({"name": "drone-1", "credits": 9000, "modules": modules, "docked": True, "goods": 0},
+                                                    {"roles": {"drone": ["mine"]}}, {"mine": mine}, self.state())[0] or {}).get("id")
+        self.assertEqual((lacks([]), lacks(["drill"])), ("mine", None))
+        few = dict(ROUTES["mine"], max_pilots=2)
+        seat = lambda name, rows=(), orders=None: (self.dispatch.pick({"name": name, "credits": 9000, "modules": [], "docked": True, "goods": 0},
+                                                                    {"roles": {"drone": ["mine"]}}, {"mine": few}, self.state(rows=rows, orders=orders))[0] or {}).get("id")
+        flown = [{"route": "mine", "pilot": "drone-1"}]
+        self.assertEqual((seat("drone-3", flown), seat("drone-3", flown, {"drone-2": "mine mine"}), seat("drone-1", flown, {"drone-2": "mine mine"})),
+                         ("mine", None, "mine"))                                                     # two pilots have it: a third gets none, the two keep it
+
     def test_a_route_the_plan_names_but_no_file_holds_is_passed_over(self):
         self.assertEqual(self.pick("miner-1")[0], "mine")
         self.assertEqual(self.pick("hauler-1")[0], None)                                          # a role without a list

@@ -1,0 +1,33 @@
+{
+ "id": "voidborn-precedence",
+ "kind": "circuit",
+ "title": "Precedence: 4,000 cr once, a round of three of our stations",
+ "note": "From the route maker (candidate mission-precedence-node, board of Node Beta read 2026-11-15): accept at Node Beta, dock at Synchrony Hub, dock at Node Alpha; nothing is bought. Not flown yet: a test with one ship (max_ships 1) until its first RESULT line shows the reward; whether every pilot is offered it is not known.",
+ "once": true,
+ "max_ships": 1,
+ "one_time": [
+  "Precedence"
+ ],
+ "skip_if_booked": [
+  "Precedence"
+ ],
+ "stops": [
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "accept": [
+    "precedence"
+   ]
+  },
+  {
+   "at": "synchrony:synchrony_hub:synchrony_hub",
+   "redock": true
+  },
+  {
+   "at": "node_alpha:node_alpha_processing_station:node_alpha_processing_station",
+   "redock": true
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station"
+  }
+ ]
+}
