@@ -102,6 +102,11 @@ class FleetCollectorTests(unittest.TestCase):
         self.assertEqual(total["divisions"]["Mining"]["ships"], 2)
         self.assertEqual(total["divisions"]["Unassigned"]["ships"], 1)
         self.assertEqual(total["idle"], 4)
+        self.assertEqual((total["working"], total["parked"], total["adrift"]), (0, 4, 0))          # docked without work: parked
+        self.assertEqual(total["divisions"]["Mining"]["parked"], 2)
+        adrift = self.fleet.ship_row(account("miner-3", docked=""))
+        self.assertEqual(self.fleet.work_state(adrift), "adrift")
+        self.assertEqual(self.fleet.totals([adrift])["adrift"], 1)
 
     def test_a_ship_under_a_fresh_order_is_at_work_and_a_stale_order_is_ignored(self):
         import os
@@ -132,18 +137,59 @@ class FleetCollectorTests(unittest.TestCase):
         # one hour: wallets +25,000, earned +24,000 of which 20,000 one-time; 4 ships
         a = [0, 1000, 4, 5000, 0, 100, 2, {"Mining": [4, 1000, 5000, 0, 100, 2]}]
         b = [3600, 26000, 4, 29000, 20000, 400, 6, {"Mining": [4, 26000, 29000, 20000, 400, 6]}]
-        r = self.fleet.rates([a, b], 3600)
+        r = self.fleet.rates([a, b], 3600, one=[[1800, "miner-1", "a starter reward", 20000]])
         self.assertEqual((r["cph"], r["cph_per_ship"], r["net_per_hour"], r["earned_per_hour"]), (5000, 1250, 25000, 4000))
         self.assertEqual((r["ore_per_hour"], r["missions_per_hour"], r["window_minutes"]), (300, 4.0, 60))
         self.assertEqual(r["divisions"]["Mining"]["cph"], 5000)
         self.assertEqual(r["divisions"]["Mining"]["earned_per_hour"], 4000)
+        self.assertEqual(r["windows"]["1h"]["cph"], 5000)
+        self.assertEqual(r["windows"]["24h"]["cph"], 5000)                                          # the same two samples: the same figure
 
     def test_cph_goes_below_zero_when_ships_only_spend(self):
         # one hour of fuel for ore nobody buys: wallets -400, nothing earned
         a = [0, 10000, 2, 500, 0, 0, 0, {"Mining": [2, 10000, 500, 0, 0, 0]}]
         b = [3600, 9600, 2, 500, 0, 90, 0, {"Mining": [2, 9600, 500, 0, 90, 0]}]
-        r = self.fleet.rates([a, b], 3600)
+        r = self.fleet.rates([a, b], 3600, one=[])
         self.assertEqual((r["cph"], r["cph_per_ship"], r["earned_per_hour"]), (-400, -200, 0))
+        self.assertEqual((r["income_per_hour"], r["costs_per_hour"]), (0, 400))
+
+    def test_goods_bought_for_a_one_time_reward_are_no_running_cost(self):
+        # one hour: a 2,500 reward for which 600 of goods were bought, 500 of sales, 100 of fuel: wallets +2,300, earned +3,000
+        a = [0, 10000, 2, 0, 0, 0, 0, {"Mining": [2, 10000, 0, 0, 0, 0]}]
+        b = [3600, 12300, 2, 3000, 1900, 0, 1, {"Mining": [2, 12300, 3000, 1900, 0, 1]}]
+        one = [[90, "miner-1", "the mission: goods bought", -600], [100, "miner-1", "the mission", 2500], [9000, "miner-1", "later", 700]]
+        r = self.fleet.rates([a, b], 3600, one=one)
+        self.assertEqual((r["income_per_hour"], r["costs_per_hour"], r["cph"], r["one_time_per_hour"]), (500, 100, 400, 1900))
+        self.assertEqual(r["divisions"]["Mining"]["costs_per_hour"], 100)
+        self.assertFalse(r["ships_changed"])
+        self.assertNotIn("fuel_cr_per_hour", r)                                                     # no meters in these samples: not measured
+
+    def test_the_meters_count_fuel_and_repairs_and_what_they_cost(self):
+        meters = {"fuel_units": 0, "fuel_cr": 0, "hull_points": 0, "repair_cr": 0, "burned": 0, "clean": [0, 0, 0, 0], "div": {}}
+        row = lambda **change: dict({"division": "Mining", "docked": "base", "fuel": 50, "hull": 60, "credits": 1000, "cargo_used": 10}, **change)
+        step = lambda new, old: self.fleet.meter(new, (old["fuel"], old["hull"], old["credits"], old["cargo_used"]), meters)
+        step(row(fuel=40, docked=""), row())                                                        # a jump: fuel burned, nothing bought
+        self.assertEqual((meters["burned"], meters["fuel_units"]), (10, 0))
+        step(row(fuel=90, credits=920), row(fuel=40))                                               # a refuel alone: 50 units for 80 cr
+        self.assertEqual((meters["fuel_units"], meters["fuel_cr"], meters["clean"][:2]), (50, 80, [50, 80]))
+        step(row(hull=75, credits=970), row())                                                      # a repair alone: 15 points for 30 cr
+        self.assertEqual((meters["hull_points"], meters["repair_cr"]), (15, 30))
+        step(row(fuel=75, credits=1500, cargo_used=0), row())                                       # a refuel in the pass of a sale: the average price
+        self.assertEqual((meters["fuel_units"], meters["fuel_cr"]), (75, 120))
+        step(row(fuel=60, hull=70, credits=954), row())                                             # both in one pass: fuel at its average, the rest is repair
+        self.assertEqual((meters["fuel_units"], meters["fuel_cr"], meters["hull_points"], meters["repair_cr"]), (85, 136, 25, 60))
+        step(row(fuel=60, docked=""), row())                                                        # fuel that rose in space is not a purchase
+        self.assertEqual(meters["fuel_units"], 85)
+        self.assertEqual(meters["div"], {"Mining": [85, 136, 25, 60]})
+        rows = [self.fleet.ship_row(account("miner-1", credits=100))]
+        with tempfile.TemporaryDirectory(prefix="fleet-test-") as tmp:
+            setattr(self.fleet, "DATA", Path(tmp))
+            a = self.fleet.sample(0, rows, {"fuel_units": 0, "fuel_cr": 0, "hull_points": 0, "repair_cr": 0, "burned": 0, "clean": [0, 0, 0, 0], "div": {}})
+            b = self.fleet.sample(3600, rows, meters)
+        self.assertEqual((b[8]["w"], b[8]["m"]), ([0, 1, 0], [85, 136, 25, 60, 10]))
+        r = self.fleet.rates([a, b], 3600, one=[])
+        self.assertEqual((r["fuel_cr_per_hour"], r["repair_cr_per_hour"], r["fuel_units_per_hour"], r["hull_points_per_hour"]), (136, 60, 85, 25))
+        self.assertEqual(r["divisions"]["Mining"]["fuel_cr_per_hour"], 136)
 
     def test_top_skill_is_the_highest_level_then_the_most_xp(self):
         acc = account("miner-1")
@@ -156,15 +202,17 @@ class FleetCollectorTests(unittest.TestCase):
         old_style = [0, 1000, 4]                      # rows from before the metrics
         a = [100, 1000, 4, 5000, 0, 0, 0, {}]
         b = [300, 2000, 4, 6000, 0, 0, 0, {}]
-        self.assertIsNone(self.fleet.rates([old_style, a, b], 300))
-        self.assertIsNone(self.fleet.rates([], 300))
+        self.assertIsNone(self.fleet.rates([old_style, a, b], 300, one=[]))
+        self.assertIsNone(self.fleet.rates([], 300, one=[]))
 
     def test_rates_ignore_samples_older_than_the_window(self):
         ancient = [0, 0, 1, 0, 0, 0, 0, {}]
         a = [10000, 1000, 2, 1000, 0, 0, 0, {}]
         b = [13600, 3000, 2, 3000, 0, 0, 0, {}]
-        r = self.fleet.rates([ancient, a, b], 13600)
+        r = self.fleet.rates([ancient, a, b], 13600, one=[])
         self.assertEqual((r["cph"], r["cph_per_ship"]), (2000, 1000))
+        self.assertEqual(r["windows"]["6h"]["cph"], round(3000 * 3600 / 13600))                     # six hours reach back to the first sample
+        self.assertTrue(r["windows"]["6h"]["ships_changed"])
 
     def test_sample_splits_one_time_rewards_by_division(self):
         with tempfile.TemporaryDirectory(prefix="fleet-test-") as tmp:

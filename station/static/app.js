@@ -96,7 +96,7 @@ function fleetGroups(list) {                             // our ships at one pla
 }
 
 let S = null;                                  // /api/state
-let L = { hour: {}, day: {}, events: [], fills: [], battles: [], stats: {}, stream: {} };
+let L = { hour: {}, day: {}, battles: [], stats: {}, stream: {}, groups: [] };
 let F = { ships: [], totals: {}, engine: {}, age: -1, birth: null };   // /api/fleet
 let fetchedAt = 0;                             // when /api/fleet last answered (ms)
 let HIST = { rows: [], at: 0 };                // /api/history, for the Metrics tab
@@ -107,10 +107,12 @@ let board = null;
 const sys = new Map();
 const stationsBy = new Map();
 const shipsBy = new Map();                     // system id -> our ships there
-const layers = { Lanes: true, Traffic: true, Stations: true, Strongholds: true, Intel: true, Fleet: true, Names: true };
+const layers = { Lanes: true, Traffic: true, Stations: true, Strongholds: true, Intel: true, Factions: true, Fleet: true, Names: true };
 const view = { x: 0, y: 0, k: 0.05 };
 let selected = null, hover = null, route = [], tab = 'Selection', pilotCard = null;
 let selShip = null, shipCard = null, shipMark = '', docView = null;
+const groupsBy = new Map();                    // system id -> the larger groups of one foreign faction seen there
+let groupHits = [];                            // their tags as drawn
 let pop = null, hoverBadge = null, badgeHits = [];   // the open fleet card {system, kind}; the marker under the pointer; the markers drawn
 let cam = null, raf = 0, pulse = 0;                  // an eased move of the view; the frame that is asked for; the timer of the next quiet frame
 
@@ -271,52 +273,75 @@ function paint(t) {
       ctx.fillText(s.name, x + q + 6, y + 4);
     }
   }
-  badgeHits = [];
-  if (layers.Fleet) {                                               // our ships: one marker per kind, above its system
-    ctx.font = '600 11px system-ui, sans-serif'; ctx.textBaseline = 'middle';
+  badgeHits = []; groupHits = [];
+  if (layers.Factions) {                                            // the larger groups of one foreign faction: a tag and a count under the system
+    ctx.font = '600 10.5px system-ui, sans-serif'; ctx.textBaseline = 'middle';
+    for (const [id, list] of groupsBy) {
+      const s = sys.get(id);
+      if (!s) continue;
+      const [x, y] = toScreen(s);
+      if (x < -60 || y < -40 || x > W + 60 || y > H + 20) continue;
+      const q = s.home ? r + 2 : r, show = list.filter((g) => k >= 0.12 || g.count >= 8).slice(0, 2);
+      show.forEach((g, i) => {
+        const label = g.tag + ' ' + g.count, w = ctx.measureText(label).width + 14, gx = x - w / 2, gy = y + q + 9 + i * 18;
+        const c = g.standing === 'hostile' ? '#e06c66' : g.standing === 'ally' ? '#58c08c' : '#dcae58';
+        pill(gx, gy, w, 15);
+        ctx.fillStyle = 'rgba(15,20,31,0.9)'; ctx.fill();
+        ctx.strokeStyle = rgba(c, 0.7); ctx.lineWidth = 1; ctx.stroke();
+        ctx.fillStyle = c; ctx.fillText(label, gx + 7, gy + 8);
+        groupHits.push({ x: gx, y: gy, w, h: 15, system: id, group: g });
+      });
+    }
+    ctx.textBaseline = 'alphabetic';
+  }
+  if (layers.Fleet) {                                               // our ships: one ring per system, a slice per division, the count inside
+    ctx.textBaseline = 'middle'; ctx.textAlign = 'center';
     const rows = [];
     for (const [id, list] of shipsBy) {
       const s = sys.get(id);
       if (!s) continue;
       const [x, y] = toScreen(s);
-      if (x < -120 || y < -20 || x > W + 120 || y > H + 80) continue;
-      const groups = k < 0.14                                       // far out: one marker with the total
-        ? [{ kind: 'All', colour: '#e3e6ee', ships: list, shape: fleetGroups(list)[0].shape }] : fleetGroups(list);
-      const lines = [];                                             // at most three markers in a line; more lines stack upwards
-      for (let i = 0; i < groups.length; i += 3) {
-        const part = groups.slice(i, i + 3), widths = part.map((g) => 31 + ctx.measureText(String(g.ships.length)).width);
-        lines.push({ part, widths, w: widths.reduce((a, b) => a + b, 0) + 4 * (part.length - 1) });
-      }
-      rows.push({ id, x, y, lines, w: Math.max(...lines.map((l) => l.w)), h: lines.length * 26 - 4 });
+      if (x < -60 || y < -20 || x > W + 60 || y > H + 80) continue;
+      const R = Math.max(11, Math.min(20, 9 + Math.sqrt(list.length) * 1.3));
+      rows.push({ id, x, y, R, list, cy: y - r - 15 - R });
     }
-    rows.sort((a, b) => b.y - a.y);                                 // the lowest system first: a block that would cover another moves up
+    rows.sort((a, b) => b.y - a.y);                                 // the lowest system first: a ring that would cover another moves up
     const placed = [];
     for (const row of rows) {
-      const left = Math.max(4, Math.min(W - row.w - 4, row.x - row.w / 2));
-      let top = row.y - r - 15 - row.h;
-      for (let tries = 0; tries < 12 && placed.some((b) => left < b.x + b.w + 6 && left + row.w + 6 > b.x && top < b.y + b.h + 5 && top + row.h + 5 > b.y); tries++) top -= 13;
-      placed.push({ x: left, y: top, w: row.w, h: row.h });
+      for (let tries = 0; tries < 12 && placed.some((b) => Math.hypot(b.x - row.x, b.cy - row.cy) < b.R + row.R + 7); tries++) row.cy -= 12;
+      placed.push(row);
+      const { id, x, R, list, cy } = row, groups = fleetGroups(list), n = list.length;
+      const open = pop && pop.system === id, hot = hoverBadge && hoverBadge.system === id;
       ctx.strokeStyle = 'rgba(213,218,230,0.3)'; ctx.lineWidth = 1;
-      ctx.beginPath(); ctx.moveTo(row.x, top + row.h); ctx.lineTo(row.x, row.y - r - 12); ctx.stroke();
-      row.lines.forEach((line, n) => {
-        let x = left + (row.w - line.w) / 2;
-        const y = top + row.h - 22 - n * 26;                        // the first line is the lowest
-        line.part.forEach((g, i) => {
-          const w = line.widths[i], open = pop && pop.system === row.id && pop.kind === g.kind;
-          const hot = hoverBadge && hoverBadge.system === row.id && hoverBadge.kind === g.kind;
-          pill(x, y, w, 22);
-          ctx.fillStyle = open || hot ? 'rgba(36,45,66,0.97)' : 'rgba(15,20,31,0.9)'; ctx.fill();
-          ctx.strokeStyle = rgba(g.colour, open ? 1 : hot ? 0.85 : 0.45); ctx.lineWidth = open ? 1.6 : 1; ctx.stroke();
-          shipShape(ctx, g.shape, x + 13, y + 11, 0.72, g.colour);
-          ctx.fillStyle = '#eef0f6'; ctx.fillText(String(g.ships.length), x + 24, y + 11.5);
-          badgeHits.push({ x, y, w, h: 22, system: row.id, kind: g.kind, count: g.ships.length });
-          x += w + 4;
-        });
-      });
+      ctx.beginPath(); ctx.moveTo(x, cy + R + 3); ctx.lineTo(x, row.y - r - 12); ctx.stroke();
+      ctx.fillStyle = open || hot ? 'rgba(36,45,66,0.97)' : 'rgba(15,20,31,0.92)';
+      ctx.beginPath(); ctx.arc(x, cy, R + 3, 0, 6.2832); ctx.fill();
+      let from = -1.5708;
+      ctx.lineWidth = open || hot ? 5 : 4; ctx.lineCap = 'butt';
+      for (const g of groups) {
+        const to = from + 6.2832 * g.ships.length / n, gap = groups.length > 1 ? Math.min(0.07, (to - from) / 4) : 0;
+        ctx.strokeStyle = g.colour; ctx.beginPath(); ctx.arc(x, cy, R, from + gap, to - gap); ctx.stroke();
+        from = to;
+      }
+      if (list.some((sh) => sh.name === selShip)) {                 // the ship that is open in the panel is here
+        ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(x, cy, R + 5.5, 0, 6.2832); ctx.stroke();
+      }
+      ctx.font = '650 ' + (n > 99 ? 10 : 11.5) + 'px system-ui, sans-serif';
+      ctx.fillStyle = '#eef0f6'; ctx.fillText(String(n), x, cy + 0.5);
+      badgeHits.push({ x: x - R - 4, y: cy - R - 4, w: 2 * R + 8, h: 2 * R + 8, system: id, kind: 'All', count: n,
+        parts: groups.map((g) => g.ships.length + ' ' + (g.kind === 'Command' ? 'command group' : g.kind)).join(', ') });
     }
-    ctx.textBaseline = 'alphabetic';
+    ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
   }
   placePop();
+}
+
+function groupAt(mx, my) {
+  for (let i = groupHits.length - 1; i >= 0; i--) {
+    const b = groupHits[i];
+    if (mx >= b.x && mx <= b.x + b.w && my >= b.y && my <= b.y + b.h) return b;
+  }
+  return null;
 }
 
 function badgeAt(mx, my) {
@@ -466,32 +491,35 @@ function shipState(r) {
   if (a.kind === 'loop') return waiting ? ['wait', 'waiting for ore'] : ['work', a.type + ' loop'];
   if (a.kind === 'order') return ['work', a.type];
   if (a.kind === 'goal' || a.kind === 'job') return ['work', r.order ? r.order + ': ' + a.type : a.type];
-  return r.docked ? ['dock', 'docked'] : ['idle', 'idle in space'];
+  return r.docked ? ['dock', 'parked'] : ['idle', 'idle in space'];
 }
 
 function signed(n) { return (n > 0 ? '+' : '') + fmt(n); }
 function liveAge() { return F.age < 0 ? -1 : F.age + Math.round((Date.now() - fetchedAt) / 1000); }
 
-function renderResources() {
-  const box = $('resources'), t = F.totals || {}, r = t.rates;
+function isWorking(r) { return ['work', 'move', 'wait'].includes(shipState(r)[0]); }
+
+function renderMembers() {                       // the top bar: the six members, each with its symbol and its ships; then the fleet
+  const box = $('members'), by = new Map();
   box.replaceChildren();
-  const cell = (k, v, small, smallCls, tip) => {
-    const c = el('div', 'res'), val = el('div', 'v', v);
-    if (small) val.append(el('small', smallCls || null, small));
-    c.append(el('div', 'k', k), val);
-    if (tip) c.title = tip;
-    box.append(c);
-    return c;
-  };
-  const tone = (n) => (n > 0 ? 'up' : n < 0 ? 'down' : null);
-  cell('Credits', fmt(t.credits), r ? signed(r.cph) + ' / h' : 'measuring', r ? tone(r.cph) : null,
-    'All wallets. The coloured number is CPH: what the fleet earned minus what it spent per hour over the last '
-    + (r ? r.window_minutes : 60) + ' minutes, one-time starter rewards left out').classList.add('head');
-  cell('Per ship', fmt(t.credits_per_ship), r ? signed(r.cph_per_ship) + ' / h' : '', r ? tone(r.cph_per_ship) : null,
-    'Credits per ship. The coloured number is CPH per ship: what one ship produces per hour');
-  cell('Ships', fmt(t.ships), t.ships ? (t.idle ? t.idle + ' idle' : 'all busy') : '', t.idle ? 'warn' : 'up',
-    'Idle: docked or drifting without a goal, a loop or a script\'s order');
-  cell('Ore / h', r ? fmt(r.ore_per_hour) : '--', r ? r.missions_per_hour + ' missions / h' : '');
+  F.ships.forEach((r) => { if (!by.has(r.division)) by.set(r.division, []); by.get(r.division).push(r); });
+  for (const a of (S ? S.roster : [])) {
+    const list = by.get(a.division) || [], c = DIV[a.division] || DIV.Unassigned, b = el('button', 'member');
+    const working = list.filter(isWorking).length, who = el('div', 'who');
+    b.type = 'button';
+    who.append(el('div', 'n', a.name), el('div', 'd', a.division));
+    b.append(shipSvg(a.division === 'Command' ? 'Flagship' : a.division, c, 20), who, el('div', 'c', String(list.length)));
+    b.style.setProperty('--c', c);
+    b.title = a.name + ', ' + a.rank + ' | ' + a.division + ': ' + list.length + ' ships, ' + working + ' working, '
+      + (list.length - working) + ' without work | click to write to ' + a.name;
+    b.addEventListener('click', () => address(a.id));
+    box.append(b);
+  }
+  const t = F.totals || {}, all = el('div', 'member total'), who = el('div', 'who');
+  who.append(el('div', 'n', 'Fleet'), el('div', 'd', t.ships ? (t.working || 0) + ' working' : 'no data'));
+  all.append(who, el('div', 'c', fmt(t.ships)));
+  all.title = 'All ships: ' + fmt(t.working) + ' working, ' + fmt(t.parked) + ' parked at a station without work, ' + fmt(t.adrift) + ' in space without work';
+  box.append(all);
 }
 
 function fleetAgeText() {
@@ -549,8 +577,8 @@ function renderRoster() {
     name.addEventListener('click', () => { if (collapsed.has(division)) collapsed.delete(division); else collapsed.add(division); saveFolds(); renderRoster(); });
     head.append(name);
     if (admiral) {
-      const b = linkButton('Adm. ' + admiral.name, () => openChat(admiral.id), 'adm');
-      b.title = 'Open the chat with ' + admiral.name;
+      const b = linkButton('Adm. ' + admiral.name, () => address(admiral.id), 'adm');
+      b.title = 'Write to ' + admiral.name + ' in comms';
       head.append(b);
     }
     if (list.length) {
@@ -564,7 +592,7 @@ function renderRoster() {
     else if (list.length) {                     // folded: the division in one line
       const n = { work: 0, move: 0, dock: 0, idle: 0, wait: 0, bad: 0, off: 0 };
       list.forEach((r) => { n[shipState(r)[0]] += 1; });
-      const parts = [[n.work + n.move, 'working'], [n.wait, 'waiting'], [n.dock, 'docked'], [n.idle, 'idle in space'], [n.bad, 'failing'], [n.off, 'offline']];
+      const parts = [[n.work + n.move, 'working'], [n.wait, 'waiting'], [n.dock, 'parked'], [n.idle, 'idle in space'], [n.bad, 'failing'], [n.off, 'offline']];
       const line = el('button', 'divline', parts.filter((p) => p[0]).map((p) => p[0] + ' ' + p[1]).join(', '));
       line.type = 'button';
       line.title = 'Unfold ' + division;
@@ -679,7 +707,8 @@ async function renderSelection(panel, live) {
   const ours = shipsBy.get(s.id) || [];
   if (ours.length) {
     panel.append(el('h3', null, 'Our ships here (' + ours.length + ')'));
-    panel.append(table(['Ship', 'Doing', 'Cargo'], ours.map((r) => [shipLink(r.name), shipState(r)[1], r.cargo_used + ' / ' + r.cargo_capacity])));
+    panel.append(table(['Ship', 'Doing', 'Cargo'], ours.slice(0, 12).map((r) => [shipLink(r.name), shipState(r)[1], r.cargo_used + ' / ' + r.cargo_capacity])));
+    if (ours.length > 12) panel.append(linkButton('All ' + ours.length + ' ships: open the card', () => openPop(s.id, 'All')));
   }
   panel.append(el('h3', null, 'Lanes'));
   const lanes = el('div', 'chips');
@@ -702,17 +731,18 @@ async function renderSelection(panel, live) {
   try {
     const d = await get('/api/system?id=' + encodeURIComponent(id));
     if (!live()) return;
-    box.append(el('h3', null, 'Pilots last seen here (' + d.pilot_count + ')'));
-    if (d.pilots.length) {
-      box.append(table(['Pilot', 'Faction', 'Empire', 'Seen'], d.pilots.map((p) => [pilotLink(p.name), p.tag, p.empire, ago(p.age) + ' ago'])));
-    } else box.append(el('p', 'empty', 'Nobody jumped here in the last 24 h.'));
+    box.append(el('h3', null, 'Foreign factions here, last hour'));
+    if (d.groups.length) {
+      box.append(table(['Tag', 'Faction', 'Pilots', 'Standing'], d.groups.map((g) => [g.tag, g.name || '', g.count, g.standing]), [2]));
+    } else box.append(el('p', 'empty', 'No faction had two or more pilots jump here in the last hour.'));
+    box.append(el('p', 'sub', fmt(d.pilot_count) + ' pilots of any kind made their last jump here in the last 24 h.'));
     if (d.battles.length) {
       box.append(el('h3', null, 'Recent battles'));
       box.append(table(['Kind', 'Pilots', 'Lost'], d.battles.map((b) => [b.category, b.pilots.join(', '), b.lost.join(', ')])));
     }
     if (d.intel) {
-      box.append(el('h3', null, 'Intel file: ' + d.intel.file));
-      box.append(el('pre', null, d.intel_text));
+      box.append(el('h3', null, 'Intel'));
+      box.append(markdown(d.intel_text, d.intel.file, false));
     }
   } catch (e) { if (live()) box.append(el('p', 'empty', 'Detail not available: ' + e.message)); }
 }
@@ -732,33 +762,6 @@ function renderPilot(panel, d) {
     for (const [k, v] of Object.entries(d.profile.stats)) rows.push([k.replace(/_/g, ' '), fmt(v)]);
   }
   panel.append(facts(rows));
-}
-
-function renderTraffic(panel) {
-  panel.append(el('h3', null, 'Jumps (' + fmt(L.pilots_tracked) + ' pilots tracked)'));
-  panel.append(table(['Ago', 'Pilot', 'From', 'To'],
-    L.events.slice(0, 40).map((e) => [ago(e.t), pilotLink(e.pilot), sysLink(e.from), sysLink(e.to)])));
-  panel.append(el('h3', null, 'Exchange fills'));
-  panel.append(table(['Ago', 'Item', 'Qty', 'Each', 'Where'],
-    L.fills.slice(0, 25).map((f) => [ago(f.t), f.item, fmt(f.qty), fmt(f.price), sysLink(f.system)]), [2, 3]));
-  panel.append(el('h3', null, 'Battles'));
-  panel.append(table(['Where', 'Kind', 'Pilots', 'Lost'],
-    L.battles.slice(0, 20).map((b) => [sysLink(b.system), b.category, b.pilots.join(', '), b.lost.join(', ')])));
-}
-
-async function renderRanks(panel, live) {
-  if (!board) board = await get('/api/leaderboard');
-  if (!live()) return;
-  const groups = Object.keys(board.groups || {});
-  if (!groups.length) { panel.append(el('p', 'empty', 'No leaderboard yet.')); return; }
-  const g = el('select'), c = el('select'), out = el('div'), row = el('div', 'row');
-  groups.forEach((n) => g.append(new Option(n, n)));
-  const show = () => out.replaceChildren(table(['#', 'Name', '', 'Value'],
-    (board.groups[g.value][c.value] || []).map((r) => [r.rank, r.name, r.tag, fmt(r.value)]), [0, 3]));
-  const fill = () => { c.replaceChildren(); Object.keys(board.groups[g.value]).forEach((n) => c.append(new Option(n.replace(/_/g, ' '), n))); show(); };
-  g.addEventListener('change', fill); c.addEventListener('change', show);
-  row.append(g, c); panel.append(row, out, el('p', 'sub', 'Generated ' + board.generated_at));
-  fill();
 }
 
 function renderMarket(panel) {
@@ -794,7 +797,7 @@ async function openDoc(path) {
 }
 
 // ---- Markdown and logs as formatted text. Everything is built from DOM nodes with textContent; no HTML is parsed.
-const DOC_RE = /^(reports|communications|planets|players|governance|rules)\/[A-Za-z0-9_.\-]{1,120}\.(md|log)$/;
+const DOC_RE = /^(reports|communications|governance|game\/(planets|players|factions|rules|routes\/guidebook|routes|fleet))\/[A-Za-z0-9_.\-]{1,120}\.(md|log)$/;
 function docTarget(target, base) {              // a link or a quoted path that names a document the station shows
   let t = String(target).split('#')[0];
   if (!t || t.includes('://') || t.startsWith('/')) return null;
@@ -908,10 +911,15 @@ function logView(text, cut, base) {              // an append-only log as entry 
   return out;
 }
 
+function docTitle(path) {                         // a file's short name: governance/map.md -> Map
+  const stem = String(path).split('/').pop().replace(/\.(md|log)$/, '').replace(/[-_]/g, ' ');
+  return stem.charAt(0).toUpperCase() + stem.slice(1);
+}
+
 async function renderDocs(panel, live) {
   setWide(Boolean(docView));
   if (docView) {
-    panel.append(linkButton('Back to the list', () => { docView = null; render(); }), el('h2', null, docView.path));
+    panel.append(linkButton('Back to the list', () => { docView = null; render(); }), el('h2', null, docView.title || docTitle(docView.path)));
     if (docView.loading) panel.append(el('p', 'empty', 'Loading...'));
     else if (docView.error) panel.append(el('p', 'empty', docView.error));
     else {
@@ -925,76 +933,93 @@ async function renderDocs(panel, live) {
   if (!live()) return;
   const row = (label, small, path) => { const b = linkButton(label, () => openDoc(path), 'rowlink'); if (small) b.append(el('small', null, small)); return b; };
   panel.append(el('h3', null, 'Governance'));
-  (d.governance || []).forEach((g) => panel.append(row(g.title, g.path, g.path)));
+  (d.governance || []).forEach((g) => panel.append(row(g.title, '', g.path)));
   panel.append(el('h3', null, 'Reports'));
-  if (d.reports.length) d.reports.forEach((r) => panel.append(row(r.name, r.author, r.path)));
+  if ((d.reports || []).length) d.reports.forEach((r) => panel.append(row(r.title, [r.author, r.date].filter(Boolean).join(', '), r.path)));
   else panel.append(el('p', 'empty', 'No report yet. One is written at every session end.'));
   panel.append(el('h3', null, 'Logs'));
-  d.logs.forEach((g) => panel.append(row(g.name, g.entries ? g.entries + ' entries, last ' + g.last.ent + ' by ' + g.last.by + ', ' + g.last.at : 'no entries', g.path)));
-  panel.append(el('h3', null, 'Intel'));
-  (d.indexes || []).forEach((g) => panel.append(row(g.title, g.path, g.path)));
-  const intel = Object.values(S.intel.systems).concat(Object.values(S.intel.pilots));
-  if (intel.length) intel.forEach((i) => panel.append(row(i.file, i.standing + ', threat ' + i.threat + (i.updated ? ', ' + i.updated : ''), i.file)));
-  else panel.append(el('p', 'empty', 'None yet.'));
-  if ((d.rules || []).length) {
-    panel.append(el('h3', null, 'Game rules, in detail'));
-    d.rules.forEach((g) => panel.append(row(g.title, '', g.path)));
-  }
+  (d.logs || []).forEach((g) => panel.append(row(g.title, g.entries ? g.entries + ' entries, last by ' + g.last.by + ', ' + g.last.at : 'no entries', g.path)));
+  panel.append(el('h3', null, 'Fleet knowledge'));
+  (d.knowledge || []).forEach((g) => panel.append(row(g.title, '', g.path)));
   panel.append(el('h3', null, 'Station data sources'));
   panel.append(table(['Source', 'Last good', 'Problem'],
     Object.entries(S.sources).map(([n, s]) => [n, ago(s.age) + (s.age < 0 ? '' : ' ago'), s.error])));
 }
 
-function chart(rows, pick, label, unit) {
-  const c = el('canvas', 'chart'), wrap = el('div', 'chartbox');
-  wrap.append(el('div', 'chartlabel', label), c);
+function chart(label, series) {                  // series: [{ pts: [[t, value], ...], colour, name }] on one scale
+  const c = el('canvas', 'chart'), wrap = el('div', 'chartbox'), head = el('div', 'chartlabel', label);
+  series.filter((s) => s.name).forEach((s) => { const key = el('span', 'key', s.name); key.style.color = s.colour; head.append(key); });
+  wrap.append(head, c);
   requestAnimationFrame(() => {
     const w = c.clientWidth || 340, h = 90, d = window.devicePixelRatio || 1, g = c.getContext('2d');
     c.width = w * d; c.height = h * d; g.scale(d, d);
-    const pts = rows.map((r) => [r[0], pick(r)]).filter((p) => p[1] !== null && isFinite(p[1]));
-    if (pts.length < 2) { g.fillStyle = '#5c6780'; g.font = '12px system-ui'; g.fillText('Not enough samples yet', 8, 48); return; }
-    const t0 = pts[0][0], t1 = pts[pts.length - 1][0];
-    let lo = Math.min(...pts.map((p) => p[1])), hi = Math.max(...pts.map((p) => p[1]));
-    if (lo > 0) lo = 0;
+    const lines = series.map((s) => s.pts.filter((p) => p[1] !== null && p[1] !== undefined && isFinite(p[1]))), flat = lines.flat();
+    if (flat.length < 2) { g.fillStyle = '#5c6780'; g.font = '12px system-ui'; g.fillText('Not enough samples yet', 8, 48); return; }
+    const t0 = Math.min(...flat.map((p) => p[0])), t1 = Math.max(...flat.map((p) => p[0]));
+    let lo = Math.min(0, ...flat.map((p) => p[1])), hi = Math.max(0, ...flat.map((p) => p[1]));
     if (hi === lo) hi = lo + 1;
-    const X = (t) => 4 + (w - 8) * (t - t0) / Math.max(1, t1 - t0), Y = (v) => h - 14 - (h - 26) * (v - lo) / (hi - lo);
-    g.strokeStyle = 'rgba(135,145,168,0.25)'; g.lineWidth = 1; g.beginPath(); g.moveTo(4, Y(0)); g.lineTo(w - 4, Y(0)); g.stroke();
-    g.strokeStyle = '#a48be0'; g.lineWidth = 1.6; g.beginPath();
-    pts.forEach((p, i) => (i ? g.lineTo(X(p[0]), Y(p[1])) : g.moveTo(X(p[0]), Y(p[1]))));
-    g.stroke();
+    const X = (t) => 4 + (w - 8) * (t - t0) / Math.max(1, t1 - t0), Y = (v) => h - 14 - (h - 28) * (v - lo) / (hi - lo);
+    g.strokeStyle = 'rgba(135,145,168,0.3)'; g.lineWidth = 1; g.beginPath(); g.moveTo(4, Y(0)); g.lineTo(w - 4, Y(0)); g.stroke();
+    lines.forEach((pts, n) => {
+      g.strokeStyle = series[n].colour || '#a48be0'; g.lineWidth = 1.6; g.beginPath();
+      pts.forEach((p, i) => (i ? g.lineTo(X(p[0]), Y(p[1])) : g.moveTo(X(p[0]), Y(p[1]))));
+      g.stroke();
+    });
     g.fillStyle = '#8791a8'; g.font = '10.5px system-ui';
-    g.fillText(fmt(hi) + unit, 6, 10);
+    g.fillText(fmt(Math.round(hi)), 6, 10);
+    if (lo < 0) g.fillText(fmt(Math.round(lo)), 6, h - 16);
     g.fillText(new Date(t0 * 1000).toISOString().slice(11, 16) + ' UTC', 6, h - 2);
     g.fillText(new Date(t1 * 1000).toISOString().slice(11, 16), w - 34, h - 2);
   });
   return wrap;
 }
 
-function rolling(rows, minutes) {               // CPH over a trailing window, from the minute samples
+function trailing(rows, minutes, col) {          // the change of a running sum per hour, over the minutes before each sample
   const out = [];
+  let j = 0;
   for (let i = 0; i < rows.length; i++) {
-    let j = i;
-    while (j > 0 && rows[i][0] - rows[j - 1][0] <= minutes * 60) j--;
+    while (rows[i][0] - rows[j][0] > minutes * 60) j++;
     const dt = rows[i][0] - rows[j][0];
-    out.push([rows[i][0], dt >= 300 ? (rows[i][6] - rows[j][6]) * 3600 / dt : null]);
+    out.push([rows[i][0], dt >= 300 && rows[i][col] !== null && rows[j][col] !== null ? (rows[i][col] - rows[j][col]) * 3600 / dt : null]);
   }
   return out;
 }
 
+const WINDOWS = { '1h': ['Last hour', 6, 60, 4], '6h': ['6 hours', 24, 60, 6], '24h': ['24 hours', 48, 180, 24] };   // label, hours of graph, minutes behind each point, hours of the routes table
+let metricWin = '1h';
+let INCOME = { routes: [], at: 0, key: '' };
+
 async function renderMetrics(panel, live) {
-  const t = F.totals || {}, r = t.rates;
-  panel.append(el('h2', null, 'Fleet performance'));
-  panel.append(el('p', 'sub', r ? 'Rates over the last ' + r.window_minutes + ' minutes.' : 'Rates appear after five minutes of samples.'));
+  const t = F.totals || {}, r = t.rates, w = r && r.windows ? r.windows[metricWin] : null, [, graphHours, behind, routeHours] = WINDOWS[metricWin];
+  panel.append(el('h2', null, 'Fleet economy'));
+  const pickRow = el('div', 'winsel');
+  for (const [key, def] of Object.entries(WINDOWS)) {
+    const b = el('button', key === metricWin ? 'on' : null, def[0]);
+    b.type = 'button';
+    b.addEventListener('click', () => { metricWin = key; HIST.at = 0; INCOME.at = 0; render(); });
+    pickRow.append(b);
+  }
+  panel.append(pickRow);
+  const span = w ? (w.minutes >= 120 ? Math.round(w.minutes / 60) + ' hours' : w.minutes + ' minutes') : '';
+  panel.append(el('p', 'sub', w
+    ? 'Steady money over the last ' + span + ': what the fleet makes again and again. Rewards the game pays once per pilot are left out.'
+      + (w.ships_changed ? ' The fleet grew in this stretch: a new pilot\'s first credits count as income here.' : '')
+    : 'No figures for this stretch yet: the collector needs five minutes of samples.'));
   const grid = el('div', 'kpis');
-  const kpi = (k, v, sub, cls) => { const b = el('div', 'kpi' + (cls ? ' ' + cls : '')); b.append(el('div', 'k', k), el('div', 'v', v)); if (sub) b.append(el('div', 's', sub)); grid.append(b); };
-  kpi('CPH', r ? signed(r.cph) : '--', 'earned minus spent per hour, one-time rewards left out', 'main');
-  kpi('CPH per ship', r ? signed(r.cph_per_ship) : '--', 'what one ship produces per hour', 'main');
-  kpi('Credits per ship', fmt(t.credits_per_ship), fmt(t.credits) + ' in all');
-  kpi('Earned per hour', r ? fmt(r.earned_per_hour) : '--', 'sales and repeating rewards, before costs');
-  kpi('Wallets per hour', r ? signed(r.net_per_hour) : '--', 'one-time rewards included');
-  kpi('Ore per hour', r ? fmt(r.ore_per_hour) : '--', 'units mined');
-  kpi('Missions per hour', r ? String(r.missions_per_hour) : '--', 'completed');
+  const kpi = (k, v, sub, cls) => { const b = el('div', 'kpi' + (cls ? ' ' + cls : '')); b.append(el('div', 'k', k), el('div', 'v', v)); if (sub) b.append(el('div', 's', sub)); grid.append(b); return b; };
+  const tone = (n) => (n < 0 ? ' neg' : n > 0 ? ' pos' : '');
+  kpi('Steady net / h', w ? signed(w.cph) : '--', 'income minus costs', 'main' + (w ? tone(w.cph) : ''));
+  kpi('Net per ship / h', w ? signed(w.cph_per_ship) : '--', 'what one ship makes', 'main' + (w ? tone(w.cph_per_ship) : ''));
+  kpi('Steady income / h', w ? fmt(w.income_per_hour) : '--', 'sales and repeatable rewards');
+  kpi('Running costs / h', w ? fmt(w.costs_per_hour) : '--', 'fuel, repairs, goods, modules');
+  const metered = w && w.fuel_cr_per_hour !== undefined;
+  kpi('Fuel / h', metered ? fmt(w.fuel_cr_per_hour) : '--', metered ? fmt(w.fuel_units_per_hour) + ' units bought' : 'not measured in this stretch yet');
+  kpi('Repairs / h', metered ? fmt(w.repair_cr_per_hour) : '--', metered ? fmt(w.hull_points_per_hour) + ' hull points' : 'not measured in this stretch yet');
+  kpi('Ships working', t.ships ? fmt(t.working) + ' of ' + fmt(t.ships) : '--',
+    fmt(t.parked) + ' parked at a station' + (t.adrift ? ', ' + fmt(t.adrift) + ' in space without work' : ''));
+  kpi('Credits', fmt(t.credits), fmt(t.credits_per_ship) + ' per ship');
   panel.append(grid);
+  if (w) panel.append(el('p', 'sub', 'Paid once in this stretch (not counted above): ' + signed(Math.round(w.one_time_per_hour * w.minutes / 60)) + ' cr.'));
   const b = F.birth;
   if (b && b.planned && !b.finished_at) {
     panel.append(el('h3', null, 'Birth in progress'));
@@ -1002,29 +1027,54 @@ async function renderMetrics(panel, live) {
       ['Starter missions done', b.starter_done], ['Standing orders given', b.ordered], ['Stopped', b.stopped || 'no']]));
   }
   panel.append(el('h3', null, 'By division'));
-  const div = t.divisions || {}, dr = (r || {}).divisions || {};
+  const div = t.divisions || {}, dw = (w || {}).divisions || {};
   const order = (S ? S.roster : []).filter((a) => a.division !== 'Command' || div.Command).map((a) => [a.division, a.name]);
   if (div.Unassigned) order.push(['Unassigned', '']);
-  panel.append(table(['Division', 'Ships', 'Credits', 'Per ship', 'CPH', 'CPH / ship', 'Ore / h'],
+  panel.append(table(['Division', 'Working', 'Income / h', 'Costs / h', 'Net / h', 'Net / ship'],
     order.map(([d, adm]) => {
-      const x = div[d] || {}, y = dr[d] || {}, name = el('span', null, d);
+      const x = div[d] || {}, y = dw[d] || {}, name = el('span', null, d);
       name.style.color = DIV[d] || DIV.Unassigned; name.title = adm ? 'Admiral ' + adm : '';
-      return [name, fmt(x.ships), fmt(x.credits), fmt(x.credits_per_ship), r ? signed(y.cph) : '--', r ? signed(y.cph_per_ship) : '--', r ? fmt(y.ore_per_hour) : '--'];
-    }), [1, 2, 3, 4, 5, 6]));
-  panel.append(el('h3', null, 'Last six hours'));
-  const box = el('div');
-  panel.append(box);
-  if (Date.now() - HIST.at > 30000) {
-    try { HIST = Object.assign(await get('/api/history?q=6'), { at: Date.now() }); } catch (e) { HIST = { rows: [], at: Date.now() }; }
+      const net = el('span', y.cph < 0 ? 'neg' : null, w ? signed(y.cph) : '--');
+      return [name, fmt(x.working) + ' / ' + fmt(x.ships), w ? fmt(y.income_per_hour) : '--', w ? fmt(y.costs_per_hour) : '--', net, w ? signed(y.cph_per_ship) : '--'];
+    }), [1, 2, 3, 4, 5]));
+  const routesBox = el('div'), graphs = el('div');
+  panel.append(el('h3', null, 'Where the money comes from, last ' + routeHours + ' hours'), routesBox, el('h3', null, 'Last ' + graphHours + ' hours'), graphs);
+  panel.append(el('p', 'sub', 'How it is counted. Income: the game\'s counter of credits earned, less the rewards paid once per pilot. Costs: everything spent, '
+    + 'less what was bought for such a reward. Net: income minus costs. Fuel and repairs: counted when a docked ship\'s tank or hull rises and its wallet falls. '
+    + 'A route\'s figure counts only runs that read a wallet.'));
+  if (Date.now() - HIST.at > 30000 || HIST.key !== metricWin) {
+    try { HIST = Object.assign(await get('/api/history?q=' + graphHours), { at: Date.now(), key: metricWin }); } catch (e) { HIST = { rows: [], at: Date.now(), key: metricWin }; }
     if (!live()) return;
   }
-  box.append(chart(rolling(HIST.rows, 30), (p) => p[1], 'CPH (earned minus spent), trailing 30 minutes', ''),
-    chart(HIST.rows, (p) => p[1], 'Credits, all wallets', ''),
-    chart(HIST.rows, (p) => (p[2] ? p[1] / p[2] : null), 'Credits per ship', ''));
-  panel.append(el('p', 'sub', 'CPH is the change of all wallets per hour with one-time rewards (the starter missions) taken out: sales and repeating rewards minus fuel, goods and modules bought. A fleet that only burns fuel shows a negative CPH.'));
+  if (Date.now() - INCOME.at > 30000 || INCOME.key !== metricWin) {
+    try { INCOME = Object.assign(await get('/api/income?q=' + routeHours), { at: Date.now(), key: metricWin }); } catch (e) { INCOME = { routes: [], at: Date.now(), key: metricWin }; }
+    if (!live()) return;
+  }
+  const steady = INCOME.routes.filter((x) => !x.once).sort((a, b2) => b2.credits - a.credits), once = INCOME.routes.filter((x) => x.once && (x.runs || x.flying));
+  if (steady.length) {
+    routesBox.append(table(['Route', 'Ships now', 'Runs', 'Ship-hours', 'Credits', 'Per ship-hour'], steady.map((x) => {
+      const name = el('span', null, x.route), sum = el('span', x.credits < 0 ? 'neg' : null, signed(x.credits));
+      name.title = x.title || '';
+      return [name, x.flying || '', x.runs, x.ship_hours, sum, x.per_ship_hour === null ? 'no reading' : signed(x.per_ship_hour)];
+    }), [1, 2, 3, 4, 5]));
+  } else routesBox.append(el('p', 'empty', 'No run of a repeating route in this stretch.'));
+  if (once.length) {
+    routesBox.append(el('p', 'sub', 'Paid once per pilot:'));
+    routesBox.append(table(['Route', 'Ships now', 'Runs', 'One-time credits'], once.map((x) => {
+      const name = el('span', null, x.route);
+      name.title = x.title || '';
+      return [name, x.flying || '', x.runs, signed(x.one_time)];
+    }), [1, 2, 3]));
+  }
+  const rows = HIST.rows || [];
+  graphs.append(
+    chart('Steady net per hour, over the ' + behind + ' minutes before', [{ pts: trailing(rows, behind, 5), colour: '#a48be0' }]),
+    chart('Per hour:', [{ pts: trailing(rows, behind, 3), colour: '#58c08c', name: 'income' }, { pts: trailing(rows, behind, 4), colour: '#e06c66', name: 'costs' }]),
+    chart('Ships working', [{ pts: rows.map((p) => [p[0], p[6]]), colour: '#6fa8dc' }]),
+    chart('Credits, all wallets', [{ pts: rows.map((p) => [p[0], p[1]]), colour: '#dcae58' }]));
 }
 
-const TABS = { Selection: renderSelection, Metrics: renderMetrics, Traffic: renderTraffic, Market: renderMarket, Ranks: renderRanks, Docs: renderDocs };
+const TABS = { Selection: renderSelection, Metrics: renderMetrics, Market: renderMarket, Docs: renderDocs };
 let renderSeq = 0, viewKey = '';
 function render() {
   const panel = $('panel'), mine = ++renderSeq, live = () => mine === renderSeq;
@@ -1070,116 +1120,116 @@ function status() {
   }
 }
 
-// ---------------------------------------------------------------- chat with the six agents
+// ---------------------------------------------------------------- comms: one conversation with all six members
 
-const chat = { agent: 'unity', after: 0, timer: 0, draft: null, lastText: '', running: false, seq: 0 };
-const agentOf = (id) => ((S && S.roster) || []).find((a) => a.id === id) || { id, name: id, division: 'Command' };
+const chat = { after: 0, timer: 0, busy: false, first: true };
+const agentOf = (id) => ((S && S.roster) || []).find((a) => a.id === id) || { id, name: id, division: 'Command', rank: '' };
 
-function chatLine(cls, text) {
-  const log = $('chat-log'), hint = log.querySelector('.chathint'), m = el('div', cls, text);
-  if (hint) hint.remove();
-  log.append(m); log.scrollTop = log.scrollHeight;
-  return m;
-}
-function bubble(role, text) {
-  const m = chatLine('msg ' + (role === 'user' ? 'user' : 'agent'), text);
-  if (role !== 'user') m.style.borderLeftColor = DIV[agentOf(chat.agent).division] || DIV.Command;
-  return m;
-}
-function setRunning(on) { chat.running = on; $('chat-send').disabled = on; }
-
-function applyChatEvent(e) {
-  const log = $('chat-log');
-  if (e.kind === 'delta') {
-    if (!chat.draft) chat.draft = bubble('agent', '');
-    chat.draft.textContent += e.text;
-  } else if (e.kind === 'final') {
-    if (chat.draft) chat.draft.textContent = e.text;
-    else if (e.text && e.text !== chat.lastText) bubble('agent', e.text);
-    chat.lastText = e.text; chat.draft = null;
-  } else if (e.kind === 'tool') {
-    if (chat.draft) { chat.lastText = chat.draft.textContent; chat.draft = null; }
-    chatLine('toolline', '> ' + (e.tool || 'tool') + (e.text ? '  ' + e.text : ''));
-  } else if (e.kind === 'tool_done') {
-    if (e.failed) chatLine('toolline failed', 'x ' + (e.tool || 'tool') + ' failed');
-  } else if (e.kind === 'note') chatLine('toolline', e.text);
-  else if (e.kind === 'error') chatLine('msg err', e.text);
-  else if (e.kind === 'end') chat.draft = null;
-  log.scrollTop = log.scrollHeight;
+function address(id) {                           // put @Name at the head of the message, or take it out again
+  const input = $('chat-input'), tag = '@' + (id === 'all' ? 'all' : agentOf(id).name);
+  const has = new RegExp('(^|\\s)' + tag + '(?![A-Za-z0-9_])\\s*', 'i');
+  input.value = has.test(input.value) ? input.value.replace(has, '$1') : tag + ' ' + input.value;
+  input.focus();
+  markWho();
 }
 
-async function pollChat(mine, first) {
-  let d = null;
-  try { d = await get('/api/chat?agent=' + encodeURIComponent(chat.agent) + '&after=' + chat.after); } catch (e) { d = null; }
-  if (mine !== chat.seq) return;
-  if (d && !d.error) {
-    if (first && !d.running) return;                 // nothing in flight: the history is complete
-    for (const e of d.events) { applyChatEvent(e); chat.after = e.n; }
-    setRunning(d.running);
-    $('chat-state').textContent = d.running ? agentOf(chat.agent).name + ' is working | ' + d.seconds + ' s' : '';
-    if (!d.running) return;
-  }
-  chat.timer = setTimeout(() => pollChat(mine, false), 1000);
-}
-
-async function openChat(id) {
-  const mine = ++chat.seq, a = agentOf(id), c = DIV[a.division] || DIV.Command, log = $('chat-log');
-  clearTimeout(chat.timer);
-  chat.agent = id; chat.after = 0; chat.draft = null; chat.lastText = '';
-  setRunning(false); $('chat-state').textContent = '';
-  document.querySelectorAll('#chat-tabs button').forEach((b) => {
-    const on = b.dataset.id === id;
-    b.classList.toggle('on', on); b.style.borderBottomColor = on ? c : 'transparent';
+function markWho() {                             // light the portraits the message is for; nobody named: the Fleet Admiral
+  const names = ($('chat-input').value.match(/@[A-Za-z]+/g) || []).map((s) => s.slice(1).toLowerCase());
+  const all = names.some((n) => ['all', 'everyone', 'fleet'].includes(n)), admirals = names.includes('admirals');
+  const to = [];
+  document.querySelectorAll('#chat-who button').forEach((b) => {
+    const a = agentOf(b.dataset.id);
+    const on = b.dataset.id === 'all' ? all : (all || names.includes(a.name.toLowerCase()) || (admirals && a.rank === 'Admiral'));
+    b.classList.toggle('on', on);
+    if (on && b.dataset.id !== 'all') to.push(a.name);
   });
-  $('chat-input').placeholder = 'Message to ' + a.name + ' (Enter sends, Shift+Enter: new line)';
-  log.replaceChildren(el('div', 'chathint', 'Loading the conversation with ' + a.name + '...'));
-  let h;
-  try { h = await get('/api/chat/history?agent=' + encodeURIComponent(id)); } catch (e) { h = { messages: [], error: e.message }; }
-  if (mine !== chat.seq) return;
-  log.replaceChildren();
-  if (!h.messages || !h.messages.length) {
-    log.append(el('div', 'chathint', h.error || 'No conversation with ' + a.name + ' here yet. Your first message starts one. It is separate from your chats in the desktop app.'));
-  } else h.messages.forEach((m) => bubble(m.role, m.text));
-  log.scrollTop = log.scrollHeight;
-  pollChat(mine, true);
-}
-
-async function sendChat() {
-  const input = $('chat-input'), message = input.value.trim(), mine = chat.seq;
-  if (!message || chat.running) return;
-  setRunning(true);
-  try { await post('/api/chat/send', { agent: chat.agent, text: message }); } catch (e) {
-    setRunning(false); chatLine('msg err', 'Not sent: ' + e.message); return;
+  if (!to.length) {
+    const unity = document.querySelector('#chat-who button[data-id="unity"]');
+    if (unity) unity.classList.add('on');
+    to.push('Unity');
   }
-  if (mine !== chat.seq) return;
-  input.value = '';
-  bubble('user', message);
-  chat.after = 0; chat.draft = null; chat.lastText = '';
-  $('chat-state').textContent = agentOf(chat.agent).name + ' is working';
-  clearTimeout(chat.timer);
-  pollChat(mine, false);
+  $('chat-input').placeholder = 'To ' + (all ? 'everyone' : to.join(', ')) + '. Click a symbol or type @Name to choose. Enter sends.';
 }
 
-async function newChat() {
-  if (chat.running) return;
-  try { await post('/api/chat/new', { agent: chat.agent }); } catch (e) { chatLine('msg err', e.message); return; }
-  openChat(chat.agent);
+function chatNote(text) {
+  const log = $('chat-log'), hint = log.querySelector('.chathint');
+  if (hint) hint.remove();
+  log.append(el('div', 'msg err', text));
+  log.scrollTop = log.scrollHeight;
+}
+
+function groupMessage(m) {
+  const log = $('chat-log'), hint = log.querySelector('.chathint');
+  if (hint) hint.remove();
+  const mine = m.who === 'suggi', a = mine ? null : agentOf(m.who);
+  const box = el('div', 'msg ' + (mine ? 'user' : m.kind === 'error' ? 'err' : 'agent')), head = el('div', 'msghead');
+  if (mine) head.append(el('b', null, 'Suggi'), el('span', 'to', ' to ' + ((m.to || []).length >= 6 ? 'everyone' : (m.to || []).map((i) => agentOf(i).name).join(', ') || 'the group')));
+  else {
+    const name = el('b', null, a.name), c = DIV[a.division] || DIV.Command;
+    name.style.color = c; box.style.borderLeftColor = c;
+    head.append(shipSvg(a.division === 'Command' ? 'Flagship' : a.division, c, 12), name, el('span', null, ' ' + a.division));
+  }
+  head.append(el('span', 'when', new Date((m.t || 0) * 1000).toISOString().slice(11, 16)));
+  box.append(head);
+  if (mine || m.kind === 'error') box.append(el('div', 'msgtext', m.text)); else box.append(markdown(m.text, '', false));
+  log.append(box);
+}
+
+async function pollGroup() {
+  clearTimeout(chat.timer);
+  let d = null;
+  try { d = await get('/api/group?after=' + chat.after); } catch (e) { d = null; }
+  if (d && d.messages) {
+    const log = $('chat-log'), stick = chat.first || log.scrollHeight - log.scrollTop - log.clientHeight < 80;
+    d.messages.forEach((m) => { groupMessage(m); chat.after = Math.max(chat.after, m.n); });
+    if (chat.first && !log.children.length) {
+      log.append(el('div', 'chathint', 'One conversation with Unity and the five Admirals. A message goes to Unity unless it names someone: click a symbol above or type @Name; @all reaches everyone.'));
+    }
+    if (d.messages.length && stick) log.scrollTop = log.scrollHeight;
+    chat.first = false;
+    chat.busy = d.running.length > 0;
+    $('chat-state').textContent = d.running.map((r) => agentOf(r.agent).name + ' is working, ' + r.seconds + ' s' + (r.tool ? ' (' + r.tool + ')' : '')).join('  |  ');
+    document.querySelectorAll('#chat-who button').forEach((b) => b.classList.toggle('busy', d.running.some((r) => r.agent === b.dataset.id)));
+  }
+  chat.timer = setTimeout(pollGroup, chat.busy ? 1500 : 5000);
+}
+
+async function sendGroup() {
+  const input = $('chat-input'), message = input.value.trim(), send = $('chat-send');
+  if (!message || send.disabled) return;
+  send.disabled = true;
+  try {
+    const d = await post('/api/group/send', { text: message });
+    input.value = '';
+    markWho();
+    if (d.busy && d.busy.length) chatNote('Not sent to ' + d.busy.map((i) => agentOf(i).name).join(', ') + ': still answering the last message.');
+  } catch (e) { chatNote('Not sent: ' + e.message); }
+  send.disabled = false;
+  pollGroup();
 }
 
 function initChat() {
-  const tabs = $('chat-tabs');
-  tabs.replaceChildren();
+  const who = $('chat-who');
+  who.replaceChildren();
   for (const a of S.roster) {
-    const b = el('button', null, a.name);
+    const b = el('button', null), c = DIV[a.division] || DIV.Command;
     b.type = 'button'; b.dataset.id = a.id;
-    b.append(el('small', null, a.division));
-    b.addEventListener('click', () => openChat(a.id));
-    tabs.append(b);
+    b.style.setProperty('--c', c);
+    b.append(shipSvg(a.division === 'Command' ? 'Flagship' : a.division, c, 18), el('span', null, a.name));
+    b.title = a.name + ', ' + a.rank + (a.division === 'Command' ? '' : ' of ' + a.division) + ': write to ' + a.name;
+    b.addEventListener('click', () => address(a.id));
+    who.append(b);
   }
-  $('chat-send').addEventListener('click', sendChat);
-  $('chat-input').addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); } });
-  $('chat-new').addEventListener('click', newChat);
-  openChat('unity');
+  const all = el('button', 'all', 'All');
+  all.type = 'button'; all.dataset.id = 'all';
+  all.title = 'Write to all six';
+  all.addEventListener('click', () => address('all'));
+  who.append(all);
+  $('chat-send').addEventListener('click', sendGroup);
+  $('chat-input').addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendGroup(); } });
+  $('chat-input').addEventListener('input', markWho);
+  markWho();
+  pollGroup();
 }
 
 // ---------------------------------------------------------------- loading
@@ -1202,18 +1252,20 @@ async function loadState() {
     legend.append(span);
   }
   legend.append(el('span', null, 'ring: station (gold: player faction)'), el('span', null, 'red cross: pirate stronghold'),
-    el('span', null, 'glow: pilots seen in the last hour'));
+    el('span', null, 'glow: pilots seen in the last hour'), el('span', null, 'numbered ring: our ships by division'),
+    el('span', null, 'tag and number: a foreign faction, last hour'));
 }
 async function loadLive() {
   try { L = await get('/api/live'); } catch (e) { L.stream = { connected: false, age: -1 }; }
+  groupsBy.clear();
+  (L.groups || []).forEach((g) => { if (!groupsBy.has(g.system)) groupsBy.set(g.system, []); groupsBy.get(g.system).push(g); });
   status(); draw();
-  if (tab === 'Traffic') render();
 }
 async function loadFleet() {
   try { F = await get('/api/fleet'); fetchedAt = Date.now(); } catch (e) { F = Object.assign({}, F, { age: -1 }); }
   shipsBy.clear();
   F.ships.forEach((r) => { if (r.system) { if (!shipsBy.has(r.system)) shipsBy.set(r.system, []); shipsBy.get(r.system).push(r); } });
-  renderResources(); renderRoster(); tickAges(); renderPop(); draw();
+  renderMembers(); renderRoster(); tickAges(); renderPop(); draw();
   if (tab === 'Metrics') render();
   if (selShip) {
     const name = selShip;
@@ -1249,12 +1301,16 @@ function init() {
       view.x = drag[2] - (e.clientX - drag[0]) / view.k; view.y = drag[3] - (e.clientY - drag[1]) / view.k;
       draw(); return;
     }
-    const tip = $('tip'), badge = S && badgeAt(mx, my), s = !badge && S && nearest(mx, my);
+    const tip = $('tip'), badge = S && badgeAt(mx, my), grp = !badge && S && groupAt(mx, my), s = !badge && !grp && S && nearest(mx, my);
     hover = s ? s.id : null; hoverBadge = badge || null;
     canvas.style.cursor = badge ? 'pointer' : '';
+    const placeName = (b) => { const o = sys.get(b.system); return o ? o.name : b.system; };
     if (badge) {
-      const at = sys.get(badge.system);
-      tip.textContent = badge.count + (badge.count === 1 ? ' ship of ' : ' ships of ') + kindLabel(badge.kind) + ' at ' + (at ? at.name : badge.system) + ' | click for the card';
+      tip.textContent = badge.count + (badge.count === 1 ? ' ship' : ' ships') + ' of ours at ' + placeName(badge) + ': ' + badge.parts + ' | click for the card';
+      tip.style.left = mx + 14 + 'px'; tip.style.top = my + 12 + 'px'; tip.hidden = false;
+    } else if (grp) {
+      const g = grp.group;
+      tip.textContent = '[' + g.tag + '] ' + (g.name || 'a faction') + ': ' + g.count + ' pilots jumped into ' + placeName(grp) + ' in the last hour | our standing: ' + g.standing;
       tip.style.left = mx + 14 + 'px'; tip.style.top = my + 12 + 'px'; tip.hidden = false;
     } else if (s) {
       const ours = (shipsBy.get(s.id) || []).length;

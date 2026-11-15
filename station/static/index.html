@@ -9,7 +9,7 @@
 <body>
 <header class="topbar">
   <div class="brand"><i class="sigil"></i>THE COLLECTIVE<small>Command Station</small></div>
-  <div id="resources" class="resources"></div>
+  <div id="members" class="members"></div>
   <div class="search">
     <input id="search" type="search" placeholder="Find a system or pilot" autocomplete="off" spellcheck="false">
     <div id="results" class="results" hidden></div>
@@ -23,8 +23,8 @@
       <div id="roster" class="panebody"></div>
     </div>
     <div class="pane comms">
-      <div class="panehead"><span>Comms</span><button id="chat-new" type="button" class="mini">New chat</button></div>
-      <div id="chat-tabs" class="chattabs"></div>
+      <div class="panehead"><span>Comms <span class="fresh">all hands</span></span></div>
+      <div id="chat-who" class="chatwho"></div>
       <div id="chat-log" class="chatlog"></div>
       <div id="chat-state" class="chatstate"></div>
       <div class="chatform">

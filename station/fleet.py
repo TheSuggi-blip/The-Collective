@@ -9,21 +9,38 @@ flies and writes it into the unit's data folder, outside the repository:
                                        modules, skills, missions, what it is doing
     <FLEET_DATA>/history.json          one sample a minute, 48 hours: credits, ships,
                                        credits earned, one-time rewards, ore, missions,
-                                       per division
+                                       per division; ships working, parked and adrift,
+                                       and the meters
+    <FLEET_DATA>/meters.json           the meters: fuel bought, hull repaired and the
+                                       credits that left with them, counted from pass to
+                                       pass, in all and per division
     <FLEET_DATA>/orders/<name>.json    (read) what a fleet script is doing with a pilot
                                        ({"what", "since"}), written and kept fresh by that
                                        script; a file not touched for 20 minutes is ignored
-    <FLEET_DATA>/onetime.json          (read) one-time rewards, written by the birth
-                                       script; kept apart so CPH counts recurring income
+    <FLEET_DATA>/onetime.json          (read) one-time money, written by the birth script
+                                       and the runners: a reward the game pays once per
+                                       pilot (above zero) and what was bought for it
+                                       (below zero); kept apart so the metrics count
+                                       steady money only
 
-Metrics in fleet.json, over the last 60 minutes:
-    cph              change of all wallets per hour with one-time rewards taken
-                     out: what the fleet earns minus what it spends
+Metrics in fleet.json (`totals.rates`): steady money, per hour, over the last
+hour at the top level and over 1, 6 and 24 hours under `windows`:
+    income_per_hour  what the game's counter of credits earned rose by, less the
+                     one-time rewards: sales and repeatable rewards
+    costs_per_hour   everything spent (earned minus the change of the wallets),
+                     less what was bought for one-time rewards: fuel, repairs,
+                     goods, modules
+    cph              income minus costs: what the fleet makes by itself
     cph_per_ship     cph / ships
-    earned_per_hour  credits earned per hour, one-time rewards excluded,
-                     spending not subtracted
-    net_per_hour     change of all wallets per hour (one-time rewards included)
-    credits_per_ship, ore_per_hour, missions_per_hour; the same per division
+    fuel_cr_per_hour, repair_cr_per_hour, fuel_units_per_hour, hull_points_per_hour
+                     from the meters; absent until both ends of the window carry them
+    the same per division; `ships_changed` marks a window in which the fleet grew
+    (a new pilot's first credits then count as income)
+    earned_per_hour (= income_per_hour), net_per_hour (all wallets, one-time
+    money included), ore_per_hour, missions_per_hour: kept for older readers
+Ships in the totals: `working` (a loop, a goal or a script's order), `parked`
+(docked without work: it costs nothing), `adrift` (in space without work);
+`idle` = parked + adrift.
 
 Every file is written whole and then renamed, so a reader never sees half a
 file. A ship's file is rewritten only when its content changed. Nothing here
@@ -53,7 +70,8 @@ DATA = Path(os.environ.get("FLEET_DATA", "/srv/collective/data/fleet"))
 EVERY = max(5, int(os.environ.get("FLEET_EVERY", "10")))
 HISTORY_EVERY = 60           # seconds between two history samples
 HISTORY_CAP = 2880           # 48 hours of samples
-WINDOW = 3600                # the metrics' window
+WINDOW = 3600                # the metrics' first window
+WINDOWS = (("1h", 3600), ("6h", 6 * 3600), ("24h", 24 * 3600))
 MIN_SPAN = 300               # no rate from less than five minutes of samples
 OPENER = urllib.request.build_opener(urllib.request.ProxyHandler({}))   # the gate is inside the unit
 
@@ -215,16 +233,26 @@ def ship_detail(account, row):
     return out
 
 
+def work_state(row):
+    """working (a loop, a goal, a script's order), parked (docked without work) or adrift (in space without work)."""
+    if row["activity"]["kind"] != "idle":
+        return "working"
+    return "parked" if row["docked"] else "adrift"
+
+
 def totals(rows):
-    out = {"ships": len(rows), "connected": 0, "credits": 0, "cargo_used": 0, "cargo_capacity": 0, "idle": 0, "divisions": {}}
+    out = {"ships": len(rows), "connected": 0, "credits": 0, "cargo_used": 0, "cargo_capacity": 0, "idle": 0,
+           "working": 0, "parked": 0, "adrift": 0, "divisions": {}}
     for r in rows:
         d = out["divisions"].setdefault(r["division"], {"admiral": r["admiral"], "ships": 0, "credits": 0, "cargo_used": 0,
-                                                        "cargo_capacity": 0, "idle": 0})
+                                                        "cargo_capacity": 0, "idle": 0, "working": 0, "parked": 0, "adrift": 0})
+        state = work_state(r)
         for bucket in (out, d):
             bucket["credits"] += r["credits"]
             bucket["cargo_used"] += r["cargo_used"]
             bucket["cargo_capacity"] += r["cargo_capacity"]
-            bucket["idle"] += 1 if r["activity"]["kind"] == "idle" else 0
+            bucket["idle"] += 1 if state != "working" else 0
+            bucket[state] += 1
         d["ships"] += 1
         out["connected"] += 1 if r["status"] == "connected" else 0
     return out
@@ -240,8 +268,58 @@ def onetime_by_division(now):
     return out
 
 
-def sample(now, rows):
-    """One history row: [t, credits, ships, earned, onetime, ore, missions, {division: [...]}]."""
+METERS = {"fuel_units": 0, "fuel_cr": 0, "hull_points": 0, "repair_cr": 0, "burned": 0, "clean": [0, 0, 0, 0], "div": {}}
+PREV = {}                    # pilot name -> (fuel, hull, credits, cargo used) at the pass before
+
+
+def meter(row, prev, meters):
+    """Count what one ship burned and bought between two passes.
+
+    Fuel that rose while docked was bought; hull that rose while docked was repaired. When the hold did
+    not change and the wallet did not rise in the same pass, the credits that left are the price: a clean
+    reading. A refuel that shares its pass with a sale or a purchase is priced at the average of the clean
+    readings so far (at nothing while there is none). `clean` holds fuel units, their credits, hull points,
+    their credits of the clean readings.
+    """
+    fuel, hull = row["fuel"] - prev[0], row["hull"] - prev[1]
+    paid, same_hold = prev[2] - row["credits"], row["cargo_used"] == prev[3]
+    if fuel < 0:
+        meters["burned"] += -fuel
+    if not row["docked"] or (fuel <= 0 and hull <= 0):
+        return
+    fuel, hull = max(fuel, 0), max(hull, 0)
+    clean = meters["clean"]
+    price_fuel = clean[1] / clean[0] if clean[0] else None
+    price_hull = clean[3] / clean[2] if clean[2] else None
+    if paid >= 0 and same_hold and not (fuel and hull):
+        fuel_cr, hull_cr = (paid, 0) if fuel else (0, paid)
+        if fuel:
+            clean[0] += fuel
+            clean[1] += paid
+        else:
+            clean[2] += hull
+            clean[3] += paid
+    elif paid >= 0 and same_hold:                 # both in one pass: the fuel at its average price, the rest is the repair
+        fuel_cr = min(paid, round(fuel * price_fuel)) if price_fuel is not None else round(paid * fuel / (fuel + hull))
+        hull_cr = paid - fuel_cr
+    else:                                         # a sale or a purchase in the same pass hides the price
+        fuel_cr = round(fuel * price_fuel) if price_fuel is not None else 0
+        hull_cr = round(hull * price_hull) if price_hull is not None else 0
+    division = meters["div"].setdefault(row["division"], [0, 0, 0, 0])
+    for index, value in enumerate((fuel, fuel_cr, hull, hull_cr)):
+        division[index] += value
+    meters["fuel_units"] += fuel
+    meters["fuel_cr"] += fuel_cr
+    meters["hull_points"] += hull
+    meters["repair_cr"] += hull_cr
+
+
+def sample(now, rows, meters=None):
+    """One history row: [t, credits, ships, earned, onetime, ore, missions, {division: [...]}, extra].
+
+    extra: {"w": [working, parked, adrift], "dw": {division: working}} and, with the meters,
+    "m": [fuel units, fuel credits, hull points, repair credits, fuel burned] and "d": the first four per division.
+    """
     one = onetime_by_division(now)
     divisions = {}
     for r in rows:
@@ -253,32 +331,93 @@ def sample(now, rows):
         d[5] += r["missions_done"]
     for division, value in one.items():
         divisions.setdefault(division, [0, 0, 0, 0, 0, 0])[3] = value
+    states = [work_state(r) for r in rows]
+    extra = {"w": [states.count("working"), states.count("parked"), states.count("adrift")], "dw": {}}
+    for r, state in zip(rows, states):
+        extra["dw"][r["division"]] = extra["dw"].get(r["division"], 0) + (1 if state == "working" else 0)
+    if meters is not None:
+        extra["m"] = [meters["fuel_units"], meters["fuel_cr"], meters["hull_points"], meters["repair_cr"], meters["burned"]]
+        extra["d"] = {division: list(values) for division, values in meters["div"].items()}
     return [int(now), sum(r["credits"] for r in rows), len(rows), sum(r["earned"] for r in rows), sum(one.values()),
-            sum(r["ore_mined"] for r in rows), sum(r["missions_done"] for r in rows), divisions]
+            sum(r["ore_mined"] for r in rows), sum(r["missions_done"] for r in rows), divisions, extra]
 
 
-def rates(history, now):
-    """Metrics over the last WINDOW seconds, for the fleet and per division."""
-    full = [h for h in history if isinstance(h, list) and len(h) == 8 and now - h[0] <= WINDOW + 90]
+def one_time_until(one, t):
+    """One-time money booked up to t, as {division: [rewards, bought]}; the whole fleet under ''."""
+    out = {"": [0, 0]}
+    for row in one:
+        if isinstance(row, list) and len(row) == 4 and isinstance(row[0], (int, float)) and row[0] <= t:
+            value = num(row[3])
+            for key in ("", division_of(row[1] if isinstance(row[1], str) else "")[0]):
+                out.setdefault(key, [0, 0])[0 if value > 0 else 1] += abs(value)
+    return out
+
+
+def figures(hours, ships, credits, earned, one):
+    """Steady money per hour from three changes over a window: the wallets, the game's counter of credits
+    earned, and the one-time money ([rewards, bought])."""
+    income = earned - one[0]
+    costs = earned - credits - one[1]
+    net = income - costs
+    return {"income_per_hour": round(income / hours), "costs_per_hour": round(costs / hours), "cph": round(net / hours),
+            "cph_per_ship": round(net / hours / ships) if ships else 0, "one_time_per_hour": round((one[0] - one[1]) / hours)}
+
+
+def window(history, now, seconds, one):
+    """The steady money of one window, for the fleet and per division; None from less than five minutes of samples."""
+    full = [h for h in history if isinstance(h, list) and len(h) >= 8 and now - h[0] <= seconds + 90]
     if len(full) < 2 or full[-1][0] - full[0][0] < MIN_SPAN:
         return None
+    a, b = full[0], full[-1]
+    hours = (b[0] - a[0]) / 3600
+    before, after = one_time_until(one, a[0]), one_time_until(one, b[0])
+
+    def booked(key):
+        return [after.get(key, [0, 0])[i] - before.get(key, [0, 0])[i] for i in (0, 1)]
+
+    out = figures(hours, b[2], b[1] - a[1], b[3] - a[3], booked(""))
+    out.update({"minutes": round((b[0] - a[0]) / 60), "ships_changed": a[2] != b[2], "divisions": {}})
+    xa, xb = (a[8] if len(a) > 8 else {}), (b[8] if len(b) > 8 else {})
+    metered = "m" in xa and "m" in xb
+    if metered:
+        for index, key in enumerate(("fuel_units_per_hour", "fuel_cr_per_hour", "hull_points_per_hour", "repair_cr_per_hour", "fuel_burned_per_hour")):
+            out[key] = round((xb["m"][index] - xa["m"][index]) / hours)
+    for division, d in b[7].items():
+        e = a[7].get(division, [0, 0, 0, 0, 0, 0])
+        row = figures(hours, d[0], d[1] - e[1], d[2] - e[2], booked(division))
+        if metered:
+            da, db = (xa.get("d") or {}).get(division) or [0, 0, 0, 0], (xb.get("d") or {}).get(division) or [0, 0, 0, 0]
+            row.update({"fuel_cr_per_hour": round((db[1] - da[1]) / hours), "repair_cr_per_hour": round((db[3] - da[3]) / hours)})
+        out["divisions"][division] = row
+    return out
+
+
+def rates(history, now, one=None):
+    """Steady money per hour: the last hour at the top level, and one, six and 24 hours under `windows`.
+
+    `one` is the one-time money ([t, pilot, title, credits] rows); by default the file the birth script
+    and the runners keep.
+    """
+    one = read(DATA / "onetime.json", []) if one is None else one
+    first = window(history, now, WINDOW, one)
+    if first is None:
+        return None
+    full = [h for h in history if isinstance(h, list) and len(h) >= 8 and now - h[0] <= WINDOW + 90]
     a, b = full[0], full[-1]
     hours = (b[0] - a[0]) / 3600
 
     def per_hour(x, y):
         return round((y - x) / hours)
 
-    out = {"window_minutes": round((b[0] - a[0]) / 60), "net_per_hour": per_hour(a[1], b[1]),
-           "cph": per_hour(a[1] - a[4], b[1] - b[4]), "earned_per_hour": per_hour(a[3] - a[4], b[3] - b[4]),
-           "ore_per_hour": per_hour(a[5], b[5]),
-           "missions_per_hour": round((b[6] - a[6]) / hours, 1), "divisions": {}}
-    out["cph_per_ship"] = round(out["cph"] / b[2]) if b[2] else 0
-    for division, d in b[7].items():
-        e = a[7].get(division, [0, 0, 0, 0, 0, 0])
-        cph = per_hour(e[1] - e[3], d[1] - d[3])
-        out["divisions"][division] = {"cph": cph, "cph_per_ship": round(cph / d[0]) if d[0] else 0,
-                                      "earned_per_hour": per_hour(e[2] - e[3], d[2] - d[3]),
-                                      "net_per_hour": per_hour(e[1], d[1]), "ore_per_hour": per_hour(e[4], d[4])}
+    out = dict(first)
+    out.update({"window_minutes": first["minutes"], "earned_per_hour": first["income_per_hour"], "net_per_hour": per_hour(a[1], b[1]),
+                "ore_per_hour": per_hour(a[5], b[5]), "missions_per_hour": round((b[6] - a[6]) / hours, 1)})
+    out["divisions"] = {}
+    for division, row in first["divisions"].items():
+        d, e = b[7][division], a[7].get(division, [0, 0, 0, 0, 0, 0])
+        out["divisions"][division] = dict(row, earned_per_hour=row["income_per_hour"], net_per_hour=per_hour(e[1], d[1]),
+                                          ore_per_hour=per_hour(e[4], d[4]))
+    out["windows"] = {name: (first if seconds == WINDOW else window(history, now, seconds, one)) for name, seconds in WINDOWS}
     return out
 
 
@@ -348,11 +487,18 @@ def collect_once(last):
         if path.name not in keep:
             path.unlink()
             last.pop(path.name, None)
+    for row in rows:                              # what each ship burned and bought since the pass before
+        if row["status"] == "connected" and row["max_fuel"]:
+            before = PREV.get(row["name"])
+            if before:
+                meter(row, before, METERS)
+            PREV[row["name"]] = (row["fuel"], row["hull"], row["credits"], row["cargo_used"])
     total = totals(rows)
     history = read(DATA / "history.json", [])
     if not history or now - history[-1][0] >= HISTORY_EVERY:
-        history.append(sample(now, rows))
+        history.append(sample(now, rows, METERS))
         write(DATA / "history.json", history[-HISTORY_CAP:])
+        write(DATA / "meters.json", METERS)
     total["credits_per_ship"] = round(total["credits"] / total["ships"]) if total["ships"] else 0
     total["earned"] = sum(r["earned"] for r in rows)
     total["onetime"] = sum(onetime_by_division(now).values())
@@ -370,6 +516,9 @@ def main():
         sys.exit("fleet: FLEET_GATE is not set")
     (DATA / "ships").mkdir(parents=True, exist_ok=True)
     last = {}
+    saved = read(DATA / "meters.json", {})          # the meters count on over a restart
+    if isinstance(saved, dict) and isinstance(saved.get("clean"), list) and len(saved["clean"]) == 4 and isinstance(saved.get("div"), dict):
+        METERS.update({key: saved[key] for key in METERS if key in saved})
     for row in read(DATA / "fleet.json", {}).get("ships", []):   # positions survive a restart
         if isinstance(row, dict) and row.get("system"):
             POSITION[text(row.get("name"), 40)] = (text(row["system"], 80), text(row.get("system_name"), 80))

@@ -267,3 +267,49 @@ select, .panel input { background: var(--bg); color: var(--text); border: 1px so
 @media (max-width: 1100px) { .status, .legend { display: none; } .left { width: 270px; } .right { width: 290px; } .ship { grid-template-columns: 16px minmax(0, 1fr) 52px; } .ship .bars { display: none; } }
 @media (max-width: 860px) { .search, .res:nth-child(n+3) { display: none; } .right { display: none; } }
 @media (max-height: 620px) { .legend { display: none; } .pane.roster { flex-basis: 40%; } .pane.comms { flex-basis: 60%; } }
+
+/* ---- top bar: the six members, each with its symbol and its ships; then the fleet */
+.members { display: flex; align-items: stretch; flex: none; }
+.member { display: flex; align-items: center; gap: 8px; padding: 0 12px; background: none; border: 0; border-right: 1px solid var(--line);
+  white-space: nowrap; text-align: left; }
+button.member { cursor: pointer; }
+button.member:hover { background: var(--raise); box-shadow: inset 0 -2px 0 var(--c, var(--accent)); }
+.member .n { font-size: 12.5px; font-weight: 600; line-height: 1.2; }
+.member .d { font: 9px/1.2 var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--dim); }
+.member .c { font-size: 18px; font-weight: 650; min-width: 22px; text-align: right; }
+.member.total { background: linear-gradient(180deg, rgba(164, 139, 224, 0.12), transparent); padding: 0 14px; }
+
+/* ---- comms: one conversation; the symbols choose who a message is for */
+.chatwho { display: flex; flex: none; border-bottom: 1px solid var(--line); }
+.chatwho button { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 2px 5px; background: none; border: 0;
+  border-bottom: 2px solid transparent; color: var(--dim); cursor: pointer; font-size: 11px; }
+.chatwho button:hover { color: var(--text); background: var(--raise); }
+.chatwho button.on { color: var(--text); border-bottom-color: var(--c, var(--accent)); background: var(--raise); }
+.chatwho button.all { justify-content: center; font: 10px/1.2 var(--mono); letter-spacing: 0.1em; text-transform: uppercase; }
+.chatwho button.busy span::after { content: " ..."; color: var(--warn); }
+.msghead { display: flex; align-items: center; gap: 5px; margin-bottom: 2px; font-size: 11px; color: var(--dim); white-space: nowrap; }
+.msghead b { color: var(--text); font-weight: 600; }
+.msghead .when { margin-left: auto; padding-left: 10px; color: var(--faint); font: 10px/1.2 var(--mono); }
+.msg.agent { border-left-width: 2px; }
+.msg .msgtext { white-space: pre-wrap; }
+.msg .md { white-space: normal; font-size: 12.5px; line-height: 1.5; }
+.msg .md p { margin: 4px 0; } .msg .md .mdh { margin: 8px 0 3px; }
+.msg .mdtable { overflow-x: auto; }
+
+/* ---- metrics: the stretch of time, good and bad figures, a graph's key */
+.winsel { display: flex; gap: 6px; margin: 8px 0 6px; }
+.winsel button { background: var(--bg); border: 1px solid var(--line2); border-radius: 999px; padding: 3px 12px; cursor: pointer; color: var(--dim);
+  font: 10.5px/1.4 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; }
+.winsel button:hover { color: var(--text); border-color: var(--accent); }
+.winsel button.on { color: var(--text); border-color: var(--accent); background: var(--raise); }
+.kpi.neg .v, .panel .neg { color: var(--bad); } .kpi.pos .v { color: var(--good); }
+.chartlabel .key { margin-left: 8px; font-weight: 600; }
+.msghead > span.to { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.chatlog { overflow-x: hidden; }
+#roster { overflow-x: hidden; }
+.ship .cr { min-width: 0; overflow: hidden; }
+.ship .cr small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@media (max-width: 1500px) { .member .d { display: none; } .member { padding: 0 9px; gap: 6px; } .brand small { display: none; } }
+@media (max-width: 1250px) { .member { padding: 0 7px; gap: 5px; } .member .n { font-size: 12px; } .member .c { font-size: 16px; min-width: 18px; } .brand { padding: 0 12px; letter-spacing: 0.1em; } }
+@media (max-width: 1150px) { .member .who { display: none; } }
+@media (max-width: 860px) { .member:nth-child(n+4) { display: none; } }
