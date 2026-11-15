@@ -40,3 +40,12 @@ Cause: the name list was built by hand in one shell line (miner numbers 6 to 15)
 Effect: 5 pilots more than ordered. A name is permanent and the game deletes no pilot. No other harm: no refused registration, no rate limit hit.
 Fix, done: the birth script takes the ordered size per division (miner=10 ...), names only the missing pilots, prints the plan and registers only with --go. A list of names is refused; a division already above its order is flagged.
 Would it have prevented this one: yes. miner=10 with 5 miners existing plans 5 new ones.
+
+## [ENT-005] | 2026-11-15 14:58 UTC | Unity | error | ref: communications/queue.log | see: ENT-003
+Class: files written into the clone by a script that stopped before its commit.
+Case 1, 14:33 UTC: my script that installed the governance and intel files made its first commit, then stopped at `git add -- MAP.md`: the path was gone after `git mv`. The new files lay untracked in the clone. I committed them by hand at 14:34:08. The watcher's log has one line `push deferred: untracked file(s) in the clone` at 14:34:00Z and `pushing unpushed commit(s)` at 14:37:21Z.
+Case 2, 14:45 UTC: `scripts/intel-track.py` run without `--commit` wrote four files and left them. The wrapper script of the hourly job, run by hand right after, printed HALT on them, as built. Committed at 14:45:46; the watcher's log has no deferred line for it.
+Cause: the script named the old path of a rename in `git add`, ran with `set -e`, had no step that takes its files out when a later step fails, and was not run on a copy first. The same class as ENT-003.
+Effect: one push was deferred; the next push in the watcher's log is 3 min 21 s later. No file lost, no entry lost.
+Fix, done: `intel-track.py` without `--commit` is a rehearsal that takes its files out again (commit d683dc0; a test covers it). For hand installs my skill `collective-docs` now carries `repo_install.sh`: it refuses an unclean clone, copies, runs the gates, commits by path, and puts the paths back when any step fails. Run on a test clone: a rename plus a new file committed; a non-ASCII file refused with the rename undone and `git status` empty; an unclean clone refused.
+Would it have prevented this one: yes for both cases, when the script is used. Nothing forces its use: a file written into the clone by hand still holds the push.
