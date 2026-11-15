@@ -59,11 +59,13 @@ OPENER = urllib.request.build_opener(urllib.request.ProxyHandler({}))   # the ga
 
 # Pilot name -> division and its Admiral (COLLECTIVE.md; names: <role>-<n>).
 # A flagship's name carries no role word: <FLEET_DATA>/flagships.json names its
-# Admiral and division ({pilot: {admiral, division, role}}), read at every pass.
+# division, that division's Admiral and whose ship it is
+# ({pilot: {admiral, division, role, of}}), read at every pass. The six flagships
+# and the guard (`sentinel-<n>`) are the command group: the Command division.
 FLAGSHIPS = {}
 ROLES = {
     "miner": ("Mining", "Zero"), "trader": ("Trade", "Mercury"), "hauler": ("Logistics", "Apollo"),
-    "drone": ("Military", "Apophis"), "scout": ("Intel", "Oracle"),
+    "drone": ("Military", "Apophis"), "scout": ("Intel", "Oracle"), "sentinel": ("Command", "Unity"),
 }
 ROLE_NAME = re.compile(r"([a-z]+)-(\d{1,4})")
 STATS = ("credits_earned", "credits_spent", "ore_mined", "trades_completed", "missions_completed", "jumps_completed",
@@ -146,6 +148,7 @@ def ship_row(account):
     loop = account.get("loop") or {}
     return {
         "name": name, "division": division, "admiral": admiral, "number": number, "flagship": name in FLAGSHIPS,
+        "flagship_of": text((FLAGSHIPS.get(name) or {}).get("of"), 20),
         "empire": text(player.get("empire"), 20), "status": text(account.get("status"), 20),
         "credits": num(player.get("credits")),
         "class": text(ship.get("class_name") or ship.get("class_id"), 40),
@@ -295,6 +298,11 @@ def read(path, default):
 POSITION = {}                # pilot name -> (system id, system name) last named by the engine
 
 
+def row_order(row):
+    """Roster order: by division; in it the division's own flagship, the other flagships by name, then the ships by number."""
+    return (row["division"], row["number"], row.get("flagship_of") != row["admiral"], row["name"])
+
+
 def load_flagships():
     """Read the flagship entries anew: a ship registered a minute ago stands in its division at the next pass."""
     found = read(DATA / "flagships.json", {})
@@ -317,7 +325,7 @@ def collect_once(last):
         fleet["engine"] = {"ok": False, "error": (type(e).__name__ + ": " + str(e))[:200], "checked_at": stamp}
         write(DATA / "fleet.json", fleet)
         return False
-    rows = sorted((ship_row(a) for a in accounts), key=lambda r: (r["division"], r["number"], r["name"]))
+    rows = sorted((ship_row(a) for a in accounts), key=row_order)
     apply_orders(rows, now)
     for row in rows:                              # between two systems the engine names none: keep the last one
         row["jumping"] = not row["system"]

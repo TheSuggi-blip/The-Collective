@@ -1,5 +1,5 @@
 {
- "note": "Per role (the word before the dash of a pilot's name): the routes tried in this order for a free pilot. The dispatcher reads this file at every pass. A flagship's role is in the data folder (fleet/flagships.json); `command` is the Fleet Admiral's ship.",
+ "note": "Per role (the word before the dash of a pilot's name): the routes tried in this order for a free pilot. The dispatcher reads this file at every pass. The command group: `command` is the six flagships (their role is in the data folder, fleet/flagships.json), `sentinel` their guard; both lists are kept the same, so the group gets the same task in the same pass.",
  "roles": {
   "drone": [
    "voidborn-substrate",
@@ -43,6 +43,13 @@
    "mine-pherkad-rift"
   ],
   "command": [
+   "voidborn-substrate",
+   "voidborn-missions-1",
+   "mine-acubens",
+   "mine-gsc-seep",
+   "mine-pherkad-rift"
+  ],
+  "sentinel": [
    "voidborn-substrate",
    "voidborn-missions-1",
    "mine-acubens",

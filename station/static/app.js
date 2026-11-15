@@ -303,8 +303,9 @@ function shipRow(r) {
   const who = el('div', 'who'), bars = el('div', 'bars'), cr = el('div', 'cr', fmt(r.credits));
   const nm = el('div', 'nm', r.name);
   if (r.flagship) {                               // a star after the name: a word would be cut off behind a long name
-    const flag = el('span', 'flag', '\u2605');
-    flag.title = 'Flagship' + (r.admiral ? ' of ' + r.admiral : '');
+    const of = r.flagship_of || r.admiral || '';
+    const flag = el('span', 'flag', '\u2605' + (of && of !== r.admiral ? ' ' + of : ''));
+    flag.title = 'Flagship' + (of ? ' of ' + of : '');
     nm.append(flag);
   }
   who.append(nm, el('div', 'at', (r.system_name || r.system || 'position unknown') + ' | ' + what));

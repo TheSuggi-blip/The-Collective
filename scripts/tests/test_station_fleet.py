@@ -49,16 +49,22 @@ class FleetCollectorTests(unittest.TestCase):
         for name in ("One of Seven", "miner", "miner-x", "pirate-1", "", None):
             self.assertEqual(self.fleet.division_of(name), ("Unassigned", "", 0))
 
-    def test_a_flagship_stands_first_in_its_admirals_division(self):
-        self.fleet.FLAGSHIPS.update({"Prime Directive": {"admiral": "Unity", "division": "Command", "role": "command"},
-                                     "Zero Point": {"admiral": "Zero", "division": "Mining", "role": "miner"}})
+    def test_the_command_group_is_the_flagships_and_their_guard(self):
+        self.fleet.FLAGSHIPS.update({"Prime Directive": {"admiral": "Unity", "division": "Command", "role": "command", "of": "Unity"},
+                                     "Zero Point": {"admiral": "Unity", "division": "Command", "role": "command", "of": "Zero"},
+                                     "Hades": {"admiral": "Unity", "division": "Command", "role": "command", "of": "Apophis"}})
         self.addCleanup(self.fleet.FLAGSHIPS.clear)
         self.assertEqual(self.fleet.division_of("Prime Directive"), ("Command", "Unity", 0))
-        self.assertEqual(self.fleet.division_of("Zero Point"), ("Mining", "Zero", 0))
+        self.assertEqual(self.fleet.division_of("Zero Point"), ("Command", "Unity", 0))
+        self.assertEqual(self.fleet.division_of("sentinel-3"), ("Command", "Unity", 3))
         self.assertEqual(self.fleet.division_of("One of Seven"), ("Unassigned", "", 0))
-        rows = sorted((self.fleet.ship_row(account(n)) for n in ("miner-2", "Zero Point", "miner-1")), key=lambda r: (r["division"], r["number"], r["name"]))
-        self.assertEqual([(r["name"], r["flagship"]) for r in rows], [("Zero Point", True), ("miner-1", False), ("miner-2", False)])
-        self.assertEqual(self.fleet.totals(rows)["divisions"]["Mining"]["ships"], 3)
+        names = ("sentinel-2", "Zero Point", "miner-1", "Hades", "sentinel-1", "Prime Directive")
+        rows = sorted((self.fleet.ship_row(account(n)) for n in names), key=self.fleet.row_order)
+        self.assertEqual([(r["name"], r["flagship_of"]) for r in rows],
+                         [("Prime Directive", "Unity"), ("Hades", "Apophis"), ("Zero Point", "Zero"), ("sentinel-1", ""), ("sentinel-2", ""), ("miner-1", "")])
+        self.assertEqual([r["flagship"] for r in rows], [True, True, True, False, False, False])
+        totals = self.fleet.totals(rows)["divisions"]
+        self.assertEqual((totals["Command"]["ships"], totals["Command"]["admiral"], totals["Mining"]["ships"]), (5, "Unity", 1))
 
     def test_file_name_has_no_path_characters(self):
         self.assertEqual(self.fleet.file_name("One of Seven"), "One_of_Seven")

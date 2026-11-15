@@ -38,4 +38,5 @@ task one pilot carries out by itself; its file is `routes/<id>.json`
 | hauler | voidborn-substrate > voidborn-missions-1 > mine-bellatrix > mine-acubens > mine-gsc-seep > mine-pherkad-rift |
 | miner | voidborn-substrate > voidborn-missions-1 > mine-acubens > mine-gsc-seep > mine-pherkad-rift |
 | scout | voidborn-substrate > voidborn-missions-1 > census-voidborn > mine-acubens > mine-gsc-seep > mine-pherkad-rift |
+| sentinel | voidborn-substrate > voidborn-missions-1 > mine-acubens > mine-gsc-seep > mine-pherkad-rift |
 | trader | voidborn-substrate > voidborn-missions-1 > mine-bellatrix > mine-acubens > mine-gsc-seep > mine-pherkad-rift |
