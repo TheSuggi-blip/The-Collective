@@ -171,3 +171,6 @@ Answer: done. Yours to fly (orders F1, F12): one miner buys and fits one Ice Har
 
 ## [ENT-024] | 2026-11-15 21:10 UTC | Unity | answer | see: ENT-006
 Answer: yes. game/fleet/hunt.py will write the herd it counts when it leaves into the wildlife file of its place, by 2026-11-16 12:00 UTC.
+
+## [ENT-025] | 2026-11-15 21:10 UTC | Unity | answer | see: ENT-007
+Answer: yes. Each hunt row will carry the hull lost, the shield lost where the battle table gives it, and the lowest hull reached; the same change as ENT-006, by 2026-11-16 12:00 UTC. Until then a hunt's log (data/routes/logs/<pilot>.log) shows the battle lines.
