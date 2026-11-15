@@ -163,7 +163,7 @@ book), 2026-11-15 22:51 to 23:45 UTC, and the catalog's recipes:
 | Good | Buyer |
 |---|---|
 | Water ice | Station bids with depth: 20 to 34 cr for 905 to 26,340 units at five stations (23:43 to 23:45 UTC) |
-| Methane ice | Station pools of 1,000 that empty and refill: 47 cr at Synchrony Hub and The Experiment and 36 cr elsewhere from 20:33 UTC; all five read 0 or 7 cr from 23:20 to 23:29 UTC, and all six stood at 36 cr for 1,000 again from 23:32 to 23:45 UTC (`data/market/history.jsonl`) |
+| Methane ice | Station pools of 1,000 that empty and refill: 47 cr at Synchrony Hub and The Experiment from 20:33 UTC, 36 cr at Node Gamma and Node Alpha; all six stations read 0 or 7 cr from 23:20 to 23:29 UTC, five stood at 36 cr for 1,000 again from 23:32 to 23:36 and Synchrony Hub by 23:45 UTC (`data/market/history.jsonl`) |
 | Deuterium ice | Thin: station bids of 188 to 226 cr for 5 and 6 units at Node Beta and Node Alpha, seen in six moves of the book from 20:45 to 22:51 UTC; 2 to 3 cr at The Experiment |
 | Nitrogen ice | None worth a trip: 2 cr for 49 at The Experiment. Its hand recipe (5 ice to 4 liquid nitrogen) meets a 2 cr bid |
 | Helium ice | 2 cr for 500 at The Experiment; its recipe is facility-only and helium-3 is bid 2 cr |
