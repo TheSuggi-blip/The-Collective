@@ -128,9 +128,9 @@ Append-only, newest last.
 
 Append-only, newest last.
 
-| When | Pilot | What was done or seen | Source |
+| When | By | What was done or seen | Source |
 |---|---|---|---|
-| <tick> | <username> | <what> | <source> |
+| <tick or UTC time> | <own ship, or who reported it> | <what> | <source> |
 
 ## Notes
 
@@ -148,6 +148,9 @@ Append-only, newest last.
    grow at the bottom.
 4. Before every commit: `python3 scripts/validate-intel.py` and
    `bash scripts/validate-ids.sh`.
+5. A ship of ours is written `own ship`, never by name. Which ship it
+   was, where our ships are and which way they fly stays in the
+   unit's data folder and out of the repository (Suggi, 2026-11-15).
 
 ## 6. Where the Facts Come From
 

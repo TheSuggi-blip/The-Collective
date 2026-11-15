@@ -68,3 +68,13 @@ queries:
   gold_files:
   - governance/template-reports.md
   domain: governance
+- qid: c014
+  question: Which station in our home empire besides the capital has a salvage yard, and what did fuel cost there when a ship of ours docked?
+  gold_files:
+  - planets/a-node_alpha.md
+  domain: intel
+- qid: c015
+  question: How strongly is the border system three jumps from home policed, the one with a research station and lanes into lawless space, and was any ore left in its belt?
+  gold_files:
+  - planets/a-the_experiment.md
+  domain: intel
