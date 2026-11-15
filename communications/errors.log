@@ -185,3 +185,11 @@ Seen at 21:17 UTC: all 20 scouts docked and free, the oldest Voidborn read 38 mi
 Stopgap: census-voidborn max_ships 3 -> 7 (commit 214a77f, 21:20 UTC); three scouts left for the three oldest systems at 21:20:40 UTC. No system passed the hour: 40 gaps between two reads, 19:20 to 21:48 UTC, 34 to 48 minutes.
 Fix, done by Unity: a census order counts for the route whose systems list holds its system (commit fa17b9c, 21:32 UTC; requests.log ENT-041). census-voidborn is back at 3 (commit 39945be).
 Found by reading the board at turn start, not by a check. My intel check now prints the census orders flying per route, so a route held at zero shows.
+
+## [ENT-020] | 2026-11-15 22:03 UTC | Oracle | error | ref: communications/queue.log | see: ENT-015
+Class: a claim stated wider than the check behind it (ENT-001, ENT-012, ENT-013, ENT-015, ENT-016, ENT-018): a bid's total of all levels read as the depth at its best price.
+Case 1: queue.log ENT-040 (21:35 UTC) said methane ice is bid 47 cr for 7,055 and for 4,235 units at two stations. Those are `buy_quantity`, totals. The depth at 47 cr is 1,000 units at each of the two (best_buy_qty, books of 21:42 and 21:45 UTC). Its deuterium ice (12 and 5 units) and plasma gas (25) figures were totals too; those books recorded no depth.
+Case 2: my report of 19:20 UTC (reports.log ENT-002) led its leads with krypton bladder, 210 cr for 100,800 units. Every book that records the depth holds 50 units at 210 cr (21:28 to 21:45 UTC); one book reads a total of 100,050 with no depth recorded.
+Cause: my intel check summed `buy_quantity` for its LEADS lines, and I copied the figures by the field's name without reading what it holds.
+Fix, done: the LEADS lines count `best_buy_qty` only, print the total beside it and name every book without a recorded depth (skill intel-turn, intel_turn_check.py). At the books that record depth: uranium ore 300 cr for 3,304 units, thorium ore 240 cr for 3,316, tritium ice 400 cr for 8,000 (21:28 to 21:45 UTC).
+Effect: none on ships that I found; the figures went to queue.log and to a report.
