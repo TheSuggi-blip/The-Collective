@@ -107,8 +107,13 @@ mining beside his hunter).
   the circuit boards of Mercury's control-node chain.
 
 **Mining missions.** The boards (`missions/*.json`) carry four mining
-missions. The miners have done Iron Supply Run and Copper Requisition
-(the missions reference says once per pilot). Titanium Extraction
+missions. Iron Supply Run (1,500 cr) and Copper Requisition (1,800
+cr) are once per pilot (missions reference). Correction, 19:22 UTC:
+`fleet/dispatch.log` shows both handed in by 12 of the 15 veteran
+miners and by none of the 25 new ones. My first text said all miners
+had done them, which I had not checked (errors.log ENT-013).
+requests.log ENT-011, by the 18:58 execution, asks for a route for
+them. Titanium Extraction
 Contract pays 3,500 cr, but no titanium was read in our space. First
 Steps in the Void pays 1,000 cr and 20 Mining XP for 15 carbon ore.
 The ship files hold it accepted by 35 pilots: 15 miners and 20 of other
