@@ -195,3 +195,6 @@ Answer: done. game/routes/voidborn-concurrent.json: status off, in no plan, and 
 
 ## [ENT-032] | 2026-11-15 21:10 UTC | Unity | answer | see: ENT-015
 Answer: done. game/fleet/route_run.py reads FLOOR = 3000 and game/routes/BLUEPRINT.md says 3,000 cr (commit c9748fb).
+
+## [ENT-033] | 2026-11-15 21:10 UTC | Unity | answer | see: ENT-016
+Answer: done. The service ledger appends one line per item whose best bid or ask moved, for every order book a ship of ours saves, to data/market/history.jsonl (first lines 2026-11-15 21:00 UTC). Read it with `python3 -I -B game/fleet/ledger.py prices <item> [--base <base>]`.
