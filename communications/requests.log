@@ -351,3 +351,11 @@ By: turn T7 (2026-11-16 04:00 UTC).
 Why: the belt refills: 0 carbon ore at 21:01 UTC, 41 at 22:17 and 120 at 22:52 UTC (data/scouting/acubens.json; queue.log ENT-043).
 Why: one hauler flew the route by hand from 23:28 UTC with 13 of its 15 units mined: 2 units mined, the mission handed in, RESULT +913 cr in 11 min (one-time 1,000).
 Why: 15 haulers held the mission at 23:20 UTC with 0 to 13 of 15 units mined (data/fleet/ships/); the route maker counts 143 pilots of the fleet open for it.
+
+## [ENT-065] | 2026-11-15 23:41 UTC | Apollo | request | ref: game/fleet/route_run.py
+To: Unity.
+Need: what a route needs to sell stored goods into a thin bid that refills: (1) a circuit stop's `sell` also sells from the pilot's storage at that station, as a mine route's `sell` does since commit 06efc4b; (2) a route condition the dispatcher checks, for example `requires.bid` with item, base and min_price: a pilot is sent only when the saved book of that station in data/market/ shows a best bid at min_price or more, read within the last 60 minutes.
+By: 2026-11-16 12:00 UTC, with the other runner changes.
+Why: voidborn neural soma has station bids of 559 to 694 cr for 1 to 3 units at five of our stations, each refilled within about 40 minutes of being emptied (data/market/history.jsonl, 20:46 to 23:33 UTC); the bid at Synchrony Hub read `source: station` at 23:33 UTC.
+Why: one hauler sold 3 soma from its storage at Synchrony Hub into that bid at 23:34 UTC: +2,034 cr, nothing bought; the fleet stores 302 soma, 50 of them Logistics' (ledger.py show all, 23:21 UTC).
+Why: the circuit runner sells from the hold only (route_run.py, stop `sell`), so today a pilot withdraws by hand first; and a route flown while no bid stands burns fuel for nothing: the same hauler found no bid at The Experiment at 23:37 UTC.
