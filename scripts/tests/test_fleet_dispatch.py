@@ -127,6 +127,18 @@ class PassTests(Tree):
         self.assertEqual(children, [])
         self.assertEqual(sorted(p.name for p in (self.data / "fleet" / "orders").iterdir()), ["miner-4.json"])
 
+    def test_a_flagship_takes_the_role_its_entry_names(self):
+        (self.data / "fleet" / "flagships.json").write_text(json.dumps({"Zero Point": {"admiral": "Zero", "division": "Mining", "role": "miner"}, "broken": "x"}))
+        named = self.dispatch.flagships(str(self.data))
+        self.assertEqual(sorted(named), ["Zero Point"])
+        self.assertEqual([self.dispatch.role_of(n, named) for n in ("Zero Point", "miner-3", "No Role Ship")], ["miner", "miner", "No Role Ship"])
+        self.assertEqual(self.dispatch.ship_file("Zero Point"), "Zero_Point.json")              # the collector's rule: no space in a file name
+        self.assertEqual(self.dispatch.ship_file("miner-3"), "miner-3.json")
+        self.fleet([{"name": "Zero Point", "status": "connected", "credits": 9000, "activity": {"kind": "idle"}},
+                    {"name": "No Role Ship", "status": "connected", "credits": 9000, "activity": {"kind": "idle"}}])
+        self.assertEqual(self.dispatch.one_pass(str(self.root), str(self.data), True, []), ["Zero Point -> mine mine"])   # a ship without a role gets nothing
+        self.assertEqual(self.dispatch.flagships(str(self.root)), {})                             # no file: no flagship
+
     def test_the_stop_file_halts_every_start_and_a_dead_order_frees_its_pilot(self):
         self.fleet([{"name": "miner-4", "status": "connected", "credits": 9000, "activity": {"kind": "idle"}}])
         order = self.data / "fleet" / "orders" / "miner-4.json"

@@ -49,6 +49,17 @@ class FleetCollectorTests(unittest.TestCase):
         for name in ("One of Seven", "miner", "miner-x", "pirate-1", "", None):
             self.assertEqual(self.fleet.division_of(name), ("Unassigned", "", 0))
 
+    def test_a_flagship_stands_first_in_its_admirals_division(self):
+        self.fleet.FLAGSHIPS.update({"Prime Directive": {"admiral": "Unity", "division": "Command", "role": "command"},
+                                     "Zero Point": {"admiral": "Zero", "division": "Mining", "role": "miner"}})
+        self.addCleanup(self.fleet.FLAGSHIPS.clear)
+        self.assertEqual(self.fleet.division_of("Prime Directive"), ("Command", "Unity", 0))
+        self.assertEqual(self.fleet.division_of("Zero Point"), ("Mining", "Zero", 0))
+        self.assertEqual(self.fleet.division_of("One of Seven"), ("Unassigned", "", 0))
+        rows = sorted((self.fleet.ship_row(account(n)) for n in ("miner-2", "Zero Point", "miner-1")), key=lambda r: (r["division"], r["number"], r["name"]))
+        self.assertEqual([(r["name"], r["flagship"]) for r in rows], [("Zero Point", True), ("miner-1", False), ("miner-2", False)])
+        self.assertEqual(self.fleet.totals(rows)["divisions"]["Mining"]["ships"], 3)
+
     def test_file_name_has_no_path_characters(self):
         self.assertEqual(self.fleet.file_name("One of Seven"), "One_of_Seven")
         self.assertEqual(self.fleet.file_name("../../etc/passwd"), ".._.._etc_passwd")

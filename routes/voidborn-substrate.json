@@ -2,10 +2,9 @@
  "id": "voidborn-substrate",
  "kind": "circuit",
  "title": "Substrate Delivery: two neural soma bought at Central Nexus, the mission taken at Node Alpha and handed in at Central Nexus; 2 jumps",
- "note": "Reward 2,500 cr, once per pilot by its kind; two Voidborn Neural Soma cost 313 cr each at Central Nexus (205,311 on offer). Board and order book read 2026-11-15 17:00 UTC. On trial with one ship.",
+ "note": "Reward 2,500 cr, once per pilot by its kind; two Voidborn Neural Soma cost 313 cr each at Central Nexus (205,311 on offer). Board and order book read 2026-11-15 17:00 UTC. The one-ship trial of 2026-11-15 17:37 UTC: +1,979 cr in 14 minutes; open to every pilot since 18:05 UTC.",
  "once": true,
  "min_credits": 3000,
- "max_ships": 1,
  "one_time": [
   "Substrate Delivery"
  ],

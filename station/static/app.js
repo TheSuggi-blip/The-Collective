@@ -301,7 +301,13 @@ function shipRow(r) {
   const [cls, what] = shipState(r), b = el('button', 'ship' + (r.name === selShip ? ' on' : ''));
   b.type = 'button';
   const who = el('div', 'who'), bars = el('div', 'bars'), cr = el('div', 'cr', fmt(r.credits));
-  who.append(el('div', 'nm', r.name), el('div', 'at', (r.system_name || r.system || 'position unknown') + ' | ' + what));
+  const nm = el('div', 'nm', r.name);
+  if (r.flagship) {                               // a star after the name: a word would be cut off behind a long name
+    const flag = el('span', 'flag', '\u2605');
+    flag.title = 'Flagship' + (r.admiral ? ' of ' + r.admiral : '');
+    nm.append(flag);
+  }
+  who.append(nm, el('div', 'at', (r.system_name || r.system || 'position unknown') + ' | ' + what));
   bars.append(bar('hull', r.hull, r.max_hull, 0.5), bar('fuel', r.fuel, r.max_fuel, 0.25), bar('cargo', r.cargo_used, r.cargo_capacity));
   const best = r.top_skill || ['', 0];
   cr.append(el('small', null, best[1] ? best[0].replace(/_/g, ' ') + ' ' + best[1] : (r.class || '')));
@@ -315,7 +321,7 @@ function renderRoster() {
   const box = $('roster'), keep = box.scrollTop, by = new Map();
   box.replaceChildren();
   F.ships.forEach((r) => { if (!by.has(r.division)) by.set(r.division, []); by.get(r.division).push(r); });
-  const divisions = (S ? S.roster : []).filter((a) => a.division !== 'Command').map((a) => [a.division, a]);
+  const divisions = (S ? S.roster : []).filter((a) => a.division !== 'Command' || by.has('Command')).map((a) => [a.division, a]);
   if (by.has('Unassigned')) divisions.push(['Unassigned', null]);
   for (const [division, admiral] of divisions) {
     const list = by.get(division) || [], block = el('div', 'div'), head = el('div', 'divhead'), c = DIV[division] || DIV.Unassigned;
@@ -784,7 +790,7 @@ async function renderMetrics(panel, live) {
   }
   panel.append(el('h3', null, 'By division'));
   const div = t.divisions || {}, dr = (r || {}).divisions || {};
-  const order = (S ? S.roster : []).filter((a) => a.division !== 'Command').map((a) => [a.division, a.name]);
+  const order = (S ? S.roster : []).filter((a) => a.division !== 'Command' || div.Command).map((a) => [a.division, a.name]);
   if (div.Unassigned) order.push(['Unassigned', '']);
   panel.append(table(['Division', 'Ships', 'Credits', 'Per ship', 'CPH', 'CPH / ship', 'Ore / h'],
     order.map(([d, adm]) => {

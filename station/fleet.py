@@ -58,6 +58,9 @@ MIN_SPAN = 300               # no rate from less than five minutes of samples
 OPENER = urllib.request.build_opener(urllib.request.ProxyHandler({}))   # the gate is inside the unit
 
 # Pilot name -> division and its Admiral (COLLECTIVE.md; names: <role>-<n>).
+# A flagship's name carries no role word: <FLEET_DATA>/flagships.json names its
+# Admiral and division ({pilot: {admiral, division, role}}), read at every pass.
+FLAGSHIPS = {}
 ROLES = {
     "miner": ("Mining", "Zero"), "trader": ("Trade", "Mercury"), "hauler": ("Logistics", "Apollo"),
     "drone": ("Military", "Apophis"), "scout": ("Intel", "Oracle"),
@@ -76,7 +79,11 @@ def num(v):
 
 
 def division_of(name):
-    """(division, admiral, number) from a pilot's name; pilots outside the naming rule are unassigned."""
+    """(division, admiral, number) from a pilot's name; a flagship from its entry (number 0: first of its division);
+    pilots outside both are unassigned."""
+    entry = FLAGSHIPS.get(name or "")
+    if entry:
+        return (text(entry.get("division"), 20) or "Unassigned", text(entry.get("admiral"), 20), 0)
     m = ROLE_NAME.fullmatch(name or "")
     if m and m.group(1) in ROLES:
         return ROLES[m.group(1)] + (int(m.group(2)),)
@@ -138,7 +145,7 @@ def ship_row(account):
     division, admiral, number = division_of(name)
     loop = account.get("loop") or {}
     return {
-        "name": name, "division": division, "admiral": admiral, "number": number,
+        "name": name, "division": division, "admiral": admiral, "number": number, "flagship": name in FLAGSHIPS,
         "empire": text(player.get("empire"), 20), "status": text(account.get("status"), 20),
         "credits": num(player.get("credits")),
         "class": text(ship.get("class_name") or ship.get("class_id"), 40),
@@ -288,9 +295,18 @@ def read(path, default):
 POSITION = {}                # pilot name -> (system id, system name) last named by the engine
 
 
+def load_flagships():
+    """Read the flagship entries anew: a ship registered a minute ago stands in its division at the next pass."""
+    found = read(DATA / "flagships.json", {})
+    FLAGSHIPS.clear()
+    if isinstance(found, dict):
+        FLAGSHIPS.update({str(name): entry for name, entry in found.items() if isinstance(entry, dict)})
+
+
 def collect_once(last):
     """One pass: ask the engine, write the files. `last` holds what was written before."""
     now = time.time()
+    load_flagships()
     stamp = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(now))
     try:
         with OPENER.open(GATE + "/dashboard/data", timeout=25) as r:

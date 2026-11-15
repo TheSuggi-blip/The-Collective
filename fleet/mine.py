@@ -26,6 +26,7 @@ import atexit
 import fcntl
 import json
 import os
+import re
 import sys
 import time
 import urllib.error
@@ -85,7 +86,8 @@ def main():
     def numbers():
         """(credits, ore mined so far); None for a value that could not be read."""
         try:
-            with open(os.path.join(DATA, "fleet", "ships", pilot + ".json"), encoding="utf-8") as handle:
+            live = (re.sub(r"[^A-Za-z0-9_.-]", "_", pilot)[:60] or "pilot") + ".json"      # the collector's file-name rule
+            with open(os.path.join(DATA, "fleet", "ships", live), encoding="utf-8") as handle:
                 ship = json.load(handle)
         except (OSError, ValueError):
             ship = {}

@@ -8,7 +8,9 @@ WHAT: every 30 s it reads the fleet's live files, the plan (routes/plan.json) an
         census   -> fleet/census.py      read one system whole (the stalest first)
         mine     -> fleet/mine.py        the engine's mining loop for a set time
       A pilot's role is the word before the dash of its name; the plan lists,
-      per role, route ids in the order they are tried.
+      per role, route ids in the order they are tried. A flagship's name has
+      no role word: its role is in data/fleet/flagships.json
+      ({pilot: {admiral, division, role}}).
 RULES:
   - A pilot is free when it is connected, the engine runs no loop and no goal
     for it, and it carries no fresh order file (data/fleet/orders/<pilot>.json:
@@ -38,6 +40,7 @@ import argparse
 import calendar
 import json
 import os
+import re
 import subprocess
 import sys
 import time
@@ -54,6 +57,23 @@ def read_json(path, default):
         return json.loads(Path(path).read_text(encoding="utf-8"))
     except (OSError, ValueError):
         return default
+
+
+def flagships(data):
+    """{pilot: {admiral, division, role}} from data/fleet/flagships.json: the ships whose names carry no role word."""
+    found = read_json(Path(data) / "fleet" / "flagships.json", {})
+    return {name: entry for name, entry in found.items() if isinstance(entry, dict)} if isinstance(found, dict) else {}
+
+
+def role_of(name, ships):
+    """A pilot's role: the one its flagship entry names, else the word before the dash of its name."""
+    entry = ships.get(name)
+    return str(entry.get("role") or "") if entry else name.split("-")[0]
+
+
+def ship_file(name):
+    """The name of a pilot's live file, by the fleet collector's rule (station/fleet.py, file_name)."""
+    return (re.sub(r"[^A-Za-z0-9_.-]", "_", name)[:60] or "pilot") + ".json"
 
 
 def load_routes(root):
@@ -135,7 +155,7 @@ def stalest_system(data, route, orders, now):
 
 def pick(pilot, plan, routes, state):
     """(route, argument) for the first route of the pilot's role that is open to it, or (None, None)."""
-    role = pilot["name"].split("-")[0]
+    role = pilot.get("role") or pilot["name"].split("-")[0]
     for rid in (plan.get("roles") or {}).get(role) or []:
         route = routes.get(rid)
         if not route or route.get("status") == "off":
@@ -208,13 +228,15 @@ def one_pass(root, data, dry_run, children):
     routes = load_routes(root)
     rows = run_rows(data)
     state = {"now": now, "data": data, "rows": rows, "orders": fresh_orders(data, now), "rest": resting(routes, rows, now)}
+    named = flagships(data)
     lines = []
     for ship in fleet.get("ships") or []:
         name = ship.get("name") or ""
         if ship.get("status") != "connected" or name in state["orders"] or (ship.get("activity") or {}).get("kind") != "idle":
             continue
-        detail = read_json(Path(data) / "fleet" / "ships" / (name + ".json"), {})
-        pilot = {"name": name, "credits": ship.get("credits", 0), "modules": [m.get("type") or m.get("type_id") for m in detail.get("modules") or [] if isinstance(m, dict)]}
+        detail = read_json(Path(data) / "fleet" / "ships" / ship_file(name), {})
+        pilot = {"name": name, "role": role_of(name, named), "credits": ship.get("credits", 0),
+                 "modules": [m.get("type") or m.get("type_id") for m in detail.get("modules") or [] if isinstance(m, dict)]}
         route, argument = pick(pilot, plan, routes, state)
         if route is None:
             continue
