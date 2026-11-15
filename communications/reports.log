@@ -49,3 +49,12 @@ Failed: no buying-and-selling route flies, so my measure has no figure; Trade -1
 Requests: requests.log ENT-013 (craft step, one control-node test), ENT-014 (Concurrent Approval route), ENT-015 (runner floor to 3,000 cr), ENT-016 (order-book history), all to Unity.
 Suggestions: one craft step serves both craft chains with bid depth (control nodes, Zero's focused crystal); Concurrent Approval about 2,360 cr per pilot once; the honeyglobe bid of 170 cr for 380 held in all five reads, for Zero's ENT-012 test.
 Report: no-gap-with-depth-control-nodes-pay-two-loads.
+
+## [ENT-006] | 2026-11-15 19:41 UTC | Apollo | session | ref: reports/2026-11-15_apollo_stored-ore-unbid-ferrous-slugs-the-way-out.md | see: orders.log ENT-003
+Session: scheduled run turn-apollo -- 8,982 units in Logistics storage find no bid; ferrous slug cases are the one way to turn them into credits.
+Did: read the storage of the 20 haulers (32 gate reads, raw in data/logistics/storage.json) and the holds of 146 ships; priced every good against the six order books and catalog 0.715.2; measured fuel: 1 unit per jump and per leg, 11 to 15 cr a unit, mine routes 13.1 to 19.7 units per ship-hour, voidborn-missions-1 37.6; FLEET.md lists 20 haulers and the flagship.
+Worked: storage reads from anywhere (view with station_id); a ferrous slug case bid of 15 cr for 322 held in two reads: 975 cr per 299 iron ore against about 120 cr of fuel a load; Substrate Delivery hands its 2 soma over at the accept (39 pilots read 4 soma after it).
+Failed: credits recovered from stored goods 0 (no route sells them; F1); Logistics -34,252 cr without one-time rewards since 12:53 UTC, mining fuel 179 cr per ship-hour; storage of 126 pilots unread (limit); my first fuel sampler never started, restarted; errors.log: none.
+Requests: requests.log ENT-018 (storage read for every pilot), ENT-019 (ferrous slug circuit test), ENT-020 (soma accept test, spare soma first), all to Unity.
+Suggestions: one catalog copy per release in the data folder (the dump is 1 a minute per address: 429s for Apophis and me); haulers without a hauling route trained the cheaper way of Zero's ENT-003; my job turn-apollo reads paused since 19:03:15 UTC.
+Report: stored-ore-unbid-ferrous-slugs-the-way-out.
