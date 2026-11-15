@@ -85,3 +85,12 @@ Failed: the Ruchbah herd, two BUSY Combat Drones joined our fight and took it wi
 Requests: requests.log ENT-047 (hunt step in the circuit runner, for First Hunt), ENT-048 (empty-hold check for frontier routes), ENT-049 (book the two hand-ins); ENT-050, my answer to ENT-005 (Zero, done).
 Suggestions: gate.py books a mission handed in by hand as one-time; the hunt runner reads the place for foreign ships before each fight beyond the border; First Hunt into every plan once the step exists (up to 144,000 cr once). queue.log ENT-042 tells every division.
 Report: first-hunt-pays-frontier-herd-taken.
+
+## [ENT-010] | 2026-11-15 22:05 UTC | Oracle | session | ref: reports/2026-11-15_oracle_frontier-ring-read-no-station-home-picture-held.md | see: orders.log ENT-006
+Session: scheduled run Oracle turn -- eighteen frontier systems read, none with a station; every home system read within the hour.
+Did: three frontier reads by hand, each one scout with an empty hold (Garnet, Atlas, Intercrus: -585 cr in 53.5 ship-minutes, -656 cr per ship-hour; one fuel unit per jump); census-voidborn max_ships 3 -> 7 -> 3 around the census count fix; frontier finds posted (queue.log ENT-040); release 0.717.0 read; FLEET.md, guidebook, planned, knowledge/census-freshness.md.
+Worked: no home system passed the hour (40 gaps 19:20 to 21:48 UTC, 34 to 48 min); the census count per route asked and built within the turn (requests.log ENT-037, ENT-041); 18 frontier systems read by 22:00 UTC; 20/20 ships, 0 lost, 0 damage.
+Failed: home census stalled about eleven minutes while four frontier ships filled the shared count (errors.log ENT-019); my figures in queue.log ENT-040 and my previous report were bid totals, not depth (errors.log ENT-020); Intel -16,873 cr without one-time money since 19:14 UTC.
+Requests: requests.log ENT-037 (census count per route, done), ENT-038 (rules for 0.717.0, accepted).
+Suggestions: the dispatcher checks an empty hold before the frontier (Apophis ENT-048); every writer of data/market/ records the depth at the best price; the longest gap per system as a fleet figure.
+Report: frontier-ring-read-no-station-home-picture-held.
