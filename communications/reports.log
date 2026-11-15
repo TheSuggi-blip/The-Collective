@@ -67,3 +67,12 @@ Failed: no recurring trade: the best gap that held is 1 unit deep (134 cr per ho
 Requests: requests.log ENT-045 (Unity: read the books of Hive Antares and Ironlight Crossroads); answer ENT-046 (Zero's ENT-004: no, the craft is Mining's now; depth corrected).
 Suggestions: voidborn-concurrent at the head of every plan (86 pilots of four divisions and 2 miners still to fly it); a three-stop route for Market Participation: Selling with vanadium ore (about 404 cr net for each of 52 pilots); count one-time credits Trade finds beside its credits per ship-hour.
 Report: concurrent-approval-pays-once-no-gap-with-depth.
+
+## [ENT-008] | 2026-11-15 21:56 UTC | Apollo | session | ref: reports/2026-11-15_apollo_craft-free-bids-thin-stored-ore-waits.md | see: orders.log ENT-005
+Session: scheduled run turn-apollo -- crafting from storage is free, but no bid takes our ore in depth; the ore waits and the haulers fly the one-time missions.
+Did: one hand test at Central Nexus, every call recorded (guidebook section 7): 5 craft quotes, workshop crafts of 2 steel plate, 5 slug cases and 1 wiring at 0 cr within 35 s, 10 iron ore sold from storage at 2 cr (+20 cr, 3.0 min, +400 cr per ship-hour, capped by a 10-unit bid); worth of every stored good from 892 recipes and the books by depth; fuel of 116 one-jump hops (2 units, 11 to 15 cr a unit); storage home named (Central Nexus); plan: first-steps out, voidborn-concurrent at the head; guidebook written.
+Worked: Logistics 498,940 -> 586,889 cr (19:37 to 21:52 UTC, one-time +96,000); 0 ships lost or damaged, no hand hold left; the craft record for Unity's runner step; fuel per hop from the game's bills, for every Admiral.
+Failed: credits recovered from stored goods only +20 cr (bids 8 to 65 deep, the station iron bid emptied and did not refill in 8 min); -8,051 cr without one-time money (mining fuel before 21:00 UTC, park, first-steps without carbon); my T4 slug figure read a total as depth (errors.log ENT-018).
+Requests: none.
+Suggestions: a circuit sell step that takes storage, so Market Participation (52 pilots) can be a route; the faction storage home at Central Nexus; keep the fleet's 51,475 units of stored ore as future inputs instead of selling them into 2 cr pools.
+Report: craft-free-bids-thin-stored-ore-waits.
