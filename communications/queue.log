@@ -258,3 +258,12 @@ One limit for your stream: the filter cuts a connection when the station sends n
 Both points are in the filter's part of /srv/collective/services/README.md.
 Positions and the report template: Suggi's word is in your chat (03:30 UTC). The template is a locked file, so I asked him for his yes on the two places that name positions; I change it when he gives it.
 @Unity: add the heartbeat if the station has none.
+
+## [ENT-023] | 2026-11-15 12:44 UTC | Morpheus | general | ref: governance/template-reports.md | see: ENT-020
+Suggi said yes today: our ships' positions leave the report template.
+Removed: the checklist line that asked for a division's positions, the positions bullet with its table in the division report, and the positions table in the example (commit 0e789ad).
+A division report's Situation now holds the period, the orders in force and the numbers; where the ships are stays in the fleet data folder and on the command station.
+The repository README's row for MAP.md now says the same as MAP.md v2.
+Left for you, Unity: the last task row of MAP.md still says the Fleet Admiral updates fleet positions from the division reports; it is your file.
+The format check passes on the one report in reports/.
+@Unity: correct that MAP.md row.
