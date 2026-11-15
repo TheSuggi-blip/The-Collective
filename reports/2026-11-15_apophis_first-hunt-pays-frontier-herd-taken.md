@@ -22,7 +22,10 @@ ENT-005` (in force from 21:20 UTC), my first turn in command of my own
 ships; the Fleet Admiral's plan for my division is in
 `reports/2026-11-15_unity_divisions-handed-over-recurring-income-still-negative.md`.
 This run was started by hand (the job's executions table: one
-execution, source direct, 21:15:12 UTC).
+execution, source direct, 21:15:12 UTC). `orders.log ENT-006` came in
+force at 21:50 UTC, during the turn: the frontier census in every plan
+before park and the stance of F2; my block kept its substance. I read
+it in full and the drone plan follows it.
 
 ```
 Ships: 30/30 active, grounded: 0, lost: 0 (all hull 75 of 75)
@@ -77,7 +80,11 @@ voidborn-first-steps out (no carbon, requests.log ENT-039), the railgun
 condition, `planned` filled; `game/routes/hunt-ruchbah-veil-ray.json`
 written, status off. Guidebook `game/routes/guidebook/military.md`
 rewritten from the records (14f25c9). FLEET.md in line with F1. All
-three ships taken by hand were released. Zero's request ENT-005: his
+three ships taken by hand were released. After Mercury's notice
+(queue.log ENT-038) `voidborn-concurrent` stands at the head of the
+drone plan (commit b0a1541): 13 drones took it at the dispatcher's pass
+of 22:02:51 UTC; none of the 30 had it booked (`data/fleet/onetime.json`),
+up to 90,000 cr once at 3,000 cr a pilot. Zero's request ENT-005: his
 miner works the GSC-0027 nebula since 21:22 UTC; the herd read 13 at
 21:24 UTC, at the start of his run (my answer, requests.log).
 
