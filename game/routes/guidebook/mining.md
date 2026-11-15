@@ -72,6 +72,28 @@ was flown the first time.
   Fitted beside both lasers: cpu 8 of 16, power 17 of 30 (the
   `install_mod` answer). Mining power 8. At Wolf 1061 it filled a hold
   of 65 in about 7 minutes.
+- Two utility slots hold two of: Mining Laser I, Ice Harvester I (cpu 4,
+  power 7), Gas Harvester I (cpu 4, power 6), a filter (catalog 0.717.0).
+  An ice miner keeps the laser and the harvester; a gas miner the laser
+  and the gas harvester; an ice miner with a filter gives up the laser.
+  `uninstall_mod` works docked and puts the module into the hold
+  (engine help, 2026-11-15).
+- Nitrogen Vent: never targets nitrogen ice, every cycle re-targets
+  another deposit at the field; cpu 4, power 9 (catalog). One was on
+  offer in our six books, 1,500 cr at Central Nexus from a player; the
+  trip from Synchrony (3 jumps) and the buy took the wallet from 34,984
+  to 33,430 cr. Fitted with the Ice Harvester I in
+  place of the mining laser: cpu 10 of 16, power 21 of 30 (`get_ship`,
+  2026-11-15 23:32 UTC). The laser went into storage there.
+- Where harvesters are on offer (asks at the best price): Ice Harvester I
+  1,413 cr at all six of our stations, 20 units in all at 22:47 to 23:21
+  UTC, of them 5 at Central Nexus, gone by 23:36 UTC (then 1,738 x 4); at
+  the station of LHS 1140, beyond our border, 638 cr x 20 (23:45 UTC).
+  Gas Harvester I 1,202 x 18 at Node Beta (23:17 UTC), 1,554 to 2,639 at
+  the other five, 1,691 x 20 at LHS 1140 (`data/market/`).
+- The fit route (`fit-ice-harvester`) buys and fits by itself: 1,427 cr
+  at Central Nexus, 1,451 at Node Alpha with the jump. Size it by the
+  asks at its station, one ship at a time where they are few (section 6).
 - Extraction filters take one ore out of a pull's draw (the game's
   `mine` help; catalog `special: filter_<ore>`): Magnetic Ore Separator
   (iron; power 12), Flotation Cell (copper; power 4, cpu 8; 1,600 cr at
@@ -136,17 +158,26 @@ Synchrony 34 to 36 (23:00).
 
 ## 7. Open Tests
 
-- Water ice from Wolf 1061 as a route: the second run, and the third,
-  to see whether the Synchrony bid holds. A mine route stores its ore
-  and does not sell (BLUEPRINT, kind `mine`): the route waits for a sell
-  step (requests.log ENT-051); until then it is flown by hand.
-- A Nitrogen Vent (filter nitrogen ice; power 9, cpu 4) in place of the
-  mining laser: nitrogen ice was 32% of the load and has no buyer.
+- The ice routes, each a test with one ship since 2026-11-15 23:34 UTC
+  (orders.log ENT-007): the ten fields the route maker wrote
+  (`mine-*` with `requires.module: ice_harvester_i`), shared with the
+  command group, and `mine-wolf-1061-vent`. Read each first RESULT line,
+  then `routes.py measure --write`, then lift `max_ships` where the
+  water-ice depth at the best bid carries more ships.
+- The Nitrogen Vent: does it raise water and rare ice per minute at
+  Wolf 1061 against run 1 (126 units in 25 minutes, 32% nitrogen)?
+- Plasma gas at GSC-0050 Gas Plume with one gas miner
+  (`fit-gas-harvester`, `mine-gsc-0050-gas-plume`): the Node Beta bid read
+  90 x 5, 94 x 21, 98 x 25 and 102 x 5 between 20:45 and 23:16 UTC with
+  no sale of ours: a few units that grow back. What a gas harvester
+  mines per minute is not measured.
+- Deuterium ice: bids of 188 to 226 cr for 5 or 6 units at Node Alpha
+  and Node Beta (20:45 to 23:17 UTC), 2 cr at The Experiment, an ask of
+  491 at LHS 1140: a one-time price until it is seen to refill (orders
+  F12). Stored, not sold at 2 cr, until then.
 - Whether the one-unit station bid for focused crystal at The
   Experiment refills: `ledger.py prices focused_crystal`, before a second
   craft.
-- A crystal route that sells raw at 40 cr: not flown as a route; the
-  fuel of the trip to Synchrony decides it.
 - Uranium, thorium and tritium have bids of 300, 240 and 400 cr with
   depth at all six stations; no field read in our space or on the
   frontier holds them (census reads to 22:22 UTC).
