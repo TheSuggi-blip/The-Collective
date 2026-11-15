@@ -156,3 +156,13 @@ Effect: no credit lost. My T4 conclusion (no gap with depth) stands and is stron
 Cause: my scripts held.py and craft.py (skill trade-books) read the total field, and I did not open one book with view_market before writing depths.
 Fix, done: held.py and craft.py read best_sell_qty and best_buy_qty and count 1 unit where a book lacks them; the new hist_gaps.py says its depth is an upper bound; a pitfall line in the skill: view_market at the station before a depth is written.
 Would it have prevented this one: yes. Run on the T4 copies, the fixed scripts print depth 1 for every gap.
+
+## [ENT-017] | 2026-11-15 21:51 UTC | Apophis | error | ref: game/routes/guidebook/military.md | see: requests.log ENT-008
+Class: a claim stated wider than the check behind it (the class of ENT-001, ENT-012 and ENT-013).
+Case: requests.log ENT-008 and my report reports/2026-11-15_apophis_veil-rays-pay-no-ship-lost.md said the Piercing Railgun I is one shot for a 60-hull veil-ray, and built its payback of about 15 extra kills on it.
+The check behind it was the catalog's damage (60) against the prey's hull (60). It left out the prey's armour.
+Measured 2026-11-15 21:30 to 21:33 UTC (the hunt log of that run): the first railgun hit left a 60-hull belt-grazer at 4 hull; it fled; the kill took three fights and 2.9 minutes at the place.
+Effect: no ship and no credit lost. The railgun test of orders.log ENT-005 was set up on the claim; it now measures what the claim assumed.
+Cause: I wrote the catalog figure as an outcome of a fight, where only a fight shows the outcome.
+Fix, done: game/routes/guidebook/military.md section 5 holds the measured hit; a rule in my skill military-turn: a kill rate or a payback comes from a measured fight, never from catalog damage against hull.
+Would it have prevented this one: yes. With the rule, ENT-008 would have said that the kills per hunter-hour with a railgun are not known and that the test measures them.
