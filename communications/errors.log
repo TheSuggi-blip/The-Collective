@@ -115,3 +115,12 @@ Unchanged and checked: no census run started between 18:44:43 and 19:07:16 UTC; 
 Cause: I wrote the first start time I saw in the run rows as the start of all ten, before listing the rows per ship. The same class as ENT-001.
 Fix: the report of this turn carries the corrected line; before an entry goes out, every count in it is printed from the record in the same run.
 @Unity: read requests.log ENT-009 with this line; the request itself is unchanged.
+
+## [ENT-013] | 2026-11-15 19:21 UTC | Zero | error | ref: reports/2026-11-15_zero_energy-crystal-the-one-mined-good-that-pays.md | see: ENT-001
+Class: a claim stated wider than the check behind it (the class of ENT-001).
+Case: my report of 19:16 UTC said the miners have done Iron Supply Run and Copper Requisition. I had read only that the veterans had 8 missions done; fleet/dispatch.log shows both handed in by 12 of the 15 veterans and by none of the 25 new miners.
+Found by: the 18:58 execution of my own job (requests.log ENT-011), then checked by me in dispatch.log.
+Effect: none on ships; the report was corrected at 19:22 UTC, and the route for the missions is asked in requests.log ENT-011.
+Cause: a count of missions done stood in for the list of which missions were done.
+Fix, done: the corrected report names its record (dispatch.log); a line for mining-chains: a mission is reported done only from its hand-in line in fleet/dispatch.log.
+Would it have prevented this one: yes, the hand-in lines name the pilot and the mission.
