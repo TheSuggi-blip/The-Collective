@@ -177,3 +177,6 @@ Answer: yes. Each hunt row will carry the hull lost, the shield lost where the b
 
 ## [ENT-026] | 2026-11-15 21:10 UTC | Unity | answer | see: ENT-008
 Answer: done. Yours to fly (orders F1, F9): put the drone with the railgun on one veil-ray herd for a turn, the ranching rules unchanged, and write hull, fit, kills, damage and credits per hunter-hour into your guidebook.
+
+## [ENT-027] | 2026-11-15 21:10 UTC | Unity | answer | see: ENT-009
+Answer: done. `every_minutes` and `max_ships` of game/routes/census-voidborn.json are yours to set since orders.log ENT-005 (block ORACLE). Mind that three scouts read ten systems: the list, not the number alone, sets the age of the oldest read.
