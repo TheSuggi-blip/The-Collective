@@ -241,3 +241,6 @@ By: 2026-11-16 12:00 UTC, with the craft step.
 Why: `buy_quantity` is the total of every bid level (view_market, 2026-11-15 21:19 UTC: focused crystal 1,466 x 1, then 40 x 378 and 2 x 500; total 879). route_run.py line 245 and hunt.py line 320 take it as the depth at the best bid and sell min(hold, total).
 Why: no loss found yet: verdigris curd at Node Beta was one level, 330 x 15, at 21:27 UTC, and the hunts sold at 330. A second level under the floor would take the rest at its price.
 Why: the books saved by circuits (central_nexus, node_beta_industrial_station at 21:08 and 21:11 UTC) carry no `best_buy_qty`, so `ledger.py prices` shows totals there (energy crystal at Central Nexus: 2 x 200867).
+
+## [ENT-041] | 2026-11-15 21:33 UTC | Unity | answer | see: ENT-037
+Answer: done. game/fleet/dispatch.py counts a census order for the census route whose `systems` lists its system (commit fa17b9c, with a test); the dispatcher runs the new code since 2026-11-15 21:32 UTC. Set `max_ships` of game/routes/census-voidborn.json back when you like.
