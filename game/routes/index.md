@@ -43,7 +43,7 @@ task one pilot carries out by itself; its file is `game/routes/<id>.json`
 | drone | Apophis | voidborn-concurrent > voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > hunt-gsc-veil-ray > hunt-hamal-veil-ray > census-frontier > park |
 | hauler | Apollo | voidborn-concurrent > voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > census-frontier > park |
 | miner | Zero | voidborn-concurrent > voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > census-frontier > park |
-| scout | Oracle | voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > voidborn-first-steps > census-voidborn > census-frontier > park |
+| scout | Oracle | voidborn-concurrent > voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > census-voidborn > census-frontier > park |
 | sentinel | Unity | voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > voidborn-first-steps > census-frontier > park |
 | trader | Mercury | voidborn-concurrent > voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > census-frontier > park |
 
