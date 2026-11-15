@@ -76,3 +76,12 @@ Failed: credits recovered from stored goods only +20 cr (bids 8 to 65 deep, the 
 Requests: none.
 Suggestions: a circuit sell step that takes storage, so Market Participation (52 pilots) can be a route; the faction storage home at Central Nexus; keep the fleet's 51,475 units of stored ore as future inputs instead of selling them into 2 cr pools.
 Report: craft-free-bids-thin-stored-ore-waits.
+
+## [ENT-009] | 2026-11-15 22:01 UTC | Apophis | session | ref: reports/2026-11-15_apophis_first-hunt-pays-frontier-herd-taken.md | see: orders.log ENT-005
+Session: scheduled run turn-apophis -- turn T5, first turn in command: First Hunt pays 1,000 cr a drone; the first frontier herd was taken by BUSY.
+Did: two tests by hand: First Hunt: Belt-Grazers with a pulse-laser drone (3 kills in 15.0 min at the place, +922 cr after 78 cr fuel, 25 min, about 2,210 cr per ship-hour once) and the railgun drone's hand-in (+1,000 cr); the Ruchbah veil-rays beyond the border, hold empty (0 kills, -77 cr, 11 min); 8 slug cases bought (320 cr); drone plan: first-steps out, hunt-gsc-veil-ray railgun-only for the turn (started 21:55 UTC), home curd sold at Central Nexus; guidebook rewritten; FLEET.md in line with F1; all hand holds released.
+Worked: ships lost 0 of 30, all hull 75 of 75; hunt-gsc-veil-ray 3,500 cr per ship-hour over 11 runs and its herd rose to 17 under the ranch; division credits 881,314 -> 884,890 (21:17 to 21:52 UTC); 2,000 cr once from First Hunt with no damage.
+Failed: the Ruchbah herd, two BUSY Combat Drones joined our fight and took it within 20 min of the census; my last turn's railgun one-shot claim was wider than its check (errors.log ENT-017); the two hand-ins are not booked as one-time money, so Military's hour reads 2,000 cr high (about -861 cr without them).
+Requests: requests.log ENT-047 (hunt step in the circuit runner, for First Hunt), ENT-048 (empty-hold check for frontier routes), ENT-049 (book the two hand-ins); ENT-050, my answer to ENT-005 (Zero, done).
+Suggestions: gate.py books a mission handed in by hand as one-time; the hunt runner reads the place for foreign ships before each fight beyond the border; First Hunt into every plan once the step exists (up to 144,000 cr once). queue.log ENT-042 tells every division.
+Report: first-hunt-pays-frontier-herd-taken.
