@@ -457,7 +457,7 @@ def api_ship(name):
         return {"error": "no such ship"}
 
 
-DOC_PATH = re.compile(r"(reports|communications|planets|players|governance|rules)/[A-Za-z0-9_.\-]{1,120}\.(md|log)")
+DOC_PATH = re.compile(r"(reports|communications|planets|players|factions|governance|rules)/[A-Za-z0-9_.\-]{1,120}\.(md|log)")
 ENTRY = re.compile(r"^## \[(ENT-\d+)\] \| ([^|\n]+) \| ([^|\n]+) \|", re.M)
 
 
@@ -492,7 +492,7 @@ def api_docs():
         logs.append({"path": "communications/" + fn, "name": fn, "entries": len(entries),
                      "last": {"ent": last[0], "at": last[1].strip()[:20], "by": last[2].strip()[:30]} if last else None})
     return {"reports": reports, "logs": logs, "governance": doc_list("governance"), "rules": doc_list("rules"),
-            "indexes": [d for d in (doc_list("planets") + doc_list("players")) if d["path"].endswith("/index.md")]}
+            "indexes": [d for d in (doc_list("planets") + doc_list("players") + doc_list("factions")) if d["path"].endswith("/index.md")]}
 
 
 def doc_list(folder):

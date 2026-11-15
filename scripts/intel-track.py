@@ -3,14 +3,17 @@
 
 WHAT: 1. scripts/intel-planets.py  files the systems our ships have read;
       2. scripts/intel-players.py  files the armed pilots seen in our space;
-      3. scripts/intel-index.py    rebuilds planets/index.md and players/index.md;
-      4. scripts/validate-intel.py and scripts/validate-ids.sh check the result;
-      5. with --commit: one commit of exactly the files this pass wrote.
+      3. scripts/intel-factions.py files the player factions that hold a base
+                                   or have pilots in our space, and the zones
+                                   they hold (factions/index.md);
+      4. scripts/intel-index.py    rebuilds planets/index.md and players/index.md;
+      5. scripts/validate-intel.py and scripts/validate-ids.sh check the result;
+      6. with --commit: one commit of exactly the files this pass wrote.
          Without it the pass is a rehearsal: it prints what it would
          change and takes its files out again.
 RULES:
-  - Refuses to start when planets/ or players/ hold a change that is not
-    committed: that is another writer's work in progress.
+  - Refuses to start when planets/, players/ or factions/ hold a change
+    that is not committed: that is another writer's work in progress.
   - A pass that fails a gate takes its own files out again and restores
     the index files, so nothing untracked is left in the clone (an
     untracked file holds every agent's push).
@@ -23,7 +26,7 @@ USAGE:
   intel-track.py --commit     track, index, gate and commit
   intel-track.py --root <dir> another repository tree (used by tests)
   --author "<name> <mail>"    default: Unity <unity@suggi-workspace.dev>
-  --data, --station, --fleet, --kills, --max are handed to the trackers.
+  --data, --station, --fleet, --kills, --max, --met are handed to the trackers.
 
 Stdlib only. ASCII only.
 """
@@ -40,8 +43,8 @@ def run(root, *command):
 
 
 def changed(root):
-    """Paths under planets/ and players/ that git sees as new or modified."""
-    _code, out = run(root, "git", "status", "--porcelain", "--", "planets", "players")
+    """Paths under planets/, players/ and factions/ that git sees as new or modified."""
+    _code, out = run(root, "git", "status", "--porcelain", "--untracked-files=all", "--", "planets", "players", "factions")
     return [line[3:].strip() for line in out.splitlines() if line.strip()]
 
 
@@ -68,12 +71,14 @@ def main():
     scripts = os.path.join(root, "scripts")
     before = changed(root)
     if before:
-        print("HALT: planets/ or players/ hold changes that are not committed: %s" % ", ".join(before))
+        print("HALT: planets/, players/ or factions/ hold changes that are not committed: %s" % ", ".join(before))
         return 1
     planets_extra = [a for pair in zip(extra, extra[1:]) if pair[0] == "--data" for a in pair]
     players_extra = [a for pair in zip(extra, extra[1:]) if pair[0] in ("--station", "--fleet", "--kills", "--max") for a in pair]
+    factions_extra = [a for pair in zip(extra, extra[1:]) if pair[0] in ("--station", "--fleet", "--met") for a in pair]
     for command in (["python3", "-B", os.path.join(scripts, "intel-planets.py"), "--root", root] + planets_extra,
                     ["python3", "-B", os.path.join(scripts, "intel-players.py"), "--root", root] + players_extra,
+                    ["python3", "-B", os.path.join(scripts, "intel-factions.py"), "--root", root] + factions_extra,
                     ["python3", "-B", os.path.join(scripts, "intel-index.py"), "--root", root]):
         code, out = run(root, *command)
         print(out.rstrip())

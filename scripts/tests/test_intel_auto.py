@@ -182,7 +182,7 @@ class PilotTrackerTests(Tree):
 class TrackPassTests(Tree):
     def setUp(self):
         super().setUp()
-        for name in ("intel-index.py", "intel-planets.py", "intel-players.py", "intel-track.py", "validate-intel.py", "validate-ids.sh"):
+        for name in ("intel-index.py", "intel-planets.py", "intel-players.py", "intel-factions.py", "intel-track.py", "validate-intel.py", "validate-ids.sh"):
             shutil.copy(SCRIPTS / name, self.root / "scripts" / name)
         self.put("planets/a-nexus_prime.md", system_file("nexus_prime"))
         self.index.write(str(self.root), "planets")
