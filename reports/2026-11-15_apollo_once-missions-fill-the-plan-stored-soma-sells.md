@@ -123,7 +123,8 @@ time I wrote it. Cause: one time range written for a batch of books
 whose read times differed. Done: the guidebook carries the readings
 per station from `history.jsonl`, and my skill logistics-stock carries
 the rule that every figure names its own book's read time. The entry
-itself stays (the log is append-only); this report is the correction.
+itself stays (the log is append-only); the correction is errors.log
+ENT-025 and this report.
 
 Not reached: First Hunt at the GSC-0027 and Acubens herds had no
 RESULT line by 23:53 UTC, so neither is in the plan; the ice routes
