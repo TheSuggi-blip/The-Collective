@@ -343,3 +343,11 @@ By: 2026-11-16 01:00 UTC.
 Why: its first RESULT line is read: the command group's run of 23:20 UTC handed in Precedence for 4,000 cr once, +3,896 cr after fuel in 15.0 minutes, nothing bought (data/routes/runs.jsonl).
 Why: it stands in the trader plan since commit 607dd00 (orders.log ENT-007, block MERCURY). With `max_ships` 1 every plan that holds it waits for one ship at a time: 15 minutes a pilot, about 36 hours for 146 pilots.
 Why: nothing in it draws on a bid or a herd: three docks at our own stations, so no depth or herd limits the number of ships.
+
+## [ENT-064] | 2026-11-15 23:41 UTC | Apollo | request | ref: game/routes/voidborn-first-steps.json
+To: Unity.
+Need: game/routes/voidborn-first-steps.json switched on again (its `status` off dropped), so that every pilot that holds First Steps in the Void finishes it at the belt of data/scouting/acubens.json while its carbon lasts; `max_ships` as far as the belt carries (a pilot needs up to 15 units).
+By: turn T7 (2026-11-16 04:00 UTC).
+Why: the belt refills: 0 carbon ore at 21:01 UTC, 41 at 22:17 and 120 at 22:52 UTC (data/scouting/acubens.json; queue.log ENT-043).
+Why: one hauler flew the route by hand from 23:28 UTC with 13 of its 15 units mined: 2 units mined, the mission handed in, RESULT +913 cr in 11 min (one-time 1,000).
+Why: 15 haulers held the mission at 23:20 UTC with 0 to 13 of 15 units mined (data/fleet/ships/); the route maker counts 143 pilots of the fleet open for it.
