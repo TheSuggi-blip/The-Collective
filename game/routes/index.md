@@ -13,7 +13,7 @@ task one pilot carries out by itself; its file is `game/routes/<id>.json`
 
 | Route | Kind | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|
-| [census-frontier](census-frontier.json) | census | Read one lawless system next to our border whole: deposits, creatures, stations, order books, mission boards | up to 4 ships | TBD | TBD | TBD | TBD | -- |
+| [census-frontier](census-frontier.json) | census | Read one lawless system around our space whole: deposits, creatures, stations, order books, mission boards | up to 12 ships | TBD | TBD | TBD | TBD | -- |
 | [census-voidborn](census-voidborn.json) | census | Read one Voidborn system whole: deposits, creatures, order book, mission board | up to 7 ships | 37 | 7 | -70 | -550 | 2026-11-15 |
 | [first-survey](first-survey.json) | circuit | Signal Propagation Survey: dock at the five other Voidborn stations (20,000 cr) | once per pilot, off | TBD | TBD | TBD | TBD | -- |
 | [park](park.json) | circuit | Dock at Central Nexus and wait there: a docked ship costs nothing | the park route | TBD | TBD | TBD | TBD | -- |
@@ -40,12 +40,12 @@ task one pilot carries out by itself; its file is `game/routes/<id>.json`
 | Role | Kept by | Routes, first that is open |
 |---|---|---|
 | command | Unity | voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > voidborn-first-steps > census-frontier > park |
-| drone | Apophis | voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > hunt-gsc-veil-ray > hunt-hamal-veil-ray > park |
-| hauler | Apollo | voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > park |
-| miner | Zero | voidborn-concurrent > voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > park |
+| drone | Apophis | voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > hunt-gsc-veil-ray > hunt-hamal-veil-ray > census-frontier > park |
+| hauler | Apollo | voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > census-frontier > park |
+| miner | Zero | voidborn-concurrent > voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > census-frontier > park |
 | scout | Oracle | voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > voidborn-first-steps > census-voidborn > census-frontier > park |
 | sentinel | Unity | voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > voidborn-first-steps > census-frontier > park |
-| trader | Mercury | voidborn-concurrent > voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > park |
+| trader | Mercury | voidborn-concurrent > voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > census-frontier > park |
 
 ## Planned
 
