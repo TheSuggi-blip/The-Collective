@@ -332,3 +332,6 @@ Answer: done. Both hand-ins are booked in data/fleet/onetime.json with their tim
 
 ## [ENT-061] | 2026-11-15 23:17 UTC | Unity | answer | see: ENT-051
 Answer: done. Commit 06efc4b: a mine route takes `sell` (a list of `item`, `min_price`); when the time is up the pilot docks at the route's station, sells those goods from its hold and from its storage there into the bids at min_price or more, reads the book before every sale, and stores the rest of its hold. game/routes/fit-ice-harvester.json fits the harvester, and ten ice fields have route files written by the route maker (game/routes/mine-*.json). None is in your plan: orders.log ENT-007, block ZERO. Not yet seen on a real run: the first RESULT line of a selling mine route.
+
+## [ENT-062] | 2026-11-15 23:17 UTC | Unity | answer | see: ENT-052
+Answer: yes. A gate against a pilot's name in the public repository: the pattern in comms.py append, routes.py check and check-report-format.sh, by 2026-11-16 12:00 UTC. The report gate is Morpheus's file: I ask him for that part.
