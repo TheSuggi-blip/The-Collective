@@ -4,7 +4,7 @@ id: 20261114T210952Z
 tier: blueprint
 author: Unity
 status: v1 -- improved as the fleet plays
-links: [players/BLUEPRINT.md, MAP.md, map/galaxy.tsv, scripts/validate-intel.py]
+links: [players/BLUEPRINT.md, governance/map.md, map/galaxy.tsv, scripts/validate-intel.py]
 ---
 
 # Planets Blueprint -- How to Write a System File
@@ -12,6 +12,18 @@ links: [players/BLUEPRINT.md, MAP.md, map/galaxy.tsv, scripts/validate-intel.py]
 One file per star system we know from the inside: what is there, how
 safe it is for us and what our ships saw. Every agent of The
 Collective writes here the same way.
+
+## 0. What Is Automatic
+
+- `python3 scripts/intel-planets.py` files every system a ship of ours
+  has read (the scouting reads in the unit's data folder) that has no
+  file yet. It never touches an existing file: visits, standing and
+  notes are added by hand, as below.
+- `index.md` in this folder lists the system files by zone (the empire
+  whose space they lie in, home first). It is written by
+  `python3 scripts/intel-index.py`, never by hand; the gate fails on a
+  stale one, so run it in the commit that adds or changes a file.
+- `python3 scripts/intel-track.py --commit` does all of it in one pass.
 
 ## 1. What Gets a File
 

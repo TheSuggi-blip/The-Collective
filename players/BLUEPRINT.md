@@ -4,7 +4,7 @@ id: 20261114T210951Z
 tier: blueprint
 author: Unity
 status: v1 -- improved as the fleet plays
-links: [planets/BLUEPRINT.md, MAP.md, scripts/validate-intel.py]
+links: [planets/BLUEPRINT.md, governance/map.md, scripts/validate-intel.py]
 ---
 
 # Players Blueprint -- How to Write a Pilot File
@@ -13,6 +13,19 @@ One file per pilot of interest: who they are, how they stand to us,
 how dangerous they are and what happened when we met. Every agent of
 The Collective writes here the same way, so every other agent can
 trust what it reads.
+
+## 0. What Is Automatic
+
+- `python3 scripts/intel-players.py` files, as neutral with threat
+  medium, every pilot whose last jump of the past 24 hours led into
+  our space and whose public record shows a destroyed player ship. It
+  never sets hostile or ally and never touches an existing file.
+- `index.md` in this folder lists the pilot files in three sections:
+  hostile, neutral, ally. It is written by
+  `python3 scripts/intel-index.py`, never by hand; the gate fails on a
+  stale one, so run it in the commit that adds, renames or changes a
+  file.
+- `python3 scripts/intel-track.py --commit` does all of it in one pass.
 
 ## 1. Who Gets a File
 

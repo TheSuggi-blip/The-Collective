@@ -20,8 +20,12 @@ RULES CHECKED:
   8. A system id that is not in map/galaxy.tsv is a warning (a typo,
      or a system that is not on the public chart).
 
-Files whose name starts with an upper-case letter (BLUEPRINT.md) and
-dot files are not data files and are skipped.
+  9. Each folder's index.md lists exactly the folder's data files
+     (written by scripts/intel-index.py); a missing or stale index is
+     an error.
+
+Files whose name starts with an upper-case letter (BLUEPRINT.md), the
+generated index.md and dot files are not data files and are skipped.
 
 USAGE:
   validate-intel.py                     check both folders; exit 1 on errors
@@ -33,6 +37,7 @@ Stdlib only. ASCII only.
 """
 
 import argparse
+import importlib.util
 import os
 import re
 import sys
@@ -45,6 +50,7 @@ ID_FIELD = {"player": "username", "system": "system_id"}
 REQUIRED = ["name", "id", "tier", "author", "kind", "standing",
             "standing_since", "threat", "updated"]
 DATE_FIELDS = ["standing_since", "updated"]
+INDEX = "index.md"
 FILE_RE = re.compile(r"^([anh])-([a-z0-9_.\-]+)\.md$")
 SYSTEM_ID_RE = re.compile(r"^[a-z0-9_]+$")
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
@@ -134,7 +140,7 @@ def data_files(root, folder):
         if os.path.isdir(os.path.join(directory, name)):
             yield name, None, "folders are not allowed here"
             continue
-        if name.startswith(".") or name[:1].isupper():
+        if name.startswith(".") or name[:1].isupper() or name == INDEX:
             continue
         match = FILE_RE.match(name)
         if match:
@@ -207,6 +213,23 @@ def check(root):
     return errors, warnings, counts
 
 
+def check_index(root):
+    """Errors for an index.md that does not match its folder (rule 9)."""
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "intel-index.py")
+    if not os.path.isfile(path):
+        return ["scripts/intel-index.py is missing: the index files cannot be checked"]
+    sys.dont_write_bytecode = True                    # no __pycache__ in the shared clone
+    spec = importlib.util.spec_from_file_location("intel_index", path)
+    builder = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(builder)
+    errors = []
+    for folder in FOLDERS:
+        state = builder.state(root, folder)
+        if state in ("stale", "missing"):
+            errors.append("%s/%s is %s: run `python3 scripts/intel-index.py`" % (folder, INDEX, state))
+    return errors
+
+
 def suggest_name(root, what, entity, standing):
     """Return (path, note): the file a pilot or system belongs in."""
     kind = "player" if what == "player" else "system"
@@ -268,6 +291,7 @@ def main():
         return 0
 
     errors, warnings, counts = check(root)
+    errors += check_index(root)
     for line in warnings:
         print("WARNING: " + line)
     for line in errors:
