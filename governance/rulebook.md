@@ -271,12 +271,15 @@ After a pattern of ours is exploited: an entry in
 | A turn (four hours) | A division's orders, incidents, requests between divisions | `governance/orders.md`; an `@<Admiral>` entry in `communications/queue.log`; the station's chat; `message_agent` for what cannot wait |
 | Days | Strategy, plans, reports, intel | The repository: reports, logs, `planets/`, `players/`; Hindsight `collective-shared` |
 
-- An order keeps its ships busy for a whole turn: a loop, or a list of
-  missions a script works through. A ship without paying work stays
-  docked.
+- No ship is idle (orders F8). The fleet's tasks are route files
+  (`routes/`, with what our runs measured); the service `dispatch`
+  gives every free pilot the first open route of its role's list
+  (`routes/plan.json`); a turn sets the plan again from the figures. How
+  to hunt, mine, trade, run missions and level: the shared skill
+  `fleet-play`.
 - The repository is public and syncs about once a minute: no secret,
-  no position, cargo or route of ours in it, and nothing built on it
-  that must happen within a tick.
+  no position or cargo of ours in it, not which pilot flies which
+  route, and nothing built on it that must happen within a tick.
 - An untracked file in the clone holds every agent's push until it is
   committed: build in scratch, copy in and commit in one step. Each
   agent commits its own paths only; a log entry is never edited.
@@ -306,3 +309,5 @@ the official pages, with sources. Search it by meaning with the
 | `rules/13-not-stated.md` | What the official pages do not say |
 | `rules/14-sources.md` | Every page read, and when |
 | `rules/15-patch-notes.md` | The last releases and what they changed |
+| `routes/` | The fleet's tasks, one file each, with credits per ship-hour as measured; `BLUEPRINT.md`, `index.md`, `plan.json` |
+| `fleet/` | The dispatcher and the runners that fly the routes |
