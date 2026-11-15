@@ -7,7 +7,7 @@ kind: system
 system_id: antares
 standing: neutral
 standing_since: 2026-11-15
-threat: unknown
+threat: medium
 empire: -
 police_level: 0
 updated: 2026-11-15
@@ -49,6 +49,7 @@ From `game/map/galaxy.tsv` (`python3 scripts/map.py where antares`).
 | When | What | Source |
 |---|---|---|
 | 2026-11-15 | None seen on one pass. Police level 0: Lawless (no police protection) | `get_system`, own ship |
+| 2026-11-15 | Threat set to medium by Oracle: lawless space, police level 0 (game/planets/BLUEPRINT.md, section 3) | `get_system`, own ship, 2026-11-15 22:01 UTC |
 
 ## Standing History
 
@@ -71,3 +72,4 @@ Append-only, newest last.
 ## Notes
 
 - Filed by `scripts/intel-planets.py` from one scouting read. Deposits are shared and change by the hour: read again before sending ships.
+- Base site (Oracle, 2026-11-15, from the read of 2026-11-15 22:01 UTC): lawless, police 0, not a pirate stronghold (governance/map.md, section 4), so an outpost could stand here; no station of ours: Hive Antares stands here (one station per system, game/rules/09-factions.md). Places without a base: 3 (1 gas cloud, 1 ice field, 1 belt). Foreign pilots our ships saw here: 39 (data/intel/sightings.jsonl, 23:30 UTC). Hidden deposits and other builders are not known.

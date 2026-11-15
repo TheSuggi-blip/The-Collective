@@ -30,32 +30,32 @@ never edited by hand. Files listed: 39. The format of a system file:
 
 | System | Standing | Threat | Police level | Jumps from home | Updated | File |
 |---|---|---|---|---|---|---|
-| Schedar | neutral | unknown | 0 | 2 | 2026-11-15 | [n-schedar.md](n-schedar.md) |
-| GSC-0050 | neutral | unknown | 0 | 3 | 2026-11-15 | [n-gsc_0050.md](n-gsc_0050.md) |
-| Achernar | neutral | unknown | 0 | 4 | 2026-11-15 | [n-achernar.md](n-achernar.md) |
-| Brachium | neutral | unknown | 0 | 4 | 2026-11-15 | [n-brachium.md](n-brachium.md) |
-| GJ 3470 | neutral | unknown | 0 | 4 | 2026-11-15 | [n-gj_3470.md](n-gj_3470.md) |
-| GSC-0041 | neutral | unknown | 0 | 4 | 2026-11-15 | [n-gsc_0041.md](n-gsc_0041.md) |
-| Ironhollow | neutral | unknown | 0 | 4 | 2026-11-15 | [n-ironhollow.md](n-ironhollow.md) |
-| Megrez | neutral | unknown | 0 | 4 | 2026-11-15 | [n-megrez.md](n-megrez.md) |
-| Miram | neutral | unknown | 0 | 4 | 2026-11-15 | [n-miram.md](n-miram.md) |
-| Okab | neutral | unknown | 0 | 4 | 2026-11-15 | [n-okab.md](n-okab.md) |
-| Ruchbah | neutral | unknown | 0 | 4 | 2026-11-15 | [n-ruchbah.md](n-ruchbah.md) |
-| Shaula | neutral | unknown | 0 | 4 | 2026-11-15 | [n-shaula.md](n-shaula.md) |
-| Thornhaven | neutral | unknown | 0 | 4 | 2026-11-15 | [n-thornhaven.md](n-thornhaven.md) |
-| Wolf 1061 | neutral | unknown | 0 | 4 | 2026-11-15 | [n-wolf_1061.md](n-wolf_1061.md) |
-| Achird | neutral | unknown | 0 | 5 | 2026-11-15 | [n-achird.md](n-achird.md) |
-| Alnair | neutral | unknown | 0 | 5 | 2026-11-15 | [n-alnair.md](n-alnair.md) |
-| Amberfall | neutral | unknown | 0 | 5 | 2026-11-15 | [n-amberfall.md](n-amberfall.md) |
-| Antares | neutral | unknown | 0 | 5 | 2026-11-15 | [n-antares.md](n-antares.md) |
-| Cedarhold | neutral | unknown | 0 | 5 | 2026-11-15 | [n-cedarhold.md](n-cedarhold.md) |
-| Coldwater | neutral | unknown | 0 | 5 | 2026-11-15 | [n-coldwater.md](n-coldwater.md) |
-| Garnet | neutral | unknown | 0 | 5 | 2026-11-15 | [n-garnet.md](n-garnet.md) |
-| GSC-0012 | neutral | unknown | 0 | 5 | 2026-11-15 | [n-gsc_0012.md](n-gsc_0012.md) |
-| GSC-0031 | neutral | unknown | 0 | 5 | 2026-11-15 | [n-gsc_0031.md](n-gsc_0031.md) |
-| GSC-0038 | neutral | unknown | 0 | 5 | 2026-11-15 | [n-gsc_0038.md](n-gsc_0038.md) |
-| Keid | neutral | unknown | 0 | 5 | 2026-11-15 | [n-keid.md](n-keid.md) |
-| Lesath | neutral | unknown | 0 | 5 | 2026-11-15 | [n-lesath.md](n-lesath.md) |
-| Stormwatch | neutral | unknown | 0 | 5 | 2026-11-15 | [n-stormwatch.md](n-stormwatch.md) |
-| Atlas | neutral | unknown | 0 | 6 | 2026-11-15 | [n-atlas.md](n-atlas.md) |
-| Intercrus | neutral | unknown | 0 | 7 | 2026-11-15 | [n-intercrus.md](n-intercrus.md) |
+| Schedar | neutral | medium | 0 | 2 | 2026-11-15 | [n-schedar.md](n-schedar.md) |
+| GSC-0050 | neutral | medium | 0 | 3 | 2026-11-15 | [n-gsc_0050.md](n-gsc_0050.md) |
+| Achernar | neutral | medium | 0 | 4 | 2026-11-15 | [n-achernar.md](n-achernar.md) |
+| Brachium | neutral | medium | 0 | 4 | 2026-11-15 | [n-brachium.md](n-brachium.md) |
+| GJ 3470 | neutral | medium | 0 | 4 | 2026-11-15 | [n-gj_3470.md](n-gj_3470.md) |
+| GSC-0041 | neutral | medium | 0 | 4 | 2026-11-15 | [n-gsc_0041.md](n-gsc_0041.md) |
+| Ironhollow | neutral | medium | 0 | 4 | 2026-11-15 | [n-ironhollow.md](n-ironhollow.md) |
+| Megrez | neutral | medium | 0 | 4 | 2026-11-15 | [n-megrez.md](n-megrez.md) |
+| Miram | neutral | medium | 0 | 4 | 2026-11-15 | [n-miram.md](n-miram.md) |
+| Okab | neutral | medium | 0 | 4 | 2026-11-15 | [n-okab.md](n-okab.md) |
+| Ruchbah | neutral | medium | 0 | 4 | 2026-11-15 | [n-ruchbah.md](n-ruchbah.md) |
+| Shaula | neutral | medium | 0 | 4 | 2026-11-15 | [n-shaula.md](n-shaula.md) |
+| Thornhaven | neutral | medium | 0 | 4 | 2026-11-15 | [n-thornhaven.md](n-thornhaven.md) |
+| Wolf 1061 | neutral | medium | 0 | 4 | 2026-11-15 | [n-wolf_1061.md](n-wolf_1061.md) |
+| Achird | neutral | medium | 0 | 5 | 2026-11-15 | [n-achird.md](n-achird.md) |
+| Alnair | neutral | medium | 0 | 5 | 2026-11-15 | [n-alnair.md](n-alnair.md) |
+| Amberfall | neutral | medium | 0 | 5 | 2026-11-15 | [n-amberfall.md](n-amberfall.md) |
+| Antares | neutral | medium | 0 | 5 | 2026-11-15 | [n-antares.md](n-antares.md) |
+| Cedarhold | neutral | medium | 0 | 5 | 2026-11-15 | [n-cedarhold.md](n-cedarhold.md) |
+| Coldwater | neutral | medium | 0 | 5 | 2026-11-15 | [n-coldwater.md](n-coldwater.md) |
+| Garnet | neutral | medium | 0 | 5 | 2026-11-15 | [n-garnet.md](n-garnet.md) |
+| GSC-0012 | neutral | medium | 0 | 5 | 2026-11-15 | [n-gsc_0012.md](n-gsc_0012.md) |
+| GSC-0031 | neutral | medium | 0 | 5 | 2026-11-15 | [n-gsc_0031.md](n-gsc_0031.md) |
+| GSC-0038 | neutral | medium | 0 | 5 | 2026-11-15 | [n-gsc_0038.md](n-gsc_0038.md) |
+| Keid | neutral | medium | 0 | 5 | 2026-11-15 | [n-keid.md](n-keid.md) |
+| Lesath | neutral | medium | 0 | 5 | 2026-11-15 | [n-lesath.md](n-lesath.md) |
+| Stormwatch | neutral | medium | 0 | 5 | 2026-11-15 | [n-stormwatch.md](n-stormwatch.md) |
+| Atlas | neutral | medium | 0 | 6 | 2026-11-15 | [n-atlas.md](n-atlas.md) |
+| Intercrus | neutral | medium | 0 | 7 | 2026-11-15 | [n-intercrus.md](n-intercrus.md) |
