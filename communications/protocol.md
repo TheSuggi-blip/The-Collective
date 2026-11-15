@@ -23,8 +23,9 @@ wrong.
 | Log file | Purpose | Written by |
 |:--|:--|:--|
 | `orders.log` | The orders in force, for the fleet and for each Admiral. The newest entry is the orders in force, complete | The Fleet Admiral only |
-| `reports.log` | Every member's session-end entry: what it did, its problems, its suggestions, naming its report | Every member, its own entries |
-| `queue.log` | Messages between members (@mentions) and general fleet work | Every member |
+| `reports.log` | Every member's session-end entry: the summary of its session, naming its report | Every member, its own entries |
+| `requests.log` | What one member asks of another or of the Fleet Admiral, and the answers | Every member, its own entries |
+| `queue.log` | Notices: general fleet work, changes to the repository and the systems, and what is asked of Morpheus, who keeps the box | Every member |
 | `errors.log` | Errors, scars and fixes | Every member |
 
 ## Directory Structure
@@ -34,7 +35,8 @@ communications/
   protocol.md          # this file -- the spec
   orders.log           # the orders in force, by the Fleet Admiral (append-only)
   reports.log          # every member's session-end entries (append-only)
-  queue.log            # messages and general fleet work (append-only)
+  requests.log         # requests between members and their answers (append-only)
+  queue.log            # notices and general fleet work (append-only)
   errors.log           # errors, scars and fixes (append-only)
   archive/             # logs archived by CI when >500 lines
 ```
@@ -60,20 +62,22 @@ Do NOT pack a whole session onto one line.
 | `ENT-ID` | Yes | Sequential per file (ENT-001, ENT-002...). Never reused. Last entry in the file + 1. |
 | Timestamp | Yes | Date + HH:MM UTC, from `date -u`. Always increasing. |
 | Agent | Yes | The agent that wrote the entry. |
-| Category | Yes | `general`, `error`, `session` or `order` |
+| Category | Yes | `general`, `error`, `session`, `order`, `request` or `answer` |
 | ref: | Optional | Path to the file the entry relates to. |
 | see: | Optional | Another entry (`ENT-003`, or `orders.log ENT-003` for an entry of another log) or an artifact id. |
-| @mention | Optional | `@<Agent>` in the body for a directed request. |
+| @mention | Optional | `@<Agent>` in the body points that agent at the entry. |
 | Body | Yes | What was done, what changed, what was found. Multiline. |
 
 ## Categories
 
 | Category | Use for | File |
 |:--|:--|:--|
-| `general` | Messages to other agents, fleet work, repository changes | queue.log |
+| `general` | Notices, fleet work, repository changes | queue.log |
 | `error` | Bugs found, scars earned, fixes and gates added | errors.log |
-| `session` | A member's session-end entry: what it did, its problems and suggestions, naming its report | reports.log |
+| `session` | A member's session-end entry: the summary of its session, naming its report | reports.log |
 | `order` | The orders in force, written by the Fleet Admiral | orders.log |
+| `request` | What a member needs from another member or from the Fleet Admiral | requests.log |
+| `answer` | The answer to a request: yes, no or done | requests.log |
 
 ## The Orders Log
 
@@ -83,8 +87,10 @@ It replaced `governance/orders.md` on 2026-11-15, on Suggi's word.
 
 - One writer: the Fleet Admiral, on Suggi's decisions. No other member
   appends to it. An Admiral proposes a change in its session entry
-  (`Suggestions:`), in its report, or with an `@Unity` entry in
-  `queue.log`.
+  (`Suggestions:`) and its report, or asks for one in `requests.log`.
+- The Fleet Admiral writes the orders from what she and Suggi decide,
+  after reading every new entry of `reports.log`, `requests.log` and
+  `errors.log`.
 - Every entry is complete. The newest entry is the orders in force;
   every older entry is history and orders nothing.
 - A new entry is written only when the orders change: at the Fleet
@@ -127,24 +133,74 @@ Admirals and the Fleet Admiral. It replaced the one log per Admiral on
 2026-11-15, on Suggi's word.
 
 - A member appends its own entry and edits nobody's.
-- The entry is short. The session's report in `reports/` holds the
-  detail (`governance/template-reports.md`); the entry names it.
-- `Problems:` says what went wrong. A real error or scar also gets its
-  own entry in `errors.log`, named here by its ENT.
-- `Suggestions:` is what the member wants the Fleet Admiral or another
-  member to know or to weigh: information, an idea, an objection. The
-  Fleet Admiral reads every new entry before she writes orders. A
-  request that cannot wait for that also goes to `queue.log` with an
-  @mention.
+- The entry is the summary: a few lines a reader takes in at a glance.
+  The session's report in `reports/` is the full account
+  (`governance/template-reports.md`): what was done and what came of
+  it, the problems with their causes, the plans, the suggestions. The
+  entry names it.
+- `Worked:` and `Failed:` are the feedback of the session: what moved
+  the division's measure, and what did not and why. A real error or
+  scar also gets its own entry in `errors.log`, named here by its ENT.
+- `Requests:` names the entries the member wrote to `requests.log` in
+  this session, by their ENT. The request itself is written there.
+- `Suggestions:` is what the member wants the Fleet Admiral to know or
+  to weigh: information, an idea, an objection to an order.
+- Every line is present; one with nothing to say holds `none`.
 - `see:` names the orders the session worked under.
 
 ```
 ## [ENT-NNN] | YYYY-MM-DD HH:MM UTC | <Name> | session | ref: reports/<file>.md | see: orders.log ENT-NNN
 Session: <one-line title>.
-Did: <one line per piece of work, with its numbers>.
-Problems: <what failed and why, with errors.log ENT-NNN; or none>.
+Did: <the work of the session, with its numbers>.
+Worked: <what worked, with the number it moved; or none>.
+Failed: <what did not and why, with errors.log ENT-NNN; or none>.
+Requests: <requests.log ENT-NNN, one per request written; or none>.
 Suggestions: <information, ideas, objections; or none>.
 Report: <report slug>.
+```
+
+## The Requests Log
+
+`requests.log` holds what one member needs from another: Mining needs
+a guard at a field, Military warns the others off a place, Trade
+needs goods hauled. Added on 2026-11-15, on Suggi's word.
+
+- A request is written at session-end, or at once when it cannot wait
+  a turn. One request per entry. The requester writes it; nobody edits
+  it.
+- `To:` names the member asked: an Admiral, `Unity`, or `all`. `Need:`
+  says what and how much, `By:` by when, `Why:` the fact behind it
+  with its number. A place is named by its file in the unit's data
+  folder or by its route file, never spelled out: the log is public.
+- A request is not an order. The member asked answers inside its own
+  orders: `yes` with what it will do and by when, or `no` with the
+  reason. It writes `done` when the work is finished. What needs the
+  orders to change is the Fleet Admiral's to answer: `yes` with the
+  entry of `orders.log` that carries it, or `no`. A request to `all`
+  is answered by the Fleet Admiral.
+- An answer is its own entry whose `see:` names the request. The last
+  answer sets the state: no answer is open, `yes` is accepted, `done`
+  or `no` is closed. The requester may close its own request with
+  `done`.
+- Every member reads, at every session start, the requests addressed
+  to it that are not closed, and answers each open one in that
+  session. The Fleet Admiral reads all of them before she writes
+  orders.
+- The board of requests is computed from the log, never kept by hand:
+  `python3 -B scripts/comms.py requests` (all), `--to <Name>` (mine to
+  answer), `--from <Name>` (mine, asked), `--all` (closed ones too).
+
+```
+## [ENT-NNN] | YYYY-MM-DD HH:MM UTC | <Name> | request | ref: <file the facts are in>
+To: <an Admiral by name, Unity, or all>.
+Need: <what, and how much>.
+By: <a UTC time or a turn>.
+Why: <the fact behind it, with its number>.
+```
+
+```
+## [ENT-NNN] | YYYY-MM-DD HH:MM UTC | <Name> | answer | see: ENT-NNN
+Answer: <yes | no | done>. <what will be done and by when; why not; or what was done>.
 ```
 
 ## How to Write
@@ -158,14 +214,24 @@ Report: <report slug>.
 1. At session start, read the newest entry of `orders.log` in full,
    then the logs the agent's AGENTS.md names, each from its last-seen
    entry onward.
-2. Store the new last-seen ENT-ID of each log in the agent's own memory.
-3. No reply is needed unless an entry contains `@<Agent>`.
+2. Read the requests addressed to you that are not closed, and answer
+   the open ones in this session.
+3. Store the new last-seen ENT-ID of each log in the agent's own memory.
+4. No reply is needed to an entry of `queue.log` unless it contains
+   `@<Agent>`.
+
+`scripts/comms.py` reads the three logs without AI: `orders` prints
+the orders in force, `requests` the board of requests, `digest` the
+last session entries of each member, `check` is the gate of their
+format.
 
 ## @agent Mentions
 
-`@<Agent>` in an entry body is a directed request in plain language.
-The mentioned agent acts on it in its current or next session. A
-mention is a signal, not a command.
+`@<Agent>` in an entry body points that agent at the entry. The
+mentioned agent weighs it in its current or next session. A mention is
+a signal, not a command. What one member of the fleet needs from
+another goes to `requests.log`, where it gets an answer; `@Morpheus`
+in `queue.log` asks the keeper of the box.
 
 ## Archiving
 

@@ -170,8 +170,9 @@ conflicts with Ethics, Ethics wins. No exceptions.
   format.
 - [MUST] `orders.log` carries the orders in force and is written by
   the Fleet Admiral alone; `reports.log` carries every member's
-  session entries; `queue.log` carries the messages between members;
-  `errors.log` carries errors, scars and fixes.
+  session entries; `requests.log` carries what one member asks of
+  another, and the answers; `queue.log` carries notices and general
+  fleet work; `errors.log` carries errors, scars and fixes.
 
 ### Reports
 

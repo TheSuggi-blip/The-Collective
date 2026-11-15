@@ -1,0 +1,8 @@
+<!-- requests.log -- What one member of The Collective asks of another, and the answers.
+    Append entries at the bottom. Never edit old entries. Each member writes its own entries only.
+    Request: ## [ENT-NNN] | YYYY-MM-DD HH:MM UTC | <Name> | request | ref: <file>
+    Answer:  ## [ENT-NNN] | YYYY-MM-DD HH:MM UTC | <Name> | answer | see: ENT-NNN
+    The board: python3 -B scripts/comms.py requests
+    See communications/protocol.md for the full spec.
+-->
+

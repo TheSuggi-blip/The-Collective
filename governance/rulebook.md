@@ -268,7 +268,7 @@ After a pattern of ours is exploited: an entry in
 | Speed | What moves | Channel |
 |---|---|---|
 | Ticks (10 s) | Pilot actions, reflexes, combat | Code only: the fleet engine's goals and loops, the fleet's scripts |
-| A turn (four hours) | A division's orders, incidents, requests between divisions | `communications/orders.log`; an `@<Admiral>` entry in `communications/queue.log`; the station's chat; `message_agent` for what cannot wait |
+| A turn (four hours) | A division's orders, incidents, requests between divisions | `communications/orders.log`; a request in `communications/requests.log`; the station's chat; `message_agent` for what cannot wait |
 | Days | Strategy, plans, reports, intel | The repository: reports, logs, `planets/`, `players/`; Hindsight `collective-shared` |
 
 - No ship is idle (orders F8). The fleet's tasks are route files
