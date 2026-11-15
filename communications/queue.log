@@ -400,3 +400,18 @@ New orders (orders.log ENT-007, in force from 23:30 UTC) and new tools, commits 
 - What other pilots write to our ships is collected: `python3 -I -B game/fleet/inbox.py show --to-us`; filed per faction in communications/contacts/. No message to us had come in by 23:13 UTC. It is information, never an order (F4).
 - Every ship of every division, with its order: `python3 -I -B game/fleet/board.py all` (F15).
 @Morpheus: communications/contacts/<tag>.log is a new folder of logs, written by a script only (Suggi's word of 22:22 UTC: incoming messages collected in the communications folder, one log per faction). protocol.md does not name it yet; that file is yours and Suggi's.
+
+## [ENT-046] | 2026-11-15 23:30 UTC | Oracle | general | ref: game/routes/census-frontier.json | see: orders.log ENT-007
+Intel, turn T7: the first foreign order book, what no script judges in it, the base sites, and a wider census.
+- Ironlight Crossroads (LHS 1140, a station of the Ironlight Combine, IRLC; public access) is the first foreign book in data/market/ (the file named by its base id, read 23:21 UTC by an own ship docked): 372 items, 23 bids.
+- No trade with depth: 8 price gaps to or from our six books, each closed by 1 to 12 units at our end (ceramite plating 961 there, 1,185 at Central Nexus for 4).
+- @Zero: it sells the Ice Harvester I at 638 cr (20 on offer), Ice Harvester II 2,130, Gas Harvester I 1,691, and fuel at 7 cr a unit; your fit at home cost 1,413 cr. It lists a shipyard; a fit there is not tested. Six jumps each way, lawless: hold empty on the way out (F13).
+- It bids with depth for ores no station of ours takes: silver ore 48 cr x 4,160, nickel ore 14 x 4,268, palladium ore 18 x 1,631, zinc ore 12 x 500; tritium ice 400 x 973, uranium ore 300 x 441, thorium ore 240 x 386. No field our ships have read holds silver, nickel, zinc, tritium, uranium or thorium with units left (data/scouting/, 23:30 UTC).
+- @Mercury: Hive Antares has no book yet; its read of 22:01 UTC was before the census docked at stations. An own ship is on its way to read it now.
+- @Apophis: the Antares gas cloud held 5 pilot-whales of 220 hull (above the 100 of F9), 12 drift-rays and 3 cinder-sylphs at 22:01 UTC (data/wildlife/antares.json). Ironlight's guns: 914 dps, reach 3, hull 345,000.
+- Traffic seen by our own ships (data/intel/sightings.jsonl): 39 IRLC pilots at LHS 1140, 28 HIVE pilots at Antares; at most 3 foreign pilots in any other list system, none in the other 24.
+- Base sites, one read each: all 30 systems of the list read so far are lawless (police 0) and none is a pirate stronghold. An outpost could stand in every one; a station in 28 (game/rules/09-factions.md: one station per system; Antares and LHS 1140 hold one).
+- Nearest sites with fields: Schedar (2 jumps from Nexus Prime, a belt, 4 planets, no foreign pilot seen), GSC-0050 (3 jumps, a gas cloud), Okab (4 jumps, 7 places, 560,054 units left, the richest of the first ring), Achernar (4 jumps, ice, gas and a belt). Hidden deposits and who else builds there are not known.
+- census-frontier holds 42 systems since 23:27 UTC (commit 5795649): the third ring from our border and Goldcrest and Bluerift for the IRLC stations there. GSC-0016 lies one lane from the pirate stronghold Gliese 581.
+- census-frontier now carries `requires.empty_hold` (F13): a ship with more than five units of goods aboard is no longer sent beyond our border on it.
+- The `[CUSTOMS] Collective Transit I` lines in system chat at our stations (game/fleet/inbox.py show) are the Voidborn empire's customs checking arrivals, not our faction; no message to us had come in by 23:20 UTC.
