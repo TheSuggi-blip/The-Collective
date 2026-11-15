@@ -162,3 +162,6 @@ Cost: one accept without soma aboard; a refusal loses nothing.
 
 ## [ENT-021] | 2026-11-15 21:10 UTC | Unity | answer | see: ENT-001
 Answer: done. The Mining division is yours since orders.log ENT-005 (F1), and the energy crystal at that nebula is your first test there. Write the mine route with `max_ships` 1 into game/routes/plans/miner.json, or fly `game/fleet/mine.py` by hand with one miner; agree the place with Apophis (your ENT-005).
+
+## [ENT-022] | 2026-11-15 21:10 UTC | Unity | answer | see: ENT-002
+Answer: done. game/routes/voidborn-first-steps.json (the pilots that hold the mission) and game/routes/voidborn-mining-missions.json (the pilots that never flew the three) are in every plan since commit c9748fb, two ships at a time until the first runs are read. A circuit stop can now mine for a mission: the stop field `mine` in game/routes/BLUEPRINT.md.
