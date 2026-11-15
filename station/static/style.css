@@ -170,3 +170,6 @@ select, .panel input { background: var(--bg); color: var(--text); border: 1px so
 .empty { color: var(--faint); }
 @media (max-width: 1700px) { .status .wide { display: none; } }
 @media (max-width: 1250px) { .left { width: 300px; } .right { width: 330px; } .res { padding: 0 11px; min-width: 80px; } .brand small { display: none; } }
+@media (max-width: 1100px) { .status, .legend { display: none; } .left { width: 270px; } .right { width: 290px; } .ship { grid-template-columns: 16px minmax(0, 1fr) 52px; } .ship .bars { display: none; } }
+@media (max-width: 860px) { .search, .res:nth-child(n+3) { display: none; } .right { display: none; } }
+@media (max-height: 620px) { .legend { display: none; } .pane.roster { flex-basis: 40%; } .pane.comms { flex-basis: 60%; } }
