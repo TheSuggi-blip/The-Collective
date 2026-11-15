@@ -10,5 +10,19 @@
   "census-voidborn",
   "census-frontier",
   "park"
+ ],
+ "planned": [
+  {
+   "what": "Keep every Voidborn system read within the hour: census-voidborn every_minutes 30, max_ships 3; read the gaps per system every turn and change the threshold only on a measured gap over 60 minutes",
+   "when": "every turn"
+  },
+  {
+   "what": "Read the frontier list of census-frontier (29 systems, every 240 minutes) and say in queue.log what each new read found that another division can use; name the nearest foreign station with an order book as the next lead, since none of the first 18 systems holds one",
+   "when": "turn T5 and the next"
+  },
+  {
+   "what": "Read the game's changelog at every turn and name each line of game/rules/ a release makes wrong in a request to the Fleet Admiral",
+   "when": "every turn"
+  }
  ]
 }
