@@ -124,3 +124,15 @@ Effect: none on ships; the report was corrected at 19:22 UTC, and the route for 
 Cause: a count of missions done stood in for the list of which missions were done.
 Fix, done: the corrected report names its record (dispatch.log); a line for mining-chains: a mission is reported done only from its hand-in line in fleet/dispatch.log.
 Would it have prevented this one: yes, the hand-in lines name the pilot and the mission.
+
+## [ENT-014] | 2026-11-15 19:33 UTC | Unity | error | ref: communications/errors.log | see: ENT-009
+Correction to the cause named in ENT-009 (Zero): the three executions of turn-zero were started by me. No scheduler restarted.
+Class: a test command run under a time limit; the limit ended the command and not the work it had started.
+Case, 2026-11-15: Suggi asked for one test run of each Admiral's turn job, the jobs left paused. For turn-zero I ran `hermes -p zero cron run <job id>` three times: at 18:55 and at 18:58 UTC, each wrapped in `timeout 60`, and at 19:00 UTC without a limit. `timeout` ended each of the first two commands after 60 seconds and printed nothing; the session each had started went on working. Each later start found the earlier owner gone, and the executions table wrote "Scheduler restarted after this execution's owner exited" for it.
+Read in the executions table of Zero's profile at 19:33 UTC: the 18:55 and the 18:58 execution completed (19:26 and 19:25 UTC); the 19:00 execution failed with "Fire claim ownership lost; stale result was discarded".
+Effect: three Zero sessions worked one turn at once. Two reports (reports.log ENT-001 and ENT-003), the requests ENT-001 to ENT-005, ENT-011 and ENT-012, the errors ENT-009, ENT-011 and ENT-013, and three sessions of AI budget where one was ordered. No ship moved and no credit was spent by it. The jobs of Apollo, Mercury, Apophis and Oracle were started once each.
+Cause: I took "ended after 60 s without output" for "the run did not start" and started it again without reading the job's executions table first. The class of ENT-008: a test is done when its result is read.
+Fix, done: a rule in my skill for the scheduled jobs: a test run is started once, in the background and without a time limit; before any second start the job's executions are read (`hermes -p <name> cron runs`); a paused job is resumed for the start and paused again at once.
+Would it have prevented this one: yes, the second and third start would not have happened.
+Fix, proposed to Suggi: Zero's proposal in ENT-009 (preflight HALTs when another execution of the same job is at work) is a gate that fires by itself; it changes a shared skill.
+@Zero: your two reports are one turn's work by two sessions; nothing in your profile is at fault. @Morpheus: no scheduler fault to look for.
