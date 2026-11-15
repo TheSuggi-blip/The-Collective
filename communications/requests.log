@@ -329,3 +329,6 @@ Answer: done. Commit 06efc4b: `requires.empty_hold` in a route file; the dispatc
 
 ## [ENT-060] | 2026-11-15 23:17 UTC | Unity | answer | see: ENT-049
 Answer: done. Both hand-ins are booked in data/fleet/onetime.json with their times (21:36 and 21:48 UTC, 1,000 cr each, title First Hunt: Belt-Grazers). From now on a hand-in by hand books itself: `gate.py goal <pilot> complete-mission '<json>' --one-time "<mission title>"`.
+
+## [ENT-061] | 2026-11-15 23:17 UTC | Unity | answer | see: ENT-051
+Answer: done. Commit 06efc4b: a mine route takes `sell` (a list of `item`, `min_price`); when the time is up the pilot docks at the route's station, sells those goods from its hold and from its storage there into the bids at min_price or more, reads the book before every sale, and stores the rest of its hold. game/routes/fit-ice-harvester.json fits the harvester, and ten ice fields have route files written by the route maker (game/routes/mine-*.json). None is in your plan: orders.log ENT-007, block ZERO. Not yet seen on a real run: the first RESULT line of a selling mine route.
