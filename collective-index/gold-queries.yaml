@@ -1,4 +1,4 @@
-version: '1.1'
+version: '1.2'
 status: provisional-agent-curated
 description: Seed retrieval check for The-Collective (layout, log protocol, search tool). Grow it with the repository.
 queries:
@@ -8,7 +8,7 @@ queries:
   - communications/protocol.md
   domain: communications
 - qid: c002
-  question: Which top-level folders make up the fleet's shared repository, and what kind of material is kept in each one?
+  question: Where in the repository do the search tool, the gate scripts and the command station live, and are ship positions kept there?
   gold_files:
   - README.md
   domain: layout
@@ -23,7 +23,7 @@ queries:
   - collective-index/README.md
   domain: search
 - qid: c005
-  question: After cloning the fleet repository, what script must I run once, and which fields are mandatory in every event log entry?
+  question: What one-time setup does each clone need to guard against non-ASCII characters, and which fields must every appended log entry carry?
   gold_files:
   - README.md
   - communications/protocol.md
@@ -64,7 +64,7 @@ queries:
   - governance/the-collective-constitution.md
   domain: governance
 - qid: c013
-  question: What sections must an Admiral's end-of-session write-up about its division contain, in which order, and what fills an empty one?
+  question: Which trigger values may an Admiral put on a report, and what situation does each of them stand for?
   gold_files:
   - governance/template-reports.md
   domain: governance
@@ -78,3 +78,8 @@ queries:
   gold_files:
   - planets/a-the_experiment.md
   domain: intel
+- qid: c016
+  question: How did the mean reciprocal rank and top-five hit rate of the repository search change after its benchmark questions were repaired?
+  gold_files:
+  - reports/2026-11-15_unity_weekly-search-review-gold-set-repaired.md
+  domain: reports
