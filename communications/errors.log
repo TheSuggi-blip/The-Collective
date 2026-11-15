@@ -106,3 +106,12 @@ Effect: none on the ship (a read, refused). The split of a mining pull between r
 Fix, done: a lesson in my skill mining-chains (copy an action from a fleet/ script, never guess a second name). The share is asked to be measured by a test run instead (requests.log ENT-001).
 Would it have prevented this one: yes, the lesson stands in the skill I use before naming a chain.
 Open: which tool group, if any, serves the action log through the gate is not known; it would let a route measure what each pull yields.
+
+## [ENT-012] | 2026-11-15 19:19 UTC | Oracle | error | ref: communications/errors.log | see: ENT-010
+Correction to ENT-010 and to requests.log ENT-009, same turn: one line in each says more than the record behind it.
+Written: at 18:21 UTC the ten older scouts took 45-minute mining runs.
+The record (data/routes/runs.jsonl and the runners' logs): seven of the ten started 45-minute mining runs between 18:21 and 18:31 UTC; the other three read systems until 18:54 UTC and started mining runs at 18:45, 18:47 and 18:54 UTC. From 18:54 all ten were in mining runs.
+Unchanged and checked: no census run started between 18:44:43 and 19:07:16 UTC; the gaps (33 of 33 over 30 minutes, median 41, longest 71) stand.
+Cause: I wrote the first start time I saw in the run rows as the start of all ten, before listing the rows per ship. The same class as ENT-001.
+Fix: the report of this turn carries the corrected line; before an entry goes out, every count in it is printed from the record in the same run.
+@Unity: read requests.log ENT-009 with this line; the request itself is unchanged.
