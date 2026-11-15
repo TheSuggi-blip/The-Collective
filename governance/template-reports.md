@@ -46,11 +46,11 @@ checklist in the report.
 - [ ] Every number is printed from a record the same section names; a number nobody measured is written "not measured"  (PASS / HALT)
 - [ ] No section is left out; a section with little to report says what was checked and what the check showed  (PASS / HALT)
 - [ ] Division report, minimum words: Situation 250, Activities 250, Problems 150, Plans 250, Suggestions 100, Learnings 200  (PASS / HALT)
-- [ ] Fleet report, minimum words: Situation 250, Strategy 300, Divisions 300, Plans 250, Open Questions 150  (PASS / HALT)
+- [ ] Fleet report, minimum words: Situation 250, Strategy 300, Divisions 300, Plans 250, Open Questions 150, Learnings 200  (PASS / HALT)
 - [ ] `python3 -B scripts/report-words.py reports/<file>` prints `REPORT WORDS: PASS`  (PASS / HALT)
 - [ ] The words carry facts: no sentence stands in the report only to reach a minimum, nothing is invented, nothing is said twice  (PASS / HALT)
 - [ ] Suggestions (a division report) say what can be changed, each with its reason and its cost  (PASS / HALT)
-- [ ] Learnings (a division report) hold what the period taught the division about its own role, each lesson with the record that earned it  (PASS / HALT)
+- [ ] Learnings hold what the period taught the writer about its own role, each lesson with the record that earned it  (PASS / HALT)
 - [ ] No secrets: no password, registration code, key or token  (PASS / HALT)
 - [ ] File named `YYYY-MM-DD_author_slug.md`, in `reports/`  (PASS / HALT)
 - [ ] `bash scripts/check-report-format.sh reports/<file>` prints `REPORT FORMAT: PASS`  (PASS / HALT)
@@ -119,7 +119,7 @@ minimum is a floor: a section is as much longer as its facts need.
 | Divisions | -- | 300 |
 | Plans | 250 | 250 |
 | Suggestions | 100 | -- |
-| Learnings | 200 | -- |
+| Learnings | 200 | 200 |
 | Open Questions | -- | 150 |
 | Cross-links | none | none |
 
@@ -135,7 +135,7 @@ minimum is a floor: a section is as much longer as its facts need.
   Problems, the losses and failed orders looked for, the records read
   and the risks watched; under Suggestions and Open Questions, what
   was weighed and why nothing more is proposed or asked; under
-  Learnings, what the period confirmed of what the division already
+  Learnings, what the period confirmed of what the writer already
   knew. Nothing is invented and nothing is said twice to fill a
   section.
 
@@ -208,6 +208,14 @@ questions to settle.
 
 **`## Open Questions`** -- *What must Suggi decide?* Each question
 with the Fleet Admiral's recommendation.
+
+**`## Learnings`** -- *What did the Fleet Admiral learn?* What the
+period taught her about leading the fleet (its strategy, its orders
+and its systems), written from her learning capture
+(`learnings-capture`): each lesson, the record that earned it, what
+she does differently because of it, and what the Admirals or Suggi can
+take from it. It names the knowledge files created or updated, which
+stay in her workspace, and what stays an open question.
 
 **`## Cross-links`** -- every Admiral report used, and the files the
 strategy rests on, by repository path with a short description.
@@ -283,4 +291,4 @@ it>. Kept in: <knowledge file, or "unpromoted">.
 
 ---
 
-*Last updated: 2026-11-15 by Morpheus, on Suggi's instruction: a division report ends with Learnings, at least 200 words. Suggi refines the contents with the Fleet Admiral.*
+*Last updated: 2026-11-15 by Morpheus, on Suggi's instruction: a fleet report carries Learnings too, at least 200 words. Suggi refines the contents with the Fleet Admiral.*

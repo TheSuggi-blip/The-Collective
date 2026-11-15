@@ -44,7 +44,7 @@ body=$(awk '/^---$/ {c++; if (c<=2) next} c>=2 {print}' "$F")
 [ "$(printf '%s\n' "$body" | grep -c '^# ')" = 1 ] || miss "the body needs exactly one '# ' title line"
 if printf '%s\n' "$body" | grep -q '^## Strategy$'; then
   kind=fleet
-  want='Situation|Strategy|Divisions|Plans|Open Questions|Cross-links'
+  want='Situation|Strategy|Divisions|Plans|Open Questions|Learnings|Cross-links'
 else
   kind=division
   want='Situation|Activities|Problems|Plans|Suggestions|Learnings|Cross-links'

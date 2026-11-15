@@ -150,7 +150,7 @@ class TemplateTests(Tree):
         wanted, errors = words.minimums(str(ROOT))
         self.assertEqual(errors, [])
         self.assertEqual(sorted(wanted["division"]), ["Activities", "Cross-links", "Learnings", "Plans", "Problems", "Situation", "Suggestions"])
-        self.assertEqual(sorted(wanted["fleet"]), ["Cross-links", "Divisions", "Open Questions", "Plans", "Situation", "Strategy"])
+        self.assertEqual(sorted(wanted["fleet"]), ["Cross-links", "Divisions", "Learnings", "Open Questions", "Plans", "Situation", "Strategy"])
         self.assertTrue(all(number > 0 for kind in wanted.values() for name, number in kind.items() if name != "Cross-links"))
 
 
