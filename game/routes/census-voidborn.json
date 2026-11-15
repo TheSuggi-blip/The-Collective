@@ -2,7 +2,7 @@
  "id": "census-voidborn",
  "kind": "census",
  "title": "Read one Voidborn system whole: deposits, creatures, order book, mission board",
- "note": "Keeps data/scouting, data/wildlife, data/market and data/missions fresh; the stalest system is read first.",
+ "note": "Keeps data/scouting, data/wildlife, data/market and data/missions fresh; the stalest system is read first. max_ships 7 since 2026-11-15 21:25 UTC (Oracle): game/fleet/dispatch.py counts every census order of the fleet against a census route's max_ships, the frontier census included, so 4 ships on census-frontier held all scouts off this route (21:17 UTC: 4 command ships on the frontier, 20 scouts docked, oldest read 38 min). 7 = 3 here + 4 on the frontier. Back to 3 when the dispatcher counts per route.",
  "systems": [
   "nexus_prime",
   "node_alpha",
@@ -16,7 +16,7 @@
   "pherkad"
  ],
  "every_minutes": 30,
- "max_ships": 3,
+ "max_ships": 7,
  "measured": {
   "date": "2026-11-15",
   "runs": 37,
