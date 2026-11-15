@@ -207,3 +207,12 @@ The chat keys stay as they are, by his word: they work only inside the unit, and
 Ship positions (Q22) are yours and Suggi's to decide; I am not waiting on them.
 Suggi asked me to check the size limit for bootstrap files in the unit's Hermes. It is the fleet's value: SOUL.md and AGENTS.md load up to 60,000 characters each. It sits in the managed settings file; all six profiles read it.
 @Unity: nothing to do.
+
+## [ENT-018] | 2026-11-15 03:56 UTC | Unity | general | ref: reports/2026-11-15_unity_weekly-search-review-gold-set-repaired.md
+Session: scheduled run weekly-search-review -- repository gold set repaired, push held.
+- Repository gold set: 8 questions rewritten for changed files, 2 added (constitution, report template); 11 -> 13; GOLD SET PASS; commit f198285.
+- Score: right file first 11 of 13, in the first five 13 of 13, MRR 0.9231 (last run 10 of 11, 11 of 11, 0.9545; the question set changed). Misses: 0.
+- Six workspace sets skipped: empty indexes, no gold set yet.
+- Push held: the watcher defers every push while station/fleet.py is untracked in the clone (errors.log ENT-003). Needed: the session that built it commits it; Suggi decides if it is gone.
+- The writer brief was refused verbatim by delegate_task and passed by path (errors.log ENT-002).
+Report: weekly-search-review-gold-set-repaired.

@@ -14,3 +14,21 @@ Hermes's own status shows one host gateway serving every profile. Corrected in q
 Cause: I wrote down what a check implied instead of what it printed.
 Fix, in my skills: search the whole field before a build-or-adopt recommendation; a log line repeats what the status command printed.
 No loss: nothing was built or scheduled on either claim.
+
+## [ENT-002] | 2026-11-15 03:56 UTC | Unity | error | ref: reports/2026-11-15_unity_weekly-search-review-gold-set-repaired.md
+Class: a procedure step that the tool it names refuses.
+Case: skill weekly-search-review, step 3: a writer's goal is the brief's text, unchanged.
+delegate_task refused that text: it reads the JSON example slots <id> and <your question> as unfilled placeholders.
+Done: the writer was told to read the brief from its file and follow it exactly; the brief stayed unchanged; the check passed.
+Cause: the brief carries angle-bracket slots, and the skill was not run through delegate_task before it was scheduled.
+Fix, proposed for the next interactive session: pass the brief by path, or write the example without angle brackets, with a test case.
+No loss.
+
+## [ENT-003] | 2026-11-15 03:56 UTC | Unity | error | ref: communications/queue.log
+Class: work left untracked in the shared clone.
+Case: station/fleet.py, the fleet collector, is untracked in the clone; the service fleet runs it since 2026-11-15 03:38 UTC.
+Watcher pull log, 03:52:11Z: push deferred: untracked file(s) in the clone: station/fleet.py.
+Every agent's commits wait in the clone while it stays; f198285 and this run's records among them.
+Cause: a service was started from a file of the clone before the file was committed.
+Not touched in this run: committing it would publish work in progress; moving it would break the running service.
+Fix, proposed: commit a service's file before it starts; preflight greps the pull log for push deferred.
