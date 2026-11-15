@@ -15,7 +15,7 @@ updated: 2026-11-15
 # Bedrock Materials [ROCK]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 5.
+Pilots of it in our space in the last 24 hours: 1.
 
 ## Identity
 
@@ -38,11 +38,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Meph Addict | Nexus Prime (`nexus_prime`) | 0 | prospect |
-| Roland de Tortuga | Nexus Prime (`nexus_prime`) | 0 | theoria |
-| Space Hulk | Nexus Prime (`nexus_prime`) | 0 | not met |
-| Steve from Accounting | Nexus Prime (`nexus_prime`) | 0 | prospect |
-| William Hill | Nexus Prime (`nexus_prime`) | 0 | not met |
+| Space Hulk | Nexus Prime (`nexus_prime`) | 0 | shard |
 
 ## Standing History
 

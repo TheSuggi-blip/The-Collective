@@ -48,9 +48,9 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Caelen Tharos | GSC-0027 (`gsc_0027`) | 0 | not met |
 | Elara Orris | Hamal (`hamal`) | 0 | lithosphere |
-| HexBot2 | Synchrony (`synchrony`) | 0 | frankenhauler |
+| HexBot6 | Nexus Prime (`nexus_prime`) | 9 | premiere |
+| Liora Vessand | Node Gamma (`node_gamma`) | 0 | liquidity_event |
 
 ## Standing History
 

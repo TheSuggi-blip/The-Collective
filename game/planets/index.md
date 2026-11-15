@@ -8,7 +8,7 @@ author: Unity
 # index.md -- Systems We Know
 
 Built by `scripts/intel-index.py` from the system files of this folder;
-never edited by hand. Files listed: 39. The format of a system file:
+never edited by hand. Files listed: 53. The format of a system file:
 `BLUEPRINT.md`.
 
 ## Voidborn space
@@ -50,12 +50,26 @@ never edited by hand. Files listed: 39. The format of a system file:
 | Antares | neutral | medium | 0 | 5 | 2026-11-15 | [n-antares.md](n-antares.md) |
 | Cedarhold | neutral | medium | 0 | 5 | 2026-11-15 | [n-cedarhold.md](n-cedarhold.md) |
 | Coldwater | neutral | medium | 0 | 5 | 2026-11-15 | [n-coldwater.md](n-coldwater.md) |
+| Denebola | neutral | unknown | 0 | 5 | 2026-11-15 | [n-denebola.md](n-denebola.md) |
 | Garnet | neutral | medium | 0 | 5 | 2026-11-15 | [n-garnet.md](n-garnet.md) |
 | GSC-0012 | neutral | medium | 0 | 5 | 2026-11-15 | [n-gsc_0012.md](n-gsc_0012.md) |
 | GSC-0031 | neutral | medium | 0 | 5 | 2026-11-15 | [n-gsc_0031.md](n-gsc_0031.md) |
 | GSC-0038 | neutral | medium | 0 | 5 | 2026-11-15 | [n-gsc_0038.md](n-gsc_0038.md) |
+| GSC-0049 | neutral | unknown | 0 | 5 | 2026-11-15 | [n-gsc_0049.md](n-gsc_0049.md) |
 | Keid | neutral | medium | 0 | 5 | 2026-11-15 | [n-keid.md](n-keid.md) |
 | Lesath | neutral | medium | 0 | 5 | 2026-11-15 | [n-lesath.md](n-lesath.md) |
+| Nightveil | neutral | unknown | 0 | 5 | 2026-11-15 | [n-nightveil.md](n-nightveil.md) |
 | Stormwatch | neutral | medium | 0 | 5 | 2026-11-15 | [n-stormwatch.md](n-stormwatch.md) |
 | Atlas | neutral | medium | 0 | 6 | 2026-11-15 | [n-atlas.md](n-atlas.md) |
+| GSC-0016 | neutral | unknown | 0 | 6 | 2026-11-15 | [n-gsc_0016.md](n-gsc_0016.md) |
+| GSC-0021 | neutral | unknown | 0 | 6 | 2026-11-15 | [n-gsc_0021.md](n-gsc_0021.md) |
+| GSC-0033 | neutral | unknown | 0 | 6 | 2026-11-15 | [n-gsc_0033.md](n-gsc_0033.md) |
+| GSC-0044 | neutral | unknown | 0 | 6 | 2026-11-15 | [n-gsc_0044.md](n-gsc_0044.md) |
+| HD 40307 | neutral | unknown | 0 | 6 | 2026-11-15 | [n-hd_40307.md](n-hd_40307.md) |
+| Homam | neutral | unknown | 0 | 6 | 2026-11-15 | [n-homam.md](n-homam.md) |
+| LHS 1140 | neutral | unknown | 0 | 6 | 2026-11-15 | [n-lhs_1140.md](n-lhs_1140.md) |
+| Tanglewood | neutral | unknown | 0 | 6 | 2026-11-15 | [n-tanglewood.md](n-tanglewood.md) |
+| Bluerift | neutral | unknown | 0 | 7 | 2026-11-15 | [n-bluerift.md](n-bluerift.md) |
+| Felis | neutral | unknown | 0 | 7 | 2026-11-15 | [n-felis.md](n-felis.md) |
+| Goldcrest | neutral | unknown | 0 | 7 | 2026-11-15 | [n-goldcrest.md](n-goldcrest.md) |
 | Intercrus | neutral | medium | 0 | 7 | 2026-11-15 | [n-intercrus.md](n-intercrus.md) |
