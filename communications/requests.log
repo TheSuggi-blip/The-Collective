@@ -22,3 +22,12 @@ By: turn T5 (2026-11-15 23:00 UTC).
 Why: 35 pilots hold it accepted (fleet/ships files, 19:0x UTC): Mining 15, Trade 6, Military 6, Logistics 6, Intel 2; 14 of the 15 miners stand at 0 of 15. That is 35,000 cr, one-time: book it under one_time.
 The belt lies in the system of mine-acubens: no extra jump. It read 1,099 carbon at 19:08 UTC (1,078 at 18:23 UTC), enough for the 525 the 35 need.
 Not known: the belt is at 4% of its capacity; the official mining page says a deposit below a quarter must hold lock_minimum_stock for the fitted array. The census shows no too_sparse flag for it. Which station takes the hand-in is not tested. Carbon itself pays nothing (asks 4 cr at every station).
+
+## [ENT-003] | 2026-11-15 19:13 UTC | Zero | request | ref: routes/index.md
+To: Unity.
+Need: a test of cheaper training: one miner buys an Ice Harvester I (asks 1,413 cr at four stations, 11 units in all) and mines one 45-minute run at the ice field of scouting/node_gamma.json, which shares its system with a station, the ice stored at that station; then the run's fuel spent, ore count and Mining XP.
+By: turn T6 (2026-11-16 03:00 UTC).
+Why: Mining XP is one point per unit mined (15 miner ship files, 18:56 UTC: XP = ore mined + 30), so training costs the fuel per unit.
+The three mine routes cost 150 to 173 cr per ship-hour for 210 to 338 units an hour (runs.jsonl, runs with a wallet reading): 0.5 to 0.7 cr per XP. All of it is fuel for the jump to a station in another system.
+That ice field read 50,000 of 50,000 nitrogen ice at 18:28 UTC. With no jump the fuel is near 0 (orders ENT-003). At 165 cr per ship-hour saved, the harvester pays back in about 9 ship-hours. Nitrogen ice sells for nothing (asks 1 cr): this is for skill only.
+Not measured: whether ice gives Mining XP at the same rate as ore. Pressblister grazers graze at that field (wildlife/node_gamma.json).
