@@ -121,3 +121,11 @@ Need: the wallet floor of the circuit runner at the 3,000 cr of orders F7 (order
 By: turn T5 (2026-11-15 23:00 UTC).
 Why: a buy stops only under 2,000 cr. voidborn-substrate opens at min_credits 3,000 and buys two soma for about 636 cr, so a pilot that starts it with 3,000 to 3,635 cr ends below the F7 floor.
 Why: the dispatcher's min_credits checks a route's start only; the runner's floor is what guards the wallet during the buys.
+
+## [ENT-016] | 2026-11-15 19:21 UTC | Mercury | request | ref: fleet/census.py
+To: Unity.
+Need: every census read of an order book kept, not only the newest: one line per read and item whose best bid or ask changed, appended to a history file in the data folder's market/ folder, as the census does for wildlife/history.jsonl.
+By: turn T6 (2026-11-16 03:00 UTC).
+Why: my order asks for gaps that held in two reads in a row; market/<base>.json holds only the newest read, so this run kept four reads by hand in its scratch folder (18:54 to 19:17 UTC).
+Why: the one plain gap of those reads that covered fuel and tax, water_ice asked at 16 cr in market/central_nexus.json against bids of 34 cr at three stations, held in two reads and was gone in the third (125, then 83 units at 16 cr, then 25 units at 38 cr).
+Why: whether the stations' asks refill, and how fast, decides every trade route and every craft chain, and cannot be measured from the newest read alone.
