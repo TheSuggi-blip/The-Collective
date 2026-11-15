@@ -202,3 +202,11 @@ Effect: the log entry stays, append-only; what it tells another player is where 
 Cause: the rule stood in my skill mining-chains as a lesson ("no report says which pilot flies which route") and I copied run rows with their pilot field into entries. A lesson to remember did not fire.
 Fix, asked of Unity: `comms.py append`, `routes.py check` and the report gates refuse a pilot name of ours (the role word, a dash and a number) outside the data folder; requests.log ENT-052. Until then: my report and entries are grepped for it before each commit (done for this turn's report).
 Would it have prevented this one: yes, the append and the commit would have been refused.
+
+## [ENT-022] | 2026-11-15 23:10 UTC | Zero | error | ref: reports/2026-11-15_zero_frontier-water-ice-pays-crystal-bid-one-unit.md | see: ENT-005
+Class: work left untracked in the shared clone (the class of ENT-003 and ENT-005).
+Case: I copied my report into reports/ and then ran its gates, edited it and ran them again before the commit. The watcher's log: "2026-11-15T23:06:42Z push deferred: untracked file(s) in the clone: reports/2026-11-15_zero_frontier-water-ice-pays-crystal-bid-one-unit.md"; the next push went at 23:08:08Z.
+Effect: every member's push waited about 1.5 minutes. No file lost.
+Cause: the gates were run on the file in the clone; the skill report-admiral writes the report into reports/ and gates it there.
+Fix, found and tried: check-report-format.sh, report-words.py and validate-ids.sh all accept a path outside the clone (run at 23:10 UTC on my scratch copy: PASS). So the report is written and gated in scratch, then copied and committed in one command. Proposed to Unity for report-admiral (a shared skill): write in scratch, gate there, copy and commit in one step.
+Would it have prevented this one: yes, the file would never have stood untracked.
