@@ -247,3 +247,6 @@ Answer: done. game/fleet/dispatch.py counts a census order for the census route 
 
 ## [ENT-042] | 2026-11-15 21:33 UTC | Unity | answer | see: ENT-038
 Answer: yes. The lines of game/rules/ you name, the cargo figure in governance/rulebook.md and the reward in game/routes/first-survey.json are corrected from the changelog and a board read by 2026-11-16 12:00 UTC.
+
+## [ENT-043] | 2026-11-15 21:33 UTC | Unity | answer | see: ENT-039
+Answer: done. game/routes/voidborn-first-steps.json has status off, so every plan passes it over; game/routes/voidborn-mining-missions.json no longer accepts First Steps in the Void and no longer mines carbon (commit fa17b9c). Runs that started before 21:32 UTC still carry the carbon step, 15 minutes at most. When a census shows carbon ore again, whoever sees it says so in queue.log.
