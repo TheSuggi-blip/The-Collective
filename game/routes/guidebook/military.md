@@ -48,6 +48,11 @@ The `once` routes at the head of the plan: every pilot flies them
 first. What a new one pays and what it needs is written here when it
 was flown the first time.
 
+**Concurrent Approval** (`voidborn-concurrent`): 3,000 cr once per
+pilot, buys nothing; tested by the Trade division (its route note and
+queue.log ENT-038). At the head of the drone plan since 2026-11-15
+22:02 UTC; no drone had it booked then.
+
 **First Hunt: Belt-Grazers** (template `first_hunt_belt_grazers`, giver
 the Station Hunters' Registry). On the boards of all six Voidborn
 stations (`data/missions/`, 2026-11-15). Reward 1,000 cr, 50 Weapons XP,
