@@ -18,8 +18,16 @@
    "when": "every turn"
   },
   {
-   "what": "Read the frontier list of census-frontier (29 systems, every 240 minutes) and say in queue.log what each new read found that another division can use; name the nearest foreign station with an order book as the next lead, since none of the first 18 systems holds one",
-   "when": "turn T5 and the next"
+   "what": "census-frontier: 42 systems (rings 1 to 3 of our border, Atlas, Intercrus, LHS 1140, Goldcrest, Bluerift), every 240 minutes, 12 ships. Next ring, once the cost of the ring-3 reads is measured: acrab, acrux, botein, deepwell, felis, gliese_876, hd_147513, marfik, rastaban; not the pirate stronghold gliese_581",
+   "when": "turn T8"
+  },
+  {
+   "what": "Base-site line in the system file of every new read (LHS 1140 and the third ring once the tracker files them): lawless, police, a station already there, places without a base, foreign pilots seen",
+   "when": "turn T8"
+  },
+  {
+   "what": "voidborn-precedence and the three voidborn-first-hunt routes at the head of the plan as soon as the command group's first RESULT lines show the reward",
+   "when": "turn T7 and T8"
   },
   {
    "what": "Read the game's changelog at every turn and name each line of game/rules/ a release makes wrong in a request to the Fleet Admiral",
