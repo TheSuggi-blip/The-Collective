@@ -6,6 +6,8 @@ WHAT: 1. scripts/intel-planets.py  files the systems our ships have read;
       3. scripts/intel-index.py    rebuilds planets/index.md and players/index.md;
       4. scripts/validate-intel.py and scripts/validate-ids.sh check the result;
       5. with --commit: one commit of exactly the files this pass wrote.
+         Without it the pass is a rehearsal: it prints what it would
+         change and takes its files out again.
 RULES:
   - Refuses to start when planets/ or players/ hold a change that is not
     committed: that is another writer's work in progress.
@@ -17,8 +19,8 @@ WHY:  what ships and public data show reaches the repository without an
       agent retyping it, and never half-written.
 
 USAGE:
-  intel-track.py              track and index; print what changed; no commit
-  intel-track.py --commit     the same, then commit
+  intel-track.py              rehearsal: print what would change; leave nothing behind
+  intel-track.py --commit     track, index, gate and commit
   intel-track.py --root <dir> another repository tree (used by tests)
   --author "<name> <mail>"    default: Unity <unity@suggi-workspace.dev>
   --data, --station, --fleet, --kills, --max are handed to the trackers.
@@ -91,9 +93,11 @@ def main():
             undo(root, paths)
             print("HALT: a gate failed; this pass's files were taken out again")
             return 1
-    print("Changed: " + ", ".join(paths))
     if not args.commit:
+        undo(root, paths)
+        print("Would change (rehearsal; nothing is left in the clone): " + ", ".join(paths))
         return 0
+    print("Changed: " + ", ".join(paths))
     name, _sep, mail = args.author.partition(" <")
     run(root, "git", "add", "--", *paths)
     message = "intel: %d file(s) from the automatic tracker" % len(paths)

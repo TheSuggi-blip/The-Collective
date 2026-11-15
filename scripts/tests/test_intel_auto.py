@@ -208,10 +208,12 @@ class TrackPassTests(Tree):
         self.assertEqual(self.git("status", "--porcelain").strip(), "?? notes.txt")
         self.assertIn("Nothing new.", self.track("--commit").stdout)
 
-    def test_without_commit_the_files_are_written_and_reported_only(self):
+    def test_without_commit_a_pass_is_a_rehearsal_that_leaves_nothing_behind(self):
         done = self.track()
         self.assertEqual(done.returncode, 0, done.stdout)
-        self.assertIn("Changed: ", done.stdout)
+        self.assertIn("Would change", done.stdout)
+        self.assertIn("planets/a-node_alpha.md", done.stdout)
+        self.assertEqual(self.git("status", "--porcelain").strip(), "")
         self.assertIn("baseline", self.git("log", "-1", "--format=%s"))
 
     def test_a_pass_refuses_to_start_on_uncommitted_intel(self):
