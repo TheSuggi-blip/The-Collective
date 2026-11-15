@@ -1,0 +1,82 @@
+{
+ "id": "voidborn-missions-1",
+ "kind": "circuit",
+ "title": "Synchrony Relay Run and Crystal Delivery: two board missions in one circuit of 8 jumps",
+ "note": "Relay Run 2,500 cr (Synchrony Hub). Crystal Delivery 7,000 cr (The Experiment): 10 energy crystal, bought at Central Nexus for 4,242 cr. Boards read 2026-11-15.",
+ "once": true,
+ "min_credits": 8000,
+ "one_time": [
+  "Synchrony Relay Run",
+  "Crystal Delivery to the Experiment"
+ ],
+ "stops": [
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "skip_if_hold": {
+    "energy_crystal": 10
+   },
+   "store": [
+    "iron_ore",
+    "copper_ore",
+    "carbon_ore",
+    "silicon_ore",
+    "null_matter"
+   ],
+   "buy": [
+    {
+     "item": "energy_crystal",
+     "qty": 10,
+     "max_price": 450
+    }
+   ]
+  },
+  {
+   "at": "synchrony:synchrony_hub:synchrony_hub",
+   "accept": [
+    "synchrony_relay_run"
+   ],
+   "sell": [
+    {
+     "item": "verdigris_curd",
+     "min_price": 300
+    }
+   ]
+  },
+  {
+   "at": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+   "accept": [
+    {
+     "template": "crystal_delivery_to_the_experiment",
+     "needs": {
+      "energy_crystal": 10
+     }
+    }
+   ],
+   "redock": true,
+   "sell": [
+    {
+     "item": "verdigris_curd",
+     "min_price": 300
+    }
+   ]
+  },
+  {
+   "at": "node_alpha:node_alpha_processing_station:node_alpha_processing_station"
+  },
+  {
+   "at": "synchrony:synchrony_hub:synchrony_hub",
+   "only_if_active": [
+    "Synchrony Relay Run"
+   ]
+  },
+  {
+   "at": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+   "only_if_active": [
+    "Crystal Delivery to the Experiment"
+   ]
+  },
+  {
+   "at": "nexus_prime:the_core:central_nexus"
+  }
+ ]
+}

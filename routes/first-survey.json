@@ -1,0 +1,37 @@
+{
+ "id": "first-survey",
+ "kind": "circuit",
+ "status": "off",
+ "title": "Signal Propagation Survey: dock at the five other Voidborn stations (20,000 cr)",
+ "note": "A new pilot's first big reward. Flown for all 55 pilots by the birth script on 2026-11-15, not yet as this route file: off until one new pilot has flown it.",
+ "once": true,
+ "one_time": [
+  "Signal Propagation Survey"
+ ],
+ "stops": [
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "accept": [
+    "signal_propagation_survey"
+   ]
+  },
+  {
+   "at": "node_alpha:node_alpha_processing_station:node_alpha_processing_station"
+  },
+  {
+   "at": "synchrony:synchrony_hub:synchrony_hub"
+  },
+  {
+   "at": "the_experiment:the_experiment_research_station:the_experiment_research_station"
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station"
+  },
+  {
+   "at": "node_gamma:node_gamma_relay_station:node_gamma_relay_station"
+  },
+  {
+   "at": "nexus_prime:the_core:central_nexus"
+  }
+ ]
+}

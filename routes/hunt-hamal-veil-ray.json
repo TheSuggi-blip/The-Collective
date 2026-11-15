@@ -1,0 +1,16 @@
+{
+ "id": "hunt-hamal-veil-ray",
+ "kind": "hunt",
+ "title": "Veil-rays at Hamal Crystal Bloom; verdigris curd sold at Node Gamma",
+ "note": "Seven kills in 33 minutes with a Pulse Laser I (2026-11-15). A carcass holds 1 or 2 curd. Curd bids: 330 cr.",
+ "place": "hamal:hamal_crystal_bloom",
+ "species": [
+  "veil_ray"
+ ],
+ "sell_at": "node_gamma:node_gamma_relay_station:node_gamma_relay_station",
+ "min_bid": 250,
+ "kills": 12,
+ "minutes": 40,
+ "max_ships": 1,
+ "min_creatures": 2
+}

@@ -1,0 +1,10 @@
+{
+ "id": "mine-gsc-seep",
+ "kind": "mine",
+ "title": "Iron and copper at GSC-0027 Spacetime Seep; ore into storage at Node Beta",
+ "note": "For skill, not for money. Iron 54,404 and copper 19,162 left on 2026-11-15.",
+ "belt": "gsc_0027:spacetime_seep",
+ "station": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+ "minutes": 45,
+ "max_ships": 15
+}

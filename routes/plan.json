@@ -1,0 +1,40 @@
+{
+ "note": "Per role (the word before the dash of a pilot's name): the routes tried in this order for a free pilot. The dispatcher reads this file at every pass.",
+ "roles": {
+  "drone": [
+   "voidborn-missions-1",
+   "hunt-home-whale",
+   "hunt-acubens-urchin",
+   "hunt-hamal-veil-ray",
+   "hunt-gsc-veil-ray",
+   "mine-acubens",
+   "mine-gsc-seep",
+   "mine-pherkad-rift"
+  ],
+  "scout": [
+   "voidborn-missions-1",
+   "census-voidborn",
+   "mine-acubens",
+   "mine-gsc-seep",
+   "mine-pherkad-rift"
+  ],
+  "miner": [
+   "voidborn-missions-1",
+   "mine-acubens",
+   "mine-gsc-seep",
+   "mine-pherkad-rift"
+  ],
+  "hauler": [
+   "voidborn-missions-1",
+   "mine-acubens",
+   "mine-gsc-seep",
+   "mine-pherkad-rift"
+  ],
+  "trader": [
+   "voidborn-missions-1",
+   "mine-acubens",
+   "mine-gsc-seep",
+   "mine-pherkad-rift"
+  ]
+ }
+}

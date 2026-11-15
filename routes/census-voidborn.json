@@ -1,0 +1,20 @@
+{
+ "id": "census-voidborn",
+ "kind": "census",
+ "title": "Read one Voidborn system whole: deposits, creatures, order book, mission board",
+ "note": "Keeps data/scouting, data/wildlife, data/market and data/missions fresh; the stalest system is read first.",
+ "systems": [
+  "nexus_prime",
+  "node_alpha",
+  "node_beta",
+  "node_gamma",
+  "synchrony",
+  "the_experiment",
+  "acubens",
+  "gsc_0027",
+  "hamal",
+  "pherkad"
+ ],
+ "every_minutes": 60,
+ "max_ships": 3
+}

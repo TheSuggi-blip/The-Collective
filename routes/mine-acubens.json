@@ -1,0 +1,10 @@
+{
+ "id": "mine-acubens",
+ "kind": "mine",
+ "title": "Iron and copper at Acubens Shadow Pocket; ore into storage at Node Beta",
+ "note": "For skill, not for money: common ore sells for 1 to 4 cr. Iron 78,496 and copper 94,468 left on 2026-11-15.",
+ "belt": "acubens:acubens_shadow_pocket",
+ "station": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+ "minutes": 45,
+ "max_ships": 15
+}

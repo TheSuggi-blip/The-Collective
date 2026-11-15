@@ -1,0 +1,19 @@
+{
+ "id": "hunt-home-whale",
+ "kind": "hunt",
+ "title": "Pilot-whales at Stellar Siphon in Nexus Prime; whale oil sold at Node Beta",
+ "note": "Three whales of 220 hull counted 2026-11-15 15:10 UTC: too much for a Pulse Laser I. Whale oil bids: 300 cr.",
+ "place": "nexus_prime:stellar_siphon",
+ "species": [
+  "pilot_whale"
+ ],
+ "sell_at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+ "min_bid": 250,
+ "kills": 3,
+ "minutes": 25,
+ "max_ships": 1,
+ "min_creatures": 1,
+ "requires": {
+  "module": "piercing_railgun_i"
+ }
+}

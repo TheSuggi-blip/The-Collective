@@ -1,0 +1,16 @@
+{
+ "id": "hunt-gsc-veil-ray",
+ "kind": "hunt",
+ "title": "Veil-rays at GSC-0027 Prism Scatter; verdigris curd sold at Node Gamma",
+ "note": "Six veil-rays counted 2026-11-15 15:09 UTC.",
+ "place": "gsc_0027:gsc_0027_prism_scatter",
+ "species": [
+  "veil_ray"
+ ],
+ "sell_at": "node_gamma:node_gamma_relay_station:node_gamma_relay_station",
+ "min_bid": 250,
+ "kills": 12,
+ "minutes": 40,
+ "max_ships": 1,
+ "min_creatures": 2
+}

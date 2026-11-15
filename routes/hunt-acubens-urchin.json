@@ -1,0 +1,16 @@
+{
+ "id": "hunt-acubens-urchin",
+ "kind": "hunt",
+ "title": "Cinder-urchins at Acubens Shadow Pocket; radiant bile sold at Node Gamma",
+ "note": "Three urchins of 70 hull counted 2026-11-15 15:11 UTC. Radiant bile bids: 780 to 808 cr.",
+ "place": "acubens:acubens_shadow_pocket",
+ "species": [
+  "cinder_urchin"
+ ],
+ "sell_at": "node_gamma:node_gamma_relay_station:node_gamma_relay_station",
+ "min_bid": 250,
+ "kills": 3,
+ "minutes": 25,
+ "max_ships": 1,
+ "min_creatures": 1
+}
