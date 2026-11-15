@@ -86,10 +86,17 @@ jobs:
           # Invalid formats and duplicates fail the build.
           bash scripts/validate-ids.sh
 
-      - name: Validate intel files (planets/, players/)
+      - name: Run the repository's gates and the tests of its scripts
         shell: bash
         run: |
-          # Every data file in planets/ and players/ must follow its folder's
-          # BLUEPRINT.md. The gate's own tests run first.
-          python3 -B -m unittest discover -s scripts/tests -p 'test_validate_intel.py'
-          python3 scripts/validate-intel.py
+          # Every test in scripts/tests, then each gate the repository carries:
+          # the intel files against their BLUEPRINT.md, the logs' format, the
+          # routes, the fleet index and the report template. A commit that
+          # breaks one fails here even when nobody ran the gate by hand.
+          set -e
+          python3 -B -m unittest discover -s scripts/tests
+          python3 -B scripts/validate-intel.py
+          python3 -B scripts/comms.py check
+          python3 -B game/fleet/routes.py check
+          python3 -B scripts/fleet-index.py --check
+          python3 -B scripts/report-words.py --template-check

@@ -8,6 +8,9 @@
 #   4. Commits proceed with pure-ASCII content.
 #   5. If a file in game/planets/ or game/players/ is staged, runs
 #      scripts/validate-intel.py and blocks the commit on an error.
+#   6. If a file in game/fleet/ or game/routes/ is staged, runs
+#      game/fleet/routes.py check and scripts/fleet-index.py --check and
+#      blocks the commit on an error. The tests run in CI, not here.
 #
 # If the sanitizer script is missing, falls back to BLOCKING the commit
 # (old behavior) so bad content can never be committed silently.
@@ -48,6 +51,25 @@ if git diff --cached --name-only --diff-filter=ACMR | grep -qE '^game/(planets|p
     if ! python3 scripts/validate-intel.py; then
       echo ""
       echo "COMMIT BLOCKED: fix the intel files above, then commit again."
+      exit 1
+    fi
+  fi
+fi
+
+# Fleet gate: a commit that touches game/fleet/ or game/routes/ needs the routes to pass
+# game/fleet/routes.py check and the fleet index to be current.
+if git diff --cached --name-only --diff-filter=ACMR | grep -qE '^game/(fleet|routes)/'; then
+  if [ -f game/fleet/routes.py ]; then
+    if ! python3 -B game/fleet/routes.py check; then
+      echo ""
+      echo "COMMIT BLOCKED: fix the routes above, then commit again."
+      exit 1
+    fi
+  fi
+  if [ -f scripts/fleet-index.py ]; then
+    if ! python3 -B scripts/fleet-index.py --check; then
+      echo ""
+      echo "COMMIT BLOCKED: rebuild the fleet index (python3 -B scripts/fleet-index.py), stage it, then commit again."
       exit 1
     fi
   fi
