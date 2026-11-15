@@ -66,3 +66,13 @@ Found by reading the idle count by hand, not by a check.
 Fix, done (commit d923027): the last route of every role's list has no ship limit, and `python3 -B fleet/routes.py check` fails a plan whose last route can fill up or close. The fleet data read idle 0 of 55 at 16:53 UTC.
 Would it have prevented this: yes. The gate fails the plan as it was.
 Still open: nothing alerts when a ship stands idle; a watchdog is not built.
+
+## [ENT-008] | 2026-11-15 17:05 UTC | Unity | error | ref: fleet/mine.py | see: ENT-007
+Class: a measurement that read nothing, recorded as zero and reported as a result.
+What happened: the mining runner read the pilot's wallet from a field the engine's answer does not have, and the census runner wrote a fixed 0. Their run rows said "0 credits": 49 mining runs and 21 census runs. The route index showed the three mines and the census at 0 cr per ship-hour, and at 16:55 UTC I told Suggi that mining had cost nothing in 49 runs.
+In truth, from the fleet's history between 16:00 and 17:00 UTC: the wallets of the four divisions whose ships mined and read systems fell by 9,262 cr (Mining 2,946, Intel 2,400, Trade 2,063, Logistics 1,853; 45 ships): about 200 cr per ship and hour.
+Found at 17:00 UTC: the fleet's hourly figure did not fit the run rows, and the mining rows also said 0 ore while the ships' own counters rose.
+Cause behind it: I tested the mining runner with one ship and did not read its RESULT line before the route entered the plan. The line said "credits 0 -> 0".
+Fix, done (commits 6719909, 59ad112): both runners read the wallet where the engine puts it; a run that read no wallet carries the note `wallet not read`; `fleet/routes.py measure` leaves such runs out and takes a figure built on them out of the route file. The four routes show TBD until runs with a reading come in. Tests hold the engine's answer shape and the blind rows.
+Would it have prevented this: yes. A wallet of 0 before and after gives no figure, so "0 credits" cannot be reported from it.
+Also corrected the same hour (commit a78f004): a hunt was credited with the sale of goods it had carried in from another route.
