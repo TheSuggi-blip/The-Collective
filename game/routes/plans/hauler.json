@@ -1,8 +1,9 @@
 {
  "role": "hauler",
  "owner": "Apollo",
- "note": "The routes the dispatcher tries, in this order, for a free hauler pilot. Apollo keeps this file: put a route that pays first, a test with `max_ships` before it enters for all, and end with `park`. No route that loses money stands here to fill time (orders F8). 2026-11-15 21:32 UTC (Apollo): voidborn-first-steps taken out: Acubens Belt reads 0 carbon ore (data/scouting/acubens.json, 21:01 UTC) and the run of 21:02 UTC lost 109 cr with nothing handed in (runs.jsonl); it comes back when a census read shows carbon again. 2026-11-15 21:51 UTC (Apollo): voidborn-concurrent at the head, on Mercury's test (queue.log ENT-038: 2,950 cr a run, nothing bought; orders F8).",
+ "note": "The routes the dispatcher tries, in this order, for a free hauler pilot. Apollo keeps this file: put a route that pays first, a test with `max_ships` before it enters for all, and end with `park`. No route that loses money stands here to fill time (orders F8). 2026-11-15 21:32 UTC (Apollo): voidborn-first-steps taken out: Acubens Belt reads 0 carbon ore (data/scouting/acubens.json, 21:01 UTC) and the run of 21:02 UTC lost 109 cr with nothing handed in (runs.jsonl); it comes back when a census read shows carbon again. 2026-11-15 21:51 UTC (Apollo): voidborn-concurrent at the head, on Mercury's test (queue.log ENT-038: 2,950 cr a run, nothing bought; orders F8). 2026-11-15 23:30 UTC (Apollo): voidborn-selling at the head: its first RESULT line paid +865 cr in 5 min after the ten units bought (the command group's test, orders.log ENT-007, block APOLLO); 7 haulers hold Market Participation: Selling.",
  "routes": [
+  "voidborn-selling",
   "voidborn-concurrent",
   "voidborn-substrate",
   "voidborn-missions-1",
@@ -11,10 +12,6 @@
   "park"
  ],
  "planned": [
-  {
-   "what": "Market Participation: Selling (1,000 cr once) for the haulers that hold it: sell 10 units from storage into a station bid at Central Nexus, by hand, after their mining-missions circuit; sell takes storage when the hold is empty (tested 2026-11-15)",
-   "when": "turn T6"
-  },
   {
    "what": "A craft-and-sell route for stored ore once the circuit runner has its craft step (requests.log ENT-013), only where the depth at the best bid (best_buy_qty, read live with view_market) pays the fuel",
    "when": "after 2026-11-16 12:00 UTC"
