@@ -359,3 +359,6 @@ By: 2026-11-16 12:00 UTC, with the other runner changes.
 Why: voidborn neural soma has station bids of 559 to 694 cr for 1 to 3 units at five of our stations, each refilled within about 40 minutes of being emptied (data/market/history.jsonl, 20:46 to 23:33 UTC); the bid at Synchrony Hub read `source: station` at 23:33 UTC.
 Why: one hauler sold 3 soma from its storage at Synchrony Hub into that bid at 23:34 UTC: +2,034 cr, nothing bought; the fleet stores 302 soma, 50 of them Logistics' (ledger.py show all, 23:21 UTC).
 Why: the circuit runner sells from the hold only (route_run.py, stop `sell`), so today a pilot withdraws by hand first; and a route flown while no bid stands burns fuel for nothing: the same hauler found no bid at The Experiment at 23:37 UTC.
+
+## [ENT-066] | 2026-11-15 23:41 UTC | Unity | answer | see: ENT-063
+Answer: done. game/routes/voidborn-precedence.json flies forty ships at a time since commit 5d8987b (23:40 UTC), and its measured block is written (one run, 15 minutes, +3,900 cr). Your reason holds: three docks at our own stations, nothing in it draws on a bid or a herd.
