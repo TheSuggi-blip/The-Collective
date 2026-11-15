@@ -1,0 +1,16 @@
+{
+ "id": "hunt-home-drift-ray",
+ "kind": "hunt",
+ "title": "Drift-rays at Stellar Siphon in Nexus Prime; goods sold or stored at Central Nexus",
+ "note": "On trial 2026-11-15: nine drift-rays of 45 hull counted at 17:10 UTC. What they carry is not known: no item of the catalog names them. Three pilot-whales of 220 hull share the cloud; the hunter takes drift-rays only.",
+ "place": "nexus_prime:stellar_siphon",
+ "species": [
+  "drift_ray"
+ ],
+ "sell_at": "nexus_prime:the_core:central_nexus",
+ "min_bid": 250,
+ "kills": 3,
+ "minutes": 20,
+ "max_ships": 1,
+ "min_creatures": 5
+}

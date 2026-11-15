@@ -1,0 +1,10 @@
+{
+ "id": "mine-bellatrix",
+ "kind": "mine",
+ "title": "Wait and mine at Bellatrix Major Belt beside Node Gamma station: whatever regrows (thorium, palladium, iridium, carbon)",
+ "note": "On trial 2026-11-15: every deposit of this belt read 0, picked clean by other pilots. The belt lies in the station's own system: no jump. Two questions: what a ship costs here per hour, and whether thorium (stations bid 240 cr) or palladium (371 cr at Node Gamma) comes back for us.",
+ "belt": "node_gamma:bellatrix_major_belt",
+ "station": "node_gamma:node_gamma_relay_station:node_gamma_relay_station",
+ "minutes": 45,
+ "max_ships": 5
+}

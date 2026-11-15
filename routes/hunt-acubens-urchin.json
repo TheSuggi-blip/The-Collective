@@ -2,7 +2,7 @@
  "id": "hunt-acubens-urchin",
  "kind": "hunt",
  "title": "Cinder-urchins at Acubens Shadow Pocket; radiant bile sold at Node Gamma",
- "note": "Three urchins of 70 hull counted 2026-11-15 15:11 UTC. Radiant bile bids: 780 to 808 cr; Synchrony Hub asks for 10 in a station-need mission (9,292 cr). Two kills on 2026-11-15 gave carapace only; another player's drones hunt here too and join a fight: ours flees then (HOLD). Measured 2026-11-15: six kills in two runs gave carapace only and no radiant bile; the 1,320 cr the first run sold were veil-ray curd carried in from another place and are not counted here.",
+ "note": "Three urchins of 70 hull counted 2026-11-15 15:11 UTC. Radiant bile bids: 780 to 808 cr; Synchrony Hub asks for 10 in a station-need mission (9,292 cr). Two kills on 2026-11-15 gave carapace only; another player's drones hunt here too and join a fight: ours flees then (HOLD). Measured 2026-11-15: six kills in two runs gave carapace only and no radiant bile; the 1,320 cr the first run sold were veil-ray curd carried in from another place and are not counted here. Off since 2026-11-15 17:40 UTC: the catalog says the bile is concentrated from uranium and the docs say a creature's diet shapes its loot; this place has no uranium deposit and the belt next door reads 0 uranium.",
  "place": "acubens:acubens_shadow_pocket",
  "species": [
   "cinder_urchin"
@@ -19,5 +19,6 @@
   "minutes": 25,
   "credits_per_run": -120,
   "cph_per_ship": -290
- }
+ },
+ "status": "off"
 }

@@ -109,7 +109,7 @@ def raw(action, params=None, group='spacemolt'):
 def save_station(base, system):
     items = raw('view_market', group='spacemolt_market').get('items') or []
     if items:
-        rows = [{k: i.get(k) for k in ('item_id', 'item_name', 'category', 'best_buy', 'buy_quantity', 'best_sell', 'sell_quantity')} for i in items if isinstance(i, dict)]
+        rows = [{k: i.get(k) for k in ('item_id', 'item_name', 'category', 'best_buy', 'best_buy_qty', 'buy_quantity', 'best_sell', 'best_sell_qty', 'sell_quantity')} for i in items if isinstance(i, dict)]
         write_json(DATA / 'market' / f'{base}.json', {'base': base, 'system': system, 'read_at': now(), 'source': 'view_market, own ship docked', 'items': rows})
     ms = raw('get_missions').get('missions') or []
     keep = [{k: m.get(k) for k in ('template_id', 'mission_id', 'title', 'type', 'difficulty', 'rewards', 'objectives', 'expires_in_ticks', 'giver')} for m in ms if isinstance(m, dict)]
@@ -154,6 +154,13 @@ if goal('navigate-to-system', {'targetSystemId': system_id}):
                 say(f'docked at {p["base_id"]}: order book {n_items} items, board {n_missions} missions saved')
     write_json(DATA / 'scouting' / f'{system_id}.json', scouting)
     write_json(DATA / 'wildlife' / f'{system_id}.json', wildlife)
+    with open(DATA / 'wildlife' / 'history.jsonl', 'a', encoding='utf-8') as fh:      # herds and deposits over time: what regrows, and how fast
+        fcntl.flock(fh, fcntl.LOCK_EX)
+        fh.write(json.dumps({'at': now(), 'system': system_id,
+                             'herds': {poi: dict(Counter(c.get('species') for c in v['creatures'])) for poi, v in wildlife['pois'].items()},
+                             'pilots': {poi: v.get('pilots') for poi, v in wildlife['pois'].items()},
+                             'deposits': {poi: {r.get('resource_id'): r.get('remaining') for r in (v.get('resources') or (v.get('poi') or {}).get('resources') or [])
+                                                if isinstance(r, dict)} for poi, v in scouting['pois'].items()}}, separators=(',', ':')) + '\n')
 if not ('--stay' in sys.argv and last_station):
     goal('prepare-at-station', HOME)
 WALLET_AFTER = wallet()
