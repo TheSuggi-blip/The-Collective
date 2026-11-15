@@ -1,0 +1,20 @@
+{
+ "id": "hunt-test-acubens-patina-grazer",
+ "kind": "hunt",
+ "title": "Yield test: patina_grazer at acubens_shadow_pocket; what a kill drops and whether a bid takes it",
+ "note": "A test with one ship (orders.log ENT-007, F8 and F9): no run of ours has looted this species. The route maker read 11 of them here, 60 hull (data/routes/opportunities.json, 2026-11-15 23:12 UTC). Policed space. 3 kills a run, ranched: no hunt below 5 animals. Loot that no bid of 50 cr or more takes is stored at the station, so the row's goods show the drop. Written by Apophis 2026-11-15 23:28 UTC; it leaves the plan after its first RESULT line unless the drop sells. `alone`: another player's drones hunt this pocket and join a fight (the cinder-urchin route's note).",
+ "place": "acubens:acubens_shadow_pocket",
+ "species": [
+  "patina_grazer"
+ ],
+ "sell_at": "node_gamma:node_gamma_relay_station:node_gamma_relay_station",
+ "min_bid": 50,
+ "kills": 3,
+ "minutes": 30,
+ "max_ships": 1,
+ "min_creatures": 5,
+ "requires": {
+  "without_module": "piercing_railgun_i"
+ },
+ "alone": true
+}

@@ -35,13 +35,18 @@ task one pilot carries out by itself; its file is `game/routes/<id>.json`
 | [hunt-cedarhold-dim-lattice-veil-ray](hunt-cedarhold-dim-lattice-veil-ray.json) | hunt | veil_ray at cedarhold_dim_lattice; loot sold at The Experiment Research Station | up to 1 ships | TBD | TBD | TBD | TBD | -- |
 | [hunt-faintlight-drift-veil-ray](hunt-faintlight-drift-veil-ray.json) | hunt | veil_ray at faintlight_drift; loot sold at Node Beta Industrial Station | up to 1 ships | TBD | TBD | TBD | TBD | -- |
 | [hunt-garnet-dim-lattice-veil-ray](hunt-garnet-dim-lattice-veil-ray.json) | hunt | veil_ray at garnet_dim_lattice; loot sold at The Experiment Research Station | up to 1 ships | TBD | TBD | TBD | TBD | -- |
-| [hunt-gsc-veil-ray](hunt-gsc-veil-ray.json) | hunt | Veil-rays at GSC-0027 Prism Scatter; verdigris curd sold at Central Nexus | up to 1 ships, needs piercing_railgun_i | 7 | 24 | 1,830 | 3,350 | 2026-11-15 |
+| [hunt-gsc-veil-ray](hunt-gsc-veil-ray.json) | hunt | Veil-rays at GSC-0027 Prism Scatter; verdigris curd sold at Central Nexus | up to 1 ships | 7 | 24 | 1,830 | 3,350 | 2026-11-15 |
 | [hunt-hamal-veil-ray](hunt-hamal-veil-ray.json) | hunt | Veil-rays at Hamal Crystal Bloom; verdigris curd sold at Central Nexus | up to 1 ships | 5 | 23 | 1,070 | 3,120 | 2026-11-15 |
 | [hunt-home-drift-ray](hunt-home-drift-ray.json) | hunt | Drift-rays at Stellar Siphon in Nexus Prime; goods sold or stored at Central Nexus | up to 1 ships | 8 | 10 | -40 | -250 | 2026-11-15 |
 | [hunt-home-whale](hunt-home-whale.json) | hunt | Pilot-whales at Stellar Siphon in Nexus Prime; whale oil sold at Node Beta | up to 1 ships, needs piercing_railgun_i, off | 1 | 20 | 570 | 1,670 | 2026-11-15 |
 | [hunt-keid-fractured-prism-veil-ray](hunt-keid-fractured-prism-veil-ray.json) | hunt | veil_ray at keid_fractured_prism; loot sold at Node Beta Industrial Station | up to 1 ships | TBD | TBD | TBD | TBD | -- |
 | [hunt-low-charge-glint-veil-ray](hunt-low-charge-glint-veil-ray.json) | hunt | veil_ray at low_charge_glint; loot sold at Node Beta Industrial Station | up to 1 ships | TBD | TBD | TBD | TBD | -- |
-| [hunt-ruchbah-veil-ray](hunt-ruchbah-veil-ray.json) | hunt | Veil-rays at Ruchbah Broken Glass Veil (lawless); verdigris curd sold at The Experiment | up to 1 ships, off | TBD | TBD | TBD | TBD | -- |
+| [hunt-ruchbah-veil-ray](hunt-ruchbah-veil-ray.json) | hunt | Veil-rays at Ruchbah Broken Glass Veil (lawless); verdigris curd sold at The Experiment | up to 1 ships | TBD | TBD | TBD | TBD | -- |
+| [hunt-test-acubens-patina-grazer](hunt-test-acubens-patina-grazer.json) | hunt | Yield test: patina_grazer at acubens_shadow_pocket; what a kill drops and whether a bid takes it | up to 1 ships | TBD | TBD | TBD | TBD | -- |
+| [hunt-test-eltanin-kiln-snail](hunt-test-eltanin-kiln-snail.json) | hunt | Yield test: kiln_snail at eltanin_prime_belt; what a kill drops and whether a bid takes it | up to 1 ships | TBD | TBD | TBD | TBD | -- |
+| [hunt-test-frozen-drift-deuteron-slug](hunt-test-frozen-drift-deuteron-slug.json) | hunt | Yield test: deuteron_slug at node_beta_frozen_drift; what a kill drops and whether a bid takes it | up to 1 ships | TBD | TBD | TBD | TBD | -- |
+| [hunt-test-node-gamma-ice-belt](hunt-test-node-gamma-ice-belt.json) | hunt | Yield test: rime_grazer, pressblister at node_gamma_ice_belt; what a kill drops and whether a bid takes it | up to 1 ships | TBD | TBD | TBD | TBD | -- |
+| [hunt-test-siphon-bell-jelly](hunt-test-siphon-bell-jelly.json) | hunt | Yield test: bell_jelly at stellar_siphon; what a kill drops and whether a bid takes it | up to 1 ships | TBD | TBD | TBD | TBD | -- |
 | [mine-achernar-frost-ring](mine-achernar-frost-ring.json) | mine | Achernar Frost Ring: water_ice, nitrogen_ice, deuterium_ice, methane_ice; sold at The Experiment Research Station | up to 1 ships, needs ice_harvester_i | TBD | TBD | TBD | TBD | -- |
 | [mine-acubens](mine-acubens.json) | mine | Iron and copper at Acubens Shadow Pocket; ore into storage at Node Beta | up to 16 ships | 48 | 45 | -120 | -160 | 2026-11-15 |
 | [mine-alnair-ice-fields](mine-alnair-ice-fields.json) | mine | Alnair Ice Fields: water_ice, nitrogen_ice, deuterium_ice; sold at Node Alpha Processing Station | up to 1 ships, needs ice_harvester_i | TBD | TBD | TBD | TBD | -- |
@@ -64,7 +69,7 @@ task one pilot carries out by itself; its file is `game/routes/<id>.json`
 | Role | Kept by | Routes, first that is open |
 |---|---|---|
 | command | Unity | voidborn-concurrent > voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > voidborn-first-steps > voidborn-selling > voidborn-precedence > voidborn-first-hunt-nexus > voidborn-first-hunt-gsc > voidborn-first-hunt-acubens > mine-node-beta-frozen-drift > mine-ruchbah-ice-belt > mine-achernar-frost-ring > mine-wolf-1061-frozen-drift > mine-keid-ice-shelf > mine-cryogenic-reserve > mine-alnair-ice-fields > mine-gsc-0041-frost-ring > mine-antares-ice-fields > mine-intercrus-ice-fields > census-frontier > park |
-| drone | Apophis | voidborn-concurrent > voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > hunt-gsc-veil-ray > hunt-hamal-veil-ray > census-frontier > park |
+| drone | Apophis | voidborn-concurrent > voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > hunt-gsc-veil-ray > hunt-hamal-veil-ray > hunt-cedarhold-dim-lattice-veil-ray > hunt-garnet-dim-lattice-veil-ray > hunt-ruchbah-veil-ray > hunt-low-charge-glint-veil-ray > hunt-faintlight-drift-veil-ray > hunt-keid-fractured-prism-veil-ray > hunt-test-acubens-patina-grazer > hunt-test-node-gamma-ice-belt > hunt-test-siphon-bell-jelly > hunt-test-frozen-drift-deuteron-slug > hunt-test-eltanin-kiln-snail > census-frontier > park |
 | hauler | Apollo | voidborn-selling > voidborn-concurrent > voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > census-frontier > park |
 | miner | Zero | voidborn-concurrent > voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > census-frontier > park |
 | scout | Oracle | voidborn-selling > voidborn-concurrent > voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > census-voidborn > census-frontier > park |
@@ -77,10 +82,10 @@ What an Admiral means to do next (`planned` in its plan file), so that the other
 
 | Role | What | When |
 |---|---|---|
-| drone | Railgun test at hunt-gsc-veil-ray for turn T5: kills per hunter-hour and credits per hunter-hour against the pulse-laser figure; if it pays, a railgun for the hunter of every herd (5,000 cr each, orders F12). | turn T5 to T6 |
-| drone | hunt-ruchbah-veil-ray into the plan with max_ships 1 when the hand run's RESULT line shows a profit and no damage from a ship; then the veil-rays of Garnet Dim Lattice (8 at 21:24 UTC) the same way. | turn T6 |
-| drone | First Hunt: Belt-Grazers (1,000 cr once, 3 belt-grazer kills) for every drone, as a route, once the circuit runner can hunt for a mission (request to Unity). | when the runner step exists |
-| drone | Cinder-sylphs at Achernar Gas Pocket (40 hull; ember gland bid 480 cr for 550 at The Experiment): one ship, hand test. | turn T6 |
+| drone | First Hunt: Belt-Grazers for every drone: voidborn-first-hunt-nexus, -gsc and -acubens at the head of this plan when the command group's first RESULT lines are read (runs started 2026-11-15 23:20 UTC). | turn T7, or T8 at the latest |
+| drone | Frontier veil-ray tests and yield tests: routes.py measure --write after their first RESULT lines; a test that lost money leaves the plan, a yield whose drop sells becomes a ranched route. | turn T8 |
+| drone | The railgun ship: ammunition from stored iron (2 steel plate and 3 iron ore make 5 Ferrous Slug Cases, one case loads a magazine; the craft costs no credits), then a yield test of armoured prey of 100 hull or less, where armour bypass may count. | turn T8 |
+| drone | The next hull: commission_quote of the tier-1 Vigil (two weapon slots, hull 75, cargo 20, no Piloting gate named) at a Voidborn shipyard; one ship, two Pulse Laser I, against a home veil-ray herd, measured against the starter's trips. | turn T8, after the quote |
 | hauler | A craft-and-sell route for stored ore once the circuit runner has its craft step (requests.log ENT-013), only where the depth at the best bid (best_buy_qty, read live with view_market) pays the fuel | after 2026-11-16 12:00 UTC |
 | hauler | Measure how fast station-owned bids refill (iron ore at Central Nexus read 0 at 21:25 UTC after our sale) | turn T6 |
 | miner | Water ice from the ice field of data/scouting/wolf_1061.json, sold at Synchrony: run 2 and 3 by hand with the one miner that carries an Ice Harvester I (run 1: +2,688 cr in 30 minutes after fuel); a route once the mine runner can sell (requests.log ENT-051) | turn T6 and T7 |

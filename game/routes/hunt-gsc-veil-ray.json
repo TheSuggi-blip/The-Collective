@@ -2,7 +2,7 @@
  "id": "hunt-gsc-veil-ray",
  "kind": "hunt",
  "title": "Veil-rays at GSC-0027 Prism Scatter; verdigris curd sold at Central Nexus",
- "note": "Six veil-rays counted 2026-11-15 15:09 UTC; 13 at 21:24 UTC while one hunter worked here. Ranched from 2026-11-15 17:40 UTC: no hunt below four animals and four kills a run. Railgun test from 2026-11-15 21:40 UTC for turn T5 (orders.log ENT-005, requests.log ENT-008/ENT-026): only a ship with a Piercing Railgun I is sent, so the turn's runs here measure the railgun against the 30 pulse-laser kills of 186 hunter-minutes before it. Sold at Central Nexus from the same time: Node Beta's curd bid was down to 15 units (data/market, 20:45 UTC), Central Nexus bid 330 for 50.",
+ "note": "Six veil-rays counted 2026-11-15 15:09 UTC; 16 to 18 from 22:32 to 23:06 UTC while one hunter worked here. Ranched from 2026-11-15 17:40 UTC: no hunt below four animals and four kills a run. Railgun test 2026-11-15 21:55 to 22:54 UTC (orders.log ENT-005): three runs of the railgun ship, 4, 4 and 0 kills; the two trips with 4 kills took 21.4 and 24.0 minutes against 21.7 to 26.8 for the eight pulse-laser trips with 4 kills here (18:20 to 21:28 UTC); the 8 slug cases bought for it ran out in the third run, which fled with no ammunition. No gain measured: from 2026-11-15 23:28 UTC the route takes every drone again and no ship with a Piercing Railgun I (requires.without_module) until that ship carries ammunition. Sold at Central Nexus: 330 cr a curd.",
  "place": "gsc_0027:gsc_0027_prism_scatter",
  "species": [
   "veil_ray"
@@ -14,7 +14,7 @@
  "max_ships": 1,
  "min_creatures": 4,
  "requires": {
-  "module": "piercing_railgun_i"
+  "without_module": "piercing_railgun_i"
  },
  "measured": {
   "date": "2026-11-15",

@@ -2,7 +2,7 @@
  "id": "hunt-ruchbah-veil-ray",
  "kind": "hunt",
  "title": "Veil-rays at Ruchbah Broken Glass Veil (lawless); verdigris curd sold at The Experiment",
- "note": "Beyond Voidborn space (orders.log ENT-005, F13; Military TIGHT outside). Seven veil-rays counted 2026-11-15 21:14 UTC by the frontier census, no pilot at the place. The Experiment, one jump away, bid 330 cr for 526 curd (data/market, 20:36 UTC). Off: flown by hand with one drone, hold empty, from 2026-11-15 21:26 UTC; it enters the plan when that run's RESULT line is read. Ranched like the home herds: no hunt below four animals, four kills a run.",
+ "note": "Beyond Voidborn space (orders F13). Seven veil-rays counted 2026-11-15 21:14 UTC by the frontier census. Flown by hand with an empty hold from 21:26 UTC: 0 kills, -77 cr of fuel, no damage; two ships of a large faction joined the fight within three minutes and our hunter fled (guidebook military.md, section 2). Back in the drone plan from 2026-11-15 23:28 UTC as a test with one ship, with `alone` (no fight where a ship that is not ours stands) and `requires.empty_hold` (orders.log ENT-007, block APOPHIS). Ranched like the home herds.",
  "place": "ruchbah:broken_glass_veil",
  "species": [
   "veil_ray"
@@ -13,5 +13,9 @@
  "minutes": 40,
  "max_ships": 1,
  "min_creatures": 4,
- "status": "off"
+ "alone": true,
+ "requires": {
+  "empty_hold": true,
+  "without_module": "piercing_railgun_i"
+ }
 }

@@ -2,7 +2,7 @@
  "id": "hunt-cedarhold-dim-lattice-veil-ray",
  "kind": "hunt",
  "title": "veil_ray at cedarhold_dim_lattice; loot sold at The Experiment Research Station",
- "note": "Written by routemaker.py from the herd's count, the loot of 20 runs of ours and the order book; an estimate of 3075 cr per hunter-hour, not a measurement. A test: one ship, the ranching rules kept. Estimate of 2026-11-15 23:10 UTC from: {\"four_kills\": [\"verdigris_curd 5.0 units for 1653 cr (depth at the best price)\"], \"herd\": 7, \"hull\": 60, \"jumps\": 2, \"learned_from_runs\": 20, \"loot_a_kill\": {\"creature_carapace\": 1.24, \"verdigris_curd\": 1.25}, \"place\": \"cedarhold:cedarhold_dim_lattice\", \"sold_at\": \"the_experiment_research_station\"}. Uncertain: lawless space: no police at cedarhold. In no plan: its Admiral adds it.",
+ "note": "Written by routemaker.py from the herd's count, the loot of 20 runs of ours and the order book; an estimate of 3075 cr per hunter-hour, not a measurement. A test: one ship, the ranching rules kept. Estimate of 2026-11-15 23:10 UTC from: {\"four_kills\": [\"verdigris_curd 5.0 units for 1653 cr (depth at the best price)\"], \"herd\": 7, \"hull\": 60, \"jumps\": 2, \"learned_from_runs\": 20, \"loot_a_kill\": {\"creature_carapace\": 1.24, \"verdigris_curd\": 1.25}, \"place\": \"cedarhold:cedarhold_dim_lattice\", \"sold_at\": \"the_experiment_research_station\"}. Uncertain: lawless space: no police at cedarhold. In the drone plan from 2026-11-15 23:28 UTC as a test with one ship (orders.log ENT-007, block APOPHIS).",
  "place": "cedarhold:cedarhold_dim_lattice",
  "species": [
   "veil_ray"
@@ -15,6 +15,7 @@
  "min_creatures": 4,
  "alone": true,
  "requires": {
-  "empty_hold": true
+  "empty_hold": true,
+  "without_module": "piercing_railgun_i"
  }
 }

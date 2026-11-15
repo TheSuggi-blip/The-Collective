@@ -1,0 +1,19 @@
+{
+ "id": "hunt-test-siphon-bell-jelly",
+ "kind": "hunt",
+ "title": "Yield test: bell_jelly at stellar_siphon; what a kill drops and whether a bid takes it",
+ "note": "A test with one ship (orders.log ENT-007, F8 and F9): no run of ours has looted this species. The route maker read 4 of them here, 45 hull (data/routes/opportunities.json, 2026-11-15 23:12 UTC). Policed space. 2 kills a run, ranched: no hunt below 3 animals. Loot that no bid of 50 cr or more takes is stored at the station, so the row's goods show the drop. Written by Apophis 2026-11-15 23:28 UTC; it leaves the plan after its first RESULT line unless the drop sells.",
+ "place": "nexus_prime:stellar_siphon",
+ "species": [
+  "bell_jelly"
+ ],
+ "sell_at": "nexus_prime:the_core:central_nexus",
+ "min_bid": 50,
+ "kills": 2,
+ "minutes": 30,
+ "max_ships": 1,
+ "min_creatures": 3,
+ "requires": {
+  "without_module": "piercing_railgun_i"
+ }
+}

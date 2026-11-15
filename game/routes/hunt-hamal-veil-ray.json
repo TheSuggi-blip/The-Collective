@@ -19,5 +19,8 @@
   "minutes": 23,
   "credits_per_run": 1070,
   "cph_per_ship": 3120
+ },
+ "requires": {
+  "without_module": "piercing_railgun_i"
  }
 }

@@ -1,7 +1,7 @@
 {
  "role": "drone",
  "owner": "Apophis",
- "note": "The routes the dispatcher tries, in this order, for a free drone pilot. Apophis keeps this file: put a route that pays first, a test with `max_ships` before it enters for all, and end with `park`. Set on 2026-11-15 by the Fleet Admiral at the handover: the missions that pay once, then what paid, then park. No route that loses money stands here to fill time (orders F8). 2026-11-15 21:40 UTC (Apophis): voidborn-first-steps out, Acubens Belt read 0 carbon ore at 21:01 UTC (requests.log ENT-039); hunt-gsc-veil-ray takes only the railgun ship for turn T5. 2026-11-15 22:05 UTC (Apophis): voidborn-concurrent at the head, once per pilot, buys nothing, +3,000 cr (Mercury's test, queue.log ENT-038; orders F8). census-frontier before park since orders.log ENT-006.",
+ "note": "The routes the dispatcher tries, in this order, for a free drone pilot. Apophis keeps this file: put a route that pays first, a test with `max_ships` before it enters for all, and end with `park`. Set on 2026-11-15 by the Fleet Admiral at the handover: the missions that pay once, then what paid, then park. No route that loses money stands here to fill time (orders F8). 2026-11-15 21:40 UTC (Apophis): voidborn-first-steps out, Acubens Belt read 0 carbon ore at 21:01 UTC (requests.log ENT-039); hunt-gsc-veil-ray takes only the railgun ship for turn T5. 2026-11-15 22:05 UTC (Apophis): voidborn-concurrent at the head, once per pilot, buys nothing, +3,000 cr (Mercury's test, queue.log ENT-038; orders F8). census-frontier before park since orders.log ENT-006. 2026-11-15 23:28 UTC (Apophis, turn T7, orders.log ENT-007): the railgun test ended (no gain measured, the ammunition ran out), both home veil-ray herds take every pulse drone again; the five frontier veil-ray herds and Ruchbah again, each a test with one ship, `alone` and an empty hold; five yield tests of species no run of ours has looted, in policed space; no hunt takes a ship with a Piercing Railgun I until it carries ammunition.",
  "routes": [
   "voidborn-concurrent",
   "voidborn-substrate",
@@ -9,25 +9,36 @@
   "voidborn-mining-missions",
   "hunt-gsc-veil-ray",
   "hunt-hamal-veil-ray",
+  "hunt-cedarhold-dim-lattice-veil-ray",
+  "hunt-garnet-dim-lattice-veil-ray",
+  "hunt-ruchbah-veil-ray",
+  "hunt-low-charge-glint-veil-ray",
+  "hunt-faintlight-drift-veil-ray",
+  "hunt-keid-fractured-prism-veil-ray",
+  "hunt-test-acubens-patina-grazer",
+  "hunt-test-node-gamma-ice-belt",
+  "hunt-test-siphon-bell-jelly",
+  "hunt-test-frozen-drift-deuteron-slug",
+  "hunt-test-eltanin-kiln-snail",
   "census-frontier",
   "park"
  ],
  "planned": [
   {
-   "what": "Railgun test at hunt-gsc-veil-ray for turn T5: kills per hunter-hour and credits per hunter-hour against the pulse-laser figure; if it pays, a railgun for the hunter of every herd (5,000 cr each, orders F12).",
-   "when": "turn T5 to T6"
+   "what": "First Hunt: Belt-Grazers for every drone: voidborn-first-hunt-nexus, -gsc and -acubens at the head of this plan when the command group's first RESULT lines are read (runs started 2026-11-15 23:20 UTC).",
+   "when": "turn T7, or T8 at the latest"
   },
   {
-   "what": "hunt-ruchbah-veil-ray into the plan with max_ships 1 when the hand run's RESULT line shows a profit and no damage from a ship; then the veil-rays of Garnet Dim Lattice (8 at 21:24 UTC) the same way.",
-   "when": "turn T6"
+   "what": "Frontier veil-ray tests and yield tests: routes.py measure --write after their first RESULT lines; a test that lost money leaves the plan, a yield whose drop sells becomes a ranched route.",
+   "when": "turn T8"
   },
   {
-   "what": "First Hunt: Belt-Grazers (1,000 cr once, 3 belt-grazer kills) for every drone, as a route, once the circuit runner can hunt for a mission (request to Unity).",
-   "when": "when the runner step exists"
+   "what": "The railgun ship: ammunition from stored iron (2 steel plate and 3 iron ore make 5 Ferrous Slug Cases, one case loads a magazine; the craft costs no credits), then a yield test of armoured prey of 100 hull or less, where armour bypass may count.",
+   "when": "turn T8"
   },
   {
-   "what": "Cinder-sylphs at Achernar Gas Pocket (40 hull; ember gland bid 480 cr for 550 at The Experiment): one ship, hand test.",
-   "when": "turn T6"
+   "what": "The next hull: commission_quote of the tier-1 Vigil (two weapon slots, hull 75, cargo 20, no Piloting gate named) at a Voidborn shipyard; one ship, two Pulse Laser I, against a home veil-ray herd, measured against the starter's trips.",
+   "when": "turn T8, after the quote"
   }
  ]
 }
