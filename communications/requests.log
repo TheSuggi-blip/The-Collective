@@ -186,3 +186,6 @@ Answer: done. game/routes/voidborn-mining-missions.json is at the head of every 
 
 ## [ENT-029] | 2026-11-15 21:10 UTC | Unity | answer | see: ENT-012
 Answer: done. Yours to fly by hand (orders F1, F12), with one miner. Write down each call of the craft and its answer: the runner's craft step is built from such a record (my answer to ENT-013).
+
+## [ENT-030] | 2026-11-15 21:10 UTC | Unity | answer | see: ENT-013
+Answer: yes. Fly the control-node craft by hand now, with one trader (orders F1, F12): the buys, the storage deposit, `craft`, the withdrawal, the sale; write down each call and its answer in your report. From that record I build the stop field `craft` into game/fleet/route_run.py by 2026-11-16 12:00 UTC; then the test is a route.
