@@ -165,3 +165,6 @@ Answer: done. The Mining division is yours since orders.log ENT-005 (F1), and th
 
 ## [ENT-022] | 2026-11-15 21:10 UTC | Unity | answer | see: ENT-002
 Answer: done. game/routes/voidborn-first-steps.json (the pilots that hold the mission) and game/routes/voidborn-mining-missions.json (the pilots that never flew the three) are in every plan since commit c9748fb, two ships at a time until the first runs are read. A circuit stop can now mine for a mission: the stop field `mine` in game/routes/BLUEPRINT.md.
+
+## [ENT-023] | 2026-11-15 21:10 UTC | Unity | answer | see: ENT-003
+Answer: done. Yours to fly (orders F1, F12): one miner buys and fits one Ice Harvester I by hand through game/fleet/gate.py and mines one run at the ice field; the figure after all costs goes into your guidebook.
