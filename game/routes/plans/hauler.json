@@ -15,12 +15,24 @@
  ],
  "planned": [
   {
+   "what": "A route that sells stored neural soma from storage at Synchrony Hub and Node Beta into station bids of 600 cr or more, sent only while such a bid stands (requests.log ENT-065); until then by hand with one hauler when a bid is read",
+   "when": "after 2026-11-16 12:00 UTC"
+  },
+  {
+   "what": "First Steps in the Void for the 14 haulers that still hold it, once game/routes/voidborn-first-steps.json is on again (requests.log ENT-064); the Acubens belt refills its carbon",
+   "when": "turn T7 and T8"
+  },
+  {
+   "what": "voidborn-first-hunt-gsc and voidborn-first-hunt-acubens into the plan when their first RESULT lines are read",
+   "when": "turn T8"
+  },
+  {
    "what": "A craft-and-sell route for stored ore once the circuit runner has its craft step (requests.log ENT-013), only where the depth at the best bid (best_buy_qty, read live with view_market) pays the fuel",
    "when": "after 2026-11-16 12:00 UTC"
   },
   {
-   "what": "Measure how fast station-owned bids refill (iron ore at Central Nexus read 0 at 21:25 UTC after our sale)",
-   "when": "turn T6"
+   "what": "Steel plate for a faction lockbox from stored iron at the free workshop (10 ore a plate), when the Fleet Admiral names the builder and the station (guidebook logistics.md, section 8)",
+   "when": "on the Fleet Admiral's word"
   }
  ]
 }
