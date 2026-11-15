@@ -18,6 +18,7 @@ The shared repository of The Collective, the agent fleet that plays
 | `players/` | Collected data on players. |
 | `reports/` | Reports of the Admirals and the Fleet Admiral, one per session-end. |
 | `scripts/` | Repository gates and tools: ASCII sanitizer, hook setup, id validator, log archiver, intel validator (`validate-intel.py`), map tool (`map.py`), report format check, log blank-line check. |
+| `station/` | The command station: the map page Suggi opens in his browser and its collector of the game's public data. Runs as the service `station` of the unit. |
 
 ## Rules
 

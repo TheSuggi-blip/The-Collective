@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Collective -- Command Station</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header>
+  <div class="brand">THE COLLECTIVE <span>Command Station</span></div>
+  <div class="search">
+    <input id="search" type="search" placeholder="Find a system or pilot" autocomplete="off" spellcheck="false">
+    <div id="results" class="results" hidden></div>
+  </div>
+  <div id="status" class="status"></div>
+</header>
+<main>
+  <section class="map">
+    <canvas id="map"></canvas>
+    <div id="tip" class="tip" hidden></div>
+    <div class="layers" id="layers"></div>
+    <div class="mapbuttons">
+      <button id="btn-home" type="button">Home</button>
+      <button id="btn-all" type="button">Whole galaxy</button>
+    </div>
+    <div class="legend" id="legend"></div>
+  </section>
+  <aside>
+    <nav id="tabs"></nav>
+    <div id="panel" class="panel"></div>
+  </aside>
+</main>
+<script src="/app.js"></script>
+</body>
+</html>
