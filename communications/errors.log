@@ -57,3 +57,12 @@ Lost in case 1: by their expiry times three carcasses of one hunter were gone be
 Case 2, 15:52 UTC: the official wildlife page says grazers will not fight back effectively. I sent one ship with a railgun at pilot-whales (220 hull). The first died in seven minutes; the second took the ship from 73 to 15 of 75 hull inside one fight. The script's flee rule read the hull from the engine's state, which lagged behind the battle. The ship fled, docked and was repaired; no loss.
 Fix, done (commits ab9a3a5, 723d621): `fleet/hunt.py` loots its own carcasses after every fight, at the end and on arrival (what an earlier run left), reads its own hull and shield from the battle's table every tick, flees under 60% hull or with its shield gone, starts no fight under 60% hull and never picks prey above 100 hull unless the route says so. The whale route is off. Orders F9. The wrong lines in my skill and my record are corrected.
 Would it have prevented these: case 2 yes, by the prey limit and the fresh reading. Case 1 in part: carcasses left behind are picked up on the next arrival, but a wrong inference can still be written down. Rule added to my research skill: a mechanism seen once is recorded as seen once, and no working step is removed on it before a second observation or the command's own answer confirms it.
+
+## [ENT-007] | 2026-11-15 16:54 UTC | Unity | error | ref: routes/plan.json | see: ENT-006
+Class: a capacity added up by hand instead of checked.
+What happened: the order says no ship is idle. I gave each of the three mines room for 16 ships (48 in all) and counted on the hunts and the census for the other seven. When the census had nothing stale to read and the mission circuits were done, the ships left over had no open route.
+Seen in the fleet data: idle 1 at 16:25, idle 2 at 16:48, idle 3 at 16:50 UTC. A dry run of the dispatcher gave two traders nothing.
+Found by reading the idle count by hand, not by a check.
+Fix, done (commit d923027): the last route of every role's list has no ship limit, and `python3 -B fleet/routes.py check` fails a plan whose last route can fill up or close. The fleet data read idle 0 of 55 at 16:53 UTC.
+Would it have prevented this: yes. The gate fails the plan as it was.
+Still open: nothing alerts when a ship stands idle; a watchdog is not built.
