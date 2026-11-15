@@ -1,0 +1,42 @@
+{
+ "id": "voidborn-first-hunt-schedar",
+ "kind": "circuit",
+ "title": "First Hunt: Belt-Grazers: 1,000 cr once and 50 Weapons XP; three belt-grazers at Schedar Belt (lawless, one jump past GSC-0027)",
+ "note": "Accept at Node Beta Industrial Station, three belt-grazers (60 hull) at schedar:schedar_belt with the rules of hunt.py and `alone`, hand in where accepted. A fourth herd for the mission beside the three of our space (voidborn-first-hunt-nexus, -gsc, -acubens: +934 to +974 cr, one-time 1,000, 18.9 to 28.0 minutes, their first runs of 2026-11-15 23:20 UTC), which hold one hunter each. Schedar Belt read 20 belt-grazers and no pilot at 21:14 UTC (data/wildlife/history.jsonl). Beyond policed space (orders F13): an empty hold, and no fight where a ship that is not ours stands. A test with one ship, written by Apophis 2026-11-15 23:57 UTC, until its first RESULT line.",
+ "once": true,
+ "max_ships": 1,
+ "requires": {
+  "empty_hold": true
+ },
+ "one_time": [
+  "First Hunt: Belt-Grazers"
+ ],
+ "skip_if_booked": [
+  "First Hunt: Belt-Grazers"
+ ],
+ "stops": [
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "accept": [
+    "first_hunt_belt_grazers"
+   ],
+   "hunt": [
+    {
+     "at": "schedar:schedar_belt",
+     "species": [
+      "belt_grazer"
+     ],
+     "kills": 3,
+     "minutes": 35,
+     "for": [
+      "First Hunt: Belt-Grazers"
+     ],
+     "alone": true
+    }
+   ]
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station"
+  }
+ ]
+}

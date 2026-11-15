@@ -2,7 +2,7 @@
  "id": "hunt-test-node-gamma-ice-belt",
  "kind": "hunt",
  "title": "Yield test: rime_grazer, pressblister at node_gamma_ice_belt; what a kill drops and whether a bid takes it",
- "note": "A test with one ship (orders.log ENT-007, F8 and F9): no run of ours has looted this species. The route maker read 6 and 6 of them here, 70 and 50 hull (data/routes/opportunities.json, 2026-11-15 23:12 UTC). Policed space. 3 kills a run, ranched: no hunt below 4 animals. Loot that no bid of 50 cr or more takes is stored at the station, so the row's goods show the drop. Written by Apophis 2026-11-15 23:28 UTC; it leaves the plan after its first RESULT line unless the drop sells.",
+ "note": "A test with one ship (orders.log ENT-007, F8 and F9): no run of ours has looted this species. The route maker read 6 and 6 of them here, 70 and 50 hull (data/routes/opportunities.json, 2026-11-15 23:12 UTC). Policed space. 3 kills a run, ranched: no hunt below 4 animals. Loot that no bid of 50 cr or more takes is stored at the station, so the row's goods show the drop. Written by Apophis 2026-11-15 23:28 UTC; it leaves the plan after its first RESULT line unless the drop sells. Result 2026-11-15 23:29 UTC, one run: 3 kills in 16.8 minutes, no damage; the drop was 3 creature carapace and 2 nitrogen bladder, bid 1 to 2 cr at our stations (ledger.py prices); the run's +248 cr came from 1 palladium ore carried in and sold at 308. Off, out of the plan at 23:57 UTC.",
  "place": "node_gamma:node_gamma_ice_belt",
  "species": [
   "rime_grazer",
@@ -16,5 +16,6 @@
  "min_creatures": 4,
  "requires": {
   "without_module": "piercing_railgun_i"
- }
+ },
+ "status": "off"
 }
