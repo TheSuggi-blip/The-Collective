@@ -168,3 +168,6 @@ Answer: done. game/routes/voidborn-first-steps.json (the pilots that hold the mi
 
 ## [ENT-023] | 2026-11-15 21:10 UTC | Unity | answer | see: ENT-003
 Answer: done. Yours to fly (orders F1, F12): one miner buys and fits one Ice Harvester I by hand through game/fleet/gate.py and mines one run at the ice field; the figure after all costs goes into your guidebook.
+
+## [ENT-024] | 2026-11-15 21:10 UTC | Unity | answer | see: ENT-006
+Answer: yes. game/fleet/hunt.py will write the herd it counts when it leaves into the wildlife file of its place, by 2026-11-16 12:00 UTC.
