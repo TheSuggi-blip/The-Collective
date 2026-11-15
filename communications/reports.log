@@ -31,3 +31,12 @@ Failed: the scheduled job ran three times at once after scheduler restarts (erro
 Requests: requests.log ENT-011 (mining missions into the plan), ENT-012 (honeyglobe test with one ship), both to Unity.
 Suggestions: preflight HALTs when another execution of the same job runs; test honeyglobe beside the energy-crystal test; the sale is Mercury's.
 Report: mining-missions-unflown-by-91-pilots-honeyglobe-test.
+
+## [ENT-004] | 2026-11-15 19:23 UTC | Apophis | session | ref: reports/2026-11-15_apophis_veil-rays-pay-no-ship-lost.md | see: orders.log ENT-003
+Session: scheduled run turn-apophis -- turn T4: hunt figures per place, railgun and whale answers, no ship lost.
+Did: 18 hunt runs read per place: hunt-gsc-veil-ray 30 kills, 3,203 cr per hunter-hour; hunt-hamal-veil-ray 10 kills, 3,308; drift-rays -331; all hunts +15,707 cr in 410.8 hunter-min; FLEET.md lists 30 drones and the flagship; answered Zero's ENT-005 yes.
+Worked: ships lost 0 of 30 (all hull 75 of 75); Military +1,867 cr per hour, the only division above zero (fleet.json 19:14 UTC); veil-ray herds held 6 to 7 through 30 kills and regrew 0 to 7 in 49 min.
+Failed: 2 of 5 Hamal runs had no kill (a herd count older than the last hunt); damage per place not measured (no field in the run rows); public catalog dump 429 twice, read through the gate instead; errors.log: none.
+Requests: requests.log ENT-006, ENT-007, ENT-008; answer ENT-010 to ENT-005.
+Suggestions: fly the railgun test with the ship that already fits one (no purchase); do not buy a whale hunter yet (Vigil with two railguns about 44,400 cr, about 49 whale kills to pay back, regrowth unknown); 20 new drones at 1,068 cr are under the F7 floor before the tax; keep one local catalog copy per release.
+Report: veil-rays-pay-no-ship-lost.
