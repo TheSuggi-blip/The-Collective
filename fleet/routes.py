@@ -15,6 +15,8 @@ RULES:
     `min_credits` and `requires`. A list that can fill up leaves a ship idle.
   - index.md is written by this script, never by hand; `check` fails on a stale one.
   - A measured block changes only on a real move, so a pass rarely makes a commit.
+  - A hunt is not credited with what it got for goods it carried in from an
+    earlier run: those were earned on another route.
 WHY:  what a route pays is written next to the route, and a wrong file is caught
       before a pilot flies it.
 
@@ -159,6 +161,19 @@ def index_text(root, keep_id=False):
     return "\n".join(lines) + "\n"
 
 
+def earned(row):
+    """A run's credits without the sale of goods it carried in: a hunt that sells another place's goods did not earn them."""
+    if row.get("kind") != "hunt":
+        return row.get("delta", 0)
+    gained, carried = row.get("goods") or {}, 0.0
+    for item, sale in (row.get("sold") or {}).items():
+        units, credits = sale[0], sale[2]
+        extra = units - gained.get(item, 0)
+        if units > 0 and extra > 0:
+            carried += credits * extra / units
+    return row.get("delta", 0) - carried
+
+
 def measure(root, data, write):
     rows = []
     try:
@@ -178,8 +193,8 @@ def measure(root, data, write):
             continue
         minutes = sum(r["minutes"] for r in mine)
         figure = {"date": time.strftime("%Y-%m-%d", time.gmtime()), "runs": len(mine), "minutes": round(statistics.median(r["minutes"] for r in mine)),
-                  "credits_per_run": int(round(sum(r.get("delta", 0) for r in mine) / len(mine), -1)),
-                  "cph_per_ship": int(round(60 * sum(r.get("delta", 0) for r in mine) / minutes, -1)) if minutes else 0}
+                  "credits_per_run": int(round(sum(earned(r) for r in mine) / len(mine), -1)),
+                  "cph_per_ship": int(round(60 * sum(earned(r) for r in mine) / minutes, -1)) if minutes else 0}
         print("%-28s runs %-4d minutes %-4d credits per run %-8s per ship-hour %-8s %s" % (
             rid, figure["runs"], figure["minutes"], format(figure["credits_per_run"], ","), format(figure["cph_per_ship"], ","),
             "" if rid in routes else "(no route file)"))

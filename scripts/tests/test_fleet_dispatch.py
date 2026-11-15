@@ -185,6 +185,16 @@ class RouteGateTests(Tree):
         self.routes.measure(str(self.root), str(self.data), True)
         self.assertEqual((self.root / "routes" / "mine.json").stat().st_mtime_ns, stamp)          # 3 runs, the same rate: untouched
 
+    def test_a_hunt_is_not_credited_with_goods_it_carried_in(self):
+        rows = [{"route": "rays", "kind": "hunt", "pilot": "drone-1", "minutes": 30, "delta": 1140, "goods": {"carapace": 3}, "sold": {"curd": [4, 330, 1320]}},
+                {"route": "rays", "kind": "hunt", "pilot": "drone-2", "minutes": 30, "delta": 3000, "goods": {"curd": 9}, "sold": {"curd": [10, 330, 3300]}}]
+        self.assertEqual([round(self.routes.earned(r)) for r in rows], [-180, 2670])            # all four carried in; one of ten
+        self.assertEqual(self.routes.earned({"route": "missions", "kind": "circuit", "delta": 500, "sold": {"curd": [4, 330, 1320]}}), 500)
+        (self.data / "routes" / "runs.jsonl").write_text("".join(json.dumps(r) + "\n" for r in rows))
+        self.routes.measure(str(self.root), str(self.data), True)
+        figure = json.loads((self.root / "routes" / "rays.json").read_text())["measured"]
+        self.assertEqual((figure["runs"], figure["credits_per_run"], figure["cph_per_ship"]), (2, 1240, 2490))
+
 
 if __name__ == "__main__":
     unittest.main()
