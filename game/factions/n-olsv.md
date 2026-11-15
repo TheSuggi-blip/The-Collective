@@ -15,7 +15,7 @@ updated: 2026-11-15
 # Our Lord And Savior [OLSV]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 33.
+Pilots of it in our space in the last 24 hours: 34.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 33.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 181 | Public event stream |
+| Pilots carrying the tag on the public event stream | 183 | Public event stream |
 
 ## Bases
 
@@ -47,12 +47,12 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | OLS Azelfafage | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | OLS Beemim | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | OLS Bharani | Nexus Prime (`nexus_prime`) | 0 | theoria |
-| OLS Castor | Synchrony (`synchrony`) | 0 | not met |
 | OLS Castula | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | OLS Chalawan | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | OLS Chamukuy | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | OLS Denebola | Node Alpha (`node_alpha`) | 0 | shard |
 | OLS Dschubba | Nexus Prime (`nexus_prime`) | 0 | theoria |
+| OLS Electra | Synchrony (`synchrony`) | 0 | cobble |
 | OLS Elkurud | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | OLS Fawaris | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | OLS Fuyue | Nexus Prime (`nexus_prime`) | 0 | theoria |
@@ -65,11 +65,11 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | OLS Kraz | Nexus Prime (`nexus_prime`) | 0 | cobble |
 | OLS Libertas | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | OLS Mintaka | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| OLS Nahn | Synchrony (`synchrony`) | 0 | not met |
-| OLS Ogma | Synchrony (`synchrony`) | 0 | not met |
-| OLS Rasalhague | Node Alpha (`node_alpha`) | 0 | not met |
+| OLS Nahn | Synchrony (`synchrony`) | 0 | shard |
+| OLS Ogma | Synchrony (`synchrony`) | 0 | shard |
+| OLS Rasalhague | Node Alpha (`node_alpha`) | 0 | shard |
 
-And 3 more.
+And 4 more.
 
 ## Standing History
 

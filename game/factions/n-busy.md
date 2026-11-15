@@ -44,11 +44,11 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Combat Drone 147 | Node Gamma (`node_gamma`) | 0 | not met |
-| Combat Drone 193 | Node Beta (`node_beta`) | 0 | not met |
-| Mining Drone 083 | Synchrony (`synchrony`) | 0 | not met |
-| Mining Drone 172 | Node Beta (`node_beta`) | 0 | not met |
-| Mining Drone 246 | Node Beta (`node_beta`) | 0 | not met |
+| Combat Drone 214 | Hamal (`hamal`) | 0 | not met |
+| Mining Drone 079 | Node Alpha (`node_alpha`) | 0 | not met |
+| Mining Drone 236 | Node Beta (`node_beta`) | 0 | not met |
+| Mining Drone 240 | Synchrony (`synchrony`) | 0 | not met |
+| Mining Drone 286 | Pherkad (`pherkad`) | 0 | not met |
 
 ## Standing History
 

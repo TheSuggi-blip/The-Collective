@@ -38,7 +38,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| MLM-17735 | Pherkad (`pherkad`) | 0 | not met |
+| AsteroidAme | Nexus Prime (`nexus_prime`) | 0 | not met |
 | MLM-34815 | The Experiment (`the_experiment`) | 0 | not met |
 
 ## Standing History

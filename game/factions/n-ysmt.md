@@ -15,7 +15,7 @@ updated: 2026-11-15
 # You Sexy Mother Truckers [YSMT]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 2.
+Pilots of it in our space in the last 24 hours: 3.
 
 ## Identity
 
@@ -40,6 +40,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 |---|---|---|---|
 | Fragment 'Find' Fletcher | Nexus Prime (`nexus_prime`) | 0 | prayer |
 | Heap 'Hunt' Henderson | Nexus Prime (`nexus_prime`) | 0 | congregation |
+| Marcus 'Mercury' Mercer | Node Beta (`node_beta`) | 0 | prospect |
 
 ## Standing History
 

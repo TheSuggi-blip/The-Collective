@@ -39,7 +39,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
 | Jenny | Nexus Prime (`nexus_prime`) | 0 | not met |
-| Mirna | Nexus Prime (`nexus_prime`) | 0 | not met |
+| Mirna | Nexus Prime (`nexus_prime`) | 0 | futures |
 
 ## Standing History
 
