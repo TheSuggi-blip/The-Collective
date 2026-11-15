@@ -499,7 +499,7 @@ function shipState(r) {
 
 function signed(n) { return (n > 0 ? '+' : '') + fmt(n); }
 function tint(n) { return el('span', n < 0 ? 'neg' : n > 0 ? 'pos' : null, signed(n)); }   // a signed number: green above zero, red below
-function tint(n) { return el('span', n < 0 ? 'neg' : n > 0 ? 'pos' : null, signed(n)); }   // a signed number: green above zero, red below
+function shade(n, cls) { return el('span', n > 0 ? cls : null, fmt(n)); }                  // an amount without a sign: income green, a cost red
 function liveAge() { return F.age < 0 ? -1 : F.age + Math.round((Date.now() - fetchedAt) / 1000); }
 
 function isWorking(r) { return ['work', 'move', 'wait'].includes(shipState(r)[0]); }
@@ -1015,11 +1015,11 @@ async function renderMetrics(panel, live) {
   const tone = (n) => (n < 0 ? ' neg' : n > 0 ? ' pos' : '');
   kpi('Steady net / h', w ? signed(w.cph) : '--', 'income minus costs', 'main' + (w ? tone(w.cph) : ''));
   kpi('Net per ship / h', w ? signed(w.cph_per_ship) : '--', 'what one ship makes', 'main' + (w ? tone(w.cph_per_ship) : ''));
-  kpi('Steady income / h', w ? fmt(w.income_per_hour) : '--', 'sales and repeatable rewards');
-  kpi('Running costs / h', w ? fmt(w.costs_per_hour) : '--', 'fuel, repairs, goods, modules');
+  kpi('Steady income / h', w ? fmt(w.income_per_hour) : '--', 'sales and repeatable rewards', w && w.income_per_hour > 0 ? 'pos' : '');
+  kpi('Running costs / h', w ? fmt(w.costs_per_hour) : '--', 'fuel, repairs, goods, modules', w && w.costs_per_hour > 0 ? 'neg' : '');
   const metered = w && w.fuel_cr_per_hour !== undefined;
-  kpi('Fuel / h', metered ? fmt(w.fuel_cr_per_hour) : '--', metered ? fmt(w.fuel_units_per_hour) + ' units bought' : 'not measured in this stretch yet');
-  kpi('Repairs / h', metered ? fmt(w.repair_cr_per_hour) : '--', metered ? fmt(w.hull_points_per_hour) + ' hull points' : 'not measured in this stretch yet');
+  kpi('Fuel / h', metered ? fmt(w.fuel_cr_per_hour) : '--', metered ? fmt(w.fuel_units_per_hour) + ' units bought' : 'not measured in this stretch yet', metered && w.fuel_cr_per_hour > 0 ? 'neg' : '');
+  kpi('Repairs / h', metered ? fmt(w.repair_cr_per_hour) : '--', metered ? fmt(w.hull_points_per_hour) + ' hull points' : 'not measured in this stretch yet', metered && w.repair_cr_per_hour > 0 ? 'neg' : '');
   kpi('Ships working', t.ships ? fmt(t.working) + ' of ' + fmt(t.ships) : '--',
     fmt(t.parked) + ' parked at a station' + (t.adrift ? ', ' + fmt(t.adrift) + ' in space without work' : ''));
   kpi('Credits', fmt(t.credits), fmt(t.credits_per_ship) + ' per ship');
@@ -1039,7 +1039,7 @@ async function renderMetrics(panel, live) {
     order.map(([d, adm]) => {
       const x = div[d] || {}, y = dw[d] || {}, name = el('span', null, d);
       name.style.color = DIV[d] || DIV.Unassigned; name.title = adm ? 'Admiral ' + adm : '';
-      return [name, fmt(x.working) + ' / ' + fmt(x.ships), w ? fmt(y.income_per_hour) : '--', w ? fmt(y.costs_per_hour) : '--', w ? tint(y.cph) : '--', w ? tint(y.cph_per_ship) : '--'];
+      return [name, fmt(x.working) + ' / ' + fmt(x.ships), w ? shade(y.income_per_hour, 'pos') : '--', w ? shade(y.costs_per_hour, 'neg') : '--', w ? tint(y.cph) : '--', w ? tint(y.cph_per_ship) : '--'];
     }), [1, 2, 3, 4, 5]));
   const routesBox = el('div'), graphs = el('div');
   panel.append(el('h3', null, 'Where the money comes from, last ' + routeHours + ' hours'), routesBox, el('h3', null, 'Last ' + graphHours + ' hours'), graphs);
@@ -1054,7 +1054,7 @@ async function renderMetrics(panel, live) {
     try { INCOME = Object.assign(await get('/api/income?q=' + routeHours), { at: Date.now(), key: metricWin }); } catch (e) { INCOME = { routes: [], at: Date.now(), key: metricWin }; }
     if (!live()) return;
   }
-  const steady = INCOME.routes.filter((x) => !x.once).sort((a, b2) => b2.credits - a.credits), once = INCOME.routes.filter((x) => x.once && (x.runs || x.flying));
+  const steady = INCOME.routes.filter((x) => !x.once && (x.runs || x.flying)).sort((a, b2) => b2.credits - a.credits), once = INCOME.routes.filter((x) => x.once && (x.runs || x.flying));
   if (steady.length) {
     routesBox.append(table(['Route', 'Ships now', 'Runs', 'Ship-hours', 'Credits', 'Per ship-hour'], steady.map((x) => {
       const name = el('span', null, x.route);
