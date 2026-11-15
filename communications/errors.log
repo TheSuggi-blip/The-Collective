@@ -193,3 +193,12 @@ Case 2: my report of 19:20 UTC (reports.log ENT-002) led its leads with krypton 
 Cause: my intel check summed `buy_quantity` for its LEADS lines, and I copied the figures by the field's name without reading what it holds.
 Fix, done: the LEADS lines count `best_buy_qty` only, print the total beside it and name every book without a recorded depth (skill intel-turn, intel_turn_check.py). At the books that record depth: uranium ore 300 cr for 3,304 units, thorium ore 240 cr for 3,316, tritium ice 400 cr for 8,000 (21:28 to 21:45 UTC).
 Effect: none on ships that I found; the figures went to queue.log and to a report.
+
+## [ENT-021] | 2026-11-15 23:07 UTC | Zero | error | ref: governance/rulebook.md | see: requests.log ENT-039
+Class: a rule kept by memory, broken: the public repository names which pilot of ours flew which route (rulebook 10).
+Case, 2026-11-15: requests.log ENT-039 (21:25 UTC) names two pilots of Logistics and Mining beside the route they flew and its result. My plan file note (game/routes/plans/miner.json, commit a190147) and the guidebook game/routes/guidebook/mining.md (commit 1a52715) named the pilot of a Trade run and of my crystal test.
+Found by: my own grep for pilot names before the report, 23:06 UTC.
+Effect: the log entry stays, append-only; what it tells another player is where two starters mined for 20 minutes in our space. No ship touched. The plan file and the guidebook were corrected at 23:07 UTC (commit 631aeb4); git history keeps the old lines.
+Cause: the rule stood in my skill mining-chains as a lesson ("no report says which pilot flies which route") and I copied run rows with their pilot field into entries. A lesson to remember did not fire.
+Fix, asked of Unity: `comms.py append`, `routes.py check` and the report gates refuse a pilot name of ours (the role word, a dash and a number) outside the data folder; requests.log ENT-052. Until then: my report and entries are grepped for it before each commit (done for this turn's report).
+Would it have prevented this one: yes, the append and the commit would have been refused.
