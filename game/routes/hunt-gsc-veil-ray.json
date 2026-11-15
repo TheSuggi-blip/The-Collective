@@ -1,18 +1,21 @@
 {
  "id": "hunt-gsc-veil-ray",
  "kind": "hunt",
- "title": "Veil-rays at GSC-0027 Prism Scatter; verdigris curd sold at Node Beta",
- "note": "Six veil-rays counted 2026-11-15 15:09 UTC. Ranched from 2026-11-15 17:40 UTC: no hunt below four animals and four kills a run, until data/wildlife/history.jsonl shows how fast the herd regrows. Sold at Node Beta: Node Gamma's bid of 50 units was down to 13.",
+ "title": "Veil-rays at GSC-0027 Prism Scatter; verdigris curd sold at Central Nexus",
+ "note": "Six veil-rays counted 2026-11-15 15:09 UTC; 13 at 21:24 UTC while one hunter worked here. Ranched from 2026-11-15 17:40 UTC: no hunt below four animals and four kills a run. Railgun test from 2026-11-15 21:40 UTC for turn T5 (orders.log ENT-005, requests.log ENT-008/ENT-026): only a ship with a Piercing Railgun I is sent, so the turn's runs here measure the railgun against the 30 pulse-laser kills of 186 hunter-minutes before it. Sold at Central Nexus from the same time: Node Beta's curd bid was down to 15 units (data/market, 20:45 UTC), Central Nexus bid 330 for 50.",
  "place": "gsc_0027:gsc_0027_prism_scatter",
  "species": [
   "veil_ray"
  ],
- "sell_at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+ "sell_at": "nexus_prime:the_core:central_nexus",
  "min_bid": 250,
  "kills": 4,
  "minutes": 40,
  "max_ships": 1,
  "min_creatures": 4,
+ "requires": {
+  "module": "piercing_railgun_i"
+ },
  "measured": {
   "date": "2026-11-15",
   "runs": 7,
