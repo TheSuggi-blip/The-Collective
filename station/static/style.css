@@ -79,6 +79,7 @@ main { flex: 1; display: flex; min-height: 0; }
 .glyph.work { background: var(--good); border-radius: 50%; }
 .glyph.move { background: none; width: 0; height: 0; border-top: 6px solid transparent; border-bottom: 6px solid transparent; border-left: 10px solid var(--info); }
 .glyph.dock { background: none; border: 2px solid var(--dim); }
+.glyph.wait { background: none; border: 2px solid var(--warn); border-radius: 50%; }
 .glyph.idle { background: var(--warn); transform: rotate(45deg); }
 .glyph.bad { background: var(--bad); transform: rotate(45deg); }
 .glyph.off { background: none; border: 2px dashed var(--faint); }

@@ -242,11 +242,12 @@ function divTag(division) {
 
 function shipState(r) {
   if (r.status !== 'connected') return ['off', 'offline'];
-  if (r.loop_failures >= 3) return ['bad', 'loop failing'];
+  const waiting = r.loop_failures > 0 && /depleted/i.test(r.loop_last_failure || '');   // a patient loop at an empty belt
+  if (r.loop_failures >= 3 && !waiting) return ['bad', 'loop failing'];
   if (r.jumping) return ['move', 'jumping'];
   if (r.in_transit) return ['move', 'to ' + (r.dest_poi || 'another place')];
   const a = r.activity || {};
-  if (a.kind === 'loop') return ['work', a.type + ' loop'];
+  if (a.kind === 'loop') return waiting ? ['wait', 'waiting for ore'] : ['work', a.type + ' loop'];
   if (a.kind === 'goal' || a.kind === 'job') return ['work', a.type];
   return r.docked ? ['dock', 'docked'] : ['idle', 'idle in space'];
 }
@@ -320,7 +321,7 @@ function renderShip(panel) {
   panel.append(el('h2', null, d.name), el('p', 'sub', [d.class, d.empire].filter(Boolean).join(' | ')));
   chips.append(divTag(d.division));
   if (d.admiral) chips.append(el('span', 'tag', 'Adm. ' + d.admiral));
-  chips.append(el('span', 'tag ' + (cls === 'bad' ? 'bad' : cls === 'idle' ? 'warn' : cls === 'work' ? 'good' : ''), what));
+  chips.append(el('span', 'tag ' + (cls === 'bad' ? 'bad' : cls === 'idle' || cls === 'wait' ? 'warn' : cls === 'work' ? 'good' : ''), what));
   panel.append(chips);
   const g = el('div', 'gauges');
   for (const [k, kind, a, b, low] of [['Hull', 'hull', d.hull, d.max_hull, 0.5], ['Shield', 'shield', d.shield, d.max_shield, 0],
