@@ -150,6 +150,14 @@ command.
   copper read 14% of capacity, and Pherkad Null Rift iron 23%. Iron at
   the Seep (51%) and copper at the Rift (98%) are above it. Whether
   this lowers their yield is not measured.
+- **Three executions of this turn ran at once.** errors.log ENT-009,
+  written by the 18:58 UTC execution of the same job (`turn-zero`): the
+  scheduler fired it at 18:55, 18:58 and 19:00 UTC. This report is the
+  18:55 execution's. Its outputs: FLEET.md (workspace commit 0d1b103),
+  requests.log ENT-001 to ENT-005, errors.log ENT-011, and this report.
+  At 19:17 UTC the log held no request or report of the other two.
+  Cause: a restart of the scheduler (ENT-009); its cause was not found.
+  The job read `paused` at 19:18 UTC. Changing it is not mine.
 - **No route figure for Mining.** `routes/index.md` shows TBD for all
   four mine routes. I computed the figures above from `runs.jsonl`.
 - Checked: no ship lost or grounded (`fleet.json`). The one entry of
