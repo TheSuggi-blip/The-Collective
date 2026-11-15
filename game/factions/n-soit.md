@@ -40,16 +40,16 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Aqua Nan | Node Beta (`node_beta`) | 0 | not met |
-| Artemis Fowl | Node Beta (`node_beta`) | 0 | not met |
-| BipBip | Node Alpha (`node_alpha`) | 0 | not met |
-| Cadavre Exquis | Node Beta (`node_beta`) | 0 | not met |
-| Coma Idyllique | Node Beta (`node_beta`) | 0 | not met |
-| Jesus Crie | Node Beta (`node_beta`) | 0 | not met |
-| Kira Solenne | Node Alpha (`node_alpha`) | 0 | not met |
-| Marre Tot | Node Beta (`node_beta`) | 0 | not met |
-| Palin Dromes | Node Beta (`node_beta`) | 0 | not met |
-| Selection Naturelle | Node Beta (`node_beta`) | 0 | not met |
+| Aqua Nan | Node Beta (`node_beta`) | 0 | bonanza |
+| Artemis Fowl | Node Beta (`node_beta`) | 0 | bonanza |
+| BipBip | Node Alpha (`node_alpha`) | 0 | confluence |
+| Cadavre Exquis | Node Beta (`node_beta`) | 0 | bonanza |
+| Coma Idyllique | Node Beta (`node_beta`) | 0 | bonanza |
+| Jesus Crie | Node Beta (`node_beta`) | 0 | bonanza |
+| Kira Solenne | Node Alpha (`node_alpha`) | 0 | bonanza |
+| Marre Tot | Node Beta (`node_beta`) | 0 | bonanza |
+| Palin Dromes | Node Beta (`node_beta`) | 0 | bonanza |
+| Selection Naturelle | Node Beta (`node_beta`) | 0 | bonanza |
 
 ## Standing History
 

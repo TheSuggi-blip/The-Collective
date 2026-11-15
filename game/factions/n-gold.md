@@ -15,7 +15,7 @@ updated: 2026-11-15
 # Golden Age Compact [GOLD]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 4.
+Pilots of it in our space in the last 24 hours: 2.
 
 ## Identity
 
@@ -38,10 +38,8 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Iron Prospector | Nexus Prime (`nexus_prime`) | 0 | not met |
-| Kratos2010 | Node Gamma (`node_gamma`) | 0 | not met |
-| Nickel Prospector | Synchrony (`synchrony`) | 0 | not met |
-| Rusty Prospector | Synchrony (`synchrony`) | 0 | not met |
+| Iron Prospector | Nexus Prime (`nexus_prime`) | 0 | liminal |
+| Nickel Prospector | Nexus Prime (`nexus_prime`) | 0 | not met |
 
 ## Standing History
 

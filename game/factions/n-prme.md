@@ -38,7 +38,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| MLM-98780 | The Experiment (`the_experiment`) | 0 | not met |
+| MLM-17735 | Node Beta (`node_beta`) | 0 | not met |
 
 ## Standing History
 

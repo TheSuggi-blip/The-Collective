@@ -15,7 +15,7 @@ updated: 2026-11-15
 # Culte du Vide [VIDE]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 5.
+Pilots of it in our space in the last 24 hours: 4.
 
 ## Identity
 
@@ -38,11 +38,10 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Ellara | Nexus Prime (`nexus_prime`) | 0 | not met |
-| Hesser | Node Beta (`node_beta`) | 0 | not met |
-| Nythera | Node Beta (`node_beta`) | 0 | not met |
-| Serelys | Node Alpha (`node_alpha`) | 0 | not met |
-| Slyreus | The Experiment (`the_experiment`) | 0 | not met |
+| Ellara | Nexus Prime (`nexus_prime`) | 0 | threshold |
+| Hesser | Node Beta (`node_beta`) | 0 | cobble |
+| Nythera | Node Beta (`node_beta`) | 0 | threshold |
+| Slyreus | The Experiment (`the_experiment`) | 0 | threshold |
 
 ## Standing History
 

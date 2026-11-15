@@ -15,7 +15,7 @@ updated: 2026-11-15
 # Our Lord And Savior [OLSV]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 32.
+Pilots of it in our space in the last 24 hours: 30.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 32.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 180 | Public event stream |
+| Pilots carrying the tag on the public event stream | 181 | Public event stream |
 
 ## Bases
 
@@ -38,38 +38,36 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| OLS Aladfar | Nexus Prime (`nexus_prime`) | 0 | not met |
-| OLS Alphecca | Nexus Prime (`nexus_prime`) | 0 | not met |
-| OLS Armus | Nexus Prime (`nexus_prime`) | 0 | not met |
-| OLS Arrakis | Nexus Prime (`nexus_prime`) | 0 | not met |
-| OLS Ashlesha | Nexus Prime (`nexus_prime`) | 0 | not met |
-| OLS Atlas | Nexus Prime (`nexus_prime`) | 0 | not met |
-| OLS Azelfafage | Nexus Prime (`nexus_prime`) | 0 | not met |
-| OLS Beemim | Nexus Prime (`nexus_prime`) | 0 | not met |
-| OLS Bharani | Nexus Prime (`nexus_prime`) | 0 | not met |
-| OLS Castula | Nexus Prime (`nexus_prime`) | 0 | not met |
-| OLS Cebalrai | Nexus Prime (`nexus_prime`) | 0 | not met |
-| OLS Chalawan | Nexus Prime (`nexus_prime`) | 0 | not met |
-| OLS Chamukuy | Nexus Prime (`nexus_prime`) | 0 | not met |
-| OLS Denebola | Node Alpha (`node_alpha`) | 0 | not met |
-| OLS Dschubba | Nexus Prime (`nexus_prime`) | 0 | not met |
-| OLS Elkurud | Nexus Prime (`nexus_prime`) | 0 | not met |
-| OLS Fawaris | Nexus Prime (`nexus_prime`) | 0 | not met |
-| OLS Fuyue | Nexus Prime (`nexus_prime`) | 0 | not met |
-| OLS Girtab | Synchrony (`synchrony`) | 0 | not met |
-| OLS Gudja | Nexus Prime (`nexus_prime`) | 0 | not met |
+| OLS Aladfar | Nexus Prime (`nexus_prime`) | 0 | theoria |
+| OLS Alphecca | Nexus Prime (`nexus_prime`) | 0 | threshold |
+| OLS Armus | Nexus Prime (`nexus_prime`) | 0 | theoria |
+| OLS Arrakis | Nexus Prime (`nexus_prime`) | 0 | theoria |
+| OLS Ashlesha | Nexus Prime (`nexus_prime`) | 0 | theoria |
+| OLS Atlas | Nexus Prime (`nexus_prime`) | 0 | theoria |
+| OLS Azelfafage | Nexus Prime (`nexus_prime`) | 0 | theoria |
+| OLS Beemim | Nexus Prime (`nexus_prime`) | 0 | theoria |
+| OLS Bharani | Nexus Prime (`nexus_prime`) | 0 | theoria |
+| OLS Castula | Nexus Prime (`nexus_prime`) | 0 | theoria |
+| OLS Chalawan | Nexus Prime (`nexus_prime`) | 0 | theoria |
+| OLS Chamukuy | Nexus Prime (`nexus_prime`) | 0 | theoria |
+| OLS Denebola | Node Alpha (`node_alpha`) | 0 | shard |
+| OLS Dschubba | Nexus Prime (`nexus_prime`) | 0 | theoria |
+| OLS Elkurud | Nexus Prime (`nexus_prime`) | 0 | theoria |
+| OLS Fawaris | Nexus Prime (`nexus_prime`) | 0 | theoria |
+| OLS Fuyue | Nexus Prime (`nexus_prime`) | 0 | theoria |
+| OLS Girtab | Synchrony (`synchrony`) | 0 | theoria |
+| OLS Gudja | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | OLS Guniibuu | Nexus Prime (`nexus_prime`) | 0 | not met |
 | OLS Hunor | Nexus Prime (`nexus_prime`) | 0 | not met |
-| OLS Imai | Synchrony (`synchrony`) | 0 | not met |
-| OLS Kochab | Node Alpha (`node_alpha`) | 0 | not met |
-| OLS Kraz | Nexus Prime (`nexus_prime`) | 0 | not met |
-| OLS Libertas | Nexus Prime (`nexus_prime`) | 0 | not met |
-| OLS Mintaka | Nexus Prime (`nexus_prime`) | 0 | not met |
+| OLS Imai | Synchrony (`synchrony`) | 0 | theoria |
+| OLS Kochab | Node Alpha (`node_alpha`) | 0 | shard |
+| OLS Kraz | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| OLS Libertas | Nexus Prime (`nexus_prime`) | 0 | theoria |
+| OLS Mintaka | Nexus Prime (`nexus_prime`) | 0 | threshold |
 | OLS Rasalhague | Node Alpha (`node_alpha`) | 0 | not met |
 | OLS Sadr | Nexus Prime (`nexus_prime`) | 0 | not met |
 | OLS Saiph | Nexus Prime (`nexus_prime`) | 0 | not met |
-
-And 2 more.
+| OLS Schedar | Nexus Prime (`nexus_prime`) | 0 | not met |
 
 ## Standing History
 

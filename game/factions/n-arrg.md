@@ -38,7 +38,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Cormac Dunleavy | Node Beta (`node_beta`) | 0 | not met |
+| Cormac Dunleavy | Node Beta (`node_beta`) | 0 | terms_and_conditions |
 | Rafferty Doyle | Node Beta (`node_beta`) | 0 | not met |
 | Soledad Marquez | Nexus Prime (`nexus_prime`) | 0 | not met |
 

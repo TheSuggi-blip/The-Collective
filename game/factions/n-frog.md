@@ -38,10 +38,10 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Anne Marie | Nexus Prime (`nexus_prime`) | 0 | not met |
-| Jenny Beth | Nexus Prime (`nexus_prime`) | 0 | not met |
-| Kaniball SicK | Nexus Prime (`nexus_prime`) | 0 | not met |
-| Shade SicK | Nexus Prime (`nexus_prime`) | 0 | not met |
+| Anne Marie | Synchrony (`synchrony`) | 0 | theoria |
+| Jenny Beth | Synchrony (`synchrony`) | 0 | theoria |
+| Kaniball SicK | Synchrony (`synchrony`) | 0 | shard |
+| Shade SicK | Synchrony (`synchrony`) | 0 | cobble |
 
 ## Standing History
 

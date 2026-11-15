@@ -38,8 +38,8 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Bluddflagg Hulleatta | Nexus Prime (`nexus_prime`) | 0 | not met |
-| Krak Swallo | Nexus Prime (`nexus_prime`) | 0 | not met |
+| Bluddflagg Hulleatta | Nexus Prime (`nexus_prime`) | 0 | shard |
+| Krak Swallo | Nexus Prime (`nexus_prime`) | 0 | threshold |
 | Ugh | Nexus Prime (`nexus_prime`) | 0 | not met |
 | WaKKO SicK | Nexus Prime (`nexus_prime`) | 0 | not met |
 

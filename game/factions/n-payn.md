@@ -38,9 +38,9 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Atervisus | Acubens (`acubens`) | 0 | not met |
+| Atervisus | Acubens (`acubens`) | 0 | threshold |
 | Stoleas | Nexus Prime (`nexus_prime`) | 0 | not met |
-| VedaFlux | The Experiment (`the_experiment`) | 0 | not met |
+| VedaFlux | The Experiment (`the_experiment`) | 0 | threshold |
 
 ## Standing History
 

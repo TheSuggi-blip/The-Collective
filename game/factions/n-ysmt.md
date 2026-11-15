@@ -38,8 +38,8 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Fragment 'Find' Fletcher | Nexus Prime (`nexus_prime`) | 0 | not met |
-| Heap 'Hunt' Henderson | Nexus Prime (`nexus_prime`) | 0 | not met |
+| Fragment 'Find' Fletcher | Nexus Prime (`nexus_prime`) | 0 | prayer |
+| Heap 'Hunt' Henderson | Nexus Prime (`nexus_prime`) | 0 | congregation |
 
 ## Standing History
 

@@ -46,20 +46,20 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| ILC Chute | Synchrony (`synchrony`) | 0 | not met |
-| ILC Flange | Synchrony (`synchrony`) | 0 | not met |
-| ILC Gantry | Node Alpha (`node_alpha`) | 0 | not met |
-| ILC Gasket | Synchrony (`synchrony`) | 0 | not met |
-| ILC Gateway | Nexus Prime (`nexus_prime`) | 0 | not met |
-| ILC Gilt | Synchrony (`synchrony`) | 0 | not met |
-| ILC Kerf | Pherkad (`pherkad`) | 0 | not met |
-| ILC Ladle | Node Alpha (`node_alpha`) | 0 | not met |
-| ILC Nonstop | Nexus Prime (`nexus_prime`) | 0 | not met |
-| ILC Penalty | Pherkad (`pherkad`) | 0 | not met |
-| ILC Ratchet | The Experiment (`the_experiment`) | 0 | not met |
-| ILC Retort | Synchrony (`synchrony`) | 0 | not met |
-| ILC Vagabond | Nexus Prime (`nexus_prime`) | 0 | not met |
-| ILC Weir | Synchrony (`synchrony`) | 0 | not met |
+| ILC Chute | Synchrony (`synchrony`) | 0 | junk_convoy |
+| ILC Constellation | Nexus Prime (`nexus_prime`) | 0 | concordia |
+| ILC Flange | Synchrony (`synchrony`) | 0 | junk_convoy |
+| ILC Fumarole | Node Beta (`node_beta`) | 0 | not met |
+| ILC Gantry | Synchrony (`synchrony`) | 0 | junk_convoy |
+| ILC Gasket | Synchrony (`synchrony`) | 0 | junk_convoy |
+| ILC Gateway | Nexus Prime (`nexus_prime`) | 0 | concordia |
+| ILC Gilt | Synchrony (`synchrony`) | 0 | syndicate |
+| ILC Ladle | Synchrony (`synchrony`) | 0 | junk_convoy |
+| ILC Nonstop | Nexus Prime (`nexus_prime`) | 0 | concordia |
+| ILC Ratchet | Synchrony (`synchrony`) | 0 | junk_convoy |
+| ILC Retort | Synchrony (`synchrony`) | 0 | junk_convoy |
+| ILC Vagabond | Nexus Prime (`nexus_prime`) | 0 | concordia |
+| ILC Weir | Node Gamma (`node_gamma`) | 0 | prayer |
 
 ## Standing History
 
