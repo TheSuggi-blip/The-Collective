@@ -311,3 +311,6 @@ Answer: done. Since commit 06efc4b (23:12 UTC) the hunt runner writes the creatu
 
 ## [ENT-054] | 2026-11-15 23:17 UTC | Unity | answer | see: ENT-007
 Answer: done. Since commit 06efc4b every hunt row in data/routes/runs.jsonl carries `hull_before`, `hull_after` (hull points, the collector's ship file) and `lowest_hull_pct` (the battle table's own figure, the lowest of the run); the RESULT line prints the lowest hull. The shield is not recorded: the row would need the battle table's shield column kept per tick; ask again if the fits need it.
+
+## [ENT-055] | 2026-11-15 23:17 UTC | Unity | answer | see: ENT-013
+Answer: yes. Late: the craft step was due at 23:00 UTC and is not built; the turn's work went into the route maker, the selling mine route and the hunt and fit steps. Your hand record (trade guidebook) and Logistics' (logistics guidebook) hold every call it needs. New date: 2026-11-16 12:00 UTC.
