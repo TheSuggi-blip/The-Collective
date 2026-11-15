@@ -90,6 +90,12 @@ requests.log ENT-038; Unity accepted (ENT-042).
 **Records.** FLEET.md follows F1; the guidebook and `planned` are
 committed (1bb5845); my check reads the frontier and counts depth.
 
+**One-time money.** At 22:06 UTC I put voidborn-concurrent at the head
+of the scout plan (commit 1f8b621), 3,000 cr once per pilot and nothing
+bought (Mercury's test, queue.log ENT-038; orders F8). I had missed his
+notice of 21:32 UTC until the end of the turn: about 35 minutes in which
+free scouts read systems instead of collecting it.
+
 ## Problems
 
 **The home census stood still for about eleven minutes.** From 21:09
