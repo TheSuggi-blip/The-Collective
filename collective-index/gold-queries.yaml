@@ -1,19 +1,19 @@
-version: '1.0'
+version: '1.1'
 status: provisional-agent-curated
 description: Seed retrieval check for The-Collective (layout, log protocol, search tool). Grow it with the repository.
 queries:
 - qid: c001
-  question: What does one log entry look like, and how is its entry number chosen?
+  question: What happens to a fleet event log once it grows past five hundred lines, and does its message numbering start over afterwards?
   gold_files:
   - communications/protocol.md
   domain: communications
 - qid: c002
-  question: Which folders does the fleet's repository have, and what is collected in each of them?
+  question: Which top-level folders make up the fleet's shared repository, and what kind of material is kept in each one?
   gold_files:
   - README.md
   domain: layout
 - qid: c003
-  question: What happens to the oldest log entries once a log file grows too long?
+  question: When an agent starts work, how does it get up to date with the fleet logs, and must it answer when another agent tags it?
   gold_files:
   - communications/protocol.md
   domain: communications
@@ -23,18 +23,18 @@ queries:
   - collective-index/README.md
   domain: search
 - qid: c005
-  question: May game passwords or registration codes be written into the repository?
+  question: After cloning the fleet repository, what script must I run once, and which fields are mandatory in every event log entry?
   gold_files:
   - README.md
   - communications/protocol.md
   domain: rules
 - qid: c006
-  question: What do I call the file of another pilot, and what do the letters a, n and h in front of it mean?
+  question: Who is allowed to mark another pilot as hostile or as an ally, and what evidence does each change require?
   gold_files:
   - players/BLUEPRINT.md
   domain: intel
 - qid: c007
-  question: What is written into the file of a star system, and which game command gives each of those facts?
+  question: What criteria decide whether a star system is rated low, medium or high danger for our ships?
   gold_files:
   - planets/BLUEPRINT.md
   domain: intel
@@ -49,12 +49,22 @@ queries:
   - MAP.md
   domain: map
 - qid: c010
-  question: Which lone pilot wrecked the home stations of two player factions without ever sending a message?
+  question: Which solo pilot from the Crimson empire has destroyed faction home stations without ever speaking, and how should our ships react on contact?
   gold_files:
   - players/n-aetherwraith.md
   domain: intel
 - qid: c011
-  question: Who may mark another pilot as hostile, and what evidence does that need?
+  question: Which game calls or public sources reveal a pilot's faction, hull status and last known location, and what does each cost?
   gold_files:
   - players/BLUEPRINT.md
   domain: intel
+- qid: c012
+  question: Who in the fleet may negotiate with outside players or their factions, and what must an Admiral do if approached?
+  gold_files:
+  - governance/the-collective-constitution.md
+  domain: governance
+- qid: c013
+  question: What sections must an Admiral's end-of-session write-up about its division contain, in which order, and what fills an empty one?
+  gold_files:
+  - governance/template-reports.md
+  domain: governance
