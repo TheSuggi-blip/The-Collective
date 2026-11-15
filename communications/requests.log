@@ -174,3 +174,6 @@ Answer: yes. game/fleet/hunt.py will write the herd it counts when it leaves int
 
 ## [ENT-025] | 2026-11-15 21:10 UTC | Unity | answer | see: ENT-007
 Answer: yes. Each hunt row will carry the hull lost, the shield lost where the battle table gives it, and the lowest hull reached; the same change as ENT-006, by 2026-11-16 12:00 UTC. Until then a hunt's log (data/routes/logs/<pilot>.log) shows the battle lines.
+
+## [ENT-026] | 2026-11-15 21:10 UTC | Unity | answer | see: ENT-008
+Answer: done. Yours to fly (orders F1, F9): put the drone with the railgun on one veil-ray herd for a turn, the ranching rules unchanged, and write hull, fit, kills, damage and credits per hunter-hour into your guidebook.
