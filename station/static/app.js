@@ -40,6 +40,61 @@ const HEX = /^#[0-9a-fA-F]{6}$/;
 const LAWLESS = '#59607a';
 const DIV = { Command: '#e3e6ee', Mining: '#d9a857', Trade: '#5fbfad', Logistics: '#6fa8dc', Military: '#d9766f', Intel: '#b18ae0', Unassigned: '#7c869b' };
 
+// Ship silhouettes, nose up, in a box of -10..10: a list of parts, each a polygon or a ring. The same
+// shapes draw the markers of the map (canvas) and the icons of the roster, the legend and the cards (SVG).
+const SHAPES = {
+  Flagship: [[[0, -10], [2.6, -5], [2.6, -1], [6.5, 2.5], [6.5, 8], [2.2, 6], [0, 9.5], [-2.2, 6], [-6.5, 8], [-6.5, 2.5], [-2.6, -1], [-2.6, -5]]],
+  Guard: [[[0, -9], [7, -6], [7, 1], [0, 9], [-7, 1], [-7, -6]]],
+  Mining: [[[-4, -2], [4, -2], [5, 8], [-5, 8]], [[-6.5, -9], [-3.4, -9], [-2.2, -2], [-5.4, -2]], [[6.5, -9], [3.4, -9], [2.2, -2], [5.4, -2]], [[-1.4, -2], [1.4, -2], [0, -6.5]]],
+  Trade: [[[0, -9], [5, -5.5], [6.5, 5.5], [3.2, 9], [-3.2, 9], [-6.5, 5.5], [-5, -5.5]]],
+  Logistics: [[[-1.4, -9.5], [1.4, -9.5], [1.4, 9.5], [-1.4, 9.5]], [[-6.5, -6.5], [-2.4, -6.5], [-2.4, -2.5], [-6.5, -2.5]], [[6.5, -6.5], [2.4, -6.5], [2.4, -2.5], [6.5, -2.5]],
+    [[-6.5, -1], [-2.4, -1], [-2.4, 3], [-6.5, 3]], [[6.5, -1], [2.4, -1], [2.4, 3], [6.5, 3]], [[-6.5, 4.5], [-2.4, 4.5], [-2.4, 8.5], [-6.5, 8.5]], [[6.5, 4.5], [2.4, 4.5], [2.4, 8.5], [6.5, 8.5]]],
+  Military: [[[0, -10], [3, 0], [9.5, 7.5], [3, 5.2], [0, 9], [-3, 5.2], [-9.5, 7.5], [-3, 0]]],
+  Intel: [[[0, -10], [2, 2.5], [4.6, 8.5], [0, 6.2], [-4.6, 8.5], [-2, 2.5]], { ring: [0, -1.5, 7.6] }],
+  Unassigned: [[[0, -8], [6, 7], [-6, 7]]],
+};
+const KINDS = ['Command', 'Mining', 'Trade', 'Logistics', 'Military', 'Intel', 'Unassigned'];
+const kindLabel = (kind) => (kind === 'Command' ? 'the command group' : kind === 'All' ? 'ours' : kind);
+function rgba(hex, a) {
+  const n = parseInt(hex.slice(1), 16);
+  return 'rgba(' + (n >> 16) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')';
+}
+function shipShape(c, shape, x, y, scale, colour) {     // a silhouette on a canvas
+  c.fillStyle = colour; c.strokeStyle = colour;
+  for (const part of SHAPES[shape] || SHAPES.Unassigned) {
+    c.beginPath();
+    if (part.ring) { c.lineWidth = 1.1; c.arc(x + part.ring[0] * scale, y + part.ring[1] * scale, part.ring[2] * scale, 0, 6.2832); c.stroke(); continue; }
+    part.forEach((q, i) => (i ? c.lineTo(x + q[0] * scale, y + q[1] * scale) : c.moveTo(x + q[0] * scale, y + q[1] * scale)));
+    c.closePath(); c.fill();
+  }
+}
+function shipSvg(shape, colour, size) {                  // the same silhouette as an SVG element
+  const NS = 'http://www.w3.org/2000/svg', svg = document.createElementNS(NS, 'svg');
+  svg.setAttribute('viewBox', '-11 -11 22 22'); svg.setAttribute('width', size); svg.setAttribute('height', size);
+  svg.setAttribute('class', 'shipicon'); svg.setAttribute('aria-hidden', 'true');
+  for (const part of SHAPES[shape] || SHAPES.Unassigned) {
+    if (part.ring) {
+      const c = document.createElementNS(NS, 'circle');
+      c.setAttribute('cx', part.ring[0]); c.setAttribute('cy', part.ring[1]); c.setAttribute('r', part.ring[2]);
+      c.setAttribute('fill', 'none'); c.setAttribute('stroke', colour); c.setAttribute('stroke-width', '1.4');
+      svg.append(c);
+    } else {
+      const p = document.createElementNS(NS, 'polygon');
+      p.setAttribute('points', part.map((q) => q.join(',')).join(' ')); p.setAttribute('fill', colour);
+      svg.append(p);
+    }
+  }
+  return svg;
+}
+function fleetGroups(list) {                             // our ships at one place, by kind, in the order of KINDS
+  const by = new Map();
+  list.forEach((r) => { const k = KINDS.includes(r.division) ? r.division : 'Unassigned'; if (!by.has(k)) by.set(k, []); by.get(k).push(r); });
+  return KINDS.filter((k) => by.has(k)).map((k) => ({
+    kind: k, colour: DIV[k] || DIV.Unassigned, ships: by.get(k),
+    shape: k === 'Command' ? (by.get(k).some((r) => r.flagship) ? 'Flagship' : 'Guard') : k,
+  }));
+}
+
 let S = null;                                  // /api/state
 let L = { hour: {}, day: {}, events: [], fills: [], battles: [], stats: {}, stream: {} };
 let F = { ships: [], totals: {}, engine: {}, age: -1, birth: null };   // /api/fleet
@@ -56,6 +111,8 @@ const layers = { Lanes: true, Traffic: true, Stations: true, Strongholds: true, 
 const view = { x: 0, y: 0, k: 0.05 };
 let selected = null, hover = null, route = [], tab = 'Selection', pilotCard = null;
 let selShip = null, shipCard = null, shipMark = '', docView = null;
+let pop = null, hoverBadge = null, badgeHits = [];   // the open fleet card {system, kind}; the marker under the pointer; the markers drawn
+let cam = null, raf = 0, pulse = 0;                  // an eased move of the view; the frame that is asked for; the timer of the next quiet frame
 
 const canvas = $('map'), ctx = canvas.getContext('2d');
 let W = 0, H = 0;
@@ -74,13 +131,17 @@ function resize() {
   draw();
 }
 
-function fit(list, pad) {
+function flyTo(x, y, k, ms) {                       // ease the view to a place; ms 0 jumps
+  if (!W || ms === 0) { cam = null; view.x = x; view.y = y; view.k = k; draw(); return; }
+  cam = { x0: view.x, y0: view.y, k0: view.k, x1: x, y1: y, k1: k, t0: performance.now(), ms: ms || 520 };
+  draw();
+}
+
+function fit(list, pad, jump) {
   if (!list.length || !W) return;
   const xs = list.map((s) => s.x), ys = list.map((s) => s.y);
   const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
-  view.x = (x0 + x1) / 2; view.y = (y0 + y1) / 2;
-  view.k = Math.min(3, Math.min(W / (x1 - x0 + pad), H / (y1 - y0 + pad)));
-  draw();
+  flyTo((x0 + x1) / 2, (y0 + y1) / 2, Math.min(3, Math.min(W / (x1 - x0 + pad), H / (y1 - y0 + pad))), jump ? 0 : 650);
 }
 
 function pathFromHome(target) {
@@ -98,93 +159,243 @@ function pathFromHome(target) {
   return out;
 }
 
-function diamond(x, y, r) {
-  ctx.beginPath(); ctx.moveTo(x, y - r); ctx.lineTo(x + r, y); ctx.lineTo(x, y + r); ctx.lineTo(x - r, y); ctx.closePath(); ctx.fill();
+// A fixed field of stars: [x, y] as fractions of the view, brightness, size.
+const STARS = Array.from({ length: 460 }, (_, i) => {
+  const a = Math.sin(i * 12.9898) * 43758.5453, b = Math.sin(i * 78.233) * 12543.123;
+  return [a - Math.floor(a), b - Math.floor(b), 0.18 + ((i * 7) % 10) / 24, i % 11 === 0 ? 1.7 : i % 3 === 0 ? 1.2 : 0.8];
+});
+
+function pill(x, y, w, h) {                          // a rounded marker's outline
+  const q = h / 2;
+  ctx.beginPath(); ctx.moveTo(x + q, y); ctx.lineTo(x + w - q, y); ctx.arc(x + w - q, y + q, q, -1.5708, 1.5708);
+  ctx.lineTo(x + q, y + h); ctx.arc(x + q, y + q, q, 1.5708, 4.7124); ctx.closePath();
 }
 
-function draw() {
+function draw() { if (!raf) raf = requestAnimationFrame(frame); }   // every caller asks for a frame; frames are joined
+
+function frame(now) {
+  raf = 0;
+  if (cam) {
+    const u = Math.min(1, (now - cam.t0) / cam.ms), e = 1 - Math.pow(1 - u, 3);
+    view.x = cam.x0 + (cam.x1 - cam.x0) * e; view.y = cam.y0 + (cam.y1 - cam.y0) * e;
+    view.k = Math.exp(Math.log(cam.k0) + (Math.log(cam.k1) - Math.log(cam.k0)) * e);
+    if (u >= 1) cam = null;
+  }
+  paint(now / 1000);
+  if (cam) draw();
+  else if ((selected || route.length > 1) && !pulse) pulse = setTimeout(() => { pulse = 0; draw(); }, 60);   // the selection breathes, the route line moves
+}
+
+function paint(t) {
   if (!S) return;
   ctx.clearRect(0, 0, W, H);
-  const k = view.k, r = Math.max(2, Math.min(7, 2 + k * 28));
+  const k = view.k, r = Math.max(2.2, Math.min(7, 2 + k * 28));
+  const px = -view.x * k * 0.05, py = -view.y * k * 0.05;           // the stars drift a little with the view
+  for (const [u, v, a, size] of STARS) {
+    ctx.fillStyle = 'rgba(186,198,232,' + a.toFixed(2) + ')';
+    ctx.fillRect((((u * W + px) % W) + W) % W, (((v * H + py) % H) + H) % H, size, size);
+  }
   if (layers.Lanes) {
-    ctx.strokeStyle = 'rgba(120,130,165,0.22)'; ctx.lineWidth = 1; ctx.beginPath();
+    const strokes = new Map();                                      // one path per colour
     for (const s of S.systems) {
       const [ax, ay] = toScreen(s);
       for (const id of s.lanes) {
-        const t = sys.get(id);
-        if (t && s.id < id) { const [bx, by] = toScreen(t); ctx.moveTo(ax, ay); ctx.lineTo(bx, by); }
+        const o = sys.get(id);
+        if (!o || s.id >= id) continue;
+        const c = s.empire && s.empire === o.empire ? rgba(color(s), 0.3) : 'rgba(125,135,170,0.17)';
+        if (!strokes.has(c)) strokes.set(c, []);
+        strokes.get(c).push(ax, ay, ...toScreen(o));
       }
     }
-    ctx.stroke();
+    ctx.lineWidth = 1;
+    for (const [c, seg] of strokes) {
+      ctx.strokeStyle = c; ctx.beginPath();
+      for (let i = 0; i < seg.length; i += 4) { ctx.moveTo(seg[i], seg[i + 1]); ctx.lineTo(seg[i + 2], seg[i + 3]); }
+      ctx.stroke();
+    }
   }
-  if (route.length > 1) {
-    ctx.strokeStyle = '#a48be0'; ctx.lineWidth = 2.5; ctx.beginPath();
-    route.forEach((id, i) => { const [x, y] = toScreen(sys.get(id)); if (i) ctx.lineTo(x, y); else ctx.moveTo(x, y); });
-    ctx.stroke();
+  if (route.length > 1) {                                           // the way from home: a soft band and a moving dash
+    const line = () => { ctx.beginPath(); route.forEach((id, i) => { const [x, y] = toScreen(sys.get(id)); if (i) ctx.lineTo(x, y); else ctx.moveTo(x, y); }); ctx.stroke(); };
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.strokeStyle = 'rgba(164,139,224,0.22)'; ctx.lineWidth = 6; line();
+    ctx.strokeStyle = '#b9a4ec'; ctx.lineWidth = 1.8; ctx.setLineDash([7, 7]); ctx.lineDashOffset = -t * 16; line();
+    ctx.setLineDash([]); ctx.lineCap = 'butt';
   }
   if (layers.Traffic) {
     for (const s of S.systems) {
       const n = L.hour[s.id] || 0;
       if (!n) continue;
       const [x, y] = toScreen(s);
-      ctx.fillStyle = 'rgba(220,174,88,0.15)';
+      ctx.fillStyle = 'rgba(220,174,88,0.13)';
       ctx.beginPath(); ctx.arc(x, y, r + 3 + Math.sqrt(n) * 2.6, 0, 6.2832); ctx.fill();
     }
   }
+  ctx.font = '11px system-ui, sans-serif';
   for (const s of S.systems) {
     const [x, y] = toScreen(s);
     if (x < -40 || y < -40 || x > W + 40 || y > H + 40) continue;
-    ctx.fillStyle = color(s);
-    ctx.beginPath(); ctx.arc(x, y, s.home ? r + 2 : r, 0, 6.2832); ctx.fill();
+    const c = color(s), q = s.home ? r + 2 : r, ours = layers.Fleet && shipsBy.has(s.id);
+    ctx.fillStyle = rgba(c, 0.16); ctx.beginPath(); ctx.arc(x, y, q * 2.3, 0, 6.2832); ctx.fill();      // glow
+    ctx.fillStyle = c; ctx.beginPath(); ctx.arc(x, y, q, 0, 6.2832); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.5)'; ctx.beginPath(); ctx.arc(x - q * 0.28, y - q * 0.28, q * 0.34, 0, 6.2832); ctx.fill();
     if (layers.Stations && stationsBy.has(s.id)) {
-      const own = stationsBy.get(s.id).some((t) => t.tag);
-      ctx.strokeStyle = own ? '#e8c35a' : '#cfd3e6'; ctx.lineWidth = 1.2;
-      ctx.beginPath(); ctx.arc(x, y, r + 3, 0, 6.2832); ctx.stroke();
+      ctx.strokeStyle = stationsBy.get(s.id).some((b) => b.tag) ? 'rgba(232,195,90,0.9)' : 'rgba(207,211,230,0.75)'; ctx.lineWidth = 1.1;
+      ctx.beginPath(); ctx.arc(x, y, q + 3.5, 0, 6.2832); ctx.stroke();
     }
     if (layers.Strongholds && s.stronghold) {
-      ctx.strokeStyle = '#e06c66'; ctx.lineWidth = 2; ctx.beginPath();
-      ctx.moveTo(x - r - 4, y - r - 4); ctx.lineTo(x + r + 4, y + r + 4);
-      ctx.moveTo(x + r + 4, y - r - 4); ctx.lineTo(x - r - 4, y + r + 4); ctx.stroke();
+      ctx.strokeStyle = '#e06c66'; ctx.lineWidth = 1.8; ctx.lineCap = 'round'; ctx.beginPath();
+      ctx.moveTo(x - q - 4, y - q - 4); ctx.lineTo(x + q + 4, y + q + 4);
+      ctx.moveTo(x + q + 4, y - q - 4); ctx.lineTo(x - q - 4, y + q + 4); ctx.stroke(); ctx.lineCap = 'butt';
     }
     const intel = layers.Intel && S.intel.systems[s.id];
-    if (intel && intel.standing !== 'neutral') {
-      ctx.strokeStyle = intel.standing === 'ally' ? '#58c08c' : '#e06c66'; ctx.lineWidth = 1.5;
-      ctx.strokeRect(x - r - 6, y - r - 6, 2 * r + 12, 2 * r + 12);
+    if (intel && intel.standing !== 'neutral') {                    // our standing: a dashed ring, green or red
+      ctx.strokeStyle = intel.standing === 'ally' ? 'rgba(88,192,140,0.85)' : 'rgba(224,108,102,0.9)'; ctx.lineWidth = 1.4;
+      ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.arc(x, y, q + 7, 0, 6.2832); ctx.stroke(); ctx.setLineDash([]);
+    }
+    if (ours) {                                                     // our ships are here: a quiet ring
+      ctx.strokeStyle = shipsBy.get(s.id).some((sh) => sh.name === selShip) ? '#ffffff' : 'rgba(227,230,238,0.5)'; ctx.lineWidth = 1.2;
+      ctx.beginPath(); ctx.arc(x, y, q + 10.5, 0, 6.2832); ctx.stroke();
     }
     if (s.id === selected) {
-      ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.arc(x, y, r + 7, 0, 6.2832); ctx.stroke();
+      const beat = (Math.sin(t * 2.6) + 1) / 2;
+      ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.8;
+      ctx.beginPath(); ctx.arc(x, y, q + 13.5, 0, 6.2832); ctx.stroke();
+      ctx.strokeStyle = 'rgba(255,255,255,' + (0.3 * (1 - beat)).toFixed(2) + ')'; ctx.lineWidth = 1.2;
+      ctx.beginPath(); ctx.arc(x, y, q + 14 + beat * 9, 0, 6.2832); ctx.stroke();
     }
-    const ours = layers.Fleet && shipsBy.has(s.id);
     if (layers.Names && (k > 0.16 || s.home || ours || s.id === selected || s.id === hover)) {
-      ctx.fillStyle = s.home || ours ? '#ffffff' : '#aab0c8';
       ctx.font = (s.home || ours ? '600 ' : '') + '11px system-ui, sans-serif';
-      ctx.fillText(s.name, x + r + 5, y + 4);
+      ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(9,12,18,0.85)'; ctx.lineJoin = 'round';
+      ctx.strokeText(s.name, x + q + 6, y + 4);
+      ctx.fillStyle = s.home || ours ? '#f1f3f9' : '#a9b0c9';
+      ctx.fillText(s.name, x + q + 6, y + 4);
     }
   }
-  if (layers.Fleet) {
-    for (const [id, list] of shipsBy) {            // our ships: one diamond per division, with its count
+  badgeHits = [];
+  if (layers.Fleet) {                                               // our ships: one marker per kind, above its system
+    ctx.font = '600 11px system-ui, sans-serif'; ctx.textBaseline = 'middle';
+    const rows = [];
+    for (const [id, list] of shipsBy) {
       const s = sys.get(id);
       if (!s) continue;
-      const [x, y] = toScreen(s), q = r + 10, groups = new Map();
-      list.forEach((sh) => groups.set(sh.division, (groups.get(sh.division) || 0) + 1));
-      ctx.strokeStyle = list.some((sh) => sh.name === selShip) ? '#ffffff' : 'rgba(213,218,230,0.75)'; ctx.lineWidth = 1.5; ctx.beginPath();
-      for (const [dx, dy] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) {     // corner brackets around the system
-        ctx.moveTo(x + dx * q, y + dy * (q - 5)); ctx.lineTo(x + dx * q, y + dy * q); ctx.lineTo(x + dx * (q - 5), y + dy * q);
+      const [x, y] = toScreen(s);
+      if (x < -120 || y < -20 || x > W + 120 || y > H + 80) continue;
+      const groups = k < 0.14                                       // far out: one marker with the total
+        ? [{ kind: 'All', colour: '#e3e6ee', ships: list, shape: fleetGroups(list)[0].shape }] : fleetGroups(list);
+      const lines = [];                                             // at most three markers in a line; more lines stack upwards
+      for (let i = 0; i < groups.length; i += 3) {
+        const part = groups.slice(i, i + 3), widths = part.map((g) => 31 + ctx.measureText(String(g.ships.length)).width);
+        lines.push({ part, widths, w: widths.reduce((a, b) => a + b, 0) + 4 * (part.length - 1) });
       }
-      ctx.stroke();
-      let i = 0;
-      ctx.font = '600 11px system-ui, sans-serif';
-      for (const [division, n] of groups) {
-        const cx = x - q + 5 + i * 26, cy = y - q - 9;
-        ctx.fillStyle = DIV[division] || DIV.Unassigned;
-        diamond(cx, cy, 5);
-        ctx.fillStyle = '#d5dae6';
-        ctx.fillText(String(n), cx + 8, cy + 4);
-        i++;
-      }
+      rows.push({ id, x, y, lines, w: Math.max(...lines.map((l) => l.w)), h: lines.length * 26 - 4 });
+    }
+    rows.sort((a, b) => b.y - a.y);                                 // the lowest system first: a block that would cover another moves up
+    const placed = [];
+    for (const row of rows) {
+      const left = Math.max(4, Math.min(W - row.w - 4, row.x - row.w / 2));
+      let top = row.y - r - 15 - row.h;
+      for (let tries = 0; tries < 12 && placed.some((b) => left < b.x + b.w + 6 && left + row.w + 6 > b.x && top < b.y + b.h + 5 && top + row.h + 5 > b.y); tries++) top -= 13;
+      placed.push({ x: left, y: top, w: row.w, h: row.h });
+      ctx.strokeStyle = 'rgba(213,218,230,0.3)'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(row.x, top + row.h); ctx.lineTo(row.x, row.y - r - 12); ctx.stroke();
+      row.lines.forEach((line, n) => {
+        let x = left + (row.w - line.w) / 2;
+        const y = top + row.h - 22 - n * 26;                        // the first line is the lowest
+        line.part.forEach((g, i) => {
+          const w = line.widths[i], open = pop && pop.system === row.id && pop.kind === g.kind;
+          const hot = hoverBadge && hoverBadge.system === row.id && hoverBadge.kind === g.kind;
+          pill(x, y, w, 22);
+          ctx.fillStyle = open || hot ? 'rgba(36,45,66,0.97)' : 'rgba(15,20,31,0.9)'; ctx.fill();
+          ctx.strokeStyle = rgba(g.colour, open ? 1 : hot ? 0.85 : 0.45); ctx.lineWidth = open ? 1.6 : 1; ctx.stroke();
+          shipShape(ctx, g.shape, x + 13, y + 11, 0.72, g.colour);
+          ctx.fillStyle = '#eef0f6'; ctx.fillText(String(g.ships.length), x + 24, y + 11.5);
+          badgeHits.push({ x, y, w, h: 22, system: row.id, kind: g.kind, count: g.ships.length });
+          x += w + 4;
+        });
+      });
+    }
+    ctx.textBaseline = 'alphabetic';
+  }
+  placePop();
+}
+
+function badgeAt(mx, my) {
+  for (let i = badgeHits.length - 1; i >= 0; i--) {
+    const b = badgeHits[i];
+    if (mx >= b.x && mx <= b.x + b.w && my >= b.y && my <= b.y + b.h) return b;
+  }
+  return null;
+}
+
+// ---------------------------------------------------------------- the fleet card over the map
+
+function openPop(system, kind) { pop = { system, kind }; renderPop(); draw(); }
+function closePop() { pop = null; $('fleetpop').hidden = true; draw(); }
+
+function placePop() {                                // the card stays beside its system while the view moves
+  const box = $('fleetpop');
+  if (!pop || box.hidden || !sys.has(pop.system)) return;
+  const [x, y] = toScreen(sys.get(pop.system)), w = box.offsetWidth, h = box.offsetHeight;
+  const left = x + 30 + w <= W - 8 ? x + 30 : Math.max(8, x - 30 - w);
+  box.style.left = Math.round(left) + 'px';
+  box.style.top = Math.round(Math.max(8, Math.min(H - h - 8, y - h / 3))) + 'px';
+}
+
+function renderPop() {
+  const box = $('fleetpop');
+  if (!pop) { box.hidden = true; return; }
+  const s = sys.get(pop.system), all = fleetGroups(shipsBy.get(pop.system) || []);
+  const groups = pop.kind === 'All' ? all : all.filter((g) => g.kind === pop.kind);
+  if (!s || !groups.length) { closePop(); return; }                // the ships have left
+  const ships = groups.flatMap((g) => g.ships), body = box.querySelector('.popbody'), keep = body ? body.scrollTop : 0;
+  const head = el('div', 'pophead'), title = el('div', 'poptitle'), close = el('button', 'popclose', '\u00d7');
+  const one = groups.length === 1 ? groups[0] : null;
+  head.append(shipSvg(one ? one.shape : all[0].shape, one ? one.colour : '#e3e6ee', 26));
+  title.append(el('b', null, one ? (one.kind === 'Command' ? 'Command group' : one.kind) : 'Our ships'),
+    el('span', null, 'at ' + s.name + (one && one.ships[0].admiral ? ' | Adm. ' + one.ships[0].admiral : '')));
+  close.type = 'button'; close.title = 'Close (Esc)'; close.addEventListener('click', closePop);
+  head.append(title, close);
+  const low = (a, b) => ships.reduce((m, r) => Math.min(m, r[b] > 0 ? Math.round(100 * r[a] / r[b]) : 100), 100);
+  const stats = el('div', 'popstats'), n = {};
+  for (const [label, value, bad] of [['Ships', ships.length], ['Credits', fmt(ships.reduce((a, r) => a + r.credits, 0))],
+    ['Lowest hull', low('hull', 'max_hull') + '%', low('hull', 'max_hull') < 50], ['Lowest fuel', low('fuel', 'max_fuel') + '%', low('fuel', 'max_fuel') < 25]]) {
+    const cell = el('div', bad ? 'bad' : null);
+    cell.append(el('div', 'k', label), el('div', 'v', String(value)));
+    stats.append(cell);
+  }
+  ships.forEach((r) => { const w = shipState(r)[1]; n[w] = (n[w] || 0) + 1; });
+  const doing = el('div', 'popdoing', Object.entries(n).sort((a, b) => b[1] - a[1]).slice(0, 4).map(([w, c]) => c + ' ' + w).join(', '));
+  const list = el('div', 'popbody');
+  const row = (r) => {
+    const b = el('button', 'poprow'), who = el('div', 'who'), nm = el('div', 'nm', r.name), bars = el('div', 'bars');
+    b.type = 'button';
+    if (r.flagship) { const f = el('span', 'flag', '\u2605' + (r.flagship_of ? ' ' + r.flagship_of : '')); nm.append(f); }
+    who.append(nm, el('div', 'at', shipState(r)[1]));
+    bars.append(bar('hull', r.hull, r.max_hull, 0.5), bar('fuel', r.fuel, r.max_fuel, 0.25), bar('cargo', r.cargo_used, r.cargo_capacity));
+    b.append(who, bars, el('div', 'cr', fmt(r.credits)));
+    b.title = 'Open ' + r.name;
+    b.addEventListener('click', () => { closePop(); selectShip(r.name, false); });
+    return b;
+  };
+  for (const g of groups) {
+    const parts = g.kind === 'Command'
+      ? [['Flagships', g.ships.filter((r) => r.flagship), 'Flagship'], ['Guard', g.ships.filter((r) => !r.flagship), 'Guard']]
+      : [[g.kind, g.ships, g.shape]];
+    for (const [label, rows, shape] of parts) {
+      if (!rows.length) continue;
+      const sec = el('div', 'popsec');
+      sec.append(shipSvg(shape, g.colour, 13), label + ' ', el('b', null, String(rows.length)));
+      list.append(sec);
+      rows.forEach((r) => list.append(row(r)));
     }
   }
+  const foot = el('div', 'popfoot'), go = el('button', 'poplink', 'Open ' + s.name);
+  go.type = 'button'; go.addEventListener('click', () => { closePop(); select(s.id, false); });
+  foot.append(go, el('span', null, 'fleet data ' + fleetAgeText()));
+  box.replaceChildren(head, stats, doing, list, foot);
+  box.hidden = false;
+  list.scrollTop = keep;
+  placePop();
 }
 
 function nearest(mx, my) {
@@ -330,6 +541,7 @@ function renderRoster() {
     const name = el('button', 'name', division), fold = el('span', 'fold', folded ? '+' : '-');
     name.type = 'button';
     name.prepend(fold);
+    fold.after(shipSvg(division === 'Command' ? 'Flagship' : division, c, 13));
     name.append(el('b', 'count', String(list.length)));
     head.style.borderLeftColor = c; name.style.color = c;
     name.title = (folded ? 'Unfold' : 'Fold') + ' the ' + list.length + ' ships of ' + division;
@@ -436,7 +648,7 @@ async function selectShip(name, center) {
   const row = F.ships.find((r) => r.name === name);
   if (row && sys.has(row.system)) {
     selected = row.system; route = pathFromHome(selected);
-    if (center) { const s = sys.get(selected); view.x = s.x; view.y = s.y; if (view.k < 0.12) view.k = 0.35; }
+    if (center) { const s = sys.get(selected); flyTo(s.x, s.y, view.k < 0.12 ? 0.35 : view.k); }
   }
   renderRoster(); draw(); render();
   try { shipCard = await get('/api/ship?name=' + encodeURIComponent(name)); } catch (e) { shipCard = { error: e.message }; }
@@ -829,7 +1041,7 @@ function render() {
 function select(id, center) {
   if (!sys.has(id)) return;
   selected = id; pilotCard = null; selShip = null; shipCard = null; docView = null; route = pathFromHome(id); tab = 'Selection';
-  if (center) { const s = sys.get(id); view.x = s.x; view.y = s.y; if (view.k < 0.12) view.k = 0.2; }
+  if (center) { const s = sys.get(id); flyTo(s.x, s.y, view.k < 0.12 ? 0.2 : view.k); }
   renderRoster(); draw(); render();
 }
 async function showPilot(name) {
@@ -837,8 +1049,7 @@ async function showPilot(name) {
   tab = 'Selection'; selShip = null; shipCard = null; docView = null;
   if (pilotCard.seen && sys.has(pilotCard.seen.system)) {
     selected = pilotCard.seen.system; route = pathFromHome(selected);
-    const s = sys.get(selected); view.x = s.x; view.y = s.y; if (view.k < 0.12) view.k = 0.2;
-    draw();
+    const s = sys.get(selected); flyTo(s.x, s.y, view.k < 0.12 ? 0.2 : view.k);
   }
   renderRoster(); render();
 }
@@ -985,10 +1196,12 @@ async function loadState() {
     dot.style.background = HEX.test(c) ? c : LAWLESS;
     span.append(dot, name); legend.append(span);
   }
-  const ours = el('span'), mark = el('i', 'sq');
-  mark.style.background = DIV.Mining;
-  ours.append(mark, 'diamond: our ships, by division');
-  legend.append(ours, el('span', null, 'ring: station (gold: player faction)'), el('span', null, 'red cross: pirate stronghold'),
+  for (const kind of KINDS.slice(0, 6)) {            // our ships: the silhouette of each kind
+    const span = el('span', 'kind');
+    span.append(shipSvg(kind === 'Command' ? 'Flagship' : kind, DIV[kind], 13), kind === 'Command' ? 'command group' : kind.toLowerCase());
+    legend.append(span);
+  }
+  legend.append(el('span', null, 'ring: station (gold: player faction)'), el('span', null, 'red cross: pirate stronghold'),
     el('span', null, 'glow: pilots seen in the last hour'));
 }
 async function loadLive() {
@@ -1000,7 +1213,7 @@ async function loadFleet() {
   try { F = await get('/api/fleet'); fetchedAt = Date.now(); } catch (e) { F = Object.assign({}, F, { age: -1 }); }
   shipsBy.clear();
   F.ships.forEach((r) => { if (r.system) { if (!shipsBy.has(r.system)) shipsBy.set(r.system, []); shipsBy.get(r.system).push(r); } });
-  renderResources(); renderRoster(); tickAges(); draw();
+  renderResources(); renderRoster(); tickAges(); renderPop(); draw();
   if (tab === 'Metrics') render();
   if (selShip) {
     const name = selShip;
@@ -1027,7 +1240,7 @@ function init() {
     nav.append(b);
   }
   let drag = null, moved = false;
-  canvas.addEventListener('mousedown', (e) => { drag = [e.clientX, e.clientY, view.x, view.y]; moved = false; canvas.classList.add('drag'); });
+  canvas.addEventListener('mousedown', (e) => { cam = null; drag = [e.clientX, e.clientY, view.x, view.y]; moved = false; canvas.classList.add('drag'); });
   window.addEventListener('mouseup', () => { drag = null; canvas.classList.remove('drag'); });
   canvas.addEventListener('mousemove', (e) => {
     const r = canvas.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top;
@@ -1036,31 +1249,40 @@ function init() {
       view.x = drag[2] - (e.clientX - drag[0]) / view.k; view.y = drag[3] - (e.clientY - drag[1]) / view.k;
       draw(); return;
     }
-    const s = S && nearest(mx, my), tip = $('tip');
-    hover = s ? s.id : null;
-    if (s) {
+    const tip = $('tip'), badge = S && badgeAt(mx, my), s = !badge && S && nearest(mx, my);
+    hover = s ? s.id : null; hoverBadge = badge || null;
+    canvas.style.cursor = badge ? 'pointer' : '';
+    if (badge) {
+      const at = sys.get(badge.system);
+      tip.textContent = badge.count + (badge.count === 1 ? ' ship of ' : ' ships of ') + kindLabel(badge.kind) + ' at ' + (at ? at.name : badge.system) + ' | click for the card';
+      tip.style.left = mx + 14 + 'px'; tip.style.top = my + 12 + 'px'; tip.hidden = false;
+    } else if (s) {
       const ours = (shipsBy.get(s.id) || []).length;
       tip.textContent = s.name + (s.empire ? ' (' + s.empire + ')' : '') + ' | ' + (L.hour[s.id] || 0) + ' pilots in the last hour' + (ours ? ' | ' + ours + ' of ours' : '');
       tip.style.left = mx + 14 + 'px'; tip.style.top = my + 12 + 'px'; tip.hidden = false;
     } else tip.hidden = true;
     draw();
   });
-  canvas.addEventListener('mouseleave', () => { $('tip').hidden = true; hover = null; draw(); });
+  canvas.addEventListener('mouseleave', () => { $('tip').hidden = true; hover = null; hoverBadge = null; draw(); });
   canvas.addEventListener('click', (e) => {
     if (moved || !S) return;
-    const r = canvas.getBoundingClientRect(), s = nearest(e.clientX - r.left, e.clientY - r.top);
+    const r = canvas.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top, badge = badgeAt(mx, my);
+    if (badge) { $('tip').hidden = true; openPop(badge.system, badge.kind); return; }
+    const s = nearest(mx, my);
+    if (pop) closePop();
     if (s) select(s.id, false);
   });
   canvas.addEventListener('wheel', (e) => {
     e.preventDefault();
     const r = canvas.getBoundingClientRect(), mx = e.clientX - r.left - W / 2, my = e.clientY - r.top - H / 2;
     const k = Math.max(0.01, Math.min(3, view.k * (e.deltaY < 0 ? 1.2 : 1 / 1.2)));
+    cam = null;
     view.x += mx / view.k - mx / k; view.y += my / view.k - my / k; view.k = k;
     draw();
   }, { passive: false });
   $('btn-all').addEventListener('click', () => fit(S.systems, 1200));
   $('btn-home').addEventListener('click', () => fit(S.systems.filter((s) => s.jumps >= 0 && s.jumps <= 4), 500));
-  $('btn-fleet').addEventListener('click', fitFleet);
+  $('btn-fleet').addEventListener('click', () => fitFleet(false));
   const input = $('search'), results = $('results');
   let timer = 0;
   input.addEventListener('input', () => {
@@ -1085,12 +1307,13 @@ function init() {
   });
   document.addEventListener('click', (e) => { if (!e.target.closest('.search')) results.hidden = true; });
   window.addEventListener('resize', resize);
+  window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && pop) closePop(); });
 }
 
-function fitFleet() {
+function fitFleet(jump) {
   const list = [...shipsBy.keys()].map((id) => sys.get(id)).filter(Boolean);
-  if (!list.length) { fit(S.systems.filter((s) => s.jumps >= 0 && s.jumps <= 4), 500); return; }
-  fit(list.concat(list.flatMap((s) => s.lanes.map((id) => sys.get(id)).filter(Boolean))), 300);
+  if (!list.length) { fit(S.systems.filter((s) => s.jumps >= 0 && s.jumps <= 4), 500, jump); return; }
+  fit(list.concat(list.flatMap((s) => s.lanes.map((id) => sys.get(id)).filter(Boolean))), 300, jump);
 }
 
 (async function main() {
@@ -1098,7 +1321,7 @@ function fitFleet() {
   await loadState();
   resize();
   await loadFleet();
-  fitFleet();
+  fitFleet(true);
   await loadLive();
   render();
   initChat();
