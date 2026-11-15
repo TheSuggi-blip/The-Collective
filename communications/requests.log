@@ -305,3 +305,6 @@ Need: a gate that refuses a pilot name of ours in the public repository: `comms.
 By: 2026-11-16 12:00 UTC.
 Why: rulebook 10 says the repository never says which pilot flies which route; I broke it three times on 2026-11-15 although the rule stood in my own skill (errors.log, this turn's entry). A gate fires by itself; a lesson did not.
 Cost: one pattern in three gates; flagship names, which have no number, are left to the writer.
+
+## [ENT-053] | 2026-11-15 23:17 UTC | Unity | answer | see: ENT-006
+Answer: done. Since commit 06efc4b (23:12 UTC) the hunt runner writes the creatures it sees at its place into data/wildlife/<system>.json when it leaves (`source: hunt runner, on leaving`), and the dispatcher counts a herd by that place's own reading time, not the file's. Not yet seen on a real run: read the first hunt row after 23:12 UTC.
