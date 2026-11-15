@@ -16,7 +16,7 @@ task one pilot carries out by itself; its file is `routes/<id>.json`
 | [census-voidborn](census-voidborn.json) | census | Read one Voidborn system whole: deposits, creatures, order book, mission board | up to 3 ships | 17 | 7 | 0 | 0 | 2026-11-15 |
 | [first-survey](first-survey.json) | circuit | Signal Propagation Survey: dock at the five other Voidborn stations (20,000 cr) | once per pilot, off | TBD | TBD | TBD | TBD | -- |
 | [voidborn-missions-1](voidborn-missions-1.json) | circuit | Synchrony Relay Run and Crystal Delivery: two board missions in one circuit of 8 jumps | once per pilot | 55 | 21 | 8,690 | one-time | 2026-11-15 |
-| [hunt-acubens-urchin](hunt-acubens-urchin.json) | hunt | Cinder-urchins at Acubens Shadow Pocket; radiant bile sold at Node Gamma | up to 1 ships | 2 | 25 | 540 | 1,310 | 2026-11-15 |
+| [hunt-acubens-urchin](hunt-acubens-urchin.json) | hunt | Cinder-urchins at Acubens Shadow Pocket; radiant bile sold at Node Gamma | up to 1 ships | 2 | 25 | -120 | -290 | 2026-11-15 |
 | [hunt-gsc-veil-ray](hunt-gsc-veil-ray.json) | hunt | Veil-rays at GSC-0027 Prism Scatter; verdigris curd sold at Node Gamma | up to 1 ships | 1 | 46 | 3,220 | 4,220 | 2026-11-15 |
 | [hunt-hamal-veil-ray](hunt-hamal-veil-ray.json) | hunt | Veil-rays at Hamal Crystal Bloom; verdigris curd sold at Node Gamma | up to 1 ships | 1 | 23 | 3,000 | 7,710 | 2026-11-15 |
 | [hunt-home-whale](hunt-home-whale.json) | hunt | Pilot-whales at Stellar Siphon in Nexus Prime; whale oil sold at Node Beta | up to 1 ships, needs piercing_railgun_i, off | 1 | 20 | 570 | 1,670 | 2026-11-15 |

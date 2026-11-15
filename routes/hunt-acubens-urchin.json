@@ -17,7 +17,7 @@
   "date": "2026-11-15",
   "runs": 2,
   "minutes": 25,
-  "credits_per_run": 540,
-  "cph_per_ship": 1310
+  "credits_per_run": -120,
+  "cph_per_ship": -290
  }
 }
