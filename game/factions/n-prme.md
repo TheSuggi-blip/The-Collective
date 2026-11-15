@@ -15,7 +15,7 @@ updated: 2026-11-15
 # The Prime [PRME]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 1.
+Pilots of it in our space in the last 24 hours: 2.
 
 ## Identity
 
@@ -38,7 +38,8 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| MLM-17735 | Node Beta (`node_beta`) | 0 | not met |
+| MLM-17735 | Pherkad (`pherkad`) | 0 | not met |
+| MLM-34815 | The Experiment (`the_experiment`) | 0 | not met |
 
 ## Standing History
 

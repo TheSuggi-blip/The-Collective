@@ -39,9 +39,9 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
 | Arbogast | Synchrony (`synchrony`) | 0 | dust_devil |
-| Arbuckle | Node Alpha (`node_alpha`) | 0 | not met |
-| Cook | Node Alpha (`node_alpha`) | 0 | futures |
-| Speke | Node Gamma (`node_gamma`) | 0 | futures |
+| Arbuckle | Nexus Prime (`nexus_prime`) | 0 | dust_devil |
+| Cook | Synchrony (`synchrony`) | 0 | futures |
+| Speke | Node Beta (`node_beta`) | 0 | futures |
 
 ## Standing History
 

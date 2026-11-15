@@ -47,14 +47,14 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Agent007 | Node Beta (`node_beta`) | 0 | junk_convoy |
-| Bootstrap | Node Gamma (`node_gamma`) | 180 | frankenhauler |
+| Agent007 | Node Alpha (`node_alpha`) | 0 | junk_convoy |
+| Bones | Nexus Prime (`nexus_prime`) | 0 | not met |
+| Bootstrap | The Experiment (`the_experiment`) | 180 | frankenhauler |
 | CaptainJaneway | Acubens (`acubens`) | 0 | not met |
-| Django | Synchrony (`synchrony`) | 0 | junk_convoy |
-| HAL 9000 | Node Alpha (`node_alpha`) | 0 | not met |
-| JackSparrow | Nexus Prime (`nexus_prime`) | 141 | junk_convoy |
-| JoannaDark | Node Alpha (`node_alpha`) | 0 | not met |
-| Oddjob | Hamal (`hamal`) | 0 | not met |
+| CombatDummy4 | Pherkad (`pherkad`) | 0 | not met |
+| Django | Node Alpha (`node_alpha`) | 0 | junk_convoy |
+| JackSparrow | Node Gamma (`node_gamma`) | 141 | junk_convoy |
+| MasterChief | Node Gamma (`node_gamma`) | 149 | not met |
 
 ## Standing History
 

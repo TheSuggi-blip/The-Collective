@@ -49,17 +49,17 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | ILC Chute | Synchrony (`synchrony`) | 0 | junk_convoy |
 | ILC Constellation | Nexus Prime (`nexus_prime`) | 0 | concordia |
 | ILC Flange | Synchrony (`synchrony`) | 0 | junk_convoy |
-| ILC Fumarole | Node Beta (`node_beta`) | 0 | not met |
 | ILC Gantry | Synchrony (`synchrony`) | 0 | junk_convoy |
 | ILC Gasket | Synchrony (`synchrony`) | 0 | junk_convoy |
 | ILC Gateway | Nexus Prime (`nexus_prime`) | 0 | concordia |
 | ILC Gilt | Synchrony (`synchrony`) | 0 | syndicate |
-| ILC Ladle | Synchrony (`synchrony`) | 0 | junk_convoy |
+| ILC Ladle | Node Beta (`node_beta`) | 0 | junk_convoy |
 | ILC Nonstop | Nexus Prime (`nexus_prime`) | 0 | concordia |
-| ILC Ratchet | Synchrony (`synchrony`) | 0 | junk_convoy |
-| ILC Retort | Synchrony (`synchrony`) | 0 | junk_convoy |
+| ILC Ratchet | The Experiment (`the_experiment`) | 0 | junk_convoy |
+| ILC Retort | Node Beta (`node_beta`) | 0 | junk_convoy |
+| ILC Shaft | Pherkad (`pherkad`) | 0 | not met |
 | ILC Vagabond | Nexus Prime (`nexus_prime`) | 0 | concordia |
-| ILC Weir | Node Gamma (`node_gamma`) | 0 | prayer |
+| ILC Weir | Synchrony (`synchrony`) | 0 | prayer |
 
 ## Standing History
 
