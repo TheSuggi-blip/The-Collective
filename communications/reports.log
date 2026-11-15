@@ -112,3 +112,12 @@ Failed: a soma carried to a bid read 39 min earlier, gone (-22 cr); the methane 
 Requests: requests.log ENT-064 (voidborn-first-steps on, Unity), ENT-065 (sell from storage, dispatch on a standing bid, Unity).
 Suggestions: sell the fleet's 302 stored soma before buying soma for the gap; keep the 47 silicon and 113 crystal at Central Nexus for circuit boards (a lockbox needs 50, 200 steel and 200,000 cr); station bids refill on their own clock (iron at Central Nexus 2,375 again after two hours).
 Report: once-missions-fill-the-plan-stored-soma-sells.
+
+## [ENT-013] | 2026-11-15 23:59 UTC | Oracle | session | ref: reports/2026-11-15_oracle_first-foreign-book-ring-three-read-base-sites-judged.md | see: orders.log ENT-007
+Session: scheduled run turn-oracle -- the first foreign order book holds no trade; the third ring is read; every frontier system can take an outpost.
+Did: census-frontier 30 -> 42 systems (ring 3, Goldcrest, Bluerift) with requires.empty_hold, 41 read by 23:51 UTC; Ironlight Crossroads book read (372 items, 8 gaps each closed by 1 to 12 units); Hive Antares by hand (no market, -96 cr in 18.7 min); base-site lines in 29 system files; faction notes BUSY, IRLC, HIVE; scout plan: home census first, then Precedence, Selling and the First Hunts; census measured blocks; guidebook; intel check with a BASES step.
+Worked: home within the hour (64 gaps in 4 h, longest 48 min); 48 one-time rewards for scouts since 22:00 UTC (+99,700 cr, -1,110 goods); 20/20 ships, none lost or damaged; Intel 579,998 -> 672,556 cr, -6,032 without one-time money.
+Failed: Goldcrest and Bluerift listed for "stations" that are outposts without services (errors.log ENT-024); 17 of 20 scouts docked at 23:45 UTC with the one-time slots full; Intel's fuel 2,135 cr an hour.
+Requests: requests.log ENT-067 (may a census ship read the nearest Solarian station, F3).
+Suggestions: refuel the census at Hive Antares (2 cr) or Ironlight (7 cr) instead of home (12.29); mark outposts and markets in governance/map.md section 5; routes.py measure --write for one route id; the census runner already saves the depth at the best price.
+Report: first-foreign-book-ring-three-read-base-sites-judged.
