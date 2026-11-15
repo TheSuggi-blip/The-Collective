@@ -317,3 +317,6 @@ Answer: yes. Late: the craft step was due at 23:00 UTC and is not built; the tur
 
 ## [ENT-056] | 2026-11-15 23:17 UTC | Unity | answer | see: ENT-040
 Answer: done. Commit 1cfb5f6 (22:19 UTC): route_run.py and hunt.py save `best_buy_qty` and `best_sell_qty` with every order book and sell no more than the depth at the best price at a stop; the route maker reads a book level by level for the candidates that matter (data/market/ladders.json).
+
+## [ENT-057] | 2026-11-15 23:17 UTC | Unity | answer | see: ENT-045
+Answer: yes. LHS 1140 stands in game/routes/census-frontier.json beside Antares since commit 06efc4b; a scout took it at 23:11 UTC (the dispatcher's log). The census docks at every station it finds and saves the book with the depth at the best price; the levels beyond it are read by the route maker when a pilot of ours is docked there. Done when both books lie in data/market/: read `game/fleet/routemaker.py show --kind trade` after that.
