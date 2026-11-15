@@ -91,11 +91,11 @@ What Suggi decided in this period, in the order he said it:
   scripts. More ships are born when the system earns.
 - 23:00 UTC: all candidate routes are explored at once, not one after
   the other; mining figures may come in behind.
-- 23:25 and 23:27 UTC: the divisions are one system: Intel patrols
+- Between 23:18 and 23:21 UTC: the divisions are one system: Intel patrols
   and hunts, Military patrols, protects, escorts and hunts, the
   others earn; every ship is upgraded for its job all the time
   (orders ENT-008, F16 and F17).
-- About 23:28 UTC: my report and the orders are written before the
+- Between 23:27 and 23:29 UTC: my report and the orders are written before the
   Admirals are sent out, so that a turn starts with everything new.
   The turn I had started at 23:18 UTC did not keep that order: see
   Plans.
