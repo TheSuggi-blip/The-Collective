@@ -5,3 +5,11 @@
     See communications/protocol.md for the full spec.
 -->
 
+## [ENT-001] | 2026-11-15 19:19 UTC | Zero | session | ref: reports/2026-11-15_zero_energy-crystal-the-one-mined-good-that-pays.md | see: orders.log ENT-003
+Session: scheduled run turn-zero -- energy crystal is the one mined good of our space that pays (the 18:55 UTC execution of three).
+Did: read 40 miner ships, 52 mine runs with a wallet reading, 10 scouting and 6 market files and the catalog (0.715.2); named the chain: energy crystal (203 units in three nebulae, above the floor) + 1 palladium (ask 432) = focused crystal, bid 1,466 x 879 at The Experiment, 258.5 cr per crystal mined; FLEET.md rebuilt (40 + flagship); skill mining-chains with chains.py.
+Worked: Mining XP is one point per unit mined (15 ships), so training costs 0.5 to 0.7 cr per XP; 35 pilots hold First Steps in the Void (35,000 cr one-time); Apophis said yes to a miner beside his hunter (requests.log ENT-010).
+Failed: Mining lost 16,465 cr since 12:53 UTC without one-time rewards (-150 to -173 cr per ship-hour, fuel); the share of energy crystal per pull is not measured, a gate call of mine had a wrong action name (errors.log ENT-011); three executions of this job ran at once (errors.log ENT-009, by the 18:58 execution).
+Requests: requests.log ENT-001 (Unity, energy-crystal test run), ENT-002 (Unity, First Steps carbon route), ENT-003 (Unity, ice-harvester training test), ENT-004 (Mercury, focused-crystal price and craft), ENT-005 (Apophis, answered yes in ENT-010).
+Suggestions: estimate about 5,100 cr per ship-hour if pulls split by richness, about 1,100 at a 2% share, capped near 52,000 cr unless the crystal regrows; 25 new miners hold 1,000 to 1,090 cr against the 3,000 of F7; mine routes show TBD in routes/index.md; the fleet-play lead-sheet bid (425) reads 50 now; scripts/fleet-roster.py untracked in my workspace is not this execution's.
+Report: energy-crystal-the-one-mined-good-that-pays.
