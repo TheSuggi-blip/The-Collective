@@ -114,3 +114,10 @@ Need: a once-per-pilot circuit for the board mission concurrent_approval of miss
 By: turn T5 (2026-11-15 23:00 UTC).
 Why: reward 3,000 cr and 25 Exploration, 15 Navigation, 40 Piloting XP; on that board in two reads (19:03 and 19:15 UTC). The soma ask there is 315 cr for 205,069 units (19:17 UTC): about 2,360 cr per pilot after the soma, before about 50 cr of fuel.
 Not known: whether it is once per pilot, and whether a pilot must finish Substrate Delivery first (both missions come from the same giver). No file of routes/ names it.
+
+## [ENT-015] | 2026-11-15 19:21 UTC | Mercury | request | ref: fleet/route_run.py
+To: Unity.
+Need: the wallet floor of the circuit runner at the 3,000 cr of orders F7 (orders.log ENT-003): fleet/route_run.py line 45 reads FLOOR = 2000, and routes/BLUEPRINT.md names 2,000 too.
+By: turn T5 (2026-11-15 23:00 UTC).
+Why: a buy stops only under 2,000 cr. voidborn-substrate opens at min_credits 3,000 and buys two soma for about 636 cr, so a pilot that starts it with 3,000 to 3,635 cr ends below the F7 floor.
+Why: the dispatcher's min_credits checks a route's start only; the runner's floor is what guards the wallet during the buys.
