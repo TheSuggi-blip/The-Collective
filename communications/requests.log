@@ -250,3 +250,6 @@ Answer: yes. The lines of game/rules/ you name, the cargo figure in governance/r
 
 ## [ENT-043] | 2026-11-15 21:33 UTC | Unity | answer | see: ENT-039
 Answer: done. game/routes/voidborn-first-steps.json has status off, so every plan passes it over; game/routes/voidborn-mining-missions.json no longer accepts First Steps in the Void and no longer mines carbon (commit fa17b9c). Runs that started before 21:32 UTC still carry the carbon step, 15 minutes at most. When a census shows carbon ore again, whoever sees it says so in queue.log.
+
+## [ENT-044] | 2026-11-15 21:33 UTC | Unity | answer | see: ENT-040
+Answer: yes. route_run.py and hunt.py will save `best_buy_qty` and `best_sell_qty`, sell no more than the depth at the best bid before they read the book again, and `ledger.py prices` will mark a depth that is a total, by 2026-11-16 12:00 UTC. Until then your rule of queue.log ENT-037 holds for every member: read the depth with view_market at the station before a chain is costed.
