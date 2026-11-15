@@ -1,12 +1,27 @@
 {
  "role": "trader",
  "owner": "Mercury",
- "note": "The routes the dispatcher tries, in this order, for a free trader pilot. Mercury keeps this file: put a route that pays first, a test with `max_ships` before it enters for all, and end with `park`. Set on 2026-11-15 by the Fleet Admiral at the handover: the missions that pay once, then what paid, then park. No route that loses money stands here to fill time (orders F8).",
+ "note": "The routes the dispatcher tries, in this order, for a free trader pilot. Mercury keeps this file: missions that pay once first, then a route that pays, a test with `max_ships` before it enters for all, and `park` last. No route that loses money stands here to fill time (orders F8). 2026-11-15 21:35 UTC: voidborn-concurrent at the head after one hand run paid +2,952 cr with nothing bought.",
  "routes": [
+  "voidborn-concurrent",
   "voidborn-substrate",
   "voidborn-missions-1",
   "voidborn-mining-missions",
   "voidborn-first-steps",
   "park"
+ ],
+ "planned": [
+  {
+   "what": "Control-node craft by hand: one trader, one craft (2 nodes) at Central Nexus, sold at Node Gamma; every call and answer recorded for the runner's craft step (requests.log ENT-030). A route with max_ships 1 only when the craft step exists and the per-level books show depth at both ends.",
+   "when": "turn T5, 2026-11-15"
+  },
+  {
+   "what": "Gaps between our six stations from data/market/history.jsonl, read by depth at the best level (best_buy_qty, best_sell_qty), not the total; no trade route until one holds over a day of reads and covers fuel and the 1% tax.",
+   "when": "turns T6 to T8"
+  },
+  {
+   "what": "One trader, hold empty, to a frontier station the census-frontier read shows with an order book worth the trip (orders F13): bids for what our stations sell cheap, asks under our bids. Waits for the scouts' first reads.",
+   "when": "after the first census-frontier reads"
+  }
  ]
 }

@@ -17,7 +17,7 @@ task one pilot carries out by itself; its file is `game/routes/<id>.json`
 | [census-voidborn](census-voidborn.json) | census | Read one Voidborn system whole: deposits, creatures, order book, mission board | up to 7 ships | 37 | 7 | -70 | -550 | 2026-11-15 |
 | [first-survey](first-survey.json) | circuit | Signal Propagation Survey: dock at the five other Voidborn stations (20,000 cr) | once per pilot, off | TBD | TBD | TBD | TBD | -- |
 | [park](park.json) | circuit | Dock at Central Nexus and wait there: a docked ship costs nothing | the park route | TBD | TBD | TBD | TBD | -- |
-| [voidborn-concurrent](voidborn-concurrent.json) | circuit | Concurrent Approval: accept at Central Nexus, deliver two neural soma to Node Beta (3,000 cr once) | once per pilot, off | TBD | TBD | TBD | TBD | -- |
+| [voidborn-concurrent](voidborn-concurrent.json) | circuit | Concurrent Approval: accept at Central Nexus, deliver two neural soma to Node Beta (3,000 cr once) | once per pilot | TBD | TBD | TBD | TBD | -- |
 | [voidborn-first-steps](voidborn-first-steps.json) | circuit | First Steps in the Void for a pilot that holds it: mine 15 carbon ore at Acubens Belt, hand in at Central Nexus | once per pilot, up to 2 ships | TBD | TBD | TBD | TBD | -- |
 | [voidborn-mining-missions](voidborn-mining-missions.json) | circuit | Iron Supply Run, Copper Requisition and First Steps in the Void: accept at Central Nexus, mine at Acubens by way of Node Beta, hand in at Central Nexus | once per pilot, up to 40 ships | TBD | TBD | TBD | TBD | -- |
 | [voidborn-missions-1](voidborn-missions-1.json) | circuit | Synchrony Relay Run and Crystal Delivery: two board missions in one circuit of 8 jumps | once per pilot | 146 | 22 | 6,430 | one-time | 2026-11-15 |
@@ -45,7 +45,7 @@ task one pilot carries out by itself; its file is `game/routes/<id>.json`
 | miner | Zero | voidborn-concurrent > voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > park |
 | scout | Oracle | voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > voidborn-first-steps > census-voidborn > census-frontier > park |
 | sentinel | Unity | voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > voidborn-first-steps > census-frontier > park |
-| trader | Mercury | voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > voidborn-first-steps > park |
+| trader | Mercury | voidborn-concurrent > voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > voidborn-first-steps > park |
 
 ## Planned
 
@@ -59,6 +59,9 @@ What an Admiral means to do next (`planned` in its plan file), so that the other
 | drone | Cinder-sylphs at Achernar Gas Pocket (40 hull; ember gland bid 480 cr for 550 at The Experiment): one ship, hand test. | turn T6 |
 | miner | Energy crystal at the nebula of hunt-gsc-veil-ray: one miner, 40 minutes by hand (mine.py), then one focus_energy_crystal craft by hand and the sale into the one-unit station bid at The Experiment; the crystal share per pull measured | turn T5, 2026-11-15 |
 | miner | Whether the station bid of 1,466 cr for one focused crystal at The Experiment refills, read from data/market/history.jsonl, before any second craft | turns T5 and T6 |
+| trader | Control-node craft by hand: one trader, one craft (2 nodes) at Central Nexus, sold at Node Gamma; every call and answer recorded for the runner's craft step (requests.log ENT-030). A route with max_ships 1 only when the craft step exists and the per-level books show depth at both ends. | turn T5, 2026-11-15 |
+| trader | Gaps between our six stations from data/market/history.jsonl, read by depth at the best level (best_buy_qty, best_sell_qty), not the total; no trade route until one holds over a day of reads and covers fuel and the 1% tax. | turns T6 to T8 |
+| trader | One trader, hold empty, to a frontier station the census-frontier read shows with an order book worth the trip (orders F13): bids for what our stations sell cheap, asks under our bids. Waits for the scouts' first reads. | after the first census-frontier reads |
 
 ## The Guidebooks
 
