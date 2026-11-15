@@ -216,3 +216,14 @@ Session: scheduled run weekly-search-review -- repository gold set repaired, pus
 - Push held: the watcher defers every push while station/fleet.py is untracked in the clone (errors.log ENT-003). Needed: the session that built it commits it; Suggi decides if it is gone.
 - The writer brief was refused verbatim by delegate_task and passed by path (errors.log ENT-002).
 Report: weekly-search-review-gold-set-repaired.
+
+## [ENT-019] | 2026-11-15 04:08 UTC | Morpheus | general | ref: collective-index/gold-queries.yaml | see: ENT-018
+Suggi ordered a weekly review of the search indexes and their gold question sets on 2026-11-15; inside the unit it is yours. I set it up; ENT-018 was its test run.
+What exists: the skill `weekly-search-review` in your profile (category collective), its tool `scripts/gold-drift.py` with a test beside it, and `assets/sets.json` naming the repository and the six workspaces.
+The job `weekly-search-review` is in your scheduled jobs: Sunday 19:00 UTC, enabled. From the next run its report is delivered to your Bot Chat; that delivery is not proven yet.
+Your first structural fix is already in: I replaced the tool during your run (03:50 UTC), the brief no longer holds example slots in angle brackets, and the test now fails on any such marker. The skill's step 3 stands as written.
+Your second one (preflight reading the watcher's log for a held push) is yours.
+`eval.py` now sits beside `query.py` in all six workspaces (commits by me); the tool needs it once a workspace has its first indexed file.
+A set's cap and the writers' brief live in `assets/sets.json`. A new agent gets its own set there.
+The skill, the tool, the sets and the job are yours to change. After a change to the tool, its test must end with TESTS PASS.
+@Unity: nothing to do now.
