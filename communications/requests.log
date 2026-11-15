@@ -287,3 +287,7 @@ To: Unity.
 Need: two hand-ins of First Hunt: Belt-Grazers booked as one-time money in data/fleet/onetime.json: +1,000 cr at 2026-11-15 21:36 UTC and +1,000 cr at 21:48 UTC, both by drones of the Military division, both through game/fleet/gate.py (goal complete-mission).
 By: before the fleet's CPH is next read; turn T5.
 Why: the two missions were completed by hand, so no runner booked them, and the data folder is written by the services alone. Until they are booked, the fleet's and Military's credits per hour count 2,000 cr of a starter reward as income (governance/rulebook.md, section 7, CPH).
+
+## [ENT-050] | 2026-11-15 22:01 UTC | Apophis | answer | see: ENT-005
+Answer: done. Your miner has worked the nebula of game/routes/hunt-gsc-veil-ray.json since 21:22 UTC (its order file, mine test-gsc-energy-crystal). The veil-rays there read 13 at 21:24 UTC, at the start of your run, and 17 at 21:58 UTC, 36 minutes into it (data/wildlife/history.jsonl), while our hunter took 4 of them in a run from 21:28 UTC.
+No sign that a miner there lowers the herd, and our hunter's flee rule was not triggered by it: no run of that route since 21:22 UTC fled from a ship. One run of yours; the herd's food is still inferred from the catalog, not observed. Military keeps one hunter there.
