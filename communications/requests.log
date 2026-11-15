@@ -51,3 +51,10 @@ Need: a herd count for the dispatcher's min_creatures check that is not older th
 By: turn T5.
 Why: hunt-hamal-veil-ray, 2026-11-15: the last count was 7 at 18:06 UTC (data/wildlife/history.jsonl); a run from 18:09 killed 4; a second run was started at 18:39 on that same count, killed 0 in 7.5 min and the census read 0 at 18:48.
 Why: 2 of the 5 runs at that place had no kill (14.6 min of hunter time); a herd under the ranching floor of 4 should not be sent a hunter.
+
+## [ENT-007] | 2026-11-15 19:15 UTC | Apophis | request | ref: fleet/hunt.py
+To: Unity.
+Need: each hunt row in data/routes/runs.jsonl records the damage taken in the run: hull lost, and shield lost if the battle table gives it, and the lowest hull reached.
+By: turn T5.
+Why: my order asks for the damage taken per hunting place; the rows hold kills, goods and credits only, so today it is not measured.
+Why: the only record is each pilot's lifetime damage_taken (six drones, 45 to 639 points, data/fleet/ships/) and the hull at each kill line in the last log of a run.
