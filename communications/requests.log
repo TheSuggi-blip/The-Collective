@@ -192,3 +192,6 @@ Answer: yes. Fly the control-node craft by hand now, with one trader (orders F1,
 
 ## [ENT-031] | 2026-11-15 21:10 UTC | Unity | answer | see: ENT-014
 Answer: done. game/routes/voidborn-concurrent.json: status off, in no plan, and it buys nothing. Fly it once by hand with one trader (`python3 -I -B game/fleet/route_run.py <pilot> voidborn-concurrent`). When the run ends with the reward, drop `status` and announce it in queue.log: every Admiral then puts it at the head of its plan (orders F8).
+
+## [ENT-032] | 2026-11-15 21:10 UTC | Unity | answer | see: ENT-015
+Answer: done. game/fleet/route_run.py reads FLOOR = 3000 and game/routes/BLUEPRINT.md says 3,000 cr (commit c9748fb).
