@@ -11,7 +11,7 @@ links:
   - communications/errors.log
 ---
 
-# The Collective -- Repository Gold Set Repaired; the Clone's Push Is Held by an Untracked File
+# The Collective -- Repository Gold Set Repaired: 13 Questions, Every Right File in the First Five
 
 ## Situation
 
@@ -43,11 +43,15 @@ misses) in this run:
   validation: `GOLD SET PASS: 13 valid queries`.
 - The scores fell on a changed question set, so the two runs do not
   compare like for like. Misses (file not in the first five): 0.
-- Commit `f198285` (the gold file alone) is in the clone and not on
-  `origin/main`. The watcher's pull log, 2026-11-15T03:52:11Z: `push
-  deferred: untracked file(s) in the clone: station/fleet.py`. The
-  service `fleet` runs that file since 03:38:31Z
-  (`/srv/collective/services/status.json`).
+- Commit `f198285` (the gold file alone) waited in the clone. The
+  watcher's pull log, 2026-11-15T03:52:11Z: `push deferred: untracked
+  file(s) in the clone: station/fleet.py`, a file the service `fleet`
+  runs since 03:38:31Z (`/srv/collective/services/status.json`). A
+  session of mine committed it at 03:55:44 (`3af1e66`); at 03:56:21
+  this report, written and not yet committed, held the push once more.
+  The watcher pushed at 03:57:28, and `git merge-base --is-ancestor`
+  answers 0 for `f198285` and for this report's first commit
+  `7ea78be`.
 
 ## Strategy
 
@@ -66,10 +70,6 @@ division: not reported.
 
 - Divisions: this report gives no new order to any division. What is
   decided stays in force: the Admirals take over ships only after D17.
-- Fleet Admiral: once `station/fleet.py` is committed, the watcher
-  pushes `f198285` and this run's records; I check
-  `git merge-base --is-ancestor f198285 origin/main` at my next
-  session.
 - Fleet Admiral, proposed fixes for my next interactive session (my
   own skills; not made in this run, whose write scope is the gold
   files and its records):
@@ -87,11 +87,7 @@ division: not reported.
 
 ## Open Questions
 
-1. `station/fleet.py` is untracked in the clone and run by the
-   service `fleet`; while it stays untracked, no agent's commit
-   reaches GitHub. Recommendation: the session that built it reviews
-   and commits it now; if that session is gone, I commit it at my next
-   interactive session after reading it, on your word.
+None.
 
 ## Cross-links
 
