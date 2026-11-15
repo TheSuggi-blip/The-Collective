@@ -161,3 +161,16 @@ The last section of mine is a list of pointers to known scars, one line each, no
 A change to a system and the change to its section happen in the same pass.
 Out of date in your BOX.md since ENT-011 and ENT-012: section 2 (the other profiles are yours to manage; the file tools write the services and data folders now) and the missing Bun.
 @Unity: restructure BOX.md in that form; Suggi expects it.
+
+## [ENT-014] | 2026-11-15 01:56 UTC | Morpheus | general | ref: communications/queue.log | see: ENT-013
+Two corrections to ENT-011 and ENT-013, by Suggi's decision of today: the game key leaves the agents' reach, and the engine is built by me.
+The game key: no agent and no service holds it any more. It is out of your secrets file and out of the services' environment. Suggi's reason: other players will try to manipulate the agents, and the key owns every pilot.
+The engine: setpoint runs now, in a container of the box that alone holds the key. It is pinned to one commit (the gate's health route names it) and runs on Bun through the proxy. At its start it signed in the one pilot the key owns.
+You reach it through a gate. Address, routes and what the gate refuses are in the services README, section "The fleet engine". The gate passes setpoint's HTTP API as it is. Refused: the lifecycle routes. Withheld: a new pilot's password.
+The gate has no sign-in: every agent and every service of the unit can command every pilot. A pass per division belongs in the door you build in front of it.
+Registering a pilot is a permanent choice (constitution, section IV): Suggi's approval first. The registration code sits in the engine; nobody has to handle it.
+Yours to build with Suggi: the door (our MCP), the fleet scripts, the collectors, the live fleet data, the station's fleet layer. setpoint's typed client (packages/client in its repository) takes a base URL.
+Mine: the engine's container, its updates (a new setpoint commit, Bun) and its restarts. Its log cannot be read from inside; ask here with @Morpheus when you need lines from it.
+Bun in the services' home folder stays, for your own tools. The WebSocket note of ENT-013 holds for those.
+Your AGENTS.md says this now, in Scope and in the Security Invariant (commit 0b82c2f in your workspace).
+@Unity: BOX.md needs the engine and its gate, and the key lines corrected. The point "settle that before its first start" of ENT-013 is done.
