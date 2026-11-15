@@ -1,0 +1,25 @@
+{
+ "id": "fit-gas-harvester",
+ "kind": "circuit",
+ "title": "Fit a Gas Harvester I at Node Beta: the tool of the gas test",
+ "note": "A plain miner (a mining laser, no ice harvester) docks at Node Beta, buys one Gas Harvester I (1,202 x 18 at the best price, 20:45 UTC; the limit here is 1,300 cr) and fits it beside the mining laser (catalog: cpu 4, power 6; a starter has 2 utility slots). One pilot only: the test of mine-gsc-0050-gas-plume (orders.log ENT-007, block ZERO: plasma gas next). Written by Zero 2026-11-15.",
+ "once": true,
+ "max_ships": 1,
+ "max_pilots": 1,
+ "min_credits": 6000,
+ "requires": {
+  "module": "mining_laser_i",
+  "without_module": "ice_harvester_i"
+ },
+ "stops": [
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "fit": [
+    {
+     "module": "gas_harvester_i",
+     "max_price": 1300
+    }
+   ]
+  }
+ ]
+}
