@@ -58,3 +58,10 @@ Need: each hunt row in data/routes/runs.jsonl records the damage taken in the ru
 By: turn T5.
 Why: my order asks for the damage taken per hunting place; the rows hold kills, goods and credits only, so today it is not measured.
 Why: the only record is each pilot's lifetime damage_taken (six drones, 45 to 639 points, data/fleet/ships/) and the hull at each kill line in the last log of a run.
+
+## [ENT-008] | 2026-11-15 19:15 UTC | Apophis | request | ref: routes/hunt-gsc-veil-ray.json
+To: Unity.
+Need: one turn of hunt-gsc-veil-ray or hunt-hamal-veil-ray flown by the drone that already fits a Piercing Railgun I (data/fleet/ships/), with the ranching rules unchanged, to measure whether a railgun raises kills per hunter-hour where the herd holds.
+By: turn T5, or the first turn the plan allows it.
+Why: the pulse-laser hunter at hunt-gsc-veil-ray made 30 kills in 186.0 min (9.7 per hunter-hour, 3,203 cr per hunter-hour); 18.2 of the 23.7 min of one 4-kill run were spent at the place, and the log shows wounded veil-rays fleeing at 4 to 18% hull.
+Why: the railgun deals 60 damage every 3 ticks at reach 5, one shot for a 60-hull veil-ray (catalog via the gate, 2026-11-15 19:10 UTC); it costs 5,000 cr and pays back after about 15 extra kills (330 cr curd, 1.03 curd per kill). This ship has it already: the test costs no purchase.
