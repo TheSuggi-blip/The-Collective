@@ -2,7 +2,7 @@
  "id": "census-frontier",
  "kind": "census",
  "title": "Read one lawless system around our space whole: deposits, creatures, stations, order books, mission boards",
- "note": "Kept by Oracle (orders F13). Since 2026-11-15 21:50 UTC, on Suggi's word, every division and the whole command group fly it: it stands in every plan before `park`. The list: the 27 systems within two jumps of our border, nearest first, then Atlas and Intercrus, and LHS 1140 beside Antares for its station (Trade, requests.log ENT-045); widen it ring by ring. Lawless space: no police. A system where a ship of ours was lost leaves the list until Military has looked at it. No goods of value in the hold on the way out.",
+ "note": "Kept by Oracle (orders F13). Since 2026-11-15 21:50 UTC, on Suggi's word, every division and the whole command group fly it: it stands in every plan before `park`. The list: the 27 systems within two jumps of our border, nearest first, then Atlas and Intercrus, LHS 1140 beside Antares for its station (Trade, requests.log ENT-045); since 2026-11-15 23:40 UTC the third ring from our border (the 10 lawless systems of it not yet listed, from game/map/galaxy.tsv) and Goldcrest and Bluerift of the fourth for the stations of the Ironlight Combine (governance/map.md, section 5). GSC-0016 lies one lane from the pirate stronghold Gliese 581 (governance/map.md, section 4). Every system on the list is lawless (police 0) and none is a stronghold. A system where a ship of ours was lost leaves the list until Military has looked at it. No goods of value in the hold on the way out: `requires.empty_hold` since 2026-11-15 23:40 UTC (orders F13).",
  "systems": [
   "achernar",
   "ruchbah",
@@ -33,8 +33,23 @@
   "miram",
   "stormwatch",
   "atlas",
-  "intercrus"
+  "intercrus",
+  "gsc_0033",
+  "homam",
+  "denebola",
+  "gsc_0049",
+  "nightveil",
+  "gsc_0021",
+  "gsc_0044",
+  "hd_40307",
+  "tanglewood",
+  "gsc_0016",
+  "goldcrest",
+  "bluerift"
  ],
  "every_minutes": 240,
- "max_ships": 12
+ "max_ships": 12,
+ "requires": {
+  "empty_hold": true
+ }
 }
