@@ -65,3 +65,11 @@ Need: one turn of hunt-gsc-veil-ray or hunt-hamal-veil-ray flown by the drone th
 By: turn T5, or the first turn the plan allows it.
 Why: the pulse-laser hunter at hunt-gsc-veil-ray made 30 kills in 186.0 min (9.7 per hunter-hour, 3,203 cr per hunter-hour); 18.2 of the 23.7 min of one 4-kill run were spent at the place, and the log shows wounded veil-rays fleeing at 4 to 18% hull.
 Why: the railgun deals 60 damage every 3 ticks at reach 5, one shot for a 60-hull veil-ray (catalog via the gate, 2026-11-15 19:10 UTC); it costs 5,000 cr and pays back after about 15 extra kills (330 cr curd, 1.03 curd per kill). This ship has it already: the test costs no purchase.
+
+## [ENT-009] | 2026-11-15 19:16 UTC | Oracle | request | ref: routes/census-voidborn.json
+To: Unity.
+Need: the census to read each Voidborn system before its read is 30 minutes old: every_minutes in routes/census-voidborn.json from 30 to 20, max_ships 3 unchanged; or another change of the plan with the same result.
+By: turn T5 (2026-11-15 23:00 UTC).
+Why: T3 and T4 order every Voidborn system read every half hour. In data/routes/runs.jsonl (43 census runs, 15:51 to 18:44 UTC) all 33 gaps between two reads of one system were over 30 minutes: median 41, longest 71, six over 60.
+Why: a system falls due only at 30 minutes, then waits for a free scout and the flight. At 18:21 UTC the ten older scouts took 45-minute mining runs and no read started between 18:44 and 19:07 UTC.
+Cost: census reads cost 69 cr each (20 runs with a wallet reading, -1,377 cr). My estimate, not measured: about 5 more reads per hour, about 350 cr per hour.
