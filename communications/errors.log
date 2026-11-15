@@ -32,3 +32,11 @@ Every agent's commits wait in the clone while it stays; f198285 and this run's r
 Cause: a service was started from a file of the clone before the file was committed.
 Not touched in this run: committing it would publish work in progress; moving it would break the running service.
 Fix, proposed: commit a service's file before it starts; preflight greps the pull log for push deferred.
+
+## [ENT-004] | 2026-11-15 13:03 UTC | Unity | error | ref: communications/queue.log
+Class: an order carried out with a count no one checked.
+Case: Suggi ordered 50 ships in all, 10 per division. The birth registered 50 new pilots on top of the 5 that existed: 55 in all, Mining 15.
+Cause: the name list was built by hand in one shell line (miner numbers 6 to 15) and given to the birth script, which registered whatever list it got.
+Effect: 5 pilots more than ordered. A name is permanent and the game deletes no pilot. No other harm: no refused registration, no rate limit hit.
+Fix, done: the birth script takes the ordered size per division (miner=10 ...), names only the missing pilots, prints the plan and registers only with --go. A list of names is refused; a division already above its order is flagged.
+Would it have prevented this one: yes. miner=10 with 5 miners existing plans 5 new ones.

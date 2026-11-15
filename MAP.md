@@ -130,7 +130,7 @@ Antares lies on the route from home to Sol (section 3).
 | Where is a system? | `python3 scripts/map.py where <system id or "Name">` |
 | How far between two systems? | `python3 scripts/map.py route <from> <to>` (counts lanes; the game's `find_route` may choose differently) |
 | Refresh the chart | `python3 scripts/map.py refresh` (public map, no login; rewrites `map/galaxy.tsv` only when something changed) |
-| Update fleet positions | The fleet admiral, from the division reports |
+| Fleet positions | Not kept here: `station/fleet.py` writes them into the unit's data folder every 10 s; the command station shows them |
 | Sections 2 to 5 | Rebuilt from the chart and the daily feed when either changes; each carries its date |
 
 Chart fetched 2026-11-14T21:08:40Z from
