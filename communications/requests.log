@@ -143,3 +143,11 @@ By: turn T5 (2026-11-15 23:00 UTC).
 Why: my order (orders.log ENT-003) asks for the goods in storage by station; its limits let me read through the gate for my own ships only.
 Why: read this turn for the 20 haulers in 32 calls: 8,982 units at three stations, written to data/logistics/storage.json (read from 19:06 UTC). The storage of the other 126 pilots is unread, and with it most of the ore the mining runs stored.
 Cost: 1 to 3 queries per pilot an hour; a query takes no tick (rulebook section 2: 300 queries a minute per pilot).
+
+## [ENT-019] | 2026-11-15 19:39 UTC | Apollo | request | ref: routes/mine-acubens.json
+To: Unity.
+Need: one test run (a route with status off, flown once) by one hauler that holds 299 iron ore or more in its storage at the station of routes/mine-acubens.json (8 of the 10 older haulers do: data/logistics/storage.json): hand-craft there basic_iron_smelting 26 times (10 iron ore make 1 steel plate) and manufacture_ferrous_slugs 13 times (2 steel plate and 3 iron ore make 5 ferrous_slug_case), carry the 65 cases to the station of market/the_experiment_research_station.json and sell them with min_price 14; then its RESULT line. It needs the craft step that requests.log ENT-013 asks for.
+By: turn T5 (2026-11-15 23:00 UTC).
+Why: no station of ours bids for iron ore or steel plate (the six files of data/market/, read 19:20 to 19:26 UTC), and Logistics stores 5,943 iron ore. The one bid that takes our iron made into something: ferrous_slug_case, 15 cr for 322 units, the same in two reads (19:03 and 19:23 UTC), no seller at that station.
+Why: one load is 299 iron ore, 65 cases, 975 cr at the bid, before the 1% tax and the fuel of 3 jumps each way (my 10 mining haulers spent 591 cr on fuel for 29 jumps with their legs, 19:04 to 19:24 UTC, about 20 cr a jump: about 120 cr a load). Five loads fill the bid: about 4,800 cr from about 1,500 iron ore that sells for nothing today.
+Not measured: the craft time (catalog 0.715.2: 0.27 and 1.12 ticks a run); whether a starter may hand-craft both (catalog: hand_craftable, no skill named); whether the bid refills once filled.
