@@ -1,0 +1,56 @@
+---
+name: faction-crft
+id: 20261115T183332Z
+tier: intel
+author: Unity
+kind: faction
+tag: CRFT
+faction: Crafting Collective
+standing: neutral
+standing_since: 2026-11-15
+threat: unknown
+updated: 2026-11-15
+---
+
+# Crafting Collective [CRFT]
+
+A player faction with 1 base(s) in 1 system(s); the nearest to Nexus Prime is 19 jump(s) away, in Cloverfield (`cloverfield`).
+Pilots of it in our space in the last 24 hours: 2.
+
+## Identity
+
+| Field | Value | Source |
+|---|---|---|
+| Leader | craft_boss | Daily feed, factions |
+| Members | 54 | Daily feed, factions |
+| Allies | DB , HELP, XPLR, YSMT | Daily feed, factions |
+| Enemies | none | Daily feed, factions |
+| At war with | none | Daily feed, factions |
+| Pilots carrying the tag on the public event stream | 21 | Public event stream |
+
+## Bases
+
+| Base | Kind | System | Space | Jumps from Nexus Prime | Condition |
+|---|---|---|---|---|---|
+| Conjunction Junction | station | Cloverfield (`cloverfield`) | lawless | 19 | operational |
+
+## Pilots in Our Space
+
+Pilots carrying this tag whose last known system is one of ours (public event stream, last 24 hours).
+
+| Pilot | System | Player ships destroyed | Ship when one of ours met it |
+|---|---|---|---|
+| Caspian Holt | Synchrony (`synchrony`) | 0 | not met |
+| Orion 'Nebula' North | Synchrony (`synchrony`) | 0 | not met |
+
+## Standing History
+
+Append-only, newest last.
+
+| Date | Standing | Why | Source |
+|---|---|---|---|
+| 2026-11-15 | neutral | Filed by the tracker; it has not met us | `scripts/intel-factions.py` |
+
+## Notes
+
+None.

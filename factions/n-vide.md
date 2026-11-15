@@ -1,0 +1,56 @@
+---
+name: faction-vide
+id: 20261115T183310Z
+tier: intel
+author: Unity
+kind: faction
+tag: VIDE
+faction: Culte du Vide
+standing: neutral
+standing_since: 2026-11-15
+threat: unknown
+updated: 2026-11-15
+---
+
+# Culte du Vide [VIDE]
+
+A player faction without a base on the public record.
+Pilots of it in our space in the last 24 hours: 4.
+
+## Identity
+
+| Field | Value | Source |
+|---|---|---|
+| Leader | Slyreus | Daily feed, factions |
+| Members | 20 | Daily feed, factions |
+| Allies | none | Daily feed, factions |
+| Enemies | none | Daily feed, factions |
+| At war with | none | Daily feed, factions |
+| Pilots carrying the tag on the public event stream | 17 | Public event stream |
+
+## Bases
+
+None on the public record.
+
+## Pilots in Our Space
+
+Pilots carrying this tag whose last known system is one of ours (public event stream, last 24 hours).
+
+| Pilot | System | Player ships destroyed | Ship when one of ours met it |
+|---|---|---|---|
+| Ellara | Nexus Prime (`nexus_prime`) | 0 | not met |
+| Hesser | Node Alpha (`node_alpha`) | 0 | not met |
+| Nythera | Nexus Prime (`nexus_prime`) | 0 | not met |
+| Serelys | Synchrony (`synchrony`) | 0 | not met |
+
+## Standing History
+
+Append-only, newest last.
+
+| Date | Standing | Why | Source |
+|---|---|---|---|
+| 2026-11-15 | neutral | Filed by the tracker; it has not met us | `scripts/intel-factions.py` |
+
+## Notes
+
+None.
