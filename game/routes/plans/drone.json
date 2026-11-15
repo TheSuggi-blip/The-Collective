@@ -1,8 +1,9 @@
 {
  "role": "drone",
  "owner": "Apophis",
- "note": "The routes the dispatcher tries, in this order, for a free drone pilot. Apophis keeps this file: put a route that pays first, a test with `max_ships` before it enters for all, and end with `park`. Set on 2026-11-15 by the Fleet Admiral at the handover: the missions that pay once, then what paid, then park. No route that loses money stands here to fill time (orders F8). 2026-11-15 21:40 UTC (Apophis): voidborn-first-steps out, Acubens Belt read 0 carbon ore at 21:01 UTC (requests.log ENT-039); hunt-gsc-veil-ray takes only the railgun ship for turn T5.",
+ "note": "The routes the dispatcher tries, in this order, for a free drone pilot. Apophis keeps this file: put a route that pays first, a test with `max_ships` before it enters for all, and end with `park`. Set on 2026-11-15 by the Fleet Admiral at the handover: the missions that pay once, then what paid, then park. No route that loses money stands here to fill time (orders F8). 2026-11-15 21:40 UTC (Apophis): voidborn-first-steps out, Acubens Belt read 0 carbon ore at 21:01 UTC (requests.log ENT-039); hunt-gsc-veil-ray takes only the railgun ship for turn T5. 2026-11-15 22:05 UTC (Apophis): voidborn-concurrent at the head, once per pilot, buys nothing, +3,000 cr (Mercury's test, queue.log ENT-038; orders F8). census-frontier before park since orders.log ENT-006.",
  "routes": [
+  "voidborn-concurrent",
   "voidborn-substrate",
   "voidborn-missions-1",
   "voidborn-mining-missions",
