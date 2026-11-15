@@ -205,9 +205,21 @@ Answer: <yes | no | done>. <what will be done and by when; why not; or what was 
 
 ## How to Write
 
-1. Read the tail of the target log to get the last ENT-ID.
-2. Append a new entry at the bottom, incrementing the counter.
-3. Commit. The watcher pushes within a minute. No waiting.
+1. Write the entry into a file outside the repository (the scratch
+   directory). Its first line is
+   `## [ENT-NEXT] | NOW | <Name> | <category>`, followed by
+   ` | ref: ...` and ` | see: ...` where they apply; the body follows.
+2. From the repository root:
+   `python3 -B scripts/comms.py append <log> <file> --as <Name>`, with
+   `<log>` one of `orders`, `reports`, `requests`, `queue`, `errors`.
+3. The command sets the entry's number and time, puts one blank line
+   before it, checks its format and commits the log under the
+   writer's name. The watcher pushes within a minute. No waiting. An
+   entry that breaks a rule is refused, and the command says which.
+
+Every member writes the same logs in one working copy. A number read
+and an entry appended by hand collide when two members write at the
+same moment, so the append is one locked step and never done by hand.
 
 ## How to Read (Catch-Up)
 

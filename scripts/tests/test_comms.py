@@ -4,6 +4,8 @@ import contextlib
 import importlib.util
 import io
 from pathlib import Path
+import shutil
+import subprocess
 import tempfile
 import unittest
 
@@ -77,7 +79,7 @@ class Tree(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(prefix="comms-test-")
         self.addCleanup(self.temp.cleanup)
-        self.root = Path(self.temp.name)
+        self.root = Path(self.temp.name) / "repo"                                           # drafts lie beside it, never in it
         (self.root / "communications" / "archive").mkdir(parents=True)
         self.write("orders", ORDERS)
         self.write("reports", REPORTS)
@@ -185,6 +187,86 @@ class GateTests(Tree):
     def test_a_missing_log_is_an_error(self):
         (self.root / "communications" / "requests.log").unlink()
         self.assertEqual(comms.check(str(self.root)), ["requests.log: missing"])
+
+
+class AppendTests(Tree):
+    def draft(self, text):
+        path = Path(self.temp.name) / "draft.txt"
+        path.write_text(text, encoding="ascii")
+        return str(path)
+
+    def log(self, name):
+        return (self.root / "communications" / (name + ".log")).read_text(encoding="ascii")
+
+    def test_the_script_sets_number_and_time_and_one_blank_line(self):
+        self.write("requests", COMMENT)
+        draft = self.draft("## [ENT-NEXT] | NOW | Zero | request | ref: routes/mine-a.json\nTo: Apophis.\nNeed: one guard.\n\n\n")
+        code, text = self.run_command(comms.append, "requests", draft, "Zero")
+        self.assertEqual((code, text.strip()), (0, "appended ENT-001 to communications/requests.log (not committed)"))
+        code, _text = self.run_command(comms.append, "requests", self.draft("## [ENT-NEXT] | NOW | Apophis | answer | see: ENT-001\nAnswer: yes. From the next turn.\n"), "Apophis")
+        self.assertEqual(code, 0)
+        body = self.log("requests")[len(COMMENT):]
+        self.assertRegex(body, r"\A## \[ENT-001\] \| \d{4}-\d\d-\d\d \d\d:\d\d UTC \| Zero \| request \| ref: routes/mine-a.json\nTo: Apophis.\nNeed: one guard.\n\n"
+                               r"## \[ENT-002\] \| \d{4}-\d\d-\d\d \d\d:\d\d UTC \| Apophis \| answer \| see: ENT-001\nAnswer: yes. From the next turn.\n\Z")
+        self.assertEqual(comms.check(str(self.root)), [])
+
+    def test_a_refused_entry_leaves_the_log_byte_for_byte(self):
+        before = {name: self.log(name) for name in ("orders", "reports", "requests")}
+        order = "## [ENT-NEXT] | NOW | %s | order\nChanged: x.\nIn force from now until a newer entry.\nFLEET\nF1. y.\n"
+        cases = [("orders", order % "Zero", "Zero", "orders.log is written by the Fleet Admiral only"),
+                 ("orders", order % "Unity", "Zero", "the entry names Unity as its writer, the append is made as Zero"),
+                 ("reports", "## [ENT-NEXT] | NOW | Zero | request\nTo: Unity.\nNeed: x.\n", "Zero", "category `request` does not belong in reports.log (it takes: session)"),
+                 ("requests", "## [ENT-008] | 2026-01-01 16:00 UTC | Zero | request\nTo: Unity.\nNeed: x.\n", "Zero", "the first line must be `## [ENT-NEXT] | NOW |"),
+                 ("requests", "## [ENT-NEXT] | NOW | Zero | request\nTo: Unity.\nNeed: x.\n\n## [ENT-NEXT] | NOW | Zero | request\nTo: all.\nNeed: y.\n", "Zero", "one entry per call"),
+                 ("requests", "## [ENT-NEXT] | NOW | Zero | request\n\n", "Zero", "the entry has no body"),
+                 ("requests", "## [ENT-NEXT] | NOW | Zero | request\nNeed: x.\n", "Zero", "requests.log the entry: a request needs a `To:` line"),
+                 ("requests", "## [ENT-NEXT] | NOW | Zero | answer | see: ENT-099\nAnswer: yes.\n", "Zero", "an answer names a request of this log"),
+                 ("reports", "## [ENT-NEXT] | NOW | Zero | session\nSession: x.\nDid: y.\nReport: z.\n", "Zero", "reports.log the entry: no `Worked:` line")]
+        for log, text, writer, message in cases:
+            code, printed = self.run_command(comms.append, log, self.draft(text), writer)
+            self.assertEqual(code, 1, message)
+            self.assertIn("NOT APPENDED: ", printed)
+            self.assertIn(message, printed)
+            self.assertEqual({name: self.log(name) for name in before}, before, message)
+
+    def test_an_entry_file_inside_the_repository_is_refused(self):
+        inside = self.root / "draft.txt"
+        inside.write_text("## [ENT-NEXT] | NOW | Zero | request\nTo: Unity.\nNeed: x.\n", encoding="ascii")
+        before = self.log("requests")
+        code, printed = self.run_command(comms.append, "requests", str(inside), "Zero")
+        self.assertEqual(code, 1)
+        self.assertIn("keep the entry file outside the repository", printed)
+        self.assertEqual(self.log("requests"), before)
+
+    def test_an_old_fault_in_a_log_does_not_block_a_good_entry(self):
+        self.write("requests", REQUESTS.replace("To: Unity.\n", ""))                          # ENT-003 was written without its To: line
+        code, _text = self.run_command(comms.append, "requests", self.draft("## [ENT-NEXT] | NOW | Zero | request\nTo: Unity.\nNeed: x.\n"), "Zero")
+        self.assertEqual(code, 0)
+        self.assertIn("## [ENT-008] | ", self.log("requests"))
+
+    def test_the_counter_goes_on_after_an_archive_run_and_queue_takes_general(self):
+        (self.root / "communications" / "archive" / "queue-2026-01-01.log").write_text(
+            COMMENT + "## [ENT-041] | 2026-01-01 08:00 UTC | Unity | general\nOld.\n", encoding="ascii")
+        self.write("queue", COMMENT)
+        code, text = self.run_command(comms.append, "queue", self.draft("## [ENT-NEXT] | NOW | Zero | general | ref: routes/index.md\nA notice.\n"), "Zero")
+        self.assertEqual((code, text.strip()), (0, "appended ENT-042 to communications/queue.log (not committed)"))
+
+    @unittest.skipUnless(shutil.which("git"), "git is not installed")
+    def test_the_entry_is_committed_by_path_under_the_writers_name(self):
+        def git(*args):
+            return subprocess.run(["git", "-C", str(self.root)] + list(args), capture_output=True, text=True, check=True).stdout.strip()
+        git("init", "-q")
+        git("-c", "user.name=Seed", "-c", "user.email=seed@example.invalid", "add", "communications")
+        git("-c", "user.name=Seed", "-c", "user.email=seed@example.invalid", "commit", "-q", "-m", "seed")
+        (self.root / "communications" / "errors.log").write_text(COMMENT + "another member's work in progress\n", encoding="ascii")
+        git("add", "communications/errors.log")                                              # staged by someone else: not ours to commit
+        draft = self.draft("## [ENT-NEXT] | NOW | Zero | request\nTo: Unity.\nNeed: x.\n")
+        code, text = self.run_command(comms.append, "requests", draft, "Zero")
+        self.assertEqual(code, 0, text)
+        self.assertRegex(text.strip(), r"^appended ENT-008 to communications/requests.log, committed [0-9a-f]{7,} as Zero$")
+        self.assertEqual(git("log", "-1", "--format=%an <%ae> | %s"), "Zero <zero@suggi-workspace.dev> | requests.log: ENT-008 (request, Zero)")
+        self.assertEqual(git("show", "--name-only", "--format=", "HEAD"), "communications/requests.log")
+        self.assertEqual(git("status", "--short"), "A  communications/errors.log")            # still staged, still theirs
 
 
 if __name__ == "__main__":

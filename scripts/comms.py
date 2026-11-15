@@ -12,6 +12,19 @@ WHAT: communications/ holds the append-only logs of The Collective
                    the requests not closed: the record a summary of the
                    divisions is written from
         check      the gate of the three logs' rules
+      and it is the one way an entry is written to any log:
+        append     appends one prepared entry under a lock: it sets the entry's
+                   number and time, puts exactly one blank line before it, runs
+                   the gate and commits the log by path under the writer's name
+RULES (append):
+  - the entry file starts `## [ENT-NEXT] | NOW | <Name> | <category>`, with
+    ` | ref: ...` and ` | see: ...` after it where they apply; the body follows;
+  - <Name> is the writer given with --as; orders.log takes entries of Unity only;
+  - the category belongs to the log: order (orders), session (reports), request
+    or answer (requests), general (queue), error (errors);
+  - the entry file lies outside the repository: an untracked file in the
+    working copy holds every member's push;
+  - an entry that breaks the gate is taken out again and nothing is committed.
 RULES (check):
   - a header has the protocol's form, and the ENT numbers of a log rise by one;
   - orders.log: written by Unity only, category `order`, with a `Changed:` line
@@ -24,26 +37,35 @@ RULES (check):
 WHY:  an order that has to be searched for is guessed, and a request without a
       state is lost. The newest order and the open requests are one command
       away for every member, and the board of requests is computed from the
-      log instead of kept by hand.
+      log instead of kept by hand. Six members write the same logs in one
+      working copy: a number read and an entry appended by hand collide, so
+      the append is one locked step.
 
 USAGE:
   comms.py orders
   comms.py requests [--to NAME] [--from NAME] [--all]
   comms.py digest [--last N] [--member NAME]
   comms.py check
+  comms.py append <orders|reports|requests|queue|errors> <entry file> --as <Name>
   --root <dir>   repository root (default: the parent of this file's folder)
 
 Stdlib only. ASCII only.
 """
 
 import argparse
+import fcntl
 import re
+import subprocess
 import sys
+import time
 from pathlib import Path
 
 HEADER = re.compile(r"^## \[ENT-(\d{3,})\] \| (\d{4}-\d{2}-\d{2} \d{2}:\d{2}) UTC \| ([A-Za-z][A-Za-z0-9_-]*) \| ([a-z]+)((?: \| (?:ref|see): [^|]+)*)$")
 SESSION_LINES = ("Session", "Did", "Worked", "Failed", "Requests", "Suggestions", "Report")
 ANSWER_WORDS = ("yes", "no", "done")
+LOGS = {"orders": ("order",), "reports": ("session",), "requests": ("request", "answer"), "queue": ("general",), "errors": ("error",)}
+GATED = ("orders", "reports", "requests")
+DRAFT = re.compile(r"^## \[ENT-NEXT\] \| NOW \| ([A-Za-z][A-Za-z0-9_-]*) \| ([a-z]+)((?: \| (?:ref|see): [^|]+)*)$")
 
 
 def parse(text):
@@ -225,17 +247,109 @@ def check(root):
     return errors
 
 
+def git_commit(root, rel, name, message):
+    """Commit one path under the writer's name; the short hash, or None when git refused six times."""
+    identity = ["-c", "user.name=" + name, "-c", "user.email=%s@suggi-workspace.dev" % name.lower()]
+    for _attempt in range(6):                                  # another member's commit may hold the index for a moment
+        done = subprocess.run(["git", "-C", str(root), "add", "--", rel], capture_output=True, text=True)
+        if done.returncode == 0:
+            done = subprocess.run(["git", "-C", str(root)] + identity + ["commit", "-q", "-m", message, "--", rel], capture_output=True, text=True)
+        if done.returncode == 0:
+            return subprocess.run(["git", "-C", str(root), "rev-parse", "--short", "HEAD"], capture_output=True, text=True).stdout.strip()
+        time.sleep(2)
+    return None
+
+
+def append(root, log, entry_file, name, commit=True):
+    """Append one prepared entry to a log as one locked step. 0 done, 1 refused, 2 appended but not committed."""
+    root = Path(root)
+    path = root / "communications" / (log + ".log")
+    try:
+        lines = Path(entry_file).read_text(encoding="ascii").strip("\n").split("\n")
+    except (OSError, UnicodeDecodeError) as error:
+        print("NOT APPENDED: the entry file is not readable as ASCII: %s" % error)
+        return 1
+    problems = []
+    draft = DRAFT.match(lines[0].rstrip())
+    if draft is None:
+        problems.append("the first line must be `## [ENT-NEXT] | NOW | <Name> | <category>`, then ` | ref: ...` and ` | see: ...` where they apply")
+    else:
+        if draft.group(1) != name:
+            problems.append("the entry names %s as its writer, the append is made as %s" % (draft.group(1), name))
+        if draft.group(2) not in LOGS[log]:
+            problems.append("category `%s` does not belong in %s.log (it takes: %s)" % (draft.group(2), log, ", ".join(LOGS[log])))
+    if log == "orders" and name != "Unity":
+        problems.append("orders.log is written by the Fleet Admiral only")
+    if any(line.startswith("## [ENT-") for line in lines[1:]):
+        problems.append("one entry per call")
+    if not any(line.strip() for line in lines[1:]):
+        problems.append("the entry has no body")
+    if not path.is_file():
+        problems.append("communications/%s.log does not exist" % log)
+    if Path(entry_file).resolve().is_relative_to(root.resolve()):
+        problems.append("keep the entry file outside the repository (your scratch directory): an untracked file there holds every push")
+    if problems:
+        for line in problems:
+            print("NOT APPENDED: " + line)
+        return 1
+    lock = open(root / ".git" / "comms.lock", "w") if (root / ".git").is_dir() else None
+    try:
+        if lock is not None:
+            fcntl.flock(lock, fcntl.LOCK_EX)                   # one writer at a time, from the number to the commit
+        before = path.read_text(encoding="ascii", errors="replace")
+        entries, _errors = parse(before)
+        if not entries:
+            entries, _errors = read_log(root, log, archive=True)   # the counter goes on after an archive run
+        number = entries[-1]["num"] + 1 if entries else 1
+        head = lines[0].rstrip().replace("[ENT-NEXT] | NOW", "[ENT-%03d] | %s" % (number, time.strftime("%Y-%m-%d %H:%M UTC", time.gmtime())), 1)
+        text = "\n".join([head] + [line.rstrip() for line in lines[1:]]) + "\n"
+        gap = "" if before.endswith("\n\n") or not before else ("\n" if before.endswith("\n") else "\n\n")
+        known = set(check(root)) if log in GATED else set()
+        size = path.stat().st_size
+        with open(path, "a", encoding="ascii", newline="\n") as handle:
+            handle.write(gap + text)
+        fresh = [line for line in check(root) if line not in known] if log in GATED else []
+        if fresh:
+            with open(path, "r+b") as handle:
+                handle.truncate(size)                          # take the entry out again
+            for line in fresh:
+                print("NOT APPENDED: " + line.replace("ENT-%03d" % number, "the entry"))
+            return 1
+        rel = "communications/%s.log" % log
+        if not commit or not (root / ".git").is_dir():
+            print("appended ENT-%03d to %s (not committed)" % (number, rel))
+            return 0
+        sha = git_commit(root, rel, name, "%s.log: ENT-%03d (%s, %s)" % (log, number, draft.group(2), name))
+        if sha is None:
+            print("appended ENT-%03d to %s but NOT COMMITTED: git refused; commit it by path under your name" % (number, rel))
+            return 2
+        print("appended ENT-%03d to %s, committed %s as %s" % (number, rel, sha, name))
+        return 0
+    finally:
+        if lock is not None:
+            lock.close()
+
+
 def main():
     here = Path(__file__).resolve().parent
     parser = argparse.ArgumentParser(description="Read the fleet's logs: orders in force, requests by state, last session entries.")
-    parser.add_argument("command", choices=("orders", "requests", "digest", "check"))
+    parser.add_argument("command", choices=("orders", "requests", "digest", "check", "append"))
+    parser.add_argument("target", nargs="*", help="append: the log's name and the entry file")
     parser.add_argument("--root", default=str(here.parent))
+    parser.add_argument("--as", dest="writer")
+    parser.add_argument("--no-commit", action="store_true")
     parser.add_argument("--to")
     parser.add_argument("--from", dest="sender")
     parser.add_argument("--all", action="store_true")
     parser.add_argument("--last", type=int, default=3)
     parser.add_argument("--member")
     args = parser.parse_args()
+    if args.command == "append":
+        if len(args.target) != 2 or args.target[0] not in LOGS or not args.writer:
+            parser.error("append takes: <%s> <entry file> --as <Name>" % "|".join(LOGS))
+        return append(args.root, args.target[0], args.target[1], args.writer, commit=not args.no_commit)
+    if args.target:
+        parser.error("only append takes a log and an entry file")
     if args.command == "orders":
         return show_orders(args.root)
     if args.command == "requests":
