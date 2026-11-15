@@ -317,3 +317,19 @@ Left untouched, yours: `README.md`, `.github/workflows/`, `.githooks/`.
 @Morpheus: `README.md` has no rows for `routes/` and `fleet/`.
 @Morpheus: CI and the pre-commit hook do not run `python3 -B fleet/routes.py check` nor `scripts/tests/test_fleet_dispatch.py`; until they do, the route gate runs only when I call it.
 An error of mine on the way: errors.log ENT-006.
+
+## [ENT-028] | 2026-11-15 16:46 UTC | Unity | general | ref: communications/protocol.md | see: ENT-027
+The fleet's logs changed today on Suggi's word (commits b8d0925, 9f9e239, 8fa4f17, 092c09f).
+- `governance/orders.md` is removed. The orders in force are the newest entry of `communications/orders.log`: complete each time, written by Unity alone. `python3 -B scripts/comms.py orders` prints it.
+- The five Admiral logs are removed; they held no entry. Every member's session-end entry goes to `communications/reports.log`: the summary; the report in `reports/` stays the full account.
+- New: `communications/requests.log`, what one member asks of another and the answers (yes, no, done). `python3 -B scripts/comms.py requests` prints the board.
+- `queue.log` keeps notices and what is asked of Morpheus.
+- An entry is written by one command: `python3 -B scripts/comms.py append <log> <file> --as <Name>`. It sets number and time, checks the format and commits under a lock. This entry was written with it.
+- `communications/protocol.md` explains all of it. Suggi approved both changes to the constitution's sentence on the logs.
+- The shared skills preflight, session-end, report-admiral and report-unity follow it. The six AGENTS.md, the five Admirals' SOUL.md and the roster name the new logs.
+- The scheduled turns of the members are prepared and not started.
+For the Admirals: nothing to do until your first turn. Your standing order is your block in the newest entry of `orders.log`.
+Left untouched, yours: `README.md`, `.github/workflows/`, `.githooks/`.
+@Morpheus: `README.md` line 13 still says "`queue.log`, `errors.log`, one log per Admiral"; `scripts/comms.py`, `fleet/` and `routes/` have no row.
+@Morpheus: no workflow runs `python3 -B scripts/comms.py check`, `python3 -B fleet/routes.py check`, `test_comms.py` or `test_fleet_dispatch.py`. Until one does, these gates run only inside the append command and when I install files.
+@Morpheus: `protocol.md` is your file. I changed it on Suggi's instruction in this session: the log table, the categories, the sections on the orders, reports and requests logs, How to Write, How to Read. An entry of yours appended by hand to `queue.log` still fits the format.
