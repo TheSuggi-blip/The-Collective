@@ -418,13 +418,35 @@ def api_fleet():
         age = int(time.time() - path.stat().st_mtime)
     except (OSError, ValueError):
         return {"ships": [], "totals": {}, "engine": {"ok": False, "error": "no fleet data yet"}, "updated_at": "", "age": -1,
-                "history": []}
-    try:
-        history = read_json(FLEET / "history.json")[-288:]
-    except (OSError, ValueError, TypeError):
-        history = []
+                "birth": None}
     return {"ships": d.get("ships") or [], "totals": d.get("totals") or {}, "engine": d.get("engine") or {},
-            "updated_at": text(d.get("updated_at"), 30), "age": age, "history": history}
+            "updated_at": text(d.get("updated_at"), 30), "age": age, "birth": birth_summary()}
+
+
+def birth_summary():
+    """Progress of a running or recent birth of pilots (data/fleet/birth.json), or None."""
+    try:
+        b = read_json(FLEET / "birth.json")
+    except (OSError, ValueError):
+        return None
+    if not isinstance(b, dict):
+        return None
+    return {"planned": num(b.get("planned")), "registered": len(b.get("registered") or []),
+            "failed": len(b.get("failed") or {}), "starter_done": len(b.get("starter_done") or []),
+            "ordered": len(b.get("standing") or {}), "stopped": text(b.get("stopped"), 160),
+            "started_at": text(b.get("started_at"), 30), "finished_at": text(b.get("finished_at"), 30)}
+
+
+def api_history(hours):
+    """Fleet samples, one a minute: [t, credits, ships, recurring earned, ore mined, missions done]."""
+    try:
+        rows = read_json(FLEET / "history.json", cap=20_000_000)
+    except (OSError, ValueError):
+        return {"rows": []}
+    since = time.time() - hours * 3600
+    out = [[r[0], r[1], r[2], r[3] - r[4], r[5], r[6]] for r in rows
+           if isinstance(r, list) and len(r) == 8 and isinstance(r[0], (int, float)) and r[0] >= since]
+    return {"rows": out}
 
 
 def api_ship(name):
@@ -789,6 +811,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 "/api/market": lambda: api_market(arg),
                 "/api/leaderboard": lambda: VALUE.get("leaderboard") or {"groups": {}},
                 "/api/fleet": api_fleet, "/api/ship": lambda: api_ship(arg),
+                "/api/history": lambda: api_history(min(48, max(1, int(arg) if arg.isdigit() else 6))),
                 "/api/docs": api_docs, "/api/doc": lambda: api_doc(doc),
                 "/api/chat": lambda: api_chat(arg, after), "/api/chat/history": lambda: api_chat_history(arg),
                 "/healthz": lambda: {"ok": True, "sources": sum(1 for s in STATUS.values() if s["ok_at"])},

@@ -94,6 +94,40 @@ class FleetCollectorTests(unittest.TestCase):
             self.assertEqual([p.name for p in Path(tmp).iterdir()], ["fleet.json"])
             self.assertEqual(self.fleet.read(Path(tmp) / "missing.json", "default"), "default")
 
+    def test_rates_count_recurring_income_only(self):
+        # one hour: wallets +25,000, earned +24,000 of which 20,000 one-time; 4 ships
+        a = [0, 1000, 4, 5000, 0, 100, 2, {"Mining": [4, 1000, 5000, 0, 100, 2]}]
+        b = [3600, 26000, 4, 29000, 20000, 400, 6, {"Mining": [4, 26000, 29000, 20000, 400, 6]}]
+        r = self.fleet.rates([a, b], 3600)
+        self.assertEqual((r["cph"], r["cph_per_ship"], r["net_per_hour"]), (4000, 1000, 25000))
+        self.assertEqual((r["ore_per_hour"], r["missions_per_hour"], r["window_minutes"]), (300, 4.0, 60))
+        self.assertEqual(r["divisions"]["Mining"]["cph"], 4000)
+
+    def test_rates_need_five_minutes_and_skip_old_rows(self):
+        old_style = [0, 1000, 4]                      # rows from before the metrics
+        a = [100, 1000, 4, 5000, 0, 0, 0, {}]
+        b = [300, 2000, 4, 6000, 0, 0, 0, {}]
+        self.assertIsNone(self.fleet.rates([old_style, a, b], 300))
+        self.assertIsNone(self.fleet.rates([], 300))
+
+    def test_rates_ignore_samples_older_than_the_window(self):
+        ancient = [0, 0, 1, 0, 0, 0, 0, {}]
+        a = [10000, 1000, 2, 1000, 0, 0, 0, {}]
+        b = [13600, 3000, 2, 3000, 0, 0, 0, {}]
+        r = self.fleet.rates([ancient, a, b], 13600)
+        self.assertEqual((r["cph"], r["cph_per_ship"]), (2000, 1000))
+
+    def test_sample_splits_one_time_rewards_by_division(self):
+        with tempfile.TemporaryDirectory(prefix="fleet-test-") as tmp:
+            setattr(self.fleet, "DATA", Path(tmp))
+            self.fleet.write(Path(tmp) / "onetime.json", [[10, "miner-6", "x", 1000], [20, "trader-1", "x", 20000], [99, "miner-6", "y", 5]])
+            rows = [self.fleet.ship_row(account("miner-6", credits=500)), self.fleet.ship_row(account("trader-1", credits=700))]
+            h = self.fleet.sample(50, rows)
+            self.assertEqual(h[:5], [50, 1200, 2, 0, 21000])
+            self.assertEqual(h[7]["Mining"][3], 1000)
+            self.assertEqual(h[7]["Trade"][3], 20000)
+            self.assertEqual(h[7]["Mining"][4], 7)
+
 
 if __name__ == "__main__":
     unittest.main()

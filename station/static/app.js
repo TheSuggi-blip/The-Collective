@@ -42,7 +42,10 @@ const DIV = { Command: '#e3e6ee', Mining: '#d9a857', Trade: '#5fbfad', Logistics
 
 let S = null;                                  // /api/state
 let L = { hour: {}, day: {}, events: [], fills: [], battles: [], stats: {}, stream: {} };
-let F = { ships: [], totals: {}, engine: {}, age: -1, history: [] };     // /api/fleet
+let F = { ships: [], totals: {}, engine: {}, age: -1, birth: null };   // /api/fleet
+let fetchedAt = 0;                             // when /api/fleet last answered (ms)
+let HIST = { rows: [], at: 0 };                // /api/history, for the Metrics tab
+const collapsed = new Set();                   // divisions folded in the roster
 let board = null;
 const sys = new Map();
 const stationsBy = new Map();
@@ -252,21 +255,38 @@ function shipState(r) {
   return r.docked ? ['dock', 'docked'] : ['idle', 'idle in space'];
 }
 
+function signed(n) { return (n > 0 ? '+' : '') + fmt(n); }
+function liveAge() { return F.age < 0 ? -1 : F.age + Math.round((Date.now() - fetchedAt) / 1000); }
+
 function renderResources() {
-  const box = $('resources'), t = F.totals || {};
+  const box = $('resources'), t = F.totals || {}, r = t.rates;
   box.replaceChildren();
-  const cell = (k, v, small, smallCls, bad) => {
+  const cell = (k, v, small, smallCls, bad, tip) => {
     const c = el('div', 'res' + (bad ? ' bad' : '')), val = el('div', 'v', v);
     if (small) val.append(el('small', smallCls || null, small));
-    c.append(el('div', 'k', k), val); box.append(c);
+    c.append(el('div', 'k', k), val);
+    if (tip) c.title = tip;
+    box.append(c);
+    return c;
   };
-  const rate = t.credits_per_hour;
-  cell('Credits', fmt(t.credits), rate === undefined ? '' : (rate >= 0 ? '+' : '') + fmt(rate) + ' / h', rate > 0 ? 'up' : rate < 0 ? 'down' : null);
+  const head = cell('CPH', r ? fmt(r.cph) : '--', r ? fmt(r.cph_per_ship) + ' / ship' : 'measuring', r && r.cph > 0 ? 'up' : null, false,
+    'Credits per hour: recurring income over the last ' + (r ? r.window_minutes : 60) + ' minutes, one-time starter rewards excluded');
+  head.classList.add('head');
+  cell('Credits', fmt(t.credits), r ? signed(r.net_per_hour) + ' / h' : '', r && r.net_per_hour < 0 ? 'down' : 'up', false,
+    'All wallets; the small number is the net change per hour, spending and seed money included');
+  cell('Per ship', fmt(t.credits_per_ship), '', null, false, 'Credits divided by ships');
   cell('Ships', fmt(t.ships), t.ships ? (t.idle ? t.idle + ' idle' : 'all busy') : '', t.idle ? 'warn' : 'up');
-  cell('Cargo', fmt(t.cargo_used) + ' / ' + fmt(t.cargo_capacity));
-  cell('Missions', fmt(F.ships.reduce((a, r) => a + (r.missions || 0), 0)));
-  const ok = Boolean(F.engine && F.engine.ok && F.age >= 0 && F.age < 90);
-  cell('Engine', ok ? 'online' : 'no data', F.age >= 0 ? ago(F.age) + ' ago' : '', null, !ok);
+  cell('Ore / h', r ? fmt(r.ore_per_hour) : '--', r ? r.missions_per_hour + ' missions / h' : '');
+  const age = liveAge(), ok = Boolean(F.engine && F.engine.ok && age >= 0 && age < 60);
+  const eng = cell('Engine', ok ? 'live' : 'no data', age >= 0 ? age + ' s ago' : '', null, !ok);
+  eng.id = 'engine-cell';
+}
+
+function tickAges() {                          // every second: the age labels count up between polls
+  const age = liveAge(), cell = $('engine-cell');
+  if (cell) { const s = cell.querySelector('small'); if (s) s.textContent = age >= 0 ? age + ' s ago' : ''; }
+  const fresh = $('fleet-fresh');
+  if (fresh && age >= 0) fresh.textContent = (F.engine && F.engine.ok && age < 60 ? 'live | ' : 'stale | ') + age + ' s ago';
 }
 
 function shipRow(r) {
@@ -290,8 +310,10 @@ function renderRoster() {
   if (by.has('Unassigned')) divisions.push(['Unassigned', null]);
   for (const [division, admiral] of divisions) {
     const list = by.get(division) || [], block = el('div', 'div'), head = el('div', 'divhead'), c = DIV[division] || DIV.Unassigned;
-    const name = el('span', 'name', division), sum = el('span', 'sum');
+    const name = el('span', 'name', (collapsed.has(division) ? '+ ' : '') + division), sum = el('span', 'sum');
     head.style.borderLeftColor = c; name.style.color = c;
+    name.title = 'Fold or unfold this division';
+    name.addEventListener('click', () => { if (collapsed.has(division)) collapsed.delete(division); else collapsed.add(division); renderRoster(); });
     head.append(name);
     if (admiral) {
       const b = linkButton('Adm. ' + admiral.name, () => openChat(admiral.id), 'adm');
@@ -299,16 +321,18 @@ function renderRoster() {
       head.append(b);
     }
     if (list.length) {
+      const dr = ((F.totals.rates || {}).divisions || {})[division];
       sum.append(el('b', null, String(list.length)), list.length === 1 ? ' ship  ' : ' ships  ', el('b', null, fmt(list.reduce((a, r) => a + r.credits, 0))), ' cr');
+      if (dr) sum.append('  ', el('b', null, fmt(dr.cph)), ' /h');
     }
     head.append(sum); block.append(head);
     if (!list.length) block.append(el('div', 'noships', 'No ships yet'));
-    list.forEach((r) => block.append(shipRow(r)));
+    if (!collapsed.has(division)) list.forEach((r) => block.append(shipRow(r)));
     box.append(block);
   }
   box.scrollTop = keep;
-  const fresh = $('fleet-fresh'), ok = F.age >= 0 && F.age < 90 && F.engine && F.engine.ok;
-  fresh.textContent = F.age < 0 ? 'no data' : (ok ? 'live | ' : 'stale | ') + ago(F.age) + ' ago';
+  const fresh = $('fleet-fresh'), ok = F.age >= 0 && F.age < 60 && F.engine && F.engine.ok;
+  fresh.textContent = F.age < 0 ? 'no data' : (ok ? 'live | ' : 'stale | ') + liveAge() + ' s ago';
   fresh.className = 'fresh' + (ok ? '' : ' bad');
 }
 
@@ -534,7 +558,85 @@ async function renderDocs(panel, live) {
     Object.entries(S.sources).map(([n, s]) => [n, ago(s.age) + (s.age < 0 ? '' : ' ago'), s.error])));
 }
 
-const TABS = { Selection: renderSelection, Traffic: renderTraffic, Market: renderMarket, Ranks: renderRanks, Docs: renderDocs };
+function chart(rows, pick, label, unit) {
+  const c = el('canvas', 'chart'), wrap = el('div', 'chartbox');
+  wrap.append(el('div', 'chartlabel', label), c);
+  requestAnimationFrame(() => {
+    const w = c.clientWidth || 340, h = 90, d = window.devicePixelRatio || 1, g = c.getContext('2d');
+    c.width = w * d; c.height = h * d; g.scale(d, d);
+    const pts = rows.map((r) => [r[0], pick(r)]).filter((p) => p[1] !== null && isFinite(p[1]));
+    if (pts.length < 2) { g.fillStyle = '#5c6780'; g.font = '12px system-ui'; g.fillText('Not enough samples yet', 8, 48); return; }
+    const t0 = pts[0][0], t1 = pts[pts.length - 1][0];
+    let lo = Math.min(...pts.map((p) => p[1])), hi = Math.max(...pts.map((p) => p[1]));
+    if (lo > 0) lo = 0;
+    if (hi === lo) hi = lo + 1;
+    const X = (t) => 4 + (w - 8) * (t - t0) / Math.max(1, t1 - t0), Y = (v) => h - 14 - (h - 26) * (v - lo) / (hi - lo);
+    g.strokeStyle = 'rgba(135,145,168,0.25)'; g.lineWidth = 1; g.beginPath(); g.moveTo(4, Y(0)); g.lineTo(w - 4, Y(0)); g.stroke();
+    g.strokeStyle = '#a48be0'; g.lineWidth = 1.6; g.beginPath();
+    pts.forEach((p, i) => (i ? g.lineTo(X(p[0]), Y(p[1])) : g.moveTo(X(p[0]), Y(p[1]))));
+    g.stroke();
+    g.fillStyle = '#8791a8'; g.font = '10.5px system-ui';
+    g.fillText(fmt(hi) + unit, 6, 10);
+    g.fillText(new Date(t0 * 1000).toISOString().slice(11, 16) + ' UTC', 6, h - 2);
+    g.fillText(new Date(t1 * 1000).toISOString().slice(11, 16), w - 34, h - 2);
+  });
+  return wrap;
+}
+
+function rolling(rows, minutes) {               // CPH over a trailing window, from the minute samples
+  const out = [];
+  for (let i = 0; i < rows.length; i++) {
+    let j = i;
+    while (j > 0 && rows[i][0] - rows[j - 1][0] <= minutes * 60) j--;
+    const dt = rows[i][0] - rows[j][0];
+    out.push([rows[i][0], dt >= 300 ? (rows[i][3] - rows[j][3]) * 3600 / dt : null]);
+  }
+  return out;
+}
+
+async function renderMetrics(panel, live) {
+  const t = F.totals || {}, r = t.rates;
+  panel.append(el('h2', null, 'Fleet performance'));
+  panel.append(el('p', 'sub', r ? 'Rates over the last ' + r.window_minutes + ' minutes.' : 'Rates appear after five minutes of samples.'));
+  const grid = el('div', 'kpis');
+  const kpi = (k, v, sub, cls) => { const b = el('div', 'kpi' + (cls ? ' ' + cls : '')); b.append(el('div', 'k', k), el('div', 'v', v)); if (sub) b.append(el('div', 's', sub)); grid.append(b); };
+  kpi('CPH', r ? fmt(r.cph) : '--', 'recurring credits per hour', 'main');
+  kpi('CPH per ship', r ? fmt(r.cph_per_ship) : '--', 'production capacity of one ship', 'main');
+  kpi('Credits per ship', fmt(t.credits_per_ship), fmt(t.credits) + ' in all');
+  kpi('Net per hour', r ? signed(r.net_per_hour) : '--', 'wallet change, all included');
+  kpi('Ore per hour', r ? fmt(r.ore_per_hour) : '--', 'units mined');
+  kpi('Missions per hour', r ? String(r.missions_per_hour) : '--', 'completed');
+  panel.append(grid);
+  const b = F.birth;
+  if (b && b.planned && !b.finished_at) {
+    panel.append(el('h3', null, 'Birth in progress'));
+    panel.append(facts([['Registered', b.registered + ' of ' + b.planned + (b.failed ? ', ' + b.failed + ' refused' : '')],
+      ['Starter missions done', b.starter_done], ['Standing orders given', b.ordered], ['Stopped', b.stopped || 'no']]));
+  }
+  panel.append(el('h3', null, 'By division'));
+  const div = t.divisions || {}, dr = (r || {}).divisions || {};
+  const order = (S ? S.roster : []).filter((a) => a.division !== 'Command').map((a) => [a.division, a.name]);
+  if (div.Unassigned) order.push(['Unassigned', '']);
+  panel.append(table(['Division', 'Ships', 'Credits', 'Per ship', 'CPH', 'CPH / ship', 'Ore / h'],
+    order.map(([d, adm]) => {
+      const x = div[d] || {}, y = dr[d] || {}, name = el('span', null, d);
+      name.style.color = DIV[d] || DIV.Unassigned; name.title = adm ? 'Admiral ' + adm : '';
+      return [name, fmt(x.ships), fmt(x.credits), fmt(x.credits_per_ship), r ? fmt(y.cph) : '--', r ? fmt(y.cph_per_ship) : '--', r ? fmt(y.ore_per_hour) : '--'];
+    }), [1, 2, 3, 4, 5, 6]));
+  panel.append(el('h3', null, 'Last six hours'));
+  const box = el('div');
+  panel.append(box);
+  if (Date.now() - HIST.at > 30000) {
+    try { HIST = Object.assign(await get('/api/history?q=6'), { at: Date.now() }); } catch (e) { HIST = { rows: [], at: Date.now() }; }
+    if (!live()) return;
+  }
+  box.append(chart(rolling(HIST.rows, 30), (p) => p[1], 'CPH, trailing 30 minutes', ''),
+    chart(HIST.rows, (p) => p[1], 'Credits, all wallets', ''),
+    chart(HIST.rows, (p) => (p[2] ? p[1] / p[2] : null), 'Credits per ship', ''));
+  panel.append(el('p', 'sub', 'CPH counts what the pilots earn (missions, sales) minus one-time starter rewards. Seed money and spending show in the net change, not in CPH.'));
+}
+
+const TABS = { Selection: renderSelection, Metrics: renderMetrics, Traffic: renderTraffic, Market: renderMarket, Ranks: renderRanks, Docs: renderDocs };
 let renderSeq = 0, viewKey = '';
 function render() {
   const panel = $('panel'), mine = ++renderSeq, live = () => mine === renderSeq;
@@ -715,10 +817,11 @@ async function loadLive() {
   if (tab === 'Traffic') render();
 }
 async function loadFleet() {
-  try { F = await get('/api/fleet'); } catch (e) { F = Object.assign({}, F, { age: -1 }); }
+  try { F = await get('/api/fleet'); fetchedAt = Date.now(); } catch (e) { F = Object.assign({}, F, { age: -1 }); }
   shipsBy.clear();
   F.ships.forEach((r) => { if (r.system) { if (!shipsBy.has(r.system)) shipsBy.set(r.system, []); shipsBy.get(r.system).push(r); } });
   renderResources(); renderRoster(); draw();
+  if (tab === 'Metrics') render();
   if (selShip) {
     const name = selShip;
     try {
@@ -821,5 +924,6 @@ function fitFleet() {
   initChat();
   setInterval(loadLive, 5000);
   setInterval(loadFleet, 5000);
+  setInterval(tickAges, 1000);
   setInterval(async () => { await loadState(); draw(); if (tab === 'Docs' && !docView) render(); }, 120000);
 })().catch((e) => { $('panel').replaceChildren(el('p', 'empty', 'The station could not load its data: ' + e.message)); });

@@ -7,7 +7,17 @@ flies and writes it into the unit's data folder, outside the repository:
     <FLEET_DATA>/fleet.json            one row per ship, totals, totals per division
     <FLEET_DATA>/ships/<name>.json     one file per ship: position, hull, cargo,
                                        modules, skills, missions, what it is doing
-    <FLEET_DATA>/history.json          credits and ship count over time (capped)
+    <FLEET_DATA>/history.json          one sample a minute, 48 hours: credits, ships,
+                                       credits earned, one-time rewards, ore, missions,
+                                       per division
+    <FLEET_DATA>/onetime.json          (read) one-time rewards, written by the birth
+                                       script; kept apart so CPH counts recurring income
+
+Metrics in fleet.json, over the last 60 minutes:
+    cph            credits earned per hour, one-time rewards excluded
+    cph_per_ship   cph / ships
+    net_per_hour   change of all wallets per hour (spending and seed money included)
+    credits_per_ship, ore_per_hour, missions_per_hour; the same per division
 
 Every file is written whole and then renamed, so a reader never sees half a
 file. A ship's file is rewritten only when its content changed. Nothing here
@@ -35,8 +45,10 @@ from pathlib import Path
 GATE = os.environ.get("FLEET_GATE", "").rstrip("/")
 DATA = Path(os.environ.get("FLEET_DATA", "/srv/collective/data/fleet"))
 EVERY = max(5, int(os.environ.get("FLEET_EVERY", "10")))
-HISTORY_EVERY = 300          # seconds between two history samples
-HISTORY_CAP = 576            # 48 hours of samples
+HISTORY_EVERY = 60           # seconds between two history samples
+HISTORY_CAP = 2880           # 48 hours of samples
+WINDOW = 3600                # the metrics' window
+MIN_SPAN = 300               # no rate from less than five minutes of samples
 OPENER = urllib.request.build_opener(urllib.request.ProxyHandler({}))   # the gate is inside the unit
 
 # Pilot name -> division and its Admiral (COLLECTIVE.md; names: <role>-<n>).
@@ -106,6 +118,9 @@ def ship_row(account):
         "activity": activity(account),
         "loop_failures": num(loop.get("consecutiveFailures")), "loop_last_failure": text(loop.get("lastFailure"), 200),
         "missions": len((st.get("missions") or {}).get("active") or []),
+        "earned": num((player.get("stats") or {}).get("credits_earned")),
+        "ore_mined": num((player.get("stats") or {}).get("ore_mined")),
+        "missions_done": num((player.get("stats") or {}).get("missions_completed")),
         "state_at": text(st.get("updatedAt"), 30),
     }
 
@@ -157,6 +172,56 @@ def totals(rows):
             bucket["idle"] += 1 if r["activity"]["kind"] == "idle" else 0
         d["ships"] += 1
         out["connected"] += 1 if r["status"] == "connected" else 0
+    return out
+
+
+def onetime_by_division(now):
+    """One-time rewards received up to `now`, summed per division and in all."""
+    out = {}
+    for row in read(DATA / "onetime.json", []):
+        if isinstance(row, list) and len(row) == 4 and isinstance(row[0], (int, float)) and row[0] <= now:
+            division = division_of(row[1] if isinstance(row[1], str) else "")[0]
+            out[division] = out.get(division, 0) + num(row[3])
+    return out
+
+
+def sample(now, rows):
+    """One history row: [t, credits, ships, earned, onetime, ore, missions, {division: [...]}]."""
+    one = onetime_by_division(now)
+    divisions = {}
+    for r in rows:
+        d = divisions.setdefault(r["division"], [0, 0, 0, 0, 0, 0])   # ships, credits, earned, onetime, ore, missions
+        d[0] += 1
+        d[1] += r["credits"]
+        d[2] += r["earned"]
+        d[4] += r["ore_mined"]
+        d[5] += r["missions_done"]
+    for division, value in one.items():
+        divisions.setdefault(division, [0, 0, 0, 0, 0, 0])[3] = value
+    return [int(now), sum(r["credits"] for r in rows), len(rows), sum(r["earned"] for r in rows), sum(one.values()),
+            sum(r["ore_mined"] for r in rows), sum(r["missions_done"] for r in rows), divisions]
+
+
+def rates(history, now):
+    """Metrics over the last WINDOW seconds, for the fleet and per division."""
+    full = [h for h in history if isinstance(h, list) and len(h) == 8 and now - h[0] <= WINDOW + 90]
+    if len(full) < 2 or full[-1][0] - full[0][0] < MIN_SPAN:
+        return None
+    a, b = full[0], full[-1]
+    hours = (b[0] - a[0]) / 3600
+
+    def per_hour(x, y):
+        return round((y - x) / hours)
+
+    out = {"window_minutes": round((b[0] - a[0]) / 60), "net_per_hour": per_hour(a[1], b[1]),
+           "cph": per_hour(a[3] - a[4], b[3] - b[4]), "ore_per_hour": per_hour(a[5], b[5]),
+           "missions_per_hour": round((b[6] - a[6]) / hours, 1), "divisions": {}}
+    out["cph_per_ship"] = round(out["cph"] / b[2]) if b[2] else 0
+    for division, d in b[7].items():
+        e = a[7].get(division, [0, 0, 0, 0, 0, 0])
+        cph = per_hour(e[2] - e[3], d[2] - d[3])
+        out["divisions"][division] = {"cph": cph, "cph_per_ship": round(cph / d[0]) if d[0] else 0,
+                                      "net_per_hour": per_hour(e[1], d[1]), "ore_per_hour": per_hour(e[4], d[4])}
     return out
 
 
@@ -214,11 +279,14 @@ def collect_once(last):
     total = totals(rows)
     history = read(DATA / "history.json", [])
     if not history or now - history[-1][0] >= HISTORY_EVERY:
-        history.append([int(now), total["credits"], total["ships"]])
+        history.append(sample(now, rows))
         write(DATA / "history.json", history[-HISTORY_CAP:])
-    hour_ago = [h for h in history if now - h[0] <= 3900]
-    if len(hour_ago) >= 2 and hour_ago[-1][0] > hour_ago[0][0]:
-        total["credits_per_hour"] = round((hour_ago[-1][1] - hour_ago[0][1]) * 3600 / (hour_ago[-1][0] - hour_ago[0][0]))
+    total["credits_per_ship"] = round(total["credits"] / total["ships"]) if total["ships"] else 0
+    total["earned"] = sum(r["earned"] for r in rows)
+    total["onetime"] = sum(onetime_by_division(now).values())
+    for division, d in total["divisions"].items():
+        d["credits_per_ship"] = round(d["credits"] / d["ships"]) if d["ships"] else 0
+    total["rates"] = rates(history, now)
     write(DATA / "fleet.json", {
         "updated_at": stamp, "engine": {"ok": True, "error": "", "checked_at": stamp, "started_at": text(data.get("startedAt"), 30)},
         "totals": total, "ships": rows})
