@@ -19,8 +19,8 @@
  "max_ships": 3,
  "measured": {
   "date": "2026-11-15",
-  "runs": 37,
-  "minutes": 7,
+  "runs": 93,
+  "minutes": 8,
   "credits_per_run": -70,
   "cph_per_ship": -550
  }

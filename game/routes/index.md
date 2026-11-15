@@ -13,8 +13,8 @@ task one pilot carries out by itself; its file is `game/routes/<id>.json`
 
 | Route | Kind | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|
-| [census-frontier](census-frontier.json) | census | Read one lawless system around our space whole: deposits, creatures, stations, order books, mission boards | up to 12 ships | TBD | TBD | TBD | TBD | -- |
-| [census-voidborn](census-voidborn.json) | census | Read one Voidborn system whole: deposits, creatures, order book, mission board | up to 3 ships | 37 | 7 | -70 | -550 | 2026-11-15 |
+| [census-frontier](census-frontier.json) | census | Read one lawless system around our space whole: deposits, creatures, stations, order books, mission boards | up to 12 ships | 35 | 14 | -140 | -600 | 2026-11-15 |
+| [census-voidborn](census-voidborn.json) | census | Read one Voidborn system whole: deposits, creatures, order book, mission board | up to 3 ships | 93 | 8 | -70 | -550 | 2026-11-15 |
 | [first-survey](first-survey.json) | circuit | Signal Propagation Survey: dock at the five other Voidborn stations (20,000 cr) | once per pilot, off | TBD | TBD | TBD | TBD | -- |
 | [fit-ice-harvester](fit-ice-harvester.json) | circuit | Fit an Ice Harvester I at Node Alpha: the tool every ice field needs | once per pilot, up to 1 ships | TBD | TBD | TBD | TBD | -- |
 | [fit-ice-harvester-guard](fit-ice-harvester-guard.json) | circuit | Fit an Ice Harvester I at Central Nexus: the tool every ice field needs | once per pilot, up to 2 ships | TBD | TBD | TBD | TBD | -- |
