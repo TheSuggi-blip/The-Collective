@@ -86,6 +86,23 @@ class FleetCollectorTests(unittest.TestCase):
         self.assertEqual(total["divisions"]["Unassigned"]["ships"], 1)
         self.assertEqual(total["idle"], 4)
 
+    def test_a_ship_under_a_fresh_order_is_at_work_and_a_stale_order_is_ignored(self):
+        import os
+        with tempfile.TemporaryDirectory(prefix="fleet-test-") as tmp:
+            self.fleet.DATA = Path(tmp)
+            (Path(tmp) / "orders").mkdir()
+            for name in ("miner-1", "miner-2"):
+                (Path(tmp) / "orders" / (name + ".json")).write_text(json.dumps({"pilot": name, "what": "route voidborn-missions-1", "since": "2026-01-01T00:00:00Z"}))
+            (Path(tmp) / "orders" / "broken.json").write_text("{not json")
+            now = (Path(tmp) / "orders" / "miner-1.json").stat().st_mtime
+            os.utime(Path(tmp) / "orders" / "miner-2.json", (now - 3600, now - 3600))
+            rows = [self.fleet.ship_row(account(n)) for n in ("miner-1", "miner-2", "miner-3")] + [self.fleet.ship_row(account("miner-4", goal="dock-at"))]
+            (Path(tmp) / "orders" / "miner-4.json").write_text(json.dumps({"pilot": "miner-4", "what": "hunt", "since": ""}))
+            self.fleet.apply_orders(rows, now)
+        self.assertEqual([r["activity"]["kind"] for r in rows], ["order", "idle", "idle", "goal"])
+        self.assertEqual([r["order"] for r in rows], ["route voidborn-missions-1", "", "", "hunt"])
+        self.assertEqual(self.fleet.totals(rows)["idle"], 2)
+
     def test_files_are_written_whole(self):
         with tempfile.TemporaryDirectory(prefix="fleet-test-") as tmp:
             path = Path(tmp) / "fleet.json"

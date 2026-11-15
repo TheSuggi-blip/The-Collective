@@ -10,6 +10,9 @@ flies and writes it into the unit's data folder, outside the repository:
     <FLEET_DATA>/history.json          one sample a minute, 48 hours: credits, ships,
                                        credits earned, one-time rewards, ore, missions,
                                        per division
+    <FLEET_DATA>/orders/<name>.json    (read) what a fleet script is doing with a pilot
+                                       ({"what", "since"}), written and kept fresh by that
+                                       script; a file not touched for 20 minutes is ignored
     <FLEET_DATA>/onetime.json          (read) one-time rewards, written by the birth
                                        script; kept apart so CPH counts recurring income
 
@@ -96,6 +99,35 @@ def activity(account):
     if account.get("hasRunningJob") and job:
         return {"kind": "job", "type": text(job.get("goalType") or job.get("type"), 40), "since": text(job.get("startedAt"), 30)}
     return {"kind": "idle", "type": "", "since": ""}
+
+
+ORDER_FRESH = 20 * 60        # seconds an order file counts without being touched
+
+
+def orders(now):
+    """{pilot name: (what, since)} from the order files the fleet's scripts keep fresh."""
+    out = {}
+    folder = DATA / "orders"
+    for path in folder.glob("*.json") if folder.is_dir() else []:
+        try:
+            if now - path.stat().st_mtime > ORDER_FRESH:
+                continue
+            d = json.loads(path.read_text(encoding="utf-8"))
+            out[text(d.get("pilot"), 40)] = (text(d.get("what"), 60), text(d.get("since"), 30))
+        except (OSError, ValueError, AttributeError):
+            continue
+    return out
+
+
+def apply_orders(rows, now):
+    """A ship under a script's order carries it; between two goals it is at work, not idle."""
+    given = orders(now)
+    for row in rows:
+        what, since = given.get(row["name"], ("", ""))
+        row["order"] = what
+        if what and row["activity"]["kind"] == "idle":
+            row["activity"] = {"kind": "order", "type": what, "since": since}
+    return rows
 
 
 def ship_row(account):
@@ -270,6 +302,7 @@ def collect_once(last):
         write(DATA / "fleet.json", fleet)
         return False
     rows = sorted((ship_row(a) for a in accounts), key=lambda r: (r["division"], r["number"], r["name"]))
+    apply_orders(rows, now)
     for row in rows:                              # between two systems the engine names none: keep the last one
         row["jumping"] = not row["system"]
         if row["system"]:

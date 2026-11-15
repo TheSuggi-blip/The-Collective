@@ -45,7 +45,9 @@ let L = { hour: {}, day: {}, events: [], fills: [], battles: [], stats: {}, stre
 let F = { ships: [], totals: {}, engine: {}, age: -1, birth: null };   // /api/fleet
 let fetchedAt = 0;                             // when /api/fleet last answered (ms)
 let HIST = { rows: [], at: 0 };                // /api/history, for the Metrics tab
-const collapsed = new Set();                   // divisions folded in the roster
+const collapsed = new Set();                   // divisions folded in the roster; remembered by the browser
+try { JSON.parse(localStorage.getItem('station.folded') || '[]').forEach((d) => collapsed.add(String(d))); } catch (e) { /* no storage */ }
+function saveFolds() { try { localStorage.setItem('station.folded', JSON.stringify([...collapsed])); } catch (e) { /* no storage */ } }
 let board = null;
 const sys = new Map();
 const stationsBy = new Map();
@@ -251,7 +253,8 @@ function shipState(r) {
   if (r.in_transit) return ['move', 'to ' + (r.dest_poi || 'another place')];
   const a = r.activity || {};
   if (a.kind === 'loop') return waiting ? ['wait', 'waiting for ore'] : ['work', a.type + ' loop'];
-  if (a.kind === 'goal' || a.kind === 'job') return ['work', a.type];
+  if (a.kind === 'order') return ['work', a.type];
+  if (a.kind === 'goal' || a.kind === 'job') return ['work', r.order ? r.order + ': ' + a.type : a.type];
   return r.docked ? ['dock', 'docked'] : ['idle', 'idle in space'];
 }
 
@@ -276,7 +279,7 @@ function renderResources() {
   cell('Per ship', fmt(t.credits_per_ship), r ? signed(r.cph_per_ship) + ' / h' : '', r ? tone(r.cph_per_ship) : null,
     'Credits per ship. The coloured number is CPH per ship: what one ship produces per hour');
   cell('Ships', fmt(t.ships), t.ships ? (t.idle ? t.idle + ' idle' : 'all busy') : '', t.idle ? 'warn' : 'up',
-    'Idle: docked or drifting without a goal or a loop');
+    'Idle: docked or drifting without a goal, a loop or a script\'s order');
   cell('Ore / h', r ? fmt(r.ore_per_hour) : '--', r ? r.missions_per_hour + ' missions / h' : '');
 }
 
@@ -316,10 +319,15 @@ function renderRoster() {
   if (by.has('Unassigned')) divisions.push(['Unassigned', null]);
   for (const [division, admiral] of divisions) {
     const list = by.get(division) || [], block = el('div', 'div'), head = el('div', 'divhead'), c = DIV[division] || DIV.Unassigned;
-    const name = el('span', 'name', (collapsed.has(division) ? '+ ' : '') + division), sum = el('span', 'sum');
+    const folded = collapsed.has(division), sum = el('span', 'sum');
+    const name = el('button', 'name', division), fold = el('span', 'fold', folded ? '+' : '-');
+    name.type = 'button';
+    name.prepend(fold);
+    name.append(el('b', 'count', String(list.length)));
     head.style.borderLeftColor = c; name.style.color = c;
-    name.title = 'Fold or unfold this division';
-    name.addEventListener('click', () => { if (collapsed.has(division)) collapsed.delete(division); else collapsed.add(division); renderRoster(); });
+    name.title = (folded ? 'Unfold' : 'Fold') + ' the ' + list.length + ' ships of ' + division;
+    name.setAttribute('aria-expanded', folded ? 'false' : 'true');
+    name.addEventListener('click', () => { if (collapsed.has(division)) collapsed.delete(division); else collapsed.add(division); saveFolds(); renderRoster(); });
     head.append(name);
     if (admiral) {
       const b = linkButton('Adm. ' + admiral.name, () => openChat(admiral.id), 'adm');
@@ -328,15 +336,28 @@ function renderRoster() {
     }
     if (list.length) {
       const dr = ((F.totals.rates || {}).divisions || {})[division];
-      sum.append(el('b', null, String(list.length)), list.length === 1 ? ' ship  ' : ' ships  ', el('b', null, fmt(list.reduce((a, r) => a + r.credits, 0))), ' cr');
+      sum.append(el('b', null, fmt(list.reduce((a, r) => a + r.credits, 0))), ' cr');
       if (dr) sum.append('  ', el('b', dr.cph < 0 ? 'neg' : null, signed(dr.cph)), ' /h');
     }
     head.append(sum); block.append(head);
     if (!list.length) block.append(el('div', 'noships', 'No ships yet'));
-    if (!collapsed.has(division)) list.forEach((r) => block.append(shipRow(r)));
+    if (!folded) list.forEach((r) => block.append(shipRow(r)));
+    else if (list.length) {                     // folded: the division in one line
+      const n = { work: 0, move: 0, dock: 0, idle: 0, wait: 0, bad: 0, off: 0 };
+      list.forEach((r) => { n[shipState(r)[0]] += 1; });
+      const parts = [[n.work + n.move, 'working'], [n.wait, 'waiting'], [n.dock, 'docked'], [n.idle, 'idle in space'], [n.bad, 'failing'], [n.off, 'offline']];
+      const line = el('button', 'divline', parts.filter((p) => p[0]).map((p) => p[0] + ' ' + p[1]).join(', '));
+      line.type = 'button';
+      line.title = 'Unfold ' + division;
+      line.addEventListener('click', () => { collapsed.delete(division); saveFolds(); renderRoster(); });
+      block.append(line);
+    }
     box.append(block);
   }
   box.scrollTop = keep;
+  const all = $('fold-all'), names = divisions.map((d) => d[0]), everyFolded = names.length > 0 && names.every((d) => collapsed.has(d));
+  all.textContent = everyFolded ? 'Unfold all' : 'Fold all';
+  all.onclick = () => { names.forEach((d) => (everyFolded ? collapsed.delete(d) : collapsed.add(d))); saveFolds(); renderRoster(); };
   const fresh = $('fleet-fresh'), ok = fleetLive();
   fresh.textContent = ok ? F.ships.length + ' ships' : (F.age < 0 ? 'no data' : 'stale');
   fresh.className = 'fresh' + (ok ? '' : ' bad');
