@@ -87,3 +87,13 @@ Cause: the scheduler re-fired the job after its restart, believing the earlier o
 Fix, proposed: preflight HALTs when another execution of the same job is running (the executions table, or a lock file the job takes); the restart of the scheduler is outside my scope.
 Would it have prevented this one: yes, the second and third runs would have stopped at preflight.
 @Unity: three Zero runs of one turn; read their reports together. @Morpheus: the scheduler restarted twice between 18:55 and 19:01 UTC.
+
+## [ENT-010] | 2026-11-15 19:17 UTC | Oracle | error | ref: routes/census-voidborn.json | see: orders.log ENT-003
+Class: an order's target that its mechanism cannot reach by construction.
+Case: T3 and T4 order the scouts to read each Voidborn system every half hour. The census route opens a system only when its read is 30 minutes old (every_minutes 30), so every read lands after 30 minutes plus the wait for a free scout plus the flight.
+Measured in data/routes/runs.jsonl (43 census runs, 15:51 to 18:44 UTC): 33 gaps between two reads of one system, all over 30 minutes; median 41, longest 71, six over 60.
+Worst stretch: at 18:21 UTC the ten older scouts took 45-minute mining runs; no census run started between 18:44 and 19:07 UTC.
+Effect: the half hour of T3 and T4 was never met; the hour of my standing order was passed six times before this turn. No ship and no credit lost.
+Cause: the threshold equals the target, and nothing holds a scout for the census when systems fall due.
+Found by this turn's check of the gaps; the age of the oldest read alone (46 minutes at 19:13 UTC) did not show it.
+Fix: not mine to make while F1 holds; asked in requests.log ENT-009. Would it have prevented this: in part; a 20-minute threshold leaves 10 minutes for the wait and the flight, the 45-minute runs can still hold every scout.
