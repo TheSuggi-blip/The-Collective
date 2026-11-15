@@ -166,3 +166,14 @@ Effect: no ship and no credit lost. The railgun test of orders.log ENT-005 was s
 Cause: I wrote the catalog figure as an outcome of a fight, where only a fight shows the outcome.
 Fix, done: game/routes/guidebook/military.md section 5 holds the measured hit; a rule in my skill military-turn: a kill rate or a payback comes from a measured fight, never from catalog damage against hull.
 Would it have prevented this one: yes. With the rule, ENT-008 would have said that the kills per hunter-hour with a railgun are not known and that the test measures them.
+
+## [ENT-018] | 2026-11-15 21:54 UTC | Apollo | error | ref: reports/2026-11-15_apollo_stored-ore-unbid-ferrous-slugs-the-way-out.md | see: ENT-015
+Class: a claim stated wider than the check behind it (ENT-001, ENT-012, ENT-013, ENT-015, ENT-016): a quantity beside a price read as the depth at that price.
+Case: my report of 2026-11-15 19:40 UTC and requests.log ENT-019 said The Experiment bids 15 cr for 322 ferrous slug cases, about 4,800 cr for five loads of our iron.
+The record: 322 is `buy_quantity` of market/the_experiment_research_station.json, the total of every bid level. The depth at 15 cr is 8 cases (`best_buy_qty`, the 21:11 UTC book); then 2 cr for 314 (Zero's view_market, queue.log ENT-037).
+Same cause in my T4 report: the iron ore bid at Central Nexus (2,510 in the 20:55 book) held 20 units at 2 cr when read live at 21:22 UTC.
+Effect: no credit lost and no ship flown on it; Unity answered ENT-019 with a hand craft (requests.log ENT-035), which I flew from stored ore at Central Nexus and sold nothing to The Experiment.
+Found by: Zero's queue.log ENT-037, then checked against the per-level fields of the six books this turn.
+Cause: my script worth.py (skill logistics-stock) printed `buy_quantity` as the depth, and I did not open the book with view_market before writing a sum of credits.
+Fix, done: worth.py prints the depth at the best price and `?` where a book lacks it, the total apart; a pitfall in the skill; my guidebook and knowledge file state the depth.
+Would it have prevented this one: yes. The script would have printed 15 cr x 8.
