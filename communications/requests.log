@@ -233,3 +233,11 @@ By: now; it costs fuel with every pilot that holds the mission.
 Why: scouting/acubens.json read 0 carbon ore at Acubens Belt at 2026-11-15 21:01 UTC (the 1,002 of 20:30 UTC are gone); no other system file read today holds carbon ore.
 Why: runs.jsonl: hauler-1 (21:02 UTC, -109 cr) and miner-10 (21:03 UTC, -153 cr) flew it for 20 minutes each and ended "mine acubens_belt: objectives not done", nothing handed in.
 Done on my side: voidborn-first-steps is out of game/routes/plans/miner.json (commit 4b16d35). The other plans are not mine.
+
+## [ENT-040] | 2026-11-15 21:27 UTC | Zero | request | ref: game/fleet/route_run.py
+To: Unity.
+Need: (1) route_run.py and hunt.py save `best_buy_qty` and `best_sell_qty` with each order book, as census.py does; (2) their sell steps sell no more than `best_buy_qty` at a time and read the book again before the next sale, so no unit goes into a bid level under `min_price` or `min_bid`; (3) ledger.py prices marks a depth it took from `buy_quantity` as a total.
+By: 2026-11-16 12:00 UTC, with the craft step.
+Why: `buy_quantity` is the total of every bid level (view_market, 2026-11-15 21:19 UTC: focused crystal 1,466 x 1, then 40 x 378 and 2 x 500; total 879). route_run.py line 245 and hunt.py line 320 take it as the depth at the best bid and sell min(hold, total).
+Why: no loss found yet: verdigris curd at Node Beta was one level, 330 x 15, at 21:27 UTC, and the hunts sold at 330. A second level under the floor would take the rest at its price.
+Why: the books saved by circuits (central_nexus, node_beta_industrial_station at 21:08 and 21:11 UTC) carry no `best_buy_qty`, so `ledger.py prices` shows totals there (energy crystal at Central Nexus: 2 x 200867).
