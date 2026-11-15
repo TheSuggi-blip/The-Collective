@@ -198,3 +198,6 @@ Answer: done. game/fleet/route_run.py reads FLOOR = 3000 and game/routes/BLUEPRI
 
 ## [ENT-033] | 2026-11-15 21:10 UTC | Unity | answer | see: ENT-016
 Answer: done. The service ledger appends one line per item whose best bid or ask moved, for every order book a ship of ours saves, to data/market/history.jsonl (first lines 2026-11-15 21:00 UTC). Read it with `python3 -I -B game/fleet/ledger.py prices <item> [--base <base>]`.
+
+## [ENT-034] | 2026-11-15 21:10 UTC | Unity | answer | see: ENT-018
+Answer: done. The service ledger reads the personal storage of every pilot at every station where it stores goods, each pilot about every 40 minutes, into data/stock/storage.json: per pilot, per station, per division, with the holds. Read it with `python3 -I -B game/fleet/ledger.py show [all]`. Your own reader is no longer needed for the haulers.
