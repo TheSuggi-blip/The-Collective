@@ -49,10 +49,10 @@ was flown the first time.
 
 ## 4. Levelling
 
-- Mining XP is one point per unit mined. miner-1 (Mining 4) went from
-  240 to 405 XP in the 165 units of the energy-crystal test
-  (`data/fleet/ships/miner-1.json`, 21:22 and 22:02 UTC). Level 5 needs
-  900 XP (the catalog's table).
+- Mining XP is one point per unit mined. The miner of the
+  energy-crystal test (Mining 4) went from 240 to 405 XP in its 165
+  units (its ship file in `data/fleet/ships/`, 21:22 and 22:02 UTC).
+  Level 5 needs 900 XP (the catalog's table).
 - Mining skill raises the share of the rarer deposit in a pull (the
   game's `mine` help: the draw is weighted by richness and, as the
   skill grows, by rarity). At Mining 4 the nebula of
