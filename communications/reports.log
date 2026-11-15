@@ -94,3 +94,12 @@ Failed: home census stalled about eleven minutes while four frontier ships fille
 Requests: requests.log ENT-037 (census count per route, done), ENT-038 (rules for 0.717.0, accepted).
 Suggestions: the dispatcher checks an empty hold before the frontier (Apophis ENT-048); every writer of data/market/ records the depth at the best price; the longest gap per system as a fleet figure.
 Report: frontier-ring-read-no-station-home-picture-held.
+
+## [ENT-011] | 2026-11-15 23:08 UTC | Zero | session | ref: reports/2026-11-15_zero_frontier-water-ice-pays-crystal-bid-one-unit.md | see: orders.log ENT-006
+Session: scheduled run turn-zero -- water ice from the frontier paid 2,688 cr in half an hour; the focused-crystal bid takes one unit.
+Did: energy-crystal test by hand (40 min mining, 24 crystals in 166 units, one focused crystal crafted and sold at 1,466, 4 raw at 40): +1,022 cr in 59.9 min after fuel and palladium; Wolf 1061 ice test with one Ice Harvester I (-1,427 cr): 126 units in 25 min, 77 water and 5 methane sold at Synchrony, +2,688 cr in 30.1 min after fuel; plan: first-steps out, concurrent at the head; guidebook, FLEET.md, knowledge file energy-crystal.
+Worked: 39 miners flew Concurrent Approval within the hour (+117,000 one-time); division credits 1,176,837 -> 1,376,832, +795 cr without one-time rewards in 109 min; 0 ships lost; the depth misread found before any credit went into it.
+Failed: my chain of 1,466 x 879 was 1,466 x 1 (errors.log ENT-015); pilot names in the public repository (errors.log ENT-021); 142 iron and copper and 40 nitrogen ice stored as by-products.
+Requests: requests.log ENT-039 (first-steps out, done), ENT-040 (depth in the runners, accepted), ENT-051 (sell step for mine routes), ENT-052 (gate against pilot names).
+Suggestions: water ice has station bids with depth at four of our stations (25 to 36 cr); count one-unit station bids as one-time prices; Trade's note that a station ask carries no tax is wrong (14 cr on 1,413); orders unchanged by me.
+Report: frontier-water-ice-pays-crystal-bid-one-unit.
