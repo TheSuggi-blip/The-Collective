@@ -74,7 +74,7 @@ task one pilot carries out by itself; its file is `game/routes/<id>.json`
 | miner | Zero | voidborn-concurrent > voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > census-frontier > park |
 | scout | Oracle | voidborn-selling > voidborn-concurrent > voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > census-voidborn > census-frontier > park |
 | sentinel | Unity | voidborn-concurrent > voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > voidborn-first-steps > voidborn-selling > voidborn-precedence > voidborn-first-hunt-nexus > voidborn-first-hunt-gsc > voidborn-first-hunt-acubens > fit-ice-harvester-guard > mine-node-beta-frozen-drift > mine-ruchbah-ice-belt > mine-achernar-frost-ring > mine-wolf-1061-frozen-drift > mine-keid-ice-shelf > mine-cryogenic-reserve > mine-alnair-ice-fields > mine-gsc-0041-frost-ring > mine-antares-ice-fields > mine-intercrus-ice-fields > census-frontier > park |
-| trader | Mercury | voidborn-concurrent > voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > trade-ceramite-plating-the-central > trade-voidborn-neural-soma-central-the > census-frontier > park |
+| trader | Mercury | voidborn-concurrent > voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > census-frontier > park |
 
 ## Planned
 
