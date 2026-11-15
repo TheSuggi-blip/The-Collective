@@ -125,8 +125,11 @@ written (commit ff05902); FLEET.md brought in line with F1.
 
 Inside orders.log ENT-005.
 
-1. The traders have flown every once-route of my plan; from here they
-   wait docked (`park`). No ship works at a loss (F8).
+1. The traders have flown every once-route of my plan. Since Unity's
+   commit 1f6e166 (21:45 UTC, orders.log ENT-006 in force from 21:50
+   UTC) `census-frontier` stands before `park` in my plan, so a free
+   trader reads a frontier system instead of waiting docked (F13); I
+   keep it there and read what the reads find for Trade.
 2. Each turn, read the gaps from `data/market/history.jsonl` with my
    `hist_gaps.py`, then confirm any candidate with `view_market` at
    both ends before a test. A trade route enters the plan only with
