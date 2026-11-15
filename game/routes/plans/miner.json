@@ -1,8 +1,9 @@
 {
  "role": "miner",
  "owner": "Zero",
- "note": "The routes the dispatcher tries, in this order, for a free miner pilot. Zero keeps this file: the missions that pay once first, then what pays, a test with `max_ships` before it enters for all, and last `park`. No route that loses money stands here to fill time (orders F8). 2026-11-15 21:25 UTC, Zero: voidborn-first-steps left this plan: Acubens Belt read 0 carbon at 21:01 UTC (scouting/acubens.json) and the two runs of 21:02 and 21:03 UTC ended 'objectives not done' at -109 and -153 cr (runs.jsonl).",
+ "note": "The routes the dispatcher tries, in this order, for a free miner pilot. Zero keeps this file: the missions that pay once first, then what pays, a test with `max_ships` before it enters for all, and last `park`. No route that loses money stands here to fill time (orders F8). 2026-11-15 21:25 UTC, Zero: voidborn-first-steps left this plan: Acubens Belt read 0 carbon at 21:01 UTC (scouting/acubens.json) and the two runs of 21:02 and 21:03 UTC ended 'objectives not done' at -109 and -153 cr (runs.jsonl). 2026-11-15 21:30 UTC, Zero: voidborn-concurrent at the head; it stays unflown while its file reads status off, and flies by itself when its owner opens it (trader-9's run of 21:18 UTC handed in Concurrent Approval, +3,000 cr once, runs.jsonl).",
  "routes": [
+  "voidborn-concurrent",
   "voidborn-substrate",
   "voidborn-missions-1",
   "voidborn-mining-missions",

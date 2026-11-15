@@ -23,10 +23,11 @@ task one pilot carries out by itself; its file is `game/routes/<id>.json`
 | [voidborn-missions-1](voidborn-missions-1.json) | circuit | Synchrony Relay Run and Crystal Delivery: two board missions in one circuit of 8 jumps | once per pilot | 146 | 22 | 6,430 | one-time | 2026-11-15 |
 | [voidborn-substrate](voidborn-substrate.json) | circuit | Substrate Delivery: two neural soma bought at Central Nexus, the mission taken at Node Alpha and handed in at Central Nexus; 2 jumps | once per pilot | 146 | 8 | 1,790 | one-time | 2026-11-15 |
 | [hunt-acubens-urchin](hunt-acubens-urchin.json) | hunt | Cinder-urchins at Acubens Shadow Pocket; radiant bile sold at Node Gamma | up to 1 ships, off | 2 | 25 | -120 | -290 | 2026-11-15 |
-| [hunt-gsc-veil-ray](hunt-gsc-veil-ray.json) | hunt | Veil-rays at GSC-0027 Prism Scatter; verdigris curd sold at Node Beta | up to 1 ships | 7 | 24 | 1,830 | 3,350 | 2026-11-15 |
-| [hunt-hamal-veil-ray](hunt-hamal-veil-ray.json) | hunt | Veil-rays at Hamal Crystal Bloom; verdigris curd sold at Node Beta | up to 1 ships | 5 | 23 | 1,070 | 3,120 | 2026-11-15 |
+| [hunt-gsc-veil-ray](hunt-gsc-veil-ray.json) | hunt | Veil-rays at GSC-0027 Prism Scatter; verdigris curd sold at Central Nexus | up to 1 ships, needs piercing_railgun_i | 7 | 24 | 1,830 | 3,350 | 2026-11-15 |
+| [hunt-hamal-veil-ray](hunt-hamal-veil-ray.json) | hunt | Veil-rays at Hamal Crystal Bloom; verdigris curd sold at Central Nexus | up to 1 ships | 5 | 23 | 1,070 | 3,120 | 2026-11-15 |
 | [hunt-home-drift-ray](hunt-home-drift-ray.json) | hunt | Drift-rays at Stellar Siphon in Nexus Prime; goods sold or stored at Central Nexus | up to 1 ships | 8 | 10 | -40 | -250 | 2026-11-15 |
 | [hunt-home-whale](hunt-home-whale.json) | hunt | Pilot-whales at Stellar Siphon in Nexus Prime; whale oil sold at Node Beta | up to 1 ships, needs piercing_railgun_i, off | 1 | 20 | 570 | 1,670 | 2026-11-15 |
+| [hunt-ruchbah-veil-ray](hunt-ruchbah-veil-ray.json) | hunt | Veil-rays at Ruchbah Broken Glass Veil (lawless); verdigris curd sold at The Experiment | up to 1 ships, off | TBD | TBD | TBD | TBD | -- |
 | [mine-acubens](mine-acubens.json) | mine | Iron and copper at Acubens Shadow Pocket; ore into storage at Node Beta | up to 16 ships | 48 | 45 | -120 | -160 | 2026-11-15 |
 | [mine-bellatrix](mine-bellatrix.json) | mine | Wait at Bellatrix Major Belt beside Node Gamma station for whatever regrows (thorium, palladium, iridium, carbon) | up to 1 ships | 8 | 45 | 0 | 0 | 2026-11-15 |
 | [mine-gsc-seep](mine-gsc-seep.json) | mine | Iron and copper at GSC-0027 Spacetime Seep; ore into storage at Node Beta | up to 16 ships | 48 | 45 | -120 | -160 | 2026-11-15 |
@@ -39,9 +40,9 @@ task one pilot carries out by itself; its file is `game/routes/<id>.json`
 | Role | Kept by | Routes, first that is open |
 |---|---|---|
 | command | Unity | voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > voidborn-first-steps > census-frontier > park |
-| drone | Apophis | voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > voidborn-first-steps > hunt-gsc-veil-ray > hunt-hamal-veil-ray > park |
+| drone | Apophis | voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > hunt-gsc-veil-ray > hunt-hamal-veil-ray > park |
 | hauler | Apollo | voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > voidborn-first-steps > park |
-| miner | Zero | voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > park |
+| miner | Zero | voidborn-concurrent > voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > park |
 | scout | Oracle | voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > voidborn-first-steps > census-voidborn > census-frontier > park |
 | sentinel | Unity | voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > voidborn-first-steps > census-frontier > park |
 | trader | Mercury | voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > voidborn-first-steps > park |
@@ -52,6 +53,10 @@ What an Admiral means to do next (`planned` in its plan file), so that the other
 
 | Role | What | When |
 |---|---|---|
+| drone | Railgun test at hunt-gsc-veil-ray for turn T5: kills per hunter-hour and credits per hunter-hour against the pulse-laser figure; if it pays, a railgun for the hunter of every herd (5,000 cr each, orders F12). | turn T5 to T6 |
+| drone | hunt-ruchbah-veil-ray into the plan with max_ships 1 when the hand run's RESULT line shows a profit and no damage from a ship; then the veil-rays of Garnet Dim Lattice (8 at 21:24 UTC) the same way. | turn T6 |
+| drone | First Hunt: Belt-Grazers (1,000 cr once, 3 belt-grazer kills) for every drone, as a route, once the circuit runner can hunt for a mission (request to Unity). | when the runner step exists |
+| drone | Cinder-sylphs at Achernar Gas Pocket (40 hull; ember gland bid 480 cr for 550 at The Experiment): one ship, hand test. | turn T6 |
 | miner | Energy crystal at the nebula of hunt-gsc-veil-ray: one miner, 40 minutes by hand (mine.py), then one focus_energy_crystal craft by hand and the sale into the one-unit station bid at The Experiment; the crystal share per pull measured | turn T5, 2026-11-15 |
 | miner | Whether the station bid of 1,466 cr for one focused crystal at The Experiment refills, read from data/market/history.jsonl, before any second craft | turns T5 and T6 |
 
