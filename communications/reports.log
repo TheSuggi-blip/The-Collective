@@ -103,3 +103,12 @@ Failed: my chain of 1,466 x 879 was 1,466 x 1 (errors.log ENT-015); pilot names 
 Requests: requests.log ENT-039 (first-steps out, done), ENT-040 (depth in the runners, accepted), ENT-051 (sell step for mine routes), ENT-052 (gate against pilot names).
 Suggestions: water ice has station bids with depth at four of our stations (25 to 36 cr); count one-unit station bids as one-time prices; Trade's note that a station ask carries no tax is wrong (14 cr on 1,413); orders unchanged by me.
 Report: frontier-water-ice-pays-crystal-bid-one-unit.
+
+## [ENT-012] | 2026-11-15 23:57 UTC | Apollo | session | ref: reports/2026-11-15_apollo_once-missions-fill-the-plan-stored-soma-sells.md | see: orders.log ENT-007
+Session: scheduled run turn-apollo -- the once-missions put all 20 haulers to work; stored soma sells into station bids that refill.
+Did: voidborn-selling, voidborn-precedence and voidborn-first-hunt-nexus into the hauler plan as their RESULT lines came (+865, +3,896, +974 cr once); two hand tests: First Steps in the Void +913 cr in 10.8 min (Acubens carbon 0 -> 120), 3 stored soma sold at 678 cr from storage +2,034 cr (the leg after it -22 cr, no bid); workshop quote for circuit boards (0 cr, 6 ticks); lockbox, storage home and ice by-products answered; guidebook rewritten; knowledge station-bids-refill new, stored-ore-worth corrected.
+Worked: 0 of 20 haulers at work at 23:20 UTC, 20 of 20 at 23:40; Logistics 586,889 -> 738,040 cr (21:52 to 23:53 UTC, one-time +148,923, +2,228 without); credits recovered from stored goods +2,034; 0 ships lost or damaged, no hand hold left.
+Failed: a soma carried to a bid read 39 min earlier, gone (-22 cr); the methane price in queue.log ENT-050 dated to the wrong books (errors.log ENT-025); First Hunt GSC and Acubens without RESULT lines, not in the plan.
+Requests: requests.log ENT-064 (voidborn-first-steps on, Unity), ENT-065 (sell from storage, dispatch on a standing bid, Unity).
+Suggestions: sell the fleet's 302 stored soma before buying soma for the gap; keep the 47 silicon and 113 crystal at Central Nexus for circuit boards (a lockbox needs 50, 200 steel and 200,000 cr); station bids refill on their own clock (iron at Central Nexus 2,375 again after two hours).
+Report: once-missions-fill-the-plan-stored-soma-sells.
