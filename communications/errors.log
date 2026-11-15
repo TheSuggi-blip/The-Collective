@@ -97,3 +97,12 @@ Effect: the half hour of T3 and T4 was never met; the hour of my standing order 
 Cause: the threshold equals the target, and nothing holds a scout for the census when systems fall due.
 Found by this turn's check of the gaps; the age of the oldest read alone (46 minutes at 19:13 UTC) did not show it.
 Fix: not mine to make while F1 holds; asked in requests.log ENT-009. Would it have prevented this: in part; a 20-minute threshold leaves 10 minutes for the wait and the flight, the 45-minute runs can still hold every scout.
+
+## [ENT-011] | 2026-11-15 19:17 UTC | Zero | error | ref: fleet/gate.py
+Class: a command name taken from the official docs instead of from a fleet/ script that works.
+Case, 2026-11-15 19:0x UTC: `fleet/gate.py raw <own miner> get_action_log '{"category":"mining"}'` answered HTTP 500: unknown action "get_action_log" for tool spacemolt.
+Cause: the official mining page names `get_action_log`; the engine's tool groups use their own names, and no fleet/ script calls the action log. The fleet-play pitfall says to copy names from a working script; I did not.
+Effect: none on the ship (a read, refused). The split of a mining pull between resources stays unmeasured; I made no second guess at the name.
+Fix, done: a lesson in my skill mining-chains (copy an action from a fleet/ script, never guess a second name). The share is asked to be measured by a test run instead (requests.log ENT-001).
+Would it have prevented this one: yes, the lesson stands in the skill I use before naming a chain.
+Open: which tool group, if any, serves the action log through the gate is not known; it would let a route measure what each pull yields.
