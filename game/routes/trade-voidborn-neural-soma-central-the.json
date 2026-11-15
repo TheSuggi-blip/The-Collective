@@ -1,0 +1,29 @@
+{
+ "id": "trade-voidborn-neural-soma-central-the",
+ "kind": "circuit",
+ "title": "Voidborn Neural Soma: bought at The Core for 258 cr, sold at The Experiment Research Station for 690 cr",
+ "note": "Written by routemaker.py 2026-11-15 23:12 UTC from two order books: Central Nexus asked 258 cr (deep), The Experiment bid 690 cr for 2 units (22:58 UTC read); 3 units cost about 774 cr. Soma bids of 646 to 690 cr for 1 or 2 units came and went at four of our stations from 21:35 to 22:58 UTC (ledger.py prices voidborn_neural_soma). An estimate, not a measurement. Test of turn T7 (Mercury): one ship; the buy and the sale carry price limits.",
+ "max_ships": 1,
+ "min_credits": 3851,
+ "stops": [
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "buy": [
+    {
+     "item": "voidborn_neural_soma",
+     "qty": 3,
+     "max_price": 266
+    }
+   ]
+  },
+  {
+   "at": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+   "sell": [
+    {
+     "item": "voidborn_neural_soma",
+     "min_price": 611
+    }
+   ]
+  }
+ ]
+}

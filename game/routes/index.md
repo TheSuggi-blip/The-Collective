@@ -19,6 +19,8 @@ task one pilot carries out by itself; its file is `game/routes/<id>.json`
 | [fit-ice-harvester](fit-ice-harvester.json) | circuit | Fit an Ice Harvester I at Central Nexus: the tool every ice field needs | once per pilot, up to 2 ships | TBD | TBD | TBD | TBD | -- |
 | [fit-ice-harvester-guard](fit-ice-harvester-guard.json) | circuit | Fit an Ice Harvester I at Central Nexus: the tool every ice field needs | once per pilot, up to 2 ships | TBD | TBD | TBD | TBD | -- |
 | [park](park.json) | circuit | Dock at Central Nexus and wait there: a docked ship costs nothing | the park route | TBD | TBD | TBD | TBD | -- |
+| [trade-ceramite-plating-the-central](trade-ceramite-plating-the-central.json) | circuit | Ceramite Plating: bought at The Experiment Research Station for 899 cr, sold at The Core for 1185 cr | up to 1 ships | TBD | TBD | TBD | TBD | -- |
+| [trade-voidborn-neural-soma-central-the](trade-voidborn-neural-soma-central-the.json) | circuit | Voidborn Neural Soma: bought at The Core for 258 cr, sold at The Experiment Research Station for 690 cr | up to 1 ships | TBD | TBD | TBD | TBD | -- |
 | [voidborn-concurrent](voidborn-concurrent.json) | circuit | Concurrent Approval: accept at Central Nexus, deliver two neural soma to Node Beta (3,000 cr once) | once per pilot | TBD | TBD | TBD | TBD | -- |
 | [voidborn-first-hunt-acubens](voidborn-first-hunt-acubens.json) | circuit | First Hunt: Belt-Grazers: 1,000 cr once and 50 Weapons XP; three belt-grazers at Acubens Shadow Pocket | once per pilot, up to 1 ships | TBD | TBD | TBD | TBD | -- |
 | [voidborn-first-hunt-gsc](voidborn-first-hunt-gsc.json) | circuit | First Hunt: Belt-Grazers: 1,000 cr once and 50 Weapons XP; three belt-grazers at Spacetime Seep | once per pilot, up to 1 ships | TBD | TBD | TBD | TBD | -- |
@@ -65,9 +67,9 @@ task one pilot carries out by itself; its file is `game/routes/<id>.json`
 | drone | Apophis | voidborn-concurrent > voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > hunt-gsc-veil-ray > hunt-hamal-veil-ray > census-frontier > park |
 | hauler | Apollo | voidborn-concurrent > voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > census-frontier > park |
 | miner | Zero | voidborn-concurrent > voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > census-frontier > park |
-| scout | Oracle | voidborn-concurrent > voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > census-voidborn > census-frontier > park |
+| scout | Oracle | voidborn-selling > voidborn-concurrent > voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > census-voidborn > census-frontier > park |
 | sentinel | Unity | voidborn-concurrent > voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > voidborn-first-steps > voidborn-selling > voidborn-precedence > voidborn-first-hunt-nexus > voidborn-first-hunt-gsc > voidborn-first-hunt-acubens > fit-ice-harvester-guard > mine-node-beta-frozen-drift > mine-ruchbah-ice-belt > mine-achernar-frost-ring > mine-wolf-1061-frozen-drift > mine-keid-ice-shelf > mine-cryogenic-reserve > mine-alnair-ice-fields > mine-gsc-0041-frost-ring > mine-antares-ice-fields > mine-intercrus-ice-fields > census-frontier > park |
-| trader | Mercury | voidborn-concurrent > voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > census-frontier > park |
+| trader | Mercury | voidborn-concurrent > voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > trade-ceramite-plating-the-central > trade-voidborn-neural-soma-central-the > census-frontier > park |
 
 ## Planned
 

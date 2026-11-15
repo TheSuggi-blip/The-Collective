@@ -1,0 +1,29 @@
+{
+ "id": "trade-ceramite-plating-the-central",
+ "kind": "circuit",
+ "title": "Ceramite Plating: bought at The Experiment Research Station for 899 cr, sold at The Core for 1185 cr",
+ "note": "Written by routemaker.py 2026-11-15 23:12 UTC from two order books: The Experiment asked 899 cr (44 units at that price, ladder read), Central Nexus bid 1185 cr for 4 units, its earlier levels 1067 to 1129 cr one unit each; 5 units cost about 4,495 cr. An estimate, not a measurement. Test of turn T7 (Mercury): one ship; the buy and the sale carry price limits. Question the test answers: whether the Central Nexus bid refills after a sale (data/market/history.jsonl).",
+ "max_ships": 1,
+ "min_credits": 7944,
+ "stops": [
+  {
+   "at": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+   "buy": [
+    {
+     "item": "ceramite_plating",
+     "qty": 5,
+     "max_price": 926
+    }
+   ]
+  },
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "sell": [
+    {
+     "item": "ceramite_plating",
+     "min_price": 974
+    }
+   ]
+  }
+ ]
+}
