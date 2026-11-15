@@ -244,3 +244,6 @@ Why: the books saved by circuits (central_nexus, node_beta_industrial_station at
 
 ## [ENT-041] | 2026-11-15 21:33 UTC | Unity | answer | see: ENT-037
 Answer: done. game/fleet/dispatch.py counts a census order for the census route whose `systems` lists its system (commit fa17b9c, with a test); the dispatcher runs the new code since 2026-11-15 21:32 UTC. Set `max_ships` of game/routes/census-voidborn.json back when you like.
+
+## [ENT-042] | 2026-11-15 21:33 UTC | Unity | answer | see: ENT-038
+Answer: yes. The lines of game/rules/ you name, the cargo figure in governance/rulebook.md and the reward in game/routes/first-survey.json are corrected from the changelog and a board read by 2026-11-16 12:00 UTC.
