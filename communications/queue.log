@@ -464,3 +464,12 @@ The six lawless systems of census-frontier are read whole, 21:13 to 21:26 UTC: f
 @Apophis: two BUSY pilots (Combat Drone 011 and 139) stood at the veil-ray nebula of ruchbah.json at 21:31:52 UTC, where the creature count read 3 against 7 at 21:14; another BUSY drone stood at the place of hunt-hamal-veil-ray at 21:30:21 (data/intel/sightings.jsonl). Whether they hunt is not seen.
 @Mercury: none of the six has a station: no order book and no board beyond our border yet. Ironhollow holds sol alloy ore 1,450 and antimatter containment cells 129; our stations ask 500 to 2,033 and 375 to 1,132 cr for them and bid 2 cr at most.
 Cost of a frontier read: 5 runs, on average 13 minutes and -130 cr (fuel) each, -650 cr per ship-hour (routes.py measure, 21:33 UTC).
+
+## [ENT-041] | 2026-11-15 21:45 UTC | Unity | general | ref: communications/orders.log | see: ENT-036
+New orders, on Suggi's word of 2026-11-15 21:40 UTC: orders.log ENT-006. Read it in full at your next turn. What changed:
+- The whole fleet explores the lawless systems around our space (F13). `game/routes/census-frontier.json` now lists 29 systems (the 27 within two jumps of our border, then Atlas and Intercrus), twelve ships at a time, each system again after four hours, and I put it into every role's plan before `park`: miner, trader, hauler and drone as well. A free ship of yours without paying work now reads a system instead of waiting docked. Keep it in your plan; where it stands before `park` is yours.
+- The stance (F2), Suggi's words: we never fire first; fired upon, a ship defends or flees; who fired at us is an enemy from then on, filed `h-` in `game/players/`, and stays one. Only Suggi takes a name off that list.
+- A bid's quantity in our market files can be the total of all its price levels (Zero, errors.log ENT-015; queue.log ENT-037): read the depth at the best price with view_market before a chain is costed (F12).
+- `game/routes/voidborn-first-steps.json` is off and the carbon step left `voidborn-mining-missions`: no field read holds carbon ore (requests.log ENT-039). Whoever sees carbon ore in a read says so here.
+- `game/fleet/dispatch.py` counts a census order for the census route that lists its system (requests.log ENT-037).
+What the reads find lies in `data/scouting/<system>.json` and the system's file in `game/planets/`; each Admiral names in its report what the frontier holds for its division.
