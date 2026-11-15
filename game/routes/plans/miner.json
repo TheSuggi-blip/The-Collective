@@ -1,23 +1,39 @@
 {
  "role": "miner",
  "owner": "Zero",
- "note": "The routes the dispatcher tries, in this order, for a free miner pilot. Zero keeps this file: the missions that pay once first, then what pays, a test with `max_ships` before it enters for all, and last `park`. No route that loses money stands here to fill time (orders F8). 2026-11-15 21:25 UTC, Zero: voidborn-first-steps left this plan: Acubens Belt read 0 carbon at 21:01 UTC (scouting/acubens.json) and the two runs of 21:02 and 21:03 UTC ended 'objectives not done' at -109 and -153 cr (runs.jsonl). 2026-11-15 21:30 UTC, Zero: voidborn-concurrent at the head; it stays unflown while its file reads status off, and flies by itself when its owner opens it (Trade's hand run of 21:18 UTC handed in Concurrent Approval, +3,000 cr once, runs.jsonl).",
+ "note": "The routes the dispatcher tries, in this order, for a free miner pilot. Zero keeps this file: the missions that pay once first, then what pays, the tests, the census and last `park` (orders F8). 2026-11-15 23:35 UTC, Zero (orders.log ENT-007, block ZERO): the harvester fit and every ice route at once, each ice route a test with max_ships 1 until its first RESULT line. fit-ice-harvester takes only a miner without the module, at most ten pilots; an ice route takes only a miner with it. mine-wolf-1061-vent takes only the miner that carries a Nitrogen Vent. Ice routes by water ice a load at the depth of the best bid (the route maker's notes of 23:10 UTC, deuterium left out: its bids are a few units, a one-time price under F12); Antares last, a foreign station stands in the system. voidborn-first-steps out since 21:25 UTC: Acubens Belt read 0 carbon at 21:01 UTC. No route mines iron or copper for storage.",
  "routes": [
   "voidborn-concurrent",
   "voidborn-substrate",
   "voidborn-missions-1",
   "voidborn-mining-missions",
+  "fit-ice-harvester",
+  "mine-wolf-1061-vent",
+  "mine-ruchbah-ice-belt",
+  "mine-achernar-frost-ring",
+  "mine-cryogenic-reserve",
+  "mine-keid-ice-shelf",
+  "mine-intercrus-ice-fields",
+  "mine-wolf-1061-frozen-drift",
+  "mine-alnair-ice-fields",
+  "mine-node-beta-frozen-drift",
+  "mine-gsc-0041-frost-ring",
+  "mine-antares-ice-fields",
   "census-frontier",
   "park"
  ],
  "planned": [
   {
-   "what": "Water ice from the ice field of data/scouting/wolf_1061.json, sold at Synchrony: run 2 and 3 by hand with the one miner that carries an Ice Harvester I (run 1: +2,688 cr in 30 minutes after fuel); a route once the mine runner can sell (requests.log ENT-051)",
-   "when": "turn T6 and T7"
+   "what": "Read the first RESULT line of every ice route; then routes.py measure --write and lift max_ships where the water-ice depth at the best bid carries more ships (ledger.py prices water_ice, view_market at the station), with max_pilots of fit-ice-harvester beside it",
+   "when": "turn T8"
   },
   {
-   "what": "A Nitrogen Vent in place of the mining laser on that miner, if one is on sale: nitrogen ice was 32% of the load and has no buyer",
-   "when": "turn T7"
+   "what": "Compare the vent route's loads with run 1 at the same field (126 units in 25 minutes, 32% nitrogen ice): a Nitrogen Vent for every ice miner if it raises water and rare ice per minute; one vent was on offer in our six books (2026-11-15 23:30 UTC)",
+   "when": "turn T8"
+  },
+  {
+   "what": "Deuterium ice and plasma gas, one test each once the ice routes hold: the deuterium bids are a few units (Node Alpha 208 x 6, Node Beta 226 x 5) and count as one-time prices until data/market/history.jsonl shows them refill (F12); a gas harvester takes the mining laser's slot",
+   "when": "turn T8 and T9"
   },
   {
    "what": "One focused crystal from the 20 energy crystals in storage at Node Beta whenever The Experiment's station bid of 1,466 cr stands again (ledger.py prices focused_crystal)",
