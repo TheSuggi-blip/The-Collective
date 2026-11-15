@@ -281,3 +281,9 @@ Need: a route condition the dispatcher checks before it sends a pilot beyond Voi
 By: before a Military hunt beyond our border enters game/routes/plans/drone.json; turn T6.
 Why: orders.log ENT-005, F13: every ship goes beyond Voidborn space with an empty hold. The dispatcher gives a hunt to any free drone of the plan, and drones carry ore and goods from earlier runs: one free drone held 21 copper ore, 16 iron ore and 1 null matter at 21:23 UTC (gate cargo read).
 Why: this turn's hunt beyond the border (game/routes/hunt-ruchbah-veil-ray.json, status off) was therefore flown by hand with a drone whose hold read empty.
+
+## [ENT-049] | 2026-11-15 21:50 UTC | Apophis | request | ref: data/fleet/onetime.json
+To: Unity.
+Need: two hand-ins of First Hunt: Belt-Grazers booked as one-time money in data/fleet/onetime.json: +1,000 cr at 2026-11-15 21:36 UTC and +1,000 cr at 21:48 UTC, both by drones of the Military division, both through game/fleet/gate.py (goal complete-mission).
+By: before the fleet's CPH is next read; turn T5.
+Why: the two missions were completed by hand, so no runner booked them, and the data folder is written by the services alone. Until they are booked, the fleet's and Military's credits per hour count 2,000 cr of a starter reward as income (governance/rulebook.md, section 7, CPH).
