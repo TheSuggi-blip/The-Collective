@@ -12,5 +12,12 @@
  "kills": 12,
  "minutes": 40,
  "max_ships": 1,
- "min_creatures": 2
+ "min_creatures": 2,
+ "measured": {
+  "date": "2026-11-15",
+  "runs": 1,
+  "minutes": 46,
+  "credits_per_run": 3220,
+  "cph_per_ship": 4220
+ }
 }

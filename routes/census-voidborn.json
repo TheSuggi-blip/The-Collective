@@ -16,5 +16,12 @@
   "pherkad"
  ],
  "every_minutes": 30,
- "max_ships": 3
+ "max_ships": 3,
+ "measured": {
+  "date": "2026-11-15",
+  "runs": 17,
+  "minutes": 7,
+  "credits_per_run": 0,
+  "cph_per_ship": 0
+ }
 }
