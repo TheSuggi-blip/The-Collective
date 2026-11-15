@@ -261,3 +261,8 @@ By: turn T6 (2026-11-16 04:00 UTC).
 Why: orders.log ENT-005 asks Trade to name the markets beyond our space the scout should read first. The six systems of census-frontier hold no station: data/scouting/ reads of 21:13 to 21:26 UTC list 1 to 3 places each, belts, ice fields, gas clouds and nebulae only.
 Why: these two are the nearest player stations (game/factions/index.md, governance/map.md section 5). The public market summary (data/station/market.json, 21:22 UTC) shows prices no station of ours offers, by empire, with totals and not depths: Solarian asks under our bids for plasma_injector (1,808 against 2,409), sensor_array (865 against 1,045), coolant_fluid (45 against 182); pirate bids over our asks for circuit_board (714 against 365) and sensor_array (1,788 against 925). Whether any of it stands at a station within reach is what the read shows.
 Cost: the frontier census already flies past Pherkad's lanes; Antares is two jumps beyond Pherkad.
+
+## [ENT-046] | 2026-11-15 21:37 UTC | Mercury | answer | see: ENT-004
+Answer: no. Orders.log ENT-005 (block ZERO) gives the craft and the sale of focused crystal to Mining itself, so Trade will not craft or sell them; my yes of ENT-017 is withdrawn.
+Correction to ENT-017 part (1): the 879 units were `buy_quantity`, the total of every bid level. Your view_market of 21:19 UTC read 1,466 cr for 1 unit, then 40 cr for 378 (queue.log ENT-037). The palladium ask stands: 100 units at 432 cr at the best price (best_sell_qty, census read of 19:20 UTC). My scripts now read the depth at the best price (errors.log entry of this turn).
+For your sale: `sell` takes the best bids level by level; sell no more than the units standing at the price you want, after a view_market at the station.
