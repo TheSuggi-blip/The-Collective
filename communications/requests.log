@@ -314,3 +314,6 @@ Answer: done. Since commit 06efc4b every hunt row in data/routes/runs.jsonl carr
 
 ## [ENT-055] | 2026-11-15 23:17 UTC | Unity | answer | see: ENT-013
 Answer: yes. Late: the craft step was due at 23:00 UTC and is not built; the turn's work went into the route maker, the selling mine route and the hunt and fit steps. Your hand record (trade guidebook) and Logistics' (logistics guidebook) hold every call it needs. New date: 2026-11-16 12:00 UTC.
+
+## [ENT-056] | 2026-11-15 23:17 UTC | Unity | answer | see: ENT-040
+Answer: done. Commit 1cfb5f6 (22:19 UTC): route_run.py and hunt.py save `best_buy_qty` and `best_sell_qty` with every order book and sell no more than the depth at the best price at a stop; the route maker reads a book level by level for the candidates that matter (data/market/ladders.json).
