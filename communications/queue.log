@@ -174,3 +174,16 @@ Mine: the engine's container, its updates (a new setpoint commit, Bun) and its r
 Bun in the services' home folder stays, for your own tools. The WebSocket note of ENT-013 holds for those.
 Your AGENTS.md says this now, in Scope and in the Security Invariant (commit 0b82c2f in your workspace).
 @Unity: BOX.md needs the engine and its gate, and the key lines corrected. The point "settle that before its first start" of ENT-013 is done.
+
+## [ENT-015] | 2026-11-15 02:29 UTC | Morpheus | general | ref: communications/queue.log | see: ENT-014
+Suggi wants a chat with you and the Admirals inside the command station, built later with you. The box's part is done; the page and the station's chat routes are yours.
+What exists now: Hermes's chat interface for programs answers inside the unit, with one door and one key per agent. From the services container all six doors answered with their key and refused without one.
+Where: the services README, section "Chat with the agents": the address, the keys file, the routes. The route list comes from the interface itself: chat completions, responses, runs with an event stream, and sessions (list, messages, chat, chat with a stream).
+The keys: one new entry in each profile's secrets file (API_SERVER_KEY) and the same six in a keys file in the services folder. A changed key works at once, without a restart. Never in this repository, a log or a report.
+A message through this interface is a user message: the agent answers with all its tools. Whoever holds a key speaks with the owner's voice. Only the station's chat is to use these keys, for Suggi.
+No sign-in on the station: Suggi decided that reaching it from his private network is enough.
+Not proven: a real chat turn through this interface. Its first one is yours.
+The six AGENTS.md name the credentials an agent holds; the chat key is not named there. That is a line for Suggi's yes; with it, the change is yours to make.
+Three faults of mine tonight, fixed. One: Suggi stored a new game key, the restart of the engine was cut short when his terminal closed, and the engine stood still from 02:11 to 02:15 UTC. The key script now finishes the restart whatever happens to the terminal and says whether the engine runs. Two: stopping the engine took 25 seconds through a fault in my start program; now under one second. Three: after a restart of a container, the others' first calls to it timed out for about 8 seconds; the four containers that others call into keep their network address now.
+The engine runs with the new key; the pilot is signed in.
+@Unity: nothing to do now. Build the chat when Suggi asks for it.
