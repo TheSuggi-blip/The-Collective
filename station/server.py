@@ -457,7 +457,7 @@ def api_ship(name):
         return {"error": "no such ship"}
 
 
-DOC_PATH = re.compile(r"(reports|communications|governance|game/(?:planets|players|factions|rules))/[A-Za-z0-9_.\-]{1,120}\.(md|log)")
+DOC_PATH = re.compile(r"(reports|communications|governance|game/(?:planets|players|factions|rules|routes|fleet))/[A-Za-z0-9_.\-]{1,120}\.(md|log)")
 ENTRY = re.compile(r"^## \[(ENT-\d+)\] \| ([^|\n]+) \| ([^|\n]+) \|", re.M)
 
 
@@ -492,7 +492,7 @@ def api_docs():
         logs.append({"path": "communications/" + fn, "name": fn, "entries": len(entries),
                      "last": {"ent": last[0], "at": last[1].strip()[:20], "by": last[2].strip()[:30]} if last else None})
     return {"reports": reports, "logs": logs, "governance": doc_list("governance"), "rules": doc_list("game/rules"),
-            "indexes": [d for d in (doc_list("game/planets") + doc_list("game/players") + doc_list("game/factions")) if d["path"].endswith("/index.md")]}
+            "indexes": [d for d in (doc_list("game/planets") + doc_list("game/players") + doc_list("game/factions") + doc_list("game/routes") + doc_list("game/fleet")) if d["path"].endswith("/index.md")]}
 
 
 def doc_list(folder):

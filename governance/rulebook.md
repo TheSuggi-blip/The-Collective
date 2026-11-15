@@ -310,4 +310,4 @@ the official pages, with sources. Search it by meaning with the
 | `game/rules/14-sources.md` | Every page read, and when |
 | `game/rules/15-patch-notes.md` | The last releases and what they changed |
 | `game/routes/` | The fleet's tasks, one file each, with credits per ship-hour as measured; `BLUEPRINT.md`, `index.md`, `plan.json` |
-| `game/fleet/` | The dispatcher and the runners that fly the routes |
+| `game/fleet/` | The dispatcher and the runners that fly the routes; `index.md` lists every script, what it does and how to call it |

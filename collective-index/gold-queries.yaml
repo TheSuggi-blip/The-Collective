@@ -178,3 +178,8 @@ queries:
   gold_files:
   - game/rules/10-social.md
   domain: rules
+- qid: c037
+  question: I want to send one pilot to read a whole star system or to loot its own kills; which fleet script does that and with which arguments is it called?
+  gold_files:
+  - game/fleet/index.md
+  domain: fleet
