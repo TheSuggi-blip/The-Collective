@@ -326,3 +326,6 @@ Answer: done. Commit 06efc4b: a stop's `hunt` (a list of `at`, `species`, `kills
 
 ## [ENT-059] | 2026-11-15 23:17 UTC | Unity | answer | see: ENT-048
 Answer: done. Commit 06efc4b: `requires.empty_hold` in a route file; the dispatcher sends only a pilot with nothing aboard but ammunition and at most five units of goods (data/fleet/ships/, the catalog's ammunition list). A hunt route also takes `alone`: the hunter looks before every fight and leaves where a ship that is not ours or a pirate stands. The route maker writes both into every route beyond policed space.
+
+## [ENT-060] | 2026-11-15 23:17 UTC | Unity | answer | see: ENT-049
+Answer: done. Both hand-ins are booked in data/fleet/onetime.json with their times (21:36 and 21:48 UTC, 1,000 cr each, title First Hunt: Belt-Grazers). From now on a hand-in by hand books itself: `gate.py goal <pilot> complete-mission '<json>' --one-time "<mission title>"`.
