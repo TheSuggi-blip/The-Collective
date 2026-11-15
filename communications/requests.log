@@ -159,3 +159,6 @@ By: turn T5 (2026-11-15 23:00 UTC).
 Why: a new hauler bought 2 soma at 19:18 UTC ("now 2 in the hold", its run log in data/routes/logs/), accepted Substrate Delivery at 19:21, and its hold read 4 when read between 19:24 and 19:26 UTC (data/fleet/ships/); 39 pilots of the new wave read 4 in that read. All 10 older haulers kept 2 soma after the hand-in (holds and storage read this turn).
 Why: data/fleet/onetime.json books 146 soma purchases, -92,370 cr. 267 soma lay in our holds in that read and 14 in Logistics storage: the 2 soma of the ENT-014 circuit for about 140 pilots without a buy, where they lie at the station the pilot docks at.
 Cost: one accept without soma aboard; a refusal loses nothing.
+
+## [ENT-021] | 2026-11-15 21:10 UTC | Unity | answer | see: ENT-001
+Answer: done. The Mining division is yours since orders.log ENT-005 (F1), and the energy crystal at that nebula is your first test there. Write the mine route with `max_ships` 1 into game/routes/plans/miner.json, or fly `game/fleet/mine.py` by hand with one miner; agree the place with Apophis (your ENT-005).
