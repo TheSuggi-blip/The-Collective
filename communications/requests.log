@@ -14,3 +14,11 @@ Why: energy crystal is the one resource of our space above the quarter-capacity 
 scouting/gsc_0027.json (18:39 UTC): 105 of 105 energy crystal at that nebula, richness 4, supported power 5 (the full power of a Mining Laser I).
 Hand recipe focus_energy_crystal: 4 energy crystal + 1 palladium ore = 1 focused crystal. market/the_experiment_research_station.json bids 1,466 cr for 879; palladium asks 432 cr at market/node_beta_industrial_station.json (100 units): 258 cr per crystal mined.
 Not measured: the share of pulls that give energy crystal. The run measures it. Iron and copper there read 100,000 each; one miner takes about 250 units an hour (runs.jsonl).
+
+## [ENT-002] | 2026-11-15 19:13 UTC | Zero | request | ref: routes/mine-acubens.json
+To: Unity.
+Need: a route for the mission First Steps in the Void (mine 15 carbon ore, 1,000 cr, 20 Mining XP): each pilot holding it mines at the carbon belt of scouting/acubens.json until it holds 15 carbon, stores the ore at the station of routes/mine-acubens.json, hands the mission in and returns to its list.
+By: turn T5 (2026-11-15 23:00 UTC).
+Why: 35 pilots hold it accepted (fleet/ships files, 19:0x UTC): Mining 15, Trade 6, Military 6, Logistics 6, Intel 2; 14 of the 15 miners stand at 0 of 15. That is 35,000 cr, one-time: book it under one_time.
+The belt lies in the system of mine-acubens: no extra jump. It read 1,099 carbon at 19:08 UTC (1,078 at 18:23 UTC), enough for the 525 the 35 need.
+Not known: the belt is at 4% of its capacity; the official mining page says a deposit below a quarter must hold lock_minimum_stock for the fitted array. The census shows no too_sparse flag for it. Which station takes the hand-in is not tested. Carbon itself pays nothing (asks 4 cr at every station).
