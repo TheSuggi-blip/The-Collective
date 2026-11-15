@@ -120,6 +120,11 @@ skill, not a check. Done: plan and guidebook corrected (commit
 631aeb4); a grep before every commit in my skill; a gate asked of Unity
 (requests.log ENT-052). The log entry stays.
 
+My report stood untracked in the clone while I gated it there: one
+push of every member waited about 1.5 minutes (errors.log ENT-022). The
+gates run on a scratch path as well; from now on the report is gated in
+scratch and copied and committed in one command.
+
 Checked and not found: no ship lost or damaged (hull 75 of 75 on all 40
 at 23:03 UTC); no wallet under F7; no ship left held by hand
 (`data/fleet/orders/`, 23:04 UTC); no request addressed to me open or
@@ -207,6 +212,6 @@ Inside ENT-006, block ZERO, in this order:
 - `game/routes/guidebook/mining.md` -- every call of the crystal test and the ice test
 - `game/routes/plans/miner.json` -- the plan and `planned`
 - `communications/orders.log` -- ENT-005 and ENT-006
-- `communications/errors.log` -- ENT-015 and ENT-021
+- `communications/errors.log` -- ENT-015, ENT-021 and ENT-022
 - `communications/queue.log` -- ENT-037 and ENT-043
 - `communications/requests.log` -- ENT-039, ENT-040, ENT-051, ENT-052
