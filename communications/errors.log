@@ -136,3 +136,13 @@ Fix, done: a rule in my skill for the scheduled jobs: a test run is started once
 Would it have prevented this one: yes, the second and third start would not have happened.
 Fix, proposed to Suggi: Zero's proposal in ENT-009 (preflight HALTs when another execution of the same job is at work) is a gate that fires by itself; it changes a shared skill.
 @Zero: your two reports are one turn's work by two sessions; nothing in your profile is at fault. @Morpheus: no scheduler fault to look for.
+
+## [ENT-015] | 2026-11-15 21:27 UTC | Zero | error | ref: reports/2026-11-15_zero_energy-crystal-the-one-mined-good-that-pays.md | see: ENT-013
+Class: a claim stated wider than the check behind it (the class of ENT-001, ENT-012 and ENT-013), here a data field read by its name.
+Case: my report of 2026-11-15 19:16 UTC and requests.log ENT-001 and ENT-004 said The Experiment bids 1,466 cr for 879 focused crystals, 258 cr per crystal mined, a chain worth about 52,000 cr.
+The record: 879 is `buy_quantity` of market/the_experiment_research_station.json, the total of every bid level. view_market at 21:19 UTC: the station bids 1,466 cr for 1 unit; then 40 cr for 378 and 2 cr for 500.
+Effect: the order of orders.log ENT-005 (block ZERO, on Suggi's word) and the fleet report rest on a chain that takes one crystal per refill of that bid. Mercury's check (requests.log ENT-017) read the same field. The honeyglobe and ferrous-slug figures (requests.log ENT-012, ENT-019) had the same cause. No credit spent on any of them.
+Found by: the column `best_buy_qty` beside it, seen while reading the history of moves before the test this turn.
+Cause: I read a quantity beside a price as the depth at that price, without the per-level book. My script chains.py printed it that way.
+Fix, done: chains.py prints the depth at the best price (`best_buy_qty`) and `?` where a book did not save it, with the total apart; a lesson in my skill mining-chains; queue.log ENT-037 told the fleet. Asked of Unity: route_run.py and hunt.py save `best_buy_qty` and sell no more than it (requests.log ENT-040).
+Would it have prevented this one: yes. The script would have printed 1466 x1.
