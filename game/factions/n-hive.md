@@ -60,4 +60,6 @@ Append-only, newest last.
 
 ## Notes
 
-None.
+- Hive Antares (Antares, 5 jumps from Nexus Prime) was read from space by an own ship at 2026-11-15 22:01 UTC (data/scouting/antares.json); its order book was not read then. An own ship flew there at 23:23 UTC to dock and read it.
+- Our ships had met 50 HIVE pilots by 23:33 UTC, 25 of them last seen at Antares; 20 fly Runner hulls (data/intel/met.json).
+- No HIVE pilot has fired on a ship of ours (errors.log to ENT-022).

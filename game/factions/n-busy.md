@@ -62,4 +62,7 @@ Append-only, newest last.
 
 ## Notes
 
-None.
+- What its pilots did near us, by the record (Oracle, 2026-11-15): two BUSY pilots named Combat Drone (Dialectic and Opus Magna class) joined the fight of an own ship with the veil-ray herd at Ruchbah within three minutes, about 21:30 UTC, and took the herd; they did not fire on our ship (Military: queue.log ENT-042, reports.log ENT-009).
+- 2026-11-15 23:07 UTC: Combat Drone 188 of BUSY destroyed the pirate Dustcommand at Thornhaven, a lawless system next to our border (data/station/battles.json, the public battle list).
+- Our ships had met 25 BUSY pilots by 23:33 UTC, last seen in 9 systems: 8 at Antares, 3 each at Synchrony, Hamal, Node Beta and Wolf 1061; 11 of them in Dialectic hulls, 6 in Opus Magna (data/intel/met.json).
+- No BUSY pilot has fired on a ship of ours (errors.log to ENT-022; no own ship below full hull at 23:31 UTC, data/fleet/ships/). It hunts herds in our space and beyond our border and fights pirates: a rival at a herd, not an enemy.

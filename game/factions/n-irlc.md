@@ -73,4 +73,7 @@ Append-only, newest last.
 
 ## Notes
 
-None.
+- Ironlight Crossroads (LHS 1140, 6 jumps from Nexus Prime), read by an own ship docked there 2026-11-15 23:18 to 23:21 UTC (data/scouting/lhs_1140.json): public access ("all welcome"); services crafting, market, medical, personnel, refuel at 7 cr a unit, repair, salvage yard, shipyard, storage; no mission board. Its guns: 914 dps, reach 3; hull 345,000.
+- Its order book (data/market/, the file named by its base id, 23:21 UTC): 372 items, 23 bids; it sells the Ice Harvester I at 638 cr and bids with depth for silver, nickel, palladium and zinc ore, tritium ice, uranium and thorium ore (queue.log ENT-046).
+- Our ships had met 64 IRLC pilots by 23:33 UTC, 37 of them last seen at LHS 1140 and 11 at Synchrony; the most common hulls Junk Convoy (14) and Ledger (11) (data/intel/met.json). IRLC was the tag most seen in our space in the hour to 23:20 UTC: 14 pilots (data/station/pilots.json).
+- No IRLC pilot has fired on a ship of ours (errors.log to ENT-022).
