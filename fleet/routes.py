@@ -17,6 +17,9 @@ RULES:
   - A measured block changes only on a real move, so a pass rarely makes a commit.
   - A hunt is not credited with what it got for goods it carried in from an
     earlier run: those were earned on another route.
+  - A run that read no wallet (no credits before and after, both 0, or the note
+    `wallet not read`) counts for nothing: a route whose runs are all such has
+    no figure, and a figure built on them is taken out of its file.
 WHY:  what a route pays is written next to the route, and a wrong file is caught
       before a pilot flies it.
 
@@ -174,6 +177,13 @@ def earned(row):
     return row.get("delta", 0) - carried
 
 
+def readable(row):
+    """False for a run that read no wallet: it says nothing about credits. A pilot's wallet is never 0 (it keeps a floor)."""
+    before, after = row.get("credits_before"), row.get("credits_after")
+    numbers = all(isinstance(v, (int, float)) and not isinstance(v, bool) for v in (before, after))
+    return numbers and bool(before or after) and "wallet not read" not in (row.get("notes") or [])
+
+
 def measure(root, data, write):
     rows = []
     try:
@@ -188,8 +198,15 @@ def measure(root, data, write):
     routes, _errors = routes_of(root)
     changed = []
     for rid in sorted({r.get("route") for r in rows if r.get("route")}):
-        mine = [r for r in rows if r.get("route") == rid and r.get("minutes")]
+        every = [r for r in rows if r.get("route") == rid and r.get("minutes")]
+        mine = [r for r in every if readable(r)]
         if not mine:
+            if every:
+                print("%-28s runs %-4d none read a wallet: no figure" % (rid, len(every)))
+                if write and (routes.get(rid) or {}).get("measured"):
+                    del routes[rid]["measured"]
+                    (Path(root) / "routes" / (rid + ".json")).write_text(json.dumps(routes[rid], indent=1) + "\n", encoding="ascii")
+                    changed.append(rid)
             continue
         minutes = sum(r["minutes"] for r in mine)
         figure = {"date": time.strftime("%Y-%m-%d", time.gmtime()), "runs": len(mine), "minutes": round(statistics.median(r["minutes"] for r in mine)),
@@ -197,7 +214,7 @@ def measure(root, data, write):
                   "cph_per_ship": int(round(60 * sum(earned(r) for r in mine) / minutes, -1)) if minutes else 0}
         print("%-28s runs %-4d minutes %-4d credits per run %-8s per ship-hour %-8s %s" % (
             rid, figure["runs"], figure["minutes"], format(figure["credits_per_run"], ","), format(figure["cph_per_ship"], ","),
-            "" if rid in routes else "(no route file)"))
+            ("" if rid in routes else "(no route file)") + (" (%d more runs read no wallet)" % (len(every) - len(mine)) if len(every) > len(mine) else "")))
         old = (routes.get(rid) or {}).get("measured") or {}
         moved = not old or abs(figure["cph_per_ship"] - old.get("cph_per_ship", 0)) >= 0.2 * max(abs(old.get("cph_per_ship", 0)), 100) \
             or figure["runs"] >= 2 * max(old.get("runs", 0), 1)

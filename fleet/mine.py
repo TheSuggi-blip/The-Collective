@@ -16,6 +16,9 @@ USAGE:
   mine.py <pilot> <system:poi> <system:poi:base> [--minutes M] [--sell] [--route ID]
 
 Writes one row to data/routes/runs.jsonl (minutes, credits before and after, ore mined).
+The wallet is read from the engine's answer for the account (state.credits), the ore
+from the collector's file of the ship (stats.ore_mined). A run that could not read its
+wallet carries the note `wallet not read`: it says nothing about credits.
 Stdlib only. ASCII only.
 """
 
@@ -32,6 +35,18 @@ import urllib.request
 GATE = os.environ.get("FLEET_GATE", "http://172.30.0.32:7580")
 DATA = os.environ.get("FLEET_DATA_ROOT", "/srv/collective/data")
 OPENER = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+
+
+def credits_of(account):
+    """The wallet in the engine's answer for one account, or None when the answer holds none."""
+    value = ((account or {}).get("state") or {}).get("credits")
+    return int(value) if isinstance(value, (int, float)) and not isinstance(value, bool) else None
+
+
+def ore_of(ship):
+    """Units mined so far in the collector's file of one ship, or None when it holds no count."""
+    value = ((ship or {}).get("stats") or {}).get("ore_mined")
+    return int(value) if isinstance(value, (int, float)) and not isinstance(value, bool) else None
 
 
 def option(args, name, default):
@@ -67,12 +82,14 @@ def main():
         except OSError:
             pass
 
-    def state():
-        return call("GET", "/accounts/" + quoted)[1].get("state") or {}
-
     def numbers():
-        player = state().get("player") or {}
-        return int(player.get("credits") or 0), int((player.get("stats") or {}).get("ore_mined") or 0)
+        """(credits, ore mined so far); None for a value that could not be read."""
+        try:
+            with open(os.path.join(DATA, "fleet", "ships", pilot + ".json"), encoding="utf-8") as handle:
+                ship = json.load(handle)
+        except (OSError, ValueError):
+            ship = {}
+        return credits_of(call("GET", "/accounts/" + quoted)[1]), ore_of(ship)
 
     os.makedirs(os.path.dirname(order_file), exist_ok=True)
     with open(order_file, "w", encoding="utf-8") as handle:
@@ -107,15 +124,19 @@ def main():
         time.sleep(15)
     credits_after, ore_after = numbers()
     took = (time.time() - started) / 60
+    if credits_before is None or credits_after is None:
+        notes.append("wallet not read")
+    delta = 0 if "wallet not read" in notes else credits_after - credits_before
+    ore = None if ore_before is None or ore_after is None else ore_after - ore_before
     row = {"route": route_id, "kind": "mine", "pilot": pilot, "started": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(started)), "minutes": round(took, 1),
-           "credits_before": credits_before, "credits_after": credits_after, "delta": credits_after - credits_before, "one_time": 0,
-           "ore": ore_after - ore_before, "notes": notes}
+           "credits_before": credits_before, "credits_after": credits_after, "delta": delta, "one_time": 0,
+           "ore": ore, "notes": notes}
     os.makedirs(os.path.join(DATA, "routes"), exist_ok=True)
     with open(os.path.join(DATA, "routes", "runs.jsonl"), "a", encoding="utf-8") as handle:
         fcntl.flock(handle, fcntl.LOCK_EX)
         handle.write(json.dumps(row, separators=(",", ":")) + "\n")
-    print("RESULT %s: mined %d ore at %s in %.0f min | credits %d -> %d (%+d) | %s" % (
-        pilot, ore_after - ore_before, belt[1], took, credits_before, credits_after, credits_after - credits_before, "; ".join(notes) or "no notes"), flush=True)
+    print("RESULT %s: mined %s ore at %s in %.0f min | credits %s -> %s (%+d) | %s" % (
+        pilot, "an unread amount of" if ore is None else ore, belt[1], took, credits_before, credits_after, delta, "; ".join(notes) or "no notes"), flush=True)
     return 0
 
 

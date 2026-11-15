@@ -174,26 +174,57 @@ class RouteGateTests(Tree):
             self.assertIn("role `drone` must end with a route that is always open (%s); `%s` is not" % (why, last), found[0])
 
     def test_measure_writes_a_figure_once_and_again_only_on_a_real_move(self):
-        rows = [{"route": "mine", "pilot": "miner-1", "minutes": 30, "delta": -40}, {"route": "mine", "pilot": "miner-2", "minutes": 60, "delta": -50}]
+        rows = [{"route": "mine", "pilot": "miner-1", "minutes": 30, "delta": -40, "credits_before": 9000, "credits_after": 8960},
+                {"route": "mine", "pilot": "miner-2", "minutes": 60, "delta": -50, "credits_before": 9000, "credits_after": 8950}]
         (self.data / "routes" / "runs.jsonl").write_text("".join(json.dumps(r) + "\n" for r in rows))
         self.routes.measure(str(self.root), str(self.data), True)
         figure = json.loads((self.root / "routes" / "mine.json").read_text())["measured"]
         self.assertEqual((figure["runs"], figure["minutes"], figure["credits_per_run"], figure["cph_per_ship"]), (2, 45, -40, -60))
         stamp = (self.root / "routes" / "mine.json").stat().st_mtime_ns
         with open(self.data / "routes" / "runs.jsonl", "a") as handle:
-            handle.write(json.dumps({"route": "mine", "pilot": "miner-3", "minutes": 45, "delta": -45}) + "\n")
+            handle.write(json.dumps({"route": "mine", "pilot": "miner-3", "minutes": 45, "delta": -45, "credits_before": 9000, "credits_after": 8955}) + "\n")
         self.routes.measure(str(self.root), str(self.data), True)
         self.assertEqual((self.root / "routes" / "mine.json").stat().st_mtime_ns, stamp)          # 3 runs, the same rate: untouched
 
     def test_a_hunt_is_not_credited_with_goods_it_carried_in(self):
-        rows = [{"route": "rays", "kind": "hunt", "pilot": "drone-1", "minutes": 30, "delta": 1140, "goods": {"carapace": 3}, "sold": {"curd": [4, 330, 1320]}},
-                {"route": "rays", "kind": "hunt", "pilot": "drone-2", "minutes": 30, "delta": 3000, "goods": {"curd": 9}, "sold": {"curd": [10, 330, 3300]}}]
+        rows = [{"route": "rays", "kind": "hunt", "pilot": "drone-1", "minutes": 30, "delta": 1140, "goods": {"carapace": 3}, "sold": {"curd": [4, 330, 1320]},
+                 "credits_before": 20000, "credits_after": 21140},
+                {"route": "rays", "kind": "hunt", "pilot": "drone-2", "minutes": 30, "delta": 3000, "goods": {"curd": 9}, "sold": {"curd": [10, 330, 3300]},
+                 "credits_before": 20000, "credits_after": 23000}]
         self.assertEqual([round(self.routes.earned(r)) for r in rows], [-180, 2670])            # all four carried in; one of ten
         self.assertEqual(self.routes.earned({"route": "missions", "kind": "circuit", "delta": 500, "sold": {"curd": [4, 330, 1320]}}), 500)
         (self.data / "routes" / "runs.jsonl").write_text("".join(json.dumps(r) + "\n" for r in rows))
         self.routes.measure(str(self.root), str(self.data), True)
         figure = json.loads((self.root / "routes" / "rays.json").read_text())["measured"]
         self.assertEqual((figure["runs"], figure["credits_per_run"], figure["cph_per_ship"]), (2, 1240, 2490))
+
+    def test_a_run_that_read_no_wallet_gives_no_figure_and_takes_a_false_one_out(self):
+        blind = [{"route": "mine", "kind": "mine", "pilot": "miner-1", "minutes": 45, "delta": 0, "credits_before": 0, "credits_after": 0},
+                 {"route": "mine", "kind": "census", "pilot": "scout-1", "minutes": 7, "delta": 0},
+                 {"route": "mine", "kind": "mine", "pilot": "miner-2", "minutes": 45, "delta": 0, "credits_before": None, "credits_after": 9000, "notes": ["wallet not read"]}]
+        self.assertEqual([self.routes.readable(r) for r in blind], [False, False, False])
+        path = self.root / "routes" / "mine.json"
+        route = dict(ROUTES["mine"]); route["measured"] = {"date": "2026-01-01", "runs": 3, "minutes": 45, "credits_per_run": 0, "cph_per_ship": 0}
+        path.write_text(json.dumps(route), encoding="ascii")
+        (self.data / "routes" / "runs.jsonl").write_text("".join(json.dumps(r) + "\n" for r in blind))
+        self.routes.measure(str(self.root), str(self.data), False)
+        self.assertIn("measured", json.loads(path.read_text()))                                 # a rehearsal changes nothing
+        self.routes.measure(str(self.root), str(self.data), True)
+        self.assertNotIn("measured", json.loads(path.read_text()))                              # "0 credits" was never measured
+        with open(self.data / "routes" / "runs.jsonl", "a") as handle:
+            handle.write(json.dumps({"route": "mine", "kind": "mine", "pilot": "miner-3", "minutes": 60, "delta": -190, "credits_before": 9000, "credits_after": 8810}) + "\n")
+        self.routes.measure(str(self.root), str(self.data), True)
+        figure = json.loads(path.read_text())["measured"]
+        self.assertEqual((figure["runs"], figure["credits_per_run"], figure["cph_per_ship"]), (1, -190, -190))   # the one run that read
+
+    def test_the_mining_runner_reads_the_wallet_where_the_engine_puts_it(self):
+        mine = load("mine")
+        answer = {"username": "miner-7", "state": {"credits": 29785, "location": {}, "ship": {}}, "loop": {}}   # the shape the gate answered on 2026-11-15
+        self.assertEqual(mine.credits_of(answer), 29785)
+        self.assertIsNone(mine.credits_of({"state": {"player": {"credits": 29785}}}))           # the field the first version read: not there
+        self.assertIsNone(mine.credits_of({}))
+        self.assertEqual(mine.ore_of({"stats": {"ore_mined": 446}}), 446)
+        self.assertIsNone(mine.ore_of({"stats": {}}))
 
 
 if __name__ == "__main__":

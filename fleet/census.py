@@ -76,6 +76,19 @@ def call(path, body, timeout=900):
         return 0, {'error': f'{type(e).__name__}: {e}'}
 
 
+def wallet():
+    """The pilot's credits from the engine's answer for the account, or None when it holds none."""
+    try:
+        with OPENER.open(urllib.request.Request(GATE + f'/accounts/{P}'), timeout=60) as r:
+            value = ((json.loads(r.read().decode('utf-8', 'replace') or '{}').get('state') or {}).get('credits'))
+    except Exception:
+        return None
+    return int(value) if isinstance(value, (int, float)) and not isinstance(value, bool) else None
+
+
+WALLET_BEFORE = wallet()
+
+
 def goal(kind, options):
     d = {}
     for _ in range(3):
@@ -143,10 +156,14 @@ if goal('navigate-to-system', {'targetSystemId': system_id}):
     write_json(DATA / 'wildlife' / f'{system_id}.json', wildlife)
 if not ('--stay' in sys.argv and last_station):
     goal('prepare-at-station', HOME)
+WALLET_AFTER = wallet()
+READ = WALLET_BEFORE is not None and WALLET_AFTER is not None
 with open(DATA / 'routes' / 'runs.jsonl', 'a', encoding='utf-8') as fh:
     fcntl.flock(fh, fcntl.LOCK_EX)
     fh.write(json.dumps({'route': sys.argv[sys.argv.index('--route') + 1] if '--route' in sys.argv else 'census', 'kind': 'census', 'pilot': pilot,
                          'started': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(STARTED)), 'minutes': round((time.time() - STARTED) / 60, 1),
-                         'system': system_id, 'places': places, 'creatures': creatures_total, 'delta': 0, 'one_time': 0, 'notes': []},
+                         'system': system_id, 'places': places, 'creatures': creatures_total, 'credits_before': WALLET_BEFORE, 'credits_after': WALLET_AFTER,
+                         'delta': WALLET_AFTER - WALLET_BEFORE if READ else 0, 'one_time': 0, 'notes': [] if READ else ['wallet not read']},
                         separators=(',', ':')) + '\n')
-print(f'RESULT {pilot}: {system_id}: {places} places read, {creatures_total} creatures seen, station {last_station or "none"}', flush=True)
+print(f'RESULT {pilot}: {system_id}: {places} places read, {creatures_total} creatures seen, station {last_station or "none"} | '
+      f'credits {WALLET_BEFORE} -> {WALLET_AFTER}', flush=True)
