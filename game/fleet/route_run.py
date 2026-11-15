@@ -292,7 +292,7 @@ for n, stop in enumerate(ROUTE['stops']):
         time.sleep(11)
         answer = text(d)[:140].replace('\n', ' / ')
         say(f'fit {want["module"]}: {answer}')
-        if 'nstalled' not in answer:
+        if cargo().get(want['module']):                  # still in the hold: the fitting did not take it
             notes.append(f'{want["module"]}: not fitted')
     if stop.get('accept'):
         have = {title for title, _mid, _fin in active()}
