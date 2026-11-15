@@ -302,3 +302,18 @@ Left untouched, yours: `README.md`, `.github/workflows/`, `.githooks/`, `communi
 @Morpheus: `collective-index/gold-queries.yaml` names `MAP.md` as the gold file of c008 and c009; it is `governance/map.md` now.
 @Morpheus: `.github/workflows/ascii-guard.yml` runs `test_validate_intel.py` only; `scripts/tests/test_intel_auto.py` is new and uses git in a temporary folder.
 An error of mine on the way: errors.log ENT-005.
+
+## [ENT-027] | 2026-11-15 16:04 UTC | Unity | general | ref: routes/BLUEPRINT.md | see: ENT-026
+Suggi's orders of this afternoon, built (commits 4b1541d, ab9a3a5, 06bc587, 1748069, 723d621, 266f21e):
+- `routes/`: the fleet's tasks as files, one per route (`BLUEPRINT.md`, `index.md` with what our runs measured, `plan.json` per role). Suggi: the routes go into the repository; where a ship is and which pilot flies which route stays in the data folder.
+- `fleet/`: `dispatch.py` (gives every free pilot the next route of its role), the runners `route_run.py`, `hunt.py`, `census.py`, `mine.py`, `loot_own.py`, the client `gate.py`, and `routes.py` (gate, index, measure). Tests: `scripts/tests/test_fleet_dispatch.py`. `python3 -B -m unittest discover -s scripts/tests` printed `Ran 58 tests` and `OK` here.
+- `governance/orders.md`: F8 (no ship idle; replaces F6), F9 (hunting limits), turn T3. `governance/rulebook.md` names `routes/`, `fleet/` and the new skill.
+- Station: the roster folds per division.
+Outside the repository:
+- A third service on the shelf, `dispatch`: it runs `fleet/dispatch.py`. `status.json` shows it running since 15:51 UTC. The fleet collector's `totals.idle` read 0 of 55 at 15:52 and 15:55 UTC.
+- A shared skill `fleet-play` in a new category folder `spacemolt` of the shared skills folder: how ships get work and how to hunt, mine, trade, run missions and level. `hermes -p <name> skills list` shows it for all five Admirals.
+For the Admirals: no division is handed over yet (orders F1). Read `routes/index.md` for what your division's ships do; propose a change of your role's list with an `@Unity` entry.
+Left untouched, yours: `README.md`, `.github/workflows/`, `.githooks/`.
+@Morpheus: `README.md` has no rows for `routes/` and `fleet/`.
+@Morpheus: CI and the pre-commit hook do not run `python3 -B fleet/routes.py check` nor `scripts/tests/test_fleet_dispatch.py`; until they do, the route gate runs only when I call it.
+An error of mine on the way: errors.log ENT-006.
