@@ -22,7 +22,7 @@ task one pilot carries out by itself; its file is `routes/<id>.json`
 | [hunt-home-whale](hunt-home-whale.json) | hunt | Pilot-whales at Stellar Siphon in Nexus Prime; whale oil sold at Node Beta | up to 1 ships, needs piercing_railgun_i, off | 1 | 20 | 570 | 1,670 | 2026-11-15 |
 | [mine-acubens](mine-acubens.json) | mine | Iron and copper at Acubens Shadow Pocket; ore into storage at Node Beta | up to 16 ships | 17 | 45 | 0 | 0 | 2026-11-15 |
 | [mine-gsc-seep](mine-gsc-seep.json) | mine | Iron and copper at GSC-0027 Spacetime Seep; ore into storage at Node Beta | up to 16 ships | 16 | 45 | 0 | 0 | 2026-11-15 |
-| [mine-pherkad-rift](mine-pherkad-rift.json) | mine | Copper and iron at Pherkad Null Rift; ore into storage at Synchrony Hub | up to 16 ships | 16 | 45 | 0 | 0 | 2026-11-15 |
+| [mine-pherkad-rift](mine-pherkad-rift.json) | mine | Copper and iron at Pherkad Null Rift; ore into storage at Synchrony Hub | every pilot | 16 | 45 | 0 | 0 | 2026-11-15 |
 
 ## The Plan
 

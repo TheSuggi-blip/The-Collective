@@ -86,8 +86,11 @@ runner books them so that CPH counts recurring income only.
 5. A hunt sets `max_ships` and `min_creatures`: a herd regrows only
    when it is hunted below its replacement rate, and it starves when
    its deposit is mined out (`rules/` wildlife).
-6. Each role's list in `plan.json` ends with routes that are always
-   open (the mines), so no pilot is left without work.
+6. Each role's list in `plan.json` ends with a route that is always
+   open: a mine that is not `off` and has no `max_ships`, `once`,
+   `min_credits` or `requires`. The gate checks it. A list whose
+   routes can all fill up leaves a ship idle: on 2026-11-15 three
+   mines of 16 ships each left two traders without work.
 7. A figure in `note` carries its date; `measured` is never typed by
    hand.
 

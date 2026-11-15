@@ -27,6 +27,7 @@ ROUTES = {
     "rays": {"id": "rays", "kind": "hunt", "title": "t", "place": "far:nebula", "sell_at": "home:core:base", "species": ["veil_ray"], "max_ships": 1, "min_creatures": 2},
     "census": {"id": "census", "kind": "census", "title": "t", "systems": ["home", "far"], "every_minutes": 60, "max_ships": 1},
     "mine": {"id": "mine", "kind": "mine", "title": "t", "belt": "far:belt", "station": "home:core:base", "max_ships": 2},
+    "open": {"id": "open", "kind": "mine", "title": "t", "belt": "far:rift", "station": "home:core:base"},
 }
 PLAN = {"roles": {"drone": ["missions", "whale", "rays", "mine"], "scout": ["missions", "census", "mine"], "miner": ["off-route", "mine"]}}
 
@@ -140,16 +141,16 @@ class PassTests(Tree):
 class RouteGateTests(Tree):
     def setUp(self):
         super().setUp()                                                                           # the gate's tree has a plan without the unknown route
-        clean = {"roles": {role: [r for r in ids if r in ROUTES] for role, ids in PLAN["roles"].items()}}
+        clean = {"roles": {role: [r for r in ids if r in ROUTES] + ["open"] for role, ids in PLAN["roles"].items()}}
         (self.root / "routes" / "plan.json").write_text(json.dumps(clean), encoding="ascii")
 
     def test_the_gate_passes_a_clean_tree_with_a_current_index(self):
         self.assertIn("routes/index.md is missing or stale", self.routes.check(str(self.root))[0][-1])
         (self.root / "routes" / "index.md").write_text(self.routes.index_text(str(self.root)), encoding="ascii")
-        self.assertEqual(self.routes.check(str(self.root)), ([], 5))
+        self.assertEqual(self.routes.check(str(self.root)), ([], 6))
         first = (self.root / "routes" / "index.md").read_text(encoding="ascii")
         self.assertEqual(self.routes.index_text(str(self.root)), first)                           # same input, same bytes, same id
-        self.assertIn("| drone | missions > whale > rays > mine |", first)
+        self.assertIn("| drone | missions > whale > rays > mine > open |", first)
 
     def test_each_rule_fails_alone(self):
         def errors_with(rid, change):
@@ -164,8 +165,13 @@ class RouteGateTests(Tree):
         self.assertIn("system `nowhere` is not on the chart", errors_with("rays", {"place": "nowhere:nebula"})[0])
         self.assertIn("`sell_at` must have 3 parts", errors_with("rays", {"sell_at": "home:core"})[0])
         self.assertIn("stop 1: `at` must be system:poi:base", errors_with("missions", {"stops": [{"at": "home"}]})[0])
-        (self.root / "routes" / "plan.json").write_text(json.dumps({"roles": {"drone": ["ghost"]}}), encoding="ascii")
+        (self.root / "routes" / "plan.json").write_text(json.dumps({"roles": {"drone": ["ghost", "open"]}}), encoding="ascii")
         self.assertIn("names `ghost`, which is no route file", [e for e in self.routes.check(str(self.root))[0] if "index.md" not in e][0])
+        for last, why in (("mine", "a mine without max_ships"), ("rays", "a mine without max_ships"), ("missions", "a mine without once, min_credits")):
+            (self.root / "routes" / "plan.json").write_text(json.dumps({"roles": {"drone": ["open", last]}}), encoding="ascii")
+            found = [e for e in self.routes.check(str(self.root))[0] if "index.md" not in e]
+            self.assertEqual(len(found), 1, last)
+            self.assertIn("role `drone` must end with a route that is always open (%s); `%s` is not" % (why, last), found[0])
 
     def test_measure_writes_a_figure_once_and_again_only_on_a_real_move(self):
         rows = [{"route": "mine", "pilot": "miner-1", "minutes": 30, "delta": -40}, {"route": "mine", "pilot": "miner-2", "minutes": 60, "delta": -50}]

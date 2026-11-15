@@ -10,7 +10,9 @@ WHAT: routes/<id>.json are the fleet's tasks (routes/BLUEPRINT.md); routes/plan.
                   in the route file's `measured` block when they moved by a fifth or more.
 RULES:
   - A route's id is its file name; its systems are on the chart (map/galaxy.tsv).
-  - The plan names only routes that exist.
+  - The plan names only routes that exist, and the last route of every
+    role's list is always open: not `off`, not `once`, without `max_ships`,
+    `min_credits` and `requires`. A list that can fill up leaves a ship idle.
   - index.md is written by this script, never by hand; `check` fails on a stale one.
   - A measured block changes only on a real move, so a pass rarely makes a commit.
 WHY:  what a route pays is written next to the route, and a wrong file is caught
@@ -99,6 +101,11 @@ def check(root):
                 for rid in ids:
                     if rid not in routes:
                         errors.append("routes/plan.json: role `%s` names `%s`, which is no route file" % (role, rid))
+                last = routes.get(ids[-1]) if ids else None
+                closed = [key for key in ("once", "max_ships", "min_credits", "requires") if (last or {}).get(key)] + (["status off"] if (last or {}).get("status") == "off" else [])
+                if last is not None and (closed or last.get("kind") not in ("mine",)):
+                    errors.append("routes/plan.json: role `%s` must end with a route that is always open (a mine without %s); `%s` is not, and a full list leaves a ship idle"
+                                  % (role, ", ".join(closed) or "limits", ids[-1]))
         except (OSError, ValueError) as error:
             errors.append("routes/plan.json: not readable as ASCII JSON: %s" % error)
     if routes and index_text(root, keep_id=True) != current_index(root):
