@@ -179,6 +179,7 @@ def command(route, pilot, argument, root):
     system, poi = route["place"].split(":")
     out = base + [system, poi, "--kills", str(route.get("kills", 8)), "--minutes", str(route.get("minutes", 40)),
                   "--min-bid", str(route.get("min_bid", 100)), "--sell-at", route["sell_at"], "--route", route["id"]]
+    out += ["--max-prey-hull", str(route["max_prey_hull"])] if route.get("max_prey_hull") else []
     return out + (["--species", ",".join(route["species"])] if route.get("species") else [])
 
 

@@ -51,7 +51,7 @@ the scripts in `fleet/` fly them; nobody retypes a route into a chat.
 | Kind | Fields | The runner does |
 |---|---|---|
 | `circuit` | `stops`, `one_time` | Docks at each stop and there, in this order: hands in finished missions, `redock`, `store`, `sell`, `buy`, `accept`; saves the order book and the board |
-| `hunt` | `place` (system:poi), `species`, `sell_at` (system:poi:base), `min_bid`, `kills`, `minutes`, `min_creatures`, `rest_minutes` | Hunts grazers of the species, loots its own carcasses, sells what a bid of `min_bid` or more takes |
+| `hunt` | `place` (system:poi), `species`, `sell_at` (system:poi:base), `min_bid`, `kills`, `minutes`, `min_creatures`, `rest_minutes`, `max_prey_hull` (default 100) | Hunts grazers of the species, loots its own carcasses, sells what a bid of `min_bid` or more takes |
 | `census` | `systems`, `every_minutes` | Reads the stalest system whole: deposits, creatures, order book, mission board |
 | `mine` | `belt` (system:poi), `station` (system:poi:base), `minutes` | Runs the engine's mining loop for the time; the ore goes into storage |
 
@@ -80,12 +80,15 @@ runner books them so that CPH counts recurring income only.
    then its `status` is `off`.
 3. A route that buys says what the goods cost in its `note`, and sets
    `min_credits`.
-4. A hunt sets `max_ships` and `min_creatures`: a herd regrows only
+4. A hunt names its `species`. Prey above 100 hull hits back hard: a
+   pilot-whale (220) nearly killed a starter. Raise `max_prey_hull`
+   only for a hull that was tested against that prey.
+5. A hunt sets `max_ships` and `min_creatures`: a herd regrows only
    when it is hunted below its replacement rate, and it starves when
    its deposit is mined out (`rules/` wildlife).
-5. Each role's list in `plan.json` ends with routes that are always
+6. Each role's list in `plan.json` ends with routes that are always
    open (the mines), so no pilot is left without work.
-6. A figure in `note` carries its date; `measured` is never typed by
+7. A figure in `note` carries its date; `measured` is never typed by
    hand.
 
 ## 5. The Ladder of a New Pilot

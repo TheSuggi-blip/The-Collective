@@ -1,7 +1,8 @@
 """Hunt grazers at one place, loot the carcasses and sell what the kills bring.
 
 Usage: python3 -I hunt.py <pilot> <system_id> <poi> [--species a,b] [--kills N] [--minutes M]
-                          [--min-bid CR] [--sell-at system:poi:base] [--route ID] [--keep]
+                          [--min-bid CR] [--sell-at system:poi:base] [--max-prey-hull N]
+                          [--route ID] [--keep]
 
 Only creatures whose role is `grazer` are hunted (the game: prey that
 does not start a fight; wildlife never joins a herd-mate's fight; hunting
@@ -26,7 +27,12 @@ What was measured (2026-11-15, starter ship Threshold):
 - A weapon with a magazine is refilled from the same ammo in the hold
   when it runs low; without ammo the hunt ends.
 
-The pilot flees a fight when its hull falls under half. After --kills
+Safety (the worst case is a lost ship): prey above --max-prey-hull (default
+100) is never picked: a pilot-whale of 220 hull took a starter from 73 to 15
+hull inside one fight, railgun or not. No fight is started under 60% hull:
+the pilot goes to the station, which repairs. In a fight the pilot reads its
+own hull and shield from the battle table every tick and flees under 60% hull,
+or when its shield is gone while the prey still has over 40% hull. After --kills
 kills (default 5) or --minutes minutes (default 40), or when no grazer is
 left or the hold is full, it loots once more, docks at the station named
 by --sell-at (default Central Nexus), sells every good in its hold whose
@@ -60,6 +66,7 @@ max_minutes = int(args[args.index('--minutes') + 1]) if '--minutes' in args else
 min_bid = int(args[args.index('--min-bid') + 1]) if '--min-bid' in args else 50
 sell_at = args[args.index('--sell-at') + 1].split(':') if '--sell-at' in args else ['nexus_prime', 'the_core', 'central_nexus']
 route_id = args[args.index('--route') + 1] if '--route' in args else 'hunt-' + poi
+max_prey_hull = int(args[args.index('--max-prey-hull') + 1]) if '--max-prey-hull' in args else 100
 MARKET = '/srv/collective/data/market/'
 ORDER = f'/srv/collective/data/fleet/orders/{pilot}.json'
 RUNS = '/srv/collective/data/routes/runs.jsonl'
@@ -196,7 +203,7 @@ def in_battle():
 
 
 def fight():
-    """Drive the running battle to its end: close in, fire, flee under half hull. True when it ended."""
+    """Drive the running battle to its end: close in, fire, flee in time. True when it ended."""
     for tick in range(90):                           # at most 15 minutes for one fight
         beat = call('POST', f'/accounts/{P}/combat-heartbeat', {}, timeout=20)[0]   # or the engine flees for us after 50 s
         if tick == 0 and beat != 200:
@@ -208,10 +215,14 @@ def fight():
             reload_if_low(0)
         if tick % 6 == 0:
             say('battle: ' + ' / '.join(row for row in t.splitlines() if '\t' in row and not row.startswith('player\t'))[:400])
-        h, m = hull()
-        kinds = [c[1] for c in (row.split('\t') for row in t.splitlines()) if len(c) > 9 and c[0] != 'player']
-        if h < m * 0.5:
-            say(f'hull {h}/{m}: fleeing')
+        cells = [c for c in (row.split('\t') for row in t.splitlines()) if len(c) > 9 and c[0] != 'player']
+        kinds = [c[1] for c in cells]
+        pct = lambda value: int(value.rstrip('%')) if value.rstrip('%').isdigit() else 100
+        own = next((c for c in cells if c[0] == pilot), None)
+        own_hull, own_shield = (pct(own[6]), pct(own[7])) if own else (100, 100)       # the battle's own figures: fresh every tick
+        prey_hull = max([pct(c[6]) for c in cells if c[1] == 'creature'] or [0])
+        if own_hull < 60 or (own_shield < 15 and prey_hull > 40):
+            say(f'hull {own_hull}%, shield {own_shield}%, prey {prey_hull}%: fleeing')
             raw('stance', {'stance': 'flee'}, group='spacemolt_battle')
         elif kinds and any(k != 'creature' for k in kinds if k != 'player') or kinds.count('player') > 1:
             # a pilot or an NPC ship is in this fight: the posture toward them is HOLD
@@ -245,6 +256,10 @@ if goal('navigate-to-system', {'targetSystemId': system_id}) and goal('go-to-poi
         say(f'{left} carcass(es) of ours were still here: looted')
     while kills < max_kills and time.time() - started < max_minutes * 60:
         held = cargo()
+        h, m = hull()
+        if h < m * 0.6:
+            say(f'hull {h}/{m}: no further fight, to the station for repair')
+            break
         if not reload_if_low():
             break
         if in_battle()[0]:
@@ -252,7 +267,7 @@ if goal('navigate-to-system', {'targetSystemId': system_id}) and goal('go-to-poi
         else:
             near = body(raw('get_nearby'))
             prey = [c for c in near.get('creatures') or [] if isinstance(c, dict) and c.get('role') == 'grazer' and not c.get('in_combat')
-                    and (species is None or c.get('species') in species)]
+                    and (species is None or c.get('species') in species) and (c.get('max_hull') or c.get('hull') or 0) <= max_prey_hull]
             if not prey:
                 say(f'no free grazer here (creatures listed: {near.get("creature_count")})')
                 break
@@ -276,7 +291,7 @@ if goal('navigate-to-system', {'targetSystemId': system_id}) and goal('go-to-poi
         if new:
             kills += new
             say(f'kill {kills} after {(time.time() - arrived) / 60:.1f} min at the place: {gain or "an empty carcass"} | hull {h}/{m}, hold {sum(now.values())}')
-        if h < m * 0.5 or sum(now.values()) >= 60:
+        if sum(now.values()) >= 60:
             break
     if not in_battle()[0]:
         kills += loot_own()                          # nothing of ours is left behind

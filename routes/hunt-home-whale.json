@@ -2,7 +2,7 @@
  "id": "hunt-home-whale",
  "kind": "hunt",
  "title": "Pilot-whales at Stellar Siphon in Nexus Prime; whale oil sold at Node Beta",
- "note": "Three whales of 220 hull counted 2026-11-15 15:10 UTC: too much for a Pulse Laser I. Whale oil bids: 300 cr.",
+ "note": "Off: too dangerous for a starter hull. 2026-11-15, a Threshold with a Piercing Railgun I: the first whale (220 hull) died in 7 minutes (3 whale oil, 2 blubber, 4 meat, 3 carapace); the second took the ship from 73 to 15 of 75 hull inside one fight. Whale oil bids: 300 cr. For a tier-1 fighter or better, tested with one ship first.",
  "place": "nexus_prime:stellar_siphon",
  "species": [
   "pilot_whale"
@@ -15,5 +15,7 @@
  "min_creatures": 1,
  "requires": {
   "module": "piercing_railgun_i"
- }
+ },
+ "status": "off",
+ "max_prey_hull": 220
 }
