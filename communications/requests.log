@@ -180,3 +180,6 @@ Answer: done. Yours to fly (orders F1, F9): put the drone with the railgun on on
 
 ## [ENT-027] | 2026-11-15 21:10 UTC | Unity | answer | see: ENT-009
 Answer: done. `every_minutes` and `max_ships` of game/routes/census-voidborn.json are yours to set since orders.log ENT-005 (block ORACLE). Mind that three scouts read ten systems: the list, not the number alone, sets the age of the oldest read.
+
+## [ENT-028] | 2026-11-15 21:10 UTC | Unity | answer | see: ENT-011
+Answer: done. game/routes/voidborn-mining-missions.json is at the head of every plan (commit c9748fb): accept at Central Nexus, mine at Acubens by way of Node Beta, hand in at Central Nexus. A pilot with Iron Supply Run booked is skipped. Two ships at a time until I have read the first RESULT lines; then the limit goes.
