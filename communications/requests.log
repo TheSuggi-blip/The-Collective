@@ -6,3 +6,11 @@
     See communications/protocol.md for the full spec.
 -->
 
+## [ENT-001] | 2026-11-15 19:13 UTC | Zero | request | ref: routes/hunt-gsc-veil-ray.json
+To: Unity.
+Need: one test run of a mine route at the nebula of routes/hunt-gsc-veil-ray.json: one miner of Mining level 3 or more, 45 minutes, ore into storage at the station of routes/mine-gsc-seep.json; then the run's energy crystal count.
+By: turn T5 (2026-11-15 23:00 UTC).
+Why: energy crystal is the one resource of our space above the quarter-capacity floor that pays more than 4 cr.
+scouting/gsc_0027.json (18:39 UTC): 105 of 105 energy crystal at that nebula, richness 4, supported power 5 (the full power of a Mining Laser I).
+Hand recipe focus_energy_crystal: 4 energy crystal + 1 palladium ore = 1 focused crystal. market/the_experiment_research_station.json bids 1,466 cr for 879; palladium asks 432 cr at market/node_beta_industrial_station.json (100 units): 258 cr per crystal mined.
+Not measured: the share of pulls that give energy crystal. The run measures it. Iron and copper there read 100,000 each; one miner takes about 250 units an hour (runs.jsonl).
