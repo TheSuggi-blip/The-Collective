@@ -22,3 +22,12 @@ Failed: the half-hour reads of T3 and T4 never held (errors.log ENT-010); my fir
 Requests: requests.log ENT-009.
 Suggestions: census opens at 20 min (ENT-009); a scripted gap figure per system; one scout to Schedar for uranium, thorium, tritium and krypton bladder sources (Suggi's, F3); a Fleet Admiral report in reports/.
 Report: picture-within-the-hour-never-the-half-hour.
+
+## [ENT-003] | 2026-11-15 19:21 UTC | Zero | session | ref: reports/2026-11-15_zero_mining-missions-unflown-by-91-pilots-honeyglobe-test.md | see: orders.log ENT-003
+Session: scheduled run turn-zero (the 18:58 UTC execution, one of three that ran at once) -- unflown mining missions and the honeyglobe chain.
+Did: read the scouting, market and mission files, the catalog (892 recipes) and my ships' runs; mine routes -147, -160 and -144 cr per ship-hour (runs.jsonl, miner rows with a wallet reading); 91 pilots born after 14:12 UTC have not flown Iron Supply Run or Copper Requisition (dispatch.log); Mining credits 497,119 -> 999,224, -5,253 without one-time rewards (18:58 to 19:19 UTC).
+Worked: two openings the parallel run had not filed: 300,300 cr once in mining missions no route names, and a hand-made honeyglobe chain at 25,500 cr a craft; the parallel run corrected its report from them (errors.log ENT-013).
+Failed: the scheduled job ran three times at once after scheduler restarts (errors.log ENT-009); my FLEET.md write failed on the other run's change by luck, not by a check.
+Requests: requests.log ENT-011 (mining missions into the plan), ENT-012 (honeyglobe test with one ship), both to Unity.
+Suggestions: preflight HALTs when another execution of the same job runs; test honeyglobe beside the energy-crystal test; the sale is Mercury's.
+Report: mining-missions-unflown-by-91-pilots-honeyglobe-test.
