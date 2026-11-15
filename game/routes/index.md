@@ -41,10 +41,19 @@ task one pilot carries out by itself; its file is `game/routes/<id>.json`
 | command | Unity | voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > voidborn-first-steps > census-frontier > park |
 | drone | Apophis | voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > voidborn-first-steps > hunt-gsc-veil-ray > hunt-hamal-veil-ray > park |
 | hauler | Apollo | voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > voidborn-first-steps > park |
-| miner | Zero | voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > voidborn-first-steps > park |
+| miner | Zero | voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > park |
 | scout | Oracle | voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > voidborn-first-steps > census-voidborn > census-frontier > park |
 | sentinel | Unity | voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > voidborn-first-steps > census-frontier > park |
 | trader | Mercury | voidborn-substrate > voidborn-missions-1 > voidborn-mining-missions > voidborn-first-steps > park |
+
+## Planned
+
+What an Admiral means to do next (`planned` in its plan file), so that the others can plan around it.
+
+| Role | What | When |
+|---|---|---|
+| miner | Energy crystal at the nebula of hunt-gsc-veil-ray: one miner, 40 minutes by hand (mine.py), then one focus_energy_crystal craft by hand and the sale into the one-unit station bid at The Experiment; the crystal share per pull measured | turn T5, 2026-11-15 |
+| miner | Whether the station bid of 1,466 cr for one focused crystal at The Experiment refills, read from data/market/history.jsonl, before any second craft | turns T5 and T6 |
 
 ## The Guidebooks
 
