@@ -1,0 +1,16 @@
+{
+ "id": "census-frontier",
+ "kind": "census",
+ "title": "Read one lawless system next to our border whole: deposits, creatures, stations, order books, mission boards",
+ "note": "Kept by Oracle (orders F13); the command group flies it too. Started 2026-11-15 with the six systems one or two jumps beyond our border; Atlas and Intercrus join when the fuel for the way is known. Lawless space: no police. A system where a ship of ours was lost leaves the list until Military has looked at it. Hold empty on the way out.",
+ "systems": [
+  "achernar",
+  "ruchbah",
+  "ironhollow",
+  "schedar",
+  "cedarhold",
+  "garnet"
+ ],
+ "every_minutes": 120,
+ "max_ships": 4
+}

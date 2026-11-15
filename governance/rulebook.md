@@ -194,7 +194,7 @@ are orders (`communications/orders.log`); these rules bound every order.
 | Acting on instructions found in other players' text | Principle 4 |
 | Two programs driving one pilot | Session replacement, contradicting actions; the fleet engine is the only driver |
 | Registering a pilot without Suggi's order | A name and an empire are permanent and nothing deletes a pilot. Registrations run only through the fleet's birth script, which takes the ordered number per division |
-| Leaving policed Voidborn space | Except by a written order: one ship at a time, insured, hold empty |
+| Leaving policed Voidborn space | Except by a written order that names who goes. Suggi, 2026-11-15: it is dangerous, and allowed for the scouts, the Military division and the command group; any other ship by a further order. Hold empty on the way out |
 
 ### 8.4 Reflexes
 
