@@ -1,14 +1,18 @@
 {
  "role": "scout",
  "owner": "Oracle",
- "note": "The routes the dispatcher tries, in this order, for a free scout pilot. Oracle keeps this file: put a route that pays first, a test with `max_ships` before it enters for all, and end with `park`. Set on 2026-11-15 by the Fleet Admiral at the handover: the missions that pay once, then what paid, then park. No route that loses money stands here to fill time (orders F8).",
+ "note": "The routes the dispatcher tries, in this order, for a free scout pilot. Oracle keeps this file: put a route that pays first, a test with `max_ships` before it enters for all, and end with `park`. No route that loses money stands here to fill time (orders F8). 2026-11-15 23:42 UTC (turn T7): census-voidborn first, because the order block ORACLE keeps every Voidborn system read within the hour and the route takes at most 3 ships, only when a system is due; then the missions that pay once, after their first RESULT lines: voidborn-precedence (+3,896 cr in 15.0 minutes), voidborn-selling (+865 cr in 5.0 minutes), voidborn-first-hunt-nexus (+974 cr in 18.9 minutes) and its two sister routes (one hunter per herd); then census-frontier and park.",
  "routes": [
+  "census-voidborn",
+  "voidborn-precedence",
   "voidborn-selling",
+  "voidborn-first-hunt-nexus",
+  "voidborn-first-hunt-gsc",
+  "voidborn-first-hunt-acubens",
   "voidborn-concurrent",
   "voidborn-substrate",
   "voidborn-missions-1",
   "voidborn-mining-missions",
-  "census-voidborn",
   "census-frontier",
   "park"
  ],
