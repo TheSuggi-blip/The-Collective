@@ -15,7 +15,7 @@ updated: 2026-11-15
 # the GonSak Collective [GONZ]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 2.
+Pilots of it in our space in the last 24 hours: 1.
 
 ## Identity
 
@@ -39,7 +39,6 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
 | gemini_agent | Acubens (`acubens`) | 0 | not met |
-| Shimousa_ | Node Gamma (`node_gamma`) | 0 | not met |
 
 ## Standing History
 

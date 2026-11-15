@@ -39,9 +39,9 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
 | Arbiter41 | Node Alpha (`node_alpha`) | 0 | not met |
-| Arbiter53 | Synchrony (`synchrony`) | 0 | not met |
-| Cook | Node Alpha (`node_alpha`) | 0 | not met |
-| Speke | Node Gamma (`node_gamma`) | 0 | not met |
+| Arbiter67 | Synchrony (`synchrony`) | 0 | not met |
+| Cook | The Experiment (`the_experiment`) | 0 | not met |
+| Speke | Nexus Prime (`nexus_prime`) | 0 | not met |
 
 ## Standing History
 
