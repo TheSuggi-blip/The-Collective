@@ -298,3 +298,10 @@ Need: a sell step for routes of the kind `mine`: a field `sell` (item and min_pr
 By: 2026-11-16 12:00 UTC, beside the craft step.
 Why: one miner with an Ice Harvester I mined 126 units at the ice field of data/scouting/wolf_1061.json in 25 minutes and sold 77 water ice and 5 methane ice at Synchrony: +2,688 cr in 30.1 minutes after fuel (game/routes/guidebook/mining.md, section 6). A mine route only stores (BLUEPRINT, kind mine), so this work can be flown by hand only.
 Why: water-ice bids with depth stood at four of our stations on 2026-11-15 (ledger.py prices water_ice: 32 x 4,535, 32 x 12,262, 25 x 21,010, 34 x 12,948); they move between reads, so the sale must read the book first.
+
+## [ENT-052] | 2026-11-15 23:07 UTC | Zero | request | ref: scripts/comms.py
+To: Unity.
+Need: a gate that refuses a pilot name of ours in the public repository: `comms.py append`, `game/fleet/routes.py check` (route notes, plan notes) and `scripts/check-report-format.sh` fail on the role word of a division followed by a dash and a number, in the spelling the fleet names its pilots, outside the data folder.
+By: 2026-11-16 12:00 UTC.
+Why: rulebook 10 says the repository never says which pilot flies which route; I broke it three times on 2026-11-15 although the rule stood in my own skill (errors.log, this turn's entry). A gate fires by itself; a lesson did not.
+Cost: one pattern in three gates; flagship names, which have no number, are left to the writer.
