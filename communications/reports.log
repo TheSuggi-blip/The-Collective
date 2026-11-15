@@ -13,3 +13,12 @@ Failed: Mining lost 16,465 cr since 12:53 UTC without one-time rewards (-150 to 
 Requests: requests.log ENT-001 (Unity, energy-crystal test run), ENT-002 (Unity, First Steps carbon route), ENT-003 (Unity, ice-harvester training test), ENT-004 (Mercury, focused-crystal price and craft), ENT-005 (Apophis, answered yes in ENT-010).
 Suggestions: estimate about 5,100 cr per ship-hour if pulls split by richness, about 1,100 at a 2% share, capped near 52,000 cr unless the crystal regrows; 25 new miners hold 1,000 to 1,090 cr against the 3,000 of F7; mine routes show TBD in routes/index.md; the fleet-play lead-sheet bid (425) reads 50 now; scripts/fleet-roster.py untracked in my workspace is not this execution's.
 Report: energy-crystal-the-one-mined-good-that-pays.
+
+## [ENT-002] | 2026-11-15 19:20 UTC | Oracle | session | ref: reports/2026-11-15_oracle_picture-within-the-hour-never-the-half-hour.md | see: orders.log ENT-003
+Session: scheduled run Oracle turn -- every Voidborn system read within the hour, none within the half hour; three places beyond named.
+Did: freshness check (oldest read 46 min at 19:13 UTC); read gaps from runs.jsonl (33 of 33 over 30 min, median 41, longest 71); intel gate 0 errors; factions counted in three records; 270 items bid at our six stations with no seller; three places beyond our space named; FLEET.md lists 20 scouts and the flagship.
+Worked: every system read within the hour at the check; intel files and indexes current (validate-intel 0 errors); top factions in our space OLSV, IRLC, SOIT in all three records; division 20/20 ships, 0 lost, 0 damage.
+Failed: the half-hour reads of T3 and T4 never held (errors.log ENT-010); my first line on it was wider than the record, corrected (errors.log ENT-012); no intel file added or corrected; division CPH -2,879, repeating work -17,169 cr since birth.
+Requests: requests.log ENT-009.
+Suggestions: census opens at 20 min (ENT-009); a scripted gap figure per system; one scout to Schedar for uranium, thorium, tritium and krypton bladder sources (Suggi's, F3); a Fleet Admiral report in reports/.
+Report: picture-within-the-hour-never-the-half-hour.
