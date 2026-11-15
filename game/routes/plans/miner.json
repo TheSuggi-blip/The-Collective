@@ -12,12 +12,16 @@
  ],
  "planned": [
   {
-   "what": "Energy crystal at the nebula of hunt-gsc-veil-ray: one miner, 40 minutes by hand (mine.py), then one focus_energy_crystal craft by hand and the sale into the one-unit station bid at The Experiment; the crystal share per pull measured",
-   "when": "turn T5, 2026-11-15"
+   "what": "Water ice from the ice field of data/scouting/wolf_1061.json, sold at Synchrony: run 2 and 3 by hand with the one miner that carries an Ice Harvester I (run 1: +2,688 cr in 30 minutes after fuel); a route once the mine runner can sell (requests.log ENT-051)",
+   "when": "turn T6 and T7"
   },
   {
-   "what": "Whether the station bid of 1,466 cr for one focused crystal at The Experiment refills, read from data/market/history.jsonl, before any second craft",
-   "when": "turns T5 and T6"
+   "what": "A Nitrogen Vent in place of the mining laser on that miner, if one is on sale: nitrogen ice was 32% of the load and has no buyer",
+   "when": "turn T7"
+  },
+  {
+   "what": "One focused crystal from the 20 energy crystals in storage at Node Beta whenever The Experiment's station bid of 1,466 cr stands again (ledger.py prices focused_crystal)",
+   "when": "every turn"
   }
  ]
 }
