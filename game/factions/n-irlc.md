@@ -15,7 +15,7 @@ updated: 2026-11-15
 # Ironlight Combine [IRLC]
 
 A player faction with 7 base(s) in 4 system(s); the nearest to Nexus Prime is 6 jump(s) away, in LHS 1140 (`lhs_1140`).
-Pilots of it in our space in the last 24 hours: 15.
+Pilots of it in our space in the last 24 hours: 16.
 
 ## Identity
 
@@ -47,18 +47,19 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
 | ILC Chute | Synchrony (`synchrony`) | 0 | junk_convoy |
+| ILC Crater | Node Gamma (`node_gamma`) | 0 | not met |
 | ILC Flange | Synchrony (`synchrony`) | 0 | junk_convoy |
 | ILC Gantry | Synchrony (`synchrony`) | 0 | junk_convoy |
 | ILC Gasket | Synchrony (`synchrony`) | 0 | junk_convoy |
 | ILC Gateway | Nexus Prime (`nexus_prime`) | 0 | concordia |
 | ILC Gilt | Synchrony (`synchrony`) | 0 | syndicate |
-| ILC Ladle | Node Beta (`node_beta`) | 0 | junk_convoy |
+| ILC Kerf | Synchrony (`synchrony`) | 0 | junk_convoy |
+| ILC Ladle | Synchrony (`synchrony`) | 0 | junk_convoy |
 | ILC Nonstop | Nexus Prime (`nexus_prime`) | 0 | concordia |
-| ILC Pawl | Pherkad (`pherkad`) | 0 | not met |
 | ILC Penalty | Synchrony (`synchrony`) | 0 | junk_convoy |
-| ILC Pyroclast | Synchrony (`synchrony`) | 0 | not met |
-| ILC Ratchet | Synchrony (`synchrony`) | 0 | junk_convoy |
+| ILC Ratchet | The Experiment (`the_experiment`) | 0 | junk_convoy |
 | ILC Retort | Synchrony (`synchrony`) | 0 | junk_convoy |
+| ILC Stope | Synchrony (`synchrony`) | 0 | not met |
 | ILC Vagabond | Nexus Prime (`nexus_prime`) | 0 | concordia |
 | ILC Weir | Synchrony (`synchrony`) | 0 | prayer |
 

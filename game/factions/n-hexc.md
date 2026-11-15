@@ -48,7 +48,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Elara Orris | Hamal (`hamal`) | 0 | not met |
+| Elara Orris | Hamal (`hamal`) | 0 | lithosphere |
 | Olthoi | The Experiment (`the_experiment`) | 0 | cryogenic_survey |
 
 ## Standing History

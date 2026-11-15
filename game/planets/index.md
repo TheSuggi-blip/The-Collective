@@ -8,7 +8,7 @@ author: Unity
 # index.md -- Systems We Know
 
 Built by `scripts/intel-index.py` from the system files of this folder;
-never edited by hand. Files listed: 10. The format of a system file:
+never edited by hand. Files listed: 28. The format of a system file:
 `BLUEPRINT.md`.
 
 ## Voidborn space
@@ -25,3 +25,26 @@ never edited by hand. Files listed: 10. The format of a system file:
 | Hamal | ally | low | 30 | 3 | 2026-11-15 | [a-hamal.md](a-hamal.md) |
 | Pherkad | ally | low | 30 | 3 | 2026-11-15 | [a-pherkad.md](a-pherkad.md) |
 | The Experiment | ally | low | 30 | 3 | 2026-11-15 | [a-the_experiment.md](a-the_experiment.md) |
+
+## Lawless space
+
+| System | Standing | Threat | Police level | Jumps from home | Updated | File |
+|---|---|---|---|---|---|---|
+| Schedar | neutral | unknown | 0 | 2 | 2026-11-15 | [n-schedar.md](n-schedar.md) |
+| GSC-0050 | neutral | unknown | 0 | 3 | 2026-11-15 | [n-gsc_0050.md](n-gsc_0050.md) |
+| Achernar | neutral | unknown | 0 | 4 | 2026-11-15 | [n-achernar.md](n-achernar.md) |
+| GJ 3470 | neutral | unknown | 0 | 4 | 2026-11-15 | [n-gj_3470.md](n-gj_3470.md) |
+| GSC-0041 | neutral | unknown | 0 | 4 | 2026-11-15 | [n-gsc_0041.md](n-gsc_0041.md) |
+| Ironhollow | neutral | unknown | 0 | 4 | 2026-11-15 | [n-ironhollow.md](n-ironhollow.md) |
+| Megrez | neutral | unknown | 0 | 4 | 2026-11-15 | [n-megrez.md](n-megrez.md) |
+| Okab | neutral | unknown | 0 | 4 | 2026-11-15 | [n-okab.md](n-okab.md) |
+| Ruchbah | neutral | unknown | 0 | 4 | 2026-11-15 | [n-ruchbah.md](n-ruchbah.md) |
+| Shaula | neutral | unknown | 0 | 4 | 2026-11-15 | [n-shaula.md](n-shaula.md) |
+| Thornhaven | neutral | unknown | 0 | 4 | 2026-11-15 | [n-thornhaven.md](n-thornhaven.md) |
+| Wolf 1061 | neutral | unknown | 0 | 4 | 2026-11-15 | [n-wolf_1061.md](n-wolf_1061.md) |
+| Achird | neutral | unknown | 0 | 5 | 2026-11-15 | [n-achird.md](n-achird.md) |
+| Alnair | neutral | unknown | 0 | 5 | 2026-11-15 | [n-alnair.md](n-alnair.md) |
+| Cedarhold | neutral | unknown | 0 | 5 | 2026-11-15 | [n-cedarhold.md](n-cedarhold.md) |
+| Garnet | neutral | unknown | 0 | 5 | 2026-11-15 | [n-garnet.md](n-garnet.md) |
+| Atlas | neutral | unknown | 0 | 6 | 2026-11-15 | [n-atlas.md](n-atlas.md) |
+| Intercrus | neutral | unknown | 0 | 7 | 2026-11-15 | [n-intercrus.md](n-intercrus.md) |
