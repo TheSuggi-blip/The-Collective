@@ -3,7 +3,7 @@ name: routes-blueprint
 id: 20261115T154044Z
 tier: intel
 author: Unity
-links: [routes/index.md, routes/plan.json, fleet/dispatch.py, communications/orders.log, governance/rulebook.md]
+links: [game/routes/index.md, game/routes/plan.json, game/fleet/dispatch.py, communications/orders.log, governance/rulebook.md]
 ---
 
 # BLUEPRINT.md -- How a Route Is Written
@@ -11,19 +11,19 @@ links: [routes/index.md, routes/plan.json, fleet/dispatch.py, communications/ord
 A route is one task a pilot carries out by itself, written down once
 so that every ship, and every ship born later, can do it again. The
 route files are the fleet's memory of how to earn and how to level;
-the scripts in `fleet/` fly them; nobody retypes a route into a chat.
+the scripts in `game/fleet/` fly them; nobody retypes a route into a chat.
 
 ## 1. What Is Automatic
 
 | Part | Does |
 |---|---|
-| `routes/<id>.json` | One route: what to do, for whom, and what our runs measured |
-| `routes/plan.json` | Per role, the routes tried in this order for a free pilot |
-| `fleet/dispatch.py` (service `dispatch`) | Every 30 s gives each free pilot the first route of its role that is open to it |
-| `fleet/route_run.py`, `hunt.py`, `census.py`, `mine.py` | The runners: one pilot, one route, one row in the runs file |
-| `python3 -B fleet/routes.py check` | The gate: fails on a wrong route file, a wrong plan or a stale index |
-| `python3 -B fleet/routes.py index` | Writes `index.md`; never by hand |
-| `python3 -B fleet/routes.py measure --write` | Stores what the runs measured in the route file |
+| `game/routes/<id>.json` | One route: what to do, for whom, and what our runs measured |
+| `game/routes/plan.json` | Per role, the routes tried in this order for a free pilot |
+| `game/fleet/dispatch.py` (service `dispatch`) | Every 30 s gives each free pilot the first route of its role that is open to it |
+| `game/fleet/route_run.py`, `hunt.py`, `census.py`, `mine.py` | The runners: one pilot, one route, one row in the runs file |
+| `python3 -B game/fleet/routes.py check` | The gate: fails on a wrong route file, a wrong plan or a stale index |
+| `python3 -B game/fleet/routes.py index` | Writes `index.md`; never by hand |
+| `python3 -B game/fleet/routes.py measure --write` | Stores what the runs measured in the route file |
 
 - Where a pilot is and which pilot flies which route stays in the
   unit's data folder (`data/fleet/`, `data/routes/`), never here.
@@ -85,7 +85,7 @@ runner books them so that CPH counts recurring income only.
    only for a hull that was tested against that prey.
 5. A hunt sets `max_ships` and `min_creatures`: a herd regrows only
    when it is hunted below its replacement rate, and it starves when
-   its deposit is mined out (`rules/` wildlife).
+   its deposit is mined out (`game/rules/` wildlife).
 6. Each role's list in `plan.json` ends with a route that is always
    open: a mine that is not `off` and has no `max_ships`, `once`,
    `min_credits` or `requires`. The gate checks it. A list whose

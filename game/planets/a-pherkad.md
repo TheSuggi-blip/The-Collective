@@ -21,7 +21,7 @@ Voidborn system 3 jumps from home, police level 30. No station on the chart.
 
 ## Chart
 
-From `map/galaxy.tsv` (`python3 scripts/map.py where pherkad`).
+From `game/map/galaxy.tsv` (`python3 scripts/map.py where pherkad`).
 
 | Field | Value |
 |---|---|

@@ -59,14 +59,14 @@ class Tree(unittest.TestCase):
         return written, factions.write_index(str(self.root), data, now)
 
     def text(self, name):
-        return (self.root / "factions" / name).read_text(encoding="ascii")
+        return (self.root / "game" / "factions" / name).read_text(encoding="ascii")
 
 
 class FileTests(Tree):
     def test_a_faction_with_a_base_or_two_pilots_in_our_space_gets_a_file(self):
         written, index = self.run_pass()
-        self.assertEqual(sorted(written), ["factions/n-hexc.md", "factions/n-olsv.md"])           # not SOLO (one pilot), PAST (old), CLTV (ours)
-        self.assertEqual(index, "factions/index.md")
+        self.assertEqual(sorted(written), ["game/factions/n-hexc.md", "game/factions/n-olsv.md"])           # not SOLO (one pilot), PAST (old), CLTV (ours)
+        self.assertEqual(index, "game/factions/index.md")
         hexc = self.text("n-hexc.md")
         self.assertIn("kind: faction\ntag: HEXC\nfaction: Hex Collective\nstanding: neutral\n", hexc)
         self.assertIn("# Hex Collective [HEXC]\n\nA player faction with 2 base(s) in 2 system(s); the nearest to Nexus Prime is 2 jump(s) away, in Okab (`okab`).\n"
@@ -89,13 +89,13 @@ class FileTests(Tree):
 
     def test_an_unchanged_faction_is_not_rewritten(self):
         self.run_pass()
-        before = {p.name: p.stat().st_mtime_ns for p in (self.root / "factions").iterdir()}
+        before = {p.name: p.stat().st_mtime_ns for p in (self.root / "game" / "factions").iterdir()}
         self.assertEqual(self.run_pass(now=self.now + 30), ([], None))
-        self.assertEqual({p.name: p.stat().st_mtime_ns for p in (self.root / "factions").iterdir()}, before)
+        self.assertEqual({p.name: p.stat().st_mtime_ns for p in (self.root / "game" / "factions").iterdir()}, before)
 
     def test_the_standing_and_the_hand_written_part_are_kept_when_the_facts_move(self):
         self.run_pass()
-        folder = self.root / "factions"
+        folder = self.root / "game" / "factions"
         text = self.text("n-hexc.md").replace("standing: neutral", "standing: hostile").replace("threat: unknown", "threat: high")
         text = text.replace("## Notes\n\nNone.\n", "| 2026-11-16 | hostile | It attacked an own ship at Okab | Unity |\n\n## Notes\n\nIts scouts sit at our gate.\n")
         (folder / "h-hexc.md").write_text(text, encoding="ascii")
@@ -103,7 +103,7 @@ class FileTests(Tree):
         first_id = text.split("\nid: ")[1].split("\n")[0]
         self.write("stations.json", self.bases + [base("Gate Watch", "outpost", "synchrony", "HEXC", "Hex Collective")])
         written, index = self.run_pass(now=self.now + 60)
-        self.assertEqual((written, index), (["factions/h-hexc.md"], "factions/index.md"))
+        self.assertEqual((written, index), (["game/factions/h-hexc.md"], "game/factions/index.md"))
         self.assertFalse((folder / "n-hexc.md").exists())                                         # never a second file
         new = self.text("h-hexc.md")
         self.assertIn("id: %s\n" % first_id, new)
@@ -117,9 +117,9 @@ class FileTests(Tree):
 
     def test_the_cap_files_the_factions_with_a_base_first(self):
         written, _index = self.run_pass(limit=1)
-        self.assertEqual(written, ["factions/n-hexc.md"])
+        self.assertEqual(written, ["game/factions/n-hexc.md"])
         written, _index = self.run_pass(limit=1, now=self.now + 5)
-        self.assertEqual(written, ["factions/n-olsv.md"])
+        self.assertEqual(written, ["game/factions/n-olsv.md"])
 
 
 class IndexTests(Tree):
@@ -138,14 +138,14 @@ class IndexTests(Tree):
                          ["| HEXC | Hex Collective | 2 | [n-hexc.md](n-hexc.md) |", "| OLSV | Olsen Line | 2 | [n-olsv.md](n-olsv.md) |", "| SOLO | not on record | 1 | -- |"])
         self.assertIn("## Pirate Strongholds\n\n| System | Space | Jumps from Nexus Prime | Base |\n|---|---|---|---|\n| Okab (`okab`) | lawless | 2 | Blood Den |\n", text)
         self.assertNotIn("CLTV", text)                                                            # our own faction is never listed
-        for path in (self.root / "factions").iterdir():
+        for path in (self.root / "game" / "factions").iterdir():
             path.read_text(encoding="ascii")                                                      # raises on a byte outside ASCII
 
     def test_without_a_chart_nothing_is_written(self):
         (self.station / "map.json").unlink()
         data = factions.gather(str(self.station), str(self.station / "met.json"), str(self.station / "fleet.json"), self.now)
         self.assertEqual(data["space"], {})
-        self.assertFalse((self.root / "factions").exists())
+        self.assertFalse((self.root / "game" / "factions").exists())
 
     def test_keys_and_ascii(self):
         self.assertEqual([factions.key_of(t) for t in ("HEXC", "A-1!", "3333")], ["hexc", "ax2d1x21", "3333"])

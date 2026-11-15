@@ -2,11 +2,11 @@
 """intel-factions.py -- file the player factions that matter to us, and the zones they hold.
 
 WHAT: from the command station's copy of the game's public data it writes
-        factions/<letter>-<tag>.md   one file per player faction that holds a
+        game/factions/<letter>-<tag>.md   one file per player faction that holds a
                                      base (station or outpost) anywhere, or
                                      had two or more pilots in our space in
                                      the last 24 hours;
-        factions/index.md            the zones held by other players (every
+        game/factions/index.md            the zones held by other players (every
                                      system with a player base, nearest
                                      first), the factions by standing, every
                                      tag seen in our space, and the pirate
@@ -16,13 +16,13 @@ WHAT: from the command station's copy of the game's public data it writes
       map.json (empire and lanes of every system), feed.json (the daily
       feed: a faction's name, leader, member count, allies, enemies, wars;
       a pilot's kill count), and the pilots our own ships met (met.json,
-      written by fleet/sight.py: the ship a pilot flew).
+      written by game/fleet/sight.py: the ship a pilot flew).
 RULES:
   - A faction file has a written part and a kept part. From the title to
     `## Standing History` it is written anew at every run. The frontmatter
     fields id, standing, standing_since and threat, and everything from
     `## Standing History` on, are kept as they are: they are set by hand
-    (who may set a standing: players/BLUEPRINT.md s.3).
+    (who may set a standing: game/players/BLUEPRINT.md s.3).
   - A file is rewritten only when its written part changed, so a faction
     that did not move makes no commit; `updated` changes with it.
   - The letter of an existing file is kept: a change of standing is a
@@ -203,14 +203,14 @@ def split_file(text):
 
 def existing(root):
     """{key: file name} of the faction files in the folder."""
-    folder = os.path.join(root, "factions")
+    folder = os.path.join(root, "game", "factions")
     return {FILE_RE.match(n).group(2): n for n in sorted(os.listdir(folder)) if FILE_RE.match(n)} if os.path.isdir(folder) else {}
 
 
 def used_ids(root):
     out = set()
     for folder in ("factions", "planets", "players"):
-        directory = os.path.join(root, folder)
+        directory = os.path.join(root, "game", folder)
         for name in os.listdir(directory) if os.path.isdir(directory) else []:
             if name.endswith(".md"):
                 try:
@@ -239,7 +239,7 @@ def front(fields):
 def write_files(root, data, now, limit):
     """Write the faction files that are new or changed; returns the paths written."""
     day = time.strftime("%Y-%m-%d", time.gmtime(now))
-    folder = os.path.join(root, "factions")
+    folder = os.path.join(root, "game", "factions")
     have, used, written, created = existing(root), None, [], 0
     wanted = [t for t in data["bases"] if t != OWN_TAG] + sorted(t for t, pilots in data["seen"].items() if len(pilots) >= 2 and t not in data["bases"] and t != OWN_TAG)
     wanted += [t for t in sorted(set(data["known"]) | set(data["carried"])) if key_of(t) in have and t not in wanted and t != OWN_TAG]
@@ -280,7 +280,7 @@ def index_body(root, data):
     """The index text below its frontmatter: zones, factions by standing, tags in our space, pirate strongholds."""
     files = {}
     for key, name in existing(root).items():
-        with open(os.path.join(root, "factions", name), encoding="ascii", errors="replace") as handle:
+        with open(os.path.join(root, "game", "factions", name), encoding="ascii", errors="replace") as handle:
             files[key] = (name, split_file(handle.read())[0])
     lines = ["# index.md -- Factions We Know and the Zones They Hold", "",
              "Built by `scripts/intel-factions.py` from the game's public data and the faction files of this folder;",
@@ -340,8 +340,8 @@ def index_body(root, data):
 
 
 def write_index(root, data, now):
-    """Write factions/index.md when its text changed; returns its path or None."""
-    path = os.path.join(root, "factions", "index.md")
+    """Write game/factions/index.md when its text changed; returns its path or None."""
+    path = os.path.join(root, "game", "factions", "index.md")
     body = index_body(root, data)
     head = ""
     if os.path.isfile(path):

@@ -2,7 +2,7 @@
 
 Usage: python3 -I route_run.py <pilot> <route id | route file> [--from N] [--verbose]
 
-A route is a JSON file of the repository's routes/ folder (routes/BLUEPRINT.md);
+A route is a JSON file of the repository's game/routes/ folder (game/routes/BLUEPRINT.md);
 which pilot flies it, and where a pilot is, stays in the unit's data folder:
   {"id": "...", "kind": "missions | trade | ...", "note": "...",
    "one_time": ["Mission Title", ...],        rewards booked as seed money, not income

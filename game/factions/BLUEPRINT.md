@@ -4,7 +4,7 @@ id: 20261115T183141Z
 tier: blueprint
 author: Unity
 status: v1 -- improved as the fleet plays
-links: [players/BLUEPRINT.md, planets/BLUEPRINT.md, governance/map.md, scripts/intel-factions.py]
+links: [game/players/BLUEPRINT.md, game/planets/BLUEPRINT.md, governance/map.md, scripts/intel-factions.py]
 ---
 
 # Factions Blueprint -- How the Faction Files Are Written
@@ -51,7 +51,7 @@ A new file is neutral with threat `unknown`.
 ## 3. Standing and Threat
 
 The same two questions and the same rules as for a pilot
-(`players/BLUEPRINT.md` s.3): who may set hostile or ally, and what
+(`game/players/BLUEPRINT.md` s.3): who may set hostile or ally, and what
 each threat level means. A faction at war with us is threat `high`.
 To change a standing: rename the file, change `standing` and
 `standing_since` in its frontmatter, append the row to its history.
@@ -70,5 +70,5 @@ To change a standing: rename the file, change `standing` and
 | Bases, their kind, system and condition | The game's public station list, read by the command station every few minutes |
 | Pilots in our space | The public event stream: a pilot's last jump, kept for 24 hours |
 | Leader, members, allies, enemies, wars; a pilot's kill count | The daily feed |
-| Space and jumps of a system | The chart (`map/galaxy.tsv` and the station's copy) |
+| Space and jumps of a system | The chart (`game/map/galaxy.tsv` and the station's copy) |
 | The ship a pilot flew | An own ship that met it at the same place |

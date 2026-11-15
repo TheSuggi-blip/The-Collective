@@ -6,7 +6,7 @@
 #   2. Prints the offending file:line so the author sees the mistake.
 #   3. Auto-sanitizes via scripts/sanitize-ascii.py and re-stages.
 #   4. Commits proceed with pure-ASCII content.
-#   5. If a file in planets/ or players/ is staged, runs
+#   5. If a file in game/planets/ or game/players/ is staged, runs
 #      scripts/validate-intel.py and blocks the commit on an error.
 #
 # If the sanitizer script is missing, falls back to BLOCKING the commit
@@ -41,9 +41,9 @@ if [ "$bad" -ne 0 ]; then
   exit 1
 fi
 
-# Intel gate: a commit that touches planets/ or players/ needs every intel
+# Intel gate: a commit that touches game/planets/ or game/players/ needs every intel
 # file to pass scripts/validate-intel.py (each folder's BLUEPRINT.md).
-if git diff --cached --name-only --diff-filter=ACMR | grep -qE '^(planets|players)/'; then
+if git diff --cached --name-only --diff-filter=ACMR | grep -qE '^game/(planets|players)/'; then
   if [ -f scripts/validate-intel.py ]; then
     if ! python3 scripts/validate-intel.py; then
       echo ""

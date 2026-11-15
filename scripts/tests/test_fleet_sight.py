@@ -1,4 +1,4 @@
-"""fleet/sight.py on a disposable data folder: which places are looked at, what is kept, what is never written. No engine, no network."""
+"""game/fleet/sight.py on a disposable data folder: which places are looked at, what is kept, what is never written. No engine, no network."""
 
 import importlib.util
 import json
@@ -7,7 +7,7 @@ import tempfile
 import unittest
 
 
-SCRIPT = Path(__file__).resolve().parents[2] / "fleet" / "sight.py"
+SCRIPT = Path(__file__).resolve().parents[2] / "game" / "fleet" / "sight.py"
 spec = importlib.util.spec_from_file_location("sight_under_test", SCRIPT)
 assert spec is not None and spec.loader is not None
 sight = importlib.util.module_from_spec(spec)
@@ -92,7 +92,7 @@ class PassTests(Tree):
         self.assertEqual(said, ["far: first read of the system saved"])
         self.assertEqual(self.asked, [("scout-1", "get_nearby"), ("scout-1", "get_system"), ("scout-1", "get_poi")])
         read = self.read("scouting/far.json")
-        self.assertEqual((read["system"]["id"], sorted(read["pois"]), read["source"]), ("far", ["gate"], "fleet/sight.py, an own ship passing"))
+        self.assertEqual((read["system"]["id"], sorted(read["pois"]), read["source"]), ("far", ["gate"], "game/fleet/sight.py, an own ship passing"))
         self.assertTrue(read["read_at"].endswith("Z"))
 
     def test_no_answer_a_moved_ship_and_the_stop_file_write_nothing(self):

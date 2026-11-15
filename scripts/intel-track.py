@@ -5,14 +5,14 @@ WHAT: 1. scripts/intel-planets.py  files the systems our ships have read;
       2. scripts/intel-players.py  files the armed pilots seen in our space;
       3. scripts/intel-factions.py files the player factions that hold a base
                                    or have pilots in our space, and the zones
-                                   they hold (factions/index.md);
-      4. scripts/intel-index.py    rebuilds planets/index.md and players/index.md;
+                                   they hold (game/factions/index.md);
+      4. scripts/intel-index.py    rebuilds game/planets/index.md and game/players/index.md;
       5. scripts/validate-intel.py and scripts/validate-ids.sh check the result;
       6. with --commit: one commit of exactly the files this pass wrote.
          Without it the pass is a rehearsal: it prints what it would
          change and takes its files out again.
 RULES:
-  - Refuses to start when planets/, players/ or factions/ hold a change
+  - Refuses to start when game/planets/, game/players/ or game/factions/ hold a change
     that is not committed: that is another writer's work in progress.
   - A pass that fails a gate takes its own files out again and restores
     the index files, so nothing untracked is left in the clone (an
@@ -43,8 +43,8 @@ def run(root, *command):
 
 
 def changed(root):
-    """Paths under planets/, players/ and factions/ that git sees as new or modified."""
-    _code, out = run(root, "git", "status", "--porcelain", "--untracked-files=all", "--", "planets", "players", "factions")
+    """Paths under game/planets/, game/players/ and game/factions/ that git sees as new or modified."""
+    _code, out = run(root, "git", "status", "--porcelain", "--untracked-files=all", "--", "game/planets", "game/players", "game/factions")
     return [line[3:].strip() for line in out.splitlines() if line.strip()]
 
 
@@ -71,7 +71,7 @@ def main():
     scripts = os.path.join(root, "scripts")
     before = changed(root)
     if before:
-        print("HALT: planets/, players/ or factions/ hold changes that are not committed: %s" % ", ".join(before))
+        print("HALT: game/planets/, game/players/ or game/factions/ hold changes that are not committed: %s" % ", ".join(before))
         return 1
     planets_extra = [a for pair in zip(extra, extra[1:]) if pair[0] == "--data" for a in pair]
     players_extra = [a for pair in zip(extra, extra[1:]) if pair[0] in ("--station", "--fleet", "--kills", "--max") for a in pair]

@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 """routes.py -- check the route files, write their index, and attach what the runs measured.
 
-WHAT: routes/<id>.json are the fleet's tasks (routes/BLUEPRINT.md); routes/plan.json
+WHAT: game/routes/<id>.json are the fleet's tasks (game/routes/BLUEPRINT.md); game/routes/plan.json
       lists them per role. This script
         check     validates every route file and the plan (the gate);
-        index     writes routes/index.md: every route with its measured figures and the plan;
+        index     writes game/routes/index.md: every route with its measured figures and the plan;
         measure   reads the runs (data/routes/runs.jsonl) and prints, per route, runs,
                   minutes and credits per ship-hour; with --write it stores the figures
                   in the route file's `measured` block when they moved by a fifth or more.
 RULES:
-  - A route's id is its file name; its systems are on the chart (map/galaxy.tsv).
+  - A route's id is its file name; its systems are on the chart (game/map/galaxy.tsv).
   - The plan names only routes that exist, and the last route of every
     role's list is always open: not `off`, not `once`, without `max_ships`,
     `min_credits` and `requires`. A list that can fill up leaves a ship idle.
@@ -62,7 +62,7 @@ def routes_of(root):
         try:
             out[path.stem] = read_json(path)
         except (OSError, ValueError) as error:
-            errors.append("routes/%s: not readable as ASCII JSON: %s" % (path.name, error))
+            errors.append("game/routes/%s: not readable as ASCII JSON: %s" % (path.name, error))
     return out, errors
 
 
@@ -78,7 +78,7 @@ def check(root):
     routes, errors = routes_of(root)
     known = chart(root)
     for rid, route in routes.items():
-        where = "routes/%s.json: " % rid
+        where = "game/routes/%s.json: " % rid
         if not isinstance(route, dict) or route.get("id") != rid:
             errors.append(where + "`id` must equal the file name")
             continue
@@ -105,16 +105,16 @@ def check(root):
             for role, ids in (read_json(plan_path).get("roles") or {}).items():
                 for rid in ids:
                     if rid not in routes:
-                        errors.append("routes/plan.json: role `%s` names `%s`, which is no route file" % (role, rid))
+                        errors.append("game/routes/plan.json: role `%s` names `%s`, which is no route file" % (role, rid))
                 last = routes.get(ids[-1]) if ids else None
                 closed = [key for key in ("once", "max_ships", "min_credits", "requires") if (last or {}).get(key)] + (["status off"] if (last or {}).get("status") == "off" else [])
                 if last is not None and (closed or last.get("kind") not in ("mine",)):
-                    errors.append("routes/plan.json: role `%s` must end with a route that is always open (a mine without %s); `%s` is not, and a full list leaves a ship idle"
+                    errors.append("game/routes/plan.json: role `%s` must end with a route that is always open (a mine without %s); `%s` is not, and a full list leaves a ship idle"
                                   % (role, ", ".join(closed) or "limits", ids[-1]))
         except (OSError, ValueError) as error:
-            errors.append("routes/plan.json: not readable as ASCII JSON: %s" % error)
+            errors.append("game/routes/plan.json: not readable as ASCII JSON: %s" % error)
     if routes and index_text(root, keep_id=True) != current_index(root):
-        errors.append("routes/index.md is missing or stale: run `python3 -B fleet/routes.py index`")
+        errors.append("game/routes/index.md is missing or stale: run `python3 -B game/fleet/routes.py index`")
     return errors, len(routes)
 
 
@@ -139,8 +139,8 @@ def index_text(root, keep_id=False):
             moment += 1
         stamp = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime(moment))
     lines = [FRONT % stamp, "# index.md -- Routes We Fly", "",
-             "Written by `python3 -B fleet/routes.py index`, never by hand. A route is a",
-             "task one pilot carries out by itself; its file is `routes/<id>.json`",
+             "Written by `python3 -B game/fleet/routes.py index`, never by hand. A route is a",
+             "task one pilot carries out by itself; its file is `game/routes/<id>.json`",
              "(`BLUEPRINT.md`). The figures are what our own runs measured.", "",
              "| Route | Kind | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |",
              "|---|---|---|---|---|---|---|---|---|"]
@@ -245,10 +245,10 @@ def main():
     if args.command == "index":
         text = index_text(args.root)
         if text == current_index(args.root):
-            print("routes/index.md: current")
+            print("game/routes/index.md: current")
         else:
             (Path(args.root) / "routes" / "index.md").write_text(text, encoding="ascii")
-            print("routes/index.md: written")
+            print("game/routes/index.md: written")
         return 0
     return measure(args.root, args.data, args.write)
 

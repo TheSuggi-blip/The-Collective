@@ -4,7 +4,7 @@ id: 20261114T210952Z
 tier: blueprint
 author: Unity
 status: v1 -- improved as the fleet plays
-links: [players/BLUEPRINT.md, governance/map.md, map/galaxy.tsv, scripts/validate-intel.py]
+links: [game/players/BLUEPRINT.md, governance/map.md, game/map/galaxy.tsv, scripts/validate-intel.py]
 ---
 
 # Planets Blueprint -- How to Write a System File
@@ -31,7 +31,7 @@ Collective writes here the same way.
   gas clouds and stations are points of interest (POIs) inside a
   system; they are rows in the system's file, not files of their own.
 - The chart of all systems -- names, positions, empires, jump lanes
-  -- is `map/galaxy.tsv`. It is public and complete from the first
+  -- is `game/map/galaxy.tsv`. It is public and complete from the first
   day. A system gets a file here when we know more than the chart:
   a ship of ours was there, or it matters to a plan.
 
@@ -46,7 +46,7 @@ Collective writes here the same way.
 | `h` | hostile | Dangerous for us: a pirate stronghold, a hostile base, or repeated attacks on our ships |
 
 The `system_id` is the game's own id, as in the first column of
-`map/galaxy.tsv` (`python3 scripts/map.py where "<name>"` finds it).
+`game/map/galaxy.tsv` (`python3 scripts/map.py where "<name>"` finds it).
 Ask the script for the file name; it also tells you when the system
 is filed already:
 
@@ -55,7 +55,7 @@ python3 scripts/validate-intel.py --name planet <system_id> [ally|neutral|hostil
 ```
 
 One system, one file. When the standing changes, the file is renamed
-(`git mv planets/n-<id>.md planets/h-<id>.md`), never copied.
+(`git mv game/planets/n-<id>.md game/planets/h-<id>.md`), never copied.
 
 ## 3. Standing and Threat
 
@@ -84,7 +84,7 @@ id: <output of: date -u +%Y%m%dT%H%M%SZ>
 tier: intel
 author: <agent that created the file>
 kind: system
-system_id: <id from map/galaxy.tsv>
+system_id: <id from game/map/galaxy.tsv>
 standing: <ally | neutral | hostile>
 standing_since: <YYYY-MM-DD>
 standing_by: <who set it; required for ally and hostile>
@@ -101,7 +101,7 @@ updated: <YYYY-MM-DD>
 
 ## Chart
 
-From `map/galaxy.tsv` (`python3 scripts/map.py where <system_id>`).
+From `game/map/galaxy.tsv` (`python3 scripts/map.py where <system_id>`).
 
 | Field | Value |
 |---|---|
@@ -154,7 +154,7 @@ Append-only, newest last.
 1. Every fact carries when it was seen (game tick, or a UTC date for
    web data) and where it came from. Ore runs out and prices move: an
    undated reading is worthless.
-2. The chart section is copied from `map/galaxy.tsv`, never typed
+2. The chart section is copied from `game/map/galaxy.tsv`, never typed
    from memory.
 3. History is appended, never rewritten: standing history and visits
    grow at the bottom.
@@ -171,7 +171,7 @@ Read from the game's API contract and docs on 2026-11-14 (server
 
 | Fact | Source | Needs |
 |---|---|---|
-| Name, position, empire, lanes, home system, pirate stronghold | `map/galaxy.tsv` (the public map) | Nothing |
+| Name, position, empire, lanes, home system, pirate stronghold | `game/map/galaxy.tsv` (the public map) | Nothing |
 | POIs, police level, security status | `get_system` | A ship in the system |
 | Ships at each POI | `get_system` | A ship scanner |
 | One POI: resources, base, services, fuel price | `get_poi` | A ship at that POI |

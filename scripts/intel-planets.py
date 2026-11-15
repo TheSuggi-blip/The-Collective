@@ -3,8 +3,8 @@
 
 WHAT: for every system a scout of ours read (one JSON file per system in
       the unit's data folder, written by the fleet's scripts), writes the
-      system file planets/<a|n>-<system_id>.md in the form of
-      planets/BLUEPRINT.md, when no file for that system exists yet.
+      system file game/planets/<a|n>-<system_id>.md in the form of
+      game/planets/BLUEPRINT.md, when no file for that system exists yet.
       A system in our home empire is filed as ally, any other as neutral.
       An existing file is never touched: its history is append-only and
       its notes are written by hand.
@@ -51,7 +51,7 @@ def ascii_cell(value):
 
 def chart(root):
     out = {}
-    path = os.path.join(root, "map", "galaxy.tsv")
+    path = os.path.join(root, "game", "map", "galaxy.tsv")
     if not os.path.isfile(path):
         return out
     with open(path, encoding="ascii", errors="replace") as handle:
@@ -65,7 +65,7 @@ def chart(root):
 def filed(root):
     """System ids that already have a file, under any letter."""
     out = set()
-    directory = os.path.join(root, "planets")
+    directory = os.path.join(root, "game", "planets")
     for name in os.listdir(directory) if os.path.isdir(directory) else []:
         match = re.match(r"^[anh]-([a-z0-9_]+)\.md$", name)
         if match:
@@ -102,7 +102,7 @@ def system_file(system_id, read, spot, stamp):
               "%s system %s jumps from home, police level %s. %s." % (
                   empire.capitalize() if empire != "none" else "Lawless", spot.get("jumps", "an unknown number of"), police,
                   ("Station: " + ", ".join(ascii_cell(p.get("name")) for p in stations)) if stations else "No station on the chart"),
-              "", "## Chart", "", "From `map/galaxy.tsv` (`python3 scripts/map.py where %s`)." % system_id, "",
+              "", "## Chart", "", "From `game/map/galaxy.tsv` (`python3 scripts/map.py where %s`)." % system_id, "",
               "| Field | Value |", "|---|---|",
               "| Position | x %s, y %s (Galactic Units) |" % (spot.get("x", "?"), spot.get("y", "?")),
               "| Empire | %s |" % (spot.get("empire") if spot.get("empire") not in (None, "-") else "lawless"),
@@ -176,10 +176,10 @@ def main():
             print("skipped %s: no system read in it" % name)
             continue
         text, letter = system_file(system_id, read, spots.get(system_id, {}), index.new_id(root))   # an id no intel file carries
-        path = os.path.join(root, "planets", "%s-%s.md" % (letter, system_id))
+        path = os.path.join(root, "game", "planets", "%s-%s.md" % (letter, system_id))
         with open(path, "w", encoding="ascii") as handle:
             handle.write(text)
-        print("written planets/%s-%s.md" % (letter, system_id))
+        print("written game/planets/%s-%s.md" % (letter, system_id))
         written += 1
     print("%d new system file(s)" % written)
     return 0

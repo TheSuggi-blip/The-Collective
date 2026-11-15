@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""validate-intel.py -- gate for the intel files in planets/ and players/.
+"""validate-intel.py -- gate for the intel files in game/planets/ and game/players/.
 
-WHAT: checks every data file in planets/ and players/ against the rules
+WHAT: checks every data file in game/planets/ and game/players/ against the rules
 of that folder's BLUEPRINT.md, and tells a writer which file name a
 pilot or a star system gets.
 
@@ -10,14 +10,14 @@ RULES CHECKED:
      h (hostile).
   2. The frontmatter carries the required fields.
   3. The letter matches the `standing` field.
-  4. The key matches the pilot's username (players/) or the system id
-     (planets/). A second pilot whose name gives the same key gets
+  4. The key matches the pilot's username (game/players/) or the system id
+     (game/planets/). A second pilot whose name gives the same key gets
      the suffix -2, -3, ...
   5. One file per pilot and per system: nobody is filed twice, not
      even under another letter.
   6. Ally and hostile standing name who set it and why.
   7. `threat` is unknown, low, medium or high; dates are YYYY-MM-DD.
-  8. A system id that is not in map/galaxy.tsv is a warning (a typo,
+  8. A system id that is not in game/map/galaxy.tsv is a warning (a typo,
      or a system that is not on the public chart).
 
   9. Each folder's index.md lists exactly the folder's data files
@@ -117,8 +117,8 @@ def read_frontmatter(path):
 
 
 def chart_ids(root):
-    """System ids in map/galaxy.tsv, or None when there is no chart."""
-    path = os.path.join(root, "map", "galaxy.tsv")
+    """System ids in game/map/galaxy.tsv, or None when there is no chart."""
+    path = os.path.join(root, "game", "map", "galaxy.tsv")
     if not os.path.isfile(path):
         return None
     ids = set()
@@ -133,7 +133,7 @@ def chart_ids(root):
 def data_files(root, folder):
     """Yield (file name, letter, key) for each data file, or
     (file name, None, problem) for a name that breaks the rule."""
-    directory = os.path.join(root, folder)
+    directory = os.path.join(root, "game", folder)
     if not os.path.isdir(directory):
         return
     for name in sorted(os.listdir(directory)):
@@ -157,7 +157,7 @@ def check(root):
         counts[folder] = 0
         id_field = ID_FIELD[kind]
         for name, letter, key in data_files(root, folder):
-            rel = "%s/%s" % (folder, name)
+            rel = "game/%s/%s" % (folder, name)
             if letter is None:
                 errors.append("%s: %s" % (rel, key))
                 continue
@@ -165,7 +165,7 @@ def check(root):
             if key in seen_key:
                 errors.append("%s: the key `%s` is already used by %s" % (rel, key, seen_key[key]))
             seen_key.setdefault(key, rel)
-            fields, problem = read_frontmatter(os.path.join(root, folder, name))
+            fields, problem = read_frontmatter(os.path.join(root, "game", folder, name))
             if fields is None:
                 errors.append("%s: %s" % (rel, problem))
                 continue
@@ -202,7 +202,7 @@ def check(root):
                     % (rel, key, id_field, entity, base_key(kind, entity))
                 )
             if kind == "system" and known is not None and entity not in known:
-                warnings.append("%s: `%s` is not in map/galaxy.tsv" % (rel, entity))
+                warnings.append("%s: `%s` is not in game/map/galaxy.tsv" % (rel, entity))
             ident = ident_of(kind, entity)
             if ident in seen_entity:
                 errors.append(
@@ -226,7 +226,7 @@ def check_index(root):
     for folder in FOLDERS:
         state = builder.state(root, folder)
         if state in ("stale", "missing"):
-            errors.append("%s/%s is %s: run `python3 scripts/intel-index.py`" % (folder, INDEX, state))
+            errors.append("game/%s/%s is %s: run `python3 scripts/intel-index.py`" % (folder, INDEX, state))
     return errors
 
 
@@ -241,15 +241,15 @@ def suggest_name(root, what, entity, standing):
         if letter is None:
             continue
         keys.add(key)
-        fields, _ = read_frontmatter(os.path.join(root, folder, name))
+        fields, _ = read_frontmatter(os.path.join(root, "game", folder, name))
         if fields and fields.get(id_field) and ident_of(kind, fields[id_field]) == ident:
             existing = (name, key)
     if existing:
         target = "%s-%s.md" % (LETTERS[standing], existing[1])
         if target == existing[0]:
-            return "%s/%s" % (folder, target), "exists already; edit it, do not create a second file"
-        return ("%s/%s" % (folder, target),
-                "filed as %s/%s; rename it with: git mv %s/%s %s/%s"
+            return "game/%s/%s" % (folder, target), "exists already; edit it, do not create a second file"
+        return ("game/%s/%s" % (folder, target),
+                "filed as game/%s/%s; rename it with: git mv game/%s/%s game/%s/%s"
                 % (folder, existing[0], folder, existing[0], folder, target))
     key = base_key(kind, entity)
     note = "new file"
@@ -259,12 +259,12 @@ def suggest_name(root, what, entity, standing):
             number += 1
         note = "new file; the key `%s` belongs to another pilot, so this one gets a suffix" % key
         key = "%s-%d" % (key, number)
-    return "%s/%s-%s.md" % (folder, LETTERS[standing], key), note
+    return "game/%s/%s-%s.md" % (folder, LETTERS[standing], key), note
 
 
 def main():
     here = os.path.dirname(os.path.abspath(__file__))
-    parser = argparse.ArgumentParser(description="Gate for planets/ and players/.")
+    parser = argparse.ArgumentParser(description="Gate for game/planets/ and game/players/.")
     parser.add_argument("--root", default=os.path.join(here, ".."))
     parser.add_argument("--name", nargs="+", metavar="ARG",
                         help='player "<username>" [standing] | planet <system_id> [standing]')
@@ -281,10 +281,10 @@ def main():
         if args.name[0] == "planet":
             entity = entity.strip()
             if not SYSTEM_ID_RE.match(entity):
-                parser.error("the system id must be the game's id (a-z, 0-9, _); look it up in map/galaxy.tsv")
+                parser.error("the system id must be the game's id (a-z, 0-9, _); look it up in game/map/galaxy.tsv")
             known = chart_ids(root)
             if known is not None and entity not in known:
-                print("# WARNING: `%s` is not in map/galaxy.tsv" % entity, file=sys.stderr)
+                print("# WARNING: `%s` is not in game/map/galaxy.tsv" % entity, file=sys.stderr)
         path, note = suggest_name(root, args.name[0], entity, standing)
         print(path)
         print("# " + note)

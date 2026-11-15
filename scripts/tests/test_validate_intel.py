@@ -44,9 +44,9 @@ class ValidateIntelTests(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory(prefix="validate-intel-test-")
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
-        for folder in ("players", "planets", "map"):
+        for folder in ("game", "game/players", "game/planets", "game/map"):
             (self.root / folder).mkdir()
-        (self.root / "map" / "galaxy.tsv").write_text(
+        (self.root / "game" / "map" / "galaxy.tsv").write_text(
             "# fixture chart\nid\tname\nnexus_prime\tNexus Prime\nsol\tSol\n", encoding="ascii"
         )
 
@@ -57,53 +57,53 @@ class ValidateIntelTests(unittest.TestCase):
         return self.intel.check(str(self.root))
 
     def test_clean_tree_passes_and_skips_non_data_files(self):
-        self.put("players/n-gemma.md", intel_file("player", "Gemma"))
-        self.put("players/h-silas_vane.md", intel_file("player", "Silas Vane", "hostile"))
-        self.put("planets/a-nexus_prime.md", intel_file("system", "nexus_prime", "ally"))
-        self.put("players/BLUEPRINT.md", "not a data file\n")
-        self.put("planets/.gitkeep", "")
+        self.put("game/players/n-gemma.md", intel_file("player", "Gemma"))
+        self.put("game/players/h-silas_vane.md", intel_file("player", "Silas Vane", "hostile"))
+        self.put("game/planets/a-nexus_prime.md", intel_file("system", "nexus_prime", "ally"))
+        self.put("game/players/BLUEPRINT.md", "not a data file\n")
+        self.put("game/planets/.gitkeep", "")
         errors, warnings, counts = self.run_check()
         self.assertEqual(errors, [])
         self.assertEqual(warnings, [])
         self.assertEqual(counts, {"players": 2, "planets": 1})
 
     def test_letter_must_match_standing(self):
-        self.put("players/n-gemma.md", intel_file("player", "Gemma", "hostile"))
+        self.put("game/players/n-gemma.md", intel_file("player", "Gemma", "hostile"))
         errors, _, _ = self.run_check()
         self.assertEqual(len(errors), 1)
         self.assertIn("rename it to h-gemma.md", errors[0])
 
     def test_one_pilot_cannot_be_filed_twice(self):
-        self.put("players/n-gemma.md", intel_file("player", "Gemma"))
-        self.put("players/h-gemma.md", intel_file("player", "gemma", "hostile"))
+        self.put("game/players/n-gemma.md", intel_file("player", "Gemma"))
+        self.put("game/players/h-gemma.md", intel_file("player", "gemma", "hostile"))
         errors, _, _ = self.run_check()
         self.assertTrue(any("already used by" in line for line in errors))
         self.assertTrue(any("already filed in" in line for line in errors))
 
     def test_ally_and_hostile_need_who_and_why(self):
-        self.put("players/h-gemma.md",
+        self.put("game/players/h-gemma.md",
                  intel_file("player", "Gemma", "hostile", standing_by=None, standing_reason=None))
         errors, _, _ = self.run_check()
         self.assertEqual(len(errors), 2)
         self.assertTrue(all("hostile standing needs" in line for line in errors))
 
     def test_key_must_fit_the_entity(self):
-        self.put("players/n-gemma.md", intel_file("player", "Somebody Else"))
-        self.put("planets/n-sol.md", intel_file("system", "nexus_prime"))
+        self.put("game/players/n-gemma.md", intel_file("player", "Somebody Else"))
+        self.put("game/planets/n-sol.md", intel_file("system", "nexus_prime"))
         errors, _, _ = self.run_check()
         self.assertEqual(len(errors), 2)
         self.assertTrue(all("does not fit" in line for line in errors))
 
     def test_bad_names_are_errors(self):
-        self.put("players/x-gemma.md", intel_file("player", "Gemma"))
-        self.put("players/n-Gemma.md", intel_file("player", "Gemma"))
-        self.put("players/gemma.md", intel_file("player", "Gemma"))
+        self.put("game/players/x-gemma.md", intel_file("player", "Gemma"))
+        self.put("game/players/n-Gemma.md", intel_file("player", "Gemma"))
+        self.put("game/players/gemma.md", intel_file("player", "Gemma"))
         errors, _, counts = self.run_check()
         self.assertEqual(len(errors), 3)
         self.assertEqual(counts["players"], 0)
 
     def test_missing_field_bad_threat_and_bad_date(self):
-        self.put("players/n-gemma.md",
+        self.put("game/players/n-gemma.md",
                  intel_file("player", "Gemma", threat="deadly", updated="14.11.2026", author=None))
         errors, _, _ = self.run_check()
         joined = "\n".join(errors)
@@ -112,19 +112,19 @@ class ValidateIntelTests(unittest.TestCase):
         self.assertIn("`updated` must be a date", joined)
 
     def test_wrong_kind_and_missing_frontmatter(self):
-        self.put("players/n-gemma.md", intel_file("system", "gemma", username="Gemma"))
-        self.put("planets/n-sol.md", "# Sol\nno frontmatter\n")
+        self.put("game/players/n-gemma.md", intel_file("system", "gemma", username="Gemma"))
+        self.put("game/planets/n-sol.md", "# Sol\nno frontmatter\n")
         errors, _, _ = self.run_check()
         joined = "\n".join(errors)
         self.assertIn("`kind` must be player", joined)
         self.assertIn("no frontmatter", joined)
 
     def test_system_off_the_chart_is_a_warning(self):
-        self.put("planets/n-far_away.md", intel_file("system", "far_away"))
+        self.put("game/planets/n-far_away.md", intel_file("system", "far_away"))
         errors, warnings, _ = self.run_check()
         self.assertEqual(errors, [])
         self.assertEqual(len(warnings), 1)
-        self.assertIn("not in map/galaxy.tsv", warnings[0])
+        self.assertIn("not in game/map/galaxy.tsv", warnings[0])
 
     def test_player_key(self):
         key = self.intel.player_key
@@ -138,24 +138,24 @@ class ValidateIntelTests(unittest.TestCase):
         self.assertEqual(key("!!!"), "unnamed")
 
     def test_second_pilot_with_the_same_key_gets_a_suffix(self):
-        self.put("players/n-silas_vane.md", intel_file("player", "Silas Vane"))
+        self.put("game/players/n-silas_vane.md", intel_file("player", "Silas Vane"))
         path, note = self.intel.suggest_name(str(self.root), "player", "Silas_Vane", "neutral")
-        self.assertEqual(path, "players/n-silas_vane-2.md")
+        self.assertEqual(path, "game/players/n-silas_vane-2.md")
         self.assertIn("suffix", note)
-        self.put("players/n-silas_vane-2.md", intel_file("player", "Silas_Vane"))
+        self.put("game/players/n-silas_vane-2.md", intel_file("player", "Silas_Vane"))
         errors, _, _ = self.run_check()
         self.assertEqual(errors, [])
 
     def test_suggest_name_finds_an_existing_file(self):
-        self.put("players/n-gemma.md", intel_file("player", "Gemma"))
+        self.put("game/players/n-gemma.md", intel_file("player", "Gemma"))
         path, note = self.intel.suggest_name(str(self.root), "player", "GEMMA", "neutral")
-        self.assertEqual(path, "players/n-gemma.md")
+        self.assertEqual(path, "game/players/n-gemma.md")
         self.assertIn("exists already", note)
         path, note = self.intel.suggest_name(str(self.root), "player", "Gemma", "hostile")
-        self.assertEqual(path, "players/h-gemma.md")
-        self.assertIn("git mv players/n-gemma.md players/h-gemma.md", note)
+        self.assertEqual(path, "game/players/h-gemma.md")
+        self.assertIn("git mv game/players/n-gemma.md game/players/h-gemma.md", note)
         path, note = self.intel.suggest_name(str(self.root), "planet", "sol", "neutral")
-        self.assertEqual((path, note), ("planets/n-sol.md", "new file"))
+        self.assertEqual((path, note), ("game/planets/n-sol.md", "new file"))
 
 
 if __name__ == "__main__":

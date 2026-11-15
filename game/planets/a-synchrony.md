@@ -21,7 +21,7 @@ Voidborn system two jumps from home; the way to The Experiment and to Pherkad. N
 
 ## Chart
 
-From `map/galaxy.tsv` (`python3 scripts/map.py where synchrony`).
+From `game/map/galaxy.tsv` (`python3 scripts/map.py where synchrony`).
 
 | Field | Value |
 |---|---|

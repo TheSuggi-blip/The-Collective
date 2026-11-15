@@ -21,7 +21,7 @@ Voidborn border system three jumps from home, with three lanes into lawless spac
 
 ## Chart
 
-From `map/galaxy.tsv` (`python3 scripts/map.py where the_experiment`).
+From `game/map/galaxy.tsv` (`python3 scripts/map.py where the_experiment`).
 
 | Field | Value |
 |---|---|

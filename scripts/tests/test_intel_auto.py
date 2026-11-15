@@ -58,9 +58,9 @@ class Tree(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory(prefix="intel-auto-test-")
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name) / "repo"
-        for folder in ("players", "planets", "map", "scripts"):
+        for folder in ("game/players", "game/planets", "game/map", "scripts"):
             (self.root / folder).mkdir(parents=True)
-        (self.root / "map" / "galaxy.tsv").write_text(CHART, encoding="ascii")
+        (self.root / "game" / "map" / "galaxy.tsv").write_text(CHART, encoding="ascii")
         self.data = Path(self.temp.name) / "data"
         for folder in ("scouting", "station"):
             (self.data / folder).mkdir(parents=True)
@@ -82,45 +82,45 @@ class Tree(unittest.TestCase):
 
 class IndexTests(Tree):
     def test_systems_are_grouped_by_zone_home_first_and_pilots_by_standing(self):
-        self.put("planets/n-far_rock.md", system_file("far_rock", "neutral", "none", "0", "Far Rock"))
-        self.put("planets/a-node_alpha.md", system_file("node_alpha", title="Node Alpha"))
-        self.put("planets/a-nexus_prime.md", system_file("nexus_prime", title="Nexus Prime"))
-        self.put("players/n-gemma.md", pilot_file("Gemma"))
-        self.put("players/h-silas_vane.md", pilot_file("Silas Vane", "hostile"))
+        self.put("game/planets/n-far_rock.md", system_file("far_rock", "neutral", "none", "0", "Far Rock"))
+        self.put("game/planets/a-node_alpha.md", system_file("node_alpha", title="Node Alpha"))
+        self.put("game/planets/a-nexus_prime.md", system_file("nexus_prime", title="Nexus Prime"))
+        self.put("game/players/n-gemma.md", pilot_file("Gemma"))
+        self.put("game/players/h-silas_vane.md", pilot_file("Silas Vane", "hostile"))
         self.assertTrue(self.index.write(str(self.root), "planets"))
         self.assertTrue(self.index.write(str(self.root), "players"))
-        planets = (self.root / "planets" / "index.md").read_text(encoding="ascii")
+        planets = (self.root / "game" / "planets" / "index.md").read_text(encoding="ascii")
         self.assertLess(planets.index("## Voidborn space"), planets.index("## Lawless space"))
         self.assertLess(planets.index("a-nexus_prime.md"), planets.index("a-node_alpha.md"))      # by jumps from home
         self.assertIn("| Far Rock | neutral | low | 0 | 2 | 2026-11-14 | [n-far_rock.md](n-far_rock.md) |", planets)
-        players = (self.root / "players" / "index.md").read_text(encoding="ascii")
+        players = (self.root / "game" / "players" / "index.md").read_text(encoding="ascii")
         self.assertLess(players.index("## Hostile"), players.index("## Neutral"))
         self.assertIn("## Ally\n\nNone filed.", players)
         self.assertIn("| Silas Vane | medium | crimson | none | 2026-11-14 | 2026-11-14 | [h-silas_vane.md](h-silas_vane.md) |", players)
 
     def test_an_unchanged_folder_is_not_rewritten_and_a_new_file_makes_the_index_stale(self):
-        self.put("planets/a-nexus_prime.md", system_file("nexus_prime"))
+        self.put("game/planets/a-nexus_prime.md", system_file("nexus_prime"))
         self.assertEqual(self.index.state(str(self.root), "planets"), "missing")
         self.assertEqual(self.index.state(str(self.root), "players"), "empty")
         self.assertTrue(self.index.write(str(self.root), "planets"))
-        first = (self.root / "planets" / "index.md").read_text(encoding="ascii")
+        first = (self.root / "game" / "planets" / "index.md").read_text(encoding="ascii")
         self.assertFalse(self.index.write(str(self.root), "planets"))
         self.assertEqual(self.index.state(str(self.root), "planets"), "current")
-        self.put("planets/a-node_alpha.md", system_file("node_alpha"))
+        self.put("game/planets/a-node_alpha.md", system_file("node_alpha"))
         self.assertEqual(self.index.state(str(self.root), "planets"), "stale")
         self.assertTrue(self.index.write(str(self.root), "planets"))
-        second = (self.root / "planets" / "index.md").read_text(encoding="ascii")
+        second = (self.root / "game" / "planets" / "index.md").read_text(encoding="ascii")
         self.assertEqual(first.split("\n---\n")[0], second.split("\n---\n")[0])                   # the id is kept
 
     def test_the_gate_skips_index_md_as_data_and_fails_on_a_stale_or_missing_one(self):
-        self.put("planets/a-nexus_prime.md", system_file("nexus_prime"))
+        self.put("game/planets/a-nexus_prime.md", system_file("nexus_prime"))
         self.assertEqual(self.gate.check(str(self.root))[0], [])
         self.assertEqual(len(self.gate.check_index(str(self.root))), 1)                           # missing
         self.index.write(str(self.root), "planets")
         self.assertEqual(self.gate.check(str(self.root))[0], [])                                  # index.md is not a bad name
         self.assertEqual(self.gate.check_index(str(self.root)), [])
-        self.put("planets/a-node_alpha.md", system_file("node_alpha"))
-        self.assertIn("planets/index.md is stale", self.gate.check_index(str(self.root))[0])
+        self.put("game/planets/a-node_alpha.md", system_file("node_alpha"))
+        self.assertIn("game/planets/index.md is stale", self.gate.check_index(str(self.root))[0])
 
 
 class PlanetTrackerTests(Tree):
@@ -128,7 +128,7 @@ class PlanetTrackerTests(Tree):
         (self.data / "scouting" / "node_alpha.json").write_text(json.dumps(scouting_read("node_alpha")), encoding="utf-8")
         done = self.run_script("intel-planets", "--data", str(self.data / "scouting"))
         self.assertEqual(done.returncode, 0, done.stdout)
-        text = (self.root / "planets" / "a-node_alpha.md").read_text(encoding="ascii")
+        text = (self.root / "game" / "planets" / "a-node_alpha.md").read_text(encoding="ascii")
         self.assertEqual(self.gate.check(str(self.root))[0], [])
         self.assertIn("iron_ore: richness 40, 78496 of 100000 left", text)
         self.assertIn("| `alpha_ice` | Alpha Ice | ice_field | -- | not read |", text)
@@ -139,12 +139,12 @@ class PlanetTrackerTests(Tree):
         (self.data / "scouting" / "node_alpha.json").write_text(json.dumps(scouting_read("node_alpha")), encoding="utf-8")
         (self.data / "scouting" / "far_rock.json").write_text(json.dumps(scouting_read("far_rock", "none")), encoding="utf-8")
         (self.data / "scouting" / "broken.json").write_text("{not json", encoding="utf-8")
-        self.put("planets/n-node_alpha.md", "hand-written\n")
+        self.put("game/planets/n-node_alpha.md", "hand-written\n")
         done = self.run_script("intel-planets", "--data", str(self.data / "scouting"))
         self.assertEqual(done.returncode, 0, done.stdout)
-        self.assertEqual((self.root / "planets" / "n-node_alpha.md").read_text(encoding="ascii"), "hand-written\n")
-        self.assertFalse((self.root / "planets" / "a-node_alpha.md").exists())
-        self.assertIn("standing: neutral", (self.root / "planets" / "n-far_rock.md").read_text(encoding="ascii"))
+        self.assertEqual((self.root / "game" / "planets" / "n-node_alpha.md").read_text(encoding="ascii"), "hand-written\n")
+        self.assertFalse((self.root / "game" / "planets" / "a-node_alpha.md").exists())
+        self.assertIn("standing: neutral", (self.root / "game" / "planets" / "n-far_rock.md").read_text(encoding="ascii"))
         self.assertIn("1 new system file(s)", done.stdout)
 
 
@@ -160,13 +160,13 @@ class PilotTrackerTests(Tree):
         args = self.station_data(pilots, players, ours=["miner-1"])
         done = self.run_script("intel-players", *args)
         self.assertEqual(done.returncode, 0, done.stdout)
-        names = sorted(p.name for p in (self.root / "players").iterdir())
+        names = sorted(p.name for p in (self.root / "game" / "players").iterdir())
         self.assertEqual(names, ["n-killer.md", "n-zoueb.md"])
-        text = (self.root / "players" / "n-killer.md").read_text(encoding="ascii")
+        text = (self.root / "game" / "players" / "n-killer.md").read_text(encoding="ascii")
         self.assertIn("standing: neutral", text)
         self.assertIn("threat: medium", text)
         self.assertIn("| Player ships destroyed | 12 |", text)
-        self.assertIn("username: Zo\\u{eb}", (self.root / "players" / "n-zoueb.md").read_text(encoding="ascii"))
+        self.assertIn("username: Zo\\u{eb}", (self.root / "game" / "players" / "n-zoueb.md").read_text(encoding="ascii"))
         self.assertEqual(self.gate.check(str(self.root))[0], [])
         again = self.run_script("intel-players", *args)
         self.assertIn("0 new pilot file(s)", again.stdout)
@@ -176,7 +176,7 @@ class PilotTrackerTests(Tree):
         pilots = {"P%d" % n: ["nexus_prime", now - 60, "crimson", ""] for n in range(5)}
         players = {"p%d" % n: {"empire": "crimson", "faction": "", "stats": {"ships_destroyed": n + 1}} for n in range(5)}
         done = self.run_script("intel-players", "--max", "2", *self.station_data(pilots, players))
-        self.assertEqual(sorted(p.name for p in (self.root / "players").iterdir()), ["n-p3.md", "n-p4.md"], done.stdout)
+        self.assertEqual(sorted(p.name for p in (self.root / "game" / "players").iterdir()), ["n-p3.md", "n-p4.md"], done.stdout)
 
 
 class TrackPassTests(Tree):
@@ -184,7 +184,7 @@ class TrackPassTests(Tree):
         super().setUp()
         for name in ("intel-index.py", "intel-planets.py", "intel-players.py", "intel-factions.py", "intel-track.py", "validate-intel.py", "validate-ids.sh"):
             shutil.copy(SCRIPTS / name, self.root / "scripts" / name)
-        self.put("planets/a-nexus_prime.md", system_file("nexus_prime"))
+        self.put("game/planets/a-nexus_prime.md", system_file("nexus_prime"))
         self.index.write(str(self.root), "planets")
         self.git("init", "-q")
         self.git("add", "-A")
@@ -203,7 +203,7 @@ class TrackPassTests(Tree):
         (self.root / "notes.txt").write_text("another agent's work in progress\n", encoding="ascii")
         done = self.track("--commit")
         self.assertEqual(done.returncode, 0, done.stdout)
-        self.assertEqual(sorted(self.git("show", "--name-only", "--format=", "HEAD").split()), ["planets/a-node_alpha.md", "planets/index.md"])
+        self.assertEqual(sorted(self.git("show", "--name-only", "--format=", "HEAD").split()), ["game/planets/a-node_alpha.md", "game/planets/index.md"])
         self.assertEqual(self.git("log", "-1", "--format=%an <%ae>").strip(), "Unity <unity@suggi-workspace.dev>")
         self.assertEqual(self.git("status", "--porcelain").strip(), "?? notes.txt")
         self.assertIn("Nothing new.", self.track("--commit").stdout)
@@ -212,24 +212,24 @@ class TrackPassTests(Tree):
         done = self.track()
         self.assertEqual(done.returncode, 0, done.stdout)
         self.assertIn("Would change", done.stdout)
-        self.assertIn("planets/a-node_alpha.md", done.stdout)
+        self.assertIn("game/planets/a-node_alpha.md", done.stdout)
         self.assertEqual(self.git("status", "--porcelain").strip(), "")
         self.assertIn("baseline", self.git("log", "-1", "--format=%s"))
 
     def test_a_pass_refuses_to_start_on_uncommitted_intel(self):
-        self.put("players/n-gemma.md", pilot_file("Gemma"))
+        self.put("game/players/n-gemma.md", pilot_file("Gemma"))
         done = self.track("--commit")
         self.assertEqual(done.returncode, 1)
         self.assertIn("HALT", done.stdout)
-        self.assertFalse((self.root / "planets" / "a-node_alpha.md").exists())
+        self.assertFalse((self.root / "game" / "planets" / "a-node_alpha.md").exists())
 
     def test_a_failed_gate_takes_the_pass_out_again(self):
-        self.put("planets/n-far_rock.md", system_file("far_rock", "neutral", "none", "0").replace("threat: low", "threat: deadly"))
+        self.put("game/planets/n-far_rock.md", system_file("far_rock", "neutral", "none", "0").replace("threat: low", "threat: deadly"))
         self.git("add", "-A")
         self.git("-c", "user.name=Fixture", "-c", "user.email=fixture@example.invalid", "commit", "-q", "-m", "a bad file gets in")
         done = self.track("--commit")
         self.assertEqual(done.returncode, 1, done.stdout)
-        self.assertFalse((self.root / "planets" / "a-node_alpha.md").exists())
+        self.assertFalse((self.root / "game" / "planets" / "a-node_alpha.md").exists())
         self.assertEqual(self.git("status", "--porcelain").strip(), "")
         self.assertIn("a bad file gets in", self.git("log", "-1", "--format=%s"))
 

@@ -31,12 +31,12 @@ queries:
 - qid: c006
   question: Who is allowed to mark another pilot as hostile or as an ally, and what evidence does each change require?
   gold_files:
-  - players/BLUEPRINT.md
+  - game/players/BLUEPRINT.md
   domain: intel
 - qid: c007
   question: When we write up a star system, what threat rating applies to lawless space versus a system with a lethal hazard?
   gold_files:
-  - planets/BLUEPRINT.md
+  - game/planets/BLUEPRINT.md
   domain: intel
 - qid: c008
   question: Which player faction stations lie within a few jumps of our Voidborn capital, and how many members do those factions have?
@@ -51,12 +51,12 @@ queries:
 - qid: c010
   question: Which solo pilot from the Crimson empire has destroyed faction home stations without ever speaking, and how should our ships react on contact?
   gold_files:
-  - players/n-aetherwraith.md
+  - game/players/n-aetherwraith.md
   domain: intel
 - qid: c011
   question: How do I turn a pilot's username with spaces or non-ASCII characters into the key used for their intel file?
   gold_files:
-  - players/BLUEPRINT.md
+  - game/players/BLUEPRINT.md
   domain: intel
 - qid: c012
   question: What must an agent do when an order would break a non-overridable rule, or when two top-level rules contradict each other?
@@ -71,12 +71,12 @@ queries:
 - qid: c014
   question: Which station in our home empire besides the capital has a salvage yard, and what did fuel cost there when a ship of ours docked?
   gold_files:
-  - planets/a-node_alpha.md
+  - game/planets/a-node_alpha.md
   domain: intel
 - qid: c015
   question: How strongly is the border system three jumps from home policed, the one with a research station and lanes into lawless space, and was any ore left in its belt?
   gold_files:
-  - planets/a-the_experiment.md
+  - game/planets/a-the_experiment.md
   domain: intel
 - qid: c017
   question: Under what conditions may one of our ships leave policed Voidborn space, and how does law differ outside empire space?
@@ -86,95 +86,95 @@ queries:
 - qid: c018
   question: How much null matter and copper ore is still left in the asteroid rift at Pherkad?
   gold_files:
-  - planets/a-pherkad.md
+  - game/planets/a-pherkad.md
   domain: intel
 - qid: c019
   question: Which pilots we track fly for the ENDL faction, and which known pilot is rated the highest threat?
   gold_files:
-  - players/index.md
+  - game/players/index.md
   domain: intel
 - qid: c020
   question: Which of our fleet's hunting runs earns the most credits per ship-hour, and which one actually lost money?
   gold_files:
-  - routes/index.md
+  - game/routes/index.md
   domain: routes
 - qid: c021
   question: What did the latest game releases change about pirate salvagers, customs cutters and unpaid facility rent?
   gold_files:
-  - rules/15-patch-notes.md
+  - game/rules/15-patch-notes.md
   domain: rules
 - qid: c022
   question: Does Hamal have any asteroid belt or gas cloud to mine, and what kinds of planets orbit its star?
   gold_files:
-  - planets/a-hamal.md
+  - game/planets/a-hamal.md
   domain: intel
 - qid: c023
   question: What is the kill record of JackSparrow against player ships and pirates, and where was it last seen in Voidborn space?
   gold_files:
-  - players/n-jacksparrow.md
+  - game/players/n-jacksparrow.md
   domain: intel
 - qid: c024
   question: What fields does a hunting task for our pilots need, and why is prey above a hundred hull avoided?
   gold_files:
-  - routes/BLUEPRINT.md
+  - game/routes/BLUEPRINT.md
   domain: routes
 - qid: c025
   question: Which official SpaceMolt doc pages and guides has the fleet read so far, and which were only skimmed?
   gold_files:
-  - rules/14-sources.md
+  - game/rules/14-sources.md
   domain: rules
 - qid: c026
   question: How much iron and copper is left in the Spacetime Seep belt, and how strong is the police presence in that system?
   gold_files:
-  - planets/a-gsc_0027.md
+  - game/planets/a-gsc_0027.md
   domain: intel
 - qid: c027
   question: How many player ships has Blackbeard destroyed and lost, and where in our space was it last seen jumping?
   gold_files:
-  - players/n-blackbeard.md
+  - game/players/n-blackbeard.md
   domain: intel
 - qid: c028
   question: Is it known how quickly a depleted ore deposit refills, or whether a ban covers all of an operator's accounts?
   gold_files:
-  - rules/13-not-stated.md
+  - game/rules/13-not-stated.md
   domain: rules
 - qid: c029
   question: How much tungsten, platinum and palladium ore is left in the mixed asteroid belt at Acubens?
   gold_files:
-  - planets/a-acubens.md
+  - game/planets/a-acubens.md
   domain: intel
 - qid: c030
   question: How many ships has the Solarian pilot Ferengi1 lost, and which home system did it jump into?
   gold_files:
-  - players/n-ferengi1.md
+  - game/players/n-ferengi1.md
   domain: intel
 - qid: c031
   question: Which tool names group the game's commands for salvage and insurance, market orders, and faction diplomacy?
   gold_files:
-  - rules/12-commands.md
+  - game/rules/12-commands.md
   domain: rules
 - qid: c032
   question: What police level does each of the ten Voidborn home systems have, from the capital out to the border?
   gold_files:
-  - planets/index.md
+  - game/planets/index.md
   domain: intel
 - qid: c033
   question: Which BUSY faction pilot from the Crimson empire has killed over two hundred pirates without losing a ship, and where did it jump?
   gold_files:
-  - players/n-combat_drone_001.md
+  - game/players/n-combat_drone_001.md
   domain: intel
 - qid: c034
   question: What counts toward a pilot's total wealth on the leaderboard, and which boards does the public leaderboard endpoint return?
   gold_files:
-  - rules/11-public-data.md
+  - game/rules/11-public-data.md
   domain: rules
 - qid: c035
   question: What faction and empire does HexBot11 fly for, and how many player ships has it destroyed in its career?
   gold_files:
-  - players/n-hexbot11.md
+  - game/players/n-hexbot11.md
   domain: intel
 - qid: c036
   question: Which game chat channels and other surfaces can expose our agents to text written by other players, and which cannot?
   gold_files:
-  - rules/10-social.md
+  - game/rules/10-social.md
   domain: rules

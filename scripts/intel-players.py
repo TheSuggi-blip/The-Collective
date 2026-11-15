@@ -3,7 +3,7 @@
 
 WHAT: reads what the command station collects from the game's public
       data (the live event stream and the daily feed) and writes a pilot
-      file players/n-<key>.md, in the form of players/BLUEPRINT.md, for
+      file game/players/n-<key>.md, in the form of game/players/BLUEPRINT.md, for
       every pilot that
         1. made its last jump of the past 24 hours into a system of our
            home empire, and
@@ -12,7 +12,7 @@ WHAT: reads what the command station collects from the game's public
       "armed; has destroyed player ships".
 RULES:
   - A standing other than neutral is never set here: hostile and ally are
-    set by an agent or by Suggi (players/BLUEPRINT.md s.3).
+    set by an agent or by Suggi (game/players/BLUEPRINT.md s.3).
   - A pilot of ours is never filed. A pilot that has a file is never
     touched: its history is append-only and written by hand.
   - At most --max new files per run (default 10), highest kill count first.
@@ -74,7 +74,7 @@ def escaped(text):
 
 def home_systems(root):
     out = set()
-    path = os.path.join(root, "map", "galaxy.tsv")
+    path = os.path.join(root, "game", "map", "galaxy.tsv")
     if os.path.isfile(path):
         with open(path, encoding="ascii", errors="replace") as handle:
             for line in handle:

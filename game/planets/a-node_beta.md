@@ -21,7 +21,7 @@ First system out of Nexus Prime on the southern lane; Voidborn industry. A lane 
 
 ## Chart
 
-From `map/galaxy.tsv` (`python3 scripts/map.py where node_beta`).
+From `game/map/galaxy.tsv` (`python3 scripts/map.py where node_beta`).
 
 | Field | Value |
 |---|---|

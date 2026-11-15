@@ -21,7 +21,7 @@ Voidborn system 2 jumps from home, police level 55. No station on the chart.
 
 ## Chart
 
-From `map/galaxy.tsv` (`python3 scripts/map.py where acubens`).
+From `game/map/galaxy.tsv` (`python3 scripts/map.py where acubens`).
 
 | Field | Value |
 |---|---|

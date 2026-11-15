@@ -21,7 +21,7 @@ Home of the Voidborn Collective and the fleet's home system. Every pilot of ours
 
 ## Chart
 
-From `map/galaxy.tsv` (`python3 scripts/map.py where nexus_prime`).
+From `game/map/galaxy.tsv` (`python3 scripts/map.py where nexus_prime`).
 
 | Field | Value |
 |---|---|

@@ -4,7 +4,7 @@ id: 20261114T210953Z
 tier: map
 author: Unity
 status: v2 -- home space read by our own ships; ship positions are not kept here
-links: [map/galaxy.tsv, scripts/map.py, planets/index.md, players/index.md, governance/rulebook.md]
+links: [game/map/galaxy.tsv, scripts/map.py, game/planets/index.md, game/players/index.md, governance/rulebook.md]
 ---
 
 # map.md -- Where The Collective Is
@@ -19,9 +19,9 @@ unit's data folder, shown on the command station.
 
 | Layer | File | Holds |
 |---|---|---|
-| Chart | `map/galaxy.tsv` | All 506 systems: id, name, position, empire, lanes, jumps from home |
-| Inside a system | `planets/<letter>-<system_id>.md`, listed by zone in `planets/index.md` | POIs, stations, resources, threats |
-| Pilots of interest | `players/<letter>-<key>.md`, listed by standing in `players/index.md` | Who they are, how dangerous, what happened when we met |
+| Chart | `game/map/galaxy.tsv` | All 506 systems: id, name, position, empire, lanes, jumps from home |
+| Inside a system | `game/planets/<letter>-<system_id>.md`, listed by zone in `game/planets/index.md` | POIs, stations, resources, threats |
+| Pilots of interest | `game/players/<letter>-<key>.md`, listed by standing in `game/players/index.md` | Who they are, how dangerous, what happened when we met |
 | Fleet | Not in the repository: `/srv/collective/data/fleet/` in the unit, written by `station/fleet.py` | Where each ship is and what it does, live |
 
 ## 1. Fleet Positions
@@ -131,7 +131,7 @@ Antares lies on the route from home to Sol (section 3).
 |---|---|
 | Where is a system? | `python3 scripts/map.py where <system id or "Name">` |
 | How far between two systems? | `python3 scripts/map.py route <from> <to>` (counts lanes; the game's `find_route` may choose differently) |
-| Refresh the chart | `python3 scripts/map.py refresh` (public map, no login; rewrites `map/galaxy.tsv` only when something changed) |
+| Refresh the chart | `python3 scripts/map.py refresh` (public map, no login; rewrites `game/map/galaxy.tsv` only when something changed) |
 | Fleet positions | Not kept here: `station/fleet.py` writes them into the unit's data folder every 10 s; the command station shows them |
 | Sections 2 to 5 | Rebuilt from the chart and the daily feed when either changes; each carries its date |
 

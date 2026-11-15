@@ -21,7 +21,7 @@ Interior Voidborn system two jumps from home, between Node Alpha, Node Beta, Acu
 
 ## Chart
 
-From `map/galaxy.tsv` (`python3 scripts/map.py where node_gamma`).
+From `game/map/galaxy.tsv` (`python3 scripts/map.py where node_gamma`).
 
 | Field | Value |
 |---|---|

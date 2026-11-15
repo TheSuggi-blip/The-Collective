@@ -12,8 +12,8 @@ WHAT: every 30 s it reads the fleet's live file (data/fleet/fleet.json). For
                                       pirates, creatures
         data/scouting/<system>.json   a first read of a system that has no
                                       scouting file (the format of
-                                      fleet/census.py), so the hourly tracker
-                                      files the system in planets/
+                                      game/fleet/census.py), so the hourly tracker
+                                      files the system in game/planets/
       The hourly tracker (scripts/intel-track.py) turns these into the files
       and indexes of the repository; the command station reads those.
 RULES:
@@ -143,7 +143,7 @@ def one_pass(data, ask, seen, now):
         if not scouting.exists():
             read = ask(pilot, "get_system").get("system")
             if isinstance(read, dict) and read.get("id") == system:
-                write_json(scouting, {"system": read, "read_at": stamp(now), "source": "fleet/sight.py, an own ship passing", "pois": {poi: ask(pilot, "get_poi")}})
+                write_json(scouting, {"system": read, "read_at": stamp(now), "source": "game/fleet/sight.py, an own ship passing", "pois": {poi: ask(pilot, "get_poi")}})
                 said.append("%s: first read of the system saved" % system)
     if lines:
         write_json(data / "intel" / "met.json", met)

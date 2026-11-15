@@ -17,13 +17,13 @@ comms = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(comms)
 
 COMMENT = "<!-- a log of the test tree.\n    See communications/protocol.md for the full spec.\n-->\n\n"
-ORDERS = COMMENT + """## [ENT-001] | 2026-01-01 08:00 UTC | Unity | order | ref: routes/plan.json
+ORDERS = COMMENT + """## [ENT-001] | 2026-01-01 08:00 UTC | Unity | order | ref: game/routes/plan.json
 Changed: first entry.
 In force from 2026-01-01 08:00 UTC until a newer entry.
 FLEET
 F1. Old order.
 
-## [ENT-002] | 2026-01-01 12:00 UTC | Unity | order | ref: routes/plan.json | see: ENT-001
+## [ENT-002] | 2026-01-01 12:00 UTC | Unity | order | ref: game/routes/plan.json | see: ENT-001
 Changed: F1 reworded.
 In force from 2026-01-01 12:00 UTC until a newer entry.
 FLEET
@@ -44,7 +44,7 @@ Report: y.
 """
 REPORTS = COMMENT + "\n".join([SESSION % (1, "09:00", "Zero", "first"), SESSION % (2, "09:05", "Unity", "fleet"),
                                SESSION % (3, "13:00", "Zero", "second"), SESSION % (4, "17:00", "Zero", "third")])
-REQUESTS = COMMENT + """## [ENT-001] | 2026-01-01 09:00 UTC | Zero | request | ref: routes/mine-a.json
+REQUESTS = COMMENT + """## [ENT-001] | 2026-01-01 09:00 UTC | Zero | request | ref: game/routes/mine-a.json
 To: Apophis.
 Need: one guard at the field of the route.
 By: next turn.
@@ -60,7 +60,7 @@ By: 2026-01-02 08:00 UTC.
 
 ## [ENT-004] | 2026-01-01 10:00 UTC | Apophis | request
 To: all.
-Need: keep clear of the nebula of routes/hunt-b.json this turn.
+Need: keep clear of the nebula of game/routes/hunt-b.json this turn.
 Why: a pirate.
 
 ## [ENT-005] | 2026-01-01 13:00 UTC | Unity | answer | see: ENT-003
@@ -200,13 +200,13 @@ class AppendTests(Tree):
 
     def test_the_script_sets_number_and_time_and_one_blank_line(self):
         self.write("requests", COMMENT)
-        draft = self.draft("## [ENT-NEXT] | NOW | Zero | request | ref: routes/mine-a.json\nTo: Apophis.\nNeed: one guard.\n\n\n")
+        draft = self.draft("## [ENT-NEXT] | NOW | Zero | request | ref: game/routes/mine-a.json\nTo: Apophis.\nNeed: one guard.\n\n\n")
         code, text = self.run_command(comms.append, "requests", draft, "Zero")
         self.assertEqual((code, text.strip()), (0, "appended ENT-001 to communications/requests.log (not committed)"))
         code, _text = self.run_command(comms.append, "requests", self.draft("## [ENT-NEXT] | NOW | Apophis | answer | see: ENT-001\nAnswer: yes. From the next turn.\n"), "Apophis")
         self.assertEqual(code, 0)
         body = self.log("requests")[len(COMMENT):]
-        self.assertRegex(body, r"\A## \[ENT-001\] \| \d{4}-\d\d-\d\d \d\d:\d\d UTC \| Zero \| request \| ref: routes/mine-a.json\nTo: Apophis.\nNeed: one guard.\n\n"
+        self.assertRegex(body, r"\A## \[ENT-001\] \| \d{4}-\d\d-\d\d \d\d:\d\d UTC \| Zero \| request \| ref: game/routes/mine-a.json\nTo: Apophis.\nNeed: one guard.\n\n"
                                r"## \[ENT-002\] \| \d{4}-\d\d-\d\d \d\d:\d\d UTC \| Apophis \| answer \| see: ENT-001\nAnswer: yes. From the next turn.\n\Z")
         self.assertEqual(comms.check(str(self.root)), [])
 
@@ -248,7 +248,7 @@ class AppendTests(Tree):
         (self.root / "communications" / "archive" / "queue-2026-01-01.log").write_text(
             COMMENT + "## [ENT-041] | 2026-01-01 08:00 UTC | Unity | general\nOld.\n", encoding="ascii")
         self.write("queue", COMMENT)
-        code, text = self.run_command(comms.append, "queue", self.draft("## [ENT-NEXT] | NOW | Zero | general | ref: routes/index.md\nA notice.\n"), "Zero")
+        code, text = self.run_command(comms.append, "queue", self.draft("## [ENT-NEXT] | NOW | Zero | general | ref: game/routes/index.md\nA notice.\n"), "Zero")
         self.assertEqual((code, text.strip()), (0, "appended ENT-042 to communications/queue.log (not committed)"))
 
     @unittest.skipUnless(shutil.which("git"), "git is not installed")

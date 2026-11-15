@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 """map.py -- the galaxy chart of The Collective.
 
-WHAT: keeps map/galaxy.tsv, the chart of every star system (id, name,
+WHAT: keeps game/map/galaxy.tsv, the chart of every star system (id, name,
 coordinates, empire, jump lanes), and answers two questions from it:
 where a system is, and how many jumps lie between two systems.
 
 The chart comes from the game's public map (no login). It holds what
 every pilot knows from the first day: names, positions and lanes. What
-is inside a system is learned by going there and is kept in planets/.
+is inside a system is learned by going there and is kept in game/planets/.
 
 USAGE:
-  map.py refresh              fetch the public chart, rewrite map/galaxy.tsv
+  map.py refresh              fetch the public chart, rewrite game/map/galaxy.tsv
   map.py where <system>       one system: position, empire, lanes, jumps from home
   map.py route <from> <to>    the shortest route between two systems, in jumps
 
@@ -37,7 +37,7 @@ System = collections.namedtuple("System", "id name x y empire flags jumps lanes"
 
 
 def chart_path(root):
-    return os.path.join(root, "map", "galaxy.tsv")
+    return os.path.join(root, "game", "map", "galaxy.tsv")
 
 
 def jumps_from(systems, start):
@@ -79,7 +79,7 @@ def rows_from_api(payload):
 
 
 def read_chart(root):
-    """Return {id: System} from map/galaxy.tsv."""
+    """Return {id: System} from game/map/galaxy.tsv."""
     path = chart_path(root)
     if not os.path.isfile(path):
         sys.exit("No chart at %s. Run: map.py refresh" % path)
@@ -113,7 +113,7 @@ def chart_rows_on_disk(root):
 
 
 def write_chart(root, rows, fetched):
-    os.makedirs(os.path.join(root, "map"), exist_ok=True)
+    os.makedirs(os.path.join(root, "game", "map"), exist_ok=True)
     with open(chart_path(root), "w", encoding="ascii", newline="\n") as handle:
         handle.write("# The galaxy chart: every star system on the game's public map.\n")
         handle.write("# Source: %s | Fetched: %s | Systems: %d | Home: %s\n"
@@ -133,7 +133,7 @@ def find(systems, word):
     for system in systems.values():
         if system.name.lower() == wanted or system.id == wanted.replace(" ", "_"):
             return system
-    sys.exit("Unknown system: %s (look it up in map/galaxy.tsv)" % word)
+    sys.exit("Unknown system: %s (look it up in game/map/galaxy.tsv)" % word)
 
 
 def route(systems, start, goal):
@@ -162,7 +162,7 @@ def label(system):
 
 def intel_file(root, system_id):
     for letter in "anh":
-        name = "planets/%s-%s.md" % (letter, system_id)
+        name = "game/planets/%s-%s.md" % (letter, system_id)
         if os.path.isfile(os.path.join(root, name)):
             return name
     return "none yet"
@@ -215,7 +215,7 @@ def main():
     parser = argparse.ArgumentParser(description="The galaxy chart of The Collective.")
     parser.add_argument("--root", default=os.path.join(here, ".."))
     sub = parser.add_subparsers(dest="command", required=True)
-    sub.add_parser("refresh", help="fetch the public chart and rewrite map/galaxy.tsv")
+    sub.add_parser("refresh", help="fetch the public chart and rewrite game/map/galaxy.tsv")
     where = sub.add_parser("where", help="one system: position, empire, lanes, jumps from home")
     where.add_argument("system")
     way = sub.add_parser("route", help="the shortest route between two systems, in jumps")

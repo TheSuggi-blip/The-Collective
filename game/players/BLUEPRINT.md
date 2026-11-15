@@ -4,7 +4,7 @@ id: 20261114T210951Z
 tier: blueprint
 author: Unity
 status: v1 -- improved as the fleet plays
-links: [planets/BLUEPRINT.md, governance/map.md, scripts/validate-intel.py]
+links: [game/planets/BLUEPRINT.md, governance/map.md, scripts/validate-intel.py]
 ---
 
 # Players Blueprint -- How to Write a Pilot File
@@ -59,7 +59,7 @@ python3 scripts/validate-intel.py --name player "<username>" [ally|neutral|hosti
 ```
 
 One pilot, one file. When the standing changes, the file is renamed
-(`git mv players/n-gemma.md players/h-gemma.md`), never copied. Two
+(`git mv game/players/n-gemma.md game/players/h-gemma.md`), never copied. Two
 names can give the same key (`Silas Vane`, `Silas_Vane`); the second
 one filed gets `-2`, and the script says so.
 

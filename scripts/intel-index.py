@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""intel-index.py -- build planets/index.md and players/index.md.
+"""intel-index.py -- build game/planets/index.md and game/players/index.md.
 
 WHAT: one table of contents per folder, built from the frontmatter of
       its data files (<a|n|h>-<key>.md). Systems are grouped by zone:
@@ -56,9 +56,9 @@ def read_file(path):
 
 
 def chart_jumps(root):
-    """System id -> jumps from home, from map/galaxy.tsv (column 7)."""
+    """System id -> jumps from home, from game/map/galaxy.tsv (column 7)."""
     jumps = {}
-    path = os.path.join(root, "map", "galaxy.tsv")
+    path = os.path.join(root, "game", "map", "galaxy.tsv")
     if not os.path.isfile(path):
         return jumps
     with open(path, encoding="ascii", errors="replace") as handle:
@@ -74,7 +74,7 @@ def cell(value):
 
 
 def rows_of(root, folder):
-    directory = os.path.join(root, folder)
+    directory = os.path.join(root, "game", folder)
     out = []
     for name in sorted(os.listdir(directory)) if os.path.isdir(directory) else []:
         if not FILE_RE.match(name):
@@ -140,7 +140,7 @@ def split(text):
 
 def state(root, folder):
     """current, stale, missing, or empty (no data files and no index)."""
-    path = os.path.join(root, folder, "index.md")
+    path = os.path.join(root, "game", folder, "index.md")
     if not os.path.isfile(path):
         return "missing" if rows_of(root, folder) else "empty"
     with open(path, encoding="ascii", errors="replace") as handle:
@@ -152,7 +152,7 @@ def new_id(root):
     """A timestamp id no file of the two folders carries yet, and never one ending on :00."""
     used = set()
     for folder in TITLES:
-        directory = os.path.join(root, folder)
+        directory = os.path.join(root, "game", folder)
         for name in os.listdir(directory) if os.path.isdir(directory) else []:
             if name.endswith(".md"):
                 used.add(read_file(os.path.join(directory, name))[0].get("id"))
@@ -166,7 +166,7 @@ def new_id(root):
 
 def write(root, folder):
     """Write the index when it is missing or stale. Returns True when written."""
-    path = os.path.join(root, folder, "index.md")
+    path = os.path.join(root, "game", folder, "index.md")
     front = ""
     if not os.path.isfile(path) and not rows_of(root, folder):
         return False                                   # nothing to list and nothing to correct
@@ -185,21 +185,21 @@ def write(root, folder):
 
 def main():
     here = os.path.dirname(os.path.abspath(__file__))
-    parser = argparse.ArgumentParser(description="Build planets/index.md and players/index.md.")
+    parser = argparse.ArgumentParser(description="Build game/planets/index.md and game/players/index.md.")
     parser.add_argument("--root", default=os.path.join(here, ".."))
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args()
     root = os.path.abspath(args.root)
     bad = 0
     for folder in ("planets", "players"):
-        if not os.path.isdir(os.path.join(root, folder)):
+        if not os.path.isdir(os.path.join(root, "game", folder)):
             continue
         if args.check:
             result = state(root, folder)
-            print("%s/index.md: %s" % (folder, result))
+            print("game/%s/index.md: %s" % (folder, result))
             bad += result in ("stale", "missing")
         else:
-            print("%s/index.md: %s" % (folder, "written" if write(root, folder) else "current"))
+            print("game/%s/index.md: %s" % (folder, "written" if write(root, folder) else "current"))
     return 1 if bad else 0
 
 

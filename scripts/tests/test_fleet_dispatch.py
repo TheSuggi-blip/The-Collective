@@ -9,7 +9,7 @@ import time
 import unittest
 
 
-FLEET = Path(__file__).resolve().parents[2] / "fleet"
+FLEET = Path(__file__).resolve().parents[2] / "game" / "fleet"
 
 
 def load(name):
@@ -157,7 +157,7 @@ class RouteGateTests(Tree):
         (self.root / "routes" / "plan.json").write_text(json.dumps(clean), encoding="ascii")
 
     def test_the_gate_passes_a_clean_tree_with_a_current_index(self):
-        self.assertIn("routes/index.md is missing or stale", self.routes.check(str(self.root))[0][-1])
+        self.assertIn("game/routes/index.md is missing or stale", self.routes.check(str(self.root))[0][-1])
         (self.root / "routes" / "index.md").write_text(self.routes.index_text(str(self.root)), encoding="ascii")
         self.assertEqual(self.routes.check(str(self.root)), ([], 6))
         first = (self.root / "routes" / "index.md").read_text(encoding="ascii")

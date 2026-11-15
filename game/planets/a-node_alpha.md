@@ -21,7 +21,7 @@ First system out of Nexus Prime on the eastern lane; the hub of Voidborn space w
 
 ## Chart
 
-From `map/galaxy.tsv` (`python3 scripts/map.py where node_alpha`).
+From `game/map/galaxy.tsv` (`python3 scripts/map.py where node_alpha`).
 
 | Field | Value |
 |---|---|

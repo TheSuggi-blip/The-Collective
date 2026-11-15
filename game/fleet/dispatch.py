@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """dispatch.py -- keep every pilot at work: give each free pilot the next task of its role.
 
-WHAT: every 30 s it reads the fleet's live files, the plan (routes/plan.json) and
-      the route files (routes/<id>.json), and starts one runner per free pilot:
-        circuit  -> fleet/route_run.py   stops with missions, buying and selling
-        hunt     -> fleet/hunt.py        grazers at one place, loot, sell
-        census   -> fleet/census.py      read one system whole (the stalest first)
-        mine     -> fleet/mine.py        the engine's mining loop for a set time
+WHAT: every 30 s it reads the fleet's live files, the plan (game/routes/plan.json) and
+      the route files (game/routes/<id>.json), and starts one runner per free pilot:
+        circuit  -> game/fleet/route_run.py   stops with missions, buying and selling
+        hunt     -> game/fleet/hunt.py        grazers at one place, loot, sell
+        census   -> game/fleet/census.py      read one system whole (the stalest first)
+        mine     -> game/fleet/mine.py        the engine's mining loop for a set time
       A pilot's role is the word before the dash of its name; the plan lists,
       per role, route ids in the order they are tried. A flagship's name has
       no role word: its role is in data/fleet/flagships.json
@@ -77,7 +77,7 @@ def ship_file(name):
 
 
 def load_routes(root):
-    """{route id: route} from routes/<id>.json; plan.json is not a route."""
+    """{route id: route} from game/routes/<id>.json; plan.json is not a route."""
     out = {}
     for path in sorted((Path(root) / "routes").glob("*.json")):
         if path.name == "plan.json":

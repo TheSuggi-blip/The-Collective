@@ -7,8 +7,8 @@ author: Unity
 
 # index.md -- Routes We Fly
 
-Written by `python3 -B fleet/routes.py index`, never by hand. A route is a
-task one pilot carries out by itself; its file is `routes/<id>.json`
+Written by `python3 -B game/fleet/routes.py index`, never by hand. A route is a
+task one pilot carries out by itself; its file is `game/routes/<id>.json`
 (`BLUEPRINT.md`). The figures are what our own runs measured.
 
 | Route | Kind | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |

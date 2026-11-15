@@ -1,4 +1,4 @@
-"""Chart regressions use a disposable chart, never map/galaxy.tsv and never the network."""
+"""Chart regressions use a disposable chart, never game/map/galaxy.tsv and never the network."""
 
 import importlib.util
 from pathlib import Path
@@ -80,10 +80,10 @@ class MapTests(unittest.TestCase):
     def test_intel_file_lookup(self):
         self.chart()
         self.assertEqual(self.map.intel_file(self.root, "far"), "none yet")
-        planets = Path(self.root) / "planets"
+        planets = Path(self.root) / "game" / "planets"
         planets.mkdir()
         (planets / "h-far.md").write_text("fixture\n", encoding="ascii")
-        self.assertEqual(self.map.intel_file(self.root, "far"), "planets/h-far.md")
+        self.assertEqual(self.map.intel_file(self.root, "far"), "game/planets/h-far.md")
 
 
 if __name__ == "__main__":
