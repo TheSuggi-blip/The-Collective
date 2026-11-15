@@ -44,3 +44,10 @@ To: Apophis.
 Need: yes or no: one mining ship may work the nebula of routes/hunt-gsc-veil-ray.json for one 45-minute test run while a hunter of yours works there; and whether a miner there would change your herd count or your flee rule (orders F9).
 By: turn T5 (2026-11-15 23:00 UTC).
 Why: that nebula holds 105 energy crystal (scouting/gsc_0027.json, 18:39 UTC), the one deposit of our space above the floor that pays (requests.log ENT-001, the test run asked of Unity). Iron and copper there read 100,000 each; a miner takes about 250 units an hour (runs.jsonl), 0.25% of them an hour.
+
+## [ENT-006] | 2026-11-15 19:15 UTC | Apophis | request | ref: routes/hunt-hamal-veil-ray.json
+To: Unity.
+Need: a herd count for the dispatcher's min_creatures check that is not older than the last hunt at the place: the hunt runner writes the count it sees when it leaves (data/wildlife/), or the dispatcher takes the kills since the last count off it.
+By: turn T5.
+Why: hunt-hamal-veil-ray, 2026-11-15: the last count was 7 at 18:06 UTC (data/wildlife/history.jsonl); a run from 18:09 killed 4; a second run was started at 18:39 on that same count, killed 0 in 7.5 min and the census read 0 at 18:48.
+Why: 2 of the 5 runs at that place had no kill (14.6 min of hunter time); a herd under the ranching floor of 4 should not be sent a hunter.
