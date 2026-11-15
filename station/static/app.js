@@ -13,6 +13,20 @@ async function get(path) {
   if (!r.ok) throw new Error(path + ' -> ' + r.status);
   return r.json();
 }
+async function post(path, body) {
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const r = await fetch(path, {
+      method: 'POST', cache: 'no-store',
+      headers: { 'Content-Type': 'application/json', 'X-Station-Token': S ? S.token : '' }, body: JSON.stringify(body),
+    });
+    if (r.status === 403 && attempt === 0) { await loadState(); continue; }   // the station restarted: read the new token
+    let d = {};
+    try { d = await r.json(); } catch (e) { d = {}; }
+    if (!r.ok) throw new Error(d.error || (path + ' -> ' + r.status));
+    return d;
+  }
+  throw new Error('the station refused the message');
+}
 const fmt = (n) => Number(n || 0).toLocaleString('en-US');
 function ago(s) {
   if (s < 0) return 'never';
@@ -21,18 +35,22 @@ function ago(s) {
   if (s < 129600) return Math.round(s / 3600) + ' h';
   return Math.round(s / 86400) + ' d';
 }
+const pct = (a, b) => (b > 0 ? Math.max(0, Math.min(100, Math.round(100 * a / b))) : 0);
 const HEX = /^#[0-9a-fA-F]{6}$/;
 const LAWLESS = '#59607a';
+const DIV = { Command: '#e3e6ee', Mining: '#d9a857', Trade: '#5fbfad', Logistics: '#6fa8dc', Military: '#d9766f', Intel: '#b18ae0', Unassigned: '#7c869b' };
 
 let S = null;                                  // /api/state
 let L = { hour: {}, day: {}, events: [], fills: [], battles: [], stats: {}, stream: {} };
+let F = { ships: [], totals: {}, engine: {}, age: -1, history: [] };     // /api/fleet
 let board = null;
 const sys = new Map();
 const stationsBy = new Map();
-const fleetBy = new Map();
+const shipsBy = new Map();                     // system id -> our ships there
 const layers = { Lanes: true, Traffic: true, Stations: true, Strongholds: true, Intel: true, Fleet: true, Names: true };
 const view = { x: 0, y: 0, k: 0.05 };
-let selected = null, hover = null, route = [], tab = 'System', pilotCard = null;
+let selected = null, hover = null, route = [], tab = 'Selection', pilotCard = null;
+let selShip = null, shipCard = null, shipMark = '', docView = null;
 
 const canvas = $('map'), ctx = canvas.getContext('2d');
 let W = 0, H = 0;
@@ -56,7 +74,7 @@ function fit(list, pad) {
   const xs = list.map((s) => s.x), ys = list.map((s) => s.y);
   const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
   view.x = (x0 + x1) / 2; view.y = (y0 + y1) / 2;
-  view.k = Math.min(W / (x1 - x0 + pad), H / (y1 - y0 + pad));
+  view.k = Math.min(3, Math.min(W / (x1 - x0 + pad), H / (y1 - y0 + pad)));
   draw();
 }
 
@@ -75,12 +93,16 @@ function pathFromHome(target) {
   return out;
 }
 
+function diamond(x, y, r) {
+  ctx.beginPath(); ctx.moveTo(x, y - r); ctx.lineTo(x + r, y); ctx.lineTo(x, y + r); ctx.lineTo(x - r, y); ctx.closePath(); ctx.fill();
+}
+
 function draw() {
   if (!S) return;
   ctx.clearRect(0, 0, W, H);
   const k = view.k, r = Math.max(2, Math.min(7, 2 + k * 28));
   if (layers.Lanes) {
-    ctx.strokeStyle = 'rgba(120,128,160,0.22)'; ctx.lineWidth = 1; ctx.beginPath();
+    ctx.strokeStyle = 'rgba(120,130,165,0.22)'; ctx.lineWidth = 1; ctx.beginPath();
     for (const s of S.systems) {
       const [ax, ay] = toScreen(s);
       for (const id of s.lanes) {
@@ -91,7 +113,7 @@ function draw() {
     ctx.stroke();
   }
   if (route.length > 1) {
-    ctx.strokeStyle = '#9b59b6'; ctx.lineWidth = 2.5; ctx.beginPath();
+    ctx.strokeStyle = '#a48be0'; ctx.lineWidth = 2.5; ctx.beginPath();
     route.forEach((id, i) => { const [x, y] = toScreen(sys.get(id)); if (i) ctx.lineTo(x, y); else ctx.moveTo(x, y); });
     ctx.stroke();
   }
@@ -100,7 +122,7 @@ function draw() {
       const n = L.hour[s.id] || 0;
       if (!n) continue;
       const [x, y] = toScreen(s);
-      ctx.fillStyle = 'rgba(240,180,70,0.16)';
+      ctx.fillStyle = 'rgba(220,174,88,0.15)';
       ctx.beginPath(); ctx.arc(x, y, r + 3 + Math.sqrt(n) * 2.6, 0, 6.2832); ctx.fill();
     }
   }
@@ -115,29 +137,47 @@ function draw() {
       ctx.beginPath(); ctx.arc(x, y, r + 3, 0, 6.2832); ctx.stroke();
     }
     if (layers.Strongholds && s.stronghold) {
-      ctx.strokeStyle = '#e5534b'; ctx.lineWidth = 2; ctx.beginPath();
+      ctx.strokeStyle = '#e06c66'; ctx.lineWidth = 2; ctx.beginPath();
       ctx.moveTo(x - r - 4, y - r - 4); ctx.lineTo(x + r + 4, y + r + 4);
       ctx.moveTo(x + r + 4, y - r - 4); ctx.lineTo(x - r - 4, y + r + 4); ctx.stroke();
     }
     const intel = layers.Intel && S.intel.systems[s.id];
     if (intel && intel.standing !== 'neutral') {
-      ctx.strokeStyle = intel.standing === 'ally' ? '#4cc38a' : '#e5534b'; ctx.lineWidth = 2;
+      ctx.strokeStyle = intel.standing === 'ally' ? '#58c08c' : '#e06c66'; ctx.lineWidth = 1.5;
       ctx.strokeRect(x - r - 6, y - r - 6, 2 * r + 12, 2 * r + 12);
-    }
-    if (layers.Fleet && fleetBy.has(s.id)) {
-      ctx.fillStyle = '#c084fc';
-      ctx.beginPath(); ctx.moveTo(x, y - r - 9); ctx.lineTo(x + 6, y - r - 3); ctx.lineTo(x, y - r + 3); ctx.lineTo(x - 6, y - r - 3);
-      ctx.closePath(); ctx.fill();
-      ctx.fillText(String(fleetBy.get(s.id)), x + 9, y - r - 2);
     }
     if (s.id === selected) {
       ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2;
       ctx.beginPath(); ctx.arc(x, y, r + 7, 0, 6.2832); ctx.stroke();
     }
-    if (layers.Names && (k > 0.16 || s.home || s.id === selected || s.id === hover)) {
-      ctx.fillStyle = s.home ? '#ffffff' : '#aab0c8';
-      ctx.font = (s.home ? '600 ' : '') + '11px system-ui, sans-serif';
+    const ours = layers.Fleet && shipsBy.has(s.id);
+    if (layers.Names && (k > 0.16 || s.home || ours || s.id === selected || s.id === hover)) {
+      ctx.fillStyle = s.home || ours ? '#ffffff' : '#aab0c8';
+      ctx.font = (s.home || ours ? '600 ' : '') + '11px system-ui, sans-serif';
       ctx.fillText(s.name, x + r + 5, y + 4);
+    }
+  }
+  if (layers.Fleet) {
+    for (const [id, list] of shipsBy) {            // our ships: one diamond per division, with its count
+      const s = sys.get(id);
+      if (!s) continue;
+      const [x, y] = toScreen(s), q = r + 10, groups = new Map();
+      list.forEach((sh) => groups.set(sh.division, (groups.get(sh.division) || 0) + 1));
+      ctx.strokeStyle = list.some((sh) => sh.name === selShip) ? '#ffffff' : 'rgba(213,218,230,0.75)'; ctx.lineWidth = 1.5; ctx.beginPath();
+      for (const [dx, dy] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) {     // corner brackets around the system
+        ctx.moveTo(x + dx * q, y + dy * (q - 5)); ctx.lineTo(x + dx * q, y + dy * q); ctx.lineTo(x + dx * (q - 5), y + dy * q);
+      }
+      ctx.stroke();
+      let i = 0;
+      ctx.font = '600 11px system-ui, sans-serif';
+      for (const [division, n] of groups) {
+        const cx = x - q + 5 + i * 26, cy = y - q - 9;
+        ctx.fillStyle = DIV[division] || DIV.Unassigned;
+        diamond(cx, cy, 5);
+        ctx.fillStyle = '#d5dae6';
+        ctx.fillText(String(n), cx + 8, cy + 4);
+        i++;
+      }
     }
   }
 }
@@ -151,11 +191,15 @@ function nearest(mx, my) {
   return best;
 }
 
-// ---------------------------------------------------------------- panels
+// ---------------------------------------------------------------- small builders
 
 function facts(rows) {
   const t = el('table');
-  for (const [k, v] of rows) { const tr = el('tr'); tr.append(el('th', null, k), el('td', null, v)); t.append(tr); }
+  for (const [k, v] of rows) {
+    const tr = el('tr'), td = el('td');
+    if (v instanceof Node) td.append(v); else td.textContent = v === undefined || v === null ? '' : String(v);
+    tr.append(el('th', null, k), td); t.append(tr);
+  }
   return t;
 }
 function table(head, rows, numeric) {
@@ -173,22 +217,171 @@ function table(head, rows, numeric) {
   }
   return t;
 }
-function sysLink(id) {
-  const s = sys.get(id), b = el('button', 'link', s ? s.name : id);
+function linkButton(label, go, cls) {
+  const b = el('button', cls || 'link', label);
   b.type = 'button';
-  b.addEventListener('click', () => select(id, true));
+  b.addEventListener('click', go);
   return b;
 }
-function pilotLink(name) {
-  const b = el('button', 'link', name);
+const sysLink = (id) => linkButton(sys.has(id) ? sys.get(id).name : id, () => select(id, true));
+const pilotLink = (name) => linkButton(name, () => showPilot(name));
+const shipLink = (name) => linkButton(name, () => selectShip(name, false));
+function bar(kind, a, b, lowBelow) {
+  const o = el('div', 'bar ' + kind + (lowBelow && b > 0 && a / b < lowBelow ? ' low' : '')), i = el('i');
+  i.style.width = pct(a, b) + '%';
+  o.append(i); o.title = kind + ' ' + fmt(a) + ' / ' + fmt(b);
+  return o;
+}
+function divTag(division) {
+  const t = el('span', 'tag', division), c = DIV[division] || DIV.Unassigned;
+  t.style.color = c; t.style.borderColor = c;
+  return t;
+}
+
+// ---------------------------------------------------------------- fleet: resources, roster, ship card
+
+function shipState(r) {
+  if (r.status !== 'connected') return ['off', 'offline'];
+  if (r.loop_failures >= 3) return ['bad', 'loop failing'];
+  if (r.jumping) return ['move', 'jumping'];
+  if (r.in_transit) return ['move', 'to ' + (r.dest_poi || 'another place')];
+  const a = r.activity || {};
+  if (a.kind === 'loop') return ['work', a.type + ' loop'];
+  if (a.kind === 'goal' || a.kind === 'job') return ['work', a.type];
+  return r.docked ? ['dock', 'docked'] : ['idle', 'idle in space'];
+}
+
+function renderResources() {
+  const box = $('resources'), t = F.totals || {};
+  box.replaceChildren();
+  const cell = (k, v, small, smallCls, bad) => {
+    const c = el('div', 'res' + (bad ? ' bad' : '')), val = el('div', 'v', v);
+    if (small) val.append(el('small', smallCls || null, small));
+    c.append(el('div', 'k', k), val); box.append(c);
+  };
+  const rate = t.credits_per_hour;
+  cell('Credits', fmt(t.credits), rate === undefined ? '' : (rate >= 0 ? '+' : '') + fmt(rate) + ' / h', rate > 0 ? 'up' : rate < 0 ? 'down' : null);
+  cell('Ships', fmt(t.ships), t.ships ? (t.idle ? t.idle + ' idle' : 'all busy') : '', t.idle ? 'warn' : 'up');
+  cell('Cargo', fmt(t.cargo_used) + ' / ' + fmt(t.cargo_capacity));
+  cell('Missions', fmt(F.ships.reduce((a, r) => a + (r.missions || 0), 0)));
+  const ok = Boolean(F.engine && F.engine.ok && F.age >= 0 && F.age < 90);
+  cell('Engine', ok ? 'online' : 'no data', F.age >= 0 ? ago(F.age) + ' ago' : '', null, !ok);
+}
+
+function shipRow(r) {
+  const [cls, what] = shipState(r), b = el('button', 'ship' + (r.name === selShip ? ' on' : ''));
   b.type = 'button';
-  b.addEventListener('click', () => showPilot(name));
+  const who = el('div', 'who'), bars = el('div', 'bars'), cr = el('div', 'cr', fmt(r.credits));
+  who.append(el('div', 'nm', r.name), el('div', 'at', (r.system_name || r.system || 'position unknown') + ' | ' + what));
+  bars.append(bar('hull', r.hull, r.max_hull, 0.5), bar('fuel', r.fuel, r.max_fuel, 0.25), bar('cargo', r.cargo_used, r.cargo_capacity));
+  cr.append(el('small', null, r.class || ''));
+  b.append(el('i', 'glyph ' + cls), who, bars, cr);
+  b.title = r.name + ': hull ' + r.hull + '/' + r.max_hull + ', fuel ' + r.fuel + '/' + r.max_fuel + ', cargo ' + r.cargo_used + '/' + r.cargo_capacity;
+  b.addEventListener('click', () => selectShip(r.name, true));
   return b;
 }
 
-async function renderSystem(panel) {
+function renderRoster() {
+  const box = $('roster'), keep = box.scrollTop, by = new Map();
+  box.replaceChildren();
+  F.ships.forEach((r) => { if (!by.has(r.division)) by.set(r.division, []); by.get(r.division).push(r); });
+  const divisions = (S ? S.roster : []).filter((a) => a.division !== 'Command').map((a) => [a.division, a]);
+  if (by.has('Unassigned')) divisions.push(['Unassigned', null]);
+  for (const [division, admiral] of divisions) {
+    const list = by.get(division) || [], block = el('div', 'div'), head = el('div', 'divhead'), c = DIV[division] || DIV.Unassigned;
+    const name = el('span', 'name', division), sum = el('span', 'sum');
+    head.style.borderLeftColor = c; name.style.color = c;
+    head.append(name);
+    if (admiral) {
+      const b = linkButton('Adm. ' + admiral.name, () => openChat(admiral.id), 'adm');
+      b.title = 'Open the chat with ' + admiral.name;
+      head.append(b);
+    }
+    if (list.length) {
+      sum.append(el('b', null, String(list.length)), list.length === 1 ? ' ship  ' : ' ships  ', el('b', null, fmt(list.reduce((a, r) => a + r.credits, 0))), ' cr');
+    }
+    head.append(sum); block.append(head);
+    if (!list.length) block.append(el('div', 'noships', 'No ships yet'));
+    list.forEach((r) => block.append(shipRow(r)));
+    box.append(block);
+  }
+  box.scrollTop = keep;
+  const fresh = $('fleet-fresh'), ok = F.age >= 0 && F.age < 90 && F.engine && F.engine.ok;
+  fresh.textContent = F.age < 0 ? 'no data' : (ok ? 'live | ' : 'stale | ') + ago(F.age) + ' ago';
+  fresh.className = 'fresh' + (ok ? '' : ' bad');
+}
+
+function renderShip(panel) {
+  const d = shipCard;
+  panel.append(linkButton('Back to the system', () => { selShip = null; shipCard = null; shipMark = ''; renderRoster(); draw(); render(); }));
+  if (!d) { panel.append(el('p', 'empty', 'Loading the ship...')); return; }
+  if (d.error) { panel.append(el('p', 'empty', 'The fleet data has no file for this ship.')); return; }
+  const chips = el('div', 'chips'), [cls, what] = shipState(d);
+  panel.append(el('h2', null, d.name), el('p', 'sub', [d.class, d.empire].filter(Boolean).join(' | ')));
+  chips.append(divTag(d.division));
+  if (d.admiral) chips.append(el('span', 'tag', 'Adm. ' + d.admiral));
+  chips.append(el('span', 'tag ' + (cls === 'bad' ? 'bad' : cls === 'idle' ? 'warn' : cls === 'work' ? 'good' : ''), what));
+  panel.append(chips);
+  const g = el('div', 'gauges');
+  for (const [k, kind, a, b, low] of [['Hull', 'hull', d.hull, d.max_hull, 0.5], ['Shield', 'shield', d.shield, d.max_shield, 0],
+    ['Fuel', 'fuel', d.fuel, d.max_fuel, 0.25], ['Cargo', 'cargo', d.cargo_used, d.cargo_capacity, 0]]) {
+    g.append(el('span', 'k', k), bar(kind, a, b, low), el('span', 'v', fmt(a) + ' / ' + fmt(b)));
+  }
+  panel.append(g);
+  const loc = d.system && sys.has(d.system) ? sysLink(d.system) : (d.system_name || 'unknown');
+  panel.append(facts([
+    ['System', loc], ['Place', d.jumping ? 'jumping to the next system' : d.in_transit ? 'in transit to ' + (d.dest_poi || '?') : (d.poi_name || '-')],
+    ['Docked at', d.docked || 'not docked'], ['Credits', fmt(d.credits)], ['Home base', d.home_base || '-'],
+    ['Security here', d.security || '-'], ['State as of', (d.state_at || '') + ' UTC'],
+  ]));
+  if (d.loop && d.loop.type) {
+    panel.append(el('h3', null, 'Loop'));
+    panel.append(facts([['Type', d.loop.type + (d.loop.running ? ' (running)' : ' (stopped)')], ['Last step', d.loop.last_step || '-'],
+      ['Failures in a row', d.loop_failures], ['Last failure', d.loop_last_failure || 'none']]));
+  }
+  panel.append(el('h3', null, 'Missions (' + (d.mission_list || []).length + ' of 5)'));
+  if (!(d.mission_list || []).length) panel.append(el('p', 'empty', 'None accepted.'));
+  for (const m of d.mission_list || []) {
+    const box = el('div', 'mission'), top = el('div', 't'), b = el('div', 'bar'), i = el('i');
+    top.append(el('b', null, m.title), el('span', null, fmt(m.credits) + ' cr'));
+    i.style.width = Math.round(m.percent) + '%'; b.append(i);
+    box.append(top, b);
+    m.objectives.forEach((o) => box.append(el('div', 'o' + (o.done ? ' done' : ''), (o.done ? '[done] ' : '[' + o.current + '/' + o.required + '] ') + o.text)));
+    panel.append(box);
+  }
+  panel.append(el('h3', null, 'Cargo'));
+  if (d.cargo.length) panel.append(table(['Item', 'Units'], d.cargo.map((c) => [c.name || c.item, fmt(c.quantity)]), [1]));
+  else panel.append(el('p', 'empty', 'Empty hold.'));
+  panel.append(el('h3', null, 'Modules'));
+  panel.append(table(['Module', 'Kind', 'Slot'], d.modules.map((m) => [m.name, m.kind, m.slot])));
+  const skills = Object.entries(d.skills || {});
+  if (skills.length) {
+    panel.append(el('h3', null, 'Skills'));
+    panel.append(table(['Skill', 'Level', 'XP'], skills.map(([k, v]) => [k.replace(/_/g, ' '), v.level, fmt(v.xp) + ' / ' + fmt(v.next)]), [1, 2]));
+  }
+  panel.append(el('h3', null, 'Service record'));
+  panel.append(facts(Object.entries(d.stats || {}).map(([k, v]) => [k.replace(/_/g, ' '), fmt(v)])));
+}
+
+async function selectShip(name, center) {
+  selShip = name; shipCard = null; shipMark = ''; pilotCard = null; docView = null; tab = 'Selection';
+  const row = F.ships.find((r) => r.name === name);
+  if (row && sys.has(row.system)) {
+    selected = row.system; route = pathFromHome(selected);
+    if (center) { const s = sys.get(selected); view.x = s.x; view.y = s.y; if (view.k < 0.12) view.k = 0.35; }
+  }
+  renderRoster(); draw(); render();
+  try { shipCard = await get('/api/ship?name=' + encodeURIComponent(name)); } catch (e) { shipCard = { error: e.message }; }
+  shipMark = JSON.stringify(shipCard);
+  if (selShip === name) render();
+}
+
+// ---------------------------------------------------------------- right panel
+
+async function renderSelection(panel, live) {
+  if (selShip) { renderShip(panel); return; }
   if (pilotCard) { renderPilot(panel, pilotCard); return; }
-  if (!selected) { panel.append(el('p', 'empty', 'Click a system on the map.')); return; }
+  if (!selected) { panel.append(el('p', 'empty', 'Click a system on the map or a ship in the roster.')); return; }
   const s = sys.get(selected);
   panel.append(el('h2', null, s.name), el('p', 'sub', s.id));
   const intel = S.intel.systems[s.id];
@@ -203,6 +396,11 @@ async function renderSystem(panel) {
     ['Pilots seen (1 h / 24 h)', (L.hour[s.id] || 0) + ' / ' + (L.day[s.id] || 0)],
     ['Flags', [s.home ? 'empire home' : '', s.stronghold ? 'pirate stronghold' : ''].filter(Boolean).join(', ') || 'none'],
   ]));
+  const ours = shipsBy.get(s.id) || [];
+  if (ours.length) {
+    panel.append(el('h3', null, 'Our ships here (' + ours.length + ')'));
+    panel.append(table(['Ship', 'Doing', 'Cargo'], ours.map((r) => [shipLink(r.name), shipState(r)[1], r.cargo_used + ' / ' + r.cargo_capacity])));
+  }
   panel.append(el('h3', null, 'Lanes'));
   const lanes = el('div', 'chips');
   s.lanes.forEach((id) => lanes.append(sysLink(id)));
@@ -219,17 +417,11 @@ async function renderSystem(panel) {
     panel.append(table(['Station', 'Owner', 'State', 'Services'],
       st.map((t) => [t.name, t.tag || t.empire || '', t.wrecked ? 'wrecked' : t.condition, t.services.join(', ')])));
   } else panel.append(el('p', 'empty', 'None on the public list.'));
-  const fleet = S.fleet.filter((f) => f.system === s.id);
-  if (fleet.length) {
-    panel.append(el('h3', null, 'Our ships (MAP.md)'));
-    panel.append(table(['Division', 'POI', 'Ships', 'Doing', 'As of'], fleet.map((f) => [f.division, f.poi, f.ships, f.doing, f.as_of]), [2]));
-  }
-  const id = s.id;
-  const box = el('div');
+  const id = s.id, box = el('div');
   panel.append(box);
   try {
     const d = await get('/api/system?id=' + encodeURIComponent(id));
-    if (selected !== id || tab !== 'System' || pilotCard) return;
+    if (!live()) return;
     box.append(el('h3', null, 'Pilots last seen here (' + d.pilot_count + ')'));
     if (d.pilots.length) {
       box.append(table(['Pilot', 'Faction', 'Empire', 'Seen'], d.pilots.map((p) => [pilotLink(p.name), p.tag, p.empire, ago(p.age) + ' ago'])));
@@ -242,18 +434,15 @@ async function renderSystem(panel) {
       box.append(el('h3', null, 'Intel file: ' + d.intel.file));
       box.append(el('pre', null, d.intel_text));
     }
-  } catch (e) { box.append(el('p', 'empty', 'Detail not available: ' + e.message)); }
+  } catch (e) { if (live()) box.append(el('p', 'empty', 'Detail not available: ' + e.message)); }
 }
 
 function renderPilot(panel, d) {
-  const back = el('button', 'link', 'Back to the system');
-  back.type = 'button';
-  back.addEventListener('click', () => { pilotCard = null; render(); });
-  panel.append(back, el('h2', null, d.name));
+  panel.append(linkButton('Back to the system', () => { pilotCard = null; render(); }), el('h2', null, d.name));
   if (d.intel) {
     const chips = el('div', 'chips');
     chips.append(el('span', 'tag ' + d.intel.standing, d.intel.standing), el('span', 'tag ' + d.intel.threat, 'threat ' + d.intel.threat));
-    panel.append(chips, el('p', 'sub', d.intel.file));
+    panel.append(chips, linkButton('Intel file: ' + d.intel.file, () => openDoc(d.intel.file)));
   }
   const rows = [];
   if (d.seen) rows.push(['Last jump', sysLink(d.seen.system)], ['Seen', ago(d.seen.age) + ' ago'], ['Faction', d.seen.tag || 'none'], ['Empire', d.seen.empire]);
@@ -262,16 +451,10 @@ function renderPilot(panel, d) {
     rows.push(['Registered', d.profile.created], ['Faction (daily feed)', d.profile.faction || 'none'], ['Empire (daily feed)', d.profile.empire]);
     for (const [k, v] of Object.entries(d.profile.stats)) rows.push([k.replace(/_/g, ' '), fmt(v)]);
   }
-  const t = el('table');
-  for (const [k, v] of rows) {
-    const tr = el('tr'), td = el('td');
-    if (v instanceof Node) td.append(v); else td.textContent = String(v);
-    tr.append(el('th', null, k), td); t.append(tr);
-  }
-  panel.append(t);
+  panel.append(facts(rows));
 }
 
-function renderFeed(panel) {
+function renderTraffic(panel) {
   panel.append(el('h3', null, 'Jumps (' + fmt(L.pilots_tracked) + ' pilots tracked)'));
   panel.append(table(['Ago', 'Pilot', 'From', 'To'],
     L.events.slice(0, 40).map((e) => [ago(e.t), pilotLink(e.pilot), sysLink(e.from), sysLink(e.to)])));
@@ -283,15 +466,16 @@ function renderFeed(panel) {
     L.battles.slice(0, 20).map((b) => [sysLink(b.system), b.category, b.pilots.join(', '), b.lost.join(', ')])));
 }
 
-async function renderBoard(panel) {
+async function renderRanks(panel, live) {
   if (!board) board = await get('/api/leaderboard');
+  if (!live()) return;
   const groups = Object.keys(board.groups || {});
   if (!groups.length) { panel.append(el('p', 'empty', 'No leaderboard yet.')); return; }
   const g = el('select'), c = el('select'), out = el('div'), row = el('div', 'row');
   groups.forEach((n) => g.append(new Option(n, n)));
-  const fill = () => { c.replaceChildren(); Object.keys(board.groups[g.value]).forEach((n) => c.append(new Option(n.replace(/_/g, ' '), n))); show(); };
   const show = () => out.replaceChildren(table(['#', 'Name', '', 'Value'],
     (board.groups[g.value][c.value] || []).map((r) => [r.rank, r.name, r.tag, fmt(r.value)]), [0, 3]));
+  const fill = () => { c.replaceChildren(); Object.keys(board.groups[g.value]).forEach((n) => c.append(new Option(n.replace(/_/g, ' '), n))); show(); };
   g.addEventListener('change', fill); c.addEventListener('change', show);
   row.append(g, c); panel.append(row, out, el('p', 'sub', 'Generated ' + board.generated_at));
   fill();
@@ -315,68 +499,202 @@ function renderMarket(panel) {
   input.dispatchEvent(new Event('input'));
 }
 
-function renderFleet(panel) {
-  panel.append(el('h2', null, 'Fleet'));
-  if (!S.fleet.length) {
-    panel.append(el('p', 'empty', 'No ships deployed yet. This tab shows the positions in MAP.md; live ship status comes with the fleet program.'));
-  } else {
-    panel.append(table(['Division', 'System', 'POI', 'Ships', 'Doing', 'As of'],
-      S.fleet.map((f) => [f.division, sysLink(f.system), f.poi, f.ships, f.doing, f.as_of]), [3]));
+async function openDoc(path) {
+  tab = 'Docs'; selShip = null; shipCard = null; docView = { path, text: 'Loading...' };
+  renderRoster(); render();
+  try { docView = await get('/api/doc?path=' + encodeURIComponent(path)); } catch (e) { docView = { path, error: e.message }; }
+  if (tab === 'Docs') render();
+}
+
+async function renderDocs(panel, live) {
+  if (docView) {
+    panel.append(linkButton('Back to the list', () => { docView = null; render(); }), el('h2', null, docView.path));
+    if (docView.error) panel.append(el('p', 'empty', docView.error));
+    else {
+      if (docView.cut) panel.append(el('p', 'sub', docView.path.endsWith('.log') ? 'Long log: the newest part is shown.' : 'Long file: the first part is shown.'));
+      panel.append(el('pre', null, docView.text));
+    }
+    return;
   }
-  panel.append(el('h3', null, 'Intel files in the repository'));
-  const a = Object.values(S.intel.systems), p = Object.values(S.intel.pilots);
-  panel.append(table(['File', 'Standing', 'Threat', 'Updated'],
-    a.concat(p).map((i) => [i.file, i.standing, i.threat, i.updated])));
-  panel.append(el('h3', null, 'Data sources'));
+  const d = await get('/api/docs');
+  if (!live()) return;
+  const row = (label, small, path) => { const b = linkButton(label, () => openDoc(path), 'rowlink'); if (small) b.append(el('small', null, small)); return b; };
+  panel.append(el('h3', null, 'Reports'));
+  if (d.reports.length) d.reports.forEach((r) => panel.append(row(r.name, r.author, r.path)));
+  else panel.append(el('p', 'empty', 'No report yet. One is written at every session end.'));
+  panel.append(el('h3', null, 'Logs'));
+  d.logs.forEach((g) => panel.append(row(g.name, g.entries ? g.entries + ' entries, last ' + g.last.ent + ' by ' + g.last.by + ', ' + g.last.at : 'no entries', g.path)));
+  panel.append(el('h3', null, 'Intel files'));
+  const intel = Object.values(S.intel.systems).concat(Object.values(S.intel.pilots));
+  if (intel.length) intel.forEach((i) => panel.append(row(i.file, i.standing + ', threat ' + i.threat + (i.updated ? ', ' + i.updated : ''), i.file)));
+  else panel.append(el('p', 'empty', 'None yet.'));
+  panel.append(el('h3', null, 'Station data sources'));
   panel.append(table(['Source', 'Last good', 'Problem'],
     Object.entries(S.sources).map(([n, s]) => [n, ago(s.age) + (s.age < 0 ? '' : ' ago'), s.error])));
 }
 
-const TABS = { System: renderSystem, Feed: renderFeed, Leaderboard: renderBoard, Market: renderMarket, Fleet: renderFleet };
-let renderSeq = 0;
+const TABS = { Selection: renderSelection, Traffic: renderTraffic, Market: renderMarket, Ranks: renderRanks, Docs: renderDocs };
+let renderSeq = 0, viewKey = '';
 function render() {
-  const panel = $('panel'), mine = ++renderSeq;
+  const panel = $('panel'), mine = ++renderSeq, live = () => mine === renderSeq;
+  const key = [tab, selShip, selShip ? '' : selected, pilotCard ? pilotCard.name : '', docView ? docView.path : ''].join('|');
+  const keep = key === viewKey ? panel.scrollTop : 0;
+  viewKey = key;
   panel.replaceChildren();
   document.querySelectorAll('nav button').forEach((b) => b.classList.toggle('on', b.textContent === tab));
-  Promise.resolve(TABS[tab](panel)).catch((e) => { if (mine === renderSeq) panel.append(el('p', 'empty', e.message)); });
+  Promise.resolve(TABS[tab](panel, live)).catch((e) => { if (live()) panel.append(el('p', 'empty', e.message)); });
+  panel.scrollTop = keep;
 }
 
 function select(id, center) {
   if (!sys.has(id)) return;
-  selected = id; pilotCard = null; route = pathFromHome(id); tab = 'System';
+  selected = id; pilotCard = null; selShip = null; shipCard = null; docView = null; route = pathFromHome(id); tab = 'Selection';
   if (center) { const s = sys.get(id); view.x = s.x; view.y = s.y; if (view.k < 0.12) view.k = 0.2; }
-  draw(); render();
+  renderRoster(); draw(); render();
 }
 async function showPilot(name) {
   pilotCard = await get('/api/pilot?name=' + encodeURIComponent(name));
-  tab = 'System';
+  tab = 'Selection'; selShip = null; shipCard = null; docView = null;
   if (pilotCard.seen && sys.has(pilotCard.seen.system)) {
     selected = pilotCard.seen.system; route = pathFromHome(selected);
     const s = sys.get(selected); view.x = s.x; view.y = s.y; if (view.k < 0.12) view.k = 0.2;
     draw();
   }
-  render();
+  renderRoster(); render();
 }
 
 function status() {
   const box = $('status'), st = L.stats || {};
   box.replaceChildren();
-  const item = (label, value, cls) => { const s = el('span'); if (cls) s.append(el('i', 'dot ' + cls)); s.append(label + ' '); s.append(el('b', null, value)); box.append(s); };
-  item('Tick', fmt(st.tick)); item('Game', st.version || '?'); item('Online', fmt(st.online_players));
-  const live = L.stream || {};
-  item('Live stream', live.connected ? ago(live.age) + ' ago' : 'down', live.connected && live.age < 60 ? 'good' : 'bad');
+  const item = (label, value, cls, wide) => { const s = el('span', wide ? 'wide' : null); if (cls) s.append(el('i', 'dot ' + cls)); s.append(label + ' '); s.append(el('b', null, value)); box.append(s); };
+  item('Tick', fmt(st.tick)); item('Game', st.version || '?', null, true); item('Online', fmt(st.online_players));
+  const liveStream = L.stream || {};
+  item('Stream', liveStream.connected ? ago(liveStream.age) + ' ago' : 'down', liveStream.connected && liveStream.age < 60 ? 'good' : 'bad');
   if (S) {
     const bad = Object.entries(S.sources).filter(([, s]) => s.error || s.age < 0).map(([n]) => n);
-    item('Sources', bad.length ? 'problem: ' + bad.join(', ') : 'all good', bad.length ? 'warn' : 'good');
+    item('Sources', bad.length ? 'problem: ' + bad.join(', ') : 'good', bad.length ? 'warn' : 'good');
   }
 }
 
+// ---------------------------------------------------------------- chat with the six agents
+
+const chat = { agent: 'unity', after: 0, timer: 0, draft: null, lastText: '', running: false, seq: 0 };
+const agentOf = (id) => ((S && S.roster) || []).find((a) => a.id === id) || { id, name: id, division: 'Command' };
+
+function chatLine(cls, text) {
+  const log = $('chat-log'), hint = log.querySelector('.chathint'), m = el('div', cls, text);
+  if (hint) hint.remove();
+  log.append(m); log.scrollTop = log.scrollHeight;
+  return m;
+}
+function bubble(role, text) {
+  const m = chatLine('msg ' + (role === 'user' ? 'user' : 'agent'), text);
+  if (role !== 'user') m.style.borderLeftColor = DIV[agentOf(chat.agent).division] || DIV.Command;
+  return m;
+}
+function setRunning(on) { chat.running = on; $('chat-send').disabled = on; }
+
+function applyChatEvent(e) {
+  const log = $('chat-log');
+  if (e.kind === 'delta') {
+    if (!chat.draft) chat.draft = bubble('agent', '');
+    chat.draft.textContent += e.text;
+  } else if (e.kind === 'final') {
+    if (chat.draft) chat.draft.textContent = e.text;
+    else if (e.text && e.text !== chat.lastText) bubble('agent', e.text);
+    chat.lastText = e.text; chat.draft = null;
+  } else if (e.kind === 'tool') {
+    if (chat.draft) { chat.lastText = chat.draft.textContent; chat.draft = null; }
+    chatLine('toolline', '> ' + (e.tool || 'tool') + (e.text ? '  ' + e.text : ''));
+  } else if (e.kind === 'tool_done') {
+    if (e.failed) chatLine('toolline failed', 'x ' + (e.tool || 'tool') + ' failed');
+  } else if (e.kind === 'note') chatLine('toolline', e.text);
+  else if (e.kind === 'error') chatLine('msg err', e.text);
+  else if (e.kind === 'end') chat.draft = null;
+  log.scrollTop = log.scrollHeight;
+}
+
+async function pollChat(mine, first) {
+  let d = null;
+  try { d = await get('/api/chat?agent=' + encodeURIComponent(chat.agent) + '&after=' + chat.after); } catch (e) { d = null; }
+  if (mine !== chat.seq) return;
+  if (d && !d.error) {
+    if (first && !d.running) return;                 // nothing in flight: the history is complete
+    for (const e of d.events) { applyChatEvent(e); chat.after = e.n; }
+    setRunning(d.running);
+    $('chat-state').textContent = d.running ? agentOf(chat.agent).name + ' is working | ' + d.seconds + ' s' : '';
+    if (!d.running) return;
+  }
+  chat.timer = setTimeout(() => pollChat(mine, false), 1000);
+}
+
+async function openChat(id) {
+  const mine = ++chat.seq, a = agentOf(id), c = DIV[a.division] || DIV.Command, log = $('chat-log');
+  clearTimeout(chat.timer);
+  chat.agent = id; chat.after = 0; chat.draft = null; chat.lastText = '';
+  setRunning(false); $('chat-state').textContent = '';
+  document.querySelectorAll('#chat-tabs button').forEach((b) => {
+    const on = b.dataset.id === id;
+    b.classList.toggle('on', on); b.style.borderBottomColor = on ? c : 'transparent';
+  });
+  $('chat-input').placeholder = 'Message to ' + a.name + ' (Enter sends, Shift+Enter: new line)';
+  log.replaceChildren(el('div', 'chathint', 'Loading the conversation with ' + a.name + '...'));
+  let h;
+  try { h = await get('/api/chat/history?agent=' + encodeURIComponent(id)); } catch (e) { h = { messages: [], error: e.message }; }
+  if (mine !== chat.seq) return;
+  log.replaceChildren();
+  if (!h.messages || !h.messages.length) {
+    log.append(el('div', 'chathint', h.error || 'No conversation with ' + a.name + ' here yet. Your first message starts one. It is separate from your chats in the desktop app.'));
+  } else h.messages.forEach((m) => bubble(m.role, m.text));
+  log.scrollTop = log.scrollHeight;
+  pollChat(mine, true);
+}
+
+async function sendChat() {
+  const input = $('chat-input'), message = input.value.trim(), mine = chat.seq;
+  if (!message || chat.running) return;
+  setRunning(true);
+  try { await post('/api/chat/send', { agent: chat.agent, text: message }); } catch (e) {
+    setRunning(false); chatLine('msg err', 'Not sent: ' + e.message); return;
+  }
+  if (mine !== chat.seq) return;
+  input.value = '';
+  bubble('user', message);
+  chat.after = 0; chat.draft = null; chat.lastText = '';
+  $('chat-state').textContent = agentOf(chat.agent).name + ' is working';
+  clearTimeout(chat.timer);
+  pollChat(mine, false);
+}
+
+async function newChat() {
+  if (chat.running) return;
+  try { await post('/api/chat/new', { agent: chat.agent }); } catch (e) { chatLine('msg err', e.message); return; }
+  openChat(chat.agent);
+}
+
+function initChat() {
+  const tabs = $('chat-tabs');
+  tabs.replaceChildren();
+  for (const a of S.roster) {
+    const b = el('button', null, a.name);
+    b.type = 'button'; b.dataset.id = a.id;
+    b.append(el('small', null, a.division));
+    b.addEventListener('click', () => openChat(a.id));
+    tabs.append(b);
+  }
+  $('chat-send').addEventListener('click', sendChat);
+  $('chat-input').addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); } });
+  $('chat-new').addEventListener('click', newChat);
+  openChat('unity');
+}
+
+// ---------------------------------------------------------------- loading
+
 async function loadState() {
   S = await get('/api/state');
-  sys.clear(); stationsBy.clear(); fleetBy.clear();
+  sys.clear(); stationsBy.clear();
   S.systems.forEach((s) => sys.set(s.id, s));
   S.stations.forEach((t) => { if (!stationsBy.has(t.system)) stationsBy.set(t.system, []); stationsBy.get(t.system).push(t); });
-  S.fleet.forEach((f) => fleetBy.set(f.system, (fleetBy.get(f.system) || 0) + f.ships));
   const legend = $('legend');
   legend.replaceChildren();
   for (const [name, c] of Object.entries(S.empires).concat([['lawless', LAWLESS]])) {
@@ -384,13 +702,29 @@ async function loadState() {
     dot.style.background = HEX.test(c) ? c : LAWLESS;
     span.append(dot, name); legend.append(span);
   }
-  legend.append(el('span', null, 'ring: station (gold: player faction)'), el('span', null, 'red cross: pirate stronghold'),
+  const ours = el('span'), mark = el('i', 'sq');
+  mark.style.background = DIV.Mining;
+  ours.append(mark, 'diamond: our ships, by division');
+  legend.append(ours, el('span', null, 'ring: station (gold: player faction)'), el('span', null, 'red cross: pirate stronghold'),
     el('span', null, 'glow: pilots seen in the last hour'));
 }
 async function loadLive() {
   try { L = await get('/api/live'); } catch (e) { L.stream = { connected: false, age: -1 }; }
   status(); draw();
-  if (tab === 'Feed') render();
+  if (tab === 'Traffic') render();
+}
+async function loadFleet() {
+  try { F = await get('/api/fleet'); } catch (e) { F = Object.assign({}, F, { age: -1 }); }
+  shipsBy.clear();
+  F.ships.forEach((r) => { if (r.system) { if (!shipsBy.has(r.system)) shipsBy.set(r.system, []); shipsBy.get(r.system).push(r); } });
+  renderResources(); renderRoster(); draw();
+  if (selShip) {
+    const name = selShip;
+    try {
+      const d = await get('/api/ship?name=' + encodeURIComponent(name)), mark = JSON.stringify(d);
+      if (selShip === name && mark !== shipMark) { shipMark = mark; shipCard = d; if (tab === 'Selection') render(); }
+    } catch (e) { /* keep the last card */ }
+  }
 }
 
 function init() {
@@ -405,7 +739,7 @@ function init() {
   for (const name of Object.keys(TABS)) {
     const b = el('button', null, name);
     b.type = 'button';
-    b.addEventListener('click', () => { tab = name; if (name !== 'System') pilotCard = null; render(); });
+    b.addEventListener('click', () => { tab = name; if (name !== 'Selection') pilotCard = null; if (name !== 'Docs') docView = null; render(); });
     nav.append(b);
   }
   let drag = null, moved = false;
@@ -421,7 +755,8 @@ function init() {
     const s = S && nearest(mx, my), tip = $('tip');
     hover = s ? s.id : null;
     if (s) {
-      tip.textContent = s.name + (s.empire ? ' (' + s.empire + ')' : '') + ' | ' + (L.hour[s.id] || 0) + ' pilots in the last hour';
+      const ours = (shipsBy.get(s.id) || []).length;
+      tip.textContent = s.name + (s.empire ? ' (' + s.empire + ')' : '') + ' | ' + (L.hour[s.id] || 0) + ' pilots in the last hour' + (ours ? ' | ' + ours + ' of ours' : '');
       tip.style.left = mx + 14 + 'px'; tip.style.top = my + 12 + 'px'; tip.hidden = false;
     } else tip.hidden = true;
     draw();
@@ -441,6 +776,7 @@ function init() {
   }, { passive: false });
   $('btn-all').addEventListener('click', () => fit(S.systems, 1200));
   $('btn-home').addEventListener('click', () => fit(S.systems.filter((s) => s.jumps >= 0 && s.jumps <= 4), 500));
+  $('btn-fleet').addEventListener('click', fitFleet);
   const input = $('search'), results = $('results');
   let timer = 0;
   input.addEventListener('input', () => {
@@ -455,6 +791,8 @@ function init() {
         b.addEventListener('click', () => { results.hidden = true; input.value = ''; go(); });
         results.append(b);
       };
+      F.ships.filter((r) => r.name.toLowerCase().includes(input.value.trim().toLowerCase())).slice(0, 8)
+        .forEach((r) => add(r.name, 'our ship', () => selectShip(r.name, true)));
       d.systems.forEach((s) => add(s.name, 'system', () => select(s.id, true)));
       d.pilots.forEach((n) => add(n, 'pilot', () => showPilot(n)));
       if (!results.children.length) results.append(el('button', null, 'Nothing found'));
@@ -465,13 +803,22 @@ function init() {
   window.addEventListener('resize', resize);
 }
 
+function fitFleet() {
+  const list = [...shipsBy.keys()].map((id) => sys.get(id)).filter(Boolean);
+  if (!list.length) { fit(S.systems.filter((s) => s.jumps >= 0 && s.jumps <= 4), 500); return; }
+  fit(list.concat(list.flatMap((s) => s.lanes.map((id) => sys.get(id)).filter(Boolean))), 300);
+}
+
 (async function main() {
   init();
   await loadState();
   resize();
-  fit(S.systems, 1200);
+  await loadFleet();
+  fitFleet();
   await loadLive();
   render();
+  initChat();
   setInterval(loadLive, 5000);
-  setInterval(async () => { await loadState(); draw(); if (tab === 'Fleet') render(); }, 120000);
+  setInterval(loadFleet, 5000);
+  setInterval(async () => { await loadState(); draw(); if (tab === 'Docs' && !docView) render(); }, 120000);
 })().catch((e) => { $('panel').replaceChildren(el('p', 'empty', 'The station could not load its data: ' + e.message)); });

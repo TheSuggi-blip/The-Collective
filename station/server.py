@@ -1,10 +1,18 @@
 #!/usr/bin/env python3
-"""Command station of The Collective -- read-only galaxy map and public game data.
+"""Command station of The Collective -- Suggi's command screen: map, fleet, intel, chat.
 
 WHAT: one small web server for Suggi's browser (reached over the tailnet). It
 collects the game's PUBLIC data (no login, no key), keeps it in memory with a
-copy on disk, reads the Collective repository's intel files, and serves a map
-page plus a JSON API. It sends nothing to the game and changes nothing.
+copy on disk, reads the Collective repository's intel files, reports and logs,
+reads our own ships' live state from the unit's data folder (written by
+station/fleet.py, never kept in the repository), and serves the page plus a
+JSON API. It sends nothing to the game.
+
+The one thing it passes on is Suggi's chat: a message typed on the page goes to
+the chosen agent's chat door inside the unit, and the answer comes back to the
+page. The keys of those doors are read from the unit's file at each use and
+never reach the page, a log or the repository. A POST is accepted only from the
+station's own page: it must carry the token that page read with the state.
 
 It runs as the service `station` of the unit (/srv/collective/services/station/run;
 the README in that folder's parent explains services). After a change to this
@@ -24,10 +32,12 @@ Stdlib only. ASCII only. Run: python3 -I -B server.py
 import collections
 import gzip
 import hashlib
+import hmac
 import http.server
 import json
 import os
 import re
+import secrets
 import threading
 import time
 import urllib.parse
@@ -42,6 +52,20 @@ PORT = int(os.environ.get("STATION_PORT", "8080"))
 DATA = Path(os.environ.get("STATION_DATA", "/srv/collective/data/station"))
 REPO = Path(os.environ.get("STATION_REPO", "/srv/collective/the-collective"))
 STATIC = Path(__file__).resolve().parent / "static"
+FLEET = Path(os.environ.get("STATION_FLEET", "/srv/collective/data/fleet"))
+AGENTS_API = Path(os.environ.get("STATION_AGENTS", "/srv/collective/services/agents-api.json"))
+OFFLINE = os.environ.get("STATION_OFFLINE") == "1"      # development: no polling of the game, no live stream
+TOKEN = secrets.token_urlsafe(24)                       # new at every start; the page reads it with the state
+LOCAL = urllib.request.build_opener(urllib.request.ProxyHandler({}))    # for addresses inside the unit
+# Who is who (COLLECTIVE.md). The order is the order on the page.
+ROSTER = [
+    {"id": "unity", "name": "Unity", "rank": "Fleet Admiral", "division": "Command"},
+    {"id": "zero", "name": "Zero", "rank": "Admiral", "division": "Mining"},
+    {"id": "mercury", "name": "Mercury", "rank": "Admiral", "division": "Trade"},
+    {"id": "apollo", "name": "Apollo", "rank": "Admiral", "division": "Logistics"},
+    {"id": "apophis", "name": "Apophis", "rank": "Admiral", "division": "Military"},
+    {"id": "oracle", "name": "Oracle", "rank": "Admiral", "division": "Intel"},
+]
 STATIC_TYPES = {
     ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".mjs": "text/javascript; charset=utf-8",
     ".css": "text/css; charset=utf-8", ".json": "application/json; charset=utf-8", ".map": "application/json; charset=utf-8",
@@ -379,22 +403,251 @@ def scan_intel():
     return out
 
 
-def fleet_positions():
-    """Rows of MAP.md section 1 (the Fleet Admiral's snapshot of where each division is)."""
+def read_json(path, cap=5_000_000):
+    """A plain JSON file under the size cap; symlinks are refused."""
+    if path.is_symlink() or not path.is_file() or path.stat().st_size > cap:
+        raise OSError("not a plain file under the size cap")
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def api_fleet():
+    """Our ships, from the fleet collector's files in the data folder (station/fleet.py)."""
+    path = FLEET / "fleet.json"
     try:
-        body = repo_text("MAP.md")
+        d = read_json(path)
+        age = int(time.time() - path.stat().st_mtime)
+    except (OSError, ValueError):
+        return {"ships": [], "totals": {}, "engine": {"ok": False, "error": "no fleet data yet"}, "updated_at": "", "age": -1,
+                "history": []}
+    try:
+        history = read_json(FLEET / "history.json")[-288:]
+    except (OSError, ValueError, TypeError):
+        history = []
+    return {"ships": d.get("ships") or [], "totals": d.get("totals") or {}, "engine": d.get("engine") or {},
+            "updated_at": text(d.get("updated_at"), 30), "age": age, "history": history}
+
+
+def api_ship(name):
+    fn = re.sub(r"[^A-Za-z0-9_.-]", "_", name)[:60]
+    try:
+        return read_json(FLEET / "ships" / (fn + ".json"))
+    except (OSError, ValueError):
+        return {"error": "no such ship"}
+
+
+DOC_PATH = re.compile(r"(reports|communications|planets|players)/[A-Za-z0-9_.\-]{1,120}\.(md|log)|MAP\.md")
+ENTRY = re.compile(r"^## \[(ENT-\d+)\] \| ([^|\n]+) \| ([^|\n]+) \|", re.M)
+
+
+def api_docs():
+    """Reports and logs of the repository: what exists, newest first."""
+    reports, logs = [], []
+    try:
+        names = sorted(os.listdir(REPO / "reports"), reverse=True)[:300]
     except OSError:
-        return []
-    rows, inside = [], False
-    for line in body.splitlines():
-        if line.startswith("## "):
-            inside = line.startswith("## 1.")
-        elif inside and line.startswith("|"):
-            cells = [c.strip().strip("`") for c in line.strip().strip("|").split("|")]
-            if len(cells) >= 6 and cells[3].isdigit() and int(cells[3]) > 0:
-                rows.append({"division": cells[0][:40], "system": cells[1][:80], "poi": cells[2][:60],
-                             "ships": int(cells[3]), "doing": cells[4][:80], "as_of": cells[5][:20]})
-    return rows[:500]
+        names = []
+    for fn in names:
+        if not DOC_PATH.fullmatch("reports/" + fn):
+            continue
+        try:
+            fm = frontmatter(repo_text("reports/" + fn))
+        except OSError:
+            continue
+        reports.append({"path": "reports/" + fn, "name": fm.get("name", fn)[:80], "author": fm.get("author", "")[:40],
+                        "id": fm.get("id", "")[:20]})
+    try:
+        names = sorted(os.listdir(REPO / "communications"))[:100]
+    except OSError:
+        names = []
+    for fn in names:
+        if not fn.endswith(".log") or not DOC_PATH.fullmatch("communications/" + fn):
+            continue
+        try:
+            entries = ENTRY.findall(repo_text("communications/" + fn, cap=3_000_000))
+        except OSError:
+            continue
+        last = entries[-1] if entries else None
+        logs.append({"path": "communications/" + fn, "name": fn, "entries": len(entries),
+                     "last": {"ent": last[0], "at": last[1].strip()[:20], "by": last[2].strip()[:30]} if last else None})
+    return {"reports": reports, "logs": logs}
+
+
+def api_doc(rel):
+    """One report, log or intel file of the repository, as text. A long log shows its newest part."""
+    if not DOC_PATH.fullmatch(rel):
+        return {"error": "not a document the station shows"}
+    try:
+        body = repo_text(rel, cap=3_000_000)
+    except OSError:
+        return {"error": "not found"}
+    part = body[-80_000:] if rel.endswith(".log") else body[:80_000]
+    return {"path": rel, "text": part, "cut": len(body) > len(part)}
+
+
+# ---------------------------------------------------------------- chat with the agents
+
+CHATS = {a["id"]: {"turn": 0, "running": False, "events": [], "started": 0.0} for a in ROSTER}
+CHAT_LOCK = threading.Lock()
+SESSION_ID = re.compile(r"[A-Za-z0-9_.\-]{1,80}")
+
+
+def hermes(agent, method, path, body=None, stream=False, timeout=60):
+    """A request to one agent's chat door. The key is read here and goes nowhere else."""
+    cfg = json.loads(AGENTS_API.read_text(encoding="utf-8"))
+    door = cfg["agents"][agent]
+    headers = {"Authorization": "Bearer " + str(door["key"])}
+    data = None
+    if body is not None:
+        data = json.dumps(body).encode("utf-8")
+        headers["Content-Type"] = "application/json"
+    if stream:
+        headers["Accept"] = "text/event-stream"
+    url = str(cfg["base_url"]).rstrip("/") + str(door["prefix"]) + path
+    return LOCAL.open(urllib.request.Request(url, data=data, method=method, headers=headers), timeout=timeout)
+
+
+def chat_sessions():
+    try:
+        value = json.loads((DATA / "chat.json").read_text(encoding="utf-8"))
+        return value if isinstance(value, dict) else {}
+    except (OSError, ValueError):
+        return {}
+
+
+def chat_session(agent, create=False):
+    """The station's conversation with this agent; made on the first message."""
+    sessions = chat_sessions()
+    sid = sessions.get(agent)
+    if isinstance(sid, str) and SESSION_ID.fullmatch(sid):
+        return sid
+    if not create:
+        return None
+    with hermes(agent, "POST", "/api/sessions", {"title": "Command station"}) as r:
+        sid = text((json.loads(r.read(200_000)).get("session") or {}).get("id"), 80)
+    if not SESSION_ID.fullmatch(sid):
+        raise ValueError("the agent's door gave no session")
+    sessions[agent] = sid
+    save("chat", sessions)
+    return sid
+
+
+def chat_turn(agent, sid, message, turn):
+    """One turn: send the message, follow the answer stream, keep its events for the page."""
+    chat = CHATS[agent]
+
+    def add(kind, **more):
+        with CHAT_LOCK:
+            if chat["turn"] == turn:
+                chat["events"].append(dict(more, n=len(chat["events"]) + 1, kind=kind))
+
+    def on(event, payload):
+        try:
+            d = json.loads(payload)
+        except ValueError:
+            return
+        if not isinstance(d, dict):
+            return
+        if event == "assistant.delta":
+            add("delta", text=text(d.get("delta"), 20000))
+        elif event == "assistant.completed":
+            add("final", text=text(d.get("content"), 200000))
+        elif event == "assistant.commentary" and not d.get("already_streamed"):
+            add("note", text=text(d.get("text"), 4000))
+        elif event == "tool.started":
+            add("tool", tool=text(d.get("tool") or d.get("tool_name") or d.get("name"), 60), text=text(d.get("preview"), 300))
+        elif event in ("tool.completed", "tool.failed"):
+            add("tool_done", tool=text(d.get("tool") or d.get("tool_name") or d.get("name"), 60), failed=event == "tool.failed" or bool(d.get("error")))
+        elif event in ("run.failed", "run.cancelled"):
+            add("error", text=event.split(".")[1] + ": " + text(d.get("error") or d.get("message") or "", 300))
+
+    try:
+        with hermes(agent, "POST", f"/api/sessions/{sid}/chat/stream", {"input": message}, stream=True, timeout=1800) as r:
+            event, data = "", []
+            for raw in r:
+                line = raw.decode("utf-8", "replace").rstrip("\r\n")
+                if line.startswith("event:"):
+                    event = line[6:].strip()
+                elif line.startswith("data:"):
+                    data.append(line[5:].lstrip())
+                elif not line:
+                    if data:
+                        on(event, "\n".join(data))
+                    event, data = "", []
+    except Exception as e:
+        add("error", text=(type(e).__name__ + ": " + str(e))[:300])
+    finally:
+        with CHAT_LOCK:
+            if chat["turn"] == turn:
+                chat["running"] = False
+                chat["events"].append({"n": len(chat["events"]) + 1, "kind": "end"})
+
+
+def chat_send(body):
+    agent, message = body.get("agent"), body.get("text")
+    if agent not in CHATS or not isinstance(message, str) or not message.strip():
+        return 400, {"error": "agent and text are needed"}
+    message = message.strip()[:12000]
+    chat = CHATS[agent]
+    with CHAT_LOCK:
+        if chat["running"]:
+            return 409, {"error": "still answering the last message"}
+        chat["turn"] += 1
+        chat["running"], chat["events"], chat["started"] = True, [], time.time()
+        turn = chat["turn"]
+    try:
+        sid = chat_session(agent, create=True)
+    except Exception as e:
+        with CHAT_LOCK:
+            chat["running"] = False
+        return 502, {"error": "the agent's chat door did not answer: " + type(e).__name__}
+    threading.Thread(target=chat_turn, args=(agent, sid, message, turn), daemon=True).start()
+    return 200, {"ok": True, "turn": turn}
+
+
+def chat_new(body):
+    """Forget the conversation with one agent; the next message starts a new one."""
+    agent = body.get("agent")
+    if agent not in CHATS:
+        return 400, {"error": "agent is needed"}
+    with CHAT_LOCK:
+        if CHATS[agent]["running"]:
+            return 409, {"error": "still answering the last message"}
+        CHATS[agent]["events"] = []
+    sessions = chat_sessions()
+    sessions.pop(agent, None)
+    save("chat", sessions)
+    return 200, {"ok": True}
+
+
+def api_chat(agent, after):
+    """The running or last turn with one agent: its events after number `after`."""
+    if agent not in CHATS:
+        return {"error": "no such agent"}
+    chat = CHATS[agent]
+    with CHAT_LOCK:
+        events = [e for e in chat["events"] if e["n"] > after]
+        return {"agent": agent, "turn": chat["turn"], "running": chat["running"], "events": events,
+                "seconds": int(time.time() - chat["started"]) if chat["running"] else 0}
+
+
+def api_chat_history(agent):
+    """What was said so far in the station's conversation with one agent."""
+    if agent not in CHATS:
+        return {"error": "no such agent"}
+    try:
+        sid = chat_session(agent)
+        if not sid:
+            return {"agent": agent, "messages": []}
+        with hermes(agent, "GET", f"/api/sessions/{sid}/messages") as r:
+            rows = json.loads(r.read(20_000_000)).get("data") or []
+    except Exception as e:
+        return {"agent": agent, "messages": [], "error": "history not available: " + type(e).__name__}
+    out = []
+    for m in rows:
+        if isinstance(m, dict) and m.get("role") in ("user", "assistant") and isinstance(m.get("content"), str) and m["content"].strip():
+            out.append({"role": m["role"], "text": m["content"][:200000], "at": num(m.get("timestamp"))})
+    out.sort(key=lambda m: m["at"])
+    return {"agent": agent, "messages": out[-200:]}
 
 
 # ---------------------------------------------------------------- API
@@ -407,7 +660,8 @@ def api_state():
             "stats": VALUE.get("stats") or {}, "feed_built_at": (VALUE.get("feed") or {}).get("built_at", ""),
         }
     out["intel"] = scan_intel()
-    out["fleet"] = fleet_positions()
+    out["roster"] = ROSTER
+    out["token"] = TOKEN
     now = time.time()
     out["sources"] = {n: {"age": int(now - s["ok_at"]) if s["ok_at"] else -1, "error": s["error"]} for n, s in STATUS.items()}
     return out
@@ -521,7 +775,10 @@ class Handler(http.server.BaseHTTPRequestHandler):
     def route(self, head_only):
         url = urllib.parse.urlsplit(self.path)
         query = urllib.parse.parse_qs(url.query, max_num_fields=5)
-        arg = (query.get("q") or query.get("id") or query.get("name") or [""])[0][:80]
+        arg = (query.get("q") or query.get("id") or query.get("name") or query.get("agent") or [""])[0][:80]
+        after = (query.get("after") or ["0"])[0]
+        after = int(after) if after.isdigit() and len(after) < 9 else 0
+        doc = (query.get("path") or [""])[0][:200]
         try:
             page = None if url.path.startswith("/api/") else static_file(urllib.parse.unquote(url.path))
             if page is not None:
@@ -531,6 +788,9 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 "/api/pilot": lambda: api_pilot(arg), "/api/search": lambda: api_search(arg),
                 "/api/market": lambda: api_market(arg),
                 "/api/leaderboard": lambda: VALUE.get("leaderboard") or {"groups": {}},
+                "/api/fleet": api_fleet, "/api/ship": lambda: api_ship(arg),
+                "/api/docs": api_docs, "/api/doc": lambda: api_doc(doc),
+                "/api/chat": lambda: api_chat(arg, after), "/api/chat/history": lambda: api_chat_history(arg),
                 "/healthz": lambda: {"ok": True, "sources": sum(1 for s in STATUS.values() if s["ok_at"])},
             }
             if url.path not in handlers:
@@ -540,6 +800,34 @@ class Handler(http.server.BaseHTTPRequestHandler):
         except Exception as e:
             body = json.dumps({"error": type(e).__name__}).encode("utf-8")
             return self.reply(500, body, "application/json", head_only)
+
+    def own_page(self):
+        """True when a POST carries the page's token. Only a page loaded from the station can read
+        the token (/api/state), and the extra header keeps other sites' forms and scripts out."""
+        if self.headers.get("Sec-Fetch-Site") in ("cross-site", "same-site"):
+            return False
+        return hmac.compare_digest(self.headers.get("X-Station-Token", ""), TOKEN)
+
+    def do_POST(self):
+        handlers = {"/api/chat/send": chat_send, "/api/chat/new": chat_new}
+        url = urllib.parse.urlsplit(self.path)
+        try:
+            length = int(self.headers.get("Content-Length") or "0")
+            if url.path not in handlers:
+                return self.reply(404, b'{"error":"not found"}', "application/json")
+            if not self.own_page() or not self.headers.get("Content-Type", "").startswith("application/json"):
+                return self.reply(403, b'{"error":"only the station page may send"}', "application/json")
+            if not 0 < length <= 65536:
+                return self.reply(413, b'{"error":"message too long"}', "application/json")
+            body = json.loads(self.rfile.read(length))
+            if not isinstance(body, dict):
+                raise ValueError("not an object")
+            code, out = handlers[url.path](body)
+            return self.reply(code, json.dumps(out, separators=(",", ":")).encode("utf-8"), "application/json; charset=utf-8")
+        except ValueError:
+            return self.reply(400, b'{"error":"bad request"}', "application/json")
+        except Exception as e:
+            return self.reply(500, json.dumps({"error": type(e).__name__}).encode("utf-8"), "application/json")
 
     def do_GET(self):
         self.route(False)
@@ -551,7 +839,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
 def main():
     DATA.mkdir(parents=True, exist_ok=True)
     restore()
-    for target in (poller, stream, housekeeping):
+    for target in (() if OFFLINE else (poller, stream, housekeeping)):
         threading.Thread(target=target, daemon=True).start()
     server = http.server.ThreadingHTTPServer(("0.0.0.0", PORT), Handler)
     server.daemon_threads = True

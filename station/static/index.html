@@ -7,8 +7,9 @@
 <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-<header>
-  <div class="brand">THE COLLECTIVE <span>Command Station</span></div>
+<header class="topbar">
+  <div class="brand"><i class="sigil"></i>THE COLLECTIVE<small>Command Station</small></div>
+  <div id="resources" class="resources"></div>
   <div class="search">
     <input id="search" type="search" placeholder="Find a system or pilot" autocomplete="off" spellcheck="false">
     <div id="results" class="results" hidden></div>
@@ -16,17 +17,34 @@
   <div id="status" class="status"></div>
 </header>
 <main>
+  <section class="left">
+    <div class="pane roster">
+      <div class="panehead"><span>Fleet</span><span id="fleet-fresh" class="fresh"></span></div>
+      <div id="roster" class="panebody"></div>
+    </div>
+    <div class="pane comms">
+      <div class="panehead"><span>Comms</span><button id="chat-new" type="button" class="mini">New chat</button></div>
+      <div id="chat-tabs" class="chattabs"></div>
+      <div id="chat-log" class="chatlog"></div>
+      <div id="chat-state" class="chatstate"></div>
+      <div class="chatform">
+        <textarea id="chat-input" rows="2" placeholder="Message" spellcheck="true"></textarea>
+        <button id="chat-send" type="button">Send</button>
+      </div>
+    </div>
+  </section>
   <section class="map">
     <canvas id="map"></canvas>
     <div id="tip" class="tip" hidden></div>
     <div class="layers" id="layers"></div>
     <div class="mapbuttons">
+      <button id="btn-fleet" type="button">Fleet</button>
       <button id="btn-home" type="button">Home</button>
-      <button id="btn-all" type="button">Whole galaxy</button>
+      <button id="btn-all" type="button">Galaxy</button>
     </div>
     <div class="legend" id="legend"></div>
   </section>
-  <aside>
+  <aside class="right">
     <nav id="tabs"></nav>
     <div id="panel" class="panel"></div>
   </aside>
