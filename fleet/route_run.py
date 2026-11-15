@@ -12,7 +12,9 @@ which pilot flies it, and where a pilot is, stays in the unit's data folder:
               "redock": true,                 undock and dock again (a delivery counts on docking)
               "store":  ["item_id", ...],     hold -> personal storage here
               "sell":   [{"item": "...", "min_price": N}],
-              "buy":    [{"item": "...", "qty": N, "max_price": N}],   qty = units wanted in the hold
+              "buy":    [{"item": "...", "qty": N, "max_price": N, "one_time": true}],
+                                              qty = units wanted in the hold; one_time: goods for a
+                                              one-time mission, their cost is booked against its reward
               "accept": ["template_id", {"template": "...", "needs": {"item_id": N}}]}, ...]}
                                               needs: accept only with these goods in the hold
 At every stop, in this order: dock and refuel; hand in every mission whose
@@ -250,6 +252,10 @@ for n, stop in enumerate(ROUTE['stops']):
             ok, msg = goal('buy-items', {'items': [{'itemId': want['item'], 'maxPrice': want['max_price'], 'maxQuantity': need}]}, tries=1)
             got = cargo().get(want['item'], 0)
             say(f'buy {need} {want["item"]} at up to {want["max_price"]}: {ok}, now {got} in the hold, {credits() - c0:+d} cr {"" if ok else msg[:100]}')
+            spent = credits() - c0
+            if want.get('one_time') and spent < 0:
+                book_onetime(f'{ROUTE["id"]}: {want["item"]} bought', spent)
+                onetime[0] += spent
             if got < want['qty']:
                 notes.append(f'{want["item"]}: {got} of {want["qty"]}')
     if stop.get('accept'):

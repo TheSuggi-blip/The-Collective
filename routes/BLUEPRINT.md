@@ -65,7 +65,7 @@ A stop of a circuit:
 | `redock` | Undock and dock again: a delivery counts on docking |
 | `store` | Goods moved from the hold into the pilot's storage here |
 | `sell` | `item`, `min_price`: sold only into a bid at that price or more |
-| `buy` | `item`, `qty` (units wanted in the hold), `max_price`; never under the wallet floor of 2,000 cr |
+| `buy` | `item`, `qty` (units wanted in the hold), `max_price`; never under the wallet floor of 2,000 cr. `one_time`: goods for a one-time mission; their cost is booked against its reward |
 | `accept` | A template id, or `template` with `needs`: accepted only with those goods aboard |
 
 `one_time` lists the mission titles whose reward is seed money: the
