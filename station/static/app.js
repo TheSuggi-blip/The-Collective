@@ -261,32 +261,37 @@ function liveAge() { return F.age < 0 ? -1 : F.age + Math.round((Date.now() - fe
 function renderResources() {
   const box = $('resources'), t = F.totals || {}, r = t.rates;
   box.replaceChildren();
-  const cell = (k, v, small, smallCls, bad, tip) => {
-    const c = el('div', 'res' + (bad ? ' bad' : '')), val = el('div', 'v', v);
+  const cell = (k, v, small, smallCls, tip) => {
+    const c = el('div', 'res'), val = el('div', 'v', v);
     if (small) val.append(el('small', smallCls || null, small));
     c.append(el('div', 'k', k), val);
     if (tip) c.title = tip;
     box.append(c);
     return c;
   };
-  const head = cell('CPH', r ? fmt(r.cph) : '--', r ? fmt(r.cph_per_ship) + ' / ship' : 'measuring', r && r.cph > 0 ? 'up' : null, false,
-    'Credits per hour: recurring income over the last ' + (r ? r.window_minutes : 60) + ' minutes, one-time starter rewards excluded');
-  head.classList.add('head');
-  cell('Credits', fmt(t.credits), r ? signed(r.net_per_hour) + ' / h' : '', r && r.net_per_hour < 0 ? 'down' : 'up', false,
-    'All wallets; the small number is the net change per hour, spending and seed money included');
-  cell('Per ship', fmt(t.credits_per_ship), '', null, false, 'Credits divided by ships');
-  cell('Ships', fmt(t.ships), t.ships ? (t.idle ? t.idle + ' idle' : 'all busy') : '', t.idle ? 'warn' : 'up');
+  const tone = (n) => (n > 0 ? 'up' : n < 0 ? 'down' : null);
+  cell('Credits', fmt(t.credits), r ? signed(r.cph) + ' / h' : 'measuring', r ? tone(r.cph) : null,
+    'All wallets. The coloured number is CPH: what the fleet earned minus what it spent per hour over the last '
+    + (r ? r.window_minutes : 60) + ' minutes, one-time starter rewards left out').classList.add('head');
+  cell('Per ship', fmt(t.credits_per_ship), r ? signed(r.cph_per_ship) + ' / h' : '', r ? tone(r.cph_per_ship) : null,
+    'Credits per ship. The coloured number is CPH per ship: what one ship produces per hour');
+  cell('Ships', fmt(t.ships), t.ships ? (t.idle ? t.idle + ' idle' : 'all busy') : '', t.idle ? 'warn' : 'up',
+    'Idle: docked or drifting without a goal or a loop');
   cell('Ore / h', r ? fmt(r.ore_per_hour) : '--', r ? r.missions_per_hour + ' missions / h' : '');
-  const age = liveAge(), ok = Boolean(F.engine && F.engine.ok && age >= 0 && age < 60);
-  const eng = cell('Engine', ok ? 'live' : 'no data', age >= 0 ? age + ' s ago' : '', null, !ok);
-  eng.id = 'engine-cell';
 }
 
-function tickAges() {                          // every second: the age labels count up between polls
-  const age = liveAge(), cell = $('engine-cell');
-  if (cell) { const s = cell.querySelector('small'); if (s) s.textContent = age >= 0 ? age + ' s ago' : ''; }
-  const fresh = $('fleet-fresh');
-  if (fresh && age >= 0) fresh.textContent = (F.engine && F.engine.ok && age < 60 ? 'live | ' : 'stale | ') + age + ' s ago';
+function fleetAgeText() {
+  const age = liveAge();
+  return age < 0 ? 'no data' : ago(age) + ' ago';
+}
+function fleetLive() { const age = liveAge(); return Boolean(F.engine && F.engine.ok && age >= 0 && age < 60); }
+
+function tickAges() {                          // every second: the one age label counts up between polls
+  const b = $('fleet-age');
+  if (!b) return;
+  b.textContent = fleetAgeText();
+  const dot = b.parentElement.querySelector('.dot');
+  if (dot) dot.className = 'dot ' + (fleetLive() ? 'good' : 'bad');
 }
 
 function shipRow(r) {
@@ -295,7 +300,8 @@ function shipRow(r) {
   const who = el('div', 'who'), bars = el('div', 'bars'), cr = el('div', 'cr', fmt(r.credits));
   who.append(el('div', 'nm', r.name), el('div', 'at', (r.system_name || r.system || 'position unknown') + ' | ' + what));
   bars.append(bar('hull', r.hull, r.max_hull, 0.5), bar('fuel', r.fuel, r.max_fuel, 0.25), bar('cargo', r.cargo_used, r.cargo_capacity));
-  cr.append(el('small', null, r.class || ''));
+  const best = r.top_skill || ['', 0];
+  cr.append(el('small', null, best[1] ? best[0].replace(/_/g, ' ') + ' ' + best[1] : (r.class || '')));
   b.append(el('i', 'glyph ' + cls), who, bars, cr);
   b.title = r.name + ': hull ' + r.hull + '/' + r.max_hull + ', fuel ' + r.fuel + '/' + r.max_fuel + ', cargo ' + r.cargo_used + '/' + r.cargo_capacity;
   b.addEventListener('click', () => selectShip(r.name, true));
@@ -323,7 +329,7 @@ function renderRoster() {
     if (list.length) {
       const dr = ((F.totals.rates || {}).divisions || {})[division];
       sum.append(el('b', null, String(list.length)), list.length === 1 ? ' ship  ' : ' ships  ', el('b', null, fmt(list.reduce((a, r) => a + r.credits, 0))), ' cr');
-      if (dr) sum.append('  ', el('b', null, fmt(dr.cph)), ' /h');
+      if (dr) sum.append('  ', el('b', dr.cph < 0 ? 'neg' : null, signed(dr.cph)), ' /h');
     }
     head.append(sum); block.append(head);
     if (!list.length) block.append(el('div', 'noships', 'No ships yet'));
@@ -331,8 +337,8 @@ function renderRoster() {
     box.append(block);
   }
   box.scrollTop = keep;
-  const fresh = $('fleet-fresh'), ok = F.age >= 0 && F.age < 60 && F.engine && F.engine.ok;
-  fresh.textContent = F.age < 0 ? 'no data' : (ok ? 'live | ' : 'stale | ') + liveAge() + ' s ago';
+  const fresh = $('fleet-fresh'), ok = fleetLive();
+  fresh.textContent = ok ? F.ships.length + ' ships' : (F.age < 0 ? 'no data' : 'stale');
   fresh.className = 'fresh' + (ok ? '' : ' bad');
 }
 
@@ -353,6 +359,20 @@ function renderShip(panel) {
     g.append(el('span', 'k', k), bar(kind, a, b, low), el('span', 'v', fmt(a) + ' / ' + fmt(b)));
   }
   panel.append(g);
+  const skills = Object.entries(d.skills || {}).sort((x, y) => (y[1].level - x[1].level) || (y[1].xp - x[1].xp));
+  panel.append(el('h3', null, 'Levels'));
+  if (!skills.length) panel.append(el('p', 'empty', 'No skill trained yet.'));
+  else {
+    const lv = el('div', 'levels');
+    for (const [k, v] of skills) {
+      const row = el('div', 'lv'), b = el('div', 'bar xp'), i = el('i');
+      i.style.width = pct(v.xp, v.next) + '%'; b.append(i);
+      row.title = k.replace(/_/g, ' ') + ': level ' + v.level + ', ' + fmt(v.xp) + ' of ' + fmt(v.next) + ' XP to the next level';
+      row.append(el('span', 'n', k.replace(/_/g, ' ')), el('b', null, String(v.level)), b);
+      lv.append(row);
+    }
+    panel.append(lv);
+  }
   const loc = d.system && sys.has(d.system) ? sysLink(d.system) : (d.system_name || 'unknown');
   panel.append(facts([
     ['System', loc], ['Place', d.jumping ? 'jumping to the next system' : d.in_transit ? 'in transit to ' + (d.dest_poi || '?') : (d.poi_name || '-')],
@@ -379,11 +399,6 @@ function renderShip(panel) {
   else panel.append(el('p', 'empty', 'Empty hold.'));
   panel.append(el('h3', null, 'Modules'));
   panel.append(table(['Module', 'Kind', 'Slot'], d.modules.map((m) => [m.name, m.kind, m.slot])));
-  const skills = Object.entries(d.skills || {});
-  if (skills.length) {
-    panel.append(el('h3', null, 'Skills'));
-    panel.append(table(['Skill', 'Level', 'XP'], skills.map(([k, v]) => [k.replace(/_/g, ' '), v.level, fmt(v.xp) + ' / ' + fmt(v.next)]), [1, 2]));
-  }
   panel.append(el('h3', null, 'Service record'));
   panel.append(facts(Object.entries(d.stats || {}).map(([k, v]) => [k.replace(/_/g, ' '), fmt(v)])));
 }
@@ -524,35 +539,167 @@ function renderMarket(panel) {
   input.dispatchEvent(new Event('input'));
 }
 
+function setWide(on) {                          // a document gets a wide panel; the map is resized to what is left
+  const right = $('main-right');
+  if (right.classList.contains('wide') === on) return;
+  right.classList.toggle('wide', on);
+  resize();
+}
+
 async function openDoc(path) {
-  tab = 'Docs'; selShip = null; shipCard = null; docView = { path, text: 'Loading...' };
+  tab = 'Docs'; selShip = null; shipCard = null; docView = { path, text: '', loading: true };
   renderRoster(); render();
   try { docView = await get('/api/doc?path=' + encodeURIComponent(path)); } catch (e) { docView = { path, error: e.message }; }
   if (tab === 'Docs') render();
 }
 
+// ---- Markdown and logs as formatted text. Everything is built from DOM nodes with textContent; no HTML is parsed.
+const DOC_RE = /^(reports|communications|planets|players|governance|rules)\/[A-Za-z0-9_.\-]{1,120}\.(md|log)$/;
+function docTarget(target, base) {              // a link or a quoted path that names a document the station shows
+  let t = String(target).split('#')[0];
+  if (!t || t.includes('://') || t.startsWith('/')) return null;
+  if (!t.includes('/') && base && base.includes('/')) t = base.slice(0, base.lastIndexOf('/') + 1) + t;
+  return DOC_RE.test(t) ? t : null;
+}
+function inline(parent, text, base) {           // `code`, **bold**, [label](target)
+  const re = /(`[^`\n]+`|\*\*[^*\n]+\*\*|\[[^\]\n]+\]\([^)\s]+\))/g;
+  let last = 0, m;
+  while ((m = re.exec(text))) {
+    if (m.index > last) parent.append(text.slice(last, m.index));
+    const t = m[0];
+    if (t[0] === '`') {
+      const body = t.slice(1, -1), path = docTarget(body, '');
+      if (path) parent.append(linkButton(body, () => openDoc(path), 'doclink code')); else parent.append(el('code', null, body));
+    } else if (t[0] === '*') parent.append(el('b', null, t.slice(2, -2)));
+    else {
+      const k = t.indexOf(']('), label = t.slice(1, k), path = docTarget(t.slice(k + 2, -1), base);
+      if (path) parent.append(linkButton(label, () => openDoc(path), 'doclink')); else parent.append(label);
+    }
+    last = m.index + t.length;
+  }
+  if (last < text.length) parent.append(text.slice(last));
+  return parent;
+}
+function mdTable(rows, base) {
+  const wrap = el('div', 'mdtable'), t = el('table');
+  const cells = (line) => line.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map((c) => c.trim());
+  rows.forEach((line, n) => {
+    if (n === 1) return;                         // the |---|---| line
+    const tr = el('tr');
+    cells(line).forEach((c) => tr.append(inline(el(n === 0 ? 'th' : 'td'), c, base)));
+    t.append(tr);
+  });
+  wrap.append(t);
+  return wrap;
+}
+function markdown(text, base, hard) {            // hard: every line is its own paragraph (log entries)
+  const out = el('div', 'md'), lines = String(text).replace(/\r/g, '').split('\n');
+  let i = 0;
+  if (lines[0] && lines[0].trim() === '---') {   // frontmatter: one quiet line
+    const meta = [];
+    for (i = 1; i < lines.length && lines[i].trim() !== '---'; i++) {
+      const m = /^(name|author|tier|id|status|updated|standing|threat):\s*(.+)$/.exec(lines[i]);
+      if (m) meta.push(m[1] + ' ' + m[2]);
+    }
+    i++;
+    if (meta.length) out.append(el('div', 'mdmeta', meta.join('  |  ')));
+  }
+  const isBullet = (l) => /^\s*([-*]|\d+\.)\s+/.test(l), isBlock = (l) => /^(#{1,5}\s|```|>|\|)/.test(l) || /^-{3,}\s*$/.test(l) || isBullet(l);
+  while (i < lines.length) {
+    const line = lines[i];
+    if (!line.trim()) { i++; continue; }
+    if (line.startsWith('```')) {
+      const code = [];
+      for (i++; i < lines.length && !lines[i].startsWith('```'); i++) code.push(lines[i]);
+      i++; out.append(el('pre', null, code.join('\n'))); continue;
+    }
+    const h = /^(#{1,5})\s+(.*)$/.exec(line);
+    if (h) { out.append(inline(el('div', 'mdh mdh' + h[1].length), h[2], base)); i++; continue; }
+    if (/^-{3,}\s*$/.test(line)) { out.append(el('hr')); i++; continue; }
+    if (line.startsWith('|') && /^\|?[\s:|-]+\|?\s*$/.test(lines[i + 1] || '')) {
+      const rows = [];
+      for (; i < lines.length && lines[i].startsWith('|'); i++) rows.push(lines[i]);
+      out.append(mdTable(rows, base)); continue;
+    }
+    if (isBullet(line)) {
+      const ul = el('ul');
+      while (i < lines.length && (isBullet(lines[i]) || (/^\s{2,}\S/.test(lines[i]) && ul.lastChild))) {
+        if (isBullet(lines[i])) {
+          const m = /^(\s*)([-*]|\d+\.)\s+(.*)$/.exec(lines[i]), li = el('li', m[1].length >= 2 ? 'sub' : null);
+          if (/\d/.test(m[2])) li.dataset.n = m[2];
+          li.dataset.text = m[3]; ul.append(li);
+        } else ul.lastChild.dataset.text += ' ' + lines[i].trim();
+        i++;
+      }
+      for (const li of ul.children) { if (li.dataset.n) li.append(el('span', 'num', li.dataset.n + ' ')); inline(li, li.dataset.text, base); delete li.dataset.text; }
+      out.append(ul); continue;
+    }
+    if (line.startsWith('>')) {
+      const q = [];
+      for (; i < lines.length && lines[i].startsWith('>'); i++) q.push(lines[i].replace(/^>\s?/, ''));
+      out.append(inline(el('blockquote'), q.join(' '), base)); continue;
+    }
+    const para = [line.trim()];
+    for (i++; !hard && i < lines.length && lines[i].trim() && !isBlock(lines[i]); i++) para.push(lines[i].trim());
+    const p = inline(el('p'), para.join(' '), base);
+    if (/^@[A-Za-z]+:/.test(para[0])) p.className = 'ask';
+    out.append(p);
+  }
+  return out;
+}
+function logView(text, cut, base) {              // an append-only log as entry cards, newest first
+  const out = el('div', 'entries'), parts = String(text).split(/^(?=## \[ENT-\d+\])/m);
+  const entries = parts.filter((p) => p.startsWith('## [ENT-'));
+  if (!entries.length) { out.append(markdown(text, base, true)); return out; }
+  for (const raw of entries.reverse()) {
+    const nl = raw.indexOf('\n'), head = (nl < 0 ? raw : raw.slice(0, nl)).replace(/^## /, '').split('|').map((s) => s.trim());
+    const card = el('div', 'entry'), top = el('div', 'entryhead'), who = head[2] || '';
+    const member = ((S && S.roster) || []).find((a) => a.name === who);
+    const name = el('b', null, who || 'unknown');
+    name.style.color = member ? (DIV[member.division] || DIV.Command) : 'var(--dim)';
+    card.style.borderLeftColor = member ? (DIV[member.division] || DIV.Command) : 'var(--line2)';
+    top.append(name, el('span', 'tag', head[0].replace(/[[\]]/g, '')), el('span', 'tag' + (head[3] === 'error' ? ' bad' : ''), head[3] || ''), el('span', 'when', head[1] || ''));
+    const refs = head.slice(4).filter(Boolean);
+    card.append(top);
+    if (refs.length) card.append(inline(el('div', 'entryrefs'), refs.map((r) => r.replace(/^(ref|see):\s*(\S+)/, (m, k, v) => k + ': `' + v + '`')).join('   '), ''));
+    card.append(markdown(nl < 0 ? '' : raw.slice(nl + 1), base, true));
+    out.append(card);
+  }
+  return out;
+}
+
 async function renderDocs(panel, live) {
+  setWide(Boolean(docView));
   if (docView) {
     panel.append(linkButton('Back to the list', () => { docView = null; render(); }), el('h2', null, docView.path));
-    if (docView.error) panel.append(el('p', 'empty', docView.error));
+    if (docView.loading) panel.append(el('p', 'empty', 'Loading...'));
+    else if (docView.error) panel.append(el('p', 'empty', docView.error));
     else {
-      if (docView.cut) panel.append(el('p', 'sub', docView.path.endsWith('.log') ? 'Long log: the newest part is shown.' : 'Long file: the first part is shown.'));
-      panel.append(el('pre', null, docView.text));
+      const isLog = docView.path.endsWith('.log');
+      if (docView.cut) panel.append(el('p', 'sub', isLog ? 'Long log: the newest part is shown.' : 'Long file: the first part is shown.'));
+      panel.append(isLog ? logView(docView.text, docView.cut, docView.path) : markdown(docView.text, docView.path, false));
     }
     return;
   }
   const d = await get('/api/docs');
   if (!live()) return;
   const row = (label, small, path) => { const b = linkButton(label, () => openDoc(path), 'rowlink'); if (small) b.append(el('small', null, small)); return b; };
+  panel.append(el('h3', null, 'Governance'));
+  (d.governance || []).forEach((g) => panel.append(row(g.title, g.path, g.path)));
   panel.append(el('h3', null, 'Reports'));
   if (d.reports.length) d.reports.forEach((r) => panel.append(row(r.name, r.author, r.path)));
   else panel.append(el('p', 'empty', 'No report yet. One is written at every session end.'));
   panel.append(el('h3', null, 'Logs'));
   d.logs.forEach((g) => panel.append(row(g.name, g.entries ? g.entries + ' entries, last ' + g.last.ent + ' by ' + g.last.by + ', ' + g.last.at : 'no entries', g.path)));
-  panel.append(el('h3', null, 'Intel files'));
+  panel.append(el('h3', null, 'Intel'));
+  (d.indexes || []).forEach((g) => panel.append(row(g.title, g.path, g.path)));
   const intel = Object.values(S.intel.systems).concat(Object.values(S.intel.pilots));
   if (intel.length) intel.forEach((i) => panel.append(row(i.file, i.standing + ', threat ' + i.threat + (i.updated ? ', ' + i.updated : ''), i.file)));
   else panel.append(el('p', 'empty', 'None yet.'));
+  if ((d.rules || []).length) {
+    panel.append(el('h3', null, 'Game rules, in detail'));
+    d.rules.forEach((g) => panel.append(row(g.title, '', g.path)));
+  }
   panel.append(el('h3', null, 'Station data sources'));
   panel.append(table(['Source', 'Last good', 'Problem'],
     Object.entries(S.sources).map(([n, s]) => [n, ago(s.age) + (s.age < 0 ? '' : ' ago'), s.error])));
@@ -589,7 +736,7 @@ function rolling(rows, minutes) {               // CPH over a trailing window, f
     let j = i;
     while (j > 0 && rows[i][0] - rows[j - 1][0] <= minutes * 60) j--;
     const dt = rows[i][0] - rows[j][0];
-    out.push([rows[i][0], dt >= 300 ? (rows[i][3] - rows[j][3]) * 3600 / dt : null]);
+    out.push([rows[i][0], dt >= 300 ? (rows[i][6] - rows[j][6]) * 3600 / dt : null]);
   }
   return out;
 }
@@ -600,10 +747,11 @@ async function renderMetrics(panel, live) {
   panel.append(el('p', 'sub', r ? 'Rates over the last ' + r.window_minutes + ' minutes.' : 'Rates appear after five minutes of samples.'));
   const grid = el('div', 'kpis');
   const kpi = (k, v, sub, cls) => { const b = el('div', 'kpi' + (cls ? ' ' + cls : '')); b.append(el('div', 'k', k), el('div', 'v', v)); if (sub) b.append(el('div', 's', sub)); grid.append(b); };
-  kpi('CPH', r ? fmt(r.cph) : '--', 'recurring credits per hour', 'main');
-  kpi('CPH per ship', r ? fmt(r.cph_per_ship) : '--', 'production capacity of one ship', 'main');
+  kpi('CPH', r ? signed(r.cph) : '--', 'earned minus spent per hour, one-time rewards left out', 'main');
+  kpi('CPH per ship', r ? signed(r.cph_per_ship) : '--', 'what one ship produces per hour', 'main');
   kpi('Credits per ship', fmt(t.credits_per_ship), fmt(t.credits) + ' in all');
-  kpi('Net per hour', r ? signed(r.net_per_hour) : '--', 'wallet change, all included');
+  kpi('Earned per hour', r ? fmt(r.earned_per_hour) : '--', 'sales and repeating rewards, before costs');
+  kpi('Wallets per hour', r ? signed(r.net_per_hour) : '--', 'one-time rewards included');
   kpi('Ore per hour', r ? fmt(r.ore_per_hour) : '--', 'units mined');
   kpi('Missions per hour', r ? String(r.missions_per_hour) : '--', 'completed');
   panel.append(grid);
@@ -621,7 +769,7 @@ async function renderMetrics(panel, live) {
     order.map(([d, adm]) => {
       const x = div[d] || {}, y = dr[d] || {}, name = el('span', null, d);
       name.style.color = DIV[d] || DIV.Unassigned; name.title = adm ? 'Admiral ' + adm : '';
-      return [name, fmt(x.ships), fmt(x.credits), fmt(x.credits_per_ship), r ? fmt(y.cph) : '--', r ? fmt(y.cph_per_ship) : '--', r ? fmt(y.ore_per_hour) : '--'];
+      return [name, fmt(x.ships), fmt(x.credits), fmt(x.credits_per_ship), r ? signed(y.cph) : '--', r ? signed(y.cph_per_ship) : '--', r ? fmt(y.ore_per_hour) : '--'];
     }), [1, 2, 3, 4, 5, 6]));
   panel.append(el('h3', null, 'Last six hours'));
   const box = el('div');
@@ -630,10 +778,10 @@ async function renderMetrics(panel, live) {
     try { HIST = Object.assign(await get('/api/history?q=6'), { at: Date.now() }); } catch (e) { HIST = { rows: [], at: Date.now() }; }
     if (!live()) return;
   }
-  box.append(chart(rolling(HIST.rows, 30), (p) => p[1], 'CPH, trailing 30 minutes', ''),
+  box.append(chart(rolling(HIST.rows, 30), (p) => p[1], 'CPH (earned minus spent), trailing 30 minutes', ''),
     chart(HIST.rows, (p) => p[1], 'Credits, all wallets', ''),
     chart(HIST.rows, (p) => (p[2] ? p[1] / p[2] : null), 'Credits per ship', ''));
-  panel.append(el('p', 'sub', 'CPH counts what the pilots earn (missions, sales) minus one-time starter rewards. Seed money and spending show in the net change, not in CPH.'));
+  panel.append(el('p', 'sub', 'CPH is the change of all wallets per hour with one-time rewards (the starter missions) taken out: sales and repeating rewards minus fuel, goods and modules bought. A fleet that only burns fuel shows a negative CPH.'));
 }
 
 const TABS = { Selection: renderSelection, Metrics: renderMetrics, Traffic: renderTraffic, Market: renderMarket, Ranks: renderRanks, Docs: renderDocs };
@@ -645,6 +793,7 @@ function render() {
   viewKey = key;
   panel.replaceChildren();
   document.querySelectorAll('nav button').forEach((b) => b.classList.toggle('on', b.textContent === tab));
+  if (tab !== 'Docs') setWide(false);
   Promise.resolve(TABS[tab](panel, live)).catch((e) => { if (live()) panel.append(el('p', 'empty', e.message)); });
   panel.scrollTop = keep;
 }
@@ -670,9 +819,12 @@ function status() {
   const box = $('status'), st = L.stats || {};
   box.replaceChildren();
   const item = (label, value, cls, wide) => { const s = el('span', wide ? 'wide' : null); if (cls) s.append(el('i', 'dot ' + cls)); s.append(label + ' '); s.append(el('b', null, value)); box.append(s); };
-  item('Tick', fmt(st.tick)); item('Game', st.version || '?', null, true); item('Online', fmt(st.online_players));
+  item('Fleet data', fleetAgeText(), fleetLive() ? 'good' : 'bad');
+  box.lastChild.querySelector('b').id = 'fleet-age';
+  box.lastChild.title = 'How old the picture of our ships is. The collector reads the engine every 10 seconds, about once a game tick';
+  item('Tick', fmt(st.tick), null, true); item('Game', st.version || '?', null, true); item('Online', fmt(st.online_players));
   const liveStream = L.stream || {};
-  item('Stream', liveStream.connected ? ago(liveStream.age) + ' ago' : 'down', liveStream.connected && liveStream.age < 60 ? 'good' : 'bad');
+  item('Stream', liveStream.connected && liveStream.age < 60 ? 'live' : 'down', liveStream.connected && liveStream.age < 60 ? 'good' : 'bad');
   if (S) {
     const bad = Object.entries(S.sources).filter(([, s]) => s.error || s.age < 0).map(([n]) => n);
     item('Sources', bad.length ? 'problem: ' + bad.join(', ') : 'good', bad.length ? 'warn' : 'good');
@@ -820,7 +972,7 @@ async function loadFleet() {
   try { F = await get('/api/fleet'); fetchedAt = Date.now(); } catch (e) { F = Object.assign({}, F, { age: -1 }); }
   shipsBy.clear();
   F.ships.forEach((r) => { if (r.system) { if (!shipsBy.has(r.system)) shipsBy.set(r.system, []); shipsBy.get(r.system).push(r); } });
-  renderResources(); renderRoster(); draw();
+  renderResources(); renderRoster(); tickAges(); draw();
   if (tab === 'Metrics') render();
   if (selShip) {
     const name = selShip;

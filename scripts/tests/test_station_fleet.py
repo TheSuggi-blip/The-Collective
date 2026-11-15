@@ -99,9 +99,24 @@ class FleetCollectorTests(unittest.TestCase):
         a = [0, 1000, 4, 5000, 0, 100, 2, {"Mining": [4, 1000, 5000, 0, 100, 2]}]
         b = [3600, 26000, 4, 29000, 20000, 400, 6, {"Mining": [4, 26000, 29000, 20000, 400, 6]}]
         r = self.fleet.rates([a, b], 3600)
-        self.assertEqual((r["cph"], r["cph_per_ship"], r["net_per_hour"]), (4000, 1000, 25000))
+        self.assertEqual((r["cph"], r["cph_per_ship"], r["net_per_hour"], r["earned_per_hour"]), (5000, 1250, 25000, 4000))
         self.assertEqual((r["ore_per_hour"], r["missions_per_hour"], r["window_minutes"]), (300, 4.0, 60))
-        self.assertEqual(r["divisions"]["Mining"]["cph"], 4000)
+        self.assertEqual(r["divisions"]["Mining"]["cph"], 5000)
+        self.assertEqual(r["divisions"]["Mining"]["earned_per_hour"], 4000)
+
+    def test_cph_goes_below_zero_when_ships_only_spend(self):
+        # one hour of fuel for ore nobody buys: wallets -400, nothing earned
+        a = [0, 10000, 2, 500, 0, 0, 0, {"Mining": [2, 10000, 500, 0, 0, 0]}]
+        b = [3600, 9600, 2, 500, 0, 90, 0, {"Mining": [2, 9600, 500, 0, 90, 0]}]
+        r = self.fleet.rates([a, b], 3600)
+        self.assertEqual((r["cph"], r["cph_per_ship"], r["earned_per_hour"]), (-400, -200, 0))
+
+    def test_top_skill_is_the_highest_level_then_the_most_xp(self):
+        acc = account("miner-1")
+        acc["state"]["skills"] = {"mining": {"level": 3, "xp": 10}, "piloting": {"level": 3, "xp": 90}, "trading": {"level": 0, "xp": 30}}
+        self.assertEqual(self.fleet.ship_row(acc)["top_skill"], ["piloting", 3])
+        acc["state"]["skills"] = {}
+        self.assertEqual(self.fleet.ship_row(acc)["top_skill"], ["", 0])
 
     def test_rates_need_five_minutes_and_skip_old_rows(self):
         old_style = [0, 1000, 4]                      # rows from before the metrics

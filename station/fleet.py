@@ -14,9 +14,12 @@ flies and writes it into the unit's data folder, outside the repository:
                                        script; kept apart so CPH counts recurring income
 
 Metrics in fleet.json, over the last 60 minutes:
-    cph            credits earned per hour, one-time rewards excluded
-    cph_per_ship   cph / ships
-    net_per_hour   change of all wallets per hour (spending and seed money included)
+    cph              change of all wallets per hour with one-time rewards taken
+                     out: what the fleet earns minus what it spends
+    cph_per_ship     cph / ships
+    earned_per_hour  credits earned per hour, one-time rewards excluded,
+                     spending not subtracted
+    net_per_hour     change of all wallets per hour (one-time rewards included)
     credits_per_ship, ore_per_hour, missions_per_hour; the same per division
 
 Every file is written whole and then renamed, so a reader never sees half a
@@ -121,8 +124,18 @@ def ship_row(account):
         "earned": num((player.get("stats") or {}).get("credits_earned")),
         "ore_mined": num((player.get("stats") or {}).get("ore_mined")),
         "missions_done": num((player.get("stats") or {}).get("missions_completed")),
+        "top_skill": top_skill(st.get("skills")),
         "state_at": text(st.get("updatedAt"), 30),
     }
+
+
+def top_skill(skills):
+    """[name, level] of the pilot's highest skill (XP breaks a tie), or ["", 0]."""
+    best = ("", 0, 0)
+    for name, v in (skills or {}).items() if isinstance(skills, dict) else []:
+        if isinstance(v, dict) and (num(v.get("level")), num(v.get("xp"))) > (best[1], best[2]):
+            best = (text(name, 40), num(v.get("level")), num(v.get("xp")))
+    return [best[0], best[1]]
 
 
 def ship_detail(account, row):
@@ -214,13 +227,15 @@ def rates(history, now):
         return round((y - x) / hours)
 
     out = {"window_minutes": round((b[0] - a[0]) / 60), "net_per_hour": per_hour(a[1], b[1]),
-           "cph": per_hour(a[3] - a[4], b[3] - b[4]), "ore_per_hour": per_hour(a[5], b[5]),
+           "cph": per_hour(a[1] - a[4], b[1] - b[4]), "earned_per_hour": per_hour(a[3] - a[4], b[3] - b[4]),
+           "ore_per_hour": per_hour(a[5], b[5]),
            "missions_per_hour": round((b[6] - a[6]) / hours, 1), "divisions": {}}
     out["cph_per_ship"] = round(out["cph"] / b[2]) if b[2] else 0
     for division, d in b[7].items():
         e = a[7].get(division, [0, 0, 0, 0, 0, 0])
-        cph = per_hour(e[2] - e[3], d[2] - d[3])
+        cph = per_hour(e[1] - e[3], d[1] - d[3])
         out["divisions"][division] = {"cph": cph, "cph_per_ship": round(cph / d[0]) if d[0] else 0,
+                                      "earned_per_hour": per_hour(e[2] - e[3], d[2] - d[3]),
                                       "net_per_hour": per_hour(e[1], d[1]), "ore_per_hour": per_hour(e[4], d[4])}
     return out
 

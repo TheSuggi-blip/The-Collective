@@ -438,13 +438,13 @@ def birth_summary():
 
 
 def api_history(hours):
-    """Fleet samples, one a minute: [t, credits, ships, recurring earned, ore mined, missions done]."""
+    """Fleet samples, one a minute: [t, credits, ships, recurring earned, ore mined, missions done, credits minus one-time rewards]."""
     try:
         rows = read_json(FLEET / "history.json", cap=20_000_000)
     except (OSError, ValueError):
         return {"rows": []}
     since = time.time() - hours * 3600
-    out = [[r[0], r[1], r[2], r[3] - r[4], r[5], r[6]] for r in rows
+    out = [[r[0], r[1], r[2], r[3] - r[4], r[5], r[6], r[1] - r[4]] for r in rows
            if isinstance(r, list) and len(r) == 8 and isinstance(r[0], (int, float)) and r[0] >= since]
     return {"rows": out}
 
@@ -457,7 +457,7 @@ def api_ship(name):
         return {"error": "no such ship"}
 
 
-DOC_PATH = re.compile(r"(reports|communications|planets|players)/[A-Za-z0-9_.\-]{1,120}\.(md|log)|MAP\.md")
+DOC_PATH = re.compile(r"(reports|communications|planets|players|governance|rules)/[A-Za-z0-9_.\-]{1,120}\.(md|log)")
 ENTRY = re.compile(r"^## \[(ENT-\d+)\] \| ([^|\n]+) \| ([^|\n]+) \|", re.M)
 
 
@@ -491,7 +491,28 @@ def api_docs():
         last = entries[-1] if entries else None
         logs.append({"path": "communications/" + fn, "name": fn, "entries": len(entries),
                      "last": {"ent": last[0], "at": last[1].strip()[:20], "by": last[2].strip()[:30]} if last else None})
-    return {"reports": reports, "logs": logs}
+    return {"reports": reports, "logs": logs, "governance": doc_list("governance"), "rules": doc_list("rules"),
+            "indexes": [d for d in (doc_list("planets") + doc_list("players")) if d["path"].endswith("/index.md")]}
+
+
+def doc_list(folder):
+    """The Markdown files of one repository folder: path and the title after its first '# '."""
+    out = []
+    try:
+        names = sorted(os.listdir(REPO / folder))[:300]
+    except OSError:
+        return out
+    for fn in names:
+        rel = folder + "/" + fn
+        if not fn.endswith(".md") or not DOC_PATH.fullmatch(rel):
+            continue
+        try:
+            body = repo_text(rel)
+        except OSError:
+            continue
+        title = next((line[2:].strip() for line in body.splitlines() if line.startswith("# ")), fn)
+        out.append({"path": rel, "title": title[:120]})
+    return out
 
 
 def api_doc(rel):
