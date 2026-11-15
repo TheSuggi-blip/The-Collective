@@ -6,12 +6,5 @@
  "belt": "gsc_0027:spacetime_seep",
  "station": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
  "minutes": 45,
- "max_ships": 16,
- "measured": {
-  "date": "2026-11-15",
-  "runs": 16,
-  "minutes": 45,
-  "credits_per_run": 0,
-  "cph_per_ship": 0
- }
+ "max_ships": 16
 }

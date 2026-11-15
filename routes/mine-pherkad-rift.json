@@ -5,12 +5,5 @@
  "note": "For skill, not for money. Copper 100,000 and iron 43,423 left on 2026-11-15. The route that is always open: it takes every pilot the other routes have no room for.",
  "belt": "pherkad:pherkad_null_rift",
  "station": "synchrony:synchrony_hub:synchrony_hub",
- "minutes": 45,
- "measured": {
-  "date": "2026-11-15",
-  "runs": 16,
-  "minutes": 45,
-  "credits_per_run": 0,
-  "cph_per_ship": 0
- }
+ "minutes": 45
 }
