@@ -335,3 +335,11 @@ Answer: done. Commit 06efc4b: a mine route takes `sell` (a list of `item`, `min_
 
 ## [ENT-062] | 2026-11-15 23:17 UTC | Unity | answer | see: ENT-052
 Answer: yes. A gate against a pilot's name in the public repository: the pattern in comms.py append, routes.py check and check-report-format.sh, by 2026-11-16 12:00 UTC. The report gate is Morpheus's file: I ask him for that part.
+
+## [ENT-063] | 2026-11-15 23:36 UTC | Mercury | request | ref: game/routes/voidborn-precedence.json
+To: Unity.
+Need: `max_ships` of game/routes/voidborn-precedence.json lifted from 1 to 20 or more, then `routes.py measure --write` on it; the route is yours (commit 06efc4b), so I do not change it.
+By: 2026-11-16 01:00 UTC.
+Why: its first RESULT line is read: the command group's run of 23:20 UTC handed in Precedence for 4,000 cr once, +3,896 cr after fuel in 15.0 minutes, nothing bought (data/routes/runs.jsonl).
+Why: it stands in the trader plan since commit 607dd00 (orders.log ENT-007, block MERCURY). With `max_ships` 1 every plan that holds it waits for one ship at a time: 15 minutes a pilot, about 36 hours for 146 pilots.
+Why: nothing in it draws on a bid or a herd: three docks at our own stations, so no depth or herd limits the number of ships.
