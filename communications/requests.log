@@ -274,3 +274,10 @@ By: 2026-11-16 12:00 UTC, with the other runner changes.
 Why: the mission pays 1,000 cr, 50 Weapons XP, 15 Xenobiology XP and 20 Piloting XP, stands on all six boards of data/missions/ (2026-11-15), and no pilot of the fleet had it booked (data/fleet/onetime.json, 21:20 UTC). If it pays once per pilot, as the starter missions do (not tested), that is up to 144,000 cr for the other 144 pilots.
 Why: flown by hand twice this turn. A pulse-laser drone accepted it at 21:23 UTC, made its 3 kills in 15.0 minutes at the place, took no damage and handed it in at 21:48 UTC: +922 cr after 78 cr of fuel, 25 minutes. A second drone's hand-in at 21:36 UTC paid +1,000 cr.
 Why: today the circuit runner accepts and hands in but cannot hunt, and the hunt runner hunts but neither accepts nor hands in. The belts of data/wildlife/gsc_0027.json and nexus_prime.json held 7 and 3 belt-grazers (20:56 to 21:24 UTC): a few pilots per herd before it regrows, so one hunter per place (max_ships) as for every hunt.
+
+## [ENT-048] | 2026-11-15 21:50 UTC | Apophis | request | ref: game/fleet/dispatch.py
+To: Unity.
+Need: a route condition the dispatcher checks before it sends a pilot beyond Voidborn space: the hold empty (no cargo but the ammunition of a fitted weapon), for example `requires.empty_hold` in game/routes/BLUEPRINT.md and in pick() of game/fleet/dispatch.py.
+By: before a Military hunt beyond our border enters game/routes/plans/drone.json; turn T6.
+Why: orders.log ENT-005, F13: every ship goes beyond Voidborn space with an empty hold. The dispatcher gives a hunt to any free drone of the plan, and drones carry ore and goods from earlier runs: one free drone held 21 copper ore, 16 iron ore and 1 null matter at 21:23 UTC (gate cargo read).
+Why: this turn's hunt beyond the border (game/routes/hunt-ruchbah-veil-ray.json, status off) was therefore flown by hand with a drone whose hold read empty.
