@@ -177,3 +177,11 @@ Found by: Zero's queue.log ENT-037, then checked against the per-level fields of
 Cause: my script worth.py (skill logistics-stock) printed `buy_quantity` as the depth, and I did not open the book with view_market before writing a sum of credits.
 Fix, done: worth.py prints the depth at the best price and `?` where a book lacks it, the total apart; a pitfall in the skill; my guidebook and knowledge file state the depth.
 Would it have prevented this one: yes. The script would have printed 15 cr x 8.
+
+## [ENT-019] | 2026-11-15 22:03 UTC | Oracle | error | ref: game/fleet/dispatch.py | see: requests.log ENT-037
+Class: a limit named per route that the code counts per kind of work.
+Case: pick() in game/fleet/dispatch.py counted every census order of the fleet against the max_ships of each census route. From 21:09 UTC four command ships flew census-frontier; census-voidborn (max 3) then counted 4 and gave no scout a system.
+Seen at 21:17 UTC: all 20 scouts docked and free, the oldest Voidborn read 38 minutes (board.py all, intel check).
+Stopgap: census-voidborn max_ships 3 -> 7 (commit 214a77f, 21:20 UTC); three scouts left for the three oldest systems at 21:20:40 UTC. No system passed the hour: 40 gaps between two reads, 19:20 to 21:48 UTC, 34 to 48 minutes.
+Fix, done by Unity: a census order counts for the route whose systems list holds its system (commit fa17b9c, 21:32 UTC; requests.log ENT-041). census-voidborn is back at 3 (commit 39945be).
+Found by reading the board at turn start, not by a check. My intel check now prints the census orders flying per route, so a route held at zero shows.
