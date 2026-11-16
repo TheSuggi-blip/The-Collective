@@ -40,7 +40,7 @@ name below is a link into one of the sub-indexes of this folder.
 
 | Role | Kept by | Routes | The first three, in order | Planned |
 |---|---|---|---|---|
-| [command](plan.md#command) | Unity | 25 | voidborn-concurrent > voidborn-substrate > voidborn-missions-1 | 0 |
+| [command](plan.md#command) | Unity | 24 | voidborn-concurrent > voidborn-substrate > voidborn-missions-1 | 0 |
 | [drone](plan.md#drone) | Apophis | 21 | voidborn-precedence > voidborn-first-hunt-nexus > voidborn-first-hunt-gsc | 4 |
 | [hauler](plan.md#hauler) | Apollo | 9 | voidborn-precedence > voidborn-selling > voidborn-first-hunt-nexus | 5 |
 | [miner](plan.md#miner) | Zero | 24 | voidborn-concurrent > voidborn-substrate > voidborn-missions-1 | 4 |
