@@ -85,5 +85,7 @@
  "of": 20,
  "planned": [],
  "derived": "Written by game/fleet/plan.py from the division's plan file (data/plans/plan-command.md), never by hand.",
- "templates": {}
+ "templates": {
+  "ice-and-hunt": 17
+ }
 }

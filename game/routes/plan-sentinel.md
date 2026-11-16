@@ -58,3 +58,9 @@ Kept by Unity. Routes: 38. Ships: 20.
 | 36 | [gather-hamal-crystal-bloom](gather-hamal-crystal-bloom.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 56 ships, needs mining_laser_i, standing work | all 20 |
 | 37 | [census-frontier](census-frontier.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 7 jumps | up to 12 ships, empty hold | all 20 |
 | 38 | [park](park.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | the park route | all 20 |
+
+Templates its ships fly (a ship's own routes name one as `@<name>`):
+
+| Template | Ships of this role on it |
+|---|---|
+| [ice-and-hunt](templates-command.md) | 17 |
