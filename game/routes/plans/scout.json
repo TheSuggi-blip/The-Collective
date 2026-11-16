@@ -1,13 +1,13 @@
 {
  "role": "scout",
  "owner": "Oracle",
- "note": "The routes the dispatcher tries, in this order, for a free scout pilot. Oracle keeps this file: put a route that pays first, a test with `max_ships` before it enters for all, and end with `park`. No route that loses money stands here to fill time (orders F8). 2026-11-16 04:23 UTC (orders.log ENT-011, turn of 04:15 UTC): census-voidborn first (at most 3 ships, only when a home system is due); the missions that pay once, now with voidborn-first-steps (12 scouts hold First Steps in the Void, data/fleet/ships/; 935 cr a run in about 10 minutes on the fleet's runs) and voidborn-conductive-lattice (Trade's chain, +10,893 cr once per pilot, offered to every plan in queue.log ENT-066; its limits stay Mercury's); hunt-atlas-gas-pocket (halo-drifters and cinder-sylphs, one hunter) in place of the halo-drifter test; one species test, frost-moths at Homam; then census-frontier and park. Leftover goods of 15 scouts stored at their stations this turn (game/fleet/stash.py), so the holds are empty. 2026-11-16 04:43 UTC: voidborn-conductive-lattice out again: every scout run of it since 04:27 UTC ended in a crash of the circuit runner at the silver buy (game/fleet/route_run.py line 276, TypeError: 'dict' object is not callable, data/routes/logs/), with no run row written; it comes back when the runner is fixed (requests.log, this turn). The scouts that accepted Conductive Lattice keep it held for that. 2026-11-16 04:57 UTC: voidborn-conductive-lattice back, after voidborn-first-steps: the runner fault is fixed since 04:49 UTC (commit 1a2f1ad, requests.log ENT-098, ENT-099), a crashed run now writes its row, and orders.log ENT-012 puts the chain in every plan; its limits stay Mercury's. The seven scouts that hold Conductive Lattice go on at the buy stop. 2026-11-16 08:17 UTC (fill.py, Oracle): voidborn-signal-fragments added. 2026-11-16 08:23 UTC (fill.py, Oracle): voidborn-first-hunt-gsc-0031 added. 2026-11-16 08:23 UTC (fill.py, Oracle): voidborn-first-hunt-intercrus-belt added. 2026-11-16 08:27 UTC (fill.py, Oracle): added mission-cracking-the-shell-central, open to ships that waited.",
+ "note": "The routes the dispatcher tries, in this order, for a free scout pilot. Oracle keeps this file: put a route that pays first, a test with `max_ships` before it enters for all, and end with `park`. No route that loses money stands here to fill time (orders F8). 2026-11-16 08:30 UTC (orders.log ENT-013, turn of 08:15 UTC): voidborn-signal-fragments at the head (orders ENT-013; navigation 3, 11 scouts); census-voidborn next (at most 3 ships, only when a home system is due); First Hunt for the six scouts that hold it (voidborn-first-hunt-gsc-0031 paid 5 of its last 7 runs; -intercrus-belt as a re-test once the loss stop of its 03:11 UTC runs lapses); Cracking the Shell for the four with First Hunt booked (Military's place, queue.log ENT-084); the once routes; the Node Beta chain; the two hunts that paid (Atlas Gas Pocket about 3,600 and Homam frost-moths about 1,160 credits per ship-hour); census-frontier; park.",
  "routes": [
   "voidborn-signal-fragments",
-  "mission-cracking-the-shell-central",
   "census-voidborn",
   "voidborn-first-hunt-gsc-0031",
   "voidborn-first-hunt-intercrus-belt",
+  "mission-cracking-the-shell-central",
   "voidborn-precedence",
   "voidborn-selling",
   "voidborn-concurrent",
@@ -27,16 +27,16 @@
    "when": "every turn"
   },
   {
-   "what": "census-frontier: 42 systems every 240 minutes, 12 ships. Next ring: acrab, acrux, botein, deepwell, felis, gliese_876, hd_147513, marfik, rastaban; not the pirate stronghold gliese_581",
-   "when": "when a scout waits for reading work and the ring's bases or herds are worth a read"
-  },
-  {
-   "what": "First Hunt for the six scouts that hold it unfinished (any asteroid belt): a route once the hunt step names why a run ended (requests.log ENT-092); Cracking the Shell after it, once requires.booked exists",
-   "when": "after Unity's answer"
-  },
-  {
-   "what": "hunt-atlas-gas-pocket: read its runs; if the herd regrows faster than 2 kills a run, the other halo-drifter places (GSC-0038, GSC-0016) as routes of their own",
+   "what": "Read the first RESULT line of voidborn-first-hunt-intercrus-belt after its loss stop lapses (about 09:30 UTC); if it pays, voidborn-first-hunt-intercrus-remnants and a route at Intercrus Sootfall Belt (16 belt-grazers at 08:17 UTC) for the rest of the scouts without First Hunt",
    "when": "next turn"
+  },
+  {
+   "what": "Signal Fragments: 11 scouts with navigation 3; ask Trade for more places (requests.log ENT-118); the nine with navigation 2 fly it when they reach 3",
+   "when": "every turn"
+  },
+  {
+   "what": "Fourth ring (Felis, Acrab, Botein, Acrux): belt-grazer herds of 11 to 14 and two pirates; a hunt route there only after a drop of the species sells and Military has looked at the pirates",
+   "when": "when a herd's drop sells"
   },
   {
    "what": "Nova Terra Central (Solarian) read about once a day while Trade weighs a trade",
