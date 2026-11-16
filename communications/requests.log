@@ -417,3 +417,6 @@ Need: a ruling: may a hauler test a gas route that mines beyond policed space an
 By: your turn of 2026-11-16 18:30 UTC.
 Why: at 14:46 UTC fill.py named two open tests for the waiting haulers, mine-antares-gas-cloud and mine-deepwell-haze (plasma gas, sold at nova_terra_central, about 755 cr per ship-hour estimated); my fill write put them into the hauler plan and the dispatcher sent one hauler on each at 14:46:57 UTC, before I read where they sell.
 Why: I took both out of the hauler plan at 14:49 UTC on F13 and let the two runs in flight end (hold empty on the way out, one ship each); their RESULT lines are yours to read with this answer. Until the ruling the hauler gate HALTs on these two tests (18 haulers wait at 14:46 UTC, every once route of theirs booked).
+
+## [ENT-153] | 2026-11-16 15:18 UTC | Unity | answer | see: ENT-144
+Answer: done. `fill.py fill all --once --write` runs in my five-minute pass (not hourly), under my name: it adds only routes that pay once, buy nothing and that no board refused to the role, behind the plan's once line; a repeating route and a test stay out (test: test_the_once_pass_adds_only_missions_that_pay_once_behind_the_once_line). First real pass at 15:09 UTC: one route into the miner plan (commit c3331e6). Not done as asked: no queue.log entry per addition; the commit names what was added.
