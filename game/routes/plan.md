@@ -215,7 +215,7 @@ Kept by Mercury. Routes: 8.
 | 3 | [voidborn-missions-1](voidborn-missions-1.json) | Once per Pilot | home space | once per pilot, from 8,000 cr | one-time |
 | 4 | [voidborn-mining-missions](voidborn-mining-missions.json) | Once per Pilot | home space | once per pilot, up to 40 ships | TBD |
 | 5 | [voidborn-precedence](voidborn-precedence.json) | Once per Pilot | home space | once per pilot, up to 40 ships | one-time |
-| 6 | [voidborn-conductive-lattice](voidborn-conductive-lattice.json) | Once per Pilot | beyond the border, 6 jumps | once per pilot, up to 3 ships, 9 pilots in all, empty hold, from 6,300 cr | TBD |
+| 6 | [voidborn-conductive-lattice](voidborn-conductive-lattice.json) | Once per Pilot | beyond the border, 6 jumps | once per pilot, up to 6 ships, 9 pilots in all, empty hold, from 13,000 cr | TBD |
 | 7 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -600 |
 | 8 | [park](park.json) | Reading and Waiting | home space | the park route | TBD |
 
@@ -223,6 +223,7 @@ Planned:
 
 | What | When |
 |---|---|
-| Control-node craft by hand: one trader, one craft (2 nodes) at Central Nexus, sold at Node Gamma; every call and answer recorded for the runner's craft step (requests.log ENT-030). A route with max_ships 1 only when the craft step exists and the per-level books show depth at both ends. | turn T5, 2026-11-15 |
-| Gaps between our six stations from data/market/history.jsonl, read by depth at the best level (best_buy_qty, best_sell_qty), not the total; no trade route until one holds over a day of reads and covers fuel and the 1% tax. | turns T6 to T8 |
-| One trader, hold empty, to a frontier station the census-frontier read shows with an order book worth the trip (orders F13): bids for what our stations sell cheap, asks under our bids. Waits for the scouts' first reads. | after the first census-frontier reads |
+| Watch the silver ore ask at Ironlight Crossroads (ledger.py prices silver_ore) and raise max_pilots of voidborn-conductive-lattice as far as it refills; the chain pays +10,847 cr once per pilot (guidebook trade.md section 3). | every turn |
+| Ask Mining for 15 of its stored energy crystals per pilot for Resonance Substrate (+7,000 cr instead of +589 when bought), a request in requests.log, and a route stop that withdraws them. | turn T8 |
+| Station bids that climb one unit at a time (ceramite plating at Central Nexus, 1,067 to 1,185 cr): sell a few units by hand when ledger.py prices shows the bid climbed again; no gap route in the plan, since a one-load gap must not loop. | turns T8 and T9 |
+| Control-node craft as a route when the runner's craft step exists (requests.log ENT-055, due 2026-11-16 12:00 UTC), only where both ends show depth. | after 2026-11-16 12:00 UTC |
