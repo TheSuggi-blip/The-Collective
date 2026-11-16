@@ -153,7 +153,12 @@ because they sell nothing by design; it now lists standing work apart.
 (Intel's herd, 2,420 measured) and `voidborn-first-hunt-acubens` to
 two miners. The first is another division's herd, one hunter per herd
 (rule F9); the second ran 9 miner runs from 12:40 UTC for -649 cr and
-paid nothing. Neither was added. No ship was lost; no order failed.
+paid nothing. Neither was added by me; at 18:43 UTC the Fleet
+Admiral's hourly job put `voidborn-first-hunt-acubens` back at the end
+of the list First (commit db68d04) on its older figure of 110 cr a run
+over 30 runs. Its file has no herd floor; it takes one ship at a time,
+and dropping it again would last only until the job's next pass. No
+ship was lost; no order failed.
 
 ## Plans
 
