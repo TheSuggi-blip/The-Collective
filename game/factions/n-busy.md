@@ -15,7 +15,7 @@ updated: 2026-11-16
 # Busy Being Dead [BUSY]
 
 A player faction with 6 base(s) in 6 system(s); the nearest to Nexus Prime is 14 jump(s) away, in 40 Eridani (`40_eridani`).
-Pilots of it in our space in the last 24 hours: 8.
+Pilots of it in our space in the last 24 hours: 5.
 
 ## Identity
 
@@ -45,14 +45,11 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Combat Drone 018 | Synchrony (`synchrony`) | 0 | not met |
-| Combat Drone 168 | Node Alpha (`node_alpha`) | 0 | dialectic |
-| Combat Drone 172 | Synchrony (`synchrony`) | 0 | dialectic |
-| Combat Drone 181 | Node Beta (`node_beta`) | 0 | dialectic |
-| Combat Drone 188 | Acubens (`acubens`) | 0 | dialectic |
-| Mining Drone 198 | Node Gamma (`node_gamma`) | 0 | not met |
-| Mining Drone 222 | Node Alpha (`node_alpha`) | 0 | not met |
-| Mining Drone 238 | Node Alpha (`node_alpha`) | 0 | not met |
+| Combat Drone 161 | Node Gamma (`node_gamma`) | 0 | dialectic |
+| Combat Drone 200 | The Experiment (`the_experiment`) | 0 | dialectic |
+| Mining Drone 101 | Node Gamma (`node_gamma`) | 0 | not met |
+| Mining Drone 105 | Node Alpha (`node_alpha`) | 0 | not met |
+| Refueling Drone 001 | Node Beta (`node_beta`) | 0 | technically_legal |
 
 ## Standing History
 

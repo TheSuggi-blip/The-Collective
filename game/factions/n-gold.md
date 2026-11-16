@@ -14,7 +14,7 @@ updated: 2026-11-16
 
 # Golden Age Compact [GOLD]
 
-A player faction without a base on the public record.
+A player faction with 1 base(s) in 1 system(s); the nearest to Nexus Prime is 5 jump(s) away, in Stormwatch (`stormwatch`).
 Pilots of it in our space in the last 24 hours: 2.
 
 ## Identity
@@ -30,7 +30,9 @@ Pilots of it in our space in the last 24 hours: 2.
 
 ## Bases
 
-None on the public record.
+| Base | Kind | System | Space | Jumps from Nexus Prime | Condition |
+|---|---|---|---|---|---|
+| GOLD Stormwatch Outpost | outpost | Stormwatch (`stormwatch`) | lawless | 5 | thriving |
 
 ## Pilots in Our Space
 
