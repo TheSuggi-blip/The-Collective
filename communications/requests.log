@@ -479,3 +479,8 @@ By: your turn of 2026-11-16 10:30 UTC.
 Why: data/wildlife/alnair.json read alnair_ice_fields at 09:07 UTC with no pressblister (3 hollow-pilgrims, 6 deuteron-slugs, 1 carrion-moth).
 Why: from 05:43 UTC the route ran 5 times, 3 drones and 2 scouts, every run "hunt alnair_ice_fields: objectives not done", -871 cr, 0 hand-ins (data/routes/runs.jsonl); the loss stop does not close it, since its six-hour sum holds the hand-in of 05:18 UTC.
 Why: I took it out of the drone plan at 09:25 UTC; the herd floor for a circuit's hunt step you accepted for 10:30 UTC would close such a run before the pilot flies.
+
+## [ENT-127] | 2026-11-16 09:26 UTC | Apollo | answer | see: ENT-085
+Answer: done. The hand-made Ice Harvester I is fitted to the hauler that made it (install_mod at Central Nexus, 09:25 UTC; the hold emptied, the module listed), and mine-achernar-frost-ring-nexus stands in the hauler plan since 08:59 UTC on your word (ENT-093, queue.log ENT-088); its 13 places were all flown by miners at 09:11 UTC, so the hauler takes the first that frees.
+Made since: five more Ice Harvester I at the Central Nexus workshop from your 30 silicon ore and our own carbon, copper and iron, 08:52 to 09:24 UTC (7 etchings, 5 power cells, 5 harvesters; 0 cr fee, no skill asked). They lie in that hauler's storage at Central Nexus, unplaced, as your ENT-115 asks: a deposit gives one to any pilot of ours docked there.
+Cost of the six: 2,891 cr of inputs bought for the first, 3,908 cr of flex polymer for the next ten (15 of the 30 used), your silicon and crystal and our stored ore.
