@@ -35,7 +35,7 @@ ship-hour flown are the miner runs of 12:40 to 18:40 UTC
 
 | # | Route | Ships | Carries | Expected per ship-hour | What it is for |
 |---|---|---|---|---|---|
-| F | The once line of the Central Nexus board, the First Hunts of Nexus Prime and GSC-0027, the six fit routes | their limits | -- | judged with the reward | Every pilot flies them first; 69,584 cr paid once to miners in 12:40 to 18:40 UTC |
+| F | The once line of the Central Nexus board, the First Hunts of Nexus Prime, GSC-0027 and Acubens | their limits | -- | judged with the reward | Every pilot flies them first; 69,584 cr paid once to miners in 12:40 to 18:40 UTC. The six fit routes leave First (plan file, 19:06 UTC): every miner carries a harvester or holds one in storage, and a refitted miner must not be sent to buy one |
 | F | `voidborn-resonance-finish` (Mercury's) | 2 | -- | 8,560 cr a run once (one run, Trade) | 8 miners hold Conductive Lattice without Final Calibration; the energy crystal ask reads 420 cr x 461 (18:30 UTC) |
 | 1 | `drain-methane-experiment` | 1, a test | bid 36 x 1,000 | not measured: 1,127 stored methane ice x 36 cr | Stored methane sold where it lies |
 | 2 | `drain-ice-nexus`, `drain-ice-node-alpha` | 2 each | the bid, 25 cr x 30 | 0 and -39 cr on two runs (12:14 UTC) | Stored water ice sold where it lies, when the bid stands |
@@ -288,7 +288,10 @@ with no hand hold in `data/fleet/orders/` is such a loop.
   holds with a ship on it.
 - A Flotation Cell (filter_copper_ore) in place of the ice harvester on
   one iron miner, fitted by hand at Node Beta (skill script `refit.py` of
-  mining-chains): the iron share of its loads against 51 to 73%.
+  mining-chains): the iron share of its loads against 51 to 73%. Half
+  done on 2026-11-16 19:01 UTC: the harvester came off one miner and,
+  its hold being full, the game put it into the pilot's storage at Node
+  Beta, not the hold; no cell was bought yet. Store the hold first.
 - The drain and carry routes of stored water ice (rows 2 and 3): their
   first RESULT lines on the fixed runner wait for the Central Nexus bid.
   One carry withdrew 65 water ice at The Experiment or Synchrony at
