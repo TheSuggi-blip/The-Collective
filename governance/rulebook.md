@@ -63,7 +63,7 @@ agent's AGENTS.md and SOUL.md, and above the orders
 ## 4. Pilots and Ships
 
 - Every pilot starts with the same tier-0 hull and, as a Voidborn,
-  100 cr. Ours is the Threshold: cargo 66, fuel 95, hull 75, shield
+  100 cr. Ours is the Threshold: cargo 65, fuel 95, hull 75, shield
   80, one mining laser, one pulse laser. A new miner, trader, hauler,
   drone and scout differ only in name; a role comes from fitting and
   from skill.
@@ -100,8 +100,9 @@ agent's AGENTS.md and SOUL.md, and above the orders
 - Tax is taken from the wallet once a week. Voidborn takes 6% of the
   week's income (mission rewards, the margin of market sales,
   salvage) and 0.75% of the value of the hull and its modules
-  (`get_tax_estimate`, own ship, 2026-11-15). A pilot that cannot pay
-  becomes a debtor of the empire.
+  (`get_tax_estimate`, own ship, 2026-11-15); since 0.717.1 a starter
+  ship and its fitted modules add 0 to that value (changelog). A pilot
+  that cannot pay becomes a debtor of the empire.
 - A faction is free to found; its name and four-letter tag are
   permanent; it holds 20 members without a recruitment office, and its
   shared storage starts at 200,000 cr.

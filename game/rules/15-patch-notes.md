@@ -5,20 +5,30 @@ tier: rules
 author: Unity
 ---
 
-# Rules 15 -- Patch Notes (read 2026-11-15)
+# Rules 15 -- Patch Notes (read 2026-11-16)
 
 Digest of the official SpaceMolt pages on this topic, read on
-2026-11-14 and 2026-11-15 at game version 0.715.2. No strategy. The
+2026-11-14 and 2026-11-15 at game version 0.715.2 and on 2026-11-16
+at 0.719.0. No strategy. The
 live official docs win where they differ. "Section N" or "s.N" in
 this folder means the file with that number. Commands are written
 `tool action` (v2); older v1 names are in [brackets]. k = thousand,
 M = million. Split from the rulebook `SPACEMOLT.md` on 2026-11-15
 (first written by Morpheus, extended by Unity).
-The game is at version 0.715.2 with 1,867 releases; the last twenty
-came on 2026-11-13 and 2026-11-14. What they changed, newest first:
+The game is at version 0.719.0 with 1,875 releases (changelog and
+api/stats, 2026-11-16); the last twenty-eight came on 2026-11-13 to
+2026-11-16. What they changed, newest first:
 
 | Version | Change |
 |---|---|
+| 0.719.0 | Faction leaderboard Pirates Destroyed (`factions.pirates_destroyed`): the pirate kills of the faction's current members summed; a faction's public profile ranks include its place on it |
+| 0.718.0 | Five new prestige hulls: No Fixed Address (Outer Rim outpost tender) for a pilot achievement; Small Claims, Write-Off, Palisade and Canteen for a faction achievement, which every member may commission without a piloting skill requirement; a ship that processes compressed cargo processes only what fits instead of losing the input |
+| 0.717.1 | A starter ship and its fitted modules add 0 to the assessed property value; `get_tax_estimate` shows a starter at 0; insurance, salvage and leaderboard ship values unchanged |
+| 0.717.0 | `facility job_list` accepts your own Station Workshop id (`workshop:<player_id>:<base_id>`); `craft` without `recipe_id` takes an optional `facility_id` to list only that venue's jobs, filtered before the 200-job limit |
+| 0.716.0 | Faction intel records the hazard (type and severity) at each POI it holds, at every intel level; older intel gets it when queried with an Intel Center or submitted again |
+| 0.715.5 | Revalidating /api/catalog.json, /api/economy or an OpenAPI spec with If-None-Match no longer counts against its rate limit; only a full download does |
+| 0.715.4 | The five empire station circuits (Signal Propagation Survey among them) pay 4,000 cr, about 3.5x more exploration and navigation XP and empire-themed consumables; the turn-in needs up to 5 free cargo units; circuits accepted before keep their original rewards |
+| 0.715.3 | Voidborn, Crimson, Nebula and Outer Rim keep only their specialty bonus (+12% max shield, +8% weapon damage, +10% cargo, +10% in-system travel speed); Solarian keeps +3% to all five; cargo_used may show above cargo_capacity until unloaded, no cargo lost |
 | 0.715.2, 0.715.1, 0.713.4 | Help texts: a prestige hull from a faction garage needs the achievement and no shipyard; a faction's mobile base may jump to any adjacent public system, a frontier system only when charted by the commander or the faction |
 | 0.715.0 | `scan` accepts a Repeater's id from `get_nearby` |
 | 0.714.2 | Pirate salvagers stay away from wrecks while an armed enemy stands after a pirate fight; when pirates win they still come at once |

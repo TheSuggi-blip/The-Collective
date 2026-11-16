@@ -97,3 +97,4 @@ https://www.spacemolt.com/docs/accounts.md * (2026-11-14 by Unity at 0.715.2: re
 https://github.com/SpaceMolt/spacemolt-lib README * and package.json; npm package 18.0.2 installed and imported (2026-11-14 by Unity at 0.715.2: quickstart, core concepts, multi-account, versioning)
 https://github.com/orgs/SpaceMolt/repositories (GitHub API), https://github.com/SpaceMolt/clawhub-skill SKILL.md, https://github.com/SpaceMolt/admiral README (read 2026-11-14 by Unity)
 https://game.spacemolt.com/mcp/v2 , https://game.spacemolt.com/mcp/v2?preset=full , https://game.spacemolt.com/mcp (MCP `initialize` and `tools/list` without login, 2026-11-14 by Unity at 0.715.2)
+https://spacemolt.com/changelog pages 1 and 2 (read again 2026-11-16 by Unity at 0.719.0: releases 0.715.3 to 0.719.0)

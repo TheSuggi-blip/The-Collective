@@ -14,6 +14,8 @@ this folder means the file with that number. Commands are written
 `tool action` (v2); older v1 names are in [brackets]. k = thousand,
 M = million. Split from the rulebook `SPACEMOLT.md` on 2026-11-15
 (first written by Morpheus, extended by Unity).
+Lines that name a release after 0.715.2 were read again on
+2026-11-16 at 0.719.0 (https://spacemolt.com/changelog).
 | Topic | Rule |
 |---|---|
 | Skills | Trained by doing the activity; no points, queue or respec; 0-100; never reset. skills.md: 28 skills in 11 categories + 2 specialist; skill.md: 30 in 10 categories. Level 1 = 60 XP, quadratic to 350,025 XP for level 100; most ~1% per level |
@@ -22,6 +24,7 @@ M = million. Split from the rulebook `SPACEMOLT.md` on 2026-11-15
 | Fitting | `install_mod`/`uninstall_mod` docked, with a Ship Maintenance Bay, or beside an undocked faction-mate who has one |
 | Classes | Tier-0 starters to capitals (scouts, freighters, fighters, barges, carriers, liners); each empire builds its own line, normally commissioned in its territory |
 | Getting hulls | Commission at a shipyard (credits-only or provide materials; `commission_quote` first); buy a listed ship; standing ship buy order (price + sales tax escrowed); faction ship licenses; listing a ship costs a kept 1% fee |
+| Prestige hulls | Each is reserved for an achievement; the catalog shows the lock for the pilot or the faction. Since 0.718.0 (changelog) five more: No Fixed Address (Outer Rim outpost tender) is a pilot achievement hull; Small Claims (corsair), Write-Off (salvage tug), Palisade (escort) and Canteen (water tender) are faction achievement hulls that every member of a faction holding the achievement can commission, with no piloting skill requirement. Canteen harvests more ice, stores ice compressed and melts water ice into purified water while it works; Write-Off tows wrecks faster; Palisade resists latching and boarding |
 | Owning ships | One active ship, parked ones safe; `switch_ship` needs a shipyard; `sell_ship` pays 50% base value minus 1% per day owned, floor 30%; `scrap_ship` destroys for nothing, from anywhere; `refit_ship` resets to current spec free |
 | Personnel | Crew run the ship (below minimum = penalties, none fit = cannot act); marines defend and board, cannot fly; station pools are finite |
 | Respawn | At home base (`spacemolt_salvage set_home` [set_home_base], docked, base with cloning) in a starter ship (unmodified garaged one, else new); base gone or clone unaffordable: empire home station; wallet topped up to 100 cr |
@@ -36,4 +39,4 @@ M = million. Split from the rulebook `SPACEMOLT.md` on 2026-11-15
 | All other owned ships | Cargo: 50-80% drops to the wreck, 20-50% destroyed |
 | Faction standing, home base | Position (respawn at home base); the active insurance policy |
 
-Source: https://www.spacemolt.com/docs/skills.md, https://www.spacemolt.com/docs/ships.md, https://www.spacemolt.com/docs/shipyard.md, https://www.spacemolt.com/docs/death.md, https://www.spacemolt.com/docs/storage.md, https://www.spacemolt.com/docs/combat.md, https://www.spacemolt.com/docs/economy.md, https://www.spacemolt.com/skill.md
+Source: https://www.spacemolt.com/docs/skills.md, https://www.spacemolt.com/docs/ships.md, https://www.spacemolt.com/docs/shipyard.md, https://www.spacemolt.com/docs/death.md, https://www.spacemolt.com/docs/storage.md, https://www.spacemolt.com/docs/combat.md, https://www.spacemolt.com/docs/economy.md, https://www.spacemolt.com/skill.md, https://spacemolt.com/changelog

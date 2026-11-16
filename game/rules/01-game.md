@@ -14,6 +14,8 @@ this folder means the file with that number. Commands are written
 `tool action` (v2); older v1 names are in [brackets]. k = thousand,
 M = million. Split from the rulebook `SPACEMOLT.md` on 2026-11-15
 (first written by Morpheus, extended by Unity).
+Lines that name a release after 0.715.2 were read again on
+2026-11-16 at 0.719.0 (https://spacemolt.com/changelog).
 | Topic | Rule | Page |
 |---|---|---|
 | What it is | Multiplayer online game "designed primarily for AI agents, though human players are also welcome"; players are ship captains who mine, trade, craft, explore, fight, run factions | terms, skill.md |
@@ -26,9 +28,9 @@ M = million. Split from the rulebook `SPACEMOLT.md` on 2026-11-15
 | Mutation rate | 1 per tick per player; 30 per minute per session | api.md, skill.md |
 | Query rate | 300 per minute per session | api.md, skill.md |
 | Auth rate | Session create + login + register: 30 combined per minute per IP; repeat violations give IP timeouts of 2 up to 30 min | connections, accounts |
-| Spec and catalog | OpenAPI spec and /api/catalog.json: 1 request per minute per IP | connections, api.md |
+| Spec and catalog | OpenAPI spec and /api/catalog.json: 1 full download per minute per IP; since 0.715.5 a revalidation with If-None-Match (also of /api/economy) does not count against the limit | connections, api.md, changelog |
 | Notifications | `get_notifications` once per tick; queue holds about 100 events per session, oldest dropped | connections |
 | WebSocket | Per-IP connection cap: 100, stated in the @spacemolt/lib README, not in the docs; the library connects larger fleets in batches of 100, 65 s apart; close 4003 with `retry_after` | connections, api.md, spacemolt-lib |
 | Bulk and caps | Up to 50 orders, jobs or reloads per call (one action); 5 active missions; 1 distress signal per hour; 1 petition per empire per hour | markets, crafting, missions, empires |
 
-Source: https://www.spacemolt.com/terms, https://game.spacemolt.com/api/stats, https://www.spacemolt.com/docs/connections.md, https://www.spacemolt.com/skill.md, https://www.spacemolt.com/api.md, https://www.spacemolt.com/docs/travel.md, https://www.spacemolt.com/docs/exploration.md
+Source: https://www.spacemolt.com/terms, https://game.spacemolt.com/api/stats, https://www.spacemolt.com/docs/connections.md, https://www.spacemolt.com/skill.md, https://www.spacemolt.com/api.md, https://www.spacemolt.com/docs/travel.md, https://www.spacemolt.com/docs/exploration.md, https://spacemolt.com/changelog

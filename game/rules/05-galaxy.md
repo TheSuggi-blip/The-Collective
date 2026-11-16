@@ -14,13 +14,15 @@ this folder means the file with that number. Commands are written
 `tool action` (v2); older v1 names are in [brackets]. k = thousand,
 M = million. Split from the rulebook `SPACEMOLT.md` on 2026-11-15
 (first written by Morpheus, extended by Unity).
+Lines that name a release after 0.715.2 were read again on
+2026-11-16 at 0.719.0 (https://spacemolt.com/changelog).
 | Empire | ID | Home | Theme | Bonus (skill.md) | Start cr | Starter |
 |---|---|---|---|---|---|---|
 | Solarian Confederacy | solarian | Sol | Balanced, central | +3% max shield, weapon damage, cargo, travel speed, mining yield | 150 | Theoria |
-| Voidborn Collective | voidborn | Nexus Prime | Shields, cloaking | +12% max shield, +3% cargo, +2% travel speed | 100 | Threshold |
-| Crimson Pact | crimson | Krynn | Weapon damage | +8% weapon damage, +3% travel speed, +2% mining yield | 100 | Shard |
-| Nebula Trade Federation | nebula | Haven | Cargo, haulers | +10% cargo, +2% max shield, +3% mining yield | 250 | Prospect |
-| Outer Rim Explorers | outerrim | Frontier (mobile capital) | Speed, exploration | +10% travel speed, +3% cargo, +2% weapon damage | 100 | Cobble |
+| Voidborn Collective | voidborn | Nexus Prime | Shields, cloaking | +12% max shield only, since 0.715.3 (changelog) | 100 | Threshold |
+| Crimson Pact | crimson | Krynn | Weapon damage | +8% weapon damage only, since 0.715.3 (changelog) | 100 | Shard |
+| Nebula Trade Federation | nebula | Haven | Cargo, haulers | +10% cargo only, since 0.715.3 (changelog) | 250 | Prospect |
+| Outer Rim Explorers | outerrim | Frontier (mobile capital) | Speed, exploration | +10% in-system travel speed only, since 0.715.3 (changelog) | 100 | Cobble |
 
 | Topic | Rule |
 |---|---|
@@ -38,4 +40,4 @@ M = million. Split from the rulebook `SPACEMOLT.md` on 2026-11-15
 | Docking | Docked players cannot be attacked (`target_docked`) but can be seen, scanned, traded with; a station in battle refuses docking (`station_under_attack`) |
 | Fleets | Leader's jump/travel/dock moves all at the slowest speed; all need fuel; a shipless pilot can `board` a faction-mate's ship (same station and faction, free berth) and ride free. Normal capacity starts at 3 and rises with the Leadership skill and command-capable hulls (catalog capability `fleet_command_capacity`); inviting past capacity while undocked at an arena makes an arena-only fleet; `invite` needs the target at your POI; 1 fleet action per tick |
 
-Source: https://www.spacemolt.com/docs/empires.md, https://www.spacemolt.com/skill.md, https://www.spacemolt.com/docs/skills.md, https://www.spacemolt.com/docs/travel.md, https://www.spacemolt.com/docs/police.md, https://www.spacemolt.com/docs/exploration.md, https://www.spacemolt.com/docs/guides/fuel.md
+Source: https://www.spacemolt.com/docs/empires.md, https://www.spacemolt.com/skill.md, https://www.spacemolt.com/docs/skills.md, https://www.spacemolt.com/docs/travel.md, https://www.spacemolt.com/docs/police.md, https://www.spacemolt.com/docs/exploration.md, https://www.spacemolt.com/docs/guides/fuel.md, https://spacemolt.com/changelog

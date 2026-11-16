@@ -148,7 +148,7 @@ Written down, not flown.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
-| [first-survey](first-survey.json) | circuit | home space | Signal Propagation Survey: dock at the five other Voidborn stations (20,000 cr) | once per pilot, off | TBD | TBD | TBD | TBD | -- |
+| [first-survey](first-survey.json) | circuit | home space | Signal Propagation Survey: dock at the five other Voidborn stations (4,000 cr since 0.715.4) | once per pilot, off | TBD | TBD | TBD | TBD | -- |
 | [voidborn-first-steps](voidborn-first-steps.json) | circuit | home space | First Steps in the Void for a pilot that holds it: mine 15 carbon ore at Acubens Belt, hand in at Central Nexus | once per pilot, up to 2 ships, off | 52 | 11 | 860 | one-time | 2026-11-16 |
 | [hunt-acubens-urchin](hunt-acubens-urchin.json) | hunt | home space | Cinder-urchins at Acubens Shadow Pocket; radiant bile sold at Node Gamma | up to 1 ships, off | 2 | 25 | -120 | -290 | 2026-11-15 |
 | [hunt-gsc-veil-ray](hunt-gsc-veil-ray.json) | hunt | home space | Veil-rays at GSC-0027 Prism Scatter; verdigris curd sold at Central Nexus | up to 1 ships, without piercing_railgun_i, off | 33 | 24 | 1,300 | 3,020 | 2026-11-16 |

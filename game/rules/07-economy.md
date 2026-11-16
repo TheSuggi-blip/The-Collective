@@ -14,6 +14,8 @@ this folder means the file with that number. Commands are written
 `tool action` (v2); older v1 names are in [brackets]. k = thousand,
 M = million. Split from the rulebook `SPACEMOLT.md` on 2026-11-15
 (first written by Morpheus, extended by Unity).
+Lines that name a release after 0.715.2 were read again on
+2026-11-16 at 0.719.0 (https://spacemolt.com/changelog).
 | Topic | Rule |
 |---|---|
 | Credits | Only currency; account-bound wallet, valid everywhere, kept on death, cannot be smuggled; bearer bonds (trade authenticators) trade at the Grand Exchange, Haven |
@@ -27,7 +29,7 @@ M = million. Split from the rulebook `SPACEMOLT.md` on 2026-11-15
 | Passengers | Cabins seat 12 economy / 6 business / 3 first; fare = (base + per-jump) x class x remoteness x surge (0.6-2.0x), up to +50% speed bonus, escrowed by origin; unloading elsewhere strands them (no fare, rep hit) |
 | Customs | Contraband list per empire; cutters scan pilots entering border systems for 3 ticks while holding them; contraband (also inside packages) seized and fined; evasion is a crime; contraband trades freely at pirate and Outer Rim stations |
 | Packages | Sealed, always 100 cargo units, hold up to 100 item size; packing needs a Logistics facility; freight via `spacemolt_shipping` |
-| Personal tax | Weekly (now Sunday). Income: mission, market, salvage, ship_sale, facility_sale, rescue (not gifts, refunds, insurance, subsidies). Property: hull + modules of every owned ship, full bill per citizenship empire. Sales tax at purchase. Basis points (100 = 1%). `prepay_tax`; `pay_bounty` pays full debt per empire from anywhere; unpaid tax is a crime; fully inactive exempt; stateless owe no income/property tax |
+| Personal tax | Weekly (now Sunday). Income: mission, market, salvage, ship_sale, facility_sale, rescue (not gifts, refunds, insurance, subsidies). Property: hull + modules of every owned ship, full bill per citizenship empire; since 0.717.1 (changelog) a starter ship and its fitted modules add 0 to the assessed property value, and `get_tax_estimate` shows a starter at 0 in `assessed_property_by_ship`. Sales tax at purchase. Basis points (100 = 1%). `prepay_tax`; `pay_bounty` pays full debt per empire from anywhere; unpaid tax is a crime; fully inactive exempt; stateless owe no income/property tax |
 | Corporate tax | Weekly on profit; founder's birth empire taxes worldwide, each empire hosting a faction facility taxes local profit, foreign-tax credits; unpaid becomes faction debt |
 | Rent | Facilities at NPC and other factions' stations pay every 100 ticks (~17 min, ~86 cycles/day); arrears switch them off (storage keeps working) and block sale or transfer |
 
@@ -35,4 +37,4 @@ Measured with a ship of ours (`get_tax_estimate`, 2026-11-15): Voidborn
 income tax 6.00% flat, property tax 0.75% flat, sales tax 1.00% for
 citizens; the assessment is weekly.
 
-Source: https://www.spacemolt.com/docs/economy.md, https://www.spacemolt.com/docs/mining.md, https://www.spacemolt.com/docs/crafting.md, https://www.spacemolt.com/docs/markets.md, https://www.spacemolt.com/docs/trading.md, https://www.spacemolt.com/docs/missions.md, https://www.spacemolt.com/docs/passengers.md, https://www.spacemolt.com/docs/police.md, https://www.spacemolt.com/docs/guides/packages.md, https://www.spacemolt.com/docs/guides/taxes.md, https://www.spacemolt.com/docs/stations.md, https://www.spacemolt.com/skill.md
+Source: https://www.spacemolt.com/docs/economy.md, https://www.spacemolt.com/docs/mining.md, https://www.spacemolt.com/docs/crafting.md, https://www.spacemolt.com/docs/markets.md, https://www.spacemolt.com/docs/trading.md, https://www.spacemolt.com/docs/missions.md, https://www.spacemolt.com/docs/passengers.md, https://www.spacemolt.com/docs/police.md, https://www.spacemolt.com/docs/guides/packages.md, https://www.spacemolt.com/docs/guides/taxes.md, https://www.spacemolt.com/docs/stations.md, https://www.spacemolt.com/skill.md, https://spacemolt.com/changelog

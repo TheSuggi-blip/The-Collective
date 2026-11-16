@@ -2,8 +2,8 @@
  "id": "first-survey",
  "kind": "circuit",
  "status": "off",
- "title": "Signal Propagation Survey: dock at the five other Voidborn stations (20,000 cr)",
- "note": "A new pilot's first big reward. Flown for all 55 pilots by the birth script on 2026-11-15, not yet as this route file: off until one new pilot has flown it.",
+ "title": "Signal Propagation Survey: dock at the five other Voidborn stations (4,000 cr since 0.715.4)",
+ "note": "A new pilot's first big reward. Flown for all 55 pilots by the birth script on 2026-11-15, not yet as this route file: off until one new pilot has flown it. Reward 4,000 cr since 0.715.4, read from the changelog on 2026-11-16, not from a board; a circuit accepted before that update keeps its original reward.",
  "once": true,
  "one_time": [
   "Signal Propagation Survey"
