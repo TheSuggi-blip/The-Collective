@@ -131,8 +131,8 @@ Kept by Apollo. Routes: 29.
 | 23 | [carry-soma-node-beta-node-alpha](carry-soma-node-beta-node-alpha.json) | Tests | home space | up to 1 ships, with 1 voidborn_neural_soma stored at node_beta_industrial_station, while node_alpha_processing_station bids 500 cr for voidborn_neural_soma | TBD |
 | 24 | [carry-soma-node-beta-node-gamma](carry-soma-node-beta-node-gamma.json) | Tests | home space | up to 1 ships, with 1 voidborn_neural_soma stored at node_beta_industrial_station, while node_gamma_relay_station bids 500 cr for voidborn_neural_soma | TBD |
 | 25 | [mission-ghosts-in-the-cloud-node](mission-ghosts-in-the-cloud-node.json) | Once per Pilot | home space | once per pilot, up to 1 ships | one-time |
-| 26 | [mine-gsc-0012-gas-plume](mine-gsc-0012-gas-plume.json) | Tests | beyond the border, 5 jumps | up to 1 ships, needs gas_harvester_i, empty hold | TBD |
-| 27 | [mine-miram-haze](mine-miram-haze.json) | Tests | beyond the border, 4 jumps | up to 1 ships, needs gas_harvester_i, empty hold | TBD |
+| 26 | [mine-gsc-0012-gas-plume](mine-gsc-0012-gas-plume.json) | Tests | beyond the border, 5 jumps | up to 1 ships, needs gas_harvester_i, empty hold, while node_beta_industrial_station bids 27 cr for hydrogen_gas | TBD |
+| 27 | [mine-miram-haze](mine-miram-haze.json) | Tests | beyond the border, 4 jumps | up to 1 ships, needs gas_harvester_i, empty hold, while node_beta_industrial_station bids 27 cr for hydrogen_gas | TBD |
 | 28 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -790 |
 | 29 | [park](park.json) | Reading and Waiting | home space | the park route | -670 |
 
