@@ -2,7 +2,7 @@
  "id": "mission-cracking-the-shell-achernar",
  "kind": "circuit",
  "title": "Cracking the Shell: 1,500 cr once; three pressblisters at Achernar Frost Ring (lawless), accepted and handed in at Central Nexus",
- "note": "The mission asks 'Hunt 3 Pressblisters at an ice field' (data/missions/node_gamma_relay_station.json, 2026-11-16): any ice field. The herd of mission-cracking-the-shell-central at Node Gamma Ice Belt read 0 pressblisters at 02:27 and 03:04 UTC; Achernar Frost Ring read 8 at 01:21 UTC (data/wildlife/history.jsonl). The frost ring is also the place of Mining's ice route there: the hunter is the presence of orders F16. Beyond policed space (F13): an empty hold, and no fight where a ship that is not ours stands (`alone`). Written by Apophis 2026-11-16 03:13 UTC (orders.log ENT-011); a test with one ship until its first RESULT line. 2026-11-16 05:16 UTC (Apophis): `requires.booked` First Hunt: Belt-Grazers (requests.log ENT-102): the board offers the mission only to a pilot that holds First Hunt booked (7 of 7 with, 0 of 12 without, 2026-11-16 01:16 to 03:22 UTC); a refusal is now no try.",
+ "note": "The mission asks 'Hunt 3 Pressblisters at an ice field' (data/missions/node_gamma_relay_station.json, 2026-11-16): any ice field. The herd of mission-cracking-the-shell-central at Node Gamma Ice Belt read 0 pressblisters at 02:27 and 03:04 UTC; Achernar Frost Ring read 8 at 01:21 UTC (data/wildlife/history.jsonl). The frost ring is also the place of Mining's ice route there: the hunter is the presence of orders F16. Beyond policed space (F13): an empty hold, and no fight where a ship that is not ours stands (`alone`). Written by Apophis 2026-11-16 03:13 UTC (orders.log ENT-011); a test with one ship until its first RESULT line. 2026-11-16 05:16 UTC (Apophis): `requires.booked` First Hunt: Belt-Grazers (requests.log ENT-102): the board offers the mission only to a pilot that holds First Hunt booked (7 of 7 with, 0 of 12 without, 2026-11-16 01:16 to 03:22 UTC); a refusal is now no try. 2026-11-16 13:09 UTC (Apophis): herd floor `min_creatures` 3 on the hunt step (requests.log ENT-135): Achernar Frost Ring read 1 pressblister at 12:40 UTC (data/wildlife/achernar.json) and 10 drone runs from 09:30 UTC lost money; the route opens when a census reads three again. `store: all` at the last stop, so the loot never closes a route with requires.empty_hold.",
  "once": true,
  "max_ships": 1,
  "requires": {
@@ -32,12 +32,14 @@
      "for": [
       "Cracking the Shell"
      ],
-     "alone": true
+     "alone": true,
+     "min_creatures": 3
     }
    ]
   },
   {
-   "at": "nexus_prime:the_core:central_nexus"
+   "at": "nexus_prime:the_core:central_nexus",
+   "store": "all"
   }
  ],
  "measured": {

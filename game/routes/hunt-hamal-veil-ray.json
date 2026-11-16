@@ -2,13 +2,13 @@
  "id": "hunt-hamal-veil-ray",
  "kind": "hunt",
  "title": "Veil-rays at Hamal Crystal Bloom; verdigris curd sold at Central Nexus",
- "note": "Seven kills in 33 minutes with a Pulse Laser I (2026-11-15). A carcass holds 1 or 2 curd. Curd bids: 330 cr. The first measured run is too high: its 9 curd included carcasses an earlier, unrecorded hunt had left here. The clean run at GSC-0027 gave about 4,200 cr per ship-hour. The herd read 0 at 17:17 UTC after our hunts. Ranched from 2026-11-15 17:40 UTC: no hunt below four animals and four kills a run, until data/wildlife/history.jsonl shows how fast the herd regrows. Sold at Central Nexus from 2026-11-15 21:40 UTC: Node Beta's curd bid was down to 15 units (data/market, 20:45 UTC), Central Nexus bid 330 for 50. 2026-11-16 09:12 UTC (Apophis): status off. The verdigris curd bid (330 cr x 50) left every station of our books between 07:08 and 07:51 UTC (data/market/history.jsonl) and has not come back; the seven drone veil-ray hunts made -1,851 cr in 21 runs from 07:05 UTC (data/routes/runs.jsonl). Back on when a curd bid of 100 cr or more reads again (the tool market); requires.bid on hunt routes is asked of Unity so that this happens by itself.",
+ "note": "Seven kills in 33 minutes with a Pulse Laser I (2026-11-15). A carcass holds 1 or 2 curd. Curd bids: 330 cr. The first measured run is too high: its 9 curd included carcasses an earlier, unrecorded hunt had left here. The clean run at GSC-0027 gave about 4,200 cr per ship-hour. The herd read 0 at 17:17 UTC after our hunts. Ranched from 2026-11-15 17:40 UTC: no hunt below four animals and four kills a run, until data/wildlife/history.jsonl shows how fast the herd regrows. Sold at Central Nexus from 2026-11-15 21:40 UTC: Node Beta's curd bid was down to 15 units (data/market, 20:45 UTC), Central Nexus bid 330 for 50. 2026-11-16 09:12 UTC (Apophis): status off. The verdigris curd bid (330 cr x 50) left every station of our books between 07:08 and 07:51 UTC (data/market/history.jsonl) and has not come back; the seven drone veil-ray hunts made -1,851 cr in 21 runs from 07:05 UTC (data/routes/runs.jsonl). Back on when a curd bid of 100 cr or more reads again (the tool market); requires.bid on hunt routes is asked of Unity so that this happens by itself. 2026-11-16 13:09 UTC (Apophis): back on (orders.log ENT-014, block APOPHIS). The verdigris curd bid stood again at 330 cr x 50 at seven stations of our books from 12:07 to 12:21 UTC (data/market/history.jsonl). `requires.bid` names the curd bid of the sell station (100 cr, 4 units): the dispatcher closes the route while a book read within the hour shows it gone and opens it when a docked ship reads it back; `min_bid` 100 so that every bid that opens the route also takes the curd. The loss stop holds it until its losing runs of 07:05 to 09:20 UTC leave the six-hour window.",
  "place": "hamal:hamal_crystal_bloom",
  "species": [
   "veil_ray"
  ],
  "sell_at": "nexus_prime:the_core:central_nexus",
- "min_bid": 250,
+ "min_bid": 100,
  "kills": 4,
  "minutes": 40,
  "max_ships": 1,
@@ -21,7 +21,12 @@
   "cph_per_ship": 2310
  },
  "requires": {
-  "without_module": "piercing_railgun_i"
- },
- "status": "off"
+  "without_module": "piercing_railgun_i",
+  "bid": {
+   "item": "verdigris_curd",
+   "base": "central_nexus",
+   "min_price": 100,
+   "min_qty": 4
+  }
+ }
 }

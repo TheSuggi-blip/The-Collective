@@ -2,7 +2,7 @@
  "id": "hunt-test-achernar-cinder-sylph",
  "kind": "hunt",
  "title": "Cinder-sylphs at Achernar Gas Pocket (lawless); ember glands sold at The Experiment (480 cr)",
- "note": "A test with one ship (orders.log ENT-011, block APOPHIS: every untested herd of prey of 100 hull or less with ten animals or more gets a test hunt; F9). No run of ours has looted this species. The herd read 10 at 2026-11-16 01:21 UTC, 40 hull (data/wildlife/). Beyond policed space (F13): `alone` and an empty hold. 2 kills a run, ranched: no hunt below 4 animals. Loot that no bid of 50 cr or more takes is stored at the station, so the row's goods show the drop; whether it is caustic sac (bid 420 cr at seven stations) is part of the question. Written by Apophis 2026-11-16 03:00 UTC; it leaves the plan after its first RESULT line unless the drop sells. Achernar holds an ice route of Mining: the hunter there is also the presence of orders F16. First RESULT 2026-11-16 03:00 UTC: 2 kills in 5.2 min at the place, 2 ember glands sold at The Experiment at 480 cr (bid 480 x 50 at all six of our stations and Ironlight Crossroads), +894 cr in 12.2 min, hull 75 of 75 (data/routes/runs.jsonl). The drop sells: the route stays in the plan as a ranched hunt, one hunter, no hunt below 4 animals; the herd read 10 at 01:21 and 4 at 03:13 UTC.",
+ "note": "A test with one ship (orders.log ENT-011, block APOPHIS: every untested herd of prey of 100 hull or less with ten animals or more gets a test hunt; F9). No run of ours has looted this species. The herd read 10 at 2026-11-16 01:21 UTC, 40 hull (data/wildlife/). Beyond policed space (F13): `alone` and an empty hold. 2 kills a run, ranched: no hunt below 4 animals. Loot that no bid of 50 cr or more takes is stored at the station, so the row's goods show the drop; whether it is caustic sac (bid 420 cr at seven stations) is part of the question. Written by Apophis 2026-11-16 03:00 UTC; it leaves the plan after its first RESULT line unless the drop sells. Achernar holds an ice route of Mining: the hunter there is also the presence of orders F16. First RESULT 2026-11-16 03:00 UTC: 2 kills in 5.2 min at the place, 2 ember glands sold at The Experiment at 480 cr (bid 480 x 50 at all six of our stations and Ironlight Crossroads), +894 cr in 12.2 min, hull 75 of 75 (data/routes/runs.jsonl). The drop sells: the route stays in the plan as a ranched hunt, one hunter, no hunt below 4 animals; the herd read 10 at 01:21 and 4 at 03:13 UTC. 2026-11-16 13:09 UTC (Apophis): `requires.bid` names the ember gland bid of the sell station (100 cr, 2 units; it read 480 cr at 12:59 UTC, data/market/), orders.log ENT-014 (a).",
  "place": "achernar:achernar_gas_pocket",
  "species": [
   "cinder_sylph"
@@ -16,7 +16,13 @@
  "alone": true,
  "requires": {
   "empty_hold": true,
-  "without_module": "piercing_railgun_i"
+  "without_module": "piercing_railgun_i",
+  "bid": {
+   "item": "ember_gland",
+   "base": "the_experiment_research_station",
+   "min_price": 100,
+   "min_qty": 2
+  }
  },
  "measured": {
   "date": "2026-11-16",
