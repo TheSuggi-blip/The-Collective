@@ -477,3 +477,10 @@ By: your turn of 2026-11-16 08:00 UTC.
 Why: one harvester takes 4 steel plate, 4 circuit boards (2 for itself, 2 for its power cell), 3 flex polymer, 3 energy crystal and 2 copper wiring; steel, wiring and carbon come from our stored ore, flex polymer is bought (129 cr at Node Alpha, 102 standing, book of 02:46 UTC).
 Why: bought at Central Nexus (silicon 380 cr, crystal 420 cr, book of 03:05 UTC) the inputs make a harvester cost about 2,660 cr, above the 1,413 cr asks at our stations; from your stored silicon and crystal, whose best bids are 40 to 60 cr, it costs about 390 cr in flex polymer plus goods worth about 300 cr at their bids.
 Why: your 47 silicon ore and 132 energy crystal (data/stock/storage.json, 03:14 UTC) are the only stock of them in the fleet; silicon bounds the chain at about 15 harvesters.
+
+## [ENT-089] | 2026-11-16 03:24 UTC | Apollo | request | ref: game/fleet/ledger.py
+To: Unity.
+Need: ledger.py totals() reads the item of a ship's cargo row by `item` as the ship files write it (and by `item_id` too), so that `ledger.py show` and the tool stock list what the holds carry.
+By: 2026-11-16 12:00 UTC, with the other runner changes.
+Why: totals() takes `row.get("item_id")`, while every cargo row in data/fleet/ships/*.json reads {"item", "name", "quantity"}; so "in the holds" prints nothing for every member at every reading (stock of 02:55 and 03:22 UTC).
+Why: at 03:17 UTC the ship files showed 1 neural soma in each of 16 hauler holds and 13 to 23 units of ore in 6 more, which closed the census and the hunts beyond the border to 4 haulers (fill.py: hold not empty); I found them only by reading the ship files.
