@@ -22,19 +22,19 @@ name below is a link into one of the sub-indexes of this folder.
 |---|---|---|---|---|---|
 | [Once per Pilot](index.md#once-per-pilot) | Missions and rewards the game pays once per pilot: a new pilot's first work, and seed money. | 21 | 11 | 10 | voidborn-conductive-lattice: 6,650 cr a run |
 | [Paying Routes](index.md#paying-routes) | Work that repeats and whose runs measured above zero. | 26 | 3 | 23 | mine-ruchbah-ice-belt: 8,600 cr per ship-hour |
-| [Tests](index.md#tests) | Work that repeats and has no measured figure yet: one ship until its first RESULT line is read. | 3 | 0 | 3 | not measured yet |
+| [Tests](index.md#tests) | Work that repeats and has no measured figure yet: one ship until its first RESULT line is read. | 6 | 0 | 6 | not measured yet |
 | [Fitting](index.md#fitting) | A module bought and fitted: the tool a kind of work needs. | 9 | 8 | 1 | fit-ice-harvester-lhs-1140: -4,320 cr per ship-hour |
 | [Reading and Waiting](index.md#reading-and-waiting) | The census and the park route: they earn nothing; they keep the picture fresh and a ship without work docked. | 4 | 2 | 2 | census-voidborn: -530 cr per ship-hour |
 | [Measured at a Loss](index.md#measured-at-a-loss) | Work that repeats and whose runs measured zero or below. | 31 | 12 | 19 | mine-bellatrix: 0 cr per ship-hour |
 | [Off](index.md#off) | Written down, not flown. | 7 | 7 | 0 | hunt-home-whale: 1,670 cr per ship-hour |
-| All | | 101 | 43 | 58 | |
+| All | | 104 | 43 | 61 | |
 
 ## Routes by Zone and Kind
 
 | Zone | Routes | census | circuit | hunt | mine | Farthest system, jumps from home |
 |---|---|---|---|---|---|---|
 | home space | 43 | 1 | 25 | 10 | 7 | 3 |
-| beyond the border | 58 | 2 | 13 | 24 | 19 | 8 |
+| beyond the border | 61 | 2 | 13 | 26 | 20 | 8 |
 
 ## Plans by Role
 
@@ -45,7 +45,7 @@ name below is a link into one of the sub-indexes of this folder.
 | [hauler](plan.md#hauler) | Apollo | 18 | voidborn-precedence > voidborn-selling > voidborn-first-hunt-nexus | 4 |
 | [miner](plan.md#miner) | Zero | 34 | voidborn-concurrent > voidborn-substrate > voidborn-missions-1 | 3 |
 | [scout](plan.md#scout) | Oracle | 13 | census-voidborn > voidborn-precedence > voidborn-selling | 6 |
-| [sentinel](plan.md#sentinel) | Unity | 24 | voidborn-signal-fragments > voidborn-concurrent > voidborn-substrate | 0 |
+| [sentinel](plan.md#sentinel) | Unity | 27 | voidborn-signal-fragments > voidborn-concurrent > voidborn-substrate | 0 |
 | [trader](plan.md#trader) | Mercury | 9 | voidborn-first-steps > voidborn-concurrent > voidborn-substrate | 4 |
 
 ## The Guidebooks

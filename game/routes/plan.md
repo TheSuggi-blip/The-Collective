@@ -206,7 +206,7 @@ Planned:
 
 ## sentinel
 
-Kept by Unity. Routes: 24.
+Kept by Unity. Routes: 27.
 
 | # | Route | Group | Zone | Open to | Credits per ship-hour |
 |---|---|---|---|---|---|
@@ -232,8 +232,11 @@ Kept by Unity. Routes: 24.
 | 20 | [mine-gsc-0041-frost-ring](mine-gsc-0041-frost-ring.json) | Paying Routes | beyond the border, 4 jumps | up to 1 ships, needs ice_harvester_i, empty hold | 3,800 |
 | 21 | [mine-antares-ice-fields](mine-antares-ice-fields.json) | Paying Routes | beyond the border, 5 jumps | up to 1 ships, needs ice_harvester_i, empty hold | 630 |
 | 22 | [mine-intercrus-ice-fields](mine-intercrus-ice-fields.json) | Paying Routes | beyond the border, 7 jumps | up to 2 ships, needs ice_harvester_i, empty hold | 1,370 |
-| 23 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -620 |
-| 24 | [park](park.json) | Reading and Waiting | home space | the park route | -670 |
+| 23 | [mine-deepwell-volatile-ice](mine-deepwell-volatile-ice.json) | Tests | beyond the border, 7 jumps | up to 1 ships, needs ice_harvester_i, empty hold | TBD |
+| 24 | [hunt-starveling-nebula-veil-ray](hunt-starveling-nebula-veil-ray.json) | Tests | beyond the border, 6 jumps | up to 1 ships, empty hold | TBD |
+| 25 | [hunt-felis-dim-lattice-veil-ray](hunt-felis-dim-lattice-veil-ray.json) | Tests | beyond the border, 7 jumps | up to 1 ships, empty hold | TBD |
+| 26 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -620 |
+| 27 | [park](park.json) | Reading and Waiting | home space | the park route | -670 |
 
 ## trader
 

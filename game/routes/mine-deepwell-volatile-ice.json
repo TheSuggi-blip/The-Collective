@@ -1,0 +1,28 @@
+{
+ "id": "mine-deepwell-volatile-ice",
+ "kind": "mine",
+ "title": "Deepwell Volatile Ice: water_ice, methane_ice, ammonia_ice, helium_ice; sold at The Experiment Research Station",
+ "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 2361 cr per ship-hour, not a measurement. A test: one ship. Added as a test by fill.py on 2026-11-16 06:46 UTC (Unity): one ship until its first RESULT line is read.",
+ "belt": "deepwell:deepwell_volatile_ice",
+ "station": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+ "minutes": 84,
+ "max_ships": 1,
+ "sell": [
+  {
+   "item": "water_ice",
+   "min_price": 32
+  },
+  {
+   "item": "methane_ice",
+   "min_price": 28
+  },
+  {
+   "item": "helium_ice",
+   "min_price": 1
+  }
+ ],
+ "requires": {
+  "module": "ice_harvester_i",
+  "empty_hold": true
+ }
+}

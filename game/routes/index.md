@@ -82,7 +82,10 @@ Work that repeats and has no measured figure yet: one ship until its first RESUL
 |---|---|---|---|---|---|---|---|---|---|
 | [hunt-deepwell-haze-cinder-sylph](hunt-deepwell-haze-cinder-sylph.json) | hunt | beyond the border, 7 jumps | cinder_sylph at deepwell_haze; loot sold at Ironlight Crossroads | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-deepwell-volatile-ice-frost-moth](hunt-deepwell-volatile-ice-frost-moth.json) | hunt | beyond the border, 7 jumps | frost_moth at deepwell_volatile_ice; loot sold at Ironlight Crossroads | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
+| [hunt-felis-dim-lattice-veil-ray](hunt-felis-dim-lattice-veil-ray.json) | hunt | beyond the border, 7 jumps | veil_ray at felis_dim_lattice; loot sold at Synchrony Hub | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-raysheet-nebula-veil-ray](hunt-raysheet-nebula-veil-ray.json) | hunt | beyond the border, 8 jumps | veil_ray at raysheet_nebula; loot sold at Nova Terra Central | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
+| [hunt-starveling-nebula-veil-ray](hunt-starveling-nebula-veil-ray.json) | hunt | beyond the border, 6 jumps | veil_ray at starveling_nebula; loot sold at Node Beta Industrial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
+| [mine-deepwell-volatile-ice](mine-deepwell-volatile-ice.json) | mine | beyond the border, 7 jumps | Deepwell Volatile Ice: water_ice, methane_ice, ammonia_ice, helium_ice; sold at The Experiment Research Station | up to 1 ships, needs ice_harvester_i, empty hold | TBD | TBD | TBD | TBD | -- |
 
 ## Fitting
 
