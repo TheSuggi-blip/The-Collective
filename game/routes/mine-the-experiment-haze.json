@@ -1,0 +1,19 @@
+{
+ "id": "mine-the-experiment-haze",
+ "kind": "mine",
+ "title": "The Experiment Haze: hydrogen_gas, neon_gas; sold at Node Beta Industrial Station",
+ "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 1637 cr per ship-hour, not a measurement. A test: one ship. Added as a test by fill.py on 2026-11-16 08:36 UTC (Mercury): one ship until its first RESULT line is read.",
+ "belt": "the_experiment:the_experiment_haze",
+ "station": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+ "minutes": 73,
+ "max_ships": 1,
+ "sell": [
+  {
+   "item": "hydrogen_gas",
+   "min_price": 26
+  }
+ ],
+ "requires": {
+  "module": "gas_harvester_i"
+ }
+}

@@ -239,7 +239,7 @@ Kept by Unity. Routes: 27.
 
 ## trader
 
-Kept by Mercury. Routes: 10.
+Kept by Mercury. Routes: 11.
 
 | # | Route | Group | Zone | Open to | Credits per ship-hour |
 |---|---|---|---|---|---|
@@ -251,8 +251,9 @@ Kept by Mercury. Routes: 10.
 | 6 | [voidborn-mining-missions](voidborn-mining-missions.json) | Once per Pilot | home space | once per pilot, up to 40 ships | one-time |
 | 7 | [voidborn-precedence](voidborn-precedence.json) | Once per Pilot | home space | once per pilot, up to 40 ships | one-time |
 | 8 | [voidborn-conductive-lattice](voidborn-conductive-lattice.json) | Once per Pilot | beyond the border, 6 jumps | once per pilot, up to 10 ships, 146 pilots in all, empty hold, from 13,000 cr | one-time |
-| 9 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -620 |
-| 10 | [park](park.json) | Reading and Waiting | home space | the park route | -670 |
+| 9 | [mine-the-experiment-haze](mine-the-experiment-haze.json) | Tests | home space | up to 1 ships, needs gas_harvester_i | TBD |
+| 10 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -620 |
+| 11 | [park](park.json) | Reading and Waiting | home space | the park route | -670 |
 
 Planned:
 

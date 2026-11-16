@@ -83,6 +83,7 @@ Work that repeats and has no measured figure yet: one ship until its first RESUL
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
+| [mine-the-experiment-haze](mine-the-experiment-haze.json) | mine | home space | The Experiment Haze: hydrogen_gas, neon_gas; sold at Node Beta Industrial Station | up to 1 ships, needs gas_harvester_i | TBD | TBD | TBD | TBD | -- |
 | [mine-deepwell-volatile-ice](mine-deepwell-volatile-ice.json) | mine | beyond the border, 7 jumps | Deepwell Volatile Ice: water_ice, methane_ice, ammonia_ice, helium_ice; sold at The Experiment Research Station | up to 1 ships, needs ice_harvester_i, empty hold | TBD | TBD | TBD | TBD | -- |
 | [mine-gsc-0049-platinum-group-reef](mine-gsc-0049-platinum-group-reef.json) | mine | beyond the border, 5 jumps | GSC-0049 Platinum-Group Reef: nickel_ore, platinum_ore, rhodium_ore; sold at Node Gamma Relay Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [mine-ruchbah-ice-belt-nexus](mine-ruchbah-ice-belt-nexus.json) | mine | beyond the border, 4 jumps | Ruchbah Ice Belt: water_ice, methane_ice; sold at The Core (Central Nexus) | up to 1 ships, needs ice_harvester_i, empty hold | TBD | TBD | TBD | TBD | -- |
