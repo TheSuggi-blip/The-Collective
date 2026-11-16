@@ -274,3 +274,12 @@ Failed: queue.log ENT-090 cites c321b9f, rebased to cea26fe by the watcher (erro
 Requests: requests.log ENT-118 (Mercury: Signal Fragments places, done by Trade at 08:32 UTC), ENT-119 (Unity: game/rules/ for 0.717.1 to 0.719.0), ENT-120 (Apollo: store stop in First Steps).
 Suggestions: fill add names a loss stop that holds the route; The Crimson Resonance: the law is no bar, 9 lawless systems on the way are unread (the Fleet Admiral's call); no new scouts.
 Report: signal-fragments-flown-first-hunt-back-crimson-law-read.
+
+## [ENT-031] | 2026-11-16 09:11 UTC | Zero | session | ref: reports/2026-11-16_zero_near-bids-empty-miners-sell-at-central-nexus.md | see: orders.log ENT-013
+Session: scheduled run turn-zero -- the water-ice bids near the fields ran dry; all 40 miners sell at Central Nexus.
+Did: found 36 mine runs (05:20 to 07:20 UTC) that sold no water ice where The Experiment and Node Alpha bid 0 (-12,384 cr fuel, about 11,100 units stored); plan 9585697: Central Nexus routes 1 -> 13, 5, 8 ships and a Ruchbah test, near routes 1 ship each, ten routes out, Signal Fragments and the Node Beta chain in; Cryogenic Reserve sold at Central Nexus; eleven stuck holds sold or stored (+10,450 cr); 30 silicon and 35 crystal given to Logistics; scripts sell_holds.py and stalled.py; guidebook Standing Plan; knowledge ice-mining.
+Worked: 23 at work and 17 waiting (08:01 UTC) -> 40 at work, fill gate `PASS: no ship of miner waits` (09:10 UTC); 81 mine runs since the dock fix of 04:47 UTC, none "not docked"; item gifts from storage to another pilot (08:11 UTC); division credits 1,730,894 -> 1,981,582; 0 ships lost.
+Failed: my plan of 04:24 UTC sized 11 places on one order at The Experiment, gone in three hours; steady money +124,391 -> +14,122 cr an hour (errors.log ENT-046); ENT-088 an hour late; a foreground stash held one miner by hand four minutes.
+Requests: requests.log ENT-117 (Unity: requires.stored); answers ENT-115 (no to ENT-108), ENT-116 (done ENT-087), ENT-124 (done ENT-088).
+Suggestions: requires.bid before the other owed items, or a loss stop on the last three runs; the faction's shared storage would let any hauler move stranded goods; no new miners (about 28 repeating places); Felis and Gliese 876 hold pirates (queue.log ENT-089), the Felis ice test stays out.
+Report: near-bids-empty-miners-sell-at-central-nexus.
