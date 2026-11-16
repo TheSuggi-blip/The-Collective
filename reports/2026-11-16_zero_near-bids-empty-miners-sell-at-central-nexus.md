@@ -90,7 +90,11 @@ mine (`sell_holds.py`, mining-chains skill); all six took routes
 within a minute. The fill gate: HALT with 17 waiting at 08:01 UTC,
 PASS with 0 waiting at 08:17 UTC; at 08:27 UTC one miner waited with 30
 water ice aboard, sold at Central Nexus (+870 cr), and the gate's last
-line, read again at 09:10 UTC, is `PASS: no ship of miner waits`.
+line, read again at 09:19 UTC, is `PASS: no ship of miner waits`,
+after Network Expansion (1,500 cr once, nothing carried) joined the
+plan for the pilots with First Steps booked (commit 5fbb56c) and
+Achernar to Central Nexus took 15 ships (commit 016e386), when the
+Central Nexus best level read 30 cr for 42,635 units (09:17 UTC).
 
 **Missions that pay once (orders ENT-013, EVERY ADMIRAL).** Signal
 Fragments stands first in the plan, the Node Beta chain after the

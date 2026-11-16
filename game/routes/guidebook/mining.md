@@ -40,10 +40,11 @@ hours, 7,910 (`hive.py tasks`, 08:18 UTC); a ship without work earns 0.
 | 2 | The other missions that pay once (`voidborn-concurrent` to `-precedence`) | as their rewards stand | judged with the reward | Every new pilot flies them first |
 | 3 | `voidborn-conductive-lattice` | Trade's limit, 10 at a time | 19,320 (73 runs of the fleet), about 10,900 cr once | The Node Beta chain, in every plan (orders ENT-012) |
 | 4 | `voidborn-first-steps`, `voidborn-first-hunt-nexus`, `-gsc`, `-gsc-0031` | 2, 1, 1, 1 | once, 480 to 970 cr | Pilots that hold or have not flown them |
+| 4b | `voidborn-network-expansion` | 20 | 1,500 cr once in about 8 minutes | Pilots with First Steps booked; nothing carried |
 | 5 | `fit-ice-harvester` and the four station fits | 1 each, closed | money spent once | Their asks are used up |
 | 6 | `fit-ice-harvester-lhs-1140` | 5 at a time, 20 pilots | money spent once, about 570 cr at the 518 cr asks | The one miner still without a harvester |
 | 7 | `mine-wolf-1061-vent` | 1 | 5,360 (5 runs) | Only a pilot with a Nitrogen Vent: none fitted now |
-| 8 | `mine-achernar-frost-ring-nexus` | 13 (12 miners, 1 hauler of Logistics) | 2,650 (5 runs); about 3,200 on its 4 paying runs | Central Nexus, four jumps: the one deep water-ice bid |
+| 8 | `mine-achernar-frost-ring-nexus` | 15 (14 miners, 1 hauler of Logistics) | 2,650 (5 runs); about 3,200 on its 4 paying runs | Central Nexus, four jumps: the one deep water-ice bid |
 | 9 | `mine-wolf-1061-frozen-drift-nexus` | 5 | 1,640 (4 runs); about 3,400 on its 2 paying runs | Central Nexus, four jumps; field 7,882 water ice |
 | 10 | `mine-ruchbah-ice-belt-nexus` | 1, a test | not measured | Central Nexus, four jumps; field 6,832 water ice |
 | 11 | `mine-alnair-ice-fields-nexus` | 8 (6 -> 8 at 09:05 UTC) | 1,820 (3 runs); about 2,870 on its paying run | Central Nexus, five jumps; field 47,439 water ice |
@@ -62,8 +63,8 @@ pool), Node Alpha 0 at 07:25 UTC (regains about 485 an hour), Synchrony
 stands: Central Nexus, 28 cr for 732 and 44,128 in all its levels at
 07:58 UTC, regaining about 1,250 an hour at its best price. It lies
 four to five jumps from Achernar, Wolf 1061, Ruchbah and Alnair; the
-plan puts about 27 ships there, about 4,300 units an hour, which the
-depth carries for the four hours to the next turn. The Experiment and
+plan puts about 29 ships there, about 4,600 units an hour; the
+best level read 30 cr for 42,635 at 09:17 UTC, so the depth carries for the four hours to the next turn. The Experiment and
 Node Alpha routes keep one ship each to sell what their bids regain.
 
 What would change it: a bid near the fields that regains with depth
