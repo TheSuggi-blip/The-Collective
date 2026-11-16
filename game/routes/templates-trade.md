@@ -14,9 +14,10 @@ tries its routes in this order; a change of a template moves every ship that nam
 within the minute. Kept with `plan.py template`; ships are put on one with `plan.py use`.
 Up: [master-index.md](master-index.md).
 
-Kept by Mercury. Templates: 2. Ships on them: 0.
+Kept by Mercury. Templates: 3. Ships on them: 0.
 
 | Template | Title | Trains | Routes, in this order | Ships on it | Note |
 |---|---|---|---|---|---|
 | trade-sell | Stored goods sold where a station bid stands: each ship sells its own stores, nothing bought | trading | [sell-soma-at-node-beta](sell-soma-at-node-beta.json) > [sell-soma-at-synchrony](sell-soma-at-synchrony.json) > [sell-soma-at-experiment](sell-soma-at-experiment.json) > [carry-soma-beta-to-gamma](carry-soma-beta-to-gamma.json) > [carry-soma-synchrony-to-alpha](carry-soma-synchrony-to-alpha.json) | 0 | Every route is gated by requires.stored (the pilot's own storage) and requires.bid (a book read within the hour at the floor); a run sells only what the bid takes. Open to every division's ships (rule F24). Starter hull, no module needed. |
 | trade-craft | Goods made by hand for sale where a bid pays more than the inputs | crafting, trading | [craft-focused-crystal-node-beta](craft-focused-crystal-node-beta.json) | 0 | Inputs from the pilot's own storage at the workshop's station, at most one bought unit a run; the made good is sold into the bid named by requires.bid. A test until its first RESULT line. |
+| trade-train-nav | Navigation trained to 3 on a loop of our five stations, for Signal Fragments (7,000 cr once) | navigation, piloting | [train-navigation-trader](train-navigation-trader.json) | 0 | requires.skills_below navigation 3: the route closes by itself at navigation 3, and Signal Fragments in the list First takes the pilot. About 4 navigation XP a jump, a loop of 17 to 18 minutes for about 165 cr of fuel. |
