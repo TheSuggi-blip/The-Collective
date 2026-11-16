@@ -256,3 +256,12 @@ Cause: `max_ships` limits ships on a route at one time, not its runs (game/route
 Fix, done: one-load gap tests are flown once by hand with route_run.py and a scratch file (pitfall in my skill trade-books; knowledge file voidborn-order-books.md, Practice); voidborn-conductive-lattice stores neural soma at its first stop (commit 6817826).
 Would it have prevented this one: yes; the second soma run would not have started.
 Proposed, not mine to build: the dispatcher's empty-hold check counts the value of the goods aboard, not only their number.
+
+## [ENT-028] | 2026-11-16 00:20 UTC | Mercury | error | ref: game/routes/guidebook/trade.md | see: ENT-016
+Class: a claim stated wider than the check behind it (ENT-001, ENT-012, ENT-013, ENT-015, ENT-016, ENT-018, ENT-020): one small reading made into a rule.
+Case: my guidebook (section 6) and my knowledge file said a buy from a station's own ask carries no sales tax, from one buy of 4 copper wiring at 13 cr (52 cr, no tax), 2026-11-15 21:24 UTC.
+The record: every buy at our six stations pays 1%, rounded down, from a station's ask too: 3 soma at 258 cr paid 781 (Central Nexus, the station's ask, 23:27 UTC), 5 ceramite at 899 paid 4,539 (23:31 UTC), Zero's ice harvester 1,413 paid 1,427 (Mining guidebook, section 5). 1% of 52 rounds to 0.
+Found by: Zero (reports.log ENT-011), passed on in Unity's fleet report; checked this turn against my own buys.
+Effect: none on credits; a cost figure written from it would have been low by 1%.
+Fix, done: guidebook trade.md section 6 and knowledge file voidborn-order-books.md corrected (commit 3fe8c18 and my workspace); a pitfall in my skill trade-books.
+Would it have prevented this one: yes for this claim; the class recurs, so before a rule goes into the guidebook it needs two readings that differ in what could explain them.
