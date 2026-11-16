@@ -14,6 +14,20 @@
     "piloting"
    ],
    "note": "Fit: the starter Threshold, empty hold (rule F13). Long jumps train navigation fastest; navigation 3 opens Signal Fragments in the list First."
+  },
+  "reader": {
+   "title": "Read: the places our routes use twice a turn, then the frontier, then the roads",
+   "routes": [
+    "census-worked",
+    "census-frontier",
+    "census-roads"
+   ],
+   "trains": [
+    "exploration",
+    "navigation",
+    "piloting"
+   ],
+   "note": "Fit: the starter Threshold, empty hold. The home census stands in the list First for every scout; gathering in the list Then is the fallback when nothing is due."
   }
  }
 }
