@@ -63,5 +63,7 @@ Planned:
 
 | What | When |
 |---|---|
-| Read the first RESULT lines of drain-ice-nexus, drain-ice-node-alpha and the three carries; lift the carries as far as the Central Nexus bid takes them, and cut the mine routes further if the carries fill it | turn of 2026-11-16 16:00 UTC |
-| When the stored ice outside Central Nexus is under about 2,000 units, lift the Central Nexus mine routes back toward ten ships; bring the Experiment and Node Alpha mine routes back only when their bids regain with depth (requires.bid opens them by itself) | each turn |
+| Read the first RESULT line of drain-methane-experiment; when it sold, lift it to 3 ships until the 1,127 stored methane ice is sold | next turn |
+| Read the first RESULT line of gather-ironhollow-fading-signal (iron share of the load, minutes, fuel); when it holds, lift it to what the field regrows (about 520 iron an hour, two to three ships), a light footprint beyond the border | next turn |
+| Test one Flotation Cell (filter_copper_ore) on one iron miner in place of its ice harvester: the share of iron per pull on a shared iron field, against 65% and 51% without it | next turn |
+| When the stored water ice is under about 2,000 units, lift the Central Nexus mine routes back toward what the bid regains | each turn |
