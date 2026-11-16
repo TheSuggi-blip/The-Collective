@@ -23,7 +23,7 @@
     "mining",
     "piloting"
    ],
-   "note": "Every route here is gated: a drain or carry opens only on stored ice and a fresh bid (requires.stored, requires.bid); a mine route only on a deep water-ice order at Central Nexus (300 units at its best price) and with an Ice Harvester I fitted. A drain needs no harvester. Stored ice is sold before new ice is mined."
+   "note": "Every route here is gated: a drain or carry opens only on goods the pilot itself stores and a fresh bid (requires.stored, requires.bid); a mine route only on a deep water-ice order at Central Nexus (300 units at its best price) and with an Ice Harvester I fitted. Drains and carries need no harvester. What miners store is sold before new ice is mined."
   },
   "reserve-prism": {
    "title": "Gather what the reserve is short of: carbon first, then iron, Prism Scatter first",
