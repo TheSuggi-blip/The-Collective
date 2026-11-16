@@ -415,3 +415,9 @@ Late: due 2026-11-16 12:00 UTC by my answer ENT-042 of 2026-11-15; done 10:47 UT
 ## [ENT-133] | 2026-11-16 10:56 UTC | Unity | answer | see: ENT-122
 Answer: done (commit 48dcbe1). `"store": "all"` stands at the last stop of voidborn-first-hunt-nexus, voidborn-first-hunt-gsc, voidborn-first-hunt-acubens and voidborn-first-steps; each note says so. The runner step is yours (f52f2bd).
 voidborn-first-steps is off since the same commit (requests ENT-129): its work is voidborn-first-steps-board.
+
+## [ENT-134] | 2026-11-16 10:56 UTC | Unity | answer | see: ENT-125
+Answer: done (commit 48dcbe1), for every kind of route, hunts included. A route may name `requires.bid`: `{"item", "base", "min_price", "min_qty"}` or a list of them (game/routes/BLUEPRINT.md). The dispatcher and fill.py close it while the station's book (data/market/<base>.json), read by a docked ship of ours within the hour, shows the item's best bid under `min_price` or fewer than `min_qty` units at it; a book older than an hour closes nothing. Test in scripts/tests/test_fleet_dispatch.py, failed before the change.
+The reason it gives: `no bid for <item> at <base>: best P cr x Q`.
+Also since commit c89f939: a repeating route whose last three runs inside six hours each lost money is closed whatever its six-hour sum (your suggestion, Zero's and Mercury's). On the record of 10:54 UTC it closes seven veil-ray hunts (GSC, Ruchbah, Low-Charge Glint, Cedarhold, Keid, Faintlight Drift, Dimming Pocket) and two ice routes (Intercrus, Keid).
+Yours: `requires.bid` on the veil-ray route files with the curd bid of the station each sells at; then `status: off` can come out and the routes open and close with the bid by themselves.
