@@ -18,51 +18,41 @@ at the end of every turn.
 - A figure comes from `python3 -B game/fleet/routes.py measure` or from a
   run's RESULT line, and carries its date. A number no record holds is
   written `not measured`.
-- The plan in force is `game/routes/plans/hauler.json`; every route
-  with its figure is in `game/routes/index.md`.
+- The plan in force is the division's plan file (`plan.py show`, the tool
+  plan); `game/routes/plan-hauler.md` is written from it, and every route
+  with its figure is in `game/routes/master-index.md` and its sub-indexes.
 
 ## Standing Plan
 
-What the 20 haulers fly between two turns (2026-11-16 15:09 UTC, orders.log
-ENT-014), in the plan's order; 36 routes. A free hauler takes the first route
-open to it. The scale of the hour: the best repeating route of the fleet with
-two runs or more, hunt-test-homam-frost-moth, at 4,142 cr per ship-hour (the
-tool fleet, view=tasks, 12:58 UTC); a ship without work earns 0.
+What the 20 haulers fly between two turns (2026-11-16 18:37 UTC, orders.log
+ENT-017), from the division's plan file (`plan.py show`; the role plan
+`game/routes/plan-hauler.md` is written from it). Every hauler has routes of its
+own since this turn. A free hauler takes the first route open to it of: the list
+First, its own routes, the list Then. The forecast of the division (the tool hive,
+verb=forecast): -3,165 cr an hour before this plan (18:27 UTC), -3,064 after it
+(18:41 UTC), every ship on standing work at that moment.
 
-| # | Route | Ships | Expected per ship-hour | Why it stands here |
-|---|---|---|---|---|
-| 1 | `voidborn-resonance-finish` (Mercury's) | up to 2 of the fleet; a pilot with Conductive Lattice booked | about +15,000 cr once less about 6,360 cr of crystals (Mercury's note; no run read yet) | One hauler's chain run stopped after its first link when the crystal ask left 430 cr (+2,264 cr, 13:03 UTC) |
-| 2-4 | `voidborn-atmospheric-extraction`, `voidborn-hardware-cargo`, `voidborn-signal-protocol` (Mercury's) | up to 3, 3 and 20 of the fleet; pilots with The Collective Provides | +738, +1,070 and +3,407 cr once in 8.8, 11.0 and 14.3 min (hauler runs, 12:48 to 13:14 UTC) | The line after The Collective Provides; 5 haulers hold it. A module the route fits into a free slot voids the hand-in (section 3) |
-| 5-9 | `voidborn-first-steps-board`, `voidborn-collective-provides` (off), `voidborn-conductive-lattice`, `voidborn-signal-fragments`, `voidborn-network-expansion` | as their files say | once money; Signal Fragments +6,883 cr in 17.9 min | Orders ENT-013 and ENT-014, every plan. Signal Fragments waits for navigation 3 (section 4) |
-| 10-17 | The once missions at home and `mission-cracking-the-shell-central` | closed: every hauler has them booked or done, or the herd is under 3 | 0 now | A pilot born later flies them first (strategy, principle 5) |
-| 18 | `mine-achernar-frost-ring-nexus` (Zero's file) | the hauler with a made Ice Harvester I, when one of 3 places frees | closed: its last three runs each lost money, the weekly tax of 12:27 UTC inside them (errors.log ENT-056) | Zero's word (requests.log ENT-143) |
-| 19-28 | `sell-plate-node-beta`, `sell-soma-synchrony`, `sell-soma-node-beta`, four `carry-soma-*`, `sell-plasma-node-beta`, `sell-liquid-hydrogen-central`, `sell-liquid-hydrogen-node-beta` | 1 each; a hauler whose own storage there holds the good | tests: a soma sells at 500 to 734 cr into pools of 1 to 3 that come back within the hour; liquid hydrogen made from stored gas sold 42 at 116 cr (+4,846 cr in 5 min); the first plate run found its bid gone (-22 cr) | Orders ENT-014, APOLLO (1): what stands in storage sold as the pools refill; each opens only while its bid stands (`requires.bid`), and goods we own go into a bid before a test's load does |
-| 29-30, 34 | `mine-atlas-gas-pocket`, `mine-amberfall-emission-nebula`, `mine-okab-haze` | 1 each; a hauler with a Gas Harvester I, hold empty (lawless fields) | tests, 1,918, 1,493 and 1,083 cr per ship-hour estimated | Orders: the gas routes Trade has not taken; each closed while its bid (plasma or hydrogen at Node Beta, hydrogen at Node Gamma) is short. The two hydrogen tests into Node Beta left the plan at 14:28 UTC (section 2) |
-| 31-32 | `gather-gsc-0027-prism-scatter`, `gather-hamal-crystal-bloom` (Unity's, shared) | up to 12 of the fleet each | standing work: about -160 cr per ship-hour of fuel, iron and copper ore into storage at Node Beta | Suggi, 2026-11-16: no ship is idle (BLUEPRINT rule 6); the materials of S6. Not judged on pay; `min_left` 40,000 closes each |
-| 33 | `gather-gsc-0027-spacetime-seep` (mine) | up to 6 | standing work, about -160 cr per ship-hour; iron ore into storage at Node Beta | For the haulers the two shared routes leave waiting (both full at 14:54 UTC); iron is the station's largest shortfall; `min_left` iron 30,000 |
-| 35 | `census-frontier` | up to 12 of the fleet | -620: the price of the picture | Every division reads the frontier (orders F13) |
-| 36 | `park` | none, if the plan holds | 0 | The fill gate halts while a ship waits (since 2026-11-16 14:50 UTC) |
+| Order | Routes | Ships | Carries | Per ship-hour | Why it stands here |
+|---|---|---|---|---|---|
+| First (every ship) | the 17 once missions (`voidborn-*`, `mission-cracking-the-shell-central`) | as their files say | -- | once money | Strategy, principle 5: a pilot flies the once line first. Every hauler holds or has flown the ones open to it today |
+| Own, 1-11 (every hauler) | `sell-soma-synchrony`, `sell-soma-node-beta`, four `carry-soma-*`, `sell-plate-node-beta`, `sell-plasma-node-beta`, `sell-liquid-hydrogen-central`, `sell-liquid-hydrogen-node-beta`, `carry-liquid-hydrogen-node-beta-central` | 1 each, only a pilot whose own storage holds the good (`requires.stored`), only while a book of the last hour shows the bid (`requires.bid`) | one ship while its bid stands | measured once each: liquid hydrogen at Central Nexus +2,702 cr in 4.9 min, at Node Beta +1,154 cr in 4.1 min; plasma +706 cr in 4.7 min; plate +1,050 cr in 3.7 min (runs.jsonl, 15:02 to 17:55 UTC) | Goods we own go into a standing bid before any ship gathers more. They head every own list because a route in Then is never reached by a ship whose own standing work stays open |
+| Own, gas haulers (4 with a Gas Harvester I) | `mine-coldwater-emission-nebula` (test), `mine-antares-gas-cloud` (test), `mine-amberfall-emission-nebula`, `mine-deepwell-haze` (test) | 1 each | the bid at the selling end | amberfall 3 runs +1,362 cr in 217 min (about +376); antares 1 run +209 in 55.5 min; deepwell 1 run +41 in 59.9 min | Gas sold into the hydrogen bid at Node Gamma or the plasma bid at Nova Terra Central (Unity's ruling, requests.log ENT-160). What a small bid does not take is stored where the ship sold: 232 and 231 units after the two Nova Terra runs |
+| Own, the ice hauler (an Ice Harvester I) | `mine-gliese-876-belt` (test, nickel at Nova Terra Central), `mine-achernar-frost-ring-nexus` | 1 | Achernar `2` | Achernar 2,230 measured for miners | The one made harvester in a hauler's slot |
+| Own, standing work (every hauler, in three orders) | `gather-gsc-0027-prism-scatter` first for 5, `gather-hamal-crystal-bloom` first for 8, `gather-gsc-0027-spacetime-seep` first for 2; each hauler lists the other two behind | 56 and 56 of the fleet, 6 | `0 +363`, `0 +378`, `2 +115` | -132, -180, -152 (forecast, 18:41 UTC) | Iron and copper ore into storage at Node Beta: iron is the stations' largest shortfall and the input of the faction's steel plate (section 13). Not judged on pay; `min_left` closes each field |
+| Then (every ship) | `census-frontier`, `park` | census 12 of the fleet | -- | census about -630 | A hauler should never reach them |
 
-Since 14:27 UTC every hauler stands at navigation 3 (section 4): Signal
-Fragments (row 8) is open to the ten that have not flown it, 7,000 cr once
-each, and the dispatcher had sent five of them by 14:27 UTC.
+So, for the four hours: once money where a pilot still holds a link, stored goods
+into each bid as it stands, the gas and ice tests one ship each, and iron and copper
+gathered for the stations by every other hauler. Hand work of the turn (section 14):
+the faction's 275 steel plate made from stored iron at the Node Beta workshop, and
+stored hydrogen gas made into liquid hydrogen for the Central Nexus bid.
 
-So, for the four hours: the once line for the haulers that still lack a link,
-the stored soma, plate, plasma and liquid hydrogen as their bids come back, and
-standing work for every other hauler: iron and copper ore gathered into storage
-at Node Beta for the station (S6), at its fuel. At 14:57 and again at 15:09 UTC
-all 20 haulers were at work and the fill gate read `PASS: no ship of hauler
-waits`. Two gas
-tests that sell at Nova Terra Central (Solarian) are out of the plan until the
-Fleet Admiral rules on F13 (requests.log ENT-152). No repeating route pays a hauler: ice is bounded by the water-ice bids
-(section 12), gas by the hydrogen bid the tests share.
-
-What changes it: The Collective Provides back on (nickel at its reef, Mercury's
-word), which opens three once missions to 15 more haulers; a water-ice bid that
-regains more than the miners take (Zero's word); the first RESULT lines of the
-soma, plate and gas tests; a craft step in the circuit runner, which would let
-a gas route mine hydrogen, compress it at Node Beta and sell liquid hydrogen at
-Central Nexus (section 1).
+What changes it: the boards' silicon and carbon in one storage at Central Nexus
+(requests.log ENT-168), which turns one hauler into a board maker; Trade's word on
+focused crystal (ENT-169); a second RESULT line of each gas test (a test that loses
+twice leaves); a craft step flown once by Trade (requests.log ENT-161), after which
+the gas haulers can mine, compress and sell liquid hydrogen in one route; a bid
+for water ice that regains more than the miners take.
 
 ## 1. Routes That Pay
 
@@ -83,6 +73,7 @@ Central Nexus (section 1).
 
 | Route or test | What was measured | Date | Why, and what follows |
 |---|---|---|---|
+| `mine-antares-gas-cloud`, `mine-deepwell-haze` (gas tests that sell plasma at Nova Terra Central, Solarian) | 1 run each: +209 cr in 55.5 min and +41 cr in 59.9 min; 240 and 239 units mined, 8 plasma sold each at 92 and 88 cr (runs.jsonl, 14:46 UTC) | 2026-11-16 | The plasma bid there took 8 units a run; the rest, 232 and 231 units of argon, neon, hydrogen and other gas, lies in two hauler storages at Nova Terra Central (storage book 18:37 UTC), one Solarian jump-chain from home and bid 2 to 34 cr at our stations. Back in the plan as one-ship tests on Unity's ruling (requests.log ENT-160); a second run that pays less than standing work takes each out |
 | `mission-ghosts-in-the-cloud-node` (added by fill.py on a measure of command ships) | 2 hauler runs, `ghosts_in_the_cloud not offered`, -24 cr each | 2026-11-16 13:12 to 13:18 UTC | The board offered it to the two command ships that were paid and refused the six pilots after them; out of the hauler plan at 13:16 UTC |
 | `mine-achernar-frost-ring-nexus` (the hauler with the made harvester) | 2 runs, -3,346 cr in 107.5 min since 08:45 UTC (runs.jsonl) | 2026-11-16 | The weekly tax of 12:27 UTC fell inside a run (errors.log ENT-056); the loss stop closed the route on its last three runs. Zero cut its places from 15 to 3 (requests.log ENT-143) |
 | `sell-plate-node-beta`, first run | -22 cr in 3.3 min: the 361 x 4 plate bid read at 12:44 UTC read 0 at 13:26 UTC | 2026-11-16 | `requires.bid` trusts a book up to an hour old. It stays in the plan: the bid came back within the hour all day (`ledger.py prices armor_plate`) |
@@ -289,20 +280,19 @@ goods we store until that order changes.
 
 ## 10. Open Tests
 
-- The stored soma, plate and plasma routes (2026-11-16, since the circuit's
-  withdraw step and `requires.bid`): `sell-soma-synchrony`, `sell-soma-node-beta`,
-  four `carry-soma-*` to the Node Alpha and Node Gamma bids, `sell-plate-node-beta`
-  and `sell-plasma-node-beta`, one ship each, each open only while its bid
-  stands. Their first RESULT lines decide them.
-- The gas tests `mine-gsc-0012-gas-plume`, `mine-miram-haze` (hydrogen at
-  Node Beta), `mine-atlas-gas-pocket` (plasma at Node Beta) and
-  `mine-amberfall-emission-nebula` (hydrogen at Node Gamma), one hauler each,
-  each closed while its bid is short.
-- Navigation 3 for the ten haulers born later (section 4), then Signal
-  Fragments from the plan.
-- Where the made harvesters go: none placed yet (section 11); Zero answered
-  no for now (requests.log ENT-115): the bids, not the tool, limit ice.
-- What the fleet owns and where: `python3 -I -B game/fleet/ledger.py show all`.
+- The stored-goods routes (soma, plate, plasma, liquid hydrogen), one ship each
+  while a bid stands; since 18:37 UTC at the head of every hauler's own routes.
+  Measured once each (Standing Plan); the soma routes have no run yet.
+- `carry-liquid-hydrogen-node-beta-central` (written 2026-11-16 18:35 UTC): liquid
+  hydrogen made at the Node Beta workshop into the Central Nexus bid. Its first
+  RESULT line decides it.
+- The gas tests `mine-coldwater-emission-nebula`, `mine-antares-gas-cloud`,
+  `mine-deepwell-haze` and the ice hauler's `mine-gliese-876-belt` (nickel at Nova
+  Terra Central), one ship each.
+- The boards for the faction (section 14): one batch of etchings when Mining's
+  silicon and carbon lie in the crafter's storage (requests.log ENT-168).
+- What the fleet owns and where: `python3 -I -B game/fleet/ledger.py show all`; the
+  stations' list: section 13.
 
 ## 11. The Harvester Chain: an Ice Harvester I Made by Hand
 
@@ -462,3 +452,59 @@ files, the tool fleet with view=capacity, `ledger.py prices`).
   census by turns; 12 of 20 wait. Logistics needs no more ships: each
   harvester made turns one waiting hauler into an ice ship where Mining
   gives the place.
+
+## 13. The Stations' List (orders.log ENT-017, P4)
+
+One station takes a fee of 5,000,000 cr, one station core and the foundry that
+makes it (38,000,000 cr); two stations take the list twice. Read 2026-11-16 18:26
+UTC (the tool base_plan with kind=station) against the storage book of 18:37 UTC
+(`data/stock/storage.json`, summed per station). Units are for one station.
+
+| Input | Needed | Held | Where it lies (units) | Missing | Known source |
+|---|---|---|---|---|---|
+| iron ore | 491,400 | 107,707 | Node Beta 75,679, Synchrony Hub 22,254, Central Nexus 9,296 | 383,693 | fields of 100,000 at Nightveil and Marfik; 24,442 asked at 1 cr at Central Nexus |
+| salvage metal | 249,600 | 0 | -- | 249,600 | none read |
+| carbon ore | 97,008 | 2,133 | Central Nexus 1,864, Node Beta 148 | 94,875 | Gliese 876 belt (2,901 left), Furud belt (612); 44,531 asked at 4 cr at Nova Terra Central |
+| anchor plate | 93,690 | 0 | -- | 93,690 | none read |
+| alloy scale | 56,520 | 0 | -- | 56,520 | none read |
+| silicon ore | 52,808 | 34 | Central Nexus 34 | 52,774 | asks of 1 to 4 units at 312 to 376 cr |
+| salvage components | 41,600 | 0 | -- | 41,600 | 546 asked at 87 cr at Node Alpha |
+| foil scale | 41,220 | 0 | -- | 41,220 | none read |
+| creature carapace | 35,640 | 904 | Node Beta 365, Central Nexus 312, The Experiment 157 | 34,736 | Military's hunts |
+| verdigris curd | 34,832 | 37 | Node Beta 21 | 34,795 | Military's hunts |
+| ferrous nodule | 28,260 | 0 | -- | 28,260 | 636 asked at 60 cr at Synchrony Hub |
+| nickel ore | 18,320 | 514 | Node Gamma 290, Central Nexus 224 | 17,806 | 2,669 asked at 100 cr at Central Nexus |
+| gold ore | 16,740 | 0 | -- | 16,740 | Gold Crest (764 left), Rastaban belt (589) |
+| graphene thread | 13,260 | 0 | -- | 13,260 | none read |
+| silica lens | 10,440 | 0 | -- | 10,440 | none read |
+| crystallized biogas | 4,420 | 118 | Central Nexus 48 | 4,302 | 7 asked at 165 cr in LHS 1140 |
+| irradiated marrow | 4,000 | 0 | -- | 4,000 | none read |
+| quantum fragments | 3,720 | 0 | -- | 3,720 | 24 asked at 600 cr at Node Beta |
+| platinum ore | 3,720 | 799 | Central Nexus 503, Node Gamma 225 | 2,921 | 29 asked at 250 cr at Central Nexus |
+| uranium ore | 2,304 | 0 | -- | 2,304 | Acubens belt (1 left) |
+| thorium ore | 1,200 | 0 | -- | 1,200 | none read |
+| copper ore | 768 | 75,869 | Node Beta 49,796, Synchrony Hub 19,253 | 0 | held |
+| fluorine gas | 384 | 0 | -- | 384 | 192,627 asked at 36 cr in LHS 1140 |
+| nitrogen bladder | 192 | 45 | Central Nexus 33 | 147 | 6 asked at 27 cr at Nova Terra Central |
+| cobalt ink | 192 | 0 | -- | 192 | none read |
+| lithium ore | 120 | 1 | Central Nexus 1 | 119 | Stormwatch belt (25,000), Acrux belt (12,182) |
+| cobalt ore | 80 | 0 | -- | 80 | 200 asked at 140 cr in LHS 1140 |
+| energy crystal | 80 | 528 | Node Beta 408, Central Nexus 120 | 0 | held |
+| hoarfrost heartcore | 40 | 0 | -- | 40 | none read |
+| polonium ore | 20 | 0 | -- | 20 | 200 asked at 1,000 cr in LHS 1140 |
+
+So: 28 of 30 inputs are short; 18 have a field or an offer in our readings, 2 more
+come from Military's hunts, and 10 have none: salvage metal, anchor plate, alloy
+scale, foil scale, graphene thread, silica lens, irradiated marrow, thorium ore,
+cobalt ink and hoarfrost heartcore (Intel's search, orders ENT-017).
+
+Steel is the largest made step: 49,140 plate by `basic_iron_smelting` (10 iron ore
+a plate) is what makes the iron line 491,400. The catalog names cheaper ways in
+iron (`catalog`, item steel_plate): `refine_steel` in a facility, 5 iron ore for 2
+plate (2.5 a plate; a public facility quoted 19 cr on 2026-11-15, section 7, and
+that quote does not say whether for one run or two), and by hand
+`sinter_tungsten_steel` (4 iron, 2 tungsten for 3 plate) or `forge_vanadium_steel`
+(4 iron, 2 vanadium for 3). By refine_steel the iron line would be 122,850 units
+and 24,570 runs, about 233,000 to 467,000 cr of fees; the fleet holds 107,707 iron
+ore today. Which way the stations' steel goes is not decided; the hand recipe asks
+no facility and no fee.
