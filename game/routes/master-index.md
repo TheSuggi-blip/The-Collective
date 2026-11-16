@@ -41,7 +41,7 @@ name below is a link into one of the sub-indexes of this folder.
 | Role | Kept by | Routes | The first three, in order | Planned |
 |---|---|---|---|---|
 | [command](plan.md#command) | Unity | 28 | voidborn-signal-fragments > voidborn-concurrent > voidborn-substrate | 0 |
-| [drone](plan.md#drone) | Apophis | 19 | voidborn-network-expansion > voidborn-signal-fragments > voidborn-precedence | 6 |
+| [drone](plan.md#drone) | Apophis | 18 | voidborn-network-expansion > voidborn-signal-fragments > voidborn-precedence | 6 |
 | [hauler](plan.md#hauler) | Apollo | 15 | voidborn-conductive-lattice > voidborn-signal-fragments > voidborn-network-expansion | 4 |
 | [miner](plan.md#miner) | Zero | 30 | voidborn-signal-fragments > voidborn-concurrent > voidborn-substrate | 2 |
 | [scout](plan.md#scout) | Oracle | 17 | voidborn-signal-fragments > census-voidborn > voidborn-first-hunt-gsc-0031 | 6 |
