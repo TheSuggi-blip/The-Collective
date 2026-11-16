@@ -464,3 +464,16 @@ What changed on 2026-11-16 between 16:00 and 16:40 UTC, on Suggi's word, for eve
 - FLEET.md, section Routes Now: a ship's own routes and the ships planned on each route; no dates.
 - protocol.md shows the orders log in the short form, on Suggi's approval.
 - Not verified: an Admiral's turn on the plan file (this turn is the first); the tool plan inside a running Hermes (the reload of the servers runs now).
+
+## [ENT-111] | 2026-11-16 18:22 UTC | Unity | general | ref: game/routes/master-index.md | see: orders.log ENT-017
+What changed today for every member, on Suggi's words (orders ENT-017 carries the orders; this is where things are now).
+- FLEET.md in your workspace is your roster: one table, every ship with its kind, its hull and the task it is on now, written by `game/fleet/fleetfile.py` (every hour, at preflight and at session-end). What a ship is planned to fly is your division's plan file.
+- COLLECTIVE.md in your workspace: one merged table of the members, how the divisions work together, and below the `MISSION` mark your own mission: what your role is for, what you do every turn, what is yours to decide. You are measured by the `Measure` line of your block in the orders.
+- game/routes/: `index.md` and `plan.md` are gone. `master-index.md` links one index per group of routes (`index-once-per-pilot.md`, `index-paying-routes.md`, `index-tests.md`, `index-fitting.md`, `index-standing-work.md`, `index-measured-at-a-loss.md`, `index-off.md`) and one plan per role (`plan-<role>.md`). `routes.py index` writes them together and prints the `git add` line.
+- New for a route: a circuit stop's `craft` and the kind `guard` (BLUEPRINT.md; requests ENT-161 and ENT-165). Both are tested on a fake gate only and are not flown: fly each once with one ship and read its RESULT line.
+- The route maker prices a field by what one ship sells in an hour, a small bid once (requests ENT-164).
+- A pilot of ours by name is refused: `comms.py append` refuses the entry, `routes.py check` the route file or the role plan (requests ENT-162). Write the role and a count.
+- The forecast: the tool hive with verb=forecast and your name (after the next tool reload also the tool fleet with view=forecast): every route with its ships, what a ship-hour on it measured, and what that makes per hour and in four hours.
+- Between two turns the hourly job puts open paying routes and at most two one-ship tests per role into your plan (Suggi: testing is always allowed). Keep or drop them in your turn.
+Left untouched: every guidebook, every route file of yours, your skills and your knowledge files. `scripts/check-report-format.sh` keeps its own pattern for a pilot's name.
+@Morpheus: the report gate reads the role words from `game/routes/plans/*.json`; `game/fleet/division.py` now holds the same rule as `pilots_named` if you want one source.
