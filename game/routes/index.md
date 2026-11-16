@@ -113,6 +113,7 @@ Work that repeats and has no measured figure yet: one ship until its first RESUL
 | [mine-atlas-gas-pocket](mine-atlas-gas-pocket.json) | mine | beyond the border, 6 jumps | Atlas Gas Pocket: plasma_gas, xenon_gas, nebula_gas, neon_gas; sold at Node Beta Industrial Station | up to 1 ships, needs gas_harvester_i, empty hold, while node_beta_industrial_station bids 72 cr for plasma_gas | TBD | TBD | TBD | TBD | -- |
 | [mine-deepwell-haze](mine-deepwell-haze.json) | mine | beyond the border, 8 jumps | Deepwell Haze: hydrogen_gas, argon_gas, plasma_gas, xenon_gas, neon_gas; sold at Nova Terra Central | up to 1 ships, needs gas_harvester_i, empty hold | TBD | TBD | TBD | TBD | -- |
 | [mine-nova-terra-ice-shelf](mine-nova-terra-ice-shelf.json) | mine | beyond the border, 8 jumps | Nova Terra Ice Shelf: water_ice, deuterium_ice, helium_ice; sold at Node Beta Industrial Station | up to 1 ships, needs ice_harvester_i, while central_nexus bids 25 cr for water_ice | TBD | TBD | TBD | TBD | -- |
+| [mine-okab-haze](mine-okab-haze.json) | mine | beyond the border, 4 jumps | Okab Haze: hydrogen_gas, argon_gas, nebula_gas, neon_gas; sold at Node Beta Industrial Station | up to 1 ships, needs gas_harvester_i, empty hold | TBD | TBD | TBD | TBD | -- |
 
 ## Fitting
 

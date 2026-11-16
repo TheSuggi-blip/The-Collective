@@ -22,19 +22,19 @@ name below is a link into one of the sub-indexes of this folder.
 |---|---|---|---|---|---|
 | [Once per Pilot](index.md#once-per-pilot) | Missions and rewards the game pays once per pilot: a new pilot's first work, and seed money. | 25 | 15 | 10 | voidborn-conductive-lattice: 9,110 cr a run |
 | [Paying Routes](index.md#paying-routes) | Work that repeats and whose runs measured above zero. | 39 | 8 | 31 | sell-curd-central-nexus: 302,820 cr per ship-hour |
-| [Tests](index.md#tests) | Work that repeats and has no measured figure yet: one ship until its first RESULT line is read. | 16 | 11 | 5 | not measured yet |
+| [Tests](index.md#tests) | Work that repeats and has no measured figure yet: one ship until its first RESULT line is read. | 17 | 11 | 6 | not measured yet |
 | [Fitting](index.md#fitting) | A module bought and fitted: the tool a kind of work needs. | 11 | 10 | 1 | voidborn-hardware-cargo: 4,280 cr per ship-hour |
 | [Standing Work, Reading and Waiting](index.md#standing-work-reading-and-waiting) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 11 | 9 | 2 | mine-bellatrix: 0 cr per ship-hour |
 | [Measured at a Loss](index.md#measured-at-a-loss) | Work that repeats and whose runs measured zero or below. | 37 | 13 | 24 | hunt-denebola-fractured-prism-veil-ray: -10 cr per ship-hour |
 | [Off](index.md#off) | Written down, not flown. | 11 | 8 | 3 | voidborn-first-steps: 4,020 cr per ship-hour |
-| All | | 150 | 74 | 76 | |
+| All | | 151 | 74 | 77 | |
 
 ## Routes by Zone and Kind
 
 | Zone | Routes | census | circuit | hunt | mine | Farthest system, jumps from home |
 |---|---|---|---|---|---|---|
 | home space | 74 | 1 | 51 | 10 | 12 | 3 |
-| beyond the border | 76 | 2 | 15 | 26 | 33 | 8 |
+| beyond the border | 77 | 2 | 15 | 26 | 34 | 8 |
 
 ## Plans by Role
 
@@ -42,7 +42,7 @@ name below is a link into one of the sub-indexes of this folder.
 |---|---|---|---|---|
 | [command](plan.md#command) | Unity | 36 | voidborn-first-steps-board > voidborn-collective-provides > voidborn-signal-protocol | 0 |
 | [drone](plan.md#drone) | Apophis | 35 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 5 |
-| [hauler](plan.md#hauler) | Apollo | 35 | voidborn-resonance-finish > voidborn-atmospheric-extraction > voidborn-hardware-cargo | 4 |
+| [hauler](plan.md#hauler) | Apollo | 36 | voidborn-resonance-finish > voidborn-atmospheric-extraction > voidborn-hardware-cargo | 4 |
 | [miner](plan.md#miner) | Zero | 35 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 2 |
 | [scout](plan.md#scout) | Oracle | 20 | voidborn-first-steps-board > voidborn-network-expansion > voidborn-collective-provides | 6 |
 | [sentinel](plan.md#sentinel) | Unity | 33 | voidborn-first-steps-board > voidborn-collective-provides > voidborn-signal-protocol | 0 |

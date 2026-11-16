@@ -110,7 +110,7 @@ Planned:
 
 ## hauler
 
-Kept by Apollo. Routes: 35.
+Kept by Apollo. Routes: 36.
 
 | # | Route | Group | Zone | Open to | Credits per ship-hour |
 |---|---|---|---|---|---|
@@ -147,8 +147,9 @@ Kept by Apollo. Routes: 35.
 | 31 | [gather-gsc-0027-prism-scatter](gather-gsc-0027-prism-scatter.json) | Standing Work, Reading and Waiting | home space | up to 12 ships, standing work | TBD |
 | 32 | [gather-hamal-crystal-bloom](gather-hamal-crystal-bloom.json) | Standing Work, Reading and Waiting | home space | up to 12 ships, standing work | TBD |
 | 33 | [gather-gsc-0027-spacetime-seep](gather-gsc-0027-spacetime-seep.json) | Standing Work, Reading and Waiting | home space | up to 6 ships, standing work | TBD |
-| 34 | [census-frontier](census-frontier.json) | Standing Work, Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -630 |
-| 35 | [park](park.json) | Standing Work, Reading and Waiting | home space | the park route | -670 |
+| 34 | [mine-okab-haze](mine-okab-haze.json) | Tests | beyond the border, 4 jumps | up to 1 ships, needs gas_harvester_i, empty hold | TBD |
+| 35 | [census-frontier](census-frontier.json) | Standing Work, Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -630 |
+| 36 | [park](park.json) | Standing Work, Reading and Waiting | home space | the park route | -670 |
 
 Planned:
 
