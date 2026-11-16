@@ -110,7 +110,7 @@ Planned:
 
 ## hauler
 
-Kept by Apollo. Routes: 34.
+Kept by Apollo. Routes: 35.
 
 | # | Route | Group | Zone | Open to | Credits per ship-hour |
 |---|---|---|---|---|---|
@@ -146,8 +146,9 @@ Kept by Apollo. Routes: 34.
 | 30 | [mine-amberfall-emission-nebula](mine-amberfall-emission-nebula.json) | Tests | beyond the border, 5 jumps | up to 1 ships, needs gas_harvester_i, empty hold, while node_gamma_relay_station bids 27 cr for hydrogen_gas | TBD |
 | 31 | [gather-gsc-0027-prism-scatter](gather-gsc-0027-prism-scatter.json) | Standing Work, Reading and Waiting | home space | up to 12 ships, standing work | TBD |
 | 32 | [gather-hamal-crystal-bloom](gather-hamal-crystal-bloom.json) | Standing Work, Reading and Waiting | home space | up to 12 ships, standing work | TBD |
-| 33 | [census-frontier](census-frontier.json) | Standing Work, Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -790 |
-| 34 | [park](park.json) | Standing Work, Reading and Waiting | home space | the park route | -670 |
+| 33 | [gather-gsc-0027-spacetime-seep](gather-gsc-0027-spacetime-seep.json) | Standing Work, Reading and Waiting | home space | up to 6 ships, standing work | TBD |
+| 34 | [census-frontier](census-frontier.json) | Standing Work, Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -790 |
+| 35 | [park](park.json) | Standing Work, Reading and Waiting | home space | the park route | -670 |
 
 Planned:
 
