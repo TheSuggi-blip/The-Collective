@@ -1,0 +1,41 @@
+{
+ "id": "sell-soma-node-beta",
+ "kind": "circuit",
+ "title": "Stored neural soma sold where it lies, at Node Beta, into the station's soma bid",
+ "note": "Node Beta's soma bid stood at 670 x 2 at 11:56 UTC and read 0 at 12:31 UTC (ledger.py prices voidborn_neural_soma); 10 haulers store 16 soma there (data/stock/storage.json, 12:21 to 12:26 UTC). Floor 500 cr. Written by Apollo, 2026-11-16 13:00 UTC (orders.log ENT-014, block APOLLO (1): sell the stored soma where it lies as the pools refill). Uses the circuit runner's withdraw step (Zero, commit 6f643ec): at a stop that also sells the item it withdraws only what the bid takes at its best price, so nothing withdrawn stays aboard. requires.stored sends only a pilot whose own storage there holds the good; requires.bid closes the route while a book read within the hour shows the bid gone or under its floor. Nothing is bought; a run that finds the bid gone costs the hop's fuel (about 26 cr a jump). A test: one ship until its first RESULT line.",
+ "requires": {
+  "stored": {
+   "at": "node_beta_industrial_station",
+   "item": "voidborn_neural_soma",
+   "min": 1
+  },
+  "bid": {
+   "item": "voidborn_neural_soma",
+   "base": "node_beta_industrial_station",
+   "min_price": 500,
+   "min_qty": 1
+  }
+ },
+ "max_ships": 1,
+ "stops": [
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "voidborn_neural_soma"
+    }
+   ],
+   "sell": [
+    {
+     "item": "voidborn_neural_soma",
+     "min_price": 500
+    }
+   ]
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store": "all"
+  }
+ ]
+}

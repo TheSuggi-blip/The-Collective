@@ -1,0 +1,41 @@
+{
+ "id": "sell-plate-node-beta",
+ "kind": "circuit",
+ "title": "Stored armor plate sold where it lies, at Node Beta, into the station's plate bid",
+ "note": "Node Beta's armor-plate bid stood at 380 x 3 at 11:43 UTC and 361 x 4 at 12:44 UTC (ledger.py prices armor_plate); one hauler stores 3 plates there (data/stock/storage.json, 12:21 UTC), made from carapace (game/fleet/plate.py). Floor 300 cr. Written by Apollo, 2026-11-16 13:00 UTC (orders.log ENT-014, block APOLLO (1): sell the stored soma where it lies as the pools refill). Uses the circuit runner's withdraw step (Zero, commit 6f643ec): at a stop that also sells the item it withdraws only what the bid takes at its best price, so nothing withdrawn stays aboard. requires.stored sends only a pilot whose own storage there holds the good; requires.bid closes the route while a book read within the hour shows the bid gone or under its floor. Nothing is bought; a run that finds the bid gone costs the hop's fuel (about 26 cr a jump). A test: one ship until its first RESULT line.",
+ "requires": {
+  "stored": {
+   "at": "node_beta_industrial_station",
+   "item": "armor_plate",
+   "min": 1
+  },
+  "bid": {
+   "item": "armor_plate",
+   "base": "node_beta_industrial_station",
+   "min_price": 300,
+   "min_qty": 1
+  }
+ },
+ "max_ships": 1,
+ "stops": [
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "armor_plate"
+    }
+   ],
+   "sell": [
+    {
+     "item": "armor_plate",
+     "min_price": 300
+    }
+   ]
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store": "all"
+  }
+ ]
+}

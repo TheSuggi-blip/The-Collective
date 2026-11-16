@@ -1,0 +1,41 @@
+{
+ "id": "sell-soma-synchrony",
+ "kind": "circuit",
+ "title": "Stored neural soma sold where it lies, at Synchrony Hub, into the station's soma bid",
+ "note": "Synchrony Hub's soma bid comes back by single units: 675 x 1 at 12:05, 708 x 1 at 12:19 and 376 x 1 at 12:49 UTC (ledger.py prices voidborn_neural_soma); 11 haulers store 30 soma there (data/stock/storage.json, 12:21 to 12:25 UTC). Floor 500 cr: most bids of the day stood at 559 to 734. Written by Apollo, 2026-11-16 13:00 UTC (orders.log ENT-014, block APOLLO (1): sell the stored soma where it lies as the pools refill). Uses the circuit runner's withdraw step (Zero, commit 6f643ec): at a stop that also sells the item it withdraws only what the bid takes at its best price, so nothing withdrawn stays aboard. requires.stored sends only a pilot whose own storage there holds the good; requires.bid closes the route while a book read within the hour shows the bid gone or under its floor. Nothing is bought; a run that finds the bid gone costs the hop's fuel (about 26 cr a jump). A test: one ship until its first RESULT line.",
+ "requires": {
+  "stored": {
+   "at": "synchrony_hub",
+   "item": "voidborn_neural_soma",
+   "min": 1
+  },
+  "bid": {
+   "item": "voidborn_neural_soma",
+   "base": "synchrony_hub",
+   "min_price": 500,
+   "min_qty": 1
+  }
+ },
+ "max_ships": 1,
+ "stops": [
+  {
+   "at": "synchrony:synchrony_hub:synchrony_hub",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "voidborn_neural_soma"
+    }
+   ],
+   "sell": [
+    {
+     "item": "voidborn_neural_soma",
+     "min_price": 500
+    }
+   ]
+  },
+  {
+   "at": "synchrony:synchrony_hub:synchrony_hub",
+   "store": "all"
+  }
+ ]
+}
