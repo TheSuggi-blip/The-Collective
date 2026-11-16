@@ -19,6 +19,7 @@ Missions and rewards the game pays once per pilot: a new pilot's first work, and
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
+| [mission-ghosts-in-the-cloud-node](mission-ghosts-in-the-cloud-node.json) | circuit | home space | Ghosts in the Cloud: 2000 cr at Node Alpha Processing Station | once per pilot, up to 1 ships | TBD | TBD | TBD | TBD | -- |
 | [voidborn-concurrent](voidborn-concurrent.json) | circuit | home space | Concurrent Approval: accept at Central Nexus, deliver two neural soma to Node Beta (3,000 cr once) | once per pilot | 146 | 8 | 2,970 | one-time | 2026-11-16 |
 | [voidborn-first-hunt-acubens](voidborn-first-hunt-acubens.json) | circuit | home space | First Hunt: Belt-Grazers: 1,000 cr once and 50 Weapons XP; three belt-grazers at Acubens Shadow Pocket | once per pilot, up to 1 ships | 30 | 13 | 110 | one-time | 2026-11-16 |
 | [voidborn-first-hunt-gsc](voidborn-first-hunt-gsc.json) | circuit | home space | First Hunt: Belt-Grazers: 1,000 cr once and 50 Weapons XP; three belt-grazers at Spacetime Seep | once per pilot, up to 1 ships | 16 | 26 | 750 | one-time | 2026-11-16 |
@@ -73,6 +74,14 @@ Work that repeats and whose runs measured above zero.
 | [mine-wolf-1061-frozen-drift](mine-wolf-1061-frozen-drift.json) | mine | beyond the border, 4 jumps | Wolf 1061 Frozen Drift: water_ice, nitrogen_ice, deuterium_ice, methane_ice; sold at Node Alpha Processing Station | up to 1 ships, needs ice_harvester_i, empty hold | 12 | 67 | 2,270 | 2,040 | 2026-11-16 |
 | [mine-wolf-1061-frozen-drift-nexus](mine-wolf-1061-frozen-drift-nexus.json) | mine | beyond the border, 4 jumps | Wolf 1061 Frozen Drift: water_ice, nitrogen_ice, deuterium_ice, methane_ice; sold at Central Nexus | up to 5 ships, needs ice_harvester_i, empty hold | 9 | 68 | 3,290 | 2,940 | 2026-11-16 |
 | [mine-wolf-1061-vent](mine-wolf-1061-vent.json) | mine | beyond the border, 4 jumps | Wolf 1061 Frozen Drift with a Nitrogen Vent: water and the rare ices, sold at Synchrony | up to 1 ships, needs nitrogen_vent, empty hold | 6 | 56 | 6,360 | 7,680 | 2026-11-16 |
+
+## Tests
+
+Work that repeats and has no measured figure yet: one ship until its first RESULT line is read.
+
+| Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
+|---|---|---|---|---|---|---|---|---|---|
+| [mine-hd-147513-belt](mine-hd-147513-belt.json) | mine | beyond the border, 7 jumps | HD 147513 Belt: iron_ore, copper_ore, titanium_ore, gold_ore; sold at The Experiment Research Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 
 ## Fitting
 

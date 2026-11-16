@@ -1,0 +1,38 @@
+{
+ "id": "mission-ghosts-in-the-cloud-node",
+ "kind": "circuit",
+ "title": "Ghosts in the Cloud: 2000 cr at Node Alpha Processing Station",
+ "note": "Written by routemaker.py from the board and the order books: goods for about 0 cr, reward 2000 cr. A test: one ship; whether the mission hands its goods out at the accept is not known until one accept with an empty hold. Added as a test by fill.py on 2026-11-16 10:52 UTC (Unity): one ship until its first RESULT line is read.",
+ "once": true,
+ "max_ships": 1,
+ "one_time": [
+  "Ghosts in the Cloud"
+ ],
+ "skip_if_booked": [
+  "Ghosts in the Cloud"
+ ],
+ "stops": [
+  {
+   "at": "node_alpha:node_alpha_processing_station:node_alpha_processing_station",
+   "accept": [
+    "ghosts_in_the_cloud"
+   ],
+   "hunt": [
+    {
+     "at": "nexus_prime:stellar_siphon",
+     "species": [
+      "drift_ray"
+     ],
+     "kills": 4,
+     "minutes": 35,
+     "for": [
+      "Ghosts in the Cloud"
+     ]
+    }
+   ]
+  },
+  {
+   "at": "node_alpha:node_alpha_processing_station:node_alpha_processing_station"
+  }
+ ]
+}
