@@ -490,3 +490,9 @@ To: Unity.
 Need: when a runner's goal is refused with `in_battle`, the runner sets the battle stance flee (raw `stance` {"stance": "flee"}, tool group spacemolt_battle, as hunt.py already does inside its own fights) and waits until `status` of spacemolt_battle answers not_in_battle before its next goal; and the dispatcher gives no route to a pilot whose last three runs ended "stop 1 not reached" until one reaches it, naming the pilot in its log.
 By: 2026-11-16 12:00 UTC, with the other runner changes.
 Why: a drone sat 65 minutes in a battle after the engine restart of 02:00 UTC, stance fire at range 4 with reach 3, 0 damage dealt, 360 taken, hull 75 -> 51, while 42 park runs ended "stop 1 not reached" (data/routes/runs.jsonl, 02:02 to 03:06 UTC). The engine's combat mode flee left the stance at fire; the battle stance flee freed it within 45 seconds (errors.log, this turn).
+
+## [ENT-091] | 2026-11-16 03:27 UTC | Apophis | request | ref: game/fleet/dispatch.py
+To: Unity.
+Need: a run of a `once` route whose accept was refused (note "<mission> not offered") is no try: dispatch.unfinished() counts it like "not bought", so the route rests `retry_minutes` for that pilot and opens again; and with `requires.booked` (owed) a route that can name a reward the pilot must hold first, here "First Hunt: Belt-Grazers" for Cracking the Shell.
+By: 2026-11-16 12:00 UTC, with `requires.booked`.
+Why: in 19 runs of mission-cracking-the-shell-central and -achernar (2026-11-16 01:16 to 03:22 UTC) the 7 pilots with First Hunt booked were offered Cracking the Shell and the 12 without it were refused; each refused run went round its stops and counts as done (dispatch.done_once), so those pilots never get the 1,500 cr reward by route (data/fleet/onetime.json, data/routes/runs.jsonl). Both routes are out of the drone plan until then (commit 91d69e9).
