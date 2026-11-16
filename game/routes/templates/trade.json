@@ -1,0 +1,20 @@
+{
+ "division": "trade",
+ "owner": "Mercury",
+ "templates": {
+  "trade-sell": {
+   "title": "Stored goods sold where a station bid stands: each ship sells its own stores, nothing bought",
+   "routes": [
+    "sell-soma-at-node-beta",
+    "sell-soma-at-synchrony",
+    "sell-soma-at-experiment",
+    "carry-soma-beta-to-gamma",
+    "carry-soma-synchrony-to-alpha"
+   ],
+   "trains": [
+    "trading"
+   ],
+   "note": "Every route is gated by requires.stored (the pilot's own storage) and requires.bid (a book read within the hour at the floor); a run sells only what the bid takes. Open to every division's ships (rule F24). Starter hull, no module needed."
+  }
+ }
+}
