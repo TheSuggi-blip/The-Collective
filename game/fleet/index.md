@@ -8,7 +8,7 @@ author: Unity
 # index.md -- The Fleet's Scripts
 
 Built by `python3 -B scripts/fleet-index.py` from the docstring of every script in this
-folder; never edited by hand. Scripts listed: 23.
+folder; never edited by hand. Scripts listed: 24.
 
 - Run a script from the repository root: `python3 -I -B game/fleet/<script> <arguments>`,
   the arguments as listed under "How to Call Each".
@@ -42,6 +42,7 @@ folder; never edited by hand. Scripts listed: 23.
 | `ledger.py` | Keep the fleet's books: what we own and where it lies, and how every order book moved. | Service |
 | `loot_own.py` | Loot every carcass and wreck at the pilot's place that the pilot itself killed. | By hand |
 | `mine.py` | One pilot mines at one field for a set time, through the engine's mining loop. | Runner (`mine` routes) |
+| `plan.py` | Each division's plan file: every ship with the routes it flies, in their order; the dispatcher sends the ships by it. | By hand |
 | `plate.py` | Make our pilots' stored creature carapace into armor plate where each is docked, and sell plates into the bid there. | By hand |
 | `route_run.py` | Fly one pilot along a route file: dock at each stop and do what the stop says. | Runner (`circuit` routes) |
 | `routemaker.py` | Find every way to earn that the fleet's own data shows, cost it, and write the route file for it. | Service |
@@ -286,6 +287,26 @@ A runner: the dispatcher starts it for a route of the kind `mine`; by hand only 
 
 ```
 mine.py <pilot> <system:poi> <system:poi:base> [--minutes M] [--sell-items item:min_price,...] [--route ID]
+```
+
+### `plan.py`
+
+Each division's plan file: every ship with the routes it flies, in their order; the
+dispatcher sends the ships by it.
+
+Run by hand.
+
+```
+plan.py [show] [<division>|<Member>|all] [--brief]    the file, what the check says and whether it is applied
+plan.py check [<division>|<Member>|all]               PASS or HALT per division (exit 1 on a HALT)
+plan.py apply [<division>|<Member>|all] [--quiet]     after a change by hand: check, write, commit
+plan.py set <ships> <routes> [--division <name>]      the own routes of ships: names with commas, a range
+                                                      (miner-1..10), a role or `all`; routes with commas in their
+                                                      order, or `none`
+plan.py first <routes> [--division <name>]            the list First, whole
+plan.py then <routes> [--division <name>]             the list Then, whole
+--root <dir>   the repository's game/ folder (default: the parent of this file's folder)
+--data <dir>   the unit's data folder (default: the fleet's)
 ```
 
 ### `plate.py`

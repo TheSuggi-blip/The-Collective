@@ -25,7 +25,7 @@
 #   REPO=<dir> runs it on another clone (a test copy).
 set -u
 R=${REPO:-/srv/collective/the-collective}
-CLOSED='^(game/fleet/(gate|division|dispatch|fill|collective_mcp|store)\.py|scripts/(comms\.py|fleet-build\.sh)|(station|governance|communications|collective-index|\.github|\.githooks)(/|$))'
+CLOSED='^(game/fleet/(gate|division|dispatch|fill|plan|collective_mcp|store)\.py|scripts/(comms\.py|fleet-build\.sh)|(station|governance|communications|collective-index|\.github|\.githooks)(/|$))'
 verb=${1:-}; T=${2:-}
 usage() { sed -n '2,26p' "$0" | sed 's/^# \{0,1\}//'; exit 2; }
 [ -n "$verb" ] && [ -n "$T" ] || usage

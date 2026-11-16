@@ -202,14 +202,16 @@ class WriteTests(Tree):
         done = self.run_fill("apollo", "check")
         self.assertEqual((done.returncode, done.stdout.count("HALT")), (1, 1))
         done = self.run_fill("apollo", "fill")
-        self.assertIn("hauler: 3 waiting; 1 paying routes and 1 tests to add: herd2, trade-x", done.stdout)
+        self.assertIn("hauler: 3 waiting, 0 on standing work; 1 paying routes and 1 tests to add: herd2, trade-x", done.stdout)
         self.assertIn("not written: add --write", done.stdout)
         self.assertEqual(self.git("status", "--porcelain"), "")
         done = self.run_fill("apollo", "fill", "--write")
         self.assertIn("committed", done.stdout, done.stdout)
         plan = json.loads((self.root / "routes" / "plans" / "hauler.json").read_text())
-        self.assertEqual(plan["routes"], ["once", "herd2", "trade-x", "park"])                    # in front of the route that only waits
-        self.assertIn("(fill.py, Apollo): added herd2, trade-x", plan["note"])
+        self.assertEqual(plan["routes"], ["once", "trade-x", "herd2", "park"])                    # the role's routes in one order, from the division's plan file
+        self.assertEqual((plan["ships"], plan["of"]), ({"once": 3, "trade-x": 1, "herd2": 1, "park": 3}, 3))
+        lists = json.loads((self.data / "plans" / "assign.json").read_text())["pilots"]          # each a ship's own route: the paying one to the ship it was open to
+        self.assertEqual(sorted(lists.values()), [["once", "herd2", "park"], ["once", "park"], ["once", "trade-x", "park"]])
         test = json.loads((self.root / "routes" / "trade-x.json").read_text())
         self.assertEqual((test["max_ships"], "Added as a test by fill.py" in test["note"]), (1, True))
         self.assertEqual(self.git("status", "--porcelain"), "")
@@ -231,6 +233,20 @@ class WriteTests(Tree):
         self.assertIn("committed", self.run_fill("apollo", "add", "gather").stdout)
         done = self.run_fill("apollo", "check")
         self.assertEqual((done.returncode, done.stdout), (0, "PASS: no ship of hauler waits\n"))
+
+    def test_a_ship_on_standing_work_is_offered_paying_work_and_the_gate_says_so(self):
+        self.commit_route({"id": "gather", "kind": "mine", "title": "t", "belt": "far:rocks", "station": "home:core:base", "standing": True, "max_ships": 5})
+        self.assertIn("committed", self.run_fill("apollo", "add", "gather").stdout)
+        orders = self.data / "fleet" / "orders"
+        for name in ("hauler-1", "hauler-2", "hauler-3"):                                          # all three gather now
+            (orders / (name + ".json")).write_text(json.dumps({"pilot": name, "what": "mine gather", "since": "2026-11-16T10:00:00Z"}))
+        done = self.run_fill("apollo", "check")
+        self.assertEqual(done.returncode, 0)
+        self.assertIn("PASS: no ship of hauler waits | 1 places of paying work and 1 tests stand open to its ships on standing work", done.stdout)
+        self.assertIn("committed", self.run_fill("apollo", "fill", "--write").stdout)
+        lists = json.loads((self.data / "plans" / "assign.json").read_text())["pilots"]
+        self.assertEqual(sorted(ids.index("gather") > ids.index(rid) for ids in lists.values() for rid in ("herd2", "trade-x") if rid in ids), [True, True])   # before its standing work
+        self.assertEqual(self.run_fill("apollo", "check").stdout, "PASS: no ship of hauler waits\n")
 
     def test_the_once_pass_adds_only_missions_that_pay_once_behind_the_once_line(self):
         # requests ENT-144: a new once route reached a plan only at its Admiral's next turn, hours later
@@ -255,7 +271,7 @@ class WriteTests(Tree):
 
     def test_add_drop_and_lift_are_one_command_each_and_the_gate_undoes_a_wrong_one(self):
         self.assertIn("committed", self.run_fill("apophis", "add", "herd2").stdout)
-        self.assertEqual(json.loads((self.root / "routes" / "plans" / "drone.json").read_text())["routes"], ["once", "rays", "herd2", "park"])
+        self.assertEqual(json.loads((self.root / "routes" / "plans" / "drone.json").read_text())["routes"], ["once", "rays", "herd2", "park"])     # into the list Then
         self.assertIn("committed", self.run_fill("apophis", "lift", "herd2", "3").stdout)
         self.assertEqual(json.loads((self.root / "routes" / "herd2.json").read_text())["max_ships"], 3)
         self.assertIn("REFUSED: ice stands in no plan of yours", self.run_fill("apophis", "lift", "ice", "9").stdout)
@@ -265,7 +281,7 @@ class WriteTests(Tree):
         self.assertIn("committed", self.run_fill("zero", "lift", "ice", "20").stdout)
         self.assertIn("committed", self.run_fill("apophis", "drop", "herd2").stdout)
         done = self.run_fill("apophis", "drop", "park")                                           # a plan must end with a route that is always open
-        self.assertEqual((done.returncode, "HALT: nothing changed; the route gate says" in done.stdout), (1, True))
+        self.assertEqual((done.returncode, "HALT military: nothing changed; the plan applied last stays in force" in done.stdout), (1, True), done.stdout)
         self.assertEqual(json.loads((self.root / "routes" / "plans" / "drone.json").read_text())["routes"], ["once", "rays", "park"])
         self.assertEqual(self.git("status", "--porcelain"), "")
 

@@ -7,9 +7,11 @@ WHAT: every 30 s it reads the fleet's live files, the plans (game/routes/plans/<
         hunt     -> game/fleet/hunt.py        grazers at one place, loot, sell
         census   -> game/fleet/census.py      read one system whole (the stalest first)
         mine     -> game/fleet/mine.py        the engine's mining loop for a set time
-      A pilot's role is the word before the dash of its name; its role's plan
-      file lists route ids in the order they are tried, and the role's
-      Admiral keeps that file (division.py). A flagship's name has
+      A pilot's role is the word before the dash of its name. A pilot flies its
+      own list of routes in its order: data/plans/assign.json, written by
+      plan.py from its division's plan file, which its Admiral keeps. A pilot
+      that file does not name flies its role's list
+      (game/routes/plans/<role>.json). A flagship's name has
       no role word: its role is in data/fleet/flagships.json
       ({pilot: {admiral, division, role}}).
 RULES:
@@ -448,10 +450,18 @@ def why_not(pilot, rid, route, state):
     return None, None
 
 
+def own_lists(data):
+    """{pilot: its routes in order} as plan.py applied them (data/plans/assign.json); {} when there is none."""
+    found = read_json(Path(data) / "plans" / "assign.json", {})
+    pilots = found.get("pilots") if isinstance(found, dict) else None
+    return {str(name): [str(rid) for rid in ids] for name, ids in pilots.items() if isinstance(ids, list)} if isinstance(pilots, dict) else {}
+
+
 def pick(pilot, plan, routes, state):
-    """(route, argument) for the first route of the pilot's role that is open to it, or (None, None)."""
+    """(route, argument) for the first route open to the pilot, or (None, None): of its own list (`pilots` of the
+    plan, from its division's plan file), or of its role's list when it has none."""
     role = pilot.get("role") or pilot["name"].split("-")[0]
-    for rid in (plan.get("roles") or {}).get(role) or []:
+    for rid in (plan.get("pilots") or {}).get(pilot["name"]) or (plan.get("roles") or {}).get(role) or []:
         reason, argument = why_not(pilot, rid, routes.get(rid), state)
         if reason is None:
             return routes[rid], argument
@@ -609,7 +619,7 @@ def one_pass(root, data, dry_run, children):
     if (Path(data) / "fleet" / "STOP").exists():
         return ["STOP file present: nothing started"]
     fleet = read_json(Path(data) / "fleet" / "fleet.json", {})
-    plan = {"roles": division.load_plan(root)[0]}
+    plan = {"roles": division.load_plan(root)[0], "pilots": own_lists(data)}
     routes = load_routes(root)
     rows = run_rows(data)
     state = {"now": now, "data": data, "rows": rows, "orders": fresh_orders(data, now), "rest": resting(routes, rows, now), "booked": booked(data),

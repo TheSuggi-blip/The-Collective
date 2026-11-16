@@ -9,97 +9,100 @@ author: Unity
 
 Written by `python3 -B game/fleet/routes.py index`, never by hand, from
 `plans/<role>.json`: per role (the word before the dash of a pilot's name) the routes
-the dispatcher tries in this order for a free pilot. The role's Admiral keeps the
-file; `planned` in it is what the Admiral means to do next. The roles at a glance:
-[master-index.md](master-index.md); every route's figures: [index.md](index.md).
+its ships fly, in one order, and how many of its ships have each route in their plan.
+Each division's Admiral keeps one plan file with every ship and its own routes
+(`game/fleet/plan.py`); it names our ships, so it lies in the unit's data folder and
+not here, and `plans/<role>.json` is written from it. `Planned` is what the Admiral
+means to do next. The roles at a glance: [master-index.md](master-index.md); every
+route's figures: [index.md](index.md).
 
 ## command
 
 Kept by Unity. Routes: 36.
 
-| # | Route | Group | Zone | Open to | Credits per ship-hour |
-|---|---|---|---|---|---|
-| 1 | [voidborn-first-steps-board](voidborn-first-steps-board.json) | Once per Pilot | home space | once per pilot, up to 3 ships | one-time |
-| 2 | [voidborn-collective-provides](voidborn-collective-provides.json) | Off | beyond the border, 5 jumps | once per pilot, up to 2 ships, empty hold, after the reward Network Expansion, off | one-time |
-| 3 | [voidborn-signal-protocol](voidborn-signal-protocol.json) | Once per Pilot | home space | once per pilot, up to 20 ships, after the reward The Collective Provides | one-time |
-| 4 | [voidborn-signal-fragments](voidborn-signal-fragments.json) | Once per Pilot | home space | once per pilot, up to 10 ships, from navigation 3 | one-time |
-| 5 | [voidborn-concurrent](voidborn-concurrent.json) | Once per Pilot | home space | once per pilot | one-time |
-| 6 | [voidborn-substrate](voidborn-substrate.json) | Once per Pilot | home space | once per pilot, from 3,000 cr | one-time |
-| 7 | [voidborn-missions-1](voidborn-missions-1.json) | Once per Pilot | home space | once per pilot, from 8,000 cr | one-time |
-| 8 | [voidborn-mining-missions](voidborn-mining-missions.json) | Once per Pilot | home space | once per pilot, up to 40 ships | one-time |
-| 9 | [voidborn-first-steps](voidborn-first-steps.json) | Off | home space | once per pilot, up to 2 ships, off | one-time |
-| 10 | [voidborn-selling](voidborn-selling.json) | Once per Pilot | home space | once per pilot, up to 10 ships | one-time |
-| 11 | [voidborn-precedence](voidborn-precedence.json) | Once per Pilot | home space | once per pilot, up to 40 ships | one-time |
-| 12 | [voidborn-first-hunt-nexus](voidborn-first-hunt-nexus.json) | Once per Pilot | home space | once per pilot, up to 1 ships | one-time |
-| 13 | [voidborn-first-hunt-gsc](voidborn-first-hunt-gsc.json) | Once per Pilot | home space | once per pilot, up to 1 ships | one-time |
-| 14 | [voidborn-first-hunt-acubens](voidborn-first-hunt-acubens.json) | Once per Pilot | home space | once per pilot, up to 1 ships | one-time |
-| 15 | [mine-node-beta-frozen-drift](mine-node-beta-frozen-drift.json) | Paying Routes | home space | up to 1 ships, needs ice_harvester_i, while node_alpha_processing_station bids 25 cr for water_ice | 1,790 |
-| 16 | [mine-ruchbah-ice-belt](mine-ruchbah-ice-belt.json) | Paying Routes | beyond the border, 4 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while the_experiment_research_station bids 25 cr for water_ice | 7,430 |
-| 17 | [mine-achernar-frost-ring](mine-achernar-frost-ring.json) | Paying Routes | beyond the border, 4 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while the_experiment_research_station bids 25 cr for water_ice | 4,590 |
-| 18 | [mine-wolf-1061-frozen-drift](mine-wolf-1061-frozen-drift.json) | Paying Routes | beyond the border, 4 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while node_alpha_processing_station bids 25 cr for water_ice | 2,040 |
-| 19 | [mine-keid-ice-shelf](mine-keid-ice-shelf.json) | Paying Routes | beyond the border, 5 jumps | up to 2 ships, needs ice_harvester_i, empty hold, while node_alpha_processing_station bids 25 cr for water_ice | 780 |
-| 20 | [mine-cryogenic-reserve](mine-cryogenic-reserve.json) | Paying Routes | home space | up to 1 ships, needs ice_harvester_i, while central_nexus bids 25 cr for water_ice | 1,060 |
-| 21 | [mine-alnair-ice-fields](mine-alnair-ice-fields.json) | Paying Routes | beyond the border, 5 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while node_alpha_processing_station bids 25 cr for water_ice | 680 |
-| 22 | [mine-gsc-0041-frost-ring](mine-gsc-0041-frost-ring.json) | Paying Routes | beyond the border, 4 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while node_alpha_processing_station bids 25 cr for water_ice | 2,120 |
-| 23 | [mine-antares-ice-fields](mine-antares-ice-fields.json) | Paying Routes | beyond the border, 5 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while node_alpha_processing_station bids 25 cr for water_ice | 80 |
-| 24 | [mine-intercrus-ice-fields](mine-intercrus-ice-fields.json) | Paying Routes | beyond the border, 7 jumps | up to 2 ships, needs ice_harvester_i, empty hold, while the_experiment_research_station bids 25 cr for water_ice | 610 |
-| 25 | [mission-cracking-the-shell-central](mission-cracking-the-shell-central.json) | Once per Pilot | beyond the border, 4 jumps | once per pilot, up to 1 ships, empty hold, after the reward First Hunt: Belt-Grazers | one-time |
-| 26 | [hunt-deepwell-volatile-ice-frost-moth](hunt-deepwell-volatile-ice-frost-moth.json) | Paying Routes | beyond the border, 7 jumps | up to 1 ships, empty hold | 3,480 |
-| 27 | [hunt-deepwell-haze-cinder-sylph](hunt-deepwell-haze-cinder-sylph.json) | Paying Routes | beyond the border, 7 jumps | up to 1 ships, empty hold | 320 |
-| 28 | [hunt-raysheet-nebula-veil-ray](hunt-raysheet-nebula-veil-ray.json) | Measured at a Loss | beyond the border, 8 jumps | up to 1 ships, empty hold | -740 |
-| 29 | [mine-gsc-0049-platinum-group-reef](mine-gsc-0049-platinum-group-reef.json) | Measured at a Loss | beyond the border, 5 jumps | up to 1 ships, empty hold | -440 |
-| 30 | [voidborn-network-expansion](voidborn-network-expansion.json) | Once per Pilot | home space | once per pilot, up to 20 ships, after the reward First Steps in the Void | one-time |
-| 31 | [mission-ghosts-in-the-cloud-node](mission-ghosts-in-the-cloud-node.json) | Once per Pilot | home space | once per pilot, up to 1 ships | one-time |
-| 32 | [mine-hd-147513-belt](mine-hd-147513-belt.json) | Paying Routes | beyond the border, 7 jumps | up to 1 ships, empty hold | 20 |
-| 33 | [gather-gsc-0027-prism-scatter](gather-gsc-0027-prism-scatter.json) | Standing Work, Reading and Waiting | home space | up to 40 ships, needs mining_laser_i, standing work | -100 |
-| 34 | [gather-hamal-crystal-bloom](gather-hamal-crystal-bloom.json) | Standing Work, Reading and Waiting | home space | up to 40 ships, needs mining_laser_i, standing work | -160 |
-| 35 | [census-frontier](census-frontier.json) | Standing Work, Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -630 |
-| 36 | [park](park.json) | Standing Work, Reading and Waiting | home space | the park route | -670 |
+| # | Route | Group | Zone | Open to | Ships planned | Credits per ship-hour |
+|---|---|---|---|---|---|---|
+| 1 | [voidborn-first-steps-board](voidborn-first-steps-board.json) | Once per Pilot | home space | once per pilot, up to 3 ships | -- | one-time |
+| 2 | [voidborn-collective-provides](voidborn-collective-provides.json) | Off | beyond the border, 5 jumps | once per pilot, up to 2 ships, empty hold, after the reward Network Expansion, off | -- | one-time |
+| 3 | [voidborn-signal-protocol](voidborn-signal-protocol.json) | Once per Pilot | home space | once per pilot, up to 20 ships, after the reward The Collective Provides | -- | one-time |
+| 4 | [voidborn-signal-fragments](voidborn-signal-fragments.json) | Once per Pilot | home space | once per pilot, up to 10 ships, from navigation 3 | -- | one-time |
+| 5 | [voidborn-concurrent](voidborn-concurrent.json) | Once per Pilot | home space | once per pilot | -- | one-time |
+| 6 | [voidborn-substrate](voidborn-substrate.json) | Once per Pilot | home space | once per pilot, from 3,000 cr | -- | one-time |
+| 7 | [voidborn-missions-1](voidborn-missions-1.json) | Once per Pilot | home space | once per pilot, from 8,000 cr | -- | one-time |
+| 8 | [voidborn-mining-missions](voidborn-mining-missions.json) | Once per Pilot | home space | once per pilot, up to 40 ships | -- | one-time |
+| 9 | [voidborn-first-steps](voidborn-first-steps.json) | Off | home space | once per pilot, up to 2 ships, off | -- | one-time |
+| 10 | [voidborn-selling](voidborn-selling.json) | Once per Pilot | home space | once per pilot, up to 10 ships | -- | one-time |
+| 11 | [voidborn-precedence](voidborn-precedence.json) | Once per Pilot | home space | once per pilot, up to 40 ships | -- | one-time |
+| 12 | [voidborn-first-hunt-nexus](voidborn-first-hunt-nexus.json) | Once per Pilot | home space | once per pilot, up to 1 ships | -- | one-time |
+| 13 | [voidborn-first-hunt-gsc](voidborn-first-hunt-gsc.json) | Once per Pilot | home space | once per pilot, up to 1 ships | -- | one-time |
+| 14 | [voidborn-first-hunt-acubens](voidborn-first-hunt-acubens.json) | Once per Pilot | home space | once per pilot, up to 1 ships | -- | one-time |
+| 15 | [mine-node-beta-frozen-drift](mine-node-beta-frozen-drift.json) | Paying Routes | home space | up to 1 ships, needs ice_harvester_i, while node_alpha_processing_station bids 25 cr for water_ice | -- | 1,790 |
+| 16 | [mine-ruchbah-ice-belt](mine-ruchbah-ice-belt.json) | Paying Routes | beyond the border, 4 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while the_experiment_research_station bids 25 cr for water_ice | -- | 7,430 |
+| 17 | [mine-achernar-frost-ring](mine-achernar-frost-ring.json) | Paying Routes | beyond the border, 4 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while the_experiment_research_station bids 25 cr for water_ice | -- | 4,590 |
+| 18 | [mine-wolf-1061-frozen-drift](mine-wolf-1061-frozen-drift.json) | Paying Routes | beyond the border, 4 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while node_alpha_processing_station bids 25 cr for water_ice | -- | 2,040 |
+| 19 | [mine-keid-ice-shelf](mine-keid-ice-shelf.json) | Paying Routes | beyond the border, 5 jumps | up to 2 ships, needs ice_harvester_i, empty hold, while node_alpha_processing_station bids 25 cr for water_ice | -- | 780 |
+| 20 | [mine-cryogenic-reserve](mine-cryogenic-reserve.json) | Paying Routes | home space | up to 1 ships, needs ice_harvester_i, while central_nexus bids 25 cr for water_ice | -- | 1,060 |
+| 21 | [mine-alnair-ice-fields](mine-alnair-ice-fields.json) | Paying Routes | beyond the border, 5 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while node_alpha_processing_station bids 25 cr for water_ice | -- | 680 |
+| 22 | [mine-gsc-0041-frost-ring](mine-gsc-0041-frost-ring.json) | Paying Routes | beyond the border, 4 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while node_alpha_processing_station bids 25 cr for water_ice | -- | 2,120 |
+| 23 | [mine-antares-ice-fields](mine-antares-ice-fields.json) | Paying Routes | beyond the border, 5 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while node_alpha_processing_station bids 25 cr for water_ice | -- | 80 |
+| 24 | [mine-intercrus-ice-fields](mine-intercrus-ice-fields.json) | Paying Routes | beyond the border, 7 jumps | up to 2 ships, needs ice_harvester_i, empty hold, while the_experiment_research_station bids 25 cr for water_ice | -- | 610 |
+| 25 | [mission-cracking-the-shell-central](mission-cracking-the-shell-central.json) | Once per Pilot | beyond the border, 4 jumps | once per pilot, up to 1 ships, empty hold, after the reward First Hunt: Belt-Grazers | -- | one-time |
+| 26 | [hunt-deepwell-volatile-ice-frost-moth](hunt-deepwell-volatile-ice-frost-moth.json) | Paying Routes | beyond the border, 7 jumps | up to 1 ships, empty hold | -- | 3,480 |
+| 27 | [hunt-deepwell-haze-cinder-sylph](hunt-deepwell-haze-cinder-sylph.json) | Paying Routes | beyond the border, 7 jumps | up to 1 ships, empty hold | -- | 320 |
+| 28 | [hunt-raysheet-nebula-veil-ray](hunt-raysheet-nebula-veil-ray.json) | Measured at a Loss | beyond the border, 8 jumps | up to 1 ships, empty hold | -- | -740 |
+| 29 | [mine-gsc-0049-platinum-group-reef](mine-gsc-0049-platinum-group-reef.json) | Measured at a Loss | beyond the border, 5 jumps | up to 1 ships, empty hold | -- | -440 |
+| 30 | [voidborn-network-expansion](voidborn-network-expansion.json) | Once per Pilot | home space | once per pilot, up to 20 ships, after the reward First Steps in the Void | -- | one-time |
+| 31 | [mission-ghosts-in-the-cloud-node](mission-ghosts-in-the-cloud-node.json) | Once per Pilot | home space | once per pilot, up to 1 ships | -- | one-time |
+| 32 | [mine-hd-147513-belt](mine-hd-147513-belt.json) | Paying Routes | beyond the border, 7 jumps | up to 1 ships, empty hold | -- | 20 |
+| 33 | [gather-gsc-0027-prism-scatter](gather-gsc-0027-prism-scatter.json) | Standing Work, Reading and Waiting | home space | up to 40 ships, needs mining_laser_i, standing work | -- | -100 |
+| 34 | [gather-hamal-crystal-bloom](gather-hamal-crystal-bloom.json) | Standing Work, Reading and Waiting | home space | up to 40 ships, needs mining_laser_i, standing work | -- | -160 |
+| 35 | [census-frontier](census-frontier.json) | Standing Work, Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -- | -630 |
+| 36 | [park](park.json) | Standing Work, Reading and Waiting | home space | the park route | -- | -670 |
 
 ## drone
 
 Kept by Apophis. Routes: 38.
 
-| # | Route | Group | Zone | Open to | Credits per ship-hour |
-|---|---|---|---|---|---|
-| 1 | [voidborn-signal-fragments](voidborn-signal-fragments.json) | Once per Pilot | home space | once per pilot, up to 10 ships, from navigation 3 | one-time |
-| 2 | [voidborn-first-steps-board](voidborn-first-steps-board.json) | Once per Pilot | home space | once per pilot, up to 3 ships | one-time |
-| 3 | [voidborn-network-expansion](voidborn-network-expansion.json) | Once per Pilot | home space | once per pilot, up to 20 ships, after the reward First Steps in the Void | one-time |
-| 4 | [voidborn-collective-provides](voidborn-collective-provides.json) | Off | beyond the border, 5 jumps | once per pilot, up to 2 ships, empty hold, after the reward Network Expansion, off | one-time |
-| 5 | [voidborn-signal-protocol](voidborn-signal-protocol.json) | Once per Pilot | home space | once per pilot, up to 20 ships, after the reward The Collective Provides | one-time |
-| 6 | [voidborn-precedence](voidborn-precedence.json) | Once per Pilot | home space | once per pilot, up to 40 ships | one-time |
-| 7 | [voidborn-conductive-lattice](voidborn-conductive-lattice.json) | Once per Pilot | beyond the border, 6 jumps | once per pilot, up to 4 ships, 146 pilots in all, empty hold, from 13,000 cr | one-time |
-| 8 | [voidborn-first-hunt-nexus](voidborn-first-hunt-nexus.json) | Once per Pilot | home space | once per pilot, up to 1 ships | one-time |
-| 9 | [voidborn-first-hunt-gsc](voidborn-first-hunt-gsc.json) | Once per Pilot | home space | once per pilot, up to 1 ships | one-time |
-| 10 | [voidborn-first-hunt-achernar](voidborn-first-hunt-achernar.json) | Once per Pilot | beyond the border, 4 jumps | once per pilot, up to 1 ships, empty hold | one-time |
-| 11 | [mission-cracking-the-shell-achernar](mission-cracking-the-shell-achernar.json) | Once per Pilot | beyond the border, 4 jumps | once per pilot, up to 1 ships, empty hold, after the reward First Hunt: Belt-Grazers | one-time |
-| 12 | [mission-cracking-the-shell-central](mission-cracking-the-shell-central.json) | Once per Pilot | beyond the border, 4 jumps | once per pilot, up to 1 ships, empty hold, after the reward First Hunt: Belt-Grazers | one-time |
-| 13 | [voidborn-selling](voidborn-selling.json) | Once per Pilot | home space | once per pilot, up to 10 ships | one-time |
-| 14 | [voidborn-concurrent](voidborn-concurrent.json) | Once per Pilot | home space | once per pilot | one-time |
-| 15 | [voidborn-substrate](voidborn-substrate.json) | Once per Pilot | home space | once per pilot, from 3,000 cr | one-time |
-| 16 | [voidborn-missions-1](voidborn-missions-1.json) | Once per Pilot | home space | once per pilot, from 8,000 cr | one-time |
-| 17 | [voidborn-mining-missions](voidborn-mining-missions.json) | Once per Pilot | home space | once per pilot, up to 40 ships | one-time |
-| 18 | [sell-curd-central-nexus](sell-curd-central-nexus.json) | Paying Routes | home space | up to 1 ships, with 2 verdigris_curd stored at central_nexus, while central_nexus bids 250 cr for verdigris_curd | 302,820 |
-| 19 | [sell-curd-node-beta](sell-curd-node-beta.json) | Paying Routes | home space | up to 1 ships, with 2 verdigris_curd stored at node_beta_industrial_station, while node_beta_industrial_station bids 250 cr for verdigris_curd | 29,370 |
-| 20 | [sell-curd-experiment](sell-curd-experiment.json) | Paying Routes | home space | up to 1 ships, with 2 verdigris_curd stored at the_experiment_research_station, while the_experiment_research_station bids 250 cr for verdigris_curd | 13,390 |
-| 21 | [hunt-test-achernar-cinder-sylph](hunt-test-achernar-cinder-sylph.json) | Paying Routes | beyond the border, 4 jumps | up to 1 ships, without piercing_railgun_i, empty hold, while the_experiment_research_station bids 100 cr for ember_gland | 6,720 |
-| 22 | [hunt-gsc-veil-ray](hunt-gsc-veil-ray.json) | Paying Routes | home space | up to 1 ships, without piercing_railgun_i, while central_nexus bids 100 cr for verdigris_curd | 3,020 |
-| 23 | [hunt-hamal-veil-ray](hunt-hamal-veil-ray.json) | Paying Routes | home space | up to 1 ships, without piercing_railgun_i, while central_nexus bids 100 cr for verdigris_curd | 2,310 |
-| 24 | [hunt-ruchbah-veil-ray](hunt-ruchbah-veil-ray.json) | Paying Routes | beyond the border, 4 jumps | up to 1 ships, without piercing_railgun_i, empty hold, while the_experiment_research_station bids 100 cr for verdigris_curd | 2,100 |
-| 25 | [hunt-keid-fractured-prism-veil-ray](hunt-keid-fractured-prism-veil-ray.json) | Paying Routes | beyond the border, 5 jumps | up to 1 ships, without piercing_railgun_i, empty hold, while node_beta_industrial_station bids 100 cr for verdigris_curd | 1,420 |
-| 26 | [hunt-faintlight-drift-veil-ray](hunt-faintlight-drift-veil-ray.json) | Paying Routes | beyond the border, 5 jumps | up to 1 ships, without piercing_railgun_i, empty hold, while node_beta_industrial_station bids 100 cr for verdigris_curd | 1,300 |
-| 27 | [hunt-test-lesath-cinder-sylph](hunt-test-lesath-cinder-sylph.json) | Paying Routes | beyond the border, 5 jumps | up to 1 ships, without piercing_railgun_i, empty hold, while node_beta_industrial_station bids 100 cr for ember_gland | 600 |
-| 28 | [hunt-cedarhold-dim-lattice-veil-ray](hunt-cedarhold-dim-lattice-veil-ray.json) | Paying Routes | beyond the border, 5 jumps | up to 1 ships, without piercing_railgun_i, empty hold, while the_experiment_research_station bids 100 cr for verdigris_curd | 840 |
-| 29 | [hunt-low-charge-glint-veil-ray](hunt-low-charge-glint-veil-ray.json) | Paying Routes | beyond the border, 4 jumps | up to 1 ships, without piercing_railgun_i, empty hold, while node_beta_industrial_station bids 100 cr for verdigris_curd | 800 |
-| 30 | [train-navigation-home](train-navigation-home.json) | Measured at a Loss | home space | up to 1 ships | -470 |
-| 31 | [mission-ghosts-in-the-cloud-node](mission-ghosts-in-the-cloud-node.json) | Once per Pilot | home space | once per pilot, up to 1 ships | one-time |
-| 32 | [voidborn-first-hunt-acubens](voidborn-first-hunt-acubens.json) | Once per Pilot | home space | once per pilot, up to 1 ships | one-time |
-| 33 | [voidborn-first-hunt-intercrus-belt](voidborn-first-hunt-intercrus-belt.json) | Once per Pilot | beyond the border, 7 jumps | once per pilot, up to 1 ships, empty hold | one-time |
-| 34 | [census-guard-ice](census-guard-ice.json) | Standing Work, Reading and Waiting | beyond the border, 7 jumps | up to 2 ships, empty hold | -610 |
-| 35 | [gather-gsc-0027-prism-scatter](gather-gsc-0027-prism-scatter.json) | Standing Work, Reading and Waiting | home space | up to 40 ships, needs mining_laser_i, standing work | -100 |
-| 36 | [gather-hamal-crystal-bloom](gather-hamal-crystal-bloom.json) | Standing Work, Reading and Waiting | home space | up to 40 ships, needs mining_laser_i, standing work | -160 |
-| 37 | [census-frontier](census-frontier.json) | Standing Work, Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -630 |
-| 38 | [park](park.json) | Standing Work, Reading and Waiting | home space | the park route | -670 |
+| # | Route | Group | Zone | Open to | Ships planned | Credits per ship-hour |
+|---|---|---|---|---|---|---|
+| 1 | [voidborn-signal-fragments](voidborn-signal-fragments.json) | Once per Pilot | home space | once per pilot, up to 10 ships, from navigation 3 | -- | one-time |
+| 2 | [voidborn-first-steps-board](voidborn-first-steps-board.json) | Once per Pilot | home space | once per pilot, up to 3 ships | -- | one-time |
+| 3 | [voidborn-network-expansion](voidborn-network-expansion.json) | Once per Pilot | home space | once per pilot, up to 20 ships, after the reward First Steps in the Void | -- | one-time |
+| 4 | [voidborn-collective-provides](voidborn-collective-provides.json) | Off | beyond the border, 5 jumps | once per pilot, up to 2 ships, empty hold, after the reward Network Expansion, off | -- | one-time |
+| 5 | [voidborn-signal-protocol](voidborn-signal-protocol.json) | Once per Pilot | home space | once per pilot, up to 20 ships, after the reward The Collective Provides | -- | one-time |
+| 6 | [voidborn-precedence](voidborn-precedence.json) | Once per Pilot | home space | once per pilot, up to 40 ships | -- | one-time |
+| 7 | [voidborn-conductive-lattice](voidborn-conductive-lattice.json) | Once per Pilot | beyond the border, 6 jumps | once per pilot, up to 4 ships, 146 pilots in all, empty hold, from 13,000 cr | -- | one-time |
+| 8 | [voidborn-first-hunt-nexus](voidborn-first-hunt-nexus.json) | Once per Pilot | home space | once per pilot, up to 1 ships | -- | one-time |
+| 9 | [voidborn-first-hunt-gsc](voidborn-first-hunt-gsc.json) | Once per Pilot | home space | once per pilot, up to 1 ships | -- | one-time |
+| 10 | [voidborn-first-hunt-achernar](voidborn-first-hunt-achernar.json) | Once per Pilot | beyond the border, 4 jumps | once per pilot, up to 1 ships, empty hold | -- | one-time |
+| 11 | [mission-cracking-the-shell-achernar](mission-cracking-the-shell-achernar.json) | Once per Pilot | beyond the border, 4 jumps | once per pilot, up to 1 ships, empty hold, after the reward First Hunt: Belt-Grazers | -- | one-time |
+| 12 | [mission-cracking-the-shell-central](mission-cracking-the-shell-central.json) | Once per Pilot | beyond the border, 4 jumps | once per pilot, up to 1 ships, empty hold, after the reward First Hunt: Belt-Grazers | -- | one-time |
+| 13 | [voidborn-selling](voidborn-selling.json) | Once per Pilot | home space | once per pilot, up to 10 ships | -- | one-time |
+| 14 | [voidborn-concurrent](voidborn-concurrent.json) | Once per Pilot | home space | once per pilot | -- | one-time |
+| 15 | [voidborn-substrate](voidborn-substrate.json) | Once per Pilot | home space | once per pilot, from 3,000 cr | -- | one-time |
+| 16 | [voidborn-missions-1](voidborn-missions-1.json) | Once per Pilot | home space | once per pilot, from 8,000 cr | -- | one-time |
+| 17 | [voidborn-mining-missions](voidborn-mining-missions.json) | Once per Pilot | home space | once per pilot, up to 40 ships | -- | one-time |
+| 18 | [sell-curd-central-nexus](sell-curd-central-nexus.json) | Paying Routes | home space | up to 1 ships, with 2 verdigris_curd stored at central_nexus, while central_nexus bids 250 cr for verdigris_curd | -- | 302,820 |
+| 19 | [sell-curd-node-beta](sell-curd-node-beta.json) | Paying Routes | home space | up to 1 ships, with 2 verdigris_curd stored at node_beta_industrial_station, while node_beta_industrial_station bids 250 cr for verdigris_curd | -- | 29,370 |
+| 20 | [sell-curd-experiment](sell-curd-experiment.json) | Paying Routes | home space | up to 1 ships, with 2 verdigris_curd stored at the_experiment_research_station, while the_experiment_research_station bids 250 cr for verdigris_curd | -- | 13,390 |
+| 21 | [hunt-test-achernar-cinder-sylph](hunt-test-achernar-cinder-sylph.json) | Paying Routes | beyond the border, 4 jumps | up to 1 ships, without piercing_railgun_i, empty hold, while the_experiment_research_station bids 100 cr for ember_gland | -- | 6,720 |
+| 22 | [hunt-gsc-veil-ray](hunt-gsc-veil-ray.json) | Paying Routes | home space | up to 1 ships, without piercing_railgun_i, while central_nexus bids 100 cr for verdigris_curd | -- | 3,020 |
+| 23 | [hunt-hamal-veil-ray](hunt-hamal-veil-ray.json) | Paying Routes | home space | up to 1 ships, without piercing_railgun_i, while central_nexus bids 100 cr for verdigris_curd | -- | 2,310 |
+| 24 | [hunt-ruchbah-veil-ray](hunt-ruchbah-veil-ray.json) | Paying Routes | beyond the border, 4 jumps | up to 1 ships, without piercing_railgun_i, empty hold, while the_experiment_research_station bids 100 cr for verdigris_curd | -- | 2,100 |
+| 25 | [hunt-keid-fractured-prism-veil-ray](hunt-keid-fractured-prism-veil-ray.json) | Paying Routes | beyond the border, 5 jumps | up to 1 ships, without piercing_railgun_i, empty hold, while node_beta_industrial_station bids 100 cr for verdigris_curd | -- | 1,420 |
+| 26 | [hunt-faintlight-drift-veil-ray](hunt-faintlight-drift-veil-ray.json) | Paying Routes | beyond the border, 5 jumps | up to 1 ships, without piercing_railgun_i, empty hold, while node_beta_industrial_station bids 100 cr for verdigris_curd | -- | 1,300 |
+| 27 | [hunt-test-lesath-cinder-sylph](hunt-test-lesath-cinder-sylph.json) | Paying Routes | beyond the border, 5 jumps | up to 1 ships, without piercing_railgun_i, empty hold, while node_beta_industrial_station bids 100 cr for ember_gland | -- | 600 |
+| 28 | [hunt-cedarhold-dim-lattice-veil-ray](hunt-cedarhold-dim-lattice-veil-ray.json) | Paying Routes | beyond the border, 5 jumps | up to 1 ships, without piercing_railgun_i, empty hold, while the_experiment_research_station bids 100 cr for verdigris_curd | -- | 840 |
+| 29 | [hunt-low-charge-glint-veil-ray](hunt-low-charge-glint-veil-ray.json) | Paying Routes | beyond the border, 4 jumps | up to 1 ships, without piercing_railgun_i, empty hold, while node_beta_industrial_station bids 100 cr for verdigris_curd | -- | 800 |
+| 30 | [train-navigation-home](train-navigation-home.json) | Measured at a Loss | home space | up to 1 ships | -- | -470 |
+| 31 | [mission-ghosts-in-the-cloud-node](mission-ghosts-in-the-cloud-node.json) | Once per Pilot | home space | once per pilot, up to 1 ships | -- | one-time |
+| 32 | [voidborn-first-hunt-acubens](voidborn-first-hunt-acubens.json) | Once per Pilot | home space | once per pilot, up to 1 ships | -- | one-time |
+| 33 | [voidborn-first-hunt-intercrus-belt](voidborn-first-hunt-intercrus-belt.json) | Once per Pilot | beyond the border, 7 jumps | once per pilot, up to 1 ships, empty hold | -- | one-time |
+| 34 | [census-guard-ice](census-guard-ice.json) | Standing Work, Reading and Waiting | beyond the border, 7 jumps | up to 2 ships, empty hold | -- | -610 |
+| 35 | [gather-gsc-0027-prism-scatter](gather-gsc-0027-prism-scatter.json) | Standing Work, Reading and Waiting | home space | up to 40 ships, needs mining_laser_i, standing work | -- | -100 |
+| 36 | [gather-hamal-crystal-bloom](gather-hamal-crystal-bloom.json) | Standing Work, Reading and Waiting | home space | up to 40 ships, needs mining_laser_i, standing work | -- | -160 |
+| 37 | [census-frontier](census-frontier.json) | Standing Work, Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -- | -630 |
+| 38 | [park](park.json) | Standing Work, Reading and Waiting | home space | the park route | -- | -670 |
 
 Planned:
 
@@ -115,44 +118,44 @@ Planned:
 
 Kept by Apollo. Routes: 36.
 
-| # | Route | Group | Zone | Open to | Credits per ship-hour |
-|---|---|---|---|---|---|
-| 1 | [voidborn-resonance-finish](voidborn-resonance-finish.json) | Once per Pilot | home space | once per pilot, up to 2 ships, from 8,000 cr, after the reward Conductive Lattice | one-time |
-| 2 | [voidborn-atmospheric-extraction](voidborn-atmospheric-extraction.json) | Fitting | home space | once per pilot, up to 3 ships, without gas_harvester_i, from 6,000 cr, after the reward The Collective Provides | one-time |
-| 3 | [voidborn-hardware-cargo](voidborn-hardware-cargo.json) | Fitting | home space | once per pilot, up to 3 ships, without cargo_expander_i, from 4,000 cr, after the reward The Collective Provides | one-time |
-| 4 | [voidborn-signal-protocol](voidborn-signal-protocol.json) | Once per Pilot | home space | once per pilot, up to 20 ships, after the reward The Collective Provides | one-time |
-| 5 | [voidborn-first-steps-board](voidborn-first-steps-board.json) | Once per Pilot | home space | once per pilot, up to 3 ships | one-time |
-| 6 | [voidborn-collective-provides](voidborn-collective-provides.json) | Off | beyond the border, 5 jumps | once per pilot, up to 2 ships, empty hold, after the reward Network Expansion, off | one-time |
-| 7 | [voidborn-conductive-lattice](voidborn-conductive-lattice.json) | Once per Pilot | beyond the border, 6 jumps | once per pilot, up to 4 ships, 146 pilots in all, empty hold, from 13,000 cr | one-time |
-| 8 | [voidborn-signal-fragments](voidborn-signal-fragments.json) | Once per Pilot | home space | once per pilot, up to 10 ships, from navigation 3 | one-time |
-| 9 | [voidborn-network-expansion](voidborn-network-expansion.json) | Once per Pilot | home space | once per pilot, up to 20 ships, after the reward First Steps in the Void | one-time |
-| 10 | [voidborn-precedence](voidborn-precedence.json) | Once per Pilot | home space | once per pilot, up to 40 ships | one-time |
-| 11 | [voidborn-selling](voidborn-selling.json) | Once per Pilot | home space | once per pilot, up to 10 ships | one-time |
-| 12 | [voidborn-first-hunt-nexus](voidborn-first-hunt-nexus.json) | Once per Pilot | home space | once per pilot, up to 1 ships | one-time |
-| 13 | [voidborn-concurrent](voidborn-concurrent.json) | Once per Pilot | home space | once per pilot | one-time |
-| 14 | [voidborn-substrate](voidborn-substrate.json) | Once per Pilot | home space | once per pilot, from 3,000 cr | one-time |
-| 15 | [voidborn-missions-1](voidborn-missions-1.json) | Once per Pilot | home space | once per pilot, from 8,000 cr | one-time |
-| 16 | [voidborn-mining-missions](voidborn-mining-missions.json) | Once per Pilot | home space | once per pilot, up to 40 ships | one-time |
-| 17 | [mission-cracking-the-shell-central](mission-cracking-the-shell-central.json) | Once per Pilot | beyond the border, 4 jumps | once per pilot, up to 1 ships, empty hold, after the reward First Hunt: Belt-Grazers | one-time |
-| 18 | [mine-achernar-frost-ring-nexus](mine-achernar-frost-ring-nexus.json) | Paying Routes | beyond the border, 4 jumps | up to 3 ships, needs ice_harvester_i, empty hold, while central_nexus bids 25 cr for water_ice | 2,230 |
-| 19 | [sell-plate-node-beta](sell-plate-node-beta.json) | Measured at a Loss | home space | up to 1 ships, with 1 armor_plate stored at node_beta_industrial_station, while node_beta_industrial_station bids 300 cr for armor_plate | -400 |
-| 20 | [sell-soma-synchrony](sell-soma-synchrony.json) | Tests | home space | up to 1 ships, with 1 voidborn_neural_soma stored at synchrony_hub, while synchrony_hub bids 500 cr for voidborn_neural_soma | TBD |
-| 21 | [sell-soma-node-beta](sell-soma-node-beta.json) | Tests | home space | up to 1 ships, with 1 voidborn_neural_soma stored at node_beta_industrial_station, while node_beta_industrial_station bids 500 cr for voidborn_neural_soma | TBD |
-| 22 | [carry-soma-synchrony-node-alpha](carry-soma-synchrony-node-alpha.json) | Tests | home space | up to 1 ships, with 1 voidborn_neural_soma stored at synchrony_hub, while node_alpha_processing_station bids 500 cr for voidborn_neural_soma | TBD |
-| 23 | [carry-soma-synchrony-node-gamma](carry-soma-synchrony-node-gamma.json) | Tests | home space | up to 1 ships, with 1 voidborn_neural_soma stored at synchrony_hub, while node_gamma_relay_station bids 500 cr for voidborn_neural_soma | TBD |
-| 24 | [carry-soma-node-beta-node-alpha](carry-soma-node-beta-node-alpha.json) | Tests | home space | up to 1 ships, with 1 voidborn_neural_soma stored at node_beta_industrial_station, while node_alpha_processing_station bids 500 cr for voidborn_neural_soma | TBD |
-| 25 | [carry-soma-node-beta-node-gamma](carry-soma-node-beta-node-gamma.json) | Tests | home space | up to 1 ships, with 1 voidborn_neural_soma stored at node_beta_industrial_station, while node_gamma_relay_station bids 500 cr for voidborn_neural_soma | TBD |
-| 26 | [sell-plasma-node-beta](sell-plasma-node-beta.json) | Tests | home space | up to 1 ships, with 5 plasma_gas stored at node_beta_industrial_station, while node_beta_industrial_station bids 90 cr for plasma_gas | TBD |
-| 27 | [sell-liquid-hydrogen-central](sell-liquid-hydrogen-central.json) | Measured at a Loss | home space | up to 1 ships, with 5 liquid_hydrogen stored at central_nexus, while central_nexus bids 100 cr for liquid_hydrogen | -480 |
-| 28 | [sell-liquid-hydrogen-node-beta](sell-liquid-hydrogen-node-beta.json) | Paying Routes | home space | up to 1 ships, with 5 liquid_hydrogen stored at node_beta_industrial_station, while node_beta_industrial_station bids 95 cr for liquid_hydrogen | 16,890 |
-| 29 | [mine-atlas-gas-pocket](mine-atlas-gas-pocket.json) | Paying Routes | beyond the border, 6 jumps | up to 1 ships, needs gas_harvester_i, empty hold, while node_beta_industrial_station bids 72 cr for plasma_gas | 90 |
-| 30 | [mine-amberfall-emission-nebula](mine-amberfall-emission-nebula.json) | Measured at a Loss | beyond the border, 5 jumps | up to 1 ships, needs gas_harvester_i, empty hold, while node_gamma_relay_station bids 27 cr for hydrogen_gas | -120 |
-| 31 | [gather-gsc-0027-prism-scatter](gather-gsc-0027-prism-scatter.json) | Standing Work, Reading and Waiting | home space | up to 40 ships, needs mining_laser_i, standing work | -100 |
-| 32 | [gather-hamal-crystal-bloom](gather-hamal-crystal-bloom.json) | Standing Work, Reading and Waiting | home space | up to 40 ships, needs mining_laser_i, standing work | -160 |
-| 33 | [gather-gsc-0027-spacetime-seep](gather-gsc-0027-spacetime-seep.json) | Standing Work, Reading and Waiting | home space | up to 6 ships, standing work | -130 |
-| 34 | [mine-okab-haze](mine-okab-haze.json) | Tests | beyond the border, 4 jumps | up to 1 ships, needs gas_harvester_i, empty hold, while node_beta_industrial_station bids 27 cr for hydrogen_gas | TBD |
-| 35 | [census-frontier](census-frontier.json) | Standing Work, Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -630 |
-| 36 | [park](park.json) | Standing Work, Reading and Waiting | home space | the park route | -670 |
+| # | Route | Group | Zone | Open to | Ships planned | Credits per ship-hour |
+|---|---|---|---|---|---|---|
+| 1 | [voidborn-resonance-finish](voidborn-resonance-finish.json) | Once per Pilot | home space | once per pilot, up to 2 ships, from 8,000 cr, after the reward Conductive Lattice | -- | one-time |
+| 2 | [voidborn-atmospheric-extraction](voidborn-atmospheric-extraction.json) | Fitting | home space | once per pilot, up to 3 ships, without gas_harvester_i, from 6,000 cr, after the reward The Collective Provides | -- | one-time |
+| 3 | [voidborn-hardware-cargo](voidborn-hardware-cargo.json) | Fitting | home space | once per pilot, up to 3 ships, without cargo_expander_i, from 4,000 cr, after the reward The Collective Provides | -- | one-time |
+| 4 | [voidborn-signal-protocol](voidborn-signal-protocol.json) | Once per Pilot | home space | once per pilot, up to 20 ships, after the reward The Collective Provides | -- | one-time |
+| 5 | [voidborn-first-steps-board](voidborn-first-steps-board.json) | Once per Pilot | home space | once per pilot, up to 3 ships | -- | one-time |
+| 6 | [voidborn-collective-provides](voidborn-collective-provides.json) | Off | beyond the border, 5 jumps | once per pilot, up to 2 ships, empty hold, after the reward Network Expansion, off | -- | one-time |
+| 7 | [voidborn-conductive-lattice](voidborn-conductive-lattice.json) | Once per Pilot | beyond the border, 6 jumps | once per pilot, up to 4 ships, 146 pilots in all, empty hold, from 13,000 cr | -- | one-time |
+| 8 | [voidborn-signal-fragments](voidborn-signal-fragments.json) | Once per Pilot | home space | once per pilot, up to 10 ships, from navigation 3 | -- | one-time |
+| 9 | [voidborn-network-expansion](voidborn-network-expansion.json) | Once per Pilot | home space | once per pilot, up to 20 ships, after the reward First Steps in the Void | -- | one-time |
+| 10 | [voidborn-precedence](voidborn-precedence.json) | Once per Pilot | home space | once per pilot, up to 40 ships | -- | one-time |
+| 11 | [voidborn-selling](voidborn-selling.json) | Once per Pilot | home space | once per pilot, up to 10 ships | -- | one-time |
+| 12 | [voidborn-first-hunt-nexus](voidborn-first-hunt-nexus.json) | Once per Pilot | home space | once per pilot, up to 1 ships | -- | one-time |
+| 13 | [voidborn-concurrent](voidborn-concurrent.json) | Once per Pilot | home space | once per pilot | -- | one-time |
+| 14 | [voidborn-substrate](voidborn-substrate.json) | Once per Pilot | home space | once per pilot, from 3,000 cr | -- | one-time |
+| 15 | [voidborn-missions-1](voidborn-missions-1.json) | Once per Pilot | home space | once per pilot, from 8,000 cr | -- | one-time |
+| 16 | [voidborn-mining-missions](voidborn-mining-missions.json) | Once per Pilot | home space | once per pilot, up to 40 ships | -- | one-time |
+| 17 | [mission-cracking-the-shell-central](mission-cracking-the-shell-central.json) | Once per Pilot | beyond the border, 4 jumps | once per pilot, up to 1 ships, empty hold, after the reward First Hunt: Belt-Grazers | -- | one-time |
+| 18 | [mine-achernar-frost-ring-nexus](mine-achernar-frost-ring-nexus.json) | Paying Routes | beyond the border, 4 jumps | up to 3 ships, needs ice_harvester_i, empty hold, while central_nexus bids 25 cr for water_ice | -- | 2,230 |
+| 19 | [sell-plate-node-beta](sell-plate-node-beta.json) | Measured at a Loss | home space | up to 1 ships, with 1 armor_plate stored at node_beta_industrial_station, while node_beta_industrial_station bids 300 cr for armor_plate | -- | -400 |
+| 20 | [sell-soma-synchrony](sell-soma-synchrony.json) | Tests | home space | up to 1 ships, with 1 voidborn_neural_soma stored at synchrony_hub, while synchrony_hub bids 500 cr for voidborn_neural_soma | -- | TBD |
+| 21 | [sell-soma-node-beta](sell-soma-node-beta.json) | Tests | home space | up to 1 ships, with 1 voidborn_neural_soma stored at node_beta_industrial_station, while node_beta_industrial_station bids 500 cr for voidborn_neural_soma | -- | TBD |
+| 22 | [carry-soma-synchrony-node-alpha](carry-soma-synchrony-node-alpha.json) | Tests | home space | up to 1 ships, with 1 voidborn_neural_soma stored at synchrony_hub, while node_alpha_processing_station bids 500 cr for voidborn_neural_soma | -- | TBD |
+| 23 | [carry-soma-synchrony-node-gamma](carry-soma-synchrony-node-gamma.json) | Tests | home space | up to 1 ships, with 1 voidborn_neural_soma stored at synchrony_hub, while node_gamma_relay_station bids 500 cr for voidborn_neural_soma | -- | TBD |
+| 24 | [carry-soma-node-beta-node-alpha](carry-soma-node-beta-node-alpha.json) | Tests | home space | up to 1 ships, with 1 voidborn_neural_soma stored at node_beta_industrial_station, while node_alpha_processing_station bids 500 cr for voidborn_neural_soma | -- | TBD |
+| 25 | [carry-soma-node-beta-node-gamma](carry-soma-node-beta-node-gamma.json) | Tests | home space | up to 1 ships, with 1 voidborn_neural_soma stored at node_beta_industrial_station, while node_gamma_relay_station bids 500 cr for voidborn_neural_soma | -- | TBD |
+| 26 | [sell-plasma-node-beta](sell-plasma-node-beta.json) | Tests | home space | up to 1 ships, with 5 plasma_gas stored at node_beta_industrial_station, while node_beta_industrial_station bids 90 cr for plasma_gas | -- | TBD |
+| 27 | [sell-liquid-hydrogen-central](sell-liquid-hydrogen-central.json) | Measured at a Loss | home space | up to 1 ships, with 5 liquid_hydrogen stored at central_nexus, while central_nexus bids 100 cr for liquid_hydrogen | -- | -480 |
+| 28 | [sell-liquid-hydrogen-node-beta](sell-liquid-hydrogen-node-beta.json) | Paying Routes | home space | up to 1 ships, with 5 liquid_hydrogen stored at node_beta_industrial_station, while node_beta_industrial_station bids 95 cr for liquid_hydrogen | -- | 16,890 |
+| 29 | [mine-atlas-gas-pocket](mine-atlas-gas-pocket.json) | Paying Routes | beyond the border, 6 jumps | up to 1 ships, needs gas_harvester_i, empty hold, while node_beta_industrial_station bids 72 cr for plasma_gas | -- | 90 |
+| 30 | [mine-amberfall-emission-nebula](mine-amberfall-emission-nebula.json) | Measured at a Loss | beyond the border, 5 jumps | up to 1 ships, needs gas_harvester_i, empty hold, while node_gamma_relay_station bids 27 cr for hydrogen_gas | -- | -120 |
+| 31 | [gather-gsc-0027-prism-scatter](gather-gsc-0027-prism-scatter.json) | Standing Work, Reading and Waiting | home space | up to 40 ships, needs mining_laser_i, standing work | -- | -100 |
+| 32 | [gather-hamal-crystal-bloom](gather-hamal-crystal-bloom.json) | Standing Work, Reading and Waiting | home space | up to 40 ships, needs mining_laser_i, standing work | -- | -160 |
+| 33 | [gather-gsc-0027-spacetime-seep](gather-gsc-0027-spacetime-seep.json) | Standing Work, Reading and Waiting | home space | up to 6 ships, standing work | -- | -130 |
+| 34 | [mine-okab-haze](mine-okab-haze.json) | Tests | beyond the border, 4 jumps | up to 1 ships, needs gas_harvester_i, empty hold, while node_beta_industrial_station bids 27 cr for hydrogen_gas | -- | TBD |
+| 35 | [census-frontier](census-frontier.json) | Standing Work, Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -- | -630 |
+| 36 | [park](park.json) | Standing Work, Reading and Waiting | home space | the park route | -- | -670 |
 
 Planned:
 
@@ -167,49 +170,49 @@ Planned:
 
 Kept by Zero. Routes: 41.
 
-| # | Route | Group | Zone | Open to | Credits per ship-hour |
-|---|---|---|---|---|---|
-| 1 | [voidborn-signal-fragments](voidborn-signal-fragments.json) | Once per Pilot | home space | once per pilot, up to 10 ships, from navigation 3 | one-time |
-| 2 | [voidborn-first-steps-board](voidborn-first-steps-board.json) | Once per Pilot | home space | once per pilot, up to 3 ships | one-time |
-| 3 | [voidborn-network-expansion](voidborn-network-expansion.json) | Once per Pilot | home space | once per pilot, up to 20 ships, after the reward First Steps in the Void | one-time |
-| 4 | [voidborn-collective-provides](voidborn-collective-provides.json) | Off | beyond the border, 5 jumps | once per pilot, up to 2 ships, empty hold, after the reward Network Expansion, off | one-time |
-| 5 | [voidborn-signal-protocol](voidborn-signal-protocol.json) | Once per Pilot | home space | once per pilot, up to 20 ships, after the reward The Collective Provides | one-time |
-| 6 | [voidborn-concurrent](voidborn-concurrent.json) | Once per Pilot | home space | once per pilot | one-time |
-| 7 | [voidborn-substrate](voidborn-substrate.json) | Once per Pilot | home space | once per pilot, from 3,000 cr | one-time |
-| 8 | [voidborn-missions-1](voidborn-missions-1.json) | Once per Pilot | home space | once per pilot, from 8,000 cr | one-time |
-| 9 | [voidborn-mining-missions](voidborn-mining-missions.json) | Once per Pilot | home space | once per pilot, up to 40 ships | one-time |
-| 10 | [voidborn-precedence](voidborn-precedence.json) | Once per Pilot | home space | once per pilot, up to 40 ships | one-time |
-| 11 | [voidborn-conductive-lattice](voidborn-conductive-lattice.json) | Once per Pilot | beyond the border, 6 jumps | once per pilot, up to 4 ships, 146 pilots in all, empty hold, from 13,000 cr | one-time |
-| 12 | [voidborn-first-hunt-nexus](voidborn-first-hunt-nexus.json) | Once per Pilot | home space | once per pilot, up to 1 ships | one-time |
-| 13 | [voidborn-first-hunt-gsc](voidborn-first-hunt-gsc.json) | Once per Pilot | home space | once per pilot, up to 1 ships | one-time |
-| 14 | [voidborn-first-hunt-gsc-0031](voidborn-first-hunt-gsc-0031.json) | Once per Pilot | beyond the border, 5 jumps | once per pilot, up to 1 ships, empty hold | one-time |
-| 15 | [fit-ice-harvester](fit-ice-harvester.json) | Fitting | home space | once per pilot, up to 1 ships, 15 pilots in all, without ice_harvester_i, from 6,000 cr | one-time |
-| 16 | [fit-ice-harvester-node-beta](fit-ice-harvester-node-beta.json) | Fitting | home space | once per pilot, up to 1 ships, 2 pilots in all, without ice_harvester_i, from 6,000 cr | one-time |
-| 17 | [fit-ice-harvester-node-gamma](fit-ice-harvester-node-gamma.json) | Fitting | home space | once per pilot, up to 1 ships, 2 pilots in all, without ice_harvester_i, from 6,000 cr | one-time |
-| 18 | [fit-ice-harvester-synchrony](fit-ice-harvester-synchrony.json) | Fitting | home space | once per pilot, up to 1 ships, 4 pilots in all, without ice_harvester_i, from 6,000 cr | one-time |
-| 19 | [fit-ice-harvester-experiment](fit-ice-harvester-experiment.json) | Fitting | home space | once per pilot, up to 1 ships, 2 pilots in all, without ice_harvester_i, from 6,000 cr | one-time |
-| 20 | [fit-ice-harvester-lhs-1140](fit-ice-harvester-lhs-1140.json) | Fitting | beyond the border, 6 jumps | once per pilot, up to 5 ships, 20 pilots in all, without ice_harvester_i, empty hold, from 6,000 cr | one-time |
-| 21 | [voidborn-first-hunt-acubens](voidborn-first-hunt-acubens.json) | Once per Pilot | home space | once per pilot, up to 1 ships | one-time |
-| 22 | [voidborn-first-hunt-achernar](voidborn-first-hunt-achernar.json) | Once per Pilot | beyond the border, 4 jumps | once per pilot, up to 1 ships, empty hold | one-time |
-| 23 | [carry-ice-node-alpha-nexus](carry-ice-node-alpha-nexus.json) | Measured at a Loss | home space | up to 3 ships, with 65 water_ice stored at node_alpha_processing_station, while central_nexus bids 25 cr for water_ice | -360 |
-| 24 | [drain-ice-node-alpha](drain-ice-node-alpha.json) | Tests | home space | up to 2 ships, with 30 water_ice stored at node_alpha_processing_station, while node_alpha_processing_station bids 25 cr for water_ice | TBD |
-| 25 | [carry-ice-synchrony-nexus](carry-ice-synchrony-nexus.json) | Measured at a Loss | home space | up to 2 ships, with 65 water_ice stored at synchrony_hub, while central_nexus bids 25 cr for water_ice | -460 |
-| 26 | [carry-ice-experiment-nexus](carry-ice-experiment-nexus.json) | Measured at a Loss | home space | up to 3 ships, with 65 water_ice stored at the_experiment_research_station, while central_nexus bids 25 cr for water_ice | -480 |
-| 27 | [drain-ice-nexus](drain-ice-nexus.json) | Measured at a Loss | home space | up to 2 ships, with 30 water_ice stored at central_nexus, while central_nexus bids 25 cr for water_ice | -460 |
-| 28 | [mine-wolf-1061-vent](mine-wolf-1061-vent.json) | Paying Routes | beyond the border, 4 jumps | up to 1 ships, needs nitrogen_vent, empty hold, while synchrony_hub bids 25 cr for water_ice | 5,860 |
-| 29 | [mine-achernar-frost-ring-nexus](mine-achernar-frost-ring-nexus.json) | Paying Routes | beyond the border, 4 jumps | up to 3 ships, needs ice_harvester_i, empty hold, while central_nexus bids 25 cr for water_ice | 2,230 |
-| 30 | [mine-ruchbah-ice-belt-nexus](mine-ruchbah-ice-belt-nexus.json) | Paying Routes | beyond the border, 4 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while central_nexus bids 25 cr for water_ice | 3,670 |
-| 31 | [mine-wolf-1061-frozen-drift-nexus](mine-wolf-1061-frozen-drift-nexus.json) | Paying Routes | beyond the border, 4 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while central_nexus bids 25 cr for water_ice | 1,900 |
-| 32 | [mine-alnair-ice-fields-nexus](mine-alnair-ice-fields-nexus.json) | Paying Routes | beyond the border, 5 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while central_nexus bids 25 cr for water_ice | 2,200 |
-| 33 | [mine-cryogenic-reserve](mine-cryogenic-reserve.json) | Paying Routes | home space | up to 1 ships, needs ice_harvester_i, while central_nexus bids 25 cr for water_ice | 1,060 |
-| 34 | [mine-felis-frost-ring](mine-felis-frost-ring.json) | Measured at a Loss | beyond the border, 7 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while node_beta_industrial_station bids 156 cr for deuterium_ice | -70 |
-| 35 | [mine-nova-terra-ice-shelf](mine-nova-terra-ice-shelf.json) | Tests | beyond the border, 8 jumps | up to 1 ships, needs ice_harvester_i, while central_nexus bids 25 cr for water_ice | TBD |
-| 36 | [gather-gsc-0027-prism-scatter](gather-gsc-0027-prism-scatter.json) | Standing Work, Reading and Waiting | home space | up to 40 ships, needs mining_laser_i, standing work | -100 |
-| 37 | [gather-hamal-crystal-bloom](gather-hamal-crystal-bloom.json) | Standing Work, Reading and Waiting | home space | up to 40 ships, needs mining_laser_i, standing work | -160 |
-| 38 | [mine-acubens](mine-acubens.json) | Standing Work, Reading and Waiting | home space | up to 18 ships, needs mining_laser_i, standing work | -160 |
-| 39 | [mine-pherkad-rift](mine-pherkad-rift.json) | Standing Work, Reading and Waiting | home space | up to 18 ships, needs mining_laser_i, standing work | -170 |
-| 40 | [census-frontier](census-frontier.json) | Standing Work, Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -630 |
-| 41 | [park](park.json) | Standing Work, Reading and Waiting | home space | the park route | -670 |
+| # | Route | Group | Zone | Open to | Ships planned | Credits per ship-hour |
+|---|---|---|---|---|---|---|
+| 1 | [voidborn-signal-fragments](voidborn-signal-fragments.json) | Once per Pilot | home space | once per pilot, up to 10 ships, from navigation 3 | -- | one-time |
+| 2 | [voidborn-first-steps-board](voidborn-first-steps-board.json) | Once per Pilot | home space | once per pilot, up to 3 ships | -- | one-time |
+| 3 | [voidborn-network-expansion](voidborn-network-expansion.json) | Once per Pilot | home space | once per pilot, up to 20 ships, after the reward First Steps in the Void | -- | one-time |
+| 4 | [voidborn-collective-provides](voidborn-collective-provides.json) | Off | beyond the border, 5 jumps | once per pilot, up to 2 ships, empty hold, after the reward Network Expansion, off | -- | one-time |
+| 5 | [voidborn-signal-protocol](voidborn-signal-protocol.json) | Once per Pilot | home space | once per pilot, up to 20 ships, after the reward The Collective Provides | -- | one-time |
+| 6 | [voidborn-concurrent](voidborn-concurrent.json) | Once per Pilot | home space | once per pilot | -- | one-time |
+| 7 | [voidborn-substrate](voidborn-substrate.json) | Once per Pilot | home space | once per pilot, from 3,000 cr | -- | one-time |
+| 8 | [voidborn-missions-1](voidborn-missions-1.json) | Once per Pilot | home space | once per pilot, from 8,000 cr | -- | one-time |
+| 9 | [voidborn-mining-missions](voidborn-mining-missions.json) | Once per Pilot | home space | once per pilot, up to 40 ships | -- | one-time |
+| 10 | [voidborn-precedence](voidborn-precedence.json) | Once per Pilot | home space | once per pilot, up to 40 ships | -- | one-time |
+| 11 | [voidborn-conductive-lattice](voidborn-conductive-lattice.json) | Once per Pilot | beyond the border, 6 jumps | once per pilot, up to 4 ships, 146 pilots in all, empty hold, from 13,000 cr | -- | one-time |
+| 12 | [voidborn-first-hunt-nexus](voidborn-first-hunt-nexus.json) | Once per Pilot | home space | once per pilot, up to 1 ships | -- | one-time |
+| 13 | [voidborn-first-hunt-gsc](voidborn-first-hunt-gsc.json) | Once per Pilot | home space | once per pilot, up to 1 ships | -- | one-time |
+| 14 | [voidborn-first-hunt-gsc-0031](voidborn-first-hunt-gsc-0031.json) | Once per Pilot | beyond the border, 5 jumps | once per pilot, up to 1 ships, empty hold | -- | one-time |
+| 15 | [fit-ice-harvester](fit-ice-harvester.json) | Fitting | home space | once per pilot, up to 1 ships, 15 pilots in all, without ice_harvester_i, from 6,000 cr | -- | one-time |
+| 16 | [fit-ice-harvester-node-beta](fit-ice-harvester-node-beta.json) | Fitting | home space | once per pilot, up to 1 ships, 2 pilots in all, without ice_harvester_i, from 6,000 cr | -- | one-time |
+| 17 | [fit-ice-harvester-node-gamma](fit-ice-harvester-node-gamma.json) | Fitting | home space | once per pilot, up to 1 ships, 2 pilots in all, without ice_harvester_i, from 6,000 cr | -- | one-time |
+| 18 | [fit-ice-harvester-synchrony](fit-ice-harvester-synchrony.json) | Fitting | home space | once per pilot, up to 1 ships, 4 pilots in all, without ice_harvester_i, from 6,000 cr | -- | one-time |
+| 19 | [fit-ice-harvester-experiment](fit-ice-harvester-experiment.json) | Fitting | home space | once per pilot, up to 1 ships, 2 pilots in all, without ice_harvester_i, from 6,000 cr | -- | one-time |
+| 20 | [fit-ice-harvester-lhs-1140](fit-ice-harvester-lhs-1140.json) | Fitting | beyond the border, 6 jumps | once per pilot, up to 5 ships, 20 pilots in all, without ice_harvester_i, empty hold, from 6,000 cr | -- | one-time |
+| 21 | [voidborn-first-hunt-acubens](voidborn-first-hunt-acubens.json) | Once per Pilot | home space | once per pilot, up to 1 ships | -- | one-time |
+| 22 | [voidborn-first-hunt-achernar](voidborn-first-hunt-achernar.json) | Once per Pilot | beyond the border, 4 jumps | once per pilot, up to 1 ships, empty hold | -- | one-time |
+| 23 | [carry-ice-node-alpha-nexus](carry-ice-node-alpha-nexus.json) | Measured at a Loss | home space | up to 3 ships, with 65 water_ice stored at node_alpha_processing_station, while central_nexus bids 25 cr for water_ice | -- | -360 |
+| 24 | [drain-ice-node-alpha](drain-ice-node-alpha.json) | Tests | home space | up to 2 ships, with 30 water_ice stored at node_alpha_processing_station, while node_alpha_processing_station bids 25 cr for water_ice | -- | TBD |
+| 25 | [carry-ice-synchrony-nexus](carry-ice-synchrony-nexus.json) | Measured at a Loss | home space | up to 2 ships, with 65 water_ice stored at synchrony_hub, while central_nexus bids 25 cr for water_ice | -- | -460 |
+| 26 | [carry-ice-experiment-nexus](carry-ice-experiment-nexus.json) | Measured at a Loss | home space | up to 3 ships, with 65 water_ice stored at the_experiment_research_station, while central_nexus bids 25 cr for water_ice | -- | -480 |
+| 27 | [drain-ice-nexus](drain-ice-nexus.json) | Measured at a Loss | home space | up to 2 ships, with 30 water_ice stored at central_nexus, while central_nexus bids 25 cr for water_ice | -- | -460 |
+| 28 | [mine-wolf-1061-vent](mine-wolf-1061-vent.json) | Paying Routes | beyond the border, 4 jumps | up to 1 ships, needs nitrogen_vent, empty hold, while synchrony_hub bids 25 cr for water_ice | -- | 5,860 |
+| 29 | [mine-achernar-frost-ring-nexus](mine-achernar-frost-ring-nexus.json) | Paying Routes | beyond the border, 4 jumps | up to 3 ships, needs ice_harvester_i, empty hold, while central_nexus bids 25 cr for water_ice | -- | 2,230 |
+| 30 | [mine-ruchbah-ice-belt-nexus](mine-ruchbah-ice-belt-nexus.json) | Paying Routes | beyond the border, 4 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while central_nexus bids 25 cr for water_ice | -- | 3,670 |
+| 31 | [mine-wolf-1061-frozen-drift-nexus](mine-wolf-1061-frozen-drift-nexus.json) | Paying Routes | beyond the border, 4 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while central_nexus bids 25 cr for water_ice | -- | 1,900 |
+| 32 | [mine-alnair-ice-fields-nexus](mine-alnair-ice-fields-nexus.json) | Paying Routes | beyond the border, 5 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while central_nexus bids 25 cr for water_ice | -- | 2,200 |
+| 33 | [mine-cryogenic-reserve](mine-cryogenic-reserve.json) | Paying Routes | home space | up to 1 ships, needs ice_harvester_i, while central_nexus bids 25 cr for water_ice | -- | 1,060 |
+| 34 | [mine-felis-frost-ring](mine-felis-frost-ring.json) | Measured at a Loss | beyond the border, 7 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while node_beta_industrial_station bids 156 cr for deuterium_ice | -- | -70 |
+| 35 | [mine-nova-terra-ice-shelf](mine-nova-terra-ice-shelf.json) | Tests | beyond the border, 8 jumps | up to 1 ships, needs ice_harvester_i, while central_nexus bids 25 cr for water_ice | -- | TBD |
+| 36 | [gather-gsc-0027-prism-scatter](gather-gsc-0027-prism-scatter.json) | Standing Work, Reading and Waiting | home space | up to 40 ships, needs mining_laser_i, standing work | -- | -100 |
+| 37 | [gather-hamal-crystal-bloom](gather-hamal-crystal-bloom.json) | Standing Work, Reading and Waiting | home space | up to 40 ships, needs mining_laser_i, standing work | -- | -160 |
+| 38 | [mine-acubens](mine-acubens.json) | Standing Work, Reading and Waiting | home space | up to 18 ships, needs mining_laser_i, standing work | -- | -160 |
+| 39 | [mine-pherkad-rift](mine-pherkad-rift.json) | Standing Work, Reading and Waiting | home space | up to 18 ships, needs mining_laser_i, standing work | -- | -170 |
+| 40 | [census-frontier](census-frontier.json) | Standing Work, Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -- | -630 |
+| 41 | [park](park.json) | Standing Work, Reading and Waiting | home space | the park route | -- | -670 |
 
 Planned:
 
@@ -222,30 +225,30 @@ Planned:
 
 Kept by Oracle. Routes: 22.
 
-| # | Route | Group | Zone | Open to | Credits per ship-hour |
-|---|---|---|---|---|---|
-| 1 | [voidborn-first-steps-board](voidborn-first-steps-board.json) | Once per Pilot | home space | once per pilot, up to 3 ships | one-time |
-| 2 | [voidborn-network-expansion](voidborn-network-expansion.json) | Once per Pilot | home space | once per pilot, up to 20 ships, after the reward First Steps in the Void | one-time |
-| 3 | [voidborn-collective-provides](voidborn-collective-provides.json) | Off | beyond the border, 5 jumps | once per pilot, up to 2 ships, empty hold, after the reward Network Expansion, off | one-time |
-| 4 | [voidborn-signal-protocol](voidborn-signal-protocol.json) | Once per Pilot | home space | once per pilot, up to 20 ships, after the reward The Collective Provides | one-time |
-| 5 | [voidborn-signal-fragments](voidborn-signal-fragments.json) | Once per Pilot | home space | once per pilot, up to 10 ships, from navigation 3 | one-time |
-| 6 | [census-voidborn](census-voidborn.json) | Standing Work, Reading and Waiting | home space | up to 3 ships | -530 |
-| 7 | [voidborn-first-hunt-intercrus-belt](voidborn-first-hunt-intercrus-belt.json) | Once per Pilot | beyond the border, 7 jumps | once per pilot, up to 1 ships, empty hold | one-time |
-| 8 | [voidborn-first-hunt-intercrus-sootfall](voidborn-first-hunt-intercrus-sootfall.json) | Once per Pilot | beyond the border, 7 jumps | once per pilot, up to 1 ships, empty hold | one-time |
-| 9 | [mission-cracking-the-shell-central](mission-cracking-the-shell-central.json) | Once per Pilot | beyond the border, 4 jumps | once per pilot, up to 1 ships, empty hold, after the reward First Hunt: Belt-Grazers | one-time |
-| 10 | [voidborn-precedence](voidborn-precedence.json) | Once per Pilot | home space | once per pilot, up to 40 ships | one-time |
-| 11 | [voidborn-selling](voidborn-selling.json) | Once per Pilot | home space | once per pilot, up to 10 ships | one-time |
-| 12 | [voidborn-concurrent](voidborn-concurrent.json) | Once per Pilot | home space | once per pilot | one-time |
-| 13 | [voidborn-substrate](voidborn-substrate.json) | Once per Pilot | home space | once per pilot, from 3,000 cr | one-time |
-| 14 | [voidborn-missions-1](voidborn-missions-1.json) | Once per Pilot | home space | once per pilot, from 8,000 cr | one-time |
-| 15 | [voidborn-mining-missions](voidborn-mining-missions.json) | Once per Pilot | home space | once per pilot, up to 40 ships | one-time |
-| 16 | [voidborn-conductive-lattice](voidborn-conductive-lattice.json) | Once per Pilot | beyond the border, 6 jumps | once per pilot, up to 4 ships, 146 pilots in all, empty hold, from 13,000 cr | one-time |
-| 17 | [hunt-atlas-gas-pocket](hunt-atlas-gas-pocket.json) | Paying Routes | beyond the border, 6 jumps | up to 1 ships, empty hold | 2,420 |
-| 18 | [hunt-test-homam-frost-moth](hunt-test-homam-frost-moth.json) | Paying Routes | beyond the border, 6 jumps | up to 1 ships, empty hold | 1,730 |
-| 19 | [gather-gsc-0027-prism-scatter](gather-gsc-0027-prism-scatter.json) | Standing Work, Reading and Waiting | home space | up to 40 ships, needs mining_laser_i, standing work | -100 |
-| 20 | [gather-hamal-crystal-bloom](gather-hamal-crystal-bloom.json) | Standing Work, Reading and Waiting | home space | up to 40 ships, needs mining_laser_i, standing work | -160 |
-| 21 | [census-frontier](census-frontier.json) | Standing Work, Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -630 |
-| 22 | [park](park.json) | Standing Work, Reading and Waiting | home space | the park route | -670 |
+| # | Route | Group | Zone | Open to | Ships planned | Credits per ship-hour |
+|---|---|---|---|---|---|---|
+| 1 | [voidborn-first-steps-board](voidborn-first-steps-board.json) | Once per Pilot | home space | once per pilot, up to 3 ships | -- | one-time |
+| 2 | [voidborn-network-expansion](voidborn-network-expansion.json) | Once per Pilot | home space | once per pilot, up to 20 ships, after the reward First Steps in the Void | -- | one-time |
+| 3 | [voidborn-collective-provides](voidborn-collective-provides.json) | Off | beyond the border, 5 jumps | once per pilot, up to 2 ships, empty hold, after the reward Network Expansion, off | -- | one-time |
+| 4 | [voidborn-signal-protocol](voidborn-signal-protocol.json) | Once per Pilot | home space | once per pilot, up to 20 ships, after the reward The Collective Provides | -- | one-time |
+| 5 | [voidborn-signal-fragments](voidborn-signal-fragments.json) | Once per Pilot | home space | once per pilot, up to 10 ships, from navigation 3 | -- | one-time |
+| 6 | [census-voidborn](census-voidborn.json) | Standing Work, Reading and Waiting | home space | up to 3 ships | -- | -530 |
+| 7 | [voidborn-first-hunt-intercrus-belt](voidborn-first-hunt-intercrus-belt.json) | Once per Pilot | beyond the border, 7 jumps | once per pilot, up to 1 ships, empty hold | -- | one-time |
+| 8 | [voidborn-first-hunt-intercrus-sootfall](voidborn-first-hunt-intercrus-sootfall.json) | Once per Pilot | beyond the border, 7 jumps | once per pilot, up to 1 ships, empty hold | -- | one-time |
+| 9 | [mission-cracking-the-shell-central](mission-cracking-the-shell-central.json) | Once per Pilot | beyond the border, 4 jumps | once per pilot, up to 1 ships, empty hold, after the reward First Hunt: Belt-Grazers | -- | one-time |
+| 10 | [voidborn-precedence](voidborn-precedence.json) | Once per Pilot | home space | once per pilot, up to 40 ships | -- | one-time |
+| 11 | [voidborn-selling](voidborn-selling.json) | Once per Pilot | home space | once per pilot, up to 10 ships | -- | one-time |
+| 12 | [voidborn-concurrent](voidborn-concurrent.json) | Once per Pilot | home space | once per pilot | -- | one-time |
+| 13 | [voidborn-substrate](voidborn-substrate.json) | Once per Pilot | home space | once per pilot, from 3,000 cr | -- | one-time |
+| 14 | [voidborn-missions-1](voidborn-missions-1.json) | Once per Pilot | home space | once per pilot, from 8,000 cr | -- | one-time |
+| 15 | [voidborn-mining-missions](voidborn-mining-missions.json) | Once per Pilot | home space | once per pilot, up to 40 ships | -- | one-time |
+| 16 | [voidborn-conductive-lattice](voidborn-conductive-lattice.json) | Once per Pilot | beyond the border, 6 jumps | once per pilot, up to 4 ships, 146 pilots in all, empty hold, from 13,000 cr | -- | one-time |
+| 17 | [hunt-atlas-gas-pocket](hunt-atlas-gas-pocket.json) | Paying Routes | beyond the border, 6 jumps | up to 1 ships, empty hold | -- | 2,420 |
+| 18 | [hunt-test-homam-frost-moth](hunt-test-homam-frost-moth.json) | Paying Routes | beyond the border, 6 jumps | up to 1 ships, empty hold | -- | 1,730 |
+| 19 | [gather-gsc-0027-prism-scatter](gather-gsc-0027-prism-scatter.json) | Standing Work, Reading and Waiting | home space | up to 40 ships, needs mining_laser_i, standing work | -- | -100 |
+| 20 | [gather-hamal-crystal-bloom](gather-hamal-crystal-bloom.json) | Standing Work, Reading and Waiting | home space | up to 40 ships, needs mining_laser_i, standing work | -- | -160 |
+| 21 | [census-frontier](census-frontier.json) | Standing Work, Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -- | -630 |
+| 22 | [park](park.json) | Standing Work, Reading and Waiting | home space | the park route | -- | -670 |
 
 Planned:
 
@@ -262,73 +265,73 @@ Planned:
 
 Kept by Unity. Routes: 34.
 
-| # | Route | Group | Zone | Open to | Credits per ship-hour |
-|---|---|---|---|---|---|
-| 1 | [voidborn-first-steps-board](voidborn-first-steps-board.json) | Once per Pilot | home space | once per pilot, up to 3 ships | one-time |
-| 2 | [voidborn-collective-provides](voidborn-collective-provides.json) | Off | beyond the border, 5 jumps | once per pilot, up to 2 ships, empty hold, after the reward Network Expansion, off | one-time |
-| 3 | [voidborn-signal-protocol](voidborn-signal-protocol.json) | Once per Pilot | home space | once per pilot, up to 20 ships, after the reward The Collective Provides | one-time |
-| 4 | [voidborn-signal-fragments](voidborn-signal-fragments.json) | Once per Pilot | home space | once per pilot, up to 10 ships, from navigation 3 | one-time |
-| 5 | [voidborn-concurrent](voidborn-concurrent.json) | Once per Pilot | home space | once per pilot | one-time |
-| 6 | [voidborn-substrate](voidborn-substrate.json) | Once per Pilot | home space | once per pilot, from 3,000 cr | one-time |
-| 7 | [voidborn-missions-1](voidborn-missions-1.json) | Once per Pilot | home space | once per pilot, from 8,000 cr | one-time |
-| 8 | [voidborn-mining-missions](voidborn-mining-missions.json) | Once per Pilot | home space | once per pilot, up to 40 ships | one-time |
-| 9 | [voidborn-first-steps](voidborn-first-steps.json) | Off | home space | once per pilot, up to 2 ships, off | one-time |
-| 10 | [voidborn-selling](voidborn-selling.json) | Once per Pilot | home space | once per pilot, up to 10 ships | one-time |
-| 11 | [voidborn-precedence](voidborn-precedence.json) | Once per Pilot | home space | once per pilot, up to 40 ships | one-time |
-| 12 | [voidborn-first-hunt-nexus](voidborn-first-hunt-nexus.json) | Once per Pilot | home space | once per pilot, up to 1 ships | one-time |
-| 13 | [voidborn-first-hunt-gsc](voidborn-first-hunt-gsc.json) | Once per Pilot | home space | once per pilot, up to 1 ships | one-time |
-| 14 | [voidborn-first-hunt-acubens](voidborn-first-hunt-acubens.json) | Once per Pilot | home space | once per pilot, up to 1 ships | one-time |
-| 15 | [fit-ice-harvester-guard](fit-ice-harvester-guard.json) | Fitting | home space | once per pilot, up to 4 ships, 8 pilots in all, without ice_harvester_i, from 6,000 cr | one-time |
-| 16 | [mine-node-beta-frozen-drift](mine-node-beta-frozen-drift.json) | Paying Routes | home space | up to 1 ships, needs ice_harvester_i, while node_alpha_processing_station bids 25 cr for water_ice | 1,790 |
-| 17 | [mine-ruchbah-ice-belt](mine-ruchbah-ice-belt.json) | Paying Routes | beyond the border, 4 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while the_experiment_research_station bids 25 cr for water_ice | 7,430 |
-| 18 | [mine-achernar-frost-ring](mine-achernar-frost-ring.json) | Paying Routes | beyond the border, 4 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while the_experiment_research_station bids 25 cr for water_ice | 4,590 |
-| 19 | [mine-wolf-1061-frozen-drift](mine-wolf-1061-frozen-drift.json) | Paying Routes | beyond the border, 4 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while node_alpha_processing_station bids 25 cr for water_ice | 2,040 |
-| 20 | [mine-keid-ice-shelf](mine-keid-ice-shelf.json) | Paying Routes | beyond the border, 5 jumps | up to 2 ships, needs ice_harvester_i, empty hold, while node_alpha_processing_station bids 25 cr for water_ice | 780 |
-| 21 | [mine-cryogenic-reserve](mine-cryogenic-reserve.json) | Paying Routes | home space | up to 1 ships, needs ice_harvester_i, while central_nexus bids 25 cr for water_ice | 1,060 |
-| 22 | [mine-alnair-ice-fields](mine-alnair-ice-fields.json) | Paying Routes | beyond the border, 5 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while node_alpha_processing_station bids 25 cr for water_ice | 680 |
-| 23 | [mine-gsc-0041-frost-ring](mine-gsc-0041-frost-ring.json) | Paying Routes | beyond the border, 4 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while node_alpha_processing_station bids 25 cr for water_ice | 2,120 |
-| 24 | [mine-antares-ice-fields](mine-antares-ice-fields.json) | Paying Routes | beyond the border, 5 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while node_alpha_processing_station bids 25 cr for water_ice | 80 |
-| 25 | [mine-intercrus-ice-fields](mine-intercrus-ice-fields.json) | Paying Routes | beyond the border, 7 jumps | up to 2 ships, needs ice_harvester_i, empty hold, while the_experiment_research_station bids 25 cr for water_ice | 610 |
-| 26 | [mine-deepwell-volatile-ice](mine-deepwell-volatile-ice.json) | Paying Routes | beyond the border, 7 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while the_experiment_research_station bids 25 cr for water_ice | 640 |
-| 27 | [hunt-starveling-nebula-veil-ray](hunt-starveling-nebula-veil-ray.json) | Measured at a Loss | beyond the border, 6 jumps | up to 1 ships, empty hold | -520 |
-| 28 | [hunt-felis-dim-lattice-veil-ray](hunt-felis-dim-lattice-veil-ray.json) | Measured at a Loss | beyond the border, 7 jumps | up to 1 ships, empty hold | -490 |
-| 29 | [voidborn-network-expansion](voidborn-network-expansion.json) | Once per Pilot | home space | once per pilot, up to 20 ships, after the reward First Steps in the Void | one-time |
-| 30 | [mission-ghosts-in-the-cloud-node](mission-ghosts-in-the-cloud-node.json) | Once per Pilot | home space | once per pilot, up to 1 ships | one-time |
-| 31 | [gather-gsc-0027-prism-scatter](gather-gsc-0027-prism-scatter.json) | Standing Work, Reading and Waiting | home space | up to 40 ships, needs mining_laser_i, standing work | -100 |
-| 32 | [gather-hamal-crystal-bloom](gather-hamal-crystal-bloom.json) | Standing Work, Reading and Waiting | home space | up to 40 ships, needs mining_laser_i, standing work | -160 |
-| 33 | [census-frontier](census-frontier.json) | Standing Work, Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -630 |
-| 34 | [park](park.json) | Standing Work, Reading and Waiting | home space | the park route | -670 |
+| # | Route | Group | Zone | Open to | Ships planned | Credits per ship-hour |
+|---|---|---|---|---|---|---|
+| 1 | [voidborn-first-steps-board](voidborn-first-steps-board.json) | Once per Pilot | home space | once per pilot, up to 3 ships | -- | one-time |
+| 2 | [voidborn-collective-provides](voidborn-collective-provides.json) | Off | beyond the border, 5 jumps | once per pilot, up to 2 ships, empty hold, after the reward Network Expansion, off | -- | one-time |
+| 3 | [voidborn-signal-protocol](voidborn-signal-protocol.json) | Once per Pilot | home space | once per pilot, up to 20 ships, after the reward The Collective Provides | -- | one-time |
+| 4 | [voidborn-signal-fragments](voidborn-signal-fragments.json) | Once per Pilot | home space | once per pilot, up to 10 ships, from navigation 3 | -- | one-time |
+| 5 | [voidborn-concurrent](voidborn-concurrent.json) | Once per Pilot | home space | once per pilot | -- | one-time |
+| 6 | [voidborn-substrate](voidborn-substrate.json) | Once per Pilot | home space | once per pilot, from 3,000 cr | -- | one-time |
+| 7 | [voidborn-missions-1](voidborn-missions-1.json) | Once per Pilot | home space | once per pilot, from 8,000 cr | -- | one-time |
+| 8 | [voidborn-mining-missions](voidborn-mining-missions.json) | Once per Pilot | home space | once per pilot, up to 40 ships | -- | one-time |
+| 9 | [voidborn-first-steps](voidborn-first-steps.json) | Off | home space | once per pilot, up to 2 ships, off | -- | one-time |
+| 10 | [voidborn-selling](voidborn-selling.json) | Once per Pilot | home space | once per pilot, up to 10 ships | -- | one-time |
+| 11 | [voidborn-precedence](voidborn-precedence.json) | Once per Pilot | home space | once per pilot, up to 40 ships | -- | one-time |
+| 12 | [voidborn-first-hunt-nexus](voidborn-first-hunt-nexus.json) | Once per Pilot | home space | once per pilot, up to 1 ships | -- | one-time |
+| 13 | [voidborn-first-hunt-gsc](voidborn-first-hunt-gsc.json) | Once per Pilot | home space | once per pilot, up to 1 ships | -- | one-time |
+| 14 | [voidborn-first-hunt-acubens](voidborn-first-hunt-acubens.json) | Once per Pilot | home space | once per pilot, up to 1 ships | -- | one-time |
+| 15 | [fit-ice-harvester-guard](fit-ice-harvester-guard.json) | Fitting | home space | once per pilot, up to 4 ships, 8 pilots in all, without ice_harvester_i, from 6,000 cr | -- | one-time |
+| 16 | [mine-node-beta-frozen-drift](mine-node-beta-frozen-drift.json) | Paying Routes | home space | up to 1 ships, needs ice_harvester_i, while node_alpha_processing_station bids 25 cr for water_ice | -- | 1,790 |
+| 17 | [mine-ruchbah-ice-belt](mine-ruchbah-ice-belt.json) | Paying Routes | beyond the border, 4 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while the_experiment_research_station bids 25 cr for water_ice | -- | 7,430 |
+| 18 | [mine-achernar-frost-ring](mine-achernar-frost-ring.json) | Paying Routes | beyond the border, 4 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while the_experiment_research_station bids 25 cr for water_ice | -- | 4,590 |
+| 19 | [mine-wolf-1061-frozen-drift](mine-wolf-1061-frozen-drift.json) | Paying Routes | beyond the border, 4 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while node_alpha_processing_station bids 25 cr for water_ice | -- | 2,040 |
+| 20 | [mine-keid-ice-shelf](mine-keid-ice-shelf.json) | Paying Routes | beyond the border, 5 jumps | up to 2 ships, needs ice_harvester_i, empty hold, while node_alpha_processing_station bids 25 cr for water_ice | -- | 780 |
+| 21 | [mine-cryogenic-reserve](mine-cryogenic-reserve.json) | Paying Routes | home space | up to 1 ships, needs ice_harvester_i, while central_nexus bids 25 cr for water_ice | -- | 1,060 |
+| 22 | [mine-alnair-ice-fields](mine-alnair-ice-fields.json) | Paying Routes | beyond the border, 5 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while node_alpha_processing_station bids 25 cr for water_ice | -- | 680 |
+| 23 | [mine-gsc-0041-frost-ring](mine-gsc-0041-frost-ring.json) | Paying Routes | beyond the border, 4 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while node_alpha_processing_station bids 25 cr for water_ice | -- | 2,120 |
+| 24 | [mine-antares-ice-fields](mine-antares-ice-fields.json) | Paying Routes | beyond the border, 5 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while node_alpha_processing_station bids 25 cr for water_ice | -- | 80 |
+| 25 | [mine-intercrus-ice-fields](mine-intercrus-ice-fields.json) | Paying Routes | beyond the border, 7 jumps | up to 2 ships, needs ice_harvester_i, empty hold, while the_experiment_research_station bids 25 cr for water_ice | -- | 610 |
+| 26 | [mine-deepwell-volatile-ice](mine-deepwell-volatile-ice.json) | Paying Routes | beyond the border, 7 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while the_experiment_research_station bids 25 cr for water_ice | -- | 640 |
+| 27 | [hunt-starveling-nebula-veil-ray](hunt-starveling-nebula-veil-ray.json) | Measured at a Loss | beyond the border, 6 jumps | up to 1 ships, empty hold | -- | -520 |
+| 28 | [hunt-felis-dim-lattice-veil-ray](hunt-felis-dim-lattice-veil-ray.json) | Measured at a Loss | beyond the border, 7 jumps | up to 1 ships, empty hold | -- | -490 |
+| 29 | [voidborn-network-expansion](voidborn-network-expansion.json) | Once per Pilot | home space | once per pilot, up to 20 ships, after the reward First Steps in the Void | -- | one-time |
+| 30 | [mission-ghosts-in-the-cloud-node](mission-ghosts-in-the-cloud-node.json) | Once per Pilot | home space | once per pilot, up to 1 ships | -- | one-time |
+| 31 | [gather-gsc-0027-prism-scatter](gather-gsc-0027-prism-scatter.json) | Standing Work, Reading and Waiting | home space | up to 40 ships, needs mining_laser_i, standing work | -- | -100 |
+| 32 | [gather-hamal-crystal-bloom](gather-hamal-crystal-bloom.json) | Standing Work, Reading and Waiting | home space | up to 40 ships, needs mining_laser_i, standing work | -- | -160 |
+| 33 | [census-frontier](census-frontier.json) | Standing Work, Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -- | -630 |
+| 34 | [park](park.json) | Standing Work, Reading and Waiting | home space | the park route | -- | -670 |
 
 ## trader
 
 Kept by Mercury. Routes: 24.
 
-| # | Route | Group | Zone | Open to | Credits per ship-hour |
-|---|---|---|---|---|---|
-| 1 | [voidborn-first-steps-board](voidborn-first-steps-board.json) | Once per Pilot | home space | once per pilot, up to 3 ships | one-time |
-| 2 | [voidborn-network-expansion](voidborn-network-expansion.json) | Once per Pilot | home space | once per pilot, up to 20 ships, after the reward First Steps in the Void | one-time |
-| 3 | [voidborn-collective-provides](voidborn-collective-provides.json) | Off | beyond the border, 5 jumps | once per pilot, up to 2 ships, empty hold, after the reward Network Expansion, off | one-time |
-| 4 | [voidborn-signal-protocol](voidborn-signal-protocol.json) | Once per Pilot | home space | once per pilot, up to 20 ships, after the reward The Collective Provides | one-time |
-| 5 | [voidborn-signal-fragments](voidborn-signal-fragments.json) | Once per Pilot | home space | once per pilot, up to 10 ships, from navigation 3 | one-time |
-| 6 | [voidborn-hardware-cargo](voidborn-hardware-cargo.json) | Fitting | home space | once per pilot, up to 3 ships, without cargo_expander_i, from 4,000 cr, after the reward The Collective Provides | one-time |
-| 7 | [voidborn-atmospheric-extraction](voidborn-atmospheric-extraction.json) | Fitting | home space | once per pilot, up to 3 ships, without gas_harvester_i, from 6,000 cr, after the reward The Collective Provides | one-time |
-| 8 | [voidborn-concurrent](voidborn-concurrent.json) | Once per Pilot | home space | once per pilot | one-time |
-| 9 | [voidborn-substrate](voidborn-substrate.json) | Once per Pilot | home space | once per pilot, from 3,000 cr | one-time |
-| 10 | [voidborn-missions-1](voidborn-missions-1.json) | Once per Pilot | home space | once per pilot, from 8,000 cr | one-time |
-| 11 | [voidborn-mining-missions](voidborn-mining-missions.json) | Once per Pilot | home space | once per pilot, up to 40 ships | one-time |
-| 12 | [voidborn-precedence](voidborn-precedence.json) | Once per Pilot | home space | once per pilot, up to 40 ships | one-time |
-| 13 | [voidborn-conductive-lattice](voidborn-conductive-lattice.json) | Once per Pilot | beyond the border, 6 jumps | once per pilot, up to 4 ships, 146 pilots in all, empty hold, from 13,000 cr | one-time |
-| 14 | [voidborn-resonance-finish](voidborn-resonance-finish.json) | Once per Pilot | home space | once per pilot, up to 2 ships, from 8,000 cr, after the reward Conductive Lattice | one-time |
-| 15 | [mine-the-experiment-haze](mine-the-experiment-haze.json) | Paying Routes | home space | up to 1 ships, needs gas_harvester_i, while node_beta_industrial_station bids 26 cr for hydrogen_gas | 1,160 |
-| 16 | [mine-the-experiment-haze-synchrony](mine-the-experiment-haze-synchrony.json) | Tests | home space | up to 1 ships, needs gas_harvester_i, while synchrony_hub bids 28 cr for hydrogen_gas | TBD |
-| 17 | [mine-gsc-0016-emission-nebula](mine-gsc-0016-emission-nebula.json) | Paying Routes | beyond the border, 6 jumps | up to 1 ships, needs gas_harvester_i, empty hold | 510 |
-| 18 | [mine-marfik-emission-nebula](mine-marfik-emission-nebula.json) | Paying Routes | beyond the border, 6 jumps | up to 1 ships, needs gas_harvester_i, empty hold | 240 |
-| 19 | [gather-gsc-0027-prism-scatter](gather-gsc-0027-prism-scatter.json) | Standing Work, Reading and Waiting | home space | up to 40 ships, needs mining_laser_i, standing work | -100 |
-| 20 | [gather-hamal-crystal-bloom](gather-hamal-crystal-bloom.json) | Standing Work, Reading and Waiting | home space | up to 40 ships, needs mining_laser_i, standing work | -160 |
-| 21 | [mine-acubens](mine-acubens.json) | Standing Work, Reading and Waiting | home space | up to 18 ships, needs mining_laser_i, standing work | -160 |
-| 22 | [mine-pherkad-rift](mine-pherkad-rift.json) | Standing Work, Reading and Waiting | home space | up to 18 ships, needs mining_laser_i, standing work | -170 |
-| 23 | [census-frontier](census-frontier.json) | Standing Work, Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -630 |
-| 24 | [park](park.json) | Standing Work, Reading and Waiting | home space | the park route | -670 |
+| # | Route | Group | Zone | Open to | Ships planned | Credits per ship-hour |
+|---|---|---|---|---|---|---|
+| 1 | [voidborn-first-steps-board](voidborn-first-steps-board.json) | Once per Pilot | home space | once per pilot, up to 3 ships | -- | one-time |
+| 2 | [voidborn-network-expansion](voidborn-network-expansion.json) | Once per Pilot | home space | once per pilot, up to 20 ships, after the reward First Steps in the Void | -- | one-time |
+| 3 | [voidborn-collective-provides](voidborn-collective-provides.json) | Off | beyond the border, 5 jumps | once per pilot, up to 2 ships, empty hold, after the reward Network Expansion, off | -- | one-time |
+| 4 | [voidborn-signal-protocol](voidborn-signal-protocol.json) | Once per Pilot | home space | once per pilot, up to 20 ships, after the reward The Collective Provides | -- | one-time |
+| 5 | [voidborn-signal-fragments](voidborn-signal-fragments.json) | Once per Pilot | home space | once per pilot, up to 10 ships, from navigation 3 | -- | one-time |
+| 6 | [voidborn-hardware-cargo](voidborn-hardware-cargo.json) | Fitting | home space | once per pilot, up to 3 ships, without cargo_expander_i, from 4,000 cr, after the reward The Collective Provides | -- | one-time |
+| 7 | [voidborn-atmospheric-extraction](voidborn-atmospheric-extraction.json) | Fitting | home space | once per pilot, up to 3 ships, without gas_harvester_i, from 6,000 cr, after the reward The Collective Provides | -- | one-time |
+| 8 | [voidborn-concurrent](voidborn-concurrent.json) | Once per Pilot | home space | once per pilot | -- | one-time |
+| 9 | [voidborn-substrate](voidborn-substrate.json) | Once per Pilot | home space | once per pilot, from 3,000 cr | -- | one-time |
+| 10 | [voidborn-missions-1](voidborn-missions-1.json) | Once per Pilot | home space | once per pilot, from 8,000 cr | -- | one-time |
+| 11 | [voidborn-mining-missions](voidborn-mining-missions.json) | Once per Pilot | home space | once per pilot, up to 40 ships | -- | one-time |
+| 12 | [voidborn-precedence](voidborn-precedence.json) | Once per Pilot | home space | once per pilot, up to 40 ships | -- | one-time |
+| 13 | [voidborn-conductive-lattice](voidborn-conductive-lattice.json) | Once per Pilot | beyond the border, 6 jumps | once per pilot, up to 4 ships, 146 pilots in all, empty hold, from 13,000 cr | -- | one-time |
+| 14 | [voidborn-resonance-finish](voidborn-resonance-finish.json) | Once per Pilot | home space | once per pilot, up to 2 ships, from 8,000 cr, after the reward Conductive Lattice | -- | one-time |
+| 15 | [mine-the-experiment-haze](mine-the-experiment-haze.json) | Paying Routes | home space | up to 1 ships, needs gas_harvester_i, while node_beta_industrial_station bids 26 cr for hydrogen_gas | -- | 1,160 |
+| 16 | [mine-the-experiment-haze-synchrony](mine-the-experiment-haze-synchrony.json) | Tests | home space | up to 1 ships, needs gas_harvester_i, while synchrony_hub bids 28 cr for hydrogen_gas | -- | TBD |
+| 17 | [mine-gsc-0016-emission-nebula](mine-gsc-0016-emission-nebula.json) | Paying Routes | beyond the border, 6 jumps | up to 1 ships, needs gas_harvester_i, empty hold | -- | 510 |
+| 18 | [mine-marfik-emission-nebula](mine-marfik-emission-nebula.json) | Paying Routes | beyond the border, 6 jumps | up to 1 ships, needs gas_harvester_i, empty hold | -- | 240 |
+| 19 | [gather-gsc-0027-prism-scatter](gather-gsc-0027-prism-scatter.json) | Standing Work, Reading and Waiting | home space | up to 40 ships, needs mining_laser_i, standing work | -- | -100 |
+| 20 | [gather-hamal-crystal-bloom](gather-hamal-crystal-bloom.json) | Standing Work, Reading and Waiting | home space | up to 40 ships, needs mining_laser_i, standing work | -- | -160 |
+| 21 | [mine-acubens](mine-acubens.json) | Standing Work, Reading and Waiting | home space | up to 18 ships, needs mining_laser_i, standing work | -- | -160 |
+| 22 | [mine-pherkad-rift](mine-pherkad-rift.json) | Standing Work, Reading and Waiting | home space | up to 18 ships, needs mining_laser_i, standing work | -- | -170 |
+| 23 | [census-frontier](census-frontier.json) | Standing Work, Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -- | -630 |
+| 24 | [park](park.json) | Standing Work, Reading and Waiting | home space | the park route | -- | -670 |
 
 Planned:
 

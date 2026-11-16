@@ -18,9 +18,10 @@ the scripts in `game/fleet/` fly them; nobody retypes a route into a chat.
 | Part | Does |
 |---|---|
 | `game/routes/<id>.json` | One route: what to do, for whom, and what our runs measured |
-| `game/routes/plans/<role>.json` | One plan per role: the routes tried in this order for a free pilot. The role's Admiral keeps it (`owner`) |
+| A division's plan file (`game/fleet/plan.py`) | One file per division, kept by its Admiral: every ship with its own routes in their order, between the list First and the list Then that every ship of the division flies. It names our ships, so it lies in the unit's data folder (`data/plans/plan-<division>.md`), not here. `plan.py apply` checks it and writes what the dispatcher flies by |
+| `game/routes/plans/<role>.json` | Written by `plan.py` from the division's plan file, never by hand: the role's routes in one order and how many of its ships have each in their plan |
 | `game/routes/guidebook/<division>.md` | What each division learned about its routes and its levelling; its Admiral keeps it, every member reads it |
-| `game/fleet/dispatch.py` (service `dispatch`) | Every 30 s gives each free pilot the first route of its role that is open to it |
+| `game/fleet/dispatch.py` (service `dispatch`) | Every 30 s gives each free pilot the first route of its own list that is open to it |
 | `game/fleet/route_run.py`, `hunt.py`, `census.py`, `mine.py` | The runners: one pilot, one route, one row in the runs file |
 | `game/fleet/routemaker.py` (service `routemaker`) | Every ten minutes costs every way to earn that our readings show (fields, order books, boards, herds, recipes) and keeps the list in the unit's data folder. `routemaker.py show` lists the candidates of your division, best first; `routemaker.py route <id>` prints a candidate's route file, ready to be saved here as a test |
 | `python3 -B game/fleet/routes.py check` | The gate: fails on a wrong route file, a wrong plan or a stale index |
@@ -115,7 +116,9 @@ runner books them so that CPH counts recurring income only.
 5. A hunt sets `max_ships` and `min_creatures`: a herd regrows only
    when it is hunted below its replacement rate, and it starves when
    its deposit is mined out (`game/rules/` wildlife).
-6. No ship is idle (Suggi, 2026-11-16). A plan holds, in this order:
+6. No ship is idle (Suggi, 2026-11-16). A ship's list (the list First,
+   its own routes, the list Then of its division's plan file) holds, in
+   this order:
    the missions that pay once; the routes that pay, each with no more
    ships than it carries; standing work for every ship that is left
    (a mine route that sells nothing and gathers into storage, a loop
@@ -125,8 +128,9 @@ runner books them so that CPH counts recurring income only.
    Standing work costs its fuel (about 160 cr per ship-hour measured
    on the first ore routes) and brings skill and the materials of
    standing order S6. The fill gate halts while a ship waits.
-7. Read what a route carries before you lift it (Suggi, 2026-11-16:
-   never all ships on one route): `hive.py standing` prints for every
+7. Read what a route carries before you give it ships or lift it
+   (Suggi, 2026-11-16: never all ships on one route): give a route to as
+   many ships as it carries, as their own route, and no more. `hive.py standing` prints for every
    route of your plan the ships it keeps busy hour after hour, from
    what its bid, its field or its herd regains, and how many more for
    one turn while today's standing order holds. `fill.py lift` refuses

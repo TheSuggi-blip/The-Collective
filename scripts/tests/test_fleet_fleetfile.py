@@ -138,17 +138,18 @@ class BlockTests(Tree):
                                r"changed only by the script \(preflight and session-end run it\)\.\n")
         self.assertTablesWhole(text)
         plan, ships = tables(text)
-        self.assertEqual(plan[0], "| # | Route | Kind | Group | Ships now / limit | Carries | Measured |")
-        self.assertEqual(plan[2:], ["| 1 | ice | mine | Paying Routes | 1 / 2 | -- | 5,000 |", "| 2 | gone | no route file | -- | -- | -- | -- |",
-                                    "| 3 | park | circuit | Standing Work, Reading and Waiting | 0 / - | -- | TBD |"])
-        self.assertEqual(ships[0], "| Ship | Does now | Since (UTC) | Last run | Piloting | Mining | Navigation | Modules |")
+        self.assertEqual(plan[0], "| # | Route | Kind | Group | Ships planned | Ships now / limit | Carries | Measured |")
+        self.assertEqual(plan[2:], ["| 1 | ice | mine | Paying Routes | -- | 1 / 2 | -- | 5,000 |", "| 2 | gone | no route file | -- | -- | -- | -- | -- |",
+                                    "| 3 | park | circuit | Standing Work, Reading and Waiting | -- | 0 / - | -- | TBD |"])
+        self.assertEqual(ships[0], "| Ship | Does now | Last run | Own routes, in order | Piloting | Mining | Navigation | Modules |")
         rows = rows_by_first(ships)
         self.assertEqual([cells(line)[0] for line in ships[2:]], ["miner-1", "miner-2", "miner-3", "miner-4", "miner-10"])     # by number, then name
-        self.assertEqual({name: (row["Does now"], row["Since (UTC)"]) for name, row in rows.items()},
-                         {"miner-1": ("flies mine ice", "10:05"), "miner-2": ("waits docked at far", "--"), "miner-3": ("not connected", "--"),
-                          "miner-4": ("busy by hand (goal)", "11:20"), "miner-10": ("by hand: Zero", "12:00")})
-        self.assertEqual(rows["miner-1"]["Last run"], "ice: +1,000 cr in 30 min, started 11-16 09:00")       # the newest start, not the last line
-        self.assertEqual(rows["miner-2"]["Last run"], "ice: wallet not read in 20 min, started 11-16 08:30")
+        self.assertEqual({name: (row["Does now"], "--") for name, row in rows.items()},
+                         {"miner-1": ("flies mine ice", "--"), "miner-2": ("waits docked at far", "--"), "miner-3": ("not connected", "--"),
+                          "miner-4": ("busy by hand (goal)", "--"), "miner-10": ("by hand: Zero", "--")})
+        self.assertEqual(rows["miner-1"]["Last run"], "ice: +1,000 cr in 30 min")       # the newest start, not the last line
+        self.assertEqual(rows["miner-2"]["Last run"], "ice: wallet not read in 20 min")
+        self.assertEqual(rows["miner-1"]["Own routes, in order"], "--")                     # no plan file yet: no route of its own
         self.assertEqual(rows["miner-3"]["Last run"], "--")
         self.assertEqual([rows["miner-1"][k] for k in ("Piloting", "Mining", "Navigation", "Modules")], ["5", "3", "0", "ice_harvester_i, mining_laser_i"])
         self.assertEqual([rows["miner-2"][k] for k in ("Piloting", "Mining", "Navigation", "Modules")], ["--", "--", "--", "--"])     # no live file
@@ -162,7 +163,7 @@ class BlockTests(Tree):
         self.assertTablesWhole(done.stdout)
         self.assertEqual([line.split("\n", 1)[0] for line in done.stdout.split("### ")[1:]], ["Plan command", "Ships command", "Plan sentinel", "Ships sentinel"])
         row = rows_by_first(tables(done.stdout)[1])["Zero Point"]
-        self.assertEqual((row["Does now"], row["Since (UTC)"], row["Last run"]), ("flies circuit a/b", "13:45", "ice: -1,234 cr in 40 min, started 11-16 07:00"))
+        self.assertEqual((row["Does now"], row["Last run"]), ("flies circuit a/b", "ice: -1,234 cr in 40 min"))
         self.assertEqual((row["Navigation"], row["Piloting"], row["Modules"]), ("4", "0", "none"))
         self.assertIn("\n1 ships: 1 on a route, 0 waiting, 0 by hand, 0 not connected\n", done.stdout)
 
@@ -226,7 +227,7 @@ class WriteTests(Tree):
         done = self.run_it("zero")
         self.assertIn("Zero: written: ", done.stdout)
         self.assertNotIn("2000-01-01", path.read_text())
-        self.assertIn("| miner-1 | waits docked at home | -- |", path.read_text())
+        self.assertIn("| miner-1 | waits docked at home | ", path.read_text())
 
 
 class PermissionTests(Tree):

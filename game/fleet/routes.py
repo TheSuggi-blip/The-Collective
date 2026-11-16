@@ -102,6 +102,13 @@ def systems_of(route):
     return [p.split(":")[0] for p in places if p] + list(route.get("systems") or [])
 
 
+def closes(route):
+    """What keeps a route from being always open, as the last route of a plan must be: the fields that limit it, or
+    `limits` for a route that is neither the `park` route nor a mine; [] for one that is always open."""
+    closed = [key for key in ("once", "max_ships", "min_credits", "requires", "skip_if_booked") if route.get(key)] + (["status off"] if route.get("status") == "off" else [])
+    return closed or ([] if route.get("park") or route.get("kind") == "mine" else ["limits"])
+
+
 def check(root):
     routes, errors = routes_of(root)
     known = chart(root)
@@ -152,10 +159,9 @@ def check(root):
             if rid not in routes:
                 errors.append(where + "names `%s`, which is no route file" % rid)
         last = routes.get(ids[-1]) if ids else None
-        closed = [key for key in ("once", "max_ships", "min_credits", "requires", "skip_if_booked") if (last or {}).get(key)] + (["status off"] if (last or {}).get("status") == "off" else [])
-        if last is not None and (closed or not (last.get("park") or last.get("kind") == "mine")):
+        if last is not None and closes(last):
             errors.append(where + "must end with a route that is always open (the `park` route, or a mine, without %s); `%s` is not, and a list that runs out leaves a ship adrift"
-                          % (", ".join(closed) or "limits", ids[-1]))
+                          % (", ".join(closes(last)), ids[-1]))
         if not ids:
             errors.append(where + "`routes` is empty: end it with the `park` route")
     if routes:
@@ -301,27 +307,34 @@ def index_files(root, keep_id=False):
                 format(m["credits_per_run"], ",") if m else "TBD", figure(route), m.get("date", "--")))
 
     roles, owners, _plan_errors = division.load_plan(root)
-    planned = {}
+    planned, counts = {}, {}
     for role in roles:
         try:
-            items = read_json(Path(root) / "routes" / "plans" / (role + ".json")).get("planned") or []
+            spec = read_json(Path(root) / "routes" / "plans" / (role + ".json"))
         except (OSError, ValueError):
-            items = []
-        planned[role] = [i for i in items if isinstance(i, dict) and i.get("what")]
+            spec = {}
+        spec = spec if isinstance(spec, dict) else {}
+        planned[role] = [i for i in spec.get("planned") or [] if isinstance(i, dict) and i.get("what")]
+        counts[role] = (spec.get("ships") if isinstance(spec.get("ships"), dict) else {}, spec.get("of") if isinstance(spec.get("of"), int) else 0)
+    on = lambda role, rid: "--" if rid not in counts[role][0] else ("all %d" if counts[role][0][rid] == counts[role][1] else "%d of " + str(counts[role][1])) % counts[role][0][rid]
     plan = ["# plan.md -- The Plans", "",
             "Written by `python3 -B game/fleet/routes.py index`, never by hand, from",
             "`plans/<role>.json`: per role (the word before the dash of a pilot's name) the routes",
-            "the dispatcher tries in this order for a free pilot. The role's Admiral keeps the",
-            "file; `planned` in it is what the Admiral means to do next. The roles at a glance:",
-            "[master-index.md](master-index.md); every route's figures: [index.md](index.md)."]
+            "its ships fly, in one order, and how many of its ships have each route in their plan.",
+            "Each division's Admiral keeps one plan file with every ship and its own routes",
+            "(`game/fleet/plan.py`); it names our ships, so it lies in the unit's data folder and",
+            "not here, and `plans/<role>.json` is written from it. `Planned` is what the Admiral",
+            "means to do next. The roles at a glance: [master-index.md](master-index.md); every",
+            "route's figures: [index.md](index.md)."]
     for role in sorted(roles):
         plan += ["", "## " + role, "", "Kept by %s. Routes: %d." % (owners.get(role) or "--", len(roles[role])), "",
-                 "| # | Route | Group | Zone | Open to | Credits per ship-hour |", "|---|---|---|---|---|---|"]
+                 "| # | Route | Group | Zone | Open to | Ships planned | Credits per ship-hour |", "|---|---|---|---|---|---|---|"]
         for n, rid in enumerate(roles[role], 1):
             if rid in routes:
-                plan.append("| %d | [%s](%s.json) | %s | %s | %s | %s |" % (n, rid, rid, titles[facts[rid]["stage"]], place(rid), cell(open_to(routes[rid])), figure(routes[rid])))
+                plan.append("| %d | [%s](%s.json) | %s | %s | %s | %s | %s |" % (n, rid, rid, titles[facts[rid]["stage"]], place(rid), cell(open_to(routes[rid])), on(role, rid),
+                                                                              figure(routes[rid])))
             else:
-                plan.append("| %d | %s | no route file | -- | -- | -- |" % (n, cell(rid)))
+                plan.append("| %d | %s | no route file | -- | -- | -- | -- |" % (n, cell(rid)))
         if planned[role]:
             plan += ["", "Planned:", "", "| What | When |", "|---|---|"] + ["| %s | %s |" % (cell(i.get("what", "")), cell(i.get("when", "--"))) for i in planned[role]]
 
@@ -338,7 +351,7 @@ def index_files(root, keep_id=False):
               "name below is a link into one of the sub-indexes of this folder.", "",
               "| File | Holds |", "|---|---|",
               "| [index.md](index.md) | Every route with its measured figures, group by group |",
-              "| [plan.md](plan.md) | Every role's plan in its order, and what its Admiral means to do next |",
+              "| [plan.md](plan.md) | Every role's routes in one order with the ships planned on each, and what its Admiral means to do next |",
               "| [BLUEPRINT.md](BLUEPRINT.md) | How a route is written, and what is automatic |",
               "", "## Routes by Group", "",
               "| Group | What it holds | Routes | Home space | Beyond the border | Best measured |", "|---|---|---|---|---|---|"]
@@ -356,10 +369,10 @@ def index_files(root, keep_id=False):
             master.append("| %s | %d | %s | %s |" % ("not on the chart" if where == "--" else where, len(rids),
                                                    " | ".join(str(sum(1 for r in rids if str(routes[r].get("kind", "")) == k)) for k in kinds), max(far) if far else "--"))
     if roles:
-        master += ["", "## Plans by Role", "", "| Role | Kept by | Routes | The first three, in order | Planned |", "|---|---|---|---|---|"]
+        master += ["", "## Plans by Role", "", "| Role | Kept by | Routes | The first three, in order | Planned | Ships |", "|---|---|---|---|---|---|"]
         for role in sorted(roles):
-            master.append("| [%s](plan.md#%s) | %s | %d | %s | %d |" % (cell(role), anchor(role), cell(owners.get(role) or "--"), len(roles[role]),
-                                                                    cell(" > ".join(roles[role][:3])), len(planned[role])))
+            master.append("| [%s](plan.md#%s) | %s | %d | %s | %d | %s |" % (cell(role), anchor(role), cell(owners.get(role) or "--"), len(roles[role]),
+                                                                         cell(" > ".join(roles[role][:3])), len(planned[role]), counts[role][1] or "--"))
     books = sorted((Path(root) / "routes" / "guidebook").glob("*.md")) if (Path(root) / "routes" / "guidebook").is_dir() else []
     if books:
         master += ["", "## The Guidebooks", "", "What each division learned about its routes, its levelling and its ships; kept by its Admiral, read by every member.", "",

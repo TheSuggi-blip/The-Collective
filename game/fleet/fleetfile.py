@@ -3,11 +3,13 @@
 
 WHAT: a member's FLEET.md (in its private workspace) says how its division is meant to work; this script
       adds what it does now, read from the fleet's live files, between two marks:
-        Plan <role>    every route of the role's plan in its order: kind, group, ships on it now against
-                       its limit, the ships it carries (what its bid, field or herd regains; fill.py
-                       `carries`), what its runs measured (game/routes/plans/<role>.json, the route files)
-        Ships <role>   every ship of the role, by its number: what it does now and since when, its last
-                       run, its Piloting, Mining and Navigation levels and its modules; then one count line
+        Plan <role>    every route of the role's plan in its order: kind, group, the ships planned on it,
+                       ships on it now against its limit, the ships it carries (what its bid, field or herd
+                       regains; fill.py `carries`), what its runs measured (game/routes/plans/<role>.json,
+                       the route files)
+        Ships <role>   every ship of the role, by its number: what it does now, its last run, its own
+                       routes in their order (the division's plan file, plan.py), its Piloting, Mining and
+                       Navigation levels and its modules; then one count line
       Unity's block holds the roles command and sentinel; every other member's block its one role.
 RULES:
   - A member writes its own file only; the Fleet Admiral may name any member or `all`. A shell that is
@@ -51,6 +53,7 @@ import dispatch                                   # noqa: E402  orders, routes, 
 import division                                   # noqa: E402  who asks, which roles are whose
 import fill                                       # noqa: E402  ships on a route, counted as the dispatcher counts them
 import hive                                       # noqa: E402  the ships' files, modules, numbers and times
+import plan as planfile                           # noqa: E402  each ship's own routes
 import routes as routefiles                       # noqa: E402  a route's group and figure, what a run earned
 
 BEGIN = "<!-- ROUTES-NOW:BEGIN written by game/fleet/fleetfile.py; do not edit between the two marks -->"
@@ -59,8 +62,8 @@ BEGIN_MARK, END_MARK = "<!-- ROUTES-NOW:BEGIN", "<!-- ROUTES-NOW:END"
 STAMP = "Written by `game/fleet/fleetfile.py` at "
 TIME = re.compile(r"\d{4}-\d{2}-\d{2} \d{2}:\d{2} UTC")
 SKILLS = ("piloting", "mining", "navigation")
-PLAN_HEAD = ("#", "Route", "Kind", "Group", "Ships now / limit", "Carries", "Measured")
-SHIP_HEAD = ("Ship", "Does now", "Since (UTC)", "Last run", "Piloting", "Mining", "Navigation", "Modules")
+PLAN_HEAD = ("#", "Route", "Kind", "Group", "Ships planned", "Ships now / limit", "Carries", "Measured")
+SHIP_HEAD = ("Ship", "Does now", "Last run", "Own routes, in order", "Piloting", "Mining", "Navigation", "Modules")
 OPTIONS = ("--root", "--data", "--profiles")
 FLAGS = ("--print", "--commit")
 
@@ -101,7 +104,7 @@ def newest_runs(rows):
 
 
 def last_run(row):
-    """`<route>: <+/-credits> cr in <minutes> min, started <MM-DD HH:MM>`, or `--`."""
+    """`<route>: <+/-credits> cr in <minutes> min`, or `--`."""
     if not row:
         return "--"
     if routefiles.readable(row):
@@ -109,9 +112,7 @@ def last_run(row):
         money = "%s%s cr" % ("-" if credits < 0 else "+", hive.num(abs(credits)))
     else:
         money = "wallet not read"
-    t = hive.epoch(row.get("started"))
-    return "%s: %s in %s min, started %s" % (row.get("route") or "?", money, hive.num(row.get("minutes")),
-                                             time.strftime("%m-%d %H:%M", time.gmtime(t)) if t else "--")
+    return "%s: %s in %s min" % (row.get("route") or "?", money, hive.num(row.get("minutes")))
 
 
 def level(detail, skill):
@@ -156,7 +157,15 @@ def read_state(root, data, now):
         found = dispatch.read_json(Path(data) / "fleet" / "orders" / (pilot + ".json"), {})
         since[pilot] = found.get("since") if isinstance(found, dict) else None
     crew, _fleet = hive.pilots(data)
-    return {"now": now, "data": data, "plans": plans, "routes": dispatch.load_routes(root), "orders": orders, "since": since,
+    routes = dispatch.load_routes(root)
+    planned, own = {}, {}
+    for role in plans:
+        spec = dispatch.read_json(Path(root) / "routes" / "plans" / (role + ".json"), {})
+        spec = spec if isinstance(spec, dict) else {}
+        planned[role] = (spec.get("ships") if isinstance(spec.get("ships"), dict) else {}, spec.get("of") if isinstance(spec.get("of"), int) else 0)
+    for name in planfile.DIVISIONS:
+        own.update(planfile.load(root, data, name, routes)[0]["ships"])
+    return {"now": now, "data": data, "root": root, "plans": plans, "planned": planned, "own": own, "routes": routes, "orders": orders, "since": since,
             "named": dispatch.flagships(data), "crew": crew, "runs": newest_runs(dispatch.run_rows(data)),
             "titles": {key: title for key, title, _text in routefiles.STAGES}}
 
@@ -169,7 +178,8 @@ def block(seen, member):
     """(the block's text without a final newline, ships counted, roles) of one member."""
     stamp = time.strftime("%Y-%m-%d %H:%M UTC", time.gmtime(seen["now"]))
     lines = [BEGIN, "## Routes Now", "",
-             STAMP + stamp + " from the fleet's live files; changed only by the script (preflight and session-end run it).", ""]
+             STAMP + stamp + " from the fleet's live files; changed only by the script (preflight and session-end run it).",
+             "A ship's own routes are set in the division's plan file (`python3 -I -B game/fleet/plan.py show`, the tool plan).", ""]
     routes, orders, total = seen["routes"], seen["orders"], 0
     for role in roles_of(member):
         lines += ["### Plan %s" % role, ""]
@@ -180,12 +190,14 @@ def block(seen, member):
             lines += ["The plan lists no route.", ""]
         else:
             rows = []
+            on, of = seen["planned"].get(role) or ({}, 0)
             for n, rid in enumerate(plan, 1):
                 route = routes.get(rid)
                 if not route:
-                    rows.append((n, rid, "no route file", "--", "--", "--", "--"))
+                    rows.append((n, rid, "no route file", "--", "--", "--", "--", "--"))
                     continue
                 rows.append((n, rid, route.get("kind"), seen["titles"][routefiles.stage(route)],
+                             "--" if rid not in on else "all %d" % of if on[rid] == of else "%d of %d" % (on[rid], of),
                              "%d / %s" % (fill.flying_now(route, rid, orders), route.get("max_ships") or "-"),
                              fill.carried(fill.carries(seen, route)), routefiles.figure(route)))
             lines += table(PLAN_HEAD, rows) + [""]
@@ -196,9 +208,9 @@ def block(seen, member):
         rows = []
         for ship, detail in mine:
             name = ship.get("name") or ""
-            does, since, key = doing(ship, orders.get(name), seen["since"].get(name), routes)
+            does, _since, key = doing(ship, orders.get(name), seen["since"].get(name), routes)
             counts[key] += 1
-            rows.append([name, does, since, last_run(seen["runs"].get(name))] + [level(detail, s) for s in SKILLS] + [modules(detail)])
+            rows.append([name, does, last_run(seen["runs"].get(name)), " > ".join(seen["own"].get(name) or []) or "--"] + [level(detail, s) for s in SKILLS] + [modules(detail)])
         lines += (table(SHIP_HEAD, rows) if rows else ["No ship of this role in the fleet's file."]) + [""]
         lines += ["%d ships: %d on a route, %d waiting, %d by hand, %d not connected"
                   % (len(mine), counts["on a route"], counts["waiting"], counts["by hand"], counts["not connected"]), ""]

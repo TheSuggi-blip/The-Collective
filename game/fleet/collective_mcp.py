@@ -94,6 +94,20 @@ def fleet_plan(a):
     raise ValueError("view is one of: money, history, levels, capacity, board, standing, tasks, refill")
 
 
+def plan_file(a):
+    action = a.get("action") or "show"
+    where = flag(a, "division")
+    if action in ("show", "check", "apply"):
+        return [("game/fleet/plan.py", [action] + ([a["division"]] if a.get("division") else []) + (["--brief"] if a.get("brief") and action == "show" else []))]
+    if action == "set":
+        need(a, "ships", "routes")
+        return [("game/fleet/plan.py", ["set", a["ships"], a["routes"]] + where)]
+    if action in ("first", "then"):
+        need(a, "routes")
+        return [("game/fleet/plan.py", [action, a["routes"]] + where)]
+    raise ValueError("action is one of: show, check, apply, set, first, then")
+
+
 def fill_plan(a):
     action = a.get("action") or "status"
     who = [a["who"]] if a.get("who") else []
@@ -191,6 +205,18 @@ TOOLS = {
                  "write": arg(B, "for fill: write and commit; without it the answer only lists what would be added"),
                  "tests": arg(I, "for fill: at most this many tests added per role, default 8"), "floor": arg(I, "for fill: a candidate counts from this estimate, default 500")},
         "plan": fill_plan},
+    "plan": {
+        "text": "Your division's plan file: every ship of yours with its own routes in their order. A free ship takes the first route open to it of: the list First (for every "
+                "ship), its own routes, the list Then (for every ship, ending with park); the dispatcher sends it within the minute. action=show: the file, what the check says and "
+                "whether it is applied (brief=true: a few lines). action=set: give ships their own routes (ships: names with commas, a range like miner-1..10, a role or all; "
+                "routes: route ids with commas in their order, or none). action=first or then: set that list whole. action=apply: after you changed the file by hand. Every change "
+                "is checked first: a plan that fails changes nothing. action=check: PASS or HALT. You change your own division's plan only.",
+        "args": {"action": arg(S, "show (default), check, apply, set, first or then", ("show", "check", "apply", "set", "first", "then")),
+                 "division": arg(S, "command, mining, trade, logistics, military or intel; default: your own (for show and check also all)"),
+                 "ships": arg(S, "for set: ship names with commas, a range (miner-1..10), a role, or all"),
+                 "routes": arg(S, "for set, first and then: route ids with commas, in their order; none for no route"),
+                 "brief": arg(B, "for show: the plan in a few lines instead of the whole file")},
+        "plan": plan_file},
     "candidates": {
         "text": "Ways to earn that the route maker computed from our own readings (fields, order books, mission boards, herds, recipes), best first, with the estimate "
                 "per ship-hour, what it rests on, its warnings and what it still needs. With id: the ready route file of one candidate.",
@@ -265,7 +291,7 @@ TOOLS = {
 }
 
 
-WRITES = ("fill", "command", "goal", "hold")      # every other tool only reads
+WRITES = ("fill", "plan", "command", "goal", "hold")      # every other tool only reads
 
 
 def schema(name):

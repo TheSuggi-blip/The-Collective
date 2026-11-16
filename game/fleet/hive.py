@@ -25,8 +25,8 @@ WHAT: reads the unit's data folder (fleet/, routes/runs.jsonl, market/, scouting
         refill                what comes back by itself between our readings, per hour: the units a bid regains, what a
                               field grows back, the animals of a herd
         briefing              a session's start in one answer: the orders in force, the requests addressed to the member,
-                              the fleet's money, its own standing fleet (plan, what each route carries, every ship) and
-                              the fill gate
+                              the fleet's money, its own standing fleet (plan, what each route carries, every ship), its
+                              plan file in short (plan.py) and the fill gate
         store                 the history store (store.py): what it holds, and every route's credits per ship-hour over
                               the whole hours of a window, also beyond what the records still hold
         store price <item>    one item's lowest and highest best bid and best ask per station over a window
@@ -874,12 +874,19 @@ def show_standing(root, data, now, who, hours):
     if not roles:
         print("no plan of `%s`: a member's name, a role (%s) or all" % (who, ", ".join(sorted(division.ROLES))))
         return 1
+    import plan as planfile                        # each ship's own routes, from its division's plan file
+    files = {}
     for role in roles:
+        its = planfile.division_of(role)
+        if its and its not in files:
+            files[its] = planfile.load(root, data, its, routes)[0]["ships"]
+        own_of = files.get(its) or {}
         crew, plan = seen["crews"].get(role) or {}, seen["roles"].get(role) or []
         mine = [(ship, detail) for ship, detail in crew_all if dispatch.role_of(ship.get("name") or "", named) == role]
         print("STANDING FLEET | %s, role %s: %d ships | fleet data read %s | figures: the last %g hours of runs, steady money (paid once apart) | credits per ship-hour throughout"
               % (division.ROLES.get(role, "?"), role, len(mine), ago(fleet.get("updated_at"), now), hours))
-        print("PLAN %s: %d routes in this order; a free ship takes the first one open to it (game/routes/plans/%s.json)" % (role, len(plan), role))
+        print("PLAN %s: %d routes, the role's in one order (game/routes/plans/%s.json); each ship flies the list First, its own routes and the list Then of its division's "
+              "plan file (`plan.py show`, the tool plan) and takes the first one open to it" % (role, len(plan), role))
         print("  carries: the ships a route keeps busy hour after hour by what its bid, its field or its herd regains (`?` not measured), and `+N` more for one turn "
               "while today's standing order or field holds; never more ships than that on it (fill.py lift refuses)")
         print("  %2s %-40s %-8s %-16s %10s %9s %9s | %4s %9s %13s %9s" % ("#", "route", "kind", "group", "measured/h", "ships/cap", "carries", "runs", "credits", "per ship-hour", "paid once"))
@@ -910,7 +917,7 @@ def show_standing(root, data, now, who, hours):
                 route = routes.get(rid)
                 doing = "flies " + what
                 key = "reading" if what.startswith("census ") else "waiting" if route and route.get("park") else "on a route that pays once" if route and route.get("once") else \
-                    "on a route that pays" if route and fill.proven(route) else "on a test or a fitting"
+                    "on standing work" if route and routefiles.standing(route) else "on a route that pays" if route and fill.proven(route) else "on a test or a fitting"
                 if route and route.get("park"):
                     doing = "waits docked (the plan's last route)"
             elif (ship.get("activity") or {}).get("kind") != "idle":
@@ -926,17 +933,19 @@ def show_standing(root, data, now, who, hours):
                 elif name in waiting:
                     doing += " | the plan holds no route that repeats and pays"
             counts[key] += 1
+            doing += " | own routes: " + (" > ".join(own_of.get(name) or []) or "none")
             runs, credits, minutes, once, flown = by_pilot.get(name, [0, 0.0, 0.0, 0, 0.0])
             sums = [a + b for a, b in zip(sums, (credits, minutes, flown, once))]
             tools = ", ".join(sorted({str(m) for m in modules_of(detail) if m}))
             print("  %-16s %-34s | %2d runs %5.0f min %9s cr %7s/h flown %7s/h clock%s | %s"
                   % (name[:16], (tools or "no module read")[:34], runs, flown, num(credits) if runs else "--", per_hour(credits, minutes), num(credits / hours) if runs else "0",
-                     " +%s once" % num(once) if once else "", doing[:150]))
+                     " +%s once" % num(once) if once else "", doing[:260]))
         clock = len(mine) * hours
         print("SUM %s | %s | the runs of %g hours: income %s credits an hour (steady money), paid once %s; busy %d%% of %d ship-hours; %s per ship-hour flown"
               % (role, ", ".join("%d %s" % (n, key) for key, n in counts.most_common()) or "no ship", hours, num(sums[0] / hours), num(sums[3]),
                  100 * sums[2] / 60 / clock if clock else 0, clock, per_hour(sums[0], sums[1])))
-        print("  to change it: the tool fill (status says why each route is closed, add/drop/lift change the plan); a ship is pinned to nothing: it flies the plan in order")
+        print("  to change it: your plan file gives each ship its own routes (the tool plan: show, set, first, then, apply; `plan.py`); the tool fill says why a route is closed and "
+              "adds the work that stands open")
     return 0
 
 
@@ -960,6 +969,9 @@ def show_briefing(root, data, now, who, hours):
     show_fleet(root, data, now)
     print("=== MY STANDING FLEET")
     code = show_standing(root, data, now, who, hours)
+    print("=== MY PLAN FILE (every ship with its own routes; I change it and the dispatcher sends the ships by it)")
+    import plan as planfile
+    planfile.show(root, data, sorted(planfile.DIVISIONS) if who in ("all", "Unity") and who != planfile.DIVISIONS["command"] else [planfile.division_of(who)] if planfile.division_of(who) else [], True)
     print("=== THE FILL GATE (no ship is idle)")
     seen = fill.survey(root, data, now)
     for role in sorted(r for r in seen["roles"] if who in ("all", r, division.ROLES.get(r))):

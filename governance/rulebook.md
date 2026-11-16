@@ -276,8 +276,9 @@ After a pattern of ours is exploited: an entry in
 
 - No ship is idle (rule F8, section 12). The fleet's tasks are route files
   (`game/routes/`, with what our runs measured); the service `dispatch`
-  gives every free pilot the first open route of its role's list
-  (`game/routes/plans/<role>.json`); a turn sets the plan again from the figures. How
+  gives every free pilot the first open route of its own list, which
+  its Admiral sets in the division's plan file (`game/fleet/plan.py`);
+  a turn sets the plan again from the figures. How
   to hunt, mine, trade, run missions and level: the shared skill
   `fleet-play`.
 - The repository is public and syncs about once a minute: no secret,

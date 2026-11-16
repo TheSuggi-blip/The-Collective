@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """fill.py -- keep every ship of a division at work: say why ships wait, and fill the plan with the work that stands open.
 
-WHAT: the dispatcher gives a free pilot the first route of its role's plan that is open to it. A ship waits (docked,
-      costing nothing) when every route of its plan is closed to it. This script reads the files the dispatcher
+WHAT: the dispatcher gives a free pilot the first route of its own list that is open to it (its division's plan
+      file, plan.py: the list First, its own routes, the list Then). A ship waits (docked, costing nothing) when
+      every route of its list is closed to it. This script reads the files the dispatcher
       reads and uses the dispatcher's own rule (dispatch.why_not), so the two cannot disagree. It
         status   per role: how many ships work, start and wait; for every route of the plan why it is closed to
                  the waiting pilots; then the work outside the plan: route files measured above zero with a free
@@ -10,10 +11,12 @@ WHAT: the dispatcher gives a free pilot the first route of its role's plan that 
         check    the gate: no ship is idle (Suggi, 2026-11-16). PASS: no ship of the role waits. HALT (exit 1): ships
                  wait; the line says whether paying work or a test stands open (fill adds it) or whether the plan
                  lacks standing work for them (a route that trains or gathers: routes.py `standing`)
-        fill     puts that work into the plan, in front of the census and the park route: the paying routes, then
-                 up to --tests tests of one ship each. With --write it writes the route files and the plan,
-                 rebuilds the three index files, runs the route gate and commits by path as the member
-        add, drop, lift   one change to a plan, or to a route's `max_ships`, gated and committed the same way
+        fill     puts that work into the division's plan file: a mission that pays once into the list First, a
+                 paying route into the own routes of the ships it is open to, then up to --tests tests of one ship
+                 each. With --write it writes the route files and the plan (plan.py), rebuilds the three index
+                 files, runs the route gate and commits by path as the member
+        add, drop, lift   one change: a route into a plan's list Then (--first: at the head of First), a route out
+                 of a plan everywhere, or a route's `max_ships`; gated and committed the same way
 RULES:
   - A member changes the plans of its own roles only; the Fleet Admiral any (orders F1).
   - Nothing is written while game/routes/ holds a change that is not committed, or while fleet/STOP exists.
@@ -26,6 +29,8 @@ RULES:
     `carries` counts what its bid, its field or its herd regains per hour, and apart from that what today's standing
     order holds; `hive.py standing` prints both for every route of a plan, and `lift` refuses more ships than the two
     together carry.
+  - A ship on standing work counts as free for paying work and for tests: `status` lists what stands open to it
+    outside its plan, `fill` puts it in front of its own routes, and the gate's PASS line names it.
   - `fill --once` adds only missions that pay once and buy nothing: the five-minute job runs it for every role, so a
     new once route reaches every plan without waiting for a turn (requests ENT-144).
   - A list of the route maker older than an hour is no ground for PASS while ships wait: the gate says so.
@@ -60,6 +65,7 @@ from pathlib import Path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import dispatch                                   # noqa: E402  the rule that closes a route to a pilot
 import division                                   # noqa: E402  who commands which ship, and the plan files
+import plan as planfile                           # noqa: E402  each division's plan file: every ship with its own routes
 import routes as routefiles                       # noqa: E402  the route gate and the three index files
 
 STALE = 60 * 60                # a list of the route maker older than this is no ground for PASS
@@ -110,6 +116,7 @@ def survey(root, data, now=None):
     now = time.time() if now is None else now
     roles, owners, _errors = division.load_plan(root)
     routes = dispatch.load_routes(root)
+    own = dispatch.own_lists(data)                      # each pilot's own list, as its division's plan file was applied
     rows = dispatch.run_rows(data)
     state = {"now": now, "data": data, "rows": rows, "orders": dispatch.fresh_orders(data, now), "rest": dispatch.resting(routes, rows, now),
              "booked": dispatch.booked(data), "loss": dispatch.losing(routes, rows, now),
@@ -120,7 +127,7 @@ def survey(root, data, now=None):
     named = dispatch.flagships(data)
     ammo = set(dispatch.read_json(Path(data) / "catalog" / "ammo.json", []) or [])
     fleet = dispatch.read_json(Path(data) / "fleet" / "fleet.json", {})
-    blank = lambda: {"ships": 0, "work": [], "hand": [], "away": [], "starting": [], "waiting": [], "reasons": {}}
+    blank = lambda: {"ships": 0, "work": [], "hand": [], "away": [], "starting": [], "waiting": [], "standing": [], "next": [], "reasons": {}}
     crews = {role: blank() for role in roles}
     played = dict(state["orders"])                     # the orders as they stand after the dispatcher's next pass
     for ship in fleet.get("ships") or [] if isinstance(fleet, dict) else []:
@@ -133,11 +140,23 @@ def survey(root, data, now=None):
             crew["away"].append(name)
         elif what:
             crew["hand" if what.startswith("hand ") else "work"].append(name)
+            flown = routes.get(what.split(" ", 1)[1]) if " " in what and not what.startswith("hand ") else None
+            if flown and routefiles.standing(flown) and not flown.get("park"):      # free for paying work and tests when its run ends
+                pilot = dict(dispatch.pilot_of(ship, named, data, ammo), docked=True, goods=0)
+                for rid in own.get(name) or roles.get(role) or []:
+                    if rid == flown.get("id"):
+                        crew["standing"].append(pilot)                 # nothing ahead of its standing work is open: free for what pays
+                        break
+                    reason, argument = dispatch.why_not(pilot, rid, routes.get(rid), dict(state, orders=played, rows=by_route.get(rid, [])))
+                    if reason is None:                                 # its own list sends it there when this run ends: the place is its own
+                        played[name + " (next)"] = mark_of(routes[rid], argument)
+                        crew["next"].append((name, rid))
+                        break
         elif (ship.get("activity") or {}).get("kind") != "idle":
             crew["hand"].append(name)                  # the engine runs a loop or a goal for it: given by hand
         else:
             pilot, why = dispatch.pilot_of(ship, named, data, ammo), []
-            for rid in roles.get(role) or []:
+            for rid in own.get(name) or roles.get(role) or []:
                 reason, argument = dispatch.why_not(pilot, rid, routes.get(rid), dict(state, orders=played, rows=by_route.get(rid, [])))
                 if reason is None:
                     played[name] = mark_of(routes[rid], argument)
@@ -150,7 +169,7 @@ def survey(root, data, now=None):
                     crew["reasons"].setdefault(rid, Counter())[reason] += 1
     book = dispatch.read_json(Path(data) / "routes" / "opportunities.json", {})
     book = book if isinstance(book, dict) else {}
-    return {"now": now, "data": data, "root": root, "roles": roles, "owners": owners, "routes": routes, "state": state, "crews": crews, "by_route": by_route, "named": named,
+    return {"now": now, "data": data, "root": root, "roles": roles, "owners": owners, "own": own, "routes": routes, "state": state, "crews": crews, "by_route": by_route, "named": named,
             "played": played, "taken": {}, "candidates": book.get("candidates") or [], "list_age": age_of(book.get("written_at") or "", now),
             "fleet_at": fleet.get("updated_at") or "?" if isinstance(fleet, dict) else "?"}
 
@@ -243,11 +262,13 @@ def refused_to(seen, rid, role):
 
 
 def read_role(seen, role, floor=500, tests=8):
-    """What one role's ships do now and what would give its waiting ships work.
-    {ships, work, hand, away, starting [(pilot, route)], waiting [pilot], idle [pilot left without any offer],
+    """What one role's ships do now and what would give its waiting ships work, and its ships on standing work
+    paying work.
+    {ships, work, hand, away, starting [(pilot, route)], waiting [pilot], standing [pilot on standing work],
+     idle [waiting pilot left without any offer],
      plan [(route id, flying, cap, Counter of reasons, hint)], paying [(route id, worth, pilots)],
      tests [(route id, estimate, route to write or None, pilot)], closed {reason: [(worth, route id)]}}"""
-    crew = seen["crews"].get(role) or {"ships": 0, "work": [], "hand": [], "away": [], "starting": [], "waiting": [], "reasons": {}}
+    crew = seen["crews"].get(role) or {"ships": 0, "work": [], "hand": [], "away": [], "starting": [], "waiting": [], "standing": [], "next": [], "reasons": {}}
     routes, plan = seen["routes"], seen["roles"].get(role) or []
     state = dict(seen["state"], orders=dict(seen["played"], **seen["taken"]))     # what free pilots start and take is counted, role after role
     starting, waiting = crew["starting"], crew["waiting"]
@@ -263,15 +284,18 @@ def read_role(seen, role, floor=500, tests=8):
         hint = "carries %s ships hour after hour, %d more this turn: %s" % ("about %d" % deep["ships"] if deep["ships"] is not None else "an unmeasured number of",
                                                                                deep["extra"], deep["text"]) if deep else ""
         rows.append((rid, flying_now(route, rid, seen["state"]["orders"]), route.get("max_ships"), why, hint))
-    left = list(waiting)
+    left = list(waiting) + list(crew.get("standing") or [])           # a ship on standing work is free for what pays
     paying, closed = [], {}
 
     def offer(rid, route, value, limit=None):
-        """The waiting pilots the route is open to, taken off the list; the commonest reason when there are none."""
+        """The pilots the route is open to (waiting, or on standing work), taken off the list; the commonest reason
+        when there are none. A pilot whose own list holds the route is passed over: the dispatcher gives it to it."""
         took, why = [], Counter()
         for pilot in list(left):
             if limit is not None and len(took) >= limit:
                 break
+            if rid in (seen["own"].get(pilot["name"]) or plan):
+                continue
             reason, argument = closed_to(pilot, rid, route)
             if reason is None:
                 state["orders"][pilot["name"]] = mark_of(route, argument)
@@ -284,14 +308,16 @@ def read_role(seen, role, floor=500, tests=8):
         return took
 
     outside = [(worth(route), rid, route) for rid, route in routes.items()
-               if rid not in plan and route.get("status") != "off" and not route.get("park") and route.get("kind") != "census" and proven(route)]
+               if route.get("status") != "off" and not route.get("park") and route.get("kind") != "census" and proven(route)]
     by_hand = []
     for value, rid, route in sorted(outside, key=lambda r: (-r[0], r[1])):
         if buys(route):                                           # it buys goods: in a plan by its Admiral's word only, never by this script
-            by_hand.append((value, rid))
+            if rid not in plan:
+                by_hand.append((value, rid))
             continue
         if route.get("once") and refused_to(seen, rid, role):
-            closed.setdefault("the board refused it to this role", []).append((value, rid))
+            if rid not in plan:
+                closed.setdefault("the board refused it to this role", []).append((value, rid))
             continue
         took = offer(rid, route, value) if left else []
         if took:
@@ -316,7 +342,9 @@ def read_role(seen, role, floor=500, tests=8):
             found.append((rid, cand["per_ship_hour"], None if rid in routes else route, took[0]))
     seen["taken"] = {name: what for name, what in state["orders"].items() if name not in seen["played"]}
     return {"role": role, "owner": seen["owners"].get(role) or division.ROLES.get(role, "?"), "ships": crew["ships"], "work": crew["work"], "hand": crew["hand"],
-            "away": crew["away"], "starting": starting, "waiting": [p["name"] for p in waiting], "idle": [p["name"] for p in left], "plan": rows,
+            "away": crew["away"], "starting": starting, "waiting": [p["name"] for p in waiting], "standing": [p["name"] for p in crew.get("standing") or []],
+            "next": list(crew.get("next") or []),
+            "idle": [p["name"] for p in left if p in waiting], "plan": rows,
             "paying": paying, "tests": found, "closed": closed, "by_hand": sorted(by_hand, reverse=True)}
 
 
@@ -324,7 +352,9 @@ def verdict(seen, got):
     """(True for PASS, the line). No ship is idle (Suggi, 2026-11-16): PASS only when no ship of the role waits."""
     waiting, places, tests = len(got["waiting"]), sum(len(p) for _r, _v, p in got["paying"]), len(got["tests"])
     if not waiting:
-        return True, "PASS: no ship of %s waits" % got["role"]
+        return True, "PASS: no ship of %s waits" % got["role"] + (
+            " | %d places of paying work and %d tests stand open to its ships on standing work: python3 -I -B game/fleet/fill.py fill %s --write"
+            % (places, tests, got["role"]) if places or tests else "")
     if places or tests:
         return False, ("HALT: %d ships of %s wait while %d places of paying work and %d tests stand open: python3 -I -B game/fleet/fill.py fill %s --write"
                        % (waiting, got["role"], places, tests, got["role"]))
@@ -339,16 +369,18 @@ def verdict(seen, got):
 def show(seen, got):
     def short(names):
         return ", ".join(names[:3]) + (" ..." if len(names) > 3 else "")
-    print("FILL | %s (%s) | %d ships: %d at work, %d starting, %d waiting, %d by hand, %d away | fleet file %s"
-          % (got["role"], got["owner"], got["ships"], len(got["work"]), len(got["starting"]), len(got["waiting"]), len(got["hand"]), len(got["away"]), seen["fleet_at"]))
-    if got["waiting"]:
-        print("  the plan, in its order                    flying/cap  closed to the %d waiting pilots because" % len(got["waiting"]))
-        for n, (rid, flying, cap, why, hint) in enumerate(got["plan"], 1):
+    print("FILL | %s (%s) | %d ships: %d at work, %d starting, %d waiting, %d by hand, %d away | standing work: %d free for what pays, %d take a route of their list "
+          "next | fleet file %s" % (got["role"], got["owner"], got["ships"], len(got["work"]), len(got["starting"]), len(got["waiting"]), len(got["hand"]), len(got["away"]),
+                                     len(got.get("standing") or []), len(got.get("next") or []), seen["fleet_at"]))
+    if got["waiting"] or got["paying"] or got["tests"]:
+        if got["waiting"]:
+            print("  the role's routes, in one order           flying/cap  closed to the %d waiting pilots because" % len(got["waiting"]))
+        for n, (rid, flying, cap, why, hint) in enumerate(got["plan"] if got["waiting"] else [], 1):
             print("  %2d %-38s %3d/%-5s  %s%s" % (n, rid[:38], flying, cap if cap else "-", ", ".join("%s %d" % kv for kv in why.most_common(4)) or "--", (" | " + hint) if hint else ""))
         if got["paying"] or got["tests"]:
-            print("  open outside the plan (fill adds it):")
+            print("  open outside the plan to ships that wait or do standing work (fill adds it):")
             for rid, value, pilots in got["paying"]:
-                print("     PAYING %-38s %s measured, %d of the waiting pilots (%s)" % (rid[:38], format(int(value), ","), len(pilots), short(pilots)))
+                print("     PAYING %-38s %s measured, open to %d ships (%s)" % (rid[:38], format(int(value), ","), len(pilots), short(pilots)))
             for rid, value, draft, pilot in got["tests"]:
                 print("     TEST   %-38s %s estimated per ship-hour, one ship%s" % (rid[:38], format(int(value), ","), "" if draft is None else "; its route file is written"))
         if got.get("by_hand"):
@@ -410,27 +442,6 @@ def commit(root, data, who, files, message):
         return False, "HALT: nothing changed; the route gate says:\n  " + "\n  ".join(errors[:8])
 
 
-def plan_text(root, role, change, note):
-    """The plan file of a role after `change(list of route ids)`, with one dated line added to its note."""
-    path = Path(root) / "routes" / "plans" / (role + ".json")
-    plan = json.loads(path.read_text(encoding="ascii"))
-    plan["routes"] = change(list(plan["routes"]))
-    plan["note"] = (str(plan.get("note") or "") + " " + note).strip()
-    return json.dumps(plan, indent=1) + "\n"
-
-
-def after_the_once(seen, ids, new):
-    """The list with `new` put behind its last route that pays once (at the head when it holds none): the once line stays together."""
-    at = max((n + 1 for n, rid in enumerate(ids) if (seen["routes"].get(rid) or {}).get("once")), default=0)
-    return ids[:at] + [rid for rid in new if rid not in ids] + ids[at:]
-
-
-def before_the_wait(seen, ids, new):
-    """The list with `new` put in front of the first census or park route (the routes that only read and wait)."""
-    at = next((n for n, rid in enumerate(ids) if (seen["routes"].get(rid) or {}).get("park") or (seen["routes"].get(rid) or {}).get("kind") == "census"), len(ids))
-    return ids[:at] + [rid for rid in new if rid not in ids] + ids[at:]
-
-
 def may_change(who, role):
     return who == "Unity" or division.ROLES.get(role) == who
 
@@ -481,17 +492,17 @@ def main():
         sys.exit("REFUSED: this shell is no member of The Collective: it changes no plan")
     if verb == "fill":
         chosen = roles_of(rest[0]) if rest else sorted(r for r in seen["roles"] if division.ROLES.get(r) == who)
-        files, lines, added = {}, [], []
+        files, lines, added, changes = {}, [], [], {}
         for role in chosen:
             if not may_change(who, role):
                 sys.exit("REFUSED: the %s plan is kept by %s (orders F1): ask in requests.log" % (role, division.ROLES.get(role)))
             got = read_role(seen, role, floor, tests)
             once = "--once" in args                                 # only missions that pay once (they buy nothing: read_role keeps buying routes out)
-            paying = [rid for rid, _v, _p in got["paying"] if not once or seen["routes"][rid].get("once")]
+            paying = [(rid, pilots) for rid, _v, pilots in got["paying"] if not once or seen["routes"][rid].get("once")]
             found = [] if once else got["tests"]
-            new = paying + [rid for rid, _v, _d, _p in found]
-            print("%s: %d waiting; %d %s and %d tests to add%s" % (role, len(got["waiting"]), len(paying), "routes that pay once" if once else "paying routes", len(found),
-                                                                   ": " + ", ".join(new) if new else ""))
+            new = [rid for rid, _p in paying] + [rid for rid, _v, _d, _p in found]
+            print("%s: %d waiting, %d on standing work; %d %s and %d tests to add%s" % (role, len(got["waiting"]), len(got["standing"]), len(paying),
+                                                                                   "routes that pay once" if once else "paying routes", len(found), ": " + ", ".join(new) if new else ""))
             if not new:
                 continue
             for rid, estimate, draft, _pilot in found:
@@ -500,20 +511,27 @@ def main():
                     draft["note"] = (str(draft.get("note") or "") + " Added as a test by fill.py on %s (%s): one ship until its first RESULT line is read." % (stamp, who)).strip()
                     files["routes/%s.json" % rid] = json.dumps(draft, indent=1) + "\n"
                     seen["routes"][rid] = draft
-            note = "%s (fill.py, %s): added %s, open to ships that waited." % (stamp, who, ", ".join(new))
-            files["routes/plans/%s.json" % role] = plan_text(root, role, lambda ids, new=new: (after_the_once if once else before_the_wait)(seen, ids, new), note)
+            edits = changes.setdefault(planfile.division_of(role), [])
+            for rid, pilots in paying:                              # a mission that pays once is for every ship; a route that repeats for the ships it is open to
+                if seen["routes"][rid].get("once"):
+                    edits.append(lambda plan, rid=rid: planfile.put_first(plan, [rid]))
+                else:
+                    edits.append(lambda plan, rid=rid, pilots=pilots: planfile.put_own(plan, pilots, rid))
+            for rid, _estimate, _draft, pilot in found:
+                edits.append(lambda plan, rid=rid, pilot=pilot: planfile.put_own(plan, [pilot], rid))
             added += new
             lines.append("%s +%d" % (role, len(new)))
-        if not files:
+        if not added:
             print("nothing to add")
             return 0
         if "--write" not in args:
             print("not written: add --write")
             return 0
-        ok, line = commit(root, data, who, files, "plans: fill.py adds open work for waiting ships (%s): %s" % ("; ".join(lines), ", ".join(sorted(set(added)))[:400]))
-        print(line)
+        ok, out = planfile.apply(root, data, sorted(changes), who, changes={name: (lambda plan, edits=edits: [edit(plan) for edit in edits]) for name, edits in changes.items()},
+                                 extra=files, message="plans: fill.py adds open work (%s): %s" % ("; ".join(lines), ", ".join(sorted(set(added)))[:400]), commit=commit)
+        print("\n".join(out))
         if ok:
-            print("the dispatcher gives the routes to the waiting ships within the minute; read `fill.py` again in two minutes")
+            print("the dispatcher gives the routes to the ships within the minute (a ship on standing work when its run ends); read `fill.py` again in two minutes")
         return 0 if ok else 1
 
     if verb in ("add", "drop") and rest:
@@ -524,20 +542,26 @@ def main():
             sys.exit("name the plan: --role <%s>" % "|".join(sorted(seen["roles"])))
         if not may_change(who, role):
             sys.exit("REFUSED: the %s plan is kept by %s (orders F1): ask in requests.log" % (role, division.ROLES.get(role)))
+        name = planfile.division_of(role)
         if verb == "add":
             if rid not in seen["routes"]:
                 sys.exit("no route file game/routes/%s.json: `routemaker.py route <candidate id>` prints one" % rid)
             if rid in seen["roles"][role]:
                 sys.exit("%s stands in the %s plan already" % (rid, role))
-            change = (lambda ids: [rid] + ids) if "--first" in args else (lambda ids: before_the_wait(seen, ids, [rid]))
+            if "--first" in args:
+                change = lambda plan: planfile.put_first(plan, [rid], head=True)
+            elif len(planfile.roles_of(name)) > 1:                  # a division of two roles: the route is for the ships of the role named
+                ships = [ship for ship, its, _row in planfile.crew_of(data, name) if its == role]
+                change = lambda plan: planfile.put_own(plan, ships, rid, tail=True)
+            else:
+                change = lambda plan: planfile.put_then(plan, rid, seen["routes"])
         else:
             if rid not in seen["roles"][role]:
                 sys.exit("%s is not in the %s plan" % (rid, role))
-            change = lambda ids: [r for r in ids if r != rid]
+            change = lambda plan: planfile.take_out(plan, rid)
         word = "added" if verb == "add" else "taken out"
-        ok, line = commit(root, data, who, {"routes/plans/%s.json" % role: plan_text(root, role, change, "%s (fill.py, %s): %s %s." % (stamp, who, rid, word))},
-                          "%s plan: %s %s (fill.py)" % (role, rid, word))
-        print(line)
+        ok, out = planfile.apply(root, data, [name], who, changes={name: change}, message="%s plan: %s %s (fill.py)" % (role, rid, word), commit=commit)
+        print("\n".join(out))
         return 0 if ok else 1
 
     if verb == "lift" and len(rest) == 2 and rest[1].isdigit() and int(rest[1]) >= 1:

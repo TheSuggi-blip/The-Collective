@@ -88,6 +88,10 @@ class PlanTests(unittest.TestCase):
         self.assertEqual(self.plan("fill", action="lift", route="mine-x", ships=6), [("game/fleet/fill.py", ["lift", "mine-x", "6"])])
         self.assertEqual(self.plan("fill", action="add", route="mine-x", first=True), [("game/fleet/fill.py", ["add", "mine-x", "--first"])])
         self.assertEqual(self.plan("catalog", ask="needs", name="outpost_kit", quantity=2), [("game/fleet/craftbook.py", ["needs", "outpost_kit", "2"])])
+        self.assertEqual(self.plan("plan"), [("game/fleet/plan.py", ["show"])])
+        self.assertEqual(self.plan("plan", action="show", division="all", brief=True), [("game/fleet/plan.py", ["show", "all", "--brief"])])
+        self.assertEqual(self.plan("plan", action="set", ships="miner-1..10", routes="ice-a,gather"), [("game/fleet/plan.py", ["set", "miner-1..10", "ice-a,gather"])])
+        self.assertEqual(self.plan("plan", action="then", routes="census,park", division="mining"), [("game/fleet/plan.py", ["then", "census,park", "--division", "mining"])])
         self.assertEqual(self.plan("candidates", id="mine-x"), [("game/fleet/routemaker.py", ["route", "mine-x"])])
         self.assertEqual(self.plan("comms", view="requests", member="Zero"), [("scripts/comms.py", ["requests", "--to", "Zero"])])
         self.assertEqual(self.plan("hold", pilot="miner-1", release=True), [("game/fleet/gate.py", ["release", "miner-1"])])
@@ -112,7 +116,7 @@ class PlanTests(unittest.TestCase):
 
     def test_the_tools_carry_the_protocols_hints(self):
         hints = {name: self.server.schema(name)["annotations"] for name in self.server.TOOLS}
-        self.assertEqual(sorted(name for name, h in hints.items() if not h["readOnlyHint"]), ["command", "fill", "goal", "hold"])
+        self.assertEqual(sorted(name for name, h in hints.items() if not h["readOnlyHint"]), ["command", "fill", "goal", "hold", "plan"])
         self.assertEqual(sorted(name for name, h in hints.items() if h["destructiveHint"]), ["command", "goal", "hold"])
 
     def test_the_door_is_marked_and_every_script_exists(self):
