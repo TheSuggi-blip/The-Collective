@@ -43,7 +43,8 @@ and 0 for a ship that waits.
 | 6 | `voidborn-selling`, `-concurrent`, `-substrate`, `-missions-1`, `-mining-missions` | as booked | once | Pass by themselves once booked |
 | 7 | `sell-curd-central-nexus`, `sell-curd-node-beta`, `sell-curd-experiment` | 1 each (tests) | about 330 cr a curd, no jump for the pilot docked there | The curd the veil-ray hunts stored while its bid was gone; closed by `requires.stored` and `requires.bid` |
 | 8 | Hunts, best first: `hunt-test-achernar-cinder-sylph` (4,230 measured), `hunt-gsc-veil-ray` (3,020), `-hamal-` (2,310), `-ruchbah-` (2,100), `-keid-fractured-prism-` (1,420), `-faintlight-drift-` (1,300), `hunt-test-lesath-cinder-sylph` (970), `hunt-cedarhold-dim-lattice-veil-ray` (840), `hunt-low-charge-glint-veil-ray` (800) | 1 each | 800 to 4,200 per ship-hour where the herd stands at four or more | Each names its loot's bid at its sell station (`requires.bid`, 100 cr); the veil-ray hunts open as the loss stop's window passes their losing runs of 07:05 to 09:20 UTC |
-| 9 | `train-navigation-home` | 1 (test) | a cost; opens Signal Fragments | Five jumps through our own stations for a drone without Signal Fragments: what navigation XP a jump gives (section 4) |
+| 9 | `train-navigation-home` | 1 (test) | -117 cr a run of 15 min; about 19 navigation XP | Five jumps through our own stations for a drone without Signal Fragments; its first run lifted a drone to navigation 3 (section 4). More ships wait for a level cap and a loss-stop exemption (requests.log ENT-150) |
+| 9a | `mission-ghosts-in-the-cloud-node`, `voidborn-first-hunt-acubens` (Unity's, added by the fill gate at 13:29 and 13:31 UTC) | 1 each | 2,000 and 1,000 cr once where offered | Ghosts in the Cloud was refused "not offered" in 7 of its 9 runs of the fleet (-24 cr each); Acubens Shadow Pocket read 2 belt-grazers at 12:55 UTC. Each costs one try a pilot |
 | 10 | `census-guard-ice` | 2 | a cost: -611 cr per ship-hour (25 runs from 09:30 UTC) | The guard of orders F16 until the guard runner exists (Unity, her turn of 18:30 UTC) |
 | 11 | `census-frontier`, then `park` | up to 12, then the rest | reads; 0 | Docked costs nothing |
 
@@ -53,7 +54,7 @@ over all drones: carapace becomes armor plate where it lies and plates are sold 
 deeper than the bid; `sell_stored.py` (skill military-turn) sells a stored good into
 the bid of the station where a drone is docked.
 
-At 13:16 UTC the fill gate read PASS with 23 drones waiting. What closes the work to
+At 13:33 UTC the fill gate read PASS with 16 drones waiting (13:16 UTC: PASS, 23). What closes the work to
 them: navigation 3 for Signal Fragments (16), the three places of First Steps on the
 board (14), the loss stop's six-hour window on the veil-ray hunts, First Hunt nexus and
 achernar and Cracking the Shell achernar, the herd floor (cinder-sylphs under four,
@@ -81,7 +82,7 @@ can read above zero there; `routes.py measure` reads lower where that happened
 | `hunt-test-lesath-cinder-sylph` | 1,490 | 2, 15 min, 360 cr | 1 drone run from 05:30 UTC: 2 kills, 1 gland, +348 cr; the herd read 2 at 07:58 UTC |
 | Carapace into armor plate (`game/fleet/plate.py`, not a route) | no fuel: +746 cr for 12 carapace in about two minutes, one test | 1 | 2026-11-16 09:06 UTC at Central Nexus: 2 plates crafted free in one tick, sold into a bid of 373 cr x 4. The drones hold about 617 carapace in storage (about 100 plates); the plate bids are the limit: pools of 3 to 6 at 221 to 486 cr at six stations, most of them 0 at 09:02 UTC after Logistics sold into them |
 | Stored curd sold where it lies (`sell_stored.py` by hand, then `sell-curd-*` routes) | no fuel for a pilot docked there: +9,570 cr by hand for 29 curd at Central Nexus and Node Beta (13:13 to 13:17 UTC), +3,630 cr for 11 by the first `sell-curd-central-nexus` run (13:22 UTC, 0.7 min) | 6 | 2026-11-16: 114 curd lay in drone storage at three stations (the tool stock, 13:10 UTC), looted while the bid was gone; the bid stood at 330 cr x 50 again from 12:07 UTC |
-| Plate by `plate.py` over all drones, second pass | +2,943 cr at three stations by 13:25 UTC (made 12, sold 9 at 287 to 361 cr) | 3 | 2026-11-16 13:23 UTC; plate bids of 4 to 5 at each station took 9 of 12; the drones still hold about 720 carapace (the tool stock, 13:10 UTC) |
+| Plate by `plate.py` over all drones, second pass | +4,665 cr, no fuel: 23 plates made, 15 sold at 287 to 361 cr, 8 stay in storage | 11 | 2026-11-16 13:23 to 13:33 UTC; the plate bids of 1 to 5 units at each station took 15 of 23; the drones held about 720 carapace before it (the tool stock, 13:10 UTC) |
 
 Drone hunts from 2026-11-16 09:30 to 13:00 UTC (`hunt_figures.py --since 09:30 --role drone`):
 4 runs, 52.7 hunter-minutes, +1,535 cr, 1,748 cr per hunter-hour; Achernar cinder-sylphs
@@ -122,7 +123,7 @@ the veil-ray part of it stopped paying at 07:05 UTC (section 2). No hull lost.
 | `voidborn-first-hunt-achernar` | 19 drone runs from 05:30 UTC, 0 hand-ins, -1,474 cr | 2026-11-16 09:12 UTC | A ship not ours at the place in every run from 06:49 UTC (the hunt step's last word in each row). Out of the plan; `store: all` at its last stop |
 | `voidborn-first-hunt-schedar` | 17 runs of the fleet from 03:13 UTC, 1 hand-in, -12 cr in sum | 2026-11-16 09:16 UTC | A ship not ours at the place in every run from 04:58 UTC. `status: off`; back when a census reads the belt free twice in a row |
 
-| The weekly tax inside runs | 7 drone runs in flight at the assessment of 12:27 UTC carried 29,346 cr of their pilots' tax (census-guard-ice 2, First Hunt 3, Cracking the Shell 2); the division paid 125,248 cr in all, 2,868 to 5,315 a drone (`get_tax_estimate`, 13:05 UTC) | 2026-11-16 12:27 UTC | Not a loss of the routes: the money was owed. Read without it, the drones' steady money over four hours to 13:18 UTC was -5,077 cr (-42 per ship-hour over 30 ships) against -34,423 with it (the tool fleet, view tasks). Next assessment in about six days; Trade asked Unity to keep it out of the run rows (requests.log ENT-147) |
+| The weekly tax inside runs | 7 drone runs started from 12:07 to 12:30 UTC, two of them after the assessment of 12:27:32 UTC, carried 29,346 cr of their pilots' tax (census-guard-ice 2, First Hunt 3, Cracking the Shell 2); the division paid 125,248 cr in all, 2,868 to 5,315 a drone (`get_tax_estimate`, 13:05 UTC) | 2026-11-16 12:27 UTC | Not a loss of the routes: the money was owed. Read without it, the drones' steady money over four hours to 13:18 UTC was -5,077 cr (-42 per ship-hour over 30 ships) against -34,423 with it (the tool fleet, view tasks). Next assessment in about six days; Trade asked Unity to keep it out of the run rows (requests.log ENT-147) |
 
 ## 3. Missions That Pay Once
 
@@ -172,12 +173,13 @@ plate at a workshop (section 1).
   average since birth (18 hours played, median): 170 hours to Piloting 10. Navigation
   2 median (26 XP an hour): 12 drones at navigation 3, 18 at 2 with 173 to 334 of the
   340 XP the level asks (data/fleet/ships/, 13:05 UTC).
-- Navigation by jumps (test `train-navigation-home`, one drone, 2026-11-16 13:17 UTC):
-  three jumps through our own stations (Central Nexus, Node Alpha, Synchrony, Node
-  Gamma) and their docks took the pilot from 334 XP at level 2 to 6 XP into level 3,
-  12 XP, about 4 XP a jump, for 80 cr of fuel (ship file 13:27 UTC). At that rate the
-  drone furthest from level 3 (173 XP) needs about 42 jumps and about 1,100 cr of fuel
-  for a mission that pays 7,000 cr once. The whole run's RESULT line is read next turn.
+- Navigation by jumps (test `train-navigation-home`, one drone, RESULT of 2026-11-16
+  13:17 UTC): five jumps through our own stations (Node Alpha, Synchrony, Node Gamma,
+  Node Beta, Central Nexus) and their docks in 15.0 minutes, -117 cr, took the pilot
+  from 334 XP at level 2 to 13 XP into level 3: 19 XP, about 4 XP and 23 cr a jump
+  (runs.jsonl; ship file 13:33 UTC). At that rate the drone furthest from level 3 (173
+  XP) needs about 44 jumps, nine runs, about 1,050 cr of fuel and two and a half hours,
+  for a mission that pays 7,000 cr once (requests.log ENT-150).
 - Weapons stand at 0 to 2, Gunnery at 0 to 3, Tactics at 0 to 3 and
   Xenobiology at 0 to 3 on the eight drones that have hunted; the other
   drones carry none of these skills (same read). First Hunt gives 50
