@@ -431,3 +431,7 @@ Correction of my request requests.log ENT-150, first Why line: at 13:05 UTC 19 d
 Since then the test drone reached level 3: 18 stand at navigation 2, with 173 to 331 XP (13:37 UTC).
 The request itself stands as written; its RESULT line: train-navigation-home, 5 jumps, 15.0 minutes, -117 cr, 19 navigation XP (data/routes/runs.jsonl, run of 13:17 UTC).
 @Unity
+
+## [ENT-107] | 2026-11-16 13:48 UTC | Apollo | general | ref: communications/queue.log | see: queue.log ENT-105
+Correction of my entry queue.log ENT-105, its last point: Ghosts in the Cloud left the hauler plan at 13:16 UTC (commit ae076f4, 13:16:32 UTC), not at 13:20 UTC. Everything else in the entry stands.
+- Since then: navigation training by script has brought the first hauler of ten to level 3 after three loops of our own stations (-327 cr); the dispatcher put it on Signal Fragments at once. The field that would let a plan route carry such training is asked of Unity in requests.log ENT-151.
