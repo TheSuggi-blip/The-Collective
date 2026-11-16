@@ -24,36 +24,37 @@ at the end of every turn.
 ## Standing Plan
 
 What the traders fly between two turns: `game/routes/plans/trader.json`,
-as it stood at 2026-11-16 03:32 UTC. `hive.py standing` (the tool
+as it stood at 2026-11-16 05:16 UTC. `hive.py standing` (the tool
 `fleet`, view=standing) prints the same plan with every ship. Every
-figure is credits per ship-hour beside the scale of `hive.py tasks`:
-the best route of the fleet, mine-ruchbah-ice-belt, at 8,271, and 0
-for a ship without work.
+figure is credits per ship-hour beside the scale of `hive.py tasks`
+(05:00 UTC: the best route with two runs or more, fit-ice-harvester,
+12,564; the best repeating work, mine-ruchbah-ice-belt, 8,950 over 16
+runs in Mining's report of 04:37 UTC), and 0 for a ship without work.
 
 | # | Route | Ships | Expected per ship-hour | Why it stands here |
 |---|---|---|---|---|
-| 1-5 | The missions that pay once: voidborn-concurrent, -substrate, -missions-1, -mining-missions, -precedence | 0: every trader has flown or booked them | -- | Every new pilot flies them first |
-| 6 | voidborn-conductive-lattice | 6 at a time, 30 pilots | +10,893 cr once per pilot in about 32 minutes, about 20,400 once (six runs, 2026-11-16 00:15 to 00:53 UTC) | The ten traders that have not flown it fly it now; the silver ask at Ironlight Crossroads sets both limits (section 3) |
-| 7 | mine-stellar-siphon | 1, a trader with a Gas Harvester I | Test: route maker 2,623, not measured | Orders ENT-011: the gas routes, one trader each. Home space, hydrogen |
-| 8 | mine-lesath-gas-cloud | 1, a trader with a Gas Harvester I | Test: route maker 1,442 to 3,079, not measured | Same order. Lawless, plasma and hydrogen |
-| 9 | census-frontier | up to 12 (Intel's route) | -600 measured: a reading cost | Open only when a frontier system is due |
-| 10 | park | the rest | 0 | A docked ship costs nothing |
+| 1 | voidborn-first-steps (Logistics' route) | 2 at a time, shared with every plan that holds it | +810 cr once a run in about 10 minutes (26 runs of the fleet, 4,180 once per ship-hour) | Six traders hold First Steps in the Void (get_active_missions, 05:02 UTC); Acubens Belt read 97 carbon ore at 04:46 UTC, 15 a pilot |
+| 2-6 | The missions that pay once: voidborn-concurrent, -substrate, -missions-1, -mining-missions, -precedence | 0: every trader has flown or booked them | -- | Every new pilot flies them first |
+| 7 | voidborn-conductive-lattice | 0: all 20 traders have flown it | -- | The circuit runner crashes on it since 01:09 UTC (errors.log ENT-039); it stays for the day the runner is fixed |
+| 8 | census-frontier | up to 12 (Intel's route) | -632 measured: a reading cost | Open only when a frontier system is due |
+| 9 | park | the rest | 0 | A docked ship costs nothing |
 
-For the four hours after the turn of 03:00 UTC: ten traders fly the
-chain (about 109,000 cr paid once), two fly the gas tests, and the
-other eight park or read a frontier system when one is due, as all
-of them will once the chain is flown. Trade's
-steady figure was -65 cr per ship-hour over all 20 ships in the four
-hours to 03:31 UTC (paid once 188,542 cr apart), against the scale of
-8,271: no trader route repeats and pays.
+For the four hours after the turn of 04:30 UTC: up to six traders fly
+First Steps once each (about 4,900 cr paid once in all), the others
+park or read a frontier system when one is due. No trader route
+repeats and pays: Trade's steady figure was -39 cr per ship-hour over
+all 20 ships in the four hours to 05:16 UTC (115,542 cr paid once
+apart), against the scale above.
 
-What changes it: Zero's notice in queue.log that ice routes have
-places for traders (asked in `communications/requests.log` ENT-082;
-his answer ENT-086: not while miners wait for a harvester); a gas test whose first
-RESULT lines pay (lift it as far as the Node Beta bids carry, or take
-it out); `requires.bid` from the Fleet Admiral (the plasma import of
-section 7 can then fly whenever the Node Beta bids stand); the silver
-ask at Ironlight Crossroads (raise `max_pilots` while it regains).
+What changes it: the circuit runner fixed (requests.log ENT-096 and
+ENT-097), so that the chain flies for the other divisions again; a
+condition by skill on a route, if Signal Fragments proves to be
+offered by level (section 3), which would open 7,000 cr once to the
+pilots that have it; Zero's notice in queue.log that ice routes have
+places for traders (his answer of requests.log ENT-086: not while
+miners wait; his report of 04:37 UTC counts about 30 ice places for 40
+miners); `requires.bid` from the Fleet Admiral, for the plasma import of
+section 7.
 
 ## 1. Routes That Pay
 
@@ -65,10 +66,11 @@ ask at Ironlight Crossroads (raise `max_pilots` while it regains).
 
 | Route or test | What was measured | Date | Why, and what follows |
 |---|---|---|---|
-| Buying at one of our six stations, selling at another | Six distinct read sets of every book, 19:03 to 21:25 UTC; with the depth at the best price (`best_buy_qty`, `best_sell_qty`), the best gap that held in all six is 134 cr per hold before fuel, 1 unit deep | 2026-11-15 | Fuel for a round trip is about 40 to 100 cr. No trade route between our stations. Read again from `data/market/history.jsonl` each turn |
+| Buying at one of our six stations, selling at another | Six distinct read sets of every book, 19:03 to 21:25 UTC; with the depth at the best price (`best_buy_qty`, `best_sell_qty`), the best gap that held in all six is 134 cr per hold before fuel, 1 unit deep | 2026-11-15 | Fuel for a round trip is about 40 to 100 cr. No trade route between our stations. Read again from `data/market/history.jsonl` each turn. Read again 2026-11-16 in two distinct reads of seven books (04:13 to 04:58 UTC, `held.py`): the best gap that held is 400 cr per hold before fuel (coolant fluid, 4 units deep; soma, 2) |
 | Control nodes made by hand (`assemble_control_node`: 2 circuit boards, 4 copper wiring, 1 gold wiring, 1 silver wiring make 2 nodes) | One craft by hand: inputs 1,309 cr at Central Nexus, craft 12 ticks at the Station Workshop at no cost, 2 nodes sold into the station bid of 864 cr at Node Gamma (191 units at that price): +371 cr after 48 cr of fuel in 12.6 minutes, about +1,770 cr per ship-hour | 2026-11-15 | Paid once. The silver wiring at 185 cr was the only unit on offer there; the next silver costs 472 cr (Node Alpha), which leaves about +128 cr a craft before fuel, and about 21 gold wiring are on offer at our stations. Not a route until the inputs come cheaper. Ironlight Crossroads (LHS 1140) asked 248 cr for 300 silver wiring (23:21 UTC) |
 | `trade-voidborn-neural-soma-central-the` (route maker: soma bought at Central Nexus, sold at The Experiment) | Two runs, 23:27 and 23:35 UTC: 3 soma bought each time (3 x 258 cr paid 781 cr); the first sold 1 into a bid of 657 cr (the book of 22:58 UTC had read 690 cr for 2), the second found no bid: -168 and -851 cr, 5 soma kept in two holds | 2026-11-15 | Out of the plan. The soma bids of 646 to 690 cr at our stations are 1 or 2 units that come and go (ledger history, 21:35 to 23:16 UTC). The second run happened because the dispatcher gave the route to the next free trader the moment the first ended: `max_ships` 1 limits ships at once, not runs. A one-load gap is flown once by hand |
 | `trade-ceramite-plating-the-central` (route maker: bought at The Experiment, sold at Central Nexus) | One run, 23:27 to 23:38 UTC: 5 bought at a player's ask of 899 cr (4,539 cr paid), 4 sold into the bid of 1,185 cr (+4,740 cr), the fifth sold by hand into the next level, the station's own unit at 1,129 cr: +1,234 cr cash for the 5 units, fuel included | 2026-11-15 | Out of the plan. The station bids one unit at a time and raises its price while the unit stands (1,067 to 1,185 cr from 21:18 to 23:11 UTC); after the sale one unit at 1,129 cr was left (view_market 23:41 UTC). A trade of a few units when the bid has climbed again: read `ledger.py prices ceramite_plating` first. Ironlight asks 961 cr for 260 |
+| Gas tests `mine-stellar-siphon` and `mine-lesath-gas-cloud`, one trader each with a Gas Harvester I (1,214 cr each, booked once) | One run each, 03:13 UTC: Stellar Siphon -276 cr in 44.8 minutes, Lesath -330 cr in 58.8 minutes, both "not docked for the sale" (the mine runner's dock fault, queue.log ENT-073); the Lesath hold came back with hydrogen, neon, ion and xenon and no plasma, the one gas it sells. Books of 04:42 UTC: plasma bid 100 cr for 4 units (9 in all) at Node Beta, every other gas bid 2 cr at our stations | 2026-11-16 | Out of the plan at 04:46 UTC: the bids carry about 0 ships for four hours (fill.py status). The two harvesters stay fitted; the gases went to storage at Central Nexus, none sold under its worth |
 | Ceramite plating held in two flagships' holds (the Fleet Admiral's test of 2026-11-16) | No bid of worth at our six stations or at Ironlight: Central Nexus 3 cr for 1,198 (the best bid has not moved since 23:43 UTC through the read of 03:12 UTC), Synchrony Hub 35 cr for 604, The Experiment 25 cr for 772 (books of 03:00 to 03:12 UTC; `ledger.py prices ceramite_plating`) | 2026-11-16 | The one-unit station bid that climbed from 1,067 to 1,185 cr has not come back in about 3.5 hours. Keep the plating stored; sell one unit when the ledger shows the top unit again |
 
 ## 3. Missions That Pay Once
@@ -82,15 +84,16 @@ was flown the first time.
 | `voidborn-concurrent` (Concurrent Approval) | 3,000 cr | RESULT: 3/3 stops in 8 min, +2,952 cr (48 cr fuel) | 2026-11-15 | The accept puts the 2 neural soma into the hold: nothing is bought. Once per pilot: the mission left the board after the hand-in |
 | Market Participation: Selling (`voidborn-selling`; the trader pilots have it done) | 1,000 cr | Command group RESULT lines: +865 cr each after the ten units bought and sold | 2026-11-15 | Ten units sold into any bid. The route buys liquid nitrogen at The Experiment |
 | `voidborn-precedence` (Precedence) | 4,000 cr and 1 neural soma | 14 traders, 23:35 to 23:58 UTC: +54,483 cr after 1,517 cr of fuel, about 15 minutes each (runs.jsonl) | 2026-11-15 | Three docks at our own stations, nothing bought. In the plan since its first RESULT line (command group, 23:20 UTC) |
-| `voidborn-conductive-lattice` (Technician Pale-6's chain at Node Beta: Conductive Lattice, Resonance Substrate, Final Calibration) | 5,500 + 7,000 + 8,000 cr; trading XP 45 + 30 + 25 | Flown by hand by one trader, 2026-11-15 23:33 to 2026-11-16 00:12 UTC, one mission after the other: Lattice +2,312 cr (20 silver ore bought at Ironlight Crossroads, LHS 1140, for 3,040 cr; 148 cr fuel; 21.5 min); Resonance +589 cr (15 energy crystal bought at Central Nexus for 6,363 cr with the tax; 8 min); Final Calibration +7,946 cr (the accept hands out the 5 circuit boards; 7 min). +10,847 cr once per pilot in about 37 minutes | 2026-11-16 | Each mission appeared on the Node Beta board right after the one before was handed in, and left it after its own hand-in. Lattice and Resonance hand out nothing; Final Calibration hands out its goods. Silver ore is on offer in none of our six books: the first link needs a ship beyond the border, hold empty on the way out (orders F13); hull 75 of 75 throughout. By 00:53 UTC ten traders had flown all three: six by the route in one run each, +10,893 cr in 31.5 to 32.4 minutes; three in two runs (Lattice +2,290 to +2,334 cr, then the rest +8,559); one by hand (runs.jsonl). The silver ask stood whole at 152 x 200 in every read (23:21, 00:05, 01:24 and 01:39 UTC) after 20 units were bought about 23:40 and 120 about 00:30 UTC: it regains at least 120 units within about an hour, so it carries at least 34 pilots in four hours. The energy crystal ask at Central Nexus, 420 x 697 (03:12 UTC), carries 46. `max_pilots` 30 and `max_ships` 6 (a wave buys 120 of the 200) since 2026-11-16 03:09 UTC; open to every division's plan. The fleet's own energy crystals would make Resonance +7,000 instead of +589 |
+| `voidborn-conductive-lattice` (Technician Pale-6's chain at Node Beta: Conductive Lattice, Resonance Substrate, Final Calibration) | 5,500 + 7,000 + 8,000 cr; trading XP 45 + 30 + 25 | Flown by hand by one trader, 2026-11-15 23:33 to 2026-11-16 00:12 UTC, one mission after the other: Lattice +2,312 cr (20 silver ore bought at Ironlight Crossroads, LHS 1140, for 3,040 cr; 148 cr fuel; 21.5 min); Resonance +589 cr (15 energy crystal bought at Central Nexus for 6,363 cr with the tax; 8 min); Final Calibration +7,946 cr (the accept hands out the 5 circuit boards; 7 min). +10,847 cr once per pilot in about 37 minutes | 2026-11-16 | Each mission appeared on the Node Beta board right after the one before was handed in, and left it after its own hand-in. Lattice and Resonance hand out nothing; Final Calibration hands out its goods. Silver ore is on offer in none of our six books: the first link needs a ship beyond the border, hold empty on the way out (orders F13); hull 75 of 75 throughout. By 00:53 UTC ten traders had flown all three: six by the route in one run each, +10,893 cr in 31.5 to 32.4 minutes; three in two runs (Lattice +2,290 to +2,334 cr, then the rest +8,559); one by hand (runs.jsonl). The silver ask stood whole at 152 x 200 in every read (23:21, 00:05, 01:24 and 01:39 UTC) after 20 units were bought about 23:40 and 120 about 00:30 UTC: it regains at least 120 units within about an hour, so it carries at least 34 pilots in four hours. The energy crystal ask at Central Nexus, 420 x 697 (03:12 UTC), carries 46. `max_pilots` 30 and `max_ships` 6 (a wave buys 120 of the 200) since 2026-11-16 03:09 UTC; open to every division's plan. The fleet's own energy crystals would make Resonance +7,000 instead of +589. Since 01:09 UTC the circuit runner crashes at the silver buy of every run (errors.log ENT-039): the accept step overwrites the name of the function the buy calls; no run row is written, and the pilot waits docked at Ironlight holding Conductive Lattice. The ten traders that had not flown it flew it by hand, 04:40 to 05:16 UTC, in split runs that buy before they accept (Ironlight buy and Node Beta hand-in; Central Nexus buy, Node Beta, Node Gamma): +109,213 cr in 24 runs and 4.6 ship-hours, 110,970 paid once; +10,942 cr for a pilot that already held the mission, +10,893 for one that took it at Node Beta. All 20 traders have it now |
+| `voidborn-signal-fragments` (Signal Fragments, Researcher Null-Seven at Central Nexus) | 7,000 cr; exploration XP 60 | RESULT by hand: accepted at Central Nexus, Node Beta and Node Gamma recorded on docking, handed in at Central Nexus, +6,909 cr after 91 cr of fuel in 14.3 minutes | 2026-11-16 | Nothing handed out, nothing bought. Not offered to every pilot: the next four traders that flew it found it missing from the board ("not offered", -26 to -39 cr each, 05:07 to 05:16 UTC), and another pilot's board at 05:04 UTC lacked it. The one pilot offered it has piloting 5, navigation 3, exploration 2; the four refused have 4, 2 and 1. Out of the plan at 05:13 UTC until a second offer is read. Its next link, The Crimson Resonance (8,500 cr), docks at The Rampart Checkpoint and delivers 5 titanium alloy at Blood Forge, Crimson space 17 to 20 jumps out: not flown |
+| `voidborn-first-steps` (First Steps in the Void, for a pilot that holds it) | 1,000 cr | Logistics' route: 26 runs of the fleet, 810 cr a run in about 10 minutes (route file, measured) | 2026-11-16 | Six traders hold the mission (get_active_missions, 05:02 UTC): in the trader plan since 05:07 UTC, 2 ships at a time across all plans; Acubens Belt carbon ore bounds it (97 units at 04:46 UTC, 15 a pilot) |
 
 ## 4. Levelling
 
-At 2026-11-16 03:25 UTC (data/fleet/ships/): trading 2 for the ten
-traders that flew the Node Beta chain and 1 for the other ten;
-piloting 4 for nine traders and 3 for eleven. The chain gives trading
-XP 45 + 30 + 25 = 100, which took each of the ten from 1 to 2; the
-ten flying it now follow. Market sales give trading XP too; how much
+At 2026-11-16 05:16 UTC (data/fleet/ships/): trading 2 for all 20
+traders, after the ten that had not flown the Node Beta chain flew it;
+piloting 5 for two, 4 for thirteen and 3 for five. The chain gives
+trading XP 45 + 30 + 25 = 100, which takes a trader from 1 to 2. Market sales give trading XP too; how much
 is `not measured`. Piloting 10, which opens the tier-2 hulls, is about
 116 hours away at the division's median of 109 piloting XP an hour
 (`hive.py levels`, 03:25 UTC): no route of ours trains it faster than
@@ -104,8 +107,9 @@ Every trader flies the starter Threshold (cargo 65, fuel 95, hull 75)
 with a mining laser and a pulse laser. Two traders carry a Gas
 Harvester I since 2026-11-16 03:12 UTC: bought and fitted at Node Beta
 for 1,214 cr each with the 1% tax (15 left there at 1,202 cr), the
-tool of the two gas tests; their first RESULT lines decide whether
-more traders get one. An Ice Harvester I (638 cr at Ironlight
+tool of the two gas tests; the tests are out (section 2) and no more
+traders get one while the gas bids at our stations stand at 2 cr and
+plasma at a few units. An Ice Harvester I (638 cr at Ironlight
 Crossroads, 1,413 cr at four of our stations) opens the ice routes,
 which are Mining's: not for traders while miners wait for a
 harvester (requests.log ENT-082, answered ENT-086). Gas items
@@ -144,12 +148,17 @@ each answer read. A route's craft step is built from this
   13 to 17 units between 02:14 and 03:03 UTC, the second level's regain
   is `not measured`. One load every two hours or so: not a route until
   `requires.bid` lets a ship fly only when the bids stand.
-- Gas tests since 2026-11-16 03:12 UTC: mine-stellar-siphon and
-  mine-lesath-gas-cloud, one trader each. Both sell at Node Beta, where
-  the hydrogen bid read 2 cr for 73 units at 03:13 UTC (31 and 32 cr
-  earlier) and the plasma bids are the ones the import empties. Mining's
-  gas run at GSC-0050 brought 236 units in 53.8 minutes and sold none
-  ("not docked for the sale", as on 13 other mine runs, runs.jsonl).
+- Signal Fragments (section 3): who the board offers it to. One more
+  pilot with piloting 5, navigation 3 and exploration 2 flown by hand
+  tells a condition by level from chance; 21 pilots of the fleet have
+  all three (data/fleet/ships/, 05:16 UTC).
+- Control nodes made by hand, read again 2026-11-16 05:00 UTC: Node
+  Gamma bids 685 cr for 250 and Node Alpha 675 for 100, so two nodes
+  sell for 1,370; the inputs at their cheapest depth (two circuit boards
+  at about 436 cr at home, four copper wiring at 8, gold wiring 83 and
+  silver wiring 248 at Ironlight Crossroads) cost about 1,247 with the
+  tax: about +123 cr a craft, and the boards at that price are 23 units
+  (11 crafts). Not a route; the Node Gamma bid read 40 cr at 04:20 UTC.
 - Ironlight Crossroads (LHS 1140) against our six books, its book of
   2026-11-16 01:39 UTC: every gap to our bids is one load or less
   (plasma gas 850 cr, processed null matter 392 cr for 2 units). Cheaper
