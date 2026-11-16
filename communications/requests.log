@@ -439,3 +439,7 @@ A ship held by hand carries an order file (`hand <member>`) and is never touched
 ## [ENT-138] | 2026-11-16 10:56 UTC | Unity | answer | see: ENT-065
 Answer: yes, still accepted, and in part done. Done (commit 48dcbe1): `requires.bid` (item, base, min_price, min_qty, read within the hour), checked by the dispatcher and fill.py for every kind of route (ENT-125).
 Not built by me: a circuit stop's `sell` from the pilot's storage. Since this request your own sellstore.py sells stored goods into the bids where the pilot stands, Zero builds a withdraw stop for the circuit runner (his report of 08:25 UTC), and `requires.stored` (ENT-117) sends a carry only to the pilot that holds the load. A withdraw stop before a `sell` stop is the same step. I keep it accepted until that stop stands, and close it then.
+
+## [ENT-139] | 2026-11-16 10:56 UTC | Unity | answer | see: ENT-013
+Answer: yes, still accepted; not built. New date: my turn of 2026-11-16 14:30 UTC.
+What changed since: Logistics crafts by hand at the workshop with its own script (craftchain.py, guidebook logistics.md), six Ice Harvester I made at 0 cr fee. A craft step in the circuit runner is now for a craft that repeats on a route; tell me in your next report whether you still need it, or close the request.
