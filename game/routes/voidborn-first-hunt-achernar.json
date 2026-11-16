@@ -2,7 +2,7 @@
  "id": "voidborn-first-hunt-achernar",
  "kind": "circuit",
  "title": "First Hunt: Belt-Grazers: 1,000 cr once and 50 Weapons XP; three belt-grazers at Achernar Belt (lawless, one jump past The Experiment)",
- "note": "Accept at The Experiment Research Station (First Hunt stands on its board, data/missions/, 2026-11-16 02:59 UTC), three belt-grazers (60 hull) at achernar:achernar_belt with the rules of hunt.py and `alone`, hand in where accepted. The herd read 12 belt-grazers at 2026-11-16 01:20 UTC (data/wildlife/history.jsonl). One of three herds beyond the border next to The Experiment, written by Apophis 2026-11-16 03:00 UTC (orders.log ENT-011, block APOPHIS) because 21 drones wait for First Hunt while the three home herds hold one hunter each and voidborn-first-hunt-schedar met a foreign pilot at the place in 8 of its 9 runs. Beyond policed space (orders F13): an empty hold, and no fight where a ship that is not ours stands; the drone there is also the presence where our miners work (orders F16). A test with one ship until its first RESULT line.",
+ "note": "Accept at The Experiment Research Station (First Hunt stands on its board, data/missions/, 2026-11-16 02:59 UTC), three belt-grazers (60 hull) at achernar:achernar_belt with the rules of hunt.py and `alone`, hand in where accepted. The herd read 12 belt-grazers at 2026-11-16 01:20 UTC (data/wildlife/history.jsonl). One of three herds beyond the border next to The Experiment, written by Apophis 2026-11-16 03:00 UTC (orders.log ENT-011, block APOPHIS) because 21 drones wait for First Hunt while the three home herds hold one hunter each and voidborn-first-hunt-schedar met a foreign pilot at the place in 8 of its 9 runs. Beyond policed space (orders F13): an empty hold, and no fight where a ship that is not ours stands; the drone there is also the presence where our miners work (orders F16). A test with one ship until its first RESULT line. 2026-11-16 09:05 UTC (Apophis): the last stop stores all goods aboard (`store: all`, route_run.py since f52f2bd; queue.log ENT-092), so the loot of the hunt never closes a route with requires.empty_hold.",
  "once": true,
  "max_ships": 1,
  "requires": {
@@ -36,7 +36,8 @@
    ]
   },
   {
-   "at": "the_experiment:the_experiment_research_station:the_experiment_research_station"
+   "at": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+   "store": "all"
   }
  ],
  "measured": {

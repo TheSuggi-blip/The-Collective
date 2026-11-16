@@ -2,7 +2,7 @@
  "id": "voidborn-first-hunt-schedar",
  "kind": "circuit",
  "title": "First Hunt: Belt-Grazers: 1,000 cr once and 50 Weapons XP; three belt-grazers at Schedar Belt (lawless, one jump past GSC-0027)",
- "note": "Accept at Node Beta Industrial Station, three belt-grazers (60 hull) at schedar:schedar_belt with the rules of hunt.py and `alone`, hand in where accepted. A fourth herd for the mission beside the three of our space (voidborn-first-hunt-nexus, -gsc, -acubens: +934 to +974 cr, one-time 1,000, 18.9 to 28.0 minutes, their first runs of 2026-11-15 23:20 UTC), which hold one hunter each. Schedar Belt read 20 belt-grazers and no pilot at 21:14 UTC (data/wildlife/history.jsonl). Beyond policed space (orders F13): an empty hold, and no fight where a ship that is not ours stands. A test with one ship, written by Apophis 2026-11-15 23:57 UTC, until its first RESULT line.",
+ "note": "Accept at Node Beta Industrial Station, three belt-grazers (60 hull) at schedar:schedar_belt with the rules of hunt.py and `alone`, hand in where accepted. A fourth herd for the mission beside the three of our space (voidborn-first-hunt-nexus, -gsc, -acubens: +934 to +974 cr, one-time 1,000, 18.9 to 28.0 minutes, their first runs of 2026-11-15 23:20 UTC), which hold one hunter each. Schedar Belt read 20 belt-grazers and no pilot at 21:14 UTC (data/wildlife/history.jsonl). Beyond policed space (orders F13): an empty hold, and no fight where a ship that is not ours stands. A test with one ship, written by Apophis 2026-11-15 23:57 UTC, until its first RESULT line. 2026-11-16 09:05 UTC (Apophis): the last stop stores all goods aboard (`store: all`, route_run.py since f52f2bd; queue.log ENT-092), so the loot of the hunt never closes a route with requires.empty_hold.",
  "once": true,
  "max_ships": 1,
  "requires": {
@@ -36,7 +36,8 @@
    ]
   },
   {
-   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station"
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store": "all"
   }
  ],
  "measured": {
