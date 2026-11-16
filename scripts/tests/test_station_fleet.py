@@ -85,6 +85,76 @@ class FleetCollectorTests(unittest.TestCase):
         self.assertFalse(held(140, 146, 2600, low))            # it stayed low for ten minutes: that is the fleet now
         self.assertFalse(held(0, 0, 3000, {}))                 # a first pass has nothing before it
 
+    def test_a_pilot_the_engine_signed_out_for_good_is_named_and_signed_in_again(self):
+        # 2026-11-16: close code 4002 left one pilot signed out for 70 minutes; POST /accounts {"username"} brought it back (queue.log ENT-123)
+        calls = []
+
+        class Answer:
+            def __init__(self, text):
+                self.text = text
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *exc):
+                return False
+
+            def read(self, n=-1):
+                return self.text
+
+        class Opener:
+            def __init__(self, listed):
+                self.listed = listed
+
+            def open(self, request, timeout=0):
+                if isinstance(request, str):
+                    calls.append(("GET", request, None))
+                    return Answer(json.dumps({"accounts": self.listed}).encode())
+                calls.append((request.get_method(), request.full_url, json.loads(request.data)))
+                return Answer(b"{}")
+
+        self.fleet.GATE = "http://gate"
+        listed = [{"username": "miner-1", "status": "connected"}, {"username": "miner-2", "status": "disconnected"},
+                  {"username": "drone-3", "status": "reconnecting"}, {"username": "One of Seven", "status": "disconnected"}, "x", {"status": "disconnected"}]
+        self.assertEqual(self.fleet.signed_out(listed), ["miner-2"])                      # of the fleet and signed out; never one that reconnects
+        gate, away, posts = Opener(listed), {}, lambda: [c for c in calls if c[0] == "POST"]
+        self.assertEqual(self.fleet.rejoin(1000, 5000, away, gate), (["miner-2"], []))       # the first look only names it
+        self.assertEqual(self.fleet.rejoin(1030, 5030, away, gate), (["miner-2"], []))       # no second look within a minute
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(self.fleet.rejoin(1060, 5060, away, gate), (["miner-2"], ["miner-2"]))   # still out a minute later: asked back in
+        self.assertEqual(posts(), [("POST", "http://gate/accounts", {"username": "miner-2"})])
+        self.assertEqual(self.fleet.rejoin(1120, 5120, away, gate), (["miner-2"], []))       # one try per pilot in a quarter of an hour
+        self.assertEqual(self.fleet.rejoin(1960, 5960, away, gate), (["miner-2"], ["miner-2"]))
+        self.assertEqual(len(posts()), 2)
+        gate.listed = [{"username": "miner-2", "status": "connected"}]
+        self.assertEqual(self.fleet.rejoin(2020, 6020, away, gate), ([], []))               # it is back: the list is empty ...
+        before = len(calls)
+        self.assertEqual(self.fleet.rejoin(2400, 6400, away, gate), ([], []))               # ... and the next look comes after ten minutes
+        self.assertEqual(len(calls), before)
+        young, away = Opener(listed), {}
+        self.fleet.rejoin(1000, 100, away, young)
+        self.assertEqual(self.fleet.rejoin(1060, 160, away, young), (["miner-2"], []))       # an engine that started under ten minutes ago: nobody is signed in
+        self.assertEqual(self.fleet.rejoin(1120, None, away, young), (["miner-2"], []))      # ... nor when its age is not known
+        self.assertEqual(posts()[2:], [])
+
+        class Away:
+            def open(self, request, timeout=0):
+                raise OSError("no engine")
+
+        self.assertEqual(self.fleet.rejoin(5000, 9000, {}, Away()), ([], []))
+        # the switch: STOP or an empty rejoin-off names the pilot and asks nobody; a name in rejoin-off is left signed out, unnamed
+        self.assertEqual(self.fleet.left_out(), (True, set()))
+        seen_before = {"at": 0, "first": {"miner-2": 0}}
+        self.assertEqual(self.fleet.rejoin(7000, 9000, dict(seen_before), Opener(listed), allowed=False), (["miner-2"], []))
+        self.assertEqual(self.fleet.rejoin(7000, 9000, dict(seen_before), Opener(listed), never={"miner-2"}), ([], []))
+        self.assertEqual(len(posts()), 2)
+        (self.fleet.DATA / "rejoin-off").write_text("")
+        self.assertEqual(self.fleet.left_out(), (False, set()))
+        (self.fleet.DATA / "rejoin-off").write_text("miner-2\n\n")
+        self.assertEqual(self.fleet.left_out(), (True, {"miner-2"}))
+        (self.fleet.DATA / "STOP").write_text("")
+        self.assertEqual(self.fleet.left_out(), (False, {"miner-2"}))
+
     def test_file_name_has_no_path_characters(self):
         self.assertEqual(self.fleet.file_name("One of Seven"), "One_of_Seven")
         self.assertEqual(self.fleet.file_name("../../etc/passwd"), ".._.._etc_passwd")

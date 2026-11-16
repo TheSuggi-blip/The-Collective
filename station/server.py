@@ -45,6 +45,7 @@ import re
 import secrets
 import threading
 import time
+import urllib.error
 import urllib.parse
 import urllib.request
 from pathlib import Path
@@ -658,6 +659,24 @@ def chat_sessions():
         return {}
 
 
+def new_session(agent, title):
+    """A new conversation at this agent's chat door; its id, or '' when the door named none."""
+    with hermes(agent, "POST", "/api/sessions", {"title": title}) as r:
+        return text((json.loads(r.read(200_000)).get("session") or {}).get("id"), 80)
+
+
+def door_said(e):
+    """A chat door's failure in words: its kind and, when the door refused, its code and the first words of its answer."""
+    said = type(e).__name__
+    if isinstance(e, urllib.error.HTTPError):
+        try:
+            body = e.read(400).decode("utf-8", "replace")
+        except Exception:
+            body = ""
+        said += " %s %s" % (e.code, " ".join(body.split())[:160])
+    return said.strip()
+
+
 def chat_session(agent, create=False):
     """The station's conversation with this agent; made on the first message."""
     with SESSION_LOCK:
@@ -667,8 +686,14 @@ def chat_session(agent, create=False):
             return sid
         if not create:
             return None
-        with hermes(agent, "POST", "/api/sessions", {"title": "Command station"}) as r:
-            sid = text((json.loads(r.read(200_000)).get("session") or {}).get("id"), 80)
+        try:
+            sid = new_session(agent, "Command station")
+        except urllib.error.HTTPError as e:
+            if e.code != 400:
+                raise
+            # Hermes allows a session title once per profile: an older session of the station still holds it. 2026-11-16 Zero's
+            # door answered 400 to every message until that session was renamed by hand (queue.log ENT-118).
+            sid = new_session(agent, "Command station (%s)" % time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()))
         if not SESSION_ID.fullmatch(sid):
             raise ValueError("the agent's door gave no session")
         sessions[agent] = sid
@@ -800,7 +825,7 @@ def group_turn(agent, message, turn, number, targets):
         with CHAT_LOCK:
             if chat["turn"] == turn:
                 chat["running"] = False
-        group_add(agent, "The chat door did not answer: " + type(e).__name__, kind="error")
+        group_add(agent, "The chat door did not answer: " + door_said(e), kind="error")
         return
     others = [NAMES[a] for a in targets if a != agent]
     head = ("[Command station, group comms. Suggi writes to you%s. All six members read this conversation; your answer is posted "

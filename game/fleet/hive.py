@@ -247,6 +247,10 @@ def show_fleet(root, data, now):
     print("FLEET | %s ships: %s at work, %s docked without work, %s adrift | credits %s (%s a ship) | read %s"
           % (totals.get("ships"), totals.get("working"), totals.get("parked"), totals.get("adrift"), num(totals.get("credits")), num(totals.get("credits_per_ship")),
              ago(fleet.get("updated_at"), now)))
+    away = [a for a in fleet.get("away") or [] if isinstance(a, dict)]
+    if away:                                                          # station/fleet.py rejoin: signed in again within minutes
+        print("  AWAY | %d pilot(s) the engine holds signed out, not in the count above; the collector signs them in again by itself: %s"
+              % (len(away), ", ".join("%d of %s" % (n, d) for d, n in sorted(Counter(str(a.get("division")) for a in away).items()))))
     print("  steady money per hour, the rewards the game pays once per pilot left out; costs are money out (net = income - costs):")
     for key in ("1h", "6h", "24h"):
         w = windows.get(key) or {}

@@ -13,7 +13,7 @@
 #     Otherwise one member's work would silently overwrite another's.
 #   - A changed script under game/fleet/ needs its test in the same install: a path under scripts/tests/.
 #   - Closed to every member but the Fleet Admiral, because one fault there stops the whole fleet or opens the lock:
-#     game/fleet/gate.py, division.py, dispatch.py, fill.py, collective_mcp.py, store.py; scripts/comms.py and this
+#     game/fleet/gate.py, division.py, dispatch.py, runhost.py, fill.py, collective_mcp.py, store.py; scripts/comms.py and this
 #     file; station/, governance/, communications/, collective-index/, .github/, .githooks/. Ask for those in requests.log.
 #   - The member is read from the shell (your Hermes profile); a shell that is no member installs nothing.
 # WHY:  Suggi, 2026-11-16: the Admirals do by script what they would otherwise ask for and wait for.
@@ -25,7 +25,7 @@
 #   REPO=<dir> runs it on another clone (a test copy).
 set -u
 R=${REPO:-/srv/collective/the-collective}
-CLOSED='^(game/fleet/(gate|division|dispatch|fill|plan|collective_mcp|store)\.py|scripts/(comms\.py|fleet-build\.sh)|(station|governance|communications|collective-index|\.github|\.githooks)(/|$))'
+CLOSED='^(game/fleet/(gate|division|dispatch|runhost|fill|plan|collective_mcp|store)\.py|scripts/(comms\.py|fleet-build\.sh)|(station|governance|communications|collective-index|\.github|\.githooks)(/|$))'
 verb=${1:-}; T=${2:-}
 usage() { sed -n '2,26p' "$0" | sed 's/^# \{0,1\}//'; exit 2; }
 [ -n "$verb" ] && [ -n "$T" ] || usage

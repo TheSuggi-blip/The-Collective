@@ -29,6 +29,12 @@ flies and writes it into the unit's data folder, outside the repository:
     <FLEET_DATA>/presence.jsonl        one line per pilot the engine stopped listing ("sign": -1, with the credits
                                        and counters of its last reading) or lists again (+1, with what it holds
                                        now): {"at", "pilot", "sign", "credits", "earned", "spent"}
+    <FLEET_DATA>/fleet.json `away`      the pilots of the fleet the engine holds signed out (`disconnected` in its
+                                       GET /accounts): [{"name", "division"}]; each is signed in again by this
+                                       collector (rejoin), so the list is empty but for some minutes
+    <FLEET_DATA>/rejoin-off            (optional, by hand) empty: no pilot is signed in again; with names, one a
+                                       line: those pilots are left signed out and are not named as away. The
+                                       file STOP beside it also stops every sign-in
     <FLEET_DATA>/seed.json             {pilot: [first seen epoch, credits, earned, spent]}
                                        as the collector first saw each pilot; at the first
                                        start every pilot present is put at epoch 0
@@ -699,6 +705,82 @@ def held(count, known, now, low=LOW):
     return now - low["since"] < LOW_HOLD
 
 
+LOOK_EVERY = 60              # seconds between two looks at the engine's own list while a pilot is away
+LOOK_QUIET = 600             # ... after a look that found none away
+REJOIN_AFTER = 600           # seconds the engine must have run before a pilot is signed in again
+REJOIN_EVERY = 900           # seconds between two tries for one pilot
+REJOIN_MOST = 5              # pilots signed in again in one look
+AWAY = {}                    # "at": the last look, "every": seconds to the next, "list": the pilots away, "first"/"tried": {pilot: when}
+
+
+def signed_out(listed):
+    """The pilots of the fleet the engine lists `disconnected` (GET /accounts), by name. One it shows `reconnecting` is
+    being signed in by the engine itself; a pilot of the account that stands in no division was signed out by us."""
+    return sorted(a["username"] for a in listed if isinstance(a, dict) and isinstance(a.get("username"), str) and a.get("status") == "disconnected"
+                  and division_of(a["username"])[0] != "Unassigned")
+
+
+def left_out():
+    """(True while pilots may be signed in again, the pilots that are left signed out on purpose) from the files STOP and
+    rejoin-off of the fleet's data folder."""
+    try:
+        names = {line.strip() for line in (DATA / "rejoin-off").read_text(encoding="utf-8", errors="replace").splitlines() if line.strip()}
+        switched_off = not names
+    except OSError:
+        names, switched_off = set(), False
+    return not (switched_off or (DATA / "STOP").exists()), names
+
+
+def rejoin(now, uptime, away=AWAY, opener=None, allowed=True, never=()):
+    """Look at the engine's own list for pilots it signed out for good, and sign them in again: (the pilots away, the
+    pilots asked back in at this look).
+
+    2026-11-16, 22:07:29 UTC: in a stall of the server one mining pilot's reconnect did not authenticate in time (close
+    code 4002). The engine's library holds that close final: the pilot was never connected again and nobody was told.
+    Its dashboard left the pilot out, this collector wrote no picture for ten minutes (held), the pilot flew nothing for
+    70 minutes and the game towed the drifting ship for 500 cr, until Morpheus signed it in by hand (queue.log ENT-123:
+    POST /accounts {"username": the pilot}, answer 202, connected 5 s later). His guards are kept: never a pilot the
+    engine shows `reconnecting`, never within REJOIN_AFTER seconds of an engine start (a second connection replaces
+    the first, and that close is final too), never a pilot that is not of the fleet. And: only a pilot seen signed out
+    at two looks, one try per pilot in REJOIN_EVERY seconds, REJOIN_MOST pilots a look. A look that finds none away is
+    followed by the next after LOOK_QUIET seconds. `allowed` False: the pilots away are named and nobody is asked;
+    a pilot of `never` is left signed out and not named (left_out). Not flown yet: no pilot has been signed out since
+    it was written.
+    """
+    if now - away.get("at", 0) < away.get("every", LOOK_EVERY):
+        return away.get("list", []), []
+    away["at"], away["every"] = now, LOOK_QUIET
+    opener = opener or OPENER
+    try:
+        with opener.open(GATE + "/accounts", timeout=25) as r:
+            listed = json.loads(r.read(60_000_000)).get("accounts") or []
+    except Exception:                               # the engine is away: the pass says so
+        return away.get("list", []), []
+    out = [name for name in signed_out(listed) if name not in never]
+    first, tried = away.setdefault("first", {}), away.setdefault("tried", {})
+    for name in [n for n in first if n not in out]:
+        del first[name]
+    away["list"] = out
+    if out:
+        away["every"] = LOOK_EVERY
+    asked = []
+    for name in out:
+        seen = first.setdefault(name, now)
+        if (not allowed or not isinstance(uptime, (int, float)) or uptime < REJOIN_AFTER or now - seen < LOOK_EVERY or now - tried.get(name, 0) < REJOIN_EVERY
+                or len(asked) >= REJOIN_MOST):
+            continue
+        tried[name] = now
+        request = urllib.request.Request(GATE + "/accounts", data=json.dumps({"username": name}).encode("utf-8"), method="POST",
+                                         headers={"Content-Type": "application/json"})
+        try:
+            with opener.open(request, timeout=25) as r:
+                r.read(1_000_000)
+            asked.append(name)
+        except Exception:
+            continue
+    return out, asked
+
+
 def collect_once(last):
     """One pass: ask the engine, write the files. `last` holds what was written before."""
     now = time.time()
@@ -716,8 +798,18 @@ def collect_once(last):
     rows = of_fleet(sorted((ship_row(a) for a in accounts), key=row_order))
     before = read(DATA / "fleet.json", {})
     known = len(of_fleet([s for s in before.get("ships") or [] if isinstance(s, dict)]))
+    seen = read(DATA / "seed.json", None)
+    away = AWAY.get("list", [])
+    if away or len(rows) < max(known, len(seen) if isinstance(seen, dict) else 0):     # a pilot we know is not listed: signed out for good?
+        uptime = data.get("uptimeMs")
+        allowed, never = left_out()
+        away, asked = rejoin(now, uptime / 1000 if isinstance(uptime, (int, float)) and not isinstance(uptime, bool) else None, allowed=allowed, never=never)
+        if asked:
+            print("fleet: %d pilot(s) the engine had signed out: asked back in" % len(asked), flush=True)
+    away = [{"name": name, "division": division_of(name)[0]} for name in away]
     if held(len(rows), known, now):               # the engine signs its pilots in again: keep the last picture, write no sample
         before["engine"] = {"ok": False, "error": "%d of %d pilots signed in" % (len(rows), known), "checked_at": stamp}
+        before["away"] = away
         write(DATA / "fleet.json", before)
         return False
     note_presence(before.get("ships") or [], rows, read(DATA / "seed.json", None), now)   # who left the engine's list, who is back
@@ -766,7 +858,7 @@ def collect_once(last):
     total["rates"] = rates(history, now, seeds=seeds if isinstance(seeds, dict) else {})
     write(DATA / "fleet.json", {
         "updated_at": stamp, "engine": {"ok": True, "error": "", "checked_at": stamp, "started_at": text(data.get("startedAt"), 30)},
-        "totals": total, "ships": rows})
+        "totals": total, "ships": rows, "away": away})
     return True
 
 
