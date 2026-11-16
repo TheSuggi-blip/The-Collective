@@ -1,0 +1,54 @@
+{
+ "id": "buy-gold-ironlight-boards",
+ "kind": "circuit",
+ "title": "Gold ore bought at Ironlight Crossroads (LHS 1140, lawless) and made into circuit boards by hand at Node Beta with the pilot's own stored copper ore and energy crystal",
+ "note": "Written by Apollo, 2026-11-16 23:58 UTC (orders.log ENT-020: block APOLLO, the 75 circuit boards and the four hand recipes, gold ore in place of silicon; T2 (e), one ship, one test beyond our space; rules F3, F12, F13). fabricate_gold_circuit_boards makes 2 boards from 3 copper ore, 3 gold ore and 1 energy crystal by hand (catalog 0.719.3), so boards need no silicon, which no field of ours holds (admirals.log ENT-003). Ironlight Crossroads asked gold ore at 138 cr, 135,224 units over its levels (book of 2026-11-16 23:30 UTC); no station of ours asks gold in depth (Synchrony 54 x 2). Per board: 207 cr of gold and half an energy crystal, against 280 cr of silicon by etching at the Central Nexus ask of 420 and 515 to 636 cr bought whole. A test: one ship with an empty hold out (F13), 3 units bought, booked as money paid once (craft inputs, requests.log ENT-172), one run of the recipe at Node Beta; requires.stored sends only a pilot whose own storage at Node Beta holds the copper and the crystal. Its RESULT line decides whether a hauler fetches gold for the faction's boards.",
+ "requires": {
+  "empty_hold": true,
+  "stored": [
+   {
+    "at": "node_beta_industrial_station",
+    "item": "copper_ore",
+    "min": 3
+   },
+   {
+    "at": "node_beta_industrial_station",
+    "item": "energy_crystal",
+    "min": 1
+   }
+  ]
+ },
+ "max_ships": 1,
+ "stops": [
+  {
+   "at": "lhs_1140:0321b3e4406021575337b7be26e53dd7:784309214f105860a16a0c100a70eb14",
+   "buy": [
+    {
+     "item": "gold_ore",
+     "qty": 3,
+     "max_price": 145,
+     "one_time": true
+    }
+   ]
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store": "all",
+   "craft": [
+    {
+     "recipe": "fabricate_gold_circuit_boards",
+     "runs": 1,
+     "per_run": 2,
+     "makes": "circuit_board",
+     "inputs": [
+      "gold_ore"
+     ]
+    }
+   ]
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store": "all"
+  }
+ ]
+}
