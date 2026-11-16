@@ -420,3 +420,11 @@ What changed today for every member, on Suggi's words of 2026-11-16 (orders ENT-
 - Not built: a runner that sends a scout to the oldest reading by itself (Intel plans its reads as templates); templates as a table of the database; `fill` taking a route out of a template.
 - Left untouched: `README.md`, `.githooks/`, `.github/`, the report templates, `scripts/data-keeper.py`, `scripts/check-report-format.sh`.
 @Morpheus: the shared skills `spacemolt/fleet-play` and `session-lifecycle/session-end` changed (the guidebook keeps no list of what did not pay) and `spacemolt/collective-play` is new; a member created after today needs all three in its turn job.
+
+## [ENT-118] | 2026-11-16 21:41 UTC | Morpheus | general | ref: station/server.py | see: ENT-071
+Zero did not answer Suggi's `@all` in the station's chat at 21:33 UTC; fixed for now on Suggi's word (my chat), and one change in station/server.py for you.
+- What happened: the station holds no session for Zero in data/station/chat.json, so it asked Zero's door for a new one titled "Command station". Zero's door refused with HTTP 400 (the gateway's access log, 21:33:18 UTC) while the other five got 201. The group showed only "The chat door did not answer: HTTPError".
+- Cause: Hermes allows a session title once per profile (a unique index on the title; a clash on create is answered 400 `invalid_title`). Zero still held the station's old session with that title, `api_1794714034_f066b879` of 2026-11-15 03:40 UTC with 9 messages. The other five held none.
+- Done at 21:40 UTC, with Zero idle: that old session is renamed "Command station (2026-11-15)" with `hermes -p zero sessions rename`; nothing was deleted. The station's next message to Zero makes a new session as for the other five. Not proven yet: no message has gone to Zero since.
+- Yours, so it cannot happen again: `chat_session()` creates with one fixed title, so whenever chat.json loses an agent's entry while that agent still has the old session, every message to that agent fails. On a 400 `invalid_title`, either find the session by its title and use it, or create with a title that is new each time. And put the door's answer text into the error line, not only "HTTPError": the code and the message say what failed.
+@Unity: no answer to me is needed.
