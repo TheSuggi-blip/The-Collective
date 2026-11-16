@@ -56,7 +56,7 @@ Kept by Unity. Routes: 37.
 | 32 | [mission-ghosts-in-the-cloud-node](mission-ghosts-in-the-cloud-node.json) | Once per Pilot | home space | once per pilot, up to 1 ships | all 6 | one-time |
 | 33 | [mine-hd-147513-belt](mine-hd-147513-belt.json) | Paying Routes | beyond the border, 7 jumps | up to 1 ships, empty hold | all 6 | 20 |
 | 34 | [gather-gsc-0027-prism-scatter](gather-gsc-0027-prism-scatter.json) | Standing Work, Reading and Waiting | home space | up to 46 ships, needs mining_laser_i, standing work | all 6 | -100 |
-| 35 | [gather-hamal-crystal-bloom](gather-hamal-crystal-bloom.json) | Standing Work, Reading and Waiting | home space | up to 40 ships, needs mining_laser_i, standing work | all 6 | -160 |
+| 35 | [gather-hamal-crystal-bloom](gather-hamal-crystal-bloom.json) | Standing Work, Reading and Waiting | home space | up to 46 ships, needs mining_laser_i, standing work | all 6 | -160 |
 | 36 | [census-frontier](census-frontier.json) | Standing Work, Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | all 6 | -630 |
 | 37 | [park](park.json) | Standing Work, Reading and Waiting | home space | the park route | all 6 | -670 |
 
@@ -101,7 +101,7 @@ Kept by Apophis. Routes: 38.
 | 33 | [voidborn-first-hunt-intercrus-belt](voidborn-first-hunt-intercrus-belt.json) | Once per Pilot | beyond the border, 7 jumps | once per pilot, up to 1 ships, empty hold | all 30 | one-time |
 | 34 | [census-guard-ice](census-guard-ice.json) | Standing Work, Reading and Waiting | beyond the border, 7 jumps | up to 2 ships, empty hold | all 30 | -610 |
 | 35 | [gather-gsc-0027-prism-scatter](gather-gsc-0027-prism-scatter.json) | Standing Work, Reading and Waiting | home space | up to 46 ships, needs mining_laser_i, standing work | all 30 | -100 |
-| 36 | [gather-hamal-crystal-bloom](gather-hamal-crystal-bloom.json) | Standing Work, Reading and Waiting | home space | up to 40 ships, needs mining_laser_i, standing work | all 30 | -160 |
+| 36 | [gather-hamal-crystal-bloom](gather-hamal-crystal-bloom.json) | Standing Work, Reading and Waiting | home space | up to 46 ships, needs mining_laser_i, standing work | all 30 | -160 |
 | 37 | [census-frontier](census-frontier.json) | Standing Work, Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | all 30 | -630 |
 | 38 | [park](park.json) | Standing Work, Reading and Waiting | home space | the park route | all 30 | -670 |
 
@@ -152,7 +152,7 @@ Kept by Apollo. Routes: 36.
 | 29 | [mine-atlas-gas-pocket](mine-atlas-gas-pocket.json) | Paying Routes | beyond the border, 6 jumps | up to 1 ships, needs gas_harvester_i, empty hold, while node_beta_industrial_station bids 72 cr for plasma_gas | all 20 | 90 |
 | 30 | [mine-amberfall-emission-nebula](mine-amberfall-emission-nebula.json) | Measured at a Loss | beyond the border, 5 jumps | up to 1 ships, needs gas_harvester_i, empty hold, while node_gamma_relay_station bids 27 cr for hydrogen_gas | all 20 | -120 |
 | 31 | [gather-gsc-0027-prism-scatter](gather-gsc-0027-prism-scatter.json) | Standing Work, Reading and Waiting | home space | up to 46 ships, needs mining_laser_i, standing work | all 20 | -100 |
-| 32 | [gather-hamal-crystal-bloom](gather-hamal-crystal-bloom.json) | Standing Work, Reading and Waiting | home space | up to 40 ships, needs mining_laser_i, standing work | all 20 | -160 |
+| 32 | [gather-hamal-crystal-bloom](gather-hamal-crystal-bloom.json) | Standing Work, Reading and Waiting | home space | up to 46 ships, needs mining_laser_i, standing work | all 20 | -160 |
 | 33 | [gather-gsc-0027-spacetime-seep](gather-gsc-0027-spacetime-seep.json) | Standing Work, Reading and Waiting | home space | up to 6 ships, standing work | all 20 | -130 |
 | 34 | [mine-okab-haze](mine-okab-haze.json) | Tests | beyond the border, 4 jumps | up to 1 ships, needs gas_harvester_i, empty hold, while node_beta_industrial_station bids 27 cr for hydrogen_gas | all 20 | TBD |
 | 35 | [census-frontier](census-frontier.json) | Standing Work, Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | all 20 | -630 |
@@ -209,7 +209,7 @@ Kept by Zero. Routes: 41.
 | 34 | [mine-felis-frost-ring](mine-felis-frost-ring.json) | Measured at a Loss | beyond the border, 7 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while node_beta_industrial_station bids 156 cr for deuterium_ice | all 40 | -70 |
 | 35 | [mine-nova-terra-ice-shelf](mine-nova-terra-ice-shelf.json) | Tests | beyond the border, 8 jumps | up to 1 ships, needs ice_harvester_i, while central_nexus bids 25 cr for water_ice | all 40 | TBD |
 | 36 | [gather-gsc-0027-prism-scatter](gather-gsc-0027-prism-scatter.json) | Standing Work, Reading and Waiting | home space | up to 46 ships, needs mining_laser_i, standing work | all 40 | -100 |
-| 37 | [gather-hamal-crystal-bloom](gather-hamal-crystal-bloom.json) | Standing Work, Reading and Waiting | home space | up to 40 ships, needs mining_laser_i, standing work | all 40 | -160 |
+| 37 | [gather-hamal-crystal-bloom](gather-hamal-crystal-bloom.json) | Standing Work, Reading and Waiting | home space | up to 46 ships, needs mining_laser_i, standing work | all 40 | -160 |
 | 38 | [mine-acubens](mine-acubens.json) | Standing Work, Reading and Waiting | home space | up to 18 ships, needs mining_laser_i, standing work | all 40 | -160 |
 | 39 | [mine-pherkad-rift](mine-pherkad-rift.json) | Standing Work, Reading and Waiting | home space | up to 18 ships, needs mining_laser_i, standing work | all 40 | -170 |
 | 40 | [census-frontier](census-frontier.json) | Standing Work, Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | all 40 | -630 |
@@ -247,7 +247,7 @@ Kept by Oracle. Routes: 22.
 | 17 | [hunt-atlas-gas-pocket](hunt-atlas-gas-pocket.json) | Paying Routes | beyond the border, 6 jumps | up to 1 ships, empty hold | all 20 | 2,420 |
 | 18 | [hunt-test-homam-frost-moth](hunt-test-homam-frost-moth.json) | Paying Routes | beyond the border, 6 jumps | up to 1 ships, empty hold | all 20 | 1,730 |
 | 19 | [gather-gsc-0027-prism-scatter](gather-gsc-0027-prism-scatter.json) | Standing Work, Reading and Waiting | home space | up to 46 ships, needs mining_laser_i, standing work | all 20 | -100 |
-| 20 | [gather-hamal-crystal-bloom](gather-hamal-crystal-bloom.json) | Standing Work, Reading and Waiting | home space | up to 40 ships, needs mining_laser_i, standing work | all 20 | -160 |
+| 20 | [gather-hamal-crystal-bloom](gather-hamal-crystal-bloom.json) | Standing Work, Reading and Waiting | home space | up to 46 ships, needs mining_laser_i, standing work | all 20 | -160 |
 | 21 | [census-frontier](census-frontier.json) | Standing Work, Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | all 20 | -630 |
 | 22 | [park](park.json) | Standing Work, Reading and Waiting | home space | the park route | all 20 | -670 |
 
@@ -300,7 +300,7 @@ Kept by Unity. Routes: 35.
 | 30 | [voidborn-network-expansion](voidborn-network-expansion.json) | Once per Pilot | home space | once per pilot, up to 20 ships, after the reward First Steps in the Void | all 10 | one-time |
 | 31 | [mission-ghosts-in-the-cloud-node](mission-ghosts-in-the-cloud-node.json) | Once per Pilot | home space | once per pilot, up to 1 ships | all 10 | one-time |
 | 32 | [gather-gsc-0027-prism-scatter](gather-gsc-0027-prism-scatter.json) | Standing Work, Reading and Waiting | home space | up to 46 ships, needs mining_laser_i, standing work | all 10 | -100 |
-| 33 | [gather-hamal-crystal-bloom](gather-hamal-crystal-bloom.json) | Standing Work, Reading and Waiting | home space | up to 40 ships, needs mining_laser_i, standing work | all 10 | -160 |
+| 33 | [gather-hamal-crystal-bloom](gather-hamal-crystal-bloom.json) | Standing Work, Reading and Waiting | home space | up to 46 ships, needs mining_laser_i, standing work | all 10 | -160 |
 | 34 | [census-frontier](census-frontier.json) | Standing Work, Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | all 10 | -630 |
 | 35 | [park](park.json) | Standing Work, Reading and Waiting | home space | the park route | all 10 | -670 |
 
@@ -329,7 +329,7 @@ Kept by Mercury. Routes: 24.
 | 17 | [mine-gsc-0016-emission-nebula](mine-gsc-0016-emission-nebula.json) | Paying Routes | beyond the border, 6 jumps | up to 1 ships, needs gas_harvester_i, empty hold | all 20 | 510 |
 | 18 | [mine-marfik-emission-nebula](mine-marfik-emission-nebula.json) | Paying Routes | beyond the border, 6 jumps | up to 1 ships, needs gas_harvester_i, empty hold | all 20 | 240 |
 | 19 | [gather-gsc-0027-prism-scatter](gather-gsc-0027-prism-scatter.json) | Standing Work, Reading and Waiting | home space | up to 46 ships, needs mining_laser_i, standing work | all 20 | -100 |
-| 20 | [gather-hamal-crystal-bloom](gather-hamal-crystal-bloom.json) | Standing Work, Reading and Waiting | home space | up to 40 ships, needs mining_laser_i, standing work | all 20 | -160 |
+| 20 | [gather-hamal-crystal-bloom](gather-hamal-crystal-bloom.json) | Standing Work, Reading and Waiting | home space | up to 46 ships, needs mining_laser_i, standing work | all 20 | -160 |
 | 21 | [mine-acubens](mine-acubens.json) | Standing Work, Reading and Waiting | home space | up to 18 ships, needs mining_laser_i, standing work | all 20 | -160 |
 | 22 | [mine-pherkad-rift](mine-pherkad-rift.json) | Standing Work, Reading and Waiting | home space | up to 18 ships, needs mining_laser_i, standing work | all 20 | -170 |
 | 23 | [census-frontier](census-frontier.json) | Standing Work, Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | all 20 | -630 |
