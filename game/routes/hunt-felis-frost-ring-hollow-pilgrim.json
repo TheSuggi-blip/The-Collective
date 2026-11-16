@@ -1,0 +1,27 @@
+{
+ "id": "hunt-felis-frost-ring-hollow-pilgrim",
+ "kind": "hunt",
+ "title": "hollow_pilgrim at felis_frost_ring; loot sold at The Experiment Research Station",
+ "note": "Written by routemaker.py from the herd's count, the loot of 2 runs of ours and the order book; an estimate of 8429 cr per hunter-hour, not a measurement. A test: one ship, the ranching rules kept. 2026-11-16 19:29 UTC (Apophis): a test, one hunter. The crystal melt bid at The Experiment moves between 54 cr x 50 and about 1,394 cr x 9 to 10 (data/market/history.jsonl, 13:21 to 19:01 UTC); `requires.bid` opens the route only while 1,000 cr or more stands for 4 units. Hollow-pilgrims (70 hull) dropped crystal melt, carapace and meat in the yield test at Tanglewood (guidebook military.md, section 2). Felis Frost Ring read 5 and no pilot at 17:27 UTC.",
+ "place": "felis:felis_frost_ring",
+ "species": [
+  "hollow_pilgrim"
+ ],
+ "sell_at": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+ "min_bid": 1112,
+ "kills": 4,
+ "minutes": 63,
+ "max_ships": 1,
+ "min_creatures": 4,
+ "alone": true,
+ "requires": {
+  "empty_hold": true,
+  "bid": {
+   "item": "crystal_melt",
+   "base": "the_experiment_research_station",
+   "min_price": 1000,
+   "min_qty": 4
+  },
+  "without_module": "piercing_railgun_i"
+ }
+}
