@@ -1,0 +1,29 @@
+{
+ "id": "trade-plasma-gas-784309214f105860a16a0c100a70eb14-node",
+ "kind": "circuit",
+ "title": "Plasma Gas: bought at Ironlight Crossroads for 52 cr, sold at Node Beta Industrial Station for 104 cr",
+ "note": "Written by routemaker.py from two order books; 16 units cost about 832 cr. An estimate, not a measurement. A test: one ship; the buy and the sale carry price limits. Added as a test by fill.py on 2026-11-16 01:16 UTC (Unity): one ship until its first RESULT line is read.",
+ "max_ships": 1,
+ "min_credits": 3915,
+ "stops": [
+  {
+   "at": "lhs_1140:0321b3e4406021575337b7be26e53dd7:784309214f105860a16a0c100a70eb14",
+   "buy": [
+    {
+     "item": "plasma_gas",
+     "qty": 16,
+     "max_price": 54
+    }
+   ]
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "sell": [
+    {
+     "item": "plasma_gas",
+     "min_price": 93
+    }
+   ]
+  }
+ ]
+}

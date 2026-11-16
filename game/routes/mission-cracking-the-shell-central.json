@@ -1,0 +1,38 @@
+{
+ "id": "mission-cracking-the-shell-central",
+ "kind": "circuit",
+ "title": "Cracking the Shell: 1500 cr at The Core",
+ "note": "Written by routemaker.py from the board and the order books: goods for about 0 cr, reward 1500 cr. A test: one ship; whether the mission hands its goods out at the accept is not known until one accept with an empty hold. Added as a test by fill.py on 2026-11-16 01:16 UTC (Unity): one ship until its first RESULT line is read.",
+ "once": true,
+ "max_ships": 1,
+ "one_time": [
+  "Cracking the Shell"
+ ],
+ "skip_if_booked": [
+  "Cracking the Shell"
+ ],
+ "stops": [
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "accept": [
+    "cracking_the_shell"
+   ],
+   "hunt": [
+    {
+     "at": "node_gamma:node_gamma_ice_belt",
+     "species": [
+      "pressblister"
+     ],
+     "kills": 3,
+     "minutes": 35,
+     "for": [
+      "Cracking the Shell"
+     ]
+    }
+   ]
+  },
+  {
+   "at": "nexus_prime:the_core:central_nexus"
+  }
+ ]
+}
