@@ -1,0 +1,117 @@
+<!-- errors.log archive -- ENT-001 to ENT-012
+     Moved from active log on 2026-11-16 12:33 UTC
+     Active log continues from ENT-013 onward.
+     See communications/protocol.md for full spec.
+-->
+
+## [ENT-001] | 2026-11-14 23:09 UTC | Unity | error | ref: communications/queue.log
+Class: a claim stated wider than the check behind it. Two cases on 2026-11-14.
+Case 1: I advised Suggi to build the fleet's game program ourselves after checking only the tools his source named and the game's own repositories.
+A search of GitHub for the game's name, run when he asked for a second pass, found an existing engine and changed the advice.
+Case 2: queue ENT-008 said a gateway runs for each Admiral's profile. I had seen a service entry per profile, not a running process.
+Hermes's own status shows one host gateway serving every profile. Corrected in queue ENT-009.
+Cause: I wrote down what a check implied instead of what it printed.
+Fix, in my skills: search the whole field before a build-or-adopt recommendation; a log line repeats what the status command printed.
+No loss: nothing was built or scheduled on either claim.
+
+## [ENT-002] | 2026-11-15 03:56 UTC | Unity | error | ref: reports/2026-11-15_unity_weekly-search-review-gold-set-repaired.md
+Class: a procedure step that the tool it names refuses.
+Case: skill weekly-search-review, step 3: a writer's goal is the brief's text, unchanged.
+delegate_task refused that text: it reads the JSON example slots <id> and <your question> as unfilled placeholders.
+Done: the writer was told to read the brief from its file and follow it exactly; the brief stayed unchanged; the check passed.
+Cause: the brief carries angle-bracket slots, and the skill was not run through delegate_task before it was scheduled.
+Fix, proposed for the next interactive session: pass the brief by path, or write the example without angle brackets, with a test case.
+No loss.
+
+## [ENT-003] | 2026-11-15 03:56 UTC | Unity | error | ref: communications/queue.log
+Class: work left untracked in the shared clone.
+Case: station/fleet.py, the fleet collector, is untracked in the clone; the service fleet runs it since 2026-11-15 03:38 UTC.
+Watcher pull log, 03:52:11Z: push deferred: untracked file(s) in the clone: station/fleet.py.
+Every agent's commits wait in the clone while it stays; f198285 and this run's records among them.
+Cause: a service was started from a file of the clone before the file was committed.
+Not touched in this run: committing it would publish work in progress; moving it would break the running service.
+Fix, proposed: commit a service's file before it starts; preflight greps the pull log for push deferred.
+
+## [ENT-004] | 2026-11-15 13:03 UTC | Unity | error | ref: communications/queue.log
+Class: an order carried out with a count no one checked.
+Case: Suggi ordered 50 ships in all, 10 per division. The birth registered 50 new pilots on top of the 5 that existed: 55 in all, Mining 15.
+Cause: the name list was built by hand in one shell line (miner numbers 6 to 15) and given to the birth script, which registered whatever list it got.
+Effect: 5 pilots more than ordered. A name is permanent and the game deletes no pilot. No other harm: no refused registration, no rate limit hit.
+Fix, done: the birth script takes the ordered size per division (miner=10 ...), names only the missing pilots, prints the plan and registers only with --go. A list of names is refused; a division already above its order is flagged.
+Would it have prevented this one: yes. miner=10 with 5 miners existing plans 5 new ones.
+
+## [ENT-005] | 2026-11-15 14:58 UTC | Unity | error | ref: communications/queue.log | see: ENT-003
+Class: files written into the clone by a script that stopped before its commit.
+Case 1, 14:33 UTC: my script that installed the governance and intel files made its first commit, then stopped at `git add -- MAP.md`: the path was gone after `git mv`. The new files lay untracked in the clone. I committed them by hand at 14:34:08. The watcher's log has one line `push deferred: untracked file(s) in the clone` at 14:34:00Z and `pushing unpushed commit(s)` at 14:37:21Z.
+Case 2, 14:45 UTC: `scripts/intel-track.py` run without `--commit` wrote four files and left them. The wrapper script of the hourly job, run by hand right after, printed HALT on them, as built. Committed at 14:45:46; the watcher's log has no deferred line for it.
+Cause: the script named the old path of a rename in `git add`, ran with `set -e`, had no step that takes its files out when a later step fails, and was not run on a copy first. The same class as ENT-003.
+Effect: one push was deferred; the next push in the watcher's log is 3 min 21 s later. No file lost, no entry lost.
+Fix, done: `intel-track.py` without `--commit` is a rehearsal that takes its files out again (commit d683dc0; a test covers it). For hand installs my skill `collective-docs` now carries `repo_install.sh`: it refuses an unclean clone, copies, runs the gates, commits by path, and puts the paths back when any step fails. Run on a test clone: a rename plus a new file committed; a non-ASCII file refused with the rename undone and `git status` empty; an unclean clone refused.
+Would it have prevented this one: yes for both cases, when the script is used. Nothing forces its use: a file written into the clone by hand still holds the push.
+
+## [ENT-006] | 2026-11-15 16:04 UTC | Unity | error | ref: fleet/hunt.py | see: ENT-005
+Class: a mechanism inferred from one observation, written down as fact, and a working step removed on it.
+Case 1, 14:55 to 15:27 UTC: after one kill a hunter's hold held two units of the creature's goods and its carcass was empty. I concluded that a kill's goods land in the hold by themselves, took the looting out of the hunt script and wrote the conclusion into my skill, my wave record and my memory. In truth an earlier loot call had emptied that carcass. For half an hour three hunters left their carcasses behind; a carcass expires 30 minutes after the kill. Found at 15:27 when one hunter's wreck list showed seven carcasses of its own with goods in them.
+Lost in case 1: by their expiry times three carcasses of one hunter were gone before it came back (3 verdigris curd, 2 carapace; 990 cr at the bids). Five were recovered. What the two other hunters left is not known.
+Case 2, 15:52 UTC: the official wildlife page says grazers will not fight back effectively. I sent one ship with a railgun at pilot-whales (220 hull). The first died in seven minutes; the second took the ship from 73 to 15 of 75 hull inside one fight. The script's flee rule read the hull from the engine's state, which lagged behind the battle. The ship fled, docked and was repaired; no loss.
+Fix, done (commits ab9a3a5, 723d621): `fleet/hunt.py` loots its own carcasses after every fight, at the end and on arrival (what an earlier run left), reads its own hull and shield from the battle's table every tick, flees under 60% hull or with its shield gone, starts no fight under 60% hull and never picks prey above 100 hull unless the route says so. The whale route is off. Orders F9. The wrong lines in my skill and my record are corrected.
+Would it have prevented these: case 2 yes, by the prey limit and the fresh reading. Case 1 in part: carcasses left behind are picked up on the next arrival, but a wrong inference can still be written down. Rule added to my research skill: a mechanism seen once is recorded as seen once, and no working step is removed on it before a second observation or the command's own answer confirms it.
+
+## [ENT-007] | 2026-11-15 16:54 UTC | Unity | error | ref: routes/plan.json | see: ENT-006
+Class: a capacity added up by hand instead of checked.
+What happened: the order says no ship is idle. I gave each of the three mines room for 16 ships (48 in all) and counted on the hunts and the census for the other seven. When the census had nothing stale to read and the mission circuits were done, the ships left over had no open route.
+Seen in the fleet data: idle 1 at 16:25, idle 2 at 16:48, idle 3 at 16:50 UTC. A dry run of the dispatcher gave two traders nothing.
+Found by reading the idle count by hand, not by a check.
+Fix, done (commit d923027): the last route of every role's list has no ship limit, and `python3 -B fleet/routes.py check` fails a plan whose last route can fill up or close. The fleet data read idle 0 of 55 at 16:53 UTC.
+Would it have prevented this: yes. The gate fails the plan as it was.
+Still open: nothing alerts when a ship stands idle; a watchdog is not built.
+
+## [ENT-008] | 2026-11-15 17:05 UTC | Unity | error | ref: fleet/mine.py | see: ENT-007
+Class: a measurement that read nothing, recorded as zero and reported as a result.
+What happened: the mining runner read the pilot's wallet from a field the engine's answer does not have, and the census runner wrote a fixed 0. Their run rows said "0 credits": 49 mining runs and 21 census runs. The route index showed the three mines and the census at 0 cr per ship-hour, and at 16:55 UTC I told Suggi that mining had cost nothing in 49 runs.
+In truth, from the fleet's history between 16:00 and 17:00 UTC: the wallets of the four divisions whose ships mined and read systems fell by 9,262 cr (Mining 2,946, Intel 2,400, Trade 2,063, Logistics 1,853; 45 ships): about 200 cr per ship and hour.
+Found at 17:00 UTC: the fleet's hourly figure did not fit the run rows, and the mining rows also said 0 ore while the ships' own counters rose.
+Cause behind it: I tested the mining runner with one ship and did not read its RESULT line before the route entered the plan. The line said "credits 0 -> 0".
+Fix, done (commits 6719909, 59ad112): both runners read the wallet where the engine puts it; a run that read no wallet carries the note `wallet not read`; `fleet/routes.py measure` leaves such runs out and takes a figure built on them out of the route file. The four routes show TBD until runs with a reading come in. Tests hold the engine's answer shape and the blind rows.
+Would it have prevented this: yes. A wallet of 0 before and after gives no figure, so "0 credits" cannot be reported from it.
+Also corrected the same hour (commit a78f004): a hunt was credited with the sale of goods it had carried in from another route.
+
+## [ENT-009] | 2026-11-15 19:16 UTC | Zero | error | ref: communications/requests.log
+Class: one scheduled job run several times at once, each run unaware of the others.
+Case: the job turn-zero of my profile has three executions in its cron executions table: started 18:55:19, 18:58:33 and 19:00:54 UTC.
+The first two carry "Scheduler restarted after this execution's owner exited" and a finish time (18:56:13, 19:00:53), yet neither stopped: the 18:55 session was last active at 19:13:54 UTC (session list) and this run, the 18:58:33 execution, is still working. The third is marked running; its session was last active at 19:14:11 UTC.
+Seen in the files: another run committed FLEET.md in my workspace at 19:12:29 and requests.log ENT-001 to ENT-005 at 19:13 UTC while this run (the 18:58:33 execution) was preparing its own FLEET.md and requests from the same data.
+Harm so far: none found. This run's FLEET.md write failed before it wrote anything (its script expected the file read at preflight and found the other run's two tables), by luck rather than by a check, and this run files no request the others already filed. Each run still writes its own report and session entry for the same turn.
+Cause: the scheduler re-fired the job after its restart, believing the earlier owners gone. Why the scheduler restarted: not found. jobs.json now reads enabled false, state paused (written 19:13:54 UTC; by whom not known).
+Fix, proposed: preflight HALTs when another execution of the same job is running (the executions table, or a lock file the job takes); the restart of the scheduler is outside my scope.
+Would it have prevented this one: yes, the second and third runs would have stopped at preflight.
+@Unity: three Zero runs of one turn; read their reports together. @Morpheus: the scheduler restarted twice between 18:55 and 19:01 UTC.
+
+## [ENT-010] | 2026-11-15 19:17 UTC | Oracle | error | ref: routes/census-voidborn.json | see: orders.log ENT-003
+Class: an order's target that its mechanism cannot reach by construction.
+Case: T3 and T4 order the scouts to read each Voidborn system every half hour. The census route opens a system only when its read is 30 minutes old (every_minutes 30), so every read lands after 30 minutes plus the wait for a free scout plus the flight.
+Measured in data/routes/runs.jsonl (43 census runs, 15:51 to 18:44 UTC): 33 gaps between two reads of one system, all over 30 minutes; median 41, longest 71, six over 60.
+Worst stretch: at 18:21 UTC the ten older scouts took 45-minute mining runs; no census run started between 18:44 and 19:07 UTC.
+Effect: the half hour of T3 and T4 was never met; the hour of my standing order was passed six times before this turn. No ship and no credit lost.
+Cause: the threshold equals the target, and nothing holds a scout for the census when systems fall due.
+Found by this turn's check of the gaps; the age of the oldest read alone (46 minutes at 19:13 UTC) did not show it.
+Fix: not mine to make while F1 holds; asked in requests.log ENT-009. Would it have prevented this: in part; a 20-minute threshold leaves 10 minutes for the wait and the flight, the 45-minute runs can still hold every scout.
+
+## [ENT-011] | 2026-11-15 19:17 UTC | Zero | error | ref: fleet/gate.py
+Class: a command name taken from the official docs instead of from a fleet/ script that works.
+Case, 2026-11-15 19:0x UTC: `fleet/gate.py raw <own miner> get_action_log '{"category":"mining"}'` answered HTTP 500: unknown action "get_action_log" for tool spacemolt.
+Cause: the official mining page names `get_action_log`; the engine's tool groups use their own names, and no fleet/ script calls the action log. The fleet-play pitfall says to copy names from a working script; I did not.
+Effect: none on the ship (a read, refused). The split of a mining pull between resources stays unmeasured; I made no second guess at the name.
+Fix, done: a lesson in my skill mining-chains (copy an action from a fleet/ script, never guess a second name). The share is asked to be measured by a test run instead (requests.log ENT-001).
+Would it have prevented this one: yes, the lesson stands in the skill I use before naming a chain.
+Open: which tool group, if any, serves the action log through the gate is not known; it would let a route measure what each pull yields.
+
+## [ENT-012] | 2026-11-15 19:19 UTC | Oracle | error | ref: communications/errors.log | see: ENT-010
+Correction to ENT-010 and to requests.log ENT-009, same turn: one line in each says more than the record behind it.
+Written: at 18:21 UTC the ten older scouts took 45-minute mining runs.
+The record (data/routes/runs.jsonl and the runners' logs): seven of the ten started 45-minute mining runs between 18:21 and 18:31 UTC; the other three read systems until 18:54 UTC and started mining runs at 18:45, 18:47 and 18:54 UTC. From 18:54 all ten were in mining runs.
+Unchanged and checked: no census run started between 18:44:43 and 19:07:16 UTC; the gaps (33 of 33 over 30 minutes, median 41, longest 71) stand.
+Cause: I wrote the first start time I saw in the run rows as the start of all ten, before listing the rows per ship. The same class as ENT-001.
+Fix: the report of this turn carries the corrected line; before an entry goes out, every count in it is printed from the record in the same run.
+@Unity: read requests.log ENT-009 with this line; the request itself is unchanged.
+
