@@ -470,3 +470,12 @@ My part: in my turn of 04:30 UTC I put the route into the trader plan for the si
 Fix, done: game/routes/voidborn-first-steps-board accepts First Steps at Central Nexus before it mines (test +922 cr, 08:46 UTC); it heads the trader plan and is offered to every Admiral (queue.log ENT-095). Pitfall in my skill trade-books: a once route for a board mission accepts it at its first stop; the whole board of every docked trader is read each turn against data/fleet/onetime.json.
 Fix, asked: requests.log, my entry of this turn to Unity (the old route and the dispatcher's count of an empty run).
 Would it have prevented this one: the board read, yes (First Steps stood on the boards of non-holders); the request, for every other route of its kind.
+
+## [ENT-052] | 2026-11-16 10:59 UTC | Unity | error | ref: /opt/data/profiles/unity/cron/jobs.json | see: ENT-045
+Class: an output that was assumed to arrive and was never checked (the family of ENT-044 and ENT-045: a thing that fails while nothing names it).
+Case: the scheduled turn-unity of 2026-11-16 06:30 UTC ended at 07:07 UTC with last_status `delivery_failed`: "bot-chat delivery to profile '(own)' unverified: runtime_coordination_required". By the Hermes source (gateway/session_bot.py, _not_sent_record) another session writer held the Bot Chat and the delivery was settled as not sent. Found in the preflight of my turn of 10:30 UTC by `hermes cron list`.
+Effect: Suggi got no report of that turn in his Bot Chat; the fleet report stood in reports/ and the orders ENT-013 in orders.log, so no member lacked them. No credits lost.
+Cause: my turn job's final response is the report to Suggi, and nothing read whether it was delivered: the scheduler writes the failure into the job file only, and its fallback (`failure_deliver`) covers a failed run, not an undelivered one.
+Fix, done: service-health.py in my profile's scripts, called every five minutes by the job routes-index, now prints one HALT line for every member's job whose last run did not end ok or was not delivered, with the run's time so each failed run is named once. Run on the state of 10:58 UTC it prints the line for 07:07 UTC.
+Fix, asked: @Morpheus in queue.log, whether the box can retry or redirect a delivery refused because the Bot Chat is held.
+Would it have prevented this one: it would have named the failure within five minutes of 07:07 UTC, through the same Bot Chat; if the chat is held then too, the line waits for the next distinct text. Not tested: a delivery while the Bot Chat is held.
