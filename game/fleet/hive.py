@@ -642,6 +642,21 @@ def moves(seen):
             (seen[-1][0] - seen[0][0]) / 3600 if len(seen) > 1 else 0.0)
 
 
+def bid_moves(seen):
+    """(added, taken) units at the best bid over a series [(time, units, bid)]. A rise at the same price is a refill and a
+    new higher bid adds its units; a lower price after a higher one is the next step of the ladder coming into view,
+    not a refill: the step above it was used up."""
+    added = taken = 0
+    for (_t0, u0, b0), (_t1, u1, b1) in zip(seen, seen[1:]):
+        if b1 == b0:
+            added, taken = added + max(0, u1 - u0), taken + max(0, u0 - u1)
+        elif b1 > b0:
+            added += u1
+        else:
+            taken += u0
+    return added, taken
+
+
 def json_lines(path):
     try:
         with open(path, encoding="utf-8") as handle:
@@ -690,12 +705,13 @@ def show_refill(root, data, now):
     table = []
     for (base, item), seen in bids.items():
         seen.sort()
-        added, taken, _span = moves([(t, units) for t, units, _bid in seen])
+        added, taken = bid_moves(seen)
         hours = (max(read_at.get(base, 0), seen[-1][0]) - seen[0][0]) / 3600     # a move is written when a value changed: the span runs to the last reading of the book
         bid = next((b for _t, _u, b in reversed(seen) if b), 0)
         if hours >= 0.5 and added > 0 and bid > 0:
             table.append((-(added / hours * bid), label(base, where), item, bid, seen[-1][1], len(seen), hours, added / hours, taken / hours))
-    print("BIDS that regained units: %d of %d watched | sorted by the credits an hour the regained units are worth at the bid" % (len(table), len(bids)))
+    print("BIDS that regained units at their best price: %d of %d watched | sorted by the credits an hour the regained units are worth at the bid | "
+          "the steps below the best price are not in the record yet" % (len(table), len(bids)))
     print("  %-30s %-26s %7s %9s %6s %6s %12s %12s %11s" % ("station", "item", "bid", "units now", "moves", "hours", "regained/h", "worth cr/h", "taken/h"))
     for worth_h, base, item, bid, units, n, hours, added, taken in sorted(table)[:25]:
         print("  %-30s %-26s %7s %9s %6d %6.1f %12s %12s %11s" % (base[:30], item[:26], num(bid), num(units), n, hours, num(added), num(-worth_h), num(taken)))
