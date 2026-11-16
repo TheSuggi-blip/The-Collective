@@ -38,7 +38,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Aurelisk | Nexus Prime (`nexus_prime`) | 0 | theoria |
+| Dmitri Valkov | Node Beta (`node_beta`) | 0 | not met |
 | Rafferty Doyle | Nexus Prime (`nexus_prime`) | 0 | cobble |
 
 ## Standing History

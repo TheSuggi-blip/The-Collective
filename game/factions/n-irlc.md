@@ -47,20 +47,20 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
 | ILC Chute | Synchrony (`synchrony`) | 0 | junk_convoy |
-| ILC Constellation | Nexus Prime (`nexus_prime`) | 0 | concordia |
+| ILC Constellation | Node Alpha (`node_alpha`) | 0 | concordia |
+| ILC Crater | Node Alpha (`node_alpha`) | 0 | atmospheric_sampler |
 | ILC Flange | Synchrony (`synchrony`) | 0 | junk_convoy |
-| ILC Gantry | Synchrony (`synchrony`) | 0 | junk_convoy |
-| ILC Gasket | Node Alpha (`node_alpha`) | 0 | junk_convoy |
-| ILC Gateway | Node Gamma (`node_gamma`) | 0 | concordia |
+| ILC Gantry | Node Alpha (`node_alpha`) | 0 | junk_convoy |
+| ILC Gasket | Nexus Prime (`nexus_prime`) | 0 | junk_convoy |
+| ILC Gateway | Nexus Prime (`nexus_prime`) | 0 | concordia |
 | ILC Gilt | Synchrony (`synchrony`) | 0 | syndicate |
-| ILC Kerf | Pherkad (`pherkad`) | 0 | junk_convoy |
+| ILC Glacier | Pherkad (`pherkad`) | 0 | cryogenic_survey |
 | ILC Ladle | Synchrony (`synchrony`) | 0 | junk_convoy |
-| ILC Nonstop | Node Gamma (`node_gamma`) | 0 | concordia |
-| ILC Penalty | Synchrony (`synchrony`) | 0 | junk_convoy |
+| ILC Nonstop | Nexus Prime (`nexus_prime`) | 0 | concordia |
 | ILC Ratchet | Synchrony (`synchrony`) | 0 | junk_convoy |
 | ILC Retort | Node Beta (`node_beta`) | 0 | junk_convoy |
-| ILC Vagabond | Node Gamma (`node_gamma`) | 0 | concordia |
-| ILC Weir | Node Gamma (`node_gamma`) | 0 | prayer |
+| ILC Vagabond | Nexus Prime (`nexus_prime`) | 0 | concordia |
+| ILC Weir | Synchrony (`synchrony`) | 0 | prayer |
 
 ## Standing History
 

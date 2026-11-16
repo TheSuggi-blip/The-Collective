@@ -15,7 +15,7 @@ updated: 2026-11-16
 # End of Line [ENDL]
 
 A player faction with 8 base(s) in 8 system(s); the nearest to Nexus Prime is 8 jump(s) away, in GSC-0040 (`gsc_0040`).
-Pilots of it in our space in the last 24 hours: 7.
+Pilots of it in our space in the last 24 hours: 6.
 
 ## Identity
 
@@ -47,13 +47,12 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Bones | Pherkad (`pherkad`) | 0 | last_drop |
-| Django | Node Alpha (`node_alpha`) | 0 | junk_convoy |
-| Ferengi2 | Acubens (`acubens`) | 0 | frankenhauler |
-| JackSparrow | Acubens (`acubens`) | 141 | junk_convoy |
-| JamesBond | Node Beta (`node_beta`) | 0 | catalogue |
-| LandoCalrissian | Nexus Prime (`nexus_prime`) | 0 | junk_convoy |
-| Oddjob | Nexus Prime (`nexus_prime`) | 0 | dirk |
+| CombatDummy5 | Acubens (`acubens`) | 1 | junk_convoy |
+| Django | Nexus Prime (`nexus_prime`) | 0 | junk_convoy |
+| Ferengi3 | Nexus Prime (`nexus_prime`) | 0 | junk_convoy |
+| JackSparrow | Node Gamma (`node_gamma`) | 141 | junk_convoy |
+| MasterChief | Nexus Prime (`nexus_prime`) | 149 | frankenhauler |
+| Quark | Node Beta (`node_beta`) | 0 | junk_convoy |
 
 ## Standing History
 

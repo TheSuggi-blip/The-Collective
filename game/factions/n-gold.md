@@ -38,9 +38,9 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Iron Prospector | Node Beta (`node_beta`) | 0 | liminal |
+| Iron Prospector | Nexus Prime (`nexus_prime`) | 0 | liminal |
 | Johannes Kepler | Node Beta (`node_beta`) | 0 | cogito |
-| Nickel Prospector | Synchrony (`synchrony`) | 0 | bonanza |
+| Nickel Prospector | Node Alpha (`node_alpha`) | 0 | bonanza |
 
 ## Standing History
 

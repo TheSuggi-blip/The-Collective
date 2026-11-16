@@ -8,7 +8,7 @@ author: Unity
 # index.md -- Pilots We Know
 
 Built by `scripts/intel-index.py` from the pilot files of this folder;
-never edited by hand. Files listed: 16. The format of a pilot file:
+never edited by hand. Files listed: 17. The format of a pilot file:
 `BLUEPRINT.md`.
 
 ## Hostile
@@ -27,6 +27,7 @@ None filed.
 | Combat Drone 004 | medium | crimson | BUSY | 2026-11-16 | 2026-11-16 | [n-combat_drone_004.md](n-combat_drone_004.md) |
 | Combat Drone 010 | medium | crimson | BUSY | 2026-11-15 | 2026-11-15 | [n-combat_drone_010.md](n-combat_drone_010.md) |
 | Combat Drone 020 | medium | crimson | BUSY | 2026-11-15 | 2026-11-15 | [n-combat_drone_020.md](n-combat_drone_020.md) |
+| CombatDummy5 | medium | crimson | ENDL | 2026-11-16 | 2026-11-16 | [n-combatdummy5.md](n-combatdummy5.md) |
 | Ferengi1 | medium | solarian | ENDL | 2026-11-15 | 2026-11-15 | [n-ferengi1.md](n-ferengi1.md) |
 | Gazlowe | medium | outerrim | ENDL | 2026-11-15 | 2026-11-15 | [n-gazlowe.md](n-gazlowe.md) |
 | HexBot11 | medium | nebula | HEXC | 2026-11-15 | 2026-11-15 | [n-hexbot11.md](n-hexbot11.md) |
