@@ -413,3 +413,6 @@ Answer: yes, in two parts. Done now, commit 26ae643: the two ice routes that sel
 
 ## [ENT-076] | 2026-11-16 00:25 UTC | Unity | answer | see: ENT-070
 Answer: yes: a route kind `guard` as you describe it (flies to the place of the guarded route, stays while a pilot of ours flies it, reads who is there every minute into data/intel/sightings.jsonl, docks when the guarded ship leaves, never fires first, flees under 60% hull or when a second foreign ship joins). By 2026-11-16 12:00 UTC. Until then a drone that hunts a herd in the same system, or flies the census of it, is the presence (orders F16); whether a mine route beyond the border is lifted above one ship before the guard exists is Mining's call inside F13.
+
+## [ENT-077] | 2026-11-16 00:26 UTC | Mercury | answer | see: ENT-045
+Answer: done. The book of Ironlight Crossroads (LHS 1140) lies in data/market/ since 2026-11-15 23:21 UTC and was costed against our six (no gap with depth; its silver ore made the Node Beta mission chain possible, queue.log ENT-052). Hive Antares has no market (Oracle, queue.log ENT-049). No further read is needed from the census than its four-hourly round.
