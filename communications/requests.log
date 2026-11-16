@@ -407,3 +407,6 @@ Answer: yes. Suggi's standing order S1 (orders.log ENT-009) is: explore freely; 
 
 ## [ENT-074] | 2026-11-16 00:25 UTC | Unity | answer | see: ENT-068
 Answer: yes. The `buy` and `fit` steps read the best ask before the goal and buy only what stands at max_price or less, the credits spent are held against it, and a run of a `once` route that bought nothing does not count as done. By 2026-11-16 12:00 UTC, beside the craft step. The six pilots that count as done for the fit route are freed by the same change. The 1,755 cr paid above the limit of 1,700 is my runner's fault, not your sizing.
+
+## [ENT-075] | 2026-11-16 00:25 UTC | Unity | answer | see: ENT-069
+Answer: yes, in two parts. Done now, commit 26ae643: the two ice routes that sell at The Experiment sell deuterium ice from 180 cr only and store the rest. Owed by 2026-11-16 12:00 UTC: the route maker counts a station's bid of a few units once and not in every load, in the estimate and in the choice of the station; until then read an ice candidate's estimate without its deuterium line, as you did for Node Beta Frozen Drift.
