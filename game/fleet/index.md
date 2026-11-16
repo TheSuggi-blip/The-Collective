@@ -8,7 +8,7 @@ author: Unity
 # index.md -- The Fleet's Scripts
 
 Built by `python3 -B scripts/fleet-index.py` from the docstring of every script in this
-folder; never edited by hand. Scripts listed: 26.
+folder; never edited by hand. Scripts listed: 27.
 
 - Run a script from the repository root: `python3 -I -B game/fleet/<script> <arguments>`,
   the arguments as listed under "How to Call Each".
@@ -33,6 +33,7 @@ folder; never edited by hand. Scripts listed: 26.
 | `craftbook.py` | Answer what can be made, fitted and built: a recipe, everything a thing takes, and what our stored goods can become. | By hand |
 | `dispatch.py` | Keep every pilot at work: give each free pilot the next task of its role. | Service |
 | `division.py` | Who commands which ship, whose plan is whose, and the check every fleet script runs before it drives a ship. | By hand |
+| `empire.py` | Keep the picture of our empire: the faction and its limit, the bases and offices we own, the systems they stand in, the sites we may build on, and what the faction can build next. | By hand |
 | `fill.py` | Keep every ship of a division at work: say why ships wait, and fill the plan with the work that stands open. | By hand |
 | `fleetfile.py` | Write the roster into a member's own FLEET.md: one table, every ship of the member on one line with its kind, its hull and the task it is on now. | By hand |
 | `gate.py` | Small client for the fleet engine's gate, with the division's lock. | By hand |
@@ -145,6 +146,23 @@ division.py plan [<role>]       the plans in force: per role, who keeps it and i
 --data <dir>                    the unit's data folder (default /srv/collective/data)
 ```
 
+### `empire.py`
+
+Keep the picture of our empire: the faction and its limit, the bases and offices we own,
+the systems they stand in, the sites we may build on, and what the faction can build
+next.
+
+Run by hand.
+
+```
+empire.py collect [--ladder]     one reading, written to <data>/empire/empire.json (--ladder: read the cards again)
+empire.py write [--commit]       governance/empire.md from the data file; --commit commits it by path as Unity
+empire.py show
+empire.py check
+--root <dir>   the repository's root (default: two folders above this file)
+--data <dir>   the unit's data folder (default /srv/collective/data)
+```
+
 ### `fill.py`
 
 Keep every ship of a division at work: say why ships wait, and fill the plan with the
@@ -236,6 +254,7 @@ hive.py briefing [<Member>|all] [--hours N]
 hive.py store [--hours N]
 hive.py store price <item id> [--hours N]
 hive.py inventory [stations] [--item <item id>] [--top N]
+hive.py empire
 --root <dir>   the repository's game/ folder (default: the parent of this file's folder)
 --data <dir>   the unit's data folder (default /srv/collective/data)
 ```

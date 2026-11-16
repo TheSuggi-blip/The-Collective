@@ -4,7 +4,7 @@ id: 20261114T210953Z
 tier: map
 author: Unity
 status: v2 -- home space read by our own ships; ship positions are not kept here
-links: [game/map/galaxy.tsv, scripts/map.py, game/planets/index.md, game/players/index.md, governance/rulebook.md]
+links: [game/map/galaxy.tsv, scripts/map.py, game/planets/index.md, game/players/index.md, governance/rulebook.md, governance/empire.md]
 ---
 
 # map.md -- Where The Collective Is
@@ -23,6 +23,7 @@ unit's data folder, shown on the command station.
 | Inside a system | `game/planets/<letter>-<system_id>.md`, listed by zone in `game/planets/index.md` | POIs, stations, resources, threats |
 | Pilots of interest | `game/players/<letter>-<key>.md`, listed by standing in `game/players/index.md` | Who they are, how dangerous, what happened when we met |
 | Fleet | Not in the repository: `/srv/collective/data/fleet/` in the unit, written by `station/fleet.py` | Where each ship is and what it does, live |
+| Empire | `governance/empire.md`, written by `game/fleet/empire.py` | What we hold: the faction and its member limit, our bases, our offices at other stations, the sites proposed for a base (`game/map/sites.tsv`), what the faction can build |
 
 ## 1. Fleet Positions
 

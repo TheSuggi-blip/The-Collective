@@ -219,3 +219,13 @@ queries:
   gold_files:
   - governance/strategy.md
   domain: governance
+- qid: c045
+  question: What does our faction hold today, how many members may it have, and which sites are proposed for a base?
+  gold_files:
+  - governance/empire.md
+  domain: governance
+- qid: c046
+  question: What does each recruitment office cost in credits, materials and rent, and which one lets a thousand ships into the faction?
+  gold_files:
+  - governance/empire.md
+  domain: governance

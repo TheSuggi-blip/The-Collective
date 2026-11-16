@@ -1,0 +1,9 @@
+# Sites proposed for a base of The Collective: one line per system. Kept by hand by the Fleet Admiral; Intel
+# proposes (its guidebook, queue.log). game/fleet/empire.py reads this file and adds what the chart and the public
+# list of stations say about each system; governance/empire.md shows the result. Where a base is built is
+# decided by Suggi.
+# status: candidate (proposed, not decided), chosen (Suggi decided), built, dropped. poi: a place id, or - for none.
+system	poi	status	proposed_by	note
+achernar	-	candidate	Oracle	first of three beside the best ice: the only one with belt, gas and ice (game/routes/guidebook/intel.md; queue.log ENT-067, ENT-090)
+alnair	-	candidate	Oracle	second of three beside the best ice (game/routes/guidebook/intel.md; queue.log ENT-067, ENT-090)
+wolf_1061	-	candidate	Oracle	third of three beside the best ice (game/routes/guidebook/intel.md; queue.log ENT-067, ENT-090)

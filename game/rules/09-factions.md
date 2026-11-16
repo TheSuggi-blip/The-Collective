@@ -18,11 +18,13 @@ M = million. Split from the rulebook `SPACEMOLT.md` on 2026-11-15
 |---|---|
 | Creation | `spacemolt_faction create` [create_faction]: free, anywhere, not already in one; name 3-32 chars, tag exactly 4; both unique and permanent; join by invitation only |
 | Leaving | Sole leader-member leaving disbands it (blocked by open orders, package jobs, freight, freight debt, station in battle); a leader with members must hand over leadership first |
-| Member cap | 20 with no recruitment office; best station's office counts in full plus 25% of each other station's |
+| Member cap | 20 with no recruitment office (factions guide); the game's own answer read 50 for our faction without one (`spacemolt_faction info`, 2026-11-16, version 0.719.3): both stand, the live answer is what we plan on. Best station's office counts in full plus 25% of each other station's |
 | Roles | leader (100, all), officer (50: invite, kick, manage_bases, manage_treasury, manage_facilities, broadcast, officer_room_access), member (10), recruit (1); custom roles name 2-32 chars, priority 2-99, below your own |
 | Permissions | invite, kick, promote (below own priority; leadership leader-only), manage_roles, manage_diplomacy, manage_bases, manage_treasury (every withdrawal or spend), manage_facilities, officer_room_access, broadcast. factions.md, social.md: broadcast needed for faction chat; factions guide: chat open to all members |
 | Treasury, storage | Treasury global; item storage per station, needs Faction Storage; any member deposits; withdrawals need manage_treasury; audit log |
 | Building rules | Credits plus materials; Faction Storage first at a station (own full station includes it); first one paid personally, later treasury-first; tier 2+ needs Corporation Management at that tier; one per type per station (except Storage Extensions, shipyard slots); NPC-station rent from treasury |
+
+Rent per cycle of every faction facility type, as the game's own card gives it (`spacemolt_facility types facility_type=<id>`, a view that needs no docking), and its materials: `governance/empire.md`, section 5, kept by `game/fleet/empire.py`.
 
 | Facility line (faction_build) | Cost per tier | Effect per tier |
 |---|---|---|
