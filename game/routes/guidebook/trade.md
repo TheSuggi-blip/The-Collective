@@ -34,10 +34,11 @@ judged with its reward (rule F19).
 
 | Order | Route | Ships (own routes) | Carries (briefing, 18:23 UTC) | Expected | Why it stands here |
 |---|---|---|---|---|---|
-| First | The once line: voidborn-first-steps-board to voidborn-resonance-finish (14 routes) | every ship, by the list First | -- | +1,000 to +7,000 cr once a pilot | A pilot that has not booked a reward flies it first; most traders have booked them all |
+| First | The once line: voidborn-first-steps-board to voidborn-resonance-finish (14 routes), and two the five-minute pass added at 19:13 UTC (mission-ghosts-in-the-cloud-node, voidborn-first-hunt-intercrus-sootfall) | every ship, by the list First | -- | +1,000 to +7,000 cr once a pilot | A pilot that has not booked a reward flies it first; most traders have booked them all |
 | 1 | mine-marfik-emission-nebula | 1, a Gas Harvester I | 0 (bid-bound) | about 610: 4 runs from 13:05 UTC, +3,131 cr in 307 minutes | The best repeating route of the division; hydrogen and plasma into the Node Beta bids |
 | 1 | mine-gsc-0016-emission-nebula | 1, a Gas Harvester I | ? +6 | about 410: 4 runs from 12:45 UTC, +2,196 cr in 322 minutes | Plasma and argon into Node Beta, lawless, hold empty on the way out |
 | 1 | mine-coldwater-emission-nebula | 1, a Gas Harvester I, test | ? | estimate 1,172 (route maker), not measured | One ship until its first RESULT line |
+| 1 | voidborn-neural-matrix-delivery | 1, the test pilot (`requires.stored` its 8 phase matrix at Synchrony Hub) | -- | +5,000 cr once less the fuel of about 16 jumps | The Fleet Admiral's word for this mission's goods (requests.log ENT-155); a route for every pilot the board offers it to after its RESULT line |
 | 1 | train-navigation-trader | 4, the traders at navigation 2 | -- | about -470 while it flies (train-navigation-home: 2 runs, -117 cr in 15 minutes), then Signal Fragments +7,000 cr once each | Standing work under `requires.skills_below` navigation 3: 12 to 36 XP short, a few loops each |
 | 1-2 | mine-acubens | 5 first, 1 as second | 0 +233 | -175 (72 runs since 14:00 UTC, 295 ore a ship-hour) | Standing work: iron and copper into storage at Node Beta |
 | 1-2 | mine-pherkad-rift | 4 first, 10 as second or third | 12 +235 | -176 (39 runs, 190 ore a ship-hour) | Standing work: copper and iron into storage at Synchrony Hub |
@@ -84,6 +85,7 @@ standing work that buys instead of gathers.
 | `mine-the-experiment-haze` (gas from The Experiment Haze, hydrogen sold at Node Beta) | Two runs that sold, 08:36 and 09:59 UTC, 2,330 and 3,197 per ship-hour; then 12:37 and 14:58 UTC -528 cr each, nothing sold: the Node Beta hydrogen bid read gone at both sales (runs.jsonl) | 2026-11-16 | Out of the plan at 18:52 UTC (the list Then and its ship's own routes): two runs in a row lost their fuel on the bid it names. Back when the hydrogen bid stands longer than one ship's sale |
 | `voidborn-first-hunt-acubens` (Military's First Hunt at Acubens Shadow Pocket), offered by fill.py again | Its last 11 runs of the fleet, 13:45 to 18:13 UTC, all ended 'objectives not done', kills 0, -44 to -99 cr each (the tool route, 18:41 UTC) | 2026-11-16 | Kept out of the trader plan: fill.py counts it as paying on its older figure (110 a run over 30 runs) |
 | `mine-gliese-876-belt` (nickel from Gliese 876 Belt sold at Nova Terra Central; a route maker test the hourly job added) | Not flown: the field read 161 nickel ore left (base_plan, 18:25 UTC) against a route maker estimate of 804 per ship-hour | 2026-11-16 | Out of the plan at 18:34 UTC: one load would empty the nickel |
+| Gold wiring bought at Ironlight Crossroads (83 cr, 300 units, steady since 2026-11-15) for the Node Alpha bid of 190 cr (one trader, by hand) | The bid stood at 190 cr from 18:45 UTC (76 units, 545 at 19:07); the trader reached Ironlight at 19:27 UTC in 4 minutes from Pherkad, and the bid read 75 cr for 377 then (55 at 19:11 UTC, an ask of 82 beside it at 19:17): the script's guard bought nothing. -42 cr of fuel (runs.jsonl). The structural-frame bid of 481 cr for 220 at Synchrony Hub (19:04 UTC) read 40 cr at 19:09 UTC | 2026-11-16 | A bid at our stations at or above an item's base value is taken by other traders within 5 to 25 minutes; a ship that fetches the goods beyond the border loses that race. Such a bid can only be served from stock lying at the station: section 7 |
 | The weekly tax inside a run's credits | The Voidborn assessment of 2026-11-16 12:27:32 UTC took 83,940 cr from the 20 traders (4,038 to 4,818 each; get_tax_estimate); 38 runs of the fleet in flight then carry -149,123 cr (runs.jsonl) | 2026-11-16 | Not a route that lost: the tax is the week's. Read a run that spans an assessment without it; asked of Unity (errors.log ENT-056, requests.log ENT-147). Next assessment about 2026-11-23 12:27 UTC |
 
 ## 3. Missions That Pay Once
@@ -177,6 +179,13 @@ it reaches `runs` x `per_run` in more jobs than one (`runs` 8, `per_run`
 flown). With `runs` 1 it made 2 in one job, as the recipe does.
 
 ## 7. Open Tests
+
+- Stock for spiky bids: gold wiring (an input of the station list,
+  1,860, and of control nodes) bought at Ironlight Crossroads at 83 cr
+  and stored at Node Alpha, sold from storage by a route with
+  `requires.bid` gold_wiring at 150 cr and `requires.stored` when a bid
+  like that of 18:45 UTC stands again (section 2). One load, 65 units,
+  about 5,450 cr; not tested.
 
 - Plasma gas bought at Ironlight Crossroads (52 cr, 932,099 on offer),
   sold into the two station bids at Node Beta. Two runs. The command
