@@ -34,7 +34,7 @@ folder; never edited by hand. Scripts listed: 25.
 | `dispatch.py` | Keep every pilot at work: give each free pilot the next task of its role. | Service |
 | `division.py` | Who commands which ship, whose plan is whose, and the check every fleet script runs before it drives a ship. | By hand |
 | `fill.py` | Keep every ship of a division at work: say why ships wait, and fill the plan with the work that stands open. | By hand |
-| `fleetfile.py` | Write the section `## Routes Now` into a member's own FLEET.md: its plans route by route, and every ship of its division on one line with what it flies now. | By hand |
+| `fleetfile.py` | Write the roster into a member's own FLEET.md: one table, every ship of the member on one line with its kind, its hull and the task it is on now. | By hand |
 | `gate.py` | Small client for the fleet engine's gate, with the division's lock. | By hand |
 | `hive.py` | The fleet's figures from its own readings: money, routes and their history, levels, what the work carries, what a base takes, a system. | By hand |
 | `hunt.py` | Hunt grazers at one place, loot the carcasses and sell what the kills bring. | Runner (`hunt` routes) |
@@ -165,8 +165,8 @@ fill.py lift <route id> <ships>
 
 ### `fleetfile.py`
 
-Write the section `## Routes Now` into a member's own FLEET.md: its plans route by
-route, and every ship of its division on one line with what it flies now.
+Write the roster into a member's own FLEET.md: one table, every ship of the member on
+one line with its kind, its hull and the task it is on now.
 
 Run by hand.
 

@@ -33,15 +33,15 @@ SHIPS = [   # name, number, status, activity, docked, system
     ("sentinel-1", 1, "connected", IDLE, "base", "home"),
 ]
 ORDERS = {"miner-1": ("mine ice", "2026-11-16T10:05:00Z"), "miner-10": ("hand Zero", "2026-11-16T12:00:00Z"),
-          "Zero Point": ("circuit a|b", "2026-11-16T13:45:00Z")}
+          "Zero Point": ("circuit a|b", "2026-11-16T13:45:00Z"), "sentinel-1": ("circuit park", "2026-11-16T13:50:00Z")}
 RUNS = [
     {"route": "ice", "kind": "mine", "pilot": "miner-1", "started": "2026-11-16T09:00:00Z", "minutes": 30, "credits_before": 5000, "credits_after": 6000, "delta": 1000},
     {"route": "park", "kind": "circuit", "pilot": "miner-1", "started": "2026-11-16T08:00:00Z", "minutes": 5, "credits_before": 5000, "credits_after": 5000, "delta": 0},
     {"route": "ice", "kind": "mine", "pilot": "miner-2", "started": "2026-11-16T08:30:00Z", "minutes": 20, "credits_before": 0, "credits_after": 0, "delta": 0},
     {"route": "ice", "kind": "mine", "pilot": "Zero Point", "started": "2026-11-16T07:00:00Z", "minutes": 40, "credits_before": 9000, "credits_after": 7766, "delta": -1234},
 ]
-BEGIN = "<!-- ROUTES-NOW:BEGIN written by game/fleet/fleetfile.py; do not edit between the two marks -->"
-END = "<!-- ROUTES-NOW:END -->"
+BEGIN = "<!-- FLEET-ROSTER:BEGIN written by game/fleet/fleetfile.py; do not edit between the two marks -->"
+END = "<!-- FLEET-ROSTER:END -->"
 
 
 def tables(text):
@@ -78,7 +78,7 @@ class Tree(unittest.TestCase):
             (self.root / "routes" / (rid + ".json")).write_text(json.dumps(route, indent=1) + "\n", encoding="ascii")
         for role, (owner, ids) in PLANS.items():
             (self.root / "routes" / "plans" / (role + ".json")).write_text(json.dumps({"role": role, "owner": owner, "routes": ids}) + "\n", encoding="ascii")
-        ships = [{"name": n, "number": num, "status": st, "activity": act, "docked": dock, "system": system, "credits": 9000}
+        ships = [{"name": n, "number": num, "status": st, "activity": act, "docked": dock, "system": system, "credits": 9000, "class": "Threshold"}
                  for n, num, st, act, dock, system in SHIPS]
         (self.data / "fleet" / "fleet.json").write_text(json.dumps({"updated_at": "2026-11-16T14:00:00Z", "ships": ships}))
         (self.data / "fleet" / "flagships.json").write_text(json.dumps({"Zero Point": {"admiral": "Unity", "division": "Command", "role": "command", "of": "Zero"}}))
@@ -128,44 +128,33 @@ class Tree(unittest.TestCase):
 
 
 class BlockTests(Tree):
-    def test_each_ship_says_what_it_does_and_every_row_has_its_header_s_cells(self):
+    def test_one_table_says_each_ships_kind_hull_and_task(self):
         done = self.run_it("zero", "--print")
         self.assertEqual(done.returncode, 0, done.stdout)
         text = done.stdout
-        self.assertTrue(text.startswith(BEGIN + "\n## Routes Now\n"), text[:200])
+        self.assertTrue(text.startswith(BEGIN + "\n| Ship | Kind | Hull | Task now |\n"), text[:200])
         self.assertEqual(text.rstrip("\n").splitlines()[-1], END)
-        self.assertRegex(text, r"\nWritten by `game/fleet/fleetfile.py` at \d{4}-\d\d-\d\d \d\d:\d\d UTC from the fleet's live files; "
-                               r"changed only by the script \(preflight and session-end run it\)\.\n")
+        self.assertRegex(text, r"\nWritten by `game/fleet/fleetfile.py` at \d{4}-\d\d-\d\d \d\d:\d\d UTC from the fleet's live files\.\n")
         self.assertTablesWhole(text)
-        plan, ships = tables(text)
-        self.assertEqual(plan[0], "| # | Route | Kind | Group | Ships planned | Ships now / limit | Carries | Measured |")
-        self.assertEqual(plan[2:], ["| 1 | ice | mine | Paying Routes | -- | 1 / 2 | -- | 5,000 |", "| 2 | gone | no route file | -- | -- | -- | -- | -- |",
-                                    "| 3 | park | circuit | Standing Work, Reading and Waiting | -- | 0 / - | -- | TBD |"])
-        self.assertEqual(ships[0], "| Ship | Does now | Last run | Own routes, in order | Piloting | Mining | Navigation | Modules |")
-        rows = rows_by_first(ships)
-        self.assertEqual([cells(line)[0] for line in ships[2:]], ["miner-1", "miner-2", "miner-3", "miner-4", "miner-10"])     # by number, then name
-        self.assertEqual({name: (row["Does now"], "--") for name, row in rows.items()},
-                         {"miner-1": ("flies mine ice", "--"), "miner-2": ("waits docked at far", "--"), "miner-3": ("not connected", "--"),
-                          "miner-4": ("busy by hand (goal)", "--"), "miner-10": ("by hand: Zero", "--")})
-        self.assertEqual(rows["miner-1"]["Last run"], "ice: +1,000 cr in 30 min")       # the newest start, not the last line
-        self.assertEqual(rows["miner-2"]["Last run"], "ice: wallet not read in 20 min")
-        self.assertEqual(rows["miner-1"]["Own routes, in order"], "--")                     # no plan file yet: no route of its own
-        self.assertEqual(rows["miner-3"]["Last run"], "--")
-        self.assertEqual([rows["miner-1"][k] for k in ("Piloting", "Mining", "Navigation", "Modules")], ["5", "3", "0", "ice_harvester_i, mining_laser_i"])
-        self.assertEqual([rows["miner-2"][k] for k in ("Piloting", "Mining", "Navigation", "Modules")], ["--", "--", "--", "--"])     # no live file
-        self.assertIn("\n5 ships: 1 on a route, 1 waiting, 2 by hand, 1 not connected\n", text)
-        self.assertNotIn("home", rows["miner-1"]["Does now"] + rows["miner-4"]["Does now"])                 # no position but a waiting ship's system
+        found = tables(text)
+        self.assertEqual(len(found), 1)                                                            # one table, the whole roster (Suggi, 2026-11-16)
+        self.assertEqual(found[0][2:], ["| miner-1 | miner | Threshold | mine ice |", "| miner-2 | miner | Threshold | waits docked |",
+                                        "| miner-3 | miner | Threshold | not connected |", "| miner-4 | miner | Threshold | busy by hand (goal) |",
+                                        "| miner-10 | miner | Threshold | by hand: Zero |"])              # by number, then name; no level, no place
+        self.assertIn("\n5 ships: 1 on a route, 1 waiting, 2 by hand, 1 not connected.\n", text)
+        self.assertNotIn("home", text)
+        self.assertNotIn("far", text)
         self.assertEqual(self.fleet_md("Zero").read_text(), "# FLEET.md -- Zero\n\nThe design, written by hand.\n")      # printing writes nothing
 
-    def test_a_pilot_name_with_a_space_and_a_pipe_in_an_order_text_break_no_table(self):
+    def test_the_command_group_is_one_table_and_a_pipe_in_an_order_text_breaks_no_row(self):
         done = self.run_it("unity", "--print")
         self.assertEqual(done.returncode, 0, done.stdout)
         self.assertTablesWhole(done.stdout)
-        self.assertEqual([line.split("\n", 1)[0] for line in done.stdout.split("### ")[1:]], ["Plan command", "Ships command", "Plan sentinel", "Ships sentinel"])
-        row = rows_by_first(tables(done.stdout)[1])["Zero Point"]
-        self.assertEqual((row["Does now"], row["Last run"]), ("flies circuit a/b", "ice: -1,234 cr in 40 min"))
-        self.assertEqual((row["Navigation"], row["Piloting"], row["Modules"]), ("4", "0", "none"))
-        self.assertIn("\n1 ships: 1 on a route, 0 waiting, 0 by hand, 0 not connected\n", done.stdout)
+        found = tables(done.stdout)
+        self.assertEqual(len(found), 1)
+        self.assertEqual(found[0][2:], ["| Zero Point | flagship of Zero | Threshold | circuit a/b |", "| sentinel-1 | sentinel | Threshold | parked |"])
+        self.assertIn("\n2 ships: 1 on a route, 1 waiting, 0 by hand, 0 not connected.\n", done.stdout)
+        self.assertIn("No ship of Apollo in the fleet's file.", self.run_it("apollo", "--print").stdout)
 
 
 class WriteTests(Tree):
@@ -186,7 +175,7 @@ class WriteTests(Tree):
         self.fleet_md("Apollo").write_bytes(b"# no newline at the end")
         self.assertEqual(self.run_it("apollo").returncode, 0)
         self.assertTrue(self.fleet_md("Apollo").read_bytes().startswith(b"# no newline at the end\n\n" + BEGIN.encode()))
-        self.assertIn("No plan file game/routes/plans/hauler.json.", self.fleet_md("Apollo").read_text())
+        self.assertIn("No ship of Apollo in the fleet's file.", self.fleet_md("Apollo").read_text())
 
     def test_the_block_between_the_marks_is_replaced_and_the_text_around_it_kept_byte_for_byte(self):
         before = b"# FLEET.md\r\nA line with two trailing spaces  \n\n"
@@ -195,7 +184,7 @@ class WriteTests(Tree):
         done = self.run_it("zero")
         self.assertEqual(done.returncode, 0, done.stdout)
         new = self.fleet_md("Zero").read_bytes()
-        self.assertTrue(new.startswith(before + BEGIN.encode() + b"\n## Routes Now\n"))
+        self.assertTrue(new.startswith(before + BEGIN.encode() + b"\n| Ship | Kind | Hull | Task now |\n"))
         self.assertTrue(new.endswith(END.encode() + after))
         self.assertNotIn(b"an old table", new)
         self.assertEqual(new.count(BEGIN.encode()), 1)
@@ -227,7 +216,7 @@ class WriteTests(Tree):
         done = self.run_it("zero")
         self.assertIn("Zero: written: ", done.stdout)
         self.assertNotIn("2000-01-01", path.read_text())
-        self.assertIn("| miner-1 | waits docked at home | ", path.read_text())
+        self.assertIn("| miner-1 | miner | Threshold | waits docked |", path.read_text())
 
 
 class PermissionTests(Tree):
@@ -270,7 +259,7 @@ class CommitTests(Tree):
         self.assertEqual(done.returncode, 0, done.stdout)
         head = self.git(work, "log", "-1", "--format=%h").strip()
         self.assertEqual(done.stdout, "Zero: committed %s: %s (5 ships, miner)\n" % (head, self.fleet_md("Zero")))
-        self.assertEqual(self.git(work, "log", "-1", "--format=%an <%ae>|%s"), "Zero <zero@suggi-workspace.dev>|FLEET.md: routes now (fleetfile.py)\n")
+        self.assertEqual(self.git(work, "log", "-1", "--format=%an <%ae>|%s"), "Zero <zero@suggi-workspace.dev>|FLEET.md: the roster (fleetfile.py)\n")
         self.assertEqual(self.git(work, "show", "--name-only", "--format=", "HEAD").split(), ["FLEET.md"])
         self.assertEqual(self.git(work, "status", "--porcelain"), "A  other.md\n")                # the other file is still staged, not committed
         self.assertEqual(self.run_it("zero", "--commit").stdout.split(":")[0:2], ["Zero", " unchanged"])
@@ -281,7 +270,7 @@ class CommitTests(Tree):
         self.assertIn("Zero: written; not committed: FLEET.md carried an uncommitted change before the write", done.stdout)
         self.assertEqual(self.git(work, "log", "-1", "--format=%h").strip(), head)
         self.assertTrue(self.fleet_md("Zero").read_text().endswith("\nA note by hand.\n"))
-        self.assertIn("| miner-1 | waits docked at home |", self.fleet_md("Zero").read_text())
+        self.assertIn("| miner-1 | miner | Threshold | waits docked |", self.fleet_md("Zero").read_text())
         self.git(self.profiles, "init", "-q")                                                     # a parent's repository is not the workspace's
         done = self.run_it("apollo", "--commit")
         self.assertIn("Apollo: written; not committed: no git repository", done.stdout)

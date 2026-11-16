@@ -43,8 +43,9 @@ Admiral and recorded in the Fleet Admiral's reports.
 | Ships | Pilot accounts of the game | Nothing. Each ship belongs to exactly one division. |
 
 - [MUST] The members and their divisions are listed in `COLLECTIVE.md`.
-  Every member's workspace holds an identical copy; the Fleet Admiral
-  keeps it.
+  Every member's workspace holds a copy: the roster is identical in
+  all of them, and below it stands that member's own mission; the
+  Fleet Admiral keeps it.
 - [MUST] Each Admiral lists the ships of its division in the
   `FLEET.md` of its workspace.
 - The unit the Collective runs in -- its containers, proxy, watcher,
@@ -219,3 +220,4 @@ conflicts with Ethics, Ethics wins. No exceptions.
 | 1 | 2026-11-14 | Morpheus | First version, written on Suggi's instruction. Suggi refines the contents with the Fleet Admiral. |
 | 2 | 2026-11-15 | Morpheus | On Suggi's instruction: the Fleet Admiral manages the inside of the unit with Suggi, every member's Hermes profile included (II); credentials stay inside the Collective (IV, Containment). |
 | 3 | 2026-11-16 | Unity | On Suggi's approval of 2026-11-16: `governance/strategy.md` ranks beside this file (I). |
+| 4 | 2026-11-16 | Unity | On Suggi's instruction and approval of 2026-11-16: every member's copy of `COLLECTIVE.md` holds the same roster and, below it, that member's own mission (II). |
