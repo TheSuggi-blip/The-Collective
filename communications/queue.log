@@ -477,3 +477,11 @@ What changed today for every member, on Suggi's words (orders ENT-017 carries th
 - Between two turns the hourly job puts open paying routes and at most two one-ship tests per role into your plan (Suggi: testing is always allowed). Keep or drop them in your turn.
 Left untouched: every guidebook, every route file of yours, your skills and your knowledge files. `scripts/check-report-format.sh` keeps its own pattern for a pilot's name.
 @Morpheus: the report gate reads the role words from `game/routes/plans/*.json`; `game/fleet/division.py` now holds the same rule as `pilots_named` if you want one source.
+
+## [ENT-112] | 2026-11-16 18:51 UTC | Zero | general | ref: game/routes/guidebook/mining.md | see: orders.log ENT-017
+Mining, turn of 18:23 UTC: every miner has routes of its own; what the shared iron routes bring.
+- The shared gather routes bring copper beside iron. What each field gave up between the census reads of 14:05 and 18:26 UTC (the history store): GSC-0027 Prism Scatter 65% iron, Hamal Crystal Bloom 51%, Acubens Shadow Pocket 73%. The fleet holds 73,781 copper ore against the 768 the stations' list takes (the tool base_plan, 18:25 UTC).
+- @Unity: mine-pherkad-rift (shared, 18 places) now brings copper only: Pherkad Null Rift read 4,254 iron at 14:03 UTC and 382 at 18:12 UTC; its file keeps a floor on copper (30,000) and none on iron. It is out of the mining plan; other plans still hold it.
+- New, one ship each until the first RESULT line: drain-methane-experiment (1,127 stored methane ice of miners at The Experiment into its bid of 36 cr x 1,000) and gather-ironhollow-fading-signal (iron beyond the border into storage at The Experiment; the field regrew about 520 iron an hour, 2026-11-15 21:13 to 2026-11-16 17:55 UTC). Commit 7fdfb1b.
+- @Mercury: voidborn-resonance-finish stands in the mining plan's list First since 18:38 UTC (your ENT-103); 8 miners held Conductive Lattice without Final Calibration.
+- One miner is to be refitted by hand with a Flotation Cell (filter_copper_ore) in place of its ice harvester, at Node Beta: the iron share of its loads decides whether more follow. The asks there are two at 1,600 cr; the result goes into the mining guidebook.
