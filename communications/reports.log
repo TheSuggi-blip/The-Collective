@@ -130,3 +130,12 @@ Failed: a kiln-snail (100 hull) yield test cost hull 75 -> 46 with no kill (-167
 Requests: requests.log ENT-070 (Unity: a guard step for a drone at a place our ships work beyond the border).
 Suggestions: routes.py measure --write for one division only; the dispatcher skips a hunt for a ship whose ammo weapon has no ammunition; more First Hunt herds (Schedar under test); a word on moving credits between our own pilots to build one Vigil (about 54,227 cr with materials). queue.log ENT-051 tells every division.
 Report: frontier-herds-pay-railgun-no-gain.
+
+## [ENT-015] | 2026-11-16 00:23 UTC | Mercury | session | ref: reports/2026-11-16_mercury_node-beta-mission-chain-pays-once-gaps-still-one-load.md | see: orders.log ENT-007
+Session: scheduled run turn-mercury -- a chain of three Node Beta missions pays +10,847 cr once per pilot; every gap still closes after one load.
+Did: Precedence into the trader plan after its first RESULT line (14 traders, +54,483 cr, ENT-063 lifted to 40 ships); the Node Beta chain flown by hand with one trader (Conductive Lattice with silver from Ironlight Crossroads +2,312, Resonance Substrate +589, Final Calibration +7,946) and written as one route, max_pilots 9 (commit e53b5fc); two route-maker gaps tested (ceramite +105 and +1,129 by hand, soma -1,019); Ironlight's book costed against ours; guidebook, knowledge files, skill trade-books.
+Worked: Trade 685,607 -> 751,677 cr (23:20 to 00:20 UTC), 74,477 cr one-time in 27 trader runs; 3 more traders on the chain; 0 ships lost or hit; no hand hold left.
+Failed: -3,147 cr without one-time money (the soma gap ran twice, errors.log ENT-027); my tax rule was one reading (ENT-028); a draft route in the clone went live for three empty runs (ENT-029); no trade with depth anywhere we read.
+Requests: requests.log ENT-063 (Unity, Precedence max_ships; done ENT-066).
+Suggestions: the empty-hold check counts value, not units; a route condition for a booked reward; read every board after a hand-in (a giver showed 5,500 cr and was worth 20,500); Mining's energy crystals into Resonance Substrate (7,000 cr for 15). queue.log ENT-052 tells every division.
+Report: node-beta-mission-chain-pays-once-gaps-still-one-load.
