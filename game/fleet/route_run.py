@@ -17,6 +17,12 @@ which pilot flies it, and where a pilot is, stays in the unit's data folder:
               "buy":    [{"item": "...", "qty": N, "max_price": N, "one_time": true}],   max_price: the most a unit may cost, tax included
                                               qty = units wanted in the hold; one_time: goods for a
                                               one-time mission, their cost is booked against its reward
+              "craft":  [{"recipe": "...", "runs": N, "makes": "item_id", "per_run": M, "inputs": ["item_id", ...]}],
+                                              after the buy, at the station's workshop: the `inputs` aboard go into
+                                              storage, a quote, then `runs` runs (per_run units each, default 1) made
+                                              into storage and counted there; what was made comes into the hold and
+                                              the stop's `sell` runs once more for it. No inputs, a fee that would take
+                                              the wallet under FLOOR, or no `makes`: nothing is made, the run goes on
               "accept": ["template_id", {"template": "...", "needs": {"item_id": N}}],
                                               needs: accept only with these goods in the hold
               "mine":   [{"at": "system:poi", "for": ["Mission Title"], "minutes": 25}]}, ...]}
@@ -25,8 +31,8 @@ which pilot flies it, and where a pilot is, stays in the unit's data folder:
                                               objectives done (a mission that counts units mined), at most
                                               `minutes`; ore that fills the hold goes into storage at the stop
 At every stop, in this order: dock and refuel; hand in every mission whose
-objectives are all done; redock; hand in again; store; withdraw; sell; buy; accept; save the
-station's order book and mission board (data/market, data/missions).
+objectives are all done; redock; hand in again; store; withdraw; sell; buy; craft (then sell what
+it made); accept; save the station's order book and mission board (data/market, data/missions).
 --from N starts at stop N (1 is the first). A goal the engine is still carrying
 out for the pilot is waited for, up to ten minutes. While the run lasts the pilot
 carries an order file (data/fleet/orders/<pilot>.json) so the station shows it at
@@ -211,6 +217,15 @@ def store_list(want, hold):
     return [item for item in (want or []) if hold.get(item)]
 
 
+def deposit(item, units):
+    """Hold -> the pilot's own storage at the station where it is docked: the call of a stop's `store`, and of a craft's
+    `inputs` (the workshop takes its inputs from that storage, guidebook logistics.md section 7)."""
+    d = raw('deposit', {'item_id': item, 'quantity': units, 'target': 'self', 'source': 'cargo'}, group='spacemolt_storage')
+    if 'error' in d:
+        say(f'store {item}: {str(d.get("error"))[:100]}')
+    time.sleep(11)
+
+
 def withdraw_units(want, stored, free, sell, row, aboard, size=1):
     """Units a stop's `withdraw` takes from the pilot's own storage into the hold: at most what is stored, what the free
     hold takes at the item's `size` (plasma gas takes two units of space a piece: 33 asked into a free hold of 65 were
@@ -257,6 +272,96 @@ def room():
     except (OSError, ValueError):
         capacity = 65
     return free_space(capacity, call('GET', f'/accounts/{P}/state/cargo')[1])
+
+
+def sell_into_bid(want, book):
+    """A stop's `sell` entry: the units aboard into the bid of `book`, at `min_price` or more and no more than stand at
+    its best price (`all`: down its levels too). Run for every sale of the stop, and once more for what its craft made."""
+    row, have = book.get(want['item']) or {}, cargo().get(want['item'], 0)
+    bid = row.get('best_buy') or 0
+    depth = row.get('best_buy_qty') if isinstance(row.get('best_buy_qty'), (int, float)) else (row.get('buy_quantity') or 0)   # at the best price: `buy_quantity` is the total of all levels
+    if have and isinstance(bid, (int, float)) and bid >= want['min_price'] and depth:
+        c0 = credits()
+        units = have if want.get('all') else min(have, depth)   # `all`: down the bid's levels too (a mission that counts units sold)
+        raw('sell', {'item_id': want['item'], 'quantity': units})
+        time.sleep(11)
+        say(f'sold {units} {want["item"]} into a bid of {bid}: {credits() - c0:+d} cr')
+    elif have:
+        say(f'{want["item"]}: bid {bid} x {depth} is under {want["min_price"]}: kept')
+
+
+TICK = 11                    # seconds a game tick takes, with a margin: the waits of this runner and of craftchain.py
+
+
+def craft_fields(d):
+    """The fields of a craft answer where craftchain.py of the skill logistics-stock reads them: in `structuredContent`
+    (or `result`), and there in `details` when it has one (a job's `job_id` stands there, guidebook logistics.md section 7)."""
+    s = d
+    for key in ('structuredContent', 'result'):
+        if isinstance(d.get(key), dict):
+            inner = d[key].get('structuredContent')
+            s = inner if isinstance(inner, dict) else d[key]
+            break
+    return s.get('details') if isinstance(s.get('details'), dict) else s
+
+
+def workshop(job, base):
+    """One `craft` entry of a stop at the station's workshop, the way craftchain.py of the skill logistics-stock made
+    harvesters and liquid hydrogen (2026-11-16): the entry's `inputs` aboard go into the pilot's storage first (the
+    workshop takes its inputs from there, guidebook logistics.md sections 7 and 11); a quote (`dry_run`); then the runs,
+    asked again for the rest after each job delivered (7 etchings asked, 3 queued); the made units counted in storage,
+    where they arrive, each job waited for at most craftchain.py's limit. A craft that cannot start makes nothing and
+    moves nothing back: the run goes on. Returns (units made, the note for the run's row or None)."""
+    recipe, runs, per, item = job['recipe'], int(job['runs']), int(job.get('per_run') or 1), job.get('makes')
+    if not item:                                     # nothing named to count in storage: no wait could tell a job done
+        say(f'craft {recipe}: not crafted, the entry names no `makes`')
+        return 0, f'craft {recipe}: no makes'
+    hold = cargo()
+    for name in store_list(job.get('inputs') or [], hold):
+        deposit(name, hold[name])
+    asked = {'recipe_id': recipe, 'quantity': runs, 'deliver_to': 'storage', 'preset': 'workshop'}
+    quote = craft_fields(raw('craft', dict(asked, dry_run=True)))
+    try:
+        fee = float(quote.get('credits_total') or 0)
+    except (TypeError, ValueError):
+        fee = 0.0
+    pace = quote.get('effective_time_per_run')
+    pace = pace if isinstance(pace, (int, float)) and not isinstance(pace, bool) and pace > 0 else 6   # craftchain.py's default
+    if quote.get('have_inputs') is not True:
+        say(f'craft {recipe} x{runs}: not crafted, the quote says have_inputs {quote.get("have_inputs")}: {str(quote.get("message") or quote.get("error") or "")[:100]}')
+        return 0, f'craft {recipe}: no inputs'
+    if fee > credits() - FLOOR:
+        say(f'craft {recipe} x{runs}: not crafted, the quote asks {fee:.0f} cr and the wallet keeps {FLOOR} cr')
+        return 0, f'craft {recipe}: fee'
+    say(f'craft {recipe} x{runs}: quote: inputs here, {fee:.0f} cr, {pace} ticks a run')
+    first = stored(base).get(item, 0)
+    count, left, wanted = first, runs, runs * per
+    while left > 0:
+        answer = craft_fields(raw('craft', dict(asked, quantity=left)))
+        queued = answer.get('runs') if isinstance(answer.get('runs'), int) and not isinstance(answer.get('runs'), bool) else 0
+        if not queued:
+            match = re.search(r'\((\d+) run', str(answer.get('message') or ''))
+            queued = int(match.group(1)) if match else 0
+        say(f'craft {recipe}: {left} runs asked, {queued} queued: {str(answer.get("message") or answer.get("kind") or answer.get("error") or "")[:100]}')
+        if queued <= 0:
+            break
+        target = count + queued * per
+        limit = time.time() + max(120, (pace * queued + 4) * TICK * 1.5)   # craftchain.py's limit for one job
+        checks = 0
+        while time.time() < limit:
+            time.sleep(TICK)
+            seen, checks = stored(base).get(item, 0), checks + 1
+            if seen != count or checks % 5 == 0:     # say touches the order file: at least once a minute while it waits
+                say(f'craft {recipe}: {seen - first} of {wanted} {item} in storage')
+            count = seen
+            if count >= target:
+                break
+        if count < target:
+            break
+        left -= queued
+    made = count - first
+    say(f'craft {recipe}: {made} of {wanted} {item} made')
+    return made, (None if made >= wanted else f'craft {recipe}: {made} of {wanted} made')
 
 
 def book_onetime(title, amount):
@@ -388,10 +493,7 @@ for n, stop in enumerate(ROUTE['stops']):
     hold = cargo()
     for item in store_list(stop.get('store'), hold):
         if hold.get(item):
-            d = raw('deposit', {'item_id': item, 'quantity': hold[item], 'target': 'self', 'source': 'cargo'}, group='spacemolt_storage')
-            if 'error' in d:
-                say(f'store {item}: {str(d.get("error"))[:100]}')
-            time.sleep(11)
+            deposit(item, hold[item])
     book, board = save_station(base, system)
     for want in stop.get('withdraw') or []:              # own storage -> hold: sold here into the bid, or carried on
         sale = next((s for s in stop.get('sell') or [] if s.get('item') == want['item']), None)
@@ -405,17 +507,7 @@ for n, stop in enumerate(ROUTE['stops']):
         else:
             say(f'withdraw {want["item"]}: nothing to take (stored, hold or bid)')
     for want in stop.get('sell') or []:
-        row, have = book.get(want['item']) or {}, cargo().get(want['item'], 0)
-        bid = row.get('best_buy') or 0
-        depth = row.get('best_buy_qty') if isinstance(row.get('best_buy_qty'), (int, float)) else (row.get('buy_quantity') or 0)   # at the best price: `buy_quantity` is the total of all levels
-        if have and isinstance(bid, (int, float)) and bid >= want['min_price'] and depth:
-            c0 = credits()
-            units = have if want.get('all') else min(have, depth)   # `all`: down the bid's levels too (a mission that counts units sold)
-            raw('sell', {'item_id': want['item'], 'quantity': units})
-            time.sleep(11)
-            say(f'sold {units} {want["item"]} into a bid of {bid}: {credits() - c0:+d} cr')
-        elif have:
-            say(f'{want["item"]}: bid {bid} x {depth} is under {want["min_price"]}: kept')
+        sell_into_bid(want, book)
     for want in stop.get('buy') or []:
         need = want['qty'] - cargo().get(want['item'], 0)
         if need > 0 and credits() - need * want['max_price'] * 1.01 < FLOOR:
@@ -439,6 +531,27 @@ for n, stop in enumerate(ROUTE['stops']):
                 onetime[0] += spent
             if got < want['qty']:
                 notes.append(f'{want["item"]}: {got} of {want["qty"]}')
+    made = {}                                            # item -> units this stop's crafts put into storage (requests ENT-013)
+    for job in stop.get('craft') or []:
+        units, note = workshop(job, base)
+        if note:
+            notes.append(note)
+        if units > 0:
+            made[job['makes']] = made.get(job['makes'], 0) + units
+    if made:                                             # what was made comes into the hold, then the stop's sale runs once more for it
+        book, board = save_station(base, system)         # the book read before the craft may be minutes old: no sale into a bid gone since
+        for item, units in made.items():
+            sale = next((s for s in stop.get('sell') or [] if s.get('item') == item), None)
+            take = withdraw_units({'item': item, 'qty': units}, stored(base).get(item, 0), room(), sale, book.get(item) or {}, cargo().get(item, 0),
+                                  SIZES.get(item, 1))
+            if take:
+                d = raw('withdraw', {'item_id': item, 'quantity': take, 'target': 'self'}, group='spacemolt_storage')
+                time.sleep(11)
+                say(f'withdrew {take} {item} from storage after the craft' + (f': {str(d.get("error"))[:100]}' if 'error' in d else ''))
+            else:
+                say(f'withdraw {item}: nothing to take after the craft (stored, hold or bid)')
+        for want in [s for s in stop.get('sell') or [] if s.get('item') in made]:
+            sell_into_bid(want, book)
     for want in stop.get('fit') or []:                   # a module bought here and fitted, one of its kind
         try:
             live = json.load(open(DATA / 'fleet' / 'ships' / ((re.sub(r'[^A-Za-z0-9_.-]', '_', pilot)[:60] or 'pilot') + '.json'), encoding='utf-8'))

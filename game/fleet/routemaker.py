@@ -4,7 +4,8 @@
 WHAT: the service `routemaker` runs it. Every ten minutes it reads what the
       ships and services collected -- every field and what is left in it
       (data/scouting/), every station's order book with the depth at the
-      best price (data/market/), every mission board (data/missions/), every
+      best price (data/market/) and what a bid regains an hour (hive.py
+      `rates`), every mission board (data/missions/), every
       herd (data/wildlife/), what we own (data/stock/), the runs so far
       (data/routes/runs.jsonl), the chart (game/map/galaxy.tsv) and the
       game's catalog of items and recipes (data/catalog/, fetched once a day
@@ -16,7 +17,8 @@ WHAT: the service `routemaker` runs it. Every ten minutes it reads what the
       reads the book price level by price level through a pilot docked
       there (data/market/ladders.json): a station's bid is often a ladder
       of single units. Five kinds:
-        mine     a field, sold whole at the station that pays most for its mix
+        mine     a field, sold whole at the station whose bids pay most for
+                 what one ship mines there in an hour
         trade    an item on offer at one station and bid for at another
         craft    a hand recipe whose inputs are on offer or in our storage
         hunt     a herd of a species whose loot a run of ours already sold
@@ -38,6 +40,17 @@ RULES:
     depth at all, one unit counts. A gap that one load closes is costed
     as one load, not as an hour of loads. A book read more than six hours
     ago is `stale`.
+  - A field is costed by what one ship mines there in one hour, sold once
+    down a station's bids: each level up to its depth and no further; what
+    the levels do not take counts for nothing. (The best level can also
+    take what it regains in an hour by hive.py `rates`; that is switched
+    off, REGAIN, until `rates` measures the last hours only: averaged over
+    every reading on record, a large order long gone still counted and
+    moved 17 ice fields to a bid of two units, 2026-11-16.) A load's figure is the hour's
+    divided by the loads; the station is the one whose bids pay most for
+    the hour, every item of the field together; a sale's `min_price` is
+    four fifths of the lowest level the hour reaches, rounded up
+    (requests.log ENT-069).
   - A route it writes is a test: `max_ships` 1. The Admiral who flies it
     lifts the limit after the first RESULT line (game/routes/BLUEPRINT.md).
 WHY:  five Admirals should not each search 30 systems, six books and six
@@ -57,6 +70,7 @@ Stdlib only. ASCII only.
 
 import calendar
 import json
+import math
 import os
 import statistics
 import sys
@@ -64,6 +78,7 @@ import time
 import urllib.parse
 import urllib.request
 from collections import Counter, defaultdict, deque
+from itertools import takewhile
 from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -260,6 +275,12 @@ def load_world(data, root, now):
             booked[str(row[2]).lower()].add(str(row[1]))
     world["booked"] = booked
     world["assume"] = assumptions(world, ships, read_json(data / "fleet" / "meters.json", {}))
+    try:                                              # what a bid regains an hour: the fleet's one measure of it
+        import hive                                   # here, not at the top: hive.py loads the dispatcher's modules, a pass needs them only here
+        world["regains"] = hive.rates(data)[0]
+    except Exception as error:                        # no measure is no reason to stop: then the standing depth is all there is
+        world["regains"] = {}
+        world["skipped"].append("market/history.jsonl: %s: %s" % (type(error).__name__, error))
     return world
 
 
@@ -358,25 +379,69 @@ def want_ladder(world, base, item, worth):
     world["wanted"][key] = max(world["wanted"].get(key, 0), worth)
 
 
-def sell_into(world, base, item, units):
-    """(units sold, credits, how the depth is known) for selling into a station's bids, never below 80% of the best bid."""
+def bid_levels(world, base, item, units):
+    """(the price levels [[price, units], ...] a sale goes down, best first; how their depth is known) of an item's bids
+    at a station: the levels read, as far as 80% of the best bid; else the depth at the best price; else one unit.
+    ([], "no bid") where nobody bids. `units` only ranks the wish to read the levels."""
     row = (world["books"].get(base) or {"items": {}})["items"].get(item)
     if not row or row["bid"] <= 0 or units <= 0:
-        return 0, 0.0, "no bid"
+        return [], "no bid"
     levels = ladder(world, base, item, "bids")
     if levels is not None:
-        sold, income = 0.0, 0.0
-        for price, qty in levels:
-            if price < 0.8 * levels[0][0] or sold >= units:
-                break
-            take = min(qty, units - sold)
-            sold, income = sold + take, income + take * price
-        return sold, income, "price levels read"
+        return list(takewhile(lambda level: level[0] >= 0.8 * levels[0][0], levels)), "price levels read"
     want_ladder(world, base, item, min(units, max(row["bid_qty"], 1) * 50) * row["bid"])
     if row["bid_depth_known"]:
-        sold = min(units, row["bid_qty"])
-        return sold, sold * row["bid"], "depth at the best price"
-    return min(units, 1), min(units, 1) * row["bid"], "one unit: the saved book has no depth"
+        return [[row["bid"], row["bid_qty"]]], "depth at the best price"
+    return [[row["bid"], 1]], "one unit: the saved book has no depth"
+
+
+def sell_into(world, base, item, units):
+    """(units sold, credits, how the depth is known) for selling into a station's bids, never below 80% of the best bid."""
+    levels, how = bid_levels(world, base, item, units)
+    if how == "no bid":
+        return 0, 0.0, how
+    sold, income = 0.0, 0.0
+    for price, qty in levels:
+        if sold >= units:
+            break
+        take = min(qty, units - sold)
+        sold, income = sold + take, income + take * price
+    return sold, income, how
+
+
+REGAIN = False                 # True: the best level also takes its regain. Off: `rates` averages every reading on record,
+                               # so an order that left hours ago still counts (Central Nexus water ice, 2026-11-16)
+
+
+def regained(world, base, item):
+    """Units an hour an item's best bid at a station regains by our own readings (hive.py `rates`, the figure fill.py
+    `carries` sizes a mine route by); None where they measure nothing, and always while REGAIN is off."""
+    if not REGAIN:
+        return None
+    rate = (world.get("regains") or {}).get((base, item))
+    if rate is None or (not rate[0] and not rate[1]):  # nothing was taken and nothing came back: the readings say nothing
+        return None
+    return rate[0]
+
+
+def sell_hour(world, base, item, units):
+    """(units sold, credits, how the depth is known, the levels used [[price, standing units], ...], units the best level
+    regains an hour or None) for what ONE ship brings in ONE hour, sold into a station's bids (bid_levels): each level
+    takes up to its depth and no further, the best level also what it regains in that hour where our readings measure
+    it (and only there); what the levels do not take is worth nothing. A bid of six units counts six units an hour,
+    never six a load (requests.log ENT-069)."""
+    levels, how = bid_levels(world, base, item, units)
+    back = regained(world, base, item) if levels else None
+    sold, income, used = 0.0, 0.0, []
+    for n, (price, qty) in enumerate(levels):
+        if sold >= units:
+            break
+        take = min(qty + ((back or 0) if n == 0 else 0), units - sold)
+        sold, income = sold + take, income + take * price
+        used.append([price, qty])
+    if back:
+        how += ", %g regained an hour by our readings" % round(back, 1)
+    return sold, income, how, used, back
 
 
 def buy_from(world, base, item, units):
@@ -477,7 +542,9 @@ def candidate(world, cid, kind, title, per_hour, per_run, minutes, basis, warnin
 
 
 def mine_candidates(world):
-    """Each field, sold whole at the station that pays most for what it yields."""
+    """Each field, sold whole at the station whose bids pay most for what one ship mines there in an hour, every item of
+    the field together. A bid is used up to its depth once in that hour, never once a load (sell_hour): a bid of six
+    units at 200 cr counts six units an hour. A load's figure is the hour's divided by the loads (requests.log ENT-069)."""
     out, cargo, rate = [], value(world, "cargo"), value(world, "mine_rate")
     for field in world["fields"]:
         live = [r for r in field["resources"] if r["remaining"] >= 100 and r["richness"] > 0]
@@ -490,34 +557,33 @@ def mine_candidates(world):
             jumps = world["chart"].jumps(field["system"], station["system"])
             if not book or jumps is None:
                 continue
-            income, parts, thin, floors = 0.0, [], [], []
-            for res in live:
-                units = cargo * res["richness"] / rich
-                sold, got, how = sell_into(world, base, res["id"], units)
-                if sold <= 0:
-                    continue
-                income += got
-                floors.append({"item": res["id"], "min_price": max(1, int(0.8 * got / sold))})
-                parts.append("%s %d of %d units for %d cr (%s)" % (res["id"], sold, units, got, how))
-                if sold < units:
-                    thin.append("%s: the bids take %d of %d units a load" % (res["id"], sold, units))
             minutes, fuel = trip(world, jumps)
             minutes += cargo / (rate * rich)
-            loads = 60 / minutes                              # an hour of mining, sold down the book
-            per_hour = -fuel * loads
+            loads = 60 / minutes                              # an hour of mining, sold down the book once
+            per_hour, sales = -fuel * loads, []
             for res in live:
                 hour = loads * cargo * res["richness"] / rich
-                sold, got, _how = sell_into(world, base, res["id"], hour)
+                sold, got, how, levels, back = sell_hour(world, base, res["id"], hour)
                 per_hour += got
-                if 0 < sold < 0.99 * hour:
-                    thin.append("%s: the bids take %d of the %d units an hour brings" % (res["id"], sold, hour))
-            if income > 0 and (best is None or per_hour > best[0]):
-                best = (per_hour, income - fuel, minutes, base, jumps, parts, thin, floors)
+                if sold > 0:
+                    sales.append((res["id"], cargo * res["richness"] / rich, hour, sold, got, how, levels, back))
+            if sales and (best is None or per_hour > best[0]):     # the station: what the hour brings there, every item together
+                best = (per_hour, minutes, loads, base, jumps, sales)
         if best is None:
             continue
-        per_hour, per_run, minutes, base, jumps, parts, thin, floors = best
+        per_hour, minutes, loads, base, jumps, sales = best
+        per_run = per_hour / loads
         station = world["stations"][base]
-        warnings = list(thin)
+        warnings, parts, hourly, floors = [], [], [], []
+        for item, units, hour, sold, got, how, levels, back in sales:
+            parts.append("%s %d of %d units for %d cr (%s)" % (item, round(sold / loads), round(units), round(got / loads), how))
+            hourly.append("%s %d of %d units for %d cr" % (item, round(sold), round(hour), round(got)))
+            # the runner sells only at min_price or more: four fifths of the lowest level the hour's units reach, rounded up
+            floors.append({"item": item, "min_price": max(1, math.ceil(round(0.8 * levels[-1][0], 6)))})
+            if sold < 0.99 * hour:
+                bids = ", ".join("%d x %d%s" % (price, qty, " (+%g regained an hour)" % round(back, 1) if n == 0 and back else "")
+                                 for n, (price, qty) in enumerate(levels))
+                warnings.append("%s: bid %s at %s takes %d of %d units an hour" % (item, bids, base, round(sold), round(hour)))
         low = [r["id"] for r in live if r["remaining"] < 10 * cargo * r["richness"] / rich]
         if low:
             warnings.append("nearly mined out: %s hold fewer than ten loads" % ", ".join(low))
@@ -541,7 +607,8 @@ def mine_candidates(world):
             route.setdefault("requires", {})["empty_hold"] = True
         out.append(candidate(world, cid, "mine", route["title"], per_hour, per_run, minutes,
                              {"field": "%s:%s" % (field["system"], field["poi"]), "richness": {r["id"]: r["richness"] for r in live},
-                              "left": {r["id"]: r["remaining"] for r in live}, "sold_at": base, "jumps": jumps, "a_load": parts},
+                              "left": {r["id"]: r["remaining"] for r in live}, "sold_at": base, "jumps": jumps, "loads_an_hour": round(loads, 2),
+                              "an_hour": hourly, "a_load": parts},
                              warnings, route=route, rid=rid))
     return out
 

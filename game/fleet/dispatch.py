@@ -7,6 +7,7 @@ WHAT: every 30 s it reads the fleet's live files, the plans (game/routes/plans/<
         hunt     -> game/fleet/hunt.py        grazers at one place, loot, sell
         census   -> game/fleet/census.py      read one system whole (the stalest first)
         mine     -> game/fleet/mine.py        the engine's mining loop for a set time
+        guard    -> game/fleet/guard.py       one ship at the place where another route's ship of ours works
       A pilot's role is the word before the dash of its name. A pilot flies its
       own list of routes in its order: data/plans/assign.json, written by
       plan.py from its division's plan file, which its Admiral keeps. A pilot
@@ -38,7 +39,9 @@ RULES:
     station holds less than `requires.stored` asks (at, item, min), or was not
     read again since the pilot's last run of the route; a once run whose every stop
     was skipped (`every stop skipped`) is no try and the route rests; a
-    census has no system older than `every_minutes` (default 60).
+    census has no system older than `every_minutes` (default 60); a guard sees no pilot of
+    ours on the route it guards (`nobody flies <id>`); a guard route without `max_ships`
+    takes one ship.
   - An engine loop that runs for a pilot with no fresh order file for five
     minutes belongs to no runner (an engine restart, a dead runner): the
     dispatcher stops that loop through the gate and names it in its log.
@@ -79,7 +82,7 @@ import taxes                                      # noqa: E402  the weekly tax a
 EVERY = 30                   # seconds between two passes
 ORDER_FRESH = 20 * 60        # an order file not touched for this long is dead
 CENSUS_FRESH = 90 * 60       # a census older than this says nothing about a herd
-KINDS = {"circuit": "route_run.py", "hunt": "hunt.py", "census": "census.py", "mine": "mine.py"}
+KINDS = {"circuit": "route_run.py", "hunt": "hunt.py", "census": "census.py", "mine": "mine.py", "guard": "guard.py"}
 
 
 def read_json(path, default):
@@ -421,8 +424,18 @@ def why_not(pilot, rid, route, state):
         flying = sum(1 for what in state["orders"].values() if what.startswith("census ") and what.split(" ", 1)[1] in systems)
     else:
         flying = sum(1 for what in state["orders"].values() if what == mark)
-    if flying >= route.get("max_ships", 10 ** 6):
-        return "max_ships %s reached" % route["max_ships"], None
+    limit = route.get("max_ships", 1 if route["kind"] == "guard" else 10 ** 6)     # one guard to a place unless its file says more
+    if flying >= limit:
+        return "max_ships %s reached" % limit, None
+    place = None
+    if route["kind"] == "guard":                  # it keeps a place only while a pilot of ours flies the route it guards (requests ENT-070)
+        folder = Path(state.get("root") or Path(__file__).resolve().parent.parent) / "routes"      # fill.py's state names no root: the default one
+        guarded = read_json(folder / (str(route.get("guards")) + ".json"), None)
+        place = routefiles.guarded_place(route, guarded)
+        if place is None:
+            return "guards `%s`: no mine or hunt route file" % route.get("guards"), None
+        if guarded["kind"] + " " + str(route["guards"]) not in state["orders"].values():
+            return "nobody flies %s" % route["guards"], None
     if pilot.get("credits", 0) < route.get("min_credits", 0):
         return "wallet below %s cr" % route["min_credits"], None
     if pilot.get("credits", 0) < FLOOR and not (route.get("park") or routefiles.stage(route) in ("once", "paying")):
@@ -452,6 +465,8 @@ def why_not(pilot, rid, route, state):
         if system is None:
             return "every system read", None
         return None, system
+    if route["kind"] == "guard":                  # the place it keeps, for its command line
+        return None, place
     return None, None
 
 
@@ -496,6 +511,9 @@ def command(route, pilot, argument, root):
     if route["kind"] == "mine":
         sell = ",".join("%s:%d" % (s["item"], s["min_price"]) for s in route.get("sell") or [])
         return base + [route["belt"], route["station"], "--minutes", str(route.get("minutes", 45)), "--route", route["id"]] + (["--sell-items", sell] if sell else [])
+    if route["kind"] == "guard":                  # the place why_not found: the guard's own, else the guarded route's
+        system, poi = (str(argument or route.get("place") or "") + ":").split(":")[:2]
+        return base + [system, poi, "--guards", route["guards"], "--station", route["station"], "--minutes", str(route.get("minutes", 60)), "--route", route["id"]]
     system, poi = route["place"].split(":")
     out = base + [system, poi, "--kills", str(route.get("kills", 8)), "--minutes", str(route.get("minutes", 40)),
                   "--min-bid", str(route.get("min_bid", 100)), "--sell-at", route["sell_at"], "--route", route["id"]]
@@ -628,7 +646,7 @@ def one_pass(root, data, dry_run, children):
     routes = load_routes(root)
     rows = run_rows(data)
     state = {"now": now, "data": data, "rows": rows, "orders": fresh_orders(data, now), "rest": resting(routes, rows, now), "booked": booked(data),
-             "loss": losing(routes, rows, now), "late": lately_losing(routes, rows, now)}
+             "loss": losing(routes, rows, now), "late": lately_losing(routes, rows, now), "root": root}
     named = flagships(data)
     ammo = set(read_json(Path(data) / "catalog" / "ammo.json", []) or [])      # written by routemaker.py from the game's catalog
     lines = []

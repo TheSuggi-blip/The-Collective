@@ -220,5 +220,224 @@ class WithdrawStepTests(unittest.TestCase):
         self.assertIn("'withdraw', {'item_id': want['item'], 'quantity': units, 'target': 'self'}, group='spacemolt_storage'", source)
 
 
+# The whole runner on a made-up route, its module level run as it stands: `call` (the only way to the engine) is taken
+# out and a fake gate answers instead, DATA is a temporary folder, the clock is counted, not waited, and no program is
+# started. The fake keeps a wallet, a hold, a storage, a book and the workshop's jobs: a job delivers into storage after
+# `ticks` reads of the storage, and `queue` says how many runs the workshop takes at each ask.
+FAKE_RUN = r'''
+import ast, json, pathlib, subprocess, sys, time, types, urllib.request
+CONFIG = json.loads(pathlib.Path(sys.argv[1]).read_text())
+WORLD, LOG, clock = CONFIG["world"], [], [1800000000.0]
+time.time = lambda: clock[0]
+time.sleep = lambda seconds: clock.__setitem__(0, clock[0] + seconds)
+urllib.request.build_opener = lambda *a, **k: types.SimpleNamespace(open=lambda *a, **k: 1 / 0)   # no network from a test
+subprocess.run = lambda *a, **k: types.SimpleNamespace(stdout="no hunt in a test")
+sys.modules["division"] = types.SimpleNamespace(require=lambda pilot: None)
+sys.argv = ["route_run.py", "trader-1", CONFIG["route"]]
+
+
+def items(where):
+    return [{"item_id": k, "quantity": v, "size": 1} for k, v in sorted(WORLD[where].items()) if v]
+
+
+def move(source, target, item, units):
+    units = min(units, WORLD[source].get(item, 0))
+    WORLD[source][item] = WORLD[source].get(item, 0) - units
+    WORLD[target][item] = WORLD[target].get(item, 0) + units
+
+
+def call(method, path, body=None, timeout=900):
+    if method == "GET":
+        if path.endswith("/state/cargo"):
+            return 200, items("cargo")
+        if path.endswith("/loop"):
+            return 200, {"running": False}
+        return 200, {"state": {"credits": WORLD["credits"]}, "hasExecutingGoal": False}
+    if method == "DELETE" or path.endswith("/loop"):
+        LOG.append(["loop", method])
+        return 200, {}
+    if path.endswith("/goal"):
+        LOG.append(["goal", body["type"]])
+        for want in body["options"].get("items") or []:          # buy-items: at the ask, with the tax of 1 percent
+            WORLD["cargo"][want["itemId"]] = WORLD["cargo"].get(want["itemId"], 0) + want["maxQuantity"]
+            WORLD["credits"] -= int(round(want["maxQuantity"] * want["maxPrice"] * 1.01))
+        return 200, {"success": True, "message": "done"}
+    action, params = body["action"], body["params"]
+    LOG.append([action, params])
+    if action == "get_active_missions":
+        return 200, {"result": ""}
+    if action == "view_market":
+        return 200, {"structuredContent": {"items": [dict(row, item_id=k) for k, row in sorted(WORLD["book"].items())]}}
+    if action == "get_missions":
+        return 200, {"structuredContent": {"missions": WORLD.get("missions") or []}}
+    if action == "deposit":
+        move("cargo", "storage", params["item_id"], params["quantity"])
+    if action == "withdraw":
+        move("storage", "cargo", params["item_id"], params["quantity"])
+    if action == "view":
+        for job in WORLD["jobs"]:
+            job["ticks"] -= 1
+            if job["ticks"] == 0:
+                WORLD["storage"][job["item"]] = WORLD["storage"].get(job["item"], 0) + job["units"]
+        return 200, {"structuredContent": {"items": items("storage")}}
+    if action == "sell":
+        row = WORLD["book"][params["item_id"]]
+        units = min(params["quantity"], WORLD["cargo"].get(params["item_id"], 0))
+        WORLD["cargo"][params["item_id"]] -= units
+        WORLD["credits"] += units * row["best_buy"]
+        row["best_buy_qty"] -= units
+    if action == "craft":
+        if params.get("dry_run"):
+            return 200, {"structuredContent": {"kind": "quote", "details": WORLD["quote"]}}
+        runs = min(WORLD["queue"].pop(0) if WORLD["queue"] else 0, params["quantity"])
+        if runs:
+            WORLD["jobs"].append({"item": WORLD["makes"], "units": runs * WORLD["per_run"], "ticks": WORLD["ticks"]})
+        return 200, {"structuredContent": {"kind": "job", "details": {"job_id": "job-%d" % len(WORLD["jobs"]), "runs": runs,
+                                                                      "message": "%d of %d runs queued" % (runs, params["quantity"])}}}
+    return 200, {}
+
+
+tree = ast.parse(pathlib.Path(CONFIG["runner"]).read_text(encoding="ascii"))
+keep = []
+for node in tree.body:
+    if isinstance(node, ast.FunctionDef) and node.name == "call":
+        continue                                                # the fake gate above answers instead
+    if isinstance(node, ast.Assign) and getattr(node.targets[0], "id", "") == "DATA":
+        node = ast.copy_location(ast.parse("DATA = pathlib.Path(%r)" % CONFIG["data"]).body[0], node)
+    keep.append(node)
+tree.body = keep
+try:
+    exec(compile(ast.fix_missing_locations(tree), CONFIG["runner"], "exec"), {"__name__": "__main__", "__file__": CONFIG["runner"], "call": call})
+finally:
+    pathlib.Path(CONFIG["log"]).write_text(json.dumps({"log": LOG, "world": WORLD}))
+'''
+
+
+def fly(route, world, runner=FLEET / "route_run.py"):
+    """(the gate calls in their order, the fake world after, the run's row, the run's output) of one run of `route`."""
+    base = {"credits": 20000, "cargo": {}, "storage": {}, "book": {}, "jobs": [], "queue": [], "quote": {}, "makes": "", "per_run": 1, "ticks": 1}
+    with tempfile.TemporaryDirectory() as folder:
+        root = Path(folder)
+        (root / "route.json").write_text(json.dumps(route))
+        config = {"world": dict(base, **world), "route": str(root / "route.json"), "data": str(root / "data"), "runner": str(runner), "log": str(root / "log.json")}
+        (root / "config.json").write_text(json.dumps(config))
+        done = subprocess.run([sys.executable, "-I", "-B", "-c", FAKE_RUN, str(root / "config.json")], stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                              text=True, timeout=120)
+        out = json.loads((root / "log.json").read_text())
+        rows = [json.loads(line) for line in (root / "data" / "routes" / "runs.jsonl").read_text().splitlines()]
+    return out["log"], out["world"], rows[-1], done.stdout
+
+
+def steps(log):
+    """The calls that act or read a book, without the reads of hold and wallet: the order a stop's work runs in."""
+    out = []
+    for action, params in log:
+        if action == "craft":
+            out.append("craft dry_run" if params.get("dry_run") else "craft %d" % params["quantity"])
+        elif action in ("deposit", "withdraw", "sell"):
+            out.append("%s %d %s" % (action, params["quantity"], params["item_id"]))
+        else:
+            out.append("%s %s" % (action, params) if action in ("goal", "loop") else action)
+    return out
+
+
+CRAFT_STOP = {"at": "home:core:base", "sell": [{"item": "control_node", "min_price": 760}], "buy": [{"item": "silver_wiring", "qty": 8, "max_price": 400}],
+              "craft": [{"recipe": "assemble_control_node", "runs": 8, "makes": "control_node", "per_run": 2, "inputs": ["silver_wiring"]}]}
+CRAFT_ROUTE = {"id": "made-up", "kind": "circuit", "title": "t", "stops": [CRAFT_STOP]}
+CRAFT_WORLD = {"storage": {"circuit_board": 16, "copper_wiring": 32, "gold_wiring": 8},
+               "book": {"silver_wiring": {"best_sell": 300, "best_sell_qty": 50}, "control_node": {"best_buy": 800, "best_buy_qty": 20}},
+               "quote": {"kind": "quote", "have_inputs": True, "credits_total": 0, "effective_time_per_run": 2},
+               "queue": [8], "makes": "control_node", "per_run": 2, "ticks": 2}
+
+
+class CraftStepTests(unittest.TestCase):
+    # requests.log ENT-013 (the Trade Admiral): a circuit buys inputs along its stops, crafts at one station's workshop and
+    # sells the product there. The calls are craftchain.py's of the skill logistics-stock, which made five harvesters and
+    # 75 liquid hydrogen that way (guidebook logistics.md sections 1 and 11, 2026-11-16).
+    def test_a_stop_buys_crafts_and_sells_what_it_made(self):
+        log, world, row, out = fly(CRAFT_ROUTE, CRAFT_WORLD)
+        self.assertEqual(steps(log), [
+            "goal prepare-at-station", "get_active_missions", "view_market", "get_missions",          # dock, hand in, the book
+            "goal buy-items",                                                                         # the sale finds no node aboard; the buy
+            "deposit 8 silver_wiring", "craft dry_run", "view", "craft 8", "view", "view",            # inputs into storage, quote, queue, wait
+            "view_market", "get_missions", "view", "withdraw 16 control_node", "sell 16 control_node"], out)   # a fresh book, then the sale once more
+        crafts = [params for action, params in log if action == "craft"]
+        self.assertEqual(crafts[0], {"recipe_id": "assemble_control_node", "quantity": 8, "deliver_to": "storage", "preset": "workshop", "dry_run": True})
+        self.assertEqual(crafts[1], {"recipe_id": "assemble_control_node", "quantity": 8, "deliver_to": "storage", "preset": "workshop"})
+        self.assertEqual((row["credits_before"], row["credits_after"], row["delta"]), (20000, 20000 - 2424 + 16 * 800, 16 * 800 - 2424))
+        self.assertEqual((row["stops"], row["of"], row["notes"]), (1, 1, []))
+        self.assertEqual((world["cargo"].get("control_node"), world["storage"].get("control_node"), world["book"]["control_node"]["best_buy_qty"]), (0, 0, 4))
+
+    def test_the_rest_is_asked_again_when_the_workshop_queues_fewer_runs(self):
+        # 2026-11-16: 7 etchings asked, 3 queued, then 2, 1 and 1 (guidebook logistics.md section 11)
+        log, _world, row, out = fly(CRAFT_ROUTE, dict(CRAFT_WORLD, queue=[3, 3, 2], ticks=1))
+        self.assertEqual([s for s in steps(log) if s.startswith("craft")], ["craft dry_run", "craft 8", "craft 5", "craft 2"], out)
+        self.assertIn("sell 16 control_node", steps(log))
+        self.assertEqual((row["delta"], row["notes"]), (16 * 800 - 2424, []))
+
+    def test_a_craft_without_inputs_makes_nothing_and_the_run_goes_on(self):
+        route = dict(CRAFT_ROUTE, stops=[CRAFT_STOP, {"at": "home:core:other"}])
+        quote = {"kind": "quote", "have_inputs": False, "credits_total": 0, "message": "missing 8 gold_wiring"}
+        log, world, row, out = fly(route, dict(CRAFT_WORLD, quote=quote, storage={}))
+        self.assertEqual([s for s in steps(log) if s.startswith(("craft", "withdraw", "sell"))], ["craft dry_run"], out)
+        self.assertEqual((row["stops"], row["of"], row["notes"]), (2, 2, ["craft assemble_control_node: no inputs"]))
+        self.assertEqual(world["storage"].get("silver_wiring"), 8)                                    # the goods stay where they are
+        self.assertEqual(steps(log).count("goal prepare-at-station"), 2)
+
+    def test_a_fee_the_wallet_cannot_pay_above_its_floor_makes_nothing(self):
+        quote = dict(CRAFT_WORLD["quote"], credits_total=14577)                                       # 17,576 after the buy, less the floor of 3,000
+        log, _world, row, out = fly(CRAFT_ROUTE, dict(CRAFT_WORLD, quote=quote))
+        self.assertEqual([s for s in steps(log) if s.startswith(("craft", "withdraw", "sell"))], ["craft dry_run"], out)
+        self.assertEqual(row["notes"], ["craft assemble_control_node: fee"])
+        log, _world, row, out = fly(CRAFT_ROUTE, dict(CRAFT_WORLD, quote=dict(quote, credits_total=14576)))
+        self.assertIn("craft 8", steps(log), out)                                                     # down to the floor itself: crafted
+        self.assertEqual(row["notes"], [])
+
+    def test_the_wait_ends_at_craftchain_s_limit_and_the_row_says_how_many_were_made(self):
+        log, _world, row, out = fly(CRAFT_ROUTE, dict(CRAFT_WORLD, ticks=10 ** 6))
+        after = steps(log)[steps(log).index("craft 8") + 1:]
+        self.assertEqual(after, ["view"] * 30, out)                  # (2 ticks x 8 runs + 4) x 11 s x 1.5 = 330 s, a read every 11 s
+        self.assertEqual(row["notes"], ["craft assemble_control_node: 0 of 16 made"])
+        self.assertEqual(out.count("0 of 16 control_node in storage"), 6)        # `say` every fifth read: the order file stays fresh
+        log, _world, row, out = fly(CRAFT_ROUTE, dict(CRAFT_WORLD, queue=[3, 0], ticks=1))             # the workshop takes no more runs
+        self.assertEqual([s for s in steps(log) if s.startswith(("craft", "withdraw", "sell"))],
+                         ["craft dry_run", "craft 8", "craft 5", "withdraw 6 control_node", "sell 6 control_node"], out)
+        self.assertEqual((row["notes"], row["delta"]), (["craft assemble_control_node: 6 of 16 made"], 6 * 800 - 2424))
+
+    def test_a_route_without_craft_flies_as_before(self):
+        # the store, withdraw, sell and buy of a route written before the craft step: the same calls in the same order
+        stop = {"at": "home:core:base", "store": ["iron_ore"], "withdraw": [{"item": "water_ice", "qty": 30}],
+                "sell": [{"item": "water_ice", "min_price": 25}, {"item": "copper_ore", "min_price": 10}], "buy": [{"item": "fuel_cell", "qty": 2, "max_price": 50}]}
+        world = {"cargo": {"iron_ore": 12, "copper_ore": 5}, "storage": {"water_ice": 500},
+                 "book": {"water_ice": {"best_buy": 30, "best_buy_qty": 40}, "copper_ore": {"best_buy": 12, "best_buy_qty": 3}, "fuel_cell": {"best_sell": 40, "best_sell_qty": 9}}}
+        log, world, row, out = fly({"id": "old", "kind": "circuit", "title": "t", "stops": [stop]}, world)
+        self.assertEqual(steps(log), ["goal prepare-at-station", "get_active_missions", "deposit 12 iron_ore", "view_market", "get_missions", "view",
+                                      "withdraw 30 water_ice", "sell 30 water_ice", "sell 3 copper_ore", "goal buy-items"], out)
+        self.assertEqual((row["delta"], row["notes"]), (30 * 30 + 3 * 12 - 81, []))
+        self.assertEqual((world["cargo"]["copper_ore"], world["storage"]["iron_ore"]), (2, 12))
+
+    def test_a_craft_entry_without_makes_is_not_crafted(self):
+        space = functions("workshop")
+        said = []
+        space.update(say=said.append, raw=lambda *a, **k: self.fail("no call to the engine"), cargo=lambda: self.fail("no read of the hold"))
+        self.assertEqual(space["workshop"]({"recipe": "assemble_control_node", "runs": 8}, "base"), (0, "craft assemble_control_node: no makes"))
+        self.assertEqual(len(said), 1)
+
+    def test_the_craft_answer_is_read_where_craftchain_reads_it(self):
+        fields = functions("craft_fields")["craft_fields"]
+        self.assertEqual(fields({"structuredContent": {"kind": "job", "details": {"runs": 3}}}), {"runs": 3})
+        self.assertEqual(fields({"structuredContent": {"kind": "quote", "have_inputs": True}}), {"kind": "quote", "have_inputs": True})
+        self.assertEqual(fields({"result": {"structuredContent": {"details": {"runs": 2}}}}), {"runs": 2})
+        self.assertEqual(fields({"result": "text only", "error": "x"}), {"result": "text only", "error": "x"})
+
+    def test_the_craft_step_runs_after_the_buy_and_before_the_accept(self):
+        source = (FLEET / "route_run.py").read_text(encoding="ascii")
+        buy, craft = source.index("for want in stop.get('buy') or []:"), source.index("for job in stop.get('craft') or []:")
+        self.assertTrue(buy < craft < source.index("if stop.get('accept'):"))
+        defined = {node.name for node in ast.parse(source).body if isinstance(node, ast.FunctionDef)}
+        self.assertTrue({"workshop", "craft_fields", "deposit", "sell_into_bid"} <= defined)
+        self.assertEqual(rebound(FLEET / "route_run.py"), [])                                         # no step binds a function's name
+
+
 if __name__ == "__main__":
     unittest.main()

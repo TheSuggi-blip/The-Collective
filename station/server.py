@@ -506,7 +506,7 @@ def api_income(hours):
         ships = []
     for ship in ships:
         kind, _, rest = text(ship.get("order") if isinstance(ship, dict) else "", 80).partition(" ")
-        if kind not in ("circuit", "hunt", "mine", "census"):     # a hand hold and a birth are no route
+        if kind not in ("circuit", "hunt", "mine", "census", "guard"):     # a hand hold and a birth are no route
             continue
         if kind == "census":                      # a census order names its system: it belongs to the route that lists it
             rest = next((rid for rid, route in routes.items() if isinstance(route, dict) and rest in (route.get("systems") or [])), "")

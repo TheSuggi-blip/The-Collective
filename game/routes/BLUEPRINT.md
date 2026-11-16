@@ -22,7 +22,7 @@ the scripts in `game/fleet/` fly them; nobody retypes a route into a chat.
 | `game/routes/plans/<role>.json` | Written by `plan.py` from the division's plan file, never by hand: the role's routes in one order and how many of its ships have each in their plan |
 | `game/routes/guidebook/<division>.md` | What each division learned about its routes and its levelling; its Admiral keeps it, every member reads it |
 | `game/fleet/dispatch.py` (service `dispatch`) | Every 30 s gives each free pilot the first route of its own list that is open to it |
-| `game/fleet/route_run.py`, `hunt.py`, `census.py`, `mine.py` | The runners: one pilot, one route, one row in the runs file |
+| `game/fleet/route_run.py`, `hunt.py`, `census.py`, `mine.py`, `guard.py` | The runners: one pilot, one route, one row in the runs file |
 | `game/fleet/routemaker.py` (service `routemaker`) | Every ten minutes costs every way to earn that our readings show (fields, order books, boards, herds, recipes) and keeps the list in the unit's data folder. `routemaker.py show` lists the candidates of your division, best first; `routemaker.py route <id>` prints a candidate's route file, ready to be saved here as a test |
 | `python3 -B game/fleet/routes.py check` | The gate: fails on a wrong route file, a wrong plan or a stale index |
 | `python3 -B game/fleet/routes.py index` | Writes `master-index.md` (the groups of routes and the plans at a glance, every name a link), one index per group of routes (`index-once-per-pilot.md`, `index-paying-routes.md`, `index-tests.md`, `index-fitting.md`, `index-standing-work.md`, `index-measured-at-a-loss.md`, `index-off.md`: every route of the group with its figures and its zone) and one plan per role (`plan-<role>.md`: the role's routes in their order with the ships planned on each); never by hand. No file holds every route or every plan |
@@ -49,7 +49,7 @@ the scripts in `game/fleet/` fly them; nobody retypes a route into a chat.
 | Field | Meaning |
 |---|---|
 | `id` | The file name without `.json`: lower case, digits, `-` |
-| `kind` | `circuit`, `hunt`, `census` or `mine` |
+| `kind` | `circuit`, `hunt`, `census`, `mine` or `guard` |
 | `title` | One line: what and where |
 | `note` | What was seen or measured, with its date |
 | `once` | true: each pilot flies it one time (a mission the game offers once) |
@@ -75,10 +75,11 @@ the scripts in `game/fleet/` fly them; nobody retypes a route into a chat.
 
 | Kind | Fields | The runner does |
 |---|---|---|
-| `circuit` | `stops`, `one_time` | Docks at each stop and there, in this order: hands in finished missions, `redock`, `store`, `withdraw` (own storage to the hold; when the stop sells the item, only what its bid takes), `sell`, `buy`, `fit`, `accept`, `mine`, `hunt`; saves the order book and the board |
+| `circuit` | `stops`, `one_time` | Docks at each stop and there, in this order: hands in finished missions, `redock`, `store`, `withdraw` (own storage to the hold; when the stop sells the item, only what its bid takes), `sell`, `buy`, `craft` (then `sell` again for what it made), `fit`, `accept`, `mine`, `hunt`; saves the order book and the board |
 | `hunt` | `place` (system:poi), `species`, `sell_at` (system:poi:base), `min_bid`, `kills`, `minutes`, `min_creatures`, `rest_minutes`, `max_prey_hull` (default 100), `alone` | Hunts grazers of the species, loots its own carcasses, sells what a bid of `min_bid` or more takes. `alone` true: before every fight it looks who is at the place and leaves without a fight when a ship that is not ours or a pirate stands there; set it on every hunt beyond policed space. On leaving it writes the herd it sees for the dispatcher's count, and its row records the hull before, after and at its lowest |
 | `census` | `systems`, `every_minutes` | Reads the stalest system whole: deposits, creatures, order book, mission board |
 | `mine` | `belt` (system:poi), `station` (system:poi:base), `minutes`, `sell` | Runs the engine's mining loop for the time; the ore goes into storage at the station. With `sell` (a list of `item`, `min_price`) the run ends with a sale: the pilot docks at the station, sells those goods from its hold and its storage there into the bids at `min_price` or more, the book read before every sale, and stores the rest of its hold |
+| `guard` | `guards` (the id of a mine or hunt route), `station` (system:poi:base), `place` (system:poi; default: the guarded route's `belt` or `place`), `minutes` (default 60), `max_ships` (default 1) | Keeps one ship at the place where a pilot of ours flies the guarded route: it flies there, never fires first and looks once a minute who is there (its log names our pilots and the others with their faction tag; the sightings stay the service `sight`'s). It leaves when no pilot of ours carried the guarded route's order in two looks in a row, after `minutes` at the place, under 60% hull or in a fight (stance flee), and docks at `station`. Open only while a pilot of ours flies the guarded route (`nobody flies <id>` otherwise); standing work, never judged on its pay. Write `place` into a guard beyond the border, or its zone reads from its station. Not flown yet (2026-11-16): fly it once with one ship and read its RESULT line before a plan relies on it |
 
 A stop of a circuit:
 
@@ -91,6 +92,7 @@ A stop of a circuit:
 | `store` | Goods moved from the hold into the pilot's storage here |
 | `sell` | `item`, `min_price`: sold only into a bid at that price or more, and no more units than stand at that best price. `all` true: every unit, down the bid's lower levels too; only for a mission that counts units sold |
 | `buy` | `item`, `qty` (units wanted in the hold), `max_price`; never under the wallet floor of 3,000 cr (orders F7). `one_time`: goods for a one-time mission; their cost is booked against its reward |
+| `craft` | A list of `recipe`, `runs`, `makes` (the item made), `per_run` (units one run makes, default 1), `inputs` (items moved from the hold into storage first): after the buy, the station's workshop makes the runs into the pilot's storage, from the inputs stored there; the runner waits for the made units, takes them into the hold and runs the stop's `sell` once more for them. No inputs, a fee that would take the wallet under its floor, or no `makes`: nothing is made, the note says so and the run goes on. The gate asks for `recipe`, `runs` and `makes`. Not flown yet (2026-11-16): fly it once with one ship and read its RESULT line before a plan relies on it |
 | `fit` | A list of `module`, `max_price`: a pilot that does not carry the module buys one here and fits it (`install_mod`); never under the wallet floor |
 | `accept` | A template id, or `template` with `needs`: accepted only with those goods aboard |
 | `mine` | A list of `at` (system:poi), `for` (mission titles), `minutes`: after the station's work the pilot mines there with the engine's loop until the named missions' objectives are done. For missions that count units mined |

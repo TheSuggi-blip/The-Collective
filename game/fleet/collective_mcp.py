@@ -186,7 +186,7 @@ TOOLS = {
         "text": "Every route with what it earns: its group (once per pilot, paying, test, fitting, reading and waiting, at a loss, off), zone, ships on it against its "
                 "limit, the credits per ship-hour its runs measured, and its runs, steady credits and credits per ship-hour in the last hours. Filter by group, kind or zone.",
         "args": {"group": arg(S, "once, paying, test, fit, service, losing or off", ("once", "paying", "test", "fit", "service", "losing", "off")),
-                 "kind": arg(S, "circuit, hunt, mine or census", ("circuit", "hunt", "mine", "census")), "zone": arg(S, "home or beyond (the border)", ("home", "beyond")),
+                 "kind": arg(S, "circuit, hunt, mine, census or guard", ("circuit", "hunt", "mine", "census", "guard")), "zone": arg(S, "home or beyond (the border)", ("home", "beyond")),
                  "hours": arg(I, "the window of the runs, default 4")},
         "plan": lambda a: [("game/fleet/hive.py", ["routes"] + flag(a, "group") + flag(a, "kind") + flag(a, "zone") + flag(a, "hours"))]},
     "route": {

@@ -8,7 +8,7 @@ author: Unity
 # index.md -- The Fleet's Scripts
 
 Built by `python3 -B scripts/fleet-index.py` from the docstring of every script in this
-folder; never edited by hand. Scripts listed: 25.
+folder; never edited by hand. Scripts listed: 26.
 
 - Run a script from the repository root: `python3 -I -B game/fleet/<script> <arguments>`,
   the arguments as listed under "How to Call Each".
@@ -36,6 +36,7 @@ folder; never edited by hand. Scripts listed: 25.
 | `fill.py` | Keep every ship of a division at work: say why ships wait, and fill the plan with the work that stands open. | By hand |
 | `fleetfile.py` | Write the roster into a member's own FLEET.md: one table, every ship of the member on one line with its kind, its hull and the task it is on now. | By hand |
 | `gate.py` | Small client for the fleet engine's gate, with the division's lock. | By hand |
+| `guard.py` | Keep one pilot at the place where another route's ship of ours works, for as long as that ship works there. | Runner (`guard` routes) |
 | `hive.py` | The fleet's figures from its own readings: money, routes and their history, levels, what the work carries, what a base takes, a system. | By hand |
 | `hunt.py` | Hunt grazers at one place, loot the carcasses and sell what the kills bring. | Runner (`hunt` routes) |
 | `inbox.py` | Read what other pilots write to our ships and say near them, keep every message once, and file the ones that are for us. | Service |
@@ -194,6 +195,18 @@ gate.py post <path> '<json body>'
 gate.py patch|delete <path> ['<json body>']
 gate.py hold <pilot>
 gate.py release <pilot>
+```
+
+### `guard.py`
+
+Keep one pilot at the place where another route's ship of ours works, for as long as
+that ship works there. Reads only: it never fires, never buys and never mines; in a
+fight it flees.
+
+A runner: the dispatcher starts it for a route of the kind `guard`; by hand only for a test with one free pilot.
+
+```
+guard.py <pilot> <system_id> <poi> --guards <route id> --station <system:poi:base> [--minutes M] [--route ID]
 ```
 
 ### `hive.py`

@@ -10,6 +10,8 @@ import tempfile
 import time
 import unittest
 
+os.environ.setdefault("FLEET_TAXES", os.devnull)   # no test reads the fleet's own tax record (routemaker.py loads hive.py)
+
 
 FLEET = Path(__file__).resolve().parents[2] / "game" / "fleet"
 
@@ -25,6 +27,10 @@ def load(name):
 maker, routes = load("routemaker"), load("routes")
 NOW = 1_800_000_000
 STAMP = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(NOW - 600))
+LOADS = 60 / (2 * 1.5 + 1.5 + 60 / (0.05 * 50))               # mid_belt sold at mid_base: two flights, one stop, a hold of 60 mined at 0.05 x richness 50
+FUEL = 2 * 2 * 13.0                                            # two flights of 2 units of fuel at 13 cr
+FAR = 60 / (2 * 2.0 + 2 * 1.5 + 1.5 + 60 / (0.05 * 50))        # mid_belt sold at home_base: one jump each way besides
+FAR_FUEL = (2 * 1 + 2 * 2) * 13.0
 CHART = "# test chart\nid\tname\tx\ty\tempire\tflags\tjumps_from_home\tlanes\nhome\tHome\t0\t0\tvoidborn\t-\t0\tmid\nmid\tMid\t1\t0\tvoidborn\t-\t1\thome,wild\nwild\tWild\t2\t0\t-\t-\t2\tmid\nlost\tLost\t9\t9\t-\t-\t9\t-\n"
 
 
@@ -120,10 +126,10 @@ class CandidateTests(Tree):
         book = self.build()
         mine = self.one(book, "mine-mid-belt")
         self.assertEqual((mine["basis"]["sold_at"], mine["basis"]["jumps"], mine["status"]), ("mid_base", 0, "new"))
-        self.assertEqual(mine["basis"]["a_load"], ["ore 48 of 48 units for 576 cr (depth at the best price)", "dust 10 of 12 units for 30 cr (depth at the best price)"])
-        self.assertIn("dust: the bids take 10 of 12 units a load", mine["warnings"])
+        self.assertEqual(mine["basis"]["a_load"], ["ore 48 of 48 units for 576 cr (depth at the best price)", "dust 5 of 12 units for 14 cr (depth at the best price)"])
+        self.assertIn("dust: bid 3 x 10 at mid_base takes 10 of 25 units an hour", mine["warnings"])                        # ten units an hour, not ten a load
         self.assertEqual((mine["route"]["belt"], mine["route"]["station"], mine["route"]["max_ships"]), ("mid:mid_belt", "mid:hub:mid_base", 1))
-        self.assertEqual(mine["route"]["sell"], [{"item": "ore", "min_price": 9}, {"item": "dust", "min_price": 2}])            # four fifths of what the bids pay now
+        self.assertEqual(mine["route"]["sell"], [{"item": "ore", "min_price": 10}, {"item": "dust", "min_price": 3}])           # four fifths of the bid the hour reaches, rounded up
         ice = self.one(book, "mine-wild-ice")
         self.assertEqual(ice["route"]["requires"], {"module": "ice_harvester_i", "empty_hold": True})                           # the harvester, and nothing to lose aboard
         self.assertTrue(any("lawless space: no police at wild" in w for w in ice["warnings"]))
@@ -210,6 +216,101 @@ class CandidateTests(Tree):
         far = self.one(book, "mission-far-look-home")
         self.assertIn("a charted way to lost", far["needs"])
         self.assertFalse([c for c in book["candidates"] if "unpaid" in c["id"]])
+
+
+class SmallBidTests(Tree):
+    """A station's bid of a few units counts once an hour, never in every load (requests.log ENT-069)."""
+
+    def history(self, rows):
+        with open(self.data / "market" / "history.jsonl", "w", encoding="utf-8") as handle:
+            for base, item, ago, units, bid in rows:
+                handle.write(json.dumps({"t": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(NOW - ago)), "base": base, "item": item,
+                                         "bid": bid, "bid_qty": units, "ask": 0, "ask_qty": 0}) + "\n")
+
+    def test_a_bid_of_six_units_counts_six_units_an_hour_and_the_rest_sells_at_the_deep_bid(self):
+        self.book("mid_base", "mid", [row("ore", bid=25, bid_qty=50000), row("dust", bid=200, bid_qty=6)])
+        mine = self.one(self.build(), "mine-mid-belt")
+        hour = 6 * 200 + 48 * LOADS * 25 - FUEL * LOADS                  # dust: six units at 200 an hour, the rest of it worth nothing; ore: all at 25
+        self.assertEqual((mine["per_ship_hour"], mine["per_run"]), (round(hour), round(hour / LOADS)))
+        self.assertLess(mine["per_run"], 48 * 25 + 6 * 200 - FUEL)                                                       # not six units at 200 in every load
+        self.assertEqual(mine["basis"]["an_hour"], ["ore 101 of 101 units for 2526 cr", "dust 6 of 25 units for 1200 cr"])
+        self.assertIn("dust: bid 200 x 6 at mid_base takes 6 of 25 units an hour", mine["warnings"])
+        self.put("market/ladders.json", {"mid_base": {"dust": {"t": NOW, "bids": [[200, 6], [190, 4], [25, 99999]], "asks": []}}})
+        read = self.one(self.build(), "mine-mid-belt")                    # the levels read: the next lower level takes the rest, as far as 80% of the best
+        self.assertIn("dust: bid 200 x 6, 190 x 4 at mid_base takes 10 of 25 units an hour", read["warnings"])
+        self.assertEqual(read["per_ship_hour"], round(6 * 200 + 4 * 190 + 48 * LOADS * 25 - FUEL * LOADS))
+
+    def test_the_station_is_the_one_whose_bids_pay_most_for_the_hour_not_the_one_with_the_best_price(self):
+        self.book("mid_base", "mid", [row("ore", bid=25, bid_qty=50000), row("dust", bid=200, bid_qty=6)])
+        self.book("home_base", "home", [row("ore", bid=45, bid_qty=50000)])
+        mine = self.one(self.build(), "mine-mid-belt")
+        self.assertEqual((mine["basis"]["sold_at"], mine["route"]["station"]), ("home_base", "home:core:home_base"))
+        self.assertEqual(mine["per_ship_hour"], round(48 * FAR * 45 - FAR_FUEL * FAR))
+        self.assertGreater(mine["per_ship_hour"], round(6 * 200 + 48 * LOADS * 25 - FUEL * LOADS))                     # what the hour would bring at mid_base
+        self.assertEqual(mine["route"]["sell"], [{"item": "ore", "min_price": 36}])
+
+    def regain_on(self):
+        maker.REGAIN = True                                                                # off in the fleet: `rates` averages every reading on record
+        self.addCleanup(setattr, maker, "REGAIN", False)
+
+    def test_a_regain_counts_for_nothing_while_the_switch_is_off(self):
+        self.book("mid_base", "mid", [row("ore", bid=25, bid_qty=50000), row("dust", bid=200, bid_qty=6)])
+        self.history([("mid_base", "dust", 7800, 6, 200), ("mid_base", "dust", 4200, 0, 200), ("mid_base", "dust", 600, 6, 200)])   # sold out, back in two hours
+        self.assertFalse(maker.REGAIN)
+        mine = self.one(self.build(), "mine-mid-belt")
+        self.assertIn("dust: bid 200 x 6 at mid_base takes 6 of 25 units an hour", mine["warnings"])
+        self.assertEqual(mine["per_ship_hour"], round(6 * 200 + 48 * LOADS * 25 - FUEL * LOADS))
+
+    def test_a_measured_regain_extends_the_best_level(self):
+        self.regain_on()
+        self.book("mid_base", "mid", [row("ore", bid=25, bid_qty=50000), row("dust", bid=200, bid_qty=6)])
+        self.book("home_base", "home", [row("ore", bid=45, bid_qty=40)])                 # 40 units stand at home_base: fewer than the 89 an hour brings
+        self.history([("mid_base", "dust", 7800, 6, 200), ("mid_base", "dust", 4200, 0, 200), ("mid_base", "dust", 600, 6, 200)])   # sold out, back in two hours
+        mine = self.one(self.build(), "mine-mid-belt")
+        self.assertEqual(mine["basis"]["sold_at"], "mid_base")
+        self.assertIn("dust: bid 200 x 6 (+3 regained an hour) at mid_base takes 9 of 25 units an hour", mine["warnings"])
+        self.assertEqual(mine["per_ship_hour"], round(9 * 200 + 48 * LOADS * 25 - FUEL * LOADS))
+        self.assertTrue(mine["basis"]["a_load"][1].endswith("(depth at the best price, 3 regained an hour by our readings)"))
+        self.history([("home_base", "ore", 7800, 40, 45), ("home_base", "ore", 4200, 0, 45), ("home_base", "ore", 2400, 120, 45),
+                      ("home_base", "ore", 600, 40, 45)])                                 # 120 came back in two hours: 60 an hour beside the 40 standing
+        moved = self.one(self.build(), "mine-mid-belt")
+        self.assertEqual((moved["basis"]["sold_at"], moved["per_ship_hour"]), ("home_base", round(48 * FAR * 45 - FAR_FUEL * FAR)))
+        self.assertFalse([w for w in moved["warnings"] if "takes" in w])                    # 100 an hour carry the 89
+
+    def test_without_a_measure_the_standing_depth_is_all_there_is(self):
+        self.regain_on()
+        self.book("mid_base", "mid", [row("ore", bid=25, bid_qty=50000), row("dust", bid=200, bid_qty=6)])
+        for rows in ([("mid_base", "dust", 1200, 0, 200), ("mid_base", "dust", 600, 6, 200)],          # ten minutes apart: no measure
+                     [("mid_base", "dust", 7800, 6, 200), ("mid_base", "dust", 600, 6, 200)],          # never taken, never back: the readings say nothing
+                     [("home_base", "dust", 7800, 0, 200), ("home_base", "dust", 600, 60, 200)]):      # another station's regain is not this one's
+            self.history(rows)
+            self.assertIsNone(maker.regained(maker.load_world(str(self.data), self.root, NOW), "mid_base", "dust"))
+            mine = self.one(self.build(), "mine-mid-belt")
+            self.assertIn("dust: bid 200 x 6 at mid_base takes 6 of 25 units an hour", mine["warnings"])
+            self.assertEqual(mine["per_ship_hour"], round(6 * 200 + 48 * LOADS * 25 - FUEL * LOADS))
+
+    def test_the_route_file_sells_from_the_level_that_carries_the_hour(self):
+        self.book("mid_base", "mid", [row("ore", bid=2, bid_qty=50000), row("dust", bid=200, bid_qty=6)])
+        mine = self.one(self.build(), "mine-mid-belt")
+        self.assertEqual(mine["route"]["sell"], [{"item": "ore", "min_price": 2}, {"item": "dust", "min_price": 160}])  # a bid of 2 cr is no floor of 1
+        self.put("market/ladders.json", {"mid_base": {"dust": {"t": NOW, "bids": [[200, 6], [190, 4], [180, 900]], "asks": []}}})
+        read = self.one(self.build(), "mine-mid-belt")
+        self.assertEqual(read["route"]["sell"][1], {"item": "dust", "min_price": 144})     # the hour reaches 180 x 900: the runner must sell there
+        (self.root / "routes" / (read["route"]["id"] + ".json")).write_text(json.dumps(read["route"]), encoding="ascii")
+        self.assertEqual([e for e in routes.check(str(self.root))[0] if "index.md" not in e], [])
+
+    def test_trade_and_craft_keep_their_figures_when_a_bid_regains(self):
+        self.regain_on()
+        self.book("home_base", "home", [row("gel", ask=100, ask_qty=20), row("ore", ask=10, ask_qty=40), row("plate", bid=60, bid_qty=8)])
+        self.book("mid_base", "mid", [row("gel", bid=150, bid_qty=20)])
+        before = [c for c in self.build()["candidates"] if c["kind"] != "mine"]
+        self.history([("mid_base", "gel", 7800, 20, 150), ("mid_base", "gel", 4200, 0, 150), ("mid_base", "gel", 600, 20, 150),
+                      ("home_base", "plate", 7800, 8, 60), ("home_base", "plate", 4200, 0, 60), ("home_base", "plate", 600, 8, 60)])
+        after = [c for c in self.build()["candidates"] if c["kind"] != "mine"]
+        self.assertEqual(sorted(c["kind"] for c in before), ["craft", "trade"])
+        self.assertEqual(after, before)                                                    # a regain is read for a mine candidate only
+        trade = self.one({"candidates": after}, "trade-gel-home-mid")
+        self.assertEqual((trade["basis"]["units"], trade["basis"]["paid"], trade["basis"]["got"], trade["per_ship_hour"]), (20, 2000, 3000, trade["per_run"]))
 
 
 class ReadingTests(Tree):

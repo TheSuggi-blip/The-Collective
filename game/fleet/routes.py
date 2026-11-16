@@ -56,7 +56,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import division                                   # noqa: E402  the plan files and who keeps them
 import taxes                                      # noqa: E402  the weekly tax a run in flight carried
 
-KINDS = {"circuit": ("stops",), "hunt": ("place", "sell_at"), "census": ("systems",), "mine": ("belt", "station")}
+KINDS = {"circuit": ("stops",), "hunt": ("place", "sell_at"), "census": ("systems",), "mine": ("belt", "station"), "guard": ("guards", "station")}
+PLACES = {"mine": "belt", "hunt": "place"}       # the kinds that work at one place, and the field that names it: what a guard keeps
 FRONT = "---\nname: %s\nid: %s\ntier: intel\nauthor: Unity\n---\n\n"
 MASTER = "master-index.md"
 WRITTEN = "`python3 -B game/fleet/routes.py index`, never by hand"       # every file `index` writes says so
@@ -130,6 +131,12 @@ def check(root):
         for field in ("title",) + KINDS[kind]:
             if not route.get(field):
                 errors.append(where + "`%s` is missing" % field)
+        if kind == "guard" and route.get("guards"):    # a guard keeps the place of a route of ours: one that exists and works at one place
+            guarded = routes.get(str(route["guards"]))
+            if not isinstance(guarded, dict):
+                errors.append(where + "`guards` names `%s`, which is no route file" % route["guards"])
+            elif guarded_place(route, guarded) is None:
+                errors.append(where + "`guards` names `%s`, a %s: a guard keeps the place of a mine or a hunt, and it has none" % (route["guards"], guarded.get("kind") or "route without a kind"))
         if kind == "circuit":
             for n, stop in enumerate(route.get("stops") or [], 1):
                 if not isinstance(stop, dict) or len(str(stop.get("at", "")).split(":")) != 3:
@@ -139,6 +146,15 @@ def check(root):
                     for step in stop.get(key) or []:
                         if not isinstance(step, dict) or len(str(step.get("at", "")).split(":")) != 2:
                             errors.append(where + "stop %d: the `at` of a `%s` step must be system:poi" % (n, key))
+                for job in stop.get("craft") or []:                  # route_run.py's craft step (requests ENT-013)
+                    if not isinstance(job, dict) or not isinstance(job.get("recipe"), str) or not job["recipe"]:
+                        errors.append(where + "stop %d: a `craft` entry needs `recipe`, a recipe id" % n)
+                        continue
+                    runs = job.get("runs")
+                    if not isinstance(runs, int) or isinstance(runs, bool) or runs < 1:
+                        errors.append(where + "stop %d: the `craft` of %s needs `runs`, a whole number of 1 or more" % (n, job["recipe"]))
+                    if not (isinstance(job.get("makes"), str) and job["makes"]):
+                        errors.append(where + "stop %d: the `craft` of %s needs `makes`: the runner counts what was made by that item in storage" % (n, job["recipe"]))
         levels = lambda value: isinstance(value, dict) and all(isinstance(v, int) and not isinstance(v, bool) for v in value.values())
         need = route.get("requires") if isinstance(route.get("requires"), dict) else {}
         if "skills_below" in need and not levels(need["skills_below"]):
@@ -223,9 +239,19 @@ def standing(route):
     """True for standing work: a route that keeps a ship busy between paying work and is not judged on its pay. It
     trains a skill or gathers into storage: `"standing": true` in its file, a route open only under a skill level
     (`requires.skills_below`), or a mine route that sells nothing (its load goes into the pilot's storage). Suggi,
-    2026-11-16: no ship is idle; a ship without paying work levels and gathers."""
+    2026-11-16: no ship is idle; a ship without paying work levels and gathers. A guard is standing work too: it
+    earns nothing and keeps another route's ship company (requests ENT-070)."""
     need = route.get("requires") or {}
-    return bool(route.get("standing") or need.get("skills_below") or (route.get("kind") == "mine" and not route.get("sell")))
+    return bool(route.get("standing") or need.get("skills_below") or (route.get("kind") == "mine" and not route.get("sell"))
+                or route.get("kind") == "guard")
+
+
+def guarded_place(guard, guarded):
+    """The system:poi a guard keeps: its own `place`, else the place of the route it guards (a mine's `belt`, a hunt's
+    `place`); None when the guarded route is no mine and no hunt (a circuit, a census, a guard) or names no place."""
+    if not isinstance(guarded, dict) or guarded.get("kind") not in PLACES:
+        return None
+    return str(guard.get("place") or guarded.get(PLACES[guarded["kind"]]) or "") or None
 
 
 def stage(route):

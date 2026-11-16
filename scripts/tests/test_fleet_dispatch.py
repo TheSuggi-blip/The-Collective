@@ -522,6 +522,32 @@ class RouteGateTests(Tree):
         self.assertIn("the one plan file is gone", [e for e in self.routes.check(str(self.root))[0] if "index.md" not in e][0])
         (self.root / "routes" / "plan.json").unlink()
 
+    def test_a_craft_entry_names_its_recipe_its_runs_and_what_it_makes_where_the_stop_sells(self):
+        # requests ENT-013: route_run.py's craft step queues `runs` of `recipe` and sells again what it made (`makes`)
+        def errors_with(stop):
+            route = dict(ROUTES["missions"], stops=[dict({"at": "home:core:base"}, **stop)])
+            (self.root / "routes" / "missions.json").write_text(json.dumps(route), encoding="ascii")
+            found = [e for e in self.routes.check(str(self.root))[0] if "index.md" not in e]
+            (self.root / "routes" / "missions.json").write_text(json.dumps(ROUTES["missions"]), encoding="ascii")
+            return found
+        good = {"recipe": "assemble_control_node", "runs": 8, "makes": "control_node", "per_run": 2, "inputs": ["silver_wiring"]}
+        sells = {"sell": [{"item": "control_node", "min_price": 760}]}
+        self.assertEqual(errors_with(dict(sells, craft=[good])), [])
+        self.assertEqual(errors_with({"craft": [good]}), [])                                                 # a craft at a stop that sells nothing
+        self.assertIn("needs `makes`", errors_with({"craft": [{"recipe": "assemble_control_node", "runs": 1}]})[0])     # the runner refuses an entry without it
+        for wrong in ({"runs": 8}, {"recipe": "", "runs": 8}, {"recipe": 7, "runs": 8}, "assemble_control_node"):
+            found = errors_with({"craft": [wrong]})
+            self.assertEqual(len(found), 1, found)
+            self.assertIn("game/routes/missions.json: stop 1: a `craft` entry needs `recipe`, a recipe id", found[0])
+        for runs in (0, -1, "8", 2.5, True, None):
+            found = errors_with({"craft": [dict(good, runs=runs)]})
+            self.assertEqual(len(found), 1, (runs, found))
+            self.assertIn("stop 1: the `craft` of assemble_control_node needs `runs`, a whole number of 1 or more", found[0])
+        for makes in (None, ""):
+            found = errors_with(dict(sells, craft=[dict(good, makes=makes)]))
+            self.assertEqual(len(found), 1, found)
+            self.assertIn("stop 1: the `craft` of assemble_control_node needs `makes`: the runner counts", found[0])
+
     def test_measure_writes_only_the_routes_it_is_given(self):
         rows = [{"route": rid, "pilot": "p", "minutes": 30, "delta": 600, "credits_before": 5000, "credits_after": 5600, "started": "2026-11-15T10:00:00Z"} for rid in ("mine", "rays")]
         (self.data / "routes" / "runs.jsonl").write_text("".join(json.dumps(r) + "\n" for r in rows))
