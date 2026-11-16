@@ -15,7 +15,7 @@ updated: 2026-11-16
 # Stellar Alliance [STLR]
 
 A player faction with 1 base(s) in 1 system(s); the nearest to Nexus Prime is 17 jump(s) away, in GSC-0013 (`gsc_0013`).
-Pilots of it in our space in the last 24 hours: 7.
+Pilots of it in our space in the last 24 hours: 8.
 
 ## Identity
 
@@ -42,8 +42,9 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 |---|---|---|---|
 | STLR-004-RIM | Node Beta (`node_beta`) | 0 | billhook |
 | STLR-006-RIM | Nexus Prime (`nexus_prime`) | 0 | billhook |
-| STLR-041-NEB | GSC-0027 (`gsc_0027`) | 0 | prospect |
+| STLR-041-NEB | Node Beta (`node_beta`) | 0 | prospect |
 | STLR-066-VOI | Node Gamma (`node_gamma`) | 0 | threshold |
+| STLR-089-VOI | Node Alpha (`node_alpha`) | 0 | threshold |
 | STLR-142-NEB | GSC-0027 (`gsc_0027`) | 0 | prospect |
 | STLR-163-NEB | GSC-0027 (`gsc_0027`) | 0 | prospect |
 | STLR-164-NEB | GSC-0027 (`gsc_0027`) | 0 | prospect |

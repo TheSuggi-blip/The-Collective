@@ -47,19 +47,19 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
 | ILC Chute | Node Alpha (`node_alpha`) | 0 | junk_convoy |
-| ILC Constellation | Nexus Prime (`nexus_prime`) | 0 | concordia |
-| ILC Cope | Pherkad (`pherkad`) | 0 | junk_convoy |
-| ILC Flange | Node Alpha (`node_alpha`) | 0 | junk_convoy |
-| ILC Gantry | Node Alpha (`node_alpha`) | 0 | junk_convoy |
-| ILC Gasket | Nexus Prime (`nexus_prime`) | 0 | junk_convoy |
+| ILC Cope | Synchrony (`synchrony`) | 0 | junk_convoy |
+| ILC Crater | Node Alpha (`node_alpha`) | 0 | atmospheric_sampler |
+| ILC Flange | Synchrony (`synchrony`) | 0 | junk_convoy |
+| ILC Gantry | Nexus Prime (`nexus_prime`) | 0 | junk_convoy |
+| ILC Gasket | Node Alpha (`node_alpha`) | 0 | junk_convoy |
 | ILC Gateway | Nexus Prime (`nexus_prime`) | 0 | concordia |
-| ILC Gilt | Synchrony (`synchrony`) | 0 | syndicate |
-| ILC Ladle | Synchrony (`synchrony`) | 0 | junk_convoy |
+| ILC Gilt | The Experiment (`the_experiment`) | 0 | syndicate |
+| ILC Ladle | Node Beta (`node_beta`) | 0 | junk_convoy |
 | ILC Nonstop | Nexus Prime (`nexus_prime`) | 0 | concordia |
-| ILC Ratchet | The Experiment (`the_experiment`) | 0 | junk_convoy |
+| ILC Ratchet | Synchrony (`synchrony`) | 0 | junk_convoy |
 | ILC Retort | Synchrony (`synchrony`) | 0 | junk_convoy |
 | ILC Vagabond | Nexus Prime (`nexus_prime`) | 0 | concordia |
-| ILC Weir | Synchrony (`synchrony`) | 0 | prayer |
+| ILC Weir | Node Gamma (`node_gamma`) | 0 | prayer |
 
 ## Standing History
 

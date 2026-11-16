@@ -15,7 +15,7 @@ updated: 2026-11-16
 # The Prime [PRME]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 1.
+Pilots of it in our space in the last 24 hours: 2.
 
 ## Identity
 
@@ -38,7 +38,8 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| MLM-56217 | Pherkad (`pherkad`) | 0 | archimedes |
+| MLM-34815 | Hamal (`hamal`) | 0 | liminal |
+| MLM-56217 | Hamal (`hamal`) | 0 | archimedes |
 
 ## Standing History
 
