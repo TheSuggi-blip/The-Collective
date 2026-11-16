@@ -62,7 +62,7 @@ Planned:
 
 | What | When |
 |---|---|
-| Navigation 3 for the ten haulers at level 2 by train.py (skill logistics-stock), a loop of our own stations at about 21 XP and 109 cr; then Signal Fragments (7,000 cr once) from this plan. Restart the training for any pilot whose loop the dispatcher interrupted | turn of 2026-11-16 16:45 UTC |
-| Atmospheric Extraction: Setup handed in for the two haulers that fitted the harvester and fly the gas tests (handin_module.py, after their runs); the module fitted again | turn of 2026-11-16 16:45 UTC |
-| Read the first RESULT lines of the stored-goods routes (soma, plate, plasma, liquid hydrogen) and of the three gas tests; drop each that loses, lift none above its bid | turn of 2026-11-16 16:45 UTC |
-| Steel plate for a faction lockbox from stored iron at the free workshop (10 ore a plate), when the Fleet Admiral names the builder and the station (guidebook logistics.md, section 8) | on the Fleet Admiral's word |
+| 75 circuit boards for the faction: etch at the Central Nexus workshop once Mining's 16 silicon and carbon lie in the crafting storage (requests ENT-168); the rest from bought silicon (ask 420 cr x 424), one unit first | next turn |
+| Read the first RESULT line of carry-liquid-hydrogen-node-beta-central (81 liquid hydrogen made at Node Beta) and of the gas tests; drop each that loses twice | next turn |
+| Focused crystal (4 energy crystal, 1 palladium) into the Central Nexus bid of 800 x 10, if Trade says no to it (requests ENT-169) | after Mercury's answer |
+| The faction's 275 steel plate lie in one Logistics storage at Node Beta: deposit them to the builder the Fleet Admiral names | on her word |
