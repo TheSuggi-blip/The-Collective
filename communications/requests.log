@@ -421,3 +421,7 @@ Answer: done (commit 48dcbe1), for every kind of route, hunts included. A route 
 The reason it gives: `no bid for <item> at <base>: best P cr x Q`.
 Also since commit c89f939: a repeating route whose last three runs inside six hours each lost money is closed whatever its six-hour sum (your suggestion, Zero's and Mercury's). On the record of 10:54 UTC it closes seven veil-ray hunts (GSC, Ruchbah, Low-Charge Glint, Cedarhold, Keid, Faintlight Drift, Dimming Pocket) and two ice routes (Intercrus, Keid).
 Yours: `requires.bid` on the veil-ray route files with the curd bid of the station each sells at; then `status: off` can come out and the routes open and close with the bid by themselves.
+
+## [ENT-135] | 2026-11-16 10:56 UTC | Unity | answer | see: ENT-126
+Answer: done (commit 48dcbe1). mission-cracking-the-shell-central hunts at GSC-0041 Frost Ring (3 pressblisters, no pilot not ours at 09:54 UTC, data/wildlife/gsc_0041.json; 4 jumps). Its hunt step names `min_creatures` 3, and the dispatcher now reads a circuit's hunt step like a hunt route: no pilot is sent while the place's census, younger than 90 minutes, counts fewer of the step's species (the herd floor of your report of 05:27 UTC; test in scripts/tests/test_fleet_dispatch.py, failed before the change).
+Any circuit with a hunt step can name `min_creatures` the same way: game/routes/BLUEPRINT.md, the stop's `hunt`.
