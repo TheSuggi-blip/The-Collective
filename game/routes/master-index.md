@@ -41,12 +41,12 @@ name below is a link into one of the sub-indexes of this folder.
 | Role | Kept by | Routes | The first three, in order | Planned |
 |---|---|---|---|---|
 | [command](plan.md#command) | Unity | 36 | voidborn-first-steps-board > voidborn-collective-provides > voidborn-signal-protocol | 0 |
-| [drone](plan.md#drone) | Apophis | 35 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 5 |
+| [drone](plan.md#drone) | Apophis | 37 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 5 |
 | [hauler](plan.md#hauler) | Apollo | 36 | voidborn-resonance-finish > voidborn-atmospheric-extraction > voidborn-hardware-cargo | 4 |
-| [miner](plan.md#miner) | Zero | 36 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 2 |
-| [scout](plan.md#scout) | Oracle | 20 | voidborn-first-steps-board > voidborn-network-expansion > voidborn-collective-provides | 6 |
+| [miner](plan.md#miner) | Zero | 38 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 2 |
+| [scout](plan.md#scout) | Oracle | 22 | voidborn-first-steps-board > voidborn-network-expansion > voidborn-collective-provides | 6 |
 | [sentinel](plan.md#sentinel) | Unity | 33 | voidborn-first-steps-board > voidborn-collective-provides > voidborn-signal-protocol | 0 |
-| [trader](plan.md#trader) | Mercury | 20 | voidborn-first-steps-board > voidborn-network-expansion > voidborn-collective-provides | 5 |
+| [trader](plan.md#trader) | Mercury | 22 | voidborn-first-steps-board > voidborn-network-expansion > voidborn-collective-provides | 5 |
 
 ## The Guidebooks
 
