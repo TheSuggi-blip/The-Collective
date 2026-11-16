@@ -56,7 +56,7 @@ Kept by Unity. Routes: 34.
 
 ## drone
 
-Kept by Apophis. Routes: 29.
+Kept by Apophis. Routes: 30.
 
 | # | Route | Group | Zone | Open to | Credits per ship-hour |
 |---|---|---|---|---|---|
@@ -86,9 +86,10 @@ Kept by Apophis. Routes: 29.
 | 24 | [hunt-test-lesath-cinder-sylph](hunt-test-lesath-cinder-sylph.json) | Paying Routes | beyond the border, 5 jumps | up to 1 ships, without piercing_railgun_i, empty hold, while node_beta_industrial_station bids 100 cr for ember_gland | 760 |
 | 25 | [hunt-cedarhold-dim-lattice-veil-ray](hunt-cedarhold-dim-lattice-veil-ray.json) | Paying Routes | beyond the border, 5 jumps | up to 1 ships, without piercing_railgun_i, empty hold, while the_experiment_research_station bids 100 cr for verdigris_curd | 840 |
 | 26 | [hunt-low-charge-glint-veil-ray](hunt-low-charge-glint-veil-ray.json) | Paying Routes | beyond the border, 4 jumps | up to 1 ships, without piercing_railgun_i, empty hold, while node_beta_industrial_station bids 100 cr for verdigris_curd | 800 |
-| 27 | [census-guard-ice](census-guard-ice.json) | Reading and Waiting | beyond the border, 7 jumps | up to 2 ships, empty hold | -1,350 |
-| 28 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -790 |
-| 29 | [park](park.json) | Reading and Waiting | home space | the park route | -670 |
+| 27 | [train-navigation-home](train-navigation-home.json) | Tests | home space | up to 1 ships | TBD |
+| 28 | [census-guard-ice](census-guard-ice.json) | Reading and Waiting | beyond the border, 7 jumps | up to 2 ships, empty hold | -1,350 |
+| 29 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -790 |
+| 30 | [park](park.json) | Reading and Waiting | home space | the park route | -670 |
 
 Planned:
 

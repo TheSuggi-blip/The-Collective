@@ -1,0 +1,28 @@
+{
+ "id": "train-navigation-home",
+ "kind": "circuit",
+ "title": "Navigation test: five jumps through our own stations (Node Alpha, Synchrony, Node Gamma, Node Beta, Central Nexus), nothing carried, for the drones that do not yet reach navigation 3",
+ "note": "2026-11-16 13:16 UTC (Apophis): a test with one ship (orders F8). Signal Fragments (7,000 cr once, voidborn-signal-fragments) is offered only from navigation 3; 16 waiting drones stand at navigation 2 with 173 to 334 of 340 XP (data/fleet/ships/, 13:05 UTC). What one jump gives in navigation XP is not measured. This route flies five jumps in policed space and docks at each station; its first RESULT line and the pilot's navigation XP before and after (ship file) give XP per jump and fuel per jump. Not lifted until the figure shows the fuel to reach level 3 is well under the 7,000 cr it opens; `skip_if_booked` Signal Fragments keeps it from every pilot that has flown the mission.",
+ "max_ships": 1,
+ "skip_if_booked": [
+  "Signal Fragments"
+ ],
+ "stops": [
+  {
+   "at": "node_alpha:node_alpha_processing_station:node_alpha_processing_station"
+  },
+  {
+   "at": "synchrony:synchrony_hub:synchrony_hub"
+  },
+  {
+   "at": "node_gamma:node_gamma_relay_station:node_gamma_relay_station"
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station"
+  },
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "store": "all"
+  }
+ ]
+}
