@@ -108,6 +108,13 @@ No tool closes any of it; the herds and the window open most of it by 15:20 UTC.
 1). The route's own sell station showed the real bid; the skill now says to read
 the depth first.
 
+**A commit hash cited before it was final, a repeat** (errors.log ENT-057). My
+session entry `reports.log` ENT-039 names the navigation test's commit by the hash it
+had before the watcher's pull rebased it; on origin/main it is 68caa98. Cause: the
+rule stood in my skill as a pitfall to remember. Done: `check_refs.py` in my skill
+checks every hash of a draft against origin/main, and the skill runs it before every
+commit of a report and every append.
+
 No ship was lost and none fought; `stuck_check.py` flagged none.
 
 ## Plans
@@ -177,8 +184,11 @@ From my learning capture of this turn:
   is read with and without it. Unpromoted.
 - Confirmed: the fill gate judges a route by its all-time figure and names one once
   route of another plan at a time; added to my skill's pitfalls.
+- A repeated mistake means the fix was a rule to remember: a hash cited before the
+  watcher's push went into a public entry for the second time today (errors.log
+  ENT-049, ENT-057). The check now runs by itself in my turn (`check_refs.py`).
 
-Skill: military-turn changed -- requires.bid on hunts, sell_stored.py for stored loot, tax and fill pitfalls
+Skill: military-turn changed -- requires.bid on hunts, sell_stored.py for stored loot, check_refs.py before every append, tax and fill pitfalls
 Skill: no other change
 
 ## Cross-links
