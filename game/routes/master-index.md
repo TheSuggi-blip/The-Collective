@@ -21,7 +21,7 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 | [Paying Routes](index-paying-routes.md) | Work that repeats and whose runs of the last 12 hours measured above zero. | 36 | 12 | 24 | sell-curd-central-nexus: 302,820 cr per ship-hour |
 | [Tests](index-tests.md) | Work that repeats and has no measured figure: new, or no readable run in the last 12 hours. One ship until its first RESULT line is read. | 36 | 14 | 22 | not measured yet |
 | [Fitting](index-fitting.md) | A module bought and fitted: the tool a kind of work needs. | 9 | 8 | 1 | fit-ice-harvester-lhs-1140: -4,320 cr per ship-hour |
-| [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 24 | 13 | 11 | gather-hamal-crystal-bloom: 70 cr per ship-hour |
+| [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 24 | 13 | 11 | guard-marfik-emission-nebula: -110 cr per ship-hour |
 | [Measured at a Loss](index-measured-at-a-loss.md) | Work that repeats and whose runs of the last 12 hours measured zero or below. | 19 | 5 | 14 | mine-felis-frost-ring: -70 cr per ship-hour |
 | [Off](index-off.md) | Written down, not flown. | 12 | 8 | 4 | voidborn-first-steps: 4,020 cr per ship-hour |
 | All | | 164 | 77 | 87 | |
