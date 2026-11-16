@@ -240,7 +240,7 @@ def take_census(conn, row, sealed, line):
     return added, keys
 
 
-EARNED_RULE = "2"                 # the rule of what a run earned (routes.earned); a new mark has the raw runs kept counted again
+EARNED_RULE = "3"                 # the rule of what a run earned (routes.earned); a new mark has the raw runs kept counted again
 
 
 def recount(conn):

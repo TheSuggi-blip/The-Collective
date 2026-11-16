@@ -606,6 +606,20 @@ class RouteGateTests(Tree):
         self.assertEqual([self.routes.moved(r) for r in (giver, taker, earlier, other)], [19000, -19000, 0, 0])
         self.assertEqual([self.routes.earned(r) for r in (giver, taker, earlier, other)], [-120, -120, -120, -120])
         self.assertEqual(self.routes.moved({"route": "mine", "pilot": "miner-1"}), 0)           # a row without a start
+        # one gift, one run: the spans of two runs in a row overlap, and the run after the giver's read +19,000 cr nobody made
+        seam = now - 300                                                                        # the giver's run ends here, the next begins
+        (fleet / "gifts.jsonl").write_text(json.dumps({"at": seam - 60, "from": "miner-1", "to": "miner-9", "credits": 19000}) + "\n")
+        first = dict(giver, started=text(seam - 2700), delta=-19120)                            # the gift fell in its last minute: its wallet shows it
+        second = dict(giver, started=text(seam), minutes=4, delta=-11)                          # begins a minute after the gift: its wallet does not
+        self.assertEqual([self.routes.earned(r) for r in (first, second)], [-120, -11])
+        late = dict(first, delta=-120)                                                          # the first run's last reading came before the gift ...
+        shown = dict(second, delta=-19011)                                                      # ... and the second run's wallet shows it
+        self.assertEqual([self.routes.earned(r) for r in (late, shown)], [-120, -11])
+        (fleet / "gifts.jsonl").write_text(json.dumps({"at": seam - 1300, "from": "miner-1", "to": "miner-9", "credits": 19000}) + "\n")
+        sale = dict(first, delta=11000)                                                         # well inside a run that also sold for 30,000 cr: it counts whatever the wallet reads
+        self.assertEqual(self.routes.earned(sale), 30000)
+        (fleet / "gifts.jsonl").write_text(json.dumps({"at": seam - 1300, "from": "miner-1", "to": "miner-9", "credits": 19000, "loose": True}) + "\n")
+        self.assertEqual([self.routes.earned(r) for r in (first, dict(first, delta=-120))], [-120, -120])     # a row whose time is its pass's: by the wallet alone
 
     def test_a_hunt_is_not_credited_with_goods_it_carried_in(self):
         rows = [{"route": "rays", "kind": "hunt", "pilot": "drone-1", "minutes": 30, "delta": 1140, "goods": {"carapace": 3}, "sold": {"curd": [4, 330, 1320]},

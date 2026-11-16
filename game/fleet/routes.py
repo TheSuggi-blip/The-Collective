@@ -630,11 +630,13 @@ def write_index(root):
 
 
 GIFTS = {"path": None, "stamp": None, "rows": []}      # the wallet guard's top-ups, read again only when the file changed
+EDGE = 120                    # seconds at a run's start and end in which a wallet reading may fall on either side of a gift
 
 
 def gifts(data=None):
-    """[(epoch, giver, taker, credits)] of the wallet guard's top-ups (wallet.py: data/fleet/gifts.jsonl). The file lies
-    beside the tax record, so what points that record elsewhere (FLEET_TAXES, a test) points this one there too."""
+    """[(epoch, giver, taker, credits, loose)] of the wallet guard's top-ups (wallet.py: data/fleet/gifts.jsonl); loose:
+    the row's time is not the gift's own to the second. The file lies beside the tax record, so what points that
+    record elsewhere (FLEET_TAXES, a test) points this one there too."""
     path = Path(taxes.record_file(data)).with_name("gifts.jsonl")
     try:
         found = path.stat()
@@ -651,7 +653,7 @@ def gifts(data=None):
                     except ValueError:
                         continue
                     if isinstance(row, dict) and all(isinstance(row.get(key), (int, float)) and not isinstance(row.get(key), bool) for key in ("at", "credits")):
-                        rows.append((row["at"], str(row.get("from") or ""), str(row.get("to") or ""), row["credits"]))
+                        rows.append((row["at"], str(row.get("from") or ""), str(row.get("to") or ""), row["credits"], bool(row.get("loose"))))
         except OSError:
             return []
         GIFTS.update(path=str(path), stamp=stamp, rows=rows)
@@ -665,7 +667,20 @@ def moved(row, data=None):
     pilot, found = row.get("pilot"), taxes.span(row)
     if not pilot or not found:
         return 0
-    return sum(credits * ((giver == pilot) - (taker == pilot)) for at, giver, taker, credits in gifts(data) if found[0] <= at <= found[1])
+    # One gift, one run. The spans of two runs in a row overlap (the wallet readings lag), so a gift near the seam lies
+    # in both: it counts where it fell well inside the run, and near a seam only where the run's own wallet shows it
+    # (taking it out brings the run's change nearer to nothing).
+    start, end = found[0] + taxes.LAG, found[1] - taxes.SLACK
+    plain = (row.get("delta") or 0) + taxes.in_run(row, data)
+    total = 0
+    for at, giver, taker, credits, loose in gifts(data):
+        sign = (giver == pilot) - (taker == pilot)
+        if not sign or not found[0] <= at <= found[1]:
+            continue
+        inside = not loose and start + EDGE <= at <= end - EDGE
+        if inside or abs(plain + total + credits * sign) < abs(plain + total):
+            total += credits * sign
+    return total
 
 
 def earned(row):
