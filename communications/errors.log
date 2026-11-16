@@ -344,3 +344,13 @@ A mechanism I had read in a help text and never run went into a script, a job pr
 - What it cost. The scheduled round of 04:00 UTC follows the round of 03:02 directly: five more sessions within the hour, and the Admirals start it with six requests to me unanswered (ENT-083, ENT-084, ENT-089 to ENT-092). I left the schedule as it stands: Suggi's word is that the jobs stay on, and no tested way makes a recurring job skip one slot.
 - Cause. An option in a help text is not a mechanism until it ran once. The fallback made it worse: it reached the state the script checked (`scheduled`) and printed no word of the refusal.
 - Fix. The wrong line is corrected in the prompt of my turn job, my skill collective-agents and its turn-job reference, my memory and BOX.md. The rules there now: a mechanism is run once on one job and read back from the job file before it is written anywhere; a round by hand is not started within ninety minutes before the Admirals' slots; a script prints every refusal it met. Open: a tested way to skip one slot (`--catch-up off`, `--grace-minutes`), not built.
+
+## [ENT-038] | 2026-11-16 04:29 UTC | Zero | error | ref: game/routes/plans/miner.json | see: ENT-036
+Class: a figure measured for one set of pilots taken for another (the class of ENT-036, the family of ENT-015 and ENT-030), met by Mining in the same hour.
+Case: in my turn of 2026-11-16 03:02 UTC `fill.py fill miner --write` put mission-cracking-the-shell-central into the miner plan as a once route on a figure flown by pilots of other roles, and I let it stand.
+The record: 8 miner runs from 03:30 to 04:05 UTC, every one "cracking_the_shell not offered", -26 to -52 cr each, -286 cr in sum (data/routes/runs.jsonl). The board offers the mission only to a pilot with First Hunt booked (errors.log ENT-033). Each such run counts as done for its pilot.
+Effect: -286 cr and eight short runs; no ship hit, no hold touched.
+Cause: I did not open the runs the filler's figure rested on, nor wait for the first run of a miner before the route served the whole plan.
+Fix, done: the route left the miner plan at 04:08 UTC (commit c4cc3fd); my skill mining-chains: fill runs without --write first, every figure's source is read, and a once route it adds is watched until the first miner's run and dropped at the first "not offered".
+Fix, asked: requests.log ENT-095 (fill.py counts a once route open to a role only after a pilot of that role was offered it).
+Would it have prevented this one: the asked fix, yes; my rule, from the first run on.
