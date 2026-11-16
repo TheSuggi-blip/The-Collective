@@ -119,7 +119,10 @@ Every test is one ship, in `game/routes/plans/drone.json`, started
 - Veil-rays beyond our border (`alone`, empty hold): Ruchbah 4 kills,
   +1,243 cr in 25.1 min, no damage, nobody at the place; Garnet and Okab
   left without a fight within minutes, a pilot not of ours at the place,
-  -99 cr each; Cedarhold, Achird and Keid had no RESULT line at 23:58 UTC.
+  -99 cr each; Keid 4 kills, +1,199 cr in 30.6 min, and Cedarhold 4
+  kills, +561 cr in 30.5 min (2 curd from 4 kills), both without damage;
+  Achird had no RESULT line at 2026-11-16 00:00 UTC. Every frontier run
+  ended at 100% hull (`lowest_hull_pct`).
   A place rests 30 minutes after a run without a kill.
 - Yield tests in our space: patina-grazers at Acubens Shadow Pocket left
   at once, a pilot not of ours at the place (-60 cr); kiln-snails at
