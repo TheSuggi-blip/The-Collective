@@ -364,3 +364,50 @@ Measure: income per hour; drones at work, 30 of 30; ships lost, which stays 0.
 ORACLE, Intel (the scout- ships)
 Order: keep the census fresh: it measures what a field and a herd regain, so every place our routes use is read twice in a turn. Find the sources the stations' list lacks: thirteen inputs have no field and no offer in our readings (salvage metal, anchor plate, alloy scale, foil scale, silica lens among them; base_plan lists them). The three station sites you named stay on record; Suggi chooses later. A scout between two reads hunts or does standing work.
 Measure: places our routes use that were read twice in the turn; inputs of the list with a known source; scouts at work, 20 of 20.
+
+## [ENT-016] | 2026-11-16 16:35 UTC | Unity | order | ref: game/fleet/plan.py | see: ENT-015
+Changed: on Suggi's word of 2026-11-16, about 16:00 UTC. Each division now has one plan file, kept by its Admiral: every ship of the division with its own routes in their order, between a list First and a list Then for every ship (data/plans/plan-<division>.md, game/fleet/plan.py, the tool plan); the dispatcher sends every ship by it, and the role plans and plan.md are written from it. The Admiral changes only that file, every turn. No ship goes broke: a pilot under 10,000 cr is given credits by a rich ship of its division, and a pilot under 5,000 cr is sent only on work that pays (game/fleet/wallet.py). T1 and EVERY ADMIRAL say so; the rest stands as in ENT-015. The turn jobs stay paused on his word (every four hours when they run); this turn is started by hand on his word.
+In force from 2026-11-16 16:35 UTC until a newer entry.
+STANDING ORDERS (Suggi; for the whole fleet; set and changed by him alone)
+S1. Explore freely.
+S2. Grow income; optimize the routes and the credits per hour.
+S3. Evolve the fleet.
+S4. Build bases and stations.
+S5. Grow the fleet and the faction.
+S6. Prepare all the material for one to two stations and learn how to build one; Suggi chooses the place later (Suggi, 2026-11-16: "prepare all the material for 1-2 stations and learn how to build it. I chose location in the future").
+PLAN (the Fleet Admiral's reading of the standing orders, in five steps; Suggi and the Fleet Admiral change it together; strategy, phase 1: income)
+P1. No ship is idle (S2, S3; Suggi, 2026-11-16: "The ships should never be idle ... as long as all ships are always leveling and doing stuff"). Every ship works all the time: it earns, or it levels and gathers. Rule F8.
+  Goal: the fill gate says PASS for every role: 146 of 146 ships at work.
+P2. Income that repeats, on routes that are never crowded (S2; Suggi: "never switch all the ships to the same routes"). A route gets no more ships than it carries: what its bid, its field or its herd regains per hour. A whole division on one buyer emptied every ice bid in half a day; the buyers are the limit, so new demand is the work: other goods, other stations, what we craft.
+  Goal: steady income per hour above zero in every division, and rising.
+P3. Level and upgrade (S3). A ship that earns nothing still levels; the next hull and fit are bought when wallet and skill allow (rule F17; Piloting 10, 20, 30 and 50 open hull tiers 2 to 5).
+  Goal: every division names in its report what its pilots' levels gained and its next hull step.
+P4. Gather and learn for the stations (S4, S6). One station takes a fee of 5,000,000 cr, one station core and the foundry that makes it (38,000,000 cr and about 30 raw inputs; the tool base_plan with kind=station prints each input, what we hold and what is missing). Standing work gathers the inputs into storage; Logistics keeps the list and tests the crafted steps by hand; Intel finds the sources the list lacks. Two stations take the list twice.
+  Goal: per input the units held against the units needed, rising every turn; one recipe step tested per turn.
+P5. One fleet (S5). The faction for every ship, with shared storage and shared money (rule F11), and the purse on the flagships (rule F20): the Fleet Admiral's steps, each on Suggi's word. More ships when a division shows work for more ships than it has (rule F5).
+  Goal: Suggi has the live cost of each faction step before any is paid.
+  The plan changes when Suggi and the Fleet Admiral change it.
+TURN
+T1. The turn started by hand on Suggi's word of 2026-11-16 (about 16:00 UTC): each Admiral writes its division's plan file. Every ship of yours gets its own routes in their order: the paying routes to as many ships as each carries and no more (the column `carries`), the best ships on the routes that need them, every other ship standing work spread over places that hold. Choose the best routes for the plan's steps and the standing orders. The plan file is seeded from the role plans in force, with no ship holding routes of its own; the four standing routes the Fleet Admiral put into the plans of Mining, Trade, Military and Intel at 15:10 UTC are a stopgap: keep, cut or replace them, and say why.
+  Done when: plan.py check and the fill gate say PASS for your division; every ship of yours has routes of its own in the plan file; the Standing Plan in your guidebook names each route with its ships and what it carries; FLEET.md carries the section Routes Now; the report gives the division's income per hour, its ships at work and its one-time money apart (rule F19), and every route your ships were put on with the number of ships on each.
+EVERY ADMIRAL
+Order: plan your own division every turn in its plan file, as the shared skill fleet-play says under "Plan a Division": read the briefing (preflight prints it; the tool hive with verb=briefing); the missions that pay once in the list First; the routes that pay, each given to no more ships than its column `carries` says; standing work for every other ship, spread over places that hold; the next level and the next hull (P3); the plan check and the fill gate; the Standing Plan in your guidebook; `fleetfile.py --commit` for your FLEET.md. What you lack you build yourself (the skill fleet-build, rule F21). Answer the requests addressed to you.
+Limits: the standing rules of the rulebook, section 12; above all the stance (F2), no word to another player (F4), no new pilot (F5), the wallet floor (F7), the money limit (F12) and the frontier rule (F13). A doubt about an order is a request to the Fleet Admiral, never a guess.
+UNITY, Fleet Admiral (the command group)
+Order: smooth the Admirals' way and build the plumbing (Suggi, 2026-11-15): answer every request before the Admirals' next turn; keep the gate, the tools, the briefing and the station; write the fleet report and, when they change, the orders; bring to Suggi what is his to decide. The command group does standing work and levels.
+Measure: requests to me still open when the Admirals' next turn starts, which should be none; the fleet's steady income per hour; ships at work of 146.
+ZERO, Mining (the miner- ships)
+Order: sell ice only as far as each bid regains, spread over the stations that buy; every other miner gathers what the stations take, iron first (431,678 units short for one station at 14:49 UTC), on fields that hold, each with a floor. Say per ore what a ship gathers in an hour and what each field grows back.
+Measure: income per hour; miners at work, 40 of 40; iron ore held against the 491,400 one station takes.
+MERCURY, Trade (the trader- ships)
+Order: find the trade that repeats, and buy the stations' inputs where they are cheap: our books of 14:49 UTC showed iron ore on offer at 1 cr at Central Nexus (35,923 units) and carbon ore at 4 cr at Nova Terra Central (44,531 units). Cost each against mining it, test with one ship and one unit, then buy inside rule F12. A trader without a paying trade does standing work.
+Measure: income per hour from trade; station inputs bought, in units per credit; traders at work, 20 of 20.
+APOLLO, Logistics (the hauler- ships)
+Order: keep the stations' list in your guidebook: per input what we hold, where it lies and what is missing (base_plan with kind=station against the storage book). Learn the build: make the first crafted steps by hand as tests, one hauler and one batch each, steel plate from iron ore first (49,140 are needed), and say what each costs in credits, minutes and skill. A hauler without that work gathers.
+Measure: inputs of the list with a known source; recipe steps tested; haulers at work, 20 of 20.
+APOPHIS, Military (the drone- ships)
+Order: hunt as far as each herd regains, one hunter per herd (rule F9); guard where our ships gather and mine beyond the border (rule F16); every other drone does standing work. The stations take creature goods too (creature carapace 35,640, verdigris curd 34,832): where no bid stands for a kill's goods, they go into storage.
+Measure: income per hour; drones at work, 30 of 30; ships lost, which stays 0.
+ORACLE, Intel (the scout- ships)
+Order: keep the census fresh: it measures what a field and a herd regain, so every place our routes use is read twice in a turn. Find the sources the stations' list lacks: thirteen inputs have no field and no offer in our readings (salvage metal, anchor plate, alloy scale, foil scale, silica lens among them; base_plan lists them). The three station sites you named stay on record; Suggi chooses later. A scout between two reads hunts or does standing work.
+Measure: places our routes use that were read twice in the turn; inputs of the list with a known source; scouts at work, 20 of 20.
