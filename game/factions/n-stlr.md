@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 7.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 164 | Public event stream |
+| Pilots carrying the tag on the public event stream | 163 | Public event stream |
 
 ## Bases
 
@@ -43,7 +43,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | STLR-041-NEB | GSC-0027 (`gsc_0027`) | 0 | prospect |
 | STLR-066-VOI | Node Gamma (`node_gamma`) | 0 | threshold |
 | STLR-070-CRI | Nexus Prime (`nexus_prime`) | 0 | shard |
-| STLR-089-VOI | GSC-0027 (`gsc_0027`) | 0 | threshold |
+| STLR-089-VOI | Synchrony (`synchrony`) | 0 | threshold |
 | STLR-163-NEB | GSC-0027 (`gsc_0027`) | 0 | prospect |
 | STLR-164-NEB | Nexus Prime (`nexus_prime`) | 0 | prospect |
 | VMan | Node Beta (`node_beta`) | 0 | threshold |

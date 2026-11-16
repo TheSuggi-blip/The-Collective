@@ -38,8 +38,8 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Colleen Brown | Node Alpha (`node_alpha`) | 0 | losers_weepers |
-| Marta Quintero | Node Gamma (`node_gamma`) | 0 | junk_convoy |
+| James Mcchriston | Node Beta (`node_beta`) | 0 | junk_convoy |
+| Kathleen Trapp | Nexus Prime (`nexus_prime`) | 0 | junk_convoy |
 
 ## Standing History
 

@@ -38,9 +38,9 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Arbiter59 | Synchrony (`synchrony`) | 0 | dust_devil |
+| Arbiter71 | Synchrony (`synchrony`) | 0 | dust_devil |
 | Cook | Node Alpha (`node_alpha`) | 0 | futures |
-| Speke | The Experiment (`the_experiment`) | 0 | futures |
+| Speke | Node Gamma (`node_gamma`) | 0 | futures |
 
 ## Standing History
 
