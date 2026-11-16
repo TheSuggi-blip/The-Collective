@@ -39,6 +39,30 @@ class SaleStepTests(unittest.TestCase):
         sold = self.mine.sell_at_station(engine, self.said.append, "miner-1", ["sys", "poi", "base"], [], notes)
         return sold, notes
 
+    def test_a_dock_refused_in_battle_sets_the_stance_flee(self):
+        # requests ENT-090: the engine's combat mode flee leaves the battle stance as it was
+        engine, posted = Engine(busy=0, refusals=2, error="in_battle: the ship is in a battle"), []
+        original = engine.__call__
+
+        def call(method, path, body=None, timeout=120):
+            if path.endswith("/raw"):
+                posted.append((body or {}).get("action"))
+            return original(method, path, body, timeout)
+        notes = []
+        self.mine.sell_at_station(call, self.said.append, "miner-1", ["sys", "poi", "base"], [], notes)
+        self.assertEqual(posted.count("stance"), 2)
+        self.assertEqual(engine.goals, 3)
+        self.assertEqual(notes, [])
+
+    def test_the_census_runner_answers_in_battle_with_the_stance_flee(self):
+        import ast
+        source = (FLEET / "census.py").read_text(encoding="ascii")
+        tree = ast.parse(source)
+        functions = {node.name: ast.unparse(node) for node in tree.body if isinstance(node, ast.FunctionDef)}
+        self.assertIn("free_from_battle()", functions["goal"])
+        self.assertIn("in_battle", functions["goal"])
+        self.assertIn("'stance', {'stance': 'flee'}, 'spacemolt_battle'", functions["free_from_battle"])
+
     def test_it_waits_for_a_job_in_flight_and_tries_the_dock_until_it_holds(self):
         engine = Engine(busy=3, refusals=4)
         self.assertEqual(self.sale(engine), ({}, []))                       # docked at the fifth try: no note

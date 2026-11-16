@@ -92,12 +92,27 @@ def wallet():
 WALLET_BEFORE = wallet()
 
 
+def free_from_battle():
+    """A goal refused `in_battle`: set the battle stance flee and wait, three minutes at most, until the ship is out.
+    The engine's combat mode flee leaves the battle stance as it was (requests ENT-090; the same step as route_run.py)."""
+    raw('stance', {'stance': 'flee'}, 'spacemolt_battle')
+    for _ in range(18):
+        time.sleep(10)
+        if not raw('status', group='spacemolt_battle').get('is_participant'):
+            say('out of the battle after the stance flee')
+            return True
+    say('still in a battle three minutes after the stance flee')
+    return False
+
+
 def goal(kind, options):
     d = {}
     for _ in range(3):
         status, d = call(f'/accounts/{P}/goal', {'type': kind, 'options': options})
         if status == 200 and d.get('success'):
             return True
+        if 'in_battle' in str(d.get('message') or d.get('error') or '').lower().replace(' ', '_'):
+            free_from_battle()                                               # then the next try
         time.sleep(15)
     say(f'goal {kind} failed: {str(d.get("message") or d.get("error"))[:120]}')
     return False

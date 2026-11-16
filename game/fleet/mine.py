@@ -91,6 +91,9 @@ def sell_at_station(call, say, quoted, station, wanted, notes):
             break
         last = "%s %s" % (status, " ".join(str(answer.get("error") or answer.get("message") or answer).split())[:90])
         say("dock for the sale, try %d of %d: %s" % (attempt + 1, DOCK_TRIES, last))
+        if "in_battle" in last.lower().replace(" ", "_"):     # the engine's flee mode leaves the battle stance as it was (requests ENT-090)
+            raw("stance", {"stance": "flee"}, "spacemolt_battle")
+            say("in a battle: stance flee")
         time.sleep(30)
     else:
         notes.append("not docked for the sale: " + last)   # the engine's last answer: the cause is in the record
