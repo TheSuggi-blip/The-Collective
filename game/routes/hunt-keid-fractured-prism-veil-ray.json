@@ -2,7 +2,7 @@
  "id": "hunt-keid-fractured-prism-veil-ray",
  "kind": "hunt",
  "title": "veil_ray at keid_fractured_prism; loot sold at Node Beta Industrial Station",
- "note": "Written by routemaker.py from the herd's count, the loot of 20 runs of ours and the order book; an estimate of 2364 cr per hunter-hour, not a measurement. A test: one ship, the ranching rules kept. Estimate of 2026-11-15 23:10 UTC from: {\"four_kills\": [\"verdigris_curd 5.0 units for 1653 cr (depth at the best price)\", \"creature_carapace 5.0 units for 4 cr (depth at the best price)\"], \"herd\": 6, \"hull\": 60, \"jumps\": 4, \"learned_from_runs\": 20, \"loot_a_kill\": {\"creature_carapace\": 1.24, \"verdigris_curd\": 1.25}, \"place\": \"keid:keid_fractured_prism\", \"sold_at\": \"node_beta_industrial_station\"}. Uncertain: lawless space: no police at keid. In the drone plan from 2026-11-15 23:28 UTC as a test with one ship (orders.log ENT-007, block APOPHIS).",
+ "note": "Written by routemaker.py from the herd's count, the loot of 20 runs of ours and the order book; an estimate of 2364 cr per hunter-hour, not a measurement. A test: one ship, the ranching rules kept. Estimate of 2026-11-15 23:10 UTC from: {\"four_kills\": [\"verdigris_curd 5.0 units for 1653 cr (depth at the best price)\", \"creature_carapace 5.0 units for 4 cr (depth at the best price)\"], \"herd\": 6, \"hull\": 60, \"jumps\": 4, \"learned_from_runs\": 20, \"loot_a_kill\": {\"creature_carapace\": 1.24, \"verdigris_curd\": 1.25}, \"place\": \"keid:keid_fractured_prism\", \"sold_at\": \"node_beta_industrial_station\"}. Uncertain: lawless space: no police at keid. In the drone plan from 2026-11-15 23:28 UTC as a test with one ship (orders.log ENT-007, block APOPHIS). 2026-11-16 09:12 UTC (Apophis): status off. The verdigris curd bid (330 cr x 50) left every station of our books between 07:08 and 07:51 UTC (data/market/history.jsonl) and has not come back; the seven drone veil-ray hunts made -1,851 cr in 21 runs from 07:05 UTC (data/routes/runs.jsonl). Back on when a curd bid of 100 cr or more reads again (the tool market); requires.bid on hunt routes is asked of Unity so that this happens by itself.",
  "place": "keid:keid_fractured_prism",
  "species": [
   "veil_ray"
@@ -24,5 +24,6 @@
   "minutes": 30,
   "credits_per_run": 700,
   "cph_per_ship": 1420
- }
+ },
+ "status": "off"
 }
