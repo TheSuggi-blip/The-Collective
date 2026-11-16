@@ -85,8 +85,10 @@ Work that repeats and has no measured figure yet: one ship until its first RESUL
 | [hunt-test-nightveil-rivetshell](hunt-test-nightveil-rivetshell.json) | hunt | beyond the border, 5 jumps | Yield test: rivetshell at nightveil_dark_residue (lawless); what a kill drops and whether a bid takes it | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-test-stormwatch-lantern-slug](hunt-test-stormwatch-lantern-slug.json) | hunt | beyond the border, 5 jumps | Yield test: lantern_slug at stormwatch_belt (lawless); what a kill drops and whether a bid takes it | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-test-tanglewood-hollow-pilgrim](hunt-test-tanglewood-hollow-pilgrim.json) | hunt | beyond the border, 6 jumps | Yield test: hollow_pilgrim at tanglewood_frost_ring (lawless); what a kill drops and whether a bid takes it | up to 1 ships, without piercing_railgun_i, empty hold | TBD | TBD | TBD | TBD | -- |
+| [mine-achernar-frost-ring-nexus](mine-achernar-frost-ring-nexus.json) | mine | beyond the border, 4 jumps | Achernar Frost Ring: water_ice, nitrogen_ice, deuterium_ice, methane_ice; sold at Central Nexus | up to 1 ships, needs ice_harvester_i, empty hold | TBD | TBD | TBD | TBD | -- |
 | [mine-achernar-gas-pocket](mine-achernar-gas-pocket.json) | mine | beyond the border, 4 jumps | Achernar Gas Pocket: hydrogen_gas, argon_gas, plasma_gas, neon_gas; sold at Node Beta Industrial Station | up to 1 ships, needs gas_harvester_i, empty hold | TBD | TBD | TBD | TBD | -- |
 | [mine-lesath-gas-cloud](mine-lesath-gas-cloud.json) | mine | beyond the border, 5 jumps | Lesath Gas Cloud: hydrogen_gas, plasma_gas, xenon_gas, neon_gas, ion_gas; sold at Node Beta Industrial Station | up to 1 ships, needs gas_harvester_i, empty hold | TBD | TBD | TBD | TBD | -- |
+| [mine-wolf-1061-frozen-drift-nexus](mine-wolf-1061-frozen-drift-nexus.json) | mine | beyond the border, 4 jumps | Wolf 1061 Frozen Drift: water_ice, nitrogen_ice, deuterium_ice, methane_ice; sold at Central Nexus | up to 1 ships, needs ice_harvester_i, empty hold | TBD | TBD | TBD | TBD | -- |
 
 ## Fitting
 
