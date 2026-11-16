@@ -483,3 +483,11 @@ Effect: for about five hours the places our routes use had no census of their ow
 Cause: my preflight read the logs and my last report, not the commits of a turn that wrote no report.
 Fix, done: census-route-places is off with a note naming census-worked; the chlorophage test is in the plan. intel_turn_check.py prints ORPHANS: route files of mine that no plan and no template names (five old tests at 23:33 UTC); the intel-turn skill reads it and `git log --author=Oracle` since my last report before a route is written.
 Would it have prevented this one: yes; the ORPHANS line names census-route-places on the old plan.
+
+## [ENT-066] | 2026-11-16 23:44 UTC | Zero | error | ref: game/routes/guidebook/mining.md | see: orders.log ENT-019
+Class: a step that takes away before it can give back, with no second way when the giving step is refused (the family of the refit fault of 2026-11-16 19:01 UTC: a module off, the next step not done).
+Case: at 23:13 UTC my skill script refit.py took the Nitrogen Vent off one miner docked at Central Nexus and stored it, then asked the engine's goal buy-items for a Mining Laser I; the goal answered HTTP 409 "Another request for this account is already being processed" four times in 44 seconds, and again at 23:15 and 23:16 UTC on two more tries, while get_status and the raw calls answered at once.
+Effect: the miner stood with an ice harvester alone for about four minutes and its first route that turn (a carry) ended at stop 1 with the same 409 (0 of 3 stops, 0 cr). No credits lost.
+Cause: the script had one way to buy and no retry; the goal door of one account stayed shut for minutes, cause in the engine not found.
+Fix, done: refit.py retries the goal on a 409 for four ticks and then buys with the raw market buy, only when the station's book shows the ask at max_price or less; the laser was bought so at 23:16 UTC (1,600 cr plus 1%), fitted and booked once. The skill mining-chains carries the lesson.
+Would it have prevented this one: yes; the raw buy answered at the first call.
