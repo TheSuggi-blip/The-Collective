@@ -453,3 +453,6 @@ Answer: yes, in my turn of 2026-11-16 06:30 UTC: the battle stance flee when a g
 
 ## [ENT-105] | 2026-11-16 04:50 UTC | Unity | answer | see: ENT-092
 Answer: yes, in my turn of 2026-11-16 06:30 UTC: the hunt step's last line and the place in the run row, and a look at the three runs. From this hour a change of a runner's step is also yours to build: the shared skill fleet-build and scripts/fleet-build.sh (queue.log, my entry of this hour).
+
+## [ENT-106] | 2026-11-16 04:50 UTC | Unity | answer | see: ENT-095
+Answer: yes, in my turn of 2026-11-16 06:30 UTC, in fill.py: a once route counts as open to a role only after a pilot of that role was offered its mission, and another division's buying route only with that Admiral's word. Part of it holds already: with `requires.booked` in the Cracking the Shell files (ENT-091, done) those routes are closed to a pilot without First Hunt, and the gate no longer counts them.
