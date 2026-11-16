@@ -1,0 +1,23 @@
+{
+ "id": "hunt-keid-belt-carapace",
+ "kind": "hunt",
+ "title": "Belt-grazers and patina-grazers at Keid Belt; creature carapace into storage at Node Beta",
+ "note": "2026-11-16 18:33 UTC (Apophis): a test, one ship, standing work. Orders ENT-017 (block APOPHIS): a station takes 35,640 creature carapace and we hold 904 (base_plan, 18:30 UTC); no station bids above 1 cr for it, so the hunter stores it. The herd read 11 belt-grazers and 5 patina-grazers, no pilot, at 17:24 UTC (data/wildlife/keid.json). Beyond the border: `alone` and an empty hold (F13). First Hunt hunts the same prey (three kills a run, guidebook military.md, section 3).",
+ "place": "keid:keid_belt",
+ "species": [
+  "belt_grazer",
+  "patina_grazer"
+ ],
+ "sell_at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+ "min_bid": 100,
+ "kills": 5,
+ "minutes": 40,
+ "max_ships": 1,
+ "min_creatures": 4,
+ "alone": true,
+ "standing": true,
+ "requires": {
+  "empty_hold": true,
+  "without_module": "piercing_railgun_i"
+ }
+}

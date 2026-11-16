@@ -2,7 +2,7 @@
  "id": "hunt-ruchbah-veil-ray",
  "kind": "hunt",
  "title": "Veil-rays at Ruchbah Broken Glass Veil (lawless); verdigris curd sold at The Experiment",
- "note": "Beyond Voidborn space (orders F13). Seven veil-rays counted 2026-11-15 21:14 UTC by the frontier census. Flown by hand with an empty hold from 21:26 UTC: 0 kills, -77 cr of fuel, no damage; two ships of a large faction joined the fight within three minutes and our hunter fled (guidebook military.md, section 2). Back in the drone plan from 2026-11-15 23:28 UTC as a test with one ship, with `alone` (no fight where a ship that is not ours stands) and `requires.empty_hold` (orders.log ENT-007, block APOPHIS). Ranched like the home herds. 2026-11-16 09:12 UTC (Apophis): status off. The verdigris curd bid (330 cr x 50) left every station of our books between 07:08 and 07:51 UTC (data/market/history.jsonl) and has not come back; the seven drone veil-ray hunts made -1,851 cr in 21 runs from 07:05 UTC (data/routes/runs.jsonl). Back on when a curd bid of 100 cr or more reads again (the tool market); requires.bid on hunt routes is asked of Unity so that this happens by itself. 2026-11-16 13:09 UTC (Apophis): back on (orders.log ENT-014, block APOPHIS). The verdigris curd bid stood again at 330 cr x 50 at seven stations of our books from 12:07 to 12:21 UTC (data/market/history.jsonl). `requires.bid` names the curd bid of the sell station (100 cr, 4 units): the dispatcher closes the route while a book read within the hour shows it gone and opens it when a docked ship reads it back; `min_bid` 100 so that every bid that opens the route also takes the curd. The loss stop holds it until its losing runs of 07:05 to 09:20 UTC leave the six-hour window.",
+ "note": "Beyond Voidborn space (orders F13). Seven veil-rays counted 2026-11-15 21:14 UTC by the frontier census. Flown by hand with an empty hold from 21:26 UTC: 0 kills, -77 cr of fuel, no damage; two ships of a large faction joined the fight within three minutes and our hunter fled (guidebook military.md, section 2). Back in the drone plan from 2026-11-15 23:28 UTC as a test with one ship, with `alone` (no fight where a ship that is not ours stands) and `requires.empty_hold` (orders.log ENT-007, block APOPHIS). Ranched like the home herds. 2026-11-16 09:12 UTC (Apophis): status off. The verdigris curd bid (330 cr x 50) left every station of our books between 07:08 and 07:51 UTC (data/market/history.jsonl) and has not come back; the seven drone veil-ray hunts made -1,851 cr in 21 runs from 07:05 UTC (data/routes/runs.jsonl). Back on when a curd bid of 100 cr or more reads again (the tool market); requires.bid on hunt routes is asked of Unity so that this happens by itself. 2026-11-16 13:09 UTC (Apophis): back on (orders.log ENT-014, block APOPHIS). The verdigris curd bid stood again at 330 cr x 50 at seven stations of our books from 12:07 to 12:21 UTC (data/market/history.jsonl). `requires.bid` names the curd bid of the sell station (100 cr, 4 units): the dispatcher closes the route while a book read within the hour shows it gone and opens it when a docked ship reads it back; `min_bid` 100 so that every bid that opens the route also takes the curd. The loss stop holds it until its losing runs of 07:05 to 09:20 UTC leave the six-hour window. 2026-11-16 18:33 UTC (Apophis): standing work, `requires.bid` out. Orders ENT-017 (block APOPHIS): where no bid stands for a kill's goods they go into storage; a station takes 34,832 verdigris curd and we hold 37 (base_plan, 18:30 UTC). The hunter sells the curd where its sell station bids 100 cr or more and stores it there otherwise; the herd floor (min_creatures 4) and one hunter keep the herd. The curd bid read 0 at every sell station of these hunts at 18:26 UTC (loot_bids).",
  "place": "ruchbah:broken_glass_veil",
  "species": [
   "veil_ray"
@@ -16,13 +16,7 @@
  "alone": true,
  "requires": {
   "empty_hold": true,
-  "without_module": "piercing_railgun_i",
-  "bid": {
-   "item": "verdigris_curd",
-   "base": "the_experiment_research_station",
-   "min_price": 100,
-   "min_qty": 4
-  }
+  "without_module": "piercing_railgun_i"
  },
  "measured": {
   "date": "2026-11-16",
@@ -30,5 +24,6 @@
   "minutes": 22,
   "credits_per_run": 680,
   "cph_per_ship": 2100
- }
+ },
+ "standing": true
 }

@@ -1,0 +1,14 @@
+{
+ "id": "guard-marfik-emission-nebula",
+ "kind": "guard",
+ "title": "Guard at Marfik Emission Nebula while a ship of ours mines gas there; docks at Node Beta",
+ "note": "2026-11-16 18:33 UTC (Apophis): the first guard route (requests.log ENT-165, orders ENT-017 block APOPHIS: fly it once with one drone). Guards mine-marfik-emission-nebula, which a ship of ours flies in runs of about 77 minutes (data/routes/runs.jsonl, four runs from 13:05 UTC). Marfik is lawless, six jumps from home; pilots of three foreign factions were met there (the tool system). The guard never fires; it leaves under 60 percent hull, in a fight, after 60 minutes or when the guarded ship is gone.",
+ "guards": "mine-marfik-emission-nebula",
+ "station": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+ "place": "marfik:marfik_emission_nebula",
+ "minutes": 60,
+ "max_ships": 1,
+ "requires": {
+  "empty_hold": true
+ }
+}
