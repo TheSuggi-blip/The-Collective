@@ -12,7 +12,7 @@ which pilot flies it, and where a pilot is, stays in the unit's data folder:
               "redock": true,                 undock and dock again (a delivery counts on docking)
               "store":  ["item_id", ...],     hold -> personal storage here
               "sell":   [{"item": "...", "min_price": N}],
-              "buy":    [{"item": "...", "qty": N, "max_price": N, "one_time": true}],
+              "buy":    [{"item": "...", "qty": N, "max_price": N, "one_time": true}],   max_price: the most a unit may cost, tax included
                                               qty = units wanted in the hold; one_time: goods for a
                                               one-time mission, their cost is booked against its reward
               "accept": ["template_id", {"template": "...", "needs": {"item_id": N}}],
@@ -57,6 +57,9 @@ verbose = '--verbose' in sys.argv
 route_path = pathlib.Path(route_arg) if route_arg.endswith('.json') else pathlib.Path(__file__).resolve().parent.parent / 'routes' / f'{route_arg}.json'
 ROUTE = json.loads(route_path.read_text(encoding='utf-8'))
 P = urllib.parse.quote(pilot, safe='')
+
+
+TAX = 1.01                   # what a buy costs above its ask at our stations (1 percent, seen 2026-11-15); the wallet is read after every buy
 
 
 def now():
@@ -142,6 +145,17 @@ def text(d):
 
 def credits():
     return int(((call('GET', f'/accounts/{P}')[1].get('state') or {}).get('credits')) or 0)
+
+
+def offer(book, item, limit, units):
+    """(the best ask of the book just read, the units to buy): only what stands at the limit or under it with the
+    buyer's tax, and no more than stands at that ask. (ask, 0): buy nothing."""
+    row = book.get(item) or {}
+    ask = row.get('best_sell') or 0
+    if not isinstance(ask, (int, float)) or ask <= 0 or ask * TAX > limit:
+        return ask, 0
+    there = row.get('best_sell_qty')
+    return ask, min(units, int(there)) if isinstance(there, (int, float)) and there > 0 else units
 
 
 def cargo():
@@ -259,11 +273,18 @@ for n, stop in enumerate(ROUTE['stops']):
             say(f'buy {need} {want["item"]}: not bought, the wallet would fall under {FLOOR} cr')
             notes.append(f'{want["item"]}: wallet floor')
         elif need > 0:
-            c0 = credits()
-            ok, msg = goal('buy-items', {'items': [{'itemId': want['item'], 'maxPrice': want['max_price'], 'maxQuantity': need}]}, tries=1)
+            ask, units = offer(book, want['item'], want['max_price'], need)
+            if not units:                                # nothing stands at the limit or under it, tax included: nothing is bought
+                say(f'buy {need} {want["item"]}: not bought, the best ask is {ask or "none"} and the limit is {want["max_price"]} with tax')
+                notes.append(f'{want["item"]}: not bought')
+                continue
+            c0, had = credits(), cargo().get(want['item'], 0)
+            ok, msg = goal('buy-items', {'items': [{'itemId': want['item'], 'maxPrice': ask, 'maxQuantity': units}]}, tries=1)
             got = cargo().get(want['item'], 0)
-            say(f'buy {need} {want["item"]} at up to {want["max_price"]}: {ok}, now {got} in the hold, {credits() - c0:+d} cr {"" if ok else msg[:100]}')
+            say(f'buy {units} {want["item"]} at the ask of {ask} (limit {want["max_price"]} with tax): {ok}, now {got} in the hold, {credits() - c0:+d} cr {"" if ok else msg[:100]}')
             spent = credits() - c0
+            if got > had and -spent > (got - had) * want['max_price']:
+                notes.append(f'{want["item"]}: paid {-spent} for {got - had}, above the limit of {want["max_price"]} each')
             if want.get('one_time') and spent < 0:
                 book_onetime(f'{ROUTE["id"]}: {want["item"]} bought', spent)
                 onetime[0] += spent
@@ -283,8 +304,17 @@ for n, stop in enumerate(ROUTE['stops']):
                 say(f'fit {want["module"]}: not bought, the wallet would fall under {FLOOR} cr')
                 notes.append(f'{want["module"]}: wallet floor')
                 continue
-            ok, msg = goal('buy-items', {'items': [{'itemId': want['module'], 'maxPrice': want['max_price'], 'maxQuantity': 1}]}, tries=1)
-            say(f'buy {want["module"]} at up to {want["max_price"]}: {ok} {"" if ok else msg[:100]}')
+            ask, units = offer(book, want['module'], want['max_price'], 1)
+            if not units:                                # nothing stands at the limit or under it, tax included: nothing is bought
+                say(f'fit {want["module"]}: not bought, the best ask is {ask or "none"} and the limit is {want["max_price"]} with tax')
+                notes.append(f'{want["module"]}: not bought')
+                continue
+            c0 = credits()
+            ok, msg = goal('buy-items', {'items': [{'itemId': want['module'], 'maxPrice': ask, 'maxQuantity': 1}]}, tries=1)
+            paid = c0 - credits()
+            say(f'buy {want["module"]} at the ask of {ask} (limit {want["max_price"]} with tax): {ok}, {-paid:+d} cr {"" if ok else msg[:100]}')
+            if paid > want['max_price']:
+                notes.append(f'{want["module"]}: paid {paid}, above the limit of {want["max_price"]}')
         if not cargo().get(want['module']):
             notes.append(f'{want["module"]}: not bought')
             continue

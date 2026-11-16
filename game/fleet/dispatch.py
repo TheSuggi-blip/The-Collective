@@ -24,7 +24,7 @@ RULES:
   - A route is skipped for a pilot when: it is a `park` route and the pilot is
     docked; the pilot has a reward booked (data/fleet/onetime.json) that the
     route lists under `skip_if_booked`; it is `once` and the pilot has done it
-    (or tried it twice); `max_ships` pilots fly it already; the pilot lacks a
+    (or tried it twice; a run that found nothing to buy is no try, the route rests `retry_minutes`, default 60); `max_ships` pilots fly it already; the pilot lacks a
     module the route `requires` or has fewer credits than `min_credits`; a hunt's
     place rests after a run without a kill (`rest_minutes`, default 30) or its
     last census (younger than 90 minutes) shows fewer than `min_creatures`; a
@@ -135,12 +135,33 @@ def booked(data):
     return out
 
 
+NO_BUY = (": not bought", ": not fitted", ": wallet floor")
+
+
+def unfinished(row):
+    """A run that went all the way round and did not get what it came to buy or fit: no finished run of a `once` route."""
+    return row.get("stops") == row.get("of") and any(str(note).endswith(NO_BUY) for note in row.get("notes") or [])
+
+
 def done_once(route, rows):
-    """A `once` route counts as done after a whole run, or after two tries."""
+    """A `once` route counts as done after a whole run that got what it came for, or after two tries. A run that found
+    nothing to buy is neither: the route opens again for that pilot after a rest (waits_once)."""
+    rows = [r for r in rows if not unfinished(r)]
     if not rows:
         return False
     whole = [r for r in rows if r.get("stops") == r.get("of")]          # it went all the way round
     return bool(whole) or len(rows) >= 2
+
+
+def waits_once(route, rows, now):
+    """True while a `once` route rests for a pilot: its last run found nothing to buy less than retry_minutes (default 60) ago."""
+    if not rows or not unfinished(rows[-1]):
+        return False
+    try:
+        ended = calendar.timegm(time.strptime(rows[-1]["started"], "%Y-%m-%dT%H:%M:%SZ")) + rows[-1].get("minutes", 0) * 60
+    except (KeyError, ValueError):
+        return False
+    return now < ended + route.get("retry_minutes", 60) * 60
 
 
 def herd(data, route, now):
@@ -189,8 +210,12 @@ def why_not(pilot, rid, route, state):
         return "the pilot is docked", None
     if set(route.get("skip_if_booked") or []) & (state.get("booked") or {}).get(pilot["name"], set()):
         return "its reward is booked", None
-    if route.get("once") and done_once(route, [r for r in state["rows"] if r.get("route") == rid and r.get("pilot") == pilot["name"]]):
-        return "done once", None
+    if route.get("once"):
+        mine = [r for r in state["rows"] if r.get("route") == rid and r.get("pilot") == pilot["name"]]
+        if done_once(route, mine):
+            return "done once", None
+        if waits_once(route, mine, state["now"]):
+            return "rests after a buy that found no offer", None
     mark = route["kind"] + " " + rid
     if route.get("max_pilots"):                   # at most this many different pilots ever: those that flew it and those on it now
         flew = {r.get("pilot") for r in state["rows"] if r.get("route") == rid} | {p for p, what in state["orders"].items() if what == mark}

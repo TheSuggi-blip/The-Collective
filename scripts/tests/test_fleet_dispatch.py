@@ -95,6 +95,19 @@ class PickTests(Tree):
         self.assertAlmostEqual(rest["rays"], self.now - 600 + 300 + 1800, delta=2)
         self.assertEqual(self.dispatch.resting(self.dispatch.load_routes(self.root), [{"route": "rays", "kills": 3, "started": started, "minutes": 5}], self.now), {})
 
+    def test_a_once_run_that_found_nothing_to_buy_is_no_run_and_the_route_rests(self):
+        started = lambda ago: time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(self.now - ago))
+        empty = {"route": "missions", "pilot": "drone-1", "stops": 1, "of": 1, "minutes": 1, "started": started(600), "notes": ["ice_harvester_i: not bought"]}
+        self.assertEqual(self.pick("drone-1", rows=[empty])[0], "rays")                           # ten minutes ago: the route rests
+        routes = self.dispatch.load_routes(self.root)
+        pilot = {"name": "drone-1", "credits": 20000, "modules": [], "docked": True}
+        self.assertEqual(self.dispatch.why_not(pilot, "missions", routes["missions"], self.state(rows=[empty]))[0], "rests after a buy that found no offer")
+        old = dict(empty, started=started(2 * 3600))
+        self.assertEqual(self.pick("drone-1", rows=[old])[0], "missions")                         # after the rest: once more
+        self.assertEqual(self.pick("drone-1", rows=[old, dict(old), dict(old)])[0], "missions")   # three empty runs are still no finished run
+        bought = dict(old, notes=[])
+        self.assertEqual(self.pick("drone-1", rows=[old, bought])[0], "rays")                     # the run that bought is the finished one
+
     def test_the_rule_says_why_a_route_is_closed(self):
         routes, pilot = self.dispatch.load_routes(self.root), {"name": "drone-1", "credits": 5000, "modules": [], "docked": True}
         why = lambda rid, **state: self.dispatch.why_not(pilot, rid, routes.get(rid), self.state(**state))[0]
@@ -275,6 +288,13 @@ class RouteGateTests(Tree):
         self.put_plan({"drone": ["open"]})
         self.assertIn("the one plan file is gone", [e for e in self.routes.check(str(self.root))[0] if "index.md" not in e][0])
         (self.root / "routes" / "plan.json").unlink()
+
+    def test_measure_writes_only_the_routes_it_is_given(self):
+        rows = [{"route": rid, "pilot": "p", "minutes": 30, "delta": 600, "credits_before": 5000, "credits_after": 5600, "started": "2026-11-15T10:00:00Z"} for rid in ("mine", "rays")]
+        (self.data / "routes" / "runs.jsonl").write_text("".join(json.dumps(r) + "\n" for r in rows))
+        self.routes.measure(str(self.root), str(self.data), True, {"mine"})
+        self.assertIn("measured", json.loads((self.root / "routes" / "mine.json").read_text()))
+        self.assertNotIn("measured", json.loads((self.root / "routes" / "rays.json").read_text()))  # another division's file is left alone
 
     def test_measure_writes_a_figure_once_and_again_only_on_a_real_move(self):
         rows = [{"route": "mine", "pilot": "miner-1", "minutes": 30, "delta": -40, "credits_before": 9000, "credits_after": 8960},

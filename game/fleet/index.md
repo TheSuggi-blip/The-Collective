@@ -296,7 +296,10 @@ Check the route files, write their index, and attach what the runs measured.
 Run by hand.
 
 ```
-routes.py check | index | measure [--write]      [--root <dir>] [--data <dir>]
+routes.py check | index | measure                [--root <dir>] [--data <dir>]
+routes.py measure --write <route id>... | --role <role> | --all
+                  writes the measured block of the routes named, of a role's plan, or of every route (the hourly
+                  job); without one of the three it writes nothing and says so
 ```
 
 ### `sight.py`

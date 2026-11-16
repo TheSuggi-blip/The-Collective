@@ -33,7 +33,10 @@ WHY:  what a route pays is written next to the route, and a wrong file is caught
       before a pilot flies it.
 
 USAGE:
-  routes.py check | index | measure [--write]      [--root <dir>] [--data <dir>]
+  routes.py check | index | measure                [--root <dir>] [--data <dir>]
+  routes.py measure --write <route id>... | --role <role> | --all
+                    writes the measured block of the routes named, of a role's plan, or of every route (the hourly
+                    job); without one of the three it writes nothing and says so
 
 Stdlib only. ASCII only.
 """
@@ -373,7 +376,8 @@ def readable(row):
     return numbers and bool(before or after) and "wallet not read" not in (row.get("notes") or [])
 
 
-def measure(root, data, write):
+def measure(root, data, write, only=None):
+    """Print what the runs measured per route; with `write`, store it in the route files, of the routes in `only` when given."""
     rows = []
     try:
         with open(Path(data) / "routes" / "runs.jsonl", encoding="utf-8") as handle:
@@ -392,7 +396,7 @@ def measure(root, data, write):
         if not mine:
             if every:
                 print("%-28s runs %-4d none read a wallet: no figure" % (rid, len(every)))
-                if write and (routes.get(rid) or {}).get("measured"):
+                if write and (only is None or rid in only) and (routes.get(rid) or {}).get("measured"):
                     del routes[rid]["measured"]
                     (Path(root) / "routes" / (rid + ".json")).write_text(json.dumps(routes[rid], indent=1) + "\n", encoding="ascii")
                     changed.append(rid)
@@ -407,7 +411,7 @@ def measure(root, data, write):
         old = (routes.get(rid) or {}).get("measured") or {}
         moved = not old or abs(figure["cph_per_ship"] - old.get("cph_per_ship", 0)) >= 0.2 * max(abs(old.get("cph_per_ship", 0)), 100) \
             or figure["runs"] >= 2 * max(old.get("runs", 0), 1)
-        if write and rid in routes and moved:
+        if write and (only is None or rid in only) and rid in routes and moved:
             routes[rid]["measured"] = figure
             (Path(root) / "routes" / (rid + ".json")).write_text(json.dumps(routes[rid], indent=1) + "\n", encoding="ascii")
             changed.append(rid)
@@ -423,6 +427,9 @@ def main():
     parser.add_argument("--root", default=str(here.parent))
     parser.add_argument("--data", default="/srv/collective/data")
     parser.add_argument("--write", action="store_true")
+    parser.add_argument("ids", nargs="*", help="measure --write: the routes whose measured block is written")
+    parser.add_argument("--role", help="measure --write: the routes of this role's plan")
+    parser.add_argument("--all", action="store_true", help="measure --write: every route (the hourly job)")
     args = parser.parse_args()
     if args.command == "check":
         errors, count = check(args.root)
@@ -438,7 +445,18 @@ def main():
         if any(state == "written" for _name, state in done):
             print("commit the three together: git add -- game/routes/index.md game/routes/plan.md game/routes/master-index.md")
         return 0
-    return measure(args.root, args.data, args.write)
+    only = set(args.ids)
+    if args.role:
+        roles, _owners, _errors = division.load_plan(args.root)
+        if args.role not in roles:
+            print("no plan for the role `%s`: %s" % (args.role, ", ".join(sorted(roles))))
+            return 1
+        only |= set(roles[args.role])
+    if args.write and not only and not args.all:
+        print("NOTHING WRITTEN: `measure --write` needs the routes it may change: route ids, --role <role> (the routes of that plan), or --all.")
+        print("The figures below are a rehearsal. Every route is measured and committed by the hourly job; write by hand only what you need at once.")
+        return measure(args.root, args.data, False)
+    return measure(args.root, args.data, args.write, None if args.all or not args.write else only)
 
 
 if __name__ == "__main__":
