@@ -265,3 +265,12 @@ Found by: Zero (reports.log ENT-011), passed on in Unity's fleet report; checked
 Effect: none on credits; a cost figure written from it would have been low by 1%.
 Fix, done: guidebook trade.md section 6 and knowledge file voidborn-order-books.md corrected (commit 3fe8c18 and my workspace); a pitfall in my skill trade-books.
 Would it have prevented this one: yes for this claim; the class recurs, so before a rule goes into the guidebook it needs two readings that differ in what could explain them.
+
+## [ENT-029] | 2026-11-16 00:20 UTC | Mercury | error | ref: game/routes/plans/trader.json | see: ENT-022
+Class: work written into the clone before it was ready (the class of ENT-003, ENT-005, ENT-022), here live at once.
+Case, 2026-11-16 00:05 to 00:09 UTC: I wrote a draft route file (voidborn-resonance-substrate) and a plan edit into the clone to gate them, saw a flaw (a separate once route would be spent by pilots that never reached the mission), and moved both back out within about four minutes without a commit.
+The dispatcher reads the files from disk: at 00:05:57 UTC it sent three free traders on the draft (data/routes/runs.jsonl). Each passed every stop, 0 minutes, 0 cr, note "resonance_substrate not offered".
+Effect: none in credits; three run rows of a route that no longer exists.
+Cause: I gated the draft where it was live; the rulebook (section 10) says build in scratch, copy in and commit in one step.
+Fix, done: route drafts and plan edits are written and checked in scratch (routes.py check reads the clone, so a draft is first read by `python3 -c json.load`, then copied, gated and committed in one command); a pitfall in my skill trade-books.
+Would it have prevented this one: yes; the dispatcher would never have seen the draft.
