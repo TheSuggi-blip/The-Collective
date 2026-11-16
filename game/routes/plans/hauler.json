@@ -31,6 +31,11 @@
   "sell-liquid-hydrogen-central",
   "sell-liquid-hydrogen-node-beta",
   "carry-liquid-hydrogen-node-beta-central",
+  "mine-the-experiment-haze",
+  "mine-antares-gas-cloud",
+  "mine-amberfall-emission-nebula",
+  "mine-deepwell-haze",
+  "mine-coldwater-emission-nebula",
   "craft-steel-node-beta",
   "gather-hamal-crystal-bloom",
   "gather-gsc-0027-prism-scatter",
@@ -89,6 +94,11 @@
   "sell-liquid-hydrogen-central": 40,
   "sell-liquid-hydrogen-node-beta": 40,
   "carry-liquid-hydrogen-node-beta-central": 40,
+  "mine-the-experiment-haze": 4,
+  "mine-antares-gas-cloud": 4,
+  "mine-amberfall-emission-nebula": 4,
+  "mine-deepwell-haze": 4,
+  "mine-coldwater-emission-nebula": 4,
   "craft-steel-node-beta": 40,
   "gather-hamal-crystal-bloom": 40,
   "gather-gsc-0027-prism-scatter": 40,
@@ -101,6 +111,7 @@
  "templates": {
   "stored-goods": 40,
   "craft-reserve": 40,
-  "gather-reserve": 40
+  "gather-reserve": 40,
+  "gas-harvest": 4
  }
 }
