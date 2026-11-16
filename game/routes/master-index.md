@@ -42,7 +42,7 @@ name below is a link into one of the sub-indexes of this folder.
 |---|---|---|---|---|
 | [command](plan.md#command) | Unity | 34 | voidborn-first-steps-board > voidborn-collective-provides > voidborn-signal-protocol | 0 |
 | [drone](plan.md#drone) | Apophis | 29 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 5 |
-| [hauler](plan.md#hauler) | Apollo | 24 | voidborn-atmospheric-extraction > voidborn-hardware-cargo > voidborn-signal-protocol | 4 |
+| [hauler](plan.md#hauler) | Apollo | 25 | voidborn-atmospheric-extraction > voidborn-hardware-cargo > voidborn-signal-protocol | 4 |
 | [miner](plan.md#miner) | Zero | 35 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 2 |
 | [scout](plan.md#scout) | Oracle | 20 | voidborn-first-steps-board > voidborn-network-expansion > voidborn-collective-provides | 6 |
 | [sentinel](plan.md#sentinel) | Unity | 31 | voidborn-first-steps-board > voidborn-collective-provides > voidborn-signal-protocol | 0 |
