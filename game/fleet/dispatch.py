@@ -328,13 +328,24 @@ def judged(route):
     return not any(isinstance(stop, dict) and stop.get("fit") for stop in route.get("stops") or [])
 
 
+RUNNER_FAULT = ("not docked for the sale", "crashed: ", "loop not started")      # notes of a run the runner failed: it says nothing about the route
+
+
+def faulted(row):
+    """A run that ended on the runner's own fault: its goods were not sold, or it crashed."""
+    return any(str(note).startswith(RUNNER_FAULT) for note in row.get("notes") or [])
+
+
 def losing(routes, rows, now):
     """{route id: (runs, credits)} of the routes that lost money over their runs of the last LOSS_HOURS: two runs or
     more that read a wallet, negative in sum. A repeating route is summed without the money booked once (a reward, a
     tool); a route that pays once is summed with it, since its reward is its pay. Such a route is closed to every
-    pilot until the window moves on: no route flies at a loss unattended (orders F8)."""
+    pilot until the window moves on: no route flies at a loss unattended (orders F8). A run the runner failed (its
+    load not sold because the ship did not dock, a crash) is not counted: it would close a route for the runner's fault."""
     sums = {}
     for row in rows:
+        if faulted(row):
+            continue
         before, after = row.get("credits_before"), row.get("credits_after")
         if not all(isinstance(v, (int, float)) and not isinstance(v, bool) for v in (before, after)) or not (before > 0 and after > 0):
             continue                                              # the run read no wallet at one end: it says nothing about credits

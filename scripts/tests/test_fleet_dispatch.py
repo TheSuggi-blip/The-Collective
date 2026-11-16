@@ -133,6 +133,10 @@ class PickTests(Tree):
         unread = dict(run("rays", 200, 0), credits_after=0)                                       # the engine did not answer at the run's end: no reading
         self.assertEqual(losing(run("rays", 600, 105), unread), {})
         self.assertEqual(losing(run("rays", 600, 900), run("rays", 300, -90)), {})                 # it paid in sum
+        unsold = lambda ago: dict(run("rays", ago, -120), notes=["not docked for the sale: 500 already executing"])
+        self.assertEqual(losing(unsold(900), unsold(600), unsold(300)), {})                        # the runner failed, not the route
+        self.assertEqual(losing(unsold(900), run("rays", 600, -200), run("rays", 300, -300)), {"rays": (2, -500)})
+        self.assertEqual(losing(dict(run("rays", 600, -50), notes=["crashed: TypeError: x (line 9)"]), run("rays", 300, -300)), {})
         self.assertEqual(losing(run("rays", 8 * 3600, -500), run("rays", 7 * 3600, -500)), {})     # the window has moved on
         self.assertEqual(losing(run("rays", 600, 2000, 3000), run("rays", 300, -100)), {"rays": (2, -1100)})   # a reward paid once is no pay of a repeating route
         self.assertEqual(losing(run("missions", 600, 2000, 3000), run("missions", 300, -100)), {})             # a route that pays once is judged with its reward
