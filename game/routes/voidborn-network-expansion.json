@@ -1,0 +1,39 @@
+{
+ "id": "voidborn-network-expansion",
+ "kind": "circuit",
+ "title": "Network Expansion: 1,500 cr once, accepted at Central Nexus, a visit to Node Alpha, handed in at Central Nexus",
+ "note": "Architect line of the Central Nexus board, the link after First Steps in the Void: visit the Node Alpha system, return to Central Nexus; 1,500 cr once, voidborn mastery, exploration and navigation XP; nothing carried, nothing bought. Offered (boards read at 08:34 UTC) to the 6 of 8 traders docked at Central Nexus that have First Steps in the Void done, and to neither of the two that still have First Steps on their board (get_missions for each; voidborn mastery XP 15 in data/fleet/ships/ for the six). Test by hand, one trader, 08:35 to 08:43 UTC: accepted at Central Nexus, the visit counted on docking at Node Alpha, handed in at Central Nexus: RESULT +1,450 cr after fuel in 8 minutes (data/routes/runs.jsonl). The next link appears on the board after the hand-in: The Collective Provides (2,500 cr once, mine 20 nickel ore; no nickel field in home space). Open to every pilot that holds First Steps in the Void booked (requires.booked); max_ships 10: the stops are docks at our own stations and the board offers it to each pilot apart.",
+ "once": true,
+ "requires": {
+  "booked": "First Steps in the Void"
+ },
+ "max_ships": 10,
+ "one_time": [
+  "Network Expansion"
+ ],
+ "skip_if_booked": [
+  "Network Expansion"
+ ],
+ "stops": [
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "accept": [
+    "network_expansion"
+   ]
+  },
+  {
+   "at": "node_alpha:node_alpha_processing_station:node_alpha_processing_station",
+   "only_if_active": [
+    "Network Expansion"
+   ],
+   "redock": true
+  },
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "only_if_active": [
+    "Network Expansion"
+   ],
+   "redock": true
+  }
+ ]
+}
