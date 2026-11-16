@@ -38,7 +38,7 @@
    "trains": [
     "mining"
    ],
-   "note": "Standing work into storage at Node Beta, nothing sold (orders ENT-019: silicon and carbon first, then iron). Needs the Mining Laser I. Silicon: no field we read holds it (Nexus Prime Material Harvesters reads 0 to 2 all day). Carbon: Acubens Belt, one ship, floor 60. Iron: Prism Scatter gave 65% iron of what it lost (census 2026-11-16), then Hamal (51%), then Acubens Shadow Pocket, each closed at its floor."
+   "note": "Standing work into storage, nothing sold (orders ENT-019: silicon and carbon first, then iron). Needs the Mining Laser I. Silicon: no field we read holds it (Nexus Prime Material Harvesters reads 0 to 2 all day). Carbon: Acubens Belt, one ship, floor 60, into Node Beta. Iron: Ironhollow Fading Signal (beyond the border, into The Experiment, 5 ships) and Schedar Belt (beyond the border, into Node Beta, a one-ship test) first, then the shared fields: Prism Scatter (65% iron of what it gave up), Hamal (51%), Acubens Shadow Pocket, each closed at its floor."
   },
   "reserve-hamal": {
    "title": "Gather what the reserve is short of: carbon first, then iron, Hamal Crystal Bloom first",
