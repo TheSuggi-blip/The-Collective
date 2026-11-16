@@ -110,6 +110,15 @@ def age_of(stamp, now):
         return None
 
 
+def headcount(value):
+    """A count a reader wrote either as a number or as the list of what it saw (a census writes `pirates` as a number)."""
+    if isinstance(value, bool):
+        return 0
+    if isinstance(value, (int, float)):
+        return int(value)
+    return len(value) if isinstance(value, (list, tuple, dict)) else 0
+
+
 def num(value):
     return value if isinstance(value, (int, float)) and not isinstance(value, bool) else 0
 
@@ -164,45 +173,57 @@ def load_world(data, root, now):
     """Everything the candidates are made from, as plain dicts."""
     data = Path(data)
     world = {"now": now, "fields": [], "stations": {}, "books": {}, "boards": {}, "herds": [], "chart": Chart(load_chart(root)),
-             "ladders": read_json(data / "market" / "ladders.json", {}), "wanted": {}}
+             "ladders": read_json(data / "market" / "ladders.json", {}), "wanted": {}, "skipped": []}
     for path in sorted((data / "scouting").glob("*.json")) if (data / "scouting").is_dir() else []:
-        scout = read_json(path, {})
-        system = sid(scout.get("system"), path.stem)
-        for poi_id, entry in (scout.get("pois") or {}).items():
-            poi = entry.get("poi") if isinstance(entry.get("poi"), dict) else {}
-            if poi.get("type") == "station" and poi.get("base_id"):
-                world["stations"][poi["base_id"]] = {"system": system, "poi": poi_id, "name": poi.get("name") or poi_id,
-                                                     "at": "%s:%s:%s" % (system, poi_id, poi["base_id"])}
-            resources = [{"id": r.get("resource_id"), "richness": num(r.get("richness")), "remaining": num(r.get("remaining"))}
-                         for r in entry.get("resources") or poi.get("resources") or [] if isinstance(r, dict) and r.get("resource_id")]
-            if resources:
-                world["fields"].append({"system": system, "poi": poi_id, "name": poi.get("name") or poi_id, "type": poi.get("type") or "",
-                                        "read_at": scout.get("read_at"), "resources": resources})
+        try:
+            scout = read_json(path, {})
+            system = sid(scout.get("system"), path.stem)
+            for poi_id, entry in (scout.get("pois") or {}).items():
+                poi = entry.get("poi") if isinstance(entry.get("poi"), dict) else {}
+                if poi.get("type") == "station" and poi.get("base_id"):
+                    world["stations"][poi["base_id"]] = {"system": system, "poi": poi_id, "name": poi.get("name") or poi_id,
+                                                         "at": "%s:%s:%s" % (system, poi_id, poi["base_id"])}
+                resources = [{"id": r.get("resource_id"), "richness": num(r.get("richness")), "remaining": num(r.get("remaining"))}
+                             for r in entry.get("resources") or poi.get("resources") or [] if isinstance(r, dict) and r.get("resource_id")]
+                if resources:
+                    world["fields"].append({"system": system, "poi": poi_id, "name": poi.get("name") or poi_id, "type": poi.get("type") or "",
+                                            "read_at": scout.get("read_at"), "resources": resources})
+        except Exception as error:                        # one bad file costs its own reading, never the pass
+            world["skipped"].append("%s/%s: %s: %s" % (path.parent.name, path.name, type(error).__name__, error))
     for path in sorted((data / "market").glob("*.json")) if (data / "market").is_dir() else []:
-        book = read_json(path, {})
-        if path.name.startswith("history.") or not book.get("base"):
-            continue
-        items = {}
-        for item in book.get("items") or []:
-            if isinstance(item, dict) and item.get("item_id"):
-                items[item["item_id"]] = {"bid": num(item.get("best_buy")), "bid_qty": num(item.get("best_buy_qty", item.get("buy_quantity"))),
-                                          "bid_depth_known": "best_buy_qty" in item, "ask": num(item.get("best_sell")),
-                                          "ask_qty": num(item.get("best_sell_qty", item.get("sell_quantity"))), "name": item.get("item_name") or item["item_id"]}
-        world["books"][book["base"]] = {"system": sid(book.get("system")), "read_at": book.get("read_at"), "items": items}
+        try:
+            book = read_json(path, {})
+            if path.name.startswith("history.") or not book.get("base"):
+                continue
+            items = {}
+            for item in book.get("items") or []:
+                if isinstance(item, dict) and item.get("item_id"):
+                    items[item["item_id"]] = {"bid": num(item.get("best_buy")), "bid_qty": num(item.get("best_buy_qty", item.get("buy_quantity"))),
+                                              "bid_depth_known": "best_buy_qty" in item, "ask": num(item.get("best_sell")),
+                                              "ask_qty": num(item.get("best_sell_qty", item.get("sell_quantity"))), "name": item.get("item_name") or item["item_id"]}
+            world["books"][book["base"]] = {"system": sid(book.get("system")), "read_at": book.get("read_at"), "items": items}
+        except Exception as error:                        # one bad file costs its own reading, never the pass
+            world["skipped"].append("%s/%s: %s: %s" % (path.parent.name, path.name, type(error).__name__, error))
     for path in sorted((data / "missions").glob("*.json")) if (data / "missions").is_dir() else []:
-        board = read_json(path, {})
-        if board.get("base"):
-            world["boards"][board["base"]] = {"system": sid(board.get("system")), "read_at": board.get("read_at"),
-                                              "missions": [m for m in board.get("missions") or [] if isinstance(m, dict)]}
+        try:
+            board = read_json(path, {})
+            if board.get("base"):
+                world["boards"][board["base"]] = {"system": sid(board.get("system")), "read_at": board.get("read_at"),
+                                                  "missions": [m for m in board.get("missions") or [] if isinstance(m, dict)]}
+        except Exception as error:                        # one bad file costs its own reading, never the pass
+            world["skipped"].append("%s/%s: %s: %s" % (path.parent.name, path.name, type(error).__name__, error))
     for path in sorted((data / "wildlife").glob("*.json")) if (data / "wildlife").is_dir() else []:
-        wild = read_json(path, {})
-        for poi_id, entry in (wild.get("pois") or {}).items():
-            creatures = [c for c in entry.get("creatures") or [] if isinstance(c, dict) and c.get("species")]
-            if creatures:
-                world["herds"].append({"system": sid(wild.get("system"), path.stem), "poi": poi_id, "read_at": entry.get("read_at") or wild.get("read_at"),
-                                       "species": Counter(c["species"] for c in creatures),
-                                       "hull": {c["species"]: num(c.get("max_hull")) for c in creatures},
-                                       "pirates": len(entry.get("pirates") or [])})
+        try:
+            wild = read_json(path, {})
+            for poi_id, entry in (wild.get("pois") or {}).items():
+                creatures = [c for c in entry.get("creatures") or [] if isinstance(c, dict) and c.get("species")]
+                if creatures:
+                    world["herds"].append({"system": sid(wild.get("system"), path.stem), "poi": poi_id, "read_at": entry.get("read_at") or wild.get("read_at"),
+                                           "species": Counter(c["species"] for c in creatures),
+                                           "hull": {c["species"]: num(c.get("max_hull")) for c in creatures},
+                                           "pirates": headcount(entry.get("pirates"))})
+        except Exception as error:                        # one bad file costs its own reading, never the pass
+            world["skipped"].append("%s/%s: %s: %s" % (path.parent.name, path.name, type(error).__name__, error))
     catalog = read_json(newest_catalog(data), {})
     items = catalog.get("items") or []
     recipes = catalog.get("recipes") or []
@@ -875,7 +896,7 @@ def build(data, root, now, policed=None, look=None):
             "assumptions": world["assume"], "catalog": world["catalog_version"], "ladders_read": read,
             "read": {"fields": len(world["fields"]), "order_books": len(world["books"]), "boards": len(world["boards"]), "herds": len(world["herds"]),
                      "recipes": len(world["recipes"]), "runs": len(world["runs"])},
-            "candidates": rows}
+            "skipped": world["skipped"], "candidates": rows}
 
 
 def policed_systems(root):
@@ -968,8 +989,9 @@ def main():
             tmp = path.with_name("%s.%d.tmp" % (path.name, os.getpid()))
             tmp.write_text(json.dumps(book, separators=(",", ":")), encoding="utf-8")
             os.replace(tmp, path)
-            print(book["written_at"], "candidates: %s | books read level by level: %d | catalog %s" % (
-                dict(Counter(c["kind"] for c in book["candidates"])), book["ladders_read"], fetched), flush=True)
+            print(book["written_at"], "candidates: %s | books read level by level: %d | catalog %s%s" % (
+                dict(Counter(c["kind"] for c in book["candidates"])), book["ladders_read"], fetched,
+                " | skipped %d file(s): %s" % (len(book["skipped"]), "; ".join(book["skipped"][:3])) if book["skipped"] else ""), flush=True)
         except Exception as error:                            # a bad file must not end the service
             print(time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "pass failed: %s: %s" % (type(error).__name__, error), flush=True)
         if once:

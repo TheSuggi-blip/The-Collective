@@ -212,6 +212,24 @@ class CandidateTests(Tree):
         self.assertFalse([c for c in book["candidates"] if "unpaid" in c["id"]])
 
 
+class ReadingTests(Tree):
+    def test_a_census_count_of_pirates_is_read_as_a_number(self):
+        self.put("wildlife/wild.json", {"system": "wild", "read_at": STAMP, "pois": {
+            "wild_cloud": {"read_at": STAMP, "pirates": 1, "pilots": 0, "creatures": [{"species": "glow_ray", "max_hull": 60}] * 5},
+            "wild_rift": {"read_at": STAMP, "pirates": [{"id": "p1"}, {"id": "p2"}], "creatures": [{"species": "glow_ray", "max_hull": 60}] * 5}}})
+        world = maker.load_world(str(self.data), self.root, NOW)
+        self.assertEqual(sorted((h["poi"], h["pirates"]) for h in world["herds"]), [("wild_cloud", 1), ("wild_rift", 2)])
+        self.assertEqual(self.build()["skipped"], [])
+
+    def test_one_bad_file_costs_its_own_reading_not_the_pass(self):
+        self.put("wildlife/bad.json", {"system": "bad", "read_at": STAMP, "pois": {"odd": 5}})
+        self.put("wildlife/wild.json", {"system": "wild", "read_at": STAMP, "pois": {"wild_cloud": {"read_at": STAMP, "creatures": [{"species": "glow_ray", "max_hull": 60}] * 5}}})
+        book = self.build()
+        self.assertEqual(book["read"]["herds"], 1)
+        self.assertEqual(len(book["skipped"]), 1)
+        self.assertTrue(book["skipped"][0].startswith("wildlife/bad.json: AttributeError"))
+
+
 class ServiceTests(Tree):
     def test_the_catalog_is_fetched_once_a_day_and_kept_by_version(self):
         raw = json.dumps({"version": "2.0/x", "items": [], "recipes": []}).encode()
