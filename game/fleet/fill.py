@@ -172,7 +172,8 @@ def carries(seen, route):
     on}; None for a route nothing of this limits (a circuit, a census) or that no reading speaks of. A mine route that
     sells is carried by what its bid regains per hour at its best price, shared by the routes that sell the same good
     at the same station; one that sells nothing by what its field grows back; a hunt by one hunter (the herd's regain
-    is named). The standing depth of a bid is one order: it can leave within the hour (errors ENT-046, ENT-054)."""
+    is named). The standing depth of a bid is one order: it can leave within the hour (errors ENT-046, ENT-054). A bid
+    nobody sold into and a field that read full show no regain: that is `not measured`, never 0."""
     bids, fields, herds = regains(seen)
     kind = route.get("kind")
     if kind == "hunt" and len(str(route.get("place", "")).split(":")) == 2:
@@ -194,6 +195,8 @@ def carries(seen, route):
                    and (other.get("sell") or [{}])[0].get("item") == item) or 1       # the routes that sell the same good into the same bid share it
         stands = bool(row) and (row.get("best_buy") or 0) >= sells[0].get("min_price", 0) and isinstance(row.get("best_buy_qty"), (int, float))
         depth, rate = (int(row["best_buy_qty"]) if stands else 0), bids.get((base, item))
+        if rate is not None and not rate[0] and not rate[1]:
+            rate = None                                # nothing was taken and nothing came back: the readings say nothing
         if rate is None and not stands:
             return None
         text = ("the %s bid at %s regains %s units an hour at its best price" % (item, base, format(int(rate[0]), ",")) if rate is not None
@@ -203,13 +206,15 @@ def carries(seen, route):
         return {"ships": None if rate is None else int(rate[0] / per_ship / same), "extra": int(depth // (per_ship * HOURS) // same), "text": text}
     place = str(route.get("belt", ""))
     system, poi = (place.split(":") + [""])[:2]
-    back = [rate[0] for key, rate in fields.items() if key[0] == system and key[1] == poi]
+    back = [rate[0] for key, rate in fields.items() if key[0] == system and key[1] == poi and (rate[0] or rate[1])]     # a field that read full shows no regain
     left = dispatch.field_left(seen["data"], place, seen["now"], fresh=float("inf")) or {}
     if not back and not left:
         return None
+    floor = route.get("min_left") if isinstance(route.get("min_left"), dict) else {}
+    free = sum(max(0, units - int(floor.get(item, 0))) for item, units in left.items())          # what may be taken before the route's own floor closes it
     text = "its field grew back %s units an hour" % format(int(sum(back)), ",") if back else "what its field grows back is not measured"
-    text += "; %s units lie in it" % format(sum(left.values()), ",") if left else ""
-    return {"ships": int(sum(back) / per_ship) if back else None, "extra": int(sum(left.values()) // (per_ship * HOURS)), "text": text}
+    text += "; %s units lie in it%s" % (format(sum(left.values()), ","), ", %s above its floor" % format(free, ",") if floor else "") if left else ""
+    return {"ships": int(sum(back) / per_ship) if back else None, "extra": int(free // (per_ship * HOURS)), "text": text}
 
 
 def carried(deep):

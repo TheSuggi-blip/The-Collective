@@ -166,6 +166,17 @@ class ReadTests(Tree):
         self.assertEqual((deep["ships"], deep["extra"], self.fill.carried(deep)), (3, 20, "3 +20"))        # 400 units came back in two hours; a ship brings 65 an hour
         self.assertIn("regains 200 units an hour at its best price", deep["text"])
         self.assertIsNone(self.fill.carries(seen, ROUTES["once"]))
+        # a gathering field: read full twice (no regain to see: not measured, never 0), and its own floor counted off
+        (self.data / "wildlife").mkdir(exist_ok=True)
+        (self.data / "scouting").mkdir(exist_ok=True)
+        (self.data / "wildlife" / "history.jsonl").write_text("".join(
+            json.dumps({"at": stamp(ago), "system": "far", "deposits": {"rocks": {"iron_ore": 100000}}}) + "\n" for ago in (7200, 0)))
+        (self.data / "scouting" / "far.json").write_text(json.dumps({"system": "far", "read_at": stamp(0), "pois": {"rocks": {"resources": [{"resource_id": "iron_ore", "remaining": 100000}]}}}))
+        gather = {"id": "gather", "kind": "mine", "belt": "far:rocks", "station": "home:core:base", "min_left": {"iron_ore": 40000}}
+        seen, _got = self.read("miner")
+        deep = self.fill.carries(seen, gather)
+        self.assertEqual((deep["ships"], deep["extra"], self.fill.carried(deep)), (None, 230, "? +230"))    # 60,000 above the floor, 260 a ship in four hours
+        self.assertIn("what its field grows back is not measured; 100,000 units lie in it, 60,000 above its floor", deep["text"])
         self.assertEqual(self.fill.carried(None), "--")
         self.assertEqual(self.fill.asks(seen, "ice_harvester"), [(2, 1413, "base")])
 

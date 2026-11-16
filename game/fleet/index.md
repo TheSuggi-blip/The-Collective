@@ -8,7 +8,7 @@ author: Unity
 # index.md -- The Fleet's Scripts
 
 Built by `python3 -B scripts/fleet-index.py` from the docstring of every script in this
-folder; never edited by hand. Scripts listed: 22.
+folder; never edited by hand. Scripts listed: 23.
 
 - Run a script from the repository root: `python3 -I -B game/fleet/<script> <arguments>`,
   the arguments as listed under "How to Call Each".
@@ -34,6 +34,7 @@ folder; never edited by hand. Scripts listed: 22.
 | `dispatch.py` | Keep every pilot at work: give each free pilot the next task of its role. | Service |
 | `division.py` | Who commands which ship, whose plan is whose, and the check every fleet script runs before it drives a ship. | By hand |
 | `fill.py` | Keep every ship of a division at work: say why ships wait, and fill the plan with the work that stands open. | By hand |
+| `fleetfile.py` | Write the section `## Routes Now` into a member's own FLEET.md: its plans route by route, and every ship of its division on one line with what it flies now. | By hand |
 | `gate.py` | Small client for the fleet engine's gate, with the division's lock. | By hand |
 | `hive.py` | The fleet's figures from its own readings: money, routes and their history, levels, what the work carries, what a base takes, a system. | By hand |
 | `hunt.py` | Hunt grazers at one place, loot the carcasses and sell what the kills bring. | Runner (`hunt` routes) |
@@ -158,6 +159,20 @@ fill.py lift <route id> <ships>
 --floor CR   a candidate counts from this estimate, in credits per ship-hour (default 500)
 --root <dir>   the repository's game/ folder (default: the parent of this file's folder)
 --data <dir>   the unit's data folder (default /srv/collective/data)
+```
+
+### `fleetfile.py`
+
+Write the section `## Routes Now` into a member's own FLEET.md: its plans route by
+route, and every ship of its division on one line with what it flies now.
+
+Run by hand.
+
+```
+fleetfile.py [<Member>|all] [--print] [--commit]
+--root <dir>      the repository's game/ folder (default: the parent of this file's folder)
+--data <dir>      the unit's data folder (default /srv/collective/data)
+--profiles <dir>  where the members' workspaces lie (default /opt/data/profiles): <profiles>/<name>/workspace-<name>/FLEET.md
 ```
 
 ### `gate.py`
