@@ -65,4 +65,5 @@ Planned:
 | 75 circuit boards for the faction: etch at the Central Nexus workshop once Mining's 16 silicon and carbon lie in the crafting storage (requests ENT-168); the rest from bought silicon (ask 420 cr x 424), one unit first | next turn |
 | Read the first RESULT line of carry-liquid-hydrogen-node-beta-central (81 liquid hydrogen made at Node Beta) and of the gas tests; drop each that loses twice | next turn |
 | Focused crystal (4 energy crystal, 1 palladium) into the Central Nexus bid of 800 x 10, if Trade says no to it (requests ENT-169) | after Mercury's answer |
+| The next station step tested by hand: draw_copper_piping (12 copper ore, 2 steel plate, 4 piping) at the Node Beta workshop, one hauler and one batch, quoted first | next turn |
 | The faction's 275 steel plate lie in one Logistics storage at Node Beta: deposit them to the builder the Fleet Admiral names | on her word |

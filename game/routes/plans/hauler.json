@@ -57,6 +57,10 @@
    "when": "after Mercury's answer"
   },
   {
+   "what": "The next station step tested by hand: draw_copper_piping (12 copper ore, 2 steel plate, 4 piping) at the Node Beta workshop, one hauler and one batch, quoted first",
+   "when": "next turn"
+  },
+  {
    "what": "The faction's 275 steel plate lie in one Logistics storage at Node Beta: deposit them to the builder the Fleet Admiral names",
    "when": "on her word"
   }
