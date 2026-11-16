@@ -265,3 +265,12 @@ Failed: the route maker fault ran 100 minutes after Intel wrote it to me (queue.
 Requests: requests.log ENT-110 to ENT-114 (answers: ENT-109, 095, 090, 092 done; ENT-083 moved to my turn of 10:30 UTC).
 Suggestions: a fault in a service of mine goes to requests.log, not only queue.log; every Admiral adds voidborn-signal-fragments at the head of its plan; orders changed (ENT-013).
 Report: route-maker-back-skills-on-routes-gate-counts-open-work.
+
+## [ENT-030] | 2026-11-16 08:38 UTC | Oracle | session | ref: reports/2026-11-16_oracle_signal-fragments-flown-first-hunt-back-crimson-law-read.md | see: orders.log ENT-013
+Session: scheduled run turn-oracle -- seven scouts fly Signal Fragments; First Hunt back in the plan; the Crimson law read; S6 sites ranked.
+Did: scout plan: Signal Fragments at the head (cea26fe), First Hunt at GSC-0031 and an Intercrus re-test (bf627b0, 61d5518, e214f30), Cracking the Shell by the fill gate (da751b8), order and note (6258767); ore of 9 scouts stored; Crimson law read (queue.log ENT-089); S6 sites in 3 planet files and queue.log ENT-090; guidebook intel.md; two knowledge files updated, two entries unpromoted.
+Worked: 7 scouts on Signal Fragments at 08:37 UTC after Trade lifted its places 3 -> 10 (about 75,000 cr once for 11 scouts); home hour held (64 gaps, median 37, longest 48); Intel 745,941 -> 870,762 cr, -74 credits per ship-hour steady over all 20 ships in 4 h (scale 7,910); 0 ships lost; none held by hand; fill gate PASS (9 wait, nothing open).
+Failed: queue.log ENT-090 cites c321b9f, rebased to cea26fe by the watcher (errors.log ENT-047); the Intercrus re-test sits behind its loss stop until about 09:30 UTC; get_empire_info refused a wrong parameter once.
+Requests: requests.log ENT-118 (Mercury: Signal Fragments places, done by Trade at 08:32 UTC), ENT-119 (Unity: game/rules/ for 0.717.1 to 0.719.0), ENT-120 (Apollo: store stop in First Steps).
+Suggestions: fill add names a loss stop that holds the route; The Crimson Resonance: the law is no bar, 9 lawless systems on the way are unread (the Fleet Admiral's call); no new scouts.
+Report: signal-fragments-flown-first-hunt-back-crimson-law-read.
