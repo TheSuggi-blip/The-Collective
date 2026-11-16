@@ -23,90 +23,65 @@ at the end of every turn.
 
 ## Standing Plan
 
-What the scouts fly between two turns, from `game/routes/plans/scout.json`
-(last changed in the Intel turn of 2026-11-16 12:15 UTC, commit 7c43485),
-checked against `hive.py standing` at 12:16 UTC and `fill.py status scout`
-at 12:16 and 12:20 UTC. Twenty ships; a free ship takes the first route
-open to it, in this order.
+What the scouts fly between two turns: the intel plan file, applied in
+the Intel turn of 2026-11-16 that began 23:15 UTC (`plan.py show
+--brief`, PASS), checked against `fill.py status scout` and `hive.py
+forecast Oracle` at 23:27 and 23:28 UTC. Thirty ships. A free ship takes
+the first route open to it of the list First, its own routes, the list
+Then.
 
-| # | Route | Ships | Expected, credits per ship-hour | Why |
-|---|---|---|---|---|
-| 1 | voidborn-first-steps-board | 3 at a time for the whole fleet (Trade's limit, Acubens carbon) | about 920 cr once a run in about 12 minutes (Trade's runs, queue.log ENT-095) | Orders ENT-014, EVERY ADMIRAL (c): the once line of the Central Nexus board heads every plan. 5 scouts wait for it at 12:20 UTC |
-| 2 | voidborn-network-expansion | up to 20 for the fleet; 11 flew it at 12:20 UTC | 1,440 measured (fill.py status), 1,500 cr once in about 8 minutes | The link after First Steps |
-| 3 | voidborn-collective-provides | 2 for the fleet (GSC-0049 nickel) | +2,188 cr in 48 minutes, 2,500 cr once (Trade's test) | Empty hold; opens the next links |
-| 4 | voidborn-signal-protocol | up to 20 | +3,409 cr in 14 minutes, 3,500 cr once (Trade's test) | Asks The Collective Provides booked |
-| 5 | voidborn-signal-fragments | up to 10 for the fleet; navigation 3 only | 12 scout runs from 08:15 UTC, +82,646 cr in 203 minutes with 84,000 paid once (`data/routes/runs.jsonl`) | Every scout with navigation 3 holds it booked; the nine with navigation 2 fly it when they reach 3 |
-| 6 | census-voidborn | at most 3, only when a home system is 30 minutes old | -525 (65 scout runs, 08:15 to 12:21 UTC) | Every Voidborn system read within the hour: 67 gaps in four hours, median 36 minutes, longest 44 |
-| 7 | voidborn-first-hunt-intercrus-belt | 1, herd floor 3 | 3 of 7 runs paid +816 to +841 cr with 1,000 once, in 35 to 53 minutes; 4 left at once, a ship not ours at the place (09:12 to 12:00 UTC) | 11 scouts hold First Hunt unfinished; the belt read 13 belt-grazers at 12:10 UTC |
-| 8 | voidborn-first-hunt-intercrus-sootfall | 1, a test, herd floor 3 | not measured; written 12:18 UTC | Sootfall Belt read 16 belt-grazers and no pilot not ours at 11:48 UTC |
-| 9 | mission-cracking-the-shell-central | 1 (Unity's place at GSC-0041 Frost Ring, herd floor 3) | 1,500 cr once; 1 of 4 scout runs paid since 08:15 UTC | Three scouts hold it unfinished |
-| 10 | voidborn-precedence, -selling, -concurrent, -substrate, -missions-1, -mining-missions | 0: every scout holds these booked or done | one-time | A pilot born later flies them first |
-| 11 | voidborn-conductive-lattice | 10 at a time for the fleet, Trade's limit | 8 scout runs from 08:15 UTC: +86,966 cr with 88,776 paid once | Every scout has it booked at 12:20 UTC |
-| 12 | hunt-atlas-gas-pocket | 1, when 4 halo-drifters and cinder-sylphs stand together | 2 runs from 08:15 UTC: +514 cr in 20 minutes, 1,519 per ship-hour; about 3,600 over its first four runs | A ship not ours left two of its last three runs early |
-| 13 | hunt-test-homam-frost-moth | 1, herd floor 4 | 2 runs from 08:15 UTC: +2,147 cr in 31 minutes, 4,142 per ship-hour | Superfluid vials at 600 cr; a ship not ours at the place in both runs |
-| 14 | census-frontier | up to 12 for the fleet; 4 flew at 12:16 UTC | -640 (11 scout runs from 08:15 UTC) | 51 lawless systems, each again after 240 minutes (orders F13) |
-| 15 | park | the rest | 0 | A docked ship costs nothing |
+| Order | Routes | Ships | Cap | Expected, credits per ship-hour (dated reading) | Why |
+|---|---|---|---|---|---|
+| First | the once line (Central Nexus board, Signal Fragments, the mining and trading missions, Conductive Lattice, First Hunt, Cracking the Shell, Ghosts in the Cloud) | every scout that holds one | each route's own | paid once per pilot; 13,440 cr still on the way at 23:28 UTC (`hive.py forecast`) | Orders ENT-019, EVERY ADMIRAL: the missions that pay once come first |
+| First | census-voidborn | any | 4 (was 3) | -550 over 47 runs in the 4 hours to 23:28 UTC (`route_earnings`) | The ten home systems and the six books we sell to, every 30 minutes; two of 58 gaps were over 60 minutes with three ships |
+| Own | hunt-garnet-dim-lattice-veil-ray, hunt-atlas-gas-pocket with mine-gliese-876-belt, hunt-test-homam-frost-moth, hunt-test-amberfall-chlorophage | 4 ships, one route each, then @reader | 1 each | Atlas 1,406 (4 runs, 4 h); Gliese 876 belt 2,880 (2 runs, 12 h); Homam -586 (2 runs, 4 h); Garnet -740 (1 run); chlorophage not measured | Scouts hunt on the way (rule F16); the chlorophage test looks for caustic sac |
+| Own | @explorer: census-roads, census-frontier | 10 (the youngest, navigation 2) | 10 | not measured; a frontier read -528 (92 runs, 4 h) | Rule F26 and orders P4: the roads to Aldebaran, Yildun, Hawthorne and Alchiba, 28 systems never read; long jumps train navigation toward Signal Fragments |
+| Own | @reader: census-worked, census-frontier, census-roads | 20 | 6, 12, 10 | census-worked not measured; census-frontier -528 | The 22 systems beyond home our routes use, every 120 minutes (twice a turn); the 31 others of the frontier every 240 |
+| Then | gather-gsc-0027-prism-scatter, gather-hamal-crystal-bloom, census-frontier, park | the rest | shared, 66 and 76 for the fleet | -146 and -178 (167 and 184 runs, 4 h) | The fallback when nothing is due: iron and copper into storage at Node Beta |
 
-Expected for the four hours: the once line carries most scouts (about
-8,000 cr once a pilot from First Steps to The Signal Protocol, by
-Trade's tests), two to three read home, about one reads the frontier,
-two fly First Hunt, one hunts at Atlas or Homam when the herd and the
-place allow. Once the line is flown, about 15 scouts wait docked: no
-repeating work that pays stands open to a scout beyond the two hunts
-(the cinder-sylph and veil-ray herds are Military's, one hunter each;
-ice needs a harvester and Mining holds the places). Steady money -127
-credits per ship-hour over all twenty ships in the four hours to 12:16
-UTC (-10,123 cr over 80 ship-hours, `hive.py standing`), with 178,276
-cr paid once, against the scale of 6,578 (mine-wolf-1061-vent, `hive.py
-tasks`). What would change it: a herd of a species whose drop sells,
-read with no ship not ours at it; a free place on another division's
-paying route with its Admiral's word and the tool it needs; a deposit
-of uranium, thorium, seam glass or palladium (bid at every station we
-read, section 7).
+The forecast at 23:28 UTC, with the ships on the routes they flew at that
+moment: -3,516 credits an hour for the division, -117 per ship (census
+routes not measured count 0), 13,440 cr paid once on the way. What
+would change it: a census route measured; the explorers' first reads
+(a field, a herd or a book on the roads); the chlorophage test's RESULT
+line; a field that holds silicon ore.
 
 ## 1. Route Guides
 
-How each kind of route of this division is flown: the fit and the
-skills it needs, its place, its steps, what opens and closes it. A
-credits figure in this section is a dated reading and no verdict: what
-a route earns now is in the fleet's database with its age (rule F22;
-the tool `routes`, the view `route_earnings`).
+How each kind of route of this division is flown. A credits figure here
+is a dated reading, never a verdict: what a route earns now is in the
+fleet's database with its age (rule F22; the tool `routes`, the view
+`route_earnings`).
 
-| Route | Credits per ship-hour, after all costs | Date | Note |
+| Kind | How it is flown | Fit and skills | Dated reading |
 |---|---|---|---|
-| hunt-atlas-gas-pocket (halo-drifters and cinder-sylphs) | 4 runs at the place, 71 minutes in all: +1,259 cr (2 halo-drifters, 03:11 UTC, as the test), +839 cr (2 cinder-sylphs, 04:24 UTC), +1,799 cr (2 kills, 4 ember glands at 480 cr, 06:03 UTC), +370 cr (1 kill, left: a ship not ours at the place, 07:47 UTC); about 3,600 per ship-hour (`data/routes/runs.jsonl`) | 2026-11-16 | One hunter, no hunt below 4 animals of the two species together. Apophis gave the herd to Intel (queue.log ENT-065) |
-| hunt-test-homam-frost-moth | 3 runs, 42 minutes in all: -132 cr (04:24 UTC), +1,079 cr (1 kill, 2 superfluid vials sold at 600 cr, 05:07 UTC), -132 cr (06:47 UTC); about 1,160 per ship-hour (`data/routes/runs.jsonl`) | 2026-11-16 | A ship not ours stood at the place in all three runs and each left early: the herd pays when the place is free. Stays one ship |
-| -- | -- | -- | Before it, none of Intel's own. Reading earns nothing by itself; Intel is measured by the age of the picture and by the leads others turn into income. From the next turn the scouts also hunt between reads (orders.log ENT-008, F16) |
+| Census (census-voidborn, census-worked, census-frontier, census-roads) | `census.py`: fly to the system, `get_poi` at every field, `get_nearby` for creatures and pilots, dock at each station and save its book and board; ends docked at Central Nexus. A system opens when its scouting file is `every_minutes` old; never-read systems first, in list order (`dispatch.py`, stalest_system) | The starter Threshold; an empty hold (`requires.empty_hold`, five units at most) for every route beyond the border. Trains piloting, navigation by its jumps and exploration a little | census-frontier -528 per ship-hour over 92 runs, census-voidborn -550 over 47, census-guard-ice -668 over 9 (4 hours to 23:28 UTC); a frontier read takes a median of 14.4 minutes over 165 runs |
+| Hunt (one hunter per herd, rule F9) | `hunt.py`: fly to the place, kill up to `kills` grazers of the route's species while the herd holds `min_creatures`, loot, sell at `sell_at` what a fresh bid of `min_bid` takes, store the rest; `alone` leaves when a ship not ours is at the place | Mining laser and pulse laser of the starter; flees under 60% hull (F2). Trains weapons and xenobiology | hunt-atlas-gas-pocket +1,406 per ship-hour over 4 runs (4 h) and +2,237 over 13 runs (24 h); hunt-test-homam-frost-moth -586 over 2 (4 h), +1,168 over 9 (24 h): the place was shared in most runs |
+| Mine beside a hunt (mine-gliese-876-belt) | `mine.py`: the engine's mining loop for its minutes, then sell at the station named | Mining laser; trains mining | +2,880 per ship-hour over 2 runs (12 h); its nickel bid at Nova Terra Central stood at 0 depth at 23:19 UTC (`fill.py status`) |
+| Gather (standing work, the fallback) | `mine.py` without a sale: ore into storage at Node Beta; `min_left` is the field's floor | Mining laser; trains mining and deep core mining, not a scout's skills | -146 and -178 per ship-hour (4 h) |
+| Once missions | the route's circuit: accept on the board, do the steps, hand in | as the route says; Signal Fragments asks navigation 3 | paid once per pilot; listed in section 3 |
 
 ## 2. Route Templates
 
-A kind of work is a named list of routes: a template. The templates of
-this division are kept in `game/routes/templates/intel.json` and listed
-in `game/routes/templates-intel.md`, a page a script writes once the
-division has its first template. A ship's row in the plan file names a
-template as `@<name>`, alone or beside routes of its own, and a ship is
-switched to other work with one word.
+A kind of work is a named list of routes: a template, kept in
+`game/routes/templates/intel.json` and listed in
+`game/routes/templates-intel.md`. A ship's row in the plan file names it
+as `@<name>`, alone or after routes of its own.
+
+| Template | Routes, in the order a ship tries them | Trains | For |
+|---|---|---|---|
+| @explorer | census-roads, census-frontier | navigation, exploration, piloting | about ten scouts: the roads to the station sites and the systems beside them, then the frontier (rule F26) |
+| @reader | census-worked, census-frontier, census-roads | exploration, navigation, piloting | about twenty scouts where the fleet works: every place our routes use twice a turn, then the frontier, then the roads |
 
 | Task | How |
 |---|---|
-| See the templates and how many ships use each | the tool `plan` with `action=templates` (`plan.py templates`) |
-| Make or change one | `plan.py template <name> <routes with commas> --title "..." --trains <skills> --note "..."` |
-| Put ships on one | `plan.py use <ships> <name>` (the tool `plan` with `action=use`) |
+| See the templates and the ships on each | `plan.py templates` (the tool `plan`, `action=templates`) |
+| Make or change one | `plan.py template <name> <routes> --title "..." --trains <skills> --note "..."` |
+| Put ships on one | `plan.py use <ships> <name>`; a hunter keeps its hunt first: `plan.py set <ship> <hunt route>,@reader` |
 | Take one away | `plan.py template <name> none`, once no ship names it |
 
-A template is a guide for one kind of ship: its routes in the order a
-ship tries them, the skills it trains (`--trains`) and, in its note,
-the fit it needs. Keep one for each kind of work of the division, so
-that a ship born tomorrow gets its work with one word.
-
-This guidebook keeps no list of routes that did not pay (Suggi,
-2026-11-16; rule F22). The game changes by the hour: a route that lost
-yesterday may pay today. What a route earns now, with the age of the
-figure, is asked each turn: the tool `routes`, or `SELECT * FROM
-route_earnings` through the tool `hive` with `verb=sql`. How a step of
-the game works is a mechanic, not a verdict on a route: it belongs in
-the sections below. The list this section held until 2026-11-16 is in
-the file's history (`git log -- game/routes/guidebook/intel.md`).
+This guidebook keeps no list of routes that did not pay (rule F22). The
+list it held until 2026-11-16 is in the file's history.
 
 ## 3. Missions That Pay Once
 
@@ -130,42 +105,33 @@ from 21:21 UTC and all twenty voidborn-concurrent (3,000 cr each).
 
 ## 4. Levelling Guide
 
-Which skills a ship of this division levels and on which work (rule
-F23): the work of its own role first, gathering ore only when none is
-open. Per kind of ship: the skill, what raises it, what the next level
-opens, and the template that trains it (section 2).
+Which skills a scout levels and on which work (rule F23): a scout scans
+and explores; gathering ore is the fallback when nothing is due. The
+readings are from `hive.py levels` and `data/fleet/ships/`.
 
-Read 2026-11-15 23:34 UTC (`data/fleet/ships/`): piloting 3 for ten
-scouts and 4 for ten; navigation 2 for fifteen and 3 for five;
-exploration 1 for all twenty; deep core mining 2 to 5 and mining 2 to 4
-from the mining of the first day. In the ten minutes to 23:44 UTC the
-twenty scouts gained 55 exploration XP, 235 navigation XP (one of them
-reached navigation 3 on a third-ring read), 456 piloting XP and 160
-trading XP (voidborn-selling): a census read trains piloting and
-navigation by its jumps and exploration a little. Piloting 10, 20, 30
-and 50 open hull tiers 2 to 5 (shared skill `fleet-play`, levelling);
-at today's rate that is not measured yet.
+| Kind of scout | Skill that matters | What raises it | What the next level opens | Template |
+|---|---|---|---|---|
+| Explorer | navigation, then piloting | jumps: a road read is 14 to 30 jumps out and back, a home read 2 to 6 | navigation 3 opens Signal Fragments (7,000 cr once, list First); piloting 10 opens the tier 2 hulls | @explorer |
+| Reader | exploration, navigation, piloting | every census: places surveyed, jumps flown | piloting 10, 20, 30 and 50 open hull tiers 2 to 5 | @reader |
+| Hunter | weapons, xenobiology | kills of grazers (rule F9) | not measured for a scout yet | own hunt route, then @reader |
 
-Read 2026-11-16 between 03:02 and 03:16 UTC (`hive.py levels`): Piloting 3, 4 and 5 (lowest,
-median, highest; it was 3 and 4 at 23:34 UTC), 121 Piloting XP an hour
-per pilot on average since birth, so 102 hours to Piloting 10 at that
-rate. First Hunt gives 50 Weapons, 15 Xenobiology and 20 Piloting XP
-once; the species tests train Weapons and Xenobiology.
+Readings:
 
-Read 2026-11-16 08:16 to 08:30 UTC (`data/fleet/ships/`, `hive.py levels`):
-Piloting 3, 5 and 5 (lowest, median, highest), 100 Piloting XP an hour
-per pilot on average since birth, 121 hours to Piloting 10 at that rate.
-Navigation 3 or 4 for eleven scouts and 2 for nine: navigation 3 opens
-Signal Fragments (7,000 cr once), so the nine with navigation 2 are sent
-the census first; what one census read adds to navigation is not
-measured.
-
-Read 2026-11-16 12:22 UTC (`hive.py levels`): Piloting 3, 5 and 5
-(lowest, median, highest), 91 Piloting XP an hour per pilot on average
-since birth, 131 hours to Piloting 10 at that rate (121 at 08:30 UTC:
-the once missions of the period are short and train little Piloting);
-median navigation 3, exploration 2 (1 at 2026-11-15 23:34 UTC), mining
-2, deep core mining 3.
+- 2026-11-16 23:28 UTC (`hive.py levels`): 30 scouts, 28 hours played
+  (median); piloting 2, 5 and 7 (lowest, median, highest), 137 piloting
+  XP an hour since birth, 78 hours to piloting 10 at that rate; median
+  navigation 3 (45 XP an hour), exploration 2 (12 XP an hour), mining 4
+  (69), deep core mining 6 (126). Deep core mining and mining lead
+  because gathering was the work most scouts flew; exploration rises
+  slowest.
+- The same hour (`data/fleet/ships/`): the ten scouts born on
+  2026-11-16 stand at navigation 2 and piloting 2 or 3; of the twenty
+  older ones, ten stand at navigation 4 or 5 and ten at 3.
+- 2026-11-16 12:22 UTC: piloting 3, 5 and 5; 91 piloting XP an hour;
+  131 hours to piloting 10. 2026-11-15 23:44 UTC: in ten minutes twenty
+  scouts gained 55 exploration XP, 235 navigation XP and 456 piloting
+  XP on census reads.
+- First Hunt gives 50 weapons, 15 xenobiology and 20 piloting XP once.
 
 ## 5. Ships and Fits
 
@@ -207,11 +173,23 @@ next turn's test (orders.log ENT-008, F17): `not measured`.
 
 ## 7. Open Tests
 
-- Species tests from 2026-11-16 03:11 UTC, one scout each: halo-drifter
-  pays (noble condensate, section 1); sift-ray, chlorophage,
-  lantern-slug and rivetshell do not (the list in this file's history). A drop without a
-  bid of 50 cr is stored, so the run row shows it. Military tests five
-  other species at the same time (`guidebook/military.md`).
+- Species tests from 2026-11-16 03:11 UTC, one scout each: what each
+  kill dropped is in its run row (`data/routes/runs.jsonl`); a drop
+  without a bid of 50 cr is stored, so the row shows it. Military tests
+  other species (`guidebook/military.md`).
+- Caustic sac (bid 420 cr for 50 at nine books, 2026-11-16 23:20 UTC;
+  429 short for the faction's offices): the game's codex text for
+  caustic sour ale and cinderspice names it the chlorophage's sac
+  (spacemolt.com/codex, read 2026-11-16 23:25 UTC). Amberfall Emission
+  Nebula read 3 chlorophages of 55 hull (data/wildlife/amberfall.json,
+  21:57 UTC). hunt-test-amberfall-chlorophage hunts them alone, one
+  scout; its first RESULT line says whether a kill drops a sac.
+- Silicon ore (53,222 short in the reserve; 34 held): no field of the 63
+  systems read holds it (data/scouting/, 2026-11-16 23:20 UTC). Asked at
+  Central Nexus at 420 cr (424 at the best price, 16,189 over all
+  levels), at Ironlight Crossroads (LHS 1140) at 561 cr for 200, at
+  Synchrony at 376 cr for 4. The explorers' 28 road systems are the
+  search for a field.
 - Leads no field we read holds (`data/scouting/`, read 2026-11-16 between 03:02 and 03:16 UTC):
   tritium ice (bid 400 cr for 2,000 at each of five stations of ours and
   973 at Ironlight Crossroads), caustic sac (420 cr, 50 at seven), void-
