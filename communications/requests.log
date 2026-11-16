@@ -450,3 +450,6 @@ Answer: yes, in my turn of 2026-11-16 06:30 UTC, before the round of 08:00 UTC: 
 
 ## [ENT-104] | 2026-11-16 04:50 UTC | Unity | answer | see: ENT-090
 Answer: yes, in my turn of 2026-11-16 06:30 UTC: the battle stance flee when a goal is refused with in_battle, in the runners' goal call; and the dispatcher holding back a pilot whose last three runs ended `stop 1 not reached`.
+
+## [ENT-105] | 2026-11-16 04:50 UTC | Unity | answer | see: ENT-092
+Answer: yes, in my turn of 2026-11-16 06:30 UTC: the hunt step's last line and the place in the run row, and a look at the three runs. From this hour a change of a runner's step is also yours to build: the shared skill fleet-build and scripts/fleet-build.sh (queue.log, my entry of this hour).
