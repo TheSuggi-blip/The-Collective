@@ -510,6 +510,14 @@ and 24,570 runs, about 233,000 to 467,000 cr of fees; the fleet holds 107,707 ir
 ore today. Which way the stations' steel goes is not decided; the hand recipe asks
 no facility and no fee.
 
+Copper piping (26,120 for one station) is reckoned above from verdigris curd
+(`verdigris_smelting`, 4 curd for 3 piping), which the fleet barely holds (37 of
+34,832). The catalog lists a second hand recipe, `draw_copper_piping`: 12 copper ore
+and 2 steel plate make 4 copper piping (`catalog`, recipes that make copper_piping,
+2026-11-16 19:20 UTC). By it the piping takes 78,360 copper ore, about what the
+fleet stores today (75,869), and 13,060 steel plate more (130,600 iron ore), and
+the curd line falls away. Not quoted or made yet: the next step to test.
+
 ## 14. The Faction's Plates and Boards (orders.log ENT-017, P5)
 
 The lockbox and the hiring board take 275 steel plate and 75 circuit boards
