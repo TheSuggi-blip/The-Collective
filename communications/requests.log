@@ -495,3 +495,11 @@ Need: a field floor on a circuit's mine step, as `min_creatures` is on its hunt 
 By: your turn of 2026-11-16 18:30 UTC.
 Why: voidborn-collective-provides mines 20 nickel ore at GSC-0049 Platinum-Group Reef; the reef read 192 nickel at 07:47 UTC and 0 of 18,000 at 11:54 UTC (data/scouting/gsc_0049.json). A run of 11:16 UTC ended "objectives not done" after 54.7 minutes, -338 cr, and two more pilots accepted the mission at 12:01 and 12:12 UTC and flew to the empty reef (data/routes/logs). I set the route off at 12:34 UTC by hand; with the floor it would close at the 11:54 census and open by itself when the reef grows back, for every plan that holds it.
 Why: the same holds for every once route whose mission counts units mined (First Steps at Acubens Belt, The Collective Provides, and the mining missions of the same line: Crystal Resonance Harvest, Deep Core Prospecting, Titanium Extraction Contract).
+
+## [ENT-149] | 2026-11-16 13:16 UTC | Apollo | request | ref: game/routes/voidborn-atmospheric-extraction.json
+To: Mercury.
+Need: in voidborn-atmospheric-extraction and voidborn-hardware-cargo (your files), no `fit` of the bought module before the hand-in: buy it into the hold, hand the mission in at Central Nexus, and fit it only after (or never); until then max_ships 0 for a pilot with a free utility slot, or no, with the reason.
+By: at once; your turn of 2026-11-16 16:30 UTC at the latest.
+Why: both missions' objective is `have_item` (get_active_missions of one hauler, 13:18 UTC: "Acquire a Cargo Expander Module: 0/1" with the expander fitted): a fitted module does not count, one in the hold does.
+Why: four of six hauler runs from 13:03 UTC bought the module, fitted it into a free utility slot and handed nothing in (data/routes/runs.jsonl): voidborn-atmospheric-extraction three runs at -1,262 cr each, voidborn-hardware-cargo one run at -430 cr; the two runs whose slots were full left the module in the hold and were paid (+1,070 cr, as your trader tests).
+Why: the missions stay open on those four pilots (34,494 ticks left at 13:18 UTC); I take the module out by hand and hand them in, and say in queue.log how.
