@@ -24,46 +24,48 @@ at the end of every turn.
 ## Standing Plan
 
 What the traders fly between two turns: `game/routes/plans/trader.json`,
-as it stood at 2026-11-16 09:53 UTC. `hive.py standing` (the tool
-`fleet`, view=standing) prints the same plan with every ship. Every
-figure is credits per ship-hour beside the scale of `hive.py tasks`
-(08:47 UTC: the best repeating route with two runs or more,
-hunt-test-achernar-cinder-sylph, 7,910), and 0 for a ship without work.
-A mission that pays once is judged with its reward (orders F19).
+as it stood at 2026-11-16 12:52 UTC. `hive.py standing` (the tool `fleet`,
+view=standing) prints the same plan with every ship. Every figure is
+credits per ship-hour beside the scale of `hive.py tasks` (12:51 UTC:
+the best repeating route with two runs or more, hunt-test-homam-frost-moth,
+4,142), and 0 for a ship without work. A mission that pays once is
+judged with its reward (orders F19).
 
 | # | Route | Ships | Expected | Why it stands here |
 |---|---|---|---|---|
-| 1 | voidborn-first-steps-board | 3 at a time, every plan that holds it | +883 to +922 cr once a run in 12 to 17.5 minutes (4 runs), about 3,000 to 4,600 once per ship-hour | Ten traders had not done First Steps in the Void at 09:40 UTC; it opens the voidborn mastery line. Acubens Belt carbon bounds it (section 3) |
-| 2 | voidborn-network-expansion | 20 | +1,398 to +1,450 cr once in 8 to 14 minutes (40 runs of the fleet), about 6,000 to 10,900 once per ship-hour | Every trader that has First Steps done |
-| 3 | voidborn-collective-provides | 2 | +2,188 cr once in 48 minutes (1 run), about 2,700 once per ship-hour | The next link; the nickel of one lawless reef bounds it |
-| 4 | voidborn-signal-protocol | 20 | +3,409 cr once in 14 minutes (1 run), about 14,600 once per ship-hour | The link after The Collective Provides |
-| 5 | voidborn-signal-fragments | 10 | +6,792 to +6,909 cr once in 14 to 26 minutes | Navigation 3 only: both traders that have it are done; stands for a trader that reaches it |
-| 6-12 | The older missions that pay once and the Node Beta chain | 0 | -- | Every trader has flown or booked them; they stay for a pilot born later |
-| 13 | mine-the-experiment-haze | 1, a trader with a Gas Harvester I | +3,008 cr in 77.5 minutes on its first run, about 2,330 per ship-hour (section 1) | Test: hydrogen into the Node Beta bid of 33 cr (34 units at the best price, 08:30 UTC) |
-| 14 | census-frontier | up to 12 (Intel's route) | -620 measured: a reading cost | Open only when a frontier system is due |
-| 15 | park | the rest | 0 | A docked ship costs nothing |
+| 1-2 | voidborn-first-steps-board, voidborn-network-expansion | 3 and 20 | +883 to +1,450 cr once a run in 8 to 17.5 minutes | Every trader has both booked; they stay for a pilot that has not |
+| 3 | voidborn-collective-provides | 2, off | +2,188 to +2,344 cr once in 24 to 48 minutes (8 runs) | Off since 12:34 UTC: the GSC-0049 reef reads no nickel (section 2). On again when a census reads it back |
+| 4 | voidborn-signal-protocol | 20 | +3,407 to +3,409 cr once in 14 minutes | Behind The Collective Provides |
+| 5 | voidborn-signal-fragments | 10 | +6,792 to +6,909 cr once in 14 to 26 minutes | Navigation 3 only: 11 traders lack it |
+| 6-7 | voidborn-hardware-cargo, voidborn-atmospheric-extraction | 1 each (tests) | about +1,050 and +690 cr once after the buy and fuel, by the hand tests (section 3) | After The Collective Provides; the module stays fitted |
+| 8-13 | The older missions that pay once and the Node Beta chain | chain 4 | the chain +10,869 cr once in about 34 minutes | Every trader has flown or booked them; the chain's crystal ask bounds it (section 3) |
+| 14 | voidborn-resonance-finish | 2 | +7,000 and +8,000 cr once less about 6,360 cr of crystals | For a pilot the chain left after its first link; all 11 are miners today |
+| 15 | mine-the-experiment-haze | 1, a Gas Harvester I | 2,330 and 3,197 per ship-hour on its two runs that sold (section 1) | Hydrogen into the Node Beta bid, which it names (26 cr, 20 units) |
+| 16 | mine-the-experiment-haze-synchrony | 1, test | estimate 2,400 (routemaker) | The same field into the Synchrony Hub bid, so the two tests do not measure each other |
+| 17 | mine-gsc-0016-emission-nebula | 1, test (added by fill.py) | estimate 992 | Plasma and argon into Node Beta, lawless, empty hold |
+| 18 | census-frontier | up to 12 (Intel's route) | -620 measured: a reading cost | Open only when a frontier system is due |
+| 19 | park | the rest | 0 | A docked ship costs nothing |
 
-For the four hours after the turn of 08:30 UTC: the ten traders without
-First Steps fly the board route, then Network Expansion and The
-Collective Provides and The Signal Protocol, about 7,900 cr once each
-after fuel; the other ten fly the links of that line they have not
-flown, then wait docked or read a frontier system. No trader route
-repeats and pays: Trade's steady figure was -27 cr per ship-hour over
-all 20 ships in the four hours to 09:39 UTC (35,000 cr paid once
-apart), against the scale above.
+For the four hours after the turn of 12:30 UTC: four traders fly (the
+haze route, the GSC-0016 test, and one trader on each of the two new
+once routes), sixteen wait docked. Nothing that pays or is under test
+is open to them (fill gate PASS, 12:50 UTC): every once route is booked
+or waits behind The Collective Provides or navigation 3, and the
+hydrogen bids carry two gas ships. Trade's figure was -58 per ship-hour
+over all 20 ships in the four hours to 12:51 UTC (72,000 cr paid once
+apart); 4,818 cr of it is one pilot's weekly tax booked into a run
+(errors.log ENT-056): without it about +3.
 
-What changes it: the tree that The Collective Provides opens on the
-Central Nexus board (section 7): the gas harvester and cargo expander
-missions to test, the mining ones for Mining;
-a repeating route only from a bid with depth, of which none stands
-between our stations (section 2), or `requires.bid` from the Fleet
-Admiral for the plasma import of section 7.
+What changes it: Unity's word on Neural Matrix Delivery (5,000 cr once,
+the goods handed out at the accept; requests.log ENT-146), then a route
+for every pilot the board offers it to; nickel back at the GSC-0049
+reef; a hydrogen bid that stands longer than an hour.
 
 ## 1. Routes That Pay
 
 | Route | Credits per ship-hour, after all costs | Date | Note |
 |---|---|---|---|
-| `mine-the-experiment-haze` (gas from The Experiment Haze with a Gas Harvester I, sold at Node Beta) | +3,008 cr in 77.5 minutes, one run: about 2,330 per ship-hour after fuel; 104 hydrogen sold at 34 cr (3,536 cr), 325 units mined (data/routes/runs.jsonl, 08:36 UTC) | 2026-11-16 | One run, one trader; the Node Beta hydrogen bid read 34 cr for 160 at its best price before the sale (fill.py status) and its regain is not measured. The second run, from 09:59 UTC, shows whether the bid stood again; one ship until then |
+| `mine-the-experiment-haze` (gas from The Experiment Haze with a Gas Harvester I, sold at Node Beta) | Three runs (data/routes/runs.jsonl): 08:36 UTC +3,008 cr in 77.5 minutes (104 hydrogen at 34 cr), 2,330 per ship-hour; 09:59 UTC +4,129 cr in 77.5 minutes (136 hydrogen), 3,197 per ship-hour; 11:17 UTC -5,346 cr in 79.5 minutes, nothing sold (the Node Beta bid read 0 at the sale; the gas stored there), of which 4,818 cr is the weekly tax: about -528 from the run | 2026-11-16 | One ship. Since 12:41 UTC it names its bid (`requires.bid` hydrogen at Node Beta, 26 cr, 20 units): the hydrogen bids of our stations come and go within the hour at 30 to 35 cr for 36 to 136 units (the tool market, 11:24 to 12:31 UTC). The same field sold at Synchrony Hub is a test of its own |
 
 
 ## 2. What Did Not Pay
@@ -77,6 +79,8 @@ Admiral for the plasma import of section 7.
 | Gas tests `mine-stellar-siphon` and `mine-lesath-gas-cloud`, one trader each with a Gas Harvester I (1,214 cr each, booked once) | One run each, 03:13 UTC: Stellar Siphon -276 cr in 44.8 minutes, Lesath -330 cr in 58.8 minutes, both "not docked for the sale" (the mine runner's dock fault, queue.log ENT-073); the Lesath hold came back with hydrogen, neon, ion and xenon and no plasma, the one gas it sells. Books of 04:42 UTC: plasma bid 100 cr for 4 units (9 in all) at Node Beta, every other gas bid 2 cr at our stations | 2026-11-16 | A second Lesath run, started before the route left the plan, sold 5 plasma at Node Beta: +17 cr in 67 minutes (05:52 UTC), about +15 per ship-hour. Out of the plan at 04:46 UTC: the bids carry about 0 ships for four hours (fill.py status). The two harvesters stay fitted; the gases went to storage at Central Nexus, none sold under its worth |
 | Ceramite plating held in two flagships' holds (the Fleet Admiral's test of 2026-11-16) | No bid of worth at our six stations or at Ironlight: Central Nexus 3 cr for 1,198 (the best bid has not moved since 23:43 UTC through the read of 03:12 UTC), Synchrony Hub 35 cr for 604, The Experiment 25 cr for 772 (books of 03:00 to 03:12 UTC; `ledger.py prices ceramite_plating`) | 2026-11-16 | The one-unit station bid that climbed from 1,067 to 1,185 cr has not come back in about 3.5 hours. Keep the plating stored; sell one unit when the ledger shows the top unit again |
 | `voidborn-first-hunt-achernar` (Military's route; First Hunt at Achernar Belt), for traders | Two trader runs, 09:07 and 09:14 UTC: -77 cr each, no hunt; the six runs of other divisions from 08:02 UTC the same (data/routes/runs.jsonl) | 2026-11-16 | The hunt step leaves when a ship not ours stands at the belt (`alone`) or the board does not offer First Hunt. fill.py counts it as paying on its older measure (+80 a run over 31 runs) and puts it back into the plan; out again at 09:53 UTC |
+| `voidborn-collective-provides` (The Collective Provides: 20 nickel ore mined at GSC-0049 Platinum-Group Reef) | 8 paid runs of the fleet, +2,188 to +2,344 cr once each; then the reef read nickel 0 of 18,000 and platinum 0 of 7,000 at 11:54 UTC (data/scouting/gsc_0049.json) and a run of 11:16 UTC ended 'objectives not done' after 54.7 minutes, -338 cr | 2026-11-16 | Off since 12:34 UTC. The other nickel we read, Gliese 876 Belt, is 659 among about 7,000 iron and carbon (08:49 UTC), 7 jumps: three holds or more a run with nowhere to store. On when a census reads nickel at the reef; a field floor on a circuit's mine step is asked (requests.log ENT-148) |
+| The weekly tax inside a run's credits | The Voidborn assessment of 2026-11-16 12:27:32 UTC took 83,940 cr from the 20 traders (4,038 to 4,818 each; get_tax_estimate); 38 runs of the fleet in flight then carry -149,123 cr (runs.jsonl) | 2026-11-16 | Not a route that lost: the tax is the week's. Read a run that spans an assessment without it; asked of Unity (errors.log ENT-056, requests.log ENT-147). Next assessment about 2026-11-23 12:27 UTC |
 
 ## 3. Missions That Pay Once
 
@@ -96,6 +100,11 @@ was flown the first time.
 | `voidborn-collective-provides` (The Collective Provides, the link after Network Expansion) | 2,500 cr; voidborn mastery XP | RESULT by hand: hold stored at Central Nexus, accepted, 20 nickel ore mined at GSC-0049 Platinum-Group Reef (lawless, 5 jumps), handed in at Central Nexus, +2,188 cr after fuel in 48 minutes | 2026-11-16 | No home field holds nickel; the reef read 192 at 07:47 UTC. Its mix (nickel, platinum, rhodium, osmium, iridium) filled the hold with 14 nickel among 58 units, so the run went home to storage and back: two trips. The other ores have no bid above 2 cr at our stations (books of 09:05 UTC): stored. `requires.booked` Network Expansion, `max_ships` 2. Its hand-in opens eight missions of the same line (section 7) |
 | `voidborn-signal-protocol` (The Signal Protocol, after The Collective Provides) | 3,500 cr; voidborn mastery XP 25 | RESULT by hand: accepted at Central Nexus, the arrays recalibrated on docking at Node Beta and Node Gamma, handed in at Central Nexus, +3,409 cr after fuel in 14 minutes | 2026-11-16 | Nothing carried, nothing bought. `requires.booked` The Collective Provides, `max_ships` 20; offered to every Admiral (queue.log ENT-096) |
 | `voidborn-first-steps` (First Steps in the Void, for a pilot that holds it) | 1,000 cr | Logistics' route: 26 runs of the fleet, 810 cr a run in about 10 minutes (route file, measured) | 2026-11-16 | Six traders hold the mission (get_active_missions, 05:02 UTC): in the trader plan since 05:07 UTC, 2 ships at a time across all plans; Acubens Belt carbon ore bounds it (97 units at 04:46 UTC, 15 a pilot) |
+| `voidborn-hardware-cargo` (Hardware Optimization: Cargo, after The Collective Provides) | 1,500 cr; voidborn mastery XP 15 | By hand 2026-11-16 12:41 to 12:43 UTC: accepted at Central Nexus, one Cargo Expander I bought there after the accept (1,056 cr, 1,066 with the tax), the objective read 1 of 1 at once, handed in: +434 cr; fitted, the hold went from 65 to 85 | 2026-11-16 | The route buys at Synchrony Hub (7 at 352 cr, book of 12:40 UTC; limit 420): about +1,050 cr after fuel. One ship until its first RESULT line; the dispatcher gave it to the other tester at once |
+| `voidborn-atmospheric-extraction` (Atmospheric Extraction: Setup, after The Collective Provides) | 2,000 cr; voidborn mastery XP 15 | By hand 2026-11-16 12:41 to 12:43 UTC: accepted, one Gas Harvester I bought at Central Nexus after the accept (1,554 cr, 1,569 with the tax; 1 at that price), 1 of 1 at once, handed in: +431 cr and a fitted harvester | 2026-11-16 | A harvester owned before the accept did not count (09:32 UTC); bought after it, it counts. The route buys at Node Beta (14 at 1,202 cr; limit 1,300) and skips a pilot that carries one |
+| `voidborn-resonance-finish` (Resonance Substrate and Final Calibration for a pilot the chain left after Conductive Lattice) | 7,000 + 8,000 cr | Not flown yet. From 11:11 UTC six chain runs read 'energy_crystal: not bought; final_calibration not offered' when the Central Nexus crystal ask left 420 cr (3,500 at 11:35, 420 x 65 at 11:52, 420 x 43 at 12:48 UTC); the chain skips a pilot with its first link booked. 11 pilots, all miners, stood so at 12:49 UTC (data/fleet/onetime.json) | 2026-11-16 | Written 12:49 UTC, max_ships 2; the chain's max_ships 10 -> 4 on the crystal ask. A run without crystals ends 'not offered': no try, it rests an hour (requires.booked) |
+| The Crimson Resonance (the link after Signal Fragments, 8,500 cr) | -- | One accept with an empty hold, 2026-11-16 12:36 UTC: the hold stayed empty, no titanium alloy handed out | 2026-11-16 | Not flown (orders ENT-014): 5 titanium alloy would be bought (about 6,500 cr) for 8,500 cr at 34 jumps. The trader holds the mission |
+| Neural Matrix Delivery (Central Nexus board, 5,000 cr; deliver 8 phase matrix to Sirius Observatory Station, Solarian, 9 jumps) | 5,000 cr; navigation 25, trading 40 XP | One accept with an empty hold, 2026-11-16 12:36 UTC: 8 phase matrix (size 2, base value 1,400 each) put into the hold; fixer exposure 0 | 2026-11-16 | Offered to 10 of 10 traders read, booked 0 times in the fleet. Carrying goods of value beyond the border needs the Fleet Admiral's word (orders F13; requests.log ENT-146); the trader keeps mission and goods docked until then. Nova Terra, one jump short, was a 304 cr round trip of about 25 minutes |
 
 ## 4. Levelling
 
@@ -113,7 +122,11 @@ docked there (the game's `craft` help, 2026-11-15).
 ## 5. Ships and Fits
 
 Every trader flies the starter Threshold (cargo 65, fuel 95, hull 75)
-with a mining laser and a pulse laser. Two traders carry a Gas
+with a mining laser and a pulse laser. Since 2026-11-16 12:43 UTC one
+more trader carries a Gas Harvester I and one a Cargo Expander I (hold
+85), each bought for a mission that paid more than the module
+(section 3); a Cargo Expander I asks 352 cr at Synchrony Hub and 173
+cr at Ironlight Crossroads (books of 12:39 to 12:40 UTC). Two traders carry a Gas
 Harvester I since 2026-11-16 03:12 UTC: bought and fitted at Node Beta
 for 1,214 cr each with the 1% tax (15 left there at 1,202 cr), the
 tool of the two gas tests; the tests are out (section 2) and no more
@@ -157,9 +170,28 @@ each answer read. A route's craft step is built from this
   13 to 17 units between 02:14 and 03:03 UTC, the second level's regain
   is `not measured`. One load every two hours or so: not a route until
   `requires.bid` lets a ship fly only when the bids stand.
-- Signal Fragments: navigation 3 is the condition (section 3); what
-  the next link, The Crimson Resonance, asks of the law of Crimson
-  space is not read.
+- Signal Fragments: navigation 3 is the condition (section 3); its
+  next link, The Crimson Resonance, hands out nothing at the accept and
+  is not flown (section 3).
+- Titles on the Central Nexus board that the fleet has booked 0 times
+  (boards of 10 traders, about 12:34 UTC, `boards.py`): Listening Orders
+  (7,000 cr and a ship scanner; survey Sarin, Greymist and more),
+  Deep Space Cartography (4,000 cr; The Crucible and Horizon, 18 jumps
+  each from home), Local Sector Survey (2,500 cr; Sirius, Node Alpha,
+  Horizon), Anomalous Readings (500 cr; Gacrux, a wormhole), Titanium
+  Extraction Contract (3,500 cr; 20 titanium ore: the one field we read
+  with titanium, HD 147513 Belt, holds 127 among 2,720 units),
+  Amplification Materials and Crystal Resonance Harvest (4,000 cr each,
+  after The Collective Provides; silver ore and energy crystal are a
+  few units in fields of about 200,000). The survey and visit titles
+  are offered to Intel (queue.log ENT-102). The smuggling couriers on
+  the same board carry goods the Solarian law lists as contraband: not
+  Trade's.
+- S6: the Outpost Kit at Ironlight Crossroads asked 74,010 cr (3 at
+  10:04, 2 at 12:39 UTC; 216,825 cr for 1 at 2026-11-15 23:21 UTC, the
+  tool market). No station core, salvage metal, anchor plate, alloy
+  scale or foil scale stands on offer in our eight books (read 07:45 to
+  12:48 UTC); Synchrony Hub bids 213 cr for 20 alloy scale.
 - Control nodes made by hand, read again 2026-11-16 05:00 UTC: Node
   Gamma bids 685 cr for 250 and Node Alpha 675 for 100, so two nodes
   sell for 1,370; the inputs at their cheapest depth (two circuit boards
