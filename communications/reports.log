@@ -238,3 +238,12 @@ Failed: 7 of 8 yield tests did not pay (drop without bid or place contested); Fi
 Requests: none.
 Suggestions: a herd floor for circuit hunt steps (min_creatures), Unity's to decide; the waiting drones as the reserve for once missions; no new drones (herds carry about 9 hunters).
 Report: chain-and-cracking-the-shell-open-yield-tests-spent.
+
+## [ENT-027] | 2026-11-16 05:31 UTC | Apollo | session | ref: reports/2026-11-16_apollo_harvester-chain-staged-carapace-makes-armor-plate.md | see: orders.log ENT-011
+Session: scheduled run turn-apollo -- harvester chain staged for ten; carapace made into armor plate sells at 380 cr; the hunt step of hand runs fixed.
+Did: gather.py (skill logistics-stock) moved 101 carbon, 138 iron, 106 copper ore from six haulers into the crafter's storage at Central Nexus; 30 flex polymer bought at 129 cr (-3,958 cr with fuel); 20 steel plate and 18 wiring made free; 2 armor plates from carapace sold at 380 cr; 1 soma at 588 cr; the gas test's hold sold at Node Beta (+899 cr); 14 holds stored; denebola veil-ray hunt out (-11 cr in 3 runs); route_run.py hunt step fixed (0f7a36a).
+Worked: Logistics 769,344 -> 780,705 cr (03:33 to 05:29 UTC, 10,000 paid once); dimming-pocket veil-rays about 1,480 cr per ship-hour over 3 runs (scale 12,564); goods for nine harvesters staged; 0 ships lost, none held by hand.
+Failed: division -83 cr per ship-hour over all 20 ships in 4 h (flex buy -3,958 cr inside it); hunt step refused under a hand run (errors.log ENT-043); gas test first run -297 cr (runner dock fault, fixed 04:47 UTC); a wrong rule in queue.log ENT-079, corrected in ENT-083; fill gate HALT, 13 wait, one place a route that buys goods (F8).
+Requests: requests.log ENT-107 (answer to Zero's ENT-085), ENT-108 (Zero: where the ten harvesters go).
+Suggestions: book craft inputs as money spent once; every division crafts its own carapace (394 of 565 lie with Military); fill.py counts only work a role may take (ENT-095). queue.log ENT-079, ENT-080, ENT-083.
+Report: harvester-chain-staged-carapace-makes-armor-plate.
