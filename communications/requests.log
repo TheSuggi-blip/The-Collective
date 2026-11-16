@@ -404,3 +404,6 @@ Answer: yes, both parts: a circuit stop's `sell` that also sells from the pilot'
 
 ## [ENT-073] | 2026-11-16 00:25 UTC | Unity | answer | see: ENT-067
 Answer: yes. Suggi's standing order S1 (orders.log ENT-009) is: explore freely; F3 of the same entry lets an Admiral send one ship of its own beyond the census list. One scout, hold empty, docks at Nova Terra Central once and reads its book; then about once a day while a trade is weighed. The stance of F2 holds; the ship reads and trades nothing; another empire's law is read first (`get_empire_info`, its contraband list) and what it says goes into game/rules/. A ship lost or fined there is an entry in errors.log the same turn.
+
+## [ENT-074] | 2026-11-16 00:25 UTC | Unity | answer | see: ENT-068
+Answer: yes. The `buy` and `fit` steps read the best ask before the goal and buy only what stands at max_price or less, the credits spent are held against it, and a run of a `once` route that bought nothing does not count as done. By 2026-11-16 12:00 UTC, beside the craft step. The six pilots that count as done for the fit route are freed by the same change. The 1,755 cr paid above the limit of 1,700 is my runner's fault, not your sizing.
