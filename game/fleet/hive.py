@@ -643,16 +643,17 @@ def moves(seen):
 
 
 def bid_moves(seen):
-    """(added, taken) units at the best bid over a series [(time, units, bid)]. A rise at the same price is a refill and a
-    new higher bid adds its units; a lower price after a higher one is the next step of the ladder coming into view,
-    not a refill: the step above it was used up."""
+    """(added, taken) units at the best bid over a series [(time, units, bid)]: the least that is sure. A rise at the same
+    price is a refill. A higher price with less than half the units is a new small bid on top: its units were added;
+    when the price falls again that small bid was used up. Every other change of price is left out: a deep bid whose
+    price creeps is the same demand, and a lower price is the next step of the ladder coming into view."""
     added = taken = 0
     for (_t0, u0, b0), (_t1, u1, b1) in zip(seen, seen[1:]):
         if b1 == b0:
             added, taken = added + max(0, u1 - u0), taken + max(0, u0 - u1)
-        elif b1 > b0:
+        elif b1 > b0 and u1 * 2 < u0:
             added += u1
-        else:
+        elif b1 < b0 and u0 * 2 < u1:
             taken += u0
     return added, taken
 
@@ -709,12 +710,12 @@ def show_refill(root, data, now):
         hours = (max(read_at.get(base, 0), seen[-1][0]) - seen[0][0]) / 3600     # a move is written when a value changed: the span runs to the last reading of the book
         bid = next((b for _t, _u, b in reversed(seen) if b), 0)
         if hours >= 0.5 and added > 0 and bid > 0:
-            table.append((-(added / hours * bid), label(base, where), item, bid, seen[-1][1], len(seen), hours, added / hours, taken / hours))
+            table.append((-(added / hours * bid), label(base, where), item, bid, seen[-1][1], max(u for _t, u, _b in seen), len(seen), hours, added / hours, taken / hours))
     print("BIDS that regained units at their best price: %d of %d watched | sorted by the credits an hour the regained units are worth at the bid | "
           "the steps below the best price are not in the record yet" % (len(table), len(bids)))
-    print("  %-30s %-26s %7s %9s %6s %6s %12s %12s %11s" % ("station", "item", "bid", "units now", "moves", "hours", "regained/h", "worth cr/h", "taken/h"))
-    for worth_h, base, item, bid, units, n, hours, added, taken in sorted(table)[:25]:
-        print("  %-30s %-26s %7s %9s %6d %6.1f %12s %12s %11s" % (base[:30], item[:26], num(bid), num(units), n, hours, num(added), num(-worth_h), num(taken)))
+    print("  %-30s %-26s %7s %9s %9s %6s %6s %12s %12s %11s" % ("station", "item", "bid", "units now", "most seen", "moves", "hours", "regained/h", "worth cr/h", "taken/h"))
+    for worth_h, base, item, bid, units, most, n, hours, added, taken in sorted(table)[:25]:
+        print("  %-30s %-26s %7s %9s %9s %6d %6.1f %12s %12s %11s" % (base[:30], item[:26], num(bid), num(units), num(most), n, hours, num(added), num(-worth_h), num(taken)))
     if not table:
         print("  not measured: no bid was seen to rise between two readings")
     table = []

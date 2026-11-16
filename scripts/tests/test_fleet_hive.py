@@ -63,6 +63,7 @@ class HiveTests(unittest.TestCase):
         self.assertEqual(self.hive.moves([(0, 5)]), (0, 0, 0.0))
         # 72 units at 38 are sold out and the step of 7,470 at 34 comes into view: no refill; then 72 at 38 stand again: 72 came back
         self.assertEqual(self.hive.bid_moves([(0, 72, 38), (60, 7470, 34), (120, 7400, 34), (180, 72, 38), (240, 90, 38)]), (72 + 18, 72 + 70))
+        self.assertEqual(self.hive.bid_moves([(0, 67284, 18), (60, 67515, 19), (120, 56480, 21)]), (0, 0))      # a deep bid whose price creeps is the same demand
         hour = lambda h: time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(1_800_000_000 + h * 3600))
         with open(self.data / "wildlife" / "history.jsonl", "w") as handle:
             for h, herd in ((0, {"belt": {"veil_ray": 6}}), (1, {}), (2, {"belt": {"veil_ray": 4}})):
