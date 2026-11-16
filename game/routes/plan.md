@@ -115,10 +115,9 @@ Planned:
 
 | What | When |
 |---|---|
-| A route that sells stored neural soma from storage at Synchrony Hub and Node Beta into station bids of 600 cr or more, sent only while such a bid stands (requests.log ENT-065); until then by hand with one hauler when a bid is read | after 2026-11-16 12:00 UTC |
-| First Steps in the Void for the 14 haulers that still hold it, once game/routes/voidborn-first-steps.json is on again (requests.log ENT-064); the Acubens belt refills its carbon | turn T7 and T8 |
-| voidborn-first-hunt-gsc and voidborn-first-hunt-acubens into the plan when their first RESULT lines are read | turn T8 |
-| A craft-and-sell route for stored ore once the circuit runner has its craft step (requests.log ENT-013), only where the depth at the best bid (best_buy_qty, read live with view_market) pays the fuel | after 2026-11-16 12:00 UTC |
+| Make about ten Ice Harvester I at the Central Nexus workshop from the staged goods (guidebook logistics.md, section 11) when Mining's silicon ore and energy crystal land (requests.log ENT-094); fit them where Zero names (ENT-108), and fit the one made before for the ice route Zero names (ENT-093) | turn of 2026-11-16 08:45 UTC |
+| A route that crafts carapace into armor plate where it is stored and sells into the 233 to 380 cr station pools, and one that sells stored soma, both sent only while a bid stands (requests.log ENT-065: craft step, sale from storage, requires.bid); until then by hand where a hauler stands | after 2026-11-16 12:00 UTC |
+| mine-achernar-gas-pocket: read its second RESULT line (the first with the runner's dock fix); out of the plan if it loses | turn of 2026-11-16 08:45 UTC |
 | Steel plate for a faction lockbox from stored iron at the free workshop (10 ore a plate), when the Fleet Admiral names the builder and the station (guidebook logistics.md, section 8) | on the Fleet Admiral's word |
 
 ## miner
