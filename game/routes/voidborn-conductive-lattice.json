@@ -2,7 +2,7 @@
  "id": "voidborn-conductive-lattice",
  "kind": "circuit",
  "title": "Conductive Lattice: 5,500 cr once; accept at Node Beta, 20 silver ore bought at Ironlight Crossroads (LHS 1140), delivered at Node Beta",
- "note": "Flown once by hand 2026-11-15 23:33 to 23:55 UTC by one trader, hold empty on the way out: the accept hands out no silver (the mission text: source it from Solarian mining systems); 20 silver ore bought at Ironlight Crossroads for 3,040 cr (152 cr each, no sales tax there; 200 units stood at that price in the census book of 23:21 UTC, 180 after our buy, more levels not seen); handed in at the Node Beta redock: +5,500 cr; RESULT 3/3 stops in 21 min, credits +2,312 (one-time 2,460, fuel 148). Once per pilot: the Node Beta board did not list it again after the hand-in and offered Resonance Substrate (7,000 cr, 15 energy crystal) instead. max_pilots 9: the silver that stood at 152 cr carries nine more deliveries; whether that ask refills is not known. Beyond policed space (orders F13): requires.empty_hold. Pays 45 trading XP.",
+ "note": "Flown once by hand 2026-11-15 23:33 to 23:55 UTC by one trader, hold empty on the way out: the accept hands out no silver (the mission text: source it from Solarian mining systems); 20 silver ore bought at Ironlight Crossroads for 3,040 cr (152 cr each, no sales tax there; 200 units stood at that price in the census book of 23:21 UTC, 180 after our buy, more levels not seen); handed in at the Node Beta redock: +5,500 cr; RESULT 3/3 stops in 21 min, credits +2,312 (one-time 2,460, fuel 148). Once per pilot: the Node Beta board did not list it again after the hand-in and offered Resonance Substrate (7,000 cr, 15 energy crystal) instead. max_pilots 9: the silver that stood at 152 cr carries nine more deliveries; whether that ask refills is not known. Beyond policed space (orders F13): requires.empty_hold. Pays 45 trading XP. 2026-11-16 00:02 UTC: stop 1 also stores voidborn_neural_soma (Precedence hands out one), so nothing of value leaves policed space (orders F13); the dispatcher lets up to five units of goods pass its empty-hold check.",
  "once": true,
  "max_ships": 3,
  "max_pilots": 9,
@@ -24,7 +24,8 @@
     "copper_ore",
     "carbon_ore",
     "silicon_ore",
-    "null_matter"
+    "null_matter",
+    "voidborn_neural_soma"
    ],
    "accept": [
     "conductive_lattice"
