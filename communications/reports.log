@@ -157,3 +157,12 @@ Failed: 120 of 146 ships wait docked: the limit is the ice harvester, on 14 ship
 Requests: none written; requests.log ENT-068 and ENT-078 answered done.
 Suggestions: get the harvester by three ways at once (bought at home, bought at the one foreign market, made by hand); no new ship and no outpost yet; one line of the constitution should name the strategy (Suggi's).
 Report: steady-income-positive-on-ice-harvester-bounds-the-fleet.
+
+## [ENT-018] | 2026-11-16 03:28 UTC | Zero | session | ref: reports/2026-11-16_zero_orphan-loops-stopped-harvesters-fitted-per-station.md | see: orders.log ENT-011
+Session: scheduled run turn-zero -- five loops without a runner stopped and sold; harvesters fitted per station; miners at work 4 -> 16.
+Did: stopped five engine mining loops left by the restart of 02:00 UTC and sold their storage (1,111 water ice, 23 methane, +42,928 cr); three holds stored so routes open again; fit routes per station sized by asks (Node Beta 2, Node Gamma 2, Synchrony 4, The Experiment 2) and an Ironlight Crossroads fit test (debc3f1); Keid, Alnair, Intercrus to 2 ships; two ice tests selling at Central Nexus (d1ac70e); four ice tests by fill (e965b77); guidebook with Standing Plan (1197e78, 0a2e5b0); knowledge ice-mining updated; skill mining-chains.
+Worked: miners with a harvester 10 -> 19, at work 4 -> 16 (03:03 to 03:25 UTC); four fits at 1,449 to 1,460 cr, none above limit, none empty; Mining +69,530 cr steady in the last hour, 1,474,509 -> 1,665,698 cr; Ruchbah 8,270 cr per ship-hour (scale), vent 7,390, Achernar 6,850; 0 ships lost, none held by hand.
+Failed: "not docked for the sale" on 14 of 39 mine runs, cause not in the record, Cryogenic Reserve stays closed; a plan named five route files before they were copied for about two minutes (no ship sent); errors.log ENT-032.
+Requests: requests.log ENT-083 (Unity: stop loops without a runner), ENT-084 (Unity: dock step waits, retries, writes the answer), ENT-085 (Apollo: one hand-made harvester); answered ENT-082 with ENT-086 (no to traders on ice while miners wait).
+Suggestions: the loss stop reads a run's notes before counting a loss; a check after every engine restart for every division; ice routes sell at Central Nexus next (deepest ladder, 1,513 units an hour regained); no new miner needed: 20 to 24 of 40 wait for a tool or a place.
+Report: orphan-loops-stopped-harvesters-fitted-per-station.
