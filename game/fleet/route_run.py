@@ -10,7 +10,7 @@ which pilot flies it, and where a pilot is, stays in the unit's data folder:
               "only_if_active": ["Mission Title"],   skip the stop unless one of these is still open
               "skip_if_hold": {"item_id": N},        skip the stop when the hold has these already
               "redock": true,                 undock and dock again (a delivery counts on docking)
-              "store":  ["item_id", ...],     hold -> personal storage here
+              "store":  ["item_id", ...],     hold -> personal storage here; "all": every good aboard
               "sell":   [{"item": "...", "min_price": N}],
               "buy":    [{"item": "...", "qty": N, "max_price": N, "one_time": true}],   max_price: the most a unit may cost, tax included
                                               qty = units wanted in the hold; one_time: goods for a
@@ -200,6 +200,15 @@ def cargo():
     return {r.get('item_id'): int(r.get('quantity') or 0) for r in rows if isinstance(r, dict)} if isinstance(rows, list) else {}
 
 
+def store_list(want, hold):
+    """The goods a stop's `store` moves from the hold into storage: the named ones that are aboard, or with `store: "all"`
+    every good aboard. The once routes of First Hunt and First Steps left loot and ore aboard, and a few units closed every
+    route with `requires.empty_hold` to the pilot (requests.log ENT-120, 2026-11-16)."""
+    if want == 'all':
+        return [item for item, n in hold.items() if n]
+    return [item for item in (want or []) if hold.get(item)]
+
+
 def book_onetime(title, amount):
     with open(ONETIME_FILE + '.lock', 'w') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
@@ -323,7 +332,7 @@ for n, stop in enumerate(ROUTE['stops']):
         time.sleep(11)
         hand_in(done, onetime)
     hold = cargo()
-    for item in stop.get('store') or []:
+    for item in store_list(stop.get('store'), hold):
         if hold.get(item):
             d = raw('deposit', {'item_id': item, 'quantity': hold[item], 'target': 'self', 'source': 'cargo'}, group='spacemolt_storage')
             if 'error' in d:

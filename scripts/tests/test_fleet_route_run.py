@@ -123,5 +123,22 @@ class BattleAndHuntWordTests(unittest.TestCase):
         self.assertIn("objectives not done; the step said: {said}; the ship stood at {where_now()}", source)
 
 
+class StoreStepTests(unittest.TestCase):
+    def test_store_all_names_everything_aboard(self):
+        # 2026-11-16: the once routes of First Hunt and First Steps left their loot and their ore aboard (carapace, meat,
+        # carbon, lead ...); a few units closed every route with `requires.empty_hold` to the pilot. `store: "all"` at a
+        # stop moves every good aboard into the pilot's storage there.
+        pick = functions("store_list")["store_list"]
+        hold = {"creature_carapace": 7, "raw_xeno_meat": 3, "lead_ore": 0}
+        self.assertEqual(pick("all", hold), ["creature_carapace", "raw_xeno_meat"])
+        self.assertEqual(pick(["raw_xeno_meat", "carbon_ore"], hold), ["raw_xeno_meat"])
+        self.assertEqual(pick(None, hold), [])
+        self.assertEqual(pick("all", {}), [])
+
+    def test_the_store_step_uses_store_list(self):
+        source = (FLEET / "route_run.py").read_text(encoding="ascii")
+        self.assertIn("for item in store_list(stop.get('store'), hold):", source)
+
+
 if __name__ == "__main__":
     unittest.main()
