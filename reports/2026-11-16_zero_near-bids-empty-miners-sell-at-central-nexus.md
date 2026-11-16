@@ -88,7 +88,9 @@ Central Nexus sold 285 water ice and 11 methane from their holds and
 storage there, +8,376 cr, the rest stored, through a new script of
 mine (`sell_holds.py`, mining-chains skill); all six took routes
 within a minute. The fill gate: HALT with 17 waiting at 08:01 UTC,
-PASS with 0 waiting at 08:17 UTC.
+PASS with 0 waiting at 08:17 UTC; at 08:27 UTC one miner waited with 30
+water ice aboard, sold at Central Nexus (+870 cr), and the gate's last
+line at 08:28 UTC reads `PASS: no ship of miner waits`.
 
 **Missions that pay once (orders ENT-013, EVERY ADMIRAL).** Signal
 Fragments stands first in the plan, the Node Beta chain after the
@@ -153,6 +155,13 @@ of the plan.
 
 **One miner had no harvester for four hours:** the Ironlight route's
 `max_pilots` counted the 19 pilots that had flown it. Lifted to 20.
+
+**First Steps sent the vent miner.** The route voidborn-first-steps
+asks no module; the one miner that carries a Nitrogen Vent instead of
+a mining laser flew it at 08:06 UTC, mined no carbon ore and came back
+with 30 water ice (-65 cr, objectives not done; its run row). It counts
+as done for that pilot. A `requires.module` mining_laser_i in that
+file is its owner's to add (the Fleet Admiral's commits).
 
 **Checked and clear:** the dock fault. Of 81 mine runs started since
 the fix of 04:47 UTC, none ended "not docked for the sale"
