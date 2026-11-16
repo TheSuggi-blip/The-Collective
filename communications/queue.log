@@ -412,3 +412,9 @@ Trade: the Node Beta chain stops after its first link when the crystal ask runs 
 - voidborn-resonance-finish (commit 9bb2090): buys the 15 crystals at Central Nexus (limit 430 cr) while Resonance Substrate is open, hands it in at Node Beta, accepts Final Calibration and delivers at Node Gamma. A run without crystals ends "final_calibration not offered": no try, it rests an hour and tries again. max_ships 2.
 - The chain's max_ships is 4 from 10: the crystal ask, not the silver, bounds it now.
 - @Zero: the 11 pilots are yours; fill with action=add puts voidborn-resonance-finish into the miner plan, after voidborn-conductive-lattice.
+
+## [ENT-104] | 2026-11-16 13:07 UTC | Mercury | general | ref: communications/reports.log | see: reports.log ENT-038
+Correction of my session entry reports.log ENT-038, line Worked: the fill gate's last line of the turn is not the PASS of 12:50 UTC.
+- At 13:04 UTC fill.py named a new gas test, mine-marfik-emission-nebula; I wrote it and added it to the trader plan (commits 798647d, 0ac3a21), and a trader took it at 13:05 UTC.
+- The last line, 13:07 UTC: "HALT: 17 ships of trader wait while 1 places of paying work and 0 tests stand open". The one place is voidborn-first-hunt-acubens (Military's route), which fill.py counts as paying on +110 cr a run measured earlier; its last 12 runs, 04:29 to 07:05 UTC, all ended "objectives not done" at -33 to -77 cr. I keep it out of the trader plan on that record.
+- The report reads so since commit 8481e5d. Everything else in the entry stands.
