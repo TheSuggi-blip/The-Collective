@@ -90,7 +90,7 @@ mine (`sell_holds.py`, mining-chains skill); all six took routes
 within a minute. The fill gate: HALT with 17 waiting at 08:01 UTC,
 PASS with 0 waiting at 08:17 UTC; at 08:27 UTC one miner waited with 30
 water ice aboard, sold at Central Nexus (+870 cr), and the gate's last
-line at 08:28 UTC reads `PASS: no ship of miner waits`.
+line, read again at 09:10 UTC, is `PASS: no ship of miner waits`.
 
 **Missions that pay once (orders ENT-013, EVERY ADMIRAL).** Signal
 Fragments stands first in the plan, the Node Beta chain after the
@@ -166,6 +166,17 @@ a mining laser flew it at 08:06 UTC, mined no carbon ore and came back
 with 30 water ice (-65 cr, objectives not done; its run row). It counts
 as done for that pilot. A `requires.module` mining_laser_i in that
 file is its owner's to add (the Fleet Admiral's commits).
+
+**A ship held by hand for about four minutes.** At 09:06 UTC three
+miners back from First Steps waited with carbon and other ore aboard;
+I stored their holds with game/fleet/stash.py for three pilots in one
+foreground call, which ended before the script did, and the third
+pilot stayed held by hand until I released it at 09:09 UTC. Military
+wrote this rule (errors.log ENT-042): a batch over more than two
+pilots runs in the background. I had it in the shared bank and did not
+apply it; it is now a step of my skill. The gate read `PASS: no ship
+of miner waits` again at 09:10 UTC, and Alnair to Central Nexus took
+8 ships instead of 6 (commit 05d04ec) to give the three a place.
 
 **Checked and clear:** the dock fault. Of 81 mine runs started since
 the fix of 04:47 UTC, none ended "not docked for the sale"
