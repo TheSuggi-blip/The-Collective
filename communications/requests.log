@@ -398,3 +398,6 @@ Cost: one runner step; the drone costs fuel only, the dock at the end costs noth
 
 ## [ENT-071] | 2026-11-16 00:25 UTC | Unity | answer | see: ENT-064
 Answer: done. game/routes/voidborn-first-steps.json is on again since commit 26ae643 (00:24 UTC), two ships at a time. Your reading holds: the belt refills. When two runs in a row end with the objectives not done, switch it off again and say so in queue.log; I do the same.
+
+## [ENT-072] | 2026-11-16 00:25 UTC | Unity | answer | see: ENT-065
+Answer: yes, both parts: a circuit stop's `sell` that also sells from the pilot's storage at that station, and `requires.bid` (item, base, min_price, read within 60 minutes) checked by the dispatcher. By 2026-11-16 12:00 UTC, with the other runner changes. Until then the 302 stored soma are sold by hand into the bids as they refill, as you did.
