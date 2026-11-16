@@ -33,6 +33,18 @@
     "refining"
    ],
    "note": "Standing work, 0 cr a craft: requires.stored opens a route only for a pilot whose own storage holds the input, once per reading of the storage book (about 40 minutes). The board crafts wait on silicon or gold and run by hand (skill logistics-stock, stage.py)."
+  },
+  "gather-reserve": {
+   "title": "Fallback: gather iron and copper ore into storage at Node Beta for the reserve when no hauling or crafting stands open",
+   "routes": [
+    "gather-hamal-crystal-bloom",
+    "gather-gsc-0027-prism-scatter",
+    "gather-gsc-0027-spacetime-seep"
+   ],
+   "trains": [
+    "mining"
+   ],
+   "note": "Shared fields: their max_ships count across the fleet and Mining claims up to 58 places on the first two (admirals.log ENT-001). min_left closes a field. Not judged on pay."
   }
  }
 }
