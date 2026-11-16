@@ -49,5 +49,33 @@
    "what": "The two haze tests: lift the one whose bid regains, after two RESULT lines each.",
    "when": "the turn of 2026-11-16 16:30 UTC"
   }
- ]
+ ],
+ "ships": {
+  "voidborn-first-steps-board": 20,
+  "voidborn-network-expansion": 20,
+  "voidborn-collective-provides": 20,
+  "voidborn-signal-protocol": 20,
+  "voidborn-signal-fragments": 20,
+  "voidborn-hardware-cargo": 20,
+  "voidborn-atmospheric-extraction": 20,
+  "voidborn-concurrent": 20,
+  "voidborn-substrate": 20,
+  "voidborn-missions-1": 20,
+  "voidborn-mining-missions": 20,
+  "voidborn-precedence": 20,
+  "voidborn-conductive-lattice": 20,
+  "voidborn-resonance-finish": 20,
+  "mine-the-experiment-haze": 20,
+  "mine-the-experiment-haze-synchrony": 20,
+  "mine-gsc-0016-emission-nebula": 20,
+  "mine-marfik-emission-nebula": 20,
+  "gather-gsc-0027-prism-scatter": 20,
+  "gather-hamal-crystal-bloom": 20,
+  "mine-acubens": 20,
+  "mine-pherkad-rift": 20,
+  "census-frontier": 20,
+  "park": 20
+ },
+ "of": 20,
+ "derived": "Written by game/fleet/plan.py from the division's plan file (data/plans/plan-trade.md), never by hand."
 }
