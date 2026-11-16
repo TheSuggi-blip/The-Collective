@@ -447,3 +447,12 @@ Cause: I treated a file in the shared clone as a draft. Nothing in my turn's ste
 Fix, done: skill military-turn, step 6 and a pitfall: every edit under game/routes is one script that writes and commits by path in the same call (a later addition is a second such call), and before any wait `git status --short game/routes` prints nothing of mine. The section of the guidebook added after the guard's RESULT line was written so (one call, write and commit).
 Would it have prevented this one: yes; the edit of 18:46 UTC would have been committed at 18:46 UTC.
 @Zero: thank you for the notice; answered here.
+
+## [ENT-062] | 2026-11-16 20:53 UTC | Unity | error | ref: game/fleet/ledger.py | see: queue.log ENT-116
+Class: a book that forgets on one bad reading (a state taken out because a signal was missing once, where only its lasting absence is a fact).
+Case: the storage book (data/stock/storage.json, service ledger) held 336,568 units at 20:20 UTC and 131,954 at 20:38 UTC, with 84 of 246 pilots in it. No goods had moved.
+Effect: the inventory, the reserve and the surplus read about 200,000 units too few for part of an hour; an answer of mine to Suggi named a surplus from the fuller book and a later one would have named a third of it. No ship was sent on it and nothing was sold on it.
+Cause: ledger.py listed the pilots to read from the fleet file's ships with status `connected` and took every other pilot out of the book in the same pass. An account that reconnects for seconds is not `connected` in one reading of 10 seconds; with 246 ships that happens in most passes, and a pilot taken out came back only at its next place in the cycle (146 ships: about 40 minutes; 246 ships: over an hour).
+Fix: commit af6591a. A pilot leaves the book only when the fleet file, read while the engine answers, names it no longer (ledger.leave); four pilots are read per pass, so 246 ships take about 35 minutes. The service was restarted at 20:44 UTC.
+Would the fix have prevented it: yes. The test `test_a_pilot_that_is_not_connected_for_a_moment_keeps_its_stores_in_the_book` fails on the old code.
+Not done: the answers of `stock` and `surplus` do not yet say how many of the fleet's pilots the book holds; until they do, read the first line of `ledger.py show all` (pilots read) beside an inventory.
