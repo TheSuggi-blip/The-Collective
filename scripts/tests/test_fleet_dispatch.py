@@ -214,13 +214,22 @@ class RouteGateTests(Tree):
         super().setUp()                                                                           # the gate's tree has a plan without the unknown route
         self.put_plan({role: [r for r in ids if r in ROUTES] + ["open"] for role, ids in PLAN["roles"].items()})
 
-    def test_the_gate_passes_a_clean_tree_with_a_current_index(self):
-        self.assertIn("game/routes/index.md is missing or stale", self.routes.check(str(self.root))[0][-1])
-        (self.root / "routes" / "index.md").write_text(self.routes.index_text(str(self.root)), encoding="ascii")
+    def test_the_gate_passes_a_clean_tree_with_current_indexes(self):
+        self.assertEqual([e.split(" is ")[0] for e in self.routes.check(str(self.root))[0][-3:]],
+                         ["game/routes/index.md", "game/routes/plan.md", "game/routes/master-index.md"])    # the three are written together
+        self.assertEqual(self.routes.write_index(str(self.root)), [("index.md", "written"), ("plan.md", "written"), ("master-index.md", "written")])
         self.assertEqual(self.routes.check(str(self.root)), ([], 6))
-        first = (self.root / "routes" / "index.md").read_text(encoding="ascii")
-        self.assertEqual(self.routes.index_text(str(self.root)), first)                           # same input, same bytes, same id
-        self.assertIn("| drone | Apophis | missions > whale > rays > mine > open |", first)
+        first = {name: (self.root / "routes" / name).read_text(encoding="ascii") for name in ("index.md", "plan.md", "master-index.md")}
+        self.assertEqual(self.routes.index_files(str(self.root)), first)                          # same input, same bytes, same ids
+        self.assertEqual(len({text.split("\nid: ")[1].split("\n")[0] for text in first.values()}), 3)
+        for rid in ROUTES:                                                                        # every route once, in one group
+            self.assertEqual(first["index.md"].count("| [%s](%s.json) |" % (rid, rid)), 1, rid)
+        self.assertIn("| [drone](plan.md#drone) | Apophis | 5 | missions > whale > rays | 0 |", first["master-index.md"])
+        self.assertIn("](index.md#tests) |", first["master-index.md"])                            # a group's name leads into the sub-index
+        self.assertIn("## Tests\n", first["index.md"])
+        self.assertIn("## drone\n\nKept by Apophis. Routes: 5.", first["plan.md"])
+        self.assertIn("| 1 | [missions](missions.json) |", first["plan.md"])
+        self.assertIn("| home space |", first["index.md"])                                        # the chart's empire column gives the zone
 
     def test_each_rule_fails_alone(self):
         def errors_with(rid, change):

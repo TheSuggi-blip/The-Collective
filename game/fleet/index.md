@@ -8,7 +8,7 @@ author: Unity
 # index.md -- The Fleet's Scripts
 
 Built by `python3 -B scripts/fleet-index.py` from the docstring of every script in this
-folder; never edited by hand. Scripts listed: 14.
+folder; never edited by hand. Scripts listed: 15.
 
 - Run a script from the repository root: `python3 -I -B game/fleet/<script> <arguments>`,
   the arguments as listed under "How to Call Each".
@@ -29,6 +29,7 @@ folder; never edited by hand. Scripts listed: 14.
 |---|---|---|
 | `board.py` | The board of a division: what each of its ships does now, its plan, what is planned, and what its runs earned. | By hand |
 | `census.py` | Read one system whole with one pilot: every place's deposits and creatures, and the station's order book and mission board. | Runner (`census` routes) |
+| `craftbook.py` | Answer what can be made, fitted and built: a recipe, everything a thing takes, and what our stored goods can become. | By hand |
 | `dispatch.py` | Keep every pilot at work: give each free pilot the next task of its role. | Service |
 | `division.py` | Who commands which ship, whose plan is whose, and the check every fleet script runs before it drives a ship. | By hand |
 | `gate.py` | Small client for the fleet engine's gate, with the division's lock. | By hand |
@@ -68,6 +69,22 @@ A runner: the dispatcher starts it for a route of the kind `census`; by hand onl
 
 ```
 census.py <pilot> <system_id> [--stay] [--route ID]
+```
+
+### `craftbook.py`
+
+Answer what can be made, fitted and built: a recipe, everything a thing takes, and what
+our stored goods can become.
+
+Run by hand.
+
+```
+craftbook.py item <text>
+craftbook.py needs <item id> [quantity]
+craftbook.py build <facility id or hull id>
+craftbook.py can [<Member>|all] [--top N]
+craftbook.py recipes [--category <name>] [--makes <item id>] [--uses <item id>] [--hand]
+--data <dir>      the unit's data folder (default /srv/collective/data)
 ```
 
 ### `dispatch.py`

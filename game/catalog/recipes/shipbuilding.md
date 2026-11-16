@@ -1,0 +1,33 @@
+# Shipbuilding -- Recipes
+
+Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.717.0; never edited by hand.
+Up: [master-index.md](../master-index.md). Recipes: 26; by hand: 15; in a facility only: 11.
+
+| Recipe | Makes | From | Where | Time |
+|---|---|---|---|---|
+| `assemble_outpost_kit` | outpost_kit x 1 | steel_plate x 400; circuit_board x 150; reinforced_frame x 40; structural_frame x 60; control_node x 10 | in: outpost_frame_assembler | 120 |
+| `assemble_station_core` | station_core x 1 | station_reactor_core x 4; station_reactor x 2; reinforced_frame x 220; structural_frame x 320; quantum_control_core x 60; docking_ring x 90; hull_plating x 520; reinforced_bulkhead x 340 | in: station_core_foundry | 600 |
+| `build_capital_ship_frame` | capital_ship_frame x 1 | hull_plating x 5; reinforced_bulkhead x 2; durasteel_plate x 10; titanium_alloy x 10 | in: capital_frame_assembly_line, modular_frame_plant, capital_shipyard_complex, automated_capital_frame_works | 112.5 |
+| `build_cargo_superstructure` | cargo_superstructure x 1 | cargo_container x 2; hull_plating x 1; steel_plate x 10 | in: modular_assembly_line, integrated_cargo_plant, automated_superstructure_works, high_capacity_cargo_fabrication | 13.8 |
+| `build_crimson_ordnance_bay` | crimson_ordnance_bay x 1 | weapon_core x 2; ammo_fabricator x 1; fury_alloy x 1 | by hand, or in: weapon_bay_assembly_line, ordnance_manufacturing_plant, advanced_weapons_assembly_complex | 43.5 |
+| `build_dark_matter_thruster` | dark_matter_thruster x 1 | engine_core x 1; thruster_nozzle x 3; condensed_dark_matter x 1 | in: dark_matter_engine_assembly, exotic_thruster_production_line, advanced_propulsion_systems_plant, exotic_propulsion_manufacturing_complex | 67.5 |
+| `build_drone_command_module` | drone_command_module x 1 | drone_ai_core x 1; drone_sensor_suite x 1; drone_comms_module x 1; processing_core x 1 | by hand, or in: command_module_assembly_station, command_hub_production_plant, swarm_command_manufacturing | 82.5 |
+| `build_frontier_survival_kit` | frontier_survival_kit x 1 | life_support_unit x 1; repair_nanite_container x 1; fuel_tank x 1; flex_polymer x 10 | by hand, or in: survival_kit_assembly_line, survival_kit_manufacturing_plant, survival_kit_production_complex | 69 |
+| `build_hangar_bay_module` | hangar_bay_module x 1 | titanium_alloy x 8; steel_plate x 15; circuit_board x 6; docking_ring x 2; life_support_unit x 1 | in: hangar_bay_module_assembly_line, modular_hangar_bay_production_plant, automated_hangar_bay_works, state_of_the_art_hangar_bay_fabrication_complex | 150 |
+| `build_life_support_array` | life_support_array x 1 | life_support_unit x 1; water_recycler x 1; pressure_seal x 3 | by hand, or in: life_support_assembly_line, environmental_systems_plant, life_support_production_works | 18 |
+| `build_navigation_array` | navigation_array x 1 | navigation_core x 1; autopilot_module x 1; sensor_array x 1 | by hand, or in: navigation_array_assembly, advanced_navigation_plant, navigation_systems_works | 135 |
+| `build_nebula_cargo_matrix` | nebula_cargo_matrix x 1 | cargo_container x 2; prismatic_lens x 1; flex_polymer x 10 | by hand, or in: cargo_matrix_assembly_line, storage_optimization_plant, prismatic_cargo_fabrication_works | 75 |
+| `build_nebula_prism_computer` | nebula_prism_computer x 1 | processing_core x 1; prismatic_lens x 1; navigation_core x 1 | by hand, or in: photonic_processing_assembly, prism_computer_manufacturing_plant, photonic_computing_works | 180 |
+| `build_power_distribution_grid` | power_distribution_grid x 1 | power_cell x 1; wiring_harness x 5; copper_wiring x 10 | by hand, or in: power_grid_assembly_station, integrated_grid_manufacturing_plant, advanced_power_distribution_fabrication | 28.5 |
+| `build_sensor_cluster` | sensor_cluster x 1 | sensor_array x 2; sensor_package x 1; circuit_board x 2 | by hand, or in: sensor_array_integration_line, sensor_cluster_assembly_plant, sensor_cluster_manufacturing_complex | 58.5 |
+| `build_shield_array` | shield_array x 1 | shield_emitter x 2; power_cell x 1; circuit_board x 3 | by hand, or in: shield_array_assembly, shield_array_manufacturing, shield_integration_works | 109.5 |
+| `build_solar_collector_array` | solar_collector_array x 1 | sensor_array x 2; solarian_composite x 1; optical_fiber_bundle x 2 | by hand, or in: photonic_assembly_line, solar_array_manufacturing_plant, photonic_production_facility | 60 |
+| `build_solarian_logic_matrix` | solarian_logic_matrix x 1 | processing_core x 1; solarian_composite x 1; circuit_board x 5 | by hand, or in: logic_core_assembly_line, quantum_processor_manufacturing_plant, logic_matrix_production_facility | 51 |
+| `build_station_reactor_core` | station_reactor_core x 1 | neutronium_ingot x 5; superconductor x 5; power_cell x 2; durasteel_plate x 5 | in: reactor_core_production_line, advanced_reactor_assembly, station_power_core_fabrication, megareactor_production_facility | 120 |
+| `build_thruster_assembly` | thruster_assembly x 1 | thruster_nozzle x 3; engine_core x 1; titanium_alloy x 3 | by hand, or in: thruster_assembly_line, integrated_thruster_plant, thruster_production_complex | 49.5 |
+| `build_void_capacitor` | void_capacitor x 1 | processed_null_matter x 5; superconductor x 3; shield_emitter x 1 | in: void_capacitor_assembly_line, dimensional_energy_storage_plant, industrial_capacitor_manufacturing, advanced_void_storage_complex | 139.5 |
+| `build_voidborn_null_matrix` | voidborn_null_matrix x 1 | shield_matrix x 1; processed_null_matter x 5; processing_core x 1 | in: null_matrix_assembly_line, null_matrix_production_facility, automated_null_matrix_works, null_matrix_fabrication_complex | 93 |
+| `build_voidborn_phase_drive` | voidborn_phase_drive x 1 | engine_core x 1; processed_null_matter x 5; circuit_board x 3 | in: phase_drive_assembly_plant, dimensional_propulsion_works, phase_propulsion_manufacturing_line, cutting_edge_phase_drive_factory | 90 |
+| `build_weapon_battery` | weapon_battery x 1 | weapon_housing x 2; weapon_core x 1; targeting_computer x 1 | by hand, or in: weapon_battery_assembly_line, automated_weapon_battery_plant, weapon_battery_manufacturing_complex | 70.5 |
+| `forge_crimson_siege_plating` | crimson_siege_plating x 1 | armor_plate x 2; fury_alloy x 1; durasteel_plate x 2 | by hand, or in: siege_plating_assembly_station, advanced_siege_armor_works, heavy_assault_plating_facility | 33 |
+| `forge_reinforced_bulkhead` | reinforced_bulkhead x 1 | hull_plating x 2; armor_plate x 1; titanium_alloy x 5 | in: bulkhead_framing_station, reinforced_bulkhead_plant, bulkhead_manufacturing_works, reinforced_bulkhead_fabrication_complex | 27 |

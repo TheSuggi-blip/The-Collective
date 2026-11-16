@@ -193,3 +193,18 @@ queries:
   gold_files:
   - game/routes/BLUEPRINT.md
   domain: fleet
+- qid: c040
+  question: In which order does the dispatcher try the routes of the drone ships, and what does their Admiral plan next?
+  gold_files:
+  - game/routes/plan.md
+  domain: routes
+- qid: c041
+  question: How many of our routes are tests not measured yet, and how many of them lie beyond the border?
+  gold_files:
+  - game/routes/master-index.md
+  domain: routes
+- qid: c042
+  question: What does founding an outpost or a station take, and which facility makes the kit?
+  gold_files:
+  - game/catalog/facilities.md
+  domain: catalog

@@ -24,7 +24,7 @@ the scripts in `game/fleet/` fly them; nobody retypes a route into a chat.
 | `game/fleet/route_run.py`, `hunt.py`, `census.py`, `mine.py` | The runners: one pilot, one route, one row in the runs file |
 | `game/fleet/routemaker.py` (service `routemaker`) | Every ten minutes costs every way to earn that our readings show (fields, order books, boards, herds, recipes) and keeps the list in the unit's data folder. `routemaker.py show` lists the candidates of your division, best first; `routemaker.py route <id>` prints a candidate's route file, ready to be saved here as a test |
 | `python3 -B game/fleet/routes.py check` | The gate: fails on a wrong route file, a wrong plan or a stale index |
-| `python3 -B game/fleet/routes.py index` | Writes `index.md`; never by hand |
+| `python3 -B game/fleet/routes.py index` | Writes `master-index.md` (the groups of routes and the plans at a glance, every name a link), `index.md` (every route with its figures, grouped by what it is for, with its zone) and `plan.md` (every role's plan in its order); never by hand |
 | `python3 -B game/fleet/routes.py measure --write` | Stores what the runs measured in the route file |
 
 - Where a pilot is and which pilot flies which route stays in the

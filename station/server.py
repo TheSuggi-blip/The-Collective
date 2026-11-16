@@ -530,7 +530,7 @@ def api_ship(name):
         return {"error": "no such ship"}
 
 
-DOC_PATH = re.compile(r"(reports|communications|governance|game/(?:planets|players|factions|rules|routes/guidebook|routes|fleet))/[A-Za-z0-9_.\-]{1,120}\.(md|log)")
+DOC_PATH = re.compile(r"(reports|communications|governance|game/(?:planets|players|factions|rules|routes/guidebook|routes|fleet|catalog/recipes|catalog/ships|catalog))/[A-Za-z0-9_.\-]{1,120}\.(md|log)")
 ENTRY = re.compile(r"^## \[(ENT-\d+)\] \| ([^|\n]+) \| ([^|\n]+) \|", re.M)
 
 
@@ -541,8 +541,10 @@ def doc_title(rel, body=""):
         tail = head.split(" -- ", 1)[-1].strip()
         if tail:
             return tail[:160]
-    if rel == "game/routes/index.md":
-        return "Routes and plans"
+    names = {"game/routes/master-index.md": "Routes and plans: start here", "game/routes/index.md": "Routes, by group", "game/routes/plan.md": "Plans, by role",
+             "game/catalog/master-index.md": "Catalog: what can be made and built"}
+    if rel in names:
+        return names[rel]
     if rel == "game/fleet/index.md":
         return "Fleet scripts"
     stem = rel.rsplit("/", 1)[-1].rsplit(".", 1)[0]
@@ -580,8 +582,10 @@ def api_docs():
         last = entries[-1] if entries else None
         logs.append({"path": "communications/" + fn, "title": doc_title("communications/" + fn), "entries": len(entries),
                      "last": {"ent": last[0], "at": last[1].strip()[:20], "by": last[2].strip()[:30]} if last else None})
-    knowledge = [{"path": rel, "title": doc_title(rel)} for rel in ("game/routes/index.md", "game/fleet/index.md") if (REPO / rel).is_file()]
-    knowledge[1:1] = [{"path": d["path"], "title": doc_title(d["path"])} for d in doc_list("game/routes/guidebook")]
+    listed = lambda *rels: [{"path": rel, "title": doc_title(rel)} for rel in rels if (REPO / rel).is_file()]
+    knowledge = (listed("game/routes/master-index.md", "game/routes/index.md", "game/routes/plan.md")
+                 + [{"path": d["path"], "title": doc_title(d["path"])} for d in doc_list("game/routes/guidebook")]
+                 + listed("game/catalog/master-index.md", "game/fleet/index.md"))
     return {"reports": reports, "logs": logs, "governance": [{"path": d["path"], "title": doc_title(d["path"])} for d in doc_list("governance")],
             "knowledge": knowledge}
 

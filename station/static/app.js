@@ -802,11 +802,15 @@ async function openDoc(path) {
 }
 
 // ---- Markdown and logs as formatted text. Everything is built from DOM nodes with textContent; no HTML is parsed.
-const DOC_RE = /^(reports|communications|governance|game\/(planets|players|factions|rules|routes\/guidebook|routes|fleet))\/[A-Za-z0-9_.\-]{1,120}\.(md|log)$/;
+const DOC_RE = /^(reports|communications|governance|game\/(planets|players|factions|rules|routes\/guidebook|routes|fleet|catalog\/recipes|catalog\/ships|catalog))\/[A-Za-z0-9_.\-]{1,120}\.(md|log)$/;
 function docTarget(target, base) {              // a link or a quoted path that names a document the station shows
   let t = String(target).split('#')[0];
   if (!t || t.includes('://') || t.startsWith('/')) return null;
-  if (!t.includes('/') && base && base.includes('/')) t = base.slice(0, base.lastIndexOf('/') + 1) + t;
+  if (DOC_RE.test(t)) return t;                                    // a path from the repository's root
+  if (!base || !base.includes('/')) return null;
+  const parts = base.slice(0, base.lastIndexOf('/')).split('/');   // else relative to the document it stands in: a sub-folder, or `..`
+  for (const seg of t.split('/')) { if (seg === '..') parts.pop(); else if (seg !== '.') parts.push(seg); }
+  t = parts.join('/');
   return DOC_RE.test(t) ? t : null;
 }
 function inline(parent, text, base) {           // `code`, **bold**, [label](target)

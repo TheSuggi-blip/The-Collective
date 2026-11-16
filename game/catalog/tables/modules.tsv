@@ -1,0 +1,274 @@
+# Every module of the game: its slot, what it draws, what it does.
+# Source: the game's public catalog, version 0.717.0 | Rows: 270
+# Written by scripts/catalog-index.py. Do not edit by hand.
+id	name	type	slot	cpu	power	size	base_value	damage	reach	cooldown	effect	special
+adaptive_shield_i	Adaptive Shield I	defense	defense	5	10	10	21000					adaptive_resistance_10
+adaptive_shield_ii	Adaptive Shield II	defense	defense	8	15	10	44000					adaptive_resistance_20
+adaptive_shield_iii	Adaptive Shield III	defense	defense	12	22	10	53000					adaptive_resistance_35
+armor_plate_i	Armor Plate I	defense	defense	1	0	10	490					
+armor_plate_ii	Armor Plate II	defense	defense	2	0	10	1200					
+armor_plate_iii	Armor Plate III	defense	defense	3	0	10	1700					
+armor_repairer_i	Armor Repairer I	defense	defense	3	8	10	4300					
+armor_repairer_ii	Armor Repairer II	defense	defense	5	14	10	8700					
+armor_repairer_iii	Armor Repairer III	defense	defense	8	22	10	29000					
+crimson_berserker_plating	Crimson Berserker Plating	defense	defense	6	8	10	16000					damage_boost_on_hit
+damage_control_system	Damage Control System	defense	defense	4	5	10	5600					
+darksteel_armor	Darksteel Armor	defense	defense	5	0	10	8000					
+em_hull_hardener	EM Hull Hardener	defense	defense	2	4	10	1600					
+em_shield_hardener	EM Shield Hardener	defense	defense	3	6	10	4300					
+emergency_cloaking_system	Emergency Cloaking System	defense	defense	8	12	10	4700					auto_cloak_on_shield_failure,duration_10
+emergency_warp_stabilizer	Emergency Warp Stabilizer	defense	defense	6	8	10	19000					emergency_warp_at_20_hull
+event_horizon_plating	Event Horizon Plating	defense	defense	8	6	10	40000					
+explosive_hull_hardener	Explosive Hull Hardener	defense	defense	2	4	10	640					
+explosive_shield_hardener	Explosive Shield Hardener	defense	defense	3	6	10	3700					
+hull_integrity_field	Hull Integrity Field	defense	defense	7	14	10	5500					
+hull_reinforcement_i	Hull Reinforcement I	defense	defense	1	0	10	880					
+hull_reinforcement_ii	Hull Reinforcement II	defense	defense	2	0	10	1100					
+hull_reinforcement_iii	Hull Reinforcement III	defense	defense	3	0	10	2100					
+kinetic_hull_hardener	Kinetic Hull Hardener	defense	defense	2	4	10	740					
+kinetic_shield_hardener	Kinetic Shield Hardener	defense	defense	3	6	10	3800					
+nanite_hull_coating	Nanite Hull Coating	defense	defense	10	15	10	21000					repairs_all_damage_types
+nanocarbon_hull_lattice	Nanocarbon Hull Lattice	defense	defense	5	0	10	2800					
+nebula_bio_regenerator	Nebula Bio-Regenerator	defense	defense	6	10	10	1600					bio_repair
+nebula_storm_barrier	Nebula Storm Barrier	defense	defense	8	14	10	18000					shock_attackers_15
+outer_rim_scrap_armor	Outer Rim Scrap Armor	defense	defense	2	0	10	3300					repair_from_salvage
+quantum_entanglement_shield	Quantum Entanglement Shield	defense	defense	12	22	8	83000					
+quantum_shield_iv	Quantum Shield IV	defense	defense	12	25	10	21000					adaptive_resistance_35
+reactive_armor_hardener	Reactive Armor Hardener	defense	defense	6	10	10	8400					reactive_resistance
+regenerative_armor_i	Regenerative Armor I	defense	defense	4	6	10	3900					
+regenerative_armor_ii	Regenerative Armor II	defense	defense	7	10	10	12000					
+shield_booster_i	Shield Booster I	defense	defense	2	4	10	1700					
+shield_booster_ii	Shield Booster II	defense	defense	3	6	10	7200					
+shield_booster_iii	Shield Booster III	defense	defense	5	10	10	13000					
+shield_booster_iv	Shield Booster IV	defense	defense	8	15	10	18000					
+shield_recharger_i	Shield Recharger I	defense	defense	2	5	10	1300					
+shield_recharger_ii	Shield Recharger II	defense	defense	3	8	10	7500					
+solarian_aegis	Solarian Aegis	defense	defense	8	15	10	23000					reflect_energy_20
+thermal_hull_hardener	Thermal Hull Hardener	defense	defense	2	4	10	580					
+thermal_shield_hardener	Thermal Shield Hardener	defense	defense	3	6	10	3600					
+void_hull_hardener	Void Hull Hardener	defense	defense	4	6	10	4900					
+void_shield_hardener	Void Shield Hardener	defense	defense	5	8	10	8200					
+voidborn_phase_armor	Voidborn Phase Armor	defense	defense	9	12	10	26000					phase_dodge_25
+crystal_mining_probe	Crystal Mining Probe	mining	utility	5	10	10	7200					crystal_bonus_100
+damped_mining_head_i	Damped Mining Head I	mining	utility	6	10	10	19000					
+damped_mining_head_ii	Damped Mining Head II	mining	utility	8	14	10	48000					
+damped_mining_head_iii	Damped Mining Head III	mining	utility	10	18	10	150000					
+deep_core_extractor_ii	Deep Core Extractor II	mining	utility	10	20	10	55000					deep_core_access
+deep_core_extractor_iii	Deep Core Extractor III	mining	utility	14	28	10	15000					deep_core_access
+deep_core_extractor_mk_i	Deep Core Extractor Mk I	mining	utility	8	15	10	3000					deep_core_access
+hyper_mining_laser_iii	Hyper Mining Laser III	mining	utility	5	10	10	20000					
+kinetic_core_drill	Kinetic Core Drill	mining	utility	7	14	10	10000					
+mining_laser_i	Mining Laser I	mining	utility	2	5	10	1600					
+mining_laser_ii	Mining Laser II	mining	utility	4	8	10	2500					
+mining_laser_iii	Mining Laser III	mining	utility	6	12	10	7900					
+mining_laser_iv	Mining Laser IV	mining	utility	10	18	10	25000					
+mining_laser_v	Mining Laser V	mining	utility	13	24	10	55000					
+modulated_mining_laser	Modulated Mining Laser	mining	utility	7	12	10	3900					
+percussive_mining_array	Percussive Mining Array	mining	utility	6	10	10	8000					
+plasma_fracturing_torch	Plasma Fracturing Torch	mining	utility	8	16	10	12000					
+strip_miner_i	Strip Miner I	mining	utility	7	22	10	8000					common_only
+strip_miner_ii	Strip Miner II	mining	utility	9	32	10	18000					common_only
+advanced_drone_bay	Advanced Drone Bay	utility	utility	12	15	10	4200					
+advanced_tow_rig	Advanced Tow Rig	utility	utility	8	15	10	1500					
+afterburner_i	Afterburner I	utility	utility	2	3	10	1100					
+afterburner_ii	Afterburner II	utility	utility	3	5	10	2300					
+afterburner_iii	Afterburner III	utility	utility	5	8	10	2500					
+anomaly_detector	Anomaly Detector	utility	utility	15	25	10	20000					anomaly_detection
+argon_condenser	Argon Condenser	utility	utility	3	10	10	1400					filter_argon_gas
+assault_barracks	Assault Barracks	utility	utility	6	12	10	22000					
+assault_boarding_lock	Assault Boarding Lock	utility	utility	10	18	10	28000					
+atmospheric_processor	Atmospheric Processor	utility	utility	8	28	10	7000					filter_argon_gas,filter_hydrogen_gas,filter_neon_gas
+basic_tow_rig	Basic Tow Rig	utility	utility	5	10	10	380					
+boarding_clamp	Boarding Clamp	utility	utility	4	8	10	5200					
+business_passenger_cabin	Business Passenger Cabin	utility	utility	6	8	10	22000					
+capital_crew_habitat	Capital Crew Habitat	utility	utility	30	55	10	180000					
+carbon_scrubber	Carbon Scrubber	utility	utility	7	5	10	1500					filter_carbon_ore
+cargo_expander_i	Cargo Expander I	utility	utility	1	1	10	160					
+cargo_expander_ii	Cargo Expander II	utility	utility	2	2	10	800					
+cargo_expander_iii	Cargo Expander III	utility	utility	3	3	10	2000					
+citadel_security_grid	Citadel Security Grid	utility	utility	14	24	10	48000					
+cloaking_device_i	Cloaking Device I	utility	utility	5	10	10	4800					
+cloaking_device_ii	Cloaking Device II	utility	utility	8	15	10	37000					
+combat_drone_bay	Combat Drone Bay	utility	utility	8	10	10	2000					
+compact_aluminum_smelter	Compact Aluminum Smelter	utility	utility	24	60	10	45000					
+compact_argon_purifier	Compact Argon Purifier	utility	utility	21	54	10	40000					
+compact_copper_wiring_plant	Compact Copper Wiring Plant	utility	utility	24	60	10	45000					
+compact_deuterium_ice_processor	Compact Deuterium Ice Processor	utility	utility	19	48	10	35000					
+compact_helium_ice_processor	Compact Helium Ice Processor	utility	utility	19	48	10	35000					
+compact_hydrogen_compressor	Compact Hydrogen Compressor	utility	utility	21	54	10	40000					
+compact_lead_smelter	Compact Lead Smelter	utility	utility	24	60	10	45000					
+compact_neon_ionizer	Compact Neon Ionizer	utility	utility	21	54	10	40000					
+compact_nitrogen_ice_processor	Compact Nitrogen Ice Processor	utility	utility	19	48	10	35000					
+compact_oxygen_liquefier	Compact Oxygen Liquefier	utility	utility	21	54	10	40000					
+compact_steel_refinery	Compact Steel Refinery	utility	utility	24	60	10	45000					
+compact_titanium_refinery	Compact Titanium Refinery	utility	utility	24	60	10	45000					
+compact_water_ice_processor	Compact Water Ice Processor	utility	utility	19	48	10	35000					
+compact_xenon_extractor	Compact Xenon Extractor	utility	utility	21	54	10	40000					
+cpu_co_processor	CPU Co-Processor	utility	utility	0	3	10	1000					
+crew_armory	Crew Armory	utility	utility	4	5	10	9000					
+crew_deck_expansion	Crew Deck Expansion	utility	utility	6	10	10	12000					
+crew_habitat_complex	Crew Habitat Complex	utility	utility	14	24	10	48000					
+crimson_berserker_core	Crimson Berserker Core	utility	utility	6	8	10	5400					rage_damage_scaling
+deep_core_survey_scanner	Deep Core Survey Scanner	utility	utility	6	8	10	15000					deep_core_detection,ore_quality_detection,rare_ore_detection
+dust_skirt_i	Dust Skirt I	utility	utility	2	2	10	12000					
+dust_skirt_ii	Dust Skirt II	utility	utility	3	4	10	38000					
+dust_skirt_iii	Dust Skirt III	utility	utility	4	7	10	130000					
+ecm_jammer	ECM Jammer	utility	utility	8	12	10	3800		3			
+economy_passenger_cabin	Economy Passenger Cabin	utility	utility	3	4	10	6000					
+electromagnetic_refinery	Electromagnetic Refinery	utility	utility	12	18	10	6000					filter_iron_ore,filter_copper_ore
+expanded_crew_quarters	Expanded Crew Quarters	utility	utility	2	3	10	2600					
+expanded_fuel_tank	Expanded Fuel Tank	utility	utility	1	2	10	950					
+field_generator	Field Generator	utility	utility	6	14	10	3000					
+field_hospital	Field Hospital	utility	utility	14	24	10	45000					
+first_class_passenger_suite	First-Class Passenger Suite	utility	utility	12	16	10	75000					
+fleet_hospital	Fleet Hospital	utility	utility	22	38	10	95000					
+flotation_cell	Flotation Cell	utility	utility	8	4	10	1600					filter_copper_ore
+fuel_optimizer	Fuel Optimizer	utility	utility	3	2	10	800					
+gas_harvester_i	Gas Harvester I	utility	utility	4	6	10	1200					gas_harvesting
+gas_harvester_ii	Gas Harvester II	utility	utility	6	10	10	2500					gas_harvesting
+gas_harvester_iii	Gas Harvester III	utility	utility	9	15	10	5000					gas_harvesting
+gas_harvester_iv	Gas Harvester IV	utility	utility	12	22	10	24000					gas_harvesting
+grand_dining_hall	Grand Dining Hall	utility	utility	12	16	10	68000					
+hydrogen_combustor	Hydrogen Combustor	utility	utility	2	14	10	1500					filter_hydrogen_gas
+ice_harvester_i	Ice Harvester I	utility	utility	4	7	10	1000					ice_harvesting
+ice_harvester_ii	Ice Harvester II	utility	utility	6	12	10	1800					ice_harvesting
+ice_harvester_iii	Ice Harvester III	utility	utility	9	18	10	9000					ice_harvesting
+ice_harvester_iv	Ice Harvester IV	utility	utility	12	25	10	28000					ice_harvesting
+isotope_separator	Isotope Separator	utility	utility	10	22	10	6500					filter_water_ice,filter_nitrogen_ice
+lead_lined_cargo_i	Lead Lined Cargo I	utility	utility	3	4	10	850					hazmat_cargo
+lead_lined_cargo_ii	Lead Lined Cargo II	utility	utility	5	8	10	2600					hazmat_cargo
+legion_barracks	Legion Barracks	utility	utility	30	60	10	240000					
+lensing_veil	Lensing Veil	utility	utility	14	22	10	200000					
+light_drone_bay	Light Drone Bay	utility	utility	5	7	10	800					
+magnetic_ore_separator	Magnetic Ore Separator	utility	utility	2	12	10	1800					filter_iron_ore
+marine_barracks	Marine Barracks	utility	utility	2	4	10	5000					
+marine_garrison_deck	Marine Garrison Deck	utility	utility	14	28	10	65000					
+neon_vent	Neon Vent	utility	utility	3	8	10	1400					filter_neon_gas
+nitrogen_vent	Nitrogen Vent	utility	utility	4	9	10	1500					filter_nitrogen_ice
+nuclear_reactor_i	Nuclear Reactor I	utility	utility	8	5	10	13000					
+nuclear_reactor_ii	Nuclear Reactor II	utility	utility	14	8	10	49000					
+onboard_galley	Onboard Galley	utility	utility	4	5	10	9000					
+onboard_h2o2_refinery	Onboard H2O2 Refinery	utility	utility	20	50	10	48000					
+onboard_hydrogen_refinery	Onboard Hydrogen Refinery	utility	utility	22	56	10	52000					
+outer_rim_salvage_array	Outer Rim Salvage Array	utility	utility	5	6	10	5200					
+pathfinder_drive	Pathfinder Drive	utility	utility	18	30	10	120000					pathfinder_drive
+phase_cloaking_device	Phase Cloaking Device	utility	utility	12	20	10	27000					
+pirate_radio_scanner	Pirate Radio Scanner	utility	utility	1	1	10	470					pirate_radio
+plasma_afterburner	Plasma Afterburner	utility	utility	8	12	10	4200					
+power_reactor_upgrade	Power Reactor Upgrade	utility	utility	2	0	10	1500					
+promenade_lounge	Promenade Lounge	utility	utility	7	10	10	26000					
+quantum_computer_core	Quantum Computer Core	utility	utility	0	8	10	25000					
+rad_harvester_i	Rad Harvester I	utility	utility	4	7	10	990					rad_harvesting
+rad_harvester_ii	Rad Harvester II	utility	utility	6	11	10	2300					rad_harvesting
+rad_harvester_iii	Rad Harvester III	utility	utility	9	18	10	4100					rad_harvesting
+rad_harvester_iv	Rad Harvester IV	utility	utility	13	26	10	6800					rad_harvesting
+radiation_baffles_i	Radiation Baffles I	utility	utility	2	3	10	14000					
+radiation_baffles_ii	Radiation Baffles II	utility	utility	3	5	10	42000					
+radiation_baffles_iii	Radiation Baffles III	utility	utility	4	8	10	140000					
+refueling_pump	Refueling Pump	utility	utility	4	6	10	1100					
+remote_armor_repairer_i	Remote Armor Repairer I	utility	utility	4	10	10	2000					
+remote_armor_repairer_ii	Remote Armor Repairer II	utility	utility	6	16	10	4500					
+remote_armor_repairer_iii	Remote Armor Repairer III	utility	utility	10	25	10	10000					
+repair_arm	Repair Arm	utility	utility	4	6	10	1400					
+salvage_module	Salvage Module	utility	utility	4	6	10	2000					
+seam_glass_telescope	Seam Glass Telescope	utility	utility	16	24	10	240000					
+security_bulkheads	Security Bulkheads	utility	utility	5	8	10	12000					
+sensor_dampener	Sensor Dampener	utility	utility	4	5	10	1200					
+shear_bracing_i	Shear Bracing I	utility	utility	2	3	10	14000					
+shear_bracing_ii	Shear Bracing II	utility	utility	3	6	10	42000					
+shear_bracing_iii	Shear Bracing III	utility	utility	5	10	10	140000					
+ship_maintenance_bay	Ship Maintenance Bay	utility	utility	8	10	10	7300					
+ship_scanner_i	Ship Scanner I	utility	utility	3	4	10	3200					
+ship_scanner_ii	Ship Scanner II	utility	utility	5	6	10	7000					
+ship_scanner_iii	Ship Scanner III	utility	utility	7	10	10	22000					
+shipboard_sickbay	Shipboard Sickbay	utility	utility	8	12	10	15000					
+signal_scrubber_i	Signal Scrubber I	utility	utility	6	4	10	16000					
+signal_scrubber_ii	Signal Scrubber II	utility	utility	10	6	10	48000					
+signal_scrubber_iii	Signal Scrubber III	utility	utility	14	8	10	150000					
+stasis_webifier_i	Stasis Webifier I	utility	utility	4	6	10	2500		3			
+stasis_webifier_ii	Stasis Webifier II	utility	utility	6	10	10	4500		4			
+stellar_observation_deck	Stellar Observation Deck	utility	utility	18	24	10	140000					
+stellar_telescope	Stellar Telescope	utility	utility	12	18	10	75000					
+survey_scanner_i	Survey Scanner I	utility	utility	3	4	10	4400					ore_quality_detection
+survey_scanner_ii	Survey Scanner II	utility	utility	5	7	10	14000					ore_quality_detection,rare_ore_detection
+target_painter_i	Target Painter I	utility	utility	3	5	10	3000		3			
+target_painter_ii	Target Painter II	utility	utility	5	8	10	7000		5			
+thermal_sublimator	Thermal Sublimator	utility	utility	5	10	10	1600					filter_water_ice
+tracking_computer_i	Tracking Computer I	utility	utility	3	4	10	6400					
+tracking_computer_ii	Tracking Computer II	utility	utility	5	7	10	12000					
+tracking_computer_iii	Tracking Computer III	utility	utility	8	10	10	37500					
+tractor_beam	Tractor Beam	utility	utility	3	5	10	5200		2			
+vanadium_ejector	Vanadium Ejector	utility	utility	3	13	10	1700					filter_vanadium_ore
+void_reactor	Void Reactor	utility	utility	5	0	10	36000					
+warp_core_stabilizer	Warp Core Stabilizer	utility	utility	3	3	10	1500					
+warp_disruptor	Warp Disruptor	utility	utility	5	7	10	2900		5			
+warp_scrambler	Warp Scrambler	utility	utility	6	8	10	4500		3			
+autocannon_i	Autocannon I	weapon	weapon	3	4	10	710	10	2	1		
+autocannon_ii	Autocannon II	weapon	weapon	4	6	10	1800	18	2	1		
+blood_reaver	Blood Reaver	weapon	weapon	9	20	10	8700	45	3	2		lifesteal_20
+dark_matter_projector	Dark Matter Projector	weapon	weapon	18	40	10	52000	150	3	6		ignores_resistance_100,shield_phase
+em_disruptor_i	EM Disruptor I	weapon	weapon	5	8	10	3900	5	2	2		cpu_damage_10
+emp_cannon_i	EMP Cannon I	weapon	weapon	5	10	10	3000	8	3	3		system_disable_2
+emp_missile_launcher	EMP Missile Launcher	weapon	weapon	8	12	10	5600	15	6	4		system_disable_3
+emp_pulse_i	EMP Pulse I	weapon	weapon	5	12	10	3800	5	2	4		system_disable_1
+emp_pulse_ii	EMP Pulse II	weapon	weapon	7	18	10	6800	10	2	4		system_disable_2
+emp_pulse_iii	EMP Pulse III	weapon	weapon	10	25	10	41000	18	2	5		system_disable_3
+energy_siphon	Energy Siphon	weapon	weapon	12	15	10	33000	25	3	2		shield_drain_30,shield_transfer_50
+entropy_beam	Entropy Beam	weapon	weapon	9	18	10	12000	15	4	2		dot_damage_10,dot_duration_5
+flak_cannon_i	Flak Cannon I	weapon	weapon	3	5	10	4800	15	3	1		anti_drone_bonus_100,anti_missile_bonus_25
+flak_cannon_ii	Flak Cannon II	weapon	weapon	5	8	10	6200	28	3	1		anti_drone_bonus_150,anti_missile_bonus_45
+flak_cannon_iii	Flak Cannon III	weapon	weapon	8	12	10	30000	40	3	1		anti_drone_bonus_200,anti_missile_bonus_65
+focused_beam_i	Focused Beam I	weapon	weapon	4	10	10	8700	15	4	2		shield_bypass_25
+focused_beam_ii	Focused Beam II	weapon	weapon	6	15	10	17000	25	4	2		shield_bypass_40
+focused_beam_iii	Focused Beam III	weapon	weapon	10	22	10	27000	40	4	2		shield_bypass_60
+fury_cannon	Fury Cannon	weapon	weapon	14	32	10	37000	70	5	3		rage_damage_scaling
+galvanic_hull_grid	Galvanic Hull Grid	weapon	weapon	8	15	10	22000	70		2		
+graviton_beam_i	Graviton Beam I	weapon	weapon	8	15	10	4200	32	4	3		hull_damage_bonus_25
+graviton_beam_ii	Graviton Beam II	weapon	weapon	12	22	10	37000	50	4	3		hull_damage_bonus_50
+heavy_mass_driver	Heavy Mass Driver	weapon	weapon	15	35	10	25000	150	6	5		armor_bypass_80,hull_damage_bonus_50
+heavy_pulse_laser	Heavy Pulse Laser	weapon	weapon	8	20	10	27000	45	3	2		
+heavy_torpedo	Heavy Torpedo	weapon	weapon	8	8	10	4000	80	6	5		
+ion_beam_array	Ion Beam Array	weapon	weapon	8	18	10	11000	30	3	2		
+ion_blaster_i	Ion Blaster I	weapon	weapon	4	8	10	3900	8	2	1		shield_damage_bonus_50
+ion_blaster_ii	Ion Blaster II	weapon	weapon	6	12	10	7200	14	2	1		shield_damage_bonus_75
+ion_blaster_iii	Ion Blaster III	weapon	weapon	9	18	10	11000	22	2	1		shield_damage_bonus_100
+ion_cannon_i	Ion Cannon I	weapon	weapon	3	8	10	2600	12	5	2		
+ion_cannon_ii	Ion Cannon II	weapon	weapon	5	12	10	5400	20	5	2		
+judgment_beam	Judgment Beam	weapon	weapon	16	35	10	40000	100	4	4		energy_damage_bonus_50,shield_bypass_50
+jury_rigged_cannon	Jury-Rigged Cannon	weapon	weapon	7	14	10	2500	60	3	2		random_damage_variance_30,low_cpu_requirement
+mass_driver	Mass Driver	weapon	weapon	12	28	10	12000	130	6	4		armor_bypass_75
+mine_launcher_i	Mine Launcher I	weapon	weapon	5	4	10	1800	50	3	5		mine_capacity_5,mine_duration_60
+mine_launcher_ii	Mine Launcher II	weapon	weapon	7	6	10	4000	80	3	4		mine_capacity_10,mine_duration_120
+missile_launcher_i	Missile Launcher I	weapon	weapon	4	3	10	1800	20	6	3		
+missile_launcher_ii	Missile Launcher II	weapon	weapon	6	5	10	6500	35	6	3		
+neural_disruptor	Neural Disruptor	weapon	weapon	8	14	10	10000	12	3	2		cpu_damage_25
+null_cannon	Null Cannon	weapon	weapon	15	38	10	46000	110	3	4		ignores_all_defense,aoe_radius_2
+phase_disruptor	Phase Disruptor	weapon	weapon	10	22	10	21000	48	3	2		phase_strike_30
+piercing_railgun_i	Piercing Railgun I	weapon	weapon	5	12	10	5000	60	5	3		armor_bypass_70
+piercing_railgun_ii	Piercing Railgun II	weapon	weapon	8	20	10	15000	90	5	3		armor_bypass_85
+plasma_cannon_i	Plasma Cannon I	weapon	weapon	4	10	10	2200	22	3	2		hull_damage_bonus_50
+plasma_cannon_ii	Plasma Cannon II	weapon	weapon	6	14	10	3800	38	3	2		hull_damage_bonus_50
+plasma_cannon_iii	Plasma Cannon III	weapon	weapon	9	20	10	8100	58	3	2		armor_melt_15
+plasma_cannon_iv	Plasma Cannon IV	weapon	weapon	14	30	10	9500	85	3	2		armor_melt_30
+plasma_repeater_i	Plasma Repeater I	weapon	weapon	5	8	10	2400	12	3	1		hull_damage_bonus_50
+plasma_repeater_ii	Plasma Repeater II	weapon	weapon	7	12	10	4900	20	3	1		hull_damage_bonus_50
+plasma_torpedo_launcher	Plasma Torpedo Launcher	weapon	weapon	8	14	10	7500	60	6	5		armor_melt_20
+proximity_mine_launcher	Proximity Mine Launcher	weapon	weapon	6	5	10	3500	65	3	4		mine_capacity_8,mine_detection_10,mine_duration_90
+pulse_laser_i	Pulse Laser I	weapon	weapon	2	5	10	2500	10	3	1		
+pulse_laser_ii	Pulse Laser II	weapon	weapon	3	8	10	6900	18	3	1		
+pulse_laser_iii	Pulse Laser III	weapon	weapon	5	12	10	13000	28	3	1		
+railgun_i	Railgun I	weapon	weapon	5	12	10	5000	45	5	2		
+railgun_ii	Railgun II	weapon	weapon	7	18	10	9500	90	5	3		armor_bypass_50
+scrap_harpoon	Scrap Harpoon	weapon	weapon	4	7	10	1500	44	2	3		armor_bypass_30
+scrapgun	Scrapgun	weapon	weapon	4	6	10	1100	30	2	1		ammo_from_cargo
+siege_railgun	Siege Railgun	weapon	weapon	16	35	10	30000	200	6	5		armor_bypass_90
+solar_lance	Solar Lance	weapon	weapon	11	24	10	27000	65	4	3		energy_damage_bonus_25
+storm_lance	Storm Lance	weapon	weapon	10	18	10	15000	40	3	2		chain_lightning_2
+system_disabler	System Disabler	weapon	weapon	8	15	10	8800	2	3	3		module_disable_1,target_specific
+tracking_mine_launcher	Tracking Mine Launcher	weapon	weapon	10	8	10	8000	100	3	6		mine_capacity_5,mine_tracking_speed_3,mine_duration_60
+void_cannon	Void Cannon	weapon	weapon	14	28	10	25000	75	3	3		ignores_resistance_50
+void_lance_i	Void Lance I	weapon	weapon	10	20	10	17000	55	4	3		ignores_resistance_50
+void_lance_ii	Void Lance II	weapon	weapon	14	30	10	40000	85	4	3		ignores_resistance_75
+void_laser	Void Laser	weapon	weapon	14	26	10	143000	65	5	2		shield_bypass_50
+void_mine_launcher	Void Mine Launcher	weapon	weapon	14	12	10	56000	120	3	8		mine_capacity_4,mine_duration_90,ignores_resistance_50
+void_torpedo_launcher	Void Torpedo Launcher	weapon	weapon	16	32	10	108000	100	6	5		ignores_resistance_75
