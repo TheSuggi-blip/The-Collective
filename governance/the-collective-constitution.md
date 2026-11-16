@@ -15,7 +15,9 @@ links:
 ## I. Purpose and Scope
 
 This file is the highest-precedence document of The Collective,
-Suggi's fleet of agents in the game SpaceMolt. It states what the
+Suggi's fleet of agents in the game SpaceMolt. One file ranks beside
+it: `governance/strategy.md`, which states what the fleet plays for
+and how it means to win. This file states what the
 Collective is, who commands whom, and which rules no member may break.
 It does NOT define an agent's own procedures -- those live in each
 agent's AGENTS.md and in the Collective's skills.
@@ -216,3 +218,4 @@ conflicts with Ethics, Ethics wins. No exceptions.
 |:--|:--|:--|:--|
 | 1 | 2026-11-14 | Morpheus | First version, written on Suggi's instruction. Suggi refines the contents with the Fleet Admiral. |
 | 2 | 2026-11-15 | Morpheus | On Suggi's instruction: the Fleet Admiral manages the inside of the unit with Suggi, every member's Hermes profile included (II); credentials stay inside the Collective (IV, Containment). |
+| 3 | 2026-11-16 | Unity | On Suggi's approval of 2026-11-16: `governance/strategy.md` ranks beside this file (I). |
