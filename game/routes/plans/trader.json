@@ -89,5 +89,6 @@
   "park": 40
  },
  "of": 40,
- "derived": "Written by game/fleet/plan.py from the division's plan file (data/plans/plan-trade.md), never by hand."
+ "derived": "Written by game/fleet/plan.py from the division's plan file (data/plans/plan-trade.md), never by hand.",
+ "templates": {}
 }
