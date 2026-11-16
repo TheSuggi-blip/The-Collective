@@ -1,0 +1,44 @@
+{
+ "id": "voidborn-first-hunt-intercrus-sootfall",
+ "kind": "circuit",
+ "title": "First Hunt: Belt-Grazers: 1,000 cr once and 50 Weapons XP; three belt-grazers at Intercrus Sootfall Belt (lawless, four jumps past The Experiment)",
+ "note": "Accept at The Experiment Research Station, three belt-grazers (60 hull) at intercrus:sootfall_belt with the rules of hunt.py, `alone` and a herd floor of 3, hand in where accepted, store all that is aboard. Written by Oracle 2026-11-16 12:18 UTC (orders.log ENT-014, block ORACLE (2): the scouts earn between reads with the missions that pay once): 11 scouts hold First Hunt unfinished (data/fleet/ships/), GSC-0031 Belt is spent (0 belt-grazers at 11:45 UTC) and Intercrus Belt paid 3 of 7 runs from 09:12 UTC, the other 4 left for a ship not ours at the place (data/routes/runs.jsonl). Sootfall Belt read 16 belt-grazers and no pilot not ours at 11:48 UTC (data/wildlife/intercrus.json), the most of any belt-grazer place without a pirate in its system. Beyond policed space (orders F13): an empty hold, and no fight where a ship that is not ours stands. Open to every plan with Oracle's word (queue.log); one hunter at a time. A test with one ship until its first RESULT line.",
+ "once": true,
+ "max_ships": 1,
+ "requires": {
+  "empty_hold": true
+ },
+ "one_time": [
+  "First Hunt: Belt-Grazers"
+ ],
+ "skip_if_booked": [
+  "First Hunt: Belt-Grazers"
+ ],
+ "stops": [
+  {
+   "at": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+   "accept": [
+    "first_hunt_belt_grazers"
+   ],
+   "hunt": [
+    {
+     "at": "intercrus:sootfall_belt",
+     "species": [
+      "belt_grazer"
+     ],
+     "kills": 3,
+     "minutes": 35,
+     "for": [
+      "First Hunt: Belt-Grazers"
+     ],
+     "alone": true,
+     "min_creatures": 3
+    }
+   ]
+  },
+  {
+   "at": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+   "store": "all"
+  }
+ ]
+}
