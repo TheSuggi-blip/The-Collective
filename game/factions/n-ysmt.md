@@ -38,7 +38,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Fragment 'Find' Fletcher | Synchrony (`synchrony`) | 0 | prayer |
+| Sterling 'Silver' Solomo | The Experiment (`the_experiment`) | 0 | congregation |
 
 ## Standing History
 

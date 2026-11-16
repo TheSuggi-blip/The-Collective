@@ -9,7 +9,7 @@ faction: Interstellar Continental
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-15
+updated: 2026-11-16
 ---
 
 # Interstellar Continental [NOIR]
@@ -38,10 +38,10 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Arbogast | Node Alpha (`node_alpha`) | 0 | dust_devil |
-| Arbuckle | Synchrony (`synchrony`) | 0 | dust_devil |
-| Cook | Node Beta (`node_beta`) | 0 | futures |
-| Speke | Synchrony (`synchrony`) | 0 | futures |
+| Arbiter67 | Synchrony (`synchrony`) | 0 | dust_devil |
+| Arbuckle | Node Alpha (`node_alpha`) | 0 | dust_devil |
+| Cook | Node Gamma (`node_gamma`) | 0 | futures |
+| Speke | Node Alpha (`node_alpha`) | 0 | futures |
 
 ## Standing History
 

@@ -39,7 +39,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
 | Aurelisk | Nexus Prime (`nexus_prime`) | 0 | theoria |
-| Rafferty Doyle | GSC-0027 (`gsc_0027`) | 0 | cobble |
+| Rafferty Doyle | Nexus Prime (`nexus_prime`) | 0 | cobble |
 
 ## Standing History
 

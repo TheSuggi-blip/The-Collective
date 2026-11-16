@@ -38,9 +38,9 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Wexler 6U3-5F | Synchrony (`synchrony`) | 0 | cobble |
-| Wexler 8NC-8X | Nexus Prime (`nexus_prime`) | 0 | frankenhauler |
-| Wexler E1W-PS | Synchrony (`synchrony`) | 0 | not met |
+| Wexler 8NC-8X | Synchrony (`synchrony`) | 0 | frankenhauler |
+| Wexler QWM-Y0 | Hamal (`hamal`) | 0 | cobble |
+| Wexler VN3-Z1 | Node Alpha (`node_alpha`) | 0 | cobble |
 
 ## Standing History
 
