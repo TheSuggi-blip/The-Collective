@@ -484,7 +484,7 @@ def api_income(hours):
         e = by.setdefault(text(r.get("route"), 60), {"runs": 0, "minutes": 0.0, "credits": 0, "one_time": 0})
         e["runs"] += 1
         e["one_time"] += num(r.get("one_time"))
-        if num(r.get("credits_before")) > 0:
+        if num(r.get("credits_before")) > 0 and r.get("credits_after") != 0:          # a wallet read as 0 is no reading
             minutes = r.get("minutes")
             e["minutes"] += float(minutes) if isinstance(minutes, (int, float)) else 0.0
             e["credits"] += num(r.get("delta")) - num(r.get("one_time"))

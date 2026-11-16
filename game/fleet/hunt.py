@@ -398,13 +398,15 @@ if goal('prepare-at-station', {'systemId': sell_at[0], 'poiId': sell_at[1], 'bas
     if stashed:
         say(f'stored at {sell_at[2]}: {stashed}')
 after = credits()
+if not (before_credits and after) and 'wallet not read' not in notes:      # a wallet is never 0: the engine did not answer at one end
+    notes.append('wallet not read')
 try:
     os.makedirs(os.path.dirname(RUNS), exist_ok=True)
     with open(RUNS, 'a', encoding='utf-8') as fh:
         fcntl.flock(fh, fcntl.LOCK_EX)
         fh.write(json.dumps({'route': route_id, 'kind': 'hunt', 'pilot': pilot, 'started': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(started)),
                              'minutes': round((time.time() - started) / 60, 1), 'credits_before': before_credits, 'credits_after': after,
-                             'delta': after - before_credits, 'one_time': 0, 'kills': kills, 'goods': goods, 'sold': {k: list(v) for k, v in sold.items()},
+                             'delta': after - before_credits if before_credits and after else 0, 'one_time': 0, 'kills': kills, 'goods': goods, 'sold': {k: list(v) for k, v in sold.items()},
                              'hull_before': HULL_BEFORE, 'hull_after': hull()[0], 'lowest_hull_pct': LOW[0], 'notes': notes}, separators=(',', ':')) + '\n')
 except OSError as e:
     say(f'run row not written: {e}')

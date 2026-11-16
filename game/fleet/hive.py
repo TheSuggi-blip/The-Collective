@@ -16,6 +16,13 @@ WHAT: reads the unit's data folder (fleet/, routes/runs.jsonl, market/, scouting
         system <id>           one system: chart, places, what is left in its fields, its herds, its market, who was met, our ships
         learnings             per member: its newest report, and the knowledge files and learning questions it wrote or
                               changed in the last hours (from the git history of its workspace)
+        standing              the standing fleet of a member: its plan route by route with the credits per ship-hour of each,
+                              and every ship on one line: what it flies now, what it earned per hour in the last hours,
+                              and what closes the best route to it when it waits
+        tasks                 one unit for all work: credits per ship-hour by kind of work (mining, hunting, trade, ...)
+                              and by division with the idle ships counted, beside the best route as the scale
+        refill                what comes back by itself between our readings, per hour: the units a bid regains, what a
+                              field grows back, the animals of a herd
 RULES:
   - It reads only: it moves no ship and writes no file.
   - Every figure names what it rests on; what no reading holds is printed as `not measured`, never filled in.
@@ -34,6 +41,9 @@ USAGE:
   hive.py base outpost|station
   hive.py system <system id>
   hive.py learnings [--hours N]
+  hive.py standing [<Member>|<role>|all] [--hours N]
+  hive.py tasks [--hours N]
+  hive.py refill
   --root <dir>   the repository's game/ folder (default: the parent of this file's folder)
   --data <dir>   the unit's data folder (default /srv/collective/data)
 
@@ -624,6 +634,244 @@ def show_learnings(root, data, now, hours, profiles=PROFILES):
     return 0
 
 
+def moves(seen):
+    """(added, taken, hours) of a series [(time, value)]: the sum of the rises and of the falls between two readings, and its span."""
+    seen = sorted(seen)
+    pairs = list(zip(seen, seen[1:]))
+    return (sum(max(0, b[1] - a[1]) for a, b in pairs), sum(max(0, a[1] - b[1]) for a, b in pairs),
+            (seen[-1][0] - seen[0][0]) / 3600 if len(seen) > 1 else 0.0)
+
+
+def json_lines(path):
+    try:
+        with open(path, encoding="utf-8") as handle:
+            for line in handle:
+                try:
+                    row = json.loads(line)
+                except ValueError:
+                    continue
+                if isinstance(row, dict):
+                    yield row
+    except OSError:
+        return
+
+
+def series(data):
+    """The readings over time: ({(base, item): [(time, bid units, bid)]}, {(system, place, resource): [(time, units)]},
+    {(system, place, species): [(time, animals)]}) from market/history.jsonl and wildlife/history.jsonl. A herd that a
+    reading of its place no longer lists stands at 0 in that reading."""
+    bids, deposits, herds = defaultdict(list), defaultdict(list), defaultdict(list)
+    for row in json_lines(Path(data) / "market" / "history.jsonl"):
+        if row.get("base") and row.get("item") and isinstance(row.get("bid_qty"), (int, float)):
+            bids[(row["base"], row["item"])].append((epoch(row.get("t")), row["bid_qty"], row.get("bid") or 0))
+    known = defaultdict(set)
+    for row in json_lines(Path(data) / "wildlife" / "history.jsonl"):
+        at, system = epoch(row.get("at")), row.get("system")
+        found = {poi: entry for poi, entry in (row.get("herds") or {}).items() if isinstance(entry, dict)}
+        for poi, entry in (row.get("deposits") or {}).items():
+            for res, units in (entry or {}).items() if isinstance(entry, dict) else []:
+                if isinstance(units, (int, float)):
+                    deposits[(system, poi, res)].append((at, units))
+        for poi in set(row.get("deposits") or {}) | set(row.get("pilots") or {}) | set(found):
+            here = {s: c for s, c in (found.get(poi) or {}).items() if isinstance(c, (int, float))}
+            known[(system, poi)] |= set(here)
+            for species in known[(system, poi)]:
+                herds[(system, poi, species)].append((at, here.get(species, 0)))
+    return bids, deposits, herds
+
+
+def show_refill(root, data, now):
+    bids, deposits, herds = series(data)
+    read_at = {base: epoch((entry or {}).get("read_at")) for base, entry in (read(Path(data) / "market" / "history.state.json", {}) or {}).items()
+               if isinstance(entry, dict)}
+    _market, where = books(data)
+    print("REFILL | what comes back by itself, per hour, from our own readings | a rise between two readings is the least that came back: "
+          "what was sold, mined or killed in between hides the rest | a place read twice or more, half an hour apart or more")
+    table = []
+    for (base, item), seen in bids.items():
+        seen.sort()
+        added, taken, _span = moves([(t, units) for t, units, _bid in seen])
+        hours = (max(read_at.get(base, 0), seen[-1][0]) - seen[0][0]) / 3600     # a move is written when a value changed: the span runs to the last reading of the book
+        bid = next((b for _t, _u, b in reversed(seen) if b), 0)
+        if hours >= 0.5 and added > 0 and bid > 0:
+            table.append((-(added / hours * bid), label(base, where), item, bid, seen[-1][1], len(seen), hours, added / hours, taken / hours))
+    print("BIDS that regained units: %d of %d watched | sorted by the credits an hour the regained units are worth at the bid" % (len(table), len(bids)))
+    print("  %-30s %-26s %7s %9s %6s %6s %12s %12s %11s" % ("station", "item", "bid", "units now", "moves", "hours", "regained/h", "worth cr/h", "taken/h"))
+    for worth_h, base, item, bid, units, n, hours, added, taken in sorted(table)[:25]:
+        print("  %-30s %-26s %7s %9s %6d %6.1f %12s %12s %11s" % (base[:30], item[:26], num(bid), num(units), n, hours, num(added), num(-worth_h), num(taken)))
+    if not table:
+        print("  not measured: no bid was seen to rise between two readings")
+    table = []
+    for (system, poi, res), seen in deposits.items():
+        added, taken, hours = moves(seen)
+        if hours >= 0.5:
+            table.append((-added / hours, system, poi, res, sorted(seen)[-1][1], len(seen), hours, added / hours, taken / hours))
+    print("FIELDS read twice or more: %d | sorted by what grew back" % len(table))
+    print("  %-14s %-30s %-16s %10s %8s %6s %12s %11s" % ("system", "place", "resource", "units now", "readings", "hours", "grew back/h", "taken/h"))
+    for _key, system, poi, res, units, n, hours, added, taken in sorted(table)[:20]:
+        print("  %-14s %-30s %-16s %10s %8d %6.1f %12s %11s" % (str(system)[:14], poi[:30], res[:16], num(units), n, hours, num(added), num(taken)))
+    if not table:
+        print("  not measured: no field was read twice half an hour apart")
+    table = []
+    for (system, poi, species), seen in herds.items():
+        added, taken, hours = moves(seen)
+        if hours >= 0.5:
+            counts = [c for _t, c in seen]
+            table.append((-added / hours, system, poi, species, sorted(seen)[-1][1], min(counts), max(counts), len(seen), hours, added / hours, taken / hours))
+    print("HERDS read twice or more: %d | sorted by the animals that came back" % len(table))
+    print("  %-14s %-30s %-16s %4s %7s %5s %8s %6s %12s %14s" % ("system", "place", "species", "now", "fewest", "most", "readings", "hours", "came back/h", "killed, left/h"))
+    for _key, system, poi, species, last, low, high, n, hours, added, taken in sorted(table)[:25]:
+        print("  %-14s %-30s %-16s %4d %7d %5d %8d %6.1f %12.1f %14.1f" % (str(system)[:14], poi[:30], species[:16], last, low, high, n, hours, added, taken))
+    if not table:
+        print("  not measured: no herd was read twice half an hour apart")
+    return 0
+
+
+def pilot_stats(rows, since):
+    """{pilot or route: [runs, steady credits, minutes that read a wallet, paid once, minutes flown]} of the runs started since a time."""
+    by_pilot, by_route = defaultdict(lambda: [0, 0.0, 0.0, 0, 0.0]), defaultdict(lambda: [0, 0.0, 0.0, 0, 0.0])
+    for row in rows:
+        if epoch(row.get("started")) >= since:
+            for entry in (by_pilot[row.get("pilot")], by_route[row.get("route")]):
+                entry[0] += 1
+                entry[3] += row.get("one_time") or 0
+                entry[4] += row.get("minutes") or 0
+                if routefiles.readable(row):
+                    entry[1] += routefiles.earned(row) - (row.get("one_time") or 0)
+                    entry[2] += row.get("minutes") or 0
+    return by_pilot, by_route
+
+
+def per_hour(credits, minutes):
+    return num(credits / minutes * 60) if minutes else "--"
+
+
+def work_of(route):
+    """The kind of work a route is, for one table of all work."""
+    if not route:
+        return "route file gone"
+    if routefiles.stage(route) == "fit":
+        return "fitting (tools, bought once)"
+    if route.get("once"):
+        return "missions that pay once"
+    return {"mine": "mining", "hunt": "hunting", "census": "census (reads, no pay)", "circuit": "trade and delivery"}.get(route.get("kind"), str(route.get("kind") or "?"))
+
+
+def show_tasks(root, data, now, hours):
+    routes, rows = dispatch.load_routes(root), dispatch.run_rows(data)
+    by_pilot, by_route = pilot_stats(rows, now - hours * 3600)
+    kinds = defaultdict(lambda: [0, 0, 0.0, 0.0, 0, 0.0])            # routes, runs, credits, read minutes, paid once, minutes flown
+    for rid, (runs, credits, minutes, once, flown) in by_route.items():
+        entry = kinds[work_of(routes.get(rid))]
+        entry[0] += 1
+        for index, value in ((1, runs), (2, credits), (3, minutes), (4, once), (5, flown)):
+            entry[index] += value
+    print("TASKS | the last %g hours of runs | one unit for all work: credits per ship-hour | steady money: a reward the game pays once stands in its own column" % hours)
+    print("  %-30s %6s %5s %12s %11s %13s %10s %19s" % ("kind of work", "routes", "runs", "ship-h flown", "credits", "per ship-hour", "paid once", "per ship-h with it"))
+    for name, (count, runs, credits, minutes, once, flown) in sorted(kinds.items(), key=lambda kv: -(kv[1][2] / kv[1][3] if kv[1][3] else -10 ** 9)):
+        print("  %-30s %6d %5d %12.1f %11s %13s %10s %19s" % (name, count, runs, flown / 60, num(credits), per_hour(credits, minutes), num(once) if once else "--",
+                                                          per_hour(credits + once, minutes)))
+    print("  a mission that pays once buys its goods from the steady money and is paid in the last column: judge it there; it cannot be flown twice")
+    crew, _fleet = pilots(data)
+    ships = Counter(division.owner(ship.get("name") or "", data) for ship, _detail in crew)
+    owners = defaultdict(lambda: [0, 0.0, 0.0, 0, 0.0])
+    for pilot, values in by_pilot.items():
+        entry = owners[division.owner(pilot or "", data)]
+        for index, value in enumerate(values):
+            entry[index] += value
+    print("  %-10s %5s %12s %12s %6s %11s %19s %15s %10s" % ("division", "ships", "ship-h clock", "ship-h flown", "busy", "credits", "per ship-h, all ships", "per ship-h flown", "paid once"))
+    total = [0, 0.0, 0.0, 0, 0.0]
+    for member in division.MEMBERS:
+        runs, credits, minutes, once, flown = owners.get(member, [0, 0.0, 0.0, 0, 0.0])
+        clock = ships.get(member, 0) * hours
+        total = [a + b for a, b in zip(total, (runs, credits, minutes, once, flown))]
+        print("  %-10s %5d %12.0f %12.1f %5.0f%% %11s %19s %15s %10s" % (member, ships.get(member, 0), clock, flown / 60, 100 * flown / 60 / clock if clock else 0, num(credits),
+                                                                       num(credits / clock) if clock else "--", per_hour(credits, minutes), num(once) if once else "--"))
+    clock = sum(ships.values()) * hours
+    print("  %-10s %5d %12.0f %12.1f %5.0f%% %11s %19s %15s %10s" % ("FLEET", sum(ships.values()), clock, total[4] / 60, 100 * total[4] / 60 / clock if clock else 0, num(total[1]),
+                                                                   num(total[1] / clock) if clock else "--", per_hour(total[1], total[2]), num(total[3]) if total[3] else "--"))
+    best = sorted(((credits / minutes * 60, rid, runs) for rid, (runs, credits, minutes, _o, _f) in by_route.items() if runs >= 2 and minutes), reverse=True)
+    if best:
+        print("  THE SCALE | best route with two runs or more: %s at %s credits per ship-hour | a ship without work earns 0 | every figure above reads against these two"
+              % (best[0][1], num(best[0][0])))
+    return 0
+
+
+def show_standing(root, data, now, who, hours):
+    import fill                                    # the dispatcher's next pass played through for every free pilot
+    seen = fill.survey(root, data, now)
+    routes, state = seen["routes"], seen["state"]
+    by_pilot, by_route = pilot_stats(state["rows"], now - hours * 3600)
+    titles = {key: title for key, title, _text in routefiles.STAGES}
+    named = dispatch.flagships(data)
+    crew_all, fleet = pilots(data)
+    roles = [role for role in seen["roles"] if who in ("all", role, division.ROLES.get(role))]
+    if not roles:
+        print("no plan of `%s`: a member's name, a role (%s) or all" % (who, ", ".join(sorted(division.ROLES))))
+        return 1
+    for role in roles:
+        crew, plan = seen["crews"].get(role) or {}, seen["roles"].get(role) or []
+        mine = [(ship, detail) for ship, detail in crew_all if dispatch.role_of(ship.get("name") or "", named) == role]
+        print("STANDING FLEET | %s, role %s: %d ships | fleet data read %s | figures: the last %g hours of runs, steady money (paid once apart) | credits per ship-hour throughout"
+              % (division.ROLES.get(role, "?"), role, len(mine), ago(fleet.get("updated_at"), now), hours))
+        print("PLAN %s: %d routes in this order; a free ship takes the first one open to it (game/routes/plans/%s.json)" % (role, len(plan), role))
+        print("  %2s %-40s %-8s %-16s %10s %9s | %4s %9s %13s %9s" % ("#", "route", "kind", "group", "measured/h", "ships/cap", "runs", "credits", "per ship-hour", "paid once"))
+        for n, rid in enumerate(plan, 1):
+            route = routes.get(rid)
+            if not route:
+                print("  %2d %-40s no route file" % (n, rid[:40]))
+                continue
+            runs, credits, minutes, once, _flown = by_route.get(rid, [0, 0.0, 0.0, 0, 0.0])
+            print("  %2d %-40s %-8s %-16s %10s %9s | %4d %9s %13s %9s" % (n, rid[:40], route["kind"], titles[routefiles.stage(route)][:16], routefiles.figure(route),
+                                                                      "%d/%s" % (fill.flying_now(route, rid, state["orders"]), route.get("max_ships") or "-"), runs,
+                                                                      num(credits) if runs else "--", per_hour(credits, minutes), num(once) if once else "--"))
+        waiting = {p["name"]: p for p in crew.get("waiting") or []}
+        starting = dict(crew.get("starting") or [])
+        ranked = sorted(((worth(routes[rid]) or 0, rid) for rid in plan if rid in routes and not routes[rid].get("once") and (worth(routes[rid]) or 0) > 0), reverse=True)
+        print("SHIPS: what each flies now, what it earned, and what closes the best route of the plan to a ship that waits")
+        counts, sums = Counter(), [0.0, 0.0, 0.0, 0.0]
+        for ship, detail in sorted(mine, key=lambda sd: (sd[0].get("number") or 0, sd[0].get("name") or "")):
+            name = ship.get("name") or ""
+            what = state["orders"].get(name)
+            if ship.get("status") != "connected":
+                doing, key = "not connected", "away"
+            elif what and what.startswith("hand "):
+                doing, key = "by hand: " + what[5:], "by hand"
+            elif what:
+                rid = what.split(" ", 1)[1] if " " in what else what
+                route = routes.get(rid)
+                doing = "flies " + what
+                key = "reading" if what.startswith("census ") else "waiting" if route and route.get("park") else "on a route that pays once" if route and route.get("once") else \
+                    "on a route that pays" if route and fill.proven(route) else "on a test or a fitting"
+                if route and route.get("park"):
+                    doing = "waits docked (the plan's last route)"
+            elif (ship.get("activity") or {}).get("kind") != "idle":
+                doing, key = "busy by hand (%s)" % (ship.get("activity") or {}).get("kind"), "by hand"
+            elif name in starting:
+                doing, key = "starts %s at the next pass" % starting[name], "starting"
+            else:
+                key, doing = "waiting", "waits at %s" % (ship.get("system") or "?")
+                if name in waiting and ranked:
+                    rid = ranked[0][1]
+                    reason, _argument = dispatch.why_not(waiting[name], rid, routes.get(rid), dict(state, orders=seen["played"], rows=seen["by_route"].get(rid, [])))
+                    doing += " | best route %s (%s/h): %s" % (rid, num(ranked[0][0]), reason or "open at the next pass")
+                elif name in waiting:
+                    doing += " | the plan holds no route that repeats and pays"
+            counts[key] += 1
+            runs, credits, minutes, once, flown = by_pilot.get(name, [0, 0.0, 0.0, 0, 0.0])
+            sums = [a + b for a, b in zip(sums, (credits, minutes, flown, once))]
+            tools = ", ".join(sorted({str(m) for m in modules_of(detail) if m}))
+            print("  %-16s %-34s | %2d runs %5.0f min %9s cr %7s/h flown %7s/h clock%s | %s"
+                  % (name[:16], (tools or "no module read")[:34], runs, flown, num(credits) if runs else "--", per_hour(credits, minutes), num(credits / hours) if runs else "0",
+                     " +%s once" % num(once) if once else "", doing[:150]))
+        clock = len(mine) * hours
+        print("SUM %s | %s | %g hours: %s credits over %d ship-hours on the clock = %s credits per ship-hour, all ships; flown %.1f ship-hours at %s per ship-hour; paid once %s"
+              % (role, ", ".join("%d %s" % (n, key) for key, n in counts.most_common()) or "no ship", hours, num(sums[0]), clock, num(sums[0] / clock) if clock else "--",
+                 sums[2] / 60, per_hour(sums[0], sums[1]), num(sums[3])))
+        print("  to change it: the tool fill (status says why each route is closed, add/drop/lift change the plan); a ship is pinned to nothing: it flies the plan in order")
+    return 0
+
+
 def main():
     args = sys.argv[1:]
     value = lambda name, default: args[args.index(name) + 1] if name in args and args.index(name) + 1 < len(args) else default
@@ -654,6 +902,13 @@ def main():
         return show_system(root, data, now, rest[0])
     if verb == "learnings":
         return show_learnings(root, data, now, float(value("--hours", "8")))
+    if verb == "standing":
+        _kind, me = division.member()
+        return show_standing(root, data, now, rest[0] if rest else (me if me in division.MEMBERS else "all"), float(value("--hours", str(TURN))))
+    if verb == "tasks":
+        return show_tasks(root, data, now, float(value("--hours", str(TURN))))
+    if verb == "refill":
+        return show_refill(root, data, now)
     sys.exit(__doc__)
 
 

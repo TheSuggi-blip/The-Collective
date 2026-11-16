@@ -115,6 +115,8 @@ class PickTests(Tree):
         losing = lambda *rows: self.dispatch.losing(routes, list(rows), self.now)
         self.assertEqual(losing(run("rays", 600, 105), run("rays", 300, -4635)), {"rays": (2, -4530)})
         self.assertEqual(losing(run("rays", 600, -4635)), {})                                      # one run is no verdict
+        unread = dict(run("rays", 200, 0), credits_after=0)                                       # the engine did not answer at the run's end: no reading
+        self.assertEqual(losing(run("rays", 600, 105), unread), {})
         self.assertEqual(losing(run("rays", 600, 900), run("rays", 300, -90)), {})                 # it paid in sum
         self.assertEqual(losing(run("rays", 8 * 3600, -500), run("rays", 7 * 3600, -500)), {})     # the window has moved on
         self.assertEqual(losing(run("rays", 600, 2000, 3000), run("rays", 300, -100)), {"rays": (2, -1100)})   # a reward paid once is no pay of a repeating route

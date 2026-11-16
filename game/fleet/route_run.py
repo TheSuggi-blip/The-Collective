@@ -413,10 +413,12 @@ for n, stop in enumerate(ROUTE['stops']):
     if verbose:
         active()
 after = credits()
+if not (before and after) and 'wallet not read' not in notes:      # a wallet is never 0: the engine did not answer at one end
+    notes.append('wallet not read')
 minutes = (time.time() - started) / 60
 row = {'route': ROUTE['id'], 'kind': ROUTE.get('kind'), 'pilot': pilot, 'started': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(started)),
        'minutes': round(minutes, 1), 'stops': reached, 'of': len(ROUTE['stops']), 'credits_before': before, 'credits_after': after,
-       'delta': after - before, 'one_time': onetime[0], 'handed_in': done, 'notes': notes}
+       'delta': after - before if before and after else 0, 'one_time': onetime[0], 'handed_in': done, 'notes': notes}
 runs = DATA / 'routes' / 'runs.jsonl'
 runs.parent.mkdir(parents=True, exist_ok=True)
 with open(runs, 'a', encoding='utf-8') as fh:

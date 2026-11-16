@@ -370,10 +370,11 @@ def earned(row):
 
 
 def readable(row):
-    """False for a run that read no wallet: it says nothing about credits. A pilot's wallet is never 0 (it keeps a floor)."""
+    """False for a run that read no wallet at its start or at its end: it says nothing about credits. A pilot's wallet is
+    never 0 (it keeps a floor): a 0 at either end is the engine not answering."""
     before, after = row.get("credits_before"), row.get("credits_after")
     numbers = all(isinstance(v, (int, float)) and not isinstance(v, bool) for v in (before, after))
-    return numbers and bool(before or after) and "wallet not read" not in (row.get("notes") or [])
+    return numbers and before > 0 and after > 0 and "wallet not read" not in (row.get("notes") or [])
 
 
 def measure(root, data, write, only=None):

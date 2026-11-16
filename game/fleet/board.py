@@ -80,7 +80,7 @@ def state_of(ship, what):
 
 def figure(rows):
     """(runs with a wallet reading, ship-hours, credits without one-time, per ship-hour or None)."""
-    read = [r for r in rows if (r.get("credits_before") or 0) > 0]
+    read = [r for r in rows if (r.get("credits_before") or 0) > 0 and r.get("credits_after") != 0]      # a wallet read as 0 is no reading
     minutes = sum(r.get("minutes") or 0 for r in read)
     credits = sum((r.get("delta") or 0) - (r.get("one_time") or 0) for r in read)
     return len(read), minutes / 60.0, credits, (round(60 * credits / minutes) if minutes else None)

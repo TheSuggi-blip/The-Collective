@@ -83,7 +83,13 @@ def fleet_plan(a):
         return [("game/fleet/hive.py", ["capacity"])]
     if view == "board":
         return [("game/fleet/board.py", ([a["member"]] if a.get("member") else []) + flag(a, "hours"))]
-    raise ValueError("view is one of: money, history, levels, capacity, board")
+    if view == "standing":
+        return [("game/fleet/hive.py", ["standing"] + ([a["member"]] if a.get("member") else []) + flag(a, "hours"))]
+    if view == "tasks":
+        return [("game/fleet/hive.py", ["tasks"] + flag(a, "hours"))]
+    if view == "refill":
+        return [("game/fleet/hive.py", ["refill"])]
+    raise ValueError("view is one of: money, history, levels, capacity, board, standing, tasks, refill")
 
 
 def fill_plan(a):
@@ -148,9 +154,13 @@ TOOLS = {
         "text": "The fleet in figures. view=money: credits and steady money per hour (income, costs, net; rewards paid once left out) over 1, 6 and 24 hours, per division. "
                 "view=history: credits hour by hour per division. view=levels: pilots' levels, XP an hour, hours to the next hull tier. view=capacity: what mining, hunting "
                 "and the once-missions carry (bids, what is left in the fields, herds, tools) and how many ships that employs. view=board: a member's ships one line each, "
-                "with their orders and last runs.",
-        "args": {"view": arg(S, "money (default), history, levels, capacity or board", ("money", "history", "levels", "capacity", "board")),
-                 "member": arg(S, "for levels and board: a member's name, or all", MEMBERS), "hours": arg(I, "for history and board: the window in hours")},
+                "with their orders and last runs. view=standing: the standing fleet of a member: its plan route by route with the credits per ship-hour of each, and "
+                "every ship with what it flies, what it earned per hour and what closes the best route to it. view=tasks: credits per ship-hour by kind of work and by "
+                "division, idle ships counted. view=refill: what comes back per hour between our readings: bids, fields, herds.",
+        "args": {"view": arg(S, "money (default), history, levels, capacity, board, standing, tasks or refill",
+                             ("money", "history", "levels", "capacity", "board", "standing", "tasks", "refill")),
+                 "member": arg(S, "for levels, board and standing: a member's name, or all", MEMBERS),
+                 "hours": arg(I, "for history, board, standing and tasks: the window in hours")},
         "plan": fleet_plan},
     "ship": {
         "text": "One ship of the fleet from its live file: place, docked or not, hull, fuel, hold, modules, wallet, the order it flies, skills, missions held.",

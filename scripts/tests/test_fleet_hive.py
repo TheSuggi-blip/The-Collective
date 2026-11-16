@@ -58,6 +58,37 @@ class HiveTests(unittest.TestCase):
                 {"route": "r", "started": stamp(90000), "minutes": 30, "delta": 99, "credits_before": 1, "credits_after": 100}]
         self.assertEqual(self.hive.window_stats(rows, now - 3600)["r"], [2, 2000.0, 60.0, 3000])
 
+    def test_what_comes_back_is_the_sum_of_the_rises_between_readings(self):
+        self.assertEqual(self.hive.moves([(0, 100), (3600, 40), (7200, 90), (10800, 90)]), (50, 60, 3.0))
+        self.assertEqual(self.hive.moves([(0, 5)]), (0, 0, 0.0))
+        hour = lambda h: time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(1_800_000_000 + h * 3600))
+        with open(self.data / "wildlife" / "history.jsonl", "w") as handle:
+            for h, herd in ((0, {"belt": {"veil_ray": 6}}), (1, {}), (2, {"belt": {"veil_ray": 4}})):
+                handle.write(json.dumps({"at": hour(h), "system": "far", "deposits": {"belt": {"water_ice": 1000 - 100 * h}}, "herds": herd, "pilots": {"belt": 0}}) + "\n")
+        with open(self.data / "market" / "history.jsonl", "w") as handle:
+            for h, units in ((0, 500), (1, 100), (2, 400)):
+                handle.write(json.dumps({"t": hour(h), "base": "hub", "item": "water_ice", "bid": 38, "bid_qty": units, "ask": 0, "ask_qty": 0}) + "\n")
+        bids, deposits, herds = self.hive.series(str(self.data))
+        self.assertEqual([units for _t, units, _bid in bids[("hub", "water_ice")]], [500, 100, 400])
+        self.assertEqual([c for _t, c in herds[("far", "belt", "veil_ray")]], [6, 0, 4])          # the herd was gone at the second reading of its place
+        self.assertEqual(self.hive.moves(herds[("far", "belt", "veil_ray")])[:2], (4, 6))
+        with contextlib.redirect_stdout(io.StringIO()) as printed:
+            self.assertEqual(self.hive.show_refill(str(FLEET.parent), str(self.data), time.time()), 0)
+        self.assertIn("water_ice", printed.getvalue())
+        self.assertIn("veil_ray", printed.getvalue())
+
+    def test_work_is_counted_per_pilot_and_per_route_in_one_unit(self):
+        now = time.time()
+        stamp = lambda ago: time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(now - ago))
+        rows = [{"route": "r", "pilot": "miner-1", "started": stamp(600), "minutes": 30, "delta": 1000, "credits_before": 1000, "credits_after": 2000},
+                {"route": "r", "pilot": "miner-2", "started": stamp(900), "minutes": 30, "delta": 4000, "credits_before": 1000, "credits_after": 5000, "one_time": 3000},
+                {"route": "r", "pilot": "miner-1", "started": stamp(9000), "minutes": 30, "delta": 8000, "credits_before": 1000, "credits_after": 9000}]
+        by_pilot, by_route = self.hive.pilot_stats(rows, now - 3600)
+        self.assertEqual(by_pilot["miner-1"], [1, 1000.0, 30.0, 0, 30.0])
+        self.assertEqual(by_route["r"], [2, 2000.0, 60.0, 3000, 60.0])
+        self.assertEqual(self.hive.per_hour(2000, 60), "2,000")
+        self.assertEqual(self.hive.per_hour(2000, 0), "--")
+
     def test_a_question_without_readings_says_so_instead_of_failing(self):
         out = io.StringIO()
         with contextlib.redirect_stdout(out):

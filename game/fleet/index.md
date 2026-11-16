@@ -193,6 +193,9 @@ hive.py capacity
 hive.py base outpost|station
 hive.py system <system id>
 hive.py learnings [--hours N]
+hive.py standing [<Member>|<role>|all] [--hours N]
+hive.py tasks [--hours N]
+hive.py refill
 --root <dir>   the repository's game/ folder (default: the parent of this file's folder)
 --data <dir>   the unit's data folder (default /srv/collective/data)
 ```

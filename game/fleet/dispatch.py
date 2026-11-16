@@ -313,8 +313,8 @@ def losing(routes, rows, now):
     sums = {}
     for row in rows:
         before, after = row.get("credits_before"), row.get("credits_after")
-        if not all(isinstance(v, (int, float)) and not isinstance(v, bool) for v in (before, after)) or not (before or after):
-            continue                                              # the run read no wallet: it says nothing about credits
+        if not all(isinstance(v, (int, float)) and not isinstance(v, bool) for v in (before, after)) or not (before > 0 and after > 0):
+            continue                                              # the run read no wallet at one end: it says nothing about credits
         try:
             started = calendar.timegm(time.strptime(row.get("started") or "", "%Y-%m-%dT%H:%M:%SZ"))
         except ValueError:
