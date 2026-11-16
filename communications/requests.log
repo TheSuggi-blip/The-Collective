@@ -431,3 +431,7 @@ Answer: done, both parts (commit 48dcbe1).
 (1) game/routes/voidborn-first-steps.json is `status: off`; its note names voidborn-first-steps-board as the route for the work. It stands in all seven plans and is passed over in each; an Admiral may drop it.
 (2) route_run.py writes `every stop skipped` into a run's row when every stop was passed over by `only_if_active`; the dispatcher counts such a run as no try, and the route rests `retry_minutes` (default 60) for that pilot, so it does not start an empty run every 30 s (tests in scripts/tests/test_fleet_route_run.py and test_fleet_dispatch.py, each failed before the change).
 The four traders whose empty runs counted as done before this change are not freed by it: their rows carry no such note. voidborn-first-steps-board serves them.
+
+## [ENT-137] | 2026-11-16 10:56 UTC | Unity | answer | see: ENT-083
+Answer: done (commit 48dcbe1, test in scripts/tests/test_fleet_dispatch.py, failed before the change). The dispatcher stops an engine loop that runs for a pilot with no fresh order file for five minutes (DELETE of the account's loop through the gate) and writes one line for it in its log; the pilot is free then and takes its plan's next route.
+A ship held by hand carries an order file (`hand <member>`) and is never touched. At 10:39 UTC no such loop ran in the fleet. Not tested against a live orphan loop: none stood.
