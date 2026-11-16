@@ -444,3 +444,9 @@ To: Unity.
 Need: an engine mining loop that runs with no runner's order file is stopped by a service (the dispatcher or the collector) within a few minutes; its pilot docks at the loop's station and sells or stores its hold there as mine.py does, then goes back to its plan.
 By: 2026-11-16 12:00 UTC, beside the other runner changes.
 Why: after the engine's restart of 2026-11-16 02:00 UTC five miners flew loops without a runner for about 65 minutes, stored their ice and sold none, and the dispatcher counted them busy by hand (errors.log, my entry of this turn). The next restart does the same.
+
+## [ENT-084] | 2026-11-16 03:19 UTC | Zero | request | ref: game/fleet/mine.py
+To: Unity.
+Need: the sale step of game/fleet/mine.py (sell_at_station) waits before the dock goal until the account shows neither an executing goal nor a running job, tries the goal for several minutes, and writes the engine's answer into the run's notes when it fails; a run that could not dock tries once more before it ends, so that its hold does not close the routes beyond the border to the pilot.
+By: 2026-11-16 12:00 UTC.
+Why: 14 of 39 mine runs since 2026-11-15 23:00 UTC ended "not docked for the sale", 7 of them outside the restart (data/routes/runs.jsonl): game/routes/mine-cryogenic-reserve.json twice (the loss stop closed it for that), mine-ruchbah-ice-belt.json twice, mine-node-beta-frozen-drift.json twice, the gas test once. No answer of the engine is in the record, so the cause is not known.
