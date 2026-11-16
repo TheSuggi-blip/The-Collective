@@ -14,7 +14,7 @@ updated: 2026-11-16
 
 # Crafting Collective [CRFT]
 
-A player faction with 1 base(s) in 1 system(s); the nearest to Nexus Prime is 19 jump(s) away, in Cloverfield (`cloverfield`).
+A player faction with 2 base(s) in 2 system(s); the nearest to Nexus Prime is 19 jump(s) away, in Cloverfield (`cloverfield`).
 Pilots of it in our space in the last 24 hours: 0.
 
 ## Identity
@@ -26,13 +26,14 @@ Pilots of it in our space in the last 24 hours: 0.
 | Allies | DB , HELP, XPLR, YSMT | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 21 | Public event stream |
+| Pilots carrying the tag on the public event stream | 22 | Public event stream |
 
 ## Bases
 
 | Base | Kind | System | Space | Jumps from Nexus Prime | Condition |
 |---|---|---|---|---|---|
 | Conjunction Junction | station | Cloverfield (`cloverfield`) | lawless | 19 | operational |
+| station | station | Beid (`beid`) | lawless | 20 | thriving |
 
 ## Pilots in Our Space
 

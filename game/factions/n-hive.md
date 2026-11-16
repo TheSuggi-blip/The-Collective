@@ -15,7 +15,7 @@ updated: 2026-11-16
 # Hive Swarm [HIVE]
 
 A player faction with 3 base(s) in 3 system(s); the nearest to Nexus Prime is 5 jump(s) away, in Antares (`antares`).
-Pilots of it in our space in the last 24 hours: 11.
+Pilots of it in our space in the last 24 hours: 8.
 
 ## Identity
 
@@ -42,17 +42,14 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| 0e43701103dd8244439d8139 | The Experiment (`the_experiment`) | 0 | long_haul |
+| 0637bfdf8ba6a997093332c9 | Nexus Prime (`nexus_prime`) | 0 | futures |
+| 0a5266cdbbc00fe268e0948a | Synchrony (`synchrony`) | 0 | not met |
 | 1529c444887f2a8857c3bcd5 | Nexus Prime (`nexus_prime`) | 0 | theoria |
-| 4011f46410f19d6243276018 | Hamal (`hamal`) | 0 | not met |
-| 4937375bd771390f2e173ca0 | The Experiment (`the_experiment`) | 0 | runner |
-| 553c423820b3e6ea5f477c90 | Node Gamma (`node_gamma`) | 0 | runner |
-| 67194c43c43f74e1b9267ed5 | Pherkad (`pherkad`) | 0 | workhorse |
-| 8054dbcf8fff7c0f8c4f0165 | Hamal (`hamal`) | 0 | workhorse |
-| 907a7ad5fc57ac61d6e57ad4 | Hamal (`hamal`) | 0 | workhorse |
-| a61127ef25917281a2f5af9d | Pherkad (`pherkad`) | 0 | workhorse |
-| b14ccc7a855a258164b5f3c1 | The Experiment (`the_experiment`) | 0 | runner |
-| c413294b4b6a11879da15614 | Hamal (`hamal`) | 0 | bonanza |
+| 49be043857c5616dc5baa8b4 | Pherkad (`pherkad`) | 0 | not met |
+| 5a5a2c9677d0713f238cec9c | Hamal (`hamal`) | 0 | workhorse |
+| 7cef309f38b6626b4f94a9e9 | Hamal (`hamal`) | 0 | workhorse |
+| 9140cf6907be68f776da37ea | Hamal (`hamal`) | 0 | workhorse |
+| e039279d45eefa288b1c7717 | The Experiment (`the_experiment`) | 0 | futures |
 
 ## Standing History
 

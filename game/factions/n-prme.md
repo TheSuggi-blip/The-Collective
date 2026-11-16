@@ -15,7 +15,7 @@ updated: 2026-11-16
 # The Prime [PRME]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 0.
+Pilots of it in our space in the last 24 hours: 4.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 0.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 28 | Public event stream |
+| Pilots carrying the tag on the public event stream | 29 | Public event stream |
 
 ## Bases
 
@@ -36,7 +36,12 @@ None on the public record.
 
 Pilots carrying this tag whose last known system is one of ours (public event stream, last 24 hours).
 
-None in the last 24 hours.
+| Pilot | System | Player ships destroyed | Ship when one of ours met it |
+|---|---|---|---|
+| AsteroidAme | Nexus Prime (`nexus_prime`) | 0 | bonanza_king |
+| MLM-34815 | GSC-0027 (`gsc_0027`) | 0 | liminal |
+| MLM-56217 | GSC-0027 (`gsc_0027`) | 0 | archimedes |
+| MLM-61659 | GSC-0027 (`gsc_0027`) | 0 | archimedes |
 
 ## Standing History
 

@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 5.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 16 | Public event stream |
+| Pilots carrying the tag on the public event stream | 15 | Public event stream |
 
 ## Bases
 
@@ -39,9 +39,9 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
 | Daemia | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| Ellara | Node Beta (`node_beta`) | 0 | threshold |
+| Ellara | Node Gamma (`node_gamma`) | 0 | threshold |
 | Hesser | Node Beta (`node_beta`) | 0 | cobble |
-| Nythera | Node Beta (`node_beta`) | 0 | threshold |
+| Nythera | Node Gamma (`node_gamma`) | 0 | threshold |
 | Slyreus | Nexus Prime (`nexus_prime`) | 0 | threshold |
 
 ## Standing History
