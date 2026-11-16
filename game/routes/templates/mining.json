@@ -36,6 +36,19 @@
     "mining"
    ],
    "note": "Standing work into storage at Node Beta, nothing sold (orders ENT-019: silicon and carbon first, then iron). Needs the Mining Laser I. Silicon: no field we read holds it (Nexus Prime Material Harvesters reads 0 to 2 all day). Carbon: Acubens Belt, one ship, floor 60. Iron: Prism Scatter gave 65% iron of what it lost (census 2026-11-16), then Hamal (51%), then Acubens Shadow Pocket, each closed at its floor."
+  },
+  "reserve-hamal": {
+   "title": "Gather what the reserve is short of: carbon first, then iron, Hamal Crystal Bloom first",
+   "routes": [
+    "gather-acubens-belt-carbon",
+    "gather-hamal-crystal-bloom",
+    "gather-gsc-0027-prism-scatter",
+    "mine-acubens"
+   ],
+   "trains": [
+    "mining"
+   ],
+   "note": "As reserve-prism with Hamal Crystal Bloom first, so the division is spread over two iron fields. Needs the Mining Laser I."
   }
  }
 }
