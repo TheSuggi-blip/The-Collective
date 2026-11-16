@@ -171,8 +171,10 @@ with the fuel; the nodes are kept for the station list (its foundry takes
 1,500), since the best home bid stood at 40 cr (Node Gamma) against 1,013
 asked at Ironlight Crossroads. The game's `craft` help says `quantity` is
 the number of output items, rounded up to whole runs; the runner passes
-`runs` as that quantity, so a stop with `runs` 8 and `per_run` 2 makes 8
-units (4 runs), not 16. With `runs` 1 it made 2, as the recipe does.
+the runs still wanted as that quantity and asks again after each job, so
+it reaches `runs` x `per_run` in more jobs than one (`runs` 8, `per_run`
+2: jobs of 4, 2, 1 and 1 runs, read from game/fleet/route_run.py, not
+flown). With `runs` 1 it made 2 in one job, as the recipe does.
 
 ## 7. Open Tests
 
