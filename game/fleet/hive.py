@@ -39,6 +39,10 @@ WHAT: reads the unit's data folder (fleet/, routes/runs.jsonl, market/, scouting
         inventory             what the fleet owns in goods: every item in station storage and in the holds added up, by
                               kind of item (raw, refined, parts, modules ...); `inventory stations` lists it per station
                               (the craft book's own count: craftbook.py inventory)
+        sql "<statement>"     one SELECT or WITH statement on the store's read copy (store.py query: read only, one statement,
+                              a time stop), its rows as an aligned table with the column names, values as they are
+        schema [<table>]      every table and view of the store with what a row is and its columns; with a table's name its
+                              columns and three example questions as SQL
 RULES:
   - It reads only: it moves no ship and writes no file.
   - Every figure names what it rests on; what no reading holds is printed as `not measured`, never filled in.
@@ -66,6 +70,8 @@ USAGE:
   hive.py store price <item id> [--hours N]
   hive.py inventory [stations] [--item <item id>] [--top N]
   hive.py empire
+  hive.py sql "<SELECT or WITH statement>" [--limit N]
+  hive.py schema [<table or view>]
   --root <dir>   the repository's game/ folder (default: the parent of this file's folder)
   --data <dir>   the unit's data folder (default /srv/collective/data)
 
@@ -96,6 +102,8 @@ PAYS = 1000                    # credits a hold must bring at the best bid befor
 PROFILES = "/opt/data/profiles"                  # each member's workspace: <PROFILES>/<name>/workspace-<name>
 FEES = {"outpost": ("outpost_kit", 100000), "station": ("station_core", 5000000)}      # the founding fee: the game's faction guide, read 2026-11-15
 TIERS = ((10, 2), (20, 3), (30, 4), (50, 5))                                           # Piloting level -> hull tier (game/catalog/master-index.md)
+SQL_ROWS = 200                 # rows `sql` prints unless --limit says more
+SQL_CELL = 120                 # characters of one cell `sql` prints; a longer text is cut and the cut is said
 
 
 def worth(route):
@@ -1132,12 +1140,94 @@ def show_store(data, now, hours, rest):
         conn.close()
 
 
+def copy_line(data, now):
+    """What an answer of the store rests on: the read copy, when it was written and how old it is."""
+    path = Path(data) / "store" / "read.db"
+    written = path.stat().st_mtime if path.is_file() else None
+    return "the store's read copy %s, written %s (%s)" % (path, time.strftime("%Y-%m-%d %H:%M:%S UTC", time.gmtime(written)) if written else "never",
+                                                       "%d s old" % (now - written) if written else "not published yet")
+
+
+def shown(value, width=SQL_CELL):
+    """A value as it is, on one line; NULL for none; a text longer than `width` cut with `...`."""
+    text = "NULL" if value is None else str(value).replace("\r", " ").replace("\n", " ").replace("\t", " ")
+    return (text[:width - 3] + "...", True) if len(text) > width else (text, False)
+
+
+def show_sql(data, now, statement, limit):
+    """One read-only statement on the store's read copy (store.py query), its rows as an aligned table: numbers to the right,
+    values as they are, NULL for none."""
+    try:
+        limit = int(limit)
+    except ValueError:
+        print("SQL | --limit takes a number, not `%s`" % limit)
+        return 1
+    found = history.query(data, statement, limit=limit)
+    if found["error"]:
+        print("SQL | %s | %s" % (found["error"], copy_line(data, now)))
+        print("  the tables and their columns: hive.py schema; one table with three example questions: hive.py schema <table>")
+        return 1
+    rows, cut = [], 0
+    for row in found["rows"]:
+        cells = [shown(v) for v in row]
+        cut += sum(1 for _text, was in cells if was)
+        rows.append([text for text, _was in cells])
+    values = lambda n: [row[n] for row in found["rows"] if row[n] is not None]
+    right = [bool(values(n)) and all(isinstance(v, (int, float)) and not isinstance(v, bool) for v in values(n)) for n in range(len(found["columns"]))]
+    widths = [max([len(str(c))] + [len(r[n]) for r in rows]) for n, c in enumerate(found["columns"])]
+    line = lambda cells: "  " + "  ".join((c.rjust(w) if right[n] else c.ljust(w)) for n, (c, w) in enumerate(zip(cells, widths))).rstrip()
+    print("SQL | %d rows%s | %s" % (len(rows), " (cut at --limit %d: more rows match; raise it or narrow the statement)" % limit if found["cut"] else "",
+                                    copy_line(data, now)))
+    print(line([str(c) for c in found["columns"]]))
+    print(line(["-" * w for w in widths]))
+    for row in rows:
+        print(line(row))
+    if cut:
+        print("  %d cells longer than %d characters are cut (...): select substr(<column>, %d) for the rest" % (cut, SQL_CELL, SQL_CELL - 2))
+    return 0
+
+
+def show_schema(data, now, name):
+    """Every table and view of the store with its description and columns; one table with its columns and example questions."""
+    conn = history.connect(data)
+    if conn is None:
+        print("SCHEMA | no read copy at %s: the service `store` has not published one yet" % (Path(data) / "store" / "read.db"))
+        return 1
+    try:
+        found = history.schema(conn)
+    finally:
+        conn.close()
+    if name and name not in found:
+        near = sorted(n for n in found if name.lower() in n)
+        print("SCHEMA | no table or view `%s`%s" % (name, ": did you mean " + ", ".join(near) if near else "; hive.py schema lists them all"))
+        return 1
+    if not name:
+        tables = sum(1 for t in found.values() if t["kind"] == "table")
+        print("SCHEMA | %d tables, %d views | %s | `hive.py schema <table>`: its columns and three example questions; "
+              "`hive.py sql \"<SELECT ...>\"` asks" % (tables, len(found) - tables, copy_line(data, now)))
+        for table, entry in found.items():
+            print("%s %s -- %s" % (entry["kind"].upper(), table, entry["description"] or "no description"))
+            print("  " + ", ".join(column for column, _type in entry["columns"]))
+        return 0
+    entry = found[name]
+    print("SCHEMA %s | %s | %s" % (name, entry["kind"], entry["description"] or "no description"))
+    for column, kind in entry["columns"]:
+        print("  %-24s %s" % (column, kind or "--"))
+    print("EXAMPLES (hive.py sql \"<statement>\"):")
+    for question, sql in entry["examples"]:
+        print("  -- %s" % question)
+        print("  %s" % sql)
+    if not entry["examples"]:
+        print("  none written for this table")
+    return 0
+
+
 def main():
     args = sys.argv[1:]
     value = lambda name, default: args[args.index(name) + 1] if name in args and args.index(name) + 1 < len(args) else default
     here = Path(__file__).resolve().parent
     root, data = value("--root", str(here.parent)), value("--data", division.DATA)
-    words = [a for n, a in enumerate(args) if not a.startswith("--") and (n == 0 or args[n - 1] not in ("--root", "--data", "--group", "--kind", "--zone", "--hours", "--item", "--top"))]
+    words = [a for n, a in enumerate(args) if not a.startswith("--") and (n == 0 or args[n - 1] not in ("--root", "--data", "--group", "--kind", "--zone", "--hours", "--item", "--top", "--limit"))]
     if not words or any(a in ("-h", "--help") for a in args):
         sys.exit(__doc__)
     now, verb, rest = time.time(), words[0], words[1:]
@@ -1180,6 +1270,10 @@ def main():
         return holdings.show(data)
     if verb == "inventory":
         return craftbook.show_inventory(craftbook.load(data) or {"version": "none", "items": {}}, data, rest[0] if rest else "total", value("--item", ""), int(value("--top", "40")))
+    if verb == "sql":
+        return show_sql(data, now, " ".join(rest), value("--limit", str(SQL_ROWS)))
+    if verb == "schema":
+        return show_schema(data, now, rest[0] if rest else "")
     sys.exit(__doc__)
 
 

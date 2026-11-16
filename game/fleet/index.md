@@ -51,7 +51,7 @@ folder; never edited by hand. Scripts listed: 27.
 | `routes.py` | Check the route files, write their index, and attach what the runs measured. | By hand |
 | `sight.py` | What our ships see where they are: the pilots they meet, and a first read of a system nobody read. | Service |
 | `stash.py` | Store what a docked pilot carries in its own storage at that station, so that its hold is free for the next route. | By hand |
-| `store.py` | Keeps the fleet's history in one SQLite file: the runs, the price moves and the census readings, with their sums by hour and by day. | Service |
+| `store.py` | Keeps the fleet's history and its current state in one SQLite file: the runs, the price moves and the census readings with their sums by hour and by day, and beside them what the fleet's own files say now. | Service |
 | `taxes.py` | Keeps each pilot's weekly tax apart, so that no run and no hour reads it as a loss. | By hand |
 | `wallet.py` | No ship of ours goes broke: a ship whose wallet runs low is given credits by a rich ship of its division. | By hand |
 
@@ -255,6 +255,8 @@ hive.py store [--hours N]
 hive.py store price <item id> [--hours N]
 hive.py inventory [stations] [--item <item id>] [--top N]
 hive.py empire
+hive.py sql "<SELECT or WITH statement>" [--limit N]
+hive.py schema [<table or view>]
 --root <dir>   the repository's game/ folder (default: the parent of this file's folder)
 --data <dir>   the unit's data folder (default /srv/collective/data)
 ```
@@ -421,16 +423,19 @@ stash.py <pilot> [<pilot> ...] [--dry-run]
 
 ### `store.py`
 
-Keeps the fleet's history in one SQLite file: the runs, the price moves and the census
-readings, with their sums by hour and by day.
+Keeps the fleet's history and its current state in one SQLite file: the runs, the price
+moves and the census readings with their sums by hour and by day, and beside them what
+the fleet's own files say now.
 
 A service: it runs by itself and is never started a second time.
 
 ```
 store.py serve [--every 60]     run forever (the service `store`)
 store.py once                   one pass, then stop
-store.py status                 from the read copy: rows and newest row of each table, age of the copy
+store.py status                 from the read copy: rows and newest row of each table, age of the copy, the
+                                snapshot tables with the age of their newest source, the files not read
 --data <dir>                    the unit's data folder (default /srv/collective/data)
+--root <dir>                    the repository's game/ folder (default: the parent of this file's folder)
 --keep-days N                   days of raw rows kept (default 7)
 ```
 
