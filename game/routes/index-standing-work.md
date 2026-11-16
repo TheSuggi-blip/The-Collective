@@ -12,12 +12,16 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 12.
+Routes: 24.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
 | [census-voidborn](census-voidborn.json) | census | home space | Read one Voidborn system whole: deposits, creatures, order book, mission board | up to 3 ships | 343 | 8 | -70 | -530 | 2026-11-16 |
 | [park](park.json) | circuit | home space | Dock at Central Nexus and wait there: a docked ship costs nothing | the park route | 216 | 5 | -50 | -670 | 2026-11-16 |
+| [train-navigation-trader](train-navigation-trader.json) | circuit | home space | Navigation for traders one level short of Signal Fragments: five jumps through our own stations, nothing carried | up to 4 ships, under navigation 3, standing work | TBD | TBD | TBD | TBD | -- |
+| [hunt-gsc-veil-ray](hunt-gsc-veil-ray.json) | hunt | home space | Veil-rays at GSC-0027 Prism Scatter; verdigris curd sold at Central Nexus | up to 1 ships, without piercing_railgun_i, standing work | 33 | 24 | 1,300 | 3,020 | 2026-11-16 |
+| [hunt-hamal-veil-ray](hunt-hamal-veil-ray.json) | hunt | home space | Veil-rays at Hamal Crystal Bloom; verdigris curd sold at Central Nexus | up to 1 ships, without piercing_railgun_i, standing work | 18 | 24 | 780 | 2,310 | 2026-11-16 |
+| [hunt-home-drift-ray](hunt-home-drift-ray.json) | hunt | home space | Drift-rays at Stellar Siphon in Nexus Prime; goods sold or stored at Central Nexus | up to 1 ships, standing work | 8 | 10 | -40 | -250 | 2026-11-15 |
 | [gather-gsc-0027-prism-scatter](gather-gsc-0027-prism-scatter.json) | mine | home space | Standing work: iron and copper at GSC-0027 Prism Scatter into storage at Node Beta (S6) | up to 56 ships, needs mining_laser_i, standing work | 80 | 45 | -90 | -120 | 2026-11-16 |
 | [gather-gsc-0027-spacetime-seep](gather-gsc-0027-spacetime-seep.json) | mine | home space | Standing work: iron at GSC-0027 Spacetime Seep into storage at Node Beta (S6) | up to 6 ships, standing work | 12 | 45 | -120 | -150 | 2026-11-16 |
 | [gather-hamal-crystal-bloom](gather-hamal-crystal-bloom.json) | mine | home space | Standing work: iron and copper at Hamal Crystal Bloom into storage at Node Beta (S6) | up to 56 ships, needs mining_laser_i, standing work | 81 | 45 | -130 | -170 | 2026-11-16 |
@@ -28,3 +32,11 @@ Routes: 12.
 | [census-frontier](census-frontier.json) | census | beyond the border, 7 jumps | Read one lawless system around our space whole: deposits, creatures, stations, order books, mission boards | up to 12 ships, empty hold | 195 | 15 | -160 | -630 | 2026-11-16 |
 | [census-guard-ice](census-guard-ice.json) | census | beyond the border, 7 jumps | Guard by census: read whole, every hour, the lawless systems where our miners work | up to 2 ships, empty hold | 68 | 13 | -140 | -610 | 2026-11-16 |
 | [census-route-places](census-route-places.json) | census | beyond the border, 8 jumps | Read twice a turn every system beyond our space that a route of any plan uses and no hourly census reads | up to 4 ships, empty hold | TBD | TBD | TBD | TBD | -- |
+| [guard-marfik-emission-nebula](guard-marfik-emission-nebula.json) | guard | beyond the border, 6 jumps | Guard at Marfik Emission Nebula while a ship of ours mines gas there; docks at Node Beta | up to 1 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
+| [hunt-achernar-belt-carapace](hunt-achernar-belt-carapace.json) | hunt | beyond the border, 4 jumps | Belt-grazers and patina-grazers at Achernar Belt; creature carapace into storage at The Experiment | up to 1 ships, without piercing_railgun_i, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
+| [hunt-cedarhold-dim-lattice-veil-ray](hunt-cedarhold-dim-lattice-veil-ray.json) | hunt | beyond the border, 5 jumps | veil_ray at cedarhold_dim_lattice; loot sold at The Experiment Research Station | up to 1 ships, without piercing_railgun_i, empty hold, standing work | 13 | 13 | 230 | 840 | 2026-11-16 |
+| [hunt-faintlight-drift-veil-ray](hunt-faintlight-drift-veil-ray.json) | hunt | beyond the border, 5 jumps | veil_ray at faintlight_drift; loot sold at Node Beta Industrial Station | up to 1 ships, without piercing_railgun_i, empty hold, standing work | 13 | 31 | 600 | 1,300 | 2026-11-16 |
+| [hunt-keid-belt-carapace](hunt-keid-belt-carapace.json) | hunt | beyond the border, 5 jumps | Belt-grazers and patina-grazers at Keid Belt; creature carapace into storage at Node Beta | up to 1 ships, without piercing_railgun_i, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
+| [hunt-keid-fractured-prism-veil-ray](hunt-keid-fractured-prism-veil-ray.json) | hunt | beyond the border, 5 jumps | veil_ray at keid_fractured_prism; loot sold at Node Beta Industrial Station | up to 1 ships, without piercing_railgun_i, empty hold, standing work | 19 | 30 | 700 | 1,420 | 2026-11-16 |
+| [hunt-low-charge-glint-veil-ray](hunt-low-charge-glint-veil-ray.json) | hunt | beyond the border, 4 jumps | veil_ray at low_charge_glint; loot sold at Node Beta Industrial Station | up to 1 ships, without piercing_railgun_i, empty hold, standing work | 17 | 27 | 300 | 800 | 2026-11-16 |
+| [hunt-ruchbah-veil-ray](hunt-ruchbah-veil-ray.json) | hunt | beyond the border, 4 jumps | Veil-rays at Ruchbah Broken Glass Veil (lawless); verdigris curd sold at The Experiment | up to 1 ships, without piercing_railgun_i, empty hold, standing work | 17 | 22 | 680 | 2,100 | 2026-11-16 |

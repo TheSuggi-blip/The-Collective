@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 41.
+Routes: 40.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -27,7 +27,6 @@ Routes: 41.
 | [trade-voidborn-neural-soma-central-the](trade-voidborn-neural-soma-central-the.json) | circuit | home space | Voidborn Neural Soma: bought at The Core for 258 cr, sold at The Experiment Research Station for 690 cr | up to 1 ships, from 3,851 cr | 2 | 6 | -510 | -4,740 | 2026-11-16 |
 | [trade-voidborn-neural-soma-node-node](trade-voidborn-neural-soma-node-node.json) | circuit | home space | Voidborn Neural Soma: bought at Node Beta Industrial Station for 268 cr, sold at Node Gamma Relay Station for 622 cr | up to 1 ships, from 3,589 cr | 1 | 4 | -300 | -4,290 | 2026-11-16 |
 | [train-navigation-home](train-navigation-home.json) | circuit | home space | Navigation test: five jumps through our own stations (Node Alpha, Synchrony, Node Gamma, Node Beta, Central Nexus), nothing carried, for the drones that do not yet reach navigation 3 | up to 1 ships | 2 | 15 | -120 | -470 | 2026-11-16 |
-| [hunt-home-drift-ray](hunt-home-drift-ray.json) | hunt | home space | Drift-rays at Stellar Siphon in Nexus Prime; goods sold or stored at Central Nexus | up to 1 ships | 8 | 10 | -40 | -250 | 2026-11-15 |
 | [hunt-test-acubens-patina-grazer](hunt-test-acubens-patina-grazer.json) | hunt | home space | Yield test: patina_grazer at acubens_shadow_pocket; what a kill drops and whether a bid takes it | up to 1 ships, without piercing_railgun_i | 3 | 5 | -50 | -560 | 2026-11-16 |
 | [mine-stellar-siphon](mine-stellar-siphon.json) | mine | home space | Stellar Siphon: hydrogen_gas, argon_gas, neon_gas; sold at Synchrony Hub | up to 1 ships, needs gas_harvester_i | 2 | 45 | -280 | -380 | 2026-11-16 |
 | [trade-hydrogen-gas-784309214f105860a16a0c100a70eb14-synchrony](trade-hydrogen-gas-784309214f105860a16a0c100a70eb14-synchrony.json) | circuit | beyond the border, 6 jumps | Hydrogen Gas: bought at Ironlight Crossroads for 6 cr, sold at Synchrony Hub for 28 cr | up to 1 ships, from 3,429 cr | 1 | 15 | -400 | -1,620 | 2026-11-16 |

@@ -12,16 +12,18 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 25.
+Routes: 27.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
 | [mission-ghosts-in-the-cloud-node](mission-ghosts-in-the-cloud-node.json) | circuit | home space | Ghosts in the Cloud: 2000 cr at Node Alpha Processing Station | once per pilot, up to 1 ships | 18 | 3 | 520 | one-time | 2026-11-16 |
+| [voidborn-atmospheric-extraction](voidborn-atmospheric-extraction.json) | circuit | home space | Atmospheric Extraction: Setup: 2,000 cr once after The Collective Provides; a Gas Harvester I bought at Node Beta after the accept | once per pilot, up to 3 ships, without gas_harvester_i, from 6,000 cr, after the reward The Collective Provides | 5 | 8 | -460 | one-time | 2026-11-16 |
 | [voidborn-concurrent](voidborn-concurrent.json) | circuit | home space | Concurrent Approval: accept at Central Nexus, deliver two neural soma to Node Beta (3,000 cr once) | once per pilot | 146 | 8 | 2,970 | one-time | 2026-11-16 |
 | [voidborn-first-hunt-acubens](voidborn-first-hunt-acubens.json) | circuit | home space | First Hunt: Belt-Grazers: 1,000 cr once and 50 Weapons XP; three belt-grazers at Acubens Shadow Pocket | once per pilot, up to 1 ships | 30 | 13 | 110 | one-time | 2026-11-16 |
 | [voidborn-first-hunt-gsc](voidborn-first-hunt-gsc.json) | circuit | home space | First Hunt: Belt-Grazers: 1,000 cr once and 50 Weapons XP; three belt-grazers at Spacetime Seep | once per pilot, up to 1 ships | 35 | 26 | 740 | one-time | 2026-11-16 |
 | [voidborn-first-hunt-nexus](voidborn-first-hunt-nexus.json) | circuit | home space | First Hunt: Belt-Grazers: 1,000 cr once and 50 Weapons XP; three belt-grazers at Material Harvesters | once per pilot, up to 1 ships | 39 | 23 | 490 | one-time | 2026-11-16 |
 | [voidborn-first-steps-board](voidborn-first-steps-board.json) | circuit | home space | First Steps in the Void taken from the Central Nexus board: 1,000 cr once, 15 carbon ore mined at Acubens Belt, handed in at Central Nexus | once per pilot, up to 3 ships | 48 | 18 | 950 | one-time | 2026-11-16 |
+| [voidborn-hardware-cargo](voidborn-hardware-cargo.json) | circuit | home space | Hardware Optimization: Cargo: 1,500 cr once after The Collective Provides; a Cargo Expander I bought at Synchrony Hub after the accept | once per pilot, up to 3 ships, without cargo_expander_i, from 4,000 cr, after the reward The Collective Provides | 7 | 11 | 850 | one-time | 2026-11-16 |
 | [voidborn-mining-missions](voidborn-mining-missions.json) | circuit | home space | Iron Supply Run and Copper Requisition: accept at Central Nexus, mine at Acubens by way of Node Beta, hand in at Central Nexus | once per pilot, up to 40 ships | 93 | 31 | 3,060 | one-time | 2026-11-16 |
 | [voidborn-missions-1](voidborn-missions-1.json) | circuit | home space | Synchrony Relay Run and Crystal Delivery: two board missions in one circuit of 8 jumps | once per pilot, from 8,000 cr | 146 | 22 | 6,430 | one-time | 2026-11-15 |
 | [voidborn-network-expansion](voidborn-network-expansion.json) | circuit | home space | Network Expansion: 1,500 cr once, accepted at Central Nexus, a visit to Node Alpha, handed in at Central Nexus | once per pilot, up to 20 ships, after the reward First Steps in the Void | 115 | 8 | 1,520 | one-time | 2026-11-16 |
