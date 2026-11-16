@@ -138,9 +138,9 @@ the ask 1,202 cr). It is the tool of the gas test `mine-achernar-gas-pocket`, wh
 An Ice Harvester I made by hand went into a hauler's second utility slot
 beside the mining laser the same way (`withdraw` from storage, then
 `install_mod`, docked at Central Nexus, 2026-11-16 09:25 UTC): the Threshold
-answered 2 utility slots, cpu 8 of 16 and power 17 of 30 used before it.
+answer listed 2 utility slots, cpu 8 of 16 and power 17 of 30 in use.
 
-Next step up: Piloting 10 opens the tier-2 hulls, about 111 hours away at
+Next step up: Piloting 10 opens the tier-2 hulls, about 141 hours away at
 the haulers' rate (section 4). Until then the step that pays is a tool, not
 a hull: an ice harvester puts a hauler on routes measured at 4,000 to 8,400
 cr per ship-hour (`hive.py tasks`, 03:28 UTC).
