@@ -17,7 +17,7 @@ links:
 
 Period: from my report of 2026-11-16 09:33 UTC
 (`reports/2026-11-16_apollo_once-chain-heads-plan-holds-emptied-into-plate.md`)
-to 14:42 UTC, the scheduled run turn-apollo of 12:45 UTC. Orders in force:
+to 14:58 UTC, the scheduled run turn-apollo of 12:45 UTC (figures to 14:42 UTC). Orders in force:
 `communications/orders.log` ENT-014 (10:58 UTC), the fleet's orders, EVERY
 ADMIRAL (a) to (d) and the block APOLLO; the plan for my division is in the
 Fleet Admiral's report
@@ -49,8 +49,9 @@ once and eight platinum ore sold for +504 cr. The steady change of the hour to
 13:42 UTC (+4,114 cr) holds 3,500 cr of hand-ins I booked as one-time only at
 14:31 UTC (errors.log ENT-058). At 12:46 UTC all 20 haulers waited
 docked and the fill gate HALTed on a once route my plan lacked; at 14:29 UTC 9
-flew once routes, 2 flew tests and 9 waited (`hive.py standing`). Hulls 75 of 75 on all 20 ships (ship files, 14:42 UTC);
-no ship lost or grounded.
+flew once routes, 2 flew tests and 9 waited (`hive.py standing`); at 14:57 UTC
+all 20 were at work and the gate read `PASS: no ship of hauler waits`. Hulls 75
+of 75 on all 20 ships (ship files, 14:42 UTC); no ship lost or grounded.
 
 ## Activities
 
@@ -113,12 +114,23 @@ Node Beta. Out of the plan at 14:28 UTC. Two more stand as tests with their
 bids named: `mine-atlas-gas-pocket` (plasma, Node Beta) and
 `mine-amberfall-emission-nebula` (hydrogen, Node Gamma).
 
+**Standing work (Suggi's rule of 14:50 UTC: no ship idle; the gate now halts
+while a ship waits).** At 14:46 UTC 18 haulers waited, every once route of
+theirs booked. Into the plan: Unity's two shared gather routes (iron and copper
+into storage at Node Beta, 12 ships each across the fleet, both full at 14:54
+UTC) and my own `gather-gsc-0027-spacetime-seep` for the six left (iron, the
+station's largest shortfall; 50,693 iron in the field at 14:46 UTC; closes
+under 30,000). Its price is fuel, about 160 cr per ship-hour (BLUEPRINT). Fill
+also named two gas tests that sell at Nova Terra Central; I took them out on
+F13 and asked Unity to rule (requests.log ENT-152).
+
 **Holds, tools, requests.** One hauler's hold emptied by `gather.py` (fixed:
 it now deposits the receiver's own hold and counts space by size), which
 opened the chain to it. Runner fix: the withdraw step counts the hold by item
 size (commit df8f6fb, test first). No request was addressed to me; I wrote
-requests.log ENT-149 to Mercury and ENT-151 to Unity, and queue.log ENT-105 and
-ENT-107.
+requests.log ENT-149 to Mercury, ENT-151 and ENT-152 to Unity, and queue.log
+ENT-105 and ENT-107. `orders_routes.py` now reports a route whose file is off
+as OFF, not MISSING (voidborn-first-steps, dropped by ENT-014).
 
 **Capacity (F18).** Storage: 11,431 iron and 6,063 copper ore, 58 soma in 29
 storages, gas at Node Beta (213 argon, 175 neon, 83 plasma), 128 platinum and
@@ -155,6 +167,16 @@ by role before it enters the plan.
 runner stored the gas. Cause: a test added by the fill tool without its bid
 read first. Done: both out of the plan; every gas test left carries its bid;
 the stored gas is worth more compressed (Plans).
+
+**Two tests outside F13 flown before I read them.** At 14:46 UTC my `fill
+write` put `mine-antares-gas-cloud` and `mine-deepwell-haze` into the plan; both
+mine beyond the border and sell plasma at Nova Terra Central, and F13 says such
+a ship "sells and stores at a Voidborn station". The dispatcher sent one hauler
+on each at 14:46:57 UTC, before I read their files. Cause: the third fill write
+of the turn taken unread (after Ghosts in the Cloud and the gas bids). Done:
+both out of the plan at 14:49 UTC; the two runs in flight end with an empty
+hold out, one ship each; ruling asked (ENT-152). Rule kept in my skill: read
+every route fill names before `write`.
 
 **Two small losses of the runner.** The plasma stop sold nothing (-48 cr): the
 withdraw step asked 66 units of space of 65 (fixed, df8f6fb). The plate route's
@@ -199,7 +221,10 @@ Inside ENT-014, my choices:
 7. Steel plate for a lockbox from stored iron at the free workshop on the Fleet
    Admiral's word (orders F11).
 8. The orders against my plan (`orders_routes.py`) at the start and end of
-   every turn, and the fill gate before every turn ends.
+   every turn, and the fill gate before every turn ends. Standing work stays
+   at the end of the plan for every hauler without paying work; the gather
+   routes' fields are read each turn (`min_left`), and the iron in storage at
+   Node Beta is counted for S6.
 
 What would change the plan: The Collective Provides switched on again (nickel
 at the reef), which opens three once missions to 15 more haulers, about 7,000
@@ -225,12 +250,16 @@ a gas test that pays twice.
    too many, not two needs. A route open only to pilots under a skill level,
    kept out of the loss stop; without it training needs a hand every turn.
    Cost: one field in dispatch.py and fill.py.
-5. **The craft step in the circuit runner (Unity, owed since ENT-013).** A
+5. **Fill names only work the orders allow (Unity, ENT-152).** A test that
+   sells at a foreign station beyond F13 should not be offered as open work,
+   or F13 should say it may. Cost: one check in fill.py, or one line in the
+   orders.
+6. **The craft step in the circuit runner (Unity, owed since ENT-013).** A
    hydrogen route could then mine, compress at the Node Beta workshop (8 gas
    to 3 liquid, free, 6.5 minutes for 75) and sell at Central Nexus, where
    liquid hydrogen bids 116 to 121 cr against 34 cr for the gas. Cost: one
    step in route_run.py; until then I do it by script each turn.
-6. **The orders against every plan in the fill gate (Unity, owed for 14:30
+7. **The orders against every plan in the fill gate (Unity, owed for 14:30
    UTC):** it caught `voidborn-signal-protocol` at 12:47 UTC in my turn; five
    pilots then earned 17,035 cr within 15 minutes.
 
@@ -264,6 +293,11 @@ From my learning capture of this turn (`learnings-capture`):
   counted 5,500 cr as steady income until I booked them (errors.log ENT-058).
   Kept in the skill logistics-stock (step 9), not as knowledge: it is how a
   script of mine works, not a fact of the game.
+- **Fill writes what it names, not what my orders allow.** Three times this
+  turn a `fill write` put work into the plan that a read would have kept out
+  (Ghosts in the Cloud, two gas tests without their bid, two tests selling at
+  Nova Terra). Kept in the skill logistics-stock as a pitfall: read every route
+  fill names before `write`.
 - Open: what gates Ghosts in the Cloud; whether XP per jump falls at higher
   levels; how fast the liquid hydrogen bid refills.
 
@@ -277,4 +311,5 @@ Skill: logistics-stock changed -- gather.py deposits the receiver's own hold and
 - `communications/orders.log` ENT-014 -- the orders this turn worked under
 - `communications/requests.log` ENT-149 -- the request to Mercury on the module missions
 - `communications/requests.log` ENT-150 (Apophis) and ENT-151 (mine) -- the training field asked of Unity
+- `communications/requests.log` ENT-152 -- the ruling on gas tests that sell at Nova Terra Central
 - `communications/queue.log` ENT-105 -- the runner fix and the module missions, for every division
