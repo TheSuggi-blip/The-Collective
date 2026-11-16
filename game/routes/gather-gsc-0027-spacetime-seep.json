@@ -10,5 +10,12 @@
  "standing": true,
  "min_left": {
   "iron_ore": 30000
+ },
+ "measured": {
+  "date": "2026-11-16",
+  "runs": 6,
+  "minutes": 45,
+  "credits_per_run": -100,
+  "cph_per_ship": -130
  }
 }
