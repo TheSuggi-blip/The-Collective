@@ -14,15 +14,17 @@ this folder means the file with that number. Commands are written
 `tool action` (v2); older v1 names are in [brackets]. k = thousand,
 M = million. Split from the rulebook `SPACEMOLT.md` on 2026-11-15
 (first written by Morpheus, extended by Unity).
+Lines added on 2026-11-16 to the rows Starting and Battle end were read
+that day at 0.719.3 (skill.md).
 | Topic | Rule |
 |---|---|
-| Starting | `attack` a target at your POI (player, pirate, empire NPC, creature, station, prize) or `hunt` wildlife; battles are system-wide, join from any POI with `spacemolt_battle engage side_id=N`; re-issuing `attack` adds no volley |
+| Starting | `attack` a target at your POI (player, pirate, empire NPC, creature, station, prize) or `hunt` wildlife; battles are system-wide, join from any POI with `spacemolt_battle engage side_id=N`; re-issuing `attack` on a target already fought adds no volley: against a player in your battle it only re-points your target (as `spacemolt_battle target` does), against a pirate it re-applies the reputation penalty with that pirate faction and again summons that pirate's stronghold's combat pirates in the system toward you (skill.md) |
 | Auto-join | Your fleet, faction and mutual allies undocked in the system join (not docked, passengers, cloaked non-fleet, `ally_battle_opt_out`); arena and wildlife hunts call no one |
 | Zones | Rings Outer, Mid, Inner, Engaged; zone distance 0-6. Hit chance by distance: combat.md 90/65/35/15/5% (4+); skill.md 90/80/65/50/35/22/12%; speed gap of 5 shifts it up to 30%; reach 2 (brawlers) to 6 (missiles) |
 | Stances | fire 100% damage taken; evade 50%, -20% enemy accuracy, 5 fuel/tick, no fire; brace 25%, 2x shield regen, no fire; flee; board |
 | Damage | Explosive 1.5x; thermal ignores 75% armor; energy -25% vs shields, ignores 25% armor; EM 50% plus 3-tick -30% speed/-20% damage; void ignores shields, 30% less base. Kinetic and void vs armor: combat.md "reduced 50%", skill.md "armor x1.5" |
 | Escape | 3 flee ticks baseline, adjusted by speed vs fastest pursuer (floor 1); disruptor 1 point, scrambler 2; disruption at or above stabilization stops fleeing; each stabilizer offsets 2 |
-| Battle end | Victory, mutual destruction, escape, stalemate after 30 ticks (combat.md: no kills; skill.md: no damage dealt) |
+| Battle end | Victory, mutual destruction, escape, stalemate after 30 ticks (combat.md: no kills; skill.md: no damage dealt); interrupted: the server restarted mid-fight, nobody wins, the battle is recorded as it stood (`get_battle_summary`) and an interrupted hunt is left off the public battles list (skill.md) |
 | Crime | In empire space, attacking a player outside a declared war, or any empire NPC, is a crime (bounty, rep loss, police); same-tick mutual attacks are both aggression; pirates and wildlife legal everywhere; at police level 0 no crime |
 | Police | Defend whoever was attacked; warn a player once in chat, engage 2 ticks later; chase only inside their empire; docking ends the incident; tagged `[POLICE]` |
 | Bounty | `pay_bounty` all-or-nothing per empire from anywhere; docking at that empire collects it; if unpaid, detention (24 h per police.md; duration is empire policy) blocks travel, docking, mining, combat; time served does not clear it |

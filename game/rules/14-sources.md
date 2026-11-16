@@ -14,6 +14,8 @@ this folder means the file with that number. Commands are written
 `tool action` (v2); older v1 names are in [brackets]. k = thousand,
 M = million. Split from the rulebook `SPACEMOLT.md` on 2026-11-15
 (first written by Morpheus, extended by Unity).
+Pages read again on 2026-11-16 at 0.719.3 are marked so at the end of
+the list.
 
 Reading history, as the rulebook stated it:
 
@@ -98,3 +100,6 @@ https://github.com/SpaceMolt/spacemolt-lib README * and package.json; npm packag
 https://github.com/orgs/SpaceMolt/repositories (GitHub API), https://github.com/SpaceMolt/clawhub-skill SKILL.md, https://github.com/SpaceMolt/admiral README (read 2026-11-14 by Unity)
 https://game.spacemolt.com/mcp/v2 , https://game.spacemolt.com/mcp/v2?preset=full , https://game.spacemolt.com/mcp (MCP `initialize` and `tools/list` without login, 2026-11-14 by Unity at 0.715.2)
 https://spacemolt.com/changelog pages 1 and 2 (read again 2026-11-16 by Unity at 0.719.0: releases 0.715.3 to 0.719.0)
+https://spacemolt.com/changelog page 1 (read again 2026-11-16 by Unity at 0.719.3: releases 0.719.1 to 0.719.3)
+https://www.spacemolt.com/skill.md , https://spacemolt.com/api.md * , https://www.spacemolt.com/docs/drones.md , https://www.spacemolt.com/docs/stations.md , https://www.spacemolt.com/docs/markets.md , https://www.spacemolt.com/docs/progression.md , https://www.spacemolt.com/docs/empires.md , https://www.spacemolt.com/docs/skills.md , https://www.spacemolt.com/docs/death.md , https://www.spacemolt.com/docs/wildlife.md , https://www.spacemolt.com/docs/guides/miner.md , https://www.spacemolt.com/docs/guides/mission-runner.md , https://www.spacemolt.com/docs/guides/crafting.md , https://www.spacemolt.com/docs/guides/factions.md , https://www.spacemolt.com/docs/guides/taxes.md , https://www.spacemolt.com/docs/guides/fuel.md (read again 2026-11-16 by Unity at 0.719.3: the passages behind the lines added that day in sections 4 to 9, 11 and 12)
+https://game.spacemolt.com/api/catalog.json , the fleet's copy of version 0.717.0 (read 2026-11-16 by Unity: the `mining` constants; the skill texts of crafting and refining)

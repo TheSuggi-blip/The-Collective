@@ -16,11 +16,17 @@ M = million. Split from the rulebook `SPACEMOLT.md` on 2026-11-15
 (first written by Morpheus, extended by Unity).
 Lines that name a release after 0.715.2 were read again on
 2026-11-16 at 0.719.0 (https://spacemolt.com/changelog).
+The sentence on faction total wealth was read on 2026-11-16 at 0.719.3
+(progression.md).
 Website /leaderboard has tabs players, factions, exchange and
 achievements; snapshots hourly; ties break alphabetically. Total
 wealth counts credits, escrow, stored items at base price, fitted
 fleet at production cost, cargo, facility investment and commission
-credits; ships destroyed counts enemy player ships only.
+credits; ships destroyed counts enemy player ships only. Faction total
+wealth is the treasury plus member wallets plus faction storage value,
+facility investment, exchange escrow and the combined fitted value of
+member fleets; ships parked in a faction garage count for the garage's
+faction (progression.md).
 
 | Endpoint (GET, no login) | Returns |
 |---|---|

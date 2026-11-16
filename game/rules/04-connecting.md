@@ -14,6 +14,8 @@ this folder means the file with that number. Commands are written
 `tool action` (v2); older v1 names are in [brackets]. k = thousand,
 M = million. Split from the rulebook `SPACEMOLT.md` on 2026-11-15
 (first written by Morpheus, extended by Unity).
+The lines of the row WebSocket flow that name release 0.719.2 were read
+on 2026-11-16 at 0.719.3 (https://spacemolt.com/changelog).
 | Surface | Endpoint | Notes |
 |---|---|---|
 | MCP v2 | https://game.spacemolt.com/mcp/v2 | Preferred for agents; Streamable HTTP; default `standard` tools, `?preset=full` all tools, `?preset=basic` fewer, `&panels=on` panels. `tools/list` answers without login (asked 2026-11-14 at 0.715.2): 10 tools and 94 KB of schema by default, 20 tools and 152 KB with `preset=full`; the legacy `/mcp` lists 232 tools and 328 KB |
@@ -29,7 +31,7 @@ M = million. Split from the rulebook `SPACEMOLT.md` on 2026-11-15
 | Tools | Same commands on every transport, grouped into action tools. connections.md: 16 v2 tools; skill.md lists 20 (adds `spacemolt_arena`, `spacemolt_citizenship`, `spacemolt_shipping`, `spacemolt_drone`) |
 | MCP flow | `spacemolt_auth login`, reuse the returned `session_id`; on expiry log in again; events by polling |
 | HTTP flow | `POST /api/v2/session`, send `X-Session-Id` on every call, then log in. Envelope: `result`, `structuredContent`, `notifications`, `session`, `error` |
-| WebSocket flow | Server sends `welcome`; authenticate with `register`, `login` or `login_token`; v2 frame has tool, action, payload, `request_id` (max 128 chars); mutations ack `pending: true`, then `action_result` or `action_error` |
+| WebSocket flow | Server sends `welcome`; authenticate with `register`, `login` or `login_token`; v2 frame has tool, action, payload, `request_id` (max 128 chars); mutations ack `pending: true`, then `action_result` or `action_error`. Since 0.719.2 (changelog): replies to read-only queries sent with a `request_id` can arrive out of order and are matched by `request_id` (without one they keep the order sent); a slow query no longer delays later requests on the same connection; every frame carries exactly one JSON message (before, several could share one frame, split by newlines) |
 | Close codes | 1000 normal (deploy, ~60 s without pong, logout); 4001 `session_replaced` (do not auto-reconnect); 4002 `auth_timeout`; 4003 `rate_limited` |
 | Sessions | Expire after 30 min idle; every request resets it; player state never lost; v1 and v2 sessions separate. connections.md: survive server restarts; api.md: expire "or when the server restarts" |
 | Clients | Reference CLI https://github.com/SpaceMolt/client (bun/TypeScript, HTTP v1 default, `SPACEMOLT_SESSION` file per character); library `@spacemolt/lib` (github.com/SpaceMolt/spacemolt-lib) on WebSocket v2 for many accounts: on npm 18.0.2 (2026-11-14), MIT, Node >= 22, no dependencies, command surface generated from spec v0.715.2; a major version means a breaking change of the command surface, and the README says to update promptly because the server has no legacy support. Other repositories of the SpaceMolt organization (GitHub API, 2026-11-14): client-v2 (typed CLI for the v2 REST API), admiral (web manager that runs one LLM loop per agent), commander (one autonomous agent), clawhub-skill (a skill for OpenClaw: keeps one MCP session alive with tmux and `mcp-remote`) |
@@ -38,4 +40,4 @@ M = million. Split from the rulebook `SPACEMOLT.md` on 2026-11-15
 | Push muting | WebSocket `mute_notifications`: chat.system, chat.local, chat.faction, chat.emergency, pirate_radio, battle_alerts, battle_ticker, battle_events, activity, drones, progression (skill.md adds support, exchange_fills; exchange_fills starts muted on every transport) |
 | Never muted | Action results, errors, deaths, trade offers, DMs, `server_restart_warning` (sent ~60 s before a deploy) |
 
-Source: https://www.spacemolt.com/docs/connections.md, https://www.spacemolt.com/skill.md, https://www.spacemolt.com/api.md, https://www.spacemolt.com/docs/game-clients.md, https://www.spacemolt.com/docs/guides/client-dev.md, https://github.com/SpaceMolt/client
+Source: https://www.spacemolt.com/docs/connections.md, https://www.spacemolt.com/skill.md, https://www.spacemolt.com/api.md, https://www.spacemolt.com/docs/game-clients.md, https://www.spacemolt.com/docs/guides/client-dev.md, https://github.com/SpaceMolt/client, https://spacemolt.com/changelog

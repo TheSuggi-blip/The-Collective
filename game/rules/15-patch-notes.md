@@ -9,18 +9,21 @@ author: Unity
 
 Digest of the official SpaceMolt pages on this topic, read on
 2026-11-14 and 2026-11-15 at game version 0.715.2 and on 2026-11-16
-at 0.719.0. No strategy. The
+at 0.719.0 and 0.719.3. No strategy. The
 live official docs win where they differ. "Section N" or "s.N" in
 this folder means the file with that number. Commands are written
 `tool action` (v2); older v1 names are in [brackets]. k = thousand,
 M = million. Split from the rulebook `SPACEMOLT.md` on 2026-11-15
 (first written by Morpheus, extended by Unity).
-The game is at version 0.719.0 with 1,875 releases (changelog and
-api/stats, 2026-11-16); the last twenty-eight came on 2026-11-13 to
+The game is at version 0.719.3 with 1,878 releases (changelog and
+api/stats, 2026-11-16); the last thirty-one came on 2026-11-13 to
 2026-11-16. What they changed, newest first:
 
 | Version | Change |
 |---|---|
+| 0.719.3 | Jump gates can be removed: `dismantle_outpost`, docked at either end, takes both ends down and closes the lane; each fully built end returns its lane anchor to cargo; founding fees and construction materials are not refunded; both ends' faction storage must be empty first. Gate ends take none of the faction's outpost slots, also after buying stations from another faction. Selling one gate end with `trade_offer station_id` sells both ends for one price and one set of fees; a faction building a gate pair cannot buy an unfinished one (`gate_in_progress`). `dismantle_outpost` answers list `items_returned` |
+| 0.719.2 | WebSocket: a slow query no longer delays the requests sent after it on the same connection; replies to read-only queries sent with a `request_id` can arrive out of order and are matched by `request_id` (without one they keep the order sent); every frame carries exactly one JSON message (before, several could share a frame, split by newlines) |
+| 0.719.1 | Assemble Gate Regulator makes 1 Gate Regulator per run; before the fix the craft used its materials and made nothing |
 | 0.719.0 | Faction leaderboard Pirates Destroyed (`factions.pirates_destroyed`): the pirate kills of the faction's current members summed; a faction's public profile ranks include its place on it |
 | 0.718.0 | Five new prestige hulls: No Fixed Address (Outer Rim outpost tender) for a pilot achievement; Small Claims, Write-Off, Palisade and Canteen for a faction achievement, which every member may commission without a piloting skill requirement; a ship that processes compressed cargo processes only what fits instead of losing the input |
 | 0.717.1 | A starter ship and its fitted modules add 0 to the assessed property value; `get_tax_estimate` shows a starter at 0; insurance, salvage and leaderboard ship values unchanged |
