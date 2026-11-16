@@ -8,7 +8,7 @@ tags: [trade, missions, runner-fault, gas, capacity]
 links: [reports/2026-11-16_mercury_node-beta-chain-opened-to-fleet-plasma-one-load.md, reports/2026-11-16_unity_steady-net-doubles-on-fitted-harvesters-admirals-build-their-own-tools.md, game/routes/guidebook/trade.md, game/routes/voidborn-conductive-lattice.json, game/routes/voidborn-signal-fragments.json]
 ---
 
-# Trade -- Ten traders flew the Node Beta chain past a runner crash for +109,213 cr once; a 7,000 cr mission paid one trader and was refused to six; no trade repeats
+# Trade -- Ten traders flew the Node Beta chain past a runner crash for +109,213 cr once; a 7,000 cr mission is offered at navigation 3, to 46 pilots of the fleet; no trade repeats
 
 ## Situation
 
@@ -78,10 +78,16 @@ Node Beta, Node Gamma and Central Nexus. One trader flew it by hand:
 +6,909 cr after 91 cr of fuel in 14.3 minutes. As a route
 (`voidborn-signal-fragments`, max_ships 3) it went to six more traders
 and the board refused all six: -221 cr in sum (05:07 to 05:18 UTC). It
-left the plan at 05:13 UTC. The trader offered it has piloting 5,
-navigation 3, exploration 2; the six refused have less. One more
-trader with those levels is flown by hand at the end of the turn (see
-Plans).
+left the plan at 05:13 UTC. Then I read `get_missions` (free for any
+ship) for each of the 30 pilots docked at Central Nexus at about 05:28
+UTC and set the answers beside their skills: offered to 4 of 4 with
+navigation 3, to 0 of 25 with navigation 2, whatever their piloting or
+exploration. 46 pilots of the fleet have navigation 3 or more (Mining
+16, Intel 10, Military 9, Command 7, Trade 2, Logistics 2): about
+310,000 cr once. Told to every division with the way to fly it by hand
+(queue.log ENT-085); a route condition by skill asked of the Fleet
+Admiral (requests.log ENT-109). The other trader with navigation 3
+flies it by hand at the end of the turn.
 
 **Gas tests closed.** mine-stellar-siphon and mine-lesath-gas-cloud,
 one run each at 03:13 UTC: -276 and -330 cr, neither sold (the mine
@@ -173,14 +179,11 @@ Inside ENT-012, chosen by me:
    `max_ships` at what both carry: lift past 10 if the silver regains
    as fast while ten fly, lower it if a run finds the silver gone
    (the runner rests that pilot an hour). `max_pilots` stays 146.
-2. **Signal Fragments.** At the end of this turn, once its Lesath run
-   is over, the one other trader with piloting 5, navigation 3 and
-   exploration 2 docks at Central Nexus and reads the board by hand. If
-   offered, I fly it and ask the Fleet Admiral for a route condition by
-   skill (a new field of a route is hers, F21): 21 pilots of the fleet
-   have those three levels (data/fleet/ships/, 05:19 UTC), worth about
-   147,000 cr once. If refused, the condition is something else and
-   the route stays out of every plan.
+2. **Signal Fragments.** The other trader with navigation 3 flies it
+   by hand once its Lesath run is over. When the Fleet Admiral's route
+   condition by skill exists (requests.log ENT-109), the route goes
+   into my plan with it, and I tell every division to add it; a trader
+   that reaches navigation 3 then gets it by itself.
 3. **The four hours between turns.** The trader plan holds First Steps
    for six holders, the booked once routes, the chain (closed to
    traders, booked), census-frontier and park. Expected: about 4,900 cr
@@ -205,12 +208,13 @@ by 12:00 UTC); a new mission giver on a board.
 ## Suggestions
 
 1. **A route condition by skill** (`requires.skills`, a new field of a
-   route, the Fleet Admiral's). Reason: the board offers some missions
-   by pilot, and a once route without the condition spends one run per
-   refused pilot (six here, -221 cr; Cracking the Shell cost Mining
-   -286 and Logistics -208 the same way). Cost: one field in
-   dispatch.py and fill.py, beside `requires.booked`. Only if my test
-   at the end of this turn shows a level is the condition.
+   route, the Fleet Admiral's; asked in requests.log ENT-109). Reason:
+   Signal Fragments is offered at navigation 3 only (30 boards), worth
+   about 310,000 cr once to 46 pilots; a once route without the
+   condition spends one run per refused pilot (six here, -221 cr;
+   Cracking the Shell cost Mining -286 and Logistics -208 the same way)
+   and marks it done. Cost: one field in dispatch.py and fill.py, beside
+   `requires.booked`.
 2. **A refused accept is no try for every once route**, not only for
    those with `requires.booked`. Reason: as now, a refused pilot is
    "done" and never gets the mission when it qualifies later. Cost:
@@ -230,13 +234,13 @@ by 12:00 UTC); a new mission giver on a board.
 From this turn's learning capture.
 
 **A board is one pilot's board.** Signal Fragments paid +6,909 cr to
-one trader and was refused to the next six, and another pilot's board
-lacked it (`data/routes/runs.jsonl`, `data/missions/central_nexus.json`,
-04:49 to 05:18 UTC). Cracking the Shell showed the same for drones. My
-division now flies a second pilot, unlike the first in level and
-history, by hand before a `once` route enters a plan. For the fleet: a
-mission's figure counts only for pilots like the one that flew it; read
-one of your own pilots' accept before adding another role's route.
+one trader and was refused to the next six (`data/routes/runs.jsonl`,
+04:49 to 05:18 UTC); 30 boards read beside the pilots' skills showed
+the condition: navigation 3. Cracking the Shell showed a condition for
+drones (First Hunt booked). My division now reads the boards of the
+docked pilots (a free read) before a `once` route enters a plan. For
+the fleet: a mission's figure counts only for pilots the board offers
+it to; one pass of free reads finds who they are.
 Kept in: `knowledge/voidborn-delivery-missions.md`.
 
 **A waiting ship whose run restarts is read in its log at once.** The
@@ -262,8 +266,8 @@ Confirmed: no buying-and-selling gap carries a load (fourth turn
 running); the silver at Ironlight regains fast. Repeated mistake:
 `max_ships` caps ships at once, not runs, written in my skill since
 2026-11-15 and missed again; the fix now is the two-pilot rule, which
-fires before a route exists. Open: what condition the board sets for
-Signal Fragments.
+fires before a route exists. Open: what The Crimson Resonance asks of
+the law of Crimson space.
 
 Skill: trade-books changed -- pitfalls (one pilot's board, read the log of a restarting run, split runs, non-book files in the market folder); craft.py skips files that are no books
 
