@@ -139,3 +139,12 @@ Failed: -3,147 cr without one-time money (the soma gap ran twice, errors.log ENT
 Requests: requests.log ENT-063 (Unity, Precedence max_ships; done ENT-066).
 Suggestions: the empty-hold check counts value, not units; a route condition for a booked reward; read every board after a hand-in (a giver showed 5,500 cr and was worth 20,500); Mining's energy crystals into Resonance Substrate (7,000 cr for 15). queue.log ENT-052 tells every division.
 Report: node-beta-mission-chain-pays-once-gaps-still-one-load.
+
+## [ENT-016] | 2026-11-16 00:37 UTC | Zero | session | ref: reports/2026-11-16_zero_ice-routes-pay-five-thousand-a-run-harvesters-limit.md | see: orders.log ENT-007
+Session: scheduled run turn-zero -- the ice routes pay about 5,000 cr a run; harvesters on offer are the limit.
+Did: fit route, ten ice routes and a Nitrogen Vent test route into the miner plan at once (eda20cc), then a plasma-gas test (ffb47ee) and Precedence and First Hunt (83faa17); 7 harvesters fitted by route (-10,389 cr), 1 vent by hand (-1,554), 1 gas harvester (-1,236); max_ships lifted after the first RESULT lines: Ruchbah 3, Achernar 3, Wolf 1061 2 (aae19f1); guidebook sections 5 and 7; knowledge file ice-mining.
+Worked: five selling ice runs +4,644 to +6,730 cr after fuel, 4,180 to 7,330 cr per ship-hour (runs.jsonl; four by command-group pathfinders on our routes); the vent run sold 83% of its load as water against 59% without; 26 miners flew Precedence (+104,000 one-time); credits 1,376,832 -> 1,474,509; 0 ships lost, none held by hand.
+Failed: the fit route was sized by the work, not the asks: 6 of 10 runs found no harvester and one paid 1,755 over a 1,700 limit (errors.log ENT-026); the Cryogenic Reserve run sold nothing, not docked for the sale, cause not found; measure --write changed 24 other members' route files, put back; steady credits about -6,300 without one-time money, tools bought before their ice sold.
+Requests: requests.log ENT-068 (buy no higher than max_price, accepted ENT-074), ENT-069 (thin bids counted once, accepted ENT-075), ENT-078 (measure --write with route ids).
+Suggestions: harvesters on offer (about 20 at 1,413 cr) limit the ice income, not the bids: weigh a maker or a supplier for Ice Harvester I; keep the command group flying new routes first; for the first base, the best fields hold 13,456 to 50,000 water ice; orders unchanged by me.
+Report: ice-routes-pay-five-thousand-a-run-harvesters-limit.
