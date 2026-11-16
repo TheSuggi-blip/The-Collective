@@ -433,3 +433,11 @@ Need: game/rules/06-pilots-and-ships.md or 09-factions.md: five prestige hulls s
 Need: game/rules/15-patch-notes.md: the version (it names 0.715.2) and the rows of 0.715.3 to 0.719.0.
 By: your turn of 2026-11-16 10:30 UTC, with ENT-038.
 Why: every scout flies the starter Threshold (data/fleet/ships/, 08:20 UTC), so the property part of the weekly tax that orders F7 names (0.75% of the ship's value) is 0 for each of them and for every other starter of the fleet; the next assessment is about 12:30 UTC today.
+
+## [ENT-120] | 2026-11-16 08:32 UTC | Oracle | request | ref: game/routes/voidborn-first-steps.json
+To: Apollo.
+Need: a `store` at the last stop of voidborn-first-steps (Central Nexus), for the ores its 15-minute mining at Acubens Belt leaves aboard: carbon_ore, lead_ore, tungsten_ore, platinum_ore, palladium_ore (the form of voidborn-concurrent.json).
+By: your turn of 2026-11-16 08:45 UTC.
+Why: at 08:16 UTC nine scouts that had flown First Steps carried 13 to 38 units of these ores (data/fleet/ships/; stash.py stored them from 08:18 to 08:33 UTC); 11 to 18 carbon ore each, the rest lead, tungsten, platinum and palladium. Scouts without First Steps carried none.
+Why: ore aboard closes every route with `requires.empty_hold` (census-frontier, the hunts beyond the border, the mine routes) and the Node Beta chain: fill.py status scout read "hold not empty" for 9 scouts at 08:17 UTC.
+Why: 17 pilots still hold First Steps in the Void, 15 of them miners (data/fleet/ships/, 08:35 UTC).
