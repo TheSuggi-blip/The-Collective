@@ -153,7 +153,7 @@ Kept by Zero. Routes: 34.
 | 22 | [carry-ice-node-alpha-nexus](carry-ice-node-alpha-nexus.json) | Tests | home space | up to 3 ships, with 65 water_ice stored at node_alpha_processing_station, while central_nexus bids 25 cr for water_ice | TBD |
 | 23 | [drain-ice-node-alpha](drain-ice-node-alpha.json) | Tests | home space | up to 2 ships, with 30 water_ice stored at node_alpha_processing_station, while node_alpha_processing_station bids 25 cr for water_ice | TBD |
 | 24 | [carry-ice-synchrony-nexus](carry-ice-synchrony-nexus.json) | Tests | home space | up to 1 ships, with 65 water_ice stored at synchrony_hub, while central_nexus bids 25 cr for water_ice | TBD |
-| 25 | [carry-ice-experiment-nexus](carry-ice-experiment-nexus.json) | Tests | home space | up to 1 ships, with 65 water_ice stored at the_experiment_research_station, while central_nexus bids 25 cr for water_ice | TBD |
+| 25 | [carry-ice-experiment-nexus](carry-ice-experiment-nexus.json) | Tests | home space | up to 3 ships, with 65 water_ice stored at the_experiment_research_station, while central_nexus bids 25 cr for water_ice | TBD |
 | 26 | [mine-wolf-1061-vent](mine-wolf-1061-vent.json) | Paying Routes | beyond the border, 4 jumps | up to 1 ships, needs nitrogen_vent, empty hold, while synchrony_hub bids 25 cr for water_ice | 7,680 |
 | 27 | [mine-achernar-frost-ring-nexus](mine-achernar-frost-ring-nexus.json) | Paying Routes | beyond the border, 4 jumps | up to 3 ships, needs ice_harvester_i, empty hold, while central_nexus bids 25 cr for water_ice | 3,480 |
 | 28 | [mine-ruchbah-ice-belt-nexus](mine-ruchbah-ice-belt-nexus.json) | Paying Routes | beyond the border, 4 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while central_nexus bids 25 cr for water_ice | 3,430 |
