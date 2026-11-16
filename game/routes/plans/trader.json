@@ -25,6 +25,7 @@
   "carry-soma-beta-to-gamma",
   "carry-soma-synchrony-to-alpha",
   "craft-focused-crystal-node-beta",
+  "train-navigation-trader",
   "mine-marfik-emission-nebula",
   "mine-gsc-0016-emission-nebula",
   "mine-the-experiment-haze",
@@ -77,12 +78,13 @@
   "voidborn-resonance-finish": 40,
   "mission-ghosts-in-the-cloud-node": 40,
   "voidborn-first-hunt-intercrus-sootfall": 40,
-  "sell-soma-at-node-beta": 20,
-  "sell-soma-at-synchrony": 20,
-  "sell-soma-at-experiment": 20,
-  "carry-soma-beta-to-gamma": 20,
-  "carry-soma-synchrony-to-alpha": 20,
-  "craft-focused-crystal-node-beta": 20,
+  "sell-soma-at-node-beta": 40,
+  "sell-soma-at-synchrony": 40,
+  "sell-soma-at-experiment": 40,
+  "carry-soma-beta-to-gamma": 40,
+  "carry-soma-synchrony-to-alpha": 40,
+  "craft-focused-crystal-node-beta": 40,
+  "train-navigation-trader": 20,
   "mine-marfik-emission-nebula": 40,
   "mine-gsc-0016-emission-nebula": 40,
   "mine-the-experiment-haze": 3,
@@ -99,9 +101,10 @@
  "of": 40,
  "derived": "Written by game/fleet/plan.py from the division's plan file (data/plans/plan-trade.md), never by hand.",
  "templates": {
-  "trade-sell": 20,
-  "trade-craft": 20,
+  "trade-sell": 40,
+  "trade-craft": 40,
+  "trade-train-nav": 20,
   "trade-gas": 3,
-  "trade-gather": 20
+  "trade-gather": 40
  }
 }
