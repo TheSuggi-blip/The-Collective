@@ -2,7 +2,7 @@
  "id": "mine-ruchbah-ice-belt-nexus",
  "kind": "mine",
  "title": "Ruchbah Ice Belt: water_ice, methane_ice; sold at The Core (Central Nexus)",
- "note": "Written 2026-11-16 08:10 UTC by Zero from mine-achernar-frost-ring-nexus: the same station, the field next to Achernar, four jumps from Central Nexus as Achernar (game/map/galaxy.tsv). A test: one ship. Central Nexus is the one deep water-ice bid: 28 x 732 at its best price and 44,128 in all levels at 07:58 UTC (27 cr for about 43,000), regains about 1,250 an hour at its best price (hive.py refill). Field 6,832 water ice and 3,212 methane ice (census 07:29 UTC).",
+ "note": "Written 2026-11-16 08:10 UTC by Zero from mine-achernar-frost-ring-nexus: the same station, the field next to Achernar, four jumps from Central Nexus as Achernar (game/map/galaxy.tsv). A test: one ship. Central Nexus is the one deep water-ice bid: 28 x 732 at its best price and 44,128 in all levels at 07:58 UTC (27 cr for about 43,000), regains about 1,250 an hour at its best price (hive.py refill). Field 6,832 water ice and 3,212 methane ice (census 07:29 UTC). 2026-11-16 12:11 UTC, Zero: requires.bid water ice at central_nexus, 25 cr for 300 units at the best price (orders.log ENT-014 (a)): the route closes while a book read within the hour shows less, and opens when one shows it back.",
  "belt": "ruchbah:ruchbah_ice_belt",
  "station": "nexus_prime:the_core:central_nexus",
  "minutes": 48,
@@ -27,7 +27,13 @@
  ],
  "requires": {
   "module": "ice_harvester_i",
-  "empty_hold": true
+  "empty_hold": true,
+  "bid": {
+   "item": "water_ice",
+   "base": "central_nexus",
+   "min_price": 25,
+   "min_qty": 300
+  }
  },
  "measured": {
   "date": "2026-11-16",
