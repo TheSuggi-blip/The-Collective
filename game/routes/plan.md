@@ -131,7 +131,7 @@ Planned:
 
 ## miner
 
-Kept by Zero. Routes: 35.
+Kept by Zero. Routes: 36.
 
 | # | Route | Group | Zone | Open to | Credits per ship-hour |
 |---|---|---|---|---|---|
@@ -168,8 +168,9 @@ Kept by Zero. Routes: 35.
 | 31 | [mine-homam-cryobelt](mine-homam-cryobelt.json) | Tests | beyond the border, 6 jumps | up to 1 ships, needs ice_harvester_i, empty hold | TBD |
 | 32 | [mine-tanglewood-frost-ring](mine-tanglewood-frost-ring.json) | Tests | beyond the border, 6 jumps | up to 1 ships, needs ice_harvester_i, empty hold | TBD |
 | 33 | [mine-gsc-0021-ice-fields](mine-gsc-0021-ice-fields.json) | Tests | beyond the border, 6 jumps | up to 1 ships, needs ice_harvester_i, empty hold | TBD |
-| 34 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -600 |
-| 35 | [park](park.json) | Reading and Waiting | home space | the park route | -550 |
+| 34 | [mission-cracking-the-shell-central](mission-cracking-the-shell-central.json) | Once per Pilot | home space | once per pilot, up to 1 ships | one-time |
+| 35 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -600 |
+| 36 | [park](park.json) | Reading and Waiting | home space | the park route | -550 |
 
 Planned:
 
