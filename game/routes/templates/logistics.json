@@ -22,6 +22,17 @@
     "navigation"
    ],
    "note": "Every route is gated by requires.stored and requires.bid: it opens for one pilot while its bid stands and closes by itself. It heads every hauler's list because a route behind standing work is never reached."
+  },
+  "craft-reserve": {
+   "title": "Craft what we build with from the pilot's own stores: steel plate from stored iron ore at the Node Beta workshop, kept for the faction's ladder and the station",
+   "routes": [
+    "craft-steel-node-beta"
+   ],
+   "trains": [
+    "crafting",
+    "refining"
+   ],
+   "note": "Standing work, 0 cr a craft: requires.stored opens a route only for a pilot whose own storage holds the input, once per reading of the storage book (about 40 minutes). The board crafts wait on silicon or gold and run by hand (skill logistics-stock, stage.py)."
   }
  }
 }
