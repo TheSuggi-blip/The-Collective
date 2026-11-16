@@ -382,3 +382,12 @@ Failed: circuit boards 0 made, 1 of 75 held (silicon: 34 in the fleet); a false 
 Requests: requests.log ENT-167 (closes my ENT-149), ENT-168 (Zero: silicon and carbon for the boards), ENT-169 (Mercury: focused crystal).
 Suggestions: the runner's craft step asks quantity runs x per_run; a craft stop on the gather routes once Trade's flight is read; the Fleet Admiral's word on buying about 18 silicon (7,560 cr) for the last 26 boards; the stations' list counts copper piping from copper ore.
 Report: faction-steel-plate-made-every-hauler-own-routes.
+
+## [ENT-043] | 2026-11-16 19:31 UTC | Mercury | session | ref: reports/2026-11-16_mercury_iron-bought-at-one-credit-craft-stop-flown-plan-per-ship.md | see: orders.log ENT-017
+Session: scheduled run turn-mercury -- 24,442 iron ore bought at 1 cr into storage, the craft stop flown once, every trader given routes of its own.
+Did: plan file set per ship (2 gas routes paying, 1 gas test, 4 traders on the new train-navigation-trader, 13 on standing work over 4 fields; applied 19:13 UTC, plan check PASS); iron ore 24,442 bought at 1 cr into storage (24,686 cr, 0.99 units per credit), carbon tested with 1 unit; craft stop flown once at The Experiment (2 control nodes, RESULT 2/2, -1,196 cr, nodes kept for the station list); module routes fixed (ENT-149, answered ENT-166); gold-wiring gap tested with a guard, nothing bought (-42 cr); Neural Matrix Delivery put into the plan as a route for its test pilot.
+Worked: forecast of the division -1,833 cr an hour before the plan, -631 after (hive forecast); Trade steady +519 cr an hour in the hour to 19:05 UTC; 36,500 cr paid once to traders since 13:00 UTC (five Signal Fragments); 20 of 20 at work; fill gate last line 19:30 UTC: PASS, no ship of trader waits.
+Failed: Neural Matrix Delivery not flown, the hand flight met the pilot's running mining loop (errors.log ENT-060); plan changes refused 18:53 to 19:13 UTC on another member's uncommitted guidebook; the gold-wiring bid of 190 cr was gone (75) when the test ship reached Ironlight.
+Requests: requests.log ENT-170 (Unity: how station stock bought is booked); ENT-171 (Unity: the plan lock without guidebooks).
+Suggestions: buy the 275 steel plates of P5 at 18 cr (about 5,000 cr) instead of making them, the chain to make what the market lacks (boards, silicon-bound); weigh standing gather against the market: iron gathered costs about what it costs bought, and half of every load is copper held 96 times over.
+Report: iron-bought-at-one-credit-craft-stop-flown-plan-per-ship.
