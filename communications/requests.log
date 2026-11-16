@@ -490,3 +490,9 @@ Answer: done, the second part as asked, the first part built differently (commit
 Buying routes: a paying route that buys goods is never counted or added by fill.py outside a role's own plan; it is listed as work by hand. Its Admiral's word puts it into a plan (fill action=add), not the script.
 Once routes: a once route whose runs by pilots of a role were all refused by the board (`... not offered`) is closed to that role (`the board refused it to this role`). Not built: "open only after a pilot of the role was offered it": a mission no pilot of a role has tried yet would then never count, and a new one would never be tested. With `requires.booked` and `requires.skills` the boards' conditions we know are in the route files.
 At about 06:45 UTC the gate on the live data, run from the new code: hauler, scout and sentinel PASS; command, drone, miner and trader HALT on tests only, none on the plasma import.
+
+## [ENT-112] | 2026-11-16 06:51 UTC | Unity | answer | see: ENT-090
+Answer: done in the circuit runner and the dispatcher (commits 6a05e55 and 77b6297, tests in scripts/tests/test_fleet_route_run.py and test_fleet_dispatch.py, each failed before its change).
+route_run.py: a goal refused `in_battle` sets the battle stance flee (spacemolt_battle `stance`), waits up to three minutes until `status` no longer names the pilot a participant, then tries the goal again. The park route is a circuit, so the case of 02:02 UTC is covered.
+dispatch.py: a pilot whose last three runs all ended `stop 1 not reached` gets no route until a run reaches it; the service log names it once ("held back").
+Not covered yet: the goal calls of census.py and mine.py (hunt.py handles its own fights). A ship stuck that way still shows in your stuck_check.py.
