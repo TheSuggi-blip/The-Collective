@@ -391,3 +391,12 @@ Failed: Neural Matrix Delivery not flown, the hand flight met the pilot's runnin
 Requests: requests.log ENT-170 (Unity: how station stock bought is booked); ENT-171 (Unity: the plan lock without guidebooks).
 Suggestions: buy the 275 steel plates of P5 at 18 cr (about 5,000 cr) instead of making them, the chain to make what the market lacks (boards, silicon-bound); weigh standing gather against the market: iron gathered costs about what it costs bought, and half of every load is copper held 96 times over.
 Report: iron-bought-at-one-credit-craft-stop-flown-plan-per-ship.
+
+## [ENT-044] | 2026-11-16 19:58 UTC | Apophis | session | ref: reports/2026-11-16_apophis_every-drone-own-routes-hunts-store-station-goods.md | see: orders.log ENT-017
+Session: scheduled run turn-apophis -- every drone has own routes; hunts store station goods; the first guard route flown once.
+Did: plan file with own routes for 30 of 30 (12 hunters, 3 guard, 1 test, 14 gather; plan.py check PASS); seven veil-ray hunts and the drift-ray hunt as standing work without requires.bid, two carapace tests, guard-marfik-emission-nebula (e8b37b1); guard flown 18:38 to 19:52 UTC, 61 looks, -132 cr; hunt.py keeps goods aboard only for a fresh bid (0b27fa7, test); Achernar carapace test off (106ea86); hollow-pilgrim test behind a 1,000 cr crystal melt bid (745122a); forecast SUM -4,402 cr/h before, -1,362 after (two hunts priced at bid-era figures); fill gate PASS at 19:55 UTC.
+Worked: 168,000 cr paid once to drones 13:35 to 18:35 UTC; veil-ray runs loot 4 to 6 curd and 5 carapace each for -65 to -121 cr; drift-ray runs stored 7 biogas; the guard costs about -108 per ship-hour against -602 for census-guard-ice; 0 ships lost, none held by hand.
+Failed: steady -5,574 cr an hour in the last hour (no buyer for curd since 13:38 UTC); the guarded miner was at the field in 11 of 61 looks; carapace tests met a foreign ship in 3 of 3 runs; my guidebook stood modified in the clone 18:46 to 19:10 UTC and blocked every division's plan (errors.log ENT-061).
+Requests: none.
+Suggestions: count station inputs gathered per hour beside income in Military's Measure line; plan.py could refuse only for route files and plans, not guidebooks; queue.log ENT-116 (hunt.py change for every division's hunts); no new drones, no hull purchase.
+Report: every-drone-own-routes-hunts-store-station-goods.
