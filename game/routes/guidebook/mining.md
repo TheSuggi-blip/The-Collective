@@ -51,8 +51,9 @@ of 2026-11-16 03:22 UTC; the scale is the best route, 8,270.
 | 16 | `mine-antares-ice-fields` | 1 | 2,700 (1 run) | Field 1,733, 300 an hour grows back |
 | 17 | `mine-wolf-1061-frozen-drift-nexus`, `mine-achernar-frost-ring-nexus` | 1 each | not measured | Tests: sold at Central Nexus, the deepest water-ice ladder |
 | 18 | `mine-gsc-0033-cryobelt`, `mine-homam-cryobelt`, `mine-tanglewood-frost-ring`, `mine-gsc-0021-ice-fields` | 1 each | not measured | Tests the route maker wrote, added by the fill gate (03:25 UTC) for the miners fitted this turn |
-| 19 | `census-frontier` | up to 12 | -600 | Reading, when a miner has nothing else |
-| 20 | `park` | the rest | 0 | Dock at home and wait |
+| 19 | `mission-cracking-the-shell-central` | 1 | judged with its 1,500 cr reward (7 runs, +340 cr a run) | A mission that pays once, added by the fill gate (03:30 UTC) |
+| 20 | `census-frontier` | up to 12 | -600 | Reading, when a miner has nothing else |
+| 21 | `park` | the rest | 0 | Dock at home and wait |
 
 Why this plan: the limit of the ice work is the tool. 40 miners, 19
 with an Ice Harvester I at 03:25 UTC (their ship files) and the rest of
@@ -60,7 +61,9 @@ the asks on the fit routes. The ice routes hold 24 places, tests included, share
 command group's pathfinders. The next limit is the bid: The Experiment's water-ice
 share carries about 2 ships for each of Ruchbah and Achernar at its
 best price (fill status, 03:16 UTC), so new places go to Central
-Nexus, not to more ships at The Experiment.
+Nexus, not to more ships at The Experiment. By 03:32 UTC The Experiment
+held 604 units at 38 cr and Synchrony 10 at 40, Central Nexus 47,098 at
+24 (fill status).
 
 What would change it: the RESULT line of the Ironlight fit (cheaper
 harvesters for the waiting miners); the dock fix asked in requests.log

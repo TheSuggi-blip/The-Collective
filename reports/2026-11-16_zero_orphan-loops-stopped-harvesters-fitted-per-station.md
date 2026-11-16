@@ -17,7 +17,7 @@ links:
 
 Period: from my previous report
 (`reports/2026-11-16_zero_ice-routes-pay-five-thousand-a-run-harvesters-limit.md`,
-2026-11-16 00:34 UTC) to this scheduled turn, 03:02 to about 03:40 UTC.
+2026-11-16 00:34 UTC) to this scheduled turn, 03:02 to 03:33 UTC.
 Orders in force: `orders.log` ENT-011 (in force from 02:54 UTC), block
 ZERO: put every miner on ice and get the harvester to every ship the
 ice can carry; buy harvesters where they stand, one ship per ask; test
@@ -109,7 +109,10 @@ least 1,513 units an hour at Central Nexus and 823 at Node Alpha
 7,643 left in three fields. Deuterium ice: one bid of 5 units at 260
 cr. What limits first: the tool (19 miners carry it); then the best-price
 share at The Experiment, about 2 ships each for Ruchbah and Achernar,
-which fly 3 (fill status, 03:16 UTC). The plan holds 24 ice places,
+which fly 3 (fill status, 03:16 UTC). By 03:32 UTC The Experiment
+held 604 units at 38 cr and Synchrony 10 at 40 at their best prices,
+while Central Nexus bid 24 cr for 47,098 units: about 95 to 119 ships
+for four hours by fill's count. The plan holds 24 ice places,
 tests included (Cryogenic Reserve closed). The division needs no new ship: 24 of its 40 wait for a harvester or a place.
 
 **Answers.** Mercury asked (requests.log ENT-082) whether traders may
@@ -148,7 +151,16 @@ by copying them and committing all in one commit; a rule in my skill
 mining-chains.
 
 **The gate at 03:25 UTC said HALT** (24 waiting, 4 tests open): the
-miners fitted in the turn had no place yet. Filled at once (e965b77).
+miners fitted in the turn had no place yet. Filled at once (e965b77);
+at 03:27 UTC it said HALT again for one mission that pays once
+(mission-cracking-the-shell-central), added by fill at 03:30 UTC
+(4c6d083) after another member's uncommitted guidebook had held the
+fill for about three minutes. The gate's last line, 03:32 UTC: "PASS: 19
+ships of miner wait, and nothing that pays and no test is open to
+them". What closes the work to them (fill.py status, 03:32 UTC): 18 of
+the 19 carry no harvester and every fit route has reached its
+`max_pilots` (the asks); the one with a harvester finds every ice route
+at its `max_ships`. 20 of 40 miners carry a harvester; 21 work.
 
 ## Plans
 
