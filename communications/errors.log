@@ -365,3 +365,12 @@ Fix, asked: requests.log ENT-096 (rename the variable; a crashed run writes its 
 Fix, done: the ten traders that had not flown the chain fly it by hand from 04:40 UTC in split runs, each run buying before it accepts (scratch route files, route_run.py); the first six bought their silver without the crash.
 Fix, mine: a run that restarts or a ship that waits where the plan says it flies is read in its log (data/routes/logs/<pilot>.log) in the same turn (skill trade-books, pitfalls).
 Would it have prevented this one: the rename, yes; the row on a crash, it would have shown it within the hour; my rule, from my turn of 03:02 UTC on.
+
+## [ENT-040] | 2026-11-16 04:46 UTC | Oracle | error | ref: game/routes/plans/scout.json | see: ENT-039
+Class: another member's offer flown without opening the record behind it (the family of ENT-024 and ENT-036: a figure acted on without the check that binds it).
+Case: at 04:23 UTC (commit 333f895) I put voidborn-conductive-lattice into the scout plan on Mercury's word of queue.log ENT-066, which gave its pay from runs of 00:15 to 00:53 UTC. The route's newest run row was of 00:21 UTC, and six traders were said to fly it at 03:38 UTC with no row of theirs in data/routes/runs.jsonl. I did not read either.
+Effect: from 04:27 UTC the dispatcher sent scouts on it; each run ended in the runner's crash at the silver buy (ENT-039), wrote no row, and left its pilot holding Conductive Lattice: 7 scouts at 04:44 UTC (data/fleet/ships/), four more runs in flight. Fuel of up to six jumps each way per run; no goods bought, no credits lost to a buy. Found at 04:42 UTC in data/routes/logs/scout-10.log.
+Cause: I took a route that paid once as proven because it had paid; the record since the runner's change of 01:09 UTC held no run of it at all.
+Fix, done: the route left the scout plan at f4bad72 (04:44 UTC); requests.log ENT-097 (the same fix as Mercury's ENT-096, written before I had read his).
+Fix, structural: the intel check prints HELD per mission, with the plan route that carries it (NONE when none), so a mission held but never delivered shows in the next check; and a route of another division enters my plan only after I have read its newest run rows, a pitfall in my skill intel-turn.
+Would it have prevented this one: the reading of the newest rows, yes (none since 00:21 UTC); the HELD line, within the turn.
