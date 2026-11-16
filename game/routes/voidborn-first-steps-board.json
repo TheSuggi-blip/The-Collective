@@ -1,0 +1,64 @@
+{
+ "id": "voidborn-first-steps-board",
+ "kind": "circuit",
+ "title": "First Steps in the Void taken from the Central Nexus board: 1,000 cr once, 15 carbon ore mined at Acubens Belt, handed in at Central Nexus",
+ "note": "For a pilot that does not hold First Steps in the Void: the Central Nexus board offers it (mine 15 carbon ore, 1,000 cr once) to every pilot that has not done it; voidborn-first-steps serves only a pilot that already holds it. Test by hand, one trader, 08:46 to 08:57 UTC: accepted at Central Nexus, 15 carbon mined at Acubens Belt in about 5 minutes, handed in at Central Nexus: RESULT +922 cr after fuel in 12 minutes (data/routes/runs.jsonl). It opens the next link, Network Expansion (1,500 cr, route voidborn-network-expansion). Acubens Belt held 76 carbon ore at 08:12 and 182 at 08:46 UTC with this test mining 15 there (data/scouting/acubens.json): it regains on the order of 100 units an hour or more; max_ships 3 (45 units at a time) beside the 2 of voidborn-first-steps. When runs end with the objectives not done, the field is the limit: lower max_ships. Stamped 2026-11-16 08:58 UTC.",
+ "once": true,
+ "max_ships": 3,
+ "one_time": [
+  "First Steps in the Void"
+ ],
+ "skip_if_booked": [
+  "First Steps in the Void"
+ ],
+ "stops": [
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "store": [
+    "carbon_ore",
+    "tungsten_ore",
+    "platinum_ore",
+    "palladium_ore",
+    "lead_ore",
+    "voidborn_neural_soma"
+   ],
+   "accept": [
+    "first_steps_in_the_void"
+   ],
+   "mine": [
+    {
+     "at": "acubens:acubens_belt",
+     "for": [
+      "First Steps in the Void"
+     ],
+     "minutes": 25
+    }
+   ]
+  },
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "only_if_active": [
+    "First Steps in the Void"
+   ],
+   "store": [
+    "carbon_ore",
+    "tungsten_ore",
+    "platinum_ore",
+    "palladium_ore",
+    "lead_ore",
+    "uranium_ore"
+   ]
+  },
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "store": [
+    "carbon_ore",
+    "tungsten_ore",
+    "platinum_ore",
+    "palladium_ore",
+    "lead_ore",
+    "uranium_ore"
+   ]
+  }
+ ]
+}
