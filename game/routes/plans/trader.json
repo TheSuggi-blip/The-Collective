@@ -17,7 +17,7 @@
  "planned": [
   {
    "what": "Read the first RESULT lines of mine-stellar-siphon and mine-lesath-gas-cloud; lift what pays as far as the Node Beta bids carry, take out what loses.",
-   "when": "turn T10 (07:00 UTC)"
+   "when": "the turn of 2026-11-16 08:30 UTC (queue.log ENT-060)"
   },
   {
    "what": "Watch the silver ore ask at Ironlight Crossroads (ledger.py prices silver_ore) and raise max_pilots of voidborn-conductive-lattice as far as it refills; the chain pays +10,893 cr once per pilot.",
