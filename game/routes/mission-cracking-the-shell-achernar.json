@@ -38,5 +38,12 @@
   {
    "at": "nexus_prime:the_core:central_nexus"
   }
- ]
+ ],
+ "measured": {
+  "date": "2026-11-16",
+  "runs": 2,
+  "minutes": 6,
+  "credits_per_run": -50,
+  "cph_per_ship": -520
+ }
 }
