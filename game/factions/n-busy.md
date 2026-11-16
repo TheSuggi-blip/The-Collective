@@ -15,7 +15,7 @@ updated: 2026-11-16
 # Busy Being Dead [BUSY]
 
 A player faction with 6 base(s) in 6 system(s); the nearest to Nexus Prime is 14 jump(s) away, in 40 Eridani (`40_eridani`).
-Pilots of it in our space in the last 24 hours: 3.
+Pilots of it in our space in the last 24 hours: 7.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 3.
 | Allies | BEIN, DEAD, MOON | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 415 | Public event stream |
+| Pilots carrying the tag on the public event stream | 414 | Public event stream |
 
 ## Bases
 
@@ -45,9 +45,13 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Combat Drone 131 | Pherkad (`pherkad`) | 0 | dialectic |
-| Combat Drone 188 | Hamal (`hamal`) | 0 | dialectic |
-| Mining Drone 183 | Synchrony (`synchrony`) | 0 | shard |
+| Combat Drone 185 | Hamal (`hamal`) | 0 | dialectic |
+| Combat Drone 202 | Pherkad (`pherkad`) | 0 | dialectic |
+| Mining Drone 028 | Pherkad (`pherkad`) | 0 | shard |
+| Mining Drone 112 | Synchrony (`synchrony`) | 0 | floor_price |
+| Mining Drone 121 | Synchrony (`synchrony`) | 0 | prospect |
+| Mining Drone 247 | Node Gamma (`node_gamma`) | 0 | not met |
+| Mining Drone 259 | Node Gamma (`node_gamma`) | 0 | not met |
 
 ## Standing History
 

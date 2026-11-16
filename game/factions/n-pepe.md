@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 5.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 14 | Public event stream |
+| Pilots carrying the tag on the public event stream | 16 | Public event stream |
 
 ## Bases
 
@@ -40,9 +40,9 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 |---|---|---|---|
 | Mimic | Nexus Prime (`nexus_prime`) | 0 | cobble |
 | MimicEcho | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| MimicFrost | Synchrony (`synchrony`) | not on record | not met |
 | MimicSol | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | MimicVoid | Nexus Prime (`nexus_prime`) | 0 | threshold |
+| Pepemos | Synchrony (`synchrony`) | 0 | shard |
 
 ## Standing History
 

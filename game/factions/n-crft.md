@@ -41,7 +41,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Scout 'Space' Sullivan | Pherkad (`pherkad`) | 0 | not met |
+| Diana 'Driftwood' Dawson | Hamal (`hamal`) | 0 | not met |
 
 ## Standing History
 

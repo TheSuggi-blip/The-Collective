@@ -38,10 +38,10 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Wexler EWK-0R | The Experiment (`the_experiment`) | 0 | not met |
-| Wexler NMC-1A | Synchrony (`synchrony`) | 0 | cobble |
-| Wexler QWM-Y0 | Acubens (`acubens`) | 0 | cobble |
+| Wexler L93-44 | Node Gamma (`node_gamma`) | 0 | not met |
+| Wexler QWM-Y0 | Node Gamma (`node_gamma`) | 0 | cobble |
 | Wexler SV3-C2 | Node Alpha (`node_alpha`) | 0 | cobble |
+| Wexler VN3-Z1 | Node Beta (`node_beta`) | 0 | cobble |
 
 ## Standing History
 

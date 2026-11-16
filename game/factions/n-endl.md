@@ -15,7 +15,7 @@ updated: 2026-11-16
 # End of Line [ENDL]
 
 A player faction with 8 base(s) in 8 system(s); the nearest to Nexus Prime is 8 jump(s) away, in GSC-0040 (`gsc_0040`).
-Pilots of it in our space in the last 24 hours: 11.
+Pilots of it in our space in the last 24 hours: 8.
 
 ## Identity
 
@@ -48,16 +48,13 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
 | Blackbeard | Nexus Prime (`nexus_prime`) | 426 | junk_convoy |
-| CaptainJaneway | Node Beta (`node_beta`) | 0 | threshold |
-| CLU | Nexus Prime (`nexus_prime`) | 0 | junk_convoy |
+| CombatDummy5 | The Experiment (`the_experiment`) | 1 | junk_convoy |
 | Django | Nexus Prime (`nexus_prime`) | 0 | junk_convoy |
-| ElChapo | Node Alpha (`node_alpha`) | 2 | caravan |
-| ElonMusk | Node Beta (`node_beta`) | 0 | junk_convoy |
-| HAL 9000 | Node Alpha (`node_alpha`) | 0 | capacity |
-| JamesBond | Node Beta (`node_beta`) | 0 | catalogue |
-| MasterChief | Node Alpha (`node_alpha`) | 149 | frankenhauler |
-| MrBurns | Node Alpha (`node_alpha`) | 0 | junk_convoy |
-| PabloEscobar | Nexus Prime (`nexus_prime`) | 0 | junk_convoy |
+| ElChapo | Hamal (`hamal`) | 2 | caravan |
+| ElonMusk | Pherkad (`pherkad`) | 0 | junk_convoy |
+| JamesBond | Synchrony (`synchrony`) | 0 | catalogue |
+| LandoCalrissian | The Experiment (`the_experiment`) | 0 | junk_convoy |
+| MrBurns | Node Beta (`node_beta`) | 0 | junk_convoy |
 
 ## Standing History
 

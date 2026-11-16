@@ -38,8 +38,8 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Daemia | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| Ellara | Node Beta (`node_beta`) | 0 | threshold |
+| Daemia | Node Beta (`node_beta`) | 0 | threshold |
+| Ellara | Node Gamma (`node_gamma`) | 0 | threshold |
 | Hesser | Node Beta (`node_beta`) | 0 | cobble |
 | Nythera | Node Gamma (`node_gamma`) | 0 | threshold |
 | Slyreus | Nexus Prime (`nexus_prime`) | 0 | threshold |
