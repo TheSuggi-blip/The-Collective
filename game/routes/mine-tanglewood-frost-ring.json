@@ -16,5 +16,12 @@
  "requires": {
   "module": "ice_harvester_i",
   "empty_hold": true
+ },
+ "measured": {
+  "date": "2026-11-16",
+  "runs": 1,
+  "minutes": 81,
+  "credits_per_run": -670,
+  "cph_per_ship": -500
  }
 }
