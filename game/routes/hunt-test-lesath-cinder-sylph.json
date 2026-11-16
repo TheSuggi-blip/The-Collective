@@ -2,7 +2,7 @@
  "id": "hunt-test-lesath-cinder-sylph",
  "kind": "hunt",
  "title": "Cinder-sylphs at lesath_gas_cloud (lawless); ember glands sold at Node Beta",
- "note": "A test with one ship: the cinder-sylph test at Achernar Gas Pocket dropped one ember gland a kill, sold at 480 cr, +894 cr in 12.2 min (2026-11-16 03:00 UTC, hunt-test-achernar-cinder-sylph). This herd read 8 cinder-sylphs (40 hull) at 2026-11-15 22:03 UTC (data/wildlife/history.jsonl), a read the census renews. Beyond policed space (F13): `alone` and an empty hold; ranched: no hunt below 4 animals, 2 kills a run. Written by Apophis 2026-11-16 03:22 UTC (orders.log ENT-011); one ship until its first RESULT line.",
+ "note": "A test with one ship: the cinder-sylph test at Achernar Gas Pocket dropped one ember gland a kill, sold at 480 cr, +894 cr in 12.2 min (2026-11-16 03:00 UTC, hunt-test-achernar-cinder-sylph). This herd read 8 cinder-sylphs (40 hull) at 2026-11-15 22:03 UTC (data/wildlife/history.jsonl), a read the census renews. Beyond policed space (F13): `alone` and an empty hold; ranched: no hunt below 4 animals, 2 kills a run. Written by Apophis 2026-11-16 03:16 UTC (orders.log ENT-011); one ship until its first RESULT line.",
  "place": "lesath:lesath_gas_cloud",
  "species": [
   "cinder_sylph"

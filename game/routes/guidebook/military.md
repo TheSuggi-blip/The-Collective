@@ -24,7 +24,7 @@ at the end of every turn.
 ## Standing Plan
 
 What the drones fly between two turns, in this order (`game/routes/plans/drone.json`,
-written 2026-11-16 03:22 UTC; `hive.py standing` prints it ship by ship). Every
+last committed 2026-11-16 03:25 UTC; `hive.py standing` prints it ship by ship). Every
 place holds one hunter (orders F9); every route beyond the border carries `alone`
 and an empty hold (F13). Figures: `routes.py measure`, 2026-11-16 03:19 UTC,
 credits per ship-hour after fuel, beside the scale of the hour: the best route of
@@ -34,7 +34,7 @@ the fleet, mine-ruchbah-ice-belt at 8,271, and 0 for a ship that waits (`hive.py
 |---|---|---|---|---|
 | 1 | `voidborn-precedence` | up to 40 | 4,000 cr once per pilot | Every drone has it booked; it passes by itself |
 | 2 | First Hunt: `voidborn-first-hunt-nexus`, `-gsc`, `-acubens` (home), `-ironhollow-echo`, `-ironhollow-fading`, `-achernar` (one jump from The Experiment) | 1 each, 6 | 1,000 cr once; 370 to 960 cr a run measured | 21 drones had not flown it at 02:55 UTC; six herds carry about six pilots an hour |
-| 3 | `mission-cracking-the-shell-achernar`, `-central` | 1 each | 1,500 cr once | Pressblisters at any ice field; Node Gamma's read 0 from 02:27 UTC |
+| 3 | none now: `mission-cracking-the-shell-achernar` and `-central` are out | 0 | 1,500 cr once | Offered only to a pilot with First Hunt booked (7 of 7 with, 0 of 12 without); back when a route can require it (requests.log ENT-091) |
 | 4 | `voidborn-first-steps`, `voidborn-selling`, `voidborn-concurrent` and the other once routes | as booked | once | Pass by themselves once booked |
 | 5 | `hunt-test-achernar-cinder-sylph` | 1 | 3,230 over 2 runs | Ember glands at 480 cr, bid 50 deep at every station |
 | 6 | Veil-rays: `hunt-gsc-veil-ray` 3,360 (24 runs), `-hamal-` 2,770 (13), `-ruchbah-` 2,710 (11), `-faintlight-drift-` 2,120 (4), `-low-charge-glint-` 2,110 (6), `-keid-fractured-prism-` 1,760 (7), `-cedarhold-dim-lattice-` 900 (6) | 1 each, 7 | about 2,000 to 3,400 | The herds that paid; ranched, no hunt below 4 animals |
@@ -109,7 +109,7 @@ the fleet:
 | `voidborn-selling` | 1,000 cr for the pilots that hold Market Participation: Selling | 40 runs, 5 min, 870 cr a run | 20 drones held the mission (`data/fleet/ships/`, 23:46 UTC) |
 | `voidborn-concurrent` | 3,000 cr | every drone has it booked | Flown by all 30 drones on 2026-11-15 |
 | `voidborn-first-hunt-ironhollow-echo`, `-ironhollow-fading`, `-achernar` | 1,000 cr, accepted and handed in at The Experiment | Achernar: 1 run, 19 min, +960 cr (03:00 UTC); Ironhollow: see section 2 | Three herds one jump beyond The Experiment, written 2026-11-16 03:00 UTC: 26, 19 and 12 belt-grazers at their reads of 01:19 to 01:20 UTC |
-| `mission-cracking-the-shell-achernar` | 1,500 cr, 55 Weapons XP | not measured | "Hunt 3 Pressblisters at an ice field": any ice field. Achernar Frost Ring read 8 pressblisters at 01:21 UTC; Node Gamma Ice Belt, the place of `mission-cracking-the-shell-central` (13 runs, 1,200 cr per ship-hour), read 0 from 02:27 UTC |
+| `mission-cracking-the-shell-achernar` | 1,500 cr, 55 Weapons XP | 1 run, refused at the accept | Out of the plan: in 19 runs of the fleet (2026-11-16 01:16 to 03:22 UTC) the pilots with First Hunt booked were offered it (7 of 7) and the others not (12 of 12), and a refused run counts as done for the pilot. "Hunt 3 Pressblisters at an ice field": any ice field. Achernar Frost Ring read 8 pressblisters at 01:21 UTC; Node Gamma Ice Belt, the place of `mission-cracking-the-shell-central` (13 runs, 1,200 cr per ship-hour), read 0 from 02:27 UTC |
 
 Belt-grazer goods are creature carapace and raw xeno meat; no station of
 ours bids above 1 cr for either. The mission is the pay.
@@ -178,7 +178,7 @@ Catalog and books read 2026-11-15 23:24 to 23:32 UTC.
 ## 6. Open Tests
 
 Every test is one ship, in `game/routes/plans/drone.json`, written 2026-11-16
-03:00 to 03:22 UTC; each leaves the plan after its first RESULT lines unless its
+03:00 to 03:16 UTC; each leaves the plan after its first RESULT lines unless its
 drop sells (orders ENT-011: every untested herd of ten or more, 100 hull or less):
 
 - Cinder-sylphs at Lesath Gas Cloud (8 at 2026-11-15 22:03 UTC) and GSC-0050 Gas
