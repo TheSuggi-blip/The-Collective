@@ -58,7 +58,7 @@ Kept by Unity. Routes: 36.
 
 ## drone
 
-Kept by Apophis. Routes: 37.
+Kept by Apophis. Routes: 38.
 
 | # | Route | Group | Zone | Open to | Credits per ship-hour |
 |---|---|---|---|---|---|
@@ -94,11 +94,12 @@ Kept by Apophis. Routes: 37.
 | 30 | [train-navigation-home](train-navigation-home.json) | Measured at a Loss | home space | up to 1 ships | -470 |
 | 31 | [mission-ghosts-in-the-cloud-node](mission-ghosts-in-the-cloud-node.json) | Once per Pilot | home space | once per pilot, up to 1 ships | one-time |
 | 32 | [voidborn-first-hunt-acubens](voidborn-first-hunt-acubens.json) | Once per Pilot | home space | once per pilot, up to 1 ships | one-time |
-| 33 | [census-guard-ice](census-guard-ice.json) | Standing Work, Reading and Waiting | beyond the border, 7 jumps | up to 2 ships, empty hold | -610 |
-| 34 | [gather-gsc-0027-prism-scatter](gather-gsc-0027-prism-scatter.json) | Standing Work, Reading and Waiting | home space | up to 40 ships, needs mining_laser_i, standing work | TBD |
-| 35 | [gather-hamal-crystal-bloom](gather-hamal-crystal-bloom.json) | Standing Work, Reading and Waiting | home space | up to 40 ships, needs mining_laser_i, standing work | TBD |
-| 36 | [census-frontier](census-frontier.json) | Standing Work, Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -630 |
-| 37 | [park](park.json) | Standing Work, Reading and Waiting | home space | the park route | -670 |
+| 33 | [voidborn-first-hunt-intercrus-belt](voidborn-first-hunt-intercrus-belt.json) | Once per Pilot | beyond the border, 7 jumps | once per pilot, up to 1 ships, empty hold | one-time |
+| 34 | [census-guard-ice](census-guard-ice.json) | Standing Work, Reading and Waiting | beyond the border, 7 jumps | up to 2 ships, empty hold | -610 |
+| 35 | [gather-gsc-0027-prism-scatter](gather-gsc-0027-prism-scatter.json) | Standing Work, Reading and Waiting | home space | up to 40 ships, needs mining_laser_i, standing work | TBD |
+| 36 | [gather-hamal-crystal-bloom](gather-hamal-crystal-bloom.json) | Standing Work, Reading and Waiting | home space | up to 40 ships, needs mining_laser_i, standing work | TBD |
+| 37 | [census-frontier](census-frontier.json) | Standing Work, Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -630 |
+| 38 | [park](park.json) | Standing Work, Reading and Waiting | home space | the park route | -670 |
 
 Planned:
 
