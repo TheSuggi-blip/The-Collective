@@ -124,7 +124,7 @@ class RunTests(Shelf):
                 sys.exit("REFUSED: not yours")
             sys.exit(0)
         """)
-        before = atexit._ncallbacks()
+        before, hook = atexit._ncallbacks(), sys.excepthook
         for pilot, how in (("miner-1", "crash"), ("miner-2", "refused"), ("miner-3", "fine")):
             self.submit(pilot, "ends.py", how)
         self.fly()
@@ -135,7 +135,7 @@ class RunTests(Shelf):
         self.assertEqual(self.log("miner-2").read_text(), "REFUSED: not yours\nregistered last, runs first\nregistered first, runs last []\n")
         self.assertEqual(self.log("miner-3").read_text(), "registered last, runs first\nregistered first, runs last []\n")
         self.assertEqual(atexit._ncallbacks(), before)                       # nothing of a run stays behind in the host
-        self.assertIs(sys.excepthook, sys.__excepthook__)
+        self.assertIs(sys.excepthook, hook)                                  # the host's own hook is as it was (Ubuntu's Python starts with apport's)
 
     def test_a_run_can_neither_end_the_host_nor_take_its_signals(self):
         self.runner("rude.py", """
