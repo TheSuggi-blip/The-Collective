@@ -3,8 +3,9 @@
  "owner": "Zero",
  "templates": {
   "ice-sell": {
-   "title": "Ice and methane sold where a bid stands: stored ice first, then the ice fields",
+   "title": "Stored goods and ice sold where a bid stands: stored null matter, methane and ice first, then the ice fields",
    "routes": [
+    "carry-null-matter-synchrony-nexus",
     "drain-methane-experiment",
     "drain-ice-nexus",
     "drain-ice-node-alpha",
