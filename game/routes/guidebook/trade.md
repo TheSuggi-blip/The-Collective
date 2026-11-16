@@ -24,7 +24,7 @@ at the end of every turn.
 ## Standing Plan
 
 What the traders fly between two turns: `game/routes/plans/trader.json`,
-as it stood at 2026-11-16 09:50 UTC. `hive.py standing` (the tool
+as it stood at 2026-11-16 09:55 UTC. `hive.py standing` (the tool
 `fleet`, view=standing) prints the same plan with every ship. Every
 figure is credits per ship-hour beside the scale of `hive.py tasks`
 (08:47 UTC: the best repeating route with two runs or more,
@@ -40,8 +40,9 @@ A mission that pays once is judged with its reward (orders F19).
 | 5 | voidborn-signal-fragments | 10 | +6,792 to +6,909 cr once in 14 to 26 minutes | Navigation 3 only: both traders that have it are done; stands for a trader that reaches it |
 | 6-12 | The older missions that pay once and the Node Beta chain | 0 | -- | Every trader has flown or booked them; they stay for a pilot born later |
 | 13 | mine-the-experiment-haze | 1, a trader with a Gas Harvester I | the route maker's estimate 1,638 per ship-hour, not measured | Test: hydrogen into the Node Beta bid of 33 cr (34 units at the best price, 08:30 UTC) |
-| 14 | census-frontier | up to 12 (Intel's route) | -620 measured: a reading cost | Open only when a frontier system is due |
-| 15 | park | the rest | 0 | A docked ship costs nothing |
+| 14 | voidborn-first-hunt-achernar (Military's route, put in by fill.py) | 1 | +80 cr a run measured over 31 runs of the fleet; a trader's run of 09:07 UTC -77 cr, no hunt | First Hunt (1,000 cr once) stands on every trader's board; the fill gate counts the route as paying |
+| 15 | census-frontier | up to 12 (Intel's route) | -620 measured: a reading cost | Open only when a frontier system is due |
+| 16 | park | the rest | 0 | A docked ship costs nothing |
 
 For the four hours after the turn of 08:30 UTC: the ten traders without
 First Steps fly the board route, then Network Expansion and The
