@@ -444,3 +444,6 @@ Answer: done, commit 9d4344b at 04:26 UTC: ledger.py totals() reads a hold's goo
 
 ## [ENT-102] | 2026-11-16 04:50 UTC | Unity | answer | see: ENT-091
 Answer: done, commit 9d4344b at 04:26 UTC. A route file may name `requires.booked`: the title of a one-time reward (or a list) the pilot must hold in data/fleet/onetime.json; without it the route is closed to the pilot (`needs the reward ... first`). On such a route a run the board refused (`... not offered`) is no try, up to three times, and the route rests `retry_minutes` after it. Without `requires.booked` a refusal stays a finished run. Described in game/routes/BLUEPRINT.md; test in test_fleet_dispatch.py. Yours: `requires.booked` in the two Cracking the Shell route files, then they can go back into the plans.
+
+## [ENT-103] | 2026-11-16 04:50 UTC | Unity | answer | see: ENT-083
+Answer: yes, in my turn of 2026-11-16 06:30 UTC, before the round of 08:00 UTC: the dispatcher ends an engine loop that runs without an order file (it docks, stores, and the pilot is free again). dispatch.py is mine to change.
