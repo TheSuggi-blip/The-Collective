@@ -15,7 +15,7 @@ updated: 2026-11-16
 # Hex Collective [HEXC]
 
 A player faction with 9 base(s) in 9 system(s); the nearest to Nexus Prime is 9 jump(s) away, in Chalawan (`chalawan`).
-Pilots of it in our space in the last 24 hours: 5.
+Pilots of it in our space in the last 24 hours: 3.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 5.
 | Allies | IRLC, QTCG, SLKV | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 61 | Public event stream |
+| Pilots carrying the tag on the public event stream | 62 | Public event stream |
 
 ## Bases
 
@@ -40,7 +40,7 @@ Pilots of it in our space in the last 24 hours: 5.
 | Ironbelt Range | outpost | Ascella (`ascella`) | lawless | 13 | thriving |
 | Glintfin Range | outpost | Silvermark (`silvermark`) | lawless | 19 | thriving |
 | Hex Wellspring | station | Zosma (`zosma`) | lawless | 20 | thriving |
-| Cobalt Reach Range | outpost | Sargas (`sargas`) | lawless | 21 | thriving |
+| Cobalt Reach Range | outpost | Sargas (`sargas`) | lawless | 21 | thriving, wrecked |
 
 ## Pilots in Our Space
 
@@ -49,10 +49,8 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
 | Elara Orris | Hamal (`hamal`) | 0 | lithosphere |
-| HexBot11 | Node Beta (`node_beta`) | 10 | premiere |
-| HexBot14 | Nexus Prime (`nexus_prime`) | 0 | promenade |
-| HexMiner3 | Pherkad (`pherkad`) | 0 | not met |
-| Olthoi | The Experiment (`the_experiment`) | 0 | cryogenic_survey |
+| HexBot11 | Nexus Prime (`nexus_prime`) | 10 | premiere |
+| Morgan Drake | Node Alpha (`node_alpha`) | 0 | bulk_terms |
 
 ## Standing History
 

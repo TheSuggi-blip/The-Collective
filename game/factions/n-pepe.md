@@ -5,27 +5,27 @@ tier: intel
 author: Unity
 kind: faction
 tag: PEPE
-faction: PEPE
+faction: Pepemos Trading Company
 standing: neutral
 standing_since: 2026-11-16
 threat: unknown
 updated: 2026-11-16
 ---
 
-# PEPE [PEPE]
+# Pepemos Trading Company [PEPE]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 1.
+Pilots of it in our space in the last 24 hours: 4.
 
 ## Identity
 
 | Field | Value | Source |
 |---|---|---|
-| Leader | not on record | Daily feed, factions |
-| Members | not on record | Daily feed, factions |
-| Allies | not on record | Daily feed, factions |
-| Enemies | not on record | Daily feed, factions |
-| At war with | not on record | Daily feed, factions |
+| Leader | Mimic | Daily feed, factions |
+| Members | 12 | Daily feed, factions |
+| Allies | none | Daily feed, factions |
+| Enemies | none | Daily feed, factions |
+| At war with | none | Daily feed, factions |
 | Pilots carrying the tag on the public event stream | 11 | Public event stream |
 
 ## Bases
@@ -38,7 +38,10 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| MimicVoid | Node Alpha (`node_alpha`) | 0 | threshold |
+| Mimic | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicEcho | Nexus Prime (`nexus_prime`) | 0 | threshold |
+| MimicSol | Nexus Prime (`nexus_prime`) | 0 | theoria |
+| MimicVoid | Nexus Prime (`nexus_prime`) | 0 | threshold |
 
 ## Standing History
 

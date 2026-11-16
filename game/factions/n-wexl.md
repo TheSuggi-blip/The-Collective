@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 1.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 134 | Public event stream |
+| Pilots carrying the tag on the public event stream | 132 | Public event stream |
 
 ## Bases
 
@@ -38,7 +38,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Wexler KGU-1N | Pherkad (`pherkad`) | 0 | crimson_devastator |
+| Wexler Q75-M5 | Synchrony (`synchrony`) | 0 | cobble |
 
 ## Standing History
 

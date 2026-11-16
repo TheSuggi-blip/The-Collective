@@ -9,7 +9,7 @@ faction: Rise and Fall of Goldcrest Moon
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-15
+updated: 2026-11-16
 ---
 
 # Rise and Fall of Goldcrest Moon [MOON]
@@ -22,7 +22,7 @@ Pilots of it in our space in the last 24 hours: 0.
 | Field | Value | Source |
 |---|---|---|
 | Leader | Goldcrest Moon | Daily feed, factions |
-| Members | 16 | Daily feed, factions |
+| Members | 17 | Daily feed, factions |
 | Allies | BEIN, BUSY, DEAD | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |

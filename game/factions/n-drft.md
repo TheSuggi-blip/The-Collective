@@ -38,7 +38,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| James Mcchriston | Node Beta (`node_beta`) | 0 | junk_convoy |
+| Colleen Brown | Node Alpha (`node_alpha`) | 0 | losers_weepers |
 
 ## Standing History
 
