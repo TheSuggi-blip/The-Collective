@@ -2,11 +2,11 @@
  "id": "mine-wolf-1061-frozen-drift",
  "kind": "mine",
  "title": "Wolf 1061 Frozen Drift: water_ice, nitrogen_ice, deuterium_ice, methane_ice; sold at Node Alpha Processing Station",
- "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 2926 cr per ship-hour, not a measurement. A test: one ship. Estimate of 2026-11-15 23:10 UTC from: {\"a_load\": [\"water_ice 27 of 27 units for 694 cr (depth at the best price)\", \"deuterium_ice 6 of 8 units for 1248 cr (depth at the best price)\", \"methane_ice 7 of 7 units for 276 cr (depth at the best price)\"], \"field\": \"wolf_1061:wolf_1061_frozen_drift\", \"jumps\": 3, \"left\": {\"deuterium_ice\": 4752, \"methane_ice\": 4000, \"nitrogen_ice\": 50000, \"water_ice\": 21518}, \"richness\": {\"deuterium_ice\": 14, \"methane_ice\": 13, \"n. Uncertain: deuterium_ice: the bids take 6 of 8 units a load; deuterium_ice: the bids take 6 of the 16 units an hour brings; lawless space: no police at wolf_1061; needs the module ice_harvester_i (base value 1000 cr), not the mining laser; the rate is measured with the laser on ore. In no plan: its Admiral adds it.",
+ "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 2926 cr per ship-hour, not a measurement. A test: one ship. Estimate of 2026-11-15 23:10 UTC from: {\"a_load\": [\"water_ice 27 of 27 units for 694 cr (depth at the best price)\", \"deuterium_ice 6 of 8 units for 1248 cr (depth at the best price)\", \"methane_ice 7 of 7 units for 276 cr (depth at the best price)\"], \"field\": \"wolf_1061:wolf_1061_frozen_drift\", \"jumps\": 3, \"left\": {\"deuterium_ice\": 4752, \"methane_ice\": 4000, \"nitrogen_ice\": 50000, \"water_ice\": 21518}, \"richness\": {\"deuterium_ice\": 14, \"methane_ice\": 13, \"n. Uncertain: deuterium_ice: the bids take 6 of 8 units a load; deuterium_ice: the bids take 6 of the 16 units an hour brings; lawless space: no police at wolf_1061; needs the module ice_harvester_i (base value 1000 cr), not the mining laser; the rate is measured with the laser on ore. In no plan: its Admiral adds it. 2026-11-16 00:30 UTC, Zero (orders.log ENT-007, block ZERO): max_ships 1 -> 2 on its first RESULT line +4,644 cr in 66.7 min (275 units, 162 water ice for 4,536, 15 methane ice for 540); water ice 21,518 left at 21:50 UTC; Node Alpha bid 28 x 11,963 at the best price (00:27 UTC).",
  "belt": "wolf_1061:wolf_1061_frozen_drift",
  "station": "node_alpha:node_alpha_processing_station:node_alpha_processing_station",
  "minutes": 60,
- "max_ships": 1,
+ "max_ships": 2,
  "sell": [
   {
    "item": "water_ice",
@@ -24,5 +24,12 @@
  "requires": {
   "module": "ice_harvester_i",
   "empty_hold": true
+ },
+ "measured": {
+  "date": "2026-11-16",
+  "runs": 1,
+  "minutes": 67,
+  "credits_per_run": 4640,
+  "cph_per_ship": 4180
  }
 }

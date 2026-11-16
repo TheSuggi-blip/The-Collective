@@ -29,12 +29,12 @@ Kept by Unity. Routes: 22.
 | 8 | [voidborn-first-hunt-nexus](voidborn-first-hunt-nexus.json) | Once per Pilot | home space | once per pilot, up to 1 ships | TBD |
 | 9 | [voidborn-first-hunt-gsc](voidborn-first-hunt-gsc.json) | Once per Pilot | home space | once per pilot, up to 1 ships | TBD |
 | 10 | [voidborn-first-hunt-acubens](voidborn-first-hunt-acubens.json) | Once per Pilot | home space | once per pilot, up to 1 ships | TBD |
-| 11 | [mine-node-beta-frozen-drift](mine-node-beta-frozen-drift.json) | Tests | home space | up to 1 ships, needs ice_harvester_i | TBD |
-| 12 | [mine-ruchbah-ice-belt](mine-ruchbah-ice-belt.json) | Tests | beyond the border, 4 jumps | up to 1 ships, needs ice_harvester_i, empty hold | TBD |
-| 13 | [mine-achernar-frost-ring](mine-achernar-frost-ring.json) | Tests | beyond the border, 4 jumps | up to 1 ships, needs ice_harvester_i, empty hold | TBD |
-| 14 | [mine-wolf-1061-frozen-drift](mine-wolf-1061-frozen-drift.json) | Tests | beyond the border, 4 jumps | up to 1 ships, needs ice_harvester_i, empty hold | TBD |
+| 11 | [mine-node-beta-frozen-drift](mine-node-beta-frozen-drift.json) | Paying Routes | home space | up to 1 ships, needs ice_harvester_i | 7,100 |
+| 12 | [mine-ruchbah-ice-belt](mine-ruchbah-ice-belt.json) | Paying Routes | beyond the border, 4 jumps | up to 3 ships, needs ice_harvester_i, empty hold | 7,270 |
+| 13 | [mine-achernar-frost-ring](mine-achernar-frost-ring.json) | Paying Routes | beyond the border, 4 jumps | up to 3 ships, needs ice_harvester_i, empty hold | 6,200 |
+| 14 | [mine-wolf-1061-frozen-drift](mine-wolf-1061-frozen-drift.json) | Paying Routes | beyond the border, 4 jumps | up to 2 ships, needs ice_harvester_i, empty hold | 4,180 |
 | 15 | [mine-keid-ice-shelf](mine-keid-ice-shelf.json) | Tests | beyond the border, 5 jumps | up to 1 ships, needs ice_harvester_i, empty hold | TBD |
-| 16 | [mine-cryogenic-reserve](mine-cryogenic-reserve.json) | Tests | home space | up to 1 ships, needs ice_harvester_i | TBD |
+| 16 | [mine-cryogenic-reserve](mine-cryogenic-reserve.json) | Measured at a Loss | home space | up to 1 ships, needs ice_harvester_i | -340 |
 | 17 | [mine-alnair-ice-fields](mine-alnair-ice-fields.json) | Tests | beyond the border, 5 jumps | up to 1 ships, needs ice_harvester_i, empty hold | TBD |
 | 18 | [mine-gsc-0041-frost-ring](mine-gsc-0041-frost-ring.json) | Tests | beyond the border, 4 jumps | up to 1 ships, needs ice_harvester_i, empty hold | TBD |
 | 19 | [mine-antares-ice-fields](mine-antares-ice-fields.json) | Tests | beyond the border, 5 jumps | up to 1 ships, needs ice_harvester_i, empty hold | TBD |
@@ -119,17 +119,17 @@ Kept by Zero. Routes: 24.
 | 6 | [voidborn-first-hunt-nexus](voidborn-first-hunt-nexus.json) | Once per Pilot | home space | once per pilot, up to 1 ships | TBD |
 | 7 | [voidborn-first-hunt-gsc](voidborn-first-hunt-gsc.json) | Once per Pilot | home space | once per pilot, up to 1 ships | TBD |
 | 8 | [voidborn-first-hunt-acubens](voidborn-first-hunt-acubens.json) | Once per Pilot | home space | once per pilot, up to 1 ships | TBD |
-| 9 | [fit-ice-harvester](fit-ice-harvester.json) | Fitting | home space | once per pilot, up to 1 ships, 12 pilots in all, without ice_harvester_i, from 6,000 cr | TBD |
-| 10 | [fit-gas-harvester](fit-gas-harvester.json) | Fitting | home space | once per pilot, up to 1 ships, 1 pilots in all, needs mining_laser_i, without ice_harvester_i, from 6,000 cr | TBD |
-| 11 | [mine-wolf-1061-vent](mine-wolf-1061-vent.json) | Tests | beyond the border, 4 jumps | up to 1 ships, needs nitrogen_vent, empty hold | TBD |
-| 12 | [mine-ruchbah-ice-belt](mine-ruchbah-ice-belt.json) | Tests | beyond the border, 4 jumps | up to 1 ships, needs ice_harvester_i, empty hold | TBD |
-| 13 | [mine-achernar-frost-ring](mine-achernar-frost-ring.json) | Tests | beyond the border, 4 jumps | up to 1 ships, needs ice_harvester_i, empty hold | TBD |
-| 14 | [mine-cryogenic-reserve](mine-cryogenic-reserve.json) | Tests | home space | up to 1 ships, needs ice_harvester_i | TBD |
+| 9 | [fit-ice-harvester](fit-ice-harvester.json) | Fitting | home space | once per pilot, up to 1 ships, 15 pilots in all, without ice_harvester_i, from 6,000 cr | one-time |
+| 10 | [fit-gas-harvester](fit-gas-harvester.json) | Fitting | home space | once per pilot, up to 1 ships, 1 pilots in all, needs mining_laser_i, without ice_harvester_i, from 6,000 cr | one-time |
+| 11 | [mine-wolf-1061-vent](mine-wolf-1061-vent.json) | Paying Routes | beyond the border, 4 jumps | up to 1 ships, needs nitrogen_vent, empty hold | 7,330 |
+| 12 | [mine-ruchbah-ice-belt](mine-ruchbah-ice-belt.json) | Paying Routes | beyond the border, 4 jumps | up to 3 ships, needs ice_harvester_i, empty hold | 7,270 |
+| 13 | [mine-achernar-frost-ring](mine-achernar-frost-ring.json) | Paying Routes | beyond the border, 4 jumps | up to 3 ships, needs ice_harvester_i, empty hold | 6,200 |
+| 14 | [mine-cryogenic-reserve](mine-cryogenic-reserve.json) | Measured at a Loss | home space | up to 1 ships, needs ice_harvester_i | -340 |
 | 15 | [mine-keid-ice-shelf](mine-keid-ice-shelf.json) | Tests | beyond the border, 5 jumps | up to 1 ships, needs ice_harvester_i, empty hold | TBD |
 | 16 | [mine-intercrus-ice-fields](mine-intercrus-ice-fields.json) | Tests | beyond the border, 7 jumps | up to 1 ships, needs ice_harvester_i, empty hold | TBD |
-| 17 | [mine-wolf-1061-frozen-drift](mine-wolf-1061-frozen-drift.json) | Tests | beyond the border, 4 jumps | up to 1 ships, needs ice_harvester_i, empty hold | TBD |
+| 17 | [mine-wolf-1061-frozen-drift](mine-wolf-1061-frozen-drift.json) | Paying Routes | beyond the border, 4 jumps | up to 2 ships, needs ice_harvester_i, empty hold | 4,180 |
 | 18 | [mine-alnair-ice-fields](mine-alnair-ice-fields.json) | Tests | beyond the border, 5 jumps | up to 1 ships, needs ice_harvester_i, empty hold | TBD |
-| 19 | [mine-node-beta-frozen-drift](mine-node-beta-frozen-drift.json) | Tests | home space | up to 1 ships, needs ice_harvester_i | TBD |
+| 19 | [mine-node-beta-frozen-drift](mine-node-beta-frozen-drift.json) | Paying Routes | home space | up to 1 ships, needs ice_harvester_i | 7,100 |
 | 20 | [mine-gsc-0041-frost-ring](mine-gsc-0041-frost-ring.json) | Tests | beyond the border, 4 jumps | up to 1 ships, needs ice_harvester_i, empty hold | TBD |
 | 21 | [mine-antares-ice-fields](mine-antares-ice-fields.json) | Tests | beyond the border, 5 jumps | up to 1 ships, needs ice_harvester_i, empty hold | TBD |
 | 22 | [mine-gsc-0050-gas-plume](mine-gsc-0050-gas-plume.json) | Tests | beyond the border, 3 jumps | up to 1 ships, needs gas_harvester_i, empty hold | TBD |
@@ -191,12 +191,12 @@ Kept by Unity. Routes: 23.
 | 9 | [voidborn-first-hunt-gsc](voidborn-first-hunt-gsc.json) | Once per Pilot | home space | once per pilot, up to 1 ships | TBD |
 | 10 | [voidborn-first-hunt-acubens](voidborn-first-hunt-acubens.json) | Once per Pilot | home space | once per pilot, up to 1 ships | TBD |
 | 11 | [fit-ice-harvester-guard](fit-ice-harvester-guard.json) | Fitting | home space | once per pilot, up to 2 ships, 4 pilots in all, without ice_harvester_i, from 6,000 cr | TBD |
-| 12 | [mine-node-beta-frozen-drift](mine-node-beta-frozen-drift.json) | Tests | home space | up to 1 ships, needs ice_harvester_i | TBD |
-| 13 | [mine-ruchbah-ice-belt](mine-ruchbah-ice-belt.json) | Tests | beyond the border, 4 jumps | up to 1 ships, needs ice_harvester_i, empty hold | TBD |
-| 14 | [mine-achernar-frost-ring](mine-achernar-frost-ring.json) | Tests | beyond the border, 4 jumps | up to 1 ships, needs ice_harvester_i, empty hold | TBD |
-| 15 | [mine-wolf-1061-frozen-drift](mine-wolf-1061-frozen-drift.json) | Tests | beyond the border, 4 jumps | up to 1 ships, needs ice_harvester_i, empty hold | TBD |
+| 12 | [mine-node-beta-frozen-drift](mine-node-beta-frozen-drift.json) | Paying Routes | home space | up to 1 ships, needs ice_harvester_i | 7,100 |
+| 13 | [mine-ruchbah-ice-belt](mine-ruchbah-ice-belt.json) | Paying Routes | beyond the border, 4 jumps | up to 3 ships, needs ice_harvester_i, empty hold | 7,270 |
+| 14 | [mine-achernar-frost-ring](mine-achernar-frost-ring.json) | Paying Routes | beyond the border, 4 jumps | up to 3 ships, needs ice_harvester_i, empty hold | 6,200 |
+| 15 | [mine-wolf-1061-frozen-drift](mine-wolf-1061-frozen-drift.json) | Paying Routes | beyond the border, 4 jumps | up to 2 ships, needs ice_harvester_i, empty hold | 4,180 |
 | 16 | [mine-keid-ice-shelf](mine-keid-ice-shelf.json) | Tests | beyond the border, 5 jumps | up to 1 ships, needs ice_harvester_i, empty hold | TBD |
-| 17 | [mine-cryogenic-reserve](mine-cryogenic-reserve.json) | Tests | home space | up to 1 ships, needs ice_harvester_i | TBD |
+| 17 | [mine-cryogenic-reserve](mine-cryogenic-reserve.json) | Measured at a Loss | home space | up to 1 ships, needs ice_harvester_i | -340 |
 | 18 | [mine-alnair-ice-fields](mine-alnair-ice-fields.json) | Tests | beyond the border, 5 jumps | up to 1 ships, needs ice_harvester_i, empty hold | TBD |
 | 19 | [mine-gsc-0041-frost-ring](mine-gsc-0041-frost-ring.json) | Tests | beyond the border, 4 jumps | up to 1 ships, needs ice_harvester_i, empty hold | TBD |
 | 20 | [mine-antares-ice-fields](mine-antares-ice-fields.json) | Tests | beyond the border, 5 jumps | up to 1 ships, needs ice_harvester_i, empty hold | TBD |

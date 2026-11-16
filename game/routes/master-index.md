@@ -21,11 +21,11 @@ name below is a link into one of the sub-indexes of this folder.
 | Group | What it holds | Routes | Home space | Beyond the border | Best measured |
 |---|---|---|---|---|---|
 | [Once per Pilot](index.md#once-per-pilot) | Missions and rewards the game pays once per pilot: a new pilot's first work, and seed money. | 12 | 10 | 2 | voidborn-missions-1: 6,430 cr a run |
-| [Paying Routes](index.md#paying-routes) | Work that repeats and whose runs measured above zero. | 3 | 2 | 1 | hunt-gsc-veil-ray: 3,620 cr per ship-hour |
-| [Tests](index.md#tests) | Work that repeats and has no measured figure yet: one ship until its first RESULT line is read. | 17 | 4 | 13 | not measured yet |
-| [Fitting](index.md#fitting) | A module bought and fitted: the tool a kind of work needs. | 3 | 3 | 0 | not measured yet |
+| [Paying Routes](index.md#paying-routes) | Work that repeats and whose runs measured above zero. | 8 | 3 | 5 | mine-wolf-1061-vent: 7,330 cr per ship-hour |
+| [Tests](index.md#tests) | Work that repeats and has no measured figure yet: one ship until its first RESULT line is read. | 11 | 2 | 9 | not measured yet |
+| [Fitting](index.md#fitting) | A module bought and fitted: the tool a kind of work needs. | 3 | 3 | 0 | fit-gas-harvester: -19,520 cr per ship-hour |
 | [Reading and Waiting](index.md#reading-and-waiting) | The census and the park route: they earn nothing; they keep the picture fresh and a ship without work docked. | 3 | 2 | 1 | census-voidborn: -550 cr per ship-hour |
-| [Measured at a Loss](index.md#measured-at-a-loss) | Work that repeats and whose runs measured zero or below. | 8 | 6 | 2 | mine-bellatrix: 0 cr per ship-hour |
+| [Measured at a Loss](index.md#measured-at-a-loss) | Work that repeats and whose runs measured zero or below. | 9 | 7 | 2 | mine-bellatrix: 0 cr per ship-hour |
 | [Off](index.md#off) | Written down, not flown. | 7 | 7 | 0 | hunt-home-whale: 1,670 cr per ship-hour |
 | All | | 53 | 34 | 19 | |
 
