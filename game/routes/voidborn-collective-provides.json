@@ -67,8 +67,8 @@
   "date": "2026-11-16",
   "runs": 11,
   "minutes": 43,
-  "credits_per_run": 1280,
-  "cph_per_ship": 1940
+  "credits_per_run": 2010,
+  "cph_per_ship": 3040
  },
  "status": "off"
 }

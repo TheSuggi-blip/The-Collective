@@ -21,11 +21,11 @@ name below is a link into one of the sub-indexes of this folder.
 | Group | What it holds | Routes | Home space | Beyond the border | Best measured |
 |---|---|---|---|---|---|
 | [Once per Pilot](index.md#once-per-pilot) | Missions and rewards the game pays once per pilot: a new pilot's first work, and seed money. | 25 | 15 | 10 | voidborn-conductive-lattice: 9,110 cr a run |
-| [Paying Routes](index.md#paying-routes) | Work that repeats and whose runs measured above zero. | 32 | 5 | 27 | mine-ruchbah-ice-belt: 7,430 cr per ship-hour |
-| [Tests](index.md#tests) | Work that repeats and has no measured figure yet: one ship until its first RESULT line is read. | 26 | 16 | 10 | not measured yet |
-| [Fitting](index.md#fitting) | A module bought and fitted: the tool a kind of work needs. | 11 | 10 | 1 | voidborn-hardware-cargo: 6,060 cr per ship-hour |
+| [Paying Routes](index.md#paying-routes) | Work that repeats and whose runs measured above zero. | 39 | 8 | 31 | sell-curd-central-nexus: 302,820 cr per ship-hour |
+| [Tests](index.md#tests) | Work that repeats and has no measured figure yet: one ship until its first RESULT line is read. | 16 | 11 | 5 | not measured yet |
+| [Fitting](index.md#fitting) | A module bought and fitted: the tool a kind of work needs. | 11 | 10 | 1 | voidborn-hardware-cargo: 4,280 cr per ship-hour |
 | [Standing Work, Reading and Waiting](index.md#standing-work-reading-and-waiting) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 11 | 9 | 2 | mine-bellatrix: 0 cr per ship-hour |
-| [Measured at a Loss](index.md#measured-at-a-loss) | Work that repeats and whose runs measured zero or below. | 34 | 11 | 23 | hunt-denebola-fractured-prism-veil-ray: -10 cr per ship-hour |
+| [Measured at a Loss](index.md#measured-at-a-loss) | Work that repeats and whose runs measured zero or below. | 37 | 13 | 24 | hunt-denebola-fractured-prism-veil-ray: -10 cr per ship-hour |
 | [Off](index.md#off) | Written down, not flown. | 11 | 8 | 3 | voidborn-first-steps: 4,020 cr per ship-hour |
 | All | | 150 | 74 | 76 | |
 
