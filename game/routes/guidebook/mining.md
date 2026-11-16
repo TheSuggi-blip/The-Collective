@@ -36,7 +36,7 @@ over the last four hours (`hive.py tasks`).
 |---|---|---|---|---|
 | 1 | The missions that pay once (`voidborn-*`) | as their rewards stand | judged with the reward | Every new pilot flies them first |
 | 2 | `fit-ice-harvester` (Node Alpha), `-node-beta`, `-node-gamma`, `-synchrony`, `-experiment` | 1 at a time each, sized by the asks | money spent once, 1,449 to 1,471 cr a fit | Their asks at 1,413 cr are used up; they open again when an ask stands |
-| 3 | `fit-ice-harvester-lhs-1140` | 5 at a time, 19 pilots | money spent once, 687 to 700 cr a fit (4 runs) | Ironlight Crossroads, beyond the border: 18 asks at 638 cr left (`hive.py capacity`, 04:24 UTC) for the miners without a harvester |
+| 3 | `fit-ice-harvester-lhs-1140` | 5 at a time, 19 pilots | money spent once, 687 or 709 cr a fit (9 runs to 04:22 UTC) | Ironlight Crossroads, beyond the border: 18 asks at 638 cr left (`hive.py capacity`, 04:24 UTC) for the miners without a harvester |
 | 4 | `mine-wolf-1061-vent` | 1 | 6,830 (4 runs) | The miner with the Nitrogen Vent |
 | 5 | `mine-ruchbah-ice-belt` | 6 | 8,950 (16 runs) | Sold at The Experiment, one jump |
 | 6 | `mine-achernar-frost-ring` | 5 | 7,280 (11 runs) | Sold at The Experiment, one jump |
@@ -144,9 +144,9 @@ first.
 - Ice Harvester I: 1,413 cr at our stations plus 1% tax; a fit by route
   costs 1,449 to 1,460 cr with the fuel (four fit routes, started
   2026-11-16 03:15 UTC, 3.6 to 4.2 minutes each). At Ironlight Crossroads (LHS 1140,
-  beyond the border) the fit costs 687 to 700 cr with fuel and tax,
-  9 to 12 minutes from Node Beta (4 runs, `routes.py measure` 04:23
-  UTC): about 760 cr less a ship than at home. 18 asks at 638 cr stood
+  beyond the border) the fit costs 687 or 709 cr with fuel and tax,
+  8.7 to 12.4 minutes from Node Beta (9 runs to 04:22 UTC,
+  `data/routes/runs.jsonl`): about 760 cr less a ship than at home. 18 asks at 638 cr stood
   at 04:24 UTC.
 - Size a route that buys a module by the asks at its one station, one
   ship at a time where they are few (errors.log ENT-026). One route per
