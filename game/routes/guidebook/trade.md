@@ -24,7 +24,7 @@ at the end of every turn.
 ## Standing Plan
 
 What the traders fly between two turns: `game/routes/plans/trader.json`,
-as it stood at 2026-11-16 09:40 UTC. `hive.py standing` (the tool
+as it stood at 2026-11-16 09:50 UTC. `hive.py standing` (the tool
 `fleet`, view=standing) prints the same plan with every ship. Every
 figure is credits per ship-hour beside the scale of `hive.py tasks`
 (08:47 UTC: the best repeating route with two runs or more,
@@ -36,23 +36,25 @@ A mission that pays once is judged with its reward (orders F19).
 | 1 | voidborn-first-steps-board | 3 at a time, every plan that holds it | +883 to +922 cr once a run in 12 to 17.5 minutes (4 runs), about 3,000 to 4,600 once per ship-hour | Ten traders had not done First Steps in the Void at 09:40 UTC; it opens the voidborn mastery line. Acubens Belt carbon bounds it (section 3) |
 | 2 | voidborn-network-expansion | 20 | +1,398 to +1,450 cr once in 8 to 14 minutes (40 runs of the fleet), about 6,000 to 10,900 once per ship-hour | Every trader that has First Steps done |
 | 3 | voidborn-collective-provides | 2 | +2,188 cr once in 48 minutes (1 run), about 2,700 once per ship-hour | The next link; the nickel of one lawless reef bounds it |
-| 4 | voidborn-signal-fragments | 10 | +6,792 to +6,909 cr once in 14 to 26 minutes | Navigation 3 only: both traders that have it are done; stands for a trader that reaches it |
-| 5-11 | The older missions that pay once and the Node Beta chain | 0 | -- | Every trader has flown or booked them; they stay for a pilot born later |
-| 12 | mine-the-experiment-haze | 1, a trader with a Gas Harvester I | the route maker's estimate 1,638 per ship-hour, not measured | Test: hydrogen into the Node Beta bid of 33 cr (34 units at the best price, 08:30 UTC) |
-| 13 | census-frontier | up to 12 (Intel's route) | -620 measured: a reading cost | Open only when a frontier system is due |
-| 14 | park | the rest | 0 | A docked ship costs nothing |
+| 4 | voidborn-signal-protocol | 20 | +3,409 cr once in 14 minutes (1 run), about 14,600 once per ship-hour | The link after The Collective Provides |
+| 5 | voidborn-signal-fragments | 10 | +6,792 to +6,909 cr once in 14 to 26 minutes | Navigation 3 only: both traders that have it are done; stands for a trader that reaches it |
+| 6-12 | The older missions that pay once and the Node Beta chain | 0 | -- | Every trader has flown or booked them; they stay for a pilot born later |
+| 13 | mine-the-experiment-haze | 1, a trader with a Gas Harvester I | the route maker's estimate 1,638 per ship-hour, not measured | Test: hydrogen into the Node Beta bid of 33 cr (34 units at the best price, 08:30 UTC) |
+| 14 | census-frontier | up to 12 (Intel's route) | -620 measured: a reading cost | Open only when a frontier system is due |
+| 15 | park | the rest | 0 | A docked ship costs nothing |
 
 For the four hours after the turn of 08:30 UTC: the ten traders without
 First Steps fly the board route, then Network Expansion and The
-Collective Provides, about 4,500 cr once each after fuel; the ten that
-have them wait docked or read a frontier system. No trader route
+Collective Provides and The Signal Protocol, about 7,900 cr once each
+after fuel; the other ten fly the links of that line they have not
+flown, then wait docked or read a frontier system. No trader route
 repeats and pays: Trade's steady figure was -27 cr per ship-hour over
 all 20 ships in the four hours to 09:39 UTC (35,000 cr paid once
 apart), against the scale above.
 
 What changes it: the tree that The Collective Provides opens on the
-Central Nexus board (section 3): The Signal Protocol and the gas
-harvester mission under test this turn, the mining ones for Mining;
+Central Nexus board (section 7): the gas harvester and cargo expander
+missions to test, the mining ones for Mining;
 a repeating route only from a bid with depth, of which none stands
 between our stations (section 2), or `requires.bid` from the Fleet
 Admiral for the plasma import of section 7.
@@ -89,6 +91,8 @@ was flown the first time.
 | `voidborn-signal-fragments` (Signal Fragments, Researcher Null-Seven at Central Nexus) | 7,000 cr; exploration XP 60 | RESULT by hand: accepted at Central Nexus, Node Beta and Node Gamma recorded on docking, handed in at Central Nexus, +6,909 cr after 91 cr of fuel in 14.3 minutes | 2026-11-16 | Nothing handed out, nothing bought. Not offered to every pilot: the next six traders that flew it found it missing from the board ("not offered", -26 to -39 cr each, -221 cr in all, 05:07 to 05:18 UTC), and another pilot's board at 05:04 UTC lacked it. The condition is navigation 3: the Central Nexus board, read for each of 30 docked pilots at about 05:28 UTC, offered it to 4 of 4 with navigation 3 and to 0 of 25 with navigation 2, whatever their piloting or exploration. 46 pilots of the fleet have navigation 3 or more (05:31 UTC), two of them traders. The second trader with navigation 3, flown by hand from 05:52 UTC, was offered it: +6,883 cr in 18 minutes (06:09 UTC). Out of the plan at 05:13 UTC; since 07:00 UTC the route asks `requires.skills` navigation 3 (requests.log ENT-110), and it heads the trader plan again since 08:32 UTC with `max_ships` 10 (requests.log ENT-118, answered ENT-121): 12 runs of the fleet from 06:43 to 08:10 UTC paid +6,792 to +6,909 cr each in 14.3 to 26.1 minutes, none refused; 56 pilots with navigation 3 had not flown it at 08:27 UTC (Intel's count). Its next link, The Crimson Resonance (8,500 cr), docks at The Rampart Checkpoint and delivers 5 titanium alloy at Blood Forge, Crimson space 17 to 20 jumps out: not flown |
 | `voidborn-first-steps-board` (First Steps in the Void taken from the Central Nexus board) | 1,000 cr; voidborn mastery XP 15 | RESULT by hand: accepted at Central Nexus, 15 carbon ore mined at Acubens Belt in about 5 minutes, handed in at Central Nexus, +922 cr after fuel in 12 minutes | 2026-11-16 | The board offers it to every pilot that has not done it; `voidborn-first-steps` serves only a pilot that already holds it and counts any other pilot's run as done, so 87 pilots of the fleet never took it (data/fleet/onetime.json, 08:46 UTC). It opens Network Expansion. Acubens Belt read 76 carbon ore at 08:12 and 182 at 08:46 UTC with the test mining 15 there: `max_ships` 3. Since 08:59 UTC in the trader plan |
 | `voidborn-network-expansion` (Network Expansion, the link after First Steps) | 1,500 cr; voidborn mastery XP 25 | RESULT by hand: accepted at Central Nexus, the visit counted on docking at Node Alpha, handed in at Central Nexus, +1,450 cr after fuel in 8 minutes; four more traders by the route, +1,450 cr each in 8 minutes | 2026-11-16 | Offered (boards read at 08:34 UTC) to the 6 of 8 traders docked at Central Nexus with First Steps done, to neither of the two without it: the route asks `requires.booked` First Steps in the Void. 59 pilots of the fleet could fly it at 08:46 UTC, about 88,000 cr once; `max_ships` 20 (docks at our own stations); offered to every Admiral (queue.log ENT-091). Its next link: The Collective Provides |
+| `voidborn-collective-provides` (The Collective Provides, the link after Network Expansion) | 2,500 cr; voidborn mastery XP | RESULT by hand: hold stored at Central Nexus, accepted, 20 nickel ore mined at GSC-0049 Platinum-Group Reef (lawless, 5 jumps), handed in at Central Nexus, +2,188 cr after fuel in 48 minutes | 2026-11-16 | No home field holds nickel; the reef read 192 at 07:47 UTC. Its mix (nickel, platinum, rhodium, osmium, iridium) filled the hold with 14 nickel among 58 units, so the run went home to storage and back: two trips. The other ores have no bid above 2 cr at our stations (books of 09:05 UTC): stored. `requires.booked` Network Expansion, `max_ships` 2. Its hand-in opens eight missions of the same line (section 7) |
+| `voidborn-signal-protocol` (The Signal Protocol, after The Collective Provides) | 3,500 cr; voidborn mastery XP 25 | RESULT by hand: accepted at Central Nexus, the arrays recalibrated on docking at Node Beta and Node Gamma, handed in at Central Nexus, +3,409 cr after fuel in 14 minutes | 2026-11-16 | Nothing carried, nothing bought. `requires.booked` The Collective Provides, `max_ships` 20; offered to every Admiral (queue.log ENT-096) |
 | `voidborn-first-steps` (First Steps in the Void, for a pilot that holds it) | 1,000 cr | Logistics' route: 26 runs of the fleet, 810 cr a run in about 10 minutes (route file, measured) | 2026-11-16 | Six traders hold the mission (get_active_missions, 05:02 UTC): in the trader plan since 05:07 UTC, 2 ships at a time across all plans; Acubens Belt carbon ore bounds it (97 units at 04:46 UTC, 15 a pilot) |
 
 ## 4. Levelling
@@ -190,7 +194,10 @@ each answer read. A route's craft step is built from this
   smelt it into steel), Network Commerce Protocol (1,500, sell 5 carbon
   ore), Hardware Optimization: Cargo (1,500, acquire a cargo expander).
   Threat Neutralization Protocol asks for a pirate destroyed: not ours
-  (orders F2). The first two are under test by hand this turn.
+  (orders F2). The Signal Protocol paid (section 3); Atmospheric
+  Extraction read 0 of 1 after the accept on a ship that already
+  carried a gas harvester: a module owned before did not count (seen
+  once); whether a purchase after the accept counts is the next test.
 - Station Need missions on the Central Nexus board (all eight traders'
   boards, 08:34 UTC): 5 sol nacre for 8,625 cr, 14 void ichor for
   3,686, two of 10 void-charged ichor for 13,133 each. The fleet holds
