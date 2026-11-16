@@ -1,0 +1,24 @@
+{
+ "id": "mine-gsc-0016-emission-nebula",
+ "kind": "mine",
+ "title": "GSC-0016 Emission Nebula: hydrogen_gas, argon_gas, plasma_gas, xenon_gas, chlorine_gas; sold at Node Beta Industrial Station",
+ "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 992 cr per ship-hour, not a measurement. A test: one ship. Added as a test by fill.py on 2026-11-16 12:45 UTC (Mercury): one ship until its first RESULT line is read.",
+ "belt": "gsc_0016:gsc_0016_emission_nebula",
+ "station": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+ "minutes": 70,
+ "max_ships": 1,
+ "sell": [
+  {
+   "item": "argon_gas",
+   "min_price": 1
+  },
+  {
+   "item": "plasma_gas",
+   "min_price": 76
+  }
+ ],
+ "requires": {
+  "module": "gas_harvester_i",
+  "empty_hold": true
+ }
+}

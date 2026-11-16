@@ -250,7 +250,7 @@ Kept by Unity. Routes: 31.
 
 ## trader
 
-Kept by Mercury. Routes: 17.
+Kept by Mercury. Routes: 18.
 
 | # | Route | Group | Zone | Open to | Credits per ship-hour |
 |---|---|---|---|---|---|
@@ -269,8 +269,9 @@ Kept by Mercury. Routes: 17.
 | 13 | [voidborn-conductive-lattice](voidborn-conductive-lattice.json) | Once per Pilot | beyond the border, 6 jumps | once per pilot, up to 10 ships, 146 pilots in all, empty hold, from 13,000 cr | one-time |
 | 14 | [mine-the-experiment-haze](mine-the-experiment-haze.json) | Paying Routes | home space | up to 1 ships, needs gas_harvester_i, while node_beta_industrial_station bids 26 cr for hydrogen_gas | 2,330 |
 | 15 | [mine-the-experiment-haze-synchrony](mine-the-experiment-haze-synchrony.json) | Tests | home space | up to 1 ships, needs gas_harvester_i, while synchrony_hub bids 28 cr for hydrogen_gas | TBD |
-| 16 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -620 |
-| 17 | [park](park.json) | Reading and Waiting | home space | the park route | -670 |
+| 16 | [mine-gsc-0016-emission-nebula](mine-gsc-0016-emission-nebula.json) | Tests | beyond the border, 6 jumps | up to 1 ships, needs gas_harvester_i, empty hold | TBD |
+| 17 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -620 |
+| 18 | [park](park.json) | Reading and Waiting | home space | the park route | -670 |
 
 Planned:
 
