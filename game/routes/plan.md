@@ -93,29 +93,30 @@ Planned:
 
 ## hauler
 
-Kept by Apollo. Routes: 19.
+Kept by Apollo. Routes: 20.
 
 | # | Route | Group | Zone | Open to | Credits per ship-hour |
 |---|---|---|---|---|---|
-| 1 | [voidborn-network-expansion](voidborn-network-expansion.json) | Once per Pilot | home space | once per pilot, up to 10 ships, after the reward First Steps in the Void | TBD |
-| 2 | [voidborn-precedence](voidborn-precedence.json) | Once per Pilot | home space | once per pilot, up to 40 ships | one-time |
-| 3 | [voidborn-selling](voidborn-selling.json) | Once per Pilot | home space | once per pilot, up to 10 ships | one-time |
-| 4 | [voidborn-first-hunt-nexus](voidborn-first-hunt-nexus.json) | Once per Pilot | home space | once per pilot, up to 1 ships | one-time |
-| 5 | [voidborn-concurrent](voidborn-concurrent.json) | Once per Pilot | home space | once per pilot | one-time |
-| 6 | [voidborn-substrate](voidborn-substrate.json) | Once per Pilot | home space | once per pilot, from 3,000 cr | one-time |
-| 7 | [voidborn-missions-1](voidborn-missions-1.json) | Once per Pilot | home space | once per pilot, from 8,000 cr | one-time |
-| 8 | [voidborn-mining-missions](voidborn-mining-missions.json) | Once per Pilot | home space | once per pilot, up to 40 ships | one-time |
-| 9 | [voidborn-first-steps](voidborn-first-steps.json) | Once per Pilot | home space | once per pilot, up to 2 ships | one-time |
-| 10 | [hunt-dimming-pocket-veil-ray](hunt-dimming-pocket-veil-ray.json) | Paying Routes | beyond the border, 4 jumps | up to 1 ships, empty hold | 150 |
-| 11 | [fit-gas-harvester-hauler](fit-gas-harvester-hauler.json) | Fitting | home space | once per pilot, up to 1 ships, 1 pilots in all, needs mining_laser_i, without gas_harvester_i, from 6,000 cr | one-time |
-| 12 | [mine-achernar-gas-pocket](mine-achernar-gas-pocket.json) | Measured at a Loss | beyond the border, 4 jumps | up to 1 ships, needs gas_harvester_i, empty hold | -340 |
-| 13 | [voidborn-first-hunt-acubens](voidborn-first-hunt-acubens.json) | Once per Pilot | home space | once per pilot, up to 1 ships | one-time |
-| 14 | [voidborn-first-hunt-gsc](voidborn-first-hunt-gsc.json) | Once per Pilot | home space | once per pilot, up to 1 ships | one-time |
-| 15 | [voidborn-first-hunt-schedar](voidborn-first-hunt-schedar.json) | Once per Pilot | beyond the border, 2 jumps | once per pilot, up to 1 ships, empty hold | one-time |
-| 16 | [voidborn-first-hunt-achernar](voidborn-first-hunt-achernar.json) | Once per Pilot | beyond the border, 4 jumps | once per pilot, up to 1 ships, empty hold | one-time |
-| 17 | [voidborn-first-hunt-gsc-0031](voidborn-first-hunt-gsc-0031.json) | Once per Pilot | beyond the border, 5 jumps | once per pilot, up to 1 ships, empty hold | one-time |
-| 18 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -620 |
-| 19 | [park](park.json) | Reading and Waiting | home space | the park route | -670 |
+| 1 | [voidborn-signal-fragments](voidborn-signal-fragments.json) | Once per Pilot | home space | once per pilot, up to 10 ships, from navigation 3 | one-time |
+| 2 | [voidborn-network-expansion](voidborn-network-expansion.json) | Once per Pilot | home space | once per pilot, up to 10 ships, after the reward First Steps in the Void | TBD |
+| 3 | [voidborn-precedence](voidborn-precedence.json) | Once per Pilot | home space | once per pilot, up to 40 ships | one-time |
+| 4 | [voidborn-selling](voidborn-selling.json) | Once per Pilot | home space | once per pilot, up to 10 ships | one-time |
+| 5 | [voidborn-first-hunt-nexus](voidborn-first-hunt-nexus.json) | Once per Pilot | home space | once per pilot, up to 1 ships | one-time |
+| 6 | [voidborn-concurrent](voidborn-concurrent.json) | Once per Pilot | home space | once per pilot | one-time |
+| 7 | [voidborn-substrate](voidborn-substrate.json) | Once per Pilot | home space | once per pilot, from 3,000 cr | one-time |
+| 8 | [voidborn-missions-1](voidborn-missions-1.json) | Once per Pilot | home space | once per pilot, from 8,000 cr | one-time |
+| 9 | [voidborn-mining-missions](voidborn-mining-missions.json) | Once per Pilot | home space | once per pilot, up to 40 ships | one-time |
+| 10 | [voidborn-first-steps](voidborn-first-steps.json) | Once per Pilot | home space | once per pilot, up to 2 ships | one-time |
+| 11 | [hunt-dimming-pocket-veil-ray](hunt-dimming-pocket-veil-ray.json) | Paying Routes | beyond the border, 4 jumps | up to 1 ships, empty hold | 150 |
+| 12 | [fit-gas-harvester-hauler](fit-gas-harvester-hauler.json) | Fitting | home space | once per pilot, up to 1 ships, 1 pilots in all, needs mining_laser_i, without gas_harvester_i, from 6,000 cr | one-time |
+| 13 | [mine-achernar-gas-pocket](mine-achernar-gas-pocket.json) | Measured at a Loss | beyond the border, 4 jumps | up to 1 ships, needs gas_harvester_i, empty hold | -340 |
+| 14 | [voidborn-first-hunt-acubens](voidborn-first-hunt-acubens.json) | Once per Pilot | home space | once per pilot, up to 1 ships | one-time |
+| 15 | [voidborn-first-hunt-gsc](voidborn-first-hunt-gsc.json) | Once per Pilot | home space | once per pilot, up to 1 ships | one-time |
+| 16 | [voidborn-first-hunt-schedar](voidborn-first-hunt-schedar.json) | Once per Pilot | beyond the border, 2 jumps | once per pilot, up to 1 ships, empty hold | one-time |
+| 17 | [voidborn-first-hunt-achernar](voidborn-first-hunt-achernar.json) | Once per Pilot | beyond the border, 4 jumps | once per pilot, up to 1 ships, empty hold | one-time |
+| 18 | [voidborn-first-hunt-gsc-0031](voidborn-first-hunt-gsc-0031.json) | Once per Pilot | beyond the border, 5 jumps | once per pilot, up to 1 ships, empty hold | one-time |
+| 19 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -620 |
+| 20 | [park](park.json) | Reading and Waiting | home space | the park route | -670 |
 
 Planned:
 
