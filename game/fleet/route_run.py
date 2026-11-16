@@ -40,6 +40,7 @@ import re
 import subprocess
 import sys
 import time
+import traceback
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -222,6 +223,44 @@ done, onetime, notes, reached = [], [0], [], 0
 first = int(sys.argv[sys.argv.index('--from') + 1]) - 1 if '--from' in sys.argv else 0
 order('circuit ' + ROUTE['id'])
 atexit.register(order_done)
+CRASH, FINISHED = [], []
+
+
+def crashed(kind, error, trace):
+    """An exception that ends the run is kept for the run's row, then printed as Python prints it."""
+    line = traceback.extract_tb(trace)[-1].lineno if trace else 0
+    CRASH.append(f'crashed: {kind.__name__}: {" ".join(str(error).split())[:120]} (line {line})')
+    sys.__excepthook__(kind, error, trace)
+
+
+def finish():
+    """The run's row in data/routes/runs.jsonl and its RESULT line, written once: after the last stop, or on the way out
+    of a run that an exception ended. A run without a row is invisible to the record and to the loss stop."""
+    if FINISHED:
+        return
+    FINISHED.append(True)
+    notes.extend(CRASH)
+    try:
+        after = credits()
+    except Exception:                                 # the engine is away on the way out: the row is written all the same
+        after = 0
+    if not (before and after) and 'wallet not read' not in notes:      # a wallet is never 0: the engine did not answer at one end
+        notes.append('wallet not read')
+    minutes = (time.time() - started) / 60
+    row = {'route': ROUTE['id'], 'kind': ROUTE.get('kind'), 'pilot': pilot, 'started': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(started)),
+           'minutes': round(minutes, 1), 'stops': reached, 'of': len(ROUTE['stops']), 'credits_before': before, 'credits_after': after,
+           'delta': after - before if before and after else 0, 'one_time': onetime[0], 'handed_in': done, 'notes': notes}
+    runs = DATA / 'routes' / 'runs.jsonl'
+    runs.parent.mkdir(parents=True, exist_ok=True)
+    with open(runs, 'a', encoding='utf-8') as fh:
+        fcntl.flock(fh, fcntl.LOCK_EX)
+        fh.write(json.dumps(row, separators=(',', ':')) + '\n')
+    print(f'RESULT {pilot}: route {ROUTE["id"]}: {reached}/{len(ROUTE["stops"])} stops in {minutes:.0f} min | handed in {done} | credits {before} -> {after} '
+          f'({after - before:+d}; one-time {onetime[0]}) | {"; ".join(notes) or "no notes"}', flush=True)
+
+
+sys.excepthook = crashed
+atexit.register(finish)                              # after order_done, so it runs before it: the row first, then the order file goes
 for n, stop in enumerate(ROUTE['stops']):
     system, poi, base = stop['at'].split(':')
     if n < first:
@@ -337,11 +376,11 @@ for n, stop in enumerate(ROUTE['stops']):
                 say(f'{template}: not accepted, the hold lacks {short}')
                 notes.append(f'{template}: goods missing')
                 continue
-            offer = next((m for m in board if m.get('template_id') == template), None)
-            if offer is None:
+            posted = next((m for m in board if m.get('template_id') == template), None)   # never `offer`: that is the function the buy and fit steps call
+            if posted is None:
                 say(f'{template}: not on the board of {base}')
                 notes.append(f'{template} not offered')
-            elif offer.get('title') in have:
+            elif posted.get('title') in have:
                 say(f'{template}: already accepted')
             else:
                 ok, msg = goal('accept-mission', {'missionId': template}, tries=1)
@@ -412,17 +451,4 @@ for n, stop in enumerate(ROUTE['stops']):
             notes.append(f'hunt {hunt_poi}: objectives not done')
     if verbose:
         active()
-after = credits()
-if not (before and after) and 'wallet not read' not in notes:      # a wallet is never 0: the engine did not answer at one end
-    notes.append('wallet not read')
-minutes = (time.time() - started) / 60
-row = {'route': ROUTE['id'], 'kind': ROUTE.get('kind'), 'pilot': pilot, 'started': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(started)),
-       'minutes': round(minutes, 1), 'stops': reached, 'of': len(ROUTE['stops']), 'credits_before': before, 'credits_after': after,
-       'delta': after - before if before and after else 0, 'one_time': onetime[0], 'handed_in': done, 'notes': notes}
-runs = DATA / 'routes' / 'runs.jsonl'
-runs.parent.mkdir(parents=True, exist_ok=True)
-with open(runs, 'a', encoding='utf-8') as fh:
-    fcntl.flock(fh, fcntl.LOCK_EX)
-    fh.write(json.dumps(row, separators=(',', ':')) + '\n')
-print(f'RESULT {pilot}: route {ROUTE["id"]}: {reached}/{len(ROUTE["stops"])} stops in {minutes:.0f} min | handed in {done} | credits {before} -> {after} '
-      f'({after - before:+d}; one-time {onetime[0]}) | {"; ".join(notes) or "no notes"}', flush=True)
+finish()
