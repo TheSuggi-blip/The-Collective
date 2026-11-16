@@ -8,7 +8,7 @@ author: Unity
 # index.md -- The Fleet's Scripts
 
 Built by `python3 -B scripts/fleet-index.py` from the docstring of every script in this
-folder; never edited by hand. Scripts listed: 18.
+folder; never edited by hand. Scripts listed: 19.
 
 - Run a script from the repository root: `python3 -I -B game/fleet/<script> <arguments>`,
   the arguments as listed under "How to Call Each".
@@ -45,6 +45,7 @@ folder; never edited by hand. Scripts listed: 18.
 | `routemaker.py` | Find every way to earn that the fleet's own data shows, cost it, and write the route file for it. | Service |
 | `routes.py` | Check the route files, write their index, and attach what the runs measured. | By hand |
 | `sight.py` | What our ships see where they are: the pilots they meet, and a first read of a system nobody read. | Service |
+| `stash.py` | Store what a docked pilot carries in its own storage at that station, so that its hold is free for the next route. | By hand |
 
 ## How to Call Each
 
@@ -316,4 +317,15 @@ A service: it runs by itself and is never started a second time.
 sight.py              run forever (the service `sight`)
 sight.py --once       one pass
 --data <dir>          the unit's data folder (default /srv/collective/data)
+```
+
+### `stash.py`
+
+Store what a docked pilot carries in its own storage at that station, so that its hold
+is free for the next route.
+
+Run by hand.
+
+```
+stash.py <pilot> [<pilot> ...] [--dry-run]
 ```
