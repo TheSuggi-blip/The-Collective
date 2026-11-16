@@ -15,7 +15,7 @@ file; `planned` in it is what the Admiral means to do next. The roles at a glanc
 
 ## command
 
-Kept by Unity. Routes: 27.
+Kept by Unity. Routes: 26.
 
 | # | Route | Group | Zone | Open to | Credits per ship-hour |
 |---|---|---|---|---|---|
@@ -40,12 +40,11 @@ Kept by Unity. Routes: 27.
 | 19 | [mine-antares-ice-fields](mine-antares-ice-fields.json) | Paying Routes | beyond the border, 5 jumps | up to 1 ships, needs ice_harvester_i, empty hold | 2,700 |
 | 20 | [mine-intercrus-ice-fields](mine-intercrus-ice-fields.json) | Paying Routes | beyond the border, 7 jumps | up to 1 ships, needs ice_harvester_i, empty hold | 4,350 |
 | 21 | [mission-cracking-the-shell-central](mission-cracking-the-shell-central.json) | Once per Pilot | home space | once per pilot, up to 1 ships | TBD |
-| 22 | [trade-plasma-gas-784309214f105860a16a0c100a70eb14-node](trade-plasma-gas-784309214f105860a16a0c100a70eb14-node.json) | Tests | beyond the border, 6 jumps | up to 1 ships, from 3,915 cr | TBD |
-| 23 | [trade-hydrogen-gas-784309214f105860a16a0c100a70eb14-synchrony](trade-hydrogen-gas-784309214f105860a16a0c100a70eb14-synchrony.json) | Tests | beyond the border, 6 jumps | up to 1 ships, from 3,429 cr | TBD |
-| 24 | [trade-voidborn-neural-soma-central-node](trade-voidborn-neural-soma-central-node.json) | Tests | home space | up to 1 ships, from 4,254 cr | TBD |
-| 25 | [trade-voidborn-neural-soma-node-node](trade-voidborn-neural-soma-node-node.json) | Tests | home space | up to 1 ships, from 3,589 cr | TBD |
-| 26 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -600 |
-| 27 | [park](park.json) | Reading and Waiting | home space | the park route | -550 |
+| 22 | [trade-hydrogen-gas-784309214f105860a16a0c100a70eb14-synchrony](trade-hydrogen-gas-784309214f105860a16a0c100a70eb14-synchrony.json) | Tests | beyond the border, 6 jumps | up to 1 ships, from 3,429 cr | TBD |
+| 23 | [trade-voidborn-neural-soma-central-node](trade-voidborn-neural-soma-central-node.json) | Tests | home space | up to 1 ships, from 4,254 cr | TBD |
+| 24 | [trade-voidborn-neural-soma-node-node](trade-voidborn-neural-soma-node-node.json) | Tests | home space | up to 1 ships, from 3,589 cr | TBD |
+| 25 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -600 |
+| 26 | [park](park.json) | Reading and Waiting | home space | the park route | -550 |
 
 ## drone
 
