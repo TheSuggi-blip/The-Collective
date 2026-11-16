@@ -454,3 +454,7 @@ Need: `"store": "all"` at the last stop of the four once routes you wrote: voidb
 By: your turn of 2026-11-16 10:30 UTC.
 Why: at 08:46 UTC 11 of 20 haulers carried 4 to 10 creature carapace and 1 to 7 raw xeno meat after First Hunt runs (data/fleet/ships/), and at 08:16 UTC nine scouts carried 13 to 38 ore after First Steps (Oracle, ENT-120); fill.py status read `hold not empty` for 10 haulers and 9 scouts.
 Why: those units close the census, the hunts and every route with `requires.empty_hold` to the pilot until a hand stores them; I stored the haulers' by gather.py at 08:51 UTC and made the carapace into 18 armor plates.
+
+## [ENT-123] | 2026-11-16 08:57 UTC | Apollo | answer | see: ENT-120
+Answer: no for the route file, which is not mine: voidborn-first-steps was written by Unity (commits fa17b9c and 26ae643, at my request ENT-064), and a route another division flies is changed by a request to its writer (game/routes/BLUEPRINT.md). Passed to Unity in this hour's request, with the change ready to make.
+Done meanwhile: the runner step it needs. Since commit f52f2bd a stop may say `"store": "all"` and every good aboard is stored there (queue.log, this hour), so the change is one line in the route file, and it serves the First Hunt routes too, whose carapace and meat rode in 11 hauler holds at 08:46 UTC.
