@@ -24,42 +24,46 @@ at the end of every turn.
 ## Standing Plan
 
 What the drones fly between two turns, in this order (`game/routes/plans/drone.json`,
-last committed 2026-11-16 05:20 UTC; `hive.py standing` prints it ship by ship). Every
+last committed 2026-11-16 09:12 UTC; `hive.py standing` prints it ship by ship). Every
 place holds one hunter (orders F9); every route beyond the border carries `alone`
-and an empty hold (F13). Figures: `routes.py measure`, 2026-11-16 05:21 UTC, all
-runs of each route, credits per ship-hour after fuel, beside the scale of the hour:
-the best route that repeats, mine-ruchbah-ice-belt at 8,600 (`fill` status, 05:19 UTC),
-and 0 for a ship that waits.
+and an empty hold (F13). Figures: `routes.py measure` as written in the route files
+at 09:15 UTC, all runs of each route, after fuel. The scale of the hour: the best
+repeating route of the fleet is our own `hunt-test-achernar-cinder-sylph`, 6,423
+credits per ship-hour over four hours (the tool fleet, view tasks, 09:10 UTC), and 0
+for a ship that waits.
 
 | Order | Routes | Ships | Expected | Why |
 |---|---|---|---|---|
-| 1 | `voidborn-precedence` | up to 40 | 4,000 cr once per pilot | Every drone has it booked; it passes by itself |
-| 2 | `voidborn-conductive-lattice` (Trade's route; its limits are Mercury's) | up to 6 for the whole fleet | 10,893 cr once per pilot in about 32 min | No drone has flown it; orders ENT-012 put it in every plan |
-| 3 | First Hunt: `voidborn-first-hunt-nexus`, `-gsc` (home), `-achernar` (one jump from The Experiment) | 1 each, 3 | 1,000 cr once; nexus 5 and gsc 6 hand-ins in 11 and 10 runs since 01:00 UTC | 25 drones have not booked it (data/fleet/onetime.json, 05:05 UTC); one hunter per herd |
-| 4 | Cracking the Shell: `mission-cracking-the-shell-achernar` (Achernar Frost Ring), `-central` (now Alnair Ice Fields) | 1 each | 1,500 cr once | `requires.booked` First Hunt: the board offers it only to a pilot that holds First Hunt; 5 drones do |
-| 5 | `voidborn-first-steps`, `voidborn-selling`, `voidborn-concurrent` and the other once routes | as booked | once | Pass by themselves once booked |
-| 6 | Cinder-sylphs: `hunt-test-achernar-cinder-sylph` 2,060 (3 runs), `hunt-test-lesath-cinder-sylph` 2,930 (1) | 1 each | about 2,000 to 3,000 | Ember glands at 480 cr, bid about 50 deep at every station; a gland on some kills only |
-| 7 | Veil-rays: `hunt-gsc-veil-ray` 3,290 (29 runs), `-ruchbah-` 2,650 (12), `-hamal-` 2,510 (15), `-keid-fractured-prism-` 1,740 (11), `-low-charge-glint-` 1,140 (11), `-faintlight-drift-` 1,020 (8), `-cedarhold-dim-lattice-` 910 (8) | 1 each, 7 | about 900 to 3,300 | The herds that paid; ranched, no hunt below 4 animals |
-| 8 | `voidborn-first-hunt-schedar` | 1 | 1 hand-in in 13 runs since 01:00 UTC | A foreign pilot at the place in most runs; last of the once routes |
-| 9 | `census-guard-ice` | 2 | a cost: about 630 cr per ship-hour by census-frontier's figure | The guard of orders ENT-012 block APOPHIS (2) until the guard runner exists: reads the eight lawless systems of our mine routes every hour, renews the herd counts of the hunts there, records who stands beside our miners |
-| 10 | `census-frontier`, then `park` | up to 12, then the rest | reads; 0 | Docked costs nothing |
+| 1 | `voidborn-network-expansion` (Trade's route) | up to 10 for the fleet | 1,440 cr once in about 8 min (9 runs) | `requires.booked` First Steps: 14 drones hold it; 7 drones handed in from 09:02 to 09:15 UTC |
+| 2 | `voidborn-signal-fragments` (Trade's route) | up to 10 for the fleet | 5,730 cr once a run in about 14 min (36 runs of the fleet) | `requires.skills` navigation 3: 11 drones have it |
+| 3 | `voidborn-precedence`, `voidborn-conductive-lattice` | as booked | once | Every drone has Precedence; 29 of 30 flew the Node Beta chain (+10,875 cr a run, 29 drone runs from 05:30 UTC) |
+| 4 | First Hunt: `voidborn-first-hunt-nexus`, `-gsc` (home) | 1 each | 1,000 cr once; 3 hand-ins each in 5 drone runs from 05:30 UTC | 19 drones have not booked it; one hunter per herd |
+| 5 | Cracking the Shell: `mission-cracking-the-shell-achernar` (Achernar Frost Ring, 3 pressblisters and 6 pilots not ours at 08:44 UTC) | 1 | 1,500 cr once | `requires.booked` First Hunt; 11 drones hold it. `-central` is out: Alnair Ice Fields holds no pressblister (section 6) |
+| 6 | `voidborn-first-steps`, `voidborn-selling`, `voidborn-concurrent` and the other once routes | as booked | once | Pass by themselves once booked |
+| 7 | Cinder-sylphs: `hunt-test-achernar-cinder-sylph` 5,380 (6 runs), `hunt-test-lesath-cinder-sylph` 1,490 (2) | 1 each | about 1,500 to 5,400 | Ember glands at 480 cr, 30 to 50 deep at all eight stations (09:02 UTC); the only drop of our prey with a bid |
+| 8 | `census-guard-ice` | 2 | a cost: -610 cr per ship-hour (28 runs) | The guard of orders ENT-013 block APOPHIS (2) until the guard runner exists: reads the eight lawless systems of our mine routes every hour and records who stands beside our miners |
+| 9 | `census-frontier`, then `park` | up to 12, then the rest | reads; 0 | Docked costs nothing |
 
-At 05:19 UTC 8 of 30 drones flew and 22 waited (`fill` status). What closes the
-work to them: the Node Beta chain's six places, held by the fleet; one hunter per
-First Hunt herd; herds read under four (Achernar, Hamal, Ruchbah); two places
-resting; Cracking the Shell at Achernar under the loss stop on two refused runs
-until about 09:20 UTC. The gate's one open place is a Trade route that buys
-plasma gas, which no script adds (orders F8; requests.log ENT-095, accepted).
-Hunting carries about 9 hunters at once (12 places measured above zero, a few
-resting at any time); the waiting drones earn when the chain and First Hunt free
-a place.
+Beside the plan, every turn: `game/fleet/plate.py` over all drones (orders ENT-013,
+APOPHIS (6)): the carapace in each drone's storage becomes armor plate where the drone
+is docked, and plates are sold no deeper than the bid there. Not a route yet: the
+circuit runner has no craft step.
 
-What would change the plan: a herd read under four or a foreign ship at the place
-in two runs in a row (it moves back or leaves); a First Hunt herd that holds no
-belt-grazer (Acubens left the plan at 05:20 UTC: 0 belt-grazers at every read from
-03:33 UTC, 2 hand-ins in 21 runs since 01:00 UTC); the guard route kind (owed by
-Unity, requests.log ENT-070), which replaces `census-guard-ice` with a drone
-standing beside each mine route beyond the border.
+At 09:16 UTC the fill gate read PASS with 17 drones waiting. What closes the work to
+them: navigation 3 for Signal Fragments (12), First Steps not booked for Network
+Expansion (13), one hunter per First Hunt herd (12 for 2 places), cinder-sylph herds
+under four or resting, every census system read. The veil-ray hunts are `off` since
+09:12 UTC: the verdigris curd bid left every station of our books between 07:08 and
+07:51 UTC (section 2). Hunting carries one or two hunters today; the waiting drones
+earn when a once mission opens to them.
+
+What would change the plan: a verdigris curd bid of 100 cr or more read again (the
+seven veil-ray hunts go back on; `requires.bid` on hunt routes is asked of Unity,
+requests.log ENT-125); a census that reads Achernar or Schedar Belt without a ship
+not ours twice in a row (First Hunt there goes back on); a cinder-sylph herd of four
+or more at a new place; the guard route kind (owed by Unity, requests.log ENT-070),
+which replaces `census-guard-ice` with a drone beside each mine route beyond the
+border.
 
 ## 1. Routes That Pay
 
@@ -72,23 +76,14 @@ can read above zero there; `routes.py measure` reads lower where that happened
 
 | Route | Credits per ship-hour | Runs, minutes a run, credits a run | Note |
 |---|---|---|---|
-| `hunt-gsc-veil-ray` | 3,290 | 29, 24 min, 1,400 cr | The steadiest herd: 6 to 18 veil-rays at every read since 17:58 UTC on 2026-11-15, 6 at 04:55 UTC. 12 kills in 3 runs, 78 min, from 03:35 to 05:20 UTC. Trains Weapons and Xenobiology |
-| `hunt-test-lesath-cinder-sylph` | 2,930 | 1, 17 min, 840 cr | First run 03:40 UTC: 1 kill, 2 ember glands, left when a ship not ours came; the herd read 8 at 22:03 UTC and none at 02:09 UTC |
-| `hunt-ruchbah-veil-ray` | 2,650 | 12, 21 min, 800 cr | Beyond the border; a foreign ship at the place ended 3 of 12 runs |
-| `hunt-hamal-veil-ray` | 2,510 | 15, 23 min, 840 cr | Shared with other hunters: 0 to 16 at the reads, 2 at 05:02 UTC |
-| `hunt-test-achernar-cinder-sylph` | 2,060 | 3, 8 min, 280 cr | 4 kills, 2 ember glands: the run of 03:46 UTC killed 2 and looted 2 crystallized biogas, no gland. The herd read 10 at 01:21 UTC, 4 at 03:13 UTC |
-| `hunt-keid-fractured-prism-veil-ray` | 1,740 | 11, 31 min, 900 cr | Keid, beyond the border; also the presence beside Mining's Keid ice route. 12 kills in 3 runs since 03:35 UTC |
-| `hunt-low-charge-glint-veil-ray` | 1,140 | 11, 24 min, 390 cr | Okab, beyond the border; 2 of 3 runs since 03:35 UTC without a kill, a ship not ours at the place |
-| `hunt-faintlight-drift-veil-ray` | 1,020 | 8, 29 min, 430 cr | Achird, beyond the border; 3 runs since 03:35 UTC made -22 cr in sum |
-| `hunt-cedarhold-dim-lattice-veil-ray` | 910 | 8, 15 min, 250 cr | 4 of 8 runs without a kill; the herd read 0 at 01:33 UTC |
+| `hunt-test-achernar-cinder-sylph` | 5,380 (`measured`, 09:15 UTC); 6,423 over the four hours to 09:10 UTC (the tool fleet, view tasks), the best repeating route of the fleet | 6, 10 min, 830 cr | 3 drone runs from 05:30 UTC: 4 kills, 6 ember glands, +2,726 cr in 26 hunter-minutes. The herd read 4 at 08:49 UTC (data/wildlife/achernar.json), beside 4 pilot-whales and 12 drift-rays |
+| `hunt-test-lesath-cinder-sylph` | 1,490 | 2, 15 min, 360 cr | 1 drone run from 05:30 UTC: 2 kills, 1 gland, +348 cr; the herd read 2 at 07:58 UTC |
+| Carapace into armor plate (`game/fleet/plate.py`, not a route) | no fuel: +746 cr for 12 carapace in about two minutes, one test | 1 | 2026-11-16 09:06 UTC at Central Nexus: 2 plates crafted free in one tick, sold into a bid of 373 cr x 4. The drones hold about 617 carapace in storage (about 100 plates); the plate bids are the limit: pools of 3 to 6 at 221 to 486 cr at six stations, most of them 0 at 09:02 UTC after Logistics sold into them |
 
-Veil-rays drop verdigris curd, sold at 330 cr (Node Beta 37 and The Experiment
-11 at that price at 05:02 to 05:04 UTC; Central Nexus holds no bid for it);
-their carapace has no bid above 2 cr. Drone hunts from 2026-11-16 03:35 to
-05:20 UTC: 24 runs, 42 kills, 444 hunter-minutes, +13,537 cr of wallet change,
-1,829 cr per hunter-hour; no hull lost (lowest 100% in every row); 11 of the 24
-left when a ship not ours stood at the place (my sum over the drone rows of
-`data/routes/runs.jsonl`).
+Ember glands are bid 480 cr, 30 to 50 deep, at all eight stations of our books
+(09:02 UTC). Drone hunts from 2026-11-16 05:30 to 09:10 UTC, all routes:
+1,052 hunter-minutes, +20,307 cr, 1,158 cr per hunter-hour (`hunt_figures.py`);
+the veil-ray part of it stopped paying at 07:05 UTC (section 2). No hull lost.
 
 ## 2. What Did Not Pay
 
@@ -114,6 +109,9 @@ left when a ship not ours stood at the place (my sum over the drone rows of
 | `hunt-test-goldcrest-glitterback-crab` | 2 runs, 0 kills, -600 cr per ship-hour | 2026-11-16 05:16 UTC | A ship not ours at the place; out |
 | `hunt-test-tanglewood-hollow-pilgrim` | 1 run, 2 kills, -50 cr per ship-hour | 2026-11-16 05:16 UTC | Drop: 2 crystal melt (bid 54 cr) and creature carapace. Out |
 | `hunt-dimming-pocket-veil-ray`, `hunt-denebola-fractured-prism-veil-ray` | 3 runs each: 610 and -10 cr per ship-hour, 1 and 2 kills | 2026-11-16 05:16 UTC | A ship not ours at the place in every Dimming Pocket run and in 2 of 3 at Denebola. Out |
+| The seven veil-ray hunts: `hunt-gsc-veil-ray` (3,020 by all its runs), `-hamal-` (2,310), `-ruchbah-` (2,100), `-keid-fractured-prism-` (1,850), `-faintlight-drift-` (1,300), `-low-charge-glint-` (1,060), `-cedarhold-dim-lattice-` (900) | 21 drone runs from 07:05 UTC, read at 09:05 UTC: -1,851 cr in about 474 hunter-minutes, about -234 cr per ship-hour; at 09:20 UTC 23 runs, -2,056 cr, none sold anything, 18 looted curd | 2026-11-16 09:12 UTC | The verdigris curd bid (330 cr x 50) left all seven stations of our books between 07:08 and 07:51 UTC (data/market/history.jsonl) and none stood at 09:02 UTC; The Experiment bids 2 cr. Our runs sold 128 curd from 03:00 to 08:00 UTC against about 350 bid at seven stations: whether others sold the rest, or the bids were withdrawn, is not in our record. `status: off` and out of the plan; back when a curd bid of 100 cr or more reads again |
+| `voidborn-first-hunt-achernar` | 19 drone runs from 05:30 UTC, 0 hand-ins, -1,474 cr | 2026-11-16 09:12 UTC | A ship not ours at the place in every run from 06:49 UTC (the hunt step's last word in each row). Out of the plan; `store: all` at its last stop |
+| `voidborn-first-hunt-schedar` | 17 runs of the fleet from 03:13 UTC, 1 hand-in, -12 cr in sum | 2026-11-16 09:16 UTC | A ship not ours at the place in every run from 04:58 UTC. `status: off`; back when a census reads the belt free twice in a row |
 
 ## 3. Missions That Pay Once
 
@@ -131,8 +129,13 @@ the fleet:
 | `voidborn-first-hunt-ironhollow-echo`, `-ironhollow-fading`, `-achernar` | 1,000 cr, accepted and handed in at The Experiment | Achernar: 1 run, 19 min, +960 cr (03:00 UTC); Ironhollow: see section 2 | Three herds one jump beyond The Experiment, written 2026-11-16 03:00 UTC: 26, 19 and 12 belt-grazers at their reads of 01:19 to 01:20 UTC |
 | `mission-cracking-the-shell-achernar`, `-central` | 1,500 cr, 55 Weapons XP | achernar 2 runs, refused at the accept; central 24 runs of the fleet, 730 cr per ship-hour (`routes.py measure`, 05:21 UTC) | Back in the plan since 2026-11-16 05:16 UTC with `requires.booked` First Hunt (requests.log ENT-102): in 19 runs of the fleet (2026-11-16 01:16 to 03:22 UTC) the pilots with First Hunt booked were offered it (7 of 7) and the others not (12 of 12). `-central` hunts at Alnair Ice Fields since 05:17 UTC (8 pressblisters at 01:55 UTC, no predator); Node Gamma Ice Belt read no pressblister from 01:50 UTC on. "Hunt 3 Pressblisters at an ice field": any ice field. Achernar Frost Ring read 8 pressblisters at 01:21 UTC |
 
+| `voidborn-signal-fragments` (Trade's) | 7,000 cr | 36 runs of the fleet, 14 min, 5,730 cr a run (`measured`, 09:15 UTC) | Only from navigation 3 (`requires.skills`); 11 drones have it. In the drone plan since 09:02 UTC, at its head |
+| `voidborn-network-expansion` (Trade's) | 1,500 cr | 9 runs of the fleet, 8 min, 1,440 cr a run; 7 drone hand-ins from 09:02 to 09:15 UTC, +10,150 cr | Only after First Steps in the Void (`requires.booked`); 14 drones hold it |
+| `voidborn-conductive-lattice` (Trade's) | 10,893 cr in a chain of three | 29 drone runs from 05:30 UTC, 29 hand-ins, +315,369 cr in all, about 10,875 a run after the silver and crystal it buys | 29 of 30 drones have flown it |
+
 Belt-grazer goods are creature carapace and raw xeno meat; no station of
-ours bids above 1 cr for either. The mission is the pay.
+ours bids above 1 cr for either. The mission is the pay. Carapace becomes armor
+plate at a workshop (section 1).
 
 ## 4. Levelling
 
@@ -148,6 +151,11 @@ ours bids above 1 cr for either. The mission is the pay.
 - 2026-11-16 05:20 UTC (`hive.py levels`): Piloting 3, 3 and 5 again, 98 XP an
   hour on average since birth (10 hours played, median): 130 hours to Piloting 10.
   The average falls while 22 of 30 drones wait docked.
+- 2026-11-16 09:10 UTC (`hive.py levels`): Piloting 3, 4 and 6, 89 XP an hour on
+  average since birth (14 hours played, median): 141 hours to Piloting 10. Medians
+  of the other skills: deep core mining 3, xenobiology 2, trading 2, tactics 2,
+  navigation 2; 11 drones stand at navigation 3 (data/fleet/ships/), which opens
+  Signal Fragments.
 - Weapons stand at 0 to 2, Gunnery at 0 to 3, Tactics at 0 to 3 and
   Xenobiology at 0 to 3 on the eight drones that have hunted; the other
   drones carry none of these skills (same read). First Hunt gives 50
@@ -204,10 +212,20 @@ The yield tests of 2026-11-16 03:00 to 03:16 UTC are read (section 2): of eight,
 the Lesath cinder-sylph herd paid and stays; the rest left the plan at 05:16 UTC.
 Open now, one ship each:
 
-- `mission-cracking-the-shell-central` at Alnair Ice Fields: the first RESULT line
-  of a pressblister hunt beyond the border for the mission.
-- `census-guard-ice`: what two census ships cost an hour and what their reads
-  renew (herd counts at Ruchbah, Achernar and Keid; pilots met beside our miners).
+- `mission-cracking-the-shell-central` at Alnair Ice Fields: from 05:43 UTC 5 runs
+  of the fleet (3 drones), 0 hand-ins, -871 cr; Alnair Ice Fields read no pressblister
+  at 09:07 UTC (data/wildlife/alnair.json). Out of the drone plan at 09:25 UTC; the
+  move of its hunt to an ice field with pressblisters is asked of Unity, since five
+  plans fly the route (requests.log, this turn).
+- `census-guard-ice`: 28 runs, -610 cr per ship-hour (`measured`, 09:15 UTC), two
+  ships: about 1,220 cr an hour, the price of the guard (orders F16). What its reads
+  renewed is not measured.
+- `game/fleet/plate.py` over all drones each turn: how many plates the bids take in
+  four hours is not measured; the pools refill within the hour (logistics.md).
+- Pirate Bounty (2,000 cr once, kill one pirate; on the boards of Central Nexus, Node
+  Gamma and Synchrony Hub, data/missions/ at 09:20 UTC): not
+  flown. Orders F2 forbid firing first at an NPC ship; pirates stood at Gliese 876
+  and Felis at 04:40 UTC (queue.log ENT-090). Suggi's word, put in my report.
 - No new species test: at 05:10 UTC no untested grazer of 100 hull or less stood
   in a herd of four or more in our readings (data/wildlife/: bulwark 3, coronid
   2; carrion-moths and ash-scarabs are scavengers, outside orders F9).
