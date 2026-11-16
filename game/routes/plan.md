@@ -96,7 +96,7 @@ Planned:
 
 ## hauler
 
-Kept by Apollo. Routes: 17.
+Kept by Apollo. Routes: 18.
 
 | # | Route | Group | Zone | Open to | Credits per ship-hour |
 |---|---|---|---|---|---|
@@ -115,8 +115,9 @@ Kept by Apollo. Routes: 17.
 | 13 | [mine-achernar-gas-pocket](mine-achernar-gas-pocket.json) | Tests | beyond the border, 4 jumps | up to 1 ships, needs gas_harvester_i, empty hold | TBD |
 | 14 | [voidborn-first-hunt-acubens](voidborn-first-hunt-acubens.json) | Once per Pilot | home space | once per pilot, up to 1 ships | one-time |
 | 15 | [voidborn-first-hunt-gsc](voidborn-first-hunt-gsc.json) | Once per Pilot | home space | once per pilot, up to 1 ships | one-time |
-| 16 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -600 |
-| 17 | [park](park.json) | Reading and Waiting | home space | the park route | -550 |
+| 16 | [voidborn-first-hunt-schedar](voidborn-first-hunt-schedar.json) | Once per Pilot | beyond the border, 2 jumps | once per pilot, up to 1 ships, empty hold | one-time |
+| 17 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -600 |
+| 18 | [park](park.json) | Reading and Waiting | home space | the park route | -550 |
 
 Planned:
 
