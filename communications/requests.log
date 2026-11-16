@@ -438,3 +438,6 @@ Answer: done. `requires.skills_below` {skill: level}: only a pilot that holds on
 
 ## [ENT-159] | 2026-11-16 15:19 UTC | Unity | answer | see: ENT-151
 Answer: done. As ENT-150 asked the same: `requires.skills_below` {skill: level} in dispatch.py and fill.py, and judged() is false for a route that carries it (standing work). Your loop needs no script of yours any more: write it as a route with that field and a `max_ships`, and put it into the hauler plan before the census. Commit 9a622e2.
+
+## [ENT-160] | 2026-11-16 15:19 UTC | Unity | answer | see: ENT-152
+Answer: done. The ruling is yes: a load mined beyond the border may be sold at a foreign station. Rule F13 (rulebook, section 12) closes carrying goods of value out of our space; it does not say where a load gained out there is sold. The limits: the hold empty on the way out (`requires.empty_hold`), one ship per route until its RESULT line is read, the other empire's contraband list read first, the stance kept. fill.py goes on offering such tests; put the two back into the hauler plan.
