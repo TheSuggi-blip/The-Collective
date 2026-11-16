@@ -194,6 +194,23 @@ class WithdrawStepTests(unittest.TestCase):
         self.assertEqual(free(65, [{"item_id": "water_ice", "quantity": 7}]), 58)
         self.assertEqual(free(65, None), 0)
 
+    def test_withdraw_takes_no_more_units_than_their_size_fits_in_the_free_hold(self):
+        # 2026-11-16 13:28 UTC: a withdraw of 33 plasma gas into an empty hold of 65 was refused, "Need 66 but only 65
+        # available": plasma gas takes two units of space a piece (the storage view's `size`), and the step had counted
+        # the free hold as item units, so the stop sold nothing.
+        units = functions("withdraw_units")["withdraw_units"]
+        sell = {"item": "plasma_gas", "min_price": 90}
+        self.assertEqual(units({"item": "plasma_gas"}, 83, 65, sell, {"best_buy": 96, "best_buy_qty": 33}, 0, 2), 32)
+        self.assertEqual(units({"item": "plasma_gas"}, 83, 65, None, {}, 0, 2), 32)
+        self.assertEqual(units({"item": "plasma_gas"}, 83, 1, None, {}, 0, 2), 0)
+        self.assertEqual(units({"item": "water_ice"}, 5500, 65, None, {}, 0, 1), 65)
+        self.assertEqual(units({"item": "water_ice"}, 5500, 65, None, {}, 0), 65)
+
+    def test_the_withdraw_step_passes_the_size_the_storage_view_names(self):
+        source = (FLEET / "route_run.py").read_text(encoding="ascii")
+        self.assertIn("SIZES[", source)
+        self.assertIn("SIZES.get(want['item'], 1)", source)
+
     def test_the_withdraw_step_runs_after_the_book_is_read_and_before_the_sale(self):
         source = (FLEET / "route_run.py").read_text(encoding="ascii")
         book = source.index("book, board = save_station(base, system)")

@@ -211,12 +211,13 @@ def store_list(want, hold):
     return [item for item in (want or []) if hold.get(item)]
 
 
-def withdraw_units(want, stored, free, sell, row, aboard):
+def withdraw_units(want, stored, free, sell, row, aboard, size=1):
     """Units a stop's `withdraw` takes from the pilot's own storage into the hold: at most what is stored, what the free
-    hold takes and the want's `qty`. When the same stop sells the item, at most what the bid takes at its best price
+    hold takes at the item's `size` (plasma gas takes two units of space a piece: 33 asked into a free hold of 65 were
+    refused, 2026-11-16) and the want's `qty`. When the same stop sells the item, at most what the bid takes at its best price
     less what is aboard already, and nothing under the sale's `min_price`: nothing withdrawn stays in the hold to close
     the pilot's `empty_hold` routes. Storage is personal (requests.log ENT-117, 2026-11-16)."""
-    units = min(int(stored or 0), max(int(free or 0), 0), int(want.get('qty') or 10 ** 9))
+    units = min(int(stored or 0), max(int(free or 0), 0) // max(int(size or 1), 1), int(want.get('qty') or 10 ** 9))
     if sell is not None:
         bid = row.get('best_buy') or 0
         depth = row.get('best_buy_qty') if isinstance(row.get('best_buy_qty'), (int, float)) else 0
@@ -226,11 +227,17 @@ def withdraw_units(want, stored, free, sell, row, aboard):
     return max(units, 0)
 
 
+SIZES = {}                   # item -> units of hold space a piece, as the storage view names it (`size`)
+
+
 def stored(base):
-    """{item_id: units} of the pilot's own storage at the station where it is docked."""
+    """{item_id: units} of the pilot's own storage at the station where it is docked; each item's `size` goes to SIZES."""
     d = raw('view', {'station_id': base}, group='spacemolt_storage')
     sc = body(d) or (body(d['result']) if isinstance(d.get('result'), dict) else {})
     items = sc.get('items') or []
+    for i in items or []:
+        if isinstance(i, dict) and i.get('item_id'):
+            SIZES[i['item_id']] = int(i.get('size') or 1)
     return {i.get('item_id'): int(i.get('quantity') or 0) for i in items or [] if isinstance(i, dict) and i.get('item_id')}
 
 
@@ -388,7 +395,9 @@ for n, stop in enumerate(ROUTE['stops']):
     book, board = save_station(base, system)
     for want in stop.get('withdraw') or []:              # own storage -> hold: sold here into the bid, or carried on
         sale = next((s for s in stop.get('sell') or [] if s.get('item') == want['item']), None)
-        units = withdraw_units(want, stored(base).get(want['item'], 0), room(), sale, book.get(want['item']) or {}, cargo().get(want['item'], 0))
+        here = stored(base)
+        units = withdraw_units(want, here.get(want['item'], 0), room(), sale, book.get(want['item']) or {}, cargo().get(want['item'], 0),
+                               SIZES.get(want['item'], 1))
         if units:
             d = raw('withdraw', {'item_id': want['item'], 'quantity': units, 'target': 'self'}, group='spacemolt_storage')
             time.sleep(11)
