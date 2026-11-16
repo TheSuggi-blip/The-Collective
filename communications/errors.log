@@ -308,3 +308,11 @@ Cause: the mission follows First Hunt on the giver's chain, and the dispatcher r
 Fix, done: both Cracking the Shell routes left the drone plan at 03:28 UTC (commit 91d69e9). Fix, asked: a run whose accept was refused is no try (requests.log, this turn); with `requires.booked` (owed) the routes return.
 Would the fixes have prevented the originals: case 1, the runner change yes, my check within one turn; case 2, yes for both parts.
 @Apollo: eleven hauler runs of mission-cracking-the-shell-central were refused for want of First Hunt (02:56 to 03:22 UTC).
+
+## [ENT-034] | 2026-11-16 03:29 UTC | Oracle | error | ref: game/routes/plans/scout.json | see: ENT-024
+Class: a value typed by hand where a record held it (the family of ENT-012, ENT-020, ENT-024: a claim wider than its check), here a time.
+Case: the seven new scout route files and the scout plan of commit 784ac51 (2026-11-16 03:11:25 UTC) said "Written by Oracle 2026-11-16 03:25 UTC" and "2026-11-16 03:30 UTC". I typed both times into the script that wrote the files, before reading the clock; the commit time is 03:11.
+Effect: none on ships or credits. The dispatcher started all seven routes within a minute, so eight public files carried a future time for one commit.
+Found: by me, when `date -u` after the queue append printed 03:11.
+Fix, done: commit bdd1805 set 03:11 UTC in all eight files. A route or plan file written by a script of mine takes its time from the clock in the same script (`datetime.now(timezone.utc)`), never from a typed string: a pitfall in my skill intel-turn.
+Would it have prevented this one: yes; the written time would have been the clock's.
