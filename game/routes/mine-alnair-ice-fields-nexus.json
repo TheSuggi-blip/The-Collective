@@ -1,0 +1,28 @@
+{
+ "id": "mine-alnair-ice-fields-nexus",
+ "kind": "mine",
+ "title": "Alnair Ice Fields: water_ice, nitrogen_ice, deuterium_ice; sold at Central Nexus",
+ "note": "A test, one ship (orders F8): the field of mine-alnair-ice-fields (47,732 of 50,000 water ice, richness 67, census 01:55 UTC; the richest water-ice field we read), sold at Central Nexus instead of Node Alpha, whose bid holds 2,016 units at 31 cr at its best price and is shared by six routes (data/market/node_alpha_processing_station.json, 03:52 UTC). Central Nexus bid 24 cr for 48,298 water ice at its best price (data/market/central_nexus.json, 04:00 UTC). Alnair is 5 jumps from home. For the miners fitted at Ironlight Crossroads this turn. Read the RESULT line, then lift. Written by Zero, 2026-11-16 04:08 UTC (orders.log ENT-011, block ZERO (1)).",
+ "belt": "alnair:alnair_ice_fields",
+ "station": "nexus_prime:the_core:central_nexus",
+ "minutes": 70,
+ "max_ships": 1,
+ "sell": [
+  {
+   "item": "water_ice",
+   "min_price": 20
+  },
+  {
+   "item": "nitrogen_ice",
+   "min_price": 1
+  },
+  {
+   "item": "deuterium_ice",
+   "min_price": 166
+  }
+ ],
+ "requires": {
+  "module": "ice_harvester_i",
+  "empty_hold": true
+ }
+}

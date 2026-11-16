@@ -32,30 +32,26 @@
   "mine-antares-ice-fields",
   "mine-wolf-1061-frozen-drift-nexus",
   "mine-achernar-frost-ring-nexus",
+  "mine-alnair-ice-fields-nexus",
   "mine-gsc-0033-cryobelt",
   "mine-homam-cryobelt",
   "mine-tanglewood-frost-ring",
   "mine-gsc-0021-ice-fields",
-  "mission-cracking-the-shell-central",
   "census-frontier",
   "park"
  ],
  "planned": [
   {
-   "what": "Read the RESULT line of fit-ice-harvester-lhs-1140 (price, fuel, minutes against 1,427 cr at home); if it fits for less, max_pilots up to the asks that stand there, one ship at a time",
-   "when": "turn T10 (07:00 UTC)"
+   "what": "Read the RESULT lines of the Central Nexus tests (Wolf 1061 Frozen Drift, Achernar, Alnair) and lift each that pays as far as the Central Nexus bid carries (48,298 units at 24 cr at 04:00 UTC); the miners fitted at Ironlight Crossroads need about 18 places",
+   "when": "turn of 2026-11-16 08:00 UTC"
   },
   {
-   "what": "Lift the ice routes where their field and their station's bid carry more ships (fill status prints the share of the bid); an ice route that sells at Central Nexus (deepest water-ice ladder, 1,513 units an hour regained) once the routes at The Experiment and Node Alpha fill their bids",
-   "when": "turn T10"
+   "what": "Read the RESULT lines of the four ice tests that sell at Synchrony (GSC-0033, Homam, Tanglewood, GSC-0021) and of the gas test; drop what loses",
+   "when": "turn of 2026-11-16 08:00 UTC"
   },
   {
-   "what": "The vent: a second vent run at Wolf 1061, and a Nitrogen Vent for every ice miner only when one is on offer and the second run holds the 83% water share",
-   "when": "when a vent is on offer"
-  },
-  {
-   "what": "The gas test: one more run of mine-gsc-0050-gas-plume; off when its two runs lose in sum (the dispatcher's loss stop)",
-   "when": "turn T10"
+   "what": "Hand 30 silicon ore and 35 energy crystal from three miners' storage at Central Nexus to the Logistics hauler that makes harvesters (requests.log, answer to ENT-088)",
+   "when": "by 2026-11-16 08:00 UTC"
   }
  ]
 }
