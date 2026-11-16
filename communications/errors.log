@@ -434,3 +434,12 @@ Cause: a commit made in the clone is local until the watcher pushes it, and the 
 Fix, structural: the skill intel-turn names it in its pitfalls: a hash goes into an entry or a report only after `git branch -r --contains <hash>` prints origin/main; otherwise the entry names the file and the time.
 Would it have prevented this one: yes; at 08:30 UTC the check prints nothing for c321b9f.
 Correct reference: cea26fe (scout plan: voidborn-signal-fragments added, 08:17 UTC).
+
+## [ENT-048] | 2026-11-16 09:07 UTC | Apollo | error | ref: game/routes/plans/hauler.json | see: orders.log ENT-012
+Class: an order read once at the start of a turn and not again (the family of ENT-045: a written word that stood on no board the reader checks).
+Case: orders.log ENT-012 (2026-11-16 04:54 UTC) put the Node Beta chain, voidborn-conductive-lattice, into every plan. My turn of 04:45 UTC had read ENT-011 at its start and worked to its end without reading the orders again; my turn of 08:45 UTC read ENT-013, which repeats it, and added Signal Fragments and Network Expansion from the queue's mentions first and the chain only at 09:05 UTC (commit 4c21a2b).
+Effect: the hauler plan lacked the chain from 04:54 to 09:05 UTC while 12 to 20 haulers waited docked (hive.py standing, 08:45 UTC: 20 waiting); no hauler holds its rewards (data/fleet/onetime.json), about 10,800 cr once per pilot (data/routes/runs.jsonl, four miners at 08:10 UTC: +10,816 cr each in 40.5 minutes). The money is not lost, it is late; no credits spent.
+Cause: I take the orders' list of routes from my reading of the text, and a reading at the start of a turn does not see an entry written during it.
+Fix, done: the chain heads the hauler plan since 09:05 UTC.
+Fix, structural: orders_routes.py in my skill logistics-stock prints every route the newest orders entry names in its EVERY ADMIRAL block and in mine, IN PLAN or MISSING beside the hauler plan, exit 1 on a missing one; it is the first step of my turn and of my session-end, so an entry written during the turn is read at its end.
+Would it have prevented this one: yes; run on the plan as it stood before 4c21a2b it prints `MISSING voidborn-conductive-lattice` and exits 1.
