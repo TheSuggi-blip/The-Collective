@@ -107,7 +107,8 @@ def survey(root, data, now=None):
     routes = dispatch.load_routes(root)
     rows = dispatch.run_rows(data)
     state = {"now": now, "data": data, "rows": rows, "orders": dispatch.fresh_orders(data, now), "rest": dispatch.resting(routes, rows, now),
-             "booked": dispatch.booked(data), "loss": dispatch.losing(routes, rows, now)}
+             "booked": dispatch.booked(data), "loss": dispatch.losing(routes, rows, now),
+             "late": dispatch.lately_losing(routes, rows, now)}
     by_route = {}
     for row in rows:
         by_route.setdefault(row.get("route"), []).append(row)

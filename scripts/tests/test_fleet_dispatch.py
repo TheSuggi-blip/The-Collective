@@ -252,6 +252,25 @@ class PickTests(Tree):
         route, _argument = self.dispatch.pick(pilot, PLAN, routes, dict(self.state(), loss={"missions": (2, -600)}))
         self.assertEqual(route["id"], "rays")                                                    # the first route of the plan is closed: the next open one is taken
 
+    def test_a_repeating_route_whose_last_three_runs_each_lost_is_closed(self):
+        # the six-hour sum held the good runs from before a bid left (errors ENT-046; requests ENT-125)
+        routes = self.dispatch.load_routes(self.root)
+        run = lambda rid, ago, delta, once=0: {"route": rid, "pilot": "p", "minutes": 10, "credits_before": 9000, "credits_after": 9000 + delta, "one_time": once,
+                                               "started": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(self.now - ago))}
+        late = lambda *rows: self.dispatch.lately_losing(routes, list(rows), self.now)
+        good = [run("rays", 5 * 3600 - 60 * i, 3000) for i in range(5)]
+        bad = [run("rays", 3000, -90), run("rays", 2000, -80), run("rays", 1000, -70)]
+        self.assertEqual(self.dispatch.losing(routes, good + bad, self.now), {})                   # the six-hour sum still pays
+        self.assertEqual(late(*(good + bad)), {"rays": (3, -240)})
+        self.assertEqual(late(*(good + bad[:2])), {})                                             # two losing runs are no verdict
+        self.assertEqual(late(*(good + bad + [run("rays", 500, 40)])), {})                       # a newer run paid
+        self.assertEqual(late(*[dict(r, started=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(self.now - 7 * 3600 + i))) for i, r in enumerate(bad)]), {})
+        self.assertEqual(late(run("missions", 300, -50), run("missions", 200, -50), run("missions", 100, -50)), {})   # a once route: its reward is its pay
+        self.assertEqual(late(run("census", 300, -50), run("census", 200, -50), run("census", 100, -50)), {})        # a patrol is not judged
+        pilot = {"name": "drone-1", "credits": 20000, "modules": [], "docked": True}
+        state = dict(self.state(), late=late(*(good + bad)))
+        self.assertEqual(self.dispatch.why_not(pilot, "rays", routes["rays"], state)[0], "its last 3 runs each lost money: -240 cr")
+
     def test_the_rule_says_why_a_route_is_closed(self):
         routes, pilot = self.dispatch.load_routes(self.root), {"name": "drone-1", "credits": 5000, "modules": [], "docked": True}
         why = lambda rid, **state: self.dispatch.why_not(pilot, rid, routes.get(rid), self.state(**state))[0]

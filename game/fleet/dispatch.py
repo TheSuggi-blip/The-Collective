@@ -40,7 +40,8 @@ RULES:
     dispatcher stops that loop through the gate and names it in its log.
   - It sends no command to the game itself: the runners do.
   - No route flies at a loss unattended: a route whose runs of the last six hours (two or more) lost money in sum is
-    closed until the window moves on (`losing`); the census, park and fitting routes are not judged.
+    closed until the window moves on (`losing`), and so is a repeating route whose last three runs inside those six
+    hours each lost money (`lately_losing`); the census, park and fitting routes are not judged.
   - Why ships wait, and what would give them work: game/fleet/fill.py, which uses this script's own rule.
 WHY:  no ship waits for a hand to give it work, and a new ship climbs the same
       ladder as the ones before it: what we learned is in the route files.
@@ -339,6 +340,9 @@ def why_not(pilot, rid, route, state):
     lost = (state.get("loss") or {}).get(rid)
     if lost:
         return "at a loss: %d runs, %s cr in %d hours" % (lost[0], format(lost[1], ","), LOSS_HOURS), None
+    late = (state.get("late") or {}).get(rid)
+    if late:
+        return "its last %d runs each lost money: %s cr" % (late[0], format(late[1], ",")), None
     if set(route.get("skip_if_booked") or []) & (state.get("booked") or {}).get(pilot["name"], set()):
         return "its reward is booked", None
     lacks = [title for title in owed(route) if title not in (state.get("booked") or {}).get(pilot["name"], set())]
@@ -481,6 +485,39 @@ def losing(routes, rows, now):
     return {rid: (runs, int(total)) for rid, (runs, total) in sums.items() if runs >= 2 and total < 0}
 
 
+RECENT = 3                   # a repeating route whose last RECENT runs each lost money is closed, whatever its six-hour sum
+
+
+def lately_losing(routes, rows, now):
+    """{route id: (runs, credits)} of the repeating routes whose last RECENT runs that read a wallet, all inside the last
+    LOSS_HOURS, each lost money (the money booked once left out). The six-hour sum of `losing` still held the good runs
+    from before a bid left: the veil-ray hunts flew 23 runs at a loss after the curd bid left every station, and 36 mine
+    runs stored their ice after the near bids emptied (errors ENT-046; the reports of Zero, Apophis and Mercury of
+    2026-11-16). Once routes are judged by `losing` alone: their reward is their pay. Closed until the oldest of the
+    three leaves the window, or a newer run pays."""
+    last = {}
+    for row in rows:
+        if faulted(row):
+            continue
+        before, after = row.get("credits_before"), row.get("credits_after")
+        if not all(isinstance(v, (int, float)) and not isinstance(v, bool) for v in (before, after)) or not (before > 0 and after > 0):
+            continue
+        route = routes.get(row.get("route"))
+        if route is None or route.get("once") or not judged(route):
+            continue
+        try:
+            started = calendar.timegm(time.strptime(row.get("started") or "", "%Y-%m-%dT%H:%M:%SZ"))
+        except ValueError:
+            continue
+        last.setdefault(route["id"], []).append((started, (after - before) - (row.get("one_time") or 0)))
+    out = {}
+    for rid, runs in last.items():
+        recent = sorted(runs)[-RECENT:]
+        if len(recent) == RECENT and recent[0][0] >= now - LOSS_HOURS * 3600 and all(delta < 0 for _t, delta in recent):
+            out[rid] = (RECENT, int(sum(delta for _t, delta in recent)))
+    return out
+
+
 def resting(routes, rows, now):
     """{route id: time before which a hunt's place rests}: its last run ended without a kill."""
     out = {}
@@ -527,7 +564,7 @@ def one_pass(root, data, dry_run, children):
     routes = load_routes(root)
     rows = run_rows(data)
     state = {"now": now, "data": data, "rows": rows, "orders": fresh_orders(data, now), "rest": resting(routes, rows, now), "booked": booked(data),
-             "loss": losing(routes, rows, now)}
+             "loss": losing(routes, rows, now), "late": lately_losing(routes, rows, now)}
     named = flagships(data)
     ammo = set(read_json(Path(data) / "catalog" / "ammo.json", []) or [])      # written by routemaker.py from the game's catalog
     lines = []
