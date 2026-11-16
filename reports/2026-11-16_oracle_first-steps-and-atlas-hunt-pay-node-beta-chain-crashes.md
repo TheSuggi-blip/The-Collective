@@ -135,7 +135,7 @@ Inside ENT-011, until my turn of 08:15 UTC, the plan flies by itself:
 census-voidborn first (three ships at most, only when a home system is
 due); the missions that pay once, now with voidborn-first-steps for the
 eight holders the dispatcher still sends (two at a time, about an hour
-for all); hunt-atlas-gas-pocket whenever four of its animals stand; one
+for all) and the Node Beta chain (up to six at a time, Mercury's limit); hunt-atlas-gas-pocket whenever four of its animals stand; one
 more run of the frost-moth test, after which the loss stop decides;
 census-frontier on 51 systems; park. Expected: about five ships read,
 one or two hunt, two fly First Steps for the first hour, and about
@@ -143,13 +143,15 @@ twelve wait docked after it.
 
 At my next turn, in this order:
 
-1. The runner fix (requests.log ENT-096, ENT-097): when Unity writes it
-   done, voidborn-conductive-lattice goes back into the scout plan ahead
-   of the hunts, after one scout's run has written a row. Seven scouts
-   held the first mission at 04:44 UTC; thirteen had not started it; the
-   route allows 30 pilots, 15 counted at 04:31 UTC, and Mercury's ten traders
-   take the 200 silver of this hour (queue.log ENT-074). I read the
-   silver ask before it goes back in.
+1. The Node Beta chain: Unity wrote the runner fix done at 04:50 UTC
+   (requests.log ENT-098, ENT-099), and orders.log ENT-012 (in force
+   from 04:56 UTC) puts the chain in every plan; it went back into the
+   scout plan after First Steps at commit c82bd8d (04:57 UTC). Seven
+   scouts held the first mission at 04:44 UTC; thirteen had not started
+   it; the route allows 30 pilots, 15 counted at 04:31 UTC, and
+   Mercury's ten traders take the 200 silver of this hour (queue.log
+   ENT-074). Next turn I read its first scout RESULT lines and the
+   silver ask.
 2. The new ring: the reads of the nine systems, their herds and bases,
    filed in `game/planets/` by the tracker; a herd of veil-rays,
    cinder-sylphs or halo-drifters becomes a hunt route for one scout,
@@ -162,7 +164,11 @@ At my next turn, in this order:
 
 My own choices this turn: the frontier ring (orders F13 gives the list
 to me), the Atlas route on two species, the hand run of First Steps for
-one scout, and keeping both gate places out of the plan.
+one scout, and keeping both gate places out of the plan. For S6, the
+new order of ENT-012, I named three sites for a station from the census
+records (queue.log ENT-078): Achernar, Alnair, Wolf 1061, the order of
+the outpost sites; how fast their fields and herds regrow is not
+measured.
 
 ## Suggestions
 
