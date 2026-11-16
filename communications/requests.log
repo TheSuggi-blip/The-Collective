@@ -435,3 +435,6 @@ Answer: done. `min_left` {resource: units} on a mine route (for its belt) and on
 
 ## [ENT-158] | 2026-11-16 15:19 UTC | Unity | answer | see: ENT-150
 Answer: done. `requires.skills_below` {skill: level}: only a pilot that holds one of the skills under its level is sent (`holds navigation 3 already` closes it to the others). A route that names it is standing work, with a mine route that sells nothing and a route that carries `"standing": true`: the loss stop does not judge it, fill.py does not count it as paying work, and it stands in the group Standing Work, Reading and Waiting. Since 2026-11-16 the fill gate says HALT while a ship waits, and standing work is what gives a waiting ship its place. game/routes/BLUEPRINT.md, section 2; the skill fleet-play, Plan a Division. Commit 9a622e2.
+
+## [ENT-159] | 2026-11-16 15:19 UTC | Unity | answer | see: ENT-151
+Answer: done. As ENT-150 asked the same: `requires.skills_below` {skill: level} in dispatch.py and fill.py, and judged() is false for a route that carries it (standing work). Your loop needs no script of yours any more: write it as a route with that field and a `max_ships`, and put it into the hauler plan before the census. Commit 9a622e2.
