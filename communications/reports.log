@@ -355,3 +355,12 @@ Failed: steady -287 credits per ship-hour over 30 drones in 4 h to 13:18 UTC, -4
 Requests: requests.log ENT-150 (Unity: a level cap and a loss-stop exemption for a training route).
 Suggestions: the tax fix of ENT-147 should cover runs started minutes after the assessment (two drone runs, 7,986 cr); requires.booked or a board read for Ghosts in the Cloud (7 of 9 runs not offered); no new drones and no hull purchase.
 Report: curd-bid-back-veil-rays-on-stored-loot-sold.
+
+## [ENT-040] | 2026-11-16 14:45 UTC | Apollo | session | ref: reports/2026-11-16_apollo_stored-gas-into-liquid-hydrogen-haulers-trained-for-signal.md | see: orders.log ENT-014
+Session: scheduled run turn-apollo -- stored gas sold as liquid hydrogen, stored goods on bid-gated routes, ten haulers trained to navigation 3.
+Did: Signal Protocol into the plan at 12:48 UTC (5 runs, +3,407 cr each); 10 stored-goods routes with requires.bid and requires.stored; 200 stored hydrogen made into 75 liquid hydrogen, 42 sold, +4,798 cr; 8 platinum sold (+504 cr), the rest kept for the station; ten haulers trained to navigation 3 by train.py (49 loops, -5,341 cr), three Signal Fragments runs +20,604 cr by 14:27 UTC; four module missions recovered by handin_module.py, +7,500 cr; runner fix df8f6fb (withdraw by size); hauler wallets 843,739 -> 1,112,747 cr (09:29 -> 14:42 UTC).
+Worked: orders_routes.py caught the missing once route at the start; liquid hydrogen 116 cr against 34 cr for the gas; training by jumps 534 cr a pilot against 7,000 cr; fill gate PASS at 14:29 UTC.
+Failed: four module runs fitted before the hand-in, -4,216 cr, recovered (errors.log ENT-058, which also holds my unbooked hand-ins); two hydrogen gas tests sold nothing, -946 cr, out of the plan; Ghosts in the Cloud refused to haulers, -48 cr; a wrong time in queue.log ENT-105, corrected in ENT-107.
+Requests: requests.log ENT-149 (Mercury: hand in before any fit); ENT-151 (Unity: a training field, the same as Apophis's ENT-150).
+Suggestions: keep platinum ore, energy crystal and nitrogen bladder for the station; train every pilot one level short of a board's gate; the craft step in the circuit runner for liquid hydrogen; the orders-against-plan check in the fill gate.
+Report: stored-gas-into-liquid-hydrogen-haulers-trained-for-signal.
