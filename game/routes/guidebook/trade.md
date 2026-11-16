@@ -43,13 +43,16 @@ judged with its reward (orders F19).
 | 15 | mine-the-experiment-haze | 1, a Gas Harvester I | 2,330 and 3,197 per ship-hour on its two runs that sold (section 1) | Hydrogen into the Node Beta bid, which it names (26 cr, 20 units) |
 | 16 | mine-the-experiment-haze-synchrony | 1, test | estimate 2,400 (routemaker) | The same field into the Synchrony Hub bid, so the two tests do not measure each other |
 | 17 | mine-gsc-0016-emission-nebula | 1, test (added by fill.py) | estimate 992 | Plasma and argon into Node Beta, lawless, empty hold |
-| 18 | census-frontier | up to 12 (Intel's route) | -620 measured: a reading cost | Open only when a frontier system is due |
-| 19 | park | the rest | 0 | A docked ship costs nothing |
+| 18 | mine-marfik-emission-nebula | 1, test | estimate 1,896 (routemaker) | Hydrogen into the same Node Beta bid as the haze route, plasma beside it; read beside the haze route's runs |
+| 19 | census-frontier | up to 12 (Intel's route) | -620 measured: a reading cost | Open only when a frontier system is due |
+| 20 | park | the rest | 0 | A docked ship costs nothing |
 
-For the four hours after the turn of 12:30 UTC: four traders fly (the
-haze route, the GSC-0016 test, and one trader on each of the two new
-once routes), sixteen wait docked. Nothing that pays or is under test
-is open to them (fill gate PASS, 12:50 UTC): every once route is booked
+For the four hours after the turn of 12:30 UTC: three traders fly the
+haze route and the GSC-0016 and Marfik tests, seventeen wait docked.
+The fill gate's last line (13:07 UTC) is HALT on one place: Military's
+voidborn-first-hunt-acubens, kept out because its last 12 runs all
+ended 'objectives not done' (route tool, 13:04 UTC). Nothing else that
+pays or is under test is open to them: every once route is booked
 or waits behind The Collective Provides or navigation 3, and the
 hydrogen bids carry two gas ships. Trade's figure was -58 per ship-hour
 over all 20 ships in the four hours to 12:51 UTC (72,000 cr paid once

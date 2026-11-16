@@ -106,16 +106,18 @@ Expansion: 41 runs, 61,500. First Steps from the board: 14 runs,
   | 09:59 UTC | +4,129 | 3,197 |
   | 11:17 UTC | -5,346, of which 4,818 is tax | about -400 from the run alone: no bid at the sale, the gas stored |
 
-- **Two tests,** one ship each:
+- **Three tests,** one ship each:
   - **mine-the-experiment-haze-synchrony:** the same field, sold into
     another station's bid.
   - **mine-gsc-0016-emission-nebula:** added by fill.py.
-  - **Result:** neither has a RESULT line yet.
+  - **mine-marfik-emission-nebula:** added at 13:05 UTC; it shares the
+    Node Beta hydrogen bid with the haze route.
+  - **Result:** none has a RESULT line yet.
 - **voidborn-first-steps:** dropped from the plan (ENT-014 (c)).
 
 **Capacity (F18).**
-- **Routes that pay:** Trade's repeating route and its two tests hold
-  3 places for its 20 ships.
+- **Routes that pay:** Trade's repeating route and its three tests hold
+  4 places for its 20 ships.
 - **Where the once line stands:**
   - 138 pilots of the fleet have not flown The Collective Provides (the
     tool fleet, view capacity), and nothing can fly it until the reef
@@ -133,9 +135,21 @@ Expansion: 41 runs, 61,500. First Steps from the board: 14 runs,
 - **The other station inputs:** no station core, salvage metal, anchor
   plate, alloy scale or foil scale stands on offer in our eight books.
 
-**Fill gate.** The last line, 12:50 UTC: "PASS: 16 ships of trader
-wait, and nothing that pays and no test is open to them". What keeps
-the waiting ships from work: the two fields above, Unity's word on
+**Fill gate.**
+- **At 12:50 UTC:** "PASS: 16 ships of trader wait, and nothing that
+  pays and no test is open to them".
+- **At 13:04 UTC:** fill named a new test, mine-marfik-emission-nebula
+  (gas into Node Beta, estimate 1,896 per ship-hour). I wrote it and
+  added it, and a trader took it at 13:05 UTC.
+- **The last line, 13:07 UTC:** "HALT: 17 ships of trader wait while 1
+  places of paying work and 0 tests stand open".
+  - **The one place:** Military's voidborn-first-hunt-acubens. Fill
+    counts it as paying on an older figure of +110 cr a run, but its
+    last 12 runs (04:29 to 07:05 UTC) all ended "objectives not done"
+    at -33 to -77 cr (the tool route).
+  - **Why it stays out:** I keep it out of the trader plan on that
+    record, and it is not mine to put in without Apophis' word.
+- **What else keeps the waiting ships from work: the two fields above, Unity's word on
 Neural Matrix Delivery, navigation 3, and hydrogen bids too thin for
 more than the two gas tests (the tool fleet, view capacity: 40 units at
 the best price at one station). No ship of mine is held by hand.
