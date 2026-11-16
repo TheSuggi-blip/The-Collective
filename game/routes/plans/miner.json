@@ -20,6 +20,7 @@
   "voidborn-first-hunt-gsc-0031",
   "voidborn-first-hunt-acubens",
   "voidborn-first-hunt-intercrus-sootfall",
+  "gather-ironhollow-fading-signal",
   "mine-gliese-876-belt",
   "drain-methane-experiment",
   "drain-ice-nexus",
@@ -32,7 +33,6 @@
   "mine-ruchbah-ice-belt-nexus",
   "mine-wolf-1061-frozen-drift-nexus",
   "mine-nova-terra-ice-shelf",
-  "gather-ironhollow-fading-signal",
   "mine-wolf-1061-vent",
   "gather-acubens-belt-carbon",
   "gather-hamal-crystal-bloom",
@@ -77,6 +77,7 @@
   "voidborn-first-hunt-gsc-0031": 59,
   "voidborn-first-hunt-acubens": 59,
   "voidborn-first-hunt-intercrus-sootfall": 59,
+  "gather-ironhollow-fading-signal": 1,
   "mine-gliese-876-belt": 1,
   "drain-methane-experiment": 59,
   "drain-ice-nexus": 59,
@@ -89,9 +90,8 @@
   "mine-ruchbah-ice-belt-nexus": 59,
   "mine-wolf-1061-frozen-drift-nexus": 59,
   "mine-nova-terra-ice-shelf": 59,
-  "gather-ironhollow-fading-signal": 1,
-  "mine-wolf-1061-vent": 58,
-  "gather-acubens-belt-carbon": 57,
+  "mine-wolf-1061-vent": 59,
+  "gather-acubens-belt-carbon": 58,
   "gather-hamal-crystal-bloom": 58,
   "gather-gsc-0027-prism-scatter": 58,
   "mine-acubens": 58,
@@ -101,8 +101,8 @@
  "of": 59,
  "derived": "Written by game/fleet/plan.py from the division's plan file (data/plans/plan-mining.md), never by hand.",
  "templates": {
-  "ice-sell": 57,
-  "reserve-prism": 26,
+  "ice-sell": 58,
+  "reserve-prism": 27,
   "reserve-hamal": 31
  }
 }
