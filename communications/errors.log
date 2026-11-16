@@ -488,3 +488,12 @@ Cause: I judged the route on its past runs and one herd count, and did not set t
 Fix, done: the route is out of the scout plan; it and voidborn-first-hunt-intercrus-belt name `min_creatures` 3 and `store: all` at the last stop; the 11 holders share Intercrus Belt and a test at Intercrus Sootfall Belt (16 belt-grazers at 11:48 UTC), each with the floor (commit 7c43485).
 Fix, structural: skill intel-turn, pitfalls: every once hunt route of mine names `min_creatures` 3 and has a second place.
 Would it have prevented this one: in part. The floor closes a route only on a census under 90 minutes old; the failing runs wrote the place (read 11:45:26 UTC inside the run of 11:36 UTC), so it would have stopped the repeats after the first empty run, not the first.
+
+## [ENT-054] | 2026-11-16 12:31 UTC | Zero | error | ref: game/routes/plans/miner.json | see: ENT-046
+Class: ships sized on a bid's standing depth instead of what it regains (the class of ENT-046), the second case in one day: a repeat.
+Case: at 09:19 UTC I lifted the Central Nexus ice routes to 29 places on 42,635 water ice at 30 cr at the best price (fill status, 09:17 UTC). The depth was one order: 8,500 at 10:37 UTC, bid 0 at 11:02 and 11:39 UTC, 563 in all levels at 12:01 UTC (data/market/history.jsonl, central_nexus.json). The station regains about 1,197 an hour at its best price (hive.py refill, 12:03 UTC): about ten ships.
+Effect: 8 runs of mine-achernar-frost-ring-nexus that ended 11:00 to 11:10 UTC lost 138 to 318 cr each, 11 losing mine runs of miners since 09:11 UTC, -3,432 cr (data/routes/runs.jsonl). Their ice is stored at Central Nexus and sold by later runs; miners hold 16,224 water ice in storage (the tool stock, 12:04 UTC).
+Cause: the lesson of ENT-046 (size on what a bid regains) stood in my skill and my knowledge file as a rule to remember; fill.py's share hint counts the standing depth (requests.log, my request of this turn), and I lifted by the hint.
+Fix, done: requires.bid (25 cr for 300 units) on all 20 ice routes (commits 0b185b7, 2565cb9): no route starts into a bid that is short; Central Nexus mine places cut 29 -> 7; stored ice drained and carried first. Skill mining-chains step 0 sizes every station on its regain.
+Fix, asked: fill.py's hint on the regain, the depth apart (requests.log, this turn).
+Would it have prevented this one: requires.bid, in part: it stops new starts when the bid is short, not runs already under way; the hint on the regain, yes: it would have said about ten ships at 09:17 UTC.
