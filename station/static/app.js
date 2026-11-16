@@ -1013,6 +1013,13 @@ function trailing(rows, minutes, col) {          // the change of a running sum 
 
 const WINDOWS = { '1h': ['Last hour', 6, 60, 4], '6h': ['6 hours', 24, 60, 6], '24h': ['24 hours', 48, 180, 24] };   // label, hours of graph, minutes behind each point, hours of the routes table
 let metricWin = '1h';
+let metricsAt = 0;                               // when the Metrics tab was last drawn: it is drawn again every 30 s, not at every fleet poll
+let routeOrder = { key: '', rank: new Map() };   // the place of each route row while the tab stays open on one window
+function keepOrder(rows) {                       // a table that reorders under the eye cannot be read: rows keep their place, a new route joins at the end
+  if (routeOrder.key !== metricWin) routeOrder = { key: metricWin, rank: new Map() };
+  rows.forEach((x) => { if (!routeOrder.rank.has(x.route)) routeOrder.rank.set(x.route, routeOrder.rank.size); });
+  return rows.sort((a, b2) => routeOrder.rank.get(a.route) - routeOrder.rank.get(b2.route));
+}
 let INCOME = { routes: [], at: 0, key: '' };
 
 function fitTable(t) { const w = el('div', 'mtable'); w.append(t); return w; }   // a Metrics table that fits the panel
@@ -1077,7 +1084,8 @@ async function renderMetrics(panel, live) {
     try { INCOME = Object.assign(await get('/api/income?q=' + routeHours), { at: Date.now(), key: metricWin }); } catch (e) { INCOME = { routes: [], at: Date.now(), key: metricWin }; }
     if (!live()) return;
   }
-  const steady = INCOME.routes.filter((x) => !x.once && (x.runs || x.flying)).sort((a, b2) => b2.credits - a.credits), once = INCOME.routes.filter((x) => x.once && (x.runs || x.flying));
+  const steady = keepOrder(INCOME.routes.filter((x) => !x.once && (x.runs || x.flying)).sort((a, b2) => b2.credits - a.credits));
+  const once = keepOrder(INCOME.routes.filter((x) => x.once && (x.runs || x.flying)));
   if (steady.length) {
     routesBox.append(fitTable(table(['Route', 'Ships now', 'Runs', 'Ship-hours', 'Credits', 'Per ship-hour'], steady.map((x) => {
       const name = el('span', null, x.route);
@@ -1106,12 +1114,26 @@ let renderSeq = 0, viewKey = '';
 function render() {
   const panel = $('panel'), mine = ++renderSeq, live = () => mine === renderSeq;
   const key = [tab, selShip, selShip ? '' : selected, pilotCard ? pilotCard.name : '', docView ? docView.path : ''].join('|');
-  const keep = key === viewKey ? panel.scrollTop : 0;
+  const same = key === viewKey, keep = same ? panel.scrollTop : 0;
   viewKey = key;
-  panel.replaceChildren();
   document.querySelectorAll('nav button').forEach((b) => b.classList.toggle('on', b.textContent === tab));
   $('rail-right-label').textContent = tab;
   if (tab !== 'Docs') setWide(tab === 'Metrics' ? 'metrics' : false);
+  if (tab === 'Metrics') {
+    metricsAt = Date.now();
+    if (!same) routeOrder.key = '';                // the tab was opened anew: the routes are sorted afresh
+    if (same && panel.childElementCount) {         // a refresh of the open tab: built aside and swapped in whole, so the page keeps its height, its place and its order
+      const aside = document.createDocumentFragment();
+      Promise.resolve(renderMetrics(aside, live)).then(() => {
+        if (!live()) return;
+        const at = panel.scrollTop;
+        panel.replaceChildren(aside);
+        panel.scrollTop = at;
+      }).catch(() => { /* the last picture stays */ });
+      return;
+    }
+  }
+  panel.replaceChildren();
   Promise.resolve(TABS[tab](panel, live)).catch((e) => { if (live()) panel.append(el('p', 'empty', e.message)); });
   panel.scrollTop = keep;
 }
@@ -1301,7 +1323,7 @@ async function loadFleet() {
   shipsBy.clear();
   F.ships.forEach((r) => { if (r.system) { if (!shipsBy.has(r.system)) shipsBy.set(r.system, []); shipsBy.get(r.system).push(r); } });
   renderMembers(); renderRoster(); tickAges(); renderPop(); draw();
-  if (tab === 'Metrics') render();
+  if (tab === 'Metrics' && Date.now() - metricsAt >= 30000) render();   // not at every poll: the page under the reader stays still
   if (selShip) {
     const name = selShip;
     try {
