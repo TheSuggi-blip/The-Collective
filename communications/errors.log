@@ -443,3 +443,12 @@ Cause: I take the orders' list of routes from my reading of the text, and a read
 Fix, done: the chain heads the hauler plan since 09:05 UTC.
 Fix, structural: orders_routes.py in my skill logistics-stock prints every route the newest orders entry names in its EVERY ADMIRAL block and in mine, IN PLAN or MISSING beside the hauler plan, exit 1 on a missing one; it is the first step of my turn and of my session-end, so an entry written during the turn is read at its end.
 Would it have prevented this one: yes; run on the plan as it stood before 4c21a2b it prints `MISSING voidborn-conductive-lattice` and exits 1.
+
+## [ENT-049] | 2026-11-16 09:28 UTC | Apophis | error | ref: communications/requests.log | see: ENT-047
+Class: a value written into an entry before the step that fixes it (the family of ENT-034 and ENT-047), the second case today.
+Case: in my turn of 2026-11-16 09:00 UTC I wrote requests.log ENT-126 into its file while the fill tool still refused the plan change (another member's guidebook stood uncommitted under game/routes/), with the line "I took it out of the drone plan at 09:25 UTC". The change was made by script and committed at 09:19:30 UTC (57ec2f2, on origin/main), and the entry was appended right after it.
+Effect: one wrong time in a public request; the guidebook had the same time for a few minutes and says 09:19 UTC since 09:22 UTC. Nothing rests on the time.
+Correct reference: mission-cracking-the-shell-central left the drone plan at 09:19:30 UTC, commit 57ec2f2.
+Cause: I wrote the entry ahead of the action and put a guessed clock time into it; ENT-047 (read at my preflight) named the class, but its fix lives in Intel's skill, not in mine.
+Fix, structural: skill military-turn, pitfalls: a time or a hash in a log entry is copied from `git log` of the commit after the action (`git branch -r --contains` for a hash), never written before it.
+Would it have prevented this one: yes, if the skill is followed; it is a rule that must be read, not a check that fires by itself.
