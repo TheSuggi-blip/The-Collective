@@ -108,7 +108,7 @@ Planned:
 
 ## hauler
 
-Kept by Apollo. Routes: 33.
+Kept by Apollo. Routes: 34.
 
 | # | Route | Group | Zone | Open to | Credits per ship-hour |
 |---|---|---|---|---|---|
@@ -143,8 +143,9 @@ Kept by Apollo. Routes: 33.
 | 29 | [mine-gsc-0012-gas-plume](mine-gsc-0012-gas-plume.json) | Tests | beyond the border, 5 jumps | up to 1 ships, needs gas_harvester_i, empty hold, while node_beta_industrial_station bids 27 cr for hydrogen_gas | TBD |
 | 30 | [mine-miram-haze](mine-miram-haze.json) | Tests | beyond the border, 4 jumps | up to 1 ships, needs gas_harvester_i, empty hold, while node_beta_industrial_station bids 27 cr for hydrogen_gas | TBD |
 | 31 | [mine-atlas-gas-pocket](mine-atlas-gas-pocket.json) | Tests | beyond the border, 6 jumps | up to 1 ships, needs gas_harvester_i, empty hold, while node_beta_industrial_station bids 72 cr for plasma_gas | TBD |
-| 32 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -790 |
-| 33 | [park](park.json) | Reading and Waiting | home space | the park route | -670 |
+| 32 | [mine-amberfall-emission-nebula](mine-amberfall-emission-nebula.json) | Tests | beyond the border, 5 jumps | up to 1 ships, needs gas_harvester_i, empty hold | TBD |
+| 33 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -790 |
+| 34 | [park](park.json) | Reading and Waiting | home space | the park route | -670 |
 
 Planned:
 

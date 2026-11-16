@@ -22,19 +22,19 @@ name below is a link into one of the sub-indexes of this folder.
 |---|---|---|---|---|---|
 | [Once per Pilot](index.md#once-per-pilot) | Missions and rewards the game pays once per pilot: a new pilot's first work, and seed money. | 25 | 15 | 10 | voidborn-conductive-lattice: 9,110 cr a run |
 | [Paying Routes](index.md#paying-routes) | Work that repeats and whose runs measured above zero. | 32 | 5 | 27 | mine-ruchbah-ice-belt: 7,430 cr per ship-hour |
-| [Tests](index.md#tests) | Work that repeats and has no measured figure yet: one ship until its first RESULT line is read. | 23 | 16 | 7 | not measured yet |
+| [Tests](index.md#tests) | Work that repeats and has no measured figure yet: one ship until its first RESULT line is read. | 24 | 16 | 8 | not measured yet |
 | [Fitting](index.md#fitting) | A module bought and fitted: the tool a kind of work needs. | 11 | 10 | 1 | voidborn-hardware-cargo: 6,060 cr per ship-hour |
 | [Reading and Waiting](index.md#reading-and-waiting) | The census and the park route: they earn nothing; they keep the picture fresh and a ship without work docked. | 4 | 2 | 2 | park: -670 cr per ship-hour |
 | [Measured at a Loss](index.md#measured-at-a-loss) | Work that repeats and whose runs measured zero or below. | 38 | 15 | 23 | mine-bellatrix: 0 cr per ship-hour |
 | [Off](index.md#off) | Written down, not flown. | 11 | 8 | 3 | voidborn-first-steps: 4,020 cr per ship-hour |
-| All | | 144 | 71 | 73 | |
+| All | | 145 | 71 | 74 | |
 
 ## Routes by Zone and Kind
 
 | Zone | Routes | census | circuit | hunt | mine | Farthest system, jumps from home |
 |---|---|---|---|---|---|---|
 | home space | 71 | 1 | 51 | 10 | 9 | 3 |
-| beyond the border | 73 | 2 | 15 | 26 | 30 | 8 |
+| beyond the border | 74 | 2 | 15 | 26 | 31 | 8 |
 
 ## Plans by Role
 
@@ -42,7 +42,7 @@ name below is a link into one of the sub-indexes of this folder.
 |---|---|---|---|---|
 | [command](plan.md#command) | Unity | 34 | voidborn-first-steps-board > voidborn-collective-provides > voidborn-signal-protocol | 0 |
 | [drone](plan.md#drone) | Apophis | 35 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 5 |
-| [hauler](plan.md#hauler) | Apollo | 33 | voidborn-resonance-finish > voidborn-atmospheric-extraction > voidborn-hardware-cargo | 4 |
+| [hauler](plan.md#hauler) | Apollo | 34 | voidborn-resonance-finish > voidborn-atmospheric-extraction > voidborn-hardware-cargo | 4 |
 | [miner](plan.md#miner) | Zero | 35 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 2 |
 | [scout](plan.md#scout) | Oracle | 20 | voidborn-first-steps-board > voidborn-network-expansion > voidborn-collective-provides | 6 |
 | [sentinel](plan.md#sentinel) | Unity | 31 | voidborn-first-steps-board > voidborn-collective-provides > voidborn-signal-protocol | 0 |
