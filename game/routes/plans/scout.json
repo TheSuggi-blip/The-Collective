@@ -21,6 +21,7 @@
   "voidborn-conductive-lattice",
   "voidborn-first-hunt-acubens",
   "mission-ghosts-in-the-cloud-node",
+  "census-roads",
   "hunt-test-homam-frost-moth",
   "hunt-atlas-gas-pocket",
   "mine-gliese-876-belt",
@@ -75,6 +76,7 @@
   "voidborn-conductive-lattice": 30,
   "voidborn-first-hunt-acubens": 30,
   "mission-ghosts-in-the-cloud-node": 30,
+  "census-roads": 10,
   "hunt-test-homam-frost-moth": 1,
   "hunt-atlas-gas-pocket": 1,
   "mine-gliese-876-belt": 1,
@@ -86,5 +88,7 @@
  },
  "of": 30,
  "derived": "Written by game/fleet/plan.py from the division's plan file (data/plans/plan-intel.md), never by hand.",
- "templates": {}
+ "templates": {
+  "explorer": 10
+ }
 }
