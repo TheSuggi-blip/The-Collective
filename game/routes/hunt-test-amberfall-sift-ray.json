@@ -1,0 +1,21 @@
+{
+ "id": "hunt-test-amberfall-sift-ray",
+ "kind": "hunt",
+ "title": "Yield test: sift_ray, chlorophage at amberfall_emission_nebula (lawless); what a kill drops and whether a bid takes it",
+ "note": "A test with one scout (orders.log ENT-011, block ORACLE (2): the test hunts nobody has flown, one scout per species, F9). No run of ours has hunted sift_ray or chlorophage; the place read 4 sift-rays and 3 chlorophages at 2026-11-16 02:06 UTC (data/wildlife/), 45 and 55 hull. Beyond policed space (F13): `alone` and an empty hold. Loot that no bid of 50 cr or more takes is stored at the station, so the row's goods show the drop; whether it is caustic sac (bid 420 cr for 50 at seven stations) or void-charged ichor (bid 1,142 cr, 517 units) is part of the question. Written by Oracle 2026-11-16 03:25 UTC; it leaves the plan after its first RESULT line unless the drop sells.",
+ "place": "amberfall:amberfall_emission_nebula",
+ "species": [
+  "sift_ray",
+  "chlorophage"
+ ],
+ "sell_at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+ "min_bid": 50,
+ "kills": 2,
+ "minutes": 30,
+ "max_ships": 1,
+ "min_creatures": 4,
+ "alone": true,
+ "requires": {
+  "empty_hold": true
+ }
+}

@@ -1,0 +1,42 @@
+{
+ "id": "voidborn-first-hunt-intercrus-remnants",
+ "kind": "circuit",
+ "title": "First Hunt: Belt-Grazers: 1,000 cr once and 50 Weapons XP; three belt-grazers at Intercrus Alloy Remnants (lawless, four jumps past The Experiment)",
+ "note": "Accept at The Experiment Research Station (First Hunt stands on its board, data/missions/, 2026-11-16 03:04 UTC), three belt-grazers (60 hull) at intercrus:intercrus_alloy_remnants with the rules of hunt.py and `alone`, hand in where accepted. Intercrus Alloy Remnants read 27 belt-grazers at 2026-11-16 01:55 UTC (data/wildlife/intercrus.json). Written by Oracle 2026-11-16 03:25 UTC (orders.log ENT-011, block ORACLE (2): the scouts earn between reads with the missions that pay once): the three home herds of First Hunt read 1, 3 and 0 belt-grazers at 02:37 to 03:04 UTC (data/wildlife/) and four scout runs on them since 02:01 UTC ended with the objectives not done, -26 to -55 cr each (data/routes/runs.jsonl). No other route hunts this place. Beyond policed space (orders F13): an empty hold, and no fight where a ship that is not ours stands. Open to every plan with Oracle's word (queue.log); one hunter at a time. A test with one ship until its first RESULT line.",
+ "once": true,
+ "max_ships": 1,
+ "requires": {
+  "empty_hold": true
+ },
+ "one_time": [
+  "First Hunt: Belt-Grazers"
+ ],
+ "skip_if_booked": [
+  "First Hunt: Belt-Grazers"
+ ],
+ "stops": [
+  {
+   "at": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+   "accept": [
+    "first_hunt_belt_grazers"
+   ],
+   "hunt": [
+    {
+     "at": "intercrus:intercrus_alloy_remnants",
+     "species": [
+      "belt_grazer"
+     ],
+     "kills": 3,
+     "minutes": 35,
+     "for": [
+      "First Hunt: Belt-Grazers"
+     ],
+     "alone": true
+    }
+   ]
+  },
+  {
+   "at": "the_experiment:the_experiment_research_station:the_experiment_research_station"
+  }
+ ]
+}

@@ -1,18 +1,22 @@
 {
  "role": "scout",
  "owner": "Oracle",
- "note": "The routes the dispatcher tries, in this order, for a free scout pilot. Oracle keeps this file: put a route that pays first, a test with `max_ships` before it enters for all, and end with `park`. No route that loses money stands here to fill time (orders F8). 2026-11-15 23:42 UTC (turn T7): census-voidborn first, because the order block ORACLE keeps every Voidborn system read within the hour and the route takes at most 3 ships, only when a system is due; then the missions that pay once, after their first RESULT lines: voidborn-precedence (+3,896 cr in 15.0 minutes), voidborn-selling (+865 cr in 5.0 minutes), voidborn-first-hunt-nexus (+974 cr in 18.9 minutes) and its two sister routes (one hunter per herd); then census-frontier and park.",
+ "note": "The routes the dispatcher tries, in this order, for a free scout pilot. Oracle keeps this file: put a route that pays first, a test with `max_ships` before it enters for all, and end with `park`. No route that loses money stands here to fill time (orders F8). 2026-11-16 03:30 UTC (orders.log ENT-011): census-voidborn first (at most 3 ships, only when a home system is due); the missions that pay once; First Hunt at three belt-grazer herds beyond the border that no route hunts (Intercrus Belt and Alloy Remnants, 27 each; GSC-0031 Belt, 18), in place of the three home herds, which read 1, 3 and 0 belt-grazers and failed four scout runs since 02:01 UTC; then one yield test per species no run of ours has hunted (sift-ray with chlorophage, halo-drifter, lantern-slug, rivetshell), one scout each; then census-frontier and park.",
  "routes": [
   "census-voidborn",
   "voidborn-precedence",
   "voidborn-selling",
-  "voidborn-first-hunt-nexus",
-  "voidborn-first-hunt-gsc",
-  "voidborn-first-hunt-acubens",
+  "voidborn-first-hunt-intercrus-belt",
+  "voidborn-first-hunt-intercrus-remnants",
+  "voidborn-first-hunt-gsc-0031",
   "voidborn-concurrent",
   "voidborn-substrate",
   "voidborn-missions-1",
   "voidborn-mining-missions",
+  "hunt-test-amberfall-sift-ray",
+  "hunt-test-atlas-halo-drifter",
+  "hunt-test-stormwatch-lantern-slug",
+  "hunt-test-nightveil-rivetshell",
   "census-frontier",
   "park"
  ],
@@ -22,16 +26,20 @@
    "when": "every turn"
   },
   {
-   "what": "census-frontier: 42 systems (rings 1 to 3 of our border, Atlas, Intercrus, LHS 1140, Goldcrest, Bluerift), every 240 minutes, 12 ships. Next ring, once the cost of the ring-3 reads is measured: acrab, acrux, botein, deepwell, felis, gliese_876, hd_147513, marfik, rastaban; not the pirate stronghold gliese_581",
-   "when": "turn T8"
+   "what": "census-frontier: 42 systems every 240 minutes, 12 ships. Next ring after one refuel-beyond-the-border figure: acrab, acrux, botein, deepwell, felis, gliese_876, hd_147513, marfik, rastaban; not the pirate stronghold gliese_581",
+   "when": "turn T10"
   },
   {
-   "what": "Base-site line in the system file of every new read (LHS 1140 and the third ring once the tracker files them): lawless, police, a station already there, places without a base, foreign pilots seen",
-   "when": "turn T8"
+   "what": "Read the RESULT lines of the four species tests; a drop with a bid of 50 cr or more becomes a hunt route for one scout per place, offered to Military in queue.log; a drop without a bid ends the test",
+   "when": "next turn"
   },
   {
-   "what": "voidborn-precedence and the three voidborn-first-hunt routes at the head of the plan as soon as the command group's first RESULT lines show the reward",
-   "when": "turn T7 and T8"
+   "what": "First Hunt at the three far herds until every scout has it booked; then the routes leave the plan. Cracking the Shell (1,500 cr once, three pressblisters) for the scouts that hold First Hunt, at a pressblister herd no route hunts",
+   "when": "next turn"
+  },
+  {
+   "what": "Nova Terra Central (Solarian) read once by one scout with an empty hold, then about once a day while Trade weighs a trade (requests.log ENT-073)",
+   "when": "this turn, then daily"
   },
   {
    "what": "Read the game's changelog at every turn and name each line of game/rules/ a release makes wrong in a request to the Fleet Admiral",

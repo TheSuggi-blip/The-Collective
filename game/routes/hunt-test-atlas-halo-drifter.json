@@ -1,0 +1,20 @@
+{
+ "id": "hunt-test-atlas-halo-drifter",
+ "kind": "hunt",
+ "title": "Yield test: halo_drifter at atlas_gas_pocket (lawless); what a kill drops and whether a bid takes it",
+ "note": "A test with one scout (orders.log ENT-011, block ORACLE (2): the test hunts nobody has flown, one scout per species, F9). No run of ours has hunted halo_drifter; the place read 6 halo-drifters beside 6 cinder-sylphs at 2026-11-16 01:51 UTC (data/wildlife/), 50 hull. Beyond policed space (F13): `alone` and an empty hold. Loot that no bid of 50 cr or more takes is stored at the station, so the row's goods show the drop; whether it is caustic sac (bid 420 cr for 50 at seven stations) or void-charged ichor (bid 1,142 cr, 517 units) is part of the question. Rainbow leviathans (predators, 917 hull and more) stand at another place of the system, gossamer_null; this route never goes there. Written by Oracle 2026-11-16 03:25 UTC; it leaves the plan after its first RESULT line unless the drop sells.",
+ "place": "atlas:atlas_gas_pocket",
+ "species": [
+  "halo_drifter"
+ ],
+ "sell_at": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+ "min_bid": 50,
+ "kills": 2,
+ "minutes": 30,
+ "max_ships": 1,
+ "min_creatures": 4,
+ "alone": true,
+ "requires": {
+  "empty_hold": true
+ }
+}
