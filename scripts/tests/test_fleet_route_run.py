@@ -183,6 +183,17 @@ class WithdrawStepTests(unittest.TestCase):
         self.assertEqual(units({"item": "water_ice"}, 5500, 65, sell, {"best_buy": 20, "best_buy_qty": 900}, 0), 0)
         self.assertEqual(units({"item": "water_ice"}, 5500, 65, sell, {}, 0), 0)
 
+    def test_free_hold_counts_each_item_by_its_size(self):
+        # 2026-11-16 12:15 UTC: the first carries withdrew by item units (65 less 42 aboard = 23); the game refused it,
+        # "Need 23 but only 9 available": tungsten and lead ore take two units of space each (state/cargo `size`).
+        free = functions("free_space")["free_space"]
+        rows = [{"item_id": "carbon_ore", "quantity": 15, "size": 1}, {"item_id": "tungsten_ore", "quantity": 5, "size": 2},
+                {"item_id": "lead_ore", "quantity": 3, "size": 2}]
+        self.assertEqual(free(65, rows), 65 - 15 - 10 - 6)
+        self.assertEqual(free(65, []), 65)
+        self.assertEqual(free(65, [{"item_id": "water_ice", "quantity": 7}]), 58)
+        self.assertEqual(free(65, None), 0)
+
     def test_the_withdraw_step_runs_after_the_book_is_read_and_before_the_sale(self):
         source = (FLEET / "route_run.py").read_text(encoding="ascii")
         book = source.index("book, board = save_station(base, system)")

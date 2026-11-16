@@ -234,14 +234,22 @@ def stored(base):
     return {i.get('item_id'): int(i.get('quantity') or 0) for i in items or [] if isinstance(i, dict) and i.get('item_id')}
 
 
+def free_space(capacity, rows):
+    """Free space of a hold of `capacity`: each row of state/cargo takes its quantity times its `size` (tungsten and lead
+    ore take 2; the game refused a withdraw counted in item units, 2026-11-16). Rows not read: no room."""
+    if not isinstance(rows, list):
+        return 0
+    return capacity - sum(int(r.get('quantity') or 0) * int(r.get('size') or 1) for r in rows if isinstance(r, dict))
+
+
 def room():
-    """Free units of the hold: the ship's capacity (its live file) less what is aboard."""
+    """Free space of the hold now: the ship's capacity (its live file) less the space of what is aboard."""
     try:
         ship = json.loads((DATA / 'fleet' / 'ships' / ((re.sub(r'[^A-Za-z0-9_.-]', '_', P)[:60] or 'pilot') + '.json')).read_text(encoding='utf-8'))
         capacity = int(ship.get('cargo_capacity') or 65)
     except (OSError, ValueError):
         capacity = 65
-    return capacity - sum(cargo().values())
+    return free_space(capacity, call('GET', f'/accounts/{P}/state/cargo')[1])
 
 
 def book_onetime(title, amount):
