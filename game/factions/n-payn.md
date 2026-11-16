@@ -39,7 +39,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
 | IDrinkBlood | The Experiment (`the_experiment`) | 0 | shard |
-| VedaFlux | Node Alpha (`node_alpha`) | 0 | threshold |
+| VedaFlux | Node Beta (`node_beta`) | 0 | threshold |
 
 ## Standing History
 

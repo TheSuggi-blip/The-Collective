@@ -15,7 +15,7 @@ updated: 2026-11-16
 # Pepemos Trading Company [PEPE]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 6.
+Pilots of it in our space in the last 24 hours: 10.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 6.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 19 | Public event stream |
+| Pilots carrying the tag on the public event stream | 22 | Public event stream |
 
 ## Bases
 
@@ -40,8 +40,12 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 |---|---|---|---|
 | Mimic | Nexus Prime (`nexus_prime`) | 0 | cobble |
 | MimicAstra | Nexus Prime (`nexus_prime`) | 0 | theoria |
-| MimicEcho | Synchrony (`synchrony`) | 0 | threshold |
+| MimicEcho | Node Alpha (`node_alpha`) | 0 | threshold |
+| MimicLens | Node Alpha (`node_alpha`) | not on record | shard |
+| MimicNeb | Nexus Prime (`nexus_prime`) | 0 | worship |
 | MimicSol | Nexus Prime (`nexus_prime`) | 0 | theoria |
+| MimicTern | Node Alpha (`node_alpha`) | not on record | not met |
+| MimicVega | The Experiment (`the_experiment`) | not on record | not met |
 | MimicVoid | Nexus Prime (`nexus_prime`) | 0 | threshold |
 | Pepemos | Nexus Prime (`nexus_prime`) | 0 | futures |
 
