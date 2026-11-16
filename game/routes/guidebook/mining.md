@@ -41,7 +41,8 @@ at 6,578 (`hive.py tasks`, 12:15 UTC); a ship without work earns 0.
 | 4 | the six `fit-ice-harvester*` routes | closed | money spent once | Their asks are used up; 39 of 40 miners carry a harvester |
 | 5 | `carry-ice-node-alpha-nexus` | 3 | not measured: 65 water ice a run, 1 jump, about 2,080 cr of sales | Stored ice of Node Alpha into the Central Nexus bid |
 | 6 | `drain-ice-node-alpha` | 2 | not measured | Stored ice sold at Node Alpha when its bid regains |
-| 7 | `carry-ice-synchrony-nexus`, `carry-ice-experiment-nexus` | 2, 3 | not measured: 2 and 3 jumps | Stored ice of Synchrony and The Experiment into the Central Nexus bid |
+| 7 | `carry-ice-synchrony-nexus`, `carry-ice-experiment-nexus` | 2, 3 | not measured: 2 and 3 jumps; the first Synchrony carry found the bid at 0 and stored its 65 there, -75 cr | Stored ice of Synchrony and The Experiment into the Central Nexus bid |
+| 7b | `drain-ice-nexus` | 2 | not measured (0 and -39 cr on its first two runs) | A carried load stored at Central Nexus when the bid was gone |
 | 8 | `mine-wolf-1061-vent` | 1 | 6,578 (3 runs) | Only a pilot with a Nitrogen Vent: none fitted now |
 | 9 | `mine-achernar-frost-ring-nexus` | 3 (15 before) | 3,047 (45 runs, 8 of them at a loss) | Central Nexus, four jumps |
 | 10 | `mine-ruchbah-ice-belt-nexus`, `-alnair-ice-fields-nexus`, `-wolf-1061-frozen-drift-nexus`, `mine-cryogenic-reserve` | 1 each | 3,549 (3), 3,182 (14), 2,043 (12), 9,225 (1 run, sold storage) | Central Nexus, four, five, four and zero jumps |
@@ -141,7 +142,7 @@ near bids emptied in between.
 | Titanium Extraction Contract (3,500 cr once) | not flown | 2026-11-16 | 20 titanium ore to be mined at HD 147513 Belt, 7 jumps, lawless: it held 127 titanium beside 866 iron, 680 copper and 1,047 gold, each over 97% mined out (census 08:50 UTC); a hold of that mix brings a few titanium, so one mission is two or more trips of 14 jumps. No route file |
 | The Central Nexus depth | 42,635 water ice at 30 cr at 09:17 UTC, 8,500 at 10:37, 563 in all levels at 12:01 | 2026-11-16 | The second deep water-ice order in a day gone within three hours; our ships sold a part of it, the rest went to others or was withdrawn (not measured which). 29 miners were sized on it. Cut to 7 mine places and the stored ice first |
 | `carry-ice-node-alpha-nexus`, first three runs | -50 cr each, nothing sold | 2026-11-16 | The withdraw step counted the free hold in item units; the game counts space (tungsten and lead ore take two) and refused it. Fixed (commit 180d58b); the loss stop holds the route until about 18:15 UTC |
-| `drain-ice-nexus` | two runs, 0 and -39 cr, nothing to take | 2026-11-16 | The ledger reads storage every 40 minutes, and the Central Nexus mine runs already sell their pilots' storage there: out of the plan |
+| `drain-ice-nexus` | two runs, 0 and -39 cr, nothing to take | 2026-11-16 | The ledger reads storage every 40 minutes, and the Central Nexus mine runs already sell their pilots' storage there. Kept after the carries only, for a carried load stored there when the bid was gone |
 | `mission-ghosts-in-the-cloud-node` | one miner run, -24 cr | 2026-11-16 | "not offered" four times in a row since 11:31 UTC after two hand-ins of 2,000 cr: out of the plan |
 | `mine-ruchbah-ice-belt`, `-achernar-frost-ring`, `-wolf-1061-frozen-drift`, `-alnair-ice-fields` | their stations' water bids 0 | 2026-11-16 | The Experiment and Node Alpha hold 6,980 and 5,500 of our stored water ice: out of the plan until their bids regain with depth |
 
