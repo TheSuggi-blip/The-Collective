@@ -1,0 +1,43 @@
+{
+ "id": "voidborn-neural-matrix-delivery",
+ "kind": "circuit",
+ "title": "Neural Matrix Delivery: 5,000 cr once; 8 phase matrix handed out at the accept, delivered to Sirius Observatory Station (Solarian, 7 jumps from Synchrony)",
+ "note": "2026-11-16 19:04 UTC (Mercury): the test of one trader, on the Fleet Admiral's word for this mission's own goods (requests.log ENT-155, rule F13). The accept at Central Nexus (2026-11-16 12:36 UTC, empty hold) put 8 phase matrix (size 2, base value 1,400 each) into the hold; they lie in the test pilot's storage at Synchrony Hub since, and `requires.stored` sends only that pilot. The hand flight of 19:02 UTC did not leave the dock: 'A loop is running on this account' (the pilot's mining loop had not stopped). Stops: withdraw at Synchrony Hub, hand in on docking at Sirius Observatory Station (the base id stands for the POI id: not read), read the Nova Terra Central book on the way back, store at Synchrony Hub. A route for every pilot the board offers it to (accept at Central Nexus first) is written after this RESULT line.",
+ "once": true,
+ "max_ships": 1,
+ "requires": {
+  "stored": {
+   "at": "synchrony_hub",
+   "item": "phase_matrix",
+   "min": 8
+  },
+  "empty_hold": true
+ },
+ "one_time": [
+  "Neural Matrix Delivery"
+ ],
+ "skip_if_booked": [
+  "Neural Matrix Delivery"
+ ],
+ "stops": [
+  {
+   "at": "synchrony:synchrony_hub:synchrony_hub",
+   "withdraw": [
+    {
+     "item": "phase_matrix",
+     "qty": 8
+    }
+   ]
+  },
+  {
+   "at": "sirius:sirius_observatory_station:sirius_observatory_station"
+  },
+  {
+   "at": "nova_terra:nova_terra_central:nova_terra_central"
+  },
+  {
+   "at": "synchrony:synchrony_hub:synchrony_hub",
+   "store": "all"
+  }
+ ]
+}
