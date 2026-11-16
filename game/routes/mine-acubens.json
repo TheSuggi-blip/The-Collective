@@ -2,16 +2,21 @@
  "id": "mine-acubens",
  "kind": "mine",
  "title": "Iron and copper at Acubens Shadow Pocket; ore into storage at Node Beta",
- "note": "For skill, not for money: common ore sells for 1 to 4 cr. Iron 78,496 and copper 94,468 left on 2026-11-15.",
+ "note": "For skill, not for money: common ore sells for 1 to 4 cr. Iron 78,496 and copper 94,468 left on 2026-11-15. 2026-11-16 15:13 UTC (Unity): standing work (no ship is idle): 18 ships, nothing sold, the ore into the pilot's storage; the census of 14:3x UTC read iron ore 30,110 and copper ore 77,513; `min_left` closes it under its floor and opens it when the field has grown back. It levels the ships; the copper is not short for the stations (S6), the iron is.",
  "belt": "acubens:acubens_shadow_pocket",
  "station": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
  "minutes": 45,
- "max_ships": 16,
+ "max_ships": 18,
  "measured": {
   "date": "2026-11-15",
   "runs": 48,
   "minutes": 45,
   "credits_per_run": -120,
   "cph_per_ship": -160
+ },
+ "standing": true,
+ "min_left": {
+  "iron_ore": 10000,
+  "copper_ore": 20000
  }
 }

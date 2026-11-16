@@ -2,7 +2,7 @@
  "id": "mine-pherkad-rift",
  "kind": "mine",
  "title": "Copper and iron at Pherkad Null Rift; ore into storage at Synchrony Hub",
- "note": "For skill, not for money. Copper 100,000 and iron 43,423 left on 2026-11-15. The route that is always open: it takes every pilot the other routes have no room for.",
+ "note": "For skill, not for money. Copper 100,000 and iron 43,423 left on 2026-11-15. The route that is always open: it takes every pilot the other routes have no room for. 2026-11-16 15:13 UTC (Unity): standing work (no ship is idle): 18 ships, nothing sold, the ore into the pilot's storage; the census of 14:3x UTC read copper ore 93,443 and iron ore 802; `min_left` closes it under its floor and opens it when the field has grown back. It levels the ships; the copper is not short for the stations (S6), the iron is.",
  "belt": "pherkad:pherkad_null_rift",
  "station": "synchrony:synchrony_hub:synchrony_hub",
  "minutes": 45,
@@ -12,5 +12,10 @@
   "minutes": 45,
   "credits_per_run": -100,
   "cph_per_ship": -170
+ },
+ "max_ships": 18,
+ "standing": true,
+ "min_left": {
+  "copper_ore": 30000
  }
 }

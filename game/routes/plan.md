@@ -164,7 +164,7 @@ Planned:
 
 ## miner
 
-Kept by Zero. Routes: 38.
+Kept by Zero. Routes: 40.
 
 | # | Route | Group | Zone | Open to | Credits per ship-hour |
 |---|---|---|---|---|---|
@@ -204,8 +204,10 @@ Kept by Zero. Routes: 38.
 | 34 | [mine-nova-terra-ice-shelf](mine-nova-terra-ice-shelf.json) | Tests | beyond the border, 8 jumps | up to 1 ships, needs ice_harvester_i, while central_nexus bids 25 cr for water_ice | TBD |
 | 35 | [gather-gsc-0027-prism-scatter](gather-gsc-0027-prism-scatter.json) | Standing Work, Reading and Waiting | home space | up to 40 ships, standing work | TBD |
 | 36 | [gather-hamal-crystal-bloom](gather-hamal-crystal-bloom.json) | Standing Work, Reading and Waiting | home space | up to 40 ships, standing work | TBD |
-| 37 | [census-frontier](census-frontier.json) | Standing Work, Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -630 |
-| 38 | [park](park.json) | Standing Work, Reading and Waiting | home space | the park route | -670 |
+| 37 | [mine-acubens](mine-acubens.json) | Standing Work, Reading and Waiting | home space | up to 18 ships, standing work | -160 |
+| 38 | [mine-pherkad-rift](mine-pherkad-rift.json) | Standing Work, Reading and Waiting | home space | up to 18 ships, standing work | -170 |
+| 39 | [census-frontier](census-frontier.json) | Standing Work, Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -630 |
+| 40 | [park](park.json) | Standing Work, Reading and Waiting | home space | the park route | -670 |
 
 Planned:
 
@@ -296,7 +298,7 @@ Kept by Unity. Routes: 33.
 
 ## trader
 
-Kept by Mercury. Routes: 22.
+Kept by Mercury. Routes: 24.
 
 | # | Route | Group | Zone | Open to | Credits per ship-hour |
 |---|---|---|---|---|---|
@@ -320,8 +322,10 @@ Kept by Mercury. Routes: 22.
 | 18 | [mine-marfik-emission-nebula](mine-marfik-emission-nebula.json) | Measured at a Loss | beyond the border, 6 jumps | up to 1 ships, needs gas_harvester_i, empty hold | -290 |
 | 19 | [gather-gsc-0027-prism-scatter](gather-gsc-0027-prism-scatter.json) | Standing Work, Reading and Waiting | home space | up to 40 ships, standing work | TBD |
 | 20 | [gather-hamal-crystal-bloom](gather-hamal-crystal-bloom.json) | Standing Work, Reading and Waiting | home space | up to 40 ships, standing work | TBD |
-| 21 | [census-frontier](census-frontier.json) | Standing Work, Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -630 |
-| 22 | [park](park.json) | Standing Work, Reading and Waiting | home space | the park route | -670 |
+| 21 | [mine-acubens](mine-acubens.json) | Standing Work, Reading and Waiting | home space | up to 18 ships, standing work | -160 |
+| 22 | [mine-pherkad-rift](mine-pherkad-rift.json) | Standing Work, Reading and Waiting | home space | up to 18 ships, standing work | -170 |
+| 23 | [census-frontier](census-frontier.json) | Standing Work, Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -630 |
+| 24 | [park](park.json) | Standing Work, Reading and Waiting | home space | the park route | -670 |
 
 Planned:
 
