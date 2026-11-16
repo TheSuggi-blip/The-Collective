@@ -108,7 +108,7 @@ Planned:
 
 ## hauler
 
-Kept by Apollo. Routes: 29.
+Kept by Apollo. Routes: 30.
 
 | # | Route | Group | Zone | Open to | Credits per ship-hour |
 |---|---|---|---|---|---|
@@ -139,8 +139,9 @@ Kept by Apollo. Routes: 29.
 | 25 | [carry-soma-node-beta-node-gamma](carry-soma-node-beta-node-gamma.json) | Tests | home space | up to 1 ships, with 1 voidborn_neural_soma stored at node_beta_industrial_station, while node_gamma_relay_station bids 500 cr for voidborn_neural_soma | TBD |
 | 26 | [mine-gsc-0012-gas-plume](mine-gsc-0012-gas-plume.json) | Tests | beyond the border, 5 jumps | up to 1 ships, needs gas_harvester_i, empty hold, while node_beta_industrial_station bids 27 cr for hydrogen_gas | TBD |
 | 27 | [mine-miram-haze](mine-miram-haze.json) | Tests | beyond the border, 4 jumps | up to 1 ships, needs gas_harvester_i, empty hold, while node_beta_industrial_station bids 27 cr for hydrogen_gas | TBD |
-| 28 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -790 |
-| 29 | [park](park.json) | Reading and Waiting | home space | the park route | -670 |
+| 28 | [sell-plasma-node-beta](sell-plasma-node-beta.json) | Tests | home space | up to 1 ships, with 5 plasma_gas stored at node_beta_industrial_station, while node_beta_industrial_station bids 90 cr for plasma_gas | TBD |
+| 29 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -790 |
+| 30 | [park](park.json) | Reading and Waiting | home space | the park route | -670 |
 
 Planned:
 
