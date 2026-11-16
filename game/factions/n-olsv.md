@@ -15,7 +15,7 @@ updated: 2026-11-16
 # Our Lord And Savior [OLSV]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 18.
+Pilots of it in our space in the last 24 hours: 16.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 18.
 | Allies | HIVE | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 142 | Public event stream |
+| Pilots carrying the tag on the public event stream | 139 | Public event stream |
 
 ## Bases
 
@@ -46,10 +46,8 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | OLS Bharani | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | OLS Cebalrai | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | OLS Chalawan | Nexus Prime (`nexus_prime`) | 0 | theoria |
-| OLS Chamukuy | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | OLS Electra | Nexus Prime (`nexus_prime`) | 0 | cobble |
 | OLS Fawaris | Nexus Prime (`nexus_prime`) | 0 | theoria |
-| OLS Fuyue | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | OLS Gudja | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | OLS Guniibuu | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | OLS Hunor | Nexus Prime (`nexus_prime`) | 0 | theoria |

@@ -40,9 +40,9 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 |---|---|---|---|
 | Daemia | Node Beta (`node_beta`) | 0 | threshold |
 | Ellara | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| Hesser | Synchrony (`synchrony`) | 0 | cobble |
+| Hesser | Nexus Prime (`nexus_prime`) | 0 | cobble |
 | Nythera | Node Beta (`node_beta`) | 0 | threshold |
-| Slyreus | The Experiment (`the_experiment`) | 0 | threshold |
+| Slyreus | Nexus Prime (`nexus_prime`) | 0 | threshold |
 
 ## Standing History
 
