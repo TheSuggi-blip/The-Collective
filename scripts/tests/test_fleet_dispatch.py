@@ -58,6 +58,10 @@ class Tree(unittest.TestCase):
         for role, ids in roles.items():
             (folder / (role + ".json")).write_text(json.dumps({"role": role, "owner": owner or OWNERS[role], "routes": ids}), encoding="ascii")
 
+    def started(self, hours_ago):
+        """A run's `started`, the way the runners write it, this many hours before the test's clock."""
+        return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(self.now - hours_ago * 3600))
+
     def state(self, rows=(), orders=None, rest=None, booked=None):
         return {"now": self.now, "data": str(self.data), "rows": list(rows), "orders": orders or {}, "rest": rest or {}, "booked": booked or {}}
 
@@ -566,30 +570,30 @@ class RouteGateTests(Tree):
         self.assertEqual(self.routes.division.pilots_named("the miner- ships, sentinel-<n>, Prime Directive, hunter-7, 30 drones, scout-"), [])
 
     def test_measure_writes_only_the_routes_it_is_given(self):
-        rows = [{"route": rid, "pilot": "p", "minutes": 30, "delta": 600, "credits_before": 5000, "credits_after": 5600, "started": "2026-11-15T10:00:00Z"} for rid in ("mine", "rays")]
+        rows = [{"route": rid, "pilot": "p", "minutes": 30, "delta": 600, "credits_before": 5000, "credits_after": 5600, "started": self.started(2)} for rid in ("mine", "rays")]
         (self.data / "routes" / "runs.jsonl").write_text("".join(json.dumps(r) + "\n" for r in rows))
         self.routes.measure(str(self.root), str(self.data), True, {"mine"})
         self.assertIn("measured", json.loads((self.root / "routes" / "mine.json").read_text()))
         self.assertNotIn("measured", json.loads((self.root / "routes" / "rays.json").read_text()))  # another division's file is left alone
 
     def test_measure_writes_a_figure_once_and_again_only_on_a_real_move(self):
-        rows = [{"route": "mine", "pilot": "miner-1", "minutes": 30, "delta": -40, "credits_before": 9000, "credits_after": 8960},
-                {"route": "mine", "pilot": "miner-2", "minutes": 60, "delta": -50, "credits_before": 9000, "credits_after": 8950}]
+        rows = [{"route": "mine", "pilot": "miner-1", "minutes": 30, "delta": -40, "credits_before": 9000, "credits_after": 8960, "started": self.started(3)},
+                {"route": "mine", "pilot": "miner-2", "minutes": 60, "delta": -50, "credits_before": 9000, "credits_after": 8950, "started": self.started(3)}]
         (self.data / "routes" / "runs.jsonl").write_text("".join(json.dumps(r) + "\n" for r in rows))
         self.routes.measure(str(self.root), str(self.data), True)
         figure = json.loads((self.root / "routes" / "mine.json").read_text())["measured"]
         self.assertEqual((figure["runs"], figure["minutes"], figure["credits_per_run"], figure["cph_per_ship"]), (2, 45, -40, -60))
         stamp = (self.root / "routes" / "mine.json").stat().st_mtime_ns
         with open(self.data / "routes" / "runs.jsonl", "a") as handle:
-            handle.write(json.dumps({"route": "mine", "pilot": "miner-3", "minutes": 45, "delta": -45, "credits_before": 9000, "credits_after": 8955}) + "\n")
+            handle.write(json.dumps({"route": "mine", "pilot": "miner-3", "minutes": 45, "delta": -45, "credits_before": 9000, "credits_after": 8955, "started": self.started(2)}) + "\n")
         self.routes.measure(str(self.root), str(self.data), True)
         self.assertEqual((self.root / "routes" / "mine.json").stat().st_mtime_ns, stamp)          # 3 runs, the same rate: untouched
 
     def test_a_hunt_is_not_credited_with_goods_it_carried_in(self):
         rows = [{"route": "rays", "kind": "hunt", "pilot": "drone-1", "minutes": 30, "delta": 1140, "goods": {"carapace": 3}, "sold": {"curd": [4, 330, 1320]},
-                 "credits_before": 20000, "credits_after": 21140},
+                 "credits_before": 20000, "credits_after": 21140, "started": self.started(2)},
                 {"route": "rays", "kind": "hunt", "pilot": "drone-2", "minutes": 30, "delta": 3000, "goods": {"curd": 9}, "sold": {"curd": [10, 330, 3300]},
-                 "credits_before": 20000, "credits_after": 23000}]
+                 "credits_before": 20000, "credits_after": 23000, "started": self.started(1)}]
         self.assertEqual([round(self.routes.earned(r)) for r in rows], [-180, 2670])            # all four carried in; one of ten
         self.assertEqual(self.routes.earned({"route": "missions", "kind": "circuit", "delta": 500, "sold": {"curd": [4, 330, 1320]}}), 500)
         (self.data / "routes" / "runs.jsonl").write_text("".join(json.dumps(r) + "\n" for r in rows))
@@ -598,9 +602,10 @@ class RouteGateTests(Tree):
         self.assertEqual((figure["runs"], figure["credits_per_run"], figure["cph_per_ship"]), (2, 1240, 2490))
 
     def test_a_run_that_read_no_wallet_gives_no_figure_and_takes_a_false_one_out(self):
-        blind = [{"route": "mine", "kind": "mine", "pilot": "miner-1", "minutes": 45, "delta": 0, "credits_before": 0, "credits_after": 0},
-                 {"route": "mine", "kind": "census", "pilot": "scout-1", "minutes": 7, "delta": 0},
-                 {"route": "mine", "kind": "mine", "pilot": "miner-2", "minutes": 45, "delta": 0, "credits_before": None, "credits_after": 9000, "notes": ["wallet not read"]}]
+        blind = [{"route": "mine", "kind": "mine", "pilot": "miner-1", "minutes": 45, "delta": 0, "credits_before": 0, "credits_after": 0, "started": self.started(3)},
+                 {"route": "mine", "kind": "census", "pilot": "scout-1", "minutes": 7, "delta": 0, "started": self.started(3)},
+                 {"route": "mine", "kind": "mine", "pilot": "miner-2", "minutes": 45, "delta": 0, "credits_before": None, "credits_after": 9000, "notes": ["wallet not read"],
+                  "started": self.started(2)}]
         self.assertEqual([self.routes.readable(r) for r in blind], [False, False, False])
         path = self.root / "routes" / "mine.json"
         route = dict(ROUTES["mine"]); route["measured"] = {"date": "2026-01-01", "runs": 3, "minutes": 45, "credits_per_run": 0, "cph_per_ship": 0}
@@ -611,10 +616,137 @@ class RouteGateTests(Tree):
         self.routes.measure(str(self.root), str(self.data), True)
         self.assertNotIn("measured", json.loads(path.read_text()))                              # "0 credits" was never measured
         with open(self.data / "routes" / "runs.jsonl", "a") as handle:
-            handle.write(json.dumps({"route": "mine", "kind": "mine", "pilot": "miner-3", "minutes": 60, "delta": -190, "credits_before": 9000, "credits_after": 8810}) + "\n")
+            handle.write(json.dumps({"route": "mine", "kind": "mine", "pilot": "miner-3", "minutes": 60, "delta": -190, "credits_before": 9000, "credits_after": 8810,
+                                     "started": self.started(2)}) + "\n")
         self.routes.measure(str(self.root), str(self.data), True)
         figure = json.loads(path.read_text())["measured"]
         self.assertEqual((figure["runs"], figure["credits_per_run"], figure["cph_per_ship"]), (1, -190, -190))   # the one run that read
+
+    def measured(self, rid):
+        return json.loads((self.root / "routes" / (rid + ".json")).read_text()).get("measured")
+
+    def runs(self, *rows):
+        (self.data / "routes" / "runs.jsonl").write_text("".join(json.dumps(r) + "\n" for r in rows))
+
+    def a_run(self, rid, hours_ago, delta, minutes=30, **more):
+        return dict({"route": rid, "pilot": "p", "minutes": minutes, "delta": delta, "credits_before": 9000, "credits_after": 9000 + delta,
+                     "started": self.started(hours_ago)}, **more)
+
+    def test_a_figure_rests_on_the_runs_that_ended_in_the_last_twelve_hours(self):
+        # Suggi, 2026-11-16: the game changes by the hour; a route that lost yesterday can pay today
+        self.assertEqual(self.routes.MEASURE_HOURS, 12)
+        self.runs(self.a_run("rays", 30, -900), self.a_run("rays", 12.6, -900), self.a_run("rays", 12.2, 600), self.a_run("rays", 3, 600))
+        self.routes.measure(str(self.root), str(self.data), True, now=self.now)                  # 12.2 hours ago + 30 minutes ended inside the window
+        figure = self.measured("rays")
+        self.assertEqual((figure["runs"], figure["credits_per_run"], figure["cph_per_ship"], figure["hours"]), (2, 600, 1200, 12))
+        self.assertEqual(figure["last_run"], self.started(3 - 0.5))                              # the end of the newest run counted
+        self.assertEqual(self.routes.stage(json.loads((self.root / "routes" / "rays.json").read_text())), "paying")
+        self.assertEqual(self.routes.ended({"started": self.started(1), "minutes": 30}), self.dispatch.read_time(self.started(1)) + 1800)    # the dispatcher's reading
+        self.assertIsNone(self.routes.ended({"minutes": 30}))
+
+    def test_a_route_without_a_readable_run_in_the_window_loses_its_figure_and_is_a_test_again(self):
+        good = {"date": "2026-11-15", "runs": 9, "minutes": 30, "credits_per_run": 2000, "cph_per_ship": 4000, "hours": 12, "last_run": "2026-11-15T10:00:00Z"}
+        for rid in ("rays", "whale"):                                                             # one with old runs, one with no run on record at all
+            (self.root / "routes" / (rid + ".json")).write_text(json.dumps(dict(ROUTES[rid], measured=good)), encoding="ascii")
+        self.runs(self.a_run("rays", 13, 3000), self.a_run("rays", 2, 0, credits_before=0, credits_after=0))     # old, and one that read no wallet
+        import contextlib, io
+        said = io.StringIO()
+        with contextlib.redirect_stdout(said):
+            self.routes.measure(str(self.root), str(self.data), False, now=self.now)             # a rehearsal changes nothing
+        self.assertEqual((self.measured("rays"), self.measured("whale")), (good, good))
+        self.assertIn("rays: no readable run in 12 hours: `--write` takes the figure out; a test again", said.getvalue())
+        said = io.StringIO()
+        with contextlib.redirect_stdout(said):
+            self.routes.measure(str(self.root), str(self.data), True, now=self.now)
+        self.assertEqual((self.measured("rays"), self.measured("whale")), (None, None))           # a figure, good or bad, is never kept past its window
+        for rid in ("rays", "whale"):
+            self.assertIn("%s: no readable run in 12 hours: the figure is taken out; a test again\n" % rid, said.getvalue())
+            self.assertEqual(self.routes.stage(json.loads((self.root / "routes" / (rid + ".json")).read_text())), "test")
+        self.assertIn("measured block written: rays, whale", said.getvalue())
+
+    def test_a_mission_that_pays_once_keeps_all_its_runs(self):
+        self.runs(self.a_run("missions", 40, 4000), self.a_run("missions", 20, 2000))
+        self.routes.measure(str(self.root), str(self.data), True, now=self.now)
+        self.assertEqual(self.measured("missions"), {"date": time.strftime("%Y-%m-%d", time.gmtime(self.now)), "runs": 2, "minutes": 30, "credits_per_run": 3000,
+                                                     "cph_per_ship": 6000})                       # today's block: no window
+        (self.root / "routes" / "missions.json").write_text(json.dumps(dict(ROUTES["missions"], measured=self.measured("missions"))), encoding="ascii")
+        self.runs()
+        self.routes.measure(str(self.root), str(self.data), True, now=self.now)
+        self.assertEqual(self.measured("missions")["runs"], 2)                                   # no run on record: a once figure is left alone
+
+    def test_a_block_from_before_the_window_is_written_once_and_an_unchanged_figure_never(self):
+        old = {"date": "2026-11-15", "runs": 2, "minutes": 30, "credits_per_run": 600, "cph_per_ship": 1200}
+        path = self.root / "routes" / "mine.json"
+        path.write_text(json.dumps(dict(ROUTES["mine"], measured=old)), encoding="ascii")
+        self.runs(self.a_run("mine", 5, 600), self.a_run("mine", 4, 600))
+        self.routes.measure(str(self.root), str(self.data), True, now=self.now)                  # the same figure, but no `hours`: written once
+        figure = self.measured("mine")
+        self.assertEqual((figure["cph_per_ship"], figure["hours"], figure["last_run"]), (1200, 12, self.started(4 - 0.5)))
+        stamp = path.stat().st_mtime_ns
+        with open(self.data / "routes" / "runs.jsonl", "a") as handle:
+            handle.write(json.dumps(self.a_run("mine", 1, 650)) + "\n")                              # a newer run, the same rate: a new last_run alone is no reason
+        self.routes.measure(str(self.root), str(self.data), True, now=self.now)
+        self.assertEqual((path.stat().st_mtime_ns, self.measured("mine")), (stamp, figure))
+
+    def test_a_templates_file_is_gated_like_a_route_file(self):
+        folder = self.root / "routes" / "templates"
+        folder.mkdir()
+        good = {"division": "military", "owner": "Apophis", "templates": {"herds": {"title": "The near herds", "routes": ["rays", "whale"], "trains": ["gunnery"]}}}
+        faults = lambda: [e for e in self.routes.check(str(self.root))[0] if "templates" in e and "is missing or stale" not in e]
+        (folder / "military.json").write_text(json.dumps(good), encoding="ascii")
+        self.assertEqual(faults(), [])
+        for change, says in (({"note": "flown by drone-4 and drone-12"}, "game/routes/templates/military.json: names a pilot of ours (drone-4, drone-12): a template is read by every member"),
+                             ({"routes": ["rays", "ghost"]}, "game/routes/templates/military.json: the template `herds` names `ghost`, which is no route file"),
+                             ({"routes": []}, "game/routes/templates/military.json: the template `herds` holds no route"),
+                             ({"routes": ["@other"]}, "the template `herds` names `@other`: a template holds route ids, never another template"),
+                             ({"title": 7}, "the template `herds`: `title` and `note` are ASCII texts and `trains` a list of skills")):
+            spec = json.loads(json.dumps(good))
+            spec["templates"]["herds"].update(change)
+            (folder / "military.json").write_text(json.dumps(spec), encoding="ascii")
+            self.assertEqual(len(faults()), 1, faults())
+            self.assertIn(says, faults()[0])
+        for spec, says in ((dict(good, owner="Zero"), "`owner` must be Apophis, who keeps the military division"),
+                           (dict(good, division="mining"), "needs `division` equal to the file name"),
+                           (dict(good, templates={"Herds": {"routes": ["rays"]}}), "`Herds` is no template name"),
+                           (dict(good, templates={"drone-2-loop": {"routes": ["rays"]}}), "is no template name")):
+            (folder / "military.json").write_text(json.dumps(spec), encoding="ascii")
+            self.assertIn(says, " | ".join(faults()))
+        (folder / "military.json").write_text(json.dumps(good), encoding="ascii")
+        (folder / "pirates.json").write_text(json.dumps(dict(good, division="pirates")), encoding="ascii")
+        self.assertEqual(faults(), ["game/routes/templates/pirates.json: `pirates` is no division of the fleet (command, intel, logistics, military, mining, trade)"])
+
+    def test_the_plan_pages_carry_no_figure_and_each_division_s_templates_have_a_page(self):
+        names = lambda: [name for name, _state in self.routes.write_index(str(self.root))]
+        names()
+        page = (self.root / "routes" / "plan-drone.md").read_text()
+        self.assertNotIn("Credits per ship-hour", page)                                          # what a route earns changes by the hour: asked of the tools
+        self.assertIn("\n| # | Route | Group | Zone | Open to | Ships planned |\n|---|---|---|---|---|---|\n", page)
+        self.assertIn("What a route earns now is not written here, because it changes by the\nhour: ask the tool `route` or `routes`, or the database (`hive.py sql`)", page)
+        self.assertNotIn("Templates", page)
+        self.assertNotIn("Templates by Division", (self.root / "routes" / "master-index.md").read_text())
+        (self.root / "routes" / "templates").mkdir()
+        spec = {"division": "military", "owner": "Apophis", "templates": {"herds": {"title": "The near herds", "routes": ["rays", "whale"], "trains": ["gunnery"], "note": "n"},
+                                                                          "idle": {"routes": ["mine"]}}}
+        (self.root / "routes" / "templates" / "military.json").write_text(json.dumps(spec), encoding="ascii")
+        plan = self.root / "routes" / "plans" / "drone.json"
+        plan.write_text(json.dumps(dict(json.loads(plan.read_text()), templates={"herds": 3})), encoding="ascii")    # as plan.py role_files writes it
+        self.assertIn("templates-military.md", names())
+        self.assertEqual(self.routes.check(str(self.root)), ([], 6))
+        page = (self.root / "routes" / "templates-military.md").read_text()
+        self.assertIn("Written by `python3 -B game/fleet/routes.py index`, never by hand, from `templates/military.json`:", page)
+        self.assertIn("\nKept by Apophis. Templates: 2. Ships on them: 3.\n", page)
+        self.assertIn("| Template | Title | Trains | Routes, in this order | Ships on it | Note |\n", page)
+        self.assertIn("| herds | The near herds | gunnery | [rays](rays.json) > [whale](whale.json) | 3 | n |\n| idle | -- | -- | [mine](mine.json) | 0 | -- |\n", page)
+        self.assertIn("\n| Template | Ships of this role on it |\n|---|---|\n| [herds](templates-military.md) | 3 |\n", (self.root / "routes" / "plan-drone.md").read_text())
+        master = (self.root / "routes" / "master-index.md").read_text()
+        self.assertIn("## Templates by Division\n", master)
+        self.assertIn("| Division | Kept by | Templates | Page |\n|---|---|---|---|\n| military | Apophis | herds, idle | [templates-military.md](templates-military.md) |\n", master)
+        self.assertEqual(self.routes.write_index(str(self.root))[-1], ("templates-military.md", "current"))
+        (self.root / "routes" / "templates" / "military.json").unlink()                         # the division gives up its templates: the page goes too
+        self.assertIn("game/routes/templates-military.md is written no longer", " ".join(self.routes.check(str(self.root))[0]))
+        self.assertIn(("templates-military.md", "removed"), self.routes.write_index(str(self.root)))
+        self.assertFalse((self.root / "routes" / "templates-military.md").exists())
+        self.assertNotIn("Templates by Division", (self.root / "routes" / "master-index.md").read_text())
 
     def test_the_mining_runner_reads_the_wallet_where_the_engine_puts_it(self):
         mine = load("mine")

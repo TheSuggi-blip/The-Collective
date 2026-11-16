@@ -36,6 +36,9 @@ WHAT: reads the unit's data folder (fleet/, routes/runs.jsonl, market/, scouting
         empire                what we hold: the faction with its members and limit, our bases, our offices at other
                               stations and their rent, the sites proposed for a base, the next steps of the member
                               limit (empire.py show; the file: governance/empire.md)
+        surplus, reserve      what we hold beyond what our bases and upgrades take, where it lies and its best bid
+                              (surplus: what the fleet may sell); what the targets of game/reserve.tsv take against
+                              what we hold, and what is short (reserve). Both are surplus.py's answers
         inventory             what the fleet owns in goods: every item in station storage and in the holds added up, by
                               kind of item (raw, refined, parts, modules ...); `inventory stations` lists it per station
                               (the craft book's own count: craftbook.py inventory)
@@ -70,6 +73,8 @@ USAGE:
   hive.py store price <item id> [--hours N]
   hive.py inventory [stations] [--item <item id>] [--top N]
   hive.py empire
+  hive.py surplus [--top N] [--kind <kind>] [--item <item id>] [--all]
+  hive.py reserve
   hive.py sql "<SELECT or WITH statement>" [--limit N]
   hive.py schema [<table or view>]
   --root <dir>   the repository's game/ folder (default: the parent of this file's folder)
@@ -95,6 +100,7 @@ import division                                   # noqa: E402  who commands whi
 import empire as holdings                         # noqa: E402  the faction, our bases and offices
 import routes as routefiles                       # noqa: E402  a route's group and zone, what a run earned
 import store as history                           # noqa: E402  the history store's read copy
+import surplus as spare                           # noqa: E402  the reserve and what we hold beyond it
 
 HOLD = 65                      # a starter's hold, units
 TURN = 4                       # hours: what a bid or a field must carry
@@ -1268,6 +1274,11 @@ def main():
         return show_store(data, now, float(value("--hours", "24")), rest)
     if verb == "empire":
         return holdings.show(data)
+    if verb in ("surplus", "reserve"):
+        found = spare.surplus(data, str(Path(root).parent))        # surplus.py takes the repository, this script its game folder
+        if verb == "reserve":
+            return spare.show_reserve(found)
+        return spare.show(found, int(value("--top", "15")), value("--kind", ""), value("--item", ""), "--all" in args)
     if verb == "inventory":
         return craftbook.show_inventory(craftbook.load(data) or {"version": "none", "items": {}}, data, rest[0] if rest else "total", value("--item", ""), int(value("--top", "40")))
     if verb == "sql":

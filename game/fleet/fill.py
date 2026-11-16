@@ -581,6 +581,10 @@ def main():
         word = "added" if verb == "add" else "taken out"
         ok, out = planfile.apply(root, data, [name], who, changes={name: change}, message="%s plan: %s %s (fill.py)" % (role, rid, word), commit=commit)
         print("\n".join(out))
+        holds = [key for key, entry in routefiles.templates_of(root, name)[0].items() if rid in entry["routes"]] if verb == "drop" else []
+        if holds:                                              # take_out reaches the lists and the ships' cells, never a template's own routes
+            print("note: %s still stands in the template%s %s of the %s division: a ship that names it flies the route on. `plan.py template <name> <routes>` "
+                  "writes the template without it" % (rid, "s" if len(holds) > 1 else "", ", ".join("@" + key for key in holds), name))
         return 0 if ok else 1
 
     if verb == "lift" and len(rest) == 2 and rest[1].isdigit() and int(rest[1]) >= 1:

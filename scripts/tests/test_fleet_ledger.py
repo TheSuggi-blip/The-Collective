@@ -64,6 +64,20 @@ class MarketTests(Tree):
         path = self.data / "market" / "history.jsonl"
         return [json.loads(l) for l in path.read_text().splitlines()] if path.exists() else []
 
+    def test_a_pilot_that_is_not_connected_for_a_moment_keeps_its_stores_in_the_book(self):
+        # 2026-11-16: the book fell from 336,568 to 131,954 units in 18 minutes; a pilot left it whenever one pass did not read it `connected`
+        book = {"pilots": {"miner-1": {"stations": {"home": {"iron_ore": 5}}}, "miner-2": {"stations": {"home": {"iron_ore": 7}}}, "miner-9": {"stations": {}}}}
+        fleet = self.data / "fleet" / "fleet.json"
+        fleet.parent.mkdir(parents=True, exist_ok=True)
+        ships = [{"name": "miner-1", "status": "connected"}, {"name": "miner-2", "status": "reconnecting"}]
+        fleet.write_text(json.dumps({"engine": {"ok": False}, "ships": ships}))
+        self.assertEqual((ledger.leave(book, str(self.data)), sorted(book["pilots"])), ([], ["miner-1", "miner-2", "miner-9"]))      # the engine does not answer: nobody leaves
+        fleet.write_text(json.dumps({"engine": {"ok": True}, "ships": []}))
+        self.assertEqual(ledger.leave(book, str(self.data)), [])                                  # a file that names nobody is no roster
+        fleet.write_text(json.dumps({"engine": {"ok": True}, "ships": ships}))
+        self.assertEqual((ledger.leave(book, str(self.data)), sorted(book["pilots"])), (["miner-9"], ["miner-1", "miner-2"]))        # only the pilot the fleet has no longer
+        self.assertEqual(ledger.pilots_of(str(self.data)), ["miner-1"])                           # and only a connected pilot is read
+
     def test_only_a_changed_best_bid_or_ask_is_a_move(self):
         seen = {}
         self.book("2026-01-01T10:00:00Z", [{"item_id": "curd", "best_buy": 330, "best_buy_qty": 240, "best_sell": 0}, {"item_id": "dust", "best_buy": 0, "best_sell": 0},

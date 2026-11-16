@@ -54,7 +54,13 @@ twice leaves); a craft step flown once by Trade (requests.log ENT-161), after wh
 the gas haulers can mine, compress and sell liquid hydrogen in one route; a bid
 for water ice that regains more than the miners take.
 
-## 1. Routes That Pay
+## 1. Route Guides
+
+How each kind of route of this division is flown: the fit and the
+skills it needs, its place, its steps, what opens and closes it. A
+credits figure in this section is a dated reading and no verdict: what
+a route earns now is in the fleet's database with its age (rule F22;
+the tool `routes`, the view `route_earnings`).
 
 | Route | Credits per ship-hour, after all costs | Date | Note |
 |---|---|---|---|
@@ -69,26 +75,35 @@ for water ice that regains more than the miners take.
 | Neural soma sold by hand where the haulers already stood (no fuel) | +2,381 cr for 4 soma: 3 at 588 cr into the Node Beta bid of 588 x 4 (02:57 UTC book; 2 from storage, 1 from a hold), 1 at 617 cr a few minutes after the same bid read 0 | 2026-11-16 03:00 to 03:19 UTC | Sold from storage and from the hold alike; a bid read empty at 03:18 UTC stood at 617 x 1 within about two minutes |
 | Stored neural soma into station bids (hand test, not a route) | +1,995 cr in 4.7 min from the first jump to the sale (one ship, Central Nexus to Synchrony Hub, 3 soma sold at 678 cr from storage); the onward leg to The Experiment found no bid (-22 cr fuel) | 2026-11-15 23:29 to 23:37 UTC | Station bids of 559 to 694 cr for 1 to 3 units stand by turns at five of our stations and refill within about 40 minutes of being emptied (`data/market/history.jsonl`, 20:46 to 23:33 UTC). Logistics stores 50 soma, the fleet 302. A route needs a sell from storage and a dispatch on a standing bid (requests.log ENT-065) |
 
-## 2. What Did Not Pay
+## 2. Route Templates
 
-| Route or test | What was measured | Date | Why, and what follows |
-|---|---|---|---|
-| `mine-antares-gas-cloud`, `mine-deepwell-haze` (gas tests that sell plasma at Nova Terra Central, Solarian) | 1 run each: +209 cr in 55.5 min and +41 cr in 59.9 min; 240 and 239 units mined, 8 plasma sold each at 92 and 88 cr (runs.jsonl, 14:46 UTC) | 2026-11-16 | The plasma bid there took 8 units a run; the rest, 232 and 231 units of argon, neon, hydrogen and other gas, lies in two hauler storages at Nova Terra Central (storage book 18:37 UTC), 8 jumps from Nexus Prime (game/planets/n-nova_terra.md), and is bid 2 to 34 cr at our stations. Back in the plan as one-ship tests on Unity's ruling (requests.log ENT-160); a second run that pays less than standing work takes each out |
-| `mission-ghosts-in-the-cloud-node` (added by fill.py on a measure of command ships) | 2 hauler runs, `ghosts_in_the_cloud not offered`, -24 cr each | 2026-11-16 13:12 to 13:18 UTC | The board offered it to the two command ships that were paid and refused the six pilots after them; out of the hauler plan at 13:16 UTC |
-| `mine-achernar-frost-ring-nexus` (the hauler with the made harvester) | 2 runs, -3,346 cr in 107.5 min since 08:45 UTC (runs.jsonl) | 2026-11-16 | The weekly tax of 12:27 UTC fell inside a run (errors.log ENT-056); the loss stop closed the route on its last three runs. Zero cut its places from 15 to 3 (requests.log ENT-143) |
-| `sell-plate-node-beta`, first run | -22 cr in 3.3 min: the 361 x 4 plate bid read at 12:44 UTC read 0 at 13:26 UTC | 2026-11-16 | `requires.bid` trusts a book up to an hour old. It stays in the plan: the bid came back within the hour all day (`ledger.py prices armor_plate`) |
-| The once line after The Collective Provides, with a free utility slot | 4 hauler runs bought the module and fitted it: -1,262 cr three times (Atmospheric Extraction), -430 cr once (Hardware Optimization) | 2026-11-16 13:03 UTC | `have_item` counts the hold, not the slot (section 3). Two of the four handed in since by `handin_module.py`, +2,000 and +1,500 cr; the other two after their gas tests |
-| `mine-gsc-0012-gas-plume`, `mine-miram-haze` (tests, one hauler each) | 1 run each: 224 and 304 units of gas mined in 72.6 and 71.9 min, nothing sold, -495 and -451 cr | 2026-11-16 13:12 to 14:25 UTC | The Node Beta hydrogen bid read 1 unit at 13:36 UTC; the runs began before `requires.bid` stood in their files. The gas lies in storage at Node Beta (174 hydrogen and more by 13:59 UTC): 8 hydrogen make 3 liquid hydrogen by hand, and the Central Nexus liquid-hydrogen bid stood at 116 to 121 cr for 34 to 89 units from 13:57 to 14:25 UTC (`ledger.py prices liquid_hydrogen`). Out of the plan at 14:28 UTC |
-| The plasma sale of the first hand haul from storage | -48 cr in 8 min, nothing sold | 2026-11-16 13:20 UTC | The circuit's withdraw step asked 33 plasma (66 units of space) of a free hold of 65 and was refused; fixed in commit df8f6fb |
-| `mine-acubens`, `mine-gsc-seep`, `mine-pherkad-rift` (haulers) | -172, -180 and -174 cr per ship-hour over 29, 7 and 31 runs (`board.py Apollo`, last four hours at 21:16 UTC) | 2026-11-15 | All fuel; the ore has no buyer. Out of the plan (orders F8) |
-| `voidborn-first-steps` while the belt was empty | One run of 20 minutes, -109 cr, nothing handed in ("objectives not done") | 2026-11-15 21:02 UTC | Acubens Belt read 0 carbon ore at 21:01 UTC. It refilled since (section 3) |
-| Selling stored iron ore into station bids | 10 units sold at 2 cr from storage; the bid at Central Nexus went 20, 10, none (21:22 to 21:33 UTC); it came back by 5 to 15 units at 1 to 2 cr every 5 to 20 minutes, and stood at 2 cr for 2,375 at 23:17 UTC, about two hours after it emptied (`data/market/history.jsonl`) | 2026-11-15 | A station-owned bid is a pool that refills on its own clock. At 2 cr the ore stays in storage (orders.log ENT-007, block APOLLO): steel and wiring are what a base will need |
-| Ferrous slug cases for The Experiment | The best bid is 15 cr for 8 cases, then 2 cr for 314 (queue.log ENT-037). The 322 at 15 cr read on 2026-11-15 19:03 UTC was the total of all levels | 2026-11-15 | A trip burns more than 8 cases bring. Not flown |
-| `mission-cracking-the-shell-central` and `-achernar` (once routes added by fill.py) | 12 hauler runs, every one `cracking_the_shell not offered`: 8 at -26 cr, 4 at 0 cr, -208 cr in all; the Achernar route read at a loss, 2 runs, -104 cr | 2026-11-16 02:56 to 03:27 UTC | The board offers it only to a pilot with First Hunt booked (errors.log ENT-033: 7 of 7 with it, 0 of 12 without). Both out of the hauler plan at 03:27 UTC; one hauler with First Hunt booked accepted it by hand at 05:14 UTC |
-| `mine-achernar-gas-pocket` (gas test, one hauler with a Gas Harvester I) | 3 runs: -297, -396, -396 cr in 183.6 min, -1,089 cr in sum, about -356 cr per ship-hour; the first ended not docked for the sale, the other two sold nothing (`route mine-achernar-gas-pocket`, 03:51 to 07:15 UTC) | 2026-11-16 | Out of the plan at 08:59 UTC. The bids are the limit: at Node Beta hydrogen 33 x 32 and plasma 94 x 4 (08:57 UTC book), while that hauler stores 204 hydrogen, 83 plasma, 213 argon and 175 neon there. A gas route adds nothing until the stored gas is sold; the candidate mine-miram-haze (1,970 estimated, hydrogen into the same 32-unit bid) was not added for that reason |
-| `hunt-dimming-pocket-veil-ray` | 6 runs: +583 and five at -77 to -99 cr; +176 cr in 68.7 min over all six, the last four all at a loss; every run left with a ship not of ours at the place | 2026-11-16 02:56 to 07:18 UTC | Out of the plan at 08:59 UTC; Military took the same herd out at 05:16 UTC for the same reason |
-| `hunt-denebola-fractured-prism-veil-ray` (test) | 3 runs: -110, +209, -110 cr in 50.4 min, -11 cr in sum; a ship not of ours stood at the place in 2 of 3 | 2026-11-16 02:56 to 04:23 UTC | Out of the hauler plan at 05:00 UTC (commit 221f9d2) |
-| Carrying a soma to a bid seen 39 minutes earlier | The Experiment bid 690 cr for 2 at 22:58 UTC; at 23:37 UTC no bid stood (view_market) | 2026-11-15 | A saved bid of a few units is gone within the hour: carry only to a bid read minutes before, or store the goods where the bid comes back |
+A kind of work is a named list of routes: a template. The templates of
+this division are kept in `game/routes/templates/logistics.json` and listed
+in `game/routes/templates-logistics.md`, a page a script writes once the
+division has its first template. A ship's row in the plan file names a
+template as `@<name>`, alone or beside routes of its own, and a ship is
+switched to other work with one word.
+
+| Task | How |
+|---|---|
+| See the templates and how many ships use each | the tool `plan` with `action=templates` (`plan.py templates`) |
+| Make or change one | `plan.py template <name> <routes with commas> --title "..." --trains <skills> --note "..."` |
+| Put ships on one | `plan.py use <ships> <name>` (the tool `plan` with `action=use`) |
+| Take one away | `plan.py template <name> none`, once no ship names it |
+
+A template is a guide for one kind of ship: its routes in the order a
+ship tries them, the skills it trains (`--trains`) and, in its note,
+the fit it needs. Keep one for each kind of work of the division, so
+that a ship born tomorrow gets its work with one word.
+
+This guidebook keeps no list of routes that did not pay (Suggi,
+2026-11-16; rule F22). The game changes by the hour: a route that lost
+yesterday may pay today. What a route earns now, with the age of the
+figure, is asked each turn: the tool `routes`, or `SELECT * FROM
+route_earnings` through the tool `hive` with `verb=sql`. How a step of
+the game works is a mechanic, not a verdict on a route: it belongs in
+the sections below. The list this section held until 2026-11-16 is in
+the file's history (`git log -- game/routes/guidebook/logistics.md`).
 
 ## 3. Missions That Pay Once
 
@@ -107,7 +122,12 @@ for water ice that regains more than the miners take.
 | `voidborn-missions-1` | Synchrony Relay Run and Crystal Delivery, 8 jumps | 146 runs, 6,430 cr a run (index) |
 | `voidborn-mining-missions` | Iron Supply Run 1,500 cr and Copper Requisition 1,800 cr | 11 hauler runs, one-time +29,700 (`board.py Apollo`, 23:20 UTC) |
 
-## 4. Levelling
+## 4. Levelling Guide
+
+Which skills a ship of this division levels and on which work (rule
+F23): the work of its own role first, gathering ore only when none is
+open. Per kind of ship: the skill, what raises it, what the next level
+opens, and the template that trains it (section 2).
 
 Navigation is the skill a hauler buys with jumps (2026-11-16): about 3 XP a
 jump and 1 a dock. One hauler went 277 to 289 on three jumps and three docks
@@ -157,7 +177,7 @@ A Gas Harvester I goes into the second utility slot beside the mining
 laser: one hauler bought and fitted one at Node Beta by the route
 `fit-gas-harvester-hauler`, -1,236 cr in 3.7 min (2026-11-16 03:16 UTC,
 the ask 1,202 cr). It is the tool of the gas test `mine-achernar-gas-pocket`, which lost
-(section 2).
+(the list in this file's history).
 
 An Ice Harvester I made by hand went into a hauler's second utility slot
 beside the mining laser the same way (`withdraw` from storage, then

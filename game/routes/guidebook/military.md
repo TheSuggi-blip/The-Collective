@@ -57,7 +57,13 @@ hunters sell); the guard route's first RESULT line (a guard beside each mine run
 and `census-guard-ice` out); the carapace tests' RESULT lines (kills, carapace a run, strangers at the
 place); a herd under its floor (the hunt closes by itself).
 
-## 1. Routes That Pay
+## 1. Route Guides
+
+How each kind of route of this division is flown: the fit and the
+skills it needs, its place, its steps, what opens and closes it. A
+credits figure in this section is a dated reading and no verdict: what
+a route earns now is in the fleet's database with its age (rule F22;
+the tool `routes`, the view `route_earnings`).
 
 Measured by `routes.py measure`, 2026-11-16 05:21 UTC, all runs of each route,
 credits per ship-hour after fuel. The wallet change of a run (the `delta` of
@@ -88,39 +94,37 @@ veil-ray hunts flew no run: the loss stop held them until the curd bid had left 
 Ember glands are bid 480 cr, 30 to 50 deep, at all eight stations of our books
 (09:02 UTC). Drone hunts from 2026-11-16 05:30 to 09:10 UTC, all routes:
 1,052 hunter-minutes, +20,307 cr, 1,158 cr per hunter-hour (`hunt_figures.py`);
-the veil-ray part of it stopped paying at 07:05 UTC (section 2). No hull lost.
+the veil-ray part of it stopped paying at 07:05 UTC (the list in this file's history). No hull lost.
 
-## 2. What Did Not Pay
+## 2. Route Templates
 
-| Route or test | What was measured | Date | Why, and what follows |
-|---|---|---|---|
-| `hunt-acubens-urchin` | 3 runs, 6 kills, -240 cr per ship-hour | 2026-11-15 | No radiant bile dropped, carapace only. Off |
-| `hunt-home-drift-ray` | 11 runs, -260 cr per ship-hour | 2026-11-15 | Crystallized biogas bid 1 to 2 cr. Out of the plan (orders F8) |
-| A pilot-whale (220 hull) | Took a starter with a railgun from 73 to 15 hull in one fight | 2026-11-15 | Not for a starter hull with no defence module (orders F9) |
-| Piercing Railgun I on veil-rays (`hunt-gsc-veil-ray`, 21:55 to 22:54 UTC) | 3 runs: 4, 4 and 0 kills; the two trips with 4 kills took 21.4 and 24.0 min, the eight pulse-laser trips with 4 kills at the same place 21.7 to 26.8 min (18:20 to 21:28 UTC); +1,915, +1,915 and -65 cr | 2026-11-15 | No gain measured, and the weapon needs ammunition: 8 slug cases bought for 320 cr ran out in the third run, which fled at once. The hunters keep the Pulse Laser I. No hunt route takes a ship with a railgun (`requires.without_module`) until it carries ammunition |
-| Yield test: bell-jellies at Nexus Prime Stellar Siphon | 1 run, 2 kills in 6 min at the place, -26 cr | 2026-11-15 23:29 UTC | Drop: 3 crystallized biogas, 1 levity bladder; both bid 1 to 2 cr. Off |
-| Yield test: rime-grazers and pressblisters at Node Gamma Ice Belt | 1 run, 3 kills in 16.8 min, -60 cr a run (`routes.py measure`) | 2026-11-15 23:29 UTC | Drop: 3 creature carapace, 2 nitrogen bladder; both bid 1 to 2 cr. Off |
-| Yield test: deuteron-slugs at Node Beta Frozen Drift | 1 run, 2 kills in 23.3 min, no goods recorded, -33 cr | 2026-11-15 23:29 UTC | Off |
-| Yield test: kiln-snails (100 hull) at Eltanin Prime Belt, Node Beta | 1 run of 32.8 min: 0 kills, hull 75 -> 46 (lowest 68% in the battle table), -167 cr | 2026-11-15 23:29 UTC | The one fight of the turn that cost hull: prey of 100 hull hits a starter hard. Off (orders F9) |
-| `hunt-ruchbah-veil-ray` by hand, hold empty | 1 run: 0 kills, -77 cr, two ships of a faction of 1,249 members joined the fight within three minutes | 2026-11-15 21:26 UTC | The first run of the route (below, section 6) found nobody there |
-| `hunt-garnet-dim-lattice-veil-ray` | 6 runs, 0 kills, -610 cr per ship-hour | 2026-11-16 03:19 UTC | A ship not of ours at the place in every run; the herd read 23 at 01:30 UTC. Out of the plan (orders F8) |
-| `hunt-test-acubens-patina-grazer` | 5 runs, 0 kills, -500 cr per ship-hour | 2026-11-16 03:19 UTC | A pilot not of ours at the place in every run; out. Patina-grazers are tested at Atlas instead |
-| `voidborn-first-hunt-schedar` | 10 runs, 190 cr per ship-hour with the reward; 1 of 9 counted runs handed in | 2026-11-16 03:19 UTC | A foreign pilot at the place in 8 of 9 runs (route logs). Kept last among the once routes because the fill gate counts it paying |
-| `voidborn-first-hunt-ironhollow-echo`, `-fading` | 2 runs each, no hand-in (`first_hunt_belt_grazers not offered` in 3 of 4), closed by the loss stop | 2026-11-16 05:16 UTC | Out of the plan |
-| `voidborn-first-hunt-acubens` | 21 runs since 01:00 UTC, 2 hand-ins | 2026-11-16 05:20 UTC | Acubens Shadow Pocket held no belt-grazer at any read from 03:33 to 04:48 UTC (data/wildlife/history.jsonl); out until the herd is back |
-| `hunt-test-gsc-0050-cinder-sylph` | 2 runs, 0 kills, -540 cr per ship-hour | 2026-11-16 05:16 UTC | The herd read 0 at 01:52 UTC. Out |
-| `hunt-test-atlas-patina-grazer` | 5 runs, 4 kills, -360 cr per ship-hour | 2026-11-16 05:16 UTC | Drop: creature carapace and raw xeno meat, no bid above 2 cr; a ship not ours at the place in 3 of 5 runs. Out |
-| `hunt-test-garnet-slag-tortoise` | 2 runs, 0 kills, -630 cr per ship-hour | 2026-11-16 05:16 UTC | Out; the drop of a slag-tortoise is still not seen |
-| `hunt-test-goldcrest-glitterback-crab` | 2 runs, 0 kills, -600 cr per ship-hour | 2026-11-16 05:16 UTC | A ship not ours at the place; out |
-| `hunt-test-tanglewood-hollow-pilgrim` | 1 run, 2 kills, -50 cr per ship-hour | 2026-11-16 05:16 UTC | Drop: 2 crystal melt (bid 54 cr) and creature carapace. Out |
-| `hunt-dimming-pocket-veil-ray`, `hunt-denebola-fractured-prism-veil-ray` | 3 runs each: 610 and -10 cr per ship-hour, 1 and 2 kills | 2026-11-16 05:16 UTC | A ship not ours at the place in every Dimming Pocket run and in 2 of 3 at Denebola. Out |
-| The seven veil-ray hunts: `hunt-gsc-veil-ray` (3,020 by all its runs), `-hamal-` (2,310), `-ruchbah-` (2,100), `-keid-fractured-prism-` (1,850), `-faintlight-drift-` (1,300), `-low-charge-glint-` (1,060), `-cedarhold-dim-lattice-` (900) | 21 drone runs from 07:05 UTC, read at 09:05 UTC: -1,851 cr in about 474 hunter-minutes, about -234 cr per ship-hour; at 09:20 UTC 23 runs, -2,056 cr, none sold anything, 18 looted curd | 2026-11-16 09:12 UTC | The verdigris curd bid (330 cr x 50) left all seven stations of our books between 07:08 and 07:51 UTC (data/market/history.jsonl) and none stood at 09:02 UTC; The Experiment bids 2 cr. Our runs sold 128 curd from 03:00 to 08:00 UTC against about 350 bid at seven stations: whether others sold the rest, or the bids were withdrawn, is not in our record. `status: off` and out of the plan; back when a curd bid of 100 cr or more reads again |
-| `hunt-dimming-pocket-veil-ray` (no plan holds it) | 7 runs of the fleet, 80 cr per ship-hour by all runs | 2026-11-16 09:32 UTC | Sells curd like the seven: `status: off` when the fill gate asked for it; back with a curd bid |
-| `voidborn-first-hunt-achernar` | 19 drone runs from 05:30 UTC, 0 hand-ins, -1,474 cr | 2026-11-16 09:12 UTC | A ship not ours at the place in every run from 06:49 UTC (the hunt step's last word in each row). Out of the plan; `store: all` at its last stop |
-| `voidborn-first-hunt-schedar` | 17 runs of the fleet from 03:13 UTC, 1 hand-in, -12 cr in sum | 2026-11-16 09:16 UTC | A ship not ours at the place in every run from 04:58 UTC. `status: off`; back when a census reads the belt free twice in a row |
+A kind of work is a named list of routes: a template. The templates of
+this division are kept in `game/routes/templates/military.json` and listed
+in `game/routes/templates-military.md`, a page a script writes once the
+division has its first template. A ship's row in the plan file names a
+template as `@<name>`, alone or beside routes of its own, and a ship is
+switched to other work with one word.
 
-| The second curd window | The bid of 330 cr x 50 stood at seven stations from 12:07 UTC and read 0 again from 13:24 UTC (Central Nexus) to 13:38 UTC (Synchrony Hub); no veil-ray hunt ran inside it, closed by the loss stop's six-hour window over the losing runs of 07:05 to 09:20 UTC (data/market/history.jsonl, data/routes/runs.jsonl) | 2026-11-16 13:38 UTC | A hunt tied to one bid flies a few hours a day at best. Since 18:33 UTC the veil-ray hunts are standing work without `requires.bid`: they store the curd a station needs and sell into a bid when one stands (orders ENT-017) |
-| The weekly tax inside runs | 7 drone runs started from 12:07 to 12:30 UTC, two of them after the assessment of 12:27:32 UTC, carried 29,346 cr of their pilots' tax (census-guard-ice 2, First Hunt 3, Cracking the Shell 2); the division paid 125,248 cr in all, 2,868 to 5,315 a drone (`get_tax_estimate`, 13:05 UTC) | 2026-11-16 12:27 UTC | Not a loss of the routes: the money was owed. Read without it, the drones' steady money over four hours to 13:18 UTC was -5,077 cr (-42 per ship-hour over 30 ships) against -34,423 with it (the tool fleet, view tasks). Next assessment in about six days; Trade asked Unity to keep it out of the run rows (requests.log ENT-147) |
+| Task | How |
+|---|---|
+| See the templates and how many ships use each | the tool `plan` with `action=templates` (`plan.py templates`) |
+| Make or change one | `plan.py template <name> <routes with commas> --title "..." --trains <skills> --note "..."` |
+| Put ships on one | `plan.py use <ships> <name>` (the tool `plan` with `action=use`) |
+| Take one away | `plan.py template <name> none`, once no ship names it |
+
+A template is a guide for one kind of ship: its routes in the order a
+ship tries them, the skills it trains (`--trains`) and, in its note,
+the fit it needs. Keep one for each kind of work of the division, so
+that a ship born tomorrow gets its work with one word.
+
+This guidebook keeps no list of routes that did not pay (Suggi,
+2026-11-16; rule F22). The game changes by the hour: a route that lost
+yesterday may pay today. What a route earns now, with the age of the
+figure, is asked each turn: the tool `routes`, or `SELECT * FROM
+route_earnings` through the tool `hive` with `verb=sql`. How a step of
+the game works is a mechanic, not a verdict on a route: it belongs in
+the sections below. The list this section held until 2026-11-16 is in
+the file's history (`git log -- game/routes/guidebook/military.md`).
 
 ## 3. Missions That Pay Once
 
@@ -132,10 +136,10 @@ the fleet:
 |---|---|---|---|
 | `voidborn-precedence` | 4,000 cr | 41 runs, 15 min, 3,890 cr a run | Accept at Node Beta, two docks, nothing bought. Drones from 23:40 UTC |
 | `voidborn-first-hunt-nexus`, `-gsc`, `-acubens` | 1,000 cr, 50 Weapons XP, 15 Xenobiology XP, 20 Piloting XP | 2026-11-16 03:19 UTC, all runs of the fleet: nexus 10 runs, 21 min, 570 cr a run; gsc 7, 27 min, 790 cr; acubens 12, 14 min, 370 cr | The circuit runner's `hunt` step: accept, three belt-grazer kills, hand in. One hunter per herd, so the fleet's pilots queue for three herds |
-| `voidborn-first-hunt-schedar` | the same | 10 runs, 11 min, 40 cr a run (2026-11-16 03:19 UTC); see section 2 | A fourth herd one jump beyond GSC-0027 (20 belt-grazers, no pilot, 21:14 UTC), `alone` and an empty hold; a test from 2026-11-15 23:58 UTC |
+| `voidborn-first-hunt-schedar` | the same | 10 runs, 11 min, 40 cr a run (2026-11-16 03:19 UTC); see the list in this file's history | A fourth herd one jump beyond GSC-0027 (20 belt-grazers, no pilot, 21:14 UTC), `alone` and an empty hold; a test from 2026-11-15 23:58 UTC |
 | `voidborn-selling` | 1,000 cr for the pilots that hold Market Participation: Selling | 40 runs, 5 min, 870 cr a run | 20 drones held the mission (`data/fleet/ships/`, 23:46 UTC) |
 | `voidborn-concurrent` | 3,000 cr | every drone has it booked | Flown by all 30 drones on 2026-11-15 |
-| `voidborn-first-hunt-ironhollow-echo`, `-ironhollow-fading`, `-achernar` | 1,000 cr, accepted and handed in at The Experiment | Achernar: 1 run, 19 min, +960 cr (03:00 UTC); Ironhollow: see section 2 | Three herds one jump beyond The Experiment, written 2026-11-16 03:00 UTC: 26, 19 and 12 belt-grazers at their reads of 01:19 to 01:20 UTC |
+| `voidborn-first-hunt-ironhollow-echo`, `-ironhollow-fading`, `-achernar` | 1,000 cr, accepted and handed in at The Experiment | Achernar: 1 run, 19 min, +960 cr (03:00 UTC); Ironhollow: see the list in this file's history | Three herds one jump beyond The Experiment, written 2026-11-16 03:00 UTC: 26, 19 and 12 belt-grazers at their reads of 01:19 to 01:20 UTC |
 | `mission-cracking-the-shell-achernar`, `-central` | 1,500 cr, 55 Weapons XP | achernar 2 runs, refused at the accept; central 24 runs of the fleet, 730 cr per ship-hour (`routes.py measure`, 05:21 UTC) | Back in the plan since 2026-11-16 05:16 UTC with `requires.booked` First Hunt (requests.log ENT-102): in 19 runs of the fleet (2026-11-16 01:16 to 03:22 UTC) the pilots with First Hunt booked were offered it (7 of 7) and the others not (12 of 12). `-central` hunts at Alnair Ice Fields since 05:17 UTC (8 pressblisters at 01:55 UTC, no predator); Node Gamma Ice Belt read no pressblister from 01:50 UTC on. "Hunt 3 Pressblisters at an ice field": any ice field. Achernar Frost Ring read 8 pressblisters at 01:21 UTC |
 
 | `voidborn-signal-fragments` (Trade's) | 7,000 cr | 36 runs of the fleet, 14 min, 5,730 cr a run (`measured`, 09:15 UTC) | Only from navigation 3 (`requires.skills`); 11 drones have it. In the drone plan since 09:02 UTC, at its head |
@@ -148,7 +152,12 @@ Belt-grazer goods are creature carapace and raw xeno meat; no station of
 ours bids above 1 cr for either. The mission is the pay. Carapace becomes armor
 plate at a workshop (section 1).
 
-## 4. Levelling
+## 4. Levelling Guide
+
+Which skills a ship of this division levels and on which work (rule
+F23): the work of its own role first, gathering ore only when none is
+open. Per kind of ship: the skill, what raises it, what the next level
+opens, and the template that trains it (section 2).
 
 - Piloting opens the hulls: tier 2 needs Piloting 10. The drones stand
   at Piloting 3 (20 drones), 4 (8) and 5 (2) (`data/fleet/ships/`,
@@ -208,7 +217,7 @@ Catalog and books read 2026-11-15 23:24 to 23:32 UTC.
 
 - A railgun hit does not kill a 60-hull grazer: the first hit leaves it
   at 4 to 8 hull and it flees (hunt logs of 21:30 and 22:52 UTC). On
-  veil-rays it was no faster than the pulse laser (section 2).
+  veil-rays it was no faster than the pulse laser (the list in this file's history).
 - Hulls, priced by the game (`commission_quote` at Central Nexus, read
   only, 2026-11-15 23:30 to 23:32 UTC):
 
@@ -234,7 +243,7 @@ Catalog and books read 2026-11-15 23:24 to 23:32 UTC.
 
 ## 6. Open Tests
 
-The yield tests of 2026-11-16 03:00 to 03:16 UTC are read (section 2): of eight,
+The yield tests of 2026-11-16 03:00 to 03:16 UTC are read (the list in this file's history): of eight,
 the Lesath cinder-sylph herd paid and stays; the rest left the plan at 05:16 UTC.
 Open now, one ship each:
 

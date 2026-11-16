@@ -295,7 +295,15 @@ class WriteTests(Tree):
         self.assertEqual((done.returncode, "REFUSED: ice carries about 20 ships, not 30" in done.stdout), (1, True), done.stdout)
         self.assertEqual(json.loads((self.root / "routes" / "ice.json").read_text())["max_ships"], 2)
         self.assertIn("committed", self.run_fill("zero", "lift", "ice", "20").stdout)
-        self.assertIn("committed", self.run_fill("apophis", "drop", "herd2").stdout)
+        kit = self.root / "routes" / "templates" / "military.json"                               # a template of the division that holds the route
+        kit.parent.mkdir()
+        kit.write_text(json.dumps({"division": "military", "owner": "Apophis", "templates": {"hunts": {"routes": ["herd2", "rays"]}}}, indent=1) + "\n", encoding="ascii")
+        subprocess.run([sys.executable, "-I", "-B", str(FLEET / "routes.py"), "index", "--root", str(self.root)], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        self.git("add", "-A")
+        self.git("-c", "user.name=Test", "-c", "user.email=test@example.invalid", "commit", "-q", "-m", "a template")
+        done = self.run_fill("apophis", "drop", "herd2")
+        self.assertIn("committed", done.stdout)
+        self.assertIn("note: herd2 still stands in the template @hunts of the military division", done.stdout)       # plan.take_out cannot reach a template
         done = self.run_fill("apophis", "drop", "park")                                           # a plan must end with a route that is always open
         self.assertEqual((done.returncode, "HALT military: nothing changed; the plan applied last stays in force" in done.stdout), (1, True), done.stdout)
         self.assertEqual(json.loads((self.root / "routes" / "plans" / "drone.json").read_text())["routes"], ["once", "rays", "park"])

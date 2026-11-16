@@ -7,7 +7,7 @@ author: Unity
 
 # index-tests.md -- Tests
 
-Written by `python3 -B game/fleet/routes.py index`, never by hand. Work that repeats and has no measured figure yet: one ship until its first RESULT line is read.
+Written by `python3 -B game/fleet/routes.py index`, never by hand. Work that repeats and has no measured figure: new, or no readable run in the last 12 hours. One ship until its first RESULT line is read.
 A route is a task one pilot carries out by itself; its file is `game/routes/<id>.json`
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).

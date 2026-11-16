@@ -8,7 +8,7 @@ author: Unity
 # index.md -- The Fleet's Scripts
 
 Built by `python3 -B scripts/fleet-index.py` from the docstring of every script in this
-folder; never edited by hand. Scripts listed: 27.
+folder; never edited by hand. Scripts listed: 28.
 
 - Run a script from the repository root: `python3 -I -B game/fleet/<script> <arguments>`,
   the arguments as listed under "How to Call Each".
@@ -52,6 +52,7 @@ folder; never edited by hand. Scripts listed: 27.
 | `sight.py` | What our ships see where they are: the pilots they meet, and a first read of a system nobody read. | Service |
 | `stash.py` | Store what a docked pilot carries in its own storage at that station, so that its hold is free for the next route. | By hand |
 | `store.py` | Keeps the fleet's history and its current state in one SQLite file: the runs, the price moves and the census readings with their sums by hour and by day, and beside them what the fleet's own files say now. | Service |
+| `surplus.py` | Say per item what the fleet holds beyond what its build targets reserve: the surplus a trader may sell, where it lies and its best bid. | By hand |
 | `taxes.py` | Keeps each pilot's weekly tax apart, so that no run and no hour reads it as a loss. | By hand |
 | `wallet.py` | No ship of ours goes broke: a ship whose wallet runs low is given credits by a rich ship of its division. | By hand |
 
@@ -255,6 +256,8 @@ hive.py store [--hours N]
 hive.py store price <item id> [--hours N]
 hive.py inventory [stations] [--item <item id>] [--top N]
 hive.py empire
+hive.py surplus [--top N] [--kind <kind>] [--item <item id>] [--all]
+hive.py reserve
 hive.py sql "<SELECT or WITH statement>" [--limit N]
 hive.py schema [<table or view>]
 --root <dir>   the repository's game/ folder (default: the parent of this file's folder)
@@ -340,9 +343,17 @@ plan.py check [<division>|<Member>|all]               PASS or HALT per division 
 plan.py apply [<division>|<Member>|all] [--quiet]     after a change by hand: check, write, commit
 plan.py set <ships> <routes> [--division <name>]      the own routes of ships: names with commas, a range
                                                       (miner-1..10), a role or `all`; routes with commas in their
-                                                      order, or `none`
+                                                      order (`@<name>` for a template, in any mix), or `none`
 plan.py first <routes> [--division <name>]            the list First, whole
 plan.py then <routes> [--division <name>]             the list Then, whole
+plan.py templates [<division>|<Member>|all]           each template: name, title, trains, its routes in order, and
+                                                      how many ships of the division use it
+plan.py template <name> <routes|none> [--title "..."] [--trains a,b] [--note "..."] [--division <name>]
+                                                      make or replace a template (routes with commas, in their
+                                                      order; an option not given keeps its value); `none` removes
+                                                      it, refused while a ship names it
+plan.py use <ships> <name[,name...]> [--division <name>]
+                                                      `set` with `@` before each name: the ships fly the templates
 --root <dir>   the repository's game/ folder (default: the parent of this file's folder)
 --data <dir>   the unit's data folder (default: the fleet's)
 ```
@@ -437,6 +448,21 @@ store.py status                 from the read copy: rows and newest row of each 
 --data <dir>                    the unit's data folder (default /srv/collective/data)
 --root <dir>                    the repository's game/ folder (default: the parent of this file's folder)
 --keep-days N                   days of raw rows kept (default 7)
+```
+
+### `surplus.py`
+
+Say per item what the fleet holds beyond what its build targets reserve: the surplus a
+trader may sell, where it lies and its best bid.
+
+Run by hand.
+
+```
+surplus.py show [--top N] [--kind <kind>] [--item <item id>] [--all]
+surplus.py reserve
+surplus.py check
+--root <dir>      the repository (default: two folders above this file)
+--data <dir>      the unit's data folder (default /srv/collective/data)
 ```
 
 ### `taxes.py`

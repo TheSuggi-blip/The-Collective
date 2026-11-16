@@ -2,17 +2,23 @@
 """routes.py -- check the route files, write their index, and attach what the runs measured.
 
 WHAT: game/routes/<id>.json are the fleet's tasks (game/routes/BLUEPRINT.md); game/routes/plans/<role>.json
-      lists them per role, one file per role, kept by the role's Admiral. This script
-        check     validates every route file and the plans (the gate);
+      lists them per role, one file per role, kept by the role's Admiral; game/routes/templates/<division>.json
+      holds a division's templates (named lists of routes a ship's plan row names as `@<name>`, plan.py). This script
+        check     validates every route file, the plans and the templates files (the gate);
         index     writes into game/routes/: master-index.md (the groups of routes and the plans at
                   a glance; every name is a link into a sub-index), one index per group of routes
                   (index-<group>.md: every route of the group with its measured figures and its
-                  zone) and one plan per role (plan-<role>.md: the role's routes in their order,
-                  the ships planned on each, and what is planned); it removes a file it wrote
-                  once and writes no longer;
+                  zone), one plan per role (plan-<role>.md: the role's routes in their order,
+                  the ships planned on each, the templates its ships fly and what is planned; no
+                  figure, since what a route earns changes by the hour) and one page per division
+                  that has templates (templates-<division>.md); it removes a file it wrote once and
+                  writes no longer;
         measure   reads the runs (data/routes/runs.jsonl) and prints, per route, runs,
-                  minutes and credits per ship-hour; with --write it stores the figures
-                  in the route file's `measured` block when they moved by a fifth or more.
+                  minutes and credits per ship-hour over the readable runs that ended in the last
+                  MEASURE_HOURS (12; a mission that pays once: all its runs); with --write it stores
+                  the figures in the route file's `measured` block when they moved by a fifth or
+                  more, and takes the block out of a repeating route without a readable run in the
+                  window: it is a test again.
 RULES:
   - A route's id is its file name; its systems are on the chart (game/map/galaxy.tsv).
   - A plan names only routes that exist and carries its role's Admiral as
@@ -26,7 +32,12 @@ RULES:
     test (not measured yet), a fitting, reading and waiting (census, park), measured at a loss,
     off. Its zone comes from the chart: home space when every system it touches is our
     empire's, beyond the border otherwise.
-  - A measured block changes only on a real move, so a pass rarely makes a commit.
+  - A measured block changes only on a real move, so a pass rarely makes a commit. A figure forgets: it rests
+    on the runs of the last MEASURE_HOURS only, and a repeating route without a readable run in that window has
+    no figure at all, good or bad (Suggi, 2026-11-16: the game changes by the hour; no route is marked bad for
+    good). A block written before the window (without `hours`) is written again once.
+  - A templates file names no pilot, holds templates of 2 to 40 lower-case letters, digits and dashes, each
+    with one route or more that has a route file, and carries its division's Admiral as `owner`.
   - A hunt is not credited with what it got for goods it carried in from an
     earlier run: those were earned on another route.
   - A run that read no wallet (no credits before and after, both 0, or the note
@@ -61,13 +72,16 @@ PLACES = {"mine": "belt", "hunt": "place"}       # the kinds that work at one pl
 FRONT = "---\nname: %s\nid: %s\ntier: intel\nauthor: Unity\n---\n\n"
 MASTER = "master-index.md"
 WRITTEN = "`python3 -B game/fleet/routes.py index`, never by hand"       # every file `index` writes says so
+MEASURE_HOURS = 12             # a figure rests on the readable runs that ended in this window: the game changes by the hour
+TEMPLATE = re.compile(r"[a-z][a-z0-9-]{1,39}")        # a template's name (fullmatch): 2 to 40 lower-case letters, digits and dashes, a letter first
 STAGES = (("once", "Once per Pilot", "Missions and rewards the game pays once per pilot: a new pilot's first work, and seed money."),
-          ("paying", "Paying Routes", "Work that repeats and whose runs measured above zero."),
-          ("test", "Tests", "Work that repeats and has no measured figure yet: one ship until its first RESULT line is read."),
+          ("paying", "Paying Routes", "Work that repeats and whose runs of the last %d hours measured above zero." % MEASURE_HOURS),
+          ("test", "Tests", "Work that repeats and has no measured figure: new, or no readable run in the last %d hours. One ship until its first "
+           "RESULT line is read." % MEASURE_HOURS),
           ("fit", "Fitting", "A module bought and fitted: the tool a kind of work needs."),
           ("service", "Standing Work, Reading and Waiting", "Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park "
            "route: they keep every ship busy and the picture fresh."),
-          ("losing", "Measured at a Loss", "Work that repeats and whose runs measured zero or below."),
+          ("losing", "Measured at a Loss", "Work that repeats and whose runs of the last %d hours measured zero or below." % MEASURE_HOURS),
           ("off", "Off", "Written down, not flown."))
 SLUGS = {"once": "once-per-pilot", "paying": "paying-routes", "test": "tests", "fit": "fitting", "service": "standing-work",
          "losing": "measured-at-a-loss", "off": "off"}               # a group's sub-index: index-<slug>.md
@@ -97,6 +111,78 @@ def routes_of(root):
         except (OSError, ValueError) as error:
             errors.append("game/routes/%s: not readable as ASCII JSON: %s" % (path.name, error))
     return out, errors
+
+
+def plan_module():
+    """game/fleet/plan.py, which knows the divisions, their Admirals (DIVISIONS) and their roles (roles_of): imported
+    when first asked, not at the top, since plan.py imports this file."""
+    import plan
+    return plan
+
+
+def templates_path(root, name):
+    """A division's templates file: game/routes/templates/<division>.json."""
+    return Path(root) / "routes" / "templates" / (name + ".json")
+
+
+def template_divisions(root):
+    """The divisions that have a templates file, by name; a file whose name is no division is the gate's to name."""
+    folder = Path(root) / "routes" / "templates"
+    known = plan_module().DIVISIONS
+    return sorted(path.stem for path in folder.glob("*.json") if path.stem in known) if folder.is_dir() else []
+
+
+def templates_of(root, name, text=None):
+    """({template: {title, routes, trains, note}} in the file's order, its `owner`, [errors]) of a division's templates
+    file, or of `text` when given (a change not written yet); ({}, "", []) when the division has none. The one reader:
+    plan.py expands a ship's `@<name>` by it, and this file's gate and pages read it."""
+    where = "game/routes/templates/%s.json: " % name
+    if text is None:
+        path = templates_path(root, name)
+        if not path.is_file():
+            return {}, "", []
+        try:
+            text = path.read_text(encoding="ascii")
+        except (OSError, UnicodeDecodeError) as error:
+            return {}, "", [where + "not readable as ASCII: %s" % error]
+    try:
+        spec = json.loads(text)
+    except ValueError as error:
+        return {}, "", [where + "not readable as JSON: %s" % error]
+    if not isinstance(spec, dict) or spec.get("division") != name or not isinstance(spec.get("templates"), dict):
+        return {}, "", [where + "needs `division` equal to the file name and an object `templates`"]
+    out, errors = {}, []
+    words = lambda value: isinstance(value, str) and all(ord(c) < 128 for c in value)
+    for key, entry in spec["templates"].items():
+        if not TEMPLATE.fullmatch(key) or division.pilots_named(key):
+            errors.append(where + "`%s` is no template name: 2 to 40 lower-case letters, digits and dashes, a letter first, never a pilot's name" % key)
+            continue
+        entry = entry if isinstance(entry, dict) else {}
+        ids, trains = entry.get("routes"), entry.get("trains", [])
+        if not isinstance(ids, list) or not all(isinstance(rid, str) for rid in ids):
+            errors.append(where + "the template `%s` needs `routes`, a list of route ids in the order a ship tries them" % key)
+            continue
+        if not all(words(entry.get(field, "")) for field in ("title", "note")) or not isinstance(trains, list) or not all(words(t) for t in trains):
+            errors.append(where + "the template `%s`: `title` and `note` are ASCII texts and `trains` a list of skills" % key)
+            continue
+        out[key] = {"title": entry.get("title", ""), "routes": list(ids), "trains": list(trains), "note": entry.get("note", "")}
+    return out, str(spec.get("owner") or ""), errors
+
+
+def template_faults(templates, routes):
+    """What is wrong with a division's templates beside the route files, one line each: a template without a route, a
+    route with no file, an `@` among its routes (a template holds route ids, never another template). The one rule:
+    plan.py's check halts a plan on it and this file's gate fails on it."""
+    out = []
+    for key, entry in templates.items():
+        if not entry["routes"]:
+            out.append("the template `%s` holds no route" % key)
+        for rid in entry["routes"]:
+            if rid.startswith("@"):
+                out.append("the template `%s` names `%s`: a template holds route ids, never another template" % (key, rid))
+            elif rid not in routes:
+                out.append("the template `%s` names `%s`, which is no route file" % (key, rid))
+    return out
 
 
 def systems_of(route):
@@ -192,12 +278,30 @@ def check(root):
                           % (", ".join(closes(last)), ids[-1]))
         if not ids:
             errors.append(where + "`routes` is empty: end it with the `park` route")
+    folder = Path(root) / "routes" / "templates"
+    keepers = plan_module().DIVISIONS if folder.is_dir() else {}
+    for path in sorted(folder.glob("*.json")) if folder.is_dir() else []:     # a division's templates (plan.py `template`)
+        where = "game/routes/templates/%s: " % path.name
+        if path.stem not in keepers:
+            errors.append(where + "`%s` is no division of the fleet (%s)" % (path.stem, ", ".join(sorted(keepers))))
+            continue
+        try:
+            named = division.pilots_named(path.read_text(encoding="ascii"))
+        except (OSError, UnicodeDecodeError):
+            named = []                                 # templates_of names the fault
+        if named:                                      # the repository is public: a template is read by everyone (requests ENT-052)
+            errors.append(where + "names a pilot of ours (%s): a template is read by every member and the public; write the role and a count" % ", ".join(named[:5]))
+        templates, owner, faults = templates_of(root, path.stem)
+        errors += faults
+        if not faults and owner != keepers[path.stem]:
+            errors.append(where + "`owner` must be %s, who keeps the %s division" % (keepers[path.stem], path.stem))
+        errors += [where + line for line in template_faults(templates, routes)]
     if routes:
         files = index_files(root, keep_id=True)
         for name in files:
             if files[name] != current_index(root, name):
-                errors.append("game/routes/%s is missing or stale: run `python3 -B game/fleet/routes.py index` (master-index.md, every index-<group>.md and "
-                              "every plan-<role>.md are written together)" % name)
+                errors.append("game/routes/%s is missing or stale: run `python3 -B game/fleet/routes.py index` (master-index.md, every index-<group>.md, "
+                              "every plan-<role>.md and every templates-<division>.md are written together)" % name)
         for name in stale(root):
             errors.append("game/routes/%s is written no longer (master-index.md and its sub-indexes took its place): run "
                           "`python3 -B game/fleet/routes.py index`, which removes it" % name)
@@ -319,19 +423,27 @@ def plan_file(role):
     return "plan-%s.md" % role
 
 
+def templates_file(name):
+    """The page of one division's templates."""
+    return "templates-%s.md" % name
+
+
 def index_names(root):
     """The files `index` writes into game/routes/, in their order: master-index.md, one index per group of routes (every
-    group, also an empty one: the set does not change with the routes) and one plan per role."""
+    group, also an empty one: the set does not change with the routes), one plan per role and one page per division
+    that has a templates file."""
     roles, _owners, _errors = division.load_plan(root)
-    return [MASTER] + [group_file(key) for key, _title, _text in STAGES] + [plan_file(role) for role in sorted(roles)]
+    return ([MASTER] + [group_file(key) for key, _title, _text in STAGES] + [plan_file(role) for role in sorted(roles)]
+            + [templates_file(name) for name in template_divisions(root)])
 
 
 def stale(root):
     """Files of game/routes/ this script wrote once and writes no longer (index.md and plan.md until 2026-11-16, the plan
-    of a role that is gone): `index` removes them, `check` fails on them. A file by another hand is never named."""
+    of a role that is gone, the templates page of a division whose templates file is gone): `index` removes them,
+    `check` fails on them. A file by another hand is never named."""
     made, out = set(index_names(root)), []
     for path in sorted((Path(root) / "routes").glob("*.md")):
-        if path.name in made or not (path.name in ("index.md", "plan.md") or path.name.startswith(("index-", "plan-"))):
+        if path.name in made or not (path.name in ("index.md", "plan.md") or path.name.startswith(("index-", "plan-", "templates-"))):
             continue
         try:
             if WRITTEN in path.read_text(encoding="ascii", errors="replace"):
@@ -358,8 +470,8 @@ def stamps(root, names, keep_id):
 
 
 def index_files(root, keep_id=False):
-    """{file name: text} of master-index.md, every index-<group>.md and every plan-<role>.md, in that order. Under
-    keep_id a file that has no id yet reads `missing`."""
+    """{file name: text} of master-index.md, every index-<group>.md, every plan-<role>.md and every
+    templates-<division>.md, in that order. Under keep_id a file that has no id yet reads `missing`."""
     routes, _errors = routes_of(root)
     systems, home = atlas(root)
     roles, owners, _plan_errors = division.load_plan(root)
@@ -391,7 +503,8 @@ def index_files(root, keep_id=False):
                 format(m["credits_per_run"], ",") if m else "TBD", figure(route), m.get("date", "--")))
         texts[group_file(key)] = lines
 
-    planned, counts = {}, {}
+    planned, counts, flown = {}, {}, {}
+    kits = {name: templates_of(root, name)[:2] for name in template_divisions(root)}      # {division: (its templates, its owner)}
     for role in roles:
         try:
             spec = read_json(Path(root) / "routes" / "plans" / (role + ".json"))
@@ -400,6 +513,7 @@ def index_files(root, keep_id=False):
         spec = spec if isinstance(spec, dict) else {}
         planned[role] = [i for i in spec.get("planned") or [] if isinstance(i, dict) and i.get("what")]
         counts[role] = (spec.get("ships") if isinstance(spec.get("ships"), dict) else {}, spec.get("of") if isinstance(spec.get("of"), int) else 0)
+        flown[role] = {str(k): n for k, n in spec["templates"].items() if isinstance(n, int)} if isinstance(spec.get("templates"), dict) else {}
     on = lambda role, rid: "--" if rid not in counts[role][0] else ("all %d" if counts[role][0][rid] == counts[role][1] else "%d of " + str(counts[role][1])) % counts[role][0][rid]
     for role in sorted(roles):                                    # one plan per role
         lines = ["# %s -- The Plan of the Role %s" % (plan_file(role), role), "",
@@ -408,18 +522,44 @@ def index_files(root, keep_id=False):
                  "their plan. The division's Admiral keeps one plan file with every ship and its own",
                  "routes (`game/fleet/plan.py`); it names our ships, so it lies in the unit's data folder",
                  "and not here, and `plans/%s.json` is written from it. `Planned` is what the Admiral" % role,
-                 "means to do next. Up: [master-index.md](master-index.md).", "",
+                 "means to do next. What a route earns now is not written here, because it changes by the",
+                 "hour: ask the tool `route` or `routes`, or the database (`hive.py sql`), which carry each",
+                 "figure with its age. Up: [master-index.md](master-index.md).", "",
                  "Kept by %s. Routes: %d. Ships: %s." % (owners.get(role) or "--", len(roles[role]), counts[role][1] or "--"), "",
-                 "| # | Route | Group | Zone | Open to | Ships planned | Credits per ship-hour |", "|---|---|---|---|---|---|---|"]
+                 "| # | Route | Group | Zone | Open to | Ships planned |", "|---|---|---|---|---|---|"]
         for n, rid in enumerate(roles[role], 1):
             if rid in routes:
-                lines.append("| %d | [%s](%s.json) | [%s](%s) | %s | %s | %s | %s |" % (
-                    n, rid, rid, titles[facts[rid]["stage"]], group_file(facts[rid]["stage"]), place(rid), cell(open_to(routes[rid])), on(role, rid), figure(routes[rid])))
+                lines.append("| %d | [%s](%s.json) | [%s](%s) | %s | %s | %s |" % (
+                    n, rid, rid, titles[facts[rid]["stage"]], group_file(facts[rid]["stage"]), place(rid), cell(open_to(routes[rid])), on(role, rid)))
             else:
-                lines.append("| %d | %s | no route file | -- | -- | -- | -- |" % (n, cell(rid)))
+                lines.append("| %d | %s | no route file | -- | -- | -- |" % (n, cell(rid)))
+        if flown[role]:                                           # the templates its ships name as `@<name>` (plan.py role_files)
+            its = plan_module().division_of(role)
+            page = templates_file(its) if its in kits else None
+            lines += ["", "Templates its ships fly (a ship's own routes name one as `@<name>`):", "", "| Template | Ships of this role on it |", "|---|---|"]
+            lines += ["| %s | %d |" % ("[%s](%s)" % (key, page) if page else cell(key), n) for key, n in flown[role].items()]
         if planned[role]:
             lines += ["", "Planned:", "", "| What | When |", "|---|---|"] + ["| %s | %s |" % (cell(i.get("what", "")), cell(i.get("when", "--"))) for i in planned[role]]
         texts[plan_file(role)] = lines
+
+    for name, (kit, keeper) in kits.items():                      # one page per division that has a templates file
+        mine = [role for role in plan_module().roles_of(name) if role in flown]
+        ships = {key: sum(flown[role].get(key, 0) for role in mine) for key in kit}
+        link = lambda rid: "[%s](%s.json)" % (rid, rid) if rid in routes else "%s (no route file)" % cell(rid)
+        lines = ["# %s -- The Templates of the %s Division" % (templates_file(name), name.capitalize()), "",
+                 "Written by " + WRITTEN + ", from `templates/%s.json`:" % name,
+                 "the named lists of routes of the %s division. A ship's row in the division's plan" % name,
+                 "file (`game/fleet/plan.py`) names one as `@<template>` among its own routes, and the ship",
+                 "tries its routes in this order; a change of a template moves every ship that names it",
+                 "within the minute. Kept with `plan.py template`; ships are put on one with `plan.py use`.",
+                 "Up: [master-index.md](master-index.md).", "",
+                 "Kept by %s. Templates: %d. Ships on them: %d." % (keeper or "--", len(kit), sum(ships.values()))]
+        if kit:
+            lines += ["", "| Template | Title | Trains | Routes, in this order | Ships on it | Note |", "|---|---|---|---|---|---|"]
+            lines += ["| %s | %s | %s | %s | %d | %s |" % (cell(key), cell(entry["title"]) or "--", cell(", ".join(entry["trains"])) or "--",
+                                                          " > ".join(link(rid) for rid in entry["routes"]) or "--", ships[key], cell(entry["note"]) or "--")
+                      for key, entry in kit.items()]
+        texts[templates_file(name)] = lines
 
     def best(key, rids):
         seen = [(routes[r]["measured"], r) for r in rids if routes[r].get("measured")]
@@ -455,6 +595,11 @@ def index_files(root, keep_id=False):
         for role in sorted(roles):
             master.append("| [%s](%s) | %s | %d | %s | %d | %s |" % (cell(role), plan_file(role), cell(owners.get(role) or "--"), len(roles[role]),
                                                                  cell(" > ".join(roles[role][:3])), len(planned[role]), counts[role][1] or "--"))
+    if kits:
+        master += ["", "## Templates by Division", "", "Named lists of routes a ship's own routes in its division's plan file name as `@<template>`.", "",
+                   "| Division | Kept by | Templates | Page |", "|---|---|---|---|"]
+        for name, (kit, keeper) in kits.items():
+            master.append("| %s | %s | %s | [%s](%s) |" % (name, cell(keeper or "--"), cell(", ".join(kit)) or "none", templates_file(name), templates_file(name)))
     books = sorted((Path(root) / "routes" / "guidebook").glob("*.md")) if (Path(root) / "routes" / "guidebook").is_dir() else []
     if books:
         master += ["", "## The Guidebooks", "", "What each division learned about its routes, its levelling and its ships; kept by its Admiral, read by every member.", "",
@@ -506,8 +651,20 @@ def readable(row):
     return numbers and before > 0 and after > 0 and "wallet not read" not in (row.get("notes") or [])
 
 
-def measure(root, data, write, only=None):
-    """Print what the runs measured per route; with `write`, store it in the route files, of the routes in `only` when given."""
+def ended(row):
+    """When a run ended, in seconds since the epoch, or None: its `started` read as dispatch.losing reads it, by the
+    dispatcher's own reader of a UTC time (dispatch.read_time), plus its minutes (as dispatch.resting counts a run's
+    end). The one clock of a run's figure: `measure` keeps the runs that ended inside its window."""
+    import dispatch                                # here, not at the top: dispatch.py imports this file
+    start = dispatch.read_time(row.get("started")) if row.get("started") else None
+    return None if start is None else start + (row.get("minutes") or 0) * 60
+
+
+def measure(root, data, write, only=None, now=None):
+    """Print what the runs measured per route; with `write`, store it in the route files, of the routes in `only` when
+    given. A repeating route counts the readable runs that ended in the last MEASURE_HOURS, and one without such a run
+    loses its figure (it is a test again); a mission that pays once counts all its runs."""
+    now = time.time() if now is None else now
     rows = []
     try:
         with open(Path(data) / "routes" / "runs.jsonl", encoding="utf-8") as handle:
@@ -519,32 +676,53 @@ def measure(root, data, write, only=None):
     except OSError:
         pass
     routes, _errors = routes_of(root)
+    since = now - MEASURE_HOURS * 3600
     changed = []
-    for rid in sorted({r.get("route") for r in rows if r.get("route")}):
+
+    def put(rid, figure):
+        if figure is None:
+            del routes[rid]["measured"]
+        else:
+            routes[rid]["measured"] = figure
+        (Path(root) / "routes" / (rid + ".json")).write_text(json.dumps(routes[rid], indent=1) + "\n", encoding="ascii")
+        changed.append(rid)
+
+    held = {rid for rid, route in routes.items() if isinstance(route, dict) and route.get("measured") and not route.get("once")}    # a figure with no run left is forgotten too
+    for rid in sorted({r.get("route") for r in rows if r.get("route")} | held):
+        route = routes.get(rid) if isinstance(routes.get(rid), dict) else {}
+        once = bool(route.get("once"))
         every = [r for r in rows if r.get("route") == rid and r.get("minutes")]
+        if not once:                                              # the window: what a route earns changes by the hour
+            every = [r for r in every if (ended(r) or 0) >= since]
         mine = [r for r in every if readable(r)]
+        may = write and (only is None or rid in only) and rid in routes
         if not mine:
             if every:
                 print("%-28s runs %-4d none read a wallet: no figure" % (rid, len(every)))
-                if write and (only is None or rid in only) and (routes.get(rid) or {}).get("measured"):
-                    del routes[rid]["measured"]
-                    (Path(root) / "routes" / (rid + ".json")).write_text(json.dumps(routes[rid], indent=1) + "\n", encoding="ascii")
-                    changed.append(rid)
+            if once and every and may and route.get("measured"):
+                put(rid, None)
+            elif not once and route.get("measured"):
+                if may:
+                    put(rid, None)
+                    print("%s: no readable run in %d hours: the figure is taken out; a test again" % (rid, MEASURE_HOURS))
+                elif not write:
+                    print("%s: no readable run in %d hours: `--write` takes the figure out; a test again" % (rid, MEASURE_HOURS))
             continue
         minutes = sum(r["minutes"] for r in mine)
-        figure = {"date": time.strftime("%Y-%m-%d", time.gmtime()), "runs": len(mine), "minutes": round(statistics.median(r["minutes"] for r in mine)),
+        figure = {"date": time.strftime("%Y-%m-%d", time.gmtime(now)), "runs": len(mine), "minutes": round(statistics.median(r["minutes"] for r in mine)),
                   "credits_per_run": int(round(sum(earned(r) for r in mine) / len(mine), -1)),
                   "cph_per_ship": int(round(60 * sum(earned(r) for r in mine) / minutes, -1)) if minutes else 0}
+        if not once:
+            figure.update(hours=MEASURE_HOURS, last_run=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(max(ended(r) for r in mine))))
         print("%-28s runs %-4d minutes %-4d credits per run %-8s per ship-hour %-8s %s" % (
             rid, figure["runs"], figure["minutes"], format(figure["credits_per_run"], ","), format(figure["cph_per_ship"], ","),
-            ("" if rid in routes else "(no route file)") + (" (%d more runs read no wallet)" % (len(every) - len(mine)) if len(every) > len(mine) else "")))
-        old = (routes.get(rid) or {}).get("measured") or {}
+            ("" if rid in routes else "(no route file)") + (" (%d more runs read no wallet)" % (len(every) - len(mine)) if len(every) > len(mine) else "")
+            + ("" if once else " (the last %d hours, the newest run ended %s)" % (MEASURE_HOURS, figure["last_run"]))))
+        old = route.get("measured") or {}
         moved = not old or abs(figure["cph_per_ship"] - old.get("cph_per_ship", 0)) >= 0.2 * max(abs(old.get("cph_per_ship", 0)), 100) \
-            or figure["runs"] >= 2 * max(old.get("runs", 0), 1)
-        if write and (only is None or rid in only) and rid in routes and moved:
-            routes[rid]["measured"] = figure
-            (Path(root) / "routes" / (rid + ".json")).write_text(json.dumps(routes[rid], indent=1) + "\n", encoding="ascii")
-            changed.append(rid)
+            or figure["runs"] >= 2 * max(old.get("runs", 0), 1) or (not once and "hours" not in old)      # a block from before the window: once more
+        if may and moved:
+            put(rid, figure)
     if write:
         print("measured block written: %s" % (", ".join(changed) or "none"))
     return 0

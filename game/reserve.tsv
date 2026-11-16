@@ -1,0 +1,16 @@
+# The reserve: what the fleet means to build or keep. game/fleet/surplus.py holds every stored good against it;
+# what it does not take is surplus that the fleet sells (`surplus.py show`; `surplus.py check` is the gate).
+# Kept by the Fleet Admiral with Logistics (rule F24); where a base stands and when a step is paid is Suggi's.
+# Tab-separated; `#` starts a comment.
+# kind: facility (a facility id, units = how many) | hull (a ship class id) | item (an item id, units on hand)
+#       keep (an item id; units a number, or `all` = never surplus) | keepkind (a kind of item, units `all`)
+# A facility's earlier steps (upgrades_from) stand on lines of their own: the script adds nothing by itself.
+kind	id	units	note
+item	station_core	1	one station of our own (orders, plan step P4): the part its founding takes
+facility	station_core_foundry	1	the facility that makes the station core (P4)
+facility	faction_lockbox	1	shared storage of the faction (P5): the first faction facility, the others need it
+facility	hiring_board	1	members of the faction (P5), step 1
+facility	recruitment_desk	1	members of the faction (P5), step 2: an upgrade of the hiring board
+facility	recruitment_center	1	members of the faction (P5), step 3: an upgrade of the recruitment desk
+keepkind	module	all	modules are kept for fitting our ships (rule F17)
+keep	fuel_cell	all	fuel for our own ships beyond the border

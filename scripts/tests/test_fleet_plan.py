@@ -72,7 +72,7 @@ class Tree(unittest.TestCase):
         return subprocess.run(["git", "-C", str(self.top)] + list(args), stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True).stdout
 
     def run_plan(self, member, *args):
-        env = {"PATH": os.environ.get("PATH", "/usr/bin:/bin"), "HOME": self.temp.name, "FLEET_TAXES": os.devnull}
+        env = {"PATH": os.environ.get("PATH", "/usr/bin:/bin"), "HOME": self.temp.name, "FLEET_TAXES": os.devnull, "FLEET_COMMIT_WAIT": "0"}
         if member:
             env["HERMES_SESSION_PROFILE"] = member
         return subprocess.run([sys.executable, "-I", "-B", str(FLEET / "plan.py")] + list(args) + ["--root", str(self.root), "--data", str(self.data)],
@@ -86,6 +86,14 @@ class Tree(unittest.TestCase):
 
     def role(self, role):
         return json.loads((self.root / "routes" / "plans" / (role + ".json")).read_text())
+
+    def kit(self, name="mining"):
+        path = self.root / "routes" / "templates" / (name + ".json")
+        return json.loads(path.read_text())["templates"] if path.is_file() else None
+
+    def still(self):
+        """What a refused change must leave as it was: the dispatcher's lists, the plan file, the commit, the folder."""
+        return (self.assign(), self.file("mining").read_text(), self.git("rev-parse", "HEAD"), self.git("status", "--porcelain"), self.kit())
 
 
 class PlanTests(Tree):
@@ -203,6 +211,122 @@ class PlanTests(Tree):
         self.assertIn("1 ships have no row yet (miner-7)", self.run_plan("zero", "show", "--brief").stdout)
         self.run_plan("zero", "apply")
         self.assertEqual(self.assign()["pilots"]["miner-7"][2], "ice-a")
+
+
+class TemplateTests(Tree):
+    """Templates: a division's named lists of routes (game/routes/templates/<division>.json), named in a ship's own
+    routes as `@<name>` (Suggi, 2026-11-16: ships switched between kinds of work, preconfigured)."""
+
+    def setUp(self):
+        super().setUp()
+        self.run_plan("zero", "apply")
+
+    def test_a_template_expands_in_order_and_without_a_route_twice(self):
+        plan = {"first": ["board"], "then": ["x", "park"], "ships": {"s": ["@a", "x", "@b"], "t": ["@b"]},
+                "templates": {"a": {"routes": ["r1", "r2"]}, "b": {"routes": ["r2", "r3", "x"]}}}
+        self.assertEqual(self.plan.expand(plan, "s"), ["r1", "r2", "x", "r3"])                  # each in its order; a route twice at its first place
+        self.assertEqual(self.plan.effective(plan, "s"), ["board", "r1", "r2", "x", "r3", "park"])
+        self.assertEqual(self.plan.effective(plan, "t"), ["board", "r2", "r3", "x", "park"])
+        done = self.run_plan("zero", "template", "ice-loop", "ice-b,gather,ice-b", "--title", "Ice for the near bids", "--trains", "mining")
+        self.assertEqual(done.returncode, 0, done.stdout)
+        self.assertEqual(self.kit(), {"ice-loop": {"title": "Ice for the near bids", "routes": ["ice-b", "gather"], "trains": ["mining"]}})
+        self.assertIn("1 templates no ship uses: @ice-loop", done.stdout)                         # a note, not a HALT
+        done = self.run_plan("zero", "use", "miner-1..2", "ice-loop")
+        self.assertEqual(done.returncode, 0, done.stdout)
+        lists = self.assign()["pilots"]
+        self.assertEqual(lists["miner-1"], ["board", "fit", "ice-b", "gather", "ice-a", "census", "park"])     # First, the template, Then without its twins
+        self.assertEqual(lists["miner-3"], PLANS["miner"][1])                                    # a ship that names none flies on as before
+        self.assertIn("| miner-1 | Threshold | 4 | 2 | 0 | 0 | 0 | 0 | @ice-loop |", self.file("mining").read_text())   # the cell keeps the word as written
+
+    def test_a_cell_mixes_templates_and_route_ids_in_any_order(self):
+        self.run_plan("zero", "template", "ice-loop", "ice-b,gather")
+        self.run_plan("zero", "template", "far-ice", "ice-a")
+        done = self.run_plan("zero", "set", "miner-3,miner-4", "@ice-loop,census,@far-ice")
+        self.assertEqual(done.returncode, 0, done.stdout)
+        self.assertEqual(self.assign()["pilots"]["miner-3"], ["board", "fit", "ice-b", "gather", "census", "ice-a", "park"])
+        self.assertIn("| miner-3 | Threshold | 4 | 2 | 0 | 0 | 0 | 0 | @ice-loop > census > @far-ice |", self.file("mining").read_text())
+        self.assertEqual(self.role("miner")["templates"], {"ice-loop": 2, "far-ice": 2})          # counts of the role's ships, never names
+        brief = self.run_plan("zero", "show", "--brief").stdout
+        self.assertIn(" 2 ships (miner-3, miner-4): @ice-loop > census > @far-ice", brief)       # grouped by the cell as written
+        self.assertIn("@ice-loop: ice-b > gather", brief)
+        self.assertEqual(self.run_plan("zero", "check").stdout.split(":")[0], "PASS mining")
+        listed = self.run_plan(None, "templates", "mining").stdout                                # reading is free
+        self.assertIn("TEMPLATES | mining (Zero) | game/routes/templates/mining.json | 2 templates, 2 ships on them", listed)
+        self.assertIn("  @ice-loop -- no title | trains -- | 2 ships\n      ice-b > gather", listed)
+
+    def test_a_template_change_is_one_commit_and_moves_every_ship_that_names_it_at_once(self):
+        self.run_plan("zero", "template", "ice-loop", "ice-b,gather", "--note", "the near bids")
+        self.assertEqual(self.git("log", "-1", "--format=%an %s"), "Zero mining templates: @ice-loop made: ice-b > gather (plan.py, Zero)\n")
+        self.assertIn("game/routes/templates/mining.json", self.git("show", "--name-only", "--format=", "HEAD"))
+        self.assertIn("game/routes/templates-mining.md", self.git("show", "--name-only", "--format=", "HEAD"))     # its page in the same commit
+        self.run_plan("zero", "use", "miner-1..3", "@ice-loop")
+        self.assertEqual(self.role("miner")["templates"], {"ice-loop": 3})
+        self.assertEqual(self.git("log", "-1", "--format=%an %s"), "Zero mining plan: 3 ships fly @ice-loop (plan.py, Zero)\n")
+        done = self.run_plan("zero", "template", "ice-loop", "gather,ice-a", "--title", "Gather first")
+        self.assertEqual(done.returncode, 0, done.stdout)
+        self.assertIn("mining: applied", done.stdout)                                            # the same call applies the plan again
+        lists = self.assign()["pilots"]
+        self.assertEqual([lists["miner-%d" % n][2:4] for n in (1, 2, 3)], [["gather", "ice-a"]] * 3)
+        self.assertEqual(lists["miner-4"], PLANS["miner"][1])
+        self.assertEqual(self.kit()["ice-loop"], {"title": "Gather first", "routes": ["gather", "ice-a"], "note": "the near bids"})   # the note kept
+        self.assertEqual((self.git("status", "--porcelain"), self.run_plan("zero", "check").stdout.split(":")[0]), ("", "PASS mining"))
+        page = (self.root / "routes" / "templates-mining.md").read_text()
+        self.assertIn("| ice-loop | Gather first | -- | [gather](gather.json) > [ice-a](ice-a.json) | 3 | the near bids |", page)
+
+    def test_a_wrong_template_halts_with_a_plain_line_and_changes_nothing(self):
+        self.run_plan("zero", "template", "ice-loop", "ice-b,gather")
+        self.run_plan("zero", "use", "miner-1", "ice-loop")
+        before = self.still()
+        for args, says in ((("use", "miner-2", "nope"), "HALT mining: the row of miner-2: `@nope` is no template of the mining division (game/routes/templates/mining.json holds @ice-loop)"),
+                           (("template", "bad", "ice-a,ice-x"), "HALT mining: game/routes/templates/mining.json: the template `bad` names `ice-x`, which is no route file"),
+                           (("template", "ice-loop", "ice-x"), "the template `ice-loop` names `ice-x`, which is no route file"),
+                           (("template", "loop", "@ice-loop"), "the template `loop` names `@ice-loop`: a template holds route ids, never another template"),
+                           (("template", "hollow", ""), "the template `hollow` holds no route"),
+                           (("first", "board,@ice-loop"), "HALT mining: the list First: `@ice-loop` is a template: the lists First and Then take route ids only"),
+                           (("then", "@ice-loop,park"), "HALT mining: the list Then: `@ice-loop` is a template")):
+            done = self.run_plan("zero", *args)
+            self.assertEqual((done.returncode, says in done.stdout, "HALT mining: nothing changed" in done.stdout), (1, True, True), done.stdout)
+            self.assertEqual(self.still(), before, args)
+        for name in ("x", "Ice", "9-ice", "miner-2-loop", "a" * 41):
+            self.assertIn("REFUSED: `%s` is no template name" % name, self.run_plan("zero", "template", name, "ice-a").stdout)
+        self.assertEqual(self.still(), before)
+
+    def test_a_template_ship_names_is_not_removed_and_one_no_ship_names_is(self):
+        self.run_plan("zero", "template", "ice-loop", "ice-b,gather")
+        self.run_plan("zero", "use", "miner-1..3", "ice-loop")
+        before = self.still()
+        done = self.run_plan("zero", "template", "ice-loop", "none")
+        self.assertEqual(done.returncode, 1)
+        self.assertIn("REFUSED: the template @ice-loop stands in the own routes of 3 ships of the mining division", done.stdout)
+        self.assertEqual(self.still(), before)
+        self.assertIn("REFUSED: the mining division has no template `ghost`", self.run_plan("zero", "template", "ghost", "none").stdout)
+        self.run_plan("zero", "set", "miner-1..3", "none")
+        done = self.run_plan("zero", "template", "ice-loop", "none")
+        self.assertEqual(done.returncode, 0, done.stdout)
+        self.assertEqual((self.kit(), self.role("miner")["templates"], self.git("status", "--porcelain")), ({}, {}, ""))
+        self.assertIn("Kept by Zero. Templates: 0. Ships on them: 0.", (self.root / "routes" / "templates-mining.md").read_text())
+
+    def test_a_member_keeps_its_own_division_s_templates_only(self):
+        self.assertIn("REFUSED: the plan of the command division is kept by Unity", self.run_plan("zero", "template", "guarding", "guard", "--division", "command").stdout)
+        self.assertIn("REFUSED: this shell is no member", self.run_plan(None, "template", "ice-loop", "ice-a").stdout)
+        self.assertIsNone(self.kit("command"))
+        done = self.run_plan("unity", "template", "guarding", "guard", "--division", "command")       # the Fleet Admiral may
+        self.assertEqual(done.returncode, 0, done.stdout)
+        before = self.still()
+        done = self.run_plan("zero", "use", "miner-1", "guarding")                                # another division's template is no template of this one
+        self.assertIn("`@guarding` is no template of the mining division", done.stdout)
+        self.assertEqual(self.still(), before)
+        self.assertIn("REFUSED: no ship of the mining division: sentinel-1", self.run_plan("zero", "use", "sentinel-1", "guarding").stdout)
+
+    def test_a_template_change_needs_its_commit_and_is_refused_whole_without_it(self):
+        (self.root / "routes" / "ice-b.json").write_text(json.dumps(dict(ROUTES["ice-b"], title="another member's change, not committed"), indent=1) + "\n", encoding="ascii")
+        before = self.still()
+        done = self.run_plan("zero", "template", "ice-loop", "ice-b,gather")
+        self.assertEqual(done.returncode, 1, done.stdout)
+        self.assertIn("REFUSED: game/routes holds a change that is not committed", done.stdout)
+        self.assertEqual(self.still(), before)                                                   # no templates file, no list changed, nothing committed
+        self.assertFalse((self.root / "routes" / "templates-mining.md").exists())
+        self.assertFalse((self.root / "routes" / "templates").exists())                          # the folder made for the commit is taken away again
 
 
 if __name__ == "__main__":

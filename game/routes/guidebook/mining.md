@@ -72,7 +72,13 @@ carries); a copper filter that lifts the iron share (one ship, by hand);
 a field at its floor. Each turn starts with `stalled.py` of the
 mining-chains skill.
 
-## 1. Routes That Pay
+## 1. Route Guides
+
+How each kind of route of this division is flown: the fit and the
+skills it needs, its place, its steps, what opens and closes it. A
+credits figure in this section is a dated reading and no verdict: what
+a route earns now is in the fleet's database with its age (rule F22;
+the tool `routes`, the view `route_earnings`).
 
 Runs of 2026-11-16 12:40 to 18:40 UTC (`data/routes/runs.jsonl`): no
 water-ice mine route ran. Every one was closed by its bid gate
@@ -105,7 +111,7 @@ The figures below were measured by `routes.py measure` at 08:20 UTC:
 Measured by `routes.py measure`, 2026-11-16 08:20 UTC, after fuel, over
 every run of a route. The figures of the routes that sold at The
 Experiment and Node Alpha were earned while their bids stood; since
-07:07 and 07:25 UTC those bids read 0 (section 2).
+07:07 and 07:25 UTC those bids read 0 (the list in this file's history).
 
 | Route | Credits per ship-hour | Runs | Minutes a run | Note |
 |---|---|---|---|---|
@@ -130,30 +136,35 @@ the division over all 40 ships, 1,183 credits per ship-hour (scale
 UTC: +14,370 cr (`hive.py fleet`), against +70,528 at 04:16 UTC: the
 near bids emptied in between.
 
-## 2. What Did Not Pay
+## 2. Route Templates
 
-| Route or test | What was measured | Date | Why, and what follows |
-|---|---|---|---|
-| `mine-acubens`, `mine-gsc-seep`, `mine-pherkad-rift` | -170 cr per ship-hour each | 2026-11-15 | Iron and copper ore sell for 1 to 4 cr and nobody needs them. Out of every plan (orders F8) |
-| `mine-cryogenic-reserve` | 3 runs, -350 cr per ship-hour | 2026-11-16 | Every run ended "not docked for the sale": the ice stayed in storage. Not the field and not the bid: the runner's dock step fails on 14 of 39 mine runs since 2026-11-15 23:00 UTC (errors.log ENT-032). Closed until the fix of requests.log ENT-084 |
-| `mine-gsc-0050-gas-plume` | 2 runs, -230 cr per ship-hour (-407 cr in sum) | 2026-11-16 | Both runs ended "not docked for the sale"; the first load was 43 of 65 units neon, which no station buys, and the plasma bid at Node Beta holds 4 to 12 units. Closed by the loss stop, out of the plan with its fit route; the harvester lies in storage at Central Nexus |
-| `voidborn-first-steps` (15 carbon ore) | Two runs, -109 and -153 cr | 2026-11-15 | Acubens Belt read 0 carbon; carbon regrows slowly (41 at 22:17 UTC) |
-| Focused crystal as a chain | One station bid of 1,466 cr for 1 unit, then 40 cr | 2026-11-15 | One craft per refill of that bid (errors.log ENT-015) |
-| `mission-cracking-the-shell-central` | 8 miner runs, all "not offered", -286 cr | 2026-11-16 | The board offers it only to a pilot with First Hunt booked (errors.log ENT-033); fill.py had added it on the figure of another role. Out of the plan |
-| Honeyglobe | Bids of 154 and 147 cr for 1 unit each | 2026-11-15 | No depth: not tested |
-| Selling at The Experiment, Node Alpha and Synchrony after their bids emptied | 36 runs started 05:20 to 07:20 UTC sold no water ice, -12,384 cr of fuel in sum; about 11,100 water ice stored there | 2026-11-16 | The Experiment's 15,832 at 36 cr was one order: used up in three hours, it regains about 10 units an hour. Routes cut to one ship each, the rest to Central Nexus (commit 9585697); the stored ice waits for a carry (requests.log ENT-117) |
-| `mine-keid-ice-shelf`, `-intercrus-ice-fields`, `-gsc-0033-cryobelt`, `-gsc-0021-ice-fields`, `-tanglewood-frost-ring`, `-antares-ice-fields` | -400 to -490 cr per ship-hour on their last runs, or runs of 76 to 96 minutes | 2026-11-16 | Their stations' bids are 0 and they lie five to seven jumps from Central Nexus. Out of the plan |
-| `voidborn-first-hunt-acubens` | 25 runs, -1,375 cr in six hours | 2026-11-16 | The belt's herd read 0; closed by the loss stop and out of the plan |
-| Titanium Extraction Contract (3,500 cr once) | not flown | 2026-11-16 | 20 titanium ore to be mined at HD 147513 Belt, 7 jumps, lawless: it held 127 titanium beside 866 iron, 680 copper and 1,047 gold, each over 97% mined out (census 08:50 UTC); a hold of that mix brings a few titanium, so one mission is two or more trips of 14 jumps. No route file |
-| The Central Nexus depth | 42,635 water ice at 30 cr at 09:17 UTC, 8,500 at 10:37, 563 in all levels at 12:01 | 2026-11-16 | The second deep water-ice order in a day gone within three hours; our ships sold a part of it, the rest went to others or was withdrawn (not measured which). 29 miners were sized on it. Cut to 7 mine places and the stored ice first |
-| `carry-ice-node-alpha-nexus`, first three runs | -50 cr each, nothing sold | 2026-11-16 | The withdraw step counted the free hold in item units; the game counts space (tungsten and lead ore take two) and refused it. Fixed (commit 180d58b); the loss stop holds the route until about 18:15 UTC |
-| `drain-ice-nexus` | two runs, 0 and -39 cr, nothing to take | 2026-11-16 | The ledger reads storage every 40 minutes, and the Central Nexus mine runs already sell their pilots' storage there. Kept after the carries only, for a carried load stored there when the bid was gone |
-| `mine-pherkad-rift` | 9 miner runs, -169 cr per ship-hour | 2026-11-16 12:40 to 18:40 UTC | Its iron is gone: Pherkad Null Rift read 4,254 iron at 14:03 UTC and 382 at 18:12; it gives copper alone, held 73,781 by the fleet against the 768 the stations take (the tool base_plan). Out of the mining plan |
-| `voidborn-first-hunt-acubens`, `-achernar` | 9 and 2 miner runs, -649 and -176 cr, nothing paid | 2026-11-16 12:40 to 18:40 UTC | Acubens Shadow Pocket read 0 belt-grazers (`hive.py refill`, 18:25 UTC). Out of the mining plan's list First |
-| `mine-felis-frost-ring` | one run, -715 cr | 2026-11-16 | Deuterium ice has no bid with depth (2 cr at The Experiment); out of the plan |
-| Iron with copper beside it | 51 to 73% iron of what three fields gave up | 2026-11-16 14:05 to 18:26 UTC | Every iron field we read holds copper too; a gather route brings 81 to 94 copper a ship-hour that nobody needs. One ship tests a copper filter (Flotation Cell) |
-| `mission-ghosts-in-the-cloud-node` | one miner run, -24 cr | 2026-11-16 | "not offered" four times in a row since 11:31 UTC after two hand-ins of 2,000 cr: out of the plan |
-| `mine-ruchbah-ice-belt`, `-achernar-frost-ring`, `-wolf-1061-frozen-drift`, `-alnair-ice-fields` | their stations' water bids 0 | 2026-11-16 | The Experiment and Node Alpha hold 6,980 and 5,500 of our stored water ice: out of the plan until their bids regain with depth |
+A kind of work is a named list of routes: a template. The templates of
+this division are kept in `game/routes/templates/mining.json` and listed
+in `game/routes/templates-mining.md`, a page a script writes once the
+division has its first template. A ship's row in the plan file names a
+template as `@<name>`, alone or beside routes of its own, and a ship is
+switched to other work with one word.
+
+| Task | How |
+|---|---|
+| See the templates and how many ships use each | the tool `plan` with `action=templates` (`plan.py templates`) |
+| Make or change one | `plan.py template <name> <routes with commas> --title "..." --trains <skills> --note "..."` |
+| Put ships on one | `plan.py use <ships> <name>` (the tool `plan` with `action=use`) |
+| Take one away | `plan.py template <name> none`, once no ship names it |
+
+A template is a guide for one kind of ship: its routes in the order a
+ship tries them, the skills it trains (`--trains`) and, in its note,
+the fit it needs. Keep one for each kind of work of the division, so
+that a ship born tomorrow gets its work with one word.
+
+This guidebook keeps no list of routes that did not pay (Suggi,
+2026-11-16; rule F22). The game changes by the hour: a route that lost
+yesterday may pay today. What a route earns now, with the age of the
+figure, is asked each turn: the tool `routes`, or `SELECT * FROM
+route_earnings` through the tool `hive` with `verb=sql`. How a step of
+the game works is a mechanic, not a verdict on a route: it belongs in
+the sections below. The list this section held until 2026-11-16 is in
+the file's history (`git log -- game/routes/guidebook/mining.md`).
 
 ## 3. Missions That Pay Once
 
@@ -170,7 +181,12 @@ first.
 | `voidborn-conductive-lattice` | about 10,900 cr | 32 miner runs, +273,451 cr | 2026-11-16 08:00 to 12:20 UTC | The Node Beta chain |
 | `voidborn-network-expansion` | 1,500 cr | 12 miner runs, +17,374 cr | 2026-11-16 08:00 to 12:20 UTC | After First Steps |
 
-## 4. Levelling
+## 4. Levelling Guide
+
+Which skills a ship of this division levels and on which work (rule
+F23): the work of its own role first, gathering ore only when none is
+open. Per kind of ship: the skill, what raises it, what the next level
+opens, and the template that trains it (section 2).
 
 - At 18:40 UTC (`hive.py levels`): Piloting 5 / 5 / 7 (lowest, median,
   highest), 136 XP an hour; median Mining 5 (115 XP an hour), Navigation

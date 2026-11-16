@@ -107,7 +107,15 @@ def plan_file(a):
     if action in ("first", "then"):
         need(a, "routes")
         return [("game/fleet/plan.py", [action, a["routes"]] + where)]
-    raise ValueError("action is one of: show, check, apply, set, first, then")
+    if action == "templates":
+        return [("game/fleet/plan.py", ["templates"] + ([a["division"]] if a.get("division") else []))]
+    if action == "template":
+        need(a, "name", "routes")
+        return [("game/fleet/plan.py", ["template", a["name"], a["routes"]] + flag(a, "title") + flag(a, "trains") + flag(a, "note") + where)]
+    if action == "use":
+        need(a, "ships", "name")
+        return [("game/fleet/plan.py", ["use", a["ships"], a["name"]] + where)]
+    raise ValueError("action is one of: show, check, apply, set, first, then, templates, template, use")
 
 
 def fill_plan(a):
@@ -136,6 +144,23 @@ def catalog_plan(a):
     if ask == "recipes":
         return [("game/fleet/craftbook.py", ["recipes"] + flag(a, "category") + flag(a, "makes") + flag(a, "uses") + (["--hand"] if a.get("by_hand") else []))]
     raise ValueError("ask is one of: item, needs, build, can, recipes")
+
+
+def stock_plan(a):
+    view = a.get("view") or "members"
+    if view in ("inventory", "stations"):
+        return [("game/fleet/craftbook.py", ["inventory"] + (["stations"] if view == "stations" else []) + flag(a, "item") + flag(a, "top"))]
+    if view == "surplus":
+        return [("game/fleet/surplus.py", ["show"] + flag(a, "item") + flag(a, "kind") + flag(a, "top"))]
+    if view == "reserve":
+        return [("game/fleet/surplus.py", ["reserve"])]
+    return [("game/fleet/ledger.py", ["show"] + ([a["member"]] if a.get("member") else []) + flag(a, "item"))]
+
+
+def sql_plan(a):
+    if a.get("query"):
+        return [("game/fleet/hive.py", ["sql", str(a["query"])] + flag(a, "limit"))]
+    return [("game/fleet/hive.py", ["schema"] + ([a["table"]] if a.get("table") not in (None, "", "all") else []))]
 
 
 def comms_plan(a):
@@ -187,7 +212,9 @@ TOOLS = {
         "plan": lambda a: [("game/fleet/hive.py", ["ship", a["pilot"]])]},
     "routes": {
         "text": "Every route with what it earns: its group (once per pilot, paying, test, fitting, reading and waiting, at a loss, off), zone, ships on it against its "
-                "limit, the credits per ship-hour its runs measured, and its runs, steady credits and credits per ship-hour in the last hours. Filter by group, kind or zone.",
+                "limit, the credits per ship-hour its runs of the last 12 hours measured (older, a route has no figure and is a test again: nothing is bad for good), and "
+                "its runs, steady credits and credits per ship-hour in the last hours. Filter by group, kind or zone. The same over 4, 12 and 24 hours with the hours "
+                "since a route last flew: the tool sql, view route_earnings.",
         "args": {"group": arg(S, "once, paying, test, fit, service, losing or off", ("once", "paying", "test", "fit", "service", "losing", "off")),
                  "kind": arg(S, "circuit, hunt, mine, census or guard", ("circuit", "hunt", "mine", "census", "guard")), "zone": arg(S, "home or beyond (the border)", ("home", "beyond")),
                  "hours": arg(I, "the window of the runs, default 4")},
@@ -213,11 +240,18 @@ TOOLS = {
                 "ship), its own routes, the list Then (for every ship, ending with park); the dispatcher sends it within the minute. action=show: the file, what the check says and "
                 "whether it is applied (brief=true: a few lines). action=set: give ships their own routes (ships: names with commas, a range like miner-1..10, a role or all; "
                 "routes: route ids with commas in their order, or none). action=first or then: set that list whole. action=apply: after you changed the file by hand. Every change "
-                "is checked first: a plan that fails changes nothing. action=check: PASS or HALT. You change your own division's plan only.",
-        "args": {"action": arg(S, "show (default), check, apply, set, first or then", ("show", "check", "apply", "set", "first", "then")),
-                 "division": arg(S, "command, mining, trade, logistics, military or intel; default: your own (for show and check also all)"),
-                 "ships": arg(S, "for set: ship names with commas, a range (miner-1..10), a role, or all"),
-                 "routes": arg(S, "for set, first and then: route ids with commas, in their order; none for no route"),
+                "is checked first: a plan that fails changes nothing. action=check: PASS or HALT. You change your own division's plan only. A template is a named list of routes "
+                "your division keeps in the repository, which a ship's own routes name as @<name> so that one word switches it to that work and a change of the template moves "
+                "every ship that names it (action=templates lists them, action=template makes, replaces or with routes=none removes one, action=use puts ships on templates).",
+        "args": {"action": arg(S, "show (default), check, apply, set, first, then, templates, template or use",
+                               ("show", "check", "apply", "set", "first", "then", "templates", "template", "use")),
+                 "division": arg(S, "command, mining, trade, logistics, military or intel; default: your own (for show, check and templates also all)"),
+                 "ships": arg(S, "for set and use: ship names with commas, a range (miner-1..10), a role, or all"),
+                 "routes": arg(S, "for set, first, then and template: route ids with commas, in their order (for set also @<template>); none for no route, or to remove a template"),
+                 "name": arg(S, "for template: the template's name (2 to 40 lower-case letters, digits and dashes); for use: one name or several with commas"),
+                 "title": arg(S, "for template: one line on what it is for; left out: kept as it was"),
+                 "trains": arg(S, "for template: the skills it trains, with commas; left out: kept as it was"),
+                 "note": arg(S, "for template: a note for the reader; left out: kept as it was"),
                  "brief": arg(B, "for show: the plan in a few lines instead of the whole file")},
         "plan": plan_file},
     "candidates": {
@@ -234,12 +268,14 @@ TOOLS = {
     "stock": {
         "text": "What we own in goods. view=members (default): what a member's ships hold in station storage and in their holds. view=inventory: the whole fleet added up, "
                 "by kind of item (raw, refined, parts, modules ...), with units stored and carried and the catalog's base value. view=stations: the same per station. "
-                "Optionally one item.",
-        "args": {"view": arg(S, "members (default), inventory or stations", ("members", "inventory", "stations")), "member": arg(S, "for members: a member's name or all", MEMBERS),
-                 "item": arg(S, "one item id"), "top": arg(I, "for inventory and stations: rows per group, default 40")},
-        "plan": lambda a: [("game/fleet/craftbook.py", ["inventory"] + (["stations"] if a.get("view") == "stations" else []) + flag(a, "item") + flag(a, "top"))]
-                          if a.get("view") in ("inventory", "stations") else
-                          [("game/fleet/ledger.py", ["show"] + ([a["member"]] if a.get("member") else []) + flag(a, "item"))]},
+                "view=surplus: what we hold beyond the reserve and may sell, best worth at a standing bid first, where it lies and the bid at that very station (rule "
+                "F24). view=reserve: what our bases and upgrades take (game/reserve.tsv) against what we hold, what is short, and what is held back for another "
+                "recipe. Optionally one item.",
+        "args": {"view": arg(S, "members (default), inventory, stations, surplus or reserve", ("members", "inventory", "stations", "surplus", "reserve")),
+                 "member": arg(S, "for members: a member's name or all", MEMBERS), "item": arg(S, "one item id (not for reserve)"),
+                 "kind": arg(S, "for surplus: one kind of item (raw, refined, component, module, consumable, ammo, drone, other, contraband)"),
+                 "top": arg(I, "for inventory and stations: rows per group, default 40; for surplus: items, default 15")},
+        "plan": stock_plan},
     "catalog": {
         "text": "The game's catalog asked as a question. ask=item: find an item by text; for one item how it is made, what uses it, what is built with it. ask=needs: "
                 "everything a number of units takes down to what is mined or bought, beside what we store. ask=build: what a facility or a hull costs and takes. "
@@ -291,6 +327,16 @@ TOOLS = {
                 "longer drive: a held ship earns nothing.",
         "args": {"pilot": arg(S, "the pilot's name"), "release": arg(B, "true: give it back to the dispatcher")}, "required": ["pilot"],
         "plan": lambda a: [("game/fleet/gate.py", ["release" if a.get("release") else "hold", a["pilot"]])], "door": True},
+    "sql": {
+        "text": "Ask the fleet's one database in SQL, read-only: one SELECT over what the fleet knows now and what it measured (ships and where they are, holdings, order "
+                "books, the game's catalog with recipes and facilities, the map, stations, factions, our empire, routes, plans, every run, prices and field readings "
+                "by the hour). What a route earns now: the view route_earnings (credits per ship-hour over the last 4, 12 and 24 hours, the runs behind each, the hours "
+                "since it last flew; an empty figure means it did not fly, not that it does not pay). Without a query: the tables and views with what each holds; "
+                "with table: its columns and example questions.",
+        "args": {"query": arg(S, "one SELECT statement, e.g. SELECT route, runs_4h, cph_4h, cph_24h, hours_since FROM route_earnings ORDER BY cph_4h DESC"),
+                 "table": arg(S, "instead of a query: a table's or view's name for its columns and examples; all (default) lists every table and view"),
+                 "limit": arg(I, "for a query: rows at most")},
+        "plan": sql_plan},
     "hive": {
         "text": "Any verb of game/fleet/hive.py by name, with its arguments as a list: the way to a figure added after this tool list was loaded. verb=help prints "
                 "what exists now.",

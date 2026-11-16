@@ -7,7 +7,7 @@ WHAT: the service `ledger` runs it. Every 30 s it does two things.
                   only reads and answers from anywhere) and writes
                   data/stock/storage.json: per pilot and station, and the
                   totals per station and per division, with what the ships
-                  carry in their holds. Every pilot is read about once in 40
+                  carry in their holds. Every pilot is read about once in 35
                   minutes.
         market    looks at the order books our ships saved (data/market/) and,
                   for every book that was read again, appends one line per
@@ -17,7 +17,9 @@ WHAT: the service `ledger` runs it. Every 30 s it does two things.
 RULES:
   - It reads only. It moves no ship, buys and sells nothing.
   - A pilot it could not read keeps its last reading and its error; a total
-    never counts a pilot twice.
+    never counts a pilot twice. A pilot leaves the book only when the fleet
+    file, read while the engine answers, names it no longer: one that is not
+    connected for a moment keeps its stores in the book.
   - The files are the unit's data, never the repository's.
 WHY:  9,000 units of ore lay in storage unseen, a second purchase was made
       for a mission that hands its goods out, and a price that held for one
@@ -52,7 +54,7 @@ import division                                   # noqa: E402
 GATE = "http://172.30.0.32:7580"
 OPENER = urllib.request.build_opener(urllib.request.ProxyHandler({}))
 EVERY = 30                   # seconds between two passes
-PER_PASS = 2                 # pilots read per pass
+PER_PASS = 4                 # pilots read per pass: 246 ships in about 35 minutes
 HOME = "central_nexus"       # any station answers with the list of the pilot's storage locations
 
 
@@ -192,6 +194,23 @@ def pilots_of(data):
     return sorted(s["name"] for s in ships if isinstance(s, dict) and s.get("name") and s.get("status") == "connected")
 
 
+def roster(data):
+    """Every pilot the fleet file names, connected or not; None while the engine does not answer or the file names nobody
+    (then nobody leaves the book: a pilot that reconnects for a moment still owns what it stored)."""
+    fleet = read_json(Path(data) / "fleet" / "fleet.json", {})
+    names = {s["name"] for s in fleet.get("ships") or [] if isinstance(s, dict) and s.get("name")}
+    return names if names and (fleet.get("engine") or {}).get("ok", True) else None
+
+
+def leave(book, data):
+    """Take the pilots out of the book that the fleet has no longer; the names taken out."""
+    known = roster(data)
+    gone = sorted(set(book["pilots"]) - known) if known is not None else []
+    for name in gone:
+        del book["pilots"][name]
+    return gone
+
+
 def show(data, who, item):
     book = read_json(Path(data) / "stock" / "storage.json", {})
     if not book:
@@ -260,8 +279,7 @@ def main():
         try:
             wrote = market_pass(data, seen)
             names = pilots_of(data)
-            for gone in set(book["pilots"]) - set(names):
-                del book["pilots"][gone]
+            leave(book, data)
             batch = names if once else [names[(turn + n) % len(names)] for n in range(min(PER_PASS, len(names)))]
             turn += len(batch)
             for pilot in batch:
