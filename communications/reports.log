@@ -301,3 +301,12 @@ Failed: the chain stood outside the hauler plan 04:54 to 09:05 UTC (errors.log E
 Requests: requests.log ENT-122 (Unity: store all in her once routes), ENT-123 (answer no to ENT-120), ENT-127 (done to ENT-085), ENT-128 (Zero: places for six haulers with made harvesters).
 Suggestions: orders_routes.py as a fill-gate check for every role; store all at the last stop of every looting once route; made harvesters before a purchase at Central Nexus; carapace sold as plate until the station is in sight.
 Report: once-chain-heads-plan-holds-emptied-into-plate.
+
+## [ENT-034] | 2026-11-16 09:58 UTC | Mercury | session | ref: reports/2026-11-16_mercury_voidborn-mastery-line-found-four-once-routes.md | see: orders.log ENT-013
+Session: scheduled run turn-mercury -- a mission line of about 24,000 cr a pilot found behind First Steps; four once routes written and opened to the fleet.
+Did: Signal Fragments heads the trader plan, max_ships 3 -> 10 (ENT-118 answered, ENT-121); boards of 8 docked traders read whole; 4 routes tested by hand and written: voidborn-network-expansion (+1,450 cr in 8 min), voidborn-first-steps-board (+922 in 12), voidborn-collective-provides (+2,188 in 48), voidborn-signal-protocol (+3,409 in 14); queue ENT-091, 095, 096; chain kept at 10 ships; guidebook and plan committed.
+Worked: the fleet flew Network Expansion 46 times (+66,232 cr) and Signal Fragments 38 times (+261,899 cr) from 08:30 UTC; 25 trader runs +36,868 cr (39,000 paid once); Trade credits 996,652 -> 1,032,546; fill gate PASS at 09:54 UTC; Trade -27 cr per ship-hour over 20 ships in 4 h against the scale 7,910.
+Failed: voidborn-first-steps served only holders, 87 pilots never took First Steps (errors.log ENT-051); fill.py put voidborn-first-hunt-achernar back twice on an old measure, two trader runs -154 cr; four typed times in the guidebook, corrected.
+Requests: requests.log ENT-129 (Unity: the old First Steps route and a skipped run counted as done); answer ENT-121.
+Suggestions: fill.py should read a route's last runs beside its measure; every Admiral reads its docked pilots' whole boards each turn (boards.py, can go to game/fleet/); Crystal Resonance Harvest and Deep Core Prospecting for Mining; no new traders.
+Report: voidborn-mastery-line-found-four-once-routes.
