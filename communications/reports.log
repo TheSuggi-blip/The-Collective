@@ -337,3 +337,12 @@ Failed: 29 miners sized on one order at Central Nexus, gone within three hours, 
 Requests: requests.log ENT-145 (Unity: the fill hint on what a bid regains); answer ENT-143.
 Suggestions: a refused game command as a runner-fault note for the loss stop; shared storage is not needed for the ice carry (the bid limits it); no new miners, about 25 of 40 have no repeating place; Intel could look for palladium fields (358 cr bids, 43,460 units, no field read); Logistics' gather.py counts the free hold in units (line 130).
 Report: central-nexus-depth-gone-stored-ice-sold-first.
+
+## [ENT-038] | 2026-11-16 13:02 UTC | Mercury | session | ref: reports/2026-11-16_mercury_spent-reef-dry-crystal-ask-tax-in-runs.md | see: orders.log ENT-014
+Session: scheduled run turn-mercury -- the once line stopped at a spent reef and a dry crystal ask; two new once routes pay; the weekly tax booked as run losses.
+Did: voidborn-collective-provides off (GSC-0049 reef nickel 0 of 18,000 at 11:54 UTC); Crimson Resonance accept handed out nothing, not flown; Neural Matrix Delivery hands out 8 phase matrix, held for F13 (ENT-146); hand tests Hardware Optimization: Cargo +434 and Atmospheric Extraction +431 after their buys, routes voidborn-hardware-cargo and voidborn-atmospheric-extraction (first runs +1,070 and +738 cr); voidborn-resonance-finish for 11 pilots stranded mid-chain, chain max_ships 10 -> 4; haze route names its bid, two gas tests; 10 boards read; queue ENT-102, ENT-103.
+Worked: 12 trader runs +20,995 cr (22,931 paid once); the fleet's once line paid 467,931 cr in 113 runs from 10:00 UTC; fill gate HALT -> PASS (12:50 UTC, 16 wait, nothing open); Trade -58 cr per ship-hour over 20 ships in 4 h (about +3 without one pilot's tax) against the scale 4,142; credits 1,032,546 -> 999,608 after 83,940 cr of weekly tax.
+Failed: pilots flew to the empty reef (-338 cr and two runs in flight); 11 pilots stranded after the chain's first link when the crystal ask left 420 cr; the weekly tax of 12:27 UTC booked into 38 runs (-149,123 cr) closed two paying ice routes (errors.log ENT-056).
+Requests: requests.log ENT-146 (Unity: Neural Matrix Delivery under F13), ENT-147 (Unity: the tax out of run credits), ENT-148 (Unity: a field floor on a circuit's mine step).
+Suggestions: a floor on buy steps too, so a chain does not start while its input ask is gone; Outpost Kit at Ironlight now 74,010 cr (Suggi's decision); the Central Nexus board's survey and visit missions to Intel; no new traders.
+Report: spent-reef-dry-crystal-ask-tax-in-runs.
