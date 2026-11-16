@@ -11,6 +11,8 @@ which pilot flies it, and where a pilot is, stays in the unit's data folder:
               "skip_if_hold": {"item_id": N},        skip the stop when the hold has these already
               "redock": true,                 undock and dock again (a delivery counts on docking)
               "store":  ["item_id", ...],     hold -> personal storage here; "all": every good aboard
+              "withdraw": [{"item": "...", "qty": N}],   personal storage here -> hold, at most qty and the free
+                                              hold; when the stop sells the item too, at most what its bid takes
               "sell":   [{"item": "...", "min_price": N}],
               "buy":    [{"item": "...", "qty": N, "max_price": N, "one_time": true}],   max_price: the most a unit may cost, tax included
                                               qty = units wanted in the hold; one_time: goods for a
@@ -23,7 +25,7 @@ which pilot flies it, and where a pilot is, stays in the unit's data folder:
                                               objectives done (a mission that counts units mined), at most
                                               `minutes`; ore that fills the hold goes into storage at the stop
 At every stop, in this order: dock and refuel; hand in every mission whose
-objectives are all done; redock; hand in again; store; sell; buy; accept; save the
+objectives are all done; redock; hand in again; store; withdraw; sell; buy; accept; save the
 station's order book and mission board (data/market, data/missions).
 --from N starts at stop N (1 is the first). A goal the engine is still carrying
 out for the pilot is waited for, up to ten minutes. While the run lasts the pilot
@@ -209,6 +211,39 @@ def store_list(want, hold):
     return [item for item in (want or []) if hold.get(item)]
 
 
+def withdraw_units(want, stored, free, sell, row, aboard):
+    """Units a stop's `withdraw` takes from the pilot's own storage into the hold: at most what is stored, what the free
+    hold takes and the want's `qty`. When the same stop sells the item, at most what the bid takes at its best price
+    less what is aboard already, and nothing under the sale's `min_price`: nothing withdrawn stays in the hold to close
+    the pilot's `empty_hold` routes. Storage is personal (requests.log ENT-117, 2026-11-16)."""
+    units = min(int(stored or 0), max(int(free or 0), 0), int(want.get('qty') or 10 ** 9))
+    if sell is not None:
+        bid = row.get('best_buy') or 0
+        depth = row.get('best_buy_qty') if isinstance(row.get('best_buy_qty'), (int, float)) else 0
+        if not isinstance(bid, (int, float)) or bid < sell['min_price']:
+            return 0
+        units = min(units, int(depth or 0) - int(aboard or 0))
+    return max(units, 0)
+
+
+def stored(base):
+    """{item_id: units} of the pilot's own storage at the station where it is docked."""
+    d = raw('view', {'station_id': base}, group='spacemolt_storage')
+    sc = body(d) or (body(d['result']) if isinstance(d.get('result'), dict) else {})
+    items = sc.get('items') or []
+    return {i.get('item_id'): int(i.get('quantity') or 0) for i in items or [] if isinstance(i, dict) and i.get('item_id')}
+
+
+def room():
+    """Free units of the hold: the ship's capacity (its live file) less what is aboard."""
+    try:
+        ship = json.loads((DATA / 'fleet' / 'ships' / ((re.sub(r'[^A-Za-z0-9_.-]', '_', P)[:60] or 'pilot') + '.json')).read_text(encoding='utf-8'))
+        capacity = int(ship.get('cargo_capacity') or 65)
+    except (OSError, ValueError):
+        capacity = 65
+    return capacity - sum(cargo().values())
+
+
 def book_onetime(title, amount):
     with open(ONETIME_FILE + '.lock', 'w') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
@@ -343,6 +378,15 @@ for n, stop in enumerate(ROUTE['stops']):
                 say(f'store {item}: {str(d.get("error"))[:100]}')
             time.sleep(11)
     book, board = save_station(base, system)
+    for want in stop.get('withdraw') or []:              # own storage -> hold: sold here into the bid, or carried on
+        sale = next((s for s in stop.get('sell') or [] if s.get('item') == want['item']), None)
+        units = withdraw_units(want, stored(base).get(want['item'], 0), room(), sale, book.get(want['item']) or {}, cargo().get(want['item'], 0))
+        if units:
+            d = raw('withdraw', {'item_id': want['item'], 'quantity': units, 'target': 'self'}, group='spacemolt_storage')
+            time.sleep(11)
+            say(f'withdrew {units} {want["item"]} from storage' + (f': {str(d.get("error"))[:100]}' if 'error' in d else ''))
+        else:
+            say(f'withdraw {want["item"]}: nothing to take (stored, hold or bid)')
     for want in stop.get('sell') or []:
         row, have = book.get(want['item']) or {}, cargo().get(want['item'], 0)
         bid = row.get('best_buy') or 0

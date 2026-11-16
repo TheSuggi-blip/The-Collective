@@ -162,5 +162,35 @@ class StoreStepTests(unittest.TestCase):
         self.assertIn("for item in store_list(stop.get('store'), hold):", source)
 
 
+class WithdrawStepTests(unittest.TestCase):
+    # 2026-11-16: about 14,000 water ice lay in miners' storage at stations whose bids regain slowly (requests.log
+    # ENT-117); storage is personal, so only the pilot that stored a load can sell it. A stop's `withdraw` takes it
+    # from the pilot's storage into the hold, before the stop's sale: sold where it lies, or carried to the next stop.
+    def test_withdraw_takes_no_more_than_storage_hold_and_qty(self):
+        units = functions("withdraw_units")["withdraw_units"]
+        self.assertEqual(units({"item": "water_ice"}, 5500, 65, None, {}, 0), 65)
+        self.assertEqual(units({"item": "water_ice"}, 40, 65, None, {}, 0), 40)
+        self.assertEqual(units({"item": "water_ice", "qty": 30}, 5500, 65, None, {}, 0), 30)
+        self.assertEqual(units({"item": "water_ice"}, 5500, 0, None, {}, 0), 0)
+        self.assertEqual(units({"item": "water_ice"}, 0, 65, None, {}, 0), 0)
+
+    def test_withdraw_before_a_sale_here_takes_only_what_the_bid_takes(self):
+        units = functions("withdraw_units")["withdraw_units"]
+        sell = {"item": "water_ice", "min_price": 25}
+        self.assertEqual(units({"item": "water_ice"}, 5500, 65, sell, {"best_buy": 32, "best_buy_qty": 20}, 0), 20)
+        self.assertEqual(units({"item": "water_ice"}, 5500, 65, sell, {"best_buy": 32, "best_buy_qty": 563}, 0), 65)
+        self.assertEqual(units({"item": "water_ice"}, 5500, 65, sell, {"best_buy": 32, "best_buy_qty": 20}, 15), 5)
+        self.assertEqual(units({"item": "water_ice"}, 5500, 65, sell, {"best_buy": 20, "best_buy_qty": 900}, 0), 0)
+        self.assertEqual(units({"item": "water_ice"}, 5500, 65, sell, {}, 0), 0)
+
+    def test_the_withdraw_step_runs_after_the_book_is_read_and_before_the_sale(self):
+        source = (FLEET / "route_run.py").read_text(encoding="ascii")
+        book = source.index("book, board = save_station(base, system)")
+        step = source.index("for want in stop.get('withdraw') or []:")
+        sale = source.index("for want in stop.get('sell') or []:")
+        self.assertTrue(book < step < sale)
+        self.assertIn("'withdraw', {'item_id': want['item'], 'quantity': units, 'target': 'self'}, group='spacemolt_storage'", source)
+
+
 if __name__ == "__main__":
     unittest.main()
