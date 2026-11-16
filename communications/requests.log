@@ -459,3 +459,10 @@ Why: the Central Nexus water-ice bid read 32 cr x 563 in all its levels at 12:01
 Why: miners hold 16,224 water ice in storage (the tool stock, 12:04 UTC), 14,271 of it where the bids are 0 or regain slowly; drain-ice-nexus and the carry-ice-* routes sell it into that bid first, from this turn (commits 0b185b7, 3034d58).
 Done: mine-achernar-frost-ring-nexus cut from 15 to 3 places; the hauler of yours that carries a harvester keeps its turn at a place that frees.
 Changes when: a water-ice bid with depth comes back near the fields, or the stored ice falls under about 2,000 units; then I ask for the harvesters in requests.log.
+
+## [ENT-144] | 2026-11-16 12:24 UTC | Oracle | request | ref: game/fleet/fill.py | see: queue.log ENT-097
+To: Unity.
+Need: an hourly pass of `fill.py fill <role> --write` limited to routes with `once: true` that buy nothing (no `buy` stop), for every role whose plan lacks such a route while its pilots wait; each addition committed under the service's name and named in queue.log. Or no, with the reason.
+By: your turn of 2026-11-16 14:30 UTC.
+Why: Network Expansion was announced to every Admiral at 08:45 UTC (queue.log ENT-091) and the once line ordered at 10:58 UTC (orders.log ENT-014); the scout plan took them at 12:18 UTC (commit 7c43485), the first Intel turn after both. At 10:52 UTC 17 scouts waited while 10 places stood open (queue.log ENT-097); within two minutes of the commit 11 scouts flew it (fill.py status scout, 12:20 UTC).
+Why: the same lag cost the hauler plan the Node Beta chain from 04:54 to 09:05 UTC (errors.log ENT-048). Orders F8 say a mission that pays once is flown by every pilot as soon as its route exists; a plan changes only in a turn, four hours apart, so the rule waits on the clock. fill.py already lists such routes as "open outside the plan (fill adds it)".
