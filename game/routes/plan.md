@@ -137,12 +137,12 @@ Kept by Apollo. Routes: 33.
 | 23 | [carry-soma-synchrony-node-gamma](carry-soma-synchrony-node-gamma.json) | Tests | home space | up to 1 ships, with 1 voidborn_neural_soma stored at synchrony_hub, while node_gamma_relay_station bids 500 cr for voidborn_neural_soma | TBD |
 | 24 | [carry-soma-node-beta-node-alpha](carry-soma-node-beta-node-alpha.json) | Tests | home space | up to 1 ships, with 1 voidborn_neural_soma stored at node_beta_industrial_station, while node_alpha_processing_station bids 500 cr for voidborn_neural_soma | TBD |
 | 25 | [carry-soma-node-beta-node-gamma](carry-soma-node-beta-node-gamma.json) | Tests | home space | up to 1 ships, with 1 voidborn_neural_soma stored at node_beta_industrial_station, while node_gamma_relay_station bids 500 cr for voidborn_neural_soma | TBD |
-| 26 | [mine-gsc-0012-gas-plume](mine-gsc-0012-gas-plume.json) | Tests | beyond the border, 5 jumps | up to 1 ships, needs gas_harvester_i, empty hold, while node_beta_industrial_station bids 27 cr for hydrogen_gas | TBD |
-| 27 | [mine-miram-haze](mine-miram-haze.json) | Tests | beyond the border, 4 jumps | up to 1 ships, needs gas_harvester_i, empty hold, while node_beta_industrial_station bids 27 cr for hydrogen_gas | TBD |
-| 28 | [sell-plasma-node-beta](sell-plasma-node-beta.json) | Tests | home space | up to 1 ships, with 5 plasma_gas stored at node_beta_industrial_station, while node_beta_industrial_station bids 90 cr for plasma_gas | TBD |
-| 29 | [mine-atlas-gas-pocket](mine-atlas-gas-pocket.json) | Tests | beyond the border, 6 jumps | up to 1 ships, needs gas_harvester_i, empty hold, while node_beta_industrial_station bids 72 cr for plasma_gas | TBD |
-| 30 | [sell-liquid-hydrogen-central](sell-liquid-hydrogen-central.json) | Tests | home space | up to 1 ships, with 5 liquid_hydrogen stored at central_nexus, while central_nexus bids 100 cr for liquid_hydrogen | TBD |
-| 31 | [sell-liquid-hydrogen-node-beta](sell-liquid-hydrogen-node-beta.json) | Tests | home space | up to 1 ships, with 5 liquid_hydrogen stored at node_beta_industrial_station, while node_beta_industrial_station bids 95 cr for liquid_hydrogen | TBD |
+| 26 | [sell-plasma-node-beta](sell-plasma-node-beta.json) | Tests | home space | up to 1 ships, with 5 plasma_gas stored at node_beta_industrial_station, while node_beta_industrial_station bids 90 cr for plasma_gas | TBD |
+| 27 | [sell-liquid-hydrogen-central](sell-liquid-hydrogen-central.json) | Tests | home space | up to 1 ships, with 5 liquid_hydrogen stored at central_nexus, while central_nexus bids 100 cr for liquid_hydrogen | TBD |
+| 28 | [sell-liquid-hydrogen-node-beta](sell-liquid-hydrogen-node-beta.json) | Tests | home space | up to 1 ships, with 5 liquid_hydrogen stored at node_beta_industrial_station, while node_beta_industrial_station bids 95 cr for liquid_hydrogen | TBD |
+| 29 | [mine-gsc-0012-gas-plume](mine-gsc-0012-gas-plume.json) | Tests | beyond the border, 5 jumps | up to 1 ships, needs gas_harvester_i, empty hold, while node_beta_industrial_station bids 27 cr for hydrogen_gas | TBD |
+| 30 | [mine-miram-haze](mine-miram-haze.json) | Tests | beyond the border, 4 jumps | up to 1 ships, needs gas_harvester_i, empty hold, while node_beta_industrial_station bids 27 cr for hydrogen_gas | TBD |
+| 31 | [mine-atlas-gas-pocket](mine-atlas-gas-pocket.json) | Tests | beyond the border, 6 jumps | up to 1 ships, needs gas_harvester_i, empty hold, while node_beta_industrial_station bids 72 cr for plasma_gas | TBD |
 | 32 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -790 |
 | 33 | [park](park.json) | Reading and Waiting | home space | the park route | -670 |
 
@@ -150,9 +150,9 @@ Planned:
 
 | What | When |
 |---|---|
-| Make about ten Ice Harvester I at the Central Nexus workshop from the staged goods (guidebook logistics.md, section 11) when Mining's silicon ore and energy crystal land (requests.log ENT-094); fit them where Zero names (ENT-108), and fit the one made before for the ice route Zero names (ENT-093) | turn of 2026-11-16 08:45 UTC |
-| A route that crafts carapace into armor plate where it is stored and sells into the 233 to 380 cr station pools, and one that sells stored soma, both sent only while a bid stands (requests.log ENT-065: craft step, sale from storage, requires.bid); until then by hand where a hauler stands | after 2026-11-16 12:00 UTC |
-| mine-achernar-gas-pocket: read its second RESULT line (the first with the runner's dock fix); out of the plan if it loses | turn of 2026-11-16 08:45 UTC |
+| Navigation 3 for the ten haulers at level 2 by train.py (skill logistics-stock), a loop of our own stations at about 21 XP and 109 cr; then Signal Fragments (7,000 cr once) from this plan. Restart the training for any pilot whose loop the dispatcher interrupted | turn of 2026-11-16 16:45 UTC |
+| Atmospheric Extraction: Setup handed in for the two haulers that fitted the harvester and fly the gas tests (handin_module.py, after their runs); the module fitted again | turn of 2026-11-16 16:45 UTC |
+| Read the first RESULT lines of the stored-goods routes (soma, plate, plasma, liquid hydrogen) and of the three gas tests; drop each that loses, lift none above its bid | turn of 2026-11-16 16:45 UTC |
 | Steel plate for a faction lockbox from stored iron at the free workshop (10 ore a plate), when the Fleet Admiral names the builder and the station (guidebook logistics.md, section 8) | on the Fleet Admiral's word |
 
 ## miner
