@@ -15,6 +15,17 @@
     "trading"
    ],
    "note": "Every route is gated by requires.stored (the pilot's own storage) and requires.bid (a book read within the hour at the floor); a run sells only what the bid takes. Open to every division's ships (rule F24). Starter hull, no module needed."
+  },
+  "trade-craft": {
+   "title": "Goods made by hand for sale where a bid pays more than the inputs",
+   "routes": [
+    "craft-focused-crystal-node-beta"
+   ],
+   "trains": [
+    "crafting",
+    "trading"
+   ],
+   "note": "Inputs from the pilot's own storage at the workshop's station, at most one bought unit a run; the made good is sold into the bid named by requires.bid. A test until its first RESULT line."
   }
  }
 }
