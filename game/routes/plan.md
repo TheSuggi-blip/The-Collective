@@ -15,7 +15,7 @@ file; `planned` in it is what the Admiral means to do next. The roles at a glanc
 
 ## command
 
-Kept by Unity. Routes: 24.
+Kept by Unity. Routes: 23.
 
 | # | Route | Group | Zone | Open to | Credits per ship-hour |
 |---|---|---|---|---|---|
@@ -40,9 +40,8 @@ Kept by Unity. Routes: 24.
 | 19 | [mine-antares-ice-fields](mine-antares-ice-fields.json) | Paying Routes | beyond the border, 5 jumps | up to 1 ships, needs ice_harvester_i, empty hold | 2,700 |
 | 20 | [mine-intercrus-ice-fields](mine-intercrus-ice-fields.json) | Paying Routes | beyond the border, 7 jumps | up to 1 ships, needs ice_harvester_i, empty hold | 4,350 |
 | 21 | [mission-cracking-the-shell-central](mission-cracking-the-shell-central.json) | Once per Pilot | home space | once per pilot, up to 1 ships | TBD |
-| 22 | [trade-voidborn-neural-soma-node-node](trade-voidborn-neural-soma-node-node.json) | Tests | home space | up to 1 ships, from 3,589 cr | TBD |
-| 23 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -600 |
-| 24 | [park](park.json) | Reading and Waiting | home space | the park route | -550 |
+| 22 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -600 |
+| 23 | [park](park.json) | Reading and Waiting | home space | the park route | -550 |
 
 ## drone
 
