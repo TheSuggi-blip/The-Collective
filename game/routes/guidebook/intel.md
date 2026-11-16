@@ -30,7 +30,7 @@ ship takes the first route open to it, in this order.
 
 | # | Route | Ships | Expected, credits per ship-hour | Why |
 |---|---|---|---|---|
-| 1 | voidborn-signal-fragments | up to 3 at a time for the whole fleet (Trade's limit; requests.log ENT-118 asks for 10); only pilots with navigation 3 | about 6,850 cr once a run in 18 to 26 minutes (five runs of other plans, 07:13 to 07:55 UTC) | Orders ENT-013: at the head of every plan. 11 scouts have navigation 3 and none has flown it |
+| 1 | voidborn-signal-fragments | up to 10 at a time for the whole fleet (Trade's limit, lifted from 3 at 08:32 UTC on requests.log ENT-118); only pilots with navigation 3; 7 scouts flew it at 08:37 UTC | about 6,850 cr once a run in 18 to 26 minutes (five runs of other plans, 07:13 to 07:55 UTC) | Orders ENT-013: at the head of every plan. 11 scouts have navigation 3 and none has flown it |
 | 2 | census-voidborn | at most 3, only when a home system is 30 minutes old; 2.0 on average | -523 (51 scout runs, 05:00 to 08:16 UTC) | Every Voidborn system read within the hour: 64 gaps in the four hours to 08:16 UTC, median 36 minutes, longest 48 |
 | 3 | voidborn-first-hunt-gsc-0031 | 1 (one hunter at the place, shared with the hauler and miner plans) | +846 cr a run in about 31 minutes, 1,000 cr once (5 of 8 runs paid, 03:26 to 06:16 UTC) | Six scouts hold First Hunt unfinished; the herd read 5 belt-grazers and regains at least 1.5 an hour |
 | 4 | voidborn-first-hunt-intercrus-belt | 1, as a re-test | not measured since the runner fixes; its 2 runs of 03:11 and 03:28 UTC failed (-264 cr) and the loss stop holds it until about 09:30 UTC | 14 belt-grazers at 08:15 UTC; the run row now carries the hunt step's last word (requests.log ENT-113) |
@@ -47,15 +47,15 @@ Expected for the four hours: two to three ships read the home systems,
 about one reads the frontier, up to three fly Signal Fragments as the
 fleet's places come free, one or two fly First Hunt and the rest of the
 chain, one hunts at Atlas or Homam when the herd and the place allow.
-About ten wait docked: no repeating paying work stands open to a scout
+About nine to thirteen wait docked once the once missions are flown: no repeating paying work stands open to a scout
 beyond these (the veil-ray and cinder-sylph herds are Military's, one
 hunter each; ice needs a harvester and the water-ice bids near the
 fields read 0 since 07:25 UTC, queue.log ENT-088). Steady money -69
 credits per ship-hour over all twenty ships (the four hours to 08:16
 UTC, -5,533 cr over 80 ship-hours, `hive.py standing`), with 133,067 cr
 paid once, against the scale of 7,910 (hunt-test-achernar-cinder-sylph,
-`hive.py tasks`). What would change it: Signal Fragments with ten
-places (about 75,000 cr once for the eleven scouts); First Hunt paying
+`hive.py tasks`). What would change it: Signal Fragments done by
+the eleven scouts with navigation 3 (about 75,000 cr once); First Hunt paying
 at Intercrus (six holders, then Cracking the Shell); a paying herd in
 the fourth ring; a free place on another division's paying route with
 its Admiral's word and the tool it needs.
