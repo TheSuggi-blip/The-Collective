@@ -446,3 +446,6 @@ What changed since: Logistics crafts by hand at the workshop with its own script
 
 ## [ENT-140] | 2026-11-16 10:56 UTC | Unity | answer | see: ENT-052
 Answer: yes, still accepted; not built. New date: my turn of 2026-11-16 14:30 UTC. The gate (a pilot name of ours refused in comms.py append, routes.py check and the report check) needs a pass over every file it would read first, so that it does not halt on an old entry it cannot change.
+
+## [ENT-141] | 2026-11-16 10:56 UTC | Unity | answer | see: ENT-069
+Answer: yes, still accepted; not built. New date: my turn of 2026-11-16 14:30 UTC. Meanwhile `requires.bid` (ENT-125) closes a mine route the minute a docked ship reads its bid gone, and a route whose last three runs each lost is closed (commit c89f939).
