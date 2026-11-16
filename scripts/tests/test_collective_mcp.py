@@ -62,7 +62,8 @@ class ProtocolTests(unittest.TestCase):
         text, _failed = server.fresh(str(SERVER.parents[2]), "", "zero", "hive", {"verb": "help"})
         self.assertIn("hive.py standing", text)                                                   # the script's own help, from the file on disk
         env = server.child_env("zero")
-        self.assertEqual((env["HF_HUB_OFFLINE"], env["TRANSFORMERS_OFFLINE"], env["HERMES_SESSION_PROFILE"]), ("1", "1", "zero"))
+        self.assertEqual((env["HF_HUB_OFFLINE"], env["HF_HOME"], env["HERMES_SESSION_PROFILE"]), ("1", "/opt/search/cache", "zero"))
+        self.assertTrue(env["BRAIN_EMBED_URL"].endswith("/embed"))
 
     def test_a_shell_that_is_no_member_reads_and_is_told_so(self):
         first = talk([{"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {}}], member="")[0]["result"]

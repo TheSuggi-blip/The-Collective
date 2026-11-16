@@ -46,6 +46,8 @@ import division                                   # noqa: E402  the member this 
 LIMIT = 30000                  # characters of one answer
 SECONDS = 110                  # one script
 SEARCH = "/opt/search/venv/bin/python"           # the repository search's own Python (query-collective)
+SEARCH_ENV = {"BRAIN_EMBED_URL": "http://embed:8099/embed",      # the unit's warm embedder, as a member's shell names it
+              "HF_HOME": "/opt/search/cache", "HF_HUB_OFFLINE": "1", "TRANSFORMERS_OFFLINE": "1"}   # and the model on disk when the embedder is away
 MEMBERS = list(division.MEMBERS) + ["all"]
 S, I, B, O, A = "string", "integer", "boolean", "object", "array"
 
@@ -292,8 +294,8 @@ def child_env(member):
     if member:
         env["HERMES_SESSION_PROFILE"] = member.lower()
     env.pop("PYTHONPATH", None)
-    env.setdefault("HF_HUB_OFFLINE", "1")              # the search's model lies on disk: a server started without the proxy must not look for it on the web
-    env.setdefault("TRANSFORMERS_OFFLINE", "1")
+    for key, value in SEARCH_ENV.items():              # Hermes starts a server with a bare environment: the search needs these to find its model
+        env.setdefault(key, value)
     return env
 
 
