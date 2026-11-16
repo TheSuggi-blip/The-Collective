@@ -160,7 +160,7 @@ Catalog and books read 2026-11-15 23:24 to 23:32 UTC.
 | Vigil | 1 | 106,208 cr | 15,040 cr | 8 steel plate, 15 copper wiring, 14 silicate composite, 5 shield emitter, 3 thruster nozzle, 2 sensor array, 2 Pulse Laser I, 2 Shield Booster I |
 | Paradox | 1 | 82,690 cr | 12,368 cr | 15 silicate composite, 10 copper wiring, 1 processing core, 2 shield emitter, 4 void nanite suspension, 5 shield matrix, 1 phase matrix, 2 Pulse Laser I, 1 Shield Booster I, 1 Shield Recharger I |
 
-- Re-quoted 2026-11-16 03:17 UTC at Central Nexus: the Vigil costs 111,316 cr
+- Re-quoted 2026-11-16 between 03:16 and 03:18 UTC at Central Nexus: the Vigil costs 111,316 cr
   with credits only (materials 47,805, labor 1,050, yard fee 14,656), or
   15,706 cr plus the same materials; build time 87 ticks.
 - The railgun ship flies the Pulse Laser I again since 2026-11-16 03:10 UTC; its
