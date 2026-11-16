@@ -20,12 +20,11 @@ name below is a link into one of the sub-indexes of this folder.
 
 | Group | What it holds | Routes | Home space | Beyond the border | Best measured |
 |---|---|---|---|---|---|
-| [Once per Pilot](index.md#once-per-pilot) | Missions and rewards the game pays once per pilot: a new pilot's first work, and seed money. | 21 | 11 | 10 | voidborn-missions-1: 6,430 cr a run |
-| [Paying Routes](index.md#paying-routes) | Work that repeats and whose runs measured above zero. | 23 | 3 | 20 | mine-ruchbah-ice-belt: 8,600 cr per ship-hour |
-| [Tests](index.md#tests) | Work that repeats and has no measured figure yet: one ship until its first RESULT line is read. | 1 | 0 | 1 | not measured yet |
+| [Once per Pilot](index.md#once-per-pilot) | Missions and rewards the game pays once per pilot: a new pilot's first work, and seed money. | 21 | 11 | 10 | voidborn-conductive-lattice: 6,650 cr a run |
+| [Paying Routes](index.md#paying-routes) | Work that repeats and whose runs measured above zero. | 26 | 3 | 23 | mine-ruchbah-ice-belt: 8,600 cr per ship-hour |
 | [Fitting](index.md#fitting) | A module bought and fitted: the tool a kind of work needs. | 9 | 8 | 1 | fit-ice-harvester-lhs-1140: -4,320 cr per ship-hour |
-| [Reading and Waiting](index.md#reading-and-waiting) | The census and the park route: they earn nothing; they keep the picture fresh and a ship without work docked. | 4 | 2 | 2 | census-voidborn: -550 cr per ship-hour |
-| [Measured at a Loss](index.md#measured-at-a-loss) | Work that repeats and whose runs measured zero or below. | 33 | 12 | 21 | mine-bellatrix: 0 cr per ship-hour |
+| [Reading and Waiting](index.md#reading-and-waiting) | The census and the park route: they earn nothing; they keep the picture fresh and a ship without work docked. | 4 | 2 | 2 | census-voidborn: -530 cr per ship-hour |
+| [Measured at a Loss](index.md#measured-at-a-loss) | Work that repeats and whose runs measured zero or below. | 31 | 12 | 19 | mine-bellatrix: 0 cr per ship-hour |
 | [Off](index.md#off) | Written down, not flown. | 7 | 7 | 0 | hunt-home-whale: 1,670 cr per ship-hour |
 | All | | 98 | 43 | 55 | |
 

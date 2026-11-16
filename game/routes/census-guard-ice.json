@@ -17,5 +17,12 @@
  "max_ships": 2,
  "requires": {
   "empty_hold": true
+ },
+ "measured": {
+  "date": "2026-11-16",
+  "runs": 5,
+  "minutes": 13,
+  "credits_per_run": -140,
+  "cph_per_ship": -630
  }
 }
