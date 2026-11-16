@@ -1,0 +1,20 @@
+{
+ "id": "hunt-dimming-pocket-veil-ray",
+ "kind": "hunt",
+ "title": "veil_ray at dimming_pocket; loot sold at Node Beta Industrial Station",
+ "note": "Written by routemaker.py from the herd's count, the loot of 50 runs of ours and the order book; an estimate of 2298 cr per hunter-hour, not a measurement. A test: one ship, the ranching rules kept. Added as a test by fill.py on 2026-11-16 02:56 UTC (Apollo): one ship until its first RESULT line is read.",
+ "place": "thornhaven:dimming_pocket",
+ "species": [
+  "veil_ray"
+ ],
+ "sell_at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+ "min_bid": 264,
+ "kills": 4,
+ "minutes": 49,
+ "max_ships": 1,
+ "min_creatures": 4,
+ "alone": true,
+ "requires": {
+  "empty_hold": true
+ }
+}

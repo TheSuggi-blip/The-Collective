@@ -58,6 +58,15 @@ Work that repeats and whose runs measured above zero.
 | [mine-wolf-1061-frozen-drift](mine-wolf-1061-frozen-drift.json) | mine | beyond the border, 4 jumps | Wolf 1061 Frozen Drift: water_ice, nitrogen_ice, deuterium_ice, methane_ice; sold at Node Alpha Processing Station | up to 2 ships, needs ice_harvester_i, empty hold | 1 | 67 | 4,640 | 4,180 | 2026-11-16 |
 | [mine-wolf-1061-vent](mine-wolf-1061-vent.json) | mine | beyond the border, 4 jumps | Wolf 1061 Frozen Drift with a Nitrogen Vent: water and the rare ices, sold at Synchrony | up to 1 ships, needs nitrogen_vent, empty hold | 2 | 56 | 8,070 | 8,710 | 2026-11-16 |
 
+## Tests
+
+Work that repeats and has no measured figure yet: one ship until its first RESULT line is read.
+
+| Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
+|---|---|---|---|---|---|---|---|---|---|
+| [hunt-denebola-fractured-prism-veil-ray](hunt-denebola-fractured-prism-veil-ray.json) | hunt | beyond the border, 5 jumps | veil_ray at denebola_fractured_prism; loot sold at Node Beta Industrial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
+| [hunt-dimming-pocket-veil-ray](hunt-dimming-pocket-veil-ray.json) | hunt | beyond the border, 4 jumps | veil_ray at dimming_pocket; loot sold at Node Beta Industrial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
+
 ## Fitting
 
 A module bought and fitted: the tool a kind of work needs.
