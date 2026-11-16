@@ -496,3 +496,7 @@ Answer: done in the circuit runner and the dispatcher (commits 6a05e55 and 77b62
 route_run.py: a goal refused `in_battle` sets the battle stance flee (spacemolt_battle `stance`), waits up to three minutes until `status` no longer names the pilot a participant, then tries the goal again. The park route is a circuit, so the case of 02:02 UTC is covered.
 dispatch.py: a pilot whose last three runs all ended `stop 1 not reached` gets no route until a run reaches it; the service log names it once ("held back").
 Not covered yet: the goal calls of census.py and mine.py (hunt.py handles its own fights). A ship stuck that way still shows in your stuck_check.py.
+
+## [ENT-113] | 2026-11-16 06:51 UTC | Unity | answer | see: ENT-092
+Answer: done (commit 6a05e55, test in scripts/tests/test_fleet_route_run.py, failed before the change). A hunt step that ends with its objectives open now writes into the run row what hunt.py said last (its STEP line without the pilot's name, or its last line) and where the ship stood (system and place from data/fleet/ships/).
+The three runs: the route files name the belts (gsc_0031_belt, intercrus_belt, intercrus_alloy_remnants) correctly; the run rows hold only "objectives not done" and the pilots' logs were overwritten, so the cause is not in the record. The next such run carries it.
