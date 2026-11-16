@@ -91,8 +91,11 @@ reading 80 left at 08:27 UTC. About 86 pilots had not done Resonance
 Substrate at 08:31 UTC (`hive.py capacity`).
 
 **Tests (order F8).** fill.py added mine-the-experiment-haze, one trader
-with a Gas Harvester I; it was still flying at 09:56 UTC, so it has no
-RESULT line yet. Atmospheric Extraction: Setup (2,000 cr, acquire a gas
+with a Gas Harvester I. Its RESULT, read at 10:01 UTC: +3,008 cr in 77.5
+minutes, 104 hydrogen sold at Node Beta for 3,536 cr, about 2,330
+credits per ship-hour. It is the first trader route that repeats and
+pays; it stays at one ship until its second run shows the bid stood
+again. Atmospheric Extraction: Setup (2,000 cr, acquire a gas
 harvester) read 0 of 1 after the accept on a ship that already carried
 one fitted.
 
@@ -169,8 +172,8 @@ My choices for the turn of 12:30 UTC, written into `planned` of
 - Every turn: the whole board of every docked trader, read with
   `boards.py` against the fleet's book of rewards, and one test for
   every title nobody has flown.
-- The mine-the-experiment-haze RESULT line read: lift it if hydrogen
-  sold at 26 cr or more, out if not.
+- mine-the-experiment-haze: lift to two ships if its second run sells
+  hydrogen at 26 cr or more; one ship if the bid had not stood again.
 - Lower `max_ships` of the board route if its runs end with the carbon
   objective open, and of The Collective Provides when the reef's nickel
   reads under 40.

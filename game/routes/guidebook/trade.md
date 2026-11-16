@@ -39,7 +39,7 @@ A mission that pays once is judged with its reward (orders F19).
 | 4 | voidborn-signal-protocol | 20 | +3,409 cr once in 14 minutes (1 run), about 14,600 once per ship-hour | The link after The Collective Provides |
 | 5 | voidborn-signal-fragments | 10 | +6,792 to +6,909 cr once in 14 to 26 minutes | Navigation 3 only: both traders that have it are done; stands for a trader that reaches it |
 | 6-12 | The older missions that pay once and the Node Beta chain | 0 | -- | Every trader has flown or booked them; they stay for a pilot born later |
-| 13 | mine-the-experiment-haze | 1, a trader with a Gas Harvester I | the route maker's estimate 1,638 per ship-hour, not measured | Test: hydrogen into the Node Beta bid of 33 cr (34 units at the best price, 08:30 UTC) |
+| 13 | mine-the-experiment-haze | 1, a trader with a Gas Harvester I | +3,008 cr in 77.5 minutes on its first run, about 2,330 per ship-hour (section 1) | Test: hydrogen into the Node Beta bid of 33 cr (34 units at the best price, 08:30 UTC) |
 | 14 | census-frontier | up to 12 (Intel's route) | -620 measured: a reading cost | Open only when a frontier system is due |
 | 15 | park | the rest | 0 | A docked ship costs nothing |
 
@@ -63,7 +63,8 @@ Admiral for the plasma import of section 7.
 
 | Route | Credits per ship-hour, after all costs | Date | Note |
 |---|---|---|---|
-| -- | -- | -- | None that repeats yet. The one-time missions of section 3 pay once per pilot |
+| `mine-the-experiment-haze` (gas from The Experiment Haze with a Gas Harvester I, sold at Node Beta) | +3,008 cr in 77.5 minutes, one run: about 2,330 per ship-hour after fuel; 104 hydrogen sold at 34 cr (3,536 cr), 325 units mined (data/routes/runs.jsonl, 08:36 UTC) | 2026-11-16 | One run, one trader; the Node Beta hydrogen bid read 34 cr for 160 at its best price before the sale (fill.py status) and its regain is not measured. The second run, from 09:59 UTC, shows whether the bid stood again; one ship until then |
+
 
 ## 2. What Did Not Pay
 
