@@ -1,0 +1,46 @@
+{
+ "id": "voidborn-signal-protocol",
+ "kind": "circuit",
+ "title": "The Signal Protocol: 3,500 cr once, the voidborn mastery line after The Collective Provides; docks at Node Beta and Node Gamma, handed in at Central Nexus",
+ "note": "On the Central Nexus board after The Collective Provides is handed in (one trader's board, 09:32 UTC): recalibrate arrays at Node Beta Industrial Station and Node Gamma Relay Station, return the data to Central Nexus; 3,500 cr, voidborn mastery, exploration, scanning and tactics XP; nothing carried, nothing bought. Test by hand, one trader, 09:34 to 09:48 UTC: both arrays counted on docking, handed in at Central Nexus: RESULT +3,409 cr after fuel in 14 minutes (data/routes/runs.jsonl). requires.booked The Collective Provides; max_ships 20: docks at our own stations. Stamped 2026-11-16 09:49 UTC.",
+ "once": true,
+ "requires": {
+  "booked": "The Collective Provides"
+ },
+ "max_ships": 20,
+ "one_time": [
+  "The Signal Protocol"
+ ],
+ "skip_if_booked": [
+  "The Signal Protocol"
+ ],
+ "stops": [
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "accept": [
+    "the_signal_protocol"
+   ]
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "only_if_active": [
+    "The Signal Protocol"
+   ],
+   "redock": true
+  },
+  {
+   "at": "node_gamma:node_gamma_relay_station:node_gamma_relay_station",
+   "only_if_active": [
+    "The Signal Protocol"
+   ],
+   "redock": true
+  },
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "only_if_active": [
+    "The Signal Protocol"
+   ],
+   "redock": true
+  }
+ ]
+}
