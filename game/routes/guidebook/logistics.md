@@ -467,7 +467,7 @@ UTC (the tool base_plan with kind=station) against the storage book of 18:37 UTC
 | carbon ore | 97,008 | 2,133 | Central Nexus 1,864, Node Beta 148 | 94,875 | Gliese 876 belt (2,901 left), Furud belt (612); 44,531 asked at 4 cr at Nova Terra Central |
 | anchor plate | 93,690 | 0 | -- | 93,690 | none read |
 | alloy scale | 56,520 | 0 | -- | 56,520 | none read |
-| silicon ore | 52,808 | 34 | Central Nexus 34 | 52,774 | asks of 1 to 4 units at 312 to 376 cr |
+| silicon ore | 52,808 | 34 | Central Nexus 34 | 52,774 | 424 asked at 420 cr at Central Nexus (book of 19:07 UTC); 1 to 4 units at 312 to 376 cr elsewhere |
 | salvage components | 41,600 | 0 | -- | 41,600 | 546 asked at 87 cr at Node Alpha |
 | foil scale | 41,220 | 0 | -- | 41,220 | none read |
 | creature carapace | 35,640 | 904 | Node Beta 365, Central Nexus 312, The Experiment 157 | 34,736 | Military's hunts |
@@ -508,3 +508,47 @@ that quote does not say whether for one run or two), and by hand
 and 24,570 runs, about 233,000 to 467,000 cr of fees; the fleet holds 107,707 iron
 ore today. Which way the stations' steel goes is not decided; the hand recipe asks
 no facility and no fee.
+
+## 14. The Faction's Plates and Boards (orders.log ENT-017, P5)
+
+The lockbox and the hiring board take 275 steel plate and 75 circuit boards
+(orders ENT-017). Who builds them and where is the Fleet Admiral's; the goods move
+to the builder by a deposit to that pilot (section 7).
+
+Steel plate, made 2026-11-16 18:59 to 19:05 UTC at the Node Beta workshop by
+`basic_iron_smelting` (10 iron ore, 1 plate, 0.27 ticks a run, 0 cr), from the iron
+ore the gather routes put into hauler storage there (catch.py and craftchain.py of
+the skill logistics-stock, logs of the turn):
+
+| Batch | Plates | Minutes of crafting | Credits | Skill |
+|---|---|---|---|---|
+| one hauler, 1,450 iron ore | 145 | 5.7 | 0 | crafting 0 (25 XP) to 1 (75 XP), refining 0 (15 XP) to 1 (65 XP): about 110 XP each for 145 runs |
+| one hauler, 1,170 iron ore | 117 | 5.2 | 0 | not read |
+| one hauler, 130 iron ore | 13 | 0.7 | 0 | not read |
+
+So 275 plate took 2,750 iron ore, 0 cr and about 6 minutes of workshop time with
+three haulers in parallel, about 25 plates a minute a hauler; no skill is asked.
+The two smaller batches went by deposit into the first hauler's storage (117 and 13
+plates, three loads of 57 at most). All 275 lie in one Logistics storage at Node
+Beta (`view` of that storage, 19:08 UTC). What the hand took besides: each hauler
+was taken at the end of its gather run, where its minutes ran out (at the field),
+and flown to Node Beta, 3.5 to 5 minutes; those hops are the ones its gather run
+flies anyway.
+
+For the stations' 49,140 plate the same recipe takes 491,400 iron ore and, at
+about 25 plates a minute, about 33 hours of one docked hauler's workshop time;
+`refine_steel` in a facility takes a quarter of the ore (section 13).
+
+Circuit boards: not made this turn. Every by-hand board recipe takes silicon ore,
+and the fleet holds 34, all at Central Nexus: 16 in one hauler's storage, 16 and 1
+in two Mining storages, 1 in a scout's (storage book 18:37 UTC).
+`carbon_arc_circuit_etching` makes 3 boards from 2 silicon and 12 carbon;
+`fabricate_circuit_boards` 2 boards from 2 silicon, 3 copper and 1 energy crystal.
+So 75 boards take 50 silicon by etching (and 300 carbon), 75 by fabrication. With
+Mining's 16 silicon and 17 carbon in the crafting hauler's storage (requests.log
+ENT-168), 16 etchings give 48 boards; with the one board stored there, 49 of 75.
+The other 26 take about 18 silicon more: Central Nexus asked silicon ore at 420 cr
+for 424 units and circuit boards at 686 cr for 250 (book of 19:07 UTC). Etched from
+bought silicon a board costs about 280 cr in silicon (2 at 420 for 3 boards), against
+686 cr bought whole. Silicon is the limit; a buy for a craft is one unit first (rule
+F12).
