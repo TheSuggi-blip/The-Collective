@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 3.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 90 | Public event stream |
+| Pilots carrying the tag on the public event stream | 89 | Public event stream |
 
 ## Bases
 
@@ -47,9 +47,9 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| CLU | Pherkad (`pherkad`) | 0 | junk_convoy |
-| JabbaTheHutt | Pherkad (`pherkad`) | 0 | junk_convoy |
-| LandoCalrissian | Hamal (`hamal`) | 0 | junk_convoy |
+| CaptainJaneway | The Experiment (`the_experiment`) | 0 | threshold |
+| CLU | Node Beta (`node_beta`) | 0 | junk_convoy |
+| MasterChief | The Experiment (`the_experiment`) | 149 | frankenhauler |
 
 ## Standing History
 

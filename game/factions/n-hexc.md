@@ -15,7 +15,7 @@ updated: 2026-11-16
 # Hex Collective [HEXC]
 
 A player faction with 9 base(s) in 9 system(s); the nearest to Nexus Prime is 9 jump(s) away, in Chalawan (`chalawan`).
-Pilots of it in our space in the last 24 hours: 4.
+Pilots of it in our space in the last 24 hours: 3.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 4.
 | Allies | IRLC, QTCG, SLKV | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 66 | Public event stream |
+| Pilots carrying the tag on the public event stream | 68 | Public event stream |
 
 ## Bases
 
@@ -49,9 +49,8 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
 | Elara Orris | Hamal (`hamal`) | 0 | lithosphere |
-| HexBot11 | Synchrony (`synchrony`) | 10 | premiere |
-| Tinibu | Synchrony (`synchrony`) | 0 | praecursor |
-| Zhou | Node Alpha (`node_alpha`) | 0 | pithead |
+| HexBot13 | Node Beta (`node_beta`) | 0 | frankenhauler |
+| HexBot2 | Pherkad (`pherkad`) | 0 | frankenhauler |
 
 ## Standing History
 

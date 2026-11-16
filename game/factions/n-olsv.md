@@ -15,7 +15,7 @@ updated: 2026-11-16
 # Our Lord And Savior [OLSV]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 15.
+Pilots of it in our space in the last 24 hours: 11.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 15.
 | Allies | HIVE | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 136 | Public event stream |
+| Pilots carrying the tag on the public event stream | 127 | Public event stream |
 
 ## Bases
 
@@ -38,20 +38,16 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| OLS Acrux II | Synchrony (`synchrony`) | 0 | cobble |
 | OLS Aladfar | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | OLS Armus | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | OLS Arrakis | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | OLS Ashlesha | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | OLS Bharani | Nexus Prime (`nexus_prime`) | 0 | theoria |
-| OLS Cebalrai | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | OLS Chalawan | Nexus Prime (`nexus_prime`) | 0 | theoria |
-| OLS Electra | Nexus Prime (`nexus_prime`) | 0 | cobble |
 | OLS Fawaris | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | OLS Gudja | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | OLS Guniibuu | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | OLS Hunor | Nexus Prime (`nexus_prime`) | 0 | theoria |
-| OLS Imai | Synchrony (`synchrony`) | 0 | theoria |
 | OLS Sadalbari | Synchrony (`synchrony`) | 0 | cobble |
 
 ## Standing History

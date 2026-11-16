@@ -15,7 +15,7 @@ updated: 2026-11-16
 # Ironlight Combine [IRLC]
 
 A player faction with 7 base(s) in 4 system(s); the nearest to Nexus Prime is 6 jump(s) away, in LHS 1140 (`lhs_1140`).
-Pilots of it in our space in the last 24 hours: 19.
+Pilots of it in our space in the last 24 hours: 18.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 19.
 | Allies | HEXC | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 189 | Public event stream |
+| Pilots carrying the tag on the public event stream | 191 | Public event stream |
 
 ## Bases
 
@@ -47,24 +47,23 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
 | ILC Chute | Synchrony (`synchrony`) | 0 | junk_convoy |
+| ILC Constellation | Pherkad (`pherkad`) | 0 | concordia |
+| ILC Cope | Synchrony (`synchrony`) | 0 | junk_convoy |
 | ILC Flange | Synchrony (`synchrony`) | 0 | junk_convoy |
-| ILC Gantry | Node Alpha (`node_alpha`) | 0 | junk_convoy |
-| ILC Gasket | Nexus Prime (`nexus_prime`) | 0 | junk_convoy |
+| ILC Gantry | Nexus Prime (`nexus_prime`) | 0 | junk_convoy |
+| ILC Gasket | Synchrony (`synchrony`) | 0 | junk_convoy |
 | ILC Gateway | Nexus Prime (`nexus_prime`) | 0 | concordia |
-| ILC Geyser | The Experiment (`the_experiment`) | 0 | atmospheric_sampler |
+| ILC Geyser | Synchrony (`synchrony`) | 0 | atmospheric_sampler |
 | ILC Gilt | Synchrony (`synchrony`) | 0 | syndicate |
-| ILC Glacier | Synchrony (`synchrony`) | 0 | cryogenic_survey |
 | ILC Ladle | Synchrony (`synchrony`) | 0 | junk_convoy |
-| ILC Mallet | Node Beta (`node_beta`) | 0 | syndicate |
+| ILC Mallet | Synchrony (`synchrony`) | 0 | syndicate |
 | ILC Nonstop | Nexus Prime (`nexus_prime`) | 0 | concordia |
 | ILC Ratchet | Synchrony (`synchrony`) | 0 | junk_convoy |
 | ILC Retort | Synchrony (`synchrony`) | 0 | junk_convoy |
-| ILC Shaft | Node Alpha (`node_alpha`) | 0 | theoria |
 | ILC Shank | The Experiment (`the_experiment`) | 1 | syndicate |
-| ILC Solder | Synchrony (`synchrony`) | 1 | syndicate |
+| ILC Solder | Node Gamma (`node_gamma`) | 1 | syndicate |
 | ILC Vagabond | Nexus Prime (`nexus_prime`) | 0 | concordia |
-| ILC Verdict | Pherkad (`pherkad`) | 0 | junk_convoy |
-| ILC Weir | Node Gamma (`node_gamma`) | 0 | prayer |
+| ILC Weir | Synchrony (`synchrony`) | 0 | prayer |
 
 ## Standing History
 

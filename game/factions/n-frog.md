@@ -15,7 +15,7 @@ updated: 2026-11-16
 # Leap Frog Freight [FROG]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 1.
+Pilots of it in our space in the last 24 hours: 2.
 
 ## Identity
 
@@ -38,6 +38,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
+| Anne Marie | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | Shade SicK | Nexus Prime (`nexus_prime`) | 0 | cobble |
 
 ## Standing History

@@ -38,7 +38,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| MLM-17735 | Hamal (`hamal`) | 0 | archimedes |
+| MLM-17735 | Nexus Prime (`nexus_prime`) | 0 | archimedes |
 
 ## Standing History
 
