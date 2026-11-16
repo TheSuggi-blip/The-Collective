@@ -116,6 +116,24 @@ class ReadTests(Tree):
         _seen, got = self.read("hauler", tests=0)
         self.assertEqual((got["tests"], got["idle"]), ([], ["hauler-2", "hauler-3"]))
 
+    def test_only_work_the_waiting_ships_may_take_is_counted(self):
+        bought = dict(ROUTES["herd2"], id="gap", kind="circuit", stops=[{"at": "home:core:base", "buy": [{"item": "x", "qty": 5, "max_price": 100}]}])
+        bought.pop("place"); bought.pop("sell_at")
+        (self.root / "routes" / "gap.json").write_text(json.dumps(bought, indent=1) + "\n", encoding="ascii")
+        mission = dict(ROUTES["once"], id="board", measured=MEASURED(6000))
+        (self.root / "routes" / "board.json").write_text(json.dumps(mission, indent=1) + "\n", encoding="ascii")
+        with open(self.data / "routes" / "runs.jsonl", "a") as handle:
+            for pilot in ("hauler-7", "hauler-8"):
+                handle.write(json.dumps({"route": "board", "pilot": pilot, "stops": 1, "of": 1, "notes": ["board_mission not offered"]}) + "\n")
+            handle.write(json.dumps({"route": "board", "pilot": "drone-7", "stops": 1, "of": 1, "notes": []}) + "\n")
+        seen, got = self.read("hauler")
+        self.assertNotIn("gap", [rid for rid, _v, _p in got["paying"]])                          # it buys goods: its Admiral's word puts it in a plan
+        self.assertIn((2000, "gap"), got["by_hand"])
+        self.assertNotIn("board", [rid for rid, _v, _p in got["paying"]])                        # refused to every hauler that flew it
+        self.assertIn("board", [rid for _v, rid in got["closed"]["the board refused it to this role"]])
+        _seen, drones = self.read("drone")
+        self.assertNotIn("board", (drones["closed"].get("the board refused it to this role") or []))
+
     def test_one_good_run_is_no_paying_route_and_a_losing_route_is_offered_to_nobody(self):
         once = dict(ROUTES["herd2"], measured=dict(MEASURED(2000), runs=1))
         (self.root / "routes" / "herd2.json").write_text(json.dumps(once, indent=1) + "\n", encoding="ascii")

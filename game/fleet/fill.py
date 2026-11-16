@@ -144,7 +144,7 @@ def survey(root, data, now=None):
                     crew["reasons"].setdefault(rid, Counter())[reason] += 1
     book = dispatch.read_json(Path(data) / "routes" / "opportunities.json", {})
     book = book if isinstance(book, dict) else {}
-    return {"now": now, "data": data, "root": root, "roles": roles, "owners": owners, "routes": routes, "state": state, "crews": crews, "by_route": by_route,
+    return {"now": now, "data": data, "root": root, "roles": roles, "owners": owners, "routes": routes, "state": state, "crews": crews, "by_route": by_route, "named": named,
             "played": played, "taken": {}, "candidates": book.get("candidates") or [], "list_age": age_of(book.get("written_at") or "", now),
             "fleet_at": fleet.get("updated_at") or "?" if isinstance(fleet, dict) else "?"}
 
@@ -173,6 +173,13 @@ def asks(seen, item):
             if row.get("item_id") == item and (row.get("best_sell") or 0) > 0:
                 out.append((int(row.get("best_sell_qty") or row.get("sell_quantity") or 0), row["best_sell"], book.get("base") or path.stem))
     return sorted(out, key=lambda r: r[1])
+
+
+def refused_to(seen, rid, role):
+    """True when a once route was flown by pilots of this role and the board refused it to every one of them
+    (`... not offered`): the mission is not for this role, and no waiting ship of it may take it (requests ENT-095)."""
+    mine = [r for r in seen["by_route"].get(rid, []) if dispatch.role_of(str(r.get("pilot") or ""), seen.get("named") or {}) == role]
+    return bool(mine) and all(dispatch.refused(r) for r in mine)
 
 
 def read_role(seen, role, floor=500, tests=8):
@@ -217,11 +224,18 @@ def read_role(seen, role, floor=500, tests=8):
 
     outside = [(worth(route), rid, route) for rid, route in routes.items()
                if rid not in plan and route.get("status") != "off" and not route.get("park") and route.get("kind") != "census" and proven(route)]
+    by_hand = []
     for value, rid, route in sorted(outside, key=lambda r: (-r[0], r[1])):
+        if buys(route):                                           # it buys goods: in a plan by its Admiral's word only, never by this script
+            by_hand.append((value, rid))
+            continue
+        if route.get("once") and refused_to(seen, rid, role):
+            closed.setdefault("the board refused it to this role", []).append((value, rid))
+            continue
         took = offer(rid, route, value) if left else []
         if took:
             paying.append((rid, value, took))
-    found, by_hand, seen_ids = [], [], set(plan) | {rid for rid, _v, _t in paying}
+    found, seen_ids = [], set(plan) | {rid for rid, _v, _t in paying} | {rid for _v, rid in by_hand}
     for cand in sorted(seen["candidates"], key=lambda c: -(c.get("per_ship_hour") or 0)):
         draft = cand.get("route")
         if not isinstance(draft, dict) or cand.get("needs") or (cand.get("per_ship_hour") or 0) < floor or str(cand.get("status", "")).startswith("off"):
@@ -231,6 +245,8 @@ def read_role(seen, role, floor=500, tests=8):
             continue                                              # proven ones are judged above, by their figure; one measured at a loss is no test
         seen_ids.add(rid)
         route = routes.get(rid) or dict(draft, id=rid)
+        if route.get("once") and refused_to(seen, rid, role):
+            continue
         if buys(route):                                           # a gap is flown once by hand, with one load (errors.log ENT-027)
             by_hand.append((cand["per_ship_hour"], rid))
             continue
