@@ -4,7 +4,8 @@
 # Usage: bash scripts/check-report-format.sh <reports/YYYY-MM-DD_author_slug.md>
 # PASS: prints "REPORT FORMAT: PASS", exit 0.
 # HALT: prints one line per violation, then "REPORT FORMAT: HALT", exit 1.
-# It checks form only: file name, frontmatter, section headings, ASCII.
+# It checks form only: file name, frontmatter, section headings, ASCII,
+# and that no pilot of ours is named.
 # Whether the numbers are true is the writer's gate, not this one.
 set -u
 F="${1:-}"
@@ -53,6 +54,13 @@ have=$(printf '%s\n' "$body" | sed -n 's/^## //p' | paste -sd'|' -)
 [ "$have" = "$want" ] || miss "SECTIONS of a $kind report must be exactly, in order: $want (found: $have)"
 if LC_ALL=C grep -qP '[^\x00-\x7F]' "$F"; then
   miss "NON-ASCII bytes present"
+fi
+# No pilot of ours by name (a role word, a dash, a number): the repository is public.
+# The role words are the names of the plan files (game/routes/plans/<role>.json).
+roles=$(ls "$(dirname "$0")/../game/routes/plans/"*.json 2>/dev/null | sed 's#.*/##; s#\.json$##' | paste -sd'|' -)
+if [ -n "$roles" ]; then
+  named=$(grep -noE "\b($roles)-[0-9]+\b" "$F" | head -n 5 | paste -sd' ' -)
+  [ -z "$named" ] || miss "PILOT NAMED (line:name): $named -- a report names no pilot of ours; write the division and a count"
 fi
 
 if [ "$fail" -eq 0 ]; then
