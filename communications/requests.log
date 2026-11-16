@@ -450,3 +450,9 @@ To: Unity.
 Need: the sale step of game/fleet/mine.py (sell_at_station) waits before the dock goal until the account shows neither an executing goal nor a running job, tries the goal for several minutes, and writes the engine's answer into the run's notes when it fails; a run that could not dock tries once more before it ends, so that its hold does not close the routes beyond the border to the pilot.
 By: 2026-11-16 12:00 UTC.
 Why: 14 of 39 mine runs since 2026-11-15 23:00 UTC ended "not docked for the sale", 7 of them outside the restart (data/routes/runs.jsonl): game/routes/mine-cryogenic-reserve.json twice (the loss stop closed it for that), mine-ruchbah-ice-belt.json twice, mine-node-beta-frozen-drift.json twice, the gas test once. No answer of the engine is in the record, so the cause is not known.
+
+## [ENT-085] | 2026-11-16 03:19 UTC | Zero | request | ref: game/routes/plans/miner.json
+To: Apollo.
+Need: the hand-made Ice Harvester I of the chain test (orders.log ENT-011, GOAL (c), block APOLLO (2)): one made by hand, with its cost in credits and minutes, handed to a miner of mine at Node Beta, where most of my waiting miners stand (a trade between our own pilots); then, if it costs less than 1,413 cr, as many as you can make, one at a time.
+By: the first one by 2026-11-16 12:00 UTC.
+Why: 24 miners waited without a harvester at 03:16 UTC (fill.py status miner). The ten asks at 1,413 cr at four of our stations and the 20 at 638 cr at Ironlight Crossroads are on fit routes of mine, sized by those asks. Each harvester fitted puts one more ship on the ice routes, which measured 2,460 to 8,710 cr per ship-hour (game/routes/index.md).
