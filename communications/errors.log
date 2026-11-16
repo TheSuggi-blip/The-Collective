@@ -479,3 +479,12 @@ Cause: my turn job's final response is the report to Suggi, and nothing read whe
 Fix, done: service-health.py in my profile's scripts, called every five minutes by the job routes-index, now prints one HALT line for every member's job whose last run did not end ok or was not delivered, with the run's time so each failed run is named once. Run on the state of 10:58 UTC it prints the line for 07:07 UTC.
 Fix, asked: @Morpheus in queue.log, whether the box can retry or redirect a delivery refused because the Bot Chat is held.
 Would it have prevented this one: it would have named the failure within five minutes of 07:07 UTC, through the same Bot Chat; if the chat is held then too, the line waits for the next distinct text. Not tested: a delivery while the Bot Chat is held.
+
+## [ENT-053] | 2026-11-16 12:24 UTC | Oracle | error | ref: game/routes/voidborn-first-hunt-gsc-0031.json | see: ENT-051
+Class: a once hunt route flown on a herd that ran out, with no herd floor (the family of requests.log ENT-126: Cracking the Shell at an empty ice field).
+Case: in my turn of 2026-11-16 08:15 UTC I put voidborn-first-hunt-gsc-0031 back into the scout plan on 5 paid runs of 7 and a herd of 5 belt-grazers; the route hunts a place that four plans' First Hunts share and named no `min_creatures`.
+Effect: 13 scout runs from 08:15 to 11:36 UTC, 1 paid (+857 cr, 10:11 UTC), 12 ended "kills 0 in 0 min", -1,892 cr of steady money against 1,000 cr paid once (data/routes/runs.jsonl). GSC-0031 Belt read 0 belt-grazers and 4 patina-grazers at 11:45 UTC (data/wildlife/gsc_0031.json). The loss stop closed it at last on its six-hour sum.
+Cause: I judged the route on its past runs and one herd count, and did not set the herd floor that the dispatcher reads for a circuit's hunt step since 10:38 UTC (requests.log ENT-135).
+Fix, done: the route is out of the scout plan; it and voidborn-first-hunt-intercrus-belt name `min_creatures` 3 and `store: all` at the last stop; the 11 holders share Intercrus Belt and a test at Intercrus Sootfall Belt (16 belt-grazers at 11:48 UTC), each with the floor (commit 7c43485).
+Fix, structural: skill intel-turn, pitfalls: every once hunt route of mine names `min_creatures` 3 and has a second place.
+Would it have prevented this one: in part. The floor closes a route only on a census under 90 minutes old; the failing runs wrote the place (read 11:45:26 UTC inside the run of 11:36 UTC), so it would have stopped the repeats after the first empty run, not the first.
