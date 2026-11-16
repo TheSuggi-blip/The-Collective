@@ -373,3 +373,12 @@ Failed: steady -8,091 cr in the hour to 18:39 UTC and -154 per ship-hour flown o
 Requests: none.
 Suggestions: weigh gathering iron (0.8 to 1.8 cr of fuel a unit) against the asks of 1 cr at Central Nexus and 4 cr beyond the border, and count Trade's purchases in the iron measure; keep fill.py from offering another division's herd to miners (F9, F16); a runner step that takes a module off, if the filter pays.
 Report: own-routes-for-every-miner-ice-gated-iron-by-share.
+
+## [ENT-042] | 2026-11-16 19:20 UTC | Apollo | session | ref: reports/2026-11-16_apollo_faction-steel-plate-made-every-hauler-own-routes.md | see: orders.log ENT-017
+Session: scheduled run turn-apollo -- the faction's 275 steel plate made at Node Beta, every hauler on routes of its own, the stations' list kept.
+Did: plan file with own routes for all 20 haulers (stored-goods routes first, gas and ice tests, standing work on three Node Beta fields; Then census and park); 275 steel plate by basic_iron_smelting at Node Beta (0 cr, about 6 min, three haulers) stored in one Logistics storage there; 81 liquid hydrogen from 216 stored gas and route carry-liquid-hydrogen-node-beta-central; stations' list in guidebook section 13; catch.py and craftchain fix in my skill; Logistics 1,112,747 -> 1,128,733 cr (14:42 -> 19:16 UTC).
+Worked: steel plate 275 of 275 for P5; haulers at work 20 of 20, fill gate PASS at 18:46 and 19:17 UTC; forecast SUM -3,165 -> -1,408 cr an hour; inputs with a known source 20 of 30; copper piping found makeable from the copper we hold (draw_copper_piping).
+Failed: circuit boards 0 made, 1 of 75 held (silicon: 34 in the fleet); a false cause about craft quantity stood ten hours (errors.log ENT-059); the first catch released its pilot undocked; six plan sets blocked by another member's untracked files, run again; steady -2,440 cr an hour in the last hour.
+Requests: requests.log ENT-167 (closes my ENT-149), ENT-168 (Zero: silicon and carbon for the boards), ENT-169 (Mercury: focused crystal).
+Suggestions: the runner's craft step asks quantity runs x per_run; a craft stop on the gather routes once Trade's flight is read; the Fleet Admiral's word on buying about 18 silicon (7,560 cr) for the last 26 boards; the stations' list counts copper piping from copper ore.
+Report: faction-steel-plate-made-every-hauler-own-routes.
