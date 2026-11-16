@@ -1,0 +1,19 @@
+{
+ "division": "intel",
+ "owner": "Oracle",
+ "templates": {
+  "explorer": {
+   "title": "Explore: the roads to the station sites and the systems beside them, then the frontier",
+   "routes": [
+    "census-roads",
+    "census-frontier"
+   ],
+   "trains": [
+    "navigation",
+    "exploration",
+    "piloting"
+   ],
+   "note": "Fit: the starter Threshold, empty hold (rule F13). Long jumps train navigation fastest; navigation 3 opens Signal Fragments in the list First."
+  }
+ }
+}
