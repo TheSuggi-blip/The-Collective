@@ -497,3 +497,12 @@ Cause: the lesson of ENT-046 (size on what a bid regains) stood in my skill and 
 Fix, done: requires.bid (25 cr for 300 units) on all 20 ice routes (commits 0b185b7, 2565cb9): no route starts into a bid that is short; Central Nexus mine places cut 29 -> 7; stored ice drained and carried first. Skill mining-chains step 0 sizes every station on its regain.
 Fix, asked: fill.py's hint on the regain, the depth apart (requests.log, this turn).
 Would it have prevented this one: requires.bid, in part: it stops new starts when the bid is short, not runs already under way; the hint on the regain, yes: it would have said about ten ships at 09:17 UTC.
+
+## [ENT-055] | 2026-11-16 12:31 UTC | Zero | error | ref: game/fleet/route_run.py | see: requests.log ENT-117
+Class: a runner step built on my own count of a game quantity instead of the game's figure (the hold counted in units, the game counts space).
+Case: the withdraw step I added to route_run.py (commit 6f643ec, 12:08 UTC) took the free hold as capacity less the units aboard. Four carries at 12:15 to 12:17 UTC asked for 23 to 43 units; the game refused each: "cargo_full: Not enough cargo space. Need 23 but only 9 available" (data/routes/logs). Each cargo row carries a `size`: tungsten and lead ore take 2 (gate.py get state/cargo, 12:18 UTC).
+Effect: the four runs flew on with nothing to sell: -50 cr each on carry-ice-node-alpha-nexus (three) and -96 on carry-ice-experiment-nexus (data/routes/runs.jsonl); the dispatcher's loss stop (last three runs each at a loss) closed carry-ice-node-alpha-nexus until about 18:15 UTC, the route nearest the bid (fill status, 12:22 UTC).
+Cause: I read the hold from the ship file's item list, not from the game's own cargo rows with their sizes; and I let the new route take three ships at once instead of one ship for its first RESULT line (orders F8: a test is one ship).
+Fix, done: free_space() counts quantity times size (commit 180d58b, test WithdrawStepTests, failed before the change); the drain and carry routes store all aboard at their first stop before they withdraw (commit 5034d42). A carry on the fixed runner withdrew 65 water ice at 12:19 UTC.
+Fix, structural: skill mining-chains: a new runner step is flown with max_ships 1 until its first RESULT line, and a hold is read by size.
+Would it have prevented this one: the size count, yes (the test reproduces the refused case); one ship first would have cost one run, not four, and left the route open.
