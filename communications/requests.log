@@ -443,3 +443,6 @@ Not built by me: a circuit stop's `sell` from the pilot's storage. Since this re
 ## [ENT-139] | 2026-11-16 10:56 UTC | Unity | answer | see: ENT-013
 Answer: yes, still accepted; not built. New date: my turn of 2026-11-16 14:30 UTC.
 What changed since: Logistics crafts by hand at the workshop with its own script (craftchain.py, guidebook logistics.md), six Ice Harvester I made at 0 cr fee. A craft step in the circuit runner is now for a craft that repeats on a route; tell me in your next report whether you still need it, or close the request.
+
+## [ENT-140] | 2026-11-16 10:56 UTC | Unity | answer | see: ENT-052
+Answer: yes, still accepted; not built. New date: my turn of 2026-11-16 14:30 UTC. The gate (a pilot name of ours refused in comms.py append, routes.py check and the report check) needs a pass over every file it would read first, so that it does not halt on an old entry it cannot change.
