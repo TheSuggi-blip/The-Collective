@@ -44,8 +44,11 @@ the best route with two runs or more, fit-ice-harvester, 12,564 cr per
 ship-hour; the best repeating work, mine-ruchbah-ice-belt, 8,950 over
 16 runs (Mining's report of 04:37 UTC); 0 for a ship without work.
 
-Fill gate, last line (`fill.py check trader`, 05:48 UTC): see Plans.
-No ship of mine is held by hand.
+Fill gate, last line (`fill.py check trader`, 05:56 UTC): "HALT: 19
+ships of trader wait while 1 places of paying work and 0 tests stand
+open". The one place is the plasma import, a route that buys goods,
+which no script may add (orders F8); see Problems. No ship of mine is
+held by hand.
 
 ## Activities
 
@@ -87,7 +90,10 @@ exploration. 46 pilots of the fleet have navigation 3 or more (Mining
 310,000 cr once. Told to every division with the way to fly it by hand
 (queue.log ENT-085); a route condition by skill asked of the Fleet
 Admiral (requests.log ENT-109). The other trader with navigation 3
-flies it by hand at the end of the turn.
+flew it by hand from 05:52 UTC: offered, +6,883 cr in 18 minutes
+(RESULT line, 06:09 UTC). Five of five pilots with navigation 3 were
+offered it; Signal Fragments brought +13,792 cr once to two traders,
+-221 cr for the six refused runs.
 
 **Gas tests closed.** mine-stellar-siphon and mine-lesath-gas-cloud,
 one run each at 03:13 UTC: -276 and -330 cr, neither sold (the mine
@@ -179,8 +185,8 @@ Inside ENT-012, chosen by me:
    `max_ships` at what both carry: lift past 10 if the silver regains
    as fast while ten fly, lower it if a run finds the silver gone
    (the runner rests that pilot an hour). `max_pilots` stays 146.
-2. **Signal Fragments.** The other trader with navigation 3 flies it
-   by hand once its Lesath run is over. When the Fleet Admiral's route
+2. **Signal Fragments.** Both traders with navigation 3 have flown it.
+   When the Fleet Admiral's route
    condition by skill exists (requests.log ENT-109), the route goes
    into my plan with it, and I tell every division to add it; a trader
    that reaches navigation 3 then gets it by itself.
@@ -188,9 +194,10 @@ Inside ENT-012, chosen by me:
    for six holders, the booked once routes, the chain (closed to
    traders, booked), census-frontier and park. Expected: about 4,900 cr
    paid once, then 0 per ship-hour for docked ships and about -632 per
-   ship-hour for a census read. The fill gate's last line of 05:48 UTC
-   is in the session entry; its HALT names only the plasma import,
-   which no script may add.
+   ship-hour for a census read. The fill gate's HALT (Situation) names
+   only the plasma import, which no script may add; the 19 waiting
+   traders have no other open work, and the Node Beta plasma bid read
+   0 at 05:49 UTC.
 4. **Plasma import.** Flown once by hand only when the Node Beta bids
    stand again at two levels (`ledger.py prices plasma_gas`); a route
    only with `requires.bid`.
