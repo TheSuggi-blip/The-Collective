@@ -42,6 +42,7 @@ of the turn (`runs.jsonl`, `sold`).
 | Yield test: bell-jellies at Nexus Prime Stellar Siphon | 1 run, 2 kills in 6 min at the place, -26 cr | 2026-11-15 23:29 UTC | Drop: 3 crystallized biogas, 1 levity bladder; both bid 1 to 2 cr. Off |
 | Yield test: rime-grazers and pressblisters at Node Gamma Ice Belt | 1 run, 3 kills in 16.8 min, -60 cr a run (`routes.py measure`) | 2026-11-15 23:29 UTC | Drop: 3 creature carapace, 2 nitrogen bladder; both bid 1 to 2 cr. Off |
 | Yield test: deuteron-slugs at Node Beta Frozen Drift | 1 run, 2 kills in 23.3 min, no goods recorded, -33 cr | 2026-11-15 23:29 UTC | Off |
+| Yield test: kiln-snails (100 hull) at Eltanin Prime Belt, Node Beta | 1 run of 32.8 min: 0 kills, hull 75 -> 46 (lowest 68% in the battle table), -167 cr | 2026-11-15 23:29 UTC | The one fight of the turn that cost hull: prey of 100 hull hits a starter hard. Off (orders F9) |
 | `hunt-ruchbah-veil-ray` by hand, hold empty | 1 run: 0 kills, -77 cr, two ships of a faction of 1,249 members joined the fight within three minutes | 2026-11-15 21:26 UTC | The first run of the route (below, section 6) found nobody there |
 
 ## 3. Missions That Pay Once
@@ -119,14 +120,15 @@ Every test is one ship, in `game/routes/plans/drone.json`, started
 - Veil-rays beyond our border (`alone`, empty hold): Ruchbah 4 kills,
   +1,243 cr in 25.1 min, no damage, nobody at the place; Garnet and Okab
   left without a fight within minutes, a pilot not of ours at the place,
-  -99 cr each; Keid 4 kills, +1,199 cr in 30.6 min, and Cedarhold 4
-  kills, +561 cr in 30.5 min (2 curd from 4 kills), both without damage;
-  Achird had no RESULT line at 2026-11-16 00:00 UTC. Every frontier run
-  ended at 100% hull (`lowest_hull_pct`).
+  -99 cr each; Achird 4 kills, +2,189 cr in 31.1 min (7 curd); Keid 4
+  kills, +1,199 cr in 30.6 min; Cedarhold 4 kills, +561 cr in 30.5 min
+  (2 curd from 4 kills). Ruchbah's second run (23:54 UTC) left at once, a
+  ship not of ours at the place, -77 cr. Every frontier run ended at 100%
+  hull (`lowest_hull_pct`).
   A place rests 30 minutes after a run without a kill.
 - Yield tests in our space: patina-grazers at Acubens Shadow Pocket left
-  at once, a pilot not of ours at the place (-60 cr); kiln-snails at
-  Eltanin Prime Belt had no RESULT line at 23:58 UTC.
+  at once, a pilot not of ours at the place (-60 cr); it stays for a
+  second try. Kiln-snails: section 2.
 - The railgun ship: ammunition from stored iron, then armoured prey of
   100 hull or less.
 - A tier-1 hull with two weapons against a home herd, after its cost is
