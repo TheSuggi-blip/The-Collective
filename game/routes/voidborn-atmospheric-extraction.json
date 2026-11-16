@@ -45,5 +45,12 @@
     "gas_harvester_i"
    ]
   }
- ]
+ ],
+ "measured": {
+  "date": "2026-11-16",
+  "runs": 1,
+  "minutes": 8,
+  "credits_per_run": 740,
+  "cph_per_ship": 5210
+ }
 }
