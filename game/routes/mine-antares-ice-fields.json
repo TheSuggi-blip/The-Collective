@@ -2,7 +2,7 @@
  "id": "mine-antares-ice-fields",
  "kind": "mine",
  "title": "Antares Ice Fields: water_ice, nitrogen_ice, deuterium_ice, helium_ice; sold at Node Alpha Processing Station",
- "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 2187 cr per ship-hour, not a measurement. A test: one ship. Estimate of 2026-11-15 23:10 UTC from: {\"a_load\": [\"water_ice 25 of 25 units for 638 cr (depth at the best price)\", \"deuterium_ice 6 of 9 units for 1248 cr (depth at the best price)\"], \"field\": \"antares:antares_ice_fields\", \"jumps\": 4, \"left\": {\"deuterium_ice\": 306, \"helium_ice\": 306, \"nitrogen_ice\": 30052, \"water_ice\": 1293}, \"richness\": {\"deuterium_ice\": 20, \"helium_ice\": 24, \"nitrogen_ice\": 41, \"water_ice\": 55}, \"sold_at\": \"node_alpha_processing_statio. Uncertain: deuterium_ice: the bids take 6 of 9 units a load; deuterium_ice: the bids take 6 of the 17 units an hour brings; lawless space: no police at antares; needs the module ice_harvester_i (base value 1000 cr), not the mining laser; the rate is measured with the laser on ore. In no plan: its Admiral adds it.",
+ "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 2187 cr per ship-hour, not a measurement. A test: one ship. Estimate of 2026-11-15 23:10 UTC from: {\"a_load\": [\"water_ice 25 of 25 units for 638 cr (depth at the best price)\", \"deuterium_ice 6 of 9 units for 1248 cr (depth at the best price)\"], \"field\": \"antares:antares_ice_fields\", \"jumps\": 4, \"left\": {\"deuterium_ice\": 306, \"helium_ice\": 306, \"nitrogen_ice\": 30052, \"water_ice\": 1293}, \"richness\": {\"deuterium_ice\": 20, \"helium_ice\": 24, \"nitrogen_ice\": 41, \"water_ice\": 55}, \"sold_at\": \"node_alpha_processing_statio. Uncertain: deuterium_ice: the bids take 6 of 9 units a load; deuterium_ice: the bids take 6 of the 17 units an hour brings; lawless space: no police at antares; needs the module ice_harvester_i (base value 1000 cr), not the mining laser; the rate is measured with the laser on ore. In no plan: its Admiral adds it. 2026-11-16 12:22 UTC, Zero: requires.bid water ice at node_alpha_processing_station, 25 cr for 300 units at the best price (orders.log ENT-014 (a), queue.log ENT-097: each ice route names its bid): the route closes while a book read within the hour shows less, and opens by itself when one shows it back. At 12:00 UTC the water-ice bids of Node Alpha, The Experiment and Synchrony read 0.",
  "belt": "antares:antares_ice_fields",
  "station": "node_alpha:node_alpha_processing_station:node_alpha_processing_station",
  "minutes": 62,
@@ -19,7 +19,13 @@
  ],
  "requires": {
   "module": "ice_harvester_i",
-  "empty_hold": true
+  "empty_hold": true,
+  "bid": {
+   "item": "water_ice",
+   "base": "node_alpha_processing_station",
+   "min_price": 25,
+   "min_qty": 300
+  }
  },
  "measured": {
   "date": "2026-11-16",

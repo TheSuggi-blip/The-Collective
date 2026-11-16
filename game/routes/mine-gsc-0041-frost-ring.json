@@ -2,7 +2,7 @@
  "id": "mine-gsc-0041-frost-ring",
  "kind": "mine",
  "title": "GSC-0041 Frost Ring: water_ice, nitrogen_ice, deuterium_ice; sold at Node Alpha Processing Station",
- "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 2500 cr per ship-hour, not a measurement. A test: one ship. Estimate of 2026-11-15 23:10 UTC from: {\"a_load\": [\"water_ice 29 of 29 units for 747 cr (depth at the best price)\", \"deuterium_ice 6 of 6 units for 1248 cr (depth at the best price)\"], \"field\": \"gsc_0041:gsc_0041_frost_ring\", \"jumps\": 3, \"left\": {\"deuterium_ice\": 5000, \"nitrogen_ice\": 48165, \"water_ice\": 1816}, \"richness\": {\"deuterium_ice\": 12, \"nitrogen_ice\": 49, \"water_ice\": 52}, \"sold_at\": \"node_alpha_processing_station\"}. Uncertain: deuterium_ice: the bids take 6 of 6 units a load; deuterium_ice: the bids take 6 of the 13 units an hour brings; lawless space: no police at gsc_0041; needs the module ice_harvester_i (base value 1000 cr), not the mining laser; the rate is measured with the laser on ore. In no plan: its Admiral adds it.",
+ "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 2500 cr per ship-hour, not a measurement. A test: one ship. Estimate of 2026-11-15 23:10 UTC from: {\"a_load\": [\"water_ice 29 of 29 units for 747 cr (depth at the best price)\", \"deuterium_ice 6 of 6 units for 1248 cr (depth at the best price)\"], \"field\": \"gsc_0041:gsc_0041_frost_ring\", \"jumps\": 3, \"left\": {\"deuterium_ice\": 5000, \"nitrogen_ice\": 48165, \"water_ice\": 1816}, \"richness\": {\"deuterium_ice\": 12, \"nitrogen_ice\": 49, \"water_ice\": 52}, \"sold_at\": \"node_alpha_processing_station\"}. Uncertain: deuterium_ice: the bids take 6 of 6 units a load; deuterium_ice: the bids take 6 of the 13 units an hour brings; lawless space: no police at gsc_0041; needs the module ice_harvester_i (base value 1000 cr), not the mining laser; the rate is measured with the laser on ore. In no plan: its Admiral adds it. 2026-11-16 12:22 UTC, Zero: requires.bid water ice at node_alpha_processing_station, 25 cr for 300 units at the best price (orders.log ENT-014 (a), queue.log ENT-097: each ice route names its bid): the route closes while a book read within the hour shows less, and opens by itself when one shows it back. At 12:00 UTC the water-ice bids of Node Alpha, The Experiment and Synchrony read 0.",
  "belt": "gsc_0041:gsc_0041_frost_ring",
  "station": "node_alpha:node_alpha_processing_station:node_alpha_processing_station",
  "minutes": 59,
@@ -19,7 +19,13 @@
  ],
  "requires": {
   "module": "ice_harvester_i",
-  "empty_hold": true
+  "empty_hold": true,
+  "bid": {
+   "item": "water_ice",
+   "base": "node_alpha_processing_station",
+   "min_price": 25,
+   "min_qty": 300
+  }
  },
  "measured": {
   "date": "2026-11-16",

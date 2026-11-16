@@ -2,7 +2,7 @@
  "id": "mine-gsc-0021-ice-fields",
  "kind": "mine",
  "title": "GSC-0021 Ice Fields: water_ice, nitrogen_ice, ammonia_ice; sold at Synchrony Hub",
- "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 1515 cr per ship-hour, not a measurement. A test: one ship. Added as a test by fill.py on 2026-11-16 03:25 UTC (Zero): one ship until its first RESULT line is read.",
+ "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 1515 cr per ship-hour, not a measurement. A test: one ship. Added as a test by fill.py on 2026-11-16 03:25 UTC (Zero): one ship until its first RESULT line is read. 2026-11-16 12:22 UTC, Zero: requires.bid water ice at synchrony_hub, 25 cr for 300 units at the best price (orders.log ENT-014 (a), queue.log ENT-097: each ice route names its bid): the route closes while a book read within the hour shows less, and opens by itself when one shows it back. At 12:00 UTC the water-ice bids of Node Alpha, The Experiment and Synchrony read 0.",
  "belt": "gsc_0021:gsc_0021_ice_fields",
  "station": "synchrony:synchrony_hub:synchrony_hub",
  "minutes": 72,
@@ -15,7 +15,13 @@
  ],
  "requires": {
   "module": "ice_harvester_i",
-  "empty_hold": true
+  "empty_hold": true,
+  "bid": {
+   "item": "water_ice",
+   "base": "synchrony_hub",
+   "min_price": 25,
+   "min_qty": 300
+  }
  },
  "measured": {
   "date": "2026-11-16",
