@@ -39,7 +39,7 @@ name below is a link into one of the sub-indexes of this folder.
 
 | Role | Kept by | Routes | The first three, in order | Planned |
 |---|---|---|---|---|
-| [command](plan.md#command) | Unity | 31 | voidborn-collective-provides > voidborn-signal-protocol > voidborn-signal-fragments | 0 |
+| [command](plan.md#command) | Unity | 32 | voidborn-first-steps-board > voidborn-collective-provides > voidborn-signal-protocol | 0 |
 | [drone](plan.md#drone) | Apophis | 18 | voidborn-network-expansion > voidborn-signal-fragments > voidborn-precedence | 6 |
 | [hauler](plan.md#hauler) | Apollo | 17 | voidborn-first-steps-board > voidborn-collective-provides > voidborn-conductive-lattice | 4 |
 | [miner](plan.md#miner) | Zero | 30 | voidborn-signal-fragments > voidborn-concurrent > voidborn-substrate | 2 |
