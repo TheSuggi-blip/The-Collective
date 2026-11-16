@@ -2,7 +2,7 @@
  "id": "voidborn-first-steps",
  "kind": "circuit",
  "title": "First Steps in the Void for a pilot that holds it: mine 15 carbon ore at Acubens Belt, hand in at Central Nexus",
- "note": "On again since 2026-11-16 00:25 UTC (requests.log ENT-064, Logistics): Acubens Belt refills, 0 carbon ore at 21:01 UTC, 41 at 22:17 and 120 at 22:52 UTC (data/scouting/acubens.json), and one hauler finished the mission there by hand at 23:28 UTC, +913 cr in 11 minutes. Two ships at a time: a pilot needs up to 15 units. It was off from 2026-11-15 21:30 UTC (requests.log ENT-039): the belt read 0 and two runs ended with the objectives not done, about 130 cr of fuel each; when the runs show that again, switch it off again. Once, 1,000 cr; the stops are skipped for a pilot that does not hold the mission.",
+ "note": "On again since 2026-11-16 00:25 UTC (requests.log ENT-064, Logistics): Acubens Belt refills, 0 carbon ore at 21:01 UTC, 41 at 22:17 and 120 at 22:52 UTC (data/scouting/acubens.json), and one hauler finished the mission there by hand at 23:28 UTC, +913 cr in 11 minutes. Two ships at a time: a pilot needs up to 15 units. It was off from 2026-11-15 21:30 UTC (requests.log ENT-039): the belt read 0 and two runs ended with the objectives not done, about 130 cr of fuel each; when the runs show that again, switch it off again. Once, 1,000 cr; the stops are skipped for a pilot that does not hold the mission. 2026-11-16 10:38 UTC (Unity): `\"store\": \"all\"` at the last stop, so that the loot or the ore of the run no longer closes every route with `requires.empty_hold` to the pilot (requests.log ENT-122). 2026-11-16 10:38 UTC (Unity): off. It has no accept step, so for a pilot that does not hold First Steps in the Void every stop was skipped and the run counted as done (errors.log ENT-051, requests.log ENT-129); 87 pilots never took the mission. Its work is game/routes/voidborn-first-steps-board.json (Trade's), which accepts the mission at Central Nexus and serves a holder as well: one route, one limit on the carbon of Acubens Belt.",
  "once": true,
  "max_ships": 2,
  "one_time": [
@@ -28,7 +28,8 @@
    "at": "nexus_prime:the_core:central_nexus",
    "only_if_active": [
     "First Steps in the Void"
-   ]
+   ],
+   "store": "all"
   }
  ],
  "measured": {
@@ -37,5 +38,6 @@
   "minutes": 11,
   "credits_per_run": 860,
   "cph_per_ship": 4020
- }
+ },
+ "status": "off"
 }

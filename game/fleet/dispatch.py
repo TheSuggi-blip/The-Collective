@@ -27,8 +27,15 @@ RULES:
     (or tried it twice; a run that found nothing to buy is no try, the route rests `retry_minutes`, default 60); `max_ships` pilots fly it already; the pilot lacks a
     module the route `requires` or has fewer credits than `min_credits`; a hunt's
     place rests after a run without a kill (`rest_minutes`, default 30) or its
-    last census (younger than 90 minutes) shows fewer than `min_creatures`; a
+    last census (younger than 90 minutes) shows fewer than `min_creatures`, and a
+    circuit's hunt step that names `min_creatures` is judged the same way; the
+    station's book, read within the hour, shows no bid the route names in
+    `requires.bid` (item, base, min_price, min_qty); a once run whose every stop
+    was skipped (`every stop skipped`) is no try and the route rests; a
     census has no system older than `every_minutes` (default 60).
+  - An engine loop that runs for a pilot with no fresh order file for five
+    minutes belongs to no runner (an engine restart, a dead runner): the
+    dispatcher stops that loop through the gate and names it in its log.
   - It sends no command to the game itself: the runners do.
   - No route flies at a loss unattended: a route whose runs of the last six hours (two or more) lost money in sum is
     closed until the window moves on (`losing`); the census, park and fitting routes are not judged.
@@ -58,6 +65,7 @@ from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import division                                   # noqa: E402  who commands which ship, and the plan files
+import gate                                       # noqa: E402  the one call the dispatcher sends itself: stop a loop no runner owns
 
 EVERY = 30                   # seconds between two passes
 ORDER_FRESH = 20 * 60        # an order file not touched for this long is dead
@@ -138,6 +146,12 @@ def booked(data):
 
 
 NO_BUY = (": not bought", ": not fitted", ": wallet floor")
+EMPTY_RUN = "every stop skipped"   # route_run.py: the pilot held none of the missions its stops wait for, and did nothing
+
+
+def empty(row):
+    """A run whose every stop was skipped by `only_if_active`: the pilot did nothing (requests ENT-129)."""
+    return EMPTY_RUN in (row.get("notes") or [])
 
 
 def unfinished(row):
@@ -184,7 +198,7 @@ def done_once(route, rows):
     reward the pilot must hold first (`requires.booked`), a run the board refused is no try either, up to REFUSALS times:
     the pilot flew it before it held that reward. Without `requires.booked` a refusal stays a finished run: a mission
     done once is never offered again."""
-    rows = [r for r in rows if not unfinished(r)]
+    rows = [r for r in rows if not unfinished(r) and not empty(r)]
     if owed(route) and sum(1 for r in rows if refused(r)) <= REFUSALS:
         rows = [r for r in rows if not refused(r)]
     if not rows:
@@ -195,7 +209,7 @@ def done_once(route, rows):
 
 def waits_once(route, rows, now):
     """True while a `once` route rests for a pilot: its last run found nothing to buy less than retry_minutes (default 60) ago."""
-    if not rows or not (unfinished(rows[-1]) or (owed(route) and refused(rows[-1]))):
+    if not rows or not (unfinished(rows[-1]) or empty(rows[-1]) or (owed(route) and refused(rows[-1]))):
         return False
     try:
         ended = calendar.timegm(time.strptime(rows[-1]["started"], "%Y-%m-%dT%H:%M:%SZ")) + rows[-1].get("minutes", 0) * 60
@@ -221,6 +235,54 @@ def herd(data, route, now):
         pass
     species = set(route.get("species") or [])
     return sum(1 for c in place.get("creatures") or [] if not species or c.get("species") in species)
+
+
+def hunt_floor(data, route, now):
+    """Why a circuit is closed by the herd floor of one of its hunt steps (`min_creatures` in a stop's `hunt`), or None:
+    the place's fresh census counts fewer of the step's species. Apophis, his report of 2026-11-16 05:27 UTC and
+    requests ENT-126: Cracking the Shell flew five runs to an ice field that held no pressblister."""
+    for stop in route.get("stops") or []:
+        for step in (stop.get("hunt") or []) if isinstance(stop, dict) else []:
+            if isinstance(step, dict) and step.get("min_creatures") and step.get("at"):
+                count = herd(data, {"place": step["at"], "species": step.get("species")}, now)
+                if count is not None and count < int(step["min_creatures"]):
+                    return "herd below %s at %s" % (step["min_creatures"], step["at"])
+    return None
+
+
+BID_FRESH = 60 * 60          # a book older than this says nothing about a bid
+
+
+def read_time(text):
+    """Seconds since the epoch of a UTC time written YYYY-MM-DDTHH:MM:SS..., or None."""
+    try:
+        return calendar.timegm(time.strptime(str(text)[:19], "%Y-%m-%dT%H:%M:%S"))
+    except ValueError:
+        return None
+
+
+def bids(route):
+    """The bids a route sells into (`requires.bid`: one {item, base, min_price, min_qty} or a list of them)."""
+    need = (route.get("requires") or {}).get("bid")
+    return [need] if isinstance(need, dict) else [b for b in need or [] if isinstance(b, dict)]
+
+
+def bid_missing(data, route, now):
+    """Why a route is closed by `requires.bid`, or None: the station's book, read by a docked ship of ours within
+    BID_FRESH, shows the item's best bid under `min_price` (default 1) or fewer than `min_qty` units (default 1) at it.
+    A book older than that says nothing and closes nothing. Requests ENT-065 and ENT-125, errors ENT-046: the curd bid
+    left seven stations and the veil-ray hunts flew on at a loss for two hours; the ice bids near the fields emptied
+    and 36 mine runs stored their ice."""
+    for want in bids(route):
+        book = read_json(Path(data) / "market" / (str(want.get("base")) + ".json"), {})
+        read = read_time(book.get("read_at")) if isinstance(book, dict) else None
+        if read is None or now - read > BID_FRESH:
+            continue
+        row = next((i for i in book.get("items") or [] if isinstance(i, dict) and i.get("item_id") == want.get("item")), {})
+        price, depth = int(row.get("best_buy") or 0), int(row.get("best_buy_qty") or 0)
+        if price < int(want.get("min_price") or 1) or depth < int(want.get("min_qty") or 1):
+            return "no bid for %s at %s: best %d cr x %d" % (want.get("item"), want.get("base"), price, depth)
+    return None
 
 
 def stalest_system(data, route, orders, now):
@@ -264,7 +326,8 @@ def why_not(pilot, rid, route, state):
         if done_once(route, mine):
             return "done once", None
         if waits_once(route, mine, state["now"]):
-            return ("rests after a run the board refused" if refused(mine[-1]) else "rests after a buy that found no offer"), None
+            return ("rests after a run the board refused" if refused(mine[-1]) else
+                    "rests after a run with every stop skipped" if empty(mine[-1]) else "rests after a buy that found no offer"), None
     mark = route["kind"] + " " + rid
     if route.get("max_pilots"):                   # at most this many different pilots ever: those that flew it and those on it now
         flew = {r.get("pilot") for r in state["rows"] if r.get("route") == rid} | {p for p, what in state["orders"].items() if what == mark}
@@ -288,6 +351,13 @@ def why_not(pilot, rid, route, state):
         return "has the module already", None
     if state["now"] < state["rest"].get(rid, 0):
         return "the place rests", None
+    lacking = bid_missing(state["data"], route, state["now"])
+    if lacking:
+        return lacking, None
+    if route["kind"] == "circuit":
+        floor = hunt_floor(state["data"], route, state["now"])
+        if floor:
+            return floor, None
     if route["kind"] == "hunt":
         count = herd(state["data"], route, state["now"])
         if count is not None and count < route.get("min_creatures", 1):
@@ -402,6 +472,24 @@ def resting(routes, rows, now):
 
 
 HELD_BACK = set()             # pilots already named as held back, so that a pass every 30 s names each once
+ORPHAN_MINUTES = 5            # an engine loop without a fresh order file this long belongs to no runner
+ORPHANS = {}                  # pilot -> when its loop was first seen without an order file
+
+
+def orphans(fleet, orders, now, seen):
+    """[pilot] whose engine loop has run with no fresh order file for ORPHAN_MINUTES: no runner owns it (a loop left by
+    an engine restart or a dead runner). `seen` keeps the first sighting and forgets a pilot whose loop ended or got an
+    owner. Zero, requests ENT-083: two mining loops of guard ships stored ice for hours after the restart of 02:01 UTC."""
+    out, current = [], set()
+    for ship in fleet.get("ships") or [] if isinstance(fleet, dict) else []:
+        name = ship.get("name") or ""
+        if ship.get("status") == "connected" and (ship.get("activity") or {}).get("kind") == "loop" and name not in orders:
+            current.add(name)
+            if now - seen.setdefault(name, now) >= ORPHAN_MINUTES * 60:
+                out.append(name)
+    for name in [n for n in seen if n not in current]:
+        del seen[name]
+    return out
 
 
 def one_pass(root, data, dry_run, children):
@@ -417,6 +505,13 @@ def one_pass(root, data, dry_run, children):
     named = flagships(data)
     ammo = set(read_json(Path(data) / "catalog" / "ammo.json", []) or [])      # written by routemaker.py from the game's catalog
     lines = []
+    for name in orphans(fleet, state["orders"], now, ORPHANS):
+        if dry_run:
+            lines.append("%s runs an engine loop no runner owns: a real pass stops it" % name)
+            continue
+        status, _answer = gate.call("delete", "/accounts/%s/loop" % gate.q(name), timeout=60)
+        ORPHANS.pop(name, None)
+        lines.append("%s ran an engine loop no runner owns for %d minutes: loop stopped (HTTP %s)" % (name, ORPHAN_MINUTES, status))
     for ship in fleet.get("ships") or []:
         name = ship.get("name") or ""
         if ship.get("status") != "connected" or name in state["orders"] or (ship.get("activity") or {}).get("kind") != "idle":

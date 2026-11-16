@@ -61,6 +61,7 @@ the scripts in `game/fleet/` fly them; nobody retypes a route into a chat.
 | `requires.booked` | The title of a one-time reward (or a list of titles) the pilot must hold in `data/fleet/onetime.json` before it is sent: for a mission the board offers only after another one. On such a route a run the board refused (`... not offered`) is no try, up to three times, and the route rests `retry_minutes` after it |
 | `status` | `off`: written down, not flown |
 | `park` | true: the route that docks a ship and lets it wait. Given to a pilot in space only; the last route of every plan |
+| `requires.bid` | `{"item", "base", "min_price", "min_qty"}` or a list of them: the route is open only while the station's book (`data/market/<base>.json`), read by a docked ship of ours within the hour, shows the item's best bid at `min_price` or more (default 1) with `min_qty` units or more at it (default 1). A book older than an hour closes nothing. For a route that sells one good: a hunt's drop, a mine's ice. It closes the route the minute a docked ship reads the bid gone and opens it again when one reads it back |
 | `requires.skills` | `{skill: level}`: only a pilot that holds each skill at that level or higher is sent (its live file, `data/fleet/ships/`): for a mission a board offers only from a skill level, as Signal Fragments from navigation 3 |
 | `skip_if_booked` | Titles of one-time rewards: a pilot that has one of them booked is not sent |
 | `measured` | Written by `routes.py measure --write`: date, runs, minutes per run, credits per run, credits per ship-hour |

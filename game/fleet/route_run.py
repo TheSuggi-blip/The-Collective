@@ -265,6 +265,7 @@ def save_station(base, system):
 
 started, before = time.time(), credits()
 done, onetime, notes, reached = [], [0], [], 0
+skipped = 0                                          # stops passed over because none of their missions is held
 first = int(sys.argv[sys.argv.index('--from') + 1]) - 1 if '--from' in sys.argv else 0
 order('circuit ' + ROUTE['id'])
 atexit.register(order_done)
@@ -291,6 +292,8 @@ def finish():
         after = 0
     if not (before and after) and 'wallet not read' not in notes:      # a wallet is never 0: the engine did not answer at one end
         notes.append('wallet not read')
+    if skipped == len(ROUTE['stops']) and 'every stop skipped' not in notes:   # the pilot held none of the missions: no try (dispatch.py)
+        notes.append('every stop skipped')
     minutes = (time.time() - started) / 60
     row = {'route': ROUTE['id'], 'kind': ROUTE.get('kind'), 'pilot': pilot, 'started': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(started)),
            'minutes': round(minutes, 1), 'stops': reached, 'of': len(ROUTE['stops']), 'credits_before': before, 'credits_after': after,
@@ -317,6 +320,7 @@ for n, stop in enumerate(ROUTE['stops']):
         continue
     if stop.get('only_if_active') and not ({title for title, _mid, _fin in active()} & set(stop['only_if_active'])):
         reached += 1
+        skipped += 1
         continue
     ok, msg = goal('prepare-at-station', {'systemId': system, 'poiId': poi, 'baseId': base, 'refuel': True})
     if not ok:

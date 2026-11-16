@@ -103,6 +103,70 @@ class PickTests(Tree):
         (ships / "drone-1.json").write_text(json.dumps({"skills": {"navigation": {"level": 3, "xp": 1}, "piloting": {"level": 5}}}), encoding="ascii")
         self.assertEqual(self.dispatch.pilot_of({"name": "drone-1"}, {}, str(self.data), set())["skills"], {"navigation": 3, "piloting": 5})
 
+    def test_a_route_that_names_a_bid_is_closed_while_a_fresh_book_shows_none(self):
+        # requests ENT-065, ENT-125: the curd bid left every station and the hunts flew on; the near ice bids emptied
+        routes = self.dispatch.load_routes(self.root)
+        rays = dict(routes["rays"], requires={"bid": {"item": "verdigris_curd", "base": "base", "min_price": 100}})
+        pilot = {"name": "drone-1", "credits": 20000, "modules": [], "docked": True}
+        why = lambda route=rays: self.dispatch.why_not(pilot, "rays", route, self.state())[0]
+        market = self.data / "market"
+        market.mkdir(exist_ok=True)
+        book = lambda price, qty, ago=60: (market / "base.json").write_text(json.dumps({"base": "base", "read_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(self.now - ago)),
+                                                                              "items": [{"item_id": "verdigris_curd", "best_buy": price, "best_buy_qty": qty}]}))
+        self.assertIsNone(why())                                                                   # no book: nothing known, nothing closed
+        book(0, 0)
+        self.assertEqual(why(), "no bid for verdigris_curd at base: best 0 cr x 0")
+        book(330, 50)
+        self.assertIsNone(why())
+        book(90, 50)
+        self.assertEqual(why(), "no bid for verdigris_curd at base: best 90 cr x 50")
+        book(0, 0, ago=2 * 3600)
+        self.assertIsNone(why())                                                                   # a book two hours old says nothing
+        book(330, 3)
+        deep = dict(rays, requires={"bid": [{"item": "verdigris_curd", "base": "base", "min_price": 100, "min_qty": 10}]})
+        self.assertEqual(why(deep), "no bid for verdigris_curd at base: best 330 cr x 3")       # a list, and a depth asked
+        mine = dict(routes["mine"], requires={"bid": {"item": "water_ice", "base": "base", "min_price": 20}})
+        self.assertEqual(self.dispatch.why_not(pilot, "mine", mine, self.state())[0], "no bid for water_ice at base: best 0 cr x 0")
+
+    def test_a_circuit_hunt_step_with_a_herd_floor_waits_for_its_herd(self):
+        # Apophis, report of 2026-11-16 05:27 UTC; requests ENT-126
+        shell = {"id": "shell", "kind": "circuit", "title": "t", "once": True, "stops": [
+            {"at": "home:core:base", "hunt": [{"at": "far:nebula", "species": ["veil_ray"], "kills": 3, "min_creatures": 3}]}, {"at": "home:core:base"}]}
+        pilot = {"name": "drone-1", "credits": 20000, "modules": [], "docked": True}
+        why = lambda: self.dispatch.why_not(pilot, "shell", shell, self.state())[0]
+        self.assertIsNone(why())                                                                   # no census: nothing known
+        census = self.data / "wildlife" / "far.json"
+        census.write_text(json.dumps({"pois": {"nebula": {"creatures": [{"species": "veil_ray"}, {"species": "veil_ray"}, {"species": "belt_grazer"}]}}}))
+        self.assertEqual(why(), "herd below 3 at far:nebula")
+        census.write_text(json.dumps({"pois": {"nebula": {"creatures": [{"species": "veil_ray"}] * 3}}}))
+        self.assertIsNone(why())
+
+    def test_a_once_run_whose_every_stop_was_skipped_is_no_try_and_the_route_rests(self):
+        # requests ENT-129: four traders flew runs of 0 minutes that counted as done
+        started = lambda ago: time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(self.now - ago))
+        nothing = {"route": "missions", "pilot": "drone-1", "stops": 1, "of": 1, "minutes": 0.0, "started": started(600), "notes": ["every stop skipped"]}
+        routes = self.dispatch.load_routes(self.root)
+        pilot = {"name": "drone-1", "credits": 20000, "modules": [], "docked": True}
+        why = lambda rows: self.dispatch.why_not(pilot, "missions", routes["missions"], self.state(rows=rows))[0]
+        self.assertEqual(why([nothing]), "rests after a run with every stop skipped")
+        self.assertEqual(why([dict(nothing, started=started(2 * 3600))] * 3), None)              # three empty runs are still no try
+        self.assertEqual(why([dict(nothing, notes=[], started=started(2 * 3600))]), "done once")
+
+    def test_an_engine_loop_no_runner_owns_is_named_after_five_minutes(self):
+        # Zero, requests ENT-083
+        fleet = {"ships": [{"name": "miner-1", "status": "connected", "activity": {"kind": "loop"}},
+                           {"name": "miner-2", "status": "connected", "activity": {"kind": "loop"}},
+                           {"name": "miner-3", "status": "connected", "activity": {"kind": "idle"}}]}
+        seen = {}
+        self.assertEqual(self.dispatch.orphans(fleet, {"miner-2": "mine mine"}, self.now, seen), [])
+        self.assertEqual(self.dispatch.orphans(fleet, {"miner-2": "mine mine"}, self.now + 299, seen), [])
+        self.assertEqual(self.dispatch.orphans(fleet, {"miner-2": "mine mine"}, self.now + 300, seen), ["miner-1"])
+        fleet["ships"][0]["activity"] = {"kind": "idle"}
+        self.assertEqual(self.dispatch.orphans(fleet, {}, self.now + 400, seen), [])              # the loop ended: forgotten
+        self.assertNotIn("miner-1", seen)
+        self.assertEqual(self.dispatch.orphans(fleet, {}, self.now + 400, seen), [])              # miner-2 lost its order: a new sighting
+        self.assertEqual(self.dispatch.orphans(fleet, {}, self.now + 700, seen), ["miner-2"])
+
     def test_a_pilot_whose_last_three_runs_ended_before_stop_one_is_held_back(self):
         failed = {"route": "park", "pilot": "drone-1", "stops": 0, "of": 1, "notes": ["stop 1 not reached"]}
         self.assertFalse(self.dispatch.stuck("drone-1", [failed, failed]))

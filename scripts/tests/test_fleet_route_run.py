@@ -60,7 +60,7 @@ class ModuleLevelTests(unittest.TestCase):
                 "import atexit, fcntl, json, pathlib, sys, time, traceback",
                 "DATA = pathlib.Path(%r)" % folder,
                 "ROUTE = {'id': 'made-up', 'kind': 'circuit', 'stops': [1, 2]}",
-                "pilot, started, before, done, onetime, notes, reached = 'trader-1', time.time() - 120, 5000, [], [0], ['a note'], 1",
+                "pilot, started, before, done, onetime, notes, reached, skipped = 'trader-1', time.time() - 120, 5000, [], [0], ['a note'], 1, 0",
                 "CRASH, FINISHED = [], []",
                 "credits = lambda: 4900"] + parts + [
                 "sys.excepthook = crashed", "atexit.register(finish)", "offer = None", "offer('book')"])
@@ -71,6 +71,28 @@ class ModuleLevelTests(unittest.TestCase):
         self.assertEqual((rows[0]["route"], rows[0]["stops"], rows[0]["of"], rows[0]["delta"]), ("made-up", 1, 2, -100))
         self.assertEqual(rows[0]["notes"][0], "a note")
         self.assertTrue(rows[0]["notes"][1].startswith("crashed: TypeError: 'NoneType' object is not callable"), rows[0]["notes"])
+
+
+class EmptyRunTests(unittest.TestCase):
+    def test_a_run_whose_every_stop_was_skipped_says_so_in_its_row(self):
+        # requests ENT-129: a once route for pilots that hold its mission gave every other pilot a run of 0 minutes booked as done
+        source = (FLEET / "route_run.py").read_text(encoding="ascii")
+        tree = ast.parse(source)
+        parts = [ast.get_source_segment(source, node) for node in tree.body if isinstance(node, ast.FunctionDef) and node.name in ("crashed", "finish")]
+        for skipped, stops, expect in ((2, 2, True), (1, 2, False)):
+            with tempfile.TemporaryDirectory() as folder:
+                driver = "\n\n".join([
+                    "import atexit, fcntl, json, pathlib, sys, time, traceback",
+                    "DATA = pathlib.Path(%r)" % folder,
+                    "ROUTE = {'id': 'made-up', 'kind': 'circuit', 'stops': %r}" % list(range(stops)),
+                    "pilot, started, before, done, onetime, notes, reached, skipped = 'trader-1', time.time(), 5000, [], [0], [], %d, %d" % (stops, skipped),
+                    "CRASH, FINISHED = [], []",
+                    "credits = lambda: 5000"] + parts + ["finish()"])
+                subprocess.run([sys.executable, "-I", "-B", "-c", driver], check=True, timeout=60)
+                row = json.loads((Path(folder) / "routes" / "runs.jsonl").read_text().splitlines()[0])
+            self.assertEqual("every stop skipped" in row["notes"], expect, row)
+        loop = next(node for node in tree.body if isinstance(node, ast.For) and "only_if_active" in ast.unparse(node))
+        self.assertIn("skipped += 1", ast.unparse(loop))
 
 
 class HuntStepTests(unittest.TestCase):
