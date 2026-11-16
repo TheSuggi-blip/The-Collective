@@ -64,8 +64,8 @@ player-run market and territory that can be lost.
 
 - The economy decides the game, and it compounds: a gap in production
   early becomes a deficit later that no skill in battle closes.[2]
-  Workers that gather and production that runs are the path to every
-  later choice.[1]
+  Enough workers gathering is what pays for every later choice:
+  structures, more bases, an army.[1]
 - Nothing stands idle: the making of workers never stops,[2] and there
   is no "good enough" state: there is always a next thing to do.[3]
 - Resources are spent, not banked: a large balance is production that
@@ -81,10 +81,10 @@ player-run market and territory that can be lost.
 ### Factory and base building
 
 - Automate, then raise the rate, then rebuild: observing, expanding
-  and redesigning is the core loop of play.[6]
-- Plan in rates before building: count the machines from the known
-  ratios of input to output, and measure a line against its target
-  rate to catch a starved one.[7]
+  and redesigning is a key loop of play.[6]
+- Plan in rates before building: start from the end product and the
+  rates every line before it has to hit, and count the machines from
+  the known ratios of input to output.[7]
 - Build small modules that can be copied, not one large plant early;
   a tested module is saved as a blueprint and placed again.[5][7]
 - A central line of the most used goods forces a planned layout and
@@ -107,13 +107,15 @@ player-run market and territory that can be lost.
 ### Fleets that leave safe space (EVE Online)
 
 - Before moving out, a group answers why, where and when, and sets
-  goalposts its members can help to reach.[10]
+  realistic goalposts on the way: members, regular fleets, a
+  treasury.[10]
 - In space that can be lost, keep a light footprint: no more on site
   than the work needs.[11] Channels that report hostile activity are
   standard for a group that holds space.[11]
-- A group that lasts makes and buys from itself: its own market in a
-  central system, its own miners and makers, and stock to replace a
-  loss.[12] Supply chains are written down, and no chain hangs on one
+- A group that wants to grow makes and buys from itself: its own
+  market in a central system, its own miners and makers, and stock to
+  replace a loss (one observer's proposal).[12] Supply chains are
+  written down, and no chain hangs on one
   member.[13] Valuable cargo flies with an escort.[13]
 - The soft target is the extraction, not the fortress: guarding it is
   a standing patrol, not an emergency.[14] Space that goes quiet is
@@ -203,20 +205,36 @@ amendment adds a row below.
 | Version | Date | Author | Change |
 |:--|:--|:--|:--|
 | 1 | 2026-11-16 | Unity | First version, written on Suggi's instruction and approved by him. |
+| 1.1 | 2026-11-16 | Unity | Under the same instruction: every cited sentence of section III read again against its source's page; five reworded to what the page says; the source list in the form the citation check reads. No aim, principle or phase changed. |
 
 ## VIII. Sources
 
-- [1] https://news.blizzard.com/en-us/article/23229495/finding-the-fun-real-time-strategy-games-for-beginners -- Blizzard News: Real-Time Strategy Games for Beginners (2020)
-- [2] https://www.spyld.com/rts-beginner-guide -- Spyld Gaming: RTS Beginner Guide, Build Order Before Everything Else (2026)
-- [3] https://waywardstrategy.com/2015/03/25/rts101-evolve-or-die -- Wayward Strategy: RTS101, Evolve or Die (2015)
-- [4] https://wiki.factorio.com/Tutorial:Main_bus -- Factorio Wiki: Tutorial, Main bus
-- [5] https://satisfactory.wiki.gg/wiki/Tutorial:Production_line_design_tips -- Satisfactory Wiki: Tutorial, Production line design tips
-- [6] https://aphyr.com/posts/351-a-satisfactory-way-of-building -- Aphyr: A Satisfactory Way of Building
-- [7] https://guides-factory.com/guides/factory-master-planning-designing-a-satisfactory-base-that-scales -- Guides Factory: Satisfactory Factory Master-Planning Guide (2026)
-- [8] https://www.gamedeveloper.com/design/rethinking-the-trinity-of-mmo-design -- Game Developer: Rethinking the Trinity of MMO Design (2009)
-- [9] https://corepunkers.com/guides/starting-strong-guilds-groups-optimization-guide -- Corepunkers: Guilds and groups optimization guide (2024)
-- [10] https://www.tentonhammer.com/guides/moving-your-corporation-to-null-sec-space-eve-online-guide -- Ten Ton Hammer: Moving Your Corporation To Null-Sec Space, EVE Online (2011)
-- [11] https://www.tentonhammer.com/guides/ten-tips-for-moving-to-null-sec-in-eve-online -- Ten Ton Hammer: Ten Tips For Moving To Null-Sec In EVE Online (2011)
-- [12] https://www.fuzzwork.co.uk/2019/02/19/a-modest-proposal-nullsec-groups -- Fuzzwork Enterprises: A Modest Proposal, Nullsec Groups (2019)
-- [13] https://guildorder.com/games/eve/guides/industrial-supply-chains -- Guild Order: EVE Industry, Null-sec Supply Chains and Manufacturing (2026)
-- [14] https://guildorder.com/games/eve/guides/sovereignty-timer-operations -- Guild Order: EVE Sovereignty Timer Ops Guide for Nullsec Corps (2026)
+Sources:
+
+[1] https://news.blizzard.com/en-us/article/23229495/finding-the-fun-real-time-strategy-games-for-beginners -- Blizzard News: Real-Time Strategy Games for Beginners (2020)
+
+[2] https://www.spyld.com/rts-beginner-guide -- Spyld Gaming: RTS Beginner Guide, Build Order Before Everything Else (2026)
+
+[3] https://waywardstrategy.com/2015/03/25/rts101-evolve-or-die -- Wayward Strategy: RTS101, Evolve or Die (2015)
+
+[4] https://wiki.factorio.com/Tutorial:Main_bus -- Factorio Wiki: Tutorial, Main bus
+
+[5] https://satisfactory.wiki.gg/wiki/Tutorial:Production_line_design_tips -- Satisfactory Wiki: Tutorial, Production line design tips
+
+[6] https://aphyr.com/posts/351-a-satisfactory-way-of-building -- Aphyr: A Satisfactory Way of Building
+
+[7] https://guides-factory.com/guides/factory-master-planning-designing-a-satisfactory-base-that-scales -- Guides Factory: Satisfactory Factory Master-Planning Guide (2026)
+
+[8] https://www.gamedeveloper.com/design/rethinking-the-trinity-of-mmo-design -- Game Developer: Rethinking the Trinity of MMO Design (2009)
+
+[9] https://corepunkers.com/guides/starting-strong-guilds-groups-optimization-guide -- Corepunkers: Guilds and groups optimization guide (2024)
+
+[10] https://www.tentonhammer.com/guides/moving-your-corporation-to-null-sec-space-eve-online-guide -- Ten Ton Hammer: Moving Your Corporation To Null-Sec Space, EVE Online (2011)
+
+[11] https://www.tentonhammer.com/guides/ten-tips-for-moving-to-null-sec-in-eve-online -- Ten Ton Hammer: Ten Tips For Moving To Null-Sec In EVE Online (2011)
+
+[12] https://www.fuzzwork.co.uk/2019/02/19/a-modest-proposal-nullsec-groups -- Fuzzwork Enterprises: A Modest Proposal, Nullsec Groups (2019)
+
+[13] https://guildorder.com/games/eve/guides/industrial-supply-chains -- Guild Order: EVE Industry, Null-sec Supply Chains and Manufacturing (2026)
+
+[14] https://guildorder.com/games/eve/guides/sovereignty-timer-operations -- Guild Order: EVE Sovereignty Timer Ops Guide for Nullsec Corps (2026)
