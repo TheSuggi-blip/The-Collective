@@ -8,7 +8,7 @@ author: Unity
 # index.md -- Systems We Know
 
 Built by `scripts/intel-index.py` from the system files of this folder;
-never edited by hand. Files listed: 54. The format of a system file:
+never edited by hand. Files listed: 56. The format of a system file:
 `BLUEPRINT.md`.
 
 ## Voidborn space
@@ -30,6 +30,8 @@ never edited by hand. Files listed: 54. The format of a system file:
 
 | System | Standing | Threat | Police level | Jumps from home | Updated | File |
 |---|---|---|---|---|---|---|
+| Furud | neutral | unknown | 30 | 7 | 2026-11-16 | [n-furud.md](n-furud.md) |
+| Nova Terra | neutral | unknown | 55 | 8 | 2026-11-16 | [n-nova_terra.md](n-nova_terra.md) |
 | Sol | neutral | unknown | 100 | 10 | 2026-11-16 | [n-sol.md](n-sol.md) |
 
 ## Lawless space
