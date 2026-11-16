@@ -1,0 +1,20 @@
+{
+ "id": "mine-antares-gas-cloud",
+ "kind": "mine",
+ "title": "Antares Gas Cloud: hydrogen_gas, argon_gas, plasma_gas, nebula_gas, neon_gas, chlorine_gas; sold at Nova Terra Central",
+ "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 757 cr per ship-hour, not a measurement. A test: one ship. Added as a test by fill.py on 2026-11-16 14:46 UTC (Apollo): one ship until its first RESULT line is read.",
+ "belt": "antares:antares_gas_cloud",
+ "station": "nova_terra:nova_terra_central:nova_terra_central",
+ "minutes": 50,
+ "max_ships": 1,
+ "sell": [
+  {
+   "item": "plasma_gas",
+   "min_price": 70
+  }
+ ],
+ "requires": {
+  "module": "gas_harvester_i",
+  "empty_hold": true
+ }
+}
