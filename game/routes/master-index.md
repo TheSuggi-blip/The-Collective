@@ -19,19 +19,19 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 |---|---|---|---|---|---|
 | [Once per Pilot](index-once-per-pilot.md) | Missions and rewards the game pays once per pilot: a new pilot's first work, and seed money. | 27 | 17 | 10 | voidborn-conductive-lattice: 9,110 cr a run |
 | [Paying Routes](index-paying-routes.md) | Work that repeats and whose runs measured above zero. | 36 | 8 | 28 | sell-curd-central-nexus: 302,820 cr per ship-hour |
-| [Tests](index-tests.md) | Work that repeats and has no measured figure yet: one ship until its first RESULT line is read. | 13 | 9 | 4 | not measured yet |
+| [Tests](index-tests.md) | Work that repeats and has no measured figure yet: one ship until its first RESULT line is read. | 14 | 10 | 4 | not measured yet |
 | [Fitting](index-fitting.md) | A module bought and fitted: the tool a kind of work needs. | 9 | 8 | 1 | fit-ice-harvester-lhs-1140: -4,320 cr per ship-hour |
-| [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 24 | 13 | 11 | hunt-gsc-veil-ray: 3,020 cr per ship-hour |
+| [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 25 | 13 | 12 | hunt-gsc-veil-ray: 3,020 cr per ship-hour |
 | [Measured at a Loss](index-measured-at-a-loss.md) | Work that repeats and whose runs measured zero or below. | 40 | 13 | 27 | hunt-denebola-fractured-prism-veil-ray: -10 cr per ship-hour |
 | [Off](index-off.md) | Written down, not flown. | 11 | 8 | 3 | voidborn-first-steps: 4,020 cr per ship-hour |
-| All | | 160 | 76 | 84 | |
+| All | | 162 | 77 | 85 | |
 
 ## Routes by Zone and Kind
 
 | Zone | Routes | census | circuit | guard | hunt | mine | Farthest system, jumps from home |
 |---|---|---|---|---|---|---|---|
-| home space | 76 | 1 | 53 | 0 | 10 | 12 | 3 |
-| beyond the border | 84 | 3 | 15 | 1 | 29 | 36 | 8 |
+| home space | 77 | 1 | 54 | 0 | 10 | 12 | 3 |
+| beyond the border | 85 | 3 | 15 | 1 | 29 | 37 | 8 |
 
 ## Plans by Role
 

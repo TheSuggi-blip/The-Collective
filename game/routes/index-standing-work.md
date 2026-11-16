@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 24.
+Routes: 25.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -40,3 +40,4 @@ Routes: 24.
 | [hunt-keid-fractured-prism-veil-ray](hunt-keid-fractured-prism-veil-ray.json) | hunt | beyond the border, 5 jumps | veil_ray at keid_fractured_prism; loot sold at Node Beta Industrial Station | up to 1 ships, without piercing_railgun_i, empty hold, standing work | 19 | 30 | 700 | 1,420 | 2026-11-16 |
 | [hunt-low-charge-glint-veil-ray](hunt-low-charge-glint-veil-ray.json) | hunt | beyond the border, 4 jumps | veil_ray at low_charge_glint; loot sold at Node Beta Industrial Station | up to 1 ships, without piercing_railgun_i, empty hold, standing work | 17 | 27 | 300 | 800 | 2026-11-16 |
 | [hunt-ruchbah-veil-ray](hunt-ruchbah-veil-ray.json) | hunt | beyond the border, 4 jumps | Veil-rays at Ruchbah Broken Glass Veil (lawless); verdigris curd sold at The Experiment | up to 1 ships, without piercing_railgun_i, empty hold, standing work | 17 | 22 | 680 | 2,100 | 2026-11-16 |
+| [gather-ironhollow-fading-signal](gather-ironhollow-fading-signal.json) | mine | beyond the border, 4 jumps | Standing work, a test: iron at Ironhollow Fading Signal (beyond the border) into storage at The Experiment | up to 1 ships, needs mining_laser_i, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
