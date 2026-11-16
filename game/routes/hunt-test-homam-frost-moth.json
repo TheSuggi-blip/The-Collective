@@ -1,0 +1,20 @@
+{
+ "id": "hunt-test-homam-frost-moth",
+ "kind": "hunt",
+ "title": "Yield test: frost_moth at homam_cryobelt (lawless); what a kill drops and whether a bid takes it",
+ "note": "A test with one scout (orders.log ENT-011, block ORACLE (2): the test hunts nobody has flown, one scout per species, F9). No hunt route of the fleet names frost_moth (game/routes/, 2026-11-16 04:23 UTC). The place read 7 frost-moths beside 6 rime-grazers and 5 pressblisters at 2026-11-16 03:43 UTC (data/wildlife/homam.json), 45 hull, a grazer. Rime-grazer and pressblister drops are known and bid 1 to 2 cr (guidebook military.md), so only frost-moths are hunted. Beyond policed space (F13): `alone` and an empty hold. Loot that no bid of 50 cr takes is stored at the station, so the row's goods show the drop. Mining tests an ice route at the same field (mine-homam-cryobelt). Written by Oracle 2026-11-16 04:23 UTC; it leaves the plan after its first RESULT line unless the drop sells.",
+ "place": "homam:homam_cryobelt",
+ "species": [
+  "frost_moth"
+ ],
+ "sell_at": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+ "min_bid": 50,
+ "kills": 2,
+ "minutes": 30,
+ "max_ships": 1,
+ "min_creatures": 4,
+ "alone": true,
+ "requires": {
+  "empty_hold": true
+ }
+}

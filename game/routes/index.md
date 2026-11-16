@@ -74,6 +74,8 @@ Work that repeats and has no measured figure yet: one ship until its first RESUL
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
+| [hunt-atlas-gas-pocket](hunt-atlas-gas-pocket.json) | hunt | beyond the border, 6 jumps | Halo-drifters and cinder-sylphs at Atlas Gas Pocket (lawless); noble condensate (690 cr) and ember glands (480 cr) sold at The Experiment | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
+| [hunt-test-homam-frost-moth](hunt-test-homam-frost-moth.json) | hunt | beyond the border, 6 jumps | Yield test: frost_moth at homam_cryobelt (lawless); what a kill drops and whether a bid takes it | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [mine-achernar-gas-pocket](mine-achernar-gas-pocket.json) | mine | beyond the border, 4 jumps | Achernar Gas Pocket: hydrogen_gas, argon_gas, plasma_gas, neon_gas; sold at Node Beta Industrial Station | up to 1 ships, needs gas_harvester_i, empty hold | TBD | TBD | TBD | TBD | -- |
 | [mine-alnair-ice-fields-nexus](mine-alnair-ice-fields-nexus.json) | mine | beyond the border, 5 jumps | Alnair Ice Fields: water_ice, nitrogen_ice, deuterium_ice; sold at Central Nexus | up to 1 ships, needs ice_harvester_i, empty hold | TBD | TBD | TBD | TBD | -- |
 | [mine-gsc-0021-ice-fields](mine-gsc-0021-ice-fields.json) | mine | beyond the border, 6 jumps | GSC-0021 Ice Fields: water_ice, nitrogen_ice, ammonia_ice; sold at Synchrony Hub | up to 1 ships, needs ice_harvester_i, empty hold | TBD | TBD | TBD | TBD | -- |

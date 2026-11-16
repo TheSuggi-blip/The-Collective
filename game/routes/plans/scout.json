@@ -1,7 +1,7 @@
 {
  "role": "scout",
  "owner": "Oracle",
- "note": "The routes the dispatcher tries, in this order, for a free scout pilot. Oracle keeps this file: put a route that pays first, a test with `max_ships` before it enters for all, and end with `park`. No route that loses money stands here to fill time (orders F8). 2026-11-16 03:35 UTC (orders.log ENT-011): census-voidborn first (at most 3 ships, only when a home system is due); the missions that pay once; the halo-drifter test, whose first run paid +1,259 cr in 18.7 minutes (2 noble condensate sold at 690 cr), until a second run measures it; then census-frontier and park. Out since this commit: the three First Hunt routes beyond the border (3 runs, -143 to -154 cr each, objectives not done, two pilots still holding the mission from the home herds) and the sift-ray and lantern-slug tests (drops of crystallized biogas and creature carapace, bid 1 to 2 cr). 2026-11-16 03:43 UTC: the rivetshell test out as well: its first run dropped creature carapace and raw xeno meat; its +496 cr came from a neural soma carried in the hold, sold at 617 cr.",
+ "note": "The routes the dispatcher tries, in this order, for a free scout pilot. Oracle keeps this file: put a route that pays first, a test with `max_ships` before it enters for all, and end with `park`. No route that loses money stands here to fill time (orders F8). 2026-11-16 04:23 UTC (orders.log ENT-011, turn of 04:15 UTC): census-voidborn first (at most 3 ships, only when a home system is due); the missions that pay once, now with voidborn-first-steps (12 scouts hold First Steps in the Void, data/fleet/ships/; 935 cr a run in about 10 minutes on the fleet's runs) and voidborn-conductive-lattice (Trade's chain, +10,893 cr once per pilot, offered to every plan in queue.log ENT-066; its limits stay Mercury's); hunt-atlas-gas-pocket (halo-drifters and cinder-sylphs, one hunter) in place of the halo-drifter test; one species test, frost-moths at Homam; then census-frontier and park. Leftover goods of 15 scouts stored at their stations this turn (game/fleet/stash.py), so the holds are empty.",
  "routes": [
   "census-voidborn",
   "voidborn-precedence",
@@ -10,7 +10,10 @@
   "voidborn-substrate",
   "voidborn-missions-1",
   "voidborn-mining-missions",
-  "hunt-test-atlas-halo-drifter",
+  "voidborn-first-steps",
+  "voidborn-conductive-lattice",
+  "hunt-atlas-gas-pocket",
+  "hunt-test-homam-frost-moth",
   "census-frontier",
   "park"
  ],
@@ -20,24 +23,24 @@
    "when": "every turn"
   },
   {
-   "what": "census-frontier: 42 systems every 240 minutes, 12 ships. Next ring after one refuel-beyond-the-border figure: acrab, acrux, botein, deepwell, felis, gliese_876, hd_147513, marfik, rastaban; not the pirate stronghold gliese_581",
-   "when": "turn T10"
+   "what": "census-frontier: 42 systems every 240 minutes, 12 ships. Next ring: acrab, acrux, botein, deepwell, felis, gliese_876, hd_147513, marfik, rastaban; not the pirate stronghold gliese_581",
+   "when": "when a scout waits for reading work and the ring's bases or herds are worth a read"
   },
   {
-   "what": "First Hunt for the scouts that hold it unfinished: a route that hands it in where it was accepted, once the cause of the three failed far-herd runs is known (requests.log); Cracking the Shell (1,500 cr once, three pressblisters) after it",
+   "what": "First Hunt for the six scouts that hold it unfinished (any asteroid belt): a route once the hunt step names why a run ended (requests.log ENT-092); Cracking the Shell after it, once requires.booked exists",
+   "when": "after Unity's answer"
+  },
+  {
+   "what": "hunt-atlas-gas-pocket: read its runs; if the herd regrows faster than 2 kills a run, the other halo-drifter places (GSC-0038, GSC-0016) as routes of their own",
    "when": "next turn"
   },
   {
-   "what": "Nova Terra Central (Solarian) read once by one scout with an empty hold, then about once a day while Trade weighs a trade (requests.log ENT-073)",
-   "when": "this turn, then daily"
+   "what": "Nova Terra Central (Solarian) read about once a day while Trade weighs a trade",
+   "when": "daily"
   },
   {
    "what": "Read the game's changelog at every turn and name each line of game/rules/ a release makes wrong in a request to the Fleet Admiral",
    "when": "every turn"
-  },
-  {
-   "what": "Halo-drifter: after a second paying run, a hunt route at Atlas Gas Pocket for one scout, and the other halo-drifter places read for their herds",
-   "when": "next turn"
   }
  ]
 }

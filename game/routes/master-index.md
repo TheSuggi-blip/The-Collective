@@ -22,19 +22,19 @@ name below is a link into one of the sub-indexes of this folder.
 |---|---|---|---|---|---|
 | [Once per Pilot](index.md#once-per-pilot) | Missions and rewards the game pays once per pilot: a new pilot's first work, and seed money. | 20 | 11 | 9 | voidborn-conductive-lattice: 8,030 cr a run |
 | [Paying Routes](index.md#paying-routes) | Work that repeats and whose runs measured above zero. | 21 | 3 | 18 | mine-ruchbah-ice-belt: 8,270 cr per ship-hour |
-| [Tests](index.md#tests) | Work that repeats and has no measured figure yet: one ship until its first RESULT line is read. | 8 | 0 | 8 | not measured yet |
+| [Tests](index.md#tests) | Work that repeats and has no measured figure yet: one ship until its first RESULT line is read. | 10 | 0 | 10 | not measured yet |
 | [Fitting](index.md#fitting) | A module bought and fitted: the tool a kind of work needs. | 9 | 8 | 1 | fit-ice-harvester-lhs-1140: -3,730 cr per ship-hour |
 | [Reading and Waiting](index.md#reading-and-waiting) | The census and the park route: they earn nothing; they keep the picture fresh and a ship without work docked. | 3 | 2 | 1 | census-voidborn: -550 cr per ship-hour |
 | [Measured at a Loss](index.md#measured-at-a-loss) | Work that repeats and whose runs measured zero or below. | 26 | 12 | 14 | mine-bellatrix: 0 cr per ship-hour |
 | [Off](index.md#off) | Written down, not flown. | 7 | 7 | 0 | hunt-home-whale: 1,670 cr per ship-hour |
-| All | | 94 | 43 | 51 | |
+| All | | 96 | 43 | 53 | |
 
 ## Routes by Zone and Kind
 
 | Zone | Routes | census | circuit | hunt | mine | Farthest system, jumps from home |
 |---|---|---|---|---|---|---|
 | home space | 43 | 1 | 25 | 10 | 7 | 3 |
-| beyond the border | 51 | 1 | 12 | 19 | 19 | 7 |
+| beyond the border | 53 | 1 | 12 | 21 | 19 | 7 |
 
 ## Plans by Role
 
@@ -44,7 +44,7 @@ name below is a link into one of the sub-indexes of this folder.
 | [drone](plan.md#drone) | Apophis | 32 | voidborn-precedence > voidborn-first-hunt-nexus > voidborn-first-hunt-gsc | 6 |
 | [hauler](plan.md#hauler) | Apollo | 19 | voidborn-precedence > voidborn-selling > voidborn-first-hunt-nexus | 5 |
 | [miner](plan.md#miner) | Zero | 34 | voidborn-concurrent > voidborn-substrate > voidborn-missions-1 | 3 |
-| [scout](plan.md#scout) | Oracle | 10 | census-voidborn > voidborn-precedence > voidborn-selling | 6 |
+| [scout](plan.md#scout) | Oracle | 13 | census-voidborn > voidborn-precedence > voidborn-selling | 6 |
 | [sentinel](plan.md#sentinel) | Unity | 23 | voidborn-concurrent > voidborn-substrate > voidborn-missions-1 | 0 |
 | [trader](plan.md#trader) | Mercury | 10 | voidborn-concurrent > voidborn-substrate > voidborn-missions-1 | 4 |
 
