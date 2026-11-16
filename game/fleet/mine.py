@@ -54,6 +54,19 @@ def ore_of(ship):
     return int(value) if isinstance(value, (int, float)) and not isinstance(value, bool) else None
 
 
+DOCK_TRIES = 10                # tries of the dock goal before a sale, 30 s apart: about five minutes
+
+
+def settled(call, quoted, tries=20, pause=15):
+    """Waits until the engine shows neither an executing goal nor a running job for the account; False when it never did."""
+    for _ in range(tries):
+        account = call("GET", "/accounts/" + quoted)[1]
+        if not (account.get("hasExecutingGoal") or account.get("hasRunningJob")):
+            return True
+        time.sleep(pause)
+    return False
+
+
 def sell_at_station(call, say, quoted, station, wanted, notes):
     """Dock at the route's station; sell each wanted (item, min_price) from the hold, then from the storage there, into the
     bids at min_price or more; store the rest of the hold. Returns {item: [units, credits]}."""
@@ -68,14 +81,19 @@ def sell_at_station(call, say, quoted, station, wanted, notes):
         rows = call("GET", "/accounts/%s/state/cargo" % quoted)[1]
         return {r.get("item_id"): r.get("quantity") or 0 for r in (rows if isinstance(rows, list) else []) if isinstance(r, dict)}
 
-    for _ in range(3):
+    last = ""
+    for attempt in range(DOCK_TRIES):
+        if attempt in (0, DOCK_TRIES // 2):
+            settled(call, quoted)                        # a goal or a job still in flight refuses the dock goal
         status, answer = call("POST", "/accounts/%s/goal" % quoted, {"type": "prepare-at-station", "options": {
             "systemId": station[0], "poiId": station[1], "baseId": station[2], "refuel": True}}, timeout=900)
         if status == 200 and answer.get("success"):
             break
-        time.sleep(15)
+        last = "%s %s" % (status, " ".join(str(answer.get("error") or answer.get("message") or answer).split())[:90])
+        say("dock for the sale, try %d of %d: %s" % (attempt + 1, DOCK_TRIES, last))
+        time.sleep(30)
     else:
-        notes.append("not docked for the sale")
+        notes.append("not docked for the sale: " + last)   # the engine's last answer: the cause is in the record
         return {}
     wallet = lambda: credits_of(call("GET", "/accounts/" + quoted)[1]) or 0
     sold = {}
