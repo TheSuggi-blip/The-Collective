@@ -43,6 +43,7 @@
    "title": "Gather what the reserve is short of: carbon first, then iron, Hamal Crystal Bloom first",
    "routes": [
     "gather-acubens-belt-carbon",
+    "gather-ironhollow-fading-signal",
     "gather-hamal-crystal-bloom",
     "gather-gsc-0027-prism-scatter",
     "mine-acubens"
