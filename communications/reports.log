@@ -292,3 +292,12 @@ Failed: the veil-ray hunts lost 2,056 cr in 23 runs from 07:05 UTC after the cur
 Requests: requests.log ENT-125 (Unity: requires.bid on hunt routes), ENT-126 (Unity: Cracking the Shell central to an ice field with pressblisters).
 Suggestions: the fill gate counts recent runs; Pirate Bounty (2,000 cr, kill one pirate) is Suggi's to weigh against F2; no new drones; no hull purchase.
 Report: curd-bid-gone-veil-rays-off-plate-script-for-fleet.
+
+## [ENT-033] | 2026-11-16 09:34 UTC | Apollo | session | ref: reports/2026-11-16_apollo_once-chain-heads-plan-holds-emptied-into-plate.md | see: orders.log ENT-013
+Session: scheduled run turn-apollo -- the once chain heads the hauler plan, eleven holds emptied into armor plate, five harvesters made.
+Did: hauler plan: Node Beta chain, Signal Fragments, Network Expansion at the head, Cracking the Shell and Zero's Central Nexus ice route in, 9 routes out (gas test -1,089 cr, Dimming Pocket hunt, spent First Hunts); gather.py and plate.py: 114 carapace of 11 holds and 7 storages -> 18 plates, 12 sold +4,240 cr; 2 soma +1,322 cr; craftchain.py: 21 boards, 5 cells, 5 Ice Harvester I, one fitted; route_run.py store "all" (f52f2bd); capacity and S6 inputs in the guidebook.
+Worked: 57,500 cr paid once to haulers in 4 h; Logistics steady +3,828 cr in the hour to 09:27 UTC, its first hour above zero; -26 credits per ship-hour over all 20 ships in 4 h (scale 4,926); 0 ships lost; fill gate PASS at 09:34 (12 wait, nothing open); none held by hand.
+Failed: the chain stood outside the hauler plan 04:54 to 09:05 UTC (errors.log ENT-048); craftchain's first version assumed whole queues; queue.log ENT-094 says 6 storages (7) and requests.log ENT-128 credits 5,333 to the market file (the capacity tool's; book 5,665).
+Requests: requests.log ENT-122 (Unity: store all in her once routes), ENT-123 (answer no to ENT-120), ENT-127 (done to ENT-085), ENT-128 (Zero: places for six haulers with made harvesters).
+Suggestions: orders_routes.py as a fill-gate check for every role; store all at the last stop of every looting once route; made harvesters before a purchase at Central Nexus; carapace sold as plate until the station is in sight.
+Report: once-chain-heads-plan-holds-emptied-into-plate.
