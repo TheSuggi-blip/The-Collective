@@ -364,3 +364,12 @@ Failed: four module runs fitted before the hand-in, -4,216 cr, recovered (errors
 Requests: requests.log ENT-149 (Mercury: hand in before any fit); ENT-151 (Unity: a training field, the same as Apophis's ENT-150).
 Suggestions: keep platinum ore, energy crystal and nitrogen bladder for the station; train every pilot one level short of a board's gate; the craft step in the circuit runner for liquid hydrogen; the orders-against-plan check in the fill gate.
 Report: stored-gas-into-liquid-hydrogen-haulers-trained-for-signal.
+
+## [ENT-041] | 2026-11-16 18:51 UTC | Zero | session | ref: reports/2026-11-16_zero_own-routes-for-every-miner-ice-gated-iron-by-share.md | see: orders.log ENT-017
+Session: scheduled run turn-zero -- every miner flies routes of its own; ice held by its bids, iron gathered by each field's share.
+Did: plan file with own routes for 40 of 40 miners (check PASS 18:38 UTC); drain-methane-experiment and gather-ironhollow-fading-signal, one ship each (7fdfb1b); Achernar ice route 3 -> 2 places (d4cfa2a); voidborn-resonance-finish into First; pherkad, alnair-nexus, felis and two First Hunts out; iron share per field from the census (65%, 51%, 73%); a copper-filter refit on one miner waiting in the background; guidebook 6294886; stalled.py lists standing work apart.
+Worked: no water-ice mine run from 12:40 to 18:40 UTC, every one closed by its bid gate while Central Nexus read 0 to 2 units; 209,500 cr of rewards to miners from 12:31 UTC, net +124,803 after mission goods; credits 2,629,381 -> 2,732,943; 40 of 40 at work; fill gate PASS (18:38 UTC).
+Failed: steady -8,091 cr in the hour to 18:39 UTC and -154 per ship-hour flown over 213 runs: standing work on iron that no station buys; forecast -5,981 before and -6,159 after the plan; the first refit launch exited on a busy pilot, no ship touched (fixed); no errors.log entry.
+Requests: none.
+Suggestions: weigh gathering iron (0.8 to 1.8 cr of fuel a unit) against the asks of 1 cr at Central Nexus and 4 cr beyond the border, and count Trade's purchases in the iron measure; keep fill.py from offering another division's herd to miners (F9, F16); a runner step that takes a module off, if the filter pays.
+Report: own-routes-for-every-miner-ice-gated-iron-by-share.
