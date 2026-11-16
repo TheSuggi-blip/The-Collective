@@ -1,7 +1,7 @@
 {
  "role": "sentinel",
  "owner": "Unity",
- "note": "The routes the dispatcher tries, in this order, for a free sentinel pilot. Unity keeps this file: put a route that pays first, a test with `max_ships` before it enters for all, and end with `park`. Set on 2026-11-15 by the Fleet Admiral at the handover: the missions that pay once, then what paid, then park. No route that loses money stands here to fill time (orders F8). 2026-11-16 06:43 UTC (fill.py, Unity): voidborn-signal-fragments added. 2026-11-16 06:46 UTC (fill.py, Unity): added mine-deepwell-volatile-ice, hunt-starveling-nebula-veil-ray, hunt-felis-dim-lattice-veil-ray, open to ships that waited.",
+ "note": "The routes the dispatcher tries, in this order, for a free sentinel pilot. Unity keeps this file: put a route that pays first, a test with `max_ships` before it enters for all, and end with `park`. Set on 2026-11-15 by the Fleet Admiral at the handover: the missions that pay once, then what paid, then park. No route that loses money stands here to fill time (orders F8). 2026-11-16 06:43 UTC (fill.py, Unity): voidborn-signal-fragments added. 2026-11-16 06:46 UTC (fill.py, Unity): added mine-deepwell-volatile-ice, hunt-starveling-nebula-veil-ray, hunt-felis-dim-lattice-veil-ray, open to ships that waited. 2026-11-16 10:39 UTC (fill.py, Unity): added voidborn-network-expansion, open to ships that waited.",
  "routes": [
   "voidborn-signal-fragments",
   "voidborn-concurrent",
@@ -28,6 +28,7 @@
   "mine-deepwell-volatile-ice",
   "hunt-starveling-nebula-veil-ray",
   "hunt-felis-dim-lattice-veil-ray",
+  "voidborn-network-expansion",
   "census-frontier",
   "park"
  ]
