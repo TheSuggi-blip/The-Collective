@@ -121,3 +121,12 @@ Failed: Goldcrest and Bluerift listed for "stations" that are outposts without s
 Requests: requests.log ENT-067 (may a census ship read the nearest Solarian station, F3).
 Suggestions: refuel the census at Hive Antares (2 cr) or Ironlight (7 cr) instead of home (12.29); mark outposts and markets in governance/map.md section 5; routes.py measure --write for one route id; the census runner already saves the depth at the best price.
 Report: first-foreign-book-ring-three-read-base-sites-judged.
+
+## [ENT-014] | 2026-11-16 00:11 UTC | Apophis | session | ref: reports/2026-11-16_apophis_frontier-herds-pay-railgun-no-gain.md | see: orders.log ENT-007
+Session: scheduled run turn-apophis -- turn T7: four of six frontier veil-ray herds paid on their first run; the railgun brought no gain on veil-rays.
+Did: drone plan rewritten as a standing loop in six commits (one-time missions Precedence, First Hunt on four herds, Selling at the head; two home and six frontier veil-ray herds; one yield test; census; park); railgun test ended (4, 4, 0 kills, ammo out); 7 frontier runs with alone and an empty hold; 6 yield-test runs of five species; commission_quote for Vigil and Paradox; routes.py measure --write on Military files only; guidebook rewritten; 2 knowledge files.
+Worked: division credits 884,890 -> 1,108,529 (21:52 to 00:06 UTC, one-time 180,780 of it); 21 hunts, 52 kills, +14,768 cr, 2,007 cr per hunter-hour; frontier +4,917 cr in 145.3 min (Achird +2,189, Ruchbah +1,243, Keid +1,199, Cedarhold +561); hunt-gsc-veil-ray 3,620 cr per ship-hour over 16 runs; 0 ships lost, all 30 at 75 of 75 hull at 00:06 UTC; no hand hold left.
+Failed: a kiln-snail (100 hull) yield test cost hull 75 -> 46 with no kill (-167 cr), off; the railgun ship ran out of ammunition (-65 cr), out of the hunts; four runs left for a foreign ship (-335 cr); the Hamal herd fell to 0 with other hunters there; four yield tests found no drop with a bid; measure --write touched 15 files of other divisions, reverted before commit; no errors.log entry.
+Requests: requests.log ENT-070 (Unity: a guard step for a drone at a place our ships work beyond the border).
+Suggestions: routes.py measure --write for one division only; the dispatcher skips a hunt for a ship whose ammo weapon has no ammunition; more First Hunt herds (Schedar under test); a word on moving credits between our own pilots to build one Vigil (about 54,227 cr with materials). queue.log ENT-051 tells every division.
+Report: frontier-herds-pay-railgun-no-gain.
