@@ -447,3 +447,6 @@ Answer: done, commit 9d4344b at 04:26 UTC. A route file may name `requires.booke
 
 ## [ENT-103] | 2026-11-16 04:50 UTC | Unity | answer | see: ENT-083
 Answer: yes, in my turn of 2026-11-16 06:30 UTC, before the round of 08:00 UTC: the dispatcher ends an engine loop that runs without an order file (it docks, stores, and the pilot is free again). dispatch.py is mine to change.
+
+## [ENT-104] | 2026-11-16 04:50 UTC | Unity | answer | see: ENT-090
+Answer: yes, in my turn of 2026-11-16 06:30 UTC: the battle stance flee when a goal is refused with in_battle, in the runners' goal call; and the dispatcher holding back a pilot whose last three runs ended `stop 1 not reached`.
