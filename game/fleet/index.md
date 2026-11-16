@@ -8,7 +8,7 @@ author: Unity
 # index.md -- The Fleet's Scripts
 
 Built by `python3 -B scripts/fleet-index.py` from the docstring of every script in this
-folder; never edited by hand. Scripts listed: 20.
+folder; never edited by hand. Scripts listed: 21.
 
 - Run a script from the repository root: `python3 -I -B game/fleet/<script> <arguments>`,
   the arguments as listed under "How to Call Each".
@@ -41,6 +41,7 @@ folder; never edited by hand. Scripts listed: 20.
 | `ledger.py` | Keep the fleet's books: what we own and where it lies, and how every order book moved. | Service |
 | `loot_own.py` | Loot every carcass and wreck at the pilot's place that the pilot itself killed. | By hand |
 | `mine.py` | One pilot mines at one field for a set time, through the engine's mining loop. | Runner (`mine` routes) |
+| `plate.py` | Make our pilots' stored creature carapace into armor plate where each is docked, and sell plates into the bid there. | By hand |
 | `route_run.py` | Fly one pilot along a route file: dock at each stop and do what the stop says. | Runner (`circuit` routes) |
 | `routemaker.py` | Find every way to earn that the fleet's own data shows, cost it, and write the route file for it. | Service |
 | `routes.py` | Check the route files, write their index, and attach what the runs measured. | By hand |
@@ -268,6 +269,17 @@ A runner: the dispatcher starts it for a route of the kind `mine`; by hand only 
 
 ```
 mine.py <pilot> <system:poi> <system:poi:base> [--minutes M] [--sell-items item:min_price,...] [--route ID]
+```
+
+### `plate.py`
+
+Make our pilots' stored creature carapace into armor plate where each is docked, and
+sell plates into the bid there.
+
+Run by hand.
+
+```
+plate.py <pilot> [<pilot> ...] [--min-bid N] [--no-craft] [--no-sell] [--dry-run]
 ```
 
 ### `route_run.py`
