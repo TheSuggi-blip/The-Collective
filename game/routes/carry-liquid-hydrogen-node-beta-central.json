@@ -1,0 +1,45 @@
+{
+ "id": "carry-liquid-hydrogen-node-beta-central",
+ "kind": "circuit",
+ "title": "Liquid hydrogen made at the Node Beta workshop carried one jump to the Central Nexus bid",
+ "note": "Written by Apollo, 2026-11-16 18:35 UTC (orders.log ENT-017, block APOLLO: craft the stored goods; strategy principle 8, make before selling). Hydrogen gas from the gas routes lies in hauler storage at Node Beta (398 units in four storages, data/stock/storage.json 18:25 UTC), bid 34 cr there; the Node Beta workshop makes 3 liquid hydrogen from 8 gas by hand at 0 cr (compress_hydrogen_gas, 2026-11-16). The Central Nexus bid stood at 133 x 42 at 17:48 UTC and took 42 at 116 cr on 2026-11-16 13:39 UTC; Node Beta's own bid read 77 x 19 at 18:28 UTC, under sell-liquid-hydrogen-node-beta's floor. A pilot whose storage at Node Beta holds liquid hydrogen withdraws 40, sells at Central Nexus at 110 cr or more and stores what the bid did not take there (sell-liquid-hydrogen-central then sells it). requires.bid closes it while a book read within the hour shows under 10 units at 110 cr or more. Nothing is bought; a run into a bid that left costs one jump of fuel (about 26 cr). A test: one ship until its first RESULT line.",
+ "requires": {
+  "stored": {
+   "at": "node_beta_industrial_station",
+   "item": "liquid_hydrogen",
+   "min": 10
+  },
+  "bid": {
+   "item": "liquid_hydrogen",
+   "base": "central_nexus",
+   "min_price": 110,
+   "min_qty": 10
+  }
+ },
+ "max_ships": 1,
+ "stops": [
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "liquid_hydrogen",
+     "qty": 40
+    }
+   ]
+  },
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "sell": [
+    {
+     "item": "liquid_hydrogen",
+     "min_price": 110
+    }
+   ]
+  },
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "store": "all"
+  }
+ ]
+}
