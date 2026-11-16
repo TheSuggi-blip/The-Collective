@@ -88,6 +88,20 @@ class PlanTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.plan("fill", action="lift", route="mine-x")
 
+    def test_a_call_through_the_door_leaves_one_line_and_a_reading_call_none(self):
+        import tempfile
+        with tempfile.TemporaryDirectory(prefix="collective-mcp-door-") as temp:
+            self.server.run_one = lambda root, data, member, script, argv: (0, "held: miner-1\n")
+            self.assertEqual(self.server.call(str(REPO), temp, "Zero", "hold", {"pilot": "miner-1"}), ("held: miner-1", False))
+            self.server.call(str(REPO), temp, "Zero", "ship", {"pilot": "miner-1"})
+            lines = [json.loads(line) for line in (Path(temp) / "fleet" / "door.jsonl").read_text().splitlines()]
+        self.assertEqual([(r["who"], r["tool"], r["args"], r["ok"], r["answer"]) for r in lines], [("Zero", "hold", {"pilot": "miner-1"}, True, "held: miner-1")])
+
+    def test_the_tools_carry_the_protocols_hints(self):
+        hints = {name: self.server.schema(name)["annotations"] for name in self.server.TOOLS}
+        self.assertEqual(sorted(name for name, h in hints.items() if not h["readOnlyHint"]), ["command", "fill", "goal", "hold"])
+        self.assertEqual(sorted(name for name, h in hints.items() if h["destructiveHint"]), ["command", "goal", "hold"])
+
     def test_the_door_is_marked_and_every_script_exists(self):
         self.assertEqual(sorted(name for name, tool in self.server.TOOLS.items() if tool.get("door")), ["command", "goal", "hold"])
         samples = {"ship": {"pilot": "p"}, "route": {"id": "r"}, "market": {"item": "i"}, "base_plan": {"kind": "outpost"}, "system": {"id": "s"}, "search": {"question": "q"},

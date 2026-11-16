@@ -206,6 +206,11 @@ def show_fleet(root, data, now):
             print("    last %-3s (%s min measured): net %s | income %s | costs %s (fuel %s, repairs %s) | paid once, not counted: %s"
                   % (key, num(w.get("minutes")), num(w.get("cph")), num(w.get("income_per_hour")), num(w.get("costs_per_hour")), num(w.get("fuel_cr_per_hour")),
                      num(w.get("repair_cr_per_hour")), num(w.get("one_time_per_hour"))))
+    once = read(Path(data) / "fleet" / "onetime.json", [])
+    for label, seconds in (("1h", 3600), ("24h", 86400)):
+        rows = [r[3] for r in once if isinstance(r, list) and len(r) == 4 and isinstance(r[0], (int, float)) and isinstance(r[3], (int, float)) and r[0] >= now - seconds]
+        print("    money booked once, last %-3s: rewards %s in %d bookings | bought once (tools, goods for a mission) %s in %d buys"
+              % (label, num(sum(v for v in rows if v > 0)), sum(1 for v in rows if v > 0), num(-sum(v for v in rows if v < 0)), sum(1 for v in rows if v < 0)))
     hour = (windows.get("1h") or {}).get("divisions") or {}
     print("  %-10s %5s %8s %8s %12s %10s %10s %10s" % ("division", "ships", "at work", "docked", "credits", "net/h", "income/h", "costs/h"))
     for name, row in sorted((totals.get("divisions") or {}).items()):

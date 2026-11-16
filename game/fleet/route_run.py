@@ -315,6 +315,9 @@ for n, stop in enumerate(ROUTE['stops']):
             say(f'buy {want["module"]} at the ask of {ask} (limit {want["max_price"]} with tax): {ok}, {-paid:+d} cr {"" if ok else msg[:100]}')
             if paid > want['max_price']:
                 notes.append(f'{want["module"]}: paid {paid}, above the limit of {want["max_price"]}')
+            if paid > 0:                                 # a tool is bought once: kept out of the steady costs, like a mission's goods
+                book_onetime(f'{ROUTE["id"]}: {want["module"]} bought (tool)', -paid)
+                onetime[0] -= paid
         if not cargo().get(want['module']):
             notes.append(f'{want["module"]}: not bought')
             continue

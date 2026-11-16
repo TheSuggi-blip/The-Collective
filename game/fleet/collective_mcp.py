@@ -12,6 +12,7 @@ WHAT: a Model Context Protocol server over stdin and stdout (JSON-RPC, one messa
 RULES:
   - The server holds no figure and no rule of its own. Who may command which ship is division.py's lock inside
     gate.py and fill.py: an Admiral commands its own ships and changes its own plans, the Fleet Admiral any.
+  - Every call through the door leaves one line in data/fleet/door.jsonl: who, tool, arguments, how it ended.
   - The member is the profile Hermes runs the server for (HERMES_SESSION_PROFILE, set where the server is
     registered); every script it starts runs as that member.
   - A script runs for 110 s at most; an answer longer than 30,000 characters is cut and says so.
@@ -30,10 +31,12 @@ USAGE:
 Stdlib only. ASCII only.
 """
 
+import fcntl
 import json
 import os
 import subprocess
 import sys
+import time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
@@ -250,9 +253,28 @@ TOOLS = {
 }
 
 
+WRITES = ("fill", "command", "goal", "hold")      # every other tool only reads
+
+
 def schema(name):
     tool = TOOLS[name]
-    return {"name": name, "description": tool["text"], "inputSchema": {"type": "object", "properties": tool["args"], "required": tool.get("required", [])}}
+    hints = {"readOnlyHint": name not in WRITES, "destructiveHint": bool(tool.get("door")), "idempotentHint": name not in ("command", "goal"), "openWorldHint": False}
+    return {"name": name, "description": tool["text"], "annotations": hints,
+            "inputSchema": {"type": "object", "properties": tool["args"], "required": tool.get("required", [])}}
+
+
+def audit(data, member, name, args, failed, text):
+    """One line per call through the door, in data/fleet/door.jsonl: who, which tool, with what, how it ended. Never fails a call."""
+    try:
+        path = Path(data or division.DATA) / "fleet" / "door.jsonl"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        row = {"at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "who": member or "no member", "tool": name, "args": args, "ok": not failed,
+               "answer": " ".join(str(text).split())[:300]}
+        with open(path, "a", encoding="utf-8") as handle:
+            fcntl.flock(handle, fcntl.LOCK_EX)
+            handle.write(json.dumps(row, separators=(",", ":")) + "\n")
+    except OSError:
+        pass
 
 
 def child_env(member):
@@ -299,6 +321,8 @@ def call(root, data, member, name, args):
         text = "\n".join("%s: %s%s" % (step[1][1], "" if code == 0 else "FAILED: ", " ".join(out.split())[:700]) for step, (code, out) in zip(plan, results))
         text = "%d of %d went through\n%s" % (sum(1 for code, _t in results if code == 0), len(results), text)
     text = text.strip() or "(the script printed nothing; exit %s)" % ("0" if not failed else "not 0")
+    if tool.get("door"):
+        audit(data, member, name, args, failed, text)
     if len(text) > LIMIT:
         text = text[:LIMIT] + "\n... CUT at %d of %d characters: narrow the question (a filter, one member, fewer rows)" % (LIMIT, len(text))
     return text, failed
