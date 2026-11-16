@@ -457,7 +457,8 @@ def show_capacity(root, data, now):
     shrunk = sum(1 for (_s, _p, _sp), (low, high, last) in herd_counts.items() if last < high)
     print("  herds read more than once: %d; smaller at the last census than at their largest: %d. How fast a herd grows back: not measured." % (len(herd_counts), shrunk))
     hunting_places = len(paying) + len(tests)
-    once = [(c.get("pilots_open") or 0, c.get("per_run") or 0, c.get("id")) for c in cands if c.get("kind") == "mission" and (c.get("pilots_open") or 0) > 0 and not c.get("needs")]
+    once = [(c.get("pilots_open") or 0, c.get("per_run") or 0, c.get("id")) for c in cands
+            if c.get("kind") == "mission" and (c.get("pilots_open") or 0) > 0 and not c.get("needs") and (c.get("per_run") or 0) > 0]      # a mission that costs more than it pays is no credit to collect
     print("ONCE | missions the game pays once per pilot, flyable now: %d, %s cr still to collect (pilots that have not flown it x reward)"
           % (len(once), num(sum(n * reward for n, reward, _i in once))))
     for n, reward, cid in sorted(once, key=lambda r: -r[0] * r[1])[:5]:
