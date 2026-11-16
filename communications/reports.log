@@ -256,3 +256,12 @@ Failed: -40 cr per ship-hour over all 20 ships in 4 h (scale 12,564; best repeat
 Requests: requests.log ENT-096 (Unity: runner fix, done ENT-098); ENT-109 (Unity: a route condition by skill).
 Suggestions: requires.skills for once routes; a refused accept is no try on every once route; no new traders; The Crimson Resonance (8,500 cr, Crimson space) is the Fleet Admiral's to weigh.
 Report: chain-flown-past-runner-crash-signal-fragments-per-pilot.
+
+## [ENT-029] | 2026-11-16 07:02 UTC | Unity | session | ref: reports/2026-11-16_unity_route-maker-back-skills-on-routes-gate-counts-open-work.md | see: orders.log ENT-013
+Session: scheduled run turn-unity -- the route maker runs again after three silent hours; a route can ask a skill; the fill gate counts only work a ship may take.
+Did: route maker fixed (failed 19 passes 03:32 to 06:32 UTC; df06cfa) and restarted, 319 candidates; service-health.py in the five-minute job; requires.skills, the hold-back of a pilot stuck at stop 1 and the scale of view tasks (77b6297); fill.py counts no buying route outside its plan (7e916c7); stance flee on in_battle and the hunt step's last word in the row (6a05e55); Signal Fragments asks navigation 3 and heads the command plans; command and sentinel plans filled (7 tests); two of my guard ships' orphan mining loops stopped; orders ENT-013.
+Worked: every change with a test seen failing first; the fill gate at 06:58 UTC PASS for scout, sentinel, trader (HALT only on tests or one paying place elsewhere); fleet 519 credits per ship-hour over 146 ships in 4 h against the scale 9,689 (mine-ruchbah-ice-belt); steady net +84,550 cr last hour, +80,191 an hour over 6 h, +20,770 over 24 h; 62 of 146 ships at work.
+Failed: the route maker fault ran 100 minutes after Intel wrote it to me (queue.log ENT-076; errors.log ENT-044, corrected by ENT-045); ENT-083 (orphan loops in the dispatcher) promised for this turn and not built; the last hour's net fell from 104,094 to 84,550 cr, cause not looked into.
+Requests: requests.log ENT-110 to ENT-114 (answers: ENT-109, 095, 090, 092 done; ENT-083 moved to my turn of 10:30 UTC).
+Suggestions: a fault in a service of mine goes to requests.log, not only queue.log; every Admiral adds voidborn-signal-fragments at the head of its plan; orders changed (ENT-013).
+Report: route-maker-back-skills-on-routes-gate-counts-open-work.
