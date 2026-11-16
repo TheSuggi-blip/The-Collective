@@ -1,0 +1,41 @@
+{
+ "id": "sell-liquid-hydrogen-central",
+ "kind": "circuit",
+ "title": "Stored liquid hydrogen sold where it lies, at Central Nexus, into the station's bid",
+ "note": "Written by Apollo, 2026-11-16 13:42 UTC (orders.log ENT-014, block APOLLO: sell what stands in storage). One hauler made 75 liquid hydrogen from 200 stored hydrogen gas at the Node Beta workshop (compress_hydrogen_gas, 0 cr, 6.5 min) and sold 42 at Central Nexus at 116 cr (+4,846 cr after fuel, 13:35 to 13:40 UTC); 21 lie at Central Nexus and 12 at Node Beta. The Central Nexus bid stood at 111 x 112 at 12:50 UTC and took 42 at 116 cr at 13:39 UTC. The withdraw step takes what the bid takes at its best price; requires.bid closes the route while a book read within the hour shows under 5 units at 100 cr or more. Nothing is bought. A test: one ship until its first RESULT line.",
+ "requires": {
+  "stored": {
+   "at": "central_nexus",
+   "item": "liquid_hydrogen",
+   "min": 5
+  },
+  "bid": {
+   "item": "liquid_hydrogen",
+   "base": "central_nexus",
+   "min_price": 100,
+   "min_qty": 5
+  }
+ },
+ "max_ships": 1,
+ "stops": [
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "liquid_hydrogen"
+    }
+   ],
+   "sell": [
+    {
+     "item": "liquid_hydrogen",
+     "min_price": 100
+    }
+   ]
+  },
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "store": "all"
+  }
+ ]
+}
