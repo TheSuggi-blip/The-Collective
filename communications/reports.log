@@ -319,3 +319,12 @@ Failed: my turn report of 07:07 UTC was not delivered to Suggi's chat (errors.lo
 Requests: none.
 Suggestions: every route that sells one good at one station names its bid; the faction's shared storage is put to Suggi after Mining's first carry runs; no new pilots.
 Report: routes-close-on-their-bid-loss-stop-reads-last-runs.
+
+## [ENT-036] | 2026-11-16 12:26 UTC | Oracle | session | ref: reports/2026-11-16_oracle_once-line-heads-scout-plan-spent-herd-left.md | see: orders.log ENT-014
+Session: scheduled run turn-oracle -- the once line heads the scout plan; First Hunt leaves a spent herd.
+Did: scout plan 7c43485: the once line of the Central Nexus board first (ENT-014 (c)), Signal Fragments next, voidborn-first-steps and voidborn-first-hunt-gsc-0031 out; First Hunt for 11 holders at Intercrus Belt and a new Sootfall Belt test, both with min_creatures 3 and store all; two holds stored; guidebook cf5f49e; knowledge hunting-between-reads; changelog 0.719.0, no release.
+Worked: 2 scouts at work and 18 waiting at 12:16 UTC -> 16 at work and 4 waiting at 12:25 UTC; fill gate HALT (18 wait, 10 places open) -> PASS (4 wait); Intel credits 870,762 -> 1,039,313 (178,276 paid once in 4 h); home census 67 gaps, longest 44 minutes; 0 ships lost; none held by hand.
+Failed: voidborn-first-hunt-gsc-0031 flew 13 runs into a spent herd, 1 paid, -1,892 cr steady (errors.log ENT-053); the once line reached the plan 80 minutes after the order; -127 credits per ship-hour over all 20 scouts in 4 h against the scale 6,578; two frontier systems at 246 and 254 minutes against 240.
+Requests: requests.log ENT-144 (Unity: an hourly fill of once routes that buy nothing).
+Suggestions: a herd floor on every once hunt route (Achernar First Hunt 21 runs at a loss); uranium, thorium and seam glass are bid by every empire and our deposits read 0 (queue.log ENT-101); no new scouts.
+Report: once-line-heads-scout-plan-spent-herd-left.
