@@ -44,7 +44,7 @@ name below is a link into one of the sub-indexes of this folder.
 | [hauler](plan.md#hauler) | Apollo | 17 | voidborn-first-steps-board > voidborn-collective-provides > voidborn-conductive-lattice | 4 |
 | [miner](plan.md#miner) | Zero | 30 | voidborn-signal-fragments > voidborn-concurrent > voidborn-substrate | 2 |
 | [scout](plan.md#scout) | Oracle | 17 | voidborn-signal-fragments > census-voidborn > voidborn-first-hunt-gsc-0031 | 6 |
-| [sentinel](plan.md#sentinel) | Unity | 28 | voidborn-signal-fragments > voidborn-concurrent > voidborn-substrate | 0 |
+| [sentinel](plan.md#sentinel) | Unity | 29 | voidborn-signal-protocol > voidborn-signal-fragments > voidborn-concurrent | 0 |
 | [trader](plan.md#trader) | Mercury | 15 | voidborn-first-steps-board > voidborn-network-expansion > voidborn-collective-provides | 5 |
 
 ## The Guidebooks
