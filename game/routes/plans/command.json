@@ -88,5 +88,6 @@
  },
  "of": 6,
  "planned": [],
- "derived": "Written by game/fleet/plan.py from the division's plan file (data/plans/plan-command.md), never by hand."
+ "derived": "Written by game/fleet/plan.py from the division's plan file (data/plans/plan-command.md), never by hand.",
+ "templates": {}
 }

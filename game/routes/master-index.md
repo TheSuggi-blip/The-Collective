@@ -45,6 +45,14 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 | [sentinel](plan-sentinel.md) | Unity | 38 | voidborn-first-steps-board > voidborn-collective-provides > voidborn-signal-protocol | 0 | 20 |
 | [trader](plan-trader.md) | Mercury | 30 | voidborn-first-steps-board > voidborn-network-expansion > voidborn-collective-provides | 5 | 40 |
 
+## Templates by Division
+
+Named lists of routes a ship's own routes in its division's plan file name as `@<template>`.
+
+| Division | Kept by | Templates | Page |
+|---|---|---|---|
+| command | Unity | ice-and-hunt | [templates-command.md](templates-command.md) |
+
 ## The Guidebooks
 
 What each division learned about its routes, its levelling and its ships; kept by its Admiral, read by every member.
