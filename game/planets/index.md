@@ -8,7 +8,7 @@ author: Unity
 # index.md -- Systems We Know
 
 Built by `scripts/intel-index.py` from the system files of this folder;
-never edited by hand. Files listed: 53. The format of a system file:
+never edited by hand. Files listed: 54. The format of a system file:
 `BLUEPRINT.md`.
 
 ## Voidborn space
@@ -25,6 +25,12 @@ never edited by hand. Files listed: 53. The format of a system file:
 | Hamal | ally | low | 30 | 3 | 2026-11-15 | [a-hamal.md](a-hamal.md) |
 | Pherkad | ally | low | 30 | 3 | 2026-11-15 | [a-pherkad.md](a-pherkad.md) |
 | The Experiment | ally | low | 30 | 3 | 2026-11-15 | [a-the_experiment.md](a-the_experiment.md) |
+
+## Solarian space
+
+| System | Standing | Threat | Police level | Jumps from home | Updated | File |
+|---|---|---|---|---|---|---|
+| Sol | neutral | unknown | 100 | 10 | 2026-11-16 | [n-sol.md](n-sol.md) |
 
 ## Lawless space
 

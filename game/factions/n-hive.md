@@ -15,7 +15,7 @@ updated: 2026-11-16
 # Hive Swarm [HIVE]
 
 A player faction with 3 base(s) in 3 system(s); the nearest to Nexus Prime is 5 jump(s) away, in Antares (`antares`).
-Pilots of it in our space in the last 24 hours: 8.
+Pilots of it in our space in the last 24 hours: 3.
 
 ## Identity
 
@@ -42,14 +42,9 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| 0e43701103dd8244439d8139 | The Experiment (`the_experiment`) | 0 | not met |
-| 4011f46410f19d6243276018 | Node Alpha (`node_alpha`) | 0 | not met |
-| 4369ebe51c415d3d0756ceba | Hamal (`hamal`) | 0 | bonanza |
-| 68cf653d9ab64d0866a6555c | Nexus Prime (`nexus_prime`) | 0 | runner |
-| 701bac222e26deb239bec1bc | Nexus Prime (`nexus_prime`) | 0 | runner |
-| 75685d10376ae488b84c6f6e | Node Gamma (`node_gamma`) | 0 | runner |
-| cb9f390ad124b910d6bb336c | Hamal (`hamal`) | 0 | not met |
-| hiver | Node Beta (`node_beta`) | 0 | bonanza |
+| 0637bfdf8ba6a997093332c9 | The Experiment (`the_experiment`) | 0 | futures |
+| 492927e413c5b9ce2fe52212 | Nexus Prime (`nexus_prime`) | 0 | runner |
+| cdecb819d281b0409de31dce | Nexus Prime (`nexus_prime`) | 0 | runner |
 
 ## Standing History
 

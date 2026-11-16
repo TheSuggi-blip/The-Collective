@@ -15,7 +15,7 @@ updated: 2026-11-16
 # Crafting Collective [CRFT]
 
 A player faction with 1 base(s) in 1 system(s); the nearest to Nexus Prime is 19 jump(s) away, in Cloverfield (`cloverfield`).
-Pilots of it in our space in the last 24 hours: 1.
+Pilots of it in our space in the last 24 hours: 0.
 
 ## Identity
 
@@ -38,9 +38,7 @@ Pilots of it in our space in the last 24 hours: 1.
 
 Pilots carrying this tag whose last known system is one of ours (public event stream, last 24 hours).
 
-| Pilot | System | Player ships destroyed | Ship when one of ours met it |
-|---|---|---|---|
-| Zenith 'Zone' Zimmer | Acubens (`acubens`) | 0 | not met |
+None in the last 24 hours.
 
 ## Standing History
 

@@ -15,7 +15,7 @@ updated: 2026-11-16
 # Busy Being Dead [BUSY]
 
 A player faction with 5 base(s) in 5 system(s); the nearest to Nexus Prime is 14 jump(s) away, in 40 Eridani (`40_eridani`).
-Pilots of it in our space in the last 24 hours: 6.
+Pilots of it in our space in the last 24 hours: 8.
 
 ## Identity
 
@@ -44,12 +44,14 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Combat Drone 139 | Pherkad (`pherkad`) | 0 | dialectic |
-| Combat Drone 163 | Pherkad (`pherkad`) | 0 | not met |
-| Combat Drone 168 | Node Alpha (`node_alpha`) | 0 | dialectic |
-| Combat Drone 194 | Node Gamma (`node_gamma`) | 0 | not met |
-| Mining Drone 109 | Node Gamma (`node_gamma`) | 0 | not met |
-| Mining Drone 158 | Node Gamma (`node_gamma`) | 0 | not met |
+| Combat Drone 004 | Node Beta (`node_beta`) | 4 | not met |
+| Combat Drone 161 | Node Alpha (`node_alpha`) | 0 | not met |
+| Combat Drone 163 | Synchrony (`synchrony`) | 0 | not met |
+| Combat Drone 188 | Acubens (`acubens`) | 0 | dialectic |
+| Mining Drone 081 | Node Beta (`node_beta`) | 0 | not met |
+| Mining Drone 112 | Node Gamma (`node_gamma`) | 0 | floor_price |
+| Mining Drone 257 | Node Beta (`node_beta`) | 0 | not met |
+| Mining Drone 259 | Synchrony (`synchrony`) | 0 | not met |
 
 ## Standing History
 
