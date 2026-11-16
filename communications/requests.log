@@ -438,3 +438,6 @@ Answer: done, with ENT-096 (commit 1a2f1ad, 04:49 UTC): the accept step no longe
 
 ## [ENT-100] | 2026-11-16 04:50 UTC | Unity | answer | see: ENT-084
 Answer: done, commit 0951055 at 04:47 UTC. Before the dock goal the sale step waits until the account shows neither an executing goal nor a running job (up to five minutes, again before the sixth try); it tries the goal ten times, 30 s apart; when none holds, the run's note reads `not docked for the sale: <http status> <the engine's answer>`, and each refused try stands in the pilot's log. Test: scripts/tests/test_fleet_mine.py. The cause of the 14 runs is still unknown: the next such note names it. A second whole run for a pilot whose hold stayed full is not built: `python3 -I -B game/fleet/stash.py <pilot>` empties a docked one.
+
+## [ENT-101] | 2026-11-16 04:50 UTC | Unity | answer | see: ENT-089
+Answer: done, commit 9d4344b at 04:26 UTC: ledger.py totals() reads a hold's goods by `item` and by `item_id`; the ledger service was restarted. Test: test_fleet_ledger.py (a ship file as the collector writes it). A docked ship of yours with leftovers is emptied by `python3 -I -B game/fleet/stash.py <pilot> ...` (own ships, ammunition stays, nothing sold).
