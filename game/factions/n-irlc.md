@@ -15,7 +15,7 @@ updated: 2026-11-16
 # Ironlight Combine [IRLC]
 
 A player faction with 7 base(s) in 4 system(s); the nearest to Nexus Prime is 6 jump(s) away, in LHS 1140 (`lhs_1140`).
-Pilots of it in our space in the last 24 hours: 16.
+Pilots of it in our space in the last 24 hours: 21.
 
 ## Identity
 
@@ -46,22 +46,27 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
+| ILC Auger | Synchrony (`synchrony`) | 0 | not met |
 | ILC Chute | Synchrony (`synchrony`) | 0 | junk_convoy |
-| ILC Clevis | Synchrony (`synchrony`) | 0 | theoria |
+| ILC Constellation | Nexus Prime (`nexus_prime`) | 0 | concordia |
+| ILC Crater | Nexus Prime (`nexus_prime`) | 0 | atmospheric_sampler |
 | ILC Flange | Synchrony (`synchrony`) | 0 | junk_convoy |
-| ILC Gantry | Nexus Prime (`nexus_prime`) | 0 | junk_convoy |
+| ILC Gantry | Synchrony (`synchrony`) | 0 | junk_convoy |
 | ILC Gasket | Synchrony (`synchrony`) | 0 | junk_convoy |
 | ILC Gateway | Nexus Prime (`nexus_prime`) | 0 | concordia |
+| ILC Geode | Pherkad (`pherkad`) | 0 | deep_survey |
 | ILC Gilt | Synchrony (`synchrony`) | 0 | syndicate |
-| ILC Ladle | Node Beta (`node_beta`) | 0 | junk_convoy |
+| ILC Kerf | Synchrony (`synchrony`) | 0 | junk_convoy |
+| ILC Ladle | Synchrony (`synchrony`) | 0 | junk_convoy |
 | ILC Mallet | Synchrony (`synchrony`) | 0 | syndicate |
 | ILC Nonstop | Nexus Prime (`nexus_prime`) | 0 | concordia |
+| ILC Penalty | Synchrony (`synchrony`) | 0 | junk_convoy |
 | ILC Ratchet | Synchrony (`synchrony`) | 0 | junk_convoy |
 | ILC Retort | Synchrony (`synchrony`) | 0 | junk_convoy |
-| ILC Shank | Synchrony (`synchrony`) | 1 | syndicate |
+| ILC Shank | Pherkad (`pherkad`) | 1 | syndicate |
 | ILC Vagabond | Nexus Prime (`nexus_prime`) | 0 | concordia |
 | ILC Verdict | Synchrony (`synchrony`) | 0 | junk_convoy |
-| ILC Weir | Node Gamma (`node_gamma`) | 0 | prayer |
+| ILC Weir | Synchrony (`synchrony`) | 0 | prayer |
 
 ## Standing History
 

@@ -15,7 +15,7 @@ updated: 2026-11-16
 # Wexler's Void Safari [WEXL]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 4.
+Pilots of it in our space in the last 24 hours: 3.
 
 ## Identity
 
@@ -38,10 +38,9 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Wexler L93-44 | Node Gamma (`node_gamma`) | 0 | not met |
-| Wexler QWM-Y0 | Node Gamma (`node_gamma`) | 0 | cobble |
-| Wexler SV3-C2 | Node Alpha (`node_alpha`) | 0 | cobble |
-| Wexler VN3-Z1 | Node Beta (`node_beta`) | 0 | cobble |
+| Wexler QWM-Y0 | The Experiment (`the_experiment`) | 0 | cobble |
+| Wexler TDU-2B | Acubens (`acubens`) | 0 | cobble |
+| Wexler XNK-D3 | Acubens (`acubens`) | 0 | not met |
 
 ## Standing History
 

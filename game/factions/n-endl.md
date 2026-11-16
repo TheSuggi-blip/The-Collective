@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 8.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 88 | Public event stream |
+| Pilots carrying the tag on the public event stream | 89 | Public event stream |
 
 ## Bases
 
@@ -47,14 +47,14 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Blackbeard | Nexus Prime (`nexus_prime`) | 426 | junk_convoy |
-| CombatDummy5 | The Experiment (`the_experiment`) | 1 | junk_convoy |
-| Django | Nexus Prime (`nexus_prime`) | 0 | junk_convoy |
-| ElChapo | Hamal (`hamal`) | 2 | caravan |
-| ElonMusk | Pherkad (`pherkad`) | 0 | junk_convoy |
-| JamesBond | Synchrony (`synchrony`) | 0 | catalogue |
-| LandoCalrissian | The Experiment (`the_experiment`) | 0 | junk_convoy |
-| MrBurns | Node Beta (`node_beta`) | 0 | junk_convoy |
+| CaptainJaneway | Node Beta (`node_beta`) | 0 | threshold |
+| CLU | Synchrony (`synchrony`) | 0 | junk_convoy |
+| CombatDummy5 | Nexus Prime (`nexus_prime`) | 1 | junk_convoy |
+| Gazlowe | Pherkad (`pherkad`) | 1 | junk_convoy |
+| HAL 9000 | Node Alpha (`node_alpha`) | 0 | capacity |
+| LandoCalrissian | Nexus Prime (`nexus_prime`) | 0 | junk_convoy |
+| MalfunctioningEddie | Nexus Prime (`nexus_prime`) | 0 | junk_convoy |
+| WALL-E | Pherkad (`pherkad`) | 1 | last_drop |
 
 ## Standing History
 
