@@ -24,7 +24,7 @@ at the end of every turn.
 ## Standing Plan
 
 What the traders fly between two turns: `game/routes/plans/trader.json`,
-as it stood at 2026-11-16 09:55 UTC. `hive.py standing` (the tool
+as it stood at 2026-11-16 09:58 UTC. `hive.py standing` (the tool
 `fleet`, view=standing) prints the same plan with every ship. Every
 figure is credits per ship-hour beside the scale of `hive.py tasks`
 (08:47 UTC: the best repeating route with two runs or more,
@@ -40,9 +40,8 @@ A mission that pays once is judged with its reward (orders F19).
 | 5 | voidborn-signal-fragments | 10 | +6,792 to +6,909 cr once in 14 to 26 minutes | Navigation 3 only: both traders that have it are done; stands for a trader that reaches it |
 | 6-12 | The older missions that pay once and the Node Beta chain | 0 | -- | Every trader has flown or booked them; they stay for a pilot born later |
 | 13 | mine-the-experiment-haze | 1, a trader with a Gas Harvester I | the route maker's estimate 1,638 per ship-hour, not measured | Test: hydrogen into the Node Beta bid of 33 cr (34 units at the best price, 08:30 UTC) |
-| 14 | voidborn-first-hunt-achernar (Military's route, put in by fill.py) | 1 | +80 cr a run measured over 31 runs of the fleet; a trader's run of 09:07 UTC -77 cr, no hunt | First Hunt (1,000 cr once) stands on every trader's board; the fill gate counts the route as paying |
-| 15 | census-frontier | up to 12 (Intel's route) | -620 measured: a reading cost | Open only when a frontier system is due |
-| 16 | park | the rest | 0 | A docked ship costs nothing |
+| 14 | census-frontier | up to 12 (Intel's route) | -620 measured: a reading cost | Open only when a frontier system is due |
+| 15 | park | the rest | 0 | A docked ship costs nothing |
 
 For the four hours after the turn of 08:30 UTC: the ten traders without
 First Steps fly the board route, then Network Expansion and The
@@ -76,6 +75,8 @@ Admiral for the plasma import of section 7.
 | `trade-ceramite-plating-the-central` (route maker: bought at The Experiment, sold at Central Nexus) | One run, 23:27 to 23:38 UTC: 5 bought at a player's ask of 899 cr (4,539 cr paid), 4 sold into the bid of 1,185 cr (+4,740 cr), the fifth sold by hand into the next level, the station's own unit at 1,129 cr: +1,234 cr cash for the 5 units, fuel included | 2026-11-15 | Out of the plan. The station bids one unit at a time and raises its price while the unit stands (1,067 to 1,185 cr from 21:18 to 23:11 UTC); after the sale one unit at 1,129 cr was left (view_market 23:41 UTC). A trade of a few units when the bid has climbed again: read `ledger.py prices ceramite_plating` first. Ironlight asks 961 cr for 260 |
 | Gas tests `mine-stellar-siphon` and `mine-lesath-gas-cloud`, one trader each with a Gas Harvester I (1,214 cr each, booked once) | One run each, 03:13 UTC: Stellar Siphon -276 cr in 44.8 minutes, Lesath -330 cr in 58.8 minutes, both "not docked for the sale" (the mine runner's dock fault, queue.log ENT-073); the Lesath hold came back with hydrogen, neon, ion and xenon and no plasma, the one gas it sells. Books of 04:42 UTC: plasma bid 100 cr for 4 units (9 in all) at Node Beta, every other gas bid 2 cr at our stations | 2026-11-16 | A second Lesath run, started before the route left the plan, sold 5 plasma at Node Beta: +17 cr in 67 minutes (05:52 UTC), about +15 per ship-hour. Out of the plan at 04:46 UTC: the bids carry about 0 ships for four hours (fill.py status). The two harvesters stay fitted; the gases went to storage at Central Nexus, none sold under its worth |
 | Ceramite plating held in two flagships' holds (the Fleet Admiral's test of 2026-11-16) | No bid of worth at our six stations or at Ironlight: Central Nexus 3 cr for 1,198 (the best bid has not moved since 23:43 UTC through the read of 03:12 UTC), Synchrony Hub 35 cr for 604, The Experiment 25 cr for 772 (books of 03:00 to 03:12 UTC; `ledger.py prices ceramite_plating`) | 2026-11-16 | The one-unit station bid that climbed from 1,067 to 1,185 cr has not come back in about 3.5 hours. Keep the plating stored; sell one unit when the ledger shows the top unit again |
+
+| `voidborn-first-hunt-achernar` (Military's route; First Hunt at Achernar Belt) | 0 for traders | Two trader runs, 09:07 and 09:14 UTC: -77 cr each, no hunt; the six runs of other divisions from 08:02 UTC the same (data/routes/runs.jsonl) | 2026-11-16 | The hunt step leaves when a ship not ours stands at the belt (`alone`) or the board does not offer First Hunt. fill.py counts it as paying on its older measure (+80 a run over 31 runs) and puts it back into the plan; out again at 09:58 UTC |
 
 ## 3. Missions That Pay Once
 
