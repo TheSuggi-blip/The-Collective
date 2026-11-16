@@ -354,9 +354,10 @@ Five made (2026-11-16 08:52 to 09:24 UTC, one hauler at the Central Nexus
 workshop, by `craftchain.py` of the skill logistics-stock): 7 carbon-arc
 etchings (14 silicon, 84 carbon) gave 21 boards, then 5 power cells, then 5
 harvesters; 0 cr fee, no skill asked, about 32 minutes of crafting with the
-waits. The workshop queued fewer runs than asked when a job would run long:
-7 etchings asked, 3 queued, then 2, 1 and 1; 5 power cells and 5 harvesters
-were queued whole (about 32 and 70 ticks). The harvesters took about 18
+waits. The etchings came as jobs of 3, 2, 1 and 1 runs because a craft's
+`quantity` counts made units, rounded up to runs: 7 asked of a recipe that makes
+3 a run is 3 runs (queue.log ENT-114, 2026-11-16 19:02 UTC); 5 power cells and 5
+harvesters, 1 a run, were queued whole (about 32 and 70 ticks). The harvesters took about 18
 minutes for five, about 3.6 minutes each against 13.9 ticks quoted (about
 2.5 minutes at 11 s a tick). Mining gave 30 silicon ore and
 35 energy crystal by deposit (requests.log ENT-124). The first harvester is
