@@ -24,7 +24,7 @@ at the end of every turn.
 ## Standing Plan
 
 What the drones fly between two turns, in this order (`game/routes/plans/drone.json`,
-last committed 2026-11-16 09:12 UTC; `hive.py standing` prints it ship by ship). Every
+last committed 2026-11-16 09:19 UTC; `hive.py standing` prints it ship by ship). Every
 place holds one hunter (orders F9); every route beyond the border carries `alone`
 and an empty hold (F13). Figures: `routes.py measure` as written in the route files
 at 09:15 UTC, all runs of each route, after fuel. The scale of the hour: the best
@@ -214,7 +214,7 @@ Open now, one ship each:
 
 - `mission-cracking-the-shell-central` at Alnair Ice Fields: from 05:43 UTC 5 runs
   of the fleet (3 drones), 0 hand-ins, -871 cr; Alnair Ice Fields read no pressblister
-  at 09:07 UTC (data/wildlife/alnair.json). Out of the drone plan at 09:25 UTC; the
+  at 09:07 UTC (data/wildlife/alnair.json). Out of the drone plan at 09:19 UTC (commit 57ec2f2); the
   move of its hunt to an ice field with pressblisters is asked of Unity, since five
   plans fly the route (requests.log, this turn).
 - `census-guard-ice`: 28 runs, -610 cr per ship-hour (`measured`, 09:15 UTC), two
