@@ -13,7 +13,7 @@ WHAT: the dispatcher gives a free pilot the first route of its own list that is 
                  lacks standing work for them (a route that trains or gathers: routes.py `standing`)
         fill     puts that work into the division's plan file: a mission that pays once into the list First, a
                  paying route into the own routes of the ships it is open to, then up to --tests tests of one ship
-                 each. With --write it writes the route files and the plan (plan.py), rebuilds the three index
+                 each. With --write it writes the route files and the plan (plan.py), rebuilds the index
                  files, runs the route gate and commits by path as the member
         add, drop, lift   one change: a route into a plan's list Then (--first: at the head of First), a route out
                  of a plan everywhere, or a route's `max_ships`; gated and committed the same way
@@ -66,11 +66,10 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import dispatch                                   # noqa: E402  the rule that closes a route to a pilot
 import division                                   # noqa: E402  who commands which ship, and the plan files
 import plan as planfile                           # noqa: E402  each division's plan file: every ship with its own routes
-import routes as routefiles                       # noqa: E402  the route gate and the three index files
+import routes as routefiles                       # noqa: E402  the route gate and the index files
 
 STALE = 60 * 60                # a list of the route maker older than this is no ground for PASS
 HOURS = 4                      # a turn: what a bid must carry
-INDEXES = ("routes/index.md", "routes/plan.md", "routes/master-index.md")
 
 
 def age_of(stamp, now):
@@ -412,7 +411,7 @@ def git(root, *args):
 
 
 def commit(root, data, who, files, message):
-    """Write {path relative to the game folder: text} with the three index files, run the route gate, commit by path as
+    """Write {path relative to the game folder: text} with the index files, run the route gate, commit by path as
     `who`. (True, the commit's line) or (False, why); on a failure every file is put back."""
     if (Path(data) / "fleet" / "STOP").exists():
         return False, "REFUSED: fleet/STOP exists: nothing is changed while the fleet is halted"
@@ -422,11 +421,13 @@ def commit(root, data, who, files, message):
         dirty = git(root, "status", "--porcelain", "--", "routes")[1].strip()
         if dirty:
             return False, "REFUSED: game/routes holds a change that is not committed; commit it or take it back first:\n" + dirty
-        paths = sorted(set(files) | set(INDEXES))
-        new = [rel for rel in paths if not (Path(root) / rel).exists()]
+        before = {p.name for p in (Path(root) / "routes").glob("*.md")}
+        new = [rel for rel in files if not (Path(root) / rel).exists()]
         for rel, text in files.items():
             (Path(root) / rel).write_text(text, encoding="ascii")
-        routefiles.write_index(root)
+        made = ["routes/" + name for name, _state in routefiles.write_index(root)]     # written, current and removed
+        new += [rel for rel in made if rel.split("/")[-1] not in before]
+        paths = sorted(set(files) | set(made))
         errors, _count = routefiles.check(root)
         if not errors:
             git(root, "add", "--", *paths)

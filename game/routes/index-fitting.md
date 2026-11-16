@@ -1,0 +1,29 @@
+---
+name: routes-index-fitting
+id: 20261116T174326Z
+tier: intel
+author: Unity
+---
+
+# index-fitting.md -- Fitting
+
+Written by `python3 -B game/fleet/routes.py index`, never by hand. A module bought and fitted: the tool a kind of work needs.
+A route is a task one pilot carries out by itself; its file is `game/routes/<id>.json`
+(`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
+kind and name. Up: [master-index.md](master-index.md).
+
+Routes: 11.
+
+| Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
+|---|---|---|---|---|---|---|---|---|---|
+| [fit-gas-harvester](fit-gas-harvester.json) | circuit | home space | Fit a Gas Harvester I at Node Beta: the tool of the gas test | once per pilot, up to 1 ships, 1 pilots in all, needs mining_laser_i, without ice_harvester_i, from 6,000 cr | 1 | 4 | -1,240 | one-time | 2026-11-16 |
+| [fit-gas-harvester-hauler](fit-gas-harvester-hauler.json) | circuit | home space | Fit a Gas Harvester I at Node Beta: the tool of the Logistics gas test | once per pilot, up to 1 ships, 1 pilots in all, needs mining_laser_i, without gas_harvester_i, from 6,000 cr | 1 | 4 | -1,240 | one-time | 2026-11-16 |
+| [fit-ice-harvester](fit-ice-harvester.json) | circuit | home space | Fit an Ice Harvester I at Node Alpha: the tool every ice field needs | once per pilot, up to 1 ships, 15 pilots in all, without ice_harvester_i, from 6,000 cr | 17 | 2 | -560 | one-time | 2026-11-16 |
+| [fit-ice-harvester-experiment](fit-ice-harvester-experiment.json) | circuit | home space | Fit an Ice Harvester I at The Experiment: the tool every ice field needs | once per pilot, up to 1 ships, 2 pilots in all, without ice_harvester_i, from 6,000 cr | 2 | 4 | -1,470 | one-time | 2026-11-16 |
+| [fit-ice-harvester-guard](fit-ice-harvester-guard.json) | circuit | home space | Fit an Ice Harvester I at Central Nexus: the tool every ice field needs | once per pilot, up to 4 ships, 8 pilots in all, without ice_harvester_i, from 6,000 cr | 8 | 1 | -1,590 | one-time | 2026-11-16 |
+| [fit-ice-harvester-node-beta](fit-ice-harvester-node-beta.json) | circuit | home space | Fit an Ice Harvester I at Node Beta: the tool every ice field needs | once per pilot, up to 1 ships, 2 pilots in all, without ice_harvester_i, from 6,000 cr | 2 | 4 | -1,450 | one-time | 2026-11-16 |
+| [fit-ice-harvester-node-gamma](fit-ice-harvester-node-gamma.json) | circuit | home space | Fit an Ice Harvester I at Node Gamma: the tool every ice field needs | once per pilot, up to 1 ships, 2 pilots in all, without ice_harvester_i, from 6,000 cr | 2 | 4 | -1,460 | one-time | 2026-11-16 |
+| [fit-ice-harvester-synchrony](fit-ice-harvester-synchrony.json) | circuit | home space | Fit an Ice Harvester I at Synchrony Hub: the tool every ice field needs | once per pilot, up to 1 ships, 4 pilots in all, without ice_harvester_i, from 6,000 cr | 4 | 5 | -1,460 | one-time | 2026-11-16 |
+| [voidborn-atmospheric-extraction](voidborn-atmospheric-extraction.json) | circuit | home space | Atmospheric Extraction: Setup: 2,000 cr once after The Collective Provides; a Gas Harvester I bought at Node Beta after the accept | once per pilot, up to 3 ships, without gas_harvester_i, from 6,000 cr, after the reward The Collective Provides | 5 | 8 | -460 | one-time | 2026-11-16 |
+| [voidborn-hardware-cargo](voidborn-hardware-cargo.json) | circuit | home space | Hardware Optimization: Cargo: 1,500 cr once after The Collective Provides; a Cargo Expander I bought at Synchrony Hub after the accept | once per pilot, up to 3 ships, without cargo_expander_i, from 4,000 cr, after the reward The Collective Provides | 7 | 11 | 850 | one-time | 2026-11-16 |
+| [fit-ice-harvester-lhs-1140](fit-ice-harvester-lhs-1140.json) | circuit | beyond the border, 6 jumps | Fit an Ice Harvester I at Ironlight Crossroads (LHS 1140), beyond the border: a test with one miner | once per pilot, up to 5 ships, 20 pilots in all, without ice_harvester_i, empty hold, from 6,000 cr | 19 | 9 | -690 | one-time | 2026-11-16 |

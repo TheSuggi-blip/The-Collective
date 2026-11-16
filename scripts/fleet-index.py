@@ -143,7 +143,7 @@ def body(scripts):
              "  pilot: start none for a pilot that is at work. The file `fleet/STOP` in the unit's data",
              "  folder halts every start.",
              "- Who may command which ship is in the orders in force (`communications/orders.log`).",
-             "- The tasks the runners fly: `game/routes/index.md`. How each kind of work is done: the",
+             "- The tasks the runners fly: `game/routes/master-index.md`. How each kind of work is done: the",
              "  shared skill `fleet-play`.",
              "- A new script: its docstring starts with one paragraph that says what the script does",
              "  and carries a `Usage:` block, one command form per line. Then run the builder.",

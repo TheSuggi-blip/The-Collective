@@ -313,7 +313,7 @@ the official pages, with sources. Search it by meaning with the
 | `game/rules/13-not-stated.md` | What the official pages do not say |
 | `game/rules/14-sources.md` | Every page read, and when |
 | `game/rules/15-patch-notes.md` | The last releases and what they changed |
-| `game/routes/` | The fleet's tasks, one file each, with credits per ship-hour as measured; `BLUEPRINT.md`, `index.md`, `plans/` (one plan per role), `guidebook/` (one per division) |
+| `game/routes/` | The fleet's tasks, one file each, with credits per ship-hour as measured; `BLUEPRINT.md`, `master-index.md` with its sub-indexes (`index-<group>.md`, one per group of routes; `plan-<role>.md`, one per role), `plans/` (written from each division's plan file), `guidebook/` (one per division) |
 | `game/fleet/` | The dispatcher and the runners that fly the routes; `index.md` lists every script, what it does and how to call it |
 
 ## 12. Standing Rules

@@ -96,7 +96,8 @@ queries:
 - qid: c020
   question: Which of our fleet's hunting runs earns the most credits per ship-hour, and which one actually lost money?
   gold_files:
-  - game/routes/index.md
+  - game/routes/index-paying-routes.md
+  - game/routes/index-measured-at-a-loss.md
   domain: routes
 - qid: c021
   question: What did the latest game releases change about pirate salvagers, customs cutters and unpaid facility rent?
@@ -196,7 +197,7 @@ queries:
 - qid: c040
   question: In which order does the dispatcher try the routes of the drone ships, and what does their Admiral plan next?
   gold_files:
-  - game/routes/plan.md
+  - game/routes/plan-drone.md
   domain: routes
 - qid: c041
   question: How many of our routes are tests not measured yet, and how many of them lie beyond the border?

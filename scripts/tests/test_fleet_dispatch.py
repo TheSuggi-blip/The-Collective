@@ -451,21 +451,42 @@ class RouteGateTests(Tree):
         self.put_plan({role: [r for r in ids if r in ROUTES] + ["open"] for role, ids in PLAN["roles"].items()})
 
     def test_the_gate_passes_a_clean_tree_with_current_indexes(self):
-        self.assertEqual([e.split(" is ")[0] for e in self.routes.check(str(self.root))[0][-3:]],
-                         ["game/routes/index.md", "game/routes/plan.md", "game/routes/master-index.md"])    # the three are written together
-        self.assertEqual(self.routes.write_index(str(self.root)), [("index.md", "written"), ("plan.md", "written"), ("master-index.md", "written")])
+        groups = ["index-once-per-pilot.md", "index-paying-routes.md", "index-tests.md", "index-fitting.md", "index-standing-work.md",
+                  "index-measured-at-a-loss.md", "index-off.md"]
+        names = ["master-index.md"] + groups + ["plan-%s.md" % role for role in sorted(PLAN["roles"])]
+        self.assertEqual(self.routes.index_names(str(self.root)), names)                          # one index per group, one plan per role
+        self.assertEqual([e.split(" is ")[0] for e in self.routes.check(str(self.root))[0][-len(names):]], ["game/routes/" + n for n in names])
+        self.assertEqual(self.routes.write_index(str(self.root)), [(name, "written") for name in names])   # all written together
         self.assertEqual(self.routes.check(str(self.root)), ([], 6))
-        first = {name: (self.root / "routes" / name).read_text(encoding="ascii") for name in ("index.md", "plan.md", "master-index.md")}
+        first = {name: (self.root / "routes" / name).read_text(encoding="ascii") for name in names}
         self.assertEqual(self.routes.index_files(str(self.root)), first)                          # same input, same bytes, same ids
-        self.assertEqual(len({text.split("\nid: ")[1].split("\n")[0] for text in first.values()}), 3)
+        self.assertEqual(len({text.split("\nid: ")[1].split("\n")[0] for text in first.values()}), len(names))
+        self.assertEqual(self.routes.write_index(str(self.root)), [(name, "current") for name in names])
         for rid in ROUTES:                                                                        # every route once, in one group
-            self.assertEqual(first["index.md"].count("| [%s](%s.json) |" % (rid, rid)), 1, rid)
-        self.assertIn("| [drone](plan.md#drone) | Apophis | 5 | missions > whale > rays | 0 |", first["master-index.md"])
-        self.assertIn("](index.md#tests) |", first["master-index.md"])                            # a group's name leads into the sub-index
-        self.assertIn("## Tests\n", first["index.md"])
-        self.assertIn("## drone\n\nKept by Apophis. Routes: 5.", first["plan.md"])
-        self.assertIn("| 1 | [missions](missions.json) |", first["plan.md"])
-        self.assertIn("| home space |", first["index.md"])                                        # the chart's empire column gives the zone
+            self.assertEqual(sum(first[g].count("| [%s](%s.json) |" % (rid, rid)) for g in groups), 1, rid)
+        self.assertIn("| [drone](plan-drone.md) | Apophis | 5 | missions > whale > rays | 0 |", first["master-index.md"])
+        self.assertIn("| [Tests](index-tests.md) |", first["master-index.md"])                    # a group's name leads into its sub-index
+        self.assertIn("# index-tests.md -- Tests\n", first["index-tests.md"])
+        self.assertIn("\nKept by Apophis. Routes: 5. Ships: --.\n", first["plan-drone.md"])
+        self.assertIn("| 1 | [missions](missions.json) |", first["plan-drone.md"])
+        self.assertIn("| home space |", "".join(first[g] for g in groups))                        # the chart's empire column gives the zone
+        self.assertIn("Routes: 0.", "".join(first[g] for g in groups))                            # an empty group keeps its file: the set never changes
+
+    def test_a_file_written_no_longer_fails_the_gate_and_is_removed_by_index(self):
+        self.routes.write_index(str(self.root))
+        folder = self.root / "routes"
+        made = "Written by `python3 -B game/fleet/routes.py index`, never by hand.\n"
+        (folder / "index.md").write_text("# index.md\n\n" + made, encoding="ascii")              # the two files the sub-indexes replaced
+        (folder / "plan.md").write_text("# plan.md\n\n" + made, encoding="ascii")
+        (folder / "plan-ghost.md").write_text("# plan-ghost.md\n\n" + made, encoding="ascii")    # the plan of a role that is gone
+        (folder / "plan-notes.md").write_text("# my own notes\n", encoding="ascii")               # another hand's file is never touched
+        self.assertEqual(self.routes.stale(str(self.root)), ["index.md", "plan-ghost.md", "plan.md"])
+        errors = self.routes.check(str(self.root))[0]
+        self.assertEqual([e.split(" is ")[0] for e in errors], ["game/routes/index.md", "game/routes/plan-ghost.md", "game/routes/plan.md"])
+        self.assertEqual([pair for pair in self.routes.write_index(str(self.root)) if pair[1] != "current"],
+                         [("index.md", "removed"), ("plan-ghost.md", "removed"), ("plan.md", "removed")])
+        self.assertEqual(self.routes.check(str(self.root)), ([], 6))
+        self.assertTrue((folder / "plan-notes.md").is_file())
 
     def test_each_rule_fails_alone(self):
         def errors_with(rid, change):

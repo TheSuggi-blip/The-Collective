@@ -9,12 +9,12 @@ WHAT: a division's plan is one file its Admiral keeps: data/plans/plan-<division
         Then, for Every Ship    routes every ship tries after its own (shared paying routes, standing work, the
                                 census), ending with the `park` route
         Planned                 what the Admiral means to do next (`- what | when`): shown to every member in
-                                game/routes/plan.md, so it names no ship
+                                game/routes/plan-<role>.md, so it names no ship
       A free ship takes the first route of First + its own + Then that is open to it (the dispatcher's one rule,
       dispatch.why_not) within the minute. `apply` checks the file and writes what the fleet's tools read:
         data/plans/assign.json            {pilot: its routes in order}: the dispatcher and fill.py fly by it
         game/routes/plans/<role>.json     the role's routes in one order with the ships planned on each (counts, no
-                                          names); plan.md and master-index.md are written from it, one commit
+                                          names); plan-<role>.md and master-index.md are written from it, one commit
 RULES:
   - A member changes the file of its own division; the Fleet Admiral any. A shell that is no member changes nothing.
   - A file that fails the check changes nothing: the plan applied last stays in force, and the ships fly on.
@@ -283,7 +283,7 @@ def render(data, name, plan, crew):
     lines += ["", "## Then, for Every Ship", ""]
     lines += ["%d. %s" % (n, rid) for n, rid in enumerate(plan["then"], 1)] or ["None."]
     lines += ["", "## Planned", "", "What you mean to do next, one line each as `- what | when`. Every member reads it in",
-              "`game/routes/plan.md`: it names no ship of ours.", ""]
+              "`game/routes/plan-<role>.md`: it names no ship of ours.", ""]
     lines += ["- %s | %s" % (cell(item["what"]), cell(item["when"])) for item in plan["planned"]] or ["None."]
     lines += ["", "## Notes", "", plan["notes"].strip("\n") or "None."]
     return "\n".join(lines) + "\n"

@@ -4,10 +4,12 @@
 WHAT: game/routes/<id>.json are the fleet's tasks (game/routes/BLUEPRINT.md); game/routes/plans/<role>.json
       lists them per role, one file per role, kept by the role's Admiral. This script
         check     validates every route file and the plans (the gate);
-        index     writes three files in game/routes/: master-index.md (the groups of routes and the
-                  plans at a glance; every name is a link into the two below), index.md (every
-                  route with its measured figures, grouped by what it is for, with its zone) and
-                  plan.md (every role's plan in its order, and what is planned);
+        index     writes into game/routes/: master-index.md (the groups of routes and the plans at
+                  a glance; every name is a link into a sub-index), one index per group of routes
+                  (index-<group>.md: every route of the group with its measured figures and its
+                  zone) and one plan per role (plan-<role>.md: the role's routes in their order,
+                  the ships planned on each, and what is planned); it removes a file it wrote
+                  once and writes no longer;
         measure   reads the runs (data/routes/runs.jsonl) and prints, per route, runs,
                   minutes and credits per ship-hour; with --write it stores the figures
                   in the route file's `measured` block when they moved by a fifth or more.
@@ -18,7 +20,8 @@ RULES:
     (dock and wait: a docked ship costs nothing) or a mine, not `off`, not
     `once`, without `max_ships`, `min_credits`, `requires` and
     `skip_if_booked`. A list that can run out leaves a ship adrift.
-  - The three index files are written by this script, never by hand; `check` fails on a stale one.
+  - The index files are written by this script, never by hand; `check` fails on a stale one. No file
+    holds every route or every plan: a group or a role that grows fills its own file (Suggi, 2026-11-16).
   - A route's group comes from its own file: once per pilot, paying (measured above zero), a
     test (not measured yet), a fitting, reading and waiting (census, park), measured at a loss,
     off. Its zone comes from the chart: home space when every system it touches is our
@@ -55,7 +58,8 @@ import taxes                                      # noqa: E402  the weekly tax a
 
 KINDS = {"circuit": ("stops",), "hunt": ("place", "sell_at"), "census": ("systems",), "mine": ("belt", "station")}
 FRONT = "---\nname: %s\nid: %s\ntier: intel\nauthor: Unity\n---\n\n"
-INDEXES = (("index.md", "routes-index"), ("plan.md", "routes-plan"), ("master-index.md", "routes-master-index"))
+MASTER = "master-index.md"
+WRITTEN = "`python3 -B game/fleet/routes.py index`, never by hand"       # every file `index` writes says so
 STAGES = (("once", "Once per Pilot", "Missions and rewards the game pays once per pilot: a new pilot's first work, and seed money."),
           ("paying", "Paying Routes", "Work that repeats and whose runs measured above zero."),
           ("test", "Tests", "Work that repeats and has no measured figure yet: one ship until its first RESULT line is read."),
@@ -64,6 +68,8 @@ STAGES = (("once", "Once per Pilot", "Missions and rewards the game pays once pe
            "route: they keep every ship busy and the picture fresh."),
           ("losing", "Measured at a Loss", "Work that repeats and whose runs measured zero or below."),
           ("off", "Off", "Written down, not flown."))
+SLUGS = {"once": "once-per-pilot", "paying": "paying-routes", "test": "tests", "fit": "fitting", "service": "standing-work",
+         "losing": "measured-at-a-loss", "off": "off"}               # a group's sub-index: index-<slug>.md
 
 
 def read_json(path):
@@ -166,13 +172,17 @@ def check(root):
             errors.append(where + "`routes` is empty: end it with the `park` route")
     if routes:
         files = index_files(root, keep_id=True)
-        for name, _front in INDEXES:
+        for name in files:
             if files[name] != current_index(root, name):
-                errors.append("game/routes/%s is missing or stale: run `python3 -B game/fleet/routes.py index` (index.md, plan.md and master-index.md are written together)" % name)
+                errors.append("game/routes/%s is missing or stale: run `python3 -B game/fleet/routes.py index` (master-index.md, every index-<group>.md and "
+                              "every plan-<role>.md are written together)" % name)
+        for name in stale(root):
+            errors.append("game/routes/%s is written no longer (master-index.md and its sub-indexes took its place): run "
+                          "`python3 -B game/fleet/routes.py index`, which removes it" % name)
     return errors, len(routes)
 
 
-def current_index(root, name="index.md"):
+def current_index(root, name=MASTER):
     path = Path(root) / "routes" / name
     return path.read_text(encoding="ascii") if path.is_file() else ""
 
@@ -259,11 +269,43 @@ def anchor(title):
     return re.sub(r"[^a-z0-9 -]", "", title.lower()).replace(" ", "-")
 
 
-def stamps(root, keep_id):
+def group_file(key):
+    """The sub-index of one group of routes."""
+    return "index-%s.md" % SLUGS[key]
+
+
+def plan_file(role):
+    """The sub-plan of one role."""
+    return "plan-%s.md" % role
+
+
+def index_names(root):
+    """The files `index` writes into game/routes/, in their order: master-index.md, one index per group of routes (every
+    group, also an empty one: the set does not change with the routes) and one plan per role."""
+    roles, _owners, _errors = division.load_plan(root)
+    return [MASTER] + [group_file(key) for key, _title, _text in STAGES] + [plan_file(role) for role in sorted(roles)]
+
+
+def stale(root):
+    """Files of game/routes/ this script wrote once and writes no longer (index.md and plan.md until 2026-11-16, the plan
+    of a role that is gone): `index` removes them, `check` fails on them. A file by another hand is never named."""
+    made, out = set(index_names(root)), []
+    for path in sorted((Path(root) / "routes").glob("*.md")):
+        if path.name in made or not (path.name in ("index.md", "plan.md") or path.name.startswith(("index-", "plan-"))):
+            continue
+        try:
+            if WRITTEN in path.read_text(encoding="ascii", errors="replace"):
+                out.append(path.name)
+        except OSError:
+            pass
+    return out
+
+
+def stamps(root, names, keep_id):
     """{file name: id}: the id a file carries; a file without one gets a new id, a second apart each and never on a full
     minute, or None under keep_id."""
-    out, moment = {}, time.time() - len(INDEXES) - 1
-    for name, _front in INDEXES:
+    out, moment = {}, time.time() - len(names) - 1
+    for name in names:
         old = current_index(root, name)
         stamp = old.split("\nid: ", 1)[1].split("\n", 1)[0] if "\nid: " in old else ""
         if not stamp and not keep_id:
@@ -276,10 +318,13 @@ def stamps(root, keep_id):
 
 
 def index_files(root, keep_id=False):
-    """{file name: text} of index.md, plan.md and master-index.md. Under keep_id a file that has no id yet reads `missing`."""
+    """{file name: text} of master-index.md, every index-<group>.md and every plan-<role>.md, in that order. Under
+    keep_id a file that has no id yet reads `missing`."""
     routes, _errors = routes_of(root)
     systems, home = atlas(root)
-    ids = stamps(root, keep_id)
+    roles, owners, _plan_errors = division.load_plan(root)
+    names = index_names(root)
+    ids = stamps(root, names, keep_id)
     facts = {}
     for rid, route in routes.items():
         where, far = zone(route, systems, home)
@@ -288,25 +333,24 @@ def index_files(root, keep_id=False):
     place = lambda rid: facts[rid]["zone"] + (", %d jumps" % facts[rid]["far"] if facts[rid]["far"] and facts[rid]["zone"] == "beyond the border" else "")
     order = lambda rid: (facts[rid]["zone"] != "home space", routes[rid].get("kind", ""), rid)
     groups = [(key, title, text, sorted((r for r in routes if facts[r]["stage"] == key), key=order)) for key, title, text in STAGES]
-    groups = [g for g in groups if g[3]]
+    texts = {}
 
-    index = ["# index.md -- Routes We Fly", "",
-             "Written by `python3 -B game/fleet/routes.py index`, never by hand. A route is a",
-             "task one pilot carries out by itself; its file is `game/routes/<id>.json`",
-             "(`BLUEPRINT.md`). The figures are what our own runs measured. The groups and the",
-             "plans at a glance: [master-index.md](master-index.md); every plan in its order:",
-             "[plan.md](plan.md). Inside a group: home space first, then by kind and name."]
-    for _key, title, text, rids in groups:
-        index += ["", "## " + title, "", text, "",
-                  "| Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |",
-                  "|---|---|---|---|---|---|---|---|---|---|"]
+    for key, title, text, rids in groups:                         # one index per group of routes
+        lines = ["# %s -- %s" % (group_file(key), title), "",
+                 "Written by " + WRITTEN + ". " + text,
+                 "A route is a task one pilot carries out by itself; its file is `game/routes/<id>.json`",
+                 "(`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by",
+                 "kind and name. Up: [master-index.md](master-index.md).", "", "Routes: %d." % len(rids)]
+        if rids:
+            lines += ["", "| Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |",
+                      "|---|---|---|---|---|---|---|---|---|---|"]
         for rid in rids:
             route, m = routes[rid], routes[rid].get("measured") or {}
-            index.append("| [%s](%s.json) | %s | %s | %s | %s | %s | %s | %s | %s | %s |" % (
+            lines.append("| [%s](%s.json) | %s | %s | %s | %s | %s | %s | %s | %s | %s |" % (
                 rid, rid, cell(route.get("kind", "")), place(rid), cell(route.get("title", "")), cell(open_to(route)), m.get("runs", "TBD"), m.get("minutes", "TBD"),
                 format(m["credits_per_run"], ",") if m else "TBD", figure(route), m.get("date", "--")))
+        texts[group_file(key)] = lines
 
-    roles, owners, _plan_errors = division.load_plan(root)
     planned, counts = {}, {}
     for role in roles:
         try:
@@ -317,47 +361,45 @@ def index_files(root, keep_id=False):
         planned[role] = [i for i in spec.get("planned") or [] if isinstance(i, dict) and i.get("what")]
         counts[role] = (spec.get("ships") if isinstance(spec.get("ships"), dict) else {}, spec.get("of") if isinstance(spec.get("of"), int) else 0)
     on = lambda role, rid: "--" if rid not in counts[role][0] else ("all %d" if counts[role][0][rid] == counts[role][1] else "%d of " + str(counts[role][1])) % counts[role][0][rid]
-    plan = ["# plan.md -- The Plans", "",
-            "Written by `python3 -B game/fleet/routes.py index`, never by hand, from",
-            "`plans/<role>.json`: per role (the word before the dash of a pilot's name) the routes",
-            "its ships fly, in one order, and how many of its ships have each route in their plan.",
-            "Each division's Admiral keeps one plan file with every ship and its own routes",
-            "(`game/fleet/plan.py`); it names our ships, so it lies in the unit's data folder and",
-            "not here, and `plans/<role>.json` is written from it. `Planned` is what the Admiral",
-            "means to do next. The roles at a glance: [master-index.md](master-index.md); every",
-            "route's figures: [index.md](index.md)."]
-    for role in sorted(roles):
-        plan += ["", "## " + role, "", "Kept by %s. Routes: %d." % (owners.get(role) or "--", len(roles[role])), "",
+    for role in sorted(roles):                                    # one plan per role
+        lines = ["# %s -- The Plan of the Role %s" % (plan_file(role), role), "",
+                 "Written by " + WRITTEN + ", from `plans/%s.json`:" % role,
+                 "the routes the %s ships fly, in one order, and how many of them have each route in" % role,
+                 "their plan. The division's Admiral keeps one plan file with every ship and its own",
+                 "routes (`game/fleet/plan.py`); it names our ships, so it lies in the unit's data folder",
+                 "and not here, and `plans/%s.json` is written from it. `Planned` is what the Admiral" % role,
+                 "means to do next. Up: [master-index.md](master-index.md).", "",
+                 "Kept by %s. Routes: %d. Ships: %s." % (owners.get(role) or "--", len(roles[role]), counts[role][1] or "--"), "",
                  "| # | Route | Group | Zone | Open to | Ships planned | Credits per ship-hour |", "|---|---|---|---|---|---|---|"]
         for n, rid in enumerate(roles[role], 1):
             if rid in routes:
-                plan.append("| %d | [%s](%s.json) | %s | %s | %s | %s | %s |" % (n, rid, rid, titles[facts[rid]["stage"]], place(rid), cell(open_to(routes[rid])), on(role, rid),
-                                                                              figure(routes[rid])))
+                lines.append("| %d | [%s](%s.json) | [%s](%s) | %s | %s | %s | %s |" % (
+                    n, rid, rid, titles[facts[rid]["stage"]], group_file(facts[rid]["stage"]), place(rid), cell(open_to(routes[rid])), on(role, rid), figure(routes[rid])))
             else:
-                plan.append("| %d | %s | no route file | -- | -- | -- | -- |" % (n, cell(rid)))
+                lines.append("| %d | %s | no route file | -- | -- | -- | -- |" % (n, cell(rid)))
         if planned[role]:
-            plan += ["", "Planned:", "", "| What | When |", "|---|---|"] + ["| %s | %s |" % (cell(i.get("what", "")), cell(i.get("when", "--"))) for i in planned[role]]
+            lines += ["", "Planned:", "", "| What | When |", "|---|---|"] + ["| %s | %s |" % (cell(i.get("what", "")), cell(i.get("when", "--"))) for i in planned[role]]
+        texts[plan_file(role)] = lines
 
     def best(key, rids):
         seen = [(routes[r]["measured"], r) for r in rids if routes[r].get("measured")]
         if not seen:
-            return "not measured yet"
+            return "not measured yet" if rids else "--"
         field, unit = ("credits_per_run", "cr a run") if key == "once" else ("cph_per_ship", "cr per ship-hour")
         m, rid = max(seen, key=lambda pair: pair[0].get(field) or 0)
         return "%s: %s %s" % (rid, format(m.get(field) or 0, ","), unit)
 
     master = ["# master-index.md -- Routes and Plans", "",
-              "Written by `python3 -B game/fleet/routes.py index`, never by hand. Start here: every",
-              "name below is a link into one of the sub-indexes of this folder.", "",
-              "| File | Holds |", "|---|---|",
-              "| [index.md](index.md) | Every route with its measured figures, group by group |",
-              "| [plan.md](plan.md) | Every role's routes in one order with the ships planned on each, and what its Admiral means to do next |",
-              "| [BLUEPRINT.md](BLUEPRINT.md) | How a route is written, and what is automatic |",
+              "Written by " + WRITTEN + ". Start here: every",
+              "name below is a link into a sub-index of this folder. Each group of routes has its own",
+              "index (`index-<group>.md`) and each role its own plan (`plan-<role>.md`), so that no",
+              "file grows with the whole fleet. How a route is written, and what is automatic:",
+              "[BLUEPRINT.md](BLUEPRINT.md).",
               "", "## Routes by Group", "",
               "| Group | What it holds | Routes | Home space | Beyond the border | Best measured |", "|---|---|---|---|---|---|"]
     for key, title, text, rids in groups:
-        master.append("| [%s](index.md#%s) | %s | %d | %d | %d | %s |" % (
-            title, anchor(title), cell(text), len(rids), sum(1 for r in rids if facts[r]["zone"] == "home space"),
+        master.append("| [%s](%s) | %s | %d | %d | %d | %s |" % (
+            title, group_file(key), cell(text), len(rids), sum(1 for r in rids if facts[r]["zone"] == "home space"),
             sum(1 for r in rids if facts[r]["zone"] == "beyond the border"), cell(best(key, rids))))
     master.append("| All | | %d | %d | %d | |" % (len(routes), sum(1 for f in facts.values() if f["zone"] == "home space"), sum(1 for f in facts.values() if f["zone"] == "beyond the border")))
     kinds = sorted({str(r.get("kind", "")) for r in routes.values()})
@@ -371,8 +413,8 @@ def index_files(root, keep_id=False):
     if roles:
         master += ["", "## Plans by Role", "", "| Role | Kept by | Routes | The first three, in order | Planned | Ships |", "|---|---|---|---|---|---|"]
         for role in sorted(roles):
-            master.append("| [%s](plan.md#%s) | %s | %d | %s | %d | %s |" % (cell(role), anchor(role), cell(owners.get(role) or "--"), len(roles[role]),
-                                                                         cell(" > ".join(roles[role][:3])), len(planned[role]), counts[role][1] or "--"))
+            master.append("| [%s](%s) | %s | %d | %s | %d | %s |" % (cell(role), plan_file(role), cell(owners.get(role) or "--"), len(roles[role]),
+                                                                 cell(" > ".join(roles[role][:3])), len(planned[role]), counts[role][1] or "--"))
     books = sorted((Path(root) / "routes" / "guidebook").glob("*.md")) if (Path(root) / "routes" / "guidebook").is_dir() else []
     if books:
         master += ["", "## The Guidebooks", "", "What each division learned about its routes, its levelling and its ships; kept by its Admiral, read by every member.", "",
@@ -380,12 +422,13 @@ def index_files(root, keep_id=False):
         for path in books:
             title = next((l[2:].strip() for l in path.read_text(encoding="ascii", errors="replace").splitlines() if l.startswith("# ")), path.stem)
             master.append("| [guidebook/%s](guidebook/%s) | %s |" % (path.name, path.name, cell(title)))
-    texts = {"index.md": index, "plan.md": plan, "master-index.md": master}
-    return {name: (FRONT % (front, ids[name]) + "\n".join(texts[name]) + "\n") if ids[name] else "missing" for name, front in INDEXES}
+    texts[MASTER] = master
+    return {name: (FRONT % ("routes-" + name[:-3], ids[name]) + "\n".join(texts[name]) + "\n") if ids[name] else "missing" for name in names}
 
 
 def write_index(root):
-    """Write the index files that changed; [(file name, `written` or `current`)]."""
+    """Write the index files that changed and remove the ones written no longer; [(file name, `written`, `current` or
+    `removed`)]."""
     done = []
     for name, text in index_files(root).items():
         if text == current_index(root, name):
@@ -393,6 +436,9 @@ def write_index(root):
         else:
             (Path(root) / "routes" / name).write_text(text, encoding="ascii")
             done.append((name, "written"))
+    for name in stale(root):
+        (Path(root) / "routes" / name).unlink()
+        done.append((name, "removed"))
     return done
 
 
@@ -486,8 +532,9 @@ def main():
         done = write_index(args.root)
         for name, state in done:
             print("game/routes/%s: %s" % (name, state))
-        if any(state == "written" for _name, state in done):
-            print("commit the three together: git add -- game/routes/index.md game/routes/plan.md game/routes/master-index.md")
+        changed = ["game/routes/" + name for name, state in done if state != "current"]
+        if changed:
+            print("commit them together: git add -- " + " ".join(changed))
         return 0
     only = set(args.ids)
     if args.role:

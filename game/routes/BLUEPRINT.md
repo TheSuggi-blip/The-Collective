@@ -3,7 +3,7 @@ name: routes-blueprint
 id: 20261115T154044Z
 tier: intel
 author: Unity
-links: [game/routes/index.md, game/routes/plan.json, game/fleet/dispatch.py, communications/orders.log, governance/rulebook.md]
+links: [game/routes/master-index.md, game/fleet/dispatch.py, communications/orders.log, governance/rulebook.md]
 ---
 
 # BLUEPRINT.md -- How a Route Is Written
@@ -25,7 +25,7 @@ the scripts in `game/fleet/` fly them; nobody retypes a route into a chat.
 | `game/fleet/route_run.py`, `hunt.py`, `census.py`, `mine.py` | The runners: one pilot, one route, one row in the runs file |
 | `game/fleet/routemaker.py` (service `routemaker`) | Every ten minutes costs every way to earn that our readings show (fields, order books, boards, herds, recipes) and keeps the list in the unit's data folder. `routemaker.py show` lists the candidates of your division, best first; `routemaker.py route <id>` prints a candidate's route file, ready to be saved here as a test |
 | `python3 -B game/fleet/routes.py check` | The gate: fails on a wrong route file, a wrong plan or a stale index |
-| `python3 -B game/fleet/routes.py index` | Writes `master-index.md` (the groups of routes and the plans at a glance, every name a link), `index.md` (every route with its figures, grouped by what it is for, with its zone) and `plan.md` (every role's plan in its order); never by hand |
+| `python3 -B game/fleet/routes.py index` | Writes `master-index.md` (the groups of routes and the plans at a glance, every name a link), one index per group of routes (`index-once-per-pilot.md`, `index-paying-routes.md`, `index-tests.md`, `index-fitting.md`, `index-standing-work.md`, `index-measured-at-a-loss.md`, `index-off.md`: every route of the group with its figures and its zone) and one plan per role (`plan-<role>.md`: the role's routes in their order with the ships planned on each); never by hand. No file holds every route or every plan |
 | `python3 -B game/fleet/routes.py measure --write` | Stores what the runs measured in the route file |
 
 - Where a pilot is and which pilot flies which route stays in the

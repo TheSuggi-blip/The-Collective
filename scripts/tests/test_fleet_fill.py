@@ -217,7 +217,7 @@ class WriteTests(Tree):
         self.assertEqual(self.git("status", "--porcelain"), "")
         self.assertEqual(self.git("log", "-1", "--format=%an"), "Apollo\n")
         self.assertEqual(sorted(self.git("show", "--name-only", "--format=", "HEAD").split()),
-                         ["game/routes/index.md", "game/routes/master-index.md", "game/routes/plan.md", "game/routes/plans/hauler.json", "game/routes/trade-x.json"])
+                         ["game/routes/index-tests.md", "game/routes/master-index.md", "game/routes/plan-hauler.md", "game/routes/plans/hauler.json", "game/routes/trade-x.json"])
         done = self.run_fill("apollo", "check")                                                   # the dispatcher would start two; the third has nothing open
         self.assertEqual((done.returncode, done.stdout.startswith("HALT: 1 ships of hauler wait and nothing that pays is open to them")), (1, True))
 

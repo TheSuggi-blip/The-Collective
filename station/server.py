@@ -541,7 +541,7 @@ def doc_title(rel, body=""):
         tail = head.split(" -- ", 1)[-1].strip()
         if tail:
             return tail[:160]
-    names = {"game/routes/master-index.md": "Routes and plans: start here", "game/routes/index.md": "Routes, by group", "game/routes/plan.md": "Plans, by role",
+    names = {"game/routes/master-index.md": "Routes and plans: start here",
              "game/catalog/master-index.md": "Catalog: what can be made and built"}
     if rel in names:
         return names[rel]
@@ -595,7 +595,7 @@ def api_docs():
         logs.append({"path": "communications/" + fn, "title": doc_title("communications/" + fn), "entries": len(entries),
                      "last": {"ent": last[0], "at": last[1].strip()[:20], "by": last[2].strip()[:30]} if last else None})
     listed = lambda *rels: [{"path": rel, "title": doc_title(rel)} for rel in rels if (REPO / rel).is_file()]
-    knowledge = (listed("game/routes/master-index.md", "game/routes/index.md", "game/routes/plan.md")
+    knowledge = (listed("game/routes/master-index.md")            # its links lead into every index-<group>.md and plan-<role>.md
                  + [{"path": d["path"], "title": doc_title(d["path"])} for d in doc_list("game/routes/guidebook")]
                  + listed("game/catalog/master-index.md", "game/fleet/index.md"))
     return {"reports": reports, "reports_total": total, "logs": logs,
