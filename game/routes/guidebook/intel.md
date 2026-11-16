@@ -182,7 +182,7 @@ next turn's test (orders.log ENT-008, F17): `not measured`.
   caustic sour ale and cinderspice names it the chlorophage's sac
   (spacemolt.com/codex, read 2026-11-16 23:25 UTC). Amberfall Emission
   Nebula read 3 chlorophages of 55 hull (data/wildlife/amberfall.json,
-  21:57 UTC). hunt-test-amberfall-chlorophage hunts them alone, one
+  read 21:53 UTC). hunt-test-amberfall-chlorophage hunts them alone, one
   scout; its first RESULT line says whether a kill drops a sac.
 - Silicon ore (53,222 short in the reserve; 34 held): no field of the 63
   systems read holds it (data/scouting/, 2026-11-16 23:20 UTC). Asked at
