@@ -37,8 +37,8 @@ kills (default 5) or --minutes minutes (default 40), or when no grazer is
 left or the hold is full, it loots once more, docks at the station named
 by --sell-at (default Central Nexus), sells every good in its hold whose
 best bid there is at least --min-bid (default 50 cr). Goods another
-station of ours bids for stay aboard; the rest (not its ammo) goes into
-its storage there. --keep skips selling and stashing.
+station bids for, in a book read within the hour, stay aboard; the rest
+(not its ammo) goes into its storage there. --keep skips selling and stashing.
 While it runs the pilot carries an order file (the station shows it at
 work). Prints one line per step and a RESULT line, and appends one row to
 data/routes/runs.jsonl under the id given by --route (default hunt-<poi>).
@@ -51,6 +51,7 @@ no row of its own; it prints a STEP line. When it leaves, the runner writes
 the herd it sees into data/wildlife/ (the dispatcher's count), and the row
 records the hull before, after and at its lowest."""
 import atexit
+import calendar
 import fcntl
 import glob
 import json
@@ -85,6 +86,25 @@ MARKET = '/srv/collective/data/market/'
 ORDER = f'/srv/collective/data/fleet/orders/{pilot}.json'
 RUNS = '/srv/collective/data/routes/runs.jsonl'
 P = urllib.parse.quote(pilot, safe='')
+
+
+def wanted_goods(market, min_bid, now, fresh=3600):
+    """The goods a station's book, read within `fresh` seconds, bids `min_bid` or more for: they stay aboard for the next
+    sale. A book older than that keeps nothing aboard, the rule of `requires.bid` (a stale book closes nothing): a bid of
+    one unit read hours ago kept a hunter's curd aboard and closed the hunts that ask an empty hold (2026-11-16)."""
+    wanted = set()
+    for path in glob.glob(os.path.join(market, '*.json')):
+        try:
+            with open(path, encoding='utf-8') as fh:
+                book = json.load(fh)
+            read = calendar.timegm(time.strptime(str(book.get('read_at')), '%Y-%m-%dT%H:%M:%SZ'))
+        except (OSError, ValueError, AttributeError):
+            continue
+        if now - read > fresh:
+            continue
+        wanted.update(i.get('item_id') for i in book.get('items') or []
+                      if isinstance(i, dict) and isinstance(i.get('best_buy'), (int, float)) and i['best_buy'] >= min_bid and i.get('buy_quantity'))
+    return wanted
 
 
 def order(what):
@@ -382,13 +402,7 @@ if goal('prepare-at-station', {'systemId': sell_at[0], 'poiId': sell_at[1], 'bas
             sold[item] = (n, bid, credits() - c0)
         elif item in goods:
             say(f'{item}: best bid here {bid} x {depth}: kept')
-    wanted = set()                                   # goods some station of ours bids for: they stay aboard for the next sale
-    for path in glob.glob(MARKET + '*.json'):
-        try:
-            wanted.update(i.get('item_id') for i in json.load(open(path, encoding='utf-8')).get('items') or []
-                          if isinstance(i.get('best_buy'), (int, float)) and i['best_buy'] >= min_bid and i.get('buy_quantity'))
-        except (OSError, ValueError):
-            pass
+    wanted = wanted_goods(MARKET, min_bid, time.time())   # goods a station bids for, read within the hour: they stay aboard for the next sale
     stashed = {}
     for item, qty in cargo().items():                # the rest goes into storage here: the hold is free for the next hunt
         if item not in AMMO and item not in wanted:
