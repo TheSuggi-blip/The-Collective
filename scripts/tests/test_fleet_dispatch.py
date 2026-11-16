@@ -449,6 +449,102 @@ class PassTests(Tree):
         self.assertEqual(self.dispatch.one_pass(str(self.root), str(self.data), True, []), ["STOP file present: nothing started"])
 
 
+class Flying:
+    """A runner process that has not ended, as the dispatcher's reaping sees it."""
+
+    def poll(self):
+        return None
+
+
+class HostingTests(PassTests):
+    """Which runs go to the host (game/fleet/runhost.py: threads of one program) and which stay processes."""
+
+    def setUp(self):
+        super().setUp()
+        self.spawned = []
+        self.dispatch.spawn = lambda argv, log, env: self.spawned.append((argv, str(log), env)) or Flying()
+        self.home = self.data / "fleet" / "host"
+        self.idle = lambda *names: self.fleet([{"name": n, "status": "connected", "credits": 9000, "activity": {"kind": "idle"}} for n in names])
+
+    def hosting(self, **what):
+        (self.data / "fleet" / "hosting.json").write_text(json.dumps(what))
+
+    def host(self, accepting=True, runs=0, age=0.0):
+        self.home.mkdir(parents=True, exist_ok=True)
+        (self.home / "state.json").write_text(json.dumps({"at": time.time() - age, "accepting": accepting, "runs": runs}))
+
+    def inbox(self):
+        folder = self.home / "inbox"
+        return {p.stem: json.loads(p.read_text()) for p in sorted(folder.glob("*.json"))} if folder.is_dir() else {}
+
+    def real_pass(self):
+        children = []
+        return self.dispatch.one_pass(str(self.root), str(self.data), False, children), children
+
+    def test_without_a_hosting_file_every_run_is_a_process_as_before(self):
+        self.idle("miner-1")
+        self.host()                                                          # a host that runs changes nothing by itself
+        lines, children = self.real_pass()
+        self.assertEqual((lines, len(children), self.inbox()), (["miner-1 -> mine mine"], 1, {}))
+        argv, log, env = self.spawned[0]
+        self.assertEqual(argv[1:7], ["-I", "-B", str(self.root / "fleet" / "mine.py"), "miner-1", "far:belt", "home:core:base"])
+        self.assertEqual((log, env["FLEET_HOLD"], env["FLEET_MEMBER"]), (str(self.data / "routes" / "logs" / "miner-1.log"), "mine mine", "dispatch"))
+
+    def test_a_kind_the_hosting_file_names_goes_to_a_host_that_accepts(self):
+        self.idle("miner-1")
+        self.hosting(kinds=["mine"])
+        self.host()
+        lines, children = self.real_pass()
+        self.assertEqual((lines, children, self.spawned), (["miner-1 -> mine mine"], [], []))
+        job = self.inbox()["miner-1"]
+        self.assertEqual((job["pilot"], job["what"], job["script"], job["argv"][:3]), ("miner-1", "mine mine", "mine.py", ["miner-1", "far:belt", "home:core:base"]))
+        self.assertEqual(job["env"], {"FLEET_MEMBER": "dispatch", "FLEET_HOLD": "mine mine"})
+        self.assertEqual(json.loads((self.data / "fleet" / "orders" / "miner-1.json").read_text())["what"], "mine mine")   # the order is written first
+
+    def test_a_host_that_is_away_or_full_or_a_kind_not_named_leaves_the_run_a_process(self):
+        self.idle("miner-1")
+        for hosting, host in (({"kinds": ["mine"]}, None), ({"kinds": ["mine"]}, {"accepting": False}), ({"kinds": ["mine"]}, {"age": 120}),
+                              ({"kinds": ["circuit"]}, {}), ({"kinds": "mine"}, {}), ({"kinds": ["mine"], "max_runs": 3}, {"runs": 3})):
+            self.hosting(**hosting)
+            (self.home / "state.json").unlink(missing_ok=True)
+            if host is not None:
+                self.host(**host)
+            (self.data / "fleet" / "orders" / "miner-1.json").unlink(missing_ok=True)
+            del self.spawned[:]
+            self.real_pass()
+            self.assertEqual((len(self.spawned), self.inbox()), (1, {}), (hosting, host))
+
+    def test_the_hosting_file_can_cap_the_runs_the_host_is_given(self):
+        self.idle("miner-1", "miner-2")                                      # the route `mine` takes two ships
+        self.hosting(kinds=["mine"], max_runs=2)
+        self.host(runs=1)
+        self.real_pass()
+        self.assertEqual((sorted(self.inbox()), [argv[4] for argv, _log, _env in self.spawned]), (["miner-1"], ["miner-2"]))
+
+    def test_a_job_the_host_did_not_take_in_a_minute_is_started_as_a_process_when_its_order_still_names_it(self):
+        self.idle()
+        runhost = self.dispatch.runhost
+        for pilot, order in (("miner-1", "mine mine"), ("miner-2", "hand Zero"), ("miner-3", "mine mine")):
+            (self.data / "fleet" / "orders" / (pilot + ".json")).write_text(json.dumps({"pilot": pilot, "what": order}))
+            runhost.submit(str(self.data), pilot, "mine mine", "mine.py", [pilot, "far:belt", "home:core:base"], {"FLEET_HOLD": "mine mine"})
+        for pilot in ("miner-1", "miner-2"):                                 # miner-3's job is young: the host may still take it
+            os.utime(self.home / "inbox" / (pilot + ".json"), (self.now - 90, self.now - 90))
+        lines, children = self.real_pass()
+        self.assertEqual(sorted(self.inbox()), ["miner-3"])
+        self.assertEqual([argv[3:] for argv, _log, _env in self.spawned], [[str(self.root / "fleet" / "mine.py"), "miner-1", "far:belt", "home:core:base"]])
+        self.assertEqual((len(children), self.spawned[0][2]["FLEET_HOLD"]), (1, "mine mine"))
+        self.assertEqual(len([line for line in lines if "the host did not take it" in line]), 2)
+
+    def test_a_dry_pass_hands_nothing_over_and_takes_nothing_back(self):
+        self.idle("miner-1")
+        self.hosting(kinds=["mine"])
+        self.host()
+        self.dispatch.runhost.submit(str(self.data), "miner-9", "mine mine", "mine.py", ["miner-9"], {})
+        os.utime(self.home / "inbox" / "miner-9.json", (self.now - 90, self.now - 90))
+        self.assertEqual(self.dispatch.one_pass(str(self.root), str(self.data), True, []), ["miner-1 -> mine mine"])
+        self.assertEqual((sorted(self.inbox()), self.spawned), (["miner-9"], []))
+
+
 class RouteGateTests(Tree):
     def setUp(self):
         super().setUp()                                                                           # the gate's tree has a plan without the unknown route

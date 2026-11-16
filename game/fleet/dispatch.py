@@ -46,6 +46,11 @@ RULES:
     minutes belongs to no runner (an engine restart, a dead runner): the
     dispatcher stops that loop through the gate and names it in its log.
   - It sends no command to the game itself: the runners do.
+  - A runner is started as a process of its own, or handed to the run host (game/fleet/runhost.py: one
+    program that flies runs as threads, under 1 MB a waiting run where a process holds 13 MB) when
+    data/fleet/hosting.json names the route's kind: {"kinds": ["mine", ...], "max_runs": N}. Without that
+    file, with a host that is away, draining or at `max_runs`, the run is a process as before. A job the
+    host did not take within a minute is taken back and started as a process.
   - No route flies at a loss unattended: a route whose runs of the last six hours (two or more) lost money in sum is
     closed until the window moves on (`losing`), and so is a repeating route whose last three runs inside those six
     hours each lost money (`lately_losing`); the census, park and fitting routes are not judged.
@@ -76,6 +81,7 @@ from pathlib import Path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import division                                   # noqa: E402  who commands which ship, and the plan files
 import gate                                       # noqa: E402  the one call the dispatcher sends itself: stop a loop no runner owns
+import runhost                                    # noqa: E402  the program that flies hosted runs as threads
 import routes as routefiles                       # noqa: E402  what standing work is
 import taxes                                      # noqa: E402  the weekly tax a run in flight carried is no loss of its route
 
@@ -637,6 +643,23 @@ def orphans(fleet, orders, now, seen):
     return out
 
 
+def hosting(data):
+    """({the kinds of route whose runs go to the run host}, the most runs it is given) from data/fleet/hosting.json:
+    {"kinds": ["mine", ...], "max_runs": N}. No file, or one that is not of this form: (set(), 0), every run a process."""
+    found = read_json(Path(data) / "fleet" / "hosting.json", {})
+    kinds = found.get("kinds") if isinstance(found, dict) else None
+    if not isinstance(kinds, list):
+        return set(), 0
+    cap = found.get("max_runs")
+    return {str(k) for k in kinds if str(k) in KINDS}, cap if isinstance(cap, int) and not isinstance(cap, bool) and cap > 0 else 10 ** 6
+
+
+def spawn(argv, log_path, env):
+    """A runner as a process of its own, its output in the pilot's log."""
+    with open(log_path, "w", encoding="utf-8") as log:
+        return subprocess.Popen(argv, stdout=log, stderr=subprocess.STDOUT, start_new_session=True, env=env)
+
+
 def one_pass(root, data, dry_run, children):
     now = time.time()
     if (Path(data) / "fleet" / "STOP").exists():
@@ -650,6 +673,19 @@ def one_pass(root, data, dry_run, children):
     named = flagships(data)
     ammo = set(read_json(Path(data) / "catalog" / "ammo.json", []) or [])      # written by routemaker.py from the game's catalog
     lines = []
+    logs = Path(data) / "routes" / "logs"
+    kinds, cap = hosting(data)
+    hosted = runhost.load(data) if kinds and runhost.accepting(data, now) else None      # runs the host has; None: no host takes runs now
+    for job in [] if dry_run else runhost.take_back(data, now):
+        name, what, script = str(job.get("pilot")), str(job.get("what")), str(job.get("script"))
+        if state["orders"].get(name) != what or script not in KINDS.values():
+            lines.append("%s: `%s` dropped: the host did not take it within a minute, and the pilot's order no longer names it" % (name, what))
+            continue
+        logs.mkdir(parents=True, exist_ok=True)
+        mark = dict(os.environ, FLEET_MEMBER=os.environ.get("FLEET_MEMBER") or "dispatch", FLEET_HOLD=what)
+        children.append(spawn([sys.executable, "-I", "-B", os.path.join(str(Path(root) / "fleet"), script)] + [str(a) for a in job.get("argv") or []],
+                              logs / (name + ".log"), mark))
+        lines.append("%s: `%s` started as a process: the host did not take it within a minute" % (name, what))
     for name in orphans(fleet, state["orders"], now, ORPHANS):
         if dry_run:
             lines.append("%s runs an engine loop no runner owns: a real pass stops it" % name)
@@ -679,11 +715,14 @@ def one_pass(root, data, dry_run, children):
         orders = Path(data) / "fleet" / "orders"
         orders.mkdir(parents=True, exist_ok=True)
         (orders / (name + ".json")).write_text(json.dumps({"pilot": name, "what": what, "since": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(now))}), encoding="utf-8")
-        logs = Path(data) / "routes" / "logs"
         logs.mkdir(parents=True, exist_ok=True)
-        with open(logs / (name + ".log"), "w", encoding="utf-8") as log:
-            mark = dict(os.environ, FLEET_MEMBER=os.environ.get("FLEET_MEMBER") or "dispatch", FLEET_HOLD=what)    # the runner is the dispatcher's: division.py lets it pass
-            children.append(subprocess.Popen(command(route, name, argument, root), stdout=log, stderr=subprocess.STDOUT, start_new_session=True, env=mark))
+        mark = {"FLEET_MEMBER": os.environ.get("FLEET_MEMBER") or "dispatch", "FLEET_HOLD": what}    # the runner is the dispatcher's: division.py lets it pass
+        argv = command(route, name, argument, root)
+        if hosted is not None and route["kind"] in kinds and hosted < cap:
+            runhost.submit(data, name, what, KINDS[route["kind"]], argv[4:], mark, now)       # the pilot onwards: the host runs the script itself
+            hosted += 1
+        else:
+            children.append(spawn(argv, logs / (name + ".log"), dict(os.environ, **mark)))
     children[:] = [c for c in children if c.poll() is None]          # reap the runners that ended
     return lines
 

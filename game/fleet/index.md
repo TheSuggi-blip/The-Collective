@@ -8,7 +8,7 @@ author: Unity
 # index.md -- The Fleet's Scripts
 
 Built by `python3 -B scripts/fleet-index.py` from the docstring of every script in this
-folder; never edited by hand. Scripts listed: 29.
+folder; never edited by hand. Scripts listed: 30.
 
 - Run a script from the repository root: `python3 -I -B game/fleet/<script> <arguments>`,
   the arguments as listed under "How to Call Each".
@@ -50,6 +50,7 @@ folder; never edited by hand. Scripts listed: 29.
 | `route_run.py` | Fly one pilot along a route file: dock at each stop and do what the stop says. | Runner (`circuit` routes) |
 | `routemaker.py` | Find every way to earn that the fleet's own data shows, cost it, and write the route file for it. | Service |
 | `routes.py` | Check the route files, write their index, and attach what the runs measured. | By hand |
+| `runhost.py` | One program that flies the runs the dispatcher starts, each run as a thread instead of a process. | Service |
 | `sight.py` | What our ships see where they are: the pilots they meet, and a first read of a system nobody read. | Service |
 | `stash.py` | Store what a docked pilot carries in its own storage at that station, so that its hold is free for the next route. | By hand |
 | `store.py` | Keeps the fleet's history and its current state in one SQLite file: the runs, the price moves and the census readings with their sums by hour and by day, the members' own observations, and beside them what the fleet's own files say now. | Service |
@@ -426,6 +427,19 @@ routes.py check | index | measure                [--root <dir>] [--data <dir>]
 routes.py measure --write <route id>... | --role <role> | --all
                   writes the measured block of the routes named, of a role's plan, or of every route (the hourly
                   job); without one of the three it writes nothing and says so
+```
+
+### `runhost.py`
+
+One program that flies the runs the dispatcher starts, each run as a thread instead of a
+process.
+
+A service: it runs by itself and is never started a second time.
+
+```
+runhost.py              run forever (the service `runhost`)
+--fleet <dir>   the folder of the runners (default: this file's folder)
+--data <dir>    the unit's data folder (default /srv/collective/data)
 ```
 
 ### `sight.py`
