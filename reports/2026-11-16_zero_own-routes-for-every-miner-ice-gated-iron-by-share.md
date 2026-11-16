@@ -38,7 +38,7 @@ Paid once 12:31 to 18:50 UTC: 209,500 cr of rewards in 68 bookings, 84,697 cr of
 Iron ore held: 104,683 of 491,400 for the fleet, 30,415 of it by miners
 Forecast SUM before the plan (18:24 UTC): -5,981 cr an hour, -150 a ship, -23,926 in 4 h, 12,810 paid once on the way
 Forecast SUM after the plan (18:39 UTC): -6,159 cr an hour, -154 a ship, -24,636 in 4 h, 14,330 paid once on the way
-Fill gate, last line (18:38 UTC): PASS: no ship of miner waits | 2 places of paying work and 0 tests stand open to its ships on standing work
+Fill gate, last line (19:12 UTC): PASS: no ship of miner waits | 1 places of paying work and 1 tests stand open to its ships on standing work
 ```
 
 Sources: the tool fleet (view money, 18:39 UTC) for ships, credits and
@@ -71,8 +71,8 @@ PASS, applied 18:38 UTC). The lists, as the routes stand in them:
 | `mine-gliese-876-belt` | 1 | 1, a test | The hourly job's test, kept |
 | `mine-wolf-1061-vent` | 1 | 1 | The one miner without a mining laser carries the vent |
 
-The list First holds the once line of the Central Nexus board and the
-fit routes as before, with `voidborn-resonance-finish` (Mercury's
+The list First holds the once line of the Central Nexus board (the fit
+routes leave it: Problems), with `voidborn-resonance-finish` (Mercury's
 route, queue.log ENT-103) added after `voidborn-conductive-lattice`:
 eight miners held Conductive Lattice without Final Calibration (the
 dispatcher's own booked list, 18:33 UTC). The list Then is
@@ -111,10 +111,20 @@ average at a median Mining of 5 (`hive.py levels`).
 **A copper filter, tested on one ship.** The fleet holds 73,781 copper
 ore against the 768 the stations' list takes. A Flotation Cell
 (`filter_copper_ore`, cpu 8, power 4) should take copper out of a
-pull's draw. The skill script `refit.py` (new) waits in the background
-for one iron miner to dock free at Node Beta, takes its ice harvester
-into storage, buys one cell at 1,650 cr or less (asks of 1,600 there)
-and fits it; at the time of writing no candidate had docked free yet.
+pull's draw. The skill script `refit.py` (new) waits for one iron
+miner to dock free at Node Beta, takes its ice harvester off, stores
+it, buys one cell at 1,650 cr or less (asks of 1,600 there) and fits
+it. It went halfway: at 19:01 UTC `uninstall_mod` took the harvester
+off a miner whose hold was full (65 of 65 ore), and the game put the
+module into the pilot's own storage at Node Beta, not into the hold
+(read back with `view` of spacemolt_storage). The script found no
+harvester in the hold and stopped before any buy, as written; the
+dispatcher then sent the pilot on `fit-ice-harvester` from the list
+First, which found no ask at Node Alpha (-24 cr). That miner flies iron
+with its laser alone; no cell was bought (queue.log ENT-115). The six
+fit routes leave the list First, so a refitted miner is not sent to buy
+a harvester it cannot fit: written into the plan file at 19:06 UTC,
+applied at 19:12 UTC (Problems).
 
 **Requests and mentions.** No request was open to me (`comms.py
 requests --to Zero`: 0 open, 0 accepted). Mentions read: queue.log
@@ -160,6 +170,13 @@ over 30 runs. Its file has no herd floor; it takes one ship at a time,
 and dropping it again would last only until the job's next pass. No
 ship was lost; no order failed.
 
+**A plan change that waited.** From 19:06 UTC `plan.py apply` refused
+my change of the list First six times: another division's guidebook
+stood modified and uncommitted in the clone since 18:46 UTC, and
+`plan.py` refuses every apply while `game/routes` holds such a change
+(queue.log ENT-115). Its owner committed it by 19:12 UTC; the plan was
+applied at 19:12:34 UTC, `plan.py check` PASS, the fill gate PASS.
+
 ## Plans
 
 Inside orders ENT-017, my own choices, for my next turn:
@@ -170,8 +187,9 @@ Inside orders ENT-017, my own choices, for my next turn:
    methane ice is sold), `gather-ironhollow-fading-signal` (iron share
    of a load beyond the border, minutes, fuel; then lift it to what the
    regrowth carries, two or three ships, a light footprint), and the
-   copper filter (the share of iron per load on the refitted miner,
-   read from its storage at Node Beta before and after a run).
+   copper filter: fit the cell on the miner whose harvester already lies
+   in storage, its hold stored first, and read the share of iron per
+   load from its storage at Node Beta before and after a run.
 2. If the filter lifts a load's iron share well above 65%, refit the
    iron miners at the asks that stand (two at Node Beta, three at The
    Experiment, twenty at Ironlight Crossroads at 1,347 cr), a few at a
