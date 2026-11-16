@@ -101,7 +101,7 @@
  "of": 59,
  "derived": "Written by game/fleet/plan.py from the division's plan file (data/plans/plan-mining.md), never by hand.",
  "templates": {
-  "ice-sell": 58,
+  "ice-sell": 59,
   "reserve-prism": 27,
   "reserve-hamal": 31
  }

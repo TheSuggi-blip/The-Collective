@@ -62,7 +62,7 @@ Templates its ships fly (a ship's own routes name one as `@<name>`):
 
 | Template | Ships of this role on it |
 |---|---|
-| [ice-sell](templates-mining.md) | 58 |
+| [ice-sell](templates-mining.md) | 59 |
 | [reserve-prism](templates-mining.md) | 27 |
 | [reserve-hamal](templates-mining.md) | 31 |
 
