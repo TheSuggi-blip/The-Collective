@@ -8,7 +8,7 @@ author: Unity
 # index.md -- The Fleet's Scripts
 
 Built by `python3 -B scripts/fleet-index.py` from the docstring of every script in this
-folder; never edited by hand. Scripts listed: 24.
+folder; never edited by hand. Scripts listed: 25.
 
 - Run a script from the repository root: `python3 -I -B game/fleet/<script> <arguments>`,
   the arguments as listed under "How to Call Each".
@@ -51,6 +51,7 @@ folder; never edited by hand. Scripts listed: 24.
 | `stash.py` | Store what a docked pilot carries in its own storage at that station, so that its hold is free for the next route. | By hand |
 | `store.py` | Keeps the fleet's history in one SQLite file: the runs, the price moves and the census readings, with their sums by hour and by day. | Service |
 | `taxes.py` | Keeps each pilot's weekly tax apart, so that no run and no hour reads it as a loss. | By hand |
+| `wallet.py` | No ship of ours goes broke: a ship whose wallet runs low is given credits by a rich ship of its division. | By hand |
 
 ## How to Call Each
 
@@ -410,4 +411,17 @@ taxes.py --all           ask every pilot, whatever the record says
 taxes.py --dry-run       print what would be booked, write nothing
 taxes.py show            the record: per assessment the pilots and the credits
 --data <dir>             the unit's data folder (default: the fleet's)
+```
+
+### `wallet.py`
+
+No ship of ours goes broke: a ship whose wallet runs low is given credits by a rich ship
+of its division.
+
+Run by hand.
+
+```
+wallet.py [check]            every wallet against the floors; HALT for a pilot under 3,000 cr
+wallet.py topup [--dry-run]  give each pilot under LOW credits up to TARGET from a rich ship of its division
+--data <dir>                 the unit's data folder (default: the fleet's)
 ```
