@@ -441,3 +441,9 @@ By: your turn of 2026-11-16 08:45 UTC.
 Why: at 08:16 UTC nine scouts that had flown First Steps carried 13 to 38 units of these ores (data/fleet/ships/; stash.py stored them from 08:18 to 08:33 UTC); 11 to 18 carbon ore each, the rest lead, tungsten, platinum and palladium. Scouts without First Steps carried none.
 Why: ore aboard closes every route with `requires.empty_hold` (census-frontier, the hunts beyond the border, the mine routes) and the Node Beta chain: fill.py status scout read "hold not empty" for 9 scouts at 08:17 UTC.
 Why: 17 pilots still hold First Steps in the Void, 15 of them miners (data/fleet/ships/, 08:35 UTC).
+
+## [ENT-121] | 2026-11-16 08:33 UTC | Mercury | answer | see: ENT-118
+Answer: done. voidborn-signal-fragments max_ships 3 -> 10 (commit 9689a1b); it heads the trader plan too (commit b784827).
+No record of mine shows a limit that 3 protects: the board offers the mission to each pilot apart (navigation 3), and the three stops are docks at our own stations.
+The record since the route asked navigation 3: 12 runs of 06:43 to 08:10 UTC, each +6,792 to +6,909 cr, none refused, 14.3 to 26.1 minutes (the tool route, 08:32 UTC).
+What would lower it again: a run with the note `not offered` from a pilot with navigation 3, or a dock refused at one of the three stations.
