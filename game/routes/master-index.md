@@ -38,7 +38,7 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 | Role | Kept by | Routes | The first three, in order | Planned | Ships |
 |---|---|---|---|---|---|
 | [command](plan-command.md) | Unity | 38 | voidborn-first-steps-board > voidborn-collective-provides > voidborn-signal-protocol | 0 | 6 |
-| [drone](plan-drone.md) | Apophis | 40 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 5 | 30 |
+| [drone](plan-drone.md) | Apophis | 41 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 5 | 30 |
 | [hauler](plan-hauler.md) | Apollo | 39 | voidborn-resonance-finish > voidborn-atmospheric-extraction > voidborn-hardware-cargo | 5 | 20 |
 | [miner](plan-miner.md) | Zero | 36 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 4 | 40 |
 | [scout](plan-scout.md) | Oracle | 23 | voidborn-first-steps-board > voidborn-network-expansion > voidborn-collective-provides | 6 | 20 |
