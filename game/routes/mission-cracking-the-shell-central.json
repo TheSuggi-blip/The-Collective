@@ -1,8 +1,8 @@
 {
  "id": "mission-cracking-the-shell-central",
  "kind": "circuit",
- "title": "Cracking the Shell: 1500 cr at The Core",
- "note": "Written by routemaker.py from the board and the order books: goods for about 0 cr, reward 1500 cr. A test: one ship; whether the mission hands its goods out at the accept is not known until one accept with an empty hold. Added as a test by fill.py on 2026-11-16 01:16 UTC (Unity): one ship until its first RESULT line is read. 2026-11-16 05:16 UTC (Apophis): `requires.booked` First Hunt: Belt-Grazers (requests.log ENT-102): the board offers the mission only to a pilot that holds First Hunt booked (7 of 7 with, 0 of 12 without, 2026-11-16 01:16 to 03:22 UTC); a refusal is now no try.",
+ "title": "Cracking the Shell: 1,500 cr once; three pressblisters at Alnair Ice Fields (lawless), accepted and handed in at Central Nexus",
+ "note": "Written by routemaker.py from the board and the order books: goods for about 0 cr, reward 1500 cr. A test: one ship; whether the mission hands its goods out at the accept is not known until one accept with an empty hold. Added as a test by fill.py on 2026-11-16 01:16 UTC (Unity): one ship until its first RESULT line is read. 2026-11-16 05:16 UTC (Apophis): `requires.booked` First Hunt: Belt-Grazers (requests.log ENT-102): the board offers the mission only to a pilot that holds First Hunt booked (7 of 7 with, 0 of 12 without, 2026-11-16 01:16 to 03:22 UTC); a refusal is now no try. 2026-11-16 05:17 UTC (Apophis): the hunt moved from Node Gamma Ice Belt, which read no pressblister from 01:50 UTC on (rime-grazers only, 2 at 05:05 UTC), to Alnair Ice Fields: 8 pressblisters (50 hull), 15 deuteron-slugs and 7 hollow-pilgrims, no predator, at 01:55 UTC (data/wildlife/); Mining's mine-alnair-ice-fields works there, so the hunter is also the presence of orders F16. The mission asks 'Hunt 3 Pressblisters at an ice field': any ice field. Beyond policed space (F13): `alone` and an empty hold. A test of the place with one ship until its first RESULT line.",
  "once": true,
  "max_ships": 1,
  "one_time": [
@@ -19,7 +19,7 @@
    ],
    "hunt": [
     {
-     "at": "node_gamma:node_gamma_ice_belt",
+     "at": "alnair:alnair_ice_fields",
      "species": [
       "pressblister"
      ],
@@ -27,7 +27,8 @@
      "minutes": 35,
      "for": [
       "Cracking the Shell"
-     ]
+     ],
+     "alone": true
     }
    ]
   },
@@ -43,6 +44,7 @@
   "cph_per_ship": 810
  },
  "requires": {
-  "booked": "First Hunt: Belt-Grazers"
+  "booked": "First Hunt: Belt-Grazers",
+  "empty_hold": true
  }
 }
