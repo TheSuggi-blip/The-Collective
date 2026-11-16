@@ -1,29 +1,29 @@
 {
- "id": "census-voidborn",
- "kind": "census",
- "title": "Read one Voidborn system whole: deposits, creatures, order book, mission board",
- "note": "Keeps data/scouting, data/wildlife, data/market and data/missions fresh; the stalest system is read first. every_minutes 30 holds the hour: from 19:20 to 21:48 UTC on 2026-11-15, 40 gaps between two reads of one system, 34 to 48 minutes, none over 60 (runs.jsonl). max_ships 3 counts only the census orders of this route's systems since dispatch.py fa17b9c (2026-11-15 21:32 UTC); it stood at 7 from 21:20 to 21:57 UTC while every census order of the fleet counted against it.",
- "systems": [
-  "nexus_prime",
-  "node_alpha",
-  "node_beta",
-  "node_gamma",
-  "synchrony",
-  "the_experiment",
-  "acubens",
-  "gsc_0027",
-  "hamal",
-  "pherkad"
- ],
- "every_minutes": 30,
- "max_ships": 3,
- "measured": {
-  "date": "2026-11-16",
-  "runs": 191,
-  "minutes": 7,
-  "credits_per_run": -50,
-  "cph_per_ship": -360,
-  "hours": 12,
-  "last_run": "2026-11-16T20:42:40Z"
- }
+  "id": "census-voidborn",
+  "kind": "census",
+  "title": "Read one Voidborn system whole: deposits, creatures, order book, mission board",
+  "note": "Keeps data/scouting, data/wildlife, data/market and data/missions fresh; the stalest system is read first. every_minutes 30 holds the hour: from 19:20 to 21:48 UTC on 2026-11-15, 40 gaps between two reads of one system, 34 to 48 minutes, none over 60 (runs.jsonl). max_ships 3 counts only the census orders of this route's systems since dispatch.py fa17b9c (2026-11-15 21:32 UTC); it stood at 7 from 21:20 to 21:57 UTC while every census order of the fleet counted against it. max_ships 3 -> 4 at 2026-11-16 23:21 UTC: 58 gaps of the four hours to 23:17 UTC on 2026-11-16 had a median of 38 minutes and two over 60 (76 and 91), so the hour failed twice with three ships (intel_turn_check.py GAPS).",
+  "systems": [
+    "nexus_prime",
+    "node_alpha",
+    "node_beta",
+    "node_gamma",
+    "synchrony",
+    "the_experiment",
+    "acubens",
+    "gsc_0027",
+    "hamal",
+    "pherkad"
+  ],
+  "every_minutes": 30,
+  "max_ships": 4,
+  "measured": {
+    "date": "2026-11-16",
+    "runs": 191,
+    "minutes": 7,
+    "credits_per_run": -50,
+    "cph_per_ship": -360,
+    "hours": 12,
+    "last_run": "2026-11-16T20:42:40Z"
+  }
 }
