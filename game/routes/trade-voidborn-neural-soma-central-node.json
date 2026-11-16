@@ -1,0 +1,29 @@
+{
+ "id": "trade-voidborn-neural-soma-central-node",
+ "kind": "circuit",
+ "title": "Voidborn Neural Soma: bought at The Core for 285 cr, sold at Node Gamma Relay Station for 622 cr",
+ "note": "Written by routemaker.py from two order books; 4 units cost about 1140 cr. An estimate, not a measurement. A test: one ship; the buy and the sale carry price limits. Added as a test by fill.py on 2026-11-16 01:31 UTC (Unity): one ship until its first RESULT line is read.",
+ "max_ships": 1,
+ "min_credits": 4254,
+ "stops": [
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "buy": [
+    {
+     "item": "voidborn_neural_soma",
+     "qty": 4,
+     "max_price": 294
+    }
+   ]
+  },
+  {
+   "at": "node_gamma:node_gamma_relay_station:node_gamma_relay_station",
+   "sell": [
+    {
+     "item": "voidborn_neural_soma",
+     "min_price": 559
+    }
+   ]
+  }
+ ]
+}

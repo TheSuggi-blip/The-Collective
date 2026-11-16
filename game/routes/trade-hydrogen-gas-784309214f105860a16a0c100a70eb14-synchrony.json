@@ -1,0 +1,29 @@
+{
+ "id": "trade-hydrogen-gas-784309214f105860a16a0c100a70eb14-synchrony",
+ "kind": "circuit",
+ "title": "Hydrogen Gas: bought at Ironlight Crossroads for 6 cr, sold at Synchrony Hub for 28 cr",
+ "note": "Written by routemaker.py from two order books; 65 units cost about 390 cr. An estimate, not a measurement. A test: one ship; the buy and the sale carry price limits. Added as a test by fill.py on 2026-11-16 01:31 UTC (Unity): one ship until its first RESULT line is read.",
+ "max_ships": 1,
+ "min_credits": 3429,
+ "stops": [
+  {
+   "at": "lhs_1140:0321b3e4406021575337b7be26e53dd7:784309214f105860a16a0c100a70eb14",
+   "buy": [
+    {
+     "item": "hydrogen_gas",
+     "qty": 65,
+     "max_price": 7
+    }
+   ]
+  },
+  {
+   "at": "synchrony:synchrony_hub:synchrony_hub",
+   "sell": [
+    {
+     "item": "hydrogen_gas",
+     "min_price": 25
+    }
+   ]
+  }
+ ]
+}

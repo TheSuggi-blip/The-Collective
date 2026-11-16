@@ -62,6 +62,9 @@ Work that repeats and has no measured figure yet: one ship until its first RESUL
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
+| [trade-voidborn-neural-soma-central-node](trade-voidborn-neural-soma-central-node.json) | circuit | home space | Voidborn Neural Soma: bought at The Core for 285 cr, sold at Node Gamma Relay Station for 622 cr | up to 1 ships, from 4,254 cr | TBD | TBD | TBD | TBD | -- |
+| [trade-voidborn-neural-soma-node-node](trade-voidborn-neural-soma-node-node.json) | circuit | home space | Voidborn Neural Soma: bought at Node Beta Industrial Station for 268 cr, sold at Node Gamma Relay Station for 622 cr | up to 1 ships, from 3,589 cr | TBD | TBD | TBD | TBD | -- |
+| [trade-hydrogen-gas-784309214f105860a16a0c100a70eb14-synchrony](trade-hydrogen-gas-784309214f105860a16a0c100a70eb14-synchrony.json) | circuit | beyond the border, 6 jumps | Hydrogen Gas: bought at Ironlight Crossroads for 6 cr, sold at Synchrony Hub for 28 cr | up to 1 ships, from 3,429 cr | TBD | TBD | TBD | TBD | -- |
 | [trade-plasma-gas-784309214f105860a16a0c100a70eb14-node](trade-plasma-gas-784309214f105860a16a0c100a70eb14-node.json) | circuit | beyond the border, 6 jumps | Plasma Gas: bought at Ironlight Crossroads for 52 cr, sold at Node Beta Industrial Station for 104 cr | up to 1 ships, from 3,915 cr | TBD | TBD | TBD | TBD | -- |
 | [mine-keid-ice-shelf](mine-keid-ice-shelf.json) | mine | beyond the border, 5 jumps | Keid Ice Shelf: water_ice, deuterium_ice; sold at Node Alpha Processing Station | up to 1 ships, needs ice_harvester_i, empty hold | TBD | TBD | TBD | TBD | -- |
 
