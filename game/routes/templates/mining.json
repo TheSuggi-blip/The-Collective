@@ -1,0 +1,28 @@
+{
+ "division": "mining",
+ "owner": "Zero",
+ "templates": {
+  "ice-sell": {
+   "title": "Ice and methane sold where a bid stands: stored ice first, then the ice fields",
+   "routes": [
+    "drain-methane-experiment",
+    "drain-ice-nexus",
+    "drain-ice-node-alpha",
+    "carry-ice-node-alpha-nexus",
+    "carry-ice-synchrony-nexus",
+    "carry-ice-experiment-nexus",
+    "mine-cryogenic-reserve",
+    "mine-achernar-frost-ring-nexus",
+    "mine-ruchbah-ice-belt-nexus",
+    "mine-wolf-1061-frozen-drift-nexus",
+    "mine-nova-terra-ice-shelf",
+    "mine-wolf-1061-vent"
+   ],
+   "trains": [
+    "mining",
+    "piloting"
+   ],
+   "note": "Every route here is gated: a drain or carry opens only on stored ice and a fresh bid (requires.stored, requires.bid); a mine route only on a deep water-ice order at Central Nexus (300 units at its best price) and with an Ice Harvester I fitted. A drain needs no harvester. Stored ice is sold before new ice is mined."
+  }
+ }
+}

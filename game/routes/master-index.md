@@ -40,7 +40,7 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 | [command](plan-command.md) | Unity | 41 | voidborn-first-steps-board > voidborn-collective-provides > voidborn-signal-protocol | 0 | 6 |
 | [drone](plan-drone.md) | Apophis | 45 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 5 | 50 |
 | [hauler](plan-hauler.md) | Apollo | 43 | voidborn-resonance-finish > voidborn-atmospheric-extraction > voidborn-hardware-cargo | 5 | 40 |
-| [miner](plan-miner.md) | Zero | 39 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 4 | 60 |
+| [miner](plan-miner.md) | Zero | 39 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 4 | 59 |
 | [scout](plan-scout.md) | Oracle | 26 | voidborn-first-steps-board > voidborn-network-expansion > voidborn-collective-provides | 6 | 30 |
 | [sentinel](plan-sentinel.md) | Unity | 39 | voidborn-first-steps-board > voidborn-collective-provides > voidborn-signal-protocol | 0 | 20 |
 | [trader](plan-trader.md) | Mercury | 33 | voidborn-first-steps-board > voidborn-network-expansion > voidborn-collective-provides | 5 | 40 |
@@ -52,6 +52,7 @@ Named lists of routes a ship's own routes in its division's plan file name as `@
 | Division | Kept by | Templates | Page |
 |---|---|---|---|
 | command | Unity | ice-and-hunt | [templates-command.md](templates-command.md) |
+| mining | Zero | ice-sell | [templates-mining.md](templates-mining.md) |
 
 ## The Guidebooks
 
