@@ -107,6 +107,13 @@ class Tree(unittest.TestCase):
                               + ["--root", str(self.root), "--data", str(self.data), "--profiles", str(self.profiles)],
                               stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, env=environ)
 
+    def start_it(self, member, *args):
+        """The script started and not waited for: (the process, its environment as run_it builds it)."""
+        environ = {"PATH": os.environ.get("PATH", "/usr/bin:/bin"), "HOME": self.temp.name, "HERMES_SESSION_PROFILE": member}
+        return subprocess.Popen([sys.executable, "-I", "-B", str(FLEET / "fleetfile.py")] + list(args)
+                                + ["--root", str(self.root), "--data", str(self.data), "--profiles", str(self.profiles)],
+                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, env=environ)
+
     def git(self, folder, *args):
         return subprocess.run(["git", "-C", str(folder)] + list(args), stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
                               env={"PATH": os.environ.get("PATH", "/usr/bin:/bin"), "HOME": self.temp.name}).stdout
@@ -278,6 +285,21 @@ class CommitTests(Tree):
         done = self.run_it("apollo", "--commit")
         self.assertIn("Apollo: written; not committed: no git repository", done.stdout)
         self.assertEqual(self.git(self.profiles, "rev-list", "--all", "--count"), "0\n")             # nothing was committed into the parent
+
+    def test_a_second_run_waits_for_the_first_and_a_print_never_waits(self):
+        # the hourly job (Unity, all members) and a member's preflight write and commit the same file
+        import fcntl
+        with open(self.data / "fleet" / "fleetfile.lock", "w") as held:
+            fcntl.flock(held, fcntl.LOCK_EX)                                                      # another run is at work
+            done = self.run_it("zero", "--print")
+            self.assertEqual((done.returncode, done.stdout.startswith(BEGIN)), (0, True))         # a print writes nothing and asks for no lock
+            waiting = self.start_it("zero")
+            with self.assertRaises(subprocess.TimeoutExpired):
+                waiting.wait(timeout=2.5)
+            self.assertNotIn(BEGIN, self.fleet_md("Zero").read_text())                            # nothing written while the other run holds the lock
+        out, _err = waiting.communicate(timeout=60)                                               # the lock is free: the run goes through
+        self.assertEqual((waiting.returncode, out.split(":")[0:2]), (0, ["Zero", " written"]))
+        self.assertIn(BEGIN, self.fleet_md("Zero").read_text())
 
 
 if __name__ == "__main__":

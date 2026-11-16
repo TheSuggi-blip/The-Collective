@@ -19,6 +19,8 @@ RULES:
     than the line that carries the time: a run that finds nothing new prints `unchanged`.
   - --commit commits FLEET.md by path in the workspace's own git repository as the member that runs the
     script, only when the file had no uncommitted change before the write.
+  - One run writes at a time (the lock data/fleet/fleetfile.lock, held from the reading to the commit):
+    the hourly job and a member's preflight never write or commit the same file together.
   - The figures are the fleet's own: ships on a route counted as the dispatcher counts them (fill.py), a
     route's group and figure from routes.py, a run's credits by routes.earned; what no file holds is `--`.
   - No ship's position beyond the system of a ship that waits: the file is private, the habit is not.
@@ -34,6 +36,7 @@ USAGE:
 Stdlib only. ASCII only.
 """
 
+import fcntl
 import os
 import re
 import stat
@@ -311,6 +314,14 @@ def main(argv=None):
         if me != "Unity" and targets != [me]:
             print("REFUSED: %s writes its own FLEET.md only; the Fleet Admiral may write any (asked: %s)" % (me, words[0]))
             return 2
+    lock = None
+    if not printing:                                # one writer at a time, from the reading to the commit; the lock goes with the process
+        try:
+            (Path(data) / "fleet").mkdir(parents=True, exist_ok=True)
+            lock = open(Path(data) / "fleet" / "fleetfile.lock", "w")
+            fcntl.flock(lock, fcntl.LOCK_EX)
+        except OSError:
+            lock = None                             # a data folder this shell cannot write: the write below is still one rename
     seen = read_state(root, data, time.time())
     halted = False
     for member in targets:
