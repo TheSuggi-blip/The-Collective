@@ -94,7 +94,7 @@ Planned:
 
 ## hauler
 
-Kept by Apollo. Routes: 13.
+Kept by Apollo. Routes: 14.
 
 | # | Route | Group | Zone | Open to | Credits per ship-hour |
 |---|---|---|---|---|---|
@@ -109,8 +109,9 @@ Kept by Apollo. Routes: 13.
 | 9 | [voidborn-first-steps](voidborn-first-steps.json) | Once per Pilot | home space | once per pilot, up to 2 ships | one-time |
 | 10 | [hunt-dimming-pocket-veil-ray](hunt-dimming-pocket-veil-ray.json) | Tests | beyond the border, 4 jumps | up to 1 ships, empty hold | TBD |
 | 11 | [hunt-denebola-fractured-prism-veil-ray](hunt-denebola-fractured-prism-veil-ray.json) | Tests | beyond the border, 5 jumps | up to 1 ships, empty hold | TBD |
-| 12 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -600 |
-| 13 | [park](park.json) | Reading and Waiting | home space | the park route | -550 |
+| 12 | [fit-gas-harvester-hauler](fit-gas-harvester-hauler.json) | Fitting | home space | once per pilot, up to 1 ships, 1 pilots in all, needs mining_laser_i, without gas_harvester_i, from 6,000 cr | TBD |
+| 13 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -600 |
+| 14 | [park](park.json) | Reading and Waiting | home space | the park route | -550 |
 
 Planned:
 
