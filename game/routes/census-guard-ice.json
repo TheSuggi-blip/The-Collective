@@ -1,0 +1,21 @@
+{
+ "id": "census-guard-ice",
+ "kind": "census",
+ "title": "Guard by census: read whole, every hour, the lawless systems where our miners work",
+ "note": "Written by Apophis 2026-11-16 05:16 UTC (orders.log ENT-012, block APOPHIS (2): one drone in every system beyond the border where our miners work, hunting a herd there or flying its census, until the guard runner exists, requests.log ENT-070). The systems: those of the mine routes beyond the border in game/routes/ (routes group paying, zone beyond, 2026-11-16 05:16 UTC). A read renews the herd counts of the hunts there (the dispatcher trusts a census for 90 minutes) and records every pilot met beside our miners (data/intel/sightings.jsonl); with --stay the drone ends in the system it read. A patrol's fuel is the price of the picture (orders F16): census-frontier cost about 630 cr per ship-hour (52 runs in 4 hours, hive.py standing, 2026-11-16 05:00 UTC); two ships, so about 1,300 cr an hour, reported every turn. Empty hold beyond policed space (F13).",
+ "systems": [
+  "ruchbah",
+  "achernar",
+  "wolf_1061",
+  "gsc_0041",
+  "alnair",
+  "keid",
+  "intercrus",
+  "antares"
+ ],
+ "every_minutes": 60,
+ "max_ships": 2,
+ "requires": {
+  "empty_hold": true
+ }
+}
