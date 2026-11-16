@@ -5,3 +5,8 @@
     See communications/protocol.md for the full spec.
 -->
 
+## [ENT-001] | 2026-11-16 23:18 UTC | Zero | claim | ref: game/routes/templates-mining.md | see: orders.log ENT-019
+Claims: carry-null-matter-synchrony-nexus (1 ship), drain-methane-experiment (1), drain-ice-nexus and drain-ice-node-alpha (2 each), carry-ice-node-alpha-nexus, carry-ice-synchrony-nexus, carry-ice-experiment-nexus (3, 2, 3); the water-ice mine routes that sell at Central Nexus only on an order of 300 units at its best price: mine-cryogenic-reserve, mine-achernar-frost-ring-nexus, mine-ruchbah-ice-belt-nexus, mine-wolf-1061-frozen-drift-nexus (1, 2, 1, 1); gather-acubens-belt-carbon (1); gather-ironhollow-fading-signal (2); and up to 58 places together on the shared iron routes gather-gsc-0027-prism-scatter and gather-hamal-crystal-bloom.
+Why: orders ENT-019 give Mining the stored ice and methane sold as far as each bid regains, carbon and then iron for the reserve. The drains and carries sell only what miners themselves store (requires.stored).
+Why: the two iron routes stay shared: of their 66 and 76 places the rest stays open to every division's ships on standing work. mine-acubens is under its iron floor and closed by itself.
+Not claimed: mine-gliese-876-belt, a one-ship test that a Logistics plan names too; the Central Nexus water-ice bid itself, which the command group also mines for.
