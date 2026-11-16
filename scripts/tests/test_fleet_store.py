@@ -206,6 +206,28 @@ class StoreTests(unittest.TestCase):
         self.assertEqual(self.live("SELECT pilot, credits FROM runs ORDER BY pilot"), [("p1", routes.earned(hunt) - 50), ("p2", 550.0)])
         self.assertEqual(self.live("SELECT runs, read_minutes, credits, one_time FROM route_hour"), [(2, 60.0, 800.0, 100.0)])
 
+    def test_a_mended_record_has_the_raw_runs_counted_again(self):
+        self.first_lines()
+        self.one()
+        self.assertEqual(self.live("SELECT credits FROM runs WHERE pilot = 'p2'"), [(50.0,)])
+        self.assertEqual(self.live("SELECT value FROM meta WHERE key = 'earned.rule'"), [(store.EARNED_RULE,)])
+        fleet = self.data / "fleet"
+        fleet.mkdir(exist_ok=True)
+        os.environ["FLEET_TAXES"] = str(fleet / "taxes.json")                                  # the gifts lie beside the tax record
+        self.addCleanup(os.environ.__setitem__, "FLEET_TAXES", os.devnull)
+        at = calendar.timegm(time.strptime("2026-11-16T09:25:00", "%Y-%m-%dT%H:%M:%S"))
+        (fleet / "gifts.jsonl").write_text(json.dumps({"at": at, "from": "p2", "to": "p9", "credits": 30}) + "\n")   # p2 gave 30 cr while its run flew
+        self.assertEqual(self.one()["recounted"], 0)                                           # nobody asked: the rows stand
+        self.assertEqual(self.live("SELECT credits FROM runs WHERE pilot = 'p2'"), [(50.0,)])
+        self.assertEqual(store.main(["recount", "--data", str(self.data)]), 0)
+        out = self.one()
+        self.assertEqual((out["recounted"], out["published"]), (1, True))
+        self.assertIn("1 runs counted again", store.said(out))
+        self.assertEqual(self.live("SELECT credits FROM runs WHERE pilot = 'p2'"), [(80.0,)])
+        self.assertEqual(self.live("SELECT credits FROM route_hour WHERE route = 'r1'"), [(280.0,)])    # 200 + 80: the hour is summed again
+        self.assertFalse((self.data / "store" / "recount").exists())
+        self.assertEqual(self.one()["recounted"], 0)
+
     def test_six_daily_backups_leave_five(self):
         days = [at("2026-11-%02dT00:05:00Z" % d) for d in range(10, 16)]
         for day in days:

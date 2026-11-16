@@ -563,7 +563,7 @@ def losing(routes, rows, now):
             continue
         entry = sums.setdefault(route["id"], [0, 0])
         entry[0] += 1
-        entry[1] += (after - before) + taxes.in_run(row) - (0 if route.get("once") else (row.get("one_time") or 0))
+        entry[1] += (after - before) + taxes.in_run(row) + routefiles.moved(row) - (0 if route.get("once") else (row.get("one_time") or 0))
     return {rid: (runs, int(total)) for rid, (runs, total) in sums.items() if runs >= 2 and total < 0}
 
 
@@ -591,7 +591,7 @@ def lately_losing(routes, rows, now):
             started = calendar.timegm(time.strptime(row.get("started") or "", "%Y-%m-%dT%H:%M:%SZ"))
         except ValueError:
             continue
-        last.setdefault(route["id"], []).append((started, (after - before) + taxes.in_run(row) - (row.get("one_time") or 0)))
+        last.setdefault(route["id"], []).append((started, (after - before) + taxes.in_run(row) + routefiles.moved(row) - (row.get("one_time") or 0)))
     out = {}
     for rid, runs in last.items():
         recent = sorted(runs)[-RECENT:]

@@ -443,6 +443,9 @@ A service: it runs by itself and is never started a second time.
 ```
 store.py serve [--every 60]     run forever (the service `store`)
 store.py once                   one pass, then stop
+store.py recount                ask the writer to count every raw run kept again by the fleet's one rule
+                                (routes.earned) and to sum its hours again: after a record that rule reads
+                                was mended (the tax record, the wallet guard's gifts)
 store.py status                 from the read copy: rows and newest row of each table, age of the copy, the
                                 snapshot tables with the age of their newest source, the files not read
 --data <dir>                    the unit's data folder (default /srv/collective/data)

@@ -589,6 +589,24 @@ class RouteGateTests(Tree):
         self.routes.measure(str(self.root), str(self.data), True)
         self.assertEqual((self.root / "routes" / "mine.json").stat().st_mtime_ns, stamp)          # 3 runs, the same rate: untouched
 
+    def test_a_top_up_between_our_own_ships_is_nobodys_earning(self):
+        # 2026-11-16: the wallet guard gave the ships born that day about 19,000 cr each out of ships on standing work; their routes read -2,000 cr a ship-hour
+        fleet = self.data / "fleet"
+        fleet.mkdir(parents=True, exist_ok=True)
+        os.environ["FLEET_TAXES"] = str(fleet / "taxes.json")                                  # the gifts lie beside the tax record
+        self.addCleanup(os.environ.__setitem__, "FLEET_TAXES", os.devnull)
+        now = int(time.time())
+        text = lambda t: time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(t))
+        (fleet / "gifts.jsonl").write_text(json.dumps({"at": now - 1800, "from": "miner-1", "to": "miner-9", "credits": 19000}) + "\n"
+                                           + json.dumps({"at": now - 1700, "from": "miner-1", "to": "miner-8", "credits": 0, "unsure": 19000}) + "\n" + "not json\n")
+        giver = {"route": "mine", "kind": "mine", "pilot": "miner-1", "minutes": 45, "delta": -19120, "credits_before": 90000, "credits_after": 70880, "started": text(now - 3000)}
+        taker = dict(giver, pilot="miner-9", delta=18880, credits_before=900, credits_after=19780)
+        earlier = dict(giver, started=text(now - 4 * 3600), delta=-120)                         # a run that ended before the gift
+        other = dict(giver, pilot="miner-2", delta=-120)
+        self.assertEqual([self.routes.moved(r) for r in (giver, taker, earlier, other)], [19000, -19000, 0, 0])
+        self.assertEqual([self.routes.earned(r) for r in (giver, taker, earlier, other)], [-120, -120, -120, -120])
+        self.assertEqual(self.routes.moved({"route": "mine", "pilot": "miner-1"}), 0)           # a row without a start
+
     def test_a_hunt_is_not_credited_with_goods_it_carried_in(self):
         rows = [{"route": "rays", "kind": "hunt", "pilot": "drone-1", "minutes": 30, "delta": 1140, "goods": {"carapace": 3}, "sold": {"curd": [4, 330, 1320]},
                  "credits_before": 20000, "credits_after": 21140, "started": self.started(2)},

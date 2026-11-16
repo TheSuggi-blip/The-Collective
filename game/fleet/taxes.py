@@ -97,16 +97,22 @@ def paid(pilot, start, end, data=None):
     return sum(amount for at, amount in by_pilot(data).get(pilot, ()) if start <= at <= end)
 
 
-def in_run(row, data=None):
-    """Credits of weekly tax taken from the row's pilot while its run was in flight: from LAG seconds before its start
-    (the first wallet reading can lag the game) to its end and the seconds its last wallet reading may take. 0 for a row
-    without a start."""
+def span(row):
+    """(first, last) second in which a movement of the pilot's wallet falls into the row's run: from LAG seconds before
+    its start (the first wallet reading can lag the game) to its end and the seconds its last wallet reading may take.
+    None for a row without a start. The one span: the tax here and the wallet guard's top-ups (routes.moved) use it."""
     try:
         start = calendar.timegm(time.strptime(str(row.get("started"))[:19], "%Y-%m-%dT%H:%M:%S"))
     except ValueError:
-        return 0
+        return None
     minutes = row.get("minutes") if isinstance(row.get("minutes"), (int, float)) else 0
-    return paid(row.get("pilot"), start - LAG, start + minutes * 60 + SLACK, data)
+    return start - LAG, start + minutes * 60 + SLACK
+
+
+def in_run(row, data=None):
+    """Credits of weekly tax taken from the row's pilot while its run was in flight (span). 0 for a row without a start."""
+    found = span(row)
+    return paid(row.get("pilot"), found[0], found[1], data) if found else 0
 
 
 def ask(pilot):

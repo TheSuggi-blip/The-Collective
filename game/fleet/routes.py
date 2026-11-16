@@ -40,6 +40,8 @@ RULES:
     with one route or more that has a route file, and carries its division's Admiral as `owner`.
   - A hunt is not credited with what it got for goods it carried in from an
     earlier run: those were earned on another route.
+  - A run is not credited or charged with what another hand of ours moved through its pilot's wallet
+    while it flew: the wallet guard's top-ups between our own ships (wallet.py), like the weekly tax.
   - A run that read no wallet (no credits before and after, both 0, or the note
     `wallet not read`) counts for nothing: a route whose runs are all such has
     no figure, and a figure built on them is taken out of its file.
@@ -627,11 +629,51 @@ def write_index(root):
     return done
 
 
+GIFTS = {"path": None, "stamp": None, "rows": []}      # the wallet guard's top-ups, read again only when the file changed
+
+
+def gifts(data=None):
+    """[(epoch, giver, taker, credits)] of the wallet guard's top-ups (wallet.py: data/fleet/gifts.jsonl). The file lies
+    beside the tax record, so what points that record elsewhere (FLEET_TAXES, a test) points this one there too."""
+    path = Path(taxes.record_file(data)).with_name("gifts.jsonl")
+    try:
+        found = path.stat()
+    except OSError:
+        return []
+    stamp = (found.st_mtime_ns, found.st_size)
+    if GIFTS["path"] != str(path) or GIFTS["stamp"] != stamp:
+        rows = []
+        try:
+            with open(path, encoding="utf-8") as handle:
+                for line in handle:
+                    try:
+                        row = json.loads(line)
+                    except ValueError:
+                        continue
+                    if isinstance(row, dict) and all(isinstance(row.get(key), (int, float)) and not isinstance(row.get(key), bool) for key in ("at", "credits")):
+                        rows.append((row["at"], str(row.get("from") or ""), str(row.get("to") or ""), row["credits"]))
+        except OSError:
+            return []
+        GIFTS.update(path=str(path), stamp=stamp, rows=rows)
+    return GIFTS["rows"]
+
+
+def moved(row, data=None):
+    """Credits another hand of ours took out of (+) or put into (-) the row's pilot while its run flew (taxes.span): the
+    wallet guard's top-ups between our own ships. Nobody earned or lost them, so no route is credited or charged with
+    them: 2026-11-16, the guard's gifts to a hundred new ships read as a loss of 298,508 cr an hour for the fleet."""
+    pilot, found = row.get("pilot"), taxes.span(row)
+    if not pilot or not found:
+        return 0
+    return sum(credits * ((giver == pilot) - (taker == pilot)) for at, giver, taker, credits in gifts(data) if found[0] <= at <= found[1])
+
+
 def earned(row):
     """A run's credits without the sale of goods it carried in (a hunt that sells another place's goods did not earn
-    them) and without the weekly tax the game took from its pilot while it flew (taxes.py): the one rule for what a run
-    earned, read by hive.py, the store and the measured figures."""
-    delta = (row.get("delta") or 0) + taxes.in_run(row)
+    them), without the weekly tax the game took from its pilot while it flew (taxes.py) and without what the wallet
+    guard moved through its pilot's wallet (moved): the one rule for what a run earned, read by hive.py, the store, the
+    dispatcher's loss stop and the measured figures."""
+    delta = (row.get("delta") or 0) + taxes.in_run(row) + moved(row)
     if row.get("kind") != "hunt":
         return delta
     gained, carried = row.get("goods") or {}, 0.0

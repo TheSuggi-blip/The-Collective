@@ -54,6 +54,45 @@ class WalletTests(unittest.TestCase):
         self.wallet.main(["topup", "--data", str(self.data)])                                  # the wallets still read low: no second gift
         self.assertEqual(sent, [])
 
+    def test_a_gate_that_does_not_answer_ends_no_pass_and_loses_no_record(self):
+        # 2026-11-16: a deposit timed out, the pass ended in a fault, and the gifts it had given before were booked nowhere
+        calls = []
+
+        def give(donor, pilot, credits):
+            calls.append(pilot)
+            if len(calls) == 2:
+                raise TimeoutError("timed out")
+            return True, "ok"
+        self.wallet.give, self.wallet.WAIT = give, 0
+        os.environ["HERMES_SESSION_PROFILE"] = "unity"
+        self.addCleanup(os.environ.pop, "HERMES_SESSION_PROFILE", None)
+        self.assertEqual(self.wallet.main(["topup", "--data", str(self.data)]), 1)             # one gift failed: the pass says so and goes on
+        self.assertEqual(calls, ["miner-1", "trader-1", "miner-2"])
+        gifts = [json.loads(line) for line in (self.data / "fleet" / "gifts.jsonl").read_text().splitlines()]
+        self.assertEqual([(g["from"], g["to"], g["credits"]) for g in gifts if g["credits"]], [("miner-3", "miner-1", 17500), ("miner-3", "miner-2", 11000)])
+        self.assertEqual([(g["to"], g["credits"], g["unsure"]) for g in gifts if "unsure" in g], [("trader-1", 0, 15000)])
+        rows = json.loads((self.data / "fleet" / "onetime.json").read_text())
+        self.assertEqual([r[3] for r in rows if r[2] == "Wallet top-up"], [-17500, 17500, -11000, 11000])
+        calls.clear()
+        self.wallet.main(["topup", "--data", str(self.data)])                                  # all three on cooldown: none is given twice
+        self.assertEqual(calls, [])
+        self.put({"miner-1": 2500, "miner-3": 80000, "trader-1": 5000, "Prime Directive": 90000})
+        (self.data / "fleet" / "gifts.jsonl").write_text("")
+
+        def late(donor, pilot, credits):                                                       # the gate does not answer, the game took the gift
+            self.put({"miner-1": 2500 + credits if pilot == "miner-1" else 2500, "miner-3": 80000, "trader-1": 5000 + credits if pilot == "trader-1" else 5000, "Prime Directive": 90000})
+            raise TimeoutError("timed out")
+        self.wallet.give = late
+        self.wallet.main(["topup", "--data", str(self.data)])
+        gifts = [json.loads(line) for line in (self.data / "fleet" / "gifts.jsonl").read_text().splitlines()]
+        self.assertEqual([(g["to"], g["credits"]) for g in gifts], [("miner-1", 17500), ("trader-1", 15000)])     # the wallet showed each: booked
+        self.put({"miner-1": 2500, "miner-3": 80000})
+        (self.data / "fleet" / "gifts.jsonl").write_text("")
+        self.wallet.give, self.wallet.BUDGET = give, -1                                         # the pass's seconds are used up: the gift waits for the next pass
+        calls.clear()
+        self.wallet.main(["topup", "--data", str(self.data)])
+        self.assertEqual(calls, [])
+
     def test_the_check_names_a_pilot_under_the_floor_and_a_member_tops_up_nothing(self):
         self.assertEqual(self.wallet.main(["check", "--data", str(self.data)]), 1)
         os.environ["HERMES_SESSION_PROFILE"] = "zero"

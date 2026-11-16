@@ -76,6 +76,9 @@ From another program (the module's functions):
 USAGE:
   store.py serve [--every 60]     run forever (the service `store`)
   store.py once                   one pass, then stop
+  store.py recount                ask the writer to count every raw run kept again by the fleet's one rule
+                                  (routes.earned) and to sum its hours again: after a record that rule reads
+                                  was mended (the tax record, the wallet guard's gifts)
   store.py status                 from the read copy: rows and newest row of each table, age of the copy, the
                                   snapshot tables with the age of their newest source, the files not read
   --data <dir>                    the unit's data folder (default /srv/collective/data)
@@ -235,6 +238,37 @@ def take_census(conn, row, sealed, line):
             added += 1
             keys.add((one[0], one[1], one[2], t - t % DAY))
     return added, keys
+
+
+EARNED_RULE = "2"                 # the rule of what a run earned (routes.earned); a new mark has the raw runs kept counted again
+
+
+def recount(conn):
+    """Count every raw run kept again by the fleet's one rule (earned) and sum its hours again: after the rule changed
+    (EARNED_RULE), or when asked (`store.py recount`) after a record the rule reads was mended (the tax record, the
+    wallet guard's gifts). The runs whose credits moved."""
+    keys, moved = set(), 0
+    conn.execute("BEGIN IMMEDIATE")
+    try:
+        for pilot, route, started, t, one_time, credits, line in conn.execute("SELECT pilot, route, started, t, one_time, credits, row FROM runs").fetchall():
+            try:
+                parsed = json.loads(line)
+            except (TypeError, ValueError):
+                continue
+            if not isinstance(parsed, dict):
+                continue
+            new = earned(parsed) - (one_time or 0)
+            if new != credits:
+                conn.execute("UPDATE runs SET credits = ? WHERE pilot = ? AND route = ? AND started = ?", (new, pilot, route, started))
+                keys.add((route, t - t % HOUR))
+                moved += 1
+        sum_routes(conn, keys)
+        conn.execute("INSERT OR REPLACE INTO meta VALUES ('earned.rule', ?)", (EARNED_RULE,))
+        conn.execute("COMMIT")
+    except BaseException:
+        conn.execute("ROLLBACK")
+        raise
+    return moved
 
 
 # ---- sums, recomputed from the raw rows of one hour (day)
@@ -1125,7 +1159,8 @@ def one_pass(data, now=None, keep_days=KEEP_DAYS, root=None):
     backup: what was done."""
     begun = time.time()
     now = begun if now is None else now
-    out = {"records": {}, "snapshot": {"loaded": Counter(), "rows": 0, "problems": [], "gone": 0, "flies": 0}, "pruned": 0, "published": False, "backup": None}
+    out = {"records": {}, "snapshot": {"loaded": Counter(), "rows": 0, "problems": [], "gone": 0, "flies": 0}, "pruned": 0, "published": False, "backup": None,
+           "recounted": 0}
     conn = open_live(data)
     try:
         for name, table, take, add_up, step in RECORDS:
@@ -1134,13 +1169,21 @@ def one_pass(data, now=None, keep_days=KEEP_DAYS, root=None):
             except (OSError, sqlite3.Error) as error:  # one record that fails never holds up the others
                 out["records"][name] = {"added": 0, "bad": 0, "old": 0, "cut": False, "moved": False,
                                         "error": "%s: %s" % (type(error).__name__, error)}
+        asked = folder_of(data) / "recount"                # `store.py recount` asks; a new rule asks by itself
+        if asked.exists() or meta(conn, "earned.rule", "") != EARNED_RULE:
+            try:
+                out["recounted"] = recount(conn)
+                if asked.exists():
+                    asked.unlink()
+            except (OSError, sqlite3.Error) as error:      # the old sums stand; the next pass tries again
+                out["records"]["recount"] = {"added": 0, "bad": 0, "old": 0, "cut": False, "moved": False, "error": "%s: %s" % (type(error).__name__, error)}
         try:
             out["snapshot"] = take_snapshot(conn, data, root or ROOT, now)
         except Exception as error:                     # a fault of the snapshot never holds up the history
             out["snapshot"] = {"loaded": Counter(), "rows": 0, "problems": [], "gone": 0, "flies": 0, "error": "%s: %s" % (type(error).__name__, error)}
         out["pruned"] = prune(conn, now, keep_days)
         snap = out["snapshot"]
-        wrote = out["pruned"] or any(r["added"] or r["moved"] for r in out["records"].values()) or snap["loaded"] or snap["gone"] or snap["flies"]
+        wrote = out["pruned"] or out["recounted"] or any(r["added"] or r["moved"] for r in out["records"].values()) or snap["loaded"] or snap["gone"] or snap["flies"]
         read = folder_of(data) / "read.db"
         if wrote or not read.exists() or time.time() - read.stat().st_mtime >= PUBLISH:
             copy_to(conn, read)
@@ -1156,7 +1199,7 @@ def said(out):
     """The pass's one line, or None when it wrote nothing."""
     records = out["records"]
     snap = snapshot_said(out.get("snapshot") or {"loaded": {}, "rows": 0, "problems": [], "gone": 0, "flies": 0})
-    if not (out["pruned"] or out["backup"] or snap or any(r["added"] or r["bad"] or r["cut"] or r.get("error") for r in records.values())):
+    if not (out["pruned"] or out["backup"] or out.get("recounted") or snap or any(r["added"] or r["bad"] or r["cut"] or r.get("error") for r in records.values())):
         return None
     parts = []
     for name, r in records.items():
@@ -1166,6 +1209,8 @@ def said(out):
         parts.append(part + (" (%s)" % ", ".join(extra) if extra else ""))
     if snap:
         parts.append(snap)
+    if out.get("recounted"):
+        parts.append("%d runs counted again" % out["recounted"])
     if out["pruned"]:
         parts.append("%d old rows deleted" % out["pruned"])
     if out["backup"]:
@@ -1637,7 +1682,7 @@ def ago(seconds):
 
 def main(argv):
     parser = argparse.ArgumentParser(description="The fleet's history store.")
-    parser.add_argument("verb", choices=("serve", "once", "status"))
+    parser.add_argument("verb", choices=("serve", "once", "status", "recount"))
     parser.add_argument("--data", default="/srv/collective/data")
     parser.add_argument("--root", default=str(ROOT), help="the repository's game/ folder")
     parser.add_argument("--every", type=int, default=EVERY)
@@ -1645,6 +1690,11 @@ def main(argv):
     args = parser.parse_args(argv)
     if args.verb == "status":
         print("\n".join(status(args.data)))
+        return 0
+    if args.verb == "recount":                                  # the writer does it: this only asks (one writer of live.db)
+        folder_of(args.data).mkdir(parents=True, exist_ok=True)
+        (folder_of(args.data) / "recount").write_text(stamp(time.time()) + "\n", encoding="ascii")
+        print("store: asked; the writer's next pass counts every raw run kept again and sums its hours again")
         return 0
     if args.verb == "once":
         holder = lease(args.data)
