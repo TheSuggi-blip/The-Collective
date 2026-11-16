@@ -1,0 +1,19 @@
+{
+ "id": "mine-gaugewatch-belt",
+ "kind": "mine",
+ "title": "Gaugewatch Belt: iron_ore, copper_ore, null_matter; sold at The Core",
+ "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 2253 cr per ship-hour, not a measurement. A test: one ship. Added as a test by fill.py on 2026-11-16 23:27 UTC (Zero): one ship until its first RESULT line is read.",
+ "belt": "bluerift:gaugewatch_belt",
+ "station": "nexus_prime:the_core:central_nexus",
+ "minutes": 90,
+ "max_ships": 1,
+ "sell": [
+  {
+   "item": "null_matter",
+   "min_price": 177
+  }
+ ],
+ "requires": {
+  "empty_hold": true
+ }
+}

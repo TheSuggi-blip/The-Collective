@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 40.
+Routes: 42.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -46,6 +46,8 @@ Routes: 40.
 | [hunt-test-tanglewood-hollow-pilgrim](hunt-test-tanglewood-hollow-pilgrim.json) | hunt | beyond the border, 6 jumps | Yield test: hollow_pilgrim at tanglewood_frost_ring (lawless); what a kill drops and whether a bid takes it | up to 1 ships, without piercing_railgun_i, empty hold | TBD | TBD | TBD | TBD | -- |
 | [mine-achernar-gas-pocket](mine-achernar-gas-pocket.json) | mine | beyond the border, 4 jumps | Achernar Gas Pocket: hydrogen_gas, argon_gas, plasma_gas, neon_gas; sold at Node Beta Industrial Station | up to 1 ships, needs gas_harvester_i, empty hold | TBD | TBD | TBD | TBD | -- |
 | [mine-dewfall-fray](mine-dewfall-fray.json) | mine | beyond the border, 4 jumps | Dewfall Fray: iron_ore, copper_ore, null_matter; sold at The Core | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
+| [mine-gaugewatch-belt](mine-gaugewatch-belt.json) | mine | beyond the border, 7 jumps | Gaugewatch Belt: iron_ore, copper_ore, null_matter; sold at The Core | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
+| [mine-gossamer-null](mine-gossamer-null.json) | mine | beyond the border, 6 jumps | Gossamer Null: iron_ore, copper_ore, null_matter; sold at The Core | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [mine-gsc-0021-ice-fields](mine-gsc-0021-ice-fields.json) | mine | beyond the border, 6 jumps | GSC-0021 Ice Fields: water_ice, nitrogen_ice, ammonia_ice; sold at Synchrony Hub | up to 1 ships, needs ice_harvester_i, empty hold, while synchrony_hub bids 25 cr for water_ice | TBD | TBD | TBD | TBD | -- |
 | [mine-gsc-0033-cryobelt](mine-gsc-0033-cryobelt.json) | mine | beyond the border, 6 jumps | GSC-0033 Cryobelt: water_ice, nitrogen_ice; sold at Synchrony Hub | up to 1 ships, needs ice_harvester_i, empty hold, while synchrony_hub bids 25 cr for water_ice | TBD | TBD | TBD | TBD | -- |
 | [mine-gsc-0050-gas-plume](mine-gsc-0050-gas-plume.json) | mine | beyond the border, 3 jumps | GSC-0050 Gas Plume: plasma_gas, xenon_gas, neon_gas, chlorine_gas; sold at Node Beta Industrial Station | up to 1 ships, needs gas_harvester_i, empty hold | TBD | TBD | TBD | TBD | -- |
