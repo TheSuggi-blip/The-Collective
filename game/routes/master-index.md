@@ -42,7 +42,7 @@ name below is a link into one of the sub-indexes of this folder.
 |---|---|---|---|---|
 | [command](plan.md#command) | Unity | 23 | voidborn-concurrent > voidborn-substrate > voidborn-missions-1 | 0 |
 | [drone](plan.md#drone) | Apophis | 34 | voidborn-precedence > voidborn-first-hunt-nexus > voidborn-first-hunt-gsc | 5 |
-| [hauler](plan.md#hauler) | Apollo | 18 | voidborn-precedence > voidborn-selling > voidborn-first-hunt-nexus | 5 |
+| [hauler](plan.md#hauler) | Apollo | 19 | voidborn-precedence > voidborn-selling > voidborn-first-hunt-nexus | 5 |
 | [miner](plan.md#miner) | Zero | 29 | voidborn-concurrent > voidborn-substrate > voidborn-missions-1 | 4 |
 | [scout](plan.md#scout) | Oracle | 16 | census-voidborn > voidborn-precedence > voidborn-selling | 6 |
 | [sentinel](plan.md#sentinel) | Unity | 23 | voidborn-concurrent > voidborn-substrate > voidborn-missions-1 | 0 |
