@@ -16,12 +16,5 @@
  "alone": true,
  "requires": {
   "empty_hold": true
- },
- "measured": {
-  "date": "2026-11-16",
-  "runs": 1,
-  "minutes": 22,
-  "credits_per_run": -110,
-  "cph_per_ship": -310
  }
 }

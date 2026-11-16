@@ -43,6 +43,8 @@
   "runs": 2,
   "minutes": 1,
   "credits_per_run": 4290,
-  "cph_per_ship": 302820
+  "cph_per_ship": 302820,
+  "hours": 12,
+  "last_run": "2026-11-16T13:24:39Z"
  }
 }

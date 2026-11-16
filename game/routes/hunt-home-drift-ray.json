@@ -15,10 +15,12 @@
  "min_creatures": 5,
  "measured": {
   "date": "2026-11-16",
-  "runs": 16,
+  "runs": 9,
   "minutes": 10,
-  "credits_per_run": -40,
-  "cph_per_ship": -240
+  "credits_per_run": -2140,
+  "cph_per_ship": -12280,
+  "hours": 12,
+  "last_run": "2026-11-16T20:33:27Z"
  },
  "standing": true
 }

@@ -6,12 +6,5 @@
  "belt": "node_gamma:bellatrix_major_belt",
  "station": "node_gamma:node_gamma_relay_station:node_gamma_relay_station",
  "minutes": 45,
- "max_ships": 1,
- "measured": {
-  "date": "2026-11-15",
-  "runs": 8,
-  "minutes": 45,
-  "credits_per_run": 0,
-  "cph_per_ship": 0
- }
+ "max_ships": 1
 }
