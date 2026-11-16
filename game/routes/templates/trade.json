@@ -52,6 +52,19 @@
     "mining"
    ],
    "note": "Needs a Gas Harvester I. One ship a route: the hydrogen and plasma bids take a few dozen units an hour; the loss stop closes a route whose last runs lost."
+  },
+  "trade-gather": {
+   "title": "Fallback: iron and copper ore gathered into storage for the reserve when no trade is open",
+   "routes": [
+    "mine-pherkad-rift",
+    "gather-hamal-crystal-bloom",
+    "gather-gsc-0027-prism-scatter",
+    "mine-acubens"
+   ],
+   "trains": [
+    "mining"
+   ],
+   "note": "Standing work (rule F8), never judged on its pay; shared fields with every division, each with its limit and iron floor. A trader on it is still offered every trade route before it."
   }
  }
 }
