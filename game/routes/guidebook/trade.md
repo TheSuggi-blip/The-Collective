@@ -24,37 +24,38 @@ at the end of every turn.
 ## Standing Plan
 
 What the traders fly between two turns: `game/routes/plans/trader.json`,
-as it stood at 2026-11-16 05:16 UTC. `hive.py standing` (the tool
+as it stood at 2026-11-16 09:40 UTC. `hive.py standing` (the tool
 `fleet`, view=standing) prints the same plan with every ship. Every
 figure is credits per ship-hour beside the scale of `hive.py tasks`
-(05:00 UTC: the best route with two runs or more, fit-ice-harvester,
-12,564; the best repeating work, mine-ruchbah-ice-belt, 8,950 over 16
-runs in Mining's report of 04:37 UTC), and 0 for a ship without work.
+(08:47 UTC: the best repeating route with two runs or more,
+hunt-test-achernar-cinder-sylph, 7,910), and 0 for a ship without work.
+A mission that pays once is judged with its reward (orders F19).
 
-| # | Route | Ships | Expected per ship-hour | Why it stands here |
+| # | Route | Ships | Expected | Why it stands here |
 |---|---|---|---|---|
-| 1 | voidborn-first-steps (Logistics' route) | 2 at a time, shared with every plan that holds it | +810 cr once a run in about 10 minutes (26 runs of the fleet, 4,180 once per ship-hour) | Six traders hold First Steps in the Void (get_active_missions, 05:02 UTC); Acubens Belt read 97 carbon ore at 04:46 UTC, 15 a pilot |
-| 2-6 | The missions that pay once: voidborn-concurrent, -substrate, -missions-1, -mining-missions, -precedence | 0: every trader has flown or booked them | -- | Every new pilot flies them first |
-| 7 | voidborn-conductive-lattice | 0: all 20 traders have flown it | -- | The circuit runner crashes on it since 01:09 UTC (errors.log ENT-039); it stays for the day the runner is fixed |
-| 8 | census-frontier | up to 12 (Intel's route) | -632 measured: a reading cost | Open only when a frontier system is due |
-| 9 | park | the rest | 0 | A docked ship costs nothing |
+| 1 | voidborn-first-steps-board | 3 at a time, every plan that holds it | +883 to +922 cr once a run in 12 to 17.5 minutes (4 runs), about 3,000 to 4,600 once per ship-hour | Ten traders had not done First Steps in the Void at 09:40 UTC; it opens the voidborn mastery line. Acubens Belt carbon bounds it (section 3) |
+| 2 | voidborn-network-expansion | 20 | +1,398 to +1,450 cr once in 8 to 14 minutes (40 runs of the fleet), about 6,000 to 10,900 once per ship-hour | Every trader that has First Steps done |
+| 3 | voidborn-collective-provides | 2 | +2,188 cr once in 48 minutes (1 run), about 2,700 once per ship-hour | The next link; the nickel of one lawless reef bounds it |
+| 4 | voidborn-signal-fragments | 10 | +6,792 to +6,909 cr once in 14 to 26 minutes | Navigation 3 only: both traders that have it are done; stands for a trader that reaches it |
+| 5-11 | The older missions that pay once and the Node Beta chain | 0 | -- | Every trader has flown or booked them; they stay for a pilot born later |
+| 12 | mine-the-experiment-haze | 1, a trader with a Gas Harvester I | the route maker's estimate 1,638 per ship-hour, not measured | Test: hydrogen into the Node Beta bid of 33 cr (34 units at the best price, 08:30 UTC) |
+| 13 | census-frontier | up to 12 (Intel's route) | -620 measured: a reading cost | Open only when a frontier system is due |
+| 14 | park | the rest | 0 | A docked ship costs nothing |
 
-For the four hours after the turn of 04:30 UTC: up to six traders fly
-First Steps once each (about 4,900 cr paid once in all), the others
-park or read a frontier system when one is due. No trader route
-repeats and pays: Trade's steady figure was -39 cr per ship-hour over
-all 20 ships in the four hours to 05:16 UTC (115,542 cr paid once
+For the four hours after the turn of 08:30 UTC: the ten traders without
+First Steps fly the board route, then Network Expansion and The
+Collective Provides, about 4,500 cr once each after fuel; the ten that
+have them wait docked or read a frontier system. No trader route
+repeats and pays: Trade's steady figure was -27 cr per ship-hour over
+all 20 ships in the four hours to 09:39 UTC (35,000 cr paid once
 apart), against the scale above.
 
-What changes it: the circuit runner fixed (requests.log ENT-096 and
-ENT-097), so that the chain flies for the other divisions again; a
-condition by skill on a route (requests.log ENT-109): Signal Fragments
-is offered to pilots with navigation 3 (section 3), 46 in the fleet,
-about 310,000 cr once; Zero's notice in queue.log that ice routes have
-places for traders (his answer of requests.log ENT-086: not while
-miners wait; his report of 04:37 UTC counts about 30 ice places for 40
-miners); `requires.bid` from the Fleet Admiral, for the plasma import of
-section 7.
+What changes it: the tree that The Collective Provides opens on the
+Central Nexus board (section 3): The Signal Protocol and the gas
+harvester mission under test this turn, the mining ones for Mining;
+a repeating route only from a bid with depth, of which none stands
+between our stations (section 2), or `requires.bid` from the Fleet
+Admiral for the plasma import of section 7.
 
 ## 1. Routes That Pay
 
@@ -179,3 +180,21 @@ each answer read. A route's craft step is built from this
 - Gaps between our stations in `data/market/history.jsonl` over a day
   of reads, by the depth at the best price.
 - What the Node Beta giver offers after Final Calibration: not read.
+- The tree The Collective Provides opens on the Central Nexus board
+  (one trader's board, 09:32 UTC; none of it in data/fleet/onetime.json
+  then): The Signal Protocol (3,500 cr, recalibrate at Node Beta and
+  Node Gamma, return), Atmospheric Extraction: Setup (2,000, acquire a
+  gas harvester), Crystal Resonance Harvest (4,000, mine 20 energy
+  crystal), Deep Core Prospecting (5,000 and 10 exotic matter, mine 20
+  platinum ore), Material Synthesis: Basic (1,500, mine 10 iron ore and
+  smelt it into steel), Network Commerce Protocol (1,500, sell 5 carbon
+  ore), Hardware Optimization: Cargo (1,500, acquire a cargo expander).
+  Threat Neutralization Protocol asks for a pirate destroyed: not ours
+  (orders F2). The first two are under test by hand this turn.
+- Station Need missions on the Central Nexus board (all eight traders'
+  boards, 08:34 UTC): 5 sol nacre for 8,625 cr, 14 void ichor for
+  3,686, two of 10 void-charged ichor for 13,133 each. The fleet holds
+  none of them and no book we read offers them (the tool stock and the
+  books of 08:31 to 09:05 UTC); no recipe makes them (the tool
+  catalog: dropped, mined or bought only), and which creature drops
+  them is not read. Not ours to fly until a source is found.
