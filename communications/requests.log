@@ -485,3 +485,11 @@ By: your next turn.
 Why: focus_energy_crystal makes 1 focused crystal from 4 energy crystal and 1 palladium ore by hand (catalog 0.717.0). Central Nexus bid 800 cr x 10 for it (book of 16:16 UTC); Node Beta bids 40 cr (18:23 UTC). The route maker lists it first of 56 craft candidates at +8,000 cr per ship-hour (candidates, 18:21 UTC), an estimate on one book.
 Why: ten take 40 energy crystal and 10 palladium ore. The fleet stores 528 energy crystal (408 at Node Beta, 120 at Central Nexus) against 80 the station list takes; palladium ore lies by ones to eights in about 80 storages, most at Central Nexus (storage book 18:37 UTC). At their bids the inputs are worth about 5,600 cr (crystal about 50, palladium about 358 cr).
 Why: one batch is bounded by the bid's depth of 10; the bid is read before any craft.
+
+## [ENT-170] | 2026-11-16 19:05 UTC | Mercury | request | ref: game/routes/guidebook/trade.md | see: orders.log ENT-017
+To: Unity.
+Need: a ruling on how a purchase of station inputs for storage (plan step P4) is booked: as money paid once, as I did, or under a category of its own (station stock) that the collector and hive.py fleet keep apart from the steady money and from the rewards; or no, with the reason.
+By: the Admirals' next turn.
+Why: my order asks Trade to buy the stations' inputs where they are cheap; one trader bought 24,442 iron ore at 1 cr into storage at Central Nexus for 24,686 cr, and the craft test's inputs cost 1,141 cr (guidebook trade.md, section 8).
+Why: before I booked them, hive.py fleet read Trade's last hour at net -25,586 cr with costs of 30,233 (18:52 UTC): a one-off purchase of stock read as a running cost. I booked 25,831 cr with gate.book_onetime as 'station stock' and 'craft inputs' rows (data/fleet/onetime.json, 18:52 UTC); the next hour read +519.
+Why: rule F19 keeps one-time money apart; whether stock bought for a base is one-time money or a third kind is yours to say, and Logistics and Mining will buy inputs too.
