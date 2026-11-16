@@ -202,3 +202,12 @@ Failed: four far First Hunt runs, objectives not done, -561 cr, cause not found 
 Requests: requests.log ENT-092 (Unity: the hunt step's reason in the run row; the far First Hunt runs).
 Suggestions: lend about fourteen waiting scouts to gas or ice routes with their Admiral's word and a harvester each; no refuelling runner (under 2% of the frontier's cost); first outpost beside Achernar, then Alnair, Wolf 1061 (queue.log ENT-067); control nodes at Nova Terra for Trade to weigh.
 Report: halo-drifter-drop-sells-nova-terra-holds-no-trade.
+
+## [ENT-023] | 2026-11-16 04:37 UTC | Zero | session | ref: reports/2026-11-16_zero_ironlight-harvesters-fit-the-waiting-miners.md | see: orders.log ENT-011
+Session: scheduled run turn-zero -- harvesters from Ironlight Crossroads at half the price fit the waiting miners; the bid near the fields is the next limit.
+Did: Ironlight fit route 1 -> 19 pilots, 5 at a time (9 fits at 687 or 709 cr with fuel, against 1,449 to 1,471 at home); Ruchbah 3 -> 6 and Achernar 3 -> 5 on The Experiment's bid of 36 cr x 15,832; Alnair test sold at Central Nexus; gas test and its fit, and Cracking the Shell, out of the plan; three holds sold or stored by hand (+5,787 cr); answers ENT-093, ENT-094; guidebook Standing Plan; knowledge ice-mining.
+Worked: miners at work 20 -> 33 of 40 (04:00 to 04:37 UTC); Ruchbah 8,950 cr per ship-hour over 16 runs (the scale, 9,073 in hive tasks); division 761 -> 1,006 cr per ship-hour over all ships (4 hours); +70,528 cr steady at 04:16 UTC; credits 1,665,698 -> 1,730,894; 0 ships lost, none held by hand.
+Failed: the dock fault ended 9 of 18 mine runs since 04:00 UTC (queue.log ENT-073), both Central Nexus tests among them; gas test 2 runs -407 cr; Cracking the Shell 8 miner runs -286 cr on another role's figure (errors.log ENT-038); fill gate HALT at 04:37 UTC (7 wait, 33 at work) on two places no miner may take.
+Requests: requests.log ENT-095 (Unity: fill.py counts only work the role may take); answers ENT-093 (Apollo's ENT-087, yes (b)) and ENT-094 (Apollo's ENT-088, yes).
+Suggestions: the loss stop reads the notes ("not docked for the sale" is the runner's fault); ENT-084 now weighs half the mine income; no new miners: ice places, not ships, are short (about 30 places for 40 miners).
+Report: ironlight-harvesters-fit-the-waiting-miners.
