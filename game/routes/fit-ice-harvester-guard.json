@@ -20,5 +20,12 @@
    ]
   }
  ],
- "max_pilots": 4
+ "max_pilots": 4,
+ "measured": {
+  "date": "2026-11-16",
+  "runs": 4,
+  "minutes": 1,
+  "credits_per_run": -1430,
+  "cph_per_ship": -148900
+ }
 }

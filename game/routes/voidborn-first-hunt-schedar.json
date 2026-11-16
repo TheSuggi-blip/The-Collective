@@ -38,5 +38,12 @@
   {
    "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station"
   }
- ]
+ ],
+ "measured": {
+  "date": "2026-11-16",
+  "runs": 4,
+  "minutes": 12,
+  "credits_per_run": 210,
+  "cph_per_ship": 820
+ }
 }

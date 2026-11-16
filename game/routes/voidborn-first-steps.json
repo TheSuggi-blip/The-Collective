@@ -30,5 +30,12 @@
     "First Steps in the Void"
    ]
   }
- ]
+ ],
+ "measured": {
+  "date": "2026-11-16",
+  "runs": 11,
+  "minutes": 11,
+  "credits_per_run": 640,
+  "cph_per_ship": 2850
+ }
 }
