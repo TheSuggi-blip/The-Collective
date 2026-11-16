@@ -257,7 +257,8 @@ Planned:
 
 | What | When |
 |---|---|
-| Fly voidborn-signal-fragments by hand with the one other trader that shares the tested pilot's skills (piloting 5, navigation 3, exploration 2); if offered, ask the Fleet Admiral for a skill condition on routes and offer the route to the fleet's 21 pilots with those levels. | the turn of 2026-11-16 08:30 UTC, or this turn when the pilot is free |
-| voidborn-conductive-lattice for the other divisions once requests.log ENT-096 is done: every trader has flown it; read the silver ask at Ironlight Crossroads before more pilots start it. | after the runner fix |
-| Plasma gas from Ironlight Crossroads into the station bids at Node Beta: a route only with requires.bid (owed by Unity); the bid read 100 cr for 4 units (9 in all) at 04:46 UTC. | after 2026-11-16 12:00 UTC |
-| Control-node craft as a route when the runner's craft step exists and circuit boards stand at depth: at 05:00 UTC a run cost about 1,247 cr in inputs against 1,370 at the Node Gamma bid, and the boards at that price were 23 units. | after 2026-11-16 12:00 UTC |
+| Atmospheric Extraction: Setup (2,000 cr once, acquire a gas harvester): one trader without a harvester accepts it, buys a Gas Harvester I at Node Beta (1,202 cr) and reads the objective; a route only if the purchase counts. Hardware Optimization: Cargo (1,500 cr, acquire a cargo expander): read the expander's ask first, then the same test. | the turn of 2026-11-16 12:30 UTC |
+| Network Commerce Protocol (1,500 cr, sell 5 carbon ore) and Material Synthesis: Basic (1,500 cr, mine 10 iron ore and smelt it into steel): one hand test each with a trader that has The Collective Provides done; a route once the runner can withdraw from storage and craft. | the turn of 2026-11-16 12:30 UTC |
+| Read the whole Central Nexus board of every docked trader at the start of each turn (skill trade-books, boards.py) and test every title the fleet has not booked. | every turn |
+| Plasma gas from Ironlight Crossroads into the station bids at Node Beta: a route only with requires.bid (owed by Unity). | after 2026-11-16 12:00 UTC |
+| Control-node craft as a route when the runner's craft step exists and circuit boards stand at depth. | after 2026-11-16 12:00 UTC |
