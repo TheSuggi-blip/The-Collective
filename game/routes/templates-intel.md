@@ -14,9 +14,9 @@ tries its routes in this order; a change of a template moves every ship that nam
 within the minute. Kept with `plan.py template`; ships are put on one with `plan.py use`.
 Up: [master-index.md](master-index.md).
 
-Kept by Oracle. Templates: 2. Ships on them: 28.
+Kept by Oracle. Templates: 2. Ships on them: 29.
 
 | Template | Title | Trains | Routes, in this order | Ships on it | Note |
 |---|---|---|---|---|---|
 | explorer | Explore: the roads to the station sites and the systems beside them, then the frontier | navigation, exploration, piloting | [census-roads](census-roads.json) > [census-frontier](census-frontier.json) | 10 | Fit: the starter Threshold, empty hold (rule F13). Long jumps train navigation fastest; navigation 3 opens Signal Fragments in the list First. |
-| reader | Read: the places our routes use twice a turn, then the frontier, then the roads | exploration, navigation, piloting | [census-worked](census-worked.json) > [census-frontier](census-frontier.json) > [census-roads](census-roads.json) | 18 | Fit: the starter Threshold, empty hold. The home census stands in the list First for every scout; gathering in the list Then is the fallback when nothing is due. |
+| reader | Read: the places our routes use twice a turn, then the frontier, then the roads | exploration, navigation, piloting | [census-worked](census-worked.json) > [census-frontier](census-frontier.json) > [census-roads](census-roads.json) | 19 | Fit: the starter Threshold, empty hold. The home census stands in the list First for every scout; gathering in the list Then is the fallback when nothing is due. |
