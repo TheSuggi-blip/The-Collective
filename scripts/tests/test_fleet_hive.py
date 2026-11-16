@@ -92,6 +92,13 @@ class HiveTests(unittest.TestCase):
         self.assertEqual(self.hive.per_hour(2000, 60), "2,000")
         self.assertEqual(self.hive.per_hour(2000, 0), "--")
 
+    def test_the_scale_is_a_route_that_repeats_never_a_fitting_or_a_mission(self):
+        hive = self.hive if hasattr(self, "hive") else load("hive")
+        routes = {"mine": {"id": "mine", "kind": "mine"}, "fit": {"id": "fit", "kind": "circuit", "stops": [{"at": "a:b:c", "fit": "ice_harvester_i"}]},
+                  "once": {"id": "once", "kind": "circuit", "once": True, "stops": [{"at": "a:b:c"}]}}
+        by_route = {"mine": [3, 9000.0, 90.0, 0, 90.0], "fit": [2, 50000.0, 30.0, 0, 30.0], "once": [4, 40000.0, 60.0, 0, 60.0], "gone": [5, 99000.0, 10.0, 0, 10.0]}
+        self.assertEqual([rid for _f, rid, _r in hive.scale(routes, by_route)], ["mine"])
+
     def test_the_history_store_answers_from_its_read_copy(self):
         now = time.time()
         stamp = lambda ago: time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(now - ago))

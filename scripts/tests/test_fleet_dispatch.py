@@ -90,6 +90,26 @@ class PickTests(Tree):
         self.assertEqual(why(rows=[turned] * 4, booked=held), "done once")                        # the board keeps refusing: enough
         self.assertEqual(self.dispatch.why_not(pilot, "missions", routes["missions"], self.state(rows=[turned]))[0], "done once")   # no reward named: a refusal ends it
 
+    def test_a_route_can_name_the_skill_levels_a_pilot_must_hold(self):
+        routes = self.dispatch.load_routes(self.root)
+        shell = dict(routes["missions"], requires={"skills": {"navigation": 3}})
+        pilot = {"name": "drone-1", "credits": 20000, "modules": [], "docked": True, "skills": {"navigation": 2, "piloting": 5}}
+        self.assertEqual(self.dispatch.why_not(pilot, "missions", shell, self.state())[0], "needs navigation 3")
+        self.assertIsNone(self.dispatch.why_not(dict(pilot, skills={"navigation": 3}), "missions", shell, self.state())[0])
+        self.assertEqual(self.dispatch.why_not(dict(pilot, skills={}), "missions", shell, self.state())[0], "needs navigation 3")
+        self.assertIn("from navigation 3", self.routes.open_to(shell))
+        ships = self.data / "fleet" / "ships"
+        ships.mkdir(parents=True, exist_ok=True)
+        (ships / "drone-1.json").write_text(json.dumps({"skills": {"navigation": {"level": 3, "xp": 1}, "piloting": {"level": 5}}}), encoding="ascii")
+        self.assertEqual(self.dispatch.pilot_of({"name": "drone-1"}, {}, str(self.data), set())["skills"], {"navigation": 3, "piloting": 5})
+
+    def test_a_pilot_whose_last_three_runs_ended_before_stop_one_is_held_back(self):
+        failed = {"route": "park", "pilot": "drone-1", "stops": 0, "of": 1, "notes": ["stop 1 not reached"]}
+        self.assertFalse(self.dispatch.stuck("drone-1", [failed, failed]))
+        self.assertTrue(self.dispatch.stuck("drone-1", [failed, failed, failed]))
+        self.assertFalse(self.dispatch.stuck("drone-1", [failed, failed, failed, dict(failed, stops=1, notes=[])]))
+        self.assertFalse(self.dispatch.stuck("drone-2", [failed] * 3))
+
     def test_credits_module_and_ship_limits_close_a_route(self):
         done = [{"route": "missions", "pilot": "drone-1", "stops": 1, "of": 1}]
         self.assertEqual(self.pick("drone-1", credits=5000)[0], "rays")                           # too poor for the missions

@@ -160,6 +160,24 @@ def owed(route):
     return [need] if isinstance(need, str) else [str(t) for t in need or []]
 
 
+def skills_lacking(route, pilot):
+    """[(skill, level)] the route asks for (`requires.skills`: {skill: level}) that the pilot does not hold yet: a board
+    that offers a mission only from a skill level (Signal Fragments: navigation 3) refuses every other pilot."""
+    need = (route.get("requires") or {}).get("skills") or {}
+    held = pilot.get("skills") or {}
+    return [(str(skill), int(level)) for skill, level in sorted(need.items()) if int(held.get(skill, 0) or 0) < int(level)]
+
+
+STUCK = 3                      # runs in a row that ended before their first stop: the pilot gets no new route until one reaches it
+
+
+def stuck(name, rows):
+    """True when the pilot's last STUCK runs all ended `stop 1 not reached`: a ship held in a fight or a lost goal would
+    otherwise be handed one route after another, each failing at once (requests ENT-090: 42 park runs in an hour)."""
+    mine = [r for r in rows if r.get("pilot") == name][-STUCK:]
+    return len(mine) == STUCK and all("stop 1 not reached" in (r.get("notes") or []) for r in mine)
+
+
 def done_once(route, rows):
     """A `once` route counts as done after a whole run that got what it came for, or after two tries. A run that found
     nothing to buy is neither: the route opens again for that pilot after a rest (waits_once). On a route that names a
@@ -238,6 +256,9 @@ def why_not(pilot, rid, route, state):
     lacks = [title for title in owed(route) if title not in (state.get("booked") or {}).get(pilot["name"], set())]
     if lacks:
         return "needs the reward `%s` first" % lacks[0], None
+    low = skills_lacking(route, pilot)
+    if low:
+        return "needs %s %d" % low[0], None
     if route.get("once"):
         mine = [r for r in state["rows"] if r.get("route") == rid and r.get("pilot") == pilot["name"]]
         if done_once(route, mine):
@@ -295,6 +316,8 @@ def pilot_of(ship, named, data, ammo):
     detail = read_json(Path(data) / "fleet" / "ships" / ship_file(name), {})
     return {"name": name, "role": role_of(name, named), "credits": ship.get("credits", 0), "docked": bool(ship.get("docked")),
             "modules": [m.get("type") or m.get("type_id") for m in detail.get("modules") or [] if isinstance(m, dict)],
+            "skills": {str(k): int((v or {}).get("level") or 0) if isinstance(v, dict) else int(v or 0)
+                       for k, v in (detail.get("skills") or {}).items() if isinstance(v, (dict, int))} if isinstance(detail.get("skills"), dict) else {},
             "goods": sum(int(c.get("quantity") or 0) for c in detail.get("cargo") or [] if isinstance(c, dict) and c.get("item") not in ammo)
             if isinstance(detail.get("cargo"), list) else int(ship.get("cargo_used") or 0)}
 
@@ -378,6 +401,9 @@ def resting(routes, rows, now):
     return out
 
 
+HELD_BACK = set()             # pilots already named as held back, so that a pass every 30 s names each once
+
+
 def one_pass(root, data, dry_run, children):
     now = time.time()
     if (Path(data) / "fleet" / "STOP").exists():
@@ -396,6 +422,12 @@ def one_pass(root, data, dry_run, children):
         if ship.get("status") != "connected" or name in state["orders"] or (ship.get("activity") or {}).get("kind") != "idle":
             continue
         pilot = pilot_of(ship, named, data, ammo)
+        if stuck(name, rows):
+            if name not in HELD_BACK:
+                HELD_BACK.add(name)
+                lines.append("%s held back: its last %d runs ended `stop 1 not reached`; free again after a run that reaches it" % (name, STUCK))
+            continue
+        HELD_BACK.discard(name)
         route, argument = pick(pilot, plan, routes, state)
         if route is None:
             continue

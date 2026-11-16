@@ -214,6 +214,7 @@ def open_to(route):
             "needs %s" % need["module"] if need.get("module") else "", "without %s" % need["without_module"] if need.get("without_module") else "",
             "empty hold" if need.get("empty_hold") else "", "from %s cr" % format(route["min_credits"], ",") if route.get("min_credits") else "",
             "after the reward %s" % (need["booked"] if isinstance(need["booked"], str) else ", ".join(need["booked"])) if need.get("booked") else "",
+            "from %s" % ", ".join("%s %s" % (k, v) for k, v in sorted(need["skills"].items())) if isinstance(need.get("skills"), dict) and need["skills"] else "",
             route.get("status", "")]
     return ", ".join(g for g in gate if g) or "every pilot"
 

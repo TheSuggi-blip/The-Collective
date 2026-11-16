@@ -61,6 +61,7 @@ the scripts in `game/fleet/` fly them; nobody retypes a route into a chat.
 | `requires.booked` | The title of a one-time reward (or a list of titles) the pilot must hold in `data/fleet/onetime.json` before it is sent: for a mission the board offers only after another one. On such a route a run the board refused (`... not offered`) is no try, up to three times, and the route rests `retry_minutes` after it |
 | `status` | `off`: written down, not flown |
 | `park` | true: the route that docks a ship and lets it wait. Given to a pilot in space only; the last route of every plan |
+| `requires.skills` | `{skill: level}`: only a pilot that holds each skill at that level or higher is sent (its live file, `data/fleet/ships/`): for a mission a board offers only from a skill level, as Signal Fragments from navigation 3 |
 | `skip_if_booked` | Titles of one-time rewards: a pilot that has one of them booked is not sent |
 | `measured` | Written by `routes.py measure --write`: date, runs, minutes per run, credits per run, credits per ship-hour |
 

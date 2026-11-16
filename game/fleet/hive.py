@@ -780,6 +780,14 @@ def work_of(route):
     return {"mine": "mining", "hunt": "hunting", "census": "census (reads, no pay)", "circuit": "trade and delivery"}.get(route.get("kind"), str(route.get("kind") or "?"))
 
 
+def scale(routes, by_route):
+    """[(credits per ship-hour, route id, runs)], best first: the routes that repeat and are judged on their pay (no
+    mission paid once, no fitting, no census, no park), with two runs or more. A fitting sells the hold it came with:
+    fit-ice-harvester read 88,356 credits per ship-hour as the fleet's best route on 2026-11-16."""
+    return sorted(((credits / minutes * 60, rid, runs) for rid, (runs, credits, minutes, _o, _f) in by_route.items()
+                   if runs >= 2 and minutes and rid in routes and not routes[rid].get("once") and dispatch.judged(routes[rid])), reverse=True)
+
+
 def show_tasks(root, data, now, hours):
     routes, rows = dispatch.load_routes(root), dispatch.run_rows(data)
     by_pilot, by_route = pilot_stats(rows, now - hours * 3600)
@@ -813,9 +821,9 @@ def show_tasks(root, data, now, hours):
     clock = sum(ships.values()) * hours
     print("  %-10s %5d %12.0f %12.1f %5.0f%% %11s %19s %15s %10s" % ("FLEET", sum(ships.values()), clock, total[4] / 60, 100 * total[4] / 60 / clock if clock else 0, num(total[1]),
                                                                    num(total[1] / clock) if clock else "--", per_hour(total[1], total[2]), num(total[3]) if total[3] else "--"))
-    best = sorted(((credits / minutes * 60, rid, runs) for rid, (runs, credits, minutes, _o, _f) in by_route.items() if runs >= 2 and minutes), reverse=True)
+    best = scale(routes, by_route)
     if best:
-        print("  THE SCALE | best route with two runs or more: %s at %s credits per ship-hour | a ship without work earns 0 | every figure above reads against these two"
+        print("  THE SCALE | best repeating route with two runs or more: %s at %s credits per ship-hour | a ship without work earns 0 | every figure above reads against these two"
               % (best[0][1], num(best[0][0])))
     return 0
 
