@@ -128,6 +128,26 @@ class PickTests(Tree):
         mine = dict(routes["mine"], requires={"bid": {"item": "water_ice", "base": "base", "min_price": 20}})
         self.assertEqual(self.dispatch.why_not(pilot, "mine", mine, self.state())[0], "no bid for water_ice at base: best 0 cr x 0")
 
+    def test_a_carry_route_goes_only_to_a_pilot_whose_storage_holds_a_load(self):
+        # Zero, requests ENT-117: storage is personal; only the pilot that stored the ice can carry it
+        routes = self.dispatch.load_routes(self.root)
+        carry = dict(routes["missions"], id="missions", once=False, requires={"stored": {"at": "base", "item": "water_ice", "min": 60}})
+        pilot = {"name": "miner-1", "credits": 20000, "modules": [], "docked": True}
+        stock = self.data / "stock"
+        stock.mkdir(exist_ok=True)
+        stamp = lambda ago: time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(self.now - ago))
+        put = lambda qty, ago=60: (stock / "storage.json").write_text(json.dumps({"pilots": {"miner-1": {"read_at": stamp(ago), "stations": {"base": {"water_ice": qty}}}}}))
+        why = lambda rows=(), who=pilot: self.dispatch.why_not(who, "missions", carry, self.state(rows=rows))[0]
+        self.assertEqual(why(), "stores 0 water_ice at base, 60 wanted")                             # no storage file
+        put(59)
+        self.assertEqual(why(), "stores 59 water_ice at base, 60 wanted")
+        put(65)
+        self.assertIsNone(why())
+        self.assertEqual(why(who=dict(pilot, name="miner-2")), "stores 0 water_ice at base, 60 wanted")    # another pilot's load is not its own
+        ran = {"route": "missions", "pilot": "miner-1", "stops": 1, "of": 1, "started": stamp(30)}
+        self.assertEqual(why(rows=[ran]), "storage not read since its last run")                  # the reading is older than the run
+        self.assertIsNone(why(rows=[dict(ran, started=stamp(120))]))
+
     def test_a_circuit_hunt_step_with_a_herd_floor_waits_for_its_herd(self):
         # Apophis, report of 2026-11-16 05:27 UTC; requests ENT-126
         shell = {"id": "shell", "kind": "circuit", "title": "t", "once": True, "stops": [

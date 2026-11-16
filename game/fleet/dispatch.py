@@ -30,7 +30,9 @@ RULES:
     last census (younger than 90 minutes) shows fewer than `min_creatures`, and a
     circuit's hunt step that names `min_creatures` is judged the same way; the
     station's book, read within the hour, shows no bid the route names in
-    `requires.bid` (item, base, min_price, min_qty); a once run whose every stop
+    `requires.bid` (item, base, min_price, min_qty); the pilot's own storage at a
+    station holds less than `requires.stored` asks (at, item, min), or was not
+    read again since the pilot's last run of the route; a once run whose every stop
     was skipped (`every stop skipped`) is no try and the route rests; a
     census has no system older than `every_minutes` (default 60).
   - An engine loop that runs for a pilot with no fresh order file for five
@@ -285,6 +287,30 @@ def bid_missing(data, route, now):
     return None
 
 
+def stored_missing(data, route, pilot, rows):
+    """Why a route is closed by `requires.stored`, or None: the pilot's own storage at the station named (`at`, a base
+    id) holds fewer than `min` units of `item` by data/stock/storage.json (the service ledger reads each pilot about
+    every 40 minutes), or that storage was not read again since the pilot's last run of this route began: a carry
+    run takes the load out, and the old reading must not send the pilot a second time. Storage is personal: only the
+    pilot that stored a load can withdraw it (Zero, requests ENT-117: about 11,100 water ice in miners' storage at
+    stations whose bids are gone)."""
+    need = (route.get("requires") or {}).get("stored")
+    wants = [need] if isinstance(need, dict) else [w for w in need or [] if isinstance(w, dict)]
+    if not wants:
+        return None
+    book = read_json(Path(data) / "stock" / "storage.json", {})
+    mine = ((book.get("pilots") or {}) if isinstance(book, dict) else {}).get(pilot["name"]) or {}
+    read = read_time(mine.get("read_at"))
+    last = max((read_time(r.get("started")) or 0 for r in rows if r.get("route") == route.get("id") and r.get("pilot") == pilot["name"]), default=0)
+    for want in wants:
+        held = int(((mine.get("stations") or {}).get(str(want.get("at"))) or {}).get(str(want.get("item")), 0) or 0)
+        if held < int(want.get("min") or 1):
+            return "stores %d %s at %s, %s wanted" % (held, want.get("item"), want.get("at"), want.get("min") or 1)
+    if read is None or (last and read <= last):
+        return "storage not read since its last run"
+    return None
+
+
 def stalest_system(data, route, orders, now):
     """The system of a census route read longest ago and not being read now; None when all are fresh."""
     busy = {what.split(" ", 1)[1] for what in orders.values() if what.startswith("census ")}
@@ -351,7 +377,7 @@ def why_not(pilot, rid, route, state):
         return "has the module already", None
     if state["now"] < state["rest"].get(rid, 0):
         return "the place rests", None
-    lacking = bid_missing(state["data"], route, state["now"])
+    lacking = bid_missing(state["data"], route, state["now"]) or stored_missing(state["data"], route, pilot, state["rows"])
     if lacking:
         return lacking, None
     if route["kind"] == "circuit":
