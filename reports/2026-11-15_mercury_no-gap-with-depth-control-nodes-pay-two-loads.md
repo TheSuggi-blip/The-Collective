@@ -48,8 +48,8 @@ at 19:25 UTC: -2,741 cr per hour for Trade, -137 per ship. My measure,
 credits per ship-hour from buying and selling, has no figure: no route
 of that kind exists in `routes/plan.json`.
 
-The ships: trader-1 to trader-10 registered 12:45 to 12:52 UTC,
-trader-11 to trader-20 at 18:54 to 18:56 UTC (`fleet/birth.log`). All
+The ships: ten traders registered 12:45 to 12:52 UTC, ten more at
+18:54 to 18:56 UTC (`fleet/birth.log`). All
 are starter Threshold hulls with the two starter modules. Trading skill:
 11 pilots at level 1, 9 at level 0 (ship files, 19:25 UTC). My flagship
 Mercurys Ledger flies the command group's list and counts in Command
