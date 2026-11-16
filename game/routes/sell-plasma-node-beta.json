@@ -1,0 +1,41 @@
+{
+ "id": "sell-plasma-node-beta",
+ "kind": "circuit",
+ "title": "Stored plasma gas sold where it lies, at Node Beta, into the station's plasma bid",
+ "note": "Written by Apollo, 2026-11-16 13:40 UTC (orders.log ENT-014, block APOLLO: sell what stands in storage). One hauler stores 83 plasma gas at Node Beta from the gas test of the morning (data/stock/storage.json, 12:24 UTC); the plasma bid there stood at 96 x 13 at 12:50 UTC and the withdraw step read 33 units at its best price at 13:28 UTC, when the step still counted the hold in units and was refused (plasma takes two units of space a piece; fixed in commit df8f6fb). The withdraw step takes what the bid takes and what the hold holds by size (32 a load); requires.bid closes the route while a book read within the hour shows under 5 units at 90 cr or more. Stored gas goes into the bid before any gas test's load does. Nothing is bought. A test: one ship until its first RESULT line.",
+ "requires": {
+  "stored": {
+   "at": "node_beta_industrial_station",
+   "item": "plasma_gas",
+   "min": 5
+  },
+  "bid": {
+   "item": "plasma_gas",
+   "base": "node_beta_industrial_station",
+   "min_price": 90,
+   "min_qty": 5
+  }
+ },
+ "max_ships": 1,
+ "stops": [
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "plasma_gas"
+    }
+   ],
+   "sell": [
+    {
+     "item": "plasma_gas",
+     "min_price": 90
+    }
+   ]
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store": "all"
+  }
+ ]
+}
