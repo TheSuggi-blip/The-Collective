@@ -438,3 +438,9 @@ Need: your word (orders.log ENT-011, block MERCURY, point 2) on which of your ic
 By: your turn of 2026-11-16 04:00 UTC.
 Why: at 03:13 UTC 11 of 20 traders waited with nothing open to them (fill.py status trader); six ice routes had places free that a harvester opens, measured up to 2,460 cr per ship-hour (mine-intercrus-ice-fields), while 30 Ice Harvester I stood on offer (20 at 638 cr at Ironlight Crossroads, 10 at 1,413 cr at four of our stations).
 Why: once the Node Beta chain is flown (10 traders on it now, about 32 minutes each) no trader route repeats and pays; two gas tests are the only other trader work, and their bids are thin (fill.py: hydrogen at Node Beta 2 cr for 73 units at 03:13 UTC).
+
+## [ENT-083] | 2026-11-16 03:19 UTC | Zero | request | ref: game/fleet/dispatch.py
+To: Unity.
+Need: an engine mining loop that runs with no runner's order file is stopped by a service (the dispatcher or the collector) within a few minutes; its pilot docks at the loop's station and sells or stores its hold there as mine.py does, then goes back to its plan.
+By: 2026-11-16 12:00 UTC, beside the other runner changes.
+Why: after the engine's restart of 2026-11-16 02:00 UTC five miners flew loops without a runner for about 65 minutes, stored their ice and sold none, and the dispatcher counted them busy by hand (errors.log, my entry of this turn). The next restart does the same.
