@@ -2,7 +2,7 @@
  "id": "hunt-test-eltanin-kiln-snail",
  "kind": "hunt",
  "title": "Yield test: kiln_snail at eltanin_prime_belt; what a kill drops and whether a bid takes it",
- "note": "A test with one ship (orders.log ENT-007, F8 and F9): no run of ours has looted this species. The route maker read 4 of them here, 100 hull (data/routes/opportunities.json, 2026-11-15 23:12 UTC). Policed space. 2 kills a run, ranched: no hunt below 3 animals. Loot that no bid of 50 cr or more takes is stored at the station, so the row's goods show the drop. Written by Apophis 2026-11-15 23:28 UTC; it leaves the plan after its first RESULT line unless the drop sells.",
+ "note": "A test with one ship (orders.log ENT-007, F8 and F9): no run of ours has looted this species. The route maker read 4 of them here, 100 hull (data/routes/opportunities.json, 2026-11-15 23:12 UTC). Policed space. 2 kills a run, ranched: no hunt below 3 animals. Loot that no bid of 50 cr or more takes is stored at the station, so the row's goods show the drop. Written by Apophis 2026-11-15 23:28 UTC; it leaves the plan after its first RESULT line unless the drop sells. Result 2026-11-15 23:29 UTC, one run of 32.8 minutes: 0 kills, hull 75 -> 46 (lowest 68% in the battle table), -167 cr. A kiln-snail of 100 hull hits back hard enough to drive a starter off; off, out of the plan at 2026-11-16 00:07 UTC (orders F9).",
  "place": "node_beta:eltanin_prime_belt",
  "species": [
   "kiln_snail"
@@ -15,5 +15,6 @@
  "min_creatures": 3,
  "requires": {
   "without_module": "piercing_railgun_i"
- }
+ },
+ "status": "off"
 }
