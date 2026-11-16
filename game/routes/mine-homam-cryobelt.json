@@ -1,0 +1,24 @@
+{
+ "id": "mine-homam-cryobelt",
+ "kind": "mine",
+ "title": "Homam Cryobelt: water_ice, nitrogen_ice, helium_ice; sold at The Experiment Research Station",
+ "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 2023 cr per ship-hour, not a measurement. A test: one ship. Added as a test by fill.py on 2026-11-16 03:25 UTC (Zero): one ship until its first RESULT line is read.",
+ "belt": "homam:homam_cryobelt",
+ "station": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+ "minutes": 67,
+ "max_ships": 1,
+ "sell": [
+  {
+   "item": "water_ice",
+   "min_price": 30
+  },
+  {
+   "item": "helium_ice",
+   "min_price": 1
+  }
+ ],
+ "requires": {
+  "module": "ice_harvester_i",
+  "empty_hold": true
+ }
+}
