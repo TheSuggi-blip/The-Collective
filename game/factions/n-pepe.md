@@ -15,7 +15,7 @@ updated: 2026-11-16
 # PEPE [PEPE]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 2.
+Pilots of it in our space in the last 24 hours: 3.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 2.
 | Allies | not on record | Daily feed, factions |
 | Enemies | not on record | Daily feed, factions |
 | At war with | not on record | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 5 | Public event stream |
+| Pilots carrying the tag on the public event stream | 11 | Public event stream |
 
 ## Bases
 
@@ -38,8 +38,9 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| MimicSol | Nexus Prime (`nexus_prime`) | 0 | theoria |
-| MimicVoid | Nexus Prime (`nexus_prime`) | 0 | threshold |
+| Mimic | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicAnvil | Synchrony (`synchrony`) | not on record | not met |
+| MimicDrift | The Experiment (`the_experiment`) | not on record | not met |
 
 ## Standing History
 

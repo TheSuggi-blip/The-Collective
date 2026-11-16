@@ -15,7 +15,7 @@ updated: 2026-11-16
 # Our Lord And Savior [OLSV]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 28.
+Pilots of it in our space in the last 24 hours: 27.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 28.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 187 | Public event stream |
+| Pilots carrying the tag on the public event stream | 186 | Public event stream |
 
 ## Bases
 
@@ -40,7 +40,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 |---|---|---|---|
 | OLS Acrux II | Synchrony (`synchrony`) | 0 | cobble |
 | OLS Aladfar | Nexus Prime (`nexus_prime`) | 0 | theoria |
-| OLS Armus | Node Alpha (`node_alpha`) | 0 | theoria |
+| OLS Armus | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | OLS Arrakis | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | OLS Ashlesha | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | OLS Atlas | Nexus Prime (`nexus_prime`) | 0 | theoria |
@@ -61,7 +61,6 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | OLS Guniibuu | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | OLS Hunor | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | OLS Imai | Synchrony (`synchrony`) | 0 | theoria |
-| OLS Libertas | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | OLS Nahn | Synchrony (`synchrony`) | 0 | shard |
 | OLS Ogma | Synchrony (`synchrony`) | 0 | shard |
 | OLS Rastaban | Synchrony (`synchrony`) | 0 | cobble |
