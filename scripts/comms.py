@@ -12,6 +12,8 @@ WHAT: communications/ holds the append-only logs of The Collective
                    the requests not closed: the record a summary of the
                    divisions is written from
         check      the gate of the three logs' rules
+        admirals   the Admirals' own log (admirals.log): the claims in force
+                   and its last entries
       and it is the one way an entry is written to any log:
         append     appends one prepared entry under a lock: it sets the entry's
                    number and time, puts exactly one blank line before it, runs
@@ -21,7 +23,8 @@ RULES (append):
     ` | ref: ...` and ` | see: ...` after it where they apply; the body follows;
   - <Name> is the writer given with --as; orders.log takes entries of Unity only;
   - the category belongs to the log: order (orders), session (reports), request
-    or answer (requests), general (queue), error (errors);
+    or answer (requests), general (queue), error (errors), note or claim
+    (admirals); a claim carries a `Claims:` line;
   - the entry file lies outside the repository: an untracked file in the
     working copy holds every member's push;
   - an entry that breaks the gate is taken out again and nothing is committed.
@@ -46,13 +49,15 @@ USAGE:
   comms.py requests [--to NAME] [--from NAME] [--all]
   comms.py digest [--last N] [--member NAME]
   comms.py check
-  comms.py append <orders|reports|requests|queue|errors> <entry file> --as <Name>
+  comms.py admirals [--last N] [--member NAME]
+  comms.py append <orders|reports|requests|queue|errors|admirals> <entry file> --as <Name>
   --root <dir>   repository root (default: the parent of this file's folder)
 
 Stdlib only. ASCII only.
 """
 
 import argparse
+import calendar
 import fcntl
 import re
 import subprocess
@@ -63,7 +68,9 @@ from pathlib import Path
 HEADER = re.compile(r"^## \[ENT-(\d{3,})\] \| (\d{4}-\d{2}-\d{2} \d{2}:\d{2}) UTC \| ([A-Za-z][A-Za-z0-9_-]*) \| ([a-z]+)((?: \| (?:ref|see): [^|]+)*)$")
 SESSION_LINES = ("Session", "Did", "Worked", "Failed", "Requests", "Suggestions", "Report")
 ANSWER_WORDS = ("yes", "no", "done")
-LOGS = {"orders": ("order",), "reports": ("session",), "requests": ("request", "answer"), "queue": ("general",), "errors": ("error",)}
+LOGS = {"orders": ("order",), "reports": ("session",), "requests": ("request", "answer"), "queue": ("general",), "errors": ("error",),
+        "admirals": ("note", "claim")}
+CLAIM_HOURS = 24              # a claim in admirals.log stands this long: nothing is taken for good (Suggi, 2026-11-16)
 GATED = ("orders", "reports", "requests")
 DRAFT = re.compile(r"^## \[ENT-NEXT\] \| NOW \| ([A-Za-z][A-Za-z0-9_-]*) \| ([a-z]+)((?: \| (?:ref|see): [^|]+)*)$")
 
@@ -206,6 +213,34 @@ def show_digest(root, last, member):
     return 0
 
 
+def line_of(entry, label):
+    """The text after `<label>:` in an entry's body, or ''."""
+    return next((line[len(label) + 1:].strip() for line in entry["body"] if line.startswith(label + ":")), "")
+
+
+def show_admirals(root, last, member):
+    """The Admirals' own log: the claims in force, then the last entries. A claim stands CLAIM_HOURS hours from its
+    entry unless a later entry of its writer ends it with a `Releases: ENT-NNN` line."""
+    if not (Path(root) / "communications" / "admirals.log").is_file():
+        print("no communications/admirals.log")
+        return 0
+    entries, _errors = read_log(root, "admirals")
+    released = {(entry["by"], int(number)) for entry in entries for number in re.findall(r"ENT-(\d+)", line_of(entry, "Releases"))}
+    now = time.time()
+    claims = [e for e in entries if e["category"] == "claim" and (e["by"], e["num"]) not in released
+              and now - calendar.timegm(time.strptime(e["when"], "%Y-%m-%d %H:%M")) < CLAIM_HOURS * 3600]
+    print("CLAIMS IN FORCE: %d (a claim stands %d hours from its entry; its writer renews it with a new claim or ends it "
+          "with a `Releases: ENT-NNN` line; another division leaves a claimed route to its claimer, or asks)" % (len(claims), CLAIM_HOURS))
+    for entry in claims:
+        print("  ENT-%03d | %s UTC | %s | %s" % (entry["num"], entry["when"], entry["by"], line_of(entry, "Claims")))
+    shown = [e for e in entries if not member or e["by"].lower() == member.lower()][-last:]
+    print("LAST %d ENTRIES%s" % (len(shown), (" of " + member) if member else ""))
+    for entry in shown:
+        print("\n".join([entry["head"]] + entry["body"]))
+        print()
+    return 0
+
+
 def check(root):
     """Error lines for the three logs this script reads."""
     errors = []
@@ -295,6 +330,8 @@ def append(root, log, entry_file, name, commit=True):
         problems.append("one entry per call")
     if not any(line.strip() for line in lines[1:]):
         problems.append("the entry has no body")
+    if log == "admirals" and draft is not None and draft.group(2) == "claim" and not any(line.startswith("Claims:") for line in lines[1:]):
+        problems.append("a claim needs a `Claims:` line: the route ids or the place, and for how many ships")
     named = pilots_named("\n".join(lines))
     if named:
         problems.append("the entry names a pilot of ours (%s): the repository is public; write the division and a count, or `a miner`; "
@@ -348,7 +385,7 @@ def append(root, log, entry_file, name, commit=True):
 def main():
     here = Path(__file__).resolve().parent
     parser = argparse.ArgumentParser(description="Read the fleet's logs: orders in force, requests by state, last session entries.")
-    parser.add_argument("command", choices=("orders", "requests", "digest", "check", "append"))
+    parser.add_argument("command", choices=("orders", "requests", "digest", "check", "admirals", "append"))
     parser.add_argument("target", nargs="*", help="append: the log's name and the entry file")
     parser.add_argument("--root", default=str(here.parent))
     parser.add_argument("--as", dest="writer")
@@ -356,7 +393,7 @@ def main():
     parser.add_argument("--to")
     parser.add_argument("--from", dest="sender")
     parser.add_argument("--all", action="store_true")
-    parser.add_argument("--last", type=int, default=3)
+    parser.add_argument("--last", type=int)
     parser.add_argument("--member")
     args = parser.parse_args()
     if args.command == "append":
@@ -370,7 +407,9 @@ def main():
     if args.command == "requests":
         return show_requests(args.root, args.to, args.sender, args.all)
     if args.command == "digest":
-        return show_digest(args.root, max(args.last, 1), args.member)
+        return show_digest(args.root, max(args.last or 3, 1), args.member)
+    if args.command == "admirals":
+        return show_admirals(args.root, max(args.last or 12, 1), args.member)
     errors = check(args.root)
     for line in errors:
         print("ERROR " + line)

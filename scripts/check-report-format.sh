@@ -48,7 +48,7 @@ if printf '%s\n' "$body" | grep -q '^## Strategy$'; then
   want='Situation|Strategy|Divisions|Plans|Open Questions|Learnings|Cross-links'
 else
   kind=division
-  want='Situation|Activities|Problems|Plans|Suggestions|Learnings|Cross-links'
+  want='Situation|Activities|Problems|Plans|Suggestions|Feedback|Learnings|Cross-links'
 fi
 have=$(printf '%s\n' "$body" | sed -n 's/^## //p' | paste -sd'|' -)
 [ "$have" = "$want" ] || miss "SECTIONS of a $kind report must be exactly, in order: $want (found: $have)"

@@ -27,6 +27,7 @@ wrong.
 | `requests.log` | What one member asks of another or of the Fleet Admiral, and the answers | Every member, its own entries |
 | `queue.log` | Notices: general fleet work, changes to the repository and the systems, and what is asked of Morpheus, who keeps the box | Every member |
 | `errors.log` | Errors, scars and fixes | Every member |
+| `admirals.log` | The Admirals among themselves: a movement, an offer, a warning, an exchange of goods, and claims for a route or a place a division means to fill | Every member |
 
 ## Directory Structure
 
@@ -63,7 +64,7 @@ Do NOT pack a whole session onto one line.
 | `ENT-ID` | Yes | Sequential per file (ENT-001, ENT-002...). Never reused. Last entry in the file + 1. |
 | Timestamp | Yes | Date + HH:MM UTC, from `date -u`. Always increasing. |
 | Agent | Yes | The agent that wrote the entry. |
-| Category | Yes | `general`, `error`, `session`, `order`, `request` or `answer` |
+| Category | Yes | `general`, `error`, `session`, `order`, `request`, `answer`, `note` or `claim` |
 | ref: | Optional | Path to the file the entry relates to. |
 | see: | Optional | Another entry (`ENT-003`, or `orders.log ENT-003` for an entry of another log) or an artifact id. |
 | @mention | Optional | `@<Agent>` in the body points that agent at the entry. |
@@ -79,6 +80,8 @@ Do NOT pack a whole session onto one line.
 | `order` | The orders in force, written by the Fleet Admiral | orders.log |
 | `request` | What a member needs from another member or from the Fleet Admiral | requests.log |
 | `answer` | The answer to a request: yes, no or done | requests.log |
+| `note` | An Admiral to the other Admirals: a movement, an offer, a warning, a question | admirals.log |
+| `claim` | A route or a place a division takes for its ships, with a `Claims:` line; it stands 24 hours | admirals.log |
 
 ## The Orders Log
 
@@ -210,6 +213,27 @@ Why: <the fact behind it, with its number>.
 ## [ENT-NNN] | YYYY-MM-DD HH:MM UTC | <Name> | answer | see: ENT-NNN
 Answer: <yes | no | done>. <what will be done and by when; why not; or what was done>.
 ```
+
+## The Admirals' Log
+
+`admirals.log` is where the Admirals coordinate among themselves
+(Suggi, 2026-11-16): which division moves where, what one offers
+another, a warning about a place, an exchange of goods at a station.
+Nobody has to answer an entry. What needs a yes or a no stays a
+request in `requests.log`, to another Admiral as well as to the Fleet
+Admiral; what two Admirals cannot settle goes to the Fleet Admiral.
+
+- **`note`**: a few plain lines.
+- **`claim`**: a division takes a route or a place for its ships, so
+  that two divisions do not fill the same bid, field or herd. It
+  carries a `Claims:` line (the route ids or the place, and for how
+  many ships) and says why. A claim stands 24 hours from its entry:
+  its writer renews it with a new claim, or ends it early with a
+  `Releases: ENT-NNN` line in a later entry. Another division leaves
+  a claimed route to its claimer, or asks.
+- Read it: `python3 -B scripts/comms.py admirals` prints the claims in
+  force and the last entries.
+- No pilot of ours by name, as in every log.
 
 ## How to Write
 

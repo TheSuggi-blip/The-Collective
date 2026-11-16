@@ -256,6 +256,27 @@ class AppendTests(Tree):
         self.assertEqual(code, 0)
         self.assertIn("## [ENT-008] | ", self.log("requests"))
 
+    def test_the_admirals_log_takes_notes_and_claims_and_shows_the_claims_in_force(self):
+        self.write("admirals", COMMENT)                                                         # Suggi, 2026-11-16: the Admirals coordinate among themselves
+        claim = "## [ENT-NEXT] | NOW | Zero | claim | ref: game/routes/mine-a.json\nClaims: mine-a, for 12 ships.\nWhy: the ice bid at the capital.\n"
+        code, text = self.run_command(comms.append, "admirals", self.draft(claim), "Zero")
+        self.assertEqual((code, text.strip()), (0, "appended ENT-001 to communications/admirals.log (not committed)"))
+        code, text = self.run_command(comms.append, "admirals", self.draft("## [ENT-NEXT] | NOW | Apophis | claim\nThe herd at the nebula.\n"), "Apophis")
+        self.assertEqual((code, "a claim needs a `Claims:` line" in text), (1, True))
+        code, text = self.run_command(comms.append, "admirals", self.draft("## [ENT-NEXT] | NOW | Apophis | general\nA notice.\n"), "Apophis")
+        self.assertEqual((code, "does not belong in admirals.log" in text), (1, True))
+        self.run_command(comms.append, "admirals", self.draft("## [ENT-NEXT] | NOW | Apophis | note\nTwo guards go to the field of mine-a at the next turn.\n"), "Apophis")
+        code, text = self.run_command(comms.show_admirals, 12, None)
+        self.assertEqual((code, "CLAIMS IN FORCE: 1" in text, "ENT-001" in text, "mine-a, for 12 ships." in text, "Two guards go" in text), (0, True, True, True, True))
+        self.assertNotIn("Two guards go", self.run_command(comms.show_admirals, 12, "Zero")[1])
+        self.run_command(comms.append, "admirals", self.draft("## [ENT-NEXT] | NOW | Apophis | note\nReleases: ENT-001.\n"), "Apophis")
+        self.assertIn("CLAIMS IN FORCE: 1", self.run_command(comms.show_admirals, 12, None)[1])     # only its writer ends a claim
+        self.run_command(comms.append, "admirals", self.draft("## [ENT-NEXT] | NOW | Zero | note\nReleases: ENT-001.\nThe bid is gone.\n"), "Zero")
+        self.assertIn("CLAIMS IN FORCE: 0", self.run_command(comms.show_admirals, 12, None)[1])
+        old = COMMENT + "## [ENT-001] | 2026-01-01 08:00 UTC | Zero | claim\nClaims: mine-a, for 12 ships.\n"
+        self.write("admirals", old)
+        self.assertIn("CLAIMS IN FORCE: 0", self.run_command(comms.show_admirals, 12, None)[1])     # a claim lapses by itself
+
     def test_the_counter_goes_on_after_an_archive_run_and_queue_takes_general(self):
         (self.root / "communications" / "archive" / "queue-2026-01-01.log").write_text(
             COMMENT + "## [ENT-041] | 2026-01-01 08:00 UTC | Unity | general\nOld.\n", encoding="ascii")

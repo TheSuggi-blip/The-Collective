@@ -45,11 +45,12 @@ checklist in the report.
 - [ ] Situation names the period covered: from the previous report to this one  (PASS / HALT)
 - [ ] Every number is printed from a record the same section names; a number nobody measured is written "not measured"  (PASS / HALT)
 - [ ] No section is left out; a section with little to report says what was checked and what the check showed  (PASS / HALT)
-- [ ] Division report, minimum words: Situation 250, Activities 250, Problems 150, Plans 250, Suggestions 100, Learnings 200  (PASS / HALT)
+- [ ] Division report, minimum words: Situation 250, Activities 250, Problems 150, Plans 250, Suggestions 100, Feedback 150, Learnings 200  (PASS / HALT)
 - [ ] Fleet report, minimum words: Situation 250, Strategy 300, Divisions 300, Plans 250, Open Questions 150, Learnings 200  (PASS / HALT)
 - [ ] `python3 -B scripts/report-words.py reports/<file>` prints `REPORT WORDS: PASS`  (PASS / HALT)
 - [ ] The words carry facts: no sentence stands in the report only to reach a minimum, nothing is invented, nothing is said twice  (PASS / HALT)
 - [ ] Suggestions (a division report) say what can be changed, each with its reason and its cost  (PASS / HALT)
+- [ ] Feedback (a division report) says of what the Fleet Admiral built or changed whether it worked in the division's hands, each with the call made and what it answered  (PASS / HALT)
 - [ ] Learnings hold what the period taught the writer about its own role, each lesson with the record that earned it  (PASS / HALT)
 - [ ] No secrets: no password, registration code, key or token  (PASS / HALT)
 - [ ] File named `YYYY-MM-DD_author_slug.md`, in `reports/`  (PASS / HALT)
@@ -119,6 +120,7 @@ minimum is a floor: a section is as much longer as its facts need.
 | Divisions | -- | 300 |
 | Plans | 250 | 250 |
 | Suggestions | 100 | -- |
+| Feedback | 150 | -- |
 | Learnings | 200 | 200 |
 | Open Questions | -- | 150 |
 | Cross-links | none | none |
@@ -171,6 +173,17 @@ Admiral and by Suggi. Proposals on strategy, orders, resources, rules,
 tools or the way the fleet is run, each with its reason and what it
 would cost; say whose it is to decide where that is clear. An
 objection to an order belongs here.
+
+**`## Feedback`** -- *Did what the Fleet Admiral built work?* Read by
+the Fleet Admiral, who builds the fleet's tools, scripts, rules and
+orders. For each thing built or changed since the division's last
+report that the division used (a tool, a script, a view of the
+database, a rule, a form, the orders themselves): did it work in the
+division's hands, shown by the call made and what it answered; what
+was slow, unclear, wrong or missing; and what would make it better.
+Say also what the division built for itself instead of asking, and
+what it could have built itself had a door been open. Praise without
+a record and blame without a record are both left out.
 
 **`## Learnings`** -- *What did the division learn?* What the period
 taught the Admiral about its own role in the game, written from its
@@ -277,6 +290,12 @@ Source: <the record these numbers were printed from>
 
 <What can be changed>, because <reason>; it would cost <cost>.
 
+## Feedback
+
+<What the Fleet Admiral built or changed>: <worked / did not work>,
+shown by <the call made and what it answered>; <what would make it
+better>. Built by the division itself: <what, or nothing>.
+
 ## Learnings
 
 <Lesson>, shown by <record>; the division now <what it does
@@ -291,4 +310,4 @@ it>. Kept in: <knowledge file, or "unpromoted">.
 
 ---
 
-*Last updated: 2026-11-15 by Morpheus, on Suggi's instruction: a fleet report carries Learnings too, at least 200 words. Suggi refines the contents with the Fleet Admiral.*
+*Last updated: 2026-11-16 by Unity, on Suggi's instruction: a division report carries Feedback after Suggestions, at least 150 words, so that the Admirals say whether what the Fleet Admiral builds works. Before that: 2026-11-15 by Morpheus (a fleet report carries Learnings too).*

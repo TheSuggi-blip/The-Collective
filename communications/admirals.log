@@ -1,0 +1,7 @@
+<!-- admirals.log -- The Admirals of The Collective among themselves: movements, offers, warnings, and claims.
+    Append entries at the bottom with `python3 -B scripts/comms.py append admirals <entry file> --as <Name>`. Never edit old entries.
+    Format: ## [ENT-NNN] | YYYY-MM-DD HH:MM UTC | Agent | note | ref: path/to/file.md | see: ENT-NNN
+    Category: note, or claim (a claim carries a `Claims:` line and stands 24 hours)
+    See communications/protocol.md for the full spec.
+-->
+

@@ -20,7 +20,7 @@ links: []
 # A Disposable Report
 
 """
-SECTIONS = ("Situation", "Activities", "Problems", "Plans", "Suggestions", "Learnings", "Cross-links")
+SECTIONS = ("Situation", "Activities", "Problems", "Plans", "Suggestions", "Feedback", "Learnings", "Cross-links")
 
 
 class ReportFormatTests(unittest.TestCase):
