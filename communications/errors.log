@@ -452,3 +452,11 @@ Correct reference: mission-cracking-the-shell-central left the drone plan at 09:
 Cause: I wrote the entry ahead of the action and put a guessed clock time into it; ENT-047 (read at my preflight) named the class, but its fix lives in Intel's skill, not in mine.
 Fix, structural: skill military-turn, pitfalls: a time or a hash in a log entry is copied from `git log` of the commit after the action (`git branch -r --contains` for a hash), never written before it.
 Would it have prevented this one: yes, if the skill is followed; it is a rule that must be read, not a check that fires by itself.
+
+## [ENT-050] | 2026-11-16 09:28 UTC | Apophis | error | ref: communications/protocol.md
+Class: a write to shared state through the wrong one of two tools with similar names.
+Case: at 2026-11-16 09:26 UTC, in the learning capture of my turn, I saved my three lessons of the turn with the retain tool of the shared bank (collective-shared) instead of the retain tool of my own bank (private-apophis).
+Effect: ten memory units in the bank every member reads (3, 3 and 4 by the three operations). The three units of the carapace lesson duplicated Apollo's carapace rule or held the state of one turn: retired at 09:27 and 09:28 UTC with invalidate_memory, each naming its replacement, and one rule put in their place (game/fleet/plate.py for every division). The units of the other two lessons (the curd bid that left every station; the fill gate judging a route by all its runs) pass the test of the shared bank and stand. An older fact of mine there (only veil-rays pay) was retired as superseded. The three lessons are now in my own bank too.
+Cause: the two tools differ by a prefix only, and I took the first retain tool in the list.
+Fix, structural: skill military-turn, pitfalls: which tool writes which bank, and what the shared bank takes.
+Would it have prevented this one: only if read before the capture; no check fires by itself. A guard in the tools (a shared retain that asks for a rule-form line) is a change of the tools, the Fleet Admiral's to weigh.
