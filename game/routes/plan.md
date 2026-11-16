@@ -51,8 +51,8 @@ Kept by Unity. Routes: 34.
 | 30 | [voidborn-network-expansion](voidborn-network-expansion.json) | Once per Pilot | home space | once per pilot, up to 20 ships, after the reward First Steps in the Void | one-time |
 | 31 | [mission-ghosts-in-the-cloud-node](mission-ghosts-in-the-cloud-node.json) | Once per Pilot | home space | once per pilot, up to 1 ships | one-time |
 | 32 | [mine-hd-147513-belt](mine-hd-147513-belt.json) | Paying Routes | beyond the border, 7 jumps | up to 1 ships, empty hold | 360 |
-| 33 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -790 |
-| 34 | [park](park.json) | Reading and Waiting | home space | the park route | -670 |
+| 33 | [census-frontier](census-frontier.json) | Standing Work, Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -790 |
+| 34 | [park](park.json) | Standing Work, Reading and Waiting | home space | the park route | -670 |
 
 ## drone
 
@@ -92,9 +92,9 @@ Kept by Apophis. Routes: 35.
 | 30 | [train-navigation-home](train-navigation-home.json) | Tests | home space | up to 1 ships | TBD |
 | 31 | [mission-ghosts-in-the-cloud-node](mission-ghosts-in-the-cloud-node.json) | Once per Pilot | home space | once per pilot, up to 1 ships | one-time |
 | 32 | [voidborn-first-hunt-acubens](voidborn-first-hunt-acubens.json) | Once per Pilot | home space | once per pilot, up to 1 ships | one-time |
-| 33 | [census-guard-ice](census-guard-ice.json) | Reading and Waiting | beyond the border, 7 jumps | up to 2 ships, empty hold | -1,350 |
-| 34 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -790 |
-| 35 | [park](park.json) | Reading and Waiting | home space | the park route | -670 |
+| 33 | [census-guard-ice](census-guard-ice.json) | Standing Work, Reading and Waiting | beyond the border, 7 jumps | up to 2 ships, empty hold | -1,350 |
+| 34 | [census-frontier](census-frontier.json) | Standing Work, Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -790 |
+| 35 | [park](park.json) | Standing Work, Reading and Waiting | home space | the park route | -670 |
 
 Planned:
 
@@ -144,8 +144,8 @@ Kept by Apollo. Routes: 34.
 | 30 | [mine-amberfall-emission-nebula](mine-amberfall-emission-nebula.json) | Tests | beyond the border, 5 jumps | up to 1 ships, needs gas_harvester_i, empty hold, while node_gamma_relay_station bids 27 cr for hydrogen_gas | TBD |
 | 31 | [mine-antares-gas-cloud](mine-antares-gas-cloud.json) | Tests | beyond the border, 8 jumps | up to 1 ships, needs gas_harvester_i, empty hold | TBD |
 | 32 | [mine-deepwell-haze](mine-deepwell-haze.json) | Tests | beyond the border, 8 jumps | up to 1 ships, needs gas_harvester_i, empty hold | TBD |
-| 33 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -790 |
-| 34 | [park](park.json) | Reading and Waiting | home space | the park route | -670 |
+| 33 | [census-frontier](census-frontier.json) | Standing Work, Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -790 |
+| 34 | [park](park.json) | Standing Work, Reading and Waiting | home space | the park route | -670 |
 
 Planned:
 
@@ -195,8 +195,8 @@ Kept by Zero. Routes: 35.
 | 31 | [mine-cryogenic-reserve](mine-cryogenic-reserve.json) | Paying Routes | home space | up to 1 ships, needs ice_harvester_i, while central_nexus bids 25 cr for water_ice | 170 |
 | 32 | [mine-felis-frost-ring](mine-felis-frost-ring.json) | Tests | beyond the border, 7 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while node_beta_industrial_station bids 156 cr for deuterium_ice | TBD |
 | 33 | [mine-nova-terra-ice-shelf](mine-nova-terra-ice-shelf.json) | Tests | beyond the border, 8 jumps | up to 1 ships, needs ice_harvester_i, while central_nexus bids 25 cr for water_ice | TBD |
-| 34 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -790 |
-| 35 | [park](park.json) | Reading and Waiting | home space | the park route | -670 |
+| 34 | [census-frontier](census-frontier.json) | Standing Work, Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -790 |
+| 35 | [park](park.json) | Standing Work, Reading and Waiting | home space | the park route | -670 |
 
 Planned:
 
@@ -216,7 +216,7 @@ Kept by Oracle. Routes: 20.
 | 3 | [voidborn-collective-provides](voidborn-collective-provides.json) | Off | beyond the border, 5 jumps | once per pilot, up to 2 ships, empty hold, after the reward Network Expansion, off | one-time |
 | 4 | [voidborn-signal-protocol](voidborn-signal-protocol.json) | Once per Pilot | home space | once per pilot, up to 20 ships, after the reward The Collective Provides | one-time |
 | 5 | [voidborn-signal-fragments](voidborn-signal-fragments.json) | Once per Pilot | home space | once per pilot, up to 10 ships, from navigation 3 | one-time |
-| 6 | [census-voidborn](census-voidborn.json) | Reading and Waiting | home space | up to 3 ships | -830 |
+| 6 | [census-voidborn](census-voidborn.json) | Standing Work, Reading and Waiting | home space | up to 3 ships | -830 |
 | 7 | [voidborn-first-hunt-intercrus-belt](voidborn-first-hunt-intercrus-belt.json) | Once per Pilot | beyond the border, 7 jumps | once per pilot, up to 1 ships, empty hold | one-time |
 | 8 | [voidborn-first-hunt-intercrus-sootfall](voidborn-first-hunt-intercrus-sootfall.json) | Once per Pilot | beyond the border, 7 jumps | once per pilot, up to 1 ships, empty hold | one-time |
 | 9 | [mission-cracking-the-shell-central](mission-cracking-the-shell-central.json) | Once per Pilot | beyond the border, 4 jumps | once per pilot, up to 1 ships, empty hold, after the reward First Hunt: Belt-Grazers | one-time |
@@ -229,8 +229,8 @@ Kept by Oracle. Routes: 20.
 | 16 | [voidborn-conductive-lattice](voidborn-conductive-lattice.json) | Once per Pilot | beyond the border, 6 jumps | once per pilot, up to 4 ships, 146 pilots in all, empty hold, from 13,000 cr | one-time |
 | 17 | [hunt-atlas-gas-pocket](hunt-atlas-gas-pocket.json) | Measured at a Loss | beyond the border, 6 jumps | up to 1 ships, empty hold | -70 |
 | 18 | [hunt-test-homam-frost-moth](hunt-test-homam-frost-moth.json) | Paying Routes | beyond the border, 6 jumps | up to 1 ships, empty hold | 2,430 |
-| 19 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -790 |
-| 20 | [park](park.json) | Reading and Waiting | home space | the park route | -670 |
+| 19 | [census-frontier](census-frontier.json) | Standing Work, Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -790 |
+| 20 | [park](park.json) | Standing Work, Reading and Waiting | home space | the park route | -670 |
 
 Planned:
 
@@ -278,8 +278,8 @@ Kept by Unity. Routes: 31.
 | 27 | [hunt-starveling-nebula-veil-ray](hunt-starveling-nebula-veil-ray.json) | Measured at a Loss | beyond the border, 6 jumps | up to 1 ships, empty hold | -500 |
 | 28 | [hunt-felis-dim-lattice-veil-ray](hunt-felis-dim-lattice-veil-ray.json) | Measured at a Loss | beyond the border, 7 jumps | up to 1 ships, empty hold | -440 |
 | 29 | [voidborn-network-expansion](voidborn-network-expansion.json) | Once per Pilot | home space | once per pilot, up to 20 ships, after the reward First Steps in the Void | one-time |
-| 30 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -790 |
-| 31 | [park](park.json) | Reading and Waiting | home space | the park route | -670 |
+| 30 | [census-frontier](census-frontier.json) | Standing Work, Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -790 |
+| 31 | [park](park.json) | Standing Work, Reading and Waiting | home space | the park route | -670 |
 
 ## trader
 
@@ -305,8 +305,8 @@ Kept by Mercury. Routes: 20.
 | 16 | [mine-the-experiment-haze-synchrony](mine-the-experiment-haze-synchrony.json) | Tests | home space | up to 1 ships, needs gas_harvester_i, while synchrony_hub bids 28 cr for hydrogen_gas | TBD |
 | 17 | [mine-gsc-0016-emission-nebula](mine-gsc-0016-emission-nebula.json) | Tests | beyond the border, 6 jumps | up to 1 ships, needs gas_harvester_i, empty hold | TBD |
 | 18 | [mine-marfik-emission-nebula](mine-marfik-emission-nebula.json) | Tests | beyond the border, 6 jumps | up to 1 ships, needs gas_harvester_i, empty hold | TBD |
-| 19 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -790 |
-| 20 | [park](park.json) | Reading and Waiting | home space | the park route | -670 |
+| 19 | [census-frontier](census-frontier.json) | Standing Work, Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -790 |
+| 20 | [park](park.json) | Standing Work, Reading and Waiting | home space | the park route | -670 |
 
 Planned:
 

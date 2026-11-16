@@ -8,6 +8,8 @@ import subprocess
 import sys
 import unittest
 
+os.environ.setdefault("FLEET_TAXES", os.devnull)   # no test reads the fleet's own tax record
+
 
 REPO = Path(__file__).resolve().parents[2]
 SERVER = REPO / "game" / "fleet" / "collective_mcp.py"

@@ -4,10 +4,13 @@ import contextlib
 import importlib.util
 import io
 import json
+import os
 from pathlib import Path
 import tempfile
 import time
 import unittest
+
+os.environ.setdefault("FLEET_TAXES", os.devnull)   # no test reads the fleet's own tax record
 
 
 FLEET = Path(__file__).resolve().parents[2] / "game" / "fleet"
@@ -94,9 +97,14 @@ class HiveTests(unittest.TestCase):
 
     def test_the_scale_is_a_route_that_repeats_never_a_fitting_or_a_mission(self):
         hive = self.hive if hasattr(self, "hive") else load("hive")
-        routes = {"mine": {"id": "mine", "kind": "mine"}, "fit": {"id": "fit", "kind": "circuit", "stops": [{"at": "a:b:c", "fit": "ice_harvester_i"}]},
+        routes = {"mine": {"id": "mine", "kind": "mine", "sell": [{"item": "ice", "min_price": 1}]}, "gather": {"id": "gather", "kind": "mine"}, "fit": {"id": "fit", "kind": "circuit", "stops": [{"at": "a:b:c", "fit": "ice_harvester_i"}]},
                   "once": {"id": "once", "kind": "circuit", "once": True, "stops": [{"at": "a:b:c"}]}}
-        by_route = {"mine": [3, 9000.0, 90.0, 0, 90.0], "fit": [2, 50000.0, 30.0, 0, 30.0], "once": [4, 40000.0, 60.0, 0, 60.0], "gone": [5, 99000.0, 10.0, 0, 10.0]}
+        by_route = {"mine": [3, 9000.0, 90.0, 0, 90.0], "fit": [2, 50000.0, 30.0, 0, 30.0], "once": [4, 40000.0, 60.0, 0, 60.0], "gone": [5, 99000.0, 10.0, 0, 10.0],
+                    "gather": [6, 70000.0, 30.0, 0, 30.0]}                                        # standing work is no route judged on its pay
+        self.assertEqual([rid for _f, rid, _r in hive.scale(routes, by_route)], ["mine"])
+        self.assertEqual([hive.work_of(routes[rid]) for rid in ("mine", "gather")], ["mining", "standing work (trains, gathers)"])
+        routes["drain"] = {"id": "drain", "kind": "circuit", "requires": {"stored": {"at": "c", "item": "ice", "min": 60}}, "stops": [{"at": "a:b:c"}]}
+        by_route["drain"] = [3, 90000.0, 20.0, 0, 20.0]                                               # it sells a load mined earlier: no scale for work
         self.assertEqual([rid for _f, rid, _r in hive.scale(routes, by_route)], ["mine"])
 
     def test_the_history_store_answers_from_its_read_copy(self):
@@ -125,6 +133,26 @@ class HiveTests(unittest.TestCase):
         hub = next(line.split() for line in text.splitlines() if line.strip().startswith("hub "))
         self.assertEqual(hub[:7], ["hub", "1" if stamp(7200)[:13] == stamp(7100)[:13] else "2", "30", "38", "44", "44", "2"])
         self.assertIn("no price move of `no_such_item`", text)
+
+    def test_what_a_bid_regains_is_one_figure_for_the_tables_and_for_the_plans(self):
+        now = time.time()
+        stamp = lambda ago: time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(now - ago))
+        (self.data / "market" / "history.jsonl").write_text("".join(
+            json.dumps({"t": stamp(ago), "base": "hub", "item": "water_ice", "bid": 38, "bid_qty": units, "ask": 0, "ask_qty": 0}) + "\n"
+            for ago, units in ((7200, 1000), (3600, 600), (0, 900))))
+        bids, fields, herds = self.hive.rates(str(self.data))
+        added, taken, hours = bids[("hub", "water_ice")]
+        self.assertEqual((round(added), round(taken), round(hours, 1)), (150, 200, 2.0))          # 300 came back and 400 were taken in two hours
+        self.assertEqual((fields, herds), ({}, {}))
+
+    def test_the_briefing_is_one_answer_and_says_what_it_could_not_read(self):
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            self.hive.show_briefing(str(FLEET.parent), str(self.data), time.time(), "Zero", 4)
+        text = out.getvalue()
+        for part in ("=== THE ORDERS IN FORCE", "=== REQUESTS NOT CLOSED, ADDRESSED TO Zero", "=== THE FLEET'S MONEY", "=== MY STANDING FLEET", "STANDING FLEET | Zero, role miner",
+                     "=== THE FILL GATE (no ship is idle)", "PASS: no ship of miner waits"):
+            self.assertIn(part, text)
 
     def test_a_question_without_readings_says_so_instead_of_failing(self):
         out = io.StringIO()

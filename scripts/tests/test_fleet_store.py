@@ -14,6 +14,8 @@ import tempfile
 import time
 import unittest
 
+os.environ.setdefault("FLEET_TAXES", os.devnull)   # no test reads the fleet's own tax record
+
 
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "game" / "fleet" / "store.py"

@@ -10,6 +10,8 @@ import tempfile
 import time
 import unittest
 
+os.environ.setdefault("FLEET_TAXES", os.devnull)   # no test reads the fleet's own tax record
+
 
 FLEET = Path(__file__).resolve().parents[2] / "game" / "fleet"
 HOME = {"at": "home:core:base"}
@@ -89,7 +91,7 @@ class Tree(unittest.TestCase):
         return seen, self.fill.read_role(seen, role, **more)
 
     def run_fill(self, member, *args):
-        env = {"PATH": os.environ.get("PATH", "/usr/bin:/bin"), "HERMES_SESSION_PROFILE": member, "HOME": self.temp.name}
+        env = {"PATH": os.environ.get("PATH", "/usr/bin:/bin"), "HERMES_SESSION_PROFILE": member, "HOME": self.temp.name, "FLEET_TAXES": os.devnull}
         return subprocess.run([sys.executable, "-I", "-B", str(FLEET / "fill.py")] + list(args) + ["--root", str(self.root), "--data", str(self.data)],
                               stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, env=env)
 
@@ -152,7 +154,19 @@ class ReadTests(Tree):
         seen, got = self.read("miner")
         self.assertEqual((got["starting"], got["waiting"]), ([("miner-1", "ice")], ["miner-2"]))
         self.assertEqual(dict(got["plan"][0][3]), {"needs ice_harvester": 1})
-        self.assertEqual(self.fill.carries(seen, ROUTES["ice"]), (20, 5200, 28))                  # 5,200 units, 260 a ship in four hours
+        deep = self.fill.carries(seen, ROUTES["ice"])
+        self.assertEqual((deep["ships"], deep["extra"], self.fill.carried(deep)), (None, 20, "? +20"))    # 5,200 units stand: 260 a ship in four hours
+        self.assertIn("what the water_ice bid at base regains is not measured; 5,200 units stand at 28 cr now", deep["text"])
+        stamp = lambda ago: time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(time.time() - ago))
+        (self.data / "market" / "history.jsonl").write_text("".join(
+            json.dumps({"t": stamp(ago), "base": "base", "item": "water_ice", "bid": 28, "bid_qty": units, "ask": 0, "ask_qty": 0}) + "\n"
+            for ago, units in ((7200, 5000), (3600, 4800), (0, 5200))))
+        seen, _got = self.read("miner")
+        deep = self.fill.carries(seen, ROUTES["ice"])                                             # errors ENT-046, ENT-054: sized on the depth, not on the regain
+        self.assertEqual((deep["ships"], deep["extra"], self.fill.carried(deep)), (3, 20, "3 +20"))        # 400 units came back in two hours; a ship brings 65 an hour
+        self.assertIn("regains 200 units an hour at its best price", deep["text"])
+        self.assertIsNone(self.fill.carries(seen, ROUTES["once"]))
+        self.assertEqual(self.fill.carried(None), "--")
         self.assertEqual(self.fill.asks(seen, "ice_harvester"), [(2, 1413, "base")])
 
     def test_the_gate_passes_only_on_a_fresh_list(self):
@@ -160,7 +174,8 @@ class ReadTests(Tree):
             path.unlink()
         self.put_list([])
         seen, got = self.read("hauler")
-        self.assertEqual(self.fill.verdict(seen, got), (True, "PASS: 3 ships of hauler wait, and nothing that pays and no test is open to them (what closes the work is listed above)"))
+        ok, line = self.fill.verdict(seen, got)                                                   # Suggi, 2026-11-16: no ship idle: a waiting ship is a HALT
+        self.assertEqual((ok, line.startswith("HALT: 3 ships of hauler wait and nothing that pays is open to them: the plan lacks standing work")), (False, True))
         self.put_list([], age=2 * 3600)
         seen, got = self.read("hauler")
         self.assertEqual(self.fill.verdict(seen, got)[0], False)
@@ -191,7 +206,30 @@ class WriteTests(Tree):
         self.assertEqual(sorted(self.git("show", "--name-only", "--format=", "HEAD").split()),
                          ["game/routes/index.md", "game/routes/master-index.md", "game/routes/plan.md", "game/routes/plans/hauler.json", "game/routes/trade-x.json"])
         done = self.run_fill("apollo", "check")                                                   # the dispatcher would start two; the third has nothing open
-        self.assertEqual((done.returncode, done.stdout), (0, "PASS: 1 ships of hauler wait, and nothing that pays and no test is open to them (what closes the work is listed above)\n"))
+        self.assertEqual((done.returncode, done.stdout.startswith("HALT: 1 ships of hauler wait and nothing that pays is open to them")), (1, True))
+
+    def commit_route(self, route):
+        (self.root / "routes" / (route["id"] + ".json")).write_text(json.dumps(route, indent=1) + "\n", encoding="ascii")
+        self.fill.routefiles.write_index(str(self.root))
+        self.git("add", "-A")
+        self.git("-c", "user.name=T", "-c", "user.email=t@example.invalid", "commit", "-q", "-m", "a route")
+
+    def test_standing_work_gives_every_waiting_ship_a_place_and_the_gate_passes(self):
+        self.commit_route({"id": "gather", "kind": "mine", "title": "t", "belt": "far:rocks", "station": "home:core:base", "max_ships": 5})
+        self.assertEqual(self.run_fill("apollo", "check").returncode, 1)
+        self.assertIn("committed", self.run_fill("apollo", "add", "gather").stdout)
+        done = self.run_fill("apollo", "check")
+        self.assertEqual((done.returncode, done.stdout), (0, "PASS: no ship of hauler waits\n"))
+
+    def test_the_once_pass_adds_only_missions_that_pay_once_behind_the_once_line(self):
+        # requests ENT-144: a new once route reached a plan only at its Admiral's next turn, hours later
+        self.commit_route(dict(ROUTES["once"], id="board", measured=MEASURED(6000)))
+        done = self.run_fill("unity", "fill", "all", "--once", "--write")
+        self.assertIn("committed", done.stdout, done.stdout)
+        plans = {role: json.loads((self.root / "routes" / "plans" / (role + ".json")).read_text())["routes"] for role in PLANS}
+        self.assertEqual(plans, {"drone": ["once", "board", "rays", "park"], "hauler": ["once", "board", "park"], "miner": ["board", "ice", "park"]})   # herd2 repeats, trade-x is a test: both stay out
+        self.assertEqual((self.git("log", "-1", "--format=%an"), self.git("status", "--porcelain")), ("Unity\n", ""))
+        self.assertIn("nothing to add", self.run_fill("unity", "fill", "all", "--once", "--write").stdout)
 
     def test_a_member_changes_its_own_plans_only_and_never_a_tree_in_work(self):
         done = self.run_fill("zero", "fill", "hauler", "--write")
@@ -210,6 +248,10 @@ class WriteTests(Tree):
         self.assertIn("committed", self.run_fill("apophis", "lift", "herd2", "3").stdout)
         self.assertEqual(json.loads((self.root / "routes" / "herd2.json").read_text())["max_ships"], 3)
         self.assertIn("REFUSED: ice stands in no plan of yours", self.run_fill("apophis", "lift", "ice", "9").stdout)
+        done = self.run_fill("zero", "lift", "ice", "30")                                         # Suggi, 2026-11-16: read what a route carries before lifting it
+        self.assertEqual((done.returncode, "REFUSED: ice carries about 20 ships, not 30" in done.stdout), (1, True), done.stdout)
+        self.assertEqual(json.loads((self.root / "routes" / "ice.json").read_text())["max_ships"], 2)
+        self.assertIn("committed", self.run_fill("zero", "lift", "ice", "20").stdout)
         self.assertIn("committed", self.run_fill("apophis", "drop", "herd2").stdout)
         done = self.run_fill("apophis", "drop", "park")                                           # a plan must end with a route that is always open
         self.assertEqual((done.returncode, "HALT: nothing changed; the route gate says" in done.stdout), (1, True))

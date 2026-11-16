@@ -7,8 +7,9 @@ WHAT: the dispatcher gives a free pilot the first route of its role's plan that 
         status   per role: how many ships work, start and wait; for every route of the plan why it is closed to
                  the waiting pilots; then the work outside the plan: route files measured above zero with a free
                  place, the route maker's candidates with a ready route file, and what closes the rest
-        check    the gate of orders F8. PASS: no ship waits, or nothing that pays and no test is open to the
-                 waiting ships. HALT (exit 1): ships wait while such work stands open
+        check    the gate: no ship is idle (Suggi, 2026-11-16). PASS: no ship of the role waits. HALT (exit 1): ships
+                 wait; the line says whether paying work or a test stands open (fill adds it) or whether the plan
+                 lacks standing work for them (a route that trains or gathers: routes.py `standing`)
         fill     puts that work into the plan, in front of the census and the park route: the paying routes, then
                  up to --tests tests of one ship each. With --write it writes the route files and the plan,
                  rebuilds the three index files, runs the route gate and commits by path as the member
@@ -21,8 +22,12 @@ RULES:
     what no waiting pilot has (a module, a step no runner flies) is listed with what it needs and never added.
   - A route counts as paying from two measured runs. A candidate whose route buys goods is never added by itself:
     a gap is flown once by hand with one load. The dispatcher closes any route that lost money over two runs.
-  - How many ships a route carries is a judgment: a herd carries one hunter, a thin bid one load. For a mine route
-    that sells, `status` prints what the bid's depth carries for four hours; `lift` is the member's decision.
+  - How many ships a route carries is read before it is lifted (Suggi, 2026-11-16: never all ships on one route):
+    `carries` counts what its bid, its field or its herd regains per hour, and apart from that what today's standing
+    order holds; `hive.py standing` prints both for every route of a plan, and `lift` refuses more ships than the two
+    together carry.
+  - `fill --once` adds only missions that pay once and buy nothing: the five-minute job runs it for every role, so a
+    new once route reaches every plan without waiting for a turn (requests ENT-144).
   - A list of the route maker older than an hour is no ground for PASS while ships wait: the gate says so.
 WHY:  a plan of one-ship tests and routes that pay once left 102 of 146 ships docked while the route files that
       paid stood in other plans, and finding out why took a turn. One command shows it and one command fills it.
@@ -30,7 +35,7 @@ WHY:  a plan of one-ship tests and routes that pay once left 102 of 146 ships do
 USAGE:
   fill.py [status] [<Member>|<role>|all]
   fill.py check [<Member>|<role>|all]
-  fill.py fill [<role>] [--write] [--tests N] [--floor CR]
+  fill.py fill [<role>|all] [--write] [--once] [--tests N] [--floor CR]
   fill.py add <route id> [--role <role>] [--first]
   fill.py drop <route id> [--role <role>]
   fill.py lift <route id> <ships>
@@ -150,19 +155,68 @@ def survey(root, data, now=None):
             "fleet_at": fleet.get("updated_at") or "?" if isinstance(fleet, dict) else "?"}
 
 
+HOLD = 65                      # a starter's hold, units
+
+
+def regains(seen):
+    """What comes back per hour by our own readings (hive.py `rates`), read once per survey."""
+    if "rates" not in seen:
+        import hive                                # here, not at the top: hive.py reads fill.py for the standing fleet
+        seen["rates"] = hive.rates(seen["data"])
+    return seen["rates"]
+
+
 def carries(seen, route):
-    """(ships the best bid's depth carries for a turn, units, price) for a mine route that sells; None when no book says."""
+    """How many ships a route carries, from our own readings: {"ships": what it carries hour after hour (None: not
+    measured), "extra": ships more for one turn while today's standing order or field holds, "text": what both rest
+    on}; None for a route nothing of this limits (a circuit, a census) or that no reading speaks of. A mine route that
+    sells is carried by what its bid regains per hour at its best price, shared by the routes that sell the same good
+    at the same station; one that sells nothing by what its field grows back; a hunt by one hunter (the herd's regain
+    is named). The standing depth of a bid is one order: it can leave within the hour (errors ENT-046, ENT-054)."""
+    bids, fields, herds = regains(seen)
+    kind = route.get("kind")
+    if kind == "hunt" and len(str(route.get("place", "")).split(":")) == 2:
+        system, poi = route["place"].split(":")
+        back = [herds[(system, poi, s)][0] for s in route.get("species") or [] if (system, poi, s) in herds]
+        if not back:
+            return None
+        return {"ships": 1, "extra": 0, "text": "its herd regains %.1f animals an hour and a hunter kills about %.0f: one hunter per place"
+                % (sum(back), route.get("kills", 8) * 60 / (route.get("minutes", 40) + 15))}
+    if kind != "mine":
+        return None
+    per_ship = HOLD * 60 / (route.get("minutes", 45) + 15)               # units an hour: a starter's hold, a run and its way home
     sells = route.get("sell") or []
-    if route.get("kind") != "mine" or not sells:
+    if sells:
+        base, item = str(route.get("station", "")).split(":")[-1], sells[0].get("item")
+        book = dispatch.read_json(Path(seen["data"]) / "market" / (base + ".json"), {})
+        row = next((i for i in book.get("items") or [] if i.get("item_id") == item), None) if isinstance(book, dict) else None
+        same = sum(1 for other in seen["routes"].values() if other.get("kind") == "mine" and other.get("status") != "off" and other.get("station") == route.get("station")
+                   and (other.get("sell") or [{}])[0].get("item") == item) or 1       # the routes that sell the same good into the same bid share it
+        stands = bool(row) and (row.get("best_buy") or 0) >= sells[0].get("min_price", 0) and isinstance(row.get("best_buy_qty"), (int, float))
+        depth, rate = (int(row["best_buy_qty"]) if stands else 0), bids.get((base, item))
+        if rate is None and not stands:
+            return None
+        text = ("the %s bid at %s regains %s units an hour at its best price" % (item, base, format(int(rate[0]), ",")) if rate is not None
+                else "what the %s bid at %s regains is not measured" % (item, base))
+        text += "; %s units stand at %s cr now, one order that can leave within the hour" % (format(depth, ","), row["best_buy"]) if stands else "; no bid at its price now"
+        text += "; %d routes share the bid" % same if same > 1 else ""
+        return {"ships": None if rate is None else int(rate[0] / per_ship / same), "extra": int(depth // (per_ship * HOURS) // same), "text": text}
+    place = str(route.get("belt", ""))
+    system, poi = (place.split(":") + [""])[:2]
+    back = [rate[0] for key, rate in fields.items() if key[0] == system and key[1] == poi]
+    left = dispatch.field_left(seen["data"], place, seen["now"], fresh=float("inf")) or {}
+    if not back and not left:
         return None
-    book = dispatch.read_json(Path(seen["data"]) / "market" / (str(route.get("station", "")).split(":")[-1] + ".json"), {})
-    row = next((i for i in book.get("items") or [] if i.get("item_id") == sells[0].get("item")), None) if isinstance(book, dict) else None
-    if not row or (row.get("best_buy") or 0) < sells[0].get("min_price", 0) or not isinstance(row.get("best_buy_qty"), (int, float)):
-        return None
-    per_ship = 65 * HOURS * 60 / (route.get("minutes", 45) + 15)            # a starter's hold, a run and its way home
-    same = sum(1 for other in seen["routes"].values() if other.get("kind") == "mine" and other.get("status") != "off" and other.get("station") == route.get("station")
-               and (other.get("sell") or [{}])[0].get("item") == sells[0].get("item")) or 1      # the routes that sell the same good into the same bid share it
-    return int(row["best_buy_qty"] // per_ship // same), int(row["best_buy_qty"]), row["best_buy"]
+    text = "its field grew back %s units an hour" % format(int(sum(back)), ",") if back else "what its field grows back is not measured"
+    text += "; %s units lie in it" % format(sum(left.values()), ",") if left else ""
+    return {"ships": int(sum(back) / per_ship) if back else None, "extra": int(sum(left.values()) // (per_ship * HOURS)), "text": text}
+
+
+def carried(deep):
+    """The cell `3 +20` of what carries() found: ships hour after hour (`?`: not measured), and ships more for one turn."""
+    if not deep:
+        return "--"
+    return "%s%s" % (deep["ships"] if deep["ships"] is not None else "?", " +%d" % deep["extra"] if deep["extra"] else "")
 
 
 def asks(seen, item):
@@ -201,7 +255,8 @@ def read_role(seen, role, floor=500, tests=8):
     for rid in plan:
         route, why = routes.get(rid) or {}, crew["reasons"].get(rid) or Counter()
         deep = carries(seen, route) if any(r.startswith("max_ships") for r in why) else None
-        hint = "its share of the bid carries about %d ships for %d hours (%s units at %s cr)" % (deep[0], HOURS, format(deep[1], ","), deep[2]) if deep else ""
+        hint = "carries %s ships hour after hour, %d more this turn: %s" % ("about %d" % deep["ships"] if deep["ships"] is not None else "an unmeasured number of",
+                                                                               deep["extra"], deep["text"]) if deep else ""
         rows.append((rid, flying_now(route, rid, seen["state"]["orders"]), route.get("max_ships"), why, hint))
     left = list(waiting)
     paying, closed = [], {}
@@ -261,7 +316,7 @@ def read_role(seen, role, floor=500, tests=8):
 
 
 def verdict(seen, got):
-    """(True for PASS, the line)."""
+    """(True for PASS, the line). No ship is idle (Suggi, 2026-11-16): PASS only when no ship of the role waits."""
     waiting, places, tests = len(got["waiting"]), sum(len(p) for _r, _v, p in got["paying"]), len(got["tests"])
     if not waiting:
         return True, "PASS: no ship of %s waits" % got["role"]
@@ -271,7 +326,9 @@ def verdict(seen, got):
     if seen["list_age"] > STALE:
         return False, ("HALT: %d ships of %s wait and the route maker's list is %s old, so no test can be named: its service fails; write to the Fleet Admiral in requests.log"
                        % (waiting, got["role"], "%d minutes" % (seen["list_age"] // 60) if seen["list_age"] != float("inf") else "missing or not dated"))
-    return True, "PASS: %d ships of %s wait, and nothing that pays and no test is open to them (what closes the work is listed above)" % (waiting, got["role"])
+    return False, ("HALT: %d ships of %s wait and nothing that pays is open to them: the plan lacks standing work for them (a route that trains or gathers, each "
+                   "sized by what its place carries: the skill fleet-play, `Plan a Division`); what closes each route is listed by `fill.py status %s`"
+                   % (waiting, got["role"], got["role"]))
 
 
 def show(seen, got):
@@ -357,6 +414,12 @@ def plan_text(root, role, change, note):
     return json.dumps(plan, indent=1) + "\n"
 
 
+def after_the_once(seen, ids, new):
+    """The list with `new` put behind its last route that pays once (at the head when it holds none): the once line stays together."""
+    at = max((n + 1 for n, rid in enumerate(ids) if (seen["routes"].get(rid) or {}).get("once")), default=0)
+    return ids[:at] + [rid for rid in new if rid not in ids] + ids[at:]
+
+
 def before_the_wait(seen, ids, new):
     """The list with `new` put in front of the first census or park route (the routes that only read and wait)."""
     at = next((n for n, rid in enumerate(ids) if (seen["routes"].get(rid) or {}).get("park") or (seen["routes"].get(rid) or {}).get("kind") == "census"), len(ids))
@@ -418,18 +481,22 @@ def main():
             if not may_change(who, role):
                 sys.exit("REFUSED: the %s plan is kept by %s (orders F1): ask in requests.log" % (role, division.ROLES.get(role)))
             got = read_role(seen, role, floor, tests)
-            new = [rid for rid, _v, _p in got["paying"]] + [rid for rid, _v, _d, _p in got["tests"]]
-            print("%s: %d waiting; %d paying routes and %d tests to add%s" % (role, len(got["waiting"]), len(got["paying"]), len(got["tests"]), ": " + ", ".join(new) if new else ""))
+            once = "--once" in args                                 # only missions that pay once (they buy nothing: read_role keeps buying routes out)
+            paying = [rid for rid, _v, _p in got["paying"] if not once or seen["routes"][rid].get("once")]
+            found = [] if once else got["tests"]
+            new = paying + [rid for rid, _v, _d, _p in found]
+            print("%s: %d waiting; %d %s and %d tests to add%s" % (role, len(got["waiting"]), len(paying), "routes that pay once" if once else "paying routes", len(found),
+                                                                   ": " + ", ".join(new) if new else ""))
             if not new:
                 continue
-            for rid, estimate, draft, _pilot in got["tests"]:
+            for rid, estimate, draft, _pilot in found:
                 if draft is not None:
                     draft = dict(draft, max_ships=1)
                     draft["note"] = (str(draft.get("note") or "") + " Added as a test by fill.py on %s (%s): one ship until its first RESULT line is read." % (stamp, who)).strip()
                     files["routes/%s.json" % rid] = json.dumps(draft, indent=1) + "\n"
                     seen["routes"][rid] = draft
             note = "%s (fill.py, %s): added %s, open to ships that waited." % (stamp, who, ", ".join(new))
-            files["routes/plans/%s.json" % role] = plan_text(root, role, lambda ids, new=new: before_the_wait(seen, ids, new), note)
+            files["routes/plans/%s.json" % role] = plan_text(root, role, lambda ids, new=new: (after_the_once if once else before_the_wait)(seen, ids, new), note)
             added += new
             lines.append("%s +%d" % (role, len(new)))
         if not files:
@@ -474,6 +541,11 @@ def main():
             sys.exit("no route file game/routes/%s.json" % rid)
         if who != "Unity" and not any(rid in ids and division.ROLES.get(role) == who for role, ids in seen["roles"].items()):
             sys.exit("REFUSED: %s stands in no plan of yours: put it into your plan first (`fill.py add %s`)" % (rid, rid))
+        deep = carries(seen, seen["routes"][rid])
+        most = max(1, (deep["ships"] or 0) + deep["extra"]) if deep else None
+        if most is not None and ships > most:
+            sys.exit("REFUSED: %s carries about %d ships, not %d: %s. Never all ships on one buyer or one field: put the others on other routes or on standing work "
+                     "(the skill fleet-play, `Plan a Division`)" % (rid, most, ships, deep["text"]))
         route = json.loads((Path(root) / "routes" / (rid + ".json")).read_text(encoding="ascii"))
         was = route.get("max_ships")
         route["max_ships"] = ships

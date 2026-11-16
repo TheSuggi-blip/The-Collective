@@ -8,6 +8,8 @@ import tempfile
 import time
 import unittest
 
+os.environ.setdefault("FLEET_TAXES", os.devnull)   # no test reads the fleet's own tax record
+
 
 FLEET = Path(__file__).resolve().parents[2] / "game" / "fleet"
 
@@ -102,6 +104,53 @@ class PickTests(Tree):
         ships.mkdir(parents=True, exist_ok=True)
         (ships / "drone-1.json").write_text(json.dumps({"skills": {"navigation": {"level": 3, "xp": 1}, "piloting": {"level": 5}}}), encoding="ascii")
         self.assertEqual(self.dispatch.pilot_of({"name": "drone-1"}, {}, str(self.data), set())["skills"], {"navigation": 3, "piloting": 5})
+
+    def test_standing_work_trains_or_gathers_and_is_never_closed_for_its_fuel(self):
+        # Suggi, 2026-11-16: no ship idle. Requests ENT-150, ENT-151: a loop that trains navigation loses its fuel by design
+        routes = self.dispatch.load_routes(self.root)
+        loop = dict(routes["missions"], id="loop", once=False, min_credits=0, requires={"skills_below": {"navigation": 3}})
+        pilot = {"name": "drone-1", "credits": 20000, "modules": [], "docked": True, "skills": {"navigation": 2}}
+        self.assertIsNone(self.dispatch.why_not(pilot, "loop", loop, self.state())[0])
+        self.assertEqual(self.dispatch.why_not(dict(pilot, skills={"navigation": 3}), "loop", loop, self.state())[0], "holds navigation 3 already")
+        self.assertIn("under navigation 3", self.routes.open_to(loop))
+        gather = routes["open"]                                                                   # a mine route that sells nothing
+        sold = dict(gather, sell=[{"item": "ore", "min_price": 1}])
+        self.assertEqual([self.routes.standing(r) for r in (loop, gather, sold, dict(routes["rays"], standing=True), routes["rays"])], [True, True, False, True, False])
+        self.assertEqual((self.routes.stage(gather), self.routes.stage(sold)), ("service", "test"))
+        self.assertEqual([self.dispatch.judged(r) for r in (gather, loop, sold, routes["rays"])], [False, False, True, True])
+        stamp = lambda ago: time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(self.now - ago))
+        lost = [{"route": rid, "pilot": "drone-%d" % n, "started": stamp(600 * n), "minutes": 5, "credits_before": 9000, "credits_after": 8900}
+                for rid in ("open", "rays") for n in (1, 2, 3)]
+        self.assertEqual(sorted(self.dispatch.losing(routes, lost, self.now)), ["rays"])            # the hunt is closed for its losses, the gathering is not
+        self.assertEqual(sorted(self.dispatch.lately_losing(routes, lost, self.now)), ["rays"])
+
+    def test_a_field_floor_closes_a_route_until_the_census_reads_the_field_grown_back(self):
+        # requests ENT-148: a mission mined a reef that read 0 and pilots kept flying to it; standing work leaves its field enough to regrow
+        routes = self.dispatch.load_routes(self.root)
+        pilot = {"name": "miner-1", "credits": 20000, "modules": [], "docked": True}
+        gather = dict(routes["open"], min_left={"iron_ore": 5000})
+        circuit = dict(routes["missions"], once=False, min_credits=0,
+                       stops=[{"at": "home:core:base", "mine": [{"at": "far:rift", "minutes": 10, "min_left": {"nickel_ore": 20}}]}])
+
+        def read(iron, nickel, ago=60):
+            (self.data / "scouting" / "far.json").write_text(json.dumps({
+                "system": "far", "read_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(self.now - ago)),
+                "pois": {"rift": {"kind": "normal", "resources": [{"resource_id": "iron_ore", "remaining": iron}, {"resource_id": "nickel_ore", "remaining": nickel}]}}}))
+
+        self.assertIsNone(self.dispatch.why_not(pilot, "open", gather, self.state())[0])           # no census: nothing is known, nothing is closed
+        read(4999, 0)
+        self.assertEqual(self.dispatch.why_not(pilot, "open", gather, self.state())[0], "field below 5,000 iron_ore at far:rift")
+        self.assertEqual(self.dispatch.why_not(pilot, "missions", circuit, self.state())[0], "field below 20 nickel_ore at far:rift")
+        self.assertEqual(self.dispatch.field_left(str(self.data), "far:rift", self.now), {"iron_ore": 4999, "nickel_ore": 0})
+        read(5000, 20)                                                                             # grown back: open again by itself
+        self.assertIsNone(self.dispatch.why_not(pilot, "open", gather, self.state())[0])
+        self.assertIsNone(self.dispatch.why_not(pilot, "missions", circuit, self.state())[0])
+        read(10, 0, ago=2 * 3600)                                                                  # an old census says nothing
+        self.assertIsNone(self.dispatch.why_not(pilot, "open", gather, self.state())[0])
+        for wrong in (dict(routes["open"], min_left=5000), dict(routes["open"], requires={"skills_below": ["navigation"]})):
+            (self.root / "routes" / "open.json").write_text(json.dumps(wrong), encoding="ascii")
+            errors, _count = self.routes.check(str(self.root))
+            self.assertTrue(any("game/routes/open.json" in e and ("min_left" in e or "skills_below" in e) for e in errors), errors)
 
     def test_a_route_that_names_a_bid_is_closed_while_a_fresh_book_shows_none(self):
         # requests ENT-065, ENT-125: the curd bid left every station and the hunts flew on; the near ice bids emptied

@@ -51,6 +51,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import division                                   # noqa: E402  the plan files and who keeps them
+import taxes                                      # noqa: E402  the weekly tax a run in flight carried
 
 KINDS = {"circuit": ("stops",), "hunt": ("place", "sell_at"), "census": ("systems",), "mine": ("belt", "station")}
 FRONT = "---\nname: %s\nid: %s\ntier: intel\nauthor: Unity\n---\n\n"
@@ -59,7 +60,8 @@ STAGES = (("once", "Once per Pilot", "Missions and rewards the game pays once pe
           ("paying", "Paying Routes", "Work that repeats and whose runs measured above zero."),
           ("test", "Tests", "Work that repeats and has no measured figure yet: one ship until its first RESULT line is read."),
           ("fit", "Fitting", "A module bought and fitted: the tool a kind of work needs."),
-          ("service", "Reading and Waiting", "The census and the park route: they earn nothing; they keep the picture fresh and a ship without work docked."),
+          ("service", "Standing Work, Reading and Waiting", "Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park "
+           "route: they keep every ship busy and the picture fresh."),
           ("losing", "Measured at a Loss", "Work that repeats and whose runs measured zero or below."),
           ("off", "Off", "Written down, not flown."))
 
@@ -124,6 +126,16 @@ def check(root):
                     for step in stop.get(key) or []:
                         if not isinstance(step, dict) or len(str(step.get("at", "")).split(":")) != 2:
                             errors.append(where + "stop %d: the `at` of a `%s` step must be system:poi" % (n, key))
+        levels = lambda value: isinstance(value, dict) and all(isinstance(v, int) and not isinstance(v, bool) for v in value.values())
+        need = route.get("requires") if isinstance(route.get("requires"), dict) else {}
+        if "skills_below" in need and not levels(need["skills_below"]):
+            errors.append(where + "`requires.skills_below` must be {skill: level}")
+        floors = [("`min_left`", route.get("min_left"))] + [("stop %d: the `min_left` of a `mine` step" % n, step.get("min_left"))
+                                                             for n, stop in enumerate(route.get("stops") or [], 1) if isinstance(stop, dict)
+                                                             for step in stop.get("mine") or [] if isinstance(step, dict)]
+        for label, floor in floors:
+            if floor is not None and not levels(floor):
+                errors.append(where + label + " must be {resource: units}")
         for key, parts in (("place", 2), ("belt", 2), ("sell_at", 3), ("station", 3)):
             if route.get(key) and len(str(route[key]).split(":")) != parts:
                 errors.append(where + "`%s` must have %d parts joined by a colon" % (key, parts))
@@ -191,12 +203,21 @@ def zone(route, systems, home):
     return ("home space" if all(e == home for e, _j in seen) else "beyond the border"), (max(jumps) if jumps else None)
 
 
+def standing(route):
+    """True for standing work: a route that keeps a ship busy between paying work and is not judged on its pay. It
+    trains a skill or gathers into storage: `"standing": true` in its file, a route open only under a skill level
+    (`requires.skills_below`), or a mine route that sells nothing (its load goes into the pilot's storage). Suggi,
+    2026-11-16: no ship is idle; a ship without paying work levels and gathers."""
+    need = route.get("requires") or {}
+    return bool(route.get("standing") or need.get("skills_below") or (route.get("kind") == "mine" and not route.get("sell")))
+
+
 def stage(route):
     """The group a route stands in, from its own file (STAGES)."""
     measured = route.get("measured") or {}
     if route.get("status") == "off":
         return "off"
-    if route.get("park") or route.get("kind") == "census":
+    if route.get("park") or route.get("kind") == "census" or standing(route):
         return "service"
     if any(isinstance(s, dict) and s.get("fit") for s in route.get("stops") or []):
         return "fit"
@@ -217,6 +238,8 @@ def open_to(route):
             "from %s" % ", ".join("%s %s" % (k, v) for k, v in sorted(need["skills"].items())) if isinstance(need.get("skills"), dict) and need["skills"] else "",
             "with %s" % ", ".join("%s %s stored at %s" % (w.get("min", 1), w.get("item"), w.get("at")) for w in ([need["stored"]] if isinstance(need["stored"], dict) else need["stored"]) if isinstance(w, dict)) if need.get("stored") else "",
             "while %s" % ", ".join("%s bids %s cr for %s" % (b.get("base"), b.get("min_price", 1), b.get("item")) for b in ([need["bid"]] if isinstance(need["bid"], dict) else need["bid"]) if isinstance(b, dict)) if need.get("bid") else "",
+            "under %s" % ", ".join("%s %s" % (k, v) for k, v in sorted(need["skills_below"].items())) if isinstance(need.get("skills_below"), dict) and need["skills_below"] else "",
+            "standing work" if standing(route) and not route.get("park") else "",
             route.get("status", "")]
     return ", ".join(g for g in gate if g) or "every pilot"
 
@@ -361,16 +384,19 @@ def write_index(root):
 
 
 def earned(row):
-    """A run's credits without the sale of goods it carried in: a hunt that sells another place's goods did not earn them."""
+    """A run's credits without the sale of goods it carried in (a hunt that sells another place's goods did not earn
+    them) and without the weekly tax the game took from its pilot while it flew (taxes.py): the one rule for what a run
+    earned, read by hive.py, the store and the measured figures."""
+    delta = (row.get("delta") or 0) + taxes.in_run(row)
     if row.get("kind") != "hunt":
-        return row.get("delta", 0)
+        return delta
     gained, carried = row.get("goods") or {}, 0.0
     for item, sale in (row.get("sold") or {}).items():
         units, credits = sale[0], sale[2]
         extra = units - gained.get(item, 0)
         if units > 0 and extra > 0:
             carried += credits * extra / units
-    return row.get("delta", 0) - carried
+    return delta - carried
 
 
 def readable(row):

@@ -135,14 +135,18 @@ A module bought and fitted: the tool a kind of work needs.
 | [voidborn-hardware-cargo](voidborn-hardware-cargo.json) | circuit | home space | Hardware Optimization: Cargo: 1,500 cr once after The Collective Provides; a Cargo Expander I bought at Synchrony Hub after the accept | once per pilot, up to 3 ships, without cargo_expander_i, from 4,000 cr, after the reward The Collective Provides | 1 | 11 | 1,070 | one-time | 2026-11-16 |
 | [fit-ice-harvester-lhs-1140](fit-ice-harvester-lhs-1140.json) | circuit | beyond the border, 6 jumps | Fit an Ice Harvester I at Ironlight Crossroads (LHS 1140), beyond the border: a test with one miner | once per pilot, up to 5 ships, 20 pilots in all, without ice_harvester_i, empty hold, from 6,000 cr | 19 | 9 | -690 | one-time | 2026-11-16 |
 
-## Reading and Waiting
+## Standing Work, Reading and Waiting
 
-The census and the park route: they earn nothing; they keep the picture fresh and a ship without work docked.
+Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
 | [census-voidborn](census-voidborn.json) | census | home space | Read one Voidborn system whole: deposits, creatures, order book, mission board | up to 3 ships | 312 | 8 | -110 | -830 | 2026-11-16 |
 | [park](park.json) | circuit | home space | Dock at Central Nexus and wait there: a docked ship costs nothing | the park route | 216 | 5 | -50 | -670 | 2026-11-16 |
+| [mine-acubens](mine-acubens.json) | mine | home space | Iron and copper at Acubens Shadow Pocket; ore into storage at Node Beta | up to 16 ships, standing work | 48 | 45 | -120 | -160 | 2026-11-15 |
+| [mine-bellatrix](mine-bellatrix.json) | mine | home space | Wait at Bellatrix Major Belt beside Node Gamma station for whatever regrows (thorium, palladium, iridium, carbon) | up to 1 ships, standing work | 8 | 45 | 0 | 0 | 2026-11-15 |
+| [mine-gsc-seep](mine-gsc-seep.json) | mine | home space | Iron and copper at GSC-0027 Spacetime Seep; ore into storage at Node Beta | up to 16 ships, standing work | 48 | 45 | -120 | -160 | 2026-11-15 |
+| [mine-pherkad-rift](mine-pherkad-rift.json) | mine | home space | Copper and iron at Pherkad Null Rift; ore into storage at Synchrony Hub | standing work | 285 | 45 | -100 | -170 | 2026-11-16 |
 | [census-frontier](census-frontier.json) | census | beyond the border, 7 jumps | Read one lawless system around our space whole: deposits, creatures, stations, order books, mission boards | up to 12 ships, empty hold | 165 | 15 | -200 | -790 | 2026-11-16 |
 | [census-guard-ice](census-guard-ice.json) | census | beyond the border, 7 jumps | Guard by census: read whole, every hour, the lawless systems where our miners work | up to 2 ships, empty hold | 54 | 13 | -310 | -1,350 | 2026-11-16 |
 
@@ -162,10 +166,6 @@ Work that repeats and whose runs measured zero or below.
 | [trade-voidborn-neural-soma-node-node](trade-voidborn-neural-soma-node-node.json) | circuit | home space | Voidborn Neural Soma: bought at Node Beta Industrial Station for 268 cr, sold at Node Gamma Relay Station for 622 cr | up to 1 ships, from 3,589 cr | 1 | 4 | -300 | -4,290 | 2026-11-16 |
 | [hunt-home-drift-ray](hunt-home-drift-ray.json) | hunt | home space | Drift-rays at Stellar Siphon in Nexus Prime; goods sold or stored at Central Nexus | up to 1 ships | 8 | 10 | -40 | -250 | 2026-11-15 |
 | [hunt-test-acubens-patina-grazer](hunt-test-acubens-patina-grazer.json) | hunt | home space | Yield test: patina_grazer at acubens_shadow_pocket; what a kill drops and whether a bid takes it | up to 1 ships, without piercing_railgun_i | 3 | 5 | -50 | -560 | 2026-11-16 |
-| [mine-acubens](mine-acubens.json) | mine | home space | Iron and copper at Acubens Shadow Pocket; ore into storage at Node Beta | up to 16 ships | 48 | 45 | -120 | -160 | 2026-11-15 |
-| [mine-bellatrix](mine-bellatrix.json) | mine | home space | Wait at Bellatrix Major Belt beside Node Gamma station for whatever regrows (thorium, palladium, iridium, carbon) | up to 1 ships | 8 | 45 | 0 | 0 | 2026-11-15 |
-| [mine-gsc-seep](mine-gsc-seep.json) | mine | home space | Iron and copper at GSC-0027 Spacetime Seep; ore into storage at Node Beta | up to 16 ships | 48 | 45 | -120 | -160 | 2026-11-15 |
-| [mine-pherkad-rift](mine-pherkad-rift.json) | mine | home space | Copper and iron at Pherkad Null Rift; ore into storage at Synchrony Hub | every pilot | 285 | 45 | -100 | -170 | 2026-11-16 |
 | [mine-stellar-siphon](mine-stellar-siphon.json) | mine | home space | Stellar Siphon: hydrogen_gas, argon_gas, neon_gas; sold at Synchrony Hub | up to 1 ships, needs gas_harvester_i | 2 | 45 | -280 | -380 | 2026-11-16 |
 | [trade-hydrogen-gas-784309214f105860a16a0c100a70eb14-synchrony](trade-hydrogen-gas-784309214f105860a16a0c100a70eb14-synchrony.json) | circuit | beyond the border, 6 jumps | Hydrogen Gas: bought at Ironlight Crossroads for 6 cr, sold at Synchrony Hub for 28 cr | up to 1 ships, from 3,429 cr | 1 | 15 | -400 | -1,620 | 2026-11-16 |
 | [hunt-atlas-gas-pocket](hunt-atlas-gas-pocket.json) | hunt | beyond the border, 6 jumps | Halo-drifters and cinder-sylphs at Atlas Gas Pocket (lawless); noble condensate (690 cr) and ember glands (480 cr) sold at The Experiment | up to 1 ships, empty hold | 7 | 14 | -20 | -70 | 2026-11-16 |

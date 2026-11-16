@@ -8,7 +8,7 @@ author: Unity
 # index.md -- The Fleet's Scripts
 
 Built by `python3 -B scripts/fleet-index.py` from the docstring of every script in this
-folder; never edited by hand. Scripts listed: 21.
+folder; never edited by hand. Scripts listed: 22.
 
 - Run a script from the repository root: `python3 -I -B game/fleet/<script> <arguments>`,
   the arguments as listed under "How to Call Each".
@@ -48,6 +48,7 @@ folder; never edited by hand. Scripts listed: 21.
 | `sight.py` | What our ships see where they are: the pilots they meet, and a first read of a system nobody read. | Service |
 | `stash.py` | Store what a docked pilot carries in its own storage at that station, so that its hold is free for the next route. | By hand |
 | `store.py` | Keeps the fleet's history in one SQLite file: the runs, the price moves and the census readings, with their sums by hour and by day. | Service |
+| `taxes.py` | Keeps each pilot's weekly tax apart, so that no run and no hour reads it as a loss. | By hand |
 
 ## How to Call Each
 
@@ -149,7 +150,7 @@ Run by hand.
 ```
 fill.py [status] [<Member>|<role>|all]
 fill.py check [<Member>|<role>|all]
-fill.py fill [<role>] [--write] [--tests N] [--floor CR]
+fill.py fill [<role>|all] [--write] [--once] [--tests N] [--floor CR]
 fill.py add <route id> [--role <role>] [--first]
 fill.py drop <route id> [--role <role>]
 fill.py lift <route id> <ships>
@@ -199,6 +200,7 @@ hive.py learnings [--hours N]
 hive.py standing [<Member>|<role>|all] [--hours N]
 hive.py tasks [--hours N]
 hive.py refill
+hive.py briefing [<Member>|all] [--hours N]
 hive.py store [--hours N]
 hive.py store price <item id> [--hours N]
 --root <dir>   the repository's game/ folder (default: the parent of this file's folder)
@@ -358,4 +360,18 @@ store.py once                   one pass, then stop
 store.py status                 from the read copy: rows and newest row of each table, age of the copy
 --data <dir>                    the unit's data folder (default /srv/collective/data)
 --keep-days N                   days of raw rows kept (default 7)
+```
+
+### `taxes.py`
+
+Keeps each pilot's weekly tax apart, so that no run and no hour reads it as a loss.
+
+Run by hand.
+
+```
+taxes.py                 one pass (the five-minute job runs it)
+taxes.py --all           ask every pilot, whatever the record says
+taxes.py --dry-run       print what would be booked, write nothing
+taxes.py show            the record: per assessment the pilots and the credits
+--data <dir>             the unit's data folder (default: the fleet's)
 ```

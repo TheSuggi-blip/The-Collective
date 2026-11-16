@@ -64,6 +64,9 @@ the scripts in `game/fleet/` fly them; nobody retypes a route into a chat.
 | `requires.bid` | `{"item", "base", "min_price", "min_qty"}` or a list of them: the route is open only while the station's book (`data/market/<base>.json`), read by a docked ship of ours within the hour, shows the item's best bid at `min_price` or more (default 1) with `min_qty` units or more at it (default 1). A book older than an hour closes nothing. For a route that sells one good: a hunt's drop, a mine's ice. It closes the route the minute a docked ship reads the bid gone and opens it again when one reads it back |
 | `requires.stored` | `{"at": "<base id>", "item", "min"}` or a list of them: only a pilot whose own storage at that station holds `min` units of the item or more is sent (`data/stock/storage.json`, read by the service ledger about every 40 minutes), and not again until its storage was read after its last run of the route began. For a carry route: storage is personal, only the pilot that stored a load can withdraw it |
 | `requires.skills` | `{skill: level}`: only a pilot that holds each skill at that level or higher is sent (its live file, `data/fleet/ships/`): for a mission a board offers only from a skill level, as Signal Fragments from navigation 3 |
+| `requires.skills_below` | `{skill: level}`: only a pilot that holds one of these skills under its level is sent: for a route that trains a skill up to a board's gate (a jump loop for navigation 3). Such a route is standing work |
+| `standing` | true: standing work. It keeps a ship busy between paying work (it trains a skill, it gathers into storage) and is not judged on its pay: the loss stop never closes it and it counts as no paying work. A mine route without `sell` and a route with `requires.skills_below` are standing work without the field. Give it `max_ships`, and `min_left` when it mines |
+| `min_left` | `{resource: units}` on a mine route (for its `belt`) or on a `mine` step of a circuit (for the step's place): no pilot is sent while the system's census, younger than 90 minutes, reads less of the resource there; the route opens again by itself when the field has grown back |
 | `skip_if_booked` | Titles of one-time rewards: a pilot that has one of them booked is not sent |
 | `measured` | Written by `routes.py measure --write`: date, runs, minutes per run, credits per run, credits per ship-hour |
 
@@ -112,12 +115,24 @@ runner books them so that CPH counts recurring income only.
 5. A hunt sets `max_ships` and `min_creatures`: a herd regrows only
    when it is hunted below its replacement rate, and it starves when
    its deposit is mined out (`game/rules/` wildlife).
-6. Each plan ends with a route that is always open: `park`. The gate
-   checks it. A ship with no paying route waits docked, which costs
-   nothing; it does not fly a route that loses money to fill time
-   (orders F8, Suggi 2026-11-15: mining for skill cost about 160 cr per
-   ship-hour and the ore found no buyer).
-7. A figure in `note` carries its date; `measured` is never typed by
+6. No ship is idle (Suggi, 2026-11-16). A plan holds, in this order:
+   the missions that pay once; the routes that pay, each with no more
+   ships than it carries; standing work for every ship that is left
+   (a mine route that sells nothing and gathers into storage, a loop
+   that trains a skill: field `standing`), spread over several places,
+   each with `max_ships` and `min_left`; the census; and last `park`,
+   which the gate checks and which a ship should never reach.
+   Standing work costs its fuel (about 160 cr per ship-hour measured
+   on the first ore routes) and brings skill and the materials of
+   standing order S6. The fill gate halts while a ship waits.
+7. Read what a route carries before you lift it (Suggi, 2026-11-16:
+   never all ships on one route): `hive.py standing` prints for every
+   route of your plan the ships it keeps busy hour after hour, from
+   what its bid, its field or its herd regains, and how many more for
+   one turn while today's standing order holds. `fill.py lift` refuses
+   more than the two together. A bid's standing depth is one order: it
+   can leave within the hour.
+8. A figure in `note` carries its date; `measured` is never typed by
    hand.
 
 ## 5. The Ladder of a New Pilot

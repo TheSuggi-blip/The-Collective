@@ -69,6 +69,8 @@ from pathlib import Path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import division                                   # noqa: E402  who commands which ship, and the plan files
 import gate                                       # noqa: E402  the one call the dispatcher sends itself: stop a loop no runner owns
+import routes as routefiles                       # noqa: E402  what standing work is
+import taxes                                      # noqa: E402  the weekly tax a run in flight carried is no loss of its route
 
 EVERY = 30                   # seconds between two passes
 ORDER_FRESH = 20 * 60        # an order file not touched for this long is dead
@@ -253,6 +255,49 @@ def hunt_floor(data, route, now):
     return None
 
 
+def field_left(data, place, now, fresh=CENSUS_FRESH):
+    """{resource: units left} at a place (system:poi) by the system's last census; None when none younger than `fresh`
+    seconds holds the place."""
+    system, poi = (str(place).split(":") + [""])[:2]
+    book = read_json(Path(data) / "scouting" / (system + ".json"), {})
+    entry = (book.get("pois") or {}).get(poi) if isinstance(book, dict) and isinstance(book.get("pois"), dict) else None
+    read = read_time(book.get("read_at")) if isinstance(book, dict) else None
+    if read is None or now - read > fresh or not isinstance(entry, dict):
+        return None
+    rows = entry.get("resources") or (entry.get("poi") or {}).get("resources") or []
+    return {str(r.get("resource_id")): int(r.get("remaining") or 0) for r in rows if isinstance(r, dict) and r.get("resource_id")}
+
+
+def field_floor(data, route, now):
+    """Why a route is closed by a field floor (`min_left`: {resource: units}; on a mine route for its `belt`, on a `mine`
+    step of a circuit for the step's place), or None: the place's fresh census reads less of the resource. The route
+    opens again by itself when a census reads the field grown back. Mercury, requests ENT-148: a mission mined a reef
+    that read 0 and pilots kept flying to it; and standing work leaves its field enough to regrow."""
+    steps = [route] if route.get("kind") == "mine" else [step for stop in route.get("stops") or [] if isinstance(stop, dict) for step in stop.get("mine") or []]
+    for step in steps:
+        if not isinstance(step, dict) or not isinstance(step.get("min_left"), dict):
+            continue
+        place = step.get("belt") or step.get("at") or ""
+        left = field_left(data, place, now) if len(str(place).split(":")) == 2 else None
+        if left is None:
+            continue
+        for item, units in sorted(step["min_left"].items()):
+            if left.get(item, 0) < int(units):
+                return "field below %s %s at %s" % (format(int(units), ","), item, place)
+    return None
+
+
+def skills_reached(route, pilot):
+    """The text of `requires.skills_below` ({skill: level}) when the pilot holds every skill named at its level or above,
+    or None: a route that trains a skill up to a board's gate is flown only by a pilot still short of it (Apophis and
+    Apollo, requests ENT-150, ENT-151: Signal Fragments is offered from navigation 3)."""
+    below = (route.get("requires") or {}).get("skills_below") or {}
+    held = pilot.get("skills") or {}
+    if below and all(int(held.get(skill, 0) or 0) >= int(level) for skill, level in below.items()):
+        return ", ".join("%s %d" % (skill, int(level)) for skill, level in sorted(below.items()))
+    return None
+
+
 BID_FRESH = 60 * 60          # a book older than this says nothing about a bid
 
 
@@ -351,6 +396,9 @@ def why_not(pilot, rid, route, state):
     low = skills_lacking(route, pilot)
     if low:
         return "needs %s %d" % low[0], None
+    reached = skills_reached(route, pilot)
+    if reached:
+        return "holds %s already" % reached, None
     if route.get("once"):
         mine = [r for r in state["rows"] if r.get("route") == rid and r.get("pilot") == pilot["name"]]
         if done_once(route, mine):
@@ -384,8 +432,8 @@ def why_not(pilot, rid, route, state):
     lacking = bid_missing(state["data"], route, state["now"]) or stored_missing(state["data"], route, pilot, state["rows"])
     if lacking:
         return lacking, None
-    if route["kind"] == "circuit":
-        floor = hunt_floor(state["data"], route, state["now"])
+    if route["kind"] in ("circuit", "mine"):
+        floor = (hunt_floor(state["data"], route, state["now"]) if route["kind"] == "circuit" else None) or field_floor(state["data"], route, state["now"])
         if floor:
             return floor, None
     if route["kind"] == "hunt":
@@ -445,8 +493,9 @@ LOSS_HOURS = 6               # the window a route's runs are judged over
 
 
 def judged(route):
-    """True for a route whose runs must pay: not the census, not park, not a fitting (a tool is bought once)."""
-    if route.get("park") or route.get("kind") == "census":
+    """True for a route whose runs must pay: not the census, not park, not a fitting (a tool is bought once), not
+    standing work (it trains or gathers: its fuel is its price, routes.py `standing`)."""
+    if route.get("park") or route.get("kind") == "census" or routefiles.standing(route):
         return False
     return not any(isinstance(stop, dict) and stop.get("fit") for stop in route.get("stops") or [])
 
@@ -481,7 +530,7 @@ def losing(routes, rows, now):
             continue
         entry = sums.setdefault(route["id"], [0, 0])
         entry[0] += 1
-        entry[1] += (after - before) - (0 if route.get("once") else (row.get("one_time") or 0))
+        entry[1] += (after - before) + taxes.in_run(row) - (0 if route.get("once") else (row.get("one_time") or 0))
     return {rid: (runs, int(total)) for rid, (runs, total) in sums.items() if runs >= 2 and total < 0}
 
 
@@ -509,7 +558,7 @@ def lately_losing(routes, rows, now):
             started = calendar.timegm(time.strptime(row.get("started") or "", "%Y-%m-%dT%H:%M:%SZ"))
         except ValueError:
             continue
-        last.setdefault(route["id"], []).append((started, (after - before) - (row.get("one_time") or 0)))
+        last.setdefault(route["id"], []).append((started, (after - before) + taxes.in_run(row) - (row.get("one_time") or 0)))
     out = {}
     for rid, runs in last.items():
         recent = sorted(runs)[-RECENT:]
