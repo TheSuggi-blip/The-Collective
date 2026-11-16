@@ -272,7 +272,7 @@ So the chain pays only from the fleet's own silicon ore and energy
 crystal. What bounds it (`stock`, 2026-11-16 03:14 UTC): 48 silicon ore
 (47 in Mining's storage), 135 energy crystal (132 Mining's), 226 carbon
 ore spread over five divisions. At 2.67 silicon, 16 carbon and 3 crystal
-a harvester, carbon bounds it at about 14 and silicon at about 17. Each
+a harvester, carbon bounds it at about 14 and silicon at about 18. Each
 pilot crafts from its own storage only: the goods are first deposited
 into one pilot's storage at one station (a gift between our own pilots,
 which the wall lets pass).
