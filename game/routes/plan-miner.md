@@ -14,7 +14,7 @@ routes (`game/fleet/plan.py`); it names our ships, so it lies in the unit's data
 and not here, and `plans/miner.json` is written from it. `Planned` is what the Admiral
 means to do next. Up: [master-index.md](master-index.md).
 
-Kept by Zero. Routes: 40. Ships: 40.
+Kept by Zero. Routes: 41. Ships: 40.
 
 | # | Route | Group | Zone | Open to | Ships planned | Credits per ship-hour |
 |---|---|---|---|---|---|---|
@@ -39,25 +39,26 @@ Kept by Zero. Routes: 40. Ships: 40.
 | 19 | [fit-ice-harvester-synchrony](fit-ice-harvester-synchrony.json) | [Fitting](index-fitting.md) | home space | once per pilot, up to 1 ships, 4 pilots in all, without ice_harvester_i, from 6,000 cr | all 40 | one-time |
 | 20 | [fit-ice-harvester-experiment](fit-ice-harvester-experiment.json) | [Fitting](index-fitting.md) | home space | once per pilot, up to 1 ships, 2 pilots in all, without ice_harvester_i, from 6,000 cr | all 40 | one-time |
 | 21 | [fit-ice-harvester-lhs-1140](fit-ice-harvester-lhs-1140.json) | [Fitting](index-fitting.md) | beyond the border, 6 jumps | once per pilot, up to 5 ships, 20 pilots in all, without ice_harvester_i, empty hold, from 6,000 cr | all 40 | one-time |
-| 22 | [mine-gliese-876-belt](mine-gliese-876-belt.json) | [Tests](index-tests.md) | beyond the border, 8 jumps | up to 1 ships, empty hold | 1 of 40 | TBD |
-| 23 | [drain-methane-experiment](drain-methane-experiment.json) | [Tests](index-tests.md) | home space | up to 1 ships, with 30 methane_ice stored at the_experiment_research_station, while the_experiment_research_station bids 30 cr for methane_ice | all 40 | TBD |
-| 24 | [drain-ice-nexus](drain-ice-nexus.json) | [Measured at a Loss](index-measured-at-a-loss.md) | home space | up to 2 ships, with 30 water_ice stored at central_nexus, while central_nexus bids 25 cr for water_ice | all 40 | -460 |
-| 25 | [drain-ice-node-alpha](drain-ice-node-alpha.json) | [Tests](index-tests.md) | home space | up to 2 ships, with 30 water_ice stored at node_alpha_processing_station, while node_alpha_processing_station bids 25 cr for water_ice | all 40 | TBD |
-| 26 | [carry-ice-node-alpha-nexus](carry-ice-node-alpha-nexus.json) | [Measured at a Loss](index-measured-at-a-loss.md) | home space | up to 3 ships, with 65 water_ice stored at node_alpha_processing_station, while central_nexus bids 25 cr for water_ice | all 40 | -360 |
-| 27 | [carry-ice-synchrony-nexus](carry-ice-synchrony-nexus.json) | [Measured at a Loss](index-measured-at-a-loss.md) | home space | up to 2 ships, with 65 water_ice stored at synchrony_hub, while central_nexus bids 25 cr for water_ice | all 40 | -460 |
-| 28 | [carry-ice-experiment-nexus](carry-ice-experiment-nexus.json) | [Measured at a Loss](index-measured-at-a-loss.md) | home space | up to 3 ships, with 65 water_ice stored at the_experiment_research_station, while central_nexus bids 25 cr for water_ice | all 40 | -480 |
-| 29 | [mine-cryogenic-reserve](mine-cryogenic-reserve.json) | [Paying Routes](index-paying-routes.md) | home space | up to 1 ships, needs ice_harvester_i, while central_nexus bids 25 cr for water_ice | all 40 | 1,060 |
-| 30 | [mine-achernar-frost-ring-nexus](mine-achernar-frost-ring-nexus.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 4 jumps | up to 2 ships, needs ice_harvester_i, empty hold, while central_nexus bids 25 cr for water_ice | all 40 | 2,230 |
-| 31 | [mine-ruchbah-ice-belt-nexus](mine-ruchbah-ice-belt-nexus.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 4 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while central_nexus bids 25 cr for water_ice | all 40 | 3,670 |
-| 32 | [mine-wolf-1061-frozen-drift-nexus](mine-wolf-1061-frozen-drift-nexus.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 4 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while central_nexus bids 25 cr for water_ice | all 40 | 1,900 |
-| 33 | [mine-nova-terra-ice-shelf](mine-nova-terra-ice-shelf.json) | [Tests](index-tests.md) | beyond the border, 8 jumps | up to 1 ships, needs ice_harvester_i, while central_nexus bids 25 cr for water_ice | all 40 | TBD |
-| 34 | [gather-ironhollow-fading-signal](gather-ironhollow-fading-signal.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 4 jumps | up to 1 ships, needs mining_laser_i, empty hold, standing work | 1 of 40 | TBD |
-| 35 | [mine-wolf-1061-vent](mine-wolf-1061-vent.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 4 jumps | up to 1 ships, needs nitrogen_vent, empty hold, while synchrony_hub bids 25 cr for water_ice | 1 of 40 | 5,860 |
-| 36 | [gather-hamal-crystal-bloom](gather-hamal-crystal-bloom.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 56 ships, needs mining_laser_i, standing work | 39 of 40 | -170 |
-| 37 | [gather-gsc-0027-prism-scatter](gather-gsc-0027-prism-scatter.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 56 ships, needs mining_laser_i, standing work | 39 of 40 | -120 |
-| 38 | [mine-acubens](mine-acubens.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 18 ships, needs mining_laser_i, standing work | 39 of 40 | -170 |
-| 39 | [census-frontier](census-frontier.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 7 jumps | up to 12 ships, empty hold | all 40 | -630 |
-| 40 | [park](park.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | the park route | all 40 | -670 |
+| 22 | [voidborn-first-hunt-acubens](voidborn-first-hunt-acubens.json) | [Once per Pilot](index-once-per-pilot.md) | home space | once per pilot, up to 1 ships | all 40 | one-time |
+| 23 | [mine-gliese-876-belt](mine-gliese-876-belt.json) | [Tests](index-tests.md) | beyond the border, 8 jumps | up to 1 ships, empty hold | 1 of 40 | TBD |
+| 24 | [drain-methane-experiment](drain-methane-experiment.json) | [Tests](index-tests.md) | home space | up to 1 ships, with 30 methane_ice stored at the_experiment_research_station, while the_experiment_research_station bids 30 cr for methane_ice | all 40 | TBD |
+| 25 | [drain-ice-nexus](drain-ice-nexus.json) | [Measured at a Loss](index-measured-at-a-loss.md) | home space | up to 2 ships, with 30 water_ice stored at central_nexus, while central_nexus bids 25 cr for water_ice | all 40 | -460 |
+| 26 | [drain-ice-node-alpha](drain-ice-node-alpha.json) | [Tests](index-tests.md) | home space | up to 2 ships, with 30 water_ice stored at node_alpha_processing_station, while node_alpha_processing_station bids 25 cr for water_ice | all 40 | TBD |
+| 27 | [carry-ice-node-alpha-nexus](carry-ice-node-alpha-nexus.json) | [Measured at a Loss](index-measured-at-a-loss.md) | home space | up to 3 ships, with 65 water_ice stored at node_alpha_processing_station, while central_nexus bids 25 cr for water_ice | all 40 | -360 |
+| 28 | [carry-ice-synchrony-nexus](carry-ice-synchrony-nexus.json) | [Measured at a Loss](index-measured-at-a-loss.md) | home space | up to 2 ships, with 65 water_ice stored at synchrony_hub, while central_nexus bids 25 cr for water_ice | all 40 | -460 |
+| 29 | [carry-ice-experiment-nexus](carry-ice-experiment-nexus.json) | [Measured at a Loss](index-measured-at-a-loss.md) | home space | up to 3 ships, with 65 water_ice stored at the_experiment_research_station, while central_nexus bids 25 cr for water_ice | all 40 | -480 |
+| 30 | [mine-cryogenic-reserve](mine-cryogenic-reserve.json) | [Paying Routes](index-paying-routes.md) | home space | up to 1 ships, needs ice_harvester_i, while central_nexus bids 25 cr for water_ice | all 40 | 1,060 |
+| 31 | [mine-achernar-frost-ring-nexus](mine-achernar-frost-ring-nexus.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 4 jumps | up to 2 ships, needs ice_harvester_i, empty hold, while central_nexus bids 25 cr for water_ice | all 40 | 2,230 |
+| 32 | [mine-ruchbah-ice-belt-nexus](mine-ruchbah-ice-belt-nexus.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 4 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while central_nexus bids 25 cr for water_ice | all 40 | 3,670 |
+| 33 | [mine-wolf-1061-frozen-drift-nexus](mine-wolf-1061-frozen-drift-nexus.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 4 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while central_nexus bids 25 cr for water_ice | all 40 | 1,900 |
+| 34 | [mine-nova-terra-ice-shelf](mine-nova-terra-ice-shelf.json) | [Tests](index-tests.md) | beyond the border, 8 jumps | up to 1 ships, needs ice_harvester_i, while central_nexus bids 25 cr for water_ice | all 40 | TBD |
+| 35 | [gather-ironhollow-fading-signal](gather-ironhollow-fading-signal.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 4 jumps | up to 1 ships, needs mining_laser_i, empty hold, standing work | 1 of 40 | TBD |
+| 36 | [mine-wolf-1061-vent](mine-wolf-1061-vent.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 4 jumps | up to 1 ships, needs nitrogen_vent, empty hold, while synchrony_hub bids 25 cr for water_ice | 1 of 40 | 5,860 |
+| 37 | [gather-hamal-crystal-bloom](gather-hamal-crystal-bloom.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 56 ships, needs mining_laser_i, standing work | 39 of 40 | -170 |
+| 38 | [gather-gsc-0027-prism-scatter](gather-gsc-0027-prism-scatter.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 56 ships, needs mining_laser_i, standing work | 39 of 40 | -120 |
+| 39 | [mine-acubens](mine-acubens.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 18 ships, needs mining_laser_i, standing work | 39 of 40 | -170 |
+| 40 | [census-frontier](census-frontier.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 7 jumps | up to 12 ships, empty hold | all 40 | -630 |
+| 41 | [park](park.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | the park route | all 40 | -670 |
 
 Planned:
 
