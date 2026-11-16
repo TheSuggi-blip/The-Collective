@@ -80,7 +80,7 @@ Cracking the Shell central (GSC-0041) is back. Once runs since 09:30 UTC: Signal
 Fragments 4 runs, +27,630 cr; First Hunt gsc 7 runs, 7 hand-ins; Cracking the
 Shell achernar 10 runs, 5 hand-ins, 1,926 per ship-hour with the reward.
 
-**A navigation test.** `train-navigation-home` (commit 20eb504), one ship: five
+**A navigation test.** `train-navigation-home` (commit 68caa98), one ship: five
 jumps through our own stations in 15.0 minutes, -117 cr, took its drone from 334 XP
 at navigation 2 to 13 XP into level 3, which opens Signal Fragments (7,000 cr once).
 
