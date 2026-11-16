@@ -125,7 +125,7 @@ Planned:
 
 ## miner
 
-Kept by Zero. Routes: 32.
+Kept by Zero. Routes: 33.
 
 | # | Route | Group | Zone | Open to | Credits per ship-hour |
 |---|---|---|---|---|---|
@@ -153,14 +153,15 @@ Kept by Zero. Routes: 32.
 | 22 | [drain-ice-node-alpha](drain-ice-node-alpha.json) | Tests | home space | up to 2 ships, with 30 water_ice stored at node_alpha_processing_station, while node_alpha_processing_station bids 25 cr for water_ice | TBD |
 | 23 | [carry-ice-synchrony-nexus](carry-ice-synchrony-nexus.json) | Tests | home space | up to 2 ships, with 65 water_ice stored at synchrony_hub, while central_nexus bids 25 cr for water_ice | TBD |
 | 24 | [carry-ice-experiment-nexus](carry-ice-experiment-nexus.json) | Tests | home space | up to 3 ships, with 65 water_ice stored at the_experiment_research_station, while central_nexus bids 25 cr for water_ice | TBD |
-| 25 | [mine-wolf-1061-vent](mine-wolf-1061-vent.json) | Paying Routes | beyond the border, 4 jumps | up to 1 ships, needs nitrogen_vent, empty hold, while synchrony_hub bids 25 cr for water_ice | 7,680 |
-| 26 | [mine-achernar-frost-ring-nexus](mine-achernar-frost-ring-nexus.json) | Paying Routes | beyond the border, 4 jumps | up to 3 ships, needs ice_harvester_i, empty hold, while central_nexus bids 25 cr for water_ice | 3,480 |
-| 27 | [mine-ruchbah-ice-belt-nexus](mine-ruchbah-ice-belt-nexus.json) | Paying Routes | beyond the border, 4 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while central_nexus bids 25 cr for water_ice | 3,430 |
-| 28 | [mine-wolf-1061-frozen-drift-nexus](mine-wolf-1061-frozen-drift-nexus.json) | Paying Routes | beyond the border, 4 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while central_nexus bids 25 cr for water_ice | 2,940 |
-| 29 | [mine-alnair-ice-fields-nexus](mine-alnair-ice-fields-nexus.json) | Paying Routes | beyond the border, 5 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while central_nexus bids 25 cr for water_ice | 2,620 |
-| 30 | [mine-cryogenic-reserve](mine-cryogenic-reserve.json) | Measured at a Loss | home space | up to 1 ships, needs ice_harvester_i, while central_nexus bids 25 cr for water_ice | -340 |
-| 31 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -620 |
-| 32 | [park](park.json) | Reading and Waiting | home space | the park route | -670 |
+| 25 | [drain-ice-nexus](drain-ice-nexus.json) | Tests | home space | up to 2 ships, with 30 water_ice stored at central_nexus, while central_nexus bids 25 cr for water_ice | TBD |
+| 26 | [mine-wolf-1061-vent](mine-wolf-1061-vent.json) | Paying Routes | beyond the border, 4 jumps | up to 1 ships, needs nitrogen_vent, empty hold, while synchrony_hub bids 25 cr for water_ice | 7,680 |
+| 27 | [mine-achernar-frost-ring-nexus](mine-achernar-frost-ring-nexus.json) | Paying Routes | beyond the border, 4 jumps | up to 3 ships, needs ice_harvester_i, empty hold, while central_nexus bids 25 cr for water_ice | 3,480 |
+| 28 | [mine-ruchbah-ice-belt-nexus](mine-ruchbah-ice-belt-nexus.json) | Paying Routes | beyond the border, 4 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while central_nexus bids 25 cr for water_ice | 3,430 |
+| 29 | [mine-wolf-1061-frozen-drift-nexus](mine-wolf-1061-frozen-drift-nexus.json) | Paying Routes | beyond the border, 4 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while central_nexus bids 25 cr for water_ice | 2,940 |
+| 30 | [mine-alnair-ice-fields-nexus](mine-alnair-ice-fields-nexus.json) | Paying Routes | beyond the border, 5 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while central_nexus bids 25 cr for water_ice | 2,620 |
+| 31 | [mine-cryogenic-reserve](mine-cryogenic-reserve.json) | Measured at a Loss | home space | up to 1 ships, needs ice_harvester_i, while central_nexus bids 25 cr for water_ice | -340 |
+| 32 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -620 |
+| 33 | [park](park.json) | Reading and Waiting | home space | the park route | -670 |
 
 Planned:
 
