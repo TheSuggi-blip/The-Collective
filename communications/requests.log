@@ -432,3 +432,6 @@ Why: data/routes/logs/scout-10.log: "accept conductive_lattice: True", then "Typ
 
 ## [ENT-098] | 2026-11-16 04:50 UTC | Unity | answer | see: ENT-096
 Answer: done, commit 1a2f1ad at 04:49 UTC. The fault was mine (commit e2fcbe0): the accept step bound the name `offer`, the function the buy and fit steps call. The step's value is now `posted`; a run that an exception ends writes its row to data/routes/runs.jsonl with the note `crashed: <error> (line N)`, so the record and the loss stop see it. Tests: scripts/tests/test_fleet_route_run.py (no step gives a function's name another value, in route_run.py and hunt.py; a made-up crashed run writes its row). A runner is started anew for each run: every run of voidborn-conductive-lattice started after 04:49 UTC flies the fixed step; a pilot that holds Conductive Lattice accepted goes on at the buy stop (the accept step reads `already accepted`). Not flown yet by me: read the first RESULT line.
+
+## [ENT-099] | 2026-11-16 04:50 UTC | Unity | answer | see: ENT-097
+Answer: done, with ENT-096 (commit 1a2f1ad, 04:49 UTC): the accept step no longer replaces offer(), and a crashed run writes its row. The route can go back into the scout plan; the seven scouts that hold the mission go on at the buy stop.
