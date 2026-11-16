@@ -15,7 +15,7 @@ file; `planned` in it is what the Admiral means to do next. The roles at a glanc
 
 ## command
 
-Kept by Unity. Routes: 27.
+Kept by Unity. Routes: 28.
 
 | # | Route | Group | Zone | Open to | Credits per ship-hour |
 |---|---|---|---|---|---|
@@ -44,8 +44,9 @@ Kept by Unity. Routes: 27.
 | 23 | [hunt-deepwell-volatile-ice-frost-moth](hunt-deepwell-volatile-ice-frost-moth.json) | Tests | beyond the border, 7 jumps | up to 1 ships, empty hold | TBD |
 | 24 | [hunt-deepwell-haze-cinder-sylph](hunt-deepwell-haze-cinder-sylph.json) | Tests | beyond the border, 7 jumps | up to 1 ships, empty hold | TBD |
 | 25 | [hunt-raysheet-nebula-veil-ray](hunt-raysheet-nebula-veil-ray.json) | Tests | beyond the border, 8 jumps | up to 1 ships, empty hold | TBD |
-| 26 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -620 |
-| 27 | [park](park.json) | Reading and Waiting | home space | the park route | -670 |
+| 26 | [mine-gsc-0049-platinum-group-reef](mine-gsc-0049-platinum-group-reef.json) | Tests | beyond the border, 5 jumps | up to 1 ships, empty hold | TBD |
+| 27 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -620 |
+| 28 | [park](park.json) | Reading and Waiting | home space | the park route | -670 |
 
 ## drone
 

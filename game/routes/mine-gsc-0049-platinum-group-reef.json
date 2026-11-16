@@ -1,0 +1,19 @@
+{
+ "id": "mine-gsc-0049-platinum-group-reef",
+ "kind": "mine",
+ "title": "GSC-0049 Platinum-Group Reef: nickel_ore, platinum_ore, rhodium_ore; sold at Node Gamma Relay Station",
+ "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 1105 cr per ship-hour, not a measurement. A test: one ship. Added as a test by fill.py on 2026-11-16 06:58 UTC (Unity): one ship until its first RESULT line is read.",
+ "belt": "gsc_0049:gsc_0049_platinum_group_reef",
+ "station": "node_gamma:node_gamma_relay_station:node_gamma_relay_station",
+ "minutes": 90,
+ "max_ships": 1,
+ "sell": [
+  {
+   "item": "platinum_ore",
+   "min_price": 205
+  }
+ ],
+ "requires": {
+  "empty_hold": true
+ }
+}
