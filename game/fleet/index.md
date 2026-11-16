@@ -8,7 +8,7 @@ author: Unity
 # index.md -- The Fleet's Scripts
 
 Built by `python3 -B scripts/fleet-index.py` from the docstring of every script in this
-folder; never edited by hand. Scripts listed: 15.
+folder; never edited by hand. Scripts listed: 16.
 
 - Run a script from the repository root: `python3 -I -B game/fleet/<script> <arguments>`,
   the arguments as listed under "How to Call Each".
@@ -32,6 +32,7 @@ folder; never edited by hand. Scripts listed: 15.
 | `craftbook.py` | Answer what can be made, fitted and built: a recipe, everything a thing takes, and what our stored goods can become. | By hand |
 | `dispatch.py` | Keep every pilot at work: give each free pilot the next task of its role. | Service |
 | `division.py` | Who commands which ship, whose plan is whose, and the check every fleet script runs before it drives a ship. | By hand |
+| `fill.py` | Keep every ship of a division at work: say why ships wait, and fill the plan with the work that stands open. | By hand |
 | `gate.py` | Small client for the fleet engine's gate, with the division's lock. | By hand |
 | `hunt.py` | Hunt grazers at one place, loot the carcasses and sell what the kills bring. | Runner (`hunt` routes) |
 | `inbox.py` | Read what other pilots write to our ships and say near them, keep every message once, and file the ones that are for us. | Service |
@@ -115,6 +116,26 @@ division.py ships [<Member>]    the pilots a member commands (default: me), from
 division.py may <pilot>         exit 0 when this shell may drive the pilot now; exit 1 and the reason when not
 division.py plan [<role>]       the plans in force: per role, who keeps it and its routes in order
 --data <dir>                    the unit's data folder (default /srv/collective/data)
+```
+
+### `fill.py`
+
+Keep every ship of a division at work: say why ships wait, and fill the plan with the
+work that stands open.
+
+Run by hand.
+
+```
+fill.py [status] [<Member>|<role>|all]
+fill.py check [<Member>|<role>|all]
+fill.py fill [<role>] [--write] [--tests N] [--floor CR]
+fill.py add <route id> [--role <role>] [--first]
+fill.py drop <route id> [--role <role>]
+fill.py lift <route id> <ships>
+--tests N    at most N tests added per role in one run (default 8)
+--floor CR   a candidate counts from this estimate, in credits per ship-hour (default 500)
+--root <dir>   the repository's game/ folder (default: the parent of this file's folder)
+--data <dir>   the unit's data folder (default /srv/collective/data)
 ```
 
 ### `gate.py`

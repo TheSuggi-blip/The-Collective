@@ -95,6 +95,17 @@ class PickTests(Tree):
         self.assertAlmostEqual(rest["rays"], self.now - 600 + 300 + 1800, delta=2)
         self.assertEqual(self.dispatch.resting(self.dispatch.load_routes(self.root), [{"route": "rays", "kills": 3, "started": started, "minutes": 5}], self.now), {})
 
+    def test_the_rule_says_why_a_route_is_closed(self):
+        routes, pilot = self.dispatch.load_routes(self.root), {"name": "drone-1", "credits": 5000, "modules": [], "docked": True}
+        why = lambda rid, **state: self.dispatch.why_not(pilot, rid, routes.get(rid), self.state(**state))[0]
+        self.assertEqual(why("missions"), "wallet below 8000 cr")
+        self.assertEqual(why("whale"), "needs railgun")
+        self.assertEqual(why("rays", orders={"drone-9": "hunt rays"}), "max_ships 1 reached")
+        self.assertEqual(why("rays", rest={"rays": self.now + 60}), "the place rests")
+        self.assertEqual(why("ghost"), "no route file")
+        self.assertEqual(why("open"), None)                                                       # open: no reason
+        self.assertEqual(self.dispatch.why_not(dict(pilot, name="scout-1"), "census", routes["census"], self.state()), (None, "home"))
+
     def test_a_census_takes_the_stalest_system_nobody_reads(self):
         done = [{"route": "missions", "pilot": "scout-1", "stops": 1, "of": 1}]
         (self.data / "scouting" / "home.json").write_text("{}")

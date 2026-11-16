@@ -30,6 +30,7 @@ RULES:
     last census (younger than 90 minutes) shows fewer than `min_creatures`; a
     census has no system older than `every_minutes` (default 60).
   - It sends no command to the game itself: the runners do.
+  - Why ships wait, and what would give them work: game/fleet/fill.py, which uses this script's own rule.
 WHY:  no ship waits for a hand to give it work, and a new ship climbs the same
       ladder as the ones before it: what we learned is in the route files.
 
@@ -177,53 +178,72 @@ def stalest_system(data, route, orders, now):
     return best[1] if best else None
 
 
+def why_not(pilot, rid, route, state):
+    """(why the route is closed to the pilot now, or None when it is open; for an open census the system to read).
+    The one rule: pick() and fill.py both use it."""
+    if not route:
+        return "no route file", None
+    if route.get("status") == "off":
+        return "off", None
+    if route.get("park") and pilot.get("docked"):
+        return "the pilot is docked", None
+    if set(route.get("skip_if_booked") or []) & (state.get("booked") or {}).get(pilot["name"], set()):
+        return "its reward is booked", None
+    if route.get("once") and done_once(route, [r for r in state["rows"] if r.get("route") == rid and r.get("pilot") == pilot["name"]]):
+        return "done once", None
+    mark = route["kind"] + " " + rid
+    if route.get("max_pilots"):                   # at most this many different pilots ever: those that flew it and those on it now
+        flew = {r.get("pilot") for r in state["rows"] if r.get("route") == rid} | {p for p, what in state["orders"].items() if what == mark}
+        if pilot["name"] not in flew and len(flew) >= route["max_pilots"]:
+            return "max_pilots %s reached" % route["max_pilots"], None
+    if route["kind"] == "census":                 # a census order names its system: it counts for the route that lists that system
+        systems = set(route.get("systems") or [])
+        flying = sum(1 for what in state["orders"].values() if what.startswith("census ") and what.split(" ", 1)[1] in systems)
+    else:
+        flying = sum(1 for what in state["orders"].values() if what == mark)
+    if flying >= route.get("max_ships", 10 ** 6):
+        return "max_ships %s reached" % route["max_ships"], None
+    if pilot.get("credits", 0) < route.get("min_credits", 0):
+        return "wallet below %s cr" % route["min_credits"], None
+    need = (route.get("requires") or {}).get("module")
+    if need and need not in pilot.get("modules", []):
+        return "needs " + need, None
+    if (route.get("requires") or {}).get("empty_hold") and pilot.get("goods", 0) > 5:      # nothing to lose aboard (orders F13); five units count as nothing
+        return "hold not empty", None
+    if (route.get("requires") or {}).get("without_module") in pilot.get("modules", []):     # the route fits this module: not for a pilot that has it
+        return "has the module already", None
+    if state["now"] < state["rest"].get(rid, 0):
+        return "the place rests", None
+    if route["kind"] == "hunt":
+        count = herd(state["data"], route, state["now"])
+        if count is not None and count < route.get("min_creatures", 1):
+            return "herd below %s" % route.get("min_creatures", 1), None
+    if route["kind"] == "census":
+        system = stalest_system(state["data"], route, state["orders"], state["now"])
+        if system is None:
+            return "every system read", None
+        return None, system
+    return None, None
+
+
 def pick(pilot, plan, routes, state):
     """(route, argument) for the first route of the pilot's role that is open to it, or (None, None)."""
     role = pilot.get("role") or pilot["name"].split("-")[0]
     for rid in (plan.get("roles") or {}).get(role) or []:
-        route = routes.get(rid)
-        if not route or route.get("status") == "off":
-            continue
-        if route.get("park") and pilot.get("docked"):
-            continue
-        if set(route.get("skip_if_booked") or []) & (state.get("booked") or {}).get(pilot["name"], set()):
-            continue
-        if route.get("once") and done_once(route, [r for r in state["rows"] if r.get("route") == rid and r.get("pilot") == pilot["name"]]):
-            continue
-        mark = route["kind"] + " " + rid
-        if route.get("max_pilots"):                   # at most this many different pilots ever: those that flew it and those on it now
-            flew = {r.get("pilot") for r in state["rows"] if r.get("route") == rid} | {p for p, what in state["orders"].items() if what == mark}
-            if pilot["name"] not in flew and len(flew) >= route["max_pilots"]:
-                continue
-        if route["kind"] == "census":                 # a census order names its system: it counts for the route that lists that system
-            systems = set(route.get("systems") or [])
-            flying = sum(1 for what in state["orders"].values() if what.startswith("census ") and what.split(" ", 1)[1] in systems)
-        else:
-            flying = sum(1 for what in state["orders"].values() if what == mark)
-        if flying >= route.get("max_ships", 10 ** 6):
-            continue
-        if pilot.get("credits", 0) < route.get("min_credits", 0):
-            continue
-        need = (route.get("requires") or {}).get("module")
-        if need and need not in pilot.get("modules", []):
-            continue
-        if (route.get("requires") or {}).get("empty_hold") and pilot.get("goods", 0) > 5:      # nothing to lose aboard (orders F13); five units count as nothing
-            continue
-        if (route.get("requires") or {}).get("without_module") in pilot.get("modules", []):     # the route fits this module: not for a pilot that has it
-            continue
-        if state["now"] < state["rest"].get(rid, 0):
-            continue
-        if route["kind"] == "hunt":
-            count = herd(state["data"], route, state["now"])
-            if count is not None and count < route.get("min_creatures", 1):
-                continue
-        if route["kind"] == "census":
-            system = stalest_system(state["data"], route, state["orders"], state["now"])
-            if system is None:
-                continue
-            return route, system
-        return route, None
+        reason, argument = why_not(pilot, rid, routes.get(rid), state)
+        if reason is None:
+            return routes[rid], argument
     return None, None
+
+
+def pilot_of(ship, named, data, ammo):
+    """What the rule needs to know of one pilot, from its row in fleet.json and its live file: role, wallet, docked, modules, goods aboard."""
+    name = ship.get("name") or ""
+    detail = read_json(Path(data) / "fleet" / "ships" / ship_file(name), {})
+    return {"name": name, "role": role_of(name, named), "credits": ship.get("credits", 0), "docked": bool(ship.get("docked")),
+            "modules": [m.get("type") or m.get("type_id") for m in detail.get("modules") or [] if isinstance(m, dict)],
+            "goods": sum(int(c.get("quantity") or 0) for c in detail.get("cargo") or [] if isinstance(c, dict) and c.get("item") not in ammo)
+            if isinstance(detail.get("cargo"), list) else int(ship.get("cargo_used") or 0)}
 
 
 def command(route, pilot, argument, root):
@@ -277,11 +297,7 @@ def one_pass(root, data, dry_run, children):
         name = ship.get("name") or ""
         if ship.get("status") != "connected" or name in state["orders"] or (ship.get("activity") or {}).get("kind") != "idle":
             continue
-        detail = read_json(Path(data) / "fleet" / "ships" / ship_file(name), {})
-        pilot = {"name": name, "role": role_of(name, named), "credits": ship.get("credits", 0), "docked": bool(ship.get("docked")),
-                 "modules": [m.get("type") or m.get("type_id") for m in detail.get("modules") or [] if isinstance(m, dict)],
-                 "goods": sum(int(c.get("quantity") or 0) for c in detail.get("cargo") or [] if isinstance(c, dict) and c.get("item") not in ammo)
-                 if isinstance(detail.get("cargo"), list) else int(ship.get("cargo_used") or 0)}
+        pilot = pilot_of(ship, named, data, ammo)
         route, argument = pick(pilot, plan, routes, state)
         if route is None:
             continue

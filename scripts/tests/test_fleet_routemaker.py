@@ -4,6 +4,7 @@ import contextlib
 import importlib.util
 import io
 import json
+import os
 from pathlib import Path
 import tempfile
 import time
@@ -239,6 +240,18 @@ class ServiceTests(Tree):
         self.assertNotIn("TRADE:", text)                                                                                      # a member sees the kinds of its division
         self.assertIn("mine-mid-belt", text)
 
+
+
+class CatalogFileTests(unittest.TestCase):
+    def test_only_a_file_named_by_a_version_is_the_catalog(self):
+        with tempfile.TemporaryDirectory(prefix="routemaker-catalog-") as temp:
+            folder = Path(temp) / "catalog"
+            folder.mkdir()
+            self.assertEqual(maker.newest_catalog(temp).name, "none.json")
+            for age, name in ((300, "0.9.0.json"), (200, "0.10.0.json"), (100, "ammo.json")):      # ammo.json is the newest file, and no catalog
+                (folder / name).write_text("[]" if name == "ammo.json" else "{}")
+                os.utime(folder / name, (time.time() - age, time.time() - age))
+            self.assertEqual(maker.newest_catalog(temp).name, "0.10.0.json")
 
 if __name__ == "__main__":
     unittest.main()

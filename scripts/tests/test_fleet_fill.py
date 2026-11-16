@@ -1,0 +1,186 @@
+"""game/fleet/fill.py on a disposable repository and data folder: why ships wait, the gate, and the plan it fills. No engine, no network."""
+
+import importlib.util
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+import tempfile
+import time
+import unittest
+
+
+FLEET = Path(__file__).resolve().parents[2] / "game" / "fleet"
+HOME = {"at": "home:core:base"}
+MEASURED = lambda cph: {"date": "2026-11-15", "runs": 3, "minutes": 30, "credits_per_run": cph // 2, "cph_per_ship": cph}
+ROUTES = {
+    "park": {"id": "park", "kind": "circuit", "title": "t", "park": True, "stops": [HOME]},
+    "once": {"id": "once", "kind": "circuit", "title": "t", "once": True, "stops": [HOME]},
+    "rays": {"id": "rays", "kind": "hunt", "title": "t", "place": "home:nebula", "sell_at": "home:core:base", "max_ships": 1, "measured": MEASURED(3000)},
+    "ice": {"id": "ice", "kind": "mine", "title": "t", "belt": "far:belt", "station": "home:core:base", "max_ships": 2, "requires": {"module": "ice_harvester"},
+            "sell": [{"item": "water_ice", "min_price": 20}], "measured": MEASURED(5000)},
+    "herd2": {"id": "herd2", "kind": "hunt", "title": "t", "place": "far:cloud", "sell_at": "home:core:base", "max_ships": 1, "measured": MEASURED(2000)},
+    "bad": {"id": "bad", "kind": "hunt", "title": "t", "place": "far:rift", "sell_at": "home:core:base", "measured": MEASURED(-300)},
+}
+PLANS = {"drone": ("Apophis", ["once", "rays", "park"]), "hauler": ("Apollo", ["once", "park"]), "miner": ("Zero", ["ice", "park"])}
+SHIPS = {"drone-1": [], "drone-2": [], "hauler-1": [], "hauler-2": [], "hauler-3": [], "miner-1": ["ice_harvester"], "miner-2": []}
+CANDIDATES = [
+    {"id": "trade-x", "kind": "trade", "per_ship_hour": 900, "status": "new", "route_id": "",
+     "route": {"id": "trade-x", "kind": "circuit", "title": "t", "note": "An estimate.", "max_ships": 1, "stops": [HOME]}},
+    {"id": "mine-gas", "kind": "mine", "per_ship_hour": 800, "status": "new", "route_id": "",
+     "route": {"id": "mine-gas", "kind": "mine", "title": "t", "belt": "far:gas", "station": "home:core:base", "max_ships": 1, "requires": {"module": "gas_harvester"}}},
+    {"id": "craft-y", "kind": "craft", "per_ship_hour": 7000, "status": "new", "route_id": "", "needs": "a craft step in the circuit runner"},
+    {"id": "trade-low", "kind": "trade", "per_ship_hour": 100, "status": "new", "route_id": "",
+     "route": {"id": "trade-low", "kind": "circuit", "title": "t", "max_ships": 1, "stops": [HOME]}},
+]
+
+
+def load(name):
+    spec = importlib.util.spec_from_file_location(name + "_under_test", FLEET / (name + ".py"))
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+class Tree(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory(prefix="fleet-fill-test-")
+        self.addCleanup(self.temp.cleanup)
+        self.top, self.data = Path(self.temp.name) / "repo", Path(self.temp.name) / "data"
+        self.root = self.top / "game"
+        for folder in (self.root / "routes" / "plans", self.root / "map", self.data / "fleet" / "orders", self.data / "fleet" / "ships", self.data / "routes", self.data / "market"):
+            folder.mkdir(parents=True)
+        (self.root / "map" / "galaxy.tsv").write_text("# chart\nid\tname\tx\ty\tempire\tflags\tjumps_from_home\tlanes\nhome\tHome\t0\t0\tvoidborn\t-\t0\tfar\n"
+                                                      "far\tFar\t1\t0\tvoidborn\t-\t1\thome\n", encoding="ascii")
+        for rid, route in ROUTES.items():
+            (self.root / "routes" / (rid + ".json")).write_text(json.dumps(route, indent=1) + "\n", encoding="ascii")
+        for role, (owner, ids) in PLANS.items():
+            (self.root / "routes" / "plans" / (role + ".json")).write_text(json.dumps({"role": role, "owner": owner, "note": "n", "routes": ids}, indent=1) + "\n", encoding="ascii")
+        self.fill = load("fill")
+        self.fill.routefiles.write_index(str(self.root))
+        self.git("init", "-q")
+        self.git("add", "-A")
+        self.git("-c", "user.name=T", "-c", "user.email=t@example.invalid", "commit", "-q", "-m", "start")
+        self.now = time.time()
+        ships = [{"name": name, "status": "connected", "activity": {"kind": "idle"}, "docked": True, "credits": 20000, "cargo_used": 0} for name in SHIPS]
+        (self.data / "fleet" / "fleet.json").write_text(json.dumps({"updated_at": "now", "ships": ships}))
+        for name, modules in SHIPS.items():
+            (self.data / "fleet" / "ships" / (name + ".json")).write_text(json.dumps({"modules": [{"type": m} for m in modules], "cargo": []}))
+        with open(self.data / "routes" / "runs.jsonl", "w") as handle:
+            for name in SHIPS:
+                handle.write(json.dumps({"route": "once", "pilot": name, "stops": 1, "of": 1}) + "\n")
+        self.put_list(CANDIDATES)
+        (self.data / "market" / "base.json").write_text(json.dumps({"base": "base", "items": [
+            {"item_id": "water_ice", "best_buy": 28, "best_buy_qty": 5200}, {"item_id": "ice_harvester", "best_sell": 1413, "best_sell_qty": 2}]}))
+
+    def put_list(self, candidates, age=60):
+        stamp = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(time.time() - age))
+        (self.data / "routes" / "opportunities.json").write_text(json.dumps({"written_at": stamp, "candidates": candidates}))
+
+    def git(self, *args):
+        return subprocess.run(["git", "-C", str(self.top)] + list(args), stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True).stdout
+
+    def read(self, role, **more):
+        seen = self.fill.survey(str(self.root), str(self.data))
+        return seen, self.fill.read_role(seen, role, **more)
+
+    def run_fill(self, member, *args):
+        env = {"PATH": os.environ.get("PATH", "/usr/bin:/bin"), "HERMES_SESSION_PROFILE": member, "HOME": self.temp.name}
+        return subprocess.run([sys.executable, "-I", "-B", str(FLEET / "fill.py")] + list(args) + ["--root", str(self.root), "--data", str(self.data)],
+                              stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, env=env)
+
+
+class ReadTests(Tree):
+    def test_a_pilot_with_an_open_route_starts_and_the_rest_wait_with_the_reason(self):
+        seen, got = self.read("drone")
+        self.assertEqual((got["starting"], got["waiting"]), ([("drone-1", "rays")], ["drone-2"]))
+        self.assertEqual({rid: dict(why) for rid, _f, _c, why, _h in got["plan"]},
+                         {"once": {"done once": 1}, "rays": {"max_ships 1 reached": 1}, "park": {"the pilot is docked": 1}})          # of the one that waits
+        self.assertEqual(got["paying"], [("herd2", 2000, ["drone-2"])])                           # measured above zero, a free place, in no plan of theirs
+        self.assertEqual(self.fill.verdict(seen, got)[0], False)
+        self.assertIn("HALT: 1 ships of drone wait while 1 places of paying work and 0 tests stand open", self.fill.verdict(seen, got)[1])
+
+    def test_work_outside_the_plan_is_offered_once_and_what_closes_the_rest_is_named(self):
+        _seen, got = self.read("hauler")
+        self.assertEqual(got["waiting"], ["hauler-1", "hauler-2", "hauler-3"])
+        self.assertEqual(got["paying"], [("herd2", 2000, ["hauler-1"])])                          # one place: one pilot
+        self.assertEqual([(rid, value, pilot) for rid, value, _draft, pilot in got["tests"]], [("trade-x", 900, "hauler-2")])
+        self.assertEqual(got["idle"], ["hauler-3"])
+        self.assertEqual(got["closed"], {"needs ice_harvester": [(5000, "ice")], "max_ships 1 reached": [(3000, "rays")],    # a drone starts on `rays` at the next pass
+                                         "needs gas_harvester": [(800, "mine-gas")]})             # never `bad`, `craft-y`, `trade-low`
+        _seen, got = self.read("hauler", tests=0)
+        self.assertEqual((got["tests"], got["idle"]), ([], ["hauler-2", "hauler-3"]))
+
+    def test_a_module_decides_and_a_bid_says_how_many_ships_a_mine_carries(self):
+        seen, got = self.read("miner")
+        self.assertEqual((got["starting"], got["waiting"]), ([("miner-1", "ice")], ["miner-2"]))
+        self.assertEqual(dict(got["plan"][0][3]), {"needs ice_harvester": 1})
+        self.assertEqual(self.fill.carries(seen, ROUTES["ice"]), (20, 5200, 28))                  # 5,200 units, 260 a ship in four hours
+        self.assertEqual(self.fill.asks(seen, "ice_harvester"), [(2, 1413, "base")])
+
+    def test_the_gate_passes_only_on_a_fresh_list(self):
+        for path in (self.root / "routes").glob("herd2.json"):
+            path.unlink()
+        self.put_list([])
+        seen, got = self.read("hauler")
+        self.assertEqual(self.fill.verdict(seen, got), (True, "PASS: 3 ships of hauler wait, and nothing that pays and no test is open to them (what closes the work is listed above)"))
+        self.put_list([], age=2 * 3600)
+        seen, got = self.read("hauler")
+        self.assertEqual(self.fill.verdict(seen, got)[0], False)
+        self.assertIn("the route maker's list is 120 minutes old", self.fill.verdict(seen, got)[1])
+        (self.data / "fleet" / "orders" / "hauler-1.json").write_text(json.dumps({"what": "circuit once"}))
+        (self.data / "fleet" / "orders" / "hauler-2.json").write_text(json.dumps({"what": "hand Apollo"}))
+        seen, got = self.read("hauler")
+        self.assertEqual((got["work"], got["hand"], got["waiting"]), (["hauler-1"], ["hauler-2"], ["hauler-3"]))
+
+
+class WriteTests(Tree):
+    def test_fill_writes_the_plan_the_route_file_and_the_indexes_in_one_commit(self):
+        done = self.run_fill("apollo", "check")
+        self.assertEqual((done.returncode, done.stdout.count("HALT")), (1, 1))
+        done = self.run_fill("apollo", "fill")
+        self.assertIn("hauler: 3 waiting; 1 paying routes and 1 tests to add: herd2, trade-x", done.stdout)
+        self.assertIn("not written: add --write", done.stdout)
+        self.assertEqual(self.git("status", "--porcelain"), "")
+        done = self.run_fill("apollo", "fill", "--write")
+        self.assertIn("committed", done.stdout, done.stdout)
+        plan = json.loads((self.root / "routes" / "plans" / "hauler.json").read_text())
+        self.assertEqual(plan["routes"], ["once", "herd2", "trade-x", "park"])                    # in front of the route that only waits
+        self.assertIn("(fill.py, Apollo): added herd2, trade-x", plan["note"])
+        test = json.loads((self.root / "routes" / "trade-x.json").read_text())
+        self.assertEqual((test["max_ships"], "Added as a test by fill.py" in test["note"]), (1, True))
+        self.assertEqual(self.git("status", "--porcelain"), "")
+        self.assertEqual(self.git("log", "-1", "--format=%an"), "Apollo\n")
+        self.assertEqual(sorted(self.git("show", "--name-only", "--format=", "HEAD").split()),
+                         ["game/routes/index.md", "game/routes/master-index.md", "game/routes/plan.md", "game/routes/plans/hauler.json", "game/routes/trade-x.json"])
+        done = self.run_fill("apollo", "check")                                                   # the dispatcher would start two; the third has nothing open
+        self.assertEqual((done.returncode, done.stdout), (0, "PASS: 1 ships of hauler wait, and nothing that pays and no test is open to them (what closes the work is listed above)\n"))
+
+    def test_a_member_changes_its_own_plans_only_and_never_a_tree_in_work(self):
+        done = self.run_fill("zero", "fill", "hauler", "--write")
+        self.assertEqual((done.returncode, "REFUSED: the hauler plan is kept by Apollo" in done.stdout), (1, True))
+        (self.root / "routes" / "rays.json").write_text(json.dumps(dict(ROUTES["rays"], title="x"), indent=1) + "\n")
+        done = self.run_fill("apollo", "fill", "--write")
+        self.assertIn("REFUSED: game/routes holds a change that is not committed", done.stdout)
+        self.assertEqual(json.loads((self.root / "routes" / "plans" / "hauler.json").read_text())["routes"], ["once", "park"])
+        self.git("checkout", "--", ".")
+        (self.data / "fleet" / "STOP").write_text("")
+        self.assertIn("REFUSED: fleet/STOP exists", self.run_fill("apollo", "fill", "--write").stdout)
+
+    def test_add_drop_and_lift_are_one_command_each_and_the_gate_undoes_a_wrong_one(self):
+        self.assertIn("committed", self.run_fill("apophis", "add", "herd2").stdout)
+        self.assertEqual(json.loads((self.root / "routes" / "plans" / "drone.json").read_text())["routes"], ["once", "rays", "herd2", "park"])
+        self.assertIn("committed", self.run_fill("apophis", "lift", "herd2", "3").stdout)
+        self.assertEqual(json.loads((self.root / "routes" / "herd2.json").read_text())["max_ships"], 3)
+        self.assertIn("REFUSED: ice stands in no plan of yours", self.run_fill("apophis", "lift", "ice", "9").stdout)
+        self.assertIn("committed", self.run_fill("apophis", "drop", "herd2").stdout)
+        done = self.run_fill("apophis", "drop", "park")                                           # a plan must end with a route that is always open
+        self.assertEqual((done.returncode, "HALT: nothing changed; the route gate says" in done.stdout), (1, True))
+        self.assertEqual(json.loads((self.root / "routes" / "plans" / "drone.json").read_text())["routes"], ["once", "rays", "park"])
+        self.assertEqual(self.git("status", "--porcelain"), "")
+
+
+if __name__ == "__main__":
+    unittest.main()

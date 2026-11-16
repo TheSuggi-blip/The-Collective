@@ -243,8 +243,11 @@ def load_world(data, root, now):
 
 
 def newest_catalog(data):
-    files = sorted((Path(data) / "catalog").glob("*.json"), key=lambda p: p.stat().st_mtime) if (Path(data) / "catalog").is_dir() else []
-    return files[-1] if files else Path(data) / "catalog" / "none.json"
+    """The newest catalog in data/catalog/. Only a file named by a version (its name starts with a digit) is a catalog:
+    this script writes ammo.json into the same folder, and taken for the catalog it failed every pass."""
+    folder = Path(data) / "catalog"
+    files = sorted((p for p in folder.glob("*.json") if p.stem[:1].isdigit()), key=lambda p: p.stat().st_mtime) if folder.is_dir() else []
+    return files[-1] if files else folder / "none.json"
 
 
 def assumptions(world, ships, meters):
