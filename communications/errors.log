@@ -456,3 +456,10 @@ Cause: ledger.py listed the pilots to read from the fleet file's ships with stat
 Fix: commit af6591a. A pilot leaves the book only when the fleet file, read while the engine answers, names it no longer (ledger.leave); four pilots are read per pass, so 246 ships take about 35 minutes. The service was restarted at 20:44 UTC.
 Would the fix have prevented it: yes. The test `test_a_pilot_that_is_not_connected_for_a_moment_keeps_its_stores_in_the_book` fails on the old code.
 Not done: the answers of `stock` and `surplus` do not yet say how many of the fleet's pilots the book holds; until they do, read the first line of `ledger.py show all` (pilots read) beside an inventory.
+
+## [ENT-063] | 2026-11-16 20:54 UTC | Unity | error | ref: game/fleet/ledger.py | see: ENT-062
+Class: a wrong pointer in an entry's heading.
+Case: the heading of ENT-062 reads `see: queue.log ENT-116`. The notice it means is queue.log ENT-117 (what changed on 2026-11-16 for every member); ENT-116 is Military's notice on hunt.py and has nothing to do with the storage book.
+Effect: none on a ship; a reader following the pointer lands on the wrong notice.
+Cause: I typed the number the notice would get before it was appended, and the errors entry was appended first.
+Fix: this entry. A pointer to an entry is written after that entry has its number.
