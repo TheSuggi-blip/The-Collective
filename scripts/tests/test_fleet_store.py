@@ -192,6 +192,18 @@ class StoreTests(unittest.TestCase):
         names = sorted(p.name for p in (self.data / "store").iterdir())
         self.assertEqual([n for n in names if n.endswith(".tmp")], [])
 
+    def test_a_run_earns_what_the_fleets_one_rule_says(self):
+        # a hunt that sold 5 curd for 500 cr but gained only 2 of them here: 3/5 of the sale is not this run's
+        hunt = {"route": "hunt-a", "kind": "hunt", "pilot": "p1", "started": "2026-11-16T09:05:00Z", "minutes": 30, "credits_before": 1000,
+                "credits_after": 1600, "delta": 600, "one_time": 50, "goods": {"curd": 2}, "sold": {"curd": [5, 100, 500]}, "notes": []}
+        broken = dict(hunt, pilot="p2", sold={"curd": [5]})                                    # goods that cannot be read: the plain delta
+        self.append(RUNS, [json.dumps(hunt), json.dumps(broken)])
+        self.one()
+        routes = load("routes_beside_store", ROOT / "game" / "fleet" / "routes.py")
+        self.assertEqual(routes.earned(hunt), 300.0)
+        self.assertEqual(self.live("SELECT pilot, credits FROM runs ORDER BY pilot"), [("p1", routes.earned(hunt) - 50), ("p2", 550.0)])
+        self.assertEqual(self.live("SELECT runs, read_minutes, credits, one_time FROM route_hour"), [(2, 60.0, 800.0, 100.0)])
+
     def test_six_daily_backups_leave_five(self):
         days = [at("2026-11-%02dT00:05:00Z" % d) for d in range(10, 16)]
         for day in days:

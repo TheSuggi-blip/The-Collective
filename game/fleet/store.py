@@ -25,8 +25,9 @@ RULES:
     than --keep-days are deleted by whole hours (readings by whole days); their sums stay, and a line of
     such an hour that turns up again is not taken in: those sums are final.
   - A run counts for credits and read minutes only when it read a wallet (credits_before and
-    credits_after above 0, no note `wallet not read`); its credits are its steady credits, delta minus
-    one_time. Credits per ship-hour = 60 * credits / read minutes.
+    credits_after above 0, no note `wallet not read`); its credits are its steady credits: what the run
+    earned by the fleet's one rule (routes.py, earned: a hunt's sale of goods it carried in is left out)
+    minus one_time. Credits per ship-hour = 60 * credits / read minutes. hive.py counts the same way.
   - A herd its place's census no longer lists stands at 0 in that census (once). A bid or ask of 0 is no
     price: it is left out of the lowest and highest of its hour.
   - A bad line is skipped and counted; a failed pass is printed and tried again at the next tick.
@@ -58,6 +59,9 @@ import sys
 import time
 import urllib.parse
 from pathlib import Path
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import routes as routefiles                       # noqa: E402  what a run earned: one rule for the store and for hive.py
 
 EVERY = 60                     # seconds between two passes
 KEEP_DAYS = 7                  # days of raw rows kept; the sums stay for good
@@ -122,6 +126,15 @@ def readable(row):
     return before is not None and after is not None and before > 0 and after > 0 and "wallet not read" not in notes
 
 
+def earned(row):
+    """What the run earned, by the rule every figure of the fleet uses (routes.py, earned); its plain delta when the
+    row's goods cannot be read."""
+    try:
+        return number(routefiles.earned(row)) or 0
+    except (TypeError, ValueError, KeyError, IndexError, AttributeError):
+        return number(row.get("delta")) or 0
+
+
 # ---- one line of each record -> raw rows; each returns (rows added, the sums it touched), None for a sealed hour
 
 def take_run(conn, row, sealed, line):
@@ -130,7 +143,7 @@ def take_run(conn, row, sealed, line):
     if t < sealed:
         return None
     one_time = number(row.get("one_time")) or 0
-    credits = (number(row.get("delta")) or 0) - one_time
+    credits = earned(row) - one_time
     kind = row.get("kind") if isinstance(row.get("kind"), str) else None
     added = conn.execute("INSERT OR IGNORE INTO runs VALUES (?,?,?,?,?,?,?,?,?,?)", (
         pilot, route, kind, started, t, number(row.get("minutes")) or 0, credits, one_time,
