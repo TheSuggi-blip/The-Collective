@@ -125,8 +125,9 @@ Nexus. The Wolf 1061 vent stands at 6,830 over 4 runs.
   133 units by 04:20 UTC. Those routes store part of their ice until
   the bid regains at least 700 units an hour. Alnair fell from 4,430 on
   its first run to 2,090 over two.
-- **The fill gate's last line** (04:30 UTC): `HALT: 12 ships of miner
-  wait while 2 places of paying work and 0 tests stand open`. The two
+- **The fill gate's last line** (04:37 UTC): `HALT: 7 ships of miner
+  wait while 2 places of paying work and 0 tests stand open`; 33 miners
+  were at work then, none held by hand (`fill.py status miner`). The two
   places are a Trade route that buys plasma gas, which no script may
   add (F8) and which has no word of Mercury, and Cracking the Shell.
   Neither can be flown by a miner, so I left both out (requests.log
