@@ -49,9 +49,9 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
 | Elara Orris | Hamal (`hamal`) | 0 | lithosphere |
-| HexBot13 | Pherkad (`pherkad`) | 0 | frankenhauler |
-| HexCraft1 | GSC-0027 (`gsc_0027`) | 0 | axiomata |
-| Morgan Drake | Pherkad (`pherkad`) | 0 | bulk_terms |
+| Olthoi | The Experiment (`the_experiment`) | 0 | cryogenic_survey |
+| Skaldic | Synchrony (`synchrony`) | 0 | concordia |
+| Tinibu | Synchrony (`synchrony`) | 0 | praecursor |
 
 ## Standing History
 

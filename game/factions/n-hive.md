@@ -42,10 +42,10 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| 10c1432ce43efedb9c7f9632 | Hamal (`hamal`) | 0 | workhorse |
-| dd23b0ca1cc14350d2b0b023 | Hamal (`hamal`) | 0 | workhorse |
-| dffe230ab864d7efef98b1fc | Acubens (`acubens`) | 0 | workhorse |
-| fdd4d2a524b48e0478b85d38 | Hamal (`hamal`) | 0 | workhorse |
+| 0637bfdf8ba6a997093332c9 | Synchrony (`synchrony`) | 0 | futures |
+| 5a5a2c9677d0713f238cec9c | Synchrony (`synchrony`) | 0 | workhorse |
+| 6a73495396afc7768a08118f | Hamal (`hamal`) | 0 | workhorse |
+| 6df1320cdf9860614dbd3855 | Synchrony (`synchrony`) | 0 | futures |
 
 ## Standing History
 

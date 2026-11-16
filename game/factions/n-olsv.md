@@ -15,7 +15,7 @@ updated: 2026-11-16
 # Our Lord And Savior [OLSV]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 20.
+Pilots of it in our space in the last 24 hours: 18.
 
 ## Identity
 
@@ -40,7 +40,6 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 |---|---|---|---|
 | OLS Acrux II | Synchrony (`synchrony`) | 0 | cobble |
 | OLS Aladfar | Nexus Prime (`nexus_prime`) | 0 | theoria |
-| OLS Aljanah | Pherkad (`pherkad`) | 0 | not met |
 | OLS Armus | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | OLS Arrakis | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | OLS Ashlesha | Nexus Prime (`nexus_prime`) | 0 | theoria |
@@ -51,7 +50,6 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | OLS Electra | Nexus Prime (`nexus_prime`) | 0 | cobble |
 | OLS Fawaris | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | OLS Fuyue | Nexus Prime (`nexus_prime`) | 0 | theoria |
-| OLS Girtab | Synchrony (`synchrony`) | 0 | theoria |
 | OLS Gudja | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | OLS Guniibuu | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | OLS Hunor | Nexus Prime (`nexus_prime`) | 0 | theoria |

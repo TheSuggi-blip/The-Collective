@@ -15,7 +15,7 @@ updated: 2026-11-16
 # End of Line [ENDL]
 
 A player faction with 8 base(s) in 8 system(s); the nearest to Nexus Prime is 8 jump(s) away, in GSC-0040 (`gsc_0040`).
-Pilots of it in our space in the last 24 hours: 12.
+Pilots of it in our space in the last 24 hours: 11.
 
 ## Identity
 
@@ -47,18 +47,17 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Bender | The Experiment (`the_experiment`) | 0 | not met |
-| CLU | Node Gamma (`node_gamma`) | 0 | junk_convoy |
-| CombatDummy5 | Node Beta (`node_beta`) | 1 | junk_convoy |
+| Blackbeard | Nexus Prime (`nexus_prime`) | 426 | junk_convoy |
+| CaptainJaneway | Node Beta (`node_beta`) | 0 | threshold |
+| CLU | Nexus Prime (`nexus_prime`) | 0 | junk_convoy |
 | Django | Nexus Prime (`nexus_prime`) | 0 | junk_convoy |
-| ElChapo | Hamal (`hamal`) | 2 | caravan |
+| ElChapo | Node Alpha (`node_alpha`) | 2 | caravan |
 | ElonMusk | Node Beta (`node_beta`) | 0 | junk_convoy |
-| Ferengi1 | Nexus Prime (`nexus_prime`) | 1 | frankenhauler |
 | HAL 9000 | Node Alpha (`node_alpha`) | 0 | capacity |
 | JamesBond | Node Beta (`node_beta`) | 0 | catalogue |
-| MrBurns | Nexus Prime (`nexus_prime`) | 0 | junk_convoy |
-| Oddjob | Nexus Prime (`nexus_prime`) | 0 | dirk |
-| Quark | Nexus Prime (`nexus_prime`) | 0 | junk_convoy |
+| MasterChief | Node Alpha (`node_alpha`) | 149 | frankenhauler |
+| MrBurns | Node Alpha (`node_alpha`) | 0 | junk_convoy |
+| PabloEscobar | Nexus Prime (`nexus_prime`) | 0 | junk_convoy |
 
 ## Standing History
 
