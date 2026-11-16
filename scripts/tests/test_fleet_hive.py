@@ -107,6 +107,34 @@ class HiveTests(unittest.TestCase):
         by_route["drain"] = [3, 90000.0, 20.0, 0, 20.0]                                               # it sells a load mined earlier: no scale for work
         self.assertEqual([rid for _f, rid, _r in hive.scale(routes, by_route)], ["mine"])
 
+    def test_a_forecast_counts_each_route_by_its_ships_and_keeps_what_is_paid_once_apart(self):
+        hive = self.hive
+        routes = {"mine": {"id": "mine", "kind": "mine", "sell": [{"item": "ice", "min_price": 1}], "measured": {"cph_per_ship": 500, "credits_per_run": 300, "runs": 4, "minutes": 36}},
+                  "gather": {"id": "gather", "kind": "mine"}, "new": {"id": "new", "kind": "hunt"}, "blank": {"id": "blank", "kind": "hunt"},
+                  "once": {"id": "once", "kind": "circuit", "once": True, "measured": {"credits_per_run": 4000, "runs": 2, "minutes": 20}, "stops": [{"at": "a:b:c"}]},
+                  "park": {"id": "park", "kind": "circuit", "park": True, "stops": [{"at": "a:b:c"}]}}
+        by_route = {"mine": [3, 900.0, 90.0, 0, 90.0], "gather": [4, -400.0, 120.0, 0, 120.0]}     # the window's runs win over the file's figure
+        on = {"mine": 2, "gather": 10, "new": 1, "blank": 1, "once": 3, "park": 1, "gone": 1}
+        rows = hive.forecast(routes, on, by_route, {"new": 800}, 4)
+        found = {row[0]: row[1:] for row in rows}
+        self.assertEqual(found["mine"], (2, 600.0, "3 runs of the window", 1200.0, 0))
+        self.assertEqual(found["gather"], (10, -200.0, "4 runs of the window", -2000.0, 0))        # standing work costs its fuel
+        self.assertEqual(found["new"], (1, 800.0, "the route maker's estimate", 800.0, 0))
+        self.assertEqual(found["blank"], (1, None, "not measured", 0.0, 0))                         # never filled in: it counts as 0
+        self.assertEqual(found["once"], (3, None, "pays once per pilot", 0.0, 12000))               # no steady money
+        self.assertEqual(found["park"], (1, 0.0, "waits docked", 0.0, 0))
+        self.assertEqual(found["gone"], (1, None, "route file gone", 0.0, 0))
+        self.assertEqual([row[0] for row in rows][:2] + [rows[-1][0]], ["once", "mine", "gather"])  # the most first, the loss last
+        by_route["mine"] = [1, 900.0, 90.0, 0, 90.0]                                               # one run is no measure of a window
+        self.assertEqual(hive.forecast(routes, {"mine": 2}, by_route, {}, 4)[0][1:], (2, 500.0, "all its runs", 1000.0, 0))
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            self.assertEqual(hive.show_forecast(str(FLEET.parent), str(self.data), time.time(), "all", 4), 0)
+            self.assertEqual(hive.show_forecast(str(FLEET.parent), str(self.data), time.time(), "Nobody", 4), 1)
+        self.assertIn("FORECAST | the next 4 hours", out.getvalue())
+        self.assertIn("FLEET | 0 ships | steady money: 0 credits an hour", out.getvalue())
+        self.assertIn("no member `Nobody`", out.getvalue())
+
     def test_the_history_store_answers_from_its_read_copy(self):
         now = time.time()
         stamp = lambda ago: time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(now - ago))

@@ -229,6 +229,7 @@ hive.py system <system id>
 hive.py learnings [--hours N]
 hive.py standing [<Member>|<role>|all] [--hours N]
 hive.py tasks [--hours N]
+hive.py forecast [<Member>|all] [--hours N]
 hive.py refill
 hive.py briefing [<Member>|all] [--hours N]
 hive.py store [--hours N]

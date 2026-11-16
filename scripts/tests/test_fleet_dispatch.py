@@ -548,6 +548,23 @@ class RouteGateTests(Tree):
             self.assertEqual(len(found), 1, found)
             self.assertIn("stop 1: the `craft` of assemble_control_node needs `makes`: the runner counts", found[0])
 
+    def test_a_route_file_or_a_role_plan_that_names_a_pilot_of_ours_fails_the_gate(self):
+        # requests ENT-052: the repository never says which pilot flies what
+        names = lambda: [e for e in self.routes.check(str(self.root))[0] if "names a pilot of ours" in e]
+        self.assertEqual(names(), [])
+        path = self.root / "routes" / "missions.json"
+        path.write_text(json.dumps(dict(ROUTES["missions"], notes="flown by miner-12 at 23:10, then by miner-12 and scout-3")), encoding="ascii")
+        self.assertEqual(names(), ["game/routes/missions.json: names a pilot of ours (miner-12, scout-3): write the role and a count; which ship stays in the data folder"])
+        path.write_text(json.dumps(ROUTES["missions"]), encoding="ascii")
+        plan = self.root / "routes" / "plans" / "drone.json"
+        before = plan.read_text(encoding="ascii")
+        plan.write_text(json.dumps(dict(json.loads(before), planned=[{"what": "drone-3 tests the herd", "when": "next turn"}])), encoding="ascii")
+        self.assertEqual(len(names()), 1)
+        self.assertIn("game/routes/plans/drone.json: names a pilot of ours (drone-3)", names()[0])
+        plan.write_text(before, encoding="ascii")
+        self.assertEqual(names(), [])
+        self.assertEqual(self.routes.division.pilots_named("the miner- ships, sentinel-<n>, Prime Directive, hunter-7, 30 drones, scout-"), [])
+
     def test_measure_writes_only_the_routes_it_is_given(self):
         rows = [{"route": rid, "pilot": "p", "minutes": 30, "delta": 600, "credits_before": 5000, "credits_after": 5600, "started": "2026-11-15T10:00:00Z"} for rid in ("mine", "rays")]
         (self.data / "routes" / "runs.jsonl").write_text("".join(json.dumps(r) + "\n" for r in rows))

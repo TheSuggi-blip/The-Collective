@@ -229,6 +229,18 @@ class AppendTests(Tree):
             self.assertIn(message, printed)
             self.assertEqual({name: self.log(name) for name in before}, before, message)
 
+    def test_an_entry_that_names_a_pilot_of_ours_is_refused(self):
+        # requests ENT-052: the logs are public; a rule in a skill was broken three times, the command refuses
+        before = self.log("requests")
+        named = "## [ENT-NEXT] | NOW | Zero | request\nTo: Unity.\nNeed: a look at data/routes/logs/scout-10.log and at miner-3.\n"
+        code, printed = self.run_command(comms.append, "requests", self.draft(named), "Zero")
+        self.assertEqual(code, 1)
+        self.assertIn("NOT APPENDED: the entry names a pilot of ours (scout-10, miner-3)", printed)
+        self.assertEqual(self.log("requests"), before)
+        free = "## [ENT-NEXT] | NOW | Zero | request\nTo: Unity.\nNeed: the log of one scout; the miner- ships, sentinel-<n>, 30 drones and Prime Directive wait.\n"
+        code, _printed = self.run_command(comms.append, "requests", self.draft(free), "Zero")
+        self.assertEqual(code, 0)                                                              # a role word, a placeholder and a flagship are no pilot's name
+
     def test_an_entry_file_inside_the_repository_is_refused(self):
         inside = self.root / "draft.txt"
         inside.write_text("## [ENT-NEXT] | NOW | Zero | request\nTo: Unity.\nNeed: x.\n", encoding="ascii")

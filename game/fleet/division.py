@@ -51,6 +51,15 @@ ROLES = {"miner": "Zero", "trader": "Mercury", "hauler": "Apollo", "drone": "Apo
 MEMBERS = ("Unity", "Zero", "Apollo", "Mercury", "Apophis", "Oracle")
 PROFILE = re.compile(r"/profiles/([a-z]+)(?:/|$)")
 ORDER_FRESH = 20 * 60        # an order file not touched for this long is dead (the dispatcher's rule)
+PILOT = re.compile(r"\b(?:%s)-[0-9]+\b" % "|".join(sorted(ROLES)))      # a pilot of ours by name: a role word, a dash, a number
+
+
+def pilots_named(text):
+    """The pilots of ours a text names (a role word, a dash, a number), each once, in the order found. The repository
+    is public and never says which pilot flies what (rulebook section 10): comms.py refuses a log entry that names
+    one, routes.py check a route file or a role plan (requests ENT-052). A flagship's name has no number: it is left
+    to the writer."""
+    return list(dict.fromkeys(PILOT.findall(str(text))))
 
 
 def member(env=None):

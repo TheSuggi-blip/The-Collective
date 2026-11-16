@@ -22,6 +22,9 @@ WHAT: reads the unit's data folder (fleet/, routes/runs.jsonl, market/, scouting
                               and what closes the best route to it when it waits
         tasks                 one unit for all work: credits per ship-hour by kind of work (mining, hunting, trade, ...)
                               and by division with the idle ships counted, beside the best route as the scale
+        forecast              the hours ahead, per division: every route with the ships on it now, what a ship-hour on
+                              it measured and what that makes per hour and per turn, per ship of the division and
+                              for the fleet; what is paid once stands apart
         refill                what comes back by itself between our readings, per hour: the units a bid regains, what a
                               field grows back, the animals of a herd
         briefing              a session's start in one answer: the orders in force, the requests addressed to the member,
@@ -50,6 +53,7 @@ USAGE:
   hive.py learnings [--hours N]
   hive.py standing [<Member>|<role>|all] [--hours N]
   hive.py tasks [--hours N]
+  hive.py forecast [<Member>|all] [--hours N]
   hive.py refill
   hive.py briefing [<Member>|all] [--hours N]
   hive.py store [--hours N]
@@ -862,6 +866,100 @@ def show_tasks(root, data, now, hours):
     return 0
 
 
+def rate_of(route, rid, by_route, cands):
+    """(credits per ship-hour, what the figure rests on) of a route that repeats: the runs of the window when two or
+    more of them read a wallet, else what all its runs measured (the route file), else the route maker's estimate;
+    (None, `not measured`) when nothing speaks of it. The `park` route earns 0."""
+    if route.get("park"):
+        return 0.0, "waits docked"
+    runs, credits, minutes, _once, _flown = by_route.get(rid, [0, 0.0, 0.0, 0, 0.0])
+    if runs >= 2 and minutes:
+        return credits / minutes * 60, "%d runs of the window" % runs
+    if worth(route) is not None:
+        return float(worth(route)), "all its runs"
+    if cands.get(rid) is not None:
+        return float(cands[rid]), "the route maker's estimate"
+    return None, "not measured"
+
+
+def forecast(routes, on, by_route, cands, hours):
+    """[(route id, ships on it, credits per ship-hour or None, what that rests on, steady credits an hour, paid once)],
+    the most first: what the routes bring while the ships of `on` ({route id: ships}) stay on them. A route that pays
+    once per pilot adds no steady money: its reward (what its runs measured, per ship) stands in the last field."""
+    found = []
+    for rid, ships in on.items():
+        route = routes.get(rid) or {}
+        if route.get("once"):
+            paid = worth(route)
+            found.append((rid, ships, None, "pays once per pilot" if paid is not None else "pays once, not measured", 0.0, int((paid or 0) * ships)))
+            continue
+        rate, rests = rate_of(route, rid, by_route, cands) if route else (None, "route file gone")
+        found.append((rid, ships, rate, rests, (rate or 0.0) * ships, 0))
+    return sorted(found, key=lambda row: (-(row[4] + row[5]), row[0]))
+
+
+def show_forecast(root, data, now, who, hours):
+    routes, rows = dispatch.load_routes(root), dispatch.run_rows(data)
+    orders = dispatch.fresh_orders(data, now)
+    _by_pilot, by_route = pilot_stats(rows, now - hours * 3600)
+    book = read(Path(data) / "routes" / "opportunities.json", {})
+    cands = {c["route"]["id"]: c["per_ship_hour"] for c in (book.get("candidates") if isinstance(book, dict) else None) or []
+             if isinstance(c, dict) and isinstance(c.get("route"), dict) and c["route"].get("id") and isinstance(c.get("per_ship_hour"), (int, float))}
+    titles = {key: title for key, title, _text in routefiles.STAGES}
+    crew, fleet = pilots(data)
+    members = [m for m in division.MEMBERS if who in ("all", m)]
+    if not members:
+        print("no member `%s`: %s or all" % (who, ", ".join(division.MEMBERS)))
+        return 1
+    census = {system: rid for rid, route in routes.items() if route.get("kind") == "census" for system in route.get("systems") or []}
+    print("FORECAST | the next %g hours, if every ship stays on the route it flies now and each route pays what it measured | steady money; what is paid once "
+          "stands apart | fleet data read %s" % (hours, ago(fleet.get("updated_at"), now)))
+    print("  a figure rests on the runs of the last %g hours (two or more), else on all runs of the route, else on the route maker's estimate; `not measured` counts as 0" % hours)
+    print("  no promise: a route closes when its bid, its field or its herd is used up (the tool fill says what each carries), and the dispatcher then sends the ship "
+          "to the next route of its list")
+    total = [0, 0.0, 0]
+    for member in members:
+        mine = [ship for ship, _detail in crew if division.owner(ship.get("name") or "", data) == member]
+        on, state = Counter(), Counter()
+        for ship in mine:
+            what = orders.get(ship.get("name") or "")
+            if ship.get("status") != "connected":
+                state["not connected"] += 1
+            elif what and what.startswith("hand "):
+                state["by hand"] += 1
+            elif what:
+                kind, _, rest = what.partition(" ")
+                on[census.get(rest, rest) if kind == "census" else rest] += 1
+                state["on a route"] += 1
+            elif (ship.get("activity") or {}).get("kind") != "idle":
+                state["by hand"] += 1
+            else:
+                state["waiting"] += 1
+        planned = Counter()                                    # ships that have the route in their plan (the role plans' counts)
+        for role, keeper in division.ROLES.items():
+            spec = read(Path(root) / "routes" / "plans" / (role + ".json"), {}) if keeper == member else {}
+            for rid, count in (spec.get("ships") if isinstance(spec, dict) and isinstance(spec.get("ships"), dict) else {}).items():
+                planned[rid] += count if isinstance(count, int) else 0
+        found = forecast(routes, on, by_route, cands, hours)
+        steady, once = sum(row[4] for row in found), sum(row[5] for row in found)
+        total = [total[0] + len(mine), total[1] + steady, total[2] + once]
+        print("%s | %d ships: %s" % (member.upper(), len(mine), ", ".join("%d %s" % (n, key) for key, n in state.most_common()) or "none"))
+        print("  %-40s %-8s %-16s %5s %7s %13s %-26s %10s %11s %10s" % ("route", "kind", "group", "ships", "in plan", "per ship-hour", "rests on", "per hour",
+                                                                        "in %g h" % hours, "paid once"))
+        for rid, ships, rate, rests, hour, paid in found:
+            route = routes.get(rid) or {}
+            print("  %-40s %-8s %-16s %5d %7s %13s %-26s %10s %11s %10s" % (
+                rid[:40], str(route.get("kind") or "?")[:8], titles.get(routefiles.stage(route), "?")[:16] if route else "--", ships, planned.get(rid) or "--",
+                num(rate) if rate is not None else "--", rests[:26], num(hour) if rate is not None else "--", num(hour * hours) if rate is not None else "--",
+                num(paid) if paid else "--"))
+        print("  SUM %s | steady money: %s credits an hour, %s per ship of the division, %s in %g hours | paid once on the way: %s"
+              % (member, num(steady), num(steady / len(mine)) if mine else "--", num(steady * hours), hours, num(once) if once else "--"))
+    if len(members) > 1:
+        print("FLEET | %d ships | steady money: %s credits an hour, %s per ship, %s in %g hours | paid once on the way: %s"
+              % (total[0], num(total[1]), num(total[1] / total[0]) if total[0] else "--", num(total[1] * hours), hours, num(total[2]) if total[2] else "--"))
+    return 0
+
+
 def show_standing(root, data, now, who, hours):
     import fill                                    # the dispatcher's next pass played through for every free pilot
     seen = fill.survey(root, data, now)
@@ -1060,6 +1158,8 @@ def main():
         return show_standing(root, data, now, rest[0] if rest else (me if me in division.MEMBERS else "all"), float(value("--hours", str(TURN))))
     if verb == "tasks":
         return show_tasks(root, data, now, float(value("--hours", str(TURN))))
+    if verb == "forecast":
+        return show_forecast(root, data, now, rest[0] if rest else "all", float(value("--hours", str(TURN))))
     if verb == "refill":
         return show_refill(root, data, now)
     if verb == "briefing":

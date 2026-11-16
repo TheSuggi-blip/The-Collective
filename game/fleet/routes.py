@@ -121,6 +121,9 @@ def check(root):
     known = chart(root)
     for rid, route in routes.items():
         where = "game/routes/%s.json: " % rid
+        named = division.pilots_named(json.dumps(route))
+        if named:                                  # the repository is public: which pilot flies what stays in the data folder (requests ENT-052)
+            errors.append(where + "names a pilot of ours (%s): write the role and a count; which ship stays in the data folder" % ", ".join(named[:5]))
         if not isinstance(route, dict) or route.get("id") != rid:
             errors.append(where + "`id` must equal the file name")
             continue
@@ -177,6 +180,9 @@ def check(root):
         errors.append("game/routes/plan.json: the one plan file is gone; each role has game/routes/plans/<role>.json")
     for role, ids in roles.items():
         where = "game/routes/plans/%s.json: " % role
+        named = division.pilots_named(current_plan(root, role))
+        if named:
+            errors.append(where + "names a pilot of ours (%s): `Planned` is read by every member and the public; write the role and a count" % ", ".join(named[:5]))
         for rid in ids:
             if rid not in routes:
                 errors.append(where + "names `%s`, which is no route file" % rid)
@@ -196,6 +202,14 @@ def check(root):
             errors.append("game/routes/%s is written no longer (master-index.md and its sub-indexes took its place): run "
                           "`python3 -B game/fleet/routes.py index`, which removes it" % name)
     return errors, len(routes)
+
+
+def current_plan(root, role):
+    """The text of a role's plan file, or '' when it cannot be read."""
+    try:
+        return (Path(root) / "routes" / "plans" / (role + ".json")).read_text(encoding="ascii")
+    except (OSError, UnicodeDecodeError):
+        return ""
 
 
 def current_index(root, name=MASTER):

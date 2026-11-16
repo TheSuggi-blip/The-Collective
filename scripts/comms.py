@@ -260,8 +260,19 @@ def git_commit(root, rel, name, message):
     return None
 
 
+def pilots_named(text):
+    """The pilots of ours a text names, by the fleet's one rule for it (game/fleet/division.py)."""
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "game" / "fleet"))
+    try:
+        import division
+        return division.pilots_named(text)
+    finally:
+        sys.path.pop(0)
+
+
 def append(root, log, entry_file, name, commit=True):
-    """Append one prepared entry to a log as one locked step. 0 done, 1 refused, 2 appended but not committed."""
+    """Append one prepared entry to a log as one locked step. 0 done, 1 refused, 2 appended but not committed. An entry
+    that names a pilot of ours is refused: the logs are public (requests ENT-052)."""
     root = Path(root)
     path = root / "communications" / (log + ".log")
     try:
@@ -284,6 +295,10 @@ def append(root, log, entry_file, name, commit=True):
         problems.append("one entry per call")
     if not any(line.strip() for line in lines[1:]):
         problems.append("the entry has no body")
+    named = pilots_named("\n".join(lines))
+    if named:
+        problems.append("the entry names a pilot of ours (%s): the repository is public; write the division and a count, or `a miner`; "
+                        "which ship it was stays in the data folder" % ", ".join(named[:5]))
     if not path.is_file():
         problems.append("communications/%s.log does not exist" % log)
     if Path(entry_file).resolve().is_relative_to(root.resolve()):
