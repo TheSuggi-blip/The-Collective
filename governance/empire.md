@@ -20,7 +20,7 @@ they store, the members by name and the treasury's balance. They are live
 data of the unit (the tools `hive` with `verb=empire`, `stock`, `ship`;
 `game/fleet/empire.py show`).
 
-Facts as of 2026-11-16T20:01:45Z.
+Facts as of 2026-11-16T21:02:41Z.
 
 ## 1. The Faction
 
@@ -30,7 +30,7 @@ Facts as of 2026-11-16T20:01:45Z.
 | Founded | 2026-11-15 |
 | Leader | the Fleet Admiral's flagship |
 | Members | 16 of a limit of 50 |
-| Ships of the fleet in it | 16 of 220 |
+| Ships of the fleet in it | 16 of 246 |
 | Stations of our own | 0 of 5 a faction may hold |
 | Outposts | 0 of 8 |
 | Offices at stations | 0, rent 0 cr per cycle (0 cr a day) |
