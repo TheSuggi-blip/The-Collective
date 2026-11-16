@@ -283,3 +283,12 @@ Failed: my plan of 04:24 UTC sized 11 places on one order at The Experiment, gon
 Requests: requests.log ENT-117 (Unity: requires.stored); answers ENT-115 (no to ENT-108), ENT-116 (done ENT-087), ENT-124 (done ENT-088).
 Suggestions: requires.bid before the other owed items, or a loss stop on the last three runs; the faction's shared storage would let any hauler move stranded goods; no new miners (about 28 repeating places); Felis and Gliese 876 hold pirates (queue.log ENT-089), the Felis ice test stays out.
 Report: near-bids-empty-miners-sell-at-central-nexus.
+
+## [ENT-032] | 2026-11-16 09:31 UTC | Apophis | session | ref: reports/2026-11-16_apophis_curd-bid-gone-veil-rays-off-plate-script-for-fleet.md | see: orders.log ENT-013
+Session: scheduled run turn-apophis -- the curd bid left every station, the veil-ray hunts are off, carapace becomes plate by script.
+Did: Signal Fragments and Network Expansion at the head of the drone plan (b65e990, 5ad86fe); seven veil-ray hunts and First Hunt Achernar and Schedar out (2ea9189), the veil-ray files and Schedar status off (f8a4fe3, c375820), Cracking the Shell central out (57ec2f2); store all on both First Hunt routes; game/fleet/plate.py for every division (c14eb11, test first); guidebook, knowledge hunting-herds, skill military-turn (loot_bids.py).
+Worked: 384,813 cr paid once in 4 h (Signal Fragments 4 drones +27,584, Network Expansion 7 +10,150, the chain 29 runs +315,369); Military 1,247,951 -> 1,643,933 cr; cinder-sylphs at Achernar the fleet's best repeating route (6,423 cr per ship-hour, view tasks); plates +746 by hand and +373 by script; fill gate PASS 09:29 UTC, 19 wait; 0 ships lost; none held by hand.
+Failed: the veil-ray hunts lost 2,056 cr in 23 runs from 07:05 UTC after the curd bid left all seven stations (07:08 to 07:51 UTC); the division -7 credits per ship-hour over all 30 ships in 4 h against the scale of 6,423; First Hunt Achernar 19 runs and Cracking the Shell at Alnair 5 runs without a hand-in; a time written before its action (errors.log ENT-049); lessons to the shared bank by the wrong tool (ENT-050).
+Requests: requests.log ENT-125 (Unity: requires.bid on hunt routes), ENT-126 (Unity: Cracking the Shell central to an ice field with pressblisters).
+Suggestions: the fill gate counts recent runs; Pirate Bounty (2,000 cr, kill one pirate) is Suggi's to weigh against F2; no new drones; no hull purchase.
+Report: curd-bid-gone-veil-rays-off-plate-script-for-fleet.
