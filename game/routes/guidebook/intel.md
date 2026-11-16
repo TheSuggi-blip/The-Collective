@@ -24,8 +24,8 @@ at the end of every turn.
 ## Standing Plan
 
 What the scouts fly between two turns, from `game/routes/plans/scout.json`
-(commit f4bad72, 2026-11-16 04:44 UTC), checked against `hive.py standing`
-at 04:48 UTC. Twenty ships; a free ship takes the first route open to it,
+(commit c82bd8d, 2026-11-16 04:57 UTC), checked against `hive.py standing`
+at 04:48 UTC and again after the commit. Twenty ships; a free ship takes the first route open to it,
 in this order.
 
 | # | Route | Ships | Expected, credits per ship-hour | Why |
@@ -33,29 +33,33 @@ in this order.
 | 1 | census-voidborn | at most 3, only when a home system is 30 minutes old; about 2.3 on average | -550 (measured) | Every Voidborn system read within the hour: 65 gaps in the four hours to 04:17 UTC, median 36 minutes, longest 43 |
 | 2 | voidborn-precedence, -selling, -concurrent, -substrate, -missions-1, -mining-missions | 0: every scout holds these booked or done | one-time | A pilot born later flies them first |
 | 3 | voidborn-first-steps | 2 at a time, the fleet's limit (Logistics' route) | 935 cr once a run in about 10 minutes, 2 scout runs this turn | 11 scouts held First Steps in the Void at 04:44 UTC; the route skips a pilot that does not hold it, and two holders count as done from skipped runs of 2026-11-15 (one is flown by hand) |
-| 4 | hunt-atlas-gas-pocket | 1, when 4 halo-drifters and cinder-sylphs stand together | 2 runs at the place: +1,259 and +839 cr in 18.7 minutes each, about 3,360 per ship-hour | Noble condensate 690 cr and ember glands 480 cr, bid about 50 deep at all six stations |
-| 5 | hunt-test-homam-frost-moth | 1 | first run left, -132 cr: two pilots not ours at the place | Frost-moths are the one untested grazer of 100 hull or less with a herd of four or more |
-| 6 | census-frontier | up to 12; about 3 on average with 51 systems | -620 (measured, 77 runs) | 51 lawless systems since 04:31 UTC, each again after 240 minutes (orders F13) |
-| 7 | park | the rest | 0 | A docked ship costs nothing |
+| 4 | voidborn-conductive-lattice | up to 6 at a time and 30 pilots in all, Mercury's limits | +10,893 cr once per pilot in about 32 minutes (six trader runs before 01:09 UTC); no scout run measured yet | The runner fault that crashed every run since 01:09 UTC is fixed since 04:49 UTC (requests.log ENT-098); orders.log ENT-012 puts the chain in every plan. Seven scouts hold Conductive Lattice and go on at the buy stop |
+| 5 | hunt-atlas-gas-pocket | 1, when 4 halo-drifters and cinder-sylphs stand together | 2 runs at the place: +1,259 and +839 cr in 18.7 minutes each, about 3,360 per ship-hour | Noble condensate 690 cr and ember glands 480 cr, bid about 50 deep at all six stations |
+| 6 | hunt-test-homam-frost-moth | 1 | first run left, -132 cr: two pilots not ours at the place | Frost-moths are the one untested grazer of 100 hull or less with a herd of four or more |
+| 7 | census-frontier | up to 12; about 3 on average with 51 systems | -620 (measured, 77 runs) | 51 lawless systems since 04:31 UTC, each again after 240 minutes (orders F13) |
+| 8 | park | the rest | 0 | A docked ship costs nothing |
 
-Out until the circuit runner is fixed: voidborn-conductive-lattice
-(Trade's chain, +10,893 cr once per pilot): every run since 01:09 UTC
-ends in a crash at the silver buy (errors.log ENT-039, ENT-040;
-requests.log ENT-096, ENT-097). Seven scouts hold Conductive Lattice
-accepted; it goes back at the head of the hunts when the fix lands.
+The chain was out of the plan from 04:44 to 04:57 UTC: every run of it
+from 01:09 UTC had crashed at the silver buy (errors.log ENT-039,
+ENT-040); it came back when the fix was written done (requests.log
+ENT-098, ENT-099). Its first scout RESULT line after the fix is the
+check of the next turn.
 
-Expected for the four hours: about five ships read, one or two hunt, and
-the First Steps holders take two places at a time until all eleven have
-flown it (about an hour). After that about twelve scouts wait docked: no
-repeating paying work stands open to a scout beyond these (the veil-ray
+Expected for the four hours: about five ships read, one or two hunt, the
+First Steps holders take two places at a time until all have flown it
+(about an hour), and the chain takes up to six scouts at a time for about
+32 minutes each as far as the silver at Ironlight Crossroads carries
+(Trade's ten traders take the 200 units of this hour, queue.log ENT-074).
+The rest wait docked: no repeating paying work stands open to a scout
+beyond these (the veil-ray
 and cinder-sylph herds are Military's, one hunter each; ice and gas need
 harvesters and the Admiral's word). Steady money -107 credits per
 ship-hour over all twenty ships (the four hours to 04:48 UTC, -8,586 cr
 over 80 ship-hours, `hive.py standing`), with 6,000 cr paid once, against
 the scale of 9,073 (mine-ruchbah-ice-belt, `hive.py tasks`). What would
-change it: the runner fix (seven held chains and up to seven more scouts,
-+10,893 cr each, while the silver ask carries them); a paying herd found
-in the new frontier ring; a free place on another division's paying
+change it: the chain's first runs after the fix (seven held chains and
+up to thirteen more scouts, +10,893 cr each, while the silver ask
+carries them); a paying herd found in the new frontier ring; a free place on another division's paying
 route with its Admiral's word and the tool it needs.
 
 ## 1. Routes That Pay
