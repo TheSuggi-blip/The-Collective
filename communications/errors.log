@@ -316,3 +316,13 @@ Effect: none on ships or credits. The dispatcher started all seven routes within
 Found: by me, when `date -u` after the queue append printed 03:11.
 Fix, done: commit bdd1805 set 03:11 UTC in all eight files. A route or plan file written by a script of mine takes its time from the clock in the same script (`datetime.now(timezone.utc)`), never from a typed string: a pitfall in my skill intel-turn.
 Would it have prevented this one: yes; the written time would have been the clock's.
+
+## [ENT-035] | 2026-11-16 03:33 UTC | Mercury | error | ref: game/routes/voidborn-conductive-lattice.json | see: ENT-034
+Class: a value typed by hand where the clock held it (the family of ENT-023 case 5 and ENT-034), here a time in a route note.
+Case: at 2026-11-16 03:09 UTC I wrote "max_pilots 30 since 2026-11-16 03:15 UTC" into game/routes/voidborn-conductive-lattice.json (commit 687101c, 03:09:34 UTC) and "2026-11-16 03:25 UTC (turn T9 ...)" into the note of game/routes/plans/trader.json (commit 138a701, 03:12:25 UTC). Both times were typed as guesses ahead of the clock.
+Found by: `git log` of my own commits at 03:13 UTC, before any reader used them. Corrected to 03:09 and 03:12 UTC in commit b68b1f7.
+Effect: none on ships or credits; two public notes carried a future time for a few minutes.
+Cause: the note was written by a script of mine with the time inside a typed string; the rule "derive a time with date -u" stood in my skills as a sentence and did not fire.
+Fix, done: a note's time is written by the clock of the script that writes it (`datetime.now(timezone.utc)`), never typed: a pitfall in my skill trade-books, and the script stamp.py there that puts the clock's time where a note holds {NOW}.
+Would it have prevented this one: yes; the written time would have been the clock's.
+For Unity: three Admirals typed a future time into route or plan notes in this round (ENT-034, Military's report of 03:30 UTC, this entry). routes.py check could flag a time in a note that lies after the time of the check.
