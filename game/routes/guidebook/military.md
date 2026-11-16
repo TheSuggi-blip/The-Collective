@@ -36,8 +36,8 @@ ship-hour after fuel, steady money (paid once apart).
 |---|---|---|---|---|
 | First | The once line: `voidborn-signal-fragments`, the Central Nexus board line, `voidborn-precedence`, `-conductive-lattice`, First Hunt (nexus, gsc, achernar), Cracking the Shell (`-achernar`, `-central`), `voidborn-selling`, `-concurrent`, `-substrate`, `-missions-1`, `-mining-missions` | every drone; each route's own limit | 7,000, 1,500 and 1,000 cr once | At 18:27 UTC (`data/fleet/onetime.json`) 5 drones lacked Signal Fragments, 22 Cracking the Shell, 10 Market Participation: Selling; every other title of the line is booked by all 30. `voidborn-collective-provides` left the list: `status off` |
 | Own, every drone | `sell-curd-central-nexus`, `-node-beta`, `-experiment` | 1 each | 330 cr a curd while the bid stands | 37 curd lie in drone storage at three stations (the tool stock, 18:29 UTC). Closed by `requires.bid` now: no curd bid since 13:24 to 13:38 UTC |
-| Own, 3 ships | `guard-marfik-emission-nebula` | 1 at a time | standing work, a cost | Orders ENT-017: fly the guard route once with one drone (requests.log ENT-165). It guards `mine-marfik-emission-nebula` (a trader's gas run of about 77 minutes, lawless, six jumps) |
-| Own, 12 hunters | `hunt-test-achernar-cinder-sylph`, the seven veil-ray hunts (`hunt-gsc-`, `-hamal-`, `-ruchbah-`, `-keid-fractured-prism-`, `-faintlight-drift-`, `-cedarhold-dim-lattice-`, `-low-charge-glint-veil-ray`), `hunt-test-lesath-cinder-sylph`, `hunt-home-drift-ray`, `hunt-achernar-belt-carapace`, `hunt-keid-belt-carapace` | the 12 drones with the most gunnery and xenobiology; each hunt takes 1 | carries 1 each. Achernar cinder-sylphs 6,098 per ship-hour (2 runs); the rest standing work, a cost | Orders ENT-017: hunt as far as each herd regains; goods without a bid go into storage. A station takes 34,832 verdigris curd (we hold 37), 35,640 creature carapace (904) and 4,420 crystallized biogas (116) (base_plan, 18:30 UTC). The veil-ray hunts and the drift-ray hunt carry `standing: true` and no `requires.bid` since 18:33 UTC; the two carapace hunts are one-ship tests |
+| Own, 3 ships | `guard-marfik-emission-nebula` | 1 at a time | -108 per ship-hour, one run (section 6) | Orders ENT-017: fly the guard route once with one drone (requests.log ENT-165). It guards `mine-marfik-emission-nebula` (a trader's gas run of about 77 minutes, lawless, six jumps) |
+| Own, 12 hunters | `hunt-test-achernar-cinder-sylph`, the seven veil-ray hunts (`hunt-gsc-`, `-hamal-`, `-ruchbah-`, `-keid-fractured-prism-`, `-faintlight-drift-`, `-cedarhold-dim-lattice-`, `-low-charge-glint-veil-ray`), `hunt-test-lesath-cinder-sylph`, `hunt-home-drift-ray`, `hunt-keid-belt-carapace`, `hunt-felis-frost-ring-hollow-pilgrim` (test, first in the list) | the 12 drones with the most gunnery and xenobiology; each hunt takes 1 | carries 1 each. Achernar cinder-sylphs 6,098 per ship-hour (2 runs); the rest standing work, a cost | Orders ENT-017: hunt as far as each herd regains; goods without a bid go into storage. A station takes 34,832 verdigris curd (we hold 37), 35,640 creature carapace (904) and 4,420 crystallized biogas (116) (base_plan, 18:30 UTC). The veil-ray hunts and the drift-ray hunt carry `standing: true` and no `requires.bid` since 18:33 UTC; the Keid carapace hunt and the hollow-pilgrim hunt (crystal melt, behind a bid of 1,000 cr) are one-ship tests; the Achernar carapace test is off (a foreign ship at the belt in both runs) |
 | Own, 2 ships | `census-guard-ice` | 2 | -602 per ship-hour (32 runs) | The guard until the guard route is proven (requests.log ENT-165) |
 | Own, 1 ship | `mine-gliese-876-belt` | 1 (test) | 804 per ship-hour estimated by the route maker, not measured | Put in by the hourly job (testing is allowed); nickel ore sold at a Solarian station (requests.log ENT-160) |
 | Own, standing | `gather-gsc-0027-prism-scatter` (6 ships first), `gather-hamal-crystal-bloom` (4), `mine-acubens` (2), `mine-pherkad-rift` (2); every hunter and guard falls back on the first two | shared fleet limits 56, 56, 18, 18 | -128 and -188 per ship-hour (66 and 33 runs) | Iron and copper ore into storage for the station list (P4); the fields' floors (`min_left`) close them |
@@ -238,22 +238,47 @@ The yield tests of 2026-11-16 03:00 to 03:16 UTC are read (section 2): of eight,
 the Lesath cinder-sylph herd paid and stays; the rest left the plan at 05:16 UTC.
 Open now, one ship each:
 
+- `guard-marfik-emission-nebula`, the first guard route (requests.log ENT-165), flown once:
+  one drone from 18:38 UTC, at the place from 18:43 to 19:43 UTC, 61 looks, left after its 60
+  minutes, docked at Node Beta, hull 100 percent all along, -132 cr in 73.4 minutes (about -108 per
+  ship-hour; `census-guard-ice` costs -602). The guarded gas miner stood at the field in 11 of the
+  61 looks: its mining loop hauls each load to Node Beta, six jumps away, so the guard watched an
+  empty field most of the hour. A Combat Drone of the faction BUSY stood at the field in 12 looks
+  (19:10 to 19:21 UTC), 4 of them beside our miner; nobody fired (the run's row and the guard's log,
+  data/routes/). Next: a guard that keeps beside the guarded pilot, not at the field, before a
+  second guard flies; `census-guard-ice` stays behind it meanwhile.
+- `hunt-felis-frost-ring-hollow-pilgrim` (since 19:30 UTC): the route maker's candidate, one hunter,
+  open only while The Experiment bids 1,000 cr or more for 4 crystal melt (the bid moves between
+  54 cr x 50 and about 1,394 cr x 10, data/market/history.jsonl). Not flown yet.
+- `hunt-keid-belt-carapace` (since 2026-11-16 18:33 UTC): belt-grazers and patina-grazers for creature
+  carapace into storage, standing work, `alone` and an empty hold; one ship. First run (18:58 UTC):
+  left without a fight, a ship not of ours at the belt, -110 cr. Its twin `hunt-achernar-belt-carapace`
+  met a foreign ship in both its runs (1 kill, 2 carapace, -99 and -44 cr) and is off since 19:23 UTC.
+- The seven veil-ray hunts and `hunt-home-drift-ray` as standing work (since 18:33 UTC). First rows
+  to 19:23 UTC: three veil-ray runs (GSC-0027, Keid, Achird) made 4 kills each and looted 4 to 6
+  curd and 5 carapace each, -65 to -121 cr in about 30 minutes; Ruchbah and Cedarhold left without
+  a fight, a ship not of ours at the place, -88 and -121 cr; three drift-ray runs made 3 kills each
+  and stored 7 crystallized biogas in all, -26 to -65 cr in 10 to 13 minutes (data/routes/runs.jsonl).
+  The veil-ray hunts gather carapace too: about one carapace a kill beside the curd.
+- `mine-gliese-876-belt` (put in by the hourly job, 18:13 UTC): nickel ore sold at a Solarian
+  station, 804 cr per ship-hour estimated by the route maker; one ship.
+
 - `mission-cracking-the-shell-central` (Unity's) hunts at GSC-0041 Frost Ring since
   10:38 UTC with a herd floor of three (requests.log ENT-135); the ring read 0
   pressblisters, 4 deuteron-slugs, 2 rime-grazers and a frost-lurker of 400 hull at
   12:09 UTC (data/wildlife/gsc_0041.json): closed by its floor. Back in the drone plan.
-- `train-navigation-home`: one drone, five jumps through our own stations; what a jump
-  gives in navigation XP (section 4). Every run loses its fuel, so the loss stop closes
-  it after three runs; to fly it for every drone short of navigation 3 it needs a field
-  the dispatcher reads (asked of Unity in requests.log this turn).
+- `train-navigation-home`: closed. One run measured about 4 XP a jump (section 4); every drone
+  passed navigation 3 by its own work by 18:27 UTC, and the route left the plan.
 - `sell-curd-central-nexus`, `-node-beta`, `-experiment`: one ship each; the first run
   sold 11 curd for +3,630 cr in 0.7 min (13:22 UTC). Two runs went to pilots whose curd
   had been sold by hand minutes before (0.0 min, 0 cr): `requires.stored` reads the
   ledger, which reads each pilot about every 40 minutes.
-- `census-guard-ice`: 25 runs from 09:30 to 13:24 UTC, -3,567 cr without the tax,
+- `census-guard-ice`: 32 drone runs from 13:35 to 18:35 UTC, -4,483 cr, -602 per ship-hour;
+  before that 25 runs from 09:30 to 13:24 UTC, -3,567 cr without the tax,
   -611 cr per ship-hour, two ships: about 1,220 cr an hour, the price of the guard
   (orders F16). What its reads renewed is not measured.
-- `game/fleet/plate.py` over all drones each turn: how many plates the bids take in
+- `game/fleet/plate.py`: off since 2026-11-16 18:33 UTC while carapace and armor plate stand
+  on the station list (base_plan). Before that, over all drones each turn: how many plates the bids take in
   four hours is not measured; the pools refill within the hour (logistics.md).
 - Pirate Bounty (2,000 cr once, kill one pirate; on the boards of Central Nexus, Node
   Gamma and Synchrony Hub, data/missions/ at 09:20 UTC): not
