@@ -15,7 +15,7 @@ updated: 2026-11-16
 # Hive Swarm [HIVE]
 
 A player faction with 3 base(s) in 3 system(s); the nearest to Nexus Prime is 5 jump(s) away, in Antares (`antares`).
-Pilots of it in our space in the last 24 hours: 7.
+Pilots of it in our space in the last 24 hours: 4.
 
 ## Identity
 
@@ -42,13 +42,10 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| 0376cb910189c29811104e6c | Node Beta (`node_beta`) | 0 | gas_tanker |
-| 13170464db5eef0043ae9f5e | Node Beta (`node_beta`) | 0 | workhorse |
-| 16d6873a069d1726d6bccaf5 | Synchrony (`synchrony`) | 0 | not met |
-| 45c4e15fbfa2ff552f1bc0e9 | The Experiment (`the_experiment`) | 0 | long_haul |
-| 820203467a484fae8d55d5f7 | Node Alpha (`node_alpha`) | 0 | gas_tanker |
-| fb21ffeebed33a1f8ac75cdf | Pherkad (`pherkad`) | 0 | gas_tanker |
-| fe19de71467052c40784bf24 | Node Alpha (`node_alpha`) | 0 | not met |
+| 10c1432ce43efedb9c7f9632 | Hamal (`hamal`) | 0 | workhorse |
+| b1175909078c49082d98be1b | Synchrony (`synchrony`) | 0 | runner |
+| c09a6a25dc5785fc01d126c3 | The Experiment (`the_experiment`) | 0 | runner |
+| fb21ffeebed33a1f8ac75cdf | Node Beta (`node_beta`) | 0 | gas_tanker |
 
 ## Standing History
 

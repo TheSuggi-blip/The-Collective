@@ -15,7 +15,7 @@ updated: 2026-11-16
 # Culte du Vide [VIDE]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 5.
+Pilots of it in our space in the last 24 hours: 4.
 
 ## Identity
 
@@ -40,7 +40,6 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 |---|---|---|---|
 | Daemia | Node Beta (`node_beta`) | 0 | threshold |
 | Ellara | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| Hesser | Nexus Prime (`nexus_prime`) | 0 | cobble |
 | Nythera | Node Beta (`node_beta`) | 0 | threshold |
 | Slyreus | Nexus Prime (`nexus_prime`) | 0 | threshold |
 
