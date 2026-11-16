@@ -42,8 +42,8 @@ division's steady money read -206 cr an hour (income 3,535, costs 3,741;
 `hive.py money`). At the start of the turn all 20 haulers waited docked
 at Node Beta with every once-mission of the plan booked or done
 (`hive.py standing`, 02:54 UTC). The fill gate's last line:
-`PASS: 14 ships of hauler wait, and nothing that pays and no test is
-open to them` (`fill.py check hauler`, 03:24 UTC). No hauler is left
+`PASS: 11 ships of hauler wait, and nothing that pays and no test is
+open to them` (`fill.py check hauler`, 03:52 UTC). No hauler is left
 held by hand (data/fleet/orders/, 03:22 UTC).
 
 ## Activities
@@ -103,7 +103,9 @@ haulers; why is not found. Done: both out of the plan at 03:27 UTC.
 **The gas test has not started.** The hauler that took the fitting
 route carried 23 units of ore in its hold, which closes the test route
 (`requires.empty_hold`), and the dispatcher gave it First Hunt next.
-Done: its hold is emptied by hand when that run ends.
+Done: that run ended at 03:49 UTC (+948 cr, First Hunt handed in); its
+hold of 32 units was stored at Central Nexus by hand, and the hauler
+started `mine-achernar-gas-pocket` at about 03:51 UTC.
 
 **First Hunt at Nexus Prime:** one run ended `objectives not done`, -26
 cr. Cause not found; the route stays one hunter at a time.
