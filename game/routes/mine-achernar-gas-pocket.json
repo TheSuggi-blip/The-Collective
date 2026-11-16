@@ -1,0 +1,28 @@
+{
+ "id": "mine-achernar-gas-pocket",
+ "kind": "mine",
+ "title": "Achernar Gas Pocket: hydrogen_gas, argon_gas, plasma_gas, neon_gas; sold at Node Beta Industrial Station",
+ "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 2579 cr per ship-hour, not a measurement. A test: one ship. Taken into the hauler plan by Apollo 2026-11-16 as the Logistics gas test (orders.log ENT-011). What it rests on: a plasma gas station bid at Node Beta of 4 to 25 units near 100 cr (data/market/history.jsonl, 2026-11-15 20:45 to 2026-11-16 02:40 UTC) that every gas candidate of the route maker sells into, and a hydrogen bid of 18 units; argon and neon have no bid of depth. The one gas run of the fleet so far (mine-gsc-0050-gas-plume) measured -198 cr, not docked for its sale.",
+ "belt": "achernar:achernar_gas_pocket",
+ "station": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+ "minutes": 59,
+ "max_ships": 1,
+ "sell": [
+  {
+   "item": "hydrogen_gas",
+   "min_price": 24
+  },
+  {
+   "item": "argon_gas",
+   "min_price": 1
+  },
+  {
+   "item": "plasma_gas",
+   "min_price": 81
+  }
+ ],
+ "requires": {
+  "module": "gas_harvester_i",
+  "empty_hold": true
+ }
+}

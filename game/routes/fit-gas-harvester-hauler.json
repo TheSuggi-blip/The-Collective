@@ -1,0 +1,25 @@
+{
+ "id": "fit-gas-harvester-hauler",
+ "kind": "circuit",
+ "title": "Fit a Gas Harvester I at Node Beta: the tool of the Logistics gas test",
+ "note": "One hauler docks at Node Beta, buys one Gas Harvester I (1,202 x 17 at the best price in the book of 2026-11-16 02:57 UTC; the limit here is 1,300 cr with tax) and fits it beside the mining laser (a starter has 2 utility slots). One pilot only: the tool of the test route mine-achernar-gas-pocket (orders.log ENT-011, block APOLLO: the gas routes Trade has not taken, one hauler each). Written by Apollo 2026-11-16.",
+ "once": true,
+ "max_ships": 1,
+ "max_pilots": 1,
+ "min_credits": 6000,
+ "requires": {
+  "module": "mining_laser_i",
+  "without_module": "gas_harvester_i"
+ },
+ "stops": [
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "fit": [
+    {
+     "module": "gas_harvester_i",
+     "max_price": 1300
+    }
+   ]
+  }
+ ]
+}
