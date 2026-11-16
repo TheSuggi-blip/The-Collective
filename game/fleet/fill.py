@@ -410,17 +410,32 @@ def git(root, *args):
     return done.returncode, done.stdout
 
 
-def commit(root, data, who, files, message):
+def in_work(root):
+    """The lines of `git status` for what game/routes holds uncommitted, the guidebooks left out: no script reads a
+    guidebook, and an Admiral writes its own for most of a turn (requests ENT-171)."""
+    lines = git(root, "status", "--porcelain", "--", "routes")[1].splitlines()
+    return [line for line in lines if line.strip() and "routes/guidebook/" not in line]
+
+
+def commit(root, data, who, files, message, tries=None, wait=None):
     """Write {path relative to the game folder: text} with the index files, run the route gate, commit by path as
-    `who`. (True, the commit's line) or (False, why); on a failure every file is put back."""
+    `who`. (True, the commit's line) or (False, why); on a failure every file is put back. Another member's route
+    file in work is waited for, `tries` times `wait` seconds, before the refusal: the turns overlap in one clone."""
     if (Path(data) / "fleet" / "STOP").exists():
         return False, "REFUSED: fleet/STOP exists: nothing is changed while the fleet is halted"
+    tries = COMMIT_TRIES if tries is None else tries
+    wait = float(os.environ.get("FLEET_COMMIT_WAIT", COMMIT_WAIT)) if wait is None else wait
     (Path(data) / "routes").mkdir(parents=True, exist_ok=True)
     with open(Path(data) / "routes" / "fill.lock", "w") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)                           # one writer of the plans at a time, from the check to the commit
-        dirty = git(root, "status", "--porcelain", "--", "routes")[1].strip()
+        dirty = in_work(root)
+        for _again in range(max(0, tries - 1)):
+            if not dirty:
+                break
+            time.sleep(wait)
+            dirty = in_work(root)
         if dirty:
-            return False, "REFUSED: game/routes holds a change that is not committed; commit it or take it back first:\n" + dirty
+            return False, "REFUSED: game/routes holds a change that is not committed; commit it or take it back first:\n" + "\n".join(dirty)
         before = {p.name for p in (Path(root) / "routes").glob("*.md")}
         new = [rel for rel in files if not (Path(root) / rel).exists()]
         for rel, text in files.items():
@@ -441,6 +456,9 @@ def commit(root, data, who, files, message):
         if [p for p in paths if p not in new]:
             git(root, "checkout", "--", *[p for p in paths if p not in new])
         return False, "HALT: nothing changed; the route gate says:\n  " + "\n  ".join(errors[:8])
+
+
+COMMIT_TRIES, COMMIT_WAIT = 4, 4.0                 # a route file another member has in work: looked at this often, this many seconds apart
 
 
 def may_change(who, role):

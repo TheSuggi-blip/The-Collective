@@ -112,6 +112,24 @@ class PlanTests(Tree):
         self.assertEqual((lists["Prime Directive"], lists["sentinel-1"]), (PLANS["command"][1], PLANS["sentinel"][1]))
         self.assertIn("| sentinel-2 | Threshold | 4 | 2 | 0 | 0 | 0 | 0 | ice-a |", self.file("command").read_text())
 
+    def test_a_plan_is_flown_at_once_and_its_copy_in_the_repository_follows_when_the_folder_is_free(self):
+        self.run_plan("zero", "apply")
+        (self.root / "routes" / "ice-b.json").write_text(json.dumps(dict(ROUTES["ice-b"], title="another member's change, not committed"), indent=1) + "\n", encoding="ascii")
+        done = self.run_plan("zero", "set", "miner-1..3", "ice-b,gather")
+        self.assertEqual(done.returncode, 0, done.stdout)                                        # the turn of 2026-11-16 18:23 UTC: this was REFUSED, and a run ended on it
+        self.assertIn("mining: applied", done.stdout)
+        self.assertIn("note: the ships fly by the plan as applied; its copy in the repository", done.stdout)
+        self.assertNotIn("REFUSED", done.stdout)
+        self.assertEqual(self.assign()["pilots"]["miner-2"][:4], ["board", "fit", "ice-b", "gather"])      # the dispatcher flies the new plan
+        self.assertEqual(self.role("miner")["routes"], PLANS["miner"][1])                         # the repository's copy: as it was committed
+        self.assertEqual(self.git("status", "--porcelain").split(), ["M", "game/routes/ice-b.json"])      # nothing of ours left behind, nothing of theirs touched
+        self.assertEqual(self.run_plan("zero", "check").stdout.split(":")[0], "PASS mining")
+        self.git("checkout", "--", ".")                                                          # the other member commits its file or takes it back
+        done = self.run_plan("unity", "apply", "all", "--quiet")                                  # the five-minute job
+        self.assertIn("committed", done.stdout, done.stdout)
+        self.assertEqual((self.role("miner")["routes"][:4], self.git("status", "--porcelain")), (["board", "fit", "ice-b", "gather"], ""))
+        self.assertEqual(self.assign()["pilots"]["miner-2"][:4], ["board", "fit", "ice-b", "gather"])
+
     def test_each_ship_flies_its_own_routes_and_the_dispatcher_follows_the_file(self):
         self.run_plan("zero", "apply")
         done = self.run_plan("zero", "set", "miner-1..3", "ice-b,gather")

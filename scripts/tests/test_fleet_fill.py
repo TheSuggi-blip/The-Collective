@@ -91,7 +91,8 @@ class Tree(unittest.TestCase):
         return seen, self.fill.read_role(seen, role, **more)
 
     def run_fill(self, member, *args):
-        env = {"PATH": os.environ.get("PATH", "/usr/bin:/bin"), "HERMES_SESSION_PROFILE": member, "HOME": self.temp.name, "FLEET_TAXES": os.devnull}
+        env = {"PATH": os.environ.get("PATH", "/usr/bin:/bin"), "HERMES_SESSION_PROFILE": member, "HOME": self.temp.name, "FLEET_TAXES": os.devnull,
+               "FLEET_COMMIT_WAIT": "0"}                   # a route file in work is looked at again without the seconds between
         return subprocess.run([sys.executable, "-I", "-B", str(FLEET / "fill.py")] + list(args) + ["--root", str(self.root), "--data", str(self.data)],
                               stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, env=env)
 
@@ -226,6 +227,21 @@ class WriteTests(Tree):
         self.fill.routefiles.write_index(str(self.root))
         self.git("add", "-A")
         self.git("-c", "user.name=T", "-c", "user.email=t@example.invalid", "commit", "-q", "-m", "a route")
+
+    def test_a_guidebook_in_work_holds_no_plan_change_and_a_route_file_in_work_is_waited_for(self):
+        self.commit_route({"id": "gather", "kind": "mine", "title": "t", "belt": "far:rocks", "station": "home:core:base", "max_ships": 5})
+        (self.root / "routes" / "guidebook").mkdir()
+        (self.root / "routes" / "guidebook" / "military.md").write_text("an Admiral writes its guidebook for most of a turn\n")
+        self.assertIn("committed", self.run_fill("apollo", "add", "gather").stdout)                # requests ENT-171: no script reads a guidebook
+        self.assertEqual(self.git("status", "--porcelain").split(), ["??", "game/routes/guidebook/"])      # still there, still the Admiral's to commit
+        looks, real = [], self.fill.in_work
+        self.fill.in_work = lambda root: looks.append(1) or ([" M game/routes/ice.json"] if len(looks) < 3 else real(root))
+        self.addCleanup(setattr, self.fill, "in_work", real)
+        text = json.dumps({"role": "hauler", "owner": "Apollo", "routes": ["once", "gather", "park"]}, indent=1) + "\n"
+        done, line = self.fill.commit(str(self.root), str(self.data), "Apollo", {"routes/plans/hauler.json": text}, "a plan", tries=4, wait=0)
+        self.assertEqual((done, len(looks)), (True, 3), line)                                      # the other member committed between two looks
+        done, line = self.fill.commit(str(self.root), str(self.data), "Apollo", {"routes/plans/hauler.json": text.replace("once", "gather2")}, "a plan", tries=1, wait=0)
+        self.assertEqual((done, line.split("\n")[0]), (True, line.split("\n")[0]) if done else (False, "HALT: nothing changed; the route gate says:"))
 
     def test_standing_work_gives_every_waiting_ship_a_place_and_the_gate_passes(self):
         self.commit_route({"id": "gather", "kind": "mine", "title": "t", "belt": "far:rocks", "station": "home:core:base", "max_ships": 5})

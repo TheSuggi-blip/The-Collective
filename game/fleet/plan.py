@@ -25,6 +25,10 @@ RULES:
     missions that pay once and fittings, Then is the rest. The first `apply` writes the file; no ship changes its work.
   - Every applied version is kept in data/plans/history/ (the newest 40 of a division).
   - One writer at a time (the lock data/plans/plans.lock, held from the reading to the commit).
+  - A plan that passes its check is written and flown at once. The repository's copy of it (the role plans and
+    plan-<role>.md: counts, no names) is one commit in a folder every member works in: while another member holds
+    an uncommitted route file there, the copy waits and the next `apply` writes it (the five-minute job runs one).
+    Only a change that brings a new route file with it needs that commit, and is refused without it.
 WHY:  one plan per role sent every ship of a division down the same list: forty miners on one buyer. Suggi,
       2026-11-16: each Admiral has one file with all its ships and the routes of each, changes only that file each
       turn, and the ships are sent by it.
@@ -401,14 +405,20 @@ def apply(root, data, names, who, changes=None, extra=None, message=None, commit
         files = dict(extra or {})
         for one in ready:
             files.update(one["files"])
+        waits = ""
         if files:
             if commit is None:
                 import fill                                # here, not at the top: fill.py reads this file
                 commit = fill.commit
-            done, line = commit(root, data, who, files, message or "plans: %s (plan.py, %s)" % (", ".join(o["name"] for o in ready if o["files"]) or "routes", who))
-            lines.append(line)
-            if not done:
+            patience = {} if extra else {"tries": 1}        # the copy alone is not worth a wait: the next apply writes it
+            done, line = commit(root, data, who, files, message or "plans: %s (plan.py, %s)" % (", ".join(o["name"] for o in ready if o["files"]) or "routes", who), **patience)
+            if done:
+                lines.append(line)
+            elif extra:                                    # a new route file must be in the repository before a ship is sent on it
+                lines.append(line)
                 return False, lines
+            else:                                          # only the repository's copy of the plan: the ships do not wait for it
+                waits = " ".join(line.split("\n")[0].split(": ", 1)[-1].split())
         for one in ready:
             if one["errors"]:
                 continue
@@ -417,6 +427,9 @@ def apply(root, data, names, who, changes=None, extra=None, message=None, commit
             lines.append("%s: %s | %d ships, %d with routes of their own | First %d, Then %d | %s"
                          % (one["name"], word, len(one["crew"]), own, len(one["plan"]["first"]), len(one["plan"]["then"]), path_of(data, one["name"])))
             lines += ["  note %s: %s" % (one["name"], text) for text in one["warnings"][:8]]
+        if waits:
+            lines.append("  note: the ships fly by the plan as applied; its copy in the repository (game/routes/plans/, plan-<role>.md) waits, because %s. "
+                         "The next apply writes it (the five-minute job runs one): nothing to do." % waits.rstrip("."))
     return good, lines
 
 

@@ -350,7 +350,10 @@ def run_one(root, data, member, script, argv):
 
 
 def call(root, data, member, name, args):
-    """(text, True when it failed) of one tool call."""
+    """(text, True when the tool could not answer) of one tool call. A script that says no (HALT, REFUSED: it ends
+    with exit 1) HAS answered: its words are the answer, and the member reads them. A fault is a tool that did not
+    run: an unknown tool, a missing argument, a crash, a timeout. Hermes pauses a server after three faults in a row
+    and stops a run after eight: a refused plan change counted as a fault ended a turn (2026-11-16)."""
     tool = TOOLS.get(name)
     if tool is None:
         return "no tool `%s`: %s" % (name, ", ".join(sorted(TOOLS))), True
@@ -362,18 +365,21 @@ def call(root, data, member, name, args):
     if len(plan) == 1:
         code, text = run_one(root, data, member, *plan[0])
         failed = code != 0
+        fault = code not in (0, 1) or (code == 1 and "Traceback (most recent call last)" in text)
     else:                                                          # one command to many ships: six at a time, one block each
         with ThreadPoolExecutor(max_workers=6) as pool:
             results = list(pool.map(lambda step: run_one(root, data, member, *step), plan))
-        failed = all(code != 0 for code, _text in results)
+        failed, fault = all(code != 0 for code, _text in results), False
         text = "\n".join("%s: %s%s" % (step[1][1], "" if code == 0 else "FAILED: ", " ".join(out.split())[:700]) for step, (code, out) in zip(plan, results))
         text = "%d of %d went through\n%s" % (sum(1 for code, _t in results if code == 0), len(results), text)
     text = text.strip() or "(the script printed nothing; exit %s)" % ("0" if not failed else "not 0")
+    if failed and not fault and not any(word in text for word in ("HALT", "REFUSED", "FAILED", "went through")):
+        text = "NOT DONE: the script ended with exit 1 and these words:\n" + text      # an answer that says no must say so in its first line
     if tool.get("door"):
         audit(data, member, name, args, failed, text)
     if len(text) > LIMIT:
         text = text[:LIMIT] + "\n... CUT at %d of %d characters: narrow the question (a filter, one member, fewer rows)" % (LIMIT, len(text))
-    return text, failed
+    return text, fault
 
 
 def fresh(root, data, member, name, args):

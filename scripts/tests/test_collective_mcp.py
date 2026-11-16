@@ -67,6 +67,23 @@ class ProtocolTests(unittest.TestCase):
         self.assertEqual((env["HF_HUB_OFFLINE"], env["HF_HOME"], env["HERMES_SESSION_PROFILE"]), ("1", "/opt/search/cache", "zero"))
         self.assertTrue(env["BRAIN_EMBED_URL"].endswith("/embed"))
 
+    def test_a_script_that_says_no_has_answered_and_only_a_tool_that_did_not_run_is_a_fault(self):
+        server = load()
+        ends = {"refuses.py": (1, "REFUSED: not yours"), "halts.py": (1, "FLEET | 3 ships wait | HALT"), "mutters.py": (1, "http 500"), "fine.py": (0, "PASS"),
+                "crashes.py": (1, "Traceback (most recent call last):\n  boom"), "hangs.py": (124, "TIMEOUT")}
+        real = server.run_one
+        server.run_one = lambda root, data, member, script, argv: ends[script]
+        self.addCleanup(setattr, server, "run_one", real)
+        for script in ends:
+            server.TOOLS["t-" + script] = {"text": "t", "args": {}, "plan": lambda a, script=script: [(script, [])]}
+            self.addCleanup(server.TOOLS.pop, "t-" + script)
+        ask = lambda script: server.call("/nowhere", "", "zero", "t-" + script, {})
+        self.assertEqual(ask("refuses.py"), ("REFUSED: not yours", False))                        # an answer: Hermes pauses a server after three faults in a row
+        self.assertEqual(ask("halts.py"), ("FLEET | 3 ships wait | HALT", False))
+        self.assertEqual(ask("mutters.py"), ("NOT DONE: the script ended with exit 1 and these words:\nhttp 500", False))
+        self.assertEqual(ask("fine.py"), ("PASS", False))
+        self.assertEqual((ask("crashes.py")[1], ask("hangs.py")[1], server.call("/nowhere", "", "zero", "no-such-tool", {})[1]), (True, True, True))
+
     def test_a_shell_that_is_no_member_reads_and_is_told_so(self):
         first = talk([{"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {}}], member="")[0]["result"]
         self.assertIn("no member: the door is closed", first["instructions"])
