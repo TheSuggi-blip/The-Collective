@@ -259,14 +259,14 @@ Kept by Mercury. Routes: 15.
 | 3 | [voidborn-collective-provides](voidborn-collective-provides.json) | Off | beyond the border, 5 jumps | once per pilot, up to 2 ships, empty hold, after the reward Network Expansion, off | one-time |
 | 4 | [voidborn-signal-protocol](voidborn-signal-protocol.json) | Once per Pilot | home space | once per pilot, up to 20 ships, after the reward The Collective Provides | one-time |
 | 5 | [voidborn-signal-fragments](voidborn-signal-fragments.json) | Once per Pilot | home space | once per pilot, up to 10 ships, from navigation 3 | one-time |
-| 6 | [voidborn-first-steps](voidborn-first-steps.json) | Off | home space | once per pilot, up to 2 ships, off | one-time |
-| 7 | [voidborn-concurrent](voidborn-concurrent.json) | Once per Pilot | home space | once per pilot | one-time |
-| 8 | [voidborn-substrate](voidborn-substrate.json) | Once per Pilot | home space | once per pilot, from 3,000 cr | one-time |
-| 9 | [voidborn-missions-1](voidborn-missions-1.json) | Once per Pilot | home space | once per pilot, from 8,000 cr | one-time |
-| 10 | [voidborn-mining-missions](voidborn-mining-missions.json) | Once per Pilot | home space | once per pilot, up to 40 ships | one-time |
-| 11 | [voidborn-precedence](voidborn-precedence.json) | Once per Pilot | home space | once per pilot, up to 40 ships | one-time |
-| 12 | [voidborn-conductive-lattice](voidborn-conductive-lattice.json) | Once per Pilot | beyond the border, 6 jumps | once per pilot, up to 10 ships, 146 pilots in all, empty hold, from 13,000 cr | one-time |
-| 13 | [mine-the-experiment-haze](mine-the-experiment-haze.json) | Paying Routes | home space | up to 1 ships, needs gas_harvester_i | 2,330 |
+| 6 | [voidborn-concurrent](voidborn-concurrent.json) | Once per Pilot | home space | once per pilot | one-time |
+| 7 | [voidborn-substrate](voidborn-substrate.json) | Once per Pilot | home space | once per pilot, from 3,000 cr | one-time |
+| 8 | [voidborn-missions-1](voidborn-missions-1.json) | Once per Pilot | home space | once per pilot, from 8,000 cr | one-time |
+| 9 | [voidborn-mining-missions](voidborn-mining-missions.json) | Once per Pilot | home space | once per pilot, up to 40 ships | one-time |
+| 10 | [voidborn-precedence](voidborn-precedence.json) | Once per Pilot | home space | once per pilot, up to 40 ships | one-time |
+| 11 | [voidborn-conductive-lattice](voidborn-conductive-lattice.json) | Once per Pilot | beyond the border, 6 jumps | once per pilot, up to 10 ships, 146 pilots in all, empty hold, from 13,000 cr | one-time |
+| 12 | [mine-the-experiment-haze](mine-the-experiment-haze.json) | Paying Routes | home space | up to 1 ships, needs gas_harvester_i, while node_beta_industrial_station bids 26 cr for hydrogen_gas | 2,330 |
+| 13 | [mine-the-experiment-haze-synchrony](mine-the-experiment-haze-synchrony.json) | Tests | home space | up to 1 ships, needs gas_harvester_i, while synchrony_hub bids 28 cr for hydrogen_gas | TBD |
 | 14 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -620 |
 | 15 | [park](park.json) | Reading and Waiting | home space | the park route | -670 |
 
@@ -274,8 +274,8 @@ Planned:
 
 | What | When |
 |---|---|
-| Atmospheric Extraction: Setup (2,000 cr once, acquire a gas harvester): one trader without a harvester accepts it, buys a Gas Harvester I at Node Beta (1,202 cr) and reads the objective; a route only if the purchase counts. Hardware Optimization: Cargo (1,500 cr, acquire a cargo expander): read the expander's ask first, then the same test. | the turn of 2026-11-16 12:30 UTC |
-| Network Commerce Protocol (1,500 cr, sell 5 carbon ore) and Material Synthesis: Basic (1,500 cr, mine 10 iron ore and smelt it into steel): one hand test each with a trader that has The Collective Provides done; a route once the runner can withdraw from storage and craft. | the turn of 2026-11-16 12:30 UTC |
+| Neural Matrix Delivery (5,000 cr once, 8 phase matrix handed out at the accept, Sirius Observatory 9 jumps): one trader flies it as a test the turn Unity allows the goods out (requests.log ENT-146); then a route for every pilot the board offers it to. | after Unity's turn of 2026-11-16 14:30 UTC |
+| voidborn-collective-provides on again when a census reads nickel at GSC-0049 Platinum-Group Reef; The Signal Protocol and the line behind it follow it. | each turn |
+| The Collective Provides line (Atmospheric Extraction: Setup, Network Commerce Protocol, Hardware Optimization: Cargo, Material Synthesis: Basic): one hand test each with a trader that has The Collective Provides done; a route for each that pays. | the turns of 2026-11-16 |
 | Read the whole Central Nexus board of every docked trader at the start of each turn (skill trade-books, boards.py) and test every title the fleet has not booked. | every turn |
-| Plasma gas from Ironlight Crossroads into the station bids at Node Beta: a route only with requires.bid (owed by Unity). | after 2026-11-16 12:00 UTC |
-| Control-node craft as a route when the runner's craft step exists and circuit boards stand at depth. | after 2026-11-16 12:00 UTC |
+| The two haze tests: lift the one whose bid regains, after two RESULT lines each. | the turn of 2026-11-16 16:30 UTC |
