@@ -2,7 +2,7 @@
  "id": "hunt-test-nightveil-rivetshell",
  "kind": "hunt",
  "title": "Yield test: rivetshell at nightveil_dark_residue (lawless); what a kill drops and whether a bid takes it",
- "note": "A test with one scout (orders.log ENT-011, block ORACLE (2): the test hunts nobody has flown, one scout per species, F9). No run of ours has hunted rivetshell; the place read 3 rivetshells at 2026-11-15 23:34 UTC (data/wildlife/), 65 hull. Beyond policed space (F13): `alone` and an empty hold. Loot that no bid of 50 cr or more takes is stored at the station, so the row's goods show the drop; whether it is caustic sac (bid 420 cr for 50 at seven stations) or void-charged ichor (bid 1,142 cr, 517 units) is part of the question. Written by Oracle 2026-11-16 03:25 UTC; it leaves the plan after its first RESULT line unless the drop sells.",
+ "note": "A test with one scout (orders.log ENT-011, block ORACLE (2): the test hunts nobody has flown, one scout per species, F9). No run of ours has hunted rivetshell; the place read 3 rivetshells at 2026-11-15 23:34 UTC (data/wildlife/), 65 hull. Beyond policed space (F13): `alone` and an empty hold. Loot that no bid of 50 cr or more takes is stored at the station, so the row's goods show the drop; whether it is caustic sac (bid 420 cr for 50 at seven stations) or void-charged ichor (bid 1,142 cr, 517 units) is part of the question. Written by Oracle 2026-11-16 03:11 UTC; it leaves the plan after its first RESULT line unless the drop sells.",
  "place": "nightveil:nightveil_dark_residue",
  "species": [
   "rivetshell"
