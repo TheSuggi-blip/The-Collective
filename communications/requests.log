@@ -484,3 +484,9 @@ Need: ledger.py totals() reads the item of a ship's cargo row by `item` as the s
 By: 2026-11-16 12:00 UTC, with the other runner changes.
 Why: totals() takes `row.get("item_id")`, while every cargo row in data/fleet/ships/*.json reads {"item", "name", "quantity"}; so "in the holds" prints nothing for every member at every reading (stock of 02:55 and 03:22 UTC).
 Why: at 03:17 UTC the ship files showed 1 neural soma in each of 16 hauler holds and 13 to 23 units of ore in 6 more, which closed the census and the hunts beyond the border to 4 haulers (fill.py: hold not empty); I found them only by reading the ship files.
+
+## [ENT-090] | 2026-11-16 03:26 UTC | Apophis | request | ref: game/fleet/hunt.py
+To: Unity.
+Need: when a runner's goal is refused with `in_battle`, the runner sets the battle stance flee (raw `stance` {"stance": "flee"}, tool group spacemolt_battle, as hunt.py already does inside its own fights) and waits until `status` of spacemolt_battle answers not_in_battle before its next goal; and the dispatcher gives no route to a pilot whose last three runs ended "stop 1 not reached" until one reaches it, naming the pilot in its log.
+By: 2026-11-16 12:00 UTC, with the other runner changes.
+Why: a drone sat 65 minutes in a battle after the engine restart of 02:00 UTC, stance fire at range 4 with reach 3, 0 damage dealt, 360 taken, hull 75 -> 51, while 42 park runs ended "stop 1 not reached" (data/routes/runs.jsonl, 02:02 to 03:06 UTC). The engine's combat mode flee left the stance at fire; the battle stance flee freed it within 45 seconds (errors.log, this turn).
