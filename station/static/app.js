@@ -103,6 +103,9 @@ let HIST = { rows: [], at: 0 };                // /api/history, for the Metrics 
 const collapsed = new Set();                   // divisions folded in the roster; remembered by the browser
 try { JSON.parse(localStorage.getItem('station.folded') || '[]').forEach((d) => collapsed.add(String(d))); } catch (e) { /* no storage */ }
 function saveFolds() { try { localStorage.setItem('station.folded', JSON.stringify([...collapsed])); } catch (e) { /* no storage */ } }
+const shut = new Set();                        // what Suggi has hidden: the side panels, the messages of comms, the legend, the layers; remembered
+try { JSON.parse(localStorage.getItem('station.hidden') || '[]').forEach((d) => shut.add(String(d))); } catch (e) { /* no storage */ }
+function saveShut() { try { localStorage.setItem('station.hidden', JSON.stringify([...shut])); } catch (e) { /* no storage */ } }
 let board = null;
 const sys = new Map();
 const stationsBy = new Map();
@@ -787,10 +790,12 @@ function renderMarket(panel) {
   input.dispatchEvent(new Event('input'));
 }
 
-function setWide(on) {                          // a document gets a wide panel; the map is resized to what is left
-  const right = $('main-right');
-  if (right.classList.contains('wide') === on) return;
-  right.classList.toggle('wide', on);
+function setWide(on) {                          // a document gets a wide panel, the Metrics tab ('metrics') a wider one; the map is resized to what is left
+  const right = $('main-right'), want = on === 'metrics' ? 'metrics' : on ? 'wide' : '';
+  const now = right.classList.contains('wide') ? 'wide' : right.classList.contains('metrics') ? 'metrics' : '';
+  if (now === want) return;
+  right.classList.toggle('wide', want === 'wide');
+  right.classList.toggle('metrics', want === 'metrics');
   resize();
 }
 
@@ -941,13 +946,25 @@ async function renderDocs(panel, live) {
   const d = await get('/api/docs');
   if (!live()) return;
   const row = (label, small, path) => { const b = linkButton(label, () => openDoc(path), 'rowlink'); if (small) b.append(el('small', null, small)); return b; };
+  const report = (r) => {                        // the author in its division's colour and the time it was written, then the title
+    const b = linkButton('', () => openDoc(r.path), 'rowlink report'), lead = el('span', 'lead'), who = el('b', 'who', r.author || 'unknown');
+    const member = ((S && S.roster) || []).find((a) => a.id === String(r.author || '').toLowerCase());
+    who.style.color = member ? (DIV[member.division] || DIV.Command) : 'var(--dim)';
+    lead.append(who, el('span', 'when', r.at || r.date || ''));
+    b.append(lead, el('span', 'title', r.title));
+    b.title = (r.author || 'unknown') + ', ' + (r.at || r.date || 'no time') + ': ' + r.title;
+    return b;
+  };
   panel.append(el('h3', null, 'Governance'));
   (d.governance || []).forEach((g) => panel.append(row(g.title, '', g.path)));
-  panel.append(el('h3', null, 'Reports'));
-  if ((d.reports || []).length) d.reports.forEach((r) => panel.append(row(r.title, [r.author, r.date].filter(Boolean).join(', '), r.path)));
-  else panel.append(el('p', 'empty', 'No report yet. One is written at every session end.'));
   panel.append(el('h3', null, 'Logs'));
   (d.logs || []).forEach((g) => panel.append(row(g.title, g.entries ? g.entries + ' entries, last by ' + g.last.by + ', ' + g.last.at : 'no entries', g.path)));
+  panel.append(el('h3', null, 'Reports'));
+  const reports = d.reports || [], total = d.reports_total || reports.length;
+  if (reports.length) {
+    panel.append(el('p', 'docnote', (total > reports.length ? 'The ' + reports.length + ' newest of ' + total : 'All ' + total) + ', newest first. Times in UTC.'));
+    reports.forEach((r) => panel.append(report(r)));
+  } else panel.append(el('p', 'empty', 'No report yet. One is written at every session end.'));
   panel.append(el('h3', null, 'Fleet knowledge'));
   (d.knowledge || []).forEach((g) => panel.append(row(g.title, '', g.path)));
   panel.append(el('h3', null, 'Station data sources'));
@@ -998,6 +1015,8 @@ const WINDOWS = { '1h': ['Last hour', 6, 60, 4], '6h': ['6 hours', 24, 60, 6], '
 let metricWin = '1h';
 let INCOME = { routes: [], at: 0, key: '' };
 
+function fitTable(t) { const w = el('div', 'mtable'); w.append(t); return w; }   // a Metrics table that fits the panel
+
 async function renderMetrics(panel, live) {
   const t = F.totals || {}, r = t.rates, w = r && r.windows ? r.windows[metricWin] : null, [, graphHours, behind, routeHours] = WINDOWS[metricWin];
   panel.append(el('h2', null, 'Fleet economy'));
@@ -1039,12 +1058,12 @@ async function renderMetrics(panel, live) {
   const div = t.divisions || {}, dw = (w || {}).divisions || {};
   const order = (S ? S.roster : []).filter((a) => a.division !== 'Command' || div.Command).map((a) => [a.division, a.name]);
   if (div.Unassigned) order.push(['Unassigned', '']);
-  panel.append(table(['Division', 'Working', 'Income / h', 'Costs / h', 'Net / h', 'Net / ship'],
+  panel.append(fitTable(table(['Division', 'Working', 'Income / h', 'Costs / h', 'Net / h', 'Net / ship'],
     order.map(([d, adm]) => {
       const x = div[d] || {}, y = dw[d] || {}, name = el('span', null, d);
       name.style.color = DIV[d] || DIV.Unassigned; name.title = adm ? 'Admiral ' + adm : '';
       return [name, fmt(x.working) + ' / ' + fmt(x.ships), w ? shade(y.income_per_hour, 'pos') : '--', w ? shade(y.costs_per_hour, 'neg') : '--', w ? tint(y.cph) : '--', w ? tint(y.cph_per_ship) : '--'];
-    }), [1, 2, 3, 4, 5]));
+    }), [1, 2, 3, 4, 5])));
   const routesBox = el('div'), graphs = el('div');
   panel.append(el('h3', null, 'Where the money comes from, last ' + routeHours + ' hours'), routesBox, el('h3', null, 'Last ' + graphHours + ' hours'), graphs);
   panel.append(el('p', 'sub', 'How it is counted. Income: the game\'s counter of credits earned, less the rewards paid once per pilot. Costs: everything spent, '
@@ -1060,19 +1079,19 @@ async function renderMetrics(panel, live) {
   }
   const steady = INCOME.routes.filter((x) => !x.once && (x.runs || x.flying)).sort((a, b2) => b2.credits - a.credits), once = INCOME.routes.filter((x) => x.once && (x.runs || x.flying));
   if (steady.length) {
-    routesBox.append(table(['Route', 'Ships now', 'Runs', 'Ship-hours', 'Credits', 'Per ship-hour'], steady.map((x) => {
+    routesBox.append(fitTable(table(['Route', 'Ships now', 'Runs', 'Ship-hours', 'Credits', 'Per ship-hour'], steady.map((x) => {
       const name = el('span', null, x.route);
       name.title = x.title || '';
       return [name, x.flying || '', x.runs, x.ship_hours, tint(x.credits), x.per_ship_hour === null ? 'no reading' : tint(x.per_ship_hour)];
-    }), [1, 2, 3, 4, 5]));
+    }), [1, 2, 3, 4, 5])));
   } else routesBox.append(el('p', 'empty', 'No run of a repeating route in this stretch.'));
   if (once.length) {
     routesBox.append(el('p', 'sub', 'Paid once per pilot:'));
-    routesBox.append(table(['Route', 'Ships now', 'Runs', 'One-time credits'], once.map((x) => {
+    routesBox.append(fitTable(table(['Route', 'Ships now', 'Runs', 'One-time credits'], once.map((x) => {
       const name = el('span', null, x.route);
       name.title = x.title || '';
       return [name, x.flying || '', x.runs, tint(x.one_time)];
-    }), [1, 2, 3]));
+    }), [1, 2, 3])));
   }
   const rows = HIST.rows || [];
   graphs.append(
@@ -1091,7 +1110,8 @@ function render() {
   viewKey = key;
   panel.replaceChildren();
   document.querySelectorAll('nav button').forEach((b) => b.classList.toggle('on', b.textContent === tab));
-  if (tab !== 'Docs') setWide(false);
+  $('rail-right-label').textContent = tab;
+  if (tab !== 'Docs') setWide(tab === 'Metrics' ? 'metrics' : false);
   Promise.resolve(TABS[tab](panel, live)).catch((e) => { if (live()) panel.append(el('p', 'empty', e.message)); });
   panel.scrollTop = keep;
 }
@@ -1130,7 +1150,13 @@ function status() {
 
 // ---------------------------------------------------------------- comms: one conversation with all six members
 
-const chat = { after: 0, timer: 0, busy: false, first: true };
+const chat = { after: 0, timer: 0, busy: false, first: true, unseen: 0 };
+function markUnseen(n) {                         // answers that came while the messages are hidden: a count on the dock's toggle
+  chat.unseen = n;
+  const u = $('dock-unseen');
+  u.textContent = n ? n + ' new' : '';
+  u.hidden = !n;
+}
 const agentOf = (id) => ((S && S.roster) || []).find((a) => a.id === id) || { id, name: id, division: 'Command', rank: '' };
 
 function address(id) {                           // put @Name at the head of the message, or take it out again
@@ -1190,8 +1216,9 @@ async function pollGroup() {
   if (d && d.messages) {
     const log = $('chat-log'), stick = chat.first || log.scrollHeight - log.scrollTop - log.clientHeight < 80;
     d.messages.forEach((m) => { groupMessage(m); chat.after = Math.max(chat.after, m.n); });
+    if (!chat.first && shut.has('dock')) markUnseen(chat.unseen + d.messages.filter((m) => m.who !== 'suggi').length);
     if (chat.first && !log.children.length) {
-      log.append(el('div', 'chathint', 'One conversation with Unity and the five Admirals. A message goes to Unity unless it names someone: click a symbol above or type @Name; @all reaches everyone.'));
+      log.append(el('div', 'chathint', 'One conversation with Unity and the five Admirals. A message goes to Unity unless it names someone: click a symbol below or type @Name; @all reaches everyone.'));
     }
     if (d.messages.length && stick) log.scrollTop = log.scrollHeight;
     chat.first = false;
@@ -1259,9 +1286,9 @@ async function loadState() {
     span.append(shipSvg(kind === 'Command' ? 'Flagship' : kind, DIV[kind], 13), kind === 'Command' ? 'command group' : kind.toLowerCase());
     legend.append(span);
   }
-  legend.append(el('span', null, 'ring: station (gold: player faction)'), el('span', null, 'red cross: pirate stronghold'),
-    el('span', null, 'glow: pilots seen in the last hour'), el('span', null, 'pie and number: our ships by division'),
-    el('span', null, 'tag and number: a foreign faction, last hour'));
+  legend.append(el('span', 'note', 'ring: station (gold: player faction)'), el('span', 'note', 'red cross: pirate stronghold'),
+    el('span', 'note', 'glow: pilots seen in the last hour'), el('span', 'note', 'pie and number: our ships by division'),
+    el('span', 'note', 'tag and number: a foreign faction, last hour'));
 }
 async function loadLive() {
   try { L = await get('/api/live'); } catch (e) { L.stream = { connected: false, age: -1 }; }
@@ -1284,7 +1311,42 @@ async function loadFleet() {
   }
 }
 
+// ---------------------------------------------------------------- what folds away: side panels, comms messages, legend, layers
+
+const SHUTTERS = {                               // name: [the element that folds, its button, the button's title open, and shut]
+  left: ['side-left', 'hide-left', 'Hide the fleet panel', 'Show the fleet panel'],
+  right: ['main-right', 'hide-right', 'Hide the right panel', 'Show the right panel'],
+  dock: ['chat-dock', 'dock-toggle', 'Hide the messages', 'Show the messages'],
+  layers: ['layers-box', 'layers-toggle', 'Hide the layers', 'Show the layers'],
+  legend: ['legend-box', 'legend-toggle', 'Hide the legend', 'Show the legend'],
+};
+function applyShut(name) {
+  const [box, button, open, closed] = SHUTTERS[name], on = shut.has(name), b = $(button);
+  $(box).classList.toggle('shut', on);
+  b.title = on ? closed : open;
+  b.setAttribute('aria-expanded', on ? 'false' : 'true');
+}
+function toggleShut(name) {
+  if (shut.has(name)) shut.delete(name); else shut.add(name);
+  saveShut(); applyShut(name);
+  if (name === 'dock' && !shut.has('dock')) { markUnseen(0); const log = $('chat-log'); log.scrollTop = log.scrollHeight; }
+  if (name === 'left' || name === 'right') setTimeout(resize, 260);   // once the slide has ended the map takes the new width, also where no observer fires
+}
+function initShutters() {
+  document.body.classList.add('still');          // the remembered state is shown at once, without the slide
+  Object.keys(SHUTTERS).forEach((name) => { applyShut(name); $(SHUTTERS[name][1]).addEventListener('click', () => toggleShut(name)); });
+  document.querySelectorAll('.rail').forEach((r) => r.addEventListener('click', () => toggleShut(r.dataset.side)));
+  requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.remove('still')));
+  if (!window.ResizeObserver) return;
+  new ResizeObserver(() => {                     // the map column changed size (a panel slid, a tab widened): redraw at once, no blank frame
+    resize();
+    if (raf) { cancelAnimationFrame(raf); frame(performance.now()); }
+  }).observe($('map-col'));
+  new ResizeObserver(() => $('map-col').style.setProperty('--dockh', $('chat-dock').offsetHeight + 'px')).observe($('chat-dock'));   // legend and layers stay above comms
+}
+
 function init() {
+  initShutters();
   const lay = $('layers');
   for (const name of Object.keys(layers)) {
     const label = el('label'), box = el('input');
@@ -1302,13 +1364,15 @@ function init() {
   let drag = null, moved = false;
   canvas.addEventListener('mousedown', (e) => { cam = null; drag = [e.clientX, e.clientY, view.x, view.y]; moved = false; canvas.classList.add('drag'); });
   window.addEventListener('mouseup', () => { drag = null; canvas.classList.remove('drag'); });
+  const dragTo = (e) => {
+    if (Math.abs(e.clientX - drag[0]) + Math.abs(e.clientY - drag[1]) > 3) moved = true;
+    view.x = drag[2] - (e.clientX - drag[0]) / view.k; view.y = drag[3] - (e.clientY - drag[1]) / view.k;
+    draw();
+  };
+  window.addEventListener('mousemove', (e) => { if (drag && e.target !== canvas) dragTo(e); });   // a drag goes on over the boxes on the map
   canvas.addEventListener('mousemove', (e) => {
     const r = canvas.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top;
-    if (drag) {
-      if (Math.abs(e.clientX - drag[0]) + Math.abs(e.clientY - drag[1]) > 3) moved = true;
-      view.x = drag[2] - (e.clientX - drag[0]) / view.k; view.y = drag[3] - (e.clientY - drag[1]) / view.k;
-      draw(); return;
-    }
+    if (drag) { dragTo(e); return; }
     const tip = $('tip'), badge = S && badgeAt(mx, my), grp = !badge && S && groupAt(mx, my), s = !badge && !grp && S && nearest(mx, my);
     hover = s ? s.id : null; hoverBadge = badge || null;
     canvas.style.cursor = badge ? 'pointer' : '';

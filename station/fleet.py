@@ -450,6 +450,28 @@ def load_flagships():
         FLAGSHIPS.update({str(name): entry for name, entry in found.items() if isinstance(entry, dict)})
 
 
+LOW_HOLD = 600               # seconds a pass that lists fewer pilots than the one before is held back
+LOW = {}                     # "since": when the first such pass was seen
+
+
+def of_fleet(rows):
+    """The rows of the fleet. A pilot of the account that stands in no division (no role word, no flagship entry) is
+    not of the fleet: it gets no row, no file and no place in a figure."""
+    return [r for r in rows if r.get("division") != "Unassigned"]
+
+
+def held(count, known, now, low=LOW):
+    """True while a pass that lists fewer pilots than the one before is held back, LOW_HOLD seconds from the first.
+
+    After a restart the engine signs its pilots in again over some minutes; a sample of a part of the fleet would read
+    as credits lost and ships gone. A count that stays low for longer is the fleet as it is, and is written."""
+    if count >= known:
+        low.pop("since", None)
+        return False
+    low.setdefault("since", now)
+    return now - low["since"] < LOW_HOLD
+
+
 def collect_once(last):
     """One pass: ask the engine, write the files. `last` holds what was written before."""
     now = time.time()
@@ -464,7 +486,13 @@ def collect_once(last):
         fleet["engine"] = {"ok": False, "error": (type(e).__name__ + ": " + str(e))[:200], "checked_at": stamp}
         write(DATA / "fleet.json", fleet)
         return False
-    rows = sorted((ship_row(a) for a in accounts), key=row_order)
+    rows = of_fleet(sorted((ship_row(a) for a in accounts), key=row_order))
+    before = read(DATA / "fleet.json", {})
+    known = len(of_fleet([s for s in before.get("ships") or [] if isinstance(s, dict)]))
+    if held(len(rows), known, now):               # the engine signs its pilots in again: keep the last picture, write no sample
+        before["engine"] = {"ok": False, "error": "%d of %d pilots signed in" % (len(rows), known), "checked_at": stamp}
+        write(DATA / "fleet.json", before)
+        return False
     apply_orders(rows, now)
     for row in rows:                              # between two systems the engine names none: keep the last one
         row["jumping"] = not row["system"]

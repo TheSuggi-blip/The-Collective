@@ -552,8 +552,13 @@ def doc_title(rel, body=""):
     return "Guidebook: " + name if rel.startswith("game/routes/guidebook/") else name
 
 
+REPORT_ID = re.compile(r"(\d{4})(\d\d)(\d\d)T(\d\d)(\d\d)(\d\d)Z")
+REPORTS_SHOWN = 15
+
+
 def api_docs():
-    """What Suggi reads on the page: governance, reports (newest first), the logs, and the fleet's own knowledge."""
+    """What Suggi reads on the page: governance, the logs, the reports (the 15 newest by the time they were
+    written: the `id:` of their frontmatter, UTC), and the fleet's own knowledge."""
     reports, logs = [], []
     try:
         names = sorted(os.listdir(REPO / "reports"), reverse=True)[:300]
@@ -566,8 +571,15 @@ def api_docs():
             body = repo_text("reports/" + fn)
         except OSError:
             continue
-        reports.append({"path": "reports/" + fn, "title": doc_title("reports/" + fn, body), "author": frontmatter(body).get("author", "")[:40],
-                        "date": fn[:10] if re.fullmatch(r"\d{4}-\d\d-\d\d", fn[:10]) else ""})
+        fm = frontmatter(body)
+        date = fn[:10] if re.fullmatch(r"\d{4}-\d\d-\d\d", fn[:10]) else ""
+        made = REPORT_ID.fullmatch(fm.get("id", ""))
+        reports.append({"path": "reports/" + fn, "title": doc_title("reports/" + fn, body), "author": fm.get("author", "")[:40], "date": date,
+                        "at": "%s-%s-%s %s:%s UTC" % made.groups()[:5] if made else date,
+                        "key": made.group(0) if made else date.replace("-", "") + "T000000Z" if date else ""})
+    reports.sort(key=lambda r: (r["key"], r["path"]), reverse=True)      # newest written first, not by file name
+    total = len(reports)
+    reports = [{k: v for k, v in r.items() if k != "key"} for r in reports[:REPORTS_SHOWN]]
     try:
         names = sorted(os.listdir(REPO / "communications"))[:100]
     except OSError:
@@ -586,8 +598,8 @@ def api_docs():
     knowledge = (listed("game/routes/master-index.md", "game/routes/index.md", "game/routes/plan.md")
                  + [{"path": d["path"], "title": doc_title(d["path"])} for d in doc_list("game/routes/guidebook")]
                  + listed("game/catalog/master-index.md", "game/fleet/index.md"))
-    return {"reports": reports, "logs": logs, "governance": [{"path": d["path"], "title": doc_title(d["path"])} for d in doc_list("governance")],
-            "knowledge": knowledge}
+    return {"reports": reports, "reports_total": total, "logs": logs,
+            "governance": [{"path": d["path"], "title": doc_title(d["path"])} for d in doc_list("governance")], "knowledge": knowledge}
 
 
 def doc_list(folder):

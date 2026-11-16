@@ -66,6 +66,22 @@ class FleetCollectorTests(unittest.TestCase):
         totals = self.fleet.totals(rows)["divisions"]
         self.assertEqual((totals["Command"]["ships"], totals["Command"]["admiral"], totals["Mining"]["ships"]), (5, "Unity", 1))
 
+    def test_a_pilot_in_no_division_is_not_of_the_fleet(self):
+        rows = [self.fleet.ship_row(account(n)) for n in ("miner-1", "One of Seven", "trader-2")]
+        self.assertEqual([r["name"] for r in self.fleet.of_fleet(rows)], ["miner-1", "trader-2"])
+
+    def test_a_pass_with_fewer_pilots_is_held_back_for_ten_minutes(self):
+        low, held = {}, self.fleet.held
+        self.assertFalse(held(146, 146, 1000, low))
+        self.assertTrue(held(6, 146, 1060, low))               # the engine restarted: 6 of 146 are signed in
+        self.assertTrue(held(100, 146, 1120, low))
+        self.assertFalse(held(146, 146, 1180, low))            # all are back: the hold ends
+        self.assertEqual(low, {})
+        self.assertTrue(held(140, 146, 2000, low))
+        self.assertTrue(held(140, 146, 2599, low))
+        self.assertFalse(held(140, 146, 2600, low))            # it stayed low for ten minutes: that is the fleet now
+        self.assertFalse(held(0, 0, 3000, {}))                 # a first pass has nothing before it
+
     def test_file_name_has_no_path_characters(self):
         self.assertEqual(self.fleet.file_name("One of Seven"), "One_of_Seven")
         self.assertEqual(self.fleet.file_name("../../etc/passwd"), ".._.._etc_passwd")

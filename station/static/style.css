@@ -49,11 +49,10 @@ button { font: inherit; color: inherit; }
 
 /* ---- three columns */
 main { flex: 1; display: flex; min-height: 0; }
-.left { width: 350px; flex: none; display: flex; flex-direction: column; border-right: 1px solid var(--line2); background: var(--pane); min-height: 0; }
-.right { width: 400px; max-width: 34vw; flex: none; display: flex; flex-direction: column; border-left: 1px solid var(--line2); background: var(--pane); min-height: 0; }
+.left { --lw: 350px; width: var(--lw); flex: none; display: flex; flex-direction: column; border-right: 1px solid var(--line2); background: var(--pane); min-height: 0; }
+.right { --rw: min(400px, 34vw); width: var(--rw); flex: none; display: flex; flex-direction: column; border-left: 1px solid var(--line2); background: var(--pane); min-height: 0; }
 .pane { display: flex; flex-direction: column; min-height: 0; }
-.pane.roster { flex: 1 1 54%; }
-.pane.comms { flex: 1 1 46%; border-top: 1px solid var(--line2); }
+.pane.roster { flex: 1 1 auto; }
 .panehead { display: flex; align-items: center; justify-content: space-between; height: 28px; padding: 0 10px 0 12px; flex: none;
   font: 11px/1 var(--mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--text);
   background: linear-gradient(90deg, var(--raise), var(--pane)); border-bottom: 1px solid var(--line); }
@@ -137,17 +136,19 @@ canvas { display: block; width: 100%; height: 100%; cursor: grab; }
 canvas.drag { cursor: grabbing; }
 .tip { position: absolute; z-index: 7; pointer-events: none; padding: 5px 10px; background: var(--raise); border: 1px solid var(--line2); border-radius: 999px;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4); white-space: nowrap; font-size: 12px; }
-.layers, .mapbuttons, .legend { position: absolute; background: rgba(16, 21, 32, 0.88); border: 1px solid var(--line); border-radius: var(--r2); padding: 7px 11px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3); }
-.layers { top: 10px; left: 10px; display: grid; gap: 1px; font-size: 12px; color: var(--dim); }
+.mapbuttons, .box { background: rgba(16, 21, 32, 0.88); border: 1px solid var(--line); border-radius: var(--r2); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3); }
+.layers .boxbody { display: grid; gap: 0; padding: 0 11px 7px; font-size: 12px; line-height: 1.4; color: var(--dim); }
 .layers label { cursor: pointer; } .layers label:hover { color: var(--text); }
-.mapbuttons { top: 10px; right: 10px; display: flex; gap: 6px; padding: 6px; }
+.mapbuttons { position: absolute; top: 10px; right: 10px; display: flex; gap: 6px; padding: 6px; }
 .mapbuttons button { background: var(--bg); border: 1px solid var(--line2); border-radius: 999px; padding: 4px 12px; cursor: pointer; font: 10.5px/1.4 var(--mono);
   letter-spacing: 0.1em; text-transform: uppercase; }
 .mapbuttons button:hover { border-color: var(--accent); background: var(--raise); }
-.legend { bottom: 10px; left: 10px; display: flex; gap: 12px; flex-wrap: wrap; max-width: 80%; color: var(--dim); font-size: 11.5px; }
-.legend i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; }
+.legend .boxbody { display: grid; grid-template-columns: auto auto; gap: 1px 12px; padding: 0 10px 7px; overflow: auto; min-height: 0;
+  color: var(--dim); font-size: 10.5px; line-height: 1.35; }
+.legend i { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 4px; }
 .legend .kind { display: inline-flex; align-items: center; gap: 4px; }
+.legend .shipicon { width: 11px; height: 11px; }
+.legend .note { grid-column: 1 / -1; }
 
 /* ---- the fleet card over the map: opened by a marker, stays beside its system */
 .fleetpop { position: absolute; z-index: 6; width: 340px; max-width: calc(100% - 16px); max-height: min(74%, 540px); display: flex; flex-direction: column;
@@ -231,7 +232,8 @@ canvas.chart { display: block; width: 100%; height: 90px; background: var(--bg);
 .lv .n { color: var(--dim); text-transform: capitalize; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .lv b { text-align: right; font-size: 14px; }
 .lv .bar { height: 5px; } .bar.xp i { background: var(--accent); }
-.right.wide { width: min(780px, 56vw); max-width: none; }
+.right.wide { --rw: min(780px, 56vw); }
+.right.metrics { --rw: min(560px, 40vw); }
 .md { font-size: 13.5px; line-height: 1.55; }
 .md p { margin: 7px 0; } .md p.ask { border-left: 2px solid var(--warn); padding-left: 8px; }
 .mdh { font-weight: 650; margin: 16px 0 5px; line-height: 1.25; }
@@ -263,10 +265,10 @@ select, .panel input { background: var(--bg); color: var(--text); border: 1px so
 .row > * { flex: 1; min-width: 0; }
 .empty { color: var(--faint); }
 @media (max-width: 1700px) { .status .wide { display: none; } }
-@media (max-width: 1250px) { .left { width: 300px; } .right { width: 330px; } .res { padding: 0 11px; min-width: 80px; } .brand small { display: none; } }
-@media (max-width: 1100px) { .status, .legend { display: none; } .left { width: 270px; } .right { width: 290px; } .ship { grid-template-columns: 16px minmax(0, 1fr) 52px; } .ship .bars { display: none; } }
+@media (max-width: 1250px) { .left { --lw: 300px; } .right { --rw: 330px; } .res { padding: 0 11px; min-width: 80px; } .brand small { display: none; } }
+@media (max-width: 1100px) { .status, .legend { display: none; } .left { --lw: 270px; } .right { --rw: 290px; } .ship { grid-template-columns: 16px minmax(0, 1fr) 52px; } .ship .bars { display: none; } }
 @media (max-width: 860px) { .search, .res:nth-child(n+3) { display: none; } .right { display: none; } }
-@media (max-height: 620px) { .legend { display: none; } .pane.roster { flex-basis: 40%; } .pane.comms { flex-basis: 60%; } }
+@media (max-height: 620px) { .legend { display: none; } }
 
 /* ---- top bar: the six members, each with its symbol and its ships; then the fleet */
 .members { display: flex; align-items: stretch; flex: none; }
@@ -280,12 +282,14 @@ button.member:hover { background: var(--raise); box-shadow: inset 0 -2px 0 var(-
 .member.total { background: linear-gradient(180deg, rgba(164, 139, 224, 0.12), transparent); padding: 0 14px; }
 
 /* ---- comms: one conversation; the symbols choose who a message is for */
-.chatwho { display: flex; flex: none; border-bottom: 1px solid var(--line); }
-.chatwho button { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 2px 5px; background: none; border: 0;
-  border-bottom: 2px solid transparent; color: var(--dim); cursor: pointer; font-size: 11px; }
+.chatwho { display: flex; flex: 0 1 auto; min-width: 0; gap: 2px; }
+.chatwho button { flex: 0 1 auto; min-width: 0; display: flex; align-items: center; gap: 5px; padding: 2px 8px 2px 6px; background: none;
+  border: 1px solid transparent; border-radius: 999px; color: var(--dim); cursor: pointer; font-size: 11.5px; white-space: nowrap; }
+.chatwho button span { overflow: hidden; text-overflow: ellipsis; }
+.chatwho .shipicon { width: 14px; height: 14px; flex: none; }
 .chatwho button:hover { color: var(--text); background: var(--raise); }
-.chatwho button.on { color: var(--text); border-bottom-color: var(--c, var(--accent)); background: var(--raise); }
-.chatwho button.all { justify-content: center; font: 10px/1.2 var(--mono); letter-spacing: 0.1em; text-transform: uppercase; }
+.chatwho button.on { color: var(--text); border-color: var(--c, var(--accent)); background: var(--raise); }
+.chatwho button.all { justify-content: center; padding: 2px 9px; font: 10px/1.6 var(--mono); letter-spacing: 0.1em; text-transform: uppercase; }
 .chatwho button.busy span::after { content: " ..."; color: var(--warn); }
 .msghead { display: flex; align-items: center; gap: 5px; margin-bottom: 2px; font-size: 11px; color: var(--dim); white-space: nowrap; }
 .msghead b { color: var(--text); font-weight: 600; }
@@ -315,3 +319,88 @@ button.member:hover { background: var(--raise); box-shadow: inset 0 -2px 0 var(-
 @media (max-width: 860px) { .member:nth-child(n+4) { display: none; } }
 /* ---- a signed number: green above zero, red below (Suggi, 2026-11-15) */
 .panel .pos, .divhead .sum b.pos { color: var(--good); }
+
+/* ---- side panels fold to a slim rail: the map takes the width (Suggi, 2026-11-16) */
+.side { position: relative; overflow: hidden; transition: width 200ms cubic-bezier(.2, .7, .2, 1); }
+.still .side { transition: none; }
+.left > .pane { min-width: calc(var(--lw) - 1px); }
+.right > nav, .right > .panel { min-width: calc(var(--rw) - 1px); }
+.side > .pane, .side > nav, .side > .panel { transition: opacity 160ms ease 90ms, visibility 0s linear 0s; }
+.side.shut { width: 28px; }
+.side.shut > .pane, .side.shut > nav, .side.shut > .panel { opacity: 0; visibility: hidden; transition: opacity 90ms ease, visibility 0s linear 90ms; }
+.left .panehead { padding-right: 36px; }
+.right nav { padding-left: 32px; }
+.sidebtn { position: absolute; z-index: 2; top: 3px; width: 23px; height: 22px; display: grid; place-items: center; padding: 0; background: var(--bg);
+  border: 1px solid var(--line2); border-radius: var(--r); color: var(--dim); cursor: pointer; }
+.sidebtn:hover { color: var(--text); border-color: var(--accent); background: var(--raise); }
+.sidebtn svg { transition: transform 200ms ease; }
+.left .sidebtn { right: 7px; }
+.right .sidebtn { left: 6px; top: 4px; }
+.left.shut .sidebtn { right: 2px; }
+.right.shut .sidebtn { left: 2px; }
+.side.shut .sidebtn svg { transform: rotate(180deg); }
+.rail { display: none; position: absolute; z-index: 1; inset: 0; flex-direction: column; align-items: center; padding: 38px 0 0; background: var(--pane);
+  border: 0; color: var(--dim); cursor: pointer; }
+.rail:hover { color: var(--text); background: var(--raise); }
+.rail span { writing-mode: vertical-rl; font: 10.5px/1 var(--mono); letter-spacing: 0.18em; text-transform: uppercase; }
+.side.shut .rail { display: flex; }
+
+/* ---- map boxes (layers, legend): a head that folds the box down to its icon */
+.mapside { position: absolute; z-index: 3; top: 10px; left: 10px; display: flex; flex-direction: column; align-items: flex-start; gap: 8px;
+  max-width: calc(100% - 20px); max-height: calc(100% - 30px - var(--dockh, 0px)); pointer-events: none; }
+.mapside > .box { pointer-events: auto; display: flex; flex-direction: column; min-height: 0; max-width: 100%; }
+.mapside > .layers { flex: none; }
+.boxhead { display: flex; align-items: center; gap: 7px; width: 100%; padding: 6px 9px 5px 10px; background: none; border: 0; border-radius: var(--r2);
+  color: var(--dim); cursor: pointer; font: 10px/1.2 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; }
+.boxhead:hover { color: var(--text); }
+.boxhead svg { flex: none; }
+.boxfold { margin-left: auto; padding-left: 12px; font: 13px/1 var(--mono); letter-spacing: 0; }
+.box.shut .boxbody, .box.shut .boxname, .box.shut .boxfold { display: none; }
+.box.shut .boxhead { padding: 7px; }
+.map { container: map / inline-size; }
+@container map (max-width: 440px) {               /* a narrow map (a document open): the buttons stand in a column, the boxes keep clear of them */
+  .mapbuttons { flex-direction: column; }
+  .mapside { max-width: calc(100% - 128px); }
+  .legend .boxbody { grid-template-columns: auto; }
+}
+
+/* ---- comms docked at the foot of the map: the messages over the input bar */
+.map { user-select: none; }
+.chatdock { position: absolute; z-index: 5; left: 50%; bottom: 10px; transform: translateX(-50%); width: min(760px, calc(100% - 20px));
+  display: flex; flex-direction: column; gap: 6px; pointer-events: none; container-type: inline-size; }
+.chatdock > * { pointer-events: auto; }
+.docklog { height: calc((100vh - 50px) * 0.32); display: flex; flex-direction: column; min-height: 0; overflow: hidden; background: rgba(16, 21, 32, 0.92);
+  border: 1px solid var(--line); border-radius: var(--r2); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3); user-select: text; }
+.chatdock.shut .docklog { display: none; }
+.dockbar { background: var(--pane); border: 1px solid var(--line2); border-radius: var(--r2); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45); }
+.dockrow { display: flex; align-items: center; gap: 8px; padding: 5px 6px 0 12px; min-width: 0; }
+.docklabel { flex: none; font: 10.5px/1 var(--mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--text); white-space: nowrap; }
+.docklabel::before { content: ""; display: inline-block; width: 6px; height: 6px; margin-right: 8px; border-radius: 50%; background: var(--accent); vertical-align: 1px; }
+.chatdock .chatstate { flex: 1 1 0; min-width: 0; min-height: 0; padding: 0; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.docktoggle { flex: none; display: flex; align-items: center; gap: 5px; height: 22px; padding: 0 5px; margin-left: auto; background: var(--bg);
+  border: 1px solid var(--line2); border-radius: var(--r); color: var(--dim); cursor: pointer; }
+.docktoggle:hover { color: var(--text); border-color: var(--accent); background: var(--raise); }
+.docktoggle svg { transition: transform 200ms ease; }
+.chatdock.shut .docktoggle svg { transform: rotate(180deg); }
+.unseen { font: 10px/1 var(--mono); color: var(--accent); }
+.chatdock .chatform { padding: 6px 8px 8px; user-select: text; }
+.chatdock .chatform textarea { min-height: 40px; }
+.chatdock .msg { max-width: 86%; }
+@container (max-width: 720px) { .docklabel { display: none; } }
+@container (max-width: 590px) { .chatwho button:not(.all) span { display: none; } .chatwho button { padding: 2px 6px; } }
+
+/* ---- docs: a report row leads with its author (division colour) and its time in UTC */
+.panel button.rowlink.report { display: grid; grid-template-columns: 138px minmax(0, 1fr); gap: 10px; align-items: start; padding: 6px 0; }
+.rowlink.report .lead { display: flex; flex-direction: column; line-height: 1.25; min-width: 0; }
+.rowlink.report .who { font-weight: 650; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rowlink.report .when { color: var(--dim); font: 10.5px/1.35 var(--mono); white-space: nowrap; }
+.rowlink.report .title { min-width: 0; line-height: 1.35; }
+.panel .docnote { margin: -2px 0 4px; color: var(--faint); font-size: 11.5px; }
+
+/* ---- metrics tables fit the panel: tight cells, numbers right, long route names wrap */
+.mtable { max-width: 100%; overflow-x: auto; }
+.mtable table { font-size: 12px; }
+.mtable td, .mtable th { padding: 3px 0 3px 8px; }
+.mtable td:first-child, .mtable th:first-child { padding-left: 0; overflow-wrap: anywhere; }
+.mtable th { font-size: 11px; line-height: 1.25; vertical-align: bottom; }
+.mtable td.n { white-space: nowrap; }
