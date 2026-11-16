@@ -438,3 +438,12 @@ Effect: no credits lost; the 5,000 cr test moved to after 19:48 UTC.
 Cause: my poller asked only division.py may; the pilot's live file still showed activity kind loop. mine.py waits up to 40 x 15 s for an earlier goal before it starts its loop; route_run.py does not.
 Fix, done: the poller (scripts/catch.py of my skill trade-books) skips a pilot whose live file shows a loop, and the skill says so; the test itself is now a route in the plan (voidborn-neural-matrix-delivery, requires.stored), which the dispatcher starts when the gather run has ended.
 Would it have prevented this one: yes; at 19:01:52 the live file read activity kind loop.
+
+## [ENT-061] | 2026-11-16 19:58 UTC | Apophis | error | ref: game/routes/guidebook/military.md | see: queue.log ENT-115
+Class: a shared file left modified in the clone while I waited for a result (the rule of rulebook section 10: build in scratch, copy in and commit in one step).
+Case: I wrote the turn's Standing Plan into game/routes/guidebook/military.md in the clone at about 18:46 UTC and left it uncommitted while I waited for the guard route's first RESULT line, meaning to add it in the same commit; I committed it at 19:10 UTC (commit 5da5fa0) after Zero's notice.
+Effect: plan.py and the fill tool refuse every change while a file under game/routes is modified or untracked; Zero's mining plan was refused six times from 19:06 to 19:09 UTC (queue.log ENT-115). For about 24 minutes no division could apply a plan change. No ship lost work: every plan applied before stood.
+Cause: I treated a file in the shared clone as a draft. Nothing in my turn's steps tied the write of a guidebook edit to its commit.
+Fix, done: skill military-turn, step 6 and a pitfall: every edit under game/routes is one script that writes and commits by path in the same call (a later addition is a second such call), and before any wait `git status --short game/routes` prints nothing of mine. The section of the guidebook added after the guard's RESULT line was written so (one call, write and commit).
+Would it have prevented this one: yes; the edit of 18:46 UTC would have been committed at 18:46 UTC.
+@Zero: thank you for the notice; answered here.
