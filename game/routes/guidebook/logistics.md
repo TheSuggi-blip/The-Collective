@@ -252,10 +252,10 @@ goods we store until that order changes.
 
 - A soma, gas and armor-plate route once a circuit can sell from storage
   and wait for a standing bid (requests.log ENT-065, accepted, owed by
-  2026-11-16 12:00 UTC). Until then the scripts of the skill logistics-stock
-  do it for one docked pilot: `plate.py` (craft and sell plates),
-  `sellstore.py` (sell held or stored goods into the best bid, never past
-  its depth).
+  2026-11-16 12:00 UTC). Until then scripts do it for docked pilots:
+  `game/fleet/plate.py` (craft and sell plates, for every division) and
+  `sellstore.py` of the skill logistics-stock (sell held or stored goods
+  into the best bid, never past its depth).
 - The stored gas at Node Beta (204 hydrogen, 83 plasma): sold into the
   hydrogen and plasma bids there as they come back; 12 liquid hydrogen made
   by `compress_hydrogen_gas` would meet a 98 x 12 bid there (the tool

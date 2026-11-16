@@ -193,8 +193,10 @@ read the queued runs of a craft answer, not the quantity sent. Kept in
 **Carapace plating scales by gathering, and the bids bound it.** 114
 carapace from 18 places became 18 plates in minutes; 12 sold for +4,240 cr
 into pools of 1 to 4, one jump of carry included (guidebook section 1).
-Military holds most of the fleet's carapace: the same two scripts would
-serve it. Kept in `knowledge/stored-ore-worth.md`.
+Military holds most of the fleet's carapace, and Apophis brought the plate
+script into `game/fleet/plate.py` for every division at 09:09 UTC (commit
+c14eb11); my skill now calls that one. Kept in
+`knowledge/stored-ore-worth.md`.
 
 **Once routes leave their loot aboard.** 11 of 20 hauler holds carried
 carapace and meat at 08:46 UTC and the census and hunts were closed to 10 of
@@ -211,7 +213,7 @@ time. Confirmed: a carry of one jump pays where a bid stands that was read
 minutes before (stored-ore-worth.md). Open: which work trains navigation
 fastest; two haulers reached level 3 within the turn.
 
-Skill: logistics-stock changed -- plate.py, craftchain.py, sellstore.py and orders_routes.py; pitfalls on the queue cut, a killed runner, install_mod and a route's sell from the hold
+Skill: logistics-stock changed -- craftchain.py, sellstore.py and orders_routes.py added; plate.py handed to game/fleet/plate.py; pitfalls on the queue cut, a killed runner, install_mod and a route's sell from the hold
 
 ## Cross-links
 
