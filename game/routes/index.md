@@ -66,7 +66,7 @@ A module bought and fitted: the tool a kind of work needs.
 |---|---|---|---|---|---|---|---|---|---|
 | [fit-gas-harvester](fit-gas-harvester.json) | circuit | home space | Fit a Gas Harvester I at Node Beta: the tool of the gas test | once per pilot, up to 1 ships, 1 pilots in all, needs mining_laser_i, without ice_harvester_i, from 6,000 cr | 1 | 4 | -1,240 | one-time | 2026-11-16 |
 | [fit-ice-harvester](fit-ice-harvester.json) | circuit | home space | Fit an Ice Harvester I at Node Alpha: the tool every ice field needs | once per pilot, up to 1 ships, 15 pilots in all, without ice_harvester_i, from 6,000 cr | 15 | 2 | -900 | one-time | 2026-11-16 |
-| [fit-ice-harvester-guard](fit-ice-harvester-guard.json) | circuit | home space | Fit an Ice Harvester I at Central Nexus: the tool every ice field needs | once per pilot, up to 2 ships, 4 pilots in all, without ice_harvester_i, from 6,000 cr | 4 | 1 | -1,430 | one-time | 2026-11-16 |
+| [fit-ice-harvester-guard](fit-ice-harvester-guard.json) | circuit | home space | Fit an Ice Harvester I at Central Nexus: the tool every ice field needs | once per pilot, up to 4 ships, 8 pilots in all, without ice_harvester_i, from 6,000 cr | 4 | 1 | -1,430 | one-time | 2026-11-16 |
 
 ## Reading and Waiting
 
