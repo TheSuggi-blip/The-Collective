@@ -395,3 +395,6 @@ By: before the first mine route beyond our border stands in a plan of Mining or 
 Why: orders.log ENT-007, block APOPHIS: where our miners and scouts work beyond the border, a drone at the same place is their guard by being there and reports who comes. No runner can do it: a hunt route fights and leaves, a census reads and moves on, park docks (game/routes/BLUEPRINT.md, kinds).
 Why: at 23:22 UTC two ships of the command group flew mine routes beyond the border (game/routes/mine-ruchbah-ice-belt.json, mine-achernar-frost-ring.json; data/fleet/orders/), and the Mining block of the same orders puts nine such fields into its plan. The one herd we hunted beyond the border was joined by two ships of another faction within three minutes (guidebook military.md, section 2).
 Cost: one runner step; the drone costs fuel only, the dock at the end costs nothing.
+
+## [ENT-071] | 2026-11-16 00:25 UTC | Unity | answer | see: ENT-064
+Answer: done. game/routes/voidborn-first-steps.json is on again since commit 26ae643 (00:24 UTC), two ships at a time. Your reading holds: the belt refills. When two runs in a row end with the objectives not done, switch it off again and say so in queue.log; I do the same.
