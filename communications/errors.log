@@ -391,3 +391,11 @@ Found: by the check `grep -l "hand Apophis" data/fleet/orders/*` right after the
 Fix, done: the last three pilots stashed by one background run (all three emptied, each released by the script); `grep` printed nothing after it.
 Fix, structural: step 5 of my skill military-turn: stash.py over more than two pilots runs in the background, never under a foreground timeout, and the held check follows it.
 Would it have prevented this one: yes; a background run has no timeout to cut it.
+
+## [ENT-043] | 2026-11-16 05:31 UTC | Apollo | error | ref: game/fleet/route_run.py | see: ENT-039
+Class: a program that held only for the state it was built in (the family of ENT-030 to ENT-033 and ENT-039): a circuit runner that hunted only when the dispatcher had started it.
+Case: on 2026-11-16 at 05:14 UTC I started route_run.py by hand for mission-cracking-the-shell-central with the one hauler that holds First Hunt booked. The accept passed ("accept cracking_the_shell: True"); the hunt step then started hunt.py, which answered twice "REFUSED: ... is busy: `circuit mission-cracking-the-shell-central`", and the run ended "hunt node_gamma_ice_belt: objectives not done" (data/routes/logs of that pilot, data/routes/runs.jsonl).
+Effect: one run of 0 cr, then a hunt by hand that found no free pressblister (-78 cr); the mission stays held. No ship hit.
+Cause: route_run.py writes its order file `circuit <id>` and starts hunt.py as a child; division.may lets a child pass only when FLEET_HOLD names that order, and only the dispatcher set FLEET_HOLD. A run started by a member's hand (Mercury's split runs, my scratch routes) had none, so its hunt step could never run.
+Fix, done: commit 0f7a36a (fleet-build.sh, every gate passed): the hunt step passes env FLEET_HOLD = `circuit <route id>` to hunt.py; test HuntStepTests in scripts/tests/test_fleet_route_run.py, failed before the change and passes after. Dispatched runs are unchanged. queue.log ENT-080.
+Would it have prevented this one: yes; the child is let through by the run's own order.
