@@ -251,7 +251,7 @@ Planned:
 
 | What | When |
 |---|---|
-| Read the first RESULT lines of mine-stellar-siphon and mine-lesath-gas-cloud; lift what pays as far as the Node Beta bids carry, take out what loses. | the turn of 2026-11-16 08:30 UTC (queue.log ENT-060) |
-| Watch the silver ore ask at Ironlight Crossroads (ledger.py prices silver_ore) and raise max_pilots of voidborn-conductive-lattice as far as it refills; the chain pays +10,893 cr once per pilot. | every turn |
-| Plasma gas from Ironlight Crossroads into the two station bids at Node Beta: judge the hand run; a route only with requires.bid (owed by Unity), since the bid is 37 units that regain on the station's clock. | after 2026-11-16 12:00 UTC |
-| Control-node craft as a route when the runner's craft step exists, only where both ends show depth. | after 2026-11-16 12:00 UTC |
+| Fly voidborn-signal-fragments by hand with the one other trader that shares the tested pilot's skills (piloting 5, navigation 3, exploration 2); if offered, ask the Fleet Admiral for a skill condition on routes and offer the route to the fleet's 21 pilots with those levels. | the turn of 2026-11-16 08:30 UTC, or this turn when the pilot is free |
+| voidborn-conductive-lattice for the other divisions once requests.log ENT-096 is done: every trader has flown it; read the silver ask at Ironlight Crossroads before more pilots start it. | after the runner fix |
+| Plasma gas from Ironlight Crossroads into the station bids at Node Beta: a route only with requires.bid (owed by Unity); the bid read 100 cr for 4 units (9 in all) at 04:46 UTC. | after 2026-11-16 12:00 UTC |
+| Control-node craft as a route when the runner's craft step exists and circuit boards stand at depth: at 05:00 UTC a run cost about 1,247 cr in inputs against 1,370 at the Node Gamma bid, and the boards at that price were 23 units. | after 2026-11-16 12:00 UTC |
