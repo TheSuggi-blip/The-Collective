@@ -15,6 +15,11 @@ WHAT: reads the game's catalog (the unit's data folder, catalog/<version>.json:
                             made into by hand today, at the station where they
                             lie, and what the result sells for at our stations
         recipes [...]       the recipes of a category, or those that make or use an item
+        inventory           what the fleet owns in goods: every item in station
+                            storage and in the holds added up, by kind of item
+                            (raw, refined, parts, modules ...), with the units
+                            stored and carried and the catalog's base value;
+                            `inventory stations` lists the same per station
 RULES:
   - It reads only: it crafts nothing, buys nothing and moves no ship.
   - A list of needs follows one recipe per item: the one nearest to what
@@ -33,6 +38,7 @@ USAGE:
   craftbook.py build <facility id or hull id>
   craftbook.py can [<Member>|all] [--top N]
   craftbook.py recipes [--category <name>] [--makes <item id>] [--uses <item id>] [--hand]
+  craftbook.py inventory [stations] [--item <item id>] [--top N]
   --data <dir>      the unit's data folder (default /srv/collective/data)
 
 Stdlib only. ASCII only.
@@ -86,6 +92,119 @@ def stock(data):
             for item, units in goods.items():
                 total[item] = total.get(item, 0) + int(units or 0)
     return total, places, book.get("updated_at") or "not written yet"
+
+
+KINDS = (("raw", "Raw materials (ores, ice, gas)"), ("refined", "Refined materials"), ("component", "Components and parts"), ("module", "Modules and upgrades"),
+         ("consumable", "Consumables and fuel"), ("ammo", "Ammunition"), ("drone", "Drones"), ("other", "Creature goods and other"), ("contraband", "Contraband"),
+         ("unknown", "Not in the catalog"))                # the inventory's kinds of item, in the order they are listed
+KIND_OF = {"ore": "raw", "refined": "refined", "material": "refined", "component": "component", "consumable": "consumable", "fuel": "consumable", "ammo": "ammo",
+           "drone": "drone", "misc": "other", "contraband": "contraband"}     # the catalog's category -> the inventory's kind
+
+
+def kind_of(row):
+    """An item's kind for the inventory: a module is an item with a `type` (the catalog gives it no category); the rest
+    go by the catalog's category; an item the catalog does not hold is `unknown`."""
+    if not row:
+        return "unknown"
+    return "module" if row.get("type") else KIND_OF.get(row.get("category"), "other")
+
+
+def place_name(data, base):
+    """A station for a reader: its id in words; a player's station (an id of 32 hex digits) by its system."""
+    if base == "hold":
+        return "In the holds of our ships"
+    if re.fullmatch(r"[0-9a-f]{32}", base):
+        system = read_json(Path(data) / "market" / (base + ".json"), {}).get("system")
+        return "A player's station in %s" % system if system else "A player's station"
+    return base.replace("_", " ").title()
+
+
+def inventory(data, cat=None):
+    """What the fleet owns in goods, from the storage book's totals (stock/storage.json: every pilot's own storage at
+    every station, and the holds): {written, pilots, oldest, catalog, total: {items, units, worth}, groups: [{key,
+    title, items, units, worth, rows}], stations: [{base, name, items, units, worth, rows}]}. A row is {id, name,
+    kind, units, stored, held, value, worth, at: {base or `hold`: units}}; worth is units times the catalog's base
+    value, never a price somebody pays. The one function for it: the shell, the station and the reports ask here."""
+    cat = cat or load(data) or {"version": "none", "items": {}}
+    book = read_json(Path(data) / "stock" / "storage.json", {})
+    totals = book.get("totals") or {}
+    read = sorted(e["read_at"] for e in (book.get("pilots") or {}).values() if isinstance(e, dict) and "stations" in e and e.get("read_at"))
+    rows = {}
+
+    def add(item, place, units, field):
+        units = int(units or 0)
+        if units <= 0:
+            return
+        if item not in rows:
+            known = cat["items"].get(item) or {}
+            rows[item] = {"id": item, "name": known.get("name") or item, "kind": kind_of(known), "units": 0, "stored": 0, "held": 0,
+                          "value": known.get("base_value") or 0, "at": {}}
+        row = rows[item]
+        row["units"], row[field] = row["units"] + units, row[field] + units
+        row["at"][place] = row["at"].get(place, 0) + units
+
+    for base, goods in (totals.get("by_station") or {}).items():
+        for item, units in (goods or {}).items():
+            add(item, base, units, "stored")
+    for goods in (totals.get("holds_by_member") or {}).values():
+        for item, units in (goods or {}).items():
+            add(item, "hold", units, "held")
+    for row in rows.values():
+        row["worth"] = row["units"] * row["value"]
+    first = lambda r: (-r["worth"], -r["units"], r["id"])
+    groups = []
+    for key, title in KINDS:
+        mine = sorted((r for r in rows.values() if r["kind"] == key), key=first)
+        if mine:
+            groups.append({"key": key, "title": title, "items": len(mine), "units": sum(r["units"] for r in mine), "worth": sum(r["worth"] for r in mine), "rows": mine})
+    stations = []
+    for base in sorted({place for r in rows.values() for place in r["at"]}):
+        here = sorted(({"id": r["id"], "name": r["name"], "kind": r["kind"], "units": r["at"][base], "value": r["value"], "worth": r["at"][base] * r["value"]}
+                       for r in rows.values() if base in r["at"]), key=first)
+        stations.append({"base": base, "name": place_name(data, base), "items": len(here), "units": sum(r["units"] for r in here),
+                         "worth": sum(r["worth"] for r in here), "rows": here})
+    stations.sort(key=lambda s: (s["base"] == "hold", -s["worth"], s["base"]))            # the stations by what lies there, the holds last
+    return {"written": book.get("updated_at") or "", "pilots": len(read), "oldest": read[0] if read else "", "catalog": cat["version"],
+            "total": {"items": len(rows), "units": sum(r["units"] for r in rows.values()), "worth": sum(r["worth"] for r in rows.values())},
+            "groups": groups, "stations": stations}
+
+
+def show_inventory(cat, data, mode, item, top):
+    inv = inventory(data, cat)
+    num = "{:,}".format
+    if not inv["written"]:
+        print("no storage book yet: the service `ledger` writes stock/storage.json")
+        return 1
+    print("INVENTORY | what the fleet owns in goods: station storage and the holds, added up | storage book of %s (%d pilots read, the oldest reading %s) | catalog %s"
+          % (inv["written"], inv["pilots"], inv["oldest"] or "--", inv["catalog"]))
+    print("  TOTAL %s kinds of item, %s units, worth %s cr at the catalog's base values (a base value is no price: what a station bids is in the order books)"
+          % (num(inv["total"]["items"]), num(inv["total"]["units"]), num(inv["total"]["worth"])))
+    if item:
+        row = next((r for g in inv["groups"] for r in g["rows"] if r["id"] == item), None)
+        if row is None:
+            print("  no %s in storage or in a hold" % item)
+            return 0
+        print("  %s (%s): %s units, %s in storage, %s in the holds, base value %s, worth %s" % (row["name"], row["id"], num(row["units"]), num(row["stored"]),
+                                                                                           num(row["held"]), num(row["value"]), num(row["worth"])))
+        for place, units in sorted(row["at"].items(), key=lambda kv: -kv[1]):
+            print("    %-36s %10s" % (place_name(data, place), num(units)))
+        return 0
+    if mode == "stations":
+        for place in inv["stations"]:
+            print("%s (%s) | %s kinds, %s units, worth %s" % (place["name"], place["base"], num(place["items"]), num(place["units"]), num(place["worth"])))
+            for r in place["rows"][:top]:
+                print("  %-34s %-12s %10s  worth %s" % (r["name"][:34], r["kind"], num(r["units"]), num(r["worth"])))
+            if len(place["rows"]) > top:
+                print("  ... %d more: --top N" % (len(place["rows"]) - top))
+        return 0
+    for group in inv["groups"]:
+        print("%s | %s kinds, %s units, worth %s" % (group["title"], num(group["items"]), num(group["units"]), num(group["worth"])))
+        print("  %-34s %10s %10s %9s %7s %11s" % ("item", "units", "stored", "in holds", "value", "worth"))
+        for r in group["rows"][:top]:
+            print("  %-34s %10s %10s %9s %7s %11s" % (r["name"][:34], num(r["units"]), num(r["stored"]), num(r["held"]), num(r["value"]), num(r["worth"])))
+        if len(group["rows"]) > top:
+            print("  ... %d more: --top N" % (len(group["rows"]) - top))
+    return 0
 
 
 def bids(data):
@@ -299,7 +418,7 @@ def main():
     args = sys.argv[1:]
     value = lambda name, default: args[args.index(name) + 1] if name in args and args.index(name) + 1 < len(args) else default
     data = value("--data", division.DATA)
-    words = [a for n, a in enumerate(args) if not a.startswith("--") and (n == 0 or args[n - 1] not in ("--data", "--top", "--category", "--makes", "--uses"))]
+    words = [a for n, a in enumerate(args) if not a.startswith("--") and (n == 0 or args[n - 1] not in ("--data", "--top", "--category", "--makes", "--uses", "--item"))]
     if not words or any(a in ("-h", "--help") for a in args):
         sys.exit(__doc__)
     cat = load(data)
@@ -326,6 +445,8 @@ def main():
         return show_can(cat, data, who, int(value("--top", "15")))
     if verb == "recipes":
         return show_recipes(cat, args, value)
+    if verb == "inventory":
+        return show_inventory(cat, data, rest[0] if rest else "total", value("--item", ""), int(value("--top", "40")))
     sys.exit(__doc__)
 
 

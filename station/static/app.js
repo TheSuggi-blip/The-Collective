@@ -772,22 +772,72 @@ function renderPilot(panel, d) {
   panel.append(facts(rows));
 }
 
-function renderMarket(panel) {
-  const input = el('input'), out = el('div');
-  input.type = 'search'; input.placeholder = 'Item name, e.g. iron';
-  let timer = 0;
-  input.addEventListener('input', () => {
-    clearTimeout(timer);
-    timer = setTimeout(async () => {
-      const d = await get('/api/market?q=' + encodeURIComponent(input.value));
-      out.replaceChildren(d.rows.length
-        ? table(['Item', 'Market', 'Best bid', 'Best ask', 'Bid qty', 'Ask qty'], d.rows.map((r) => [r[1], r[3], fmt(r[4]), fmt(r[5]), fmt(r[6]), fmt(r[7])]), [2, 3, 4, 5])
-        : el('p', 'empty', input.value.length < 2 ? fmt(d.items) + ' items on the public market summary.' : 'No item matches.'));
-    }, 250);
-  });
-  const row = el('div', 'row'); row.append(input);
-  panel.append(row, out, el('p', 'sub', 'Best prices per empire market, from the public summary. Station order books need a docked ship.'));
-  input.dispatchEvent(new Event('input'));
+let invMode = 'total', invItem = null;           // the Inventory tab: all we own by kind of item, or station by station; one item's card
+const INV_KINDS = { raw: 'raw', refined: 'refined', component: 'part', module: 'module', consumable: 'consumable', ammo: 'ammo', drone: 'drone', other: 'other', contraband: 'contraband', unknown: 'not in catalog' };
+function itemLink(id, name) { return linkButton(name, () => { invItem = id; render(); }, 'doclink'); }
+function recipeRows(rows) {
+  const line = (pairs) => pairs.map((p) => fmt(p[1]) + ' ' + p[0]).join(', ');
+  return rows.map((r) => [r.doc ? linkButton(r.name || r.id, () => openDoc(r.doc), 'doclink') : (r.name || r.id), line(r.inputs), line(r.outputs), r.by_hand ? 'by hand' : 'facility']);
+}
+async function renderItem(panel, live) {
+  const d = await get('/api/item?id=' + encodeURIComponent(invItem));
+  if (!live()) return;
+  panel.append(linkButton('Back to the inventory', () => { invItem = null; render(); }));
+  if (d.error) { panel.append(el('p', 'empty', 'The catalog does not hold this item.')); return; }
+  panel.append(el('h2', null, d.name), el('p', 'sub', d.description));
+  panel.append(facts([['We own', fmt(d.units) + ' units'], ['Kind', INV_KINDS[d.kind] || d.kind], ['Base value', fmt(d.value) + ' cr'], ['Size', d.size]]));
+  if (d.at.length) { panel.append(el('h3', null, 'Where ours lies')); panel.append(fitTable(table(['Place', 'Units'], d.at.map((a) => [a[0], fmt(a[1])]), [1]))); }
+  panel.append(el('h3', null, 'Made by'));
+  panel.append(d.made_by.length ? fitTable(table(['Recipe', 'Takes', 'Gives', 'Where'], recipeRows(d.made_by))) : el('p', 'empty', 'No recipe makes it: it is mined, hunted, found or bought.'));
+  panel.append(el('h3', null, 'Goes into' + (d.used_total > d.used_in.length ? ' (' + d.used_in.length + ' of ' + d.used_total + ' recipes)' : '')));
+  panel.append(d.used_in.length ? fitTable(table(['Recipe', 'Takes', 'Gives', 'Where'], recipeRows(d.used_in))) : el('p', 'empty', 'No recipe takes it.'));
+  panel.append(el('h3', null, 'Built with it' + (d.built_total > d.built.length ? ' (' + d.built.length + ' of ' + d.built_total + ')' : '')));
+  panel.append(d.built.length ? fitTable(table(['What', 'Kind', 'Units of it', 'Cost'], d.built.map((b) => [b.name, b.kind, fmt(b.units), fmt(b.cost)]), [2, 3]))
+    : el('p', 'empty', 'No facility and no hull is built with it.'));
+}
+async function renderInventory(panel, live) {
+  if (invItem) return renderItem(panel, live);
+  const d = await get('/api/inventory');
+  if (!live()) return;
+  panel.append(el('h2', null, 'Inventory'));
+  const docs = el('div', 'chips');                // the recipes: where the fleet keeps what can be made and built
+  if (d.docs.master) docs.append(linkButton('Recipes: all ' + fmt(d.recipes) + ', by category', () => openDoc(d.docs.master)));
+  if (d.docs.facilities) docs.append(linkButton('Facilities', () => openDoc(d.docs.facilities)));
+  if (d.docs.modules) docs.append(linkButton('Modules', () => openDoc(d.docs.modules)));
+  panel.append(docs);
+  if (!d.written) { panel.append(el('p', 'empty', 'No storage book yet: the service that reads our storage has not written one.')); return; }
+  panel.append(el('p', 'sub', 'Everything our pilots hold in station storage and in their holds, added up. Click an item to see where it lies, what makes it and what it is built into.'));
+  const grid = el('div', 'kpis');
+  const kpi = (k, v, sub) => { const b = el('div', 'kpi'); b.append(el('div', 'k', k), el('div', 'v', v)); if (sub) b.append(el('div', 's', sub)); grid.append(b); };
+  const places = d.stations.filter((s) => s.base !== 'hold'), hold = d.stations.find((s) => s.base === 'hold');
+  kpi('Kinds of item', fmt(d.total.items), fmt(d.total.units) + ' units in all');
+  kpi('Worth at base value', fmt(d.total.worth), 'the catalog\'s value, not a price');
+  kpi('Stations with stock', fmt(places.length), places.length ? 'most at ' + places[0].name : '');
+  kpi('In the holds', hold ? fmt(hold.units) : '0', 'units our ships carry now');
+  panel.append(grid);
+  const pick = el('div', 'winsel');
+  for (const [key, label] of [['total', 'All we own'], ['stations', 'By station']]) {
+    const b = el('button', key === invMode ? 'on' : null, label);
+    b.type = 'button';
+    b.addEventListener('click', () => { invMode = key; render(); });
+    pick.append(b);
+  }
+  panel.append(pick);
+  const head = (title, n, units, worth) => { const h = el('h3', null, title); h.append(el('span', 'invsum', fmt(n) + ' kinds, ' + fmt(units) + ' units, worth ' + fmt(worth))); return h; };
+  if (invMode === 'stations') {
+    for (const s of d.stations) {
+      panel.append(head(s.name, s.items, s.units, s.worth));
+      panel.append(fitTable(table(['Item', 'Kind', 'Units', 'Worth'], s.rows.map((r) => [itemLink(r.id, r.name), INV_KINDS[r.kind] || r.kind, fmt(r.units), fmt(r.worth)]), [2, 3])));
+    }
+  } else {
+    for (const g of d.groups) {
+      panel.append(head(g.title, g.items, g.units, g.worth));
+      panel.append(fitTable(table(['Item', 'Units', 'Stored', 'In holds', 'Value', 'Worth'],
+        g.rows.map((r) => [itemLink(r.id, r.name), fmt(r.units), fmt(r.stored), fmt(r.held), fmt(r.value), fmt(r.worth)]), [1, 2, 3, 4, 5])));
+    }
+  }
+  panel.append(el('p', 'docnote', 'Storage read through each pilot about every 40 minutes; book written ' + (d.written || '--') + ' UTC, ' + fmt(d.pilots) + ' pilots read, the oldest reading '
+    + (d.oldest || '--') + '. Modules fitted on a ship and the ships themselves are not counted here.'));
 }
 
 function setWide(on) {                          // a document gets a wide panel, the Metrics tab ('metrics') a wider one; the map is resized to what is left
@@ -1109,16 +1159,16 @@ async function renderMetrics(panel, live) {
     chart('Credits, all wallets', [{ pts: rows.map((p) => [p[0], p[1]]), colour: '#dcae58' }]));
 }
 
-const TABS = { Selection: renderSelection, Metrics: renderMetrics, Market: renderMarket, Docs: renderDocs };
+const TABS = { Selection: renderSelection, Metrics: renderMetrics, Inventory: renderInventory, Docs: renderDocs };
 let renderSeq = 0, viewKey = '';
 function render() {
   const panel = $('panel'), mine = ++renderSeq, live = () => mine === renderSeq;
-  const key = [tab, selShip, selShip ? '' : selected, pilotCard ? pilotCard.name : '', docView ? docView.path : ''].join('|');
+  const key = [tab, selShip, selShip ? '' : selected, pilotCard ? pilotCard.name : '', docView ? docView.path : '', tab === 'Inventory' ? invMode + '/' + (invItem || '') : ''].join('|');
   const same = key === viewKey, keep = same ? panel.scrollTop : 0;
   viewKey = key;
   document.querySelectorAll('nav button').forEach((b) => b.classList.toggle('on', b.textContent === tab));
   $('rail-right-label').textContent = tab;
-  if (tab !== 'Docs') setWide(tab === 'Metrics' ? 'metrics' : false);
+  if (tab !== 'Docs') setWide(tab === 'Metrics' || tab === 'Inventory' ? 'metrics' : false);
   if (tab === 'Metrics') {
     metricsAt = Date.now();
     if (!same) routeOrder.key = '';                // the tab was opened anew: the routes are sorted afresh
@@ -1380,7 +1430,7 @@ function init() {
   for (const name of Object.keys(TABS)) {
     const b = el('button', null, name);
     b.type = 'button';
-    b.addEventListener('click', () => { tab = name; if (name !== 'Selection') pilotCard = null; if (name !== 'Docs') docView = null; render(); });
+    b.addEventListener('click', () => { tab = name; if (name !== 'Selection') pilotCard = null; if (name !== 'Docs') docView = null; invItem = null; render(); });
     nav.append(b);
   }
   let drag = null, moved = false;

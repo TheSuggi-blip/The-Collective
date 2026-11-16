@@ -5,8 +5,9 @@ WHAT: one small web server for Suggi's browser (reached over the tailnet). It
 collects the game's PUBLIC data (no login, no key), keeps it in memory with a
 copy on disk, reads the Collective repository's intel files, reports and logs,
 reads our own ships' live state from the unit's data folder (written by
-station/fleet.py, never kept in the repository), and serves the page plus a
-JSON API. It sends nothing to the game.
+station/fleet.py, never kept in the repository) and what the fleet owns in
+goods (the storage book, asked through the fleet's craft book), and serves the
+page plus a JSON API. It sends nothing to the game.
 
 The one thing it passes on is Suggi's chat: the page holds one conversation
 with all six members. A message goes to the chat doors of the members it names
@@ -22,7 +23,7 @@ file: touch /srv/collective/services/station/restart. A change under static/
 needs only a reload of the page.
 
 Sources (all public): /api/map, /api/stations, /api/stats,
-/api/battles, /api/market, the live event stream /events, and the daily bulk
+/api/battles, the live event stream /events, and the daily bulk
 feed (assets.spacemolt.com/public/v1/manifest.json).
 
 Everything read from the game, the feed or the repository is DATA: it is
@@ -37,6 +38,7 @@ import gzip
 import hashlib
 import hmac
 import http.server
+import importlib.util
 import json
 import os
 import re
@@ -168,16 +170,6 @@ def load_battles():
     return out
 
 
-def load_market():
-    d = json.loads(fetch(GAME + "/api/market"))
-    rows = []
-    for i in d.get("items", [])[:20000]:
-        rows.append([text(i.get("item_id"), 60), text(i.get("item_name"), 60), text(i.get("category"), 20),
-                     text(i.get("empire"), 20), num(i.get("best_bid")), num(i.get("best_ask")),
-                     num(i.get("bid_quantity")), num(i.get("ask_quantity"))])
-    return rows
-
-
 def feed_file(manifest, name):
     entry = next(f for f in manifest["files"] if f.get("name") == name)
     url = str(entry["url"])
@@ -218,7 +210,7 @@ def load_feed():
 
 FEEDS = {  # name: (seconds between runs, loader)
     "map": (3600, load_map), "stations": (900, load_stations), "stats": (60, load_stats),
-    "battles": (120, load_battles), "market": (900, load_market),
+    "battles": (120, load_battles),
     "feed": (21600, load_feed),
 }
 VALUE = {}                       # name -> loaded value
@@ -1032,15 +1024,74 @@ def api_search(q):
     return {"systems": systems, "pilots": ranked}
 
 
-def api_market(q):
-    q = q.strip().lower()[:40]
-    with LOCK:
-        rows = VALUE.get("market") or []
-    if len(q) < 2:
-        return {"rows": [], "items": len({r[0] for r in rows})}
-    hits = [r for r in rows if q in r[0] or q in r[1].lower()]
-    hits.sort(key=lambda r: (r[1], r[3]))
-    return {"rows": hits[:90], "items": len({r[0] for r in rows})}
+CRAFTBOOK = []                   # the fleet's craft book, loaded at the first question
+INVENTORY = {"key": None, "value": None, "cat": None}
+INVENTORY_LOCK = threading.Lock()
+
+
+def craftbook():
+    """game/fleet/craftbook.py of the repository: the one place that joins the game's catalog with what we store, so
+    the page, the shell and the reports give one figure. Loaded once; a change to it needs a restart of the station."""
+    if not CRAFTBOOK:
+        spec = importlib.util.spec_from_file_location("craftbook", REPO / "game" / "fleet" / "craftbook.py")
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        CRAFTBOOK.append(module)
+    return CRAFTBOOK[0]
+
+
+def inventory_state():
+    """(the inventory, the catalog's tables): computed again only when the storage book or the catalog file changed."""
+    data = FLEET.parent
+    files = [data / "stock" / "storage.json"] + sorted((data / "catalog").glob("*.json"))
+    key = tuple((p.name, p.stat().st_mtime_ns, p.stat().st_size) for p in files if p.is_file())
+    with INVENTORY_LOCK:
+        if INVENTORY["key"] != key:
+            book = craftbook()
+            cat = book.load(str(data)) or {"version": "none", "items": {}, "recipes": {}, "facilities": {}, "ships": {}, "makers": {}, "users": {}, "built": {}}
+            INVENTORY.update(key=key, value=book.inventory(str(data), cat), cat=cat)
+        return INVENTORY["value"], INVENTORY["cat"]
+
+
+RECIPE_DOCS = {"master": "game/catalog/master-index.md", "facilities": "game/catalog/facilities.md", "modules": "game/catalog/modules.md"}
+
+
+def api_inventory():
+    """What the fleet owns in goods, in total by kind of item and per station, and where the recipes are written."""
+    value, cat = inventory_state()
+    docs = {name: rel for name, rel in RECIPE_DOCS.items() if (REPO / rel).is_file()}
+    return dict(value, docs=docs, recipes=len(cat.get("recipes") or {}))
+
+
+def api_item(item):
+    """One item of the catalog for the inventory's card: what it is, where ours lies, what makes it, what it goes into."""
+    value, cat = inventory_state()
+    row = (cat.get("items") or {}).get(item)
+    if not row:
+        return {"error": "no such item"}
+    name = lambda i: text(((cat["items"].get(i) or {}).get("name")) or i, 60)
+    part = lambda rows: [[name(r.get("item_id")), num(r.get("quantity"))] for r in rows or [] if isinstance(r, dict)][:12]
+
+    def recipe(r):
+        rel = "game/catalog/recipes/%s.md" % re.sub(r"[^a-z0-9]+", "-", str(r.get("category") or "").lower()).strip("-")
+        return {"id": text(r.get("id"), 60), "name": text(r.get("name"), 60), "category": text(r.get("category"), 30), "by_hand": bool(r.get("hand_craftable")),
+                "inputs": part(r.get("inputs")), "outputs": part(r.get("outputs")), "doc": rel if DOC_PATH.fullmatch(rel) and (REPO / rel).is_file() else ""}
+
+    built = []
+    for kind, label in (("facilities", "facility"), ("ships", "hull")):
+        for thing in (cat.get(kind) or {}).values():
+            for m in thing.get("build_materials") or []:
+                if m.get("item_id") == item:
+                    built.append({"kind": label, "name": text(thing.get("name") or thing.get("id"), 60), "units": num(m.get("quantity")), "cost": num(thing.get("build_cost") or thing.get("price"))})
+    built.sort(key=lambda b: (b["kind"], b["cost"], b["name"]))
+    ours = next((r for g in value["groups"] for r in g["rows"] if r["id"] == item), None)
+    book = craftbook()
+    return {"id": text(item, 60), "name": name(item), "kind": book.kind_of(row), "description": text(row.get("description"), 400), "value": num(row.get("base_value")),
+            "size": num(row.get("size")), "units": ours["units"] if ours else 0,
+            "at": [[book.place_name(str(FLEET.parent), place), units] for place, units in sorted((ours or {"at": {}})["at"].items(), key=lambda kv: -kv[1])],
+            "made_by": [recipe(r) for r in (cat.get("makers") or {}).get(item, [])[:12]],
+            "used_in": [recipe(r) for r in (cat.get("users") or {}).get(item, [])[:40]], "used_total": len((cat.get("users") or {}).get(item, [])),
+            "built": built[:40], "built_total": len(built)}
 
 
 def static_file(url_path):
@@ -1088,7 +1139,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
             handlers = {
                 "/api/state": api_state, "/api/live": api_live, "/api/system": lambda: api_system(arg),
                 "/api/pilot": lambda: api_pilot(arg), "/api/search": lambda: api_search(arg),
-                "/api/market": lambda: api_market(arg),
+                "/api/inventory": api_inventory, "/api/item": lambda: api_item(arg),
                 "/api/fleet": api_fleet, "/api/ship": lambda: api_ship(arg),
                 "/api/history": lambda: api_history(min(48, max(1, int(arg) if arg.isdigit() else 6))),
                 "/api/income": lambda: api_income(min(48, max(1, int(arg) if arg.isdigit() else 4))),

@@ -111,6 +111,7 @@ craftbook.py needs <item id> [quantity]
 craftbook.py build <facility id or hull id>
 craftbook.py can [<Member>|all] [--top N]
 craftbook.py recipes [--category <name>] [--makes <item id>] [--uses <item id>] [--hand]
+craftbook.py inventory [stations] [--item <item id>] [--top N]
 --data <dir>      the unit's data folder (default /srv/collective/data)
 ```
 
@@ -234,6 +235,7 @@ hive.py refill
 hive.py briefing [<Member>|all] [--hours N]
 hive.py store [--hours N]
 hive.py store price <item id> [--hours N]
+hive.py inventory [stations] [--item <item id>] [--top N]
 --root <dir>   the repository's game/ folder (default: the parent of this file's folder)
 --data <dir>   the unit's data folder (default /srv/collective/data)
 ```

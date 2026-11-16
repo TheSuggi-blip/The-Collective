@@ -232,9 +232,14 @@ TOOLS = {
         "args": {"item": arg(S, "the item id, e.g. water_ice"), "base": arg(S, "one station's base id"), "last": arg(I, "how many moves, default 20")}, "required": ["item"],
         "plan": lambda a: [("game/fleet/ledger.py", ["prices", a["item"]] + flag(a, "base") + flag(a, "last"))]},
     "stock": {
-        "text": "What our ships hold in station storage and in their holds, per member or for the whole fleet, optionally one item.",
-        "args": {"member": arg(S, "a member's name or all", MEMBERS), "item": arg(S, "one item id")},
-        "plan": lambda a: [("game/fleet/ledger.py", ["show"] + ([a["member"]] if a.get("member") else []) + flag(a, "item"))]},
+        "text": "What we own in goods. view=members (default): what a member's ships hold in station storage and in their holds. view=inventory: the whole fleet added up, "
+                "by kind of item (raw, refined, parts, modules ...), with units stored and carried and the catalog's base value. view=stations: the same per station. "
+                "Optionally one item.",
+        "args": {"view": arg(S, "members (default), inventory or stations", ("members", "inventory", "stations")), "member": arg(S, "for members: a member's name or all", MEMBERS),
+                 "item": arg(S, "one item id"), "top": arg(I, "for inventory and stations: rows per group, default 40")},
+        "plan": lambda a: [("game/fleet/craftbook.py", ["inventory"] + (["stations"] if a.get("view") == "stations" else []) + flag(a, "item") + flag(a, "top"))]
+                          if a.get("view") in ("inventory", "stations") else
+                          [("game/fleet/ledger.py", ["show"] + ([a["member"]] if a.get("member") else []) + flag(a, "item"))]},
     "catalog": {
         "text": "The game's catalog asked as a question. ask=item: find an item by text; for one item how it is made, what uses it, what is built with it. ask=needs: "
                 "everything a number of units takes down to what is mined or bought, beside what we store. ask=build: what a facility or a hull costs and takes. "

@@ -112,6 +112,36 @@ class CraftbookTests(Tree):
                          {"outpost_kit": (1, 1, "assemble_outpost_kit"), "frame": (2, 2, "assemble_frame"), "steel_plate": (8, 8, "smelt")})   # never `break_frame`: a circle
         self.assertEqual(raw, {"iron_ore": 80})
 
+    def test_the_inventory_adds_storage_and_holds_by_kind_of_item_and_by_station(self):
+        book = {"updated_at": "2026-11-16T18:00:00Z", "pilots": {"miner-1": {"read_at": "2026-11-16T17:10:00Z", "stations": {"home_base": {"iron_ore": 25}}},
+                                                                 "drone-1": {"read_at": "2026-11-16T17:40:00Z", "stations": {"far_base": {"laser": 2}}},
+                                                                 "drone-2": {"read_at": "2026-11-16T17:50:00Z", "error": "timeout"}},
+                "totals": {"by_station": {"home_base": {"iron_ore": 34, "steel_plate": 6, "ghost_item": 3}, "far_base": {"laser": 2, "iron_ore": 1}, "a" * 32: {"frame": 1}},
+                           "holds_by_member": {"Zero": {"iron_ore": 5, "frame": 0}, "Apophis": {"iron_ore": 10}}}}
+        (self.data / "stock" / "storage.json").write_text(json.dumps(book))
+        (self.data / "market" / ("a" * 32 + ".json")).write_text(json.dumps({"base": "a" * 32, "system": "far_system", "items": []}))
+        inv = self.book.inventory(str(self.data))
+        self.assertEqual((inv["written"], inv["pilots"], inv["oldest"], inv["catalog"]), ("2026-11-16T18:00:00Z", 2, "2026-11-16T17:10:00Z", "9.9.9"))
+        self.assertEqual(inv["total"], {"items": 5, "units": 62, "worth": 50 * 5 + 6 * 18 + 2 * 300 + 1 * 90})        # an item the catalog lacks is worth 0
+        self.assertEqual([(g["key"], g["items"], g["units"], g["worth"]) for g in inv["groups"]],
+                         [("raw", 1, 50, 250), ("refined", 1, 6, 108), ("component", 1, 1, 90), ("module", 1, 2, 600), ("unknown", 1, 3, 0)])
+        ore = inv["groups"][0]["rows"][0]
+        self.assertEqual((ore["units"], ore["stored"], ore["held"], ore["at"]), (50, 35, 15, {"home_base": 34, "far_base": 1, "hold": 15}))
+        self.assertEqual([(s["base"], s["name"], s["units"], s["worth"]) for s in inv["stations"]],
+                         [("far_base", "Far Base", 3, 605), ("home_base", "Home Base", 43, 278), ("a" * 32, "A player's station in far_system", 1, 90),
+                          ("hold", "In the holds of our ships", 15, 75)])                                  # by what lies there; the holds last
+        self.assertEqual(sum(r["units"] for s in inv["stations"] for r in s["rows"]), inv["total"]["units"])        # every unit stands in one place
+        run = lambda *args: subprocess.run([sys.executable, "-I", "-B", str(REPO / "game" / "fleet" / "craftbook.py"), "inventory"] + list(args) + ["--data", str(self.data)],
+                                           stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, env={"FLEET_MEMBER": "Unity", "PATH": "/usr/bin:/bin"}).stdout
+        self.assertIn("TOTAL 5 kinds of item, 62 units, worth 1,048 cr", run())
+        self.assertIn("Raw materials (ores, ice, gas) | 1 kinds, 50 units, worth 250", run())
+        self.assertIn("Far Base (far_base) | 2 kinds, 3 units, worth 605", run("stations"))
+        self.assertIn("Iron Ore (iron_ore): 50 units, 35 in storage, 15 in the holds", run("--item", "iron_ore"))
+        self.assertIn("no outpost_kit in storage or in a hold", run("--item", "outpost_kit"))
+        (self.data / "stock" / "storage.json").unlink()
+        self.assertEqual(self.book.inventory(str(self.data))["total"], {"items": 0, "units": 0, "worth": 0})
+        self.assertIn("no storage book yet", run())
+
     def test_stored_goods_are_held_against_the_recipes_made_by_hand(self):
         have, places, _when = self.book.stock(str(self.data))
         self.assertEqual((have, len(places)), ({"iron_ore": 34}, 2))

@@ -33,6 +33,9 @@ WHAT: reads the unit's data folder (fleet/, routes/runs.jsonl, market/, scouting
         store                 the history store (store.py): what it holds, and every route's credits per ship-hour over
                               the whole hours of a window, also beyond what the records still hold
         store price <item>    one item's lowest and highest best bid and best ask per station over a window
+        inventory             what the fleet owns in goods: every item in station storage and in the holds added up, by
+                              kind of item (raw, refined, parts, modules ...); `inventory stations` lists it per station
+                              (the craft book's own count: craftbook.py inventory)
 RULES:
   - It reads only: it moves no ship and writes no file.
   - Every figure names what it rests on; what no reading holds is printed as `not measured`, never filled in.
@@ -58,6 +61,7 @@ USAGE:
   hive.py briefing [<Member>|all] [--hours N]
   hive.py store [--hours N]
   hive.py store price <item id> [--hours N]
+  hive.py inventory [stations] [--item <item id>] [--top N]
   --root <dir>   the repository's game/ folder (default: the parent of this file's folder)
   --data <dir>   the unit's data folder (default /srv/collective/data)
 
@@ -1128,7 +1132,7 @@ def main():
     value = lambda name, default: args[args.index(name) + 1] if name in args and args.index(name) + 1 < len(args) else default
     here = Path(__file__).resolve().parent
     root, data = value("--root", str(here.parent)), value("--data", division.DATA)
-    words = [a for n, a in enumerate(args) if not a.startswith("--") and (n == 0 or args[n - 1] not in ("--root", "--data", "--group", "--kind", "--zone", "--hours"))]
+    words = [a for n, a in enumerate(args) if not a.startswith("--") and (n == 0 or args[n - 1] not in ("--root", "--data", "--group", "--kind", "--zone", "--hours", "--item", "--top"))]
     if not words or any(a in ("-h", "--help") for a in args):
         sys.exit(__doc__)
     now, verb, rest = time.time(), words[0], words[1:]
@@ -1167,6 +1171,8 @@ def main():
         return show_briefing(root, data, now, rest[0] if rest else (me if me in division.MEMBERS else "all"), float(value("--hours", str(TURN))))
     if verb == "store":
         return show_store(data, now, float(value("--hours", "24")), rest)
+    if verb == "inventory":
+        return craftbook.show_inventory(craftbook.load(data) or {"version": "none", "items": {}}, data, rest[0] if rest else "total", value("--item", ""), int(value("--top", "40")))
     sys.exit(__doc__)
 
 
