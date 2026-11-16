@@ -1,0 +1,28 @@
+{
+ "id": "mine-gsc-0012-gas-plume",
+ "kind": "mine",
+ "title": "GSC-0012 Gas Plume: hydrogen_gas, argon_gas, plasma_gas, xenon_gas, nebula_gas, neon_gas; sold at Node Beta Industrial Station",
+ "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 1648 cr per ship-hour, not a measurement. A test: one ship. Added as a test by fill.py on 2026-11-16 13:12 UTC (Apollo): one ship until its first RESULT line is read.",
+ "belt": "gsc_0012:gsc_0012_gas_plume",
+ "station": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+ "minutes": 63,
+ "max_ships": 1,
+ "sell": [
+  {
+   "item": "hydrogen_gas",
+   "min_price": 27
+  },
+  {
+   "item": "argon_gas",
+   "min_price": 1
+  },
+  {
+   "item": "plasma_gas",
+   "min_price": 80
+  }
+ ],
+ "requires": {
+  "module": "gas_harvester_i",
+  "empty_hold": true
+ }
+}
