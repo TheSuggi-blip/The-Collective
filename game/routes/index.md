@@ -143,6 +143,8 @@ Standing work (it trains a skill or gathers into storage and is not judged on it
 |---|---|---|---|---|---|---|---|---|---|
 | [census-voidborn](census-voidborn.json) | census | home space | Read one Voidborn system whole: deposits, creatures, order book, mission board | up to 3 ships | 312 | 8 | -110 | -830 | 2026-11-16 |
 | [park](park.json) | circuit | home space | Dock at Central Nexus and wait there: a docked ship costs nothing | the park route | 216 | 5 | -50 | -670 | 2026-11-16 |
+| [gather-gsc-0027-prism-scatter](gather-gsc-0027-prism-scatter.json) | mine | home space | Standing work: iron and copper at GSC-0027 Prism Scatter into storage at Node Beta (S6) | up to 12 ships, standing work | TBD | TBD | TBD | TBD | -- |
+| [gather-hamal-crystal-bloom](gather-hamal-crystal-bloom.json) | mine | home space | Standing work: iron and copper at Hamal Crystal Bloom into storage at Node Beta (S6) | up to 12 ships, standing work | TBD | TBD | TBD | TBD | -- |
 | [mine-acubens](mine-acubens.json) | mine | home space | Iron and copper at Acubens Shadow Pocket; ore into storage at Node Beta | up to 16 ships, standing work | 48 | 45 | -120 | -160 | 2026-11-15 |
 | [mine-bellatrix](mine-bellatrix.json) | mine | home space | Wait at Bellatrix Major Belt beside Node Gamma station for whatever regrows (thorium, palladium, iridium, carbon) | up to 1 ships, standing work | 8 | 45 | 0 | 0 | 2026-11-15 |
 | [mine-gsc-seep](mine-gsc-seep.json) | mine | home space | Iron and copper at GSC-0027 Spacetime Seep; ore into storage at Node Beta | up to 16 ships, standing work | 48 | 45 | -120 | -160 | 2026-11-15 |

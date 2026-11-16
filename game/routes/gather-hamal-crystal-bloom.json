@@ -1,0 +1,15 @@
+{
+ "id": "gather-hamal-crystal-bloom",
+ "kind": "mine",
+ "title": "Standing work: iron and copper at Hamal Crystal Bloom into storage at Node Beta (S6)",
+ "note": "Standing work (Suggi, 2026-11-16: no ship is idle; a ship without paying work levels and gathers). Written 2026-11-16 14:51 UTC by Unity from the census of 14:3x UTC: the field read iron ore 100,000 of 100,000 and copper ore 100,000 of 100,000, full. Nothing is sold: the load goes into the pilot's storage at Node Beta, the iron and copper of standing order S6. Not judged on its pay (its fuel is its price; the first ore routes measured about -160 cr per ship-hour). `min_left` closes it when a census reads the field under 40,000 of either ore and opens it again when the field has grown back; what the field grows back per hour is not measured yet. A shared file: any division may put it into its plan; `max_ships` counts the whole fleet.",
+ "belt": "hamal:hamal_crystal_bloom",
+ "station": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+ "minutes": 45,
+ "max_ships": 12,
+ "standing": true,
+ "min_left": {
+  "iron_ore": 40000,
+  "copper_ore": 40000
+ }
+}

@@ -15,7 +15,7 @@ file; `planned` in it is what the Admiral means to do next. The roles at a glanc
 
 ## command
 
-Kept by Unity. Routes: 34.
+Kept by Unity. Routes: 36.
 
 | # | Route | Group | Zone | Open to | Credits per ship-hour |
 |---|---|---|---|---|---|
@@ -51,8 +51,10 @@ Kept by Unity. Routes: 34.
 | 30 | [voidborn-network-expansion](voidborn-network-expansion.json) | Once per Pilot | home space | once per pilot, up to 20 ships, after the reward First Steps in the Void | one-time |
 | 31 | [mission-ghosts-in-the-cloud-node](mission-ghosts-in-the-cloud-node.json) | Once per Pilot | home space | once per pilot, up to 1 ships | one-time |
 | 32 | [mine-hd-147513-belt](mine-hd-147513-belt.json) | Paying Routes | beyond the border, 7 jumps | up to 1 ships, empty hold | 360 |
-| 33 | [census-frontier](census-frontier.json) | Standing Work, Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -790 |
-| 34 | [park](park.json) | Standing Work, Reading and Waiting | home space | the park route | -670 |
+| 33 | [gather-gsc-0027-prism-scatter](gather-gsc-0027-prism-scatter.json) | Standing Work, Reading and Waiting | home space | up to 12 ships, standing work | TBD |
+| 34 | [gather-hamal-crystal-bloom](gather-hamal-crystal-bloom.json) | Standing Work, Reading and Waiting | home space | up to 12 ships, standing work | TBD |
+| 35 | [census-frontier](census-frontier.json) | Standing Work, Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -790 |
+| 36 | [park](park.json) | Standing Work, Reading and Waiting | home space | the park route | -670 |
 
 ## drone
 
@@ -243,7 +245,7 @@ Planned:
 
 ## sentinel
 
-Kept by Unity. Routes: 31.
+Kept by Unity. Routes: 33.
 
 | # | Route | Group | Zone | Open to | Credits per ship-hour |
 |---|---|---|---|---|---|
@@ -276,8 +278,10 @@ Kept by Unity. Routes: 31.
 | 27 | [hunt-starveling-nebula-veil-ray](hunt-starveling-nebula-veil-ray.json) | Measured at a Loss | beyond the border, 6 jumps | up to 1 ships, empty hold | -500 |
 | 28 | [hunt-felis-dim-lattice-veil-ray](hunt-felis-dim-lattice-veil-ray.json) | Measured at a Loss | beyond the border, 7 jumps | up to 1 ships, empty hold | -440 |
 | 29 | [voidborn-network-expansion](voidborn-network-expansion.json) | Once per Pilot | home space | once per pilot, up to 20 ships, after the reward First Steps in the Void | one-time |
-| 30 | [census-frontier](census-frontier.json) | Standing Work, Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -790 |
-| 31 | [park](park.json) | Standing Work, Reading and Waiting | home space | the park route | -670 |
+| 30 | [gather-gsc-0027-prism-scatter](gather-gsc-0027-prism-scatter.json) | Standing Work, Reading and Waiting | home space | up to 12 ships, standing work | TBD |
+| 31 | [gather-hamal-crystal-bloom](gather-hamal-crystal-bloom.json) | Standing Work, Reading and Waiting | home space | up to 12 ships, standing work | TBD |
+| 32 | [census-frontier](census-frontier.json) | Standing Work, Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -790 |
+| 33 | [park](park.json) | Standing Work, Reading and Waiting | home space | the park route | -670 |
 
 ## trader
 
