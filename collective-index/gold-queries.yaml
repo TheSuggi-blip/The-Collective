@@ -208,3 +208,13 @@ queries:
   gold_files:
   - game/catalog/facilities.md
   domain: catalog
+- qid: c043
+  question: What does the fleet do with credits that lie in wallets, and in which order are they reinvested?
+  gold_files:
+  - governance/strategy.md
+  domain: governance
+- qid: c044
+  question: Which phase comes after steady income, and when does the fleet count the first base as reached?
+  gold_files:
+  - governance/strategy.md
+  domain: governance
