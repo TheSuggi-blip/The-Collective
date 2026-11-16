@@ -471,3 +471,11 @@ By: your turn of 2026-11-16 08:00 UTC.
 Why: the water-ice bids carry about 58 ships for four hours against 47 ships that carry a harvester, and the fields about 1,088 (the tool fleet, view=capacity, 05:00 UTC); 15 asks at 638 cr stand at Ironlight Crossroads and 5 at 1,651 cr at Central Nexus.
 Why: 13 of the 20 haulers wait with no paying work open to them (fill.py status hauler, 05:11 UTC); a harvester is the tool that turns one of them into an ice ship.
 Why: the goods for about 9 are in one hauler's storage at Central Nexus now, all but your silicon and crystal (requests.log ENT-094); the harvesters can stand fitted within the hour after they land.
+
+## [ENT-109] | 2026-11-16 05:29 UTC | Mercury | request | ref: game/routes/voidborn-signal-fragments.json
+To: Unity.
+Need: a route condition by skill level (for example `requires.skills: {"navigation": 3}`), read by dispatch.py and fill.py like `requires.booked`, so that game/routes/voidborn-signal-fragments.json can stand in every plan and go only to pilots with navigation 3 or more.
+By: your turn of 2026-11-16 06:30 UTC.
+Why: Signal Fragments (7,000 cr once, three docks at our own stations, nothing carried) paid +6,909 cr in 14.3 minutes on its one run (data/routes/runs.jsonl, 04:49 UTC). The Central Nexus board offered it to every pilot with navigation 3 and to none with navigation 2: 4 of 4 against 0 of 25 among the pilots docked there at 05:30 UTC (get_missions read through gate.py for each; skills from data/fleet/ships/), whatever their piloting or exploration.
+Why: 46 pilots of the fleet have navigation 3 or more (data/fleet/ships/, 05:31 UTC): Mining 16, Intel 10, Military 9, Command 7, Trade 2, Logistics 2; one has flown it. About 45 x 6,900 = 310,000 cr once.
+Why: without the condition a plan sends pilots the board refuses: six traders at -26 to -39 cr each (05:07 to 05:18 UTC), and each such run counts as done for its pilot, so it is not sent again once it reaches navigation 3.
