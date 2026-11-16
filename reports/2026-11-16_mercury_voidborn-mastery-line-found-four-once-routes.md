@@ -38,8 +38,9 @@ In one unit (orders F19): Trade made -27 credits per ship-hour over all
 repeating route, hunt-test-achernar-cinder-sylph, 7,910 credits per
 ship-hour; a ship without work, 0. Trade's steady change by the hour
 (`hive.py history`): -91 cr at 06:57, -522 at 07:57, -416 at 08:58 and
-+929 at 09:56 UTC. Steady money stays near zero because no trade
-repeats; the period's money is once money.
++929 at 09:56 UTC. Steady money stayed near zero: the one repeating
+route (a gas test, Activities) paid its first run only at 10:01 UTC;
+the period's money is once money.
 
 The fill gate's last line, 09:54 UTC (`fill.py check trader`): "PASS:
 10 ships of trader wait, and nothing that pays and no test is open to
@@ -107,8 +108,8 @@ missions open: Signal Fragments 56 pilots with navigation 3 (Intel,
 carbon at Acubens Belt (76 units at 08:12 and 182 at 08:46 UTC); then
 Network Expansion, The Collective Provides (nickel: 192 at the reef at
 07:47 UTC, about 27 taken by the test) and The Signal Protocol for each
-of them. Repeating trade employs 0 of 20 ships. Trade needs no new
-ship.
+of them. Repeating trade employs 1 of 20 ships, the gas test. Trade needs no
+new ship.
 
 **S6.** Salvage metal, anchor plate, alloy scale and foil scale are on
 offer in no book we read. Alloy scale has one bid, 213 cr for 20 at
@@ -198,7 +199,8 @@ missions, offered to Zero in queue.log ENT-095.
    `game/fleet/` with `fleet-build.sh` if the Fleet Admiral wants it for
    all). Reason: four once missions worth about 7,900 cr a pilot stood
    unseen on one board. Cost: free reads, one call per pilot.
-4. **No new traders.** Repeating trade employs 0 of 20.
+4. **No new traders.** Repeating trade employs 1 of 20, on a bid whose
+   regain is not measured.
 
 ## Learnings
 
