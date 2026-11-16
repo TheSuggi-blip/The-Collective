@@ -1,0 +1,49 @@
+{
+ "id": "voidborn-resonance-finish",
+ "kind": "circuit",
+ "title": "The Node Beta chain finished for a pilot that holds Resonance Substrate or lacks Final Calibration: 15 energy crystal from Central Nexus, then Final Calibration (7,000 + 8,000 cr once)",
+ "note": "For the pilots whose run of voidborn-conductive-lattice ended after Conductive Lattice: from 11:11 UTC six runs read 'energy_crystal: not bought; final_calibration not offered' when the Central Nexus energy crystal ask left 420 cr (3,500 cr at 11:35 UTC; 420 x 65 at 11:52, 420 x 43 at 12:48 UTC, the tool market). That route skips a pilot with Conductive Lattice booked, so they were never sent again: at 2026-11-16 12:49 UTC data/fleet/onetime.json holds Conductive Lattice without Resonance Substrate for 10 pilots and Resonance Substrate without Final Calibration for 1; one of them read Resonance Substrate active, 0 of 15 crystals delivered (get_active_missions). Stops: the 15 crystals bought at Central Nexus (limit 430 cr) while Resonance Substrate is open; the Node Beta redock hands it in and accepts Final Calibration (its accept hands out the 5 circuit boards); Node Gamma takes the delivery. A run whose crystals were not bought ends 'final_calibration not offered', which the dispatcher counts as no try on a route with requires.booked (it rests an hour and tries again, three times). max_ships 2 while the 420 cr level holds a few dozen units. Written by Mercury.",
+ "once": true,
+ "max_ships": 2,
+ "min_credits": 8000,
+ "requires": {
+  "booked": "Conductive Lattice"
+ },
+ "one_time": [
+  "Resonance Substrate",
+  "Final Calibration"
+ ],
+ "skip_if_booked": [
+  "Final Calibration"
+ ],
+ "stops": [
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "only_if_active": [
+    "Resonance Substrate"
+   ],
+   "buy": [
+    {
+     "item": "energy_crystal",
+     "qty": 15,
+     "max_price": 430,
+     "one_time": true
+    }
+   ]
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "redock": true,
+   "accept": [
+    "final_calibration"
+   ]
+  },
+  {
+   "at": "node_gamma:node_gamma_relay_station:node_gamma_relay_station",
+   "only_if_active": [
+    "Final Calibration"
+   ],
+   "redock": true
+  }
+ ]
+}

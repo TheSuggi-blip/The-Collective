@@ -20,20 +20,20 @@ name below is a link into one of the sub-indexes of this folder.
 
 | Group | What it holds | Routes | Home space | Beyond the border | Best measured |
 |---|---|---|---|---|---|
-| [Once per Pilot](index.md#once-per-pilot) | Missions and rewards the game pays once per pilot: a new pilot's first work, and seed money. | 24 | 14 | 10 | voidborn-conductive-lattice: 9,110 cr a run |
+| [Once per Pilot](index.md#once-per-pilot) | Missions and rewards the game pays once per pilot: a new pilot's first work, and seed money. | 25 | 15 | 10 | voidborn-conductive-lattice: 9,110 cr a run |
 | [Paying Routes](index.md#paying-routes) | Work that repeats and whose runs measured above zero. | 24 | 2 | 22 | mine-wolf-1061-vent: 7,680 cr per ship-hour |
 | [Tests](index.md#tests) | Work that repeats and has no measured figure yet: one ship until its first RESULT line is read. | 10 | 6 | 4 | not measured yet |
 | [Fitting](index.md#fitting) | A module bought and fitted: the tool a kind of work needs. | 11 | 10 | 1 | fit-ice-harvester-lhs-1140: -4,320 cr per ship-hour |
 | [Reading and Waiting](index.md#reading-and-waiting) | The census and the park route: they earn nothing; they keep the picture fresh and a ship without work docked. | 4 | 2 | 2 | census-voidborn: -530 cr per ship-hour |
 | [Measured at a Loss](index.md#measured-at-a-loss) | Work that repeats and whose runs measured zero or below. | 34 | 12 | 22 | mine-bellatrix: 0 cr per ship-hour |
 | [Off](index.md#off) | Written down, not flown. | 18 | 10 | 8 | voidborn-collective-provides: 4,160 cr per ship-hour |
-| All | | 125 | 56 | 69 | |
+| All | | 126 | 57 | 69 | |
 
 ## Routes by Zone and Kind
 
 | Zone | Routes | census | circuit | hunt | mine | Farthest system, jumps from home |
 |---|---|---|---|---|---|---|
-| home space | 56 | 1 | 36 | 10 | 9 | 3 |
+| home space | 57 | 1 | 37 | 10 | 9 | 3 |
 | beyond the border | 69 | 2 | 15 | 26 | 26 | 8 |
 
 ## Plans by Role
@@ -46,7 +46,7 @@ name below is a link into one of the sub-indexes of this folder.
 | [miner](plan.md#miner) | Zero | 35 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 2 |
 | [scout](plan.md#scout) | Oracle | 20 | voidborn-first-steps-board > voidborn-network-expansion > voidborn-collective-provides | 6 |
 | [sentinel](plan.md#sentinel) | Unity | 31 | voidborn-first-steps-board > voidborn-collective-provides > voidborn-signal-protocol | 0 |
-| [trader](plan.md#trader) | Mercury | 18 | voidborn-first-steps-board > voidborn-network-expansion > voidborn-collective-provides | 5 |
+| [trader](plan.md#trader) | Mercury | 19 | voidborn-first-steps-board > voidborn-network-expansion > voidborn-collective-provides | 5 |
 
 ## The Guidebooks
 
