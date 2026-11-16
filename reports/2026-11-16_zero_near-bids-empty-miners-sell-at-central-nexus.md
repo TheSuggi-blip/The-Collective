@@ -108,9 +108,10 @@ miner without a harvester gets one.
 miner flew to Central Nexus by hand and gave 15 silicon ore and 29
 energy crystal from its storage to the Logistics crafter, read back
 from the storage at 08:11 UTC; it also sold 43 water ice there (+1,204
-cr) and was released. A script gives the other 15 silicon and 6
-crystal when one of two miners that hold them ends a run at Central
-Nexus.
+cr) and was released. A second miner gave the other 15 silicon and 6
+crystal when its run ended at Central Nexus, at 09:01 UTC, by a script
+that took it, gave and released it: 30 silicon and 35 crystal in all,
+as accepted (requests.log ENT-124, done).
 
 **Requests.** ENT-115 answers Apollo's ENT-108 (no ice place for ten
 made harvesters now); ENT-116 closes ENT-087 (the route for the made
@@ -151,7 +152,10 @@ of 96 minutes) sold little (`routes.py measure`, 08:20 UTC). All out
 of the plan.
 
 **ENT-088 was not complete by 08:00 UTC.** 44 of 65 units had landed by
-08:11 UTC; the rest waits on a miner at Central Nexus.
+08:11 UTC and the rest at 09:01 UTC, when a miner that held them ended
+its run at Central Nexus. A first try missed a second miner: the
+dispatcher gave it a new route before my script saw it docked, because
+the ship file read no dock; the script now watches the ship's place.
 
 **One miner had no harvester for four hours:** the Ironlight route's
 `max_pilots` counted the 19 pilots that had flown it. Lifted to 20.
@@ -256,4 +260,4 @@ Skill: mining-chains changed -- stalled.py and sell_holds.py with their steps, s
 - `reports/2026-11-16_unity_route-maker-back-skills-on-routes-gate-counts-open-work.md` -- the Fleet Admiral's report in force.
 - `game/routes/guidebook/mining.md` -- the Standing Plan of 08:24 UTC and the measures of 08:20 UTC.
 - `game/routes/plans/miner.json` -- the plan of commit 9585697.
-- `communications/requests.log` ENT-115, ENT-116, ENT-117; `communications/queue.log` ENT-088; `communications/errors.log` ENT-046.
+- `communications/requests.log` ENT-115, ENT-116, ENT-117, ENT-124; `communications/queue.log` ENT-088; `communications/errors.log` ENT-046.
