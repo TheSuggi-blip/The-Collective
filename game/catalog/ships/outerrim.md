@@ -1,7 +1,7 @@
 # Outerrim -- Hulls
 
-Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.717.0; never edited by hand.
-Up: [master-index.md](../master-index.md). Hulls: 67. The Piloting a tier needs, from the hulls of the catalog: tier 2: Piloting 10; tier 3: Piloting 20; tier 4: Piloting 30; tier 5: Piloting 50.
+Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.719.3; never edited by hand.
+Up: [master-index.md](../master-index.md). Hulls: 68. The Piloting a tier needs, from the hulls of the catalog: tier 2: Piloting 10; tier 3: Piloting 20; tier 4: Piloting 30; tier 5: Piloting 50.
 What a hull is built from: `python3 -I -B game/fleet/craftbook.py build <hull id>`, or `tables/ships.tsv`.
 
 ## Tier 0
@@ -87,6 +87,7 @@ What a hull is built from: `python3 -I -B game/fleet/craftbook.py build <hull id
 | `manifest_destiny` | Explorer | Exploration | 30 | 3 | 800 / 350 / 30 | 3 | 900 | 335 | 3 / 2 / 5 | 45 / 120 | anomaly_detector, scrapgun, scrapgun, expanded_fuel_tank, cargo_expander_iii |
 | `cold_comfort` | Refinery | Industrial | 30 | 3 | 700 / 250 / 28 | 2 | 320 | 780 | 1 / 2 / 5 | 32 / 90 | ice_harvester_iv |
 | `lungful` | Refinery | Industrial | 30 | 3 | 700 / 250 / 28 | 2 | 320 | 840 | 1 / 2 / 5 | 32 / 90 | gas_harvester_iv |
+| `no_fixed_address` | Outpost Tender | Industrial | -- | 3 | 900 / 300 / 45 | 2 | 900 | 600 | 1 / 4 / 5 | 50 / 110 | pulse_laser_iii, shield_booster_iii, armor_plate_ii, damage_control_system, ship_scanner_ii, cargo_expander_iii |
 | `pithead` | Miner | Industrial | 30 | 3 | 900 / 350 / 35 | 2 | 550 | 1800 | 1 / 2 / 6 | 38 / 100 | mining_laser_iv, mining_laser_iv, mining_laser_iv, autocannon_ii |
 | `rapid_smelter` | Refinery | Industrial | 30 | 3 | 800 / 300 / 30 | 2 | 320 | 720 | 1 / 2 / 5 | 35 / 95 | -- |
 | `good_enough` | Logistics | Support | 30 | 3 | 850 / 350 / 35 | 2 | 650 | 840 | 2 / 2 / 5 | 40 / 110 | scrapgun, cargo_expander_iii, cargo_expander_iii, expanded_fuel_tank, shield_booster_i |

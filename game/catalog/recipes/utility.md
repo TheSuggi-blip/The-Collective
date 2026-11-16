@@ -1,6 +1,6 @@
 # Utility -- Recipes
 
-Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.717.0; never edited by hand.
+Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.719.3; never edited by hand.
 Up: [master-index.md](../master-index.md). Recipes: 81; by hand: 63; in a facility only: 18.
 
 | Recipe | Makes | From | Where | Time |

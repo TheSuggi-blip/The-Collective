@@ -7,9 +7,9 @@ author: Unity
 
 # master-index.md -- The Game's Catalog
 
-Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.717.0; never edited by hand.
+Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.719.3; never edited by hand.
 Start here: every name below is a link into one of the sub-indexes of this folder.
-Recipes: 892. Facilities: 2953. Hulls: 380. Modules: 270. Items: 879. Skills: 30.
+Recipes: 892. Facilities: 2953. Hulls: 385. Modules: 270. Items: 879. Skills: 30.
 
 - Ask a question instead of reading a table: `python3 -I -B game/fleet/craftbook.py` from the
   repository root. `item <text>` finds an item, how it is made and what uses it; `needs <item>
@@ -72,8 +72,8 @@ The Piloting a tier needs: tier 2: Piloting 10; tier 3: Piloting 20; tier 4: Pil
 | [voidborn](ships/voidborn.md) | 65 | 0: 1, 1: 11, 2: 15, 3: 18, 4: 13, 5: 7 |
 | [crimson](ships/crimson.md) | 68 | 0: 1, 1: 13, 2: 18, 3: 15, 4: 16, 5: 5 |
 | [nebula](ships/nebula.md) | 66 | 0: 1, 1: 13, 2: 13, 3: 19, 4: 13, 5: 7 |
-| [outerrim](ships/outerrim.md) | 67 | 0: 1, 1: 14, 2: 19, 3: 15, 4: 13, 5: 5 |
-| [pirate and other](ships/pirate-and-other.md) | 49 | 1: 9, 2: 11, 3: 15, 4: 14 |
+| [outerrim](ships/outerrim.md) | 68 | 0: 1, 1: 14, 2: 19, 3: 15, 4: 14, 5: 5 |
+| [pirate and other](ships/pirate-and-other.md) | 53 | 1: 9, 2: 14, 3: 16, 4: 14 |
 | [solarian](ships/solarian.md) | 65 | 0: 1, 1: 11, 2: 15, 3: 18, 4: 15, 5: 5 |
 
 ## Modules by Slot
@@ -98,4 +98,4 @@ Tab-separated, one row per thing, a header row under three comment lines: for a 
 | `tables/items.tsv` | 879 | id, name, category, rarity, size, base_value, made_by, used_in_recipes, used_in_builds, extracted_by |
 | `tables/modules.tsv` | 270 | id, name, type, slot, cpu, power, size, base_value, damage, reach, cooldown, effect, special |
 | `tables/recipes.tsv` | 892 | id, name, category, makes, from, time, by_hand, facilities, notes |
-| `tables/ships.tsv` | 380 | id, name, empire, class, category, tier, piloting_required, shipyard_tier, hull, shield, armor, speed, fuel, cargo, cpu, power, weapon_slots, defense_slots, utility_slots, crew, build_time, build_materials, default_modules, notes |
+| `tables/ships.tsv` | 385 | id, name, empire, class, category, tier, piloting_required, shipyard_tier, hull, shield, armor, speed, fuel, cargo, cpu, power, weapon_slots, defense_slots, utility_slots, crew, build_time, build_materials, default_modules, notes |

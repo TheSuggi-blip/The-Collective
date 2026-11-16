@@ -1,7 +1,7 @@
 # Pirate and other -- Hulls
 
-Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.717.0; never edited by hand.
-Up: [master-index.md](../master-index.md). Hulls: 49. The Piloting a tier needs, from the hulls of the catalog: tier 2: Piloting 10; tier 3: Piloting 20; tier 4: Piloting 30; tier 5: Piloting 50.
+Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.719.3; never edited by hand.
+Up: [master-index.md](../master-index.md). Hulls: 53. The Piloting a tier needs, from the hulls of the catalog: tier 2: Piloting 10; tier 3: Piloting 20; tier 4: Piloting 30; tier 5: Piloting 50.
 What a hull is built from: `python3 -I -B game/fleet/craftbook.py build <hull id>`, or `tables/ships.tsv`.
 
 ## Tier 1
@@ -26,13 +26,16 @@ What a hull is built from: `python3 -I -B game/fleet/craftbook.py build <hull id
 | `filibuster` | Monitor | Combat | 10 | 1 | 760 / 80 / 42 | 1 | 400 | 80 | 2 / 6 / 2 | 30 / 75 | autocannon_ii, autocannon_ii, armor_plate_ii, armor_plate_ii, armor_plate_ii, armor_plate_ii, kinetic_hull_hardener, explosive_hull_hardener, assault_barracks, crew_armory |
 | `flight_risk` | Blockade Runner | Combat | 10 | 1 | 125 / 55 / 5 | 6 | 700 | 80 | 2 / 1 / 3 | 18 / 45 | autocannon_ii, afterburner_ii, shield_booster_ii, security_bulkheads, autocannon_i |
 | `hostile_takeover` | Assault | Combat | 10 | 1 | 250 / 90 / 17 | 3 | 110 | 50 | 4 / 2 / 1 | 24 / 45 | autocannon_ii, autocannon_ii, autocannon_i, autocannon_i, armor_plate_ii, kinetic_hull_hardener, assault_barracks |
+| `small_claims` | Corsair | Combat | -- | 1 | 240 / 130 / 14 | 5 | 300 | 60 | 3 / 2 / 2 | 36 / 70 | pulse_laser_ii, pulse_laser_ii, autocannon_ii, shield_booster_ii, armor_plate_i, ship_scanner_ii, afterburner_ii |
 | `lone_star` | Multirole | Combat Support | -- | 1 | 300 / 180 / 18 | 4 | 360 | 240 | 2 / 2 / 4 | 40 / 80 | pulse_laser_ii, pulse_laser_i, shield_booster_ii, armor_plate_i, mining_laser_ii, ship_scanner_ii, cargo_expander_ii |
 | `bulk_discount` | Bulk Hauler | Commercial | 10 | 1 | 300 / 50 / 5 | 2 | 760 | 900 | 1 / 1 / 6 | 22 / 50 | autocannon_i, armor_plate_ii, cargo_expander_iii, cargo_expander_iii, cargo_expander_iii, cargo_expander_iii, cargo_expander_iii, cargo_expander_ii |
 | `last_call` | Tanker | Commercial | 10 | 1 | 185 / 40 / 9 | 3 | 1500 | 75 | 1 / 1 / 2 | 14 / 35 | autocannon_ii, refueling_pump, security_bulkheads, hull_reinforcement_i |
+| `canteen` | Water Tender | Industrial | -- | 1 | 240 / 110 / 12 | 3 | 340 | 260 | 0 / 1 / 4 | 30 / 58 | ice_harvester_ii, cargo_expander_ii, ship_scanner_i, shield_booster_i |
 | `larder` | Hunter | Industrial | -- | 1 | 460 / 80 / 32 | 4 | 420 | 260 | 3 / 2 / 3 | 30 / 60 | pulse_laser_ii, pulse_laser_ii, armor_plate_ii, shield_booster_ii, ship_scanner_ii, cargo_expander_ii, afterburner_ii |
 | `mineral_rights` | Miner | Industrial | 10 | 1 | 200 / 55 / 12 | 2 | 120 | 230 | 2 / 1 / 2 | 14 / 38 | autocannon_ii, mining_laser_ii, armor_plate_ii, autocannon_ii |
 | `repo` | Salvager | Industrial | 10 | 1 | 180 / 65 / 8 | 2 | 200 | 370 | 1 / 1 / 3 | 18 / 40 | advanced_tow_rig, autocannon_ii, armor_plate_ii |
 | `workhorse` | Multirole | Industrial | -- | 1 | 220 / 100 / 12 | 3 | 300 | 300 | 1 / 1 / 4 | 30 / 55 | mining_laser_ii, cargo_expander_ii, ship_scanner_i, shield_booster_i, pulse_laser_i |
+| `write_off` | Salvage Tug | Industrial | -- | 1 | 300 / 90 / 22 | 3 | 380 | 280 | 0 / 2 / 4 | 30 / 60 | tractor_beam, salvage_module, cargo_expander_ii, ship_scanner_i, shield_booster_ii, armor_plate_i |
 
 ## Tier 3
 
@@ -48,6 +51,7 @@ What a hull is built from: `python3 -I -B game/fleet/craftbook.py build <hull id
 | `rhetorical_question` | Assault | Combat | 20 | 2 | 480 / 220 / 24 | 2 | 380 | 90 | 5 / 3 / 3 | 38 / 110 | pulse_laser_ii, pulse_laser_ii, pulse_laser_ii, focused_beam_i, focused_beam_i, shield_booster_ii, armor_plate_ii, damage_control_system, assault_barracks, crew_armory |
 | `running_tab` | Cruiser | Combat | 20 | 2 | 340 / 130 / 12 | 5 | 650 | 75 | 4 / 2 / 3 | 32 / 82 | autocannon_ii, autocannon_ii, autocannon_ii, railgun_ii, armor_plate_iii, damage_control_system, assault_barracks |
 | `no_take_backs` | Control Cruiser | Combat Support | 20 | 2 | 380 / 340 / 14 | 2 | 380 | 90 | 2 / 4 / 5 | 64 / 120 | pulse_laser_ii, pulse_laser_ii, shield_booster_ii, shield_recharger_ii, armor_plate_ii, damage_control_system, security_bulkheads, crew_armory, assault_barracks |
+| `palisade` | Escort | Combat Support | -- | 2 | 540 / 280 / 26 | 3 | 480 | 120 | 3 / 4 / 2 | 46 / 90 | pulse_laser_ii, autocannon_ii, autocannon_ii, shield_booster_ii, shield_booster_ii, armor_plate_ii, damage_control_system, ship_scanner_ii, shipboard_sickbay |
 | `privateer` | Patrol Cutter | Combat Support | -- | 2 | 430 / 120 / 18 | 4 | 420 | 75 | 2 / 3 / 3 | 42 / 65 | pulse_laser_ii, autocannon_ii, shield_booster_ii, damage_control_system, ship_scanner_ii, shipboard_sickbay |
 | `liquidation` | Bulk Hauler | Commercial | 20 | 2 | 450 / 200 / 18 | 2 | 400 | 745 | 1 / 2 / 4 | 30 / 70 | autocannon_ii, armor_plate_ii, damage_control_system, assault_barracks, crew_armory, security_bulkheads, cargo_expander_iii |
 | `nightcap` | Hospitality Coaster | Commercial | -- | 2 | 380 / 230 / 12 | 3 | 500 | 220 | 0 / 3 / 4 | 35 / 65 | shield_booster_ii, damage_control_system, cargo_expander_ii, ship_scanner_ii |

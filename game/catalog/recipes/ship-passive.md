@@ -1,6 +1,6 @@
 # Ship Passive -- Recipes
 
-Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.717.0; never edited by hand.
+Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.719.3; never edited by hand.
 Up: [master-index.md](../master-index.md). Recipes: 10; by hand: 0; in a facility only: 10.
 
 | Recipe | Makes | From | Where | Time |
