@@ -46,7 +46,7 @@ hours, 7,910 (`hive.py tasks`, 08:18 UTC); a ship without work earns 0.
 | 8 | `mine-achernar-frost-ring-nexus` | 13 (12 miners, 1 hauler of Logistics) | 2,650 (5 runs); about 3,200 on its 4 paying runs | Central Nexus, four jumps: the one deep water-ice bid |
 | 9 | `mine-wolf-1061-frozen-drift-nexus` | 5 | 1,640 (4 runs); about 3,400 on its 2 paying runs | Central Nexus, four jumps; field 7,882 water ice |
 | 10 | `mine-ruchbah-ice-belt-nexus` | 1, a test | not measured | Central Nexus, four jumps; field 6,832 water ice |
-| 11 | `mine-alnair-ice-fields-nexus` | 6 | 1,820 (3 runs); about 2,870 on its paying run | Central Nexus, five jumps; field 47,439 water ice |
+| 11 | `mine-alnair-ice-fields-nexus` | 8 (6 -> 8 at 09:05 UTC) | 1,820 (3 runs); about 2,870 on its paying run | Central Nexus, five jumps; field 47,439 water ice |
 | 12 | `mine-ruchbah-ice-belt`, `mine-achernar-frost-ring` | 1 each | their last three runs sold no water ice | The Experiment: they sell methane at 36 and what the water bid regains, from storage too |
 | 13 | `mine-cryogenic-reserve` | 1, closed by the loss stop | not measured at Central Nexus | Nexus Prime, 0 jumps; field 727 water ice |
 | 14 | `mine-wolf-1061-frozen-drift`, `mine-alnair-ice-fields` | 1 each | 2,070 (10 runs), 840 (9 runs) | Node Alpha: its bid regains about 485 an hour at 31 cr |
@@ -62,7 +62,7 @@ pool), Node Alpha 0 at 07:25 UTC (regains about 485 an hour), Synchrony
 stands: Central Nexus, 28 cr for 732 and 44,128 in all its levels at
 07:58 UTC, regaining about 1,250 an hour at its best price. It lies
 four to five jumps from Achernar, Wolf 1061, Ruchbah and Alnair; the
-plan puts about 25 ships there, about 4,000 units an hour, which the
+plan puts about 27 ships there, about 4,300 units an hour, which the
 depth carries for the four hours to the next turn. The Experiment and
 Node Alpha routes keep one ship each to sell what their bids regain.
 
