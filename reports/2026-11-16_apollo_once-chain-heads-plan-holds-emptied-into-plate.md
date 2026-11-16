@@ -124,7 +124,7 @@ capacity reading; the book of 08:48 UTC read 29 x 5,665.
 the bids bound ice work. By 09:27 the Central Nexus water-ice bid stood at
 30 x 41,785, and I asked him for places (ENT-128). The fill gate read HALT
 at 09:27 on `mine-homam-cryobelt`, which sells at The Experiment (37 x 5 at
-09:24): not added, it would sell nothing. Last line at 09:34 UTC: `PASS: 12
+09:24): not added, it would sell nothing. Last line at 09:43 UTC: `PASS: 10
 ships of hauler wait, and nothing that pays and no test is open to them`;
 what closes the work to them is ten places of the chain taken, navigation 3,
 and full ice routes.
