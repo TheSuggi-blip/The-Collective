@@ -49,7 +49,7 @@ APOPHIS (6)): the carapace in each drone's storage becomes armor plate where the
 is docked, and plates are sold no deeper than the bid there. Not a route yet: the
 circuit runner has no craft step.
 
-At 09:16 UTC the fill gate read PASS with 17 drones waiting. What closes the work to
+At 09:34 UTC the fill gate read PASS with 20 drones waiting. What closes the work to
 them: navigation 3 for Signal Fragments (12), First Steps not booked for Network
 Expansion (13), one hunter per First Hunt herd (12 for 2 places), cinder-sylph herds
 under four or resting, every census system read. The veil-ray hunts are `off` since
@@ -110,6 +110,7 @@ the veil-ray part of it stopped paying at 07:05 UTC (section 2). No hull lost.
 | `hunt-test-tanglewood-hollow-pilgrim` | 1 run, 2 kills, -50 cr per ship-hour | 2026-11-16 05:16 UTC | Drop: 2 crystal melt (bid 54 cr) and creature carapace. Out |
 | `hunt-dimming-pocket-veil-ray`, `hunt-denebola-fractured-prism-veil-ray` | 3 runs each: 610 and -10 cr per ship-hour, 1 and 2 kills | 2026-11-16 05:16 UTC | A ship not ours at the place in every Dimming Pocket run and in 2 of 3 at Denebola. Out |
 | The seven veil-ray hunts: `hunt-gsc-veil-ray` (3,020 by all its runs), `-hamal-` (2,310), `-ruchbah-` (2,100), `-keid-fractured-prism-` (1,850), `-faintlight-drift-` (1,300), `-low-charge-glint-` (1,060), `-cedarhold-dim-lattice-` (900) | 21 drone runs from 07:05 UTC, read at 09:05 UTC: -1,851 cr in about 474 hunter-minutes, about -234 cr per ship-hour; at 09:20 UTC 23 runs, -2,056 cr, none sold anything, 18 looted curd | 2026-11-16 09:12 UTC | The verdigris curd bid (330 cr x 50) left all seven stations of our books between 07:08 and 07:51 UTC (data/market/history.jsonl) and none stood at 09:02 UTC; The Experiment bids 2 cr. Our runs sold 128 curd from 03:00 to 08:00 UTC against about 350 bid at seven stations: whether others sold the rest, or the bids were withdrawn, is not in our record. `status: off` and out of the plan; back when a curd bid of 100 cr or more reads again |
+| `hunt-dimming-pocket-veil-ray` (no plan holds it) | 7 runs of the fleet, 80 cr per ship-hour by all runs | 2026-11-16 09:33 UTC | Sells curd like the seven: `status: off` when the fill gate asked for it at 09:31 UTC; back with a curd bid |
 | `voidborn-first-hunt-achernar` | 19 drone runs from 05:30 UTC, 0 hand-ins, -1,474 cr | 2026-11-16 09:12 UTC | A ship not ours at the place in every run from 06:49 UTC (the hunt step's last word in each row). Out of the plan; `store: all` at its last stop |
 | `voidborn-first-hunt-schedar` | 17 runs of the fleet from 03:13 UTC, 1 hand-in, -12 cr in sum | 2026-11-16 09:16 UTC | A ship not ours at the place in every run from 04:58 UTC. `status: off`; back when a census reads the belt free twice in a row |
 

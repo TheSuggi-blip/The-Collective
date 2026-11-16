@@ -42,8 +42,10 @@ not traced. The scale of that hour: the fleet's best repeating
 route is our own `hunt-test-achernar-cinder-sylph`, 6,423 credits per ship-hour over
 four hours (view tasks, 09:10 UTC); a ship without work earns 0.
 
-The fill gate's last line, 09:29 UTC: "PASS: 19 ships of drone wait, and nothing
-that pays and no test is open to them". No drone is held by hand (`grep "hand
+The fill gate's last line, 09:34 UTC: "PASS: 20 ships of drone wait, and nothing
+that pays and no test is open to them"; at 09:31 UTC it had halted once more on
+`hunt-dimming-pocket-veil-ray`, a veil-ray route in no plan, set off at 09:33 UTC on
+the same record as the seven. No drone is held by hand (`grep "hand
 Apophis" data/fleet/orders/*` printed nothing at 09:29 UTC). Levels (`hive.py
 levels`, 09:10 UTC): Piloting 3, 4 and 6 (lowest, median, highest), 89 XP an hour
 on average since birth, 141 hours to Piloting 10 at that rate.
@@ -101,7 +103,8 @@ before 07:00 UTC. Done: routes off; requests.log ENT-125.
 **The fill gate asked for losing routes back.** It judges a route by all its runs:
 twice between 09:05 and 09:16 UTC it called the Faintlight veil-ray hunt (1,300 by
 all runs) and then First Hunt at Schedar (+20 cr a run) paying work. Done: `status: off` on each,
-with its record. The gate's PASS rests on that judgment.
+with its record, and on the Dimming Pocket veil-ray route (80 by all runs) when the
+gate asked for it at 09:31 UTC. The gate's PASS rests on that judgment.
 
 **First Hunt at Achernar Belt:** 19 drone runs from 05:30 UTC, 0 hand-ins, -1,474
 cr; a ship not ours at the place in every run from 06:49 UTC. Schedar: 1 hand-in
