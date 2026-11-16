@@ -24,7 +24,7 @@ at the end of every turn.
 ## Standing Plan
 
 What the scouts fly between two turns, from `game/routes/plans/scout.json`
-(commit b09dd88, 2026-11-16 03:35 UTC), checked against
+(the commit of 2026-11-16 03:43 UTC), checked against
 `hive.py standing`. Twenty ships; a free ship takes the first route open
 to it, in this order.
 
@@ -33,9 +33,8 @@ to it, in this order.
 | 1 | census-voidborn | at most 3, only when a home system is 30 minutes old; about 2.3 on average | -550 (93 runs, `routes.py measure`) | Every Voidborn system read within the hour: 66 gaps in the four hours to 03:04 UTC, median 35 minutes, longest 45 |
 | 2 | voidborn-precedence, voidborn-selling, voidborn-concurrent, voidborn-substrate, voidborn-missions-1, voidborn-mining-missions | 0: every scout holds these booked or done | one-time | A pilot born later flies them first |
 | 3 | hunt-test-atlas-halo-drifter | 1, when the herd holds 4 or more | first run +1,259 cr in 18.7 minutes, about 4,000 per ship-hour on one run | Halo-drifters drop noble condensate, bid 690 cr at all six of our stations |
-| 4 | hunt-test-nightveil-rivetshell | 1, until its first RESULT line | not measured | What a rivetshell drops |
-| 5 | census-frontier | up to 12; about 2.5 on average | -600 (stored); 35 reads since 2026-11-15 23:00 UTC: mean -158 cr, 14.5 minutes | 42 lawless systems, each again after 240 minutes (orders F13) |
-| 6 | park | the rest | 0 | A docked ship costs nothing |
+| 4 | census-frontier | up to 12; about 2.5 on average | -600 (stored); 35 reads since 2026-11-15 23:00 UTC: mean -158 cr, 14.5 minutes | 42 lawless systems, each again after 240 minutes (orders F13) |
+| 5 | park | the rest | 0 | A docked ship costs nothing |
 
 Expected for the four hours: about five ships read and one or two hunt;
 the rest wait docked, because no repeating paying work stands open to a
@@ -64,7 +63,7 @@ the frontier list widened by a ring.
 | census-frontier, read again | 35 reads from 2026-11-15 23:00 to 2026-11-16 03:04 UTC with both wallets read: mean -158 cr, median -156, -77 to -260, 14.5 minutes (`data/routes/runs.jsonl`) | 2026-11-16 | Fuel only. A refuel where it is cheap changes little: Hive Antares and Ironlight Crossroads are the only stations of the 42 systems that sell fuel, and about half of a read's 13 units (158 cr at the fleet's 11.86 cr a unit) could be bought there: about 70 cr saved on an Antares read and 30 on an LHS 1140 read, under 2% of the round's 6,600 cr (an estimate; units per read not recorded) |
 | census-frontier | 35 runs, 14 minutes and -140 cr per run, -600 cr per ship-hour (`routes.py measure`, 23:45 UTC); a third-ring read 15.1 to 15.5 minutes and -156 to -169 cr; Antares by hand 18.7 minutes, -96 cr | 2026-11-15 | Fuel only. Kept on Suggi's word (orders F13). No own ship below full hull at 23:31 UTC (`data/fleet/ships/`) |
 | voidborn-first-hunt-intercrus-belt, -intercrus-remnants, -gsc-0031 (First Hunt at three herds beyond the border) | 3 runs at 03:11 UTC: objectives not done, -143 to -154 cr each, 15.0 to 20.7 minutes; two pilots held the mission from a failed home run, so The Experiment did not offer it; the ships were seen at other places of the systems | 2026-11-16 | Cause not found (requests.log ENT-092). Out of the plan since b09dd88 |
-| hunt-test-amberfall-sift-ray (with chlorophage), hunt-test-stormwatch-lantern-slug | one run each, -110 cr: crystallized biogas (4) and creature carapace (2), bid 1 to 2 cr; the lantern-slug run left after 1 kill, a ship not ours at the place | 2026-11-16 | The drops do not sell. Out since b09dd88 |
+| hunt-test-amberfall-sift-ray (with chlorophage), hunt-test-stormwatch-lantern-slug, hunt-test-nightveil-rivetshell | one run each: -110, -110 and +496 cr; drops of crystallized biogas (4), creature carapace (2) and creature carapace with raw xeno meat (3), bid 1 to 2 cr; the lantern-slug run left after 1 kill, a ship not ours at the place; the rivetshell run's +496 cr was a neural soma from the hold sold at 617 cr | 2026-11-16 | The drops do not sell. Out of the plan by 03:43 UTC |
 | voidborn-first-hunt-nexus, -gsc, -acubens for scouts | 4 scout runs from 02:01 to 02:49 UTC, objectives not done, -26 to -55 cr each; the three herds read 1, 3 and 0 belt-grazers at 02:37 to 03:04 UTC (`data/wildlife/`) | 2026-11-16 | Too many first hunters for three home herds. Out of the scout plan since 784ac51; the three herds beyond the border that took their place failed too (row above) |
 | Mining for skill (mine-acubens, mine-gsc-seep, mine-pherkad-rift) | scouts: -148 to -179 cr per ship-hour over 60 runs in the four hours to 21:17 UTC (`board.py all`) | 2026-11-15 | The ore had no buyer. Out of the plan since the handover (orders F8) |
 
@@ -143,8 +142,8 @@ next turn's test (orders.log ENT-008, F17): `not measured`.
 ## 7. Open Tests
 
 - Species tests from 2026-11-16 03:11 UTC, one scout each: halo-drifter
-  pays (noble condensate, section 1); sift-ray, chlorophage and
-  lantern-slug do not (section 2); rivetshell is open. A drop without a
+  pays (noble condensate, section 1); sift-ray, chlorophage,
+  lantern-slug and rivetshell do not (section 2). A drop without a
   bid of 50 cr is stored, so the run row shows it. Military tests five
   other species at the same time (`guidebook/military.md`).
 - Leads no field we read holds (`data/scouting/`, read 2026-11-16 between 03:02 and 03:16 UTC):

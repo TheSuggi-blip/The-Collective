@@ -1,7 +1,7 @@
 {
  "role": "scout",
  "owner": "Oracle",
- "note": "The routes the dispatcher tries, in this order, for a free scout pilot. Oracle keeps this file: put a route that pays first, a test with `max_ships` before it enters for all, and end with `park`. No route that loses money stands here to fill time (orders F8). 2026-11-16 03:35 UTC (orders.log ENT-011): census-voidborn first (at most 3 ships, only when a home system is due); the missions that pay once; the halo-drifter test, whose first run paid +1,259 cr in 18.7 minutes (2 noble condensate sold at 690 cr), until a second run measures it; the rivetshell test until its first RESULT line; then census-frontier and park. Out since this commit: the three First Hunt routes beyond the border (3 runs, -143 to -154 cr each, objectives not done, two pilots still holding the mission from the home herds) and the sift-ray and lantern-slug tests (drops of crystallized biogas and creature carapace, bid 1 to 2 cr).",
+ "note": "The routes the dispatcher tries, in this order, for a free scout pilot. Oracle keeps this file: put a route that pays first, a test with `max_ships` before it enters for all, and end with `park`. No route that loses money stands here to fill time (orders F8). 2026-11-16 03:35 UTC (orders.log ENT-011): census-voidborn first (at most 3 ships, only when a home system is due); the missions that pay once; the halo-drifter test, whose first run paid +1,259 cr in 18.7 minutes (2 noble condensate sold at 690 cr), until a second run measures it; then census-frontier and park. Out since this commit: the three First Hunt routes beyond the border (3 runs, -143 to -154 cr each, objectives not done, two pilots still holding the mission from the home herds) and the sift-ray and lantern-slug tests (drops of crystallized biogas and creature carapace, bid 1 to 2 cr). 2026-11-16 03:43 UTC: the rivetshell test out as well: its first run dropped creature carapace and raw xeno meat; its +496 cr came from a neural soma carried in the hold, sold at 617 cr.",
  "routes": [
   "census-voidborn",
   "voidborn-precedence",
@@ -11,7 +11,6 @@
   "voidborn-missions-1",
   "voidborn-mining-missions",
   "hunt-test-atlas-halo-drifter",
-  "hunt-test-nightveil-rivetshell",
   "census-frontier",
   "park"
  ],
@@ -25,10 +24,6 @@
    "when": "turn T10"
   },
   {
-   "what": "Halo-drifter: after a second paying run, a hunt route at Atlas Gas Pocket for one scout, and the other halo-drifter places read for their herds; rivetshell: end the test unless its drop sells",
-   "when": "next turn"
-  },
-  {
    "what": "First Hunt for the scouts that hold it unfinished: a route that hands it in where it was accepted, once the cause of the three failed far-herd runs is known (requests.log); Cracking the Shell (1,500 cr once, three pressblisters) after it",
    "when": "next turn"
   },
@@ -39,6 +34,10 @@
   {
    "what": "Read the game's changelog at every turn and name each line of game/rules/ a release makes wrong in a request to the Fleet Admiral",
    "when": "every turn"
+  },
+  {
+   "what": "Halo-drifter: after a second paying run, a hunt route at Atlas Gas Pocket for one scout, and the other halo-drifter places read for their herds",
+   "when": "next turn"
   }
  ]
 }
