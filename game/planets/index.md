@@ -8,7 +8,7 @@ author: Unity
 # index.md -- Systems We Know
 
 Built by `scripts/intel-index.py` from the system files of this folder;
-never edited by hand. Files listed: 65. The format of a system file:
+never edited by hand. Files listed: 68. The format of a system file:
 `BLUEPRINT.md`.
 
 ## Voidborn space
@@ -84,9 +84,12 @@ never edited by hand. Files listed: 65. The format of a system file:
 | Bluerift | neutral | unknown | 0 | 7 | 2026-11-15 | [n-bluerift.md](n-bluerift.md) |
 | Botein | neutral | unknown | 0 | 7 | 2026-11-16 | [n-botein.md](n-botein.md) |
 | Deepwell | neutral | unknown | 0 | 7 | 2026-11-16 | [n-deepwell.md](n-deepwell.md) |
+| Duskfield | neutral | unknown | 0 | 7 | 2026-11-16 | [n-duskfield.md](n-duskfield.md) |
 | Felis | neutral | unknown | 0 | 7 | 2026-11-15 | [n-felis.md](n-felis.md) |
 | Gliese 876 | neutral | unknown | 0 | 7 | 2026-11-16 | [n-gliese_876.md](n-gliese_876.md) |
 | Goldcrest | neutral | unknown | 0 | 7 | 2026-11-15 | [n-goldcrest.md](n-goldcrest.md) |
 | HD 147513 | neutral | unknown | 0 | 7 | 2026-11-16 | [n-hd_147513.md](n-hd_147513.md) |
 | Intercrus | neutral | medium | 0 | 7 | 2026-11-15 | [n-intercrus.md](n-intercrus.md) |
 | Rastaban | neutral | unknown | 0 | 7 | 2026-11-16 | [n-rastaban.md](n-rastaban.md) |
+| Regor | neutral | unknown | 0 | 7 | 2026-11-16 | [n-regor.md](n-regor.md) |
+| Giausar | neutral | unknown | 0 | 8 | 2026-11-16 | [n-giausar.md](n-giausar.md) |
