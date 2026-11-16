@@ -240,7 +240,7 @@ Kept by Unity. Routes: 23.
 
 ## trader
 
-Kept by Mercury. Routes: 10.
+Kept by Mercury. Routes: 9.
 
 | # | Route | Group | Zone | Open to | Credits per ship-hour |
 |---|---|---|---|---|---|
@@ -250,10 +250,9 @@ Kept by Mercury. Routes: 10.
 | 4 | [voidborn-mining-missions](voidborn-mining-missions.json) | Once per Pilot | home space | once per pilot, up to 40 ships | one-time |
 | 5 | [voidborn-precedence](voidborn-precedence.json) | Once per Pilot | home space | once per pilot, up to 40 ships | one-time |
 | 6 | [voidborn-conductive-lattice](voidborn-conductive-lattice.json) | Once per Pilot | beyond the border, 6 jumps | once per pilot, up to 6 ships, 30 pilots in all, empty hold, from 13,000 cr | one-time |
-| 7 | [mine-stellar-siphon](mine-stellar-siphon.json) | Measured at a Loss | home space | up to 1 ships, needs gas_harvester_i | -370 |
-| 8 | [mine-lesath-gas-cloud](mine-lesath-gas-cloud.json) | Tests | beyond the border, 5 jumps | up to 1 ships, needs gas_harvester_i, empty hold | TBD |
-| 9 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -620 |
-| 10 | [park](park.json) | Reading and Waiting | home space | the park route | -550 |
+| 7 | [mine-lesath-gas-cloud](mine-lesath-gas-cloud.json) | Tests | beyond the border, 5 jumps | up to 1 ships, needs gas_harvester_i, empty hold | TBD |
+| 8 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -620 |
+| 9 | [park](park.json) | Reading and Waiting | home space | the park route | -550 |
 
 Planned:
 
