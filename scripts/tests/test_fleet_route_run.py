@@ -91,5 +91,37 @@ class HuntStepTests(unittest.TestCase):
         self.assertIn("order('circuit ' + ROUTE['id'])", source)             # the hold it hands down is the order it wrote
 
 
+def functions(*names):
+    """The named functions of route_run.py, run on stubs: the runner's steps run at module level, so it is not imported."""
+    source = (FLEET / "route_run.py").read_text(encoding="ascii")
+    tree = ast.parse(source)
+    found = [node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name in names]
+    space = {"re": __import__("re"), "json": __import__("json")}
+    exec(compile(ast.Module(body=found, type_ignores=[]), "route_run.py", "exec"), space)
+    return space
+
+
+class BattleAndHuntWordTests(unittest.TestCase):
+    def test_a_goal_refused_in_battle_sets_the_stance_flee_and_tries_again(self):
+        space = functions("goal", "free_from_battle")
+        calls, answers = [], [(200, {"success": False, "message": "Cannot travel: in_battle"}), (200, {"success": True, "message": "ok"})]
+        space.update(P="drone-1", say=lambda text: None, time=type("T", (), {"sleep": staticmethod(lambda s: None)}),
+                     call=lambda method, path, body=None, timeout=900: answers.pop(0),
+                     raw=lambda action, params=None, group="spacemolt": calls.append((action, params, group)) or {"structuredContent": {"is_participant": False}},
+                     body=lambda d: d.get("structuredContent") or {})
+        self.assertEqual(space["goal"]("go-to-poi", {}), (True, "ok"))
+        self.assertEqual(calls[0], ("stance", {"stance": "flee"}, "spacemolt_battle"))
+        self.assertEqual(calls[1][0], "status")
+
+    def test_the_hunt_step_s_last_word_goes_into_the_run_row_without_the_pilot(self):
+        said = functions("step_said")["step_said"]
+        self.assertEqual(said("go-to-poi ok\nSTEP drone-1: kills 0 in 15 min at belt | goods {} | lowest hull 100% | left: a ship that is not ours was at the place"),
+                         "kills 0 in 15 min at belt | goods {} | lowest hull 100% | left: a ship that is not ours was at the place")
+        self.assertEqual(said("REFUSED: drone-1 is busy\n"), "REFUSED: drone-1 is busy")
+        self.assertEqual(said(""), "no output")
+        source = (FLEET / "route_run.py").read_text(encoding="ascii")
+        self.assertIn("objectives not done; the step said: {said}; the ship stood at {where_now()}", source)
+
+
 if __name__ == "__main__":
     unittest.main()

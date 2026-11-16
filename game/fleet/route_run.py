@@ -115,6 +115,20 @@ def call(method, path, body=None, timeout=900):
         return 0, {'error': f'{type(e).__name__}: {e}'}
 
 
+def free_from_battle():
+    """A goal refused `in_battle`: set the battle stance flee and wait, three minutes at most, until the ship is out.
+    The engine's combat mode flee leaves the battle stance as it was: after the restart of 2026-11-16 02:00 UTC a drone
+    sat 65 minutes in a fight at stance fire while 42 runs failed at their first stop (requests ENT-090)."""
+    raw('stance', {'stance': 'flee'}, 'spacemolt_battle')
+    for _ in range(18):
+        time.sleep(10)
+        if not body(raw('status', group='spacemolt_battle')).get('is_participant'):
+            say('out of the battle after the stance flee')
+            return True
+    say('still in a battle three minutes after the stance flee')
+    return False
+
+
 def goal(kind, options, tries=3):
     d, waited = {}, 0
     while tries > 0:
@@ -125,9 +139,31 @@ def goal(kind, options, tries=3):
             waited += 1
             time.sleep(10)
             continue
+        if 'in_battle' in str(d.get('message') or d.get('error') or '').lower().replace(' ', '_'):
+            free_from_battle()                                               # then the next try
         tries -= 1
         time.sleep(15)
     return False, str(d.get('message') or d.get('error') or '')
+
+
+def step_said(answer):
+    """The hunt step's own last word, for the run row (requests ENT-092): its STEP line without the pilot's name, else
+    its last line. Without it a hunt that ended with no kill left only `objectives not done`, and the pilot's log is
+    overwritten by its next run."""
+    lines = [line.strip() for line in str(answer).splitlines() if line.strip()]
+    for line in reversed(lines):
+        if line.startswith('STEP '):
+            return (line.split(': ', 1)[1] if ': ' in line else line)[:200]
+    return lines[-1][:200] if lines else 'no output'
+
+
+def where_now():
+    """system:poi of the pilot as the fleet collector last wrote it (data/fleet/ships/, at most a few seconds old)."""
+    try:
+        ship = json.loads((DATA / 'fleet' / 'ships' / ((re.sub(r'[^A-Za-z0-9_.-]', '_', P)[:60] or 'pilot') + '.json')).read_text(encoding='utf-8'))
+        return '%s:%s' % (ship.get('system') or '?', ship.get('poi') or 'in transit')
+    except (OSError, ValueError):
+        return 'not read'
 
 
 def raw(action, params=None, group='spacemolt'):
@@ -444,12 +480,13 @@ for n, stop in enumerate(ROUTE['stops']):
             except subprocess.TimeoutExpired as error:
                 answer = str(error.stdout or '') + '\nthe hunt step did not end in time'
             print(answer.rstrip(), flush=True)
+            said = step_said(answer)
             left = {title for title, _mid, finished in active() if not finished} & wanted
             if not left or 'left: a ship' in answer or (DATA / 'fleet' / 'STOP').exists():
                 break
         say(f'hunt at {hunt_poi}: ' + ('objectives done' if not left else f'stopped, still open: {sorted(left)}'))
         if left:
-            notes.append(f'hunt {hunt_poi}: objectives not done')
+            notes.append(f'hunt {hunt_poi}: objectives not done; the step said: {said}; the ship stood at {where_now()}')
     if verbose:
         active()
 finish()
