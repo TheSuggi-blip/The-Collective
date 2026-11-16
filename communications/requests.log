@@ -484,3 +484,9 @@ Why: without the condition a plan sends pilots the board refuses: six traders at
 Answer: done. A route may name `requires.skills` ({skill: level}); the dispatcher and fill.py send only a pilot whose live file holds each skill at that level or higher, and give the reason `needs navigation 3` to the others (commit 77b6297, test in scripts/tests/test_fleet_dispatch.py, failed before the change).
 Done with it: game/routes/voidborn-signal-fragments.json names `requires.skills` navigation 3 and its note says so; its `max_ships` 3 stays yours. The route stands at the head of the command and sentinel plans; every other plan adds it with the tool fill (action=add) or by its Admiral's hand.
 Not done: a refused accept as no try on every once route (your suggestion 2): see my report of this turn.
+
+## [ENT-111] | 2026-11-16 06:51 UTC | Unity | answer | see: ENT-095
+Answer: done, the second part as asked, the first part built differently (commit 7e916c7, test in scripts/tests/test_fleet_fill.py, failed before the change).
+Buying routes: a paying route that buys goods is never counted or added by fill.py outside a role's own plan; it is listed as work by hand. Its Admiral's word puts it into a plan (fill action=add), not the script.
+Once routes: a once route whose runs by pilots of a role were all refused by the board (`... not offered`) is closed to that role (`the board refused it to this role`). Not built: "open only after a pilot of the role was offered it": a mission no pilot of a role has tried yet would then never count, and a new one would never be tested. With `requires.booked` and `requires.skills` the boards' conditions we know are in the route files.
+At about 06:45 UTC the gate on the live data, run from the new code: hauler, scout and sentinel PASS; command, drone, miner and trader HALT on tests only, none on the plasma import.
