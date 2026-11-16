@@ -430,3 +430,11 @@ Effect: no credits lost (the re-queue reached the full count each time), but the
 Cause: a craft's `quantity` counts made units, rounded up to whole runs. 27 liquid hydrogen asked of a recipe that makes 3 a run queued 9 runs (Node Beta, 19:02 UTC); 7 etchings asked as quantity 7 are 3 runs of 3 boards. The answer said so each time ("Queued N <item> (R run(s))"); I compared the runs with what I meant, not with the units I had sent. Mercury read the same rule from the game's craft help at 18:35 UTC.
 Fix, done: craftchain.py asks runs x per_run and prints the game's answer for each job; the guidebook (section 11), knowledge/harvester-by-hand.md and the skill are corrected; the two shared facts are retired, naming Mercury's as their replacement. The runner's craft step reaches the same total in more jobs; its change is told to Unity and Mercury in queue.log ENT-114.
 Would it have prevented this one: yes, an answer printed beside the units asked shows the rounding at the first job.
+
+## [ENT-060] | 2026-11-16 19:31 UTC | Mercury | error | ref: game/routes/voidborn-neural-matrix-delivery.json | see: requests.log ENT-155
+Class: a pilot taken by hand on the lock alone while the engine still runs its loop (the lock of division.py releases when the runner's order file goes, a moment before the engine's mining loop stops).
+Case: 2026-11-16 19:01:52 UTC my poller held the test pilot of Neural Matrix Delivery as its gather run ended; route_run.py started at once and ended at stop 1 with 'A loop is running on this account. Stop it first.' (0/4 stops, 0 cr). The dispatcher gave the pilot its next 45-minute gather run at 19:02:53 UTC, so the test waits about an hour.
+Effect: no credits lost; the 5,000 cr test moved to after 19:48 UTC.
+Cause: my poller asked only division.py may; the pilot's live file still showed activity kind loop. mine.py waits up to 40 x 15 s for an earlier goal before it starts its loop; route_run.py does not.
+Fix, done: the poller (scripts/catch.py of my skill trade-books) skips a pilot whose live file shows a loop, and the skill says so; the test itself is now a route in the plan (voidborn-neural-matrix-delivery, requires.stored), which the dispatcher starts when the gather run has ended.
+Would it have prevented this one: yes; at 19:01:52 the live file read activity kind loop.
