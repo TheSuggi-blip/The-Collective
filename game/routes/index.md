@@ -74,6 +74,16 @@ Work that repeats and whose runs measured above zero.
 | [mine-wolf-1061-frozen-drift](mine-wolf-1061-frozen-drift.json) | mine | beyond the border, 4 jumps | Wolf 1061 Frozen Drift: water_ice, nitrogen_ice, deuterium_ice, methane_ice; sold at Node Alpha Processing Station | up to 2 ships, needs ice_harvester_i, empty hold | 6 | 66 | 3,820 | 3,450 | 2026-11-16 |
 | [mine-wolf-1061-vent](mine-wolf-1061-vent.json) | mine | beyond the border, 4 jumps | Wolf 1061 Frozen Drift with a Nitrogen Vent: water and the rare ices, sold at Synchrony | up to 1 ships, needs nitrogen_vent, empty hold | 5 | 56 | 4,330 | 5,360 | 2026-11-16 |
 
+## Tests
+
+Work that repeats and has no measured figure yet: one ship until its first RESULT line is read.
+
+| Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
+|---|---|---|---|---|---|---|---|---|---|
+| [hunt-deepwell-haze-cinder-sylph](hunt-deepwell-haze-cinder-sylph.json) | hunt | beyond the border, 7 jumps | cinder_sylph at deepwell_haze; loot sold at Ironlight Crossroads | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
+| [hunt-deepwell-volatile-ice-frost-moth](hunt-deepwell-volatile-ice-frost-moth.json) | hunt | beyond the border, 7 jumps | frost_moth at deepwell_volatile_ice; loot sold at Ironlight Crossroads | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
+| [hunt-raysheet-nebula-veil-ray](hunt-raysheet-nebula-veil-ray.json) | hunt | beyond the border, 8 jumps | veil_ray at raysheet_nebula; loot sold at Nova Terra Central | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
+
 ## Fitting
 
 A module bought and fitted: the tool a kind of work needs.

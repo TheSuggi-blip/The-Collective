@@ -1,0 +1,20 @@
+{
+ "id": "hunt-deepwell-haze-cinder-sylph",
+ "kind": "hunt",
+ "title": "cinder_sylph at deepwell_haze; loot sold at Ironlight Crossroads",
+ "note": "Written by routemaker.py from the herd's count, the loot of 4 runs of ours and the order book; an estimate of 6728 cr per hunter-hour, not a measurement. A test: one ship, the ranching rules kept. Added as a test by fill.py on 2026-11-16 06:46 UTC (Unity): one ship until its first RESULT line is read.",
+ "place": "deepwell:deepwell_haze",
+ "species": [
+  "cinder_sylph"
+ ],
+ "sell_at": "lhs_1140:0321b3e4406021575337b7be26e53dd7:784309214f105860a16a0c100a70eb14",
+ "min_bid": 384,
+ "kills": 4,
+ "minutes": 40,
+ "max_ships": 1,
+ "min_creatures": 4,
+ "alone": true,
+ "requires": {
+  "empty_hold": true
+ }
+}

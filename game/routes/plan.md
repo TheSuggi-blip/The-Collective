@@ -15,7 +15,7 @@ file; `planned` in it is what the Admiral means to do next. The roles at a glanc
 
 ## command
 
-Kept by Unity. Routes: 24.
+Kept by Unity. Routes: 27.
 
 | # | Route | Group | Zone | Open to | Credits per ship-hour |
 |---|---|---|---|---|---|
@@ -41,8 +41,11 @@ Kept by Unity. Routes: 24.
 | 20 | [mine-antares-ice-fields](mine-antares-ice-fields.json) | Paying Routes | beyond the border, 5 jumps | up to 1 ships, needs ice_harvester_i, empty hold | 630 |
 | 21 | [mine-intercrus-ice-fields](mine-intercrus-ice-fields.json) | Paying Routes | beyond the border, 7 jumps | up to 2 ships, needs ice_harvester_i, empty hold | 1,370 |
 | 22 | [mission-cracking-the-shell-central](mission-cracking-the-shell-central.json) | Once per Pilot | beyond the border, 5 jumps | once per pilot, up to 1 ships, empty hold, after the reward First Hunt: Belt-Grazers | one-time |
-| 23 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -620 |
-| 24 | [park](park.json) | Reading and Waiting | home space | the park route | -670 |
+| 23 | [hunt-deepwell-volatile-ice-frost-moth](hunt-deepwell-volatile-ice-frost-moth.json) | Tests | beyond the border, 7 jumps | up to 1 ships, empty hold | TBD |
+| 24 | [hunt-deepwell-haze-cinder-sylph](hunt-deepwell-haze-cinder-sylph.json) | Tests | beyond the border, 7 jumps | up to 1 ships, empty hold | TBD |
+| 25 | [hunt-raysheet-nebula-veil-ray](hunt-raysheet-nebula-veil-ray.json) | Tests | beyond the border, 8 jumps | up to 1 ships, empty hold | TBD |
+| 26 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -620 |
+| 27 | [park](park.json) | Reading and Waiting | home space | the park route | -670 |
 
 ## drone
 
