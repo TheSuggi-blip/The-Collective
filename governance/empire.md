@@ -20,7 +20,7 @@ they store, the members by name and the treasury's balance. They are live
 data of the unit (the tools `hive` with `verb=empire`, `stock`, `ship`;
 `game/fleet/empire.py show`).
 
-Facts as of 2026-11-16T21:02:41Z.
+Facts as of 2026-11-16T23:05:36Z.
 
 ## 1. The Faction
 
@@ -30,7 +30,7 @@ Facts as of 2026-11-16T21:02:41Z.
 | Founded | 2026-11-15 |
 | Leader | the Fleet Admiral's flagship |
 | Members | 16 of a limit of 50 |
-| Ships of the fleet in it | 16 of 246 |
+| Ships of the fleet in it | 16 of 245 |
 | Stations of our own | 0 of 5 a faction may hold |
 | Outposts | 0 of 8 |
 | Offices at stations | 0, rent 0 cr per cycle (0 cr a day) |
@@ -70,10 +70,14 @@ list of stations. Where a base is built is Suggi's decision.
 | `achernar` | Achernar | lawless | 4 | none | candidate | Oracle | first of three beside the best ice: the only one with belt, gas and ice (game/routes/guidebook/intel.md; queue.log ENT-067, ENT-090) |
 | `alnair` | Alnair | lawless | 5 | none | candidate | Oracle | second of three beside the best ice (game/routes/guidebook/intel.md; queue.log ENT-067, ENT-090) |
 | `wolf_1061` | Wolf 1061 | lawless | 4 | none | candidate | Oracle | third of three beside the best ice (game/routes/guidebook/intel.md; queue.log ENT-067, ENT-090) |
+| `yildun` | Yildun | lawless | 11 | none | candidate | Suggi | the region between our space and the Outer Rim: named for a station (Suggi, 2026-11-16); 11 jumps from home, lawless, not read by us yet |
+| `aldebaran` | Aldebaran | lawless | 9 | none | candidate | Suggi | the region between our space and the Outer Rim: named for a station (Suggi, 2026-11-16); 9 jumps from home, lawless, not read by us yet |
+| `hawthorne` | Hawthorne | lawless | 13 | none | candidate | Suggi | with alchiba the region named for a later station (Suggi, 2026-11-16); 13 jumps from home, lawless, not read by us yet |
+| `alchiba` | Alchiba | lawless | 14 | none | candidate | Suggi | with hawthorne the region named for a later station (Suggi, 2026-11-16); 14 jumps from home, lawless, not read by us yet |
 
 ## 5. What The Faction Can Build
 
-Every faction facility of the game's catalog (0.717.0), line by line and
+Every faction facility of the game's catalog (0.719.3), line by line and
 tier by tier. A higher tier is an upgrade of the one before it and
 replaces its rent. Rent is due every 100 ticks (about 17 minutes) at a
 station that is not ours; at our own station or outpost it is none. The
