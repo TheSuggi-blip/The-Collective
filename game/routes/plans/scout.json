@@ -81,9 +81,9 @@
   "hunt-atlas-gas-pocket": 1,
   "mine-gliese-876-belt": 1,
   "hunt-garnet-dim-lattice-veil-ray": 1,
-  "census-worked": 19,
+  "census-worked": 20,
   "census-frontier": 30,
-  "census-roads": 29,
+  "census-roads": 30,
   "gather-gsc-0027-prism-scatter": 30,
   "gather-hamal-crystal-bloom": 30,
   "park": 30
@@ -92,6 +92,6 @@
  "derived": "Written by game/fleet/plan.py from the division's plan file (data/plans/plan-intel.md), never by hand.",
  "templates": {
   "explorer": 10,
-  "reader": 19
+  "reader": 20
  }
 }
