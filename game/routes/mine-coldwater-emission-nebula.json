@@ -1,0 +1,24 @@
+{
+ "id": "mine-coldwater-emission-nebula",
+ "kind": "mine",
+ "title": "Coldwater Emission Nebula: hydrogen_gas, argon_gas, xenon_gas, neon_gas; sold at Node Gamma Relay Station",
+ "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 1172 cr per ship-hour, not a measurement. A test: one ship. Added as a test by fill.py on 2026-11-16 18:13 UTC (Unity): one ship until its first RESULT line is read.",
+ "belt": "coldwater:coldwater_emission_nebula",
+ "station": "node_gamma:node_gamma_relay_station:node_gamma_relay_station",
+ "minutes": 60,
+ "max_ships": 1,
+ "sell": [
+  {
+   "item": "hydrogen_gas",
+   "min_price": 28
+  },
+  {
+   "item": "argon_gas",
+   "min_price": 2
+  }
+ ],
+ "requires": {
+  "module": "gas_harvester_i",
+  "empty_hold": true
+ }
+}
