@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 25.
+Routes: 24.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -33,7 +33,6 @@ Routes: 25.
 | [census-guard-ice](census-guard-ice.json) | census | beyond the border, 7 jumps | Guard by census: read whole, every hour, the lawless systems where our miners work | up to 2 ships, empty hold | 68 | 13 | -140 | -610 | 2026-11-16 |
 | [census-route-places](census-route-places.json) | census | beyond the border, 8 jumps | Read twice a turn every system beyond our space that a route of any plan uses and no hourly census reads | up to 4 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [guard-marfik-emission-nebula](guard-marfik-emission-nebula.json) | guard | beyond the border, 6 jumps | Guard at Marfik Emission Nebula while a ship of ours mines gas there; docks at Node Beta | up to 1 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
-| [hunt-achernar-belt-carapace](hunt-achernar-belt-carapace.json) | hunt | beyond the border, 4 jumps | Belt-grazers and patina-grazers at Achernar Belt; creature carapace into storage at The Experiment | up to 1 ships, without piercing_railgun_i, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [hunt-cedarhold-dim-lattice-veil-ray](hunt-cedarhold-dim-lattice-veil-ray.json) | hunt | beyond the border, 5 jumps | veil_ray at cedarhold_dim_lattice; loot sold at The Experiment Research Station | up to 1 ships, without piercing_railgun_i, empty hold, standing work | 13 | 13 | 230 | 840 | 2026-11-16 |
 | [hunt-faintlight-drift-veil-ray](hunt-faintlight-drift-veil-ray.json) | hunt | beyond the border, 5 jumps | veil_ray at faintlight_drift; loot sold at Node Beta Industrial Station | up to 1 ships, without piercing_railgun_i, empty hold, standing work | 13 | 31 | 600 | 1,300 | 2026-11-16 |
 | [hunt-keid-belt-carapace](hunt-keid-belt-carapace.json) | hunt | beyond the border, 5 jumps | Belt-grazers and patina-grazers at Keid Belt; creature carapace into storage at Node Beta | up to 1 ships, without piercing_railgun_i, empty hold, standing work | TBD | TBD | TBD | TBD | -- |

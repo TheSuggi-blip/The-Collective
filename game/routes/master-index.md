@@ -21,9 +21,9 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 | [Paying Routes](index-paying-routes.md) | Work that repeats and whose runs measured above zero. | 36 | 8 | 28 | sell-curd-central-nexus: 302,820 cr per ship-hour |
 | [Tests](index-tests.md) | Work that repeats and has no measured figure yet: one ship until its first RESULT line is read. | 14 | 10 | 4 | not measured yet |
 | [Fitting](index-fitting.md) | A module bought and fitted: the tool a kind of work needs. | 9 | 8 | 1 | fit-ice-harvester-lhs-1140: -4,320 cr per ship-hour |
-| [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 25 | 13 | 12 | hunt-gsc-veil-ray: 3,020 cr per ship-hour |
+| [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 24 | 13 | 11 | hunt-gsc-veil-ray: 3,020 cr per ship-hour |
 | [Measured at a Loss](index-measured-at-a-loss.md) | Work that repeats and whose runs measured zero or below. | 40 | 13 | 27 | hunt-denebola-fractured-prism-veil-ray: -10 cr per ship-hour |
-| [Off](index-off.md) | Written down, not flown. | 11 | 8 | 3 | voidborn-first-steps: 4,020 cr per ship-hour |
+| [Off](index-off.md) | Written down, not flown. | 12 | 8 | 4 | voidborn-first-steps: 4,020 cr per ship-hour |
 | All | | 163 | 77 | 86 | |
 
 ## Routes by Zone and Kind

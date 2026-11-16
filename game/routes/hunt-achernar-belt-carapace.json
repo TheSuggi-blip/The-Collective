@@ -2,7 +2,7 @@
  "id": "hunt-achernar-belt-carapace",
  "kind": "hunt",
  "title": "Belt-grazers and patina-grazers at Achernar Belt; creature carapace into storage at The Experiment",
- "note": "2026-11-16 18:33 UTC (Apophis): a test, one ship, standing work. Orders ENT-017 (block APOPHIS): a station takes 35,640 creature carapace and we hold 904 (base_plan, 18:30 UTC); no station bids above 1 cr for it, so the hunter stores it. The herd read 9 belt-grazers and 5 patina-grazers, no pilot, at 18:26 UTC (data/wildlife/achernar.json). Beyond the border: `alone` and an empty hold (F13). First Hunt hunts the same prey (three kills a run, guidebook military.md, section 3).",
+ "note": "2026-11-16 18:33 UTC (Apophis): a test, one ship, standing work. Orders ENT-017 (block APOPHIS): a station takes 35,640 creature carapace and we hold 904 (base_plan, 18:30 UTC); no station bids above 1 cr for it, so the hunter stores it. The herd read 9 belt-grazers and 5 patina-grazers, no pilot, at 18:26 UTC (data/wildlife/achernar.json). Beyond the border: `alone` and an empty hold (F13). First Hunt hunts the same prey (three kills a run, guidebook military.md, section 3). 2026-11-16 19:23 UTC (Apophis): off. Two runs from 18:58 UTC, a ship not of ours at the belt in both: 1 kill, 2 carapace and 1 raw xeno meat, -99 and -44 cr (data/routes/runs.jsonl). A herd where a foreign ship stood twice leaves the plan. The veil-ray hunts loot 5 carapace a run beside their curd (three runs from 18:33 UTC).",
  "place": "achernar:achernar_belt",
  "species": [
   "belt_grazer",
@@ -19,5 +19,6 @@
  "requires": {
   "empty_hold": true,
   "without_module": "piercing_railgun_i"
- }
+ },
+ "status": "off"
 }
