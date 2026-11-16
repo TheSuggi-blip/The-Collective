@@ -31,6 +31,8 @@ CANDIDATES = [
     {"id": "mine-gas", "kind": "mine", "per_ship_hour": 800, "status": "new", "route_id": "",
      "route": {"id": "mine-gas", "kind": "mine", "title": "t", "belt": "far:gas", "station": "home:core:base", "max_ships": 1, "requires": {"module": "gas_harvester"}}},
     {"id": "craft-y", "kind": "craft", "per_ship_hour": 7000, "status": "new", "route_id": "", "needs": "a craft step in the circuit runner"},
+    {"id": "trade-buys", "kind": "trade", "per_ship_hour": 5000, "status": "new", "route_id": "",
+     "route": {"id": "trade-buys", "kind": "circuit", "title": "t", "max_ships": 1, "stops": [{"at": "home:core:base", "buy": [{"item": "x", "qty": 5, "max_price": 100}]}]}},
     {"id": "trade-low", "kind": "trade", "per_ship_hour": 100, "status": "new", "route_id": "",
      "route": {"id": "trade-low", "kind": "circuit", "title": "t", "max_ships": 1, "stops": [HOME]}},
 ]
@@ -110,8 +112,23 @@ class ReadTests(Tree):
         self.assertEqual(got["idle"], ["hauler-3"])
         self.assertEqual(got["closed"], {"needs ice_harvester": [(5000, "ice")], "max_ships 1 reached": [(3000, "rays")],    # a drone starts on `rays` at the next pass
                                          "needs gas_harvester": [(800, "mine-gas")]})             # never `bad`, `craft-y`, `trade-low`
+        self.assertEqual(got["by_hand"], [(5000, "trade-buys")])                                 # it buys goods: never added by itself, however high its estimate
         _seen, got = self.read("hauler", tests=0)
         self.assertEqual((got["tests"], got["idle"]), ([], ["hauler-2", "hauler-3"]))
+
+    def test_one_good_run_is_no_paying_route_and_a_losing_route_is_offered_to_nobody(self):
+        once = dict(ROUTES["herd2"], measured=dict(MEASURED(2000), runs=1))
+        (self.root / "routes" / "herd2.json").write_text(json.dumps(once, indent=1) + "\n", encoding="ascii")
+        _seen, got = self.read("hauler")
+        self.assertEqual(got["paying"], [])                                                       # measured on one run: not yet a route that pays
+        (self.root / "routes" / "herd2.json").write_text(json.dumps(ROUTES["herd2"], indent=1) + "\n", encoding="ascii")
+        stamp = lambda ago: time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(time.time() - ago))
+        with open(self.data / "routes" / "runs.jsonl", "a") as handle:
+            for ago, delta in ((900, 105), (300, -4635)):
+                handle.write(json.dumps({"route": "herd2", "pilot": "drone-9", "minutes": 10, "started": stamp(ago), "credits_before": 9000, "credits_after": 9000 + delta}) + "\n")
+        _seen, got = self.read("hauler")
+        self.assertEqual(got["paying"], [])
+        self.assertIn("at a loss: 2 runs, -4,530 cr in 6 hours", got["closed"])
 
     def test_a_module_decides_and_a_bid_says_how_many_ships_a_mine_carries(self):
         seen, got = self.read("miner")

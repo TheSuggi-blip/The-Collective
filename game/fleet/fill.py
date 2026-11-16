@@ -19,6 +19,8 @@ RULES:
   - It moves no ship: the dispatcher does, within the minute after the commit.
   - A test is the candidate's own route file: one ship, the limits the route maker wrote. A candidate that needs
     what no waiting pilot has (a module, a step no runner flies) is listed with what it needs and never added.
+  - A route counts as paying from two measured runs. A candidate whose route buys goods is never added by itself:
+    a gap is flown once by hand with one load. The dispatcher closes any route that lost money over two runs.
   - How many ships a route carries is a judgment: a herd carries one hunter, a thin bid one load. For a mine route
     that sells, `status` prints what the bid's depth carries for four hours; `lift` is the member's decision.
   - A list of the route maker older than an hour is no ground for PASS while ships wait: the gate says so.
@@ -87,6 +89,16 @@ def flying_now(route, rid, orders):
     return sum(1 for what in orders.values() if what == str(route.get("kind", "")) + " " + rid)
 
 
+def proven(route):
+    """True for a route measured above zero on two runs or more: one good run is a test result, not yet a route that pays."""
+    return (worth(route) or 0) > 0 and ((route.get("measured") or {}).get("runs") or 0) >= 2
+
+
+def buys(route):
+    """True for a route with a stop that buys goods: such a route is never added as a test by itself."""
+    return any(isinstance(stop, dict) and stop.get("buy") for stop in route.get("stops") or [])
+
+
 def survey(root, data, now=None):
     """Everything the answers rest on, read once: plans, route files, the candidates, and the dispatcher's next pass
     played through for every free pilot of the fleet, in its order: who starts on its own plan, who waits and why."""
@@ -95,7 +107,7 @@ def survey(root, data, now=None):
     routes = dispatch.load_routes(root)
     rows = dispatch.run_rows(data)
     state = {"now": now, "data": data, "rows": rows, "orders": dispatch.fresh_orders(data, now), "rest": dispatch.resting(routes, rows, now),
-             "booked": dispatch.booked(data)}
+             "booked": dispatch.booked(data), "loss": dispatch.losing(routes, rows, now)}
     by_route = {}
     for row in rows:
         by_route.setdefault(row.get("route"), []).append(row)
@@ -204,28 +216,31 @@ def read_role(seen, role, floor=500, tests=8):
         return took
 
     outside = [(worth(route), rid, route) for rid, route in routes.items()
-               if rid not in plan and route.get("status") != "off" and not route.get("park") and route.get("kind") != "census" and (worth(route) or 0) > 0]
+               if rid not in plan and route.get("status") != "off" and not route.get("park") and route.get("kind") != "census" and proven(route)]
     for value, rid, route in sorted(outside, key=lambda r: (-r[0], r[1])):
         took = offer(rid, route, value) if left else []
         if took:
             paying.append((rid, value, took))
-    found, seen_ids = [], set(plan) | {rid for rid, _v, _t in paying}
+    found, by_hand, seen_ids = [], [], set(plan) | {rid for rid, _v, _t in paying}
     for cand in sorted(seen["candidates"], key=lambda c: -(c.get("per_ship_hour") or 0)):
         draft = cand.get("route")
         if not isinstance(draft, dict) or cand.get("needs") or (cand.get("per_ship_hour") or 0) < floor or str(cand.get("status", "")).startswith("off"):
             continue
         rid = cand.get("route_id") or draft.get("id")
-        if not rid or rid in seen_ids or (rid in routes and worth(routes[rid]) is not None):      # measured ones are judged above, by their figure
-            continue
+        if not rid or rid in seen_ids or (rid in routes and (proven(routes[rid]) or (worth(routes[rid]) is not None and worth(routes[rid]) <= 0))):
+            continue                                              # proven ones are judged above, by their figure; one measured at a loss is no test
         seen_ids.add(rid)
         route = routes.get(rid) or dict(draft, id=rid)
+        if buys(route):                                           # a gap is flown once by hand, with one load (errors.log ENT-027)
+            by_hand.append((cand["per_ship_hour"], rid))
+            continue
         took = offer(rid, route, cand["per_ship_hour"], limit=1) if left and len(found) < tests else []
         if took:
             found.append((rid, cand["per_ship_hour"], None if rid in routes else route, took[0]))
     seen["taken"] = {name: what for name, what in state["orders"].items() if name not in seen["played"]}
     return {"role": role, "owner": seen["owners"].get(role) or division.ROLES.get(role, "?"), "ships": crew["ships"], "work": crew["work"], "hand": crew["hand"],
             "away": crew["away"], "starting": starting, "waiting": [p["name"] for p in waiting], "idle": [p["name"] for p in left], "plan": rows,
-            "paying": paying, "tests": found, "closed": closed}
+            "paying": paying, "tests": found, "closed": closed, "by_hand": sorted(by_hand, reverse=True)}
 
 
 def verdict(seen, got):
@@ -257,6 +272,9 @@ def show(seen, got):
                 print("     PAYING %-38s %s measured, %d of the waiting pilots (%s)" % (rid[:38], format(int(value), ","), len(pilots), short(pilots)))
             for rid, value, draft, pilot in got["tests"]:
                 print("     TEST   %-38s %s estimated per ship-hour, one ship%s" % (rid[:38], format(int(value), ","), "" if draft is None else "; its route file is written"))
+        if got.get("by_hand"):
+            print("  not added by itself: %d candidates that buy goods, up to %s estimated per ship-hour (%s ...): a gap is flown once by hand with one load"
+                  % (len(got["by_hand"]), format(int(got["by_hand"][0][0]), ","), got["by_hand"][0][1][:44]))
         if got["closed"] and got["idle"]:
             print("  closed outside the plan to the %d pilots still without work, by what closes it:" % len(got["idle"]))
             for reason, items in sorted(got["closed"].items(), key=lambda kv: -max(v or 0 for v, _r in kv[1])):

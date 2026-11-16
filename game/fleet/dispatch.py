@@ -30,6 +30,8 @@ RULES:
     last census (younger than 90 minutes) shows fewer than `min_creatures`; a
     census has no system older than `every_minutes` (default 60).
   - It sends no command to the game itself: the runners do.
+  - No route flies at a loss unattended: a route whose runs of the last six hours (two or more) lost money in sum is
+    closed until the window moves on (`losing`); the census, park and fitting routes are not judged.
   - Why ships wait, and what would give them work: game/fleet/fill.py, which uses this script's own rule.
 WHY:  no ship waits for a hand to give it work, and a new ship climbs the same
       ladder as the ones before it: what we learned is in the route files.
@@ -208,6 +210,9 @@ def why_not(pilot, rid, route, state):
         return "off", None
     if route.get("park") and pilot.get("docked"):
         return "the pilot is docked", None
+    lost = (state.get("loss") or {}).get(rid)
+    if lost:
+        return "at a loss: %d runs, %s cr in %d hours" % (lost[0], format(lost[1], ","), LOSS_HOURS), None
     if set(route.get("skip_if_booked") or []) & (state.get("booked") or {}).get(pilot["name"], set()):
         return "its reward is booked", None
     if route.get("once"):
@@ -290,6 +295,39 @@ def command(route, pilot, argument, root):
     return out + (["--species", ",".join(route["species"])] if route.get("species") else [])
 
 
+LOSS_HOURS = 6               # the window a route's runs are judged over
+
+
+def judged(route):
+    """True for a route whose runs must pay: not the census, not park, not a fitting (a tool is bought once)."""
+    if route.get("park") or route.get("kind") == "census":
+        return False
+    return not any(isinstance(stop, dict) and stop.get("fit") for stop in route.get("stops") or [])
+
+
+def losing(routes, rows, now):
+    """{route id: (runs, credits)} of the routes that lost money over their runs of the last LOSS_HOURS: two runs or
+    more that read a wallet, negative in sum. A repeating route is summed without the money booked once (a reward, a
+    tool); a route that pays once is summed with it, since its reward is its pay. Such a route is closed to every
+    pilot until the window moves on: no route flies at a loss unattended (orders F8)."""
+    sums = {}
+    for row in rows:
+        before, after = row.get("credits_before"), row.get("credits_after")
+        if not all(isinstance(v, (int, float)) and not isinstance(v, bool) for v in (before, after)) or not (before or after):
+            continue                                              # the run read no wallet: it says nothing about credits
+        try:
+            started = calendar.timegm(time.strptime(row.get("started") or "", "%Y-%m-%dT%H:%M:%SZ"))
+        except ValueError:
+            continue
+        route = routes.get(row.get("route"))
+        if route is None or started < now - LOSS_HOURS * 3600 or not judged(route):
+            continue
+        entry = sums.setdefault(route["id"], [0, 0])
+        entry[0] += 1
+        entry[1] += (after - before) - (0 if route.get("once") else (row.get("one_time") or 0))
+    return {rid: (runs, int(total)) for rid, (runs, total) in sums.items() if runs >= 2 and total < 0}
+
+
 def resting(routes, rows, now):
     """{route id: time before which a hunt's place rests}: its last run ended without a kill."""
     out = {}
@@ -314,7 +352,8 @@ def one_pass(root, data, dry_run, children):
     plan = {"roles": division.load_plan(root)[0]}
     routes = load_routes(root)
     rows = run_rows(data)
-    state = {"now": now, "data": data, "rows": rows, "orders": fresh_orders(data, now), "rest": resting(routes, rows, now), "booked": booked(data)}
+    state = {"now": now, "data": data, "rows": rows, "orders": fresh_orders(data, now), "rest": resting(routes, rows, now), "booked": booked(data),
+             "loss": losing(routes, rows, now)}
     named = flagships(data)
     ammo = set(read_json(Path(data) / "catalog" / "ammo.json", []) or [])      # written by routemaker.py from the game's catalog
     lines = []
