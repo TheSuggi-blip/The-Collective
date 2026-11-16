@@ -14,11 +14,11 @@
  "max_ships": 1,
  "min_creatures": 5,
  "measured": {
-  "date": "2026-11-15",
-  "runs": 8,
+  "date": "2026-11-16",
+  "runs": 16,
   "minutes": 10,
   "credits_per_run": -40,
-  "cph_per_ship": -250
+  "cph_per_ship": -240
  },
  "standing": true
 }
