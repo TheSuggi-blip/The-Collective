@@ -96,8 +96,8 @@ Kept by Apollo. Routes: 22.
 
 | # | Route | Group | Zone | Open to | Credits per ship-hour |
 |---|---|---|---|---|---|
-| 1 | [voidborn-atmospheric-extraction](voidborn-atmospheric-extraction.json) | Fitting | home space | once per pilot, up to 1 ships, without gas_harvester_i, from 6,000 cr, after the reward The Collective Provides | TBD |
-| 2 | [voidborn-hardware-cargo](voidborn-hardware-cargo.json) | Fitting | home space | once per pilot, up to 1 ships, without cargo_expander_i, from 4,000 cr, after the reward The Collective Provides | TBD |
+| 1 | [voidborn-atmospheric-extraction](voidborn-atmospheric-extraction.json) | Fitting | home space | once per pilot, up to 3 ships, without gas_harvester_i, from 6,000 cr, after the reward The Collective Provides | TBD |
+| 2 | [voidborn-hardware-cargo](voidborn-hardware-cargo.json) | Fitting | home space | once per pilot, up to 3 ships, without cargo_expander_i, from 4,000 cr, after the reward The Collective Provides | TBD |
 | 3 | [voidborn-signal-protocol](voidborn-signal-protocol.json) | Once per Pilot | home space | once per pilot, up to 20 ships, after the reward The Collective Provides | one-time |
 | 4 | [voidborn-first-steps-board](voidborn-first-steps-board.json) | Once per Pilot | home space | once per pilot, up to 3 ships | one-time |
 | 5 | [voidborn-collective-provides](voidborn-collective-provides.json) | Off | beyond the border, 5 jumps | once per pilot, up to 2 ships, empty hold, after the reward Network Expansion, off | one-time |
@@ -264,8 +264,8 @@ Kept by Mercury. Routes: 19.
 | 3 | [voidborn-collective-provides](voidborn-collective-provides.json) | Off | beyond the border, 5 jumps | once per pilot, up to 2 ships, empty hold, after the reward Network Expansion, off | one-time |
 | 4 | [voidborn-signal-protocol](voidborn-signal-protocol.json) | Once per Pilot | home space | once per pilot, up to 20 ships, after the reward The Collective Provides | one-time |
 | 5 | [voidborn-signal-fragments](voidborn-signal-fragments.json) | Once per Pilot | home space | once per pilot, up to 10 ships, from navigation 3 | one-time |
-| 6 | [voidborn-hardware-cargo](voidborn-hardware-cargo.json) | Fitting | home space | once per pilot, up to 1 ships, without cargo_expander_i, from 4,000 cr, after the reward The Collective Provides | TBD |
-| 7 | [voidborn-atmospheric-extraction](voidborn-atmospheric-extraction.json) | Fitting | home space | once per pilot, up to 1 ships, without gas_harvester_i, from 6,000 cr, after the reward The Collective Provides | TBD |
+| 6 | [voidborn-hardware-cargo](voidborn-hardware-cargo.json) | Fitting | home space | once per pilot, up to 3 ships, without cargo_expander_i, from 4,000 cr, after the reward The Collective Provides | TBD |
+| 7 | [voidborn-atmospheric-extraction](voidborn-atmospheric-extraction.json) | Fitting | home space | once per pilot, up to 3 ships, without gas_harvester_i, from 6,000 cr, after the reward The Collective Provides | TBD |
 | 8 | [voidborn-concurrent](voidborn-concurrent.json) | Once per Pilot | home space | once per pilot | one-time |
 | 9 | [voidborn-substrate](voidborn-substrate.json) | Once per Pilot | home space | once per pilot, from 3,000 cr | one-time |
 | 10 | [voidborn-missions-1](voidborn-missions-1.json) | Once per Pilot | home space | once per pilot, from 8,000 cr | one-time |

@@ -2,9 +2,9 @@
  "id": "voidborn-atmospheric-extraction",
  "kind": "circuit",
  "title": "Atmospheric Extraction: Setup: 2,000 cr once after The Collective Provides; a Gas Harvester I bought at Node Beta after the accept",
- "note": "Architect Vex-9's line on the Central Nexus board, offered only to a pilot with The Collective Provides done (boards of 10 traders, 12:34 UTC). Objective: acquire a Gas Harvester Module; a module owned before the accept does not count (one reading, 09:32 UTC), so the accept comes first and the buy after it. Test by hand 2026-11-16 12:41 to 12:43 UTC, one trader: accepted at Central Nexus, one Gas Harvester I bought there at 1,554 cr (1,569 with the tax), the objective read 1 of 1 at once, handed in: +2,000 cr, fitted beside the mining laser; +431 cr and a harvester. The route buys at Node Beta (14 at 1,202 cr, book of 12:40 UTC; limit 1,300) because the Central Nexus ask held 1 unit at that price. A test: one ship until its first RESULT line.",
+ "note": "Architect Vex-9's line on the Central Nexus board, offered only to a pilot with The Collective Provides done (boards of 10 traders, 12:34 UTC). Objective: acquire a Gas Harvester Module; a module owned before the accept does not count (one reading, 09:32 UTC), so the accept comes first and the buy after it. Test by hand 2026-11-16 12:41 to 12:43 UTC, one trader: accepted at Central Nexus, one Gas Harvester I bought there at 1,554 cr (1,569 with the tax), the objective read 1 of 1 at once, handed in: +2,000 cr, fitted beside the mining laser; +431 cr and a harvester. The route buys at Node Beta (14 at 1,202 cr, book of 12:40 UTC; limit 1,300) because the Central Nexus ask held 1 unit at that price. A test: one ship until its first RESULT line. First RESULT by the route, 12:45 UTC: 3/3 stops in 8.5 minutes, +738 cr (2,000 paid once less 1,214 for the harvester at Node Beta and fuel); the fit was refused, 'no_utility_slots' (a mining laser and a Cargo Expander I), and the hand-in paid all the same. 2026-11-16 12:59 UTC: max_ships 1 -> 3; the last stop stores the module when a full set of utility slots left it in the hold, so the hold is empty for the next route.",
  "once": true,
- "max_ships": 1,
+ "max_ships": 3,
  "min_credits": 6000,
  "requires": {
   "booked": "The Collective Provides",
@@ -40,7 +40,10 @@
    "only_if_active": [
     "Atmospheric Extraction: Setup"
    ],
-   "redock": true
+   "redock": true,
+   "store": [
+    "gas_harvester_i"
+   ]
   }
  ]
 }
