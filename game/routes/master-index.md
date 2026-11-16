@@ -44,7 +44,7 @@ name below is a link into one of the sub-indexes of this folder.
 | [drone](plan.md#drone) | Apophis | 26 | voidborn-precedence > voidborn-conductive-lattice > voidborn-first-hunt-nexus | 5 |
 | [hauler](plan.md#hauler) | Apollo | 18 | voidborn-precedence > voidborn-selling > voidborn-first-hunt-nexus | 4 |
 | [miner](plan.md#miner) | Zero | 29 | voidborn-signal-fragments > voidborn-concurrent > voidborn-substrate | 2 |
-| [scout](plan.md#scout) | Oracle | 16 | voidborn-signal-fragments > census-voidborn > voidborn-first-hunt-gsc-0031 | 6 |
+| [scout](plan.md#scout) | Oracle | 17 | voidborn-signal-fragments > mission-cracking-the-shell-central > census-voidborn | 6 |
 | [sentinel](plan.md#sentinel) | Unity | 27 | voidborn-signal-fragments > voidborn-concurrent > voidborn-substrate | 0 |
 | [trader](plan.md#trader) | Mercury | 9 | voidborn-first-steps > voidborn-concurrent > voidborn-substrate | 4 |
 
