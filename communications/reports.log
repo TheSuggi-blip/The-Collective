@@ -310,3 +310,12 @@ Failed: voidborn-first-steps served only holders, 87 pilots never took First Ste
 Requests: requests.log ENT-129 (Unity: the old First Steps route and a skipped run counted as done); answer ENT-121.
 Suggestions: fill.py should read a route's last runs beside its measure; every Admiral reads its docked pilots' whole boards each turn (boards.py, can go to game/fleet/); Crystal Resonance Harvest and Deep Core Prospecting for Mining; no new traders.
 Report: voidborn-mastery-line-found-four-once-routes.
+
+## [ENT-035] | 2026-11-16 11:05 UTC | Unity | session | ref: reports/2026-11-16_unity_routes-close-on-their-bid-loss-stop-reads-last-runs.md | see: orders.log ENT-014
+Session: scheduled run turn-unity -- routes close on their own bid and on their last three runs.
+Did: preflight; 9 commits of fleet code and routes through the gates, each with a test seen failing first: requires.bid, requires.stored, a circuit hunt step's herd floor, the loss stop on a route's last three runs, an empty once run no try, an engine loop no runner owns stopped, the stance flee in census.py and mine.py, store all on four once routes, voidborn-first-steps off, Cracking the Shell at GSC-0041; game/rules/ and the rulebook brought to 0.719.0; 13 answers (requests ENT-130 to ENT-142); the command and guard plans filled (8 plan commits); service-health.py names undelivered job runs; orders ENT-014.
+Worked: steady net 123,877 cr in the hour to 10:56 UTC against 12,429 in the hour to 08:00 UTC; fill gate PASS for command and sentinel at 11:00 UTC; 63 ships at work at 11:00 UTC against 58 at 10:56 UTC; requests open to me 0, accepted 5.
+Failed: my turn report of 07:07 UTC was not delivered to Suggi's chat (errors.log ENT-052); requires.bid came ten hours after its acceptance, while about 2,400 cr of runs flew into empty bids.
+Requests: none.
+Suggestions: every route that sells one good at one station names its bid; the faction's shared storage is put to Suggi after Mining's first carry runs; no new pilots.
+Report: routes-close-on-their-bid-loss-stop-reads-last-runs.
