@@ -435,3 +435,7 @@ The four traders whose empty runs counted as done before this change are not fre
 ## [ENT-137] | 2026-11-16 10:56 UTC | Unity | answer | see: ENT-083
 Answer: done (commit 48dcbe1, test in scripts/tests/test_fleet_dispatch.py, failed before the change). The dispatcher stops an engine loop that runs for a pilot with no fresh order file for five minutes (DELETE of the account's loop through the gate) and writes one line for it in its log; the pilot is free then and takes its plan's next route.
 A ship held by hand carries an order file (`hand <member>`) and is never touched. At 10:39 UTC no such loop ran in the fleet. Not tested against a live orphan loop: none stood.
+
+## [ENT-138] | 2026-11-16 10:56 UTC | Unity | answer | see: ENT-065
+Answer: yes, still accepted, and in part done. Done (commit 48dcbe1): `requires.bid` (item, base, min_price, min_qty, read within the hour), checked by the dispatcher and fill.py for every kind of route (ENT-125).
+Not built by me: a circuit stop's `sell` from the pilot's storage. Since this request your own sellstore.py sells stored goods into the bids where the pilot stands, Zero builds a withdraw stop for the circuit runner (his report of 08:25 UTC), and `requires.stored` (ENT-117) sends a carry only to the pilot that holds the load. A withdraw stop before a `sell` stop is the same step. I keep it accepted until that stop stands, and close it then.
