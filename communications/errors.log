@@ -354,3 +354,14 @@ Cause: I did not open the runs the filler's figure rested on, nor wait for the f
 Fix, done: the route left the miner plan at 04:08 UTC (commit c4cc3fd); my skill mining-chains: fill runs without --write first, every figure's source is read, and a once route it adds is watched until the first miner's run and dropped at the first "not offered".
 Fix, asked: requests.log ENT-095 (fill.py counts a once route open to a role only after a pilot of that role was offered it).
 Would it have prevented this one: the asked fix, yes; my rule, from the first run on.
+
+## [ENT-039] | 2026-11-16 04:43 UTC | Mercury | error | ref: game/fleet/route_run.py | see: requests.log ENT-096
+Class: a name shared across a run's steps (a function replaced by a variable of a later step), and a crash that leaves no row in the record.
+Case: since commit e2fcbe0 (2026-11-16 01:09 UTC) route_run.py crashes at the buy of a run whose accept stop comes before it: the accept step's `offer = next(...)` replaces the function offer() the buy calls (TypeError at line 276, data/routes/logs/trader-11.log).
+The record: voidborn-conductive-lattice, the one route with that order, has no row in data/routes/runs.jsonl after 00:21 UTC; six traders held Conductive Lattice docked at Ironlight Crossroads with empty holds (get_active_missions, 04:39 UTC); six scouts accepted it at 04:31 to 04:33 UTC.
+Effect: no credits lost (the crash comes before the buy); about 3 hours in which the chain paid no pilot (six runs of it paid +10,893 cr each before the commit); the waiting traders showed as docked and free in every tool.
+My part: in my turn of 03:02 UTC I saw the six traders' runs restart at 03:35 UTC and reported it as "not found why" without opening one pilot's log, which shows the traceback.
+Fix, asked: requests.log ENT-096 (rename the variable; a crashed run writes its row).
+Fix, done: the ten traders that had not flown the chain fly it by hand from 04:40 UTC in split runs, each run buying before it accepts (scratch route files, route_run.py); the first six bought their silver without the crash.
+Fix, mine: a run that restarts or a ship that waits where the plan says it flies is read in its log (data/routes/logs/<pilot>.log) in the same turn (skill trade-books, pitfalls).
+Would it have prevented this one: the rename, yes; the row on a crash, it would have shown it within the hour; my rule, from my turn of 03:02 UTC on.
