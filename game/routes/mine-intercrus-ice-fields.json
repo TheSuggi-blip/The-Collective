@@ -2,11 +2,11 @@
  "id": "mine-intercrus-ice-fields",
  "kind": "mine",
  "title": "Intercrus Ice Fields: water_ice, nitrogen_ice; sold at The Experiment Research Station",
- "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 1616 cr per ship-hour, not a measurement. A test: one ship. Estimate of 2026-11-15 23:10 UTC from: {\"a_load\": [\"water_ice 34 of 34 units for 1098 cr (depth at the best price)\", \"nitrogen_ice 30 of 30 units for 61 cr (depth at the best price)\"], \"field\": \"intercrus:intercrus_ice_fields\", \"jumps\": 4, \"left\": {\"nitrogen_ice\": 50000, \"water_ice\": 50000}, \"richness\": {\"nitrogen_ice\": 42, \"water_ice\": 47}, \"sold_at\": \"the_experiment_research_station\"}. Uncertain: lawless space: no police at intercrus; needs the module ice_harvester_i (base value 1000 cr), not the mining laser; the rate is measured with the laser on ore. In no plan: its Admiral adds it.",
+ "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 1616 cr per ship-hour, not a measurement. A test: one ship. Estimate of 2026-11-15 23:10 UTC from: {\"a_load\": [\"water_ice 34 of 34 units for 1098 cr (depth at the best price)\", \"nitrogen_ice 30 of 30 units for 61 cr (depth at the best price)\"], \"field\": \"intercrus:intercrus_ice_fields\", \"jumps\": 4, \"left\": {\"nitrogen_ice\": 50000, \"water_ice\": 50000}, \"richness\": {\"nitrogen_ice\": 42, \"water_ice\": 47}, \"sold_at\": \"the_experiment_research_station\"}. Uncertain: lawless space: no police at intercrus; needs the module ice_harvester_i (base value 1000 cr), not the mining laser; the rate is measured with the laser on ore. In no plan: its Admiral adds it. 2026-11-16 03:15 UTC, Zero (orders.log ENT-011, block ZERO (1)): max_ships 1 -> 2 on its measured runs (2 runs, 2460 cr per ship-hour) and its field 27,238 water ice (census 01:53 UTC), sold at The Experiment (38 cr x 3,033 at the best price, 18,865 in all its levels, 03:04 UTC).",
  "belt": "intercrus:intercrus_ice_fields",
  "station": "the_experiment:the_experiment_research_station:the_experiment_research_station",
  "minutes": 75,
- "max_ships": 1,
+ "max_ships": 2,
  "sell": [
   {
    "item": "water_ice",

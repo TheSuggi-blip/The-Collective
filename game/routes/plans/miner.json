@@ -1,7 +1,7 @@
 {
  "role": "miner",
  "owner": "Zero",
- "note": "The routes the dispatcher tries, in this order, for a free miner pilot. Zero keeps this file: the missions that pay once first, then what pays, the tests, the census and last `park` (orders F8). 2026-11-15 23:33 UTC, Zero (orders.log ENT-007, block ZERO): the harvester fit and every ice route at once, each ice route a test with max_ships 1 until its first RESULT line. fit-ice-harvester takes only a miner without the module, at most ten pilots; an ice route takes only a miner with it. mine-wolf-1061-vent takes only the miner that carries a Nitrogen Vent. Ice routes by water ice a load at the depth of the best bid (the route maker's notes of 23:10 UTC, deuterium left out: its bids are a few units, a one-time price under F12); Antares last, a foreign station stands in the system. voidborn-first-steps out since 21:25 UTC: Acubens Belt read 0 carbon at 21:01 UTC. No route mines iron or copper for storage. 2026-11-15 23:47 UTC, Zero: the plasma-gas test, one ship: fit-gas-harvester takes one plain miner (a mining laser, no ice harvester) once the ice fit had closed at twelve pilots, and mine-gsc-0050-gas-plume takes only a pilot with the gas harvester. 2026-11-15 23:54 UTC, Zero: voidborn-precedence (17 runs, 3,890 cr a run once, routes.py measure) and the three voidborn-first-hunt routes (one run each, 930 to 970 cr once) at the head with the other missions that pay once (orders F8).",
+ "note": "The routes the dispatcher tries, in this order, for a free miner pilot. Zero keeps this file: the missions that pay once first, then what pays, the tests, the census and last `park` (orders F8). 2026-11-15 23:33 UTC, Zero (orders.log ENT-007, block ZERO): the harvester fit and every ice route at once, each ice route a test with max_ships 1 until its first RESULT line. fit-ice-harvester takes only a miner without the module, at most ten pilots; an ice route takes only a miner with it. mine-wolf-1061-vent takes only the miner that carries a Nitrogen Vent. Ice routes by water ice a load at the depth of the best bid (the route maker's notes of 23:10 UTC, deuterium left out: its bids are a few units, a one-time price under F12); Antares last, a foreign station stands in the system. voidborn-first-steps out since 21:25 UTC: Acubens Belt read 0 carbon at 21:01 UTC. No route mines iron or copper for storage. 2026-11-15 23:47 UTC, Zero: the plasma-gas test, one ship: fit-gas-harvester takes one plain miner (a mining laser, no ice harvester) once the ice fit had closed at twelve pilots, and mine-gsc-0050-gas-plume takes only a pilot with the gas harvester. 2026-11-15 23:54 UTC, Zero: voidborn-precedence (17 runs, 3,890 cr a run once, routes.py measure) and the three voidborn-first-hunt routes (one run each, 930 to 970 cr once) at the head with the other missions that pay once (orders F8). 2026-11-16 03:15 UTC, Zero (orders.log ENT-011, block ZERO): one fit route per station, each sized by the Ice Harvester I asks there (Node Beta 2, Node Gamma 2, Synchrony Hub 4, The Experiment 2, one ship at a time), and the Ironlight Crossroads fit as a test with one miner (20 asks at 638 cr); mine-gsc-0050-gas-plume before the fit routes so that the one gas miner, whose two utility slots are full, flies its gas test and does not buy an ice harvester it cannot fit. Keid, Alnair and Intercrus lifted to 2 ships each. Node Beta Frozen Drift stays at 1: 377 water ice left in its field (census 02:51 UTC).",
  "routes": [
   "voidborn-concurrent",
   "voidborn-substrate",
@@ -11,7 +11,13 @@
   "voidborn-first-hunt-nexus",
   "voidborn-first-hunt-gsc",
   "voidborn-first-hunt-acubens",
+  "mine-gsc-0050-gas-plume",
   "fit-ice-harvester",
+  "fit-ice-harvester-node-beta",
+  "fit-ice-harvester-node-gamma",
+  "fit-ice-harvester-synchrony",
+  "fit-ice-harvester-experiment",
+  "fit-ice-harvester-lhs-1140",
   "fit-gas-harvester",
   "mine-wolf-1061-vent",
   "mine-ruchbah-ice-belt",
@@ -24,26 +30,25 @@
   "mine-node-beta-frozen-drift",
   "mine-gsc-0041-frost-ring",
   "mine-antares-ice-fields",
-  "mine-gsc-0050-gas-plume",
   "census-frontier",
   "park"
  ],
  "planned": [
   {
-   "what": "Read the first RESULT line of every ice route; then routes.py measure --write and lift max_ships where the water-ice depth at the best bid carries more ships (ledger.py prices water_ice, view_market at the station), with max_pilots of fit-ice-harvester beside it",
-   "when": "turn T8"
+   "what": "Read the RESULT line of fit-ice-harvester-lhs-1140 (price, fuel, minutes against 1,427 cr at home); if it fits for less, max_pilots up to the asks that stand there, one ship at a time",
+   "when": "turn T10 (07:00 UTC)"
   },
   {
-   "what": "Compare the vent route's loads with run 1 at the same field (126 units in 25 minutes, 32% nitrogen ice): a Nitrogen Vent for every ice miner if it raises water and rare ice per minute; one vent was on offer in our six books (2026-11-15 23:30 UTC)",
-   "when": "turn T8"
+   "what": "Lift the ice routes where their field and their station's bid carry more ships (fill status prints the share of the bid); an ice route that sells at Central Nexus (deepest water-ice ladder, 1,513 units an hour regained) once the routes at The Experiment and Node Alpha fill their bids",
+   "when": "turn T10"
   },
   {
-   "what": "Deuterium ice and plasma gas, one test each once the ice routes hold: the deuterium bids are a few units (Node Alpha 208 x 6, Node Beta 226 x 5) and count as one-time prices until data/market/history.jsonl shows them refill (F12); a gas harvester takes the mining laser's slot",
-   "when": "turn T8 and T9"
+   "what": "The vent: a second vent run at Wolf 1061, and a Nitrogen Vent for every ice miner only when one is on offer and the second run holds the 83% water share",
+   "when": "when a vent is on offer"
   },
   {
-   "what": "One focused crystal from the 20 energy crystals in storage at Node Beta whenever The Experiment's station bid of 1,466 cr stands again (ledger.py prices focused_crystal)",
-   "when": "every turn"
+   "what": "The gas test: one more run of mine-gsc-0050-gas-plume; off when its two runs lose in sum (the dispatcher's loss stop)",
+   "when": "turn T10"
   }
  ]
 }

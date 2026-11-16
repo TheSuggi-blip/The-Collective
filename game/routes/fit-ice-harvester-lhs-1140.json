@@ -1,0 +1,38 @@
+{
+ "kind": "circuit",
+ "once": true,
+ "max_ships": 1,
+ "min_credits": 6000,
+ "requires": {
+  "without_module": "ice_harvester_i",
+  "empty_hold": true
+ },
+ "id": "fit-ice-harvester-lhs-1140",
+ "title": "Fit an Ice Harvester I at Ironlight Crossroads (LHS 1140), beyond the border: a test with one miner",
+ "note": "A test (orders.log ENT-011, block ZERO (2)): one miner, hold empty, stores its mission goods at Node Beta, flies to Ironlight Crossroads in LHS 1140 (lawless, six jumps from home, a station of the Ironlight Combine with public access), buys one Ice Harvester I and fits it. 20 stood at 638 cr there (data/market/784309214f105860a16a0c100a70eb14.json, 01:39:50 UTC; queue.log ENT-046) against 1,413 cr at home. max_price 700 with the tax. The stance of F2 holds; requires.empty_hold (F13). Read the RESULT line: the price paid, the fuel and the minutes there and back against 1,427 cr at home; then max_pilots up to the asks that stand, one ship at a time. 2026-11-16, Zero.",
+ "max_pilots": 1,
+ "stops": [
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store": [
+    "voidborn_neural_soma",
+    "null_matter",
+    "iron_ore",
+    "copper_ore",
+    "lead_ore",
+    "platinum_ore",
+    "tungsten_ore",
+    "palladium_ore"
+   ]
+  },
+  {
+   "at": "lhs_1140:0321b3e4406021575337b7be26e53dd7:784309214f105860a16a0c100a70eb14",
+   "fit": [
+    {
+     "module": "ice_harvester_i",
+     "max_price": 700
+    }
+   ]
+  }
+ ]
+}
