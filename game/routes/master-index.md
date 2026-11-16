@@ -46,7 +46,7 @@ name below is a link into one of the sub-indexes of this folder.
 | [miner](plan.md#miner) | Zero | 35 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 2 |
 | [scout](plan.md#scout) | Oracle | 20 | voidborn-first-steps-board > voidborn-network-expansion > voidborn-collective-provides | 6 |
 | [sentinel](plan.md#sentinel) | Unity | 31 | voidborn-first-steps-board > voidborn-collective-provides > voidborn-signal-protocol | 0 |
-| [trader](plan.md#trader) | Mercury | 19 | voidborn-first-steps-board > voidborn-network-expansion > voidborn-collective-provides | 5 |
+| [trader](plan.md#trader) | Mercury | 20 | voidborn-first-steps-board > voidborn-network-expansion > voidborn-collective-provides | 5 |
 
 ## The Guidebooks
 
