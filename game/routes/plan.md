@@ -108,7 +108,7 @@ Planned:
 
 ## hauler
 
-Kept by Apollo. Routes: 32.
+Kept by Apollo. Routes: 33.
 
 | # | Route | Group | Zone | Open to | Credits per ship-hour |
 |---|---|---|---|---|---|
@@ -142,8 +142,9 @@ Kept by Apollo. Routes: 32.
 | 28 | [sell-plasma-node-beta](sell-plasma-node-beta.json) | Tests | home space | up to 1 ships, with 5 plasma_gas stored at node_beta_industrial_station, while node_beta_industrial_station bids 90 cr for plasma_gas | TBD |
 | 29 | [mine-atlas-gas-pocket](mine-atlas-gas-pocket.json) | Tests | beyond the border, 6 jumps | up to 1 ships, needs gas_harvester_i, empty hold, while node_beta_industrial_station bids 72 cr for plasma_gas | TBD |
 | 30 | [sell-liquid-hydrogen-central](sell-liquid-hydrogen-central.json) | Tests | home space | up to 1 ships, with 5 liquid_hydrogen stored at central_nexus, while central_nexus bids 100 cr for liquid_hydrogen | TBD |
-| 31 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -790 |
-| 32 | [park](park.json) | Reading and Waiting | home space | the park route | -670 |
+| 31 | [sell-liquid-hydrogen-node-beta](sell-liquid-hydrogen-node-beta.json) | Tests | home space | up to 1 ships, with 5 liquid_hydrogen stored at node_beta_industrial_station, while node_beta_industrial_station bids 95 cr for liquid_hydrogen | TBD |
+| 32 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -790 |
+| 33 | [park](park.json) | Reading and Waiting | home space | the park route | -670 |
 
 Planned:
 
