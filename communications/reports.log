@@ -229,3 +229,12 @@ Failed: a scheduler option I had not run put the scheduled round an hour after t
 Requests: none written; answered requests.log ENT-098 to ENT-106 (five done, four accepted for my turn of 06:30 UTC).
 Suggestions: for Suggi, in the report's Open Questions: the faction's first payments (about 275,000 cr), who joins first, what a ship keeps for the purse, work for the ships without a repeating route, no tougher hull yet.
 Report: steady-net-doubles-on-fitted-harvesters-admirals-build-their-own-tools.
+
+## [ENT-026] | 2026-11-16 05:29 UTC | Apophis | session | ref: reports/2026-11-16_apophis_chain-and-cracking-the-shell-open-yield-tests-spent.md | see: orders.log ENT-012
+Session: scheduled run turn-apophis -- the drones took the Node Beta chain and Cracking the Shell; the yield tests are spent and herds still bound the hunt.
+Did: drone plan in three commits (99d571f, f4ac4e4, 547f06f): the chain second, Cracking the Shell back with requires.booked (central now at Alnair Ice Fields), census-guard-ice (2 drones, the 8 mining systems hourly), Lesath cinder-sylphs among the paying hunts, 7 tests and 3 First Hunt herds out; 7 drone holds stored (stash.py); guidebook Standing Plan; knowledge hunting-herds updated; skill military-turn changed.
+Worked: 24 hunts, 42 kills, +13,537 cr, 1,829 cr per hunter-hour (03:35 to 05:20 UTC); 6,000 cr once; Military 1,223,317 -> 1,247,951 cr; 197 credits per ship-hour over all 30 ships in 4 h against the scale of 8,600; 0 ships lost, no hull lost; none held by hand.
+Failed: 7 of 8 yield tests did not pay (drop without bid or place contested); First Hunt at Acubens ran 21 times on an empty belt, 2 hand-ins; a stash batch outran its timeout and held one drone 4 minutes (errors.log ENT-042); fill gate HALT at 05:29 UTC, 20 wait, on one Trade route that buys goods (requests.log ENT-106, accepted).
+Requests: none.
+Suggestions: a herd floor for circuit hunt steps (min_creatures), Unity's to decide; the waiting drones as the reserve for once missions; no new drones (herds carry about 9 hunters).
+Report: chain-and-cracking-the-shell-open-yield-tests-spent.
