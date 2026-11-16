@@ -9,7 +9,7 @@ faction: Busy Being Dead
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-15
+updated: 2026-11-16
 ---
 
 # Busy Being Dead [BUSY]
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 5.
 | Allies | BEIN, DEAD, MOON | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 404 | Public event stream |
+| Pilots carrying the tag on the public event stream | 405 | Public event stream |
 
 ## Bases
 
@@ -44,11 +44,11 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Combat Drone 172 | Node Gamma (`node_gamma`) | 0 | not met |
-| Combat Drone 185 | Hamal (`hamal`) | 0 | dialectic |
-| Combat Drone 188 | Acubens (`acubens`) | 0 | dialectic |
-| Combat Drone 190 | Synchrony (`synchrony`) | 0 | not met |
-| Combat Drone 212 | Synchrony (`synchrony`) | 0 | not met |
+| Combat Drone 132 | Pherkad (`pherkad`) | 0 | not met |
+| Combat Drone 161 | Pherkad (`pherkad`) | 0 | not met |
+| Combat Drone 188 | Hamal (`hamal`) | 0 | dialectic |
+| Mining Drone 033 | Synchrony (`synchrony`) | 0 | not met |
+| Mining Drone 235 | Synchrony (`synchrony`) | 0 | not met |
 
 ## Standing History
 

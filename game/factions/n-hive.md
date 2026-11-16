@@ -9,13 +9,13 @@ faction: Hive Swarm
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-15
+updated: 2026-11-16
 ---
 
 # Hive Swarm [HIVE]
 
 A player faction with 3 base(s) in 3 system(s); the nearest to Nexus Prime is 5 jump(s) away, in Antares (`antares`).
-Pilots of it in our space in the last 24 hours: 4.
+Pilots of it in our space in the last 24 hours: 7.
 
 ## Identity
 
@@ -42,9 +42,12 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| 10c1432ce43efedb9c7f9632 | Synchrony (`synchrony`) | 0 | workhorse |
-| 1529c444887f2a8857c3bcd5 | Node Gamma (`node_gamma`) | 0 | not met |
-| 91cba4fc8631acb92b8db26f | Node Gamma (`node_gamma`) | 0 | runner |
+| 10c1432ce43efedb9c7f9632 | Hamal (`hamal`) | 0 | workhorse |
+| 4369ebe51c415d3d0756ceba | Hamal (`hamal`) | 0 | bonanza |
+| a41fe11e5e1e54e9d8f60ebb | Synchrony (`synchrony`) | 0 | futures |
+| c413294b4b6a11879da15614 | Pherkad (`pherkad`) | 0 | bonanza |
+| cb9f390ad124b910d6bb336c | Hamal (`hamal`) | 0 | not met |
+| ec43cfe9e4293184f10e08ca | Hamal (`hamal`) | 0 | not met |
 | hiver | Hamal (`hamal`) | 0 | bonanza |
 
 ## Standing History

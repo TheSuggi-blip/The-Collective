@@ -9,13 +9,13 @@ faction: Our Lord And Savior
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-15
+updated: 2026-11-16
 ---
 
 # Our Lord And Savior [OLSV]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 33.
+Pilots of it in our space in the last 24 hours: 37.
 
 ## Identity
 
@@ -39,8 +39,11 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
 | OLS Acrux II | Synchrony (`synchrony`) | 0 | cobble |
+| OLS Aladfar | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | OLS Alphecca | Nexus Prime (`nexus_prime`) | 0 | threshold |
 | OLS Armus | Nexus Prime (`nexus_prime`) | 0 | theoria |
+| OLS Arrakis | Nexus Prime (`nexus_prime`) | 0 | theoria |
+| OLS Ashlesha | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | OLS Atlas | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | OLS Azelfafage | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | OLS Beemim | Nexus Prime (`nexus_prime`) | 0 | theoria |
@@ -53,6 +56,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | OLS Dschubba | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | OLS Electra | Nexus Prime (`nexus_prime`) | 0 | cobble |
 | OLS Elkurud | Nexus Prime (`nexus_prime`) | 0 | theoria |
+| OLS Fawaris | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | OLS Fuyue | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | OLS Girtab | Synchrony (`synchrony`) | 0 | theoria |
 | OLS Gudja | Nexus Prime (`nexus_prime`) | 0 | theoria |
@@ -64,12 +68,8 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | OLS Libertas | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | OLS Mintaka | Nexus Prime (`nexus_prime`) | 0 | threshold |
 | OLS Nahn | Synchrony (`synchrony`) | 0 | shard |
-| OLS Ogma | Synchrony (`synchrony`) | 0 | shard |
-| OLS Rasalhague | Node Alpha (`node_alpha`) | 0 | shard |
-| OLS Rastaban | Synchrony (`synchrony`) | 0 | cobble |
-| OLS Sadalbari | Synchrony (`synchrony`) | 0 | cobble |
 
-And 3 more.
+And 7 more.
 
 ## Standing History
 

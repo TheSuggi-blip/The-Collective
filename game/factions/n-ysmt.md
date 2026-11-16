@@ -9,13 +9,13 @@ faction: You Sexy Mother Truckers
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-15
+updated: 2026-11-16
 ---
 
 # You Sexy Mother Truckers [YSMT]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 3.
+Pilots of it in our space in the last 24 hours: 1.
 
 ## Identity
 
@@ -38,9 +38,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Fragment 'Find' Fletcher | The Experiment (`the_experiment`) | 0 | prayer |
-| Marcus 'Mercury' Mercer | Node Beta (`node_beta`) | 0 | prospect |
-| Victor 'Value' Vanderbil | Synchrony (`synchrony`) | 0 | not met |
+| Fragment 'Find' Fletcher | Synchrony (`synchrony`) | 0 | prayer |
 
 ## Standing History
 

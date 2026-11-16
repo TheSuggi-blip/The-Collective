@@ -9,13 +9,13 @@ faction: Ironlight Combine
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-15
+updated: 2026-11-16
 ---
 
 # Ironlight Combine [IRLC]
 
 A player faction with 7 base(s) in 4 system(s); the nearest to Nexus Prime is 6 jump(s) away, in LHS 1140 (`lhs_1140`).
-Pilots of it in our space in the last 24 hours: 20.
+Pilots of it in our space in the last 24 hours: 17.
 
 ## Identity
 
@@ -46,25 +46,22 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| ILC Adit | Pherkad (`pherkad`) | 0 | not met |
+| ILC Adit | Synchrony (`synchrony`) | 0 | rock_eater |
 | ILC Chute | Synchrony (`synchrony`) | 0 | junk_convoy |
-| ILC Constellation | Node Alpha (`node_alpha`) | 0 | concordia |
-| ILC Flange | Node Alpha (`node_alpha`) | 0 | junk_convoy |
-| ILC Fumarole | Node Beta (`node_beta`) | 0 | atmospheric_sampler |
-| ILC Gantry | Synchrony (`synchrony`) | 0 | junk_convoy |
+| ILC Flange | Synchrony (`synchrony`) | 0 | junk_convoy |
+| ILC Gantry | Node Alpha (`node_alpha`) | 0 | junk_convoy |
 | ILC Gasket | Nexus Prime (`nexus_prime`) | 0 | junk_convoy |
-| ILC Gateway | Node Alpha (`node_alpha`) | 0 | concordia |
-| ILC Gilt | The Experiment (`the_experiment`) | 0 | syndicate |
-| ILC Kerf | Pherkad (`pherkad`) | 0 | junk_convoy |
+| ILC Gateway | Nexus Prime (`nexus_prime`) | 0 | concordia |
+| ILC Gilt | Synchrony (`synchrony`) | 0 | syndicate |
+| ILC Kerf | Synchrony (`synchrony`) | 0 | junk_convoy |
 | ILC Ladle | Synchrony (`synchrony`) | 0 | junk_convoy |
-| ILC Nonstop | Node Alpha (`node_alpha`) | 0 | concordia |
-| ILC Penalty | Synchrony (`synchrony`) | 0 | junk_convoy |
+| ILC Nonstop | Nexus Prime (`nexus_prime`) | 0 | concordia |
+| ILC Penalty | Pherkad (`pherkad`) | 0 | junk_convoy |
 | ILC Pyroclast | The Experiment (`the_experiment`) | 0 | atmospheric_sampler |
 | ILC Ratchet | Synchrony (`synchrony`) | 0 | junk_convoy |
 | ILC Retort | Synchrony (`synchrony`) | 0 | junk_convoy |
 | ILC Slurry | Pherkad (`pherkad`) | 0 | not met |
-| ILC Vagabond | Node Alpha (`node_alpha`) | 0 | concordia |
-| ILC Vent | Synchrony (`synchrony`) | 0 | not met |
+| ILC Vagabond | Synchrony (`synchrony`) | 0 | concordia |
 | ILC Weir | Synchrony (`synchrony`) | 0 | prayer |
 
 ## Standing History

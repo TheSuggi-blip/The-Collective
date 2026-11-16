@@ -9,7 +9,7 @@ faction: Busy Being Deads
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-15
+updated: 2026-11-16
 ---
 
 # Busy Being Deads [BEIN]
@@ -33,7 +33,7 @@ Pilots of it in our space in the last 24 hours: 0.
 | Base | Kind | System | Space | Jumps from Nexus Prime | Condition |
 |---|---|---|---|---|---|
 | The Hush Chamber | station | Diphda (`diphda`) | lawless | 16 | thriving |
-| Echo Protocol Hub | station | Lilii Borea (`lilii_borea`) | lawless | 16 | operational |
+| Echo Protocol Hub | station | Lilii Borea (`lilii_borea`) | lawless | 16 | thriving |
 | Ghost Runner Terminal | station | Thuban (`thuban`) | lawless | 16 | thriving |
 | Stellar Leap Station | station | Tiaki (`tiaki`) | lawless | 17 | thriving |
 | Event Horizon Relay | station | Alzirr (`alzirr`) | lawless | 21 | thriving |

@@ -9,13 +9,13 @@ faction: Hex Collective
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-15
+updated: 2026-11-16
 ---
 
 # Hex Collective [HEXC]
 
 A player faction with 9 base(s) in 9 system(s); the nearest to Nexus Prime is 9 jump(s) away, in Chalawan (`chalawan`).
-Pilots of it in our space in the last 24 hours: 3.
+Pilots of it in our space in the last 24 hours: 4.
 
 ## Identity
 
@@ -48,9 +48,10 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Elara Orris | Hamal (`hamal`) | 0 | lithosphere |
-| HexBot6 | Nexus Prime (`nexus_prime`) | 9 | premiere |
-| Liora Vessand | Node Gamma (`node_gamma`) | 0 | liquidity_event |
+| Elara Orris | Acubens (`acubens`) | 0 | lithosphere |
+| HexBot11 | Pherkad (`pherkad`) | 10 | premiere |
+| Olthoi | The Experiment (`the_experiment`) | 0 | cryogenic_survey |
+| Zhou | Node Alpha (`node_alpha`) | 0 | pithead |
 
 ## Standing History
 

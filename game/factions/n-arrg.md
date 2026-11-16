@@ -9,7 +9,7 @@ faction: Amalgamated Rogue Raiders Guild
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-15
+updated: 2026-11-16
 ---
 
 # Amalgamated Rogue Raiders Guild [ARRG]
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 2.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 19 | Public event stream |
+| Pilots carrying the tag on the public event stream | 20 | Public event stream |
 
 ## Bases
 
@@ -39,7 +39,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
 | Aurelisk | Nexus Prime (`nexus_prime`) | 0 | theoria |
-| Rafferty Doyle | Nexus Prime (`nexus_prime`) | 0 | terms_and_conditions |
+| Rafferty Doyle | GSC-0027 (`gsc_0027`) | 0 | cobble |
 
 ## Standing History
 
