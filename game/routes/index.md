@@ -70,6 +70,7 @@ Work that repeats and has no measured figure yet: one ship until its first RESUL
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
+| [mine-stellar-siphon](mine-stellar-siphon.json) | mine | home space | Stellar Siphon: hydrogen_gas, argon_gas, neon_gas; sold at Synchrony Hub | up to 1 ships, needs gas_harvester_i | TBD | TBD | TBD | TBD | -- |
 | [hunt-denebola-fractured-prism-veil-ray](hunt-denebola-fractured-prism-veil-ray.json) | hunt | beyond the border, 5 jumps | veil_ray at denebola_fractured_prism; loot sold at Node Beta Industrial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-dimming-pocket-veil-ray](hunt-dimming-pocket-veil-ray.json) | hunt | beyond the border, 4 jumps | veil_ray at dimming_pocket; loot sold at Node Beta Industrial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-test-achernar-cinder-sylph](hunt-test-achernar-cinder-sylph.json) | hunt | beyond the border, 4 jumps | Yield test: cinder_sylph at achernar_gas_pocket (lawless); what a kill drops and whether a bid takes it | up to 1 ships, without piercing_railgun_i, empty hold | TBD | TBD | TBD | TBD | -- |
@@ -81,6 +82,7 @@ Work that repeats and has no measured figure yet: one ship until its first RESUL
 | [hunt-test-nightveil-rivetshell](hunt-test-nightveil-rivetshell.json) | hunt | beyond the border, 5 jumps | Yield test: rivetshell at nightveil_dark_residue (lawless); what a kill drops and whether a bid takes it | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-test-stormwatch-lantern-slug](hunt-test-stormwatch-lantern-slug.json) | hunt | beyond the border, 5 jumps | Yield test: lantern_slug at stormwatch_belt (lawless); what a kill drops and whether a bid takes it | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-test-tanglewood-hollow-pilgrim](hunt-test-tanglewood-hollow-pilgrim.json) | hunt | beyond the border, 6 jumps | Yield test: hollow_pilgrim at tanglewood_frost_ring (lawless); what a kill drops and whether a bid takes it | up to 1 ships, without piercing_railgun_i, empty hold | TBD | TBD | TBD | TBD | -- |
+| [mine-lesath-gas-cloud](mine-lesath-gas-cloud.json) | mine | beyond the border, 5 jumps | Lesath Gas Cloud: hydrogen_gas, plasma_gas, xenon_gas, neon_gas, ion_gas; sold at Node Beta Industrial Station | up to 1 ships, needs gas_harvester_i, empty hold | TBD | TBD | TBD | TBD | -- |
 
 ## Fitting
 

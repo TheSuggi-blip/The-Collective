@@ -226,7 +226,7 @@ Kept by Unity. Routes: 23.
 
 ## trader
 
-Kept by Mercury. Routes: 8.
+Kept by Mercury. Routes: 10.
 
 | # | Route | Group | Zone | Open to | Credits per ship-hour |
 |---|---|---|---|---|---|
@@ -236,14 +236,16 @@ Kept by Mercury. Routes: 8.
 | 4 | [voidborn-mining-missions](voidborn-mining-missions.json) | Once per Pilot | home space | once per pilot, up to 40 ships | one-time |
 | 5 | [voidborn-precedence](voidborn-precedence.json) | Once per Pilot | home space | once per pilot, up to 40 ships | one-time |
 | 6 | [voidborn-conductive-lattice](voidborn-conductive-lattice.json) | Once per Pilot | beyond the border, 6 jumps | once per pilot, up to 6 ships, 30 pilots in all, empty hold, from 13,000 cr | one-time |
-| 7 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -600 |
-| 8 | [park](park.json) | Reading and Waiting | home space | the park route | -550 |
+| 7 | [mine-stellar-siphon](mine-stellar-siphon.json) | Tests | home space | up to 1 ships, needs gas_harvester_i | TBD |
+| 8 | [mine-lesath-gas-cloud](mine-lesath-gas-cloud.json) | Tests | beyond the border, 5 jumps | up to 1 ships, needs gas_harvester_i, empty hold | TBD |
+| 9 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -600 |
+| 10 | [park](park.json) | Reading and Waiting | home space | the park route | -550 |
 
 Planned:
 
 | What | When |
 |---|---|
-| Watch the silver ore ask at Ironlight Crossroads (ledger.py prices silver_ore) and raise max_pilots of voidborn-conductive-lattice as far as it refills; the chain pays +10,847 cr once per pilot (guidebook trade.md section 3). | every turn |
-| Ask Mining for 15 of its stored energy crystals per pilot for Resonance Substrate (+7,000 cr instead of +589 when bought), a request in requests.log, and a route stop that withdraws them. | turn T8 |
-| Station bids that climb one unit at a time (ceramite plating at Central Nexus, 1,067 to 1,185 cr): sell a few units by hand when ledger.py prices shows the bid climbed again; no gap route in the plan, since a one-load gap must not loop. | turns T8 and T9 |
-| Control-node craft as a route when the runner's craft step exists (requests.log ENT-055, due 2026-11-16 12:00 UTC), only where both ends show depth. | after 2026-11-16 12:00 UTC |
+| Read the first RESULT lines of mine-stellar-siphon and mine-lesath-gas-cloud; lift what pays as far as the Node Beta bids carry, take out what loses. | turn T10 (07:00 UTC) |
+| Watch the silver ore ask at Ironlight Crossroads (ledger.py prices silver_ore) and raise max_pilots of voidborn-conductive-lattice as far as it refills; the chain pays +10,893 cr once per pilot. | every turn |
+| Plasma gas from Ironlight Crossroads into the two station bids at Node Beta: judge the hand run; a route only with requires.bid (owed by Unity), since the bid is 37 units that regain on the station's clock. | after 2026-11-16 12:00 UTC |
+| Control-node craft as a route when the runner's craft step exists, only where both ends show depth. | after 2026-11-16 12:00 UTC |

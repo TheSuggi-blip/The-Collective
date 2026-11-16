@@ -1,0 +1,23 @@
+{
+ "id": "mine-stellar-siphon",
+ "kind": "mine",
+ "title": "Stellar Siphon: hydrogen_gas, argon_gas, neon_gas; sold at Synchrony Hub",
+ "note": "Written by routemaker.py from the field's and the book's readings; an estimate of -78 cr per ship-hour, not a measurement. A test: one ship. Taken as a Trade test on 2026-11-16 (orders.log ENT-011, block MERCURY: the gas routes, one trader each): one trader fitted with a Gas Harvester I by hand at Node Beta (1,202 cr ask). The sale rests on the Node Beta hydrogen bid, which comes and goes (31 x 92 at 02:56, 32 x 32 at 03:05 UTC; ledger.py prices hydrogen_gas). Home space, one jump.",
+ "belt": "nexus_prime:stellar_siphon",
+ "station": "synchrony:synchrony_hub:synchrony_hub",
+ "minutes": 44,
+ "max_ships": 1,
+ "sell": [
+  {
+   "item": "argon_gas",
+   "min_price": 1
+  },
+  {
+   "item": "neon_gas",
+   "min_price": 1
+  }
+ ],
+ "requires": {
+  "module": "gas_harvester_i"
+ }
+}
