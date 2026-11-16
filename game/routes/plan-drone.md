@@ -14,7 +14,7 @@ routes (`game/fleet/plan.py`); it names our ships, so it lies in the unit's data
 and not here, and `plans/drone.json` is written from it. `Planned` is what the Admiral
 means to do next. Up: [master-index.md](master-index.md).
 
-Kept by Apophis. Routes: 41. Ships: 30.
+Kept by Apophis. Routes: 40. Ships: 30.
 
 | # | Route | Group | Zone | Open to | Ships planned | Credits per ship-hour |
 |---|---|---|---|---|---|---|
@@ -52,13 +52,12 @@ Kept by Apophis. Routes: 41. Ships: 30.
 | 32 | [hunt-low-charge-glint-veil-ray](hunt-low-charge-glint-veil-ray.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 4 jumps | up to 1 ships, without piercing_railgun_i, empty hold, standing work | 12 of 30 | 800 |
 | 33 | [hunt-test-lesath-cinder-sylph](hunt-test-lesath-cinder-sylph.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 5 jumps | up to 1 ships, without piercing_railgun_i, empty hold, while node_beta_industrial_station bids 100 cr for ember_gland | 12 of 30 | 600 |
 | 34 | [hunt-home-drift-ray](hunt-home-drift-ray.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 1 ships, standing work | 12 of 30 | -250 |
-| 35 | [hunt-achernar-belt-carapace](hunt-achernar-belt-carapace.json) | [Off](index-off.md) | beyond the border, 4 jumps | up to 1 ships, without piercing_railgun_i, empty hold, standing work, off | 12 of 30 | TBD |
-| 36 | [hunt-keid-belt-carapace](hunt-keid-belt-carapace.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 5 jumps | up to 1 ships, without piercing_railgun_i, empty hold, standing work | 12 of 30 | TBD |
-| 37 | [gather-gsc-0027-prism-scatter](gather-gsc-0027-prism-scatter.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 56 ships, needs mining_laser_i, standing work | all 30 | -120 |
-| 38 | [gather-hamal-crystal-bloom](gather-hamal-crystal-bloom.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 56 ships, needs mining_laser_i, standing work | all 30 | -170 |
-| 39 | [mine-acubens](mine-acubens.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 18 ships, needs mining_laser_i, standing work | 12 of 30 | -170 |
-| 40 | [census-frontier](census-frontier.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 7 jumps | up to 12 ships, empty hold | all 30 | -630 |
-| 41 | [park](park.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | the park route | all 30 | -670 |
+| 35 | [hunt-keid-belt-carapace](hunt-keid-belt-carapace.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 5 jumps | up to 1 ships, without piercing_railgun_i, empty hold, standing work | 12 of 30 | TBD |
+| 36 | [gather-gsc-0027-prism-scatter](gather-gsc-0027-prism-scatter.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 56 ships, needs mining_laser_i, standing work | all 30 | -120 |
+| 37 | [gather-hamal-crystal-bloom](gather-hamal-crystal-bloom.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 56 ships, needs mining_laser_i, standing work | all 30 | -170 |
+| 38 | [mine-acubens](mine-acubens.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 18 ships, needs mining_laser_i, standing work | 12 of 30 | -170 |
+| 39 | [census-frontier](census-frontier.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 7 jumps | up to 12 ships, empty hold | all 30 | -630 |
+| 40 | [park](park.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | the park route | all 30 | -670 |
 
 Planned:
 
