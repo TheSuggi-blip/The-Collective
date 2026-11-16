@@ -21,11 +21,11 @@ name below is a link into one of the sub-indexes of this folder.
 | Group | What it holds | Routes | Home space | Beyond the border | Best measured |
 |---|---|---|---|---|---|
 | [Once per Pilot](index.md#once-per-pilot) | Missions and rewards the game pays once per pilot: a new pilot's first work, and seed money. | 20 | 11 | 9 | voidborn-conductive-lattice: 8,030 cr a run |
-| [Paying Routes](index.md#paying-routes) | Work that repeats and whose runs measured above zero. | 21 | 3 | 18 | mine-wolf-1061-vent: 8,710 cr per ship-hour |
-| [Tests](index.md#tests) | Work that repeats and has no measured figure yet: one ship until its first RESULT line is read. | 9 | 0 | 9 | not measured yet |
-| [Fitting](index.md#fitting) | A module bought and fitted: the tool a kind of work needs. | 9 | 8 | 1 | fit-ice-harvester-lhs-1140: -4,630 cr per ship-hour |
+| [Paying Routes](index.md#paying-routes) | Work that repeats and whose runs measured above zero. | 21 | 3 | 18 | mine-ruchbah-ice-belt: 8,270 cr per ship-hour |
+| [Tests](index.md#tests) | Work that repeats and has no measured figure yet: one ship until its first RESULT line is read. | 8 | 0 | 8 | not measured yet |
+| [Fitting](index.md#fitting) | A module bought and fitted: the tool a kind of work needs. | 9 | 8 | 1 | fit-ice-harvester-lhs-1140: -3,730 cr per ship-hour |
 | [Reading and Waiting](index.md#reading-and-waiting) | The census and the park route: they earn nothing; they keep the picture fresh and a ship without work docked. | 3 | 2 | 1 | census-voidborn: -550 cr per ship-hour |
-| [Measured at a Loss](index.md#measured-at-a-loss) | Work that repeats and whose runs measured zero or below. | 25 | 12 | 13 | mine-bellatrix: 0 cr per ship-hour |
+| [Measured at a Loss](index.md#measured-at-a-loss) | Work that repeats and whose runs measured zero or below. | 26 | 12 | 14 | mine-bellatrix: 0 cr per ship-hour |
 | [Off](index.md#off) | Written down, not flown. | 7 | 7 | 0 | hunt-home-whale: 1,670 cr per ship-hour |
 | All | | 94 | 43 | 51 | |
 
