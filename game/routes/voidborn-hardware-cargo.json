@@ -1,0 +1,46 @@
+{
+ "id": "voidborn-hardware-cargo",
+ "kind": "circuit",
+ "title": "Hardware Optimization: Cargo: 1,500 cr once after The Collective Provides; a Cargo Expander I bought at Synchrony Hub after the accept",
+ "note": "Architect Vex-9's line on the Central Nexus board, offered only to a pilot with The Collective Provides done (boards of 10 traders, 12:34 UTC). Objective: acquire a Cargo Expander Module. Test by hand 2026-11-16 12:44 UTC, one trader: accepted at Central Nexus, one Cargo Expander I bought there at 1,056 cr (1,066 with the tax), the objective read 1 of 1 at once, handed in: +1,500 cr; fitted, the hold went from 65 to 85; +434 cr. The route buys at Synchrony Hub (7 at 352 cr, book of 12:40 UTC; limit 420, Node Gamma asks 416 for 9): about +1,050 cr after fuel and 20 more hold. A test: one ship until its first RESULT line.",
+ "once": true,
+ "max_ships": 1,
+ "min_credits": 4000,
+ "requires": {
+  "booked": "The Collective Provides",
+  "without_module": "cargo_expander_i"
+ },
+ "one_time": [
+  "Hardware Optimization: Cargo"
+ ],
+ "skip_if_booked": [
+  "Hardware Optimization: Cargo"
+ ],
+ "stops": [
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "accept": [
+    "hardware_optimization_cargo"
+   ]
+  },
+  {
+   "at": "synchrony:synchrony_hub:synchrony_hub",
+   "only_if_active": [
+    "Hardware Optimization: Cargo"
+   ],
+   "fit": [
+    {
+     "module": "cargo_expander_i",
+     "max_price": 420
+    }
+   ]
+  },
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "only_if_active": [
+    "Hardware Optimization: Cargo"
+   ],
+   "redock": true
+  }
+ ]
+}
