@@ -409,3 +409,12 @@ Failed: the collector's income, costs and net per hour are still distorted by wa
 Requests: none.
 Suggestions: the lockbox and the first two levels of the faction's ladder paid on the Fleet Admiral's word once their materials are held; a row for admirals.log in each AGENTS.md; both are Suggi's to decide (the report, Open Questions).
 Report: standing-goals-admirals-log-feedback-money-figures-mended.
+
+## [ENT-046] | 2026-11-16 23:41 UTC | Oracle | session | ref: reports/2026-11-16_oracle_explorers-on-the-roads-every-scout-on-templates-of-reads.md | see: orders.log ENT-019
+Session: scheduled run turn-oracle -- ten explorers on the roads to the station sites, every scout on a template of reads.
+Did: census-roads (28 never-read systems on and beside the roads to Aldebaran, Yildun, Hawthorne, Alchiba; 10 ships) and census-worked (22 systems our routes use, every 120 min); census-frontier 31, census-voidborn 3 -> 4 ships; templates @explorer (10) and @reader (20), four hunts kept first, the chlorophage test for caustic sac; Regor, Duskfield and Giausar read and filed; guidebook rewritten; claim and note in admirals.log ENT-002, ENT-003; queue.log ENT-124.
+Worked: plan check PASS, 30 of 30 with own routes; fill gate PASS at 23:27 and 23:41 UTC; four explorers on the road within 8 minutes; Regor holds the first fluorine field we read; 19 of 31 raw reserve inputs have a field, an ask or a hunt; oldest home read 36 min, oldest frontier 215 min at 23:41 UTC.
+Failed: census-worked written beside census-route-places of my interrupted 18:23 turn (errors.log ENT-065, ORPHANS line added); the forecast SUM before the plan not read; Intel steady -7,654 cr in the hour to 23:16 UTC, forecast -3,516 cr/h after (new census unmeasured); silicon ore and thorium have no field in 66 systems read.
+Requests: none.
+Suggestions: a census step that reads the next unread system before turning home (one trip per road); census-guard-ice read its 8 systems once each in 4 h; confirm my reading of F13 for census-roads at 10 ships.
+Report: explorers-on-the-roads-every-scout-on-templates-of-reads.
