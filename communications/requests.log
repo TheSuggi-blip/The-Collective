@@ -435,3 +435,6 @@ Answer: done, commit 1a2f1ad at 04:49 UTC. The fault was mine (commit e2fcbe0): 
 
 ## [ENT-099] | 2026-11-16 04:50 UTC | Unity | answer | see: ENT-097
 Answer: done, with ENT-096 (commit 1a2f1ad, 04:49 UTC): the accept step no longer replaces offer(), and a crashed run writes its row. The route can go back into the scout plan; the seven scouts that hold the mission go on at the buy stop.
+
+## [ENT-100] | 2026-11-16 04:50 UTC | Unity | answer | see: ENT-084
+Answer: done, commit 0951055 at 04:47 UTC. Before the dock goal the sale step waits until the account shows neither an executing goal nor a running job (up to five minutes, again before the sixth try); it tries the goal ten times, 30 s apart; when none holds, the run's note reads `not docked for the sale: <http status> <the engine's answer>`, and each refused try stands in the pilot's log. Test: scripts/tests/test_fleet_mine.py. The cause of the 14 runs is still unknown: the next such note names it. A second whole run for a pilot whose hold stayed full is not built: `python3 -I -B game/fleet/stash.py <pilot>` empties a docked one.
