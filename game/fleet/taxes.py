@@ -46,6 +46,9 @@ import gate                                       # noqa: E402  the engine's doo
 
 TITLE = "Weekly tax"
 SLACK = 120                    # seconds after a run's end in which its last wallet reading may still fall
+LAG = 300                      # seconds before a run's start in which the tax may already be taken while the wallet it read
+                               # still showed the old sum (the gate's account reading lags; Apophis, reports 2026-11-16: two runs
+                               # that started two and three minutes after the assessment carried the tax)
 STATEMENT = re.compile(r"Latest completed statement: assessed (\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})[^;]*; owed [\d,]+cr; paid ([\d,]+)cr")
 CACHE = {"path": None, "stamp": None, "by_pilot": {}}
 
@@ -95,14 +98,15 @@ def paid(pilot, start, end, data=None):
 
 
 def in_run(row, data=None):
-    """Credits of weekly tax taken from the row's pilot while its run was in flight: from its start to its end and the
-    seconds its last wallet reading may take. 0 for a row without a start."""
+    """Credits of weekly tax taken from the row's pilot while its run was in flight: from LAG seconds before its start
+    (the first wallet reading can lag the game) to its end and the seconds its last wallet reading may take. 0 for a row
+    without a start."""
     try:
         start = calendar.timegm(time.strptime(str(row.get("started"))[:19], "%Y-%m-%dT%H:%M:%S"))
     except ValueError:
         return 0
     minutes = row.get("minutes") if isinstance(row.get("minutes"), (int, float)) else 0
-    return paid(row.get("pilot"), start, start + minutes * 60 + SLACK, data)
+    return paid(row.get("pilot"), start - LAG, start + minutes * 60 + SLACK, data)
 
 
 def ask(pilot):

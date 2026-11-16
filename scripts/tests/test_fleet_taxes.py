@@ -88,6 +88,8 @@ class TaxTests(unittest.TestCase):
         self.assertEqual(routes.earned(spanning), 318)                                    # the run made +318 cr; the tax is not its loss
         ended_before = dict(spanning, started=stamp(ASSESSED - 3600), minutes=30)
         started_after = dict(spanning, started=stamp(ASSESSED + 400))
+        just_after = dict(spanning, started=stamp(ASSESSED + 150))                                 # its first wallet reading lagged the game: it carried the tax
+        self.assertEqual(taxes.in_run(just_after), 4818)
         other_pilot = dict(spanning, pilot="miner-9")
         self.assertEqual([taxes.in_run(r) for r in (ended_before, started_after, other_pilot)], [0, 0, 0])
         self.assertEqual(routes.earned(ended_before), -4500)
