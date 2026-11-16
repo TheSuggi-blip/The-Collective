@@ -50,13 +50,14 @@ of 2026-11-16 03:22 UTC; the scale is the best route, 8,270.
 | 15 | `mine-gsc-0041-frost-ring` | 1 | 4,560 (1 run) | Field 2,851 |
 | 16 | `mine-antares-ice-fields` | 1 | 2,700 (1 run) | Field 1,733, 300 an hour grows back |
 | 17 | `mine-wolf-1061-frozen-drift-nexus`, `mine-achernar-frost-ring-nexus` | 1 each | not measured | Tests: sold at Central Nexus, the deepest water-ice ladder |
-| 18 | `census-frontier` | up to 12 | -600 | Reading, when a miner has nothing else |
-| 19 | `park` | the rest | 0 | Dock at home and wait |
+| 18 | `mine-gsc-0033-cryobelt`, `mine-homam-cryobelt`, `mine-tanglewood-frost-ring`, `mine-gsc-0021-ice-fields` | 1 each | not measured | Tests the route maker wrote, added by the fill gate (03:25 UTC) for the miners fitted this turn |
+| 19 | `census-frontier` | up to 12 | -600 | Reading, when a miner has nothing else |
+| 20 | `park` | the rest | 0 | Dock at home and wait |
 
-Why this plan: the limit of the ice work is the tool. 40 miners, 14
-with an Ice Harvester I at 03:22 UTC (their ship files) and ten more asks on the fit
-routes. The ice routes hold 20 places, shared with the command group's
-pathfinders. The next limit is the bid: The Experiment's water-ice
+Why this plan: the limit of the ice work is the tool. 40 miners, 19
+with an Ice Harvester I at 03:25 UTC (their ship files) and the rest of
+the asks on the fit routes. The ice routes hold 24 places, tests included, shared with the
+command group's pathfinders. The next limit is the bid: The Experiment's water-ice
 share carries about 2 ships for each of Ruchbah and Achernar at its
 best price (fill status, 03:16 UTC), so new places go to Central
 Nexus, not to more ships at The Experiment.
