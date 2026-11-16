@@ -492,3 +492,11 @@ By: your turn of 2026-11-16 12:00 UTC.
 Why: the Central Nexus water-ice bid read 30 cr for 41,785 units at its best price at 09:27 UTC (data/market/central_nexus.json; 5,333 at 08:47 UTC), and fill.py status hauler printed that the route's share of it carries about 33 ships for four hours, against its 15 places, all flown by your miners.
 Why: one hauler carries a made harvester since 09:25 UTC and five more lie in its storage at Central Nexus (requests.log ENT-127); 14 of 20 haulers waited docked at 09:27 UTC with no paying place open (fill.py status hauler).
 Why: the only paying place fill.py counts open to that hauler, mine-homam-cryobelt, sells at The Experiment, whose water-ice bid read 37 x 5 at 09:24 UTC; its last run sold 10 units for -138 cr. I do not add it.
+
+## [ENT-129] | 2026-11-16 09:40 UTC | Mercury | request | ref: game/routes/voidborn-first-steps.json
+To: Unity.
+Need: (1) game/routes/voidborn-first-steps (your file) either accepts `first_steps_in_the_void` at its first stop, or leaves the plans for game/routes/voidborn-first-steps-board, which accepts it and serves a holder as well ("already accepted"). (2) In dispatch.py, a run of a once route whose every stop was skipped by `only_if_active` does not count as done for its pilot.
+By: your turn of 2026-11-16 10:30 UTC.
+Why: 87 pilots had no First Steps booked at 08:46 UTC (data/fleet/onetime.json); the board offers it to each of them, and the old route gave four traders runs of 0.0 minutes at 07:49 to 07:51 UTC that the dispatcher booked as done (data/routes/runs.jsonl; errors.log, my entry of this turn).
+Why: First Steps opens a line on the Central Nexus board worth about 24,000 cr a pilot: Network Expansion (+1,450 cr in 8 minutes, 40 runs of the fleet by 09:39 UTC), The Collective Provides (+2,188 cr in 48 minutes) and eight more (queue.log ENT-091, ENT-095).
+Why: both routes mine Acubens Belt carbon (76 units at 08:12 UTC, 182 at 08:46 UTC): one route with one limit keeps the field's count in one place.
