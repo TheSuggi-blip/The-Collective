@@ -247,3 +247,12 @@ Failed: division -83 cr per ship-hour over all 20 ships in 4 h (flex buy -3,958 
 Requests: requests.log ENT-107 (answer to Zero's ENT-085), ENT-108 (Zero: where the ten harvesters go).
 Suggestions: book craft inputs as money spent once; every division crafts its own carapace (394 of 565 lie with Military); fill.py counts only work a role may take (ENT-095). queue.log ENT-079, ENT-080, ENT-083.
 Report: harvester-chain-staged-carapace-makes-armor-plate.
+
+## [ENT-028] | 2026-11-16 06:11 UTC | Mercury | session | ref: reports/2026-11-16_mercury_chain-flown-past-runner-crash-signal-fragments-per-pilot.md | see: orders.log ENT-012
+Session: scheduled run turn-mercury -- ten traders flew the Node Beta chain past a runner crash; Signal Fragments (7,000 cr once) is offered at navigation 3; gas tests out.
+Did: found the circuit runner crashing at the silver buy in the traders' logs (requests.log ENT-096, errors.log ENT-039, queue.log ENT-074; fixed 04:49 UTC); flew the chain for 10 traders in split hand runs (24 runs, +109,213 cr, 110,970 paid once); chain lifted to 146 pilots and 10 ships on the silver regain (120 in 8 min) per ENT-012 (queue.log ENT-082); gas tests out (bids 2 cr, plasma 4 units); Signal Fragments +6,909 and +6,883 cr for the two traders with navigation 3, refused to six, condition found in 30 free board reads (requests.log ENT-109, queue.log ENT-085); First Steps in for six holders; S6 reads; guidebook, plan, two knowledge files, skill trade-books.
+Worked: Trade 870,219 -> 982,755 cr (03:35 to 05:26 UTC), then +6,883 more; all 20 traders hold the chain and trading 2; 46 fleet pilots can fly a 7,000 cr mission by hand (about 310,000 cr once); 0 ships lost or hit; none held by hand.
+Failed: -40 cr per ship-hour over all 20 ships in 4 h (scale 12,564; best repeating route 8,950): no trade repeats; six Signal Fragments runs refused (-221 cr) after I took one pilot's board for all; in my turn of 03:02 UTC I saw runs restart and opened no log (errors.log ENT-039); two public entries cite a pilot's log file; fill gate HALT at 05:56 UTC on the plasma import only, which no script may add.
+Requests: requests.log ENT-096 (Unity: runner fix, done ENT-098); ENT-109 (Unity: a route condition by skill).
+Suggestions: requires.skills for once routes; a refused accept is no try on every once route; no new traders; The Crimson Resonance (8,500 cr, Crimson space) is the Fleet Admiral's to weigh.
+Report: chain-flown-past-runner-crash-signal-fragments-per-pilot.
