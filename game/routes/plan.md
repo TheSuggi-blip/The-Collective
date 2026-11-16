@@ -56,7 +56,7 @@ Kept by Unity. Routes: 34.
 
 ## drone
 
-Kept by Apophis. Routes: 33.
+Kept by Apophis. Routes: 34.
 
 | # | Route | Group | Zone | Open to | Credits per ship-hour |
 |---|---|---|---|---|---|
@@ -90,9 +90,10 @@ Kept by Apophis. Routes: 33.
 | 28 | [hunt-cedarhold-dim-lattice-veil-ray](hunt-cedarhold-dim-lattice-veil-ray.json) | Paying Routes | beyond the border, 5 jumps | up to 1 ships, without piercing_railgun_i, empty hold, while the_experiment_research_station bids 100 cr for verdigris_curd | 840 |
 | 29 | [hunt-low-charge-glint-veil-ray](hunt-low-charge-glint-veil-ray.json) | Paying Routes | beyond the border, 4 jumps | up to 1 ships, without piercing_railgun_i, empty hold, while node_beta_industrial_station bids 100 cr for verdigris_curd | 800 |
 | 30 | [train-navigation-home](train-navigation-home.json) | Tests | home space | up to 1 ships | TBD |
-| 31 | [census-guard-ice](census-guard-ice.json) | Reading and Waiting | beyond the border, 7 jumps | up to 2 ships, empty hold | -1,350 |
-| 32 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -790 |
-| 33 | [park](park.json) | Reading and Waiting | home space | the park route | -670 |
+| 31 | [mission-ghosts-in-the-cloud-node](mission-ghosts-in-the-cloud-node.json) | Once per Pilot | home space | once per pilot, up to 1 ships | one-time |
+| 32 | [census-guard-ice](census-guard-ice.json) | Reading and Waiting | beyond the border, 7 jumps | up to 2 ships, empty hold | -1,350 |
+| 33 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -790 |
+| 34 | [park](park.json) | Reading and Waiting | home space | the park route | -670 |
 
 Planned:
 
