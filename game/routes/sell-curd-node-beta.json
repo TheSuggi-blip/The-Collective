@@ -1,0 +1,41 @@
+{
+ "id": "sell-curd-node-beta",
+ "kind": "circuit",
+ "title": "Stored verdigris curd sold into the curd bid at Node Beta, where the drones stored it",
+ "note": "2026-11-16 13:21 UTC (Apophis): the veil-ray hunts looted curd while its bid was gone (07:08 to 12:07 UTC) and the drones stored it; drone storage held verdigris curd at Node Beta: 38 at 13:10 UTC (the tool stock). The bid stood at 330 cr x 50 there again from 12:07 to 12:21 UTC (data/market/history.jsonl). A pilot whose own storage there holds two curd or more flies there, withdraws what the bid takes and sells it (the circuit runner's withdraw step), and stores what is left. Closed by itself when the bid is gone (requires.bid) and for a pilot whose storage holds none (requires.stored). A test with one ship until its first RESULT line.",
+ "max_ships": 1,
+ "requires": {
+  "stored": {
+   "at": "node_beta_industrial_station",
+   "item": "verdigris_curd",
+   "min": 2
+  },
+  "bid": {
+   "item": "verdigris_curd",
+   "base": "node_beta_industrial_station",
+   "min_price": 250,
+   "min_qty": 2
+  }
+ },
+ "stops": [
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "verdigris_curd"
+    }
+   ],
+   "sell": [
+    {
+     "item": "verdigris_curd",
+     "min_price": 250
+    }
+   ]
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store": "all"
+  }
+ ]
+}
