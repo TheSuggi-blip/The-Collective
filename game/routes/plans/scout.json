@@ -21,14 +21,15 @@
   "voidborn-conductive-lattice",
   "voidborn-first-hunt-acubens",
   "mission-ghosts-in-the-cloud-node",
-  "census-roads",
   "hunt-test-homam-frost-moth",
   "hunt-atlas-gas-pocket",
   "mine-gliese-876-belt",
   "hunt-garnet-dim-lattice-veil-ray",
+  "census-worked",
+  "census-frontier",
+  "census-roads",
   "gather-gsc-0027-prism-scatter",
   "gather-hamal-crystal-bloom",
-  "census-frontier",
   "park"
  ],
  "planned": [
@@ -76,19 +77,21 @@
   "voidborn-conductive-lattice": 30,
   "voidborn-first-hunt-acubens": 30,
   "mission-ghosts-in-the-cloud-node": 30,
-  "census-roads": 10,
   "hunt-test-homam-frost-moth": 1,
   "hunt-atlas-gas-pocket": 1,
   "mine-gliese-876-belt": 1,
   "hunt-garnet-dim-lattice-veil-ray": 1,
+  "census-worked": 18,
+  "census-frontier": 30,
+  "census-roads": 28,
   "gather-gsc-0027-prism-scatter": 30,
   "gather-hamal-crystal-bloom": 30,
-  "census-frontier": 30,
   "park": 30
  },
  "of": 30,
  "derived": "Written by game/fleet/plan.py from the division's plan file (data/plans/plan-intel.md), never by hand.",
  "templates": {
-  "explorer": 10
+  "explorer": 10,
+  "reader": 18
  }
 }
