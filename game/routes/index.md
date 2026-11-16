@@ -19,7 +19,7 @@ Missions and rewards the game pays once per pilot: a new pilot's first work, and
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
-| [mission-cracking-the-shell-central](mission-cracking-the-shell-central.json) | circuit | home space | Cracking the Shell: 1500 cr at The Core | once per pilot, up to 1 ships | TBD | TBD | TBD | TBD | -- |
+| [mission-cracking-the-shell-central](mission-cracking-the-shell-central.json) | circuit | home space | Cracking the Shell: 1500 cr at The Core | once per pilot, up to 1 ships | 2 | 20 | 1,410 | one-time | 2026-11-16 |
 | [voidborn-concurrent](voidborn-concurrent.json) | circuit | home space | Concurrent Approval: accept at Central Nexus, deliver two neural soma to Node Beta (3,000 cr once) | once per pilot | 146 | 8 | 2,970 | one-time | 2026-11-16 |
 | [voidborn-first-hunt-acubens](voidborn-first-hunt-acubens.json) | circuit | home space | First Hunt: Belt-Grazers: 1,000 cr once and 50 Weapons XP; three belt-grazers at Acubens Shadow Pocket | once per pilot, up to 1 ships | 3 | 36 | 940 | one-time | 2026-11-16 |
 | [voidborn-first-hunt-gsc](voidborn-first-hunt-gsc.json) | circuit | home space | First Hunt: Belt-Grazers: 1,000 cr once and 50 Weapons XP; three belt-grazers at Spacetime Seep | once per pilot, up to 1 ships | 4 | 27 | 930 | one-time | 2026-11-16 |
@@ -31,7 +31,7 @@ Missions and rewards the game pays once per pilot: a new pilot's first work, and
 | [voidborn-selling](voidborn-selling.json) | circuit | home space | Market Participation: Selling: 1,000 cr once; ten liquid nitrogen bought and sold at The Experiment | once per pilot, up to 10 ships | 52 | 5 | 870 | one-time | 2026-11-16 |
 | [voidborn-substrate](voidborn-substrate.json) | circuit | home space | Substrate Delivery: two neural soma bought at Central Nexus, the mission taken at Node Alpha and handed in at Central Nexus; 2 jumps | once per pilot, from 3,000 cr | 146 | 8 | 1,790 | one-time | 2026-11-15 |
 | [voidborn-conductive-lattice](voidborn-conductive-lattice.json) | circuit | beyond the border, 6 jumps | Technician Pale-6's chain at Node Beta, once per pilot: Conductive Lattice (5,500 cr, 20 silver ore from Ironlight Crossroads), Resonance Substrate (7,000 cr, 15 energy crystal from Central Nexus), Final Calibration (8,000 cr, 5 circuit boards handed out, delivered to Node Gamma) | once per pilot, up to 6 ships, 9 pilots in all, empty hold, from 13,000 cr | 9 | 32 | 8,030 | one-time | 2026-11-16 |
-| [voidborn-first-hunt-schedar](voidborn-first-hunt-schedar.json) | circuit | beyond the border, 2 jumps | First Hunt: Belt-Grazers: 1,000 cr once and 50 Weapons XP; three belt-grazers at Schedar Belt (lawless, one jump past GSC-0027) | once per pilot, up to 1 ships, empty hold | 4 | 12 | 210 | one-time | 2026-11-16 |
+| [voidborn-first-hunt-schedar](voidborn-first-hunt-schedar.json) | circuit | beyond the border, 2 jumps | First Hunt: Belt-Grazers: 1,000 cr once and 50 Weapons XP; three belt-grazers at Schedar Belt (lawless, one jump past GSC-0027) | once per pilot, up to 1 ships, empty hold | 7 | 15 | 90 | one-time | 2026-11-16 |
 
 ## Paying Routes
 
@@ -39,34 +39,24 @@ Work that repeats and whose runs measured above zero.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
-| [trade-ceramite-plating-the-central](trade-ceramite-plating-the-central.json) | circuit | home space | Ceramite Plating: bought at The Experiment Research Station for 899 cr, sold at The Core for 1185 cr | up to 1 ships, from 7,944 cr | 1 | 11 | 100 | 580 | 2026-11-16 |
 | [hunt-gsc-veil-ray](hunt-gsc-veil-ray.json) | hunt | home space | Veil-rays at GSC-0027 Prism Scatter; verdigris curd sold at Central Nexus | up to 1 ships, without piercing_railgun_i | 16 | 24 | 1,620 | 3,620 | 2026-11-15 |
 | [hunt-hamal-veil-ray](hunt-hamal-veil-ray.json) | hunt | home space | Veil-rays at Hamal Crystal Bloom; verdigris curd sold at Central Nexus | up to 1 ships, without piercing_railgun_i | 10 | 27 | 1,150 | 2,890 | 2026-11-15 |
 | [mine-node-beta-frozen-drift](mine-node-beta-frozen-drift.json) | mine | home space | Node Beta Frozen Drift: water_ice, nitrogen_ice, deuterium_ice; sold at Node Alpha Processing Station | up to 1 ships, needs ice_harvester_i | 2 | 43 | 2,520 | 3,510 | 2026-11-16 |
+| [trade-plasma-gas-784309214f105860a16a0c100a70eb14-node](trade-plasma-gas-784309214f105860a16a0c100a70eb14-node.json) | circuit | beyond the border, 6 jumps | Plasma Gas: bought at Ironlight Crossroads for 52 cr, sold at Node Beta Industrial Station for 104 cr | up to 1 ships, from 3,915 cr | 1 | 18 | 710 | 2,420 | 2026-11-16 |
 | [hunt-cedarhold-dim-lattice-veil-ray](hunt-cedarhold-dim-lattice-veil-ray.json) | hunt | beyond the border, 5 jumps | veil_ray at cedarhold_dim_lattice; loot sold at The Experiment Research Station | up to 1 ships, without piercing_railgun_i, empty hold | 4 | 22 | 410 | 1,180 | 2026-11-16 |
 | [hunt-faintlight-drift-veil-ray](hunt-faintlight-drift-veil-ray.json) | hunt | beyond the border, 5 jumps | veil_ray at faintlight_drift; loot sold at Node Beta Industrial Station | up to 1 ships, without piercing_railgun_i, empty hold | 2 | 30 | 1,860 | 3,730 | 2026-11-16 |
 | [hunt-keid-fractured-prism-veil-ray](hunt-keid-fractured-prism-veil-ray.json) | hunt | beyond the border, 5 jumps | veil_ray at keid_fractured_prism; loot sold at Node Beta Industrial Station | up to 1 ships, without piercing_railgun_i, empty hold | 3 | 31 | 870 | 1,640 | 2026-11-16 |
+| [hunt-low-charge-glint-veil-ray](hunt-low-charge-glint-veil-ray.json) | hunt | beyond the border, 4 jumps | veil_ray at low_charge_glint; loot sold at Node Beta Industrial Station | up to 1 ships, without piercing_railgun_i, empty hold | 4 | 21 | 560 | 1,580 | 2026-11-16 |
 | [hunt-ruchbah-veil-ray](hunt-ruchbah-veil-ray.json) | hunt | beyond the border, 4 jumps | Veil-rays at Ruchbah Broken Glass Veil (lawless); verdigris curd sold at The Experiment | up to 1 ships, without piercing_railgun_i, empty hold | 4 | 18 | 750 | 2,650 | 2026-11-16 |
-| [mine-achernar-frost-ring](mine-achernar-frost-ring.json) | mine | beyond the border, 4 jumps | Achernar Frost Ring: water_ice, nitrogen_ice, deuterium_ice, methane_ice; sold at The Experiment Research Station | up to 3 ships, needs ice_harvester_i, empty hold | 1 | 49 | 5,040 | 6,200 | 2026-11-16 |
+| [mine-achernar-frost-ring](mine-achernar-frost-ring.json) | mine | beyond the border, 4 jumps | Achernar Frost Ring: water_ice, nitrogen_ice, deuterium_ice, methane_ice; sold at The Experiment Research Station | up to 3 ships, needs ice_harvester_i, empty hold | 4 | 48 | 5,990 | 7,470 | 2026-11-16 |
 | [mine-alnair-ice-fields](mine-alnair-ice-fields.json) | mine | beyond the border, 5 jumps | Alnair Ice Fields: water_ice, nitrogen_ice, deuterium_ice; sold at Node Alpha Processing Station | up to 1 ships, needs ice_harvester_i, empty hold | 1 | 69 | 5,100 | 4,430 | 2026-11-16 |
 | [mine-antares-ice-fields](mine-antares-ice-fields.json) | mine | beyond the border, 5 jumps | Antares Ice Fields: water_ice, nitrogen_ice, deuterium_ice, helium_ice; sold at Node Alpha Processing Station | up to 1 ships, needs ice_harvester_i, empty hold | 1 | 69 | 3,100 | 2,700 | 2026-11-16 |
 | [mine-gsc-0041-frost-ring](mine-gsc-0041-frost-ring.json) | mine | beyond the border, 4 jumps | GSC-0041 Frost Ring: water_ice, nitrogen_ice, deuterium_ice; sold at Node Alpha Processing Station | up to 1 ships, needs ice_harvester_i, empty hold | 1 | 62 | 4,720 | 4,560 | 2026-11-16 |
 | [mine-intercrus-ice-fields](mine-intercrus-ice-fields.json) | mine | beyond the border, 7 jumps | Intercrus Ice Fields: water_ice, nitrogen_ice; sold at The Experiment Research Station | up to 1 ships, needs ice_harvester_i, empty hold | 1 | 77 | 5,610 | 4,350 | 2026-11-16 |
-| [mine-ruchbah-ice-belt](mine-ruchbah-ice-belt.json) | mine | beyond the border, 4 jumps | Ruchbah Ice Belt: water_ice, nitrogen_ice, deuterium_ice, methane_ice; sold at The Experiment Research Station | up to 3 ships, needs ice_harvester_i, empty hold | 1 | 45 | 5,450 | 7,270 | 2026-11-16 |
+| [mine-keid-ice-shelf](mine-keid-ice-shelf.json) | mine | beyond the border, 5 jumps | Keid Ice Shelf: water_ice, deuterium_ice; sold at Node Alpha Processing Station | up to 1 ships, needs ice_harvester_i, empty hold | 1 | 97 | 7,540 | 4,690 | 2026-11-16 |
+| [mine-ruchbah-ice-belt](mine-ruchbah-ice-belt.json) | mine | beyond the border, 4 jumps | Ruchbah Ice Belt: water_ice, nitrogen_ice, deuterium_ice, methane_ice; sold at The Experiment Research Station | up to 3 ships, needs ice_harvester_i, empty hold | 4 | 42 | 4,800 | 6,800 | 2026-11-16 |
 | [mine-wolf-1061-frozen-drift](mine-wolf-1061-frozen-drift.json) | mine | beyond the border, 4 jumps | Wolf 1061 Frozen Drift: water_ice, nitrogen_ice, deuterium_ice, methane_ice; sold at Node Alpha Processing Station | up to 2 ships, needs ice_harvester_i, empty hold | 1 | 67 | 4,640 | 4,180 | 2026-11-16 |
-| [mine-wolf-1061-vent](mine-wolf-1061-vent.json) | mine | beyond the border, 4 jumps | Wolf 1061 Frozen Drift with a Nitrogen Vent: water and the rare ices, sold at Synchrony | up to 1 ships, needs nitrogen_vent, empty hold | 1 | 55 | 6,730 | 7,330 | 2026-11-16 |
-
-## Tests
-
-Work that repeats and has no measured figure yet: one ship until its first RESULT line is read.
-
-| Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
-|---|---|---|---|---|---|---|---|---|---|
-| [trade-voidborn-neural-soma-central-node](trade-voidborn-neural-soma-central-node.json) | circuit | home space | Voidborn Neural Soma: bought at The Core for 285 cr, sold at Node Gamma Relay Station for 622 cr | up to 1 ships, from 4,254 cr | TBD | TBD | TBD | TBD | -- |
-| [trade-voidborn-neural-soma-node-node](trade-voidborn-neural-soma-node-node.json) | circuit | home space | Voidborn Neural Soma: bought at Node Beta Industrial Station for 268 cr, sold at Node Gamma Relay Station for 622 cr | up to 1 ships, from 3,589 cr | TBD | TBD | TBD | TBD | -- |
-| [trade-hydrogen-gas-784309214f105860a16a0c100a70eb14-synchrony](trade-hydrogen-gas-784309214f105860a16a0c100a70eb14-synchrony.json) | circuit | beyond the border, 6 jumps | Hydrogen Gas: bought at Ironlight Crossroads for 6 cr, sold at Synchrony Hub for 28 cr | up to 1 ships, from 3,429 cr | TBD | TBD | TBD | TBD | -- |
-| [trade-plasma-gas-784309214f105860a16a0c100a70eb14-node](trade-plasma-gas-784309214f105860a16a0c100a70eb14-node.json) | circuit | beyond the border, 6 jumps | Plasma Gas: bought at Ironlight Crossroads for 52 cr, sold at Node Beta Industrial Station for 104 cr | up to 1 ships, from 3,915 cr | TBD | TBD | TBD | TBD | -- |
-| [mine-keid-ice-shelf](mine-keid-ice-shelf.json) | mine | beyond the border, 5 jumps | Keid Ice Shelf: water_ice, deuterium_ice; sold at Node Alpha Processing Station | up to 1 ships, needs ice_harvester_i, empty hold | TBD | TBD | TBD | TBD | -- |
+| [mine-wolf-1061-vent](mine-wolf-1061-vent.json) | mine | beyond the border, 4 jumps | Wolf 1061 Frozen Drift with a Nitrogen Vent: water and the rare ices, sold at Synchrony | up to 1 ships, needs nitrogen_vent, empty hold | 2 | 56 | 8,070 | 8,710 | 2026-11-16 |
 
 ## Fitting
 
@@ -75,7 +65,7 @@ A module bought and fitted: the tool a kind of work needs.
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
 | [fit-gas-harvester](fit-gas-harvester.json) | circuit | home space | Fit a Gas Harvester I at Node Beta: the tool of the gas test | once per pilot, up to 1 ships, 1 pilots in all, needs mining_laser_i, without ice_harvester_i, from 6,000 cr | 1 | 4 | -1,240 | one-time | 2026-11-16 |
-| [fit-ice-harvester](fit-ice-harvester.json) | circuit | home space | Fit an Ice Harvester I at Node Alpha: the tool every ice field needs | once per pilot, up to 1 ships, 15 pilots in all, without ice_harvester_i, from 6,000 cr | 9 | 3 | -1,480 | one-time | 2026-11-16 |
+| [fit-ice-harvester](fit-ice-harvester.json) | circuit | home space | Fit an Ice Harvester I at Node Alpha: the tool every ice field needs | once per pilot, up to 1 ships, 15 pilots in all, without ice_harvester_i, from 6,000 cr | 15 | 2 | -900 | one-time | 2026-11-16 |
 | [fit-ice-harvester-guard](fit-ice-harvester-guard.json) | circuit | home space | Fit an Ice Harvester I at Central Nexus: the tool every ice field needs | once per pilot, up to 2 ships, 4 pilots in all, without ice_harvester_i, from 6,000 cr | 4 | 1 | -1,430 | one-time | 2026-11-16 |
 
 ## Reading and Waiting
@@ -94,16 +84,19 @@ Work that repeats and whose runs measured zero or below.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
+| [trade-ceramite-plating-the-central](trade-ceramite-plating-the-central.json) | circuit | home space | Ceramite Plating: bought at The Experiment Research Station for 899 cr, sold at The Core for 1185 cr | up to 1 ships, from 7,944 cr | 3 | 10 | -3,060 | -17,350 | 2026-11-16 |
+| [trade-voidborn-neural-soma-central-node](trade-voidborn-neural-soma-central-node.json) | circuit | home space | Voidborn Neural Soma: bought at The Core for 285 cr, sold at Node Gamma Relay Station for 622 cr | up to 1 ships, from 4,254 cr | 1 | 11 | -960 | -5,140 | 2026-11-16 |
 | [trade-voidborn-neural-soma-central-the](trade-voidborn-neural-soma-central-the.json) | circuit | home space | Voidborn Neural Soma: bought at The Core for 258 cr, sold at The Experiment Research Station for 690 cr | up to 1 ships, from 3,851 cr | 2 | 6 | -510 | -4,740 | 2026-11-16 |
+| [trade-voidborn-neural-soma-node-node](trade-voidborn-neural-soma-node-node.json) | circuit | home space | Voidborn Neural Soma: bought at Node Beta Industrial Station for 268 cr, sold at Node Gamma Relay Station for 622 cr | up to 1 ships, from 3,589 cr | 1 | 4 | -300 | -4,290 | 2026-11-16 |
 | [hunt-home-drift-ray](hunt-home-drift-ray.json) | hunt | home space | Drift-rays at Stellar Siphon in Nexus Prime; goods sold or stored at Central Nexus | up to 1 ships | 8 | 10 | -40 | -250 | 2026-11-15 |
 | [hunt-test-acubens-patina-grazer](hunt-test-acubens-patina-grazer.json) | hunt | home space | Yield test: patina_grazer at acubens_shadow_pocket; what a kill drops and whether a bid takes it | up to 1 ships, without piercing_railgun_i | 3 | 5 | -50 | -560 | 2026-11-16 |
 | [mine-acubens](mine-acubens.json) | mine | home space | Iron and copper at Acubens Shadow Pocket; ore into storage at Node Beta | up to 16 ships | 48 | 45 | -120 | -160 | 2026-11-15 |
 | [mine-bellatrix](mine-bellatrix.json) | mine | home space | Wait at Bellatrix Major Belt beside Node Gamma station for whatever regrows (thorium, palladium, iridium, carbon) | up to 1 ships | 8 | 45 | 0 | 0 | 2026-11-15 |
-| [mine-cryogenic-reserve](mine-cryogenic-reserve.json) | mine | home space | Cryogenic Reserve: water_ice, nitrogen_ice, oxygen_ice; sold at Synchrony Hub | up to 1 ships, needs ice_harvester_i | 1 | 47 | -270 | -340 | 2026-11-16 |
+| [mine-cryogenic-reserve](mine-cryogenic-reserve.json) | mine | home space | Cryogenic Reserve: water_ice, nitrogen_ice, oxygen_ice; sold at Synchrony Hub | up to 1 ships, needs ice_harvester_i | 2 | 47 | -270 | -350 | 2026-11-16 |
 | [mine-gsc-seep](mine-gsc-seep.json) | mine | home space | Iron and copper at GSC-0027 Spacetime Seep; ore into storage at Node Beta | up to 16 ships | 48 | 45 | -120 | -160 | 2026-11-15 |
 | [mine-pherkad-rift](mine-pherkad-rift.json) | mine | home space | Copper and iron at Pherkad Null Rift; ore into storage at Synchrony Hub | every pilot | 285 | 45 | -100 | -170 | 2026-11-16 |
+| [trade-hydrogen-gas-784309214f105860a16a0c100a70eb14-synchrony](trade-hydrogen-gas-784309214f105860a16a0c100a70eb14-synchrony.json) | circuit | beyond the border, 6 jumps | Hydrogen Gas: bought at Ironlight Crossroads for 6 cr, sold at Synchrony Hub for 28 cr | up to 1 ships, from 3,429 cr | 1 | 15 | -400 | -1,620 | 2026-11-16 |
 | [hunt-garnet-dim-lattice-veil-ray](hunt-garnet-dim-lattice-veil-ray.json) | hunt | beyond the border, 5 jumps | veil_ray at garnet_dim_lattice; loot sold at The Experiment Research Station | up to 1 ships, without piercing_railgun_i, empty hold | 3 | 8 | -80 | -600 | 2026-11-16 |
-| [hunt-low-charge-glint-veil-ray](hunt-low-charge-glint-veil-ray.json) | hunt | beyond the border, 4 jumps | veil_ray at low_charge_glint; loot sold at Node Beta Industrial Station | up to 1 ships, without piercing_railgun_i, empty hold | 2 | 12 | -100 | -520 | 2026-11-16 |
 | [mine-gsc-0050-gas-plume](mine-gsc-0050-gas-plume.json) | mine | beyond the border, 3 jumps | GSC-0050 Gas Plume: plasma_gas, xenon_gas, neon_gas, chlorine_gas; sold at Node Beta Industrial Station | up to 1 ships, needs gas_harvester_i, empty hold | 1 | 54 | -200 | -220 | 2026-11-16 |
 
 ## Off
