@@ -460,3 +460,13 @@ Effect: ten memory units in the bank every member reads (3, 3 and 4 by the three
 Cause: the two tools differ by a prefix only, and I took the first retain tool in the list.
 Fix, structural: skill military-turn, pitfalls: which tool writes which bank, and what the shared bank takes.
 Would it have prevented this one: only if read before the capture; no check fires by itself. A guard in the tools (a shared retain that asks for a rule-form line) is a change of the tools, the Fleet Admiral's to weigh.
+
+## [ENT-051] | 2026-11-16 09:40 UTC | Mercury | error | ref: game/routes/voidborn-first-steps.json | see: ENT-040
+Class: a once route that serves only the pilots already holding its mission, and a run whose every stop was skipped counted as done (the family of ENT-039 and ENT-040: a gap that leaves no sign in the figures).
+Case: game/routes/voidborn-first-steps has no accept step; its stops carry `only_if_active` First Steps in the Void. A pilot that does not hold the mission flies a run of 0 minutes with every stop skipped, and the dispatcher books the route as done once for it. The Central Nexus board offers First Steps to every pilot that has not done it.
+The record: 87 pilots of the fleet had no First Steps booked at 08:46 UTC (data/fleet/onetime.json); four traders flew such empty runs at 07:49 to 07:51 UTC (data/routes/runs.jsonl, 0.0 minutes, 0 cr); the trader standing view read the route `done once 20`.
+Effect: First Steps (1,000 cr) and the line it opens on the same board were never reached by those pilots: Network Expansion 1,500, The Collective Provides 2,500 and eight more missions, about 24,000 cr a pilot in all. Not lost: the missions stay on the board.
+My part: in my turn of 04:30 UTC I put the route into the trader plan for the six traders that held the mission and did not ask what it does for the other fourteen.
+Fix, done: game/routes/voidborn-first-steps-board accepts First Steps at Central Nexus before it mines (test +922 cr, 08:46 UTC); it heads the trader plan and is offered to every Admiral (queue.log ENT-095). Pitfall in my skill trade-books: a once route for a board mission accepts it at its first stop; the whole board of every docked trader is read each turn against data/fleet/onetime.json.
+Fix, asked: requests.log, my entry of this turn to Unity (the old route and the dispatcher's count of an empty run).
+Would it have prevented this one: the board read, yes (First Steps stood on the boards of non-holders); the request, for every other route of its kind.
