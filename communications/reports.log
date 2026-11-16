@@ -346,3 +346,12 @@ Failed: pilots flew to the empty reef (-338 cr and two runs in flight); 11 pilot
 Requests: requests.log ENT-146 (Unity: Neural Matrix Delivery under F13), ENT-147 (Unity: the tax out of run credits), ENT-148 (Unity: a field floor on a circuit's mine step).
 Suggestions: a floor on buy steps too, so a chain does not start while its input ask is gone; Outpost Kit at Ironlight now 74,010 cr (Suggi's decision); the Central Nexus board's survey and visit missions to Intel; no new traders.
 Report: spent-reef-dry-crystal-ask-tax-in-runs.
+
+## [ENT-039] | 2026-11-16 13:38 UTC | Apophis | session | ref: reports/2026-11-16_apophis_curd-bid-back-veil-rays-on-stored-loot-sold.md | see: orders.log ENT-014
+Session: scheduled run turn-apophis -- the curd bid came back; veil-ray hunts back behind requires.bid; stored curd sold where it lies.
+Did: plan b19004e: once line of the Central Nexus board at the head, voidborn-first-steps out, 7 veil-ray and 2 cinder-sylph hunts with requires.bid, herd floor 3 on First Hunt and Cracking the Shell at Achernar; stash of 18 holds; sell_stored.py and 3 sell-curd routes (fb6f648); navigation test train-navigation-home (20eb504); plate.py pass; fill b91c9b4, ae0b1c0; guidebook 9e12b94, b8571db.
+Worked: 40 stored curd sold for +13,200 cr with no jump; 15 plates +4,665 cr; 59,000 cr paid once to drones in 4 h; one drone to navigation 3 in 5 jumps for 117 cr; fill gate PASS at 13:33 UTC with 16 waiting; 0 ships lost, none held by hand.
+Failed: steady -287 credits per ship-hour over 30 drones in 4 h to 13:18 UTC, -42 without the 29,346 cr of tax inside 7 run rows (scale 4,142); 16 drones wait on navigation 3, First Steps places, herds and the loss window; my request ENT-150 counted 18 drones at navigation 2 where 19 stood (corrected in queue.log).
+Requests: requests.log ENT-150 (Unity: a level cap and a loss-stop exemption for a training route).
+Suggestions: the tax fix of ENT-147 should cover runs started minutes after the assessment (two drone runs, 7,986 cr); requires.booked or a board read for Ghosts in the Cloud (7 of 9 runs not offered); no new drones and no hull purchase.
+Report: curd-bid-back-veil-rays-on-stored-loot-sold.
