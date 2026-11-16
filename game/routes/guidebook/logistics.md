@@ -23,8 +23,8 @@ at the end of every turn.
 
 ## Standing Plan
 
-What the 20 haulers fly between two turns (2026-11-16 14:30 UTC, orders.log
-ENT-014), in the plan's order; 32 routes. A free hauler takes the first route
+What the 20 haulers fly between two turns (2026-11-16 14:58 UTC, orders.log
+ENT-014), in the plan's order; 35 routes. A free hauler takes the first route
 open to it. The scale of the hour: the best repeating route of the fleet with
 two runs or more, hunt-test-homam-frost-moth, at 4,142 cr per ship-hour (the
 tool fleet, view=tasks, 12:58 UTC); a ship without work earns 0.
@@ -38,17 +38,22 @@ tool fleet, view=tasks, 12:58 UTC); a ship without work earns 0.
 | 18 | `mine-achernar-frost-ring-nexus` (Zero's file) | the hauler with a made Ice Harvester I, when one of 3 places frees | closed: its last three runs each lost money, the weekly tax of 12:27 UTC inside them (errors.log ENT-056) | Zero's word (requests.log ENT-143) |
 | 19-28 | `sell-plate-node-beta`, `sell-soma-synchrony`, `sell-soma-node-beta`, four `carry-soma-*`, `sell-plasma-node-beta`, `sell-liquid-hydrogen-central`, `sell-liquid-hydrogen-node-beta` | 1 each; a hauler whose own storage there holds the good | tests: a soma sells at 500 to 734 cr into pools of 1 to 3 that come back within the hour; liquid hydrogen made from stored gas sold 42 at 116 cr (+4,846 cr in 5 min); the first plate run found its bid gone (-22 cr) | Orders ENT-014, APOLLO (1): what stands in storage sold as the pools refill; each opens only while its bid stands (`requires.bid`), and goods we own go into a bid before a test's load does |
 | 29-30 | `mine-atlas-gas-pocket`, `mine-amberfall-emission-nebula` | 1 each; a hauler with a Gas Harvester I, hold empty (lawless fields) | tests, 1,918 and 1,493 cr per ship-hour estimated | Orders: the gas routes Trade has not taken; each closed while its bid (plasma at Node Beta, hydrogen at Node Gamma) is short. The two hydrogen tests into Node Beta left the plan at 14:28 UTC (section 2) |
-| 31 | `census-frontier` | up to 12 of the fleet | -620: the price of the picture | Every division reads the frontier (orders F13) |
-| 32 | `park` | the rest | 0 | Docked costs nothing (orders F8) |
+| 31-32 | `gather-gsc-0027-prism-scatter`, `gather-hamal-crystal-bloom` (Unity's, shared) | up to 12 of the fleet each | standing work: about -160 cr per ship-hour of fuel, iron and copper ore into storage at Node Beta | Suggi, 2026-11-16: no ship is idle (BLUEPRINT rule 6); the materials of S6. Not judged on pay; `min_left` 40,000 closes each |
+| 33 | `gather-gsc-0027-spacetime-seep` (mine) | up to 6 | standing work, about -160 cr per ship-hour; iron ore into storage at Node Beta | For the haulers the two shared routes leave waiting (both full at 14:54 UTC); iron is the station's largest shortfall; `min_left` iron 30,000 |
+| 34 | `census-frontier` | up to 12 of the fleet | -620: the price of the picture | Every division reads the frontier (orders F13) |
+| 35 | `park` | none, if the plan holds | 0 | The fill gate halts while a ship waits (since 2026-11-16 14:50 UTC) |
 
 Since 14:27 UTC every hauler stands at navigation 3 (section 4): Signal
 Fragments (row 8) is open to the ten that have not flown it, 7,000 cr once
 each, and the dispatcher had sent five of them by 14:27 UTC.
 
-So, for the four hours: Signal Fragments for the haulers that have not flown it
-(about 6,870 cr each after fuel), the once line for the five holders of The
-Collective Provides, and the stored soma, plate, plasma and liquid hydrogen as
-their bids come back; the rest wait docked at 0. No repeating route pays a hauler: ice is bounded by the water-ice bids
+So, for the four hours: the once line for the haulers that still lack a link,
+the stored soma, plate, plasma and liquid hydrogen as their bids come back, and
+standing work for every other hauler: iron and copper ore gathered into storage
+at Node Beta for the station (S6), at its fuel. At 14:57 UTC all 20 haulers
+were at work and the fill gate read `PASS: no ship of hauler waits`. Two gas
+tests that sell at Nova Terra Central (Solarian) are out of the plan until the
+Fleet Admiral rules on F13 (requests.log ENT-152). No repeating route pays a hauler: ice is bounded by the water-ice bids
 (section 12), gas by the hydrogen bid the tests share.
 
 What changes it: The Collective Provides back on (nickel at its reef, Mercury's
