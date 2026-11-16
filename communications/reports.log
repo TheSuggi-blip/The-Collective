@@ -328,3 +328,12 @@ Failed: voidborn-first-hunt-gsc-0031 flew 13 runs into a spent herd, 1 paid, -1,
 Requests: requests.log ENT-144 (Unity: an hourly fill of once routes that buy nothing).
 Suggestions: a herd floor on every once hunt route (Achernar First Hunt 21 runs at a loss); uranium, thorium and seam glass are bid by every empire and our deposits read 0 (queue.log ENT-101); no new scouts.
 Report: once-line-heads-scout-plan-spent-herd-left.
+
+## [ENT-037] | 2026-11-16 12:34 UTC | Zero | session | ref: reports/2026-11-16_zero_central-nexus-depth-gone-stored-ice-sold-first.md | see: orders.log ENT-014
+Session: scheduled run turn-zero -- the Central Nexus water-ice depth is gone; stored ice is drained and carried before new ice is mined.
+Did: requires.bid on all 20 ice routes (0b185b7, 2565cb9); the once line of the Central Nexus board at the head of the miner plan, voidborn-first-steps out; the circuit runner's withdraw step and its size fix, tests first (6f643ec, 180d58b); five drain and carry routes for 16,224 stored water ice; Central Nexus mine places 29 -> 7; two ice tests with their bids; ENT-128 answered no (ENT-143); guidebook ab536a7, ca385a3.
+Worked: Mining 1,446 credits per ship-hour over all 40 ships in 4 h to 12:15 UTC, 2,246 flown, scale 6,578 (hive.py tasks); steady net +39,778 cr in the hour to 12:15 UTC; 358,446 cr paid once to miners since 09:11 UTC; division credits 1,981,582 -> 2,629,381 after the weekly tax of 12:27 UTC; a carry withdrew 65 water ice on the fixed step at 12:19 UTC; 0 ships lost, none held by hand; fill gate PASS at 12:33 UTC, 12 wait with nothing open.
+Failed: 29 miners sized on one order at Central Nexus, gone within three hours, 11 mine runs at a loss since 09:11 UTC, -3,432 cr (errors.log ENT-054, a repeat of ENT-046); the withdraw step counted the hold in units, four carries refused, -246 cr, the Node Alpha carry held by the loss stop until about 18:15 UTC (ENT-055); drain-ice-nexus 0 and -39 cr; Ghosts in the Cloud not offered, -24 cr.
+Requests: requests.log ENT-145 (Unity: the fill hint on what a bid regains); answer ENT-143.
+Suggestions: a refused game command as a runner-fault note for the loss stop; shared storage is not needed for the ice carry (the bid limits it); no new miners, about 25 of 40 have no repeating place; Intel could look for palladium fields (358 cr bids, 43,460 units, no field read); Logistics' gather.py counts the free hold in units (line 130).
+Report: central-nexus-depth-gone-stored-ice-sold-first.
