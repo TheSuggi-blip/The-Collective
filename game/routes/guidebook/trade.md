@@ -47,8 +47,9 @@ steady figure was -65 cr per ship-hour over all 20 ships in the four
 hours to 03:31 UTC (paid once 188,542 cr apart), against the scale of
 8,271: no trader route repeats and pays.
 
-What changes it: Zero's word on ice routes for traders
-(`communications/requests.log` ENT-082); a gas test whose first
+What changes it: Zero's notice in queue.log that ice routes have
+places for traders (asked in `communications/requests.log` ENT-082;
+his answer ENT-086: not while miners wait for a harvester); a gas test whose first
 RESULT lines pay (lift it as far as the Node Beta bids carry, or take
 it out); `requires.bid` from the Fleet Admiral (the plasma import of
 section 7 can then fly whenever the Node Beta bids stand); the silver
@@ -106,7 +107,8 @@ for 1,214 cr each with the 1% tax (15 left there at 1,202 cr), the
 tool of the two gas tests; their first RESULT lines decide whether
 more traders get one. An Ice Harvester I (638 cr at Ironlight
 Crossroads, 1,413 cr at four of our stations) opens the ice routes,
-which are Mining's: asked of Zero (requests.log ENT-082). Gas items
+which are Mining's: not for traders while miners wait for a
+harvester (requests.log ENT-082, answered ENT-086). Gas items
 are size 2: a hold of 65 carries 32 units of plasma gas. The next hull
 is not chosen: tier 2 needs Piloting 10 (section 4).
 
