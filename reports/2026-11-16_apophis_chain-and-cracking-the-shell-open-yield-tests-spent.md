@@ -120,7 +120,7 @@ drones, 98 XP an hour: 130 hours to Piloting 10 (`hive.py levels`).
 
 ## Problems
 
-**Eight yield tests and two First Hunt herds failed.** Taken out at 05:16
+**Seven of eight yield tests and two First Hunt herds failed.** Taken out at 05:16
 UTC (orders F8): patina-grazers at Atlas (5 runs, -360 cr per ship-hour;
 carapace and meat), hollow-pilgrims at Tanglewood (crystal melt, bid 54
 cr), slag-tortoises at Garnet and glitterback crabs at Goldcrest (no kill
