@@ -123,8 +123,9 @@ def totals(pilots, data):
     for path in folder.glob("*.json") if folder.is_dir() else []:
         ship = read_json(path, {})
         for row in ship.get("cargo") or []:
-            if isinstance(row, dict) and row.get("item_id") and ship.get("name"):
-                holds[division.owner(ship["name"], data)][str(row["item_id"])] += int(row.get("quantity") or 0)
+            item = (row.get("item") or row.get("item_id")) if isinstance(row, dict) else None      # the ship files write `item`; the engine's own answer `item_id`
+            if item and ship.get("name"):
+                holds[division.owner(ship["name"], data)][str(item)] += int(row.get("quantity") or 0)
     plain = lambda d: json.loads(json.dumps(d))
     return {"by_station": plain(by_station), "by_member": plain(by_member), "holds_by_member": plain(holds)}
 

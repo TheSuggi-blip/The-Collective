@@ -213,6 +213,7 @@ def open_to(route):
             "up to %s ships" % route["max_ships"] if route.get("max_ships") else "", "%s pilots in all" % route["max_pilots"] if route.get("max_pilots") else "",
             "needs %s" % need["module"] if need.get("module") else "", "without %s" % need["without_module"] if need.get("without_module") else "",
             "empty hold" if need.get("empty_hold") else "", "from %s cr" % format(route["min_credits"], ",") if route.get("min_credits") else "",
+            "after the reward %s" % (need["booked"] if isinstance(need["booked"], str) else ", ".join(need["booked"])) if need.get("booked") else "",
             route.get("status", "")]
     return ", ".join(g for g in gate if g) or "every pilot"
 

@@ -58,6 +58,7 @@ the scripts in `game/fleet/` fly them; nobody retypes a route into a chat.
 | `max_pilots` | At most this many different pilots ever fly it (those that flew it and those on it now): for a route that buys a tool not every ship needs |
 | `requires.without_module` | Only a pilot that does not carry this module is sent: for a route that fits it |
 | `requires.empty_hold` | true: only a pilot with nothing aboard but ammunition and at most five units of goods is sent. For a route beyond policed space (orders F13): a ship lost there loses its hold |
+| `requires.booked` | The title of a one-time reward (or a list of titles) the pilot must hold in `data/fleet/onetime.json` before it is sent: for a mission the board offers only after another one. On such a route a run the board refused (`... not offered`) is no try, up to three times, and the route rests `retry_minutes` after it |
 | `status` | `off`: written down, not flown |
 | `park` | true: the route that docks a ship and lets it wait. Given to a pilot in space only; the last route of every plan |
 | `skip_if_booked` | Titles of one-time rewards: a pilot that has one of them booked is not sent |

@@ -46,7 +46,7 @@ class StorageTests(Tree):
 
     def test_totals_count_each_pilot_once_per_station_and_member(self):
         (self.data / "fleet" / "ships" / "miner-1.json").write_text(json.dumps({"name": "miner-1", "cargo": [{"item_id": "iron_ore", "quantity": 3}]}))
-        (self.data / "fleet" / "ships" / "drone-1.json").write_text(json.dumps({"name": "drone-1", "cargo": [{"item_id": "verdigris_curd", "quantity": 2}, "broken"]}))
+        (self.data / "fleet" / "ships" / "drone-1.json").write_text(json.dumps({"name": "drone-1", "cargo": [{"item": "verdigris_curd", "name": "Verdigris Curd", "quantity": 2}, "broken"]}))
         pilots = {"miner-1": {"stations": {"node_beta": {"iron_ore": 10}}}, "miner-2": {"stations": {"node_beta": {"iron_ore": 5, "copper_ore": 1}}},
                   "drone-1": {"stations": {"central_nexus": {"iron_ore": 2}}}, "drone-2": {"error": "not connected"}}
         found = ledger.totals(pilots, str(self.data))

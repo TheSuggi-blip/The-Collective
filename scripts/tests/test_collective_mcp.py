@@ -54,6 +54,16 @@ class ProtocolTests(unittest.TestCase):
         self.assertEqual(answers[5]["error"]["code"], -32601)
         self.assertEqual(answers[6]["result"], {})
 
+    def test_a_running_server_answers_through_the_file_on_disk(self):
+        server = load()
+        text, failed = server.fresh(str(SERVER.parents[2]), "", "zero", "no-such-tool", {})
+        self.assertTrue(failed)
+        self.assertIn("no tool `no-such-tool`", text)
+        text, _failed = server.fresh(str(SERVER.parents[2]), "", "zero", "hive", {"verb": "help"})
+        self.assertIn("hive.py standing", text)                                                   # the script's own help, from the file on disk
+        env = server.child_env("zero")
+        self.assertEqual((env["HF_HUB_OFFLINE"], env["TRANSFORMERS_OFFLINE"], env["HERMES_SESSION_PROFILE"]), ("1", "1", "zero"))
+
     def test_a_shell_that_is_no_member_reads_and_is_told_so(self):
         first = talk([{"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {}}], member="")[0]["result"]
         self.assertIn("no member: the door is closed", first["instructions"])

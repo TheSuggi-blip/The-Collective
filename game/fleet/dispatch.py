@@ -145,10 +145,30 @@ def unfinished(row):
     return row.get("stops") == row.get("of") and any(str(note).endswith(NO_BUY) for note in row.get("notes") or [])
 
 
+NOT_OFFERED = " not offered"
+REFUSALS = 3                   # runs a board may refuse on a route with `requires.booked` before the route counts as done for the pilot
+
+
+def refused(row):
+    """A run that went all the way round while the board did not offer its mission."""
+    return row.get("stops") == row.get("of") and any(str(note).endswith(NOT_OFFERED) for note in row.get("notes") or [])
+
+
+def owed(route):
+    """The rewards a pilot must hold before the route is open to it (`requires.booked`: one title or a list)."""
+    need = (route.get("requires") or {}).get("booked")
+    return [need] if isinstance(need, str) else [str(t) for t in need or []]
+
+
 def done_once(route, rows):
     """A `once` route counts as done after a whole run that got what it came for, or after two tries. A run that found
-    nothing to buy is neither: the route opens again for that pilot after a rest (waits_once)."""
+    nothing to buy is neither: the route opens again for that pilot after a rest (waits_once). On a route that names a
+    reward the pilot must hold first (`requires.booked`), a run the board refused is no try either, up to REFUSALS times:
+    the pilot flew it before it held that reward. Without `requires.booked` a refusal stays a finished run: a mission
+    done once is never offered again."""
     rows = [r for r in rows if not unfinished(r)]
+    if owed(route) and sum(1 for r in rows if refused(r)) <= REFUSALS:
+        rows = [r for r in rows if not refused(r)]
     if not rows:
         return False
     whole = [r for r in rows if r.get("stops") == r.get("of")]          # it went all the way round
@@ -157,7 +177,7 @@ def done_once(route, rows):
 
 def waits_once(route, rows, now):
     """True while a `once` route rests for a pilot: its last run found nothing to buy less than retry_minutes (default 60) ago."""
-    if not rows or not unfinished(rows[-1]):
+    if not rows or not (unfinished(rows[-1]) or (owed(route) and refused(rows[-1]))):
         return False
     try:
         ended = calendar.timegm(time.strptime(rows[-1]["started"], "%Y-%m-%dT%H:%M:%SZ")) + rows[-1].get("minutes", 0) * 60
@@ -215,12 +235,15 @@ def why_not(pilot, rid, route, state):
         return "at a loss: %d runs, %s cr in %d hours" % (lost[0], format(lost[1], ","), LOSS_HOURS), None
     if set(route.get("skip_if_booked") or []) & (state.get("booked") or {}).get(pilot["name"], set()):
         return "its reward is booked", None
+    lacks = [title for title in owed(route) if title not in (state.get("booked") or {}).get(pilot["name"], set())]
+    if lacks:
+        return "needs the reward `%s` first" % lacks[0], None
     if route.get("once"):
         mine = [r for r in state["rows"] if r.get("route") == rid and r.get("pilot") == pilot["name"]]
         if done_once(route, mine):
             return "done once", None
         if waits_once(route, mine, state["now"]):
-            return "rests after a buy that found no offer", None
+            return ("rests after a run the board refused" if refused(mine[-1]) else "rests after a buy that found no offer"), None
     mark = route["kind"] + " " + rid
     if route.get("max_pilots"):                   # at most this many different pilots ever: those that flew it and those on it now
         flew = {r.get("pilot") for r in state["rows"] if r.get("route") == rid} | {p for p, what in state["orders"].items() if what == mark}

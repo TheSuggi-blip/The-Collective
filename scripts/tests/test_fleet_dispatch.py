@@ -75,6 +75,21 @@ class PickTests(Tree):
         self.assertEqual(self.pick("drone-1", rows=[broken])[0], "missions")                      # one failed try: once more
         self.assertEqual(self.pick("drone-1", rows=[broken, broken])[0], "rays")                  # two: no third
 
+    def test_a_route_can_name_a_reward_the_pilot_must_hold_first(self):
+        routes = self.dispatch.load_routes(self.root)
+        shell = dict(routes["missions"], requires={"booked": "First Hunt"}, retry_minutes=60)
+        pilot = {"name": "drone-1", "credits": 20000, "modules": [], "docked": True}
+        why = lambda rows=(), booked=None: self.dispatch.why_not(pilot, "missions", shell, self.state(rows=rows, booked=booked or {}))[0]
+        self.assertEqual(why(), "needs the reward `First Hunt` first")
+        held = {"drone-1": {"First Hunt"}}
+        self.assertIsNone(why(booked=held))
+        started = lambda ago: time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(self.now - ago))
+        turned = {"route": "missions", "pilot": "drone-1", "stops": 1, "of": 1, "minutes": 5, "started": started(3 * 3600), "notes": ["cracking_the_shell not offered"]}
+        self.assertIsNone(why(rows=[turned, dict(turned)], booked=held))                           # flown before it held the reward: no try
+        self.assertEqual(why(rows=[dict(turned, started=started(600))], booked=held), "rests after a run the board refused")
+        self.assertEqual(why(rows=[turned] * 4, booked=held), "done once")                        # the board keeps refusing: enough
+        self.assertEqual(self.dispatch.why_not(pilot, "missions", routes["missions"], self.state(rows=[turned]))[0], "done once")   # no reward named: a refusal ends it
+
     def test_credits_module_and_ship_limits_close_a_route(self):
         done = [{"route": "missions", "pilot": "drone-1", "stops": 1, "of": 1}]
         self.assertEqual(self.pick("drone-1", credits=5000)[0], "rays")                           # too poor for the missions

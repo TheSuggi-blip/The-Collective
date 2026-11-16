@@ -292,6 +292,8 @@ def child_env(member):
     if member:
         env["HERMES_SESSION_PROFILE"] = member.lower()
     env.pop("PYTHONPATH", None)
+    env.setdefault("HF_HUB_OFFLINE", "1")              # the search's model lies on disk: a server started without the proxy must not look for it on the web
+    env.setdefault("TRANSFORMERS_OFFLINE", "1")
     return env
 
 
@@ -338,6 +340,28 @@ def call(root, data, member, name, args):
     return text, failed
 
 
+def fresh(root, data, member, name, args):
+    """(text, True when it failed) of one tool call, answered by a new process of this file as it stands on disk now.
+
+    A server lives for days inside Hermes and keeps the code it started with: answered this way, a change of a tool's code
+    needs no reload of the server (a new tool name or argument still does: the list is read once). When the file on disk
+    cannot answer (it does not start, or ends at once without a word), the code in memory answers a reading call; a call
+    through the door is never sent a second time."""
+    line = [sys.executable, "-I", "-B", str(Path(__file__).resolve()), "--root", str(root)] + (["--data", data] if data else []) + ["--call", str(name), json.dumps(args)]
+    door = bool((TOOLS.get(name) or {}).get("door"))
+    try:
+        done = subprocess.run(line, env=child_env(member), stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=SECONDS + 60)
+    except subprocess.TimeoutExpired:
+        return "TIMEOUT: `%s` did not answer within %d s; read the ship before sending it again" % (name, SECONDS + 60), True
+    except OSError as error:
+        return ("%s: the tool's file could not be started: %s" % (name, error), True) if door else call(root, data, member, name, args)
+    text = done.stdout.rstrip("\n")
+    if done.returncode not in (0, 1) or not text.strip():
+        why = " ".join((done.stderr or "").split())[-300:]
+        return ("%s: the tool's file on disk gave no answer (%s)" % (name, why or "exit %s" % done.returncode), True) if door else call(root, data, member, name, args)
+    return text, done.returncode == 1
+
+
 def answer(message, root, data, member):
     """The JSON-RPC answer to one message, or None for a notification."""
     method, ident = message.get("method"), message.get("id")
@@ -354,7 +378,7 @@ def answer(message, root, data, member):
     elif method == "tools/list":
         result = {"tools": [schema(name) for name in TOOLS]}
     elif method == "tools/call":
-        text, failed = call(root, data, member, params.get("name"), params.get("arguments") or {})
+        text, failed = fresh(root, data, member, params.get("name"), params.get("arguments") or {})
         result = {"content": [{"type": "text", "text": text}], "isError": bool(failed)}
     elif method in ("resources/list", "prompts/list", "resources/templates/list"):
         result = {method.split("/")[0] if "templates" not in method else "resourceTemplates": []}
