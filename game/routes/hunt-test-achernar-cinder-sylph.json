@@ -1,0 +1,21 @@
+{
+ "id": "hunt-test-achernar-cinder-sylph",
+ "kind": "hunt",
+ "title": "Yield test: cinder_sylph at achernar_gas_pocket (lawless); what a kill drops and whether a bid takes it",
+ "note": "A test with one ship (orders.log ENT-011, block APOPHIS: every untested herd of prey of 100 hull or less with ten animals or more gets a test hunt; F9). No run of ours has looted this species. The herd read 10 at 2026-11-16 01:21 UTC, 40 hull (data/wildlife/). Beyond policed space (F13): `alone` and an empty hold. 2 kills a run, ranched: no hunt below 4 animals. Loot that no bid of 50 cr or more takes is stored at the station, so the row's goods show the drop; whether it is caustic sac (bid 420 cr at seven stations) is part of the question. Written by Apophis 2026-11-16 03:00 UTC; it leaves the plan after its first RESULT line unless the drop sells. Achernar holds an ice route of Mining: the hunter there is also the presence of orders F16.",
+ "place": "achernar:achernar_gas_pocket",
+ "species": [
+  "cinder_sylph"
+ ],
+ "sell_at": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+ "min_bid": 50,
+ "kills": 2,
+ "minutes": 30,
+ "max_ships": 1,
+ "min_creatures": 4,
+ "alone": true,
+ "requires": {
+  "empty_hold": true,
+  "without_module": "piercing_railgun_i"
+ }
+}

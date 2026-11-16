@@ -1,0 +1,42 @@
+{
+ "id": "voidborn-first-hunt-achernar",
+ "kind": "circuit",
+ "title": "First Hunt: Belt-Grazers: 1,000 cr once and 50 Weapons XP; three belt-grazers at Achernar Belt (lawless, one jump past The Experiment)",
+ "note": "Accept at The Experiment Research Station (First Hunt stands on its board, data/missions/, 2026-11-16 02:59 UTC), three belt-grazers (60 hull) at achernar:achernar_belt with the rules of hunt.py and `alone`, hand in where accepted. The herd read 12 belt-grazers at 2026-11-16 01:20 UTC (data/wildlife/history.jsonl). One of three herds beyond the border next to The Experiment, written by Apophis 2026-11-16 03:00 UTC (orders.log ENT-011, block APOPHIS) because 21 drones wait for First Hunt while the three home herds hold one hunter each and voidborn-first-hunt-schedar met a foreign pilot at the place in 8 of its 9 runs. Beyond policed space (orders F13): an empty hold, and no fight where a ship that is not ours stands; the drone there is also the presence where our miners work (orders F16). A test with one ship until its first RESULT line.",
+ "once": true,
+ "max_ships": 1,
+ "requires": {
+  "empty_hold": true
+ },
+ "one_time": [
+  "First Hunt: Belt-Grazers"
+ ],
+ "skip_if_booked": [
+  "First Hunt: Belt-Grazers"
+ ],
+ "stops": [
+  {
+   "at": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+   "accept": [
+    "first_hunt_belt_grazers"
+   ],
+   "hunt": [
+    {
+     "at": "achernar:achernar_belt",
+     "species": [
+      "belt_grazer"
+     ],
+     "kills": 3,
+     "minutes": 35,
+     "for": [
+      "First Hunt: Belt-Grazers"
+     ],
+     "alone": true
+    }
+   ]
+  },
+  {
+   "at": "the_experiment:the_experiment_research_station:the_experiment_research_station"
+  }
+ ]
+}

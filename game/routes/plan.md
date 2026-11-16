@@ -45,7 +45,7 @@ Kept by Unity. Routes: 23.
 
 ## drone
 
-Kept by Apophis. Routes: 21.
+Kept by Apophis. Routes: 30.
 
 | # | Route | Group | Zone | Open to | Credits per ship-hour |
 |---|---|---|---|---|---|
@@ -53,32 +53,42 @@ Kept by Apophis. Routes: 21.
 | 2 | [voidborn-first-hunt-nexus](voidborn-first-hunt-nexus.json) | Once per Pilot | home space | once per pilot, up to 1 ships | one-time |
 | 3 | [voidborn-first-hunt-gsc](voidborn-first-hunt-gsc.json) | Once per Pilot | home space | once per pilot, up to 1 ships | one-time |
 | 4 | [voidborn-first-hunt-acubens](voidborn-first-hunt-acubens.json) | Once per Pilot | home space | once per pilot, up to 1 ships | one-time |
-| 5 | [voidborn-first-hunt-schedar](voidborn-first-hunt-schedar.json) | Once per Pilot | beyond the border, 2 jumps | once per pilot, up to 1 ships, empty hold | one-time |
-| 6 | [voidborn-selling](voidborn-selling.json) | Once per Pilot | home space | once per pilot, up to 10 ships | one-time |
-| 7 | [voidborn-concurrent](voidborn-concurrent.json) | Once per Pilot | home space | once per pilot | one-time |
-| 8 | [voidborn-substrate](voidborn-substrate.json) | Once per Pilot | home space | once per pilot, from 3,000 cr | one-time |
-| 9 | [voidborn-missions-1](voidborn-missions-1.json) | Once per Pilot | home space | once per pilot, from 8,000 cr | one-time |
-| 10 | [voidborn-mining-missions](voidborn-mining-missions.json) | Once per Pilot | home space | once per pilot, up to 40 ships | one-time |
-| 11 | [hunt-gsc-veil-ray](hunt-gsc-veil-ray.json) | Paying Routes | home space | up to 1 ships, without piercing_railgun_i | 3,620 |
-| 12 | [hunt-hamal-veil-ray](hunt-hamal-veil-ray.json) | Paying Routes | home space | up to 1 ships, without piercing_railgun_i | 2,890 |
-| 13 | [hunt-cedarhold-dim-lattice-veil-ray](hunt-cedarhold-dim-lattice-veil-ray.json) | Paying Routes | beyond the border, 5 jumps | up to 1 ships, without piercing_railgun_i, empty hold | 1,180 |
-| 14 | [hunt-garnet-dim-lattice-veil-ray](hunt-garnet-dim-lattice-veil-ray.json) | Measured at a Loss | beyond the border, 5 jumps | up to 1 ships, without piercing_railgun_i, empty hold | -610 |
-| 15 | [hunt-ruchbah-veil-ray](hunt-ruchbah-veil-ray.json) | Paying Routes | beyond the border, 4 jumps | up to 1 ships, without piercing_railgun_i, empty hold | 2,950 |
-| 16 | [hunt-low-charge-glint-veil-ray](hunt-low-charge-glint-veil-ray.json) | Paying Routes | beyond the border, 4 jumps | up to 1 ships, without piercing_railgun_i, empty hold | 2,110 |
-| 17 | [hunt-faintlight-drift-veil-ray](hunt-faintlight-drift-veil-ray.json) | Paying Routes | beyond the border, 5 jumps | up to 1 ships, without piercing_railgun_i, empty hold | 3,730 |
-| 18 | [hunt-keid-fractured-prism-veil-ray](hunt-keid-fractured-prism-veil-ray.json) | Paying Routes | beyond the border, 5 jumps | up to 1 ships, without piercing_railgun_i, empty hold | 2,050 |
-| 19 | [hunt-test-acubens-patina-grazer](hunt-test-acubens-patina-grazer.json) | Measured at a Loss | home space | up to 1 ships, without piercing_railgun_i | -560 |
-| 20 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -600 |
-| 21 | [park](park.json) | Reading and Waiting | home space | the park route | -550 |
+| 5 | [voidborn-first-hunt-ironhollow-echo](voidborn-first-hunt-ironhollow-echo.json) | Once per Pilot | beyond the border, 4 jumps | once per pilot, up to 1 ships, empty hold | TBD |
+| 6 | [voidborn-first-hunt-ironhollow-fading](voidborn-first-hunt-ironhollow-fading.json) | Once per Pilot | beyond the border, 4 jumps | once per pilot, up to 1 ships, empty hold | TBD |
+| 7 | [voidborn-first-hunt-achernar](voidborn-first-hunt-achernar.json) | Once per Pilot | beyond the border, 4 jumps | once per pilot, up to 1 ships, empty hold | TBD |
+| 8 | [mission-cracking-the-shell-central](mission-cracking-the-shell-central.json) | Once per Pilot | home space | once per pilot, up to 1 ships | one-time |
+| 9 | [voidborn-first-steps](voidborn-first-steps.json) | Once per Pilot | home space | once per pilot, up to 2 ships | one-time |
+| 10 | [voidborn-selling](voidborn-selling.json) | Once per Pilot | home space | once per pilot, up to 10 ships | one-time |
+| 11 | [voidborn-concurrent](voidborn-concurrent.json) | Once per Pilot | home space | once per pilot | one-time |
+| 12 | [voidborn-substrate](voidborn-substrate.json) | Once per Pilot | home space | once per pilot, from 3,000 cr | one-time |
+| 13 | [voidborn-missions-1](voidborn-missions-1.json) | Once per Pilot | home space | once per pilot, from 8,000 cr | one-time |
+| 14 | [voidborn-mining-missions](voidborn-mining-missions.json) | Once per Pilot | home space | once per pilot, up to 40 ships | one-time |
+| 15 | [hunt-faintlight-drift-veil-ray](hunt-faintlight-drift-veil-ray.json) | Paying Routes | beyond the border, 5 jumps | up to 1 ships, without piercing_railgun_i, empty hold | 3,730 |
+| 16 | [hunt-gsc-veil-ray](hunt-gsc-veil-ray.json) | Paying Routes | home space | up to 1 ships, without piercing_railgun_i | 3,620 |
+| 17 | [hunt-hamal-veil-ray](hunt-hamal-veil-ray.json) | Paying Routes | home space | up to 1 ships, without piercing_railgun_i | 2,890 |
+| 18 | [hunt-ruchbah-veil-ray](hunt-ruchbah-veil-ray.json) | Paying Routes | beyond the border, 4 jumps | up to 1 ships, without piercing_railgun_i, empty hold | 2,950 |
+| 19 | [hunt-keid-fractured-prism-veil-ray](hunt-keid-fractured-prism-veil-ray.json) | Paying Routes | beyond the border, 5 jumps | up to 1 ships, without piercing_railgun_i, empty hold | 2,050 |
+| 20 | [hunt-low-charge-glint-veil-ray](hunt-low-charge-glint-veil-ray.json) | Paying Routes | beyond the border, 4 jumps | up to 1 ships, without piercing_railgun_i, empty hold | 2,110 |
+| 21 | [hunt-cedarhold-dim-lattice-veil-ray](hunt-cedarhold-dim-lattice-veil-ray.json) | Paying Routes | beyond the border, 5 jumps | up to 1 ships, without piercing_railgun_i, empty hold | 1,180 |
+| 22 | [hunt-dimming-pocket-veil-ray](hunt-dimming-pocket-veil-ray.json) | Tests | beyond the border, 4 jumps | up to 1 ships, empty hold | TBD |
+| 23 | [hunt-denebola-fractured-prism-veil-ray](hunt-denebola-fractured-prism-veil-ray.json) | Tests | beyond the border, 5 jumps | up to 1 ships, empty hold | TBD |
+| 24 | [hunt-test-achernar-cinder-sylph](hunt-test-achernar-cinder-sylph.json) | Tests | beyond the border, 4 jumps | up to 1 ships, without piercing_railgun_i, empty hold | TBD |
+| 25 | [hunt-test-atlas-patina-grazer](hunt-test-atlas-patina-grazer.json) | Tests | beyond the border, 6 jumps | up to 1 ships, without piercing_railgun_i, empty hold | TBD |
+| 26 | [hunt-test-garnet-slag-tortoise](hunt-test-garnet-slag-tortoise.json) | Tests | beyond the border, 5 jumps | up to 1 ships, without piercing_railgun_i, empty hold | TBD |
+| 27 | [hunt-test-goldcrest-glitterback-crab](hunt-test-goldcrest-glitterback-crab.json) | Tests | beyond the border, 7 jumps | up to 1 ships, without piercing_railgun_i, empty hold | TBD |
+| 28 | [hunt-test-tanglewood-hollow-pilgrim](hunt-test-tanglewood-hollow-pilgrim.json) | Tests | beyond the border, 6 jumps | up to 1 ships, without piercing_railgun_i, empty hold | TBD |
+| 29 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -600 |
+| 30 | [park](park.json) | Reading and Waiting | home space | the park route | -550 |
 
 Planned:
 
 | What | When |
 |---|---|
-| First Hunt: Belt-Grazers for every drone: the three routes voidborn-first-hunt-nexus, -gsc and -acubens stand at the head since 2026-11-15 23:51 UTC, one hunter per herd; when every drone has it booked they pass by themselves (skip_if_booked). | turns T7 to T9 |
-| Frontier veil-ray tests and yield tests: routes.py measure --write after their first RESULT lines; a test that lost money leaves the plan, a yield whose drop sells becomes a ranched route. | turn T8 |
-| The railgun ship: ammunition from stored iron (2 steel plate and 3 iron ore make 5 Ferrous Slug Cases, one case loads a magazine; the craft costs no credits), then a yield test of armoured prey of 100 hull or less, where armour bypass may count. | turn T8 |
-| The next hull: commission_quote of the tier-1 Vigil (two weapon slots, hull 75, cargo 20, no Piloting gate named) at a Voidborn shipyard; one ship, two Pulse Laser I, against a home veil-ray herd, measured against the starter's trips. | turn T8, after the quote |
+| First Hunt for the 21 drones that have not flown it: six herds at one hunter each (three home, three beside The Experiment); they pass by themselves once every drone has it booked (skip_if_booked). | turn T9, about two hours |
+| Read the first RESULT lines of the five yield tests and the two new veil-ray herds; a drop that sells above fuel makes a ranched route, the rest leave the plan. | next turn |
+| The railgun ship: Pulse Laser I back in its weapon slot from storage, or ammunition once the dispatcher checks it (owed by Unity). | next turn |
+| Guard: a route kind guard (owed by Unity, requests.log ENT-076) for a drone beside every mine route beyond the border; until then the hunts at Ruchbah, Keid and Achernar are the presence. | when the guard kind exists |
+| The next hull: a tier-1 Vigil as one test, after a yield test shows prey worth a tougher hull; quotes in guidebook section 5. | after the yield tests |
 
 ## hauler
 
