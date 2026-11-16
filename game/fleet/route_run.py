@@ -439,6 +439,7 @@ for n, stop in enumerate(ROUTE['stops']):
         for _ in range(2):                               # a grazer that fled keeps its damage: a second go ends it
             try:
                 answer = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
+                                        env=dict(os.environ, FLEET_HOLD='circuit ' + ROUTE['id']),   # the run's own order: hunt.py may fly
                                         timeout=(float(step.get('minutes', 30)) + 25) * 60).stdout or ''
             except subprocess.TimeoutExpired as error:
                 answer = str(error.stdout or '') + '\nthe hunt step did not end in time'

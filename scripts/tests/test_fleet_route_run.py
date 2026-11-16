@@ -73,5 +73,23 @@ class ModuleLevelTests(unittest.TestCase):
         self.assertTrue(rows[0]["notes"][1].startswith("crashed: TypeError: 'NoneType' object is not callable"), rows[0]["notes"])
 
 
+class HuntStepTests(unittest.TestCase):
+    def test_the_hunt_step_hands_its_hold_to_hunt_py(self):
+        # 2026-11-16: a circuit started by an Admiral's hand wrote its order file `circuit <id>`; its hunt step started hunt.py
+        # without FLEET_HOLD, so division.may refused hunt.py (`busy: circuit ...`) and the run ended "objectives not done"
+        # after the accept. Under the dispatcher FLEET_HOLD was set and the step ran.
+        source = (FLEET / "route_run.py").read_text(encoding="ascii")
+        tree = ast.parse(source)
+        hunts = [node for node in ast.walk(tree) if isinstance(node, ast.For) and "'hunt'" in ast.unparse(node.iter)]
+        self.assertEqual(len(hunts), 1)
+        calls = [node for node in ast.walk(hunts[0]) if isinstance(node, ast.Call) and ast.unparse(node.func) == "subprocess.run"]
+        self.assertEqual(len(calls), 1)
+        env = [kw for kw in calls[0].keywords if kw.arg == "env"]
+        self.assertEqual(len(env), 1, "the hunt step passes no env: hunt.py cannot tell the run's own order from another program's")
+        self.assertIn("FLEET_HOLD", ast.unparse(env[0].value))
+        self.assertIn("'circuit ' + ROUTE['id']", ast.unparse(env[0].value))
+        self.assertIn("order('circuit ' + ROUTE['id'])", source)             # the hold it hands down is the order it wrote
+
+
 if __name__ == "__main__":
     unittest.main()
