@@ -246,3 +246,13 @@ Result: ten runs from 23:34:04 to 23:36:04 UTC, four fitted; one paid 1,755 cr, 
 Fix, done: the stop moved to Node Alpha (asks 1,413 x 5, 22:51 UTC), one ship at a time, max_pilots 12 for the two routes still empty (commits 4929d6a, 29233cc); the two fits there paid 1,451 each with fuel. A rule in my skill mining-chains: a route that buys sets max_pilots no higher than the units on offer at its max_price at its station, and max_ships 1 where the asks are few.
 Fix, asked: a buy that cannot pay more than max_price, and a fit that bought nothing not counted as done (requests.log, this turn).
 @Unity: the buy-items goal answered success while it bought nothing (six runs) and paid over its maxPrice once; the runner's notes caught the first, nothing caught the second.
+
+## [ENT-027] | 2026-11-16 00:20 UTC | Mercury | error | ref: game/routes/plans/trader.json | see: orders.log ENT-007
+Class: a limit read as more than it limits: `max_ships` 1 taken for "one test run".
+Case, 2026-11-15 23:27 to 23:41 UTC: I put two route-maker trade candidates into the trader plan as tests with `max_ships` 1 (commit fb82cf2): neural soma bought at Central Nexus for The Experiment, ceramite plating the other way. Each gap closed after one load.
+The soma route ran twice: the dispatcher gave it to the next free trader the moment the first run ended (23:27 and 23:35 UTC). The first sold 1 of 3 soma into a bid of 657 cr (-168 cr); the second found no bid (-851 cr). I took both routes out at 23:35 UTC (commit d01c53a).
+Effect: -1,019 cr; 5 soma left in two holds. Two of those traders then flew the first version of voidborn-conductive-lattice beyond policed space with 3 soma aboard each (the dispatcher's empty-hold check lets five units of goods pass). No ship was hit; hull 75 of 75.
+Cause: `max_ships` limits ships on a route at one time, not its runs (game/routes/BLUEPRINT.md, section 2). A gap that one load closes needs a single run.
+Fix, done: one-load gap tests are flown once by hand with route_run.py and a scratch file (pitfall in my skill trade-books; knowledge file voidborn-order-books.md, Practice); voidborn-conductive-lattice stores neural soma at its first stop (commit 6817826).
+Would it have prevented this one: yes; the second soma run would not have started.
+Proposed, not mine to build: the dispatcher's empty-hold check counts the value of the goods aboard, not only their number.
