@@ -102,7 +102,7 @@ Planned:
 
 ## hauler
 
-Kept by Apollo. Routes: 22.
+Kept by Apollo. Routes: 23.
 
 | # | Route | Group | Zone | Open to | Credits per ship-hour |
 |---|---|---|---|---|---|
@@ -126,8 +126,9 @@ Kept by Apollo. Routes: 22.
 | 18 | [sell-plate-node-beta](sell-plate-node-beta.json) | Tests | home space | up to 1 ships, with 1 armor_plate stored at node_beta_industrial_station, while node_beta_industrial_station bids 300 cr for armor_plate | TBD |
 | 19 | [sell-soma-synchrony](sell-soma-synchrony.json) | Tests | home space | up to 1 ships, with 1 voidborn_neural_soma stored at synchrony_hub, while synchrony_hub bids 500 cr for voidborn_neural_soma | TBD |
 | 20 | [sell-soma-node-beta](sell-soma-node-beta.json) | Tests | home space | up to 1 ships, with 1 voidborn_neural_soma stored at node_beta_industrial_station, while node_beta_industrial_station bids 500 cr for voidborn_neural_soma | TBD |
-| 21 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -790 |
-| 22 | [park](park.json) | Reading and Waiting | home space | the park route | -670 |
+| 21 | [carry-soma-synchrony-node-alpha](carry-soma-synchrony-node-alpha.json) | Tests | home space | up to 1 ships, with 1 voidborn_neural_soma stored at synchrony_hub, while node_alpha_processing_station bids 500 cr for voidborn_neural_soma | TBD |
+| 22 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -790 |
+| 23 | [park](park.json) | Reading and Waiting | home space | the park route | -670 |
 
 Planned:
 
