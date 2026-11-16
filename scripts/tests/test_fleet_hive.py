@@ -92,6 +92,33 @@ class HiveTests(unittest.TestCase):
         self.assertEqual(self.hive.per_hour(2000, 60), "2,000")
         self.assertEqual(self.hive.per_hour(2000, 0), "--")
 
+    def test_the_history_store_answers_from_its_read_copy(self):
+        now = time.time()
+        stamp = lambda ago: time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(now - ago))
+        said = io.StringIO()
+        with contextlib.redirect_stdout(said):
+            self.assertEqual(self.hive.show_store(str(self.data), now, 24, []), 1)              # no copy yet: said, not failed
+        self.assertIn("no read copy", said.getvalue())
+        runs = [{"route": "ice", "pilot": "miner-1", "started": stamp(7200), "minutes": 30, "delta": 4000, "credits_before": 1000, "credits_after": 5000, "one_time": 1000},
+                {"route": "ice", "pilot": "miner-2", "started": stamp(7000), "minutes": 30, "delta": 1000, "credits_before": 1000, "credits_after": 2000},
+                {"route": "ice", "pilot": "miner-3", "started": stamp(6900), "minutes": 30, "delta": 0, "credits_before": 0, "credits_after": 0, "notes": ["wallet not read"]}]
+        (self.data / "routes" / "runs.jsonl").write_text("".join(json.dumps(r) + "\n" for r in runs))
+        (self.data / "market" / "history.jsonl").write_text("".join(json.dumps(m) + "\n" for m in (
+            {"t": stamp(7200), "base": "hub", "item": "water_ice", "bid": 30, "bid_qty": 9, "ask": 0, "ask_qty": 0},
+            {"t": stamp(7100), "base": "hub", "item": "water_ice", "bid": 38, "bid_qty": 9, "ask": 44, "ask_qty": 2})))
+        self.hive.history.one_pass(str(self.data), now=now)
+        said = io.StringIO()
+        with contextlib.redirect_stdout(said):
+            self.assertEqual(self.hive.show_store(str(self.data), now, 24, []), 0)
+            self.assertEqual(self.hive.show_store(str(self.data), now, 24, ["price", "water_ice"]), 0)
+            self.assertEqual(self.hive.show_store(str(self.data), now, 24, ["price", "no_such_item"]), 0)
+        text = said.getvalue()
+        ice = next(line.split() for line in text.splitlines() if line.strip().startswith("ice "))
+        self.assertEqual(ice, ["ice", "3", "1.0", "4,000", "4,000", "1,000"])                 # by hand: (4000 - 1000) + 1000 over the 60 minutes that read a wallet
+        hub = next(line.split() for line in text.splitlines() if line.strip().startswith("hub "))
+        self.assertEqual(hub[:7], ["hub", "1" if stamp(7200)[:13] == stamp(7100)[:13] else "2", "30", "38", "44", "44", "2"])
+        self.assertIn("no price move of `no_such_item`", text)
+
     def test_a_question_without_readings_says_so_instead_of_failing(self):
         out = io.StringIO()
         with contextlib.redirect_stdout(out):

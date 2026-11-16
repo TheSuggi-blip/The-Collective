@@ -23,6 +23,9 @@ WHAT: reads the unit's data folder (fleet/, routes/runs.jsonl, market/, scouting
                               and by division with the idle ships counted, beside the best route as the scale
         refill                what comes back by itself between our readings, per hour: the units a bid regains, what a
                               field grows back, the animals of a herd
+        store                 the history store (store.py): what it holds, and every route's credits per ship-hour over
+                              the whole hours of a window, also beyond what the records still hold
+        store price <item>    one item's lowest and highest best bid and best ask per station over a window
 RULES:
   - It reads only: it moves no ship and writes no file.
   - Every figure names what it rests on; what no reading holds is printed as `not measured`, never filled in.
@@ -44,6 +47,8 @@ USAGE:
   hive.py standing [<Member>|<role>|all] [--hours N]
   hive.py tasks [--hours N]
   hive.py refill
+  hive.py store [--hours N]
+  hive.py store price <item id> [--hours N]
   --root <dir>   the repository's game/ folder (default: the parent of this file's folder)
   --data <dir>   the unit's data folder (default /srv/collective/data)
 
@@ -65,6 +70,7 @@ import craftbook                                  # noqa: E402  the catalog: wha
 import dispatch                                   # noqa: E402  routes, orders, runs
 import division                                   # noqa: E402  who commands which ship
 import routes as routefiles                       # noqa: E402  a route's group and zone, what a run earned
+import store as history                           # noqa: E402  the history store's read copy
 
 HOLD = 65                      # a starter's hold, units
 TURN = 4                       # hours: what a bid or a field must carry
@@ -889,6 +895,52 @@ def show_standing(root, data, now, who, hours):
     return 0
 
 
+def show_store(data, now, hours, rest):
+    """The history store's read copy (store.py, the service `store`): its tables and every route's credits per ship-hour
+    over the whole hours of the window; with `price <item>`, the item's price range per station. The store keeps sums by
+    hour for good, so a window may reach back past what the records still hold."""
+    conn = history.connect(data)
+    if conn is None:
+        print("STORE | no read copy at %s: the service `store` has not published one yet (services/status.json)" % (Path(data) / "store" / "read.db"))
+        return 1
+    try:
+        since = int(now - hours * 3600) // 3600 * 3600
+        when = time.strftime("%Y-%m-%d %H:%M", time.gmtime(since))
+        if rest and rest[0] == "price":
+            if len(rest) < 2:
+                print("STORE price | name the item: hive.py store price <item id> [--hours N]")
+                return 1
+            _books, where = books(data)
+            rows = conn.execute("SELECT base, COUNT(*), MIN(bid_lo), MAX(bid_hi), MIN(ask_lo), MAX(ask_hi), SUM(moves), MAX(hour) FROM market_hour "
+                                "WHERE item = ? AND hour >= ? GROUP BY base ORDER BY MAX(bid_hi) DESC, base", (rest[1], since)).fetchall()
+            print("STORE price %s | per station, the whole hours since %s UTC | the lowest and highest best bid and best ask a reading saw (the store's hourly sums); "
+                  "a price is what stood at the top of the book, not what a load sells for" % (rest[1], when))
+            if not rows:
+                print("  no price move of `%s` on record in that time" % rest[1])
+                return 0
+            print("  %-34s %5s %9s %9s %9s %9s %6s  %s" % ("station", "hours", "bid low", "bid high", "ask low", "ask high", "moves", "newest hour (UTC)"))
+            for base, count, bid_lo, bid_hi, ask_lo, ask_hi, moved, newest in rows:
+                print("  %-34s %5d %9s %9s %9s %9s %6d  %s" % (label(base, where)[:34], count, num(bid_lo), num(bid_hi), num(ask_lo), num(ask_hi), moved,
+                                                         time.strftime("%m-%d %H:00", time.gmtime(newest))))
+            return 0
+        for line in history.status(data, now):
+            print(("STORE | " + line) if line.startswith("read copy") else line)
+        rates = history.route_rates(conn, since)
+        print("ROUTES | the whole hours since %s UTC | steady credits (money paid once left out) of the runs that read a wallet, per ship-hour of those runs" % when)
+        if not rates:
+            print("  no run on record in that time")
+            return 0
+        print("  %-48s %5s %8s %11s %11s %10s" % ("route", "runs", "ship-h", "credits", "per ship-h", "paid once"))
+        order = sorted(rates.items(), key=lambda kv: (kv[1][4] is None, -(kv[1][4] or 0), kv[0]))
+        for route, (runs, minutes, credits, one_time, rate) in order:
+            print("  %-48s %5d %8.1f %11s %11s %10s" % (route[:48], runs, (minutes or 0) / 60, num(credits), num(rate) if rate is not None else "not read", num(one_time) if one_time else "--"))
+        total_minutes, total = sum(v[1] or 0 for v in rates.values()), sum(v[2] or 0 for v in rates.values())
+        print("  %-48s %5d %8.1f %11s %11s" % ("ALL ROUTES", sum(v[0] for v in rates.values()), total_minutes / 60, num(total), per_hour(total, total_minutes)))
+        return 0
+    finally:
+        conn.close()
+
+
 def main():
     args = sys.argv[1:]
     value = lambda name, default: args[args.index(name) + 1] if name in args and args.index(name) + 1 < len(args) else default
@@ -926,6 +978,8 @@ def main():
         return show_tasks(root, data, now, float(value("--hours", str(TURN))))
     if verb == "refill":
         return show_refill(root, data, now)
+    if verb == "store":
+        return show_store(data, now, float(value("--hours", "24")), rest)
     sys.exit(__doc__)
 
 

@@ -8,7 +8,7 @@ author: Unity
 # index.md -- The Fleet's Scripts
 
 Built by `python3 -B scripts/fleet-index.py` from the docstring of every script in this
-folder; never edited by hand. Scripts listed: 19.
+folder; never edited by hand. Scripts listed: 20.
 
 - Run a script from the repository root: `python3 -I -B game/fleet/<script> <arguments>`,
   the arguments as listed under "How to Call Each".
@@ -46,6 +46,7 @@ folder; never edited by hand. Scripts listed: 19.
 | `routes.py` | Check the route files, write their index, and attach what the runs measured. | By hand |
 | `sight.py` | What our ships see where they are: the pilots they meet, and a first read of a system nobody read. | Service |
 | `stash.py` | Store what a docked pilot carries in its own storage at that station, so that its hold is free for the next route. | By hand |
+| `store.py` | Keeps the fleet's history in one SQLite file: the runs, the price moves and the census readings, with their sums by hour and by day. | Service |
 
 ## How to Call Each
 
@@ -197,6 +198,8 @@ hive.py learnings [--hours N]
 hive.py standing [<Member>|<role>|all] [--hours N]
 hive.py tasks [--hours N]
 hive.py refill
+hive.py store [--hours N]
+hive.py store price <item id> [--hours N]
 --root <dir>   the repository's game/ folder (default: the parent of this file's folder)
 --data <dir>   the unit's data folder (default /srv/collective/data)
 ```
@@ -328,4 +331,19 @@ Run by hand.
 
 ```
 stash.py <pilot> [<pilot> ...] [--dry-run]
+```
+
+### `store.py`
+
+Keeps the fleet's history in one SQLite file: the runs, the price moves and the census
+readings, with their sums by hour and by day.
+
+A service: it runs by itself and is never started a second time.
+
+```
+store.py serve [--every 60]     run forever (the service `store`)
+store.py once                   one pass, then stop
+store.py status                 from the read copy: rows and newest row of each table, age of the copy
+--data <dir>                    the unit's data folder (default /srv/collective/data)
+--keep-days N                   days of raw rows kept (default 7)
 ```
