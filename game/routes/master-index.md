@@ -52,7 +52,7 @@ Named lists of routes a ship's own routes in its division's plan file name as `@
 | Division | Kept by | Templates | Page |
 |---|---|---|---|
 | command | Unity | ice-and-hunt | [templates-command.md](templates-command.md) |
-| mining | Zero | ice-sell | [templates-mining.md](templates-mining.md) |
+| mining | Zero | ice-sell, reserve-prism | [templates-mining.md](templates-mining.md) |
 
 ## The Guidebooks
 

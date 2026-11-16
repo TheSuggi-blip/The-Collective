@@ -23,6 +23,19 @@
     "piloting"
    ],
    "note": "Every route here is gated: a drain or carry opens only on stored ice and a fresh bid (requires.stored, requires.bid); a mine route only on a deep water-ice order at Central Nexus (300 units at its best price) and with an Ice Harvester I fitted. A drain needs no harvester. Stored ice is sold before new ice is mined."
+  },
+  "reserve-prism": {
+   "title": "Gather what the reserve is short of: carbon first, then iron, Prism Scatter first",
+   "routes": [
+    "gather-acubens-belt-carbon",
+    "gather-gsc-0027-prism-scatter",
+    "gather-hamal-crystal-bloom",
+    "mine-acubens"
+   ],
+   "trains": [
+    "mining"
+   ],
+   "note": "Standing work into storage at Node Beta, nothing sold (orders ENT-019: silicon and carbon first, then iron). Needs the Mining Laser I. Silicon: no field we read holds it (Nexus Prime Material Harvesters reads 0 to 2 all day). Carbon: Acubens Belt, one ship, floor 60. Iron: Prism Scatter gave 65% iron of what it lost (census 2026-11-16), then Hamal (51%), then Acubens Shadow Pocket, each closed at its floor."
   }
  }
 }
