@@ -1,0 +1,43 @@
+{
+ "id": "voidborn-signal-fragments",
+ "kind": "circuit",
+ "title": "Signal Fragments: 7,000 cr once, accepted at Central Nexus, a dock at Node Beta and at Node Gamma, handed in at Central Nexus",
+ "note": "Researcher Null-Seven's exploration mission on the Central Nexus board: three dock_at_base objectives at our own stations, 7,000 cr once per pilot, nothing handed out and nothing bought. Test by hand 2026-11-16 04:50 UTC, one trader: accepted at Central Nexus, Node Beta and Node Gamma recorded on docking, handed in at Central Nexus, +6,909 cr after 91 cr of fuel in 14 minutes (RESULT line, data/routes/runs.jsonl). Not offered to every pilot: the board another pilot read at 05:04 UTC did not list it; why is not known. Into the trader plan 2026-11-16 05:06 UTC with max_ships 3 until the first runs of other traders show the accept; a run that is not offered ends at stop 1. The next link, The Crimson Resonance (8,500 cr), docks at The Rampart Checkpoint and delivers 5 titanium alloy at Blood Forge, Crimson space 17 to 20 jumps out: not flown.",
+ "once": true,
+ "max_ships": 3,
+ "one_time": [
+  "Signal Fragments"
+ ],
+ "skip_if_booked": [
+  "Signal Fragments"
+ ],
+ "stops": [
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "accept": [
+    "signal_fragments"
+   ]
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "only_if_active": [
+    "Signal Fragments"
+   ],
+   "redock": true
+  },
+  {
+   "at": "node_gamma:node_gamma_relay_station:node_gamma_relay_station",
+   "only_if_active": [
+    "Signal Fragments"
+   ],
+   "redock": true
+  },
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "only_if_active": [
+    "Signal Fragments"
+   ],
+   "redock": true
+  }
+ ]
+}
