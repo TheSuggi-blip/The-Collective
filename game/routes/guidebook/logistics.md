@@ -23,8 +23,8 @@ at the end of every turn.
 
 ## Standing Plan
 
-What the 20 haulers fly between two turns (2026-11-16 09:15 UTC, orders.log
-ENT-013), in the plan's order; 15 routes. A free hauler takes the first
+What the 20 haulers fly between two turns (2026-11-16 09:45 UTC, orders.log
+ENT-013), in the plan's order; 17 routes. A free hauler takes the first
 route open to it. The scale of the hour: the best repeating route of the
 fleet with two runs or more, hunt-test-achernar-cinder-sylph, at 7,910 cr
 per ship-hour (the tool fleet, view=tasks, 08:46 UTC); a ship without work
@@ -32,17 +32,20 @@ earns 0.
 
 | # | Route | Ships | Expected per ship-hour | Why it stands here |
 |---|---|---|---|---|
-| 1 | `voidborn-conductive-lattice` (the Node Beta chain, Mercury's file) | up to 10 of the fleet at a time | about +10,800 cr once a pilot in about 40 min (four miners, +10,816 each in 40.5 min, 08:10 UTC) | Orders ENT-012 and ENT-013, every plan; no hauler holds its rewards |
-| 2 | `voidborn-signal-fragments` (Mercury's) | up to 10 of the fleet; only pilots with navigation 3 | about +6,900 cr once in 14 to 26 min | Orders ENT-013, head of every plan |
-| 3 | `voidborn-network-expansion` (Mercury's) | up to 20 of the fleet; pilots with First Steps booked | +1,450 cr once in 8 min (Mercury's test, 08:35 UTC) | Once money; 15 haulers held First Steps |
-| 4-11 | The once missions at home (Precedence, Selling, First Hunt at Nexus Prime, Concurrent, Substrate, Missions-1, Mining missions, First Steps) | closed: every hauler has them booked or done | 0 now | A pilot born later flies them first (strategy, principle 5) |
-| 12 | `mission-cracking-the-shell-central` | 1 of the fleet | 1,500 cr once; every hauler holds First Hunt, the condition | Once money; one hunter per place |
-| 13 | `mine-achernar-frost-ring-nexus` (Zero's file) | the hauler with a made Ice Harvester I, when a place is free (13 of 13 held by miners at 09:11 UTC) | about 2,770 (11 runs, `routes.py measure`) | Zero's word, requests.log ENT-093 and queue.log ENT-088 |
-| 14 | `census-frontier` | up to 12 of the fleet | -620: the price of the picture | Every division reads the frontier (orders F13) |
-| 15 | `park` | the rest | 0 | Docked costs nothing (orders F8) |
+| 1 | `voidborn-first-steps-board` (Mercury's) | up to 3 of the fleet (Acubens Belt carbon) | +883 to +922 cr once in about 12 min (Mercury's test and three traders, queue.log ENT-095) | Takes First Steps from the board; 5 haulers do not hold it |
+| 2 | `voidborn-collective-provides` (Mercury's) | up to 2 of the fleet | +2,188 cr once in 48 min (Mercury's test; mine 20 nickel at GSC-0049, lawless, hold empty out) | The link after Network Expansion; Mercury's word for every plan (queue.log ENT-095) |
+| 3 | `voidborn-conductive-lattice` (the Node Beta chain, Mercury's file) | up to 10 of the fleet at a time | about +10,800 cr once a pilot in about 40 min (four miners, +10,816 each in 40.5 min, 08:10 UTC) | Orders ENT-012 and ENT-013, every plan; no hauler holds its rewards |
+| 4 | `voidborn-signal-fragments` (Mercury's) | up to 10 of the fleet; only pilots with navigation 3 | about +6,900 cr once in 14 to 26 min | Orders ENT-013, head of every plan |
+| 5 | `voidborn-network-expansion` (Mercury's) | up to 20 of the fleet; pilots with First Steps booked | +1,450 cr once in 8 min (Mercury's test, 08:35 UTC) | Once money; 15 haulers held First Steps |
+| 6-13 | The once missions at home (Precedence, Selling, First Hunt at Nexus Prime, Concurrent, Substrate, Missions-1, Mining missions, First Steps) | closed: every hauler has them booked or done | 0 now | A pilot born later flies them first (strategy, principle 5) |
+| 14 | `mission-cracking-the-shell-central` | 1 of the fleet | 1,500 cr once; every hauler holds First Hunt, the condition | Once money; one hunter per place |
+| 15 | `mine-achernar-frost-ring-nexus` (Zero's file) | the hauler with a made Ice Harvester I, when a place is free (13 of 13 held by miners at 09:11 UTC) | about 2,770 (11 runs, `routes.py measure`) | Zero's word, requests.log ENT-093 and queue.log ENT-088 |
+| 16 | `census-frontier` | up to 12 of the fleet | -620: the price of the picture | Every division reads the frontier (orders F13) |
+| 17 | `park` | the rest | 0 | Docked costs nothing (orders F8) |
 
 So, for the four hours: the haulers fly the once missions as their places
-free (about 20 x 10,800 + 2 to 4 x 6,900 + 15 x 1,450 cr once), then wait
+free (about 20 x 10,800 + 2 to 4 x 6,900 + 15 x 1,450 cr once, and
+First Steps and The Collective Provides for those that can), then wait
 docked at 0. No repeating route pays a hauler: the ice routes are bounded by
 their bids, not by harvesters (section 12), the gas routes by bids our own
 storage already covers (section 2), and the veil-ray herd near home by a

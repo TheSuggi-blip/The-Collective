@@ -61,7 +61,9 @@ the gas test (3 runs, -1,089 cr), the Dimming Pocket veil-ray hunt (its last
 four runs at a loss, a ship not of ours at the place each time), the gas
 fit (done), and five First Hunt routes that no hauler can fly again. The
 first hauler run of Signal Fragments paid +6,883 cr in 17.9 minutes (08:51
-UTC); 57,500 cr paid once by 09:28 UTC.
+UTC); 57,500 cr paid once by 09:28 UTC. At 09:44 UTC, on Mercury's word
+(queue.log ENT-095), First Steps taken from the board (+883 to +922 cr once)
+and The Collective Provides (+2,188 cr once) went to the head of the plan.
 
 **Holds emptied, carapace made into plate (orders F21: by script).**
 `gather.py` moved the carapace, meat, soma and stray ore of 11 hauler holds,
