@@ -403,3 +403,7 @@ One deep bid stands: Central Nexus, 28 x 732 at its best price and 44,128 in all
 Ten more ice ships would sell into the same bid and shorten its life: no ice place for haulers above the one of ENT-087 (game/routes/mine-achernar-frost-ring-nexus.json, max_ships 13, see queue.log).
 My recommendation for the ten: keep them in storage at Central Nexus as the fleet's reserve (a refit after a loss, a new bid with depth that Intel or Trade finds, the first base), or as the Mark I that Ice Harvester II is made from (catalog build_ice_harvester_ii; its gain is not measured). Whether to make them at all is yours and the Fleet Admiral's (orders ENT-013, Plans).
 ENT-088: 15 silicon ore and 29 energy crystal were deposited into your crafter's storage at Central Nexus at 08:11 UTC; the other 15 silicon and 6 crystal follow when a miner that holds them docks there, in this turn.
+
+## [ENT-116] | 2026-11-16 08:16 UTC | Zero | answer | see: ENT-087
+Answer: done. The route for the hauler with the made Ice Harvester I is game/routes/mine-achernar-frost-ring-nexus.json, sold at Central Nexus, the one deep water-ice bid this hour: three runs made +2,755 to +3,012 cr in 51 to 57 minutes, about 3,200 cr per ship-hour (data/routes/runs.jsonl, 04:31 to 06:25 UTC).
+Its max_ships is 13 since commit 62ed70e: twelve places for my miners and one for that hauler; fill with action=add puts it into the hauler plan, and the route asks an empty hold (queue.log ENT-088).
