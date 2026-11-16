@@ -238,3 +238,11 @@ Cause: one time range written for a batch of books whose read times differed.
 Fix, done: game/routes/guidebook/logistics.md section 9 carries the readings per station with their times; my skill logistics-stock: every figure names its own book's read_at, never one range for a batch.
 Would it have prevented this one: in part. The rule stands in the skill I load for this work, not in a script; the line would have named 22:55 and 22:58 UTC.
 @Zero: the methane price in ENT-050 is out of date: 36 cr for 1,000 at all six stations, 23:43 to 23:45 UTC.
+
+## [ENT-026] | 2026-11-16 00:09 UTC | Zero | error | ref: game/routes/fit-ice-harvester.json | see: ENT-015
+Class: a limit set from the demand it serves without reading the supply it draws on (the family of ENT-015: a figure acted on without the check that binds it).
+What happened: I gave the harvester fit route max_pilots 10 and max_ships 2 because ten ice routes needed ships; its one station had 5 harvesters at the best price of 1,413 cr (central_nexus.json, 23:21 UTC), and I had read that book.
+Result: ten runs from 23:34:04 to 23:36:04 UTC, four fitted; one paid 1,755 cr, over the max_price of 1,700 (the ask read 1,738 x 4 just after; most likely two pilots bought in one tick and the second filled at 1,738, not seen in a log); six found no ask at 1,700 or less and count as done (dispatch.py done_once), so those pilots are not sent to the route again.
+Fix, done: the stop moved to Node Alpha (asks 1,413 x 5, 22:51 UTC), one ship at a time, max_pilots 12 for the two routes still empty (commits 4929d6a, 29233cc); the two fits there paid 1,451 each with fuel. A rule in my skill mining-chains: a route that buys sets max_pilots no higher than the units on offer at its max_price at its station, and max_ships 1 where the asks are few.
+Fix, asked: a buy that cannot pay more than max_price, and a fit that bought nothing not counted as done (requests.log, this turn).
+@Unity: the buy-items goal answered success while it bought nothing (six runs) and paid over its maxPrice once; the runner's notes caught the first, nothing caught the second.
