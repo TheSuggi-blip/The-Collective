@@ -8,7 +8,7 @@ author: Unity
 # index.md -- The Fleet's Scripts
 
 Built by `python3 -B scripts/fleet-index.py` from the docstring of every script in this
-folder; never edited by hand. Scripts listed: 28.
+folder; never edited by hand. Scripts listed: 29.
 
 - Run a script from the repository root: `python3 -I -B game/fleet/<script> <arguments>`,
   the arguments as listed under "How to Call Each".
@@ -44,6 +44,7 @@ folder; never edited by hand. Scripts listed: 28.
 | `ledger.py` | Keep the fleet's books: what we own and where it lies, and how every order book moved. | Service |
 | `loot_own.py` | Loot every carcass and wreck at the pilot's place that the pilot itself killed. | By hand |
 | `mine.py` | One pilot mines at one field for a set time, through the engine's mining loop. | Runner (`mine` routes) |
+| `observe.py` | A member writes down what it saw in the game (a scan far away, a price at a station we read no book of, a fight with a species) as one checked line of its division's own record; the store makes the lines one SQL table, `observations`. | By hand |
 | `plan.py` | Each division's plan file: every ship with the routes it flies, in their order; the dispatcher sends the ships by it. | By hand |
 | `plate.py` | Make our pilots' stored creature carapace into armor plate where each is docked, and sell plates into the bid there. | By hand |
 | `route_run.py` | Fly one pilot along a route file: dock at each stop and do what the stop says. | Runner (`circuit` routes) |
@@ -51,7 +52,7 @@ folder; never edited by hand. Scripts listed: 28.
 | `routes.py` | Check the route files, write their index, and attach what the runs measured. | By hand |
 | `sight.py` | What our ships see where they are: the pilots they meet, and a first read of a system nobody read. | Service |
 | `stash.py` | Store what a docked pilot carries in its own storage at that station, so that its hold is free for the next route. | By hand |
-| `store.py` | Keeps the fleet's history and its current state in one SQLite file: the runs, the price moves and the census readings with their sums by hour and by day, and beside them what the fleet's own files say now. | Service |
+| `store.py` | Keeps the fleet's history and its current state in one SQLite file: the runs, the price moves and the census readings with their sums by hour and by day, the members' own observations, and beside them what the fleet's own files say now. | Service |
 | `surplus.py` | Say per item what the fleet holds beyond what its build targets reserve: the surplus a trader may sell, where it lies and its best bid. | By hand |
 | `taxes.py` | Keeps each pilot's weekly tax apart, so that no run and no hour reads it as a loss. | By hand |
 | `wallet.py` | No ship of ours goes broke: a ship whose wallet runs low is given credits by a rich ship of its division. | By hand |
@@ -330,6 +331,25 @@ A runner: the dispatcher starts it for a route of the kind `mine`; by hand only 
 mine.py <pilot> <system:poi> <system:poi:base> [--minutes M] [--sell-items item:min_price,...] [--route ID]
 ```
 
+### `observe.py`
+
+A member writes down what it saw in the game (a scan far away, a price at a station we
+read no book of, a fight with a species) as one checked line of its division's own
+record; the store makes the lines one SQL table, `observations`.
+
+Run by hand.
+
+```
+observe.py add <kind> <subject> [key=value ...] [--note "text"] [--at <UTC time>]   one observation (default: now)
+observe.py show [<kind>] [--subject <text>] [--division <name>|all] [--last N]       the newest rows as plain lines
+                                                                                     (default: own division, 20 rows)
+observe.py kinds [--division <name>|all]                                             every kind on record: its rows,
+                                                                                     newest time and field names
+--data <dir>   the unit's data folder (default /srv/collective/data)
+--at           2026-11-16T22:10:05Z, 2026-11-16 22:10 (UTC)
+--subject      the rows whose subject holds the text (any case)
+```
+
 ### `plan.py`
 
 Each division's plan file: every ship with the routes it flies, in their order; the
@@ -435,8 +455,8 @@ stash.py <pilot> [<pilot> ...] [--dry-run]
 ### `store.py`
 
 Keeps the fleet's history and its current state in one SQLite file: the runs, the price
-moves and the census readings with their sums by hour and by day, and beside them what
-the fleet's own files say now.
+moves and the census readings with their sums by hour and by day, the members' own
+observations, and beside them what the fleet's own files say now.
 
 A service: it runs by itself and is never started a second time.
 
@@ -450,7 +470,7 @@ store.py status                 from the read copy: rows and newest row of each 
                                 snapshot tables with the age of their newest source, the files not read
 --data <dir>                    the unit's data folder (default /srv/collective/data)
 --root <dir>                    the repository's game/ folder (default: the parent of this file's folder)
---keep-days N                   days of raw rows kept (default 7)
+--keep-days N                   days of raw rows kept (default 7; observations at least 30: KEEP_TABLES)
 ```
 
 ### `surplus.py`

@@ -247,26 +247,43 @@ def show_fleet(root, data, now):
     print("FLEET | %s ships: %s at work, %s docked without work, %s adrift | credits %s (%s a ship) | read %s"
           % (totals.get("ships"), totals.get("working"), totals.get("parked"), totals.get("adrift"), num(totals.get("credits")), num(totals.get("credits_per_ship")),
              ago(fleet.get("updated_at"), now)))
-    print("  steady money per hour, the rewards the game pays once per pilot left out:")
+    print("  steady money per hour, the rewards the game pays once per pilot left out; costs are money out (net = income - costs):")
     for key in ("1h", "6h", "24h"):
         w = windows.get(key) or {}
         if w:
-            print("    last %-3s (%s min measured): net %s | income %s | costs %s (fuel %s, repairs %s) | paid once, not counted: %s"
+            print("    last %-3s (%s min measured): net %s | income %s | costs %s (metered: fuel %s + repairs %s = %s%s) | paid once, not counted: %s"
                   % (key, num(w.get("minutes")), num(w.get("cph")), num(w.get("income_per_hour")), num(w.get("costs_per_hour")), num(w.get("fuel_cr_per_hour")),
-                     num(w.get("repair_cr_per_hour")), num(w.get("one_time_per_hour"))))
+                     num(w.get("repair_cr_per_hour")), num(w.get("metered_per_hour")),
+                     "; the game's counter of credits spent %s" % num(w["spent_per_hour"]) if "spent_per_hour" in w else "", num(w.get("one_time_per_hour"))))
+            seed, left = w.get("seed") or {}, []
+            if w.get("transfers_moved_per_hour"):                     # station/fleet.py: gifts between our ships are neither income nor costs
+                left.append("gifts between our ships, %s an hour (%s of them name one side only and move no division)"
+                            % (num(w.get("transfers_moved_per_hour")), num(w.get("transfers_unpaired_per_hour"))))
+            if seed.get("pilots"):
+                left.append("the first wallets of %s new pilots, %s cr" % (seed.get("pilots"), num(seed.get("credits"))))
+            gone = w.get("presence") or {}
+            if gone.get("left") or gone.get("back"):                  # station/fleet.py: a ship off the engine's list is no loss
+                left.append("%s ships the engine stopped listing and %s it lists again, with their wallets (%s cr)"
+                            % (gone.get("left") or 0, gone.get("back") or 0, num(gone.get("credits"))))
+            if left:
+                print("      left out: " + "; ".join(left))
     once = read(Path(data) / "fleet" / "onetime.json", [])
     for label, seconds in (("1h", 3600), ("24h", 86400)):
-        near = [r for r in once if isinstance(r, list) and len(r) == 4 and isinstance(r[0], (int, float)) and isinstance(r[3], (int, float)) and r[0] >= now - seconds]
+        near = [r for r in once if isinstance(r, list) and len(r) == 4 and isinstance(r[0], (int, float)) and isinstance(r[3], (int, float)) and r[0] >= now - seconds
+                and r[2] != "Wallet top-up"]                    # wallet.py TITLE: half of a gift between our ships, no reward and no buy
         rows, tax = [r[3] for r in near if r[2] != "Weekly tax"], [-r[3] for r in near if r[2] == "Weekly tax"]
         print("    money booked once, last %-3s: rewards %s in %d bookings | bought once (tools, goods for a mission) %s in %d buys%s"
               % (label, num(sum(v for v in rows if v > 0)), sum(1 for v in rows if v > 0), num(-sum(v for v in rows if v < 0)), sum(1 for v in rows if v < 0),
                  " | weekly tax %s from %d pilots (once a week; kept out of the steady money)" % (num(sum(tax)), len(tax)) if tax else ""))
     hour = (windows.get("1h") or {}).get("divisions") or {}
-    print("  %-10s %5s %8s %8s %12s %10s %10s %10s" % ("division", "ships", "at work", "docked", "credits", "net/h", "income/h", "costs/h"))
+    print("  %-10s %5s %8s %8s %12s %10s %10s %10s %10s %10s" % ("division", "ships", "at work", "docked", "credits", "net/h", "income/h", "costs/h", "metered/h", "gifts/h"))
     for name, row in sorted((totals.get("divisions") or {}).items()):
         w = hour.get(name) or {}
-        print("  %-10s %5s %8s %8s %12s %10s %10s %10s" % (name, row.get("ships"), row.get("working"), row.get("parked"), num(row.get("credits")),
-                                                         num(w.get("cph")), num(w.get("income_per_hour")), num(w.get("costs_per_hour"))))
+        print("  %-10s %5s %8s %8s %12s %10s %10s %10s %10s %10s" % (name, row.get("ships"), row.get("working"), row.get("parked"), num(row.get("credits")),
+                                                                   num(w.get("cph")), num(w.get("income_per_hour")), num(w.get("costs_per_hour")),
+                                                                   num(w.get("metered_per_hour")), num(w.get("transfers_per_hour"))))
+    print("  the last hour; metered/h: fuel and repairs the collector saw bought; gifts/h: what our own gifts put into the division (+) or took out (-),"
+          " left out of its income and costs")
     print("  why ships are docked and what would give them work: fill.py (tool fill_status)")
     return 0
 

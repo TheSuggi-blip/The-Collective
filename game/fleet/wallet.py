@@ -45,7 +45,7 @@ LOW = 10000                    # a wallet under this is topped up
 TARGET = 20000                 # ... to this
 KEEP = 30000                   # a donor never goes under this
 COOLDOWN = 30 * 60             # one gift per pilot in this many seconds
-WAIT = 15                      # seconds until the fleet file shows a gift the gate did not answer for
+WAIT = 45                      # seconds until the fleet file shows a gift the gate did not answer for (15 were too few: 2026-11-16, a gift that landed was booked unsure)
 BUDGET = 150                   # seconds a pass may give for: what is left waits for the next pass (the job runs every five minutes)
 TITLE = "Wallet top-up"
 

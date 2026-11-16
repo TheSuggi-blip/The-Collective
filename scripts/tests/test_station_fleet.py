@@ -37,6 +37,9 @@ class FleetCollectorTests(unittest.TestCase):
         assert spec is not None and spec.loader is not None
         self.fleet = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(self.fleet)
+        self.temp = tempfile.TemporaryDirectory(prefix="fleet-test-")       # never the live data folder: rates() reads
+        self.addCleanup(self.temp.cleanup)                                   # onetime.json, gifts.jsonl and seed.json there
+        self.fleet.DATA = Path(self.temp.name)
 
     def test_division_comes_from_the_role_word(self):
         self.assertEqual(self.fleet.division_of("miner-12"), ("Mining", "Zero", 12))
@@ -240,6 +243,216 @@ class FleetCollectorTests(unittest.TestCase):
             self.assertEqual(h[7]["Mining"][3], 1000)
             self.assertEqual(h[7]["Trade"][3], 20000)
             self.assertEqual(h[7]["Mining"][4], 7)
+
+    # Steady money with gifts between our ships and with new pilots (2026-11-16: the owner saw division figures below zero
+    # while the fleet's net rose, and costs below zero). Each test writes the files rates() reads into a temp DATA.
+
+    def put(self, onetime=None, gifts=None, seeds=None):
+        if onetime is not None:
+            self.fleet.write(self.fleet.DATA / "onetime.json", onetime)
+        if gifts is not None:
+            (self.fleet.DATA / "gifts.jsonl").write_text("".join((g if isinstance(g, str) else json.dumps(g)) + "\n" for g in gifts))
+        if seeds is not None:
+            self.fleet.write(self.fleet.DATA / "seed.json", seeds)
+
+    @staticmethod
+    def at(t, divisions, spent=None):
+        """A history row from {division: [ships, credits, earned]}; with spent ({division: credits spent}) the counter too."""
+        row = [t, sum(v[1] for v in divisions.values()), sum(v[0] for v in divisions.values()), sum(v[2] for v in divisions.values()), 0, 0, 0,
+               {d: [v[0], v[1], v[2], 0, 0, 0] for d, v in divisions.items()}]
+        if spent is not None:
+            row.append({"s": sum(spent.values()), "ds": dict(spent)})
+        return row
+
+    @staticmethod
+    def money(w):
+        return (w["income_per_hour"], w["costs_per_hour"], w["cph"])
+
+    def test_a_gift_inside_a_division_changes_no_figure(self):
+        # an hour of Mining: sales 3,000, costs 1,000; then the same hour with a gift of 5,000 from miner-1 to miner-2,
+        # booked as wallet.py books it (twice in onetime.json, once in gifts.jsonl). The old code read 3,000 less income
+        # and 5,000 less costs for it.
+        history = [self.at(0, {"Mining": [2, 10000, 5000]}), self.at(3600, {"Mining": [2, 12000, 8000]})]
+        plain = self.fleet.rates(history, 3600)
+        self.put(onetime=[[1800, "miner-1", "Wallet top-up", -5000], [1800, "miner-2", "Wallet top-up", 5000]],
+                 gifts=[{"at": 1800, "from": "miner-1", "to": "miner-2", "credits": 5000}])
+        gift = self.fleet.rates(history, 3600)
+        self.assertEqual(self.money(plain), (3000, 1000, 2000))
+        for key in ("1h", "6h", "24h"):
+            w, p = gift["windows"][key], plain["windows"][key]
+            self.assertEqual((self.money(w), w["one_time_per_hour"]), (self.money(p), p["one_time_per_hour"]))
+            self.assertEqual(self.money(w["divisions"]["Mining"]), (3000, 1000, 2000))
+            self.assertEqual((w["divisions"]["Mining"]["transfers_per_hour"], w["transfers_moved_per_hour"]), (0, 5000))
+
+    def test_a_gift_of_the_command_group_to_another_division_moves_neither_division_nor_the_fleet(self):
+        # Command (sentinel-1): earned 500, spent 1,500. Trade (trader-1): earned 1,000, spent 400. Then the same hour
+        # with sentinel-1 giving trader-1 18,000 (a division without a donor is helped by the command group). The old
+        # code read Trade's 18,000 as a reward: income -17,000, costs -17,600.
+        plain = [self.at(0, {"Command": [1, 50000, 1000], "Trade": [1, 2000, 100]}), self.at(3600, {"Command": [1, 49000, 1500], "Trade": [1, 2600, 1100]})]
+        given = [plain[0], self.at(3600, {"Command": [1, 31000, 1500], "Trade": [1, 20600, 1100]})]
+        before = self.fleet.rates(plain, 3600)
+        self.put(onetime=[[1800, "sentinel-1", "Wallet top-up", -18000], [1800, "trader-1", "Wallet top-up", 18000]],
+                 gifts=[{"at": 1800, "from": "sentinel-1", "to": "trader-1", "credits": 18000}])
+        after = self.fleet.rates(given, 3600)
+        self.assertEqual(self.money(after), self.money(before))
+        self.assertEqual(self.money(after), (1500, 1900, -400))
+        self.assertEqual(self.money(after["divisions"]["Command"]), (500, 1500, -1000))
+        self.assertEqual(self.money(after["divisions"]["Trade"]), (1000, 400, 600))
+        self.assertEqual((after["divisions"]["Command"]["transfers_per_hour"], after["divisions"]["Trade"]["transfers_per_hour"]), (-18000, 18000))
+        self.assertEqual((after["transfers_per_hour"], after["transfers_moved_per_hour"], after["transfers_unpaired_per_hour"]), (0, 18000, 0))
+        self.assertEqual(after["divisions"]["Trade"]["net_per_hour"], 18600)                       # the old readers' raw wallet change stays as it was
+
+    def test_a_pilot_born_in_the_window_with_a_seed_adds_no_income_costs_or_net(self):
+        # miner-1 alone: earned 800, spent 300. miner-2 is first seen at 1,200 s with what the game gives a new pilot;
+        # in the second case with a wallet and earned counter of its own (the collector was away when it was born).
+        alone = [self.at(0, {"Mining": [1, 1000, 0]}), self.at(3600, {"Mining": [1, 1500, 800]})]
+        self.assertEqual(self.money(self.fleet.rates(alone, 3600)), (800, 300, 500))
+        for seed, extra in (([1200, 100, 0, 0], (100, 0)), ([1200, 6000, 5000, 900], (6000, 5000))):
+            self.put(seeds={"miner-1": [0, 1000, 0, 0], "miner-2": seed, "miner-3": [9999, 70, 0, 0]})   # miner-3: after the window
+            born = [alone[0], self.at(3600, {"Mining": [2, 1500 + extra[0], 800 + extra[1]]})]
+            r = self.fleet.rates(born, 3600)
+            self.assertEqual((self.money(r), self.money(r["divisions"]["Mining"])), ((800, 300, 500), (800, 300, 500)))
+            self.assertEqual(r["seed"], {"pilots": 1, "credits": extra[0], "earned": extra[1]})
+            self.assertTrue(r["ships_changed"])
+
+    def test_a_ship_the_engine_stops_listing_is_no_loss_and_one_it_lists_again_no_gain(self):
+        # 2026-11-16, 22:17 UTC: the engine listed 245 of 246 pilots; income read -71,022 cr an hour while fuel alone cost 46,420
+        two = [self.at(0, {"Mining": [2, 3000, 900]}), self.at(3600, {"Mining": [2, 3500, 1700]})]      # earned 800, spent 300
+        self.assertEqual(self.money(self.fleet.rates(two, 3600)), (800, 300, 500))
+        gone = [two[0], self.at(3600, {"Mining": [1, 1500, 1200]})]                                    # miner-2 left with 2,000 cr and 500 earned
+        self.assertEqual(self.money(self.fleet.rates(gone, 3600)), (300, 1800, -1500))                 # no record: its wallet reads as money spent
+        (self.fleet.DATA / "presence.jsonl").write_text(json.dumps({"at": 1200, "pilot": "miner-2", "sign": -1, "credits": 2000, "earned": 500, "spent": 0})
+                                                        + "\nnot json\n" + json.dumps({"at": 9999, "pilot": "miner-3", "sign": -1, "credits": 70}) + "\n")
+        r = self.fleet.rates(gone, 3600)
+        self.assertEqual((self.money(r), self.money(r["divisions"]["Mining"])), ((800, 300, 500), (800, 300, 500)))
+        self.assertEqual((r["presence"], r["divisions"]["Mining"]["presence"]["left"]), ({"left": 1, "back": 0, "credits": -2000, "earned": -500}, 1))
+        with open(self.fleet.DATA / "presence.jsonl", "a") as handle:                                  # ... and it is listed again with what it made meanwhile
+            handle.write(json.dumps({"at": 2400, "pilot": "miner-2", "sign": 1, "credits": 2100, "earned": 600, "spent": 0}) + "\n")
+        back = [two[0], self.at(3600, {"Mining": [2, 3600, 1800]})]
+        r = self.fleet.rates(back, 3600)
+        self.assertEqual((self.money(r), r["presence"]), ((800, 300, 500), {"left": 1, "back": 1, "credits": 100, "earned": 100}))
+        # the pass writes the events down: who the last picture held and this one does not, who is back; a first sight is the seed record's
+        rows = [self.fleet.ship_row(account(n, credits=c)) for n, c in (("miner-1", 900), ("trader-1", 800))]
+        path = self.fleet.DATA / "noted.jsonl"
+        self.assertEqual(self.fleet.note_presence([], rows, {}, 50, path), [])                          # no picture before: nothing to compare
+        events = self.fleet.note_presence(rows, rows[:1], {"miner-1": [0, 900, 0, 0], "trader-1": [0, 800, 0, 0]}, 1000, path)
+        self.assertEqual([(e["pilot"], e["sign"], e["credits"]) for e in events], [("trader-1", -1, 800)])
+        events = self.fleet.note_presence(rows[:1], rows + [self.fleet.ship_row(account("scout-30", credits=100))], {"miner-1": [0, 900, 0, 0], "trader-1": [0, 800, 0, 0]}, 2000, path)
+        self.assertEqual([(e["pilot"], e["sign"], e["credits"]) for e in events], [("trader-1", 1, 800)])     # scout-30 is new: no event
+        self.assertEqual([(at, name, sign) for at, name, sign, _c, _e, _s in self.fleet.read_presence(path)], [(1000, "trader-1", -1), (2000, "trader-1", 1)])
+
+    def test_gift_rows_with_an_empty_side_no_credits_or_bad_json_are_handled(self):
+        self.put(gifts=[{"at": 100, "from": "miner-1", "to": "trader-1", "credits": 900},
+                        {"at": 110, "from": "hauler-2", "to": "", "credits": 19010, "reconstructed": "from the run x"},
+                        {"at": 120, "from": "", "to": "scout-21", "credits": 18964, "reconstructed": "from the run y"},
+                        {"at": 130, "from": "scout-5", "to": "scout-25", "credits": 0, "unsure": 18498},
+                        "{not json", "[1, 2]", json.dumps({"at": "soon", "from": "a", "to": "b", "credits": 5}),
+                        json.dumps({"at": 140, "from": "miner-1", "to": "miner-2", "credits": True}), ""])
+        gifts = self.fleet.read_gifts(self.fleet.DATA / "gifts.jsonl")
+        self.assertEqual(gifts, [(100, "miner-1", "trader-1", 900), (110, "hauler-2", "", 19010), (120, "", "scout-21", 18964)])
+        self.assertEqual(self.fleet.transfers(gifts, 0, 200), ({"Mining": -900, "Trade": 900}, 38874, 37974))
+        self.assertEqual(self.fleet.transfers(gifts, 100, 200), ({}, 37974, 37974))              # a window holds what lies after its start
+        self.fleet.ONE_SIDED = True                                                                 # the switch: the known side moves its division
+        self.assertEqual(self.fleet.transfers(gifts, 0, 200)[0], {"Mining": -900, "Trade": 900, "Logistics": -19010, "Intel": 18964})
+        self.assertEqual(self.fleet.read_gifts(self.fleet.DATA / "missing.jsonl"), [])
+        history = [self.at(0, {"Mining": [1, 5000, 0], "Trade": [1, 5000, 0]}), self.at(3600, {"Mining": [1, 4100, 0], "Trade": [1, 5900, 0]})]
+        self.fleet.ONE_SIDED = False
+        r = self.fleet.rates(history, 3600)
+        self.assertEqual((self.money(r["divisions"]["Mining"]), self.money(r["divisions"]["Trade"])), ((0, 0, 0), (0, 0, 0)))
+        self.assertEqual((r["transfers_moved_per_hour"], r["transfers_unpaired_per_hour"]), (38874, 37974))
+
+    def test_net_is_income_less_costs_and_the_divisions_add_up_to_the_fleet_on_a_random_history(self):
+        import random
+        rnd = random.Random(20261116)
+        names = {"Mining": "miner", "Trade": "trader", "Logistics": "hauler", "Military": "drone", "Intel": "scout", "Command": "sentinel"}
+        state = {d: [3, 30000, 10000] for d in names}
+        history, one, gifts, seeds = [], [], [], {}
+        for step in range(200):
+            t = step * 300
+            for d, v in state.items():
+                v[2] += rnd.randint(0, 4000)
+                v[1] += rnd.randint(-3000, 4000)
+            if rnd.random() < 0.3:
+                a, b = rnd.sample(sorted(names), 2)
+                credits = rnd.randint(1, 20000) * rnd.choice((1, 0, 1, 1))
+                giver, taker = "%s-%d" % (names[a], rnd.randint(1, 3)), "%s-%d" % (names[b], rnd.randint(1, 3))
+                giver, taker = rnd.choice(((giver, taker), (giver, taker), (giver, ""), ("", taker)))
+                gifts.append({"at": t - 10, "from": giver, "to": taker, "credits": credits})
+                state[a][1] -= credits if giver else 0
+                state[b][1] += credits if taker else 0
+                if giver and taker and credits:
+                    one += [[t - 10, giver, "Wallet top-up", -credits], [t - 10, taker, "Wallet top-up", credits]]
+            if rnd.random() < 0.2:
+                d = rnd.choice(sorted(names))
+                one.append([t - 20, "%s-1" % names[d], rnd.choice(("a reward", "goods bought")), rnd.randint(-3000, 6000)])
+            if rnd.random() < 0.05:
+                d = rnd.choice(sorted(names))
+                state[d][0] += 1
+                state[d][1] += 100
+                seeds["%s-%d" % (names[d], state[d][0])] = [t - 5, 100, 0, 0]
+            history.append(self.at(t, {d: list(v) for d, v in state.items()}))
+        self.put(onetime=one, gifts=gifts, seeds=seeds)
+        for side in (False, True):
+            self.fleet.ONE_SIDED = side
+            r = self.fleet.rates(history, history[-1][0])
+            for key in ("1h", "6h", "24h"):
+                w = r["windows"][key]
+                for row in [w] + list(w["divisions"].values()):
+                    self.assertEqual(row["cph"], row["income_per_hour"] - row["costs_per_hour"])
+                if not side:                                                                        # one-sided rows moved nothing: the sums meet
+                    for field in ("income_per_hour", "costs_per_hour", "cph"):
+                        self.assertLessEqual(abs(sum(row[field] for row in w["divisions"].values()) - w[field]), len(names))
+                if side:
+                    self.assertLessEqual(abs(w["transfers_per_hour"] - sum(row["transfers_per_hour"] for row in w["divisions"].values())), len(names))
+                else:
+                    self.assertEqual(w["transfers_per_hour"], 0)
+
+    def test_the_game_s_counter_of_credits_spent_stands_beside_the_costs(self):
+        rows = [self.fleet.ship_row(account("miner-1", credits=500)), self.fleet.ship_row(account("trader-1", credits=700))]
+        rows[0]["spent"], rows[1]["spent"] = 1200, 300
+        h = self.fleet.sample(50, rows)
+        self.assertEqual((h[8]["s"], h[8]["ds"]), (1500, {"Mining": 1200, "Trade": 300}))
+        acc = account("miner-1")
+        acc["state"]["player"]["stats"]["credits_spent"] = 4321
+        self.assertEqual(self.fleet.ship_row(acc)["spent"], 4321)
+        history = [self.at(0, {"Mining": [1, 5000, 0]}, {"Mining": 1000}), self.at(3600, {"Mining": [2, 5100, 900]}, {"Mining": 1700})]
+        self.put(seeds={"miner-1": [0, 5000, 0, 1000], "miner-2": [600, 100, 0, 50]})
+        r = self.fleet.rates(history, 3600)
+        self.assertEqual((r["spent_per_hour"], r["divisions"]["Mining"]["spent_per_hour"]), (650, 650))
+        self.assertNotIn("spent_per_hour", self.fleet.rates([self.at(0, {"Mining": [1, 0, 0]}), self.at(3600, {"Mining": [1, 0, 0]})], 3600))
+
+    def test_the_seed_record_puts_every_pilot_of_the_first_start_at_epoch_0_and_a_new_one_at_its_first_pass(self):
+        rows = [self.fleet.ship_row(account(n, credits=c)) for n, c in (("miner-1", 900), ("trader-1", 800))]
+        self.assertEqual(self.fleet.note_seeds(None, [], 50), (None, False))                       # no pilot read: no record yet
+        seeds, changed = self.fleet.note_seeds(None, rows, 1000)
+        self.assertEqual((seeds, changed), ({"miner-1": [0, 900, 0, 0], "trader-1": [0, 800, 0, 0]}, True))
+        self.assertEqual(self.fleet.note_seeds(seeds, rows, 2000), (seeds, False))
+        seeds, changed = self.fleet.note_seeds(seeds, rows + [self.fleet.ship_row(account("scout-30", credits=100))], 3000)
+        self.assertEqual((seeds["scout-30"], seeds["miner-1"], changed), ([3000, 100, 0, 0], [0, 900, 0, 0], True))
+
+    def test_the_backfill_puts_the_last_birth_at_its_registration_times(self):
+        data = self.fleet.DATA
+        self.fleet.write(data / "birth.json", {"started_at": "2026-11-16T23:58:00Z", "registered": ["miner-41", "miner-42", "trader-21", "scout-29"]})
+        (data / "birth.log").write_text("12:45:58 miner-41: registered (0.6 s)\n23:58:01 miner-41: registered (0.7 s)\n"
+                                        "23:58:01 miner-41: accept market_participation_buying: True\n23:59:30 miner-42: registered (0.5 s)\n"
+                                        "00:00:10 trader-21: registered (0.6 s)\nnot a line\n00:01:00 miner-6: registered (0.6 s)\n")
+        self.fleet.write(data / "fleet.json", {"ships": [{"name": "miner-6", "credits": 90000, "earned": 5, "spent": 7}, {"name": "miner-41", "credits": 20000}]})
+        self.fleet.write(data / "seed.json", {"miner-42": [1794873000, 120, 0, 0], "miner-41": [0, 20000, 0, 0]})
+        day = 1794787200                                                                            # 2026-11-16 00:00 UTC
+        lines = self.fleet.backfill_seeds(data, dry_run=True)
+        self.assertIn("--dry-run", lines[-1])
+        self.assertEqual(self.fleet.read(data / "seed.json", None)["miner-41"], [0, 20000, 0, 0])   # a rehearsal writes nothing
+        lines = self.fleet.backfill_seeds(data)
+        seeds = self.fleet.read(data / "seed.json", None)
+        self.assertEqual(seeds["miner-41"], [day + 86280 + 1, 100, 0, 0])                           # the last registration line wins
+        self.assertEqual(seeds["trader-21"], [day + 86400 + 10, 100, 0, 0])                         # after midnight: the next day
+        self.assertEqual(seeds["miner-42"], [1794873000, 120, 0, 0])                                # a time of its own is kept
+        self.assertEqual(seeds["miner-6"], [0, 90000, 5, 7])                                        # no pilot of this birth: epoch 0
+        self.assertNotIn("scout-29", seeds)                                                         # named, never registered
+        self.assertIn("2 put at their registration time", lines[1])
+        self.assertEqual(self.fleet.backfill_seeds(data)[-1], "seed: nothing to change")
+        self.fleet.write(data / "birth.json", {"registered": []})
+        self.assertIn("nothing written", self.fleet.backfill_seeds(data)[0])
 
 
 if __name__ == "__main__":

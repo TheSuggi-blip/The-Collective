@@ -192,6 +192,40 @@ class HiveTests(unittest.TestCase):
         self.assertIn("no catalog in the data folder", out.getvalue())
         self.assertIn("fewer than two hourly samples", out.getvalue())
 
+    def test_the_fleet_s_money_prints_net_as_income_less_costs_and_says_what_it_left_out(self):
+        # the collector's own figures (station/fleet.py) over an hour in which sentinel-1 of the command group gave
+        # trader-1, a pilot born in the hour with 100 cr, 18,000 cr: neither moves a figure, and every printed row
+        # reads net = income - costs with the costs above zero (2026-11-16: division nets below zero, costs below zero)
+        spec = importlib.util.spec_from_file_location("collector_under_test", FLEET.parents[1] / "station" / "fleet.py")
+        collector = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(collector)
+        folder, now = self.data / "fleet", time.time()
+        collector.DATA, t0 = folder, int(now) - 3600
+        (folder / "onetime.json").write_text(json.dumps([[t0 + 1800, "sentinel-1", "Wallet top-up", -18000], [t0 + 1800, "trader-1", "Wallet top-up", 18000]]))
+        (folder / "gifts.jsonl").write_text(json.dumps({"at": t0 + 1800, "from": "sentinel-1", "to": "trader-1", "credits": 18000}) + "\n")
+        (folder / "seed.json").write_text(json.dumps({"sentinel-1": [0, 50000, 1000, 0], "trader-1": [t0 + 600, 100, 0, 0]}))
+        history = [[t0, 50000, 1, 1000, 0, 0, 0, {"Command": [1, 50000, 1000, 0, 0, 0]}],
+                   [t0 + 3600, 49700, 2, 2500, 0, 0, 0, {"Command": [1, 31000, 1500, 0, 0, 0], "Trade": [1, 18700, 1000, 0, 0, 0]}]]
+        rates = collector.rates(history, t0 + 3600)
+        (folder / "fleet.json").write_text(json.dumps({"updated_at": "", "totals": {"ships": 2, "working": 2, "parked": 0, "adrift": 0, "credits": 49700, "credits_per_ship": 24850,
+                                                                                    "divisions": {"Command": {"ships": 1, "credits": 31000}, "Trade": {"ships": 1, "credits": 18700}}, "rates": rates}}))
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            self.hive.show_fleet(str(FLEET.parent), str(self.data), now)
+        text = out.getvalue()
+        self.assertIn("last 1h  (60 min measured): net -400 | income 1,500 | costs 1,900 (metered: fuel -- + repairs -- = --)", text)
+        self.assertIn("left out: gifts between our ships, 18,000 an hour (0 of them name one side only and move no division); the first wallets of 1 new pilots, 100 cr", text)
+        self.assertIn("rewards 0 in 0 bookings | bought once (tools, goods for a mission) 0 in 0 buys", text)    # the halves of a gift are neither
+        number = lambda cell: int(cell.replace(",", ""))
+        rows = {line.split()[0]: line.split() for line in text.splitlines() if line.strip().split()[:1] in (["Command"], ["Trade"])}
+        self.assertEqual(sorted(rows), ["Command", "Trade"])
+        for name, (net, income, costs) in (("Command", (-1000, 500, 1500)), ("Trade", (600, 1000, 400))):
+            cells = rows[name]
+            self.assertEqual((number(cells[5]), number(cells[6]), number(cells[7])), (net, income, costs))
+            self.assertEqual(number(cells[5]), number(cells[6]) - number(cells[7]))
+            self.assertGreater(number(cells[7]), 0)
+        self.assertEqual((rows["Command"][9], rows["Trade"][9]), ("-18,000", "18,000"))
+
 
 if __name__ == "__main__":
     unittest.main()

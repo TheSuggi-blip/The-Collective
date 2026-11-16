@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """catalog-index.py -- build game/catalog/: every recipe, facility, hull, module and item of the game, as a master index with sub-indexes.
 
-WHAT: the game publishes its catalog (the route maker fetches it once a day
-      into the unit's data folder, catalog/<version>.json). This script turns
+WHAT: the game publishes its catalog (scripts/catalog-refresh.py fetches and
+      checks each new version, the route maker once a day, into the unit's
+      data folder, catalog/<version>.json). This script turns
       it into files every member can read, search and click through:
         master-index.md          start here: every group with its count, every name a link
         recipes/<category>.md    the recipes of one category: what each makes, from what, where

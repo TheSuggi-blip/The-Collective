@@ -1,4 +1,4 @@
-"""store.py on a disposable data folder: rows and sums of a pass, a record cut by the keeper, a half-written line, the read copy, the backups, old rows, bad lines, a herd gone, the writer's lease."""
+"""store.py on a disposable data folder: rows and sums of a pass, a record cut by the keeper, a half-written line, the read copy, the backups, old rows, bad lines, a herd gone, the writer's lease; the members' observations: six records, one table, kept 30 days."""
 
 import calendar
 import contextlib
@@ -107,7 +107,8 @@ class StoreTests(unittest.TestCase):
     def test_rows_sums_a_keeper_cut_and_a_half_written_line(self):
         self.first_lines()
         out = self.one()
-        self.assertEqual({k: v["added"] for k, v in out["records"].items()}, {RUNS: 4, MARKET: 4, WILD: 6})
+        self.assertEqual({k: v["added"] for k, v in out["records"].items()},
+                         dict({RUNS: 4, MARKET: 4, WILD: 6}, **{"observations/%s.jsonl" % name: 0 for name in store.OBSERVED}))   # six records not there
         self.assertEqual((self.count("runs"), self.count("moves"), self.count("readings")), (4, 4, 6))
         # by hand: r1 in hour 09: 3 runs, 60 minutes, 30 read (p3 read no wallet), credits (300-100)+50 = 250, one_time 100
         self.assertEqual(self.live("SELECT runs, minutes, read_minutes, credits, one_time FROM route_hour WHERE route = 'r1' AND hour = ?",
@@ -298,6 +299,120 @@ class StoreTests(unittest.TestCase):
         self.assertEqual(done.returncode, 0, done.stderr)
         self.assertRegex(done.stdout, r"runs\s+4 rows\s+newest 2026-11-16T10:10:00Z")
         self.assertRegex(done.stdout, r"route_hour\s+2 rows")
+
+
+def seen(t, member, name, kind, subject, fields, note=""):
+    """One line as observe.py writes it."""
+    return json.dumps({"t": t, "member": member, "division": name, "kind": kind, "subject": subject, "fields": fields, "note": note})
+
+
+class ObservationTests(unittest.TestCase):
+    """The members' records observations/<division>.jsonl (observe.py) -> the one table observations."""
+
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory(prefix="fleet-store-observe-test-")
+        self.addCleanup(self.temp.cleanup)
+        self.data = Path(self.temp.name)
+        (self.data / "observations").mkdir()
+
+    def append(self, name, lines):
+        with open(self.data / "observations" / ("%s.jsonl" % name), "a", encoding="ascii") as handle:
+            handle.write("".join(line + "\n" for line in lines))
+
+    def one(self, now=NOW, **options):
+        return store.one_pass(str(self.data), now=now, **options)
+
+    def live(self, sql, args=()):
+        conn = sqlite3.connect(str(self.data / "store" / "live.db"))
+        try:
+            return conn.execute(sql, args).fetchall()
+        finally:
+            conn.close()
+
+    def test_two_divisions_arrive_a_line_read_twice_is_one_row_and_a_missing_record_is_no_error(self):
+        scan = seen("2026-11-16T09:10:05Z", "Oracle", "intel", "scan", "sys_far", {"belts": 2, "ice": True, "owner": "ROGU"}, "two belts")
+        self.append("intel", [scan, seen("2026-11-16T09:10:05Z", "Oracle", "intel", "scan", "sys_far", {"belts": 3})])   # same subject, same second
+        self.append("trade", [seen("2026-11-16T10:00:00Z", "Mercury", "trade", "price", "far_base", {"item": "iron_ore", "bid": 14, "ask": 19.5})])
+        out = self.one()
+        self.assertEqual({k: v["added"] for k, v in out["records"].items() if k.startswith("observations/")},
+                         {"observations/%s.jsonl" % name: n for name, n in (("command", 0), ("mining", 0), ("logistics", 0), ("trade", 1),
+                                                                           ("military", 0), ("intel", 2))})
+        self.assertFalse(any(r.get("error") for r in out["records"].values()))                   # four records not there: no error
+        self.assertEqual(sorted(self.live("SELECT division, member, kind, subject, t, at, note FROM observations")),
+                         [("intel", "Oracle", "scan", "sys_far", H9 + 605, "2026-11-16T09:10:05Z", ""),
+                          ("intel", "Oracle", "scan", "sys_far", H9 + 605, "2026-11-16T09:10:05Z", "two belts"),
+                          ("trade", "Mercury", "price", "far_base", H10, "2026-11-16T10:00:00Z", "")])
+        self.assertEqual(self.live("SELECT json_extract(fields, '$.bid'), json_extract(fields, '$.ask'), json_extract(fields, '$.item') "
+                                   "FROM observations WHERE kind = 'price'"), [(14, 19.5, "iron_ore")])
+        self.assertEqual(sorted(self.live("SELECT json_extract(fields, '$.belts'), json_extract(fields, '$.ice') FROM observations WHERE kind = 'scan'")),
+                         [(2, 1), (3, None)])
+        line = store.said(out)
+        self.assertIn("observations/intel.jsonl +2", line)
+        self.assertIn("observations/trade.jsonl +1", line)
+        self.assertNotIn("observations/mining.jsonl", line)                                     # a record that did nothing is not named
+        self.assertIn("routes/runs.jsonl +0", line)                                             # the three history records as before
+
+        self.append("intel", [scan])                                                             # the same line once more: one row
+        out = self.one()
+        self.assertEqual((out["records"]["observations/intel.jsonl"]["added"], self.live("SELECT COUNT(*) FROM observations")[0][0]), (0, 3))
+        name = "observations/intel.jsonl"                                                        # the keeper's cut: read again from 0
+        size = (self.data / name).stat().st_size
+        self.assertIsNotNone(keeper.trim(self.data, name, size - 1, size // 2, settle=0.01))
+        self.append("intel", [seen("2026-11-16T11:00:00Z", "Oracle", "intel", "scan", "sys_new", {"belts": 1})])
+        out = self.one()
+        self.assertTrue(out["records"][name]["cut"])
+        self.assertEqual((out["records"][name]["added"], self.live("SELECT COUNT(*) FROM observations")[0][0]), (1, 4))
+
+    def test_a_bad_line_is_skipped_and_counted(self):
+        good = seen("2026-11-16T09:00:00Z", "Oracle", "intel", "scan", "sys_a", {"belts": 1})
+        self.append("intel", [
+            "{not json", "[1, 2]",
+            seen("2026-11-16T09:00:00Z", "Zero", "intel", "scan", "sys_a", {}),                  # another member in intel's record
+            seen("2026-11-16T09:00:00Z", "Oracle", "trade", "scan", "sys_a", {}),                # another division's line
+            seen("2026-11-16T09:00:00Z", "Oracle", "intel", "scan", "", {}),                     # no subject
+            seen("yesterday", "Oracle", "intel", "scan", "sys_a", {}),                           # no time
+            seen("2026-11-16T09:00:00Z", "Oracle", "intel", "scan", "sys_a", {"x": [1, 2]}),     # a value that is a list
+            seen("2026-11-16T09:00:00Z", "Oracle", "intel", "scan", "sys_a", {"x": float("nan")}),   # NaN: no JSON for json_extract
+            good])
+        out = self.one()
+        self.assertEqual((out["records"]["observations/intel.jsonl"]["added"], out["records"]["observations/intel.jsonl"]["bad"]), (1, 8))
+        self.assertIn("observations/intel.jsonl +1 (8 bad)", store.said(out))
+        self.assertEqual(self.live("SELECT subject, fields FROM observations"), [("sys_a", '{"belts": 1}')])
+
+    def test_observations_are_kept_thirty_days_while_runs_go_after_seven(self):
+        (self.data / "routes").mkdir()
+        with open(self.data / "routes" / "runs.jsonl", "a", encoding="ascii") as handle:
+            handle.write(run("p1", "r9", "2026-11-06T09:05:00Z", 10, 100, 200, 100) + "\n")
+        old = seen("2026-10-10T09:00:00Z", "Apophis", "military", "fight", "veil_ray", {"hull_lost": 12})
+        self.append("military", [seen("2026-11-06T09:00:00Z", "Apophis", "military", "fight", "veil_ray", {"hull_lost": 30}), old])
+        out = self.one(keep_days=7)
+        self.assertEqual(self.live("SELECT COUNT(*) FROM runs")[0][0], 0)                       # ten days old: gone after seven
+        self.assertEqual(self.live("SELECT at FROM observations"), [("2026-11-06T09:00:00Z",)])  # ten days old: kept; 37 days: gone
+        self.assertEqual(out["pruned"], 2)
+        self.assertEqual(self.live("SELECT value FROM meta WHERE key = 'sealed.observations'"), [((NOW - 30 * 86400) // 86400 * 86400,)])
+        self.append("military", [old])                                                           # a line of a sealed day is not taken in
+        out = self.one(keep_days=7)
+        self.assertEqual((out["records"]["observations/military.jsonl"]["added"], out["records"]["observations/military.jsonl"]["old"]), (0, 1))
+        self.assertEqual(store.KEEP_TABLES, {"observations": 30})
+        self.one(now=NOW + 25 * 86400, keep_days=40)                                             # a longer --keep-days holds them longer
+        self.assertEqual(self.live("SELECT COUNT(*) FROM observations")[0][0], 1)
+
+    def test_the_schema_text_status_and_examples_of_observations(self):
+        self.append("logistics", [seen("2026-11-16T09:00:00Z", "Apollo", "logistics", "price", "far_base", {"item": "steel_plate", "ask": 70})])
+        self.one()
+        self.assertIn("json_extract(fields, '$.<key>')", store.DESCRIPTIONS["observations"])
+        self.assertIn("observations/<division>.jsonl", store.DESCRIPTIONS["cursor"])
+        self.assertEqual(len(store.EXAMPLES["observations"]), 3)
+        for question, sql in store.EXAMPLES["observations"]:
+            found = store.query(str(self.data), sql)
+            self.assertIsNone(found["error"], question)
+            self.assertTrue(found["rows"], question)
+        self.assertRegex("\n".join(store.status(str(self.data), now=NOW)), r"observations\s+1 rows\s+newest 2026-11-16T09:00:00Z")
+        conn = store.connect(str(self.data))
+        self.addCleanup(conn.close)
+        self.assertEqual(store.schema(conn)["observations"]["columns"][:8], [("division", "TEXT"), ("member", "TEXT"), ("kind", "TEXT"),
+                         ("subject", "TEXT"), ("t", "INTEGER"), ("at", "TEXT"), ("fields", "TEXT"), ("note", "TEXT")])
+        self.assertTrue({row[1] for row in conn.execute("PRAGMA index_list('observations')")} >= {"observations_kind", "observations_subject"})
 
 
 if __name__ == "__main__":

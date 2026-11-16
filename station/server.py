@@ -443,7 +443,7 @@ def api_history(hours):
         if not (isinstance(r, list) and len(r) >= 8 and isinstance(r[0], (int, float))):
             continue
         while at < len(one) and one[at][0] <= r[0]:
-            value = num(one[at][3])
+            value = 0 if one[at][2] == "Wallet top-up" else num(one[at][3])   # half of a gift between our ships (station/fleet.py TRANSFER)
             rewards, bought, at = rewards + max(value, 0), bought + max(-value, 0), at + 1
         if r[0] < since:
             continue

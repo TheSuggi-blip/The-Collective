@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
-"""store.py -- keeps the fleet's history and its current state in one SQLite file: the runs, the price moves and the census readings with their sums by hour and by day, and beside them what the fleet's own files say now.
+"""store.py -- keeps the fleet's history and its current state in one SQLite file: the runs, the price moves and the census readings with their sums by hour and by day, the members' own observations, and beside them what the fleet's own files say now.
 
-WHAT: the service `store` runs it. Every minute it reads the new whole lines of three records of the
+WHAT: the service `store` runs it. Every minute it reads the new whole lines of the records of the
       unit's data folder and writes them into <data>/store/live.db:
         routes/runs.jsonl       -> runs      one row a run           sums: route_hour  (runs, minutes, credits)
         market/history.jsonl    -> moves     one row a price move    sums: market_hour (lowest and highest bid, ask)
         wildlife/history.jsonl  -> readings  one row a field or herd sums: reading_day (first and last count)
+        observations/<division>.jsonl -> observations  one row an observation a member wrote with observe.py (six
+                                records, one per division: command, mining, trade, logistics, military, intel); no sums
       In the same pass it loads the snapshot tables: what a file says NOW (state, not history), from
         fleet/fleet.json, fleet/ships/*.json, fleet/orders/*.json  -> ships, ship_skills, ship_modules, ship_cargo
         stock/storage.json                                          -> holdings (views inventory, inventory_by_station)
@@ -36,10 +38,14 @@ RULES:
   - A record shorter than its place, or whose first line changed, was cut by the keeper
     (scripts/data-keeper.py): it is read again from its start. Every row has a key and goes in with
     INSERT OR IGNORE, so a line read twice is one row: a run by (pilot, route, started), a price move by
-    (base, item, t), a reading by (system, poi, what, t).
+    (base, item, t), a reading by (system, poi, what, t), an observation by (division, kind, subject, t, digest: the first
+    16 hex of the sha256 of its line, so two observations of one subject in one second are two rows and the same line
+    read again is one). An observation counts only in its own division's record and by that division's member
+    (observe.py's rule, checked again here: the files can be written from any shell); a record not there is skipped.
   - Sums are recomputed from the raw rows, only for the hours (days) that got new rows. Raw rows older
     than --keep-days are deleted by whole hours (readings by whole days); their sums stay, and a line of
-    such an hour that turns up again is not taken in: those sums are final.
+    such an hour that turns up again is not taken in: those sums are final. Observations have no sums: they are kept
+    KEEP_TABLES days (30), or --keep-days when that is longer, cut and sealed by whole days.
   - A run counts for credits and read minutes only when it read a wallet (credits_before and
     credits_after above 0, no note `wallet not read`); its credits are its steady credits: what the run
     earned by the fleet's one rule (routes.py, earned: a hunt's sale of goods it carried in is left out)
@@ -83,7 +89,7 @@ USAGE:
                                   snapshot tables with the age of their newest source, the files not read
   --data <dir>                    the unit's data folder (default /srv/collective/data)
   --root <dir>                    the repository's game/ folder (default: the parent of this file's folder)
-  --keep-days N                   days of raw rows kept (default 7)
+  --keep-days N                   days of raw rows kept (default 7; observations at least 30: KEEP_TABLES)
 
 Stdlib only. ASCII only.
 """
@@ -137,8 +143,14 @@ CREATE TABLE IF NOT EXISTS market_hour (base TEXT NOT NULL, item TEXT NOT NULL, 
   bid_lo REAL, bid_hi REAL, ask_lo REAL, ask_hi REAL, moves INTEGER, PRIMARY KEY (base, item, hour));
 CREATE TABLE IF NOT EXISTS reading_day (system TEXT NOT NULL, poi TEXT NOT NULL, what TEXT NOT NULL, kind TEXT,
   day INTEGER NOT NULL, first REAL, last REAL, t_first INTEGER, t_last INTEGER, PRIMARY KEY (system, poi, what, day));
+CREATE TABLE IF NOT EXISTS observations (division TEXT NOT NULL, member TEXT NOT NULL, kind TEXT NOT NULL, subject TEXT NOT NULL,
+  t INTEGER NOT NULL, at TEXT NOT NULL, fields TEXT NOT NULL, note TEXT NOT NULL DEFAULT '', digest TEXT NOT NULL,
+  PRIMARY KEY (division, kind, subject, t, digest));
+CREATE INDEX IF NOT EXISTS observations_kind ON observations (kind, t);
+CREATE INDEX IF NOT EXISTS observations_subject ON observations (subject);
 """
-NEWEST = (("runs", "t"), ("moves", "t"), ("readings", "t"), ("route_hour", "hour"), ("market_hour", "hour"), ("reading_day", "day"))
+NEWEST = (("runs", "t"), ("moves", "t"), ("readings", "t"), ("route_hour", "hour"), ("market_hour", "hour"), ("reading_day", "day"),
+          ("observations", "t"))
 
 
 def stamp(t):
@@ -300,11 +312,42 @@ def sum_readings(conn, keys):
                          (system, poi, what, rows[-1][0], day, rows[0][1], rows[-1][1], rows[0][2], rows[-1][2]))
 
 
+def sum_none(conn, keys):
+    """Observations have no sums: each row stays as it was written, for KEEP_TABLES days."""
+
+
+OBSERVED = tuple(board.NAMES[member].lower() for member in division.MEMBERS)   # observe.py's six records, one per division
+KEEP_TABLES = {"observations": 30}         # days a table's raw rows stay at least, beyond --keep-days: no sums keep what a member saw
+
+
+def take_observation(name):
+    """The reader of observations/<name>.jsonl (observe.py): one row an observation, keyed by (division, kind, subject, t,
+    digest of its line). A line of another division, of another member than the division's own, or whose fields are not
+    key: number, true/false or text, is bad."""
+    owner = next(member for member in division.MEMBERS if board.NAMES[member].lower() == name)
+
+    def take(conn, row, sealed, line):
+        member, kind, subject = text_of(row, "member"), text_of(row, "kind"), text_of(row, "subject")
+        if row.get("division") != name or member != owner:      # the file is writable from any shell: the rule is read again here
+            raise ValueError("an observation of %s by %s in the record of %s" % (row.get("division"), member, name))
+        fields, note = row.get("fields", {}), row.get("note", "")
+        if not isinstance(fields, dict) or not isinstance(note, str) or not all(isinstance(v, (int, float, str)) for v in fields.values()):
+            raise ValueError("fields or note not as observe.py writes them")
+        t = epoch(row.get("t"))
+        if t < sealed:
+            return None
+        digest = hashlib.sha256(line.encode("utf-8")).hexdigest()[:16]
+        added = conn.execute("INSERT OR IGNORE INTO observations VALUES (?,?,?,?,?,?,?,?,?)", (
+            name, member, kind, subject, t, stamp(t), json.dumps(fields, sort_keys=True, allow_nan=False), note, digest)).rowcount
+        return added, set()
+    return take
+
+
 RECORDS = (                    # record, its raw table, a line -> rows, the sums, the seal's step
     ("routes/runs.jsonl", "runs", take_run, sum_routes, HOUR),
     ("market/history.jsonl", "moves", take_move, sum_market, HOUR),
     ("wildlife/history.jsonl", "readings", take_census, sum_readings, DAY),
-)
+) + tuple(("observations/%s.jsonl" % name, "observations", take_observation(name), sum_none, DAY) for name in OBSERVED)
 
 
 # ---- the snapshot tables: what the fleet's files say now (state, not history)
@@ -1105,12 +1148,13 @@ def take_record(conn, data, name, table, take, add_up, step):
 
 
 def prune(conn, now, keep_days):
-    """Delete raw rows older than keep_days by whole hours (readings: days) and seal those hours: rows deleted."""
+    """Delete raw rows older than keep_days (a table of KEEP_TABLES: its own days when longer) by whole hours (readings and
+    observations: days) and seal those hours: rows deleted."""
     gone = 0
     conn.execute("BEGIN IMMEDIATE")
     try:
-        for _name, table, _take, _sum, step in RECORDS:
-            cut = int(now - keep_days * DAY) // step * step
+        for table, step in dict((table, step) for _name, table, _take, _sum, step in RECORDS).items():     # six records feed one table
+            cut = int(now - max(keep_days, KEEP_TABLES.get(table, 0)) * DAY) // step * step
             if cut > meta(conn, "sealed." + table):
                 gone += conn.execute("DELETE FROM %s WHERE t < ?" % table, (cut,)).rowcount
                 conn.execute("INSERT OR REPLACE INTO meta VALUES (?, ?)", ("sealed." + table, cut))
@@ -1203,6 +1247,8 @@ def said(out):
         return None
     parts = []
     for name, r in records.items():
+        if name.startswith("observations/") and not (r["added"] or r["bad"] or r["old"] or r["cut"] or r.get("error")):
+            continue                               # six records that mostly stand still: named only in a pass that read one
         part = "%s +%d" % (name, r["added"])
         extra = [w for w, on in (("cut: read from 0", r["cut"]), ("%d bad" % r["bad"], r["bad"]),
                                  ("%d sealed" % r["old"], r["old"]), ("failed: %s" % r.get("error"), r.get("error"))) if on]
@@ -1297,7 +1343,8 @@ def route_rates(conn, since_epoch):
 
 
 DESCRIPTIONS = {               # one line per table and view: what a row is and where it comes from (schema(), hive.py schema)
-    "cursor": "history bookkeeping: where each record (routes/runs.jsonl, market/history.jsonl, wildlife/history.jsonl) was read to, by byte",
+    "cursor": "history bookkeeping: where each record (routes/runs.jsonl, market/history.jsonl, wildlife/history.jsonl, observations/<division>.jsonl) "
+              "was read to, by byte",
     "meta": "the store's settings: the sealed hour (day) of each raw table, the snapshot schema's version and its tables",
     "runs": "history: one row per run of a route (pilot, route, start, minutes, steady credits, paid once, read a wallet), the raw rows of --keep-days days",
     "moves": "history: one row per change of an item's best bid or ask at a station (market/history.jsonl), the raw rows of --keep-days days",
@@ -1305,6 +1352,8 @@ DESCRIPTIONS = {               # one line per table and view: what a row is and 
     "route_hour": "history: per route and UTC hour the runs, minutes, read minutes, steady credits and paid once; kept for good",
     "market_hour": "history: per station, item and UTC hour the lowest and highest best bid and best ask; kept for good",
     "reading_day": "history: per place, field or herd and UTC day the first and the last count; kept for good",
+    "observations": "history: one row per observation a member wrote with observe.py (observations/<division>.jsonl): division, member, kind, "
+                    "subject, when it was seen (t, at), note; `fields` is JSON text, one field read by json_extract(fields, '$.<key>'); kept 30 days at least",
     "source": "snapshot bookkeeping: every file the snapshot tables were read from: size, mtime, when loaded (t), rows, and why not (note)",
     "ships": "now: one row per ship of ours (fleet/fleet.json): member and division, place, docked at which base, hull, fuel, hold, wallet, the order it flies",
     "ship_skills": "now: every skill of every ship with its level and XP (fleet/ships/<pilot>.json)",
@@ -1384,6 +1433,13 @@ EXAMPLES = {                   # three questions per table and view, as SQL (hiv
                     ("Herds that shrank in a day", "SELECT system, poi, what, date(day, 'unixepoch'), first, last FROM reading_day WHERE kind = 'herd' "
                      "AND last < first ORDER BY day DESC"),
                     ("Days on record per system", "SELECT system, COUNT(DISTINCT day) FROM reading_day GROUP BY system ORDER BY 2 DESC")),
+    "observations": (("The newest observations of every division", "SELECT at, division, member, kind, subject, fields, note FROM observations "
+                      "ORDER BY t DESC LIMIT 20"),
+                     ("Every kind on record: its rows, its newest time, which division", "SELECT kind, division, COUNT(*) AS n, "
+                      "datetime(MAX(t), 'unixepoch') AS newest FROM observations GROUP BY kind, division ORDER BY n DESC"),
+                     ("Prices seen at stations we read no book of (kind price): fields read by json_extract",
+                      "SELECT at, subject AS station, json_extract(fields, '$.item') AS item, json_extract(fields, '$.bid') AS bid, "
+                      "json_extract(fields, '$.ask') AS ask FROM observations WHERE kind = 'price' ORDER BY t DESC LIMIT 20")),
     "source": (("Which files could not be read, and why", "SELECT name, note FROM source WHERE note <> ''"),
                ("How fresh is each loader's newest file", "SELECT loader, COUNT(*) AS files, datetime(MAX(mtime), 'unixepoch') AS newest_file, "
                 "datetime(MAX(t), 'unixepoch') AS loaded FROM source GROUP BY loader"),

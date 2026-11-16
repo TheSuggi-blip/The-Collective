@@ -1088,7 +1088,11 @@ async function renderMetrics(panel, live) {
   const span = w ? (w.minutes >= 120 ? Math.round(w.minutes / 60) + ' hours' : w.minutes + ' minutes') : '';
   panel.append(el('p', 'sub', w
     ? 'Steady money over the last ' + span + ': what the fleet makes again and again. Rewards the game pays once per pilot are left out.'
-      + (w.ships_changed ? ' The fleet grew in this stretch: a new pilot\'s first credits count as income here.' : '')
+      + (w.seed && w.seed.pilots ? ' ' + fmt(w.seed.pilots) + ' new pilots joined in this stretch: their first wallets are left out.'
+        : '')
+      + (w.presence && (w.presence.left || w.presence.back) ? ' A ship the engine stopped listing, or lists again, is left out with its wallet.'
+        : w.ships_changed && !(w.seed && w.seed.pilots) ? ' The number of ships changed in this stretch and no record says how: the figures may be off by a ship\'s wallet.' : '')
+      + (w.transfers_moved_per_hour ? ' Gifts between our own ships are neither income nor costs.' : '')
     : 'No figures for this stretch yet: the collector needs five minutes of samples.'));
   const grid = el('div', 'kpis');
   const kpi = (k, v, sub, cls) => { const b = el('div', 'kpi' + (cls ? ' ' + cls : '')); b.append(el('div', 'k', k), el('div', 'v', v)); if (sub) b.append(el('div', 's', sub)); grid.append(b); return b; };
