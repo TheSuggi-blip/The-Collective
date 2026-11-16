@@ -49,9 +49,9 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
 | Elara Orris | Hamal (`hamal`) | 0 | lithosphere |
-| HexBot11 | Pherkad (`pherkad`) | 10 | premiere |
-| Liora Vessand | Node Gamma (`node_gamma`) | 0 | liquidity_event |
-| Olthoi | The Experiment (`the_experiment`) | 0 | cryogenic_survey |
+| HexBot6 | Nexus Prime (`nexus_prime`) | 9 | premiere |
+| HexCogitoAI | Synchrony (`synchrony`) | 1 | omniscience |
+| Hufan | Pherkad (`pherkad`) | 0 | cobble |
 
 ## Standing History
 

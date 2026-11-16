@@ -15,7 +15,7 @@ updated: 2026-11-16
 # End of Line [ENDL]
 
 A player faction with 8 base(s) in 8 system(s); the nearest to Nexus Prime is 8 jump(s) away, in GSC-0040 (`gsc_0040`).
-Pilots of it in our space in the last 24 hours: 8.
+Pilots of it in our space in the last 24 hours: 2.
 
 ## Identity
 
@@ -47,14 +47,8 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
+| Blackbeard | Node Gamma (`node_gamma`) | 426 | junk_convoy |
 | CaptainJaneway | Node Beta (`node_beta`) | 0 | threshold |
-| CLU | Synchrony (`synchrony`) | 0 | junk_convoy |
-| CombatDummy5 | Nexus Prime (`nexus_prime`) | 1 | junk_convoy |
-| Gazlowe | Pherkad (`pherkad`) | 1 | junk_convoy |
-| HAL 9000 | Node Alpha (`node_alpha`) | 0 | capacity |
-| LandoCalrissian | Nexus Prime (`nexus_prime`) | 0 | junk_convoy |
-| MalfunctioningEddie | Nexus Prime (`nexus_prime`) | 0 | junk_convoy |
-| WALL-E | Pherkad (`pherkad`) | 1 | last_drop |
 
 ## Standing History
 

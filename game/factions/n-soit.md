@@ -15,7 +15,7 @@ updated: 2026-11-16
 # Soit [SOIT]
 
 A player faction with 1 base(s) in 1 system(s); the nearest to Nexus Prime is 24 jump(s) away, in Longshore (`longshore`).
-Pilots of it in our space in the last 24 hours: 9.
+Pilots of it in our space in the last 24 hours: 1.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 9.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 11 | Public event stream |
+| Pilots carrying the tag on the public event stream | 2 | Public event stream |
 
 ## Bases
 
@@ -40,15 +40,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Aqua Nan | Node Beta (`node_beta`) | 0 | bonanza |
-| Artemis Fowl | Node Beta (`node_beta`) | 0 | bonanza |
-| Cadavre Exquis | Node Beta (`node_beta`) | 0 | bonanza |
-| Coma Idyllique | Node Beta (`node_beta`) | 0 | bonanza |
 | Jesus Crie | Node Beta (`node_beta`) | 0 | bonanza |
-| Kira Solenne | Node Alpha (`node_alpha`) | 0 | bonanza |
-| Marre Tot | Node Beta (`node_beta`) | 0 | bonanza |
-| Palin Dromes | Node Beta (`node_beta`) | 0 | bonanza |
-| Selection Naturelle | Node Beta (`node_beta`) | 0 | bonanza |
 
 ## Standing History
 
