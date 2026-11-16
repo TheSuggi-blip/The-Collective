@@ -1,32 +1,33 @@
 {
- "id": "census-route-places",
- "kind": "census",
- "title": "Read twice a turn every system beyond our space that a route of any plan uses and no hourly census reads",
- "note": "Kept by Oracle (orders.log ENT-017, block ORACLE: every place our routes use is read twice in a turn; the census is what a field and a herd regain, and a route's `min_creatures` and `min_left` act only on a census under 90 minutes old). Written 2026-11-16 18:31 UTC from the route files of the seven role plans (game/routes/plans/*.json): 37 systems are used by a route that is not a census; the 10 Voidborn systems are read every hour by census-voidborn and 8 lawless ones by census-guard-ice; the 19 here were read once or never in the four hours before (data/routes/runs.jsonl). every_minutes 100 gives two reads in a four-hour turn with the wait for a free ship; about 19 x 2 reads of 15 minutes a turn, under three ships at a time. nova_terra (Solarian, policed) is on it because routes sell at Nova Terra Central and requires.bid reads a book under an hour old; every other system is lawless (F13: empty hold). The list is checked every Intel turn against the plans (intel_turn_check.py, PLACES).",
- "systems": [
-  "achird",
-  "okab",
-  "nova_terra",
-  "amberfall",
-  "atlas",
-  "botein",
-  "cedarhold",
-  "coldwater",
-  "deepwell",
-  "felis",
-  "gliese_876",
-  "gsc_0016",
-  "gsc_0031",
-  "gsc_0049",
-  "hd_147513",
-  "homam",
-  "lesath",
-  "lhs_1140",
-  "marfik"
- ],
- "every_minutes": 100,
- "max_ships": 4,
- "requires": {
-  "empty_hold": true
- }
+  "id": "census-route-places",
+  "kind": "census",
+  "title": "Read twice a turn every system beyond our space that a route of any plan uses and no hourly census reads",
+  "note": "Kept by Oracle (orders.log ENT-017, block ORACLE: every place our routes use is read twice in a turn; the census is what a field and a herd regain, and a route's `min_creatures` and `min_left` act only on a census under 90 minutes old). Written 2026-11-16 18:31 UTC from the route files of the seven role plans (game/routes/plans/*.json): 37 systems are used by a route that is not a census; the 10 Voidborn systems are read every hour by census-voidborn and 8 lawless ones by census-guard-ice; the 19 here were read once or never in the four hours before (data/routes/runs.jsonl). every_minutes 100 gives two reads in a four-hour turn with the wait for a free ship; about 19 x 2 reads of 15 minutes a turn, under three ships at a time. nova_terra (Solarian, policed) is on it because routes sell at Nova Terra Central and requires.bid reads a book under an hour old; every other system is lawless (F13: empty hold). The list is checked every Intel turn against the plans (intel_turn_check.py, PLACES). Off since 2026-11-16 23:26 UTC: census-worked (every 120 minutes, the scouts' template @reader) reads the same places from the route files of every plan; this file stays for its history.",
+  "systems": [
+    "achird",
+    "okab",
+    "nova_terra",
+    "amberfall",
+    "atlas",
+    "botein",
+    "cedarhold",
+    "coldwater",
+    "deepwell",
+    "felis",
+    "gliese_876",
+    "gsc_0016",
+    "gsc_0031",
+    "gsc_0049",
+    "hd_147513",
+    "homam",
+    "lesath",
+    "lhs_1140",
+    "marfik"
+  ],
+  "every_minutes": 100,
+  "max_ships": 4,
+  "requires": {
+    "empty_hold": true
+  },
+  "status": "off"
 }

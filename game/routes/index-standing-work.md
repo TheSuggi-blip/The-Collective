@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 28.
+Routes: 27.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -33,7 +33,6 @@ Routes: 28.
 | [census-frontier](census-frontier.json) | census | beyond the border, 7 jumps | Read one lawless system around our space whole: deposits, creatures, stations, order books, mission boards | up to 12 ships, empty hold | 119 | 14 | -140 | -620 | 2026-11-16 |
 | [census-guard-ice](census-guard-ice.json) | census | beyond the border, 7 jumps | Guard by census: read whole, every hour, the lawless systems where our miners work | up to 2 ships, empty hold | 68 | 13 | -140 | -610 | 2026-11-16 |
 | [census-roads](census-roads.json) | census | beyond the border, 15 jumps | Explore the roads to the station sites: read every system on the way to Aldebaran, Yildun, Hawthorne and Alchiba, and those beside them | up to 10 ships, empty hold | TBD | TBD | TBD | TBD | -- |
-| [census-route-places](census-route-places.json) | census | beyond the border, 8 jumps | Read twice a turn every system beyond our space that a route of any plan uses and no hourly census reads | up to 4 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [census-worked](census-worked.json) | census | beyond the border, 9 jumps | Read the places our routes use beyond home twice in a turn: deposits, creatures, order books, mission boards | up to 6 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [guard-marfik-emission-nebula](guard-marfik-emission-nebula.json) | guard | beyond the border, 6 jumps | Guard at Marfik Emission Nebula while a ship of ours mines gas there; docks at Node Beta | up to 1 ships, empty hold, standing work | 1 | 73 | -130 | -110 | 2026-11-16 |
 | [hunt-cedarhold-dim-lattice-veil-ray](hunt-cedarhold-dim-lattice-veil-ray.json) | hunt | beyond the border, 5 jumps | veil_ray at cedarhold_dim_lattice; loot sold at The Experiment Research Station | up to 1 ships, without piercing_railgun_i, empty hold, standing work | 2 | 10 | -110 | -640 | 2026-11-16 |
