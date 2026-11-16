@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 16.
 | Allies | HEXC | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 173 | Public event stream |
+| Pilots carrying the tag on the public event stream | 179 | Public event stream |
 
 ## Bases
 
@@ -47,20 +47,20 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
 | ILC Chute | Synchrony (`synchrony`) | 0 | junk_convoy |
-| ILC Cope | Synchrony (`synchrony`) | 0 | junk_convoy |
+| ILC Constellation | Pherkad (`pherkad`) | 0 | concordia |
 | ILC Flange | Synchrony (`synchrony`) | 0 | junk_convoy |
-| ILC Gantry | Synchrony (`synchrony`) | 0 | junk_convoy |
+| ILC Gantry | Nexus Prime (`nexus_prime`) | 0 | junk_convoy |
 | ILC Gasket | Synchrony (`synchrony`) | 0 | junk_convoy |
 | ILC Gateway | Nexus Prime (`nexus_prime`) | 0 | concordia |
+| ILC Geode | Synchrony (`synchrony`) | 0 | deep_survey |
 | ILC Gilt | Synchrony (`synchrony`) | 0 | syndicate |
-| ILC Kerf | Synchrony (`synchrony`) | 0 | junk_convoy |
-| ILC Ladle | Synchrony (`synchrony`) | 0 | junk_convoy |
+| ILC Highwall | Pherkad (`pherkad`) | 0 | theoria |
+| ILC Ladle | Node Beta (`node_beta`) | 0 | junk_convoy |
+| ILC Mallet | Pherkad (`pherkad`) | 0 | not met |
 | ILC Nonstop | Nexus Prime (`nexus_prime`) | 0 | concordia |
-| ILC Penalty | Synchrony (`synchrony`) | 0 | junk_convoy |
 | ILC Ratchet | Synchrony (`synchrony`) | 0 | junk_convoy |
 | ILC Retort | Synchrony (`synchrony`) | 0 | junk_convoy |
 | ILC Vagabond | Nexus Prime (`nexus_prime`) | 0 | concordia |
-| ILC Verdict | Pherkad (`pherkad`) | 0 | junk_convoy |
 | ILC Weir | Node Gamma (`node_gamma`) | 0 | prayer |
 
 ## Standing History

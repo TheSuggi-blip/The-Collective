@@ -14,8 +14,8 @@ updated: 2026-11-16
 
 # Busy Being Dead [BUSY]
 
-A player faction with 5 base(s) in 5 system(s); the nearest to Nexus Prime is 14 jump(s) away, in 40 Eridani (`40_eridani`).
-Pilots of it in our space in the last 24 hours: 3.
+A player faction with 6 base(s) in 6 system(s); the nearest to Nexus Prime is 14 jump(s) away, in 40 Eridani (`40_eridani`).
+Pilots of it in our space in the last 24 hours: 6.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 3.
 | Allies | BEIN, DEAD, MOON | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 417 | Public event stream |
+| Pilots carrying the tag on the public event stream | 415 | Public event stream |
 
 ## Bases
 
@@ -37,6 +37,7 @@ Pilots of it in our space in the last 24 hours: 3.
 | The Deep Current | station | GSC-0019 (`gsc_0019`) | lawless | 15 | thriving |
 | The Obsidian Well | station | Arneb (`arneb`) | lawless | 16 | thriving |
 | Plasma Echo Station | station | GSC-0010 (`gsc_0010`) | lawless | 17 | thriving |
+| To The Dark Moon | outpost | Tiaki (`tiaki`) | lawless | 17 | thriving |
 
 ## Pilots in Our Space
 
@@ -44,9 +45,12 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Combat Drone 169 | Node Beta (`node_beta`) | 0 | dialectic |
-| Mining Drone 056 | Synchrony (`synchrony`) | 0 | not met |
-| Mining Drone 278 | Node Alpha (`node_alpha`) | 0 | not met |
+| Combat Drone 135 | Pherkad (`pherkad`) | 0 | dialectic |
+| Combat Drone 139 | Pherkad (`pherkad`) | 0 | dialectic |
+| Combat Drone 188 | Acubens (`acubens`) | 0 | dialectic |
+| Mining Drone 109 | Node Gamma (`node_gamma`) | 0 | not met |
+| Mining Drone 141 | Synchrony (`synchrony`) | 0 | floor_price |
+| Mining Drone 284 | Pherkad (`pherkad`) | 0 | not met |
 
 ## Standing History
 

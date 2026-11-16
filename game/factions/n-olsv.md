@@ -15,7 +15,7 @@ updated: 2026-11-16
 # Our Lord And Savior [OLSV]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 22.
+Pilots of it in our space in the last 24 hours: 20.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 22.
 | Allies | HIVE | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 166 | Public event stream |
+| Pilots carrying the tag on the public event stream | 163 | Public event stream |
 
 ## Bases
 
@@ -40,6 +40,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 |---|---|---|---|
 | OLS Acrux II | Synchrony (`synchrony`) | 0 | cobble |
 | OLS Aladfar | Nexus Prime (`nexus_prime`) | 0 | theoria |
+| OLS Aljanah | Pherkad (`pherkad`) | 0 | not met |
 | OLS Armus | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | OLS Arrakis | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | OLS Ashlesha | Nexus Prime (`nexus_prime`) | 0 | theoria |
@@ -47,7 +48,6 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | OLS Cebalrai | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | OLS Chalawan | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | OLS Chamukuy | Nexus Prime (`nexus_prime`) | 0 | theoria |
-| OLS Dschubba | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | OLS Electra | Nexus Prime (`nexus_prime`) | 0 | cobble |
 | OLS Fawaris | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | OLS Fuyue | Nexus Prime (`nexus_prime`) | 0 | theoria |
@@ -56,8 +56,6 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | OLS Guniibuu | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | OLS Hunor | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | OLS Imai | Synchrony (`synchrony`) | 0 | theoria |
-| OLS Nahn | Synchrony (`synchrony`) | 0 | shard |
-| OLS Ogma | Synchrony (`synchrony`) | 0 | shard |
 | OLS Rastaban | Synchrony (`synchrony`) | 0 | cobble |
 | OLS Sadalbari | Synchrony (`synchrony`) | 0 | cobble |
 
