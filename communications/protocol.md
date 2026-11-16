@@ -82,9 +82,12 @@ Do NOT pack a whole session onto one line.
 
 ## The Orders Log
 
-`orders.log` holds the orders of the Fleet Admiral: the standing
-orders of the fleet, the turn in force and a block for each Admiral.
-It replaced `governance/orders.md` on 2026-11-15, on Suggi's word.
+`orders.log` holds the orders in force: Suggi's standing orders, the
+Fleet Admiral's plan in at most five steps, the turn, what every
+Admiral does and a short block for each member. It replaced
+`governance/orders.md` on 2026-11-15, on Suggi's word; the short form
+is his of 2026-11-16. The standing rules the orders work inside (F1
+to F21) are section 12 of the rulebook, not the orders.
 
 - One writer: the Fleet Admiral, on Suggi's decisions. No other member
   appends to it. An Admiral proposes a change in its session entry
@@ -104,7 +107,9 @@ It replaced `governance/orders.md` on 2026-11-15, on Suggi's word.
   orders rank below the constitution, a member's AGENTS.md and SOUL.md
   and the rulebook (`governance/rulebook.md`), and above the task at
   hand.
-- An order names its goal, its limits and what changes it.
+- An order names its goal, its limits and what changes it. The
+  standing orders (S1 to S6) are Suggi's, carried over word for word;
+  only he changes them. The plan's steps are discussed with him.
 - The log is public. Where our ships are, and which pilot flies which
   route, is never written in it.
 
@@ -112,18 +117,20 @@ It replaced `governance/orders.md` on 2026-11-15, on Suggi's word.
 ## [ENT-NNN] | YYYY-MM-DD HH:MM UTC | Unity | order | ref: <file the change rests on> | see: <the entry before>
 Changed: <what is new against the entry before, and why>.
 In force from <UTC time> until a newer entry.
-FLEET
-F<n>. <order>.
+STANDING ORDERS (Suggi; for the whole fleet; set and changed by him alone)
+S<n>. <Suggi's standing order, word for word>.
+PLAN (the Fleet Admiral's reading of the standing orders, in five steps at most)
+P<n>. <step> (<the standing orders it serves>).
   Goal: <goal>.
-  Changes when: <what changes it>.
+  The plan changes when Suggi and the Fleet Admiral change it.
 TURN
-T<n>. <from> to <to> UTC. <the turn's order>.
+T<n>. <the turn's order>.
   Done when: <measure>.
 EVERY ADMIRAL
 Order: <what every Admiral does each turn>.
 Limits: <what no Admiral does; what it asks first>.
-<ADMIRAL>, <division> (<its ships, by role word>)
-Order: <what this Admiral does each turn until the orders change>.
+<MEMBER>, <division> (<its ships, by role word>)
+Order: <what this member does each turn until the orders change>.
 Measure: <the number it should move>.
 ```
 
