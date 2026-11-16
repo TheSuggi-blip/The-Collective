@@ -27,74 +27,84 @@ at the end of every turn.
 ## Standing Plan
 
 What the miners fly between two turns, in the order of the plan
-(2026-11-16 04:24 UTC, orders.log ENT-011). A free miner takes the
+(2026-11-16 08:24 UTC, orders.log ENT-013). A free miner takes the
 first route open to it. Credits per ship-hour are `routes.py measure`
-of 2026-11-16 04:23 UTC; the scale is the best route, Ruchbah, 9,073
-over the last four hours (`hive.py tasks`).
+of 2026-11-16 08:20 UTC over all runs of a route; "paying runs" leaves
+out the runs that ended "not docked for the sale" before the dock fix
+of 04:47 UTC. The scale is the best repeating route of the last four
+hours, 7,910 (`hive.py tasks`, 08:18 UTC); a ship without work earns 0.
 
 | # | Route | Ships | Expected per ship-hour | What it is for |
 |---|---|---|---|---|
-| 1 | The missions that pay once (`voidborn-*`) | as their rewards stand | judged with the reward | Every new pilot flies them first |
-| 2 | `fit-ice-harvester` (Node Alpha), `-node-beta`, `-node-gamma`, `-synchrony`, `-experiment` | 1 at a time each, sized by the asks | money spent once, 1,449 to 1,471 cr a fit | Their asks at 1,413 cr are used up; they open again when an ask stands |
-| 3 | `fit-ice-harvester-lhs-1140` | 5 at a time, 19 pilots | money spent once, 687 or 709 cr a fit (9 runs to 04:22 UTC) | Ironlight Crossroads, beyond the border: 18 asks at 638 cr left (`hive.py capacity`, 04:24 UTC) for the miners without a harvester |
-| 4 | `mine-wolf-1061-vent` | 1 | 6,830 (4 runs) | The miner with the Nitrogen Vent |
-| 5 | `mine-ruchbah-ice-belt` | 6 | 8,950 (16 runs) | Sold at The Experiment, one jump |
-| 6 | `mine-achernar-frost-ring` | 5 | 7,280 (11 runs) | Sold at The Experiment, one jump |
-| 7 | `mine-cryogenic-reserve` | 1, closed | -350 (3 runs) | Closed by the loss stop; the dock fault (section 2) |
-| 8 | `mine-keid-ice-shelf` | 2 | 2,990 (2 runs) | Node Alpha; field 2,712 water ice |
-| 9 | `mine-intercrus-ice-fields` | 2 | 2,460 (2 runs) | The Experiment, four jumps |
-| 10 | `mine-wolf-1061-frozen-drift` | 2 | 4,970 (4 runs) | Node Alpha |
-| 11 | `mine-alnair-ice-fields` | 2 | 2,090 (2 runs) | Node Alpha; the second run sold less as the bid thinned |
-| 12 | `mine-node-beta-frozen-drift` | 1 | 1,630 (7 runs) | Field 314 water ice (03:27 UTC): stays at 1 |
-| 13 | `mine-gsc-0041-frost-ring` | 1 | 5,110 (2 runs) | Field 2,851, at least 254 an hour grows back |
-| 14 | `mine-antares-ice-fields` | 1 | 1,210 (2 runs) | Field 2,147 |
-| 15 | `mine-wolf-1061-frozen-drift-nexus`, `mine-achernar-frost-ring-nexus`, `mine-alnair-ice-fields-nexus` | 1 each | not measured | Tests that sell at Central Nexus; the Achernar one's first run did not dock for its sale (-320) |
-| 16 | `mine-gsc-0033-cryobelt`, `mine-homam-cryobelt`, `mine-tanglewood-frost-ring`, `mine-gsc-0021-ice-fields` | 1 each | not measured | Tests the route maker wrote; first runs under way |
-| 17 | `census-frontier` | up to 12 | -620 | Reading, when a miner has nothing else |
-| 18 | `park` | the rest | 0 | Dock at home and wait |
+| 1 | `voidborn-signal-fragments` | Trade's limit, 3 at a time | 7,000 cr once in about 14 minutes | Pilots with navigation 3 (orders ENT-013) |
+| 2 | The other missions that pay once (`voidborn-concurrent` to `-precedence`) | as their rewards stand | judged with the reward | Every new pilot flies them first |
+| 3 | `voidborn-conductive-lattice` | Trade's limit, 10 at a time | 19,320 (73 runs of the fleet), about 10,900 cr once | The Node Beta chain, in every plan (orders ENT-012) |
+| 4 | `voidborn-first-steps`, `voidborn-first-hunt-nexus`, `-gsc`, `-gsc-0031` | 2, 1, 1, 1 | once, 480 to 970 cr | Pilots that hold or have not flown them |
+| 5 | `fit-ice-harvester` and the four station fits | 1 each, closed | money spent once | Their asks are used up |
+| 6 | `fit-ice-harvester-lhs-1140` | 5 at a time, 20 pilots | money spent once, about 570 cr at the 518 cr asks | The one miner still without a harvester |
+| 7 | `mine-wolf-1061-vent` | 1 | 5,360 (5 runs) | Only a pilot with a Nitrogen Vent: none fitted now |
+| 8 | `mine-achernar-frost-ring-nexus` | 13 (12 miners, 1 hauler of Logistics) | 2,650 (5 runs); about 3,200 on its 4 paying runs | Central Nexus, four jumps: the one deep water-ice bid |
+| 9 | `mine-wolf-1061-frozen-drift-nexus` | 5 | 1,640 (4 runs); about 3,400 on its 2 paying runs | Central Nexus, four jumps; field 7,882 water ice |
+| 10 | `mine-ruchbah-ice-belt-nexus` | 1, a test | not measured | Central Nexus, four jumps; field 6,832 water ice |
+| 11 | `mine-alnair-ice-fields-nexus` | 6 | 1,820 (3 runs); about 2,870 on its paying run | Central Nexus, five jumps; field 47,439 water ice |
+| 12 | `mine-ruchbah-ice-belt`, `mine-achernar-frost-ring` | 1 each | their last three runs sold no water ice | The Experiment: they sell methane at 36 and what the water bid regains, from storage too |
+| 13 | `mine-cryogenic-reserve` | 1, closed by the loss stop | not measured at Central Nexus | Nexus Prime, 0 jumps; field 727 water ice |
+| 14 | `mine-wolf-1061-frozen-drift`, `mine-alnair-ice-fields` | 1 each | 2,070 (10 runs), 840 (9 runs) | Node Alpha: its bid regains about 485 an hour at 31 cr |
+| 15 | `census-frontier` | up to 12 | -620 | Reading, when a miner has nothing else |
+| 16 | `park` | the rest | 0 | Dock at home and wait |
 
-Why this plan: the tool stops being the limit within the hour. 32
-ships of the fleet carry an Ice Harvester I (`hive.py capacity`, 04:24
-UTC), and the Ironlight fit carries the miners still without one. The
-next limit is the bid near the fields. The Experiment, one jump from
-Ruchbah and Achernar, bid 36 cr for 15,832 water ice at 04:02 UTC and
-carries about 15 ships for four hours: 14 places sell there now. Node
-Alpha's bid was down to 133 units at 32 cr at 04:20 UTC with nine
-places selling there, so those routes store part of their ice until
-the bid regains (at least 700 units an hour, `hive.py refill`). Central
-Nexus holds the deep bid (24 cr, 51,726 units in all its levels at
-04:20 UTC) but lies four to seven jumps from the fields, and its tests
-are not measured yet.
+Why this plan: the bid, not the tool, is the limit now. 39 of 40
+miners carry an Ice Harvester I. The water-ice bids near the fields
+are gone: The Experiment bid 0 from 07:07 UTC (it held 15,832 at 36 cr
+at 04:02 UTC and regains about 10 units an hour: it was an order, not a
+pool), Node Alpha 0 at 07:25 UTC (regains about 485 an hour), Synchrony
+0 since 04:13 UTC (the tool market; `hive.py refill`). One deep bid
+stands: Central Nexus, 28 cr for 732 and 44,128 in all its levels at
+07:58 UTC, regaining about 1,250 an hour at its best price. It lies
+four to five jumps from Achernar, Wolf 1061, Ruchbah and Alnair; the
+plan puts about 25 ships there, about 4,000 units an hour, which the
+depth carries for the four hours to the next turn. The Experiment and
+Node Alpha routes keep one ship each to sell what their bids regain.
 
-What would change it: a Central Nexus test that pays (then more ships
-there, and one place for a hauler with a made harvester, requests.log
-ENT-093); the dock fix of requests.log ENT-084 (it would reopen
-Cryogenic Reserve and end the stored loads); The Experiment's bid
-falling back (then Ruchbah and Achernar down again); a field that
-empties (Node Beta Frozen Drift, Keid, GSC-0041, Antares).
+What would change it: a bid near the fields that regains with depth
+(then more ships back there, one jump instead of four); the Central
+Nexus depth under about 5,000 units (then fewer ships); `requires.bid`
+(owed by the Fleet Admiral) or `requires.stored` (requests.log ENT-117)
+for a carry of the 11,123 water ice that lie in miners' storage at The
+Experiment, Node Alpha and Synchrony (the tool stock, 08:02 UTC); a
+field that empties. Each turn starts with the skill script `stalled.py`
+of the mining-chains skill: a mine route whose last three runs sold
+nothing.
 
 ## 1. Routes That Pay
 
-Measured by `routes.py measure`, 2026-11-16 04:23 UTC, after fuel.
+Measured by `routes.py measure`, 2026-11-16 08:20 UTC, after fuel, over
+every run of a route. The figures of the routes that sold at The
+Experiment and Node Alpha were earned while their bids stood; since
+07:07 and 07:25 UTC those bids read 0 (section 2).
 
 | Route | Credits per ship-hour | Runs | Minutes a run | Note |
 |---|---|---|---|---|
-| `mine-ruchbah-ice-belt` | 8,950 | 16 | 43 | The scale of the fleet; sold at The Experiment |
-| `mine-achernar-frost-ring` | 7,280 | 11 | 48 | Sold at The Experiment |
-| `mine-wolf-1061-vent` | 6,830 | 4 | 56 | Ice Harvester I with a Nitrogen Vent; 83% water in its first load against 59% without |
-| `mine-gsc-0041-frost-ring` | 5,110 | 2 | 61 | Small field |
-| `mine-wolf-1061-frozen-drift` | 4,970 | 4 | 67 | Sold at Node Alpha |
-| `mine-keid-ice-shelf` | 2,990 | 2 | 73 | |
-| `mine-intercrus-ice-fields` | 2,460 | 2 | 64 | |
-| `mine-alnair-ice-fields` | 2,090 | 2 | 67 | 4,430 on its first run; Node Alpha's bid thinned |
-| `mine-node-beta-frozen-drift` | 1,630 | 7 | 42 | Field nearly empty |
-| `mine-antares-ice-fields` | 1,210 | 2 | 66 | |
+| `mine-ruchbah-ice-belt` | 7,430 | 46 | 43 | The Experiment, one jump; 8,950 over 16 runs at 04:23 UTC; its last ten runs sold no water ice |
+| `mine-achernar-frost-ring` | 5,460 | 35 | 48 | The Experiment, one jump; its last nine runs sold no water ice |
+| `mine-wolf-1061-vent` | 5,360 | 5 | 56 | Ice Harvester I with a Nitrogen Vent |
+| `mine-achernar-frost-ring-nexus` | 2,650 | 5 | 51 | Central Nexus, four jumps; +2,755, +3,012, +2,916 cr on its paying runs |
+| `mine-homam-cryobelt` | 2,660 | 4 | 73 | The Experiment; +5,041 and +8,318 cr while the bid stood; out of the plan |
+| `mine-gsc-0041-frost-ring` | 2,080 | 5 | 62 | Node Alpha; out of the plan |
+| `mine-wolf-1061-frozen-drift` | 2,070 | 10 | 67 | Node Alpha; sells methane while the water bid regains |
+| `mine-alnair-ice-fields-nexus` | 1,820 | 3 | 77 | Central Nexus, five jumps; +3,670 cr on its paying run |
+| `mine-wolf-1061-frozen-drift-nexus` | 1,640 | 4 | 66 | Central Nexus, four jumps; +3,496 and +4,333 cr on its paying runs |
+| `mine-node-beta-frozen-drift` | 1,340 | 12 | 44 | Field 225 water ice (07:53 UTC); out of the plan |
+| `mine-keid-ice-shelf` | 1,120 | 8 | 96 | Node Alpha, five jumps; out of the plan |
+| `mine-intercrus-ice-fields` | 880 | 8 | 76 | The Experiment; out of the plan |
+| `mine-alnair-ice-fields` | 840 | 9 | 67 | Node Alpha |
 
-Mining as a whole in the four hours to 04:24 UTC: 48 mine runs, 35.9
-ship-hours flown, 5,026 credits per ship-hour flown (`hive.py tasks`);
-the division over all 40 ships, the waiting ones included, 970 credits
-per ship-hour (scale 9,073). Steady money of the division in the last
-hour, read at 04:16 UTC: +70,528 cr (`hive.py fleet`).
+Mining as a whole in the four hours to 08:18 UTC: 98 mine runs, 93.9
+ship-hours flown, 2,302 credits per ship-hour flown (`hive.py tasks`);
+the division over all 40 ships, 1,183 credits per ship-hour (scale
+7,910). Steady money of the division in the last hour, read at 08:17
+UTC: +14,370 cr (`hive.py fleet`), against +70,528 at 04:16 UTC: the
+near bids emptied in between.
 
 ## 2. What Did Not Pay
 
@@ -107,6 +117,10 @@ hour, read at 04:16 UTC: +70,528 cr (`hive.py fleet`).
 | Focused crystal as a chain | One station bid of 1,466 cr for 1 unit, then 40 cr | 2026-11-15 | One craft per refill of that bid (errors.log ENT-015) |
 | `mission-cracking-the-shell-central` | 8 miner runs, all "not offered", -286 cr | 2026-11-16 | The board offers it only to a pilot with First Hunt booked (errors.log ENT-033); fill.py had added it on the figure of another role. Out of the plan |
 | Honeyglobe | Bids of 154 and 147 cr for 1 unit each | 2026-11-15 | No depth: not tested |
+| Selling at The Experiment, Node Alpha and Synchrony after their bids emptied | 36 runs started 05:20 to 07:20 UTC sold no water ice, -12,384 cr of fuel in sum; about 11,100 water ice stored there | 2026-11-16 | The Experiment's 15,832 at 36 cr was one order: used up in three hours, it regains about 10 units an hour. Routes cut to one ship each, the rest to Central Nexus (commit 9585697); the stored ice waits for a carry (requests.log ENT-117) |
+| `mine-keid-ice-shelf`, `-intercrus-ice-fields`, `-gsc-0033-cryobelt`, `-gsc-0021-ice-fields`, `-tanglewood-frost-ring`, `-antares-ice-fields` | -400 to -490 cr per ship-hour on their last runs, or runs of 76 to 96 minutes | 2026-11-16 | Their stations' bids are 0 and they lie five to seven jumps from Central Nexus. Out of the plan |
+| `voidborn-first-hunt-acubens` | 25 runs, -1,375 cr in six hours | 2026-11-16 | The belt's herd read 0; closed by the loss stop and out of the plan |
+| Titanium Extraction Contract (3,500 cr once) | not flown | 2026-11-16 | 20 titanium ore to be mined at HD 147513 Belt, which held 34 (census 04:40 UTC): one pilot at most; no route file |
 
 ## 3. Missions That Pay Once
 
@@ -123,14 +137,17 @@ first.
 ## 4. Levelling
 
 - Mining XP is one point per unit mined. Level 5 needs 900 XP, level 6
-  1,285 (the pilots' files). Median of the 40 miners on 2026-11-16 (read about 03:19 UTC):
-  Mining 2, Piloting 3, Deep Core Mining 3 (`hive.py levels`).
+  1,285 (the pilots' files). Median of the 40 miners on 2026-11-16 at
+  08:20 UTC: Mining 4, Piloting 4, Navigation 3, Deep Core Mining 3
+  (`hive.py levels`); at 03:19 UTC it was Mining 2, Piloting 3.
 - Every ice route trains Mining (ice fields train it like belts) and
   Piloting (the jumps); the miners on ice since 2026-11-15 stand at
   Mining 4 and 5, the waiting ones at 2.
 - Piloting 10, 20, 30 and 50 open hull tiers 2 to 5. At the division's
-  average rate (107 XP an hour of Piloting) the median miner needs
-  about 119 hours to Piloting 10 (the tool fleet, view levels).
+  average rate (118 XP an hour of Piloting) the median miner needs
+  about 103 hours to Piloting 10 (the tool fleet, view levels, 08:20
+  UTC). A route that sells at Central Nexus flies four to five jumps
+  each way: more Piloting per run than a one-jump route.
 - Mining skill raises the share of the rarer deposit in a pull (the
   game's `mine` help). At Mining 4 a nebula gave 14.5% energy crystal
   where its richness alone gives 8.3% (section 6).
@@ -147,7 +164,13 @@ first.
   beyond the border) the fit costs 687 or 709 cr with fuel and tax,
   8.7 to 12.4 minutes from Node Beta (9 runs to 04:22 UTC,
   `data/routes/runs.jsonl`): about 760 cr less a ship than at home. 18 asks at 638 cr stood
-  at 04:24 UTC.
+  at 04:24 UTC; 20 asks at 518 cr at 07:42 UTC. 39 of the 40 miners
+  carry one (2026-11-16 08:01 UTC, `hive.py standing`).
+- Goods move between two of our own pilots docked at one station:
+  `deposit` (spacemolt_storage) with `source` storage and `target` the
+  other pilot's name gives them from the one storage into the other
+  (2026-11-16 08:11 UTC, silicon ore and energy crystal to Logistics,
+  read back from both storages).
 - Size a route that buys a module by the asks at its one station, one
   ship at a time where they are few (errors.log ENT-026). One route per
   station, each with its own `max_pilots`.
@@ -212,17 +235,20 @@ with no hand hold in `data/fleet/orders/` is such a loop.
 
 ## 7. Open Tests
 
-- `fit-ice-harvester-lhs-1140`: done as a test (section 5); it fits
-  the waiting miners now, 5 at a time.
-- `mine-alnair-ice-fields-nexus`: the richest field we read (47,732
-  water ice, richness 67) sold at Central Nexus, five jumps.
-- `mine-wolf-1061-frozen-drift-nexus`, `mine-achernar-frost-ring-nexus`:
-  Central Nexus bids 23 cr for 2,543 water ice at its best price, 54,436
-  in all its levels, and regains at least 1,513 units an hour
-  (`hive.py refill`, 03:10 UTC).
+- `mine-ruchbah-ice-belt-nexus`: Ruchbah sold at Central Nexus, four
+  jumps, one ship from 2026-11-16 08:12 UTC.
+- A carry of stored water ice to the Central Nexus bid: about 11,100
+  units lie in miners' storage where the bids are 0 (The Experiment
+  5,103, Node Alpha 4,163, Synchrony 1,857; the tool stock, 08:02 UTC).
+  Storage is personal, so a carry route needs a pilot condition on what
+  it holds there (requests.log ENT-117) and a withdraw stop in the
+  circuit runner (Mining builds it).
 - The vent: a second vent route only when a Nitrogen Vent is on offer.
 - Deuterium ice: station bids of 188 to 260 cr for 5 or 6 units at Node
   Alpha and Node Beta; the routes sell it from 166 or 180 cr only and
   store the rest.
+- Methane ice: 36 cr bids at eight stations, 7,156 units in all (the
+  tool fleet, view capacity, 08:18 UTC); the fields hold it at richness
+  13 to 16 beside water ice, so it comes with the water, not alone.
 - Uranium, thorium and tritium have bids with depth at all six stations;
   no field read in our space or on the frontier holds them.
