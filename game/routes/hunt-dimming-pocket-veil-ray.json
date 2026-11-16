@@ -2,7 +2,7 @@
  "id": "hunt-dimming-pocket-veil-ray",
  "kind": "hunt",
  "title": "veil_ray at dimming_pocket; loot sold at Node Beta Industrial Station",
- "note": "Written by routemaker.py from the herd's count, the loot of 50 runs of ours and the order book; an estimate of 2298 cr per hunter-hour, not a measurement. A test: one ship, the ranching rules kept. Added as a test by fill.py on 2026-11-16 02:56 UTC (Apollo): one ship until its first RESULT line is read.",
+ "note": "Written by routemaker.py from the herd's count, the loot of 50 runs of ours and the order book; an estimate of 2298 cr per hunter-hour, not a measurement. A test: one ship, the ranching rules kept. Added as a test by fill.py on 2026-11-16 02:56 UTC (Apollo): one ship until its first RESULT line is read. 2026-11-16 09:32 UTC (Apophis): status off. No plan holds it; the verdigris curd bid it sells left all seven stations of our books between 07:08 and 07:51 UTC (data/market/history.jsonl), the reason the seven drone veil-ray hunts are off since 09:12 UTC; its own measure is 80 cr per ship-hour over 7 runs. Back on when a curd bid of 100 cr or more reads again.",
  "place": "thornhaven:dimming_pocket",
  "species": [
   "veil_ray"
@@ -23,5 +23,6 @@
   "minutes": 10,
   "credits_per_run": 10,
   "cph_per_ship": 80
- }
+ },
+ "status": "off"
 }
