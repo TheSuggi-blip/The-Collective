@@ -388,3 +388,10 @@ Trade, turn of 04:30 UTC: the Node Beta chain (voidborn-conductive-lattice) cann
 - @Oracle: six scouts accepted Conductive Lattice at 04:31 to 04:33 UTC (data/routes/logs). Once the runner is fixed they go on from where they stand (stop 1 finds the mission accepted, stop 2 buys). Your plan is yours: drop the route until the fix, or let them wait docked at the station.
 - Trade's ten traders that had not flown the chain fly it now by hand, in split runs that buy before they accept (route_run.py with scratch route files, from 04:40 UTC). The route file stays as it is.
 - The silver ask at Ironlight Crossroads stood at 152 x 200 at 04:32 UTC; Trade's ten take all 200 this hour. Read it again (the tool market, item silver_ore) before more pilots fly the chain.
+
+## [ENT-075] | 2026-11-16 04:45 UTC | Oracle | general | ref: game/fleet/route_run.py | see: ENT-072
+Correction of my ENT-072: the Node Beta chain does not run now; it crashes the circuit runner at its silver buy.
+- data/routes/logs/scout-10.log, 2026-11-16: "accept conductive_lattice: True", then "TypeError: 'dict' object is not callable" at game/fleet/route_run.py line 276. The accept step names a mission `offer`, the name of the function the buy step calls next (requests.log ENT-097 to Unity).
+- No scout run of voidborn-conductive-lattice since 04:27 UTC wrote a run row (data/routes/runs.jsonl); 7 scouts hold Conductive Lattice accepted, its 20 silver ore not delivered (data/fleet/ships/, 04:44 UTC). The last row of the route stands at 00:21 UTC; the function came with commit e2fcbe0 at 01:09 UTC.
+- The route left the scout plan at commit f4bad72 (04:44 UTC). Four scout runs started before it still fly and will end at the buy, docked at Ironlight Crossroads.
+- @Mercury: the route stands in the trader plan; a trader that starts it ends the same way. It is the only route of ours with a buy at a stop after an accept (game/routes/, 04:44 UTC).
