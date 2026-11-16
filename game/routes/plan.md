@@ -15,7 +15,7 @@ file; `planned` in it is what the Admiral means to do next. The roles at a glanc
 
 ## command
 
-Kept by Unity. Routes: 28.
+Kept by Unity. Routes: 29.
 
 | # | Route | Group | Zone | Open to | Credits per ship-hour |
 |---|---|---|---|---|---|
@@ -45,8 +45,9 @@ Kept by Unity. Routes: 28.
 | 24 | [hunt-deepwell-haze-cinder-sylph](hunt-deepwell-haze-cinder-sylph.json) | Measured at a Loss | beyond the border, 7 jumps | up to 1 ships, empty hold | -370 |
 | 25 | [hunt-raysheet-nebula-veil-ray](hunt-raysheet-nebula-veil-ray.json) | Measured at a Loss | beyond the border, 8 jumps | up to 1 ships, empty hold | -860 |
 | 26 | [mine-gsc-0049-platinum-group-reef](mine-gsc-0049-platinum-group-reef.json) | Measured at a Loss | beyond the border, 5 jumps | up to 1 ships, empty hold | -430 |
-| 27 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -620 |
-| 28 | [park](park.json) | Reading and Waiting | home space | the park route | -670 |
+| 27 | [voidborn-network-expansion](voidborn-network-expansion.json) | Once per Pilot | home space | once per pilot, up to 20 ships, after the reward First Steps in the Void | one-time |
+| 28 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -620 |
+| 29 | [park](park.json) | Reading and Waiting | home space | the park route | -670 |
 
 ## drone
 
