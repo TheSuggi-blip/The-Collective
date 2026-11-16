@@ -1,0 +1,27 @@
+{
+ "division": "logistics",
+ "owner": "Apollo",
+ "templates": {
+  "stored-goods": {
+   "title": "Goods our haulers store, sold into a standing bid or carried to one: one ship a route, only the pilot that stores the good, only while a book of the last hour shows the bid",
+   "routes": [
+    "sell-soma-synchrony",
+    "sell-soma-node-beta",
+    "carry-soma-synchrony-node-alpha",
+    "carry-soma-synchrony-node-gamma",
+    "carry-soma-node-beta-node-alpha",
+    "carry-soma-node-beta-node-gamma",
+    "sell-plate-node-beta",
+    "sell-plasma-node-beta",
+    "sell-liquid-hydrogen-central",
+    "sell-liquid-hydrogen-node-beta",
+    "carry-liquid-hydrogen-node-beta-central"
+   ],
+   "trains": [
+    "trading",
+    "navigation"
+   ],
+   "note": "Every route is gated by requires.stored and requires.bid: it opens for one pilot while its bid stands and closes by itself. It heads every hauler's list because a route behind standing work is never reached."
+  }
+ }
+}
