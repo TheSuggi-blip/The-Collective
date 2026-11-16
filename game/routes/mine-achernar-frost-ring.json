@@ -2,7 +2,7 @@
  "id": "mine-achernar-frost-ring",
  "kind": "mine",
  "title": "Achernar Frost Ring: water_ice, nitrogen_ice, deuterium_ice, methane_ice; sold at The Experiment Research Station",
- "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 3486 cr per ship-hour, not a measurement. A test: one ship. Estimate of 2026-11-15 23:10 UTC from: {\"a_load\": [\"water_ice 27 of 27 units for 877 cr (depth at the best price)\", \"nitrogen_ice 20 of 20 units for 41 cr (depth at the best price)\", \"deuterium_ice 7 of 7 units for 14 cr (depth at the best price)\", \"methane_ice 9 of 9 units for 448 cr (depth at the best price)\"], \"field\": \"achernar:achernar_frost_ring\", \"jumps\": 1, \"left\": {\"deuterium_ice\": 301, \"methane_ice\": 301, \"nitrogen_ice\": 50000, \"water_ice\": 2733. Uncertain: nitrogen_ice: the bids take 49 of the 55 units an hour brings; lawless space: no police at achernar; needs the module ice_harvester_i (base value 1000 cr), not the mining laser; the rate is measured with the laser on ore. In no plan: its Admiral adds it.",
+ "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 3486 cr per ship-hour, not a measurement. A test: one ship. Estimate of 2026-11-15 23:10 UTC from: {\"a_load\": [\"water_ice 27 of 27 units for 877 cr (depth at the best price)\", \"nitrogen_ice 20 of 20 units for 41 cr (depth at the best price)\", \"deuterium_ice 7 of 7 units for 14 cr (depth at the best price)\", \"methane_ice 9 of 9 units for 448 cr (depth at the best price)\"], \"field\": \"achernar:achernar_frost_ring\", \"jumps\": 1, \"left\": {\"deuterium_ice\": 301, \"methane_ice\": 301, \"nitrogen_ice\": 50000, \"water_ice\": 2733. Uncertain: nitrogen_ice: the bids take 49 of the 55 units an hour brings; lawless space: no police at achernar; needs the module ice_harvester_i (base value 1000 cr), not the mining laser; the rate is measured with the laser on ore. In no plan: its Admiral adds it. Deuterium ice is sold from 180 cr only since 2026-11-16 (requests.log ENT-069, Mining): this station bid 2 cr for it while Node Alpha and Node Beta bid 188 to 226 cr for a few units; what finds no such bid here is stored.",
  "belt": "achernar:achernar_frost_ring",
  "station": "the_experiment:the_experiment_research_station:the_experiment_research_station",
  "minutes": 44,
@@ -18,7 +18,7 @@
   },
   {
    "item": "deuterium_ice",
-   "min_price": 1
+   "min_price": 180
   },
   {
    "item": "methane_ice",

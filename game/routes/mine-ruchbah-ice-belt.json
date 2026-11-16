@@ -2,7 +2,7 @@
  "id": "mine-ruchbah-ice-belt",
  "kind": "mine",
  "title": "Ruchbah Ice Belt: water_ice, nitrogen_ice, deuterium_ice, methane_ice; sold at The Experiment Research Station",
- "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 3663 cr per ship-hour, not a measurement. A test: one ship. Estimate of 2026-11-15 23:10 UTC from: {\"a_load\": [\"water_ice 29 of 29 units for 928 cr (depth at the best price)\", \"nitrogen_ice 21 of 21 units for 42 cr (depth at the best price)\", \"deuterium_ice 8 of 8 units for 16 cr (depth at the best price)\", \"methane_ice 7 of 7 units for 329 cr (depth at the best price)\"], \"field\": \"ruchbah:ruchbah_ice_belt\", \"jumps\": 1, \"left\": {\"deuterium_ice\": 3140, \"methane_ice\": 3142, \"nitrogen_ice\": 19039, \"water_ice\": 13456}. Uncertain: nitrogen_ice: the bids take 49 of the 62 units an hour brings; lawless space: no police at ruchbah; needs the module ice_harvester_i (base value 1000 cr), not the mining laser; the rate is measured with the laser on ore. In no plan: its Admiral adds it.",
+ "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 3663 cr per ship-hour, not a measurement. A test: one ship. Estimate of 2026-11-15 23:10 UTC from: {\"a_load\": [\"water_ice 29 of 29 units for 928 cr (depth at the best price)\", \"nitrogen_ice 21 of 21 units for 42 cr (depth at the best price)\", \"deuterium_ice 8 of 8 units for 16 cr (depth at the best price)\", \"methane_ice 7 of 7 units for 329 cr (depth at the best price)\"], \"field\": \"ruchbah:ruchbah_ice_belt\", \"jumps\": 1, \"left\": {\"deuterium_ice\": 3140, \"methane_ice\": 3142, \"nitrogen_ice\": 19039, \"water_ice\": 13456}. Uncertain: nitrogen_ice: the bids take 49 of the 62 units an hour brings; lawless space: no police at ruchbah; needs the module ice_harvester_i (base value 1000 cr), not the mining laser; the rate is measured with the laser on ore. In no plan: its Admiral adds it. Deuterium ice is sold from 180 cr only since 2026-11-16 (requests.log ENT-069, Mining): this station bid 2 cr for it while Node Alpha and Node Beta bid 188 to 226 cr for a few units; what finds no such bid here is stored.",
  "belt": "ruchbah:ruchbah_ice_belt",
  "station": "the_experiment:the_experiment_research_station:the_experiment_research_station",
  "minutes": 40,
@@ -18,7 +18,7 @@
   },
   {
    "item": "deuterium_ice",
-   "min_price": 1
+   "min_price": 180
   },
   {
    "item": "methane_ice",

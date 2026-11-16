@@ -2,7 +2,7 @@
  "id": "voidborn-first-steps",
  "kind": "circuit",
  "title": "First Steps in the Void for a pilot that holds it: mine 15 carbon ore at Acubens Belt, hand in at Central Nexus",
- "note": "Off since 2026-11-15 21:30 UTC (requests.log ENT-039, Zero): Acubens Belt read 0 carbon ore at 21:01 UTC and two runs ended with the objectives not done, about 130 cr of fuel each. No other field read on 2026-11-15 holds carbon ore. When a census shows carbon ore again: point the mine step at that field and drop `status`. Once, 1,000 cr; the stops are skipped for a pilot that does not hold the mission.",
+ "note": "On again since 2026-11-16 00:25 UTC (requests.log ENT-064, Logistics): Acubens Belt refills, 0 carbon ore at 21:01 UTC, 41 at 22:17 and 120 at 22:52 UTC (data/scouting/acubens.json), and one hauler finished the mission there by hand at 23:28 UTC, +913 cr in 11 minutes. Two ships at a time: a pilot needs up to 15 units. It was off from 2026-11-15 21:30 UTC (requests.log ENT-039): the belt read 0 and two runs ended with the objectives not done, about 130 cr of fuel each; when the runs show that again, switch it off again. Once, 1,000 cr; the stops are skipped for a pilot that does not hold the mission.",
  "once": true,
  "max_ships": 2,
  "one_time": [
@@ -30,6 +30,5 @@
     "First Steps in the Void"
    ]
   }
- ],
- "status": "off"
+ ]
 }

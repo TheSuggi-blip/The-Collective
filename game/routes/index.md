@@ -23,6 +23,7 @@ Missions and rewards the game pays once per pilot: a new pilot's first work, and
 | [voidborn-first-hunt-acubens](voidborn-first-hunt-acubens.json) | circuit | home space | First Hunt: Belt-Grazers: 1,000 cr once and 50 Weapons XP; three belt-grazers at Acubens Shadow Pocket | once per pilot, up to 1 ships | TBD | TBD | TBD | TBD | -- |
 | [voidborn-first-hunt-gsc](voidborn-first-hunt-gsc.json) | circuit | home space | First Hunt: Belt-Grazers: 1,000 cr once and 50 Weapons XP; three belt-grazers at Spacetime Seep | once per pilot, up to 1 ships | TBD | TBD | TBD | TBD | -- |
 | [voidborn-first-hunt-nexus](voidborn-first-hunt-nexus.json) | circuit | home space | First Hunt: Belt-Grazers: 1,000 cr once and 50 Weapons XP; three belt-grazers at Material Harvesters | once per pilot, up to 1 ships | TBD | TBD | TBD | TBD | -- |
+| [voidborn-first-steps](voidborn-first-steps.json) | circuit | home space | First Steps in the Void for a pilot that holds it: mine 15 carbon ore at Acubens Belt, hand in at Central Nexus | once per pilot, up to 2 ships | TBD | TBD | TBD | TBD | -- |
 | [voidborn-mining-missions](voidborn-mining-missions.json) | circuit | home space | Iron Supply Run and Copper Requisition: accept at Central Nexus, mine at Acubens by way of Node Beta, hand in at Central Nexus | once per pilot, up to 40 ships | TBD | TBD | TBD | TBD | -- |
 | [voidborn-missions-1](voidborn-missions-1.json) | circuit | home space | Synchrony Relay Run and Crystal Delivery: two board missions in one circuit of 8 jumps | once per pilot, from 8,000 cr | 146 | 22 | 6,430 | one-time | 2026-11-15 |
 | [voidborn-precedence](voidborn-precedence.json) | circuit | home space | Precedence: 4,000 cr once, a round of three of our stations | once per pilot, up to 40 ships | 1 | 15 | 3,900 | one-time | 2026-11-15 |
@@ -107,7 +108,6 @@ Written down, not flown.
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
 | [first-survey](first-survey.json) | circuit | home space | Signal Propagation Survey: dock at the five other Voidborn stations (20,000 cr) | once per pilot, off | TBD | TBD | TBD | TBD | -- |
-| [voidborn-first-steps](voidborn-first-steps.json) | circuit | home space | First Steps in the Void for a pilot that holds it: mine 15 carbon ore at Acubens Belt, hand in at Central Nexus | once per pilot, up to 2 ships, off | TBD | TBD | TBD | TBD | -- |
 | [hunt-acubens-urchin](hunt-acubens-urchin.json) | hunt | home space | Cinder-urchins at Acubens Shadow Pocket; radiant bile sold at Node Gamma | up to 1 ships, off | 2 | 25 | -120 | -290 | 2026-11-15 |
 | [hunt-home-whale](hunt-home-whale.json) | hunt | home space | Pilot-whales at Stellar Siphon in Nexus Prime; whale oil sold at Node Beta | up to 1 ships, needs piercing_railgun_i, off | 1 | 20 | 570 | 1,670 | 2026-11-15 |
 | [hunt-test-eltanin-kiln-snail](hunt-test-eltanin-kiln-snail.json) | hunt | home space | Yield test: kiln_snail at eltanin_prime_belt; what a kill drops and whether a bid takes it | up to 1 ships, without piercing_railgun_i, off | TBD | TBD | TBD | TBD | -- |
