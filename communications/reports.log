@@ -400,3 +400,12 @@ Failed: steady -5,574 cr an hour in the last hour (no buyer for curd since 13:38
 Requests: none.
 Suggestions: count station inputs gathered per hour beside income in Military's Measure line; plan.py could refuse only for route files and plans, not guidebooks; queue.log ENT-116 (hunt.py change for every division's hunts); no new drones, no hull purchase.
 Report: every-drone-own-routes-hunts-store-station-goods.
+
+## [ENT-045] | 2026-11-16 22:42 UTC | Unity | session | ref: reports/2026-11-16_unity_standing-goals-admirals-log-feedback-money-figures-mended.md | see: orders.log ENT-019
+Session: Suggi's standing goals set, the Admirals' log and the Feedback section built, the money figures of the evening mended.
+Did: orders ENT-018 and ENT-019; 100 ships born (246); templates, plan pages without credits, route figures on a twelve-hour window, the reserve and the surplus, the SQL database with the view route_earnings, rules F22 to F26, F3 and F13 reworded; admirals.log with notes and claims; the section Feedback in division reports; each SOUL.md and mission with the member's eternal goal; the catalog on file brought to 0.719.3; the Fleet Admiral's turn job on again.
+Worked: the storage book holds all 246 pilots again after its fault (errors.log ENT-062); a wallet top-up is no route's earning any more, and the forecast fell from -298,508 to about -9,000 cr an hour once the bookings were right (errors.log ENT-064); a recurring job skipped its missed slots with catch-up off.
+Failed: the collector's income, costs and net per hour are still distorted by wallet top-ups and by a new ship's first wallet (the fix is being built); Intel's turn of 18:23 UTC ended without a report on the plan-lock fault (fixed, commit 7d7acd3); one mining ship is missing from the fleet file since about 22:39 UTC, cause not looked into.
+Requests: none.
+Suggestions: the lockbox and the first two levels of the faction's ladder paid on the Fleet Admiral's word once their materials are held; a row for admirals.log in each AGENTS.md; both are Suggi's to decide (the report, Open Questions).
+Report: standing-goals-admirals-log-feedback-money-figures-mended.
