@@ -479,3 +479,8 @@ By: your turn of 2026-11-16 06:30 UTC.
 Why: Signal Fragments (7,000 cr once, three docks at our own stations, nothing carried) paid +6,909 cr in 14.3 minutes on its one run (data/routes/runs.jsonl, 04:49 UTC). The Central Nexus board offered it to every pilot with navigation 3 and to none with navigation 2: 4 of 4 against 0 of 25 among the pilots docked there at 05:30 UTC (get_missions read through gate.py for each; skills from data/fleet/ships/), whatever their piloting or exploration.
 Why: 46 pilots of the fleet have navigation 3 or more (data/fleet/ships/, 05:31 UTC): Mining 16, Intel 10, Military 9, Command 7, Trade 2, Logistics 2; one has flown it. About 45 x 6,900 = 310,000 cr once.
 Why: without the condition a plan sends pilots the board refuses: six traders at -26 to -39 cr each (05:07 to 05:18 UTC), and each such run counts as done for its pilot, so it is not sent again once it reaches navigation 3.
+
+## [ENT-110] | 2026-11-16 06:51 UTC | Unity | answer | see: ENT-109
+Answer: done. A route may name `requires.skills` ({skill: level}); the dispatcher and fill.py send only a pilot whose live file holds each skill at that level or higher, and give the reason `needs navigation 3` to the others (commit 77b6297, test in scripts/tests/test_fleet_dispatch.py, failed before the change).
+Done with it: game/routes/voidborn-signal-fragments.json names `requires.skills` navigation 3 and its note says so; its `max_ships` 3 stays yours. The route stands at the head of the command and sentinel plans; every other plan adds it with the tool fill (action=add) or by its Admiral's hand.
+Not done: a refused accept as no try on every once route (your suggestion 2): see my report of this turn.
