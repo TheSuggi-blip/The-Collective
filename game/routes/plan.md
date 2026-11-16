@@ -183,26 +183,21 @@ Planned:
 
 ## scout
 
-Kept by Oracle. Routes: 16.
+Kept by Oracle. Routes: 11.
 
 | # | Route | Group | Zone | Open to | Credits per ship-hour |
 |---|---|---|---|---|---|
 | 1 | [census-voidborn](census-voidborn.json) | Reading and Waiting | home space | up to 3 ships | -550 |
 | 2 | [voidborn-precedence](voidborn-precedence.json) | Once per Pilot | home space | once per pilot, up to 40 ships | one-time |
 | 3 | [voidborn-selling](voidborn-selling.json) | Once per Pilot | home space | once per pilot, up to 10 ships | one-time |
-| 4 | [voidborn-first-hunt-intercrus-belt](voidborn-first-hunt-intercrus-belt.json) | Once per Pilot | beyond the border, 7 jumps | once per pilot, up to 1 ships, empty hold | TBD |
-| 5 | [voidborn-first-hunt-intercrus-remnants](voidborn-first-hunt-intercrus-remnants.json) | Once per Pilot | beyond the border, 7 jumps | once per pilot, up to 1 ships, empty hold | TBD |
-| 6 | [voidborn-first-hunt-gsc-0031](voidborn-first-hunt-gsc-0031.json) | Once per Pilot | beyond the border, 5 jumps | once per pilot, up to 1 ships, empty hold | TBD |
-| 7 | [voidborn-concurrent](voidborn-concurrent.json) | Once per Pilot | home space | once per pilot | one-time |
-| 8 | [voidborn-substrate](voidborn-substrate.json) | Once per Pilot | home space | once per pilot, from 3,000 cr | one-time |
-| 9 | [voidborn-missions-1](voidborn-missions-1.json) | Once per Pilot | home space | once per pilot, from 8,000 cr | one-time |
-| 10 | [voidborn-mining-missions](voidborn-mining-missions.json) | Once per Pilot | home space | once per pilot, up to 40 ships | one-time |
-| 11 | [hunt-test-amberfall-sift-ray](hunt-test-amberfall-sift-ray.json) | Tests | beyond the border, 5 jumps | up to 1 ships, empty hold | TBD |
-| 12 | [hunt-test-atlas-halo-drifter](hunt-test-atlas-halo-drifter.json) | Tests | beyond the border, 6 jumps | up to 1 ships, empty hold | TBD |
-| 13 | [hunt-test-stormwatch-lantern-slug](hunt-test-stormwatch-lantern-slug.json) | Tests | beyond the border, 5 jumps | up to 1 ships, empty hold | TBD |
-| 14 | [hunt-test-nightveil-rivetshell](hunt-test-nightveil-rivetshell.json) | Tests | beyond the border, 5 jumps | up to 1 ships, empty hold | TBD |
-| 15 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -600 |
-| 16 | [park](park.json) | Reading and Waiting | home space | the park route | -550 |
+| 4 | [voidborn-concurrent](voidborn-concurrent.json) | Once per Pilot | home space | once per pilot | one-time |
+| 5 | [voidborn-substrate](voidborn-substrate.json) | Once per Pilot | home space | once per pilot, from 3,000 cr | one-time |
+| 6 | [voidborn-missions-1](voidborn-missions-1.json) | Once per Pilot | home space | once per pilot, from 8,000 cr | one-time |
+| 7 | [voidborn-mining-missions](voidborn-mining-missions.json) | Once per Pilot | home space | once per pilot, up to 40 ships | one-time |
+| 8 | [hunt-test-atlas-halo-drifter](hunt-test-atlas-halo-drifter.json) | Tests | beyond the border, 6 jumps | up to 1 ships, empty hold | TBD |
+| 9 | [hunt-test-nightveil-rivetshell](hunt-test-nightveil-rivetshell.json) | Tests | beyond the border, 5 jumps | up to 1 ships, empty hold | TBD |
+| 10 | [census-frontier](census-frontier.json) | Reading and Waiting | beyond the border, 7 jumps | up to 12 ships, empty hold | -600 |
+| 11 | [park](park.json) | Reading and Waiting | home space | the park route | -550 |
 
 Planned:
 
@@ -210,8 +205,8 @@ Planned:
 |---|---|
 | Keep every Voidborn system read within the hour: census-voidborn every_minutes 30, max_ships 3; read the gaps per system every turn and change the threshold only on a measured gap over 60 minutes | every turn |
 | census-frontier: 42 systems every 240 minutes, 12 ships. Next ring after one refuel-beyond-the-border figure: acrab, acrux, botein, deepwell, felis, gliese_876, hd_147513, marfik, rastaban; not the pirate stronghold gliese_581 | turn T10 |
-| Read the RESULT lines of the four species tests; a drop with a bid of 50 cr or more becomes a hunt route for one scout per place, offered to Military in queue.log; a drop without a bid ends the test | next turn |
-| First Hunt at the three far herds until every scout has it booked; then the routes leave the plan. Cracking the Shell (1,500 cr once, three pressblisters) for the scouts that hold First Hunt, at a pressblister herd no route hunts | next turn |
+| Halo-drifter: after a second paying run, a hunt route at Atlas Gas Pocket for one scout, and the other halo-drifter places read for their herds; rivetshell: end the test unless its drop sells | next turn |
+| First Hunt for the scouts that hold it unfinished: a route that hands it in where it was accepted, once the cause of the three failed far-herd runs is known (requests.log); Cracking the Shell (1,500 cr once, three pressblisters) after it | next turn |
 | Nova Terra Central (Solarian) read once by one scout with an empty hold, then about once a day while Trade weighs a trade (requests.log ENT-073) | this turn, then daily |
 | Read the game's changelog at every turn and name each line of game/rules/ a release makes wrong in a request to the Fleet Admiral | every turn |
 
