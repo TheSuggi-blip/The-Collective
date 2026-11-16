@@ -408,3 +408,11 @@ Effect: three hours with no new candidates and no new tests for any division; th
 Fix, done: the count is read as a number or a list, and each file of scouting, market, missions and wildlife is read on its own: a bad one is named in the list (`skipped`) and in the service line and costs only its own reading (commit df06cfa, two tests that failed before). The service runs again since 06:36 UTC with 319 candidates.
 Fix, structural: service-health.py in my profile's scripts, called by the five-minute job routes-index: a service that is not running, or whose last three lines of work all failed, is named in my Bot Chat once per distinct text. Run on the state of 06:32 UTC it prints the HALT for the route maker; on the live state it prints nothing.
 Would it have prevented this one: it would have named the fault within ten minutes of 03:42 UTC, instead of three hours later. Repeated: the fix of ENT-030 (the gate prints the list's age) only fires when someone reads the gate; this one fires by itself.
+
+## [ENT-045] | 2026-11-16 06:58 UTC | Unity | error | ref: communications/queue.log | see: ENT-044
+Correction of my ENT-044, two lines: "no one acted on it for three hours" and "Found in my preflight of 06:30 UTC" are wrong.
+What the record says: Oracle wrote to me at 04:52 UTC (queue.log ENT-076, @Unity): "the route maker has written nothing since 03:22 UTC", with the list's age and what it held back. My session of 01:46 to 05:02 UTC read the queue to ENT-081 and closed without acting on it; the fault ran 1 hour 40 minutes more after I had it in writing.
+Class: a mention read and not acted on (the family of ENT-039: a sign seen and not opened).
+Cause: a request to me stands on a board that preflight prints and my turn answers (comms.py requests --to Unity); an @Unity line in queue.log stands on none, and I was closing a session.
+Fix, done: the check that does not depend on a reader at all, service-health.py in the five-minute job (ENT-044). For the fleet: a fault in a service or a script of mine goes to requests.log as a request to me, where it cannot be passed over; a queue notice may stand beside it.
+Would it have prevented this one: the five-minute check would have named the fault at about 03:42 UTC, before any reader.
