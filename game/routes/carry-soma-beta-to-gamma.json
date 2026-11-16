@@ -1,0 +1,45 @@
+{
+ "id": "carry-soma-beta-to-gamma",
+ "kind": "circuit",
+ "title": "Stored neural soma carried from Node Beta to the Node Gamma bid at 370 cr or more",
+ "note": "2026-11-16 23:44 UTC (Mercury, orders.log ENT-019, block MERCURY: a sell route for every surplus good with a bid, rule F24). Node Gamma bid 376 x 15 (book of 23:04 UTC), the deepest soma bid of our stations; no soma is stored there. Floor 370 cr: Central Nexus offers soma at 323 cr in depth, so a bid above 370 is the top of the market; base value 139. A pilot whose own storage at the first station holds soma withdraws up to 4, sells into the bid at the second and stores what the bid did not take there. requires.bid closes it while a book read within the hour shows that bid gone or under 370. Nothing is bought; a run into a bid that left on the way costs the hop's fuel.",
+ "requires": {
+  "stored": {
+   "at": "node_beta_industrial_station",
+   "item": "voidborn_neural_soma",
+   "min": 1
+  },
+  "bid": {
+   "item": "voidborn_neural_soma",
+   "base": "node_gamma_relay_station",
+   "min_price": 370,
+   "min_qty": 2
+  }
+ },
+ "max_ships": 1,
+ "stops": [
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "voidborn_neural_soma",
+     "qty": 4
+    }
+   ]
+  },
+  {
+   "at": "node_gamma:node_gamma_relay_station:node_gamma_relay_station",
+   "sell": [
+    {
+     "item": "voidborn_neural_soma",
+     "min_price": 370
+    }
+   ]
+  },
+  {
+   "at": "node_gamma:node_gamma_relay_station:node_gamma_relay_station",
+   "store": "all"
+  }
+ ]
+}

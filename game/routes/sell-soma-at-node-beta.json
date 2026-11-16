@@ -1,0 +1,41 @@
+{
+ "id": "sell-soma-at-node-beta",
+ "kind": "circuit",
+ "title": "Stored neural soma sold where it lies, at Node Beta, into the station's bid at 370 cr or more",
+ "note": "2026-11-16 23:44 UTC (Mercury, orders.log ENT-019, block MERCURY: a sell route for every surplus good with a bid, rule F24). Node Beta bid 393 x 6 (book of 23:32 UTC); 317 soma lie there in our storages, 62 of them traders'. Floor 370 cr: Central Nexus offers soma at 323 cr in depth (201,539 units, its ladder of 21:26 UTC), so a bid above 370 is the top of the market; the soma's base value is 139. The surplus view counts 622 soma held beyond the reserve. requires.stored sends only a pilot whose own storage there holds soma; requires.bid closes the route while a book read within the hour shows the bid gone or under 370. The withdraw step takes only what the bid takes at its best price. Nothing is bought. Open to every division's ships: each sells its own stores.",
+ "requires": {
+  "stored": {
+   "at": "node_beta_industrial_station",
+   "item": "voidborn_neural_soma",
+   "min": 1
+  },
+  "bid": {
+   "item": "voidborn_neural_soma",
+   "base": "node_beta_industrial_station",
+   "min_price": 370,
+   "min_qty": 1
+  }
+ },
+ "max_ships": 2,
+ "stops": [
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "voidborn_neural_soma"
+    }
+   ],
+   "sell": [
+    {
+     "item": "voidborn_neural_soma",
+     "min_price": 370
+    }
+   ]
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store": "all"
+  }
+ ]
+}

@@ -1,0 +1,57 @@
+{
+ "id": "craft-focused-crystal-node-beta",
+ "kind": "circuit",
+ "title": "Focused crystal made by hand at Node Beta from stored energy crystal and one bought palladium ore, sold into the Central Nexus bid",
+ "note": "2026-11-16 23:44 UTC (Mercury, orders.log ENT-019; requests.log ENT-169, Apollo's ask whether Trade crafts focused crystal for sale). focus_energy_crystal makes 1 focused crystal from 4 energy crystal and 1 palladium ore by hand (catalog 0.719.3). Central Nexus bids 800 x 10 (standing since 16:16 UTC, read again 23:33 UTC), Node Gamma 748 x 11; the cheapest ask we read is 765 at a player's station in LHS 1140, the station asks 2,900 and more. Energy crystal bids 40 cr in depth (Node Alpha 40 x 265), so a crystal made from stored ones turns about 160 cr of crystal and a palladium bought at 432 (Node Beta, 100 on offer) into 800. A test: one ship, one run, one unit bought, until its first RESULT line; requires.stored sends only a pilot with 4 energy crystal in its own storage at Node Beta. The sale stop has no store step before it, so the made crystal is sold, then stored if the bid left.",
+ "requires": {
+  "stored": {
+   "at": "node_beta_industrial_station",
+   "item": "energy_crystal",
+   "min": 4
+  },
+  "bid": {
+   "item": "focused_crystal",
+   "base": "central_nexus",
+   "min_price": 700,
+   "min_qty": 1
+  }
+ },
+ "max_ships": 1,
+ "stops": [
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store": "all",
+   "buy": [
+    {
+     "item": "palladium_ore",
+     "qty": 1,
+     "max_price": 450
+    }
+   ],
+   "craft": [
+    {
+     "recipe": "focus_energy_crystal",
+     "runs": 1,
+     "per_run": 1,
+     "makes": "focused_crystal",
+     "inputs": [
+      "palladium_ore"
+     ]
+    }
+   ]
+  },
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "sell": [
+    {
+     "item": "focused_crystal",
+     "min_price": 700
+    }
+   ]
+  },
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "store": "all"
+  }
+ ]
+}

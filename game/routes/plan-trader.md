@@ -36,7 +36,7 @@ Kept by Mercury. Routes: 33. Ships: 40.
 | 14 | [voidborn-resonance-finish](voidborn-resonance-finish.json) | [Once per Pilot](index-once-per-pilot.md) | home space | once per pilot, up to 2 ships, from 8,000 cr, after the reward Conductive Lattice | all 40 |
 | 15 | [mission-ghosts-in-the-cloud-node](mission-ghosts-in-the-cloud-node.json) | [Once per Pilot](index-once-per-pilot.md) | home space | once per pilot, up to 1 ships | all 40 |
 | 16 | [voidborn-first-hunt-intercrus-sootfall](voidborn-first-hunt-intercrus-sootfall.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 7 jumps | once per pilot, up to 1 ships, empty hold | all 40 |
-| 17 | [train-navigation-trader](train-navigation-trader.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 4 ships, under navigation 3, standing work | 4 of 40 |
+| 17 | [train-navigation-trader](train-navigation-trader.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 20 ships, under navigation 3, standing work | 4 of 40 |
 | 18 | [voidborn-neural-matrix-delivery](voidborn-neural-matrix-delivery.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 9 jumps | once per pilot, up to 1 ships, empty hold, with 8 phase_matrix stored at synchrony_hub | 1 of 40 |
 | 19 | [mine-stellar-siphon](mine-stellar-siphon.json) | [Tests](index-tests.md) | home space | up to 1 ships, needs gas_harvester_i | 1 of 40 |
 | 20 | [mine-coldwater-emission-nebula](mine-coldwater-emission-nebula.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 5 jumps | up to 1 ships, needs gas_harvester_i, empty hold | 1 of 40 |

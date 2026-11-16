@@ -2,9 +2,9 @@
  "id": "train-navigation-trader",
  "kind": "circuit",
  "title": "Navigation for traders one level short of Signal Fragments: five jumps through our own stations, nothing carried",
- "note": "2026-11-16 18:32 UTC (Mercury): standing work under requires.skills_below navigation 3. Signal Fragments (voidborn-signal-fragments, 7,000 cr once) is offered from navigation 3; four traders stand at navigation 2 with 304 to 328 of 340 XP (data/fleet/ships/, read this turn). The same loop as train-navigation-home (Military's test: 2 runs, -120 cr a run in 15 minutes, about 4 navigation XP a jump); a pilot that reaches level 3 is closed out by skills_below and takes Signal Fragments from the list First.",
+ "note": "2026-11-16 18:32 UTC (Mercury): standing work under requires.skills_below navigation 3. Signal Fragments (voidborn-signal-fragments, 7,000 cr once) is offered from navigation 3; four traders stand at navigation 2 with 304 to 328 of 340 XP (data/fleet/ships/, read this turn). The same loop as train-navigation-home (Military's test: 2 runs, -120 cr a run in 15 minutes, about 4 navigation XP a jump); a pilot that reaches level 3 is closed out by skills_below and takes Signal Fragments from the list First. 2026-11-16 23:44 UTC (Mercury): max_ships 4 -> 20 for the twenty traders born at navigation 2 (144 to 241 of 340 XP, data/fleet/ships/): a loop measured 17.6 to 17.9 minutes and -165 cr (three runs of 19:01 UTC), and Signal Fragments pays 7,000 cr once from navigation 3. No field and no bid bounds it.",
  "standing": true,
- "max_ships": 4,
+ "max_ships": 20,
  "requires": {
   "skills_below": {
    "navigation": 3

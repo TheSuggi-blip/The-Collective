@@ -1,0 +1,45 @@
+{
+ "id": "carry-soma-synchrony-to-alpha",
+ "kind": "circuit",
+ "title": "Stored neural soma carried from Synchrony Hub to the Node Alpha bid at 370 cr or more",
+ "note": "2026-11-16 23:44 UTC (Mercury, orders.log ENT-019, block MERCURY: a sell route for every surplus good with a bid, rule F24). Node Alpha bid 381 x 8 (book of 23:31 UTC); 6 soma lie there, 211 at Synchrony Hub. Floor 370 cr: Central Nexus offers soma at 323 cr in depth, so a bid above 370 is the top of the market; base value 139. A pilot whose own storage at the first station holds soma withdraws up to 4, sells into the bid at the second and stores what the bid did not take there. requires.bid closes it while a book read within the hour shows that bid gone or under 370. Nothing is bought; a run into a bid that left on the way costs the hop's fuel.",
+ "requires": {
+  "stored": {
+   "at": "synchrony_hub",
+   "item": "voidborn_neural_soma",
+   "min": 1
+  },
+  "bid": {
+   "item": "voidborn_neural_soma",
+   "base": "node_alpha_processing_station",
+   "min_price": 370,
+   "min_qty": 2
+  }
+ },
+ "max_ships": 1,
+ "stops": [
+  {
+   "at": "synchrony:synchrony_hub:synchrony_hub",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "voidborn_neural_soma",
+     "qty": 4
+    }
+   ]
+  },
+  {
+   "at": "node_alpha:node_alpha_processing_station:node_alpha_processing_station",
+   "sell": [
+    {
+     "item": "voidborn_neural_soma",
+     "min_price": 370
+    }
+   ]
+  },
+  {
+   "at": "node_alpha:node_alpha_processing_station:node_alpha_processing_station",
+   "store": "all"
+  }
+ ]
+}

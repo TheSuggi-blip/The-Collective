@@ -1,0 +1,33 @@
+{
+ "id": "voidborn-neural-matrix-board",
+ "kind": "circuit",
+ "title": "Neural Matrix Delivery taken from the Central Nexus board: 5,000 cr once; the accept hands out 8 phase matrix, delivered to Sirius Observatory Station (Solarian, 9 jumps)",
+ "note": "2026-11-16 23:44 UTC (Mercury, orders.log ENT-019, rule F3). The test pilot's run of 2026-11-16 19:49 UTC (route voidborn-neural-matrix-delivery, data/routes/runs.jsonl): 4 of 4 stops in 27.5 minutes, Neural Matrix Delivery handed in on docking at Sirius Observatory Station, 5,000 cr paid. Its wallet fell 19,390 cr beyond the reward in that run, which no step of the route explains (no buy, no sale); the wallet guard gave without a record from 19:55 to 21:04 UTC (errors.log ENT-064, case 2), so it is read as a gift, not proven. The accept at Central Nexus put 8 phase matrix (size 2) into an empty hold (12:36 UTC). Sirius is Solarian space, policed; the goods are the mission's own. The board offered it to 10 of 10 traders read at 12:36 UTC and offers it at 23:41 UTC (data/missions/central_nexus.json). A once route: the first stop stores the hold and accepts; a pilot the board refuses rests. One ship until its first RESULT line.",
+ "once": true,
+ "max_ships": 1,
+ "one_time": [
+  "Neural Matrix Delivery"
+ ],
+ "skip_if_booked": [
+  "Neural Matrix Delivery"
+ ],
+ "stops": [
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "store": "all",
+   "accept": [
+    "neural_matrix_delivery"
+   ]
+  },
+  {
+   "at": "sirius:sirius_observatory_station:sirius_observatory_station",
+   "only_if_active": [
+    "Neural Matrix Delivery"
+   ]
+  },
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "store": "all"
+  }
+ ]
+}

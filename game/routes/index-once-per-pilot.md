@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 28.
+Routes: 29.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -43,4 +43,5 @@ Routes: 28.
 | [voidborn-first-hunt-intercrus-sootfall](voidborn-first-hunt-intercrus-sootfall.json) | circuit | beyond the border, 7 jumps | First Hunt: Belt-Grazers: 1,000 cr once and 50 Weapons XP; three belt-grazers at Intercrus Sootfall Belt (lawless, four jumps past The Experiment) | once per pilot, up to 1 ships, empty hold | 9 | 28 | -1,700 | one-time | 2026-11-16 |
 | [voidborn-first-hunt-ironhollow-echo](voidborn-first-hunt-ironhollow-echo.json) | circuit | beyond the border, 4 jumps | First Hunt: Belt-Grazers: 1,000 cr once and 50 Weapons XP; three belt-grazers at Ironhollow Echo Ejecta (lawless, one jump past The Experiment) | once per pilot, up to 1 ships, empty hold | 2 | 8 | -90 | one-time | 2026-11-16 |
 | [voidborn-first-hunt-ironhollow-fading](voidborn-first-hunt-ironhollow-fading.json) | circuit | beyond the border, 4 jumps | First Hunt: Belt-Grazers: 1,000 cr once and 50 Weapons XP; three belt-grazers at Ironhollow Fading Signal (lawless, one jump past The Experiment) | once per pilot, up to 1 ships, empty hold | 2 | 6 | -60 | one-time | 2026-11-16 |
+| [voidborn-neural-matrix-board](voidborn-neural-matrix-board.json) | circuit | beyond the border, 9 jumps | Neural Matrix Delivery taken from the Central Nexus board: 5,000 cr once; the accept hands out 8 phase matrix, delivered to Sirius Observatory Station (Solarian, 9 jumps) | once per pilot, up to 1 ships | TBD | TBD | TBD | TBD | -- |
 | [voidborn-neural-matrix-delivery](voidborn-neural-matrix-delivery.json) | circuit | beyond the border, 9 jumps | Neural Matrix Delivery: 5,000 cr once; 8 phase matrix handed out at the accept, delivered to Sirius Observatory Station (Solarian, 7 jumps from Synchrony) | once per pilot, up to 1 ships, empty hold, with 8 phase_matrix stored at synchrony_hub | 2 | 14 | -7,200 | one-time | 2026-11-16 |

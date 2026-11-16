@@ -18,7 +18,7 @@ Routes: 27.
 |---|---|---|---|---|---|---|---|---|---|
 | [census-voidborn](census-voidborn.json) | census | home space | Read one Voidborn system whole: deposits, creatures, order book, mission board | up to 4 ships | 191 | 7 | -50 | -360 | 2026-11-16 |
 | [park](park.json) | circuit | home space | Dock at Central Nexus and wait there: a docked ship costs nothing | the park route | 38 | 5 | 20 | 240 | 2026-11-16 |
-| [train-navigation-trader](train-navigation-trader.json) | circuit | home space | Navigation for traders one level short of Signal Fragments: five jumps through our own stations, nothing carried | up to 4 ships, under navigation 3, standing work | 3 | 18 | -160 | -560 | 2026-11-16 |
+| [train-navigation-trader](train-navigation-trader.json) | circuit | home space | Navigation for traders one level short of Signal Fragments: five jumps through our own stations, nothing carried | up to 20 ships, under navigation 3, standing work | 3 | 18 | -160 | -560 | 2026-11-16 |
 | [hunt-gsc-veil-ray](hunt-gsc-veil-ray.json) | hunt | home space | Veil-rays at GSC-0027 Prism Scatter; verdigris curd sold at Central Nexus | up to 1 ships, without piercing_railgun_i, standing work | 6 | 25 | -70 | -180 | 2026-11-16 |
 | [hunt-hamal-veil-ray](hunt-hamal-veil-ray.json) | hunt | home space | Veil-rays at Hamal Crystal Bloom; verdigris curd sold at Central Nexus | up to 1 ships, without piercing_railgun_i, standing work | TBD | TBD | TBD | TBD | -- |
 | [hunt-home-drift-ray](hunt-home-drift-ray.json) | hunt | home space | Drift-rays at Stellar Siphon in Nexus Prime; goods sold or stored at Central Nexus | up to 1 ships, standing work | 10 | 10 | -30 | -190 | 2026-11-16 |

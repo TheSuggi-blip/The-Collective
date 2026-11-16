@@ -17,21 +17,21 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 
 | Group | What it holds | Routes | Home space | Beyond the border | Best measured |
 |---|---|---|---|---|---|
-| [Once per Pilot](index-once-per-pilot.md) | Missions and rewards the game pays once per pilot: a new pilot's first work, and seed money. | 28 | 17 | 11 | voidborn-conductive-lattice: 9,110 cr a run |
+| [Once per Pilot](index-once-per-pilot.md) | Missions and rewards the game pays once per pilot: a new pilot's first work, and seed money. | 29 | 17 | 12 | voidborn-conductive-lattice: 9,110 cr a run |
 | [Paying Routes](index-paying-routes.md) | Work that repeats and whose runs of the last 12 hours measured above zero. | 30 | 11 | 19 | sell-curd-central-nexus: 302,820 cr per ship-hour |
-| [Tests](index-tests.md) | Work that repeats and has no measured figure: new, or no readable run in the last 12 hours. One ship until its first RESULT line is read. | 44 | 15 | 29 | not measured yet |
+| [Tests](index-tests.md) | Work that repeats and has no measured figure: new, or no readable run in the last 12 hours. One ship until its first RESULT line is read. | 50 | 21 | 29 | not measured yet |
 | [Fitting](index-fitting.md) | A module bought and fitted: the tool a kind of work needs. | 9 | 8 | 1 | fit-ice-harvester-lhs-1140: -4,320 cr per ship-hour |
 | [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 27 | 14 | 13 | park: 240 cr per ship-hour |
 | [Measured at a Loss](index-measured-at-a-loss.md) | Work that repeats and whose runs of the last 12 hours measured zero or below. | 24 | 6 | 18 | mine-deepwell-volatile-ice: -70 cr per ship-hour |
 | [Off](index-off.md) | Written down, not flown. | 13 | 8 | 5 | voidborn-first-steps: 4,020 cr per ship-hour |
-| All | | 175 | 79 | 96 | |
+| All | | 182 | 85 | 97 | |
 
 ## Routes by Zone and Kind
 
 | Zone | Routes | census | circuit | guard | hunt | mine | Farthest system, jumps from home |
 |---|---|---|---|---|---|---|---|
-| home space | 79 | 1 | 55 | 0 | 10 | 13 | 3 |
-| beyond the border | 96 | 5 | 16 | 1 | 30 | 44 | 15 |
+| home space | 85 | 1 | 61 | 0 | 10 | 13 | 3 |
+| beyond the border | 97 | 5 | 17 | 1 | 30 | 44 | 15 |
 
 ## Plans by Role
 
