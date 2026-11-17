@@ -1,0 +1,20 @@
+{
+ "id": "hunt-gsc-0004-gas-pocket-cinder-sylph",
+ "kind": "hunt",
+ "title": "cinder_sylph at gsc_0004_gas_pocket; loot sold at Hex Star",
+ "note": "Written by routemaker.py from the herd's count, the loot of 40 runs of ours and the order book; an estimate of 10056 cr per hunter-hour, not a measurement. A test: one ship, the ranching rules kept. Added as a test by fill.py on 2026-11-17 12:32 UTC (Unity): one ship until its first RESULT line is read.",
+ "place": "gsc_0004:gsc_0004_gas_pocket",
+ "species": [
+  "cinder_sylph"
+ ],
+ "sell_at": "dheneb:98eba8b1a7ad0520d6a7c8ea44b2d6aa:b495c6003fc83e18f6d8cecbe6929133",
+ "min_bid": 3199,
+ "kills": 4,
+ "minutes": 99,
+ "max_ships": 1,
+ "min_creatures": 4,
+ "alone": true,
+ "requires": {
+  "empty_hold": true
+ }
+}
