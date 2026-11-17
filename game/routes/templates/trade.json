@@ -5,19 +5,22 @@
   "trade-sell": {
    "title": "Stored goods sold where a station bid stands: each ship sells its own stores, nothing bought",
    "routes": [
-    "sell-soma-at-node-beta",
     "sell-soma-at-synchrony",
-    "sell-soma-at-experiment",
-    "carry-soma-beta-to-gamma",
     "carry-soma-synchrony-to-alpha",
+    "sell-soma-at-node-beta",
+    "carry-soma-beta-to-gamma",
+    "sell-soma-at-experiment",
+    "carry-palladium-nexus-to-gamma",
+    "sell-palladium-at-node-gamma",
     "sell-hydrogen-at-node-beta",
     "sell-hydrogen-at-node-gamma",
+    "sell-hydrogen-at-synchrony",
     "carry-hydrogen-synchrony-to-experiment"
    ],
    "trains": [
     "trading"
    ],
-   "note": "Every route is gated by requires.stored (the pilot's own storage) and requires.bid (a book read within the hour at the floor); a run sells only what the bid takes. Soma floor 350 (Central Nexus asks 292 in depth); hydrogen floor 30 (Ironlight asks 6 in depth). Routes written by sellgen.py of the trade-books skill. Open to every division's ships (rule F24). Starter hull, no module needed."
+   "note": "Every route is gated by requires.stored (the pilot's own storage) and requires.bid (a book read within the hour at the floor); a run sells only what the bid takes. Soma floor 340 (Central Nexus asks 293 in depth); hydrogen floor 30 (Ironlight asks 6 in depth); palladium floor 300 (base value 200; Sirius asks 432). Routes written by sellgen.py of the trade-books skill. Open to every division's ships (rule F24). Starter hull, no module needed."
   },
   "trade-craft": {
    "title": "Goods made by hand for sale where a bid pays more than the inputs",
