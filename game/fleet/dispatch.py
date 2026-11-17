@@ -180,6 +180,15 @@ def empty(row):
     return EMPTY_RUN in (row.get("notes") or [])
 
 
+SHORT = ": objectives not done"   # route_run.py: a mine step ended with the mission's objective still open
+
+
+def short(row):
+    """A run whose mine step left the mission's objective open: the field ran short under it (Markab Belt, Rotanev
+    Daylight Seam, 2026-11-17). Its pilot did not get what it came for: no try, and the route rests for it."""
+    return any(str(note).startswith("mine ") and str(note).endswith(SHORT) for note in row.get("notes") or [])
+
+
 def unfinished(row):
     """A run that went all the way round and did not get what it came to buy or fit: no finished run of a `once` route."""
     return row.get("stops") == row.get("of") and any(str(note).endswith(NO_BUY) for note in row.get("notes") or [])
@@ -237,7 +246,7 @@ def done_once(route, rows):
     reward the pilot must hold first (`requires.booked`), a run the board refused is no try either, up to REFUSALS times:
     the pilot flew it before it held that reward. Without `requires.booked` a refusal stays a finished run: a mission
     done once is never offered again."""
-    rows = [r for r in rows if not unfinished(r) and not empty(r)]
+    rows = [r for r in rows if not unfinished(r) and not empty(r) and not short(r)]
     if owed(route) and sum(1 for r in rows if refused(r)) <= REFUSALS:
         rows = [r for r in rows if not refused(r)]
     if not rows:
@@ -248,7 +257,7 @@ def done_once(route, rows):
 
 def waits_once(route, rows, now):
     """True while a `once` route rests for a pilot: its last run found nothing to buy less than retry_minutes (default 60) ago."""
-    if not rows or not (unfinished(rows[-1]) or empty(rows[-1]) or (owed(route) and refused(rows[-1]))):
+    if not rows or not (unfinished(rows[-1]) or empty(rows[-1]) or short(rows[-1]) or (owed(route) and refused(rows[-1]))):
         return False
     try:
         ended = calendar.timegm(time.strptime(rows[-1]["started"], "%Y-%m-%dT%H:%M:%SZ")) + rows[-1].get("minutes", 0) * 60
@@ -459,7 +468,8 @@ def why_not(pilot, rid, route, state):
             return "done once", None
         if waits_once(route, mine, state["now"]):
             return ("rests after a run the board refused" if refused(mine[-1]) else
-                    "rests after a run with every stop skipped" if empty(mine[-1]) else "rests after a buy that found no offer"), None
+                    "rests after a run with every stop skipped" if empty(mine[-1]) else
+                    "rests after a mine step its field left short" if short(mine[-1]) else "rests after a buy that found no offer"), None
     mark = route["kind"] + " " + rid
     if route.get("max_pilots"):                   # at most this many different pilots ever: those that flew it and those on it now
         flew = {r.get("pilot") for r in state["rows"] if r.get("route") == rid} | {p for p, what in state["orders"].items() if what == mark}
@@ -572,7 +582,8 @@ def command(route, pilot, argument, root):
         return base + [argument, "--stay", "--route", route["id"]]
     if route["kind"] == "mine":
         sell = ",".join("%s:%d" % (s["item"], s["min_price"]) for s in route.get("sell") or [])
-        return base + [route["belt"], route["station"], "--minutes", str(route.get("minutes", 45)), "--route", route["id"]] + (["--sell-items", sell] if sell else [])
+        return (base + [route["belt"], route["station"], "--minutes", str(route.get("minutes", 45)), "--route", route["id"]] + (["--sell-items", sell] if sell else [])
+                + (["--deposit", "faction"] if route.get("deposit") == "faction" else []))
     if route["kind"] == "guard":                  # the place why_not found: the guard's own, else the guarded route's; an escort follows a pilot
         follow = argument.get("follow") if isinstance(argument, dict) else None
         spot = argument.get("place") if isinstance(argument, dict) else argument
@@ -589,22 +600,25 @@ def command(route, pilot, argument, root):
 
 LOSS_HOURS = 6               # the window a route's runs are judged over
 PIRATE_HOURS = 6             # orders D9: a hunt, a mine or a guard where a pirate was seen within this many hours is closed
+PIRATE_HEAVY = 1000          # a pack whose hull and shield, read in one census, add up to this or more ...
+PIRATE_HEAVY_HOURS = 24      # ... closes its system this long (requests ENT-250: six Nyx elites at Violethall)
 PIRATE_TAIL = 4 * 1024 * 1024    # bytes of the sightings record read from its end: six hours of service sight's passes
 
 
 def pirates(data, now):
-    """{system: the second a pirate was last seen there}, within PIRATE_HOURS: from service sight's record of every
+    """{system: the second a pirate was last seen there}, within PIRATE_HOURS (PIRATE_HEAVY_HOURS for a pack of
+    PIRATE_HEAVY or more hull and shield in one census read): from service sight's record of every
     place our ships read (data/intel/sightings.jsonl, `pirates` above 0) and from the members' own lines
     (data/observations/*.jsonl, kind `pirate`; a summary line counts by its `last` fight). A record that cannot be
     read closes nothing (Military's report of 2026-11-17: D9 was kept between turns by the runner's leave rule alone)."""
-    since, seen = now - PIRATE_HOURS * 3600, {}
+    since, seen, packs = now - PIRATE_HOURS * 3600, {}, {}
 
-    def note(system, stamp):
+    def note(system, stamp, hours=PIRATE_HOURS):
         try:
             when = calendar.timegm(time.strptime(str(stamp)[:19], "%Y-%m-%dT%H:%M:%S"))
         except ValueError:
             return
-        if system and since <= when <= now + 60:
+        if system and now - hours * 3600 <= when <= now + 60:
             seen[str(system)] = max(seen.get(str(system), 0), when)
     try:
         with open(Path(data) / "intel" / "sightings.jsonl", "rb") as handle:
@@ -638,6 +652,12 @@ def pirates(data, now):
             if isinstance(row, dict) and row.get("kind") == "pirate":
                 fields = row.get("fields") if isinstance(row.get("fields"), dict) else {}
                 note(row.get("subject"), fields.get("last") or row.get("t"))
+                weight = sum(v for v in (fields.get("hull"), fields.get("shield")) if isinstance(v, (int, float)) and not isinstance(v, bool))
+                key = (str(row.get("subject") or ""), str(row.get("t") or ""))
+                packs[key] = packs.get(key, 0) + weight          # one line per pirate of one census read
+    for (system, stamp), weight in packs.items():
+        if weight >= PIRATE_HEAVY:
+            note(system, stamp, PIRATE_HEAVY_HOURS)
     return seen
 
 

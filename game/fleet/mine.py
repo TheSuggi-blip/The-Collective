@@ -22,7 +22,10 @@ RULES:
 WHY:  a ship without paying work still earns skill, and its ore feeds the workshop.
 
 USAGE:
-  mine.py <pilot> <system:poi> <system:poi:base> [--minutes M] [--sell-items item:min_price,...] [--route ID]
+  mine.py <pilot> <system:poi> <system:poi:base> [--minutes M] [--sell-items item:min_price,...] [--route ID] [--deposit faction]
+
+With --deposit faction the engine's loop and the last load go into the faction's storage at the station (an
+outpost of ours has no personal storage; the route field `"deposit": "faction"`).
 
 Writes one row to data/routes/runs.jsonl (minutes, credits before and after, ore mined).
 The wallet is read from the engine's answer for the account (state.credits), the ore
@@ -72,7 +75,7 @@ def settled(call, quoted, tries=20, pause=15):
     return False
 
 
-def sell_at_station(call, say, quoted, station, wanted, notes):
+def sell_at_station(call, say, quoted, station, wanted, notes, target="self"):
     """Dock at the route's station; sell each wanted (item, min_price) from the hold, then from the storage there, into the
     bids at min_price or more; store the rest of the hold. Returns {item: [units, credits]}."""
     def raw(action, params, group="spacemolt"):
@@ -131,7 +134,7 @@ def sell_at_station(call, say, quoted, station, wanted, notes):
     stashed = {}
     for item, units in hold().items():                   # the rest goes into storage here: the hold is free for the next work
         if units and item not in ammo:
-            if "error" not in raw("deposit", {"item_id": item, "quantity": units, "target": "self", "source": "cargo"}, "spacemolt_storage"):
+            if "error" not in raw("deposit", {"item_id": item, "quantity": units, "target": target, "source": "cargo"}, "spacemolt_storage"):
                 stashed[item] = units
             time.sleep(11)
     if stashed:
@@ -148,7 +151,7 @@ def ammo_ids():
         return set()
 
 
-def store_last_load(call, say, quoted, station, notes):
+def store_last_load(call, say, quoted, station, notes, target="self"):
     """A run without a sale ends with its last load in storage: dock at the route's station and store the hold when more
     than five units of goods are aboard (the dispatcher's line for requires.empty_hold), so that the next route that wants
     an empty hold opens to the ship. Returns the units found aboard."""
@@ -158,7 +161,7 @@ def store_last_load(call, say, quoted, station, notes):
                  if isinstance(r, dict) and r.get("item_id") not in ammo)
     if aboard > 5:
         say("%d units aboard at the end of the run: stored at %s" % (aboard, station[2]))
-        sell_at_station(call, say, quoted, station, [], notes)
+        sell_at_station(call, say, quoted, station, [], notes, target)
     return aboard
 
 
@@ -174,6 +177,8 @@ def main():
     division.require(pilot)
     minutes = float(option(args, "--minutes", "45"))
     route_id = option(args, "--route", "mine-" + belt[1])
+    deposit = "faction" if option(args, "--deposit", "personal") == "faction" else "personal"
+    target = "faction" if deposit == "faction" else "self"     # the storage call's word for the same choice
     quoted = urllib.parse.quote(pilot, safe="")
     order_file = os.path.join(DATA, "fleet", "orders", pilot + ".json")
 
@@ -215,7 +220,7 @@ def main():
     started = time.time()
     credits_before, ore_before = numbers()
     loop = {"type": "mining", "options": {"miningSystemId": belt[0], "beltPoiId": belt[1], "sellSystemId": station[0], "sellStationPoiId": station[1],
-                                          "sellBaseId": station[2], "skipMarket": "--sell" not in args, "depositTarget": "personal", "retryOnDepleted": True}}
+                                          "sellBaseId": station[2], "skipMarket": "--sell" not in args, "depositTarget": deposit, "retryOnDepleted": True}}
     status, answer, notes, stopped = 0, {}, [], ""
     try:
         for _ in range(40):                              # a goal of an earlier runner may still be running
@@ -249,9 +254,9 @@ def main():
     if stopped:
         pass                                             # whoever stopped the run wants the ship now
     elif wanted and "loop not started" not in notes and not os.path.exists(os.path.join(DATA, "fleet", "STOP")):
-        sold = sell_at_station(call, say, quoted, station, wanted, notes)
+        sold = sell_at_station(call, say, quoted, station, wanted, notes, target)
     elif "loop not started" not in notes and not os.path.exists(os.path.join(DATA, "fleet", "STOP")):
-        store_last_load(call, say, quoted, station, notes)  # a partial load left aboard closes every empty_hold route
+        store_last_load(call, say, quoted, station, notes, target)  # a partial load left aboard closes every empty_hold route
     credits_after, ore_after = numbers()
     took = (time.time() - started) / 60
     if credits_before is None or credits_after is None:

@@ -983,3 +983,37 @@ class RouteGateTests(Tree):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TurnT2130Tests(Tree):
+    """The turn of 2026-11-17 21:30 UTC: a once run its field left short is no try (Mining ENT-096); a heavy pirate
+    pack closes its system a day (requests ENT-250); a mine route may store into the faction's storage."""
+
+    def stamp(self, hours_ago):
+        return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(self.now - hours_ago * 3600))
+
+    def test_a_once_run_whose_mine_step_left_its_objective_open_is_no_try_and_rests(self):
+        short = {"route": "missions", "pilot": "drone-1", "stops": 1, "of": 1, "minutes": 40, "started": self.stamp(0.2),
+                 "notes": ["mine markab_belt: objectives not done"]}
+        routes = self.dispatch.load_routes(self.root)
+        pilot = {"name": "drone-1", "credits": 20000, "modules": [], "docked": True}
+        self.assertEqual(self.dispatch.why_not(pilot, "missions", routes["missions"], self.state(rows=[short]))[0],
+                         "rests after a mine step its field left short")
+        old = dict(short, started=self.stamp(3))
+        self.assertEqual(self.pick("drone-1", rows=[old, dict(old), dict(old)])[0], "missions")   # three short runs: still no try
+
+    def test_a_heavy_pirate_pack_closes_its_system_a_day_a_light_one_six_hours(self):
+        (self.data / "observations").mkdir()
+        lines = [{"t": self.stamp(10), "kind": "pirate", "subject": "far", "fields": {"hull": 120, "shield": 100}} for _ in range(5)]
+        lines.append({"t": self.stamp(10), "kind": "pirate", "subject": "home", "fields": {"hull": 120, "shield": 100}})
+        (self.data / "observations" / "intel.jsonl").write_text("".join(json.dumps(r) + "\n" for r in lines))
+        self.assertEqual(set(self.dispatch.pirates(str(self.data), self.now)), {"far"})       # 1,100 of hull and shield: 24 h
+        lines = [dict(r, t=self.stamp(30)) for r in lines]
+        (self.data / "observations" / "intel.jsonl").write_text("".join(json.dumps(r) + "\n" for r in lines))
+        self.assertEqual(self.dispatch.pirates(str(self.data), self.now), {})                 # older than a day: open again
+
+    def test_a_mine_route_with_deposit_faction_runs_mine_py_with_deposit_faction(self):
+        route = dict(ROUTES["mine"], deposit="faction")
+        line = self.dispatch.command(route, "miner-1", None, self.root)
+        self.assertEqual(line[-2:], ["--deposit", "faction"])
+        self.assertNotIn("--deposit", self.dispatch.command(ROUTES["mine"], "miner-1", None, self.root))

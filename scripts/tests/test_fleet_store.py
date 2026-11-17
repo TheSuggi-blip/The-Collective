@@ -417,3 +417,26 @@ class ObservationTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class EarnedCodeTests(unittest.TestCase):
+    """requests ENT-246: a recount asked of a store that still ran the old earned rule moved nothing; the store now
+    knows the code it runs and counts the kept runs again when that code changed."""
+
+    def test_the_hash_follows_the_two_files_of_the_rule(self):
+        import importlib.util
+        import tempfile
+        spec = importlib.util.spec_from_file_location("store_under_test_code", ROOT / "game" / "fleet" / "store.py")
+        store = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(store)
+        with tempfile.TemporaryDirectory() as folder:
+            self.assertEqual(store.earned_code(folder), "")
+            (Path(folder) / "routes.py").write_text("a = 1\n")
+            (Path(folder) / "taxes.py").write_text("b = 1\n")
+            first = store.earned_code(folder)
+            self.assertEqual(len(first), 16)
+            (Path(folder) / "taxes.py").write_text("b = 2\n")
+            self.assertNotEqual(store.earned_code(folder), first)
+        self.assertEqual(store.LOADED_CODE, store.earned_code())
+        source = (ROOT / "game" / "fleet" / "store.py").read_text(encoding="ascii")
+        self.assertIn("meta(conn, \"earned.code\", \"\") != LOADED_CODE", source)

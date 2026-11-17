@@ -382,7 +382,7 @@ One pilot mines at one field for a set time, through the engine's mining loop.
 A runner: the dispatcher starts it for a route of the kind `mine`; by hand only for a test with one free pilot.
 
 ```
-mine.py <pilot> <system:poi> <system:poi:base> [--minutes M] [--sell-items item:min_price,...] [--route ID]
+mine.py <pilot> <system:poi> <system:poi:base> [--minutes M] [--sell-items item:min_price,...] [--route ID] [--deposit faction]
 ```
 
 ### `observe.py`

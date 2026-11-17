@@ -278,6 +278,23 @@ def take_census(conn, row, sealed, line):
 
 
 EARNED_RULE = "3"                 # the rule of what a run earned (routes.earned); a new mark has the raw runs kept counted again
+EARNED_FILES = ("routes.py", "taxes.py")    # the code of that rule: a change on disk has the kept runs counted again
+
+
+def earned_code(folder=None):
+    """A hash of the earned rule's code as it stands on disk (game/fleet/routes.py and taxes.py); '' when unreadable."""
+    folder = Path(folder) if folder else Path(__file__).resolve().parent
+    digest = hashlib.sha256()
+    try:
+        for name in EARNED_FILES:
+            digest.update((folder / name).read_bytes())
+    except OSError:
+        return ""
+    return digest.hexdigest()[:16]
+
+
+LOADED_CODE = earned_code()      # the code this process runs (requests ENT-246: a recount asked of a process that
+                                 # still ran the old rule moved nothing for two hours)
 
 
 def recount(conn):
@@ -301,6 +318,7 @@ def recount(conn):
                 moved += 1
         sum_routes(conn, keys)
         conn.execute("INSERT OR REPLACE INTO meta VALUES ('earned.rule', ?)", (EARNED_RULE,))
+        conn.execute("INSERT OR REPLACE INTO meta VALUES ('earned.code', ?)", (LOADED_CODE,))
         conn.execute("COMMIT")
     except BaseException:
         conn.execute("ROLLBACK")
@@ -1281,7 +1299,7 @@ def one_pass(data, now=None, keep_days=KEEP_DAYS, root=None):
                 out["records"][name] = {"added": 0, "bad": 0, "old": 0, "cut": False, "moved": False,
                                         "error": "%s: %s" % (type(error).__name__, error)}
         asked = folder_of(data) / "recount"                # `store.py recount` asks; a new rule asks by itself
-        if asked.exists() or meta(conn, "earned.rule", "") != EARNED_RULE:
+        if asked.exists() or meta(conn, "earned.rule", "") != EARNED_RULE or (LOADED_CODE and meta(conn, "earned.code", "") != LOADED_CODE):
             try:
                 out["recounted"] = recount(conn)
                 if asked.exists():
@@ -1933,6 +1951,10 @@ def main(argv):
     waiting = None
     try:
         while True:
+            if LOADED_CODE and earned_code() not in ("", LOADED_CODE):
+                print("%s the earned rule's code changed on disk: the service ends and starts the new code, which counts the kept runs again"
+                      % stamp(time.time()), flush=True)
+                return 0                               # the runner starts it again within seconds
             try:
                 holder = lease(args.data)
                 if holder:

@@ -118,7 +118,7 @@ class LastLoadTests(unittest.TestCase):
         import ast
         tree = ast.parse((FLEET / "mine.py").read_text(encoding="ascii"))
         main = next(ast.unparse(n) for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == "main")
-        self.assertIn("store_last_load(call, say, quoted, station, notes)", main)
+        self.assertIn("store_last_load(call, say, quoted, station, notes, target)", main)
 
 
 class HostStopTests(unittest.TestCase):
@@ -187,3 +187,34 @@ class HostStopTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class DepositTargetTests(unittest.TestCase):
+    """A mine route that unloads at our outpost stores into the faction's storage (it offers no personal storage):
+    the turn of 2026-11-17 21:30 UTC, for Mining's fields around GSC-0044."""
+
+    def test_the_last_load_goes_to_the_faction_storage_when_asked(self):
+        spec = importlib.util.spec_from_file_location("mine_under_test", FLEET / "mine.py")
+        mine = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mine)
+        mine.time.sleep = lambda seconds: None
+        bodies = []
+
+        def call(method, path, body=None, timeout=120):
+            bodies.append(body or {})
+            if path.endswith("/goal"):
+                return 200, {"success": True}
+            if path.endswith("/state/cargo"):
+                return 200, [{"item_id": "iron_ore", "quantity": 40}]
+            if path.endswith("/raw"):
+                return 200, {"structuredContent": {"items": []}}
+            return 200, {"hasExecutingGoal": False, "hasRunningJob": False, "state": {"player": {"credits": 5000}}}
+        mine.store_last_load(call, lambda text: None, "miner-1", ["sys", "poi", "base"], [], "faction")
+        deposits = [b.get("params") for b in bodies if b.get("action") == "deposit"]
+        self.assertEqual([d["target"] for d in deposits], ["faction"])
+
+    def test_main_passes_the_deposit_target_to_the_engines_loop(self):
+        import ast
+        tree = ast.parse((FLEET / "mine.py").read_text(encoding="ascii"))
+        main = next(ast.unparse(n) for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == "main")
+        self.assertIn("'depositTarget': deposit", main)
