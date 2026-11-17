@@ -84,8 +84,9 @@ Planned:
 
 | What | When |
 |---|---|
-| Goal of the turn: Trade's steady money above -3,000 cr an hour in the hour before the next turn (hive.py fleet), with the hydrogen and soma routes measured. | read at the turn of 2026-11-17 08:00 UTC |
-| Read the first runs of the three hydrogen sell routes and of the soma routes at the floor of 350; read every floor beside its cheapest ask with sellgen.py scan and set it again. | the next turn |
-| Read the standing sell order of one anchor beacon at Node Beta; cancel it at the turn that shows a day without a buyer. | the next turn |
+| Goal of the turn: Trade's steady money above 0 cr an hour in the hour before the next turn (hive.py fleet; +1,819 in the hour to 11:55 UTC), and crafting level 1 or more for 35 of 40 traders (table ship_skills; 27 at 11:54 UTC). | read at the turn of 2026-11-17 15:30 UTC |
+| Read the first RESULT lines of gather-okab-belt, gather-gj-3470-dewfall-fray and voidborn-collective-provides at Rotanev; give the dewfall test lift_to and the mission max_ships only after them. | the next turn |
+| Read every floor beside its cheapest ask with sellgen.py scan and set it again (soma 320, palladium 270, hydrogen 30). | every turn |
+| The standing sell order of one anchor beacon at Node Beta stood unfilled at 11:57 UTC, 12 hours after its listing; cancel it at the turn that shows a day without a buyer. | the turn after 2026-11-17 23:48 UTC |
 | Write a sell route the same day Intel files a field of uranium ore, thorium ore or seam glass, which every station bids for (requests.log ENT-194). | when Intel files one |
 | Read the whole board of every trader docked at a turn's start (boards.py) and test every title the fleet has not booked. | every turn |
