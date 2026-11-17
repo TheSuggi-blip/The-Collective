@@ -225,19 +225,22 @@ next turn's test (orders.log ENT-008, F17): `not measured`.
   herds, met, observations; reads of 2026-11-17 03:05 to 07:20 UTC):
   - The first outpost near the iron belts (orders ENT-029, task 3): every
     system within one jump of Garnet, Keid and Amberfall is read and on a
-    census list. Keid reads best: Keid Belt (iron 99,999 and copper
-    100,000 of 100,000), Keid Fractured Prism (iron and copper 100,000)
-    and Keid Ice Shelf (water ice 8,684 of 50,000, deuterium ice 5,000 of
-    5,000) in one system, no station; one jump to Okab (a full belt, a
-    full nebula and a gas cloud with hydrogen, argon, neon and nebula gas
-    all at their maximum), GSC-0012 (a full belt and a gas cloud of six
-    gases) and GSC-0031 (a full belt); two jumps to Hamal in our space;
-    only BUSY combat drones met there, no pirate on record in Keid itself
-    (the next pirate record is Coldwater, one jump). Garnet is second (a
-    full belt and a full nebula; gold ore 31 of 25,000; HEXC miners met),
-    beside Achernar (belt, ice and gas). Amberfall is third: a full belt
-    and a nebula with the chlorophages, beside Thornhaven, where the
-    public battle record names 7 pirate fights.
+    census list. Intel names Garnet, as Mining does (admirals.log
+    ENT-018): Garnet Belt and Garnet Dim Lattice hold iron and copper at
+    100,000 of 100,000 each (gold ore 31 of 25,000), no station; five iron
+    fields lie one jump away (Achernar, Ruchbah, Cedarhold, Atlas); The
+    Experiment's station, with fuel and a market, is two jumps away; no
+    pirate is on record within two jumps (observations, kind pirate);
+    HEXC miners and a BUSY combat drone were met at Garnet Belt. Keid holds
+    more kinds in one system (a full belt, a full nebula, and an ice shelf
+    with deuterium 5,000 of 5,000; Okab, GSC-0012 and GSC-0031 one jump
+    away), but its nearest station is four jumps away, the pirate
+    stronghold Gliese 581 four, and pirates are on record one jump away
+    (Coldwater) and two (GSC-0021, Thornhaven, Stormwatch, Tanglewood).
+    Amberfall is third: a full belt and the chlorophage nebula, four jumps
+    from a station, Thornhaven's pirates one jump away. Judged first on
+    resources alone, Keid was named in admirals.log ENT-020 and corrected
+    by the entry after it.
   - Hubs (task 2), for Intel: 565 scout census runs in 24 hours, each
     counted out from and back to Central Nexus (a census ends at the last
     station it read, else at Central Nexus, so the figures are an upper
