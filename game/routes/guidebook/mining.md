@@ -28,7 +28,7 @@ at the end of every turn.
 ## Class Card
 
 The mining class in short (rule F14). Levels: 60 miners, table
-`ship_skills` and the tool fleet (view=levels), 2026-11-17 11:10 UTC.
+`ship_skills` and the tool fleet (view=levels), 2026-11-17 15:10 UTC.
 
 ### Ships
 
@@ -56,58 +56,59 @@ the 60.
 
 | Skill | Why it matters | What trains it, on which routes | Level now | Next goal |
 |---|---|---|---|---|
-| Mining | +1% yield a level; the pull picks the rarer deposit more often (10% at 0, 50% at 20): silicon, nickel, platinum | 1 XP a unit mined on every gather and mine route; mining missions 15 to 30 | 5 / 7 / 9 | 10 on every miner |
-| Deep Core Mining | +5% a level from deep core deposits, which a survey reveals | mining with a laser (power 3 or more); Deep Core Prospecting 25 XP | 5 / 7 / 8 | 10; a deep core deposit read |
-| Piloting | opens tier 2 at 10 | flying, jumps, missions | 5 / 7 / 8, about 42 hours to 10 | 10 |
+| Mining | +1% yield a level; the pull picks the rarer deposit more often (10% at 0, 50% at 20): silicon, nickel, platinum | 1 XP a unit mined on every gather and mine route; mining missions 15 to 30 | 6 / 7 / 9 | 10 on every miner |
+| Deep Core Mining | +5% a level from deep core deposits, which a survey reveals | mining with a laser (power 3 or more); Deep Core Prospecting 25 XP (in First, 16 pilots) | 6 / 8 / 9 | 10; a deep core deposit read |
+| Piloting | opens tier 2 at 10 | flying, jumps, missions | 6 / 8 / 9, about 36 hours to 10 | 10 |
 | Voidborn Mastery | our empire's skill, only from Voidborn missions (rule F35) | the voidborn routes of the list First | 0 / 0 / 0 | 1: The Collective Provides, 20 nickel ore mined |
 | Navigation | -1% fuel, jump fuel and jump time a level | every jump of the shuttles; `train-navigation-trader` | 3 / 4 / 5 | 5 |
-| Trading | market fees | the drains and carries of stored ice | 0 / 2 / 3 | -- |
-| Refining, Crafting | steel smelted from our own iron | the three craft-steel routes (14 miners hold them) | 0 / 2 / 2 | -- |
+| Trading | market fees | the drains and carries of stored ice | 0 / 2 / 4 | -- |
+| Refining, Crafting | steel and piping from our own iron and copper | the craft-steel and craft-piping routes | 0 / 2 / 3; 0 / 2 / 4 | -- |
 | Exploration, Scanning | a first visit; a survey shows deep core deposits | far tests; none of ours scans | 2; 0 | -- |
 
 ## Standing Plan
 
-What the miners fly between two turns (2026-11-17 11:35 UTC, orders.log
-ENT-036). A free miner takes the first open route of the list First (the
-missions that pay once), its own routes, the list Then (Spacetime Seep,
-Pherkad, the three steel crafts, census, park). Every miner's own routes
-are templates (section 2): `@ice-sell` and then `@reserve-prism` or
-`@reserve-hamal`; one miner flies the Deep Core Prospecting test in front
-of them, one a deuterium ice test, three sell or carry stored soma first. Figures:
-miner runs of 07:00 to 11:30 UTC (data/routes/runs.jsonl, medians);
-fields from the census reads of 10:15 to 11:22 UTC (table fields).
+What the miners fly between two turns (2026-11-17 15:15 UTC, orders.log
+ENT-037). A free miner takes the first open route of the list First (the
+missions that pay once, Deep Core Prospecting among them), its own routes,
+the list Then (Spacetime Seep, Pherkad, the three steel crafts, census,
+park). Every miner's own routes are templates (section 2): `@ice-sell` and
+then `@reserve-prism` or `@reserve-hamal`; one miner flies the silicon test
+in front of them, some fly soma sales, piping crafts or Navigation training
+first. Figures: miner runs of 11:00 to 15:10 UTC (data/routes/runs.jsonl,
+medians); fields from the census reads of 13:28 to 14:48 UTC (table fields).
 
 | # | Route | Ships (max / lift_to) | Field or bid now | Per run, measured | What it is for |
 |---|---|---|---|---|---|
-| F | The once line, the mining missions, the First Hunts; `mission-deep-core-prospecting-nova-terra` | their limits; 1 | Markab Belt 503 platinum | a test from 11:10 UTC | Every pilot flies them first; rule F34 |
-| 1 | the ice drains and carries, `drain-methane-experiment`, `carry-null-matter-synchrony-nexus` | 1 to 3 each | water ice: the order of 43,315 at 34 cr at Central Nexus (09:14 UTC) gone at 11:11 UTC | 2,103 to 2,379 cr a run of 1 to 11 minutes (32 + 26 + 23 + 15 + 11 runs) | Stored goods sold where a bid stands |
-| 2 | four water-ice mine routes to Central Nexus; `mine-groombridge-34-ice-fields` | 1, 2, 1, 1; 1 | open on an order of 300 water ice | 185 to 390 ice a run of 50 to 68 minutes | New ice only on a deep order |
+| F | The once line, the First Hunts, `mission-deep-core-prospecting-nova-terra` | their limits; 4 at a time, 16 pilots | Markab Belt 503 platinum (07:51 UTC), two foreign prospectors on it | 1 run: 20 platinum in one load, +5,000 cr once, +4,370 cr in 65.7 minutes | Every pilot flies them first; rule F34 |
+| 1 | the ice drains and carries, `drain-methane-experiment`, `carry-null-matter-synchrony-nexus` | 1 to 3 each | no water-ice bid of 30 units at our stations (15:02 UTC) | closed by their bid gates | Stored goods sold where a bid stands |
+| 2 | four water-ice mine routes to Central Nexus; `mine-dheneb-cryobelt`; `mine-groombridge-34-ice-fields` | 1, 2, 1, 1; 2; 1 | Central Nexus bids no water ice; Hex Star methane 36 cr x 916 | Dheneb 4 runs, +689 cr in 41.6 minutes (960 per ship-hour over 12 h) | Ice only where a bid stands |
 | 3 | `store-hold-central-nexus` | up to 40 | -- | standing | A ship a run left loaded stores its hold |
-| 4 | `gather-acubens-belt-carbon` | 1 | 36 carbon, floor 60 | 5 runs: 180 ore in 50.3 minutes | Carbon, the only field in our space with any |
-| 5 | `gather-schedar-belt` | 45 / 45 | 29,315 iron (57), floor 20,000 | 121 runs: 260 ore in 45 minutes, -192 cr | Iron one jump from Node Beta, guarded; at its floor within about an hour |
-| 6 | `gather-ironhollow-fading-signal` | 20 / 20 | 29,682 iron (40) | 96 runs: 291 ore in 48 minutes, -180 cr | Iron one jump from The Experiment, guarded; at its floor within about two hours |
-| 7 | `gather-ironhollow-echo-ejecta` | 25 / 35 | 94,938 iron (26) | 11 runs: 174 ore in 45 minutes, -180 cr | Iron one jump from The Experiment, guarded |
-| 8 | `gather-garnet-belt` | 15 / 25 | 99,179 iron (64) | 12 runs: 260 ore in 47.9 minutes, -294 cr | The richest iron near us, two jumps, guarded |
-| 9 | `gather-achernar-belt`, `gather-ruchbah-broken-glass-veil` | 3 / 10; 2 / 3 | 96,648 iron (32); 99,999 (23) | 1 run each: 195 ore in 47.7 and 49.1 minutes, -180 cr | One jump from The Experiment; Ruchbah held low for a BUSY combat drone seen fighting there |
-| 10 | `gather-gsc-0027-prism-scatter`, `gather-hamal-crystal-bloom`, `mine-acubens` | shared | 13,276; 14,664 iron: under their floors | -- | Home iron, shared with every division |
-| Then | `gather-gsc-0027-spacetime-seep`, `mine-pherkad-rift`, the steel crafts, `census-frontier`, `park` | shared | closed at their floors; steel from stored iron | 28 steel runs of 6 minutes | Standing work for the rest |
+| 4 | `gather-acubens-belt-carbon` | 1 | under its floor of 60 carbon | 4 runs: 208 ore in 50.1 minutes, -225 cr | Carbon, the only field in our space with any |
+| 5 | `gather-schedar-belt`, `gather-ironhollow-fading-signal` | 45; 20 | at their floor of 20,000 iron | 45 and 74 runs: 260 and 292 ore in 48 to 50 minutes, -247 and -180 cr | Iron one jump from Node Beta and The Experiment; open again as they grow back |
+| 6 | `gather-garnet-belt` | 29 / 29 | 84,279 iron (64) | 72 runs: 260 ore in 46.1 minutes, -324 cr | The richest iron near us, two jumps; BUSY combat drones fight there |
+| 7 | `gather-ironhollow-echo-ejecta` | 35 / 35 | 84,591 iron (26) | 9 runs: 193 ore in 45.1 minutes, -180 cr | Iron one jump from The Experiment; Ironhollow's two belts carry about 45 by the orders' guard |
+| 8 | `gather-achernar-belt` | 16 / 16 | 89,493 iron (32) | 14 runs: 195 ore in 47.8 minutes, -180 cr | One jump from The Experiment, guarded |
+| 9 | `gather-ruchbah-broken-glass-veil` | 6 / 6 | 99,997 iron (23) | 6 runs: 195 ore in 48.3 minutes, -180 cr | One jump from The Experiment |
+| 10 | `gather-subra-floodlight-flats-silicon`; `mine-almach-stray-facets` | 1; 1 | 3,187 silicon (43); trade crystal at Almach | tests from 15:10 UTC | Silicon for the reserve, stored at The Crescent Moon; trade crystal sold at Central Nexus |
+| 11 | `gather-gsc-0027-prism-scatter`, `gather-hamal-crystal-bloom`, `mine-acubens` | shared | under their floors | -- | Home iron, shared with every division |
+| Then | `gather-gsc-0027-spacetime-seep`, `mine-pherkad-rift`, the steel crafts, `census-frontier`, `park` | shared | closed at their floors; steel from stored iron | 75 steel runs of 7.1 minutes, -36 cr | Standing work for the rest |
 
-Why this plan. Iron is the reserve's largest short ore: 344,892 held of
-540,840 (the tool stock, view=reserve, 11:05 UTC; 300,312 at 07:03 UTC).
-Mining put 9,913 iron, 5,720 copper, 125 carbon and 101 gold an hour into
-storage over the four hours to 11:11 UTC (hive.py flow Zero). The ice
-drains and carries sold into a single deep water-ice order at Central
-Nexus and closed by their bid gates when it was gone. Schedar and Fading
-Signal reach their floors next; their ships go to Garnet, Echo Ejecta,
-Achernar and Ruchbah, which `fill.py` widens up to their `lift_to` only
-while ships wait.
+Why this plan. The reserve lacks 104,401 iron ore (316,319 held of
+420,720), 52,364 silicon and 92,426 carbon (the tool stock, view=reserve,
+15:04 UTC). Mining stored +3,300 iron, +3,915 copper, +764 steel plate,
++132 carbon and +112 gold an hour over the four hours to 15:06 UTC
+(hive.py flow Zero), down from +9,913 iron: the home fields and Schedar
+shut at their floors, and the fleet smelts iron into steel. Silicon lies
+only 10 jumps and more away; one ship tests it. Carbon is asked at 3 to 4 cr
+at two stations: Trade buys it cheaper than any field of ours gives it
+(admirals.log, Mining's note of 15:00 UTC).
 
-What would change it: the RESULT lines of the Liminal (one hull ordered
-at Node Beta, section 5) and of the Deep Core test; the outpost at
-GSC-0044 founded (its five belts go in, section 7); a hostile ship at a
-field beyond the border (rule F13); a water-ice order of 300 units at
-Central Nexus. Each turn starts with `stalled.py` of the mining-chains
-skill, `fill.py status miner` and `hive.py flow Zero`.
+What would change it: the RESULT lines of the Liminal, the silicon test and
+the Almach test; the outpost at GSC-0044 founded (its five belts go in,
+section 7); a hostile ship at a field beyond the border (rule F13); a
+water-ice order of 300 units at Central Nexus. Each turn starts with
+`stalled.py` of the mining-chains skill, `fill.py status miner` and
+`hive.py flow Zero`.
 
 ## 1. Route Guides
 
@@ -263,7 +264,7 @@ The mining missions of the boards (rule F34; data/missions, read
 
 | Mission | Asks | Pays | Where the ore lies | State |
 |---|---|---|---|---|
-| Deep Core Prospecting (six boards) | 20 platinum ore | 5,000 cr, 10 exotic matter, deep core mining 25 XP | Markab Belt 503 of 8,000 (Solarian, 2 jumps from Nova Terra Central); GSC-0049 reef 20; Acubens Belt 2 | `mission-deep-core-prospecting-nova-terra`, one ship from 11:10 UTC |
+| Deep Core Prospecting (six boards) | 20 platinum ore | 5,000 cr, 10 exotic matter, deep core mining 25 XP | Markab Belt 503 of 8,000 (Solarian, 2 jumps from Nova Terra Central); 82 Eridani Belt 563 (22 jumps); Stillwater 199; GSC-0049 reef 29 | `mission-deep-core-prospecting-nova-terra`: the test run of 11:20 UTC took 20 platinum in one load and handed in, +5,000 cr once and +4,370 cr in 65.7 minutes; in First from 15:08 UTC, 4 ships at a time, 16 pilots |
 | Titanium Extraction Contract (ten boards) | 20 titanium ore | 3,500 cr, mining 25 XP | 70 at GSC-0028, 50 at Jasmine, 12 or less elsewhere (7 to 11 jumps) | not flown: no field holds a load |
 | The Collective Provides (Central Nexus, the Voidborn chain) | 20 nickel ore | 2,500 cr, Voidborn Mastery 25 XP | Gliese 876 Belt 635 of 12,000, about 28 back an hour (7 jumps, 3 from the pirate stronghold Gliese 581); Algorab 1,342 (12 jumps); Jadecove 609, Azha 570, Rotanev 424; GSC-0049 reef 39, about 10 back an hour | Trade's route, off; the readings in admirals.log ENT-029 |
 
@@ -445,24 +446,29 @@ no ship of ours on it. Lifted to 5 ships at 23:25 UTC.
   11:11 UTC), the pilot switched into it after the build; then ore a run
   and minutes on a gather field against the Threshold's 260 ore in 45
   minutes. A second hull only on that figure.
-- `mission-deep-core-prospecting-nova-terra` (one ship): offered to a
-  miner or not, how many loads give 20 platinum, the credits and the
-  exotic matter, whether the board offers it again.
-- `gather-achernar-belt` (3, `lift_to` 10) and
-  `gather-ruchbah-broken-glass-veil` (2, `lift_to` 3): one run each so
-  far, 195 ore in about 48 minutes; Ruchbah stays low while a BUSY
-  combat drone fights there.
+- `mission-deep-core-prospecting-nova-terra` (4 at a time, 16 pilots
+  from 15:08 UTC): how many of the 16 get their 20 platinum in one load
+  while two foreign prospectors mine Markab Belt; the next field is 82
+  Eridani Belt (563 platinum, 22 jumps).
+- `gather-subra-floodlight-flats-silicon` (one ship from 15:10 UTC):
+  silicon a run against about a third of the pulls (richness 43 beside
+  iron 45, copper 30, neodymium 11), stored at The Crescent Moon two jumps
+  away; what a carry home or a craft there takes.
+- `mine-almach-stray-facets` (a fill test, one ship): trade crystal sold at
+  Central Nexus, 24 jumps.
 - The outpost at GSC-0044, when founded: gather routes storing there,
   one ship each first, richest iron first: Botein Belt (68), Acrux Belt
   (64, with 13,377 lithium the reserve lacks), GSC-0044 Belt (46),
   Intercrus Belt (43), Forgotten Tailings (40) (table fields, 09:56 to
   10:17 UTC).
-- Silicon: Subra Floodlight Flats 3,187 and Zubenelhakrabi Crystal Sand
-  771 (11 to 12 jumps, a station two jumps from each); a test stores,
-  on a bigger hold, never sells (rule F24).
-- The default stance `flee`: 17 of 60 miners set by 07:29 UTC (the
-  script's state file); the script ended with the turn's session, and
-  the rest is set again from 11:36 UTC.
+- Silicon beyond Floodlight Flats: Zubenelhakrabi Crystal Sand 771 (its
+  nearest station is a pirate station, Dross Citadel in Algol: not flown);
+  Emberglow 4,935 and GSC-0007 Dark Beacon Cluster 18,639 lie 19 and 27
+  jumps out (table fields, 2026-11-17 15:03 UTC). A test stores, never
+  sells (rule F24).
+- The default stance `flee`: 30 of 60 miners set by the script's state
+  file at 15:12 UTC; the rest is set from 15:13 UTC for 25 minutes (a
+  script ends with the turn's session).
 - `mine-groombridge-34-ice-fields`: deuterium ice a run against the
   bids, which come in single units.
 - A Flotation Cell (filter_copper_ore) on one iron miner: the iron share
