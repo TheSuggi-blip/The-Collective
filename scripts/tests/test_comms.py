@@ -256,6 +256,27 @@ class AppendTests(Tree):
         self.assertEqual(code, 0)
         self.assertIn("## [ENT-008] | ", self.log("requests"))
 
+    def test_a_claim_over_a_route_another_member_claims_in_force_is_refused(self):
+        # requests ENT-180 (Apollo): two divisions claimed two gas routes nine minutes apart (errors.log ENT-069)
+        self.write("admirals", COMMENT)
+        routes = self.root / "game" / "routes"
+        routes.mkdir(parents=True)
+        (routes / "mine-a.json").write_text('{"id": "mine-a", "kind": "mine", "sell": "x:y:z", "max_ships": 2}', encoding="ascii")
+        (routes / "gather-x.json").write_text('{"id": "gather-x", "kind": "mine", "standing": true, "max_ships": 60}', encoding="ascii")
+        first = "## [ENT-NEXT] | NOW | Zero | claim\nClaims: mine-a (2 ships) and up to 20 places on gather-x.\n"
+        self.assertEqual(self.run_command(comms.append, "admirals", self.draft(first), "Zero")[0], 0)
+        over = "## [ENT-NEXT] | NOW | Apollo | claim\nClaims: mine-a (1 ship), the silicon-ore ask at the capital.\n"
+        code, text = self.run_command(comms.append, "admirals", self.draft(over), "Apollo")
+        self.assertEqual(code, 1)
+        self.assertIn("NOT APPENDED: mine-a is claimed by Zero in admirals.log ENT-001", text)
+        self.assertNotIn("silicon-ore", text)                                                   # no route file: words, not compared
+        shared = "## [ENT-NEXT] | NOW | Apollo | claim\nClaims: up to 10 places on gather-x.\n"
+        self.assertEqual(self.run_command(comms.append, "admirals", self.draft(shared), "Apollo")[0], 0)   # standing work is shared
+        again = "## [ENT-NEXT] | NOW | Zero | claim\nClaims: mine-a (2 ships).\n"
+        self.assertEqual(self.run_command(comms.append, "admirals", self.draft(again), "Zero")[0], 0)      # its own claim renewed
+        self.run_command(comms.append, "admirals", self.draft("## [ENT-NEXT] | NOW | Zero | note\nReleases: ENT-001, ENT-003.\n"), "Zero")
+        self.assertEqual(self.run_command(comms.append, "admirals", self.draft(over), "Apollo")[0], 0)     # released: free to claim
+
     def test_the_admirals_log_takes_notes_and_claims_and_shows_the_claims_in_force(self):
         self.write("admirals", COMMENT)                                                         # Suggi, 2026-11-16: the Admirals coordinate among themselves
         claim = "## [ENT-NEXT] | NOW | Zero | claim | ref: game/routes/mine-a.json\nClaims: mine-a, for 12 ships.\nWhy: the ice bid at the capital.\n"

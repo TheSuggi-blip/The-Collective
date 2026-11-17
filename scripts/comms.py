@@ -24,7 +24,8 @@ RULES (append):
   - <Name> is the writer given with --as; orders.log takes entries of Unity only;
   - the category belongs to the log: order (orders), session (reports), request
     or answer (requests), general (queue), error (errors), note or claim
-    (admirals); a claim carries a `Claims:` line;
+    (admirals); a claim carries a `Claims:` line and is refused when another member's claim in force names one of
+    its routes (standing work excepted);
   - the entry file lies outside the repository: an untracked file in the
     working copy holds every member's push;
   - an entry that breaks the gate is taken out again and nothing is committed.
@@ -59,6 +60,7 @@ Stdlib only. ASCII only.
 import argparse
 import calendar
 import fcntl
+import json
 import re
 import subprocess
 import sys
@@ -218,6 +220,53 @@ def line_of(entry, label):
     return next((line[len(label) + 1:].strip() for line in entry["body"] if line.startswith(label + ":")), "")
 
 
+def claims_in_force(entries, now=None):
+    """The claims of admirals.log still in force: younger than CLAIM_HOURS and not ended by a `Releases: ENT-NNN` line
+    of their own writer."""
+    released = {(entry["by"], int(number)) for entry in entries for number in re.findall(r"ENT-(\d+)", line_of(entry, "Releases"))}
+    now = time.time() if now is None else now
+    return [e for e in entries if e["category"] == "claim" and (e["by"], e["num"]) not in released
+            and now - calendar.timegm(time.strptime(e["when"], "%Y-%m-%d %H:%M")) < CLAIM_HOURS * 3600]
+
+
+def claimed_routes(root, text):
+    """The route ids a `Claims:` line names: its hyphenated words that are route files of game/routes/. A place written
+    in words (an ask, a bid, a field by its name) is no route id and is not compared."""
+    folder = Path(root) / "game" / "routes"
+    return sorted({word for word in re.findall(r"[a-z0-9]+(?:-[a-z0-9]+)+", text) if (folder / (word + ".json")).is_file()})
+
+
+def standing_route(root, route_id):
+    """True when the route is standing work by the fleet's one rule (game/fleet/routes.py, standing): its places are
+    shared by every division (rule F8), so two claims on it may stand side by side."""
+    try:
+        route = json.loads((Path(root) / "game" / "routes" / (route_id + ".json")).read_text(encoding="ascii"))
+    except (OSError, ValueError, UnicodeDecodeError):
+        return False
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "game" / "fleet"))
+    try:
+        import routes
+        return bool(routes.standing(route))
+    finally:
+        sys.path.pop(0)
+
+
+def claim_overlaps(root, name, claims_line):
+    """[(route id, entry)] for each route of a new claim that another member's claim in force names (requests ENT-180).
+    The writer's own claims and standing work are left out."""
+    wanted = claimed_routes(root, claims_line)
+    if not wanted:
+        return []
+    entries, _errors = read_log(root, "admirals")
+    out = []
+    for entry in claims_in_force(entries):
+        if entry["by"] == name:
+            continue
+        theirs = set(claimed_routes(root, line_of(entry, "Claims")))
+        out += [(route, entry) for route in wanted if route in theirs and not standing_route(root, route)]
+    return out
+
+
 def show_admirals(root, last, member):
     """The Admirals' own log: the claims in force, then the last entries. A claim stands CLAIM_HOURS hours from its
     entry unless a later entry of its writer ends it with a `Releases: ENT-NNN` line."""
@@ -225,10 +274,7 @@ def show_admirals(root, last, member):
         print("no communications/admirals.log")
         return 0
     entries, _errors = read_log(root, "admirals")
-    released = {(entry["by"], int(number)) for entry in entries for number in re.findall(r"ENT-(\d+)", line_of(entry, "Releases"))}
-    now = time.time()
-    claims = [e for e in entries if e["category"] == "claim" and (e["by"], e["num"]) not in released
-              and now - calendar.timegm(time.strptime(e["when"], "%Y-%m-%d %H:%M")) < CLAIM_HOURS * 3600]
+    claims = claims_in_force(entries)
     print("CLAIMS IN FORCE: %d (a claim stands %d hours from its entry; its writer renews it with a new claim or ends it "
           "with a `Releases: ENT-NNN` line; another division leaves a claimed route to its claimer, or asks)" % (len(claims), CLAIM_HOURS))
     for entry in claims:
@@ -349,6 +395,17 @@ def append(root, log, entry_file, name, commit=True):
         if lock is not None:
             fcntl.flock(lock, fcntl.LOCK_EX)                   # one writer at a time, from the number to the commit
         before = path.read_text(encoding="ascii", errors="replace")
+        if log == "admirals" and draft.group(2) == "claim":
+            claims_line = next((line[len("Claims:"):] for line in lines[1:] if line.startswith("Claims:")), "")
+            overlaps = claim_overlaps(root, name, claims_line)
+            for route, entry in overlaps:                     # read under the lock: a claim a minute old counts
+                until = time.strftime("%Y-%m-%d %H:%M UTC", time.gmtime(calendar.timegm(time.strptime(entry["when"], "%Y-%m-%d %H:%M"))
+                                                                        + CLAIM_HOURS * 3600))
+                print("NOT APPENDED: %s is claimed by %s in admirals.log ENT-%03d (in force until %s): leave it out of your claim, "
+                      "ask %s in requests.log, or claim it once %s releases it" % (route, entry["by"], entry["num"], until,
+                                                                                  entry["by"], entry["by"]))
+            if overlaps:
+                return 1
         entries, _errors = parse(before)
         if not entries:
             entries, _errors = read_log(root, log, archive=True)   # the counter goes on after an archive run
