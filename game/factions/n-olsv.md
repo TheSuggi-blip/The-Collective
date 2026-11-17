@@ -15,7 +15,7 @@ updated: 2026-11-17
 # Our Lord And Savior [OLSV]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 4.
+Pilots of it in our space in the last 24 hours: 9.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 4.
 | Allies | HIVE | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 151 | Public event stream |
+| Pilots carrying the tag on the public event stream | 158 | Public event stream |
 
 ## Bases
 
@@ -38,10 +38,15 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
+| OLS Almach | The Experiment (`the_experiment`) | 0 | threshold |
 | OLS Armus | Nexus Prime (`nexus_prime`) | 0 | theoria |
-| OLS Bharani | Nexus Prime (`nexus_prime`) | 0 | theoria |
+| OLS Caph | The Experiment (`the_experiment`) | 0 | threshold |
+| OLS Chamukuy | The Experiment (`the_experiment`) | 0 | theoria |
 | OLS Guniibuu | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | OLS Hunor | Nexus Prime (`nexus_prime`) | 0 | theoria |
+| OLS Mintaka | The Experiment (`the_experiment`) | 0 | threshold |
+| OLS Naos | The Experiment (`the_experiment`) | 0 | threshold |
+| OLS Sadr | The Experiment (`the_experiment`) | 0 | threshold |
 
 ## Standing History
 

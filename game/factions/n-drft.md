@@ -38,8 +38,8 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Carol Jordan | Node Gamma (`node_gamma`) | 0 | junk_convoy |
-| Sandra Coffield | Pherkad (`pherkad`) | 0 | junk_convoy |
+| Carol Jordan | Synchrony (`synchrony`) | 0 | junk_convoy |
+| Sandra Coffield | Synchrony (`synchrony`) | 0 | junk_convoy |
 
 ## Standing History
 
