@@ -42,13 +42,15 @@ route beyond the border carries `alone` and an empty hold (rule F13).
 | `@hunter`, hunts | `hunt-test-achernar-cinder-sylph`, `hunt-test-lesath-cinder-sylph`, seven veil-ray hunts, `hunt-home-drift-ray`, `hunt-keid-belt-carapace` | 1 each, 11 in all | Achernar 733 per ship-hour (2 runs, 4 h) and 3,606 (6 runs, 12 h); the rest standing work at -207 to -695 per ship-hour (route_earnings, 00:13 UTC) | Hunt as far as each herd regains (orders ENT-020); the veil-ray, drift-ray and carapace hunts store verdigris curd, carapace and crystallized biogas, which the station list takes |
 | `@hunter`, fallback | `gather-gsc-0027-prism-scatter`, `gather-hamal-crystal-bloom`, `mine-pherkad-rift`, `mine-acubens` | fleet-wide caps 66, 96, 18, 18 | -142, -190, -169 per ship-hour (232, 257, 58 runs, 4 h) | Iron and copper into storage for the reserve when no herd and no post is open (rule F23); each field's floor closes it |
 | By hand, next turn | The pirate group (section 6) | 5 drones | Pirate Bounty, 2,000 cr a pilot | Orders ENT-020, block APOPHIS, step 3; the one-ship test of step 2 flew 2026-11-17 00:44 to 00:57 UTC |
-| Then | `gather-gsc-0027-prism-scatter`, `gather-hamal-crystal-bloom`, `census-frontier`, `park` | -- | -- | A ship should never reach `park` |
+| Own, put in by the fleet's fill job (01:09 UTC) | `hunt-orphan-nebula-veil-ray` (1 drone, a test: the route maker's estimate 507 cr per hunter-hour), `train-navigation-trader` (6 drones, standing work that trains navigation) | 1 and 6 | not measured for drones | Kept: a test with one ship and a training route cost little |
+| Then | `gather-gsc-0027-prism-scatter`, `gather-hamal-crystal-bloom`, `gather-gsc-0027-spacetime-seep`, `census-frontier`, `park` | -- | -- | The spacetime seep (cap 16, floor 30,000 iron) since 01:13 UTC: at 01:10 UTC one drone waited while the other fields stood full or under their floors (fill.py status); a ship should never reach `park` |
 
 Not in the plan: `hunt-atlas-gas-pocket`, `hunt-test-homam-frost-moth`,
 `hunt-garnet-dim-lattice-veil-ray` and `mine-gliese-876-belt`, claimed by
 Intel (admirals.log ENT-002); `sell-plate-node-beta` sells armor plate,
 which the reserve holds (5,940 asked, 11 held: the tool stock, view
-reserve, 00:16 UTC; rule F24).
+reserve, 00:16 UTC; rule F24); the fleet's fill job put it back for two
+drones at 01:09 UTC and it was dropped again at 01:12 UTC.
 
 The forecast of the division (the tool hive, verb forecast) after the
 plan, 00:28 UTC: -7,226 credits an hour, -145 a ship; the gather
