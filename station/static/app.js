@@ -194,8 +194,13 @@ let board = null;
 const sys = new Map();
 const stationsBy = new Map();
 const shipsBy = new Map();                     // system id -> our ships there
-const layers = { Territory: true, Lanes: true, Traffic: true, Stations: true, Sites: true, Strongholds: true, Intel: true, Factions: true, Fleet: true, Names: true };
+const layers = { Regions: true, 'Our space': true, Lanes: true, Traffic: true, Stations: true, 'Our bases': true, Strongholds: true, Intel: true, Factions: true, Fleet: true, Names: true };
 const sitesBy = new Map();                     // system id -> a site named for a base of ours (game/map/sites.tsv)
+const holdBy = new Map();                      // system id -> the buildings of ours there (what the faction owns, read from the game)
+const sphere = new Map();                      // system id -> when a ship of ours was last seen there (ms): our own space on the map
+const SPHERE_MS = 3600000;                     // a system stays in our space for an hour after the last ship of ours was seen there
+try { for (const [id, at] of JSON.parse(localStorage.getItem('station.sphere') || '[]')) { if (typeof id === 'string' && Date.now() - at < SPHERE_MS) sphere.set(id, Number(at)); } } catch (e) { /* no storage */ }
+let sphereSaved = 0;
 let bounds = null, terrR = 250, homeEmpire = '';   // the galaxy's extent; the radius of the ground under one system; our empire
 const view = { x: 0, y: 0, k: 0.05 };
 let selected = null, hover = null, route = [], tab = 'Selection', pilotCard = null;
@@ -291,35 +296,137 @@ function frame(now) {
   else if ((selected || route.length > 1) && !pulse) pulse = setTimeout(() => { pulse = 0; draw(); }, 60);   // the selection breathes, the route line moves
 }
 
-// The ground under the map: each empire's space as one soft area, ours a little stronger, and brighter where our own
-// ships work. Drawn on a canvas of its own and laid under the map once per area, so that overlapping discs do not add up.
-const ground = document.createElement('canvas'), gctx = ground.getContext('2d');
-function paintTerritory(k) {
-  const d = window.devicePixelRatio || 1, R = Math.max(8, terrR * k);
-  if (ground.width !== canvas.width || ground.height !== canvas.height) { ground.width = canvas.width; ground.height = canvas.height; }
-  const area = (list, colour, alpha, radius, joined) => {
-    if (!list.length) return;
-    gctx.setTransform(d, 0, 0, d, 0, 0); gctx.clearRect(0, 0, W, H);
-    gctx.fillStyle = colour; gctx.strokeStyle = colour; gctx.lineWidth = radius * 1.2; gctx.lineCap = 'round';
-    for (const s of list) {
-      const [x, y] = toScreen(s);
-      gctx.beginPath(); gctx.arc(x, y, radius, 0, 6.2832); gctx.fill();
-      for (const id of s.lanes) {                                   // two neighbours of one area: the ground runs along their lane
-        const o = sys.get(id);
-        if (o && s.id < id && joined(o)) { const [ox, oy] = toScreen(o); gctx.beginPath(); gctx.moveTo(x, y); gctx.lineTo(ox, oy); gctx.stroke(); }
-      }
-    }
-    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = alpha; ctx.drawImage(ground, 0, 0); ctx.restore();
-  };
-  const realms = new Map();
-  for (const s of S.systems) { if (s.empire) { if (!realms.has(s.empire)) realms.set(s.empire, []); realms.get(s.empire).push(s); } }
-  for (const [empire, list] of realms) {
-    const home = empire === homeEmpire, c = color(list[0]);
-    area(list, c, home ? 0.1 : 0.05, R * (home ? 1.1 : 1), (o) => o.empire === empire);
-    if (home) area(list, c, 0.07, R * 0.7, (o) => o.empire === empire);
+// ---------------------------------------------------------------- the marks of the map
+
+const OURS = '#d9d0f5';                              // our own space and the sites chosen for a base
+const BUILT = '#ffffff', RAISING = '#dcae58';        // a building of ours that stands; one that is being built
+// One drawing per mark in a box of 12 by 12: the map paints it on the canvas, the legend shows the same path as an SVG.
+const GLYPHS = {
+  storage: { d: 'M2 4.1 6 2.1 10 4.1V8.5L6 10.5 2 8.5Z M2 4.1 6 6.1 10 4.1 M6 6.1V10.5' },
+  recruit: { d: 'M6 1.9a2 2 0 1 0 0 4a2 2 0 1 0 0-4Z M2.3 10.4c0-2.3 1.6-3.6 3.7-3.6s3.7 1.3 3.7 3.6Z', fill: true },
+  office: { d: 'M2.4 10.2V4.6L6 2 9.6 4.6V10.2Z M4.9 10.2V7.4H7.1V10.2' },
+  outpost: { d: 'M6 1.6 9.8 3.8V8.2L6 10.4 2.2 8.2V3.8Z M6 4.9a1.1 1.1 0 1 0 0 2.2a1.1 1.1 0 1 0 0-2.2Z' },
+  station: { d: 'M6 1.4 10 3.7V8.3L6 10.6 2 8.3V3.7Z', fill: true },
+  flag: { d: 'M3 10.8V1.7 M3 1.9 9.8 3.9 3 5.9Z', fill: true },
+  pip: { d: 'M6 2.4 9.6 6 6 9.6 2.4 6Z', fill: true },
+  cross: { d: 'M3 3 9 9 M9 3 3 9' },
+  threat: { d: 'M6 2.2 10.2 9.6H1.8Z', fill: true },
+};
+function glyph(c, name, x, y, size, colour, hollow) {    // a mark centred on x, y, with a dark edge so that it reads on any ground
+  const g = GLYPHS[name] || GLYPHS.office, f = size / 12;
+  if (!g.path) g.path = new Path2D(g.d);
+  c.save(); c.translate(x - size / 2, y - size / 2); c.scale(f, f);
+  c.lineJoin = 'round'; c.lineCap = 'round';
+  c.strokeStyle = 'rgba(9,12,18,0.9)'; c.lineWidth = 3.4 / f; c.stroke(g.path);
+  if (g.fill && !hollow) { c.fillStyle = colour; c.fill(g.path); }
+  c.strokeStyle = colour; c.lineWidth = 1.2 / f; c.stroke(g.path);
+  c.restore();
+}
+function glyphSvg(name, colour, size, hollow) {          // the same mark as an SVG element
+  const NS = 'http://www.w3.org/2000/svg', g = GLYPHS[name] || GLYPHS.office, svg = document.createElementNS(NS, 'svg'), path = document.createElementNS(NS, 'path');
+  svg.setAttribute('viewBox', '0 0 12 12'); svg.setAttribute('width', size); svg.setAttribute('height', size); svg.setAttribute('aria-hidden', 'true');
+  path.setAttribute('d', g.d); path.setAttribute('fill', g.fill && !hollow ? colour : 'none'); path.setAttribute('stroke', colour);
+  path.setAttribute('stroke-width', '1.2'); path.setAttribute('stroke-linejoin', 'round'); path.setAttribute('stroke-linecap', 'round');
+  svg.append(path);
+  return svg;
+}
+function tokenSvg() {                                    // a small picture of the marker of our ships, for the legend
+  const NS = 'http://www.w3.org/2000/svg', svg = document.createElementNS(NS, 'svg'), round = 2 * Math.PI * 8.3;
+  const add = (tag, attrs, words) => { const n = document.createElementNS(NS, tag); Object.entries(attrs).forEach(([a, v]) => n.setAttribute(a, v)); if (words) n.textContent = words; svg.append(n); };
+  const home = S && S.empires[homeEmpire];
+  svg.setAttribute('viewBox', '0 0 26 26'); svg.setAttribute('width', 24); svg.setAttribute('height', 24); svg.setAttribute('aria-hidden', 'true');
+  add('circle', { cx: 13, cy: 13, r: 12, fill: '#0b0f18', stroke: home && HEX.test(home) ? home : LAWLESS, 'stroke-width': 1.6 });
+  let from = 0;
+  for (const [colour, share] of [[DIV.Mining, 0.45], [DIV.Logistics, 0.3], [DIV.Military, 0.25]]) {
+    add('circle', { cx: 13, cy: 13, r: 8.3, fill: 'none', stroke: colour, 'stroke-width': 2.6, transform: 'rotate(-90 13 13)',
+      'stroke-dasharray': (share * round).toFixed(2) + ' ' + round.toFixed(2), 'stroke-dashoffset': (-from * round).toFixed(2) });
+    from += share;
   }
-  if (layers.Fleet) area([...shipsBy.keys()].map((id) => sys.get(id)).filter(Boolean), '#cdbdf5', 0.11, R * 0.62, (o) => shipsBy.has(o.id));
-  area(S.systems.filter((s) => (stationsBy.get(s.id) || []).some((b) => b.tag && b.tag === S.our_tag)), '#ffffff', 0.14, R * 0.85, () => false);
+  add('text', { x: 13, y: 16, 'text-anchor': 'middle', 'font-size': 8.5, 'font-weight': 700, fill: '#eef0f6' }, '12');
+  return svg;
+}
+const stands = (b) => !b.status || /^(active|built|online|operational)$/i.test(b.status);   // else: being built, or down
+
+// The ground under the map, as on a strategy game's galaxy map: each empire's space is one region with a soft fill and
+// a thin border in its colour. Our own space lies over it as a region of its own: the systems where a ship of ours
+// was seen in the last hour, and the systems where we own a building. All regions of one view are painted once on
+// a canvas of their own and laid under the map until the view or the data changes.
+const ground = document.createElement('canvas'), gctx = ground.getContext('2d');
+const realm = document.createElement('canvas'), rctx = realm.getContext('2d');
+let realmKey = '', realmVer = 0, realmNames = [];
+const regionRadius = (k) => Math.max(9, terrR * k * 1.3);     // how far a region reaches around each of its systems, on the screen
+function ourSpace() {
+  const ids = new Set(holdBy.keys());
+  for (const id of sphere.keys()) ids.add(id);
+  return [...ids].map((id) => sys.get(id)).filter(Boolean);
+}
+function paintTerritory(k) {
+  const d = window.devicePixelRatio || 1, R = regionRadius(k);
+  const key = [view.x.toFixed(1), view.y.toFixed(1), k.toFixed(5), canvas.width, canvas.height, layers.Regions, layers['Our space'], realmVer].join('|');
+  if (key !== realmKey) {
+    realmKey = key;
+    for (const c of [ground, realm]) { if (c.width !== canvas.width || c.height !== canvas.height) { c.width = canvas.width; c.height = canvas.height; } }
+    rctx.setTransform(1, 0, 0, 1, 0, 0); rctx.clearRect(0, 0, realm.width, realm.height);
+    const area = (list, colour, fill, edge, radius) => {
+      if (!list.length) return;
+      const half = radius * 0.75, line = 1.4, inside = new Set(list.map((s) => s.id)), at = new Map(list.map((s) => [s.id, toScreen(s)]));
+      // only the part of the view the region covers is painted and laid down: a region off the view costs nothing
+      let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+      for (const [x, y] of at.values()) { x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
+      x0 = Math.max(0, Math.floor(x0 - radius - 2)); x1 = Math.min(W, Math.ceil(x1 + radius + 2)); y0 = Math.max(0, Math.floor(y0 - radius - 2)); y1 = Math.min(H, Math.ceil(y1 + radius + 2));
+      if (x1 <= x0 || y1 <= y0) return;
+      // The shape: a disc per system, a band along each lane between two systems of the region, and the triangles and
+      // squares its lanes close, so that a region has no hole. All of it is one path, filled once.
+      const spans = [], faces = [];
+      for (const s of list) {
+        const p = at.get(s.id), near = s.lanes.filter((id) => id > s.id && inside.has(id));
+        for (const id of near) spans.push([p, at.get(id)]);
+        for (let i = 0; i < near.length; i++) {
+          for (let j = i + 1; j < near.length; j++) {
+            const a = sys.get(near[i]), b = sys.get(near[j]);
+            if (a.lanes.includes(b.id)) faces.push([p, at.get(a.id), at.get(b.id)]);
+            const far = a.lanes.find((id) => id > s.id && id !== b.id && inside.has(id) && b.lanes.includes(id));
+            if (far) faces.push([p, at.get(a.id), at.get(far), at.get(b.id)]);
+          }
+        }
+      }
+      const outline = (rad, wide) => {
+        const path = new Path2D();
+        const face = (pts) => {                                   // every part runs the same way round as a disc: parts that overlap add up and never cancel
+          let turn = 0;
+          for (let i = 0; i < pts.length; i++) { const p = pts[i], q = pts[(i + 1) % pts.length]; turn += p[0] * q[1] - q[0] * p[1]; }
+          if (turn < 0) pts = pts.slice().reverse();
+          path.moveTo(pts[0][0], pts[0][1]);
+          for (let i = 1; i < pts.length; i++) path.lineTo(pts[i][0], pts[i][1]);
+          path.closePath();
+        };
+        for (const [x, y] of at.values()) { path.moveTo(x + rad, y); path.arc(x, y, rad, 0, 6.2832); }
+        for (const [p, q] of spans) {                             // the band along a lane: its ends lie inside the two discs
+          const len = Math.hypot(q[0] - p[0], q[1] - p[1]) || 1, nx = -(q[1] - p[1]) / len * wide, ny = (q[0] - p[0]) / len * wide;
+          face([[p[0] + nx, p[1] + ny], [q[0] + nx, q[1] + ny], [q[0] - nx, q[1] - ny], [p[0] - nx, p[1] - ny]]);
+        }
+        faces.forEach(face);
+        return path;
+      };
+      const box = [Math.floor(x0 * d), Math.floor(y0 * d), Math.ceil((x1 - x0) * d), Math.ceil((y1 - y0) * d)];
+      gctx.setTransform(d, 0, 0, d, 0, 0); gctx.globalCompositeOperation = 'source-over'; gctx.globalAlpha = 1;
+      gctx.clearRect(x0 - 1, y0 - 1, x1 - x0 + 2, y1 - y0 + 2);
+      gctx.fillStyle = colour;
+      gctx.fill(outline(radius, half));
+      gctx.globalCompositeOperation = 'destination-out'; gctx.globalAlpha = 1 - fill / edge;   // the inside is thinned to the fill; what stays whole is the border
+      gctx.fill(outline(radius - line, half - line));
+      gctx.globalCompositeOperation = 'source-over'; gctx.globalAlpha = 1;
+      rctx.globalAlpha = edge; rctx.drawImage(ground, box[0], box[1], box[2], box[3], box[0], box[1], box[2], box[3]);
+    };
+    if (layers.Regions) {
+      const realms = new Map();
+      for (const s of S.systems) { if (s.empire) { if (!realms.has(s.empire)) realms.set(s.empire, []); realms.get(s.empire).push(s); } }
+      for (const list of realms.values()) area(list, color(list[0]), 0.1, 0.5, R);
+    }
+    if (layers['Our space']) area(ourSpace(), OURS, 0.085, 0.7, R * 0.62);
+    rctx.globalAlpha = 1;
+  }
+  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(realm, 0, 0); ctx.restore();
 }
 
 function paint(t) {
@@ -331,7 +438,24 @@ function paint(t) {
     ctx.fillStyle = 'rgba(186,198,232,' + a.toFixed(2) + ')';
     ctx.fillRect((((u * W + px) % W) + W) % W, (((v * H + py) % H) + H) % H, size, size);
   }
-  if (layers.Territory) paintTerritory(k);
+  if (layers.Regions || layers['Our space']) paintTerritory(k);
+  if (layers.Regions && k < 0.24) {                                 // each empire's name across its space, large and faint; it fades as the view comes close
+    const size = Math.max(11, Math.min(22, 250 * k)), fade = Math.min(1, (0.24 - k) / 0.08), gap = size * 0.42, reach = regionRadius(k) + size * 0.9;
+    const dots = S.systems.map(toScreen);
+    ctx.font = '600 ' + size.toFixed(1) + 'px system-ui, sans-serif'; ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
+    for (const n of realmNames) {
+      const x = (n.x - view.x) * k + W / 2, letters = [...n.word], widths = letters.map((ch) => ctx.measureText(ch).width);
+      const total = widths.reduce((a, b) => a + b, 0) + gap * (letters.length - 1);
+      const under = (n.y1 - view.y) * k + H / 2 + reach, over = (n.y0 - view.y) * k + H / 2 - reach;   // just outside the region, below or above it: where fewer systems stand
+      const crowd = (yy) => dots.reduce((m, q) => m + (Math.abs(q[0] - x) < total / 2 + 8 && Math.abs(q[1] - yy) < size * 0.8 + 5 ? 1 : 0), 0);
+      const y = crowd(under) <= crowd(over) ? under : over;
+      if (x < -total || x > W + total || y < -30 || y > H + 30) continue;
+      ctx.fillStyle = rgba(n.colour, (0.55 * fade).toFixed(2));
+      let at = x - total / 2;
+      letters.forEach((ch, i) => { ctx.fillText(ch, at, y); at += widths[i] + gap; });
+    }
+    ctx.textBaseline = 'alphabetic';
+  }
   if (layers.Lanes) {
     const strokes = new Map();                                      // one path per colour
     for (const s of S.systems) {
@@ -367,56 +491,95 @@ function paint(t) {
       ctx.beginPath(); ctx.arc(x, y, r + 2 + Math.min(11, Math.sqrt(n) * 1.5), 0, 6.2832); ctx.fill();
     }
   }
-  const labels = [];
-  ctx.font = '11px system-ui, sans-serif';
-  for (const s of S.systems) {
+  // Our ships: one marker per system, in the system's own place. Inside: a ring with a slice per division around the
+  // number of ships; the outer ring keeps the colour of whose space it is. Where two markers would touch, the smaller
+  // group is drawn small and without its number (the tooltip and the card still tell it).
+  const tokens = new Map();
+  if (layers.Fleet) {
+    const rows = [];
+    for (const [id, list] of shipsBy) {
+      const s = sys.get(id);
+      if (!s) continue;
+      const [x, y] = toScreen(s);
+      if (x < -60 || y < -60 || x > W + 60 || y > H + 60) continue;
+      const n = list.length, core = n > 99 ? 9.6 : n > 9 ? 7.2 : 5.2;
+      rows.push({ id, x, y, n, list, core, R: core + 6.3, full: true });
+    }
+    rows.sort((a, b) => b.n - a.n || (a.id < b.id ? -1 : 1));
+    const full = [];
+    for (const row of rows) {
+      if (full.some((o) => Math.hypot(o.x - row.x, o.y - row.y) < o.R + row.R + 1)) { row.full = false; row.core = 0; row.R = 7; } else full.push(row);
+      tokens.set(row.id, row);
+    }
+  }
+  for (const s of S.systems) {                                      // the systems without ships of ours: a small star in the colour of whose space it is
     const [x, y] = toScreen(s);
-    if (x < -40 || y < -40 || x > W + 40 || y > H + 40) continue;
-    const c = color(s), q = s.home ? r + 2 : r, ours = layers.Fleet && shipsBy.has(s.id);
+    if (x < -40 || y < -40 || x > W + 40 || y > H + 40 || tokens.has(s.id)) continue;
+    const c = color(s), q = s.home ? r + 2 : r;
     ctx.fillStyle = rgba(c, 0.09); ctx.beginPath(); ctx.arc(x, y, q * 1.5, 0, 6.2832); ctx.fill();      // glow
     ctx.fillStyle = c; ctx.beginPath(); ctx.arc(x, y, q, 0, 6.2832); ctx.fill();
     ctx.fillStyle = 'rgba(255,255,255,0.3)'; ctx.beginPath(); ctx.arc(x - q * 0.28, y - q * 0.28, q * 0.34, 0, 6.2832); ctx.fill();
-    if (layers.Stations && stationsBy.has(s.id)) {
-      const bases = stationsBy.get(s.id);
-      ctx.strokeStyle = bases.some((b) => b.tag) ? 'rgba(232,195,90,0.75)' : 'rgba(207,211,230,0.5)'; ctx.lineWidth = 1;
-      ctx.beginPath(); ctx.arc(x, y, q + 2.5, 0, 6.2832); ctx.stroke();
-      if (bases.some((b) => b.tag && b.tag === S.our_tag)) {         // a base of our own: a white square around the system
-        ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.6; ctx.strokeRect(x - q - 5, y - q - 5, 2 * q + 10, 2 * q + 10);
-      }
+  }
+  badgeHits = []; groupHits = [];
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = '700 9.5px system-ui, sans-serif';
+  for (const tok of [...tokens.values()].sort((a, b) => Number(b.full) - Number(a.full))) {   // the markers with a number first, the small ones over them
+    const { id, x, y, R, core, n, list } = tok, groups = fleetGroups(list), c = color(sys.get(id)), rim = core ? 1.9 : 1.5, ro = R - rim - (core ? 1.3 : 1.1);
+    ctx.fillStyle = 'rgba(11,15,24,0.96)'; ctx.beginPath(); ctx.arc(x, y, R, 0, 6.2832); ctx.fill();
+    ctx.strokeStyle = c; ctx.lineWidth = rim; ctx.beginPath(); ctx.arc(x, y, R - rim / 2, 0, 6.2832); ctx.stroke();   // the outer ring: whose space it is
+    let from = -1.5708;
+    for (const g of groups) {
+      const to = from + 6.2832 * g.ships.length / n;
+      ctx.fillStyle = g.colour; ctx.beginPath();
+      if (core) { ctx.arc(x, y, ro, from, to); ctx.arc(x, y, core, to, from, true); } else { ctx.moveTo(x, y); ctx.arc(x, y, ro, from, to); }
+      ctx.closePath(); ctx.fill();
+      from = to;
     }
-    if (layers.Sites && sitesBy.has(s.id) && sitesBy.get(s.id).status !== 'dropped') {   // a site named for a base: a small flag, white once built
-      ctx.strokeStyle = ctx.fillStyle = sitesBy.get(s.id).status === 'built' ? '#ffffff' : 'rgba(190,170,240,0.95)'; ctx.lineWidth = 1.2;
-      ctx.beginPath(); ctx.moveTo(x - q - 1.5, y - q); ctx.lineTo(x - q - 1.5, y - q - 12); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(x - q - 1.5, y - q - 12); ctx.lineTo(x - q - 9, y - q - 9.5); ctx.lineTo(x - q - 1.5, y - q - 7); ctx.closePath(); ctx.fill();
+    if (core) { ctx.fillStyle = '#eef0f6'; ctx.fillText(String(n), x, y + 0.5); }
+    if ((pop && pop.system === id) || (hoverBadge && hoverBadge.system === id) || list.some((sh) => sh.name === selShip)) {   // open, under the pointer, or the ship in the panel is here
+      ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(x, y, R + 2.2, 0, 6.2832); ctx.stroke();
     }
-    if (layers.Strongholds && s.stronghold) {
-      ctx.strokeStyle = '#e06c66'; ctx.lineWidth = 1.8; ctx.lineCap = 'round'; ctx.beginPath();
-      ctx.moveTo(x - q - 4, y - q - 4); ctx.lineTo(x + q + 4, y + q + 4);
-      ctx.moveTo(x + q + 4, y - q - 4); ctx.lineTo(x - q - 4, y + q + 4); ctx.stroke(); ctx.lineCap = 'butt';
-    }
+    badgeHits.push({ x: x - R - 1, y: y - R - 1, w: 2 * R + 2, h: 2 * R + 2, system: id, kind: 'All', count: n,
+      parts: groups.map((g) => g.ships.length + ' ' + (g.kind === 'Command' ? 'command group' : g.kind)).join(', ') });
+  }
+  ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+  const labels = [], size = (id, home) => (tokens.has(id) ? tokens.get(id).R : home ? r + 2 : r);   // how far a system's own mark reaches
+  const near = k >= 0.09;                                          // from far away the map keeps to regions, ships, our own marks and what is dangerous
+  ctx.font = '11px system-ui, sans-serif';
+  for (const s of S.systems) {                                      // the small marks beside each system, and its name
+    const [x, y] = toScreen(s);
+    if (x < -40 || y < -40 || x > W + 40 || y > H + 40) continue;
+    const q = size(s.id, s.home), ours = tokens.has(s.id), d = q * 0.71 + 3.4;   // d: a mark on the system's diagonal, just outside it
+    const bases = layers.Stations ? (stationsBy.get(s.id) || []).filter((b) => !(b.tag && b.tag === S.our_tag)) : [];
+    const theirs = bases.some((b) => b.tag);                       // a station of others: gold when a player faction owns it; the empires' own only from near
+    if (bases.length && (theirs || near)) glyph(ctx, 'pip', x + d, y + d, near ? 7.5 : 6.5, theirs ? '#e8c35a' : '#aeb5cc');
+    if (layers.Strongholds && s.stronghold) glyph(ctx, 'cross', x - d, y - d, 8.5, '#e06c66');
     const intel = layers.Intel && S.intel.systems[s.id];
-    if (intel && intel.standing !== 'neutral') {                    // our standing: a dashed ring, green or red
-      ctx.strokeStyle = intel.standing === 'ally' ? 'rgba(88,192,140,0.85)' : 'rgba(224,108,102,0.9)'; ctx.lineWidth = 1.4;
-      ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.arc(x, y, q + 5, 0, 6.2832); ctx.stroke(); ctx.setLineDash([]);
+    if (intel) {                                                    // what our intel files say of the danger there: a red triangle always, an amber one from near
+      const high = intel.standing === 'hostile' || /high|severe|extreme|deadly/.test(intel.threat || '');
+      if (high || (near && intel.threat === 'medium')) glyph(ctx, 'threat', x + d, y - d, 8, high ? '#e06c66' : '#dcae58');
     }
-    if (ours && shipsBy.get(s.id).some((sh) => sh.name === selShip)) {   // the ship in the panel is here: a white ring (the pie above marks our ships)
-      ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.2;
-      ctx.beginPath(); ctx.arc(x, y, q + 5.5, 0, 6.2832); ctx.stroke();
+    const own = layers['Our bases'] ? holdBy.get(s.id) || [] : [], site = layers['Our bases'] ? sitesBy.get(s.id) : null;
+    const planned = site && site.status !== 'dropped' && site.status !== 'built' && !own.some((b) => b.kind === 'outpost' || b.kind === 'station');
+    if (own.length || planned) {                                    // ours, above the system: one mark per kind of building, amber while one is being built; a flag for a planned base
+      const kinds = new Map(), row = [];
+      for (const b of own) { if (!kinds.has(b.kind)) kinds.set(b.kind, true); if (!stands(b)) kinds.set(b.kind, false); }
+      for (const [kind, done] of kinds) row.push([kind, done ? BUILT : RAISING, false]);
+      if (planned) row.push(['flag', site.status === 'candidate' ? rgba(OURS, 0.7) : OURS, site.status === 'candidate']);
+      row.forEach(([name, colour, hollow], i) => glyph(ctx, name, x - (row.length - 1) * 7 + i * 14, y - q - 10.5, 12, colour, hollow));
     }
     if (s.id === selected) {
-      const beat = (Math.sin(t * 2.6) + 1) / 2;
+      const beat = (Math.sin(t * 2.6) + 1) / 2, ring = ours ? q + 4.5 : q + 8.5;
       ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.8;
-      ctx.beginPath(); ctx.arc(x, y, q + 8.5, 0, 6.2832); ctx.stroke();
+      ctx.beginPath(); ctx.arc(x, y, ring, 0, 6.2832); ctx.stroke();
       ctx.strokeStyle = 'rgba(255,255,255,' + (0.3 * (1 - beat)).toFixed(2) + ')'; ctx.lineWidth = 1.2;
-      ctx.beginPath(); ctx.arc(x, y, q + 9 + beat * 6, 0, 6.2832); ctx.stroke();
+      ctx.beginPath(); ctx.arc(x, y, ring + 0.5 + beat * 6, 0, 6.2832); ctx.stroke();
     }
     if (layers.Names) {                                             // names are drawn after the systems: the important ones first, none over another
-      const site = layers.Sites && sitesBy.has(s.id) && sitesBy.get(s.id).status !== 'dropped', picked = s.id === selected || s.id === hover;
-      const rank = picked ? 2000 : s.home ? 1500 : site ? 800 : ours && k > 0.085 ? 500 + shipsBy.get(s.id).length : k > 0.16 ? 100 : 0;
+      const picked = s.id === selected || s.id === hover;
+      const rank = picked ? 2000 : s.home ? 1500 : own.length || planned ? 800 : ours && k > 0.085 ? 500 + shipsBy.get(s.id).length : k > 0.16 ? 100 : 0;
       if (rank) labels.push({ name: s.name, x, y, q, bold: Boolean(s.home || ours), rank });
     }
   }
-  badgeHits = []; groupHits = [];
   if (layers.Factions) {                                            // the larger groups of one foreign faction: a tag and a count under the system
     ctx.font = '600 10.5px system-ui, sans-serif'; ctx.textBaseline = 'middle';
     for (const [id, list] of groupsBy) {
@@ -424,7 +587,7 @@ function paint(t) {
       if (!s) continue;
       const [x, y] = toScreen(s);
       if (x < -60 || y < -40 || x > W + 60 || y > H + 20) continue;
-      const q = s.home ? r + 2 : r, show = list.filter((g) => k >= 0.12 || g.count >= 8).slice(0, 2);
+      const q = size(id, s.home), show = list.filter((g) => k >= 0.12 || g.count >= 8).slice(0, 2);
       show.forEach((g, i) => {
         const label = g.tag + ' ' + g.count, w = ctx.measureText(label).width + 14, gx = x - w / 2, gy = y + q + 9 + i * 18;
         const c = g.standing === 'hostile' ? '#e06c66' : g.standing === 'ally' ? '#58c08c' : '#dcae58';
@@ -443,48 +606,6 @@ function paint(t) {
       });
     }
     ctx.textBaseline = 'alphabetic';
-  }
-  if (layers.Fleet) {                                               // our ships: one small pie per system, a slice per division, the count beside it
-    ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
-    ctx.font = '650 10.5px system-ui, sans-serif';
-    const rows = [];
-    for (const [id, list] of shipsBy) {
-      const s = sys.get(id);
-      if (!s) continue;
-      const [x, y] = toScreen(s);
-      if (x < -60 || y < -20 || x > W + 60 || y > H + 80) continue;
-      const R = Math.max(4.5, Math.min(7, r));                      // zoomed in it is as large as the system's dot, never larger
-      rows.push({ id, x, y, R, list, cy: y - r - 12 - R });
-    }
-    rows.sort((a, b) => b.y - a.y);                                 // the lowest system first: a pie that would cover another moves up
-    const placed = [];
-    for (const row of rows) {
-      const { id, x, R, list } = row, groups = fleetGroups(list), n = list.length, label = String(n);
-      row.w = ctx.measureText(label).width;                         // a pie and its number are one box
-      const covers = (b) => Math.abs(b.cy - row.cy) < b.R + R + 5 && x - R - 3 < b.x + b.R + 7 + b.w && b.x - b.R - 3 < x + R + 7 + row.w;
-      for (let tries = 0; tries < 12 && placed.some(covers); tries++) row.cy -= 9;
-      placed.push(row);
-      const cy = row.cy;
-      const open = pop && pop.system === id, hot = hoverBadge && hoverBadge.system === id;
-      ctx.strokeStyle = 'rgba(213,218,230,0.28)'; ctx.lineWidth = 1;
-      ctx.beginPath(); ctx.moveTo(x, cy + R + 2); ctx.lineTo(x, row.y - r - 4); ctx.stroke();
-      ctx.fillStyle = 'rgba(11,15,24,0.95)';
-      ctx.beginPath(); ctx.arc(x, cy, R + 1.5, 0, 6.2832); ctx.fill();
-      let from = -1.5708;
-      for (const g of groups) {
-        const to = from + 6.2832 * g.ships.length / n;
-        ctx.fillStyle = g.colour; ctx.beginPath(); ctx.moveTo(x, cy); ctx.arc(x, cy, R, from, to); ctx.closePath(); ctx.fill();
-        from = to;
-      }
-      if (open || hot || list.some((sh) => sh.name === selShip)) {  // open, under the pointer, or the ship in the panel is here
-        ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(x, cy, R + 3, 0, 6.2832); ctx.stroke();
-      }
-      ctx.lineWidth = 3; ctx.lineJoin = 'round'; ctx.strokeStyle = 'rgba(11,15,24,0.92)'; ctx.strokeText(label, x + R + 4, cy + 0.5);
-      ctx.fillStyle = '#eef0f6'; ctx.fillText(label, x + R + 4, cy + 0.5);
-      badgeHits.push({ x: x - R - 4, y: cy - R - 5, w: 2 * R + 10 + row.w, h: 2 * R + 10, system: id, kind: 'All', count: n,
-        parts: groups.map((g) => g.ships.length + ' ' + (g.kind === 'Command' ? 'command group' : g.kind)).join(', ') });
-    }
-    ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
   }
   labels.sort((a, b) => b.rank - a.rank);                           // names last: beside their system, right or left, where no marker and no other name stands
   const taken = badgeHits.concat(groupHits).map((b) => [b.x, b.y, b.x + b.w, b.y + b.h]);
@@ -958,6 +1079,12 @@ async function renderSelection(panel, live) {
     ['Pilots seen (1 h / 24 h)', (L.hour[s.id] || 0) + ' / ' + (L.day[s.id] || 0)],
     ['Flags', [s.home ? 'empire home' : '', s.stronghold ? 'pirate stronghold' : ''].filter(Boolean).join(', ') || 'none'],
   ]));
+  const own = holdBy.get(s.id) || [], site = sitesBy.get(s.id);
+  if (own.length || (site && site.status !== 'dropped')) {       // what we own here and what we plan here
+    panel.append(el('h3', null, 'Ours here'));
+    if (own.length) panel.append(table(['Building', 'Tier', 'At', 'State'], own.map((b) => [b.name, b.level || '', b.at || '', (b.status || 'active').replace(/_/g, ' ')])));
+    if (site && site.status !== 'dropped') panel.append(el('p', 'sub', 'A site for a base of ours: ' + site.status + (site.by ? ', proposed by ' + site.by : '') + '.'));
+  }
   const ours = shipsBy.get(s.id) || [];
   if (ours.length) {
     panel.append(el('h3', null, 'Our ships here (' + ours.length + ')'));
@@ -1489,7 +1616,9 @@ function status() {
   item('Fleet data', fleetAgeText(), fleetLive() ? 'good' : 'bad');
   box.lastChild.querySelector('b').id = 'fleet-age';
   box.lastChild.title = 'How old the picture of our ships is. The collector reads the engine every 10 seconds, about once a game tick';
-  item('Tick', fmt(st.tick), null, 'wide'); item('Game', st.version || '?', null, 'wide'); item('Online', fmt(st.online_players), null, 'opt');
+  item('Online', fmt(st.online_players));
+  box.lastChild.title = 'Players in the game right now, by the game\'s own count; the station reads it every minute';
+  item('Tick', fmt(st.tick), null, 'wide'); item('Game', st.version || '?', null, 'wide');
   const liveStream = L.stream || {}, streams = Boolean(liveStream.connected && liveStream.age < 60);
   item('Stream', streams ? 'live' : 'down', streams ? 'good' : 'bad', streams ? 'opt' : null);
   if (S) {
@@ -1497,6 +1626,9 @@ function status() {
     item('Sources', bad.length ? 'problem: ' + bad.join(', ') : 'good', bad.length ? 'warn' : 'good', bad.length ? null : 'opt');
   }
   box.title = [...box.children].map((s) => s.textContent).join(' | ');
+  const bar = box.parentElement;                 // the status box is never cut: where it would be, the search field gives way
+  bar.classList.remove('tight');
+  if (box.scrollWidth > box.clientWidth + 1) bar.classList.add('tight');
 }
 
 // ---------------------------------------------------------------- comms: one conversation with all six members
@@ -1633,23 +1765,51 @@ async function loadState() {
   homeEmpire = (sys.get(S.home) || {}).empire || '';
   sitesBy.clear();
   (S.sites || []).forEach((t) => sitesBy.set(t.system, t));
+  holdBy.clear();
+  ((S.holdings || {}).buildings || []).forEach((b) => { if (!holdBy.has(b.system)) holdBy.set(b.system, []); holdBy.get(b.system).push(b); });
+  const spaces = new Map();
+  for (const s of S.systems) { if (s.empire) { if (!spaces.has(s.empire)) spaces.set(s.empire, []); spaces.get(s.empire).push(s); } }
+  realmNames = [...spaces].map(([name, list]) => ({ word: (name === 'outerrim' ? 'outer rim' : name).toUpperCase(), colour: color(list[0]),
+    x: list.reduce((a, o) => a + o.x, 0) / list.length, y0: Math.min(...list.map((o) => o.y)), y1: Math.max(...list.map((o) => o.y)) }));
+  realmVer++;
   const legend = $('legend');
   legend.replaceChildren();
-  for (const [name, c] of Object.entries(S.empires).concat([['lawless', LAWLESS]])) {
-    const span = el('span'), dot = el('i');
-    dot.style.background = HEX.test(c) ? c : LAWLESS;
-    span.append(dot, name); legend.append(span);
+  const head = (words) => legend.append(el('span', 'lhead', words));
+  const row = (icon, words, wide) => { const span = el('span', wide ? 'lrow full' : 'lrow'); span.append(icon, words); legend.append(span); };
+  const swatch = (edge, fill) => { const i = el('i', 'swatch'); i.style.borderColor = edge; i.style.background = fill; return i; };
+  head('Regions');
+  for (const [name, c] of Object.entries(S.empires)) {
+    const colour = HEX.test(c) ? c : LAWLESS;
+    row(swatch(rgba(colour, 0.75), rgba(colour, 0.22)), name === 'outerrim' ? 'outer rim' : name);
   }
-  for (const kind of KINDS.slice(0, 6)) {            // our ships: the silhouette of each kind
-    const span = el('span', 'kind');
+  const free = el('i'); free.style.background = LAWLESS;
+  row(free, 'lawless');
+  row(swatch(rgba(OURS, 0.9), rgba(OURS, 0.16)), 'our space: where our ships were in the last hour, and our buildings', true);
+  head('Our fleet');
+  row(tokenSvg(), 'our ships: a slice per division, their number inside; outer ring: whose space', true);
+  for (const kind of KINDS.slice(0, 6)) {            // the silhouette of each kind, as in the roster
+    const span = el('span', 'lrow kind');
     span.append(shipSvg(kind === 'Command' ? 'Flagship' : kind, DIV[kind], 13), kind === 'Command' ? 'command group' : kind.toLowerCase());
     legend.append(span);
   }
-  legend.append(el('span', 'note', 'tinted ground: an empire\'s space; lighter: where our ships work'),
-    el('span', 'note', 'ring: station (gold: player faction)'), el('span', 'note', 'white square: a base of ours'),
-    el('span', 'note', 'small flag: a site named for a base'), el('span', 'note', 'red cross: pirate stronghold'),
-    el('span', 'note', 'faint amber: pilots seen in the last hour'), el('span', 'note', 'pie and number: our ships by division'),
-    el('span', 'note', 'tag and number: a foreign faction, last hour; click it for its ships'));
+  head('Ours');
+  row(glyphSvg('storage', BUILT, 13), 'shared storage');
+  row(glyphSvg('recruit', BUILT, 13), 'hiring office');
+  row(glyphSvg('office', BUILT, 13), 'other office');
+  row(glyphSvg('outpost', BUILT, 13), 'outpost');
+  row(glyphSvg('station', BUILT, 13), 'station');
+  row(glyphSvg('storage', RAISING, 13), 'amber: being built');
+  row(glyphSvg('flag', OURS, 13), 'site chosen for a base');
+  row(glyphSvg('flag', rgba(OURS, 0.7), 13, true), 'candidate site');
+  head('Others');
+  row(glyphSvg('pip', '#aeb5cc', 12), 'station');
+  row(glyphSvg('pip', '#e8c35a', 12), 'a player faction\'s base');
+  row(glyphSvg('cross', '#e06c66', 12), 'pirate stronghold');
+  row(glyphSvg('threat', '#dcae58', 12), 'danger by our intel');
+  row(glyphSvg('threat', '#e06c66', 12), 'high danger');
+  row(el('span', 'ltag', 'TAG 5'), 'foreign faction, its pilots in the last hour', true);
+  const seen = el('i', 'seen');
+  row(seen, 'traffic in the last hour', true);
 }
 async function loadLive() {
   try { L = await get('/api/live'); } catch (e) { L.stream = { connected: false, age: -1 }; }
@@ -1661,6 +1821,12 @@ async function loadFleet() {
   try { F = await get('/api/fleet'); fetchedAt = Date.now(); } catch (e) { F = Object.assign({}, F, { age: -1 }); }
   shipsBy.clear();
   F.ships.forEach((r) => { if (r.system) { if (!shipsBy.has(r.system)) shipsBy.set(r.system, []); shipsBy.get(r.system).push(r); } });
+  const nowMs = Date.now();                    // our own space: every system where a ship of ours was seen in the last hour; the browser remembers it over a reload
+  let moved = false;
+  for (const id of shipsBy.keys()) { if (!sphere.has(id)) moved = true; sphere.set(id, nowMs); }
+  for (const [id, at] of sphere) { if (nowMs - at > SPHERE_MS) { sphere.delete(id); moved = true; } }
+  if (moved) realmVer++;
+  if (nowMs - sphereSaved > 60000) { sphereSaved = nowMs; try { localStorage.setItem('station.sphere', JSON.stringify([...sphere])); } catch (e) { /* no storage */ } }
   renderMembers(); renderRoster(); renderNotice(); tickAges(); renderPop(); draw();
   if (tab === 'Metrics' && Date.now() - metricsAt >= 30000) render();   // not at every poll: the page under the reader stays still
   if (selShip) {
@@ -1739,15 +1905,18 @@ function init() {
     canvas.style.cursor = badge || grp ? 'pointer' : '';
     const placeName = (b) => { const o = sys.get(b.system); return o ? o.name : b.system; };
     if (badge) {
-      tip.textContent = badge.count + (badge.count === 1 ? ' ship' : ' ships') + ' of ours at ' + placeName(badge) + ': ' + badge.parts + ' | click for the card';
+      const at = sys.get(badge.system) || {};
+      tip.textContent = badge.count + (badge.count === 1 ? ' ship' : ' ships') + ' of ours at ' + placeName(badge) + ' (' + (at.empire || 'lawless') + '): ' + badge.parts + ' | click for the card';
       tip.style.left = mx + 14 + 'px'; tip.style.top = my + 12 + 'px'; tip.hidden = false;
     } else if (grp) {
       const g = grp.group;
       tip.textContent = '[' + g.tag + '] ' + (g.name || 'a faction') + ': ' + g.count + ' pilots jumped into ' + placeName(grp) + ' in the last hour | our standing: ' + g.standing + ' | click for the pilots and their ships';
       tip.style.left = mx + 14 + 'px'; tip.style.top = my + 12 + 'px'; tip.hidden = false;
     } else if (s) {
-      const ours = (shipsBy.get(s.id) || []).length;
-      tip.textContent = s.name + (s.empire ? ' (' + s.empire + ')' : '') + ' | ' + (L.hour[s.id] || 0) + ' pilots in the last hour' + (ours ? ' | ' + ours + ' of ours' : '');
+      const ours = (shipsBy.get(s.id) || []).length, own = holdBy.get(s.id) || [], site = sitesBy.get(s.id);
+      tip.textContent = s.name + (s.empire ? ' (' + s.empire + ')' : '') + ' | ' + (L.hour[s.id] || 0) + ' pilots in the last hour' + (ours ? ' | ' + ours + ' of ours' : '')
+        + (own.length ? ' | ours: ' + own.map((b) => b.name + (stands(b) ? '' : ' (being built)')).join(', ') : '')
+        + (site && site.status !== 'dropped' && site.status !== 'built' ? ' | a site for a base: ' + site.status : '');
       tip.style.left = mx + 14 + 'px'; tip.style.top = my + 12 + 'px'; tip.hidden = false;
     } else tip.hidden = true;
     draw();
@@ -1756,7 +1925,7 @@ function init() {
   canvas.addEventListener('click', (e) => {
     if (moved || !S) return;
     const r = canvas.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top, badge = badgeAt(mx, my);
-    if (badge) { $('tip').hidden = true; openPop(badge.system, badge.kind); return; }
+    if (badge) { $('tip').hidden = true; select(badge.system, false); openPop(badge.system, badge.kind); return; }   // our ships stand in the system's own place: the system is picked and their card opens
     const grp = groupAt(mx, my);
     if (grp) { $('tip').hidden = true; openGroup(grp.system, grp.group); return; }
     const s = nearest(mx, my);

@@ -945,6 +945,7 @@ def api_state():
     out["roster"] = ROSTER
     out["our_tag"] = OUR_TAG
     out["sites"] = load_sites()
+    out["holdings"] = load_holdings()
     out["token"] = TOKEN
     now = time.time()
     out["sources"] = {n: {"age": int(now - s["ok_at"]) if s["ok_at"] else -1, "error": s["error"]} for n, s in STATUS.items()}
@@ -1003,6 +1004,7 @@ def foreign_groups(now, system=None, least=GROUP_MIN, cap=80):
 
 
 SITES = {"at": 0.0, "value": []}
+HOLDINGS = {"at": 0.0, "value": {"read_at": "", "buildings": []}}
 MET = {"at": 0.0, "value": {}}
 HULLS = {"at": 0.0, "value": {}}
 VERSION_FILE = re.compile(r"(\d+(?:\.\d+)*)\.json")
@@ -1023,6 +1025,45 @@ def load_sites():
                 value.append({"system": text(cells[0], 80), "status": text(cells[2], 20), "by": text(cells[3], 20)})
         SITES["at"], SITES["value"] = time.time(), value
     return SITES["value"]
+
+
+def holding_kind(kind):
+    """The mark a building of ours gets on the map: outpost, station, storage (a Lockbox or any other store), recruit
+    (an office that raises the faction's member limit) or office (every other facility)."""
+    word = str(kind).lower()
+    if word in ("outpost", "station"):
+        return word
+    if any(w in word for w in ("lockbox", "storage", "warehouse", "vault", "depot")):
+        return "storage"
+    if "hiring" in word or "recruit" in word:
+        return "recruit"
+    return "office"
+
+
+def load_holdings():
+    """What the faction owns, for the map (data/empire/empire.json beside the fleet folder, written from the game by
+    game/fleet/empire.py collect): {"read_at", "buildings": [{"system", "kind", "name", "level", "status", "at"}]},
+    the bases (outposts, stations) first, then the facilities at stations. Read at most once a minute; no file or a
+    broken one: nothing owned, no fault."""
+    if time.time() - HOLDINGS["at"] > 60:
+        value = {"read_at": "", "buildings": []}
+        try:
+            d = read_json(FLEET.parent / "empire" / "empire.json")
+        except (OSError, ValueError):
+            d = {}
+        if isinstance(d, dict):
+            value["read_at"] = text(d.get("written_at"), 30)
+            for b in (d.get("bases") if isinstance(d.get("bases"), list) else [])[:100]:
+                if isinstance(b, dict) and b.get("system"):
+                    value["buildings"].append({"system": text(b["system"], 80), "kind": holding_kind(b.get("kind")), "name": text(b.get("name"), 80),
+                                               "level": 0, "status": text(b.get("status"), 30) or "active", "at": ""})
+            for f in (d.get("facilities") if isinstance(d.get("facilities"), list) else [])[:300]:
+                if isinstance(f, dict) and f.get("system"):
+                    value["buildings"].append({"system": text(f["system"], 80), "kind": holding_kind(f.get("type") or f.get("name")),
+                                               "name": text(f.get("name") or f.get("type"), 80), "level": int(num(f.get("level"))),
+                                               "status": text(f.get("status"), 30) or "active", "at": text(f.get("base"), 80).replace("_", " ").title()})
+        HOLDINGS["at"], HOLDINGS["value"] = time.time(), value
+    return HOLDINGS["value"]
 
 
 def met():

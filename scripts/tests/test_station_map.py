@@ -35,6 +35,24 @@ class StationMapTests(unittest.TestCase):
         (self.base / "repo/game/map/sites.tsv").unlink()
         self.assertEqual(self.station.load_sites(), [])                                             # no file: no sites, no fault
 
+    def test_what_the_faction_owns_reaches_the_map_with_a_mark_per_kind(self):
+        (self.base / "data/empire").mkdir()
+        (self.base / "data/empire/empire.json").write_text(json.dumps({
+            "written_at": "2026-11-17T10:00:00Z",
+            "bases": [{"name": "Test Rock", "kind": "outpost", "system": "wild"}, "not a row"],
+            "facilities": [{"type": "faction_lockbox", "name": "Faction Lockbox", "level": 1, "base": "hub_station", "system": "home", "status": "active"},
+                           {"type": "hiring_board", "name": "Hiring Board", "level": 1, "base": "hub_station", "system": "home", "status": "under_construction"},
+                           {"type": "faction_desk", "name": "Faction Desk", "level": 2, "base": "hub_station", "system": "home"},
+                           {"type": "faction_lockbox", "name": "No system"}]}), encoding="ascii")
+        got = self.station.load_holdings()
+        self.assertEqual(got["read_at"], "2026-11-17T10:00:00Z")
+        self.assertEqual([(b["system"], b["kind"], b["name"], b["level"], b["status"], b["at"]) for b in got["buildings"]],
+                         [("wild", "outpost", "Test Rock", 0, "active", ""), ("home", "storage", "Faction Lockbox", 1, "active", "Hub Station"),
+                          ("home", "recruit", "Hiring Board", 1, "under_construction", "Hub Station"), ("home", "office", "Faction Desk", 2, "active", "Hub Station")])
+        self.station.HOLDINGS["at"] = 0.0
+        (self.base / "data/empire/empire.json").unlink()
+        self.assertEqual(self.station.load_holdings(), {"read_at": "", "buildings": []})            # no file: nothing owned, no fault
+
     def test_a_foreign_group_is_listed_with_the_hulls_our_ships_saw(self):
         now = time.time()
         (self.base / "data/catalog/0.9.0.json").write_text(json.dumps({"ships": [{"id": "big_hull", "name": "Old Name", "tier": 1}]}), encoding="ascii")
