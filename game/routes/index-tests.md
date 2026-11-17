@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 57.
+Routes: 58.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -58,6 +58,7 @@ Routes: 57.
 | [hunt-toi-2257-gas-pocket-cinder-sylph](hunt-toi-2257-gas-pocket-cinder-sylph.json) | hunt | beyond the border, 26 jumps | cinder_sylph at toi_2257_gas_pocket; loot sold at Hex Star | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-violethall-gas-plume-cinder-sylph](hunt-violethall-gas-plume-cinder-sylph.json) | hunt | beyond the border, 17 jumps | cinder_sylph at violethall_gas_plume; loot sold at Hex Star | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-wasat-cryobelt-hollow-pilgrim](hunt-wasat-cryobelt-hollow-pilgrim.json) | hunt | beyond the border, 18 jumps | hollow_pilgrim at wasat_cryobelt; loot sold at The Crucible Garrison | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
+| [hunt-yed-prior-cryobelt-hollow-pilgrim](hunt-yed-prior-cryobelt-hollow-pilgrim.json) | hunt | beyond the border, 18 jumps | hollow_pilgrim at yed_prior_cryobelt; loot sold at The Crucible Garrison | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [mine-alnair-ice-fields-nexus](mine-alnair-ice-fields-nexus.json) | mine | beyond the border, 5 jumps | Alnair Ice Fields: water_ice, nitrogen_ice, deuterium_ice; sold at Central Nexus | up to 1 ships, needs ice_harvester_i, empty hold, while central_nexus bids 25 cr for water_ice | TBD | TBD | TBD | TBD | -- |
 | [mine-atlas-gas-pocket](mine-atlas-gas-pocket.json) | mine | beyond the border, 6 jumps | Atlas Gas Pocket: plasma_gas, xenon_gas, nebula_gas, neon_gas; sold at Node Beta Industrial Station | up to 1 ships, needs gas_harvester_i, empty hold, while node_beta_industrial_station bids 72 cr for plasma_gas | TBD | TBD | TBD | TBD | -- |
 | [mine-deepwell-volatile-ice](mine-deepwell-volatile-ice.json) | mine | beyond the border, 7 jumps | Deepwell Volatile Ice: water_ice, methane_ice, ammonia_ice, helium_ice; sold at The Experiment Research Station | up to 1 ships, needs ice_harvester_i, empty hold, while the_experiment_research_station bids 25 cr for water_ice | TBD | TBD | TBD | TBD | -- |
