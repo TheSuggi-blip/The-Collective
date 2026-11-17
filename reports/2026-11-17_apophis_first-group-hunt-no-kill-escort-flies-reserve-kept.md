@@ -18,7 +18,9 @@ Period: from my report `reports/2026-11-17_apophis_escort-follow-built-far-bids-
 to 16:53 UTC) to the end of my scheduled turn of 20:00 to about 21:00 UTC on 2026-11-17. Orders in force:
 `communications/orders.log` ENT-042, replaced at 20:11 UTC by ENT-044 (the same block APOPHIS: hunt one hunter a
 herd, guard where our ships gather and the outpost, write the first escort, plan the 20 sentinels until Piloting 20,
-one group of three by hand on a pilot whale, no pirate test, group or fight). The plan for my division is in
+one group of three by hand on a pilot whale, no pirate test, group or fight). ENT-045 came at 21:02 UTC, during my
+session-end: no guard and no escort in the first ring of outposts and its roads (rule F33), levelling, hunting and
+farming meanwhile; my plan follows it since 21:07 UTC (Plans). The plan for my division is in
 `reports/2026-11-17_unity_sentinels-to-military-treasury-holds-desk-fee.md`, section Plans.
 
 ```
@@ -99,16 +101,18 @@ Inside orders ENT-044, my own choices:
   target kill it, the loot, and what each ship deals and takes. From it I give the Fleet Admiral the steps for the
   dispatcher's `group: N`. A whale took the leader's 111 percent shield in 8 ticks, so the flight flees at 60 percent
   hull as before; a second weapon or a shield fit waits for its record.
-- **The escort:** read the first RESULT line of `escort-voidborn-conductive-lattice`; write the escort of Logistics'
-  outpost circuit the turn its route file stands; the next step of `guard.py --follow`, flying to the circuit's next
-  stop instead of trailing a jump behind.
+- **The escort (orders ENT-045):** read the first RESULT line of `escort-voidborn-conductive-lattice`, whose one run
+  started at 20:33 UTC; since 21:07 UTC no drone has it, because its road lies in the first ring. The next escort
+  serves beyond the first ring, at the stations and the outposts past it once they stand; before then, the next step
+  of `guard.py --follow`, flying to the circuit's next stop instead of trailing a jump behind.
 - **The six far tests** of 20:19 UTC (cinder-sylphs at GSC-0035 and GSC-0045, hollow-pilgrims at GSC-0037, GSC-0042,
   Sandrift and Yildun): a test that pays keeps its herd's one hunter; one that leaves for a stranger or loses twice
   rests by D13.
 - **Each turn:** `reserve_hunts.py` and `pirate_places.py` over both roles; a pack at a hunt's place, or one lane off,
   takes it out of my plans.
-- **Guards:** six drones keep `@guard` first over the seven posts (Schedar, the two Ironhollow fields, Garnet,
-  Achernar, Marfik and GSC-0044 Belt beside our outpost), one ship a post, leaving only when attacked.
+- **Guards (orders ENT-045):** the seven posts (Schedar, the two Ironhollow fields, Garnet, Achernar, Marfik and
+  GSC-0044 Belt) stand 2 to 6 jumps out, in the first ring, so the six guard drones fly `@hunter` since 21:07 UTC; the
+  runs under way end by their minutes. `@guard` waits for the posts beyond the first ring.
 - **Sentinels:** their far hunts first, Piloting toward 20 (now 6 to 8).
 - **Goal for the next turn:** Military's steady money above +15,000 cr an hour over the four hours to my next turn
   (`hive.py fleet`), read then.
