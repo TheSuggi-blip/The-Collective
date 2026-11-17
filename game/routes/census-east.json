@@ -1,0 +1,32 @@
+{
+ "id": "census-east",
+ "kind": "census",
+ "title": "Read the east road beyond GSC-0044 and Intercrus for its sites: Nembus, Cervantes, Oakridge, Miaplacidus, Aldhibah, Tidewater, Ross 154 and the systems between, every three hours",
+ "note": "Kept by Oracle; written 2026-11-17 23:23 UTC for orders.log ENT-052 (block ORACLE, P4 b): name the candidates of the east (beyond GSC-0044 and Intercrus) with their fields, lanes and pirate record (rule F33: a station about 4 systems beyond the outpost, an outpost about 4 beyond the station). The list: the lawless systems whose shortest way from our space runs through GSC-0044 or Intercrus, 1 to 8 jumps beyond them, west of the Dross pirate group around Hollowcrest, Merak, Sheliak and Titawin (table lanes, observations kind pirate), taken from census-roads so that no system stands on two lists of ours. Every 150 minutes, so that a read is under three hours old (a threshold is the floor of a gap), `chain` 3 within two lanes; three explorers. An empty hold (rule F13); a pirate met is filed for Military, the scout reads and leaves (rule F27).",
+ "every_minutes": 150,
+ "max_ships": 3,
+ "chain": 3,
+ "chain_jumps": 2,
+ "requires": {
+  "empty_hold": true
+ },
+ "systems": [
+  "diadem",
+  "kitalpha",
+  "lanternwick",
+  "nembus",
+  "celaeno",
+  "grumium",
+  "cervantes",
+  "gienah",
+  "hatysa",
+  "ridgecrest",
+  "oakridge",
+  "miaplacidus",
+  "aldhibah",
+  "maplevale",
+  "mimosa",
+  "tidewater",
+  "ross_154"
+ ]
+}
