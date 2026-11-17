@@ -44,6 +44,45 @@ class StorageTests(Tree):
         half = ledger.read_pilot("miner-1", look=lambda p, s: answers[(p, s)] if s == "central_nexus" else (None, [], "timeout"), pause=0)
         self.assertEqual(half["error"], "node_beta: timeout")                                     # a half reading is no reading
 
+    def test_a_free_pilot_whose_run_ended_after_its_reading_is_read_first(self):
+        now = 1_800_000_000
+        text = lambda t: time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(t))
+        names = ["hauler-%d" % n for n in range(1, 9)]
+        (self.data / "routes" / "logs").mkdir()
+
+        def ended(pilot, ago):
+            path = self.data / "routes" / "logs" / (pilot + ".log")
+            path.write_text("RESULT\n")
+            os.utime(path, (now - ago, now - ago))
+
+        book = {"pilots": {name: {"read_at": text(now - 1500), "stations": {}} for name in names}}
+        ended("hauler-6", 300)                                       # free, its run ended after the reading: it waits on the book
+        ended("hauler-7", 600)                                       # the same, and it waits longer: first
+        ended("hauler-8", 300)                                       # its run ended, but a new run flies it
+        order = self.data / "fleet" / "orders" / "hauler-8.json"
+        order.write_text(json.dumps({"pilot": "hauler-8", "what": "circuit craft-steel"}))
+        os.utime(order, (now - 10, now - 10))
+        ended("hauler-5", 2000)                                      # read after its last run: nothing changed since
+        ended("hauler-4", 10)                                        # between two runs: the dispatcher sends it on
+        self.assertEqual(ledger.due(names, book, str(self.data), now), ["hauler-7", "hauler-6"])
+        batch, step = ledger.batch_of(names, 0, book, str(self.data), now)
+        self.assertEqual((batch, step), (["hauler-7", "hauler-6", "hauler-1", "hauler-2", "hauler-3", "hauler-4"], 4))   # the rotation keeps its four
+        book["pilots"]["hauler-7"]["read_at"] = text(now)            # read: it waits no longer
+        self.assertEqual(ledger.due(names, book, str(self.data), now), ["hauler-6"])
+        book["pilots"]["hauler-6"]["error_at"] = text(now - 30)      # its reading just failed: not every pass
+        self.assertEqual(ledger.due(names, book, str(self.data), now), [])
+        self.assertEqual(ledger.due(names, book, str(self.data), now + 200), ["hauler-6", "hauler-4"])   # tried again after two minutes; and nobody sent hauler-4 on
+        os.utime(order, (now - 3000, now - 3000))                    # an order file nobody touched for 50 minutes is dead
+        self.assertEqual(ledger.due(names, book, str(self.data), now + 200), ["hauler-6", "hauler-8", "hauler-4"])
+        batch, step = ledger.batch_of(names, 4, book, str(self.data), now + 200)
+        self.assertEqual((batch, step), (["hauler-4", "hauler-5", "hauler-6", "hauler-7", "hauler-8"], 4))   # a pilot the rotation reads anyway is read once
+        many = ["hauler-%d" % n for n in range(1, 21)]
+        for name in many[8:]:
+            ended(name, 100)
+        big = {"pilots": {name: {"read_at": text(now - 1500)} for name in many}}
+        batch, step = ledger.batch_of(many, 0, big, str(self.data), now)
+        self.assertEqual((len(batch), step, batch[3:]), (7, 4, many[:4]))                        # three at most in front of the four
+
     def test_totals_count_each_pilot_once_per_station_and_member(self):
         (self.data / "fleet" / "ships" / "miner-1.json").write_text(json.dumps({"name": "miner-1", "cargo": [{"item_id": "iron_ore", "quantity": 3}]}))
         (self.data / "fleet" / "ships" / "drone-1.json").write_text(json.dumps({"name": "drone-1", "cargo": [{"item": "verdigris_curd", "name": "Verdigris Curd", "quantity": 2}, "broken"]}))

@@ -2,13 +2,17 @@
 """ledger.py -- keep the fleet's books: what we own and where it lies, and how every order book moved.
 
 WHAT: the service `ledger` runs it. Every 30 s it does two things.
-        storage   reads the personal storage of the next two pilots at every
+        storage   reads the personal storage of the next four pilots at every
                   station where they store goods (storage `view`, a call that
                   only reads and answers from anywhere) and writes
                   data/stock/storage.json: per pilot and station, and the
                   totals per station and per division, with what the ships
-                  carry in their holds. Every pilot is read about once in 35
-                  minutes.
+                  carry in their holds. Every pilot is read about once in 50
+                  minutes by that rotation. On top of it, each pass reads up
+                  to three pilots that wait on the book: a pilot without an
+                  order for 45 s whose last run ended after its reading (the
+                  dispatcher closes a route with `requires.stored` to it
+                  until the storage is read again), the longest wait first.
         market    looks at the order books our ships saved (data/market/) and,
                   for every book that was read again, appends one line per
                   item whose best bid or best ask changed to
@@ -21,6 +25,9 @@ RULES:
     file, read while the engine answers, names it no longer: one that is not
     connected for a moment keeps its stores in the book.
   - The files are the unit's data, never the repository's.
+  - No ship waits on the book (rule F32): a free pilot is read within about a
+    minute or two of the end of its run; a reading that failed is tried again
+    after two minutes, not every pass.
 WHY:  9,000 units of ore lay in storage unseen, a second purchase was made
       for a mission that hands its goods out, and a price that held for one
       read was taken for a trade. Nobody can plan from goods and prices no
@@ -38,6 +45,7 @@ USAGE:
 Stdlib only. ASCII only.
 """
 
+import calendar
 import json
 import os
 import sys
@@ -54,7 +62,10 @@ import division                                   # noqa: E402
 GATE = "http://172.30.0.32:7580"
 OPENER = urllib.request.build_opener(urllib.request.ProxyHandler({}))
 EVERY = 30                   # seconds between two passes
-PER_PASS = 4                 # pilots read per pass: 246 ships in about 35 minutes
+PER_PASS = 4                 # pilots read per pass by the rotation: 246 ships in about 50 minutes
+DUE_PER_PASS = 3             # and on top of them the pilots that wait on the book (due), at most this many a pass
+RETRY = 120                  # seconds until a waiting pilot whose reading failed is tried again
+WAIT = 45                    # a pilot waits on the book when the dispatcher (a pass every 30 s) did not send it on within this
 HOME = "central_nexus"       # any station answers with the list of the pilot's storage locations
 
 
@@ -194,6 +205,44 @@ def pilots_of(data):
     return sorted(s["name"] for s in ships if isinstance(s, dict) and s.get("name") and s.get("status") == "connected")
 
 
+def stamp(text):
+    """Seconds since the epoch of a time now_text() wrote, or 0."""
+    try:
+        return calendar.timegm(time.strptime(str(text)[:19], "%Y-%m-%dT%H:%M:%S"))
+    except ValueError:
+        return 0
+
+
+def due(names, book, data, now=None):
+    """The pilots that wait on the book, the longest wait first: a pilot without a fresh order file (no run flies it,
+    no hand holds it) whose last run ended after its storage was read (the run's log, data/routes/logs/<pilot>.log,
+    is written last when the run ends). The dispatcher closes every route with `requires.stored` to such a pilot
+    until the storage is read again. A pilot between two runs is not read: the dispatcher sends it on within WAIT
+    seconds. A reading that failed is tried again after RETRY seconds."""
+    now = time.time() if now is None else now
+    waits = []
+    for pilot in names:
+        try:
+            ended = (Path(data) / "routes" / "logs" / (pilot + ".log")).stat().st_mtime
+        except OSError:
+            continue                                             # never flew a run: the rotation reads it
+        entry = (book.get("pilots") or {}).get(pilot) or {}
+        if now - ended < WAIT or ended <= stamp(entry.get("read_at")) or now - stamp(entry.get("error_at")) < RETRY:
+            continue
+        if division.order_of(pilot, data, now):
+            continue
+        waits.append((ended, pilot))
+    return [pilot for _ended, pilot in sorted(waits)]
+
+
+def batch_of(names, turn, book, data, now=None):
+    """(The pilots to read this pass, how many of them the rotation gave): the next PER_PASS of the rotation, and in
+    front of them up to DUE_PER_PASS pilots that wait on the book. The rotation never loses its turn."""
+    turns = [names[(turn + n) % len(names)] for n in range(min(PER_PASS, len(names)))]
+    first = [pilot for pilot in due(names, book, data, now) if pilot not in turns][:DUE_PER_PASS]
+    return first + turns, len(turns)
+
+
 def roster(data):
     """Every pilot the fleet file names, connected or not; None while the engine does not answer or the file names nobody
     (then nobody leaves the book: a pilot that reconnects for a moment still owns what it stored)."""
@@ -280,8 +329,8 @@ def main():
             wrote = market_pass(data, seen)
             names = pilots_of(data)
             leave(book, data)
-            batch = names if once else [names[(turn + n) % len(names)] for n in range(min(PER_PASS, len(names)))]
-            turn += len(batch)
+            batch, step = (names, len(names)) if once or not names else batch_of(names, turn, book, data)
+            turn += step
             for pilot in batch:
                 if (Path(data) / "fleet" / "STOP").exists():
                     break
