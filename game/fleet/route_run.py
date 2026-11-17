@@ -11,6 +11,7 @@ which pilot flies it, and where a pilot is, stays in the unit's data folder:
               "skip_if_hold": {"item_id": N},        skip the stop when the hold has these already
               "redock": true,                 undock and dock again (a delivery counts on docking)
               "store":  ["item_id", ...],     hold -> personal storage here; "all": every good aboard
+              "store_faction": ["item_id", ...],   hold -> the faction's storage here, after `store`; "all" as above
               "withdraw": [{"item": "...", "qty": N}],   personal storage here -> hold, at most qty and the free
                                               hold; when the stop sells the item too, at most what its bid takes
               "sell":   [{"item": "...", "min_price": N}],
@@ -31,7 +32,7 @@ which pilot flies it, and where a pilot is, stays in the unit's data folder:
                                               objectives done (a mission that counts units mined), at most
                                               `minutes`; ore that fills the hold goes into storage at the stop
 At every stop, in this order: dock and refuel; hand in every mission whose
-objectives are all done; redock; hand in again; store; withdraw; sell; buy; craft (then sell what
+objectives are all done; redock; hand in again; store; store_faction; withdraw; sell; buy; craft (then sell what
 it made); accept; save the station's order book and mission board (data/market, data/missions).
 --from N starts at stop N (1 is the first). A goal the engine is still carrying
 out for the pilot is waited for, up to ten minutes. While the run lasts the pilot
@@ -217,10 +218,11 @@ def store_list(want, hold):
     return [item for item in (want or []) if hold.get(item)]
 
 
-def deposit(item, units):
+def deposit(item, units, target='self'):
     """Hold -> the pilot's own storage at the station where it is docked: the call of a stop's `store`, and of a craft's
-    `inputs` (the workshop takes its inputs from that storage, guidebook logistics.md section 7)."""
-    d = raw('deposit', {'item_id': item, 'quantity': units, 'target': 'self', 'source': 'cargo'}, group='spacemolt_storage')
+    `inputs` (the workshop takes its inputs from that storage, guidebook logistics.md section 7). With target 'faction':
+    hold -> the faction's storage there, the call of a stop's `store_faction` (our outpost takes goods only so)."""
+    d = raw('deposit', {'item_id': item, 'quantity': units, 'target': target, 'source': 'cargo'}, group='spacemolt_storage')
     if 'error' in d:
         say(f'store {item}: {str(d.get("error"))[:100]}')
     time.sleep(11)
@@ -502,6 +504,11 @@ for n, stop in enumerate(ROUTE['stops']):
     for item in store_list(stop.get('store'), hold):
         if hold.get(item):
             deposit(item, hold[item])
+    if stop.get('store_faction'):                    # hold -> the faction's storage here (an outpost of ours, a lockbox)
+        hold = cargo()
+        for item in store_list(stop.get('store_faction'), hold):
+            if hold.get(item):
+                deposit(item, hold[item], 'faction')
     book, board = save_station(base, system)
     for want in stop.get('withdraw') or []:              # own storage -> hold: sold here into the bid, or carried on
         sale = next((s for s in stop.get('sell') or [] if s.get('item') == want['item']), None)

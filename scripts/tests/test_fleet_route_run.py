@@ -162,6 +162,26 @@ class StoreStepTests(unittest.TestCase):
         self.assertIn("for item in store_list(stop.get('store'), hold):", source)
 
 
+class StoreFactionStepTests(unittest.TestCase):
+    # 2026-11-17: our outpost at GSC-0044 takes goods into its faction storage only (it serves members, no personal
+    # trade), and its fuel bunker is supplied the same way; the miners around it and the haulers that supply it need a
+    # stop that moves the hold into the faction store there (admirals.log ENT-049, orders.log ENT-042 block APOLLO (2)).
+    def test_store_faction_moves_the_hold_into_faction_storage(self):
+        route = {"id": "made-up", "kind": "circuit", "title": "t", "stops": [{"at": "wild:outpost:base", "store_faction": "all"}]}
+        log, world, row, out = fly(route, {"cargo": {"fuel_cell": 20, "iron_ore": 5}})
+        deposits = [params for action, params in log if action == "deposit"]
+        self.assertEqual(deposits, [
+            {"item_id": "fuel_cell", "quantity": 20, "target": "faction", "source": "cargo"},
+            {"item_id": "iron_ore", "quantity": 5, "target": "faction", "source": "cargo"}], out)
+
+    def test_store_faction_names_only_what_is_aboard_and_store_stays_personal(self):
+        route = {"id": "made-up", "kind": "circuit", "title": "t",
+                 "stops": [{"at": "wild:outpost:base", "store": ["iron_ore"], "store_faction": ["fuel_cell", "carbon_ore"]}]}
+        log, world, row, out = fly(route, {"cargo": {"fuel_cell": 3, "iron_ore": 4}})
+        deposits = [(params["item_id"], params["target"]) for action, params in log if action == "deposit"]
+        self.assertEqual(deposits, [("iron_ore", "self"), ("fuel_cell", "faction")], out)
+
+
 class WithdrawStepTests(unittest.TestCase):
     # 2026-11-16: about 14,000 water ice lay in miners' storage at stations whose bids regain slowly (requests.log
     # ENT-117); storage is personal, so only the pilot that stored a load can sell it. A stop's `withdraw` takes it
