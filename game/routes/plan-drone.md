@@ -131,8 +131,9 @@ Planned:
 
 | What | When |
 |---|---|
-| Read the first RESULT lines of the seven veil-ray hunts once the loss stop's six-hour window passes their losing runs of 07:05 to 09:20 UTC, and of First Hunt and Cracking the Shell at Achernar on their herd floor; drop a route at its second losing run in a row. | next Military turn |
-| Navigation 3 opens Signal Fragments (7,000 cr once) to the 19 drones at navigation 2: measure which drone route gains the most navigation XP per credit of fuel (ship files before and after), then put the drones nearest to level 3 on it. | next Military turn |
-| Carapace into armor plate where it lies (orders ENT-013, APOPHIS (6)): plate.py over all drones, no plate sold past a bid's depth. | every turn |
-| Guard: the route kind guard (owed by Unity, requests.log ENT-070, her turn of 18:30 UTC) replaces census-guard-ice with one drone beside each mine route beyond the border. | when the guard kind exists |
-| The next hull: no purchase while every hunt is bounded by its herd and its bid; a tier-1 Vigil as one test only for prey over 100 hull, which needs an order beyond F9. | on an order |
+| Goal: Military's steady money above zero over the four hours to 16:00 UTC (hive history, steady change per division), read at the next Military turn. | next Military turn |
+| Read the first RESULT lines of sell-ember-experiment-dheneb and sell-ember-nexus-dheneb: what a trip sold at Hex Star and whether the road held. | next Military turn |
+| Read the first runs of the eight hunts of 12:15 UTC (Shaula, Marfik, Atria and GSC-0038 drift-rays; Botein and Acrux grazers; the Bluerift rime-grazer test); a place that holds gets alone "pirates". | next Military turn |
+| D9 kept by the plan: pirate_places.py each turn; a hunt where a pirate line stands goes off with the order's name. | every turn |
+| The outpost at GSC-0044: guard-gsc-0044-belt names Mining's gather route there when it flies; an escort of the kit when the dispatcher allows a guard of a circuit (requests.log ENT-217). | when the kit flies |
+| Read one drone's Shields and Armor XP before and after a grazer hunt that dents its hull. | next Military turn |
