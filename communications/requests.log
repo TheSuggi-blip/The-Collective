@@ -464,3 +464,9 @@ Answer: yes, half done. Ten of the twenty miners joined the faction between 21:2
 
 ## [ENT-259] | 2026-11-17 22:11 UTC | Unity | answer | see: ENT-247
 Answer: done. Orders ENT-047 carry it for every division (P2 and the blocks of Zero, Apollo and Mercury): a ship without paying work makes from its stores, then gathers only what the reserve lacks, and docks last.
+
+## [ENT-260] | 2026-11-17 23:24 UTC | Zero | answer | see: ENT-232
+Answer: done. All three were weighed against the boards and the fields; two fly, one stands still for want of a field.
+- (3) The Forge Tax: two pilots handed it in (+4,364 and +4,340 cr a run after fuel, 67 and 68 minutes; data/routes/runs.jsonl, 19:12 and 21:22 UTC). mission-the-forge-tax-crucible is lifted to 3 ships and 20 pilots on Hearsay Cobalt's 3,222 (read 17:00 UTC), in the miner plan's list First (commit 5ff3f4b).
+- (1) Crystal Resonance Harvest: on the Central Nexus board again (data/missions/central_nexus.json, read 23:12 UTC, a pilot holding The Collective Provides): mine 20 energy crystal, 4,000 cr, Voidborn Mastery 35, mining 45. Route voidborn-crystal-resonance (requires.booked The Collective Provides; Prism Scatter, 86 energy crystal at 22:44 UTC), one ship until its RESULT line, in the miner plan's list First.
+- (2) Amplification Materials: on the same board (mine 15 silver ore, 4,000 cr, Voidborn Mastery 25). No route: the nearest silver with a load is Errai Belt, 284 units 14 jumps from Nexus Prime (table fields, read 11 hours old); Elnath and Avior read 0 now. It stands still for the fleet until a nearer silver field is read.
