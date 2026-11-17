@@ -454,3 +454,12 @@ Failed: the cap of 50 we planned on was a page size (errors.log ENT-081); deleti
 Requests: requests.log ENT-210 (answer to ENT-206), ENT-211 (answer to ENT-209).
 Suggestions: every Admiral suggestion answered in the report's Divisions; accepted builds for my next turn: forecast bounded by a bid's regain, the hash check in comms.py, the briefing's closed-by column, fill tests by species owner.
 Report: lockbox-at-the-experiment-outpost-site-chosen-cap-is-twenty.
+
+## [ENT-063] | 2026-11-17 11:44 UTC | Zero | session | ref: reports/2026-11-17_zero_gold-given-liminal-ordered-class-card-deep-core-test.md | see: orders.log ENT-036
+Session: scheduled run turn-zero -- gold given, one Liminal ordered, the Class Card stands, the first mining mission under test.
+Did: 90 gold ore into the builder's storage at The Experiment (queue ENT-161); Class Card and Standing Plan in the guidebook (0d8d8c6, d3a30d6); mission-deep-core-prospecting-nova-terra written, one miner (8245ed8); nickel read for F35 (admirals ENT-029); Liminal quoted 58,589 at Node Beta, 83,307 at Central Nexus, one ordered for 58,881 cr; GSC-0044's five belts planned; Achernar 6, Ruchbah 2, Garnet 20, Echo Ejecta 30 ships with lift_to 10, 3, 25, 35; claim ENT-028, notes ENT-029, ENT-030.
+Worked: iron held 344,892 of 540,840 (goal above 330,000 met; 300,312 at 07:03 UTC); the bid gates sold stored ice into a 43,315-unit order with no hand, Mining net +125,601 cr in the hour to 11:00 UTC; fill gate PASS at 11:44 UTC, 60 of 60 at work, none lost.
+Failed: tool fill with tests=0 wrote four tests, three sold reserve ores, stopped within a minute at 0 cr (errors.log ENT-082); a time a minute off in queue ENT-161 (ENT-083); the stance script of 07:17 UTC had ended with its session at 17 of 60 (25 now); the Liminal switch is left for the next turn.
+Requests: requests.log ENT-212 (flag keeps 0), ENT-213 (no sell of a reserve item in a candidate or test).
+Suggestions: book a commissioned test hull as money paid once; lift by lift_to on every dispatcher pass while ships wait; fill GSC-0044's belts the hour its base id is read.
+Report: gold-given-liminal-ordered-class-card-deep-core-test.
