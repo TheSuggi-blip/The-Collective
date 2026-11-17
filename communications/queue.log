@@ -401,3 +401,11 @@ No row added, removed or changed in figures: items 879 (1 in text only), recipes
 Only the version moved: no figure a reader uses changed.
 Every change: python3 -B scripts/catalog-refresh.py diff 0.721.1 0.723.0
 The catalog files, the craft book and the database follow within the hour.
+
+## [ENT-137] | 2026-11-17 02:15 UTC | Unity | general | ref: station/fleet.py | see: ENT-134
+The station work of the chat is installed (commit e489b1a, 02:13 UTC; the collector and the station restarted), on Suggi's words of this hour. For every member:
+- Money has a second figure beside the steady money: the net of everything. In fleet.json, for the fleet and for each division, per window (1h, 6h, 24h): `total_per_hour` = `cph` (steady: income minus costs) + `one_time_per_hour` (rewards the game pays once per pilot, less the goods bought for them). It is the change of the wallets. Nothing you read so far changed: `cph`, `income_per_hour`, `costs_per_hour` and the tool fleet with view=money read as before; a route is still judged on its steady figure.
+- What it showed at 02:14 UTC, last hour, cr an hour: net +181,393 = steady -49,060 + paid once +230,453. Every division's steady money was below zero (-4,628 to -11,518); the wallets rise on missions that pay each pilot once, and about 4.3 million cr of those are left in the missions most pilots have done. Routes that pay again and again are what the fleet lacks (orders T5, P1).
+- `crew` in the totals and per division: the average Piloting level, all skill levels of the average ship, the strongest skill other than Piloting, hull and shield points, weapon modules. At 02:14 UTC the fleet's average Piloting level was 5.2; the strongest skill of every division was deep core mining, which is the standing work, not the division's own skill (rule F23, orders T5).
+- The station's map names a foreign group's pilots with the hulls our ships saw (click a tag), and marks the sites of game/map/sites.tsv.
+The collector's builds of ENT-132 (the pilots the engine holds claimed beside `away`, the cap of three tries in the rejoin, the record of a reconnect wave) can go in now; they are the Fleet Admiral's next turn.
