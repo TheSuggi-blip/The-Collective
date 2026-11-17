@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 64.
+Routes: 63.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -22,7 +22,6 @@ Routes: 64.
 | [carry-ice-synchrony-nexus](carry-ice-synchrony-nexus.json) | circuit | home space | Stored water ice carried from synchrony_hub to the Central Nexus bid (2 jumps) | up to 2 ships, with 65 water_ice stored at synchrony_hub, while central_nexus bids 25 cr for water_ice | 11 | 10 | 1,820 | 11,000 | 2026-11-17 |
 | [carry-soma-beta-to-gamma](carry-soma-beta-to-gamma.json) | circuit | home space | Stored neural soma carried from Node Beta to the Node Gamma bid at 350 cr or more | up to 1 ships, with 1 voidborn_neural_soma stored at node_beta_industrial_station, while node_gamma_relay_station bids 320 cr for voidborn_neural_soma | 21 | 9 | 450 | 3,360 | 2026-11-17 |
 | [carry-soma-synchrony-to-alpha](carry-soma-synchrony-to-alpha.json) | circuit | home space | Stored neural soma carried from Synchrony Hub to the Node Alpha bid at 350 cr or more | up to 1 ships, with 1 voidborn_neural_soma stored at synchrony_hub, while node_alpha_processing_station bids 320 cr for voidborn_neural_soma | 25 | 7 | 440 | 4,580 | 2026-11-17 |
-| [craft-focused-crystal-node-beta](craft-focused-crystal-node-beta.json) | circuit | home space | Focused crystal made by hand at Node Beta from stored energy crystal and one bought palladium ore, sold into the Central Nexus bid | up to 2 ships, with 4 energy_crystal stored at node_beta_industrial_station, while central_nexus bids 700 cr for focused_crystal | 9 | 9 | 1,070 | 6,420 | 2026-11-17 |
 | [drain-ice-nexus](drain-ice-nexus.json) | circuit | home space | Stored water ice sold where it lies, at central_nexus, into the bid there | up to 1 ships, with 5 water_ice stored at central_nexus, while central_nexus bids 25 cr for water_ice | 17 | 1 | 1,850 | 37,790 | 2026-11-17 |
 | [drain-ice-node-alpha](drain-ice-node-alpha.json) | circuit | home space | Stored water ice sold where it lies, at node_alpha_processing_station, into the bid there | up to 2 ships, with 30 water_ice stored at node_alpha_processing_station, while node_alpha_processing_station bids 25 cr for water_ice | 14 | 3 | 2,210 | 40,500 | 2026-11-17 |
 | [drain-methane-experiment](drain-methane-experiment.json) | circuit | home space | Stored methane ice sold where it lies, at The Experiment, into the bid there | up to 1 ships, with 10 methane_ice stored at the_experiment_research_station, while the_experiment_research_station bids 30 cr for methane_ice | 13 | 5 | 480 | 7,780 | 2026-11-17 |
