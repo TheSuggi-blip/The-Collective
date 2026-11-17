@@ -90,9 +90,10 @@ Planned:
 
 | What | When |
 |---|---|
-| Goal: the first outpost founded at GSC-0044 (the kit at 150,000 cr or less, the fee of 100,000 from the treasury), its base id and cost read; read at the next turn | next turn |
-| Fuel into the outpost's bunker: one hauler, one hold of fuel cells bought at The Experiment, the deposit read; then a supply route | the turn after the founding |
-| The Recruitment Desk (faction_upgrade of the Hiring Board, 100 boards, 200 plate, 300,000 cr) by build.py --upgrade once the Fleet Admiral places the fee (requests.log ENT-234) | on her word |
-| Read the Workshop Production Run's runs at 4 ships (3,500 cr once a hauler) | next turn |
-| An accept by mission id in route_run.py (fleet-build.sh) for the Shipyard Supply missions, one ship and one unit first | when the outpost stands |
+| Goal: the outpost's bunker at 2,000 fuel or more, filled by a route (a runner step that burns cells into the tank and deposits it into the faction reserve, built through fleet-build with its test), its cost per unit read from its runs (1,276 fuel at 2026-11-17 21:17 UTC); read at the next turn | next turn |
+| A flight of more than ten minutes goes into a route file, never a turn's shell (requests.log ENT-251, answered yes in ENT-252) | from the next turn |
+| The outpost's fuel written into the supply chains (game/supply/chains.tsv) once the Fleet Admiral's supply.py stands | when it is committed |
+| A shared flight-and-hold helper for found.py, build.py and outpost.py (goal option names written once, the hand kept fresh) | next turn |
+| Haulers from the gather fields to the copper piping craft once the iron reserve reads met | when the reserve says so |
+| The Recruitment Center (500 boards, 1,000 plate, 300 flex polymer, 2,000,000 cr) staged only on the Fleet Admiral's word | on her word |
 | One Ledger or Prayer freighter quoted and flown on a carry, inside rule F12 | when a carry with a standing bid needs the hold |
