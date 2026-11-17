@@ -2,13 +2,13 @@
  "id": "craft-steel-node-beta",
  "kind": "circuit",
  "title": "Steel plate made by hand at the Node Beta workshop from the pilot's own stored iron ore, kept in its storage there for the faction's ladder and the station (the reserve)",
- "note": "Written by Apollo, 2026-11-16 23:58 UTC (orders.log ENT-020, block APOLLO: make what we build with; rule F23: a hauler hauls and crafts). basic_iron_smelting makes 1 steel plate from 10 iron ore by hand at the station workshop, 0 cr, 0.27 ticks a run; 275 plates were made so on 2026-11-16 in about 6 minutes (guidebook logistics.md, section 14). The reserve is short 28,220 steel plate (stock view=reserve, 2026-11-16 23:53 UTC) and 19 haulers store 600 iron ore or more at Node Beta, where the gather routes put it. Standing work: it trains crafting and refining and is not judged on its pay; requires.stored sends only a pilot with 600 iron ore in its own storage there, and not again until the ledger read that storage after the run began (about 40 minutes). The made plates are taken into the hold by the craft step and stored again at the second stop. A test: one ship until its first RESULT line is read.",
+ "note": "Written by Apollo, 2026-11-16 23:58 UTC (orders.log ENT-020, block APOLLO: make what we build with; rule F23: a hauler hauls and crafts). basic_iron_smelting makes 1 steel plate from 10 iron ore by hand at the station workshop, 0 cr, 0.27 ticks a run; 275 plates were made so on 2026-11-16 in about 6 minutes (guidebook logistics.md, section 14). The reserve is short 28,220 steel plate (stock view=reserve, 2026-11-16 23:53 UTC) and 19 haulers store 600 iron ore or more at Node Beta, where the gather routes put it. Standing work: it trains crafting and refining and is not judged on its pay; requires.stored sends only a pilot with 600 iron ore in its own storage there, and not again until the ledger read that storage after the run began (about 40 minutes). The made plates are taken into the hold by the craft step and stored again at the second stop. A test: one ship until its first RESULT line is read. First runs (2026-11-17 00:03 and 00:16 UTC): 60 plates made in 8.7 min for 24 cr of fuel; the second found under 600 iron because a hand craft had used 200 after the storage book was read ('no inputs', -60 cr). Since 00:21 UTC: 50 runs (500 iron) on a floor of 800, a margin of 300 for a book up to 40 minutes old.",
  "standing": true,
  "requires": {
   "stored": {
    "at": "node_beta_industrial_station",
    "item": "iron_ore",
-   "min": 600
+   "min": 800
   }
  },
  "max_ships": 1,
@@ -19,7 +19,7 @@
    "craft": [
     {
      "recipe": "basic_iron_smelting",
-     "runs": 60,
+     "runs": 50,
      "per_run": 1,
      "makes": "steel_plate"
     }
