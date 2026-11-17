@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 71.
+Routes: 73.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -67,6 +67,7 @@ Routes: 71.
 | [mine-atria-ice-fields](mine-atria-ice-fields.json) | mine | beyond the border, 7 jumps | Atria Ice Fields: water_ice, nitrogen_ice, deuterium_ice; sold at Node Beta Industrial Station | up to 1 ships, needs ice_harvester_i, empty hold | TBD | TBD | TBD | TBD | -- |
 | [mine-deepwell-volatile-ice](mine-deepwell-volatile-ice.json) | mine | beyond the border, 7 jumps | Deepwell Volatile Ice: water_ice, methane_ice, ammonia_ice, helium_ice; sold at The Experiment Research Station | up to 1 ships, needs ice_harvester_i, empty hold, while the_experiment_research_station bids 25 cr for water_ice | TBD | TBD | TBD | TBD | -- |
 | [mine-felis-frost-ring](mine-felis-frost-ring.json) | mine | beyond the border, 7 jumps | Felis Frost Ring: water_ice, nitrogen_ice, deuterium_ice; sold at Node Beta Industrial Station | up to 1 ships, needs ice_harvester_i, empty hold, while node_beta_industrial_station bids 156 cr for deuterium_ice | TBD | TBD | TBD | TBD | -- |
+| [mine-flicker-fray](mine-flicker-fray.json) | mine | beyond the border, 5 jumps | Flicker Fray: iron_ore, copper_ore, null_matter; sold at The Core | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [mine-gsc-0012-gas-plume](mine-gsc-0012-gas-plume.json) | mine | beyond the border, 5 jumps | GSC-0012 Gas Plume: hydrogen_gas, argon_gas, plasma_gas, xenon_gas, nebula_gas, neon_gas; sold at Node Beta Industrial Station | up to 1 ships, needs gas_harvester_i, empty hold, while node_beta_industrial_station bids 27 cr for hydrogen_gas | TBD | TBD | TBD | TBD | -- |
 | [mine-gsc-0021-ice-fields](mine-gsc-0021-ice-fields.json) | mine | beyond the border, 6 jumps | GSC-0021 Ice Fields: water_ice, nitrogen_ice, ammonia_ice; sold at Synchrony Hub | up to 1 ships, needs ice_harvester_i, empty hold, while synchrony_hub bids 25 cr for water_ice | TBD | TBD | TBD | TBD | -- |
 | [mine-gsc-0033-cryobelt](mine-gsc-0033-cryobelt.json) | mine | beyond the border, 6 jumps | GSC-0033 Cryobelt: water_ice, nitrogen_ice; sold at Synchrony Hub | up to 1 ships, needs ice_harvester_i, empty hold, while synchrony_hub bids 25 cr for water_ice | TBD | TBD | TBD | TBD | -- |
@@ -78,6 +79,7 @@ Routes: 71.
 | [mine-keid-ice-shelf](mine-keid-ice-shelf.json) | mine | beyond the border, 5 jumps | Keid Ice Shelf: water_ice, deuterium_ice; sold at Node Alpha Processing Station | up to 2 ships, needs ice_harvester_i, empty hold, while node_alpha_processing_station bids 25 cr for water_ice | TBD | TBD | TBD | TBD | -- |
 | [mine-lesath-gas-cloud](mine-lesath-gas-cloud.json) | mine | beyond the border, 5 jumps | Lesath Gas Cloud: hydrogen_gas, plasma_gas, xenon_gas, neon_gas, ion_gas; sold at Node Beta Industrial Station | up to 1 ships, needs gas_harvester_i, empty hold | TBD | TBD | TBD | TBD | -- |
 | [mine-miram-haze](mine-miram-haze.json) | mine | beyond the border, 4 jumps | Miram Haze: hydrogen_gas, nebula_gas, ion_gas; sold at Node Beta Industrial Station | up to 1 ships, needs gas_harvester_i, empty hold, while node_beta_industrial_station bids 27 cr for hydrogen_gas | TBD | TBD | TBD | TBD | -- |
+| [mine-nightveil-dark-residue](mine-nightveil-dark-residue.json) | mine | beyond the border, 5 jumps | Nightveil Dark Residue: iron_ore, copper_ore, null_matter; sold at The Core | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [mine-nova-terra-ice-shelf](mine-nova-terra-ice-shelf.json) | mine | beyond the border, 8 jumps | Nova Terra Ice Shelf: water_ice, deuterium_ice, helium_ice; sold at Node Beta Industrial Station | up to 1 ships, needs ice_harvester_i, while central_nexus bids 25 cr for water_ice | TBD | TBD | TBD | TBD | -- |
 | [mine-okab-haze](mine-okab-haze.json) | mine | beyond the border, 4 jumps | Okab Haze: hydrogen_gas, argon_gas, nebula_gas, neon_gas; sold at Node Beta Industrial Station | up to 1 ships, needs gas_harvester_i, empty hold, while node_beta_industrial_station bids 27 cr for hydrogen_gas | TBD | TBD | TBD | TBD | -- |
 | [mine-oxbow-ice-belt](mine-oxbow-ice-belt.json) | mine | beyond the border, 13 jumps | Oxbow Ice Belt: water_ice, deuterium_ice, helium_ice; sold at Node Beta Industrial Station | up to 1 ships, needs ice_harvester_i, empty hold | TBD | TBD | TBD | TBD | -- |

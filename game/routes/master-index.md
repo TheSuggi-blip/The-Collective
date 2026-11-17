@@ -19,31 +19,31 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 |---|---|---|---|---|---|
 | [Once per Pilot](index-once-per-pilot.md) | Missions and rewards the game pays once per pilot: a new pilot's first work, and seed money. | 29 | 17 | 12 | voidborn-conductive-lattice: 9,110 cr a run |
 | [Paying Routes](index-paying-routes.md) | Work that repeats and whose runs of the last 12 hours measured above zero. | 28 | 15 | 13 | sell-hydrogen-at-node-beta: 176,800 cr per ship-hour |
-| [Tests](index-tests.md) | Work that repeats and has no measured figure: new, or no readable run in the last 12 hours. One ship until its first RESULT line is read. | 71 | 23 | 48 | not measured yet |
+| [Tests](index-tests.md) | Work that repeats and has no measured figure: new, or no readable run in the last 12 hours. One ship until its first RESULT line is read. | 73 | 23 | 50 | not measured yet |
 | [Fitting](index-fitting.md) | A module bought and fitted: the tool a kind of work needs. | 10 | 9 | 1 | fit-ice-harvester-lhs-1140: -4,320 cr per ship-hour |
 | [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 59 | 20 | 39 | park: 50 cr per ship-hour |
 | [Measured at a Loss](index-measured-at-a-loss.md) | Work that repeats and whose runs of the last 12 hours measured zero or below. | 24 | 3 | 21 | hunt-fulu-vapor-fields-cinder-sylph: -190 cr per ship-hour |
 | [Off](index-off.md) | Written down, not flown. | 13 | 8 | 5 | voidborn-first-steps: 4,020 cr per ship-hour |
-| All | | 234 | 95 | 139 | |
+| All | | 236 | 95 | 141 | |
 
 ## Routes by Zone and Kind
 
 | Zone | Routes | census | circuit | guard | hunt | mine | Farthest system, jumps from home |
 |---|---|---|---|---|---|---|---|
 | home space | 95 | 1 | 71 | 0 | 10 | 13 | 3 |
-| beyond the border | 139 | 6 | 20 | 3 | 60 | 50 | 15 |
+| beyond the border | 141 | 6 | 20 | 3 | 60 | 52 | 15 |
 
 ## Plans by Role
 
 | Role | Kept by | Routes | The first three, in order | Planned | Ships |
 |---|---|---|---|---|---|
-| [command](plan-command.md) | Unity | 46 | voidborn-first-steps-board > voidborn-collective-provides > voidborn-signal-protocol | 0 | 6 |
-| [drone](plan-drone.md) | Apophis | 72 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 5 | 50 |
-| [hauler](plan-hauler.md) | Apollo | 43 | voidborn-resonance-finish > voidborn-atmospheric-extraction > voidborn-hardware-cargo | 6 | 40 |
-| [miner](plan-miner.md) | Zero | 45 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 4 | 60 |
-| [scout](plan-scout.md) | Oracle | 34 | store-hold-central-nexus > voidborn-first-steps-board > voidborn-network-expansion | 6 | 30 |
-| [sentinel](plan-sentinel.md) | Unity | 47 | voidborn-first-steps-board > voidborn-collective-provides > voidborn-signal-protocol | 0 | 20 |
-| [trader](plan-trader.md) | Mercury | 39 | voidborn-first-steps-board > voidborn-network-expansion > voidborn-collective-provides | 5 | 40 |
+| [command](plan-command.md) | Unity | 48 | voidborn-first-steps-board > voidborn-collective-provides > voidborn-signal-protocol | 0 | 6 |
+| [drone](plan-drone.md) | Apophis | 74 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 5 | 50 |
+| [hauler](plan-hauler.md) | Apollo | 45 | voidborn-resonance-finish > voidborn-atmospheric-extraction > voidborn-hardware-cargo | 6 | 40 |
+| [miner](plan-miner.md) | Zero | 47 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 4 | 60 |
+| [scout](plan-scout.md) | Oracle | 36 | store-hold-central-nexus > voidborn-first-steps-board > voidborn-network-expansion | 6 | 30 |
+| [sentinel](plan-sentinel.md) | Unity | 49 | voidborn-first-steps-board > voidborn-collective-provides > voidborn-signal-protocol | 0 | 20 |
+| [trader](plan-trader.md) | Mercury | 41 | voidborn-first-steps-board > voidborn-network-expansion > voidborn-collective-provides | 5 | 40 |
 
 ## Templates by Division
 
