@@ -37,13 +37,13 @@ Kept by Unity. Routes: 49. Ships: 20.
 | 15 | [voidborn-hardware-cargo](voidborn-hardware-cargo.json) | [Once per Pilot](index-once-per-pilot.md) | home space | once per pilot, up to 3 ships, without cargo_expander_i, from 4,000 cr, after the reward The Collective Provides | all 20 |
 | 16 | [hunt-tania-vapor-fields-cinder-sylph](hunt-tania-vapor-fields-cinder-sylph.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 11 jumps | up to 1 ships, empty hold | 1 of 20 |
 | 17 | [train-navigation-trader](train-navigation-trader.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 20 ships, under navigation 3, standing work | 5 of 20 |
-| 18 | [mine-flicker-fray](mine-flicker-fray.json) | [Tests](index-tests.md) | beyond the border, 5 jumps | up to 1 ships, empty hold | 1 of 20 |
-| 19 | [mine-nightveil-dark-residue](mine-nightveil-dark-residue.json) | [Tests](index-tests.md) | beyond the border, 5 jumps | up to 1 ships, empty hold | 1 of 20 |
+| 18 | [mine-flicker-fray](mine-flicker-fray.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 5 jumps | up to 1 ships, empty hold | 1 of 20 |
+| 19 | [mine-nightveil-dark-residue](mine-nightveil-dark-residue.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 5 jumps | up to 1 ships, empty hold | 1 of 20 |
 | 20 | [hunt-test-homam-frost-moth](hunt-test-homam-frost-moth.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 6 jumps | up to 1 ships, empty hold | 1 of 20 |
-| 21 | [mine-oxbow-ice-belt](mine-oxbow-ice-belt.json) | [Tests](index-tests.md) | beyond the border, 13 jumps | up to 1 ships, needs ice_harvester_i, empty hold | 1 of 20 |
+| 21 | [mine-oxbow-ice-belt](mine-oxbow-ice-belt.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 13 jumps | up to 1 ships, needs ice_harvester_i, empty hold | 1 of 20 |
 | 22 | [hunt-atlas-gas-pocket](hunt-atlas-gas-pocket.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 6 jumps | up to 1 ships, empty hold | 1 of 20 |
-| 23 | [mine-gsc-0042-ice-shelf](mine-gsc-0042-ice-shelf.json) | [Tests](index-tests.md) | beyond the border, 11 jumps | up to 1 ships, needs ice_harvester_i, empty hold | 1 of 20 |
-| 24 | [mine-atria-ice-fields](mine-atria-ice-fields.json) | [Tests](index-tests.md) | beyond the border, 7 jumps | up to 1 ships, needs ice_harvester_i, empty hold | 1 of 20 |
+| 23 | [mine-gsc-0042-ice-shelf](mine-gsc-0042-ice-shelf.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 11 jumps | up to 1 ships, needs ice_harvester_i, empty hold | 1 of 20 |
+| 24 | [mine-atria-ice-fields](mine-atria-ice-fields.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 7 jumps | up to 1 ships, needs ice_harvester_i, empty hold | 1 of 20 |
 | 25 | [mine-groombridge-34-ice-fields](mine-groombridge-34-ice-fields.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 8 jumps | up to 1 ships, needs ice_harvester_i, empty hold | 1 of 20 |
 | 26 | [hunt-garnet-dim-lattice-veil-ray](hunt-garnet-dim-lattice-veil-ray.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 5 jumps | up to 1 ships, without piercing_railgun_i, empty hold | 1 of 20 |
 | 27 | [mine-gliese-876-belt](mine-gliese-876-belt.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 8 jumps | up to 1 ships, empty hold | 1 of 20 |

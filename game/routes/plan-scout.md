@@ -41,8 +41,8 @@ Kept by Oracle. Routes: 36. Ships: 30.
 | 19 | [mission-ghosts-in-the-cloud-node](mission-ghosts-in-the-cloud-node.json) | [Once per Pilot](index-once-per-pilot.md) | home space | once per pilot, up to 1 ships | all 30 |
 | 20 | [train-navigation-trader](train-navigation-trader.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 20 ships, under navigation 3, standing work | 2 of 30 |
 | 21 | [census-roads-chain](census-roads-chain.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 15 jumps | up to 1 ships, empty hold | 1 of 30 |
-| 22 | [mine-flicker-fray](mine-flicker-fray.json) | [Tests](index-tests.md) | beyond the border, 5 jumps | up to 1 ships, empty hold | 1 of 30 |
-| 23 | [mine-nightveil-dark-residue](mine-nightveil-dark-residue.json) | [Tests](index-tests.md) | beyond the border, 5 jumps | up to 1 ships, empty hold | 1 of 30 |
+| 22 | [mine-flicker-fray](mine-flicker-fray.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 5 jumps | up to 1 ships, empty hold | 1 of 30 |
+| 23 | [mine-nightveil-dark-residue](mine-nightveil-dark-residue.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 5 jumps | up to 1 ships, empty hold | 1 of 30 |
 | 24 | [hunt-test-homam-frost-moth](hunt-test-homam-frost-moth.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 6 jumps | up to 1 ships, empty hold | 1 of 30 |
 | 25 | [hunt-atlas-gas-pocket](hunt-atlas-gas-pocket.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 6 jumps | up to 1 ships, empty hold | 1 of 30 |
 | 26 | [mine-gliese-876-belt](mine-gliese-876-belt.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 8 jumps | up to 1 ships, empty hold | 1 of 30 |

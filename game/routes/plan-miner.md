@@ -38,9 +38,9 @@ Kept by Zero. Routes: 47. Ships: 60.
 | 16 | [voidborn-first-hunt-acubens](voidborn-first-hunt-acubens.json) | [Once per Pilot](index-once-per-pilot.md) | home space | once per pilot, up to 1 ships | all 60 |
 | 17 | [voidborn-first-hunt-intercrus-sootfall](voidborn-first-hunt-intercrus-sootfall.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 7 jumps | once per pilot, up to 1 ships, empty hold | all 60 |
 | 18 | [train-navigation-trader](train-navigation-trader.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 20 ships, under navigation 3, standing work | 12 of 60 |
-| 19 | [mine-flicker-fray](mine-flicker-fray.json) | [Tests](index-tests.md) | beyond the border, 5 jumps | up to 1 ships, empty hold | 1 of 60 |
+| 19 | [mine-flicker-fray](mine-flicker-fray.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 5 jumps | up to 1 ships, empty hold | 1 of 60 |
 | 20 | [mine-groombridge-34-ice-fields](mine-groombridge-34-ice-fields.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 8 jumps | up to 1 ships, needs ice_harvester_i, empty hold | 1 of 60 |
-| 21 | [mine-nightveil-dark-residue](mine-nightveil-dark-residue.json) | [Tests](index-tests.md) | beyond the border, 5 jumps | up to 1 ships, empty hold | 1 of 60 |
+| 21 | [mine-nightveil-dark-residue](mine-nightveil-dark-residue.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 5 jumps | up to 1 ships, empty hold | 1 of 60 |
 | 22 | [carry-null-matter-synchrony-nexus](carry-null-matter-synchrony-nexus.json) | [Paying Routes](index-paying-routes.md) | home space | up to 1 ships, with 30 null_matter stored at synchrony_hub, while central_nexus bids 150 cr for null_matter | all 60 |
 | 23 | [drain-methane-experiment](drain-methane-experiment.json) | [Paying Routes](index-paying-routes.md) | home space | up to 1 ships, with 30 methane_ice stored at the_experiment_research_station, while the_experiment_research_station bids 30 cr for methane_ice | all 60 |
 | 24 | [drain-ice-nexus](drain-ice-nexus.json) | [Paying Routes](index-paying-routes.md) | home space | up to 1 ships, with 5 water_ice stored at central_nexus, while central_nexus bids 25 cr for water_ice | all 60 |

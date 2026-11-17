@@ -38,12 +38,12 @@ Kept by Apophis. Routes: 74. Ships: 50.
 | 16 | [voidborn-mining-missions](voidborn-mining-missions.json) | [Once per Pilot](index-once-per-pilot.md) | home space | once per pilot, up to 40 ships | all 50 |
 | 17 | [mission-ghosts-in-the-cloud-node](mission-ghosts-in-the-cloud-node.json) | [Once per Pilot](index-once-per-pilot.md) | home space | once per pilot, up to 1 ships | all 50 |
 | 18 | [fit-shield-booster-pirate-group](fit-shield-booster-pirate-group.json) | [Fitting](index-fitting.md) | home space | once per pilot, up to 2 ships, 5 pilots in all, without shield_booster_i, from 8,000 cr, from gunnery 3 | all 50 |
-| 19 | [mine-flicker-fray](mine-flicker-fray.json) | [Tests](index-tests.md) | beyond the border, 5 jumps | up to 1 ships, empty hold | 1 of 50 |
+| 19 | [mine-flicker-fray](mine-flicker-fray.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 5 jumps | up to 1 ships, empty hold | 1 of 50 |
 | 20 | [guard-ironhollow-fading-signal](guard-ironhollow-fading-signal.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 4 jumps | up to 1 ships, empty hold, standing work | 3 of 50 |
 | 21 | [guard-schedar-belt](guard-schedar-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 2 jumps | up to 1 ships, empty hold, standing work | 3 of 50 |
 | 22 | [guard-marfik-emission-nebula](guard-marfik-emission-nebula.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 6 jumps | up to 1 ships, empty hold, standing work | 3 of 50 |
 | 23 | [census-guard-ice](census-guard-ice.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 7 jumps | up to 2 ships, empty hold | 3 of 50 |
-| 24 | [mine-nightveil-dark-residue](mine-nightveil-dark-residue.json) | [Tests](index-tests.md) | beyond the border, 5 jumps | up to 1 ships, empty hold | 1 of 50 |
+| 24 | [mine-nightveil-dark-residue](mine-nightveil-dark-residue.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 5 jumps | up to 1 ships, empty hold | 1 of 50 |
 | 25 | [store-hold-central-nexus](store-hold-central-nexus.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 40 ships, goods aboard, standing work | all 50 |
 | 26 | [sell-melt-nexus-sirius](sell-melt-nexus-sirius.json) | [Tests](index-tests.md) | beyond the border, 9 jumps | up to 1 ships, with 3 crystal_melt stored at central_nexus, while sirius_observatory_station bids 1000 cr for crystal_melt | all 50 |
 | 27 | [sell-melt-experiment-sirius](sell-melt-experiment-sirius.json) | [Tests](index-tests.md) | beyond the border, 9 jumps | up to 1 ships, with 3 crystal_melt stored at the_experiment_research_station, while sirius_observatory_station bids 1000 cr for crystal_melt | all 50 |
