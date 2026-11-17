@@ -43,15 +43,28 @@ class StationMapTests(unittest.TestCase):
             "facilities": [{"type": "faction_lockbox", "name": "Faction Lockbox", "level": 1, "base": "hub_station", "system": "home", "status": "active"},
                            {"type": "hiring_board", "name": "Hiring Board", "level": 1, "base": "hub_station", "system": "home", "status": "under_construction"},
                            {"type": "faction_desk", "name": "Faction Desk", "level": 2, "base": "hub_station", "system": "home"},
+                           {"type": "faction_fuel_bunker", "name": "Faction Fuel Bunker", "level": 1, "base": "0123456789abcdef0123456789abcdef", "system": "wild"},
+                           {"type": "faction_lockbox", "name": "Faction Lockbox", "level": 1, "base": "fedcba9876543210fedcba9876543210", "system": "far"},
                            {"type": "faction_lockbox", "name": "No system"}]}), encoding="ascii")
         got = self.station.load_holdings()
         self.assertEqual(got["read_at"], "2026-11-17T10:00:00Z")
         self.assertEqual([(b["system"], b["kind"], b["name"], b["level"], b["status"], b["at"]) for b in got["buildings"]],
                          [("wild", "outpost", "Test Rock", 0, "active", ""), ("home", "storage", "Faction Lockbox", 1, "active", "Hub Station"),
-                          ("home", "recruit", "Hiring Board", 1, "under_construction", "Hub Station"), ("home", "office", "Faction Desk", 2, "active", "Hub Station")])
+                          ("home", "recruit", "Hiring Board", 1, "under_construction", "Hub Station"), ("home", "office", "Faction Desk", 2, "active", "Hub Station"),
+                          ("wild", "office", "Faction Fuel Bunker", 1, "active", "Test Rock"),       # inside our own base: named by the base, not by its id
+                          ("far", "storage", "Faction Lockbox", 1, "active", "our base here")])      # a base the public list does not carry yet
+        self.assertEqual([b["part"] for b in got["buildings"]], [False, False, False, False, True, True])
         self.station.HOLDINGS["at"] = 0.0
         (self.base / "data/empire/empire.json").unlink()
         self.assertEqual(self.station.load_holdings(), {"read_at": "", "buildings": []})            # no file: nothing owned, no fault
+
+    def test_a_site_reads_built_once_a_base_of_ours_stands_in_its_system(self):
+        sites = [{"system": "wild", "status": "chosen", "by": "Zero"}, {"system": "home", "status": "candidate", "by": "Suggi"},
+                 {"system": "gone", "status": "dropped", "by": "Oracle"}]
+        holdings = {"buildings": [{"system": "wild", "kind": "outpost"}, {"system": "home", "kind": "storage"}, {"system": "gone", "kind": "station"}]}
+        self.assertEqual([s["status"] for s in self.station.sites_with_bases(sites, holdings)], ["built", "candidate", "dropped"])
+        self.assertEqual(sites[0]["status"], "chosen")                                              # the list read from the file is not changed
+        self.assertEqual(self.station.sites_with_bases(sites, {}), sites)
 
     def test_a_foreign_group_is_listed_with_the_hulls_our_ships_saw(self):
         now = time.time()

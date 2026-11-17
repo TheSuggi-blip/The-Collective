@@ -944,8 +944,8 @@ def api_state():
     out["intel"] = scan_intel()
     out["roster"] = ROSTER
     out["our_tag"] = OUR_TAG
-    out["sites"] = load_sites()
     out["holdings"] = load_holdings()
+    out["sites"] = sites_with_bases(load_sites(), out["holdings"])
     out["token"] = TOKEN
     now = time.time()
     out["sources"] = {n: {"age": int(now - s["ok_at"]) if s["ok_at"] else -1, "error": s["error"]} for n, s in STATUS.items()}
@@ -1005,6 +1005,7 @@ def foreign_groups(now, system=None, least=GROUP_MIN, cap=80):
 
 SITES = {"at": 0.0, "value": []}
 HOLDINGS = {"at": 0.0, "value": {"read_at": "", "buildings": []}}
+BASE_ID = re.compile(r"[0-9a-f]{32}")          # the id of a base a faction founded; a station of the game has a name as its id
 MET = {"at": 0.0, "value": {}}
 HULLS = {"at": 0.0, "value": {}}
 VERSION_FILE = re.compile(r"(\d+(?:\.\d+)*)\.json")
@@ -1042,9 +1043,10 @@ def holding_kind(kind):
 
 def load_holdings():
     """What the faction owns, for the map (data/empire/empire.json beside the fleet folder, written from the game by
-    game/fleet/empire.py collect): {"read_at", "buildings": [{"system", "kind", "name", "level", "status", "at"}]},
-    the bases (outposts, stations) first, then the facilities at stations. Read at most once a minute; no file or a
-    broken one: nothing owned, no fault."""
+    game/fleet/empire.py collect): {"read_at", "buildings": [{"system", "kind", "name", "level", "status", "at",
+    "part"}]}, the bases (outposts, stations) first, then the facilities. `at` names where a facility stands: the
+    station, or the base of our own in that system; `part` is true for a facility inside a base of our own, which the
+    map draws as one mark with its base. Read at most once a minute; no file or a broken one: nothing owned, no fault."""
     if time.time() - HOLDINGS["at"] > 60:
         value = {"read_at": "", "buildings": []}
         try:
@@ -1056,14 +1058,28 @@ def load_holdings():
             for b in (d.get("bases") if isinstance(d.get("bases"), list) else [])[:100]:
                 if isinstance(b, dict) and b.get("system"):
                     value["buildings"].append({"system": text(b["system"], 80), "kind": holding_kind(b.get("kind")), "name": text(b.get("name"), 80),
-                                               "level": 0, "status": text(b.get("status"), 30) or "active", "at": ""})
+                                               "level": 0, "status": text(b.get("status"), 30) or "active", "at": "", "part": False})
+            based = {b["system"]: b["name"] for b in value["buildings"]}                 # our own bases by system
             for f in (d.get("facilities") if isinstance(d.get("facilities"), list) else [])[:300]:
                 if isinstance(f, dict) and f.get("system"):
+                    at, part = text(f.get("base"), 80), False
+                    if BASE_ID.fullmatch(at):                                            # it stands in a base of our own
+                        at, part = based.get(text(f["system"], 80)) or "our base here", True
+                    else:
+                        at = at.replace("_", " ").title()
                     value["buildings"].append({"system": text(f["system"], 80), "kind": holding_kind(f.get("type") or f.get("name")),
                                                "name": text(f.get("name") or f.get("type"), 80), "level": int(num(f.get("level"))),
-                                               "status": text(f.get("status"), 30) or "active", "at": text(f.get("base"), 80).replace("_", " ").title()})
+                                               "status": text(f.get("status"), 30) or "active", "at": at, "part": part})
         HOLDINGS["at"], HOLDINGS["value"] = time.time(), value
     return HOLDINGS["value"]
+
+
+def sites_with_bases(sites, holdings):
+    """The sites as the map shows them: a site reads `built` once a base of ours (an outpost or a station) stands in
+    its system, whatever the hand-kept file still says (the rule of game/fleet/empire.py collect). A dropped site
+    stays dropped; the list read from the file is not changed."""
+    based = {b.get("system") for b in holdings.get("buildings") or [] if b.get("kind") in ("outpost", "station")}
+    return [dict(s, status="built") if s["system"] in based and s["status"] != "dropped" else s for s in sites]
 
 
 def met():

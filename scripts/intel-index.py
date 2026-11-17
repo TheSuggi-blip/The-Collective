@@ -148,20 +148,43 @@ def state(root, folder):
     return "current" if old == body(root, folder) else "stale"
 
 
-def new_id(root):
-    """A timestamp id no file of the two folders carries yet, and never one ending on :00."""
-    used = set()
-    for folder in TITLES:
-        directory = os.path.join(root, "game", folder)
-        for name in os.listdir(directory) if os.path.isdir(directory) else []:
-            if name.endswith(".md"):
-                used.add(read_file(os.path.join(directory, name))[0].get("id"))
-    stamp = time.time()
+IDS = {}                                               # root -> the ids in use, read once a run
+ID_LINE = re.compile(r"(?m)^id: (\S+)")
+
+
+def ids_in_use(root):
+    """Every id a Markdown file of the repository carries, read once a run: the intel files and also the reports,
+    the guidebooks and every other file. The id gate (scripts/validate-ids.sh) reads the whole repository, and one
+    id carried twice stops every member's install."""
+    root = str(root)
+    if root not in IDS:
+        used = set()
+        for folder, folders, names in os.walk(root):
+            folders[:] = [name for name in folders if not name.startswith(".")]
+            for name in names:
+                if name.endswith(".md"):
+                    try:
+                        with open(os.path.join(folder, name), encoding="utf-8", errors="replace") as handle:
+                            found = ID_LINE.search(handle.read(600))
+                    except OSError:
+                        continue
+                    if found:
+                        used.add(found.group(1))
+        IDS[root] = used
+    return IDS[root]
+
+
+def new_id(root, now=None):
+    """A timestamp id no Markdown file of the repository carries yet: the first free second going back from now,
+    never one ending on :00 and never a second that has not been yet (a member's own `date -u` falls there)."""
+    used = ids_in_use(root)
+    stamp = time.time() if now is None else now
     while True:
         text = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime(stamp))
         if text not in used and time.gmtime(stamp).tm_sec != 0:
+            used.add(text)
             return text
-        stamp += 1
+        stamp -= 1
 
 
 def write(root, folder):

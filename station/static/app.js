@@ -562,7 +562,8 @@ function paint(t) {
     const planned = site && site.status !== 'dropped' && site.status !== 'built' && !own.some((b) => b.kind === 'outpost' || b.kind === 'station');
     if (own.length || planned) {                                    // ours, above the system: one mark per kind of building, amber while one is not active; a flag for a planned base
       const kinds = new Map(), row = [];
-      for (const b of own) { if (!kinds.has(b.kind)) kinds.set(b.kind, true); if (!stands(b)) kinds.set(b.kind, false); }
+      const based = own.some((b) => b.kind === 'outpost' || b.kind === 'station');   // a base of our own: what stands inside it is part of it and gets no mark of its own
+      for (const b of own) { if (based && b.part) continue; if (!kinds.has(b.kind)) kinds.set(b.kind, true); if (!stands(b)) kinds.set(b.kind, false); }
       for (const [kind, done] of kinds) row.push([kind, done ? BUILT : RAISING, false]);
       if (planned) row.push(['flag', site.status === 'candidate' ? rgba(OURS, 0.7) : OURS, site.status === 'candidate']);
       row.forEach(([name, colour, hollow], i) => glyph(ctx, name, x - (row.length - 1) * 7 + i * 14, y - q - 10.5, 12, colour, hollow));

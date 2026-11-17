@@ -112,6 +112,21 @@ class IndexTests(Tree):
         second = (self.root / "game" / "planets" / "index.md").read_text(encoding="ascii")
         self.assertEqual(first.split("\n---\n")[0], second.split("\n---\n")[0])                   # the id is kept
 
+    def test_a_new_id_is_free_in_the_whole_repository_and_never_a_second_to_come(self):
+        now = 1_800_000_030                                                                       # a time 30 s past a full minute
+        stamp = lambda t: time.strftime("%Y%m%dT%H%M%SZ", time.gmtime(t))
+        (self.root / "reports").mkdir()
+        self.put("reports/a-report.md", "---\nname: a report\nid: %s\n---\n\n# A member's report of this very second\n" % stamp(now))
+        self.put("game/planets/a-nexus_prime.md", system_file("nexus_prime").replace("20261114T000001Z", stamp(now - 1)))
+        (self.root / ".git").mkdir()
+        self.put(".git/kept-out.md", "---\nid: %s\n---\n" % stamp(now - 2))                       # not a file of the repository
+        first = self.index.new_id(str(self.root), now)
+        self.assertEqual(first, stamp(now - 2))                                                   # the report's id and the intel file's are taken
+        self.assertEqual(self.index.new_id(str(self.root), now), stamp(now - 3))                  # and so is the one just given, before its file is written
+        ids = [self.index.new_id(str(self.root), now) for _ in range(40)]
+        self.assertEqual(len(set(ids + [first])), 41)
+        self.assertTrue(all(i < stamp(now) and not i.endswith("00Z") for i in ids))               # none to come, none on a full minute
+
     def test_the_gate_skips_index_md_as_data_and_fails_on_a_stale_or_missing_one(self):
         self.put("game/planets/a-nexus_prime.md", system_file("nexus_prime"))
         self.assertEqual(self.gate.check(str(self.root))[0], [])
