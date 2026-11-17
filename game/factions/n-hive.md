@@ -42,8 +42,8 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| 4011f46410f19d6243276018 | Node Gamma (`node_gamma`) | 0 | not met |
-| ec43cfe9e4293184f10e08ca | Synchrony (`synchrony`) | 0 | workhorse |
+| 13170464db5eef0043ae9f5e | Hamal (`hamal`) | 0 | workhorse |
+| 6ce9fcc5d675364f5a7de638 | Synchrony (`synchrony`) | 0 | workhorse |
 
 ## Standing History
 

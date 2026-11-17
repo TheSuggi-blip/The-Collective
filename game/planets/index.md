@@ -8,7 +8,7 @@ author: Unity
 # index.md -- Systems We Know
 
 Built by `scripts/intel-index.py` from the system files of this folder;
-never edited by hand. Files listed: 492. The format of a system file:
+never edited by hand. Files listed: 494. The format of a system file:
 `BLUEPRINT.md`.
 
 ## Voidborn space
@@ -375,10 +375,12 @@ never edited by hand. Files listed: 492. The format of a system file:
 | Tabit | neutral | unknown | 0 | 18 | 2026-11-17 | [n-tabit.md](n-tabit.md) |
 | Wazn | neutral | unknown | 0 | 18 | 2026-11-17 | [n-wazn.md](n-wazn.md) |
 | Wolf 359 | neutral | unknown | 0 | 18 | 2026-11-17 | [n-wolf_359.md](n-wolf_359.md) |
+| Xihe | neutral | unknown | 0 | 18 | 2026-11-17 | [n-xihe.md](n-xihe.md) |
 | Zenithfall | neutral | unknown | 0 | 18 | 2026-11-17 | [n-zenithfall.md](n-zenithfall.md) |
 | 36 Ophiuchi | neutral | unknown | 0 | 19 | 2026-11-17 | [n-36_ophiuchi.md](n-36_ophiuchi.md) |
 | Alkaid | neutral | unknown | 0 | 19 | 2026-11-17 | [n-alkaid.md](n-alkaid.md) |
 | Ancha | neutral | unknown | 0 | 19 | 2026-11-17 | [n-ancha.md](n-ancha.md) |
+| Capella | neutral | unknown | 0 | 19 | 2026-11-17 | [n-capella.md](n-capella.md) |
 | Cebalrai | neutral | unknown | 0 | 19 | 2026-11-17 | [n-cebalrai.md](n-cebalrai.md) |
 | Cloverfield | neutral | unknown | 0 | 19 | 2026-11-17 | [n-cloverfield.md](n-cloverfield.md) |
 | Emberglow | neutral | unknown | 0 | 19 | 2026-11-17 | [n-emberglow.md](n-emberglow.md) |

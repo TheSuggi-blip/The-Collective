@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 17.
 | Allies | HEXC | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 179 | Public event stream |
+| Pilots carrying the tag on the public event stream | 177 | Public event stream |
 
 ## Bases
 
@@ -49,20 +49,20 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | ILC Chute | Synchrony (`synchrony`) | 0 | junk_convoy |
 | ILC Flange | Synchrony (`synchrony`) | 0 | syndicate |
 | ILC Gantry | Nexus Prime (`nexus_prime`) | 0 | junk_convoy |
-| ILC Gasket | Nexus Prime (`nexus_prime`) | 0 | syndicate |
-| ILC Gateway | Synchrony (`synchrony`) | 0 | concordia |
+| ILC Gasket | Synchrony (`synchrony`) | 0 | syndicate |
+| ILC Gateway | Node Alpha (`node_alpha`) | 0 | concordia |
 | ILC Gilt | Synchrony (`synchrony`) | 0 | syndicate |
 | ILC Kerf | Pherkad (`pherkad`) | 0 | junk_convoy |
-| ILC Ladle | Synchrony (`synchrony`) | 0 | junk_convoy |
+| ILC Ladle | Node Alpha (`node_alpha`) | 0 | junk_convoy |
 | ILC Mallet | Synchrony (`synchrony`) | 0 | syndicate |
-| ILC Nonstop | Nexus Prime (`nexus_prime`) | 0 | concordia |
-| ILC Penalty | Pherkad (`pherkad`) | 0 | junk_convoy |
+| ILC Nonstop | Node Alpha (`node_alpha`) | 0 | concordia |
+| ILC Penalty | Synchrony (`synchrony`) | 0 | junk_convoy |
 | ILC Ratchet | Synchrony (`synchrony`) | 0 | junk_convoy |
 | ILC Retort | Synchrony (`synchrony`) | 0 | junk_convoy |
-| ILC Shank | Synchrony (`synchrony`) | 1 | syndicate |
+| ILC Shank | The Experiment (`the_experiment`) | 1 | syndicate |
 | ILC Solder | Synchrony (`synchrony`) | 1 | syndicate |
-| ILC Vagabond | Synchrony (`synchrony`) | 0 | concordia |
-| ILC Weir | Node Gamma (`node_gamma`) | 0 | junk_convoy |
+| ILC Vagabond | Node Alpha (`node_alpha`) | 0 | concordia |
+| ILC Weir | Synchrony (`synchrony`) | 0 | junk_convoy |
 
 ## Standing History
 

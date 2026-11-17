@@ -37,7 +37,7 @@ Pilots of it in our space in the last 24 hours: 4.
 | Argon Bank Range | outpost | Barnard's Star (`barnards_star`) | lawless | 11 | thriving |
 | Hex Star | station | Dheneb (`dheneb`) | lawless | 11 | operational |
 | Copperbelt Range | outpost | Aspidiske (`aspidiske`) | lawless | 12 | thriving |
-| Ironbelt Range | outpost | Ascella (`ascella`) | lawless | 13 | thriving, wrecked |
+| Ironbelt Range | outpost | Ascella (`ascella`) | lawless | 13 | thriving |
 | Glintfin Range | outpost | Silvermark (`silvermark`) | lawless | 19 | thriving |
 | Hex Wellspring | station | Zosma (`zosma`) | lawless | 20 | operational |
 | Cobalt Reach Range | outpost | Sargas (`sargas`) | lawless | 21 | thriving |
@@ -49,9 +49,9 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
 | Elara Orris | Hamal (`hamal`) | 0 | lithosphere |
-| HexBot13 | Synchrony (`synchrony`) | 0 | frankenhauler |
+| HexBot14 | Node Alpha (`node_alpha`) | 0 | promenade |
 | Morgan Drake | GSC-0027 (`gsc_0027`) | 0 | bulk_terms |
-| SolarCortex | The Experiment (`the_experiment`) | 0 | pithead |
+| Olthoi | The Experiment (`the_experiment`) | 0 | cryogenic_survey |
 
 ## Standing History
 
