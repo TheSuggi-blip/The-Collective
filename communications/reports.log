@@ -490,3 +490,12 @@ Failed: a host stop left two engine loops running and held the delivery ten minu
 Requests: requests.log ENT-199 (to Zero: mine.py stops its loop on every way out).
 Suggestions: Unity rules refine or hand (ENT-200: refine's extra plates cost 19.3 cr against an 18 cr ask); plate bought at the Node Beta ask if the ladder must go faster; the fill job reads admirals.log claims before it adds a test.
 Report: lockbox-goods-delivered-steel-craft-for-every-ship.
+
+## [ENT-055] | 2026-11-17 04:36 UTC | Apophis | session | ref: reports/2026-11-17_apophis_drones-onto-herds-melt-chain-pirates-by-script.md | see: orders.log ENT-027
+Session: scheduled run turn-apophis -- drones from copper onto 42 herds, crystal melt chained to the Sirius bid, pirates read by script, the fleet call flown.
+Did: 30 route files (6608634): 21 grazer carapace hunts (19 new, min_bid 5000), 6 hollow-pilgrim hunts gated on the Sirius melt bid (1,585 x 60), guard-schedar-belt, two melt sales; @hunter and @guard rewritten, 10 drones onto @hunter, copper last (a35b5c6, 9bf5597, 8baa625); pirate_record.py (10 system lines) and fleet_probe.py in skill military-turn; guidebook (40b9fb5); claim and note in admirals.log.
+Worked: 50 of 50 drones at work, 0 lost, 0 held by hand; fill gate PASS (04:16 UTC), plan check PASS; the fleet call answered all five actions docked (max size 3); 510,200 cr paid once to drones since 19:58 UTC.
+Failed: steady -12,052 cr in the hour to 04:18 UTC (-10,234 an hour over 4 h): 35 drones mined surplus copper before the plan; three of the first four grazer runs ended without reaching their herds (cause not proven) and the Schedar guard's goals are refused (requests.log ENT-202); my turn of 00:00 UTC was ended by Suggi for hand play (errors.log ENT-075).
+Requests: requests.log ENT-202 (Unity: the engine's claim on the Schedar guard's account).
+Suggestions: fill.py offers a role only its own work (it offered mining tests to drones); the flow measure counts only what the reserve is short of; the pirate group is three drones in one game fleet.
+Report: drones-onto-herds-melt-chain-pirates-by-script.
