@@ -46,7 +46,7 @@ checklist in the report.
 - [ ] Every number is printed from a record the same section names; a number nobody measured is written "not measured"  (PASS / HALT)
 - [ ] No section is left out; a section with little to report says what was checked and what the check showed  (PASS / HALT)
 - [ ] Division report, minimum words: Situation 250, Activities 250, Problems 150, Plans 250, Suggestions 100, Feedback 150, Learnings 200  (PASS / HALT)
-- [ ] Fleet report, minimum words: Situation 250, Strategy 300, Divisions 300, Plans 250, Open Questions 150, Learnings 200  (PASS / HALT)
+- [ ] Fleet report, minimum words: Situation 250, Strategy 300, Divisions 300, Plans 250, Advice and Suggestions 150, Learnings 200  (PASS / HALT)
 - [ ] `python3 -B scripts/report-words.py reports/<file>` prints `REPORT WORDS: PASS`  (PASS / HALT)
 - [ ] The words carry facts: no sentence stands in the report only to reach a minimum, nothing is invented, nothing is said twice  (PASS / HALT)
 - [ ] Suggestions (a division report) say what can be changed, each with its reason and its cost  (PASS / HALT)
@@ -122,7 +122,7 @@ minimum is a floor: a section is as much longer as its facts need.
 | Suggestions | 100 | -- |
 | Feedback | 150 | -- |
 | Learnings | 200 | 200 |
-| Open Questions | -- | 150 |
+| Advice and Suggestions | -- | 150 |
 | Cross-links | none | none |
 
 - `--` means the section is not part of that report; `none` means the
@@ -135,9 +135,9 @@ minimum is a floor: a section is as much longer as its facts need.
 - The words carry facts. A section with little to report reaches its
   minimum by saying what was checked and what the check showed: under
   Problems, the losses and failed orders looked for, the records read
-  and the risks watched; under Suggestions and Open Questions, what
-  was weighed and why nothing more is proposed or asked; under
-  Learnings, what the period confirmed of what the writer already
+  and the risks watched; under Suggestions and under Advice and
+  Suggestions, what was weighed and why nothing more is proposed;
+  under Learnings, what the period confirmed of what the writer already
   knew. Nothing is invented and nothing is said twice to fill a
   section.
 
@@ -212,15 +212,23 @@ why; what changed.
 **`## Divisions`** -- *What did the Admirals report?* For each
 division: what its Admiral reported, the Fleet Admiral's judgment of
 it, and an answer to every suggestion: accepted, declined or open,
-with the reason. A suggestion that is Suggi's to decide is carried
-into Open Questions with the Fleet Admiral's recommendation.
+with the reason. What Suggi should know of it is carried into Advice
+and Suggestions.
 
 **`## Plans`** -- *What happens next?* What each division does next,
 and what the Fleet Admiral does herself: systems to build, diplomacy,
 questions to settle.
 
-**`## Open Questions`** -- *What must Suggi decide?* Each question
-with the Fleet Admiral's recommendation.
+**`## Advice and Suggestions`** -- *What should Suggi know, and what
+does the Fleet Admiral advise?* The report informs and asks nothing
+(Suggi, 2026-11-17): the players play the game, Suggi reads the
+reports and speaks when he sees something wrong or a better way. In
+plain words, for a reader who does not know the game: what the players
+decided in the period and why, what the Fleet Admiral advises him to
+look at, and the improvements she proposes. A step the constitution
+keeps for him (a new pilot, war on a player, a word to another player)
+is named here with her recommendation and with what the fleet does
+until he speaks.
 
 **`## Learnings`** -- *What did the Fleet Admiral learn?* What the
 period taught her about leading the fleet (its strategy, its orders

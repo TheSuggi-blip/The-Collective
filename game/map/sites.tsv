@@ -1,16 +1,18 @@
 # Sites proposed for a base of The Collective: one line per system. Kept by hand by the Fleet Admiral; Intel
 # proposes (its guidebook, queue.log). game/fleet/empire.py reads this file and adds what the chart and the public
-# list of stations say about each system; governance/empire.md shows the result. Where a base is built is
-# decided by Suggi.
-# status: candidate (proposed, not decided), chosen (Suggi decided), built, dropped. poi: a place id, or - for none.
+# list of stations say about each system; governance/empire.md shows the result. Suggi gives the direction of the
+# expansion (orders P4, 2026-11-17: south, north and east; the systems he named are suggestions inside those regions;
+# large bases are spread out; outposts and hubs are built freely); the Fleet Admiral chooses the system.
+# status: candidate (proposed, not decided), chosen (the Fleet Admiral decided), built, dropped. poi: a place id, or - for none.
 system	poi	status	proposed_by	note
 achernar	-	candidate	Oracle	first of three beside the best ice: the only one with belt, gas and ice (game/routes/guidebook/intel.md; queue.log ENT-067, ENT-090)
 alnair	-	candidate	Oracle	second of three beside the best ice (game/routes/guidebook/intel.md; queue.log ENT-067, ENT-090)
 wolf_1061	-	candidate	Oracle	third of three beside the best ice (game/routes/guidebook/intel.md; queue.log ENT-067, ENT-090)
-yildun	-	candidate	Suggi	the region between our space and the Outer Rim: named for a station (Suggi, 2026-11-16); 11 jumps from home, lawless, not read by us yet
-aldebaran	-	candidate	Suggi	the region between our space and the Outer Rim: named for a station (Suggi, 2026-11-16); 9 jumps from home, lawless, not read by us yet
-hawthorne	-	candidate	Suggi	with alchiba the region named for a later station (Suggi, 2026-11-16); 13 jumps from home, lawless, not read by us yet
-alchiba	-	candidate	Suggi	with hawthorne the region named for a later station (Suggi, 2026-11-16); 14 jumps from home, lawless, not read by us yet
-intercrus	-	candidate	Suggi	proposed for a base (Suggi, 2026-11-17); 7 jumps from home, lawless; read once by our census on 2026-11-15 21:41 UTC: two belts and alloy remnants of iron and copper near 100,000 each, sol alloy ore 1,401, null matter 650, an ice field of water and nitrogen ice (game/planets/n-intercrus.md)
-felis	-	candidate	Suggi	with biham a pair proposed for a base (Suggi, 2026-11-17); 7 jumps from home, lawless, borders Gliese 876 (pirates named in the military guidebook); read once on 2026-11-15 23:34 UTC: two metallic belts and a frost ring, their deposits not read (game/planets/n-felis.md)
-biham	-	candidate	Suggi	with felis a pair proposed for a base (Suggi, 2026-11-17); 8 jumps from home, lawless, borders Felis and Gliese 876; not read by us yet
+yildun	-	candidate	Suggi	north region, two large bases there, for instance Aldebaran and Hawthorne (Suggi, 2026-11-17); the region between our space and the Outer Rim: named for a station (Suggi, 2026-11-16); 11 jumps from home, lawless, not read by us yet
+aldebaran	-	candidate	Suggi	north region, two large bases there, for instance Aldebaran and Hawthorne (Suggi, 2026-11-17); the region between our space and the Outer Rim: named for a station (Suggi, 2026-11-16); 9 jumps from home, lawless, not read by us yet
+hawthorne	-	candidate	Suggi	north region, two large bases there, for instance Aldebaran and Hawthorne (Suggi, 2026-11-17); with alchiba the region named for a later station (Suggi, 2026-11-16); 13 jumps from home, lawless, not read by us yet
+alchiba	-	candidate	Suggi	north region, two large bases there, for instance Aldebaran and Hawthorne (Suggi, 2026-11-17); with hawthorne the region named for a later station (Suggi, 2026-11-16); 14 jumps from home, lawless, not read by us yet
+intercrus	-	candidate	Suggi	east region, beside Diadem, one large base (Suggi, 2026-11-17); proposed for a base (Suggi, 2026-11-17); 7 jumps from home, lawless; read once by our census on 2026-11-15 21:41 UTC: two belts and alloy remnants of iron and copper near 100,000 each, sol alloy ore 1,401, null matter 650, an ice field of water and nitrogen ice (game/planets/n-intercrus.md)
+felis	-	candidate	Suggi	south region, the region of Biham, one large base (Suggi, 2026-11-17); with biham a pair proposed for a base (Suggi, 2026-11-17); 7 jumps from home, lawless, borders Gliese 876 (pirates named in the military guidebook); read once on 2026-11-15 23:34 UTC: two metallic belts and a frost ring, their deposits not read (game/planets/n-felis.md)
+biham	-	candidate	Suggi	south region, the region of Biham, one large base (Suggi, 2026-11-17); with felis a pair proposed for a base (Suggi, 2026-11-17); 8 jumps from home, lawless, borders Felis and Gliese 876; not read by us yet
+diadem	-	candidate	Suggi	east region, one large base (Suggi, 2026-11-17: "then maybe Diadem"); 8 jumps from home, lawless by the chart, a neighbour of Intercrus; not read by us yet
