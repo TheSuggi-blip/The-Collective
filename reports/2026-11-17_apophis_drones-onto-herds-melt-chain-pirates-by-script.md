@@ -102,6 +102,15 @@ and five by `fit-shield-booster-pirate-group` (14,920 cr), for the pirate group.
   drones lost one minute each; fixed and flown at 04:27 UTC.
 - **T5 per ship not measured:** no snapshot of each drone's XP from my last
   turn exists, so I cannot name the drones that gained none; 35 drones mined.
+- **The first grazer runs did not hunt.** Of the first four (04:14 to 04:17
+  UTC), Achernar left on a ship not ours; Schedar and the two Ironhollow
+  places ended in 6.6 to 10.5 minutes with no kill, no note and no herd row,
+  which means the runner's travel goal failed (`hunt.py` writes no note
+  then). The guard at Schedar failed five times from 04:19 UTC with `goal
+  navigate-to-system failed: Another request for this account is already
+  being processed`, while reads and the fleet calls of that pilot worked:
+  the engine's claim on the account (queue.log ENT-132). Asked of the Fleet
+  Admiral (requests.log, this turn); cause of the three hunts not proven.
 - **The fill job offered five mining tests to drones** (`fill.py fill drone`,
   04:16 UTC): not taken, they train no combat skill (F23).
 - **Not measured:** what a guard prevented; no shot was fired at a guarded ship.
@@ -118,6 +127,9 @@ and five by `fit-shield-booster-pirate-group` (14,920 cr), for the pirate group.
   rules of `pirate_test.py` against a lone weak pirate, and disbands; first run
   with the Pirate Bounty mission (2,000 cr on the boards of Nova Terra and Node
   Beta). It starts as one test in the background; its RESULT is read next turn.
+- `hunt.py` writes a note (`place not reached`) when its travel goal fails
+  and waits out the engine's 409 as `guard.py` does: through fleet-build, with
+  its test, so that a zero-kill row says why.
 - Plan the guard routes for the first outpost (P4 f) once its place is named.
 - Build a per-ship XP snapshot (a verb of `hive.py` through fleet-build) so T5
   names the ships without XP, and a flow figure that counts only the units the
