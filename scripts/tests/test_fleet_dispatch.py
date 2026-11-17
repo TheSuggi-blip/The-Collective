@@ -71,6 +71,41 @@ class Tree(unittest.TestCase):
         return (route["id"] if route else None), argument
 
 
+class PirateTests(Tree):
+    """Orders D9 (Suggi, 2026-11-17: every ship avoids pirates) and Military's report of 2026-11-17: a hunt flew four runs
+    into a place with pirates between two turns, kept whole only by the runner's leave rule."""
+
+    def stamp(self, hours_ago):
+        return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(self.now - hours_ago * 3600))
+
+    def sightings(self, *rows):
+        (self.data / "intel").mkdir(exist_ok=True)
+        with open(self.data / "intel" / "sightings.jsonl", "w") as handle:
+            for row in rows:
+                handle.write(json.dumps(row) + "\n")
+
+    def test_a_hunt_a_mine_and_a_guard_where_a_pirate_was_seen_within_six_hours_are_closed(self):
+        self.sightings({"at": self.stamp(2), "system": "far", "poi": "nebula", "pilots": [], "pirates": 1, "creatures": 3},
+                       {"at": self.stamp(1), "system": "home", "poi": "core", "pilots": [], "pirates": 0, "creatures": 0})
+        seen = self.dispatch.pirates(str(self.data), self.now)
+        self.assertEqual(set(seen), {"far"})
+        routes = self.dispatch.load_routes(self.root)
+        pilot = {"name": "drone-1", "credits": 20000, "modules": [], "docked": True}
+        state = dict(self.state(), pirates=seen)
+        self.assertIn("pirates seen in far", self.dispatch.why_not(pilot, "rays", routes["rays"], state)[0])
+        self.assertIn("pirates seen in far", self.dispatch.why_not(pilot, "mine", routes["mine"], state)[0])
+        guard = {"id": "watch", "kind": "guard", "title": "t", "guards": "mine", "station": "home:core:base"}
+        self.assertIn("pirates seen in far", self.dispatch.why_not(pilot, "watch", guard, dict(state, root=str(self.root), orders={"miner-1": "mine mine"}))[0])
+        self.assertIsNone(self.dispatch.why_not(pilot, "missions", routes["missions"], state)[0])      # a circuit at home is not touched
+        self.sightings({"at": self.stamp(7), "system": "far", "poi": "nebula", "pilots": [], "pirates": 2, "creatures": 3})
+        self.assertEqual(self.dispatch.pirates(str(self.data), self.now), {})                         # older than six hours: open again
+        (self.data / "observations").mkdir()
+        (self.data / "observations" / "intel.jsonl").write_text(json.dumps({"t": self.stamp(3), "kind": "pirate", "subject": "far", "fields": {}}) + "\n"
+                                                                 + json.dumps({"t": self.stamp(1), "kind": "pirate", "subject": "home", "fields": {"last": self.stamp(30)}}) + "\n"
+                                                                 + "not json\n")
+        self.assertEqual(set(self.dispatch.pirates(str(self.data), self.now)), {"far"})              # a member's line counts; a summary by its last fight
+
+
 class PickTests(Tree):
     def test_a_once_route_comes_first_and_is_not_flown_again(self):
         self.assertEqual(self.pick("drone-1")[0], "missions")

@@ -417,6 +417,10 @@ def why_not(pilot, rid, route, state):
         return "its last %d runs each lost money: %s cr" % (late[0], format(late[1], ",")), None
     if set(route.get("skip_if_booked") or []) & (state.get("booked") or {}).get(pilot["name"], set()):
         return "its reward is booked", None
+    if route.get("kind") in ("hunt", "mine"):
+        reason = pirate_reason(str(route.get("place") or route.get("belt") or "").split(":")[0], state)
+        if reason:
+            return reason, None
     lacks = [title for title in owed(route) if title not in (state.get("booked") or {}).get(pilot["name"], set())]
     if lacks:
         return "needs the reward `%s` first" % lacks[0], None
@@ -455,6 +459,9 @@ def why_not(pilot, rid, route, state):
             return "guards `%s`: no mine or hunt route file" % route.get("guards"), None
         if guarded["kind"] + " " + str(route["guards"]) not in state["orders"].values():
             return "nobody flies %s" % route["guards"], None
+        reason = pirate_reason(str(place).split(":")[0], state)
+        if reason:
+            return reason, None
     if pilot.get("credits", 0) < route.get("min_credits", 0):
         return "wallet below %s cr" % route["min_credits"], None
     if pilot.get("credits", 0) < FLOOR and not (route.get("park") or routefiles.stage(route) in ("once", "paying")):
@@ -544,6 +551,65 @@ def command(route, pilot, argument, root):
 
 
 LOSS_HOURS = 6               # the window a route's runs are judged over
+PIRATE_HOURS = 6             # orders D9: a hunt, a mine or a guard where a pirate was seen within this many hours is closed
+PIRATE_TAIL = 4 * 1024 * 1024    # bytes of the sightings record read from its end: six hours of service sight's passes
+
+
+def pirates(data, now):
+    """{system: the second a pirate was last seen there}, within PIRATE_HOURS: from service sight's record of every
+    place our ships read (data/intel/sightings.jsonl, `pirates` above 0) and from the members' own lines
+    (data/observations/*.jsonl, kind `pirate`; a summary line counts by its `last` fight). A record that cannot be
+    read closes nothing (Military's report of 2026-11-17: D9 was kept between turns by the runner's leave rule alone)."""
+    since, seen = now - PIRATE_HOURS * 3600, {}
+
+    def note(system, stamp):
+        try:
+            when = calendar.timegm(time.strptime(str(stamp)[:19], "%Y-%m-%dT%H:%M:%S"))
+        except ValueError:
+            return
+        if system and since <= when <= now + 60:
+            seen[str(system)] = max(seen.get(str(system), 0), when)
+    try:
+        with open(Path(data) / "intel" / "sightings.jsonl", "rb") as handle:
+            size = handle.seek(0, 2)
+            handle.seek(max(0, size - PIRATE_TAIL))
+            text = handle.read().decode("utf-8", "replace")
+    except OSError:
+        text = ""
+    for line in text.splitlines():
+        if '"pirates"' not in line:
+            continue
+        try:
+            row = json.loads(line)
+        except ValueError:
+            continue
+        count = row.get("pirates") if isinstance(row, dict) else None
+        if isinstance(count, (int, float)) and not isinstance(count, bool) and count > 0:
+            note(row.get("system"), row.get("at"))
+    for path in sorted((Path(data) / "observations").glob("*.jsonl")):
+        try:
+            lines = path.read_text(encoding="utf-8").splitlines()
+        except OSError:
+            continue
+        for line in lines:
+            if '"pirate"' not in line:
+                continue
+            try:
+                row = json.loads(line)
+            except ValueError:
+                continue
+            if isinstance(row, dict) and row.get("kind") == "pirate":
+                fields = row.get("fields") if isinstance(row.get("fields"), dict) else {}
+                note(row.get("subject"), fields.get("last") or row.get("t"))
+    return seen
+
+
+def pirate_reason(system, state):
+    """The reason a place is closed under orders D9, or None."""
+    when = (state.get("pirates") or {}).get(str(system or ""))
+    if not when:
+        return None
+    return "pirates seen in %s %.1f hours ago (orders D9: every ship avoids them)" % (system, max(0.0, state.get("now", when) - when) / 3600)
 
 
 def judged(route):
@@ -684,7 +750,7 @@ def one_pass(root, data, dry_run, children):
     routes = load_routes(root)
     rows = run_rows(data)
     state = {"now": now, "data": data, "rows": rows, "orders": fresh_orders(data, now), "rest": resting(routes, rows, now), "booked": booked(data),
-             "loss": losing(routes, rows, now), "late": lately_losing(routes, rows, now), "root": root}
+             "loss": losing(routes, rows, now), "late": lately_losing(routes, rows, now), "root": root, "pirates": pirates(data, now)}
     named = flagships(data)
     ammo = set(read_json(Path(data) / "catalog" / "ammo.json", []) or [])      # written by routemaker.py from the game's catalog
     lines = []
