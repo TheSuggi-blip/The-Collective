@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 59.
+Routes: 61.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -41,7 +41,9 @@ Routes: 59.
 | [sell-ember-nexus-dheneb](sell-ember-nexus-dheneb.json) | circuit | beyond the border, 11 jumps | Stored ember glands carried from Central Nexus to the Hex Star bid (Dheneb, lawless) | up to 1 ships, with 6 ember_gland stored at central_nexus, while b495c6003fc83e18f6d8cecbe6929133 bids 2000 cr for ember_gland | TBD | TBD | TBD | TBD | -- |
 | [trade-hydrogen-gas-784309214f105860a16a0c100a70eb14-synchrony](trade-hydrogen-gas-784309214f105860a16a0c100a70eb14-synchrony.json) | circuit | beyond the border, 6 jumps | Hydrogen Gas: bought at Ironlight Crossroads for 6 cr, sold at Synchrony Hub for 28 cr | up to 1 ships, from 3,429 cr | TBD | TBD | TBD | TBD | -- |
 | [trade-plasma-gas-784309214f105860a16a0c100a70eb14-node](trade-plasma-gas-784309214f105860a16a0c100a70eb14-node.json) | circuit | beyond the border, 6 jumps | Plasma Gas: bought at Ironlight Crossroads for 52 cr, sold at Node Beta Industrial Station for 104 cr | up to 1 ships, from 3,915 cr | TBD | TBD | TBD | TBD | -- |
+| [hunt-alchiba-ice-belt-hollow-pilgrim](hunt-alchiba-ice-belt-hollow-pilgrim.json) | hunt | beyond the border, 14 jumps | hollow_pilgrim at alchiba_ice_belt; loot sold at Sirius Observatory Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-arneb-gas-pocket-drift-ray](hunt-arneb-gas-pocket-drift-ray.json) | hunt | beyond the border, 16 jumps | drift_ray at arneb_gas_pocket; loot sold at The Obsidian Well | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
+| [hunt-ashenmoor-ice-shelf-hollow-pilgrim](hunt-ashenmoor-ice-shelf-hollow-pilgrim.json) | hunt | beyond the border, 17 jumps | hollow_pilgrim at ashenmoor_ice_shelf; loot sold at Sirius Observatory Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-avior-gas-pocket-halo-drifter](hunt-avior-gas-pocket-halo-drifter.json) | hunt | beyond the border, 12 jumps | halo_drifter at avior_gas_pocket; loot sold at Node Beta Industrial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-biham-ice-shelf-hollow-pilgrim](hunt-biham-ice-shelf-hollow-pilgrim.json) | hunt | beyond the border, 18 jumps | hollow_pilgrim at biham_ice_shelf; loot sold at The Crucible Garrison | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-denebola-fractured-prism-veil-ray](hunt-denebola-fractured-prism-veil-ray.json) | hunt | beyond the border, 5 jumps | veil_ray at denebola_fractured_prism; loot sold at Node Beta Industrial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
