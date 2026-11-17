@@ -8,7 +8,7 @@ author: Unity
 # index.md -- Systems We Know
 
 Built by `scripts/intel-index.py` from the system files of this folder;
-never edited by hand. Files listed: 90. The format of a system file:
+never edited by hand. Files listed: 97. The format of a system file:
 `BLUEPRINT.md`.
 
 ## Voidborn space
@@ -109,9 +109,16 @@ never edited by hand. Files listed: 90. The format of a system file:
 | Rotanev | neutral | unknown | 0 | 10 | 2026-11-17 | [n-rotanev.md](n-rotanev.md) |
 | GSC-0042 | neutral | unknown | 0 | 11 | 2026-11-17 | [n-gsc_0042.md](n-gsc_0042.md) |
 | Mizar | neutral | unknown | 0 | 11 | 2026-11-17 | [n-mizar.md](n-mizar.md) |
+| Saltwind | neutral | unknown | 0 | 11 | 2026-11-17 | [n-saltwind.md](n-saltwind.md) |
+| Tania | neutral | unknown | 0 | 11 | 2026-11-17 | [n-tania.md](n-tania.md) |
 | Yildun | neutral | unknown | 0 | 11 | 2026-11-17 | [n-yildun.md](n-yildun.md) |
 | Avior | neutral | unknown | 0 | 12 | 2026-11-17 | [n-avior.md](n-avior.md) |
+| Springdale | neutral | unknown | 0 | 12 | 2026-11-17 | [n-springdale.md](n-springdale.md) |
 | Hawthorne | neutral | unknown | 0 | 13 | 2026-11-17 | [n-hawthorne.md](n-hawthorne.md) |
+| Oxbow | neutral | unknown | 0 | 13 | 2026-11-17 | [n-oxbow.md](n-oxbow.md) |
 | Sabik | neutral | unknown | 0 | 13 | 2026-11-16 | [n-sabik.md](n-sabik.md) |
 | Alchiba | neutral | unknown | 0 | 14 | 2026-11-17 | [n-alchiba.md](n-alchiba.md) |
+| Dschubba | neutral | unknown | 0 | 14 | 2026-11-17 | [n-dschubba.md](n-dschubba.md) |
+| Birchwood | neutral | unknown | 0 | 15 | 2026-11-17 | [n-birchwood.md](n-birchwood.md) |
 | Brightfall | neutral | unknown | 0 | 15 | 2026-11-16 | [n-brightfall.md](n-brightfall.md) |
+| Pinecross | neutral | unknown | 0 | 15 | 2026-11-17 | [n-pinecross.md](n-pinecross.md) |

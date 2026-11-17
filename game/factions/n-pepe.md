@@ -44,7 +44,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | MimicShift | Nexus Prime (`nexus_prime`) | not on record | theoria |
 | MimicSol | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | MimicTern | Nexus Prime (`nexus_prime`) | not on record | lemma |
-| MimicVein | Nexus Prime (`nexus_prime`) | not on record | theoria |
+| MimicVega | Nexus Prime (`nexus_prime`) | not on record | cobble |
 | MimicVoid | Nexus Prime (`nexus_prime`) | 0 | threshold |
 | Pepemos | Nexus Prime (`nexus_prime`) | 0 | futures |
 

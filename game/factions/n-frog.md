@@ -38,8 +38,8 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Jenny Beth | Node Alpha (`node_alpha`) | 0 | theoria |
-| Shade SicK | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| Anne Marie | Nexus Prime (`nexus_prime`) | 0 | theoria |
+| Jenny Beth | Nexus Prime (`nexus_prime`) | 0 | theoria |
 
 ## Standing History
 

@@ -33,7 +33,7 @@ Pilots of it in our space in the last 24 hours: 1.
 | Base | Kind | System | Space | Jumps from Nexus Prime | Condition |
 |---|---|---|---|---|---|
 | Conjunction Junction | station | Cloverfield (`cloverfield`) | lawless | 19 | thriving |
-| station | station | Beid (`beid`) | lawless | 20 | thriving |
+| Jim Bob's Backwater Shack | station | Beid (`beid`) | lawless | 20 | thriving |
 
 ## Pilots in Our Space
 
