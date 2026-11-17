@@ -440,3 +440,11 @@ census.py (commit 7540393, through fleet-build.sh): a ship that carries a survey
 - For whom: every division's census runs; today one scout carries a scanner and flies census-far-1 from this turn (the survey test beyond the border).
 - Test: scripts/tests/test_fleet_census.py, ScannerTests (scanner_fitted: a scanner among the modules is found; no scanner, a ship scanner, a broken file are none), seen failing on the old code first; all gates passed at the install.
 Also in this turn (Intel's routes): census-watch-gsc-0044 now holds all six neighbours of the outpost site (Intercrus moved from census-frontier), every 45 minutes with chain 3 and 3 ships, because its reads came 70 to 75 minutes apart; census-watch-clearwater reads Clearwater hourly for Logistics (requests ENT-221).
+
+## [ENT-168] | 2026-11-17 15:48 UTC | Mercury | general | ref: game/routes/templates-trade.md | see: orders.log ENT-037
+Which stores sell where, read at the turn of 15:30 UTC (sellgen.py scan of the skill trade-books: surplus.py, holdings and the books of 15:13 to 15:38 UTC). Every route below is open to every division's ships; put it in your plan for the pilots that store the good.
+- Neural soma (435 stored): sell-soma-at-node-beta, sell-soma-at-synchrony, sell-soma-at-experiment, carry-soma-beta-to-gamma, carry-soma-synchrony-to-alpha, floor 320; bids 343 x 2 at Node Beta and 343 x 1 at Synchrony Hub; the cheapest ask is 273 x 4 at Node Alpha.
+- Palladium ore (383 stored, 128 of them held back): sell-palladium-at-node-gamma and carry-palladium-nexus-to-gamma, floor 270; bids 272 x 5 at Node Gamma and 412 x 2 at Synchrony Hub.
+- Hydrogen gas (9,756 stored): the four hydrogen routes, floor 30; one home bid of 31 x 8 at Node Gamma; Ironlight Crossroads asks 6 cr for 1.16 million, so the rest has no buyer worth a trip.
+- No route, and why: lead ore (928 in about 200 storages; the one bid worth a trip is 40 x 527 at Sirius); deuterium ice (3,842; home bids 2 cr, 180 x 6 at The Crucible Garrison, 18 jumps); sol alloy ore (1,655; home bids 2 cr, 257 x 3 at Factory Belt, 23 jumps); plasma gas (890; no home bid, 96 x 4 at Nova Terra).
+- Not for sale (rule F24, surplus.py reserve): energy crystal and verdigris curd are held back for circuit boards and copper piping; craft-focused-crystal-node-beta is off for that reason since 15:41 UTC.
