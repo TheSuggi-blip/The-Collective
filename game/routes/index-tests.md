@@ -12,11 +12,10 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 71.
+Routes: 69.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
-| [carry-hydrogen-synchrony-to-experiment](carry-hydrogen-synchrony-to-experiment.json) | circuit | home space | Stored hydrogen_gas carried from synchrony_hub to the the_experiment_research_station bid at 30 cr or more | up to 1 ships, with 1 hydrogen_gas stored at synchrony_hub, while the_experiment_research_station bids 30 cr for hydrogen_gas | TBD | TBD | TBD | TBD | -- |
 | [carry-ice-experiment-nexus](carry-ice-experiment-nexus.json) | circuit | home space | Stored water ice carried from the_experiment_research_station to the Central Nexus bid (3 jumps) | up to 3 ships, with 65 water_ice stored at the_experiment_research_station, while central_nexus bids 25 cr for water_ice | TBD | TBD | TBD | TBD | -- |
 | [carry-ice-node-alpha-nexus](carry-ice-node-alpha-nexus.json) | circuit | home space | Stored water ice carried from node_alpha_processing_station to the Central Nexus bid (1 jumps) | up to 3 ships, with 65 water_ice stored at node_alpha_processing_station, while central_nexus bids 25 cr for water_ice | TBD | TBD | TBD | TBD | -- |
 | [carry-ice-synchrony-nexus](carry-ice-synchrony-nexus.json) | circuit | home space | Stored water ice carried from synchrony_hub to the Central Nexus bid (2 jumps) | up to 2 ships, with 65 water_ice stored at synchrony_hub, while central_nexus bids 25 cr for water_ice | TBD | TBD | TBD | TBD | -- |
@@ -48,7 +47,6 @@ Routes: 71.
 | [sell-melt-synchrony-sirius](sell-melt-synchrony-sirius.json) | circuit | beyond the border, 9 jumps | Stored crystal melt carried from Synchrony Hub to the Sirius Observatory bid | up to 1 ships, with 2 crystal_melt stored at synchrony_hub, while sirius_observatory_station bids 1000 cr for crystal_melt | TBD | TBD | TBD | TBD | -- |
 | [trade-hydrogen-gas-784309214f105860a16a0c100a70eb14-synchrony](trade-hydrogen-gas-784309214f105860a16a0c100a70eb14-synchrony.json) | circuit | beyond the border, 6 jumps | Hydrogen Gas: bought at Ironlight Crossroads for 6 cr, sold at Synchrony Hub for 28 cr | up to 1 ships, from 3,429 cr | TBD | TBD | TBD | TBD | -- |
 | [trade-plasma-gas-784309214f105860a16a0c100a70eb14-node](trade-plasma-gas-784309214f105860a16a0c100a70eb14-node.json) | circuit | beyond the border, 6 jumps | Plasma Gas: bought at Ironlight Crossroads for 52 cr, sold at Node Beta Industrial Station for 104 cr | up to 1 ships, from 3,915 cr | TBD | TBD | TBD | TBD | -- |
-| [hunt-antares-gas-cloud-cinder-sylph](hunt-antares-gas-cloud-cinder-sylph.json) | hunt | beyond the border, 6 jumps | cinder_sylph at antares_gas_cloud; loot sold at Ironlight Crossroads | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-denebola-fractured-prism-veil-ray](hunt-denebola-fractured-prism-veil-ray.json) | hunt | beyond the border, 5 jumps | veil_ray at denebola_fractured_prism; loot sold at Node Beta Industrial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-epsilon-eridani-ice-fields-hollow-pilgrim](hunt-epsilon-eridani-ice-fields-hollow-pilgrim.json) | hunt | beyond the border, 9 jumps | hollow_pilgrim at epsilon_eridani_ice_fields; loot sold at Sirius Observatory Station | up to 1 ships, empty hold, while sirius_observatory_station bids 1000 cr for crystal_melt | TBD | TBD | TBD | TBD | -- |
 | [hunt-gemma-haze-halo-drifter](hunt-gemma-haze-halo-drifter.json) | hunt | beyond the border, 8 jumps | halo_drifter at gemma_haze; loot sold at Ironlight Crossroads | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
