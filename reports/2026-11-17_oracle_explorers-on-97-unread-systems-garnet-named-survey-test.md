@@ -76,7 +76,9 @@ levelling guide now names, per skill, how it is trained, which of our routes
 trains it and the scouts' levels (commit 06d3514). One reader flies
 fit-survey-scanner-central-nexus (commit 9f351d5). It buys one Survey Scanner
 I (Central Nexus asked 4,892 cr) so that the first survey_system can be read
-by hand next turn. Ships on work of the class: before 2 of 30 (one census,
+by hand next turn. It flew at 07:35 UTC: 4.2 minutes, 4,968 cr of which 4,940
+booked once, and the ship file lists the Survey Scanner I beside both lasers
+(runs.jsonl; data/fleet/ships, 07:46 UTC). Ships on work of the class: before 2 of 30 (one census,
 one hunt; 07:17 UTC); at 07:37 UTC 11 on census, one on the fit, one on a once
 mission, one on a null-matter mine, 16 still in gather runs that started
 before the plan changed.
@@ -138,7 +140,7 @@ Inside orders ENT-029, until my next turn at about 11:15 UTC:
    thorium ore, seam glass or silicon ore goes to queue.log the turn it is
    read. At the next turn I read the ROADS line first and widen the list to
    15 jumps if it HALTs.
-2. **The survey test.** When the reader's fit run has its RESULT line, one
+2. **The survey test.** The scanner is fitted (07:39 UTC). One
    survey_system by hand in a system with known fields (one ship, ten minutes,
    rule F29). The answer decides between two ways:
    - it shows a place or an ore get_poi does not: a `survey` step for
