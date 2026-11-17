@@ -128,6 +128,11 @@ class GateTests(unittest.TestCase):
         self.assertEqual([gate.is_read(a) for a in ("get_status", "view_market", "view", "catalog", "info", "sell", "mine", "deposit", "jump", "scan", "craft")],
                          [True, True, True, True, True, False, False, False, False, False, False])
 
+    def test_the_facility_cards_are_reads_and_a_build_is_not(self):
+        gate = load("gate")
+        self.assertEqual([gate.is_read(a) for a in ("types", "faction_list", "faction_owned", "owned", "upgrades", "faction_build", "build", "deploy_outpost")],
+                         [True, True, True, True, True, False, False, False])
+
     def test_a_command_for_another_divisions_ship_is_refused_before_any_call(self):
         done = self.run_gate(ZERO, "goal", "drone-3", "dock-at", "{}")
         self.assertEqual(done.returncode, 1)
