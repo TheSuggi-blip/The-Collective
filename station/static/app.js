@@ -35,6 +35,23 @@ function ago(s) {
   if (s < 129600) return Math.round(s / 3600) + ' h';
   return Math.round(s / 86400) + ' d';
 }
+
+// Times on the page are Suggi's (the zone below; CET in winter, CEST in summer). The logs and the data stay UTC.
+const ZONE = 'Europe/Berlin';
+const zoneFmt = new Intl.DateTimeFormat('en-GB', { timeZone: ZONE, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23', timeZoneName: 'short' });
+function zoned(ms) {                               // the parts of a moment in his zone
+  const p = {};
+  zoneFmt.formatToParts(new Date(ms)).forEach((x) => { p[x.type] = x.value; });
+  if (/^(GMT|UTC)/.test(p.timeZoneName || '')) p.timeZoneName = p.timeZoneName === 'GMT+2' ? 'CEST' : 'CET';
+  return p;
+}
+function clock(ms) { const p = zoned(ms); return p.hour + ':' + p.minute; }                                    // 06:28
+function clockZ(ms) { const p = zoned(ms); return p.hour + ':' + p.minute + ' ' + p.timeZoneName; }             // 06:28 CET
+function stampOf(ms) { const p = zoned(ms); return p.year + '-' + p.month + '-' + p.day + ' ' + p.hour + ':' + p.minute + ' ' + p.timeZoneName; }
+function stampCet(text) {                          // a UTC stamp as the files write it (2026-11-17 04:36 UTC, 2026-11-17T04:36:00Z) in his time; other text as it is
+  const m = /^(\d{4})-(\d\d)-(\d\d)[ T](\d\d):(\d\d)(?::(\d\d))?/.exec(String(text || ''));
+  return m ? stampOf(Date.UTC(+m[1], m[2] - 1, +m[3], +m[4], +m[5], +(m[6] || 0))) : String(text || '');
+}
 const pct = (a, b) => (b > 0 ? Math.max(0, Math.min(100, Math.round(100 * a / b))) : 0);
 const HEX = /^#[0-9a-fA-F]{6}$/;
 const LAWLESS = '#59607a';
@@ -86,6 +103,73 @@ function shipSvg(shape, colour, size) {                  // the same silhouette 
   }
   return svg;
 }
+
+// Face portraits of the six members: robots drawn to fit each one's role. A list of SVG primitives in a box of
+// 40 x 40; 'C' is the member's colour, 'K' the dark of the page. The same portrait stands in the top bar and in comms.
+const LINE = { fill: 'none', stroke: 'C', 'stroke-linecap': 'round' };
+const HEAD = { fill: 'C', 'fill-opacity': 0.2, stroke: 'C', 'stroke-width': 1.6, 'stroke-linejoin': 'round' };
+const FACES = {
+  unity: [                                          // the Fleet Admiral: one calm head under a halo, six lights in its visor: many agents, one purpose
+    ['path', { ...LINE, d: 'M9 9.5 Q20 3 31 9.5', 'stroke-width': 1.6 }],
+    ['rect', { ...HEAD, x: 9, y: 12, width: 22, height: 23, rx: 9 }],
+    ['rect', { x: 11.5, y: 19, width: 17, height: 6.4, rx: 3.2, fill: 'K', stroke: 'C', 'stroke-width': 0.8 }],
+    ...[13.6, 16.16, 18.72, 21.28, 23.84, 26.4].map((x) => ['circle', { cx: x, cy: 22.2, r: 0.95, fill: 'C' }]),
+    ['path', { ...LINE, d: 'M16 30.5 H24', 'stroke-width': 1.4 }],
+  ],
+  zero: [                                           // Mining, the prospector: a hard hat with its lamp, goggles, a grille
+    ['path', { d: 'M10 17 Q10 8 20 8 Q30 8 30 17 Z', fill: 'C' }],
+    ['path', { ...LINE, d: 'M6.5 17.5 H33.5', 'stroke-width': 2.2 }],
+    ['circle', { cx: 20, cy: 12.6, r: 2.6, fill: 'K' }], ['circle', { cx: 20, cy: 12.6, r: 1.2, fill: 'C' }],
+    ['path', { ...HEAD, d: 'M10.5 19 V30 Q10.5 35 15.5 35 H24.5 Q29.5 35 29.5 30 V19 Z' }],
+    ['circle', { cx: 15.6, cy: 24, r: 3.1, fill: 'K', stroke: 'C', 'stroke-width': 1.2 }], ['circle', { cx: 24.4, cy: 24, r: 3.1, fill: 'K', stroke: 'C', 'stroke-width': 1.2 }],
+    ['path', { ...LINE, d: 'M18.7 24 H21.3', 'stroke-width': 1.2 }],
+    ['path', { ...LINE, d: 'M16.5 30.5 V33 M20 30.5 V33 M23.5 30.5 V33', 'stroke-width': 1.2 }],
+  ],
+  mercury: [                                        // Trade, the merchant: the winged helm, a coin on the brow, a smile
+    ['path', { d: 'M11 15 L3.5 8.5 L6.5 14 L2.5 13.5 L7 18 L5 19 L10.5 21 Z', fill: 'C' }],
+    ['path', { d: 'M29 15 L36.5 8.5 L33.5 14 L37.5 13.5 L33 18 L35 19 L29.5 21 Z', fill: 'C' }],
+    ['ellipse', { ...HEAD, cx: 20, cy: 22, rx: 9.6, ry: 12.5 }],
+    ['circle', { cx: 20, cy: 14.6, r: 2.5, fill: 'K', stroke: 'C', 'stroke-width': 1.1 }], ['path', { ...LINE, d: 'M20 13.3 V15.9', 'stroke-width': 1.1 }],
+    ['path', { ...LINE, d: 'M13.5 21.8 Q15.8 19.6 18 21.8 M22 21.8 Q24.2 19.6 26.5 21.8', 'stroke-width': 1.5 }],
+    ['path', { ...LINE, d: 'M15 27.5 Q20 31.6 25 27.5', 'stroke-width': 1.5 }],
+  ],
+  apollo: [                                         // Logistics, the builder: the sun's rays over a square head, a brow plate, a level mouth, two bolts
+    ['path', { ...LINE, d: 'M20 3.5 V8 M11.5 5.6 L13.8 9.4 M28.5 5.6 L26.2 9.4', 'stroke-width': 1.7 }],
+    ['rect', { ...HEAD, x: 8.5, y: 11.5, width: 23, height: 23.5, rx: 3.5 }],
+    ['rect', { x: 8.5, y: 11.5, width: 23, height: 5, rx: 2.5, fill: 'C' }],
+    ['rect', { x: 12, y: 20, width: 6.2, height: 4.2, rx: 0.8, fill: 'K', stroke: 'C', 'stroke-width': 1 }], ['rect', { x: 21.8, y: 20, width: 6.2, height: 4.2, rx: 0.8, fill: 'K', stroke: 'C', 'stroke-width': 1 }],
+    ['rect', { x: 14, y: 28.3, width: 12, height: 2.6, rx: 0.6, fill: 'C' }],
+    ['circle', { cx: 11.4, cy: 32.2, r: 0.9, fill: 'C' }], ['circle', { cx: 28.6, cy: 32.2, r: 0.9, fill: 'C' }],
+  ],
+  apophis: [                                        // Military, the warrior: a horned helm with a crest, the visor one narrow V
+    ['path', { d: 'M10.5 13 L4 4.5 L8.5 17 Z', fill: 'C' }], ['path', { d: 'M29.5 13 L36 4.5 L31.5 17 Z', fill: 'C' }],
+    ['path', { ...HEAD, d: 'M20 6.5 L30 12 L32 24 L26 35 H14 L8 24 L10 12 Z' }],
+    ['path', { d: 'M11.5 18.5 L20 23 L28.5 18.5 L27.5 22.5 L20 26.5 L12.5 22.5 Z', fill: 'C' }],
+    ['path', { ...LINE, d: 'M20 6.5 V15', 'stroke-width': 1.6 }],
+    ['path', { ...LINE, d: 'M17 30.5 H23', 'stroke-width': 1.3 }],
+  ],
+  oracle: [                                         // Intel, the seer: one great eye, an antenna, and it listens to both sides
+    ['path', { ...LINE, d: 'M20 10.5 V6', 'stroke-width': 1.4 }], ['circle', { cx: 20, cy: 4.7, r: 1.7, fill: 'C' }],
+    ['path', { ...LINE, d: 'M5.2 16.5 Q2.6 22 5.2 27.5 M34.8 16.5 Q37.4 22 34.8 27.5', 'stroke-width': 1.3 }],
+    ['circle', { ...HEAD, cx: 20, cy: 22.5, r: 12 }],
+    ['circle', { cx: 20, cy: 21.5, r: 6, fill: 'K', stroke: 'C', 'stroke-width': 1.1 }],
+    ['circle', { cx: 20, cy: 21.5, r: 3.1, fill: 'none', stroke: 'C', 'stroke-width': 1.1 }], ['circle', { cx: 20, cy: 21.5, r: 1.3, fill: 'C' }],
+    ['path', { ...LINE, d: 'M16.5 31 H23.5', 'stroke-width': 1.2 }],
+  ],
+};
+function faceSvg(id, division, colour, size) {      // a member's portrait; a member without one gets its division's ship
+  const parts = FACES[id];
+  if (!parts) return shipSvg(division === 'Command' ? 'Flagship' : division, colour, Math.round(size * 0.7));
+  const NS = 'http://www.w3.org/2000/svg', svg = document.createElementNS(NS, 'svg');
+  svg.setAttribute('viewBox', '0 0 40 40'); svg.setAttribute('width', size); svg.setAttribute('height', size);
+  svg.setAttribute('class', 'face'); svg.setAttribute('aria-hidden', 'true');
+  for (const [tag, attrs] of parts) {
+    const e = document.createElementNS(NS, tag);
+    Object.entries(attrs).forEach(([k, v]) => e.setAttribute(k, v === 'C' ? colour : v === 'K' ? '#0b0e15' : v));
+    svg.append(e);
+  }
+  return svg;
+}
 function fleetGroups(list) {                             // our ships at one place, by kind, in the order of KINDS
   const by = new Map();
   list.forEach((r) => { const k = KINDS.includes(r.division) ? r.division : 'Unassigned'; if (!by.has(k)) by.set(k, []); by.get(k).push(r); });
@@ -97,7 +181,7 @@ function fleetGroups(list) {                             // our ships at one pla
 
 let S = null;                                  // /api/state
 let L = { hour: {}, day: {}, battles: [], stats: {}, stream: {}, groups: [] };
-let F = { ships: [], totals: {}, engine: {}, age: -1, birth: null };   // /api/fleet
+let F = { ships: [], totals: {}, engine: {}, age: -1, birth: null, wave: null, waves: [] };   // /api/fleet
 let fetchedAt = 0;                             // when /api/fleet last answered (ms)
 let HIST = { rows: [], at: 0 };                // /api/history, for the Metrics tab
 const collapsed = new Set();                   // divisions folded in the roster; remembered by the browser
@@ -614,7 +698,7 @@ function divTag(division) {
 // ---------------------------------------------------------------- fleet: resources, roster, ship card
 
 function shipState(r) {
-  if (r.status !== 'connected') return ['off', 'offline'];
+  if (r.status !== 'connected') return ['off', F.wave && F.wave.since && !F.wave.end ? 'reconnecting' : 'offline'];
   const waiting = r.loop_failures > 0 && /depleted/i.test(r.loop_last_failure || '');   // a patient loop at an empty belt
   if (r.loop_failures >= 3 && !waiting) return ['bad', 'loop failing'];
   if (r.jumping) return ['move', 'jumping'];
@@ -633,7 +717,7 @@ function liveAge() { return F.age < 0 ? -1 : F.age + Math.round((Date.now() - fe
 
 function isWorking(r) { return ['work', 'move', 'wait'].includes(shipState(r)[0]); }
 
-function renderMembers() {                       // the top bar: the six members, each with its symbol and its ships; then the fleet
+function renderMembers() {                       // the top bar: the six members, each with its portrait and its ships; then the fleet
   const box = $('members'), by = new Map();
   box.replaceChildren();
   const purse = $('purse'), have = F.totals || {}, hour = have.rates && have.rates.windows ? have.rates.windows['1h'] : null;
@@ -650,7 +734,7 @@ function renderMembers() {                       // the top bar: the six members
     const working = list.filter(isWorking).length, who = el('div', 'who');
     b.type = 'button';
     who.append(el('div', 'n', a.name), el('div', 'd', a.division));
-    b.append(shipSvg(a.division === 'Command' ? 'Flagship' : a.division, c, 20), who, el('div', 'c', String(list.length)));
+    b.append(faceSvg(a.id, a.division, c, 30), who, el('div', 'c', String(list.length)));
     b.style.setProperty('--c', c);
     b.title = a.name + ', ' + a.rank + ' | ' + a.division + ': ' + list.length + ' ships, ' + working + ' working, '
       + (list.length - working) + ' without work | click to write to ' + a.name;
@@ -662,6 +746,26 @@ function renderMembers() {                       // the top bar: the six members
   all.append(who, el('div', 'c', fmt(t.ships)));
   all.title = 'All ships: ' + fmt(t.working) + ' working, ' + fmt(t.parked) + ' parked at a station without work, ' + fmt(t.adrift) + ' in space without work';
   box.append(all);
+}
+
+function waveCause(w) {                          // what two readings show about a wave, never more
+  return w.cause === 'engine' ? 'our ship engine restarted' : w.cause === 'update' ? 'the game changed version, ' + w.from + ' to ' + w.to : 'no engine restart and no new game version read';
+}
+function renderNotice() {                        // over the map: many ships off the game at once, named as what it is
+  const box = $('notice'), w = F.wave;
+  if (!w || !w.since) { box.hidden = true; return; }
+  const at = clockZ(w.since * 1000), all = w.ships || F.ships.length;
+  if (w.end) {
+    box.textContent = 'All ships are back. ' + fmt(w.peak) + ' of ' + fmt(all) + ' were off the game from ' + at + ' to ' + clock(w.end * 1000) + ' ('
+      + waveCause(w) + '). Runs cut in those minutes are flown again.';
+  } else {
+    const who = fmt(w.off) + ' of ' + fmt(all) + ' ships';
+    box.textContent = w.cause === 'engine' ? 'Our ship engine restarted at ' + at + ': ' + who + ' are signing in again. It takes about four minutes and no ship is lost.'
+      : w.cause === 'update' ? 'The game changed version (' + w.from + ' to ' + w.to + ') around ' + at + ': ' + who + ' are reconnecting by themselves. A restart of the game drops every player.'
+        : who + ' lost the line to the game at ' + at + ' and are reconnecting by themselves. The cause is not read yet: a restart of the game for an update looks like this.';
+  }
+  box.className = 'notice ' + (w.end ? 'good' : 'warn');
+  box.hidden = false;
 }
 
 function fleetAgeText() {
@@ -676,6 +780,8 @@ function tickAges() {                          // every second: the one age labe
   b.textContent = fleetAgeText();
   const dot = b.parentElement.querySelector('.dot');
   if (dot) dot.className = 'dot ' + (fleetLive() ? 'good' : 'bad');
+  const time = $('clock');
+  if (time) time.textContent = clockZ(Date.now());
 }
 
 function shipRow(r) {
@@ -701,29 +807,22 @@ function shipRow(r) {
 }
 
 const oneDecimal = (n) => (typeof n === 'number' ? n.toFixed(1) : '--');
-function strengthBar(crew) {                     // the head of the roster: how trained and how strong the fleet is
-  const row = el('div', 'strength');
-  const cell = (k, v, title) => { const c = el('div'); c.append(el('div', 'k', k), el('div', 'v', v)); c.title = title; row.append(c); };
-  cell('Pilot level', oneDecimal(crew.piloting), 'The average Piloting level of all ships. Piloting 10, 20, 30 and 50 open the hull tiers 2 to 5');
-  cell('Skill levels', oneDecimal(crew.levels), 'All skill levels of the average ship, added up');
-  cell('Hull+shield', fmt((crew.hp || 0) * (crew.ships || 0)), 'Hull and shield points of all ships together: what the fleet can take');
-  cell('Weapons', fmt(crew.weapons), 'Weapon modules fitted, all ships');
-  return row;
-}
-function crewLine(list, crew) {                  // under a division's head: its strongest skill, what its average ship can take, ships at work
-  const line = el('div', 'crew'), working = list.filter(isWorking).length;
-  const part = (label, value, title) => { const s = el('span'); s.append(label + ' ', el('b', null, value)); s.title = title; line.append(s); };
-  if (crew.skill && crew.skill[0]) part(crew.skill[0].replace(/_/g, ' '), oneDecimal(crew.skill[1]), 'The skill other than Piloting with the highest average level in this division');
+function crewLine(list, crew) {                  // under a division's head: what its average ship can take and deal, and its ships at work
+  const line = el('div', 'crew'), n = { work: 0, move: 0, dock: 0, idle: 0, wait: 0, bad: 0, off: 0 };
+  list.forEach((r) => { n[shipState(r)[0]] += 1; });
+  const part = (label, value, title, cls) => { const s = el('span', cls || null); s.append(label + ' ', el('b', null, value)); s.title = title; line.append(s); };
   part('hull+shield', fmt(crew.hp), 'Hull and shield points of the average ship: what it can take');
-  part('at work', working + '/' + list.length, 'Ships with work now');
+  part('firepower', oneDecimal(crew.firepower), 'Damage per tick the weapons of the average ship deal: each weapon\'s damage divided by its cooldown, from the game\'s catalog. '
+    + 'The starter\'s Pulse Laser I deals 10');
+  const rest = [[n.dock, 'parked'], [n.idle, 'idle in space'], [n.bad, 'failing'], [n.off, F.wave && F.wave.since && !F.wave.end ? 'reconnecting' : 'offline']].filter((p) => p[0]);
+  part('at work', (n.work + n.move + n.wait) + '/' + list.length, rest.length ? 'Without work: ' + rest.map((p) => p[0] + ' ' + p[1]).join(', ')
+    : 'Every ship of the division has work' + (n.wait ? ' (' + n.wait + ' wait for ore at an empty field)' : ''), rest.length ? 'short' : null);
   return line;
 }
 
 function renderRoster() {
   const box = $('roster'), keep = box.scrollTop, by = new Map();
   box.replaceChildren();
-  const fleetCrew = (F.totals || {}).crew;
-  if (fleetCrew && fleetCrew.ships) box.append(strengthBar(fleetCrew));
   F.ships.forEach((r) => { if (!by.has(r.division)) by.set(r.division, []); by.get(r.division).push(r); });
   const divisions = (S ? S.roster : []).filter((a) => a.division !== 'Command' || by.has('Command')).map((a) => [a.division, a]);
   if (by.has('Unassigned')) divisions.push(['Unassigned', null]);
@@ -754,16 +853,6 @@ function renderRoster() {
     if (known) block.append(crewLine(list, crew));
     if (!list.length) block.append(el('div', 'noships', 'No ships yet'));
     if (!folded) list.forEach((r) => block.append(shipRow(r)));
-    else if (list.length) {                     // folded: the division in one line
-      const n = { work: 0, move: 0, dock: 0, idle: 0, wait: 0, bad: 0, off: 0 };
-      list.forEach((r) => { n[shipState(r)[0]] += 1; });
-      const parts = [[n.work + n.move, 'working'], [n.wait, 'waiting'], [n.dock, 'parked'], [n.idle, 'idle in space'], [n.bad, 'failing'], [n.off, 'offline']];
-      const line = el('button', 'divline', parts.filter((p) => p[0]).map((p) => p[0] + ' ' + p[1]).join(', '));
-      line.type = 'button';
-      line.title = 'Unfold ' + division;
-      line.addEventListener('click', () => { collapsed.delete(division); saveFolds(); renderRoster(); });
-      block.append(line);
-    }
     box.append(block);
   }
   box.scrollTop = keep;
@@ -810,7 +899,7 @@ function renderShip(panel) {
   panel.append(facts([
     ['System', loc], ['Place', d.jumping ? 'jumping to the next system' : d.in_transit ? 'in transit to ' + (d.dest_poi || '?') : (d.poi_name || '-')],
     ['Docked at', d.docked || 'not docked'], ['Credits', fmt(d.credits)], ['Home base', d.home_base || '-'],
-    ['Security here', d.security || '-'], ['State as of', (d.state_at || '') + ' UTC'],
+    ['Security here', d.security || '-'], ['State as of', stampCet(d.state_at)],
   ]));
   if (d.loop && d.loop.type) {
     panel.append(el('h3', null, 'Loop'));
@@ -993,8 +1082,8 @@ async function renderInventory(panel, live) {
         g.rows.map((r) => [itemLink(r.id, r.name), fmt(r.units), fmt(r.stored), fmt(r.held), fmt(r.value), fmt(r.worth)]), [1, 2, 3, 4, 5])));
     }
   }
-  panel.append(el('p', 'docnote', 'Storage read through each pilot about every 40 minutes; book written ' + (d.written || '--') + ' UTC, ' + fmt(d.pilots) + ' pilots read, the oldest reading '
-    + (d.oldest || '--') + '. Modules fitted on a ship and the ships themselves are not counted here.'));
+  panel.append(el('p', 'docnote', 'Storage read through each pilot about every 40 minutes; book written ' + (d.written ? stampCet(d.written) : '--') + ', ' + fmt(d.pilots) + ' pilots read, the oldest reading '
+    + (d.oldest ? stampCet(d.oldest) : '--') + '. Modules fitted on a ship and the ships themselves are not counted here.'));
 }
 
 function setWide(on) {                          // a document gets a wide panel, the Metrics tab ('metrics') a wider one; the map is resized to what is left
@@ -1122,7 +1211,7 @@ function logView(text, cut, base) {              // an append-only log as entry 
     const name = el('b', null, who || 'unknown');
     name.style.color = member ? (DIV[member.division] || DIV.Command) : 'var(--dim)';
     card.style.borderLeftColor = member ? (DIV[member.division] || DIV.Command) : 'var(--line2)';
-    top.append(name, el('span', 'tag', head[0].replace(/[[\]]/g, '')), el('span', 'tag' + (head[3] === 'error' ? ' bad' : ''), head[3] || ''), el('span', 'when', head[1] || ''));
+    top.append(name, el('span', 'tag', head[0].replace(/[[\]]/g, '')), el('span', 'tag' + (head[3] === 'error' ? ' bad' : ''), head[3] || ''), el('span', 'when', stampCet(head[1] || '')));
     const refs = head.slice(4).filter(Boolean);
     card.append(top);
     if (refs.length) card.append(inline(el('div', 'entryrefs'), refs.map((r) => r.replace(/^(ref|see):\s*(\S+)/, (m, k, v) => k + ': `' + v + '`')).join('   '), ''));
@@ -1146,6 +1235,7 @@ async function renderDocs(panel, live) {
     else {
       const isLog = docView.path.endsWith('.log');
       if (docView.cut) panel.append(el('p', 'sub', isLog ? 'Long log: the newest part is shown.' : 'Long file: the first part is shown.'));
+      if (isLog) panel.append(el('p', 'sub', 'The time of each entry is shown in your time (' + clockZ(Date.now()).slice(6) + '). Times inside the texts are as the members wrote them, in UTC.'));
       panel.append(isLog ? logView(docView.text, docView.cut, docView.path) : markdown(docView.text, docView.path, false));
     }
     return;
@@ -1157,19 +1247,19 @@ async function renderDocs(panel, live) {
     const b = linkButton('', () => openDoc(r.path), 'rowlink report'), lead = el('span', 'lead'), who = el('b', 'who', r.author || 'unknown');
     const member = ((S && S.roster) || []).find((a) => a.id === String(r.author || '').toLowerCase());
     who.style.color = member ? (DIV[member.division] || DIV.Command) : 'var(--dim)';
-    lead.append(who, el('span', 'when', r.at || r.date || ''));
+    lead.append(who, el('span', 'when', stampCet(r.at || r.date || '')));
     b.append(lead, el('span', 'title', r.title));
-    b.title = (r.author || 'unknown') + ', ' + (r.at || r.date || 'no time') + ': ' + r.title;
+    b.title = (r.author || 'unknown') + ', ' + (stampCet(r.at || r.date || '') || 'no time') + ': ' + r.title;
     return b;
   };
   panel.append(el('h3', null, 'Governance'));
   (d.governance || []).forEach((g) => panel.append(row(g.title, '', g.path)));
   panel.append(el('h3', null, 'Logs'));
-  (d.logs || []).forEach((g) => panel.append(row(g.title, g.entries ? g.entries + ' entries, last by ' + g.last.by + ', ' + g.last.at : 'no entries', g.path)));
+  (d.logs || []).forEach((g) => panel.append(row(g.title, g.entries ? g.entries + ' entries, last by ' + g.last.by + ', ' + stampCet(g.last.at) : 'no entries', g.path)));
   panel.append(el('h3', null, 'Reports'));
   const reports = d.reports || [], total = d.reports_total || reports.length;
   if (reports.length) {
-    panel.append(el('p', 'docnote', (total > reports.length ? 'The ' + reports.length + ' newest of ' + total : 'All ' + total) + ', newest first. Times in UTC.'));
+    panel.append(el('p', 'docnote', (total > reports.length ? 'The ' + reports.length + ' newest of ' + total : 'All ' + total) + ', newest first. Times in your time (' + clockZ(Date.now()).slice(6) + ').'));
     reports.forEach((r) => panel.append(report(r)));
   } else panel.append(el('p', 'empty', 'No report yet. One is written at every session end.'));
   panel.append(el('h3', null, 'Fleet knowledge'));
@@ -1201,8 +1291,8 @@ function chart(label, series) {                  // series: [{ pts: [[t, value],
     g.fillStyle = '#8791a8'; g.font = '10.5px system-ui';
     g.fillText(fmt(Math.round(hi)), 6, 10);
     if (lo < 0) g.fillText(fmt(Math.round(lo)), 6, h - 16);
-    g.fillText(new Date(t0 * 1000).toISOString().slice(11, 16) + ' UTC', 6, h - 2);
-    g.fillText(new Date(t1 * 1000).toISOString().slice(11, 16), w - 34, h - 2);
+    g.fillText(clockZ(t0 * 1000), 6, h - 2);
+    g.fillText(clock(t1 * 1000), w - 34, h - 2);
   });
   return wrap;
 }
@@ -1277,7 +1367,8 @@ async function renderMetrics(panel, live) {
       check.append(Math.abs(w.unexplained_per_hour) < 500 && !off.length
         ? ' The game\'s own counters of credits earned and spent agree with the wallets.'
         : ' The game\'s own counters and the wallets differ by ' + fmt(Math.abs(w.unexplained_per_hour)) + ' cr an hour in this stretch' + (off.length ? ' (' + off.join(', ') + ')' : '')
-          + ': a wallet the engine had not read again after a gift between our ships. Income and costs there may be off by that much; a longer stretch evens it out.');
+          + '. No record names the cause; it may be a wallet the engine had not read again after a gift between our ships. Income, costs and net of this stretch may be '
+          + 'off by that much; a longer stretch evens it out.');
     }
     panel.append(check);
   }
@@ -1301,6 +1392,16 @@ async function renderMetrics(panel, live) {
     }).concat([moneyRow(el('b', null, 'Fleet'), fmt(t.working) + ' / ' + fmt(t.ships), w || {})]), [1, 2, 3, 4, 5, 6])));
   panel.append(el('p', 'sub', 'Per hour. Steady net = steady income - running costs. Net = steady net + paid once: what the division\'s wallets changed by, '
     + 'gifts between our own ships left out.'));
+  const waves = (F.waves || []).slice().reverse();     // many ships off the game at once: written down by the collector, newest first
+  panel.append(el('h3', null, 'Ships off the game'));
+  if (waves.length) {
+    panel.append(fitTable(table(['When', 'Ships off', 'Minutes', 'What the readings show'],
+      waves.map((x) => [stampOf(x.since * 1000), fmt(x.peak) + ' of ' + fmt(x.ships), x.minutes, waveCause(x)]), [1, 2])));
+    panel.append(el('p', 'sub', 'A wave is many ships losing the line to the game at once. They reconnect by themselves; a run cut in those minutes is flown again.'));
+  } else {
+    panel.append(el('p', 'empty', 'No wave on record yet. When many ships lose the line to the game at once (the game restarts for an update, or our ship engine restarts), '
+      + 'it is written down here with its time, its length and what the readings show.'));
+  }
   const routesBox = el('div'), graphs = el('div');
   panel.append(el('h3', null, 'Where the money comes from, last ' + routeHours + ' hours'), routesBox, el('h3', null, 'Last ' + graphHours + ' hours'), graphs);
   panel.append(el('p', 'sub', 'How it is counted. Net: the change of the wallets. Steady income: the game\'s counter of credits earned, less the rewards paid once per pilot. '
@@ -1379,17 +1480,23 @@ async function showPilot(name) {
 function status() {
   const box = $('status'), st = L.stats || {};
   box.replaceChildren();
-  const item = (label, value, cls, wide) => { const s = el('span', wide ? 'wide' : null); if (cls) s.append(el('i', 'dot ' + cls)); s.append(label + ' '); s.append(el('b', null, value)); box.append(s); };
+  // kind 'wide' or 'opt': shown in a very wide window only, so that the top bar is never cut; a state that is not good always shows,
+  // and the box's tooltip names all of them
+  const item = (label, value, cls, kind) => { const s = el('span', kind || null); if (cls) s.append(el('i', 'dot ' + cls)); s.append(label + ' '); s.append(el('b', null, value)); box.append(s); };
+  item('Time', clockZ(Date.now()));
+  box.lastChild.querySelector('b').id = 'clock';
+  box.lastChild.title = 'Your time (' + ZONE + '). Every time on this page is shown in it; the logs and the data keep UTC';
   item('Fleet data', fleetAgeText(), fleetLive() ? 'good' : 'bad');
   box.lastChild.querySelector('b').id = 'fleet-age';
   box.lastChild.title = 'How old the picture of our ships is. The collector reads the engine every 10 seconds, about once a game tick';
-  item('Tick', fmt(st.tick), null, true); item('Game', st.version || '?', null, true); item('Online', fmt(st.online_players));
-  const liveStream = L.stream || {};
-  item('Stream', liveStream.connected && liveStream.age < 60 ? 'live' : 'down', liveStream.connected && liveStream.age < 60 ? 'good' : 'bad');
+  item('Tick', fmt(st.tick), null, 'wide'); item('Game', st.version || '?', null, 'wide'); item('Online', fmt(st.online_players), null, 'opt');
+  const liveStream = L.stream || {}, streams = Boolean(liveStream.connected && liveStream.age < 60);
+  item('Stream', streams ? 'live' : 'down', streams ? 'good' : 'bad', streams ? 'opt' : null);
   if (S) {
     const bad = Object.entries(S.sources).filter(([, s]) => s.error || s.age < 0).map(([n]) => n);
-    item('Sources', bad.length ? 'problem: ' + bad.join(', ') : 'good', bad.length ? 'warn' : 'good');
+    item('Sources', bad.length ? 'problem: ' + bad.join(', ') : 'good', bad.length ? 'warn' : 'good', bad.length ? null : 'opt');
   }
+  box.title = [...box.children].map((s) => s.textContent).join(' | ');
 }
 
 // ---------------------------------------------------------------- comms: one conversation with all six members
@@ -1426,7 +1533,7 @@ function markWho() {                             // light the portraits the mess
     if (unity) unity.classList.add('on');
     to.push('Unity');
   }
-  $('chat-input').placeholder = 'To ' + (all ? 'everyone' : to.join(', ')) + '. Click a symbol or type @Name to choose. Enter sends.';
+  $('chat-input').placeholder = 'To ' + (all ? 'everyone' : to.join(', ')) + '. Click a face or type @Name to choose. Enter sends.';
 }
 
 function chatNote(text) {
@@ -1445,9 +1552,9 @@ function groupMessage(m) {
   else {
     const name = el('b', null, a.name), c = DIV[a.division] || DIV.Command;
     name.style.color = c; box.style.borderLeftColor = c;
-    head.append(shipSvg(a.division === 'Command' ? 'Flagship' : a.division, c, 12), name, el('span', null, ' ' + a.division));
+    head.append(faceSvg(a.id, a.division, c, 18), name, el('span', null, ' ' + a.division));
   }
-  head.append(el('span', 'when', new Date((m.t || 0) * 1000).toISOString().slice(11, 16)));
+  head.append(el('span', 'when', clock((m.t || 0) * 1000)));
   box.append(head);
   if (mine || m.kind === 'error') box.append(el('div', 'msgtext', m.text)); else box.append(markdown(m.text, '', false));
   log.append(box);
@@ -1462,7 +1569,7 @@ async function pollGroup() {
     d.messages.forEach((m) => { groupMessage(m); chat.after = Math.max(chat.after, m.n); });
     if (!chat.first && shut.has('dock')) markUnseen(chat.unseen + d.messages.filter((m) => m.who !== 'suggi').length);
     if (chat.first && !log.children.length) {
-      log.append(el('div', 'chathint', 'One conversation with Unity and the five Admirals. A message goes to Unity unless it names someone: click a symbol below or type @Name; @all reaches everyone.'));
+      log.append(el('div', 'chathint', 'One conversation with Unity and the five Admirals. A message goes to Unity unless it names someone: click a face below or type @Name; @all reaches everyone.'));
     }
     if (d.messages.length && stick) log.scrollTop = log.scrollHeight;
     chat.first = false;
@@ -1494,7 +1601,7 @@ function initChat() {
     const b = el('button', null), c = DIV[a.division] || DIV.Command;
     b.type = 'button'; b.dataset.id = a.id;
     b.style.setProperty('--c', c);
-    b.append(shipSvg(a.division === 'Command' ? 'Flagship' : a.division, c, 18), el('span', null, a.name));
+    b.append(faceSvg(a.id, a.division, c, 22), el('span', null, a.name));
     b.title = a.name + ', ' + a.rank + (a.division === 'Command' ? '' : ' of ' + a.division) + ': write to ' + a.name;
     b.addEventListener('click', () => address(a.id));
     who.append(b);
@@ -1554,7 +1661,7 @@ async function loadFleet() {
   try { F = await get('/api/fleet'); fetchedAt = Date.now(); } catch (e) { F = Object.assign({}, F, { age: -1 }); }
   shipsBy.clear();
   F.ships.forEach((r) => { if (r.system) { if (!shipsBy.has(r.system)) shipsBy.set(r.system, []); shipsBy.get(r.system).push(r); } });
-  renderMembers(); renderRoster(); tickAges(); renderPop(); draw();
+  renderMembers(); renderRoster(); renderNotice(); tickAges(); renderPop(); draw();
   if (tab === 'Metrics' && Date.now() - metricsAt >= 30000) render();   // not at every poll: the page under the reader stays still
   if (selShip) {
     const name = selShip;

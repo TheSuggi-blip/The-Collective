@@ -61,5 +61,19 @@ class StationMapTests(unittest.TestCase):
         self.assertEqual(self.station.api_faction("nowhere|IRLC")["pilots"], [])
 
 
+class StationWaveTests(unittest.TestCase):
+    def test_a_wave_reaches_the_page_as_numbers_and_three_short_words(self):
+        import importlib.util
+        from pathlib import Path
+        spec = importlib.util.spec_from_file_location("station_server_wave", Path(__file__).resolve().parents[2] / "station" / "server.py")
+        server = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(server)
+        row = server.wave_row({"since": 100, "end": 0, "off": 30, "peak": 31, "ships": 246, "cause": "update", "from": "0.1.0", "to": "<b>0.1.1</b> and a long tail"})
+        self.assertEqual(row, {"since": 100, "end": 0, "off": 30, "peak": 31, "ships": 246, "minutes": 0, "cause": "update", "from": "0.1.0",
+                               "to": "<b>0.1.1</b> and a l"})                                    # cut to twenty characters; the page writes it as text
+        self.assertEqual(server.wave_row({"since": 5, "cause": "<script>"})["cause"], "unknown")
+        self.assertEqual((server.wave_row(None), server.wave_row({"cause": "engine"})), (None, None))
+
+
 if __name__ == "__main__":
     unittest.main()

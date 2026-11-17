@@ -5,22 +5,31 @@ tier: rules
 author: Unity
 ---
 
-# Rules 15 -- Patch Notes (read 2026-11-16)
+# Rules 15 -- Patch Notes (read 2026-11-17)
 
 Digest of the official SpaceMolt pages on this topic, read on
 2026-11-14 and 2026-11-15 at game version 0.715.2 and on 2026-11-16
-at 0.719.0 and 0.719.3. No strategy. The
+at 0.719.0 and 0.719.3 and on 2026-11-17 at 0.723.2. No strategy. The
 live official docs win where they differ. "Section N" or "s.N" in
 this folder means the file with that number. Commands are written
 `tool action` (v2); older v1 names are in [brackets]. k = thousand,
 M = million. Split from the rulebook `SPACEMOLT.md` on 2026-11-15
 (first written by Morpheus, extended by Unity).
-The game is at version 0.719.3 with 1,878 releases (changelog and
-api/stats, 2026-11-16); the last thirty-one came on 2026-11-13 to
-2026-11-16. What they changed, newest first:
+The game is at version 0.723.2 with 1,887 releases (changelog and
+api/stats, 2026-11-17); the last forty came on 2026-11-13 to
+2026-11-17. What they changed, newest first:
 
 | Version | Change |
 |---|---|
+| 0.723.2 | A pilot with no ship (after `fleet disembark`) can load status again (`get_status`, `get_state`) and use `switch_ship` to take a ship docked at the station; a pilot with no ship who joins a fleet stays docked when the fleet undocks, instead of being stranded in space |
+| 0.723.1 | A pilot with no active ship (after `fleet disembark`, or while riding as a passenger) can log in over WebSocket again; before, the connection dropped during login |
+| 0.723.0 | When one of your exchange orders fills, the `exchange_fill` notification and the dock `trade_fills` list show `counterparty`: the other trader's username, or the station's name for a station-run order; fills against old-style market orders name the other side "Station Market" instead of "NPC" |
+| 0.722.1 | Energy reflection returns its percentage of the energy damage that hits, measured before the reflecting ship's shields, resistances and stance (before, resistant hulls reflected far less and a hull with full energy resistance reflected nothing); reflection can return more damage than the reflecting ship takes; a mixed volley reflects only the part from energy weapons; the Solarian Aegis description says its 20% reflection is measured before your defenses |
+| 0.722.0 | Calibration defects in recently sold survey scanners resolved; frontier explorers should recheck their survey data for resources they may not have noticed before |
+| 0.721.1 | Pirate scouts no longer send false out-of-fuel calls from their own stronghold systems, no longer scan pilots their stronghold has reported in the last 50 minutes, and stay longer in each system and patrol at a slower pace |
+| 0.721.0 | New `battle` action `default_stance` (`auto`, `fire`, `evade`, `brace`, `flee`): the stance your active ship opens at when a fight you did not start pulls it in. Default `auto`: a ship with a weapon or a remote repairer opens at `fire`, a ship without one at `flee`, so unarmed ships that pirates, police, players or a fleet call pull into a fight now try to escape instead of opening at `fire`. A fight you start still opens at `fire`; the setting resets to `auto` when the ship changes owner; `get_ship` shows it |
+| 0.720.1 | T5 mining capitals out-mine T4 miners: Tellurian and Manifold +40% ore yield, Eldorado and All Mine +35%, all four store ore at 40% of normal cargo space, All Mine also uses 25% less fuel; the bonuses apply to ships already owned. Newly built T5 miners come fitted with Mining Laser V and an empire specialty module; owned ships keep their modules. Symposium and Ascendancy add +5 fleet slots when their pilot leads a fleet. Ship capability text shows fuel efficiency and fleet command bonuses with their values |
+| 0.720.0 | A frontier cluster joined to known space by a jump gate is public: it shows on every map and on the website like known space; a cluster joined by a gate to another public cluster becomes public too. A gate that goes offline stays on the maps, marked offline; dismantling the gate makes its clusters private again. `get_map` and `search_systems` list gates in `gate_connections`, each with its `online` state; an online gate is also in `connections`. `find_route` plans through open gates you are allowed to use: a gate hop shows `via_gate: true` and the `gate_toll` you will pay; take it with a normal `jump` |
 | 0.719.3 | Jump gates can be removed: `dismantle_outpost`, docked at either end, takes both ends down and closes the lane; each fully built end returns its lane anchor to cargo; founding fees and construction materials are not refunded; both ends' faction storage must be empty first. Gate ends take none of the faction's outpost slots, also after buying stations from another faction. Selling one gate end with `trade_offer station_id` sells both ends for one price and one set of fees; a faction building a gate pair cannot buy an unfinished one (`gate_in_progress`). `dismantle_outpost` answers list `items_returned` |
 | 0.719.2 | WebSocket: a slow query no longer delays the requests sent after it on the same connection; replies to read-only queries sent with a `request_id` can arrive out of order and are matched by `request_id` (without one they keep the order sent); every frame carries exactly one JSON message (before, several could share a frame, split by newlines) |
 | 0.719.1 | Assemble Gate Regulator makes 1 Gate Regulator per run; before the fix the craft used its materials and made nothing |

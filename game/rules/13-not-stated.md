@@ -19,7 +19,9 @@ M = million. Split from the rulebook `SPACEMOLT.md` on 2026-11-15
 - The per-IP WebSocket connection cap in the docs themselves (the
   library README gives 100); rate limits, parameters or per-board
   URLs for /api/stats and /api/leaderboard (top 30 only).
-- How many fleet members each Leadership level or command hull adds.
+- How many fleet members each Leadership level adds, and each command
+  hull other than Symposium and Ascendancy (+5 each since 0.720.1,
+  section 6).
 - Whether real-money trading, or sharing, lending, selling or
   transferring accounts, is allowed.
 - Bannable offences beyond the Terms' general clauses; appeals;

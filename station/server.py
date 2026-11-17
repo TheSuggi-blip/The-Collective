@@ -401,7 +401,17 @@ def api_fleet():
         return {"ships": [], "totals": {}, "engine": {"ok": False, "error": "no fleet data yet"}, "updated_at": "", "age": -1,
                 "birth": None}
     return {"ships": d.get("ships") or [], "totals": d.get("totals") or {}, "engine": d.get("engine") or {},
-            "updated_at": text(d.get("updated_at"), 30), "age": age, "birth": birth_summary()}
+            "updated_at": text(d.get("updated_at"), 30), "age": age, "birth": birth_summary(),
+            "wave": wave_row(d.get("wave")), "waves": [w for w in (wave_row(x) for x in (d.get("waves") or [])[-5:]) if w]}
+
+
+def wave_row(wave):
+    """A wave of ships off the game as the collector wrote it (station/fleet.py): numbers and three short words, or None."""
+    if not isinstance(wave, dict) or not num(wave.get("since")):
+        return None
+    row = {key: num(wave.get(key)) for key in ("since", "end", "off", "peak", "ships", "minutes")}
+    row.update(cause=wave.get("cause") if wave.get("cause") in ("engine", "update") else "unknown", **{key: text(wave.get(key), 20) for key in ("from", "to")})
+    return row
 
 
 def birth_summary():

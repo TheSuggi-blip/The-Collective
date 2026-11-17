@@ -522,16 +522,61 @@ class FleetCollectorTests(unittest.TestCase):
         a, b = account("miner-1"), account("miner-2")
         a["state"]["skills"] = {"piloting": {"level": 6}, "mining": {"level": 8}, "trading": {"level": 1}}
         b["state"]["skills"] = {"piloting": {"level": 3}, "mining": {"level": 5}}
-        b["state"]["modules"] = [{"type": "weapon"}, {"type": "weapon"}]
+        b["state"]["modules"] = [{"type": "weapon", "type_id": "pulse_laser_i"}, {"type": "weapon", "type_id": "rail_gun"}, {"type": "weapon", "type_id": "not in the catalog"}]
         rows = [self.fleet.ship_row(a), self.fleet.ship_row(b)]
         self.assertEqual((rows[0]["piloting"], rows[1]["piloting"], rows[0]["skill"]), (6, 3, ["mining", 8]))
-        got = self.fleet.crew(rows, {"miner-1": a, "miner-2": b})
-        self.assertEqual(got["Mining"], {"ships": 2, "piloting": 4.5, "levels": 11.5, "skill": ["mining", 6.5], "hp": 155, "weapons": 2})
+        got = self.fleet.crew(rows, {"miner-1": a, "miner-2": b}, power={"pulse_laser_i": 10, "rail_gun": 30})
+        self.assertEqual(got["Mining"], {"ships": 2, "piloting": 4.5, "levels": 11.5, "skill": ["mining", 6.5], "hp": 155, "weapons": 3,
+                                         "firepower": 20.0})                                   # 10 + 30 + 0 on two ships
         self.assertEqual(got[""], got["Mining"])
         bare = account("trader-1")
         bare["state"]["skills"] = None                                                              # a pilot the engine has no skills of
         self.assertEqual(self.fleet.ship_row(bare)["piloting"], 0)
-        self.assertEqual(self.fleet.crew([self.fleet.ship_row(bare)], {"trader-1": bare})["Trade"]["skill"], ["", 0])
+        self.assertEqual(self.fleet.crew([self.fleet.ship_row(bare)], {"trader-1": bare}, power={})["Trade"]["skill"], ["", 0])
+
+    def test_a_weapon_s_power_is_its_damage_per_tick_from_the_newest_catalog(self):
+        folder = Path(self.temp.name) / "catalog"
+        folder.mkdir()
+        old = {"items": [{"id": "pulse_laser_i", "type": "weapon", "damage": 99, "cooldown": 1}]}
+        new = {"items": [{"id": "pulse_laser_i", "type": "weapon", "damage": 10, "cooldown": 1}, {"id": "rail_gun", "type": "weapon", "damage": 60, "cooldown": 3},
+                         {"id": "mining_laser_i", "type": "mining", "damage": 5}, {"id": "odd", "type": "weapon"}]}
+        (folder / "0.9.12.json").write_text(json.dumps(old))
+        (folder / "0.10.2.json").write_text(json.dumps(new))                                    # 0.10 is newer than 0.9
+        (folder / "ammo.json").write_text("[]")
+        self.fleet.POWER.update(file="", at=0.0, by={})
+        self.assertEqual(self.fleet.weapon_power(now=1000.0, folder=folder), {"pulse_laser_i": 10.0, "rail_gun": 20.0})
+        self.assertEqual(self.fleet.POWER["file"], "0.10.2.json")
+
+    def test_a_wave_of_ships_off_the_game_is_shown_named_and_written_down_once(self):
+        wave, version, t = {}, {"now": "0.1.0"}, 100000.0
+        note = lambda off, now, **more: self.fleet.note_wave(off, 200, now, wave=wave, version=version, **more)
+        self.assertEqual(note(3, t), (None, None))                                                  # three ships off are no wave
+        shown, record = note(30, t + 10)
+        self.assertEqual((shown["since"], shown["off"], shown["cause"], shown["end"], record), (int(t + 10), 30, "unknown", 0, None))
+        version.update(before="0.1.0", now="0.1.1", changed=t + 60)                                 # the game's version read changes
+        shown, record = note(80, t + 70)
+        self.assertEqual((shown["peak"], shown["cause"], shown["from"], shown["to"]), (80, "update", "0.1.0", "0.1.1"))
+        shown, record = note(2, t + 250)                                                            # back: it ended, and settles ten minutes
+        self.assertEqual((shown["end"], shown["off"], record), (int(t + 250), 2, None))
+        shown, record = note(0, t + 250 + 601)
+        self.assertEqual(shown, None)
+        self.assertEqual(record, {"since": int(t + 10), "end": int(t + 250), "peak": 80, "ships": 200, "cause": "update", "from": "0.1.0", "to": "0.1.1", "minutes": 4.0})
+        self.assertEqual((wave, note(0, t + 900)), ({}, (None, None)))                              # written once
+        shown, _record = note(60, t + 5000, engine_started="1970-01-02T05:09:30.000Z")              # 105,000 s: our engine started half a minute before
+        self.assertEqual(shown["cause"], "engine")
+        wave.clear()
+        shown, _record = note(60, t + 9000, engine_started="1970-01-02T03:46:40.000Z")              # an engine start hours before is not the cause
+        self.assertEqual(shown["cause"], "unknown")
+
+    def test_the_game_s_version_read_keeps_the_one_before_and_when_it_changed(self):
+        stats, version = Path(self.temp.name) / "stats.json", {}
+        stats.write_text(json.dumps({"version": "0.1.0"}))
+        self.assertEqual((self.fleet.game_version(50, stats, version), version), ("0.1.0", {"now": "0.1.0"}))     # the first reading is no change
+        stats.write_text(json.dumps({"version": "0.1.1"}))
+        self.fleet.game_version(80, stats, version)
+        self.assertEqual(version, {"now": "0.1.1", "before": "0.1.0", "changed": 80})
+        stats.write_text("not json")
+        self.assertEqual(self.fleet.game_version(90, stats, version), "0.1.1")                      # a file that cannot be read changes nothing
 
     def test_the_seed_record_puts_every_pilot_of_the_first_start_at_epoch_0_and_a_new_one_at_its_first_pass(self):
         rows = [self.fleet.ship_row(account(n, credits=c)) for n, c in (("miner-1", 900), ("trader-1", 800))]

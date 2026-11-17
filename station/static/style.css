@@ -75,8 +75,6 @@ main { flex: 1; display: flex; min-height: 0; }
   letter-spacing: 0; text-align: center; opacity: 0.85; }
 .divhead .name:hover .fold { opacity: 1; background: var(--raise); }
 .divhead .name .count { color: var(--text); font-weight: 600; letter-spacing: 0.04em; }
-.divline { display: block; width: 100%; background: none; border: 0; text-align: left; padding: 1px 10px 7px 31px; color: var(--dim); font-size: 11.5px; cursor: pointer; }
-.divline:hover { color: var(--text); }
 .divhead .adm { background: none; border: 0; padding: 0; color: var(--dim); cursor: pointer; font-size: 12px; white-space: nowrap; overflow: hidden;
   text-overflow: ellipsis; min-width: 0; flex: 0 1 auto; }
 .divhead .adm:hover { color: var(--text); text-decoration: underline; }
@@ -412,12 +410,9 @@ button.member:hover { background: var(--raise); box-shadow: inset 0 -2px 0 var(-
 .purse .v { font-size: 16px; font-weight: 650; line-height: 1.25; white-space: nowrap; }
 .purse .s { font-size: 11px; line-height: 1.2; color: var(--dim); white-space: nowrap; }
 .purse .pos { color: var(--good); } .purse .neg { color: var(--bad); }
-.strength { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-bottom: 1px solid var(--line); }
-.strength > div { padding: 7px 4px 7px 10px; min-width: 0; }
-.strength .k { font: 9px/1.2 var(--mono); letter-spacing: 0.04em; text-transform: uppercase; color: var(--dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.strength .v { font-size: 14px; font-weight: 650; white-space: nowrap; }
 .crew { display: flex; flex-wrap: wrap; gap: 1px 12px; padding: 0 10px 6px 12px; color: var(--dim); font-size: 11.5px; }
 .crew b { color: var(--text); font-weight: 600; }
+.crew .short b { color: var(--warn); }
 .ship .cr { color: var(--text); font-weight: 600; }
 .ship .cr small { font-weight: 400; }
 .grouptag { flex: none; padding: 2px 9px; border: 1px solid; border-radius: 999px; font: 600 11px/1.5 var(--mono); letter-spacing: 0.04em; }
@@ -427,3 +422,24 @@ button.member:hover { background: var(--raise); box-shadow: inset 0 -2px 0 var(-
 @media (max-width: 1700px) { .purse { min-width: 0; padding: 0 10px; } .member { padding: 0 9px; gap: 6px; } .brand { padding: 0 12px; letter-spacing: 0.08em; } }
 @media (max-width: 1420px) { .purse { padding: 0 9px; } .purse .v { font-size: 14.5px; } .member { padding: 0 8px; } }
 @media (min-width: 1101px) { .ship { grid-template-columns: 16px minmax(0, 1fr) 42px 72px; } }
+
+/* ---- round 2 (2026-11-17): the members' portraits, the notice over the map, a top bar that fits a narrow window */
+.face { flex: none; display: block; }
+.member .face { width: 30px; height: 30px; }
+.chatwho .face { width: 22px; height: 22px; }
+.msghead .face { width: 18px; height: 18px; vertical-align: -4px; margin-right: 2px; display: inline-block; }
+.notice { position: absolute; z-index: 6; top: 10px; left: 136px; right: 222px; max-width: 760px; margin: 0 auto; padding: 7px 14px;
+  background: var(--pane); border: 1px solid var(--line2); border-radius: 6px; font-size: 12.5px; line-height: 1.4; color: var(--text); box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35); }
+.notice.warn { border-color: var(--warn); }
+.notice.good { border-color: var(--good); }
+.notice[hidden] { display: none; }
+.search { flex-shrink: 100; }                   /* the search field gives way first; the status is cut only when nothing else can */
+@media (max-width: 2399px) { .status .opt, .status .wide { display: none; } }
+@media (max-width: 2000px) { .brand small { display: none; } }
+@media (max-width: 1700px) { .member.total { display: none; } .member .d { display: none; } .member { padding: 0 8px; gap: 6px; } .member .face { width: 28px; height: 28px; }
+  .search { min-width: 110px; padding: 0 8px; } }
+@media (max-width: 1500px) { .brand .word { display: none; } .brand { padding: 0 8px 0 14px; } .sigil { margin-right: 6px; } .member .face { width: 26px; height: 26px; }
+  .status { gap: 9px; padding: 0 9px; } }
+@media (max-width: 1320px) { .member .c { display: none; } .member { padding: 0 7px; } .purse .k { display: none; } }
+@media (max-width: 1150px) { .member .face { width: 24px; height: 24px; } }
+@media (max-width: 1500px) { .notice { top: 52px; left: 136px; right: 12px; } }

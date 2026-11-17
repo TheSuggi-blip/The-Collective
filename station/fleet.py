@@ -89,8 +89,18 @@ Ships in the totals: `working` (a loop, a goal or a script's order), `parked`
 Piloting level (it opens the hull tiers), levels: all skill levels of the average
 ship added up, skill: [the skill other than Piloting with the highest average
 level, that average], hp: hull and shield points of the average ship, weapons:
-weapon modules fitted}. A ship's row carries `piloting` and `skill` ([name, level]
+weapon modules fitted, firepower: the damage per tick the average ship's weapons
+deal (each weapon's damage divided by its cooldown, from the newest catalog file
+in data/catalog/)}. A ship's row carries `piloting` and `skill` ([name, level]
 of its highest skill other than Piloting).
+A wave is many ships off the game at once (the game restarts for an update, our
+engine restarts, the line drops). While one is on and for ten minutes after it,
+fleet.json carries `wave`: {since, end (0 while it lasts), off, peak, ships, cause
+(`engine`: the engine started in those minutes; `update`: the game's version read
+changed in those minutes, with `from` and `to`; `unknown`)}. Each finished wave
+is one line of waves.jsonl with its minutes; fleet.json carries the last five as
+`waves`. The cause is what two readings show, never more: an update is named
+only when the version read changed.
 
 Every file is written whole and then renamed, so a reader never sees half a
 file. A ship's file is rewritten only when its content changed. Nothing here
@@ -300,23 +310,59 @@ def ship_detail(account, row):
     return out
 
 
-def crew(rows, accounts):
+POWER = {"file": "", "at": 0.0, "by": {}}       # the newest catalog's weapons: module type id -> damage per tick
+
+
+def weapon_power(now=None, folder=None):
+    """{module type id: damage per tick} for every weapon of the game's catalog (its damage divided by its cooldown), from
+    the newest catalog file beside the fleet folder (data/catalog/<version>.json). The folder is looked at again every
+    ten minutes; the file is read once per version."""
+    now = time.time() if now is None else now
+    if POWER["file"] and now - POWER["at"] < 600:
+        return POWER["by"]
+    POWER["at"] = now
+    folder = Path(folder) if folder else DATA.parent / "catalog"
+    try:
+        names = [n for n in os.listdir(folder) if re.fullmatch(r"\d+(\.\d+)*\.json", n)]
+    except OSError:
+        return POWER["by"]
+    if not names:
+        return POWER["by"]
+    newest = max(names, key=lambda n: tuple(int(part) for part in n[:-5].split(".")))
+    if newest != POWER["file"]:
+        catalog = read(folder / newest, {})
+        items = catalog.get("items") if isinstance(catalog, dict) else None
+        by = {}
+        for item in (items.values() if isinstance(items, dict) else items if isinstance(items, list) else []):
+            if isinstance(item, dict) and item.get("type") == "weapon" and num(item.get("damage")) > 0:
+                by[text(item.get("id") or item.get("type_id"), 60)] = num(item.get("damage")) / (num(item.get("cooldown")) or 1)
+        if by:
+            POWER["file"], POWER["by"] = newest, by
+    return POWER["by"]
+
+
+def crew(rows, accounts, power=None):
     """How trained and how strong the ships are, per division and for all of them under '': {"ships", "piloting": the
     average Piloting level (Piloting 10, 20, 30 and 50 open the hull tiers 2 to 5), "levels": all skill levels of the
     average ship added up, "skill": [the skill other than Piloting with the highest average level, that average],
-    "hp": hull and shield points of the average ship, "weapons": weapon modules fitted}. `accounts` is {pilot name: the
-    engine's account}; a ship without skills counts as level 0. Averages to one decimal."""
+    "hp": hull and shield points of the average ship, "weapons": weapon modules fitted, "firepower": the damage per tick
+    the average ship's weapons deal (`power`: {module type id: damage per tick}, the catalog's by default; a weapon the
+    catalog does not know counts 0)}. `accounts` is {pilot name: the engine's account}; a ship without skills counts as
+    level 0. Averages to one decimal."""
+    power = weapon_power() if power is None else power
     sums = {}
     for row in rows:
         st = (accounts.get(row["name"]) or {}).get("state") or {}
         skills = st.get("skills") if isinstance(st.get("skills"), dict) else {}
         levels = {text(k, 40): num(v.get("level")) for k, v in skills.items() if isinstance(v, dict)}
-        guns = sum(1 for m in (st.get("modules") or []) if isinstance(m, dict) and m.get("type") == "weapon")
+        fitted = [m for m in (st.get("modules") or []) if isinstance(m, dict) and m.get("type") == "weapon"]
+        guns, fire = len(fitted), sum(power.get(text(m.get("type_id"), 60), 0) for m in fitted)
         for key in ("", row["division"]):
-            b = sums.setdefault(key, {"ships": 0, "hp": 0, "weapons": 0, "skills": {}})
+            b = sums.setdefault(key, {"ships": 0, "hp": 0, "weapons": 0, "fire": 0, "skills": {}})
             b["ships"] += 1
             b["hp"] += row["max_hull"] + row["max_shield"]
             b["weapons"] += guns
+            b["fire"] += fire
             for name, level in levels.items():
                 b["skills"][name] = b["skills"].get(name, 0) + level
     result = {}
@@ -324,7 +370,8 @@ def crew(rows, accounts):
         n = b["ships"]
         best = max(((total / n, name) for name, total in b["skills"].items() if name != "piloting"), default=(0, ""))
         result[key] = {"ships": n, "piloting": round(b["skills"].get("piloting", 0) / n, 1), "levels": round(sum(b["skills"].values()) / n, 1),
-                       "skill": [best[1], round(best[0], 1)], "hp": round(b["hp"] / n), "weapons": b["weapons"]}
+                       "skill": [best[1], round(best[0], 1)], "hp": round(b["hp"] / n), "weapons": b["weapons"],
+                       "firepower": round(b["fire"] / n, 1)}
     return result
 
 
@@ -842,6 +889,99 @@ def rejoin(now, uptime, away=AWAY, opener=None, allowed=True, never=()):
     return out, asked
 
 
+WAVE = {}                    # the wave that is on or settles: "since", "peak", "ships", then "end", "engine", "from", "to"
+WAVES = []                   # the finished waves, oldest first (waves.jsonl); fleet.json carries the last five
+VERSION = {}                 # the game's version as the station's stats file names it: "now", "before", "changed" (when)
+WAVE_START = 0.08            # a wave begins when this share of the fleet is off the game (and five ships at least)
+WAVE_END = 0.02              # ... and ends when no more than this share is
+WAVE_SETTLE = 600            # seconds after its end until a wave is written down: the game's new version is read late
+
+
+def stamp_seconds(value):
+    """Epoch seconds of the engine's ISO time (2026-11-17T04:51:04.947Z), or 0."""
+    try:
+        return calendar.timegm(time.strptime(str(value)[:19], "%Y-%m-%dT%H:%M:%S"))
+    except ValueError:
+        return 0
+
+
+def game_version(now, path=None, version=VERSION):
+    """The game's version from the station's copy of the game's public stats (data/station/stats.json); `version` keeps
+    the one before and when the reading changed."""
+    stats = read(path or DATA.parent / "station" / "stats.json", {})
+    named = text(stats.get("version"), 20) if isinstance(stats, dict) else ""
+    if named and named != version.get("now"):
+        if version.get("now"):
+            version.update(before=version["now"], changed=now)
+        version["now"] = named
+    return version.get("now", "")
+
+
+def note_wave(off, ships, now, engine_started="", wave=WAVE, version=VERSION, engine_away=False):
+    """One pass of the wave record. `off`: ships not connected to the game now, of `ships`. Returns (what the page shows
+    while a wave is on or settles, else None; the finished record, else None). The cause is what two readings show:
+    `engine` when the engine started within five minutes before the wave or during it (or did not answer in it),
+    `update` when the game's version read changed from a quarter of an hour before it on, else `unknown`."""
+    share = off / ships if ships else 0
+    if "since" not in wave:
+        if share < WAVE_START or off < 5:
+            return None, None
+        wave.update(since=now, peak=off, ships=ships)
+    if "end" in wave and share >= WAVE_START and off >= 5:
+        del wave["end"]                           # it came back within the settling time: one wave
+    if "end" not in wave:
+        wave["peak"], wave["ships"] = max(wave["peak"], off), max(wave["ships"], ships)
+        if share <= WAVE_END:
+            wave["end"] = now
+    if engine_away or stamp_seconds(engine_started) >= wave["since"] - 300:
+        wave["engine"] = True
+    if (version.get("changed") or 0) >= wave["since"] - 900:
+        wave["from"], wave["to"] = version.get("before", ""), version.get("now", "")
+    shown = {"since": int(wave["since"]), "end": int(wave.get("end", 0)), "off": off, "peak": wave["peak"], "ships": wave["ships"],
+             "cause": "engine" if wave.get("engine") else "update" if wave.get("to") else "unknown",
+             "from": wave.get("from", ""), "to": wave.get("to", "")}
+    if "end" in wave and now - wave["end"] >= WAVE_SETTLE:
+        record = {key: value for key, value in shown.items() if key != "off"}
+        record["minutes"] = round((wave["end"] - wave["since"]) / 60, 1)
+        wave.clear()
+        return None, record
+    return shown, None
+
+
+def wave_pass(off, ships, now, engine_started="", engine_away=False):
+    """note_wave for the collector: reads the game's version, keeps a finished wave (waves.jsonl, WAVES) and returns what
+    fleet.json carries as `wave`."""
+    game_version(now)
+    shown, record = note_wave(off, ships, now, engine_started, engine_away=engine_away)
+    if record:
+        WAVES.append(record)
+        del WAVES[:-20]
+        try:
+            with open(DATA / "waves.jsonl", "a", encoding="utf-8") as handle:
+                handle.write(json.dumps(record, separators=(",", ":")) + "\n")
+        except OSError:
+            pass
+        print("fleet: a wave of %d ships off the game for %s min is written down (%s)" % (record["peak"], record["minutes"], record["cause"]), flush=True)
+    return shown
+
+
+def load_waves():
+    """The finished waves on record into WAVES (the last twenty lines of waves.jsonl)."""
+    try:
+        with open(DATA / "waves.jsonl", encoding="utf-8") as handle:
+            lines = handle.read().splitlines()[-20:]
+    except OSError:
+        return
+    del WAVES[:]
+    for line in lines:
+        try:
+            row = json.loads(line)
+        except ValueError:
+            continue
+        if isinstance(row, dict) and row.get("since"):
+            WAVES.append(row)
+
+
 def collect_once(last):
     """One pass: ask the engine, write the files. `last` holds what was written before."""
     now = time.time()
@@ -854,6 +994,10 @@ def collect_once(last):
     except Exception as e:                      # the engine is away: keep the last rows, say so
         fleet = read(DATA / "fleet.json", {"ships": [], "totals": totals([])})
         fleet["engine"] = {"ok": False, "error": (type(e).__name__ + ": " + str(e))[:200], "checked_at": stamp}
+        listed = len(fleet.get("ships") or [])
+        if "since" in WAVE:                       # one pass without an answer starts no wave; inside one it is part of it
+            fleet["wave"] = wave_pass(listed, listed, now, engine_away=True)
+        fleet["waves"] = WAVES[-5:]
         write(DATA / "fleet.json", fleet)
         return False
     rows = of_fleet(sorted((ship_row(a) for a in accounts), key=row_order))
@@ -871,6 +1015,8 @@ def collect_once(last):
     if held(len(rows), known, now):               # the engine signs its pilots in again: keep the last picture, write no sample
         before["engine"] = {"ok": False, "error": "%d of %d pilots signed in" % (len(rows), known), "checked_at": stamp}
         before["away"] = away
+        missing = max(0, known - len(rows)) + sum(1 for row in rows if row["status"] != "connected")
+        before["wave"], before["waves"] = wave_pass(missing, max(known, len(rows)), now, text(data.get("startedAt"), 30)), WAVES[-5:]
         write(DATA / "fleet.json", before)
         return False
     note_presence(before.get("ships") or [], rows, read(DATA / "seed.json", None), now)   # who left the engine's list, who is back
@@ -921,9 +1067,10 @@ def collect_once(last):
     for division, d in total["divisions"].items():
         d["credits_per_ship"] = round(d["credits"] / d["ships"]) if d["ships"] else 0
     total["rates"] = rates(history, now, seeds=seeds if isinstance(seeds, dict) else {})
+    shown = wave_pass(sum(1 for row in rows if row["status"] != "connected"), len(rows), now, text(data.get("startedAt"), 30))
     write(DATA / "fleet.json", {
         "updated_at": stamp, "engine": {"ok": True, "error": "", "checked_at": stamp, "started_at": text(data.get("startedAt"), 30)},
-        "totals": total, "ships": rows, "away": away})
+        "totals": total, "ships": rows, "away": away, "wave": shown, "waves": WAVES[-5:]})
     return True
 
 
@@ -1001,6 +1148,7 @@ def main():
     for row in read(DATA / "fleet.json", {}).get("ships", []):   # positions survive a restart
         if isinstance(row, dict) and row.get("system"):
             POSITION[text(row.get("name"), 40)] = (text(row["system"], 80), text(row.get("system_name"), 80))
+    load_waves()
     if "--once" in sys.argv:
         print("fleet: one pass,", "ok" if collect_once(last) else "engine not reached")
         return

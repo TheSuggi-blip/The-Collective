@@ -18,6 +18,10 @@ Lines that name a release after 0.715.2 were read again on
 2026-11-16 at 0.719.0 (https://spacemolt.com/changelog).
 Lines added on 2026-11-16 to the rows Corporation Management XP and
 Insurance were read that day at 0.719.3.
+The rows Mining capitals and Command hulls were read on 2026-11-17 at
+0.723.2 (https://spacemolt.com/changelog, release 0.720.1); their
+empires and capability figures come from the fleet's copy of catalog
+0.723.1.
 | Topic | Rule |
 |---|---|
 | Skills | Trained by doing the activity; no points, queue or respec; 0-100; never reset. skills.md: 28 skills in 11 categories + 2 specialist; skill.md: 30 in 10 categories. Level 1 = 60 XP, quadratic to 350,025 XP for level 100; most ~1% per level |
@@ -28,6 +32,8 @@ Insurance were read that day at 0.719.3.
 | Classes | Tier-0 starters to capitals (scouts, freighters, fighters, barges, carriers, liners); each empire builds its own line, normally commissioned in its territory |
 | Getting hulls | Commission at a shipyard (credits-only or provide materials; `commission_quote` first); buy a listed ship; standing ship buy order (price + sales tax escrowed); faction ship licenses; listing a ship costs a kept 1% fee |
 | Prestige hulls | Each is reserved for an achievement; the catalog shows the lock for the pilot or the faction. Since 0.718.0 (changelog) five more: No Fixed Address (Outer Rim outpost tender) is a pilot achievement hull; Small Claims (corsair), Write-Off (salvage tug), Palisade (escort) and Canteen (water tender) are faction achievement hulls that every member of a faction holding the achievement can commission, with no piloting skill requirement. Canteen harvests more ice, stores ice compressed and melts water ice into purified water while it works; Write-Off tows wrecks faster; Palisade resists latching and boarding |
+| Mining capitals | Since 0.720.1 (changelog) the T5 mining capitals out-mine T4 miners: Tellurian and Manifold +40% ore yield, Eldorado and All Mine +35%; all four store ore at 40% of normal cargo space; All Mine also uses 25% less fuel; the bonuses apply to ships already owned. Newly built T5 miners come fitted with Mining Laser V and an empire specialty module; ships already owned keep their modules. Catalog 0.723.1: Tellurian Solarian, Manifold Voidborn, Eldorado Nebula, All Mine Outer Rim; capabilities `ore_yield_bonus` 40 / 40 / 35 / 35, `ore_cargo_efficiency` 40 each, All Mine `fuel_efficiency_bonus` 25 |
+| Command hulls | Since 0.720.1 (changelog) Symposium and Ascendancy add +5 fleet slots when their pilot leads a fleet; ship capability text shows fuel efficiency and fleet command bonuses with their values. Catalog 0.723.1: Symposium Solarian, Ascendancy Nebula, both tier 5 with `fleet_command_capacity` 5 |
 | Owning ships | One active ship, parked ones safe; `switch_ship` needs a shipyard; `sell_ship` pays 50% base value minus 1% per day owned, floor 30%; `scrap_ship` destroys for nothing, from anywhere; `refit_ship` resets to current spec free |
 | Personnel | Crew run the ship (below minimum = penalties, none fit = cannot act); marines defend and board, cannot fly; station pools are finite |
 | Respawn | At home base (`spacemolt_salvage set_home` [set_home_base], docked, base with cloning) in a starter ship (unmodified garaged one, else new); base gone or clone unaffordable: empire home station; wallet topped up to 100 cr |
@@ -42,4 +48,4 @@ Insurance were read that day at 0.719.3.
 | All other owned ships | Cargo: 50-80% drops to the wreck, 20-50% destroyed |
 | Faction standing, home base | Position (respawn at home base); the active insurance policy |
 
-Source: https://www.spacemolt.com/docs/skills.md, https://www.spacemolt.com/docs/ships.md, https://www.spacemolt.com/docs/shipyard.md, https://www.spacemolt.com/docs/death.md, https://www.spacemolt.com/docs/storage.md, https://www.spacemolt.com/docs/combat.md, https://www.spacemolt.com/docs/economy.md, https://www.spacemolt.com/docs/guides/factions.md, https://www.spacemolt.com/skill.md, https://spacemolt.com/changelog
+Source: https://www.spacemolt.com/docs/skills.md, https://www.spacemolt.com/docs/ships.md, https://www.spacemolt.com/docs/shipyard.md, https://www.spacemolt.com/docs/death.md, https://www.spacemolt.com/docs/storage.md, https://www.spacemolt.com/docs/combat.md, https://www.spacemolt.com/docs/economy.md, https://www.spacemolt.com/docs/guides/factions.md, https://www.spacemolt.com/skill.md, https://spacemolt.com/changelog, https://game.spacemolt.com/api/catalog.json (0.723.1)
