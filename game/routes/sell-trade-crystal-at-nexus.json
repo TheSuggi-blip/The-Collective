@@ -1,0 +1,41 @@
+{
+ "id": "sell-trade-crystal-at-nexus",
+ "kind": "circuit",
+ "title": "Stored trade_crystal sold where it lies, at central_nexus, at 340 cr or more",
+ "note": "2026-11-17 23:42 UTC (Mercury, written by sellgen.py; orders block MERCURY, rule F24). central_nexus bid 352 x 8 (book of 2026-11-17T23:41:54Z); the cheapest ask read is 299 x 1000 at grand_exchange_station; floor 340 cr; 127 units lie there in our storages. requires.stored sends only a pilot whose own storage there holds the good; requires.bid closes the route while a book read within the hour shows no bid at the floor. The withdraw step takes only what the bid takes. Nothing is bought. Open to every division: each ship sells its own stores. Floor set by hand to 340 (Mercury): Central Nexus bid 346 to 369 cr for 2 to 24 units in eleven readings from 13:44 to 22:49 UTC (ledger moves), gone between them; it asks 375 x 2,367 itself; the 299 cr ask stands at Grand Exchange Station, far beyond our space. trade_crystal is in no target of the reserve (the tool stock, view=reserve, 23:32 UTC); the 127 units are miners' stores.",
+ "requires": {
+  "stored": {
+   "at": "central_nexus",
+   "item": "trade_crystal",
+   "min": 1
+  },
+  "bid": {
+   "item": "trade_crystal",
+   "base": "central_nexus",
+   "min_price": 340,
+   "min_qty": 1
+  }
+ },
+ "max_ships": 1,
+ "stops": [
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "trade_crystal"
+    }
+   ],
+   "sell": [
+    {
+     "item": "trade_crystal",
+     "min_price": 340
+    }
+   ]
+  },
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "store": "all"
+  }
+ ]
+}

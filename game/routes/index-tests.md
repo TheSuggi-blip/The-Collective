@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 61.
+Routes: 63.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -23,9 +23,11 @@ Routes: 61.
 | [carry-soma-synchrony-node-alpha](carry-soma-synchrony-node-alpha.json) | circuit | home space | Stored neural soma carried one jump from Synchrony Hub to the Node Alpha soma bid | up to 1 ships, with 1 voidborn_neural_soma stored at synchrony_hub, while node_alpha_processing_station bids 500 cr for voidborn_neural_soma | TBD | TBD | TBD | TBD | -- |
 | [carry-soma-synchrony-node-gamma](carry-soma-synchrony-node-gamma.json) | circuit | home space | Stored neural soma carried one jump from Synchrony Hub to the Node Gamma soma bid | up to 1 ships, with 1 voidborn_neural_soma stored at synchrony_hub, while node_gamma_relay_station bids 500 cr for voidborn_neural_soma | TBD | TBD | TBD | TBD | -- |
 | [drain-ice-node-alpha](drain-ice-node-alpha.json) | circuit | home space | Stored water ice sold where it lies, at node_alpha_processing_station, into the bid there | up to 2 ships, with 30 water_ice stored at node_alpha_processing_station, while node_alpha_processing_station bids 25 cr for water_ice | TBD | TBD | TBD | TBD | -- |
+| [sell-deuterium-at-node-beta](sell-deuterium-at-node-beta.json) | circuit | home space | Stored deuterium_ice sold where it lies, at node_beta_industrial_station, at 150 cr or more | up to 1 ships, with 1 deuterium_ice stored at node_beta_industrial_station, while node_beta_industrial_station bids 150 cr for deuterium_ice | TBD | TBD | TBD | TBD | -- |
 | [sell-liquid-hydrogen-node-beta](sell-liquid-hydrogen-node-beta.json) | circuit | home space | Stored liquid hydrogen sold where it lies, at Node Beta, into the station's bid | up to 1 ships, with 5 liquid_hydrogen stored at node_beta_industrial_station, while node_beta_industrial_station bids 95 cr for liquid_hydrogen | TBD | TBD | TBD | TBD | -- |
 | [sell-soma-node-beta](sell-soma-node-beta.json) | circuit | home space | Stored neural soma sold where it lies, at Node Beta, into the station's soma bid | up to 1 ships, with 1 voidborn_neural_soma stored at node_beta_industrial_station, while node_beta_industrial_station bids 500 cr for voidborn_neural_soma | TBD | TBD | TBD | TBD | -- |
 | [sell-soma-synchrony](sell-soma-synchrony.json) | circuit | home space | Stored neural soma sold where it lies, at Synchrony Hub, into the station's soma bid | up to 1 ships, with 1 voidborn_neural_soma stored at synchrony_hub, while synchrony_hub bids 500 cr for voidborn_neural_soma | TBD | TBD | TBD | TBD | -- |
+| [sell-trade-crystal-at-nexus](sell-trade-crystal-at-nexus.json) | circuit | home space | Stored trade_crystal sold where it lies, at central_nexus, at 340 cr or more | up to 1 ships, with 1 trade_crystal stored at central_nexus, while central_nexus bids 340 cr for trade_crystal | TBD | TBD | TBD | TBD | -- |
 | [trade-ceramite-plating-the-central](trade-ceramite-plating-the-central.json) | circuit | home space | Ceramite Plating: bought at The Experiment Research Station for 899 cr, sold at The Core for 1185 cr | up to 1 ships, from 7,944 cr | TBD | TBD | TBD | TBD | -- |
 | [trade-voidborn-neural-soma-central-node](trade-voidborn-neural-soma-central-node.json) | circuit | home space | Voidborn Neural Soma: bought at The Core for 285 cr, sold at Node Gamma Relay Station for 622 cr | up to 1 ships, from 4,254 cr | TBD | TBD | TBD | TBD | -- |
 | [trade-voidborn-neural-soma-central-the](trade-voidborn-neural-soma-central-the.json) | circuit | home space | Voidborn Neural Soma: bought at The Core for 258 cr, sold at The Experiment Research Station for 690 cr | up to 1 ships, from 3,851 cr | TBD | TBD | TBD | TBD | -- |

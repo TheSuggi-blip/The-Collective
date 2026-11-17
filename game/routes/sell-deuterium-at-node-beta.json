@@ -1,0 +1,41 @@
+{
+ "id": "sell-deuterium-at-node-beta",
+ "kind": "circuit",
+ "title": "Stored deuterium_ice sold where it lies, at node_beta_industrial_station, at 150 cr or more",
+ "note": "2026-11-17 23:42 UTC (Mercury, written by sellgen.py; orders block MERCURY, rule F24). node_beta_industrial_station bid 166 x 6 (book of 2026-11-17T23:42:09Z); the cheapest ask read is 120 x 6120 at nova_terra_central; floor 150 cr; 328 units lie there in our storages. requires.stored sends only a pilot whose own storage there holds the good; requires.bid closes the route while a book read within the hour shows no bid at the floor. The withdraw step takes only what the bid takes. Nothing is bought. Open to every division: each ship sells its own stores. Floor set by hand to 150 (Mercury): Node Beta bid deuterium ice 166 to 232 cr, 6 units at a time, nine times since 2026-11-16 12:24 UTC (ledger moves); the cheapest ask in depth is 120 x 6,120 at Nova Terra Central, Solarian space. deuterium_ice is in no target of the reserve (23:32 UTC); 328 units lie at Node Beta (sentinels' and miners' stores).",
+ "requires": {
+  "stored": {
+   "at": "node_beta_industrial_station",
+   "item": "deuterium_ice",
+   "min": 1
+  },
+  "bid": {
+   "item": "deuterium_ice",
+   "base": "node_beta_industrial_station",
+   "min_price": 150,
+   "min_qty": 1
+  }
+ },
+ "max_ships": 1,
+ "stops": [
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "deuterium_ice"
+    }
+   ],
+   "sell": [
+    {
+     "item": "deuterium_ice",
+     "min_price": 150
+    }
+   ]
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store": "all"
+  }
+ ]
+}
