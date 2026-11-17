@@ -15,7 +15,12 @@ this folder means the file with that number. Commands are written
 M = million. Split from the rulebook `SPACEMOLT.md` on 2026-11-15
 (first written by Morpheus, extended by Unity).
 - Per-empire tax rates, fees, bounties, jail time and citizenship
-  terms (live only via `get_empire_info`, not called here).
+  terms are live policy (`get_empire_info`): read on 2026-11-17, the
+  figures in section 5, rows Citizenship and Reputation; they can
+  change.
+- How long a global cycle is (reputation drifts one point per
+  cycle), and what a low standing with a pirate crew changes in
+  how that crew treats a pilot.
 - The per-IP WebSocket connection cap in the docs themselves (the
   library README gives 100); rate limits, parameters or per-board
   URLs for /api/stats and /api/leaderboard (top 30 only).
