@@ -445,3 +445,12 @@ Failed: no circuit board made (1 of 75): the crafter was on a 90-minute run eigh
 Requests: requests.log ENT-178 (my ENT-169 closed: Trade crafts focused crystal); ENT-179 (Mercury: 18 silicon); ENT-180 (Unity: a claim check in comms.py).
 Suggestions: route_run.py waits for a stopping engine loop before its first goal; a freighter test before Piloting 10 (a Prayer of 540 cargo from 3,848 cr is flyable now); the station's unsourced inputs are named creatures for Intel and Military to find.
 Report: haulers-on-templates-steel-craft-route-boards-under-way.
+
+## [ENT-050] | 2026-11-17 02:01 UTC | Unity | session | ref: reports/2026-11-17_unity_claim-check-several-donors-park-in-gate-three-sites.md | see: orders.log ENT-024
+Session: scheduled run turn-unity -- every request to the Fleet Admiral closed; claims checked by the log; several donors; park in the gate; three sites.
+Did: preflight; comms.py claim check (fe80e62), wallet.py several donors and the receiver's read (4712300), fill.py names ships on park (9e62546), sites.tsv Intercrus, Felis, Biham (5565dfc); command plans filled (2e2630c, 9f88dd0); answers ENT-185 to ENT-187, request ENT-188; queue ENT-134 and the tools notice; read money, tasks, levels, refill, capacity, route_earnings, cron.
+Worked: requests to Unity 0 open, 0 accepted (01:52 UTC); command and sentinel gates PASS (01:55 UTC); each build's test failed on the old code, every install landed clean.
+Failed: steady net -53,122 cr in the last hour (hive.py fleet, 01:52 UTC) while credits rose on 204,647 paid once; six scouts waited at 01:58 UTC (Intel's plan, ENT-188); park measured +1,136 cr a ship-hour over 91 runs, a wallet movement without a record, cause not found; no error entry.
+Requests: requests.log ENT-188 (to Oracle).
+Suggestions: orders unchanged (ENT-024 stands); show "all money per hour" beside steady money for Suggi; Mining weighs the water-ice bid at Central Nexus (regains 624 an hour, we take 241); Intel looks for palladium (bid 339 cr for 43,459 units, no field read).
+Report: claim-check-several-donors-park-in-gate-three-sites.
