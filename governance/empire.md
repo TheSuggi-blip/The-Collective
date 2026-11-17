@@ -20,7 +20,7 @@ they store, the members by name and the treasury's balance. They are live
 data of the unit (the tools `hive` with `verb=empire`, `stock`, `ship`;
 `game/fleet/empire.py show`).
 
-Facts as of 2026-11-17T12:33:04Z.
+Facts as of 2026-11-17T14:36:44Z.
 
 ## 1. The Faction
 
@@ -29,8 +29,8 @@ Facts as of 2026-11-17T12:33:04Z.
 | Name and tag | The Collective [CLTV] |
 | Founded | 2026-11-15 |
 | Leader | the Fleet Admiral's flagship |
-| Members | 20 of a limit of 50 |
-| Ships of the fleet in it | 20 of 246 |
+| Members | 50 of a limit of 50 |
+| Ships of the fleet in it | 50 of 246 |
 | Stations of our own | 0 of 5 a faction may hold |
 | Outposts | 0 of 8 |
 | Offices at stations | 3, rent 164 cr per cycle (14,104 cr a day) |
