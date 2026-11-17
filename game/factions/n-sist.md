@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 2.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 14 | Public event stream |
+| Pilots carrying the tag on the public event stream | 20 | Public event stream |
 
 ## Bases
 
@@ -38,8 +38,8 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| BrambleWinch_6503 | Synchrony (`synchrony`) | 0 | prospect |
-| CinderPulley_1389 | Nexus Prime (`nexus_prime`) | 0 | prospect |
+| VestrasDrone_9381 | Node Gamma (`node_gamma`) | 0 | not met |
+| WillowValve_1499 | Synchrony (`synchrony`) | 0 | prospect |
 
 ## Standing History
 

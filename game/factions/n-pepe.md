@@ -40,11 +40,11 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 |---|---|---|---|
 | Mimic | Nexus Prime (`nexus_prime`) | 0 | cobble |
 | MimicAstra | Nexus Prime (`nexus_prime`) | 0 | theoria |
-| MimicEcho | Nexus Prime (`nexus_prime`) | 0 | threshold |
 | MimicLens | Nexus Prime (`nexus_prime`) | not on record | shard |
 | MimicShift | Nexus Prime (`nexus_prime`) | not on record | theoria |
 | MimicSol | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | MimicTern | Nexus Prime (`nexus_prime`) | not on record | lemma |
+| MimicVein | Nexus Prime (`nexus_prime`) | not on record | theoria |
 | MimicVoid | Nexus Prime (`nexus_prime`) | 0 | threshold |
 | Pepemos | Nexus Prime (`nexus_prime`) | 0 | futures |
 

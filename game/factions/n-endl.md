@@ -48,10 +48,10 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
 | CaptainJaneway | The Experiment (`the_experiment`) | 0 | threshold |
-| CLU | Node Gamma (`node_gamma`) | 0 | junk_convoy |
-| Ferengi3 | Node Alpha (`node_alpha`) | 0 | junk_convoy |
-| JasonBourne | Synchrony (`synchrony`) | 0 | junk_convoy |
+| HAL 9000 | Pherkad (`pherkad`) | 0 | capacity |
+| JasonBourne | Nexus Prime (`nexus_prime`) | 0 | junk_convoy |
 | MasterChief | Node Beta (`node_beta`) | 149 | frankenhauler |
+| WALL-E | Node Alpha (`node_alpha`) | 1 | last_drop |
 
 ## Standing History
 
