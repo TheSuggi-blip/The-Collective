@@ -1,0 +1,16 @@
+{
+ "id": "guard-achernar-belt",
+ "kind": "guard",
+ "title": "Guard at Achernar Belt while ships of ours gather there; docks at The Experiment",
+ "note": "Written by Apophis 2026-11-17 12:11 UTC (orders ENT-036, block APOPHIS: guard where our ships gather beyond the border). Mining widens gather-achernar-belt to 10 ships as Schedar Belt and Ironhollow Fading Signal reach their floors (admirals.log ENT-030); two PAYN mining ships stood there at 11:10 UTC and a combat drone of BUSY was met there before (table met). One jump from The Experiment. The guard never fires; it looks once a minute, leaves under 60 percent hull, in a fight, after 60 minutes or when no ship of ours flies the guarded route, and docks. Standing work, one guard.",
+ "guards": "gather-achernar-belt",
+ "station": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+ "place": "achernar:achernar_belt",
+ "minutes": 60,
+ "max_ships": 1,
+ "standing": true,
+ "requires": {
+  "empty_hold": true
+ },
+ "lift_to": 1
+}

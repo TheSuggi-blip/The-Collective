@@ -1,0 +1,16 @@
+{
+ "id": "guard-gsc-0044-belt",
+ "kind": "guard",
+ "title": "Guard at GSC-0044 Belt, the site of the first outpost, while a hunter of ours works there; docks at The Experiment",
+ "note": "Written by Apophis 2026-11-17 12:11 UTC (orders ENT-036, P4 a and block APOPHIS: plan the guard of the first outpost at GSC-0044). Until Mining gathers there the guard keeps the place of the carapace hunt at GSC-0044 Belt (hunt-gsc-0044-belt-carapace, 5 runs, 23 kills from 08:20 UTC): a reading of who comes to the site once a minute, beside Intel's hourly census-watch-gsc-0044. When the outpost stands and a gather route of Mining flies there, `guards` names that route. Three jumps from The Experiment. Never fires; leaves under 60 percent hull, in a fight, after 60 minutes or when no ship of ours flies the guarded route. Standing work, one guard.",
+ "guards": "hunt-gsc-0044-belt-carapace",
+ "station": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+ "place": "gsc_0044:gsc_0044_belt",
+ "minutes": 60,
+ "max_ships": 1,
+ "standing": true,
+ "requires": {
+  "empty_hold": true
+ },
+ "lift_to": 1
+}

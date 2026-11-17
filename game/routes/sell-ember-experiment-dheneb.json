@@ -1,0 +1,39 @@
+{
+ "id": "sell-ember-experiment-dheneb",
+ "kind": "circuit",
+ "title": "Stored ember glands carried from The Experiment Research Station to the Hex Star bid (Dheneb, lawless)",
+ "note": "Written by Apophis 2026-11-17 12:11 UTC (orders ENT-036, block APOPHIS: what a kill yields is sold where a bid stands). Hex Star (Dheneb) bid 3,919 cr x 37 for ember glands at 11:49 UTC, rising from 3,692 x 46 at 09:17 UTC; every home station bids 480. The Achernar cinder-sylph hunt looted 17 glands in 8 runs from 08:20 UTC. A pilot whose own storage at The Experiment Research Station holds 6 glands or more withdraws them and sells at Hex Star at 2,000 cr or more, no more units than stand at the best price. 9 jumps through lawless space; no pirate on our record on the road or one jump from it (observations kind pirate, 12:10 UTC). Goods aboard (rule F13): 6 glands are some 2,900 cr at the home bid against about 23,500 at Hex Star. What it does not sell stays aboard and is stored at home by store-hold-central-nexus. A test with one ship: read its RESULT line next turn.",
+ "max_ships": 1,
+ "requires": {
+  "stored": {
+   "at": "the_experiment_research_station",
+   "item": "ember_gland",
+   "min": 6
+  },
+  "bid": {
+   "item": "ember_gland",
+   "base": "b495c6003fc83e18f6d8cecbe6929133",
+   "min_price": 2000,
+   "min_qty": 5
+  }
+ },
+ "stops": [
+  {
+   "at": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+   "withdraw": [
+    {
+     "item": "ember_gland"
+    }
+   ]
+  },
+  {
+   "at": "dheneb:98eba8b1a7ad0520d6a7c8ea44b2d6aa:b495c6003fc83e18f6d8cecbe6929133",
+   "sell": [
+    {
+     "item": "ember_gland",
+     "min_price": 2000
+    }
+   ]
+  }
+ ]
+}

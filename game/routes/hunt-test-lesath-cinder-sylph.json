@@ -1,14 +1,14 @@
 {
  "id": "hunt-test-lesath-cinder-sylph",
  "kind": "hunt",
- "title": "Cinder-sylphs at lesath_gas_cloud (lawless); ember glands sold at Node Beta",
- "note": "A test with one ship: the cinder-sylph test at Achernar Gas Pocket dropped one ember gland a kill, sold at 480 cr, +894 cr in 12.2 min (2026-11-16 03:00 UTC, hunt-test-achernar-cinder-sylph). This herd read 8 cinder-sylphs (40 hull) at 2026-11-15 22:03 UTC (data/wildlife/history.jsonl), a read the census renews. Beyond policed space (F13): `alone` and an empty hold; ranched: no hunt below 4 animals, 2 kills a run. Written by Apophis 2026-11-16 03:16 UTC (orders.log ENT-011); one ship until its first RESULT line. 2026-11-16 13:09 UTC (Apophis): `requires.bid` names the ember gland bid of the sell station (100 cr, 2 units; it read 480 cr at 12:59 UTC, data/market/), orders.log ENT-014 (a). 2026-11-17 08:14 UTC (Apophis): `alone` \"pirates\": it leaves only for a pirate or a pilot filed hostile (hunt.py e138722); 61 of 161 drone hunts from 04:12 to 08:10 UTC left for a stranger who never fired (data/routes/runs.jsonl), and no ship of ours was fired on at a hunt (errors.log), so the limit is lifted (F13).",
+ "title": "Cinder-sylphs at lesath_gas_cloud (lawless); ember glands kept for the Hex Star bid (Dheneb)",
+ "note": "A test with one ship: the cinder-sylph test at Achernar Gas Pocket dropped one ember gland a kill, sold at 480 cr, +894 cr in 12.2 min (2026-11-16 03:00 UTC, hunt-test-achernar-cinder-sylph). This herd read 8 cinder-sylphs (40 hull) at 2026-11-15 22:03 UTC (data/wildlife/history.jsonl), a read the census renews. Beyond policed space (F13): `alone` and an empty hold; ranched: no hunt below 4 animals, 2 kills a run. Written by Apophis 2026-11-16 03:16 UTC (orders.log ENT-011); one ship until its first RESULT line. 2026-11-16 13:09 UTC (Apophis): `requires.bid` names the ember gland bid of the sell station (100 cr, 2 units; it read 480 cr at 12:59 UTC, data/market/), orders.log ENT-014 (a). 2026-11-17 08:14 UTC (Apophis): `alone` \"pirates\": it leaves only for a pirate or a pilot filed hostile (hunt.py e138722); 61 of 161 drone hunts from 04:12 to 08:10 UTC left for a stranger who never fired (data/routes/runs.jsonl), and no ship of ours was fired on at a hunt (errors.log), so the limit is lifted (F13). 2026-11-17 12:11 UTC (Apophis): glands kept for Hex Star as on hunt-test-achernar-cinder-sylph (min_bid 2000; Hex Star 3,919 x 37 at 11:49 UTC against 480 at home). One run from 08:20 UTC, 13.3 minutes, no kill.",
  "place": "lesath:lesath_gas_cloud",
  "species": [
   "cinder_sylph"
  ],
  "sell_at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
- "min_bid": 300,
+ "min_bid": 2000,
  "kills": 2,
  "minutes": 30,
  "max_ships": 1,
@@ -19,9 +19,9 @@
   "without_module": "piercing_railgun_i",
   "bid": {
    "item": "ember_gland",
-   "base": "node_beta_industrial_station",
-   "min_price": 100,
-   "min_qty": 2
+   "base": "b495c6003fc83e18f6d8cecbe6929133",
+   "min_price": 2000,
+   "min_qty": 5
   }
  },
  "measured": {

@@ -2,7 +2,7 @@
  "id": "hunt-test-node-beta-cauldronback",
  "kind": "hunt",
  "title": "A test: one cauldronback (120 hull) at Eltanin Prime Belt, Node Beta; alloy scale into storage",
- "note": "2026-11-17 08:14 UTC (Apophis): a test with one ship of prey above 100 hull (F9: Military tests bigger prey, one ship). The reserve is short of 56,520 alloy scale with no source we read (surplus.py reserve, 08:10 UTC); Intel names the cauldronback as its likely source (admirals.log ENT-020), not tested. One cauldronback grazes at Eltanin Prime Belt (table herds, 08:07 UTC), 120 hull (data/wildlife/node_alpha.json). Home space: no `alone`. The runner flees under 60 percent hull or when its shield is gone while the prey holds over 40 percent. Nothing sold; every good into storage. Read its RESULT line before a second run.",
+ "note": "2026-11-17 08:14 UTC (Apophis): a test with one ship of prey above 100 hull (F9: Military tests bigger prey, one ship). The reserve is short of 56,520 alloy scale with no source we read (surplus.py reserve, 08:10 UTC); Intel names the cauldronback as its likely source (admirals.log ENT-020), not tested. One cauldronback grazes at Eltanin Prime Belt (table herds, 08:07 UTC), 120 hull (data/wildlife/node_alpha.json). Home space: no `alone`. The runner flees under 60 percent hull or when its shield is gone while the prey holds over 40 percent. Nothing sold; every good into storage. Read its RESULT line before a second run. 2026-11-17 12:11 UTC (Apophis): the test is answered: four runs from 08:22 to 11:29 UTC, 0 kills, 129.9 hunter-minutes, -544 cr; the lowest hull read 80, 81 and 45 percent (data/routes/runs.jsonl): a Threshold with one Pulse Laser I does not kill a cauldronback of 120 hull and is driven off by it. Off until a drone flies two weapons or more (section 5 of the guidebook); alloy scale stays without a source of ours.",
  "place": "node_beta:eltanin_prime_belt",
  "species": [
   "cauldronback"
@@ -28,5 +28,6 @@
   "cph_per_ship": -200,
   "hours": 12,
   "last_run": "2026-11-17T09:56:31Z"
- }
+ },
+ "status": "off"
 }
