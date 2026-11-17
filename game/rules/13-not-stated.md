@@ -34,6 +34,10 @@ M = million. Split from the rulebook `SPACEMOLT.md` on 2026-11-15
   coordination between one operator's own accounts.
 - Insurance rates and policy length; prize claim-window length;
   Transit Terminal cost; ship class stats (catalog and codex only).
+- Whether an allied member may refuel from an outpost's bunker with
+  ally_fuel_access on (an outpost docks members only), and whether a
+  station's storage service opened to allies reaches the faction
+  storage or only an ally's personal storage (read 2026-11-17).
 - How long a depleted deposit takes to refill: mining.md says
   gradually, in proportion to its capacity, common ores fastest.
 
