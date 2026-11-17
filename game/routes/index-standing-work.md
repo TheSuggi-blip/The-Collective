@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 91.
+Routes: 92.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -107,3 +107,4 @@ Routes: 91.
 | [gather-okab-belt](gather-okab-belt.json) | mine | beyond the border, 4 jumps | Standing work, a test: iron and copper ore at Okab Belt (beyond the border, one jump past Hamal) into storage at Node Beta, where the craft-piping route makes them into steel plate and copper piping | up to 28 ships, needs mining_laser_i, empty hold, standing work | 16 | 48 | -320 | -400 | 2026-11-17 |
 | [gather-ruchbah-broken-glass-veil](gather-ruchbah-broken-glass-veil.json) | mine | beyond the border, 4 jumps | Standing work, a test: iron at Ruchbah Broken Glass Veil (beyond the border, one jump from The Experiment) into storage at The Experiment | up to 6 ships, needs mining_laser_i, empty hold, standing work | 3 | 48 | -170 | -210 | 2026-11-17 |
 | [gather-schedar-belt](gather-schedar-belt.json) | mine | beyond the border, 2 jumps | Standing work, a test: iron at Schedar Belt (beyond the border, one jump from Node Beta) into storage at Node Beta | up to 45 ships, needs mining_laser_i, empty hold, standing work | 396 | 45 | -340 | -440 | 2026-11-17 |
+| [gather-subra-floodlight-flats-silicon](gather-subra-floodlight-flats-silicon.json) | mine | beyond the border, 12 jumps | A test: silicon ore (with iron and copper) gathered at Floodlight Flats (Subra, lawless) into storage at The Crescent Moon (Mebsuta, two jumps) | up to 1 ships, needs mining_laser_i, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
