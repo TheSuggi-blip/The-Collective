@@ -92,7 +92,9 @@ Planned:
 
 | What | When |
 |---|---|
-| Goal of the turn: The Collective Provides paid to 30 more pilots of the fleet by the next turn (data/fleet/onetime.json: 16 at 15:35 UTC), and Trade's steady money above -4,075 cr an hour over 4 hours (hive.py briefing, SUM trader, 15:31 UTC). | read at the turn of 2026-11-17 19:30 UTC |
+| Goal of the turn: Conductive Lattice booked by 20 more pilots of the fleet (data/fleet/onetime.json: 147 at 19:40 UTC), the first RESULT lines of carry-null-matter-beta-to-nexus and sell-null-matter-at-nexus read, and Trade's steady money above -5,000 cr an hour over 4 hours (hive.py briefing, SUM trader: -9,988 at 19:31 UTC). | read at the turn of 2026-11-17 23:30 UTC |
+| Read the silver ask at Ironlight Crossroads and the energy crystal ask at Central Nexus against the chain's limits (175, 430) and its max_ships 4. | every turn |
+| Read the iron ore the reserve is short (the tool stock, view=reserve: 23,809 at 19:32 UTC); when it reaches 0, gather-okab-belt brings only copper and iron the reserve does not take, and @trade-gather is set anew on the answer to my request to the Fleet Admiral. | every turn |
 | Read Rotanev Daylight Seam's nickel (the tool system) and the mission's runs; keep max_ships 6 while the field holds 20 a pilot for the ships on it, set it back below a floor of 200. | every turn |
 | Run reservecheck.py of the trade-books skill on the trader plan and on every route of mine: no route sells a good the reserve holds, or crafts one for sale from such an input (rule F24). | every turn |
 | Read every floor beside its cheapest ask with sellgen.py scan and set it again (soma 320, palladium 270, hydrogen 30). | every turn |
