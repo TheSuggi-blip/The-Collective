@@ -26,11 +26,13 @@
    "note": "Every route here is gated: a drain or carry opens only on goods the pilot itself stores and a fresh bid (requires.stored, requires.bid); a mine route only on a deep water-ice order at Central Nexus (300 units at its best price) and with an Ice Harvester I fitted. Drains and carries need no harvester. What miners store is sold before new ice is mined."
   },
   "reserve-prism": {
-   "title": "Gather what the reserve is short of: carbon first, then iron, Prism Scatter first",
+   "title": "Gather what the reserve is short of: a loaded hold stored first, carbon, then iron, Schedar first",
    "routes": [
+    "store-hold-central-nexus",
     "gather-acubens-belt-carbon",
-    "gather-ironhollow-fading-signal",
     "gather-schedar-belt",
+    "gather-ironhollow-fading-signal",
+    "gather-ironhollow-echo-ejecta",
     "gather-gsc-0027-prism-scatter",
     "gather-hamal-crystal-bloom",
     "mine-acubens"
@@ -38,7 +40,7 @@
    "trains": [
     "mining"
    ],
-   "note": "Standing work into storage, nothing sold (orders ENT-019: silicon and carbon first, then iron). Needs the Mining Laser I. Silicon: no field we read holds it (Nexus Prime Material Harvesters reads 0 to 2 all day). Carbon: Acubens Belt, one ship, floor 60, into Node Beta. Iron: Ironhollow Fading Signal (beyond the border, into The Experiment, 5 ships) and Schedar Belt (beyond the border, into Node Beta, a one-ship test) first, then the shared fields: Prism Scatter (65% iron of what it gave up), Hamal (51%), Acubens Shadow Pocket, each closed at its floor."
+   "note": "Standing work into storage, nothing sold (orders ENT-025: silicon and carbon first, then iron). Needs the Mining Laser I. First a ship a run left loaded stores its hold at Central Nexus (store-hold-central-nexus, requires.hold). Silicon: no field we read holds it. Carbon: Acubens Belt, one ship, floor 60. Iron: Schedar Belt (beyond the border, 2 jumps, into Node Beta, 10 ships), Ironhollow Fading Signal (beyond the border, into The Experiment, 7 ships, guarded by Military), Ironhollow Echo Ejecta (a one-ship test), then the shared fields Prism Scatter, Hamal and Acubens Shadow Pocket, each closed at its floor."
   },
   "reserve-hamal": {
    "title": "Gather what the reserve is short of: carbon first, then iron, Hamal Crystal Bloom first",
