@@ -90,12 +90,11 @@ Planned:
 
 | What | When |
 |---|---|
-| Goal of the turn of 11:15 UTC, read at about 15:15 UTC: the farthest system read in each of the five directions (census-far-1 to 5), at least 40 never-read systems read, exploration's median of the scouts 3 (fleet view=levels) | next turn |
-| Read the first rows of census-far-1 to 5: the chain's legs, the fuel left at each arrival, what the far reads found; a find another division can use goes to queue.log | next turn |
-| Read the ROADS and OVERLAP lines of the intel check first; on HALT widen a far list or part two lists | every turn |
-| A survey step in census.py through fleet-build (a ship with a survey scanner surveys once per system), after one survey by hand at the frontier; then scanners on the ten explorers inside rule F12 | next turn |
-| Read the visit missions' objectives on the scout that holds them; a route per mission if a census jump counts | next turn |
-| Keep GSC-0044 and its neighbours read every hour (census-watch-gsc-0044) until the outpost stands and after | every turn |
-| Keep every Voidborn system read within the hour: census-voidborn every_minutes 30, max_ships 4; read the gaps per system every turn | every turn |
-| After the turn of 15:15 UTC: about ten explore the three regions of D4 and the roads to them again (orders ENT-036) | turn of 19:15 UTC |
+| Goal of the turn of 19:15 UTC, read at about 23:15 UTC: every system of census-north and census-south read once at least (their rows), the outpost watch's longest gap under 60 minutes (WATCH line), scanning XP gained by the five scanner readers, exploration's median 3 held and the first scout at 4 | next turn |
+| Read the first rows of census-north and census-south (reads an hour, fuel, pirates met) and name the site candidates again on fresh reads | next turn |
+| A Mining Survey Probe (180 cr) with the scanner scout at Homam: does +30 survey power resolve the faint signature | next turn |
+| Read the RESERVE line of the intel check: a scout route that sells a good the reserve keeps stores from that turn | every turn |
+| Keep GSC-0044 and its six neighbours read every hour (census-watch-gsc-0044, every 35 minutes, 4 ships) | every turn |
+| Keep every Voidborn system read within the hour: census-voidborn every_minutes 30, max_ships 4 | every turn |
+| Signal Fragments for every scout with navigation 3 (requires.skills) | every turn |
 | Read the game's changelog at every turn and name each line of game/rules/ a release makes wrong in a request to the Fleet Admiral | every turn |
