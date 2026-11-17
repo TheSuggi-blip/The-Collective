@@ -67,6 +67,7 @@
   "trade-gather": {
    "title": "Fallback: iron ore gathered into storage for the reserve when no trade or craft is open",
    "routes": [
+    "gather-okab-belt",
     "gather-hamal-crystal-bloom",
     "gather-gsc-0027-prism-scatter",
     "gather-ironhollow-echo-ejecta",
@@ -75,7 +76,7 @@
    "trains": [
     "mining"
    ],
-   "note": "Standing work (rule F8), never judged on its pay; shared fields with every division, each with its limit and iron floor. mine-pherkad-rift left this template at 2026-11-17 07:40 UTC: it gives copper only, and the fleet holds 305,256 copper against 79,044 the reserve takes (rule F31; admirals.log ENT-018). A trader on it is still offered every trade route before it."
+   "note": "2026-11-17 11:44 UTC (Mercury, orders ENT-036): gather-okab-belt leads, a one-ship test beyond the border with lift_to 8, while every home field of this list stands at its floor; its iron and copper go into Node Beta storage for craft-piping-node-beta."
   }
  }
 }
