@@ -85,10 +85,12 @@ Planned:
 
 | What | When |
 |---|---|
-| Goal of the turn of 07:15 UTC, read at about 11:15 UTC: exploration's median of the scouts from 2 to 3 (fleet view=levels) and 40 of the 97 never-read systems of census-roads read (the ROADS line) | next turn |
-| Read the ROADS line of the intel check first; on HALT widen census-roads to the never-read systems of 15 jumps, nearest first, strongholds out | every turn |
-| The survey test: after fit-survey-scanner-central-nexus has its RESULT line, one survey_system by hand in a system with known fields; a survey step for census.py through fleet-build only if it shows a place or an ore get_poi does not | next turn |
-| Read census-roads-chain's first rows against census-roads per system; chain onto census-roads if a trip reads two or three systems in less time a system | when it has rows |
-| Keep every Voidborn system read within the hour: census-voidborn every_minutes 30, max_ships 4; read the gaps per system every turn and change the threshold only on a measured gap over 60 minutes | every turn |
-| Signal Fragments for every scout with navigation 3 (requires.skills) | every turn |
+| Goal of the turn of 11:15 UTC, read at about 15:15 UTC: the farthest system read in each of the five directions (census-far-1 to 5), at least 40 never-read systems read, exploration's median of the scouts 3 (fleet view=levels) | next turn |
+| Read the first rows of census-far-1 to 5: the chain's legs, the fuel left at each arrival, what the far reads found; a find another division can use goes to queue.log | next turn |
+| Read the ROADS and OVERLAP lines of the intel check first; on HALT widen a far list or part two lists | every turn |
+| A survey step in census.py through fleet-build (a ship with a survey scanner surveys once per system), after one survey by hand at the frontier; then scanners on the ten explorers inside rule F12 | next turn |
+| Read the visit missions' objectives on the scout that holds them; a route per mission if a census jump counts | next turn |
+| Keep GSC-0044 and its neighbours read every hour (census-watch-gsc-0044) until the outpost stands and after | every turn |
+| Keep every Voidborn system read within the hour: census-voidborn every_minutes 30, max_ships 4; read the gaps per system every turn | every turn |
+| After the turn of 15:15 UTC: about ten explore the three regions of D4 and the roads to them again (orders ENT-036) | turn of 19:15 UTC |
 | Read the game's changelog at every turn and name each line of game/rules/ a release makes wrong in a request to the Fleet Admiral | every turn |
