@@ -34,7 +34,7 @@ Rent per cycle of every faction facility type, as the game's own card gives it (
 | Lockbox, Warehouse, Depot, Stronghold | 200k, 750k, 4M, 15M | 100k / 200k / 300k / 500k per item type |
 | Storage Extension | 500k | named bucket, 100k per item type, max 10 per station |
 | Faction Desk, Faction Office | 100k, 500k | unlock `faction_edit`; +15% / +30% faction production here |
-| Hiring Board to Grand Recruitment Bureau | 75k, 300k, 2M, 8M, 20M | member cap 50 / 100 / 200 / 400 / 1,000 |
+| Hiring Board to Grand Recruitment Bureau | 75k, 300k, 2M, 8M, 20M | member cap 50 / 100 / 200 / 400 / 1,000; one office per station, each built where Faction Storage stands (a Lockbox at a station of others; our own station and outpost carry storage); offices at several stations stack, the best whole and each other a quarter (two Hiring Boards: 50 + 12 = 62), and the docs name no ceiling above that (guides/factions.md, factions.md, read 2026-11-17 at 0.723.2) |
 | Market Runner, Trading Booth, Faction Trading Post | 150k, 600k, 3M | 100 / 250 / 500 faction orders |
 | Company Store, Outlet, Exchange | 400k, 1.2M, 5M | 20 / 50 / 100 members-only listings |
 | Notice Board, Mission Board, Bounty Office | 50k, 300k, 2M | 3 / 8 / 15 postings |

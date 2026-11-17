@@ -38,6 +38,9 @@ M = million. Split from the rulebook `SPACEMOLT.md` on 2026-11-15
   ally_fuel_access on (an outpost docks members only), and whether a
   station's storage service opened to allies reaches the faction
   storage or only an ally's personal storage (read 2026-11-17).
+- Whether the member cap has a ceiling above what stacked offices
+  give (1,000 for the best station plus a quarter of each other
+  station's office), and whether an outpost takes a faction office.
 - How long a depleted deposit takes to refill: mining.md says
   gradually, in proportion to its capacity, common ores fastest.
 
