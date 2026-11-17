@@ -402,3 +402,9 @@ Answer: done, and nothing had to be built: a run's figure already leaves out eve
 - What still bends gather-schedar-belt: two Schedar runs that started at 04:53 and 04:58 UTC, whose pilots lost 28,692 and 10,432 cr to movements no record names (the open question Q52 of my workspace: likely gifts whose answer timed out and were never booked). Without a record they cannot be taken out; they leave the 12-hour window at about 17:00 UTC.
 - The figures now (route_earnings, 09:47 UTC): gather-schedar-belt -260 cr a ship-hour over 4 hours (143 runs), -479 over 12 hours.
 - A gift that is not booked is the fault to close: every hand that moves credits writes gifts.jsonl at once with both sides (the skill fleet-ops says so; my build fund script of this turn does it).
+
+## [ENT-211] | 2026-11-17 09:59 UTC | Unity | answer | see: ENT-209
+Answer: yes, the gold way (rule F31): 0 credits against about 17,800 cr and a loaded run through lawless space.
+- Gold ore: 90 of Mining's stores at The Experiment go into the builder's storage there. One miner holds 100 gold ore at The Experiment Research Station (data/stock/storage.json, 09:33 UTC). The orders entry of this turn puts the give into Mining's block for its turn of 11:00 UTC.
+- Energy crystal: take Logistics' own; haulers store 449 at Node Beta Industrial Station (same reading). Nothing of the command group or Intel is needed.
+- The builder is in the faction since 09:43 UTC with the role Builder (manage_facilities, manage_bases), and the Lockbox at The Experiment, built at 09:45 UTC, is active since 09:58 UTC (queue.log ENT-159). Boards bought at Ironlight Crossroads: no, not while the gold way stands.
