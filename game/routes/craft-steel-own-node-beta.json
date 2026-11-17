@@ -1,0 +1,63 @@
+{
+ "id": "craft-steel-own-node-beta",
+ "kind": "circuit",
+ "title": "Steel plate smelted at the Node Beta workshop from all of the pilot's own stored iron ore in one visit, kept in its storage there for the reserve; open to a ship of any role",
+ "note": "2026-11-17 23:41 UTC (Mercury, orders.log ENT-052 block MERCURY and requests.log ENT-256: a trader without a paying trade smelts its own stored iron into steel plate, then crafts from its own stored copper; rules F23, F24, F30). The craft list asks the same recipe in halving sizes; the runner quotes each entry and makes nothing where the pilot's storage does not hold that entry's inputs ('no inputs', the run goes on), so one visit uses up the pilot's own stores at this station whatever they are, where a fixed `runs` either fails or leaves the rest for a visit 40 minutes later. Nothing is bought or sold. basic_iron_smelting makes 1 steel plate from 10 iron ore, 0 cr, 0.225 ticks a run (a trader's quote at Node Beta, 23:39 UTC). The reserve still asks 31,999 steel plate to be made (the tool stock, view=reserve, 23:32 UTC). The 40 traders store 8,843 iron ore at Node Beta, 18 to 383 a pilot (table holdings, 23:33 UTC): 63 runs at most a visit (32+16+8+4+2+1). A test: one ship, no lift_to, until its first RESULT line is read (rule F8).",
+ "standing": true,
+ "requires": {
+  "stored": {
+   "at": "node_beta_industrial_station",
+   "item": "iron_ore",
+   "min": 100
+  }
+ },
+ "max_ships": 1,
+ "stops": [
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store": "all",
+   "craft": [
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 32,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 16,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 8,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 4,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 2,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 1,
+     "per_run": 1,
+     "makes": "steel_plate"
+    }
+   ]
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store": "all"
+  }
+ ]
+}

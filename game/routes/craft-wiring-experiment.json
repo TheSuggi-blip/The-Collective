@@ -1,0 +1,65 @@
+{
+ "id": "craft-wiring-experiment",
+ "kind": "circuit",
+ "title": "Copper wiring made at the The Experiment workshop from all of the pilot's own stored copper ore in one visit, kept in its storage there; the trader's crafting work once the reserve's iron is met",
+ "note": "2026-11-17 23:41 UTC (Mercury, orders.log ENT-052 block MERCURY and requests.log ENT-256: a trader without a paying trade smelts its own stored iron into steel plate, then crafts from its own stored copper; rules F23, F24, F30). The craft list asks the same recipe in halving sizes; the runner quotes each entry and makes nothing where the pilot's storage does not hold that entry's inputs ('no inputs', the run goes on), so one visit uses up the pilot's own stores at this station whatever they are, where a fixed `runs` either fails or leaves the rest for a visit 40 minutes later. Nothing is bought or sold. basic_copper_processing makes 1 copper wiring from 8 copper ore, 0 cr, 0.26 to 0.28 ticks a run (traders' quotes at Synchrony Hub, 23:37 to 23:38 UTC); the twin at Synchrony Hub gave +270 crafting XP for 20 runs (2026-11-17 19:47 UTC). Copper ore is surplus: 466,155 held, 6,312 taken by the reserve, 71,184 held back (the tool stock, view=reserve, 23:32 UTC); the wiring is kept, never sold (rule F24: all of it is held back for other recipes). 38 traders store 8,285 copper ore at The Experiment, 64 to 463 a pilot (table holdings, 23:33 UTC): 63 runs at most a visit. A test: one ship, no lift_to, until its first RESULT line is read (rule F8).",
+ "standing": true,
+ "requires": {
+  "stored": [
+   {
+    "at": "the_experiment_research_station",
+    "item": "copper_ore",
+    "min": 80
+   }
+  ]
+ },
+ "max_ships": 1,
+ "stops": [
+  {
+   "at": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+   "store": "all",
+   "craft": [
+    {
+     "recipe": "basic_copper_processing",
+     "runs": 32,
+     "per_run": 1,
+     "makes": "copper_wiring"
+    },
+    {
+     "recipe": "basic_copper_processing",
+     "runs": 16,
+     "per_run": 1,
+     "makes": "copper_wiring"
+    },
+    {
+     "recipe": "basic_copper_processing",
+     "runs": 8,
+     "per_run": 1,
+     "makes": "copper_wiring"
+    },
+    {
+     "recipe": "basic_copper_processing",
+     "runs": 4,
+     "per_run": 1,
+     "makes": "copper_wiring"
+    },
+    {
+     "recipe": "basic_copper_processing",
+     "runs": 2,
+     "per_run": 1,
+     "makes": "copper_wiring"
+    },
+    {
+     "recipe": "basic_copper_processing",
+     "runs": 1,
+     "per_run": 1,
+     "makes": "copper_wiring"
+    }
+   ]
+  },
+  {
+   "at": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+   "store": "all"
+  }
+ ]
+}
