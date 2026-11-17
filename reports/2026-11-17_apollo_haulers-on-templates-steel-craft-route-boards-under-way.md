@@ -183,7 +183,7 @@ Inside orders ENT-020, decided by me:
   from the saved file. A `--short` form that prints my block of the orders and not every
   Admiral's would fit.
 - Templates (`plan.py template`, `use`, `set` with `@`): worked; four templates and 40 ships
-  in five calls, `plan.py check` PASS, and the role page written. A template change applied
+  in seven calls, `plan.py check` PASS, and the role page written. A template change applied
   the plan at once (00:18:49 UTC).
 - `fill` with `action=lift`: worked in one call (`max_ships 1 -> 3`, commit b276fc1). Its
   gate counts a ship on `park` as at work: PASS at 00:43 UTC while one hauler parked. A line
