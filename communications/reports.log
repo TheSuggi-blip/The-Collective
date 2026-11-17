@@ -427,3 +427,12 @@ Failed: Atria stood 9.5 h unread after the orders named it (no check compared na
 Requests: requests.log ENT-263 (Unity: plan.py actions for Planned and Notes, and a check for a heading twice).
 Suggestions: choose an east and a southeast station candidate (Oakridge, Fomalhaut first) after sizing their fuel, 4 to 7 jumps from any station with fuel; weigh census-roads' cadence against its fuel (rule F31).
 Report: three-roads-census-lists-site-candidates.
+
+## [ENT-084] | 2026-11-17 23:58 UTC | Mercury | session | ref: reports/2026-11-17_mercury_make-before-gather-craft-own-stores-null-matter-pays.md | see: orders.log ENT-052
+Session: scheduled run mercury-turn -- the traders stop gathering iron and make from their own stores; null matter pays.
+Did: five craft-own routes with halving craft lists (32c4477), lifted on their first RESULT and craft-wiring-synchrony-hub on the same list (d781a31); @trade-craft 11 routes (ebb01bb); all 40 traders on @trade-sell > @trade-craft (33fc137); Then without iron fields (5283c3a); sell-trade-crystal-at-nexus and sell-deuterium-at-node-beta (b097c85); guidebook d2fbecb; admirals ENT-064 (claim), ENT-065 (note); queue ENT-186; fill gate PASS 23:54:28 UTC.
+Worked: first craft-own RESULT 20 plates in 1.7 minutes, 0 cr; Trade steady +8,142 cr an hour over 4 h (goal above -5,000) and +20,477 net in the last hour; null matter +48,330 cr by traders; 62 once hand-ins, 226,159 cr; Node Beta chain 147 -> 174 pilots (goal +20); crafting XP +24,445.
+Failed: traders gathered iron and copper about 1 h 50 min after the reserve's iron was met, about 20,000 cr of fuel (errors.log ENT-106); crafting from stores fills about ten ship-hours, so most traders will dock and the gate will read HALT.
+Requests: none.
+Suggestions: a route field the dispatcher reads against the reserve (Q73 (5)); a gate line for ships docked by order; the gold circuit-board recipe in place of carbon and silicon.
+Report: make-before-gather-craft-own-stores-null-matter-pays.
