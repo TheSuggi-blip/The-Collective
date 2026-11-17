@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 14.
+Routes: 17.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -30,3 +30,6 @@ Routes: 14.
 | [voidborn-first-hunt-schedar](voidborn-first-hunt-schedar.json) | circuit | beyond the border, 2 jumps | First Hunt: Belt-Grazers: 1,000 cr once and 50 Weapons XP; three belt-grazers at Schedar Belt (lawless, one jump past GSC-0027) | once per pilot, up to 1 ships, empty hold, off | 27 | 10 | 20 | one-time | 2026-11-16 |
 | [hunt-dimming-pocket-veil-ray](hunt-dimming-pocket-veil-ray.json) | hunt | beyond the border, 4 jumps | veil_ray at dimming_pocket; loot sold at Node Beta Industrial Station | up to 1 ships, empty hold, off | TBD | TBD | TBD | TBD | -- |
 | [hunt-test-amberfall-chlorophage](hunt-test-amberfall-chlorophage.json) | hunt | beyond the border, 5 jumps | Yield test: chlorophage at Amberfall Emission Nebula (lawless); does a kill drop caustic sac | up to 1 ships, empty hold, off | 5 | 20 | 220 | 660 | 2026-11-17 |
+| [mine-floodlight-flats](mine-floodlight-flats.json) | mine | beyond the border, 12 jumps | Floodlight Flats: iron_ore, copper_ore, silicon_ore, neodymium_ore; sold at Node Gamma Relay Station | up to 1 ships, empty hold, off | TBD | TBD | TBD | TBD | -- |
+| [mine-long-errand-band](mine-long-errand-band.json) | mine | beyond the border, 10 jumps | Long Errand Band: nickel_ore; sold at Ironlight Crossroads | up to 1 ships, empty hold, off | TBD | TBD | TBD | TBD | -- |
+| [mine-zubenelhakrabi-crystal-sand](mine-zubenelhakrabi-crystal-sand.json) | mine | beyond the border, 11 jumps | Zubenelhakrabi Crystal Sand: iron_ore, copper_ore, silicon_ore; sold at Node Gamma Relay Station | up to 1 ships, empty hold, off | TBD | TBD | TBD | TBD | -- |

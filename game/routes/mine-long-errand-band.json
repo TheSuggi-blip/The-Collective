@@ -2,7 +2,7 @@
  "id": "mine-long-errand-band",
  "kind": "mine",
  "title": "Long Errand Band: nickel_ore; sold at Ironlight Crossroads",
- "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 572 cr per ship-hour, not a measurement. A test: one ship. Added as a test by fill.py on 2026-11-17 11:14 UTC (Zero): one ship until its first RESULT line is read.",
+ "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 572 cr per ship-hour, not a measurement. A test: one ship. Added as a test by fill.py on 2026-11-17 11:14 UTC (Zero): one ship until its first RESULT line is read. 2026-11-17 11:17 UTC (Zero): off, and out of the miner plan: it sells nickel ore, short in the reserve (rule F24; the tool stock view=reserve, 11:05 UTC: nickel short 17,228), and The Collective Provides asks every pilot to mine 20 nickel itself (rule F35): the field is worth more mined for that mission than sold at 12 cr. One run started at 11:15 UTC was stopped at once by the host stop file, 0 cr.",
  "belt": "jadecove:long_errand_band",
  "station": "lhs_1140:0321b3e4406021575337b7be26e53dd7:784309214f105860a16a0c100a70eb14",
  "minutes": 90,
@@ -15,5 +15,6 @@
  ],
  "requires": {
   "empty_hold": true
- }
+ },
+ "status": "off"
 }

@@ -2,7 +2,7 @@
  "id": "mine-zubenelhakrabi-crystal-sand",
  "kind": "mine",
  "title": "Zubenelhakrabi Crystal Sand: iron_ore, copper_ore, silicon_ore; sold at Node Gamma Relay Station",
- "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 1388 cr per ship-hour, not a measurement. A test: one ship. Added as a test by fill.py on 2026-11-17 11:14 UTC (Zero): one ship until its first RESULT line is read.",
+ "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 1388 cr per ship-hour, not a measurement. A test: one ship. Added as a test by fill.py on 2026-11-17 11:14 UTC (Zero): one ship until its first RESULT line is read. 2026-11-17 11:17 UTC (Zero): off, and out of the miner plan: it sells silicon ore and iron ore, both short in the reserve (rule F24: nothing of the reserve is sold; the tool stock view=reserve, 11:05 UTC: silicon short 52,871, iron 195,948), and its station is 11 jumps from the field. A silicon test here stores, on a hull with a bigger hold, at a station two jumps away. One run started at 11:15 UTC was stopped at once by the host stop file, 0 cr.",
  "belt": "zubenelhakrabi:zubenelhakrabi_crystal_sand",
  "station": "node_gamma:node_gamma_relay_station:node_gamma_relay_station",
  "minutes": 90,
@@ -23,5 +23,6 @@
  ],
  "requires": {
   "empty_hold": true
- }
+ },
+ "status": "off"
 }
