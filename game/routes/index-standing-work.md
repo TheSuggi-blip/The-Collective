@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 93.
+Routes: 94.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -103,6 +103,7 @@ Routes: 93.
 | [gather-garnet-belt](gather-garnet-belt.json) | mine | beyond the border, 5 jumps | Standing work, a test: iron at Garnet Belt (beyond the border, two jumps from The Experiment) into storage there | up to 29 ships, needs mining_laser_i, empty hold, standing work | 114 | 46 | -320 | -410 | 2026-11-17 |
 | [gather-gj-3470-dewfall-fray](gather-gj-3470-dewfall-fray.json) | mine | beyond the border, 4 jumps | Standing work, a test: iron and copper ore at GJ 3470 Dewfall Fray (beyond the border, one jump past Hamal) into storage at Node Beta, for the reserve and for craft-piping-node-beta | up to 13 ships, needs mining_laser_i, empty hold, standing work | 33 | 50 | -280 | -340 | 2026-11-17 |
 | [gather-glasslight-shoal-silicon](gather-glasslight-shoal-silicon.json) | mine | beyond the border, 10 jumps | A test: silicon ore gathered at Glasslight Shoal (Clearwater, lawless) into storage at Node Beta for the faction's circuit boards | up to 1 ships, empty hold, standing work | 4 | 98 | -760 | -460 | 2026-11-17 |
+| [gather-goldcrest-gold](gather-goldcrest-gold.json) | mine | beyond the border, 7 jumps | A test: gold ore gathered at The Gold Crest (Goldcrest, lawless) into storage at Synchrony Hub (five jumps) | up to 1 ships, needs mining_laser_i, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [gather-ironhollow-echo-ejecta](gather-ironhollow-echo-ejecta.json) | mine | beyond the border, 4 jumps | Standing work, a test: iron at Ironhollow Echo Ejecta (beyond the border) into storage at The Experiment | up to 35 ships, needs mining_laser_i, empty hold, standing work | 333 | 47 | -170 | -220 | 2026-11-17 |
 | [gather-ironhollow-fading-signal](gather-ironhollow-fading-signal.json) | mine | beyond the border, 4 jumps | Standing work, a test: iron at Ironhollow Fading Signal (beyond the border) into storage at The Experiment | up to 20 ships, needs mining_laser_i, empty hold, standing work | 214 | 48 | -190 | -230 | 2026-11-17 |
 | [gather-okab-belt](gather-okab-belt.json) | mine | beyond the border, 4 jumps | Standing work, a test: iron and copper ore at Okab Belt (beyond the border, one jump past Hamal) into storage at Node Beta, where the craft-piping route makes them into steel plate and copper piping | up to 42 ships, needs mining_laser_i, empty hold, standing work | 124 | 47 | -320 | -400 | 2026-11-17 |

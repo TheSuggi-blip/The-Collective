@@ -1,0 +1,18 @@
+{
+ "id": "gather-goldcrest-gold",
+ "kind": "mine",
+ "title": "A test: gold ore gathered at The Gold Crest (Goldcrest, lawless) into storage at Synchrony Hub (five jumps)",
+ "note": "Written by Zero, 2026-11-17 19:20 UTC (orders.log ENT-042, block ZERO: gather what the reserve is short of; rules F3, F13, F24). The reserve is short of 15,057 gold ore and holds 1,683 (the tool stock, view=reserve, 19:13 UTC); iron is short only 29,329 now and Mining stores +6,261 iron an hour (hive.py flow Zero, 4 h to 19:00 UTC). The Gold Crest is a belt of gold alone, richness 85, capacity 150,000: it read 13,667 to 17,126 on 2026-11-15/16, fell to 569 by 2026-11-17 10:32 UTC under other players' mining and grew back to 3,555 (14:07) and 6,559 (17:44 UTC), about 830 an hour net (table readings). Goldcrest lies 7 jumps from Nexus Prime, 5 from Synchrony Hub; two stations of the Ironlight Combine stand in the system, not read by our census, so the load goes to Synchrony. No pirate on our record in Goldcrest (observations, kind pirate, 19:18 UTC). Stores everything, sells nothing (rule F24). One ship with an empty hold until its first RESULT line (rules F8, F13).",
+ "belt": "goldcrest:the_gold_crest",
+ "station": "synchrony:synchrony_hub:synchrony_hub",
+ "minutes": 90,
+ "max_ships": 1,
+ "standing": true,
+ "min_left": {
+  "gold_ore": 500
+ },
+ "requires": {
+  "module": "mining_laser_i",
+  "empty_hold": true
+ }
+}
