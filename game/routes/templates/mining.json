@@ -44,24 +44,22 @@
    "note": "Orders ENT-050, block ZERO: iron and copper no more while the reserve holds them; P2: stored iron becomes steel plate. The iron gather fields left this template on 2026-11-17 23:20 UTC (Zero)."
   },
   "reserve-hamal": {
-   "title": "Gather what the reserve is short of: a loaded hold stored first, carbon, then iron, Ironhollow first",
+   "title": "Make, then gather what the reserve lacks, the short-ore fields in the other order so the division is spread",
    "routes": [
     "store-hold-central-nexus",
+    "craft-steel-experiment",
+    "craft-steel-node-beta",
     "gather-acubens-belt-carbon",
-    "gather-ironhollow-fading-signal",
-    "gather-schedar-belt",
-    "gather-garnet-belt",
-    "gather-ironhollow-echo-ejecta",
-    "gather-ruchbah-broken-glass-veil",
-    "gather-achernar-belt",
-    "gather-hamal-crystal-bloom",
-    "gather-gsc-0027-prism-scatter",
-    "mine-acubens"
+    "gather-jadecove-nickel",
+    "gather-subra-floodlight-flats-silicon",
+    "gather-goldcrest-gold"
    ],
    "trains": [
-    "mining"
+    "mining",
+    "crafting",
+    "refining"
    ],
-   "note": "As reserve-prism with Ironhollow Fading Signal before Schedar and Hamal before Prism Scatter, so the division is spread over the iron fields. Needs the Mining Laser I."
+   "note": "Orders ENT-050, block ZERO: iron and copper no more while the reserve holds them; P2: stored iron becomes steel plate. The iron gather fields left this template on 2026-11-17 23:20 UTC (Zero)."
   }
  }
 }
