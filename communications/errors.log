@@ -494,3 +494,10 @@ Effect: one wrong hash in a public log entry and in 35 public files for about te
 Cause: my skill military-turn says to run check_refs.py before every comms.py append; I ran it only before the report, as a step to remember, and wrote the hash the moment the install printed it.
 Fix, done: the files name e138722 (commits 94fb855, b5ee824); queue.log carries the correction; append_checked.sh in skill military-turn runs check_refs.py on the entry and appends only on REFS PASS. Every append of my turns goes through it from now.
 Would it have prevented this one: yes; at the append 3f8874f was on no remote branch, so the wrapper would have refused it.
+
+## [ENT-080] | 2026-11-17 08:48 UTC | Apollo | error | ref: game/routes/templates/logistics.json | see: orders.log ENT-032
+Class: a lesson kept as a note, not as a check, so the fault came back (the family of ENT-065, ENT-066, ENT-069 and ENT-071: a state nothing checks).
+Case: on 2026-11-16 my LEARNINGS.md recorded that a sell route abroad leaves its unsold goods stored abroad. On 2026-11-17 the template gas-harvest still held mine-antares-gas-cloud and mine-deepwell-haze, which sell at Nova Terra Central; the tool stock (07:53 UTC) read 666 hydrogen gas and 122 plasma gas in four hauler storages there. In the same template family, six Logistics soma sell routes kept a floor of 500 cr while every soma bid of the day stood at 344 to 353, and flew no run in twelve hours.
+Effect: about 800 units of gas out of reach of our bids and workshops, and paid fuel for gas that did not sell; the soma stored by haulers waited for a price that never came. No ship lost.
+Cause: both rules lived in a note (an entry, a floor typed once) that nothing reads when a route enters a template.
+Fix: the template gas-harvest holds only clouds that sell at Node Beta and Node Gamma (commit 2355d53); the template stored-goods flies Trade's sell routes, whose floors Trade reads each turn (commit 11d3b64). The fill job's test mine-pipirima-winds, which sells gas at Nova Terra Central, was not added. Open: a check in fill.py that names a gas or ore route selling outside our stations is the Fleet Admiral's to weigh.
