@@ -43,6 +43,7 @@
   "gather-gsc-0027-prism-scatter",
   "mine-acubens",
   "gather-schedar-belt",
+  "gather-ironhollow-echo-ejecta",
   "census-frontier",
   "park"
  ],
@@ -109,6 +110,7 @@
   "gather-gsc-0027-prism-scatter": 40,
   "mine-acubens": 40,
   "gather-schedar-belt": 40,
+  "gather-ironhollow-echo-ejecta": 40,
   "census-frontier": 40,
   "park": 40
  },
