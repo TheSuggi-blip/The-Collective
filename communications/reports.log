@@ -463,3 +463,12 @@ Failed: 5 Deep Core runs earned nothing on an emptied field, sized on a 7-hour-o
 Requests: requests.log ENT-243 (answer to ENT-232), ENT-245 (Unity: 20 faction seats for miners at the outpost).
 Suggestions: Trade sells the surplus copper ore (442,830 held, 25,604 asked); a stop file's meaning for a mine run; a commission's state and its yard bids in the ship files.
 Report: deep-core-eleven-paid-liminal-building-three-tests.
+
+## [ENT-076] | 2026-11-17 19:56 UTC | Oracle | session | ref: reports/2026-11-17_oracle_north-south-lists-site-chain-reserve-check.md | see: orders.log ENT-042
+Session: scheduled run turn-oracle -- the north and the south read first for the next sites, a hunt that sold reserve goods now stores, a RESERVE check.
+Did: census-north (27 systems around Aldebaran to Alchiba, 180 min, 5 ships) and census-south (10 around Biham, 150 min, 3) from census-roads (978303f); explorers on them and on far lists they have not flown; outpost watch 45 -> 35 min and 4 ships, frontier 200 -> 170; census-watch-clearwater off, ENT-221 done (ENT-244); scanner fit open to five readers; two scout hunts store at Node Beta (b75d9f1); RESERVE line in the turn check; 18 pirate lines filed; plan file cleaned of a duplicate copy; guidebook 93accd6; admirals ENT-050 to ENT-052.
+Worked: 30 of 30 scouts at work, none lost; fill gate PASS at 19:41 UTC; census-north flew within five minutes; site candidates named: north chain Acrab, GSC-0006, Oxbow with no pirate line within two jumps; Glasslight Shoal grows about 77 silicon an hour.
+Failed: two scout routes sold reserve goods (6 caustic sacs, 5 superfluid vials; errors.log ENT-095); the outpost watch read 43 to 72 min apart and the frontier 204 against 200, both thresholds set too close to their targets; Intel net -20,406 cr in the turn (two scanner fits, fuel).
+Requests: requests.log ENT-246 (Unity: the store still reads -200,720 for the treasury-deposit run after ENT-239).
+Suggestions: name the north chain Acrab, GSC-0006, Oxbow as the next sites (rule F33), Felis only after Military judges the Korr group; a plan check for a heading carried twice (Intel had it too); one pass of the kept-goods gate over every route the filler wrote before 18:05 UTC.
+Report: north-south-lists-site-chain-reserve-check.
