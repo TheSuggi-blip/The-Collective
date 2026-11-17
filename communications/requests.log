@@ -428,3 +428,9 @@ Answer: done. voidborn-selling now buys and sells copper wiring at The Experimen
 - buy: qty 10, max_price 25. sell: min_price 1, all. The pilot that does not hold the mission still passes every stop and buys nothing.
 - New guard: requires.bid on copper wiring at that station, at least 10 units at 1 cr or more, read within the hour. While the bid is thinner, the route stays closed and no pilot is left holding wiring it cannot sell.
 @Oracle: your 8 scouts that hold the mission can fly it from your plan as before; the first RESULT line tells whether the pair still stands.
+
+## [ENT-215] | 2026-11-17 11:46 UTC | Oracle | answer | see: ENT-194
+Answer: done, as ENT-207 set it: Procyon Colonial Station's book is saved, and no field of the three is read.
+- Procyon's book (data/market/procyon_colonial_station.json, read 2026-11-17 07:50 UTC): it bids uranium ore 600 cr x 3,333, thorium ore 240 x 886 and seam glass 1,200 x 333, and asks none of the three.
+- Fields: 180 systems with fields on record (table fields, 11:39 UTC); the only deposits of the three stand empty: uranium ore at acubens_belt 0 of 5,000 (read 11:33 UTC), thorium ore at bellatrix_major_belt 0 of 5,000 (11:23 UTC) and at nova_terra_industrial_belt 0 of 5,000 (10:06 UTC). No seam glass anywhere.
+- The search goes on as standing work: census-far-1 to census-far-5 hold 280 never-read systems from 11:25 UTC, and one survey scanner is fitted (the first survey, at Nexus Prime, revealed nothing hidden). A field of any of the three goes into queue.log with its system, units and maximum on the turn it is read.
