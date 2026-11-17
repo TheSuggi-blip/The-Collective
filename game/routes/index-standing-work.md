@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 104.
+Routes: 105.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -44,6 +44,7 @@ Routes: 104.
 | [mine-bellatrix](mine-bellatrix.json) | mine | home space | Wait at Bellatrix Major Belt beside Node Gamma station for whatever regrows (thorium, palladium, iridium, carbon) | up to 1 ships, standing work | TBD | TBD | TBD | TBD | -- |
 | [mine-gsc-seep](mine-gsc-seep.json) | mine | home space | Iron and copper at GSC-0027 Spacetime Seep; ore into storage at Node Beta | up to 16 ships, standing work | TBD | TBD | TBD | TBD | -- |
 | [mine-pherkad-rift](mine-pherkad-rift.json) | mine | home space | Copper and iron at Pherkad Null Rift; ore into storage at Synchrony Hub | up to 125 ships, needs mining_laser_i, standing work | TBD | TBD | TBD | TBD | -- |
+| [census-east](census-east.json) | census | beyond the border, 14 jumps | Read the east road beyond GSC-0044 and Intercrus for its sites: Nembus, Cervantes, Oakridge, Miaplacidus, Aldhibah, Tidewater, Ross 154 and the systems between, every three hours | up to 3 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [census-far-1](census-far-1.json) | census | beyond the border, 27 jumps | Explore far, direction 1 of 5: the never-read systems of one fifth of the map, the farthest first (summervale at 21 jumps), with a chain of up to three more on the way home | up to 3 ships, empty hold | 43 | 23 | -240 | -720 | 2026-11-17 |
 | [census-far-2](census-far-2.json) | census | beyond the border, 26 jumps | Explore far, direction 2 of 5: the never-read systems of one fifth of the map, the farthest first (alcor at 25 jumps), with a chain of up to three more on the way home | up to 2 ships, empty hold | 42 | 25 | -210 | -710 | 2026-11-17 |
 | [census-far-3](census-far-3.json) | census | beyond the border, 29 jumps | Explore far, direction 3 of 5: the never-read systems of one fifth of the map, the farthest first (gsc_0032 at 26 jumps), with a chain of up to three more on the way home | up to 2 ships, empty hold | 35 | 9 | -230 | -760 | 2026-11-17 |
@@ -51,9 +52,9 @@ Routes: 104.
 | [census-far-5](census-far-5.json) | census | beyond the border, 24 jumps | Explore far, direction 5 of 5: the never-read systems of one fifth of the map, the farthest first (praecipua at 24 jumps), with a chain of up to three more on the way home | up to 2 ships, empty hold | 43 | 7 | -150 | -660 | 2026-11-17 |
 | [census-frontier](census-frontier.json) | census | beyond the border, 7 jumps | Read one lawless system around our space whole: deposits, creatures, stations, order books, mission boards | up to 12 ships, empty hold | 119 | 14 | -140 | -620 | 2026-11-16 |
 | [census-guard-ice](census-guard-ice.json) | census | beyond the border, 7 jumps | Guard by census: read whole, every hour, the lawless systems where our miners work | up to 2 ships, empty hold | 68 | 13 | -140 | -610 | 2026-11-16 |
-| [census-north](census-north.json) | census | beyond the border, 15 jumps | Explore the north for the next two base sites: Aldebaran, Yildun, Hawthorne, Alchiba and every system within two jumps of them, read twice a turn | up to 5 ships, empty hold | 24 | 11 | -140 | -790 | 2026-11-17 |
-| [census-roads](census-roads.json) | census | beyond the border, 14 jumps | Explore: the regions of the base sites and the roads to them (south, east, north), then every never-read system out to 14 jumps, nearest first | up to 10 ships, empty hold | 96 | 26 | -300 | -690 | 2026-11-17 |
-| [census-south](census-south.json) | census | beyond the border, 9 jumps | Explore the south for the next base site: Biham and every system within two jumps of it, read twice a turn | up to 3 ships, empty hold | 10 | 10 | -130 | -750 | 2026-11-17 |
+| [census-north](census-north.json) | census | beyond the border, 15 jumps | Read the north road and the north sites: Atria (the north outpost), the road by Regor, Groombridge 34, Chalawan and Rasalhague to Yildun (the station candidate), Aldebaran, Hawthorne, Alchiba and their neighbours, every three hours | up to 6 ships, empty hold | 24 | 11 | -140 | -790 | 2026-11-17 |
+| [census-roads](census-roads.json) | census | beyond the border, 17 jumps | Explore: the regions of the base sites and the roads to them (south, east, north), then every never-read system out to 14 jumps, nearest first | up to 10 ships, empty hold | 96 | 26 | -300 | -690 | 2026-11-17 |
+| [census-south](census-south.json) | census | beyond the border, 12 jumps | Read the southeast road for its sites: Biham and the systems around it, and beyond it Alnilam, Groombridge 1618, Pleione, Yed Posterior and Fomalhaut, every 150 minutes | up to 4 ships, empty hold | 10 | 10 | -130 | -750 | 2026-11-17 |
 | [census-watch-gsc-0044](census-watch-gsc-0044.json) | census | beyond the border, 7 jumps | Watch the first outpost site: GSC-0044 and its six neighbours read every hour (who is there, pirates, fields) | up to 4 ships, empty hold | 77 | 15 | -170 | -740 | 2026-11-17 |
 | [census-worked](census-worked.json) | census | beyond the border, 10 jumps | Read the places our routes use beyond home twice in a turn: deposits, creatures, order books, mission boards | up to 6 ships, empty hold | 121 | 16 | -190 | -710 | 2026-11-17 |
 | [guard-achernar-belt](guard-achernar-belt.json) | guard | beyond the border, 4 jumps | Guard at Achernar Belt while ships of ours gather there; docks at The Experiment | up to 1 ships, empty hold, standing work | 13 | 2 | -30 | -100 | 2026-11-17 |
