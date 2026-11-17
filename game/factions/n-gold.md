@@ -15,7 +15,7 @@ updated: 2026-11-17
 # Golden Age Compact [GOLD]
 
 A player faction with 1 base(s) in 1 system(s); the nearest to Nexus Prime is 4 jump(s) away, in GSC-0041 (`gsc_0041`).
-Pilots of it in our space in the last 24 hours: 2.
+Pilots of it in our space in the last 24 hours: 3.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 2.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 16 | Public event stream |
+| Pilots carrying the tag on the public event stream | 17 | Public event stream |
 
 ## Bases
 
@@ -41,6 +41,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
 | Iron Prospector | Acubens (`acubens`) | 0 | liminal |
+| Johannes Kepler | Nexus Prime (`nexus_prime`) | 0 | cogito |
 | Nickel Prospector | Nexus Prime (`nexus_prime`) | 0 | bonanza |
 
 ## Standing History
