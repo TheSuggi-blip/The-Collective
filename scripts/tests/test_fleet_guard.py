@@ -332,7 +332,7 @@ class KindTests(unittest.TestCase):
         (self.root / "map" / "galaxy.tsv").write_text("# chart\nhome\tHome\t0\t0\tvoidborn\nfar\tFar\t1\t0\tvoidborn\n", encoding="ascii")
         for rid, route in ROUTES.items():
             self.put(route)
-        (self.root / "routes" / "plans" / "sentinel.json").write_text(json.dumps({"role": "sentinel", "owner": "Unity", "routes": ["guard-x", "open"]}),
+        (self.root / "routes" / "plans" / "sentinel.json").write_text(json.dumps({"role": "sentinel", "owner": "Apophis", "routes": ["guard-x", "open"]}),
                                                                          encoding="ascii")
         self.dispatch, self.routes = load("dispatch"), load("routes")
         self.now = time.time()

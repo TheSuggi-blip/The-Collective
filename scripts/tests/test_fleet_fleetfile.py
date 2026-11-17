@@ -21,7 +21,7 @@ ROUTES = {
     "ice": {"id": "ice", "kind": "mine", "title": "t", "belt": "far:belt", "station": "home:core:base", "max_ships": 2, "measured": MEASURED,
             "sell": [{"item": "water_ice", "min_price": 20}]},
 }
-PLANS = {"miner": ("Zero", ["ice", "gone", "park"]), "command": ("Unity", ["park"]), "sentinel": ("Unity", ["park"])}
+PLANS = {"miner": ("Zero", ["ice", "gone", "park"]), "command": ("Unity", ["park"]), "sentinel": ("Apophis", ["park"])}
 IDLE = {"kind": "idle"}
 SHIPS = [   # name, number, status, activity, docked, system
     ("miner-10", 10, "connected", IDLE, "base", "home"),
@@ -152,8 +152,9 @@ class BlockTests(Tree):
         self.assertTablesWhole(done.stdout)
         found = tables(done.stdout)
         self.assertEqual(len(found), 1)
-        self.assertEqual(found[0][2:], ["| Zero Point | flagship of Zero | Threshold | circuit a/b |", "| sentinel-1 | sentinel | Threshold | parked |"])
-        self.assertIn("\n2 ships: 1 on a route, 1 waiting, 0 by hand, 0 not connected.\n", done.stdout)
+        self.assertEqual(found[0][2:], ["| Zero Point | flagship of Zero | Threshold | circuit a/b |"])       # the sentinels are lent to Military (D226)
+        self.assertIn("\n1 ships: 1 on a route, 0 waiting, 0 by hand, 0 not connected.\n", done.stdout)
+        self.assertIn("| sentinel-1 | sentinel | Threshold | parked |", self.run_it("apophis", "--print").stdout)
         self.assertIn("No ship of Apollo in the fleet's file.", self.run_it("apollo", "--print").stdout)
 
 
@@ -244,7 +245,8 @@ class PermissionTests(Tree):
         self.assertEqual(done.returncode, 0, done.stdout)
         self.assertEqual([line.split(":")[0:2] for line in done.stdout.splitlines()],
                          [["Unity", " written"], ["Zero", " unchanged"], ["Apollo", " written"], ["Mercury", " unchanged"], ["Apophis", " written"], ["Oracle", " written"]])
-        self.assertIn("Unity: written: %s (2 ships, command, sentinel)" % self.fleet_md("Unity"), done.stdout)
+        self.assertIn("Unity: written: %s (1 ships, command)" % self.fleet_md("Unity"), done.stdout)
+        self.assertIn("Apophis: written: %s (1 ships, drone, sentinel)" % self.fleet_md("Apophis"), done.stdout)     # lent to Military (D226)
 
 
 class CommitTests(Tree):

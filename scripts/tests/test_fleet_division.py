@@ -56,7 +56,7 @@ class MemberTests(Tree):
 
     def test_a_ship_belongs_to_its_role_word_and_a_flagship_to_the_fleet_admiral(self):
         owners = [division.owner(p, str(self.data)) for p in ("miner-7", "trader-1", "hauler-20", "drone-3", "scout-9", "sentinel-4", "Zero Point", "Odd Name", "miner")]
-        self.assertEqual(owners, ["Zero", "Mercury", "Apollo", "Apophis", "Oracle", "Unity", "Unity", "Unity", "Unity"])
+        self.assertEqual(owners, ["Zero", "Mercury", "Apollo", "Apophis", "Oracle", "Apophis", "Unity", "Unity", "Unity"])   # sentinels lent to Military (D226)
         self.assertEqual([division.role_of(p, str(self.data)) for p in ("miner-7", "Zero Point", "Odd Name")], ["miner", "command", ""])
 
 
@@ -102,8 +102,8 @@ class PlanTests(Tree):
 
     def test_one_file_per_role_kept_by_its_admiral(self):
         roles, owners, errors = self.plans({"miner.json": json.dumps({"role": "miner", "owner": "Zero", "routes": ["a", "park"]}),
-                                            "sentinel.json": json.dumps({"role": "sentinel", "owner": "Unity", "routes": ["park"]})})
-        self.assertEqual((roles, owners, errors), ({"miner": ["a", "park"], "sentinel": ["park"]}, {"miner": "Zero", "sentinel": "Unity"}, []))
+                                            "sentinel.json": json.dumps({"role": "sentinel", "owner": "Apophis", "routes": ["park"]})})
+        self.assertEqual((roles, owners, errors), ({"miner": ["a", "park"], "sentinel": ["park"]}, {"miner": "Zero", "sentinel": "Apophis"}, []))
 
     def test_a_wrong_plan_file_is_named(self):
         _roles, _owners, errors = self.plans({"miner.json": json.dumps({"role": "miner", "owner": "Apollo", "routes": ["park"]}),

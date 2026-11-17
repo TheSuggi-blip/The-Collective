@@ -16,7 +16,7 @@ means to do next. What a route earns now is not written here, because it changes
 hour: ask the tool `route` or `routes`, or the database (`hive.py sql`), which carry each
 figure with its age. Up: [master-index.md](master-index.md).
 
-Kept by Unity. Routes: 98. Ships: 20.
+Kept by Apophis. Routes: 98. Ships: 20.
 
 | # | Route | Group | Zone | Open to | Ships planned |
 |---|---|---|---|---|---|
@@ -123,4 +123,4 @@ Templates its ships fly (a ship's own routes name one as `@<name>`):
 
 | Template | Ships of this role on it |
 |---|---|
-| [ice-and-hunt](templates-command.md) | 17 |
+| [ice-and-hunt](templates-military.md) | 17 |

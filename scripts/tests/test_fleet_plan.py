@@ -27,7 +27,7 @@ ROUTES = {
     "guard": {"id": "guard", "kind": "circuit", "title": "t", "max_ships": 2, "measured": MEASURED, "stops": [HOME]},
 }
 PLANS = {"miner": ("Zero", ["board", "fit", "ice-a", "ice-b", "gather", "census", "park"]),
-         "command": ("Unity", ["board", "guard", "gather", "park"]), "sentinel": ("Unity", ["board", "ice-a", "gather", "park"])}
+         "command": ("Unity", ["board", "guard", "gather", "park"]), "sentinel": ("Apophis", ["board", "ice-a", "gather", "park"])}
 SHIPS = ["miner-%d" % n for n in range(1, 7)] + ["sentinel-1", "sentinel-2", "Prime Directive"]
 
 
@@ -115,10 +115,13 @@ class PlanTests(Tree):
         self.assertIn("mining: unchanged", self.run_plan("zero", "apply").stdout)               # nothing new: nothing applied twice
 
     def test_a_division_of_two_roles_keeps_what_differs_as_each_ships_own_routes(self):
+        # the sentinels are lent to Military (DECISIONS D226): its division holds the roles drone and sentinel
         self.assertEqual(self.run_plan("unity", "apply", "command").returncode, 0)
+        self.assertEqual(self.run_plan("unity", "apply", "military").returncode, 0)
         lists = self.assign()["pilots"]
         self.assertEqual((lists["Prime Directive"], lists["sentinel-1"]), (PLANS["command"][1], PLANS["sentinel"][1]))
-        self.assertIn("| sentinel-2 | Threshold | 4 | 2 | 0 | 0 | 0 | 0 | ice-a |", self.file("command").read_text())
+        self.assertIn("| sentinel-2 | Threshold | 4 | 2 | 0 | 0 | 0 | 0 | -- |", self.file("military").read_text())   # its role's list became First and Then
+        self.assertNotIn("sentinel-2", self.file("command").read_text())
 
     def test_a_plan_is_flown_at_once_and_its_copy_in_the_repository_follows_when_the_folder_is_free(self):
         self.run_plan("zero", "apply")

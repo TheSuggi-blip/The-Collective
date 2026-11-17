@@ -344,8 +344,8 @@ class WriteTests(Tree):
         self.assertIn("REFUSED: fleet/STOP exists", self.run_fill("apollo", "fill", "--write").stdout)
 
     def test_add_drop_and_lift_are_one_command_each_and_the_gate_undoes_a_wrong_one(self):
-        self.assertIn("committed", self.run_fill("apophis", "add", "herd2").stdout)
-        self.assertEqual(json.loads((self.root / "routes" / "plans" / "drone.json").read_text())["routes"], ["once", "rays", "herd2", "park"])     # into the list Then
+        self.assertIn("committed", self.run_fill("apophis", "add", "herd2", "--role", "drone").stdout)
+        self.assertEqual(json.loads((self.root / "routes" / "plans" / "drone.json").read_text())["routes"], ["once", "herd2", "rays", "park"])     # Military holds two roles (drone, and the sentinels lent, D226): into each drone's own routes
         self.assertIn("committed", self.run_fill("apophis", "lift", "herd2", "3").stdout)
         self.assertEqual(json.loads((self.root / "routes" / "herd2.json").read_text())["max_ships"], 3)
         self.assertIn("REFUSED: ice stands in no plan of yours", self.run_fill("apophis", "lift", "ice", "9").stdout)
@@ -359,10 +359,10 @@ class WriteTests(Tree):
         subprocess.run([sys.executable, "-I", "-B", str(FLEET / "routes.py"), "index", "--root", str(self.root)], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         self.git("add", "-A")
         self.git("-c", "user.name=Test", "-c", "user.email=test@example.invalid", "commit", "-q", "-m", "a template")
-        done = self.run_fill("apophis", "drop", "herd2")
+        done = self.run_fill("apophis", "drop", "herd2", "--role", "drone")
         self.assertIn("committed", done.stdout)
         self.assertIn("note: herd2 still stands in the template @hunts of the military division", done.stdout)       # plan.take_out cannot reach a template
-        done = self.run_fill("apophis", "drop", "park")                                           # a plan must end with a route that is always open
+        done = self.run_fill("apophis", "drop", "park", "--role", "drone")                                           # a plan must end with a route that is always open
         self.assertEqual((done.returncode, "HALT military: nothing changed; the plan applied last stays in force" in done.stdout), (1, True), done.stdout)
         self.assertEqual(json.loads((self.root / "routes" / "plans" / "drone.json").read_text())["routes"], ["once", "rays", "park"])
         self.assertEqual(self.git("status", "--porcelain"), "")

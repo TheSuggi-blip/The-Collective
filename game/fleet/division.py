@@ -3,7 +3,8 @@
 
 WHAT: a ship belongs to a division by its name: the word before the dash
       (miner- Zero, trader- Mercury, hauler- Apollo, drone- Apophis,
-      scout- Oracle, sentinel- Unity). A flagship (data/fleet/flagships.json)
+      scout- Oracle; sentinel- Apophis while Military trains them, Suggi's
+      word of 2026-11-17, DECISIONS D226). A flagship (data/fleet/flagships.json)
       and any other name belong to the Fleet Admiral. Each Admiral commands
       the ships of its own division; the Fleet Admiral commands every ship.
       The other fleet scripts ask this module three things:
@@ -47,7 +48,10 @@ import time
 from pathlib import Path
 
 DATA = "/srv/collective/data"
-ROLES = {"miner": "Zero", "trader": "Mercury", "hauler": "Apollo", "drone": "Apophis", "scout": "Oracle", "sentinel": "Unity", "command": "Unity"}
+ROLES = {"miner": "Zero", "trader": "Mercury", "hauler": "Apollo", "drone": "Apophis", "scout": "Oracle", "sentinel": "Apophis", "command": "Unity"}
+# The sentinels are lent to Military (Suggi, 2026-11-17 about 18:25 CET): Apophis commands and trains them like his
+# drones, in Military's plan; each comes back to the command group at Piloting 20 (the Fleet Admiral's turn reads the
+# levels). The Fleet Admiral may still take any of them by hand. Back: "sentinel": "Unity" and the rows into plan-command.
 MEMBERS = ("Unity", "Zero", "Apollo", "Mercury", "Apophis", "Oracle")
 PROFILE = re.compile(r"/profiles/([a-z]+)(?:/|$)")
 ORDER_FRESH = 20 * 60        # an order file not touched for this long is dead (the dispatcher's rule)
