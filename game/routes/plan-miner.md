@@ -98,10 +98,8 @@ Planned:
 
 | What | When |
 |---|---|
-| Goal of the turn of 19:00 UTC: 8 more Deep Core Prospecting hand-ins (1 so far, 5,000 cr once each; dispatch.log) and Mining's iron stored +4,000 an hour over 4 hours (+3,300 at 15:06 UTC, hive.py flow Zero) | turn of 19:00 UTC |
-| The Liminal test: the pilot switched in this turn; ore a run and minutes against the Threshold's 195 to 260 ore in about 47 minutes on the same field; a second hull only on that figure | its first gather runs |
-| gather-subra-floodlight-flats-silicon (one ship from 15:10 UTC): silicon a run and minutes; lift by its RESULT line | next turn |
-| mine-almach-stray-facets (a fill test, one ship): trade crystal sold at Central Nexus against the fuel of 24 jumps | its RESULT line |
-| gather-achernar-belt 16 and gather-ruchbah-broken-glass-veil 6 (lifted 15:06 UTC): hold the floor, read the met table | next turn |
-| When the outpost at GSC-0044 stands (base id read from the game): gather routes storing there, richest first: Botein Belt (iron richness 68), Acrux Belt (64, lithium 13,377), GSC-0044 Belt (46), Intercrus Belt (43), Forgotten Tailings (40); one ship each first | when founded |
+| Goal of the turn of 23:00 UTC: Mining's reserve goods stored +10,000 units an hour over 4 hours (hive.py flow Zero; +11,937 at 19:12 UTC), of them gold above +250 an hour (+189); the three one-ship tests read (Deep Range Deep Core, The Forge Tax, The Gold Crest) | turn of 23:00 UTC |
+| The Liminal: its yard waits for 12 silicate composite, 2 shield emitters and 1 Mining Laser I (commission_status 19:07 UTC); a script sells them into the yard's own bids at Node Beta this turn; the pilot switched in when the status no longer reads sourcing | next turn |
+| Iron is short only 29,329 (stock reserve, 19:13 UTC) against +6,261 stored an hour: when it is met, the iron gather fields go down toward the ships the reserve's other ores need (gold, nickel, carbon, silicon), every miner still mining (rule F23) | turn of 23:00 UTC |
+| The outpost at GSC-0044 (base 443f0c5b2a1fbbcea95d13b76a797fe9, members only): gather routes storing into its faction storage, richest first: Botein Belt (iron 68), Acrux Belt (64, lithium 13,361), GSC-0044 Belt (46), Intercrus Belt (43), Forgotten Tailings (40); they wait for faction seats of miners (the Desk) and a store step into faction storage proved by one run | when the Desk stands |
 | When the stored water ice is under about 2,000 units, lift the Central Nexus mine routes back toward what the bid regains | each turn |
