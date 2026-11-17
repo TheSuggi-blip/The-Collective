@@ -6,6 +6,7 @@
    "title": "Hunter: a herd for each drone, combat skills, melt for money, carapace for the reserve",
    "routes": [
     "store-hold-central-nexus",
+    "carry-soma-synchrony-to-alpha",
     "sell-melt-nexus-sirius",
     "sell-melt-experiment-sirius",
     "sell-curd-central-nexus",
@@ -17,6 +18,10 @@
     "hunt-gsc-0024-frost-ring-hollow-pilgrim",
     "hunt-atria-ice-fields-hollow-pilgrim",
     "hunt-groombridge-34-ice-fields-hollow-pilgrim",
+    "hunt-epsilon-eridani-ice-fields-hollow-pilgrim",
+    "hunt-gemma-haze-halo-drifter",
+    "hunt-test-node-beta-cauldronback",
+    "hunt-test-garnet-slag-tortoise",
     "hunt-test-achernar-cinder-sylph",
     "hunt-test-lesath-cinder-sylph",
     "hunt-schedar-belt-carapace",
@@ -48,11 +53,14 @@
     "hunt-cedarhold-dim-lattice-veil-ray",
     "hunt-low-charge-glint-veil-ray",
     "hunt-home-drift-ray",
+    "craft-steel-node-beta",
+    "craft-steel-central-nexus",
+    "craft-steel-synchrony-hub",
     "gather-gsc-0027-spacetime-seep",
     "gather-gsc-0027-prism-scatter",
     "mine-acubens",
-    "mine-pherkad-rift",
-    "gather-hamal-crystal-bloom"
+    "gather-hamal-crystal-bloom",
+    "mine-pherkad-rift"
    ],
    "trains": [
     "gunnery",
@@ -61,7 +69,7 @@
     "xenobiology",
     "piloting"
    ],
-   "note": "Loaded holds stored first; melt and curd sales open only with stock and a bid; then six hollow-pilgrim hunts (crystal melt, bid at Sirius), two cinder-sylph hunts, 21 grazer hunts that store carapace, seven veil-ray hunts, the drift-ray hunt; iron gathering last, copper after it (the reserve holds copper beyond its need)."
+   "note": "2026-11-17 08:16 UTC: holds stored first; the soma, melt and curd sales open only with stock and a bid; seven hollow-pilgrim hunts (crystal melt, standing while Sirius bids 1,000 for any depth); four one-ship tests (halo-drifters at Gemma, the cauldronback at Node Beta, slag-tortoises at Garnet, two cinder-sylphs); 21 grazer hunts storing carapace; seven veil-ray hunts and the drift-ray hunt; then steel smelted from stored iron (no fuel, steel plate short); iron gathering last, copper after it. Every hunt beyond the border leaves only for a pirate or a hostile pilot (alone pirates, except Felis)."
   },
   "guard": {
    "title": "Guard: one drone at each field beyond the border where our miners work",
