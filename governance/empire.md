@@ -20,7 +20,7 @@ they store, the members by name and the treasury's balance. They are live
 data of the unit (the tools `hive` with `verb=empire`, `stock`, `ship`;
 `game/fleet/empire.py show`).
 
-Facts as of 2026-11-17T14:36:44Z.
+Facts as of 2026-11-17T16:42:12Z.
 
 ## 1. The Faction
 
@@ -33,7 +33,7 @@ Facts as of 2026-11-17T14:36:44Z.
 | Ships of the fleet in it | 50 of 246 |
 | Stations of our own | 0 of 5 a faction may hold |
 | Outposts | 0 of 8 |
-| Offices at stations | 3, rent 164 cr per cycle (14,104 cr a day) |
+| Offices at stations | 5, rent 164 cr per cycle (14,104 cr a day) |
 | Shared ships in garages | 0 |
 | At war | no |
 | Allies | none |
@@ -51,6 +51,7 @@ Systems we hold something in:
 
 | System | What | Note |
 |---|---|---|
+| `gsc_0044` | office | at 443f0c5b2a1fbbcea95d13b76a797fe9 |
 | `node_beta` | office | at node_beta_industrial_station |
 | `the_experiment` | office | at the_experiment_research_station |
 
@@ -62,6 +63,8 @@ hold).
 
 | Office | Tier | Station | System | State | Rent per cycle |
 |---|---|---|---|---|---|
+| Faction Fuel Bunker | 1 | 443f0c5b2a1fbbcea95d13b76a797fe9 | `gsc_0044` | active | 0 |
+| Faction Lockbox | 1 | 443f0c5b2a1fbbcea95d13b76a797fe9 | `gsc_0044` | active | 0 |
 | Faction Lockbox | 1 | node_beta_industrial_station | `node_beta` | active | 69 |
 | Hiring Board | 1 | node_beta_industrial_station | `node_beta` | active | 26 |
 | Faction Lockbox | 1 | the_experiment_research_station | `the_experiment` | active | 69 |
