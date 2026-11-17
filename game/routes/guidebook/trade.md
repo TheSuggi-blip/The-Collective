@@ -26,7 +26,9 @@ at the end of every turn.
 
 What the traders fly between two turns: the division's plan file
 (`/srv/collective/data/plans/plan-trade.md`, the tool `plan`), as set
-in the turn of 2026-11-16 23:30 UTC (applied 23:47 UTC);
+in the turn of 2026-11-16 23:30 UTC and changed in the turn of
+2026-11-17 03:30 UTC (template `@trade-sell` with three hydrogen
+routes, commit 9872fa7);
 `game/routes/plan-trader.md` prints it without names, and
 `game/routes/templates-trade.md` lists the templates. Every trader's
 own routes are templates (section 2): a ship is moved to other work
@@ -37,27 +39,29 @@ mission that pays once is judged with its reward (rule F19).
 | Order | Work | Ships | Carries | Expected | Why it stands here |
 |---|---|---|---|---|---|
 | First | The once line: 17 routes from voidborn-first-steps-board to voidborn-first-hunt-intercrus-sootfall, with voidborn-neural-matrix-board new this turn | every ship, by the list First | -- | +1,000 to +7,000 cr once a pilot | A pilot that has not booked a reward flies it first |
-| 1 | `@trade-sell`: five soma routes (sell at Node Beta, Synchrony Hub, The Experiment; carry to Node Gamma and Node Alpha) | every trader; 2 at Node Beta, 1 on each other | the soma bids: 5 to 15 units each at 376 to 412 cr (books of 23:04 to 23:32 UTC), regained by one to six units at a time (the view `moves`, 2026-11-16) | +321 to +1,828 cr a run while a bid stands (first five runs, 23:49 to 00:01 UTC); closed by `requires.bid` while none does | The fleet stores 622 soma above the reserve; Central Nexus offers soma at 323 cr in depth, so the station bids are the best the market pays |
-| 2 | `@trade-craft`: craft-focused-crystal-node-beta | every trader with 4 energy crystal in its own storage at Node Beta; 2 at a time | the focused-crystal bids at Central Nexus (800 x 10) and Node Gamma (748 x 11), books of 23:33 and 23:35 UTC | +278 cr in 14.3 minutes on its first run (about 1,170 per ship-hour) | Crafting for sale is Trade's (requests.log ENT-177); the traders' stored energy crystal bids 40 cr where it lies |
-| 3 | `@trade-train-nav`: train-navigation-trader | the twenty traders at navigation 2, up to 20 at once | -- | -165 cr a loop of 17.6 to 17.9 minutes (three runs of 2026-11-16 19:01 UTC), then Signal Fragments +7,000 cr once each | Signal Fragments asks navigation 3; the route closes by itself at 3 |
+| 1 | `@trade-sell`: five soma routes (sell at Node Beta, Synchrony Hub, The Experiment; carry to Node Gamma and Node Alpha), floor 350 since 2026-11-17 03:39 UTC; three hydrogen routes (sell at Node Beta and Node Gamma, carry Synchrony Hub to The Experiment), floor 30 | every trader whose own storage holds the good; 2 at soma Node Beta, 1 on each other | soma: 1 to 7 units a bid at 357 to 362 cr (books of 03:31 to 03:38 UTC), regained by one to five units at a time; hydrogen: 34 cr x 24 to 100 at Node Beta, 27 to 40 at Node Gamma, 22 to 46 at The Experiment (the view `moves`, 03:00 to 03:41 UTC) | soma, last 4 hours to 03:32 UTC: Synchrony 4,396 and the carry to Node Alpha 4,563 per ship-hour (6 and 5 runs), Node Beta 2,663 and the carry to Node Gamma 2,812 (2 runs each); hydrogen not flown yet | The fleet stores 607 soma above the reserve and Central Nexus asks 292 in depth; it stores 5,634 hydrogen gas and Ironlight asks 6 in depth: the station bids are the top of both markets |
+| 2 | `@trade-craft`: craft-focused-crystal-node-beta | every trader with 4 energy crystal in its own storage at Node Beta; 2 at a time | the focused-crystal bids at Central Nexus (800 x 10) and Node Gamma (748 x 11), books of 23:33 and 23:35 UTC; the Central Nexus bid was taken by about 01:00 UTC and reads 40 at 03:34 UTC | 969 per ship-hour over 8 runs of the last 4 hours (route_earnings, 03:32 UTC): +278 to +324 cr a run, the last one -488 into a bid that had left | Crafting for sale is Trade's (requests.log ENT-177); the traders' stored energy crystal bids 40 cr where it lies |
+| 3 | `@trade-train-nav`: train-navigation-trader | the traders below navigation 3: 1 of 40 at 2026-11-17 03:40 UTC (20 at 00:07 UTC) | -- | -318 per ship-hour over 117 runs of the last 4 hours (route_earnings, 03:32 UTC), then Signal Fragments +7,000 cr once each | Signal Fragments asks navigation 3; the route closes by itself at 3 |
 | 3 | `@trade-gas`: six gas routes | the three traders that carry a Gas Harvester I, one ship a route | the hydrogen and plasma bids at Node Beta and Central Nexus: a few dozen units an hour | Marfik +280, GSC-0016 +260 per ship-hour over 6 runs each (route_earnings, 23:32 UTC) | Mining work of the traders that hold the tool; the loss stop closes a route whose last runs lost |
 | 4 | `@trade-gather`: mine-pherkad-rift, gather-hamal-crystal-bloom, gather-gsc-0027-prism-scatter, mine-acubens | every trader as fallback | Pherkad about 10 ships hour after hour, Hamal and Prism Scatter shared by every division (fill.py status, 23:33 UTC) | -169 to -191 per ship-hour (57 and 249 runs of the last 4 hours) | Standing work (rule F8): iron and copper into storage for the reserve |
 | Then | mine-pherkad-rift, gather-hamal-crystal-bloom, gather-gsc-0027-prism-scatter, census-frontier, park | every ship | -- | -- | `park` should never be reached |
 
 The forecast of the division (`hive.py forecast`) read -3,428 cr an
-hour at 2026-11-16 22:30 UTC (the Fleet Admiral's report of that
-hour) and +2,441 at 2026-11-17 00:07 UTC. The second figure rests on
-two soma runs at Synchrony Hub (11,045 per ship-hour) whose bid was
-taken after them: without the soma routes the same forecast reads
-about -8,200 an hour (gather -4,850, navigation training -3,360), the
-cost of standing work and of the training that buys 7,000 cr once a
-pilot.
+hour at 2026-11-16 22:30 UTC, +2,441 at 2026-11-17 00:07 UTC (two soma
+runs whose bid was taken after them), -4,294 at 03:31 UTC (the
+briefing) and -4,828 at 03:44 UTC after this turn's plan, whose new
+hydrogen routes have no measured figure yet. Standing work and
+navigation training are the cost; the soma routes and the missions
+that pay once carry the division.
 
-What changes it: the soma bids' regain (read their moves each turn);
-the focused-crystal runs (lift to what the two bids take); the
-Fleet Admiral's answer on wallet top-ups (requests.log ENT-176); a
-silicon field found by Intel; a new bid found for a good of the
-surplus (queue.log ENT-127 lists what stays unsold and why).
+What changes it: the soma and hydrogen bids' regain (read their moves
+each turn); the focused-crystal bid at Central Nexus, gone since about
+01:00 UTC (40 cr x 25,129 at 03:34 UTC; the route opens by itself at
+700); a field for uranium ore, thorium ore or seam glass, which every
+station bids for since about 00:57 UTC (requests.log ENT-194); the
+steel craft as standing work for every role (requests.log ENT-190,
+the Fleet Admiral's to put into the list Then); queue.log ENT-144
+lists what stays unsold and why.
 
 ## 1. Route Guides
 
@@ -83,7 +87,18 @@ the tool `routes`, the view `route_earnings`).
 - Readings, 2026-11-16 23:49 to 2026-11-17 00:01 UTC (runs.jsonl):
   soma at Synchrony Hub +1,828 cr in 6.7 minutes, at Node Beta +321
   and +714, carried to Node Alpha +666 in 7.9 minutes; three later
-  runs found the bid taken and cost -24 to -36 cr of fuel.
+  runs found the bid taken and cost -24 to -36 cr of fuel. Over the 12
+  hours to 2026-11-17 03:32 UTC (route_earnings): Synchrony 6,247 per
+  ship-hour over 8 runs, the carry to Node Alpha 9,178 over 7, Node
+  Beta 2,735 over 6, the carry to Node Gamma 2,812 over 2.
+- How a route is written: `sellgen.py scan` (the trade-books skill)
+  lists every good we store above the reserve with the bid where it
+  lies, the best bid elsewhere, the cheapest ask and the routes that
+  sell it already; `sellgen.py sell` and `sellgen.py carry` write the
+  route from the book and the storage book, with the readings in its
+  note; the floor is set by hand above the cheapest ask in depth.
+  Hydrogen gas (2026-11-17 03:39 UTC): floor 30 against Ironlight's
+  ask of 6 for about 1.1 million; gas is size 2, so a carry takes 32.
 
 ### Crafting for sale (`craft-<good>-<station>`)
 
@@ -152,7 +167,12 @@ in both runs (2026-11-16 19:49 UTC and 2026-11-16 23:59 UTC).
   hold, then from storage; 1% of the listed value is paid at once.
   One anchor beacon listed at 1,200 cr at Node Beta: fee 12 cr
   (2026-11-16 23:48 UTC). `view_orders` lists a pilot's orders at the
-  station where it is docked. When it fills: not read yet.
+  station where it is docked; undocked it answers `not_docked` but
+  still names the count ("0 buy orders and 1 sell orders ... 1 items
+  in escrow", 2026-11-17 03:34 UTC). Unfilled after 3 hours 46
+  minutes; the Node Beta book showed it as the ask 1,200 x 1 at 03:31
+  UTC. No station bids above 2 cr for anchor beacons; The Experiment
+  asks 1,400 x 8.
 
 ## 2. Route Templates
 
@@ -164,7 +184,7 @@ ship is switched to other work with one word.
 
 | Template | Routes, in the order a ship tries them | Trains | Fit |
 |---|---|---|---|
-| `@trade-sell` | sell-soma-at-node-beta, sell-soma-at-synchrony, sell-soma-at-experiment, carry-soma-beta-to-gamma, carry-soma-synchrony-to-alpha | trading | none |
+| `@trade-sell` | sell-soma-at-node-beta, sell-soma-at-synchrony, sell-soma-at-experiment, carry-soma-beta-to-gamma, carry-soma-synchrony-to-alpha, sell-hydrogen-at-node-beta, sell-hydrogen-at-node-gamma, carry-hydrogen-synchrony-to-experiment | trading | none |
 | `@trade-craft` | craft-focused-crystal-node-beta | crafting, trading | none |
 | `@trade-train-nav` | train-navigation-trader | navigation, piloting | none |
 | `@trade-gas` | mine-marfik-emission-nebula, mine-gsc-0016-emission-nebula, mine-the-experiment-haze, mine-coldwater-emission-nebula, mine-stellar-siphon, mine-the-experiment-haze-synchrony | mining | Gas Harvester I |
@@ -216,11 +236,14 @@ was flown the first time.
 
 Which skills a ship of this division levels and on which work (rule
 F23): the work of its own role first, gathering ore only when none is
-open. The levels below are the traders' at 2026-11-17 00:07 UTC (the
-table `ship_skills`): trading 2 for 24 ships, 1 for 15, 0 for 1;
-navigation 4 for 3, 3 for 17, 2 for 20; piloting 7 for 1, 6 for 12, 5
-for 7, 3 for 19, 2 for 1; crafting 0 (with XP) for 3, never trained
-for the rest.
+open. The levels below are the traders' at 2026-11-17 03:40 UTC (the
+table `ship_skills`): trading 2 for 24 ships, 1 for 16; navigation 5
+for 1, 4 for 3, 3 for 35, 2 for 1; piloting 7 for 3, 6 for 17, 4 for
+19, 3 for 1; crafting 0 for all, 8 of them with XP. The XP of all 40
+traders by skill: deep core mining 29,522, piloting 24,111, mining
+16,363, navigation 10,687, exploration 4,970, trading 2,753, crafting
+120: the standing work trains more than the trade does. At 00:07 UTC
+the same table read navigation 2 for 20 traders and crafting XP for 3.
 
 | Kind of ship | Skills it levels | On which work (template) | What the next level opens |
 |---|---|---|---|
@@ -312,7 +335,22 @@ reading is the state of its hour, not a verdict (rule F22).
   `requires.bid` at 1,000 cr is the next test.
 - **The standing sell order.** One anchor beacon listed at 1,200 cr at
   Node Beta (2026-11-16 23:48 UTC; The Experiment asks 1,400 for 8,
-  every station bid is 2 cr). Read whether it filled, and when.
+  every station bid is 2 cr). Unfilled at 2026-11-17 03:34 UTC (section
+  1); read again each turn, and cancel it when a reading shows no
+  buyer in a day.
+- **Buyers at every station since the game's update to v0.721.1**
+  (first read about 00:57 UTC on 2026-11-17, books of 01:55 to 03:42
+  UTC): uranium ore 600 cr x 3,333 (base value 150, size 2), thorium
+  ore 240 x 772 to 886, seam glass 1,200 x 333 (base 600), superfluid
+  vial 600 x 40 to 50, methane ice 36 x 1,000. Sirius bids crystal melt
+  at 1,585 x 85 (03:29 UTC). No field we read holds uranium, thorium
+  or seam glass now (requests.log ENT-194); no book we read asks any
+  of them.
+- **Market stations not read yet**: Procyon Colonial Station (9 jumps,
+  four lawless) and Korr Fortress Station (Gliese 581, 7 jumps, a
+  lawless stronghold on the chart): Procyon asked of Intel by name in
+  requests.log ENT-194, the others as every station an explorer docks
+  at. A stronghold is no place for a trader's test (rule F27).
 - **Plasma bought at Ironlight Crossroads** (52 cr, 932,099 on offer,
   2026-11-16 01:39 UTC) and sold into the Node Beta bids: one load of
   32 units paid +1,380 cr in about 19 minutes by hand (03:11 UTC); the
