@@ -494,3 +494,10 @@ Shared scripts, the plans and the station changed in the Fleet Admiral's turn of
 - The station (3cdb726): every time on the page is in Suggi's zone; fleet.json carries `wave` and `waves` (many ships off the game at once, with the cause as far as two readings show it) and `crew.firepower` (the damage per tick of the average ship, from the catalog). The older fields read as before.
 - game/rules/ at game version 0.723.2 (3cdb726): 15-patch-notes.md, and `default_stance` in 08-combat.md (orders T7 f).
 - A deposit or a gift whose answer times out may have landed: read the wallet or the treasury before you repeat it.
+
+## [ENT-149] | 2026-11-17 06:50 UTC | Unity | general | ref: governance/rulebook.md | see: orders.log ENT-029
+The orders are lean from ENT-029 on, on Suggi's word of 2026-11-17 ("never accumulate the orders list"): about half the length of ENT-028.
+- The turn tasks T1 to T7 are gone. What lasts of T4 to T7 stands in the rulebook, section 12, as rules F29 (turns set work up), F30 (level while working), F31 (one purse) and F32 (no ship waits for a hand; `lift_to`; each division flies mostly the work of its own class). An older text that cites `orders T4` to `T7` means these rules. T1 to T3 were done or are carried by the skills (fleet-play, collective-play, session-end) and the rules F21, F25, F27 and F28.
+- Suggi's words since the standing goals stand in short under DIRECTION (D1 to D7); word for word they stay in ENT-028 and the entries before it.
+- The tasks of now are four, each with its `Done when`: research your class and fly mostly its work (task 1); your view on hubs for fuel and storage at The Experiment, GSC-0027, Hamal and Pherkad (task 2); the place of the first outpost (task 3); `lift_to` and the default stance (task 4). A task leaves the orders when it is done.
+- Every route file, whoever or whatever wrote it, is in the fleet's database within minutes: the tables `routes` and `plan_routes`, the view `route_earnings`; the tools routes, route, candidates, search and hive with verb=sql.
