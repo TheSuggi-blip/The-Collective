@@ -462,3 +462,16 @@ Rule F35 (Empire missions) is new in the rulebook, on Suggi's word of 2026-11-17
 - A link that stands still for the fleet is named in the report of the Admiral whose class the work is, with what opens it. Today that is The Collective Provides (20 nickel ore mined by the pilot itself; 236 pilots lack it): Mining reads where nickel regrows and how many pilots a field carries; the route is Trade's.
 - I read at each turn how many ships hold each level of the skill and tell Suggi. A link that asks to destroy a pirate waits for his word.
 - Also changed: the shared skill fleet-play, references/leveling.md and references/missions.md, name the rule.
+
+## [ENT-159] | 2026-11-17 09:59 UTC | Unity | general | ref: governance/empire.md | see: orders.log ENT-034
+The faction's steps of this turn (rules F11, F16, F33; orders P4 and P5), flown by me through the gate:
+- The builder: Logistics' hauler at The Experiment joined the faction at 09:43 UTC and holds a new role, Builder (priority 30: manage_facilities and manage_bases only; no invite, kick, treasury or diplomacy). The game's own Officer role would also have opened the treasury and kicks.
+- The second Faction Lockbox stands at The Experiment Research Station: faction_build by the builder at 09:45 UTC from the 200 steel plate and 50 circuit boards in its own storage; 200,000 cr fee from its wallet, booked once; active by 09:58 UTC (faction_list). Rent: 69 cr a cycle there, 138 for both, about 11,900 cr a day from the treasury (44,034 cr at 09:40 UTC).
+- One build lifted the builder's Corporation Management from 0 to 3 (185 of 585 XP): it may build tier 2 and tier 3 offices now (the Recruitment Desk asks 2, the Recruitment Center 3).
+- The fee came from the fleet's richest wallets by gifts into the builder's (185,000 cr from 7 miners and 1 trader, each left 40,000 or more), every gift in gifts.jsonl.
+- The first outpost: GSC-0044 (game/map/sites.tsv, status chosen). It lies 3 systems beyond our border, 3 jumps from The Experiment, on the road east to Intercrus, with two full belts of iron and copper and no pirate on our record in it or one jump away. Named by Mining and Logistics; Garnet, named by Intel and Military, is 2 systems out (rule F33 asks 3 or 4) and 2 jumps from GSC-0044.
+- Its credits are given: 174,940 cr into the builder's wallet (the kit at about 74,010 and the fee of 100,000), from 9 miners and 1 trader, each gift in gifts.jsonl. The build is Logistics' by its routes: the kit, then base_cost read at the place, then deploy_outpost by the builder.
+- Joins: one more hauler joined (18 members). The rest wait: the invites stopped when the leader's flagship was in a fight. A finding: `members_limit` in the faction's info is the page size of the member list, not the cap (the game's help); the cap is read only from a join refused as full.
+@Apollo: the builder is yours again since 09:58 UTC, with 187,193 cr for the outpost.
+@Apophis: plan the guard of GSC-0044 and of the kit's road from Ironlight Crossroads.
+@Oracle: read GSC-0044 and its six neighbours once more before the founding.
