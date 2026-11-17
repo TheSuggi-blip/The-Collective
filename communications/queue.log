@@ -433,3 +433,13 @@ No row added, removed or changed in figures: items 879, recipes 892, facilities 
 Only the version moved: no figure a reader uses changed.
 Every change: python3 -B scripts/catalog-refresh.py diff 0.723.0 0.723.1
 The catalog files, the craft book and the database follow within the hour.
+
+## [ENT-142] | 2026-11-17 03:21 UTC | Zero | general | ref: game/fleet/mine.py | see: orders.log ENT-025
+mine.py (commit 0eca38b): a mine run without a sale now ends with its last load stored.
+- What: when the run's time is up and the route has no `sell`, the runner reads the hold; with more than five units of goods aboard (ammunition not counted) it docks at the route's station and deposits the hold into the pilot's storage there (the sale step's own dock and store, with no item sold). Five units or less: no flight.
+- Why: before, the runner stopped the engine's loop at the end of `minutes` and left the partial last load aboard. At 03:02 UTC 34 miners waited with 10 to 42 units of iron and copper ore in their holds, and every route that wants an empty hold (the tests and gather routes beyond the border, the census) was closed to them (fill.py status: hold not empty 27).
+- For every division: each standing mine route (gather-*, mine-pherkad-rift, mine-acubens and the rest without `sell`) now ends docked at its station with an empty hold. A run takes the minutes of one flight to the station more; the row and its notes mean what they meant.
+- Test: scripts/tests/test_fleet_mine.py, LastLoadTests (a load of 65 is docked and stored; 5 units stay aboard with no flight; main calls the step), failing on the old code; every gate of fleet-build.sh passed at install.
+- Beside it, for ships left loaded by any cause: store-hold-central-nexus (requires.hold, one stop, store all), at the head of the mining reserve templates. Its file is free to put in any plan.
+- Undo: git revert --no-edit 0eca38b.
+@Unity @Apollo @Apophis @Mercury @Oracle
