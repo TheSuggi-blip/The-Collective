@@ -20,7 +20,7 @@ they store, the members by name and the treasury's balance. They are live
 data of the unit (the tools `hive` with `verb=empire`, `stock`, `ship`;
 `game/fleet/empire.py show`).
 
-Facts as of 2026-11-17T02:14:46Z.
+Facts as of 2026-11-17T03:17:07Z.
 
 ## 1. The Faction
 
@@ -70,17 +70,18 @@ list of stations. Where a base is built is Suggi's decision.
 | `achernar` | Achernar | lawless | 4 | none | candidate | Oracle | first of three beside the best ice: the only one with belt, gas and ice (game/routes/guidebook/intel.md; queue.log ENT-067, ENT-090) |
 | `alnair` | Alnair | lawless | 5 | none | candidate | Oracle | second of three beside the best ice (game/routes/guidebook/intel.md; queue.log ENT-067, ENT-090) |
 | `wolf_1061` | Wolf 1061 | lawless | 4 | none | candidate | Oracle | third of three beside the best ice (game/routes/guidebook/intel.md; queue.log ENT-067, ENT-090) |
-| `yildun` | Yildun | lawless | 11 | none | candidate | Suggi | the region between our space and the Outer Rim: named for a station (Suggi, 2026-11-16); 11 jumps from home, lawless, not read by us yet |
-| `aldebaran` | Aldebaran | lawless | 9 | none | candidate | Suggi | the region between our space and the Outer Rim: named for a station (Suggi, 2026-11-16); 9 jumps from home, lawless, not read by us yet |
-| `hawthorne` | Hawthorne | lawless | 13 | none | candidate | Suggi | with alchiba the region named for a later station (Suggi, 2026-11-16); 13 jumps from home, lawless, not read by us yet |
-| `alchiba` | Alchiba | lawless | 14 | none | candidate | Suggi | with hawthorne the region named for a later station (Suggi, 2026-11-16); 14 jumps from home, lawless, not read by us yet |
-| `intercrus` | Intercrus | lawless | 7 | none | candidate | Suggi | proposed for a base (Suggi, 2026-11-17); 7 jumps from home, lawless; read once by our census on 2026-11-15 21:41 UTC: two belts and alloy remnants of iron and copper near 100,000 each, sol alloy ore 1,401, null matter 650, an ice field of water and nitrogen ice (game/planets/n-intercrus.md) |
-| `felis` | Felis | lawless | 7 | none | candidate | Suggi | with biham a pair proposed for a base (Suggi, 2026-11-17); 7 jumps from home, lawless, borders Gliese 876 (pirates named in the military guidebook); read once on 2026-11-15 23:34 UTC: two metallic belts and a frost ring, their deposits not read (game/planets/n-felis.md) |
-| `biham` | Biham | lawless | 8 | none | candidate | Suggi | with felis a pair proposed for a base (Suggi, 2026-11-17); 8 jumps from home, lawless, borders Felis and Gliese 876; not read by us yet |
+| `yildun` | Yildun | lawless | 11 | none | candidate | Suggi | north region, two large bases there, for instance Aldebaran and Hawthorne (Suggi, 2026-11-17); the region between our space and the Outer Rim: named for a station (Suggi, 2026-11-16); 11 jumps from home, lawless, not read by us yet |
+| `aldebaran` | Aldebaran | lawless | 9 | none | candidate | Suggi | north region, two large bases there, for instance Aldebaran and Hawthorne (Suggi, 2026-11-17); the region between our space and the Outer Rim: named for a station (Suggi, 2026-11-16); 9 jumps from home, lawless, not read by us yet |
+| `hawthorne` | Hawthorne | lawless | 13 | none | candidate | Suggi | north region, two large bases there, for instance Aldebaran and Hawthorne (Suggi, 2026-11-17); with alchiba the region named for a later station (Suggi, 2026-11-16); 13 jumps from home, lawless, not read by us yet |
+| `alchiba` | Alchiba | lawless | 14 | none | candidate | Suggi | north region, two large bases there, for instance Aldebaran and Hawthorne (Suggi, 2026-11-17); with hawthorne the region named for a later station (Suggi, 2026-11-16); 14 jumps from home, lawless, not read by us yet |
+| `intercrus` | Intercrus | lawless | 7 | none | candidate | Suggi | east region, beside Diadem, one large base (Suggi, 2026-11-17); proposed for a base (Suggi, 2026-11-17); 7 jumps from home, lawless; read once by our census on 2026-11-15 21:41 UTC: two belts and alloy remnants of iron and copper near 100,000 each, sol alloy ore 1,401, null matter 650, an ice field  |
+| `felis` | Felis | lawless | 7 | none | candidate | Suggi | south region, the region of Biham, one large base (Suggi, 2026-11-17); with biham a pair proposed for a base (Suggi, 2026-11-17); 7 jumps from home, lawless, borders Gliese 876 (pirates named in the military guidebook); read once on 2026-11-15 23:34 UTC: two metallic belts and a frost ring, their de |
+| `biham` | Biham | lawless | 8 | none | candidate | Suggi | south region, the region of Biham, one large base (Suggi, 2026-11-17); with felis a pair proposed for a base (Suggi, 2026-11-17); 8 jumps from home, lawless, borders Felis and Gliese 876; not read by us yet |
+| `diadem` | Diadem | lawless | 8 | none | candidate | Suggi | east region, one large base (Suggi, 2026-11-17: "then maybe Diadem"); 8 jumps from home, lawless by the chart, a neighbour of Intercrus; not read by us yet |
 
 ## 5. What The Faction Can Build
 
-Every faction facility of the game's catalog (0.723.0), line by line and
+Every faction facility of the game's catalog (0.723.1), line by line and
 tier by tier. A higher tier is an upgrade of the one before it and
 replaces its rent. Rent is due every 100 ticks (about 17 minutes) at a
 station that is not ours; at our own station or outpost it is none. The
