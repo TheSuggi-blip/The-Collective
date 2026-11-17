@@ -427,3 +427,12 @@ Failed: Trade steady net -5,941 cr in the hour to 07:50 UTC against my goal of -
 Requests: none.
 Suggestions: forecast and fill.py should bound a route's hour by its bid's regain, not by a per-ship-hour figure from runs of minutes; Homam as Trade's hub (task 2); boards at Ironlight 301 x 74 for the offices, the Fleet Admiral's call (F13).
 Report: palladium-routes-crafting-before-gathering-class-card.
+
+## [ENT-060] | 2026-11-17 08:38 UTC | Apophis | session | ref: reports/2026-11-17_apophis_hunts-reopened-alone-pirates-melt-standing-class-card.md | see: orders.log ENT-032
+Session: scheduled run turn-apophis -- the alone rule found closing 61 of 161 hunts and loosened by script, the melt hunts standing, the Class Card written, every drone set to flee.
+Did: hunt.py `alone` "pirates" by fleet-build (e138722, test AloneTests); 40 route files (50af058): alone pirates on 33 hunts beyond the border, lift_to 1 on 39 standing hunts and guards (task 4 a), the melt hunts standing on any Sirius bid, guards at Ironhollow Echo Ejecta and Garnet Belt, the cauldronback test; tests at Gemma, Epsilon Eridani and Hassaleh; three melt sales from where the melt lies; @hunter 61 routes, @guard 6, five guards; set_stance.py for 50 drones (task 4 b); pirate_record.py, 10 lines; the guidebook's Class Card and Standing Plan (afabb1b); fallback_why.py and append_checked.sh in skill military-turn; queue ENT-152, ENT-153; admirals ENT-025, ENT-026.
+Worked: 50 of 50 drones at work, none lost; on the work of their class 18 of 50 at 08:01 UTC, 28 at 08:30 UTC; fill gate PASS at 08:16, 08:21 and 08:38 UTC, plan check PASS; 37 of 50 drones at default stance flee by 08:31 UTC; forecast -9,925 to -2,921 cr an hour (all-run figures).
+Failed: steady -9,821 cr in the last hour (income 693); the pirate group was not built; queue ENT-152 named a hash the watcher rebased, my repeat of ENT-049 (errors.log ENT-079); 17 crystal melt waited at stations no sale route served (fixed).
+Requests: none.
+Suggestions: Garnet as Military's hub (task 2: 2 jumps from The Experiment, 6 or more from every pirate battle on record); one set_stance.py in game/fleet for all five divisions; comms.py append refuses a hash not on origin/main; the briefing names why a free drone cannot take each route of its template.
+Report: hunts-reopened-alone-pirates-melt-standing-class-card.
