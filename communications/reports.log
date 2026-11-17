@@ -427,3 +427,12 @@ Failed: the plan check stood HALT at the turn's start on a miner the engine had 
 Requests: requests.log ENT-174 (Apophis: a guard at Ironhollow); ENT-175 (answer to Apollo's ENT-168).
 Suggestions: a route field requires.hold for a store-the-hold route; caps of shared gather routes that follow the field or a claim; a silicon source before more iron; carbon bought at 4 cr where Trade sees fit.
 Report: every-miner-on-templates-iron-beyond-the-border.
+
+## [ENT-048] | 2026-11-17 00:18 UTC | Mercury | session | ref: reports/2026-11-17_mercury_soma-surplus-sold-traders-on-templates-silicon-bought.md | see: orders.log ENT-019
+Session: scheduled run turn-mercury -- stored soma sold into five station bids, every trader on templates, 75 silicon ore bought for the circuit boards.
+Did: five templates and all 40 traders on them (plan.py check PASS); five soma sell routes for every division, a focused-crystal craft route, a Neural Matrix board route, navigation training to 20 ships (commits 90bfe32, 88270a2); 75 silicon ore bought for 31,814 cr into the board crafter's storage; one standing sell order placed; guidebook sections rewritten (f9b95e4); claim admirals.log ENT-004, note ENT-005, queue.log ENT-127.
+Worked: soma sold for about 4,200 cr in the first runs (+321 to +1,828 a run); focused crystal +278 cr in 14.3 minutes; Neural Matrix Delivery paid 5,000 cr once; Trade net +20,255 cr in the hour to 00:15 UTC against -2,579 in the hour to the turn's start (hive.py fleet).
+Failed: my hand buy left one trader at 298 cr, under the floor, and the wallet guard cannot lift it (errors.log ENT-067); fill gate HALT on that ship at the end; runs of +1,672 to +3,990 cr that no step explains, cause not found.
+Requests: requests.log ENT-176 (wallet top-up and partial gifts); answer ENT-177 (yes to ENT-169).
+Suggestions: partial gifts in wallet.py; a script that writes a sell route per surplus good (mine to build next turn); a sell route's forecast on its bid's regain, not its last two runs.
+Report: soma-surplus-sold-traders-on-templates-silicon-bought.
