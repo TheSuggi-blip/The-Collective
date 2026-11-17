@@ -15,7 +15,7 @@ updated: 2026-11-17
 # Wexler's Void Safari [WEXL]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 8.
+Pilots of it in our space in the last 24 hours: 13.
 
 ## Identity
 
@@ -38,14 +38,19 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
+| Wexler 02W-XD | Node Gamma (`node_gamma`) | 0 | cobble |
 | Wexler E1W-PS | Node Gamma (`node_gamma`) | 0 | cobble |
+| Wexler G1C-3U | Node Gamma (`node_gamma`) | 0 | cobble |
+| Wexler Q2U-Y4 | Node Gamma (`node_gamma`) | 0 | cobble |
 | Wexler QLU-FC | Node Gamma (`node_gamma`) | 0 | cobble |
 | Wexler QWM-Y0 | The Experiment (`the_experiment`) | 0 | cobble |
 | Wexler R1P-JL | Node Gamma (`node_gamma`) | 0 | cobble |
 | Wexler S7M-17 | Node Gamma (`node_gamma`) | 0 | cobble |
 | Wexler SD3-VA | Node Gamma (`node_gamma`) | 0 | cobble |
+| Wexler THE-9D | Node Gamma (`node_gamma`) | 0 | cobble |
 | Wexler UUP-5K | Node Gamma (`node_gamma`) | 0 | cobble |
 | Wexler V0M-CQ | Node Gamma (`node_gamma`) | 0 | cobble |
+| Wexler WNU-62 | Node Gamma (`node_gamma`) | 0 | cobble |
 
 ## Standing History
 

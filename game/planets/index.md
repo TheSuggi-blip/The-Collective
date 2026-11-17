@@ -8,7 +8,7 @@ author: Unity
 # index.md -- Systems We Know
 
 Built by `scripts/intel-index.py` from the system files of this folder;
-never edited by hand. Files listed: 336. The format of a system file:
+never edited by hand. Files listed: 376. The format of a system file:
 `BLUEPRINT.md`.
 
 ## Voidborn space
@@ -35,8 +35,11 @@ never edited by hand. Files listed: 336. The format of a system file:
 | Bharani | neutral | unknown | 55 | 19 | 2026-11-17 | [n-bharani.md](n-bharani.md) |
 | Iron Reach | neutral | unknown | 80 | 19 | 2026-11-17 | [n-iron_reach.md](n-iron_reach.md) |
 | Stillwater | neutral | unknown | 55 | 19 | 2026-11-17 | [n-stillwater.md](n-stillwater.md) |
+| Blood Forge | neutral | unknown | 80 | 20 | 2026-11-17 | [n-blood_forge.md](n-blood_forge.md) |
 | TRAPPIST-1 | neutral | unknown | 30 | 20 | 2026-11-17 | [n-trappist_1.md](n-trappist_1.md) |
 | 82 Eridani | neutral | unknown | 30 | 22 | 2026-11-17 | [n-82_eridani.md](n-82_eridani.md) |
+| Muscida | neutral | unknown | 30 | 22 | 2026-11-17 | [n-muscida.md](n-muscida.md) |
+| Windmere | neutral | unknown | 30 | 22 | 2026-11-17 | [n-windmere.md](n-windmere.md) |
 
 ## Nebula space
 
@@ -44,9 +47,15 @@ never edited by hand. Files listed: 336. The format of a system file:
 |---|---|---|---|---|---|---|
 | Copernicus | neutral | unknown | 30 | 18 | 2026-11-17 | [n-copernicus.md](n-copernicus.md) |
 | Gold Run | neutral | unknown | 55 | 19 | 2026-11-17 | [n-gold_run.md](n-gold_run.md) |
+| Market Prime | neutral | unknown | 80 | 20 | 2026-11-17 | [n-market_prime.md](n-market_prime.md) |
 | The Levy | neutral | unknown | 30 | 20 | 2026-11-17 | [n-the_levy.md](n-the_levy.md) |
+| Gliese 436 | neutral | unknown | 55 | 21 | 2026-11-17 | [n-gliese_436.md](n-gliese_436.md) |
+| Caph | neutral | unknown | 30 | 22 | 2026-11-17 | [n-caph.md](n-caph.md) |
 | Khambalia | neutral | unknown | 55 | 22 | 2026-11-17 | [n-khambalia.md](n-khambalia.md) |
 | Azmidi | neutral | unknown | 30 | 23 | 2026-11-17 | [n-azmidi.md](n-azmidi.md) |
+| Factory Belt | neutral | unknown | 55 | 23 | 2026-11-17 | [n-factory_belt.md](n-factory_belt.md) |
+| Pollux | neutral | unknown | 30 | 23 | 2026-11-17 | [n-pollux.md](n-pollux.md) |
+| Treasure Cache | neutral | unknown | 30 | 24 | 2026-11-17 | [n-treasure_cache.md](n-treasure_cache.md) |
 
 ## Solarian space
 
@@ -260,8 +269,11 @@ never edited by hand. Files listed: 336. The format of a system file:
 | Alpheratz | neutral | unknown | 0 | 15 | 2026-11-17 | [n-alpheratz.md](n-alpheratz.md) |
 | Birchwood | neutral | unknown | 0 | 15 | 2026-11-17 | [n-birchwood.md](n-birchwood.md) |
 | Brightfall | neutral | unknown | 0 | 15 | 2026-11-16 | [n-brightfall.md](n-brightfall.md) |
+| Fang | neutral | unknown | 0 | 15 | 2026-11-17 | [n-fang.md](n-fang.md) |
+| Fumalsamakah | neutral | unknown | 0 | 15 | 2026-11-17 | [n-fumalsamakah.md](n-fumalsamakah.md) |
 | GSC-0019 | neutral | unknown | 0 | 15 | 2026-11-17 | [n-gsc_0019.md](n-gsc_0019.md) |
 | Pinecross | neutral | unknown | 0 | 15 | 2026-11-17 | [n-pinecross.md](n-pinecross.md) |
+| Propus | neutral | unknown | 0 | 15 | 2026-11-17 | [n-propus.md](n-propus.md) |
 | Revati | neutral | unknown | 0 | 15 | 2026-11-17 | [n-revati.md](n-revati.md) |
 | Tarazed | neutral | unknown | 0 | 15 | 2026-11-17 | [n-tarazed.md](n-tarazed.md) |
 | Taygeta | neutral | unknown | 0 | 15 | 2026-11-17 | [n-taygeta.md](n-taygeta.md) |
@@ -269,21 +281,27 @@ never edited by hand. Files listed: 336. The format of a system file:
 | Albireo | neutral | unknown | 0 | 16 | 2026-11-17 | [n-albireo.md](n-albireo.md) |
 | Alnitak | neutral | unknown | 0 | 16 | 2026-11-17 | [n-alnitak.md](n-alnitak.md) |
 | Arneb | neutral | unknown | 0 | 16 | 2026-11-17 | [n-arneb.md](n-arneb.md) |
+| Crosshaven | neutral | unknown | 0 | 16 | 2026-11-17 | [n-crosshaven.md](n-crosshaven.md) |
 | Diphda | neutral | unknown | 0 | 16 | 2026-11-17 | [n-diphda.md](n-diphda.md) |
 | Flintrock | neutral | unknown | 0 | 16 | 2026-11-17 | [n-flintrock.md](n-flintrock.md) |
+| GSC-0015 | neutral | unknown | 0 | 16 | 2026-11-17 | [n-gsc_0015.md](n-gsc_0015.md) |
 | Millhaven | neutral | unknown | 0 | 16 | 2026-11-17 | [n-millhaven.md](n-millhaven.md) |
 | Zibal | neutral | unknown | 0 | 16 | 2026-11-17 | [n-zibal.md](n-zibal.md) |
+| Ashenmoor | neutral | unknown | 0 | 17 | 2026-11-17 | [n-ashenmoor.md](n-ashenmoor.md) |
 | GSC-0010 | neutral | unknown | 0 | 17 | 2026-11-17 | [n-gsc_0010.md](n-gsc_0010.md) |
 | Keelbreak | neutral | unknown | 0 | 17 | 2026-11-17 | [n-keelbreak.md](n-keelbreak.md) |
 | Kornephoros | neutral | unknown | 0 | 17 | 2026-11-17 | [n-kornephoros.md](n-kornephoros.md) |
 | Kurhah | neutral | unknown | 0 | 17 | 2026-11-17 | [n-kurhah.md](n-kurhah.md) |
+| Menkib | neutral | unknown | 0 | 17 | 2026-11-17 | [n-menkib.md](n-menkib.md) |
 | Tiaki | neutral | unknown | 0 | 17 | 2026-11-17 | [n-tiaki.md](n-tiaki.md) |
 | Violethall | neutral | unknown | 0 | 17 | 2026-11-17 | [n-violethall.md](n-violethall.md) |
 | Whitecliff | neutral | unknown | 0 | 17 | 2026-11-17 | [n-whitecliff.md](n-whitecliff.md) |
+| Willowgate | neutral | unknown | 0 | 17 | 2026-11-17 | [n-willowgate.md](n-willowgate.md) |
 | Breckenridge | neutral | unknown | 0 | 18 | 2026-11-17 | [n-breckenridge.md](n-breckenridge.md) |
 | Frostpeak | neutral | unknown | 0 | 18 | 2026-11-17 | [n-frostpeak.md](n-frostpeak.md) |
 | Seginus | neutral | unknown | 0 | 18 | 2026-11-17 | [n-seginus.md](n-seginus.md) |
 | Shadowmere | neutral | unknown | 0 | 18 | 2026-11-17 | [n-shadowmere.md](n-shadowmere.md) |
+| Tabit | neutral | unknown | 0 | 18 | 2026-11-17 | [n-tabit.md](n-tabit.md) |
 | Wolf 359 | neutral | unknown | 0 | 18 | 2026-11-17 | [n-wolf_359.md](n-wolf_359.md) |
 | 36 Ophiuchi | neutral | unknown | 0 | 19 | 2026-11-17 | [n-36_ophiuchi.md](n-36_ophiuchi.md) |
 | Ancha | neutral | unknown | 0 | 19 | 2026-11-17 | [n-ancha.md](n-ancha.md) |
@@ -294,22 +312,39 @@ never edited by hand. Files listed: 336. The format of a system file:
 | Stonecrest | neutral | unknown | 0 | 19 | 2026-11-17 | [n-stonecrest.md](n-stonecrest.md) |
 | Willowthorn | neutral | unknown | 0 | 19 | 2026-11-17 | [n-willowthorn.md](n-willowthorn.md) |
 | GSC-0001 | neutral | unknown | 0 | 20 | 2026-11-17 | [n-gsc_0001.md](n-gsc_0001.md) |
+| GSC-0011 | neutral | unknown | 0 | 20 | 2026-11-17 | [n-gsc_0011.md](n-gsc_0011.md) |
+| GSC-0018 | neutral | unknown | 0 | 20 | 2026-11-17 | [n-gsc_0018.md](n-gsc_0018.md) |
+| Highcrest | neutral | unknown | 0 | 20 | 2026-11-17 | [n-highcrest.md](n-highcrest.md) |
+| Kepler-62 | neutral | unknown | 0 | 20 | 2026-11-17 | [n-kepler_62.md](n-kepler_62.md) |
 | Meridian | neutral | unknown | 0 | 20 | 2026-11-17 | [n-meridian.md](n-meridian.md) |
 | Navi | neutral | unknown | 0 | 20 | 2026-11-17 | [n-navi.md](n-navi.md) |
 | Undercliff | neutral | unknown | 0 | 20 | 2026-11-17 | [n-undercliff.md](n-undercliff.md) |
+| Alshat | neutral | unknown | 0 | 21 | 2026-11-17 | [n-alshat.md](n-alshat.md) |
 | Alula | neutral | unknown | 0 | 21 | 2026-11-17 | [n-alula.md](n-alula.md) |
+| Alzirr | neutral | unknown | 0 | 21 | 2026-11-17 | [n-alzirr.md](n-alzirr.md) |
+| Duskmere | neutral | unknown | 0 | 21 | 2026-11-17 | [n-duskmere.md](n-duskmere.md) |
+| Edgewater | neutral | unknown | 0 | 21 | 2026-11-17 | [n-edgewater.md](n-edgewater.md) |
+| Libertas | neutral | unknown | 0 | 21 | 2026-11-17 | [n-libertas.md](n-libertas.md) |
+| Minkar | neutral | unknown | 0 | 21 | 2026-11-17 | [n-minkar.md](n-minkar.md) |
 | Mintaka | neutral | unknown | 0 | 21 | 2026-11-17 | [n-mintaka.md](n-mintaka.md) |
 | Northwick | neutral | unknown | 0 | 21 | 2026-11-17 | [n-northwick.md](n-northwick.md) |
+| Quarrytown | neutral | unknown | 0 | 21 | 2026-11-17 | [n-quarrytown.md](n-quarrytown.md) |
 | Summervale | neutral | unknown | 0 | 21 | 2026-11-17 | [n-summervale.md](n-summervale.md) |
 | Sunhaven | neutral | unknown | 0 | 21 | 2026-11-17 | [n-sunhaven.md](n-sunhaven.md) |
 | 61 Cygni | neutral | unknown | 0 | 22 | 2026-11-17 | [n-61_cygni.md](n-61_cygni.md) |
+| Alsephina | neutral | unknown | 0 | 22 | 2026-11-17 | [n-alsephina.md](n-alsephina.md) |
 | Daybreak | neutral | unknown | 0 | 22 | 2026-11-17 | [n-daybreak.md](n-daybreak.md) |
 | Farpoint | neutral | unknown | 0 | 22 | 2026-11-17 | [n-farpoint.md](n-farpoint.md) |
 | GSC-0026 | neutral | unknown | 0 | 22 | 2026-11-17 | [n-gsc_0026.md](n-gsc_0026.md) |
+| GSC-0036 | neutral | unknown | 0 | 22 | 2026-11-17 | [n-gsc_0036.md](n-gsc_0036.md) |
 | Jabbah | neutral | unknown | 0 | 22 | 2026-11-17 | [n-jabbah.md](n-jabbah.md) |
+| Larchfield | neutral | unknown | 0 | 22 | 2026-11-17 | [n-larchfield.md](n-larchfield.md) |
+| Matar | neutral | unknown | 0 | 22 | 2026-11-17 | [n-matar.md](n-matar.md) |
 | Muphrid | neutral | unknown | 0 | 22 | 2026-11-17 | [n-muphrid.md](n-muphrid.md) |
+| Sunridge | neutral | unknown | 0 | 22 | 2026-11-17 | [n-sunridge.md](n-sunridge.md) |
 | TOI-700 | neutral | unknown | 0 | 22 | 2026-11-17 | [n-toi_700.md](n-toi_700.md) |
 | Vega | neutral | unknown | 0 | 22 | 2026-11-17 | [n-vega.md](n-vega.md) |
+| Vindemiatrix | neutral | unknown | 0 | 22 | 2026-11-17 | [n-vindemiatrix.md](n-vindemiatrix.md) |
 | Alioth | neutral | unknown | 0 | 23 | 2026-11-17 | [n-alioth.md](n-alioth.md) |
 | Copperfield | neutral | unknown | 0 | 23 | 2026-11-17 | [n-copperfield.md](n-copperfield.md) |
 | GSC-0047 | neutral | unknown | 0 | 23 | 2026-11-17 | [n-gsc_0047.md](n-gsc_0047.md) |
@@ -321,17 +356,21 @@ never edited by hand. Files listed: 336. The format of a system file:
 | Zubenelgenubi | neutral | unknown | 0 | 23 | 2026-11-17 | [n-zubenelgenubi.md](n-zubenelgenubi.md) |
 | Zubeneschamali | neutral | unknown | 0 | 23 | 2026-11-17 | [n-zubeneschamali.md](n-zubeneschamali.md) |
 | Algiedi | neutral | unknown | 0 | 24 | 2026-11-17 | [n-algiedi.md](n-algiedi.md) |
+| Almach | neutral | unknown | 0 | 24 | 2026-11-17 | [n-almach.md](n-almach.md) |
 | Alsuhail | neutral | unknown | 0 | 24 | 2026-11-17 | [n-alsuhail.md](n-alsuhail.md) |
 | Gliese 667 | neutral | unknown | 0 | 24 | 2026-11-17 | [n-gliese_667.md](n-gliese_667.md) |
 | GSC-0025 | neutral | unknown | 0 | 24 | 2026-11-17 | [n-gsc_0025.md](n-gsc_0025.md) |
 | Longshore | neutral | unknown | 0 | 24 | 2026-11-17 | [n-longshore.md](n-longshore.md) |
 | Menkalinan | neutral | unknown | 0 | 24 | 2026-11-17 | [n-menkalinan.md](n-menkalinan.md) |
+| Nusakan | neutral | unknown | 0 | 24 | 2026-11-17 | [n-nusakan.md](n-nusakan.md) |
 | Praecipua | neutral | unknown | 0 | 24 | 2026-11-17 | [n-praecipua.md](n-praecipua.md) |
 | Ross 128 | neutral | unknown | 0 | 24 | 2026-11-17 | [n-ross_128.md](n-ross_128.md) |
 | Sadalbari | neutral | unknown | 0 | 24 | 2026-11-17 | [n-sadalbari.md](n-sadalbari.md) |
 | Sadalmelik | neutral | unknown | 0 | 24 | 2026-11-17 | [n-sadalmelik.md](n-sadalmelik.md) |
 | Silverpine | neutral | unknown | 0 | 24 | 2026-11-17 | [n-silverpine.md](n-silverpine.md) |
 | Taiyi | neutral | unknown | 0 | 24 | 2026-11-17 | [n-taiyi.md](n-taiyi.md) |
+| Thornfield | neutral | unknown | 0 | 24 | 2026-11-17 | [n-thornfield.md](n-thornfield.md) |
+| Unukalhai | neutral | unknown | 0 | 24 | 2026-11-17 | [n-unukalhai.md](n-unukalhai.md) |
 | 55 Cancri | neutral | unknown | 0 | 25 | 2026-11-17 | [n-55_cancri.md](n-55_cancri.md) |
 | Alcor | neutral | unknown | 0 | 25 | 2026-11-17 | [n-alcor.md](n-alcor.md) |
 | Alniyat | neutral | unknown | 0 | 25 | 2026-11-17 | [n-alniyat.md](n-alniyat.md) |
@@ -363,6 +402,7 @@ never edited by hand. Files listed: 336. The format of a system file:
 | Inquill | neutral | unknown | 0 | 27 | 2026-11-17 | [n-inquill.md](n-inquill.md) |
 | Sceptrum | neutral | unknown | 0 | 27 | 2026-11-17 | [n-sceptrum.md](n-sceptrum.md) |
 | Foxglove | neutral | unknown | 0 | 28 | 2026-11-17 | [n-foxglove.md](n-foxglove.md) |
+| Ironveil | neutral | unknown | 0 | 28 | 2026-11-17 | [n-ironveil.md](n-ironveil.md) |
 | Luyten 789 | neutral | unknown | 0 | 28 | 2026-11-17 | [n-luyten_789.md](n-luyten_789.md) |
 | Sadr | neutral | unknown | 0 | 28 | 2026-11-17 | [n-sadr.md](n-sadr.md) |
 | Alcyone | neutral | unknown | 0 | 29 | 2026-11-17 | [n-alcyone.md](n-alcyone.md) |
