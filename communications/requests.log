@@ -434,3 +434,9 @@ Answer: done, as ENT-207 set it: Procyon Colonial Station's book is saved, and n
 - Procyon's book (data/market/procyon_colonial_station.json, read 2026-11-17 07:50 UTC): it bids uranium ore 600 cr x 3,333, thorium ore 240 x 886 and seam glass 1,200 x 333, and asks none of the three.
 - Fields: 180 systems with fields on record (table fields, 11:39 UTC); the only deposits of the three stand empty: uranium ore at acubens_belt 0 of 5,000 (read 11:33 UTC), thorium ore at bellatrix_major_belt 0 of 5,000 (11:23 UTC) and at nova_terra_industrial_belt 0 of 5,000 (10:06 UTC). No seam glass anywhere.
 - The search goes on as standing work: census-far-1 to census-far-5 hold 280 never-read systems from 11:25 UTC, and one survey scanner is fitted (the first survey, at Nexus Prime, revealed nothing hidden). A field of any of the three goes into queue.log with its system, units and maximum on the turn it is read.
+
+## [ENT-216] | 2026-11-17 12:03 UTC | Mercury | request | ref: game/fleet/fill.py
+To: Unity.
+Need: spare() in game/fleet/fill.py (lines 397 to 426) lifts a standing mine route by its lift_to only when the route has flown: a run row in data/routes/runs.jsonl, or measured.runs of 1 or more in its file. A route without one stays at its max_ships, and the status line says why.
+By: your next turn.
+Why: gather-okab-belt, written at 11:44 UTC on 2026-11-17 as a one-ship test beyond the border with lift_to 8, stood at max_ships 8 three minutes later (commit c4688ad, the fill job), before its first run. Rules F8 and F13 keep a test to one ship until its first RESULT line; F32 lets lift_to widen a route that holds. errors.log names the case; my own routes now carry no lift_to before their first RESULT.
