@@ -12,12 +12,15 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 34.
+Routes: 37.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
 | [census-voidborn](census-voidborn.json) | census | home space | Read one Voidborn system whole: deposits, creatures, order book, mission board | up to 4 ships | 186 | 7 | -70 | -550 | 2026-11-17 |
-| [craft-steel-node-beta](craft-steel-node-beta.json) | circuit | home space | Steel plate made by hand at the Node Beta workshop from the pilot's own stored iron ore, kept in its storage there for the faction's ladder and the station (the reserve) | up to 3 ships, with 800 iron_ore stored at node_beta_industrial_station, standing work | 25 | 7 | -40 | -410 | 2026-11-17 |
+| [craft-steel-central-nexus](craft-steel-central-nexus.json) | circuit | home space | Steel plate made by hand at the Central Nexus workshop from the pilot's own stored iron ore, kept in its storage there for the reserve; open to a ship of any role | up to 2 ships, with 300 iron_ore stored at central_nexus, standing work | TBD | TBD | TBD | TBD | -- |
+| [craft-steel-node-beta](craft-steel-node-beta.json) | circuit | home space | Steel plate made by hand at the Node Beta workshop from the pilot's own stored iron ore, kept in its storage there for the reserve; open to a ship of any role | up to 11 ships, with 550 iron_ore stored at node_beta_industrial_station, standing work | 25 | 7 | -40 | -410 | 2026-11-17 |
+| [craft-steel-refine-node-beta](craft-steel-refine-node-beta.json) | circuit | home space | A test: steel plate refined in a public facility at Node Beta (refine_steel, 5 iron ore for 2 plate and a fee) from the pilot's own stored iron ore | up to 1 ships, with 550 iron_ore stored at node_beta_industrial_station, standing work | TBD | TBD | TBD | TBD | -- |
+| [craft-steel-synchrony-hub](craft-steel-synchrony-hub.json) | circuit | home space | Steel plate made by hand at the Synchrony Hub workshop from the pilot's own stored iron ore, kept in its storage there for the reserve; open to a ship of any role | up to 3 ships, with 300 iron_ore stored at synchrony_hub, standing work | TBD | TBD | TBD | TBD | -- |
 | [park](park.json) | circuit | home space | Dock at Central Nexus and wait there: a docked ship costs nothing | the park route | 245 | 5 | 0 | 30 | 2026-11-17 |
 | [store-hold-central-nexus](store-hold-central-nexus.json) | circuit | home space | A ship a run left loaded docks at Central Nexus and stores its hold | up to 40 ships, goods aboard, standing work | 27 | 1 | 0 | 0 | 2026-11-17 |
 | [train-navigation-trader](train-navigation-trader.json) | circuit | home space | Navigation for traders one level short of Signal Fragments: five jumps through our own stations, nothing carried | up to 20 ships, under navigation 3, standing work | 97 | 15 | 0 | 20 | 2026-11-17 |

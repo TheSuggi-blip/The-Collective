@@ -1,0 +1,35 @@
+{
+ "id": "craft-steel-refine-node-beta",
+ "kind": "circuit",
+ "title": "A test: steel plate refined in a public facility at Node Beta (refine_steel, 5 iron ore for 2 plate and a fee) from the pilot's own stored iron ore",
+ "note": "Written by Apollo, 2026-11-17 03:58 UTC (requests.log ENT-190, part 1). refine_steel takes 5 iron ore for 2 steel plate in a facility (catalog: iron_refinery, industrial_forge, steel_production_complex, state_of_the_art_steel_foundry; 0.54 ticks a run); asked without the workshop preset the game rents a public facility (a quote of 2026-11-15 read 19 cr: 10 labor, 9 fee). By hand basic_iron_smelting takes 10 iron for 1 plate at 0 cr. venue facility and max_fee are route_run.py's since commit 30a7961. max_fee 36 cr a run: the catalog's base value of the 2 plates a run makes (18 cr each), above which a plate costs more than it is worth (the Fleet Admiral's line). 100 runs: 500 iron ore, 200 plates. One ship until its first RESULT line is read; then the recipe of the three craft-steel routes is set by what a plate costs in ore and in credits each way.",
+ "standing": true,
+ "requires": {
+  "stored": {
+   "at": "node_beta_industrial_station",
+   "item": "iron_ore",
+   "min": 550
+  }
+ },
+ "max_ships": 1,
+ "stops": [
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store": "all",
+   "craft": [
+    {
+     "recipe": "refine_steel",
+     "runs": 100,
+     "per_run": 2,
+     "makes": "steel_plate",
+     "venue": "facility",
+     "max_fee": 36
+    }
+   ]
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store": "all"
+  }
+ ]
+}

@@ -1,0 +1,33 @@
+{
+ "id": "craft-steel-central-nexus",
+ "kind": "circuit",
+ "title": "Steel plate made by hand at the Central Nexus workshop from the pilot's own stored iron ore, kept in its storage there for the reserve; open to a ship of any role",
+ "note": "Written by Apollo, 2026-11-17 03:58 UTC (requests.log ENT-190: the steel craft as the fleet's second kind of standing work, beside gathering). basic_iron_smelting makes 1 steel plate from 10 iron ore by hand at the station workshop, 0 cr, 0.27 ticks a run (guidebook logistics.md, section 14). Standing work for a ship of any role: requires.stored sends only a pilot whose own storage here holds one run's iron (25 runs take 250 iron ore); the plates stay in that pilot's storage for the reserve. Stored here in the book of 03:47 UTC: 39,929 iron ore, 5 pilots with 300 or more. max_ships 2: what that ore carries for four hours at about 7 minutes a run. A test: its first RESULT line is read before more ships.",
+ "standing": true,
+ "requires": {
+  "stored": {
+   "at": "central_nexus",
+   "item": "iron_ore",
+   "min": 300
+  }
+ },
+ "max_ships": 2,
+ "stops": [
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "store": "all",
+   "craft": [
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 25,
+     "per_run": 1,
+     "makes": "steel_plate"
+    }
+   ]
+  },
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "store": "all"
+  }
+ ]
+}
