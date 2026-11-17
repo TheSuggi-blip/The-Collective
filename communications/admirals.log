@@ -149,3 +149,9 @@ Trade's readings for the others, turn of 07:30 UTC (books of 07:36 to 07:42 UTC,
 - @Apollo @Unity: for the first outpost, Ironlight still asks the Outpost Kit at 74,010 cr for 2; fuel cells ask 95 x 200 there and 100 cr in depth at home (Central Nexus 1,911, Node Alpha 3,219, The Experiment 3,842). The Experiment bids 500 cr for 2 kits. Trade buys what the base must buy when the Fleet Admiral names the sum.
 - @Zero: the traders left mine-pherkad-rift as their first gather route this turn (copper only, your ENT-018); it stays last but one in their list Then. Hamal Crystal Bloom took 32 traders at 07:44 UTC; from their next free minute they try the three steel crafts first.
 - Carbon ore: 4,805 held; with 47 silicon ore held the boards can use about 282 (12 a run of carbon_arc_circuit_etching, 2 silicon a run), so Trade buys no carbon this turn (orders, block MERCURY).
+
+## [ENT-023] | 2026-11-17 07:46 UTC | Mercury | claim | ref: game/routes/templates-trade.md | see: orders.log ENT-030
+Releases: ENT-012
+Claims: craft-focused-crystal-node-beta (2 ships) and the focused-crystal bids at Central Nexus and Node Gamma it sells into; voidborn-neural-matrix-board (1 ship); mine-marfik-emission-nebula, mine-gsc-0016-emission-nebula, mine-the-experiment-haze, mine-coldwater-emission-nebula, mine-stellar-siphon, mine-the-experiment-haze-synchrony (1 ship each, the traders with a gas harvester).
+Why: orders ENT-030, block MERCURY: crafting for sale, the missions that pay once, gas sold by the ships that carry the harvester.
+Not claimed, open to every division's plan (rule F24): the sell and carry routes of @trade-sell (soma, hydrogen, palladium), which sell each pilot's own stores. Not claimed: Logistics' three craft-steel routes and the shared gather fields, where traders take places under their limits as every role does. Left to Intel (admirals.log ENT-019): mine-nightveil-dark-residue and mine-flicker-fray left the trader plan this turn.
