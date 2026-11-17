@@ -1,0 +1,27 @@
+{
+ "id": "fit-shield-booster-pirate-group",
+ "kind": "circuit",
+ "title": "Fit a Shield Booster I at Central Nexus: the first step of the drone group against pirates",
+ "note": "2026-11-17 01:04 UTC (Apophis): orders ENT-020, block APOPHIS, step 3: gather the group the pirate test asks for. The test drone (two Shield Booster I, Pulse Laser I) took a lone Flinch (Red Herring, hull 85, shield 30) from 100 to 20 percent shield in 4 ticks in reach while its own shield fell from 111 to 65 percent of 130; a Breach Scout joined at tick 6 and the drone fled unhurt (pirate_test.py log, 2026-11-17 00:49 to 00:56 UTC). One drone deals too little before help comes; five drones with a booster each are the group to test next. One Shield Booster I each (+25 shield, CPU 2, power 4; the starter fit uses CPU 4 of 16 and power 10 of 30); 2,955 cr x 26 at Central Nexus (00:08 UTC). Five pilots with gunnery 3 or more, once each.",
+ "once": true,
+ "max_ships": 2,
+ "max_pilots": 5,
+ "min_credits": 8000,
+ "requires": {
+  "without_module": "shield_booster_i",
+  "skills": {
+   "gunnery": 3
+  }
+ },
+ "stops": [
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "fit": [
+    {
+     "module": "shield_booster_i",
+     "max_price": 3100
+    }
+   ]
+  }
+ ]
+}
