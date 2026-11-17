@@ -27,8 +27,8 @@ at the end of every turn.
 The hauler's class in short (rule F14): it moves, makes and builds. The detail is in section 4
 (levelling), section 5 (ships and fits) and section 15 (base building). Sources: the catalog's tables
 `skills`, `hulls` and `facilities` (catalog 0.723.2), the game's help of `spacemolt_facility` and its
-list of 318 actions (`get_commands`, read 2026-11-17 07:58 UTC), the table `ship_skills` and the tool
-fleet with view=levels (levels below: 2026-11-17 12:01 UTC).
+list of actions (`get_commands`), the table `ship_skills` and the tool fleet with view=levels (levels
+below: 2026-11-17 16:05 UTC).
 
 ### Ships
 
@@ -38,7 +38,7 @@ fleet with view=levels (levels below: 2026-11-17 12:01 UTC).
   hauler's next hull, for it holds and survives, but no listing and no commission quote of it was
   read; Prayer (540, no shield) and Congregation (1,900, speed 1) are Outer Rim hulls listed on the
   exchange (section 5). No slot: they haul and cannot gather. None tested.
-- Tier 2, Piloting 10 (about 57 hours away): Apophenia, the Voidborn freighter, cargo 240, hull 140,
+- Tier 2, Piloting 10 (about 45 hours away): Apophenia, the Voidborn freighter, cargo 240, hull 140,
   shield 145, fuel 300.
 - Fit: hold first (Cargo Expander I, +20 hold, 352 cr); a Gas Harvester I only for the gas haulers.
   Default stance flee (game 0.721.0), set by script from 2026-11-17 07:54 UTC.
@@ -49,48 +49,49 @@ fleet with view=levels (levels below: 2026-11-17 12:01 UTC).
 
 | Skill | Why it matters | What trains it, on which routes | Logistics now | Next goal |
 |---|---|---|---|---|
-| Crafting | Station workshop speed x1 at level 0 to x5 at 100 (the higher of Crafting and Refining); facility jobs ignore it | Crafting at a station: `@craft-reserve` (steel, copper piping), `craft-boards-*`, the Workshop Production Run mission (25 XP) | 2 to 4 on 38 haulers (2.7 on average) | 5 on the builder, 3 on every hauler |
-| Refining | The same speed rule; smelting, gas and ice processing | `basic_iron_smelting` on `@craft-reserve` (crafting and refining rose together, 145 runs) | 2 to 4 on 38 (2.7) | as Crafting |
-| Corporation Management | A faction facility of tier N asks its builder for level N (tier 1 asks none); needed for a station of our own | Building a faction facility: one Lockbox build took the builder from 0 to 3 (185 of 585 XP, the Fleet Admiral's reading of 2026-11-17 09:58 UTC) | 3 on the builder, 0 on the other three haulers of the faction | 4 on the builder, by the Hiring Board and the offices |
-| Navigation | Fuel and jump fuel -1% a level, jump time -1% | Every jump: `@stored-goods` carries, the builder's hauls | 3 to 5 (3.6) | 5 |
-| Piloting | Tier 2 hulls at 10, tier 3 at 20 | Flying, jumping, mining; 20 XP with each board mission | 5 / 7 / 8 (lowest, median, highest), 174 XP an hour, 50 hours to 10 | 10 |
-| Voidborn Mastery | Our empire's skill: +1% cloak and energy weapon damage a level (rule F35) | Only Voidborn missions: the list First of the plan | 0 to 1 on 39 haulers (0.1) | 1 on every hauler |
-| Engineering | Module power and CPU -1% a level, for a fuller fit | Crafting components or modules (the harvester chain) | 0 to 2 on 29 (0.1) | 2 on the builder |
+| Crafting | Station workshop speed x1 at level 0 to x5 at 100 (the higher of Crafting and Refining); facility jobs ignore it | Crafting at a station: `@craft-reserve` (steel, copper piping), `craft-boards-*`, the Workshop Production Run mission (25 XP) | 2 to 5 on 39 haulers (3.6 on average; 10 at 5) | 5 on the builder (held), 4 on every hauler |
+| Refining | The same speed rule; smelting, gas and ice processing | `basic_iron_smelting` on `@craft-reserve` (crafting and refining rise together) | 2 to 5 on 39 (3.3) | as Crafting |
+| Corporation Management | A faction facility of tier N asks its builder for level N (tier 1 asks none); needed for a station of our own | Building or upgrading a faction facility: the Lockbox took the builder from 0 to 3, the Hiring Board from 3 to 4 | 4 on the builder, 1 on three haulers, 0 on 30 | 5 on the builder: the Recruitment Center is a tier-3 upgrade, the higher offices ask more |
+| Navigation | Fuel and jump fuel -1% a level, jump time -1% | Every jump: `@stored-goods` carries, the builder's hauls | 3 to 5 (4.0) | 5 |
+| Piloting | Tier 2 hulls at 10, tier 3 at 20 | Flying, jumping, mining; 20 XP with each board mission | 6 / 7 / 8 (lowest, median, highest), 175 XP an hour, 45 hours to 10 | 10 |
+| Voidborn Mastery | Our empire's skill: +1% cloak and energy weapon damage a level (rule F35) | Only Voidborn missions: the list First of the plan | 1 on 6 haulers, 0 on 33 | 1 on every hauler |
+| Engineering | Module power and CPU -1% a level, for a fuller fit | Crafting components or modules (the harvester chain) | 2 on the builder, 0 on 29 | 2 on the builder (held) |
 | Trading | Sales of stored goods | Each sale: `@stored-goods` | 1 to 2 (1.8) | 3 |
-| Mining, Deep Core Mining | The fallback only (rule F23) | `@gather-reserve`, `@gas-harvest`, the Then list | mining 4 to 7 (5.7), deep core 4 to 9 (7.0) | not a goal |
+| Mining, Deep Core Mining | The fallback only (rule F23) | `@gather-reserve`, `@gas-harvest`, the Then list | mining 4 to 8 (6.2), deep core 5 to 9 (7.5) | not a goal |
 
 ## Standing Plan
 
-What the 40 haulers fly between two turns (2026-11-17 12:10 UTC, orders.log ENT-036), from the
+What the 40 haulers fly between two turns (2026-11-17 16:05 UTC, orders.log ENT-037), from the
 division's plan file (`plan.py show`; the role plan `game/routes/plan-hauler.md` is written from
 it). A free hauler takes the first route open to it of: the list First, its own routes, the list
-Then. Figures: the runs of the four hours to 11:45 UTC (the briefing's standing fleet), credits per
-ship-hour flown; the division's SUM line read 18,268 cr an hour of steady income over those runs,
-680 per ship-hour flown, busy 67% of 160 ship-hours.
+Then. Figures: credits per ship-hour flown over the runs of the last four hours, every division's
+pilots on the route counted (view route_earnings, 16:05 UTC). The briefing's SUM line at 15:46 UTC:
+35 haulers on standing work, 3 on routes that pay, 1 on a test, 1 on a once mission; -2,758 cr an
+hour of steady income over four hours of runs and 12,322 cr an hour paid once; busy 74% of 160
+ship-hours.
 
 | Order | Template or routes | Ships | Carries | Per ship-hour (dated reading) | Why it stands here |
 |---|---|---|---|---|---|
-| First (every ship) | the 18 once missions (`voidborn-*`, `mission-cracking-the-shell-central`) | as their files say | -- | 2,032 cr paid once to haulers in the four hours | Strategy, principle 5; rule F35 |
-| By script, this turn | the builder at Node Beta (`build.py`, section 15.4), two haulers carry crystal and copper to The Experiment | 3 | -- | fuel only | Orders ENT-036, block APOLLO (3): the Hiring Board, the gold boards |
-| Own 1 (the builder) | `outpost-kit-ironlight-to-experiment` (off: the kit costs 148,663 cr), then `craft-boards-gold-experiment` | 1 | the 90 gold, 90 copper and 30 crystal in its storage at The Experiment | not measured | The outpost (orders (2)); the Recruitment Desk's last 60 boards (orders (3)) |
-| Own 1 (the silicon hauler) | `craft-boards-node-beta`, then `gather-glasslight-shoal-silicon` | 1 | the 340 silicon ore it stores at Node Beta | the gather run -461 (1 run, 255 silicon ore) | Boards for the reserve (24,925 asked): 45 a run from 30 silicon |
-| Own 1, a test (rule F34) | `mission-workshop-production-run-node-beta` | 1 | -- | not measured; 3,500 cr and 25 crafting XP a pilot | Crafting missions are Logistics' |
-| Own 1 (two haulers) | `mine-achernar-gas-pocket`, `mine-grumium-belt` | 1 each | the bid at the selling end | Achernar -119 (3 runs), Grumium 2,677 (1 run, 20 palladium sold) | The best mine runs of the division |
-| Own (every hauler) | `@stored-goods`: Trade's hydrogen and soma sells first, then plate, plasma, liquid hydrogen | 1 a route, only the pilot that stores the good, only while its bid stands | one ship while its bid stands | sell-hydrogen-at-node-beta 19,015 (4 runs), sell-soma-at-node-beta 10,958 (11), carry-hydrogen-synchrony-to-experiment 9,688 (3), sell-soma-at-synchrony 9,320 (8), sell-hydrogen-at-node-gamma 8,042 (5), carry-soma-synchrony-to-alpha 4,225 (12) | The paying work of the division; Trade keeps the floors |
-| Own (the four gas haulers) | `@gas-harvest`: Achernar, Lesath, Amberfall | 1 each | the bid at the selling end | Achernar -119, Lesath -7,565 (1 run) | The gas they store feeds the hydrogen sells |
-| Own (every hauler) | `@craft-reserve`: steel at Node Beta, Central Nexus, Synchrony Hub, then `craft-piping-plate-node-beta` | 11, 2, 3 (any role); piping 1 until its first RESULT line | the iron, plate and copper each pilot stores | craft-steel-node-beta 7 (178 runs) | Steel and copper piping for the reserve at 0 cr; trains crafting and refining |
-| Own (every hauler) | `@gather-reserve`: Hamal Crystal Bloom, GSC-0027 Prism Scatter, Spacetime Seep | the fleet's shared caps | all three at their floors at 12:02 UTC | Hamal -214 (138 runs), Prism Scatter -140 (127) | The fallback: ore into storage. Not judged on pay |
-| Then (every ship) | `gather-schedar-belt`, `gather-ironhollow-echo-ejecta`, `census-frontier`, `park` | -- | Mining's caps (45 and 35 of every plan) | Schedar -386 (170 runs), Echo Ejecta -229 (40) | The Fleet Admiral's list for every plan |
+| First (every ship) | the 18 once missions (`voidborn-*`, `mission-cracking-the-shell-central`), then `mission-workshop-production-run-node-beta` (4 at a time) | as their files say | -- | the Workshop mission: 3,500 cr paid once a pilot, 5 runs and 17,500 cr once in four hours | Strategy, principle 5; rules F34, F35 |
+| Own 1 (the builder) | `outpost-kit-ironlight-to-experiment` (on from 15:55 UTC; limit 150,150 cr with the tax), then the founding by script (`found.py`), then `craft-boards-gold-experiment` | 1 | one kit | not measured | Orders ENT-037, block APOLLO (1) |
+| By script, this turn | the silicon hauler gives 60 boards and 175 plate into the builder's storage at Node Beta (`catch.py`, `stage.py`) | 1 | -- | fuel only | The Recruitment Desk (block APOLLO (2); requests.log ENT-234) |
+| Own 1 (the silicon hauler) | `craft-boards-node-beta`, then `gather-glasslight-shoal-silicon` | 1 | its silicon at Node Beta; the field takes 1 ship until Intel's two readings (requests.log ENT-230) | the gather run -465 (3 runs in 12 hours) | Boards for the reserve: 45 a run from 30 silicon |
+| Own 1 (two haulers) | `mine-achernar-gas-pocket`, `mine-grumium-belt` | 1 each | the bid at the selling end | Achernar 207 (10 runs in 12 hours), Grumium 964 (6) | The best mine runs of the division |
+| Own (every hauler) | `@stored-goods`: Trade's hydrogen and soma sells first, then plasma and liquid hydrogen | 1 a route, only the pilot that stores the good, only while its bid stands | one ship while its bid stands | sell-hydrogen-at-node-beta 29,600 (3 runs), sell-soma-at-experiment 28,800 (1), sell-soma-at-node-beta 13,601 (12), sell-soma-at-synchrony 9,380 (5), carry-soma-beta-to-gamma 7,717 (5), sell-hydrogen-at-node-gamma 6,448 (2), carry-hydrogen-synchrony-to-experiment 4,621 (2), carry-soma-synchrony-to-alpha 3,548 (3) | The paying work of the division; Trade keeps the floors |
+| Own (the four gas haulers) | `@gas-harvest`: Achernar, Lesath, Amberfall | 1 each | the bid at the selling end | Achernar -460 (2 runs), Amberfall -611 (1) | The gas they store feeds the hydrogen sells |
+| Own (every hauler) | `@craft-reserve`: steel at Node Beta, Central Nexus, Synchrony Hub, then the two piping crafts | 11, 2, 3; piping 8 and 14 | the iron, plate and copper each pilot stores | craft-steel-node-beta -226 (93 runs), craft-piping-node-beta -114 (107), craft-piping-plate-node-beta -163 (39) | Steel and copper piping for the reserve at 0 cr; trains crafting and refining |
+| Own (every hauler) | `@gather-reserve`: Hamal Crystal Bloom, GSC-0027 Prism Scatter, Spacetime Seep | the fleet's shared caps | Hamal and Prism Scatter at their floors (no run in four hours) | Spacetime Seep -208 (20 runs) | The fallback: ore into storage. Not judged on pay |
+| Then (every ship) | `gather-schedar-belt`, `gather-ironhollow-echo-ejecta`, `gather-okab-belt`, `gather-gj-3470-dewfall-fray`, `census-frontier`, `park` | -- | Mining's and Trade's caps (45, 35, 28, 13 for every plan) | Echo Ejecta -222 (85 runs), Schedar -308 (66), Okab -402 (52), GJ 3470 -338 (15) | The Fleet Admiral's list for every plan |
 
-So, for the four hours: once money where a pilot still holds a link; hydrogen and soma into each
-bid as it stands; the Hiring Board at Node Beta; 60 gold boards at The Experiment; 45 silicon boards
-a run at Node Beta; plate and piping from what haulers store; iron gathered at Schedar and Echo
-Ejecta by the rest.
+So, for the four hours: the outpost kit and the founding at GSC-0044; the Desk's goods put in one
+storage; once money where a pilot still holds a link, the Workshop mission for every hauler; hydrogen
+and soma into each bid as it stands; plate and piping from what haulers store; iron gathered at
+Schedar, Ironhollow, Okab and GJ 3470 by the rest.
 
-What changes it: the Fleet Admiral's word on the kit's price (switch the kit route on, section
-15.3); Schedar Belt at its floor (Mining expects it within about two hours): its haulers then take
-the piping and steel crafts first; the piping test's first RESULT line (lift it to the haulers that
-store plate); the Workshop mission's first RESULT line (lift it to every hauler that stores iron).
+What changes it: the founding's RESULT line (then the fuel test into the bunker and the supply
+routes, section 15.3); the Fleet Admiral's word on the Desk's fee (`build.py --upgrade`, section
+15.5); Intel's two readings of Glasslight Shoal (a second silicon ship); the Workshop mission's runs
+at 4 ships.
 
 ## 1. Route Guides
 
@@ -217,7 +218,10 @@ reading and no verdict: what a route earns now is in the fleet's database with i
   - Workshop Production Run (Central Nexus and Node Beta): craft_item, "Craft 5 items using any
     recipe", 3,500 cr, 25 crafting XP, 20 Piloting XP; template id `workshop_production_run`.
     `mission-workshop-production-run-node-beta` accepts, smelts 5 plates from the pilot's own iron
-    and hands in, all at Node Beta; a one-ship test from 12:00 UTC.
+    and hands in, all at Node Beta. First RESULT line 2026-11-17 12:41 UTC: 3 of 3 stops in 6.9 minutes,
+    +3,448 cr, 3,500 cr paid once; 5 runs and 17,500 cr once in the four hours to 16:05 UTC (view
+    route_earnings, every division's pilots). In the hauler plan's list First at 4 ships from 16:00 UTC:
+    every hauler that stores 60 iron ore at Node Beta flies it once.
   - Shipyard Supply at Node Beta (Mining Laser I 1,693 cr, Void Nanite Suspension 1,454 cr, Shield
     Emitter 6,377 cr): deliver_item; each carries a station-made mission id
     (`procurement_<hash>_<item>`) and no template id, so the circuit runner's accept step, which looks
@@ -480,11 +484,13 @@ goods we store until that order changes.
 
 ## 10. Open Tests
 
-- To read next turn (written 2026-11-17 12:30 UTC): the first RESULT lines of
-  `mission-workshop-production-run-node-beta` (and whether the board offers it again after the
-  hand-in), `craft-boards-gold-experiment` and the silicon hauler's `craft-boards-node-beta`; the
-  piping route at 8 ships; the Hiring Board done and the cap read 50; the kit's ask at Ironlight
-  Crossroads.
+- To read next turn (written 2026-11-17 16:10 UTC): the kit's second run and the founding's RESULT line
+  (`found.py`: base id, fee, treasury before and after); the first fuel into the outpost's bunker; the
+  Workshop mission at 4 ships; the Desk's goods in the builder's storage at Node Beta; the Fleet
+  Admiral's answer on the Desk's fee (requests.log ENT-234).
+- Done this turn: the Hiring Board stands (active, cap 50, 50 members, table faction of 15:57 UTC);
+  `craft-boards-gold-experiment` made its 60 boards (the builder's storage at The Experiment, 15:57 UTC);
+  the Workshop mission paid (section 1.6).
 - `craft-boards-node-beta`: first RESULT line 2026-11-17 04:47 UTC, 45 boards from 30 silicon in
   20 minutes, -770 cr (the carbon, booked once). `craft-boards-silicon-central-nexus`: 65 boards,
   09:58 UTC (section 1.2).
@@ -872,10 +878,19 @@ builder's Corporation Management went from 0 to 3 (queue.log ENT-159).
 The site is GSC-0044 (the Fleet Admiral, 2026-11-17 09:59 UTC; `game/map/sites.tsv`). The kit's
 price doubled before it was bought: Ironlight Crossroads asks 148,663 cr for its one kit since
 10:02 UTC (book read again 11:23 UTC), where two stood at 74,010 at 07:55 UTC; the catalog's base
-value of a kit is 150,000 cr. The kit route buys at 75,000 or less and stays off until the Fleet
-Admiral's word (requests.log ENT-218); it stands first in the builder's own routes. Military reads
-the road (no pirate on record on it or one jump from it, admirals.log ENT-036); a guard cannot
-follow a circuit yet. What follows is the plan of 08:06 UTC.
+value of a kit is 150,000 cr. The Fleet Admiral gave her word at 13:49 UTC (requests.log ENT-227): the
+kit at up to 150,000 cr, the founding fee from the treasury (`--treasury-ok` for this site). The route
+went on at 15:55 UTC with `min_credits` 155,000 and `max_pilots` 1, so only the builder flies it, and
+stands first in the builder's own routes. Its first run (16:04 UTC) bought nothing: a route's `max_price`
+counts the buyer's 1% tax (route_run.py, `offer`), and 148,663 x 1.01 = 150,150 is over 150,000; the
+limit is 150,150 from 16:08 UTC, the kit's price itself inside the allocation. No pirate on our record
+on the road or at the site (data/intel/sightings.jsonl and observations kind pirate, 15:54 UTC); a guard
+cannot follow a circuit yet. The founding is `found.py` of the skill logistics-stock, run by `catch.py`
+at the end of the kit's run: base_cost read docked, the kit withdrawn, the flight to GSC-0044 Belt
+(goals navigate-to-system and go-to-poi), base_cost read there, `deploy_outpost` with a name (the api's
+`build_outpost(name)`; the help names no parameter), the kit's leaving the hold as the proof, treasury
+and wallet read before and after; a kit still aboard goes back into storage at The Experiment. What
+follows is the plan of 08:06 UTC.
 
 The site was the Fleet Admiral's to choose. Mining and Intel name Garnet (admirals.log ENT-018,
 ENT-021), two jumps beyond The Experiment through Achernar: by the table systems that is 2 systems
@@ -914,3 +929,16 @@ Rent at Node Beta after: 69 cr a cycle for the Lockbox, the board's 26 to come. 
 to 50 when the board is done (catalog: build time 20 ticks). Left in the builder's storage at Node
 Beta: 40 circuit boards and 5 steel plate, the start of the Recruitment Desk's 100 boards and 200
 plate; the Desk's other 60 boards are the gold boards of `craft-boards-gold-experiment` (section 1.2).
+
+### 15.5 The Recruitment Desk (orders.log ENT-037, block APOLLO (2))
+
+The Desk is an upgrade of the Hiring Board (catalog: `recruitment_desk`, level 2, upgrades_from
+`hiring_board`, cap 100, 300,000 cr, 100 circuit boards, 200 steel plate), so the call is `faction_upgrade`
+with the board's facility_id and the type, not `faction_build` (the game's help of `spacemolt_facility`).
+`build.py --upgrade <facility_id>` does it with the same steps as a build. The goods (the tool stock and the
+table holdings, 15:57 UTC): Logistics holds 236 boards (175 at Node Beta, 60 gold boards at The Experiment, 1
+at Central Nexus) and, in one storage at Node Beta, 200 steel plate; 60 boards and 175 plate go into the
+builder's storage at Node Beta by script, where it holds 40 boards and 25 plate. The fee waits for the Fleet
+Admiral (requests.log ENT-234): the treasury read 205,591 cr at 15:57 UTC and the outpost takes 100,000 of
+it. The next office, the Recruitment Center (cap 200), takes 2,000,000 cr, 500 boards, 1,000 plate and 300
+flex polymer, and Corporation Management 3 of its builder.
