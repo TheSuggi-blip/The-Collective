@@ -41,7 +41,8 @@ import division                                   # noqa: E402  who asks
 DATA = os.environ.get("FLEET_DATA_ROOT", "/srv/collective/data")
 SIGNS = ("Another request for this account is already being processed", "This account is claimed by a fleet operation in progress")
 FRESH = 10 * 60                # an answer older than this is no sighting
-GAP = 25 * 60                  # two sightings further apart than this are not one claim (a mine run tries ten minutes, then logs one line)
+GAP = 40 * 60                  # two sightings further apart than this are not one claim: the dispatcher holds a pilot back 30 minutes after
+                               # three failed starts, and a mine run tries ten minutes, then logs one line
 PASSES = 3                     # passes that each found a newer answer
 SPAN = 10 * 60                 # ... from the first to the last, in seconds
 YOUNG = 6 * 60                 # ... and the newest answer no older than this: a claim that ended is not restarted away

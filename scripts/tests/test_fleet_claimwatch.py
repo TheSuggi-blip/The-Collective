@@ -89,7 +89,7 @@ class ClaimWatchTests(unittest.TestCase):
             self.log("miner-5", [(20, line)], now)
             state, got = self.watch.step(state, self.watch.sightings(str(self.data), now), now)
         self.assertEqual((got, state["seen"]["miner-5"]["passes"]), (["miner-5"], 3))
-        now = self.now + 60 * 60                                                                 # and an hour without an answer forgets it
+        now = self.now + 90 * 60                                                                 # and an hour without an answer forgets it (GAP: 40 minutes)
         state, got = self.watch.step(state, {}, now)
         self.assertEqual((got, state["seen"]), ([], {}))
 
