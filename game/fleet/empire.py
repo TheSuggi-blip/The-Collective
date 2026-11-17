@@ -59,6 +59,8 @@ FILE = "governance/empire.md"
 SITES = "game/map/sites.tsv"
 ID = "20261116T192710Z"                           # the file's id: it stays when the file is rewritten
 CYCLES_A_DAY = 86.4                               # rent is due every 100 ticks of about 10 s (game/rules/07-economy.md)
+BASE_CAP = 20                                   # members a faction holds without a recruitment office: the game's refusal of a
+                                                # join (faction_full, "maximum of 20 members", 2026-11-17 10:20 UTC)
 STATIONS, OUTPOSTS = 5, 8                         # bases a faction may hold (game/rules/09-factions.md)
 GIVES = {"faction_recruitment": "members", "faction_storage": "units per item type", "faction_storage_extension": "units per item type in a named bucket",
          "faction_market": "open faction orders", "faction_company_store": "members-only listings", "faction_missions": "posted missions",
@@ -231,6 +233,8 @@ def collect(data, root, see=look, force=False, pause=0.5, now=None):
     feed = ((read_json(Path(data) / "station" / "feed.json", {}) or {}).get("factions") or {}).get(tag) or {}
     ships = [s for s in (read_json(Path(data) / "fleet" / "fleet.json", {}) or {}).get("ships") or [] if isinstance(s, dict) and s.get("name")]
     rungs, version = ladder(data, pilot, see, old, force, pause)
+    recruit = {r.get("type"): r.get("cap") for r in rungs if isinstance(r, dict) and r.get("line") == "faction_recruitment"}
+    faction["members_limit"] = members_cap(facilities, recruit)        # the info's own members_limit is a page size
     state = {"written_at": now_text(now), "faction": faction, "members": members, "bases": bases, "facilities": facilities, "territory": territory, "sites": sites,
              "rent": rent, "garages": {"stations": (garages or {}).get("station_count"), "ships": (garages or {}).get("total_ships")} if garages is not None else old.get("garages") or {},
              "tax": {k: (tax or {}).get(k) for k in ("domicile", "net_taxable_profit", "income_tax_total", "tax_prepaid")} if tax is not None else old.get("tax") or {},
@@ -251,6 +255,20 @@ def save(data, state):
 
 def num(value, unit=""):
     return "not read" if not isinstance(value, (int, float)) else "{:,}".format(int(round(value))) + unit
+
+
+def members_cap(facilities, recruit):
+    """The faction's cap on members: BASE_CAP without a recruitment office; with offices, the best station's office in full
+    plus a quarter of each other station's (game/rules/09-factions.md). `members_limit` in the game's faction info is the
+    page size of its member list, not the cap (the help of spacemolt_faction info; read wrongly as a cap of 50 until a
+    join was refused at 20 on 2026-11-17)."""
+    best = {}
+    for f in facilities or []:
+        cap = recruit.get(f.get("type"))
+        if isinstance(cap, int) and not isinstance(cap, bool) and str(f.get("status") or "active") == "active":
+            best[f.get("base")] = max(best.get(f.get("base"), 0), cap)
+    caps = sorted(best.values(), reverse=True)
+    return max(BASE_CAP, caps[0] + sum(c // 4 for c in caps[1:])) if caps else BASE_CAP
 
 
 def table(head, rows):

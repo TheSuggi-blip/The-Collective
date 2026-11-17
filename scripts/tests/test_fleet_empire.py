@@ -70,6 +70,14 @@ class Tree(unittest.TestCase):
 
 
 class CollectTests(Tree):
+    def test_the_member_cap_is_twenty_without_an_office_and_the_best_office_plus_a_quarter_with_them(self):
+        recruit = {"hiring_board": 50, "recruitment_desk": 100}
+        self.assertEqual(empire.members_cap([], recruit), 20)                       # the info's members_limit (a page size) plays no part
+        self.assertEqual(empire.members_cap([{"type": "faction_lockbox", "base": "a", "status": "active"}], recruit), 20)
+        self.assertEqual(empire.members_cap([{"type": "hiring_board", "base": "a", "status": "active"}], recruit), 50)
+        self.assertEqual(empire.members_cap([{"type": "recruitment_desk", "base": "a", "status": "active"}, {"type": "hiring_board", "base": "b", "status": "active"},
+                                             {"type": "hiring_board", "base": "c", "status": "under_construction"}], recruit), 112)
+
     def test_one_reading_holds_the_faction_its_bases_its_offices_the_territory_and_the_sites(self):
         state, notes = empire.collect(str(self.data), str(self.root), see=self.see(self.answers()), pause=0, now=0)
         self.assertEqual(notes, [])
