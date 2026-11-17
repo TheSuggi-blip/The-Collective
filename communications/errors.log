@@ -454,3 +454,11 @@ Second case, same turn: my first driver wrote its two log files into the reposit
 Cause: the host's stop is a signal to the runner, and mine.py stops the engine loop only on its normal way out; my script waited for the dock without asking why the goal was refused.
 Fix, done: catch.py of my skill logistics-stock stops a loop left behind (DELETE /accounts/<pilot>/loop) after a minute of 409 "A loop is running", for a pilot held by our own hand with no runner; both loops were stopped so at 04:01 UTC and the delivery finished at 04:11 UTC. Asked, not built: mine.py stops its loop in a finally, so a host stop ends it too (requests.log, this turn).
 Would it have prevented this one: the catch fix yes (the loop is stopped after a minute); the mine.py change yes, by itself.
+
+## [ENT-075] | 2026-11-17 04:35 UTC | Apophis | error | ref: game/routes/guidebook/military.md | see: orders.log ENT-027
+Class: a turn that flies ships by hand and waits in its shell for their ticks (what orders T4 now forbid).
+Case: my turn of 2026-11-17 00:00 UTC flew the one-drone pirate test by hand (pirate_test.py on a pilot held by hand, 00:44 to 00:57 UTC) and waited in the shell for it; Suggi ended the turn at 01:16 UTC, before its report, naming my hand play (orders ENT-021 to ENT-024, T4).
+Effect: no report and no session entry for that turn; its work is reported in this turn's report; no ship hurt, the test cost the 6,473 cr it was planned to cost.
+Cause: I treated a test as hand work to watch, not as a script to start and read at the next turn.
+Fix, done: the skill military-turn carries the rule (background scripts; by hand only the first flight of a call, ten minutes at most); this turn's pirate work ran as two background scripts (pirate_record.py, fleet_probe.py) and no shell call waited longer than a minute.
+Would it have prevented this one: yes; the test would have been one background start and a record read at the next turn.
