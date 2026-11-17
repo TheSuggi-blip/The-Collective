@@ -5,6 +5,8 @@ WHAT: every pilot pays its own fuel, repairs, fittings and tax from its own wall
       (data/fleet/fleet.json) and, for each pilot under LOW, has the richest ship of the same division give it
       credits up to TARGET (a credit gift: the game's storage `deposit` of item `credits` to the pilot's name; it
       works from anywhere, also while both ships fly). A division without a donor is helped by the command group.
+      When no single ship can give the whole need, several give, each what it holds above KEEP; the receiver is
+      read once after its gift, so that the fleet file and the dispatcher see it.
       Every gift is booked twice in data/fleet/onetime.json (`Wallet top-up`, minus for the giver, plus for the
       receiver), so it moves no division's steady money, and kept in data/fleet/gifts.jsonl.
       The dispatcher does its part (dispatch.py, FLOOR): a pilot under 5,000 cr is sent only on work that pays.
@@ -48,6 +50,7 @@ COOLDOWN = 30 * 60             # one gift per pilot in this many seconds
 WAIT = 45                      # seconds until the fleet file shows a gift the gate did not answer for (15 were too few: 2026-11-16, a gift that landed was booked unsure)
 BUDGET = 150                   # seconds a pass may give for: what is left waits for the next pass (the job runs every five minutes)
 TITLE = "Wallet top-up"
+MIN_GIFT = 1000                # a share smaller than this is not worth a call: what a donor holds above KEEP must reach it
 
 
 def wallets(data):
@@ -82,20 +85,38 @@ def recent(data, now):
 
 def plan_gifts(rows, given):
     """[(donor, pilot, credits)]: for each pilot under LOW, lowest first, the richest ship of its division that keeps
-    KEEP after the gift; else the richest of the command group."""
+    KEEP after giving the whole need (up to TARGET); else the richest of the command group. When no single ship can
+    give the whole need, several give: the ships of its division, richest first, each what it holds above KEEP (at
+    least MIN_GIFT), then the command group for the rest (requests ENT-176). Such a pilot may get less than TARGET."""
     purse = {name: credits for name, credits, _owner in rows}
     out = []
     for name, credits, owner in sorted(rows, key=lambda r: r[1]):
         if credits >= LOW or name in given:
             continue
         need = TARGET - credits
+        whole = None
         for group in (owner, "Unity"):
             donors = sorted(((purse[n], n) for n, _c, o in rows if o == group and n != name and purse[n] - need >= KEEP), reverse=True)
             if donors:
-                donor = donors[0][1]
-                purse[donor] -= need
-                purse[name] += need
-                out.append((donor, name, need))
+                whole = donors[0][1]
+                break
+        if whole is not None:
+            purse[whole] -= need
+            purse[name] += need
+            out.append((whole, name, need))
+            continue
+        for group in (owner, "Unity"):
+            for _have, donor in sorted(((purse[n], n) for n, _c, o in rows if o == group and n != name), reverse=True):
+                part = min(need, purse[donor] - KEEP)
+                if part < MIN_GIFT:
+                    break                                       # richest first: the rest can spare less
+                purse[donor] -= part
+                purse[name] += part
+                need -= part
+                out.append((donor, name, part))
+                if need < MIN_GIFT:
+                    break
+            if need < MIN_GIFT:
                 break
     return out
 
@@ -107,6 +128,16 @@ def give(donor, pilot, credits):
                                {"toolGroup": "spacemolt_storage", "action": "deposit", "params": {"item_id": "credits", "quantity": int(credits), "target": pilot}}, timeout=90)
     ok = status == 200 and '"error"' not in answer[:200]
     return ok, answer[:200]
+
+
+def refresh(pilot):
+    """One read of the receiver (`get_status`, a read: no ship is taken): the engine keeps the last wallet it read of a
+    docked ship, and the fleet file and the dispatcher see the gift only after a read (requests ENT-183)."""
+    import gate
+    try:
+        gate.call("post", "/accounts/%s/raw" % gate.q(pilot), {"toolGroup": "spacemolt", "action": "get_status", "params": {}}, timeout=30)
+    except Exception:                                           # a read that does not answer costs nothing: the next one shows it
+        pass
 
 
 def landed(data, pilot, was, credits):
@@ -185,6 +216,8 @@ def main(argv=None):
             done.append((donor, pilot, credits))
         else:
             failed.append((donor, pilot, text))
+    for pilot in dict.fromkeys(p for _d, p, _c in done):          # once per receiver, after its last gift
+        refresh(pilot)
     for donor, pilot, credits in done:
         print("given: %s -> %s %s cr" % (donor, pilot, format(credits, ",")))
     for donor, pilot, text in failed:

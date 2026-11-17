@@ -93,6 +93,29 @@ class WalletTests(unittest.TestCase):
         self.wallet.main(["topup", "--data", str(self.data)])
         self.assertEqual(calls, [])
 
+    def test_several_ships_give_when_no_one_can_give_the_whole_need_and_the_receiver_is_read_again(self):
+        # requests ENT-176 (Mercury): a trader at 298 cr, and no trader could give 19,702 cr and keep 30,000
+        self.put({"trader-1": 298, "trader-2": 45000, "trader-3": 40000, "trader-4": 30500, "Prime Directive": 31000})
+        rows = self.wallet.wallets(str(self.data))
+        gifts = self.wallet.plan_gifts(rows, {})
+        self.assertEqual(gifts, [("trader-2", "trader-1", 15000), ("trader-3", "trader-1", 4702)])   # richest first, each above KEEP only
+        self.put({"trader-1": 298, "trader-2": 36000, "trader-3": 32000, "Prime Directive": 33500})
+        gifts = self.wallet.plan_gifts(self.wallet.wallets(str(self.data)), {})
+        self.assertEqual(gifts, [("trader-2", "trader-1", 6000), ("trader-3", "trader-1", 2000), ("Prime Directive", "trader-1", 3500)])
+        self.put({"trader-1": 298, "trader-2": 30400, "Prime Directive": 30900})
+        self.assertEqual(self.wallet.plan_gifts(self.wallet.wallets(str(self.data)), {}), [])        # under 1,000 to spare: no call
+        self.put({"trader-1": 298, "trader-2": 45000, "trader-3": 40000})
+        sent, read = [], []
+        self.wallet.give = lambda donor, pilot, credits: (sent.append((donor, pilot, credits)) or True, "ok")
+        self.wallet.refresh = lambda pilot: read.append(pilot)
+        os.environ["HERMES_SESSION_PROFILE"] = "unity"
+        self.addCleanup(os.environ.pop, "HERMES_SESSION_PROFILE", None)
+        self.assertEqual(self.wallet.main(["topup", "--data", str(self.data)]), 0)
+        self.assertEqual(sent, [("trader-2", "trader-1", 15000), ("trader-3", "trader-1", 4702)])
+        self.assertEqual(read, ["trader-1"])                                                      # once, after its last gift
+        rows = json.loads((self.data / "fleet" / "onetime.json").read_text())
+        self.assertEqual(sum(r[3] for r in rows if r[2] == "Wallet top-up"), 0)
+
     def test_the_check_names_a_pilot_under_the_floor_and_a_member_tops_up_nothing(self):
         self.assertEqual(self.wallet.main(["check", "--data", str(self.data)]), 1)
         os.environ["HERMES_SESSION_PROFILE"] = "zero"
