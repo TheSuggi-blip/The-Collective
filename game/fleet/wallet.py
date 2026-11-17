@@ -68,7 +68,7 @@ MIN_GIFT = 1000                # a share smaller than this is not worth a call: 
 # The sweep into the faction's treasury (Suggi, 2026-11-17: a ship keeps up to 50,000 cr, the part above goes into the
 # treasury when it is convenient, a few ships a pass). It gives credits away by itself: off until the Fleet Admiral has
 # read `wallet.py sweep --dry-run` on the live data and switched it on.
-SWEEP_ENABLED = False
+SWEEP_ENABLED = True    # on since 2026-11-17 20:20 UTC, after its dry run on live data
 SWEEP_AT = 60000               # a ship holding this much gives what it holds above KEEP_SHIP
 KEEP_SHIP = 50000              # what a ship keeps
 MIN_DEPOSIT = 20000            # the leader deposits once it holds this much above KEEP_SHIP

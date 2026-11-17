@@ -751,7 +751,7 @@ def resting(routes, rows, now):
 # A route that does not pay rests, never for good (decisions D227, orders D13; rules F8, F22). Measured 2026-11-17 on
 # 48 hours of runs: of 60 judged routes closed in three or more six-hour windows, 33 paid in sum (+1,356,158 cr: their
 # buyers come and go) and 24 lost again on every opening (-141,260 cr). So a rest grows with the record and wakes early.
-ENABLED_RESTS = False        # off until the Fleet Admiral has read `dispatch.py --dry-run` on live data: it changes which routes fly
+ENABLED_RESTS = True         # on since 2026-11-17 20:20 UTC, after the dry run on a copy of the live data (round r20)
 REST_HOURS = (6, 24, 72)     # the rest of level 1, 2 and 3
 RESET_HOURS = 72             # a rest that ended longer ago is forgotten: the route's next rest is of level 1
 NET_HOURS = 48               # a route whose runs of this window paid in sum rests REST_HOURS[0] at most

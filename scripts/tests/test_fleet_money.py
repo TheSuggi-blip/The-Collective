@@ -276,7 +276,7 @@ class SweepTests(unittest.TestCase):
 
     def test_the_sweep_is_off_until_switched_on_and_its_dry_run_says_what_it_would_do(self):
         self.wallet.give, self.wallet.deposit = self.give, self.deposit
-        self.assertFalse(self.wallet.SWEEP_ENABLED)
+        self.wallet.SWEEP_ENABLED = False                     # the state this test reads; the module's own default is on
         with self.assertRaises(SystemExit) as stop:
             self.run_sweep()
         self.assertIn("REFUSED: the sweep is off", str(stop.exception))
