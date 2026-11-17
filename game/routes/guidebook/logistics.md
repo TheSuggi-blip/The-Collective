@@ -823,7 +823,7 @@ lawless); The Experiment to Garnet 2; Node Beta to Garnet 5.
 |---|---|---|---|
 | 1. The kit | `outpost-kit-ironlight-to-experiment`: one ship with an empty hold to Ironlight Crossroads, 1 kit at 75,000 cr or less (booked once), stored at The Experiment | 74,010 cr and about 10 jumps of fuel | written, off; a guard of Military for the 4 loaded jumps is asked before it is switched on |
 | 2. The founding | The builder withdraws the kit at The Experiment, flies to the chosen place, stays undocked, `deploy_outpost`; the faction gives it manage_bases | 100,000 cr from the treasury | a first call: one flight by hand, then a script |
-| 3. Fuel for its bunker | How fuel goes into a bunker is not read: the first test after the founding, one hauler | not measured | open |
+| 3. Fuel for its bunker | How fuel goes into a bunker is not read: the first test after the founding, one hauler. The good to carry is the fuel cell (a ship burns cells from its cargo where no station sells fuel: help of `refuel`), asked at 100 cr in depth at Central Nexus (1,911), Node Alpha (3,219) and The Experiment (3,842), two jumps from the site (Trade's readings, admirals.log ENT-022, books of 07:36 to 07:42 UTC); a fuel cell restores 20 fuel in one unit of hold (catalog), so a Threshold's 65 cells carry 1,300 fuel for 6,500 cr; the reserve keeps every fuel cell (game/reserve.tsv) | 6,500 cr a hold | open |
 | 4. Stock in and out | Miners at the site's fields deposit ore into the outpost's faction storage; haulers carry loads two jumps to The Experiment's workshop (an outpost has storage and fuel, no workshop and no market) | fuel | routes written once the outpost stands |
 
 Credits for the whole: 174,010 cr and the fuel. What it draws each cycle: nothing (read).
