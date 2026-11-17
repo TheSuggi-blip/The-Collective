@@ -127,9 +127,9 @@ and five by `fit-shield-booster-pirate-group` (14,920 cr), for the pirate group.
   rules of `pirate_test.py` against a lone weak pirate, and disbands; first run
   with the Pirate Bounty mission (2,000 cr on the boards of Nova Terra and Node
   Beta). It starts as one test in the background; its RESULT is read next turn.
-- `hunt.py` writes a note (`place not reached`) when its travel goal fails
-  and waits out the engine's 409 as `guard.py` does: through fleet-build, with
-  its test, so that a zero-kill row says why.
+- `hunt.py` writes a note (`place not reached`) when its travel goal fails,
+  as `guard.py` does, and gives the engine's 409 a longer wait: through
+  fleet-build, with its test, so that a zero-kill row says why.
 - Plan the guard routes for the first outpost (P4 f) once its place is named.
 - Build a per-ship XP snapshot (a verb of `hive.py` through fleet-build) so T5
   names the ships without XP, and a flow figure that counts only the units the
