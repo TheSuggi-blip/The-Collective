@@ -1,0 +1,68 @@
+{
+ "id": "craft-boards-node-beta",
+ "kind": "circuit",
+ "title": "Circuit boards etched at the Node Beta workshop from the pilot's own stored silicon ore and carbon ore bought there, kept in its storage for the faction's ladder (the reserve)",
+ "note": "Written by Apollo, 2026-11-17 04:05 UTC (orders.log ENT-027, block APOLLO: the 75 circuit boards first, then beyond; orders T4: by a route, not by hand). carbon_arc_circuit_etching makes 3 circuit boards from 2 silicon ore and 12 carbon ore by hand at the station workshop, 0 cr, about 5.6 ticks a run (16 runs, 48 boards in 16.0 minutes on 2026-11-17 01:44 to 02:01 UTC by stage.py of the skill logistics-stock). Three loads of 60 carbon ore are bought at the Node Beta ask (4 cr for 146,304 units, book of 04:02 UTC; one unit was bought first on 2026-11-17 01:42 UTC, rule F12) and stored, then 15 runs take 30 silicon and 180 carbon: 45 boards. The carbon is booked as money paid once (craft inputs, requests.log ENT-187). requires.stored sends only a pilot with 30 silicon ore in its own storage at Node Beta. One ship.",
+ "requires": {
+  "stored": {
+   "at": "node_beta_industrial_station",
+   "item": "silicon_ore",
+   "min": 30
+  }
+ },
+ "max_ships": 1,
+ "standing": true,
+ "stops": [
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store": "all",
+   "buy": [
+    {
+     "item": "carbon_ore",
+     "qty": 60,
+     "max_price": 5,
+     "one_time": true
+    }
+   ]
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store": "all",
+   "buy": [
+    {
+     "item": "carbon_ore",
+     "qty": 60,
+     "max_price": 5,
+     "one_time": true
+    }
+   ]
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store": "all",
+   "buy": [
+    {
+     "item": "carbon_ore",
+     "qty": 60,
+     "max_price": 5,
+     "one_time": true
+    }
+   ],
+   "craft": [
+    {
+     "recipe": "carbon_arc_circuit_etching",
+     "runs": 15,
+     "per_run": 3,
+     "makes": "circuit_board",
+     "inputs": [
+      "carbon_ore"
+     ]
+    }
+   ]
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store": "all"
+  }
+ ]
+}
