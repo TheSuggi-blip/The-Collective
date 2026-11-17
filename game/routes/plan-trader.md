@@ -74,9 +74,8 @@ Planned:
 
 | What | When |
 |---|---|
-| Goal of the turn: Trade's steady money per hour above -2,000 in the forecast's SUM line with the soma bids read as they regain, and every trader at navigation 3 or more by the turn after next (twenty stand at 2). | read at the turn of 2026-11-17 04:00 UTC |
-| Read the soma bids' moves and the soma routes' runs; set each route's max_ships to what its bid regains. | the next turn |
-| Read the focused-crystal runs; lift the craft route to what the two bids take, and test a stock of crystals stored at Node Alpha for its spiky bids. | the next turn |
-| Read the standing sell order of one anchor beacon at Node Beta: filled or not, and when. | the next turn |
-| Silicon ore for the circuit boards: buy more only on Logistics' word that the boards are made, inside rule F12 and the wallet floor. | when Logistics asks |
-| Read the whole Central Nexus board of every docked trader (skill trade-books, boards.py) and test every title the fleet has not booked. | every turn |
+| Goal of the turn: Trade's steady money above -3,000 cr an hour in the hour before the next turn (hive.py fleet), with the hydrogen and soma routes measured. | read at the turn of 2026-11-17 08:00 UTC |
+| Read the first runs of the three hydrogen sell routes and of the soma routes at the floor of 350; read every floor beside its cheapest ask with sellgen.py scan and set it again. | the next turn |
+| Read the standing sell order of one anchor beacon at Node Beta; cancel it at the turn that shows a day without a buyer. | the next turn |
+| Write a sell route the same day Intel files a field of uranium ore, thorium ore or seam glass, which every station bids for (requests.log ENT-194). | when Intel files one |
+| Read the whole board of every trader docked at a turn's start (boards.py) and test every title the fleet has not booked. | every turn |
