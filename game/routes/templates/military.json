@@ -1,0 +1,37 @@
+{
+ "division": "military",
+ "owner": "Apophis",
+ "templates": {
+  "hunter": {
+   "title": "Hunt where a herd holds, one hunter a herd; sell stored curd where a bid stands; gather iron only when no herd is open",
+   "routes": [
+    "sell-curd-central-nexus",
+    "sell-curd-node-beta",
+    "sell-curd-experiment",
+    "hunt-felis-frost-ring-hollow-pilgrim",
+    "hunt-test-achernar-cinder-sylph",
+    "hunt-test-lesath-cinder-sylph",
+    "hunt-gsc-veil-ray",
+    "hunt-hamal-veil-ray",
+    "hunt-ruchbah-veil-ray",
+    "hunt-keid-fractured-prism-veil-ray",
+    "hunt-faintlight-drift-veil-ray",
+    "hunt-cedarhold-dim-lattice-veil-ray",
+    "hunt-low-charge-glint-veil-ray",
+    "hunt-home-drift-ray",
+    "hunt-keid-belt-carapace",
+    "gather-gsc-0027-prism-scatter",
+    "gather-hamal-crystal-bloom",
+    "mine-pherkad-rift",
+    "mine-acubens"
+   ],
+   "trains": [
+    "gunnery",
+    "weapons",
+    "tactics",
+    "xenobiology"
+   ],
+   "note": "Fit: the starter Pulse Laser I (reach 3) and Mining Laser I. Each hunt takes one ship (rule F9); the veil-ray, drift-ray and carapace hunts are standing work that store curd, carapace and biogas for the station list; the sell-curd routes open only while a bid stands and the pilot stores curd. Gathering is the fallback (rule F23)."
+  }
+ }
+}
