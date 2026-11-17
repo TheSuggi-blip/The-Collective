@@ -111,5 +111,47 @@ class AloneTests(unittest.TestCase):
         self.assertEqual(self.alone_mode(os.path.join(self.folder, "broken.json")), "strangers")
 
 
+
+class KeptGoodsTests(unittest.TestCase):
+    """A hunt never sells what the reserve keeps (rule F24): four hunt runs sold 13 superfluid vials and a scout hunt 6
+    caustic sacs that surplus.py held back (2026-11-17, errors.log ENT-095 and Military's entry of that evening)."""
+
+    def setUp(self):
+        import sys
+        import types
+        self.sys = sys
+        self.saved = sys.modules.get("surplus")
+        fake = types.ModuleType("surplus")
+        fake.surplus = lambda data, root: {"rows": [
+            {"id": "superfluid_vial", "short": 0, "reserved": 1, "surplus": 0},     # held back for another recipe
+            {"id": "caustic_sac", "short": 384, "reserved": 45, "surplus": 0},      # short
+            {"id": "crystal_melt", "short": 0, "reserved": 0, "surplus": 34},       # not in the reserve: for sale
+            {"id": "creature_carapace", "short": 0, "reserved": 500, "surplus": 20},  # some to spare: for sale
+        ]}
+        sys.modules["surplus"] = fake
+        self.kept_goods = load("kept_goods")
+        self.saleable = load("saleable")
+
+    def tearDown(self):
+        if self.saved is None:
+            self.sys.modules.pop("surplus", None)
+        else:
+            self.sys.modules["surplus"] = self.saved
+
+    def test_the_reserve_keeps_what_is_short_or_held_back(self):
+        kept = self.kept_goods("/nowhere", "/nowhere")
+        self.assertEqual(set(kept), {"superfluid_vial", "caustic_sac"})
+
+    def test_a_kept_good_is_never_offered_for_sale_and_ammo_neither(self):
+        kept = self.kept_goods("/nowhere", "/nowhere")
+        cargo = {"superfluid_vial": 6, "caustic_sac": 2, "crystal_melt": 3, "creature_carapace": 4, "iron_slug_case": 9}
+        self.assertEqual(self.saleable(cargo, kept, {"iron_slug_case"}), {"crystal_melt": 3, "creature_carapace": 4})
+
+    def test_no_reserve_read_keeps_nothing_back(self):
+        def broken(data, root):
+            raise OSError("no storage book")
+        self.sys.modules["surplus"].surplus = broken
+        self.assertEqual(self.kept_goods("/nowhere", "/nowhere"), {})
+
 if __name__ == "__main__":
     unittest.main()

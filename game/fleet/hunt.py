@@ -38,7 +38,9 @@ left or the hold is full, it loots once more, docks at the station named
 by --sell-at (default Central Nexus), sells every good in its hold whose
 best bid there is at least --min-bid (default 50 cr). Goods another
 station bids for, in a book read within the hour, stay aboard; the rest
-(not its ammo) goes into its storage there. --keep skips selling and stashing.
+(not its ammo) goes into its storage there. A good the reserve keeps (surplus.py: short,
+or held with no unit to spare) is never sold: it is stored (rule F24). --keep skips
+selling and stashing.
 While it runs the pilot carries an order file (the station shows it at
 work). Prints one line per step and a RESULT line, and appends one row to
 data/routes/runs.jsonl under the id given by --route (default hunt-<poi>).
@@ -209,6 +211,25 @@ def reload_if_low(floor=1):
                 say(f'{m.get("type_id")}: {m.get("current_ammo")} rounds and no ammo in the hold')
                 return False
     return True
+
+
+def kept_goods(data, root):
+    """{item: units} the reserve keeps and has none of to spare (surplus.py: short, or held with no surplus unit, a good
+    held back for another recipe included; the rule of fill.kept_items): the hunt stores them and never sells them
+    (rule F24). {} when the reserve cannot be read: then nothing is kept back by it. 2026-11-17: four hunt runs sold 13
+    superfluid vials and a scout hunt 6 caustic sacs that the reserve held back (errors.log ENT-095 and after)."""
+    try:
+        import surplus
+        res = surplus.surplus(data, root)
+        return {r['id']: (r.get('short') or 0) or (r.get('reserved') or 0) for r in res['rows']
+                if (r.get('short') or 0) > 0 or ((r.get('reserved') or 0) > 0 and (r.get('surplus') or 0) <= 0)}
+    except Exception:                                   # noqa: BLE001  no reserve read: nothing is kept back by it
+        return {}
+
+
+def saleable(held, kept, ammo):
+    """The goods of the hold the sale may offer: not the ship's ammo, not what the reserve keeps."""
+    return {item: qty for item, qty in held.items() if item not in ammo and item not in kept}
 
 
 LOOTED = set()
@@ -437,9 +458,10 @@ if goal('prepare-at-station', {'systemId': sell_at[0], 'poiId': sell_at[1], 'bas
                        'source': 'view_market, own ship docked', 'items': rows}, fh, separators=(',', ':'))
         os.replace(tmp, f'{MARKET}{sell_at[2]}.json')
     book = {i.get('item_id'): i for i in items}
-    for item, qty in cargo().items():
-        if item in AMMO:
-            continue
+    KEPT = kept_goods(os.path.dirname(os.path.dirname(MARKET)), os.path.dirname(GAME))
+    for item in sorted(set(cargo()) & set(KEPT)):
+        say(f'{item}: kept for the reserve (surplus.py: no unit to spare): stored, not sold')
+    for item, qty in saleable(cargo(), KEPT, AMMO).items():
         row = book.get(item) or {}
         bid = row.get('best_buy') or 0
         depth = row.get('best_buy_qty') if isinstance(row.get('best_buy_qty'), (int, float)) else (row.get('buy_quantity') or 0)   # at the best price: `buy_quantity` is the total of all levels
@@ -451,7 +473,7 @@ if goal('prepare-at-station', {'systemId': sell_at[0], 'poiId': sell_at[1], 'bas
             sold[item] = (n, bid, credits() - c0)
         elif item in goods:
             say(f'{item}: best bid here {bid} x {depth}: kept')
-    wanted = wanted_goods(MARKET, min_bid, time.time())   # goods a station bids for, read within the hour: they stay aboard for the next sale
+    wanted = wanted_goods(MARKET, min_bid, time.time()) - set(KEPT)   # goods a station bids for, read within the hour, stay aboard for the next sale; what the reserve keeps is stored
     stashed = {}
     for item, qty in cargo().items():                # the rest goes into storage here: the hold is free for the next hunt
         if item not in AMMO and item not in wanted:
