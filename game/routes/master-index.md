@@ -37,13 +37,13 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 
 | Role | Kept by | Routes | The first three, in order | Planned | Ships |
 |---|---|---|---|---|---|
-| [command](plan-command.md) | Unity | 69 | voidborn-first-steps-board > voidborn-collective-provides > voidborn-signal-protocol | 0 | 6 |
-| [drone](plan-drone.md) | Apophis | 106 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 6 | 50 |
+| [command](plan-command.md) | Unity | 70 | voidborn-first-steps-board > voidborn-collective-provides > voidborn-signal-protocol | 0 | 6 |
+| [drone](plan-drone.md) | Apophis | 107 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 6 | 50 |
 | [hauler](plan-hauler.md) | Apollo | 53 | voidborn-resonance-finish > voidborn-atmospheric-extraction > voidborn-hardware-cargo | 6 | 40 |
-| [miner](plan-miner.md) | Zero | 59 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 7 | 60 |
+| [miner](plan-miner.md) | Zero | 60 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 7 | 60 |
 | [scout](plan-scout.md) | Oracle | 57 | store-hold-central-nexus > voidborn-first-steps-board > voidborn-network-expansion | 9 | 30 |
-| [sentinel](plan-sentinel.md) | Unity | 93 | voidborn-first-steps-board > voidborn-collective-provides > voidborn-signal-protocol | 0 | 20 |
-| [trader](plan-trader.md) | Mercury | 54 | voidborn-first-steps-board > voidborn-network-expansion > voidborn-collective-provides | 7 | 40 |
+| [sentinel](plan-sentinel.md) | Unity | 94 | voidborn-first-steps-board > voidborn-collective-provides > voidborn-signal-protocol | 0 | 20 |
+| [trader](plan-trader.md) | Mercury | 55 | voidborn-first-steps-board > voidborn-network-expansion > voidborn-collective-provides | 7 | 40 |
 
 ## Templates by Division
 
