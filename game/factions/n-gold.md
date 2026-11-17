@@ -14,7 +14,7 @@ updated: 2026-11-17
 
 # Golden Age Compact [GOLD]
 
-A player faction with 1 base(s) in 1 system(s); the nearest to Nexus Prime is 5 jump(s) away, in Stormwatch (`stormwatch`).
+A player faction with 1 base(s) in 1 system(s); the nearest to Nexus Prime is 4 jump(s) away, in GSC-0041 (`gsc_0041`).
 Pilots of it in our space in the last 24 hours: 2.
 
 ## Identity
@@ -32,7 +32,7 @@ Pilots of it in our space in the last 24 hours: 2.
 
 | Base | Kind | System | Space | Jumps from Nexus Prime | Condition |
 |---|---|---|---|---|---|
-| GOLD Stormwatch Outpost | outpost | Stormwatch (`stormwatch`) | lawless | 5 | thriving |
+| GOLD Frost Ring Outpost | outpost | GSC-0041 (`gsc_0041`) | lawless | 4 | thriving |
 
 ## Pilots in Our Space
 
@@ -41,7 +41,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
 | Iron Prospector | Nexus Prime (`nexus_prime`) | 0 | liminal |
-| Nickel Prospector | Pherkad (`pherkad`) | 0 | bonanza |
+| Nickel Prospector | Synchrony (`synchrony`) | 0 | bonanza |
 
 ## Standing History
 

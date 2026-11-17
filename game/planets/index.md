@@ -8,7 +8,7 @@ author: Unity
 # index.md -- Systems We Know
 
 Built by `scripts/intel-index.py` from the system files of this folder;
-never edited by hand. Files listed: 156. The format of a system file:
+never edited by hand. Files listed: 174. The format of a system file:
 `BLUEPRINT.md`.
 
 ## Voidborn space
@@ -41,6 +41,7 @@ never edited by hand. Files listed: 156. The format of a system file:
 | Sirius | neutral | unknown | 80 | 9 | 2026-11-16 | [n-sirius.md](n-sirius.md) |
 | Sol | neutral | unknown | 100 | 10 | 2026-11-16 | [n-sol.md](n-sol.md) |
 | Alpha Centauri | neutral | unknown | 80 | 11 | 2026-11-17 | [n-alpha_centauri.md](n-alpha_centauri.md) |
+| Mimosa | neutral | unknown | 30 | 12 | 2026-11-17 | [n-mimosa.md](n-mimosa.md) |
 
 ## Lawless space
 
@@ -166,12 +167,29 @@ never edited by hand. Files listed: 156. The format of a system file:
 | Hollowcrest | neutral | unknown | 0 | 11 | 2026-11-17 | [n-hollowcrest.md](n-hollowcrest.md) |
 | Jishui | neutral | unknown | 0 | 11 | 2026-11-17 | [n-jishui.md](n-jishui.md) |
 | Mebsuta | neutral | unknown | 0 | 11 | 2026-11-17 | [n-mebsuta.md](n-mebsuta.md) |
+| Miaplacidus | neutral | unknown | 0 | 11 | 2026-11-17 | [n-miaplacidus.md](n-miaplacidus.md) |
 | Mizar | neutral | unknown | 0 | 11 | 2026-11-17 | [n-mizar.md](n-mizar.md) |
+| Oakridge | neutral | unknown | 0 | 11 | 2026-11-17 | [n-oakridge.md](n-oakridge.md) |
+| Pleione | neutral | unknown | 0 | 11 | 2026-11-17 | [n-pleione.md](n-pleione.md) |
+| Porrima | neutral | unknown | 0 | 11 | 2026-11-17 | [n-porrima.md](n-porrima.md) |
 | Saltwind | neutral | unknown | 0 | 11 | 2026-11-17 | [n-saltwind.md](n-saltwind.md) |
 | Tania | neutral | unknown | 0 | 11 | 2026-11-17 | [n-tania.md](n-tania.md) |
+| Yed Posterior | neutral | unknown | 0 | 11 | 2026-11-17 | [n-yed_posterior.md](n-yed_posterior.md) |
 | Yildun | neutral | unknown | 0 | 11 | 2026-11-17 | [n-yildun.md](n-yildun.md) |
+| Zubenelhakrabi | neutral | unknown | 0 | 11 | 2026-11-17 | [n-zubenelhakrabi.md](n-zubenelhakrabi.md) |
+| Alathfar | neutral | unknown | 0 | 12 | 2026-11-17 | [n-alathfar.md](n-alathfar.md) |
+| Aldhibah | neutral | unknown | 0 | 12 | 2026-11-17 | [n-aldhibah.md](n-aldhibah.md) |
+| Algorab | neutral | unknown | 0 | 12 | 2026-11-17 | [n-algorab.md](n-algorab.md) |
+| Alshain | neutral | unknown | 0 | 12 | 2026-11-17 | [n-alshain.md](n-alshain.md) |
+| Aspidiske | neutral | unknown | 0 | 12 | 2026-11-17 | [n-aspidiske.md](n-aspidiske.md) |
 | Avior | neutral | unknown | 0 | 12 | 2026-11-17 | [n-avior.md](n-avior.md) |
+| Fomalhaut | neutral | unknown | 0 | 12 | 2026-11-17 | [n-fomalhaut.md](n-fomalhaut.md) |
+| Maplevale | neutral | unknown | 0 | 12 | 2026-11-17 | [n-maplevale.md](n-maplevale.md) |
+| Merak | neutral | unknown | 0 | 12 | 2026-11-17 | [n-merak.md](n-merak.md) |
+| Merope | neutral | unknown | 0 | 12 | 2026-11-17 | [n-merope.md](n-merope.md) |
+| Mira | neutral | unknown | 0 | 12 | 2026-11-17 | [n-mira.md](n-mira.md) |
 | Springdale | neutral | unknown | 0 | 12 | 2026-11-17 | [n-springdale.md](n-springdale.md) |
+| Subra | neutral | unknown | 0 | 12 | 2026-11-17 | [n-subra.md](n-subra.md) |
 | Hawthorne | neutral | unknown | 0 | 13 | 2026-11-17 | [n-hawthorne.md](n-hawthorne.md) |
 | Oxbow | neutral | unknown | 0 | 13 | 2026-11-17 | [n-oxbow.md](n-oxbow.md) |
 | Sabik | neutral | unknown | 0 | 13 | 2026-11-16 | [n-sabik.md](n-sabik.md) |
