@@ -21,17 +21,17 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 | [Paying Routes](index-paying-routes.md) | Work that repeats and whose runs of the last 12 hours measured above zero. | 51 | 20 | 31 | drain-ice-node-alpha: 40,500 cr per ship-hour |
 | [Tests](index-tests.md) | Work that repeats and has no measured figure: new, or no readable run in the last 12 hours. One ship until its first RESULT line is read. | 60 | 21 | 39 | not measured yet |
 | [Fitting](index-fitting.md) | A module bought and fitted: the tool a kind of work needs. | 11 | 10 | 1 | fit-ice-harvester-lhs-1140: -4,320 cr per ship-hour |
-| [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 83 | 25 | 58 | craft-boards-silicon-central-nexus: 156,690 cr per ship-hour |
+| [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 91 | 25 | 66 | craft-boards-silicon-central-nexus: 156,690 cr per ship-hour |
 | [Measured at a Loss](index-measured-at-a-loss.md) | Work that repeats and whose runs of the last 12 hours measured zero or below. | 45 | 3 | 42 | mine-coldwater-emission-nebula: -50 cr per ship-hour |
 | [Off](index-off.md) | Written down, not flown. | 20 | 9 | 11 | voidborn-first-steps: 4,020 cr per ship-hour |
-| All | | 302 | 106 | 196 | |
+| All | | 310 | 106 | 204 | |
 
 ## Routes by Zone and Kind
 
 | Zone | Routes | census | circuit | guard | hunt | mine | Farthest system, jumps from home |
 |---|---|---|---|---|---|---|---|
 | home space | 106 | 1 | 81 | 0 | 11 | 13 | 3 |
-| beyond the border | 196 | 12 | 27 | 7 | 87 | 63 | 29 |
+| beyond the border | 204 | 12 | 27 | 7 | 95 | 63 | 29 |
 
 ## Plans by Role
 
