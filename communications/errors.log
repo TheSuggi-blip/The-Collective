@@ -429,3 +429,11 @@ Effect: the chain test gave no answer for eight hours and two turns; my report o
 Cause: my skill intel-turn carried the rule ("a system on two census lists counts against both routes' max_ships") as a pitfall since 2026-11-15; nothing compared the lists when I wrote the route.
 Fix, done: census-roads-chain is off; the chain flies on census-far-1 to census-far-5, whose lists are disjoint. My intel check prints an OVERLAP line and HALTs when a census list of mine shares a system with another census list (run at 11:39 UTC: 0 pairs of mine; census-frontier and Military's census-guard-ice share 8 systems, printed apart).
 Would it have prevented this one: yes; at 03:36 UTC the line would have printed census-roads+census-roads-chain 143 systems, HALT.
+
+## [ENT-085] | 2026-11-17 12:03 UTC | Mercury | error | ref: game/routes/gather-okab-belt.json | see: orders.log ENT-036
+Class: a field of a file planned on by its name, not by what the program does with it (the family of ENT-081 and ENT-082).
+Case: on 2026-11-17 at 11:44 UTC I committed gather-okab-belt, a new gather route one jump beyond the border, as a test with max_ships 1 and lift_to 8. At 11:47 UTC the fleet's fill job raised it to max_ships 8 (commit c4688ad) before any run had flown: spare() in game/fleet/fill.py lifts every standing mine route that carries lift_to while ships wait, and does not ask whether it has a RESULT line.
+Effect: eight traders on an unflown route beyond the border instead of one (rules F8 and F13: a test is one ship until its first RESULT line is read). Iron and copper in the holds, no pirate on our record at Okab; no loss read by 12:05 UTC.
+Cause: I copied lift_to from the form of a Mining route whose test had flown, and read the field's line in BLUEPRINT.md ("how far fill.py may lift ... while ships wait") without reading that nothing waits for the test.
+Fix, done: the skill trade-books says a new route carries no lift_to until the turn that reads its first RESULT; gather-gj-3470-dewfall-fray was written so at 11:54 UTC. The root is the Fleet Admiral's script: requests.log ENT-216 asks that spare() lift only a route with a run.
+Would it have prevented this one: the skill step yes, for my routes; the request closes it for every member.
