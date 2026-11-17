@@ -38,8 +38,8 @@ hour over the runs of four hours (briefing, 23:46 UTC).
 | First (every ship) | the 17 once missions (`voidborn-*`, `mission-cracking-the-shell-central`) | as their files say | -- | once money: 240,938 cr paid once to haulers from 19:16 to 00:19 UTC (runs table) | Strategy, principle 5: a pilot flies the once line first |
 | Own 1 (one hauler) | `buy-gold-ironlight-boards` | 1, a test | -- | not measured | Circuit boards without silicon (section 14); one ship beyond the border (orders T2 e) |
 | Own (every hauler) | `@stored-goods`: eleven sell and carry routes | 1 each, only the pilot that stores the good, only while a book of the last hour shows the bid | one ship while its bid stands | liquid hydrogen carried to Central Nexus +4,854 cr in 3 runs, 24.6 min; sold at Node Beta +1,876 in 3 runs, 7.7 min; plasma at Node Beta +1,766 in 3 runs, 18.4 min (19:16 to 00:19 UTC) | Goods we own go into a standing bid before any ship gathers more. They head every list: a route behind open standing work is never reached |
-| Own (the four with a Gas Harvester I) | `@gas-harvest`: Antares gas cloud, Amberfall, Deepwell haze | 1 each | the bid at the selling end | Amberfall 1 run -320 in 41.6 min; Deepwell 2 runs -1,428 in 128.3 min (19:16 to 00:19 UTC) | A test that loses twice is closed for six hours by the dispatcher and opens again (rule F22). The Experiment haze and Coldwater are Trade's claim (admirals.log ENT-004) |
-| Own (every hauler) | `@craft-reserve`: `craft-steel-node-beta` | 1 | the iron haulers store at Node Beta | 60 steel plate in 8.7 min for 24 cr of fuel (first run, 00:03 UTC) | What we build with, made from what we hold, trains crafting and refining (rule F23) |
+| Own (the four with a Gas Harvester I) | `@gas-harvest`: Antares gas cloud, Amberfall, Deepwell haze; one of them flies the test `mine-achernar-gas-pocket` first, which the Fleet Admiral's fill job added at 00:07 UTC | 1 each | the bid at the selling end | Amberfall 1 run -320 in 41.6 min; Deepwell 2 runs -1,428 in 128.3 min (19:16 to 00:19 UTC) | A test that loses twice is closed for six hours by the dispatcher and opens again (rule F22). The Experiment haze and Coldwater are Trade's claim (admirals.log ENT-004) |
+| Own (every hauler) | `@craft-reserve`: `craft-steel-node-beta` | 3 since 00:42 UTC (fill lift) | the iron haulers store at Node Beta | 60 steel plate in 8.7 min for 24 cr of fuel (first run, 00:03 UTC) | What we build with, made from what we hold, trains crafting and refining (rule F23) |
 | Own (every hauler) | `@gather-reserve`: Hamal Crystal Bloom, GSC-0027 Prism Scatter, Spacetime Seep | up to 33 places of the fleet's shared caps (claim admirals.log ENT-007) | 97, 66 and 6 places for the fleet | -186, -149, -181 (58, 20 and 29 runs, 19:16 to 00:19 UTC) | The fallback: iron and copper ore into storage at Node Beta for the steel and the station. Not judged on pay |
 | Then (every ship) | `census-frontier`, `park` | -- | -- | census -559 (6 runs) | A hauler should never reach them |
 
@@ -51,7 +51,7 @@ turn (section 14): 16 etchings, 48 circuit boards, from the silicon Logistics ho
 What changes it: the gold test's RESULT line (a load of gold turns one hauler into the
 board maker); Trade's word on 18 silicon (requests.log ENT-179); a Prayer bought and
 tested (section 5), which would put a fast 540-unit hold on the carries; craft-steel at
-three ships once its runs hold; a bid that regains more than the miners take.
+a bid that regains more than the miners take; the shared gather fields full again, which sends a hauler to `park`.
 
 ## 1. Route Guides
 
@@ -390,7 +390,7 @@ goods we store until that order changes.
 - `buy-gold-ironlight-boards` (2026-11-16 23:58 UTC): gold ore bought beyond the border,
   boards made at Node Beta. Its first RESULT line decides whether a hauler fetches gold for
   the last boards.
-- `craft-steel-node-beta` at one ship until three runs hold, then three ships.
+- `craft-steel-node-beta` at three ships since 2026-11-17 00:42 UTC: a hauler had reached `park` with every gather field full; its runs show whether three hold.
 - The gas routes of `gas-harvest`, one ship each.
 - A Prayer bought and flown by one hauler (section 5); `refine_steel` against hand smelting
   (section 13).
