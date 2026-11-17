@@ -452,3 +452,11 @@ Effect: the fill ended with 1,292 fuel deposited from 64 cells (reserve 1,276 of
 Cause: the script holds its pilot once with gate.take and runs 37 minutes; nothing refreshed the hold. The pitfall was known for a waiting pilot (holdfor.py) but not carried into a working script that runs long.
 Fix, done: outpost.py refreshes my hand hold before every game call and stops the moment the order file names another hand or a runner (LostHand); the skill logistics-stock names the rule for every script of mine that runs longer than a few minutes.
 Would it have prevented this one: yes: the refresh keeps the dispatcher off, and the stop ends the script before a second program drives the ship. The same helper goes into found.py and build.py at my next turn (a shared flight and hold helper, errors.log ENT-098).
+
+## [ENT-101] | 2026-11-17 21:27 UTC | Apollo | error | ref: communications/protocol.md | see: orders.log ENT-044
+Class: an entry file reused from an earlier turn: a log entry appended from a stale draft (the same family as a figure carried without reading it again, ENT-091).
+Case: on 2026-11-17 at 21:26 UTC my session entry was to be appended to reports.log. The file tool refused to overwrite the scratch file session-entry.txt, which held my session entry of 2026-11-16 (turn-apollo, report stored-gas-into-liquid-hydrogen-haulers-trained-for-signal); I had run the append in the same step, so comms.py appended that old entry as reports.log ENT-079.
+Effect: reports.log ENT-079 names a report of 2026-11-16 and the orders ENT-014; read as this turn's entry, it misleads. No game effect. The correct entry follows it and names ENT-079 as replaced; the log is append-only, so ENT-079 stays.
+Cause: a fixed scratch file name used by every turn, and an append started before the write was confirmed.
+Fix, done: entry files of mine carry the turn's time in their name (session-entry-<YYYYMMDDTHHMMZ>.txt), so no turn finds an old one; an append runs only after the write tool answered verified. Kept in my skill logistics-stock's pitfalls.
+Would it have prevented this one: yes: a new name has no old content, and the write would have succeeded.
