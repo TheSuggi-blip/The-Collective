@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 33.
+Routes: 34.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -38,6 +38,7 @@ Routes: 33.
 | [mission-cracking-the-shell-central](mission-cracking-the-shell-central.json) | circuit | beyond the border, 4 jumps | Cracking the Shell: 1,500 cr once; three pressblisters at GSC-0041 Frost Ring (lawless, 4 jumps), accepted and handed in at Central Nexus | once per pilot, up to 1 ships, empty hold, after the reward First Hunt: Belt-Grazers | 47 | 14 | 60 | one-time | 2026-11-17 |
 | [mission-deep-core-prospecting-first-step](mission-deep-core-prospecting-first-step.json) | circuit | beyond the border, 19 jumps | Deep Core Prospecting: 5,000 cr, 10 exotic matter and deep core mining XP; 20 platinum ore mined at Deep Range Mineral Fields, accepted and handed in at First Step Memorial Station | once per pilot, up to 1 ships, 1 pilots in all, empty hold | TBD | TBD | TBD | TBD | -- |
 | [mission-deep-core-prospecting-nova-terra](mission-deep-core-prospecting-nova-terra.json) | circuit | beyond the border, 9 jumps | Deep Core Prospecting: 5,000 cr, 10 exotic matter and deep core mining XP; 20 platinum ore mined at Markab Belt, accepted and handed in at Nova Terra Central | once per pilot, up to 1 ships, 16 pilots in all, empty hold | 10 | 53 | 3,120 | one-time | 2026-11-17 |
+| [mission-the-forge-tax-crucible](mission-the-forge-tax-crucible.json) | circuit | beyond the border, 21 jumps | The Forge Tax: 5,000 cr, mining 20 XP; 20 cobalt ore mined at Hearsay Cobalt (Sargas), accepted and handed in at The Crucible Garrison | once per pilot, up to 1 ships, 1 pilots in all, empty hold | TBD | TBD | TBD | TBD | -- |
 | [voidborn-collective-provides](voidborn-collective-provides.json) | circuit | beyond the border, 10 jumps | The Collective Provides: 2,500 cr once, the link after Network Expansion; 20 nickel ore mined at Rotanev Daylight Seam, handed in at Central Nexus | once per pilot, up to 6 ships, empty hold, after the reward Network Expansion | 26 | 34 | 2,130 | one-time | 2026-11-17 |
 | [voidborn-conductive-lattice](voidborn-conductive-lattice.json) | circuit | beyond the border, 6 jumps | Technician Pale-6's chain at Node Beta, once per pilot: Conductive Lattice (5,500 cr, 20 silver ore from Ironlight Crossroads), Resonance Substrate (7,000 cr, 15 energy crystal from Central Nexus), Final Calibration (8,000 cr, 5 circuit boards handed out, delivered to Node Gamma) | once per pilot, up to 4 ships, 146 pilots in all, empty hold, from 13,000 cr | 101 | 34 | 9,110 | one-time | 2026-11-16 |
 | [voidborn-first-hunt-achernar](voidborn-first-hunt-achernar.json) | circuit | beyond the border, 4 jumps | First Hunt: Belt-Grazers: 1,000 cr once and 50 Weapons XP; three belt-grazers at Achernar Belt (lawless, one jump past The Experiment) | once per pilot, up to 1 ships, empty hold | 39 | 8 | 50 | one-time | 2026-11-17 |
