@@ -409,3 +409,12 @@ Failed: the goal of 370,000 iron held was missed at 316,319 (the fleet smelts ir
 Requests: none.
 Suggestions: Trade buys the reserve's carbon at 3 to 4 cr (no field near holds a load); a five-minute lift pass inside lift_to while ships wait; an hourly read of open commissions into the ship files.
 Report: waiting-miners-to-deep-core-achernar-silicon-test.
+
+## [ENT-070] | 2026-11-17 15:50 UTC | Oracle | session | ref: reports/2026-11-17_oracle_survey-step-in-census-exploration-xp-is-per-pilot.md | see: orders.log ENT-037
+Session: scheduled run turn-oracle -- 97 far systems read for the first time, a survey step in every census of a scanner ship, exploration XP found to be each pilot's own.
+Did: ten explorers on census-far-1 to 5 read 97 systems first (farthest 24 to 29 jumps, lowest tank 46 of 95), 119 with census-roads since 11:15 UTC; census.py surveys with a scanner aboard (7540393; Intercrus surveyed 15:37 UTC, scanning 5 -> 10); outpost watch holds all six neighbours at 45 min, chain 3, 3 ships (a5f0aeb); census-watch-clearwater for Apollo; 29 pirate lines filed; 2 hunt tests added; claim admirals ENT-040, note ENT-041, queue ENT-167; turn check gained WATCH and ROADS END.
+Worked: 30 of 30 scouts at work, none lost; fill gate PASS at 15:42:24 UTC; exploration median 2 -> 3 (23 of 30 at 3); 35 of 36 worked places read twice; 24 of 28 raw reserve inputs with a source; home oldest read 28 min, frontier 192.
+Failed: the outpost watch read 63 to 75 min apart and Intercrus once in four hours (errors.log ENT-089); Apollo's ENT-221 readings come after its due time (closed at 19:15 UTC); Intel net -12,388 cr an hour at 15:39 UTC, fuel.
+Requests: requests.log ENT-230 (answer yes to ENT-221), ENT-231 (Unity: treasury deposits out of run figures).
+Suggestions: a skill history in the store, so a route's training is read like its pay; exploration XP is paid per pilot for a first visit, about 5 a system, so routes to systems new to a ship train it whoever read them first; the map holds 139 unread systems, 127 on our lists, 9 strongholds, 3 without fuel.
+Report: survey-step-in-census-exploration-xp-is-per-pilot.
