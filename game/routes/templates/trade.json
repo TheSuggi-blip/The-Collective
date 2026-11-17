@@ -30,6 +30,7 @@
    "routes": [
     "craft-piping-node-beta",
     "craft-piping-synchrony-hub",
+    "craft-wiring-synchrony-hub",
     "craft-steel-central-nexus",
     "craft-steel-synchrony-hub",
     "craft-steel-node-beta"
@@ -38,7 +39,7 @@
     "crafting",
     "refining"
    ],
-   "note": "2026-11-17 15:42 UTC (Mercury, orders ENT-037): the two craft-piping routes lead (stored copper ore, which no station bids for, and stored iron into piping and plate for the reserve), then Logistics' three steel crafts. craft-focused-crystal-node-beta left the template and is off: energy crystal is held back for circuit boards (surplus.py reserve; rule F24)."
+   "note": "2026-11-17 19:46 UTC (Mercury, orders ENT-042): the two craft-piping routes lead (stored iron and copper into steel plate and copper piping for the reserve: piping 328 and plate 2,381 short at 19:32 UTC), then craft-wiring-synchrony-hub, a one-ship test of copper wiring from surplus copper ore (crafting XP, nothing sold), then Logistics' three steel crafts. craft-focused-crystal-node-beta stays off: energy crystal is held back for circuit boards (rule F24)."
   },
   "trade-train-nav": {
    "title": "Navigation trained to 3 on a loop of our five stations, for Signal Fragments (7,000 cr once)",
