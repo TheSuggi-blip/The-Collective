@@ -404,7 +404,8 @@ paid once on the way.
 Which skills a drone levels and on which work (rule F23).
 
 - **2026-11-17 20:17 UTC** (ship files, 50 drones and 20 sentinels): drones gunnery 4 (2 to 7), weapons 3 (1 to 4),
-  tactics 4 (2 to 6), xenobiology 4 (2 to 7): every median rose by half a level to one since 16:16 UTC; the sentinels
+  tactics 4 (2 to 6), xenobiology 4 (2 to 7): tactics and xenobiology up one since 16:16 UTC, weapons half, gunnery
+  held; the sentinels
   gunnery 2, weapons 1, tactics 2, xenobiology 2 (lent at 18:20 UTC from the command group, where they mined and
   hunted less). Piloting 5 / 7 / 9, 186 XP an hour, 36 hours to 10. Shields, armor 0 for all; Voidborn Mastery 0,
   one sentinel at 1.
