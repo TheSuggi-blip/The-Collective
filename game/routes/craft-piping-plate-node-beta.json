@@ -1,0 +1,40 @@
+{
+ "id": "craft-piping-plate-node-beta",
+ "kind": "circuit",
+ "title": "Copper piping drawn at the Node Beta workshop from the copper ore and steel plate a hauler already stores there, kept in its storage for the reserve",
+ "note": "Written by Apollo, 2026-11-17 12:05 UTC (orders.log ENT-036, block APOLLO (4): keep the reserve; a hauler without hauling crafts; rules F23, F24, F30). draw_copper_piping makes 4 copper piping from 12 copper ore and 2 steel plate by hand at the station workshop, 0 cr (made by hand 2026-11-17 00:14 UTC, 1.6 ticks a run). The reserve takes 26,120 copper piping (the station core foundry; hive.py reserve, 11:56 UTC) and holds 4. 38 haulers store 50 to 286 steel plate and 700 to 2,200 copper ore at Node Beta, where only 5 hold the 550 iron ore craft-steel-node-beta asks (storage book of 11:32 to 11:38 UTC): this route uses the plate already made instead of new iron. 15 runs take 180 copper ore and 30 plate and make 60 piping, which fit one hold. requires.stored keeps 100 plate in each storage for the faction's offices. Beside Trade's craft-piping-node-beta, which smelts its plate from iron first: a pilot's workshop is its own, so the two never share a queue. A test: one ship until its first RESULT line is read.",
+ "requires": {
+  "stored": [
+   {
+    "at": "node_beta_industrial_station",
+    "item": "steel_plate",
+    "min": 130
+   },
+   {
+    "at": "node_beta_industrial_station",
+    "item": "copper_ore",
+    "min": 180
+   }
+  ]
+ },
+ "max_ships": 1,
+ "standing": true,
+ "stops": [
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store": "all",
+   "craft": [
+    {
+     "recipe": "draw_copper_piping",
+     "runs": 15,
+     "per_run": 4,
+     "makes": "copper_piping"
+    }
+   ]
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store": "all"
+  }
+ ]
+}
