@@ -53,6 +53,7 @@
   "gather-gsc-0027-spacetime-seep",
   "gather-schedar-belt",
   "gather-ironhollow-echo-ejecta",
+  "gather-okab-belt",
   "census-frontier",
   "park"
  ],
@@ -129,6 +130,7 @@
   "gather-gsc-0027-spacetime-seep": 40,
   "gather-schedar-belt": 40,
   "gather-ironhollow-echo-ejecta": 40,
+  "gather-okab-belt": 40,
   "census-frontier": 40,
   "park": 40
  },
