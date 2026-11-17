@@ -20,7 +20,7 @@ they store, the members by name and the treasury's balance. They are live
 data of the unit (the tools `hive` with `verb=empire`, `stock`, `ship`;
 `game/fleet/empire.py show`).
 
-Facts as of 2026-11-17T20:54:38Z.
+Facts as of 2026-11-17T21:57:14Z.
 
 ## 1. The Faction
 
@@ -29,7 +29,7 @@ Facts as of 2026-11-17T20:54:38Z.
 | Name and tag | The Collective [CLTV] |
 | Founded | 2026-11-15 |
 | Leader | the Fleet Admiral's flagship |
-| Members | 50 of a limit of 100 |
+| Members | 69 of a limit of 100 |
 | Ships of the fleet in it | 50 of 246 |
 | Stations of our own | 0 of 5 a faction may hold |
 | Outposts | 1 of 8 |
@@ -91,6 +91,8 @@ list of stations. Where a base is built is Suggi's decision.
 | `biham` | Biham | lawless | 8 | none | candidate | Suggi | south region, the region of Biham, one large base (Suggi, 2026-11-17); with felis a pair proposed for a base (Suggi, 2026-11-17); 8 jumps from home, lawless, borders Felis and Gliese 876; not read by us yet |
 | `diadem` | Diadem | lawless | 8 | none | candidate | Suggi | east region, one large base (Suggi, 2026-11-17: "then maybe Diadem"); 8 jumps from home, lawless by the chart, a neighbour of Intercrus; not read by us yet |
 | `gsc_0044` | GSC-0044 | lawless | 6 | CLTV Outpost GSC-0044 (outpost, CLTV) | built | Zero, Apollo | the first outpost (the Fleet Admiral chose it on 2026-11-17, orders P4 and rule F33; Logistics builds it): 3 systems beyond our border, 3 jumps from The Experiment through Achernar and Cedarhold, 6 from home; two belts of iron and copper, 100,000 each (census 2026-11-17 06:30 UTC), sol alloy ore 1,5 |
+| `acrab` | Acrab | lawless | 6 | none | chosen | Unity | the north outpost (the Fleet Admiral chose it on 2026-11-17 at her turn of 21:30 UTC, orders P4 b and rule F33; Oracle named it, report north-south-lists-site-chain-reserve-check): 4 systems beyond our border, 6 jumps from home through Node Beta; iron and copper ore 199,999 each, null matter 594; 5 |
+| `gsc_0006` | GSC-0006 | lawless | 10 | none | candidate | Unity | the north station's candidate (Oracle, 2026-11-17): 8 systems beyond our border, 4 jumps beyond Acrab, 2 from Aldebaran; iron and copper about 200,000 each, neon 47,803, lithium 25,000; 3 lanes; no pirate line within two jumps on our record. A station is 5,000,000 cr and a Station Core: not before t |
 
 ## 5. What The Faction Can Build
 
