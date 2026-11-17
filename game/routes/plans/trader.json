@@ -51,11 +51,6 @@
   "craft-steel-node-beta",
   "craft-steel-central-nexus",
   "craft-steel-synchrony-hub",
-  "gather-hamal-crystal-bloom",
-  "gather-gsc-0027-prism-scatter",
-  "gather-ironhollow-echo-ejecta",
-  "gather-schedar-belt",
-  "mine-pherkad-rift",
   "census-frontier",
   "park"
  ],
@@ -146,11 +141,6 @@
   "craft-steel-node-beta": 40,
   "craft-steel-central-nexus": 40,
   "craft-steel-synchrony-hub": 40,
-  "gather-hamal-crystal-bloom": 40,
-  "gather-gsc-0027-prism-scatter": 40,
-  "gather-ironhollow-echo-ejecta": 40,
-  "gather-schedar-belt": 40,
-  "mine-pherkad-rift": 40,
   "census-frontier": 40,
   "park": 40
  },
