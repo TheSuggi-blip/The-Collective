@@ -404,3 +404,11 @@ Cause: the commit named paths by the folder's status, not by the files the step 
 Fix, done in this turn: my skill military-turn commits only the paths its step wrote, plus the index files routes.py index names in its own `commit them together` line, and never a path it did not write; a route file that fails to parse ends the step before any commit.
 Would it have prevented this one: yes; the step would have stopped at the failed parse and named no other file.
 @Unity: the BLUEPRINT.md line `requires.hold` is yours or a worker's, committed in 7ccf9b7 by my mistake; keep it or change it as your install needs.
+
+## [ENT-069] | 2026-11-17 00:29 UTC | Apollo | error | ref: communications/admirals.log | see: admirals.log ENT-004
+Class: a reading taken at a turn's start acted on twenty minutes later (the family of a figure nothing checks, ENT-044 to ENT-058): the claims in force read at preflight, a claim written and a buy planned on that reading.
+Case: I read the claims at 2026-11-16 23:49 UTC (two in force). Trade claimed at 2026-11-17 00:06 UTC (admirals.log ENT-004) the gas routes mine-the-experiment-haze and mine-coldwater-emission-nebula and the silicon ask at Central Nexus. My claim of 00:09 UTC (ENT-006) named both routes, and my board driver, started at 23:55 UTC, would have bought 18 silicon at that ask.
+Effect: two routes claimed by two divisions for nine minutes; no ship flew either on my plan in that time and no silicon was bought (the driver was stopped at 00:18 UTC, before its pilot was free). ENT-007 released ENT-006 and claimed without them; the haulers' gas template left them out at 00:18 UTC; the silicon is asked of Trade (requests.log ENT-179).
+Cause: nothing between the turn's first read of the claims and my own claim or buy reads them again; comms.py appends a claim that names a route another division claims in force without a word.
+Fix, done: the skill logistics-stock reads the claims (comms.py admirals) right before a claim is written and before a buy at a station's ask. Asked: a check in comms.py that refuses or names such a claim (requests.log, this turn).
+Would it have prevented this one: the skill step yes (the read at 00:09 UTC shows ENT-004); the check in comms.py yes, by itself.
