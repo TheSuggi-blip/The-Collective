@@ -1,0 +1,100 @@
+{
+ "id": "craft-boards-silicon-central-nexus",
+ "kind": "circuit",
+ "title": "The silicon ore a pilot stores at Central Nexus carried to Node Beta and etched into circuit boards there with carbon ore bought at the Node Beta ask, kept in its storage for the faction's offices (the reserve)",
+ "note": "Written by Apollo, 2026-11-17 08:05 UTC (orders.log ENT-031, block APOLLO (4): the 125 circuit boards of the Hiring Board and the Recruitment Desk; rule F29: by a route, not by hand). Central Nexus has no carbon ask; Node Beta asks carbon ore at 4 cr for 146,124 units (book of 07:57 UTC). Stop 1 withdraws 43 silicon ore and 22 carbon ore at Central Nexus (one hold of 65); at Node Beta four loads of 60 carbon are bought (one unit was bought first on 2026-11-17 01:42 UTC, rule F12) and stored, then 21 runs of carbon_arc_circuit_etching (2 silicon ore and 12 carbon ore make 3 circuit boards, by hand, 0 cr) take 42 silicon and 252 carbon: 63 boards; one run of fabricate_circuit_boards (3 copper ore, 2 silicon ore, 1 energy crystal make 2) uses the silicon left. The carbon is booked as money paid once (craft inputs). requires.stored sends only the pilot that stores 40 silicon ore at Central Nexus. One ship.",
+ "requires": {
+  "stored": {
+   "at": "central_nexus",
+   "item": "silicon_ore",
+   "min": 40
+  }
+ },
+ "max_ships": 1,
+ "standing": true,
+ "stops": [
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "silicon_ore",
+     "qty": 43
+    },
+    {
+     "item": "carbon_ore",
+     "qty": 22
+    }
+   ]
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store": "all",
+   "buy": [
+    {
+     "item": "carbon_ore",
+     "qty": 60,
+     "max_price": 5,
+     "one_time": true
+    }
+   ]
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store": "all",
+   "buy": [
+    {
+     "item": "carbon_ore",
+     "qty": 60,
+     "max_price": 5,
+     "one_time": true
+    }
+   ]
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store": "all",
+   "buy": [
+    {
+     "item": "carbon_ore",
+     "qty": 60,
+     "max_price": 5,
+     "one_time": true
+    }
+   ]
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store": "all",
+   "buy": [
+    {
+     "item": "carbon_ore",
+     "qty": 60,
+     "max_price": 5,
+     "one_time": true
+    }
+   ],
+   "craft": [
+    {
+     "recipe": "carbon_arc_circuit_etching",
+     "runs": 21,
+     "per_run": 3,
+     "makes": "circuit_board",
+     "inputs": [
+      "carbon_ore"
+     ]
+    },
+    {
+     "recipe": "fabricate_circuit_boards",
+     "runs": 1,
+     "per_run": 2,
+     "makes": "circuit_board"
+    }
+   ]
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store": "all"
+  }
+ ]
+}

@@ -12,12 +12,13 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 61.
+Routes: 62.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
 | [census-voidborn](census-voidborn.json) | census | home space | Read one Voidborn system whole: deposits, creatures, order book, mission board | up to 4 ships | 186 | 7 | -70 | -550 | 2026-11-17 |
 | [craft-boards-node-beta](craft-boards-node-beta.json) | circuit | home space | Circuit boards etched at the Node Beta workshop from the pilot's own stored silicon ore and carbon ore bought there, kept in its storage for the faction's ladder (the reserve) | up to 1 ships, with 30 silicon_ore stored at node_beta_industrial_station, standing work | 1 | 20 | -770 | -2,320 | 2026-11-17 |
+| [craft-boards-silicon-central-nexus](craft-boards-silicon-central-nexus.json) | circuit | home space | The silicon ore a pilot stores at Central Nexus carried to Node Beta and etched into circuit boards there with carbon ore bought at the Node Beta ask, kept in its storage for the faction's offices (the reserve) | up to 1 ships, with 40 silicon_ore stored at central_nexus, standing work | TBD | TBD | TBD | TBD | -- |
 | [craft-steel-central-nexus](craft-steel-central-nexus.json) | circuit | home space | Steel plate made by hand at the Central Nexus workshop from the pilot's own stored iron ore, kept in its storage there for the reserve; open to a ship of any role | up to 2 ships, with 300 iron_ore stored at central_nexus, standing work | TBD | TBD | TBD | TBD | -- |
 | [craft-steel-node-beta](craft-steel-node-beta.json) | circuit | home space | Steel plate made by hand at the Node Beta workshop from the pilot's own stored iron ore, kept in its storage there for the reserve; open to a ship of any role | up to 11 ships, with 550 iron_ore stored at node_beta_industrial_station, standing work | 43 | 6 | -30 | -320 | 2026-11-17 |
 | [craft-steel-refine-node-beta](craft-steel-refine-node-beta.json) | circuit | home space | A test: steel plate refined in a public facility at Node Beta (refine_steel, 5 iron ore for 2 plate and a fee) from the pilot's own stored iron ore | up to 1 ships, with 550 iron_ore stored at node_beta_industrial_station, standing work | 1 | 1 | -2,900 | -133,850 | 2026-11-17 |

@@ -21,17 +21,17 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 | [Paying Routes](index-paying-routes.md) | Work that repeats and whose runs of the last 12 hours measured above zero. | 30 | 15 | 15 | sell-hydrogen-at-node-beta: 56,950 cr per ship-hour |
 | [Tests](index-tests.md) | Work that repeats and has no measured figure: new, or no readable run in the last 12 hours. One ship until its first RESULT line is read. | 66 | 26 | 40 | not measured yet |
 | [Fitting](index-fitting.md) | A module bought and fitted: the tool a kind of work needs. | 11 | 10 | 1 | fit-ice-harvester-lhs-1140: -4,320 cr per ship-hour |
-| [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 61 | 20 | 41 | gather-ironhollow-fading-signal: 50 cr per ship-hour |
+| [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 62 | 21 | 41 | gather-ironhollow-fading-signal: 50 cr per ship-hour |
 | [Measured at a Loss](index-measured-at-a-loss.md) | Work that repeats and whose runs of the last 12 hours measured zero or below. | 35 | 3 | 32 | mine-amberfall-emission-nebula: 0 cr per ship-hour |
-| [Off](index-off.md) | Written down, not flown. | 13 | 8 | 5 | voidborn-first-steps: 4,020 cr per ship-hour |
-| All | | 245 | 99 | 146 | |
+| [Off](index-off.md) | Written down, not flown. | 14 | 8 | 6 | voidborn-first-steps: 4,020 cr per ship-hour |
+| All | | 247 | 100 | 147 | |
 
 ## Routes by Zone and Kind
 
 | Zone | Routes | census | circuit | guard | hunt | mine | Farthest system, jumps from home |
 |---|---|---|---|---|---|---|---|
-| home space | 99 | 1 | 75 | 0 | 10 | 13 | 3 |
-| beyond the border | 146 | 6 | 20 | 3 | 61 | 56 | 15 |
+| home space | 100 | 1 | 76 | 0 | 10 | 13 | 3 |
+| beyond the border | 147 | 6 | 21 | 3 | 61 | 56 | 15 |
 
 ## Plans by Role
 

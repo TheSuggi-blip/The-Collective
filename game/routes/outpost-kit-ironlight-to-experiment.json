@@ -1,0 +1,28 @@
+{
+ "id": "outpost-kit-ironlight-to-experiment",
+ "kind": "circuit",
+ "title": "The first outpost, step 1 of 3: one Outpost Kit bought at Ironlight Crossroads (LHS 1140, lawless) and stored at The Experiment Research Station, our border station two jumps from the site Mining and Intel name",
+ "note": "Written by Apollo, 2026-11-17 08:06 UTC (orders.log ENT-031, block APOLLO (3) and task 3: plan the first outpost as routes; deploy nothing yet). OFF until the Fleet Admiral chooses the site and gives the builder the credits (rule F33). Ironlight Crossroads asked 2 Outpost Kits at 74,010 cr (book of 2026-11-17 07:55 UTC); a kit is 30 units of hold, so one Threshold carries it. The way: Node Beta to LHS 1140 is 6 jumps (Node Alpha, Synchrony, Pherkad, GSC-0041, Antares), out with an empty hold (rule F13); LHS 1140 to The Experiment is 4 jumps (Antares, GSC-0041, Ironhollow), three of them lawless, with 74,010 cr of kit aboard: the hold that must not be lost, so the carry asks Military for an escort before this route is switched on. Our hunters sold at Ironlight Crossroads 14 times on 2026-11-16 without a loss, and buy-gold-ironlight-boards flew the same road out and back on 2026-11-17 00:35 UTC (3 of 3 stops). The kit is booked as money paid once. Step 2 is the founding by the builder (spacemolt_facility deploy_outpost, undocked at the chosen place in a lawless system, manage_bases permission, 100,000 cr from the treasury first, then the wallet); step 3 the supply routes (guidebook logistics.md, section 15).",
+ "status": "off",
+ "requires": {
+  "empty_hold": true
+ },
+ "max_ships": 1,
+ "stops": [
+  {
+   "at": "lhs_1140:0321b3e4406021575337b7be26e53dd7:784309214f105860a16a0c100a70eb14",
+   "buy": [
+    {
+     "item": "outpost_kit",
+     "qty": 1,
+     "max_price": 75000,
+     "one_time": true
+    }
+   ]
+  },
+  {
+   "at": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+   "store": "all"
+  }
+ ]
+}
