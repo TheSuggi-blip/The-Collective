@@ -20,7 +20,7 @@
    "trains": [
     "trading"
    ],
-   "note": "Every route is gated by requires.stored (the pilot's own storage) and requires.bid (a book read within the hour at the floor); a run sells only what the bid takes. Soma floor 340 (Central Nexus asks 293 in depth); hydrogen floor 30 (Ironlight asks 6 in depth); palladium floor 300 (base value 200; Sirius asks 432). Routes written by sellgen.py of the trade-books skill. Open to every division's ships (rule F24). Starter hull, no module needed."
+   "note": "2026-11-17 15:43 UTC (Mercury, orders ENT-037): every route is gated by requires.stored (the pilot's own storage) and requires.bid (a book read within the hour at the floor); a run sells only what the bid takes. Floors read against the cheapest ask (sellgen.py scan, 15:35 UTC): soma 320 (cheapest ask 273 x 4 at Node Alpha; bids 343 x 2 and 343 x 1), palladium 270 (cheapest ask 200 x 1; bids 412 x 2 and 272 x 5), hydrogen 30 (Ironlight asks 6 in depth; one home bid of 31 x 8). Open to every division's ships (rule F24). Starter hull, no module."
   },
   "trade-craft": {
    "title": "Crafting from the pilot's own stores: copper piping and steel plate for the reserve",
