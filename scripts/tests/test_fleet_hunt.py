@@ -61,5 +61,55 @@ class WantedGoodsTests(unittest.TestCase):
         self.assertEqual(self.wanted_goods(self.folder, 100, self.now), set())
 
 
+class AloneTests(unittest.TestCase):
+    """--alone: which strangers make a hunt leave a place without a fight (route field `alone`)."""
+
+    def setUp(self):
+        self.leave_reason = load("leave_reason")
+        self.alone_mode = load("alone_mode")
+        self.hostile_names = load("hostile_names")
+        self.folder = tempfile.mkdtemp()
+        self.own = {"drone-1", "miner-7", "Hades"}
+
+    def near(self, names, pirates=0):
+        return {"nearby": [{"username": n} for n in names], "pirate_count": pirates}
+
+    def route(self, alone):
+        path = os.path.join(self.folder, "hunt-x.json")
+        with open(path, "w", encoding="utf-8") as fh:
+            json.dump({"id": "hunt-x", "kind": "hunt", "alone": alone}, fh)
+        return path
+
+    def test_true_leaves_for_any_ship_not_ours(self):
+        # the rule since 2026-11-16: 61 of 161 drone hunts left so (2026-11-17 04:12 to 08:10 UTC)
+        mode = self.alone_mode(self.route(True))
+        self.assertEqual(mode, "strangers")
+        self.assertIsNotNone(self.leave_reason(self.near(["miner-7", "Combat Drone 187"]), self.own, mode, set()))
+        self.assertIsNone(self.leave_reason(self.near(["miner-7", "Hades"]), self.own, mode, set()))
+
+    def test_pirates_stays_beside_a_stranger_and_leaves_for_a_pirate(self):
+        mode = self.alone_mode(self.route("pirates"))
+        self.assertEqual(mode, "pirates")
+        self.assertIsNone(self.leave_reason(self.near(["Combat Drone 187", "VMan"]), self.own, mode, set()))
+        why = self.leave_reason(self.near(["VMan"], pirates=1), self.own, mode, set())
+        self.assertIn("pirate", why[1])
+
+    def test_pirates_leaves_for_a_pilot_of_the_hostile_list(self):
+        with open(os.path.join(self.folder, "h-vman.md"), "w", encoding="utf-8") as fh:
+            fh.write("---\nname: vman\nkind: player\nusername: VMan\nstanding: hostile\n---\n")
+        with open(os.path.join(self.folder, "n-other.md"), "w", encoding="utf-8") as fh:
+            fh.write("---\nname: other\nusername: Other\nstanding: neutral\n---\n")
+        hostile = self.hostile_names(self.folder)
+        self.assertEqual(hostile, {"VMan"})
+        why = self.leave_reason(self.near(["Other", "VMan"]), self.own, "pirates", hostile)
+        self.assertIn("hostile", why[1])
+
+    def test_a_missing_or_broken_route_file_keeps_the_strict_rule(self):
+        self.assertEqual(self.alone_mode(os.path.join(self.folder, "none.json")), "strangers")
+        with open(os.path.join(self.folder, "broken.json"), "w", encoding="utf-8") as fh:
+            fh.write("[1, 2")
+        self.assertEqual(self.alone_mode(os.path.join(self.folder, "broken.json")), "strangers")
+
+
 if __name__ == "__main__":
     unittest.main()

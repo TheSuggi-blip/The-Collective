@@ -45,6 +45,10 @@ data/routes/runs.jsonl under the id given by --route (default hunt-<poi>).
 --alone: before every fight it looks who is at the place; where a ship that
 is not ours or a pirate stands it does not fight and leaves (beyond policed
 space a herd is shared with whoever comes: orders F2, never first, flee).
+A route file with `"alone": "pirates"` leaves only where a pirate or a pilot
+filed hostile (game/players/h-*.md) stands, and hunts beside other strangers
+(rule F13: its Admiral lifts the limit once its runs hold); a stranger who
+joins the fight still makes it flee.
 --step: the hunt is one step of a circuit (route_run.py, a stop's `hunt`):
 the circuit's order file stands, and there is no station trip, no sale and
 no row of its own; it prints a STEP line. When it leaves, the runner writes
@@ -231,6 +235,46 @@ def ammo_ids():
     return {m.get('loaded_ammo_id') for m in body(raw('get_ship')).get('modules') or [] if isinstance(m, dict) and m.get('loaded_ammo_id')}
 
 
+def alone_mode(route_file):
+    """How a hunt with --alone judges a place: 'pirates' when its route file says `"alone": "pirates"` (it leaves only
+    for a pirate or a pilot of the hostile list), else 'strangers' (it leaves for every ship that is not ours). A file
+    that is missing or unreadable keeps the strict rule."""
+    try:
+        with open(route_file, encoding='utf-8') as fh:
+            return 'pirates' if json.load(fh).get('alone') == 'pirates' else 'strangers'
+    except (OSError, ValueError, AttributeError):
+        return 'strangers'
+
+
+def hostile_names(folder):
+    """The usernames of the pilots filed hostile: the line `username:` of each game/players/h-*.md."""
+    names = set()
+    for path in glob.glob(os.path.join(folder, 'h-*.md')):
+        try:
+            with open(path, encoding='utf-8') as fh:
+                for line in fh:
+                    if line.startswith('username:'):
+                        names.add(line.split(':', 1)[1].strip())
+                        break
+        except OSError:
+            continue
+    return names
+
+
+def leave_reason(near, own, mode, hostile):
+    """(what to say, the run's note) when a hunt with --alone leaves the place without a fight, or None. A pirate always
+    makes it leave; in mode 'strangers' every ship that is not ours does, in mode 'pirates' only a pilot of the hostile
+    list. 61 of 161 drone hunts left for a stranger who never fired (2026-11-17 04:12 to 08:10 UTC, runs.jsonl)."""
+    others = sorted(str(row.get('username')) for row in (near.get('nearby') or []) if isinstance(row, dict) and row.get('username') and row.get('username') not in own)
+    pirates = near.get('pirate_count') or 0
+    if pirates:
+        return 'pirates %s here, strangers %s' % (pirates, others[:4]), 'left: a pirate was at the place'
+    if mode == 'pirates':
+        bad = [n for n in others if n in hostile]
+        return ('a pilot of the hostile list here: %s' % bad[:4], 'left: a pilot of the hostile list was at the place') if bad else None
+    return ('not alone here: %s' % others[:4], 'left: a ship that is not ours was at the place') if others else None
+
+
 def own_names():
     """The pilots of our fleet; an unreadable fleet file counts every pilot as a stranger (the hunt then leaves)."""
     try:
@@ -311,6 +355,11 @@ def fight():
 
 before_credits, before_cargo = credits(), cargo()
 HULL_BEFORE, OWN, notes = hull()[0], own_names(), []
+GAME = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ALONE_MODE = alone_mode(os.path.join(GAME, 'routes', route_id + '.json')) if ALONE and not STEP else 'strangers'
+HOSTILE = hostile_names(os.path.join(GAME, 'players')) if ALONE_MODE == 'pirates' else set()
+if ALONE:
+    say('alone: leaves for ' + ('a pirate or a pilot of the hostile list (%d filed)' % len(HOSTILE) if ALONE_MODE == 'pirates' else 'every ship that is not ours'))
 if not combat_mode('external'):
     sys.exit('the engine did not take the combat mode; no hunt')
 kills, started, hunt_minutes = 0, time.time(), 0.0
@@ -335,10 +384,10 @@ if goal('navigate-to-system', {'targetSystemId': system_id}) and goal('go-to-poi
             say('already in a battle: taking it up')
         else:
             near = body(raw('get_nearby'))
-            others = sorted(str(row.get('username')) for row in near.get('nearby') or [] if isinstance(row, dict) and row.get('username') and row.get('username') not in OWN)
-            if ALONE and (others or near.get('pirate_count')):
-                say(f'not alone here: {others[:4]}, pirates {near.get("pirate_count") or 0}: no fight, leaving')
-                notes.append('left: a ship that is not ours was at the place')
+            why = leave_reason(near, OWN, ALONE_MODE, HOSTILE) if ALONE else None
+            if why:
+                say(why[0] + ': no fight, leaving')
+                notes.append(why[1])
                 break
             prey = [c for c in near.get('creatures') or [] if isinstance(c, dict) and c.get('role') == 'grazer' and not c.get('in_combat')
                     and (species is None or c.get('species') in species) and (c.get('max_hull') or c.get('hull') or 0) <= max_prey_hull]
