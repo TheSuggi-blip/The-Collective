@@ -1,0 +1,19 @@
+{
+ "id": "census-watch-gsc-0044",
+ "kind": "census",
+ "title": "Watch the first outpost site: GSC-0044 and its neighbours read every hour (who is there, pirates, fields)",
+ "note": "Kept by Oracle; written 2026-11-17 11:25 UTC for orders.log ENT-036 (P4 a, block ORACLE: read GSC-0044 and its six neighbours again before the outpost is founded; scouts watch an outpost and warn). GSC-0044 is the site the Fleet Admiral chose (game/map/sites.tsv). Its lanes go to Acrux, Atlas, Botein, Cedarhold, HD 40307 and Intercrus; Intercrus, and Achernar on the road from The Experiment, stay on Military's census-guard-ice (every 60 minutes), so they are not listed here. Six systems, 3 to 7 jumps from home, all lawless: an empty hold (rule F13). A census reads and leaves; a pirate it meets is filed for Military (observe.py).",
+ "systems": [
+  "gsc_0044",
+  "hd_40307",
+  "acrux",
+  "atlas",
+  "botein",
+  "cedarhold"
+ ],
+ "every_minutes": 60,
+ "max_ships": 2,
+ "requires": {
+  "empty_hold": true
+ }
+}

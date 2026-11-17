@@ -21,17 +21,17 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 | [Paying Routes](index-paying-routes.md) | Work that repeats and whose runs of the last 12 hours measured above zero. | 44 | 21 | 23 | drain-ice-node-alpha: 40,500 cr per ship-hour |
 | [Tests](index-tests.md) | Work that repeats and has no measured figure: new, or no readable run in the last 12 hours. One ship until its first RESULT line is read. | 63 | 18 | 45 | not measured yet |
 | [Fitting](index-fitting.md) | A module bought and fitted: the tool a kind of work needs. | 11 | 10 | 1 | fit-ice-harvester-lhs-1140: -4,320 cr per ship-hour |
-| [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 72 | 22 | 50 | hunt-elnath-ice-belt-hollow-pilgrim: 950 cr per ship-hour |
+| [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 77 | 22 | 55 | hunt-elnath-ice-belt-hollow-pilgrim: 950 cr per ship-hour |
 | [Measured at a Loss](index-measured-at-a-loss.md) | Work that repeats and whose runs of the last 12 hours measured zero or below. | 41 | 5 | 36 | mine-coldwater-emission-nebula: -50 cr per ship-hour |
-| [Off](index-off.md) | Written down, not flown. | 17 | 8 | 9 | voidborn-first-steps: 4,020 cr per ship-hour |
-| All | | 278 | 101 | 177 | |
+| [Off](index-off.md) | Written down, not flown. | 18 | 8 | 10 | voidborn-first-steps: 4,020 cr per ship-hour |
+| All | | 284 | 101 | 183 | |
 
 ## Routes by Zone and Kind
 
 | Zone | Routes | census | circuit | guard | hunt | mine | Farthest system, jumps from home |
 |---|---|---|---|---|---|---|---|
 | home space | 101 | 1 | 76 | 0 | 11 | 13 | 3 |
-| beyond the border | 177 | 6 | 25 | 5 | 80 | 61 | 15 |
+| beyond the border | 183 | 12 | 25 | 5 | 80 | 61 | 29 |
 
 ## Plans by Role
 

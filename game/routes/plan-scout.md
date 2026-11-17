@@ -39,7 +39,7 @@ Kept by Oracle. Routes: 43. Ships: 30.
 | 17 | [voidborn-conductive-lattice](voidborn-conductive-lattice.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 6 jumps | once per pilot, up to 4 ships, 146 pilots in all, empty hold, from 13,000 cr | all 30 |
 | 18 | [voidborn-first-hunt-acubens](voidborn-first-hunt-acubens.json) | [Once per Pilot](index-once-per-pilot.md) | home space | once per pilot, up to 1 ships | all 30 |
 | 19 | [mission-ghosts-in-the-cloud-node](mission-ghosts-in-the-cloud-node.json) | [Once per Pilot](index-once-per-pilot.md) | home space | once per pilot, up to 1 ships | all 30 |
-| 20 | [census-roads-chain](census-roads-chain.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 15 jumps | up to 1 ships, empty hold | 1 of 30 |
+| 20 | [census-roads-chain](census-roads-chain.json) | [Off](index-off.md) | beyond the border, 15 jumps | up to 1 ships, empty hold, off | 1 of 30 |
 | 21 | [fit-survey-scanner-central-nexus](fit-survey-scanner-central-nexus.json) | [Fitting](index-fitting.md) | home space | once per pilot, up to 1 ships, 2 pilots in all, without survey_scanner_i, from 12,000 cr | 1 of 30 |
 | 22 | [mine-flicker-fray](mine-flicker-fray.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 5 jumps | up to 1 ships, empty hold | 1 of 30 |
 | 23 | [mine-nightveil-dark-residue](mine-nightveil-dark-residue.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 5 jumps | up to 1 ships, empty hold | 1 of 30 |

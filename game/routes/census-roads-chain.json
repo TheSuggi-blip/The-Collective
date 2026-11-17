@@ -2,7 +2,7 @@
  "id": "census-roads-chain",
  "kind": "census",
  "title": "Test: the explorers' census with a chain, up to three systems of census-roads in one trip",
- "note": "Kept by Oracle; written 2026-11-17 03:36 UTC as the one-ship test of the census chain (census.py commit 9ceae23; queue.log ENT-131: Unity accepted the step, one ship first). The same systems and every_minutes as census-roads; after its first system the run reads up to 2 more that are due within 2 lanes before it turns home, while the tank holds the way there and home. Its rows are compared with census-roads per system read (credits and minutes): census-roads measured -626 cr a ship-hour over 31 scout runs in the hours to 03:20 UTC, a trip of 14 to 30 jumps out and back for one system. When its first RESULT lines read right, chain goes onto census-roads and this file is switched off. 2026-11-17 07:21 UTC, Oracle: 97 never-read systems appended (Procyon Colonial Station first, for Trade's requests.log ENT-194; then every unread system of 8 to 14 jumps from home, nearest first, pirate strongholds Gliese 581 and Algol left out): the 46 systems of the three regions had all been read by about 04:33 UTC and the explorers had fallen back to gathering (24 of 30 scouts gathering at 07:17 UTC). Exploration XP rises only on a first visit (catalog, table skills), so never-read systems are the explorers' class work (orders ENT-029, task 1).",
+ "note": "Kept by Oracle; written 2026-11-17 03:36 UTC as the one-ship test of the census chain (census.py commit 9ceae23; queue.log ENT-131: Unity accepted the step, one ship first). The same systems and every_minutes as census-roads; after its first system the run reads up to 2 more that are due within 2 lanes before it turns home, while the tank holds the way there and home. Its rows are compared with census-roads per system read (credits and minutes): census-roads measured -626 cr a ship-hour over 31 scout runs in the hours to 03:20 UTC, a trip of 14 to 30 jumps out and back for one system. When its first RESULT lines read right, chain goes onto census-roads and this file is switched off. 2026-11-17 07:21 UTC, Oracle: 97 never-read systems appended (Procyon Colonial Station first, for Trade's requests.log ENT-194; then every unread system of 8 to 14 jumps from home, nearest first, pirate strongholds Gliese 581 and Algol left out): the 46 systems of the three regions had all been read by about 04:33 UTC and the explorers had fallen back to gathering (24 of 30 scouts gathering at 07:17 UTC). Exploration XP rises only on a first visit (catalog, table skills), so never-read systems are the explorers' class work (orders ENT-029, task 1). 2026-11-17 11:25 UTC, Oracle: switched off. It never flew because its list is census-roads' list, and dispatch.py counts every census order of a listed system against each route that lists it: the explorers on census-roads held its max_ships of 1 all day (briefing, 11:15 UTC: 9 of 1). The chain is tested on census-far-1 to census-far-5, whose lists are disjoint.",
  "systems": [
   "biham",
   "sualocin",
@@ -154,5 +154,6 @@
  "chain_jumps": 2,
  "requires": {
   "empty_hold": true
- }
+ },
+ "status": "off"
 }

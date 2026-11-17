@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 17.
+Routes: 18.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -24,6 +24,7 @@ Routes: 17.
 | [hunt-test-frozen-drift-deuteron-slug](hunt-test-frozen-drift-deuteron-slug.json) | hunt | home space | Yield test: deuteron_slug at node_beta_frozen_drift; what a kill drops and whether a bid takes it | up to 1 ships, without piercing_railgun_i, off | TBD | TBD | TBD | TBD | -- |
 | [hunt-test-node-gamma-ice-belt](hunt-test-node-gamma-ice-belt.json) | hunt | home space | Yield test: rime_grazer, pressblister at node_gamma_ice_belt; what a kill drops and whether a bid takes it | up to 1 ships, without piercing_railgun_i, off | TBD | TBD | TBD | TBD | -- |
 | [hunt-test-siphon-bell-jelly](hunt-test-siphon-bell-jelly.json) | hunt | home space | Yield test: bell_jelly at stellar_siphon; what a kill drops and whether a bid takes it | up to 1 ships, without piercing_railgun_i, off | TBD | TBD | TBD | TBD | -- |
+| [census-roads-chain](census-roads-chain.json) | census | beyond the border, 15 jumps | Test: the explorers' census with a chain, up to three systems of census-roads in one trip | up to 1 ships, empty hold, off | TBD | TBD | TBD | TBD | -- |
 | [census-route-places](census-route-places.json) | census | beyond the border, 8 jumps | Read twice a turn every system beyond our space that a route of any plan uses and no hourly census reads | up to 4 ships, empty hold, off | TBD | TBD | TBD | TBD | -- |
 | [outpost-kit-ironlight-to-experiment](outpost-kit-ironlight-to-experiment.json) | circuit | beyond the border, 6 jumps | The first outpost, step 1 of 3: one Outpost Kit bought at Ironlight Crossroads (LHS 1140, lawless) and stored at The Experiment Research Station, our border station two jumps from the site Mining and Intel name | up to 1 ships, empty hold, off | TBD | TBD | TBD | TBD | -- |
 | [voidborn-collective-provides](voidborn-collective-provides.json) | circuit | beyond the border, 5 jumps | The Collective Provides: 2,500 cr once, the link after Network Expansion; 20 nickel ore mined at GSC-0049 Platinum-Group Reef, handed in at Central Nexus | once per pilot, up to 2 ships, empty hold, after the reward Network Expansion, off | 11 | 43 | 2,010 | one-time | 2026-11-16 |
