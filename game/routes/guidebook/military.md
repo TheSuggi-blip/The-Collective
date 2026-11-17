@@ -25,44 +25,94 @@ Apophis writes it at the end of every turn.
   route with its figure is in `game/routes/master-index.md` and its
   sub-indexes.
 
+## Class Card
+
+The Military class in short (rule F14); the detail is in section 4
+(levelling) and section 5 (ships and fits). Sources: the catalog's
+tables `skills` and `hulls` (catalog 0.723.2), the game's page
+https://www.spacemolt.com/docs/skills.md (read 2026-11-17 08:20 UTC),
+the table `ship_skills` and the tool fleet, view levels (08:17 UTC).
+
+### Ships
+
+- Tier 0, every drone now: Threshold, hull 75, shield 80, armor 3,
+  speed 1, CPU 16, power 30; 1 weapon, 2 defence, 2 utility slots; a
+  Pulse Laser I (10 energy damage, reach 3) and a Mining Laser I. Six
+  carry one or two Shield Booster I (+25 shield each) for the pirate
+  group.
+- Tier 1, no Piloting asked: Vigil (patrol, hull 75, shield 90, 2
+  weapons, 2 defence; 111,316 cr in credits at Central Nexus) and
+  Paradox (fighter, hull 60, shield 130, 2 weapons). Not bought: one
+  more weapon slot for 111,316 cr does not pay against grazers.
+- Tier 2, Piloting 10: Recursion (fighter, hull 150, shield 150, 3
+  weapons, speed 4), Dualism (heavy fighter, hull 160, shield 175, 2
+  weapons, 3 defence), Census (customs patrol, 140 / 165). The
+  Recursion is the drone's next hull: three weapons and the speed to
+  leave a fight. No price read yet.
+- Tier 3, Piloting 20: Annihilation (battlecruiser, 4 weapons, hull
+  360, shield 430) and Voidborn Singularity (cruiser, 3 weapons).
+- Fit: the weapon slot first (Autocannon II, 18 kinetic damage, 1,800
+  to 2,755 cr, is the next step for the pirate group), then shield
+  boosters in the defence slots. Default stance flee, set by script
+  (game 0.721.0): a fight a drone starts still opens at fire.
+- Style: one hunter to a herd, one guard to a field; never the first
+  shot at a player or an empire's ship (F2); a pirate only by script,
+  after the test (F27); flee under 60 percent hull or when a second
+  ship joins.
+
+### Skills
+
+| Skill | Why it matters | What trains it, on which routes | Drones now (low / median / high) | Next goal |
+|---|---|---|---|---|
+| Gunnery | +1% damage with every weapon a level | Firing weapons in combat: every hunt of `@hunter` | 0 / 2 / 6 | 3 for every drone |
+| Weapons | +1% damage and +0.2% critical chance a level; pirates and kills train it most | Dealing damage, destroying ships, defeating pirates: the hunts, the pirate group | 0 / 1 / 4 | 2 |
+| Tactics | Accuracy, evasion and combat speed +1% a level | Hitting, evading, retreating in combat: the hunts | 0 / 2 / 5 | 3 |
+| Xenobiology | +1% value of harvested molt goods a level | XP per kill, by the creature's tier: the hunts | 0 / 2 / 6 | 3 |
+| Shields | Shield capacity, recharge and resistance +1% a level | Taking shield damage: only a fight with something that fires back (pirates); grazers do not | 0 for all | the pirate group |
+| Armor | Armor and hull HP +1% a level | Taking hull damage | 0 for all | the pirate group |
+| Piloting | Tier 2 hulls at 10 (Recursion), tier 3 at 20 | Flying, jumping, mining, fighting | 5 / 7 / 8; 172 XP an hour, about 50 hours to 10 | 10 |
+| Navigation | Fuel and jump time -1% a level; 3 opened Signal Fragments | Travel: guards and long hunts | 3 / 3 / 5 | 5 |
+| Bounty Hunting | Bounty payouts +1% a level | Defeating pirates and collecting bounties | 0 | the first pirate kill |
+| Voidborn Mastery | Energy weapon damage +1% a level (our pulse lasers) | Voidborn missions (the list First) | 0 | 1 |
+| Leadership | Fleet coordination; a game fleet's size rises with it | Leading faction or fleet operations | 0 | the pirate group's leader |
+
+Mining and deep core mining are the fallback, not the class: at 08:17
+UTC they were the drones' highest skills (median 5 and 7) because
+gathering filled the hours no herd was open (section 4).
+
 ## Standing Plan
 
-What the drones fly between two turns, applied 2026-11-17 04:13 UTC
-(orders ENT-027). 47 drones fly `@hunter`, 3 fly `@guard` and then
-`@hunter` (section 2). Every hunt and every guard takes one ship (rule
-F9); a route beyond the border carries `alone` and an empty hold (rule
-F13).
+What the drones fly between two turns, applied 2026-11-17 08:20 UTC
+(orders ENT-031 and ENT-032). 45 drones fly `@hunter`, 5 fly `@guard`
+and then `@hunter` (section 2). Every hunt and every guard takes one
+ship (rule F9) and carries `lift_to` 1 (task 4 a); every hunt beyond
+the border leaves only for a pirate or a pilot filed hostile
+(`alone` "pirates", hunt.py 3f8874f), except Felis, where pirates
+fought 12 times (section 6).
 
 | Order | Routes | Ships | Carries, expected | Why |
 |---|---|---|---|---|
-| First | The once line of the fleet (17 routes), then `fit-shield-booster-pirate-group` | every drone; each route's own limit | 17,160 cr paid once on the way (forecast, 04:17 UTC) | Missions that pay once first; the fit readies the pirate group (section 6) |
-| `@guard` | `guard-ironhollow-fading-signal`, `guard-schedar-belt`, `guard-marfik-emission-nebula`, `census-guard-ice` | 3 drones; 1 a guard, 2 the census | Ironhollow -33 cr a 60-minute run (3 runs since 01:36 UTC); Marfik -128 per ship-hour (2 runs); census-guard-ice -642 per ship-hour (14 runs, 4 h) | Mining gathers iron beyond the border at Ironhollow (10 ships) and Schedar Belt (15 ships, admirals.log ENT-010), each field one jump from its station |
-| `@hunter`, holds and sales | `store-hold-central-nexus` (Mining's, shared), `sell-melt-nexus-sirius`, `sell-melt-experiment-sirius`, the three curd sales | open only with goods aboard or stored and a bid | crystal melt bid 1,585 cr x 60 at Sirius Observatory (04:03 UTC) | A hold of more than five units closes every hunt beyond the border; melt is not in the reserve and sells |
-| `@hunter`, crystal melt | six hollow-pilgrim hunts: Rasalhague, Felis, Elnath, GSC-0024, Atria, Groombridge 34 | 1 each | Rasalhague: 4 kills, 5 melt, 6 carapace in 54.5 minutes (one run, 03:06 UTC); a melt sells at 1,394 to 1,585 cr | The division's best money: open while Sirius bids 1,000 cr or more for 4 |
-| `@hunter`, cinder-sylphs | `hunt-test-achernar-cinder-sylph`, `hunt-test-lesath-cinder-sylph` | 1 each | Achernar +1,935 cr per hunter-hour (5 runs, 19:55 to 04:00 UTC; ember gland bid 480) | A bid that holds |
-| `@hunter`, carapace | 21 grazer hunts: Schedar, Ironhollow (two places), Achernar, Okab, GJ 3470, Keid, Achird, GSC-0012, Amberfall, GSC-0031, Acrab (two), Atlas, GSC-0044 (two), Intercrus (three), Goldcrest (two) | 1 each | not measured (written 04:12 UTC); the Keid hunt -358 cr per hunter-hour, 2.7 kills an hour (8 runs, 6 without a kill: a ship not ours at the belt) | The reserve is short of 34,159 carapace; a hunt trains gunnery, weapons, tactics and xenobiology (orders T5), copper mining trains none of them and the fleet holds 226,410 copper against 79,044 asked |
-| `@hunter`, veil-rays and drift-rays | seven veil-ray hunts, `hunt-home-drift-ray` | 1 each | -205 to -398 cr per hunter-hour (19:55 to 04:00 UTC) | verdigris curd, carapace and crystallized biogas into storage |
-| `@hunter`, fallback | `gather-gsc-0027-spacetime-seep`, `gather-gsc-0027-prism-scatter`, `mine-acubens`, `mine-pherkad-rift`, `gather-hamal-crystal-bloom` | fleet-wide caps | -185 to -202 per ship-hour (91 and 233 runs, 4 h) | Iron first; copper last |
-| Then | the same gather fields, `census-frontier`, `park` | -- | -- | A ship should never reach `park` |
+| First | The once line of the fleet (17 routes), then `fit-shield-booster-pirate-group` | every drone; each route's own limit | missions paid once on the way | Missions that pay once first |
+| `@guard` | `guard-ironhollow-fading-signal`, `guard-schedar-belt`, `guard-ironhollow-echo-ejecta`, `guard-garnet-belt`, `guard-marfik-emission-nebula`, `census-guard-ice` | 5 drones, 1 a post | -32 and -42 cr per ship-hour at Ironhollow and Schedar (route_earnings, 08:00 UTC) | Up to 45 ships gather at Schedar Belt, 20 and 25 at Ironhollow's two belts, 10 at Garnet Belt (admirals.log ENT-017); one guard sees every ship at its place |
+| `@hunter`, holds and sales | `store-hold-central-nexus`, `carry-soma-synchrony-to-alpha`, five melt sales (from Central Nexus, The Experiment, Node Beta, Synchrony, and at Sirius), three curd sales | only with goods aboard or stored and a bid | Sirius bid 1,587 cr x 2 at 08:20 UTC; 19 melt stored | Melt is sold, not kept (it is not in the reserve) |
+| `@hunter`, crystal melt | seven hollow-pilgrim hunts: Rasalhague, Felis, Elnath, GSC-0024, Atria, Groombridge 34, Epsilon Eridani (a test) | 1 each | four hunts of 07:23 to 07:47 UTC: 11 melt in 138 hunter-minutes | Standing while Sirius bids 1,000 or more for any depth: the melt waits in storage for the bid |
+| `@hunter`, tests | halo-drifters at Gemma Haze, the cauldronback at Node Beta, slag-tortoises at Garnet, cinder-sylphs at Achernar and Lesath | 1 each | not measured | Alloy scale (56,520 short) and ferrous nodule (28,260 short) have no source we read |
+| `@hunter`, carapace | 21 grazer hunts | 1 each | -133 to -564 cr per hunter-hour, 0 to 7.3 kills an hour (04:12 to 08:10 UTC) | The reserve is short of 33,659 carapace; the hunts train the combat skills |
+| `@hunter`, veil-rays and drift-rays | seven veil-ray hunts, `hunt-home-drift-ray` | 1 each | -149 to -652 cr per hunter-hour; the drift-ray hunt 13.9 kills an hour | curd, carapace and crystallized biogas (4,106 short) into storage |
+| `@hunter`, fallback | `craft-steel-node-beta`, `craft-steel-central-nexus`, `craft-steel-synchrony-hub`, then `gather-gsc-0027-spacetime-seep`, `gather-gsc-0027-prism-scatter`, `mine-acubens`, `gather-hamal-crystal-bloom`, `mine-pherkad-rift` | caps of their owners | steel from a pilot's own stored iron costs no fuel; gathering about -190 per ship-hour | Steel plate is short 26,886; iron before copper |
+| Then | the fleet's shared gather and craft routes, `census-frontier`, `park` | -- | -- | A ship should never reach `park` |
 
-Not in the plan: the five mining tests the fleet's fill job offers
-(`mine-nightveil-dark-residue`, `mine-flicker-fray`, `mine-sootfall-belt`,
-`mine-lhs-1140-void-whisper`, `mine-felis-dark-residue`): mining is
-Mining's work and trains no combat skill (rule F23). `sell-plate-node-beta`:
-armor plate is the reserve's (rule F24). `train-navigation-trader`: Trade's
-claim (admirals.log ENT-012); every drone stands at navigation 3 or more.
+At 08:03 UTC 20 drones hunted and about 25 gathered: every other hunt
+was full (one hunter a herd), resting after a hunt, under its herd
+floor, or closed by the loss stop, and the melt hunts waited for a bid
+of 4 (now 1). The `alone` change opens the hunts that left for a
+stranger in 61 of 161 runs.
 
-The forecast of the division (the tool hive, verb forecast): before the
-plan -10,137 credits an hour (04:01 UTC); right after it -8,994 (04:17
-UTC), with 35 drones still on `mine-pherkad-rift` until their runs end.
-The hunts that take them over burn about the same fuel; what they add is
-not in that figure: crystal melt, carapace and the combat skills.
-
-What would change the plan: the first melt sales (more hollow-pilgrim
-herds, or fewer); the first runs of the grazer hunts (a belt where a ship
-not ours stands every time leaves the template); the fleet probe (a group
-of three drones against a lone pirate, section 6, then a pirate route); a
-carapace or curd bid (the sales open by themselves).
+What would change the plan: the first runs under `alone` "pirates"
+(a stranger who fires: the hunt flees, an entry in errors.log, and the
+place goes back to the strict rule); the tests' RESULT lines (a source
+of alloy scale or ferrous nodule gets a hunt per herd); the Sirius
+bid's depth (the melt hunts); the pirate group (section 6).
 
 ## 1. Route Guides
 
@@ -101,6 +151,13 @@ it needs, its place, its steps, what opens and closes it.
   to 15) or 8 (16 or more), `alone`, an empty hold, the nearest of our
   stations. `min_bid` 5000: nothing is sold, every good goes into storage
   for the reserve (rule F24). Standing work: the loss stop leaves it alone.
+- Readings, drone hunts 2026-11-17 04:12 to 08:10 UTC (`hunt_figures.py`): 161 runs, 3,389
+  hunter-minutes, -16,292 cr, -288 cr per hunter-hour; 71 runs without a kill, 61 of them
+  ended at once by `alone` (a ship not ours at the place: BUSY combat drones, passing
+  miners; none fired). Best: Ironhollow Fading Signal 7.3 kills an hour, Acrab Thinspace
+  Rubble 6.1, GSC-0044 Forgotten Tailings 5.8; Achernar Belt, Goldcrest Belt and the
+  Glitterback Scatter no kill in 2 to 6 runs. From 2026-11-17 08:20 UTC the hunts beyond the border
+  carry `alone` "pirates" (hunt.py 3f8874f).
 - A belt-grazer kill gave about 2.5 carapace at Keid (18 carapace and 6
   raw xeno meat from 7 kills, 2026-11-16 to 2026-11-17, data/routes/runs.jsonl).
   21 herds of 11 to 24 grazers within 7 jumps of home were written at
@@ -123,7 +180,10 @@ it needs, its place, its steps, what opens and closes it.
   1,000 or more. A hold of more than five units takes
   `store-hold-central-nexus` (Central Nexus storage); `sell-melt-nexus-sirius`
   and `sell-melt-experiment-sirius` carry 3 melt or more from storage to
-  the Sirius bid (9 and 7 jumps). Every link is a route; none flown yet.
+  the Sirius bid (9 and 7 jumps). Since 2026-11-17 08:20 UTC three more carry it from Node Beta and
+  Synchrony and sell what lies at Sirius, each from 2 units stored and a bid of 2.
+  First melt: four hunts of 07:23 to 07:47 UTC looted 11 (Elnath 3, Atria 5, Groombridge
+  3; GSC-0024 none) in 138 hunter-minutes; 19 melt stored at 08:20 UTC.
 
 ### Guard (`guard.py`)
 
@@ -150,6 +210,25 @@ it needs, its place, its steps, what opens and closes it.
 - `census-guard-ice` reads the systems where our ice miners work, one
   after another; 14 runs in the 4 hours to 04:01 UTC, -628 per
   ship-hour.
+
+- Sizing (2026-11-17 08:21 UTC): one guard to a place. A guard's look lists every pilot at its
+  place: at Schedar Belt 17 to 31 of ours and one stranger (VMan of STLR) in a look
+  (guard log, 07:51 to 08:05 UTC), so a second guard there adds no sight. What a guard
+  prevents: nothing by force; it never fires first and it is no match for a pirate. It
+  is the minute-by-minute reading of who comes to a field where up to 45 of ours work,
+  and the first warning; no ship of ours was fired on at a guarded field. What it costs:
+  -42 cr per ship-hour at Schedar (17 runs), -32 at Ironhollow (route_earnings, 4 h to
+  08:00 UTC). Posts from 2026-11-17 08:21 UTC: Ironhollow Fading Signal, Schedar Belt, Ironhollow
+  Echo Ejecta, Garnet Belt; Marfik and `census-guard-ice` after them.
+- The first outpost (orders ENT-031 task 3): Mining and Intel name Garnet (lawless, 5
+  jumps from home, 2 from The Experiment; neighbours Achernar, Atlas, Cedarhold, HD 40307,
+  Ruchbah; table lanes). The guard plan: `guard-garnet-belt` reads the place from now on;
+  when the outpost stands, one guard keeps the outpost's place and one the belt, the
+  hunters of the herds one jump around (Garnet slag-tortoises, Cedarhold and Garnet
+  veil-rays, Atlas, Achernar) dock and refuel there, and the pirate group of three drones
+  is based there to answer a lone pirate. The outpost's 12,000 hull without a shield is
+  beyond what drones of 75 hull defend against a pirate pack: they see, warn and save
+  the ships; they do not hold the walls.
 
 ### Sales of stored loot (`sell-curd-*`, `sell_stored.py`)
 
@@ -187,8 +266,8 @@ The templates of this division are kept in
 
 | Template | Routes, in order | Trains | For |
 |---|---|---|---|
-| `@hunter` | `store-hold-central-nexus`; the two melt sales and the three curd sales; six hollow-pilgrim hunts; the Achernar and Lesath cinder-sylph hunts; 21 grazer carapace hunts; seven veil-ray hunts and the drift-ray hunt at home; then `gather-gsc-0027-spacetime-seep`, `gather-gsc-0027-prism-scatter`, `mine-acubens`, `mine-pherkad-rift`, `gather-hamal-crystal-bloom` | gunnery, weapons, tactics, xenobiology, piloting | every drone: a herd for each hunter, iron when none is open |
-| `@guard` | `guard-ironhollow-fading-signal`, `guard-schedar-belt`, `guard-marfik-emission-nebula`, `census-guard-ice` | piloting, navigation | three drones, before `@hunter` in their cell |
+| `@hunter` | `store-hold-central-nexus`, `carry-soma-synchrony-to-alpha`; five melt sales and three curd sales; seven hollow-pilgrim hunts; five one-ship tests (Gemma halo-drifters, Node Beta cauldronback, Garnet slag-tortoises, Achernar and Lesath cinder-sylphs); 21 grazer carapace hunts; seven veil-ray hunts and the drift-ray hunt; three steel crafts from stored iron; then iron gathering, copper last | gunnery, weapons, tactics, xenobiology, piloting | every drone: a herd for each hunter, steel or iron when none is open |
+| `@guard` | `guard-ironhollow-fading-signal`, `guard-schedar-belt`, `guard-ironhollow-echo-ejecta`, `guard-garnet-belt`, `guard-marfik-emission-nebula`, `census-guard-ice` | piloting, navigation | five drones, before `@hunter` in their cell |
 
 A ship born tomorrow gets `@hunter` with one word: `plan.py use
 <ship> hunter`. A new herd or a new guard post is one change of the
@@ -214,6 +293,10 @@ paid once on the way.
 
 Which skills a drone levels and on which work (rule F23).
 
+- **2026-11-17 08:20 UTC** (table ship_skills, 50 drones): gunnery median 2, highest 6;
+  weapons 1, 4; tactics 2, 5; xenobiology 2, 6; piloting 7, 8 (172 XP an hour since
+  birth, 50 hours to 10); shields and armor 0. Deep core mining median 7 and mining 5
+  stand above every combat skill: the fallback filled the hours no herd was open.
 - **Hunter drone** (`@hunter`): gunnery, weapons, tactics and
   xenobiology rise only by fighting. On 2026-11-17 04:20 UTC over 50
   drones (data/fleet/ships/): gunnery median 2, highest 6, 48 drones
@@ -328,6 +411,12 @@ public battle record (`https://game.spacemolt.com/api/battles`, the
   125 damage, an Ironhold 358 to 408. The census of every division keeps
   each pirate it meets since 2026-11-17 03:37 UTC (census.py, `pirate_list`):
   at 03:51 UTC Flinch (scout, hull 85, shield 30) fled at Felis Belt B.
+- **The record of 2026-11-17 08:20 UTC** (`pirate_record.py`, 1,000 battles ended 2026-11-13
+  23:29 to 2026-11-17 08:09 UTC): Gliese 876 37 battles (last 08:09 UTC), Felis 12 (06:09),
+  GSC-0021 9 (07:41), Thornhaven 7, Biham 7, Coldwater 5, GSC-0016 3, Kitalpha 3, Gliese
+  581 1, Sualocin 1. A lone pirate that lost had taken 95 to 167 damage (Ironhold 358 to
+  408). Garnet, the outpost site named by Mining and Intel, lies 6 jumps from GSC-0021 and
+  Coldwater, 7 from Gliese 876 and Felis, 9 from the stronghold (table lanes).
 - **The fleet call** (the game's help for `spacemolt_fleet`, read
   2026-11-17 04:15 UTC): a fleet leader controls navigation and combat for
   all members; capacity starts at 3 and rises with Leadership and
@@ -353,6 +442,16 @@ public battle record (`https://game.spacemolt.com/api/battles`, the
   measured; whether Pirate Bounty repeats is not known.
 
 ## 7. Open Tests
+
+- `alone` "pirates" (2026-11-17 08:20 UTC): the hunts beyond the border hunt beside strangers;
+  read their kills an hour and every shot fired at them at the next turn.
+- The cauldronback at Node Beta (120 hull, above F9's 100: one ship) for alloy scale;
+  slag-tortoises at Garnet (90 hull) for ferrous nodule; halo-drifters at Gemma Haze
+  (noble condensate, sold at a foreign station in lawless space); hollow-pilgrims at
+  Epsilon Eridani.
+- The pirate group (three drones in one game fleet, members at default stance fire for
+  the fight, flee by the rule): the script is the next build; the six drones with shield
+  boosters are its crews.
 
 - The pirate test (section 6): one drone, no kill, fled by the rule
   (2026-11-17 00:49 UTC); the group of three in one game fleet is next,
