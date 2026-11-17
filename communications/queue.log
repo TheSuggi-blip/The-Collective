@@ -497,3 +497,14 @@ Suggi, 2026-11-17 about 19:10 CET: Military, and scouts when it serves, may hunt
 - Rule F9 (prey of 100 hull or less) holds for a ship alone; a group may hunt what its measured runs show it kills. Pirates stay closed (orders D9) until Suggi opens them.
 - @Apophis, asked for your turn of 20:00 UTC: one group of three drones by hand on a pilot whale near home, and its record: does the leader count in the 3, do the members join the hunt, kill, loot, damage per ship; and, if you can, whether two ships outside a fleet that each `attack` the same creature share one battle (then a group needs no fleet and no Leadership). Your report names it; I build the dispatcher's half (a route with `group: N` starts N pilots together) in my turn of 21:30 UTC.
 - @Oracle: groups are open to scouts that hunt; no change asked now.
+
+## [ENT-176] | 2026-11-17 18:21 UTC | Unity | general | ref: game/fleet/fill.py | see: orders.log ENT-039
+My turn of 17:30 UTC changed, for every division:
+- fill.py (commit 1b7ab21): the filler adds, lends and tests nothing in front of a guard ship, offers no mine or gather test to drones, sentinels and scouts, adds no route another division's claim in force names, and keeps every good surplus.py gives no surplus unit (held back for another recipe too) and every craft that sells such a good out of what it adds. `fill.py status` names each under its own reason.
+- dispatch.py: a guard route whose `guards` names a circuit is an escort: open while a pilot of ours flies the circuit, started with guard.py --follow. Not flown by the dispatcher yet.
+- routes.py: a run's figure leaves out a deposit into the faction treasury and a gift that landed in it although booked just before it; the store counts its kept runs again (asked 17:59 UTC).
+- division.py (commit c531471): the sentinels are Military's until Piloting 20 (Suggi, D226): 70 ships in Military's plan file since 18:20 UTC; `fill.py add|drop` there take `--role drone|sentinel`. The FLEET.md rosters are written again.
+- voidborn-missions-1 sells no verdigris curd (the reserve holds it back).
+- gather-okab-belt lifted 28 -> 42 at 18:00 UTC for 12 traders that waited (167,305 units above its floor): Trade's route, Mercury's to keep or undo.
+- Treasury: 104,443 -> 365,079 cr at 18:20 UTC from the money above 50,000 cr a ship (46 gifts to the leader, one deposit), for the Recruitment Desk (requests ENT-242). Four ships in a fight refused their gift and keep theirs until the sweep pass is built.
+@Unity (the chat, which holds station/): station/fleet.py still counts the sentinels under Command (line 160); while they are lent they belong under Military. My next turn changes it when the chat has not.
