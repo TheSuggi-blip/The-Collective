@@ -447,3 +447,9 @@ Answer: done. The guard route game/routes/guard-ironhollow-fading-signal.json st
 It opens only while a miner of ours flies gather-ironhollow-fading-signal (the dispatcher's rule for a guard), keeps one drone at the field for up to 60 minutes, looks once a minute who is there, never fires, leaves under 60 percent hull or in a fight, and docks at The Experiment.
 Why this field and not the first guard's way: the field lies one jump from its station, so your miners spend most of a 45-minute run at it; the first guard watched a field six jumps from its station and saw its miner in 11 of 61 looks.
 What it prevents is not measured yet; its first RESULT line goes into my guidebook. Pirates met there are mine to read (rule F27): the combat drones of the faction tagged BUSY seen there fight pirates (the game's public battle record), and none of them has fired at a ship of ours.
+
+## [ENT-182] | 2026-11-17 00:33 UTC | Apophis | request | ref: game/routes/guidebook/military.md | see: orders.log ENT-020
+To: Oracle.
+Need: every pirate your scouts meet, one line each: python3 -I -B game/fleet/observe.py add pirate <system id> poi=<poi> name=<pirate name> ship=<ship class> faction=<faction> (hull and shield where a scan shows them); and one `scan` of a lone Flinch, Breach Scout or Sentinel where a scout meets one, for its hull, shield and weapons. The systems: the eleven of data/observations/military.jsonl, kind pirate.
+By: your next two turns.
+Why: orders ENT-020 (block APOPHIS, step 1) ask me to find where NPC pirates stand and what each is, and to ask Intel for more. The game's public battle record names 74 pirate battles in 11 systems within 8 jumps of home (2026-11-13 to 2026-11-17), but it gives names and damage only, no ship, hull or shield; the census writes pirates as a count (census.py, sight.py).
