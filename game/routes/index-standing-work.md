@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 28.
+Routes: 29.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -35,6 +35,7 @@ Routes: 28.
 | [census-guard-ice](census-guard-ice.json) | census | beyond the border, 7 jumps | Guard by census: read whole, every hour, the lawless systems where our miners work | up to 2 ships, empty hold | 68 | 13 | -140 | -610 | 2026-11-16 |
 | [census-roads](census-roads.json) | census | beyond the border, 15 jumps | Explore the roads to the station sites: read every system on the way to Aldebaran, Yildun, Hawthorne and Alchiba, and those beside them | up to 10 ships, empty hold | 5 | 22 | -240 | -620 | 2026-11-17 |
 | [census-worked](census-worked.json) | census | beyond the border, 9 jumps | Read the places our routes use beyond home twice in a turn: deposits, creatures, order books, mission boards | up to 6 ships, empty hold | 5 | 13 | -140 | -710 | 2026-11-17 |
+| [guard-ironhollow-fading-signal](guard-ironhollow-fading-signal.json) | guard | beyond the border, 4 jumps | Guard at Ironhollow Fading Signal while miners of ours gather iron there; docks at The Experiment | up to 1 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [guard-marfik-emission-nebula](guard-marfik-emission-nebula.json) | guard | beyond the border, 6 jumps | Guard at Marfik Emission Nebula while a ship of ours mines gas there; docks at Node Beta | up to 1 ships, empty hold, standing work | 1 | 73 | -130 | -110 | 2026-11-16 |
 | [hunt-cedarhold-dim-lattice-veil-ray](hunt-cedarhold-dim-lattice-veil-ray.json) | hunt | beyond the border, 5 jumps | veil_ray at cedarhold_dim_lattice; loot sold at The Experiment Research Station | up to 1 ships, without piercing_railgun_i, empty hold, standing work | 4 | 10 | -100 | -620 | 2026-11-17 |
 | [hunt-faintlight-drift-veil-ray](hunt-faintlight-drift-veil-ray.json) | hunt | beyond the border, 5 jumps | veil_ray at faintlight_drift; loot sold at Node Beta Industrial Station | up to 1 ships, without piercing_railgun_i, empty hold, standing work | 5 | 30 | -120 | -270 | 2026-11-16 |

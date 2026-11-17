@@ -1,0 +1,15 @@
+{
+ "id": "guard-ironhollow-fading-signal",
+ "kind": "guard",
+ "title": "Guard at Ironhollow Fading Signal while miners of ours gather iron there; docks at The Experiment",
+ "note": "2026-11-17 00:14 UTC (Apophis): written on Zero's request (requests.log ENT-174). Guards gather-ironhollow-fading-signal: up to 7 miners at once, 45-minute runs, the field one jump from The Experiment, so the miners spend most of a run at the field (the first guard route watched a field whose station lay six jumps away and saw its miner in 11 of 61 looks). Ironhollow is lawless; combat drones of a foreign faction were met there (data/intel/met.json). The guard never fires; it leaves under 60 percent hull, in a fight, after 60 minutes or when no miner of ours flies the route. Standing work: judged on what it sees, not on its pay.",
+ "guards": "gather-ironhollow-fading-signal",
+ "station": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+ "place": "ironhollow:ironhollow_fading_signal",
+ "minutes": 60,
+ "max_ships": 1,
+ "standing": true,
+ "requires": {
+  "empty_hold": true
+ }
+}
