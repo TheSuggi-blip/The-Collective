@@ -5,7 +5,7 @@
  "belt": "schedar:schedar_belt",
  "station": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
  "minutes": 45,
- "max_ships": 2,
+ "max_ships": 4,
  "standing": true,
  "min_left": {
   "iron_ore": 30000
@@ -14,5 +14,5 @@
   "module": "mining_laser_i",
   "empty_hold": true
  },
- "note": "Written by Zero, 2026-11-16 23:24 UTC (orders.log ENT-019, block ZERO: iron for the reserve on fields that hold, each with a floor; a field beyond our space is mine to test, rule F3). The shared iron routes gather-gsc-0027-prism-scatter and gather-hamal-crystal-bloom stood full (66/66, 76/76) while miners waited (fill.py status, 23:19 UTC). Schedar Belt holds iron 72,876 (richness 57) and copper 99,970 (richness 44), census 23:01 UTC; iron fell 74,535 -> 72,876 from 13:34 to 23:02 UTC, so another miner works it. Schedar is lawless, one jump from Node Beta (lanes). Pilots of other factions were met at other places of the system, a combat drone among them at 14:22 UTC (data/intel/met.json). A test: one ship, empty hold, until its first RESULT line is read (rule F13). 2026-11-17 00:19 UTC (fill.py, Unity): max_ships 1 -> 2."
+ "note": "Written by Zero, 2026-11-16 23:24 UTC (orders.log ENT-019, block ZERO: iron for the reserve on fields that hold, each with a floor; a field beyond our space is mine to test, rule F3). The shared iron routes gather-gsc-0027-prism-scatter and gather-hamal-crystal-bloom stood full (66/66, 76/76) while miners waited (fill.py status, 23:19 UTC). Schedar Belt holds iron 72,876 (richness 57) and copper 99,970 (richness 44), census 23:01 UTC; iron fell 74,535 -> 72,876 from 13:34 to 23:02 UTC, so another miner works it. Schedar is lawless, one jump from Node Beta (lanes). Pilots of other factions were met at other places of the system, a combat drone among them at 14:22 UTC (data/intel/met.json). A test: one ship, empty hold, until its first RESULT line is read (rule F13). 2026-11-17 00:19 UTC (fill.py, Unity): max_ships 1 -> 2. 2026-11-17 00:25 UTC (fill.py, Unity): max_ships 2 -> 4."
 }
