@@ -2,7 +2,7 @@
  "id": "craft-piping-node-beta",
  "kind": "circuit",
  "title": "Steel plate, then copper piping, made by hand at the Node Beta workshop from the pilot's own stored iron and copper ore, kept in its storage there for the reserve; open to a ship of any role",
- "note": "Written by Mercury, 2026-11-17 11:40 UTC (orders ENT-036, block MERCURY: a trader without a paying trade crafts; rules F23, F24, F30, F32). Two crafts in one stop: basic_iron_smelting makes 1 steel plate from 10 iron ore, then draw_copper_piping makes 4 copper piping from 12 copper ore and 2 steel plate, both by hand at the station workshop for 0 cr; the runner makes the smelt first, so its plates are in storage for the piping, and takes what was made into the hold after both (game/fleet/route_run.py, workshop); the second stop stores it again. Copper ore lies far above the reserve (372,671 held, 79,044 reserved) with no bid above 3 cr; the reserve is short 7,700 copper piping and 18,772 steel plate (the tool stock view=reserve, 11:33 UTC); copper piping is asked at 22 to 30 cr at our stations, so a piping made from stored copper and plate costs less than one bought. 32 traders hold 300 iron ore or more there and 36 hold 300 copper ore or more (15,699 iron and 20,905 copper in all) (holdings, 11:35 UTC). Standing work: it trains crafting, the class skill the 40 traders gained 0 XP in over four hours to 07:37 UTC; requires.stored sends only a pilot with one run's ore, and not again until the ledger read its storage after the run began. A test: one ship until its first RESULT line is read.",
+ "note": "Written by Mercury, 2026-11-17 11:40 UTC (orders ENT-036, block MERCURY: a trader without a paying trade crafts; rules F23, F24, F30, F32). Two crafts in one stop: basic_iron_smelting makes 1 steel plate from 10 iron ore, then draw_copper_piping makes 4 copper piping from 12 copper ore and 2 steel plate, both by hand at the station workshop for 0 cr; the runner makes the smelt first, so its plates are in storage for the piping, and takes what was made into the hold after both (game/fleet/route_run.py, workshop); the second stop stores it again. Copper ore lies far above the reserve (372,671 held, 79,044 reserved) with no bid above 3 cr; the reserve is short 7,700 copper piping and 18,772 steel plate (the tool stock view=reserve, 11:33 UTC); copper piping is asked at 22 to 30 cr at our stations, so a piping made from stored copper and plate costs less than one bought. 32 traders hold 300 iron ore or more there and 36 hold 300 copper ore or more (15,699 iron and 20,905 copper in all) (holdings, 11:35 UTC). Standing work: it trains crafting, the class skill the 40 traders gained 0 XP in over four hours to 07:37 UTC; requires.stored sends only a pilot with one run's ore, and not again until the ledger read its storage after the run began. A test: one ship until its first RESULT line is read. 2026-11-17 11:46 UTC (fill.py, Mercury): max_ships 1 -> 10.",
  "standing": true,
  "requires": {
   "stored": [
@@ -18,7 +18,7 @@
    }
   ]
  },
- "max_ships": 1,
+ "max_ships": 10,
  "stops": [
   {
    "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
