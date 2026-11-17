@@ -8,7 +8,7 @@ author: Unity
 # index.md -- Systems We Know
 
 Built by `scripts/intel-index.py` from the system files of this folder;
-never edited by hand. Files listed: 136. The format of a system file:
+never edited by hand. Files listed: 156. The format of a system file:
 `BLUEPRINT.md`.
 
 ## Voidborn space
@@ -40,6 +40,7 @@ never edited by hand. Files listed: 136. The format of a system file:
 | Procyon | neutral | unknown | 30 | 9 | 2026-11-17 | [n-procyon.md](n-procyon.md) |
 | Sirius | neutral | unknown | 80 | 9 | 2026-11-16 | [n-sirius.md](n-sirius.md) |
 | Sol | neutral | unknown | 100 | 10 | 2026-11-16 | [n-sol.md](n-sol.md) |
+| Alpha Centauri | neutral | unknown | 80 | 11 | 2026-11-17 | [n-alpha_centauri.md](n-alpha_centauri.md) |
 
 ## Lawless space
 
@@ -141,11 +142,30 @@ never edited by hand. Files listed: 136. The format of a system file:
 | Fulu | neutral | unknown | 0 | 10 | 2026-11-17 | [n-fulu.md](n-fulu.md) |
 | Gienah | neutral | unknown | 0 | 10 | 2026-11-17 | [n-gienah.md](n-gienah.md) |
 | Greenvale | neutral | unknown | 0 | 10 | 2026-11-17 | [n-greenvale.md](n-greenvale.md) |
+| Groombridge 1618 | neutral | unknown | 0 | 10 | 2026-11-17 | [n-groombridge_1618.md](n-groombridge_1618.md) |
 | GSC-0006 | neutral | unknown | 0 | 10 | 2026-11-17 | [n-gsc_0006.md](n-gsc_0006.md) |
+| GSC-0020 | neutral | unknown | 0 | 10 | 2026-11-17 | [n-gsc_0020.md](n-gsc_0020.md) |
+| Harborlight | neutral | unknown | 0 | 10 | 2026-11-17 | [n-harborlight.md](n-harborlight.md) |
 | Hatysa | neutral | unknown | 0 | 10 | 2026-11-16 | [n-hatysa.md](n-hatysa.md) |
+| Jadecove | neutral | unknown | 0 | 10 | 2026-11-17 | [n-jadecove.md](n-jadecove.md) |
+| Kapteyn 5 | neutral | unknown | 0 | 10 | 2026-11-17 | [n-kapteyn_5.md](n-kapteyn_5.md) |
+| Menkent | neutral | unknown | 0 | 10 | 2026-11-17 | [n-menkent.md](n-menkent.md) |
+| Misthollow | neutral | unknown | 0 | 10 | 2026-11-17 | [n-misthollow.md](n-misthollow.md) |
+| Proxima Centauri | neutral | unknown | 0 | 10 | 2026-11-17 | [n-proxima_centauri.md](n-proxima_centauri.md) |
 | Rasalhague | neutral | unknown | 0 | 10 | 2026-11-17 | [n-rasalhague.md](n-rasalhague.md) |
+| Relay Station | neutral | unknown | 0 | 10 | 2026-11-17 | [n-relay_station.md](n-relay_station.md) |
+| Ridgecrest | neutral | unknown | 0 | 10 | 2026-11-17 | [n-ridgecrest.md](n-ridgecrest.md) |
 | Rotanev | neutral | unknown | 0 | 10 | 2026-11-17 | [n-rotanev.md](n-rotanev.md) |
+| Silverbend | neutral | unknown | 0 | 10 | 2026-11-17 | [n-silverbend.md](n-silverbend.md) |
+| The Archive | neutral | unknown | 0 | 10 | 2026-11-17 | [n-the_archive.md](n-the_archive.md) |
+| Theemin | neutral | unknown | 0 | 10 | 2026-11-17 | [n-theemin.md](n-theemin.md) |
+| Barnard's Star | neutral | unknown | 0 | 11 | 2026-11-17 | [n-barnards_star.md](n-barnards_star.md) |
+| Deneb | neutral | unknown | 0 | 11 | 2026-11-17 | [n-deneb.md](n-deneb.md) |
+| Dheneb | neutral | unknown | 0 | 11 | 2026-11-17 | [n-dheneb.md](n-dheneb.md) |
 | GSC-0042 | neutral | unknown | 0 | 11 | 2026-11-17 | [n-gsc_0042.md](n-gsc_0042.md) |
+| Hollowcrest | neutral | unknown | 0 | 11 | 2026-11-17 | [n-hollowcrest.md](n-hollowcrest.md) |
+| Jishui | neutral | unknown | 0 | 11 | 2026-11-17 | [n-jishui.md](n-jishui.md) |
+| Mebsuta | neutral | unknown | 0 | 11 | 2026-11-17 | [n-mebsuta.md](n-mebsuta.md) |
 | Mizar | neutral | unknown | 0 | 11 | 2026-11-17 | [n-mizar.md](n-mizar.md) |
 | Saltwind | neutral | unknown | 0 | 11 | 2026-11-17 | [n-saltwind.md](n-saltwind.md) |
 | Tania | neutral | unknown | 0 | 11 | 2026-11-17 | [n-tania.md](n-tania.md) |

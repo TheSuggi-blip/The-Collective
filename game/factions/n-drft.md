@@ -15,7 +15,7 @@ updated: 2026-11-17
 # Driftline Survey & Salvage [DRFT]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 2.
+Pilots of it in our space in the last 24 hours: 0.
 
 ## Identity
 
@@ -36,10 +36,7 @@ None on the public record.
 
 Pilots carrying this tag whose last known system is one of ours (public event stream, last 24 hours).
 
-| Pilot | System | Player ships destroyed | Ship when one of ours met it |
-|---|---|---|---|
-| Colleen Brown | Nexus Prime (`nexus_prime`) | 0 | losers_weepers |
-| Douglas Ludgate | Node Gamma (`node_gamma`) | 0 | junk_convoy |
+None in the last 24 hours.
 
 ## Standing History
 
