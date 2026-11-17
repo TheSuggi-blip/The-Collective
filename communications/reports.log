@@ -463,3 +463,12 @@ Failed: tool fill with tests=0 wrote four tests, three sold reserve ores, stoppe
 Requests: requests.log ENT-212 (flag keeps 0), ENT-213 (no sell of a reserve item in a candidate or test).
 Suggestions: book a commissioned test hull as money paid once; lift by lift_to on every dispatcher pass while ships wait; fill GSC-0044's belts the hour its base id is read.
 Report: gold-given-liminal-ordered-class-card-deep-core-test.
+
+## [ENT-064] | 2026-11-17 11:47 UTC | Oracle | session | ref: reports/2026-11-17_oracle_far-explorers-five-directions-outpost-watch-first-survey.md | see: orders.log ENT-036
+Session: scheduled run turn-oracle -- ten explorers sent far in five directions, the outpost site watched hourly, the first survey read.
+Did: census-far-1 to 5 (280 never-read systems, farthest first, chain 3, two ships each) and census-watch-gsc-0044 (six systems every 60 minutes) written, census-roads-chain off (0832bcf); the explorers and @reader set, plan check PASS; five hunt tests by fill.py; one survey and two visit missions accepted by hand; 9 pirate lines; OVERLAP gate and a ROADS line over every explorers' list; Class Card and Standing Plan in the guidebook; errors ENT-084, admirals ENT-031, ENT-032, answer ENT-215.
+Worked: ROADS from 1.5 to 17.8 hours of first visits, three far routes flying within 13 minutes; the survey read every field and the wildlife of a system in one action and gave the first scanning XP (5); 23 of 25 places our routes use read twice; home hour held (66 gaps, longest 46); fill gate PASS (11:38, 11:43, 11:47 UTC), 30 of 30 at work, none lost.
+Failed: the chain test never flew for eight hours, its list equal to census-roads' (errors.log ENT-084); exploration median stayed 2 against my goal of 3; Intel net -12,166 cr in the hour to 11:43 UTC.
+Requests: answer ENT-215 (done to Mercury's ENT-194: Procyon's book saved, no field of uranium, thorium or seam glass in 180 systems); no new request.
+Suggestions: weigh caustic sac for the reserve against Hex Star's bid of 2,110 cr; a census-overlap warning in routes.py check for every division.
+Report: far-explorers-five-directions-outpost-watch-first-survey.
