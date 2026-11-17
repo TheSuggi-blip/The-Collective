@@ -52,6 +52,7 @@
   "mine-pherkad-rift",
   "gather-gsc-0027-spacetime-seep",
   "craft-steel-node-beta",
+  "craft-steel-central-nexus",
   "census-frontier",
   "park"
  ],
@@ -123,6 +124,7 @@
   "mine-pherkad-rift": 60,
   "gather-gsc-0027-spacetime-seep": 60,
   "craft-steel-node-beta": 60,
+  "craft-steel-central-nexus": 60,
   "census-frontier": 60,
   "park": 60
  },
