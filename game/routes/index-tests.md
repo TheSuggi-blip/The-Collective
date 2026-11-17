@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 58.
+Routes: 55.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -23,9 +23,6 @@ Routes: 58.
 | [carry-soma-node-beta-node-gamma](carry-soma-node-beta-node-gamma.json) | circuit | home space | Stored neural soma carried one jump from Node Beta to the Node Gamma soma bid | up to 1 ships, with 1 voidborn_neural_soma stored at node_beta_industrial_station, while node_gamma_relay_station bids 500 cr for voidborn_neural_soma | TBD | TBD | TBD | TBD | -- |
 | [carry-soma-synchrony-node-alpha](carry-soma-synchrony-node-alpha.json) | circuit | home space | Stored neural soma carried one jump from Synchrony Hub to the Node Alpha soma bid | up to 1 ships, with 1 voidborn_neural_soma stored at synchrony_hub, while node_alpha_processing_station bids 500 cr for voidborn_neural_soma | TBD | TBD | TBD | TBD | -- |
 | [carry-soma-synchrony-node-gamma](carry-soma-synchrony-node-gamma.json) | circuit | home space | Stored neural soma carried one jump from Synchrony Hub to the Node Gamma soma bid | up to 1 ships, with 1 voidborn_neural_soma stored at synchrony_hub, while node_gamma_relay_station bids 500 cr for voidborn_neural_soma | TBD | TBD | TBD | TBD | -- |
-| [sell-curd-central-nexus](sell-curd-central-nexus.json) | circuit | home space | Stored verdigris curd sold into the curd bid at Central Nexus, where the drones stored it | up to 1 ships, with 2 verdigris_curd stored at central_nexus, while central_nexus bids 250 cr for verdigris_curd | TBD | TBD | TBD | TBD | -- |
-| [sell-curd-experiment](sell-curd-experiment.json) | circuit | home space | Stored verdigris curd sold into the curd bid at The Experiment, where the drones stored it | up to 1 ships, with 2 verdigris_curd stored at the_experiment_research_station, while the_experiment_research_station bids 250 cr for verdigris_curd | TBD | TBD | TBD | TBD | -- |
-| [sell-curd-node-beta](sell-curd-node-beta.json) | circuit | home space | Stored verdigris curd sold into the curd bid at Node Beta, where the drones stored it | up to 1 ships, with 2 verdigris_curd stored at node_beta_industrial_station, while node_beta_industrial_station bids 250 cr for verdigris_curd | TBD | TBD | TBD | TBD | -- |
 | [sell-hydrogen-at-synchrony](sell-hydrogen-at-synchrony.json) | circuit | home space | Stored hydrogen_gas sold where it lies, at synchrony_hub, at 30 cr or more | up to 1 ships, with 1 hydrogen_gas stored at synchrony_hub, while synchrony_hub bids 30 cr for hydrogen_gas | TBD | TBD | TBD | TBD | -- |
 | [sell-liquid-hydrogen-node-beta](sell-liquid-hydrogen-node-beta.json) | circuit | home space | Stored liquid hydrogen sold where it lies, at Node Beta, into the station's bid | up to 1 ships, with 5 liquid_hydrogen stored at node_beta_industrial_station, while node_beta_industrial_station bids 95 cr for liquid_hydrogen | TBD | TBD | TBD | TBD | -- |
 | [sell-palladium-at-node-gamma](sell-palladium-at-node-gamma.json) | circuit | home space | Stored palladium_ore sold where it lies, at node_gamma_relay_station, at 300 cr or more | up to 1 ships, with 1 palladium_ore stored at node_gamma_relay_station, while node_gamma_relay_station bids 270 cr for palladium_ore | TBD | TBD | TBD | TBD | -- |

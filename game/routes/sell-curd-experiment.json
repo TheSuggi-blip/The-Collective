@@ -2,7 +2,7 @@
  "id": "sell-curd-experiment",
  "kind": "circuit",
  "title": "Stored verdigris curd sold into the curd bid at The Experiment, where the drones stored it",
- "note": "2026-11-16 13:21 UTC (Apophis): the veil-ray hunts looted curd while its bid was gone (07:08 to 12:07 UTC) and the drones stored it; drone storage held verdigris curd at The Experiment: 18 at 13:10 UTC (the tool stock). The bid stood at 330 cr x 50 there again from 12:07 to 12:21 UTC (data/market/history.jsonl). A pilot whose own storage there holds two curd or more flies there, withdraws what the bid takes and sells it (the circuit runner's withdraw step), and stores what is left. Closed by itself when the bid is gone (requires.bid) and for a pilot whose storage holds none (requires.stored). A test with one ship until its first RESULT line.",
+ "note": "2026-11-16 13:21 UTC (Apophis): the veil-ray hunts looted curd while its bid was gone (07:08 to 12:07 UTC) and the drones stored it; drone storage held verdigris curd at The Experiment: 18 at 13:10 UTC (the tool stock). The bid stood at 330 cr x 50 there again from 12:07 to 12:21 UTC (data/market/history.jsonl). A pilot whose own storage there holds two curd or more flies there, withdraws what the bid takes and sells it (the circuit runner's withdraw step), and stores what is left. Closed by itself when the bid is gone (requires.bid) and for a pilot whose storage holds none (requires.stored). A test with one ship until its first RESULT line. 2026-11-17 16:14 UTC (Apophis): off: verdigris curd is held back whole for copper piping (surplus.py reserve, 607 of 607; rule F24; flagged by Trade, admirals.log ENT-043).",
  "max_ships": 1,
  "requires": {
   "stored": {
@@ -37,5 +37,6 @@
    "at": "the_experiment:the_experiment_research_station:the_experiment_research_station",
    "store": "all"
   }
- ]
+ ],
+ "status": "off"
 }

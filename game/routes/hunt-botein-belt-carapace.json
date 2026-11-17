@@ -2,7 +2,7 @@
  "id": "hunt-botein-belt-carapace",
  "kind": "hunt",
  "title": "belt-grazer, patina-grazer at botein belt; goods into storage at The Experiment Research Station",
- "note": "Written by Apophis 2026-11-17 12:15 UTC (orders ENT-036, block APOPHIS: hunt as far as each herd regains, one hunter per herd, rule F9; what a kill yields and the reserve takes goes into storage). The herd read 10 belt-grazers (60 hull) (table herds, 12:13 UTC); no hunt route of the fleet stood at the place. 7 jumps from home, 4 to The Experiment Research Station. Goods: creature carapace. Nothing sold (min_bid 5000): every good into storage for the reserve (creature carapace short 32,575 and crystallized biogas 4,010: hive.py reserve, 12:14 UTC). Beyond policed space, a new place (rule F13): one ship, an empty hold, `alone` true; no pirate on our record in the system or one jump from it (observations kind pirate, 12:15 UTC). Standing work: trains gunnery, weapons, tactics and xenobiology. Read its first RESULT lines next turn.",
+ "note": "Written by Apophis 2026-11-17 12:15 UTC (orders ENT-036, block APOPHIS: hunt as far as each herd regains, one hunter per herd, rule F9; what a kill yields and the reserve takes goes into storage). The herd read 10 belt-grazers (60 hull) (table herds, 12:13 UTC); no hunt route of the fleet stood at the place. 7 jumps from home, 4 to The Experiment Research Station. Goods: creature carapace. Nothing sold (min_bid 5000): every good into storage for the reserve (creature carapace short 32,575 and crystallized biogas 4,010: hive.py reserve, 12:14 UTC). Beyond policed space, a new place (rule F13): one ship, an empty hold, `alone` true; no pirate on our record in the system or one jump from it (observations kind pirate, 12:15 UTC). Standing work: trains gunnery, weapons, tactics and xenobiology. Read its first RESULT lines next turn. 2026-11-17 16:14 UTC (Apophis): alone true -> \"pirates\" (rule F13): from 12:16 UTC these eight hunts left 35 runs at once for a stranger who was no pirate; since 08:20 UTC no stranger fired on a drone hunter in some 480 hunts (data/routes/runs.jsonl); the hunter still leaves for a pirate or a pilot filed hostile, and flees when a ship joins its fight.",
  "place": "botein:botein_belt",
  "species": [
   "belt_grazer",
@@ -14,7 +14,7 @@
  "minutes": 40,
  "max_ships": 1,
  "min_creatures": 6,
- "alone": true,
+ "alone": "pirates",
  "standing": true,
  "requires": {
   "empty_hold": true,
