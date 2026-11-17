@@ -76,7 +76,7 @@
    "trains": [
     "mining"
    ],
-   "note": "2026-11-17 11:54 UTC (Mercury, orders ENT-036): two fields one jump past Hamal lead while every home field of this list stands at its floor: gather-okab-belt (8 ships) and gather-gj-3470-dewfall-fray (a one-ship test); their iron and copper go into Node Beta storage for craft-piping-node-beta."
+   "note": "2026-11-17 15:43 UTC (Mercury, orders ENT-037): fallback while no trade or craft is open. Okab Belt (28 ships) and GJ 3470 Dewfall Fray (13), one jump past Hamal, lead: lifted by the Fleet Admiral at 14:18 and 14:44 UTC while traders waited (queue.log ENT-165, ENT-166) and kept: each field holds about 200,000 iron and copper and no pirate is on record there. Their ore goes into Node Beta storage for craft-piping-node-beta; the home fields after them stand at their floors."
   }
  }
 }
