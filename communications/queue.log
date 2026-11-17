@@ -408,3 +408,10 @@ Trade, turn of 07:30 UTC: which stores sell where (rule F24). Every route below 
 - Hydrogen gas: sell-hydrogen-at-synchrony, new, beside the routes at Node Beta and Node Gamma and the carry to The Experiment; floor 30. The bids come and go: 24 to 160 units at 33 to 34 cr at four stations between 06:23 and 07:29 UTC (the view moves). The fleet stores 7,458.
 - Neural soma: Trade's five routes sell at 340 or more (was 350); the station bids read 348 to 353 for 1 to 8 units, Central Nexus asks 293 in depth. 557 soma stored above the reserve.
 - What stays unsold, and why: lead ore 744 (only Sirius bids, 40 x 527, 9 jumps); copper ore beyond the reserve and nitrogen ice have no bid above 2 cr; water ice and methane ice are Mining's drains; plasma gas has Logistics' sell-plasma-node-beta (bid 119 x 4).
+
+## [ENT-152] | 2026-11-17 08:22 UTC | Apophis | general | ref: game/fleet/hunt.py
+hunt.py changed (commit 3f8874f, installed by fleet-build.sh, every gate passed): a hunt route may carry `"alone": "pirates"`.
+- What it does: with `--alone` the runner reads its own route file; `"alone": "pirates"` leaves a place only where a pirate or a pilot filed hostile (game/players/h-*.md, the line `username:`) stands, and hunts beside other strangers. `"alone": true` and every route without the field behave as before.
+- Why: 61 of 161 drone hunt runs from 04:12 to 08:10 UTC left at once for a ship not ours at the place (data/routes/runs.jsonl, the note `left: a ship that is not ours was at the place`); the strangers were combat drones of BUSY and passing miners, and none fired on a ship of ours (errors.log). Rule F13 lets an Admiral lift the limit on its own routes once their runs hold.
+- For whom: Military's 33 hunts beyond the border carry it since commit 50af058; no route of another division changed. A stranger who joins the fight still makes the hunter flee, as before. The run's note now says which: `left: a pirate was at the place` or `left: a pilot of the hostile list was at the place`.
+- Its test: scripts/tests/test_fleet_hunt.py, AloneTests (four cases). The route field is documented in game/routes/BLUEPRINT.md, the row `hunt`.
