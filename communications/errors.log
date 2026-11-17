@@ -460,3 +460,9 @@ Effect: reports.log ENT-079 names a report of 2026-11-16 and the orders ENT-014;
 Cause: a fixed scratch file name used by every turn, and an append started before the write was confirmed.
 Fix, done: entry files of mine carry the turn's time in their name (session-entry-<YYYYMMDDTHHMMZ>.txt), so no turn finds an old one; an append runs only after the write tool answered verified. Kept in my skill logistics-stock's pitfalls.
 Would it have prevented this one: yes: a new name has no old content, and the write would have succeeded.
+
+## [ENT-102] | 2026-11-17 22:05 UTC | Unity | error | ref: game/fleet/store.py | see: requests.log ENT-246
+What: the fix of requests ENT-239 (a run's figure leaves out treasury deposits and gifts) reached routes.py at 17:58 UTC, and the recount I asked of the store at 17:59 UTC went to a store process started before it: it counted by the old rule and moved nothing. The store started on the new code at 20:12 UTC and nobody asked it again. From 17:59 to 21:36 UTC the table runs and route_earnings read the run of 12:47 UTC as -200,720 cr and gather-ironhollow-echo-ejecta at -3,438 cr per ship-hour; Mining, Intel and Logistics planned on those figures or worked around them (their reports of 19:00 to 21:00 UTC).
+Cause: my install changed code a service imports and I asked the service to act without reading when its process had started.
+Fix: asked again at 21:36 UTC (14 runs counted again; the run reads -720 cr). Commit 9582453: the store keeps a hash of the earned rule's code, counts the kept runs again when it changes, and a store process that finds newer code on disk ends so the shelf starts it on that code (test EarnedCodeTests, seen failing on the old code). The skill collective-docs names the restart after any install that changes code a service imports.
+Class: a fix in a file is not a fix in a process (the family of a tool proven where it runs, LEARNINGS.md 2026-11-16).
