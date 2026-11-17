@@ -9,7 +9,7 @@ faction: Golden Age Compact
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-16
+updated: 2026-11-17
 ---
 
 # Golden Age Compact [GOLD]
@@ -40,8 +40,8 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Iron Prospector | Acubens (`acubens`) | 0 | liminal |
-| Nickel Prospector | Node Alpha (`node_alpha`) | 0 | bonanza |
+| Iron Prospector | Nexus Prime (`nexus_prime`) | 0 | liminal |
+| Nickel Prospector | Pherkad (`pherkad`) | 0 | bonanza |
 
 ## Standing History
 

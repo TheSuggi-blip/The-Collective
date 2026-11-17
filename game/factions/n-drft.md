@@ -9,7 +9,7 @@ faction: Driftline Survey & Salvage
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-16
+updated: 2026-11-17
 ---
 
 # Driftline Survey & Salvage [DRFT]
@@ -38,8 +38,8 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| James Mcchriston | Node Beta (`node_beta`) | 0 | junk_convoy |
-| Kathleen Trapp | Nexus Prime (`nexus_prime`) | 0 | junk_convoy |
+| Carol Jordan | Node Gamma (`node_gamma`) | 0 | junk_convoy |
+| Quentin Mattice | The Experiment (`the_experiment`) | 0 | junk_convoy |
 
 ## Standing History
 

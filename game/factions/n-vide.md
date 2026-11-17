@@ -9,7 +9,7 @@ faction: Culte du Vide
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-16
+updated: 2026-11-17
 ---
 
 # Culte du Vide [VIDE]
@@ -41,7 +41,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Daemia | Node Beta (`node_beta`) | 0 | threshold |
 | Ellara | Node Gamma (`node_gamma`) | 0 | threshold |
 | Hesser | Nexus Prime (`nexus_prime`) | 0 | cobble |
-| Nythera | Node Beta (`node_beta`) | 0 | threshold |
+| Nythera | Nexus Prime (`nexus_prime`) | 0 | threshold |
 | Slyreus | Nexus Prime (`nexus_prime`) | 0 | threshold |
 
 ## Standing History

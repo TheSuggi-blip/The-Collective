@@ -9,7 +9,7 @@ faction: Bedrock Materials
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-16
+updated: 2026-11-17
 ---
 
 # Bedrock Materials [ROCK]
@@ -38,7 +38,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Roland de Tortuga | Pherkad (`pherkad`) | 0 | theoria |
+| Space Hulk | Node Alpha (`node_alpha`) | 0 | shard |
 
 ## Standing History
 

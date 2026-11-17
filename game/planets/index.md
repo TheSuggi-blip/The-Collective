@@ -8,7 +8,7 @@ author: Unity
 # index.md -- Systems We Know
 
 Built by `scripts/intel-index.py` from the system files of this folder;
-never edited by hand. Files listed: 68. The format of a system file:
+never edited by hand. Files listed: 78. The format of a system file:
 `BLUEPRINT.md`.
 
 ## Voidborn space
@@ -32,6 +32,7 @@ never edited by hand. Files listed: 68. The format of a system file:
 |---|---|---|---|---|---|---|
 | Furud | neutral | unknown | 30 | 7 | 2026-11-16 | [n-furud.md](n-furud.md) |
 | Nova Terra | neutral | unknown | 55 | 8 | 2026-11-16 | [n-nova_terra.md](n-nova_terra.md) |
+| Lacaille 9352 | neutral | unknown | 55 | 9 | 2026-11-16 | [n-lacaille_9352.md](n-lacaille_9352.md) |
 | Sirius | neutral | unknown | 80 | 9 | 2026-11-16 | [n-sirius.md](n-sirius.md) |
 | Sol | neutral | unknown | 100 | 10 | 2026-11-16 | [n-sol.md](n-sol.md) |
 
@@ -93,3 +94,12 @@ never edited by hand. Files listed: 68. The format of a system file:
 | Rastaban | neutral | unknown | 0 | 7 | 2026-11-16 | [n-rastaban.md](n-rastaban.md) |
 | Regor | neutral | unknown | 0 | 7 | 2026-11-16 | [n-regor.md](n-regor.md) |
 | Giausar | neutral | unknown | 0 | 8 | 2026-11-16 | [n-giausar.md](n-giausar.md) |
+| Groombridge 34 | neutral | unknown | 0 | 8 | 2026-11-16 | [n-groombridge_34.md](n-groombridge_34.md) |
+| Aldebaran | neutral | unknown | 0 | 9 | 2026-11-16 | [n-aldebaran.md](n-aldebaran.md) |
+| Chalawan | neutral | unknown | 0 | 9 | 2026-11-17 | [n-chalawan.md](n-chalawan.md) |
+| GSC-0028 | neutral | unknown | 0 | 9 | 2026-11-17 | [n-gsc_0028.md](n-gsc_0028.md) |
+| GSC-0006 | neutral | unknown | 0 | 10 | 2026-11-17 | [n-gsc_0006.md](n-gsc_0006.md) |
+| Hatysa | neutral | unknown | 0 | 10 | 2026-11-16 | [n-hatysa.md](n-hatysa.md) |
+| Rasalhague | neutral | unknown | 0 | 10 | 2026-11-17 | [n-rasalhague.md](n-rasalhague.md) |
+| Sabik | neutral | unknown | 0 | 13 | 2026-11-16 | [n-sabik.md](n-sabik.md) |
+| Brightfall | neutral | unknown | 0 | 15 | 2026-11-16 | [n-brightfall.md](n-brightfall.md) |

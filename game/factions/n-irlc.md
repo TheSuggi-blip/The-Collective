@@ -9,13 +9,13 @@ faction: Ironlight Combine
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-16
+updated: 2026-11-17
 ---
 
 # Ironlight Combine [IRLC]
 
 A player faction with 7 base(s) in 4 system(s); the nearest to Nexus Prime is 6 jump(s) away, in LHS 1140 (`lhs_1140`).
-Pilots of it in our space in the last 24 hours: 19.
+Pilots of it in our space in the last 24 hours: 18.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 19.
 | Allies | HEXC | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 191 | Public event stream |
+| Pilots carrying the tag on the public event stream | 190 | Public event stream |
 
 ## Bases
 
@@ -46,24 +46,23 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| ILC Chute | Node Alpha (`node_alpha`) | 0 | junk_convoy |
+| ILC Chute | Synchrony (`synchrony`) | 0 | junk_convoy |
 | ILC Constellation | Nexus Prime (`nexus_prime`) | 0 | concordia |
 | ILC Cope | Synchrony (`synchrony`) | 0 | junk_convoy |
 | ILC Flange | Synchrony (`synchrony`) | 0 | junk_convoy |
-| ILC Gantry | Synchrony (`synchrony`) | 0 | junk_convoy |
-| ILC Gasket | Nexus Prime (`nexus_prime`) | 0 | junk_convoy |
-| ILC Gateway | Node Alpha (`node_alpha`) | 0 | concordia |
+| ILC Gantry | Nexus Prime (`nexus_prime`) | 0 | junk_convoy |
+| ILC Gasket | Synchrony (`synchrony`) | 0 | junk_convoy |
+| ILC Gateway | Nexus Prime (`nexus_prime`) | 0 | concordia |
 | ILC Gilt | Synchrony (`synchrony`) | 0 | syndicate |
-| ILC Glacier | Synchrony (`synchrony`) | 0 | cryogenic_survey |
 | ILC Ladle | Synchrony (`synchrony`) | 0 | junk_convoy |
 | ILC Mallet | Synchrony (`synchrony`) | 0 | syndicate |
-| ILC Nonstop | Node Alpha (`node_alpha`) | 0 | concordia |
+| ILC Nonstop | Nexus Prime (`nexus_prime`) | 0 | concordia |
+| ILC Penalty | Synchrony (`synchrony`) | 0 | junk_convoy |
 | ILC Ratchet | Synchrony (`synchrony`) | 0 | junk_convoy |
-| ILC Retort | Node Beta (`node_beta`) | 0 | junk_convoy |
+| ILC Retort | Synchrony (`synchrony`) | 0 | junk_convoy |
 | ILC Shank | Synchrony (`synchrony`) | 1 | syndicate |
 | ILC Solder | Synchrony (`synchrony`) | 1 | syndicate |
-| ILC Vagabond | Node Alpha (`node_alpha`) | 0 | concordia |
-| ILC Verdict | Pherkad (`pherkad`) | 0 | junk_convoy |
+| ILC Vagabond | Nexus Prime (`nexus_prime`) | 0 | concordia |
 | ILC Weir | Synchrony (`synchrony`) | 0 | prayer |
 
 ## Standing History
