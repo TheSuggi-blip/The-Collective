@@ -56,40 +56,36 @@
  ],
  "planned": [
   {
-   "what": "Goal of the turn: Conductive Lattice booked by 20 more pilots of the fleet (data/fleet/onetime.json: 147 at 19:40 UTC), the first RESULT lines of carry-null-matter-beta-to-nexus and sell-null-matter-at-nexus read, and Trade's steady money above -5,000 cr an hour over 4 hours (hive.py briefing, SUM trader: -9,988 at 19:31 UTC).",
-   "when": "read at the turn of 2026-11-17 23:30 UTC"
+   "what": "Goal of the turn: the traders' own iron made into steel plate (8,843 at Node Beta, 8,623 at The Experiment, 23,114 at Central Nexus in table holdings at 23:33 UTC: under 2,000 left in trader storages at those three), Trade's steady money above +5,000 cr an hour over 4 hours (SUM trader, +8,142 at 23:31 UTC), and 20 more pilots through the Node Beta chain (174 booked at 23:35 UTC).",
+   "when": "read at the turn of 2026-11-18 03:30 UTC"
+  },
+  {
+   "what": "Read the first RESULT lines of sell-trade-crystal-at-nexus and sell-deuterium-at-node-beta, and how many traders dock once their stores are used up; name them and why in the report (requests.log ENT-256, step 4).",
+   "when": "next turn"
   },
   {
    "what": "Read the silver ask at Ironlight Crossroads and the energy crystal ask at Central Nexus against the chain's limits (175, 430) and its max_ships 4.",
    "when": "every turn"
   },
   {
-   "what": "Read the iron ore the reserve is short (the tool stock, view=reserve: 23,809 at 19:32 UTC); when it reaches 0, gather-okab-belt brings only copper and iron the reserve does not take, and @trade-gather is set anew on the answer to my request to the Fleet Admiral.",
+   "what": "Read Rotanev Daylight Seam's nickel (the tool system) against The Collective Provides' 4 ships and its floor of 60.",
    "when": "every turn"
   },
   {
-   "what": "Read Rotanev Daylight Seam's nickel (the tool system) and the mission's runs; keep max_ships 6 while the field holds 20 a pilot for the ships on it, set it back below a floor of 200.",
+   "what": "Run reservecheck.py and oncecheck.py of the trade-books skill on the trader plan; sellgen.py scan for every floor beside its cheapest ask (null matter 200, soma 320, palladium 270, hydrogen 30, trade crystal 340, deuterium 150).",
    "when": "every turn"
   },
   {
-   "what": "Run reservecheck.py of the trade-books skill on the trader plan and on every route of mine: no route sells a good the reserve holds, or crafts one for sale from such an input (rule F24).",
-   "when": "every turn"
-  },
-  {
-   "what": "Read every floor beside its cheapest ask with sellgen.py scan and set it again (soma 320, palladium 270, hydrogen 30).",
-   "when": "every turn"
-  },
-  {
-   "what": "The standing sell order of one anchor beacon at Node Beta: cancel it at the turn that shows a day without a buyer.",
-   "when": "the turn after 2026-11-17 23:48 UTC"
-  },
-  {
-   "what": "Write a sell route the same day Intel files a field of uranium ore, thorium ore or seam glass, which every station bids for (requests.log ENT-194).",
-   "when": "when Intel files one"
+   "what": "Write a sell route the same day a home station bids for hydrogen, plasma or copper ore again, or Intel files a field of uranium ore, thorium ore or seam glass (requests.log ENT-194).",
+   "when": "when it stands"
   },
   {
    "what": "Buy the reserve's carbon ore at 4 cr in step with the silicon it pairs with (12 carbon and 2 silicon make 3 boards), when a source of silicon stands.",
    "when": "when silicon is gathered"
+  },
+  {
+   "what": "The standing sell order of one anchor beacon at Node Beta stays: unfilled a day (the Node Beta book shows its ask 1,200 x 1 at 23:42 UTC), but it costs nothing to stand and no station bids above 2 cr.",
+   "when": "kept"
   }
  ],
  "ships": {
