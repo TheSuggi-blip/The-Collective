@@ -20,7 +20,7 @@ they store, the members by name and the treasury's balance. They are live
 data of the unit (the tools `hive` with `verb=empire`, `stock`, `ship`;
 `game/fleet/empire.py show`).
 
-Facts as of 2026-11-17T06:22:21Z.
+Facts as of 2026-11-17T09:58:44Z.
 
 ## 1. The Faction
 
@@ -29,11 +29,11 @@ Facts as of 2026-11-17T06:22:21Z.
 | Name and tag | The Collective [CLTV] |
 | Founded | 2026-11-15 |
 | Leader | the Fleet Admiral's flagship |
-| Members | 16 of a limit of 50 |
-| Ships of the fleet in it | 16 of 246 |
+| Members | 18 of a limit of 50 |
+| Ships of the fleet in it | 18 of 246 |
 | Stations of our own | 0 of 5 a faction may hold |
 | Outposts | 0 of 8 |
-| Offices at stations | 1, rent 69 cr per cycle (5,934 cr a day) |
+| Offices at stations | 2, rent 138 cr per cycle (11,868 cr a day) |
 | Shared ships in garages | 0 |
 | At war | no |
 | Allies | none |
@@ -52,6 +52,7 @@ Systems we hold something in:
 | System | What | Note |
 |---|---|---|
 | `node_beta` | office | at node_beta_industrial_station |
+| `the_experiment` | office | at the_experiment_research_station |
 
 What founding a base takes: `game/rules/09-factions.md` (fees and limits)
 and the tool `base_plan` (every part down to the ore, against what we
@@ -62,6 +63,7 @@ hold).
 | Office | Tier | Station | System | State | Rent per cycle |
 |---|---|---|---|---|---|
 | Faction Lockbox | 1 | node_beta_industrial_station | `node_beta` | active | 69 |
+| Faction Lockbox | 1 | the_experiment_research_station | `the_experiment` | active | 69 |
 
 ## 4. Sites
 
@@ -82,6 +84,7 @@ list of stations. Where a base is built is Suggi's decision.
 | `felis` | Felis | lawless | 7 | none | candidate | Suggi | south region, the region of Biham, one large base (Suggi, 2026-11-17); with biham a pair proposed for a base (Suggi, 2026-11-17); 7 jumps from home, lawless, borders Gliese 876 (pirates named in the military guidebook); read once on 2026-11-15 23:34 UTC: two metallic belts and a frost ring, their de |
 | `biham` | Biham | lawless | 8 | none | candidate | Suggi | south region, the region of Biham, one large base (Suggi, 2026-11-17); with felis a pair proposed for a base (Suggi, 2026-11-17); 8 jumps from home, lawless, borders Felis and Gliese 876; not read by us yet |
 | `diadem` | Diadem | lawless | 8 | none | candidate | Suggi | east region, one large base (Suggi, 2026-11-17: "then maybe Diadem"); 8 jumps from home, lawless by the chart, a neighbour of Intercrus; not read by us yet |
+| `gsc_0044` | GSC-0044 | lawless | 6 | none | chosen | Zero, Apollo | the first outpost (the Fleet Admiral chose it on 2026-11-17, orders P4 and rule F33; Logistics builds it): 3 systems beyond our border, 3 jumps from The Experiment through Achernar and Cedarhold, 6 from home; two belts of iron and copper, 100,000 each (census 2026-11-17 06:30 UTC), sol alloy ore 1,5 |
 
 ## 5. What The Faction Can Build
 
