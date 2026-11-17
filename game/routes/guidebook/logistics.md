@@ -81,7 +81,7 @@ steady income over four hours of runs and 17,221 cr an hour paid once; busy 79% 
 | Own (every hauler) | `@craft-reserve`: steel at Node Beta, Central Nexus, Synchrony Hub, then the two piping crafts | 11, 2, 3; piping 8 and 14 | the iron, plate and copper each pilot stores | craft-steel-node-beta -316 (18 runs), craft-piping-node-beta -102 (104), craft-piping-plate-node-beta -213 (5) | Steel and copper piping for the reserve at 0 cr; trains crafting and refining |
 | Own (every hauler) | `@gather-reserve`: Hamal Crystal Bloom, GSC-0027 Prism Scatter, Spacetime Seep | the fleet's shared caps | at their floors | no run in four hours | The fallback: ore into storage. Not judged on pay |
 | Then (every ship) | `gather-schedar-belt`, `gather-ironhollow-echo-ejecta`, `gather-okab-belt`, `gather-gj-3470-dewfall-fray`, `census-frontier`, `park` | -- | Mining's and Trade's caps (45, 35, 42, 13 for every plan) | Schedar -198 (92 runs), Okab -398 (119), GJ 3470 -326 (25); Echo Ejecta -3,323 (108), which holds the money swept into the treasury from 17:50 to 18:20 UTC (single runs of -3,790 to -23,740 cr) | The Fleet Admiral's list for every plan |
-| By script, this turn | the outpost's bunker: one member hauler buys 65 fuel cells at The Experiment, burns them into its tank at the outpost and deposits the tank into the faction's fuel reserve (`outpost.py --bunker`) | 1 | one hold, about 1,300 fuel | not measured | Orders ENT-044, block APOLLO (2): keep its bunker filled |
+| By script, this turn | the outpost's bunker: one member hauler buys 65 fuel cells at The Experiment, burns them into its tank at the outpost and deposits the tank into the faction's fuel reserve (`outpost.py --bunker`) | 1 | one hold, about 1,300 fuel | 1,292 fuel for 6,565 cr in 41 minutes (21:17 UTC) | Orders ENT-044, block APOLLO (2): keep its bunker filled |
 
 So, for the four hours: hydrogen, soma, plasma and palladium into each bid as it stands; plate and
 piping from what haulers store; iron gathered at Schedar, Ironhollow, Okab and GJ 3470 by the rest;
@@ -483,9 +483,9 @@ goods we store until that order changes.
 
 ## 10. Open Tests
 
-- To read next turn (written 2026-11-17 20:40 UTC): the bunker run's RESULT line (65 cells, `outpost.py
-  --bunker 15`): fuel deposited, `faction_fuel_reserve` after, minutes and credits; then a supply route with a
-  runner step that burns cells and deposits the tank.
+- To do next turn (written 2026-11-17 21:20 UTC): a runner step that burns cells and deposits the tank
+  into a faction reserve, and a bunker supply route that opens while the reserve reads under its floor; the
+  bunker read 1,276 fuel at 21:17 UTC.
 - Done this turn: the Recruitment Desk stands (section 15.5); the outpost's storage and bunker used by a run of
   ours (section 15.3); `store_faction` in the runner (commit 6d69c52).
 - Done 2026-11-17 16:36 UTC: the outpost founded (section 15.3); the Hiring Board stands (active, cap 50).
@@ -898,6 +898,15 @@ where station fuel costs 12 to 15 cr a unit all-in (census files, 2026-11-17 20:
 burns cells into its tank in steps of 20 and deposits the tank into the reserve fills the bunker at
 about 5 cr a unit. A circuit stop unloads into the faction storage with `store_faction` (route_run.py,
 commit 6d69c52). Mine routes still store into personal storage only.
+
+The first bunker fill (2026-11-17, one member hauler, `outpost.py --bunker 15`): 65 cells bought at The
+Experiment at 101 cr with the tax (6,565 cr, one unit first, 20:39 UTC); 4 jumps; docked at the outpost
+20:44 to 21:17 UTC burning four cells at a time into the tank and depositing the tank above 15: 1,292 fuel
+from 64 cells into the reserve, which read 1,276 of 50,000 after (21 fewer than 5 + 1,292: drawn by a
+member's refuel there, likely the mine run that took the pilot at 21:10, not verified). About 5.1 cr a
+unit of reserve; 41 minutes from catch to the end, about 1,890 fuel a ship-hour, slow because each burn
+and each deposit is one call of 11 s. The dispatcher took the pilot at the 31st minute because the
+script did not refresh its hold (errors.log ENT-100; fixed in outpost.py).
 
 The plan of 08:06 UTC, as it stood before the founding:
 
