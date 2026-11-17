@@ -5,12 +5,14 @@
   "stored-goods": {
    "title": "Goods our haulers store, sold into a standing bid or carried to one: one ship a route, only the pilot that stores the good, only while a book of the last hour shows the bid",
    "routes": [
-    "sell-soma-synchrony",
-    "sell-soma-node-beta",
-    "carry-soma-synchrony-node-alpha",
-    "carry-soma-synchrony-node-gamma",
-    "carry-soma-node-beta-node-alpha",
-    "carry-soma-node-beta-node-gamma",
+    "sell-hydrogen-at-node-beta",
+    "sell-hydrogen-at-node-gamma",
+    "carry-hydrogen-synchrony-to-experiment",
+    "sell-soma-at-node-beta",
+    "sell-soma-at-synchrony",
+    "sell-soma-at-experiment",
+    "carry-soma-beta-to-gamma",
+    "carry-soma-synchrony-to-alpha",
     "sell-plate-node-beta",
     "sell-plasma-node-beta",
     "sell-liquid-hydrogen-central",
@@ -21,7 +23,7 @@
     "trading",
     "navigation"
    ],
-   "note": "Every route is gated by requires.stored and requires.bid: it opens for one pilot while its bid stands and closes by itself. It heads every hauler's list because a route behind standing work is never reached."
+   "note": "Every route is gated by requires.stored and requires.bid: it opens for one pilot while its bid stands and closes by itself. It heads every hauler's list because a route behind standing work is never reached. Since 2026-11-17 08:00 UTC the hydrogen and soma routes are Trade's (admirals.log ENT-011, ENT-012: open to every division, floors kept by Trade): haulers store 2,257 hydrogen gas at Node Beta and Node Gamma and 98 soma; Logistics' own soma routes (floor 500) stood under every bid (344 to 353) and are out of the template."
   },
   "craft-reserve": {
    "title": "Steel plate made from the pilot's own stored iron where it lies",
