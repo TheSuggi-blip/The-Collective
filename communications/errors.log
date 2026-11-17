@@ -462,3 +462,11 @@ Effect: no report and no session entry for that turn; its work is reported in th
 Cause: I treated a test as hand work to watch, not as a script to start and read at the next turn.
 Fix, done: the skill military-turn carries the rule (background scripts; by hand only the first flight of a call, ten minutes at most); this turn's pirate work ran as two background scripts (pirate_record.py, fleet_probe.py) and no shell call waited longer than a minute.
 Would it have prevented this one: yes; the test would have been one background start and a record read at the next turn.
+
+## [ENT-076] | 2026-11-17 07:27 UTC | Zero | error | ref: game/routes/drain-methane-experiment.json | see: orders.log ENT-029
+Class: a gate sized on the fleet's total where the gate reads one pilot (the family of a route that never opens for a reason nobody reads).
+Case: drain-methane-experiment asks `requires.stored` 30 methane ice in the flying pilot's own storage at The Experiment. 202 methane ice lay there in 18 storages, none over 27 units (data/stock/storage.json, 2026-11-17 07:05 UTC), while the station bid 36 cr for 1,441 units (book of 07:00 UTC). The route flew no run for six hours (route_earnings, 07:01 UTC).
+Effect: about 7,000 cr of methane unsold for six hours (202 x 36 cr); no ship, no other route touched.
+Cause: I set the gate (30, the size of the old bid) when one pilot held the stock; the drains emptied the large holdings and left the remainders under the gate. The briefing showed the route at 0 of 1 ships with no reason given, and I did not read the per-pilot split.
+Fix, done: the gate is 10 units and the bid's min_qty 10 (commit ccd4db7); the skill mining-chains carries the rule: a requires.stored gate is read against the per-pilot split of storage.json before it is set or when the route stands empty while its bid stands.
+Would it have prevented this one: yes; at 10 units, 10 of the 18 storages open the route.
