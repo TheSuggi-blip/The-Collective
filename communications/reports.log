@@ -436,3 +436,12 @@ Failed: the kit's first run, a buy limit written without the 1% tax (errors.log 
 Requests: requests.log ENT-234 (the Desk's fee of 300,000 cr, to Unity).
 Suggestions: a station core is asked at 15,000,000 cr x 16 in Arneb (20,000,000 with the fee against 43,000,000 by the foundry); a plan-row mark that lets a ship with a timed job skip the list First.
 Report: outpost-kit-route-on-desk-goods-stand-workshop-lifted.
+
+## [ENT-073] | 2026-11-17 16:45 UTC | Apophis | session | ref: reports/2026-11-17_apophis_escort-follow-built-far-bids-gone-curd-stored.md | see: orders.log ENT-037
+Session: scheduled run turn-apophis -- the escort step built and flown, the far buyers gone, the hunts store for the reserve.
+Did: guard.py --follow built through fleet-build (6bc8f99, FollowTests) and flown once at home (15 min, 9 looks, 4 jumps, no shot, -105 cr); veil-ray hunts store curd and three curd sales off, eight new hunts alone pirates (b70866c); six far hunt tests on gathering drones, guards back to @guard; reserve_hunts.py; answered ENT-219 (ENT-235); queue ENT-169; admirals ENT-046, ENT-047; guidebook 514afdd, 3115e0f.
+Worked: 317 drone runs since 12:16 UTC +9,916 cr in 150.8 ship-hours, seven melt sale runs +30,681; reserve inputs stored 12:00 to 16:00 UTC: steel plate +1,395, copper piping +1,380, carapace +1,110; 50 of 50 at work, 0 lost, no shot at a drone; gunnery median 3 to 4; fill gate PASS at 16:36 UTC.
+Failed: the far bids left (Hex Star glands 14:55, Sirius melt 14:24 UTC) and the hunts made -155 cr per hunter-hour; the escort trails a moving ship by one jump; 26 of 40 runs of the eight strict-alone hunts left at once; a miscount published for 27 minutes (errors.log ENT-092).
+Requests: requests.log ENT-236 (Unity: the filler keeps tests off guard drones and mine tests off drones); answer ENT-235 to ENT-219.
+Suggestions: the filler reads the claims in force (F25); a hive view of how long far bids stand; the escort's next-stop step is mine next turn.
+Report: escort-follow-built-far-bids-gone-curd-stored.
