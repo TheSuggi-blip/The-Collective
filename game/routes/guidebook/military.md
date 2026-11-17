@@ -87,7 +87,7 @@ What the drones fly between two turns, applied 2026-11-17 08:20 UTC
 and then `@hunter` (section 2). Every hunt and every guard takes one
 ship (rule F9) and carries `lift_to` 1 (task 4 a); every hunt beyond
 the border leaves only for a pirate or a pilot filed hostile
-(`alone` "pirates", hunt.py 3f8874f), except Felis, where pirates
+(`alone` "pirates", hunt.py e138722), except Felis, where pirates
 fought 12 times (section 6).
 
 | Order | Routes | Ships | Carries, expected | Why |
@@ -157,7 +157,7 @@ it needs, its place, its steps, what opens and closes it.
   miners; none fired). Best: Ironhollow Fading Signal 7.3 kills an hour, Acrab Thinspace
   Rubble 6.1, GSC-0044 Forgotten Tailings 5.8; Achernar Belt, Goldcrest Belt and the
   Glitterback Scatter no kill in 2 to 6 runs. From 2026-11-17 08:20 UTC the hunts beyond the border
-  carry `alone` "pirates" (hunt.py 3f8874f).
+  carry `alone` "pirates" (hunt.py e138722).
 - A belt-grazer kill gave about 2.5 carapace at Keid (18 carapace and 6
   raw xeno meat from 7 kills, 2026-11-16 to 2026-11-17, data/routes/runs.jsonl).
   21 herds of 11 to 24 grazers within 7 jumps of home were written at
