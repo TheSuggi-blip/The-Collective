@@ -10,6 +10,8 @@ WHAT: starts the engine's mining loop (mine until the hold is full, fly to the
       its hold and from its storage there into the bids that stand at the
       named price or more (the book is read before every sale, and no unit
       goes under the price), and puts the rest of its hold into storage.
+      Without it, a run that ends with more than five units aboard docks at
+      the station and stores them, so the next empty_hold route opens.
 RULES:
   - Stops at once when data/fleet/STOP appears.
   - The loop is the engine's: this script only starts and stops it and keeps the
@@ -122,11 +124,7 @@ def sell_at_station(call, say, quoted, station, wanted, notes):
                 notes.append("%s: a sale brought nothing" % item)
                 break
             sold[item] = [sold.get(item, [0, 0])[0] + units, sold.get(item, [0, 0])[1] + got]
-    try:
-        with open(os.path.join(DATA, "catalog", "ammo.json"), encoding="utf-8") as handle:
-            ammo = set(json.load(handle))
-    except (OSError, ValueError):
-        ammo = set()
+    ammo = ammo_ids()
     stashed = {}
     for item, units in hold().items():                   # the rest goes into storage here: the hold is free for the next work
         if units and item not in ammo:
@@ -136,6 +134,29 @@ def sell_at_station(call, say, quoted, station, wanted, notes):
     if stashed:
         say("stored at %s: %s" % (station[2], stashed))
     return sold
+
+
+def ammo_ids():
+    """The item ids that are ammunition (data/catalog/ammo.json): they stay aboard."""
+    try:
+        with open(os.path.join(DATA, "catalog", "ammo.json"), encoding="utf-8") as handle:
+            return set(json.load(handle))
+    except (OSError, ValueError):
+        return set()
+
+
+def store_last_load(call, say, quoted, station, notes):
+    """A run without a sale ends with its last load in storage: dock at the route's station and store the hold when more
+    than five units of goods are aboard (the dispatcher's line for requires.empty_hold), so that the next route that wants
+    an empty hold opens to the ship. Returns the units found aboard."""
+    rows = call("GET", "/accounts/%s/state/cargo" % quoted)[1]
+    ammo = ammo_ids()
+    aboard = sum(int(r.get("quantity") or 0) for r in (rows if isinstance(rows, list) else [])
+                 if isinstance(r, dict) and r.get("item_id") not in ammo)
+    if aboard > 5:
+        say("%d units aboard at the end of the run: stored at %s" % (aboard, station[2]))
+        sell_at_station(call, say, quoted, station, [], notes)
+    return aboard
 
 
 def option(args, name, default):
@@ -219,6 +240,8 @@ def main():
     wanted = [(pair.split(":")[0], int(pair.split(":")[1])) for pair in option(args, "--sell-items", "").split(",") if pair.count(":") == 1]
     if wanted and "loop not started" not in notes and not os.path.exists(os.path.join(DATA, "fleet", "STOP")):
         sold = sell_at_station(call, say, quoted, station, wanted, notes)
+    elif "loop not started" not in notes and not os.path.exists(os.path.join(DATA, "fleet", "STOP")):
+        store_last_load(call, say, quoted, station, notes)  # a partial load left aboard closes every empty_hold route
     credits_after, ore_after = numbers()
     took = (time.time() - started) / 60
     if credits_before is None or credits_after is None:

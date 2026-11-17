@@ -76,5 +76,50 @@ class SaleStepTests(unittest.TestCase):
         self.assertEqual(engine.goals, self.mine.DOCK_TRIES)
 
 
+class LastLoadTests(unittest.TestCase):
+    """A run without a sale stores its last load: a partial hold left aboard closes every empty_hold route to the ship
+    (2026-11-17 03:02 UTC: 34 miners waited with 10 to 42 units aboard after their 45-minute gather runs)."""
+
+    def setUp(self):
+        spec = importlib.util.spec_from_file_location("mine_under_test", FLEET / "mine.py")
+        self.mine = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(self.mine)
+        self.mine.time.sleep = lambda seconds: None
+        self.said = []
+
+    def engine(self, cargo):
+        posted = []
+
+        def call(method, path, body=None, timeout=120):
+            posted.append((path.rsplit("/", 1)[-1], (body or {}).get("action")))
+            if path.endswith("/goal"):
+                return 200, {"success": True}
+            if path.endswith("/state/cargo"):
+                return 200, cargo
+            if path.endswith("/raw"):
+                return 200, {"structuredContent": {"items": []}}
+            return 200, {"hasExecutingGoal": False, "hasRunningJob": False, "state": {"player": {"credits": 5000}}}
+        return call, posted
+
+    def test_a_partial_load_is_docked_and_stored(self):
+        call, posted = self.engine([{"item_id": "iron_ore", "quantity": 42}, {"item_id": "copper_ore", "quantity": 23}])
+        notes = []
+        self.assertEqual(self.mine.store_last_load(call, self.said.append, "miner-1", ["sys", "poi", "base"], notes), 65)
+        self.assertIn(("goal", None), posted)                                # it docked at the route's station
+        self.assertEqual([a for _p, a in posted if a == "deposit"], ["deposit", "deposit"])
+        self.assertEqual(notes, [])
+
+    def test_five_units_or_less_stay_aboard_and_no_flight_is_made(self):
+        call, posted = self.engine([{"item_id": "iron_ore", "quantity": 5}])
+        self.assertEqual(self.mine.store_last_load(call, self.said.append, "miner-1", ["sys", "poi", "base"], []), 5)
+        self.assertNotIn(("goal", None), posted)
+
+    def test_main_stores_the_last_load_of_a_run_without_a_sale(self):
+        import ast
+        tree = ast.parse((FLEET / "mine.py").read_text(encoding="ascii"))
+        main = next(ast.unparse(n) for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == "main")
+        self.assertIn("store_last_load(call, say, quoted, station, notes)", main)
+
+
 if __name__ == "__main__":
     unittest.main()
