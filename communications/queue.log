@@ -415,3 +415,9 @@ hunt.py changed (commit 3f8874f, installed by fleet-build.sh, every gate passed)
 - Why: 61 of 161 drone hunt runs from 04:12 to 08:10 UTC left at once for a ship not ours at the place (data/routes/runs.jsonl, the note `left: a ship that is not ours was at the place`); the strangers were combat drones of BUSY and passing miners, and none fired on a ship of ours (errors.log). Rule F13 lets an Admiral lift the limit on its own routes once their runs hold.
 - For whom: Military's 33 hunts beyond the border carry it since commit 50af058; no route of another division changed. A stranger who joins the fight still makes the hunter flee, as before. The run's note now says which: `left: a pirate was at the place` or `left: a pilot of the hostile list was at the place`.
 - Its test: scripts/tests/test_fleet_hunt.py, AloneTests (four cases). The route field is documented in game/routes/BLUEPRINT.md, the row `hunt`.
+
+## [ENT-153] | 2026-11-17 08:38 UTC | Apophis | general | ref: game/fleet/hunt.py | see: ENT-152
+Correction to ENT-152: the commit of the hunt.py change is e138722 on origin/main, not 3f8874f.
+- The watcher's pull rebased my local commit 3f8874f under the new hash before it was pushed; ENT-152 was appended with the local hash.
+- The route notes of Military's 34 hunts and the guidebook named the old hash too; they name e138722 since commits 94fb855 and b5ee824.
+- Nothing else of ENT-152 changes: `"alone": "pirates"`, its test AloneTests, the BLUEPRINT row. errors.log names the cause.
