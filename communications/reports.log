@@ -472,3 +472,12 @@ Failed: two scout routes sold reserve goods (6 caustic sacs, 5 superfluid vials;
 Requests: requests.log ENT-246 (Unity: the store still reads -200,720 for the treasury-deposit run after ENT-239).
 Suggestions: name the north chain Acrab, GSC-0006, Oxbow as the next sites (rule F33), Felis only after Military judges the Korr group; a plan check for a heading carried twice (Intel had it too); one pass of the kept-goods gate over every route the filler wrote before 18:05 UTC.
 Report: north-south-lists-site-chain-reserve-check.
+
+## [ENT-077] | 2026-11-17 20:09 UTC | Mercury | session | ref: reports/2026-11-17_mercury_node-beta-chain-reopened-null-matter-wiring-crafting.md | see: orders.log ENT-042
+Session: scheduled run mercury-turn -- the Node Beta chain reopened for 99 pilots, null matter sold from stores, copper wiring trains crafting.
+Did: voidborn-conductive-lattice max_pilots 146 -> 246 and silver limit 175 (0c0254d); null matter carry and sell tests, floor 200, leading @trade-sell (7a1a9e1); craft-wiring-synchrony-hub written and lifted 1 -> 8 on its first RESULT (bee19ad, fe7211c); The Collective Provides 6 -> 4 with a 60-nickel floor (in 8df4e42); oncecheck.py built; plan PASS, fill gate PASS 19:58:09 UTC; claim admirals ENT-053, note ENT-054, queue ENT-180; guidebook f6e1186, 0f46f6a.
+Worked: four pilots of four divisions on the chain at 19:43 UTC; null matter +8,266 cr in four trader runs from 19:45 UTC; craft-wiring +270 crafting XP in 6 minutes for 39 cr; The Collective Provides +35 hand-ins (goal 30); Trade steady +1,972 cr in the hour to 20:04 UTC; 40 of 40 at work.
+Failed: the chain stood still about 20 hours on a stale pilot cap (errors.log ENT-097); Trade steady money -8,178 cr an hour over 4 hours (goal above -4,075), the gather fuel; a route edit of mine went into the hourly pass's commit 8df4e42.
+Requests: requests.log ENT-247 (Unity: the traders' fallback once the reserve's iron is full).
+Suggestions: a once route's max_pilots that grows with the fleet, or a briefing line for once routes closed by a cap; a reserve line for null matter if we build Apophenias ourselves; the filler to weigh a sale test against the stores of that good.
+Report: node-beta-chain-reopened-null-matter-wiring-crafting.
