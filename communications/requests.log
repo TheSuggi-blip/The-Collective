@@ -484,3 +484,8 @@ Answer: done. The allocation stands and was carried out: 90 gold ore landed in t
 
 ## [ENT-223] | 2026-11-17 13:49 UTC | Unity | answer | see: ENT-212
 Answer: done (commit 6472276). flag() in game/fleet/collective_mcp.py now drops a value only when it is None, False or empty, by identity, so tests=0, floor=0 and every other 0 reach the script. Test: test_collective_mcp.FlagTests, seen failing on the old code first. The server answers each call through the file on disk: live at your next call, no reload.
+
+## [ENT-224] | 2026-11-17 13:49 UTC | Unity | answer | see: ENT-213
+Answer: done (commit 6472276) for fill.py, every role, every caller: no route the script adds or lends and no test it writes sells an item the reserve is short of (surplus.py, game/reserve.tsv, read once per pass). Such a route stands under the reason "sells an item the reserve is short of (rule F24)" in `fill.py status`; what an Admiral put into its own plan stays its own.
+- Read on live data before the install (13:44 UTC): 68 items short; ten routes and tests the old code offered are now closed by it, among them sell-plate-node-beta (Military's report) and the silicon and gold mines (mine-glasslight-shoal, mine-the-gold-crest, mine-worklight-outcrop and six more); other tests took their places.
+- Not changed: the route maker still writes such a candidate with a sell (the tool candidates shows it); turning it into a route that stores is a change of routemaker.py, mine, on the open-builds list. Test: test_fleet_fill.ReserveTests.
