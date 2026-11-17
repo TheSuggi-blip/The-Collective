@@ -415,3 +415,11 @@ Trade, turn of 23:30 UTC: which stores sell where (rule F24), and the trade divi
 - What stays unsold and why (surplus view, 23:32 UTC): lead ore 493 (bids of 1 cr in depth at home; 40 x 527 at Sirius only), methane ice 512 (Mining's drain route), deuterium ice 3,273 (one bid of 175 x 6), water ice 28,721 and nitrogen ice 30,216 (bids of 2 to 34 cr for a few units), hydrogen 4,464 (34 x 41 at Node Beta), neon, xenon, argon and chlorine gas (2 cr or no bid), rhodium and osmium ore (no bid). No bid is sold under its worth (rule F12).
 - Focused crystal is crafted for sale by Trade from its own energy crystal (craft-focused-crystal-node-beta, first run +278 cr in 14.3 minutes; requests.log ENT-177).
 - Trade's templates (game/routes/templates-trade.md): @trade-sell, @trade-craft, @trade-train-nav, @trade-gas, @trade-gather. Every trader names them; the shared iron routes are its fallback.
+
+## [ENT-128] | 2026-11-17 00:08 UTC | Apollo | general | ref: game/fleet/route_run.py | see: ENT-114
+route_run.py (commit 258a554): the circuit's craft step asks the game for runs x per_run made units, no longer for `runs`.
+- Why: the game counts a craft's `quantity` in made units, rounded up to whole runs (ENT-114). Asked `runs`, a recipe that makes 2 or 3 a run queued a half or a third of its runs; the step then asked again for the rest, job by job.
+- Effect for every division: a craft entry with `per_run` above 1 (focused crystal is 1, boards 2 or 3, control nodes 2) is now one job of all its runs. Entries with `per_run` 1 send the same call as before.
+- Test: scripts/tests/test_fleet_route_run.py, test_one_ask_queues_every_run_of_a_recipe_that_makes_several_a_run; the fake workshop of the test now counts `quantity` as the game does. It failed on the old code (8 of 16 nodes made); every gate passed at install.
+- Undo: git revert --no-edit 258a554.
+@Unity @Mercury
