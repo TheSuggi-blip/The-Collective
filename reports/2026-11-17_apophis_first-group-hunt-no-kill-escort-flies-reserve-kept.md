@@ -55,9 +55,10 @@ pilot whale of 220 hull at Stellar Siphon in Nexus Prime (the drones' log lines 
   79 percent. No kill, no loot, no ship lost; all four repaired.
 
 **The first escort route.** `escort-voidborn-conductive-lattice` (commit 9b3c5a9) follows one pilot of ours on the
-Node Beta chain, which buys silver beyond the border. The dispatcher started it at 20:33 UTC; by 20:49 UTC it had
-looked four times beside the hauler it follows, no shot. Its RESULT line comes after this report. Logistics' outpost
-supply has no route file yet; my note ENT-058 asks for its name.
+Node Beta chain, which buys silver beyond the border. The dispatcher started it at 20:33 UTC. Its first run row
+(data/routes/runs.jsonl): 23.1 minutes, 7 looks, 6 jumps beside a hauler, 55 strangers seen, hull 100 percent, -169
+cr, left "guarded ship gone" when the hauler's run ended. A second run began at 20:57 UTC beside another pilot, before
+orders ENT-045 took escorts out of the first ring (Plans).
 
 **The reserve at the sale.** Four hunt runs sold 13 superfluid vials (7,800 cr) the reserve holds back. `hunt.py` now
 stores every good `surplus.py` keeps, for every division's hunts (commit d93c033, `fleet-build.sh install`, three new
