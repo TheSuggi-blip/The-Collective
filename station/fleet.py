@@ -49,6 +49,16 @@ hour at the top level and over 1, 6 and 24 hours under `windows`:
     cph              income minus costs (of the rounded figures): what the fleet
                      makes by itself
     cph_per_ship     cph / ships
+    one_time_per_hour  what the game paid once per pilot (rewards_per_hour) less the goods
+                     bought for such a reward (bought_once_per_hour): money that does
+                     not repeat, a line of its own inside the net
+    total_per_hour   cph + one_time_per_hour: the net of everything. It is the change of
+                     the wallets (wallets_per_hour) to the rounding; total_per_ship
+    wallets          {start, end, left_out}: all wallets at both ends of the window, and the
+                     wallets of the pilots that joined or left in it (in no figure)
+    unexplained_per_hour  the change of the wallets less what the game's own counters of
+                     credits earned and spent say it should be: a tax, or a movement nobody
+                     recorded; absent until both ends of the window carry the counter
     fuel_cr_per_hour, repair_cr_per_hour, fuel_units_per_hour, hull_points_per_hour,
     metered_per_hour (fuel and repair credits together)
                      from the meters; absent until both ends of the window carry them
@@ -75,6 +85,12 @@ hour at the top level and over 1, 6 and 24 hours under `windows`:
 Ships in the totals: `working` (a loop, a goal or a script's order), `parked`
 (docked without work: it costs nothing), `adrift` (in space without work);
 `idle` = parked + adrift.
+`crew` in the totals and in each division's totals: {ships, piloting: the average
+Piloting level (it opens the hull tiers), levels: all skill levels of the average
+ship added up, skill: [the skill other than Piloting with the highest average
+level, that average], hp: hull and shield points of the average ship, weapons:
+weapon modules fitted}. A ship's row carries `piloting` and `skill` ([name, level]
+of its highest skill other than Piloting).
 
 Every file is written whole and then renamed, so a reader never sees half a
 file. A ship's file is rewritten only when its content changed. Nothing here
@@ -234,6 +250,8 @@ def ship_row(account):
         "ore_mined": num((player.get("stats") or {}).get("ore_mined")),
         "missions_done": num((player.get("stats") or {}).get("missions_completed")),
         "top_skill": top_skill(st.get("skills")),
+        "skill": top_skill({k: v for k, v in st["skills"].items() if k != "piloting"} if isinstance(st.get("skills"), dict) else None),
+        "piloting": num(st["skills"]["piloting"].get("level")) if isinstance(st.get("skills"), dict) and isinstance(st["skills"].get("piloting"), dict) else 0,
         "state_at": text(st.get("updatedAt"), 30),
     }
 
@@ -280,6 +298,34 @@ def ship_detail(account, row):
                    "last_step": text(loop.get("lastStep"), 200), "last_step_at": text(loop.get("lastStepAt"), 30)}
     out["stats"] = {k: num(stats.get(k)) for k in STATS}
     return out
+
+
+def crew(rows, accounts):
+    """How trained and how strong the ships are, per division and for all of them under '': {"ships", "piloting": the
+    average Piloting level (Piloting 10, 20, 30 and 50 open the hull tiers 2 to 5), "levels": all skill levels of the
+    average ship added up, "skill": [the skill other than Piloting with the highest average level, that average],
+    "hp": hull and shield points of the average ship, "weapons": weapon modules fitted}. `accounts` is {pilot name: the
+    engine's account}; a ship without skills counts as level 0. Averages to one decimal."""
+    sums = {}
+    for row in rows:
+        st = (accounts.get(row["name"]) or {}).get("state") or {}
+        skills = st.get("skills") if isinstance(st.get("skills"), dict) else {}
+        levels = {text(k, 40): num(v.get("level")) for k, v in skills.items() if isinstance(v, dict)}
+        guns = sum(1 for m in (st.get("modules") or []) if isinstance(m, dict) and m.get("type") == "weapon")
+        for key in ("", row["division"]):
+            b = sums.setdefault(key, {"ships": 0, "hp": 0, "weapons": 0, "skills": {}})
+            b["ships"] += 1
+            b["hp"] += row["max_hull"] + row["max_shield"]
+            b["weapons"] += guns
+            for name, level in levels.items():
+                b["skills"][name] = b["skills"].get(name, 0) + level
+    result = {}
+    for key, b in sums.items():
+        n = b["ships"]
+        best = max(((total / n, name) for name, total in b["skills"].items() if name != "piloting"), default=(0, ""))
+        result[key] = {"ships": n, "piloting": round(b["skills"].get("piloting", 0) / n, 1), "levels": round(sum(b["skills"].values()) / n, 1),
+                       "skill": [best[1], round(best[0], 1)], "hp": round(b["hp"] / n), "weapons": b["weapons"]}
+    return result
 
 
 def work_state(row):
@@ -558,8 +604,15 @@ def figures(hours, ships, credits, earned, one):
     figures a reader sees always agree (net = income - costs)."""
     income = round((earned - one[0]) / hours)
     costs = round((earned - credits - one[1]) / hours)
+    # 2026-11-17: money paid once is a line of its own inside the net, not left out of it (a reader saw every division at
+    # a loss while the wallets grew). The net of everything is the sum of the lines as rounded, and it is the change of
+    # the wallets: income - costs + rewards - bought = credits, whatever was earned.
+    rewards, bought = round(one[0] / hours), round(one[1] / hours)
+    total = income - costs + rewards - bought
     return {"income_per_hour": income, "costs_per_hour": costs, "cph": income - costs,
-            "cph_per_ship": round((income - costs) / ships) if ships else 0, "one_time_per_hour": round((one[0] - one[1]) / hours)}
+            "cph_per_ship": round((income - costs) / ships) if ships else 0, "one_time_per_hour": rewards - bought,
+            "rewards_per_hour": rewards, "bought_once_per_hour": bought, "total_per_hour": total,
+            "total_per_ship": round(total / ships) if ships else 0, "wallets_per_hour": round(credits / hours)}
 
 
 def window(history, now, seconds, one, gifts=(), seeds=None, presence=()):
@@ -595,6 +648,7 @@ def window(history, now, seconds, one, gifts=(), seeds=None, presence=()):
 
     born, off = new[""], joined("")
     out = figures(hours, b[2], b[1] - a[1] - off[0], b[3] - a[3] - off[1], booked(""))
+    out["wallets"] = {"start": a[1], "end": b[1], "left_out": off[0]}
     out.update({"minutes": round((b[0] - a[0]) / 60), "ships_changed": a[2] != b[2], "divisions": {}, "seed": seed(born), "presence": absent(""),
                 "transfers_per_hour": round(sum(given.values()) / hours), "transfers_moved_per_hour": round(moved / hours),
                 "transfers_unpaired_per_hour": round(unpaired / hours)})
@@ -607,6 +661,7 @@ def window(history, now, seconds, one, gifts=(), seeds=None, presence=()):
     spent = all(isinstance(x.get("s"), (int, float)) and isinstance(x.get("ds"), dict) for x in (xa, xb))
     if spent:
         out["spent_per_hour"] = round((xb["s"] - xa["s"] - off[2]) / hours)
+        out["unexplained_per_hour"] = round(((b[1] - a[1] - off[0]) - (b[3] - a[3] - off[1]) + (xb["s"] - xa["s"] - off[2])) / hours)
     for division, d in b[7].items():
         e = a[7].get(division, [0, 0, 0, 0, 0, 0])
         born, got, off = new.get(division, [0, 0, 0, 0]), given.get(division, 0), joined(division)
@@ -618,6 +673,8 @@ def window(history, now, seconds, one, gifts=(), seeds=None, presence=()):
             row["metered_per_hour"] = row["fuel_cr_per_hour"] + row["repair_cr_per_hour"]
         if spent:
             row["spent_per_hour"] = round((num(xb["ds"].get(division)) - num(xa["ds"].get(division)) - off[2]) / hours)
+            row["unexplained_per_hour"] = round(((d[1] - e[1] - got - off[0]) - (d[2] - e[2] - off[1])
+                                                 + (num(xb["ds"].get(division)) - num(xa["ds"].get(division)) - off[2])) / hours)
         out["divisions"][division] = row
     return out
 
@@ -850,6 +907,10 @@ def collect_once(last):
         write(DATA / "seed.json", seeds)
     total = totals(rows)
     history = read(DATA / "history.json", [])
+    strength = crew(rows, by_name)
+    total["crew"] = strength.get("", {})
+    for division, d in total["divisions"].items():
+        d["crew"] = strength.get(division, {})
     if not history or now - history[-1][0] >= HISTORY_EVERY:
         history.append(sample(now, rows, METERS))
         write(DATA / "history.json", history[-HISTORY_CAP:])

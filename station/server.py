@@ -933,6 +933,8 @@ def api_state():
         }
     out["intel"] = scan_intel()
     out["roster"] = ROSTER
+    out["our_tag"] = OUR_TAG
+    out["sites"] = load_sites()
     out["token"] = TOKEN
     now = time.time()
     out["sources"] = {n: {"age": int(now - s["ok_at"]) if s["ok_at"] else -1, "error": s["error"]} for n, s in STATUS.items()}
@@ -988,6 +990,93 @@ def foreign_groups(now, system=None, least=GROUP_MIN, cap=80):
     out = [{"system": sid, "tag": tag, "count": n, "standing": standing.get(tag.upper(), "unknown"),
             "name": text((factions.get(tag) or {}).get("name"), 60)} for (sid, tag), n in count.items() if n >= least]
     return sorted(out, key=lambda g: (-g["count"], g["system"], g["tag"]))[:cap]
+
+
+SITES = {"at": 0.0, "value": []}
+MET = {"at": 0.0, "value": {}}
+HULLS = {"at": 0.0, "value": {}}
+VERSION_FILE = re.compile(r"(\d+(?:\.\d+)*)\.json")
+
+
+def load_sites():
+    """The systems named for a base of ours (game/map/sites.tsv: system, poi, status, proposed_by, note), read at most
+    once a minute: [{"system", "status", "by"}]. The file is the Fleet Admiral's; the map marks each with a flag."""
+    if time.time() - SITES["at"] > 60:
+        try:
+            lines = (REPO / "game" / "map" / "sites.tsv").read_text(encoding="utf-8", errors="replace").splitlines()[:500]
+        except OSError:
+            lines = []
+        value = []
+        for line in lines:
+            cells = line.split("\t")
+            if len(cells) >= 4 and not line.startswith("#") and cells[0] and cells[0] != "system":
+                value.append({"system": text(cells[0], 80), "status": text(cells[2], 20), "by": text(cells[3], 20)})
+        SITES["at"], SITES["value"] = time.time(), value
+    return SITES["value"]
+
+
+def met():
+    """What our own ships saw of other pilots (data/intel/met.json, kept by the service sight): {name: {"ship_class",
+    "times", "last", ...}}, read at most once a minute."""
+    if time.time() - MET["at"] > 60:
+        try:
+            value = read_json(FLEET.parent / "intel" / "met.json", cap=30_000_000)
+        except (OSError, ValueError):
+            value = {}
+        MET["at"], MET["value"] = time.time(), value if isinstance(value, dict) else {}
+    return MET["value"]
+
+
+def hulls():
+    """{hull id: [name, tier]} from the newest copy of the game's catalog (data/catalog/<version>.json, the highest
+    version), read at most once an hour. The game shows nobody's level to others; a hull's tier is the nearest thing:
+    Piloting 10, 20, 30 and 50 open the tiers 2 to 5."""
+    if time.time() - HULLS["at"] > 3600:
+        value, best = {}, None
+        try:
+            names = os.listdir(FLEET.parent / "catalog")
+        except OSError:
+            names = []
+        for fn in names:
+            m = VERSION_FILE.fullmatch(fn)
+            if m:
+                key = (tuple(int(x) for x in m.group(1).split(".")), fn)
+                best = key if best is None or key > best else best
+        try:
+            ships = read_json(FLEET.parent / "catalog" / best[1], cap=30_000_000).get("ships") if best else []
+        except (OSError, ValueError, AttributeError):
+            ships = []
+        for s in ships if isinstance(ships, list) else []:
+            if isinstance(s, dict) and isinstance(s.get("id"), str):
+                value[text(s["id"], 60)] = [text(s.get("name"), 60), num(s.get("tier"))]
+        HULLS["at"], HULLS["value"] = time.time(), value
+    return HULLS["value"]
+
+
+def api_faction(arg):
+    """The pilots of one faction that jumped into one system within the last hour (the public stream), each with what
+    our own ships saw of it: its hull, that hull's tier and how often we met it; from its public profile the ships it
+    destroyed and its hours played. arg: "<system id>|<TAG>". Who arrived, not proof of who is still there."""
+    system, _, tag = arg.partition("|")
+    now, ours, seen, classes = time.time(), our_names(), met(), hulls()
+    pilots = []
+    with LOCK:
+        rows = [(name, v[1]) for name, v in PILOTS.items() if v[0] == system and v[3] == tag and tag and now - v[1] <= 3600 and name not in ours]
+        feed = VALUE.get("feed") or {}
+        faction = (feed.get("factions") or {}).get(tag) or {}
+        profiles = feed.get("players") or {}
+        for name, at in rows:
+            sight = seen.get(name) if isinstance(seen.get(name), dict) else {}
+            hull_id = text(sight.get("ship_class"), 60)
+            hull = classes.get(hull_id) or [hull_id.replace("_", " "), 0]
+            stats = (profiles.get(name.lower()) or {}).get("stats") or {}
+            pilots.append({"name": name, "age": int(now - at), "hull": hull[0], "tier": hull[1], "times": num(sight.get("times")),
+                           "last_met": text(sight.get("last"), 30), "destroyed": num(stats.get("ships_destroyed")),
+                           "hours": round(num(stats.get("time_played")) / 3600)})
+    pilots.sort(key=lambda p: (-p["tier"], -p["times"], p["age"], p["name"]))
+    return {"system": text(system, 80), "tag": text(tag, 8), "name": text(faction.get("name"), 60), "members": num(faction.get("members")),
+            "standing": faction_standing().get(tag.upper(), "unknown"), "count": len(pilots), "known": sum(1 for p in pilots if p["hull"]),
+            "top_tier": max((p["tier"] for p in pilots), default=0), "pilots": pilots[:120]}
 
 
 def api_live():
@@ -1170,6 +1259,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 "/api/income": lambda: api_income(min(48, max(1, int(arg) if arg.isdigit() else 4))),
                 "/api/docs": api_docs, "/api/doc": lambda: api_doc(doc),
                 "/api/group": lambda: api_group(after),
+                "/api/faction": lambda: api_faction(arg),
                 "/healthz": lambda: {"ok": True, "sources": sum(1 for s in STATUS.values() if s["ok_at"])},
             }
             if url.path not in handlers:

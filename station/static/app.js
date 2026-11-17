@@ -110,7 +110,9 @@ let board = null;
 const sys = new Map();
 const stationsBy = new Map();
 const shipsBy = new Map();                     // system id -> our ships there
-const layers = { Lanes: true, Traffic: true, Stations: true, Strongholds: true, Intel: true, Factions: true, Fleet: true, Names: true };
+const layers = { Territory: true, Lanes: true, Traffic: true, Stations: true, Sites: true, Strongholds: true, Intel: true, Factions: true, Fleet: true, Names: true };
+const sitesBy = new Map();                     // system id -> a site named for a base of ours (game/map/sites.tsv)
+let bounds = null, terrR = 250, homeEmpire = '';   // the galaxy's extent; the radius of the ground under one system; our empire
 const view = { x: 0, y: 0, k: 0.05 };
 let selected = null, hover = null, route = [], tab = 'Selection', pilotCard = null;
 let selShip = null, shipCard = null, shipMark = '', docView = null;
@@ -134,6 +136,19 @@ function resize() {
   canvas.width = Math.round(W * d); canvas.height = Math.round(H * d);
   ctx.setTransform(d, 0, 0, d, 0, 0);
   draw();
+}
+
+function minZoom() {                                 // the whole galaxy with a margin: the map never gets smaller than this
+  if (!bounds || !W) return 0.01;
+  return 0.86 * Math.min(W / (bounds.x1 - bounds.x0 + 1200), H / (bounds.y1 - bounds.y0 + 1200));
+}
+function clampView() {                               // the view stays on the galaxy: a limit to zooming out and to dragging away
+  if (!bounds || !W) return;
+  view.k = Math.max(minZoom(), Math.min(3, view.k));
+  const hx = Math.max(0, (bounds.x1 - bounds.x0 + 1200) / 2 - W / (2 * view.k)) + 0.2 * W / view.k;
+  const hy = Math.max(0, (bounds.y1 - bounds.y0 + 1200) / 2 - H / (2 * view.k)) + 0.2 * H / view.k;
+  const mx = (bounds.x0 + bounds.x1) / 2, my = (bounds.y0 + bounds.y1) / 2;
+  view.x = Math.max(mx - hx, Math.min(mx + hx, view.x)); view.y = Math.max(my - hy, Math.min(my + hy, view.y));
 }
 
 function flyTo(x, y, k, ms) {                       // ease the view to a place; ms 0 jumps
@@ -186,9 +201,41 @@ function frame(now) {
     view.k = Math.exp(Math.log(cam.k0) + (Math.log(cam.k1) - Math.log(cam.k0)) * e);
     if (u >= 1) cam = null;
   }
+  clampView();
   paint(now / 1000);
   if (cam) draw();
   else if ((selected || route.length > 1) && !pulse) pulse = setTimeout(() => { pulse = 0; draw(); }, 60);   // the selection breathes, the route line moves
+}
+
+// The ground under the map: each empire's space as one soft area, ours a little stronger, and brighter where our own
+// ships work. Drawn on a canvas of its own and laid under the map once per area, so that overlapping discs do not add up.
+const ground = document.createElement('canvas'), gctx = ground.getContext('2d');
+function paintTerritory(k) {
+  const d = window.devicePixelRatio || 1, R = Math.max(8, terrR * k);
+  if (ground.width !== canvas.width || ground.height !== canvas.height) { ground.width = canvas.width; ground.height = canvas.height; }
+  const area = (list, colour, alpha, radius, joined) => {
+    if (!list.length) return;
+    gctx.setTransform(d, 0, 0, d, 0, 0); gctx.clearRect(0, 0, W, H);
+    gctx.fillStyle = colour; gctx.strokeStyle = colour; gctx.lineWidth = radius * 1.2; gctx.lineCap = 'round';
+    for (const s of list) {
+      const [x, y] = toScreen(s);
+      gctx.beginPath(); gctx.arc(x, y, radius, 0, 6.2832); gctx.fill();
+      for (const id of s.lanes) {                                   // two neighbours of one area: the ground runs along their lane
+        const o = sys.get(id);
+        if (o && s.id < id && joined(o)) { const [ox, oy] = toScreen(o); gctx.beginPath(); gctx.moveTo(x, y); gctx.lineTo(ox, oy); gctx.stroke(); }
+      }
+    }
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = alpha; ctx.drawImage(ground, 0, 0); ctx.restore();
+  };
+  const realms = new Map();
+  for (const s of S.systems) { if (s.empire) { if (!realms.has(s.empire)) realms.set(s.empire, []); realms.get(s.empire).push(s); } }
+  for (const [empire, list] of realms) {
+    const home = empire === homeEmpire, c = color(list[0]);
+    area(list, c, home ? 0.1 : 0.05, R * (home ? 1.1 : 1), (o) => o.empire === empire);
+    if (home) area(list, c, 0.07, R * 0.7, (o) => o.empire === empire);
+  }
+  if (layers.Fleet) area([...shipsBy.keys()].map((id) => sys.get(id)).filter(Boolean), '#cdbdf5', 0.11, R * 0.62, (o) => shipsBy.has(o.id));
+  area(S.systems.filter((s) => (stationsBy.get(s.id) || []).some((b) => b.tag && b.tag === S.our_tag)), '#ffffff', 0.14, R * 0.85, () => false);
 }
 
 function paint(t) {
@@ -200,6 +247,7 @@ function paint(t) {
     ctx.fillStyle = 'rgba(186,198,232,' + a.toFixed(2) + ')';
     ctx.fillRect((((u * W + px) % W) + W) % W, (((v * H + py) % H) + H) % H, size, size);
   }
+  if (layers.Territory) paintTerritory(k);
   if (layers.Lanes) {
     const strokes = new Map();                                      // one path per colour
     for (const s of S.systems) {
@@ -231,21 +279,31 @@ function paint(t) {
       const n = L.hour[s.id] || 0;
       if (!n) continue;
       const [x, y] = toScreen(s);
-      ctx.fillStyle = 'rgba(220,174,88,0.13)';
-      ctx.beginPath(); ctx.arc(x, y, r + 3 + Math.sqrt(n) * 2.6, 0, 6.2832); ctx.fill();
+      ctx.fillStyle = 'rgba(220,174,88,0.07)';
+      ctx.beginPath(); ctx.arc(x, y, r + 2 + Math.min(11, Math.sqrt(n) * 1.5), 0, 6.2832); ctx.fill();
     }
   }
+  const labels = [];
   ctx.font = '11px system-ui, sans-serif';
   for (const s of S.systems) {
     const [x, y] = toScreen(s);
     if (x < -40 || y < -40 || x > W + 40 || y > H + 40) continue;
     const c = color(s), q = s.home ? r + 2 : r, ours = layers.Fleet && shipsBy.has(s.id);
-    ctx.fillStyle = rgba(c, 0.16); ctx.beginPath(); ctx.arc(x, y, q * 2.3, 0, 6.2832); ctx.fill();      // glow
+    ctx.fillStyle = rgba(c, 0.09); ctx.beginPath(); ctx.arc(x, y, q * 1.5, 0, 6.2832); ctx.fill();      // glow
     ctx.fillStyle = c; ctx.beginPath(); ctx.arc(x, y, q, 0, 6.2832); ctx.fill();
-    ctx.fillStyle = 'rgba(255,255,255,0.5)'; ctx.beginPath(); ctx.arc(x - q * 0.28, y - q * 0.28, q * 0.34, 0, 6.2832); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.3)'; ctx.beginPath(); ctx.arc(x - q * 0.28, y - q * 0.28, q * 0.34, 0, 6.2832); ctx.fill();
     if (layers.Stations && stationsBy.has(s.id)) {
-      ctx.strokeStyle = stationsBy.get(s.id).some((b) => b.tag) ? 'rgba(232,195,90,0.9)' : 'rgba(207,211,230,0.75)'; ctx.lineWidth = 1.1;
-      ctx.beginPath(); ctx.arc(x, y, q + 3.5, 0, 6.2832); ctx.stroke();
+      const bases = stationsBy.get(s.id);
+      ctx.strokeStyle = bases.some((b) => b.tag) ? 'rgba(232,195,90,0.75)' : 'rgba(207,211,230,0.5)'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.arc(x, y, q + 2.5, 0, 6.2832); ctx.stroke();
+      if (bases.some((b) => b.tag && b.tag === S.our_tag)) {         // a base of our own: a white square around the system
+        ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.6; ctx.strokeRect(x - q - 5, y - q - 5, 2 * q + 10, 2 * q + 10);
+      }
+    }
+    if (layers.Sites && sitesBy.has(s.id) && sitesBy.get(s.id).status !== 'dropped') {   // a site named for a base: a small flag, white once built
+      ctx.strokeStyle = ctx.fillStyle = sitesBy.get(s.id).status === 'built' ? '#ffffff' : 'rgba(190,170,240,0.95)'; ctx.lineWidth = 1.2;
+      ctx.beginPath(); ctx.moveTo(x - q - 1.5, y - q); ctx.lineTo(x - q - 1.5, y - q - 12); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x - q - 1.5, y - q - 12); ctx.lineTo(x - q - 9, y - q - 9.5); ctx.lineTo(x - q - 1.5, y - q - 7); ctx.closePath(); ctx.fill();
     }
     if (layers.Strongholds && s.stronghold) {
       ctx.strokeStyle = '#e06c66'; ctx.lineWidth = 1.8; ctx.lineCap = 'round'; ctx.beginPath();
@@ -255,25 +313,23 @@ function paint(t) {
     const intel = layers.Intel && S.intel.systems[s.id];
     if (intel && intel.standing !== 'neutral') {                    // our standing: a dashed ring, green or red
       ctx.strokeStyle = intel.standing === 'ally' ? 'rgba(88,192,140,0.85)' : 'rgba(224,108,102,0.9)'; ctx.lineWidth = 1.4;
-      ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.arc(x, y, q + 7, 0, 6.2832); ctx.stroke(); ctx.setLineDash([]);
+      ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.arc(x, y, q + 5, 0, 6.2832); ctx.stroke(); ctx.setLineDash([]);
     }
-    if (ours) {                                                     // our ships are here: a quiet ring
-      ctx.strokeStyle = shipsBy.get(s.id).some((sh) => sh.name === selShip) ? '#ffffff' : 'rgba(227,230,238,0.5)'; ctx.lineWidth = 1.2;
-      ctx.beginPath(); ctx.arc(x, y, q + 10.5, 0, 6.2832); ctx.stroke();
+    if (ours && shipsBy.get(s.id).some((sh) => sh.name === selShip)) {   // the ship in the panel is here: a white ring (the pie above marks our ships)
+      ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.2;
+      ctx.beginPath(); ctx.arc(x, y, q + 5.5, 0, 6.2832); ctx.stroke();
     }
     if (s.id === selected) {
       const beat = (Math.sin(t * 2.6) + 1) / 2;
       ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.8;
-      ctx.beginPath(); ctx.arc(x, y, q + 13.5, 0, 6.2832); ctx.stroke();
+      ctx.beginPath(); ctx.arc(x, y, q + 8.5, 0, 6.2832); ctx.stroke();
       ctx.strokeStyle = 'rgba(255,255,255,' + (0.3 * (1 - beat)).toFixed(2) + ')'; ctx.lineWidth = 1.2;
-      ctx.beginPath(); ctx.arc(x, y, q + 14 + beat * 9, 0, 6.2832); ctx.stroke();
+      ctx.beginPath(); ctx.arc(x, y, q + 9 + beat * 6, 0, 6.2832); ctx.stroke();
     }
-    if (layers.Names && (k > 0.16 || s.home || ours || s.id === selected || s.id === hover)) {
-      ctx.font = (s.home || ours ? '600 ' : '') + '11px system-ui, sans-serif';
-      ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(9,12,18,0.85)'; ctx.lineJoin = 'round';
-      ctx.strokeText(s.name, x + q + 6, y + 4);
-      ctx.fillStyle = s.home || ours ? '#f1f3f9' : '#a9b0c9';
-      ctx.fillText(s.name, x + q + 6, y + 4);
+    if (layers.Names) {                                             // names are drawn after the systems: the important ones first, none over another
+      const site = layers.Sites && sitesBy.has(s.id) && sitesBy.get(s.id).status !== 'dropped', picked = s.id === selected || s.id === hover;
+      const rank = picked ? 2000 : s.home ? 1500 : site ? 800 : ours && k > 0.085 ? 500 + shipsBy.get(s.id).length : k > 0.16 ? 100 : 0;
+      if (rank) labels.push({ name: s.name, x, y, q, bold: Boolean(s.home || ours), rank });
     }
   }
   badgeHits = []; groupHits = [];
@@ -293,6 +349,13 @@ function paint(t) {
         ctx.strokeStyle = rgba(c, 0.7); ctx.lineWidth = 1; ctx.stroke();
         ctx.fillStyle = c; ctx.fillText(label, gx + 7, gy + 8);
         groupHits.push({ x: gx, y: gy, w, h: 15, system: id, group: g });
+        if (k >= 0.2) {                                             // zoomed in: one small hull per pilot, twelve at most
+          ctx.fillStyle = rgba(c, 0.8);
+          for (let j = 0; j < Math.min(12, g.count); j++) {
+            const hx = gx + w + 5 + j * 8, hy = gy + 7.5;
+            ctx.beginPath(); ctx.moveTo(hx + 6, hy); ctx.lineTo(hx, hy - 3.6); ctx.lineTo(hx + 1.7, hy); ctx.lineTo(hx, hy + 3.6); ctx.closePath(); ctx.fill();
+          }
+        }
       });
     }
     ctx.textBaseline = 'alphabetic';
@@ -339,6 +402,19 @@ function paint(t) {
     }
     ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
   }
+  labels.sort((a, b) => b.rank - a.rank);                           // names last: beside their system, right or left, where no marker and no other name stands
+  const taken = badgeHits.concat(groupHits).map((b) => [b.x, b.y, b.x + b.w, b.y + b.h]);
+  ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(9,12,18,0.85)'; ctx.lineJoin = 'round';
+  for (const l of labels) {
+    ctx.font = (l.bold ? '600 ' : '') + '11px system-ui, sans-serif';
+    const w = ctx.measureText(l.name).width, spots = [l.x + l.q + 6, l.x - l.q - 6 - w];
+    let at = spots.find((px) => !taken.some((b) => px - 3 < b[2] && px + w + 3 > b[0] && l.y - 7 < b[3] && l.y + 8 > b[1]));
+    if (at === undefined) { if (l.rank < 1000) continue; at = spots[0]; }   // the home system and the one picked are always named
+    taken.push([at - 3, l.y - 7, at + w + 3, l.y + 8]);
+    ctx.strokeText(l.name, at, l.y + 4);
+    ctx.fillStyle = l.bold ? '#f1f3f9' : '#a9b0c9';
+    ctx.fillText(l.name, at, l.y + 4);
+  }
   placePop();
 }
 
@@ -372,9 +448,59 @@ function placePop() {                                // the card stays beside it
   box.style.top = Math.round(Math.max(8, Math.min(H - h - 8, y - h / 3))) + 'px';
 }
 
+let groupCard = null;                                // the open card of a foreign faction's group: {group, data}
+async function openGroup(system, g) {
+  pop = { system, kind: 'Group', tag: g.tag }; groupCard = { group: g, data: null, failed: false };
+  renderPop(); draw();
+  try {
+    const d = await get('/api/faction?q=' + encodeURIComponent(system + '|' + g.tag));
+    if (pop && pop.kind === 'Group' && pop.system === system && pop.tag === g.tag) { groupCard.data = d; renderPop(); }
+  } catch (e) {
+    if (pop && pop.kind === 'Group' && pop.system === system && pop.tag === g.tag) { groupCard.failed = true; renderPop(); }
+  }
+}
+
+function renderGroupPop(box) {                       // who of one foreign faction jumped in here, with the hulls our ships saw
+  const s = sys.get(pop.system), g = groupCard && groupCard.group, d = groupCard && groupCard.data;
+  if (!s || !g) { closePop(); return; }
+  const body = box.querySelector('.popbody'), keep = body ? body.scrollTop : 0;
+  const c = g.standing === 'hostile' ? '#e06c66' : g.standing === 'ally' ? '#58c08c' : '#dcae58';
+  const head = el('div', 'pophead'), title = el('div', 'poptitle'), close = el('button', 'popclose', '\u00d7'), tag = el('span', 'grouptag', g.tag);
+  tag.style.color = c;
+  title.append(el('b', null, g.name || 'A faction'), el('span', null, 'jumped into ' + s.name + ' in the last hour | our standing: ' + g.standing));
+  close.type = 'button'; close.title = 'Close (Esc)'; close.addEventListener('click', closePop);
+  head.append(tag, title, close);
+  const stats = el('div', 'popstats'), list = el('div', 'popbody');
+  const cell = (k, v) => { const x = el('div'); x.append(el('div', 'k', k), el('div', 'v', String(v))); stats.append(x); };
+  cell('Pilots', d ? d.count : g.count); cell('Members', d && d.members ? fmt(d.members) : '--');
+  cell('Hulls seen', d ? d.known : '--'); cell('Highest tier', d && d.top_tier ? 'T' + d.top_tier : '--');
+  if (!d) list.append(el('div', 'popsec', groupCard.failed ? 'The station did not answer' : 'Reading'));
+  else if (!d.pilots.length) list.append(el('div', 'popsec', 'Nobody of them within the last hour'));
+  else {
+    for (const p of d.pilots) {
+      const b = el('button', 'poprow group'), who = el('div', 'who'), hull = el('div', 'hull', p.hull ? p.hull + (p.tier ? '  T' + p.tier : '') : 'hull not seen');
+      b.type = 'button';
+      who.append(el('div', 'nm', p.name), el('div', 'at', 'jumped in ' + ago(p.age) + ' ago' + (p.times ? ' | met ' + p.times + (p.times === 1 ? ' time' : ' times') : ' | not met by our ships')));
+      if (p.destroyed || p.hours) hull.append(el('small', null, (p.hours ? fmt(p.hours) + ' h played' : '') + (p.destroyed ? (p.hours ? ', ' : '') + fmt(p.destroyed) + ' kills' : '')));
+      b.append(who, hull);
+      b.title = 'Open ' + p.name + (p.tier > 1 ? ' | a tier ' + p.tier + ' hull needs Piloting ' + ({ 2: 10, 3: 20, 4: 30, 5: 50 }[p.tier] || '?') : '');
+      b.addEventListener('click', () => { closePop(); showPilot(p.name); });
+      list.append(b);
+    }
+  }
+  const foot = el('div', 'popfoot'), go = el('button', 'poplink', 'Open ' + s.name);
+  go.type = 'button'; go.addEventListener('click', () => { closePop(); select(s.id, false); });
+  foot.append(go, el('span', null, 'who arrived, not who is still there'));
+  box.replaceChildren(head, stats, list, foot);
+  box.hidden = false;
+  list.scrollTop = keep;
+  placePop();
+}
+
 function renderPop() {
   const box = $('fleetpop');
   if (!pop) { box.hidden = true; return; }
+  if (pop.kind === 'Group') { renderGroupPop(box); return; }
   const s = sys.get(pop.system), all = fleetGroups(shipsBy.get(pop.system) || []);
   const groups = pop.kind === 'All' ? all : all.filter((g) => g.kind === pop.kind);
   if (!s || !groups.length) { closePop(); return; }                // the ships have left
@@ -510,6 +636,14 @@ function isWorking(r) { return ['work', 'move', 'wait'].includes(shipState(r)[0]
 function renderMembers() {                       // the top bar: the six members, each with its symbol and its ships; then the fleet
   const box = $('members'), by = new Map();
   box.replaceChildren();
+  const purse = $('purse'), have = F.totals || {}, hour = have.rates && have.rates.windows ? have.rates.windows['1h'] : null;
+  purse.replaceChildren(el('div', 'k', 'Credits'), el('div', 'v', have.ships ? fmt(have.credits) : '--'));
+  if (hour) {                                     // what all wallets changed by per hour over the last hour, everything counted
+    const line = el('div', 's');
+    line.append(tint(hour.total_per_hour !== undefined ? hour.total_per_hour : hour.cph + hour.one_time_per_hour), ' /h');
+    purse.append(line);
+  }
+  purse.title = 'All wallets of the fleet. Below: what they changed by per hour over the last hour, everything counted: steady money and rewards paid once';
   F.ships.forEach((r) => { if (!by.has(r.division)) by.set(r.division, []); by.get(r.division).push(r); });
   for (const a of (S ? S.roster : [])) {
     const list = by.get(a.division) || [], c = DIV[a.division] || DIV.Unassigned, b = el('button', 'member');
@@ -547,7 +681,7 @@ function tickAges() {                          // every second: the one age labe
 function shipRow(r) {
   const [cls, what] = shipState(r), b = el('button', 'ship' + (r.name === selShip ? ' on' : ''));
   b.type = 'button';
-  const who = el('div', 'who'), bars = el('div', 'bars'), cr = el('div', 'cr', fmt(r.credits));
+  const who = el('div', 'who'), bars = el('div', 'bars'), cr = el('div', 'cr', r.piloting ? 'Lv ' + r.piloting : '');
   const nm = el('div', 'nm', r.name);
   if (r.flagship) {                               // a star after the name: a word would be cut off behind a long name
     const of = r.flagship_of || r.admiral || '';
@@ -557,17 +691,39 @@ function shipRow(r) {
   }
   who.append(nm, el('div', 'at', (r.system_name || r.system || 'position unknown') + ' | ' + what));
   bars.append(bar('hull', r.hull, r.max_hull, 0.5), bar('fuel', r.fuel, r.max_fuel, 0.25), bar('cargo', r.cargo_used, r.cargo_capacity));
-  const best = r.top_skill || ['', 0];
-  cr.append(el('small', null, best[1] ? best[0].replace(/_/g, ' ') + ' ' + best[1] : (r.class || '')));
+  const best = (r.skill && r.skill[1] ? r.skill : r.top_skill) || ['', 0];
+  cr.append(el('small', null, best[1] ? best[0].replace(/_/g, ' ').replace('deep core mining', 'deep core') + ' ' + best[1] : (r.class || '')));
   b.append(el('i', 'glyph ' + cls), who, bars, cr);
-  b.title = r.name + ': hull ' + r.hull + '/' + r.max_hull + ', fuel ' + r.fuel + '/' + r.max_fuel + ', cargo ' + r.cargo_used + '/' + r.cargo_capacity;
+  b.title = r.name + ': hull ' + r.hull + '/' + r.max_hull + ', fuel ' + r.fuel + '/' + r.max_fuel + ', cargo ' + r.cargo_used + '/' + r.cargo_capacity
+    + (r.piloting ? ' | Piloting ' + r.piloting : '') + (r.class ? ' | ' + r.class : '');
   b.addEventListener('click', () => selectShip(r.name, true));
   return b;
+}
+
+const oneDecimal = (n) => (typeof n === 'number' ? n.toFixed(1) : '--');
+function strengthBar(crew) {                     // the head of the roster: how trained and how strong the fleet is
+  const row = el('div', 'strength');
+  const cell = (k, v, title) => { const c = el('div'); c.append(el('div', 'k', k), el('div', 'v', v)); c.title = title; row.append(c); };
+  cell('Pilot level', oneDecimal(crew.piloting), 'The average Piloting level of all ships. Piloting 10, 20, 30 and 50 open the hull tiers 2 to 5');
+  cell('Skill levels', oneDecimal(crew.levels), 'All skill levels of the average ship, added up');
+  cell('Hull+shield', fmt((crew.hp || 0) * (crew.ships || 0)), 'Hull and shield points of all ships together: what the fleet can take');
+  cell('Weapons', fmt(crew.weapons), 'Weapon modules fitted, all ships');
+  return row;
+}
+function crewLine(list, crew) {                  // under a division's head: its strongest skill, what its average ship can take, ships at work
+  const line = el('div', 'crew'), working = list.filter(isWorking).length;
+  const part = (label, value, title) => { const s = el('span'); s.append(label + ' ', el('b', null, value)); s.title = title; line.append(s); };
+  if (crew.skill && crew.skill[0]) part(crew.skill[0].replace(/_/g, ' '), oneDecimal(crew.skill[1]), 'The skill other than Piloting with the highest average level in this division');
+  part('hull+shield', fmt(crew.hp), 'Hull and shield points of the average ship: what it can take');
+  part('at work', working + '/' + list.length, 'Ships with work now');
+  return line;
 }
 
 function renderRoster() {
   const box = $('roster'), keep = box.scrollTop, by = new Map();
   box.replaceChildren();
+  const fleetCrew = (F.totals || {}).crew;
+  if (fleetCrew && fleetCrew.ships) box.append(strengthBar(fleetCrew));
   F.ships.forEach((r) => { if (!by.has(r.division)) by.set(r.division, []); by.get(r.division).push(r); });
   const divisions = (S ? S.roster : []).filter((a) => a.division !== 'Command' || by.has('Command')).map((a) => [a.division, a]);
   if (by.has('Unassigned')) divisions.push(['Unassigned', null]);
@@ -589,12 +745,13 @@ function renderRoster() {
       b.title = 'Write to ' + admiral.name + ' in comms';
       head.append(b);
     }
-    if (list.length) {
-      const dr = ((F.totals.rates || {}).divisions || {})[division];
-      sum.append(el('b', null, fmt(list.reduce((a, r) => a + r.credits, 0))), ' cr');
-      if (dr) sum.append('  ', el('b', dr.cph < 0 ? 'neg' : dr.cph > 0 ? 'pos' : null, signed(dr.cph)), ' /h');
+    const crew = (((F.totals || {}).divisions || {})[division] || {}).crew, known = list.length && crew && crew.ships;
+    if (known) {                                 // the division's average Piloting level; its money stands in the Metrics tab
+      sum.append('Lv ', el('b', null, oneDecimal(crew.piloting)));
+      sum.title = 'The average Piloting level of the division. Piloting 10, 20, 30 and 50 open the hull tiers 2 to 5';
     }
     head.append(sum); block.append(head);
+    if (known) block.append(crewLine(list, crew));
     if (!list.length) block.append(el('div', 'noships', 'No ships yet'));
     if (!folded) list.forEach((r) => block.append(shipRow(r)));
     else if (list.length) {                     // folded: the division in one line
@@ -1087,7 +1244,7 @@ async function renderMetrics(panel, live) {
   panel.append(pickRow);
   const span = w ? (w.minutes >= 120 ? Math.round(w.minutes / 60) + ' hours' : w.minutes + ' minutes') : '';
   panel.append(el('p', 'sub', w
-    ? 'Steady money over the last ' + span + ': what the fleet makes again and again. Rewards the game pays once per pilot are left out.'
+    ? 'All money over the last ' + span + '. Net is what the wallets changed by: steady money, which the fleet makes again and again, plus what the game paid once per pilot.'
       + (w.seed && w.seed.pilots ? ' ' + fmt(w.seed.pilots) + ' new pilots joined in this stretch: their first wallets are left out.'
         : '')
       + (w.presence && (w.presence.left || w.presence.back) ? ' A ship the engine stopped listing, or lists again, is left out with its wallet.'
@@ -1097,8 +1254,12 @@ async function renderMetrics(panel, live) {
   const grid = el('div', 'kpis');
   const kpi = (k, v, sub, cls) => { const b = el('div', 'kpi' + (cls ? ' ' + cls : '')); b.append(el('div', 'k', k), el('div', 'v', v)); if (sub) b.append(el('div', 's', sub)); grid.append(b); return b; };
   const tone = (n) => (n < 0 ? ' neg' : n > 0 ? ' pos' : '');
-  kpi('Steady net / h', w ? signed(w.cph) : '--', 'income minus costs', 'main' + (w ? tone(w.cph) : ''));
-  kpi('Net per ship / h', w ? signed(w.cph_per_ship) : '--', 'what one ship makes', 'main' + (w ? tone(w.cph_per_ship) : ''));
+  const whole = (y) => (y.total_per_hour !== undefined ? y.total_per_hour : (y.cph || 0) + (y.one_time_per_hour || 0));   // a fleet file of before 2026-11-17 has no total
+  const net = w ? whole(w) : 0;
+  kpi('Net / h', w ? signed(net) : '--', 'everything: steady money plus paid once', 'main' + (w ? tone(net) : ''));
+  kpi('Steady net / h', w ? signed(w.cph) : '--', 'income minus costs: what repeats', 'main' + (w ? tone(w.cph) : ''));
+  kpi('Paid once / h', w ? signed(w.one_time_per_hour) : '--', 'rewards once per pilot, less goods bought for them', w ? tone(w.one_time_per_hour).trim() : '');
+  kpi('Net per ship / h', w ? signed(Math.round(net / (t.ships || 1))) : '--', 'everything, per ship', w ? tone(net).trim() : '');
   kpi('Steady income / h', w ? fmt(w.income_per_hour) : '--', 'sales and repeatable rewards', w && w.income_per_hour > 0 ? 'pos' : '');
   kpi('Running costs / h', w ? fmt(w.costs_per_hour) : '--', 'fuel, repairs, goods, modules', w && w.costs_per_hour > 0 ? 'neg' : '');
   const metered = w && w.fuel_cr_per_hour !== undefined;
@@ -1108,7 +1269,18 @@ async function renderMetrics(panel, live) {
     fmt(t.parked) + ' parked at a station' + (t.adrift ? ', ' + fmt(t.adrift) + ' in space without work' : ''));
   kpi('Credits', fmt(t.credits), fmt(t.credits_per_ship) + ' per ship');
   panel.append(grid);
-  if (w) { const once = el('p', 'sub', 'Paid once in this stretch (not counted above): '); once.append(tint(Math.round(w.one_time_per_hour * w.minutes / 60)), ' cr.'); panel.append(once); }
+  if (w && w.wallets) {                           // the books close: the wallets at the start plus the net of the stretch are the wallets now
+    const made = w.wallets.end - w.wallets.start - (w.wallets.left_out || 0), check = el('p', 'sub', 'The books close: ' + fmt(w.wallets.start) + ' cr in the wallets ' + span + ' ago, ');
+    check.append(tint(made), ' net in this stretch' + (w.wallets.left_out ? ', ' + signed(w.wallets.left_out) + ' with ships that joined or left' : '') + ', ' + fmt(w.wallets.end) + ' cr now.');
+    if (w.unexplained_per_hour !== undefined) {   // the game's own counters of credits earned and spent, set beside the wallets
+      const off = Object.entries(w.divisions || {}).filter(([, y]) => Math.abs(y.unexplained_per_hour || 0) >= 500).map(([d]) => d);
+      check.append(Math.abs(w.unexplained_per_hour) < 500 && !off.length
+        ? ' The game\'s own counters of credits earned and spent agree with the wallets.'
+        : ' The game\'s own counters and the wallets differ by ' + fmt(Math.abs(w.unexplained_per_hour)) + ' cr an hour in this stretch' + (off.length ? ' (' + off.join(', ') + ')' : '')
+          + ': a wallet the engine had not read again after a gift between our ships. Income and costs there may be off by that much; a longer stretch evens it out.');
+    }
+    panel.append(check);
+  }
   const b = F.birth;
   if (b && b.planned && !b.finished_at) {
     panel.append(el('h3', null, 'Birth in progress'));
@@ -1119,16 +1291,21 @@ async function renderMetrics(panel, live) {
   const div = t.divisions || {}, dw = (w || {}).divisions || {};
   const order = (S ? S.roster : []).filter((a) => a.division !== 'Command' || div.Command).map((a) => [a.division, a.name]);
   if (div.Unassigned) order.push(['Unassigned', '']);
-  panel.append(fitTable(table(['Division', 'Working', 'Income / h', 'Costs / h', 'Net / h', 'Net / ship'],
+  const moneyRow = (name, working, y) => [name, working, w ? shade(y.income_per_hour, 'pos') : '--', w ? shade(y.costs_per_hour, 'neg') : '--', w ? tint(y.cph || 0) : '--',
+    w ? tint(y.one_time_per_hour || 0) : '--', w ? tint(whole(y)) : '--'];
+  panel.append(fitTable(table(['Division', 'Working', 'Steady income', 'Running costs', 'Steady net', 'Paid once', 'Net / h'],
     order.map(([d, adm]) => {
       const x = div[d] || {}, y = dw[d] || {}, name = el('span', null, d);
       name.style.color = DIV[d] || DIV.Unassigned; name.title = adm ? 'Admiral ' + adm : '';
-      return [name, fmt(x.working) + ' / ' + fmt(x.ships), w ? shade(y.income_per_hour, 'pos') : '--', w ? shade(y.costs_per_hour, 'neg') : '--', w ? tint(y.cph) : '--', w ? tint(y.cph_per_ship) : '--'];
-    }), [1, 2, 3, 4, 5])));
+      return moneyRow(name, fmt(x.working) + ' / ' + fmt(x.ships), y);
+    }).concat([moneyRow(el('b', null, 'Fleet'), fmt(t.working) + ' / ' + fmt(t.ships), w || {})]), [1, 2, 3, 4, 5, 6])));
+  panel.append(el('p', 'sub', 'Per hour. Steady net = steady income - running costs. Net = steady net + paid once: what the division\'s wallets changed by, '
+    + 'gifts between our own ships left out.'));
   const routesBox = el('div'), graphs = el('div');
   panel.append(el('h3', null, 'Where the money comes from, last ' + routeHours + ' hours'), routesBox, el('h3', null, 'Last ' + graphHours + ' hours'), graphs);
-  panel.append(el('p', 'sub', 'How it is counted. Income: the game\'s counter of credits earned, less the rewards paid once per pilot. Costs: everything spent, '
-    + 'less what was bought for such a reward. Net: income minus costs. Fuel and repairs: counted when a docked ship\'s tank or hull rises and its wallet falls. '
+  panel.append(el('p', 'sub', 'How it is counted. Net: the change of the wallets. Steady income: the game\'s counter of credits earned, less the rewards paid once per pilot. '
+    + 'Running costs: everything spent, less what was bought for such a reward. Paid once: those rewards less those goods; a mission pays each pilot once, so this money ends. '
+    + 'Goods in storage are no money until they are sold: the Inventory tab holds them. Fuel and repairs: counted when a docked ship\'s tank or hull rises and its wallet falls. '
     + 'A route\'s figure counts only runs that read a wallet.'));
   if (Date.now() - HIST.at > 30000 || HIST.key !== metricWin) {
     try { HIST = Object.assign(await get('/api/history?q=' + graphHours), { at: Date.now(), key: metricWin }); } catch (e) { HIST = { rows: [], at: Date.now(), key: metricWin }; }
@@ -1139,7 +1316,6 @@ async function renderMetrics(panel, live) {
     if (!live()) return;
   }
   const steady = keepOrder(INCOME.routes.filter((x) => !x.once && (x.runs || x.flying)).sort((a, b2) => b2.credits - a.credits));
-  const once = keepOrder(INCOME.routes.filter((x) => x.once && (x.runs || x.flying)));
   if (steady.length) {
     routesBox.append(fitTable(table(['Route', 'Ships now', 'Runs', 'Ship-hours', 'Credits', 'Per ship-hour'], steady.map((x) => {
       const name = el('span', null, x.route);
@@ -1147,17 +1323,9 @@ async function renderMetrics(panel, live) {
       return [name, x.flying || '', x.runs, x.ship_hours, tint(x.credits), x.per_ship_hour === null ? 'no reading' : tint(x.per_ship_hour)];
     }), [1, 2, 3, 4, 5])));
   } else routesBox.append(el('p', 'empty', 'No run of a repeating route in this stretch.'));
-  if (once.length) {
-    routesBox.append(el('p', 'sub', 'Paid once per pilot:'));
-    routesBox.append(fitTable(table(['Route', 'Ships now', 'Runs', 'One-time credits'], once.map((x) => {
-      const name = el('span', null, x.route);
-      name.title = x.title || '';
-      return [name, x.flying || '', x.runs, tint(x.one_time)];
-    }), [1, 2, 3])));
-  }
   const rows = HIST.rows || [];
   graphs.append(
-    chart('Steady net per hour, over the ' + behind + ' minutes before', [{ pts: trailing(rows, behind, 5), colour: '#a48be0' }]),
+    chart('Net per hour, over the ' + behind + ' minutes before:', [{ pts: trailing(rows, behind, 1), colour: '#dcae58', name: 'everything' }, { pts: trailing(rows, behind, 5), colour: '#a48be0', name: 'steady' }]),
     chart('Per hour:', [{ pts: trailing(rows, behind, 3), colour: '#58c08c', name: 'income' }, { pts: trailing(rows, behind, 4), colour: '#e06c66', name: 'costs' }]),
     chart('Ships working', [{ pts: rows.map((p) => [p[0], p[6]]), colour: '#6fa8dc' }]),
     chart('Credits, all wallets', [{ pts: rows.map((p) => [p[0], p[1]]), colour: '#dcae58' }]));
@@ -1350,6 +1518,14 @@ async function loadState() {
   sys.clear(); stationsBy.clear();
   S.systems.forEach((s) => sys.set(s.id, s));
   S.stations.forEach((t) => { if (!stationsBy.has(t.system)) stationsBy.set(t.system, []); stationsBy.get(t.system).push(t); });
+  const xs = S.systems.map((s) => s.x), ys = S.systems.map((s) => s.y), spans = [];
+  bounds = S.systems.length ? { x0: Math.min(...xs), x1: Math.max(...xs), y0: Math.min(...ys), y1: Math.max(...ys) } : null;
+  for (const s of S.systems) for (const id of s.lanes) { const o = sys.get(id); if (o && s.id < id) spans.push(Math.hypot(s.x - o.x, s.y - o.y)); }
+  spans.sort((a, b) => a - b);
+  terrR = spans.length ? 0.5 * spans[spans.length >> 1] : 250;   // half a usual lane: neighbours of one empire grow together
+  homeEmpire = (sys.get(S.home) || {}).empire || '';
+  sitesBy.clear();
+  (S.sites || []).forEach((t) => sitesBy.set(t.system, t));
   const legend = $('legend');
   legend.replaceChildren();
   for (const [name, c] of Object.entries(S.empires).concat([['lawless', LAWLESS]])) {
@@ -1362,9 +1538,11 @@ async function loadState() {
     span.append(shipSvg(kind === 'Command' ? 'Flagship' : kind, DIV[kind], 13), kind === 'Command' ? 'command group' : kind.toLowerCase());
     legend.append(span);
   }
-  legend.append(el('span', 'note', 'ring: station (gold: player faction)'), el('span', 'note', 'red cross: pirate stronghold'),
-    el('span', 'note', 'glow: pilots seen in the last hour'), el('span', 'note', 'pie and number: our ships by division'),
-    el('span', 'note', 'tag and number: a foreign faction, last hour'));
+  legend.append(el('span', 'note', 'tinted ground: an empire\'s space; lighter: where our ships work'),
+    el('span', 'note', 'ring: station (gold: player faction)'), el('span', 'note', 'white square: a base of ours'),
+    el('span', 'note', 'small flag: a site named for a base'), el('span', 'note', 'red cross: pirate stronghold'),
+    el('span', 'note', 'faint amber: pilots seen in the last hour'), el('span', 'note', 'pie and number: our ships by division'),
+    el('span', 'note', 'tag and number: a foreign faction, last hour; click it for its ships'));
 }
 async function loadLive() {
   try { L = await get('/api/live'); } catch (e) { L.stream = { connected: false, age: -1 }; }
@@ -1451,14 +1629,14 @@ function init() {
     if (drag) { dragTo(e); return; }
     const tip = $('tip'), badge = S && badgeAt(mx, my), grp = !badge && S && groupAt(mx, my), s = !badge && !grp && S && nearest(mx, my);
     hover = s ? s.id : null; hoverBadge = badge || null;
-    canvas.style.cursor = badge ? 'pointer' : '';
+    canvas.style.cursor = badge || grp ? 'pointer' : '';
     const placeName = (b) => { const o = sys.get(b.system); return o ? o.name : b.system; };
     if (badge) {
       tip.textContent = badge.count + (badge.count === 1 ? ' ship' : ' ships') + ' of ours at ' + placeName(badge) + ': ' + badge.parts + ' | click for the card';
       tip.style.left = mx + 14 + 'px'; tip.style.top = my + 12 + 'px'; tip.hidden = false;
     } else if (grp) {
       const g = grp.group;
-      tip.textContent = '[' + g.tag + '] ' + (g.name || 'a faction') + ': ' + g.count + ' pilots jumped into ' + placeName(grp) + ' in the last hour | our standing: ' + g.standing;
+      tip.textContent = '[' + g.tag + '] ' + (g.name || 'a faction') + ': ' + g.count + ' pilots jumped into ' + placeName(grp) + ' in the last hour | our standing: ' + g.standing + ' | click for the pilots and their ships';
       tip.style.left = mx + 14 + 'px'; tip.style.top = my + 12 + 'px'; tip.hidden = false;
     } else if (s) {
       const ours = (shipsBy.get(s.id) || []).length;
@@ -1472,6 +1650,8 @@ function init() {
     if (moved || !S) return;
     const r = canvas.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top, badge = badgeAt(mx, my);
     if (badge) { $('tip').hidden = true; openPop(badge.system, badge.kind); return; }
+    const grp = groupAt(mx, my);
+    if (grp) { $('tip').hidden = true; openGroup(grp.system, grp.group); return; }
     const s = nearest(mx, my);
     if (pop) closePop();
     if (s) select(s.id, false);
@@ -1479,7 +1659,7 @@ function init() {
   canvas.addEventListener('wheel', (e) => {
     e.preventDefault();
     const r = canvas.getBoundingClientRect(), mx = e.clientX - r.left - W / 2, my = e.clientY - r.top - H / 2;
-    const k = Math.max(0.01, Math.min(3, view.k * (e.deltaY < 0 ? 1.2 : 1 / 1.2)));
+    const k = Math.max(minZoom(), Math.min(3, view.k * (e.deltaY < 0 ? 1.2 : 1 / 1.2)));
     cam = null;
     view.x += mx / view.k - mx / k; view.y += my / view.k - my / k; view.k = k;
     draw();

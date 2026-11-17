@@ -472,6 +472,8 @@ class FleetCollectorTests(unittest.TestCase):
                 w = r["windows"][key]
                 for row in [w] + list(w["divisions"].values()):
                     self.assertEqual(row["cph"], row["income_per_hour"] - row["costs_per_hour"])
+                    self.assertEqual(row["total_per_hour"], row["cph"] + row["one_time_per_hour"])
+                    self.assertLessEqual(abs(row["total_per_hour"] - row["wallets_per_hour"]), 3)   # the net of everything is the change of the wallets, to the rounding
                 if not side:                                                                        # one-sided rows moved nothing: the sums meet
                     for field in ("income_per_hour", "costs_per_hour", "cph"):
                         self.assertLessEqual(abs(sum(row[field] for row in w["divisions"].values()) - w[field]), len(names))
@@ -493,6 +495,43 @@ class FleetCollectorTests(unittest.TestCase):
         r = self.fleet.rates(history, 3600)
         self.assertEqual((r["spent_per_hour"], r["divisions"]["Mining"]["spent_per_hour"]), (650, 650))
         self.assertNotIn("spent_per_hour", self.fleet.rates([self.at(0, {"Mining": [1, 0, 0]}), self.at(3600, {"Mining": [1, 0, 0]})], 3600))
+
+    # 2026-11-17 (the owner: the wallets grow and every division shows a loss): money paid once is a line inside the net.
+
+    def test_the_net_of_everything_is_steady_money_plus_money_paid_once_and_is_the_change_of_the_wallets(self):
+        # one hour: a 2,500 reward for which 600 of goods were bought, 500 of sales, 100 of fuel: wallets +2,300
+        a = [0, 10000, 2, 0, 0, 0, 0, {"Mining": [2, 10000, 0, 0, 0, 0]}]
+        b = [3600, 12300, 2, 3000, 1900, 0, 1, {"Mining": [2, 12300, 3000, 1900, 0, 1]}]
+        one = [[90, "miner-1", "the mission: goods bought", -600], [100, "miner-1", "the mission", 2500]]
+        r = self.fleet.rates([a, b], 3600, one=one)
+        for row in (r, r["divisions"]["Mining"], r["windows"]["24h"]):
+            self.assertEqual((row["cph"], row["rewards_per_hour"], row["bought_once_per_hour"], row["one_time_per_hour"]), (400, 2500, 600, 1900))
+            self.assertEqual((row["total_per_hour"], row["wallets_per_hour"], row["total_per_ship"]), (2300, 2300, 1150))
+        self.assertEqual(r["wallets"], {"start": 10000, "end": 12300, "left_out": 0})
+        self.assertNotIn("unexplained_per_hour", r)                                                 # these samples carry no counter of credits spent
+
+    def test_what_the_game_s_own_counters_do_not_explain_is_named(self):
+        # one hour: 900 earned and 700 spent by the game's counters, the wallets rose by 150: 50 left without a record (a tax)
+        history = [self.at(0, {"Mining": [1, 5000, 0]}, {"Mining": 1000}), self.at(3600, {"Mining": [1, 5150, 900]}, {"Mining": 1700})]
+        self.put(onetime=[], gifts=[], seeds={"miner-1": [0, 5000, 0, 1000]})
+        r = self.fleet.rates(history, 3600)
+        self.assertEqual((r["unexplained_per_hour"], r["divisions"]["Mining"]["unexplained_per_hour"]), (-50, -50))
+        self.assertEqual((r["total_per_hour"], r["wallets"]), (150, {"start": 5000, "end": 5150, "left_out": 0}))
+
+    def test_a_division_s_crew_figures_are_the_averages_of_its_ships(self):
+        a, b = account("miner-1"), account("miner-2")
+        a["state"]["skills"] = {"piloting": {"level": 6}, "mining": {"level": 8}, "trading": {"level": 1}}
+        b["state"]["skills"] = {"piloting": {"level": 3}, "mining": {"level": 5}}
+        b["state"]["modules"] = [{"type": "weapon"}, {"type": "weapon"}]
+        rows = [self.fleet.ship_row(a), self.fleet.ship_row(b)]
+        self.assertEqual((rows[0]["piloting"], rows[1]["piloting"], rows[0]["skill"]), (6, 3, ["mining", 8]))
+        got = self.fleet.crew(rows, {"miner-1": a, "miner-2": b})
+        self.assertEqual(got["Mining"], {"ships": 2, "piloting": 4.5, "levels": 11.5, "skill": ["mining", 6.5], "hp": 155, "weapons": 2})
+        self.assertEqual(got[""], got["Mining"])
+        bare = account("trader-1")
+        bare["state"]["skills"] = None                                                              # a pilot the engine has no skills of
+        self.assertEqual(self.fleet.ship_row(bare)["piloting"], 0)
+        self.assertEqual(self.fleet.crew([self.fleet.ship_row(bare)], {"trader-1": bare})["Trade"]["skill"], ["", 0])
 
     def test_the_seed_record_puts_every_pilot_of_the_first_start_at_epoch_0_and_a_new_one_at_its_first_pass(self):
         rows = [self.fleet.ship_row(account(n, credits=c)) for n, c in (("miner-1", 900), ("trader-1", 800))]
