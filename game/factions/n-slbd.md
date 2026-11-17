@@ -15,7 +15,7 @@ updated: 2026-11-17
 # SLOBODA ILI SMRT [SLBD]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 1.
+Pilots of it in our space in the last 24 hours: 2.
 
 ## Identity
 
@@ -38,7 +38,8 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| inari2 | Nexus Prime (`nexus_prime`) | 0 | prospect |
+| GentleCorsair | The Experiment (`the_experiment`) | 0 | shard |
+| tagada | Nexus Prime (`nexus_prime`) | 0 | prospect |
 
 ## Standing History
 

@@ -45,8 +45,8 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Combat Drone 139 | The Experiment (`the_experiment`) | 0 | dialectic |
-| Mining Drone 079 | Node Beta (`node_beta`) | 0 | threshold |
+| Combat Drone 181 | Synchrony (`synchrony`) | 0 | dialectic |
+| Combat Drone 214 | Hamal (`hamal`) | 0 | dialectic |
 
 ## Standing History
 

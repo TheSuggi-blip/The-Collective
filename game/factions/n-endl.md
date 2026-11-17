@@ -47,8 +47,8 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| JackSparrow | Node Alpha (`node_alpha`) | 141 | junk_convoy |
-| MrKrabs | Node Gamma (`node_gamma`) | 0 | catalogue |
+| CaptainJaneway | Node Beta (`node_beta`) | 0 | threshold |
+| Ferengi1 | Node Alpha (`node_alpha`) | 1 | frankenhauler |
 
 ## Standing History
 
