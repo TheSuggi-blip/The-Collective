@@ -24,56 +24,127 @@ at the end of every turn.
 
 ## Standing Plan
 
-What the 20 haulers fly between two turns (2026-11-16 18:37 UTC, orders.log
-ENT-017), from the division's plan file (`plan.py show`; the role plan
-`game/routes/plan-hauler.md` is written from it). Every hauler has routes of its
-own since this turn. A free hauler takes the first route open to it of: the list
-First, its own routes, the list Then. The forecast of the division (the tool hive,
-verb=forecast): -3,165 cr an hour before this plan (18:27 UTC), -3,064 after it
-(18:41 UTC), every ship on standing work at that moment.
+What the 40 haulers fly between two turns (2026-11-17 00:18 UTC, orders.log ENT-020),
+from the division's plan file (`plan.py show`; the role plan `game/routes/plan-hauler.md`
+is written from it). Every hauler flies templates since this turn (section 2). A free
+hauler takes the first route open to it of: the list First, its own routes, the list
+Then. The forecast of the division (the tool hive, verb=forecast, Apollo) read -2,818 cr an
+hour at 00:01 UTC, every ship then still on the run it took before this plan; the forecast
+before the plan was not read; the standing fleet's SUM line before it read -1,052 cr an
+hour over the runs of four hours (briefing, 23:46 UTC).
 
-| Order | Routes | Ships | Carries | Per ship-hour | Why it stands here |
+| Order | Template or routes | Ships | Carries | Per ship-hour (dated reading) | Why it stands here |
 |---|---|---|---|---|---|
-| First (every ship) | the 17 once missions (`voidborn-*`, `mission-cracking-the-shell-central`) | as their files say | -- | once money | Strategy, principle 5: a pilot flies the once line first. Every hauler holds or has flown the ones open to it today |
-| Own, 1-11 (every hauler) | `sell-soma-synchrony`, `sell-soma-node-beta`, four `carry-soma-*`, `sell-plate-node-beta`, `sell-plasma-node-beta`, `sell-liquid-hydrogen-central`, `sell-liquid-hydrogen-node-beta`, `carry-liquid-hydrogen-node-beta-central` | 1 each, only a pilot whose own storage holds the good (`requires.stored`), only while a book of the last hour shows the bid (`requires.bid`) | one ship while its bid stands | measured once each: liquid hydrogen at Central Nexus +2,702 cr in 4.9 min, at Node Beta +1,154 cr in 4.1 min; plasma +706 cr in 4.7 min; plate +1,050 cr in 3.7 min (runs.jsonl, 15:02 to 17:55 UTC) | Goods we own go into a standing bid before any ship gathers more. They head every own list because a route in Then is never reached by a ship whose own standing work stays open |
-| Own, gas haulers (4 with a Gas Harvester I) | `mine-coldwater-emission-nebula` (test), `mine-antares-gas-cloud` (test), `mine-amberfall-emission-nebula`, `mine-deepwell-haze` (test) | 1 each | the bid at the selling end | amberfall 3 runs +1,362 cr in 217 min (about +376); antares 1 run +209 in 55.5 min; deepwell 1 run +41 in 59.9 min | Gas sold into the hydrogen bid at Node Gamma or the plasma bid at Nova Terra Central (Unity's ruling, requests.log ENT-160). What a small bid does not take is stored where the ship sold: 232 and 231 units after the two Nova Terra runs |
-| Own, the ice hauler (an Ice Harvester I) | `mine-gliese-876-belt` (test, nickel at Nova Terra Central), `mine-achernar-frost-ring-nexus` | 1 | Achernar `2` | Achernar 2,230 measured for miners | The one made harvester in a hauler's slot |
-| Own, standing work (every hauler, in three orders) | `gather-gsc-0027-prism-scatter` first for 5, `gather-hamal-crystal-bloom` first for 8, `gather-gsc-0027-spacetime-seep` first for 2; each hauler lists the other two behind | 56 and 56 of the fleet, 6 | `0 +363`, `0 +378`, `2 +115` | -132, -180, -152 (forecast, 18:41 UTC) | Iron and copper ore into storage at Node Beta: iron is the stations' largest shortfall and the input of the faction's steel plate (section 13). Not judged on pay; `min_left` closes each field |
-| Then (every ship) | `census-frontier`, `park` | census 12 of the fleet | -- | census about -630 | A hauler should never reach them |
+| First (every ship) | the 17 once missions (`voidborn-*`, `mission-cracking-the-shell-central`) | as their files say | -- | once money: 240,938 cr paid once to haulers from 19:16 to 00:19 UTC (runs table) | Strategy, principle 5: a pilot flies the once line first |
+| Own 1 (one hauler) | `buy-gold-ironlight-boards` | 1, a test | -- | not measured | Circuit boards without silicon (section 14); one ship beyond the border (orders T2 e) |
+| Own (every hauler) | `@stored-goods`: eleven sell and carry routes | 1 each, only the pilot that stores the good, only while a book of the last hour shows the bid | one ship while its bid stands | liquid hydrogen carried to Central Nexus +4,854 cr in 3 runs, 24.6 min; sold at Node Beta +1,876 in 3 runs, 7.7 min; plasma at Node Beta +1,766 in 3 runs, 18.4 min (19:16 to 00:19 UTC) | Goods we own go into a standing bid before any ship gathers more. They head every list: a route behind open standing work is never reached |
+| Own (the four with a Gas Harvester I) | `@gas-harvest`: Antares gas cloud, Amberfall, Deepwell haze | 1 each | the bid at the selling end | Amberfall 1 run -320 in 41.6 min; Deepwell 2 runs -1,428 in 128.3 min (19:16 to 00:19 UTC) | A test that loses twice is closed for six hours by the dispatcher and opens again (rule F22). The Experiment haze and Coldwater are Trade's claim (admirals.log ENT-004) |
+| Own (every hauler) | `@craft-reserve`: `craft-steel-node-beta` | 1 | the iron haulers store at Node Beta | 60 steel plate in 8.7 min for 24 cr of fuel (first run, 00:03 UTC) | What we build with, made from what we hold, trains crafting and refining (rule F23) |
+| Own (every hauler) | `@gather-reserve`: Hamal Crystal Bloom, GSC-0027 Prism Scatter, Spacetime Seep | up to 33 places of the fleet's shared caps (claim admirals.log ENT-007) | 97, 66 and 6 places for the fleet | -186, -149, -181 (58, 20 and 29 runs, 19:16 to 00:19 UTC) | The fallback: iron and copper ore into storage at Node Beta for the steel and the station. Not judged on pay |
+| Then (every ship) | `census-frontier`, `park` | -- | -- | census -559 (6 runs) | A hauler should never reach them |
 
-So, for the four hours: once money where a pilot still holds a link, stored goods
-into each bid as it stands, the gas and ice tests one ship each, and iron and copper
-gathered for the stations by every other hauler. Hand work of the turn (section 14):
-the faction's 275 steel plate made from stored iron at the Node Beta workshop, and
-stored hydrogen gas made into liquid hydrogen for the Central Nexus bid.
+So, for the four hours: once money where a pilot still holds a link, stored goods into
+each bid as it stands, one craft of steel plate at a time, the gold-board test, gas for
+the four harvesters, and iron and copper gathered by every other hauler. Hand work of the
+turn (section 14): 16 etchings, 48 circuit boards, from the silicon Logistics holds.
 
-What changes it: the boards' silicon and carbon in one storage at Central Nexus
-(requests.log ENT-168), which turns one hauler into a board maker; Trade's word on
-focused crystal (ENT-169); a second RESULT line of each gas test (a test that loses
-twice leaves); a craft step flown once by Trade (requests.log ENT-161), after which
-the gas haulers can mine, compress and sell liquid hydrogen in one route; a bid
-for water ice that regains more than the miners take.
+What changes it: the gold test's RESULT line (a load of gold turns one hauler into the
+board maker); Trade's word on 18 silicon (requests.log ENT-179); a Prayer bought and
+tested (section 5), which would put a fast 540-unit hold on the carries; craft-steel at
+three ships once its runs hold; a bid that regains more than the miners take.
 
 ## 1. Route Guides
 
-How each kind of route of this division is flown: the fit and the
-skills it needs, its place, its steps, what opens and closes it. A
-credits figure in this section is a dated reading and no verdict: what
-a route earns now is in the fleet's database with its age (rule F22;
-the tool `routes`, the view `route_earnings`).
+How each kind of route of this division is flown: the fit and the skills it needs, its
+place, its steps, what opens and closes it. A credits figure in this section is a dated
+reading and no verdict: what a route earns now is in the fleet's database with its age
+(rule F22; the tool `routes`, the view `route_earnings`).
 
-| Route | Credits per ship-hour, after all costs | Date | Note |
-|---|---|---|---|
-| -- | -- | -- | No recurring route yet. The hand sales that earned (section 7) were each capped by a station bid of a few units |
-| Stored hydrogen gas made into liquid hydrogen at the Node Beta workshop and carried one jump to the Central Nexus bid (scratch routes flown by route_run, `craftchain.py`) | +4,798 cr in about 20 min of one hauler: -48 cr the plasma stop that sold nothing, 0 cr the crafts, +4,846 cr the carry (42 sold at 116 cr); 33 liquid hydrogen left for the bids (21 at Central Nexus, 12 at Node Beta) | 2026-11-16 13:20 to 13:40 UTC | `compress_hydrogen_gas` (8 gas to 3 liquid, by hand, 0 cr) made 75 liquid hydrogen from 200 gas in 6.5 min, queued by the workshop in runs of 9, 6, 4, 2, 2, 1 and 1. The Central Nexus bid stood at 111 x 112 (12:50 UTC book) against 34 cr x 135 for the gas at Node Beta |
-| Stored platinum ore into the Central Nexus bid where three haulers stood (`sellstore.py`) | +504 cr for 8 units at 63 cr, no fuel | 2026-11-16 about 12:58 UTC | Stopped there: platinum ore is an input of the station, 3,720 needed and 523 held, asked at 150 cr at Central Nexus (base_plan, 12:55 UTC) |
-| Carapace from 11 hauler holds and 7 storages (114 units) made into armor plate at three stations, sold into the bids there and one hop away (by script: `gather.py`, `plate.py`, a scratch carry) | +4,240 cr for 12 plates: 3 at 378 (The Experiment), 1 at 396 (Node Beta), 4 at 373 (Central Nexus), and 4 carried one jump from Node Beta to the Node Gamma bid of 312 x 4, +1,218 cr after fuel in 4 min; 18 plates made from 108 carapace, 6 left in storage for the next bids | 2026-11-16 08:49 to 09:01 UTC | Every plate bid read minutes before the sale; each sold no deeper than its best price. The gathering emptied the holds that closed the census and the hunts (`hold not empty` on 10 haulers at 08:46 UTC) |
-| Creature carapace made into armor plate and sold where the ship stood (by hand, no fuel) | +380 cr for each 6 carapace: 2 plates made at the Central Nexus workshop (recipe `carapace_plating`, 0 cr, about one tick) and sold into the 380 x 3 station bid | 2026-11-16 04:59 to 05:08 UTC | Carapace is bid 1 cr (Node Beta, 99,593 units, 05:15 UTC book); armor plate pools of 3 to 6 units stand at Central Nexus (380), Synchrony Hub (307 to 324), Node Gamma (319) and Node Alpha (222 to 259) and come back within the hour (`ledger.py prices armor_plate`). A route when the runner has its craft step (owed by 12:00 UTC) |
-| The gas test's hold sold at Node Beta (scratch route by hand) | +899 cr in 7.5 min with the hop from Central Nexus: 8 plasma gas at 100 cr, 4 hydrogen gas at 33 cr; argon, neon and the other 8 hydrogen stored there | 2026-11-16 05:03 to 05:10 UTC | Both bids were empty after it |
-| Two soma gathered from two holds sold into The Experiment's station bids of 677 x 1 and 645 x 1 where the ship stood | +1,322 cr | 2026-11-16 08:56 UTC | view_market read in the same minute |
-| One stored soma into The Experiment's bid where a hauler stood | +588 cr | 2026-11-16, between 04:51 and 04:55 UTC | The 588 x 1 bid read in the book of 04:26 UTC still stood |
-| Neural soma sold by hand where the haulers already stood (no fuel) | +2,381 cr for 4 soma: 3 at 588 cr into the Node Beta bid of 588 x 4 (02:57 UTC book; 2 from storage, 1 from a hold), 1 at 617 cr a few minutes after the same bid read 0 | 2026-11-16 03:00 to 03:19 UTC | Sold from storage and from the hold alike; a bid read empty at 03:18 UTC stood at 617 x 1 within about two minutes |
-| Stored neural soma into station bids (hand test, not a route) | +1,995 cr in 4.7 min from the first jump to the sale (one ship, Central Nexus to Synchrony Hub, 3 soma sold at 678 cr from storage); the onward leg to The Experiment found no bid (-22 cr fuel) | 2026-11-15 23:29 to 23:37 UTC | Station bids of 559 to 694 cr for 1 to 3 units stand by turns at five of our stations and refill within about 40 minutes of being emptied (`data/market/history.jsonl`, 20:46 to 23:33 UTC). Logistics stores 50 soma, the fleet 302. A route needs a sell from storage and a dispatch on a standing bid (requests.log ENT-065) |
+### 1.1 Stored goods sold or carried (template `stored-goods`)
+
+- Fit: none. Trains trading (each sale) and navigation (each jump).
+- Steps: a circuit; at the stop that sells, `withdraw` takes from the pilot's own
+  storage only what the bid takes at its best price, `sell` puts it in; what is left goes
+  back with `store`. A carry withdraws at the storing station and sells one hop away.
+- Opens: `requires.stored` (only the pilot whose storage holds the good; storage is
+  personal) and `requires.bid` (a book of the last hour shows the bid at its floor).
+  `max_ships` 1: a pool bid of a few units takes one load.
+- Closes: the bid read gone; the good sold out of that pilot's storage.
+- Readings, 2026-11-16 19:16 to 2026-11-17 00:19 UTC (runs table): carry of liquid hydrogen
+  Node Beta to Central Nexus 3 runs +4,854 cr in 24.6 min; liquid hydrogen sold at Node
+  Beta 3 runs +1,876 cr in 7.7 min; plasma at Node Beta 3 runs +1,766 cr in 18.4 min;
+  liquid hydrogen at Central Nexus 1 run -78 cr in 8.6 min (the bid had gone). The soma
+  routes flew no run in the period.
+- Earlier hand sales of the same kind (2026-11-15 and 16): neural soma into pools of 1 to
+  4 units at 559 to 694 cr (+1,995 cr for 3 at Synchrony Hub, +2,381 for 4 at Node Beta);
+  armor plate from carapace into pools of 3 to 6 at 222 to 396 cr (+4,240 cr for 12
+  plates); stored hydrogen gas made into 75 liquid hydrogen and 42 sold at 116 cr
+  (+4,798 cr in about 20 minutes). The bids, not the haulers, bound this work.
+
+### 1.2 Crafting what we build with (template `craft-reserve`, and hand chains)
+
+- Fit: none; the pilot stays docked while the workshop runs. Trains crafting and
+  refining: one hauler went from crafting 0 to 1 and refining 0 to 1 on 145 runs of
+  smelting (section 14).
+- Steps: `craft-steel-node-beta` stores the hold, crafts `basic_iron_smelting` (10 iron
+  ore, 1 steel plate, 0 cr) from the pilot's own iron, takes the plates aboard and stores
+  them again. A stop's craft step asks the game for runs x per_run made units, its
+  `quantity`, since commit 258a554 (queue.log ENT-128).
+- Opens: `requires.stored` (800 iron ore at Node Beta) once per reading of the storage
+  book, about every 40 minutes; 50 runs leave a margin for a book that old.
+- Readings: 60 plates in 8.7 min for 24 cr (2026-11-17 00:03 UTC); one run found under
+  600 iron because a hand craft had used 200 after the book was read (00:16 UTC, -60 cr).
+- Hand chains, by the scripts of the skill logistics-stock: `catch.py` takes a hauler at
+  the end of its run and flies it to the workshop; `craftchain.py` runs recipes in a row;
+  `stage.py` stores, buys one unit first, fills a storage by loads, flies, gives to
+  another pilot and crafts as many runs as the stored inputs allow.
+- Recipes made by hand so far, all at a station workshop for 0 cr and with no skill
+  asked: `basic_iron_smelting`, `basic_copper_processing`, `carbon_arc_circuit_etching`,
+  `build_power_cell`, `build_ice_harvester_i`, `compress_hydrogen_gas`, `carapace_plating`,
+  `draw_copper_piping` (12 copper ore and 2 steel plate, 4 copper piping, 1.6 ticks a run,
+  2026-11-17 00:14 UTC). Quoted, not made: `fabricate_circuit_boards`.
+
+### 1.3 Gas (template `gas-harvest`)
+
+- Fit: a Gas Harvester I in the second utility slot (1,202 cr at Node Beta, section 5).
+  Trains mining.
+- Steps: the engine's mining loop at a gas cloud for the route's minutes; at the end the
+  pilot docks at the route's station, sells into the bids at the route's floors and
+  stores the rest of its hold there.
+- Opens: the module, an empty hold (beyond the border, rule F13), a bid where named.
+- Readings, 2026-11-16 19:16 to 2026-11-17 00:19 UTC: Amberfall 1 run -320 cr in 41.6 min,
+  Deepwell haze 2 runs -1,428 in 128.3 min; The Experiment haze 2 runs +3,942 in 111.7 min
+  (now Trade's claim). What a small bid does not take stays stored where the ship sold.
+
+### 1.4 Gathering for the reserve (template `gather-reserve`)
+
+- Fit: the starter mining laser. Trains mining and deep core mining.
+- Steps: the engine's mining loop at the field for 45 minutes; the ore goes into the
+  pilot's storage at Node Beta. A run ends where its minutes run out, often at the field;
+  the loop finishes its sequence (mine, then dock at Node Beta) after the order ends, for
+  minutes: `catch.py` waits for the dock (2026-11-17 00:10 to 00:14 UTC).
+- Opens: a field's place under its fleet-wide cap; `min_left` closes a field.
+- Readings, 2026-11-16 19:16 to 2026-11-17 00:19 UTC: Hamal Crystal Bloom 58 runs -7,575 cr
+  in 2,437 min; Spacetime Seep 29 runs -3,305 in 1,093 min; Prism Scatter 20 runs -2,091 in
+  840 min. Standing work: its cost is the fuel, about -150 to -190 cr a ship-hour.
+
+### 1.5 Beyond the border (a test)
+
+- `buy-gold-ironlight-boards`: one ship with an empty hold to Ironlight Crossroads (LHS
+  1140, lawless, police 0, six jumps), 3 gold ore at 145 cr or less, booked as money paid
+  once (craft inputs, requests.log ENT-172), then `fabricate_gold_circuit_boards` at Node
+  Beta from the pilot's own stored copper ore and energy crystal. Written 2026-11-16
+  23:58 UTC; no RESULT line yet. Our hunters sold at that station 14 times on 2026-11-16
+  without a loss (runs table).
+
+### 1.6 Missions that pay once (the list First)
+
+- The once line is section 3. From 19:16 to 00:19 UTC haulers were paid 240,938 cr once
+  (runs table, column one_time): Mining Missions 60,900, Missions 1 59,548, Substrate
+  41,522, Conductive Lattice 29,420, Resonance Finish 26,548, Network Expansion 12,000,
+  First Steps Board 9,000, First Hunt 2,000.
+- A once route measured on another role's pilots may not open to a hauler: read its runs
+  by role before it enters the plan (skill logistics-stock).
 
 ## 2. Route Templates
 
@@ -105,6 +176,19 @@ the game works is a mechanic, not a verdict on a route: it belongs in
 the sections below. The list this section held until 2026-11-16 is in
 the file's history (`git log -- game/routes/guidebook/logistics.md`).
 
+The division's templates (2026-11-17 00:18 UTC, `plan.py templates`):
+
+| Template | Routes, in the order a ship tries them | Trains | Ships |
+|---|---|---|---|
+| `stored-goods` | the eleven `sell-*` and `carry-*` routes of section 1.1 | trading, navigation | 40 |
+| `gas-harvest` | `mine-antares-gas-cloud`, `mine-amberfall-emission-nebula`, `mine-deepwell-haze` | mining | 4 (the Gas Harvester I) |
+| `craft-reserve` | `craft-steel-node-beta` | crafting, refining | 40 |
+| `gather-reserve` | `gather-hamal-crystal-bloom`, `gather-gsc-0027-prism-scatter`, `gather-gsc-0027-spacetime-seep` | mining | 40 |
+
+Every hauler's cell reads `@stored-goods, @craft-reserve, @gather-reserve`; the four gas
+haulers put `@gas-harvest` after the first; one hauler flies `buy-gold-ironlight-boards`
+before all.
+
 ## 3. Missions That Pay Once
 
 | Route | What it pays and needs | Measured |
@@ -124,44 +208,31 @@ the file's history (`git log -- game/routes/guidebook/logistics.md`).
 
 ## 4. Levelling Guide
 
-Which skills a ship of this division levels and on which work (rule
-F23): the work of its own role first, gathering ore only when none is
-open. Per kind of ship: the skill, what raises it, what the next level
-opens, and the template that trains it (section 2).
+Which skills a ship of this division levels and on which work (rule F23): the work of
+its own role first, gathering ore only when none is open. Every hauler is a Threshold.
 
-Navigation is the skill a hauler buys with jumps (2026-11-16): about 3 XP a
-jump and 1 a dock. One hauler went 277 to 289 on three jumps and three docks
-(9.4 min, -80 cr), and ten haulers gained 21 XP on each loop of six jumps and
-three docks between our own stations (12.6 to 12.7 min, -109 cr a loop; ship
-files and runs.jsonl, 13:05 to 13:35 UTC). The 10 haulers born on 2026-11-15
-evening stood at navigation 2, 51 to 109 XP short of level 3, Signal Fragments'
-gate (7,000 cr once); `train.py` of the skill logistics-stock flies the loop
-until the level, three to six loops a pilot. Done 13:05 to 14:27 UTC: all ten
-reached level 3 in 3 to 6 loops (49 loops, -5,341 cr, 620 ship-minutes, the
-train.py RESULT lines and runs.jsonl), 534 cr a pilot against 7,000 cr once.
-The first trained hauler flew Signal Fragments at once: +6,868 cr in 19.2 min.
+| Kind of ship | Fit | Skills its work trains | Template | Next step |
+|---|---|---|---|---|
+| Hauler | mining laser, pulse laser | navigation (about 3 XP a jump, 1 a dock), trading (each sale), piloting | `stored-goods`, once missions | navigation 3 opens Signal Fragments (7,000 cr once) |
+| Crafter (any hauler docked at a workshop) | none | crafting and refining (0 to 1 each on 145 smelting runs) | `craft-reserve`, hand chains | which crafting level a recipe asks for is not read: no quote asked for one |
+| Gas hauler (4) | Gas Harvester I beside the laser | mining | `gas-harvest` | -- |
+| Every hauler, fallback | mining laser | mining, deep core mining | `gather-reserve` | -- |
 
-On 2026-11-16 09:00 UTC (the tool fleet, view=levels): Piloting 3 lowest,
-4 median, 5 highest; 87 Piloting XP an hour on average over a median of 17
-hours played, about 141 hours to Piloting 10 and the tier-2 hulls at that
-rate; deep core mining 3, mining 3, navigation 2, xenobiology 1 and weapons
-1 (medians). Navigation 3 opens Signal Fragments (7,000 cr once): 2 haulers
-held it at 08:46 UTC and 4 at 09:16 UTC (ship files); the two that reached
-it had both flown the veil-ray hunt four jumps beyond the border that day
-(runs.jsonl). Which work trains navigation fastest is `not measured`. The first
-hauler run of the route: +6,883 cr in 17.9 min (08:51 UTC).
-On 2026-11-16 03:28 UTC: Piloting 3 lowest, 4 median and highest; 112
-Piloting XP an hour, about 111 hours to Piloting 10. Mining 3, deep core
-mining 3, navigation 2, trading 1 and gunnery 1 (medians). The one hauler
-that made a harvester crafted with no skill asked for (section 11).
+Levels on 2026-11-17 00:09 UTC (table ship_skills, 40 haulers): piloting 3 to 7 (average
+4.5), deep core mining 1 to 7, mining 1 to 6, navigation 2 to 4, exploration 2, trading 0
+to 2; crafting and refining 0 to 3 on the 9 haulers that carry them. The tool fleet
+(view=levels, 00:01 UTC): Piloting median 6, 153 Piloting XP an hour since birth, 75 hours
+to Piloting 10 and the tier-2 hulls at that rate (141 hours on 2026-11-16 09:00 UTC, 20
+haulers).
 
-Earlier: the haulers read Piloting 3 (10 pilots) and 4 (10), Trading 1,
-Navigation 2, Exploration 1 and Mining 2 (10) or 4 (10) on 2026-11-15
-23:42 UTC (ship files); no level changed from the reading of 21:19 UTC.
-First Hunt pays 50 Weapons XP, 15 Xenobiology XP and 20 Piloting XP
-(the mission's board, requests.log ENT-047). Which skill each other
-route trains, and how fast: `not measured`. Piloting 10, 20, 30 and 50
-opens hull tiers 2 to 5 (shared skill `fleet-play`, levelling).
+Navigation is bought with jumps: ten haulers went from navigation 2 to 3 in 3 to 6 loops
+of six jumps and three docks between our own stations (49 loops, -5,341 cr, 2026-11-16
+13:05 to 14:27 UTC; `train.py` of the skill logistics-stock), 534 cr a pilot against
+7,000 cr once. First Hunt pays 50 Weapons XP, 15 Xenobiology XP and 20 Piloting XP.
+
+A hull needs no Piloting level at tier 1: the freighters of section 5 are open to our
+pilots today (`browse_ships` with can_fly, 2026-11-17 00:23 UTC). Piloting 10, 20, 30 and
+50 open tiers 2 to 5.
 
 ## 5. Ships and Fits
 
@@ -176,8 +247,8 @@ ENT-046), or made by hand (section 11).
 A Gas Harvester I goes into the second utility slot beside the mining
 laser: one hauler bought and fitted one at Node Beta by the route
 `fit-gas-harvester-hauler`, -1,236 cr in 3.7 min (2026-11-16 03:16 UTC,
-the ask 1,202 cr). It is the tool of the gas test `mine-achernar-gas-pocket`, which lost
-(the list in this file's history).
+the ask 1,202 cr). Four haulers carry one (table ship_modules, 2026-11-17 00:09 UTC); their
+work is the template `gas-harvest` (section 1.3).
 
 An Ice Harvester I made by hand went into a hauler's second utility slot
 beside the mining laser the same way (`withdraw` from storage, then
@@ -194,6 +265,22 @@ Next step up: Piloting 10 opens the tier-2 hulls, about 141 hours away at
 the haulers' rate (section 4). Until then the step that pays is a tool, not
 a hull: an ice harvester puts a hauler on routes measured at 4,000 to 8,400
 cr per ship-hour (`hive.py tasks`, 03:28 UTC).
+
+Hulls on the exchange (`browse_ships`, all charted stations, `can_fly` true for a hauler
+of ours, 2026-11-17 00:23 UTC; the catalog's figures):
+
+| Hull | Class, tier | Cargo | Speed | Hull, shield | Slots | Cheapest listing |
+|---|---|---|---|---|---|---|
+| Threshold (ours) | Miner, 0 | 65 | 1 | 75, 80 | 1 weapon, 2 defence, 2 utility | -- |
+| Prayer | Freighter, 1 | 540 | 3 | 40, 0 | none | 3,848 cr at Frontier Station (18 jumps); 6,000 at Ironlight Crossroads (6 jumps, 2 listed) |
+| Floor Price | Freighter, 1 | 400 | 1 | 55, 15 | 1 utility | 7,479 cr at Trader's Rest (22 jumps) |
+| Worship | Freighter, 1 | 1,100 | 2 | 60, 0 | none | 9,741 cr at Deep Range Outpost (19 jumps) |
+| Congregation | Bulk Hauler, 1 | 1,900 | 1 | 100, 0 | none | 12,080 cr at First Step Memorial Station (18 jumps) |
+
+A freighter without slots carries no mining laser: it hauls and cannot gather. Buying a
+listed ship stores the pilot's present ship at that station (the game's help of
+`buy_listed_ship`). No Ledger (480 cargo) was listed; its commission quote asks a docked
+ship and was not read. The first hull test is planned (plan file, Planned).
 
 ## 6. Fuel: What a Leg Costs (for every Admiral)
 
@@ -290,7 +377,7 @@ book), 2026-11-15 22:51 to 23:45 UTC, and the catalog's recipes:
 | Water ice | Station bids with depth: 20 to 34 cr for 905 to 26,340 units at five stations (23:43 to 23:45 UTC) |
 | Methane ice | Station pools of 1,000 that empty and refill: 47 cr at Synchrony Hub and The Experiment from 20:33 UTC, 36 cr at Node Gamma and Node Alpha; all six stations read 0 or 7 cr from 23:20 to 23:29 UTC, five stood at 36 cr for 1,000 again from 23:32 to 23:36 and Synchrony Hub by 23:45 UTC (`data/market/history.jsonl`) |
 | Deuterium ice | Thin: station bids of 188 to 226 cr for 5 and 6 units at Node Beta and Node Alpha, seen in six moves of the book from 20:45 to 22:51 UTC; 2 to 3 cr at The Experiment |
-| Nitrogen ice | None worth a trip: 2 cr for 49 at The Experiment. Its hand recipe (5 ice to 4 liquid nitrogen) meets a 2 cr bid |
+| Nitrogen ice | 2 cr for 49 at The Experiment (the only bid read). Its hand recipe (5 ice to 4 liquid nitrogen) meets a 2 cr bid |
 | Helium ice | 2 cr for 500 at The Experiment; its recipe is facility-only and helium-3 is bid 2 cr |
 | Oxygen ice | No bid; its recipe is facility-only and oxygen gas has no bid |
 
@@ -300,17 +387,13 @@ goods we store until that order changes.
 
 ## 10. Open Tests
 
-- The stored-goods routes (soma, plate, plasma, liquid hydrogen), one ship each
-  while a bid stands; since 18:37 UTC at the head of every hauler's own routes.
-  Measured once each (Standing Plan); the soma routes have no run yet.
-- `carry-liquid-hydrogen-node-beta-central` (written 2026-11-16 18:35 UTC): liquid
-  hydrogen made at the Node Beta workshop into the Central Nexus bid. Its first
-  RESULT line decides it.
-- The gas tests `mine-coldwater-emission-nebula`, `mine-antares-gas-cloud`,
-  `mine-deepwell-haze` and the ice hauler's `mine-gliese-876-belt` (nickel at Nova
-  Terra Central), one ship each.
-- The boards for the faction (section 14): one batch of etchings when Mining's
-  silicon and carbon lie in the crafter's storage (requests.log ENT-168).
+- `buy-gold-ironlight-boards` (2026-11-16 23:58 UTC): gold ore bought beyond the border,
+  boards made at Node Beta. Its first RESULT line decides whether a hauler fetches gold for
+  the last boards.
+- `craft-steel-node-beta` at one ship until three runs hold, then three ships.
+- The gas routes of `gas-harvest`, one ship each.
+- A Prayer bought and flown by one hauler (section 5); `refine_steel` against hand smelting
+  (section 13).
 - What the fleet owns and where: `python3 -I -B game/fleet/ledger.py show all`; the
   stations' list: section 13.
 
@@ -389,6 +472,20 @@ more need 160 iron ore and about 15 copper ore gathered (1 etching and 6
 
 ## 12. Capacity of the Domain (orders F18)
 
+Read 2026-11-16 23:49 to 2026-11-17 00:24 UTC (the tools stock with view=reserve, base_plan with
+kind=station, fill with action=status, the runs table):
+
+- Storage of Logistics at Node Beta: iron ore from 25 to 1,892 a pilot in 39 storages
+  (Node Beta 600 or more in 19), copper ore up to 1,295 a pilot, energy crystal 1 to 15 in
+  22 storages; the faction's 293 steel plate and 4 copper piping in one storage; at Central
+  Nexus 32 silicon, 20 energy crystal, 15 flex polymer, 5 Ice Harvester I and carbon ore 1 to
+  89 in 23 storages.
+- What limits it first: the bids for the stored goods; the silicon for the boards (Trade's
+  claim on the one deep ask); iron for the station.
+- Ships the division's work employs: 33 on the shared gather fields, 1 on the steel craft,
+  1 on the gold test, up to 11 on stored goods while their bids stand, up to 3 on gas, the
+  once line for the rest. Logistics needs no more ships.
+
 Read 2026-11-16 12:48 to 13:36 UTC (the tools stock, catalog with ask=can,
 base_plan with kind=station, fill with action=status):
 
@@ -402,8 +499,8 @@ base_plan with kind=station, fill with action=status):
   goods and 5 made Ice Harvester I at Central Nexus.
 - What it makes by hand today (ask=can): steel plate and copper wiring from the
   ore (bids of 15 and 2 cr), ionized neon (bid 2 cr), one armor plate, and liquid
-  hydrogen (111 cr x 112 at Central Nexus). Only the liquid hydrogen and the plate
-  have a bid worth a trip.
+  hydrogen (111 cr x 112 at Central Nexus). The liquid hydrogen and the plate stood
+  at the highest bids of these (books of 12:48 to 13:36 UTC).
 - What limits it first: the bids. Soma pools of 1 to 4 at 376 to 734 cr, plate
   pools of 4 to 6 at 234 to 361 cr, plasma 33 at 96 cr, hydrogen gas 1 unit at
   34 cr at Node Beta at 13:36 UTC; water ice no bid at Central Nexus at 12:48 UTC.
@@ -435,8 +532,8 @@ view=capacity, catalog with ask=can, base_plan with kind=station):
   Central Nexus, about 20 ships for four hours, methane ice about 27, and 48
   ships carry a harvester. The bids, not the tool, bound ice work today, as
   Zero answered (requests.log ENT-115).
-- Ships the hauling employs: the once missions for every hauler this turn;
-  no repeating route pays a hauler. Logistics needs no more ships; each
+- Ships the hauling employs: the once missions for every hauler that turn; no
+  repeating route was measured for haulers then. Logistics needs no more ships; each
   repeating place that opens (a bid that regains more than the miners take)
   is one waiting hauler put to work.
 - For the station (S6, base_plan 08:59 UTC): the five inputs the fleet holds
@@ -448,33 +545,7 @@ view=capacity, catalog with ask=can, base_plan with kind=station):
   (96,194; Gliese 876 and Furud belts, 44,531 on offer at 4 cr at Nova Terra
   Central), anchor plate (93,690; none) and alloy scale (56,520; none).
 
-Read 2026-11-16 04:50 to 05:21 UTC (`data/stock/storage.json`, the ship
-files, the tool fleet with view=capacity, `ledger.py prices`).
-
-- Storage of Logistics: iron ore 11,631 and copper ore 6,207 (all
-  stations), carbon ore 130 before this turn's gathering, neural soma 46 in
-  storage; the chain's goods of section 11 at Central Nexus.
-- What it makes today by hand: about 1,160 steel plate and 775 copper
-  wiring from that ore (each pilot from its own storage), neither with a
-  bid worth a sale; and armor plate from creature carapace: the fleet holds
-  565 carapace (468 in storage, 97 in holds; 394 of it Military's), about
-  94 plates, sold at 233 to 380 cr into pools of 3 to 6 units at four
-  stations that come back within the hour. The bids are the limit; how
-  fast they come back is not measured.
-- What the soma bids take: pools of 1 to 2 units at 522 to 698 cr at four
-  stations (books of 04:13 to 04:26 UTC); the fleet holds 380 soma. The
-  bids are the limit, not the haulers.
-- Water ice, the work a harvester opens: the bids carry about 58 ships for
-  four hours against 47 ships that carry a harvester, the fields about
-  1,088 (fleet capacity, 05:00 UTC). So about 11 ice places stand open for
-  the tool, about the ten Logistics makes.
-- Ships the hauling employs today: one for the chain, one for the gas
-  test, one hunter, two on First Steps, up to five on First Hunts and the
-  census by turns; 12 of 20 wait. Logistics needs no more ships: each
-  harvester made turns one waiting hauler into an ice ship where Mining
-  gives the place.
-
-## 13. The Stations' List (orders.log ENT-017, P4)
+## 13. The Stations' List (orders.log ENT-017 and ENT-020, P4)
 
 One station takes a fee of 5,000,000 cr, one station core and the foundry that
 makes it (38,000,000 cr); two stations take the list twice. Read 2026-11-16 18:26
@@ -537,6 +608,29 @@ and 2 steel plate make 4 copper piping (`catalog`, recipes that make copper_pipi
 2026-11-16 19:20 UTC). By it the piping takes 78,360 copper ore, about what the
 fleet stores today (75,869), and 13,060 steel plate more (130,600 iron ore), and
 the curd line falls away. Not quoted or made yet: the next step to test.
+
+What one station's steps take, by hand or in a facility, against what we hold (the tool
+base_plan with kind=station and the catalog's recipes, 2026-11-17 00:00 to 00:21 UTC):
+
+| Step | Recipe | Today | Why |
+|---|---|---|---|
+| steel plate | `basic_iron_smelting` by hand | yes | 219,328 iron ore held of 491,400, 21,932 plates by hand; about 25 plates a minute at the workshop (section 14) |
+| copper piping | `draw_copper_piping` by hand | yes, tested | 12 copper and 2 plate for 4 piping (2026-11-17 00:14 UTC); copper held 144,122 |
+| copper wiring | `basic_copper_processing` by hand | yes | copper held |
+| armor plate | `carapace_plating` by hand | in part | 1,164 carapace, 194 plates of 5,940 |
+| liquid nitrogen | `nitrogen_bladder_decanting` by hand | in part | 49 bladders, 48 of 192 |
+| circuit board | four hand recipes | in part | silicon 32 held (no field read), or gold bought beyond the border (section 1.5) |
+| gold wiring, processing core | `draw_gold_wire`, `assemble_gold_processing_core` by hand | not yet | gold ore: none held; fields at Gold Crest and Rastaban, an ask at Ironlight Crossroads |
+| power battery | `assemble_power_battery` by hand | not yet | 3 lithium and 2 cobalt ore each: lithium asked at 14 cr and cobalt at 140 cr at Ironlight Crossroads |
+| silicate composite | `sinter_silicate_composite` by hand | no | 4 silicon a unit, 36,640 silicon for 9,160 |
+| hull plating | `reforge_hull_plating` by hand | no | salvage metal and salvage components come from wrecks (the catalog's text); none held |
+| titanium alloy, durasteel plate, aluminum sheet, graphene sheet, control node, power cell | by hand from creature parts | no | anchor plate (magnet-barnacle), alloy scale (cauldronback), foil scale (mirror-skate), graphene thread (inkwyrm), silica lens (silica-borer), irradiated marrow (geiger-hound): the catalog names each creature; none read in our herds |
+| docking ring, reinforced bulkhead, reinforced frame, quantum control core, quantum dot matrix, the reactors, the core | a facility only | no | four facility types each; whether a public facility at our stations runs them is not read |
+
+So the station waits first on creature parts and wreck salvage, which no field and no
+book of ours holds: the search for those creatures is Intel's and the hunt Military's.
+Steel is the step that eats iron: `refine_steel` in a facility takes 5 iron for 2 plates
+against 10 for 1 by hand; its fee per run is not read yet (planned).
 
 ## 14. The Faction's Plates and Boards (orders.log ENT-017, P5)
 
