@@ -1,0 +1,16 @@
+{
+ "id": "mine-grumium-belt",
+ "kind": "mine",
+ "title": "Grumium Belt: carbon_ore, tungsten_ore, palladium_ore, aluminum_ore, legacy_ore; sold at Node Gamma Relay Station",
+ "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 2197 cr per ship-hour, not a measurement. A test: one ship. Added as a test by fill.py on 2026-11-17 05:20 UTC (Unity): one ship until its first RESULT line is read.",
+ "belt": "grumium:grumium_belt",
+ "station": "node_gamma:node_gamma_relay_station:node_gamma_relay_station",
+ "minutes": 90,
+ "max_ships": 1,
+ "sell": [
+  {
+   "item": "palladium_ore",
+   "min_price": 272
+  }
+ ]
+}
