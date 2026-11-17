@@ -175,6 +175,7 @@ Run by hand.
 empire.py collect [--ladder]     one reading, written to <data>/empire/empire.json (--ladder: read the cards again)
 empire.py write [--commit]       governance/empire.md from the data file; --commit commits it by path as Unity
 empire.py show
+empire.py site <system> candidate|chosen|dropped [--poi <poi id>] [--note "<why>"]
 empire.py check
 --root <dir>   the repository's root (default: two folders above this file)
 --data <dir>   the unit's data folder (default /srv/collective/data)

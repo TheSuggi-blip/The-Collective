@@ -69,6 +69,42 @@ class Tree(unittest.TestCase):
                 ("spacemolt_facility", "types"): lambda p: {"type_id": p["facility_type"], "rent_per_cycle": {"hiring_board": 26, "faction_lockbox": 69}[p["facility_type"]]}}
 
 
+class SiteTests(Tree):
+    """Q67 (1), Suggi 2026-11-17: what the database holds gets there by itself, never by a hand; a planned site is one command."""
+
+    def git(self, *args):
+        return subprocess.run(["git", "-C", str(self.root)] + list(args), stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True).stdout
+
+    def setUp(self):
+        super().setUp()
+        self.git("init", "-q")
+        self.git("add", "-A")
+        self.git("-c", "user.name=T", "-c", "user.email=t@example.invalid", "commit", "-q", "-m", "start")
+
+    def test_a_member_proposes_the_fleet_admiral_chooses_and_each_line_is_one_commit(self):
+        ok, line = empire.set_site(str(self.root), str(self.data), "Zero", "nowhere-at-all", "candidate")
+        self.assertEqual((ok, line.startswith("REFUSED: `nowhere-at-all` is no system")), (False, True))
+        ok, line = empire.set_site(str(self.root), str(self.data), "Zero", "far", "chosen")
+        self.assertEqual((ok, "the Fleet Admiral chooses" in line), (False, True))          # rule F33
+        ok, line = empire.set_site(str(self.root), str(self.data), "Zero", "far", "candidate", note="two\tbelts")
+        self.assertTrue(ok, line)
+        rows = {r["system"]: r for r in empire.site_rows(str(self.root))}
+        self.assertEqual((rows["far"]["status"], rows["far"]["proposed_by"], rows["far"]["note"]), ("candidate", "Zero", "two belts"))
+        self.assertEqual((self.git("log", "-1", "--format=%an").strip(), self.git("status", "--porcelain")), ("Zero", ""))
+        ok, line = empire.set_site(str(self.root), str(self.data), "Oracle", "wild", "candidate", note="mine now")
+        self.assertEqual((ok, "proposed by Oracle" in line or ok), (True, True))            # its own line: rewritten
+        ok, line = empire.set_site(str(self.root), str(self.data), "Zero", "wild", "candidate", note="mine")
+        self.assertEqual((ok, "another member's line" in line), (False, True))
+        ok, line = empire.set_site(str(self.root), str(self.data), "Unity", "wild", "chosen", poi="belt_1")
+        self.assertTrue(ok, line)
+        rows = {r["system"]: r for r in empire.site_rows(str(self.root))}
+        self.assertEqual((rows["wild"]["status"], rows["wild"]["proposed_by"], rows["wild"]["poi"], rows["wild"]["note"]), ("chosen", "Oracle", "belt_1", "mine now"))
+        self.assertEqual(len(empire.site_rows(str(self.root))), 3)                          # replaced, never a second line
+        (self.root / "game" / "map" / "sites.tsv").write_text("half an edit\n")
+        ok, line = empire.set_site(str(self.root), str(self.data), "Unity", "far", "dropped")
+        self.assertEqual((ok, "not committed" in line), (False, True))
+
+
 class CollectTests(Tree):
     def test_the_member_cap_is_twenty_without_an_office_and_the_best_office_plus_a_quarter_with_them(self):
         recruit = {"hiring_board": 50, "recruitment_desk": 100}

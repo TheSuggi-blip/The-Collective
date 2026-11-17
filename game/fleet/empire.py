@@ -11,6 +11,9 @@ WHAT: four verbs.
         write     writes governance/empire.md from that file: the faction in figures, the bases and the territory,
                   the offices and their rent, the sites, and the ladder of what the faction can build
         show      prints the same in plain lines (hive.py empire)
+        site      sets one line of game/map/sites.tsv and commits it by path as the member: a member proposes a
+                  `candidate` (its own line it may write again), the Fleet Admiral sets `chosen` or `dropped` (rule
+                  F33); `built` is read from the game, never set. The next collect puts it into the tables.
         check     governance/empire.md is what `write` would write
 RULES:
   - Views only: it founds, builds, pays and changes nothing. A call that is no view is refused here, before the gate.
@@ -18,7 +21,7 @@ RULES:
     the data file only (the repository is public; rulebook section 10).
   - Territory is what the game's own lists show: a system with a station or an outpost that carries our tag, or with
     an office of ours at somebody else's station. Nothing is claimed by hand.
-  - A site is a line of game/map/sites.tsv, kept by hand by the Fleet Admiral (Intel proposes); the script adds what
+  - A site is a line of game/map/sites.tsv, set by `site` (Q67, Suggi: never by hand); the script adds what
     the chart and the public list of stations say about its system, and reads the site as `built` once a base of ours
     stands in that system. Suggi gives the direction of the expansion; the Fleet Admiral chooses the system.
   - A fact no reading holds is written `not read`, never filled in. The file is rewritten only when a fact changed.
@@ -30,6 +33,7 @@ USAGE:
   empire.py collect [--ladder]     one reading, written to <data>/empire/empire.json (--ladder: read the cards again)
   empire.py write [--commit]       governance/empire.md from the data file; --commit commits it by path as Unity
   empire.py show
+  empire.py site <system> candidate|chosen|dropped [--poi <poi id>] [--note "<why>"]
   empire.py check
   --root <dir>   the repository's root (default: two folders above this file)
   --data <dir>   the unit's data folder (default /srv/collective/data)
@@ -377,6 +381,53 @@ def show(data):
     return 0
 
 
+STATUSES = ("candidate", "chosen", "dropped")        # `built` is the game's: a base of ours stands in the system
+
+
+def set_site(root, data, who, system, status, poi="", note=""):
+    """Write the line of one system in game/map/sites.tsv and commit it by path as `who`: (True, the line) or (False,
+    why). The system must be on the chart; a member proposes a `candidate` and may write its own line again; the Fleet
+    Admiral chooses or drops a site (rule F33) and keeps the proposer's name and note. Nothing is written while the file
+    holds a change that is not committed."""
+    if system not in chart(data, root):
+        return False, "REFUSED: `%s` is no system of the chart (game/map/galaxy.tsv)" % system
+    if status not in STATUSES:
+        return False, "REFUSED: a site's status is one of %s; `built` is read from the game" % ", ".join(STATUSES)
+    if status != "candidate" and who != "Unity":
+        return False, "REFUSED: the Fleet Admiral chooses or drops a site (rule F33); propose it as a candidate"
+    if git(root, "status", "--porcelain", "--", SITES)[1].strip():
+        return False, "REFUSED: %s holds a change that is not committed; commit it or take it back first" % SITES
+    path = Path(root) / SITES
+    try:
+        lines = path.read_text(encoding="utf-8").splitlines()
+    except OSError:
+        lines = ["system\tpoi\tstatus\tproposed_by\tnote"]
+    clean = lambda text: ascii_text(str(text or "").replace("\t", " "), 300)
+    out, line = [], None
+    for old in lines:
+        cells = old.split("\t")
+        if old.startswith("#") or cells[0] != system:
+            out.append(old)
+            continue
+        cells += [""] * (5 - len(cells))
+        if who != "Unity" and cells[3] and who not in [c.strip() for c in cells[3].split(",")]:
+            return False, "REFUSED: %s stands as another member's line (proposed by %s): ask the Fleet Admiral in requests.log" % (system, cells[3])
+        line = "\t".join([system, poi or cells[1] or "-", status, cells[3] or who, clean(note) or cells[4]])
+        out.append(line)
+    if line is None:
+        line = "\t".join([system, poi or "-", status, who, clean(note)])
+        out.append(line)
+    path.write_text("\n".join(out) + "\n", encoding="ascii")
+    git(root, "add", "--", SITES)
+    code, said = git(root, "-c", "user.name=" + who, "-c", "user.email=%s@suggi-workspace.dev" % who.lower(), "commit", "-q", "-m",
+                     "sites: %s %s (empire.py site, %s)" % (system, status, who), "--", SITES)
+    if code != 0:
+        git(root, "reset", "-q", "--", SITES)
+        git(root, "checkout", "--", SITES)
+        return False, "HALT: the commit failed; the file was put back: " + said.strip()[-200:]
+    return True, line.replace("\t", " | ")
+
+
 def git(root, *args):
     done = subprocess.run(["git", "-C", str(root)] + list(args), stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
     return done.returncode, done.stdout
@@ -387,12 +438,19 @@ def main():
     value = lambda name, default: args[args.index(name) + 1] if name in args and args.index(name) + 1 < len(args) else default
     here = Path(__file__).resolve().parent
     root, data = value("--root", str(here.parent.parent)), value("--data", division.DATA)
-    words = [a for n, a in enumerate(args) if not a.startswith("--") and (n == 0 or args[n - 1] not in ("--root", "--data"))]
+    words = [a for n, a in enumerate(args) if not a.startswith("--") and (n == 0 or args[n - 1] not in ("--root", "--data", "--poi", "--note"))]
     if not words or any(a in ("-h", "--help") for a in args):
         sys.exit(__doc__)
     verb = words[0]
     if verb == "show":
         return show(data)
+    if verb == "site":
+        kind, name = division.member()
+        if kind != "member" or len(words) < 3:
+            sys.exit("REFUSED: run as a member of the Collective: empire.py site <system> candidate|chosen|dropped [--poi <id>] [--note \"<why>\"]")
+        ok, line = set_site(root, data, name, words[1], words[2], poi=value("--poi", ""), note=value("--note", ""))
+        print(("site set and committed: %s (the tables read it at the next collect, within a quarter of an hour)" % line) if ok else line)
+        return 0 if ok else 1
     if verb == "collect":
         kind, name = division.member()
         if not (kind == "service" or name == "Unity"):
