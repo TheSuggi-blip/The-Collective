@@ -90,7 +90,7 @@ What the drones fly between two turns, applied 2026-11-17 16:18 UTC (orders ENT-
 and then `@hunter` (two with a soma sale between); 35 fly `@hunter`; 9 fly one hunt of their own first (the
 tests and hunts the filler offered), then `@hunter`. Every hunt and every guard takes one ship (rule F9). The hunts
 beyond the border leave only for a pirate or a pilot filed hostile (`alone` "pirates"; since 16:15 UTC also the
-eight hunts of 12:15 UTC, which left 35 runs at once for passers-by). The dispatcher closes a hunt, a mine or a guard
+eight hunts of 12:15 UTC, which left 26 of their 40 runs at once for passers-by). The dispatcher closes a hunt, a mine or a guard
 where a pirate was seen within six hours (orders D9, dispatch.py since 13:58 UTC).
 
 | Order | Routes | Ships | Carries, expected | Why |
@@ -171,7 +171,7 @@ it needs, its place, its steps, what opens and closes it.
 - Readings 2026-11-17 12:16 to 16:05 UTC (`hunt_figures.py --since 2026-11-17T12:16:00Z --role drone`): all drone
   hunts -15,538 cr in 6,030 hunter-minutes, -155 cr per hunter-hour (no far bid for melt or glands after 14:55 UTC);
   the carapace hunts 3.1 to 8.1 kills an hour at -102 to -445 cr per hunter-hour. The eight hunts written at 12:15 UTC
-  with `alone` true left 35 runs at once for a stranger who was no pirate; Bluerift 5 of 5. Since 16:15 UTC they carry
+  with `alone` true left 26 of their 40 runs at once for a stranger who was no pirate (to 16:40 UTC); Bluerift and GSC-0038 6 of 6. Since 16:15 UTC they carry
   `alone` "pirates". The division as a whole: 317 runs, +9,916 cr in 150.8 ship-hours (+66 per ship-hour), the seven melt
   sale runs +30,681 of it.
 
@@ -515,7 +515,7 @@ public battle record (`https://game.spacemolt.com/api/battles`, the
   offered and left out: too far for a test on a road we have not read.
 - `guard.py --follow` beside the outpost kit and the founding, once the dispatcher's half stands (requests ENT-226).
 - The eight hunts of 12:15 UTC under `alone` "pirates" from 16:15 UTC: kills an hour, and whether a stranger fires.
-- `alone` "pirates" (2026-11-17 08:20 UTC): some 480 drone hunts to 16:05 UTC, no shot from a stranger; read it again
+- `alone` "pirates" (2026-11-17 08:20 UTC): 421 drone hunts to 16:40 UTC, no shot from a stranger; read it again
   each turn.
 - Answered and off (2026-11-17): the cauldronback at Node Beta (0 kills in 4 runs, hull to 45 percent),
   the slag-tortoises at Garnet (0 kills in 2 runs): a second weapon first.
