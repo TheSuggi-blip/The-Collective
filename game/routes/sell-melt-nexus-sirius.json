@@ -2,7 +2,7 @@
  "id": "sell-melt-nexus-sirius",
  "kind": "circuit",
  "title": "Stored crystal melt carried from Central Nexus to the Sirius Observatory bid",
- "note": "2026-11-17 04:12 UTC (Apophis): crystal melt is not in the reserve (the tool stock, view reserve) and Sirius Observatory bids 1,585 cr x 60 (04:03 UTC), 9 jumps from Central Nexus. A pilot whose own storage there holds 3 melt or more withdraws it, sells it at Sirius at 1,000 cr or more and stores what is left there. Closed by itself without the bid (requires.bid) or the stock (requires.stored). A test with one ship.",
+ "note": "2026-11-17 04:12 UTC (Apophis): crystal melt is not in the reserve (the tool stock, view reserve) and Sirius Observatory bids 1,585 cr x 60 (04:03 UTC), 9 jumps from Central Nexus. A pilot whose own storage there holds 3 melt or more withdraws it, sells it at Sirius at 1,000 cr or more and stores what is left there. Closed by itself without the bid (requires.bid) or the stock (requires.stored). A test with one ship. 2026-11-17 08:18 UTC (Apophis): the bid gate takes 2 units (was more): Sirius bid 1,587 cr x 2 at 08:20 UTC while 19 melt lay stored (surplus.py); a trip of 9 jumps that sells 2 brings about 3,170 cr for some 250 cr of fuel.",
  "max_ships": 1,
  "requires": {
   "stored": {
@@ -14,7 +14,7 @@
    "item": "crystal_melt",
    "base": "sirius_observatory_station",
    "min_price": 1000,
-   "min_qty": 3
+   "min_qty": 2
   }
  },
  "stops": [

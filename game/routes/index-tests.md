@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 66.
+Routes: 69.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -42,7 +42,10 @@ Routes: 66.
 | [hunt-test-acubens-patina-grazer](hunt-test-acubens-patina-grazer.json) | hunt | home space | Yield test: patina_grazer at acubens_shadow_pocket; what a kill drops and whether a bid takes it | up to 1 ships, without piercing_railgun_i | TBD | TBD | TBD | TBD | -- |
 | [mine-cryogenic-reserve](mine-cryogenic-reserve.json) | mine | home space | Cryogenic Reserve: water_ice, nitrogen_ice, oxygen_ice; sold at Synchrony Hub | up to 1 ships, needs ice_harvester_i, while central_nexus bids 25 cr for water_ice | TBD | TBD | TBD | TBD | -- |
 | [mine-node-beta-frozen-drift](mine-node-beta-frozen-drift.json) | mine | home space | Node Beta Frozen Drift: water_ice, nitrogen_ice, deuterium_ice; sold at Node Alpha Processing Station | up to 1 ships, needs ice_harvester_i, while node_alpha_processing_station bids 25 cr for water_ice | TBD | TBD | TBD | TBD | -- |
+| [sell-melt-at-sirius](sell-melt-at-sirius.json) | circuit | beyond the border, 9 jumps | Crystal melt stored at Sirius Observatory sold into its bid | up to 1 ships, with 1 crystal_melt stored at sirius_observatory_station, while sirius_observatory_station bids 1000 cr for crystal_melt | TBD | TBD | TBD | TBD | -- |
 | [sell-melt-nexus-sirius](sell-melt-nexus-sirius.json) | circuit | beyond the border, 9 jumps | Stored crystal melt carried from Central Nexus to the Sirius Observatory bid | up to 1 ships, with 3 crystal_melt stored at central_nexus, while sirius_observatory_station bids 1000 cr for crystal_melt | TBD | TBD | TBD | TBD | -- |
+| [sell-melt-node-beta-sirius](sell-melt-node-beta-sirius.json) | circuit | beyond the border, 9 jumps | Stored crystal melt carried from Node Beta to the Sirius Observatory bid | up to 1 ships, with 2 crystal_melt stored at node_beta_industrial_station, while sirius_observatory_station bids 1000 cr for crystal_melt | TBD | TBD | TBD | TBD | -- |
+| [sell-melt-synchrony-sirius](sell-melt-synchrony-sirius.json) | circuit | beyond the border, 9 jumps | Stored crystal melt carried from Synchrony Hub to the Sirius Observatory bid | up to 1 ships, with 2 crystal_melt stored at synchrony_hub, while sirius_observatory_station bids 1000 cr for crystal_melt | TBD | TBD | TBD | TBD | -- |
 | [trade-hydrogen-gas-784309214f105860a16a0c100a70eb14-synchrony](trade-hydrogen-gas-784309214f105860a16a0c100a70eb14-synchrony.json) | circuit | beyond the border, 6 jumps | Hydrogen Gas: bought at Ironlight Crossroads for 6 cr, sold at Synchrony Hub for 28 cr | up to 1 ships, from 3,429 cr | TBD | TBD | TBD | TBD | -- |
 | [trade-plasma-gas-784309214f105860a16a0c100a70eb14-node](trade-plasma-gas-784309214f105860a16a0c100a70eb14-node.json) | circuit | beyond the border, 6 jumps | Plasma Gas: bought at Ironlight Crossroads for 52 cr, sold at Node Beta Industrial Station for 104 cr | up to 1 ships, from 3,915 cr | TBD | TBD | TBD | TBD | -- |
 | [hunt-antares-gas-cloud-cinder-sylph](hunt-antares-gas-cloud-cinder-sylph.json) | hunt | beyond the border, 6 jumps | cinder_sylph at antares_gas_cloud; loot sold at Ironlight Crossroads | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |

@@ -1,0 +1,43 @@
+{
+ "id": "sell-melt-node-beta-sirius",
+ "kind": "circuit",
+ "title": "Stored crystal melt carried from Node Beta to the Sirius Observatory bid",
+ "note": "2026-11-17 08:18 UTC (Apophis): written beside sell-melt-nexus-sirius. Crystal melt stored by drones at 08:20 UTC (data/stock/storage.json): Node Beta 11 in three storages (3, 3, 5), Synchrony Hub 3, Sirius Observatory 3, The Experiment 1; the old routes took only Central Nexus and The Experiment, so 17 melt waited. A pilot withdraws its own melt, sells what the Sirius bid of 1,000 cr or more takes and stores the rest there. Gate: 2 units stored (1 at Sirius) and a bid of 2 (it read 1,587 x 2 at 08:20 UTC).",
+ "max_ships": 1,
+ "requires": {
+  "stored": {
+   "at": "node_beta_industrial_station",
+   "item": "crystal_melt",
+   "min": 2
+  },
+  "bid": {
+   "item": "crystal_melt",
+   "base": "sirius_observatory_station",
+   "min_price": 1000,
+   "min_qty": 2
+  }
+ },
+ "stops": [
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "withdraw": [
+    {
+     "item": "crystal_melt"
+    }
+   ]
+  },
+  {
+   "at": "sirius:sirius_observatory_station:sirius_observatory_station",
+   "sell": [
+    {
+     "item": "crystal_melt",
+     "min_price": 1000
+    }
+   ]
+  },
+  {
+   "at": "sirius:sirius_observatory_station:sirius_observatory_station",
+   "store": "all"
+  }
+ ]
+}
