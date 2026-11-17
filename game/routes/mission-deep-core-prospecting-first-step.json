@@ -46,5 +46,12 @@
     "exotic_matter"
    ]
   }
- ]
+ ],
+ "measured": {
+  "date": "2026-11-17",
+  "runs": 2,
+  "minutes": 78,
+  "credits_per_run": 4620,
+  "cph_per_ship": 3570
+ }
 }

@@ -6,15 +6,6 @@
  "belt": "pherkad:pherkad_null_rift",
  "station": "synchrony:synchrony_hub:synchrony_hub",
  "minutes": 45,
- "measured": {
-  "date": "2026-11-17",
-  "runs": 47,
-  "minutes": 49,
-  "credits_per_run": -170,
-  "cph_per_ship": -200,
-  "hours": 12,
-  "last_run": "2026-11-17T07:56:43Z"
- },
  "max_ships": 125,
  "standing": true,
  "min_left": {

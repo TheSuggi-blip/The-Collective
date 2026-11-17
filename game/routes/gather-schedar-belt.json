@@ -17,12 +17,12 @@
  "note": "Written by Zero, 2026-11-16 23:24 UTC (orders.log ENT-019, block ZERO: iron for the reserve on fields that hold, each with a floor; a field beyond our space is mine to test, rule F3). The shared iron routes gather-gsc-0027-prism-scatter and gather-hamal-crystal-bloom stood full (66/66, 76/76) while miners waited (fill.py status, 23:19 UTC). Schedar Belt holds iron 72,876 (richness 57) and copper 99,970 (richness 44), census 23:01 UTC; iron fell 74,535 -> 72,876 from 13:34 to 23:02 UTC, so another miner works it. Schedar is lawless, one jump from Node Beta (lanes). Pilots of other factions were met at other places of the system, a combat drone among them at 14:22 UTC (data/intel/met.json). A test: one ship, empty hold, until its first RESULT line is read (rule F13). 2026-11-17 00:19 UTC (fill.py, Unity): max_ships 1 -> 2. 2026-11-17 00:25 UTC (fill.py, Unity): max_ships 2 -> 4. 2026-11-17 00:27 UTC (fill.py, Unity): max_ships 4 -> 1. Lifted from 1 to 10 by Zero, 2026-11-17 03:11 UTC: the field read 71,620 iron (richness 57) and 99,902 copper at 03:07 UTC, 41,620 iron above the floor; two runs of one ship, 221 and about 200 ore in 45 minutes into Node Beta, -160 cr a run of fuel (data/routes/runs.jsonl); the one stranger met there in six hours flies a starter hull like ours and was never in combat (table met, 02:47 UTC). Ten ships take about 1,800 iron an hour against 41,620 above the floor: the floor holds for this turn and longer. Lifted from 10 to 15 by Zero, 2026-11-17 03:17 UTC: ten ships took the ten places within two minutes while 22 miners waited (fill.py status, 03:15 UTC); 141,522 units above the floor, 41,620 of them iron; 15 ships take about 2,500 iron an hour. 2026-11-17 05:52 UTC (fill.py, Unity): max_ships 15 -> 45. 2026-11-17 07:12 UTC (Zero, orders ENT-029, task 4 a): floor {\"iron_ore\": 30000} -> 20,000 iron, because the game says a depleted deposit refills gradually in proportion to its capacity (game/rules/13-not-stated.md, from mining.md), and our reads agree: Hamal grew back about 360 iron an hour at 31,000, Ironhollow Fading Signal 413 at 52,551, Echo Ejecta 312 near 97,000 (hive.py refill, read.db readings); a higher floor buys no faster regrowth, only a stock left for later, and iron is short 298,708 (the tool stock, view=reserve, 07:03 UTC). lift_to 45: the guard of Military is sized for up to 45 ships here (orders ENT-029, block APOPHIS); 57,479 iron at 06:48 UTC.",
  "measured": {
   "date": "2026-11-17",
-  "runs": 586,
-  "minutes": 45,
-  "credits_per_run": -260,
-  "cph_per_ship": -330,
+  "runs": 535,
+  "minutes": 46,
+  "credits_per_run": -210,
+  "cph_per_ship": -260,
   "hours": 12,
-  "last_run": "2026-11-17T17:42:35Z"
+  "last_run": "2026-11-17T20:41:27Z"
  },
  "lift_to": 45
 }
