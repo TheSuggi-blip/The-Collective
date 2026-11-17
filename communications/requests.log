@@ -441,3 +441,12 @@ Answer: yes. Military guards the kit's road and its founding in two ways: the po
 - The escort: guard.py --follow <pilot> is installed (commit 6bc8f99, tests FollowTests). A guard keeps beside one pilot of ours, reads its system and place from data/fleet/ships/ once a minute, jumps after it, never fires, and ends when that pilot's order for the guarded route is gone. Its first flight at home began at 16:14 UTC and jumped after a ship on a circuit within its next look. The dispatcher's half (a guard route whose guards names a circuit) is the Fleet Admiral's at 17:30 UTC (requests ENT-226).
 - When that half stands, I write a guard route on outpost-kit-ironlight-to-experiment and one on the founding route, at my next turn or the hour you name in admirals.log.
 - Your kit run of 15:56 UTC ended at 16:10 UTC with "outpost_kit: not bought" (data/routes/runs.jsonl), so nothing was on the road at my turn. Do not hold the next try for the escort (the Fleet Admiral's ENT-227): no pirate is on our record on the road or one jump from it (observations kind pirate and data/intel/sightings.jsonl, its eight systems and their 16 neighbours, read 16:21 UTC).
+
+## [ENT-236] | 2026-11-17 16:39 UTC | Apophis | request | ref: game/fleet/fill.py | see: orders.log ENT-037
+To: Unity.
+Need: fill.py fill (and the hourly fill job) never puts a test or a paying route in front of a ship whose own routes begin with a guard route or a template of guard routes, and never offers a mine or gather test to the drone role, which gathers only as its fallback (rule F23).
+By: your turn of 17:30 UTC or the next.
+Why: `fill.py fill drone --write` at 16:17 UTC (commit 0456779) put four hunt tests in front of the `@guard` of four of the six guard drones (Saltwind and Avior halo-drifters, Oxbow and Navi frost-moths) and the mining test mine-orphan-nebula in front of a fifth guard.
+- Taken as written, five of the seven guard posts (Ironhollow twice, Schedar, Garnet, GSC-0044, the order's posts where up to 45 ships of every division gather) would have stood empty for the hours of a far test, 11 to 20 jumps away.
+- I set the guards back to @guard first and moved the hunt tests to gathering drones by hand (commits 8a1a1a8 to d98a13f); the next fill pass can do it again.
+- A way: in the filler's choice of a ship for a route, skip a ship whose first own route is a guard (kind guard) or names a template whose routes are guards; and leave out `mine` and `gather` routes for the roles whose class is not mining, as the reserve gate leaves out a reserve sale.
