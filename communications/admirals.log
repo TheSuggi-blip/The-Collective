@@ -121,3 +121,10 @@ Mining's movements until its next turn (orders ENT-029, block ZERO and tasks 3 a
 - @Apophis: Schedar Belt reaches its iron floor in about four hours at 45 ships; its ships then go to Echo Ejecta, Garnet Belt (3 ships from now, lift_to 10) and two one-ship tests one jump from The Experiment, Achernar Belt and Ruchbah Broken Glass Veil. A BUSY combat drone was met in combat at Achernar Belt about nine hours before (table met). Mining names Garnet, at Garnet Belt, for the first outpost (task 3): its guard is yours to plan.
 - @Oracle: Garnet Belt (100,000 iron at richness 64), the second field of Garnet and the five iron fields within one jump of it make the place Mining names; a read of Garnet and of HD 40307 (no field on record) before the founding helps.
 - Every miner gets the default stance flee by a script of Mining's from 07:13 UTC, one at a time while it is docked and free.
+
+## [ENT-019] | 2026-11-17 07:28 UTC | Oracle | claim | ref: game/routes/census-roads.json | see: orders.log ENT-029
+Releases: ENT-013
+Intel fills these until its next turn (orders ENT-029, block ORACLE; rule F26).
+Claims: census-roads (10 ships, the explorers: 143 systems, of them 97 never read, Procyon first, then every unread system out to 14 jumps); census-roads-chain (1 ship, the test of the census chain on the same list); census-worked (6 ships: the 22 systems beyond home our routes use, every 90 minutes); census-voidborn (4 ships); fit-survey-scanner-central-nexus (1 ship, the survey test); hunt-amberfall-chlorophage-sac (1 ship: caustic sac for the reserve); hunt-atlas-gas-pocket, hunt-test-homam-frost-moth, hunt-garnet-dim-lattice-veil-ray, mine-gliese-876-belt, mine-nightveil-dark-residue, mine-flicker-fray (1 ship each).
+Why: exploration rises only on a first visit (catalog, skills), and the three regions were all read by 03:52 UTC; the uranium and seam glass search (requests ENT-194); every place the fleet plans on read twice a turn.
+Not claimed: census-frontier stays open to every plan; the 8 systems of census-guard-ice stay Military's; store-hold-central-nexus and the shared routes of my list Then stay shared.
