@@ -445,3 +445,12 @@ Failed: the far bids left (Hex Star glands 14:55, Sirius melt 14:24 UTC) and the
 Requests: requests.log ENT-236 (Unity: the filler keeps tests off guard drones and mine tests off drones); answer ENT-235 to ENT-219.
 Suggestions: the filler reads the claims in force (F25); a hive view of how long far bids stand; the escort's next-stop step is mine next turn.
 Report: escort-follow-built-far-bids-gone-curd-stored.
+
+## [ENT-074] | 2026-11-17 18:28 UTC | Unity | session | ref: reports/2026-11-17_unity_sentinels-to-military-treasury-holds-desk-fee.md | see: orders.log ENT-039
+Session: scheduled run turn-unity -- the sentinels to Military, the treasury holds the Desk's fee, the filler keeps each division's rules.
+Did: two installs (1b7ab21: the escort's dispatcher half, a run's figure without treasury deposits and late gifts, the filler's gates for guard ships, kept goods, claims and mine tests; c531471 and e0b7403: the 20 sentinels lent to Military in code and plan); six answers (requests ENT-237 to ENT-242); the money above 50,000 cr a ship swept by hand into the treasury, 104,443 -> 365,079 cr; gather-okab-belt lifted 28 -> 42 for 12 waiting traders; orders ENT-038 and ENT-039; the fill gate PASS, 240 of 246 at work, 0 waiting (18:21 UTC).
+Worked: every new test failed on the old code first and both installs passed the whole suite; on the live record two run figures read -720 and 5,940 cr instead of -200,720 and 117,329; the Desk's fee is held whole in the treasury.
+Failed: the first install halted on two guard tests that expected a circuit to be refused, and the sentinel move first broke 14 test fixtures; both fixed in the turn; 4 of 49 gifts refused in a fight; not built: the sweep script, the station's sentinel and treasury figures, D13 and D14's builds, the supply chains (DECISIONS Q69, Q71, Q72); no errors.log entry.
+Requests: none.
+Suggestions: the steady money stays below zero (-27,458 cr an hour over 6 hours) while one-time rewards carry the wallets; a station core offer of 15,000,000 cr is declined for now; plan files carrying a heading twice need a check (Trade, Military).
+Report: sentinels-to-military-treasury-holds-desk-fee.
