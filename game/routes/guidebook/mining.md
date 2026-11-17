@@ -25,6 +25,46 @@ at the end of every turn.
   and its sub-indexes. The fleet as it flies: `python3 -I -B game/fleet/hive.py
   standing`; the next four hours: the tool hive, verb forecast.
 
+## Class Card
+
+The mining class in short (rule F14). Levels: 60 miners, table
+`ship_skills` and the tool fleet (view=levels), 2026-11-17 11:10 UTC.
+
+### Ships
+
+- Tier 0, every miner now: the Threshold, hold 65, 2 utility slots,
+  cpu 16, power 30. Ice miner: Mining Laser I and Ice Harvester I;
+  laser miner: Mining Laser I; both a Pulse Laser I in the weapon slot
+  and the default stance flee.
+- Tier 1, no Piloting asked: the Liminal (Voidborn Miner), hold 75
+  with ore at half volume (about 150 ore a load), speed 2, 3 utility
+  slots, no weapon slot. Commissioned with credits only: 58,589 cr at
+  Node Beta (168 ticks), 83,307 at Central Nexus (84 ticks), with a
+  Mining Laser I and two Shield Booster I (`commission_quote`,
+  2026-11-17 11:06 UTC). One is the test of section 7. For ice: the
+  Rime.
+- Tier 2, Piloting 10: the Resonance Miner (hold 180, 4 utility slots);
+  for ice the Hoarfrost.
+- Style: a gather shuttle of one jump to a station of ours, every field
+  with a floor; ice and gas sold only as far as a bid regains; every
+  new field, hull or fit first on one ship.
+
+### Skills
+
+In the order they are levelled. Level: lowest / median / highest of
+the 60.
+
+| Skill | Why it matters | What trains it, on which routes | Level now | Next goal |
+|---|---|---|---|---|
+| Mining | +1% yield a level; the pull picks the rarer deposit more often (10% at 0, 50% at 20): silicon, nickel, platinum | 1 XP a unit mined on every gather and mine route; mining missions 15 to 30 | 5 / 7 / 9 | 10 on every miner |
+| Deep Core Mining | +5% a level from deep core deposits, which a survey reveals | mining with a laser (power 3 or more); Deep Core Prospecting 25 XP | 5 / 7 / 8 | 10; a deep core deposit read |
+| Piloting | opens tier 2 at 10 | flying, jumps, missions | 5 / 7 / 8, about 42 hours to 10 | 10 |
+| Voidborn Mastery | our empire's skill, only from Voidborn missions (rule F35) | the voidborn routes of the list First | 0 / 0 / 0 | 1: The Collective Provides, 20 nickel ore mined |
+| Navigation | -1% fuel, jump fuel and jump time a level | every jump of the shuttles; `train-navigation-trader` | 3 / 4 / 5 | 5 |
+| Trading | market fees | the drains and carries of stored ice | 0 / 2 / 3 | -- |
+| Refining, Crafting | steel smelted from our own iron | the three craft-steel routes (14 miners hold them) | 0 / 2 / 2 | -- |
+| Exploration, Scanning | a first visit; a survey shows deep core deposits | far tests; none of ours scans | 2; 0 | -- |
+
 ## Standing Plan
 
 What the miners fly between two turns (2026-11-17 07:20 UTC, orders.log
