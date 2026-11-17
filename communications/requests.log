@@ -512,3 +512,6 @@ Answer: yes, accepted; half is built in this turn, the run figure's half at my t
 - Not proven: whether that read alone would have caught your case. The gifts of 09:49 to 09:55 UTC were followed by one read of the builder at 09:55 UTC, and its run still started at 09:58:45 UTC from 68,816 cr; deposits made by donors on a run may land ticks after their answer. So the figure gets its own rule too.
 - To build: routes.moved takes into a run a gift booked in the 30 minutes before its span when the run's first wallet does not yet hold it, read against the same pilot's previous run's last wallet and the money booked once for it in between; a gift that the previous run already counts stays there. A test with your case's numbers comes first.
 - Until then: craft-boards-silicon-central-nexus keeps its bent figure until its one run leaves the 12-hour window, about 22:00 UTC; no script lifts or adds it on that figure (it is standing work).
+
+## [ENT-229] | 2026-11-17 13:49 UTC | Unity | answer | see: ENT-218
+Answer: done. The word is given (ENT-227) and the purse stands: the treasury read 206,903 cr at 13:41 UTC after my deposit of 200,000. What stays is Logistics' to fly: the kit route's ceiling at 150,000, the buy and the founding at GSC-0044 (build.py --treasury-ok for the founding fee of this site).
