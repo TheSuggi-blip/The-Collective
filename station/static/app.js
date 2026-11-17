@@ -197,10 +197,7 @@ const shipsBy = new Map();                     // system id -> our ships there
 const layers = { Regions: true, 'Our space': true, Lanes: true, Traffic: true, Stations: true, 'Our bases': true, Strongholds: true, Intel: true, Factions: true, Fleet: true, Names: true };
 const sitesBy = new Map();                     // system id -> a site named for a base of ours (game/map/sites.tsv)
 const holdBy = new Map();                      // system id -> the buildings of ours there (what the faction owns, read from the game)
-const sphere = new Map();                      // system id -> when a ship of ours was last seen there (ms): our own space on the map
-const SPHERE_MS = 3600000;                     // a system stays in our space for an hour after the last ship of ours was seen there
-try { for (const [id, at] of JSON.parse(localStorage.getItem('station.sphere') || '[]')) { if (typeof id === 'string' && Date.now() - at < SPHERE_MS) sphere.set(id, Number(at)); } } catch (e) { /* no storage */ }
-let sphereSaved = 0;
+try { localStorage.removeItem('station.sphere'); } catch (e) { /* no storage */ }   // the last-hour space of round 3, no longer drawn
 let bounds = null, terrR = 250, homeEmpire = '';   // the galaxy's extent; the radius of the ground under one system; our empire
 const view = { x: 0, y: 0, k: 0.05 };
 let selected = null, hover = null, route = [], tab = 'Selection', pilotCard = null;
@@ -298,15 +295,16 @@ function frame(now) {
 
 // ---------------------------------------------------------------- the marks of the map
 
-const OURS = '#d9d0f5';                              // our own space and the sites chosen for a base
-const BUILT = '#ffffff', RAISING = '#dcae58';        // a building of ours the game lists as active; one it does not (being built, or down)
+const OURS = '#86d65b';                              // our colour (Suggi, 2026-11-17: green): our space, our buildings, our sites
+const BUILT = OURS, RAISING = '#dcae58';             // a building of ours the game lists as active; one it does not (being built, or down)
 // One drawing per mark in a box of 12 by 12: the map paints it on the canvas, the legend shows the same path as an SVG.
 const GLYPHS = {
-  storage: { d: 'M2 4.1 6 2.1 10 4.1V8.5L6 10.5 2 8.5Z M2 4.1 6 6.1 10 4.1 M6 6.1V10.5' },
+  storage: { d: 'M1.6 2.4H10.4V4.6H1.6Z M2.3 4.6H9.7V10.2H2.3Z M4.8 6.3H7.2' },       // a chest with its lid
   recruit: { d: 'M6 1.9a2 2 0 1 0 0 4a2 2 0 1 0 0-4Z M2.3 10.4c0-2.3 1.6-3.6 3.7-3.6s3.7 1.3 3.7 3.6Z', fill: true },
   office: { d: 'M2.4 10.2V4.6L6 2 9.6 4.6V10.2Z M4.9 10.2V7.4H7.1V10.2' },
-  outpost: { d: 'M6 1.6 9.8 3.8V8.2L6 10.4 2.2 8.2V3.8Z M6 4.9a1.1 1.1 0 1 0 0 2.2a1.1 1.1 0 1 0 0-2.2Z' },
-  station: { d: 'M6 1.4 10 3.7V8.3L6 10.6 2 8.3V3.7Z', fill: true },
+  outpost: { d: 'M6 1.3 10.1 3.65V8.35L6 10.7 1.9 8.35V3.65Z', fill: true },          // a solid hexagon
+  station: { d: 'M6 1.6a4.4 4.4 0 1 0 0 8.8a4.4 4.4 0 1 0 0-8.8Z M6 4.4a1.6 1.6 0 1 1 0 3.2a1.6 1.6 0 1 1 0-3.2Z', fill: true },   // a ring: the inner circle runs the other way round, so it stays open
+  fuel: { d: 'M6 1.5C6 1.5 2.6 5.5 2.6 7.6a3.4 3.4 0 0 0 6.8 0C9.4 5.5 6 1.5 6 1.5Z', fill: true },   // a drop
   flag: { d: 'M3 10.8V1.7 M3 1.9 9.8 3.9 3 5.9Z', fill: true },
   pip: { d: 'M6 2.4 9.6 6 6 9.6 2.4 6Z', fill: true },
   cross: { d: 'M3 3 9 9 M9 3 3 9' },
@@ -355,10 +353,24 @@ const ground = document.createElement('canvas'), gctx = ground.getContext('2d');
 const realm = document.createElement('canvas'), rctx = realm.getContext('2d');
 let realmKey = '', realmVer = 0, realmNames = [];
 const regionRadius = (k) => Math.max(9, terrR * k * 1.3);     // how far a region reaches around each of its systems, on the screen
-function ourSpace() {
-  const ids = new Set(holdBy.keys());
-  for (const id of sphere.keys()) ids.add(id);
-  return [...ids].map((id) => sys.get(id)).filter(Boolean);
+function lineHome(from) {                             // the systems on the shortest lane path from a system to our home space
+  const prev = new Map([[from, null]]), queue = [from];
+  while (queue.length) {
+    const here = queue.shift(), s = sys.get(here);
+    if (!s) continue;
+    if (s.empire && s.empire === homeEmpire) {
+      const out = [];
+      for (let at = here; at !== null; at = prev.get(at)) out.push(sys.get(at));
+      return out;
+    }
+    for (const next of s.lanes) { if (sys.has(next) && !prev.has(next)) { prev.set(next, here); queue.push(next); } }
+  }
+  return [sys.get(from)].filter(Boolean);
+}
+function ourSpace() {                                // our space: home (our empire's space) and a line out to each building of ours beyond it
+  const home = homeEmpire ? S.systems.filter((s) => s.empire === homeEmpire) : [];
+  const far = [...holdBy.keys()].map((id) => sys.get(id)).filter((s) => s && s.empire !== homeEmpire);
+  return { home, far, lines: far.map((s) => lineHome(s.id)) };
 }
 function paintTerritory(k) {
   const d = window.devicePixelRatio || 1, R = regionRadius(k);
@@ -421,9 +433,14 @@ function paintTerritory(k) {
     if (layers.Regions) {
       const realms = new Map();
       for (const s of S.systems) { if (s.empire) { if (!realms.has(s.empire)) realms.set(s.empire, []); realms.get(s.empire).push(s); } }
-      for (const list of realms.values()) area(list, color(list[0]), 0.1, 0.5, R);
+      for (const [empire, list] of realms) { if (!(layers['Our space'] && empire === homeEmpire)) area(list, color(list[0]), 0.1, 0.5, R); }   // our home is drawn as our space
     }
-    if (layers['Our space']) area(ourSpace(), OURS, 0.085, 0.7, R * 0.62);
+    if (layers['Our space']) {
+      const ours = ourSpace();
+      area(ours.home, OURS, 0.1, 0.6, R);
+      for (const line of ours.lines) area(line, OURS, 0.16, 0.8, R * 0.36);   // the lines going out, along the lanes
+      for (const s of ours.far) area([s], OURS, 0.18, 0.85, R * 0.75);
+    }
     rctx.globalAlpha = 1;
   }
   ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(realm, 0, 0); ctx.restore();
@@ -450,7 +467,7 @@ function paint(t) {
       const crowd = (yy) => dots.reduce((m, q) => m + (Math.abs(q[0] - x) < total / 2 + 8 && Math.abs(q[1] - yy) < size * 0.8 + 5 ? 1 : 0), 0);
       const y = crowd(under) <= crowd(over) ? under : over;
       if (x < -total || x > W + total || y < -30 || y > H + 30) continue;
-      ctx.fillStyle = rgba(n.colour, (0.55 * fade).toFixed(2));
+      ctx.fillStyle = rgba(n.home && layers['Our space'] ? OURS : n.colour, (0.55 * fade).toFixed(2));
       let at = x - total / 2;
       letters.forEach((ch, i) => { ctx.fillText(ch, at, y); at += widths[i] + gap; });
     }
@@ -1062,6 +1079,12 @@ async function selectShip(name, center) {
 
 // ---------------------------------------------------------------- right panel
 
+let INVCACHE = { at: 0, value: null };          // the inventory for the system card: asked at most once a minute
+async function inventoryOf() {
+  if (Date.now() - INVCACHE.at < 60000 && INVCACHE.value) return INVCACHE.value;
+  try { INVCACHE = { at: Date.now(), value: await get('/api/inventory') }; } catch (e) { return INVCACHE.value; }
+  return INVCACHE.value;
+}
 async function renderSelection(panel, live) {
   if (selShip) { renderShip(panel); return; }
   if (pilotCard) { renderPilot(panel, pilotCard); return; }
@@ -1080,13 +1103,33 @@ async function renderSelection(panel, live) {
     ['Pilots seen (1 h / 24 h)', (L.hour[s.id] || 0) + ' / ' + (L.day[s.id] || 0)],
     ['Flags', [s.home ? 'empire home' : '', s.stronghold ? 'pirate stronghold' : ''].filter(Boolean).join(', ') || 'none'],
   ]));
-  const own = holdBy.get(s.id) || [], site = sitesBy.get(s.id);
-  if (own.length || (site && site.status !== 'dropped')) {       // what we own here and what we plan here
-    panel.append(el('h3', null, 'Ours here'));
-    if (own.length) panel.append(table(['Building', 'Tier', 'At', 'State'], own.map((b) => [b.name, b.level || '', b.at || '', (b.status || 'active').replace(/_/g, ' ')])));
-    if (site && site.status !== 'dropped') panel.append(el('p', 'sub', 'A site for a base of ours: ' + site.status + (site.by ? ', proposed by ' + site.by : '') + '.'));
+  // What is ours here and what it is worth: the wallets of our ships, the goods we store at its stations (catalog
+  // values: what a unit is worth, not what a buyer pays today), our buildings and the faction's purse.
+  const own = holdBy.get(s.id) || [], site = sitesBy.get(s.id), ours = shipsBy.get(s.id) || [], st = stationsBy.get(s.id) || [];
+  const named = new Set(st.map((t) => t.name)), bases = new Set(own.map((b) => b.base).filter(Boolean));
+  const inv = await inventoryOf();
+  if (!live()) return;
+  const goods = inv ? inv.stations.filter((x) => named.has(x.name) || bases.has(x.base)) : [];
+  const worth = goods.reduce((a, x) => a + (x.worth || 0), 0), units = goods.reduce((a, x) => a + (x.units || 0), 0);
+  const wallets = ours.reduce((a, r) => a + (r.credits || 0), 0);
+  const here = [['Ships of ours', ours.length ? ours.length + ', their wallets ' + fmt(wallets) + ' cr' : 'none'],
+    ['Goods we store here', !inv ? 'not read' : units ? fmt(units) + ' units, worth about ' + fmt(worth) + ' cr' : 'none']];
+  if (own.length) {
+    here.push(['Our buildings', own.map((b) => b.name + (stands(b) ? '' : ' (' + String(b.status).replace(/_/g, ' ') + ')')).join(', ')]);
+    here.push(['Faction purse', fmt((S.holdings || {}).treasury) + ' cr, one purse for all our buildings']);
   }
-  const ours = shipsBy.get(s.id) || [];
+  if (site && site.status !== 'dropped' && site.status !== 'built') here.push(['Site for a base', site.status + (site.by ? ', proposed by ' + site.by : '')]);
+  panel.append(el('h3', null, 'Ours here'), facts(here));
+  // Every station, outpost and building here, whom it belongs to and what of ours it holds.
+  const theirs = (t) => (t.tag && t.tag === S.our_tag ? 'us, The Collective' : t.faction ? t.faction + (t.tag ? ' [' + t.tag + ']' : '') : t.empire ? 'the ' + t.empire + ' empire' : 'nobody');
+  const heldAt = (name) => { const x = inv && inv.stations.find((y) => y.name === name); return x ? fmt(x.worth) + ' cr' : ''; };
+  const places = st.map((t) => [t.name, t.type || 'station', theirs(t), heldAt(t.name), t.wrecked ? 'wrecked' : t.condition || '']);
+  const KIND = { storage: 'shared storage', fuel: 'fuel bunker', recruit: 'hiring office', office: 'office', outpost: 'outpost', station: 'station' };
+  own.filter((b) => b.part || b.kind === 'outpost' || b.kind === 'station').forEach((b) => { if (!st.some((t) => t.name === b.name)) places.push([b.name, KIND[b.kind] || b.kind, 'us, The Collective', '', (b.status || 'active').replace(/_/g, ' ')]); });
+  own.filter((b) => !b.part && b.kind !== 'outpost' && b.kind !== 'station').forEach((b) => places.push([b.name + ' (in ' + (b.at || 'a station') + ')', KIND[b.kind] || 'our building', 'us, The Collective', '', (b.status || 'active').replace(/_/g, ' ')]));
+  panel.append(el('h3', null, 'Stations, outposts and buildings here'));
+  if (places.length) panel.append(table(['Name', 'Kind', 'Belongs to', 'Ours stored', 'State'], places));
+  else panel.append(el('p', 'empty', 'None on the public list.'));
   if (ours.length) {
     panel.append(el('h3', null, 'Our ships here (' + ours.length + ')'));
     panel.append(table(['Ship', 'Doing', 'Cargo'], ours.slice(0, 12).map((r) => [shipLink(r.name), shipState(r)[1], r.cargo_used + ' / ' + r.cargo_capacity])));
@@ -1102,12 +1145,10 @@ async function renderSelection(panel, live) {
     route.forEach((id) => way.append(sysLink(id)));
     panel.append(way);
   }
-  const st = stationsBy.get(s.id) || [];
-  panel.append(el('h3', null, 'Stations'));
-  if (st.length) {
-    panel.append(table(['Station', 'Owner', 'State', 'Services'],
-      st.map((t) => [t.name, t.tag || t.empire || '', t.wrecked ? 'wrecked' : t.condition, t.services.join(', ')])));
-  } else panel.append(el('p', 'empty', 'None on the public list.'));
+  if (st.some((t) => t.services.length)) {
+    panel.append(el('h3', null, 'Services'));
+    panel.append(table(['Station', 'Services'], st.filter((t) => t.services.length).map((t) => [t.name, t.services.join(', ')])));
+  }
   const id = s.id, box = el('div');
   panel.append(box);
   try {
@@ -1770,7 +1811,7 @@ async function loadState() {
   ((S.holdings || {}).buildings || []).forEach((b) => { if (!holdBy.has(b.system)) holdBy.set(b.system, []); holdBy.get(b.system).push(b); });
   const spaces = new Map();
   for (const s of S.systems) { if (s.empire) { if (!spaces.has(s.empire)) spaces.set(s.empire, []); spaces.get(s.empire).push(s); } }
-  realmNames = [...spaces].map(([name, list]) => ({ word: (name === 'outerrim' ? 'outer rim' : name).toUpperCase(), colour: color(list[0]),
+  realmNames = [...spaces].map(([name, list]) => ({ word: (name === 'outerrim' ? 'outer rim' : name).toUpperCase(), colour: color(list[0]), home: name === homeEmpire,
     x: list.reduce((a, o) => a + o.x, 0) / list.length, y0: Math.min(...list.map((o) => o.y)), y1: Math.max(...list.map((o) => o.y)) }));
   realmVer++;
   const legend = $('legend');
@@ -1781,11 +1822,12 @@ async function loadState() {
   head('Regions');
   for (const [name, c] of Object.entries(S.empires)) {
     const colour = HEX.test(c) ? c : LAWLESS;
-    row(swatch(rgba(colour, 0.75), rgba(colour, 0.22)), name === 'outerrim' ? 'outer rim' : name);
+    if (name === homeEmpire) row(swatch(rgba(OURS, 0.9), rgba(OURS, 0.2)), name + ': our home, drawn in our green');
+    else row(swatch(rgba(colour, 0.75), rgba(colour, 0.22)), name === 'outerrim' ? 'outer rim' : name);
   }
   const free = el('i'); free.style.background = LAWLESS;
   row(free, 'lawless');
-  row(swatch(rgba(OURS, 0.9), rgba(OURS, 0.16)), 'our space: where our ships were in the last hour, and our buildings', true);
+  row(swatch(rgba(OURS, 0.9), rgba(OURS, 0.16)), 'our space: our home and the lines out along the lanes to our bases beyond the border', true);
   head('Our fleet');
   row(tokenSvg(), 'our ships: a slice per division, their number inside; outer ring: whose space', true);
   for (const kind of KINDS.slice(0, 6)) {            // the silhouette of each kind, as in the roster
@@ -1794,11 +1836,12 @@ async function loadState() {
     legend.append(span);
   }
   head('Ours');
-  row(glyphSvg('storage', BUILT, 13), 'shared storage');
-  row(glyphSvg('recruit', BUILT, 13), 'hiring office');
-  row(glyphSvg('office', BUILT, 13), 'other office');
   row(glyphSvg('outpost', BUILT, 13), 'outpost');
   row(glyphSvg('station', BUILT, 13), 'station');
+  row(glyphSvg('storage', BUILT, 13), 'shared storage');
+  row(glyphSvg('fuel', BUILT, 13), 'fuel bunker');
+  row(glyphSvg('recruit', BUILT, 13), 'hiring office');
+  row(glyphSvg('office', BUILT, 13), 'other office');
   row(glyphSvg('storage', RAISING, 13), 'amber: not active yet');
   row(glyphSvg('flag', OURS, 13), 'site chosen for a base');
   row(glyphSvg('flag', rgba(OURS, 0.7), 13, true), 'candidate site');
@@ -1822,12 +1865,6 @@ async function loadFleet() {
   try { F = await get('/api/fleet'); fetchedAt = Date.now(); } catch (e) { F = Object.assign({}, F, { age: -1 }); }
   shipsBy.clear();
   F.ships.forEach((r) => { if (r.system) { if (!shipsBy.has(r.system)) shipsBy.set(r.system, []); shipsBy.get(r.system).push(r); } });
-  const nowMs = Date.now();                    // our own space: every system where a ship of ours was seen in the last hour; the browser remembers it over a reload
-  let moved = false;
-  for (const id of shipsBy.keys()) { if (!sphere.has(id)) moved = true; sphere.set(id, nowMs); }
-  for (const [id, at] of sphere) { if (nowMs - at > SPHERE_MS) { sphere.delete(id); moved = true; } }
-  if (moved) realmVer++;
-  if (nowMs - sphereSaved > 60000) { sphereSaved = nowMs; try { localStorage.setItem('station.sphere', JSON.stringify([...sphere])); } catch (e) { /* no storage */ } }
   renderMembers(); renderRoster(); renderNotice(); tickAges(); renderPop(); draw();
   if (tab === 'Metrics' && Date.now() - metricsAt >= 30000) render();   // not at every poll: the page under the reader stays still
   if (selShip) {

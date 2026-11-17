@@ -1004,7 +1004,7 @@ def foreign_groups(now, system=None, least=GROUP_MIN, cap=80):
 
 
 SITES = {"at": 0.0, "value": []}
-HOLDINGS = {"at": 0.0, "value": {"read_at": "", "buildings": []}}
+HOLDINGS = {"at": 0.0, "value": {"read_at": "", "treasury": 0, "buildings": []}}
 BASE_ID = re.compile(r"[0-9a-f]{32}")          # the id of a base a faction founded; a station of the game has a name as its id
 MET = {"at": 0.0, "value": {}}
 HULLS = {"at": 0.0, "value": {}}
@@ -1029,11 +1029,13 @@ def load_sites():
 
 
 def holding_kind(kind):
-    """The mark a building of ours gets on the map: outpost, station, storage (a Lockbox or any other store), recruit
-    (an office that raises the faction's member limit) or office (every other facility)."""
+    """The mark a building of ours gets on the map: outpost, station, storage (a Lockbox or any other store), fuel (a
+    fuel bunker), recruit (an office that raises the faction's member limit) or office (every other facility)."""
     word = str(kind).lower()
     if word in ("outpost", "station"):
         return word
+    if "fuel" in word:
+        return "fuel"
     if any(w in word for w in ("lockbox", "storage", "warehouse", "vault", "depot")):
         return "storage"
     if "hiring" in word or "recruit" in word:
@@ -1043,33 +1045,37 @@ def holding_kind(kind):
 
 def load_holdings():
     """What the faction owns, for the map (data/empire/empire.json beside the fleet folder, written from the game by
-    game/fleet/empire.py collect): {"read_at", "buildings": [{"system", "kind", "name", "level", "status", "at",
-    "part"}]}, the bases (outposts, stations) first, then the facilities. `at` names where a facility stands: the
+    game/fleet/empire.py collect): {"read_at", "treasury", "buildings": [{"system", "kind", "name", "level", "status",
+    "at", "part", "base"}]}, the bases (outposts, stations) first, then the facilities; `base` is the game's id of the
+    station or base it stands in, and `treasury` the faction's purse at the reading. `at` names where a facility stands: the
     station, or the base of our own in that system; `part` is true for a facility inside a base of our own, which the
     map draws as one mark with its base. Read at most once a minute; no file or a broken one: nothing owned, no fault."""
     if time.time() - HOLDINGS["at"] > 60:
-        value = {"read_at": "", "buildings": []}
+        value = {"read_at": "", "treasury": 0, "buildings": []}
         try:
             d = read_json(FLEET.parent / "empire" / "empire.json")
         except (OSError, ValueError):
             d = {}
         if isinstance(d, dict):
             value["read_at"] = text(d.get("written_at"), 30)
+            value["treasury"] = int(num((d.get("faction") if isinstance(d.get("faction"), dict) else {}).get("treasury")))
             for b in (d.get("bases") if isinstance(d.get("bases"), list) else [])[:100]:
                 if isinstance(b, dict) and b.get("system"):
                     value["buildings"].append({"system": text(b["system"], 80), "kind": holding_kind(b.get("kind")), "name": text(b.get("name"), 80),
-                                               "level": 0, "status": text(b.get("status"), 30) or "active", "at": "", "part": False})
+                                               "level": 0, "status": text(b.get("status"), 30) or "active", "at": "", "part": False,
+                                               "base": text(b.get("base"), 80)})
             based = {b["system"]: b["name"] for b in value["buildings"]}                 # our own bases by system
             for f in (d.get("facilities") if isinstance(d.get("facilities"), list) else [])[:300]:
                 if isinstance(f, dict) and f.get("system"):
-                    at, part = text(f.get("base"), 80), False
+                    base = text(f.get("base"), 80)
+                    at, part = base, False
                     if BASE_ID.fullmatch(at):                                            # it stands in a base of our own
                         at, part = based.get(text(f["system"], 80)) or "our base here", True
                     else:
                         at = at.replace("_", " ").title()
                     value["buildings"].append({"system": text(f["system"], 80), "kind": holding_kind(f.get("type") or f.get("name")),
                                                "name": text(f.get("name") or f.get("type"), 80), "level": int(num(f.get("level"))),
-                                               "status": text(f.get("status"), 30) or "active", "at": at, "part": part})
+                                               "status": text(f.get("status"), 30) or "active", "at": at, "part": part, "base": base})
         HOLDINGS["at"], HOLDINGS["value"] = time.time(), value
     return HOLDINGS["value"]
 
