@@ -16,18 +16,18 @@
    "note": "Fit: the starter Threshold, empty hold (rule F13). Long jumps train navigation fastest; navigation 3 opens Signal Fragments in the list First."
   },
   "reader": {
-   "title": "Read: the outpost site GSC-0044 and its six neighbours hourly, Clearwater hourly for Logistics, the places our routes use twice a turn, then the frontier, then the roads",
+   "title": "Read where the fleet works: the outpost site and its neighbours, the places our routes use, the frontier, the roads",
    "routes": [
     "census-watch-gsc-0044",
-    "census-watch-clearwater",
     "census-worked",
     "census-frontier",
     "census-roads"
    ],
    "trains": [
-    "exploration",
     "navigation",
-    "piloting"
+    "exploration",
+    "piloting",
+    "scanning"
    ],
    "note": "Fit: the starter Threshold, empty hold. The home census stands in the list First for every scout; gathering in the list Then is the fallback when nothing is due. 2026-11-17 15:30 UTC: census-watch-clearwater second (requests ENT-221), off again when its two readings are filed."
   }
