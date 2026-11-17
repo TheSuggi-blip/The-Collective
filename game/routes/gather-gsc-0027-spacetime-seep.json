@@ -9,7 +9,7 @@
  "max_ships": 50,
  "standing": true,
  "min_left": {
-  "iron_ore": 30000
+  "iron_ore": 20000
  },
  "measured": {
   "date": "2026-11-17",

@@ -18,7 +18,7 @@
  "max_ships": 125,
  "standing": true,
  "min_left": {
-  "copper_ore": 30000
+  "copper_ore": 10000
  },
  "requires": {
   "module": "mining_laser_i"
