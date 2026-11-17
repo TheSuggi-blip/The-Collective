@@ -1,0 +1,17 @@
+{
+ "id": "store-hold-central-nexus",
+ "kind": "circuit",
+ "title": "A ship a run left loaded docks at Central Nexus and stores its hold",
+ "note": "Written by Zero, 2026-11-17 03:11 UTC (orders.log ENT-025, block ZERO; queue.log ENT-131: requires.hold). At 03:02 UTC 34 miners waited with 10 to 42 units of iron and copper ore aboard: a gather run without a sale stopped its engine loop at 45 minutes and left the partial load in the hold (mine.py before commit 0eca38b), so every route that wants an empty hold was closed to them (fill.py status: hold not empty 27). One stop, store all: the hold goes into the pilot's own storage, the ore stays the reserve's. Standing work; it stands at the head of the reserve templates, a ship that carries nothing passes it by.",
+ "standing": true,
+ "max_ships": 40,
+ "requires": {
+  "hold": true
+ },
+ "stops": [
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "store": "all"
+  }
+ ]
+}

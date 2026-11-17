@@ -1,0 +1,18 @@
+{
+ "id": "gather-ironhollow-echo-ejecta",
+ "kind": "mine",
+ "title": "Standing work, a test: iron at Ironhollow Echo Ejecta (beyond the border) into storage at The Experiment",
+ "note": "Written by Zero, 2026-11-17 03:11 UTC (orders.log ENT-025, block ZERO: iron for the reserve; rule F13: a test with one ship and an empty hold). The field read 94,493 iron (richness 26) and 100,000 copper (25) at about 01:20 UTC, and grew back 275 iron an hour over 28 hours (hive.py refill); it lies in the same system as Ironhollow Fading Signal, one jump from The Experiment, where seven miners gather under a guard of Military (requests.log ENT-181). A combat ship of the faction tagged BUSY was seen at this place at 2026-11-16 23:06 UTC, not in combat (table met). One ship until its first RESULT line is read.",
+ "belt": "ironhollow:echo_ejecta",
+ "station": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+ "minutes": 45,
+ "max_ships": 1,
+ "standing": true,
+ "min_left": {
+  "iron_ore": 30000
+ },
+ "requires": {
+  "module": "mining_laser_i",
+  "empty_hold": true
+ }
+}

@@ -2,21 +2,21 @@
  "id": "drain-ice-nexus",
  "kind": "circuit",
  "title": "Stored water ice sold where it lies, at central_nexus, into the bid there",
- "note": "Written by Zero, 2026-11-16 12:11 UTC (orders.log ENT-014, block ZERO; requests.log ENT-117). A pilot whose own storage at central_nexus holds 30 water ice or more docks there, withdraws what the bid takes at its best price (the circuit runner's withdraw step, commit 6f643ec) and sells it; the second stop stores anything left aboard. Central Nexus is the one water-ice bid of our books: 32 cr x 563 in all its levels at 12:01 UTC (the deep order of 42,635 at 09:17 UTC is gone), regaining about 1,197 units an hour at its best price (hive.py refill). Miners hold 14,271 water ice in storage where the bids regain slowly or not at all (the tool stock, 12:04 UTC: Node Alpha 5,500 by 15 pilots, The Experiment 6,980 by 22, Synchrony 1,791 by 8) and 1,953 at Central Nexus by 18. Selling stored ice costs only the fuel of its jumps; mining new ice into an oversold bid stores it. A test until its first RESULT line. 2026-11-16 12:12 UTC, Zero: requires.empty_hold out: the route works in policed space only and its last stop stores all that is aboard, so leftovers in a hold need not close it (six waiting miners held 26 to 56 units of First Steps ore at 12:11 UTC). 2026-11-16 12:19 UTC, Zero: the first stop stores all that is aboard before it withdraws (the store step runs first): the first carries left with 9 to 39 free units of a 65 hold, their leftover ore taking two units of space a piece (commit 180d58b counts the hold by size).",
+ "note": "Written by Zero, 2026-11-16 12:11 UTC (orders.log ENT-014, block ZERO; requests.log ENT-117). A pilot whose own storage at central_nexus holds 30 water ice or more docks there, withdraws what the bid takes at its best price (the circuit runner's withdraw step, commit 6f643ec) and sells it; the second stop stores anything left aboard. Central Nexus is the one water-ice bid of our books: 32 cr x 563 in all its levels at 12:01 UTC (the deep order of 42,635 at 09:17 UTC is gone), regaining about 1,197 units an hour at its best price (hive.py refill). Miners hold 14,271 water ice in storage where the bids regain slowly or not at all (the tool stock, 12:04 UTC: Node Alpha 5,500 by 15 pilots, The Experiment 6,980 by 22, Synchrony 1,791 by 8) and 1,953 at Central Nexus by 18. Selling stored ice costs only the fuel of its jumps; mining new ice into an oversold bid stores it. A test until its first RESULT line. 2026-11-16 12:12 UTC, Zero: requires.empty_hold out: the route works in policed space only and its last stop stores all that is aboard, so leftovers in a hold need not close it (six waiting miners held 26 to 56 units of First Steps ore at 12:11 UTC). 2026-11-16 12:19 UTC, Zero: the first stop stores all that is aboard before it withdraws (the store step runs first): the first carries left with 9 to 39 free units of a 65 hold, their leftover ore taking two units of space a piece (commit 180d58b counts the hold by size). Gate lowered by Zero, 2026-11-17 03:11 UTC, as a one-ship test: since 2026-11-16 13:36 UTC the Central Nexus water-ice bid showed 1 to 5 units at its best price at every read (34 x 5 at 03:10 UTC, 7 in all levels; the tool market), so a gate of 30 never opened while miners store 4,931 water ice there (storage book 03:10 UTC). The withdraw takes only what the bid takes; a run from a ship already docked there costs ticks, not fuel. Read its runs next turn: credits a run and runs an hour.",
  "requires": {
   "stored": {
    "at": "central_nexus",
    "item": "water_ice",
-   "min": 30
+   "min": 5
   },
   "bid": {
    "item": "water_ice",
    "base": "central_nexus",
    "min_price": 25,
-   "min_qty": 30
+   "min_qty": 5
   }
  },
- "max_ships": 2,
+ "max_ships": 1,
  "stops": [
   {
    "at": "nexus_prime:the_core:central_nexus",
