@@ -625,6 +625,14 @@ def show_system(root, data, now, sid):
         return 1
     empire, jumps = systems[sid]
     print("SYSTEM %s | %s | %s jumps from home" % (sid, "our empire" if empire == home else ("lawless" if empire in ("-", "") else "empire " + empire), jumps if jumps is not None else "?"))
+    held = read(Path(data) / "empire" / "empire.json", {})                  # what the faction owns, as empire.py collect read it from the game
+    held = held if isinstance(held, dict) else {}
+    built = ["%s %s" % (b.get("kind") or "base", b.get("name") or "?") for b in held.get("bases") or [] if isinstance(b, dict) and b.get("system") == sid]
+    built += ["%s tier %s at %s (%s)" % (f.get("name") or f.get("type") or "office", f.get("level") or 1, f.get("base") or "?", f.get("status") or "?")
+              for f in held.get("facilities") or [] if isinstance(f, dict) and f.get("system") == sid]
+    plans = ["%s%s" % (x.get("status") or "candidate", (", proposed by " + x["proposed_by"]) if x.get("proposed_by") else "")
+             for x in held.get("sites") or [] if isinstance(x, dict) and x.get("system") == sid]
+    print("  ours here: %s%s" % (", ".join(built) or "nothing built", (" | a site of ours: " + "; ".join(plans)) if plans else ""))
     scan = read(Path(data) / "scouting" / (sid + ".json"), None)
     wild = read(Path(data) / "wildlife" / (sid + ".json"), {})
     if not isinstance(scan, dict):

@@ -19,7 +19,8 @@ RULES:
   - Territory is what the game's own lists show: a system with a station or an outpost that carries our tag, or with
     an office of ours at somebody else's station. Nothing is claimed by hand.
   - A site is a line of game/map/sites.tsv, kept by hand by the Fleet Admiral (Intel proposes); the script adds what
-    the chart and the public list of stations say about its system. Where a base is built is Suggi's decision.
+    the chart and the public list of stations say about its system, and reads the site as `built` once a base of ours
+    stands in that system. Suggi gives the direction of the expansion; the Fleet Admiral chooses the system.
   - A fact no reading holds is written `not read`, never filled in. The file is rewritten only when a fact changed.
 WHY:  what we own and where stood in no file: the faction's limit was read by hand, the rent of an office was "not
       read yet" in an order, and a plan for a base had no list of what stands already (Suggi, 2026-11-16: "we need
@@ -225,7 +226,8 @@ def collect(data, root, see=look, force=False, pause=0.5, now=None):
     for row in site_rows(root):
         known = systems.get(row["system"])
         there = ["%s (%s%s)" % (ascii_text(s.get("name"), 60), s.get("type") or "station", ", " + ascii_text(s.get("tag"), 8) if s.get("tag") else "") for s in public if s.get("system") == row["system"]]
-        sites.append(dict(row, name=known["name"] if known else "", space=("not on the chart" if not known else known["empire"] or "lawless"), jumps=known["jumps"] if known else None, stations=there))
+        status = "built" if row["status"] != "dropped" and any(b["system"] == row["system"] for b in bases) else row["status"]      # a base of ours stands there: the game says so, no hand
+        sites.append(dict(row, status=status, name=known["name"] if known else "", space=("not on the chart" if not known else known["empire"] or "lawless"), jumps=known["jumps"] if known else None, stations=there))
     feed = ((read_json(Path(data) / "station" / "feed.json", {}) or {}).get("factions") or {}).get(tag) or {}
     ships = [s for s in (read_json(Path(data) / "fleet" / "fleet.json", {}) or {}).get("ships") or [] if isinstance(s, dict) and s.get("name")]
     rungs, version = ladder(data, pilot, see, old, force, pause)

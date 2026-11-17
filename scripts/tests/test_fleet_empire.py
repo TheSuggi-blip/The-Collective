@@ -83,7 +83,7 @@ class CollectTests(Tree):
         self.assertEqual(state["rent"], {"facilities": 1, "per_cycle": 26, "per_day": 2246, "arrears": None})
         self.assertEqual(state["territory"], [{"system": "wild", "claim": "outpost", "note": "Test Rock"}, {"system": "far", "claim": "office", "note": "at far_base"}])
         self.assertEqual([(s["system"], s["poi"], s["status"], s["space"], s["jumps"], s["stations"]) for s in state["sites"]],
-                         [("wild", "", "candidate", "lawless", 4, ["Test Rock (outpost, TEST)", "Their Hub (station, THEM)"]), ("nowhere", "p1", "dropped", "not on the chart", None, [])])
+                         [("wild", "", "built", "lawless", 4, ["Test Rock (outpost, TEST)", "Their Hub (station, THEM)"]), ("nowhere", "p1", "dropped", "not on the chart", None, [])])   # our outpost stands in `wild`: built, by the game's list
         self.assertEqual(state["relations"], {"allies": ["FRND"], "enemies": [], "wars": []})
         self.assertEqual({c[0] for c in self.calls}, {"Lead Ship"})                                        # the Fleet Admiral's flagship, no other pilot
 
@@ -138,7 +138,7 @@ class PageTests(Tree):
         self.assertIn("| Outposts | 1 of 8 |", text)
         self.assertIn("| Test Rock | outpost | `wild` | thriving | -- |", text)
         self.assertIn("| `far` | office | at far_base |", text)
-        self.assertIn("| `wild` | Wild | lawless | 4 | Test Rock (outpost, TEST), Their Hub (station, THEM) | candidate | Oracle | beside the ice |", text)
+        self.assertIn("| `wild` | Wild | lawless | 4 | Test Rock (outpost, TEST), Their Hub (station, THEM) | built | Oracle | beside the ice |", text)
         self.assertIn("| faction_recruitment | 1 | Hiring Board (`hiring_board`) | 75,000 | 75 steel_plate | 26 | 2,246 | 50 members |", text)
         self.assertTrue(all(ord(c) < 128 for c in text))
         later = empire.page(dict(state, written_at="2026-11-17T00:00:00Z"))

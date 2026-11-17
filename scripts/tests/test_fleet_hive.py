@@ -182,6 +182,25 @@ class HiveTests(unittest.TestCase):
                      "=== THE FILL GATE (no ship is idle)", "PASS: no ship of miner waits"):
             self.assertIn(part, text)
 
+    def test_a_system_shows_what_we_own_and_plan_there(self):
+        (self.data / "empire").mkdir()
+        (self.data / "empire" / "empire.json").write_text(json.dumps({
+            "bases": [{"name": "Test Rock", "kind": "outpost", "system": "home"}, {"name": "Elsewhere", "kind": "station", "system": "far"}],
+            "facilities": [{"name": "Faction Lockbox", "type": "faction_lockbox", "level": 1, "base": "hub", "system": "home", "status": "active"}],
+            "sites": [{"system": "home", "status": "built", "proposed_by": "Oracle"}, {"system": "far", "status": "candidate", "proposed_by": ""}]}))
+        systems = lambda root: ({"home": ("voidborn", 0), "far": ("-", 3), "bare": ("-", 5)}, "voidborn")
+        old, self.hive.routefiles.atlas = self.hive.routefiles.atlas, systems
+        self.addCleanup(setattr, self.hive.routefiles, "atlas", old)
+        text = {}
+        for sid in ("home", "far", "bare"):
+            out = io.StringIO()
+            with contextlib.redirect_stdout(out):
+                self.assertEqual(self.hive.show_system(str(FLEET.parent), str(self.data), time.time(), sid), 0)
+            text[sid] = [line for line in out.getvalue().split("\n") if line.startswith("  ours here:")]
+        self.assertEqual(text["home"], ["  ours here: outpost Test Rock, Faction Lockbox tier 1 at hub (active) | a site of ours: built, proposed by Oracle"])
+        self.assertEqual(text["far"], ["  ours here: station Elsewhere | a site of ours: candidate"])
+        self.assertEqual(text["bare"], ["  ours here: nothing built"])                              # no reading names the system: said, not left out
+
     def test_a_question_without_readings_says_so_instead_of_failing(self):
         out = io.StringIO()
         with contextlib.redirect_stdout(out):
