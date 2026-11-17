@@ -8,6 +8,8 @@ WHAT: the service `store` runs it. Every minute it reads the new whole lines of 
         wildlife/history.jsonl  -> readings  one row a field or herd sums: reading_day (first and last count)
         observations/<division>.jsonl -> observations  one row an observation a member wrote with observe.py (six
                                 records, one per division: command, mining, trade, logistics, military, intel); no sums
+        stock/storage.json      -> stock_hour  one sample an hour of what each division holds of each item (station
+                                storage and the holds, as the table holdings has it), for what flows in per hour
       In the same pass it loads the snapshot tables: what a file says NOW (state, not history), from
         fleet/fleet.json, fleet/ships/*.json, fleet/orders/*.json  -> ships, ship_skills, ship_modules, ship_cargo
         stock/storage.json                                          -> holdings (views inventory, inventory_by_station)
@@ -46,6 +48,13 @@ RULES:
     than --keep-days are deleted by whole hours (readings by whole days); their sums stay, and a line of
     such an hour that turns up again is not taken in: those sums are final. Observations have no sums: they are kept
     KEEP_TABLES days (30), or --keep-days when that is longer, cut and sealed by whole days.
+  - stock_hour: after the snapshot, a pass that loaded the storage book again, or the first pass of a UTC hour,
+    writes the hour's sample from the table holdings: per division (division.owner's member, by its division's name)
+    and item the units held in station storage and in the holds, rows above 0 only. A later pass of the same hour
+    replaces the hour's rows (an item gone to 0 leaves it); `t` is the pass that wrote them. The holds count because
+    the inventory counts them: a load carried home is gathered, and a move from a hold into storage changes no sum.
+    A pilot the book could not read keeps its last reading there (ledger.py), so a sample never drops one. Kept
+    KEEP_TABLES days (30). reserve_flow() reads it: units now and the change per hour over a window.
   - A run counts for credits and read minutes only when it read a wallet (credits_before and
     credits_after above 0, no note `wallet not read`); its credits are its steady credits: what the run
     earned by the fleet's one rule (routes.py, earned: a hunt's sale of goods it carried in is left out)
@@ -78,6 +87,8 @@ From another program (the module's functions):
   store.route_rates(conn, since_epoch)  {route: (runs, read minutes, credits, one_time, credits per ship-hour or None)}
   store.query(data, sql, limit, seconds)  {columns, rows, cut, error}: one read-only statement on the read copy
   store.schema(conn)                    {table or view: {kind, description, columns, examples}}
+  store.reserve_flow(conn, items, windows)  per division and item (of `items`, e.g. the reserve's): units held now and
+                                        the change per hour over each window, a SUM per division (hive.py flow)
 
 USAGE:
   store.py serve [--every 60]     run forever (the service `store`)
@@ -148,9 +159,12 @@ CREATE TABLE IF NOT EXISTS observations (division TEXT NOT NULL, member TEXT NOT
   PRIMARY KEY (division, kind, subject, t, digest));
 CREATE INDEX IF NOT EXISTS observations_kind ON observations (kind, t);
 CREATE INDEX IF NOT EXISTS observations_subject ON observations (subject);
+CREATE TABLE IF NOT EXISTS stock_hour (hour INTEGER NOT NULL, division TEXT NOT NULL, item TEXT NOT NULL, units INTEGER NOT NULL,
+  t INTEGER NOT NULL, PRIMARY KEY (hour, division, item));
+CREATE INDEX IF NOT EXISTS stock_hour_item ON stock_hour (division, item, hour);
 """
 NEWEST = (("runs", "t"), ("moves", "t"), ("readings", "t"), ("route_hour", "hour"), ("market_hour", "hour"), ("reading_day", "day"),
-          ("observations", "t"))
+          ("observations", "t"), ("stock_hour", "hour"))
 
 
 def stamp(t):
@@ -317,7 +331,8 @@ def sum_none(conn, keys):
 
 
 OBSERVED = tuple(board.NAMES[member].lower() for member in division.MEMBERS)   # observe.py's six records, one per division
-KEEP_TABLES = {"observations": 30}         # days a table's raw rows stay at least, beyond --keep-days: no sums keep what a member saw
+KEEP_TABLES = {"observations": 30, "stock_hour": 30}      # days a table's rows stay at least, beyond --keep-days: no sums keep what a member saw
+                                                         # or what a division held an hour ago
 
 
 def take_observation(name):
@@ -1063,6 +1078,31 @@ def snapshot_said(snap):
     return " | ".join(parts)
 
 
+def sample_stock(conn, now, fresh):
+    """The hour's sample of what each division holds (stock_hour), from the table holdings as the snapshot left it: written
+    when the storage book was loaded again in this pass (fresh) or when the hour has no sample yet; the hour's rows are
+    replaced, so an item gone to 0 leaves the hour. Rows written; 0 when nothing was due or the book holds nothing.
+    Runs record no goods stored, so this is the one source of what flows into storage (hive.py flow)."""
+    hour = int(now) // HOUR * HOUR
+    if not fresh and conn.execute("SELECT 1 FROM stock_hour WHERE hour = ? LIMIT 1", (hour,)).fetchone():
+        return 0
+    held = Counter()
+    for member, item, units in conn.execute("SELECT member, item, SUM(units) FROM holdings WHERE item IS NOT NULL GROUP BY member, item"):
+        if units and units > 0:
+            held[(board.NAMES.get(member, member or "unknown"), item)] += int(units)
+    if not held:
+        return 0                                    # no storage book loaded yet: no sample, never a sample of nothing
+    conn.execute("BEGIN IMMEDIATE")
+    try:
+        conn.execute("DELETE FROM stock_hour WHERE hour = ?", (hour,))
+        conn.executemany("INSERT OR REPLACE INTO stock_hour VALUES (?,?,?,?,?)", [(hour, name, item, units, int(now)) for (name, item), units in sorted(held.items())])
+        conn.execute("COMMIT")
+    except BaseException:
+        conn.execute("ROLLBACK")
+        raise
+    return len(held)
+
+
 # ---- the database
 
 def folder_of(data):
@@ -1158,6 +1198,8 @@ def prune(conn, now, keep_days):
             if cut > meta(conn, "sealed." + table):
                 gone += conn.execute("DELETE FROM %s WHERE t < ?" % table, (cut,)).rowcount
                 conn.execute("INSERT OR REPLACE INTO meta VALUES (?, ?)", ("sealed." + table, cut))
+        cut = int(now - max(keep_days, KEEP_TABLES["stock_hour"]) * DAY) // HOUR * HOUR      # the pass writes the samples itself: no record, no seal
+        gone += conn.execute("DELETE FROM stock_hour WHERE hour < ?", (cut,)).rowcount
         conn.execute("COMMIT")
     except BaseException:
         conn.execute("ROLLBACK")
@@ -1204,7 +1246,7 @@ def one_pass(data, now=None, keep_days=KEEP_DAYS, root=None):
     begun = time.time()
     now = begun if now is None else now
     out = {"records": {}, "snapshot": {"loaded": Counter(), "rows": 0, "problems": [], "gone": 0, "flies": 0}, "pruned": 0, "published": False, "backup": None,
-           "recounted": 0}
+           "recounted": 0, "sampled": 0}
     conn = open_live(data)
     try:
         for name, table, take, add_up, step in RECORDS:
@@ -1225,9 +1267,13 @@ def one_pass(data, now=None, keep_days=KEEP_DAYS, root=None):
             out["snapshot"] = take_snapshot(conn, data, root or ROOT, now)
         except Exception as error:                     # a fault of the snapshot never holds up the history
             out["snapshot"] = {"loaded": Counter(), "rows": 0, "problems": [], "gone": 0, "flies": 0, "error": "%s: %s" % (type(error).__name__, error)}
+        try:
+            out["sampled"] = sample_stock(conn, now, bool(out["snapshot"]["loaded"].get("holdings")))
+        except sqlite3.Error as error:                 # nor does a fault of the hour's sample: the next pass writes it
+            out["records"]["stock_hour"] = {"added": 0, "bad": 0, "old": 0, "cut": False, "moved": False, "error": "%s: %s" % (type(error).__name__, error)}
         out["pruned"] = prune(conn, now, keep_days)
         snap = out["snapshot"]
-        wrote = out["pruned"] or out["recounted"] or any(r["added"] or r["moved"] for r in out["records"].values()) or snap["loaded"] or snap["gone"] or snap["flies"]
+        wrote = out["pruned"] or out["recounted"] or out["sampled"] or any(r["added"] or r["moved"] for r in out["records"].values()) or snap["loaded"] or snap["gone"] or snap["flies"]
         read = folder_of(data) / "read.db"
         if wrote or not read.exists() or time.time() - read.stat().st_mtime >= PUBLISH:
             copy_to(conn, read)
@@ -1243,7 +1289,7 @@ def said(out):
     """The pass's one line, or None when it wrote nothing."""
     records = out["records"]
     snap = snapshot_said(out.get("snapshot") or {"loaded": {}, "rows": 0, "problems": [], "gone": 0, "flies": 0})
-    if not (out["pruned"] or out["backup"] or out.get("recounted") or snap or any(r["added"] or r["bad"] or r["cut"] or r.get("error") for r in records.values())):
+    if not (out["pruned"] or out["backup"] or out.get("recounted") or out.get("sampled") or snap or any(r["added"] or r["bad"] or r["cut"] or r.get("error") for r in records.values())):
         return None
     parts = []
     for name, r in records.items():
@@ -1255,6 +1301,8 @@ def said(out):
         parts.append(part + (" (%s)" % ", ".join(extra) if extra else ""))
     if snap:
         parts.append(snap)
+    if out.get("sampled"):
+        parts.append("stock_hour: %d rows of the hour" % out["sampled"])
     if out.get("recounted"):
         parts.append("%d runs counted again" % out["recounted"])
     if out["pruned"]:
@@ -1342,6 +1390,53 @@ def route_rates(conn, since_epoch):
     return out
 
 
+def reserve_flow(conn, items=None, windows=(4, 12, 24)):
+    """What each division holds of each item now and how much that changed per hour over each window of hours, from the
+    samples of stock_hour: {newest, oldest (hours), t_newest, t_oldest (when they were written), hours (on record,
+    t_newest - t_oldest), base {window: (sample hour it is read from, hours between the two samples, short: True when the
+    record is shorter than the window)}, rows [{division, item, units, rate {window: units per hour or None}}], sums
+    {division: {items, units, rate}}}. `items` keeps only those items (the reserve's: the caller asks surplus.py; SQLite
+    does not know the reserve); None keeps all. A window is read from the newest sample at or before its start, else from
+    the oldest sample; a window over one sample only has no rate (None). An item a sample does not list is 0 there:
+    every sample holds every division's items above 0."""
+    out = {"newest": None, "oldest": None, "t_newest": None, "t_oldest": None, "hours": 0.0, "base": {}, "rows": [], "sums": {}}
+    hours = conn.execute("SELECT hour, MAX(t) FROM stock_hour GROUP BY hour ORDER BY hour").fetchall()
+    if not hours:
+        return out
+    (newest, t_new), (oldest, t_old) = hours[-1], hours[0]
+    out.update(newest=newest, oldest=oldest, t_newest=t_new, t_oldest=t_old, hours=(t_new - t_old) / 3600.0)
+    wanted = None if items is None else set(items)
+
+    def sample(hour):
+        return {(d, i): u for d, i, u in conn.execute("SELECT division, item, units FROM stock_hour WHERE hour = ?", (hour,))
+                if wanted is None or i in wanted}
+
+    now = sample(newest)
+    then = {}
+    for window in windows:
+        earlier = [(h, t) for h, t in hours if h <= newest - window * HOUR]
+        hour, t = earlier[-1] if earlier else hours[0]
+        out["base"][window] = (hour, (t_new - t) / 3600.0, not earlier)
+        if hour not in then:
+            then[hour] = sample(hour)
+    keys = set(now).union(*then.values()) if then else set(now)
+    sums = {}
+    for division_name, item in sorted(keys):
+        rate = {}
+        for window in windows:
+            hour, span, _short = out["base"][window]
+            rate[window] = (now.get((division_name, item), 0) - then[hour].get((division_name, item), 0)) / span if span > 0 else None
+        out["rows"].append({"division": division_name, "item": item, "units": now.get((division_name, item), 0), "rate": rate})
+        total = sums.setdefault(division_name, {"items": 0, "units": 0, "rate": {window: None for window in windows}})
+        total["items"] += 1 if now.get((division_name, item), 0) > 0 else 0
+        total["units"] += now.get((division_name, item), 0)
+        for window in windows:
+            if rate[window] is not None:
+                total["rate"][window] = (total["rate"][window] or 0.0) + rate[window]
+    out["sums"] = sums
+    return out
+
+
 DESCRIPTIONS = {               # one line per table and view: what a row is and where it comes from (schema(), hive.py schema)
     "cursor": "history bookkeeping: where each record (routes/runs.jsonl, market/history.jsonl, wildlife/history.jsonl, observations/<division>.jsonl) "
               "was read to, by byte",
@@ -1354,6 +1449,9 @@ DESCRIPTIONS = {               # one line per table and view: what a row is and 
     "reading_day": "history: per place, field or herd and UTC day the first and the last count; kept for good",
     "observations": "history: one row per observation a member wrote with observe.py (observations/<division>.jsonl): division, member, kind, "
                     "subject, when it was seen (t, at), note; `fields` is JSON text, one field read by json_extract(fields, '$.<key>'); kept 30 days at least",
+    "stock_hour": "history: one sample an hour of what each division (Mining, Trade, Logistics, Military, Intel, Command) holds of each item, station storage "
+                  "and holds added (stock/storage.json through holdings), units above 0 only; t = the pass that wrote it; kept 30 days. What flows in per hour: "
+                  "hive.py flow",
     "source": "snapshot bookkeeping: every file the snapshot tables were read from: size, mtime, when loaded (t), rows, and why not (note)",
     "ships": "now: one row per ship of ours (fleet/fleet.json): member and division, place, docked at which base, hull, fuel, hold, wallet, the order it flies",
     "ship_skills": "now: every skill of every ship with its level and XP (fleet/ships/<pilot>.json)",
@@ -1440,6 +1538,15 @@ EXAMPLES = {                   # three questions per table and view, as SQL (hiv
                      ("Prices seen at stations we read no book of (kind price): fields read by json_extract",
                       "SELECT at, subject AS station, json_extract(fields, '$.item') AS item, json_extract(fields, '$.bid') AS bid, "
                       "json_extract(fields, '$.ask') AS ask FROM observations WHERE kind = 'price' ORDER BY t DESC LIMIT 20")),
+    "stock_hour": (("What the Military division holds now, the most first", "SELECT item, units FROM stock_hour WHERE division = 'Military' "
+                    "AND hour = (SELECT MAX(hour) FROM stock_hour) ORDER BY units DESC LIMIT 20"),
+                   ("Units each division gained per hour over the last 4 hours, per item (an item gone to 0 is missing from the newest sample)",
+                    "SELECT n.division, n.item, n.units, ROUND((n.units - COALESCE(o.units, 0)) * 3600.0 / (n.t - b.t), 1) AS per_hour FROM stock_hour n "
+                    "JOIN (SELECT MAX(hour) AS hour, MAX(t) AS t FROM stock_hour WHERE hour <= (SELECT MAX(hour) FROM stock_hour) - 4 * 3600) b "
+                    "LEFT JOIN stock_hour o ON o.hour = b.hour AND o.division = n.division AND o.item = n.item "
+                    "WHERE n.hour = (SELECT MAX(hour) FROM stock_hour) AND n.t > b.t ORDER BY per_hour DESC LIMIT 20"),
+                   ("Copper ore held per division hour by hour", "SELECT datetime(hour, 'unixepoch') AS hour, division, units FROM stock_hour "
+                    "WHERE item = 'copper_ore' ORDER BY hour DESC, division LIMIT 48")),
     "source": (("Which files could not be read, and why", "SELECT name, note FROM source WHERE note <> ''"),
                ("How fresh is each loader's newest file", "SELECT loader, COUNT(*) AS files, datetime(MAX(mtime), 'unixepoch') AS newest_file, "
                 "datetime(MAX(t), 'unixepoch') AS loaded FROM source GROUP BY loader"),

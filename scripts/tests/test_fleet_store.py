@@ -393,7 +393,7 @@ class ObservationTests(unittest.TestCase):
         self.append("military", [old])                                                           # a line of a sealed day is not taken in
         out = self.one(keep_days=7)
         self.assertEqual((out["records"]["observations/military.jsonl"]["added"], out["records"]["observations/military.jsonl"]["old"]), (0, 1))
-        self.assertEqual(store.KEEP_TABLES, {"observations": 30})
+        self.assertEqual(store.KEEP_TABLES, {"observations": 30, "stock_hour": 30})                # the hourly samples of what we hold: 30 days too (2026-11-16)
         self.one(now=NOW + 25 * 86400, keep_days=40)                                             # a longer --keep-days holds them longer
         self.assertEqual(self.live("SELECT COUNT(*) FROM observations")[0][0], 1)
 

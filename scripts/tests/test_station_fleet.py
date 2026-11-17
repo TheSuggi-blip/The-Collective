@@ -117,6 +117,7 @@ class FleetCollectorTests(unittest.TestCase):
         listed = [{"username": "miner-1", "status": "connected"}, {"username": "miner-2", "status": "disconnected"},
                   {"username": "drone-3", "status": "reconnecting"}, {"username": "One of Seven", "status": "disconnected"}, "x", {"status": "disconnected"}]
         self.assertEqual(self.fleet.signed_out(listed), ["miner-2"])                      # of the fleet and signed out; never one that reconnects
+        listed = [a for a in listed if not (isinstance(a, dict) and a.get("status") == "reconnecting")]     # no wave of reconnects: the engine is not at it
         gate, away, posts = Opener(listed), {}, lambda: [c for c in calls if c[0] == "POST"]
         self.assertEqual(self.fleet.rejoin(1000, 5000, away, gate), (["miner-2"], []))       # the first look only names it
         self.assertEqual(self.fleet.rejoin(1030, 5030, away, gate), (["miner-2"], []))       # no second look within a minute
@@ -142,6 +143,8 @@ class FleetCollectorTests(unittest.TestCase):
                 raise OSError("no engine")
 
         self.assertEqual(self.fleet.rejoin(5000, 9000, {}, Away()), ([], []))
+        wave = Opener([{"username": "miner-2", "status": "disconnected"}, {"username": "miner-4", "status": "reconnecting"}])
+        self.assertEqual(self.fleet.rejoin(7000, 9000, {"at": 0, "first": {"miner-2": 0}}, wave), (["miner-2"], []))   # the engine signs pilots in itself: nobody is asked now
         # the switch: STOP or an empty rejoin-off names the pilot and asks nobody; a name in rejoin-off is left signed out, unnamed
         self.assertEqual(self.fleet.left_out(), (True, set()))
         seen_before = {"at": 0, "first": {"miner-2": 0}}

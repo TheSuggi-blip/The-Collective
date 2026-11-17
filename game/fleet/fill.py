@@ -31,9 +31,17 @@ RULES:
     together carry.
   - A ship on standing work counts as free for paying work and for tests: `status` lists what stands open to it
     outside its plan, `fill` puts it in front of its own routes, and the gate's PASS line names it.
+  - Standing work of a plan that is full while ships of the role wait is lifted by `fill` itself, by as many places as
+    ships wait and never past what its field carries (carries(): what grows back, and what lies above its floor for one
+    turn). 2026-11-16: three times in one evening the gate said HALT until a shared gather route was lifted by hand.
+    A route that sells is never lifted by the script: what a bid carries is its Admiral's to weigh.
   - `fill --once` adds only missions that pay once and buy nothing: the five-minute job runs it for every role, so a
     new once route reaches every plan without waiting for a turn (requests ENT-144).
   - A list of the route maker older than an hour is no ground for PASS while ships wait: the gate says so.
+  - A hunt (a hunt route, or a circuit with a stop that hunts) is offered and added outside the plan only to a role that
+    hunts (HUNTERS, rule F16: Military and Intel hunt, Mining, Trade and Logistics earn; one hunter per herd, rule F9). A
+    mission that pays once per pilot is every pilot's, its first hunt too, and what an Admiral put into its own plan
+    stays (Zero, report of 2026-11-16: the gate offered Intel's herd to a miner).
 WHY:  a plan of one-ship tests and routes that pay once left 102 of 146 ships docked while the route files that
       paid stood in other plans, and finding out why took a turn. One command shows it and one command fills it.
 
@@ -70,6 +78,8 @@ import routes as routefiles                       # noqa: E402  the route gate a
 
 STALE = 60 * 60                # a list of the route maker older than this is no ground for PASS
 HOURS = 4                      # a turn: what a bid must carry
+HUNTERS = ("drone", "scout", "command", "sentinel")     # the roles that hunt, rule F16: Military's drones, Intel's scouts and the command group; miners, traders and haulers earn
+NO_HUNT = "a hunt: this role does not hunt (rule F16)"
 
 
 def age_of(stamp, now):
@@ -107,6 +117,21 @@ def proven(route):
 def buys(route):
     """True for a route with a stop that buys goods: such a route is never added as a test by itself."""
     return any(isinstance(stop, dict) and stop.get("buy") for stop in route.get("stops") or [])
+
+
+def hunts(route):
+    """True for a route that hunts: kind `hunt`, or a circuit with a stop that hunts (its `hunt` steps, BLUEPRINT.md)."""
+    return route.get("kind") == "hunt" or any(isinstance(stop, dict) and stop.get("hunt") for stop in route.get("stops") or [])
+
+
+def not_for(route, role):
+    """Why the rulebook closes a route outside a role's plan to the role, or None: a hunt, to a role that does not hunt
+    (rule F16; rule F9 keeps one hunter per herd, and a miner sent there takes the place of a hunter). A mission that pays
+    once per pilot is every pilot's: the starter line's first hunts stay open to every role (Zero, report of 2026-11-16:
+    the gate offered Intel's herd to a miner)."""
+    if hunts(route) and not route.get("once") and role not in HUNTERS:
+        return NO_HUNT
+    return None
 
 
 def survey(root, data, now=None):
@@ -310,6 +335,10 @@ def read_role(seen, role, floor=500, tests=8):
                if route.get("status") != "off" and not route.get("park") and route.get("kind") != "census" and proven(route)]
     by_hand = []
     for value, rid, route in sorted(outside, key=lambda r: (-r[0], r[1])):
+        rule = not_for(route, role) if rid not in plan else None         # what its Admiral put into the plan stays
+        if rule:
+            closed.setdefault(rule, []).append((value, rid))
+            continue
         if buys(route):                                           # it buys goods: in a plan by its Admiral's word only, never by this script
             if rid not in plan:
                 by_hand.append((value, rid))
@@ -331,6 +360,10 @@ def read_role(seen, role, floor=500, tests=8):
             continue                                              # proven ones are judged above, by their figure; one measured at a loss is no test
         seen_ids.add(rid)
         route = routes.get(rid) or dict(draft, id=rid)
+        rule = not_for(route, role)                               # never in the plan here: seen_ids holds the plan
+        if rule:
+            closed.setdefault(rule, []).append((cand["per_ship_hour"], rid))
+            continue
         if route.get("once") and refused_to(seen, rid, role):
             continue
         if buys(route):                                           # a gap is flown once by hand, with one load (errors.log ENT-027)
@@ -345,6 +378,41 @@ def read_role(seen, role, floor=500, tests=8):
             "next": list(crew.get("next") or []),
             "idle": [p["name"] for p in left if p in waiting], "plan": rows,
             "paying": paying, "tests": found, "closed": closed, "by_hand": sorted(by_hand, reverse=True)}
+
+
+def spare(seen, got, served=(), room=None):
+    """[(route id, places)]: standing work of the role's plan that is full while ships of the role wait, with the places
+    to add: one per waiting ship its limit closes it to, and no more than its field carries (carries(): the ships it
+    keeps busy hour after hour plus those it carries for one turn above its floor). `served` are waiting pilots this
+    call gives other work; `room` ({route id: places left to give}) is shared by the roles of one call, so that a route
+    several plans hold is lifted once for all of them. Only a mine route that sells nothing: what a bid carries is no
+    script's to lift."""
+    room = {} if room is None else room
+    need = len([name for name in got["waiting"] if name not in served])
+    found = []
+    for rid, _flying, cap, why, _hint in got["plan"]:
+        route = seen["routes"].get(rid) or {}
+        closed = sum(count for reason, count in why.items() if str(reason).startswith("max_ships"))
+        if need <= 0 or not closed or not isinstance(cap, int) or route.get("kind") != "mine" or route.get("sell") or not routefiles.standing(route):
+            continue
+        if rid not in room:
+            deep = carries(seen, route)
+            room[rid] = max(0, ((deep["ships"] or 0) + deep["extra"] if deep else 0) - cap)
+        places = min(need, closed, room[rid])
+        if places > 0:
+            found.append((rid, places))
+            room[rid] -= places
+            need -= places
+    return found
+
+
+def raise_cap(root, data, who, rid, ships, stamp):
+    """Write a route's `max_ships` with a line in its note and commit it: (True, the commit's line) or (False, why)."""
+    route = json.loads((Path(root) / "routes" / (rid + ".json")).read_text(encoding="ascii"))
+    was = route.get("max_ships")
+    route["max_ships"] = ships
+    route["note"] = (str(route.get("note") or "") + " %s (fill.py, %s): max_ships %s -> %d." % (stamp, who, was if was else "none", ships)).strip()
+    return commit(root, data, who, {"routes/%s.json" % rid: json.dumps(route, indent=1) + "\n"}, "%s: max_ships %s -> %d (fill.py, %s)" % (rid, was if was else "none", ships, who))
 
 
 def verdict(seen, got):
@@ -512,6 +580,7 @@ def main():
     if verb == "fill":
         chosen = roles_of(rest[0]) if rest else sorted(r for r in seen["roles"] if division.ROLES.get(r) == who)
         files, lines, added, changes = {}, [], [], {}
+        room, lifts = {}, Counter()                                 # standing work that is full while ships wait: places to add, per route
         for role in chosen:
             if not may_change(who, role):
                 sys.exit("REFUSED: the %s plan is kept by %s (orders F1): ask in requests.log" % (role, division.ROLES.get(role)))
@@ -522,6 +591,14 @@ def main():
             new = [rid for rid, _p in paying] + [rid for rid, _v, _d, _p in found]
             print("%s: %d waiting, %d on standing work; %d %s and %d tests to add%s" % (role, len(got["waiting"]), len(got["standing"]), len(paying),
                                                                                    "routes that pay once" if once else "paying routes", len(found), ": " + ", ".join(new) if new else ""))
+            for rid, pilots in paying:                              # Zero, 2026-11-16: a test put on a ship went unseen and the next `plan.py set` took it off
+                if not seen["routes"][rid].get("once"):
+                    print("  %s -> %s (in front of its own routes)" % (rid, ", ".join(pilots)))
+            for rid, _estimate, _draft, pilot in found:
+                print("  test %s -> %s (in front of its own routes; keep it when you set that ship's routes)" % (rid, pilot))
+            served = {name for _rid, pilots in paying for name in pilots} | {pilot for _rid, _estimate, _draft, pilot in found}
+            for rid, places in spare(seen, got, served, room):
+                lifts[rid] += places
             if not new:
                 continue
             for rid, estimate, draft, _pilot in found:
@@ -540,6 +617,12 @@ def main():
                 edits.append(lambda plan, rid=rid, pilot=pilot: planfile.put_own(plan, [pilot], rid))
             added += new
             lines.append("%s +%d" % (role, len(new)))
+        for rid, places in sorted(lifts.items()):                   # before the plans: a lift is its own commit, as `fill.py lift` makes it
+            was = seen["routes"][rid]["max_ships"]
+            print("%s: standing work, full while %d ship%s wait%s and its field carries more: max_ships %d -> %d%s"
+                  % (rid, places, "" if places == 1 else "s", "s" if places == 1 else "", was, was + places, "" if "--write" in args else " (not written: add --write)"))
+            if "--write" in args:
+                print(raise_cap(root, data, who, rid, was + places, stamp)[1])
         if not added:
             print("nothing to add")
             return 0
@@ -598,11 +681,7 @@ def main():
         if most is not None and ships > most:
             sys.exit("REFUSED: %s carries about %d ships, not %d: %s. Never all ships on one buyer or one field: put the others on other routes or on standing work "
                      "(the skill fleet-play, `Plan a Division`)" % (rid, most, ships, deep["text"]))
-        route = json.loads((Path(root) / "routes" / (rid + ".json")).read_text(encoding="ascii"))
-        was = route.get("max_ships")
-        route["max_ships"] = ships
-        route["note"] = (str(route.get("note") or "") + " %s (fill.py, %s): max_ships %s -> %d." % (stamp, who, was if was else "none", ships)).strip()
-        ok, line = commit(root, data, who, {"routes/%s.json" % rid: json.dumps(route, indent=1) + "\n"}, "%s: max_ships %s -> %d (fill.py, %s)" % (rid, was if was else "none", ships, who))
+        ok, line = raise_cap(root, data, who, rid, ships, stamp)
         print(line)
         return 0 if ok else 1
     sys.exit(__doc__)

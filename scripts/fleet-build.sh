@@ -43,6 +43,9 @@ gates() {                                           # run inside a tree or the c
     python3 -I -B -c "import ast,sys; ast.parse(open(sys.argv[1], encoding='ascii').read(), sys.argv[1])" "$f" > "$log" 2>&1 || { echo "GATE syntax or non-ASCII: $f"; tail -3 "$log"; rm -f "$log"; return 1; }
   done
   python3 -B game/fleet/routes.py check > "$log" 2>&1 || { echo "GATE routes check:"; tail -5 "$log"; rm -f "$log"; return 1; }
+  if ls "${FLEET_DATA_ROOT:-/srv/collective/data}"/catalog/[0-9]*.json > /dev/null 2>&1; then      # the reserve and its chosen recipes, against the catalog on file
+    python3 -I -B game/fleet/surplus.py check > "$log" 2>&1 || { echo "GATE reserve (game/reserve.tsv, game/reserve-recipes.tsv):"; tail -5 "$log"; rm -f "$log"; return 1; }
+  fi
   python3 -B scripts/fleet-index.py --check > "$log" 2>&1 || { echo "GATE fleet index (run: python3 -B scripts/fleet-index.py):"; tail -4 "$log"; rm -f "$log"; return 1; }
   python3 -B scripts/validate-intel.py > "$log" 2>&1 || { echo "GATE validate-intel:"; tail -5 "$log"; rm -f "$log"; return 1; }
   bash scripts/validate-ids.sh > "$log" 2>&1 || { echo "GATE validate-ids:"; tail -5 "$log"; rm -f "$log"; return 1; }

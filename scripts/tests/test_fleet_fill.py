@@ -24,6 +24,7 @@ ROUTES = {
             "sell": [{"item": "water_ice", "min_price": 20}], "measured": MEASURED(5000)},
     "herd2": {"id": "herd2", "kind": "hunt", "title": "t", "place": "far:cloud", "sell_at": "home:core:base", "max_ships": 1, "measured": MEASURED(2000)},
     "bad": {"id": "bad", "kind": "hunt", "title": "t", "place": "far:rift", "sell_at": "home:core:base", "measured": MEASURED(-300)},
+    "freight": {"id": "freight", "kind": "circuit", "title": "t", "max_ships": 1, "stops": [HOME], "measured": MEASURED(1500)},     # paying work that is no hunt: open to every role
 }
 PLANS = {"drone": ("Apophis", ["once", "rays", "park"]), "hauler": ("Apollo", ["once", "park"]), "miner": ("Zero", ["ice", "park"])}
 SHIPS = {"drone-1": [], "drone-2": [], "hauler-1": [], "hauler-2": [], "hauler-3": [], "miner-1": ["ice_harvester"], "miner-2": []}
@@ -110,10 +111,10 @@ class ReadTests(Tree):
     def test_work_outside_the_plan_is_offered_once_and_what_closes_the_rest_is_named(self):
         _seen, got = self.read("hauler")
         self.assertEqual(got["waiting"], ["hauler-1", "hauler-2", "hauler-3"])
-        self.assertEqual(got["paying"], [("herd2", 2000, ["hauler-1"])])                          # one place: one pilot
+        self.assertEqual(got["paying"], [("freight", 1500, ["hauler-1"])])                        # one place: one pilot
         self.assertEqual([(rid, value, pilot) for rid, value, _draft, pilot in got["tests"]], [("trade-x", 900, "hauler-2")])
         self.assertEqual(got["idle"], ["hauler-3"])
-        self.assertEqual(got["closed"], {"needs ice_harvester": [(5000, "ice")], "max_ships 1 reached": [(3000, "rays")],    # a drone starts on `rays` at the next pass
+        self.assertEqual(got["closed"], {"needs ice_harvester": [(5000, "ice")], self.fill.NO_HUNT: [(3000, "rays"), (2000, "herd2")],    # rule F16: haulers earn
                                          "needs gas_harvester": [(800, "mine-gas")]})             # never `bad`, `craft-y`, `trade-low`
         self.assertEqual(got["by_hand"], [(5000, "trade-buys")])                                 # it buys goods: never added by itself, however high its estimate
         _seen, got = self.read("hauler", tests=0)
@@ -138,15 +139,15 @@ class ReadTests(Tree):
         self.assertNotIn("board", (drones["closed"].get("the board refused it to this role") or []))
 
     def test_one_good_run_is_no_paying_route_and_a_losing_route_is_offered_to_nobody(self):
-        once = dict(ROUTES["herd2"], measured=dict(MEASURED(2000), runs=1))
-        (self.root / "routes" / "herd2.json").write_text(json.dumps(once, indent=1) + "\n", encoding="ascii")
+        once = dict(ROUTES["freight"], measured=dict(MEASURED(1500), runs=1))
+        (self.root / "routes" / "freight.json").write_text(json.dumps(once, indent=1) + "\n", encoding="ascii")
         _seen, got = self.read("hauler")
         self.assertEqual(got["paying"], [])                                                       # measured on one run: not yet a route that pays
-        (self.root / "routes" / "herd2.json").write_text(json.dumps(ROUTES["herd2"], indent=1) + "\n", encoding="ascii")
+        (self.root / "routes" / "freight.json").write_text(json.dumps(ROUTES["freight"], indent=1) + "\n", encoding="ascii")
         stamp = lambda ago: time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(time.time() - ago))
         with open(self.data / "routes" / "runs.jsonl", "a") as handle:
             for ago, delta in ((900, 105), (300, -4635)):
-                handle.write(json.dumps({"route": "herd2", "pilot": "drone-9", "minutes": 10, "started": stamp(ago), "credits_before": 9000, "credits_after": 9000 + delta}) + "\n")
+                handle.write(json.dumps({"route": "freight", "pilot": "drone-9", "minutes": 10, "started": stamp(ago), "credits_before": 9000, "credits_after": 9000 + delta}) + "\n")
         _seen, got = self.read("hauler")
         self.assertEqual(got["paying"], [])
         self.assertIn("at a loss: 2 runs, -4,530 cr in 6 hours", got["closed"])
@@ -182,8 +183,8 @@ class ReadTests(Tree):
         self.assertEqual(self.fill.asks(seen, "ice_harvester"), [(2, 1413, "base")])
 
     def test_the_gate_passes_only_on_a_fresh_list(self):
-        for path in (self.root / "routes").glob("herd2.json"):
-            path.unlink()
+        for name in ("herd2", "freight"):                                                         # no paying work outside the plan
+            (self.root / "routes" / (name + ".json")).unlink()
         self.put_list([])
         seen, got = self.read("hauler")
         ok, line = self.fill.verdict(seen, got)                                                   # Suggi, 2026-11-16: no ship idle: a waiting ship is a HALT
@@ -203,16 +204,16 @@ class WriteTests(Tree):
         done = self.run_fill("apollo", "check")
         self.assertEqual((done.returncode, done.stdout.count("HALT")), (1, 1))
         done = self.run_fill("apollo", "fill")
-        self.assertIn("hauler: 3 waiting, 0 on standing work; 1 paying routes and 1 tests to add: herd2, trade-x", done.stdout)
+        self.assertIn("hauler: 3 waiting, 0 on standing work; 1 paying routes and 1 tests to add: freight, trade-x", done.stdout)
         self.assertIn("not written: add --write", done.stdout)
         self.assertEqual(self.git("status", "--porcelain"), "")
         done = self.run_fill("apollo", "fill", "--write")
         self.assertIn("committed", done.stdout, done.stdout)
         plan = json.loads((self.root / "routes" / "plans" / "hauler.json").read_text())
-        self.assertEqual(plan["routes"], ["once", "trade-x", "herd2", "park"])                    # the role's routes in one order, from the division's plan file
-        self.assertEqual((plan["ships"], plan["of"]), ({"once": 3, "trade-x": 1, "herd2": 1, "park": 3}, 3))
+        self.assertEqual(plan["routes"], ["once", "trade-x", "freight", "park"])                  # the role's routes in one order, from the division's plan file
+        self.assertEqual((plan["ships"], plan["of"]), ({"once": 3, "trade-x": 1, "freight": 1, "park": 3}, 3))
         lists = json.loads((self.data / "plans" / "assign.json").read_text())["pilots"]          # each a ship's own route: the paying one to the ship it was open to
-        self.assertEqual(sorted(lists.values()), [["once", "herd2", "park"], ["once", "park"], ["once", "trade-x", "park"]])
+        self.assertEqual(sorted(lists.values()), [["once", "freight", "park"], ["once", "park"], ["once", "trade-x", "park"]])
         test = json.loads((self.root / "routes" / "trade-x.json").read_text())
         self.assertEqual((test["max_ships"], "Added as a test by fill.py" in test["note"]), (1, True))
         self.assertEqual(self.git("status", "--porcelain"), "")
@@ -261,8 +262,36 @@ class WriteTests(Tree):
         self.assertIn("PASS: no ship of hauler waits | 1 places of paying work and 1 tests stand open to its ships on standing work", done.stdout)
         self.assertIn("committed", self.run_fill("apollo", "fill", "--write").stdout)
         lists = json.loads((self.data / "plans" / "assign.json").read_text())["pilots"]
-        self.assertEqual(sorted(ids.index("gather") > ids.index(rid) for ids in lists.values() for rid in ("herd2", "trade-x") if rid in ids), [True, True])   # before its standing work
+        self.assertEqual(sorted(ids.index("gather") > ids.index(rid) for ids in lists.values() for rid in ("freight", "trade-x") if rid in ids), [True, True])   # before its standing work
         self.assertEqual(self.run_fill("apollo", "check").stdout, "PASS: no ship of hauler waits\n")
+
+    def test_standing_work_that_is_full_while_ships_wait_is_lifted_as_far_as_its_field_carries(self):
+        # 2026-11-16: the gate said HALT three times until a shared gather route was lifted by hand; its field held tens of thousands above its floor
+        self.commit_route({"id": "gather", "kind": "mine", "title": "t", "belt": "far:rocks", "station": "home:core:base", "standing": True, "max_ships": 1,
+                           "min_left": {"iron_ore": 99400}})
+        self.assertIn("committed", self.run_fill("apollo", "add", "gather").stdout)
+        (self.data / "scouting").mkdir(exist_ok=True)
+        stamp = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+        (self.data / "scouting" / "far.json").write_text(json.dumps({"system": "far", "read_at": stamp, "pois": {"rocks": {"resources": [{"resource_id": "iron_ore", "remaining": 100000}]}}}))
+        seen, got = self.read("hauler")
+        self.assertEqual((len(got["starting"]), len(got["waiting"])), (1, 2))                     # one hauler gathers, two wait at its limit
+        self.assertEqual(self.fill.spare(seen, got), [("gather", 1)])                             # 600 units above the floor carry two ships a turn: one place more
+        self.assertEqual(self.fill.spare(seen, got, served=set(got["waiting"])), [])              # ships that get other work need no place
+        done = self.run_fill("unity", "fill", "all", "--once")
+        self.assertIn("gather: standing work, full while 1 ship waits and its field carries more: max_ships 1 -> 2 (not written: add --write)", done.stdout)
+        self.assertEqual(json.loads((self.root / "routes" / "gather.json").read_text())["max_ships"], 1)
+        done = self.run_fill("unity", "fill", "all", "--once", "--write")
+        self.assertIn("max_ships 1 -> 2", done.stdout)
+        self.assertEqual(json.loads((self.root / "routes" / "gather.json").read_text())["max_ships"], 2)
+        self.assertNotIn("max_ships", self.run_fill("unity", "fill", "all", "--once", "--write").stdout)      # the field carries no third ship
+        self.assertEqual(self.git("status", "--porcelain"), "")
+        sells = dict(json.loads((self.root / "routes" / "gather.json").read_text()), sell=[{"item": "iron_ore", "min_price": 1}], max_ships=1)
+        seen["routes"]["gather"] = sells                                                          # a route that sells is its Admiral's to lift
+        self.assertEqual(self.fill.spare(seen, got), [])
+
+    def test_fill_names_the_ship_each_test_went_to(self):
+        done = self.run_fill("apollo", "fill")                                                    # Zero, 2026-11-16: a test on a ship's own routes went unseen
+        self.assertRegex(done.stdout, r"  test trade-x -> hauler-\d \(in front of its own routes")
 
     def test_the_once_pass_adds_only_missions_that_pay_once_behind_the_once_line(self):
         # requests ENT-144: a new once route reached a plan only at its Admiral's next turn, hours later
@@ -270,7 +299,7 @@ class WriteTests(Tree):
         done = self.run_fill("unity", "fill", "all", "--once", "--write")
         self.assertIn("committed", done.stdout, done.stdout)
         plans = {role: json.loads((self.root / "routes" / "plans" / (role + ".json")).read_text())["routes"] for role in PLANS}
-        self.assertEqual(plans, {"drone": ["once", "board", "rays", "park"], "hauler": ["once", "board", "park"], "miner": ["board", "ice", "park"]})   # herd2 repeats, trade-x is a test: both stay out
+        self.assertEqual(plans, {"drone": ["once", "board", "rays", "park"], "hauler": ["once", "board", "park"], "miner": ["board", "ice", "park"]})   # herd2 and freight repeat, trade-x is a test: all stay out
         self.assertEqual((self.git("log", "-1", "--format=%an"), self.git("status", "--porcelain")), ("Unity\n", ""))
         self.assertIn("nothing to add", self.run_fill("unity", "fill", "all", "--once", "--write").stdout)
 
@@ -308,6 +337,56 @@ class WriteTests(Tree):
         self.assertEqual((done.returncode, "HALT military: nothing changed; the plan applied last stays in force" in done.stdout), (1, True), done.stdout)
         self.assertEqual(json.loads((self.root / "routes" / "plans" / "drone.json").read_text())["routes"], ["once", "rays", "park"])
         self.assertEqual(self.git("status", "--porcelain"), "")
+
+
+class HuntRuleTests(Tree):
+    # Zero, report of 2026-11-16: the gate offered Intel's herd to a miner. Rule F16: Intel and Military hunt, Mining,
+    # Trade and Logistics earn; rule F9: one hunter per herd.
+    def put_route(self, route):
+        (self.root / "routes" / (route["id"] + ".json")).write_text(json.dumps(route, indent=1) + "\n", encoding="ascii")
+
+    def add_role(self, role, owner, ship):
+        (self.root / "routes" / "plans" / (role + ".json")).write_text(json.dumps({"role": role, "owner": owner, "note": "n", "routes": ["park"]}, indent=1) + "\n", encoding="ascii")
+        fleet = json.loads((self.data / "fleet" / "fleet.json").read_text())
+        fleet["ships"].append({"name": ship, "status": "connected", "activity": {"kind": "idle"}, "docked": True, "credits": 20000, "cargo_used": 0})
+        (self.data / "fleet" / "fleet.json").write_text(json.dumps(fleet))
+        (self.data / "fleet" / "ships" / (ship + ".json")).write_text(json.dumps({"modules": [], "cargo": []}))
+
+    def test_a_hunt_outside_the_plan_is_offered_only_to_a_role_that_hunts(self):
+        self.assertTrue(set(self.fill.HUNTERS) <= set(self.fill.division.ROLES))                 # every name in the list is a role of the fleet
+        self.add_role("scout", "Oracle", "scout-1")
+        self.add_role("trader", "Mercury", "trader-1")
+        self.put_route({"id": "cull", "kind": "circuit", "title": "t", "max_ships": 1, "measured": MEASURED(2600),     # a circuit whose stop hunts is a hunt too
+                        "stops": [{"at": "home:core:base", "hunt": [{"at": "home:nebula", "species": ["glow_ray"], "kills": 3}]}]})
+        self.put_list(CANDIDATES + [{"id": "hunt-z", "kind": "hunt", "per_ship_hour": 950, "status": "new", "route_id": "",
+                                     "route": {"id": "hunt-z", "kind": "hunt", "title": "t", "place": "far:cloud", "sell_at": "home:core:base", "max_ships": 1}}])
+        got = {role: self.read(role)[1] for role in ("drone", "scout", "miner", "trader", "hauler")}
+        hunts = lambda role: sorted([rid for rid, _v, _p in got[role]["paying"] if rid in ("cull", "herd2")] + [rid for rid, _v, _d, _p in got[role]["tests"] if rid == "hunt-z"])
+        self.assertEqual({role: hunts(role) for role in got}, {"drone": ["cull"], "scout": ["cull"], "miner": [], "trader": [], "hauler": []})
+        self.assertEqual(got["scout"]["paying"], [("cull", 2600, ["scout-1"])])                 # its one waiting ship takes the best hunt
+        for role in ("miner", "trader", "hauler"):
+            self.assertEqual(got[role]["closed"][self.fill.NO_HUNT], [(3000, "rays"), (2600, "cull"), (2000, "herd2"), (950, "hunt-z")], role)
+            self.assertIn(("freight", 1500), [(rid, value) for rid, value, _p in got[role]["paying"]])      # paying work that is no hunt stays open
+        for role in ("drone", "scout"):
+            self.assertNotIn(self.fill.NO_HUNT, got[role]["closed"])
+        done = self.run_fill("apollo", "status", "hauler")
+        self.assertIn("a hunt: this role does not hunt (rule F16) 4 routes, up to 3,000: rays, cull, herd2 ...", done.stdout)
+
+    def test_a_first_hunt_that_pays_once_stays_open_to_every_role(self):
+        self.put_route({"id": "first-hunt", "kind": "circuit", "title": "t", "once": True, "measured": dict(MEASURED(400), credits_per_run=2500),
+                        "stops": [{"at": "home:core:base", "accept": ["First Hunt"], "hunt": [{"at": "home:nebula", "species": ["glow_ray"], "kills": 1, "for": ["First Hunt"]}]},
+                                  HOME]})
+        _seen, got = self.read("miner")
+        self.assertEqual(got["paying"], [("first-hunt", 2500, ["miner-2"])])
+        self.assertEqual(got["closed"][self.fill.NO_HUNT], [(3000, "rays"), (2000, "herd2")])
+
+    def test_a_hunt_an_admiral_put_into_its_own_plan_stays(self):
+        (self.root / "routes" / "plans" / "miner.json").write_text(json.dumps({"role": "miner", "owner": "Zero", "note": "n", "routes": ["ice", "herd2", "park"]}, indent=1) + "\n",
+                                                                   encoding="ascii")
+        _seen, got = self.read("miner")
+        self.assertEqual(got["starting"], [("miner-1", "ice"), ("miner-2", "herd2")])               # the dispatcher sends it
+        self.assertEqual([rid for rid, _f, _c, _w, _h in got["plan"]], ["ice", "herd2", "park"])
+        self.assertEqual(got["closed"].get(self.fill.NO_HUNT), [(3000, "rays")])                # the hunt outside the plan stays closed
 
 
 if __name__ == "__main__":

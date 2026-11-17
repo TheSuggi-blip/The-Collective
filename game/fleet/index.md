@@ -117,6 +117,7 @@ craftbook.py can [<Member>|all] [--top N]
 craftbook.py recipes [--category <name>] [--makes <item id>] [--uses <item id>] [--hand]
 craftbook.py inventory [stations] [--item <item id>] [--top N]
 --data <dir>      the unit's data folder (default /srv/collective/data)
+--root <dir>      the repository, for game/reserve-recipes.tsv (default: two folders above this file)
 ```
 
 ### `dispatch.py`
@@ -260,6 +261,7 @@ hive.py inventory [stations] [--item <item id>] [--top N]
 hive.py empire
 hive.py surplus [--top N] [--kind <kind>] [--item <item id>] [--all]
 hive.py reserve
+hive.py flow [<Member>|all] [--hours N]
 hive.py sql "<SELECT or WITH statement>" [--limit N]
 hive.py schema [<table or view>]
 --root <dir>   the repository's game/ folder (default: the parent of this file's folder)

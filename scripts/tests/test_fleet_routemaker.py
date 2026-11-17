@@ -332,16 +332,14 @@ class ReadingTests(Tree):
 
 
 class ServiceTests(Tree):
-    def test_the_catalog_is_fetched_once_a_day_and_kept_by_version(self):
-        raw = json.dumps({"version": "2.0/x", "items": [], "recipes": []}).encode()
-        calls = []
-        fetch = lambda: calls.append(1) or raw
-        for path in (self.data / "catalog").glob("*.json"):
-            path.unlink()
-        self.assertEqual(maker.refresh_catalog(str(self.data), NOW, fetch), "fetched 2.0x")
-        self.assertEqual(maker.refresh_catalog(str(self.data), time.time(), fetch), "fresh")
-        self.assertEqual((len(calls), [p.name for p in (self.data / "catalog").iterdir()]), (1, ["2.0x.json"]))
-        self.assertTrue(maker.refresh_catalog(str(self.data), time.time() + 2 * maker.CATALOG_EVERY, lambda: b"not json").startswith("not fetched"))
+    def test_a_pass_reads_the_highest_version_and_fetches_no_catalog(self):
+        # 2026-11-16: scripts/catalog-refresh.py fetches the catalog, checks it and keeps it by version; the route maker
+        # only reads the newest copy (its own daily download, unchecked, is gone)
+        self.put("catalog/0.9.json", {"version": "0.9", "items": [], "recipes": []})
+        os.utime(self.data / "catalog" / "0.9.json", (time.time() + 60, time.time() + 60))         # written last, and the older version
+        self.assertEqual(self.build()["catalog"], "1.0")
+        self.assertFalse(hasattr(maker, "refresh_catalog"))
+        self.assertNotIn("api/catalog.json", (FLEET / "routemaker.py").read_text(encoding="ascii"))
 
     def test_a_pass_reads_only_and_the_list_prints_for_a_member(self):
         self.book("home_base", "home", [row("ore", bid=10, bid_qty=5000)])
@@ -371,6 +369,20 @@ class CatalogFileTests(unittest.TestCase):
                 (folder / name).write_text("[]" if name == "ammo.json" else "{}")
                 os.utime(folder / name, (time.time() - age, time.time() - age))
             self.assertEqual(maker.newest_catalog(temp).name, "0.10.0.json")
+
+    def test_the_highest_version_wins_whatever_the_file_times(self):
+        # 2026-11-16: it took the newest file time; catalog-refresh.py keeps two versions side by side
+        with tempfile.TemporaryDirectory(prefix="routemaker-catalog-") as temp:
+            folder = Path(temp) / "catalog"
+            self.assertEqual(maker.newest_catalog(temp), folder / "none.json")                      # no folder: what it gave before
+            folder.mkdir()
+            for name in ("0.99.0.json", "0.100.0.json", "ammo.json", "refresh.json"):
+                (folder / name).write_text("{}")
+            for older, newer in (("0.99.0.json", "0.100.0.json"), ("0.100.0.json", "0.99.0.json")):
+                for age, name in ((300, older), (200, newer), (100, "ammo.json"), (50, "refresh.json")):
+                    os.utime(folder / name, (time.time() - age, time.time() - age))
+                self.assertEqual(maker.newest_catalog(temp).name, "0.100.0.json", "%s written last" % newer)
+
 
 if __name__ == "__main__":
     unittest.main()

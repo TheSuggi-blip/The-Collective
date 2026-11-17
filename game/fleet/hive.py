@@ -42,6 +42,10 @@ WHAT: reads the unit's data folder (fleet/, routes/runs.jsonl, market/, scouting
         inventory             what the fleet owns in goods: every item in station storage and in the holds added up, by
                               kind of item (raw, refined, parts, modules ...); `inventory stations` lists it per station
                               (the craft book's own count: craftbook.py inventory)
+        flow                  what each division put into the reserve per hour: of every item the reserve asks for
+                              (surplus.py reserve), the units it holds (storage and holds) and their change per hour over
+                              the last 4, 12 and 24 hours, from the store's hourly samples (store.py, stock_hour); the
+                              yield of a division that stores what the bases take instead of selling it
         sql "<statement>"     one SELECT or WITH statement on the store's read copy (store.py query: read only, one statement,
                               a time stop), its rows as an aligned table with the column names, values as they are
         schema [<table>]      every table and view of the store with what a row is and its columns; with a table's name its
@@ -75,6 +79,7 @@ USAGE:
   hive.py empire
   hive.py surplus [--top N] [--kind <kind>] [--item <item id>] [--all]
   hive.py reserve
+  hive.py flow [<Member>|all] [--hours N]
   hive.py sql "<SELECT or WITH statement>" [--limit N]
   hive.py schema [<table or view>]
   --root <dir>   the repository's game/ folder (default: the parent of this file's folder)
@@ -94,6 +99,7 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import board                                      # noqa: E402  the divisions' names
 import craftbook                                  # noqa: E402  the catalog: what a thing takes
 import dispatch                                   # noqa: E402  routes, orders, runs
 import division                                   # noqa: E402  who commands which ship
@@ -463,8 +469,12 @@ def show_levels(data, now, who):
 
 
 def craftbook_file(data):
-    files = [p for p in (Path(data) / "catalog").glob("*.json") if p.stem[:1].isdigit()]
-    return max(files, key=lambda p: p.stat().st_mtime) if files else Path(data) / "catalog" / "none.json"
+    """The newest catalog/<version>.json: the highest version in the file name, craftbook.load's rule; a file not named
+    by digits and dots (ammo.json, refresh.json) is no catalog. By version, not by file time (2026-11-16): a copy
+    written later is not a newer catalog."""
+    import re                                      # only this function of hive.py matches a name
+    files = [p for p in (Path(data) / "catalog").glob("*.json") if re.fullmatch(r"\d+(\.\d+)*", p.stem)]
+    return max(files, key=lambda p: tuple(int(n) for n in p.stem.split("."))) if files else Path(data) / "catalog" / "none.json"
 
 
 def show_capacity(root, data, now):
@@ -552,6 +562,7 @@ def show_base(root, data, now, kind):
     if cat is None:
         print("no catalog in the data folder")
         return 1
+    craftbook.choose(cat, str(Path(root).parent))                    # the recipes the fleet chose: game/reserve-recipes.tsv of this repository
     have, _places, when = craftbook.stock(data)
     market, where = books(data)
     makers = cat["makers"].get(part) or []
@@ -587,6 +598,7 @@ def show_base(root, data, now, kind):
     print("  made on the way, for the part and the facility together (one recipe per item; the catalog tool `catalog_needs` shows the others):")
     for item, (units, runs, recipe, depth) in sorted(steps.items(), key=lambda kv: (kv[1][3], kv[0])):
         print("    %s%s %s <- %s x %s, %s" % ("  " * depth, num(units), item, recipe["id"], num(runs), craftbook.where(cat, recipe)[:110]))
+    craftbook.print_taken(cat, {item: step[2] for item, step in steps.items()}, "  ")
     seen = defaultdict(list)
     for system, poi, res, left, _most, _rich, _when in fields(data):
         if (left or 0) > 0:
@@ -1111,6 +1123,13 @@ def show_briefing(root, data, now, who, hours):
     show_fleet(root, data, now)
     print("=== MY STANDING FLEET")
     code = show_standing(root, data, now, who, hours)
+    print("=== THE FORECAST (the SUM line of what the routes flown now bring; every route: `hive.py forecast`)")
+    import contextlib                                               # Oracle, 2026-11-16: the orders ask for this line before and after a plan change
+    import io
+    lines = io.StringIO()
+    with contextlib.redirect_stdout(lines):
+        show_forecast(root, data, now, who if who in division.MEMBERS else "all", hours)
+    print("\n".join(line for line in lines.getvalue().splitlines() if line.lstrip().startswith("SUM")) or "  not read")
     print("=== MY PLAN FILE (every ship with its own routes; I change it and the dispatcher sends the ships by it)")
     import plan as planfile
     planfile.show(root, data, sorted(planfile.DIVISIONS) if who in ("all", "Unity") and who != planfile.DIVISIONS["command"] else [planfile.division_of(who)] if planfile.division_of(who) else [], True)
@@ -1249,6 +1268,81 @@ def show_schema(data, now, name):
     return 0
 
 
+FLOW_ROWS = 12                 # items `flow` prints per division
+
+
+def rate_text(rate):
+    return "{:+,.1f}".format(rate) if rate is not None else "--"
+
+
+def show_flow(root, data, now, who, hours):
+    """What each division put into the reserve per hour. A division that stores what the bases take (hunt goods, ore)
+    instead of selling it reads as a loss in money; its yield is the units it gathers (Military's wish, 2026-11-16). Runs
+    record no goods stored, so the figure is the store's hourly samples of the storage book (store.reserve_flow, table
+    stock_hour); which items are the reserve's is surplus.py's answer (every item its walk asks for, as `reserve` lists
+    them). Per division the items gained per hour over the window asked, the most first, at most FLOW_ROWS; a SUM line."""
+    names = {member: board.NAMES.get(member, member) for member in division.MEMBERS}
+    member = None
+    if who != "all":
+        member = next((m for m in division.MEMBERS if who.lower() in (m.lower(), names[m].lower())), None)
+        if member is None:
+            print("FLOW | no member `%s`: %s, or all" % (who, ", ".join(division.MEMBERS)))
+            return 1
+    try:
+        hours = int(float(hours))
+    except ValueError:
+        print("FLOW | --hours takes a number of hours, not `%s`" % hours)
+        return 1
+    hours = max(1, hours)
+    windows = tuple(sorted({4, 12, 24, hours}))
+    found = spare.surplus(data, str(Path(root).parent))        # surplus.py takes the repository, this script its game folder
+    items = sorted(r["id"] for r in found["rows"] if r["demand"])
+    conn = history.connect(data)
+    if conn is None:
+        print("FLOW | no read copy at %s: the service `store` has not published one yet" % (Path(data) / "store" / "read.db"))
+        return 1
+    try:
+        flow = history.reserve_flow(conn, items, windows)
+    finally:
+        conn.close()
+    hour_text = lambda h: time.strftime("%Y-%m-%d %H:00", time.gmtime(h))
+    print("FLOW | what each division put into the reserve per hour: the units it holds (station storage and holds) of the %d items the reserve asks for "
+          "(surplus.py reserve), and their change per hour, the most gained over the last %d hours first | storage book of %s | the store's samples "
+          "(stock_hour): %s" % (len(items), hours, found["written"] or "-- (none yet)", "%s to %s UTC, %.1f hours on record" % (
+              hour_text(flow["oldest"]), hour_text(flow["newest"]), flow["hours"]) if flow["newest"] is not None else "none yet"))
+    if flow["newest"] is None:
+        print("  no sample yet: the service `store` writes one an hour from the storage book")
+        return 0
+    short = [w for w in windows if flow["base"][w][2]]
+    if short:
+        print("  only %.1f hours on record: the figures of the last %s hours read from the oldest sample (%s UTC), over the hours there are%s"
+              % (flow["hours"], ", ".join("%d" % w for w in short), hour_text(flow["oldest"]), "; one sample is no rate (--)" if flow["hours"] <= 0 else ""))
+    by = defaultdict(list)
+    for row in flow["rows"]:
+        by[row["division"]].append(row)
+    order = [names[m] for m in division.MEMBERS] + sorted(set(by) - set(names.values()))
+    head = "  %-32s %12s" % ("item", "held now") + "".join(" %12s" % ("per h, %dh" % w) for w in windows)
+    for name in order:
+        if member is not None and name != names[member]:
+            continue
+        of = next((m for m in division.MEMBERS if names[m] == name), "")
+        mine = by.get(name) or []
+        if not mine:
+            if member is not None:                     # asked for by name: said; in `all` a division without any is left out
+                print("%s (%s) | none of the reserve's items in the samples" % (name, of))
+            continue
+        total = flow["sums"][name]
+        print("%s (%s) | %d of the reserve's items held now, %s units" % (name, of, total["items"], num(total["units"])))
+        print(head)
+        ranked = sorted(mine, key=lambda r: (r["rate"][hours] is None, -(r["rate"][hours] or 0), -r["units"], r["item"]))
+        for r in ranked[:FLOW_ROWS]:
+            print("  %-32s %12s" % (r["item"][:32], num(r["units"])) + "".join(" %12s" % rate_text(r["rate"][w]) for w in windows))
+        if len(ranked) > FLOW_ROWS:
+            print("  ... %d more items: hive.py sql \"SELECT item, units FROM stock_hour WHERE division = '%s' AND hour = %d\"" % (len(ranked) - FLOW_ROWS, name, flow["newest"]))
+        print("  %-32s %12s" % ("SUM %d items" % len(mine), num(total["units"])) + "".join(" %12s" % rate_text(total["rate"][w]) for w in windows))
+    return 0
+
+
 def main():
     args = sys.argv[1:]
     value = lambda name, default: args[args.index(name) + 1] if name in args and args.index(name) + 1 < len(args) else default
@@ -1300,6 +1394,8 @@ def main():
         if verb == "reserve":
             return spare.show_reserve(found)
         return spare.show(found, int(value("--top", "15")), value("--kind", ""), value("--item", ""), "--all" in args)
+    if verb == "flow":
+        return show_flow(root, data, now, rest[0] if rest else "all", value("--hours", str(TURN)))
     if verb == "inventory":
         return craftbook.show_inventory(craftbook.load(data) or {"version": "none", "items": {}}, data, rest[0] if rest else "total", value("--item", ""), int(value("--top", "40")))
     if verb == "sql":

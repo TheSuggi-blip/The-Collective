@@ -742,7 +742,9 @@ def rejoin(now, uptime, away=AWAY, opener=None, allowed=True, never=()):
     POST /accounts {"username": the pilot}, answer 202, connected 5 s later). His guards are kept: never a pilot the
     engine shows `reconnecting`, never within REJOIN_AFTER seconds of an engine start (a second connection replaces
     the first, and that close is final too), never a pilot that is not of the fleet. And: only a pilot seen signed out
-    at two looks, one try per pilot in REJOIN_EVERY seconds, REJOIN_MOST pilots a look. A look that finds none away is
+    at two looks, one try per pilot in REJOIN_EVERY seconds, REJOIN_MOST pilots a look, and nobody while any pilot of
+    the list is `reconnecting`: the engine is signing its pilots in itself (a wave: 184 of 246 at 00:09 UTC on
+    2026-11-17, all back three minutes later), and a second sign-in then would close the first. A look that finds none away is
     followed by the next after LOOK_QUIET seconds. `allowed` False: the pilots away are named and nobody is asked;
     a pilot of `never` is left signed out and not named (left_out). Not flown yet: no pilot has been signed out since
     it was written.
@@ -757,6 +759,8 @@ def rejoin(now, uptime, away=AWAY, opener=None, allowed=True, never=()):
     except Exception:                               # the engine is away: the pass says so
         return away.get("list", []), []
     out = [name for name in signed_out(listed) if name not in never]
+    if any(isinstance(a, dict) and a.get("status") == "reconnecting" for a in listed):
+        allowed = False                             # a wave of reconnects: the engine is at it; look again when it is over
     first, tried = away.setdefault("first", {}), away.setdefault("tried", {})
     for name in [n for n in first if n not in out]:
         del first[name]

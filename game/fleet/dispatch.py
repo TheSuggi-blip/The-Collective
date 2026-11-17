@@ -451,6 +451,8 @@ def why_not(pilot, rid, route, state):
         return "needs " + need, None
     if (route.get("requires") or {}).get("empty_hold") and pilot.get("goods", 0) > 5:      # nothing to lose aboard (orders F13); five units count as nothing
         return "hold not empty", None
+    if (route.get("requires") or {}).get("hold") and pilot.get("goods", 0) <= 5:            # a route that stores what is aboard: not for a pilot that carries nothing
+        return "nothing aboard", None
     if (route.get("requires") or {}).get("without_module") in pilot.get("modules", []):     # the route fits this module: not for a pilot that has it
         return "has the module already", None
     if state["now"] < state["rest"].get(rid, 0):

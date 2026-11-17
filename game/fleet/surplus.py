@@ -9,8 +9,8 @@ WHAT: reads the reserve targets (game/reserve.tsv in the repository: what the fl
                   station (a sale there needs no flight)
         reserve   per target what it takes; per item held against demand, what stock covers, what is still to
                   make and what is SHORT; a SUM line
-        check     the gate of game/reserve.tsv: exit 1 on a line it does not understand or that names what the
-                  catalog does not hold
+        check     the gate of game/reserve.tsv and game/reserve-recipes.tsv: exit 1 on a line it does not understand
+                  or that names what the catalog does not hold, or on a chosen recipe that does not make its item
       surplus(data, root) gives the same answer to other scripts as one dict.
 RULES:
   - The targets file is tab-separated, `#` starts a comment, the header is `kind<TAB>id<TAB>units<TAB>note`.
@@ -21,8 +21,10 @@ RULES:
     facility's earlier steps (`upgrades_from`) are targets of their own lines, never added by the script.
   - DEMAND at the top is the build materials of every facility and hull target times its units, plus the item
     targets. It is met level by level: first from what the fleet holds of the item itself (RESERVED, capped by
-    what is held); what is still missing is made by the recipe craftbook's `needs` follows (craftbook.pick:
-    nearest to what is mined, by hand before a facility, then the fewest inputs), whose inputs become demand
+    what is held); what is still missing is made by the recipe craftbook's `needs` follows (craftbook.recipe_for:
+    the one game/reserve-recipes.tsv names for the item, kept by Logistics; else nearest to what is mined, by
+    hand before a facility, then the fewest inputs; `reserve` names the recipe taken of every item that has
+    more than one, and a row of that file the catalog cannot follow is skipped with a NOTE), whose inputs become demand
     one level down, to what is mined (craftbook.mined) or what no recipe makes (hunted, dropped or bought). An
     item is netted once, after every item that can ask for it (craftbook.rank, highest first), so its whole
     demand meets its stock at once. A recipe run only in a facility is still followed; its row says `facility`.
@@ -186,7 +188,7 @@ def meet(cat, held, top, labels):
             step["missing"] += rest                                 # mined, hunted or bought; or asked again inside a circle of recipes (craftbook's trail rule)
             continue
         done.add(item)
-        recipe = craftbook.pick(cat, makers)
+        recipe = craftbook.recipe_for(cat, item)
         per = sum(o.get("quantity") or 0 for o in recipe.get("outputs") or [] if o.get("item_id") == item) or 1
         runs = math.ceil(rest / per)
         step.update(make=rest, runs=runs, per=per, recipe=recipe)
@@ -271,10 +273,11 @@ def why_text(labels, keep, kinds, kind, could=()):
 
 def surplus(data, root, cat=None, now=None):
     """The reserve and the surplus of every item held or asked for: {written, catalog, file, present, targets, errors, warnings,
-    books: {read, oldest, age}, rows, totals, rule}. A row is {id, name, kind, held, demand, taken, make, recipe, how, level,
+    books: {read, oldest, age}, rows, totals, rule, choices (craftbook.choose: game/reserve-recipes.tsv, its rows and errors),
+    taken (craftbook.taken_lines: the recipe the walk took of every item that has more than one)}. A row is {id, name, kind, held, demand, taken, make, recipe, how, level,
     kept, reserved, surplus, short, why, bid, bid_units, bid_at, bid_at_name, worth_at_bid, at: [{place, name, units, bid,
     bid_units}]}, the most worth at a bid first; bid is None where no order book bids for the item, and worth_at_bid is then 0."""
-    cat = cat or craftbook.load(data) or dict(EMPTY)
+    cat = craftbook.choose(cat or craftbook.load(data) or dict(EMPTY), root)      # the recipes the fleet chose (game/reserve-recipes.tsv)
     now = time.time() if now is None else now
     targets, errors, warnings, present = read_targets(Path(root) / FILE, cat)
     inv = craftbook.inventory(data, cat)
@@ -334,7 +337,7 @@ def surplus(data, root, cat=None, now=None):
               "fees": sum(t["fee"] or 0 for t in targets)}
     return {"written": inv["written"], "catalog": cat["version"], "file": FILE, "present": present, "targets": targets, "errors": errors,
             "warnings": warnings, "books": {"read": read, "oldest": oldest, "age": age(oldest, now) if oldest else ""}, "rows": rows, "totals": totals,
-            "rule": RULE}
+            "rule": RULE, "choices": cat["choices"], "taken": craftbook.taken_lines(cat, {item: s["recipe"] for item, s in steps.items() if s["recipe"]})}
 
 
 def first_line(title, res):
@@ -345,7 +348,10 @@ def first_line(title, res):
         file = "NO RESERVE FILE %s: no targets, nothing kept, everything held is surplus" % res["file"]
     books = "%d order books, the oldest read %s (%s)" % (res["books"]["read"], res["books"]["oldest"] or "--", res["books"]["age"] or "age unknown") \
         if res["books"]["read"] else "no order book read: no bid anywhere"
-    return "%s | %s | storage book of %s | catalog %s | %s" % (title, file, res["written"] or "-- (none yet)", res["catalog"], books)
+    chosen = res.get("choices") or {}
+    recipes = " | recipes chosen in %s: %d%s" % (chosen["file"], len(chosen["rows"]), ", %d rows skipped" % len(chosen["errors"]) if chosen["errors"] else "") \
+        if chosen.get("present") else ""                            # no file of chosen recipes: the line as it always was
+    return "%s | %s | storage book of %s | catalog %s | %s%s" % (title, file, res["written"] or "-- (none yet)", res["catalog"], books, recipes)
 
 
 def bid_text(bid, units, at=None, place=None):
@@ -357,9 +363,9 @@ def bid_text(bid, units, at=None, place=None):
 
 
 def notes(res):
-    for error in res["errors"]:
+    for error in res["errors"] + (res.get("choices") or {}).get("errors", []):
         print("  NOTE %s: skipped" % error)
-    for warning in res["warnings"]:
+    for warning in res["warnings"] + (res.get("choices") or {}).get("warnings", []):
         print("  NOTE %s" % warning)
 
 
@@ -426,6 +432,11 @@ def show_reserve(res):
         how = "%s, %s" % (r["recipe"], r["how"]) if r["recipe"] else r["how"]
         print("  %-30s %5s %-42s %11s %11s %11s %11s %11s" % (r["id"][:30], r["level"], how[:42], num(r["held"]), num(r["demand"]), num(r["taken"]),
                                                               num(r["make"]), num(r["short"])))
+    taken = [line for line in res.get("taken") or [] if not line.startswith("NOTE ")]      # the skipped rows stand under the first line already
+    if taken:
+        print(craftbook.TAKEN)
+        for line in taken:
+            print("  " + line)
     backs = sorted((r for r in res["rows"] if r.get("back")), key=lambda r: (-r["back"], r["id"]))
     if backs:
         print("Held back, not surplus: an input of another recipe of something that is short (one recipe is followed above; read them all with `craftbook.py item <id>`):")
@@ -440,17 +451,21 @@ def show_reserve(res):
 
 
 def check(res):
+    """The gate of game/reserve.tsv and of game/reserve-recipes.tsv (craftbook.read_choices: a row of an unknown item or recipe,
+    or of a recipe that does not make its item, fails here though the answers merely skip it)."""
     print(first_line("CHECK %s" % res["file"], res))
+    chosen = res.get("choices") or {"errors": [], "warnings": []}
+    errors, warnings = chosen["errors"], chosen["warnings"]
     if not res["present"]:
         print("  no reserve file: nothing to check (no targets is no error)")
-        print("Errors: 0 | Warnings: 0")
-        return 0
-    for error in res["errors"]:
+    else:
+        errors, warnings = res["errors"] + errors, res["warnings"] + warnings
+    for error in errors:
         print("  ERROR %s" % error)
-    for warning in res["warnings"]:
+    for warning in warnings:
         print("  WARNING %s" % warning)
-    print("Errors: %d | Warnings: %d" % (len(res["errors"]), len(res["warnings"])))
-    return 1 if res["errors"] else 0
+    print("Errors: %d | Warnings: %d" % (len(errors), len(warnings)))
+    return 1 if errors else 0
 
 
 def main():
@@ -463,7 +478,7 @@ def main():
         sys.exit(__doc__)
     cat = craftbook.load(data)
     if cat is None:
-        sys.exit("no catalog in %s/catalog: the service `routemaker` fetches it once a day" % data)
+        sys.exit("no catalog in %s/catalog: the hourly job fetches it (scripts/catalog-refresh.py)" % data)
     verb = words[0]
     if verb not in ("show", "reserve", "check"):
         sys.exit(__doc__)

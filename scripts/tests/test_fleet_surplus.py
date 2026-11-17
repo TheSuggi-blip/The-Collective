@@ -247,6 +247,71 @@ class SurplusTests(unittest.TestCase):
         self.assertIn("Laser (laser)", self.run_script("show", "--kind", "module").stdout)
         self.assertNotIn("Gem (gem)", self.run_script("show", "--kind", "module").stdout)
 
+    def press(self):
+        """A newer catalog with a second recipe of polymer from the ore we hold; the rule keeps cook_polymer (a tie, then the
+        id), which takes caustic sacs nobody holds: the live case of copper piping from curd (2026-11-16)."""
+        more = dict(CATALOG, version="9.9.10", recipes=CATALOG["recipes"] + [{"id": "press_polymer", "inputs": [{"item_id": "iron_ore", "quantity": 5}],
+                                                                              "outputs": [{"item_id": "polymer", "quantity": 1}], "hand_craftable": True,
+                                                                              "produced_by_facility_ids": []}])
+        (self.data / "catalog" / "9.9.10.json").write_text(json.dumps(more), encoding="utf-8")
+
+    def choices(self, text):
+        (self.root / "game" / "reserve-recipes.tsv").write_text("# chosen recipes\nitem\trecipe\tnote\n" + text, encoding="utf-8")
+
+    def test_a_chosen_recipe_changes_what_the_reserve_names(self):
+        self.press()
+        self.targets("facility\tvat\t1\t\n")
+        rows = self.rows()
+        self.assertEqual((rows["polymer"]["recipe"], rows["caustic_sac"]["demand"], rows["iron_ore"]["demand"]), ("cook_polymer", 6, 0))
+        self.assertIn("polymer: recipe cook_polymer (1 of 2; choose another in game/reserve-recipes.tsv)", self.run_script("reserve").stdout)
+        self.choices("polymer\tpress_polymer\tLogistics, 2026-11-16; not flown yet\n")
+        rows = self.rows()
+        self.assertEqual((rows["polymer"]["recipe"], rows["polymer"]["make"], rows["iron_ore"]["demand"], rows["iron_ore"]["short"]), ("press_polymer", 4, 20, 0))
+        self.assertNotIn("caustic_sac", rows)                                                      # neither held nor asked for any more
+        reserve = self.run_script("reserve").stdout
+        self.assertIn("polymer: recipe press_polymer (1 of 2; chosen in game/reserve-recipes.tsv line 3)", reserve)
+        self.assertTrue(reserve.split("\n")[0].endswith(" | recipes chosen in game/reserve-recipes.tsv: 1"))
+        self.assertRegex(reserve, r"polymer +1 press_polymer, by hand +0 +4 +0 +4 +0")
+        self.assertNotIn("caustic_sac", reserve)
+
+    def test_no_choices_file_is_today_s_answer(self):
+        self.press()
+        self.targets("facility\tvat\t1\t\nfacility\tlockbox\t1\t\nhull\tskiff\t1\t\n")
+        plain = self.result()
+        self.assertFalse(plain["choices"]["present"])
+        before = self.run_script("reserve").stdout
+        self.assertNotIn("recipes chosen", before.split("\n")[0])                                  # the first line as it always was
+        self.choices("")                                                                           # the header alone: no choice
+        empty = self.result()
+        self.assertEqual((empty["rows"], empty["totals"]), (plain["rows"], plain["totals"]))
+        after = self.run_script("reserve").stdout.split("\n")
+        self.assertEqual(after[1:], before.split("\n")[1:])                                       # every line under the first, byte for byte
+        self.assertTrue(after[0].endswith(" | recipes chosen in game/reserve-recipes.tsv: 0"))
+        self.assertEqual(after[0].rsplit(" (", 1)[0], before.split("\n")[0].rsplit(" (", 1)[0])   # the first line up to the books' age, which runs on
+
+    def test_a_bad_row_is_skipped_and_fails_the_gate(self):
+        self.press()
+        self.targets("facility\tvat\t1\t\n")
+        plain = self.result()["rows"]
+        self.choices("ghost\tpress_polymer\tx\npolymer\tno_recipe\tx\npolymer\tsmelt\tx\n")
+        res = self.result()
+        self.assertEqual(res["rows"], plain)                                                       # skipped: the rule's recipe stands
+        self.assertEqual(len(res["choices"]["errors"]), 3)
+        done = self.run_script("check")
+        self.assertEqual(done.returncode, 1, done.stdout)
+        self.assertIn("ERROR game/reserve-recipes.tsv line 3: no item `ghost` in the catalog 9.9.10", done.stdout)
+        self.assertIn("ERROR game/reserve-recipes.tsv line 4: no recipe `no_recipe` in the catalog 9.9.10 (the recipes of polymer: cook_polymer, press_polymer)", done.stdout)
+        self.assertIn("ERROR game/reserve-recipes.tsv line 5: the recipe `smelt` does not make polymer (it makes steel_plate;", done.stdout)
+        self.assertIn("Errors: 3 | Warnings: 0", done.stdout)
+        shown = self.run_script("reserve")
+        self.assertEqual(shown.returncode, 0, shown.stdout)
+        self.assertIn("NOTE game/reserve-recipes.tsv line 4: no recipe `no_recipe`", shown.stdout)
+        self.assertIn("recipes chosen in game/reserve-recipes.tsv: 0, 3 rows skipped", shown.stdout.split("\n")[0])
+        (self.root / "game" / "reserve.tsv").unlink()                                               # no reserve file: the choices are still the gate's
+        self.assertEqual(self.run_script("check").returncode, 1)
+        self.choices("polymer\tpress_polymer\tgood\n")
+        self.assertEqual(self.run_script("check").returncode, 0)
+
     def test_the_real_reserve_file_reads_without_an_error(self):
         targets, errors, _warnings, present = self.mod.read_targets(REPO / "game" / "reserve.tsv", None)
         self.assertTrue(present)

@@ -142,6 +142,84 @@ class CraftbookTests(Tree):
         self.assertEqual(self.book.inventory(str(self.data))["total"], {"items": 0, "units": 0, "worth": 0})
         self.assertIn("no storage book yet", run())
 
+    def choices(self, text):
+        """The repository's game/reserve-recipes.tsv in the test's own root; None takes it away."""
+        path = self.root / "game" / "reserve-recipes.tsv"
+        if text is None:
+            path.unlink(missing_ok=True)
+        else:
+            path.write_text("# chosen recipes\nitem\trecipe\tnote\n" + text, encoding="utf-8")
+
+    def salvage(self):
+        """The catalog with a third recipe of steel_plate from a creature good no recipe makes: the rule takes it (a tie on
+        the level and the inputs, then the id), as it took verdigris_smelting for copper piping (2026-11-16)."""
+        more = dict(CATALOG, version="9.9.10", items=CATALOG["items"] + [{"id": "scrap_hide", "name": "Scrap Hide", "category": "misc", "size": 1, "base_value": 7}],
+                    recipes=CATALOG["recipes"] + [{"id": "press_hide_plate", "name": "Press Hide Plate", "category": "Refining", "inputs": [{"item_id": "scrap_hide", "quantity": 3}],
+                                                   "outputs": [{"item_id": "steel_plate", "quantity": 2}], "crafting_time": 1, "hand_craftable": True, "produced_by_facility_ids": []}])
+        (self.data / "catalog" / "9.9.10.json").write_text(json.dumps(more), encoding="utf-8")
+
+    def needs(self, *args):
+        return subprocess.run([sys.executable, "-I", "-B", str(REPO / "game" / "fleet" / "craftbook.py")] + list(args) + ["--data", str(self.data), "--root", str(self.root)],
+                              stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, env={"FLEET_MEMBER": "Unity", "PATH": "/usr/bin:/bin"})
+
+    def test_a_chosen_recipe_is_what_needs_follows_and_every_answer_names_the_recipe_taken(self):
+        self.salvage()
+        cat = self.book.choose(self.book.load(str(self.data)), str(self.root))         # no file: the rule's recipe
+        steps, raw = {}, {}
+        self.book.expand(cat, "steel_plate", 4, steps, raw)
+        self.assertEqual(({i: s[2]["id"] for i, s in steps.items()}, raw), ({"steel_plate": "press_hide_plate"}, {"scrap_hide": 6}))
+        self.assertEqual(cat["choices"]["present"], False)
+        before = self.needs("needs", "steel_plate", "4")
+        self.assertIn("steel_plate: recipe press_hide_plate (1 of 3; choose another in game/reserve-recipes.tsv)", before.stdout)
+        self.choices("steel_plate\tsmelt\tLogistics, 2026-11-16; flown\n")
+        cat = self.book.choose(self.book.load(str(self.data)), str(self.root))
+        steps, raw = {}, {}
+        self.book.expand(cat, "steel_plate", 4, steps, raw)
+        self.assertEqual(({i: s[2]["id"] for i, s in steps.items()}, raw), ({"steel_plate": "smelt"}, {"iron_ore": 40}))
+        after = self.needs("needs", "steel_plate", "4")
+        self.assertEqual(after.returncode, 0, after.stdout)
+        self.assertIn("4 steel_plate <- smelt x 4, by hand", after.stdout)
+        self.assertIn("steel_plate: recipe smelt (1 of 3; chosen in game/reserve-recipes.tsv line 3)", after.stdout)
+        self.assertNotIn("scrap_hide", after.stdout)
+        built = self.needs("build", "frame_plant")                                                  # build breaks down by the same recipe
+        self.assertIn("5 steel_plate <- smelt x 5", built.stdout)
+        item = self.needs("item", "steel_plate").stdout                                              # every recipe with its id and inputs, the followed one marked
+        self.assertIn("  press_hide_plate: 2 steel_plate <- 3 scrap_hide | by hand\n", item)
+        self.assertIn("  break_frame: 2 steel_plate <- 1 frame | by hand\n", item)
+        self.assertIn("  smelt: 1 steel_plate <- 10 iron_ore | by hand | <- every list of needs follows this one (chosen in game/reserve-recipes.tsv line 3)", item)
+        self.assertIn("to follow another: a row `steel_plate<TAB><recipe id><TAB>", item)
+
+    def test_no_file_or_an_empty_one_is_today_s_answer_and_a_bad_row_is_skipped_with_a_note(self):
+        self.salvage()
+        plain = self.needs("needs", "outpost_kit").stdout
+        self.choices("")                                                                             # the header alone: no choice
+        self.assertEqual(self.needs("needs", "outpost_kit").stdout, plain)
+        self.choices(None)
+        lines = plain.split("\n")
+        self.assertEqual(lines[:5], ["NEEDS of 1 outpost_kit (catalog 9.9.10)", "Made on the way (one recipe per item):",
+                                     "  1 outpost_kit <- assemble_outpost_kit x 1, in a facility: kit_plant", "    2 frame <- assemble_frame x 2, in a facility: frame_plant",
+                                     "      8 steel_plate <- press_hide_plate x 4, by hand"])               # the steps as before; the recipe block follows them
+        self.assertEqual(lines[5:7], [self.book.TAKEN, "  steel_plate: recipe press_hide_plate (1 of 3; choose another in game/reserve-recipes.tsv)"])
+        self.choices("ghost_item\tsmelt\tx\nsteel_plate\tno_such_recipe\tx\nsteel_plate\tassemble_frame\tx\nsteel_plate\tsmelt\tgood\nsteel_plate\tbreak_frame\tagain\n")
+        cat = self.book.choose(self.book.load(str(self.data)), str(self.root))
+        self.assertEqual({item: row["recipe"] for item, row in cat["choices"]["rows"].items()}, {"steel_plate": "smelt"})   # the good row stands, the bad ones are skipped
+        self.assertEqual([e.split(": ", 1)[0] for e in cat["choices"]["errors"]], ["game/reserve-recipes.tsv line 3", "game/reserve-recipes.tsv line 4",
+                                                                                 "game/reserve-recipes.tsv line 5", "game/reserve-recipes.tsv line 7"])
+        self.assertIn("the recipe `assemble_frame` does not make steel_plate (it makes frame;", cat["choices"]["errors"][2])
+        noted = self.needs("needs", "steel_plate").stdout
+        self.assertIn("  NOTE game/reserve-recipes.tsv line 3: no item `ghost_item` in the catalog 9.9.10: skipped", noted)
+        self.assertIn("1 steel_plate <- smelt x 1", noted)
+        self.choices("ghost_item\tsmelt\tx\n")                                                       # only a bad row: the answer is the rule's
+        self.assertIn("8 steel_plate <- press_hide_plate x 4", self.needs("needs", "outpost_kit").stdout)
+        _rows, errors, _warnings, present = self.book.read_choices(self.root / "game" / "reserve-recipes.tsv", None)   # the form alone, no catalog
+        self.assertEqual((errors, present), ([], True))
+
+    def test_the_real_choices_file_reads_without_an_error(self):
+        rows, errors, _warnings, present = self.book.read_choices(REPO / "game" / "reserve-recipes.tsv", None)
+        self.assertTrue(present)
+        self.assertEqual(errors, [])
+        self.assertTrue(all(row["note"] for row in rows.values()))                                 # who chose it, when, flown or not
+
     def test_stored_goods_are_held_against_the_recipes_made_by_hand(self):
         have, places, _when = self.book.stock(str(self.data))
         self.assertEqual((have, len(places)), ({"iron_ore": 34}, 2))

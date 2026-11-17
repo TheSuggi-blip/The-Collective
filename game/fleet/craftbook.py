@@ -22,10 +22,18 @@ WHAT: reads the game's catalog (the unit's data folder, catalog/<version>.json:
                             `inventory stations` lists the same per station
 RULES:
   - It reads only: it crafts nothing, buys nothing and moves no ship.
-  - A list of needs follows one recipe per item: the one nearest to what
-    is mined (so never one that takes a finished thing apart), by hand
-    before in a facility, then the one with the fewest inputs. `item <id>`
-    shows the others. Ore, ice and gas are taken as mined, never as made.
+  - A list of needs follows one recipe per item: the one the fleet chose in
+    game/reserve-recipes.tsv (kept by Logistics, rule F24), else the one
+    nearest to what is mined (so never one that takes a finished thing
+    apart), by hand before in a facility, then the one with the fewest
+    inputs. `item <id>` shows every recipe of an item with its id and its
+    inputs and marks the one followed. Ore, ice and gas are taken as mined,
+    never as made.
+  - Every answer that breaks a thing down names, for each item that has more
+    than one recipe, the recipe taken and how many there are. A row of
+    reserve-recipes.tsv whose item or recipe the catalog does not hold, or
+    whose recipe does not make the item, is skipped with a NOTE line
+    (`surplus.py check` fails on it).
   - What a result sells for is the best bid of a saved order book and the
     units at that price: an estimate until sold (orders F12).
 WHY:  what a base, a hull or a module takes was worked out by hand, call by
@@ -40,6 +48,7 @@ USAGE:
   craftbook.py recipes [--category <name>] [--makes <item id>] [--uses <item id>] [--hand]
   craftbook.py inventory [stations] [--item <item id>] [--top N]
   --data <dir>      the unit's data folder (default /srv/collective/data)
+  --root <dir>      the repository, for game/reserve-recipes.tsv (default: two folders above this file)
 
 Stdlib only. ASCII only.
 """
@@ -53,6 +62,10 @@ from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import division                                   # noqa: E402
+
+CHOICES = "game/reserve-recipes.tsv"             # the recipe the fleet uses for an item, where it uses another than the rule's (rule F24)
+CHOICE_HEADER = ["item", "recipe", "note"]
+REPO = Path(__file__).resolve().parents[2]       # the repository this file lies in (game/fleet/craftbook.py)
 
 
 def read_json(path, default):
@@ -79,6 +92,70 @@ def load(data):
         for row in cat[kind].values():
             for m in row.get("build_materials") or []:
                 cat["built"].setdefault(m.get("item_id"), []).append(row["id"])
+    return cat
+
+
+def read_choices(path, cat):
+    """(choices {item: {recipe, line, note}}, errors, warnings, present) of game/reserve-recipes.tsv: for an item, the recipe
+    the fleet uses. The one reader of the file. A row whose item or recipe the catalog does not hold, or whose recipe does
+    not make the item, is an error and is skipped (its item keeps the rule's recipe): a wrong row must never move a list
+    of needs. A second row of one item is an error too; the first stands. With cat None only the form is checked. No
+    file: no choices and no error."""
+    try:
+        text = Path(path).read_text(encoding="utf-8")
+    except FileNotFoundError:
+        return {}, [], [], False
+    except (OSError, UnicodeDecodeError) as error:
+        return {}, ["%s: not readable (%s)" % (CHOICES, type(error).__name__)], [], True
+    choices, errors, warnings, header = {}, [], [], False
+    version = (cat or {}).get("version")
+    for number, raw in enumerate(text.split("\n"), 1):
+        line = raw.rstrip("\r")
+        if not line.strip() or line.lstrip().startswith("#"):
+            continue
+        cells = [c.strip() for c in line.split("\t")]
+        if cells[:3] == CHOICE_HEADER:
+            header = True
+            continue
+        at = "%s line %d: " % (CHOICES, number)
+        if not header:
+            errors.append(at + "the header `item<TAB>recipe<TAB>note` must come before the first row")
+            header = True                                       # said once; the row itself is still read
+        if len(cells) < 2 or not cells[0] or not cells[1]:
+            errors.append(at + "needs item and recipe separated by tabs: `%s`" % line[:80])
+            continue
+        item, rid, note = cells[0], cells[1], cells[2] if len(cells) > 2 else ""
+        if cat is not None:
+            makers = sorted(r["id"] for r in cat["makers"].get(item) or [])
+            if item not in cat["items"]:
+                errors.append(at + "no item `%s` in the catalog %s" % (item, version))
+                continue
+            if rid not in cat["recipes"]:
+                errors.append(at + "no recipe `%s` in the catalog %s (the recipes of %s: %s)" % (rid, version, item, ", ".join(makers) or "none"))
+                continue
+            if rid not in makers:
+                made = sorted({o.get("item_id") for o in cat["recipes"][rid].get("outputs") or []})
+                errors.append(at + "the recipe `%s` does not make %s (it makes %s; the recipes of %s: %s)" % (rid, item, ", ".join(made) or "nothing", item,
+                                                                                                          ", ".join(makers) or "none"))
+                continue
+            if mined(cat, item):
+                warnings.append(at + "%s is mined: a list of needs takes it as mined and never follows `%s`" % (item, rid))
+        if item in choices:
+            errors.append(at + "%s has its recipe on line %d already: the first stands" % (item, choices[item]["line"]))
+            continue
+        choices[item] = {"recipe": rid, "line": number, "note": note}
+    return choices, errors, warnings, True
+
+
+def choose(cat, root=None):
+    """Take the fleet's choices of recipe (game/reserve-recipes.tsv of the repository `root`, default the one this file lies
+    in) into a catalog: cat["chosen"] {item: recipe}, cat["choices"] {file, present, rows, errors, warnings}. From then on
+    every list of needs on this catalog follows them (recipe_for, rank). No file: nothing chosen, every answer as before.
+    The catalog, for chaining."""
+    rows, errors, warnings, present = read_choices(Path(root or REPO) / CHOICES, cat)
+    cat["chosen"] = {item: cat["recipes"][row["recipe"]] for item, row in rows.items()}
+    cat["choices"] = {"file": CHOICES, "present": present, "rows": rows, "errors": errors, "warnings": warnings}
+    cat.pop("rank", None)                                           # a level counts the recipes followed: counted again
     return cat
 
 
@@ -236,16 +313,46 @@ def rank(cat, item, open_items=()):
         return 0
     if item in open_items or len(open_items) > 24:
         return 99
-    best = min(1 + max([rank(cat, i.get("item_id"), open_items + (item,)) for i in r.get("inputs") or []] or [0]) for r in makers)
+    chosen = (cat.get("chosen") or {}).get(item)                    # a chosen recipe is the one followed: its steps are the item's level
+    best = min(1 + max([rank(cat, i.get("item_id"), open_items + (item,)) for i in r.get("inputs") or []] or [0]) for r in ([chosen] if chosen else makers))
     if best < 99 or not open_items:
         memo[item] = best
     return best
 
 
 def pick(cat, recipes):
-    """The recipe a list of needs follows: nearest to what is mined, by hand first, then the fewest inputs."""
+    """The recipe a list of needs follows when the fleet chose none: nearest to what is mined, by hand first, then the fewest inputs."""
     return sorted(recipes, key=lambda r: (max([rank(cat, i.get("item_id")) for i in r.get("inputs") or []] or [0]), not r.get("hand_craftable"),
                                           len(r.get("inputs") or []), r["id"]))[0]
+
+
+def recipe_for(cat, item):
+    """The recipe every list of needs follows for an item: the fleet's choice (game/reserve-recipes.tsv, taken in by choose),
+    else pick's rule; None when no recipe makes it. The one place a recipe is picked: needs, build, hive.py base and the
+    reserve (surplus.py) all ask here."""
+    makers = cat["makers"].get(item)
+    if not makers:
+        return None
+    return (cat.get("chosen") or {}).get(item) or pick(cat, makers)
+
+
+def taken_lines(cat, taken):
+    """For an answer that broke things down, {item: recipe taken (or its id)}: one line per item that more than one recipe
+    makes, `item: recipe <id> (1 of N; ...)`, saying whether the fleet chose it or where to choose another; then a NOTE for
+    every row of the choices file that was skipped. Empty when no item had a choice."""
+    chosen, rows = cat.get("chosen") or {}, (cat.get("choices") or {}).get("rows") or {}
+    lines = []
+    for item in sorted(taken):
+        makers = cat["makers"].get(item) or []
+        if len(makers) < 2:
+            continue
+        rid = taken[item]["id"] if isinstance(taken[item], dict) else taken[item]
+        how = ("chosen in %s line %d" % (CHOICES, rows[item]["line"]) if item in chosen and chosen[item]["id"] == rid and item in rows
+               else "choose another in %s" % CHOICES)
+        lines.append("%s: recipe %s (1 of %d; %s)" % (item, rid, len(makers), how))
+    for error in (cat.get("choices") or {}).get("errors") or []:
+        lines.append("NOTE %s: skipped" % error)
+    return lines
 
 
 def expand(cat, item, units, steps, raw, trail=()):
@@ -254,7 +361,7 @@ def expand(cat, item, units, steps, raw, trail=()):
     if not makers or mined(cat, item) or item in trail or len(trail) > 24:
         raw[item] = raw.get(item, 0) + units
         return
-    recipe = pick(cat, makers)
+    recipe = recipe_for(cat, item)
     per = sum(o.get("quantity") or 0 for o in recipe.get("outputs") or [] if o.get("item_id") == item) or 1
     runs = math.ceil(units / per)
     step = steps.setdefault(item, [0, 0, recipe, len(trail)])
@@ -273,6 +380,18 @@ def parts(rows):
     return ", ".join("%s %s" % (r.get("quantity"), r.get("item_id")) for r in rows or [])
 
 
+TAKEN = "Recipes taken where an item has more than one (each recipe with its id and inputs: craftbook.py item <id>):"
+
+
+def print_taken(cat, taken, indent):
+    """The block of taken_lines under its head line, each line indented; nothing when no item had a choice."""
+    lines = taken_lines(cat, taken)
+    if lines:
+        print(indent + (TAKEN if not indent else TAKEN[0].lower() + TAKEN[1:]))
+        for line in lines:
+            print(indent + "  " + line)
+
+
 def print_needs(cat, wanted, have, when):
     """The steps and the raw list for {item: units}."""
     steps, raw = {}, {}
@@ -283,6 +402,7 @@ def print_needs(cat, wanted, have, when):
         for item, (units, runs, recipe, depth) in sorted(steps.items(), key=lambda kv: (kv[1][3], kv[0])):
             print("  %s%s %s <- %s x %s, %s%s" % ("  " * depth, "{:,}".format(units), item, recipe["id"], "{:,}".format(runs), where(cat, recipe),
                                                  " | in storage %s" % "{:,}".format(have[item]) if have.get(item) else ""))
+    print_taken(cat, {item: step[2] for item, step in steps.items()}, "")
     print("Mined or bought (storage book of %s):" % when)
     print("  %-34s %12s %12s %12s %10s" % ("item", "units", "in storage", "missing", "base value"))
     for item, units in sorted(raw.items(), key=lambda kv: -kv[1]):
@@ -312,8 +432,14 @@ def show_item(cat, text, have):
         print("  cpu %s, power %s | %s" % (item.get("cpu_usage"), item.get("power_usage"), json.dumps({k: item[k] for k in ("damage", "reach", "cooldown", "effect", "special") if item.get(k)})[:300]))
     makers = cat["makers"].get(item["id"]) or []
     print("Made by %d recipe(s)%s" % (len(makers), "" if makers else ": mined, dropped or bought only"))
-    for r in sorted(makers, key=lambda r: (not r.get("hand_craftable"), r["id"]))[:12]:
-        print("  %s: %s <- %s | %s" % (r["id"], parts(r.get("outputs")), parts(r.get("inputs")), where(cat, r)))
+    followed = recipe_for(cat, item["id"]) if len(makers) > 1 and not mined(cat, item["id"]) else None      # every recipe is listed: a member chooses from them
+    row = ((cat.get("choices") or {}).get("rows") or {}).get(item["id"])
+    for r in sorted(makers, key=lambda r: (not r.get("hand_craftable"), r["id"])):
+        mark = "" if r is not followed else " | <- every list of needs follows this one (%s)" % (
+            "chosen in %s line %d" % (CHOICES, row["line"]) if row and (cat.get("chosen") or {}).get(item["id"]) is r else "the rule: nearest to what is mined, by hand, fewest inputs")
+        print("  %s: %s <- %s | %s%s" % (r["id"], parts(r.get("outputs")), parts(r.get("inputs")), where(cat, r), mark))
+    if followed:
+        print("  to follow another: a row `%s<TAB><recipe id><TAB><who, when, why>` in %s (Logistics, rule F24; `surplus.py check` is its gate)" % (item["id"], CHOICES))
     users = cat["users"].get(item["id"]) or []
     print("Used in %d recipe(s): %s" % (len(users), ", ".join(sorted(r["id"] for r in users)[:14]) + (" ..." if len(users) > 14 else "")))
     built = cat["built"].get(item["id"]) or []
@@ -418,12 +544,13 @@ def main():
     args = sys.argv[1:]
     value = lambda name, default: args[args.index(name) + 1] if name in args and args.index(name) + 1 < len(args) else default
     data = value("--data", division.DATA)
-    words = [a for n, a in enumerate(args) if not a.startswith("--") and (n == 0 or args[n - 1] not in ("--data", "--top", "--category", "--makes", "--uses", "--item"))]
+    words = [a for n, a in enumerate(args) if not a.startswith("--") and (n == 0 or args[n - 1] not in ("--data", "--root", "--top", "--category", "--makes", "--uses", "--item"))]
     if not words or any(a in ("-h", "--help") for a in args):
         sys.exit(__doc__)
     cat = load(data)
     if cat is None:
-        sys.exit("no catalog in %s/catalog: the service `routemaker` fetches it once a day" % data)
+        sys.exit("no catalog in %s/catalog: the hourly job fetches it (scripts/catalog-refresh.py)" % data)
+    choose(cat, value("--root", str(REPO)))
     verb, rest = words[0], words[1:]
     have, _places, when = stock(data)
     if verb == "item" and rest:

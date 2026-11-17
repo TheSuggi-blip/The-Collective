@@ -1,4 +1,4 @@
-"""game/fleet/hive.py on a disposable data folder: what the stations bid in all, a field's change between two readings, a route's runs in a window. No engine, no network."""
+"""game/fleet/hive.py on a disposable data folder: what the stations bid in all, a field's change between two readings, a route's runs in a window, what each division put into the reserve per hour (flow), a base broken down by the chosen recipe. No engine, no network."""
 
 import contextlib
 import importlib.util
@@ -192,6 +192,81 @@ class HiveTests(unittest.TestCase):
         self.assertIn("no catalog in the data folder", out.getvalue())
         self.assertIn("fewer than two hourly samples", out.getvalue())
 
+    def reserve_repo(self, choices=None):
+        """A repository with a reserve of 10 steel plates and, when given, its chosen recipes; a catalog where steel_plate has
+        two recipes, the rule's from a hide nobody gathers and one from ore. The repository's game/ folder, as hive.py takes it."""
+        root = Path(self.temp.name) / "repo"
+        (root / "game").mkdir(parents=True, exist_ok=True)
+        (root / "game" / "reserve.tsv").write_text("kind\tid\tunits\tnote\nitem\tsteel_plate\t10\tplates on hand\n", encoding="utf-8")
+        if choices is not None:
+            (root / "game" / "reserve-recipes.tsv").write_text("item\trecipe\tnote\n" + choices, encoding="utf-8")
+        recipe = lambda rid, item, units, out, made, hand=True, plants=(): {"id": rid, "inputs": [{"item_id": item, "quantity": units}], "hand_craftable": hand,
+                                                                             "outputs": [{"item_id": made, "quantity": out}], "produced_by_facility_ids": list(plants)}
+        catalog = {"version": "9.9.9", "items": [{"id": "iron_ore", "category": "ore", "base_value": 5}, {"id": "steel_plate", "category": "refined", "base_value": 18},
+                                                 {"id": "hide", "category": "misc", "base_value": 9}, {"id": "gem", "category": "misc", "base_value": 50},
+                                                 {"id": "outpost_kit", "category": "component", "base_value": 900}],
+                   "recipes": [recipe("smelt", "iron_ore", 10, 1, "steel_plate"), recipe("boil_hide", "hide", 2, 1, "steel_plate"),
+                               recipe("assemble_outpost_kit", "steel_plate", 5, 1, "outpost_kit", False, ["kit_plant"])],
+                   "facilities": [{"id": "kit_plant", "level": 1, "build_cost": 100, "build_materials": [{"item_id": "steel_plate", "quantity": 3}]}], "ships": []}
+        (self.data / "catalog" / "9.9.9.json").write_text(json.dumps(catalog))
+        return root / "game"
+
+    def book(self, military, at):
+        path = self.data / "stock" / "storage.json"
+        path.write_text(json.dumps({"updated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(at)), "pilots": {
+            "miner-1": {"read_at": "2026-11-16T10:00:00Z", "stations": {"hub": {"iron_ore": 30, "gem": 4}}},
+            "drone-1": {"read_at": "2026-11-16T10:00:00Z", "stations": {"hub": {"iron_ore": military}}}}}))
+        os.utime(path, (at, at))
+
+    def test_flow_shows_the_units_each_division_put_into_the_reserve_per_hour(self):
+        game = self.reserve_repo("steel_plate\tsmelt\tLogistics, 2026-11-16; flown\n")             # the reserve's items: steel_plate and, by smelt, iron_ore
+        hour = 1_800_000_000 // 3600 * 3600
+        self.book(5, hour + 600)
+        self.hive.history.one_pass(str(self.data), now=hour + 600, root=str(game))
+        self.book(505, hour + 4200)                                                                  # an hour later Military stored 500 ore
+        self.hive.history.one_pass(str(self.data), now=hour + 4200, root=str(game))
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            self.assertEqual(self.hive.show_flow(str(game), str(self.data), time.time(), "all", 4), 0)
+        text = out.getvalue()
+        self.assertTrue(text.startswith("FLOW | what each division put into the reserve per hour: the units it holds (station storage and holds) of the 2 items"))
+        self.assertIn("1.0 hours on record", text.split("\n")[0])
+        self.assertIn("  only 1.0 hours on record: the figures of the last 4, 12, 24 hours read from the oldest sample", text)
+        self.assertIn("Military (Apophis) | 1 of the reserve's items held now, 505 units", text)
+        self.assertRegex(text, r"\n  iron_ore +505 +\+500\.0 +\+500\.0 +\+500\.0\n  SUM 1 items +505 +\+500\.0")
+        self.assertRegex(text, r"Mining \(Zero\)[^\n]*\n[^\n]*\n  iron_ore +30 +\+0\.0")
+        self.assertNotIn("gem", text)                                                                # held, but no reserve item
+        self.assertNotIn("Intel (Oracle)", text)                                                     # nothing held: left out of `all`
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            self.assertEqual(self.hive.show_flow(str(game), str(self.data), time.time(), "Apophis", 2), 0)
+            self.assertEqual(self.hive.show_flow(str(game), str(self.data), time.time(), "Oracle", 4), 0)
+            self.assertEqual(self.hive.show_flow(str(game), str(self.data), time.time(), "Nobody", 4), 1)
+            self.assertEqual(self.hive.show_flow(str(game), str(Path(self.temp.name) / "empty"), time.time(), "all", 4), 1)
+        text = out.getvalue()
+        self.assertIn("per h, 2h", text)
+        self.assertNotIn("Mining (Zero)", text)
+        self.assertIn("Intel (Oracle) | none of the reserve's items in the samples", text)
+        self.assertIn("no member `Nobody`", text)
+        self.assertIn("FLOW | no read copy", text)
+
+    def test_base_breaks_down_by_the_chosen_recipe_and_names_it(self):
+        game = self.reserve_repo()
+        self.book(5, time.time())
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            self.assertEqual(self.hive.show_base(str(game), str(self.data), time.time(), "outpost"), 0)
+        self.assertIn("    8 steel_plate <- boil_hide x 8, by hand", out.getvalue())
+        self.assertIn("  recipes taken where an item has more than one", out.getvalue())
+        self.assertIn("    steel_plate: recipe boil_hide (1 of 2; choose another in game/reserve-recipes.tsv)", out.getvalue())
+        game = self.reserve_repo("steel_plate\tsmelt\tLogistics, 2026-11-16; not flown yet\n")
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            self.assertEqual(self.hive.show_base(str(game), str(self.data), time.time(), "outpost"), 0)
+        self.assertIn("    8 steel_plate <- smelt x 8, by hand", out.getvalue())
+        self.assertIn("    steel_plate: recipe smelt (1 of 2; chosen in game/reserve-recipes.tsv line 2)", out.getvalue())
+        self.assertNotIn("hide", out.getvalue())
+
     def test_the_fleet_s_money_prints_net_as_income_less_costs_and_says_what_it_left_out(self):
         # the collector's own figures (station/fleet.py) over an hour in which sentinel-1 of the command group gave
         # trader-1, a pilot born in the hour with 100 cr, 18,000 cr: neither moves a figure, and every printed row
@@ -226,6 +301,23 @@ class HiveTests(unittest.TestCase):
             self.assertGreater(number(cells[7]), 0)
         self.assertEqual((rows["Command"][9], rows["Trade"][9]), ("-18,000", "18,000"))
 
+
+class CraftbookFileTests(unittest.TestCase):
+    # 2026-11-16: craftbook_file took the newest file time; catalog-refresh.py keeps two versions side by side, and every
+    # other reader (craftbook.py, store.py, empire.py, catalog-index.py) takes the highest version in the name
+    def test_the_highest_version_wins_whatever_the_file_times(self):
+        hive = load("hive")
+        with tempfile.TemporaryDirectory(prefix="fleet-hive-catalog-") as temp:
+            folder = Path(temp) / "catalog"
+            self.assertEqual(hive.craftbook_file(temp), folder / "none.json")                       # no folder, no file: what it gave before
+            folder.mkdir()
+            self.assertEqual(hive.craftbook_file(temp), folder / "none.json")
+            for name in ("0.99.0.json", "0.100.0.json", "ammo.json", "refresh.json"):
+                (folder / name).write_text("{}")
+            for older, newer in (("0.99.0.json", "0.100.0.json"), ("0.100.0.json", "0.99.0.json")):
+                for age, name in ((300, older), (200, newer), (100, "ammo.json"), (50, "refresh.json")):
+                    os.utime(folder / name, (time.time() - age, time.time() - age))
+                self.assertEqual(hive.craftbook_file(temp).name, "0.100.0.json", "%s written last" % newer)
 
 if __name__ == "__main__":
     unittest.main()

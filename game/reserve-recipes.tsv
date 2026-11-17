@@ -1,0 +1,12 @@
+# The recipes the fleet uses: for an item, the recipe every list of needs follows (craftbook.py needs and build, hive.py
+# base, surplus.py reserve and the reserve held against game/reserve.tsv) where the fleet uses another than the rule's.
+# Kept by Logistics (rule F24); a row is the recipe our crafters and facilities really run, not a wish.
+# Without a row an item follows the rule: the recipe nearest to what is mined, by hand before a facility, then the fewest
+# inputs. The rule can name an input the fleet cannot get where another recipe takes ore we hold: choose here.
+# Tab-separated; `#` starts a comment. One row per item.
+# item: an item id | recipe: the id of a recipe that makes it (all of them with their inputs: craftbook.py item <id>)
+# note: who chose it, when, and whether it is flown
+# A row whose item or recipe the catalog does not hold, or whose recipe does not make the item, is skipped by every
+# answer with a NOTE and fails the gate (`surplus.py check`).
+item	recipe	note
+copper_piping	draw_copper_piping	Unity on Apollo's finding, 2026-11-16: copper ore and steel plate we hold, verdigris curd has no source that fills 34,832; by hand; the craft is not flown yet

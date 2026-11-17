@@ -248,6 +248,8 @@ def check(root):
                         errors.append(where + "stop %d: the `craft` of %s needs `makes`: the runner counts what was made by that item in storage" % (n, job["recipe"]))
         levels = lambda value: isinstance(value, dict) and all(isinstance(v, int) and not isinstance(v, bool) for v in value.values())
         need = route.get("requires") if isinstance(route.get("requires"), dict) else {}
+        if need.get("hold") and need.get("empty_hold"):
+            errors.append(where + "`requires.hold` and `requires.empty_hold` together close the route to every pilot")
         if "skills_below" in need and not levels(need["skills_below"]):
             errors.append(where + "`requires.skills_below` must be {skill: level}")
         floors = [("`min_left`", route.get("min_left"))] + [("stop %d: the `min_left` of a `mine` step" % n, step.get("min_left"))
@@ -395,7 +397,7 @@ def open_to(route):
     gate = ["the park route" if route.get("park") else "", "once per pilot" if route.get("once") else "",
             "up to %s ships" % route["max_ships"] if route.get("max_ships") else "", "%s pilots in all" % route["max_pilots"] if route.get("max_pilots") else "",
             "needs %s" % need["module"] if need.get("module") else "", "without %s" % need["without_module"] if need.get("without_module") else "",
-            "empty hold" if need.get("empty_hold") else "", "from %s cr" % format(route["min_credits"], ",") if route.get("min_credits") else "",
+            "empty hold" if need.get("empty_hold") else "", "goods aboard" if need.get("hold") else "", "from %s cr" % format(route["min_credits"], ",") if route.get("min_credits") else "",
             "after the reward %s" % (need["booked"] if isinstance(need["booked"], str) else ", ".join(need["booked"])) if need.get("booked") else "",
             "from %s" % ", ".join("%s %s" % (k, v) for k, v in sorted(need["skills"].items())) if isinstance(need.get("skills"), dict) and need["skills"] else "",
             "with %s" % ", ".join("%s %s stored at %s" % (w.get("min", 1), w.get("item"), w.get("at")) for w in ([need["stored"]] if isinstance(need["stored"], dict) else need["stored"]) if isinstance(w, dict)) if need.get("stored") else "",

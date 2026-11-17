@@ -1,4 +1,4 @@
-"""store.py's snapshot tables on a disposable data folder and repository: each loader fills its tables, a file is read again only when it changed, a missing or broken file is skipped and named, the storage book adds up, the views, the map's fallback, our empire, the orders that age; query() reads and nothing else, stops in time and cuts at its limit; schema() describes every table; hive.py sql and schema."""
+"""store.py's snapshot tables on a disposable data folder and repository: each loader fills its tables, a file is read again only when it changed, a missing or broken file is skipped and named, the storage book adds up, the views, the map's fallback, our empire, the orders that age; the hourly samples of what each division holds (stock_hour) and reserve_flow; query() reads and nothing else, stops in time and cuts at its limit; schema() describes every table; hive.py sql and schema."""
 
 import importlib.util
 import json
@@ -352,6 +352,57 @@ class SnapshotTests(unittest.TestCase):
         self.assertNotIn("gone_table", names)
         self.assertIn("runs", names)                                          # the history is never dropped
         self.assertEqual(self.read("SELECT COUNT(*) FROM items"), [(4,)])
+
+    def stock(self):
+        return {(d, i): u for d, i, u in self.read("SELECT division, item, units FROM stock_hour WHERE hour = (SELECT MAX(hour) FROM stock_hour)")}
+
+    def test_stock_hour_holds_one_sample_an_hour_per_division_and_item_and_a_later_pass_of_the_hour_replaces_it(self):
+        noon = store.epoch("2026-11-16T12:10:00Z")
+        out = self.one(now=noon)
+        self.assertEqual(out["sampled"], 4)
+        self.assertIn("stock_hour: 4 rows of the hour", store.said(out))
+        self.assertEqual(self.stock(), {("Mining", "iron_ore"): 17, ("Mining", "water_ice"): 3, ("Trade", "iron_ore"): 7, ("Trade", "steel_plate"): 5})   # storage + holds
+        self.assertEqual(self.read("SELECT DISTINCT hour, t FROM stock_hour"), [(store.epoch("2026-11-16T12:00:00Z"), noon)])
+        self.assertEqual(self.one(now=noon + 600)["sampled"], 0)                                 # the book did not change: the hour keeps its sample
+        book = json.loads(json.dumps(BOOK))
+        book["pilots"]["miner-1"]["stations"] = {"base_b": {"iron_ore": 2}}                     # water ice sold, iron ore moved on
+        book["pilots"]["drone-3"] = {"read_at": "2026-11-16T12:20:00Z", "stations": {"base_a": {"iron_ore": 500}}}
+        self.bump(self.data / "stock" / "storage.json", book)
+        out = self.one(now=noon + 1800)                                                          # the same hour, the book read again: replaced
+        self.assertEqual(out["sampled"], 4)
+        self.assertEqual(self.stock(), {("Mining", "iron_ore"): 7, ("Trade", "iron_ore"): 7, ("Trade", "steel_plate"): 5, ("Military", "iron_ore"): 500})
+        self.assertEqual(self.read("SELECT COUNT(*), COUNT(DISTINCT hour), MAX(t) FROM stock_hour"), [(4, 1, noon + 1800)])
+        self.assertEqual(self.one(now=noon + 3600)["sampled"], 4)                                # a new hour, the book unchanged: its first pass samples it
+        self.assertEqual(self.read("SELECT hour, COUNT(*) FROM stock_hour GROUP BY hour ORDER BY hour"), [(store.epoch("2026-11-16T12:00:00Z"), 4), (store.epoch("2026-11-16T13:00:00Z"), 4)])
+        self.one(now=noon + 31 * 86400)                                                         # 30 days on: the old samples go
+        self.assertEqual(self.read("SELECT COUNT(DISTINCT hour) FROM stock_hour"), [(1,)])
+
+    def test_reserve_flow_reads_units_per_hour_over_a_window_and_says_when_the_record_is_short(self):
+        noon = store.epoch("2026-11-16T12:10:00Z")
+        self.one(now=noon)
+        book = json.loads(json.dumps(BOOK))
+        book["pilots"]["drone-3"] = {"read_at": "2026-11-16T13:00:00Z", "stations": {"base_a": {"iron_ore": 500, "water_ice": 40}}}
+        self.bump(self.data / "stock" / "storage.json", book)
+        self.one(now=noon + 2 * 3600)                                                            # two hours later, Military stored 500 ore
+        conn = store.connect(str(self.data))
+        self.addCleanup(conn.close)
+        flow = store.reserve_flow(conn, ["iron_ore", "steel_plate"], (1, 4))
+        self.assertEqual((flow["hours"], flow["base"][1], flow["base"][4]), (2.0, (store.epoch("2026-11-16T12:00:00Z"), 2.0, False),
+                                                                            (store.epoch("2026-11-16T12:00:00Z"), 2.0, True)))   # 4 hours asked, 2 on record
+        rows = {(r["division"], r["item"]): (r["units"], r["rate"][1], r["rate"][4]) for r in flow["rows"]}
+        self.assertEqual(rows, {("Military", "iron_ore"): (500, 250.0, 250.0), ("Mining", "iron_ore"): (17, 0.0, 0.0), ("Trade", "iron_ore"): (7, 0.0, 0.0),
+                                ("Trade", "steel_plate"): (5, 0.0, 0.0)})                         # water ice is no reserve item here
+        self.assertEqual(flow["sums"]["Military"], {"items": 1, "units": 500, "rate": {1: 250.0, 4: 250.0}})
+        self.assertEqual(flow["sums"]["Trade"]["units"], 12)
+        self.assertEqual(len(store.reserve_flow(conn)["rows"]), 6)                               # no list: every item
+        single = tempfile.TemporaryDirectory(prefix="fleet-store-flow-")
+        self.addCleanup(single.cleanup)
+        fixture(Path(single.name) / "data", Path(single.name) / "game", self.now)
+        store.one_pass(str(Path(single.name) / "data"), now=noon, root=str(Path(single.name) / "game"))
+        one = store.connect(str(Path(single.name) / "data"))
+        self.addCleanup(one.close)
+        flow = store.reserve_flow(one, None, (4,))
+        self.assertEqual((flow["hours"], flow["base"][4][2], {r["rate"][4] for r in flow["rows"]}), (0.0, True, {None}))   # one sample is no rate
 
     def test_status_lists_the_snapshot_tables_and_the_files_not_read(self):
         (self.data / "empire" / "empire.json").unlink()

@@ -8,8 +8,8 @@ WHAT: the service `routemaker` runs it. Every ten minutes it reads what the
       `rates`), every mission board (data/missions/), every
       herd (data/wildlife/), what we own (data/stock/), the runs so far
       (data/routes/runs.jsonl), the chart (game/map/galaxy.tsv) and the
-      game's catalog of items and recipes (data/catalog/, fetched once a day
-      from the game's public address) -- and writes
+      game's catalog of items and recipes (data/catalog/, the highest
+      version; scripts/catalog-refresh.py fetches and checks it) -- and writes
       data/routes/opportunities.json: one candidate per way to earn, with
       its estimate in credits per ship-hour after fuel, what the estimate
       rests on, what is uncertain about it, and the route file that flies
@@ -72,6 +72,7 @@ import calendar
 import json
 import math
 import os
+import re
 import statistics
 import sys
 import time
@@ -86,8 +87,6 @@ import division                                   # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent     # the game/ folder
 EVERY = 600                  # seconds between two passes
-CATALOG_URL = "https://game.spacemolt.com/api/catalog.json"
-CATALOG_EVERY = 24 * 3600    # the catalog is fetched once a day at most
 STALE = 6 * 3600             # a book or a field read longer ago is marked stale
 LADDER_FRESH = 45 * 60       # a ladder read longer ago is read again when a candidate needs it
 LADDER_READS = 16            # ladders read through docked pilots in one pass, at most
@@ -285,11 +284,12 @@ def load_world(data, root, now):
 
 
 def newest_catalog(data):
-    """The newest catalog in data/catalog/. Only a file named by a version (its name starts with a digit) is a catalog:
-    this script writes ammo.json into the same folder, and taken for the catalog it failed every pass."""
+    """The newest catalog in data/catalog/: the highest version in the file name, craftbook.load's rule. Only a file
+    named by digits and dots is a catalog: this script writes ammo.json into the same folder, and taken for the catalog
+    it failed every pass. By version, not by file time (2026-11-16): a copy written later is not a newer catalog."""
     folder = Path(data) / "catalog"
-    files = sorted((p for p in folder.glob("*.json") if p.stem[:1].isdigit()), key=lambda p: p.stat().st_mtime) if folder.is_dir() else []
-    return files[-1] if files else folder / "none.json"
+    files = [p for p in folder.glob("*.json") if re.fullmatch(r"\d+(\.\d+)*", p.stem)] if folder.is_dir() else []
+    return max(files, key=lambda p: tuple(int(n) for n in p.stem.split("."))) if files else folder / "none.json"
 
 
 def assumptions(world, ships, meters):
@@ -319,27 +319,8 @@ def assumptions(world, ships, meters):
     return out
 
 
-def refresh_catalog(data, now, fetch=None):
-    """Fetch the game's catalog once a day into data/catalog/<version>.json; returns what it did, in a word."""
-    folder = Path(data) / "catalog"
-    newest = newest_catalog(data)
-    if newest.exists() and now - newest.stat().st_mtime < CATALOG_EVERY:
-        return "fresh"
-    try:
-        if fetch is None:
-            with urllib.request.urlopen(urllib.request.Request(CATALOG_URL, headers={"User-Agent": "the-collective-routemaker"}), timeout=60) as answer:
-                raw = answer.read(60_000_000)
-        else:
-            raw = fetch()
-        catalog = json.loads(raw.decode("utf-8"))
-        version = "".join(c for c in str(catalog.get("version") or "unknown") if c.isalnum() or c in ".-")[:20] or "unknown"
-        folder.mkdir(parents=True, exist_ok=True)
-        tmp = folder / (".%s.%d.tmp" % (version, os.getpid()))
-        tmp.write_bytes(raw)
-        os.replace(tmp, folder / (version + ".json"))
-        return "fetched " + version
-    except Exception as error:                                # no catalog is no reason to stop: the last one is used
-        return "not fetched: %s" % type(error).__name__
+# The catalog is fetched by scripts/catalog-refresh.py alone (hourly, checked, kept by version; 2026-11-16): this script
+# only reads the newest copy (newest_catalog). Its own daily download, unchecked, is gone.
 
 
 # ---------------------------------------------------------------- the candidates
@@ -1045,7 +1026,6 @@ def main():
     while True:
         try:
             now = time.time()
-            fetched = refresh_catalog(data, now)
             book = build(data, ROOT, now, look=read_ladder)
             ammo = Path(data) / "catalog" / "ammo.json"       # what counts as ammunition, for the dispatcher's `empty_hold`
             if book["ammo"] and read_json(ammo, None) != book["ammo"]:
@@ -1057,7 +1037,7 @@ def main():
             tmp.write_text(json.dumps(book, separators=(",", ":")), encoding="utf-8")
             os.replace(tmp, path)
             print(book["written_at"], "candidates: %s | books read level by level: %d | catalog %s%s" % (
-                dict(Counter(c["kind"] for c in book["candidates"])), book["ladders_read"], fetched,
+                dict(Counter(c["kind"] for c in book["candidates"])), book["ladders_read"], book["catalog"] or "none",
                 " | skipped %d file(s): %s" % (len(book["skipped"]), "; ".join(book["skipped"][:3])) if book["skipped"] else ""), flush=True)
         except Exception as error:                            # a bad file must not end the service
             print(time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "pass failed: %s: %s" % (type(error).__name__, error), flush=True)

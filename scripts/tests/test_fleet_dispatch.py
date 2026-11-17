@@ -378,6 +378,10 @@ class PickTests(Tree):
         pick = lambda goods: (self.dispatch.pick({"name": "drone-1", "credits": 9000, "modules": [], "docked": True, "goods": goods}, plan, routes,
                                                  self.state())[0] or {}).get("id")
         self.assertEqual((pick(0), pick(21)), ("far", "mine"))                                    # goods aboard: not sent out
+        routes["stash"] = {"id": "stash", "kind": "circuit", "title": "t", "stops": [{"at": "home:core:base", "store": "all"}], "requires": {"hold": True}}
+        plan = {"roles": {"drone": ["stash", "far", "mine"]}}                                     # Zero, 2026-11-16: store what is aboard, then the route beyond the border
+        self.assertEqual((pick(0), pick(5), pick(21)), ("far", "far", "stash"))
+        self.assertEqual(self.dispatch.why_not({"name": "drone-1", "credits": 9000, "modules": [], "docked": True, "goods": 0}, "stash", routes["stash"], self.state())[0], "nothing aboard")
         self.assertIn("--alone", self.dispatch.command(routes["far"], "drone-1", None, str(self.root)))
         self.assertNotIn("--alone", self.dispatch.command(ROUTES["rays"], "drone-1", None, str(self.root)))
 
