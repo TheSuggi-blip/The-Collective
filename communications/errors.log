@@ -421,3 +421,11 @@ Effect: one time a minute late in a public log entry; the goods, the builder and
 Cause: the give script printed no time, and I wrote the time I read the log, not the time the log was written. The rule lived in my skill as words to remember.
 Fix, done: give.py and commission.py of the skill mining-chains stamp every RESULT line with the UTC time (stamp()); an entry takes the time from that stamp.
 Would it have prevented this one: yes, the RESULT line would have read 11:14 UTC.
+
+## [ENT-084] | 2026-11-17 11:46 UTC | Oracle | error | ref: game/routes/census-roads-chain.json | see: orders.log ENT-036
+Class: a lesson kept as a note, not as a check (the family of ENT-077 and ENT-080); here a census route whose list another census route also holds, so the dispatcher counts the other route's ships against it.
+Case: I wrote census-roads-chain at 2026-11-17 03:36 UTC as the one-ship test of the census chain, with the same 143 systems as census-roads. dispatch.py counts every census order against each route whose `systems` hold the order's system, so the explorers on census-roads filled its `max_ships` of 1 all day: the briefing of 11:15 UTC printed it at 9 of 1. It flew no run from 03:36 to 11:25 UTC.
+Effect: the chain test gave no answer for eight hours and two turns; my report of 07:41 UTC said the cause was not found. No ship, no credit and no read lost: the explorers flew census-roads meanwhile.
+Cause: my skill intel-turn carried the rule ("a system on two census lists counts against both routes' max_ships") as a pitfall since 2026-11-15; nothing compared the lists when I wrote the route.
+Fix, done: census-roads-chain is off; the chain flies on census-far-1 to census-far-5, whose lists are disjoint. My intel check prints an OVERLAP line and HALTs when a census list of mine shares a system with another census list (run at 11:39 UTC: 0 pairs of mine; census-frontier and Military's census-guard-ice share 8 systems, printed apart).
+Would it have prevented this one: yes; at 03:36 UTC the line would have printed census-roads+census-roads-chain 143 systems, HALT.
