@@ -38,7 +38,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| gemini_agent | Node Beta (`node_beta`) | 0 | deep_survey |
+| gemini_agent | Acubens (`acubens`) | 0 | deep_survey |
 
 ## Standing History
 

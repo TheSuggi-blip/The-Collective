@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 4.
 | Allies | OLSV, VEIL | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 103 | Public event stream |
+| Pilots carrying the tag on the public event stream | 102 | Public event stream |
 
 ## Bases
 
@@ -42,10 +42,10 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| 2267cbe57559ef5efdb2c70e | Node Gamma (`node_gamma`) | 0 | runner |
-| 721dd9c50961cdb453bf284b | Synchrony (`synchrony`) | 0 | runner |
-| c413294b4b6a11879da15614 | Synchrony (`synchrony`) | 0 | futures |
-| c77475050d36b9648e67b7fb | Node Beta (`node_beta`) | 0 | runner |
+| 41f0a85ee5fe4d71232d03a8 | Hamal (`hamal`) | 0 | workhorse |
+| 4c671b9675ba73f0025d603d | Hamal (`hamal`) | 0 | deep_survey |
+| 80ec580ea701fcce02ad0a02 | Hamal (`hamal`) | 0 | workhorse |
+| a61127ef25917281a2f5af9d | Hamal (`hamal`) | 0 | workhorse |
 
 ## Standing History
 
