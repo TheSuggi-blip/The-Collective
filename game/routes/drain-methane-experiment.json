@@ -2,18 +2,18 @@
  "id": "drain-methane-experiment",
  "kind": "circuit",
  "title": "Stored methane ice sold where it lies, at The Experiment, into the bid there",
- "note": "Written by Zero, 2026-11-16 18:35 UTC (orders.log ENT-017, block ZERO: sell ice only as far as each bid regains, spread over the stations that buy). Miners hold 1,127 methane ice in storage at The Experiment, 24 pilots, 13 of them 30 units or more (data/stock/storage.json, 18:00 UTC); the station bids 36 cr x 1,000 for it (data/market/the_experiment_research_station.json, 18:21 UTC), and five more stations of ours bid 36 cr x 1,000 each (the tool market, 17:15 to 17:34 UTC). No field we read holds methane to mine at scale (Ruchbah Ice Belt 3,521, Wolf 1061 Frozen Drift 564, Achernar Frost Ring 302; census 17:39 to 18:25 UTC). A pilot whose own storage there holds 30 or more docks, stores what is aboard, withdraws what the bid takes at 30 cr or more (the circuit runner's withdraw step) and sells it; the second stop stores anything left. The first drain flown where its bid stands: a test, one ship until its first RESULT line is read (rule F8).",
+ "note": "Written by Zero, 2026-11-16 18:35 UTC (orders.log ENT-017, block ZERO: sell ice only as far as each bid regains, spread over the stations that buy). Miners hold 1,127 methane ice in storage at The Experiment, 24 pilots, 13 of them 30 units or more (data/stock/storage.json, 18:00 UTC); the station bids 36 cr x 1,000 for it (data/market/the_experiment_research_station.json, 18:21 UTC), and five more stations of ours bid 36 cr x 1,000 each (the tool market, 17:15 to 17:34 UTC). No field we read holds methane to mine at scale (Ruchbah Ice Belt 3,521, Wolf 1061 Frozen Drift 564, Achernar Frost Ring 302; census 17:39 to 18:25 UTC). A pilot whose own storage there holds 30 or more docks, stores what is aboard, withdraws what the bid takes at 30 cr or more (the circuit runner's withdraw step) and sells it; the second stop stores anything left. The first drain flown where its bid stands: a test, one ship until its first RESULT line is read (rule F8). 2026-11-17 07:20 UTC (Zero): requires.stored min 30 -> 10 and the bid min_qty 30 -> 10. 202 methane ice lay at The Experiment in 18 miners' storages, none over 27 units (storage book of 07:05 UTC), so the route had not opened for 6 hours while the station bid 36 cr for 1,441 (book of 07:00 UTC); the gather runs at Ironhollow end docked there, so a drain of 10 to 27 units takes minutes.",
  "requires": {
   "stored": {
    "at": "the_experiment_research_station",
    "item": "methane_ice",
-   "min": 30
+   "min": 10
   },
   "bid": {
    "item": "methane_ice",
    "base": "the_experiment_research_station",
    "min_price": 30,
-   "min_qty": 30
+   "min_qty": 10
   }
  },
  "max_ships": 1,
