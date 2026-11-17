@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 92.
+Routes: 93.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -49,7 +49,8 @@ Routes: 92.
 | [census-frontier](census-frontier.json) | census | beyond the border, 7 jumps | Read one lawless system around our space whole: deposits, creatures, stations, order books, mission boards | up to 12 ships, empty hold | 119 | 14 | -140 | -620 | 2026-11-16 |
 | [census-guard-ice](census-guard-ice.json) | census | beyond the border, 7 jumps | Guard by census: read whole, every hour, the lawless systems where our miners work | up to 2 ships, empty hold | 68 | 13 | -140 | -610 | 2026-11-16 |
 | [census-roads](census-roads.json) | census | beyond the border, 15 jumps | Explore: the regions of the base sites and the roads to them (south, east, north), then every never-read system out to 14 jumps, nearest first | up to 10 ships, empty hold | 96 | 26 | -300 | -690 | 2026-11-17 |
-| [census-watch-gsc-0044](census-watch-gsc-0044.json) | census | beyond the border, 7 jumps | Watch the first outpost site: GSC-0044 and its neighbours read every hour (who is there, pirates, fields) | up to 2 ships, empty hold | 16 | 18 | -220 | -750 | 2026-11-17 |
+| [census-watch-clearwater](census-watch-clearwater.json) | census | beyond the border, 10 jumps | Read Clearwater every hour while Logistics measures what Glasslight Shoal grows back (its silicon ore) | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
+| [census-watch-gsc-0044](census-watch-gsc-0044.json) | census | beyond the border, 7 jumps | Watch the first outpost site: GSC-0044 and its six neighbours read every hour (who is there, pirates, fields) | up to 3 ships, empty hold | 16 | 18 | -220 | -750 | 2026-11-17 |
 | [census-worked](census-worked.json) | census | beyond the border, 9 jumps | Read the places our routes use beyond home twice in a turn: deposits, creatures, order books, mission boards | up to 6 ships, empty hold | 121 | 16 | -190 | -710 | 2026-11-17 |
 | [guard-achernar-belt](guard-achernar-belt.json) | guard | beyond the border, 4 jumps | Guard at Achernar Belt while ships of ours gather there; docks at The Experiment | up to 1 ships, empty hold, standing work | 1 | 31 | -80 | -160 | 2026-11-17 |
 | [guard-garnet-belt](guard-garnet-belt.json) | guard | beyond the border, 5 jumps | Guard at Garnet Belt, the site Mining and Intel name for the first outpost, while ships of ours gather there; docks at The Experiment | up to 1 ships, empty hold, standing work | 4 | 68 | -90 | -90 | 2026-11-17 |
