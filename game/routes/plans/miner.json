@@ -51,6 +51,7 @@
   "gather-hamal-crystal-bloom",
   "gather-gsc-0027-prism-scatter",
   "mine-acubens",
+  "mine-pherkad-rift",
   "census-frontier",
   "park"
  ],
@@ -121,6 +122,7 @@
   "gather-hamal-crystal-bloom": 60,
   "gather-gsc-0027-prism-scatter": 60,
   "mine-acubens": 60,
+  "mine-pherkad-rift": 60,
   "census-frontier": 60,
   "park": 60
  },
