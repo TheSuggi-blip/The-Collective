@@ -3,6 +3,7 @@
 works there. Reads only: it never fires, never buys and never mines; in a fight it flees.
 
 Usage: python3 -I guard.py <pilot> <system_id> <poi> --guards <route id> --station <system:poi:base> [--minutes M] [--route ID]
+       python3 -I guard.py <pilot> <system_id> <poi> --guards <route id> --station <system:poi:base> --follow <pilot of ours> [--minutes M] [--route ID]
 
 Sets the combat mode flee, flies to the system and the place (`navigate-to-system`, `go-to-poi`)
 and looks once a minute: its own hull (the collector's live file of the ship), who is at the place
@@ -13,6 +14,13 @@ carried that order in two looks in a row, when --minutes (default 60) passed at 
 its hull is under 60 percent, when it is in a battle (stance flee, and out before it flies on),
 when it is no longer at the place, or when data/fleet/STOP appears; then it docks at --station
 and refuels. A place it cannot reach ends the run with the note `place not reached`.
+
+With --follow <pilot> it keeps beside that pilot of ours instead of at one place (an escort; requests ENT-217 and
+ENT-226): once a minute it reads that pilot's system and place from the collector's live file
+(data/fleet/ships/<pilot>.json), jumps and moves after it (`navigate-to-system`, `go-to-poi`), and looks as above. The
+guarded order may then also be `circuit <route id>`, and it must be that pilot's own order file; the guard ends two
+looks after it is gone, and on the same hull, battle, minutes and STOP rules. A pilot it cannot reach ends the run with
+`could not follow <pilot>`. It never fires, also when the pilot it follows is attacked.
 
 Writes, in the unit's data folder (never the repository): while it runs the pilot's order file
 (guard <route id>); on every way out, a crash too, one row in data/routes/runs.jsonl (kind
@@ -40,6 +48,7 @@ HULL_FLOOR = 0.6             # under this share of its hull the guard leaves (th
 GONE_LOOKS = 2               # looks in a row without the guarded order: a pilot between two runs of the route carries none for one dispatcher pass
 ORDER_FRESH = 20 * 60        # an order file not touched for this long is dead (the dispatcher's rule)
 PLACED = ('mine', 'hunt')    # the kinds a guard keeps (routes.py PLACES); a route's id is its file name, so one of the marks is the guarded route's own
+FOLLOWED = PLACED + ('circuit',)   # with --follow the guarded pilot may also fly a circuit (the escort; requests ENT-226)
 
 
 def stamp(moment):
@@ -57,7 +66,8 @@ def parse(args):
     if len(args) < 3 or args[0].startswith('--') or not option(args, '--guards') or len(station) != 3:
         sys.exit('usage: guard.py <pilot> <system_id> <poi> --guards <route id> --station <system:poi:base> [--minutes M] [--route ID]')
     return {'pilot': args[0], 'system': args[1], 'poi': args[2], 'guards': option(args, '--guards'), 'station': station,
-            'minutes': float(option(args, '--minutes', '60')), 'route': option(args, '--route') or 'guard-' + option(args, '--guards')}
+            'minutes': float(option(args, '--minutes', '60')), 'route': option(args, '--route') or 'guard-' + option(args, '--guards'),
+            'follow': option(args, '--follow')}
 
 
 def content(answer):
@@ -115,15 +125,21 @@ def goal(call, quoted, kind, options, say, sleep):
     return False
 
 
-def hull(data, pilot):
-    """(hull, max hull) from the collector's live file of the ship, as hunt.py reads it; (1, 1) when it holds no figures."""
+def ship_file(data, pilot):
+    """The collector's live file of one ship as a dict, or {} when it cannot be read."""
     name = (re.sub(r'[^A-Za-z0-9_.-]', '_', pilot)[:60] or 'pilot') + '.json'      # the collector's file-name rule
     try:
         with open(os.path.join(data, 'fleet', 'ships', name), encoding='utf-8') as handle:
             ship = json.load(handle)
-        now, top = ship.get('hull'), ship.get('max_hull')
-    except (OSError, ValueError, AttributeError):
-        return 1, 1
+    except (OSError, ValueError):
+        return {}
+    return ship if isinstance(ship, dict) else {}
+
+
+def hull(data, pilot):
+    """(hull, max hull) from the collector's live file of the ship, as hunt.py reads it; (1, 1) when it holds no figures."""
+    ship = ship_file(data, pilot)
+    now, top = ship.get('hull'), ship.get('max_hull')
     numbers = all(isinstance(v, (int, float)) and not isinstance(v, bool) for v in (now, top))
     return (now, top) if numbers and top > 0 else (1, 1)
 
@@ -160,6 +176,88 @@ def guarded_pilots(data, marks, now):
     return out
 
 
+def where(data, pilot):
+    """(system, place) of a pilot from its live file; None for what the file does not say."""
+    ship = ship_file(data, pilot)
+    return str(ship.get('system') or '') or None, str(ship.get('poi') or '') or None
+
+
+def carries(data, pilot, marks, now):
+    """True while the pilot's own fresh order file names the guarded route."""
+    path = os.path.join(data, 'fleet', 'orders', pilot + '.json')
+    try:
+        if now - os.stat(path).st_mtime > ORDER_FRESH:
+            return False
+        with open(path, encoding='utf-8') as handle:
+            return str(json.load(handle).get('what') or '') in marks
+    except (OSError, ValueError, AttributeError):
+        return False
+
+
+def look(opts, call, quoted, own, seen, say, guarded_text):
+    """One get_nearby at the ship's place; counts the look and the strangers, prints the line, returns the answer."""
+    pilot = opts['pilot']
+    near = raw(call, quoted, 'get_nearby')
+    seen['looks'] += 1
+    rows = [r for r in near.get('nearby') or [] if isinstance(r, dict) and r.get('username') and r.get('username') != pilot]
+    ours = sorted(str(r['username']) for r in rows if r['username'] in own)
+    others = sorted((str(r['username']), str(r.get('faction_tag') or '')) for r in rows if r['username'] not in own)
+    seen['strangers'].update(others)                         # {name: faction tag}: a pilot seen in many looks counts once
+    pirates = near.get('pirate_count') if isinstance(near.get('pirate_count'), int) else len(near.get('pirates') or [])
+    pct = int(100 * seen['hull_now'])
+    say('look %d at %s: %s | ours %s | strangers %s | pirates %d | hull %d%% | on %s: %s' % (
+        seen['looks'], near.get('poi_id') or opts['poi'], 'answered' if near else 'no answer', ', '.join(ours) or 'none',
+        ', '.join('%s [%s]' % (n, t) if t else n for n, t in others) or 'none', pirates, pct, opts['guards'], guarded_text))
+    return near
+
+
+def escort(opts, call, quoted, data, say, sleep, clock, seen):
+    """--follow: keep beside one pilot of ours, moving after it, until its order for the guarded route is gone."""
+    target, marks = opts['follow'], {kind + ' ' + opts['guards'] for kind in FOLLOWED}
+    own, missing, here, at = own_names(data), 0, None, None
+    seen['arrived'] = clock()
+    say('following %s on %s' % (target, opts['guards']))
+    while not seen['left']:
+        if os.path.exists(os.path.join(data, 'fleet', 'STOP')):
+            seen['left'] = 'STOP file'
+            break
+        if in_battle(call, quoted):
+            say('in a battle beside %s: stance flee, no shot fired' % target)
+            free_from_battle(call, quoted, say, sleep)
+            seen['left'] = 'in a fight'
+            break
+        now, top = hull(data, opts['pilot'])
+        seen['lowest'] = min(seen['lowest'], int(100 * now / top))
+        if now < top * HULL_FLOOR:
+            seen['left'] = 'hull %d%%' % int(100 * now / top)
+            break
+        seen['hull_now'] = now / top
+        system, poi = where(data, target)
+        if system and system != here:
+            if not goal(call, quoted, 'navigate-to-system', {'targetSystemId': system}, say, sleep):
+                seen['left'] = 'could not follow %s' % target
+                break
+            here, at = system, None
+            seen['jumps'] += 1
+        if poi and poi != at and here == system:
+            if not goal(call, quoted, 'go-to-poi', {'targetPoiId': poi}, say, sleep):
+                seen['left'] = 'could not follow %s' % target
+                break
+            at = poi
+        flying = carries(data, target, marks, time.time())    # the files' times are the wall clock's
+        look(opts, call, quoted, own, seen, say, '%s %s' % (target, 'flies it' if flying else 'does not fly it'))
+        missing = 0 if carries(data, target, marks, time.time()) else missing + 1
+        if missing >= GONE_LOOKS:
+            seen['left'] = 'guarded ship gone'
+            break
+        if clock() - seen['arrived'] >= opts['minutes'] * 60:
+            seen['left'] = '%g minutes passed' % opts['minutes']
+            break
+        sleep(LOOK_EVERY)
+    seen['left_at'] = clock()
+    say('leaving %s: %s' % (target, seen['left']))
+
+
 def keep(opts, call, quoted, data, say, sleep, clock, seen, notes):
     """Fly to the place, look once a minute until there is a reason to leave, then dock at the station. Fills `seen`
     and `notes` as it goes, so that a run that ends in an exception still has them for its row."""
@@ -167,7 +265,9 @@ def keep(opts, call, quoted, data, say, sleep, clock, seen, notes):
     status = call('PATCH', '/accounts/%s/combat-mode' % quoted, {'mode': 'flee'}, 30)[0]     # the engine's own answer to any fight
     if status != 200:
         say('combat mode flee: answered %s' % status)
-    if not (goal(call, quoted, 'navigate-to-system', {'targetSystemId': opts['system']}, say, sleep)
+    if opts.get('follow'):
+        escort(opts, call, quoted, data, say, sleep, clock, seen)
+    elif not (goal(call, quoted, 'navigate-to-system', {'targetSystemId': opts['system']}, say, sleep)
             and goal(call, quoted, 'go-to-poi', {'targetPoiId': poi}, say, sleep)):
         notes.append('place not reached')
     else:
@@ -223,14 +323,17 @@ def finish(opts, data, call, quoted, say, clock, started, before, seen, notes):
     """The run's row in data/routes/runs.jsonl and its RESULT line: written once, on every way out."""
     after = wallet(call, quoted)
     stay = ((seen['left_at'] or clock()) - seen['arrived']) / 60 if seen['arrived'] else 0.0
-    if seen['arrived']:
+    if seen['arrived'] and opts.get('follow'):
+        notes.insert(0, 'followed %s %d min, %d looks, %d jumps, %d strangers, left: %s' % (
+            opts['follow'], round(stay), seen['looks'], seen['jumps'], len(seen['strangers']), seen['left'] or 'the run ended'))
+    elif seen['arrived']:
         notes.insert(0, 'guarded %d min, %d looks, %d strangers, left: %s' % (round(stay), seen['looks'], len(seen['strangers']), seen['left'] or 'the run ended'))
     if not (before and after) and 'wallet not read' not in notes:        # a wallet is never 0: the engine did not answer at one end
         notes.append('wallet not read')
     row = {'route': opts['route'], 'kind': 'guard', 'pilot': opts['pilot'], 'started': stamp(started), 'minutes': round((clock() - started) / 60, 1),
            'guards': opts['guards'], 'place': '%s:%s' % (opts['system'], opts['poi']), 'stay_minutes': round(stay, 1), 'looks': seen['looks'],
            'strangers': dict(sorted(seen['strangers'].items())), 'left': seen['left'], 'docked': seen['docked'],
-           'lowest_hull_pct': seen['lowest'], 'credits_before': before, 'credits_after': after, 'delta': after - before if before and after else 0,
+           'lowest_hull_pct': seen['lowest'], 'follow': opts.get('follow'), 'jumps': seen['jumps'], 'credits_before': before, 'credits_after': after, 'delta': after - before if before and after else 0,
            'one_time': 0, 'notes': notes}
     try:
         os.makedirs(os.path.join(data, 'routes'), exist_ok=True)
@@ -263,7 +366,7 @@ def run(opts, call, data, sleep=time.sleep, clock=time.time):
         json.dump({'pilot': pilot, 'what': 'guard ' + opts['route'], 'since': stamp(time.time())}, handle)
     os.replace(tmp, order_file)
     started, before = clock(), wallet(call, quoted)
-    seen = {'arrived': None, 'left_at': None, 'left': '', 'looks': 0, 'strangers': {}, 'lowest': 100, 'docked': False}
+    seen = {'arrived': None, 'left_at': None, 'left': '', 'looks': 0, 'strangers': {}, 'lowest': 100, 'docked': False, 'jumps': 0, 'hull_now': 1.0}
     notes = []
     try:
         keep(opts, call, quoted, data, say, sleep, clock, seen, notes)

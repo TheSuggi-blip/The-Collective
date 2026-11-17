@@ -221,7 +221,8 @@ class RunnerTests(unittest.TestCase):
         parse = self.guard.parse
         self.assertEqual(parse(["s-1", "far", "belt", "--guards", "belt-x", "--station", "home:core:base"]),
                          {"pilot": "s-1", "system": "far", "poi": "belt", "guards": "belt-x", "station": ["home", "core", "base"], "minutes": 60.0,
-                          "route": "guard-belt-x"})
+                          "route": "guard-belt-x", "follow": None})
+        self.assertEqual(parse(["s-1", "far", "belt", "--guards", "kit-x", "--station", "home:core:base", "--follow", "hauler-1"])["follow"], "hauler-1")
         for args in (["s-1", "far", "belt", "--station", "home:core:base"], ["s-1", "far", "belt", "--guards", "belt-x"],
                      ["s-1", "far", "belt", "--guards", "belt-x", "--station", "home:core"], ["s-1", "far"]):
             with self.assertRaises(SystemExit):
@@ -232,6 +233,81 @@ class RunnerTests(unittest.TestCase):
         self.assertNotIn("sightings", source.split('"""', 2)[2])           # its code names no sightings file: `sight` is their one writer
         self.run_guard(Gate(), minutes=1)
         self.assertFalse((self.data / "intel").exists())
+
+
+class FollowTests(RunnerTests):
+    """--follow <pilot>: the guard keeps beside one pilot of ours on a circuit (requests ENT-217, ENT-226): it reads that
+    pilot's system and place from its live file once a minute, jumps and moves after it, looks, never fires, and ends
+    when that pilot's order for the guarded route is gone."""
+
+    def at(self, system, poi, docked=""):
+        (self.data / "fleet" / "ships" / "hauler-1.json").write_text(json.dumps({"name": "hauler-1", "system": system, "poi": poi, "docked": docked}))
+
+    def carrying(self, flying, what="circuit kit-x"):
+        path = self.data / "fleet" / "orders" / "hauler-1.json"
+        if flying:
+            path.write_text(json.dumps({"pilot": "hauler-1", "what": what, "since": "2026-11-17T16:00:00Z"}))
+        elif path.exists():
+            path.unlink()
+
+    def follow(self, gate, minutes=120):
+        opts = self.guard.parse(["sentinel-1", "far", "belt", "--guards", "kit-x", "--station", "home:core:base", "--minutes", str(minutes),
+                                 "--route", "guard-kit-x", "--follow", "hauler-1"])
+        with contextlib.redirect_stdout(io.StringIO()) as said:
+            row = self.guard.run(opts, gate, str(self.data), sleep=self.clock.sleep, clock=self.clock)
+        self.said = said.getvalue()
+        return row
+
+    def test_it_jumps_after_the_followed_pilot_and_ends_when_its_order_is_gone(self):
+        self.at("lhs", "crossroads", docked="crossroads_base")
+        self.carrying(True)
+
+        def look(n):
+            if n == 2:
+                self.at("antares", "antares_gate")           # the hauler jumped on after the second look
+            if n == 4:
+                self.carrying(False)                         # its run ended before the fourth look
+        gate = Gate(on_look=look)
+        row = self.follow(gate)
+        moves = [(kind, options) for kind, options in gate.goals()]
+        self.assertEqual(moves, [("navigate-to-system", {"targetSystemId": "lhs"}), ("go-to-poi", {"targetPoiId": "crossroads"}),
+                                 ("navigate-to-system", {"targetSystemId": "antares"}), ("go-to-poi", {"targetPoiId": "antares_gate"}),
+                                 ("prepare-at-station", {"systemId": "home", "poiId": "core", "baseId": "base", "refuel": True})])
+        self.assertEqual((row["left"], row["looks"], row["follow"], row["jumps"], row["docked"]), ("guarded ship gone", 5, "hauler-1", 2, True))
+        self.assertEqual(row["notes"][0], "followed hauler-1 4 min, 5 looks, 2 jumps, 1 strangers, left: guarded ship gone")
+        self.assertFalse({action for _g, action, _p in gate.raws()} & FIRING)
+        self.assertEqual([b["mode"] for m, p, b in gate.calls if p.endswith("/combat-mode")], ["flee"])
+        self.assertIn("following hauler-1 on kit-x", self.said)
+
+    def test_a_circuit_order_of_another_route_is_not_the_guarded_one(self):
+        self.at("lhs", "crossroads")
+        self.carrying(True, what="circuit some-other-route")
+        gate = Gate()
+        row = self.follow(gate)
+        self.assertEqual((row["left"], row["looks"]), ("guarded ship gone", 2))
+        self.assertEqual([kind for kind, _o in gate.goals()], ["navigate-to-system", "go-to-poi", "prepare-at-station"])
+
+    def test_it_stays_put_while_the_followed_pilot_stays_and_leaves_under_60_percent(self):
+        self.at("lhs", "crossroads")
+        self.carrying(True)
+
+        def look(n):
+            if n == 3:
+                self.ship(59, 100)
+        gate = Gate(on_look=look)
+        row = self.follow(gate)
+        self.assertEqual((row["left"], row["looks"], row["jumps"]), ("hull 59%", 3, 1))
+        self.assertEqual([kind for kind, _o in gate.goals()], ["navigate-to-system", "go-to-poi", "prepare-at-station"])
+
+    def test_a_followed_pilot_it_cannot_reach_ends_the_run_and_it_docks(self):
+        self.at("lhs", "crossroads")
+        self.carrying(True)
+        gate = Gate(reach=False)
+        row = self.follow(gate)
+        self.assertEqual((row["left"], row["looks"], row["docked"]), ("could not follow hauler-1", 0, True))
+
+    def test_the_static_guard_is_unchanged_by_the_follow_tests(self):
+        self.assertIsNone(self.guard.parse(["s-1", "far", "belt", "--guards", "belt-x", "--station", "home:core:base"])["follow"])
 
 
 ROUTES = {

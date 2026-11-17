@@ -244,6 +244,7 @@ A runner: the dispatcher starts it for a route of the kind `guard`; by hand only
 
 ```
 guard.py <pilot> <system_id> <poi> --guards <route id> --station <system:poi:base> [--minutes M] [--route ID]
+    python3 -I guard.py <pilot> <system_id> <poi> --guards <route id> --station <system:poi:base> --follow <pilot of ours> [--minutes M] [--route ID]
 ```
 
 ### `hive.py`
