@@ -445,6 +445,10 @@ button.member:hover { background: var(--raise); box-shadow: inset 0 -2px 0 var(-
 .notice.warn { border-color: var(--warn); }
 .notice.good { border-color: var(--good); }
 .notice[hidden] { display: none; }
+.notice { padding-right: 30px; }
+.notice .close { position: absolute; top: 3px; right: 6px; background: none; border: 0; color: var(--dim); font-size: 16px; line-height: 1;
+  cursor: pointer; padding: 2px 4px; }
+.notice .close:hover { color: var(--text); }
 .search { flex-shrink: 100; }                   /* the search field gives way first; the status is cut only when nothing else can */
 @media (max-width: 2399px) { .status .opt, .status .wide { display: none; } }
 @media (max-width: 2000px) { .brand small { display: none; } }

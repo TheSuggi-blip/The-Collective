@@ -183,6 +183,8 @@ let S = null;                                  // /api/state
 let L = { hour: {}, day: {}, battles: [], stats: {}, stream: {}, groups: [] };
 let F = { ships: [], totals: {}, engine: {}, age: -1, birth: null, wave: null, waves: [] };   // /api/fleet
 let fetchedAt = 0;                             // when /api/fleet last answered (ms)
+let noticeShut = '';                           // the wave notice closed by hand: its key (since and whether it ended)
+const NOTICE_GOOD_SECONDS = 120;               // the green 'all back' notice goes by itself this long after the wave ended
 let HIST = { rows: [], at: 0 };                // /api/history, for the Metrics tab
 const collapsed = new Set();                   // divisions folded in the roster; remembered by the browser
 try { JSON.parse(localStorage.getItem('station.folded') || '[]').forEach((d) => collapsed.add(String(d))); } catch (e) { /* no storage */ }
@@ -899,6 +901,8 @@ function waveCause(w) {                          // what two readings show about
 function renderNotice() {                        // over the map: many ships off the game at once, named as what it is
   const box = $('notice'), w = F.wave;
   if (!w || !w.since) { box.hidden = true; return; }
+  const key = w.since + ':' + (w.end ? 'end' : 'on');
+  if (key === noticeShut || (w.end && Date.now() / 1000 - w.end > NOTICE_GOOD_SECONDS)) { box.hidden = true; return; }
   const at = clockZ(w.since * 1000), all = w.ships || F.ships.length;
   if (w.end) {
     box.textContent = 'All ships are back. ' + fmt(w.peak) + ' of ' + fmt(all) + ' were off the game from ' + at + ' to ' + clock(w.end * 1000) + ' ('
@@ -909,6 +913,10 @@ function renderNotice() {                        // over the map: many ships off
       : w.cause === 'update' ? 'The game changed version (' + w.from + ' to ' + w.to + ') around ' + at + ': ' + who + ' are reconnecting by themselves. A restart of the game drops every player.'
         : who + ' lost the line to the game at ' + at + ' and are reconnecting by themselves. The cause is not read yet: a restart of the game for an update looks like this.';
   }
+  const shut = el('button', 'close', '\u00d7');
+  shut.type = 'button'; shut.title = 'Close';
+  shut.addEventListener('click', () => { noticeShut = key; box.hidden = true; });
+  box.append(shut);
   box.className = 'notice ' + (w.end ? 'good' : 'warn');
   box.hidden = false;
 }
