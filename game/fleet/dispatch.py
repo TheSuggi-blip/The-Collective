@@ -200,14 +200,27 @@ def skills_lacking(route, pilot):
     return [(str(skill), int(level)) for skill, level in sorted(need.items()) if int(held.get(skill, 0) or 0) < int(level)]
 
 
-STUCK = 3                      # runs in a row that ended before their first stop: the pilot gets no new route until one reaches it
+STUCK = 3                      # runs in a row that ended before their first stop: the pilot rests before it gets a route again
+STUCK_REST = 30 * 60           # seconds of that rest, counted from the end of the last of those runs
 
 
-def stuck(name, rows):
-    """True when the pilot's last STUCK runs all ended `stop 1 not reached`: a ship held in a fight or a lost goal would
-    otherwise be handed one route after another, each failing at once (requests ENT-090: 42 park runs in an hour)."""
+def stuck(name, rows, now=None):
+    """True when the pilot's last STUCK runs all ended `stop 1 not reached` and the last of them ended less than STUCK_REST
+    seconds before `now`: a ship held in a fight or a lost goal would otherwise be handed one route after another, each
+    failing at once (requests ENT-090: 42 park runs in an hour). After the rest it is given one route again, so the hold
+    ends by itself when its cause is gone: until 2026-11-17 it ended only with a run that reached a stop, which a held
+    pilot never got, and two ships the engine had held claimed stood for two hours and waited for a hand. Without `now`,
+    or with a last run whose time does not read, the rest is not counted."""
     mine = [r for r in rows if r.get("pilot") == name][-STUCK:]
-    return len(mine) == STUCK and all("stop 1 not reached" in (r.get("notes") or []) for r in mine)
+    if len(mine) != STUCK or not all("stop 1 not reached" in (r.get("notes") or []) for r in mine):
+        return False
+    if now is None:
+        return True
+    try:
+        ended = calendar.timegm(time.strptime(mine[-1]["started"], "%Y-%m-%dT%H:%M:%SZ")) + float(mine[-1].get("minutes") or 0) * 60
+    except (KeyError, TypeError, ValueError):
+        return True
+    return now - ended < STUCK_REST
 
 
 def done_once(route, rows):
@@ -700,10 +713,10 @@ def one_pass(root, data, dry_run, children):
         if ship.get("status") != "connected" or name in state["orders"] or (ship.get("activity") or {}).get("kind") != "idle":
             continue
         pilot = pilot_of(ship, named, data, ammo)
-        if stuck(name, rows):
+        if stuck(name, rows, now):
             if name not in HELD_BACK:
                 HELD_BACK.add(name)
-                lines.append("%s held back: its last %d runs ended `stop 1 not reached`; free again after a run that reaches it" % (name, STUCK))
+                lines.append("%s held back: its last %d runs ended `stop 1 not reached`; it gets a route again %d minutes after the last of them" % (name, STUCK, STUCK_REST // 60))
             continue
         HELD_BACK.discard(name)
         route, argument = pick(pilot, plan, routes, state)

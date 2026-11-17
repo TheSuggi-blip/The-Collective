@@ -246,6 +246,11 @@ class PickTests(Tree):
         self.assertTrue(self.dispatch.stuck("drone-1", [failed, failed, failed]))
         self.assertFalse(self.dispatch.stuck("drone-1", [failed, failed, failed, dict(failed, stops=1, notes=[])]))
         self.assertFalse(self.dispatch.stuck("drone-2", [failed] * 3))
+        timed = dict(failed, started="2026-11-17T00:00:00Z", minutes=1.0)                         # 2026-11-17: the hold ends by itself, no ship waits for a hand
+        at = 1794873660                                                                           # 00:01:00 UTC that day: the run's end
+        self.assertTrue(self.dispatch.stuck("drone-1", [failed, failed, timed], at + 29 * 60))
+        self.assertFalse(self.dispatch.stuck("drone-1", [failed, failed, timed], at + 31 * 60))   # half an hour later it is given one route again
+        self.assertTrue(self.dispatch.stuck("drone-1", [failed, failed, failed], at + 31 * 60))   # a last run without a time: held
 
     def test_credits_module_and_ship_limits_close_a_route(self):
         done = [{"route": "missions", "pilot": "drone-1", "stops": 1, "of": 1}]
