@@ -239,7 +239,8 @@ class DutyTests(Base):
         self.assertEqual(supply.gatherers(str(self.root), "iron_ore"), ["mine-a", "mine-b"])
 
     def test_write_is_refused_while_duty_is_not_enabled(self):
-        self.assertFalse(supply.DUTY_ENABLED)
+        self.addCleanup(setattr, supply, "DUTY_ENABLED", supply.DUTY_ENABLED)
+        supply.DUTY_ENABLED = False                       # the state this test reads; the module's own default is on
         code, text = self.run_main("duty", "--write")
         self.assertEqual(code, 1)
         self.assertIn("REFUSED: DUTY_ENABLED is False", text)
