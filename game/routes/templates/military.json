@@ -76,6 +76,8 @@
    "routes": [
     "guard-ironhollow-fading-signal",
     "guard-schedar-belt",
+    "guard-ironhollow-echo-ejecta",
+    "guard-garnet-belt",
     "guard-marfik-emission-nebula",
     "census-guard-ice"
    ],
@@ -83,7 +85,7 @@
     "piloting",
     "navigation"
    ],
-   "note": "Ironhollow and Schedar lie one jump from their stations, so the miners stay at the field most of a run; Marfik is guarded while the gas trader flies it. Each opens only while a ship of ours flies the guarded route."
+   "note": "2026-11-17 08:16 UTC: one drone at each field beyond the border where ships of ours gather (Schedar Belt up to 45, Ironhollow's two belts up to 20 and 25, Garnet Belt up to 10: admirals.log ENT-017); each opens only while a ship of ours flies the guarded route and never fires. Garnet is the outpost site Mining and Intel name: its guard is the first reading of the place Military will guard."
   }
  }
 }
