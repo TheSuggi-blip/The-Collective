@@ -2,12 +2,12 @@
  "id": "gather-ruchbah-broken-glass-veil",
  "kind": "mine",
  "title": "Standing work, a test: iron at Ruchbah Broken Glass Veil (beyond the border, one jump from The Experiment) into storage at The Experiment",
- "note": "Written by Zero, 2026-11-17 07:12 UTC (orders.log ENT-029, block ZERO: iron for the reserve on fields that hold, each with a floor; rule F13: one ship with an empty hold until its first RESULT line). The nebula read 100,000 iron at richness 23 and 100,000 copper at 27 (census 06:52 UTC), one jump from The Experiment (lanes and stations tables, 07:08 UTC); IRLC ships were met at the Ruchbah ice belt, none in combat (table met). Schedar Belt reaches its floor in about three hours at 45 ships and every home iron field stands near its floor: this field is tried now so that its figure is read at the next turn. lift_to 1: no widening until the RESULT line is read.",
+ "note": "Written by Zero, 2026-11-17 07:12 UTC (orders.log ENT-029, block ZERO: iron for the reserve on fields that hold, each with a floor; rule F13: one ship with an empty hold until its first RESULT line). The nebula read 100,000 iron at richness 23 and 100,000 copper at 27 (census 06:52 UTC), one jump from The Experiment (lanes and stations tables, 07:08 UTC); IRLC ships were met at the Ruchbah ice belt, none in combat (table met). Schedar Belt reaches its floor in about three hours at 45 ships and every home iron field stands near its floor: this field is tried now so that its figure is read at the next turn. lift_to 1: no widening until the RESULT line is read. 2026-11-17 11:31 UTC (Zero): the first run held: 195 ore in 49.1 minutes, -180 cr (data/routes/runs.jsonl, started 10:41 UTC). A combat drone of the faction tagged BUSY was met in combat at Broken Glass Veil about 10:47 UTC, while our miner mined there unhurt (table met): max_ships 1 -> 2 and lift_to 3 only, until a guard or more runs show who it fights.",
  "belt": "ruchbah:broken_glass_veil",
  "station": "the_experiment:the_experiment_research_station:the_experiment_research_station",
  "minutes": 45,
- "max_ships": 1,
- "lift_to": 1,
+ "max_ships": 2,
+ "lift_to": 3,
  "standing": true,
  "min_left": {
   "iron_ore": 20000
