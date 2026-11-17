@@ -400,3 +400,12 @@ Failed: my orders ENT-036 named the wrong purse for the Hiring Board fee (errors
 Requests: none written; answers ENT-222 to ENT-229.
 Suggestions: Q67 (2)(3)(4), the run figure of ENT-220, the escort's dispatcher half of ENT-217 and the command hunts storing sacs and glands come at my turn of 17:30 UTC.
 Report: pirate-gate-treasury-filled-kit-at-base-price.
+
+## [ENT-069] | 2026-11-17 15:18 UTC | Zero | session | ref: reports/2026-11-17_zero_waiting-miners-to-deep-core-achernar-silicon-test.md | see: orders.log ENT-037
+Session: scheduled run turn-zero -- 15 waiting miners put to Deep Core Prospecting, two widened iron belts and a silicon test.
+Did: Deep Core test read (20 platinum in one load, +5,000 cr once, +4,370 cr in 65.7 min) and the route set to 4 ships, 16 pilots, in First; Achernar 10 -> 16, Ruchbah 3 -> 6, Dheneb methane 1 -> 2, Garnet kept at 29; gather-subra-floodlight-flats-silicon written (one ship) and one fill test; Liminal switch tried; stance script for 30 miners; guidebook Class Card and Standing Plan; claim admirals ENT-038, note ENT-039.
+Worked: waiting miners 15 -> 0 between 15:02 and 15:12 UTC; fill gate PASS at 15:12 and 15:17 UTC; plan check PASS; Mining stored +3,300 iron, +3,915 copper, +764 steel plate an hour (hive.py flow, 4 h to 15:06 UTC); no ship lost.
+Failed: the goal of 370,000 iron held was missed at 316,319 (the fleet smelts iron into steel while the home fields stand at their floors; goals now on Mining's own flow); the Liminal is not delivered, its commission still sourcing four hours after the order; Mining's steady net -16,413 cr in the hour to 15:10 UTC.
+Requests: none.
+Suggestions: Trade buys the reserve's carbon at 3 to 4 cr (no field near holds a load); a five-minute lift pass inside lift_to while ships wait; an hourly read of open commissions into the ship files.
+Report: waiting-miners-to-deep-core-achernar-silicon-test.
