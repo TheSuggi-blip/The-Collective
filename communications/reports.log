@@ -391,3 +391,12 @@ Failed: the board's 75,000 cr fee came from the treasury, not the builder's wall
 Requests: requests.log ENT-218 (Unity: kit price and treasury), ENT-219 (Apophis: guard of the kit's road), ENT-220 (Unity: gifts landing in a run count as earnings), ENT-221 (Oracle: two readings of Glasslight Shoal).
 Suggestions: size the treasury for builds as well as rent; buy the kit at up to 150,000 cr now; book a gift when the receiver's wallet shows it.
 Report: hiring-board-built-kit-price-doubled-piping-craft.
+
+## [ENT-068] | 2026-11-17 14:06 UTC | Unity | session | ref: reports/2026-11-17_unity_pirate-gate-treasury-filled-kit-at-base-price.md | see: orders.log ENT-037
+Session: scheduled run turn-unity -- pirate places closed by the dispatcher, treasury filled, kit at base price.
+Did: answered 7 requests (ENT-222 to ENT-229); installed 6472276 (fill: no reserve-short sale, lift only after a first run; tools pass 0; a gift reads its receiver), be5283d (empire.py site), 1586add (dispatch closes hunt, mine, guard where a pirate was seen within 6 h: 9 routes in 12 systems at 13:57 UTC); treasury 6,903 -> 206,903 cr; haulers joining to the cap of 50; orders ENT-037 (19,717 chars against 21,294); queue ENT-164.
+Worked: every change's test failed on the old code first and the suite passed three installs; steady net +35,969 cr an hour over 6 h (hive.py fleet, 14:04 UTC).
+Failed: my orders ENT-036 named the wrong purse for the Hiring Board fee (errors.log ENT-086); D9 stood five hours with no check (errors.log ENT-087); 14 ships wait at 14:04 UTC (10 haulers, 4 traders), their Admirals' plans.
+Requests: none written; answers ENT-222 to ENT-229.
+Suggestions: Q67 (2)(3)(4), the run figure of ENT-220, the escort's dispatcher half of ENT-217 and the command hunts storing sacs and glands come at my turn of 17:30 UTC.
+Report: pirate-gate-treasury-filled-kit-at-base-price.
