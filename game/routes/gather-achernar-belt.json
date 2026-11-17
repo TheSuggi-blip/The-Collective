@@ -2,12 +2,12 @@
  "id": "gather-achernar-belt",
  "kind": "mine",
  "title": "Standing work, a test: iron at Achernar Belt (beyond the border, one jump from The Experiment) into storage at The Experiment",
- "note": "Written by Zero, 2026-11-17 07:12 UTC (orders.log ENT-029, block ZERO: iron for the reserve on fields that hold, each with a floor; rule F13: one ship with an empty hold until its first RESULT line). The belt read 99,999 iron at richness 32 and 99,999 copper at 39 (census 06:43 UTC): the nearest untouched iron field to a station of ours after Schedar and Ironhollow (lanes and stations tables, 07:08 UTC). A combat drone of the faction tagged BUSY was met here in combat about 9 hours before (table met); Military hunts the carapace herd here. Schedar Belt reaches its floor in about three hours at 45 ships and every home iron field stands near its floor: this field is tried now so that its figure is read at the next turn. lift_to 1: no widening until the RESULT line is read.",
+ "note": "Written by Zero, 2026-11-17 07:12 UTC (orders.log ENT-029, block ZERO: iron for the reserve on fields that hold, each with a floor; rule F13: one ship with an empty hold until its first RESULT line). The belt read 99,999 iron at richness 32 and 99,999 copper at 39 (census 06:43 UTC): the nearest untouched iron field to a station of ours after Schedar and Ironhollow (lanes and stations tables, 07:08 UTC). A combat drone of the faction tagged BUSY was met here in combat about 9 hours before (table met); Military hunts the carapace herd here. Schedar Belt reaches its floor in about three hours at 45 ships and every home iron field stands near its floor: this field is tried now so that its figure is read at the next turn. lift_to 1: no widening until the RESULT line is read. 2026-11-17 11:30 UTC (Zero): the first run held: 195 ore in 47.7 minutes, -180 cr, no note (data/routes/runs.jsonl, started 10:41 UTC), against 260 ore in 46.5 minutes at Schedar Belt; two mining ships of the faction tagged PAYN at the belt, none in combat (table met, 11:10 UTC). max_ships 1 -> 3, lift_to 6.",
  "belt": "achernar:achernar_belt",
  "station": "the_experiment:the_experiment_research_station:the_experiment_research_station",
  "minutes": 45,
- "max_ships": 1,
- "lift_to": 1,
+ "max_ships": 3,
+ "lift_to": 6,
  "standing": true,
  "min_left": {
   "iron_ore": 20000
