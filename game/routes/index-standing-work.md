@@ -12,11 +12,12 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 81.
+Routes: 82.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
 | [census-voidborn](census-voidborn.json) | census | home space | Read one Voidborn system whole: deposits, creatures, order book, mission board | up to 4 ships | 186 | 7 | -70 | -550 | 2026-11-17 |
+| [craft-boards-gold-experiment](craft-boards-gold-experiment.json) | circuit | home space | The gold ore, copper ore and energy crystal a pilot stores at The Experiment Research Station made into circuit boards there by fabricate_gold_circuit_boards and kept in its storage for the Recruitment Desk (the reserve) | up to 1 ships, with 90 gold_ore stored at the_experiment_research_station, 90 copper_ore stored at the_experiment_research_station, 30 energy_crystal stored at the_experiment_research_station, standing work | TBD | TBD | TBD | TBD | -- |
 | [craft-boards-node-beta](craft-boards-node-beta.json) | circuit | home space | Circuit boards etched at the Node Beta workshop from the pilot's own stored silicon ore and carbon ore bought there, kept in its storage for the faction's ladder (the reserve) | up to 1 ships, with 30 silicon_ore stored at node_beta_industrial_station, standing work | 1 | 20 | -770 | -2,320 | 2026-11-17 |
 | [craft-boards-silicon-central-nexus](craft-boards-silicon-central-nexus.json) | circuit | home space | The silicon ore a pilot stores at Central Nexus carried to Node Beta and etched into circuit boards there with carbon ore bought at the Node Beta ask, kept in its storage for the faction's offices (the reserve) | up to 1 ships, with 40 silicon_ore stored at central_nexus, standing work | 1 | 32 | 84,870 | 156,690 | 2026-11-17 |
 | [craft-piping-node-beta](craft-piping-node-beta.json) | circuit | home space | Steel plate, then copper piping, made by hand at the Node Beta workshop from the pilot's own stored iron and copper ore, kept in its storage there for the reserve; open to a ship of any role | up to 14 ships, with 300 iron_ore stored at node_beta_industrial_station, 180 copper_ore stored at node_beta_industrial_station, standing work | TBD | TBD | TBD | TBD | -- |

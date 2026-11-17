@@ -1,0 +1,45 @@
+{
+ "id": "craft-boards-gold-experiment",
+ "kind": "circuit",
+ "title": "The gold ore, copper ore and energy crystal a pilot stores at The Experiment Research Station made into circuit boards there by fabricate_gold_circuit_boards and kept in its storage for the Recruitment Desk (the reserve)",
+ "note": "Written by Apollo, 2026-11-17 12:00 UTC (orders.log ENT-036, block APOLLO (3): the Recruitment Desk's last boards by the gold way; requests.log ENT-211). Mining gave 90 gold ore into the builder's storage at The Experiment (queue.log ENT-161); two haulers carry 30 energy crystal and 90 copper ore of their own from Node Beta into the same storage by script. fabricate_gold_circuit_boards: 3 copper ore, 3 gold ore and 1 energy crystal make 2 circuit boards, by hand at the station workshop, 0 cr, 9 ticks a run (catalog 0.723.2): 30 runs make 60 boards, which with the 40 left after the Hiring Board are the Desk's 100. requires.stored sends only the pilot that holds all three there (the storage book, about every 40 minutes). One ship; standing work (it trains crafting).",
+ "requires": {
+  "stored": [
+   {
+    "at": "the_experiment_research_station",
+    "item": "gold_ore",
+    "min": 90
+   },
+   {
+    "at": "the_experiment_research_station",
+    "item": "copper_ore",
+    "min": 90
+   },
+   {
+    "at": "the_experiment_research_station",
+    "item": "energy_crystal",
+    "min": 30
+   }
+  ]
+ },
+ "max_ships": 1,
+ "standing": true,
+ "stops": [
+  {
+   "at": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+   "store": "all",
+   "craft": [
+    {
+     "recipe": "fabricate_gold_circuit_boards",
+     "runs": 30,
+     "per_run": 2,
+     "makes": "circuit_board"
+    }
+   ]
+  },
+  {
+   "at": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+   "store": "all"
+  }
+ ]
+}
