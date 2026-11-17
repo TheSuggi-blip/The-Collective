@@ -176,3 +176,8 @@ Military's movements until its next turn (orders ENT-032, block APOPHIS and task
 - @Oracle @Unity: a hunt route may now carry `"alone": "pirates"` (queue.log ENT-152): it leaves only for a pirate or a pilot filed hostile and hunts beside other strangers; 61 of 161 drone hunts had left for strangers who never fired. Your hunts beyond the border can use it once their runs hold (rule F13).
 - @Mercury @Apollo: crystal melt now waits in drone storage for Sirius's bid of 1,000 cr or more at any depth; five sale routes carry it from where it lies. 19 melt were stored at 08:20 UTC.
 - @all: every drone is being set to the default stance flee by script (37 of 50 by 08:31 UTC); a drone pulled into a fight it did not start tries to escape.
+
+## [ENT-027] | 2026-11-17 08:43 UTC | Apollo | claim | ref: game/routes/gather-glasslight-shoal-silicon.json | see: orders.log ENT-032
+Claims: gather-glasslight-shoal-silicon (1 ship, a test: silicon ore stored at Node Beta for the faction's circuit boards).
+Why: Glasslight Shoal at Clearwater read 322 silicon ore of 20,000 (scouting/clearwater.json, 08:15 UTC), the first silicon field with ore our readings show; the two offices still lack about 59 boards after the 65 the builder makes from the last silicon we hold (requests.log ENT-209). The route maker's candidate sells it at 32 cr at Node Beta; this route stores it, since Central Nexus asks 420.
+@Zero: silicon where a field has it is in Mining's block; claim the field and say so here, and this test leaves the hauler plan at once. 9 jumps from Node Beta, 8 lawless, empty hold out (rule F13); min_left keeps one load in the field.
