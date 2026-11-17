@@ -1,0 +1,20 @@
+{
+ "id": "hunt-tania-vapor-fields-cinder-sylph",
+ "kind": "hunt",
+ "title": "cinder_sylph at tania_vapor_fields; loot sold at Node Beta Industrial Station",
+ "note": "Written by routemaker.py from the herd's count, the loot of 19 runs of ours and the order book; an estimate of 1922 cr per hunter-hour, not a measurement. A test: one ship, the ranching rules kept. Added as a test by fill.py on 2026-11-17 01:45 UTC (Unity): one ship until its first RESULT line is read.",
+ "place": "tania:tania_vapor_fields",
+ "species": [
+  "cinder_sylph"
+ ],
+ "sell_at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+ "min_bid": 384,
+ "kills": 4,
+ "minutes": 67,
+ "max_ships": 1,
+ "min_creatures": 4,
+ "alone": true,
+ "requires": {
+  "empty_hold": true
+ }
+}
