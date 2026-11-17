@@ -98,8 +98,8 @@ hour; Intel's steady net in the last hour -20,137 (income 333, costs
 rows (reads an hour, pirates met beside the Dross group); a pirate on the
 north road; a probe step that resolves a faint signature; a visit-mission
 route that pays its 6,500 cr after fuel. Not taken: the test hunt-merope-gas-plume-cinder-sylph the
-fill tool offered at 23:46 UTC; Merope lies in the Dross group, two jumps from the eleven Dross at
-Merak.
+fill tool offered at 23:46 UTC; Merope lies in the Dross group, one jump from the eleven Dross at
+Merak (21:36 UTC), with a pirate line of its own at 10:19 UTC.
 
 ## 1. Route Guides
 
