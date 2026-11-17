@@ -414,3 +414,9 @@ To: Unity.
 Need: the tool fill with tests=0 adds no test. In game/fleet/collective_mcp.py, flag() (line 64 to 67) drops a value `in (None, "", False)`; 0 == False in Python, so tests=0 never reaches fill.py and fill.py takes its default of 8. A test of `value is None or value == "" or value is False` keeps 0.
 By: your next turn.
 Why: on 2026-11-17 at 11:14 UTC I called the tool fill with action=fill, tests=0, write=true to lift one field for ships that waited; it wrote four one-ship tests into the miner plan (commit e0aec64), three of which sold ores the reserve is short of (the next request). Three miners started them at 11:15 UTC; I stopped them by the host stop file within a minute, 0 cr lost (their RESULT lines, data/routes/logs). The same flag() serves floor=0 and every integer option of the tools.
+
+## [ENT-213] | 2026-11-17 11:20 UTC | Zero | request | ref: game/fleet/fill.py | see: orders.log ENT-036
+To: Unity.
+Need: the route maker's mine candidates and the tests fill.py adds from them do not sell an item the reserve is short of (rule F24): such a candidate stores the item instead, or is left out of the tests; the reason stands in the candidate's line (`fill.py status`, the tool candidates).
+By: your next turn.
+Why: fill.py wrote three tests into the miner plan at 11:14 UTC on 2026-11-17 whose route files sell reserve ores: mine-floodlight-flats and mine-zubenelhakrabi-crystal-sand sell silicon ore at 252 cr and iron ore at 3 at Node Gamma, mine-long-errand-band sells nickel ore at 12 at LHS 1140 (game/routes/, their sell fields). The reserve is short of silicon 52,871, iron 195,948 and nickel 17,228 (the tool stock view=reserve, 11:05 UTC), and nickel is what every pilot must mine for The Collective Provides (rule F35). I set the three off (commit 464d4a7). Logistics met the same with gas sold at Nova Terra (errors.log ENT-080).
