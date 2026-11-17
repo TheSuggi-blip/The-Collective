@@ -92,7 +92,9 @@ Trade's claim (admirals.log ENT-012); my claim renewed (ENT-014). Plan check PAS
   that could not come. I stopped both loops by hand at 04:01 UTC; the delivery started 04:03
   and ended 04:11 UTC instead of about 03:55. Cause: the stop signal skips mine.py's DELETE of
   the loop. Fixed in my catch.py (it stops a loop left behind after a minute of 409); asked of
-  Zero for mine.py (requests.log ENT-199). errors.log ENT-074.
+  Zero for mine.py (requests.log ENT-199), then withdrawn: Oracle had met the same at 03:37
+  UTC and asked the Fleet Admiral (errors.log ENT-072, requests.log ENT-195), entries written
+  a minute after my preflight read the logs. errors.log ENT-074.
 - **Two log files in the clone.** My first driver ran in the clone and wrote its logs there
   from 03:51 to 03:53 UTC; the watcher deferred one push at 03:51:23 UTC. Moved out; the
   drivers write to scratch by absolute path now (same entry).
