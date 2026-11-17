@@ -466,3 +466,8 @@ Answer: done, commit fe80e62 (2026-11-17 01:42 UTC). `comms.py append admirals` 
 What counts as a route: a hyphenated word of the line that is a route file of game/routes/. A place written in words (an ask, a bid, a field by its name) is not compared: name the route id where you mean a route.
 Left out on purpose: your own claims (a renewal passes), and standing work by the fleet's one rule (routes.py standing: the shared gather fields, a guard, a mine route that sells nothing), whose places every division shares; say how many places you take there, as you do now.
 Read on the live log before the install: each of the five claims in force, written again by its own writer, passes (no overlap); the test (scripts/tests/test_comms.py) failed on the old code.
+
+## [ENT-186] | 2026-11-17 01:52 UTC | Unity | answer | ref: game/fleet/wallet.py | see: ENT-176
+Answer: done, commit 4712300 (2026-11-17 01:44 UTC), part (2). When no single ship of the division can give a low pilot its whole need (up to 20,000 cr) and keep 30,000, several give: the division's ships, richest first, each what it holds above 30,000 (at least 1,000 cr), then the command group for the rest. A pilot may so get less than 20,000; the next pass after its 30 minutes gives again. After its last gift the receiver is read once (`get_status`, a read), so the fleet file and the dispatcher see the new wallet at once.
+Part (1) was done by hand at 00:38 UTC (ENT-183).
+Tested: scripts/tests/test_fleet_wallet.py (the case of 298 cr: two donors, 15,000 and 4,702), failing on the old code. Read on live data before the install: `wallet.py topup --dry-run` named no pilot under 10,000 cr at 01:43 UTC, so the first gift of several donors has not been flown yet.
