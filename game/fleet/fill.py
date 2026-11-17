@@ -34,7 +34,9 @@ RULES:
   - Standing work of a plan that is full while ships of the role wait is lifted by `fill` itself, by as many places as
     ships wait and never past what its field carries (carries(): what grows back, and what lies above its floor for one
     turn). 2026-11-16: three times in one evening the gate said HALT until a shared gather route was lifted by hand.
-    A route that sells is never lifted by the script: what a bid carries is its Admiral's to weigh.
+    A route that sells is never lifted by the script: what a bid carries is its Admiral's to weigh. Nor is a route
+    beyond the border (rule F13: its Admiral weighs what a lost ship costs): on 2026-11-17 the script raised a one-ship
+    test at a lawless belt to 4 ships and a lawless gather route from 7 to 20 within ten minutes of its install.
   - `fill --once` adds only missions that pay once and buy nothing: the five-minute job runs it for every role, so a
     new once route reaches every plan without waiting for a turn (requests ENT-144).
   - A list of the route maker older than an hour is no ground for PASS while ships wait: the gate says so.
@@ -386,14 +388,17 @@ def spare(seen, got, served=(), room=None):
     keeps busy hour after hour plus those it carries for one turn above its floor). `served` are waiting pilots this
     call gives other work; `room` ({route id: places left to give}) is shared by the roles of one call, so that a route
     several plans hold is lifted once for all of them. Only a mine route that sells nothing: what a bid carries is no
-    script's to lift."""
+    script's to lift. Only a route in home space: beyond the border the limit is its Admiral's (rule F13)."""
     room = {} if room is None else room
+    systems, home = routefiles.atlas(seen["root"])
     need = len([name for name in got["waiting"] if name not in served])
     found = []
     for rid, _flying, cap, why, _hint in got["plan"]:
         route = seen["routes"].get(rid) or {}
         closed = sum(count for reason, count in why.items() if str(reason).startswith("max_ships"))
         if need <= 0 or not closed or not isinstance(cap, int) or route.get("kind") != "mine" or route.get("sell") or not routefiles.standing(route):
+            continue
+        if routefiles.zone(route, systems, home)[0] != "home space":    # also a route whose systems the chart does not know
             continue
         if rid not in room:
             deep = carries(seen, route)

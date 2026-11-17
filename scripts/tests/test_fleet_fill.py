@@ -277,6 +277,11 @@ class WriteTests(Tree):
         self.assertEqual((len(got["starting"]), len(got["waiting"])), (1, 2))                     # one hauler gathers, two wait at its limit
         self.assertEqual(self.fill.spare(seen, got), [("gather", 1)])                             # 600 units above the floor carry two ships a turn: one place more
         self.assertEqual(self.fill.spare(seen, got, served=set(got["waiting"])), [])              # ships that get other work need no place
+        chart = self.root / "map" / "galaxy.tsv"                                                  # 2026-11-17: a lawless test route was raised from 1 ship to 4 by this script
+        policed = chart.read_text(encoding="ascii")
+        chart.write_text(policed.replace("far\tFar\t1\t0\tvoidborn", "far\tFar\t1\t0\t"), encoding="ascii")
+        self.assertEqual(self.fill.spare(seen, got), [])                                          # beyond the border the limit is its Admiral's (rule F13)
+        chart.write_text(policed, encoding="ascii")
         done = self.run_fill("unity", "fill", "all", "--once")
         self.assertIn("gather: standing work, full while 1 ship waits and its field carries more: max_ships 1 -> 2 (not written: add --write)", done.stdout)
         self.assertEqual(json.loads((self.root / "routes" / "gather.json").read_text())["max_ships"], 1)
