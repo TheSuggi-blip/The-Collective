@@ -49,16 +49,14 @@
   "gas-harvest": {
    "title": "Gas for the haulers with a Gas Harvester I: one ship a cloud, sold at the bid the route names, the rest stored",
    "routes": [
-    "mine-the-experiment-haze",
     "mine-antares-gas-cloud",
     "mine-amberfall-emission-nebula",
-    "mine-deepwell-haze",
-    "mine-coldwater-emission-nebula"
+    "mine-deepwell-haze"
    ],
    "trains": [
     "mining"
    ],
-   "note": "Each route takes one ship; a route that loses twice is closed by the dispatcher for its six-hour window and opens again by itself (F22). Needs a Gas Harvester I fitted."
+   "note": "Each route takes one ship; a route that loses twice is closed by the dispatcher for its six-hour window and opens again by itself (F22). Needs a Gas Harvester I fitted. The Experiment haze, Coldwater and GSC-0016 are Trade's claim (admirals.log ENT-004)."
   }
  }
 }
