@@ -15,7 +15,7 @@ updated: 2026-11-17
 # Ironlight Combine [IRLC]
 
 A player faction with 7 base(s) in 4 system(s); the nearest to Nexus Prime is 6 jump(s) away, in LHS 1140 (`lhs_1140`).
-Pilots of it in our space in the last 24 hours: 17.
+Pilots of it in our space in the last 24 hours: 16.
 
 ## Identity
 
@@ -47,22 +47,21 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
 | ILC Chute | Synchrony (`synchrony`) | 0 | junk_convoy |
+| ILC Constellation | Nexus Prime (`nexus_prime`) | 0 | concordia |
 | ILC Flange | Synchrony (`synchrony`) | 0 | syndicate |
-| ILC Gantry | Nexus Prime (`nexus_prime`) | 0 | junk_convoy |
-| ILC Gasket | Synchrony (`synchrony`) | 0 | syndicate |
-| ILC Gateway | Node Alpha (`node_alpha`) | 0 | concordia |
+| ILC Gantry | Synchrony (`synchrony`) | 0 | junk_convoy |
+| ILC Gasket | Node Alpha (`node_alpha`) | 0 | syndicate |
+| ILC Gateway | Nexus Prime (`nexus_prime`) | 0 | concordia |
 | ILC Gilt | Synchrony (`synchrony`) | 0 | syndicate |
-| ILC Kerf | Pherkad (`pherkad`) | 0 | junk_convoy |
-| ILC Ladle | Node Alpha (`node_alpha`) | 0 | junk_convoy |
+| ILC Ladle | Synchrony (`synchrony`) | 0 | junk_convoy |
 | ILC Mallet | Synchrony (`synchrony`) | 0 | syndicate |
-| ILC Nonstop | Node Alpha (`node_alpha`) | 0 | concordia |
-| ILC Penalty | Synchrony (`synchrony`) | 0 | junk_convoy |
+| ILC Nonstop | Nexus Prime (`nexus_prime`) | 0 | concordia |
 | ILC Ratchet | Synchrony (`synchrony`) | 0 | junk_convoy |
-| ILC Retort | Synchrony (`synchrony`) | 0 | junk_convoy |
-| ILC Shank | The Experiment (`the_experiment`) | 1 | syndicate |
+| ILC Retort | Node Beta (`node_beta`) | 0 | junk_convoy |
+| ILC Shank | Synchrony (`synchrony`) | 1 | syndicate |
 | ILC Solder | Synchrony (`synchrony`) | 1 | syndicate |
-| ILC Vagabond | Node Alpha (`node_alpha`) | 0 | concordia |
-| ILC Weir | Synchrony (`synchrony`) | 0 | junk_convoy |
+| ILC Vagabond | Nexus Prime (`nexus_prime`) | 0 | concordia |
+| ILC Weir | Node Gamma (`node_gamma`) | 0 | junk_convoy |
 
 ## Standing History
 

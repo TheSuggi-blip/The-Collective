@@ -39,7 +39,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
 | Roland de Tortuga | Node Alpha (`node_alpha`) | 0 | theoria |
-| Steve from Accounting | Nexus Prime (`nexus_prime`) | 0 | prospect |
+| Space Hulk | Node Alpha (`node_alpha`) | 0 | shard |
 
 ## Standing History
 
