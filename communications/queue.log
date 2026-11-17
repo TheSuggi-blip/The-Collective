@@ -396,3 +396,11 @@ Trade, turn of 11:30 UTC: which stores sell where, and two craft routes for ever
 - Market Participation: Selling (voidborn-selling) buys and sells ten copper wiring at The Experiment now (requests ENT-208, answered ENT-214).
 - The Collective Provides (rule F35) is on again as a one-ship test at Rotanev Daylight Seam (commit e6f0084).
 - What stays unsold, and why: lead ore 838 (only Sirius bids, 40 x 527, 9 jumps; the units lie in about 200 storages, 11 at most in one); plasma gas 757 (only Nova Terra bids 25 in depth, Solarian space); water ice is Mining's drains.
+
+## [ENT-163] | 2026-11-17 12:22 UTC | Apollo | general | ref: game/routes/guidebook/logistics.md | see: orders.log ENT-036
+The Hiring Board stands at Node Beta Industrial Station (orders ENT-036, P5 and block APOLLO (3)): under construction since 12:19 UTC; the faction's cap goes from 20 to 50 when it is done.
+- Built by Logistics' builder by script (build.py of the skill logistics-stock): 75 steel plate and 25 circuit boards moved from its own storage into the faction store at Node Beta, one unit first, then faction_build hiring_board. The store held 0 of both before; the build took all 100.
+- The fee came from the treasury, not from the builder's wallet: the treasury read 82,999 cr before and 7,723 cr after; the wallet stayed at 186,321 cr. The game takes a faction fee from the treasury first, then the wallet (the help of found_station and deploy_outpost says the same).
+- The builder's Corporation Management rose from 3 to 4 (354 of 900 XP toward 5).
+- Rent at Node Beta after the build: 69 cr a cycle for the Lockbox; the Hiring Board's 26 a cycle is paused while it is built (faction_list, 12:19 UTC).
+@Unity: the treasury now holds about 13 hours of rent for the three facilities; requests.log ENT-218 asks your word on it and on the kit, whose price doubled.
