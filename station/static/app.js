@@ -851,7 +851,11 @@ function shipState(r) {
 
 function signed(n) { return (n > 0 ? '+' : '') + fmt(n); }
 function tint(n) { return el('span', n < 0 ? 'neg' : n > 0 ? 'pos' : null, signed(n)); }   // a signed number: green above zero, red below
-function shade(n, cls) { return el('span', n > 0 ? cls : null, fmt(n)); }                  // an amount without a sign: income green, a cost red
+function shade(n, cls) {                       // an amount without a sign: income green, a cost red; below zero it cannot be: amber
+  const s = el('span', n > 0 ? cls : n < 0 ? 'warn' : null, fmt(n));
+  if (n < 0) s.title = 'Below zero: this cannot be. A fault of the books, e.g. ships that changed division inside the stretch';
+  return s;
+}
 function liveAge() { return F.age < 0 ? -1 : F.age + Math.round((Date.now() - fetchedAt) / 1000); }
 
 function isWorking(r) { return ['work', 'move', 'wait'].includes(shipState(r)[0]); }
@@ -1521,7 +1525,8 @@ async function renderMetrics(panel, live) {
   kpi('Steady net / h', w ? signed(w.cph) : '--', 'income minus costs: what repeats', 'main' + (w ? tone(w.cph) : ''));
   kpi('Paid once / h', w ? signed(w.one_time_per_hour) : '--', 'rewards once per pilot, less goods bought for them', w ? tone(w.one_time_per_hour).trim() : '');
   kpi('Net per ship / h', w ? signed(Math.round(net / (t.ships || 1))) : '--', 'everything, per ship', w ? tone(net).trim() : '');
-  kpi('Steady income / h', w ? fmt(w.income_per_hour) : '--', 'sales and repeatable rewards', w && w.income_per_hour > 0 ? 'pos' : '');
+  kpi('Steady income / h', w ? fmt(w.income_per_hour) : '--', w && w.income_per_hour < 0 ? 'below zero: a fault of the books' : 'sales and repeatable rewards',
+    w && w.income_per_hour > 0 ? 'pos' : w && w.income_per_hour < 0 ? 'warn' : '');
   kpi('Running costs / h', w ? fmt(w.costs_per_hour) : '--', w && w.costs_per_hour < 0 ? 'below zero: money came in that no counter names; read the longer stretch' : 'fuel, repairs, goods, modules',
     w && w.costs_per_hour > 0 ? 'neg' : w && w.costs_per_hour < 0 ? 'warn' : '');   // a cost below zero is a fault of the books, never good news
   const metered = w && w.fuel_cr_per_hour !== undefined;
@@ -1555,7 +1560,7 @@ async function renderMetrics(panel, live) {
   const div = t.divisions || {}, dw = (w || {}).divisions || {};
   const order = (S ? S.roster : []).filter((a) => a.division !== 'Command' || div.Command).map((a) => [a.division, a.name]);
   if (div.Unassigned) order.push(['Unassigned', '']);
-  const moneyRow = (name, working, y) => [name, working, w ? shade(y.income_per_hour, 'pos') : '--', w ? (y.costs_per_hour < 0 ? el('span', 'warn', fmt(y.costs_per_hour)) : shade(y.costs_per_hour, 'neg')) : '--', w ? tint(y.cph || 0) : '--',
+  const moneyRow = (name, working, y) => [name, working, w ? shade(y.income_per_hour, 'pos') : '--', w ? shade(y.costs_per_hour, 'neg') : '--', w ? tint(y.cph || 0) : '--',
     w ? tint(y.one_time_per_hour || 0) : '--', w ? tint(whole(y)) : '--'];
   panel.append(fitTable(table(['Division', 'Working', 'Steady income', 'Running costs', 'Steady net', 'Paid once', 'Net / h'],
     order.map(([d, adm]) => {
