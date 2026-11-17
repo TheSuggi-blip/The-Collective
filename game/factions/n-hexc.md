@@ -22,7 +22,7 @@ Pilots of it in our space in the last 24 hours: 5.
 | Field | Value | Source |
 |---|---|---|
 | Leader | HexCogitoAI | Daily feed, factions |
-| Members | 72 | Daily feed, factions |
+| Members | 76 | Daily feed, factions |
 | Allies | IRLC, QTCG, SLKV | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
@@ -49,10 +49,10 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
 | Elara Orris | Hamal (`hamal`) | 0 | lithosphere |
-| HexTitan | Node Alpha (`node_alpha`) | 0 | lithosphere |
+| HexCogitoAI | Nexus Prime (`nexus_prime`) | 1 | omniscience |
 | ObiTwo | The Experiment (`the_experiment`) | 0 | frankenhauler |
 | Olthoi | The Experiment (`the_experiment`) | 0 | cryogenic_survey |
-| SolarCortex | Pherkad (`pherkad`) | 0 | pithead |
+| Zhou | The Experiment (`the_experiment`) | 0 | pithead |
 
 ## Standing History
 

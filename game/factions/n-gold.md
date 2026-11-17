@@ -15,14 +15,14 @@ updated: 2026-11-17
 # Golden Age Compact [GOLD]
 
 A player faction with 1 base(s) in 1 system(s); the nearest to Nexus Prime is 5 jump(s) away, in Stormwatch (`stormwatch`).
-Pilots of it in our space in the last 24 hours: 3.
+Pilots of it in our space in the last 24 hours: 2.
 
 ## Identity
 
 | Field | Value | Source |
 |---|---|---|
 | Leader | Rusty Prospector | Daily feed, factions |
-| Members | 12 | Daily feed, factions |
+| Members | 19 | Daily feed, factions |
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
@@ -40,8 +40,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Iron Prospector | Nexus Prime (`nexus_prime`) | 0 | liminal |
-| Johannes Kepler | Node Beta (`node_beta`) | 0 | cogito |
+| Iron Prospector | Acubens (`acubens`) | 0 | liminal |
 | Nickel Prospector | Pherkad (`pherkad`) | 0 | bonanza |
 
 ## Standing History

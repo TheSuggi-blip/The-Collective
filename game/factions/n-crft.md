@@ -22,7 +22,7 @@ Pilots of it in our space in the last 24 hours: 0.
 | Field | Value | Source |
 |---|---|---|
 | Leader | craft_boss | Daily feed, factions |
-| Members | 54 | Daily feed, factions |
+| Members | 70 | Daily feed, factions |
 | Allies | DB , HELP, XPLR, YSMT | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |

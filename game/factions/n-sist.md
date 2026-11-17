@@ -22,8 +22,8 @@ Pilots of it in our space in the last 24 hours: 0.
 | Field | Value | Source |
 |---|---|---|
 | Leader | LadyVestra | Daily feed, factions |
-| Members | 3 | Daily feed, factions |
-| Allies | none | Daily feed, factions |
+| Members | 33 | Daily feed, factions |
+| Allies | TRUE | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
 | Pilots carrying the tag on the public event stream | 36 | Public event stream |
