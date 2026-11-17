@@ -1,0 +1,20 @@
+{
+ "id": "hunt-wasat-cryobelt-hollow-pilgrim",
+ "kind": "hunt",
+ "title": "hollow_pilgrim at wasat_cryobelt; loot sold at The Crucible Garrison",
+ "note": "Written by routemaker.py from the herd's count, the loot of 63 runs of ours and the order book; an estimate of 3861 cr per hunter-hour, not a measurement. A test: one ship, the ranching rules kept. Added as a test by fill.py on 2026-11-17 13:50 UTC (Unity): one ship until its first RESULT line is read.",
+ "place": "wasat:wasat_cryobelt",
+ "species": [
+  "hollow_pilgrim"
+ ],
+ "sell_at": "the_crucible:the_crucible_garrison:the_crucible_garrison",
+ "min_bid": 3039,
+ "kills": 4,
+ "minutes": 71,
+ "max_ships": 1,
+ "min_creatures": 4,
+ "alone": true,
+ "requires": {
+  "empty_hold": true
+ }
+}
