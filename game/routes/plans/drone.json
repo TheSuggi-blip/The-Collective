@@ -98,6 +98,8 @@
   "mine-pherkad-rift",
   "gather-schedar-belt",
   "gather-ironhollow-echo-ejecta",
+  "gather-ironhollow-fading-signal",
+  "gather-garnet-belt",
   "census-frontier",
   "park"
  ],
@@ -219,6 +221,8 @@
   "mine-pherkad-rift": 50,
   "gather-schedar-belt": 50,
   "gather-ironhollow-echo-ejecta": 50,
+  "gather-ironhollow-fading-signal": 50,
+  "gather-garnet-belt": 50,
   "census-frontier": 50,
   "park": 50
  },
