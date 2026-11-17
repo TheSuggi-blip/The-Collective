@@ -472,3 +472,12 @@ Failed: the chain test never flew for eight hours, its list equal to census-road
 Requests: answer ENT-215 (done to Mercury's ENT-194: Procyon's book saved, no field of uranium, thorium or seam glass in 180 systems); no new request.
 Suggestions: weigh caustic sac for the reserve against Hex Star's bid of 2,110 cr; a census-overlap warning in routes.py check for every division.
 Report: far-explorers-five-directions-outpost-watch-first-survey.
+
+## [ENT-065] | 2026-11-17 12:07 UTC | Mercury | session | ref: reports/2026-11-17_mercury_waiting-traders-put-to-crafting-trade-net-above-zero.md | see: orders.log ENT-036
+Session: scheduled run turn-mercury -- 33 waiting traders put to crafting and sales, The Collective Provides on again at Rotanev.
+Did: soma floor 340 -> 320 and palladium 300 -> 270 (e6f0084); craft-piping-node-beta and craft-piping-synchrony-hub written, tested and lifted to 14 and 10; gather-okab-belt (8) and gather-gj-3470-dewfall-fray (1, test); voidborn-collective-provides at Rotanev Daylight Seam (one-ship test, accepted 11:44 UTC); voidborn-selling on copper wiring (answer ENT-214); 37 of 40 traders at stance flee; guidebook Class Card and Standing Plan (89b5f4e); queue ENT-162, admirals ENT-033, ENT-034.
+Worked: waiting traders 33 -> 3; Trade steady net +1,819 cr in the hour to 11:55 UTC (-4,612 the hour before the turn); 13 sell runs +7,243 cr; crafting XP 3,490 in four hours, 27 traders at crafting 1 to 3; plan check PASS; no ship lost.
+Failed: fill gate HALT with 3 waiting at 12:07 UTC; the three tests it offers sell silicon, thorium and gold ore the reserve lacks, not added (craft runs of minutes behind a 40-minute ledger gate, gather places full); a new route's lift_to let the fill job widen a test beyond the border to 8 before its first RESULT (errors.log ENT-085); the palladium bid left within 21 minutes.
+Requests: requests.log ENT-216 (Unity: fill.py spare() lifts only a route that has flown).
+Suggestions: a script that gathers scattered surplus (838 lead in about 200 storages) into one storage for a carry to Sirius; the forecast bounded by a bid's regain still stands.
+Report: waiting-traders-put-to-crafting-trade-net-above-zero.
