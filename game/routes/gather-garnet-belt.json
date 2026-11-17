@@ -1,0 +1,18 @@
+{
+ "id": "gather-garnet-belt",
+ "kind": "mine",
+ "title": "Standing work, a test: iron at Garnet Belt (beyond the border, two jumps from The Experiment) into storage there",
+ "note": "Written by Zero, 2026-11-17 03:17 UTC (orders.log ENT-025, block ZERO: iron for the reserve; rule F13: one ship and an empty hold until its first RESULT line). The field read 99,999 iron at richness 64 and 100,000 copper at 22 (census about 01:35 UTC), the richest iron within two jumps of a station of ours by the lanes table: Schedar and Ironhollow are the only fields one jump from one. Strangers met in the system in six hours: two ships of the faction tagged HEXC at Garnet Dim Lattice, never in combat (table met, 2026-11-16 23:34 UTC). Military hunts the veil rays of Garnet Dim Lattice, not this belt (admirals.log ENT-009).",
+ "belt": "garnet:garnet_belt",
+ "station": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+ "minutes": 45,
+ "max_ships": 1,
+ "standing": true,
+ "min_left": {
+  "iron_ore": 30000
+ },
+ "requires": {
+  "module": "mining_laser_i",
+  "empty_hold": true
+ }
+}
