@@ -3,6 +3,7 @@
  "owner": "Oracle",
  "note": "The routes the dispatcher tries, in this order, for a free scout pilot. Oracle keeps this file: put a route that pays first, a test with `max_ships` before it enters for all, and end with `park`. No route that loses money stands here to fill time (orders F8). 2026-11-16 12:18 UTC (orders.log ENT-014, turn of 12:15 UTC): the once line of the Central Nexus board at the head (EVERY ADMIRAL (c): voidborn-first-steps-board, voidborn-network-expansion, voidborn-collective-provides, voidborn-signal-protocol; Trade's files and limits); voidborn-signal-fragments next (navigation 3); census-voidborn (at most 3 ships, only when a home system is due); First Hunt for the 11 scouts that hold it at Intercrus Belt and, as a test, Intercrus Sootfall Belt (16 belt-grazers), each with a herd floor of 3; voidborn-first-hunt-gsc-0031 out (its herd is spent, 0 belt-grazers at 11:45 UTC); voidborn-first-steps out (off); Cracking the Shell for First Hunt holders; the once routes; the Node Beta chain; the two hunts that paid (Atlas Gas Pocket, Homam frost-moths); census-frontier; park. 2026-11-16 15:10 UTC (Unity, a stopgap on Suggi's word that no ship is idle): gather-gsc-0027-prism-scatter, gather-hamal-crystal-bloom added before the census as standing work for the ships that wait; its Admiral replaces them with its own standing work at its next turn (the skill fleet-play, `Plan a Division`).",
  "routes": [
+  "store-hold-central-nexus",
   "voidborn-first-steps-board",
   "voidborn-network-expansion",
   "voidborn-collective-provides",
@@ -25,7 +26,7 @@
   "hunt-test-homam-frost-moth",
   "hunt-atlas-gas-pocket",
   "mine-gliese-876-belt",
-  "hunt-test-amberfall-chlorophage",
+  "hunt-amberfall-chlorophage-sac",
   "hunt-garnet-dim-lattice-veil-ray",
   "census-worked",
   "census-frontier",
@@ -63,6 +64,7 @@
   }
  ],
  "ships": {
+  "store-hold-central-nexus": 30,
   "voidborn-first-steps-board": 30,
   "voidborn-network-expansion": 30,
   "voidborn-collective-provides": 30,
@@ -85,7 +87,7 @@
   "hunt-test-homam-frost-moth": 1,
   "hunt-atlas-gas-pocket": 1,
   "mine-gliese-876-belt": 1,
-  "hunt-test-amberfall-chlorophage": 1,
+  "hunt-amberfall-chlorophage-sac": 1,
   "hunt-garnet-dim-lattice-veil-ray": 1,
   "census-worked": 20,
   "census-frontier": 30,
