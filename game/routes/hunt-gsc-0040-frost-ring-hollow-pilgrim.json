@@ -1,0 +1,20 @@
+{
+ "id": "hunt-gsc-0040-frost-ring-hollow-pilgrim",
+ "kind": "hunt",
+ "title": "hollow_pilgrim at gsc_0040_frost_ring; loot sold at Sirius Observatory Station",
+ "note": "Written by routemaker.py from the herd's count, the loot of 3 runs of ours and the order book; an estimate of 765 cr per hunter-hour, not a measurement. A test: one ship, the ranching rules kept. Added as a test by fill.py on 2026-11-17 00:57 UTC (Unity): one ship until its first RESULT line is read.",
+ "place": "gsc_0040:gsc_0040_frost_ring",
+ "species": [
+  "hollow_pilgrim"
+ ],
+ "sell_at": "sirius:sirius_observatory_station:sirius_observatory_station",
+ "min_bid": 1264,
+ "kills": 4,
+ "minutes": 104,
+ "max_ships": 1,
+ "min_creatures": 4,
+ "alone": true,
+ "requires": {
+  "empty_hold": true
+ }
+}
