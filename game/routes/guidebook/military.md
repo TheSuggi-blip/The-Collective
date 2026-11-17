@@ -253,8 +253,8 @@ it needs, its place, its steps, what opens and closes it.
   Ruchbah; table lanes). The guard plan: `guard-garnet-belt` reads the place from now on;
   when the outpost stands, one guard keeps the outpost's place and one the belt, the
   hunters of the herds one jump around (Garnet slag-tortoises, Cedarhold and Garnet
-  veil-rays, Atlas, Achernar) dock and refuel there, and the pirate group of three drones
-  is based there to answer a lone pirate. The outpost's 12,000 hull without a shield is
+  veil-rays, Atlas, Achernar) dock and refuel there (the pirate group once planned
+  there was withdrawn by orders D9; the outpost went to GSC-0044, below). The outpost's 12,000 hull without a shield is
   beyond what drones of 75 hull defend against a pirate pack: they see, warn and save
   the ships; they do not hold the walls.
 - The first outpost at GSC-0044 (orders ENT-036, P4 a), planned 2026-11-17 12:20 UTC: `guard-gsc-0044-belt` keeps
