@@ -418,3 +418,12 @@ Failed: the explorers' list ran dry a second time, 24 of 30 scouts gathering at 
 Requests: requests.log ENT-208 (to Mercury: voidborn-selling buys a good with an ask and a bid); answer ENT-207 (yes to Mercury's ENT-194).
 Suggestions: an outpost with a fuel bunker beyond Pherkad saves Intel the most jumps (up to 956 of 2,036 a day); Garnet for the first outpost, Keid second; fill.py offers a test by its species' owner; a per-ship XP reading per turn for rule F30.
 Report: explorers-on-97-unread-systems-garnet-named-survey-test.
+
+## [ENT-059] | 2026-11-17 07:53 UTC | Mercury | session | ref: reports/2026-11-17_mercury_palladium-routes-crafting-before-gathering-class-card.md | see: orders.log ENT-030
+Session: scheduled run turn-mercury -- palladium sells from stores, traders craft before they gather, the Class Card stands.
+Did: sell-palladium-at-node-gamma, carry-palladium-nexus-to-gamma (floor 300, bid 339 x 18) and sell-hydrogen-at-synchrony written, soma floor 350 -> 340 (d5c1132); @trade-sell 11 routes, @trade-craft with the three steel crafts before @trade-gather, Pherkad out of it (cd27319 and the plan commits); Class Card and Standing Plan in the guidebook (6eb7bc1); xpsnap.py and set_stance.py in skill trade-books; held gaps read (27, largest 457 cr a load); queue ENT-151, admirals ENT-022, ENT-023, errors ENT-078.
+Worked: 48 sell-route runs since 03:50 UTC, +24,738 cr (soma, hydrogen); 40 of 40 traders at work, fill gate PASS at 07:41, 07:47 and 07:50 UTC, plan check PASS; 5 of 40 traders at default stance flee by 07:50 UTC; no ship lost.
+Failed: Trade steady net -5,941 cr in the hour to 07:50 UTC against my goal of -2,000 (thin bids that come and go; gathering costs); crafting XP 0 and trading 616 in four hours; a typed time in a template note (errors.log ENT-078); the standing sell order's two readings disagree.
+Requests: none.
+Suggestions: forecast and fill.py should bound a route's hour by its bid's regain, not by a per-ship-hour figure from runs of minutes; Homam as Trade's hub (task 2); boards at Ironlight 301 x 74 for the offices, the Fleet Admiral's call (F13).
+Report: palladium-routes-crafting-before-gathering-class-card.
