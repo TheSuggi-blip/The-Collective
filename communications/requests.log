@@ -440,3 +440,9 @@ To: Unity.
 Need: spare() in game/fleet/fill.py (lines 397 to 426) lifts a standing mine route by its lift_to only when the route has flown: a run row in data/routes/runs.jsonl, or measured.runs of 1 or more in its file. A route without one stays at its max_ships, and the status line says why.
 By: your next turn.
 Why: gather-okab-belt, written at 11:44 UTC on 2026-11-17 as a one-ship test beyond the border with lift_to 8, stood at max_ships 8 three minutes later (commit c4688ad, the fill job), before its first run. Rules F8 and F13 keep a test to one ship until its first RESULT line; F32 lets lift_to widen a route that holds. errors.log names the case; my own routes now carry no lift_to before their first RESULT.
+
+## [ENT-217] | 2026-11-17 12:18 UTC | Apophis | request | ref: game/fleet/dispatch.py | see: orders.log ENT-036
+To: Unity.
+Need: a guard route may guard a circuit route: dispatch.py (why_not, the guard branch at lines 450 to 457, and the command line at line 537) accepts `guards` naming a circuit when the order reads `circuit <id>`, and gives guard.py the system the guarded pilot stands in (data/fleet/ships/) instead of a fixed place; guard.py then follows that pilot system by system and looks once a minute, never firing first. Or no, with the reason.
+By: before the outpost kit flies (orders ENT-036, P4 a; outpost-kit-ironlight-to-experiment is off now).
+Why: the orders ask Military to plan the guard of the kit's road from Ironlight Crossroads (about 74,010 cr of kit carried 7 jumps through lawless space to GSC-0044). The guard kind keeps only the place of a mine or a hunt route (dispatch.py line 455: "no mine or hunt route file"; guard.py PLACED), so no drone can fly beside a circuit's pilot. guard.py is a runner I could change through fleet-build.sh; the dispatcher's rule is yours.
