@@ -38,7 +38,7 @@ the list Then.
 | Own | fit-survey-scanner-central-nexus | 1 reader, then @reader | 1 (2 pilots) | paid once: one Survey Scanner I at about 4,940 cr with the tax | The survey test of task 1: whether survey_system shows places or ores the census does not, and the scanning skill (0 on every scout) |
 | Own | hunt-amberfall-chlorophage-sac | 1 | 1 (`lift_to` 1) | -399 over 5 runs (4 h): it sells nothing; 9 caustic sacs stored at Node Beta since 03:24 UTC | Caustic sac for the reserve (420 short), stored (rule F24) |
 | Own | hunt-garnet-dim-lattice-veil-ray; hunt-atlas-gas-pocket with mine-gliese-876-belt; hunt-test-homam-frost-moth; mine-nightveil-dark-residue; mine-flicker-fray | 5 ships, one route each, then @reader | 1 each | Atlas +4,413 over 3 runs, Homam +3,266 over 1, Garnet -660 over 1 (a ship not ours at the place), the two null-matter mines -400 and -318 over 2 each (4 h) | Scouts hunt on the way (rule F16); each place is shared with others |
-| Own | census-roads-chain | 1 explorer, then @explorer | 1 | not measured: no run yet, because nothing on its list was due between 03:52 and 07:20 UTC | Up to three systems of census-roads in one trip instead of one |
+| Own | census-roads-chain | 1 explorer, then @explorer | 1 | not measured: no row in runs.jsonl since it was written at 03:36 UTC; nothing on its list was due from about 04:33 to 07:21 UTC, and why its ship took no never-read system before that is not read | Up to three systems of census-roads in one trip instead of one |
 | Own | @explorer: census-roads, census-frontier | 9 | 10, 12 | census-roads -639 over 10 runs (4 h) | 143 systems since 07:21 UTC: the 46 of the three regions (read, again every 480 minutes), then Procyon (Trade's ENT-194) and 96 never-read systems of 8 to 14 jumps, nearest first. A first visit is the only thing that raises exploration |
 | Own | @reader: census-worked, census-frontier, census-roads | 19 | 6, 12, 10 | census-worked -717 over 38 runs; census-frontier -672 over 28 runs (4 h) | The 22 systems beyond home our routes use every 90 minutes, the 31 others of the frontier every 200; a reader with nothing due helps the explorers |
 | Then | gather-gsc-0027-prism-scatter, gather-hamal-crystal-bloom, mine-pherkad-rift, gather-gsc-0027-spacetime-seep, gather-schedar-belt, gather-ironhollow-echo-ejecta, the three craft-steel routes, census-frontier, park | the rest, while nothing is due | shared by the fleet | prism scatter -153 over 35 runs (4 h) | The fallback: ore into storage for the reserve (the Then list of every plan, set by the Fleet Admiral at 05:50 UTC) |
@@ -154,7 +154,7 @@ Readings:
   (7), exploration 2 (12). Against 03:23 UTC: navigation's median rose
   from 3 to 4 and deep core mining's from 6 to 7; exploration stayed at
   2, because the explorers' list held no never-read system from about
-  03:52 UTC and 24 of 30 scouts were gathering at 07:17 UTC.
+  04:33 UTC and 24 of 30 scouts were gathering at 07:17 UTC.
 
 - 2026-11-17 03:23 UTC (`fleet` view=levels): 30 scouts, 32 hours played
   (median); piloting 3, 6 and 7 (lowest, median, highest), 141 piloting
