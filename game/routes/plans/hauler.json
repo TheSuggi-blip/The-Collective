@@ -54,6 +54,7 @@
   "gather-schedar-belt",
   "gather-ironhollow-echo-ejecta",
   "gather-okab-belt",
+  "gather-gj-3470-dewfall-fray",
   "census-frontier",
   "park"
  ],
@@ -131,6 +132,7 @@
   "gather-schedar-belt": 40,
   "gather-ironhollow-echo-ejecta": 40,
   "gather-okab-belt": 40,
+  "gather-gj-3470-dewfall-fray": 40,
   "census-frontier": 40,
   "park": 40
  },
