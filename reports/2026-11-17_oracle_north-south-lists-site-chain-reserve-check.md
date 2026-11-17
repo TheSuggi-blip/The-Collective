@@ -89,7 +89,10 @@ service), errors.log ENT-095, requests ENT-244 and ENT-246.
 - **My plan file carried an older copy of itself** under its Notes, every heading twice; plan.py check passed it.
   Taken out this turn.
 - **A paying route left open:** fill.py offers hunt-violethall-gas-plume-cinder-sylph (17 jumps, six Nyx raider
-  elites there at 13:16 UTC, sales at a foreign station); not taken, the gate is PASS without it.
+  elites there at 13:16 UTC, Violethall unread since; it sells at a foreign station, and what Hex Star does not take
+  at 3,331 cr, crystallized biogas that the reserve is 3,664 short of among it, would stay far from home). The
+  hourly fill wrote it in front of one scout at 19:51 UTC; I took it out at 19:57 UTC before that scout flew it
+  (it took its Birchwood hunt at 19:55 UTC). The next hourly pass may write it in again.
 - No ship lost or damaged; no wallet under 3,000 cr (SHIPS line).
 
 ## Plans
