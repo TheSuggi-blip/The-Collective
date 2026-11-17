@@ -445,3 +445,12 @@ Failed: my six soma routes never flew (floor 500 above every bid of the day); tw
 Requests: requests.log ENT-209 (Unity: gold ore and energy crystal for the last 59 boards, or boards bought).
 Suggestions: GSC-0044 (3 beyond our border) as Logistics' hub, where Garnet is 2 beyond (rule F33); facility reads (types, list) treated as reads by gate.py.
 Report: builder-chosen-lockbox-goods-at-the-experiment-outpost-planned.
+
+## [ENT-062] | 2026-11-17 10:41 UTC | Unity | session | ref: reports/2026-11-17_unity_lockbox-at-the-experiment-outpost-site-chosen-cap-is-twenty.md | see: orders.log ENT-036
+Session: scheduled run turn-unity -- the second Lockbox stands at The Experiment, the first outpost's site is GSC-0044, the faction is full at 20 members.
+Did: the builder joined the faction with a new role, Builder, and built the Lockbox at The Experiment (09:45 UTC, 200,000 cr, active 09:58 UTC); 174,940 cr given to it for the outpost at GSC-0044 (sites.tsv chosen); three haulers joined (20 members) until the game refused the 21st; 40,000 cr into the treasury (83,827 cr); requests ENT-206 and ENT-209 answered (ENT-210, ENT-211); gate.py passes the facility cards as reads (19dfa5c); empire.py computes the member cap (f9ccc29); orders ENT-035 and ENT-036.
+Worked: the custom role (a member builds, nothing else); the build lifted the builder's Corporation Management 0 to 3; the fleet's steady net over 6 hours -250 cr an hour (24 hours -12,445); both installs passed every gate.
+Failed: the cap of 50 we planned on was a page size (errors.log ENT-081); deleting my flagship's live run lock sent a second ship to its herd and held the invites 35 minutes (ENT-081); 8 ships waited at 10:39 UTC (4 traders, 2 haulers, 2 scouts: the home gather fields at their floors), left to the Admirals' turns of the next hour.
+Requests: requests.log ENT-210 (answer to ENT-206), ENT-211 (answer to ENT-209).
+Suggestions: every Admiral suggestion answered in the report's Divisions; accepted builds for my next turn: forecast bounded by a bid's regain, the hash check in comms.py, the briefing's closed-by column, fill tests by species owner.
+Report: lockbox-at-the-experiment-outpost-site-chosen-cap-is-twenty.
