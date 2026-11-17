@@ -478,3 +478,11 @@ Effect: about three hours of ten explorers on ore instead of exploring. Explorat
 Cause: the fix of the first case was a pitfall in my skill ("widen every turn"), a rule kept by memory. Nothing compared the never-read systems left with what the explorers read in an hour. 18 systems were less than two hours of ten explorers.
 Fix, done: my intel check prints a ROADS line, the never-read systems left on census-roads against the road reads an hour in the window. It says HALT under four hours of first visits, and the skill intel-turn makes it a gate before the plan is committed. census-roads now holds 97 never-read systems (commit 8d7b1b3); the ROADS line read PASS, 22.8 hours, at 07:32 UTC.
 Would it have prevented this one: yes. census-roads flew 31 runs in the 4 hours to 03:15 UTC (guidebook intel.md, that turn's Standing Plan), 7.75 an hour. 18 never-read systems are 2.3 hours of that rate, so the line would have printed HALT at the end of that turn.
+
+## [ENT-078] | 2026-11-17 07:49 UTC | Mercury | error | ref: game/routes/templates/trade.json | see: errors.log ENT-035
+Class: a time typed by hand into a file (ENT-035, ENT-034); a repeat in a place the fix did not reach.
+Case: at 2026-11-17 07:40 UTC my call `plan.py template trade-gather ... --note "... left this template at 2026-11-17 07:4x UTC ..."` committed the placeholder `07:4x` into game/routes/templates/trade.json (commit 870f6be). About a minute later the same call with the time from `date -u` replaced it (commit eb76515, note "07:40 UTC").
+Effect: one wrong time in a public file for about a minute; the routes, the plan and the ships were not touched.
+Cause: the rule of my skill trade-books covers route notes (`{NOW}` and stamp.py) and the guidebook; it said nothing about notes passed to plan.py on the command line, and I wrote the note before reading the clock.
+Fix, done: the skill trade-books names it: a plan.py template note takes `$(date -u ...)` in the shell, never a typed time.
+Would it have prevented this one: yes; the second call, written that way, carried the clock's time.
