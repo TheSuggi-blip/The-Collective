@@ -61,7 +61,9 @@ the table `ship_skills`, the ship files and the tool fleet, view levels
   (120 hull) took 0 kills in 4 runs and left the drone at 45 percent
   hull (2026-11-17). Default stance flee, set by script (game 0.721.0):
   a fight a drone starts still opens at fire.
-- Style: one hunter to a herd, one guard to a field; never the first
+- Style: one hunter to a herd; guards and escorts only from the stations
+  outward, never in the first ring of outposts and its roads (orders
+  ENT-045, rule F33); never the first
   shot at a player or an empire's ship (F2); pirates are Military's to
   judge (orders D9 of ENT-042), and the block of ENT-042 says no test,
   group or fight for now: a hunt leaves a place where a pirate stands,
@@ -92,9 +94,11 @@ skill, because gathering filled the hours no herd was open (section 4).
 ## Standing Plan
 
 What the 70 ships of the division (50 drones, 20 sentinels lent until Piloting 20) fly between two turns, applied
-2026-11-17 20:20 UTC (orders ENT-042). 6 drones fly `@guard` and then `@hunter`; one drone flies the escort first;
-16 drones and every sentinel fly hunts of their own first (tests and the far hunts the filler offered), then
-`@hunter`; the rest fly `@hunter`. Every hunt and every guard takes one side: one ship, or a group (rule F9; groups
+2026-11-17 20:20 UTC (orders ENT-042), changed at 21:07 UTC for orders ENT-045: no guard and no escort in the first
+ring of outposts and its roads (rule F33; every post we kept stood 2 to 6 jumps out), so the six guard drones and the
+escort drone fly `@hunter`; Military guards from the stations outward when they stand, and levels, hunts and farms
+meanwhile. 16 drones and every sentinel fly hunts of their own first (tests and the far hunts the filler offered),
+then `@hunter`; the rest fly `@hunter`. Every hunt and every guard takes one side: one ship, or a group (rule F9; groups
 by hand only until the dispatcher's half stands, queue.log ENT-175). The hunts beyond the border leave only for a
 pirate or a pilot filed hostile (`alone` "pirates"). The dispatcher closes a hunt, a mine or a guard where a pirate
 was seen within six hours (orders D9); a pack seen longer ago is taken out of the plan by hand (2026-11-17 20:16 UTC:
@@ -104,9 +108,9 @@ Violethall, six Nyx pirates at 13:16 UTC; Hollowcrest, ten Dross raiders at 19:0
 |---|---|---|---|---|
 | First | The once line of the fleet (18 routes) | every ship; each route's own limit | 1,000 to 21,000 cr once a pilot; 230,601 cr paid once to the division 16:45 to 20:20 UTC | Missions that pay once first; the Voidborn chain for rule F35 |
 | Own, first | Six tests of 20:19 UTC, 8 to 17 jumps out: cinder-sylphs at GSC-0035 and GSC-0045, hollow-pilgrims at GSC-0037, GSC-0042, Sandrift and Yildun (north, a base site of G3); the paying Harborlight pilgrims; the far hunts of 16:17 UTC (Oxbow, Saltwind, Avior, Willowgate, Arneb, Tania, Etamin, Silverbend, Angetenar, Wasat, Biham) | 1 each | route_earnings, 12 h: Harborlight 4,284, Avior halo-drifters 4,510, Oxbow 4,472, Willowgate 5,164, Saltwind 2,215 cr per ship-hour; Arneb -54 | New herds: every near herd holds its one hunter; far bids for melt, noble condensate (690), halo goods |
-| Escort | `escort-voidborn-conductive-lattice` | 1 drone | not measured; a guard costs -72 to -216 cr a run | The first escort the dispatcher starts (requests ENT-237); Logistics' outpost circuit gets its own once it exists |
+| Escort | none since 21:07 UTC (orders ENT-045); `escort-voidborn-conductive-lattice` flew one run from 20:33 UTC | 0 | its RESULT line read next turn | The escort serves beyond the first ring, at stations and outposts past it, once they stand |
 | Sentinels' own | 1 to 4 far hunts each (hollow-pilgrims, cinder-sylphs, halo-drifters, a chlorophage), the ones they flew for the command group | 1 each | sentinel hunts 16:45 to 20:20 UTC: +16,782 cr in 1,755 hunter-minutes, 574 cr per hunter-hour | Their skills (gunnery median 2) and Piloting toward 20 |
-| `@guard` | `guard-ironhollow-fading-signal`, `guard-schedar-belt`, `guard-ironhollow-echo-ejecta`, `guard-garnet-belt`, `guard-achernar-belt`, `guard-gsc-0044-belt`, `guard-marfik-emission-nebula` | 6 drones, 1 a post | -72 to -216 cr a run (13 runs, 16:45 to 20:20 UTC) | Up to 45 ships of ours at Schedar, 35 at Ironhollow Echo Ejecta, 29 at Garnet; GSC-0044 is our outpost |
+| `@guard` | none since 21:07 UTC (orders ENT-045); the template stays for the posts beyond the first ring | 0 | -72 to -216 cr a run (13 runs, 16:45 to 20:20 UTC) | The seven posts stood 2 to 6 jumps out, in the first ring |
 | `@hunter`, holds and sales | `store-hold-central-nexus`, two ember-gland sales, `carry-soma-synchrony-to-alpha`, five melt sales | only with goods aboard or stored and a bid | melt: 12 sale runs +55,996 cr 16:45 to 20:20 UTC while Sirius bid 1,484 to 1,502 (18:04 to 19:44 UTC); gone again at 20:18 UTC | Melt and glands are sold, not kept (not in the reserve) |
 | `@hunter`, money hunts | hollow-pilgrim hunts, Hassaleh pilgrims, Gemma halo-drifters, Achernar and Lesath cinder-sylphs, the Bluerift rime-grazer test | 1 each | Hassaleh +4,325, Atria +422, Groombridge -363 cr per hunter-hour (16:45 to 20:20 UTC) | Melt waits aboard or in storage for the next far bid |
 | `@hunter`, reserve hunts | 24 grazer carapace hunts, seven veil-ray and five drift-ray hunts, the Hassaleh frost-moths (superfluid vials stored at Node Beta since 20:16 UTC) | 1 each | -114 to -453 cr per hunter-hour, 2.6 to 14.5 kills an hour | Carapace, curd, biogas and vials stored for the reserve (rule F24) |
@@ -121,7 +125,7 @@ What would change the plan: a group flight that kills a whale (the first, 20:12 
 fought; section 1, Group hunts) and the dispatcher's `group: N`, which would open the pilot whales of 220 hull (324
 seen in 87 systems) to sides of three; a far bid back (melt at Sirius or First
 Step Memorial, glands at Hex Star); the first RESULT lines of the six tests and of the escort; Logistics' outpost
-circuit (its escort); a pirate at a hunt's place.
+circuit beyond the first ring (its escort); a station or an outpost past the first ring (its guard); a pirate at a hunt's place.
 
 ## 1. Route Guides
 
