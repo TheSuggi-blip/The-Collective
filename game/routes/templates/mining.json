@@ -26,24 +26,22 @@
    "note": "Every route here is gated: a drain or carry opens only on goods the pilot itself stores and a fresh bid (requires.stored, requires.bid); a mine route only on a deep water-ice order at Central Nexus (300 units at its best price) and with an Ice Harvester I fitted. Drains and carries need no harvester. What miners store is sold before new ice is mined."
   },
   "reserve-prism": {
-   "title": "Gather what the reserve is short of: a loaded hold stored first, carbon, then iron, Schedar first",
+   "title": "Make, then gather what the reserve lacks: a loaded hold stored, steel plate from stored iron, then gold, silicon, nickel and carbon",
    "routes": [
     "store-hold-central-nexus",
-    "gather-acubens-belt-carbon",
-    "gather-schedar-belt",
-    "gather-ironhollow-fading-signal",
-    "gather-ironhollow-echo-ejecta",
-    "gather-garnet-belt",
-    "gather-achernar-belt",
-    "gather-ruchbah-broken-glass-veil",
-    "gather-gsc-0027-prism-scatter",
-    "gather-hamal-crystal-bloom",
-    "mine-acubens"
+    "craft-steel-experiment",
+    "craft-steel-node-beta",
+    "gather-goldcrest-gold",
+    "gather-subra-floodlight-flats-silicon",
+    "gather-jadecove-nickel",
+    "gather-acubens-belt-carbon"
    ],
    "trains": [
-    "mining"
+    "mining",
+    "crafting",
+    "refining"
    ],
-   "note": "Standing work into storage, nothing sold (orders ENT-025: silicon and carbon first, then iron). Needs the Mining Laser I. First a ship a run left loaded stores its hold at Central Nexus (store-hold-central-nexus, requires.hold). Silicon: no field we read holds it. Carbon: Acubens Belt, one ship, floor 60. Iron: Schedar Belt (beyond the border, 2 jumps, into Node Beta, 10 ships), Ironhollow Fading Signal (beyond the border, into The Experiment, 7 ships, guarded by Military), Ironhollow Echo Ejecta (a one-ship test), then the shared fields Prism Scatter, Hamal and Acubens Shadow Pocket, each closed at its floor."
+   "note": "Orders ENT-050, block ZERO: iron and copper no more while the reserve holds them; P2: stored iron becomes steel plate. The iron gather fields left this template on 2026-11-17 23:20 UTC (Zero)."
   },
   "reserve-hamal": {
    "title": "Gather what the reserve is short of: a loaded hold stored first, carbon, then iron, Ironhollow first",
