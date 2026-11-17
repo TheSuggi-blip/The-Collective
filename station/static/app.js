@@ -299,7 +299,7 @@ function frame(now) {
 // ---------------------------------------------------------------- the marks of the map
 
 const OURS = '#d9d0f5';                              // our own space and the sites chosen for a base
-const BUILT = '#ffffff', RAISING = '#dcae58';        // a building of ours that stands; one that is being built
+const BUILT = '#ffffff', RAISING = '#dcae58';        // a building of ours the game lists as active; one it does not (being built, or down)
 // One drawing per mark in a box of 12 by 12: the map paints it on the canvas, the legend shows the same path as an SVG.
 const GLYPHS = {
   storage: { d: 'M2 4.1 6 2.1 10 4.1V8.5L6 10.5 2 8.5Z M2 4.1 6 6.1 10 4.1 M6 6.1V10.5' },
@@ -345,7 +345,7 @@ function tokenSvg() {                                    // a small picture of t
   add('text', { x: 13, y: 16, 'text-anchor': 'middle', 'font-size': 8.5, 'font-weight': 700, fill: '#eef0f6' }, '12');
   return svg;
 }
-const stands = (b) => !b.status || /^(active|built|online|operational)$/i.test(b.status);   // else: being built, or down
+const stands = (b) => !b.status || /^(active|built|online|operational)$/i.test(b.status);   // else the tooltip and the panel show the game's own word
 
 // The ground under the map, as on a strategy game's galaxy map: each empire's space is one region with a soft fill and
 // a thin border in its colour. Our own space lies over it as a region of its own: the systems where a ship of ours
@@ -560,7 +560,7 @@ function paint(t) {
     }
     const own = layers['Our bases'] ? holdBy.get(s.id) || [] : [], site = layers['Our bases'] ? sitesBy.get(s.id) : null;
     const planned = site && site.status !== 'dropped' && site.status !== 'built' && !own.some((b) => b.kind === 'outpost' || b.kind === 'station');
-    if (own.length || planned) {                                    // ours, above the system: one mark per kind of building, amber while one is being built; a flag for a planned base
+    if (own.length || planned) {                                    // ours, above the system: one mark per kind of building, amber while one is not active; a flag for a planned base
       const kinds = new Map(), row = [];
       for (const b of own) { if (!kinds.has(b.kind)) kinds.set(b.kind, true); if (!stands(b)) kinds.set(b.kind, false); }
       for (const [kind, done] of kinds) row.push([kind, done ? BUILT : RAISING, false]);
@@ -1798,7 +1798,7 @@ async function loadState() {
   row(glyphSvg('office', BUILT, 13), 'other office');
   row(glyphSvg('outpost', BUILT, 13), 'outpost');
   row(glyphSvg('station', BUILT, 13), 'station');
-  row(glyphSvg('storage', RAISING, 13), 'amber: being built');
+  row(glyphSvg('storage', RAISING, 13), 'amber: not active yet');
   row(glyphSvg('flag', OURS, 13), 'site chosen for a base');
   row(glyphSvg('flag', rgba(OURS, 0.7), 13, true), 'candidate site');
   head('Others');
@@ -1915,7 +1915,7 @@ function init() {
     } else if (s) {
       const ours = (shipsBy.get(s.id) || []).length, own = holdBy.get(s.id) || [], site = sitesBy.get(s.id);
       tip.textContent = s.name + (s.empire ? ' (' + s.empire + ')' : '') + ' | ' + (L.hour[s.id] || 0) + ' pilots in the last hour' + (ours ? ' | ' + ours + ' of ours' : '')
-        + (own.length ? ' | ours: ' + own.map((b) => b.name + (stands(b) ? '' : ' (being built)')).join(', ') : '')
+        + (own.length ? ' | ours: ' + own.map((b) => b.name + (stands(b) ? '' : ' (' + String(b.status).replace(/_/g, ' ') + ')')).join(', ') : '')
         + (site && site.status !== 'dropped' && site.status !== 'built' ? ' | a site for a base: ' + site.status : '');
       tip.style.left = mx + 14 + 'px'; tip.style.top = my + 12 + 'px'; tip.hidden = false;
     } else tip.hidden = true;
