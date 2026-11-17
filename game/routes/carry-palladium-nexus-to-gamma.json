@@ -1,0 +1,45 @@
+{
+ "id": "carry-palladium-nexus-to-gamma",
+ "kind": "circuit",
+ "title": "Stored palladium_ore carried from central_nexus to the node_gamma_relay_station bid at 300 cr or more",
+ "note": "2026-11-17 07:38 UTC (Mercury, written by sellgen.py; orders block MERCURY, rule F24). node_gamma_relay_station bid 339 x 18 (book of 2026-11-17T07:11:35Z); the cheapest ask read is 432 x 26 at sirius_observatory_station; floor 300 cr; at central_nexus 253 units lie there in our storages. A pilot whose own storage at the first station holds the good withdraws up to 30, sells into the bid at the second and stores what the bid left there. requires.bid closes it while a book read within the hour shows that bid gone or under the floor. Nothing is bought; a run into a bid taken on the way costs the hop's fuel. Withdraws 18, the bid depth read; a pilot with fewer than 5 units stays home (5 x 300 cr pays the two jumps).",
+ "requires": {
+  "stored": {
+   "at": "central_nexus",
+   "item": "palladium_ore",
+   "min": 5
+  },
+  "bid": {
+   "item": "palladium_ore",
+   "base": "node_gamma_relay_station",
+   "min_price": 300,
+   "min_qty": 5
+  }
+ },
+ "max_ships": 1,
+ "stops": [
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "palladium_ore",
+     "qty": 18
+    }
+   ]
+  },
+  {
+   "at": "node_gamma:node_gamma_relay_station:node_gamma_relay_station",
+   "sell": [
+    {
+     "item": "palladium_ore",
+     "min_price": 300
+    }
+   ]
+  },
+  {
+   "at": "node_gamma:node_gamma_relay_station:node_gamma_relay_station",
+   "store": "all"
+  }
+ ]
+}

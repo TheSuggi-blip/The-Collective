@@ -1,0 +1,41 @@
+{
+ "id": "sell-hydrogen-at-synchrony",
+ "kind": "circuit",
+ "title": "Stored hydrogen_gas sold where it lies, at synchrony_hub, at 30 cr or more",
+ "note": "2026-11-17 07:38 UTC (Mercury, written by sellgen.py; orders block MERCURY, rule F24). synchrony_hub bid 0 x 0 (book of 2026-11-17T07:33:14Z); the cheapest ask read is 6 x 1114873 at 784309214f105860a16a0c100a70eb14; floor 30 cr; 1035 units lie there in our storages. requires.stored sends only a pilot whose own storage there holds the good; requires.bid closes the route while a book read within the hour shows no bid at the floor. The withdraw step takes only what the bid takes. Nothing is bought. Open to every division: each ship sells its own stores. The Synchrony bid comes and goes: 34 x 48 at 2026-11-17 07:20 UTC, 0 at 07:26 UTC; the route opens only while a read within the hour shows 10 units or more.",
+ "requires": {
+  "stored": {
+   "at": "synchrony_hub",
+   "item": "hydrogen_gas",
+   "min": 1
+  },
+  "bid": {
+   "item": "hydrogen_gas",
+   "base": "synchrony_hub",
+   "min_price": 30,
+   "min_qty": 10
+  }
+ },
+ "max_ships": 1,
+ "stops": [
+  {
+   "at": "synchrony:synchrony_hub:synchrony_hub",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "hydrogen_gas"
+    }
+   ],
+   "sell": [
+    {
+     "item": "hydrogen_gas",
+     "min_price": 30
+    }
+   ]
+  },
+  {
+   "at": "synchrony:synchrony_hub:synchrony_hub",
+   "store": "all"
+  }
+ ]
+}

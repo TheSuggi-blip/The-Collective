@@ -1,0 +1,41 @@
+{
+ "id": "sell-palladium-at-node-gamma",
+ "kind": "circuit",
+ "title": "Stored palladium_ore sold where it lies, at node_gamma_relay_station, at 300 cr or more",
+ "note": "2026-11-17 07:38 UTC (Mercury, written by sellgen.py; orders block MERCURY, rule F24). node_gamma_relay_station bid 339 x 18 (book of 2026-11-17T07:11:35Z); the cheapest ask read is 432 x 26 at sirius_observatory_station; floor 300 cr; 7 units lie there in our storages. requires.stored sends only a pilot whose own storage there holds the good; requires.bid closes the route while a book read within the hour shows no bid at the floor. The withdraw step takes only what the bid takes. Nothing is bought. Open to every division: each ship sells its own stores.",
+ "requires": {
+  "stored": {
+   "at": "node_gamma_relay_station",
+   "item": "palladium_ore",
+   "min": 1
+  },
+  "bid": {
+   "item": "palladium_ore",
+   "base": "node_gamma_relay_station",
+   "min_price": 300,
+   "min_qty": 1
+  }
+ },
+ "max_ships": 1,
+ "stops": [
+  {
+   "at": "node_gamma:node_gamma_relay_station:node_gamma_relay_station",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "palladium_ore"
+    }
+   ],
+   "sell": [
+    {
+     "item": "palladium_ore",
+     "min_price": 300
+    }
+   ]
+  },
+  {
+   "at": "node_gamma:node_gamma_relay_station:node_gamma_relay_station",
+   "store": "all"
+  }
+ ]
+}
