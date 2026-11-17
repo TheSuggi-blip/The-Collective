@@ -44,6 +44,7 @@
   "mine-acubens",
   "gather-schedar-belt",
   "gather-ironhollow-echo-ejecta",
+  "craft-steel-node-beta",
   "census-frontier",
   "park"
  ],
@@ -111,6 +112,7 @@
   "mine-acubens": 40,
   "gather-schedar-belt": 40,
   "gather-ironhollow-echo-ejecta": 40,
+  "craft-steel-node-beta": 40,
   "census-frontier": 40,
   "park": 40
  },
