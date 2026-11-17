@@ -1,0 +1,50 @@
+{
+ "id": "mission-deep-core-prospecting-first-step",
+ "kind": "circuit",
+ "title": "Deep Core Prospecting: 5,000 cr, 10 exotic matter and deep core mining XP; 20 platinum ore mined at Deep Range Mineral Fields, accepted and handed in at First Step Memorial Station",
+ "note": "Foreman Voss on the board of First Step Memorial Station (data/missions/first_step_memorial_station.json, read 2026-11-17 17:06 UTC): mine 20 platinum ore, 5,000 cr, 10 exotic matter, deep_core_mining 25 XP, mining 15 (rule F34). Deep Range Mineral Fields (Outer Rim, 2 jumps from First Step) read 531 platinum of 8,000 (richness 20) beside carbon 680, osmium 497 at 16:48 UTC (table fields); Markab Belt, the field of mission-deep-core-prospecting-nova-terra, read 0 at 17:04 UTC. First Step is 18 jumps from Nexus Prime, Deep Range 19 (lanes). A test with one ship and an empty hold (rules F12, F13): the road, the fuel of about 40 jumps, how many loads 20 platinum take at richness 20. Written 2026-11-17 19:12 UTC (Zero).",
+ "once": true,
+ "requires": {
+  "empty_hold": true
+ },
+ "max_ships": 1,
+ "max_pilots": 1,
+ "one_time": [
+  "Deep Core Prospecting"
+ ],
+ "skip_if_booked": [
+  "Deep Core Prospecting"
+ ],
+ "stops": [
+  {
+   "at": "first_step:first_step_memorial_station:first_step_memorial_station",
+   "accept": [
+    "deep_core_prospecting"
+   ],
+   "mine": [
+    {
+     "at": "deep_range:deep_range_mineral_fields",
+     "for": [
+      "Deep Core Prospecting"
+     ],
+     "minutes": 50,
+     "min_left": {
+      "platinum_ore": 40
+     }
+    }
+   ]
+  },
+  {
+   "at": "first_step:first_step_memorial_station:first_step_memorial_station",
+   "store": [
+    "platinum_ore",
+    "carbon_ore",
+    "osmium_ore",
+    "vanadium_ore",
+    "tungsten_ore",
+    "dark_matter_residue",
+    "exotic_matter"
+   ]
+  }
+ ]
+}
