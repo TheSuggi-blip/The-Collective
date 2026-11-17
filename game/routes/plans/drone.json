@@ -79,6 +79,7 @@
   "gather-hamal-crystal-bloom",
   "gather-schedar-belt",
   "gather-ironhollow-echo-ejecta",
+  "craft-steel-node-beta",
   "census-frontier",
   "park"
  ],
@@ -181,6 +182,7 @@
   "gather-hamal-crystal-bloom": 50,
   "gather-schedar-belt": 50,
   "gather-ironhollow-echo-ejecta": 50,
+  "craft-steel-node-beta": 50,
   "census-frontier": 50,
   "park": 50
  },
