@@ -1,0 +1,20 @@
+{
+ "id": "hunt-miaplacidus-frost-ring-hollow-pilgrim",
+ "kind": "hunt",
+ "title": "hollow_pilgrim at miaplacidus_frost_ring; loot sold at Sirius Observatory Station",
+ "note": "Written by routemaker.py from the herd's count, the loot of 25 runs of ours and the order book; an estimate of 5711 cr per hunter-hour, not a measurement. A test: one ship, the ranching rules kept. Added as a test by fill.py on 2026-11-17 10:08 UTC (Unity): one ship until its first RESULT line is read.",
+ "place": "miaplacidus:miaplacidus_frost_ring",
+ "species": [
+  "hollow_pilgrim"
+ ],
+ "sell_at": "sirius:sirius_observatory_station:sirius_observatory_station",
+ "min_bid": 1264,
+ "kills": 4,
+ "minutes": 71,
+ "max_ships": 1,
+ "min_creatures": 4,
+ "alone": true,
+ "requires": {
+  "empty_hold": true
+ }
+}
