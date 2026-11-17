@@ -1,0 +1,26 @@
+{
+ "id": "hunt-hassaleh-ice-halo-hollow-pilgrim",
+ "kind": "hunt",
+ "title": "hollow_pilgrim at hassaleh_ice_halo; loot sold at Sirius Observatory Station",
+ "note": "Written by routemaker.py from the herd's count, the loot of 14 runs of ours and the order book; an estimate of 2238 cr per hunter-hour, not a measurement. A test: one ship, the ranching rules kept. 2026-11-17 08:22 UTC (Apophis): taken as a Military test, one drone (fill.py offered it to the drones): read its RESULT line before a second run. Beyond the border: `alone` (strict until its runs hold) and an empty hold (F13).",
+ "place": "hassaleh:hassaleh_ice_halo",
+ "species": [
+  "hollow_pilgrim"
+ ],
+ "sell_at": "sirius:sirius_observatory_station:sirius_observatory_station",
+ "min_bid": 1270,
+ "kills": 4,
+ "minutes": 92,
+ "max_ships": 1,
+ "min_creatures": 4,
+ "alone": true,
+ "requires": {
+  "empty_hold": true,
+  "bid": {
+   "item": "crystal_melt",
+   "base": "sirius_observatory_station",
+   "min_price": 1000,
+   "min_qty": 1
+  }
+ }
+}
