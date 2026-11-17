@@ -45,6 +45,7 @@
   "gather-schedar-belt",
   "gather-ironhollow-echo-ejecta",
   "craft-steel-node-beta",
+  "craft-steel-central-nexus",
   "census-frontier",
   "park"
  ],
@@ -113,6 +114,7 @@
   "gather-schedar-belt": 40,
   "gather-ironhollow-echo-ejecta": 40,
   "craft-steel-node-beta": 40,
+  "craft-steel-central-nexus": 40,
   "census-frontier": 40,
   "park": 40
  },
