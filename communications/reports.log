@@ -481,3 +481,12 @@ Failed: the chain stood still about 20 hours on a stale pilot cap (errors.log EN
 Requests: requests.log ENT-247 (Unity: the traders' fallback once the reserve's iron is full).
 Suggestions: a once route's max_pilots that grows with the fleet, or a briefing line for once routes closed by a cap; a reserve line for null matter if we build Apophenias ourselves; the filler to weigh a sale test against the stores of that good.
 Report: node-beta-chain-reopened-null-matter-wiring-crafting.
+
+## [ENT-078] | 2026-11-17 21:06 UTC | Apophis | session | ref: reports/2026-11-17_apophis_first-group-hunt-no-kill-escort-flies-reserve-kept.md | see: orders.log ENT-044
+Session: scheduled run apophis-turn -- the first group hunt answered the fleet's questions and made no kill; the first escort flies; hunts keep the reserve's goods.
+Did: group test by hand 20:12 to 20:38 UTC (four drones, a pilot whale: fleet of 3 with the leader, members join at tick 0, an outsider joins the side, only the leader fought, fled at 48 percent, no kill, none lost); escort-voidborn-conductive-lattice written and started by the dispatcher (9b3c5a9); hunt.py keeps reserve goods at the sale (d93c033); pirate packs' hunts out of my plans; 20 sentinels planned; fill --write 12 routes, four taken out; guidebook 2728fd0, d6b7951.
+Worked: 70 of 70 at work, 0 lost; runs of 16:45 to 20:20 UTC +69,938 cr steady in 203.9 ship-hours and 230,601 paid once; melt sales +55,996 in 12 runs; sentinel hunts 574 cr a hunter-hour; reserve items +19,291.6 units an hour; fill gate PASS 20:58 UTC.
+Failed: no kill in the group (members carry no target, now set by the script); 13 superfluid vials sold between turns (errors.log ENT-099); two rows held a hunt Intel claims, flown by none; a far test stood in front of a guard drone.
+Requests: requests.log ENT-248 (done, Apollo's ENT-219), ENT-250 (Unity: the command plan's Violethall hunt).
+Suggestions: group: N with a hunt, a target and an advance per member; the filler's guard check by @guard anywhere; plan.py check names claimed routes; the pirate gate holds a heavy pack's system until a read shows it gone.
+Report: first-group-hunt-no-kill-escort-flies-reserve-kept.
