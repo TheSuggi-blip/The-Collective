@@ -24,27 +24,30 @@ at the end of every turn.
 ## Standing Plan
 
 What the scouts fly between two turns: the intel plan file, applied in
-the Intel turn of 2026-11-16 that began 23:15 UTC (`plan.py show
---brief`, PASS), checked against `fill.py status scout` and `hive.py
-forecast Oracle` at 23:27 and 23:28 UTC. Thirty ships. A free ship takes
-the first route open to it of the list First, its own routes, the list
-Then.
+the Intel turn of 2026-11-17 that began 03:15 UTC (`plan.py check`
+PASS at 03:24 UTC), checked against `fill.py check scout` (PASS, 03:44
+UTC) and `hive.py forecast Oracle` (03:44 UTC). Thirty ships. A free ship
+takes the first route open to it of the list First, its own routes, the
+list Then.
 
 | Order | Routes | Ships | Cap | Expected, credits per ship-hour (dated reading) | Why |
 |---|---|---|---|---|---|
-| First | the once line (Central Nexus board, Signal Fragments, the mining and trading missions, Conductive Lattice, First Hunt, Cracking the Shell, Ghosts in the Cloud) | every scout that holds one | each route's own | paid once per pilot; 13,440 cr still on the way at 23:28 UTC (`hive.py forecast`) | Orders ENT-019, EVERY ADMIRAL: the missions that pay once come first |
-| First | census-voidborn | any | 4 (was 3) | -550 over 47 runs in the 4 hours to 23:28 UTC (`route_earnings`) | The ten home systems and the six books we sell to, every 30 minutes; two of 58 gaps were over 60 minutes with three ships |
-| Own | hunt-garnet-dim-lattice-veil-ray, hunt-atlas-gas-pocket with mine-gliese-876-belt, hunt-test-homam-frost-moth, hunt-test-amberfall-chlorophage | 4 ships, one route each, then @reader | 1 each | Atlas 1,406 (4 runs, 4 h); Gliese 876 belt 2,880 (2 runs, 12 h); Homam -586 (2 runs, 4 h); Garnet -740 (1 run); chlorophage not measured | Scouts hunt on the way (rule F16); the chlorophage test looks for caustic sac |
-| Own | @explorer: census-roads, census-frontier | 10 (the youngest, navigation 2) | 10 | not measured; a frontier read -528 (92 runs, 4 h) | Rule F26 and orders P4: the roads to Aldebaran, Yildun, Hawthorne and Alchiba, 28 systems never read; long jumps train navigation toward Signal Fragments |
-| Own | @reader: census-worked, census-frontier, census-roads | 20 | 6, 12, 10 | census-worked not measured; census-frontier -528 | The 22 systems beyond home our routes use, every 120 minutes (twice a turn); the 31 others of the frontier every 240 |
-| Then | gather-gsc-0027-prism-scatter, gather-hamal-crystal-bloom, census-frontier, park | the rest | shared, 66 and 76 for the fleet | -146 and -178 (167 and 184 runs, 4 h) | The fallback when nothing is due: iron and copper into storage at Node Beta |
+| First | store-hold-central-nexus (Mining's standing route, `requires.hold`) | a scout with more than five units aboard | 40 for the fleet | 0; a one-minute stop | A gather run leaves ore aboard and every census beyond the border wants an empty hold: 25 scouts carried goods at 03:18 UTC |
+| First | the once line (Central Nexus board, Signal Fragments, the mining and trading missions, Conductive Lattice, First Hunt, Cracking the Shell, Ghosts in the Cloud) | every scout that holds one | each route's own | paid once per pilot | Orders ENT-027, EVERY ADMIRAL: the missions that pay once come first |
+| First | census-voidborn | any | 4 | -567 over 61 scout runs, 2026-11-16 23:15 to 2026-11-17 03:15 UTC (`data/routes/runs.jsonl`) | The ten home systems and the six books we sell to, every 30 minutes; 62 gaps in 4 hours, median 36 minutes, longest 48 (03:18 UTC) |
+| Own | hunt-amberfall-chlorophage-sac | 1 | 1 | below zero on the books: it sells nothing (the test that sold its sacs made +723 over 7 runs) | Caustic sac for the reserve (428 short), stored at Node Beta (rule F24) |
+| Own | hunt-garnet-dim-lattice-veil-ray; hunt-atlas-gas-pocket with mine-gliese-876-belt; hunt-test-homam-frost-moth | 3 ships, one route each, then @reader | 1 each | Atlas -585 (1 run: a ship not ours at the place); Gliese 876 belt -642 (1 run) | Scouts hunt on the way (rule F16); each place is shared with others |
+| Own | census-roads-chain | 1 explorer, then @explorer | 1 | not measured: the one-ship test of the chain (census.py 9ceae23) | Up to three systems of census-roads in one trip instead of one |
+| Own | @explorer: census-roads, census-frontier | 10 (the youngest) | 10, 12 | census-roads -626 over 31 runs (4 h to 03:15 UTC) | Orders P4 a: the south and east regions first (18 systems never read), then the north again every 480 minutes |
+| Own | @reader: census-worked, census-frontier, census-roads | 20 | 6, 12, 10 | census-worked -686 over 32 runs; census-frontier -671 over 5 scout runs | The 22 systems beyond home our routes use every 120 minutes (twice a turn); the 31 others of the frontier every 240 |
+| Then | gather-gsc-0027-prism-scatter, gather-hamal-crystal-bloom, mine-pherkad-rift, gather-gsc-0027-spacetime-seep, census-frontier, park | the rest, while nothing is due | shared by the fleet | -179 (Hamal, 60 scout runs), -180 (Pherkad, the briefing's 4 hours) | The fallback: ore into storage for the reserve (Unity put Pherkad and the spacetime seep here at 03:13 UTC, requests.log ENT-188) |
 
-The forecast at 23:28 UTC, with the ships on the routes they flew at that
-moment: -3,516 credits an hour for the division, -117 per ship (census
-routes not measured count 0), 13,440 cr paid once on the way. What
-would change it: a census route measured; the explorers' first reads
-(a field, a herd or a book on the roads); the chlorophage test's RESULT
-line; a field that holds silicon ore.
+The forecast's SUM line: -4,483 credits an hour at the briefing (03:15
+UTC), -9,884 an hour after the plan (03:44 UTC), with more ships on the
+census and the sac hunt selling nothing. What would change it: the chain
+test's first rows (one trip for up to three systems); a read that becomes
+a paying route of another division; a field that holds silicon ore; the
+herd at Amberfall falling under two.
 
 ## 1. Route Guides
 
@@ -55,7 +58,7 @@ fleet's database with its age (rule F22; the tool `routes`, the view
 
 | Kind | How it is flown | Fit and skills | Dated reading |
 |---|---|---|---|
-| Census (census-voidborn, census-worked, census-frontier, census-roads) | `census.py`: fly to the system, `get_poi` at every field, `get_nearby` for creatures and pilots, dock at each station and save its book and board; ends docked at Central Nexus. A system opens when its scouting file is `every_minutes` old; never-read systems first, in list order (`dispatch.py`, stalest_system) | The starter Threshold; an empty hold (`requires.empty_hold`, five units at most) for every route beyond the border. Trains piloting, navigation by its jumps and exploration a little | census-frontier -528 per ship-hour over 92 runs, census-voidborn -550 over 47, census-guard-ice -668 over 9 (4 hours to 23:28 UTC); a frontier read takes a median of 14.4 minutes over 165 runs |
+| Census (census-voidborn, census-worked, census-frontier, census-roads, census-roads-chain) | `census.py`: fly to the system, `get_poi` at every field, `get_nearby` for creatures, pilots and pirates (each pirate with name, tier, hull and shield since commit 9ceae23), dock at each station and save its book and board; ends docked at the last station read, else at Central Nexus. A route with `chain` N reads up to N more due systems of its list within `chain_jumps` lanes before it turns home (one-ship test from 2026-11-17). A system opens when its scouting file is `every_minutes` old; never-read systems first, in list order (`dispatch.py`, stalest_system) | The starter Threshold; an empty hold (`requires.empty_hold`, five units at most) for every route beyond the border. Trains piloting, navigation by its jumps and exploration a little | census-frontier -528 per ship-hour over 92 runs, census-voidborn -550 over 47, census-guard-ice -668 over 9 (4 hours to 23:28 UTC); a frontier read takes a median of 14.4 minutes over 165 runs |
 | Hunt (one hunter per herd, rule F9) | `hunt.py`: fly to the place, kill up to `kills` grazers of the route's species while the herd holds `min_creatures`, loot, sell at `sell_at` what a fresh bid of `min_bid` takes, store the rest; `alone` leaves when a ship not ours is at the place | Mining laser and pulse laser of the starter; flees under 60% hull (F2). Trains weapons and xenobiology | hunt-atlas-gas-pocket +1,406 per ship-hour over 4 runs (4 h) and +2,237 over 13 runs (24 h); hunt-test-homam-frost-moth -586 over 2 (4 h), +1,168 over 9 (24 h): the place was shared in most runs |
 | Mine beside a hunt (mine-gliese-876-belt) | `mine.py`: the engine's mining loop for its minutes, then sell at the station named | Mining laser; trains mining | +2,880 per ship-hour over 2 runs (12 h); its nickel bid at Nova Terra Central stood at 0 depth at 23:19 UTC (`fill.py status`) |
 | Gather (standing work, the fallback) | `mine.py` without a sale: ore into storage at Node Beta; `min_left` is the field's floor | Mining laser; trains mining and deep core mining, not a scout's skills | -146 and -178 per ship-hour (4 h) |
@@ -117,6 +120,15 @@ readings are from `hive.py levels` and `data/fleet/ships/`.
 
 Readings:
 
+- 2026-11-17 03:23 UTC (`fleet` view=levels): 30 scouts, 32 hours played
+  (median); piloting 3, 6 and 7 (lowest, median, highest), 141 piloting
+  XP an hour since birth, 70 hours to piloting 10; median deep core
+  mining 6 (139 XP an hour), mining 5 (73), navigation 3 (49), trading 2
+  (9), exploration 2 (12). The division's strongest skill is still the
+  fallback's (deep core mining), not a scout's: the scout runs that
+  started from 2026-11-16 23:15 to 2026-11-17 03:20 UTC flew 49 hours of
+  gathering (Hamal 43.7, the prism scatter 5.5) and 32 of census
+  (`data/routes/runs.jsonl`).
 - 2026-11-16 23:28 UTC (`hive.py levels`): 30 scouts, 28 hours played
   (median); piloting 2, 5 and 7 (lowest, median, highest), 137 piloting
   XP an hour since birth, 78 hours to piloting 10 at that rate; median
@@ -177,13 +189,43 @@ next turn's test (orders.log ENT-008, F17): `not measured`.
   kill dropped is in its run row (`data/routes/runs.jsonl`); a drop
   without a bid of 50 cr is stored, so the row shows it. Military tests
   other species (`guidebook/military.md`).
-- Caustic sac (bid 420 cr for 50 at nine books, 2026-11-16 23:20 UTC;
-  429 short for the faction's offices): the game's codex text for
-  caustic sour ale and cinderspice names it the chlorophage's sac
-  (spacemolt.com/codex, read 2026-11-16 23:25 UTC). Amberfall Emission
-  Nebula read 3 chlorophages of 55 hull (data/wildlife/amberfall.json,
-  read 21:53 UTC). hunt-test-amberfall-chlorophage hunts them alone, one
-  scout; its first RESULT line says whether a kill drops a sac.
+- Caustic sac (428 short in the reserve, `surplus.py reserve` 2026-11-17
+  03:23 UTC): answered. hunt-test-amberfall-chlorophage flew 8 runs from
+  2026-11-16 23:45 to 2026-11-17 03:08 UTC: 15 kills, 6 sacs dropped (0.4
+  a kill), 7 sold at 420 cr into the Node Beta bid (`data/routes/runs.jsonl`).
+  From 03:24 UTC hunt-amberfall-chlorophage-sac stores every drop at Node
+  Beta and sells nothing (rule F24). The herd read 2 or 3 chlorophages
+  in every census since 2026-11-16 02:06 UTC: one hunter, about two sacs
+  an hour if the herd holds. Another herd of chlorophages: not read.
+- The regions of the base sites (orders P4), read by the census
+  (`data/scouting/`, 2026-11-16 23:50 to 2026-11-17 01:56 UTC); none holds a
+  station, so a place in any of them can take an outpost:
+  - North: Hawthorne holds one belt with iron and copper ore at 100,000
+    of 100,000 each, 9 belt-grazers, 4 patina grazers, 4 slag tortoises;
+    Aldebaran one ice field (nitrogen ice 50,000) and no belt; Alchiba an
+    ice field (water ice 27,529, nitrogen 50,000); Yildun two belts mined
+    down (copper 29,501 of 30,000, iron 27,712 of 35,000, carbon 66 of
+    30,000, aluminum 102 of 20,000) and one pilot not ours. Hawthorne is
+    the north's richest read.
+  - South: Felis holds three belts at 100,000 iron and 100,000 copper each,
+    an ice field, a nebula with deuterium ice 4,355 and null matter 361,
+    and the largest herds we read (45 belt-grazers, 21 patina grazers, 20
+    slag tortoises); one pirate at its frost ring (Flinch, 85 hull and 30
+    shield in Military's test). Biham and the nine systems around it are
+    on census-roads since 03:24 UTC.
+  - East: Intercrus holds three belts at 100,000 iron and copper each, an
+    ice field, sol alloy ore 1,401 and null matter 427; 50 belt-grazers
+    and 3 crusher mantises (predators); four pilots not ours at its read.
+    Diadem and seven systems around it are on census-roads since 03:24 UTC.
+- The census chain (census.py 9ceae23): census-roads-chain tests it with
+  one explorer from 03:30 UTC; its rows (one per system) are compared
+  with census-roads per system read.
+- Game 0.722.0 (changelog, read 2026-11-17 03:39 UTC): "calibration defects
+  in recently sold survey scanners" were fixed and "frontier explorers
+  should recheck their survey data". Our census reads `get_poi` and fits
+  no survey scanner (survey_scanner_i, base value 4,400): whether a survey
+  shows resources `get_poi` does not (silicon ore among them) is not
+  tested.
 - Silicon ore (53,222 short in the reserve; 34 held): no field of the 63
   systems read holds it (data/scouting/, 2026-11-16 23:20 UTC). Asked at
   Central Nexus at 420 cr (424 at the best price, 16,189 over all
@@ -225,8 +267,8 @@ next turn's test (orders.log ENT-008, F17): `not measured`.
   holds seam glass. The capacity tool names the tool for uranium and
   thorium as `rad`, carried by none of ours. A deposit of either beyond
   the frontier is the largest lead of the picture.
-- The game stood at 0.719.0 at 12:24 UTC (https://spacemolt.com/changelog,
-  1,875 releases): no release since the turn of 08:15 UTC.
+- The game stood at 0.723.1 at 2026-11-17 03:39 UTC (https://spacemolt.com/changelog,
+  1,886 releases); `game/rules/15-patch-notes.md` names 0.719.3.
 - Pirates in the fourth ring: one at Gliese 876 (Stillwork Belt) and one
   at Felis (Felis Dim Lattice), census of 04:40 UTC (`data/wildlife/`).
 
