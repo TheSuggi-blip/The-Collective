@@ -245,6 +245,7 @@ class SweepTests(unittest.TestCase):
         self.wallet.SHOW_WAIT = 0
         self.calls = []
         self.wallet.refresh = lambda pilot: None
+        self.wallet.treasury_read = lambda pilot: None             # no read of the treasury: the wallet check (a test sets one)
         os.environ["HERMES_SESSION_PROFILE"] = "unity"
         self.addCleanup(os.environ.pop, "HERMES_SESSION_PROFILE", None)
 
@@ -340,6 +341,40 @@ class SweepTests(unittest.TestCase):
         with self.assertRaises(SystemExit) as stop:
             self.run_sweep()
         self.assertIn("REFUSED: a real sweep is the Fleet Admiral's", str(stop.exception))
+
+    def test_a_deposit_is_checked_in_the_treasury_while_a_gift_reaches_the_leader_s_wallet_late(self):
+        # 2026-11-17 20:26 UTC: the fleet file read the leader at 80,898; a gift of 10,146 reached its wallet after that
+        # reading, the deposit of 30,898 landed, the wallet read 60,146: the old check kept a deposit that landed unsure.
+        self.wallet.SWEEP_ENABLED, self.wallet.PER_PASS = True, 1
+        self.wallets = {LEADER: 80898, "miner-1": 60146}
+        self.fight = set()
+        self.write()
+        late, purse = {}, [364095]
+
+        def give(donor, pilot, credits):
+            self.calls.append(("give", donor, credits))
+            self.wallets[donor] -= credits
+            late[pilot] = late.get(pilot, 0) + credits              # reaches the leader's reading only later
+            self.write()
+            return True, "ok"
+
+        def deposit(pilot, credits):
+            self.calls.append(("deposit", pilot, credits))
+            self.wallets[pilot] += late.pop(pilot, 0) - credits
+            purse[0] += credits
+            self.write()
+            return True, "ok"
+        self.wallet.give, self.wallet.deposit = give, deposit
+        self.wallet.treasury_read = lambda pilot: purse[0]
+        code, text = self.run_sweep()
+        self.assertEqual(self.calls, [("give", "miner-1", 10146), ("deposit", LEADER, 30898)])
+        self.assertEqual((code, self.wallets[LEADER], purse[0]), (0, 60146, 394993))
+        self.assertIn("deposited: Prime Directive 30,898 cr into the faction's treasury", text)
+        once = json.loads((self.data / "fleet" / "onetime.json").read_text())
+        self.assertEqual([r[3] for r in once if r[2] != "Wallet top-up"], [-30898])
+        # a treasury that does not rise keeps the deposit unsure, whatever the wallet shows
+        self.wallet.treasury_read = lambda pilot: 394993
+        self.assertFalse(self.wallet.deposit_landed(str(self.data), LEADER, 90000, 30000, 394993))
 
     def test_a_deposit_the_leader_s_wallet_does_not_show_stops_the_deposits_for_a_while_and_is_not_booked(self):
         self.wallet.SWEEP_ENABLED, self.wallet.PER_PASS = True, 0

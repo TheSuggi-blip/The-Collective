@@ -175,6 +175,50 @@ def deposit(pilot, credits):
     return ok, text
 
 
+def treasury_read(pilot):
+    """The faction's treasury as the game answers it now (`spacemolt_faction info` through the pilot, a read), or None
+    when the read does not answer. A deposit is checked here, where it lands: the leader's wallet also moves by gifts
+    and runs inside the same seconds (2026-11-17 20:26 UTC: a deposit that landed was kept unsure)."""
+    import gate
+    try:
+        status, answer = gate.call("post", "/accounts/%s/raw" % gate.q(pilot),
+                                   {"toolGroup": "spacemolt_faction", "action": "info", "params": {}}, timeout=30)
+        found = json.loads(answer) if status == 200 else None
+    except Exception:
+        return None
+    stack = [found]
+    while stack:                                                # the first `treasury` number anywhere in the answer
+        item = stack.pop(0)
+        if isinstance(item, dict):
+            money = item.get("treasury")
+            if isinstance(money, (int, float)) and not isinstance(money, bool):
+                return int(money)
+            stack.extend(item.values())
+        elif isinstance(item, list):
+            stack.extend(item)
+        elif isinstance(item, str) and item.lstrip().startswith("{"):
+            try:
+                stack.append(json.loads(item))
+            except ValueError:
+                pass
+    return None
+
+
+def deposit_landed(data, leader, have, part, before):
+    """True when the deposit shows: the treasury, read again, rose by most of it (when it was read before), else the
+    leader's wallet fell by most of it (shows)."""
+    if before is None:
+        return shows(data, leader, have, part)
+    deadline = time.time() + SHOW_WAIT
+    while True:
+        after = treasury_read(leader)
+        if after is not None and after >= before + part * 0.9:
+            return True
+        if time.time() >= deadline:
+            return False
+        time.sleep(min(5, max(0.0, deadline - time.time())))
+
+
 def refresh(pilot):
     """One read of the receiver (`get_status`, a read: no ship is taken): the engine keeps the last wallet it read of a
     docked ship, and the fleet file and the dispatcher see the gift only after a read (requests ENT-183)."""
@@ -389,6 +433,7 @@ def sweep(data, now, dry):
     elif time.time() - now > BUDGET:
         print("the pass's %d seconds are used up: the deposit waits for the next pass" % BUDGET)
     else:
+        before = treasury_read(leader)
         try:
             ok, text = deposit(leader, part)
         except Exception as error:
@@ -397,14 +442,14 @@ def sweep(data, now, dry):
             note(data, "deposit", leader, "faction", part, "refused", text)
             failed = 1
             print("HALT: the deposit of %s cr was refused: %s; tried again at the next pass" % (format(part, ","), text))
-        elif shows(data, leader, have, part):
+        elif deposit_landed(data, leader, have, part, before):
             book_deposit(data, leader, part, time.time())
             note(data, "deposit", leader, "faction", part, "booked", text)
             print("deposited: %s %s cr into the faction's treasury" % (leader, format(part, ",")))
         else:
             note(data, "deposit", leader, "faction", part, "unsure", text)
             failed = 1
-            print("HALT: the deposit of %s cr is not booked: %s; the leader's wallet does not show it gone after %d s. Read `view` target faction: "
+            print("HALT: the deposit of %s cr is not booked: %s; neither the treasury nor the leader's wallet shows it after %d s. Read `view` target faction: "
                   "if it landed, book it once (wallet.book_deposit); no deposit again for %d minutes" % (format(part, ","), "answered" if ok else text, SHOW_WAIT, UNSURE_HOLD // 60))
     return failed
 
