@@ -37,5 +37,14 @@
    "at": "node_gamma:node_gamma_relay_station:node_gamma_relay_station",
    "store": "all"
   }
- ]
+ ],
+ "measured": {
+  "date": "2026-11-17",
+  "runs": 1,
+  "minutes": 4,
+  "credits_per_run": -30,
+  "cph_per_ship": -490,
+  "hours": 12,
+  "last_run": "2026-11-17T04:14:23Z"
+ }
 }
