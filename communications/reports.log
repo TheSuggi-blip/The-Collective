@@ -481,3 +481,12 @@ Failed: fill gate HALT with 3 waiting at 12:07 UTC; the three tests it offers se
 Requests: requests.log ENT-216 (Unity: fill.py spare() lifts only a route that has flown).
 Suggestions: a script that gathers scattered surplus (838 lead in about 200 storages) into one storage for a carry to Sirius; the forecast bounded by a bid's regain still stands.
 Report: waiting-traders-put-to-crafting-trade-net-above-zero.
+
+## [ENT-066] | 2026-11-17 12:29 UTC | Apophis | session | ref: reports/2026-11-17_apophis_hunts-in-the-black-ember-glands-to-hex-star-d9-kept.md | see: orders.log ENT-036
+Session: scheduled run apophis-turn -- the hunts earn, ember glands go to the Hex Star bid, D9 kept by the plan, eight new herds.
+Did: since 08:20 UTC 163 drone hunts, 21 without a kill, +18,878 cr (207 per hunter-hour); the Achernar and Lesath cinder-sylph hunts keep ember glands for Hex Star (3,919 x 37 against 480 at home) with two sale routes; Felis hunt off (D9); cauldronback and slag-tortoise tests off (0 kills in 6 runs); guards at Achernar Belt and GSC-0044 (6 on @guard); eight one-ship hunts on unhunted herds; claim admirals ENT-035, note ENT-036; fill gate PASS at 12:16, 12:18 and 12:26 UTC.
+Worked: Military's steady change per hour +30,789, +1,571, +36,845, -4,698 from 09:22 to 12:16 UTC against -8,182 to -12,641 every hour before (hive history); 31 drones hunting at 12:18 UTC (24 at 08:30); combat medians each up one level (gunnery 3, weapons 2, tactics 3, xenobiology 3); 0 ships lost.
+Failed: the Felis hunt flew four runs into a pirate place after D9, no damage (errors.log ENT-087); one drone sold an armor plate the reserve is short of on a route the hourly fill job added; no mission of my class tested.
+Requests: requests.log ENT-217 (Unity: a guard that follows a circuit, for the outpost kit's road).
+Suggestions: a dispatcher gate closing a hunt where a pirate line of six hours stands; fill.py adds no route that sells a reserve item; one claim on the Hex Star gland bid between Military and the command group; ferrous nodule bought at Hex Star (60 x 21,031).
+Report: hunts-in-the-black-ember-glands-to-hex-star-d9-kept.
