@@ -92,9 +92,10 @@ Planned:
 
 | What | When |
 |---|---|
-| Goal of the turn of 15:00 UTC: iron held above 370,000 (344,892 at 11:05 UTC, the tool stock view=reserve); Mining's iron +9,913 an hour over 4 hours (hive.py flow Zero) | turn of 15:00 UTC |
-| The Liminal test (one hull commissioned at Node Beta, 58,881 cr, 2026-11-17 11:11 UTC): ore a run and minutes against the Threshold's 260 ore in 46.5 minutes on the same field; a second hull only on that figure | first runs after the switch |
-| mission-deep-core-prospecting-nova-terra, one ship: offered or not, loads for 20 platinum, credits and exotic matter, whether it pays again | its RESULT line |
-| gather-achernar-belt and gather-ruchbah-broken-glass-veil (started 10:41 UTC): ore a run and minutes; lift_to by the RESULT line | next turn |
+| Goal of the turn of 19:00 UTC: 8 more Deep Core Prospecting hand-ins (1 so far, 5,000 cr once each; dispatch.log) and Mining's iron stored +4,000 an hour over 4 hours (+3,300 at 15:06 UTC, hive.py flow Zero) | turn of 19:00 UTC |
+| The Liminal test: the pilot switched in this turn; ore a run and minutes against the Threshold's 195 to 260 ore in about 47 minutes on the same field; a second hull only on that figure | its first gather runs |
+| gather-subra-floodlight-flats-silicon (one ship from 15:10 UTC): silicon a run and minutes; lift by its RESULT line | next turn |
+| mine-almach-stray-facets (a fill test, one ship): trade crystal sold at Central Nexus against the fuel of 24 jumps | its RESULT line |
+| gather-achernar-belt 16 and gather-ruchbah-broken-glass-veil 6 (lifted 15:06 UTC): hold the floor, read the met table | next turn |
 | When the outpost at GSC-0044 stands (base id read from the game): gather routes storing there, richest first: Botein Belt (iron richness 68), Acrux Belt (64, lithium 13,377), GSC-0044 Belt (46), Intercrus Belt (43), Forgotten Tailings (40); one ship each first | when founded |
 | When the stored water ice is under about 2,000 units, lift the Central Nexus mine routes back toward what the bid regains | each turn |

@@ -65,19 +65,23 @@
  ],
  "planned": [
   {
-   "what": "Goal of the turn of 15:00 UTC: iron held above 370,000 (344,892 at 11:05 UTC, the tool stock view=reserve); Mining's iron +9,913 an hour over 4 hours (hive.py flow Zero)",
-   "when": "turn of 15:00 UTC"
+   "what": "Goal of the turn of 19:00 UTC: 8 more Deep Core Prospecting hand-ins (1 so far, 5,000 cr once each; dispatch.log) and Mining's iron stored +4,000 an hour over 4 hours (+3,300 at 15:06 UTC, hive.py flow Zero)",
+   "when": "turn of 19:00 UTC"
   },
   {
-   "what": "The Liminal test (one hull commissioned at Node Beta, 58,881 cr, 2026-11-17 11:11 UTC): ore a run and minutes against the Threshold's 260 ore in 46.5 minutes on the same field; a second hull only on that figure",
-   "when": "first runs after the switch"
+   "what": "The Liminal test: the pilot switched in this turn; ore a run and minutes against the Threshold's 195 to 260 ore in about 47 minutes on the same field; a second hull only on that figure",
+   "when": "its first gather runs"
   },
   {
-   "what": "mission-deep-core-prospecting-nova-terra, one ship: offered or not, loads for 20 platinum, credits and exotic matter, whether it pays again",
+   "what": "gather-subra-floodlight-flats-silicon (one ship from 15:10 UTC): silicon a run and minutes; lift by its RESULT line",
+   "when": "next turn"
+  },
+  {
+   "what": "mine-almach-stray-facets (a fill test, one ship): trade crystal sold at Central Nexus against the fuel of 24 jumps",
    "when": "its RESULT line"
   },
   {
-   "what": "gather-achernar-belt and gather-ruchbah-broken-glass-veil (started 10:41 UTC): ore a run and minutes; lift_to by the RESULT line",
+   "what": "gather-achernar-belt 16 and gather-ruchbah-broken-glass-veil 6 (lifted 15:06 UTC): hold the floor, read the met table",
    "when": "next turn"
   },
   {
