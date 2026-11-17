@@ -638,17 +638,19 @@ for n, stop in enumerate(ROUTE['stops']):
             notes.append(f'mine {mine_poi}: loop not started')
             continue
         until = time.time() + float(step.get('minutes', 25)) * 60
-        while left and time.time() < until and not (DATA / 'fleet' / 'STOP').exists():
-            time.sleep(30)
-            try:
-                os.utime(ORDER)
-            except OSError:
-                pass
-            left = {title for title, _mid, finished in active() if not finished} & wanted
-            if left and not call('GET', f'/accounts/{P}/loop')[1].get('running'):
-                notes.append(f'mine {mine_poi}: the loop ended by itself')
-                break
-        call('DELETE', f'/accounts/{P}/loop')
+        try:
+            while left and time.time() < until and not (DATA / 'fleet' / 'STOP').exists():
+                time.sleep(30)
+                try:
+                    os.utime(ORDER)
+                except OSError:
+                    pass
+                left = {title for title, _mid, finished in active() if not finished} & wanted
+                if left and not call('GET', f'/accounts/{P}/loop')[1].get('running'):
+                    notes.append(f'mine {mine_poi}: the loop ended by itself')
+                    break
+        finally:                                         # also when the run is told to stop (runhost.py): a loop left running refuses every goal
+            call('DELETE', f'/accounts/{P}/loop')
         for _ in range(40):                              # let the step in flight end
             if not call('GET', f'/accounts/{P}')[1].get('hasExecutingGoal'):
                 break

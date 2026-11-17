@@ -358,6 +358,79 @@ class WriteTests(Tree):
         self.assertEqual(self.git("status", "--porcelain"), "")
 
 
+class FallbackTests(Tree):
+    """2026-11-17 03:09 UTC: 68 ships waited eight minutes for a hand: the three large home fields stood at their floors and two
+    plans lacked the shared standing routes that had room."""
+
+    def gather(self, **more):
+        route = dict({"id": "gather", "kind": "mine", "title": "t", "belt": "far:rocks", "station": "home:core:base", "standing": True, "max_ships": 1,
+                      "min_left": {"iron_ore": 99400}}, **more)
+        (self.root / "routes" / "gather.json").write_text(json.dumps(route, indent=1) + "\n", encoding="ascii")
+        self.fill.routefiles.write_index(str(self.root))
+        self.git("add", "-A")
+        self.git("-c", "user.name=T", "-c", "user.email=t@example.invalid", "commit", "-q", "-m", "a route")
+        (self.data / "scouting").mkdir(exist_ok=True)
+        self.field(100000)
+
+    def field(self, remaining):
+        stamp = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+        (self.data / "scouting" / "far.json").write_text(json.dumps({"system": "far", "read_at": stamp, "pois": {"rocks": {"resources": [
+            {"resource_id": "iron_ore", "remaining": remaining}]}}}))
+
+    def test_a_role_whose_ships_wait_is_lent_standing_work_of_another_plan(self):
+        self.gather()
+        self.assertIn("committed", self.run_fill("zero", "add", "gather").stdout)                 # Mining's plan holds it; Logistics' does not
+        seen, got = self.read("hauler", tests=0)
+        self.assertEqual(len(got["idle"]), 2)                                                     # three wait, one is offered the paying route
+        self.assertEqual(self.fill.borrow(seen, got, "hauler", 2), ["gather"])
+        self.assertEqual(self.fill.borrow(seen, got, "hauler", 0), [])                            # nobody is left waiting: nothing is lent
+        self.assertEqual(self.fill.borrow(seen, got, "miner", 2), [])                             # never a route of the role's own plan
+        seen["routes"]["gather"] = dict(seen["routes"]["gather"], sell=[{"item": "iron_ore", "min_price": 1}])
+        self.assertEqual(self.fill.borrow(seen, got, "hauler", 2), [])                            # a route that sells is its Admiral's to give
+        seen, got = self.read("hauler", tests=0)
+        chart = self.root / "map" / "galaxy.tsv"
+        policed = chart.read_text(encoding="ascii")
+        chart.write_text(policed.replace("far\tFar\t1\t0\tvoidborn", "far\tFar\t1\t0\t"), encoding="ascii")
+        self.assertEqual(self.fill.borrow(seen, got, "hauler", 2), [])                            # beyond the border a plan is its Admiral's alone
+        chart.write_text(policed, encoding="ascii")
+        self.field(99400)                                                                         # the field at its floor carries nobody more
+        seen, got = self.read("hauler", tests=0)
+        self.assertEqual(self.fill.borrow(seen, got, "hauler", 2), [])
+
+    def test_the_fallback_writes_the_plan_only_with_its_switch(self):
+        self.gather()
+        self.assertIn("committed", self.run_fill("zero", "add", "gather").stdout)
+        done = self.run_fill("unity", "fill", "all", "--once", "--write")
+        self.assertNotIn("lent", done.stdout)                                                     # the switch file is not there
+        self.assertEqual(json.loads((self.root / "routes" / "plans" / "hauler.json").read_text())["routes"], ["once", "park"])
+        (self.data / "fleet" / "fallback-on").write_text("")
+        done = self.run_fill("unity", "fill", "all", "--once")
+        self.assertIn("lent to the hauler plan's list Then", done.stdout, done.stdout)
+        self.assertEqual(self.git("status", "--porcelain"), "")                                   # without --write nothing is written
+        done = self.run_fill("unity", "fill", "all", "--once", "--write")
+        self.assertIn("committed", done.stdout, done.stdout)
+        self.assertEqual(json.loads((self.root / "routes" / "plans" / "hauler.json").read_text())["routes"], ["once", "gather", "park"])
+        self.assertEqual((self.git("log", "-1", "--format=%an"), self.git("status", "--porcelain")), ("Unity\n", ""))
+        self.assertNotIn("lent", self.run_fill("unity", "fill", "all", "--once", "--write").stdout)   # it is in the plan now: lent once
+
+    def test_a_route_beyond_the_border_is_lifted_only_as_far_as_its_lift_to_says(self):
+        self.gather(lift_to=2)
+        self.assertIn("committed", self.run_fill("apollo", "add", "gather").stdout)
+        seen, got = self.read("hauler")
+        chart = self.root / "map" / "galaxy.tsv"
+        chart.write_text(chart.read_text(encoding="ascii").replace("far\tFar\t1\t0\tvoidborn", "far\tFar\t1\t0\t"), encoding="ascii")
+        self.assertEqual(self.fill.spare(seen, got), [("gather", 1)])                             # its Admiral wrote 2: one place more, beyond the border too
+        seen["routes"]["gather"] = dict(seen["routes"]["gather"], lift_to=1)
+        self.assertEqual(self.fill.spare(seen, got), [])                                          # never past the Admiral's number
+        seen["routes"]["gather"] = {k: v for k, v in seen["routes"]["gather"].items() if k != "lift_to"}
+        self.assertEqual(self.fill.spare(seen, got), [])                                          # without it the limit stays its Admiral's (rule F13)
+
+    def test_a_test_goes_to_a_ship_of_the_callers_own_roles_only(self):
+        done = self.run_fill("unity", "fill", "all")                                              # the Fleet Admiral's job: no test on an Admiral's ship
+        self.assertIn("hauler: 3 waiting, 0 on standing work; 1 paying routes and 0 tests to add: freight", done.stdout, done.stdout)
+        self.assertIn("1 paying routes and 1 tests to add: freight, trade-x", self.run_fill("apollo", "fill").stdout)
+
+
 class HuntRuleTests(Tree):
     # Zero, report of 2026-11-16: the gate offered Intel's herd to a miner. Rule F16: Intel and Military hunt, Mining,
     # Trade and Logistics earn; rule F9: one hunter per herd.

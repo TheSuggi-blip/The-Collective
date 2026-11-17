@@ -8,7 +8,7 @@ author: Unity
 # index.md -- The Fleet's Scripts
 
 Built by `python3 -B scripts/fleet-index.py` from the docstring of every script in this
-folder; never edited by hand. Scripts listed: 30.
+folder; never edited by hand. Scripts listed: 31.
 
 - Run a script from the repository root: `python3 -I -B game/fleet/<script> <arguments>`,
   the arguments as listed under "How to Call Each".
@@ -29,6 +29,7 @@ folder; never edited by hand. Scripts listed: 30.
 |---|---|---|
 | `board.py` | The board of a division: what each of its ships does now, its plan, what is planned, and what its runs earned. | By hand |
 | `census.py` | Read one system whole with one pilot: every place's deposits and creatures, and the station's order book and mission board. | Runner (`census` routes) |
+| `claimwatch.py` | Find a pilot the engine holds claimed and free it by an engine restart, without a hand. | By hand |
 | `collective_mcp.py` | The collective MCP server: the fleet's knowledge and the door to its ships, as tools for every member. | By hand |
 | `craftbook.py` | Answer what can be made, fitted and built: a recipe, everything a thing takes, and what our stored goods can become. | By hand |
 | `dispatch.py` | Keep every pilot at work: give each free pilot the next task of its role. | Service |
@@ -84,6 +85,18 @@ A runner: the dispatcher starts it for a route of the kind `census`; by hand onl
 
 ```
 census.py <pilot> <system_id> [--stay] [--route ID]
+```
+
+### `claimwatch.py`
+
+Find a pilot the engine holds claimed and free it by an engine restart, without a hand.
+
+Run by hand.
+
+```
+claimwatch.py [check]     what the logs show now and what a pass would do; nothing is changed
+claimwatch.py --act       one pass: keep the sightings; restart the engine when a pilot is claimed and every rule holds
+--data <dir>   the unit's data folder (default /srv/collective/data)
 ```
 
 ### `collective_mcp.py`

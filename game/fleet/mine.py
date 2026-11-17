@@ -14,6 +14,9 @@ WHAT: starts the engine's mining loop (mine until the hold is full, fly to the
       the station and stores them, so the next empty_hold route opens.
 RULES:
   - Stops at once when data/fleet/STOP appears.
+  - Told to stop (the run host's stop file or its end, a signal), the run ends whole: it stops the engine's
+    loop and writes its row with the reason in the notes; it sells and stores nothing, because whoever stopped
+    it wants the ship now. 2026-11-17: eight stopped runs left their loops running and wrote no row.
   - The loop is the engine's: this script only starts and stops it and keeps the
     pilot's order file fresh, so the dispatcher gives the pilot nothing else.
 WHY:  a ship without paying work still earns skill, and its ore feeds the workshop.
@@ -213,32 +216,39 @@ def main():
     credits_before, ore_before = numbers()
     loop = {"type": "mining", "options": {"miningSystemId": belt[0], "beltPoiId": belt[1], "sellSystemId": station[0], "sellStationPoiId": station[1],
                                           "sellBaseId": station[2], "skipMarket": "--sell" not in args, "depositTarget": "personal", "retryOnDepleted": True}}
-    status, answer = 0, {}
-    for _ in range(40):                                  # a goal of an earlier runner may still be running
-        status, answer = call("POST", "/accounts/%s/loop" % quoted, loop)
-        if status in (200, 201) and "error" not in answer:
-            break
-        time.sleep(15)
-    say("mining loop at %s, ore to %s: %s %s" % (belt[1], station[2], status, str(answer.get("error") or "started")[:100]))
-    notes = [] if status in (200, 201) and "error" not in answer else ["loop not started"]
-    while not notes and time.time() - started < minutes * 60 and not os.path.exists(os.path.join(DATA, "fleet", "STOP")):
-        time.sleep(30)
-        try:
-            os.utime(order_file)
-        except OSError:
-            pass
-        loop_state = call("GET", "/accounts/%s/loop" % quoted)[1]
-        if not loop_state.get("running"):
-            notes.append("the loop ended by itself: " + str(loop_state.get("lastFailure") or "")[:80])
+    status, answer, notes, stopped = 0, {}, [], ""
+    try:
+        for _ in range(40):                              # a goal of an earlier runner may still be running
+            status, answer = call("POST", "/accounts/%s/loop" % quoted, loop)
+            if status in (200, 201) and "error" not in answer:
+                break
+            time.sleep(15)
+        say("mining loop at %s, ore to %s: %s %s" % (belt[1], station[2], status, str(answer.get("error") or "started")[:100]))
+        notes = [] if status in (200, 201) and "error" not in answer else ["loop not started"]
+        while not notes and time.time() - started < minutes * 60 and not os.path.exists(os.path.join(DATA, "fleet", "STOP")):
+            time.sleep(30)
+            try:
+                os.utime(order_file)
+            except OSError:
+                pass
+            loop_state = call("GET", "/accounts/%s/loop" % quoted)[1]
+            if not loop_state.get("running"):
+                notes.append("the loop ended by itself: " + str(loop_state.get("lastFailure") or "")[:80])
+    except SystemExit as leave:                          # told to stop (runhost.py's stop file or its end, a signal): the run still ends whole
+        stopped = leave.code if isinstance(leave.code, str) and leave.code else "stopped"
+        notes.append(stopped)
+        say("told to stop (%s): the loop is ended and the row written; nothing is sold or stored" % stopped)
     call("DELETE", "/accounts/%s/loop" % quoted)
-    for _ in range(40):                                  # let the step in flight end
+    for _ in range(0 if stopped else 40):                # let the step in flight end; a stopped run leaves at once
         account = call("GET", "/accounts/" + quoted)[1]
         if not account.get("hasExecutingGoal"):
             break
         time.sleep(15)
     sold = {}
     wanted = [(pair.split(":")[0], int(pair.split(":")[1])) for pair in option(args, "--sell-items", "").split(",") if pair.count(":") == 1]
-    if wanted and "loop not started" not in notes and not os.path.exists(os.path.join(DATA, "fleet", "STOP")):
+    if stopped:
+        pass                                             # whoever stopped the run wants the ship now
+    elif wanted and "loop not started" not in notes and not os.path.exists(os.path.join(DATA, "fleet", "STOP")):
         sold = sell_at_station(call, say, quoted, station, wanted, notes)
     elif "loop not started" not in notes and not os.path.exists(os.path.join(DATA, "fleet", "STOP")):
         store_last_load(call, say, quoted, station, notes)  # a partial load left aboard closes every empty_hold route

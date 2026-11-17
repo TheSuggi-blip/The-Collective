@@ -37,6 +37,16 @@ RULES:
     A route that sells is never lifted by the script: what a bid carries is its Admiral's to weigh. Nor is a route
     beyond the border (rule F13: its Admiral weighs what a lost ship costs): on 2026-11-17 the script raised a one-ship
     test at a lawless belt to 4 ships and a lawless gather route from 7 to 20 within ten minutes of its install.
+  - `lift_to` in a route file is its Admiral's word for how far the script may lift that route, beyond the border too:
+    never past it, and never past what the field carries. A route beyond the border without it is not lifted.
+  - The fallback, behind the switch file data/fleet/fallback-on: a role whose ships wait while nothing of its plan is
+    open or can be lifted is lent standing work of other plans, into its list Then: a mine route in home space that
+    sells nothing, that a waiting ship can fly and whose field carries more ships; two routes a pass at most. Its
+    Admiral reorders or drops them. 2026-11-17 03:09 UTC: 68 ships waited eight minutes for a hand, because two plans
+    lacked the shared routes that had room.
+  - A test goes to a ship of the caller's own roles only: the Fleet Admiral's hourly job gives tests to the command
+    group, and each Admiral chooses the tests of its ships (2026-11-17: tests the job put on miners, haulers and drones
+    were taken off by their Admirals turn after turn).
   - `fill --once` adds only missions that pay once and buy nothing: the five-minute job runs it for every role, so a
     new once route reaches every plan without waiting for a turn (requests ENT-144).
   - A list of the route maker older than an hour is no ground for PASS while ships wait: the gate says so.
@@ -400,17 +410,62 @@ def spare(seen, got, served=(), room=None):
         closed = sum(count for reason, count in why.items() if str(reason).startswith("max_ships"))
         if need <= 0 or not closed or not isinstance(cap, int) or route.get("kind") != "mine" or route.get("sell") or not routefiles.standing(route):
             continue
-        if routefiles.zone(route, systems, home)[0] != "home space":    # also a route whose systems the chart does not know
-            continue
+        limit = route.get("lift_to") if isinstance(route.get("lift_to"), int) and not isinstance(route.get("lift_to"), bool) else None
+        if limit is None and routefiles.zone(route, systems, home)[0] != "home space":    # also a route whose systems the chart does not know
+            continue                                                 # beyond the border only as far as its Admiral wrote into the file (`lift_to`)
         if rid not in room:
             deep = carries(seen, route)
             room[rid] = max(0, ((deep["ships"] or 0) + deep["extra"] if deep else 0) - cap)
+            if limit is not None:
+                room[rid] = min(room[rid], max(0, limit - cap))
         places = min(need, closed, room[rid])
         if places > 0:
             found.append((rid, places))
             room[rid] -= places
             need -= places
     return found
+
+
+def fallback_on(data):
+    """The fallback's switch: the file data/fleet/fallback-on."""
+    return (Path(data) / "fleet" / "fallback-on").exists()
+
+
+def borrow(seen, got, role, need, most=2):
+    """[route id]: standing work of OTHER plans to lend to a role whose `need` ships wait with nothing of their own plan
+    open (the fallback). Only what a hand would have added: a mine route that sells nothing, in home space (beyond the
+    border a plan is its Admiral's alone, rule F13), switched on, with a ship limit, whose field carries more ships than
+    fly it now (carries()), and that at least one of the waiting ships can fly (the dispatcher's rule says open, or
+    full: a full one is lifted by spare() on the next pass). The routes with the most places first, `most` at most."""
+    if need <= 0:
+        return []
+    systems, home = routefiles.atlas(seen["root"])
+    plan = set(seen["roles"].get(role) or [])
+    others = {rid for other, ids in seen["roles"].items() if other != role for rid in ids} - plan
+    idle = set(got["idle"])
+    waiting = [pilot for pilot in (seen["crews"].get(role) or {}).get("waiting") or [] if pilot["name"] in idle]
+    found = []
+    for rid in sorted(others):
+        route = seen["routes"].get(rid) or {}
+        cap = route.get("max_ships")
+        if (route.get("status") == "off" or route.get("park") or route.get("kind") != "mine" or route.get("sell")
+                or not isinstance(cap, int) or isinstance(cap, bool)):
+            continue
+        if routefiles.zone(route, systems, home)[0] != "home space":
+            continue
+        deep = carries(seen, route)
+        places = ((deep["ships"] or 0) + deep["extra"] if deep else 0) - flying_now(route, rid, seen["state"]["orders"])
+        if places <= 0:
+            continue
+        state = dict(seen["state"], orders=dict(seen["played"], **seen["taken"]), rows=seen["by_route"].get(rid, []))
+        open_to = 0
+        for pilot in waiting:
+            reason = dispatch.why_not(pilot, rid, route, state)[0]
+            if reason is None or str(reason).startswith("max_ships"):
+                open_to += 1
+        if open_to:
+            found.append((min(places, open_to), rid))
+    return [rid for _places, rid in sorted(found, key=lambda entry: (-entry[0], entry[1]))[:most]]
 
 
 def raise_cap(root, data, who, rid, ships, stamp):
@@ -594,7 +649,7 @@ def main():
         for role in chosen:
             if not may_change(who, role):
                 sys.exit("REFUSED: the %s plan is kept by %s (orders F1): ask in requests.log" % (role, division.ROLES.get(role)))
-            got = read_role(seen, role, floor, tests)
+            got = read_role(seen, role, floor, tests if division.ROLES.get(role) == who else 0)     # a test goes to the caller's own roles only
             once = "--once" in args                                 # only missions that pay once (they buy nothing: read_role keeps buying routes out)
             paying = [(rid, pilots) for rid, _v, pilots in got["paying"] if not once or seen["routes"][rid].get("once")]
             found = [] if once else got["tests"]
@@ -607,9 +662,15 @@ def main():
             for rid, _estimate, _draft, pilot in found:
                 print("  test %s -> %s (in front of its own routes; keep it when you set that ship's routes)" % (rid, pilot))
             served = {name for _rid, pilots in paying for name in pilots} | {pilot for _rid, _estimate, _draft, pilot in found}
-            for rid, places in spare(seen, got, served, room):
+            lifted = spare(seen, got, served, room)
+            for rid, places in lifted:
                 lifts[rid] += places
-            if not new:
+            still = len(got["idle"]) - sum(places for _rid, places in lifted)
+            lent = borrow(seen, got, role, still) if fallback_on(data) else []
+            if lent:
+                print("  standing work of other plans lent to the %s plan's list Then (%d ship%s with nothing open; the fallback): %s"
+                      % (role, still, " waits" if still == 1 else "s wait", ", ".join(lent)))
+            if not new and not lent:
                 continue
             for rid, estimate, draft, _pilot in found:
                 if draft is not None:
@@ -625,8 +686,15 @@ def main():
                     edits.append(lambda plan, rid=rid, pilots=pilots: planfile.put_own(plan, pilots, rid))
             for rid, _estimate, _draft, pilot in found:
                 edits.append(lambda plan, rid=rid, pilot=pilot: planfile.put_own(plan, [pilot], rid))
-            added += new
-            lines.append("%s +%d" % (role, len(new)))
+            name = planfile.division_of(role)
+            for rid in lent:                                        # as `fill.py add` puts a route: the list Then, or the tail of the role's ships in a division of two roles
+                if len(planfile.roles_of(name)) > 1:
+                    ships = [ship for ship, its, _row in planfile.crew_of(data, name) if its == role]
+                    edits.append(lambda plan, rid=rid, ships=ships: planfile.put_own(plan, ships, rid, tail=True))
+                else:
+                    edits.append(lambda plan, rid=rid: planfile.put_then(plan, rid, seen["routes"]))
+            added += new + lent
+            lines.append("%s +%d" % (role, len(new) + len(lent)))
         for rid, places in sorted(lifts.items()):                   # before the plans: a lift is its own commit, as `fill.py lift` makes it
             was = seen["routes"][rid]["max_ships"]
             print("%s: standing work, full while %d ship%s wait%s and its field carries more: max_ships %d -> %d%s"

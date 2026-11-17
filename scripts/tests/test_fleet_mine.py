@@ -121,5 +121,69 @@ class LastLoadTests(unittest.TestCase):
         self.assertIn("store_last_load(call, say, quoted, station, notes)", main)
 
 
+class HostStopTests(unittest.TestCase):
+    """A run told to stop ends whole (requests ENT-195): on 2026-11-17 eight gather runs ended by the run host's stop file left
+    their engine loops running, wrote no row, and held two ships ten minutes (errors ENT-072, ENT-074)."""
+
+    def test_a_run_told_to_stop_ends_its_loop_and_writes_its_row_without_a_sale(self):
+        import contextlib
+        import io
+        import json
+        import sys
+        import tempfile
+        import types
+        from unittest import mock
+        spec = importlib.util.spec_from_file_location("mine_under_test", FLEET / "mine.py")
+        mine = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mine)
+        temp = tempfile.TemporaryDirectory(prefix="fleet-mine-test-")
+        self.addCleanup(temp.cleanup)
+        calls = []
+
+        class Answer:
+            def __init__(self, body):
+                self.status, self.body = 200, json.dumps(body).encode()
+
+            def read(self):
+                return self.body
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *error):
+                return False
+
+        class Opener:
+            def open(self, request, timeout=120):
+                path = request.full_url[len(mine.GATE):]
+                calls.append((request.get_method(), path))
+                if path.endswith("/loop"):
+                    return Answer({"running": True})
+                if path.endswith("/state/cargo"):
+                    return Answer([{"item_id": "iron_ore", "quantity": 40}])
+                return Answer({"hasExecutingGoal": False, "state": {"credits": 5000}})
+
+        naps = []
+
+        def nap(seconds):
+            naps.append(seconds)
+            if len(naps) == 1:                                           # the run host's nap: SystemExit once, plain sleeps after it
+                raise SystemExit("stopped by the host's stop file")
+
+        kept = sys.modules.get("division")
+        sys.modules["division"] = types.SimpleNamespace(require=lambda pilot: None)
+        self.addCleanup(lambda: sys.modules.pop("division", None) if kept is None else sys.modules.__setitem__("division", kept))
+        argv = ["mine.py", "miner-1", "sys:belt", "sys:poi:base", "--minutes", "45", "--route", "gather-x"]
+        with mock.patch.object(mine, "DATA", temp.name), mock.patch.object(mine, "OPENER", Opener()), mock.patch.object(mine.time, "sleep", nap), \
+                mock.patch.object(sys, "argv", argv), contextlib.redirect_stdout(io.StringIO()) as said:
+            self.assertEqual(mine.main(), 0)
+        self.assertIn(("DELETE", "/accounts/miner-1/loop"), calls)             # the engine's loop is stopped
+        self.assertFalse([c for c in calls if c[1].endswith("/goal")])         # no dock, no sale, no store: the ship is wanted now
+        with open(Path(temp.name) / "routes" / "runs.jsonl", encoding="utf-8") as handle:
+            row = json.loads(handle.read().splitlines()[-1])
+        self.assertEqual((row["route"], row["pilot"], row["notes"]), ("gather-x", "miner-1", ["stopped by the host's stop file"]))
+        self.assertIn("RESULT miner-1", said.getvalue())
+
+
 if __name__ == "__main__":
     unittest.main()

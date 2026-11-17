@@ -463,5 +463,13 @@ class CraftStepTests(unittest.TestCase):
         self.assertEqual(rebound(FLEET / "route_run.py"), [])                                         # no step binds a function's name
 
 
+class MineStepStopTests(unittest.TestCase):
+    def test_the_mine_step_stops_its_loop_on_every_way_out(self):
+        # requests ENT-195: a run told to stop by the run host left its mining loop running, and every goal answered 409
+        tree = ast.parse((FLEET / "route_run.py").read_text(encoding="ascii"))
+        ends = ["\n".join(ast.unparse(line) for line in node.finalbody) for node in ast.walk(tree) if isinstance(node, ast.Try) and node.finalbody]
+        self.assertTrue(any("DELETE" in text and "/loop" in text for text in ends), ends)
+
+
 if __name__ == "__main__":
     unittest.main()
