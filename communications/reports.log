@@ -454,3 +454,12 @@ Failed: steady net -53,122 cr in the last hour (hive.py fleet, 01:52 UTC) while 
 Requests: requests.log ENT-188 (to Oracle).
 Suggestions: orders unchanged (ENT-024 stands); show "all money per hour" beside steady money for Suggi; Mining weighs the water-ice bid at Central Nexus (regains 624 an hour, we take 241); Intel looks for palladium (bid 339 cr for 43,459 units, no field read).
 Report: claim-check-several-donors-park-in-gate-three-sites.
+
+## [ENT-051] | 2026-11-17 03:31 UTC | Zero | session | ref: reports/2026-11-17_zero_loaded-holds-unblocked-iron-one-jump-from-a-station.md | see: orders.log ENT-025
+Session: scheduled run turn-zero -- leftover ore stored at the root, iron moved to the fields one jump from a station.
+Did: mine.py stores a no-sale run's last load (0eca38b, test first); store-hold-central-nexus at the head of both reserve templates; Schedar Belt 1 to 15 ships, Ironhollow Fading Signal 7 to 10; one-ship tests Ironhollow Echo Ejecta, Garnet Belt and a 5-unit water-ice drain at Central Nexus; seven far tests taken off their ships; guidebook Standing Plan; claim admirals.log ENT-010; queue.log ENT-142.
+Worked: waiting miners 31 to 0 in about 20 minutes; fill gate PASS at 03:19, 03:21 and 03:29 UTC; Mining steady +1,383 cr in the hour to 03:22 UTC (-1,570 at 03:00); 25,603 ore mined by miners since 23:50 UTC; iron held 265,455 of 626,100.
+Failed: 34 miners stood idle with ore aboard before the turn (errors.log ENT-071); forecast -10,073 cr an hour after the plan against -2,452 before, ships that sat docked now gather at fuel cost; silicon and carbon have no field; my workspace index read STALE from 03:16 UTC.
+Requests: none.
+Suggestions: refill view with the last hours beside its 30-hour average (Central Nexus water ice: 601 an hour against 1 to 5 units at every read for 13 h); silicon and carbon bought by Trade; an outpost one jump from a rich iron belt (Garnet, Keid, Amberfall).
+Report: loaded-holds-unblocked-iron-one-jump-from-a-station.
