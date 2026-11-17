@@ -2,11 +2,11 @@
  "id": "gather-gsc-0027-spacetime-seep",
  "kind": "mine",
  "title": "Standing work: iron at GSC-0027 Spacetime Seep into storage at Node Beta (S6)",
- "note": "Standing work (Suggi, 2026-11-16: no ship is idle; game/routes/BLUEPRINT.md rule 6). Written 2026-11-16 14:57 UTC by Apollo for the haulers the two shared gather routes leave waiting (both at 12 of 12 at 14:54 UTC). The field read iron ore 50,693 and copper ore 10,877 at 14:46 UTC (data/scouting/gsc_0027.json), in Voidborn space; iron ore is the station's largest shortfall (431,836 short, base_plan 12:55 UTC), copper is not (40,988 held of 768). Nothing is sold: the load goes into the pilot's storage at Node Beta. Not judged on its pay (its fuel is its price, about 160 cr per ship-hour on the first ore routes). `min_left` closes it when a census reads the field under 30,000 iron ore; what it grows back is not measured yet. Six ships: the haulers left waiting at 14:54 UTC. 2026-11-17 00:53 UTC (fill.py, Unity): max_ships 6 -> 10. 2026-11-17 00:59 UTC (fill.py, Unity): max_ships 10 -> 12. 2026-11-17 00:59 UTC (fill.py, Unity): max_ships 12 -> 13.",
+ "note": "Standing work (Suggi, 2026-11-16: no ship is idle; game/routes/BLUEPRINT.md rule 6). Written 2026-11-16 14:57 UTC by Apollo for the haulers the two shared gather routes leave waiting (both at 12 of 12 at 14:54 UTC). The field read iron ore 50,693 and copper ore 10,877 at 14:46 UTC (data/scouting/gsc_0027.json), in Voidborn space; iron ore is the station's largest shortfall (431,836 short, base_plan 12:55 UTC), copper is not (40,988 held of 768). Nothing is sold: the load goes into the pilot's storage at Node Beta. Not judged on its pay (its fuel is its price, about 160 cr per ship-hour on the first ore routes). `min_left` closes it when a census reads the field under 30,000 iron ore; what it grows back is not measured yet. Six ships: the haulers left waiting at 14:54 UTC. 2026-11-17 00:53 UTC (fill.py, Unity): max_ships 6 -> 10. 2026-11-17 00:59 UTC (fill.py, Unity): max_ships 10 -> 12. 2026-11-17 00:59 UTC (fill.py, Unity): max_ships 12 -> 13. 2026-11-17 01:05 UTC (fill.py, Unity): max_ships 13 -> 16.",
  "belt": "gsc_0027:spacetime_seep",
  "station": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
  "minutes": 45,
- "max_ships": 13,
+ "max_ships": 16,
  "standing": true,
  "min_left": {
   "iron_ore": 30000
