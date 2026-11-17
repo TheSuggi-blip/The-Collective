@@ -352,8 +352,8 @@ class KindTests(unittest.TestCase):
         self.assertEqual(self.why(guard, {"miner-9": "mine belt-x"}), (None, "far:belt"))                 # the mine's belt
         self.assertEqual(self.why(dict(guard, place="far:gate"), {"miner-9": "mine belt-x"}), (None, "far:gate"))   # its own place wins
         self.assertEqual(self.why(dict(guard, guards="rays"), {"drone-1": "hunt rays"}), (None, "far:nebula"))      # a hunt's place
-        self.assertEqual(self.why(dict(guard, guards="census"), {"scout-1": "census far"})[0], "guards `census`: no mine or hunt route file")
-        self.assertEqual(self.why(dict(guard, guards="ghost"), {"miner-9": "mine ghost"})[0], "guards `ghost`: no mine or hunt route file")
+        self.assertEqual(self.why(dict(guard, guards="census"), {"scout-1": "census far"})[0], "guards `census`: no mine, hunt or circuit route file")
+        self.assertEqual(self.why(dict(guard, guards="ghost"), {"miner-9": "mine ghost"})[0], "guards `ghost`: no mine, hunt or circuit route file")
 
     def test_one_guard_flies_it_unless_its_file_says_more(self):
         guard, orders = ROUTES["guard-x"], {"miner-9": "mine belt-x", "sentinel-2": "guard guard-x"}
@@ -396,7 +396,8 @@ class KindTests(unittest.TestCase):
         self.assertEqual(errors_with({"guards": ""}), ["game/routes/guard-x.json: `guards` is missing"])
         self.assertEqual(errors_with({"station": ""}), ["game/routes/guard-x.json: `station` is missing"])
         self.assertEqual(errors_with({"guards": "ghost"}), ["game/routes/guard-x.json: `guards` names `ghost`, which is no route file"])
-        for rid, kind in (("census", "census"), ("trade", "circuit"), ("guard-x", "guard")):
+        self.assertEqual(errors_with({"guards": "trade"}), [])                                  # a circuit: the escort follows its pilot (ENT-217)
+        for rid, kind in (("census", "census"), ("guard-x", "guard")):
             self.assertEqual(errors_with({"guards": rid}),
                              ["game/routes/guard-x.json: `guards` names `%s`, a %s: a guard keeps the place of a mine or a hunt, and it has none" % (rid, kind)])
         self.assertEqual(errors_with({"place": "far"}), ["game/routes/guard-x.json: `place` must have 2 parts joined by a colon"])

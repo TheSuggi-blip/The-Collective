@@ -377,18 +377,18 @@ class ReserveTests(Tree):
                                                                           sell=[{"item": "water_ice", "min_price": 20}]))
         self.put_list([sells_ice] + CANDIDATES)
         seen = self.fill.survey(str(self.root), str(self.data))
-        seen["short"] = {"water_ice": 500}                                                        # what surplus.py would read: the reserve lacks it
+        seen["kept"] = {"water_ice": 500}                                                        # what surplus.py would read: the reserve lacks it
         got = self.fill.read_role(seen, "hauler")
         self.assertNotIn("mine-ice-sell", [rid for rid, _v, _d, _p in got["tests"]])
         self.assertIn("mine-ice-sell", [rid for _v, rid in got["closed"].get(self.fill.RESERVE_SHORT, [])])
         seen = self.fill.survey(str(self.root), str(self.data))
-        seen["short"] = {}
+        seen["kept"] = {}
         got = self.fill.read_role(seen, "hauler")
         self.assertIn("mine-ice-sell", [rid for rid, _v, _d, _p in got["tests"]])                # nothing short: it is a test as before
         self.assertEqual(self.fill.sold({"kind": "circuit", "stops": [{"at": "a", "sell": [{"item": "armor_plate"}]}, {"at": "b", "sell": "all"}]}), ["armor_plate"])
         seen = self.fill.survey(str(self.root), str(self.data))
         seen["routes"]["freight"] = dict(seen["routes"]["freight"], stops=[{"at": "home:core:base", "sell": [{"item": "armor_plate", "min_price": 300}]}])
-        seen["short"] = {"armor_plate": 5931}
+        seen["kept"] = {"armor_plate": 5931}
         got = self.fill.read_role(seen, "hauler")
         self.assertNotIn("freight", [rid for rid, _v, _p in got["paying"]])                      # a proven sale of a short item is not lent either
         self.assertIn("freight", [rid for _v, rid in got["closed"].get(self.fill.RESERVE_SHORT, [])])
@@ -468,6 +468,74 @@ class FallbackTests(Tree):
         done = self.run_fill("unity", "fill", "all")                                              # the Fleet Admiral's job: no test on an Admiral's ship
         self.assertIn("hauler: 3 waiting, 0 on standing work; 1 paying routes and 0 tests to add: freight", done.stdout, done.stdout)
         self.assertIn("1 paying routes and 1 tests to add: freight, trade-x", self.run_fill("apollo", "fill").stdout)
+
+
+class HeldBackTests(Tree):
+    """requests ENT-233 (Trade): energy crystal and verdigris curd are held back whole for other recipes, yet the filler
+    offered a test that sold crystals and a route crafted them into focused crystals for sale; requests ENT-236
+    (Military): the filler put tests in front of five guard drones and a mine test on a drone, and two hunts Intel
+    claims into the drone plan."""
+
+    def test_a_good_held_back_and_a_craft_that_sells_it_are_not_added(self):
+        crafted = {"id": "craft-focus", "kind": "circuit", "title": "t", "max_ships": 1, "measured": MEASURED(6400), "stops": [
+            {"at": "home:core:base", "buy": [{"item": "palladium_ore", "qty": 1, "max_price": 450}],
+             "craft": [{"recipe": "focus_energy_crystal", "runs": 1, "makes": "focused_crystal", "inputs": ["palladium_ore"]}]},
+            {"at": "home:core:base", "sell": [{"item": "focused_crystal", "min_price": 700}]}]}
+        (self.root / "routes" / "craft-focus.json").write_text(json.dumps(crafted, indent=1) + "\n", encoding="ascii")
+        seen = self.fill.survey(str(self.root), str(self.data))
+        seen["catalog"] = {"recipes": {"focus_energy_crystal": {"inputs": [{"item_id": "energy_crystal", "quantity": 4}, {"item_id": "palladium_ore", "quantity": 1}]}}}
+        self.assertEqual(self.fill.crafted_for_sale(seen, crafted), ["energy_crystal"])               # what it buys itself is left out
+        seen["kept"] = {"energy_crystal": 2763}                                                     # held back for circuit boards: no surplus unit
+        self.assertEqual(self.fill.sells_short(seen, crafted), ["energy_crystal"])
+        got = self.fill.read_role(seen, "hauler")
+        self.assertNotIn("craft-focus", [rid for rid, _v, _p in got["paying"]])                  # a route that buys goes by hand only, as before
+        stored = dict(crafted, stops=[{"at": "home:core:base", "craft": crafted["stops"][0]["craft"]}, crafted["stops"][1]])
+        self.assertEqual(self.fill.sells_short(seen, stored), ["energy_crystal"])                # all four from storage: the same
+
+    def test_the_reserve_reads_held_back_goods_as_kept(self):
+        seen = {"data": str(self.data), "root": str(self.root)}
+        import types
+        fake = types.ModuleType("surplus")
+        fake.surplus = lambda data, root: {"rows": [{"id": "energy_crystal", "short": 0, "reserved": 2763, "surplus": 0},
+                                                    {"id": "iron_ore", "short": 60111, "reserved": 319659, "surplus": 0},
+                                                    {"id": "crystal_melt", "short": 0, "reserved": 0, "surplus": 64},
+                                                    {"id": "water_ice", "short": 0, "reserved": 0, "surplus": 0}]}
+        sys.modules["surplus"] = fake
+        self.addCleanup(sys.modules.pop, "surplus", None)
+        self.assertEqual(self.fill.kept_items(seen), {"energy_crystal": 2763, "iron_ore": 60111})   # a good nobody keeps is free to sell
+
+    def test_a_guard_ship_gets_no_test_and_a_drone_no_mine_test(self):
+        guard = {"id": "post", "kind": "guard", "title": "t", "guards": "rays", "station": "home:core:base"}
+        (self.root / "routes" / "post.json").write_text(json.dumps(guard, indent=1) + "\n", encoding="ascii")
+        (self.data / "plans").mkdir(exist_ok=True)
+        (self.data / "plans" / "assign.json").write_text(json.dumps({"pilots": {"drone-1": ["once", "post", "rays", "park"], "drone-2": ["once", "rays", "park"]}}))
+        seen = self.fill.survey(str(self.root), str(self.data))
+        seen["kept"] = {}
+        self.assertTrue(self.fill.guard_ship(seen, "drone-1"))
+        self.assertFalse(self.fill.guard_ship(seen, "drone-2"))
+        got = self.fill.read_role(seen, "drone")
+        given = [p for _rid, _v, pilots in got["paying"] for p in pilots] + [p for _rid, _v, _d, p in got["tests"]]
+        self.assertNotIn("drone-1", given)                                                         # its post stays kept
+        self.assertIn("mine-gas", [rid for _v, rid in got["closed"].get(self.fill.NOT_MINE, [])])
+        self.assertNotIn("mine-gas", [rid for rid, _v, _d, _p in got["tests"]])
+        _seen, hauler = self.read("hauler")
+        self.assertNotIn(self.fill.NOT_MINE, hauler["closed"])                                       # a hauler may still test a gas field
+
+    def test_a_route_another_division_claimed_is_not_added(self):
+        far = dict(ROUTES["freight"], id="far-freight")                                          # a route id holds a dash (comms.claimed_routes)
+        (self.root / "routes" / "far-freight.json").write_text(json.dumps(far, indent=1) + "\n", encoding="ascii")
+        stamp = time.strftime("%Y-%m-%d %H:%M", time.gmtime())
+        (self.top / "communications").mkdir()
+        (self.top / "communications" / "admirals.log").write_text(
+            "## [ENT-001] | %s UTC | Zero | claim | ref: game/routes/far-freight.json\nClaims: far-freight (1).\nWhy: a test.\n" % stamp, encoding="ascii")
+        seen = self.fill.survey(str(self.root), str(self.data))
+        seen["kept"] = {}
+        self.assertEqual((self.fill.claims(seen), seen.get("claims_error")), ({"far-freight": "Zero"}, None))
+        got = self.fill.read_role(seen, "hauler")
+        self.assertIn("far-freight", [rid for _v, rid in got["closed"].get(self.fill.CLAIMED, [])])
+        self.assertNotIn("far-freight", [rid for rid, _v, _p in got["paying"]])
+        _seen, miner = self.read("miner")
+        self.assertNotIn("far-freight", [rid for _v, rid in miner["closed"].get(self.fill.CLAIMED, [])])  # the claimer's own
 
 
 class HuntRuleTests(Tree):

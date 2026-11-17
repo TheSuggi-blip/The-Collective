@@ -454,14 +454,25 @@ def why_not(pilot, rid, route, state):
     if route["kind"] == "guard":                  # it keeps a place only while a pilot of ours flies the route it guards (requests ENT-070)
         folder = Path(state.get("root") or Path(__file__).resolve().parent.parent) / "routes"      # fill.py's state names no root: the default one
         guarded = read_json(folder / (str(route.get("guards")) + ".json"), None)
-        place = routefiles.guarded_place(route, guarded)
-        if place is None:
-            return "guards `%s`: no mine or hunt route file" % route.get("guards"), None
-        if guarded["kind"] + " " + str(route["guards"]) not in state["orders"].values():
-            return "nobody flies %s" % route["guards"], None
-        reason = pirate_reason(str(place).split(":")[0], state)
-        if reason:
-            return reason, None
+        if isinstance(guarded, dict) and guarded.get("kind") == "circuit":       # an escort: it follows the pilot of ours on the circuit (ENT-217)
+            flyers = sorted(p for p, what in state["orders"].items() if what == "circuit " + str(route["guards"]))
+            if not flyers:
+                return "nobody flies %s" % route["guards"], None
+            ship = read_json(Path(state["data"]) / "fleet" / "ships" / ship_file(flyers[0]), {}) if state.get("data") else {}
+            spot = ":".join(str(ship.get(key) or "") for key in ("system", "poi")) if isinstance(ship, dict) and ship.get("system") else ""
+            place = {"place": spot or str(route.get("place") or ":".join(str(route.get("station") or "").split(":")[:2])), "follow": flyers[0]}
+            reason = pirate_reason(place["place"].split(":")[0], state)
+            if reason:
+                return reason, None
+        else:
+            place = routefiles.guarded_place(route, guarded)
+            if place is None:
+                return "guards `%s`: no mine, hunt or circuit route file" % route.get("guards"), None
+            if guarded["kind"] + " " + str(route["guards"]) not in state["orders"].values():
+                return "nobody flies %s" % route["guards"], None
+            reason = pirate_reason(str(place).split(":")[0], state)
+            if reason:
+                return reason, None
     if pilot.get("credits", 0) < route.get("min_credits", 0):
         return "wallet below %s cr" % route["min_credits"], None
     if pilot.get("credits", 0) < FLOOR and not (route.get("park") or routefiles.stage(route) in ("once", "paying")):
@@ -539,9 +550,12 @@ def command(route, pilot, argument, root):
     if route["kind"] == "mine":
         sell = ",".join("%s:%d" % (s["item"], s["min_price"]) for s in route.get("sell") or [])
         return base + [route["belt"], route["station"], "--minutes", str(route.get("minutes", 45)), "--route", route["id"]] + (["--sell-items", sell] if sell else [])
-    if route["kind"] == "guard":                  # the place why_not found: the guard's own, else the guarded route's
-        system, poi = (str(argument or route.get("place") or "") + ":").split(":")[:2]
-        return base + [system, poi, "--guards", route["guards"], "--station", route["station"], "--minutes", str(route.get("minutes", 60)), "--route", route["id"]]
+    if route["kind"] == "guard":                  # the place why_not found: the guard's own, else the guarded route's; an escort follows a pilot
+        follow = argument.get("follow") if isinstance(argument, dict) else None
+        spot = argument.get("place") if isinstance(argument, dict) else argument
+        system, poi = (str(spot or route.get("place") or "") + ":").split(":")[:2]
+        return (base + [system, poi, "--guards", route["guards"], "--station", route["station"], "--minutes", str(route.get("minutes", 60)), "--route", route["id"]]
+                + (["--follow", follow] if follow else []))
     system, poi = route["place"].split(":")
     out = base + [system, poi, "--kills", str(route.get("kills", 8)), "--minutes", str(route.get("minutes", 40)),
                   "--min-bid", str(route.get("min_bid", 100)), "--sell-at", route["sell_at"], "--route", route["id"]]

@@ -41,7 +41,9 @@ RULES:
   - A hunt is not credited with what it got for goods it carried in from an
     earlier run: those were earned on another route.
   - A run is not credited or charged with what another hand of ours moved through its pilot's wallet
-    while it flew: the wallet guard's top-ups between our own ships (wallet.py), like the weekly tax.
+    while it flew: the wallet guard's top-ups between our own ships (wallet.py), like the weekly tax, a
+    deposit into the faction's treasury (onetime.json, title TREASURY: money the Collective keeps), and a
+    gift booked in the PRE seconds before the run's span that its first wallet did not yet hold.
   - A run that read no wallet (no credits before and after, both 0, or the note
     `wallet not read`) counts for nothing: a route whose runs are all such has
     no figure, and a figure built on them is taken out of its file.
@@ -222,11 +224,11 @@ def check(root):
         for field in ("title",) + KINDS[kind]:
             if not route.get(field):
                 errors.append(where + "`%s` is missing" % field)
-        if kind == "guard" and route.get("guards"):    # a guard keeps the place of a route of ours: one that exists and works at one place
+        if kind == "guard" and route.get("guards"):    # a guard keeps the place of a route of ours, or follows a circuit's pilot (ENT-217)
             guarded = routes.get(str(route["guards"]))
             if not isinstance(guarded, dict):
                 errors.append(where + "`guards` names `%s`, which is no route file" % route["guards"])
-            elif guarded_place(route, guarded) is None:
+            elif guarded.get("kind") != "circuit" and guarded_place(route, guarded) is None:
                 errors.append(where + "`guards` names `%s`, a %s: a guard keeps the place of a mine or a hunt, and it has none" % (route["guards"], guarded.get("kind") or "route without a kind"))
         if kind == "circuit":
             for n, stop in enumerate(route.get("stops") or [], 1):
@@ -632,7 +634,11 @@ def write_index(root):
 
 
 GIFTS = {"path": None, "stamp": None, "rows": []}      # the wallet guard's top-ups, read again only when the file changed
+DEPOSITS = {"path": None, "stamp": None, "rows": []}   # the treasury deposits of onetime.json, read again only when it changed
+RUNS = {"path": None, "stamp": None, "spans": {}}      # each pilot's runs (span, first and last wallet), read only for a gift before a span
 EDGE = 120                    # seconds at a run's start and end in which a wallet reading may fall on either side of a gift
+PRE = 30 * 60                 # a gift booked this long before a run's span may land in it: the game shows a gift minutes after its answer (ENT-220)
+TREASURY = "Faction treasury: credits deposited"     # the title a deposit into the faction's treasury is booked under (onetime.json)
 
 
 def gifts(data=None):
@@ -662,10 +668,94 @@ def gifts(data=None):
     return GIFTS["rows"]
 
 
+def deposits(data=None):
+    """[(epoch, pilot, '', credits, False)] of the deposits our pilots made into the faction's treasury: the rows of
+    onetime.json whose title begins with TREASURY (gate.book_onetime, wallet.py sweep), the giver's side of a move
+    whose other side is the Collective's own purse (requests ENT-231). Read beside the gifts, as one more giver."""
+    path = Path(taxes.record_file(data)).with_name("onetime.json")
+    try:
+        found = path.stat()
+    except OSError:
+        return []
+    stamp = (found.st_mtime_ns, found.st_size)
+    if DEPOSITS["path"] != str(path) or DEPOSITS["stamp"] != stamp:
+        rows = []
+        try:
+            loaded = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            loaded = []
+        for one in loaded if isinstance(loaded, list) else []:
+            if (isinstance(one, list) and len(one) == 4 and isinstance(one[0], (int, float)) and isinstance(one[3], (int, float))
+                    and str(one[2]).startswith(TREASURY) and one[3] < 0):
+                rows.append((one[0], str(one[1]), "", -one[3], False))
+        DEPOSITS.update(path=str(path), stamp=stamp, rows=rows)
+    return DEPOSITS["rows"]
+
+
+def run_spans(data=None):
+    """{pilot: [(span first, span last, credits before, credits after)]} of every run in data/routes/runs.jsonl, read
+    again only when the file changed. Asked only for a gift booked just before a run's span (late_gifts)."""
+    folder = Path(taxes.record_file(data)).parent.parent if data is None else Path(data)
+    path = folder / "routes" / "runs.jsonl"
+    try:
+        found = path.stat()
+    except OSError:
+        return {}
+    stamp = (found.st_mtime_ns, found.st_size)
+    if RUNS["path"] != str(path) or RUNS["stamp"] != stamp:
+        spans = {}
+        try:
+            with open(path, encoding="utf-8") as handle:
+                for line in handle:
+                    try:
+                        one = json.loads(line)
+                    except ValueError:
+                        continue
+                    when = taxes.span(one) if isinstance(one, dict) else None
+                    if when and one.get("pilot"):
+                        spans.setdefault(str(one["pilot"]), []).append((when[0], when[1], one.get("credits_before"), one.get("credits_after")))
+        except OSError:
+            return {}
+        RUNS.update(path=str(path), stamp=stamp, spans=spans)
+    return RUNS["spans"]
+
+
+def late_gifts(row, found, data=None):
+    """Credits of gifts to the row's pilot booked in the PRE seconds before its span that landed while it flew
+    (requests ENT-220: ten gifts for the outpost booked 3 to 9 minutes before a craft run read as 117,329 cr it
+    earned). A gift that another run of the pilot spans is that run's. What the pilot's wallet gained between its
+    previous run's last reading and this run's first is what landed before: the rest of the gifts, latest first,
+    landed in the run, each taken out only while that brings the run's change nearer to nothing."""
+    pilot = row.get("pilot")
+    early = [(at, credits) for at, giver, taker, credits, _loose in gifts(data) if taker == pilot and giver != pilot and found[0] - PRE <= at < found[0]]
+    if not early:
+        return 0
+    spans = run_spans(data).get(pilot) or []
+    early = [(at, credits) for at, credits in early if not any(s0 <= at <= s1 for s0, s1, _b, _a in spans if s0 != found[0])]
+    if not early:
+        return 0
+    before = row.get("credits_before")
+    prior = [s for s in spans if s[1] <= found[0] + taxes.LAG + EDGE and s[0] != found[0]]
+    landed = 0
+    if prior and isinstance(before, (int, float)) and isinstance(max(prior)[3], (int, float)) and max(prior)[3] > 0:
+        landed = max(0, before - max(prior)[3])               # what reached the wallet between the two runs
+    plain = (row.get("delta") or 0) + taxes.in_run(row, data)
+    total = 0
+    for at, credits in sorted(early):                          # the earliest landed first
+        if landed >= credits * 0.9:
+            landed -= credits
+            continue
+        if abs(plain - total - credits) < abs(plain - total):
+            total += credits
+    return -total
+
+
 def moved(row, data=None):
     """Credits another hand of ours took out of (+) or put into (-) the row's pilot while its run flew (taxes.span): the
-    wallet guard's top-ups between our own ships. Nobody earned or lost them, so no route is credited or charged with
-    them: 2026-11-16, the guard's gifts to a hundred new ships read as a loss of 298,508 cr an hour for the fleet."""
+    wallet guard's top-ups between our own ships, the deposits into the faction's treasury (deposits) and a gift that
+    landed in the run although booked just before it (late_gifts). Nobody earned or lost them, so no route is credited
+    or charged with them: 2026-11-16, the guard's gifts to a hundred new ships read as a loss of 298,508 cr an hour for
+    the fleet; 2026-11-17, a deposit of 200,000 cr read as -120,673 cr a ship-hour of a mine route (ENT-231)."""
     pilot, found = row.get("pilot"), taxes.span(row)
     if not pilot or not found:
         return 0
@@ -675,14 +765,14 @@ def moved(row, data=None):
     start, end = found[0] + taxes.LAG, found[1] - taxes.SLACK
     plain = (row.get("delta") or 0) + taxes.in_run(row, data)
     total = 0
-    for at, giver, taker, credits, loose in gifts(data):
+    for at, giver, taker, credits, loose in sorted(gifts(data) + deposits(data)):
         sign = (giver == pilot) - (taker == pilot)
         if not sign or not found[0] <= at <= found[1]:
             continue
         inside = not loose and start + EDGE <= at <= end - EDGE
         if inside or abs(plain + total + credits * sign) < abs(plain + total):
             total += credits * sign
-    return total
+    return total + late_gifts(dict(row, delta=plain - taxes.in_run(row, data) + total), found, data)
 
 
 def earned(row):

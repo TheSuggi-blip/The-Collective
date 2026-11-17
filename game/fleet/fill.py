@@ -213,7 +213,10 @@ def survey(root, data, now=None):
 
 
 HOLD = 65                      # a starter's hold, units
-RESERVE_SHORT = "sells an item the reserve is short of (rule F24)"
+RESERVE_SHORT = "sells an item the reserve is short of or holds back (rule F24)"
+NOT_MINE = "a mine test is the miners' (rule F23): not for this role"
+CLAIMED = "claimed by another division (admirals.log, rule F25)"
+NO_MINE_TESTS = ("drone", "sentinel", "scout")        # roles that gather only as their fallback: no mine test is offered to them (ENT-236)
 
 
 def sold(route):
@@ -238,10 +241,82 @@ def short_items(seen):
     return seen["short"]
 
 
+def kept_items(seen):
+    """{item: units}: what the reserve keeps and has none of to spare (surplus.py: short, or held with no surplus unit,
+    a good held back for another recipe included; requests ENT-233), read once per survey; {} when it cannot be read."""
+    if "kept" not in seen:
+        try:
+            import surplus
+            res = surplus.surplus(seen["data"], str(Path(seen["root"]).parent))
+            seen["kept"] = {r["id"]: (r.get("short") or 0) or (r.get("reserved") or 0) for r in res["rows"]
+                            if (r.get("short") or 0) > 0 or ((r.get("reserved") or 0) > 0 and (r.get("surplus") or 0) <= 0)}
+        except Exception:                                  # noqa: BLE001  no reserve read: no route is closed by it
+            seen["kept"] = {}
+    return seen["kept"]
+
+
+def crafted_for_sale(seen, route):
+    """The inputs a route's craft stops use from storage for an output the same route sells (by the catalog's recipe),
+    less what that stop buys itself: a reserve good crafted and sold is a reserve good sold (errors.log ENT-090)."""
+    out, sells = [], set(sold(route))
+    for stop in route.get("stops") or []:
+        if not isinstance(stop, dict):
+            continue
+        bought = {b.get("item") for b in stop.get("buy") or [] if isinstance(b, dict)}
+        for job in stop.get("craft") or []:
+            if not isinstance(job, dict) or job.get("makes") not in sells:
+                continue
+            if "catalog" not in seen:
+                try:
+                    import craftbook
+                    seen["catalog"] = craftbook.load(seen["data"]) or {}
+                except Exception:                          # noqa: BLE001  no catalog: the craft's inputs are not known
+                    seen["catalog"] = {}
+            recipe = (seen["catalog"].get("recipes") or {}).get(job.get("recipe")) or {}
+            out += [i.get("item_id") for i in recipe.get("inputs") or [] if isinstance(i, dict) and i.get("item_id") not in bought]
+    return [item for item in out if item]
+
+
 def sells_short(seen, route):
-    """The items of the reserve a route would sell: such a route is never added or lent by this script (rule F24)."""
-    short = short_items(seen)
-    return [item for item in sold(route) if item in short]
+    """The items of the reserve a route would sell, or craft into what it sells: such a route is never added or lent by
+    this script (rule F24; requests ENT-213, ENT-233)."""
+    kept = kept_items(seen)
+    return [item for item in dict.fromkeys(sold(route) + crafted_for_sale(seen, route)) if item in kept]
+
+
+def claims(seen):
+    """{route id: the member whose claim in force names it} of admirals.log (rule F25; requests ENT-236): a route another
+    division claimed is not added to a plan by this script. Standing work is shared and never claimed. {} when the log
+    cannot be read."""
+    if "claims" not in seen:
+        seen["claims"] = {}
+        try:
+            import importlib.util
+            repo = Path(seen["root"]).resolve().parent                # the log of the tree read; the reader of the fleet's own repository
+            spec = importlib.util.spec_from_file_location("comms_claims", Path(__file__).resolve().parents[2] / "scripts" / "comms.py")
+            comms = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(comms)
+            entries, _errors = comms.read_log(repo, "admirals")
+            for entry in comms.claims_in_force(entries):
+                for rid in comms.claimed_routes(repo, comms.line_of(entry, "Claims")):
+                    if not routefiles.standing(seen["routes"].get(rid) or {}):
+                        seen["claims"].setdefault(rid, entry["by"])
+        except Exception as error:                         # noqa: BLE001  no log read: no route is closed by it
+            seen["claims"] = {}
+            seen["claims_error"] = "%s: %s" % (type(error).__name__, error)
+    return seen["claims"]
+
+
+def guard_ship(seen, name):
+    """True for a ship whose own list, past the missions that pay once and the fittings, begins with a guard: it keeps a
+    post, and no test or paying route is put in front of it (requests ENT-236: five of seven posts would have stood
+    empty for the hours of a far test)."""
+    for rid in seen["own"].get(name) or []:
+        route = seen["routes"].get(rid) or {}
+        if route.get("once") or route.get("status") == "off" or routefiles.stage(route) == "fit":
+            continue
+        return route.get("kind") == "guard"
+    return False
 
 
 def regains(seen):
@@ -361,7 +436,7 @@ def read_role(seen, role, floor=500, tests=8):
         for pilot in list(left):
             if limit is not None and len(took) >= limit:
                 break
-            if rid in (seen["own"].get(pilot["name"]) or plan):
+            if rid in (seen["own"].get(pilot["name"]) or plan) or guard_ship(seen, pilot["name"]):
                 continue
             reason, argument = closed_to(pilot, rid, route)
             if reason is None:
@@ -388,6 +463,10 @@ def read_role(seen, role, floor=500, tests=8):
             continue
         if rid not in plan and sells_short(seen, route):         # a reserve good is kept, never sold by a route this script adds (ENT-213)
             closed.setdefault(RESERVE_SHORT, []).append((value, rid))
+            continue
+        owner = seen["owners"].get(role) or division.ROLES.get(role)
+        if rid not in plan and claims(seen).get(rid, owner) != owner:     # another division's claim stands (rule F25)
+            closed.setdefault(CLAIMED, []).append((value, rid))
             continue
         if route.get("once") and refused_to(seen, rid, role):
             if rid not in plan:
@@ -417,6 +496,13 @@ def read_role(seen, role, floor=500, tests=8):
             continue
         if sells_short(seen, route):                              # a test that sells what the reserve lacks is no test of ours (ENT-213)
             closed.setdefault(RESERVE_SHORT, []).append((cand["per_ship_hour"], rid))
+            continue
+        if route.get("kind") == "mine" and role in NO_MINE_TESTS:   # a mine test is the miners' (ENT-236)
+            closed.setdefault(NOT_MINE, []).append((cand["per_ship_hour"], rid))
+            continue
+        owner = seen["owners"].get(role) or division.ROLES.get(role)
+        if claims(seen).get(rid, owner) != owner:
+            closed.setdefault(CLAIMED, []).append((cand["per_ship_hour"], rid))
             continue
         took = offer(rid, route, cand["per_ship_hour"], limit=1) if left and len(found) < tests else []
         if took:

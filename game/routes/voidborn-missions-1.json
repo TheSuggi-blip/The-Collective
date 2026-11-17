@@ -2,7 +2,7 @@
  "id": "voidborn-missions-1",
  "kind": "circuit",
  "title": "Synchrony Relay Run and Crystal Delivery: two board missions in one circuit of 8 jumps",
- "note": "Relay Run 2,500 cr (Synchrony Hub). Crystal Delivery 7,000 cr (The Experiment): 10 energy crystal, bought at Central Nexus for 4,242 cr. Boards read 2026-11-15.",
+ "note": "Relay Run 2,500 cr (Synchrony Hub). Crystal Delivery 7,000 cr (The Experiment): 10 energy crystal, bought at Central Nexus for 4,242 cr. Boards read 2026-11-15. Curd is no longer sold here (2026-11-17, requests ENT-233): the reserve holds it back for copper piping (rule F24).",
  "once": true,
  "min_credits": 8000,
  "one_time": [
@@ -35,12 +35,6 @@
    "at": "synchrony:synchrony_hub:synchrony_hub",
    "accept": [
     "synchrony_relay_run"
-   ],
-   "sell": [
-    {
-     "item": "verdigris_curd",
-     "min_price": 300
-    }
    ]
   },
   {
@@ -53,13 +47,7 @@
      }
     }
    ],
-   "redock": true,
-   "sell": [
-    {
-     "item": "verdigris_curd",
-     "min_price": 300
-    }
-   ]
+   "redock": true
   },
   {
    "at": "node_alpha:node_alpha_processing_station:node_alpha_processing_station"

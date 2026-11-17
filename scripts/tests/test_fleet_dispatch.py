@@ -761,6 +761,57 @@ class RouteGateTests(Tree):
         (fleet / "gifts.jsonl").write_text(json.dumps({"at": seam - 1300, "from": "miner-1", "to": "miner-9", "credits": 19000, "loose": True}) + "\n")
         self.assertEqual([self.routes.earned(r) for r in (first, dict(first, delta=-120))], [-120, -120])     # a row whose time is its pass's: by the wallet alone
 
+    def test_a_treasury_deposit_and_a_gift_that_lands_late_are_nobodys_earning(self):
+        # requests ENT-231: a run read -200,720 cr where its wallet moved -720 (200,000 in as gifts, 200,000 out to the treasury)
+        # requests ENT-220: ten gifts booked 3 to 9 minutes before a craft run landed in it and read as 117,329 cr earned
+        fleet = self.data / "fleet"
+        fleet.mkdir(parents=True, exist_ok=True)
+        os.environ["FLEET_TAXES"] = str(fleet / "taxes.json")
+        self.addCleanup(os.environ.__setitem__, "FLEET_TAXES", os.devnull)
+        now = int(time.time())
+        text = lambda t: time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(t))
+        start = now - 3000
+        (fleet / "gifts.jsonl").write_text("".join(json.dumps({"at": start + 600 + n, "from": "miner-%d" % n, "to": "Prime Directive", "credits": 50000}) + "\n" for n in range(4)))
+        (fleet / "onetime.json").write_text(json.dumps([[start + 900, "Prime Directive", "Faction treasury: credits deposited (the Collective keeps them)", -200000],
+                                                        [start + 900, "Prime Directive", "Some Reward", 4000]]))
+        deposit = {"route": "mine", "kind": "mine", "pilot": "Prime Directive", "minutes": 45, "delta": -720, "credits_before": 17838, "credits_after": 17118, "started": text(start)}
+        self.assertEqual(self.routes.moved(deposit), 0)                                          # 200,000 in, 200,000 out: the run's own -720 stays
+        self.assertEqual(self.routes.earned(deposit), -720)
+        self.assertEqual(self.routes.moved(dict(deposit, pilot="miner-1", delta=-50120)), 50000)  # the giver's side as before
+        # gifts booked before the span that landed in the run
+        (fleet / "onetime.json").write_text("[]")
+        (fleet / "gifts.jsonl").write_text("".join(json.dumps({"at": start - 1200 + 60 * n, "from": "miner-%d" % n, "to": "hauler-3", "credits": 40000}) + "\n" for n in range(3)))
+        late = {"route": "craft", "kind": "circuit", "pilot": "hauler-3", "minutes": 15, "delta": 79880, "credits_before": 45000, "credits_after": 124880, "started": text(start)}
+        (self.data / "routes" / "runs.jsonl").write_text(json.dumps({"route": "gather", "kind": "mine", "pilot": "hauler-3", "minutes": 30, "delta": -100,
+                                                                     "credits_before": 5100, "credits_after": 5000, "started": text(start - 3600)}) + "\n")
+        self.assertEqual(self.routes.earned(late), -120)                                         # one landed before (5,000 -> 45,000), two in the run
+        sale = dict(late, delta=30000, credits_before=125000, credits_after=155000)            # all three landed before the run: its own sale stays
+        self.assertEqual(self.routes.earned(sale), 30000)
+        (self.data / "routes" / "runs.jsonl").write_text(json.dumps({"route": "gather", "kind": "mine", "pilot": "hauler-3", "minutes": 25, "delta": -100,
+                                                                     "credits_before": 5100, "credits_after": 5000, "started": text(start - 1500)}) + "\n")
+        self.assertEqual(self.routes.earned(late), 79880)                                       # the previous run spans the gifts: they are its
+
+    def test_a_guard_may_follow_the_pilot_of_a_circuit(self):
+        # requests ENT-217 and ENT-226: the escort; guard.py --follow is Military's half, the dispatcher's is this
+        routes = self.dispatch.load_routes(self.root)
+        kit = {"id": "kit", "kind": "circuit", "title": "t", "stops": [{"at": "home:core:base"}, {"at": "far:belt"}]}
+        (self.root / "routes" / "kit.json").write_text(json.dumps(kit), encoding="ascii")
+        guard = {"id": "escort", "kind": "guard", "title": "t", "guards": "kit", "station": "home:core:base"}
+        (self.root / "routes" / "escort.json").write_text(json.dumps(guard), encoding="ascii")
+        pilot = {"name": "drone-1", "credits": 20000, "modules": [], "docked": True}
+        state = dict(self.state(orders={}), root=str(self.root))
+        self.assertEqual(self.dispatch.why_not(pilot, "escort", guard, state), ("nobody flies kit", None))
+        (self.data / "fleet" / "ships").mkdir(parents=True, exist_ok=True)
+        (self.data / "fleet" / "ships" / "hauler-3.json").write_text(json.dumps({"name": "hauler-3", "system": "far", "poi": "belt"}))
+        state = dict(self.state(orders={"hauler-3": "circuit kit"}), root=str(self.root))
+        reason, argument = self.dispatch.why_not(pilot, "escort", guard, state)
+        self.assertEqual((reason, argument), (None, {"place": "far:belt", "follow": "hauler-3"}))
+        argv = self.dispatch.command(guard, "drone-1", argument, str(self.root))
+        self.assertEqual(argv[4:8], ["drone-1", "far", "belt", "--guards"])
+        self.assertEqual(argv[argv.index("--follow") + 1], "hauler-3")
+        self.assertNotIn("--follow", self.dispatch.command(dict(guard, guards="mine"), "drone-1", "far:belt", str(self.root)))
+        self.assertNotIn("escort", " ".join(self.routes.check(str(self.root))[0]))               # the gate takes a guard of a circuit
+
     def test_a_hunt_is_not_credited_with_goods_it_carried_in(self):
         rows = [{"route": "rays", "kind": "hunt", "pilot": "drone-1", "minutes": 30, "delta": 1140, "goods": {"carapace": 3}, "sold": {"curd": [4, 330, 1320]},
                  "credits_before": 20000, "credits_after": 21140, "started": self.started(2)},
