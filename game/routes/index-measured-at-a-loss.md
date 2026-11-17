@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 55.
+Routes: 54.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -44,7 +44,6 @@ Routes: 55.
 | [hunt-starveling-nebula-veil-ray](hunt-starveling-nebula-veil-ray.json) | hunt | beyond the border, 6 jumps | veil_ray at starveling_nebula; loot sold at Node Beta Industrial Station | up to 1 ships, empty hold | 4 | 24 | -180 | -460 | 2026-11-17 |
 | [hunt-test-lesath-cinder-sylph](hunt-test-lesath-cinder-sylph.json) | hunt | beyond the border, 5 jumps | Cinder-sylphs at lesath_gas_cloud (lawless); ember glands kept for the Hex Star bid (Dheneb) | up to 1 ships, without piercing_railgun_i, empty hold, while b495c6003fc83e18f6d8cecbe6929133 bids 2000 cr for ember_gland | 5 | 13 | -120 | -550 | 2026-11-16 |
 | [hunt-test-tanglewood-hollow-pilgrim](hunt-test-tanglewood-hollow-pilgrim.json) | hunt | beyond the border, 6 jumps | Yield test: hollow_pilgrim at tanglewood_frost_ring (lawless); what a kill drops and whether a bid takes it | up to 1 ships, without piercing_railgun_i, empty hold | 2 | 24 | -160 | -410 | 2026-11-17 |
-| [hunt-titawin-gas-cloud-chlorophage](hunt-titawin-gas-cloud-chlorophage.json) | hunt | beyond the border, 12 jumps | chlorophage at titawin_gas_cloud; loot sold at Hex Star | up to 1 ships, empty hold | 2 | 29 | -120 | -260 | 2026-11-17 |
 | [hunt-toi-2257-gas-pocket-cinder-sylph](hunt-toi-2257-gas-pocket-cinder-sylph.json) | hunt | beyond the border, 26 jumps | cinder_sylph at toi_2257_gas_pocket; loot sold at Hex Star | up to 1 ships, empty hold | 2 | 62 | -260 | -250 | 2026-11-17 |
 | [hunt-yed-prior-cryobelt-hollow-pilgrim](hunt-yed-prior-cryobelt-hollow-pilgrim.json) | hunt | beyond the border, 18 jumps | hollow_pilgrim at yed_prior_cryobelt; loot sold at The Crucible Garrison | up to 1 ships, empty hold | 2 | 34 | -240 | -430 | 2026-11-17 |
 | [mine-alnair-ice-fields](mine-alnair-ice-fields.json) | mine | beyond the border, 5 jumps | Alnair Ice Fields: water_ice, nitrogen_ice, deuterium_ice; sold at Node Alpha Processing Station | up to 1 ships, needs ice_harvester_i, empty hold, while node_alpha_processing_station bids 25 cr for water_ice | 1 | 69 | -640 | -560 | 2026-11-17 |

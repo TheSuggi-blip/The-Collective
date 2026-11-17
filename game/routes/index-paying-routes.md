@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 73.
+Routes: 72.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -73,7 +73,6 @@ Routes: 73.
 | [hunt-summervale-gas-pocket-cinder-sylph](hunt-summervale-gas-pocket-cinder-sylph.json) | hunt | beyond the border, 21 jumps | cinder_sylph at summervale_gas_pocket; loot sold at Hex Star | up to 1 ships, empty hold | 3 | 50 | 5,480 | 7,110 | 2026-11-17 |
 | [hunt-tania-vapor-fields-cinder-sylph](hunt-tania-vapor-fields-cinder-sylph.json) | hunt | beyond the border, 11 jumps | cinder_sylph at tania_vapor_fields; loot sold at Node Beta Industrial Station | up to 1 ships, empty hold | 8 | 37 | 1,740 | 2,770 | 2026-11-17 |
 | [hunt-test-achernar-cinder-sylph](hunt-test-achernar-cinder-sylph.json) | hunt | beyond the border, 4 jumps | Cinder-sylphs at Achernar Gas Pocket (lawless); ember glands kept for the Hex Star bid (Dheneb), biogas stored | up to 1 ships, without piercing_railgun_i, empty hold, while b495c6003fc83e18f6d8cecbe6929133 bids 2000 cr for ember_gland | 11 | 10 | 730 | 4,330 | 2026-11-17 |
-| [hunt-test-homam-frost-moth](hunt-test-homam-frost-moth.json) | hunt | beyond the border, 6 jumps | Yield test: frost_moth at homam_cryobelt (lawless); what a kill drops and whether a bid takes it | up to 1 ships, empty hold | 7 | 14 | 300 | 1,300 | 2026-11-17 |
 | [hunt-violethall-gas-plume-cinder-sylph](hunt-violethall-gas-plume-cinder-sylph.json) | hunt | beyond the border, 17 jumps | cinder_sylph at violethall_gas_plume; loot sold at Hex Star | up to 1 ships, empty hold | 2 | 44 | 8,370 | 11,390 | 2026-11-17 |
 | [hunt-wasat-cryobelt-hollow-pilgrim](hunt-wasat-cryobelt-hollow-pilgrim.json) | hunt | beyond the border, 18 jumps | hollow_pilgrim at wasat_cryobelt; loot sold at The Crucible Garrison | up to 1 ships, empty hold | 2 | 36 | 1,660 | 2,750 | 2026-11-17 |
 | [hunt-willowgate-vapor-fields-halo-drifter](hunt-willowgate-vapor-fields-halo-drifter.json) | hunt | beyond the border, 17 jumps | halo_drifter at willowgate_vapor_fields; loot sold at Nova Terra Central | up to 1 ships, empty hold | 1 | 43 | 3,610 | 5,070 | 2026-11-17 |

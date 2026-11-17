@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 95.
+Routes: 97.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -100,6 +100,8 @@ Routes: 95.
 | [hunt-schedar-belt-carapace](hunt-schedar-belt-carapace.json) | hunt | beyond the border, 2 jumps | Belt-grazers and patina-grazers at Schedar Belt (Schedar); creature carapace into storage at Node Beta Industrial Station | up to 1 ships, without piercing_railgun_i, empty hold, standing work | 12 | 31 | -60 | -140 | 2026-11-17 |
 | [hunt-shaula-gas-plume-drift-ray](hunt-shaula-gas-plume-drift-ray.json) | hunt | beyond the border, 4 jumps | drift-ray at shaula gas plume; goods into storage at Synchrony Hub | up to 1 ships, without piercing_railgun_i, empty hold, standing work | 4 | 10 | -70 | -420 | 2026-11-17 |
 | [hunt-test-bluerift-frost-ring-rime-grazer](hunt-test-bluerift-frost-ring-rime-grazer.json) | hunt | beyond the border, 7 jumps | rime-grazer, pressblister at bluerift frost ring; goods into storage at The Experiment Research Station | up to 1 ships, without piercing_railgun_i, empty hold, standing work | 10 | 16 | -160 | -520 | 2026-11-17 |
+| [hunt-test-homam-frost-moth](hunt-test-homam-frost-moth.json) | hunt | beyond the border, 6 jumps | Yield test: frost_moth at homam_cryobelt (lawless); what a kill drops and whether a bid takes it | up to 1 ships, empty hold, standing work | 7 | 14 | 300 | 1,300 | 2026-11-17 |
+| [hunt-titawin-gas-cloud-chlorophage](hunt-titawin-gas-cloud-chlorophage.json) | hunt | beyond the border, 12 jumps | chlorophage at titawin_gas_cloud; loot sold at Hex Star | up to 1 ships, empty hold, standing work | 2 | 29 | -120 | -260 | 2026-11-17 |
 | [gather-achernar-belt](gather-achernar-belt.json) | mine | beyond the border, 4 jumps | Standing work, a test: iron at Achernar Belt (beyond the border, one jump from The Experiment) into storage at The Experiment | up to 16 ships, needs mining_laser_i, empty hold, standing work | 19 | 48 | -170 | -220 | 2026-11-17 |
 | [gather-garnet-belt](gather-garnet-belt.json) | mine | beyond the border, 5 jumps | Standing work, a test: iron at Garnet Belt (beyond the border, two jumps from The Experiment) into storage there | up to 29 ships, needs mining_laser_i, empty hold, standing work | 114 | 46 | -320 | -410 | 2026-11-17 |
 | [gather-gj-3470-dewfall-fray](gather-gj-3470-dewfall-fray.json) | mine | beyond the border, 4 jumps | Standing work, a test: iron and copper ore at GJ 3470 Dewfall Fray (beyond the border, one jump past Hamal) into storage at Node Beta, for the reserve and for craft-piping-node-beta | up to 13 ships, needs mining_laser_i, empty hold, standing work | 33 | 50 | -280 | -340 | 2026-11-17 |
