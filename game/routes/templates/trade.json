@@ -23,8 +23,10 @@
    "note": "Every route is gated by requires.stored (the pilot's own storage) and requires.bid (a book read within the hour at the floor); a run sells only what the bid takes. Soma floor 340 (Central Nexus asks 293 in depth); hydrogen floor 30 (Ironlight asks 6 in depth); palladium floor 300 (base value 200; Sirius asks 432). Routes written by sellgen.py of the trade-books skill. Open to every division's ships (rule F24). Starter hull, no module needed."
   },
   "trade-craft": {
-   "title": "Goods made by hand: for sale where a bid pays more than the inputs, else steel plate from the pilot's own stored iron for the reserve",
+   "title": "Crafting from the pilot's own stores: steel and copper piping for the reserve, focused crystal for sale",
    "routes": [
+    "craft-piping-node-beta",
+    "craft-piping-synchrony-hub",
     "craft-focused-crystal-node-beta",
     "craft-steel-central-nexus",
     "craft-steel-synchrony-hub",
@@ -34,7 +36,7 @@
     "crafting",
     "trading"
    ],
-   "note": "Inputs from the pilot's own storage at the workshop's station. craft-focused-crystal-node-beta sells into the bid named by its requires.bid; the three craft-steel routes are Logistics' standing work open to every role (requests.log ENT-190, queue.log ENT-145), placed here so that a trader trains crafting, its class skill, before it gathers ore (rules F23, F30)."
+   "note": "2026-11-17 11:40 UTC (Mercury, orders ENT-036): the two craft-piping routes lead: they turn stored copper ore, which no station bids for, and stored iron into copper piping and steel plate for the reserve; then the focused crystal for sale and Logistics' three steel crafts."
   },
   "trade-train-nav": {
    "title": "Navigation trained to 3 on a loop of our five stations, for Signal Fragments (7,000 cr once)",
