@@ -38,7 +38,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| VedaFlux | Node Beta (`node_beta`) | 0 | threshold |
+| VedaFlux | Synchrony (`synchrony`) | 0 | threshold |
 
 ## Standing History
 
