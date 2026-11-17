@@ -40,8 +40,8 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 |---|---|---|---|
 | Arbiter67 | Synchrony (`synchrony`) | 0 | dust_devil |
 | Arbiter79 | Node Alpha (`node_alpha`) | 0 | dust_devil |
-| Cook | Node Alpha (`node_alpha`) | 0 | futures |
-| Speke | Node Gamma (`node_gamma`) | 0 | futures |
+| Cook | Nexus Prime (`nexus_prime`) | 0 | futures |
+| Speke | The Experiment (`the_experiment`) | 0 | futures |
 
 ## Standing History
 

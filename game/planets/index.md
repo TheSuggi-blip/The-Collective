@@ -8,7 +8,7 @@ author: Unity
 # index.md -- Systems We Know
 
 Built by `scripts/intel-index.py` from the system files of this folder;
-never edited by hand. Files listed: 174. The format of a system file:
+never edited by hand. Files listed: 190. The format of a system file:
 `BLUEPRINT.md`.
 
 ## Voidborn space
@@ -42,6 +42,8 @@ never edited by hand. Files listed: 174. The format of a system file:
 | Sol | neutral | unknown | 100 | 10 | 2026-11-16 | [n-sol.md](n-sol.md) |
 | Alpha Centauri | neutral | unknown | 80 | 11 | 2026-11-17 | [n-alpha_centauri.md](n-alpha_centauri.md) |
 | Mimosa | neutral | unknown | 30 | 12 | 2026-11-17 | [n-mimosa.md](n-mimosa.md) |
+| Tau Ceti | neutral | unknown | 55 | 12 | 2026-11-17 | [n-tau_ceti.md](n-tau_ceti.md) |
+| Electra | neutral | unknown | 30 | 13 | 2026-11-17 | [n-electra.md](n-electra.md) |
 
 ## Lawless space
 
@@ -188,9 +190,23 @@ never edited by hand. Files listed: 174. The format of a system file:
 | Merak | neutral | unknown | 0 | 12 | 2026-11-17 | [n-merak.md](n-merak.md) |
 | Merope | neutral | unknown | 0 | 12 | 2026-11-17 | [n-merope.md](n-merope.md) |
 | Mira | neutral | unknown | 0 | 12 | 2026-11-17 | [n-mira.md](n-mira.md) |
+| Phecda | neutral | unknown | 0 | 12 | 2026-11-17 | [n-phecda.md](n-phecda.md) |
+| Sheliak | neutral | unknown | 0 | 12 | 2026-11-17 | [n-sheliak.md](n-sheliak.md) |
 | Springdale | neutral | unknown | 0 | 12 | 2026-11-17 | [n-springdale.md](n-springdale.md) |
 | Subra | neutral | unknown | 0 | 12 | 2026-11-17 | [n-subra.md](n-subra.md) |
+| Thabit | neutral | unknown | 0 | 12 | 2026-11-17 | [n-thabit.md](n-thabit.md) |
+| Titawin | neutral | unknown | 0 | 12 | 2026-11-17 | [n-titawin.md](n-titawin.md) |
+| TOI-1452 | neutral | unknown | 0 | 12 | 2026-11-17 | [n-toi_1452.md](n-toi_1452.md) |
+| Westmark | neutral | unknown | 0 | 12 | 2026-11-17 | [n-westmark.md](n-westmark.md) |
+| Alsciaukat | neutral | unknown | 0 | 13 | 2026-11-17 | [n-alsciaukat.md](n-alsciaukat.md) |
+| Angetenar | neutral | unknown | 0 | 13 | 2026-11-17 | [n-angetenar.md](n-angetenar.md) |
+| Ascella | neutral | unknown | 0 | 13 | 2026-11-17 | [n-ascella.md](n-ascella.md) |
+| Barnardstar | neutral | unknown | 0 | 13 | 2026-11-17 | [n-barnardstar.md](n-barnardstar.md) |
+| Canopus | neutral | unknown | 0 | 13 | 2026-11-17 | [n-canopus.md](n-canopus.md) |
+| Chara | neutral | unknown | 0 | 13 | 2026-11-17 | [n-chara.md](n-chara.md) |
+| Dubhe | neutral | unknown | 0 | 13 | 2026-11-17 | [n-dubhe.md](n-dubhe.md) |
 | Hawthorne | neutral | unknown | 0 | 13 | 2026-11-17 | [n-hawthorne.md](n-hawthorne.md) |
+| Ivorygate | neutral | unknown | 0 | 13 | 2026-11-17 | [n-ivorygate.md](n-ivorygate.md) |
 | Oxbow | neutral | unknown | 0 | 13 | 2026-11-17 | [n-oxbow.md](n-oxbow.md) |
 | Sabik | neutral | unknown | 0 | 13 | 2026-11-16 | [n-sabik.md](n-sabik.md) |
 | Alchiba | neutral | unknown | 0 | 14 | 2026-11-17 | [n-alchiba.md](n-alchiba.md) |

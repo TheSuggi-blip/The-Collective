@@ -15,7 +15,7 @@ updated: 2026-11-17
 # Hive Swarm [HIVE]
 
 A player faction with 3 base(s) in 3 system(s); the nearest to Nexus Prime is 5 jump(s) away, in Antares (`antares`).
-Pilots of it in our space in the last 24 hours: 2.
+Pilots of it in our space in the last 24 hours: 12.
 
 ## Identity
 
@@ -42,8 +42,18 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| c36d96dba034b8d254f60b2a | Nexus Prime (`nexus_prime`) | 0 | runner |
-| c77475050d36b9648e67b7fb | Node Beta (`node_beta`) | 0 | runner |
+| 13170464db5eef0043ae9f5e | Hamal (`hamal`) | 0 | workhorse |
+| 1db2c542aded106fb4e54a0a | Synchrony (`synchrony`) | 0 | runner |
+| 395530a76c237308aaa5b1dc | Pherkad (`pherkad`) | 0 | workhorse |
+| 404cabdaa14cd583b3a3cc98 | Hamal (`hamal`) | 0 | workhorse |
+| 67194c43c43f74e1b9267ed5 | Acubens (`acubens`) | 0 | workhorse |
+| 6ce9fcc5d675364f5a7de638 | Acubens (`acubens`) | 0 | workhorse |
+| 75685d10376ae488b84c6f6e | Synchrony (`synchrony`) | 0 | runner |
+| 7ae29ec97dfdbf377fe58274 | Hamal (`hamal`) | 0 | workhorse |
+| c32239005c3b4341a6edc21e | Node Beta (`node_beta`) | 0 | runner |
+| dffe230ab864d7efef98b1fc | Hamal (`hamal`) | 0 | workhorse |
+| ec43cfe9e4293184f10e08ca | Hamal (`hamal`) | 0 | workhorse |
+| f5736d218d41c0675a22c3d6 | Node Alpha (`node_alpha`) | 0 | workhorse |
 
 ## Standing History
 
