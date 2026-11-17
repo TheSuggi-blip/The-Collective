@@ -53,6 +53,7 @@
   "gather-gsc-0027-spacetime-seep",
   "craft-steel-node-beta",
   "craft-steel-central-nexus",
+  "craft-steel-synchrony-hub",
   "census-frontier",
   "park"
  ],
@@ -125,6 +126,7 @@
   "gather-gsc-0027-spacetime-seep": 60,
   "craft-steel-node-beta": 60,
   "craft-steel-central-nexus": 60,
+  "craft-steel-synchrony-hub": 60,
   "census-frontier": 60,
   "park": 60
  },
