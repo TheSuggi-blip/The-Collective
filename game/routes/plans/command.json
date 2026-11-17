@@ -45,6 +45,8 @@
   "mine-hd-147513-belt",
   "gather-gsc-0027-prism-scatter",
   "gather-hamal-crystal-bloom",
+  "mine-pherkad-rift",
+  "gather-gsc-0027-spacetime-seep",
   "census-frontier",
   "park"
  ],
@@ -91,6 +93,8 @@
   "mine-hd-147513-belt": 6,
   "gather-gsc-0027-prism-scatter": 6,
   "gather-hamal-crystal-bloom": 6,
+  "mine-pherkad-rift": 6,
+  "gather-gsc-0027-spacetime-seep": 6,
   "census-frontier": 6,
   "park": 6
  },

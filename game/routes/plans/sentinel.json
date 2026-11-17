@@ -46,6 +46,8 @@
   "mission-ghosts-in-the-cloud-node",
   "gather-gsc-0027-prism-scatter",
   "gather-hamal-crystal-bloom",
+  "mine-pherkad-rift",
+  "gather-gsc-0027-spacetime-seep",
   "census-frontier",
   "park"
  ],
@@ -93,6 +95,8 @@
   "mission-ghosts-in-the-cloud-node": 20,
   "gather-gsc-0027-prism-scatter": 20,
   "gather-hamal-crystal-bloom": 20,
+  "mine-pherkad-rift": 20,
+  "gather-gsc-0027-spacetime-seep": 20,
   "census-frontier": 20,
   "park": 20
  },
