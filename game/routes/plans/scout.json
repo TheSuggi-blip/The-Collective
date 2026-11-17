@@ -39,6 +39,7 @@
   "mine-pherkad-rift",
   "gather-gsc-0027-spacetime-seep",
   "gather-schedar-belt",
+  "gather-ironhollow-echo-ejecta",
   "park"
  ],
  "planned": [
@@ -104,6 +105,7 @@
   "mine-pherkad-rift": 30,
   "gather-gsc-0027-spacetime-seep": 30,
   "gather-schedar-belt": 30,
+  "gather-ironhollow-echo-ejecta": 30,
   "park": 30
  },
  "of": 30,
