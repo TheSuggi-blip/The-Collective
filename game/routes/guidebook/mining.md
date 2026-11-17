@@ -67,55 +67,47 @@ the 60.
 
 ## Standing Plan
 
-What the miners fly between two turns (2026-11-17 07:20 UTC, orders.log
-ENT-029). A free miner takes the first open route of the list First (the
+What the miners fly between two turns (2026-11-17 11:35 UTC, orders.log
+ENT-036). A free miner takes the first open route of the list First (the
 missions that pay once), its own routes, the list Then (Spacetime Seep,
 Pherkad, the three steel crafts, census, park). Every miner's own routes
 are templates (section 2): `@ice-sell` and then `@reserve-prism` or
-`@reserve-hamal`; one miner carries a deuterium ice test in front of
-them, one sells its stored soma first. Figures: miner runs of 03:00 to
-07:00 UTC (data/routes/runs.jsonl, medians, because 15 runs of that
-window hold gifts of 10,000 cr or more to the Fleet Admiral's flagship);
-fields from the census reads of 06:43 to 06:52 UTC (table fields).
+`@reserve-hamal`; one miner flies the Deep Core Prospecting test in front
+of them, one a deuterium ice test, three sell or carry stored soma first. Figures:
+miner runs of 07:00 to 11:30 UTC (data/routes/runs.jsonl, medians);
+fields from the census reads of 10:15 to 11:22 UTC (table fields).
 
 | # | Route | Ships (max / lift_to) | Field or bid now | Per run, measured | What it is for |
 |---|---|---|---|---|---|
-| F | The once line, the mining missions, the First Hunts | their limits | -- | judged with the reward | Every pilot flies them first |
-| 1 | `carry-null-matter-synchrony-nexus`, `drain-methane-experiment`, the ice drains and carries | 1 each | methane bid 36 cr x 1,441 at The Experiment; water ice 3 units at 34 to 35 cr everywhere | methane drain opens at 10 units stored from 07:20 UTC | Stored goods sold where a bid stands |
-| 2 | four water-ice mine routes to Central Nexus; `mine-groombridge-34-ice-fields` | 1, 2, 1, 1; 1 | open on an order of 300 water ice | Groombridge: 6 to 13 deuterium ice sold a run of 95 minutes | New ice only on a deep order |
+| F | The once line, the mining missions, the First Hunts; `mission-deep-core-prospecting-nova-terra` | their limits; 1 | Markab Belt 503 platinum | a test from 11:10 UTC | Every pilot flies them first; rule F34 |
+| 1 | the ice drains and carries, `drain-methane-experiment`, `carry-null-matter-synchrony-nexus` | 1 to 3 each | water ice: the order of 43,315 at 34 cr at Central Nexus (09:14 UTC) gone at 11:11 UTC | 2,103 to 2,379 cr a run of 1 to 11 minutes (32 + 26 + 23 + 15 + 11 runs) | Stored goods sold where a bid stands |
+| 2 | four water-ice mine routes to Central Nexus; `mine-groombridge-34-ice-fields` | 1, 2, 1, 1; 1 | open on an order of 300 water ice | 185 to 390 ice a run of 50 to 68 minutes | New ice only on a deep order |
 | 3 | `store-hold-central-nexus` | up to 40 | -- | standing | A ship a run left loaded stores its hold |
-| 4 | `gather-acubens-belt-carbon` | 1 | 114 carbon, floor 60 | 2 runs, 95 ore an hour | Carbon, the only field in our space with any |
-| 5 | `gather-schedar-belt` | 45 / 45 | 57,479 iron (richness 57), floor 20,000 | 84 runs: 260 ore in 46.5 minutes, -204 cr | Iron one jump from Node Beta, under Military's guard |
-| 6 | `gather-ironhollow-fading-signal` | 20 / 20 | 52,551 iron (40), 413 back an hour | 46 runs: 256 ore in 47.9 minutes, -165 cr | Iron one jump from The Experiment, guarded |
-| 7 | `gather-ironhollow-echo-ejecta` | 25 / 25 | 96,911 iron (26) | 4 runs: 172 ore in 55 minutes | Iron one jump from The Experiment |
-| 8 | `gather-garnet-belt` | 3 / 10 | 100,000 iron (64) | 3 runs: 176 ore in 87 minutes, two jumps | The richest iron near us; the outpost site Mining names |
-| 9 | `gather-achernar-belt`, `gather-ruchbah-broken-glass-veil` | 1 / 1 each | 99,999 iron (32); 100,000 iron (23) | tests from 07:12 UTC | The next fields one jump from The Experiment |
-| 10 | `gather-gsc-0027-prism-scatter`, `gather-hamal-crystal-bloom`, `mine-acubens` | shared | 32,610; 31,857; 235 iron, floors 20,000 | -- | Home iron, shared with every division |
-| Then | `gather-gsc-0027-spacetime-seep`, `mine-pherkad-rift`, the steel crafts, `census-frontier`, `park` | shared | Spacetime 21,674 iron; Pherkad iron 1, copper floor 30,000 (closed) | -- | Standing work for the rest |
+| 4 | `gather-acubens-belt-carbon` | 1 | 36 carbon, floor 60 | 5 runs: 180 ore in 50.3 minutes | Carbon, the only field in our space with any |
+| 5 | `gather-schedar-belt` | 45 / 45 | 29,315 iron (57), floor 20,000 | 121 runs: 260 ore in 45 minutes, -192 cr | Iron one jump from Node Beta, guarded; at its floor within about an hour |
+| 6 | `gather-ironhollow-fading-signal` | 20 / 20 | 29,682 iron (40) | 96 runs: 291 ore in 48 minutes, -180 cr | Iron one jump from The Experiment, guarded; at its floor within about two hours |
+| 7 | `gather-ironhollow-echo-ejecta` | 25 / 35 | 94,938 iron (26) | 11 runs: 174 ore in 45 minutes, -180 cr | Iron one jump from The Experiment, guarded |
+| 8 | `gather-garnet-belt` | 15 / 25 | 99,179 iron (64) | 12 runs: 260 ore in 47.9 minutes, -294 cr | The richest iron near us, two jumps, guarded |
+| 9 | `gather-achernar-belt`, `gather-ruchbah-broken-glass-veil` | 3 / 10; 2 / 3 | 96,648 iron (32); 99,999 (23) | 1 run each: 195 ore in 47.7 and 49.1 minutes, -180 cr | One jump from The Experiment; Ruchbah held low for a BUSY combat drone seen fighting there |
+| 10 | `gather-gsc-0027-prism-scatter`, `gather-hamal-crystal-bloom`, `mine-acubens` | shared | 13,276; 14,664 iron: under their floors | -- | Home iron, shared with every division |
+| Then | `gather-gsc-0027-spacetime-seep`, `mine-pherkad-rift`, the steel crafts, `census-frontier`, `park` | shared | closed at their floors; steel from stored iron | 28 steel runs of 6 minutes | Standing work for the rest |
 
-Why this plan. Iron is the reserve's largest short ore: 300,312 held of
-599,020 (the tool stock, view=reserve, 07:03 UTC); Mining stored 7,062
-iron and 7,022 copper an hour over the last four hours (hive.py flow,
-07:15 UTC) for about 16,700 cr of fuel an hour (hive.py fleet, 07:16
-UTC). Iron is asked at 4 cr in depth, so what Mining stores is worth
-about 28,000 cr an hour at that ask. Every iron floor is 20,000 since
-07:12 UTC: the game says a depleted deposit refills gradually in
-proportion to its capacity (game/rules/13-not-stated.md, from the
-official mining page), and our reads agree (Hamal about 360 an hour at
-31,000 while closed, Ironhollow Fading Signal 413 at 52,551, Echo Ejecta
-312 near 97,000; hive.py refill and the table readings): a higher floor
-buys no faster regrowth. Copper is surplus (296,170 held against
-79,044), so Pherkad, which gives copper only, keeps its floor of 30,000
-and stays closed. Schedar reaches its floor in about four hours at 45
-ships; its ships then take Echo Ejecta, Garnet and the tests.
+Why this plan. Iron is the reserve's largest short ore: 344,892 held of
+540,840 (the tool stock, view=reserve, 11:05 UTC; 300,312 at 07:03 UTC).
+Mining put 9,913 iron, 5,720 copper, 125 carbon and 101 gold an hour into
+storage over the four hours to 11:11 UTC (hive.py flow Zero). The ice
+drains and carries sold into a single deep water-ice order at Central
+Nexus and closed by their bid gates when it was gone. Schedar and Fading
+Signal reach their floors next; their ships go to Garnet, Echo Ejecta,
+Achernar and Ruchbah, which `fill.py` widens up to their `lift_to` only
+while ships wait.
 
-What would change it: Schedar at its floor; the first RESULT lines of
-the two tests (each is lifted through `lift_to` once read); an outpost
-at Garnet (the belt would store at no jump); a hostile ship at a field
-beyond the border (rule F13); a water-ice order of 300 units at Central
-Nexus; a hull with a bigger hold (section 5, the Liminal). Each turn
-starts with `stalled.py` of the mining-chains skill, `fill.py status
-miner` and `hive.py flow Zero`.
+What would change it: the RESULT lines of the Liminal (one hull ordered
+at Node Beta, section 5) and of the Deep Core test; the outpost at
+GSC-0044 founded (its five belts go in, section 7); a hostile ship at a
+field beyond the border (rule F13); a water-ice order of 300 units at
+Central Nexus. Each turn starts with `stalled.py` of the mining-chains
+skill, `fill.py status miner` and `hive.py flow Zero`.
 
 ## 1. Route Guides
 
@@ -266,6 +258,15 @@ first.
 | `voidborn-conductive-lattice` | about 10,900 cr | 32 miner runs, +273,451 cr | 2026-11-16 08:00 to 12:20 UTC | The Node Beta chain |
 | `voidborn-network-expansion` | 1,500 cr | 12 miner runs, +17,374 cr | 2026-11-16 08:00 to 12:20 UTC | After First Steps |
 
+The mining missions of the boards (rule F34; data/missions, read
+2026-11-17 11:05 UTC); each counts only units the pilot mines itself:
+
+| Mission | Asks | Pays | Where the ore lies | State |
+|---|---|---|---|---|
+| Deep Core Prospecting (six boards) | 20 platinum ore | 5,000 cr, 10 exotic matter, deep core mining 25 XP | Markab Belt 503 of 8,000 (Solarian, 2 jumps from Nova Terra Central); GSC-0049 reef 20; Acubens Belt 2 | `mission-deep-core-prospecting-nova-terra`, one ship from 11:10 UTC |
+| Titanium Extraction Contract (ten boards) | 20 titanium ore | 3,500 cr, mining 25 XP | 70 at GSC-0028, 50 at Jasmine, 12 or less elsewhere (7 to 11 jumps) | not flown: no field holds a load |
+| The Collective Provides (Central Nexus, the Voidborn chain) | 20 nickel ore | 2,500 cr, Voidborn Mastery 25 XP | Gliese 876 Belt 635 of 12,000, about 28 back an hour (7 jumps, 3 from the pirate stronghold Gliese 581); Algorab 1,342 (12 jumps); Jadecove 609, Azha 570, Rotanev 424; GSC-0049 reef 39, about 10 back an hour | Trade's route, off; the readings in admirals.log ENT-029 |
+
 ## 4. Levelling Guide
 
 Which skills a ship of this division levels and on which work (rules
@@ -323,8 +324,12 @@ miners, 36 hours played (median).
   of loads, so the load size sets what a ship brings an hour (section 1).
   Its materials (the tool catalog, ask=build): 5 shield matrix, 3 ore
   hopper, 1 processing core, 12 silicate composite, 10 copper wiring, 5
-  void nanite suspension (made in a facility), 2 shield emitter. Its
-  price on the exchange and at a shipyard is not read yet. The tier 2
+  void nanite suspension (made in a facility), 2 shield emitter. The
+  game's `commission_quote` (2026-11-17 11:06 UTC): 58,589 cr with
+  credits only at Node Beta (168 ticks), 83,307 at Central Nexus (84
+  ticks), with a Mining Laser I and two Shield Booster I; with our own
+  materials 8,659 and 12,053 cr. One was ordered at Node Beta at 11:11
+  UTC for 58,881 cr (`commission.py` of the mining-chains skill). The tier 2
   step at Piloting 10 is the Resonance Miner (hold 180, 4 utility slots,
   cpu 28, power 48); for ice the Rime (tier 1) and the Hoarfrost (tier 2).
 - Half of every iron load is copper the fleet holds in surplus (hive.py
@@ -372,9 +377,9 @@ miners, 36 hours played (median).
   on offer at 2,130 cr at Ironlight Crossroads (queue.log ENT-046). Its
   gain in units a minute is not in the catalog and not measured: one
   miner tests it once the waiting miners carry the Mark I.
-- The next hull: tier 2 opens at Piloting 10, about 119 hours away for
-  the median miner. Until then the money goes into harvesters (orders
-  F17, strategy principle 1).
+- Tier 2 opens at Piloting 10, about 42 hours away for the median miner
+  (the tool fleet, view=levels, 2026-11-17 11:10 UTC). The step before
+  it is the tier 1 Liminal above, which asks no Piloting.
 - Extraction filters take one ore out of a pull's draw (Magnetic Ore
   Separator, Flotation Cell, Electromagnetic Refinery, Isotope
   Separator); not bought: no rare ore of our fields has a buyer with
@@ -436,21 +441,30 @@ no ship of ours on it. Lifted to 5 ships at 23:25 UTC.
 
 ## 7. Open Tests
 
-- `gather-achernar-belt` and `gather-ruchbah-broken-glass-veil` (from
-  2026-11-17 07:12 UTC, one ship each, `lift_to` 1): ore a run, minutes
-  and the iron share, then a lift through `lift_to`; the table `met`
-  read first (a BUSY combat drone was met in combat at Achernar Belt
-  about 9 hours before).
-- `gather-garnet-belt` at 3 ships: what three ships bring two jumps out
-  against Echo Ejecta's one jump at lower richness.
-- `drain-methane-experiment` at 10 units: credits a run against the 202
-  methane ice in 18 storages at The Experiment.
-- The default stance `flee` on every miner, set by the script
-  `set_stance.py` of the mining-chains skill from 07:13 UTC (a miner is
-  taken only while docked and free): the miners done are read from its
-  state file at the next turn.
-- A Liminal: its price and where it is sold or made; one ship first.
-- `mine-groombridge-34-ice-fields`: deuterium ice a run (6 to 13) against
-  the bids, which come in single units.
+- The Liminal: one hull ordered at Node Beta (58,881 cr, 2026-11-17
+  11:11 UTC), the pilot switched into it after the build; then ore a run
+  and minutes on a gather field against the Threshold's 260 ore in 45
+  minutes. A second hull only on that figure.
+- `mission-deep-core-prospecting-nova-terra` (one ship): offered to a
+  miner or not, how many loads give 20 platinum, the credits and the
+  exotic matter, whether the board offers it again.
+- `gather-achernar-belt` (3, `lift_to` 10) and
+  `gather-ruchbah-broken-glass-veil` (2, `lift_to` 3): one run each so
+  far, 195 ore in about 48 minutes; Ruchbah stays low while a BUSY
+  combat drone fights there.
+- The outpost at GSC-0044, when founded: gather routes storing there,
+  one ship each first, richest iron first: Botein Belt (68), Acrux Belt
+  (64, with 13,377 lithium the reserve lacks), GSC-0044 Belt (46),
+  Intercrus Belt (43), Forgotten Tailings (40) (table fields, 09:56 to
+  10:17 UTC).
+- Silicon: Subra Floodlight Flats 3,187 and Zubenelhakrabi Crystal Sand
+  771 (11 to 12 jumps, a station two jumps from each); a test stores,
+  on a bigger hold, never sells (rule F24).
+- The default stance `flee`: 17 of 60 miners set by 07:29 UTC (the
+  script's state file); the script ended with the turn's session, and
+  the rest is set again from 11:36 UTC.
+- `mine-groombridge-34-ice-fields`: deuterium ice a run against the
+  bids, which come in single units.
 - A Flotation Cell (filter_copper_ore) on one iron miner: the iron share
-  of its loads against about 50%. Not bought yet.
+  of its loads against about 50%. Not bought yet; a Liminal has the third
+  slot for it.
