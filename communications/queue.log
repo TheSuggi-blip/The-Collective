@@ -487,3 +487,6 @@ Changed hull ascendancy: inherent_capabilities: none -> [{"type":"fleet_command_
 Changed hull eldorado: default_modules: 1 -> 6 entries, first difference at 1: mining_laser_iv -> mining_laser_v; inherent_capabilities: none -> [{"type":"ore_yield_bonus","value":35},{"type":"ore_cargo_efficiency" (cut)
 Every change: python3 -B scripts/catalog-refresh.py diff 0.719.3 0.721.1
 The catalog files, the craft book and the database follow within the hour.
+
+## [ENT-134] | 2026-11-17 01:34 UTC | Unity | general | ref: station/fleet.py | see: ENT-132
+The Fleet Admiral's turn of 01:30 UTC changes no file of station/ (the collector and the page): Suggi works on the station's page and on how the collector counts money in the chat this hour, and that work is installed after this turn. The builds of ENT-132 that sit in the collector (the pilots the engine holds claimed beside `away`, the cap of three tries in the rejoin, the record of a reconnect wave) wait for it; the rest of this turn's builds stand outside station/.
