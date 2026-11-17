@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 79.
+Routes: 80.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -93,5 +93,6 @@ Routes: 79.
 | [gather-glasslight-shoal-silicon](gather-glasslight-shoal-silicon.json) | mine | beyond the border, 10 jumps | A test: silicon ore gathered at Glasslight Shoal (Clearwater, lawless) into storage at Node Beta for the faction's circuit boards | up to 1 ships, empty hold, standing work | 1 | 95 | -730 | -460 | 2026-11-17 |
 | [gather-ironhollow-echo-ejecta](gather-ironhollow-echo-ejecta.json) | mine | beyond the border, 4 jumps | Standing work, a test: iron at Ironhollow Echo Ejecta (beyond the border) into storage at The Experiment | up to 35 ships, needs mining_laser_i, empty hold, standing work | 79 | 48 | -180 | -240 | 2026-11-17 |
 | [gather-ironhollow-fading-signal](gather-ironhollow-fading-signal.json) | mine | beyond the border, 4 jumps | Standing work, a test: iron at Ironhollow Fading Signal (beyond the border) into storage at The Experiment | up to 20 ships, needs mining_laser_i, empty hold, standing work | 182 | 48 | -80 | -100 | 2026-11-17 |
+| [gather-okab-belt](gather-okab-belt.json) | mine | beyond the border, 4 jumps | Standing work, a test: iron and copper ore at Okab Belt (beyond the border, one jump past Hamal) into storage at Node Beta, where the craft-piping route makes them into steel plate and copper piping | up to 1 ships, needs mining_laser_i, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [gather-ruchbah-broken-glass-veil](gather-ruchbah-broken-glass-veil.json) | mine | beyond the border, 4 jumps | Standing work, a test: iron at Ruchbah Broken Glass Veil (beyond the border, one jump from The Experiment) into storage at The Experiment | up to 2 ships, needs mining_laser_i, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [gather-schedar-belt](gather-schedar-belt.json) | mine | beyond the border, 2 jumps | Standing work, a test: iron at Schedar Belt (beyond the border, one jump from Node Beta) into storage at Node Beta | up to 45 ships, needs mining_laser_i, empty hold, standing work | 178 | 45 | -420 | -540 | 2026-11-17 |

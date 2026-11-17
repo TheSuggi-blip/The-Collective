@@ -1,0 +1,19 @@
+{
+ "id": "gather-okab-belt",
+ "kind": "mine",
+ "title": "Standing work, a test: iron and copper ore at Okab Belt (beyond the border, one jump past Hamal) into storage at Node Beta, where the craft-piping route makes them into steel plate and copper piping",
+ "note": "Written by Mercury, 2026-11-17 11:44 UTC (orders ENT-036, block MERCURY: a trader gathers only when no trade, carry or craft is open; rules F8, F13, F23). Every home gather field of the trader plan stood at its floor at 11:31 UTC (fill.py status trader: Hamal, GSC-0027, Acubens, Pherkad) and 33 traders waited. Okab Belt read 99,999 iron ore and 100,000 copper ore of 100,000 each (census of 11:22 UTC, table fields); Okab is 3 jumps from Node Beta by Acubens and Hamal, the last jump lawless; no pirate stands on our record in Okab (observations, kind pirate); Military hunts carapace at this belt (hunt-okab-belt-carapace). The iron goes to the reserve (187,716 short, stock view=reserve 11:33 UTC); the copper and the iron feed craft-piping-node-beta. A test beyond the border (rule F13): one ship, empty hold out, until its first RESULT line is read; lift_to 8 lets fill.py widen it while ships wait and the field carries them. min_left keeps 20,000 iron in the field.",
+ "belt": "okab:okab_belt",
+ "station": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+ "minutes": 45,
+ "max_ships": 1,
+ "lift_to": 8,
+ "standing": true,
+ "min_left": {
+  "iron_ore": 20000
+ },
+ "requires": {
+  "module": "mining_laser_i",
+  "empty_hold": true
+ }
+}
