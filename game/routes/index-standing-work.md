@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 71.
+Routes: 72.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -83,6 +83,7 @@ Routes: 71.
 | [hunt-schedar-belt-carapace](hunt-schedar-belt-carapace.json) | hunt | beyond the border, 2 jumps | Belt-grazers and patina-grazers at Schedar Belt (Schedar); creature carapace into storage at Node Beta Industrial Station | up to 1 ships, without piercing_railgun_i, empty hold, standing work | 8 | 10 | -60 | -310 | 2026-11-17 |
 | [gather-achernar-belt](gather-achernar-belt.json) | mine | beyond the border, 4 jumps | Standing work, a test: iron at Achernar Belt (beyond the border, one jump from The Experiment) into storage at The Experiment | up to 1 ships, needs mining_laser_i, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [gather-garnet-belt](gather-garnet-belt.json) | mine | beyond the border, 5 jumps | Standing work, a test: iron at Garnet Belt (beyond the border, two jumps from The Experiment) into storage there | up to 3 ships, needs mining_laser_i, empty hold, standing work | 4 | 49 | -300 | -370 | 2026-11-17 |
+| [gather-glasslight-shoal-silicon](gather-glasslight-shoal-silicon.json) | mine | beyond the border, 10 jumps | A test: silicon ore gathered at Glasslight Shoal (Clearwater, lawless) into storage at Node Beta for the faction's circuit boards | up to 1 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [gather-ironhollow-echo-ejecta](gather-ironhollow-echo-ejecta.json) | mine | beyond the border, 4 jumps | Standing work, a test: iron at Ironhollow Echo Ejecta (beyond the border) into storage at The Experiment | up to 25 ships, needs mining_laser_i, empty hold, standing work | 28 | 48 | -190 | -240 | 2026-11-17 |
 | [gather-ironhollow-fading-signal](gather-ironhollow-fading-signal.json) | mine | beyond the border, 4 jumps | Standing work, a test: iron at Ironhollow Fading Signal (beyond the border) into storage at The Experiment | up to 20 ships, needs mining_laser_i, empty hold, standing work | 106 | 48 | -10 | -10 | 2026-11-17 |
 | [gather-ruchbah-broken-glass-veil](gather-ruchbah-broken-glass-veil.json) | mine | beyond the border, 4 jumps | Standing work, a test: iron at Ruchbah Broken Glass Veil (beyond the border, one jump from The Experiment) into storage at The Experiment | up to 1 ships, needs mining_laser_i, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
