@@ -38,6 +38,7 @@
   "gather-hamal-crystal-bloom",
   "mine-pherkad-rift",
   "gather-gsc-0027-spacetime-seep",
+  "gather-schedar-belt",
   "park"
  ],
  "planned": [
@@ -102,6 +103,7 @@
   "gather-hamal-crystal-bloom": 30,
   "mine-pherkad-rift": 30,
   "gather-gsc-0027-spacetime-seep": 30,
+  "gather-schedar-belt": 30,
   "park": 30
  },
  "of": 30,
