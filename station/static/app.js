@@ -860,13 +860,15 @@ function renderMembers() {                       // the top bar: the six members
   const box = $('members'), by = new Map();
   box.replaceChildren();
   const purse = $('purse'), have = F.totals || {}, hour = have.rates && have.rates.windows ? have.rates.windows['1h'] : null;
-  purse.replaceChildren(el('div', 'k', 'Credits'), el('div', 'v', have.ships ? fmt(have.credits) : '--'));
+  const treasury = (S && S.holdings && S.holdings.treasury) || 0;   // the faction's treasury, the fleet's main purse (D225)
+  purse.replaceChildren(el('div', 'k', 'Credits'), el('div', 'v', have.ships ? fmt((have.credits || 0) + treasury) : '--'));
   if (hour) {                                     // what all wallets changed by per hour over the last hour, everything counted
     const line = el('div', 's');
     line.append(tint(hour.total_per_hour !== undefined ? hour.total_per_hour : hour.cph + hour.one_time_per_hour), ' /h');
     purse.append(line);
   }
-  purse.title = 'All wallets of the fleet. Below: what they changed by per hour over the last hour, everything counted: steady money and rewards paid once';
+  purse.title = 'The fleet\'s money: all wallets (' + fmt(have.credits) + ' cr) plus the faction purse (' + fmt(treasury) + ' cr). '
+    + 'Below: what the wallets changed by per hour over the last hour, everything counted: steady money and rewards paid once';
   F.ships.forEach((r) => { if (!by.has(r.division)) by.set(r.division, []); by.get(r.division).push(r); });
   for (const a of (S ? S.roster : [])) {
     const list = by.get(a.division) || [], c = DIV[a.division] || DIV.Unassigned, b = el('button', 'member');
