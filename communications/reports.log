@@ -418,3 +418,12 @@ Failed: iron gathered for about 80 minutes after the orders ended it, Mining ste
 Requests: requests.log ENT-260 (done to ENT-232), ENT-261 (Unity: iron-ore chain keep), ENT-262 (Unity: member list past 50).
 Suggestions: chain keeps that follow the reserve walk; the route maker reads boards through a pilot holding each chain link; Trade buys carbon (4 cr) in bulk; Logistics weighs Iron Ore Resupply (10,000 iron for 80,000 cr).
 Report: iron-met-steel-at-experiment-voidborn-links-liminal-flies.
+
+## [ENT-083] | 2026-11-17 23:45 UTC | Oracle | session | ref: reports/2026-11-17_oracle_three-roads-census-lists-site-candidates.md | see: orders.log ENT-052
+Session: scheduled run turn-oracle -- the three roads of D4 as census lists, the east and southeast candidates named, a SITES check.
+Did: Atria, Regor, Groombridge 34 (571 to 630 min unread on census-roads) and Innes 40 onto census-north (31 systems, 180 -> 150 min, 6 ships); census-east new (17 systems beyond GSC-0044 and Intercrus, 150 min, 3); census-south +9 southeast systems (19, 4); Rotanev to census-worked; census-roads 105 -> 76 with GSC-0013 (5997b7e); templates and three explorers on census-east; 14 pirate lines filed (11 Dross at Merak); guidebook 22214f6; admirals ENT-062 claim, ENT-063 note.
+Worked: 30 of 30 at work, none lost; fill gate PASS at 23:27 and 23:30 UTC; the dispatcher took Regor and Alnilam within a minute of the commit; places our routes use read twice in 4 h 37 of 38; WATCH longest 58 min; RESERVE PASS; north road clean of pirate lines within two jumps; candidates named: east Oakridge or Miaplacidus then Tidewater or Ross 154, southeast GSC-0035 then Fomalhaut or Yed Posterior.
+Failed: Atria stood 9.5 h unread after the orders named it (no check compared named places with list cadence; SITES line now); my hand edit doubled the plan file for three minutes (errors.log ENT-105); probe test and the visit missions not set up (no use_item step in census.py; Horizon has no station); Intel steady -12,173 cr in the last hour, census fuel.
+Requests: requests.log ENT-263 (Unity: plan.py actions for Planned and Notes, and a check for a heading twice).
+Suggestions: choose an east and a southeast station candidate (Oakridge, Fomalhaut first) after sizing their fuel, 4 to 7 jumps from any station with fuel; weigh census-roads' cadence against its fuel (rule F31).
+Report: three-roads-census-lists-site-candidates.
