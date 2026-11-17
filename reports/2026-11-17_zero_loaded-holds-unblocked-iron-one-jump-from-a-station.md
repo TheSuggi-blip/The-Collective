@@ -92,7 +92,7 @@ hulls (`hive.py levels`). No hull or module was bought this turn.
   the home gathering routes, which accept a loaded ship, were open. It showed when their
   floors closed them. Fixed in the script, with tests that failed on the old code. Not
   yet seen on a live run: the first runs on the new code end at about 03:58 UTC.
-  Recorded in errors.log, this turn.
+  Recorded in errors.log ENT-071.
 - **Steady money of the coming hours.** Mining's forecast reads -10,073 cr an hour
   (03:22 UTC), against -2,452 before the plan. Ships that sat docked at no cost now
   gather iron, which costs fuel. In exchange the reserve gains about 1,000 to 1,500 iron
