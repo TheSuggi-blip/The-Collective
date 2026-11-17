@@ -632,7 +632,7 @@ book of ours holds: the search for those creatures is Intel's and the hunt Milit
 Steel is the step that eats iron: `refine_steel` in a facility takes 5 iron for 2 plates
 against 10 for 1 by hand; its fee per run is not read yet (planned).
 
-## 14. The Faction's Plates and Boards (orders.log ENT-017, P5)
+## 14. The Faction's Plates and Boards (orders.log ENT-017 and ENT-020, P5)
 
 The lockbox and the hiring board take 275 steel plate and 75 circuit boards
 (orders ENT-017). Who builds them and where is the Fleet Admiral's; the goods move
@@ -662,16 +662,28 @@ For the stations' 49,140 plate the same recipe takes 491,400 iron ore and, at
 about 25 plates a minute, about 33 hours of one docked hauler's workshop time;
 `refine_steel` in a facility takes a quarter of the ore (section 13).
 
-Circuit boards: not made this turn. Every by-hand board recipe takes silicon ore,
-and the fleet holds 34, all at Central Nexus: 16 in one hauler's storage, 16 and 1
-in two Mining storages, 1 in a scout's (storage book 18:37 UTC).
-`carbon_arc_circuit_etching` makes 3 boards from 2 silicon and 12 carbon;
-`fabricate_circuit_boards` 2 boards from 2 silicon, 3 copper and 1 energy crystal.
-So 75 boards take 50 silicon by etching (and 300 carbon), 75 by fabrication. With
-Mining's 16 silicon and 17 carbon in the crafting hauler's storage (requests.log
-ENT-168), 16 etchings give 48 boards; with the one board stored there, 49 of 75.
-The other 26 take about 18 silicon more: Central Nexus asked silicon ore at 420 cr
-for 424 units and circuit boards at 686 cr for 250 (book of 19:07 UTC). Etched from
-bought silicon a board costs about 280 cr in silicon (2 at 420 for 3 boards), against
-686 cr bought whole. Silicon is the limit; a buy for a craft is one unit first (rule
-F12).
+Circuit boards, 2026-11-17 00:45 UTC: 1 held. Mining gave 16 silicon ore and 17 carbon ore
+into the crafting hauler's storage at Central Nexus (requests.log ENT-175), which then held
+32 silicon and 36 carbon (the game's storage view, 2026-11-16 23:53 UTC). Four hand recipes
+make boards (catalog 0.719.3):
+
+| Recipe | Inputs | Boards | Ticks a run |
+|---|---|---|---|
+| `carbon_arc_circuit_etching` | 2 silicon ore, 12 carbon ore | 3 | 6 |
+| `fabricate_circuit_boards` | 3 copper ore, 2 silicon ore, 1 energy crystal | 2 | 6 |
+| `fabricate_gold_circuit_boards` | 3 copper ore, 3 gold ore, 1 energy crystal | 2 | 9 |
+| `reclaim_circuit_boards` | 3 rare salvage, 5 salvage components | 1 | 3 |
+
+Under way: the crafting hauler is taken at the end of its run (about 01:23 UTC) by
+`catch.py`, carries its silicon, carbon and board to Node Beta, buys carbon there at 4 cr up
+to 192 in storage, etches 16 runs (48 boards) and gives every board into the storage that
+holds the faction's steel plate (`stage.py` of the skill logistics-stock). Its log is read
+next turn. With the board held, 49 of 75.
+
+The other 26: silicon has no field in the 66 systems Intel read (admirals.log ENT-003); the
+one deep ask, Central Nexus at 420 cr for 425 units (book of 2026-11-16 23:49 UTC), is
+Trade's claim (admirals.log ENT-004), and 18 units are asked of Trade (requests.log
+ENT-179). Gold needs no silicon: Ironlight Crossroads asked gold ore at 138 cr, and the
+test `buy-gold-ironlight-boards` makes 2 boards from 3 of it (section 1.5). A board costs
+about 280 cr of silicon at 420 cr by etching, about 207 cr of gold at 138 cr, and 515 to
+743 cr bought whole at the asks of our books (2026-11-16 23:30 to 23:49 UTC).
