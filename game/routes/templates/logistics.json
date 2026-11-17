@@ -7,6 +7,7 @@
    "routes": [
     "sell-hydrogen-at-node-beta",
     "sell-hydrogen-at-node-gamma",
+    "sell-hydrogen-at-synchrony",
     "carry-hydrogen-synchrony-to-experiment",
     "sell-soma-at-node-beta",
     "sell-soma-at-synchrony",
@@ -14,6 +15,8 @@
     "carry-soma-beta-to-gamma",
     "carry-soma-synchrony-to-alpha",
     "sell-plasma-node-beta",
+    "sell-palladium-at-node-gamma",
+    "carry-palladium-nexus-to-gamma",
     "sell-liquid-hydrogen-central",
     "sell-liquid-hydrogen-node-beta",
     "carry-liquid-hydrogen-node-beta-central"
@@ -22,7 +25,7 @@
     "trading",
     "navigation"
    ],
-   "note": "Every route is gated by requires.stored and requires.bid: it opens for one pilot while its bid stands and closes by itself. It heads every hauler's list because a route behind standing work is never reached. Since 2026-11-17 08:00 UTC the hydrogen and soma routes are Trade's (admirals.log ENT-011, ENT-012: open to every division, floors kept by Trade): haulers store 2,257 hydrogen gas at Node Beta and Node Gamma and 98 soma; Logistics' own soma routes (floor 500) stood under every bid (344 to 353) and are out of the template."
+   "note": "2026-11-17 20:05 UTC: Trade's sell and carry routes that its template trade-sell opens to every division (each pilot sells its own stores, rule F24): hydrogen at Synchrony Hub and palladium at Node Gamma added; the two null matter tests stay Trade's claim (admirals.log ENT-053). Gated by requires.stored and requires.bid; one ship a route."
   },
   "craft-reserve": {
    "title": "Steel and copper piping crafted from what each hauler stores, for the reserve",
