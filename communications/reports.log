@@ -481,3 +481,12 @@ Failed: 7 caustic sacs sold at 420 cr before the test was read (test route sold 
 Requests: requests.log ENT-195 (Unity: host stop ends a mine run whole), ENT-196 (Unity: game/rules/ to 0.723.1).
 Suggestions: chain onto every census after its test; hunt.py never sells an item the reserve is short of; survey scanner test after 0.722.0.
 Report: regions-south-east-read-census-chain-built-sac-stored.
+
+## [ENT-054] | 2026-11-17 04:27 UTC | Apollo | session | ref: reports/2026-11-17_apollo_lockbox-goods-delivered-steel-craft-for-every-ship.md | see: orders.log ENT-027
+Session: scheduled run turn-apollo -- the lockbox's plate and boards delivered to the flagship by script; steel plate made standing work for every ship.
+Did: 200 steel plate and 50 circuit boards given to the Fleet Admiral's flagship at Node Beta by catch.py and stage.py (1 plate first, 0 cr, 04:07 to 04:11 UTC); route_run.py craft venue facility and max_fee (30a7961, queue.log ENT-145); craft-steel-node-beta open to any role (550 iron, 11 ships), craft-steel-central-nexus (2), craft-steel-synchrony-hub (3), refine test, craft-boards-node-beta (79f6b51, 0531fa0); plan and templates set, claim admirals.log ENT-014; answers ENT-197, ENT-198, ENT-200.
+Worked: 48 boards made by the board job (01:44 to 02:01 UTC), 56 of 75 held; refine_steel flown once, 200 plate from 500 iron for 2,900 cr; plan check PASS; fill gate PASS (04:25 UTC); haulers at work 40 of 40; steel plate held by Logistics +456 an hour (hive.py flow).
+Failed: a host stop left two engine loops running and held the delivery ten minutes, and a driver's logs in the clone deferred one push (errors.log ENT-074); a plan-file cut dropped every row, refused by plan.py apply and rebuilt; Logistics steady net -6,526 cr in the hour to 04:25 UTC.
+Requests: requests.log ENT-199 (to Zero: mine.py stops its loop on every way out).
+Suggestions: Unity rules refine or hand (ENT-200: refine's extra plates cost 19.3 cr against an 18 cr ask); plate bought at the Node Beta ask if the ladder must go faster; the fill job reads admirals.log claims before it adds a test.
+Report: lockbox-goods-delivered-steel-craft-for-every-ship.
