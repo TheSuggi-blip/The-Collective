@@ -309,9 +309,9 @@ def workshop(job, base):
     """One `craft` entry of a stop at the station's workshop, the way craftchain.py of the skill logistics-stock made
     harvesters and liquid hydrogen (2026-11-16): the entry's `inputs` aboard go into the pilot's storage first (the
     workshop takes its inputs from there, guidebook logistics.md sections 7 and 11); a quote (`dry_run`); then the runs,
-    asked again for the rest after each job delivered (7 etchings asked, 3 queued); the made units counted in storage,
-    where they arrive, each job waited for at most craftchain.py's limit. A craft that cannot start makes nothing and
-    moves nothing back: the run goes on. Returns (units made, the note for the run's row or None)."""
+    asked as runs x per_run made units (the game's `quantity`), again for the rest after each job delivered; the made
+    units counted in storage, where they arrive, each job waited for at most craftchain.py's limit. A craft that cannot
+    start makes nothing and moves nothing back: the run goes on. Returns (units made, the note for the run's row or None)."""
     recipe, runs, per, item = job['recipe'], int(job['runs']), int(job.get('per_run') or 1), job.get('makes')
     if not item:                                     # nothing named to count in storage: no wait could tell a job done
         say(f'craft {recipe}: not crafted, the entry names no `makes`')
@@ -319,7 +319,9 @@ def workshop(job, base):
     hold = cargo()
     for name in store_list(job.get('inputs') or [], hold):
         deposit(name, hold[name])
-    asked = {'recipe_id': recipe, 'quantity': runs, 'deliver_to': 'storage', 'preset': 'workshop'}
+    # the game counts `quantity` in made units, rounded up to whole runs (27 liquid hydrogen asked queued 9 runs of 3,
+    # queue.log ENT-114): runs x per_run asks every run in one job
+    asked = {'recipe_id': recipe, 'quantity': runs * per, 'deliver_to': 'storage', 'preset': 'workshop'}
     quote = craft_fields(raw('craft', dict(asked, dry_run=True)))
     try:
         fee = float(quote.get('credits_total') or 0)
@@ -337,7 +339,7 @@ def workshop(job, base):
     first = stored(base).get(item, 0)
     count, left, wanted = first, runs, runs * per
     while left > 0:
-        answer = craft_fields(raw('craft', dict(asked, quantity=left)))
+        answer = craft_fields(raw('craft', dict(asked, quantity=left * per)))
         queued = answer.get('runs') if isinstance(answer.get('runs'), int) and not isinstance(answer.get('runs'), bool) else 0
         if not queued:
             match = re.search(r'\((\d+) run', str(answer.get('message') or ''))

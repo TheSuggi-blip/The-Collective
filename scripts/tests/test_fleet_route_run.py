@@ -289,11 +289,12 @@ def call(method, path, body=None, timeout=900):
     if action == "craft":
         if params.get("dry_run"):
             return 200, {"structuredContent": {"kind": "quote", "details": WORLD["quote"]}}
-        runs = min(WORLD["queue"].pop(0) if WORLD["queue"] else 0, params["quantity"])
+        asked = -(-params["quantity"] // WORLD["per_run"])      # the game: `quantity` counts made units, rounded up to runs
+        runs = min(WORLD["queue"].pop(0) if WORLD["queue"] else 0, asked)
         if runs:
             WORLD["jobs"].append({"item": WORLD["makes"], "units": runs * WORLD["per_run"], "ticks": WORLD["ticks"]})
         return 200, {"structuredContent": {"kind": "job", "details": {"job_id": "job-%d" % len(WORLD["jobs"]), "runs": runs,
-                                                                      "message": "%d of %d runs queued" % (runs, params["quantity"])}}}
+                                                                      "message": "%d of %d runs queued" % (runs, asked)}}}
     return 200, {}
 
 
@@ -359,11 +360,11 @@ class CraftStepTests(unittest.TestCase):
         self.assertEqual(steps(log), [
             "goal prepare-at-station", "get_active_missions", "view_market", "get_missions",          # dock, hand in, the book
             "goal buy-items",                                                                         # the sale finds no node aboard; the buy
-            "deposit 8 silver_wiring", "craft dry_run", "view", "craft 8", "view", "view",            # inputs into storage, quote, queue, wait
+            "deposit 8 silver_wiring", "craft dry_run", "view", "craft 16", "view", "view",            # inputs into storage, quote, queue, wait
             "view_market", "get_missions", "view", "withdraw 16 control_node", "sell 16 control_node"], out)   # a fresh book, then the sale once more
         crafts = [params for action, params in log if action == "craft"]
-        self.assertEqual(crafts[0], {"recipe_id": "assemble_control_node", "quantity": 8, "deliver_to": "storage", "preset": "workshop", "dry_run": True})
-        self.assertEqual(crafts[1], {"recipe_id": "assemble_control_node", "quantity": 8, "deliver_to": "storage", "preset": "workshop"})
+        self.assertEqual(crafts[0], {"recipe_id": "assemble_control_node", "quantity": 16, "deliver_to": "storage", "preset": "workshop", "dry_run": True})
+        self.assertEqual(crafts[1], {"recipe_id": "assemble_control_node", "quantity": 16, "deliver_to": "storage", "preset": "workshop"})
         self.assertEqual((row["credits_before"], row["credits_after"], row["delta"]), (20000, 20000 - 2424 + 16 * 800, 16 * 800 - 2424))
         self.assertEqual((row["stops"], row["of"], row["notes"]), (1, 1, []))
         self.assertEqual((world["cargo"].get("control_node"), world["storage"].get("control_node"), world["book"]["control_node"]["best_buy_qty"]), (0, 0, 4))
@@ -371,8 +372,16 @@ class CraftStepTests(unittest.TestCase):
     def test_the_rest_is_asked_again_when_the_workshop_queues_fewer_runs(self):
         # 2026-11-16: 7 etchings asked, 3 queued, then 2, 1 and 1 (guidebook logistics.md section 11)
         log, _world, row, out = fly(CRAFT_ROUTE, dict(CRAFT_WORLD, queue=[3, 3, 2], ticks=1))
-        self.assertEqual([s for s in steps(log) if s.startswith("craft")], ["craft dry_run", "craft 8", "craft 5", "craft 2"], out)
+        self.assertEqual([s for s in steps(log) if s.startswith("craft")], ["craft dry_run", "craft 16", "craft 10", "craft 4"], out)
         self.assertIn("sell 16 control_node", steps(log))
+        self.assertEqual((row["delta"], row["notes"]), (16 * 800 - 2424, []))
+
+    def test_one_ask_queues_every_run_of_a_recipe_that_makes_several_a_run(self):
+        # the game counts a craft's `quantity` in made units, rounded up to runs: 27 liquid hydrogen asked queued 9 runs of 3
+        # (queue.log ENT-114, 2026-11-16 19:02 UTC). Asked `runs`, a recipe of 2 a run queued half and was asked again three
+        # times; asked runs x per_run, the workshop takes the whole job at once.
+        log, _world, row, out = fly(CRAFT_ROUTE, CRAFT_WORLD)
+        self.assertEqual([s for s in steps(log) if s.startswith("craft")], ["craft dry_run", "craft 16"], out)
         self.assertEqual((row["delta"], row["notes"]), (16 * 800 - 2424, []))
 
     def test_a_craft_without_inputs_makes_nothing_and_the_run_goes_on(self):
@@ -390,18 +399,18 @@ class CraftStepTests(unittest.TestCase):
         self.assertEqual([s for s in steps(log) if s.startswith(("craft", "withdraw", "sell"))], ["craft dry_run"], out)
         self.assertEqual(row["notes"], ["craft assemble_control_node: fee"])
         log, _world, row, out = fly(CRAFT_ROUTE, dict(CRAFT_WORLD, quote=dict(quote, credits_total=14576)))
-        self.assertIn("craft 8", steps(log), out)                                                     # down to the floor itself: crafted
+        self.assertIn("craft 16", steps(log), out)                                                     # down to the floor itself: crafted
         self.assertEqual(row["notes"], [])
 
     def test_the_wait_ends_at_craftchain_s_limit_and_the_row_says_how_many_were_made(self):
         log, _world, row, out = fly(CRAFT_ROUTE, dict(CRAFT_WORLD, ticks=10 ** 6))
-        after = steps(log)[steps(log).index("craft 8") + 1:]
+        after = steps(log)[steps(log).index("craft 16") + 1:]
         self.assertEqual(after, ["view"] * 30, out)                  # (2 ticks x 8 runs + 4) x 11 s x 1.5 = 330 s, a read every 11 s
         self.assertEqual(row["notes"], ["craft assemble_control_node: 0 of 16 made"])
         self.assertEqual(out.count("0 of 16 control_node in storage"), 6)        # `say` every fifth read: the order file stays fresh
         log, _world, row, out = fly(CRAFT_ROUTE, dict(CRAFT_WORLD, queue=[3, 0], ticks=1))             # the workshop takes no more runs
         self.assertEqual([s for s in steps(log) if s.startswith(("craft", "withdraw", "sell"))],
-                         ["craft dry_run", "craft 8", "craft 5", "withdraw 6 control_node", "sell 6 control_node"], out)
+                         ["craft dry_run", "craft 16", "craft 10", "withdraw 6 control_node", "sell 6 control_node"], out)
         self.assertEqual((row["notes"], row["delta"]), (["craft assemble_control_node: 6 of 16 made"], 6 * 800 - 2424))
 
     def test_a_route_without_craft_flies_as_before(self):
