@@ -27,7 +27,15 @@ turns home: the nearest within `chain_jumps` lanes (game/map/galaxy.tsv) that is
 due by the route's `every_minutes`, never read first, not read by another ship
 now (the order files) and not on this run; only while the tank holds the way
 there and home with room to spare. The order file names the system being read
-and each system gets its own row. Without `chain` nothing changes."""
+and each system gets its own row. Without `chain` nothing changes.
+
+Survey: a pilot whose live file (data/fleet/ships/<pilot>.json) lists a survey
+scanner among its modules runs `survey_system` once in each system it reads, on
+arrival and before `get_system`, so that a place the survey reveals is read in the
+same pass. The answer is kept in scouting/<system>.json (`survey`) and the history
+row says `surveyed`. It is the one action that trains scanning (catalog skills;
+5 XP for the first survey, observations kind survey). A ship without a scanner
+reads as before."""
 import atexit
 import fcntl
 import json
@@ -161,6 +169,15 @@ def pirate_details(near):
     return [{k: p.get(k) for k in keys if k in p} for p in found if isinstance(p, dict)]
 
 
+def scanner_fitted(ship):
+    """True when the ship's live file lists a survey scanner among its modules (by type or by name)."""
+    mods = ship.get('modules') if isinstance(ship, dict) else None
+    if not isinstance(mods, list):
+        return False
+    return any(isinstance(m, dict) and 'survey_scanner' in str(m.get('type') or m.get('name') or '').lower().replace(' ', '_')
+               for m in mods)
+
+
 def jumps(lanes, src, reach):
     """{system: lanes from src} for every system within `reach` lanes, by the chart's lanes."""
     dist, todo = {src: 0}, [src]
@@ -244,8 +261,13 @@ def read_system(sid):
     station = None
     if not goal('navigate-to-system', {'targetSystemId': sid}):
         return False, 0, 0, None
+    survey = raw('survey_system') if SCANNER else None          # before get_system: a place it reveals is read too
+    if survey is not None:
+        say('survey: ' + (str(survey.get('message') or survey.get('result') or '') or 'answer keys ' + ','.join(sorted(survey))[:160])[:240])
     system = raw('get_system').get('system') or {}
     scouting = {'system': system, 'read_at': now(), 'pois': {}}
+    if survey:
+        scouting['survey'] = survey
     wildlife = {'system': sid, 'read_at': now(), 'pois': {}}
     pois = [p for p in system.get('pois') or [] if isinstance(p, dict)]
     say(f'{system.get("name")}: {len(pois)} places: ' + ', '.join(f'{p.get("id")} ({p.get("type")})' for p in pois)[:400])
@@ -289,6 +311,8 @@ def read_system(sid):
         seen = {poi: v['pirate_list'] for poi, v in wildlife['pois'].items() if v.get('pirate_list')}
         if seen:
             row['pirates'] = seen
+        if survey is not None:
+            row['surveyed'] = bool(survey)
         fh.write(json.dumps(row, separators=(',', ':')) + '\n')
     return True, places, creatures, station
 
@@ -313,6 +337,10 @@ if ROUTE_ID:
         ROUTE = {}
 CHAIN = int(ROUTE.get('chain') or 0) if ROUTE.get('kind') == 'census' and isinstance(ROUTE.get('chain'), int) else 0
 REACH = int(ROUTE.get('chain_jumps') or 2) if isinstance(ROUTE.get('chain_jumps', 2), int) else 2
+try:                                                           # a survey scanner aboard: survey each system read
+    SCANNER = scanner_fitted(json.loads((DATA / 'fleet' / 'ships' / f'{pilot}.json').read_text(encoding='utf-8')))
+except (OSError, ValueError):
+    SCANNER = False
 
 places = creatures_total = 0
 last_station = None

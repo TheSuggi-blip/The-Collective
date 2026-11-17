@@ -56,6 +56,26 @@ class PirateTests(unittest.TestCase):
         self.assertEqual(self.pirate_details({"pirates": [None, 3]}), [])
 
 
+class ScannerTests(unittest.TestCase):
+    """A ship that carries a survey scanner surveys each system it reads (scanning XP, hidden places)."""
+
+    def setUp(self):
+        (self.scanner_fitted,) = load("scanner_fitted")
+
+    def test_a_survey_scanner_among_the_modules_is_found(self):
+        ship = {"modules": [{"kind": "mining", "name": "Mining Laser I", "slot": "utility", "type": "mining_laser_i"},
+                            {"kind": "utility", "name": "Survey Scanner I", "slot": "utility", "type": "survey_scanner_i"}]}
+        self.assertTrue(self.scanner_fitted(ship))
+        self.assertTrue(self.scanner_fitted({"modules": [{"name": "Survey Scanner II"}]}))
+
+    def test_no_scanner_or_a_broken_file_is_no_scanner(self):
+        self.assertFalse(self.scanner_fitted({"modules": [{"type": "mining_laser_i"}, {"type": "pulse_laser_i"}]}))
+        self.assertFalse(self.scanner_fitted({"modules": [{"type": "ship_scanner_i", "name": "Ship Scanner I"}]}))
+        self.assertFalse(self.scanner_fitted({}))
+        self.assertFalse(self.scanner_fitted({"modules": "x"}))
+        self.assertFalse(self.scanner_fitted(None))
+
+
 class ChainTests(unittest.TestCase):
     def setUp(self):
         self.jumps, self.next_system = load("jumps", "next_system")
