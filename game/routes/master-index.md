@@ -43,7 +43,7 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 | [miner](plan-miner.md) | Zero | 45 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 4 | 60 |
 | [scout](plan-scout.md) | Oracle | 34 | store-hold-central-nexus > voidborn-first-steps-board > voidborn-network-expansion | 6 | 30 |
 | [sentinel](plan-sentinel.md) | Unity | 47 | voidborn-first-steps-board > voidborn-collective-provides > voidborn-signal-protocol | 0 | 20 |
-| [trader](plan-trader.md) | Mercury | 36 | voidborn-first-steps-board > voidborn-network-expansion > voidborn-collective-provides | 6 | 40 |
+| [trader](plan-trader.md) | Mercury | 39 | voidborn-first-steps-board > voidborn-network-expansion > voidborn-collective-provides | 6 | 40 |
 
 ## Templates by Division
 
