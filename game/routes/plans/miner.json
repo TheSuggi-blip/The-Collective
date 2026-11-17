@@ -51,6 +51,7 @@
   "mine-acubens",
   "mine-pherkad-rift",
   "gather-gsc-0027-spacetime-seep",
+  "craft-steel-node-beta",
   "census-frontier",
   "park"
  ],
@@ -121,6 +122,7 @@
   "mine-acubens": 60,
   "mine-pherkad-rift": 60,
   "gather-gsc-0027-spacetime-seep": 60,
+  "craft-steel-node-beta": 60,
   "census-frontier": 60,
   "park": 60
  },
