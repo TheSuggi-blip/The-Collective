@@ -77,6 +77,7 @@
   "mine-acubens",
   "mine-pherkad-rift",
   "gather-hamal-crystal-bloom",
+  "gather-schedar-belt",
   "census-frontier",
   "park"
  ],
@@ -177,6 +178,7 @@
   "mine-acubens": 50,
   "mine-pherkad-rift": 50,
   "gather-hamal-crystal-bloom": 50,
+  "gather-schedar-belt": 50,
   "census-frontier": 50,
   "park": 50
  },
