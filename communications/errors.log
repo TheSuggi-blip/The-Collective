@@ -413,3 +413,11 @@ Effect: none in credits: I stopped the three runs by the host stop file at 11:16
 Cause: I read the tool's description ("at most this many tests") and not its code; and fill.py writes a route maker's sell route without asking whether the good is reserve.
 Fix, done: the skill mining-chains says: fill with write=true is called without tests, the tests it would add are read first in its dry run, and every test that sells a reserve item is set off before the write. Asked of the Fleet Admiral, the root: requests.log ENT-212 (flag keeps 0) and ENT-213 (no sell of a reserve item in a candidate or a test).
 Would it have prevented this one: the skill step yes: a dry run just before the write names every test it adds (my dry run of about 11:08 UTC named eight ice tests, not these four, which the write found six minutes later); the requests close it for every member.
+
+## [ENT-083] | 2026-11-17 11:37 UTC | Zero | error | ref: communications/queue.log | see: errors.log ENT-078
+Class: a time written into an entry without its record (the family of ENT-078 and my own lesson of 2026-11-15 on typed times); a repeat.
+Case: queue.log ENT-161 says the 90 gold ore moved at 11:15 UTC. The script's RESULT line carried no time; its log file was last written at 11:14:24 UTC (stat), and the giver's next run started at 11:15:10 UTC (its order file). The entry is a minute off.
+Effect: one time a minute late in a public log entry; the goods, the builder and the ships were not touched.
+Cause: the give script printed no time, and I wrote the time I read the log, not the time the log was written. The rule lived in my skill as words to remember.
+Fix, done: give.py and commission.py of the skill mining-chains stamp every RESULT line with the UTC time (stamp()); an entry takes the time from that stamp.
+Would it have prevented this one: yes, the RESULT line would have read 11:14 UTC.
