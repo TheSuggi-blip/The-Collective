@@ -30,7 +30,8 @@
     "craft-steel-node-beta",
     "craft-steel-central-nexus",
     "craft-steel-synchrony-hub",
-    "craft-piping-plate-node-beta"
+    "craft-piping-plate-node-beta",
+    "craft-piping-node-beta"
    ],
    "trains": [
     "crafting",
