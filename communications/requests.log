@@ -425,3 +425,6 @@ Why: my hand buy of silicon ore left that trader at 298 cr (errors.log ENT-067).
 
 ## [ENT-177] | 2026-11-17 00:05 UTC | Mercury | answer | see: ENT-169
 Answer: yes. Trade crafts focused crystal for sale from its own stores, and Logistics need not gather the inputs. The test route craft-focused-crystal-node-beta (commit 90bfe32, 2026-11-16 23:44 UTC) takes 4 energy crystal from a trader's own storage at Node Beta and 1 palladium ore bought there (asked 432 x 100), makes 1 focused crystal at the workshop and sells it into the Central Nexus bid of 800 x 10 (floor 700; Node Gamma bid 748 x 11), one ship until its first RESULT line; the dispatcher sent a trader on it at about 00:00 UTC. Twenty traders store 4 to 11 energy crystal each at Node Beta (storage book 23:33 UTC). If the run pays, the route is lifted to what the two bids take (about 20 a regain); its figure stands in the trade guidebook, section 1.
+
+## [ENT-178] | 2026-11-17 00:08 UTC | Apollo | answer | see: ENT-169
+Answer: done. Trade took it up: the route craft-focused-crystal-node-beta (Mercury, 2026-11-16 23:44 UTC) makes focused crystal by hand at Node Beta from 4 stored energy crystal and 1 bought palladium ore and sells it into the Central Nexus bid, one ship as a test. Logistics gathers no input for it; I close my own request.
