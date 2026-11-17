@@ -36,24 +36,24 @@ Kept by Unity. Routes: 89. Ships: 20.
 | 14 | [voidborn-first-hunt-acubens](voidborn-first-hunt-acubens.json) | [Once per Pilot](index-once-per-pilot.md) | home space | once per pilot, up to 1 ships | all 20 |
 | 15 | [voidborn-hardware-cargo](voidborn-hardware-cargo.json) | [Once per Pilot](index-once-per-pilot.md) | home space | once per pilot, up to 3 ships, without cargo_expander_i, from 4,000 cr, after the reward The Collective Provides | all 20 |
 | 16 | [voidborn-first-hunt-intercrus-belt](voidborn-first-hunt-intercrus-belt.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 7 jumps | once per pilot, up to 1 ships, empty hold | all 20 |
-| 17 | [mine-stillwater-belt](mine-stillwater-belt.json) | [Tests](index-tests.md) | beyond the border, 19 jumps | up to 1 ships | 1 of 20 |
+| 17 | [mine-stillwater-belt](mine-stillwater-belt.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 19 jumps | up to 1 ships | 1 of 20 |
 | 18 | [hunt-test-tanglewood-hollow-pilgrim](hunt-test-tanglewood-hollow-pilgrim.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 6 jumps | up to 1 ships, without piercing_railgun_i, empty hold | 1 of 20 |
-| 19 | [hunt-wasat-cryobelt-hollow-pilgrim](hunt-wasat-cryobelt-hollow-pilgrim.json) | [Tests](index-tests.md) | beyond the border, 18 jumps | up to 1 ships, empty hold | 1 of 20 |
+| 19 | [hunt-wasat-cryobelt-hollow-pilgrim](hunt-wasat-cryobelt-hollow-pilgrim.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 18 jumps | up to 1 ships, empty hold | 1 of 20 |
 | 20 | [hunt-groombridge-1618-frozen-drift-hollow-pilgrim](hunt-groombridge-1618-frozen-drift-hollow-pilgrim.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 10 jumps | up to 1 ships, empty hold | 1 of 20 |
-| 21 | [hunt-regor-wr-bubble-cinder-sylph](hunt-regor-wr-bubble-cinder-sylph.json) | [Tests](index-tests.md) | beyond the border, 11 jumps | up to 1 ships, empty hold | 1 of 20 |
+| 21 | [hunt-regor-wr-bubble-cinder-sylph](hunt-regor-wr-bubble-cinder-sylph.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 11 jumps | up to 1 ships, empty hold | 1 of 20 |
 | 22 | [hunt-gsc-0012-gas-plume-halo-drifter](hunt-gsc-0012-gas-plume-halo-drifter.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 5 jumps | up to 1 ships, empty hold | 1 of 20 |
-| 23 | [hunt-ran-haze-chlorophage](hunt-ran-haze-chlorophage.json) | [Tests](index-tests.md) | beyond the border, 25 jumps | up to 1 ships, empty hold | 1 of 20 |
+| 23 | [hunt-ran-haze-chlorophage](hunt-ran-haze-chlorophage.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 25 jumps | up to 1 ships, empty hold | 1 of 20 |
 | 24 | [hunt-hollowcrest-frozen-drift-hollow-pilgrim](hunt-hollowcrest-frozen-drift-hollow-pilgrim.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 11 jumps | up to 1 ships, empty hold | 1 of 20 |
-| 25 | [hunt-ankaa-cryobelt-hollow-pilgrim](hunt-ankaa-cryobelt-hollow-pilgrim.json) | [Tests](index-tests.md) | beyond the border, 14 jumps | up to 1 ships, empty hold | 1 of 20 |
+| 25 | [hunt-ankaa-cryobelt-hollow-pilgrim](hunt-ankaa-cryobelt-hollow-pilgrim.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 14 jumps | up to 1 ships, empty hold | 1 of 20 |
 | 26 | [craft-piping-node-beta](craft-piping-node-beta.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 14 ships, with 300 iron_ore stored at node_beta_industrial_station, 180 copper_ore stored at node_beta_industrial_station, standing work | 1 of 20 |
-| 27 | [hunt-violethall-gas-plume-cinder-sylph](hunt-violethall-gas-plume-cinder-sylph.json) | [Tests](index-tests.md) | beyond the border, 17 jumps | up to 1 ships, empty hold | 1 of 20 |
+| 27 | [hunt-violethall-gas-plume-cinder-sylph](hunt-violethall-gas-plume-cinder-sylph.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 17 jumps | up to 1 ships, empty hold | 1 of 20 |
 | 28 | [hunt-miaplacidus-frost-ring-hollow-pilgrim](hunt-miaplacidus-frost-ring-hollow-pilgrim.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 11 jumps | up to 1 ships, empty hold | 1 of 20 |
 | 29 | [hunt-tania-vapor-fields-cinder-sylph](hunt-tania-vapor-fields-cinder-sylph.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 11 jumps | up to 1 ships, empty hold | 1 of 20 |
 | 30 | [sell-melt-experiment-sirius](sell-melt-experiment-sirius.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 9 jumps | up to 1 ships, with 3 crystal_melt stored at the_experiment_research_station, while sirius_observatory_station bids 1000 cr for crystal_melt | 1 of 20 |
 | 31 | [hunt-alnair-ice-fields-hollow-pilgrim](hunt-alnair-ice-fields-hollow-pilgrim.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 5 jumps | up to 1 ships, empty hold | 1 of 20 |
 | 32 | [mine-regor-inner-debris](mine-regor-inner-debris.json) | [Tests](index-tests.md) | beyond the border, 7 jumps | up to 1 ships, empty hold | 1 of 20 |
 | 33 | [hunt-yed-prior-cryobelt-hollow-pilgrim](hunt-yed-prior-cryobelt-hollow-pilgrim.json) | [Tests](index-tests.md) | beyond the border, 18 jumps | up to 1 ships, empty hold | 1 of 20 |
-| 34 | [hunt-toi-2257-gas-pocket-cinder-sylph](hunt-toi-2257-gas-pocket-cinder-sylph.json) | [Tests](index-tests.md) | beyond the border, 26 jumps | up to 1 ships, empty hold | 1 of 20 |
+| 34 | [hunt-toi-2257-gas-pocket-cinder-sylph](hunt-toi-2257-gas-pocket-cinder-sylph.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 26 jumps | up to 1 ships, empty hold | 1 of 20 |
 | 35 | [hunt-alathfar-haze-chlorophage](hunt-alathfar-haze-chlorophage.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 12 jumps | up to 1 ships, empty hold | 2 of 20 |
 | 36 | [hunt-etamin-haze-cinder-sylph](hunt-etamin-haze-cinder-sylph.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 11 jumps | up to 1 ships, empty hold | 1 of 20 |
 | 37 | [hunt-ridgecrest-ice-shelf-hollow-pilgrim](hunt-ridgecrest-ice-shelf-hollow-pilgrim.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 10 jumps | up to 1 ships, empty hold | 1 of 20 |
