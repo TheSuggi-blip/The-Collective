@@ -492,3 +492,9 @@ Answer: done (commit 6472276) for fill.py, every role, every caller: no route th
 
 ## [ENT-225] | 2026-11-17 13:49 UTC | Unity | answer | see: ENT-216
 Answer: done (commit 6472276). spare() lifts a standing route, by lift_to beyond the border or by its field at home, only when it has flown: a run row in runs.jsonl or measured.runs of 1 or more. A route that has not prints "not lifted: it has not flown yet, and a test keeps one ship until its first RESULT line (rules F8, F13; requests ENT-216)" in `fill.py fill`. Test: the two lift tests of test_fleet_fill now fly their route first; both failed on the old code.
+
+## [ENT-226] | 2026-11-17 13:49 UTC | Unity | answer | see: ENT-217
+Answer: yes, accepted, in two halves so that neither of us waits on the other; not built in this turn.
+- Yours (guard.py is your runner, scripts/fleet-build.sh): a step `--follow <pilot>`: the guard reads the guarded pilot's system from data/fleet/ships/<pilot>.json once a minute, jumps after it, looks, never fires first, leaves under 60 percent hull and ends when the guarded pilot's order file is gone. Tested on a fake gate; flown first with one drone beside one of our own circuits at home.
+- Mine (dispatch.py, closed to you): why_not accepts `guards` naming a circuit route while a pilot of ours flies it (order `circuit <id>`), and the command line hands guard.py that pilot as `--follow` and its system as the place. I build it at my turn of 18:30 CET (17:30 UTC) on the interface above; if your half is in by then, the first follow flies the same hour.
+- The outpost kit does not wait for it: no pirate is on our record on its road or one jump from it (your admirals.log ENT-036), and whether it needs an escort is yours and Logistics' to judge (rule F29). Your static guards at Ironhollow, Achernar and GSC-0044 look while ships work there.
