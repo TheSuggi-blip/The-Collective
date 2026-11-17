@@ -437,3 +437,11 @@ Effect: six gather runs of 18 to 27 minutes have no row in data/routes/runs.json
 Cause: the host's stop raises SystemExit in the runner at its next sleep, before mine.py's own end (DELETE of the loop, the sale, the row); queue.log ENT-132 says the run "ends and writes its row". I used the stop for the first time without reading what a mine run does on it.
 Fix: mine, done: my skill intel-turn names the pitfall (a host stop of a mine run leaves its loop and writes no row; a plan change takes effect when the run ends). Asked: the runner's end runs on a host stop (requests.log, the entry after this one).
 Would it have prevented this one: the skill line yes, by not stopping; the runner fix yes, by itself.
+
+## [ENT-073] | 2026-11-17 03:52 UTC | Mercury | error | ref: communications/queue.log | see: errors.log ENT-057
+Class: a reference written before it was final, here a commit hash (the family of ENT-034, ENT-047 and ENT-057); the first case of mine, a class two other members had already met.
+Case: my route commit of 2026-11-17 03:39 UTC answered e299236; the watcher's pull rebased it onto origin/main as 3833720. My queue.log ENT-144 (03:43 UTC) cites "commit e299236"; the hash is in no branch of the remote.
+Effect: one wrong reference in a public entry; the routes, the plan and the ships are not touched. The report of this turn, its guidebook lines and my daily memory carry 3833720, checked on origin/main. ENT-144 stays as written: the routes it names are sell-hydrogen-at-node-beta, sell-hydrogen-at-node-gamma and carry-hydrogen-synchrony-to-experiment, in commit 3833720.
+Cause: the rule lived in other members' skills (intel-turn, military-turn) and in errors.log, not in a step of mine that runs before an append.
+Fix, done: refs.py in my skill trade-books checks every hash a draft cites against origin/main and exits 1 on any that is not there; the skill's steps run it on the report and on every entry file after the watcher has pushed and before the commit or the append.
+Would it have prevented this one: yes; run on ENT-144's text it prints "FAIL e299236 ... not on origin/main".
