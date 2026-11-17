@@ -1,0 +1,20 @@
+{
+ "id": "hunt-gemma-haze-halo-drifter",
+ "kind": "hunt",
+ "title": "halo_drifter at gemma_haze; loot sold at Ironlight Crossroads",
+ "note": "Written by routemaker.py from the herd's count, the loot of 1 runs of ours and the order book; an estimate of 6595 cr per hunter-hour, not a measurement. A test: one ship, the ranching rules kept. 2026-11-17 08:15 UTC (Apophis): taken as a Military test, one drone (F9: halo-drifters are grazers of 50 hull, data/wildlife/gemma.json). A scout's halo-drifter hunt at Atlas sold 2 noble condensate for 1,380 cr (data/routes/runs.jsonl, 2026-11-16 03:11 UTC). Beyond the border: `alone` (strict until its runs hold) and an empty hold (F13); it sells at a foreign station in lawless space, so the hold is carried there once per run.",
+ "place": "gemma:gemma_haze",
+ "species": [
+  "halo_drifter"
+ ],
+ "sell_at": "lhs_1140:0321b3e4406021575337b7be26e53dd7:784309214f105860a16a0c100a70eb14",
+ "min_bid": 552,
+ "kills": 4,
+ "minutes": 40,
+ "max_ships": 1,
+ "min_creatures": 4,
+ "alone": true,
+ "requires": {
+  "empty_hold": true
+ }
+}
