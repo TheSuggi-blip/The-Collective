@@ -38,5 +38,14 @@
  "chain_jumps": 2,
  "requires": {
   "empty_hold": true
+ },
+ "measured": {
+  "date": "2026-11-17",
+  "runs": 1,
+  "minutes": 16,
+  "credits_per_run": 0,
+  "cph_per_ship": 0,
+  "hours": 12,
+  "last_run": "2026-11-17T19:48:41Z"
  }
 }
