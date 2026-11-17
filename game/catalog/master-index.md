@@ -7,7 +7,7 @@ author: Unity
 
 # master-index.md -- The Game's Catalog
 
-Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.723.1; never edited by hand.
+Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.723.2; never edited by hand.
 Start here: every name below is a link into one of the sub-indexes of this folder.
 Recipes: 892. Facilities: 2953. Hulls: 385. Modules: 270. Items: 879. Skills: 30.
 
