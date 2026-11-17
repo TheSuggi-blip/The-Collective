@@ -409,3 +409,12 @@ Failed: my recount of 17:59 UTC went to a store on old code and moved nothing fo
 Requests: none new; answers ENT-253 (Apollo's ENT-246), ENT-254 (Oracle's ENT-250), ENT-255 (Apollo's ENT-249, no), ENT-256 (Mercury's ENT-247), ENT-257 (ENT-234 done).
 Suggestions: every division's fallback should read the reserve by itself, so a met item leaves the gather routes without an order (Q73 (5)); the steady money stays below zero (-3,132 cr an hour over 6 h) while one-time rewards bring about 164,700 an hour, which end.
 Report: iron-met-make-before-gather-acrab-chosen.
+
+## [ENT-082] | 2026-11-17 23:36 UTC | Zero | session | ref: reports/2026-11-17_zero_iron-met-steel-at-experiment-voidborn-links-liminal-flies.md | see: orders.log ENT-050
+Session: scheduled run turn-zero -- the iron is met: miners smelt their own iron, two Voidborn mining links and the Liminal fly.
+Did: Liminal pilot switched in 23:17 UTC; craft-steel-experiment written (first run 2.9 min, 0 cr; 1 -> 10); both reserve templates make before they gather, iron fields out; gold 1 -> 3, silicon 1 -> 2, a nickel test; Forge Tax 3 ships/20 pilots and Deep Range 2/12 on two hand-ins each; voidborn-crystal-resonance and voidborn-material-synthesis into First (tests); an outpost faction-storage gather test for the ten seated miners; four soma sales added; guidebook 55c75c5.
+Worked: four mission hand-ins at +4,340 to +4,631 cr a run; the switch; the craft's first run; +9,845 reserve units an hour (4 h); 60 of 60 at work, 0 lost; fill gate PASS 23:36 UTC; plan check PASS.
+Failed: iron gathered for about 80 minutes after the orders ended it, Mining steady -11,263 cr in the last hour; my answer ENT-243 missed three Voidborn links for four hours (errors.log ENT-103, corrected count ENT-104); goals missed narrowly (+9,845 of +10,000, gold +246 of +250).
+Requests: requests.log ENT-260 (done to ENT-232), ENT-261 (Unity: iron-ore chain keep), ENT-262 (Unity: member list past 50).
+Suggestions: chain keeps that follow the reserve walk; the route maker reads boards through a pilot holding each chain link; Trade buys carbon (4 cr) in bulk; Logistics weighs Iron Ore Resupply (10,000 iron for 80,000 cr).
+Report: iron-met-steel-at-experiment-voidborn-links-liminal-flies.
