@@ -1,0 +1,20 @@
+{
+ "id": "hunt-willowgate-vapor-fields-halo-drifter",
+ "kind": "hunt",
+ "title": "halo_drifter at willowgate_vapor_fields; loot sold at Nova Terra Central",
+ "note": "Written by routemaker.py from the herd's count, the loot of 5 runs of ours and the order book; an estimate of 1546 cr per hunter-hour, not a measurement. A test: one ship, the ranching rules kept. Added as a test by fill.py on 2026-11-17 16:16 UTC (Apophis): one ship until its first RESULT line is read.",
+ "place": "willowgate:willowgate_vapor_fields",
+ "species": [
+  "halo_drifter"
+ ],
+ "sell_at": "nova_terra:nova_terra_central:nova_terra_central",
+ "min_bid": 552,
+ "kills": 4,
+ "minutes": 79,
+ "max_ships": 1,
+ "min_creatures": 4,
+ "alone": true,
+ "requires": {
+  "empty_hold": true
+ }
+}

@@ -1,0 +1,20 @@
+{
+ "id": "hunt-saltwind-gas-pocket-halo-drifter",
+ "kind": "hunt",
+ "title": "halo_drifter at saltwind_gas_pocket; loot sold at Node Beta Industrial Station",
+ "note": "Written by routemaker.py from the herd's count, the loot of 5 runs of ours and the order book; an estimate of 1823 cr per hunter-hour, not a measurement. A test: one ship, the ranching rules kept. Added as a test by fill.py on 2026-11-17 16:16 UTC (Apophis): one ship until its first RESULT line is read.",
+ "place": "saltwind:saltwind_gas_pocket",
+ "species": [
+  "halo_drifter"
+ ],
+ "sell_at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+ "min_bid": 552,
+ "kills": 4,
+ "minutes": 71,
+ "max_ships": 1,
+ "min_creatures": 4,
+ "alone": true,
+ "requires": {
+  "empty_hold": true
+ }
+}
