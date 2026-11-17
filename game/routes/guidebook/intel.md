@@ -28,15 +28,20 @@ at the end of every turn.
 - Tier 0, every scout today: the starter Threshold (cargo 65, fuel 95,
   hull 75, shield 80, two utility slots), its mining laser and pulse
   laser, the default stance flee on all 30 (set by script, 2026-11-17).
-- Fit next: Survey Scanner I in the second utility slot (about 4,900 cr
-  at Central Nexus): one scout carries it since 2026-11-17 07:35 UTC. A
+- Fit next: Survey Scanner I in the second utility slot (4,894 cr at
+  Central Nexus, 3 on offer, book of 19:16 UTC on 2026-11-17): one scout
+  carries it since 2026-11-17 07:35 UTC and five readers take it from the
+  turn of 19:15 UTC (`fit-survey-scanner-central-nexus`, 7 pilots). A
   survey reads every field of a system and its wildlife in one action and
   is the only census action that trains scanning; since census.py 7540393
-  (2026-11-17 15:28 UTC) a ship with a scanner surveys every system it
-  reads. The fit goes to the explorers once the first surveyed rows are
-  read (`fit-survey-scanner-central-nexus`). Ship Scanner I after it.
-- Next hull: tier 2 at piloting 10 (52 hours away at the division's rate,
-  `fleet` view=levels, 2026-11-17 15:18 UTC); a tier-1 hull for a scout
+  a ship with a scanner surveys every system it reads. 12 surveys beyond
+  the border revealed no hidden deposit; two (Homam, The Telescope) found
+  "1 faint signature(s) that your scanner cannot resolve": a Mining Survey
+  Probe (+30 survey power for 10 ticks, 180 cr) or Survey Scanner II
+  (about 23,000 cr in Solarian books) is the next step. Ship Scanner I
+  after it.
+- Next hull: tier 2 at piloting 10 (48 hours away at the division's rate,
+  `fleet` view=levels, 2026-11-17 19:38 UTC); a tier-1 hull for a scout
   is not read yet.
 - Style: fly light and empty beyond the border (rule F13), read and leave,
   never fire first (F2), hunt where a herd lies on the way what passes both
@@ -45,46 +50,48 @@ at the end of every turn.
 ### Skills
 
 In the order a scout levels them (catalog, table `skills`; levels from
-the table `ship_skills`, 30 scouts, 2026-11-17 15:33 UTC, lowest / mean /
+the table `ship_skills`, 30 scouts, 2026-11-17 19:38 UTC, lowest / mean /
 highest):
 
 | Skill | Why it matters | What trains it, and our route | Now | Next goal |
 |---|---|---|---|---|
-| exploration | survey power (+1% a level); the class's own skill | the pilot's own first visit to a system, about 5 XP each, a system flown through counts too (snapshot 15:19 UTC against the runs to 15:45 UTC); every census list a scout has not flown trains it, not only never-read systems | 2 / 2.8 / 3 (23 of 30 at 3) | median 4 |
-| navigation | -1% fuel, jump fuel and jump time a level; Signal Fragments opens at 3 | every jump: every census | 4 / 4.8 / 6 | median 5 held, then 6 |
-| piloting | hull tiers 2 to 5 at 10, 20, 30, 50 | every route; missions pay piloting XP (280 to 480) | 5 / 6.7 / 8 | 10, the tier 2 hulls |
-| scanning | scanner effectiveness (+1% a level) | survey_system (census.py surveys with a scanner aboard since 7540393); a link of the Voidborn chain also paid 20 XP to two scouts (Collective Provides or Signal Protocol, not told apart); get_poi gives none | 0 / 0 / 0 (three scouts 5 to 20 XP) | level 1 on the scanner scout; scanners on the explorers |
-| xenobiology, weapons, gunnery | molt value, damage | the hunt routes of the plan | xenobiology 0 / 1.1 / 4, gunnery 0 / 1.3 / 4 | not set |
+| exploration | survey power (+1% a level); the class's own skill | the pilot's own first visit to a system, about 5 XP each, a system flown through counts too; every census list a scout has not flown trains it, so the explorers rotate between lists (census-north, census-south, census-far-1 to 5) | 2 / 3.0 / 3 (none at 4 yet) | median 4 |
+| navigation | -1% fuel, jump fuel and jump time a level; Signal Fragments opens at 3 | every jump: every census | 5 / 5.2 / 6 | median 6 |
+| piloting | hull tiers 2 to 5 at 10, 20, 30, 50 | every route; missions pay piloting XP (280 to 480) | 6 / 7.0 / 8 | 10, the tier 2 hulls |
+| scanning | scanner effectiveness (+1% a level) | survey_system (census.py surveys with a scanner aboard since 7540393), 5 XP a survey; a link of the Voidborn chain paid 20 XP to 15 scouts; get_poi gives none | 0 / 0.1 / 1 (the scanner scout at 1) | scanners on five readers: does a second survey of one system pay |
+| xenobiology, weapons, gunnery | molt value, damage | the hunt routes of the plan | xenobiology 0 / 1.1 / 4, gunnery 0 / 1.4 / 4, weapons 0 / 0.9 / 2 | not set |
 | deep core mining, mining | not the class's: the gather fallback | gathering when nothing is due | 4 / 6.4 / 8 | none |
 
 ## Standing Plan
 
 What the scouts fly between two turns: the intel plan file, applied in
-the Intel turn of 2026-11-17 that began 15:15 UTC (`plan.py check` PASS,
-`fill.py check scout` PASS at 15:35 UTC). Thirty ships. A free ship takes
-the first route open to it of the list First, its own routes, the list
-Then. For the turns of 11:15 and 15:15 UTC ten explorers go as far out as
-a tank carries them (orders ENT-036, ENT-037); from the turn of 19:15 UTC
-about ten explore the three regions of D4 and the roads to them first.
+the Intel turn of 2026-11-17 that began 19:15 UTC (`plan.py check` PASS
+at 19:29 UTC, `fill.py check scout` PASS at 19:37 UTC). Thirty ships. A
+free ship takes the first route open to it of the list First, its own
+routes, the list Then. From this turn the explorers read the north and the
+south first for the next base sites (orders ENT-042, P4 b), then far lists
+they have not flown (exploration XP is each pilot's own first visit).
 
-| Order | Routes | Ships | Cap | Expected, credits per ship-hour (route_earnings, 4 h to 15:19 UTC) | Why |
+| Order | Routes | Ships | Cap | Expected, credits per ship-hour (route_earnings, 4 h to 19:20 UTC) | Why |
 |---|---|---|---|---|---|
-| First | store-hold-central-nexus (Mining's, `requires.hold`) | a scout with more than five units aboard | 40 for the fleet | -601 over 11 runs | Every census beyond the border wants an empty hold |
-| First | the once line (Central Nexus board, the Voidborn chain to Signal Protocol, Signal Fragments, First Hunt, Cracking the Shell, Selling, Ghosts in the Cloud and the rest) | every scout that holds one | each route's own | paid once per pilot | Missions that pay once and the empire chain come first (rules F34, F35); two scouts took scanning XP from the chain |
-| First | census-voidborn | any | 4 | -615 over 59 runs | The ten home systems and the books we sell to every 30 minutes; 62 gaps in 4 hours, median 38, longest 56 (15:17 UTC) |
-| Own | census-far-1 to census-far-5 | 10 explorers, two on each, and the scanner scout third on census-far-1 | 2 each, 3 on census-far-1 | -571 to -773 over 16 to 26 runs | The map's never-read systems in five directions, farthest first, `chain` 3: 97 first reads from 11:30 to 15:16 UTC; 121 never-read left on the explorers' lists at 15:31 UTC, about 3.2 hours at 37.8 reads an hour |
-| Own | the hunts: hunt-intercrus-ice-fields-hollow-pilgrim, hunt-alnilam-frozen-drift-hollow-pilgrim, hunt-gsc-0021-ice-fields-hollow-pilgrim, hunt-atlas-gas-pocket, carry-soma-synchrony-to-alpha, hunt-amberfall-chlorophage-sac (stores), hunt-test-homam-frost-moth, hunt-gsc-0040-frost-ring-hollow-pilgrim, hunt-aldhibah-ice-shelf-hollow-pilgrim, hunt-achernar-frost-ring-hollow-pilgrim, hunt-titawin-gas-cloud-chlorophage, hunt-garnet-dim-lattice-veil-ray, the test hunt-birchwood-vapor-fields-cinder-sylph; mine-nightveil-dark-residue, mine-flicker-fray, mine-gliese-876-belt | one ship each, then @reader | 1 each | hollow-pilgrim +6,030 (Intercrus, 1 run, 12 h), +5,162 (GSC-0021, 2), +4,828 (Alnilam, 1); Atlas gas pocket +3,584 over 8; soma carry +4,939 over 5; Achernar pilgrim -1,091 over 2 | Scouts hunt on the way (D8, F9); one hunter per herd; the dispatcher closes a hunt where a pirate was seen within six hours (D9) |
-| Own | @reader: census-watch-gsc-0044, census-watch-clearwater, census-worked, census-frontier, census-roads | 19 | 3, 1, 6, 12, 10 | watch -749 over 19, worked -751 over 46, frontier -707 over 30, roads -723 over 49 | The outpost site and all six neighbours every 45 minutes with `chain` 3 (gaps were 70 to 75 minutes, Intercrus once in four hours); Clearwater hourly for Logistics (requests ENT-221); the 19 other systems our routes use every 90 minutes; the frontier every 200; the roads every 480 |
-| Then | gather-gsc-0027-prism-scatter, gather-hamal-crystal-bloom, mine-pherkad-rift, gather-gsc-0027-spacetime-seep, gather-schedar-belt, gather-ironhollow-echo-ejecta, the three craft-steel routes, census-frontier, park | the rest, while nothing is due | shared | gather-ironhollow-echo-ejecta -220 over 106 runs of the fleet | The fallback: ore into storage for the reserve |
+| First | store-hold-central-nexus (Mining's, `requires.hold`) | a scout with more than five units aboard | 40 for the fleet | -885 over 7 runs | Every census beyond the border wants an empty hold |
+| First | the once line (Central Nexus board, the Voidborn chain, Signal Fragments, First Hunt, Cracking the Shell, Selling, Ghosts in the Cloud and the rest) | every scout that holds one | each route's own | paid once per pilot | Missions that pay once and the empire chain come first (rules F34, F35) |
+| First | census-voidborn | any | 4 | -617 over 50 runs | The ten home systems and the books we sell to every 30 minutes; 66 gaps in 4 hours, median 36, longest 63 (19:18 UTC) |
+| Own | census-north | four explorers and the scanner scout | 5 | not flown yet (a test of this turn) | The 27 systems within two jumps of Aldebaran, Yildun, Hawthorne and Alchiba, every 180 minutes, `chain` 3: the north's two base sites (P4 b) |
+| Own | census-south | three explorers | 3 | not flown yet | The 10 systems within two jumps of Biham, every 150 minutes, `chain` 3; Felis, Gliese 876 and GSC-0016 stay on census-worked |
+| Own | census-far-1 to census-far-5 | three explorers first, the other seven second | 3, 2, 2, 2, 2 | -727 to -816 over 11 to 20 runs | Every system of the map an explorer has not visited, re-read every 480 minutes from about 19:30 UTC; each explorer is on lists it has not flown |
+| Own | the hunts: hunt-intercrus-ice-fields-hollow-pilgrim, hunt-alnilam-frozen-drift-hollow-pilgrim, hunt-gsc-0021-ice-fields-hollow-pilgrim, hunt-atlas-gas-pocket, carry-soma-synchrony-to-alpha, hunt-amberfall-chlorophage-sac (stores), hunt-titawin-gas-cloud-chlorophage (stores from this turn), hunt-test-homam-frost-moth (stores from this turn), hunt-achernar-frost-ring-hollow-pilgrim, hunt-garnet-dim-lattice-veil-ray, hunt-birchwood-vapor-fields-cinder-sylph, hunt-pleione-ice-fields-hollow-pilgrim; mine-nightveil-dark-residue, mine-flicker-fray, mine-gliese-876-belt | one ship each, then @reader | 1 each | mine-flicker-fray +17,698 over 1 (12 h: +5,700 over 3), Titawin +16,315 over 1 (it sold reserve sacs: stores now), Birchwood +7,276 over 1, mine-nightveil-dark-residue +7,394 over 1, carry-soma +3,706 over 5; Atlas gas pocket +2,499 over 15 (12 h) | Scouts hunt on the way (D8, F9); one hunter per herd; the dispatcher closes a hunt where a pirate was seen within six hours (D9). The GSC-0040 and Aldhibah pilgrims went to Military (admirals ENT-046) |
+| Own | fit-survey-scanner-central-nexus | five readers, one at a time | 1 (7 pilots) | -4,970 a fit | Scanning is a skill of the class and rises only by surveys |
+| Own | @reader: census-watch-gsc-0044, census-worked, census-frontier, census-roads | 19 | 4, 6, 12, 10 | watch -780 over 25, worked -769 over 38, frontier -699 over 25, roads -739 over 35 | The outpost site and all six neighbours every 35 minutes (gaps were 43 to 72 at 45); the 20 systems our routes use every 90 minutes, Clearwater among them; the frontier every 170 (oldest 204 at 200); the roads every 480 |
+| Then | gather-gsc-0027-prism-scatter, gather-hamal-crystal-bloom, mine-pherkad-rift, gather-gsc-0027-spacetime-seep, gather-schedar-belt, gather-ironhollow-echo-ejecta, the three craft-steel routes, census-frontier, park | the rest, while nothing is due | shared | gather-ironhollow-echo-ejecta -3,438 over 104 runs of the fleet (4 h) | The fallback: ore into storage for the reserve |
 
-The forecast's SUM line at the briefing (15:16 UTC): -6,308 credits an
-hour; Intel's steady net in the hour before it -17,646 (fuel; the scouts
-sell nothing but the hunts). What would change the plan: the explorers'
-lists running dry (the ROADS line: 121 never-read on the lists, none left
-on the map that a list can take, 15:31 UTC), when the explorers go to the
-D4 regions; the first surveyed census rows (then the scanner on every
-explorer); a pirate at GSC-0044 or next to it; the two Clearwater readings
-(then census-watch-clearwater goes off and Clearwater back to census-roads).
+The forecast's SUM line at the briefing (19:16 UTC): -17,777 credits an
+hour; Intel's net in the last hour +40,130 with once rewards, its steady
+runs of 4 hours -346 an hour (`hive.py briefing`). What would change the
+plan: the first census-north and census-south rows (reads per hour, fuel,
+pirates met); a pirate at a candidate site; the scanner readers' XP (if a
+second survey of a system pays nothing, scanners go to the explorers
+instead); a Mining Survey Probe that resolves a faint signature.
 
 ## 1. Route Guides
 
@@ -110,8 +117,8 @@ as `@<name>`, alone or after routes of its own.
 
 | Template | Routes, in the order a ship tries them | Trains | For |
 |---|---|---|---|
-| @explorer | census-roads, census-frontier | navigation, exploration, piloting | about ten scouts: the roads to the station sites and the systems beside them, then the frontier (rule F26) |
-| @reader | census-worked, census-frontier, census-roads | exploration, navigation, piloting | about twenty scouts where the fleet works: every place our routes use twice a turn, then the frontier, then the roads |
+| @explorer | census-roads, census-frontier | navigation, exploration, piloting | about ten scouts, after their own lists (census-north, census-south, census-far-1 to 5): the roads, then the frontier (rule F26) |
+| @reader | census-watch-gsc-0044, census-worked, census-frontier, census-roads | navigation, exploration, piloting, scanning | about twenty scouts where the fleet works: the outpost site and its neighbours, every place our routes use twice a turn, then the frontier, then the roads |
 
 | Task | How |
 |---|---|
@@ -256,6 +263,43 @@ next turn's test (orders.log ENT-008, F17): `not measured`.
   (`best_buy_qty`, Ironlight Crossroads 23:21 UTC).
 
 ## 7. Open Tests
+
+- 2026-11-17 19:15 UTC turn:
+  - The map is read: 8 never-read systems were left on the explorers'
+    lists at 19:18 UTC (147 road reads in 4 hours, 36.8 an hour) and none a
+    list can take; 9 strongholds and 3 systems without fuel stay unread.
+  - The next sites (orders ENT-042, P4 b; tables fields, herds, lanes,
+    stations, observations kind pirate, 19:20 UTC): no pirate line within
+    two jumps of any system from our border to Alchiba. A chain with 3 or
+    4 systems between sites (rule F33): Acrab (4 out, 6 jumps from home;
+    iron and copper ore 199,999 each, null matter 594; 5 lanes; 58
+    animals; the nearest station with fuel and a market 5 jumps), GSC-0006
+    (4 further; iron and copper about 200,000 each, neon 47,803, lithium
+    25,000; 69 animals; 2 from Aldebaran), Oxbow (3 further; iron and
+    copper about 200,000 each, water ice 39,328; 6 lanes; 67 animals; 1
+    from Hawthorne). Nightveil (3 out; a belt and neon and argon clouds of
+    about 50,000 each) is the alternative to Acrab. The south 3 or 4 out (GSC-0021,
+    Tanglewood, Felis, Gliese 876) holds 45 to 55 pirate lines within two
+    jumps and the Korr stronghold two or three jumps away; GSC-0035 (5 out;
+    copper 199,999, iron 181,250, argon 50,000; 7 lanes; 71 animals; no
+    pirate line of its own, 34 within two jumps) is the least exposed.
+  - Surveys beyond the border (scouting/<system>.json `survey`, 12 systems,
+    15:37 to 19:15 UTC): no hidden deposit; Homam and The Telescope answered
+    "Survey detected 1 faint signature(s) that your scanner cannot resolve.
+    Try a more powerful survey scanner." The scanner scout reached scanning 1.
+  - Uranium ore: our books bid 600 cr (was 300 on 2026-11-16), and the only
+    field read beyond Acubens is Markeb Belt, 38 of 5,000 (outer rim, 19
+    jumps). It is extracted by a Rad Harvester (catalog, base value 990),
+    carried by no ship of ours.
+  - Glasslight Shoal at Clearwater (requests ENT-221): about 77 silicon ore
+    an hour grown back, 08:18 to 18:18 UTC (322 to 15 while Logistics
+    gathered 1,081); census-watch-clearwater off, Clearwater on census-worked.
+  - A reserve sale (errors.log ENT-095): the Titawin chlorophage hunt sold 6
+    caustic sacs at 2,110 cr while the reserve stood 384 short, and the Homam
+    frost-moth test 5 superfluid vials the reserve holds back; both store at
+    Node Beta now, and the turn check prints RESERVE.
+  - Pirates filed: 18 lines, among them ten Dross raiders and raider elites
+    at Hollowcrest Frozen Drift (19:06 UTC), where a sentinel hunt works.
 
 - 2026-11-17 15:15 UTC turn:
   - The far explorers (census-far-1 to 5, from 11:25 UTC): 97 first reads
