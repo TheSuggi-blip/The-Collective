@@ -18,14 +18,5 @@
   "empty_hold": true,
   "without_module": "piercing_railgun_i"
  },
- "measured": {
-  "date": "2026-11-17",
-  "runs": 2,
-  "minutes": 34,
-  "credits_per_run": -130,
-  "cph_per_ship": -240,
-  "hours": 12,
-  "last_run": "2026-11-17T10:02:45Z"
- },
  "status": "off"
 }
