@@ -32,6 +32,19 @@
     "xenobiology"
    ],
    "note": "Fit: the starter Pulse Laser I (reach 3) and Mining Laser I. Each hunt takes one ship (rule F9); the veil-ray, drift-ray and carapace hunts are standing work that store curd, carapace and biogas for the station list; the sell-curd routes open only while a bid stands and the pilot stores curd. Gathering is the fallback (rule F23)."
+  },
+  "guard": {
+   "title": "Guard where our ships mine beyond the border; read the guarded systems when no guard post is open",
+   "routes": [
+    "guard-ironhollow-fading-signal",
+    "guard-marfik-emission-nebula",
+    "census-guard-ice"
+   ],
+   "trains": [
+    "piloting",
+    "navigation"
+   ],
+   "note": "A guard route opens only while a pilot of ours flies the route it guards; it never fires, leaves under 60 percent hull or in a fight, and docks at the station named. Put it before @hunter in a ship's cell."
   }
  }
 }
