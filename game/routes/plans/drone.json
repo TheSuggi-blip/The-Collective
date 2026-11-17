@@ -20,6 +20,9 @@
   "voidborn-missions-1",
   "voidborn-mining-missions",
   "mission-ghosts-in-the-cloud-node",
+  "guard-ironhollow-fading-signal",
+  "guard-marfik-emission-nebula",
+  "census-guard-ice",
   "sell-curd-central-nexus",
   "sell-curd-node-beta",
   "sell-curd-experiment",
@@ -82,6 +85,9 @@
   "voidborn-missions-1": 50,
   "voidborn-mining-missions": 50,
   "mission-ghosts-in-the-cloud-node": 50,
+  "guard-ironhollow-fading-signal": 3,
+  "guard-marfik-emission-nebula": 3,
+  "census-guard-ice": 3,
   "sell-curd-central-nexus": 50,
   "sell-curd-node-beta": 50,
   "sell-curd-experiment": 50,
@@ -107,6 +113,7 @@
  "of": 50,
  "derived": "Written by game/fleet/plan.py from the division's plan file (data/plans/plan-military.md), never by hand.",
  "templates": {
-  "hunter": 50
+  "hunter": 50,
+  "guard": 3
  }
 }
