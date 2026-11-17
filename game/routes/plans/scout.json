@@ -33,6 +33,7 @@
   "gather-gsc-0027-prism-scatter",
   "gather-hamal-crystal-bloom",
   "mine-pherkad-rift",
+  "gather-gsc-0027-spacetime-seep",
   "park"
  ],
  "planned": [
@@ -92,6 +93,7 @@
   "gather-gsc-0027-prism-scatter": 30,
   "gather-hamal-crystal-bloom": 30,
   "mine-pherkad-rift": 30,
+  "gather-gsc-0027-spacetime-seep": 30,
   "park": 30
  },
  "of": 30,

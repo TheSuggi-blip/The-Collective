@@ -41,7 +41,7 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 | [drone](plan-drone.md) | Apophis | 47 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 5 | 50 |
 | [hauler](plan-hauler.md) | Apollo | 42 | voidborn-resonance-finish > voidborn-atmospheric-extraction > voidborn-hardware-cargo | 6 | 40 |
 | [miner](plan-miner.md) | Zero | 50 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 4 | 60 |
-| [scout](plan-scout.md) | Oracle | 31 | voidborn-first-steps-board > voidborn-network-expansion > voidborn-collective-provides | 6 | 30 |
+| [scout](plan-scout.md) | Oracle | 32 | voidborn-first-steps-board > voidborn-network-expansion > voidborn-collective-provides | 6 | 30 |
 | [sentinel](plan-sentinel.md) | Unity | 47 | voidborn-first-steps-board > voidborn-collective-provides > voidborn-signal-protocol | 0 | 20 |
 | [trader](plan-trader.md) | Mercury | 36 | voidborn-first-steps-board > voidborn-network-expansion > voidborn-collective-provides | 6 | 40 |
 
