@@ -42,9 +42,9 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 |---|---|---|---|
 | STLR-004-RIM | Node Beta (`node_beta`) | 0 | billhook |
 | STLR-089-VOI | GSC-0027 (`gsc_0027`) | 0 | threshold |
-| STLR-119-VOI | Node Beta (`node_beta`) | 0 | threshold |
-| STLR-142-NEB | GSC-0027 (`gsc_0027`) | 0 | prospect |
+| STLR-142-NEB | Node Beta (`node_beta`) | 0 | prospect |
 | STLR-163-NEB | GSC-0027 (`gsc_0027`) | 0 | prospect |
+| VMan | Node Beta (`node_beta`) | 0 | threshold |
 
 ## Standing History
 

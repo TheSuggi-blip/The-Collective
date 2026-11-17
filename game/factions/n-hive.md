@@ -15,7 +15,7 @@ updated: 2026-11-17
 # Hive Swarm [HIVE]
 
 A player faction with 3 base(s) in 3 system(s); the nearest to Nexus Prime is 5 jump(s) away, in Antares (`antares`).
-Pilots of it in our space in the last 24 hours: 3.
+Pilots of it in our space in the last 24 hours: 9.
 
 ## Identity
 
@@ -42,9 +42,15 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| 10c1432ce43efedb9c7f9632 | Synchrony (`synchrony`) | 0 | workhorse |
-| 9c9765b4fac99eca9d3593cb | Synchrony (`synchrony`) | 0 | runner |
-| a2b005c64a75e5188f89b67b | Node Alpha (`node_alpha`) | 0 | runner |
+| 0a5266cdbbc00fe268e0948a | Pherkad (`pherkad`) | 0 | workhorse |
+| 449b2ab5318addd2a2683dba | Node Alpha (`node_alpha`) | 0 | runner |
+| 4c671b9675ba73f0025d603d | Node Alpha (`node_alpha`) | 0 | deep_survey |
+| 68cf653d9ab64d0866a6555c | Node Alpha (`node_alpha`) | 0 | runner |
+| 9140cf6907be68f776da37ea | Node Alpha (`node_alpha`) | 0 | workhorse |
+| 91cba4fc8631acb92b8db26f | Node Beta (`node_beta`) | 0 | runner |
+| 9c9765b4fac99eca9d3593cb | Node Alpha (`node_alpha`) | 0 | runner |
+| b1175909078c49082d98be1b | Nexus Prime (`nexus_prime`) | 0 | runner |
+| d6dd920cb9af326e71c06f73 | Node Alpha (`node_alpha`) | 0 | runner |
 
 ## Standing History
 

@@ -49,10 +49,10 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
 | Elara Orris | Hamal (`hamal`) | 0 | lithosphere |
-| HexBot13 | Pherkad (`pherkad`) | 0 | frankenhauler |
-| HexBot2 | Node Alpha (`node_alpha`) | 0 | frankenhauler |
-| HexCogitoAI | Nexus Prime (`nexus_prime`) | 1 | omniscience |
-| Zhou | Nexus Prime (`nexus_prime`) | 0 | pithead |
+| HexTitan | Node Beta (`node_beta`) | 0 | lithosphere |
+| Morgan Drake | Node Beta (`node_beta`) | 0 | bulk_terms |
+| Olthoi | The Experiment (`the_experiment`) | 0 | cryogenic_survey |
+| Zhou | The Experiment (`the_experiment`) | 0 | pithead |
 
 ## Standing History
 
