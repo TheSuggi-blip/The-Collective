@@ -64,9 +64,10 @@
    "note": "Loaded holds stored first; melt and curd sales open only with stock and a bid; then six hollow-pilgrim hunts (crystal melt, bid at Sirius), two cinder-sylph hunts, 21 grazer hunts that store carapace, seven veil-ray hunts, the drift-ray hunt; iron gathering last, copper after it (the reserve holds copper beyond its need)."
   },
   "guard": {
-   "title": "Guard where our ships mine beyond the border; read the guarded systems when no guard post is open",
+   "title": "Guard: one drone at each field beyond the border where our miners work",
    "routes": [
     "guard-ironhollow-fading-signal",
+    "guard-schedar-belt",
     "guard-marfik-emission-nebula",
     "census-guard-ice"
    ],
@@ -74,7 +75,7 @@
     "piloting",
     "navigation"
    ],
-   "note": "A guard route opens only while a pilot of ours flies the route it guards; it never fires, leaves under 60 percent hull or in a fight, and docks at the station named. Put it before @hunter in a ship's cell."
+   "note": "Ironhollow and Schedar lie one jump from their stations, so the miners stay at the field most of a run; Marfik is guarded while the gas trader flies it. Each opens only while a ship of ours flies the guarded route."
   }
  }
 }
