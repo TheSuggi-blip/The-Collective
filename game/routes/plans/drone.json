@@ -78,6 +78,7 @@
   "mine-pherkad-rift",
   "gather-hamal-crystal-bloom",
   "gather-schedar-belt",
+  "gather-ironhollow-echo-ejecta",
   "census-frontier",
   "park"
  ],
@@ -179,6 +180,7 @@
   "mine-pherkad-rift": 50,
   "gather-hamal-crystal-bloom": 50,
   "gather-schedar-belt": 50,
+  "gather-ironhollow-echo-ejecta": 50,
   "census-frontier": 50,
   "park": 50
  },
