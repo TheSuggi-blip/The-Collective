@@ -71,6 +71,7 @@ ship-hour; the standing fleet's SUM line read -6,686 cr an hour at 07:45 UTC.
 | First (every ship) | the 17 once missions (`voidborn-*`, `mission-cracking-the-shell-central`) | as their files say | -- | 42,217 cr paid once to haulers in the four hours to 07:45 UTC (briefing) | Strategy, principle 5 |
 | By hand, this turn | the builder and four donors (section 15.2) | 5 | -- | fuel only | Orders ENT-031, block APOLLO (2): the Lockbox at The Experiment |
 | Own 1 (the builder, after the build) | `craft-boards-silicon-central-nexus` | 1 | the 43 silicon ore it stores at Central Nexus | not measured; 65 boards for about 960 cr of carbon | The offices' 125 boards (orders (4)) |
+| Own 1 (one hauler), a test | `gather-glasslight-shoal-silicon` (Clearwater, 9 jumps, 8 lawless, empty hold out) | 1 | the 322 silicon ore read in the field, min_left 65 | not measured | The first silicon field with ore: boards for the offices (admirals.log ENT-027) |
 | Own 1 (two haulers) | `mine-achernar-gas-pocket`, `mine-grumium-belt` | 1 each | the bid at the selling end | Achernar 927 (6 runs of 12 hours), Grumium 1,508 (1 run) | The best measured mine runs of the division |
 | Own (every hauler) | `@stored-goods`: Trade's hydrogen and soma sells first, then plate, plasma, liquid hydrogen | 1 a route, only the pilot that stores the good, only while its bid stands | one ship while its bid stands | sell-hydrogen-at-node-beta 35,532 (5 runs), sell-hydrogen-at-node-gamma 11,217 (5), sell-soma-at-synchrony 6,874 (5), carry-soma-synchrony-to-alpha 5,043 (7), sell-soma-at-node-beta 3,636 (15) | Haulers store 2,257 hydrogen gas at Node Beta and Node Gamma and 98 soma; Trade keeps the floors (admirals.log ENT-011, ENT-012) |
 | Own (the four gas haulers) | `@gas-harvest`: Antares, Amberfall, Deepwell haze; one hauler on `mine-lesath-gas-cloud` first | 1 each | the bid at the selling end | Amberfall 47, Antares -236, Deepwell -452, Lesath -65 | The gas they store feeds the hydrogen sells |
@@ -810,7 +811,11 @@ logistics-stock: it keeps the hold fresh, stops the moment another hand or a run
 and lets go at 11:30 UTC). Loads, by `catch.py` and `stage.py` at the end of each pilot's gather run
 (2026-11-17 from 07:52 UTC): the builder 45 boards and 20 plate; three donors 64, 65 and 51 plate and
 1 board from Node Beta; one donor 4 boards from Central Nexus; each donor gives into the builder's
-storage at The Experiment, one unit first. Its outcome is entered here at the next turn.
+storage at The Experiment, one unit first. Done 08:41 UTC: the builder's storage there read 200 steel
+plate and 50 circuit boards (the game's storage view); each donor took 6.5 to 10.1 minutes from the
+end of its run, 0 cr but fuel, no run cut. A deposit into the storage of a pilot that is not at the
+station landed (08:22 UTC). The build is the Fleet Admiral's at 09:30 UTC; its outcome is entered
+here at the next turn.
 
 ### 15.3 The first outpost as routes (task 3; deploy nothing yet)
 
