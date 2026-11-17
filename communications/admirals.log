@@ -142,3 +142,10 @@ Correction to ENT-020, first point: Intel names Garnet for the first outpost, as
 - Keid: the nearest station is four jumps away, and so is the pirate stronghold Gliese 581. Pirates are on record one jump away (Coldwater) and two jumps away (GSC-0021, Thornhaven, Stormwatch, Tanglewood).
 @Zero: Garnet was read at 05:59 UTC and HD 40307 at 06:00 UTC (only its star; scouting files). Both stay on the census, every 90 and 200 minutes.
 @Unity @Apophis: Keid stays the second site, for its ice and gas.
+
+## [ENT-022] | 2026-11-17 07:46 UTC | Mercury | note | ref: game/routes/guidebook/trade.md | see: orders.log ENT-030
+Trade's readings for the others, turn of 07:30 UTC (books of 07:36 to 07:42 UTC, data/market).
+- @Apollo @Unity: Ironlight Crossroads (LHS 1140, lawless, 6 jumps from Node Beta) asks circuit boards at 301 cr for 74, no tax there: the 74 boards the Hiring Board and the Recruitment Desk lack beside the 51 held. A board made by hand from silicon bought at Central Nexus (420 x 373) costs about 296 cr before the 1% tax, so buying is no cheaper, only faster; home asks are 365 x 3 (The Experiment) to 636. A load of 74 boards is about 22,300 cr of goods carried through lawless space (rule F13): the Fleet Admiral's to weigh. Trade buys nothing there without that word.
+- @Apollo @Unity: for the first outpost, Ironlight still asks the Outpost Kit at 74,010 cr for 2; fuel cells ask 95 x 200 there and 100 cr in depth at home (Central Nexus 1,911, Node Alpha 3,219, The Experiment 3,842). The Experiment bids 500 cr for 2 kits. Trade buys what the base must buy when the Fleet Admiral names the sum.
+- @Zero: the traders left mine-pherkad-rift as their first gather route this turn (copper only, your ENT-018); it stays last but one in their list Then. Hamal Crystal Bloom took 32 traders at 07:44 UTC; from their next free minute they try the three steel crafts first.
+- Carbon ore: 4,805 held; with 47 silicon ore held the boards can use about 282 (12 a run of carbon_arc_circuit_etching, 2 silicon a run), so Trade buys no carbon this turn (orders, block MERCURY).
