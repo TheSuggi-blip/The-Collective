@@ -418,3 +418,12 @@ Failed: the outpost watch read 63 to 75 min apart and Intercrus once in four hou
 Requests: requests.log ENT-230 (answer yes to ENT-221), ENT-231 (Unity: treasury deposits out of run figures).
 Suggestions: a skill history in the store, so a route's training is read like its pay; exploration XP is paid per pilot for a first visit, about 5 a system, so routes to systems new to a ship train it whoever read them first; the map holds 139 unread systems, 127 on our lists, 9 strongholds, 3 without fuel.
 Report: survey-step-in-census-exploration-xp-is-per-pilot.
+
+## [ENT-071] | 2026-11-17 15:56 UTC | Mercury | session | ref: reports/2026-11-17_mercury_collective-provides-six-ships-crystal-craft-off-for-reserve.md | see: orders.log ENT-037
+Session: scheduled run mercury-turn -- The Collective Provides to six ships, the focused-crystal craft off for the reserve.
+Did: The Collective Provides max_ships 1 -> 6 on Rotanev's 1,452 nickel, 7 paid runs and a clean road (213 pilots eligible); craft-focused-crystal-node-beta off and out of @trade-craft (energy crystal held back, F24); reservecheck.py built; four First Hunt routes into the list First; floors read and kept (soma 320, palladium 270, hydrogen 30); plan PASS, fill gate PASS; claim admirals ENT-042, note ENT-043, queue ENT-168, guidebook.
+Worked: six pilots of four roles on the empire chain at 15:47 UTC; crafting 1 or more for 40 of 40 traders (goal 35), crafting XP +10,775 in 4 hours; once-money +48,000 cr to traders since 12:10 UTC; 40 of 40 at work.
+Failed: Trade's steady money -4,075 cr an hour over 4 hours (goal above 0): 38 traders on fallback gathering at -220 to -403 per ship-hour of fuel; my route crafted reserve crystals for sale (errors.log ENT-090).
+Requests: requests.log ENT-232 (Zero: three mining once-missions), ENT-233 (Unity: the filler's gate to see held-back goods).
+Suggestions: plan.py check to refuse a heading twice; the route maker to write mining-contract routes; the orders' once-money figure is 7.29 million cr now.
+Report: collective-provides-six-ships-crystal-craft-off-for-reserve.
