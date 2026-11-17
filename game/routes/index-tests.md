@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 56.
+Routes: 58.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -44,6 +44,7 @@ Routes: 56.
 | [hunt-denebola-fractured-prism-veil-ray](hunt-denebola-fractured-prism-veil-ray.json) | hunt | beyond the border, 5 jumps | veil_ray at denebola_fractured_prism; loot sold at Node Beta Industrial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-edasich-ice-halo-frost-moth](hunt-edasich-ice-halo-frost-moth.json) | hunt | beyond the border, 25 jumps | frost_moth at edasich_ice_halo; loot sold at Treasure Cache Trading Post | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-navi-ice-shelf-frost-moth](hunt-navi-ice-shelf-frost-moth.json) | hunt | beyond the border, 20 jumps | frost_moth at navi_ice_shelf; loot sold at Nova Terra Central | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
+| [hunt-nightveil-haze-cinder-sylph](hunt-nightveil-haze-cinder-sylph.json) | hunt | beyond the border, 20 jumps | cinder_sylph at nightveil_haze; loot sold at War Citadel | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-orphan-nebula-veil-ray](hunt-orphan-nebula-veil-ray.json) | hunt | beyond the border, 9 jumps | veil_ray at orphan_nebula; loot sold at Nova Terra Central | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-test-amberfall-sift-ray](hunt-test-amberfall-sift-ray.json) | hunt | beyond the border, 5 jumps | Yield test: sift_ray, chlorophage at amberfall_emission_nebula (lawless); what a kill drops and whether a bid takes it | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-test-atlas-halo-drifter](hunt-test-atlas-halo-drifter.json) | hunt | beyond the border, 6 jumps | Yield test: halo_drifter at atlas_gas_pocket (lawless); what a kill drops and whether a bid takes it | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
@@ -71,4 +72,5 @@ Routes: 56.
 | [mine-stillwork-belt](mine-stillwork-belt.json) | mine | beyond the border, 7 jumps | Stillwork Belt: iron_ore, copper_ore, null_matter; sold at The Core | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [mine-tanglewood-frost-ring](mine-tanglewood-frost-ring.json) | mine | beyond the border, 6 jumps | Tanglewood Frost Ring: water_ice, nitrogen_ice, helium_ice; sold at Synchrony Hub | up to 1 ships, needs ice_harvester_i, empty hold, while synchrony_hub bids 25 cr for water_ice | TBD | TBD | TBD | TBD | -- |
 | [mine-thinspace-rubble](mine-thinspace-rubble.json) | mine | beyond the border, 6 jumps | Thinspace Rubble: iron_ore, copper_ore, null_matter; sold at The Core | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
+| [mine-veil-nebula](mine-veil-nebula.json) | mine | beyond the border, 22 jumps | Veil Nebula: quantum_fragments, phase_crystal, energy_crystal; sold at Trader's Rest Resort Station | up to 1 ships | TBD | TBD | TBD | TBD | -- |
 | [mine-wolf-1061-vent](mine-wolf-1061-vent.json) | mine | beyond the border, 4 jumps | Wolf 1061 Frozen Drift with a Nitrogen Vent: water and the rare ices, sold at Synchrony | up to 1 ships, needs nitrogen_vent, empty hold, while synchrony_hub bids 25 cr for water_ice | TBD | TBD | TBD | TBD | -- |

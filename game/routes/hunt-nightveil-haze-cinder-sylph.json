@@ -1,0 +1,20 @@
+{
+ "id": "hunt-nightveil-haze-cinder-sylph",
+ "kind": "hunt",
+ "title": "cinder_sylph at nightveil_haze; loot sold at War Citadel",
+ "note": "Written by routemaker.py from the herd's count, the loot of 72 runs of ours and the order book; an estimate of 6514 cr per hunter-hour, not a measurement. A test: one ship, the ranching rules kept. Added as a test by fill.py on 2026-11-17 17:43 UTC (Unity): one ship until its first RESULT line is read.",
+ "place": "nightveil:nightveil_haze",
+ "species": [
+  "cinder_sylph"
+ ],
+ "sell_at": "krynn:war_citadel:crimson_war_citadel",
+ "min_bid": 5679,
+ "kills": 4,
+ "minutes": 139,
+ "max_ships": 1,
+ "min_creatures": 4,
+ "alone": true,
+ "requires": {
+  "empty_hold": true
+ }
+}
