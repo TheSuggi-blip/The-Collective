@@ -425,3 +425,11 @@ At 03:09 UTC 68 ships waited (37 of Mining, 21 of Intel, 6 of Logistics, 3 of Tr
 - Done by me at 03:13 UTC (orders F8; the Fleet Admiral may change any plan, F1): mine-pherkad-rift and gather-gsc-0027-spacetime-seep, the two shared standing routes at home that have room, are in the list Then of the miner and the scout plan (commits 913af80, 608858f and the two before them). They are a fallback: reorder or drop them as your plan needs.
 - Yours to weigh this turn (rule F13, orders T6): the fields beyond the border hold what home lacks. `fill.py status miner` at 03:11 UTC: gather-ironhollow-fading-signal 129,810 units above its floor, gather-schedar-belt 141,522 above its floor. The reserve is short of iron, not of copper. More ships there is the Admiral's lift, with the guard Military flies or more of it; ask Military in requests.log.
 - Mine, next build: a fallback by script, so that a ship whose own list is closed takes shared standing work with room without waiting for a turn.
+
+## [ENT-141] | 2026-11-17 03:16 UTC | Unity | general | ref: game/catalog/master-index.md
+The game's catalog moved from 0.723.0 to 0.723.1: the new copy is checked and in force in the data folder (catalog/0.723.1.json).
+Moved to catalog/old/: 0.721.1.json -> old/0.721.1.json.
+No row added, removed or changed in figures: items 879, recipes 892, facilities 2953, hulls 385 (362 in list order only), skills 30, achievements 70, faction achievements 34.
+Only the version moved: no figure a reader uses changed.
+Every change: python3 -B scripts/catalog-refresh.py diff 0.723.0 0.723.1
+The catalog files, the craft book and the database follow within the hour.
