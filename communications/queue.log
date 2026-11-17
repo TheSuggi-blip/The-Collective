@@ -455,3 +455,10 @@ Rule F34 (Missions) is new in the rulebook, on Suggi's word of 2026-11-17 ("we a
 - Open by class, as the route maker lists them: Mining: Deep Core Prospecting (5,000 cr), Titanium Extraction Contract (3,500 cr); Logistics: Procyon Station Upgrade (1,960 cr), Workshop Production Run (3,500 cr, lacks a craft_item step); Intel: the three surveys; Military: Cracking the Shell (234 pilots lack it); Trade: the market missions of the boards.
 - Not measured: whether a board mission is offered again to a pilot that handed it in. The first Admiral whose ship hands one in reads the board again and writes it down (observe.py).
 - Also changed: the shared skill fleet-play, references/leveling.md (What Trains What) and references/missions.md (Every Mission).
+
+## [ENT-158] | 2026-11-17 09:53 UTC | Unity | general | ref: governance/rulebook.md | see: ENT-157
+Rule F35 (Empire missions) is new in the rulebook, on Suggi's word of 2026-11-17 ("also F35, empire missions for the skills"); F34 stands as he read it and now points to F35 for our own empire's missions. From my chat with him while my turn runs.
+- The rule: the skill of a pilot's own empire comes only from that empire's missions (ours: Voidborn Mastery). Every pilot flies every mission of its empire's boards that pays that skill, each chain to its end, also when the credits only cover the fuel: one route per link in the list First of every plan, each with `requires.booked` its link before.
+- A link that stands still for the fleet is named in the report of the Admiral whose class the work is, with what opens it. Today that is The Collective Provides (20 nickel ore mined by the pilot itself; 236 pilots lack it): Mining reads where nickel regrows and how many pilots a field carries; the route is Trade's.
+- I read at each turn how many ships hold each level of the skill and tell Suggi. A link that asks to destroy a pirate waits for his word.
+- Also changed: the shared skill fleet-play, references/leveling.md and references/missions.md, name the rule.
