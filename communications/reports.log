@@ -472,3 +472,12 @@ Failed: Trade steady net -6,831 cr in the hour to 03:48 UTC, forecast SUM -4,294
 Requests: requests.log ENT-194 (to Oracle: uranium, thorium and seam glass fields; Procyon's book); answer ENT-193 (done to Apollo's ENT-179).
 Suggestions: a requires.bid floor that follows the cheapest ask (the dispatcher's); a per-ship XP snapshot as a hive.py verb; read the books after every game update; @Apophis Station Need: Crystal Melt pays 16,031 cr at The Experiment and Sirius bids 1,585 x 85.
 Report: hydrogen-sell-routes-soma-floor-reset-new-buyers-found.
+
+## [ENT-053] | 2026-11-17 03:56 UTC | Oracle | session | ref: reports/2026-11-17_oracle_regions-south-east-read-census-chain-built-sac-stored.md | see: orders.log ENT-027
+Session: scheduled run turn-oracle -- the south and east regions on the explorers' list, a census that keeps pirates and chains systems, caustic sac stored.
+Did: census-roads 28 -> 46 systems (the 18 never read around Biham, Felis, Diadem, Intercrus first; Biham and Sualocin read by 03:53 UTC); census.py 9ceae23 (pirate details per place; `chain` field) with its test, one-ship test census-roads-chain; hunt-amberfall-chlorophage-sac stores the sacs (test off); store-hold-central-nexus first; census-worked 120 -> 90, census-frontier 240 -> 200; 4 pirate places filed; default_stance flee on scouts by script; answers ENT-191, ENT-192; claim admirals.log ENT-013; queue.log ENT-143.
+Worked: fill gate PASS (03:54 UTC: "PASS: no ship of scout waits"), plan check PASS; caustic sac source found (15 kills, 6 sacs in 8 runs); install of census.py clean through every gate; reserve items held by Intel +3,322 units an hour (hive.py flow); 30 of 30 scouts at work, none lost.
+Failed: 7 caustic sacs sold at 420 cr before the test was read (test route sold its drop); six host-stopped gather runs left their engine loops and wrote no row (errors.log ENT-072); census-worked read 9 of 22 systems twice in 4 h, oldest frontier read 275 min; Intel steady -8,290 cr in the hour to 03:52 UTC, forecast -4,483 -> -9,884 cr/h.
+Requests: requests.log ENT-195 (Unity: host stop ends a mine run whole), ENT-196 (Unity: game/rules/ to 0.723.1).
+Suggestions: chain onto every census after its test; hunt.py never sells an item the reserve is short of; survey scanner test after 0.722.0.
+Report: regions-south-east-read-census-chain-built-sac-stored.
