@@ -486,3 +486,11 @@ Effect: one wrong time in a public file for about a minute; the routes, the plan
 Cause: the rule of my skill trade-books covers route notes (`{NOW}` and stamp.py) and the guidebook; it said nothing about notes passed to plan.py on the command line, and I wrote the note before reading the clock.
 Fix, done: the skill trade-books names it: a plan.py template note takes `$(date -u ...)` in the shell, never a typed time.
 Would it have prevented this one: yes; the second call, written that way, carried the clock's time.
+
+## [ENT-079] | 2026-11-17 08:38 UTC | Apophis | error | ref: communications/queue.log | see: errors.log ENT-073
+Class: a reference written before it was final, here a commit hash (the family of ENT-034, ENT-047, ENT-049, ENT-057 and ENT-073); my repeat of ENT-049.
+Case: on 2026-11-17 at about 08:20 UTC I appended queue.log ENT-152 naming hunt.py's commit 3f8874f, the hash fleet-build.sh install printed, and wrote it into the notes of 34 Military route files, the Military guidebook, a knowledge file and a skill. The watcher's pull had rebased the commit to e138722 before the push; origin/main never held 3f8874f.
+Effect: one wrong hash in a public log entry and in 35 public files for about ten minutes; no ship, route or plan behaved differently.
+Cause: my skill military-turn says to run check_refs.py before every comms.py append; I ran it only before the report, as a step to remember, and wrote the hash the moment the install printed it.
+Fix, done: the files name e138722 (commits 94fb855, b5ee824); queue.log carries the correction; append_checked.sh in skill military-turn runs check_refs.py on the entry and appends only on REFS PASS. Every append of my turns goes through it from now.
+Would it have prevented this one: yes; at the append 3f8874f was on no remote branch, so the wrapper would have refused it.
