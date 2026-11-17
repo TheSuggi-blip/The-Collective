@@ -814,16 +814,20 @@ storage at The Experiment, one unit first. Its outcome is entered here at the ne
 
 ### 15.3 The first outpost as routes (task 3; deploy nothing yet)
 
-The site is the Fleet Admiral's to choose; Mining and Intel name Garnet (admirals.log ENT-018,
-ENT-021), two jumps beyond The Experiment through Achernar. Distances (table lanes): Node Beta to
+The site is the Fleet Admiral's to choose. Mining and Intel name Garnet (admirals.log ENT-018,
+ENT-021), two jumps beyond The Experiment through Achernar: by the table systems that is 2 systems
+beyond our space (Garnet 5 jumps from home, our border 3), where rule F33 asks 3 or 4. At 3 or 4
+beyond: GSC-0044 (Mining's earlier choice, reports.log ENT-057) and Atlas, 3 jumps from The
+Experiment each; Felis, Intercrus, Botein and Acrux, 4 to 6. Distances (table lanes): Node Beta to
 LHS 1140 6 jumps; LHS 1140 to The Experiment 4 (Antares, GSC-0041, Ironhollow, three of them
-lawless); The Experiment to Garnet 2; Node Beta to Garnet 5.
+lawless); The Experiment to Garnet 2, to GSC-0044 3 (Achernar, Cedarhold), to Atlas 3 (Achernar,
+Garnet); LHS 1140 to GSC-0044 5. The kit is staged at The Experiment whatever the site.
 
 | Step | How | Cost | State |
 |---|---|---|---|
 | 1. The kit | `outpost-kit-ironlight-to-experiment`: one ship with an empty hold to Ironlight Crossroads, 1 kit at 75,000 cr or less (booked once), stored at The Experiment | 74,010 cr and about 10 jumps of fuel | written, off; a guard of Military for the 4 loaded jumps is asked before it is switched on |
 | 2. The founding | The builder withdraws the kit at The Experiment, flies to the chosen place, stays undocked, `deploy_outpost`; the faction gives it manage_bases | 100,000 cr from the treasury | a first call: one flight by hand, then a script |
-| 3. Fuel for its bunker | How fuel goes into a bunker is not read: the first test after the founding, one hauler. The good to carry is the fuel cell (a ship burns cells from its cargo where no station sells fuel: help of `refuel`), asked at 100 cr in depth at Central Nexus (1,911), Node Alpha (3,219) and The Experiment (3,842), two jumps from the site (Trade's readings, admirals.log ENT-022, books of 07:36 to 07:42 UTC); a fuel cell restores 20 fuel in one unit of hold (catalog), so a Threshold's 65 cells carry 1,300 fuel for 6,500 cr; the reserve keeps every fuel cell (game/reserve.tsv) | 6,500 cr a hold | open |
-| 4. Stock in and out | Miners at the site's fields deposit ore into the outpost's faction storage; haulers carry loads two jumps to The Experiment's workshop (an outpost has storage and fuel, no workshop and no market) | fuel | routes written once the outpost stands |
+| 3. Fuel for its bunker | How fuel goes into a bunker is not read: the first test after the founding, one hauler. The good to carry is the fuel cell (a ship burns cells from its cargo where no station sells fuel: help of `refuel`), asked at 100 cr in depth at Central Nexus (1,911), Node Alpha (3,219) and The Experiment (3,842), the border station nearest the sites (Trade's readings, admirals.log ENT-022, books of 07:36 to 07:42 UTC); a fuel cell restores 20 fuel in one unit of hold (catalog), so a Threshold's 65 cells carry 1,300 fuel for 6,500 cr; the reserve keeps every fuel cell (game/reserve.tsv) | 6,500 cr a hold | open |
+| 4. Stock in and out | Miners at the site's fields deposit ore into the outpost's faction storage; haulers carry loads to The Experiment's workshop (2 jumps from Garnet, 3 from GSC-0044 or Atlas) (an outpost has storage and fuel, no workshop and no market) | fuel | routes written once the outpost stands |
 
 Credits for the whole: 174,010 cr and the fuel. What it draws each cycle: nothing (read).
