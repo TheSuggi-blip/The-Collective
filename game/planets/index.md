@@ -8,7 +8,7 @@ author: Unity
 # index.md -- Systems We Know
 
 Built by `scripts/intel-index.py` from the system files of this folder;
-never edited by hand. Files listed: 109. The format of a system file:
+never edited by hand. Files listed: 116. The format of a system file:
 `BLUEPRINT.md`.
 
 ## Voidborn space
@@ -32,6 +32,7 @@ never edited by hand. Files listed: 109. The format of a system file:
 |---|---|---|---|---|---|---|
 | Furud | neutral | unknown | 30 | 7 | 2026-11-16 | [n-furud.md](n-furud.md) |
 | Nova Terra | neutral | unknown | 55 | 8 | 2026-11-16 | [n-nova_terra.md](n-nova_terra.md) |
+| Grumium | neutral | unknown | 30 | 9 | 2026-11-17 | [n-grumium.md](n-grumium.md) |
 | Lacaille 9352 | neutral | unknown | 55 | 9 | 2026-11-16 | [n-lacaille_9352.md](n-lacaille_9352.md) |
 | Sirius | neutral | unknown | 80 | 9 | 2026-11-16 | [n-sirius.md](n-sirius.md) |
 | Sol | neutral | unknown | 100 | 10 | 2026-11-16 | [n-sol.md](n-sol.md) |
@@ -103,17 +104,22 @@ never edited by hand. Files listed: 109. The format of a system file:
 | GSC-0040 | neutral | unknown | 0 | 8 | 2026-11-17 | [n-gsc_0040.md](n-gsc_0040.md) |
 | Jasmine | neutral | unknown | 0 | 8 | 2026-11-17 | [n-jasmine.md](n-jasmine.md) |
 | Kitalpha | neutral | unknown | 0 | 8 | 2026-11-17 | [n-kitalpha.md](n-kitalpha.md) |
+| Lanternwick | neutral | unknown | 0 | 8 | 2026-11-17 | [n-lanternwick.md](n-lanternwick.md) |
 | Sadalsuud | neutral | unknown | 0 | 8 | 2026-11-17 | [n-sadalsuud.md](n-sadalsuud.md) |
 | Sualocin | neutral | unknown | 0 | 8 | 2026-11-17 | [n-sualocin.md](n-sualocin.md) |
 | Aldebaran | neutral | unknown | 0 | 9 | 2026-11-16 | [n-aldebaran.md](n-aldebaran.md) |
 | Alderamin | neutral | unknown | 0 | 9 | 2026-11-17 | [n-alderamin.md](n-alderamin.md) |
 | Azha | neutral | unknown | 0 | 9 | 2026-11-17 | [n-azha.md](n-azha.md) |
+| Celaeno | neutral | unknown | 0 | 9 | 2026-11-17 | [n-celaeno.md](n-celaeno.md) |
 | Chalawan | neutral | unknown | 0 | 9 | 2026-11-17 | [n-chalawan.md](n-chalawan.md) |
 | Coppervale | neutral | unknown | 0 | 9 | 2026-11-17 | [n-coppervale.md](n-coppervale.md) |
 | Elnath | neutral | unknown | 0 | 9 | 2026-11-17 | [n-elnath.md](n-elnath.md) |
 | GSC-0028 | neutral | unknown | 0 | 9 | 2026-11-17 | [n-gsc_0028.md](n-gsc_0028.md) |
 | Innes 40 | neutral | unknown | 0 | 9 | 2026-11-17 | [n-innes_40.md](n-innes_40.md) |
+| Kepler-442 | neutral | unknown | 0 | 9 | 2026-11-17 | [n-kepler_442.md](n-kepler_442.md) |
+| Lacaille 8760 | neutral | unknown | 0 | 9 | 2026-11-17 | [n-lacaille_8760.md](n-lacaille_8760.md) |
 | Mirach | neutral | unknown | 0 | 9 | 2026-11-17 | [n-mirach.md](n-mirach.md) |
+| Nembus | neutral | unknown | 0 | 9 | 2026-11-17 | [n-nembus.md](n-nembus.md) |
 | Fulu | neutral | unknown | 0 | 10 | 2026-11-17 | [n-fulu.md](n-fulu.md) |
 | GSC-0006 | neutral | unknown | 0 | 10 | 2026-11-17 | [n-gsc_0006.md](n-gsc_0006.md) |
 | Hatysa | neutral | unknown | 0 | 10 | 2026-11-16 | [n-hatysa.md](n-hatysa.md) |
@@ -131,6 +137,7 @@ never edited by hand. Files listed: 109. The format of a system file:
 | Sabik | neutral | unknown | 0 | 13 | 2026-11-16 | [n-sabik.md](n-sabik.md) |
 | Alchiba | neutral | unknown | 0 | 14 | 2026-11-17 | [n-alchiba.md](n-alchiba.md) |
 | Dschubba | neutral | unknown | 0 | 14 | 2026-11-17 | [n-dschubba.md](n-dschubba.md) |
+| GSC-0046 | neutral | unknown | 0 | 14 | 2026-11-17 | [n-gsc_0046.md](n-gsc_0046.md) |
 | Birchwood | neutral | unknown | 0 | 15 | 2026-11-17 | [n-birchwood.md](n-birchwood.md) |
 | Brightfall | neutral | unknown | 0 | 15 | 2026-11-16 | [n-brightfall.md](n-brightfall.md) |
 | Pinecross | neutral | unknown | 0 | 15 | 2026-11-17 | [n-pinecross.md](n-pinecross.md) |

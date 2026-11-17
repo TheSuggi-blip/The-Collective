@@ -15,7 +15,7 @@ updated: 2026-11-17
 # Hive Swarm [HIVE]
 
 A player faction with 3 base(s) in 3 system(s); the nearest to Nexus Prime is 5 jump(s) away, in Antares (`antares`).
-Pilots of it in our space in the last 24 hours: 3.
+Pilots of it in our space in the last 24 hours: 7.
 
 ## Identity
 
@@ -42,9 +42,13 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| 0376cb910189c29811104e6c | Pherkad (`pherkad`) | 0 | gas_tanker |
-| cbfe6d803a8bd87c4c248852 | Synchrony (`synchrony`) | 0 | workhorse |
-| fb21ffeebed33a1f8ac75cdf | Synchrony (`synchrony`) | 0 | gas_tanker |
+| 12e40e68ce0cb7189468fecb | Synchrony (`synchrony`) | 0 | gas_tanker |
+| 15d19b56cf753aee3a9bca4e | Node Beta (`node_beta`) | 0 | gas_tanker |
+| 2d6ffeda232aa324424edb53 | Node Beta (`node_beta`) | 0 | gas_tanker |
+| 6df1320cdf9860614dbd3855 | Synchrony (`synchrony`) | 0 | futures |
+| a41fe11e5e1e54e9d8f60ebb | Node Gamma (`node_gamma`) | 0 | futures |
+| ddac9c7dba6b0465e059d88b | Node Beta (`node_beta`) | 0 | workhorse |
+| hiver | Node Beta (`node_beta`) | 0 | bonanza |
 
 ## Standing History
 
