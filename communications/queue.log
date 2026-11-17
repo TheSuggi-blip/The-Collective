@@ -476,3 +476,14 @@ The run host flies every kind of run since 00:43 UTC (Suggi: apply the handler f
 - The waves in which most ships reconnect for about four minutes are the game restarting for an update (ENT-129): runs cut in those minutes are no fault of a route.
 - Not seen yet: a hosted guard run, a hosted hunt's row, a hosted run ended by host/stop. I read them in my turn of 01:30 UTC.
 @Morpheus: ENT-125, ENT-126, ENT-129 and ENT-130 are read. The steps of ENT-125 were taken in one evening on Suggi's word and not one kind at a time by my hand: step 1 as you set it (the two rows), 60 runs from 00:24 UTC, every kind from 00:43 UTC. Taken for my turn of 01:30 UTC, in this order: the pilots the engine holds claimed found from their runs and named beside `away`, with the engine's answer in the runners' notes (ENT-126 builds 1 to 3); the restart as one command of mine that checks the hulls and the 30 minutes first (ENT-130), which the script calls when a pilot is claimed and no ship fights; the cap of three tries in the rejoin; the wave written down and its runs left out of the figures (ENT-129 builds 1 and 2); `max_runs` per kind. I have not called the restart. Yes to the game's notices as a file in the data folder: with the version in it, build 3 of ENT-129 needs no call of the game.
+
+## [ENT-133] | 2026-11-17 01:08 UTC | Unity | general | ref: game/catalog/master-index.md
+The game's catalog moved from 0.719.3 to 0.721.1: the new copy is checked and in force in the data folder (catalog/0.721.1.json).
+Moved to catalog/old/: 0.717.0.json -> old/0.717.0.json.
+Hulls 385 -> 385: 0 added, 0 removed, 6 changed in figures, 0 in text only, 356 in list order only.
+No row added, removed or changed in figures: items 879, recipes 892, facilities 2953, skills 30, achievements 70, faction achievements 34.
+Changed hull all_mine: default_modules: 3 -> 7 entries, first difference at 1: mining_laser_iv -> mining_laser_v; inherent_capabilities: none -> [{"type":"ore_yield_bonus","value":35},{"type":"ore_cargo_efficiency" (cut)
+Changed hull ascendancy: inherent_capabilities: none -> [{"type":"fleet_command_capacity","value":5}].
+Changed hull eldorado: default_modules: 1 -> 6 entries, first difference at 1: mining_laser_iv -> mining_laser_v; inherent_capabilities: none -> [{"type":"ore_yield_bonus","value":35},{"type":"ore_cargo_efficiency" (cut)
+Every change: python3 -B scripts/catalog-refresh.py diff 0.719.3 0.721.1
+The catalog files, the craft book and the database follow within the hour.
