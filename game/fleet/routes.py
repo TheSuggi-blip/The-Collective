@@ -18,7 +18,11 @@ WHAT: game/routes/<id>.json are the fleet's tasks (game/routes/BLUEPRINT.md); ga
                   MEASURE_HOURS (12; a mission that pays once: all its runs); with --write it stores
                   the figures in the route file's `measured` block when they moved by a fifth or
                   more, and takes the block out of a repeating route without a readable run in the
-                  window: it is a test again.
+                  window: it is a test again;
+        idle      prints, and changes nothing: every route file with status off and the sentence of its note
+                  that says why, then every route file that no plan and no template names
+                  (data/plans/plan-*.md, game/routes/plans/*.json, game/routes/templates/*.json), with
+                  its kind and when its last run in data/routes/runs.jsonl ended.
 RULES:
   - A route's id is its file name; its systems are on the chart (game/map/galaxy.tsv).
   - A plan names only routes that exist and carries its role's Admiral as
@@ -51,7 +55,7 @@ WHY:  what a route pays is written next to the route, and a wrong file is caught
       before a pilot flies it.
 
 USAGE:
-  routes.py check | index | measure                [--root <dir>] [--data <dir>]
+  routes.py check | index | measure | idle         [--root <dir>] [--data <dir>]
   routes.py measure --write <route id>... | --role <role> | --all
                     writes the measured block of the routes named, of a role's plan, or of every route (the hourly
                     job); without one of the three it writes nothing and says so
@@ -877,10 +881,82 @@ def measure(root, data, write, only=None, now=None):
     return 0
 
 
+def why_off(note):
+    """What a route's note says of why it is off: its last sentence that names `off` (else its last sentence), and when
+    that says little more than `off` (`2026-11-16 09:15 UTC (Apophis): status off.`) the sentence after it, or before
+    it when it ends the note."""
+    sentences = [s.strip() for s in re.split(r"(?<=[.!?])\s+(?=[A-Z0-9(`])", str(note or "").strip()) if s.strip()]
+    if not sentences:
+        return "(no note)"
+    said = [n for n, s in enumerate(sentences) if re.search(r"\boff\b", s, re.IGNORECASE)]
+    at = said[-1] if said else len(sentences) - 1
+    core = re.sub(r"^\d{4}-\d\d-\d\d \d\d:\d\d UTC[^:]*:\s*", "", sentences[at])
+    if len(core) >= 40 or len(sentences) == 1:
+        return sentences[at]
+    return " ".join([sentences[at], sentences[at + 1]] if at + 1 < len(sentences) else [sentences[at - 1], sentences[at]])
+
+
+def named_routes(root, data):
+    """{route id} a plan or a template names: each division's plan file (data/plans/plan-*.md: First, the ships' own
+    routes, Then, by plan.py's own reader), each role's plan (game/routes/plans/*.json) and each templates file
+    (game/routes/templates/*.json, whatever its division)."""
+    roles, _owners, _errors = division.load_plan(root)
+    named = {rid for ids in roles.values() for rid in ids}
+    parse = plan_module().parse
+    for path in sorted((Path(data) / "plans").glob("plan-*.md")):
+        try:
+            plan = parse(path.read_bytes().decode("ascii", "replace"))
+        except OSError:
+            continue
+        named |= {rid for ids in [plan["first"], plan["then"]] + list(plan["ships"].values()) for rid in ids if not rid.startswith("@")}
+    folder = Path(root) / "routes" / "templates"
+    for path in sorted(folder.glob("*.json")) if folder.is_dir() else []:
+        try:
+            spec = json.loads(path.read_text(encoding="ascii"))
+        except (OSError, ValueError, UnicodeDecodeError):
+            continue
+        kit = spec.get("templates") if isinstance(spec, dict) else None
+        for entry in kit.values() if isinstance(kit, dict) else []:
+            named |= {str(rid) for rid in (entry.get("routes") if isinstance(entry, dict) else None) or [] if isinstance(rid, str)}
+    return named
+
+
+def idle(root, data):
+    """The lines of `idle`: the route files that are off and why, then those no plan and no template names, with their
+    kind and the end of their last run. Reads only."""
+    routes, errors = routes_of(root)
+    routes = {rid: route for rid, route in routes.items() if isinstance(route, dict)}
+    off = sorted(rid for rid, route in routes.items() if route.get("status") == "off")
+    lines = ["OFF: %d route files with status off, and the sentence of each note that says why:" % len(off)]
+    lines += ["  %s (%s): %s" % (rid, routes[rid].get("kind", "?"), why_off(routes[rid].get("note"))) for rid in off]
+    last = {}
+    try:
+        with open(Path(data) / "routes" / "runs.jsonl", encoding="utf-8") as handle:
+            for line in handle:
+                try:
+                    row = json.loads(line)
+                except ValueError:
+                    continue
+                when = ended(row) if isinstance(row, dict) and row.get("route") else None
+                if when is not None:
+                    last[str(row["route"])] = max(when, last.get(str(row["route"]), when))
+    except OSError:
+        pass
+    span = "runs.jsonl holds runs that ended from %s to %s" % tuple(time.strftime("%Y-%m-%dT%H:%MZ", time.gmtime(t)) for t in (min(last.values()), max(last.values()))) if last else "runs.jsonl holds no run"
+    named = named_routes(root, data)
+    loose = sorted(rid for rid in routes if rid not in named)
+    lines += ["", "UNPLANNED: %d route files named in no plan (data/plans/plan-*.md, game/routes/plans/*.json) and no template "
+                  "(game/routes/templates/*.json); %s:" % (len(loose), span)]
+    lines += ["  %-48s %-8s %-4s %s" % (rid, routes[rid].get("kind", "?"), "off" if routes[rid].get("status") == "off" else "",
+                                         "last run ended " + time.strftime("%Y-%m-%dT%H:%MZ", time.gmtime(last[rid])) if rid in last else "no run in runs.jsonl")
+              for rid in loose]
+    return lines + ["ERROR " + line for line in errors]
+
+
 def main():
     here = Path(__file__).resolve().parent
     parser = argparse.ArgumentParser(description="Check the route files, write their index, attach what the runs measured.")
-    parser.add_argument("command", choices=("check", "index", "measure"))
+    parser.add_argument("command", choices=("check", "index", "measure", "idle"))
     parser.add_argument("--root", default=str(here.parent))
     parser.add_argument("--data", default="/srv/collective/data")
     parser.add_argument("--write", action="store_true")
@@ -895,6 +971,10 @@ def main():
         print("Checked %d route files." % count)
         print("Errors: %d | Warnings: 0" % len(errors))
         return 1 if errors else 0
+    if args.command == "idle":
+        for line in idle(args.root, args.data):
+            print(line)
+        return 0
     if args.command == "index":
         done = write_index(args.root)
         for name, state in done:

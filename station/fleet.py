@@ -22,10 +22,20 @@ flies and writes it into the unit's data folder, outside the repository:
                                        pilot (above zero) and what was bought for it
                                        (below zero); kept apart so the metrics count
                                        steady money only. Its `Wallet top-up` rows are
-                                       left out: they are the halves of a gift
+                                       left out: they are the halves of a gift. Its rows
+                                       titled TREASURY (a deposit into the faction's
+                                       treasury) are no purchase either: read as moves
     <FLEET_DATA>/gifts.jsonl           (read) the wallet guard's gifts between our own
                                        pilots (game/fleet/wallet.py): {"at", "from", "to",
                                        "credits"}; moved credits nobody earned or spent
+    <FLEET_DATA>/moves.jsonl           one line per pilot whose wallet changed by what the game's counters do not
+                                       explain (credits - earned + spent moved: a gift, a deposit, a tax), with the
+                                       pass that read it: {"at", "pilot", "moved"}; {"at", "start": 1} when the
+                                       collector starts (what moved before it is not known). Kept MOVES_KEEP
+    <FLEET_DATA>/regroup.jsonl         one line per move of ships from one division to another (ROLES or a flagship's
+                                       entry changed): {"at", "from", "to", "role", "pilots", "out", "in"}, out and
+                                       in {ships, credits, earned, spent, ore, missions}: what the division they left
+                                       lost and what the one they joined gained; taken out of both divisions' change
     <FLEET_DATA>/presence.jsonl        one line per pilot the engine stopped listing ("sign": -1, with the credits
                                        and counters of its last reading) or lists again (+1, with what it holds
                                        now): {"at", "pilot", "sign", "credits", "earned", "spent"}
@@ -53,7 +63,8 @@ hour at the top level and over 1, 6 and 24 hours under `windows`:
                      bought for such a reward (bought_once_per_hour): money that does
                      not repeat, a line of its own inside the net
     total_per_hour   cph + one_time_per_hour: the net of everything. It is the change of
-                     the wallets (wallets_per_hour) to the rounding; total_per_ship
+                     the wallets less the gifts and deposits between our own purses that
+                     the window read (wallets_per_hour) to the rounding; total_per_ship
     wallets          {start, end, left_out}: all wallets at both ends of the window, and the
                      wallets of the pilots that joined or left in it (in no figure)
     unexplained_per_hour  the change of the wallets less what the game's own counters of
@@ -67,11 +78,24 @@ hour at the top level and over 1, 6 and 24 hours under `windows`:
                      both ends of the window carry it
     transfers_per_hour  per division: credits our own gifts put into its wallets less
                      what they took out (gifts.jsonl); taken out of its change of
-                     wallets. For the fleet the gifts cancel and nothing is taken out:
-                     there it is the sum of the divisions' (0 while ONE_SIDED is off),
+                     wallets. For the fleet it is the sum of the divisions' (0 while
+                     ONE_SIDED is off and no gift is half read),
                      transfers_moved_per_hour all the credits the gifts moved and
                      transfers_unpaired_per_hour those of gifts whose record names one
                      side only (left out of every division while ONE_SIDED is off)
+    treasury_moved_per_hour  the credits our pilots deposited into the faction's treasury
+                     (onetime.json rows titled TREASURY) whose wallet drop the window
+                     read: a move between two purses of ours, taken out of the change of
+                     the wallets and never a purchase (bought_once_per_hour holds none)
+    gifts_unseen, gifts_early  credits (not per hour) of gifts the window holds one side of:
+                     given in it and not yet in the receiver's wallet at its end (unseen),
+                     or in the receiver's wallet in it and given before it began (early)
+                   Matching: every side of a gift and every deposit counts in the window that
+                     read its wallet change (moves.jsonl, read_times), never at the time it
+                     was booked; with no reading to match (before moves.jsonl, a restart)
+                     at its booking time. 2026-11-17 19:08 UTC: a window that began between
+                     the givers' readings and the leader's read 189,565 cr of gifts as
+                     money earned: costs -95,755 cr an hour
     presence         {left, back, credits, earned}: the pilots the engine stopped listing
                      and those it lists again in the window (presence.jsonl), and what that
                      took out of (-) or put into (+) the sums; left out of the figures, so a
@@ -118,6 +142,9 @@ Stdlib only. ASCII only. Run: python3 -I -B fleet.py [--once]
     python3 -I -B fleet.py --backfill-seeds [--dry-run]   once, by the Fleet Admiral, after the
     install: the pilots of the last birth (birth.json, birth.log) go into seed.json at their
     registration time, so the windows that hold that birth leave their starting wallets out
+    python3 -I -B fleet.py --regroup <before> <after> <role> <from> <to> [--dry-run]   once per move of
+    ships between divisions the collector did not see (made at its restart): one line of regroup.jsonl
+    from the two history samples (epochs) around it, what <from> lost and what <to> gained
 """
 
 import calendar
@@ -147,6 +174,14 @@ START_CREDITS = 100
 # -76,040 and Trade +76,040, while the 55 one-sided rows counted alone put Intel at +98,257 and Logistics at -81,212:
 # their missing halves lay in the same division. True: the known side moves its division.
 ONE_SIDED = False
+# A deposit into the faction's treasury is booked once in onetime.json under a title beginning with this (the same as
+# game/fleet/routes.py TREASURY): money that goes from a pilot's wallet into the Collective's own purse, no purchase.
+TREASURY = "Faction treasury: credits deposited"
+MOVES_LEAD = 600             # seconds a booking may follow the reading of its wallet change (a script books once the wallet shows it)
+TRANSIT_MAX = 2 * 3600       # a side of a gift or deposit no reading matched in this long counts at its booking time
+MOVES_KEEP = 48 * 3600       # moves.jsonl keeps this long (the longest window is 24 hours)
+RESIDUAL = {}                # pilot name -> credits - earned + spent at the pass before: it moves only by gifts, deposits, tax
+MOVES = {"started": 0, "pruned": 0}      # when this process wrote its start line, when it last cut moves.jsonl
 OPENER = urllib.request.build_opener(urllib.request.ProxyHandler({}))   # the gate is inside the unit
 
 # Pilot name -> division and its Admiral (COLLECTIVE.md; names: <role>-<n>).
@@ -488,18 +523,21 @@ def sample(now, rows, meters=None):
             sum(r["ore_mined"] for r in rows), sum(r["missions_done"] for r in rows), divisions, extra]
 
 
-def one_time_until(one, t):
+def one_time_until(one, t, place=None):
     """One-time money booked up to t, as {division: [rewards, bought]}; the whole fleet under ''.
 
     A `Wallet top-up` row is no one-time money but one half of a gift between two of our pilots, read from gifts.jsonl
     instead (transfers). Counted here its plus half was a reward and its minus half a purchase: 2026-11-16 the fleet's
     income and costs both fell by every gift (over six hours by 63,149 and 40,591 cr an hour), the costs below zero.
+    A row titled TREASURY is no purchase either but a deposit into the faction's treasury, read as a move (read_times).
     """
     out = {"": [0, 0]}
     for row in one:
-        if isinstance(row, list) and len(row) == 4 and isinstance(row[0], (int, float)) and row[0] <= t and row[2] != TRANSFER:
+        if (isinstance(row, list) and len(row) == 4 and isinstance(row[0], (int, float)) and row[0] <= t and row[2] != TRANSFER
+                and not str(row[2]).startswith(TREASURY)):
             value = num(row[3])
-            for key in ("", division_of(row[1] if isinstance(row[1], str) else "")[0]):
+            name = row[1] if isinstance(row[1], str) else ""
+            for key in ("", place(name, row[0]) if place else division_of(name)[0]):
                 out.setdefault(key, [0, 0])[0 if value > 0 else 1] += abs(value)
     return out
 
@@ -527,7 +565,7 @@ def read_gifts(path):
     return out
 
 
-def transfers(gifts, t0, t1):
+def transfers(gifts, t0, t1, place=None):
     """The gifts of (t0, t1] as ({division: credits received less credits given}, credits moved, credits of gifts whose
     record names one side only).
 
@@ -545,12 +583,280 @@ def transfers(gifts, t0, t1):
                     continue
             for name, sign in ((giver, -1), (taker, 1)):
                 if name:
-                    division = division_of(name)[0]
+                    division = place(name, at) if place else division_of(name)[0]
                     net[division] = net.get(division, 0) + sign * credits
     return net, moved, unpaired
 
 
-def seeded(seeds, t0, t1):
+def read_moves(path):
+    """([(epoch, pilot, credits moved)], [epoch of each start of the collector]) of moves.jsonl; a line that does not read
+    is left out."""
+    try:
+        with open(path, encoding="utf-8", errors="replace") as handle:
+            lines = handle.readlines()
+    except OSError:
+        return [], []
+    moves, starts = [], []
+    for line in lines:
+        try:
+            row = json.loads(line)
+        except ValueError:
+            continue
+        if not isinstance(row, dict) or not num(row.get("at")):
+            continue
+        if row.get("start"):
+            starts.append(row["at"])
+        elif isinstance(row.get("pilot"), str) and num(row.get("moved")):
+            moves.append((row["at"], row["pilot"], row["moved"]))
+    return moves, starts
+
+
+def note_moves(rows, now, path=None, last=None, state=None):
+    """Write down each pilot whose wallet changed by what the game's counters do not explain since the pass before:
+    credits - earned + spent moves only by a gift, a deposit into the treasury or a tax (2026-11-17: steady to the credit
+    for all 246 pilots over two minutes, and in every history sample between two such moves). The events written.
+
+    The first call of a process writes a start line: what moved while no collector read is not known. A pilot this pass
+    does not hold, or holds unconnected, loses its reading: its next one is a new start, never a move (its wallet then
+    counts in presence). moves.jsonl is cut to MOVES_KEEP at the start and every six hours."""
+    last, state = (RESIDUAL, MOVES) if last is None else (last, state if state is not None else {"started": 0, "pruned": 0})
+    path = Path(path or DATA / "moves.jsonl")
+    lines = []
+    if not state.get("started"):
+        state["started"] = int(now)
+        lines.append({"at": int(now), "start": 1})
+    seen = set()
+    for r in rows:
+        if r.get("status") != "connected" or not (r.get("credits") or r.get("earned") or r.get("spent")):
+            continue
+        name, value = r["name"], num(r.get("credits")) - num(r.get("earned")) + num(r.get("spent"))
+        seen.add(name)
+        if name in last and value != last[name]:
+            lines.append({"at": int(now), "pilot": name, "moved": value - last[name]})
+        last[name] = value
+    for name in [n for n in last if n not in seen]:
+        del last[name]
+    if now - state.get("pruned", 0) >= 6 * 3600:
+        state["pruned"] = int(now)
+        try:
+            kept = [line for line in path.read_text(encoding="utf-8", errors="replace").splitlines(True)
+                    if num((json.loads(line) if line.strip().startswith("{") else {}).get("at")) >= now - MOVES_KEEP]
+            tmp = path.with_name(path.name + ".tmp")
+            tmp.write_text("".join(kept), encoding="utf-8")
+            os.replace(tmp, path)
+        except (OSError, ValueError):
+            pass
+    if lines:
+        with open(path, "a", encoding="utf-8") as handle:
+            handle.write("".join(json.dumps(line, sort_keys=True) + "\n" for line in lines))
+    return [line for line in lines if "pilot" in line]
+
+
+def sides_of(gifts, one):
+    """[(booked, pilot, credits, kind, move)]: every side of a move between two purses of ours. Each gift's giver (-) and
+    taker (+), kind `gift`, or `lone` for the known side of a row that names one side only; each deposit into the
+    faction's treasury (-, kind `deposit`: a row of onetime.json whose title begins with TREASURY). `move` numbers the
+    move the side belongs to: a gift's two sides share it."""
+    out = []
+    for number, (at, giver, taker, credits) in enumerate(gifts):
+        kind = "gift" if giver and taker else "lone"
+        out += [(at, name, sign * credits, kind, number) for name, sign in ((giver, -1), (taker, 1)) if name]
+    for number, row in enumerate(one if isinstance(one, list) else []):
+        if (isinstance(row, list) and len(row) == 4 and num(row[0]) and isinstance(row[1], str) and str(row[2]).startswith(TREASURY)
+                and num(row[3]) < 0):
+            out.append((row[0], row[1], row[3], "deposit", -1 - number))
+    return out
+
+
+def read_times(sides, moves, starts, now, lead=MOVES_LEAD, longest=TRANSIT_MAX):
+    """[read time or None] for each side (sides_of): the pass whose reading of the pilot's wallet first held it.
+
+    The matching principle: money counts in the window that read it, never at the time it was booked. A move of the
+    pilot (moves.jsonl) is matched to the shortest run of its sides booked in order, not later than `lead` after the move,
+    whose credits add up to it: a wallet read anew shows all that landed. A side no move matched counts at the pilot's
+    first move after its booking (that reading held it); with none, it is not read yet (None: in transit) until `longest`
+    has passed, then at its booking time. So is a side the moves cannot speak for: booked before the first start of
+    the collector, or with a start between its booking and now (a restart loses what moved meanwhile)."""
+    out = [None] * len(sides)
+    mine, theirs = {}, {}
+    for index, side in enumerate(sides):
+        mine.setdefault(side[1], []).append(index)
+    for at, pilot, moved in sorted(moves):
+        theirs.setdefault(pilot, []).append((at, moved))
+    for pilot, order in mine.items():
+        order.sort(key=lambda i: (sides[i][0], i))
+        pending, nxt = [], 0
+        for at, moved in theirs.get(pilot, []):
+            while nxt < len(order) and sides[order[nxt]][0] <= at + lead:
+                pending.append(order[nxt])
+                nxt += 1
+            pending = [i for i in pending if sides[i][0] >= at - longest]
+            run = None
+            for first in range(len(pending)):
+                total = 0
+                for end in range(first, len(pending)):
+                    total += sides[pending[end]][2]
+                    if abs(total - moved) <= 1:
+                        run = pending[first:end + 1]
+                        break
+                if run:
+                    break
+            for i in run or []:
+                out[i] = at
+            pending = [i for i in pending if i not in (run or [])]
+    first_start = min(starts) if starts else None
+    for index, (booked, pilot, _credits, _kind, _move) in enumerate(sides):
+        if out[index] is not None:
+            continue
+        if first_start is None or booked - lead < first_start or any(booked - lead <= s <= now for s in starts):
+            out[index] = booked
+            continue
+        later = [at for at, _moved in theirs.get(pilot, []) if booked < at <= booked + longest]
+        if later:
+            out[index] = later[0]
+        elif now - booked > longest:
+            out[index] = booked
+    return out
+
+
+def in_window(sides, read, t0, t1, place=None):
+    """What the sides read in (t0, t1] moved: ({division: gifts' credits in less out}, {division: deposits' credits}, the
+    fleet's credits of gift sides whose other side the window does not read, credits deposited, gifts unseen, gifts early).
+
+    A gift's two sides read in the window cancel for the fleet; one read without the other is half a move the fleet's
+    wallets show. A `lone` side moves its division only while ONE_SIDED is on, and the fleet never."""
+    gifts, deposits, half, treasury = {}, {}, 0, 0
+    for (_booked, pilot, credits, kind, _move), at in zip(sides, read):
+        if at is None or not t0 < at <= t1 or (kind == "lone" and not ONE_SIDED):
+            continue
+        division = place(pilot, at) if place else division_of(pilot)[0]
+        if kind == "deposit":
+            deposits[division] = deposits.get(division, 0) + credits
+            treasury -= credits
+            continue
+        gifts[division] = gifts.get(division, 0) + credits
+        if kind == "gift":
+            half += credits
+    unseen = early = 0
+    pairs = {}
+    for (_booked, _pilot, credits, kind, move), at in zip(sides, read):
+        if kind == "gift":
+            pairs.setdefault(move, {})["taken" if credits > 0 else "given"] = (abs(credits), at)
+    for pair in pairs.values():
+        (credits, given), (_same, taken) = pair.get("given", (0, None)), pair.get("taken", (0, None))
+        if given is not None and t0 < given <= t1 and (taken is None or taken > t1):
+            unseen += credits
+        elif taken is not None and t0 < taken <= t1 and given is not None and given <= t0:
+            early += credits
+    return gifts, deposits, half, treasury, unseen, early
+
+
+def read_regroup(path):
+    """[(epoch, from division, to division, pilots, role, what left, what came)] of regroup.jsonl: the ships that moved
+    from one division to another, by name or by role word, with the sums ({ships, credits, earned, spent}) the division
+    they left lost and the one they joined gained. A line that does not read is left out."""
+    try:
+        with open(path, encoding="utf-8", errors="replace") as handle:
+            lines = handle.readlines()
+    except OSError:
+        return []
+    out = []
+    for line in lines:
+        try:
+            row = json.loads(line)
+        except ValueError:
+            continue
+        if (isinstance(row, dict) and num(row.get("at")) and isinstance(row.get("from"), str) and isinstance(row.get("to"), str)
+                and isinstance(row.get("out"), dict) and isinstance(row.get("in"), dict)):
+            pilots = tuple(n for n in row.get("pilots") or [] if isinstance(n, str))
+            out.append((row["at"], row["from"], row["to"], pilots, text(row.get("role"), 20), row["out"], row["in"]))
+    return sorted(out)
+
+
+def division_then(name, t, regroups=()):
+    """The division a pilot stood in at time t: its division now, or, when a later move (regroup.jsonl) took it to that
+    division, the one it came from. A gift, a reward or a reading counts for the division that held the pilot then."""
+    division = division_of(name)[0]
+    for at, frm, to, pilots, role, _gone, _come in reversed(regroups):
+        found = ROLE_NAME.fullmatch(name or "")
+        if at > t and division == to and (name in pilots or (role and found and found.group(1) == role)):
+            division = frm
+    return division
+
+
+def regrouped(regroups, t0, t1):
+    """The moves of ships between divisions in (t0, t1], as {division: [ships, credits, earned, spent]}: what the division
+    they left lost (below zero) and what the one they joined gained. Taken out of each division's change like a pilot
+    the engine stops listing (present): ships that change division are no division's income or loss. 2026-11-17 19:29
+    UTC: the 20 sentinels went from Command to Military, and the hour read Command's income -1,341,732 cr and
+    Military's +1,383,882. The fleet's sums do not move."""
+    out = {}
+    for at, frm, to, _pilots, _role, gone, come in regroups:
+        if t0 < at <= t1:
+            for division, sign, sums in ((frm, -1, gone), (to, 1, come)):
+                bucket = out.setdefault(division, [0, 0, 0, 0])
+                for index, key in enumerate(("ships", "credits", "earned", "spent")):
+                    bucket[index] += sign * num(sums.get(key))
+    return out
+
+
+def note_regroup(old, rows, now, path=None):
+    """Write down the ships this pass holds in another division than the last picture did (ROLES changed at a restart,
+    a flagship's entry changed): one line per (from, to) with the pilots and their sums at both readings. The lines."""
+    was = {r["name"]: r for r in of_fleet([s for s in old if isinstance(s, dict)]) if isinstance(r.get("name"), str) and isinstance(r.get("division"), str)}
+    groups = {}
+    for r in rows:
+        before = was.get(r["name"])
+        if before and before["division"] != r["division"] and r["division"] != "Unassigned":
+            groups.setdefault((before["division"], r["division"]), []).append((before, r))
+    lines = []
+    for (frm, to), pairs in sorted(groups.items()):
+        sums = lambda side: {"ships": len(pairs), "credits": sum(num(x[side].get("credits")) for x in pairs), "earned": sum(num(x[side].get("earned")) for x in pairs),
+                             "spent": sum(num(x[side].get("spent")) for x in pairs), "ore": sum(num(x[side].get("ore_mined")) for x in pairs),
+                             "missions": sum(num(x[side].get("missions_done")) for x in pairs)}
+        found = {ROLE_NAME.fullmatch(r["name"]).group(1) if ROLE_NAME.fullmatch(r["name"]) else "" for _b, r in pairs}
+        lines.append({"at": int(now), "from": frm, "to": to, "role": found.pop() if len(found) == 1 else "", "pilots": sorted(r["name"] for _b, r in pairs),
+                      "out": sums(0), "in": sums(1), "note": "read by the collector: the last picture and this pass"})
+    if lines:
+        with open(path or DATA / "regroup.jsonl", "a", encoding="utf-8") as handle:
+            handle.write("".join(json.dumps(line, sort_keys=True) + "\n" for line in lines))
+    return lines
+
+
+def regroup_from_history(data, before, after, role, frm, to, dry_run=False):
+    """Write the one line of a move of ships between divisions the collector did not see (it happened at its restart)
+    from two history samples: what `frm` lost between them and what `to` gained; the lines to print."""
+    data = Path(data)
+    history = read(data / "history.json", [])
+    found = {h[0]: h for h in history if isinstance(h, list) and len(h) >= 8}
+    if before not in found or after not in found or not before < after:
+        return ["regroup: no samples at %s and %s in %s: nothing written" % (before, after, data / "history.json")]
+    a, b = found[before], found[after]
+
+    def side(division, sign):
+        e, d = a[7].get(division) or [0] * 6, b[7].get(division) or [0] * 6
+        sa, sb = ((a[8] if len(a) > 8 else {}).get("ds") or {}), ((b[8] if len(b) > 8 else {}).get("ds") or {})
+        return {"ships": sign * (d[0] - e[0]), "credits": sign * (d[1] - e[1]), "earned": sign * (d[2] - e[2]),
+                "spent": sign * (num(sb.get(division)) - num(sa.get(division))), "ore": sign * (d[4] - e[4]), "missions": sign * (d[5] - e[5])}
+    fleet = read(data / "fleet.json", {})
+    pilots = sorted(r["name"] for r in fleet.get("ships") or [] if isinstance(r, dict) and isinstance(r.get("name"), str)
+                    and ROLE_NAME.fullmatch(r["name"]) and ROLE_NAME.fullmatch(r["name"]).group(1) == role)
+    line = {"at": after, "from": frm, "to": to, "role": role, "pilots": pilots, "out": side(frm, -1), "in": side(to, 1),
+            "note": "from the history samples of %s and %s UTC: what %s lost and what %s gained" % (
+                time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(before)), time.strftime("%H:%M:%S", time.gmtime(after)), frm, to)}
+    out = ["regroup: " + json.dumps(line, sort_keys=True)]
+    if dry_run:
+        out.append("regroup: --dry-run, %s not written" % (data / "regroup.jsonl"))
+    elif any(r[0] == after and r[1] == frm and r[2] == to for r in read_regroup(data / "regroup.jsonl")):
+        out.append("regroup: %s holds this move already: nothing written" % (data / "regroup.jsonl"))
+    else:
+        with open(data / "regroup.jsonl", "a", encoding="utf-8") as handle:
+            handle.write(json.dumps(line, sort_keys=True) + "\n")
+        out.append("regroup: written to %s" % (data / "regroup.jsonl"))
+    return out
+
+
+def seeded(seeds, t0, t1, place=None):
     """The pilots first seen in (t0, t1] (seed.json), as {division: [pilots, credits, earned, spent]}, all under ''.
 
     A pilot first seen inside a window brings its first wallet into the window's change of the wallets, and its counters
@@ -561,7 +867,7 @@ def seeded(seeds, t0, t1):
     for name, entry in seeds.items() if isinstance(seeds, dict) else []:
         if isinstance(entry, list) and len(entry) >= 3 and t0 < num(entry[0]) <= t1:
             values = (1, num(entry[1]), num(entry[2]), num(entry[3]) if len(entry) > 3 else 0)
-            for key in ("", division_of(name)[0]):
+            for key in ("", place(name, entry[0]) if place else division_of(name)[0]):
                 bucket = out.setdefault(key, [0, 0, 0, 0])
                 for index, value in enumerate(values):
                     bucket[index] += value
@@ -586,7 +892,7 @@ def read_presence(path):
     return out
 
 
-def present(events, t0, t1):
+def present(events, t0, t1, place=None):
     """The pilots the engine stopped listing and those it lists again in (t0, t1], as {division: [left, back, credits,
     earned, spent]} with the sums signed (what left is below zero), all under ''.
 
@@ -597,7 +903,7 @@ def present(events, t0, t1):
     out = {"": [0, 0, 0, 0, 0]}
     for at, name, sign, credits, earned, spent in events:
         if t0 < at <= t1:
-            for key in ("", division_of(name)[0]):
+            for key in ("", place(name, at) if place else division_of(name)[0]):
                 bucket = out.setdefault(key, [0, 0, 0, 0, 0])
                 bucket[0 if sign < 0 else 1] += 1
                 for index, value in enumerate((credits, earned, spent)):
@@ -663,21 +969,31 @@ def figures(hours, ships, credits, earned, one):
             "total_per_ship": round(total / ships) if ships else 0, "wallets_per_hour": round(credits / hours)}
 
 
-def window(history, now, seconds, one, gifts=(), seeds=None, presence=()):
+def window(history, now, seconds, one, gifts=(), seeds=None, presence=(), sides=None, regroups=()):
     """The steady money of one window, for the fleet and per division; None from less than five minutes of samples.
 
-    A division's change of wallets leaves out the gifts it got and gave (transfers); the fleet's does not need to, the
-    gifts cancel. The pilots first seen in the window take their first wallet and counters out of both (seeded), and so
-    do the pilots the engine stopped listing or lists again (present).
+    The change of the wallets leaves out every move between two purses of ours that the window read (in_window): the
+    gifts a division got and gave, and for the fleet a gift whose other side the window does not read (half a move);
+    the deposits into the faction's treasury, for the fleet and the depositor's division. `sides` is (sides_of, their
+    read_times); without it every side counts at its booking time. The pilots first seen in the window take their first
+    wallet and counters out of both (seeded), and so do the pilots the engine stopped listing or lists again (present).
+    Ships that changed division in the window (`regroups`, read_regroup) take their sums out of both divisions
+    (regrouped), and every booking counts for the division that held its pilot at its time (division_then).
     """
     full = [h for h in history if isinstance(h, list) and len(h) >= 8 and now - h[0] <= seconds + 90]
     if len(full) < 2 or full[-1][0] - full[0][0] < MIN_SPAN:
         return None
     a, b = full[0], full[-1]
     hours = (b[0] - a[0]) / 3600
-    before, after = one_time_until(one, a[0]), one_time_until(one, b[0])
-    (given, moved, unpaired), new = transfers(gifts, a[0], b[0]), seeded(seeds, a[0], b[0])
-    moves = present(presence, a[0], b[0])
+    place = (lambda name, t: division_then(name, t, regroups)) if regroups else None
+    before, after = one_time_until(one, a[0], place), one_time_until(one, b[0], place)
+    (_given, moved, unpaired), new = transfers(gifts, a[0], b[0], place), seeded(seeds, a[0], b[0], place)
+    moves, shifted = present(presence, a[0], b[0], place), regrouped(regroups, a[0], b[0])
+    if sides is None:                                   # no readings to match: each side at its booking time
+        found = sides_of(gifts, one)
+        sides = (found, [side[0] for side in found])
+    given, deposited, half, treasury, unseen, early = in_window(sides[0], sides[1], a[0], b[0], place)
+    ours = half + sum(deposited.values())               # what the fleet's wallets show of moves between our purses
 
     def booked(key):
         return [after.get(key, [0, 0])[i] - before.get(key, [0, 0])[i] for i in (0, 1)]
@@ -686,20 +1002,22 @@ def window(history, now, seconds, one, gifts=(), seeds=None, presence=()):
         return {"pilots": born[0], "credits": born[1], "earned": born[2]}
 
     def joined(key):
-        """[credits, earned, spent] that the pilots first seen and those that left or came back brought into the sums."""
-        s, p = new.get(key, [0, 0, 0, 0]), moves.get(key, [0, 0, 0, 0, 0])
-        return [s[1] + p[2], s[2] + p[3], s[3] + p[4]]
+        """[credits, earned, spent] that the pilots first seen, those that left or came back and the ships that changed
+        division brought into the sums (the last never into the fleet's)."""
+        s, p, g = new.get(key, [0, 0, 0, 0]), moves.get(key, [0, 0, 0, 0, 0]), shifted.get(key, [0, 0, 0, 0]) if key else [0, 0, 0, 0]
+        return [s[1] + p[2] + g[1], s[2] + p[3] + g[2], s[3] + p[4] + g[3]]
 
     def absent(key):
         p = moves.get(key, [0, 0, 0, 0, 0])
         return {"left": p[0], "back": p[1], "credits": p[2], "earned": p[3]}
 
     born, off = new[""], joined("")
-    out = figures(hours, b[2], b[1] - a[1] - off[0], b[3] - a[3] - off[1], booked(""))
+    out = figures(hours, b[2], b[1] - a[1] - off[0] - ours, b[3] - a[3] - off[1], booked(""))
     out["wallets"] = {"start": a[1], "end": b[1], "left_out": off[0]}
     out.update({"minutes": round((b[0] - a[0]) / 60), "ships_changed": a[2] != b[2], "divisions": {}, "seed": seed(born), "presence": absent(""),
                 "transfers_per_hour": round(sum(given.values()) / hours), "transfers_moved_per_hour": round(moved / hours),
-                "transfers_unpaired_per_hour": round(unpaired / hours)})
+                "transfers_unpaired_per_hour": round(unpaired / hours), "treasury_moved_per_hour": round(treasury / hours),
+                "gifts_unseen": unseen, "gifts_early": early})
     xa, xb = (a[8] if len(a) > 8 else {}), (b[8] if len(b) > 8 else {})
     metered = "m" in xa and "m" in xb
     if metered:
@@ -709,12 +1027,16 @@ def window(history, now, seconds, one, gifts=(), seeds=None, presence=()):
     spent = all(isinstance(x.get("s"), (int, float)) and isinstance(x.get("ds"), dict) for x in (xa, xb))
     if spent:
         out["spent_per_hour"] = round((xb["s"] - xa["s"] - off[2]) / hours)
-        out["unexplained_per_hour"] = round(((b[1] - a[1] - off[0]) - (b[3] - a[3] - off[1]) + (xb["s"] - xa["s"] - off[2])) / hours)
+        out["unexplained_per_hour"] = round(((b[1] - a[1] - off[0] - ours) - (b[3] - a[3] - off[1]) + (xb["s"] - xa["s"] - off[2])) / hours)
     for division, d in b[7].items():
         e = a[7].get(division, [0, 0, 0, 0, 0, 0])
-        born, got, off = new.get(division, [0, 0, 0, 0]), given.get(division, 0), joined(division)
+        born, off = new.get(division, [0, 0, 0, 0]), joined(division)
+        got = given.get(division, 0) + deposited.get(division, 0)
         row = figures(hours, d[0], d[1] - e[1] - got - off[0], d[2] - e[2] - off[1], booked(division))
-        row.update({"transfers_per_hour": round(got / hours), "seed": seed(born), "presence": absent(division)})
+        row.update({"transfers_per_hour": round(given.get(division, 0) / hours), "seed": seed(born), "presence": absent(division),
+                    "treasury_moved_per_hour": round(-deposited.get(division, 0) / hours)})
+        if shifted.get(division):
+            row["regroup"] = {"ships": shifted[division][0], "credits": shifted[division][1], "earned": shifted[division][2]}
         if metered:
             da, db = (xa.get("d") or {}).get(division) or [0, 0, 0, 0], (xb.get("d") or {}).get(division) or [0, 0, 0, 0]
             row.update({"fuel_cr_per_hour": round((db[1] - da[1]) / hours), "repair_cr_per_hour": round((db[3] - da[3]) / hours)})
@@ -727,17 +1049,23 @@ def window(history, now, seconds, one, gifts=(), seeds=None, presence=()):
     return out
 
 
-def rates(history, now, one=None, gifts=None, seeds=None, presence=None):
+def rates(history, now, one=None, gifts=None, seeds=None, presence=None, moves=None, regroups=None):
     """Steady money per hour: the last hour at the top level, and one, six and 24 hours under `windows`.
 
-    `one` is the one-time money ([t, pilot, title, credits] rows), `gifts` the gifts between our pilots (read_gifts) and
-    `seeds` the seed record; by default the files the birth script, the runners, the wallet guard and the collector keep.
+    `one` is the one-time money ([t, pilot, title, credits] rows), `gifts` the gifts between our pilots (read_gifts),
+    `seeds` the seed record, `moves` the readings of the moves (read_moves) and `regroups` the ships that changed division
+    (read_regroup); by default the files the birth script, the runners, the wallet guard and the collector keep. Each side
+    of a gift or deposit is matched to its reading once.
     """
     one = read(DATA / "onetime.json", []) if one is None else one
     gifts = read_gifts(DATA / "gifts.jsonl") if gifts is None else gifts
     seeds = read(DATA / "seed.json", {}) if seeds is None else seeds
     presence = read_presence(DATA / "presence.jsonl") if presence is None else presence
-    first = window(history, now, WINDOW, one, gifts, seeds, presence)
+    moves = read_moves(DATA / "moves.jsonl") if moves is None else moves
+    regroups = read_regroup(DATA / "regroup.jsonl") if regroups is None else sorted(regroups)
+    found = sides_of(gifts, one)
+    sides = (found, read_times(found, moves[0], moves[1], now))
+    first = window(history, now, WINDOW, one, gifts, seeds, presence, sides, regroups)
     if first is None:
         return None
     full = [h for h in history if isinstance(h, list) and len(h) >= 8 and now - h[0] <= WINDOW + 90]
@@ -755,7 +1083,7 @@ def rates(history, now, one=None, gifts=None, seeds=None, presence=None):
         d, e = b[7][division], a[7].get(division, [0, 0, 0, 0, 0, 0])
         out["divisions"][division] = dict(row, earned_per_hour=row["income_per_hour"], net_per_hour=per_hour(e[1], d[1]),
                                           ore_per_hour=per_hour(e[4], d[4]))
-    out["windows"] = {name: (first if seconds == WINDOW else window(history, now, seconds, one, gifts, seeds, presence)) for name, seconds in WINDOWS}
+    out["windows"] = {name: (first if seconds == WINDOW else window(history, now, seconds, one, gifts, seeds, presence, sides, regroups)) for name, seconds in WINDOWS}
     return out
 
 
@@ -1021,6 +1349,8 @@ def collect_once(last):
         write(DATA / "fleet.json", before)
         return False
     note_presence(before.get("ships") or [], rows, read(DATA / "seed.json", None), now)   # who left the engine's list, who is back
+    note_moves(rows, now)                                                                   # each wallet change the counters do not explain, and when it was read
+    note_regroup(before.get("ships") or [], rows, now)                                      # ships another division holds than the last picture
     apply_orders(rows, now)
     for row in rows:                              # between two systems the engine names none: keep the last one
         row["jumping"] = not row["system"]
@@ -1138,6 +1468,14 @@ def backfill_seeds(data, dry_run=False):
 def main():
     if "--backfill-seeds" in sys.argv:              # needs no gate: it reads and writes the data folder only
         print("\n".join(backfill_seeds(DATA, "--dry-run" in sys.argv)))
+        return
+    if "--regroup" in sys.argv:                     # needs no gate either: history.json in, regroup.jsonl out
+        at = sys.argv.index("--regroup")
+        try:
+            before, after, role, frm, to = int(sys.argv[at + 1]), int(sys.argv[at + 2]), sys.argv[at + 3], sys.argv[at + 4], sys.argv[at + 5]
+        except (IndexError, ValueError):
+            sys.exit("fleet: --regroup <sample before> <sample after> <role> <from division> <to division> [--dry-run]")
+        print("\n".join(regroup_from_history(DATA, before, after, role, frm, to, "--dry-run" in sys.argv)))
         return
     if not GATE:
         sys.exit("fleet: FLEET_GATE is not set")

@@ -10,6 +10,12 @@ WHAT: every pilot pays its own fuel, repairs, fittings and tax from its own wall
       Every gift is booked twice in data/fleet/onetime.json (`Wallet top-up`, minus for the giver, plus for the
       receiver), so it moves no division's steady money, and kept in data/fleet/gifts.jsonl.
       The dispatcher does its part (dispatch.py, FLOOR): a pilot under 5,000 cr is sent only on work that pays.
+      The sweep fills the faction's treasury, the fleet's main purse: a ship holding SWEEP_AT or more gives what it
+      holds above KEEP_SHIP to the faction's leader (empire.json faction.leader), a few ships a pass, and the leader
+      deposits what it holds above KEEP_SHIP into the treasury (the same storage `deposit` of `credits`, target
+      `faction`) once that is MIN_DEPOSIT or more. A gift is booked as a top-up is (gifts.jsonl, onetime.json), a
+      deposit once in onetime.json under routes.TREASURY (minus for the leader): a move between two purses of ours,
+      no cost (routes.deposits, station/fleet.py). What the sweep tried is kept in data/fleet/sweep.jsonl.
 RULES:
   - A donor keeps KEEP credits at least; one gift per pilot per COOLDOWN (the wallets are read every ten seconds,
     the game's answer can lag): a pilot is never given twice for one low reading.
@@ -20,12 +26,20 @@ RULES:
   - Gifts are not income for the game's tax. They go between our own pilots only, never to another player.
   - `check` prints one HALT line for every pilot under the floor of rule F7 (3,000 cr) and exits 1 then.
   - A real `topup` is the Fleet Admiral's or the five-minute job's; `--dry-run` is free.
+  - The sweep gives at most PER_PASS gifts a pass, never from the leader, a builder (empire.json members, role
+    Builder: it holds credits for a buy), a pilot of SKIP_PILOTS, a ship not connected, a ship whose loop fails in a
+    fight, a pilot refused for a fight in the last BATTLE_WAIT (`in_battle`: asked again at a later pass), or a pilot
+    given or giving in the last COOLDOWN. A gift or a deposit is booked only when the giver's wallet, read again, shows
+    the money gone (SHOW_WAIT); one that does not show is kept unsure (no booking, the pilot on cooldown; a deposit:
+    none again for UNSURE_HOLD). A refused deposit is tried again at the next pass, never twice in one.
+  - The sweep acts only while SWEEP_ENABLED is on; `sweep --dry-run` says what it would do in any case.
 WHY:  Suggi, 2026-11-16: "No ships can go broke, this is important." Standing work costs fuel and earns nothing, and
       the weekly tax takes a share of every wallet in one moment.
 
 USAGE:
   wallet.py [check]            every wallet against the floors; HALT for a pilot under 3,000 cr
   wallet.py topup [--dry-run]  give each pilot under LOW credits up to TARGET from a rich ship of its division
+  wallet.py sweep [--dry-run]  the part above KEEP_SHIP of the richest ships to the leader, the leader's into the treasury
   --data <dir>                 the unit's data folder (default: the fleet's)
 
 Stdlib only. ASCII only.
@@ -51,6 +65,20 @@ WAIT = 45                      # seconds until the fleet file shows a gift the g
 BUDGET = 150                   # seconds a pass may give for: what is left waits for the next pass (the job runs every five minutes)
 TITLE = "Wallet top-up"
 MIN_GIFT = 1000                # a share smaller than this is not worth a call: what a donor holds above KEEP must reach it
+# The sweep into the faction's treasury (Suggi, 2026-11-17: a ship keeps up to 50,000 cr, the part above goes into the
+# treasury when it is convenient, a few ships a pass). It gives credits away by itself: off until the Fleet Admiral has
+# read `wallet.py sweep --dry-run` on the live data and switched it on.
+SWEEP_ENABLED = False
+SWEEP_AT = 60000               # a ship holding this much gives what it holds above KEEP_SHIP
+KEEP_SHIP = 50000              # what a ship keeps
+MIN_DEPOSIT = 20000            # the leader deposits once it holds this much above KEEP_SHIP
+PER_PASS = 4                   # gifts a sweep tries at most: each takes about half a minute (the gift, the receiver's read)
+LEADER = "Prime Directive"     # the faction's leader when empire.json names none
+SKIP_PILOTS = set()            # pilots that never give in a sweep (one that holds credits for a buy the code does not know)
+SHOW_WAIT = 45                 # seconds the sweep waits for the giver's wallet to show the money gone before it books
+BATTLE_WAIT = 10 * 60          # a pilot refused `in_battle` is not asked again in this long
+UNSURE_HOLD = 60 * 60          # after a deposit the wallet did not show, no new deposit in this long
+DEPOSIT_TITLE = "Faction treasury: credits deposited (the Collective keeps them)"     # begins with routes.TREASURY
 
 
 def wallets(data):
@@ -121,15 +149,30 @@ def plan_gifts(rows, given):
     return out
 
 
-def give(donor, pilot, credits):
-    """(True, text) when the game took the gift."""
+def send(donor, target, credits):
+    """(True, text) when the game took a storage `deposit` of credits from the donor to the target: a pilot's name (a
+    gift) or `faction` (the faction's treasury)."""
     import gate
     status, answer = gate.call("post", "/accounts/%s/raw" % gate.q(donor),
-                               {"toolGroup": "spacemolt_storage", "action": "deposit", "params": {"item_id": "credits", "quantity": int(credits), "target": pilot}}, timeout=90)
-    ok = status == 200 and '"error"' not in answer[:200]
+                               {"toolGroup": "spacemolt_storage", "action": "deposit", "params": {"item_id": "credits", "quantity": int(credits), "target": target}}, timeout=90)
+    return status == 200 and '"error"' not in answer[:200], answer[:200]
+
+
+def give(donor, pilot, credits):
+    """(True, text) when the game took the gift."""
+    ok, text = send(donor, pilot, credits)
     if ok:
         refresh(pilot)                                      # the receiver read at once: the next run starts from a wallet that holds the gift (Q67, ENT-220)
-    return ok, answer[:200]
+    return ok, text
+
+
+def deposit(pilot, credits):
+    """(True, text) when the game took a deposit of credits from the pilot into the faction's treasury: the same call as a
+    gift, the target `faction` (fleet-ops references/faction.md); the pilot read again at once, as a receiver is."""
+    ok, text = send(pilot, "faction", credits)
+    if ok:
+        refresh(pilot)
+    return ok, text
 
 
 def refresh(pilot):
@@ -175,13 +218,222 @@ def book(data, gifts, now):
         os.replace(tmp, once)
 
 
+def ships(data):
+    """{pilot: its row of data/fleet/fleet.json} of every ship whose wallet was read."""
+    fleet = dispatch.read_json(Path(data) / "fleet" / "fleet.json", {})
+    return {s["name"]: s for s in (fleet.get("ships") or [] if isinstance(fleet, dict) else [])
+            if isinstance(s, dict) and s.get("name") and isinstance(s.get("credits"), (int, float)) and not isinstance(s.get("credits"), bool)}
+
+
+def leader_of(data):
+    """The faction's leader, the pilot that deposits into the treasury: data/empire/empire.json faction.leader, else LEADER."""
+    found = (dispatch.read_json(Path(data) / "empire" / "empire.json", {}) or {}).get("faction") or {}
+    return str(found.get("leader") or LEADER) if isinstance(found, dict) else LEADER
+
+
+def builders(data):
+    """The pilots whose faction role is the builder's (empire.json members): they hold credits for a buy."""
+    members = (dispatch.read_json(Path(data) / "empire" / "empire.json", {}) or {}).get("members") or []
+    return {str(m.get("pilot")) for m in members if isinstance(m, dict) and "build" in str(m.get("role") or "").lower()}
+
+
+def touched(data, now):
+    """{pilot: the time of its last gift given or received} within COOLDOWN (gifts.jsonl, the unsure rows too)."""
+    out = {}
+    try:
+        with open(Path(data) / "fleet" / "gifts.jsonl", encoding="utf-8") as handle:
+            for line in handle:
+                try:
+                    row = json.loads(line)
+                except ValueError:
+                    continue
+                if isinstance(row, dict) and isinstance(row.get("at"), (int, float)) and now - row["at"] < COOLDOWN:
+                    for name in (row.get("from"), row.get("to")):
+                        if name:
+                            out[name] = max(out.get(name, 0), row["at"])
+    except OSError:
+        pass
+    return out
+
+
+def fighting(ship):
+    """True when the ship's loop fails in a fight: the engine's last failure names `in_battle` (the fleet file carries no
+    other sign of a fight)."""
+    return bool(ship.get("loop_failures")) and "in_battle" in str(ship.get("loop_last_failure") or "").lower().replace(" ", "_")
+
+
+def swept(data):
+    """[row] of data/fleet/sweep.jsonl: what each sweep tried, {"at", "kind": gift|deposit, "from", "to", "credits", "state"}."""
+    out = []
+    try:
+        with open(Path(data) / "fleet" / "sweep.jsonl", encoding="utf-8") as handle:
+            for line in handle:
+                try:
+                    row = json.loads(line)
+                except ValueError:
+                    continue
+                if isinstance(row, dict) and isinstance(row.get("at"), (int, float)):
+                    out.append(row)
+    except OSError:
+        pass
+    return out
+
+
+def note(data, kind, giver, taker, credits, state, text=""):
+    with open(Path(data) / "fleet" / "sweep.jsonl", "a", encoding="utf-8") as handle:
+        handle.write(json.dumps({"at": int(time.time()), "kind": kind, "from": giver, "to": taker, "credits": int(credits), "state": state,
+                                 "text": str(text)[:200].encode("ascii", "replace").decode("ascii")}, sort_keys=True) + "\n")
+
+
+def plan_sweep(fleet, leader, skip):
+    """[(pilot, credits to give)]: the ships at SWEEP_AT or more, the most above KEEP_SHIP first, at most PER_PASS; never the
+    leader, a pilot of `skip`, a ship not connected or one whose loop fails in a fight."""
+    found = sorted(((s["credits"] - KEEP_SHIP, name) for name, s in fleet.items()
+                    if s["credits"] >= SWEEP_AT and name != leader and name not in skip and s.get("status", "connected") == "connected" and not fighting(s)),
+                   reverse=True)
+    return [(name, int(part)) for part, name in found[:PER_PASS]]
+
+
+def shows(data, pilot, was, credits, wait=None):
+    """True when the pilot's wallet, read again, shows `credits` gone from `was` within `wait` seconds (SHOW_WAIT)."""
+    deadline = time.time() + (SHOW_WAIT if wait is None else wait)
+    while True:
+        have = (ships(data).get(pilot) or {}).get("credits")
+        if isinstance(have, (int, float)) and have <= was - credits * 0.9:
+            return True
+        if time.time() >= deadline:
+            return False
+        time.sleep(min(5, max(0.0, deadline - time.time())))
+
+
+def book_deposit(data, pilot, credits, now):
+    """A deposit into the faction's treasury, once in onetime.json (minus for the pilot), under the title routes.deposits
+    and the collector read as a move between two purses of ours."""
+    once = Path(data) / "fleet" / "onetime.json"
+    with open(str(once) + ".lock", "w") as lock:                    # the lock the runners and gate.py book under
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        rows = dispatch.read_json(once, [])
+        rows = rows if isinstance(rows, list) else []
+        rows.append([int(now), pilot, DEPOSIT_TITLE, -int(credits)])
+        tmp = "%s.%d.tmp" % (once, os.getpid())
+        with open(tmp, "w", encoding="utf-8") as handle:
+            json.dump(rows[-8000:], handle, separators=(",", ":"))
+        os.replace(tmp, once)
+
+
+def sweep(data, now, dry):
+    """One pass of the sweep: at most PER_PASS gifts to the leader, then the leader's deposit. 0, or 1 when a call failed."""
+    fleet, leader = ships(data), leader_of(data)
+    if leader not in fleet:
+        print("SWEEP | the leader %s holds no wallet reading in the fleet file: nothing given, nothing deposited" % leader)
+        return 1
+    log = swept(data)
+    battle = {r.get("from"): r["at"] for r in log if r.get("state") == "battle" and now - r["at"] < BATTLE_WAIT}
+    held = [r for r in log if r.get("kind") == "deposit" and r.get("state") == "unsure" and now - r["at"] < UNSURE_HOLD]
+    skip = {leader} | SKIP_PILOTS | builders(data)
+    cool = touched(data, now)
+    above = [(name, s["credits"]) for name, s in fleet.items() if s["credits"] >= SWEEP_AT and name != leader]
+    print("SWEEP | leader %s holds %s cr | %d ships at %s cr or more hold %s cr above %s | the treasury read %s"
+          % (leader, format(fleet[leader]["credits"], ","), len(above), format(SWEEP_AT, ","), format(sum(c - KEEP_SHIP for _n, c in above), ","),
+             format(KEEP_SHIP, ","), treasury_text(data)))
+    for name, _credits in sorted(above):
+        why = ("a builder: holds credits for a buy" if name in builders(data) else "in SKIP_PILOTS" if name in SKIP_PILOTS
+               else "not connected" if fleet[name].get("status", "connected") != "connected" else "its loop fails in a fight" if fighting(fleet[name])
+               else "refused for a fight %d min ago" % ((now - battle[name]) // 60) if name in battle
+               else "gave or got a gift %d min ago" % ((now - cool[name]) // 60) if name in cool else "")
+        if why:
+            print("  left out: %s (%s cr): %s" % (name, format(fleet[name]["credits"], ","), why))
+    plan = plan_sweep(fleet, leader, skip | set(battle) | set(cool))
+    failed = 0
+    for pilot, credits in plan:
+        if dry:
+            print("would give: %s -> %s %s cr (keeps %s)" % (pilot, leader, format(credits, ","), format(KEEP_SHIP, ",")))
+            continue
+        if time.time() - now > BUDGET:
+            print("the pass's %d seconds are used up: %s waits for the next pass" % (BUDGET, pilot))
+            break
+        was = fleet[pilot]["credits"]
+        try:
+            ok, text = give(pilot, leader, credits)
+        except Exception as error:                              # the gate did not answer: the game may still have taken it
+            ok, text = None, "the gate did not answer (%s: %s)" % (type(error).__name__, error)
+        if ok is False:
+            fight = "in_battle" in text.lower().replace(" ", "_")
+            note(data, "gift", pilot, leader, credits, "battle" if fight else "refused", text)
+            if fight:
+                print("in a fight: %s gives nothing now; asked again after %d minutes" % (pilot, BATTLE_WAIT // 60))
+            else:
+                failed = 1
+                print("HALT: the gift %s -> %s %s cr was refused: %s" % (pilot, leader, format(credits, ","), text))
+            continue
+        if shows(data, pilot, was, credits):
+            book(data, [(pilot, leader, credits)], time.time())
+            note(data, "gift", pilot, leader, credits, "booked", text)
+            print("given: %s -> %s %s cr" % (pilot, leader, format(credits, ",")))
+        else:
+            unsure(data, pilot, leader, credits, time.time())
+            note(data, "gift", pilot, leader, credits, "unsure", text)
+            failed = 1
+            print("HALT: the gift %s -> %s %s cr is not booked: %s; the wallet of %s does not show it gone after %d s (kept unsure, the pilot on cooldown)"
+                  % (pilot, leader, format(credits, ","), "answered" if ok else text, pilot, SHOW_WAIT))
+    have = (ships(data).get(leader) or {}).get("credits", 0)
+    part = int(have - KEEP_SHIP)
+    if held:
+        print("no deposit: the deposit of %s cr at %s UTC answered but the leader's wallet did not show it; none again until %s UTC "
+              "(read `view` target faction and book it by hand if it landed)"
+              % (format(held[-1].get("credits", 0), ","), time.strftime("%H:%M", time.gmtime(held[-1]["at"])), time.strftime("%H:%M", time.gmtime(held[-1]["at"] + UNSURE_HOLD))))
+    elif part < MIN_DEPOSIT:
+        print("no deposit: the leader holds %s cr, under %s" % (format(have, ","), format(KEEP_SHIP + MIN_DEPOSIT, ",")))
+    elif dry:
+        print("would deposit: %s %s cr into the faction's treasury (keeps %s)" % (leader, format(part, ","), format(KEEP_SHIP, ",")))
+    elif time.time() - now > BUDGET:
+        print("the pass's %d seconds are used up: the deposit waits for the next pass" % BUDGET)
+    else:
+        try:
+            ok, text = deposit(leader, part)
+        except Exception as error:
+            ok, text = None, "the gate did not answer (%s: %s)" % (type(error).__name__, error)
+        if ok is False:
+            note(data, "deposit", leader, "faction", part, "refused", text)
+            failed = 1
+            print("HALT: the deposit of %s cr was refused: %s; tried again at the next pass" % (format(part, ","), text))
+        elif shows(data, leader, have, part):
+            book_deposit(data, leader, part, time.time())
+            note(data, "deposit", leader, "faction", part, "booked", text)
+            print("deposited: %s %s cr into the faction's treasury" % (leader, format(part, ",")))
+        else:
+            note(data, "deposit", leader, "faction", part, "unsure", text)
+            failed = 1
+            print("HALT: the deposit of %s cr is not booked: %s; the leader's wallet does not show it gone after %d s. Read `view` target faction: "
+                  "if it landed, book it once (wallet.book_deposit); no deposit again for %d minutes" % (format(part, ","), "answered" if ok else text, SHOW_WAIT, UNSURE_HOLD // 60))
+    return failed
+
+
+def treasury_text(data):
+    """The faction's treasury as empire.py collect last read it: `N cr, H:M UTC`, or `not measured`."""
+    state = dispatch.read_json(Path(data) / "empire" / "empire.json", {}) or {}
+    money = (state.get("faction") or {}).get("treasury") if isinstance(state.get("faction"), dict) else None
+    if not isinstance(money, (int, float)) or isinstance(money, bool):
+        return "not measured"
+    return "%s cr at %s" % (format(int(money), ","), str(state.get("written_at") or "an unknown time").replace("T", " ").replace("Z", " UTC"))
+
+
 def main(argv=None):
     args = list(sys.argv[1:] if argv is None else argv)
     if any(a in ("-h", "--help") for a in args):
         sys.exit(__doc__)
     data = args[args.index("--data") + 1] if "--data" in args else division.DATA
-    verb = "topup" if "topup" in args else "check"
+    verb = "topup" if "topup" in args else "sweep" if "sweep" in args else "check"
     now = time.time()
+    if verb == "sweep":
+        dry = "--dry-run" in args
+        if not dry and not SWEEP_ENABLED:
+            sys.exit("REFUSED: the sweep is off (wallet.py SWEEP_ENABLED = False) until the Fleet Admiral has read its dry run and "
+                     "switched it on; `wallet.py sweep --dry-run` says what it would do")
+        kind, who = division.member()
+        if not dry and not (who == "Unity" or kind == "service"):
+            sys.exit("REFUSED: a real sweep is the Fleet Admiral's or the five-minute job's; use --dry-run")
+        return sweep(data, now, dry)
     rows = wallets(data)
     if not rows:
         print("wallet: no wallet read in %s" % data)

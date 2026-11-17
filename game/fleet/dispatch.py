@@ -54,6 +54,13 @@ RULES:
   - No route flies at a loss unattended: a route whose runs of the last six hours (two or more) lost money in sum is
     closed until the window moves on (`losing`), and so is a repeating route whose last three runs inside those six
     hours each lost money (`lately_losing`); the census, park and fitting routes are not judged.
+  - Behind ENABLED_RESTS (decisions D227, orders D13): a repeating route those two would close rests instead, by its
+    record in data/routes/rests.json (`rest_book`): 6 hours, 24 when it loses again after its last rest, then 72 at
+    most; 6 hours while its runs of the last 48 hours paid in sum, and 6 again when its last rest ended over 72
+    hours ago. A run that pays after a rest sets its level back to 0. A rest ends early when a reading newer than its
+    start shows back what the route names (`wakes`: its bid, its field above `min_left`, its herd at `min_creatures`).
+    Every rest carries its end; a route that pays once and standing work never rest. --dry-run prints the rests a
+    real pass would write.
   - Why ships wait, and what would give them work: game/fleet/fill.py, which uses this script's own rule.
 WHY:  no ship waits for a hand to give it work, and a new ship climbs the same
       ladder as the ones before it: what we learned is in the route files.
@@ -70,6 +77,7 @@ Stdlib only. ASCII only.
 
 import argparse
 import calendar
+import fcntl
 import json
 import os
 import re
@@ -249,18 +257,19 @@ def waits_once(route, rows, now):
     return now < ended + route.get("retry_minutes", 60) * 60
 
 
-def herd(data, route, now):
-    """Creatures of the route's species at its place per the last census; None when no fresh census exists."""
+def herd(data, route, now, fresh=CENSUS_FRESH):
+    """Creatures of the route's species at its place per the last census; None when none younger than `fresh` seconds
+    exists."""
     system, poi = route["place"].split(":")
     path = Path(data) / "wildlife" / (system + ".json")
     try:
-        if now - path.stat().st_mtime > CENSUS_FRESH:
+        if now - path.stat().st_mtime > fresh:
             return None
     except OSError:
         return None
     place = (read_json(path, {}).get("pois") or {}).get(poi) or {}
     try:                                              # the place's own reading time: a hunter that left writes only its place
-        if now - calendar.timegm(time.strptime(str(place.get("read_at"))[:19], "%Y-%m-%dT%H:%M:%S")) > CENSUS_FRESH:
+        if now - calendar.timegm(time.strptime(str(place.get("read_at"))[:19], "%Y-%m-%dT%H:%M:%S")) > fresh:
             return None
     except ValueError:
         pass
@@ -349,15 +358,24 @@ def bid_missing(data, route, now):
     left seven stations and the veil-ray hunts flew on at a loss for two hours; the ice bids near the fields emptied
     and 36 mine runs stored their ice."""
     for want in bids(route):
-        book = read_json(Path(data) / "market" / (str(want.get("base")) + ".json"), {})
-        read = read_time(book.get("read_at")) if isinstance(book, dict) else None
-        if read is None or now - read > BID_FRESH:
+        found = bid_read(data, want, now)
+        if found is None:
             continue
-        row = next((i for i in book.get("items") or [] if isinstance(i, dict) and i.get("item_id") == want.get("item")), {})
-        price, depth = int(row.get("best_buy") or 0), int(row.get("best_buy_qty") or 0)
+        price, depth = found
         if price < int(want.get("min_price") or 1) or depth < int(want.get("min_qty") or 1):
             return "no bid for %s at %s: best %d cr x %d" % (want.get("item"), want.get("base"), price, depth)
     return None
+
+
+def bid_read(data, want, now, fresh=BID_FRESH):
+    """(best bid, units at it) for `want`'s item ({item, base}) in the station's book read within `fresh` seconds,
+    or None when no such book exists: the one reader of a bid, for bid_missing and a rest's early end (wakes)."""
+    book = read_json(Path(data) / "market" / (str(want.get("base")) + ".json"), {})
+    read = read_time(book.get("read_at")) if isinstance(book, dict) else None
+    if read is None or now - read > fresh:
+        return None
+    row = next((i for i in book.get("items") or [] if isinstance(i, dict) and i.get("item_id") == want.get("item")), {})
+    return int(row.get("best_buy") or 0), int(row.get("best_buy_qty") or 0)
 
 
 def stored_missing(data, route, pilot, rows):
@@ -409,11 +427,16 @@ def why_not(pilot, rid, route, state):
         return "off", None
     if route.get("park") and pilot.get("docked"):
         return "the pilot is docked", None
+    answered = False
+    if ENABLED_RESTS and not route.get("once") and judged(route):     # D227: a route that does not pay rests by its record
+        reason, answered = rest_of(rid, state)
+        if reason:
+            return reason, None
     lost = (state.get("loss") or {}).get(rid)
-    if lost:
+    if lost and not answered:
         return "at a loss: %d runs, %s cr in %d hours" % (lost[0], format(lost[1], ","), LOSS_HOURS), None
     late = (state.get("late") or {}).get(rid)
-    if late:
+    if late and not answered:
         return "its last %d runs each lost money: %s cr" % (late[0], format(late[1], ",")), None
     if set(route.get("skip_if_booked") or []) & (state.get("booked") or {}).get(pilot["name"], set()):
         return "its reward is booked", None
@@ -664,8 +687,16 @@ def losing(routes, rows, now):
             continue
         entry = sums.setdefault(route["id"], [0, 0])
         entry[0] += 1
-        entry[1] += (after - before) + taxes.in_run(row) + routefiles.moved(row) - (0 if route.get("once") else (row.get("one_time") or 0))
+        entry[1] += earned_by(row, route)
     return {rid: (runs, int(total)) for rid, (runs, total) in sums.items() if runs >= 2 and total < 0}
+
+
+def earned_by(row, route):
+    """What one run of a judged route made, as the loss stop counts it: its wallet's change with the weekly tax and what
+    another hand of ours moved through the wallet taken out, and for a repeating route without the money booked once.
+    The row must read a wallet at both ends (losing, lately_losing and rest_book filter first)."""
+    return ((row["credits_after"] - row["credits_before"]) + taxes.in_run(row) + routefiles.moved(row)
+            - (0 if route.get("once") else (row.get("one_time") or 0)))
 
 
 RECENT = 3                   # a repeating route whose last RECENT runs each lost money is closed, whatever its six-hour sum
@@ -692,7 +723,7 @@ def lately_losing(routes, rows, now):
             started = calendar.timegm(time.strptime(row.get("started") or "", "%Y-%m-%dT%H:%M:%SZ"))
         except ValueError:
             continue
-        last.setdefault(route["id"], []).append((started, (after - before) + taxes.in_run(row) + routefiles.moved(row) - (row.get("one_time") or 0)))
+        last.setdefault(route["id"], []).append((started, earned_by(row, route)))
     out = {}
     for rid, runs in last.items():
         recent = sorted(runs)[-RECENT:]
@@ -715,6 +746,223 @@ def resting(routes, rows, now):
                 continue
             out[rid] = ended + route.get("rest_minutes", 30) * 60
     return out
+
+
+# A route that does not pay rests, never for good (decisions D227, orders D13; rules F8, F22). Measured 2026-11-17 on
+# 48 hours of runs: of 60 judged routes closed in three or more six-hour windows, 33 paid in sum (+1,356,158 cr: their
+# buyers come and go) and 24 lost again on every opening (-141,260 cr). So a rest grows with the record and wakes early.
+ENABLED_RESTS = False        # off until the Fleet Admiral has read `dispatch.py --dry-run` on live data: it changes which routes fly
+REST_HOURS = (6, 24, 72)     # the rest of level 1, 2 and 3
+RESET_HOURS = 72             # a rest that ended longer ago is forgotten: the route's next rest is of level 1
+NET_HOURS = 48               # a route whose runs of this window paid in sum rests REST_HOURS[0] at most
+RESTS = {"path": None, "stamp": None, "book": {}}      # rests.json as why_not reads it for fill.py and hive.py: read again when it changed
+
+
+def rests_path(data):
+    """The rests' record: data/routes/rests.json, {route: {from, until, why, level, net48[, woke][, reset]}}."""
+    return Path(data) / "routes" / "rests.json"
+
+
+def read_rests(data):
+    """{route: rest} of the record, read again only when the file changed; {} without one."""
+    if not data:
+        return {}
+    path = rests_path(data)
+    try:
+        found = path.stat()
+    except OSError:
+        return {}
+    stamp = (found.st_ino, found.st_mtime_ns, found.st_size)
+    if RESTS["path"] != str(path) or RESTS["stamp"] != stamp:
+        book = read_json(path, {})
+        RESTS.update(path=str(path), stamp=stamp, book=book if isinstance(book, dict) else {})
+    return RESTS["book"]
+
+
+def utc(epoch, seconds=True):
+    return time.strftime("%Y-%m-%dT%H:%M:%SZ" if seconds else "%Y-%m-%dT%H:%MZ", time.gmtime(epoch))
+
+
+def rest_end(entry):
+    """When a rest ends: its `until`, never later than its start and the longest rest (no rest only a hand can end);
+    None for a record that is no rest (level 0, a time that does not read)."""
+    start, until = read_time(entry.get("from")), read_time(entry.get("until"))
+    if not isinstance(entry.get("level"), int) or entry["level"] < 1 or start is None or until is None:
+        return None
+    return min(until, start + REST_HOURS[-1] * 3600)
+
+
+def rest_stands(entry, now):
+    """True while a rest closes its route: begun and not ended."""
+    end = rest_end(entry) if isinstance(entry, dict) else None
+    return end is not None and read_time(entry.get("from")) <= now < end
+
+
+def rested_until(entry):
+    """When the route's last rest ended or ends (rest_end; for a record of level 0 its `until`), or None."""
+    end = rest_end(entry)
+    return end if end is not None else read_time(entry.get("until"))
+
+
+def counts_from(entry):
+    """From when a run is new to a route's record: the moment a rest woke (the reading that woke it is newer than what
+    flew during it), else the rest's start (a run in flight when it began was of the verdict that began it)."""
+    return read_time(entry.get("until")) if entry.get("woke") else read_time(entry.get("from"))
+
+
+def rest_of(rid, state):
+    """(why the route rests, or None; True when its last rest ended inside the last LOSS_HOURS, so that a verdict of
+    losing or lately_losing may rest on runs that rest answered: rest_book alone judges them). The dispatcher passes
+    the rests of its pass in state["rests"]; fill.py and hive.py read the record."""
+    entry = (state["rests"] if "rests" in state else read_rests(state.get("data"))).get(rid)
+    if not isinstance(entry, dict):
+        return None, False
+    if rest_stands(entry, state["now"]):
+        end = rest_end(entry)
+        return "resting until %s (%d h, level %d, %s)" % (utc(end, False), round((end - read_time(entry["from"])) / 3600), entry["level"], entry.get("why") or "it lost money"), True
+    return None, (rested_until(entry) or 0) > state["now"] - LOSS_HOURS * 3600
+
+
+def counted(row):
+    """True for a run whose credits speak of its route, as the loss stop counts them: not the runner's fault, a wallet
+    read at both ends."""
+    before, after = row.get("credits_before"), row.get("credits_after")
+    return (not faulted(row) and all(isinstance(v, (int, float)) and not isinstance(v, bool) for v in (before, after))
+            and before > 0 and after > 0)
+
+
+def wanted_bids(route):
+    """[{item, base, min_price, min_qty}] of the bids a route sells into by its file: `requires.bid`; else every `sell`
+    of a mine route at its station, or of a circuit's stops at the stop's station, whose `min_price` is above 1 (a
+    floor of 1 sells at any price and names no need: on 2026-11-17 a 2 cr argon bid would have woken a route that lost
+    for two days). A hunt names its drop only in `requires.bid`."""
+    if bids(route):
+        return bids(route)
+    sells = [(str(route.get("station", "")), s) for s in route.get("sell") or []] if route.get("kind") == "mine" else [
+        (str(stop.get("at", "")), s) for stop in route.get("stops") or [] if isinstance(stop, dict) and isinstance(stop.get("sell"), list) for s in stop["sell"]]
+    return [{"item": s["item"], "base": at.split(":")[-1], "min_price": s["min_price"]} for at, s in sells
+            if isinstance(s, dict) and s.get("item") and not s.get("all") and isinstance(s.get("min_price"), (int, float)) and s["min_price"] > 1]
+
+
+def wakes(data, route, start, now):
+    """What came back since a rest began, or None: every reading the route rests on, each newer than the rest's start
+    and still fresh, shows it back. Its bids (wanted_bids) at their price and depth, its field floors (`min_left` of a
+    mine route or of a circuit's mine step, field_left), its herds (`min_creatures` of a hunt or of a circuit's hunt
+    step, herd). None when one reading is missing or short, and for a route with nothing such to read: a hunt that
+    names no drop in `requires.bid` (its sale has no reading), a circuit that buys (its ask has no reader here)."""
+    if route.get("kind") == "hunt" and not bids(route):
+        return None
+    if any(isinstance(stop, dict) and stop.get("buy") for stop in route.get("stops") or []):
+        return None
+    since, seen = now - start, []
+    for want in wanted_bids(route):
+        found = bid_read(data, want, now, fresh=min(BID_FRESH, since))
+        if found is None or found[0] < int(want.get("min_price") or 1) or found[1] < int(want.get("min_qty") or 1):
+            return None
+        seen.append("%s bids %d cr x %d for %s" % (want.get("base"), found[0], found[1], want.get("item")))
+    steps = [route] if route.get("kind") == "mine" else [s for stop in route.get("stops") or [] if isinstance(stop, dict) for s in stop.get("mine") or []]
+    for step in steps:
+        if isinstance(step, dict) and isinstance(step.get("min_left"), dict):
+            place = step.get("belt") or step.get("at") or ""
+            left = field_left(data, place, now, fresh=min(CENSUS_FRESH, since)) if len(str(place).split(":")) == 2 else None
+            if left is None or any(left.get(item, 0) < int(units) for item, units in step["min_left"].items()):
+                return None
+            seen.append("the field at %s above its floor" % place)
+    herds = [(route, route.get("min_creatures", 1))] if route.get("kind") == "hunt" else [
+        ({"place": h["at"], "species": h.get("species")}, int(h["min_creatures"])) for stop in route.get("stops") or [] if isinstance(stop, dict)
+        for h in stop.get("hunt") or [] if isinstance(h, dict) and h.get("min_creatures") and h.get("at")]
+    for spot, need in herds:
+        count = herd(data, spot, now, fresh=min(CENSUS_FRESH, since)) if len(str(spot.get("place", "")).split(":")) == 2 else None
+        if count is None or count < need:
+            return None
+        seen.append("%d creatures at %s" % (count, spot["place"]))
+    return "; ".join(seen) or None
+
+
+def rest_book(routes, rows, now, data, book, loss, late):
+    """(the rests at `now`, [what changed, one line each]) from the record before (`book`) and this pass's verdicts
+    of losing and lately_losing (`loss`, `late`). A repeating judged route with a verdict and no standing rest gets one
+    when a run of it new to its record (counts_from) lost money, else the verdict rests on runs its last rest
+    answered: of level 1 (REST_HOURS[0]) without a rest in the last RESET_HOURS or while its runs of the last NET_HOURS
+    paid in sum, else one level above its last, at most the last. A standing rest ends early when wakes() reads its
+    cause gone (`until` becomes that moment, `woke` says what came back). Once a rest has ended, a new run that paid
+    sets its level to 0 (`reset`: that run's start). A record whose rest ended over RESET_HOURS ago is dropped: it
+    decides nothing."""
+    out = {rid: dict(entry) for rid, entry in (book or {}).items()
+           if isinstance(entry, dict) and (rested_until(entry) or 0) >= now - RESET_HOURS * 3600}
+    runs, told, figures = {}, [], {}
+    for row in rows:
+        route = routes.get(row.get("route"))
+        if route is None or route.get("once") or not judged(route) or not counted(row):
+            continue
+        started = read_time(row.get("started"))
+        if started is not None:
+            runs.setdefault(route["id"], []).append((started, row))
+
+    def made(rid, row):                                  # what a run made, worked out once (routes.moved reads the gifts)
+        if id(row) not in figures:
+            figures[id(row)] = earned_by(row, routes[rid])
+        return figures[id(row)]
+
+    for rid, entry in sorted(out.items()):
+        route, end = routes.get(rid), rest_end(entry)
+        if end is None:
+            continue
+        if rest_stands(entry, now):
+            woke = wakes(data, route, read_time(entry["from"]), now) if route else None
+            if woke:
+                entry.update(until=utc(now), woke=woke)
+                told.append("%s: its rest ends early, %s came back since it began" % (rid, woke))
+            continue
+        paid = next((t for t, row in sorted(runs.get(rid, []), key=lambda r: r[0]) if t >= counts_from(entry) and made(rid, row) > 0), None)
+        if paid is not None and route is not None:
+            entry.update(level=0, reset=utc(paid))
+            told.append("%s: a run of %s paid after its rest: its next rest is of level 1" % (rid, utc(paid, False)))
+    for rid in sorted(set(loss) | set(late)):
+        route, entry = routes.get(rid), out.get(rid)
+        if route is None or route.get("once") or not judged(route) or (entry and rest_stands(entry, now)):
+            continue                                     # a route that pays once stays with the six-hour stop: its reward is its pay
+        since = counts_from(entry) if entry else None
+        if entry and not any(t >= (since or float("inf")) and made(rid, row) < 0 for t, row in runs.get(rid, [])):
+            continue
+        net = int(sum(made(rid, row) for t, row in runs.get(rid, []) if t >= now - NET_HOURS * 3600))
+        verdict = ("at a loss: %d runs, %s cr in %d hours" % (loss[rid][0], format(loss[rid][1], ","), LOSS_HOURS) if rid in loss
+                   else "its last %d runs each lost money: %s cr" % (late[rid][0], format(late[rid][1], ",")))
+        level = entry.get("level") if entry and isinstance(entry.get("level"), int) else 0
+        if level < 1:
+            level, why = 1, verdict
+        elif net > 0:
+            level, why = 1, "lost again after its last rest; %s cr over %d hours keeps it at %d h: %s" % (format(net, "+,"), NET_HOURS, REST_HOURS[0], verdict)
+        else:
+            level, why = min(level + 1, len(REST_HOURS)), "lost again after its last rest: " + verdict
+        out[rid] = {"from": utc(now), "until": utc(now + REST_HOURS[level - 1] * 3600), "why": why, "level": level, "net48": net}
+        told.append("%s rests until %s (%d h, level %d, %s)" % (rid, utc(now + REST_HOURS[level - 1] * 3600, False), REST_HOURS[level - 1], level, why))
+    return out, told
+
+
+def keep_rests(routes, rows, now, data, loss, late, dry_run):
+    """(the rests of this pass or None, [lines]): rest_book on the record, written back when it changed (a real pass
+    only; under data/routes/rests.lock, written whole and then moved into place). A dry run writes nothing and says
+    so. A fault here never stops the pass: without this pass's rests why_not reads the record as it stands."""
+    path, lock, lines = rests_path(data), None, []
+    try:
+        if not dry_run:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            lock = open(path.with_name("rests.lock"), "w")
+            fcntl.flock(lock, fcntl.LOCK_EX)
+        before = read_json(path, {})
+        book, told = rest_book(routes, rows, now, data, before if isinstance(before, dict) else {}, loss, late)
+        lines += [("dry run, not written: " if dry_run else "") + line for line in told]
+        if not dry_run and book != before:
+            tmp = path.with_name("rests.json.%d.tmp" % os.getpid())
+            tmp.write_text(json.dumps(book, indent=1, sort_keys=True) + "\n", encoding="ascii")
+            os.replace(tmp, path)
+        return book, lines
+    except Exception as error:                               # noqa: BLE001  a bad record must not stop the dispatcher
+        return None, lines + ["rests not kept this pass: %s: %s" % (type(error).__name__, error)]
+    finally:
+        if lock is not None:
+            lock.close()
 
 
 HELD_BACK = set()             # pilots already named as held back, so that a pass every 30 s names each once
@@ -768,6 +1016,11 @@ def one_pass(root, data, dry_run, children):
     named = flagships(data)
     ammo = set(read_json(Path(data) / "catalog" / "ammo.json", []) or [])      # written by routemaker.py from the game's catalog
     lines = []
+    if ENABLED_RESTS:                             # D227: this pass's rests, kept before any pilot is given a route
+        book, told = keep_rests(routes, rows, now, data, state["loss"], state["late"], dry_run)
+        lines += told
+        if book is not None:
+            state["rests"] = book
     logs = Path(data) / "routes" / "logs"
     kinds, cap = hosting(data)
     hosted = runhost.load(data) if kinds and runhost.accepting(data, now) else None      # runs the host has; None: no host takes runs now

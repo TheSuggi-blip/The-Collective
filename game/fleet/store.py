@@ -22,9 +22,15 @@ WHAT: the service `store` runs it. Every minute it reads the new whole lines of 
         station/map.json (else game/map/galaxy.tsv)                 -> systems, lanes (view fleet_positions)
         station/stations.json, station/feed.json (its factions)     -> stations, factions
         empire/empire.json                                          -> faction, faction_members, bases, faction_facilities,
-                                                                       territory, sites (view our_stations)
+                                                                       faction_storage, territory, sites (views
+                                                                       our_stations, inventory_faction)
         game/routes/*.json, game/routes/plans/<role>.json (the
         repository's game/ folder, --root)                          -> routes, plan_routes
+        game/supply/chains.tsv (supply.py reads it)                 -> supply_chains (view supply_status)
+        governance/rulebook.md, strategy.md and empire.md, the
+        guidebooks and templates of each division, game/rules/*.md,
+        the newest entry of communications/orders.log (docs.py)     -> docs (one row a section), and doc_versions:
+                                                                       every version of every section, kept for good
       After a pass that wrote, and at least every five minutes, it publishes a copy, <data>/store/read.db,
       which every other program reads; the first pass of a UTC day also writes
       <data>/store/backup/collective-<date>.db (the five newest stay). `hive.py sql` and `hive.py schema`
@@ -123,6 +129,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import board                                      # noqa: E402  the divisions' names (fleet_positions)
 import division                                   # noqa: E402  who commands a pilot, its role, the order it flies
 import routes as routefiles                       # noqa: E402  what a run earned, a route's group: one rule for the store and for hive.py
+import docs as writings                           # noqa: E402  the fleet's written knowledge by section: docs, doc_versions
+import supply as supplychains                     # noqa: E402  the supply chains: the reader of game/supply/chains.tsv and the view
 
 EVERY = 60                     # seconds between two passes
 KEEP_DAYS = 7                  # days of raw rows kept; the sums stay for good
@@ -162,6 +170,9 @@ CREATE INDEX IF NOT EXISTS observations_subject ON observations (subject);
 CREATE TABLE IF NOT EXISTS stock_hour (hour INTEGER NOT NULL, division TEXT NOT NULL, item TEXT NOT NULL, units INTEGER NOT NULL,
   t INTEGER NOT NULL, PRIMARY KEY (hour, division, item));
 CREATE INDEX IF NOT EXISTS stock_hour_item ON stock_hour (division, item, hour);
+CREATE TABLE IF NOT EXISTS doc_versions (version INTEGER PRIMARY KEY, path TEXT NOT NULL, section TEXT NOT NULL, sha TEXT NOT NULL,
+  title TEXT, text TEXT, first_seen INTEGER NOT NULL, last_seen INTEGER NOT NULL);
+CREATE INDEX IF NOT EXISTS doc_versions_section ON doc_versions (path, section, version);
 """
 NEWEST = (("runs", "t"), ("moves", "t"), ("readings", "t"), ("route_hour", "hour"), ("market_hour", "hour"), ("reading_day", "day"),
           ("observations", "t"), ("stock_hour", "hour"))
@@ -410,6 +421,7 @@ SNAPSHOT = (
     ("faction_members", "pilot TEXT, role TEXT, t INTEGER", ""),
     ("bases", "base TEXT, name TEXT, system TEXT, poi TEXT, kind TEXT, t INTEGER", ""),
     ("faction_facilities", "id TEXT, type TEXT, name TEXT, level INTEGER, base TEXT, system TEXT, status TEXT, rent_per_cycle INTEGER, t INTEGER", ""),
+    ("faction_storage", "base TEXT, base_name TEXT, item TEXT, units INTEGER, t INTEGER", ""),
     ("territory", "system TEXT, claim TEXT, note TEXT, t INTEGER", ""),
     ("sites", "system TEXT, poi TEXT, status TEXT, note TEXT, t INTEGER", ""),
     ("missions", "base TEXT, system TEXT, id TEXT, template TEXT, title TEXT, kind TEXT, difficulty INTEGER, reward INTEGER, reward_items TEXT, "
@@ -417,7 +429,10 @@ SNAPSHOT = (
     ("met", "name TEXT, faction TEXT, class TEXT, system TEXT, poi TEXT, first INTEGER, t INTEGER, times INTEGER, in_combat INTEGER", "name"),
     ("routes", "id TEXT, kind TEXT, grp TEXT, title TEXT, place TEXT, station TEXT, status TEXT, max_ships INTEGER, once INTEGER, cph INTEGER, "
                "credits_per_run INTEGER, runs INTEGER, minutes REAL, measured TEXT", "id"),
+    ("supply_chains", "chain TEXT, item TEXT, place TEXT, keep INTEGER, need_per_hour REAL, sources TEXT, keeper TEXT, note TEXT, line INTEGER, "
+                      "error TEXT", "line"),
     ("plan_routes", "role TEXT, n INTEGER, route TEXT, ships INTEGER", "role, n"),
+    ("docs", "path TEXT, kind TEXT, owner TEXT, section TEXT, n INTEGER, title TEXT, text TEXT, sha TEXT, chars INTEGER, t INTEGER", "path, section"),
 )
 COLUMNS = {name: [part.split()[0] for part in columns.split(", ")] for name, columns, _key in SNAPSHOT}
 LOOKUPS = (("ships", "system"), ("holdings", "item"), ("books", "item"), ("ladders", "item"), ("recipe_inputs", "item"),
@@ -435,13 +450,16 @@ def views():
         "i.base_value AS base_value, SUM(h.units) * i.base_value AS worth FROM holdings h LEFT JOIN items i ON i.id = h.item GROUP BY h.item;\n"
         "CREATE VIEW IF NOT EXISTS inventory_by_station AS SELECT h.place AS place, h.item AS item, i.name AS name, i.category AS category, "
         "SUM(h.units) AS units FROM holdings h LEFT JOIN items i ON i.id = h.item GROUP BY h.place, h.item;\n"
+        "CREATE VIEW IF NOT EXISTS inventory_faction AS SELECT 'faction:' || f.base AS place, f.base AS base, f.base_name AS base_name, f.item AS item, "
+        "i.name AS name, i.category AS category, SUM(f.units) AS units, i.base_value AS base_value, SUM(f.units) * i.base_value AS worth, MAX(f.t) AS t "
+        "FROM faction_storage f LEFT JOIN items i ON i.id = f.item GROUP BY f.base, f.item;\n"
         "CREATE VIEW IF NOT EXISTS fleet_positions AS SELECT s.system AS system, y.name AS name, y.empire AS empire, y.jumps AS jumps, "
         "COUNT(*) AS ships, SUM(COALESCE(s.docked, 0) = 1) AS docked, SUM(COALESCE(s.docked, 0) = 0) AS flying, %s "
         "FROM ships s LEFT JOIN systems y ON y.id = s.system GROUP BY s.system;\n"
         "CREATE VIEW IF NOT EXISTS our_stations AS SELECT st.name AS name, st.kind AS kind, st.system AS system, st.tag AS tag, "
         "st.faction AS faction, st.condition AS condition, st.services AS services, st.wrecked AS wrecked, st.mobile AS mobile, b.base AS base, "
         "b.poi AS poi, b.kind AS base_kind FROM stations st JOIN faction f ON st.tag = f.tag "
-        "LEFT JOIN bases b ON b.system = st.system AND b.name = st.name;\n" % per) + EARNINGS
+        "LEFT JOIN bases b ON b.system = st.system AND b.name = st.name;\n" % per) + EARNINGS + supplychains.STATUS_VIEW
 
 
 def window(hours, column):
@@ -457,7 +475,8 @@ EARNINGS = ("CREATE VIEW IF NOT EXISTS route_earnings AS SELECT r.route AS route
             + ", ".join("COALESCE(%s, 0) AS runs_%s, ROUND(60.0 * %s / NULLIF(%s, 0)) AS cph_%s" % (window(h, "runs"), name, window(h, "credits"), window(h, "read_minutes"), name)
                         for h, name in ((4, "4h"), (12, "12h"), (24, "24h"), (0, "all")))
             + ", ROUND(SUM(r.one_time)) AS paid_once FROM route_hour r LEFT JOIN routes x ON x.id = r.route GROUP BY r.route;\n")
-VIEWS = ("inventory", "inventory_by_station", "fleet_positions", "our_stations", "route_earnings")
+VIEWS = ("inventory", "inventory_by_station", "inventory_faction", "fleet_positions", "our_stations", "route_earnings")
+VIEWS += supplychains.VIEWS                       # supply_status: each supply chain against what stands at its place (supply.py)
 
 
 def snapshot_schema():
@@ -827,7 +846,9 @@ def read_factions(path, ctx):
 
 def read_empire(path, ctx):
     """empire/empire.json (our faction, its members, bases, facilities, territory and sites) -> faction, faction_members, bases,
-    faction_facilities, territory, sites. Keys it does not know are left out; a list that is missing is an empty table."""
+    faction_facilities, faction_storage, territory, sites. Keys it does not know are left out; a list that is missing is an empty table.
+    faction_storage: what the faction's storage holds per base and item, the fuel of a bunker as item `fuel`; its t is
+    the reading of its place (a place whose view failed keeps its last reading)."""
     found = need(load_json(path), dict, "no object")
     read = when(found.get("written_at"), mtime_of(path))
     listed = lambda key: [r for r in found.get(key) or [] if isinstance(r, dict)] if isinstance(found.get(key), list) else []
@@ -841,6 +862,8 @@ def read_empire(path, ctx):
     out["faction_facilities"] = [{"id": text(f.get("facility_id")), "type": text(f.get("type")), "name": text(f.get("name")), "level": number(f.get("level")),
                                   "base": text(f.get("base")), "system": text(f.get("system")), "status": text(f.get("status")),
                                   "rent_per_cycle": number(f.get("rent_per_cycle")), "t": read} for f in listed("facilities")]
+    out["faction_storage"] = [{"base": text(r.get("base")), "base_name": text(r.get("base_name")), "item": text(r.get("item")), "units": number(r.get("units")),
+                               "t": when(r.get("read_at"), read)} for r in listed("faction_storage")]
     out["territory"] = [{"system": text(r.get("system")), "claim": text(r.get("claim")), "note": text(r.get("note")), "t": read} for r in listed("territory")]
     out["sites"] = [{"system": text(r.get("system")), "poi": text(r.get("poi")), "status": text(r.get("status")), "note": text(r.get("note")), "t": read}
                     for r in listed("sites")]
@@ -901,10 +924,12 @@ LOADERS = (    # loader, the tables it fills, its files, whole (one file holds a
     ("map", ("systems", "lanes"), map_files, True),
     ("stations", ("stations",), data_file("station/stations.json", read_stations), True),
     ("factions", ("factions",), data_file("station/feed.json", read_factions), True),
-    ("empire", ("faction", "faction_members", "bases", "faction_facilities", "territory", "sites"),
+    ("empire", ("faction", "faction_members", "bases", "faction_facilities", "faction_storage", "territory", "sites"),
      data_file("empire/empire.json", read_empire, "missing: our empire's collector has not written it yet"), True),
     ("routes", ("routes",), repo_files("routes", read_route, skip=("plan.json",)), False),
+    ("supply", ("supply_chains",), supplychains.chain_files, False),
     ("plans", ("plan_routes",), repo_files("routes/plans", read_plan), False),
+    ("docs", ("docs",), writings.files, False),     # the repository's governance/, guidebooks, templates, game/rules/, orders.log
 )
 FED = dict([(table, ("fleet", "orders")) for table in ("ships",)] + [(table, (loader,)) for loader, tables, _f, _w in LOADERS for table in tables])
 BAD = (OSError, ValueError, TypeError, KeyError, AttributeError, IndexError, RecursionError)
@@ -1267,6 +1292,7 @@ def one_pass(data, now=None, keep_days=KEEP_DAYS, root=None):
             out["snapshot"] = take_snapshot(conn, data, root or ROOT, now)
         except Exception as error:                     # a fault of the snapshot never holds up the history
             out["snapshot"] = {"loaded": Counter(), "rows": 0, "problems": [], "gone": 0, "flies": 0, "error": "%s: %s" % (type(error).__name__, error)}
+        out["versions"] = writings.keep(conn, now, out["snapshot"]["problems"])   # every version of each section of docs, kept for good
         try:
             out["sampled"] = sample_stock(conn, now, bool(out["snapshot"]["loaded"].get("holdings")))
         except sqlite3.Error as error:                 # nor does a fault of the hour's sample: the next pass writes it
@@ -1481,14 +1507,24 @@ DESCRIPTIONS = {               # one line per table and view: what a row is and 
     "faction_members": "our faction's members and their roles (empire/empire.json)",
     "bases": "our faction's bases: base id, name, system, place, kind (empire/empire.json)",
     "faction_facilities": "our faction's facilities: type, level, base, status, rent per cycle (empire/empire.json)",
+    "faction_storage": "what the faction's storage holds per base (a station's id or our outpost's) and item, the fuel of a bunker as item `fuel`; "
+                       "t = when its place was viewed (empire/empire.json, empire.py collect)",
     "territory": "the systems our faction claims (empire/empire.json)",
     "sites": "places our faction watches or plans for (empire/empire.json)",
     "missions": "now: the missions on offer at each station our ships read: kind, reward in credits, items, XP, objectives (missions/<base>.json)",
     "met": "the pilots of OTHER players our ships met: faction, ship class, where last seen, first and last seen (t), times met (intel/met.json)",
     "routes": "the repository's route files (game/routes/<id>.json): kind, group (routes.py stage), cap, what the runs measured (cph per ship-hour)",
     "plan_routes": "each role's plan in its order: the routes its ships try and the ships the plan puts on each (game/routes/plans/<role>.json)",
+    "docs": "now: the fleet's written knowledge by section (docs.py): the rulebook (each rule F<n> of section 12 its own section), the newest "
+            "entry of communications/orders.log (head, each S/G/D/P line, each block and member's block), governance/strategy.md and empire.md, "
+            "the guidebooks and templates of each division, game/rules/*.md row by row: kind, owner, section id, n (its place in the file), title, "
+            "text, sha, chars, t (the file's mtime); hive.py docs",
+    "doc_versions": "history: every version of every section of docs, kept for good: a new row when a section's sha is new (version rises), "
+                    "first_seen, last_seen (the last pass it stood; a section that left its file keeps its rows); hive.py changes, docs --history",
     "inventory": "view: what the fleet holds per item, in storage and in the holds, with its base value and worth (units x base value): craftbook.py inventory's sums",
     "inventory_by_station": "view: what the fleet holds per place (a station's base id, or `hold`) and item",
+    "inventory_faction": "view: what the faction's storage holds per place (`faction:<base id>`) and item, with its base value and worth (units x base "
+                         "value); apart from inventory and inventory_by_station, which are the storage book's sums as craftbook.py counts them",
     "fleet_positions": "view: our ships per system: the system's name, empire and jumps from home, ships, docked, flying (in space), ships per division",
     "our_stations": "view: the stations and outposts whose owner's tag is our faction's, joined to our bases",
     "route_earnings": "view: what each route earned per ship-hour (steady credits) over the last 4, 12 and 24 hours and over all hours kept, the runs behind each "
@@ -1656,6 +1692,9 @@ EXAMPLES = {                   # three questions per table and view, as SQL (hiv
     "faction_facilities": (("Our facilities and their rent", "SELECT name, type, level, base, status, rent_per_cycle FROM faction_facilities ORDER BY base"),
                            ("Rent per cycle in all", "SELECT SUM(rent_per_cycle) FROM faction_facilities"),
                            ("Facilities not active", "SELECT name, base, status FROM faction_facilities WHERE status <> 'active'")),
+    "faction_storage": (("What each faction storage holds", "SELECT base_name, base, item, units FROM faction_storage ORDER BY base_name, units DESC"),
+                        ("The fuel in our bunkers", "SELECT base_name, units FROM faction_storage WHERE item = 'fuel'"),
+                        ("Faction storage places and when they were read", "SELECT base, base_name, COUNT(*), datetime(MAX(t), 'unixepoch') FROM faction_storage GROUP BY base")),
     "territory": (("Our territory", "SELECT system, claim, note FROM territory"),
                   ("Our ships in our territory", "SELECT t.system, COUNT(s.pilot) FROM territory t LEFT JOIN ships s ON s.system = t.system GROUP BY t.system"),
                   ("Our territory and its jumps from home", "SELECT t.system, y.jumps FROM territory t LEFT JOIN systems y ON y.id = t.system ORDER BY y.jumps")),
@@ -1677,6 +1716,17 @@ EXAMPLES = {                   # three questions per table and view, as SQL (hiv
                     ("Every plan with each route's group and figure", "SELECT p.role, p.n, p.route, r.grp, r.cph FROM plan_routes p "
                      "LEFT JOIN routes r ON r.id = p.route ORDER BY p.role, p.n"),
                     ("Routes in more than one plan", "SELECT route, COUNT(DISTINCT role) FROM plan_routes GROUP BY route HAVING COUNT(DISTINCT role) > 1")),
+    "docs": (("The sections of the rulebook in their order", "SELECT section, chars, title FROM docs WHERE path = 'governance/rulebook.md' ORDER BY n"),
+             ("One rule whole", "SELECT title, text FROM docs WHERE path = 'governance/rulebook.md' AND section = 'F8'"),
+             ("The sections that name a word", "SELECT path, section, title FROM docs WHERE text LIKE '%wallet%' ORDER BY path, n")),
+    "doc_versions": (("Sections changed in the last 24 hours (a section's first version is no change)",
+                     "SELECT v.path, v.section, v.title, datetime(v.first_seen, 'unixepoch') AS changed FROM doc_versions v "
+                     "WHERE v.first_seen >= strftime('%s', 'now') - 86400 AND v.version > (SELECT MIN(w.version) FROM doc_versions w "
+                     "WHERE w.path = v.path AND w.section = v.section) ORDER BY v.first_seen DESC"),
+                    ("Every version of rule F8", "SELECT version, sha, datetime(first_seen, 'unixepoch'), datetime(last_seen, 'unixepoch'), "
+                     "LENGTH(text) FROM doc_versions WHERE path = 'governance/rulebook.md' AND section = 'F8' ORDER BY version"),
+                    ("Sections that left their file", "SELECT v.path, v.section, MAX(v.title), datetime(MAX(v.last_seen), 'unixepoch') FROM doc_versions v "
+                     "WHERE NOT EXISTS (SELECT 1 FROM docs d WHERE d.path = v.path AND d.section = v.section) GROUP BY v.path, v.section")),
     "inventory": (("What do we hold most of, by worth", "SELECT item, name, units, base_value, worth FROM inventory ORDER BY worth DESC LIMIT 10"),
                   ("Goods we hold that no station bids for", "SELECT item, units FROM inventory WHERE item NOT IN (SELECT item FROM books WHERE bid IS NOT NULL) "
                    "ORDER BY units DESC"),
@@ -1686,6 +1736,10 @@ EXAMPLES = {                   # three questions per table and view, as SQL (hiv
                              ("Where iron_ore lies", "SELECT place, units FROM inventory_by_station WHERE item = 'iron_ore'"),
                              ("The worth of the goods per place", "SELECT v.place, SUM(v.units * i.base_value) FROM inventory_by_station v "
                               "LEFT JOIN items i ON i.id = v.item GROUP BY v.place ORDER BY 2 DESC")),
+    "inventory_faction": (("The worth of each faction storage", "SELECT place, base_name, SUM(worth) FROM inventory_faction GROUP BY place ORDER BY 3 DESC"),
+                          ("Where steel_plate lies, our own storage and the faction's", "SELECT place, units FROM inventory_by_station WHERE item = 'steel_plate' "
+                           "UNION ALL SELECT place, units FROM inventory_faction WHERE item = 'steel_plate'"),
+                          ("What the faction stores that no catalog item names", "SELECT place, item, units FROM inventory_faction WHERE name IS NULL")),
     "fleet_positions": (("Where are our ships, by system and division", "SELECT * FROM fleet_positions ORDER BY ships DESC"),
                         ("Our ships away from home", "SELECT system, name, empire, jumps, ships FROM fleet_positions WHERE jumps > 0 ORDER BY jumps DESC"),
                         ("Systems where ships lie docked", "SELECT system, docked, flying FROM fleet_positions WHERE docked > 0")),
@@ -1699,6 +1753,10 @@ EXAMPLES = {                   # three questions per table and view, as SQL (hiv
                      ("Our stations and their jumps from home", "SELECT o.name, o.system, y.jumps FROM our_stations o LEFT JOIN systems y ON y.id = o.system"),
                      ("Our stations that no base row of empire.json names", "SELECT name, system FROM our_stations WHERE base IS NULL")),
 }
+
+
+DESCRIPTIONS.update(supplychains.DESCRIPTIONS)    # the supply chains' table and view, described where they are made (supply.py)
+EXAMPLES.update(supplychains.EXAMPLES)
 
 
 def schema(conn):

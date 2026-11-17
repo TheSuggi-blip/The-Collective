@@ -179,7 +179,9 @@ class CandidateTests(Tree):
         unknown = self.one(book, "hunt-wild-cloud-odd-slug")
         self.assertEqual((unknown["per_ship_hour"], "route" in unknown), (0, False))
         self.assertIn("one test hunt", unknown["needs"])
-        self.assertFalse([c for c in book["candidates"] if "big-whale" in c["id"]])                                           # prey above 100 hull is no candidate
+        whale = self.one(book, "hunt-wild-cloud-big-whale")                                                                 # 220 hull: a group of four starters (rule F9), never one ship
+        self.assertEqual((whale["group"], "route" in whale, whale["basis"]["gauges"]["kills_up_to"]), (4, False, 280.0))
+        self.assertTrue(whale["needs"].startswith("a group of 4 (rule F9, DECISIONS D228): waits for the dispatcher's group step"))
 
     def test_a_mission_says_what_it_asks_for_and_a_round_of_stations_gets_its_circuit(self):
         self.put("wildlife/wild.json", {"system": "wild", "read_at": STAMP, "pois": {"wild_cloud": {"read_at": STAMP, "creatures": [{"species": "glow_ray", "max_hull": 60}] * 5}}})
@@ -382,6 +384,88 @@ class CatalogFileTests(unittest.TestCase):
                 for age, name in ((300, older), (200, newer), (100, "ammo.json"), (50, "refresh.json")):
                     os.utime(folder / name, (time.time() - age, time.time() - age))
                 self.assertEqual(maker.newest_catalog(temp).name, "0.100.0.json", "%s written last" % newer)
+
+
+def drone(name, guns=("pulse_laser_i",), levels=(4, 2, 3), hull=75, shield=130):
+    """A ship's live file as the fleet collector writes it: its weapons, its Gunnery, Weapons and Tactics, hull and shield."""
+    return {"name": name, "modules": [{"kind": "weapon", "slot": "weapon", "type": g} for g in guns], "max_hull": hull, "max_shield": shield,
+            "skills": {k: {"level": v} for k, v in zip(("gunnery", "weapons", "tactics"), levels)}}
+
+
+class GaugeTests(Tree):
+    """Rule F9: a herd is hunted by the gauges of the ships that would fly it, never by a fixed 100 hull."""
+
+    def setUp(self):
+        super().setUp()
+        (self.data / "fleet" / "ships").mkdir()
+        self.put("catalog/1.0.json", {"version": "1.0", "items": [{"id": "gel", "size": 1}, {"id": "pulse_laser_i", "type": "weapon", "damage": 10, "cooldown": 1},
+                                                                 {"id": "big_gun", "type": "weapon", "damage": 30, "cooldown": 1}], "recipes": []})
+        self.book("mid_base", "mid", [row("gel", bid=300, bid_qty=100)])
+        herd = []
+        for species, hull, role in (("calm_ray", 70, "grazer"), ("slag_tortoise", 90, "grazer"), ("aeonbear", 120, "grazer"), ("cloudwhale", 3304, "grazer"),
+                                    ("mantis", 60, "predator"), ("pilot_whale", 220, "grazer")):
+            herd += [{"species": species, "role": role, "hull": hull, "max_hull": hull}] * 6
+        self.put("wildlife/mid.json", {"system": "mid", "read_at": STAMP, "pois": {"mid_cloud": {"read_at": STAMP, "creatures": herd}}})
+        runs = []
+        for species in ("calm_ray", "slag_tortoise", "pilot_whale"):                                                       # loot our runs sold
+            rid = "hunt-old-" + species
+            (self.root / "routes" / (rid + ".json")).write_text(json.dumps({"id": rid, "kind": "hunt", "title": "t", "place": "home:old", "species": [species],
+                                                                            "sell_at": "home:core:home_base", "min_bid": 1, "kills": 4, "minutes": 40,
+                                                                            "max_ships": 1, "min_creatures": 4}), encoding="ascii")
+            runs.append(json.dumps({"route": rid, "kind": "hunt", "kills": 4, "minutes": 25, "goods": {"gel": 6}}))
+        (self.data / "routes" / "runs.jsonl").write_text("\n".join(runs) + "\n")
+
+    def fleet(self, ships):
+        self.put("fleet/fleet.json", {"ships": [{"name": s["name"], "cargo_capacity": 60, "status": "connected"} for s in ships]})
+        for ship in ships:
+            self.put("fleet/ships/%s.json" % ship["name"], ship)
+
+    def hunts(self, book):
+        return {c["id"].replace("hunt-mid-cloud-", ""): c for c in book["candidates"] if c["kind"] == "hunt"}
+
+    def test_one_drone_hunts_what_it_kills_and_stands_and_a_group_herd_waits_without_a_route(self):
+        self.fleet([drone("drone-1"), drone("drone-2"), drone("drone-3")])           # each 10 x 1.09 = 10.9 a tick: kills up to 76.3 hull, stands up to 102.5
+        hunts = self.hunts(self.build())
+        calm = hunts["calm-ray"]                                                    # 70 hull: one ship alone, as before
+        self.assertEqual((calm.get("group"), calm.get("needs"), calm["route"]["species"], "max_prey_hull" in calm["route"]), (None, None, ["calm_ray"], False))
+        slag = hunts["slag-tortoise"]                                               # 90 hull: one ship of the 100-hull rule, now a group of two
+        self.assertEqual((slag.get("group"), "route" in slag), (2, False))
+        self.assertEqual(slag.get("needs"), "a group of 2 (rule F9, DECISIONS D228): waits for the dispatcher's group step")
+        self.assertAlmostEqual(slag["per_ship_hour"], calm["per_ship_hour"] / 2, delta=1)   # the same loot, shared by two ships
+        self.assertEqual({k: slag["basis"]["gauges"][k] for k in ("species_hull", "group", "kills_up_to", "stands_up_to")},
+                         {"species_hull": 90, "group": 2, "kills_up_to": 152.6, "stands_up_to": 205.0})
+        self.assertFalse(any(c.get("route") for k, c in hunts.items() if k.startswith("aeonbear")))   # 120 hull: never one ship
+        self.assertEqual(hunts["aeonbear"]["group"], 2)
+        self.assertEqual((hunts["mantis"]["group"], hunts["mantis"]["basis"]["gauges"]["weight"]), (2, 120))  # a predator of 60 weighs 120
+        self.assertEqual(hunts["pilot-whale"]["group"], 3)                          # 220 hull: three ships (228.9 and 307.5)
+        self.assertNotIn("cloudwhale", hunts)                                       # beyond twenty ships: no candidate
+
+    def test_a_strong_ship_hunts_above_100_alone_and_its_route_names_the_prey_hull(self):
+        self.fleet([drone("drone-1", guns=("big_gun", "big_gun"), shield=400)])    # 60 x 1.09 = 65.4 a tick: kills up to 457.8; stands up to 237.5
+        hunts = self.hunts(self.build())
+        self.assertIn("pilot-whale", hunts)                                        # 220 hull: no candidate under the 100-hull rule
+        whale = hunts["pilot-whale"]
+        self.assertEqual((whale.get("group"), whale["route"]["max_prey_hull"], whale["route"]["max_ships"]), (None, 220, 1))
+        (self.root / "routes" / (whale["route"]["id"] + ".json")).write_text(json.dumps(whale["route"]), encoding="ascii")
+        self.assertEqual([e for e in routes.check(str(self.root))[0] if "index.md" not in e], [])
+        self.put("missions/home_base.json", {"base": "home_base", "system": "home", "read_at": STAMP, "missions": [
+            {"template_id": "whale_hunt", "title": "Whale Hunt", "rewards": {"credits": 1000}, "objectives": [
+                {"type": "kill_creature", "description": "Hunt 3 Pilot Whales", "quantity": 3}]}]})
+        hunt = self.one(self.build(), "mission-whale-hunt-home")                     # a circuit's hunt step takes nothing above 100 hull
+        self.assertEqual((hunt["needs"], "route" in hunt), ("a herd of four or more for: Hunt 3 Pilot Whales", False))
+
+    def test_a_mission_herd_is_one_typical_ship_s_prey(self):
+        self.fleet([drone("drone-1"), drone("drone-2")])
+        self.put("missions/home_base.json", {"base": "home_base", "system": "home", "read_at": STAMP, "missions": [
+            {"template_id": "calm_hunt", "title": "Calm Hunt", "rewards": {"credits": 1000}, "objectives": [
+                {"type": "kill_creature", "description": "Hunt 3 Calm Rays", "quantity": 3}]},
+            {"template_id": "slag_hunt", "title": "Slag Hunt", "rewards": {"credits": 1000}, "objectives": [
+                {"type": "kill_creature", "description": "Hunt 3 Slag Tortoises", "quantity": 3}]}]})
+        book = self.build()
+        calm = self.one(book, "mission-calm-hunt-home")
+        self.assertEqual(calm["route"]["stops"][0]["hunt"][0]["species"], ["calm_ray"])
+        slag = self.one(book, "mission-slag-hunt-home")                              # 90 hull: no herd one ship can take
+        self.assertEqual((slag.get("needs"), "route" in slag), ("a herd of four or more for: Hunt 3 Slag Tortoises", False))
 
 
 if __name__ == "__main__":

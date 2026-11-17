@@ -21,7 +21,8 @@ WHAT: the service `routemaker` runs it. Every ten minutes it reads what the
                  what one ship mines there in an hour
         trade    an item on offer at one station and bid for at another
         craft    a hand recipe whose inputs are on offer or in our storage
-        hunt     a herd of a species whose loot a run of ours already sold
+        hunt     a herd of a species whose loot a run of ours already sold,
+                 that one ship of ours can kill and stand (rule F9)
         mission  a mission on a board: its reward, what it asks for, how
                  many of our pilots have not booked it yet
       `show` prints the list for a member; `route <id>` prints a candidate's
@@ -53,6 +54,13 @@ RULES:
     (requests.log ENT-069).
   - A route it writes is a test: `max_ships` 1. The Admiral who flies it
     lifts the limit after the first RESULT line (game/routes/BLUEPRINT.md).
+  - A herd is hunted by its species' gauges (rule F9, gauges.py), never by a
+    fixed hull: one typical ship of the hunting role must pass both its
+    firepower and its toughness. A species only a group of N such ships
+    passes (N up to gauges.GROUP_MAX) is listed with `group` N, what it
+    needs and no route file: no ship goes on it alone. A mission's hunt
+    step is one ship of the fleet's typical fit, and its runner takes prey
+    of RUNNER_PREY_HULL or less.
 WHY:  five Admirals should not each search 30 systems, six books and six
       boards by hand at every turn, and a new field or a new bid that a
       scout brings home should show up as a route within minutes.
@@ -84,6 +92,7 @@ from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import division                                   # noqa: E402
+import gauges                                     # noqa: E402  rule F9: what one ship or a group of ours can hunt
 
 ROOT = Path(__file__).resolve().parent.parent     # the game/ folder
 EVERY = 600                  # seconds between two passes
@@ -94,6 +103,9 @@ GATE = "http://172.30.0.32:7580"
 OPENER = urllib.request.build_opener(urllib.request.ProxyHandler({}))
 HARVESTER = {"ice_field": "ice_harvester_i", "gas_cloud": "gas_harvester_i"}
 ROLE = {"mine": "miner", "trade": "trader", "craft": "hauler", "hunt": "drone", "mission": ""}
+RUNNER_PREY_HULL = 100       # hunt.py's own limit where a route names none (--max-prey-hull): a hunt route above it names its prey's hull;
+                             # a circuit's hunt step (route_run.py) passes none, so a mission's herd stays at or under it
+GROUP_NEEDS = "a group of %d (rule F9, DECISIONS D228): waits for the dispatcher's group step"
 MEMBER_KINDS = {"Zero": ("mine", "mission"), "Mercury": ("trade", "mission"), "Apollo": ("craft", "mission"),
                 "Apophis": ("hunt", "mission"), "Oracle": ("mission",), "Unity": ("mine", "trade", "craft", "hunt", "mission")}
 # What a starter hull does, where no record measures it. Each is printed with every list.
@@ -226,11 +238,13 @@ def load_world(data, root, now):
                                                   "missions": [m for m in board.get("missions") or [] if isinstance(m, dict)]}
         except Exception as error:                        # one bad file costs its own reading, never the pass
             world["skipped"].append("%s/%s: %s: %s" % (path.parent.name, path.name, type(error).__name__, error))
+    seen = []                                         # every creature read: a species' hull and weight (gauges.py)
     for path in sorted((data / "wildlife").glob("*.json")) if (data / "wildlife").is_dir() else []:
         try:
             wild = read_json(path, {})
             for poi_id, entry in (wild.get("pois") or {}).items():
                 creatures = [c for c in entry.get("creatures") or [] if isinstance(c, dict) and c.get("species")]
+                seen.extend(creatures)
                 if creatures:
                     world["herds"].append({"system": sid(wild.get("system"), path.stem), "poi": poi_id, "read_at": entry.get("read_at") or wild.get("read_at"),
                                            "species": Counter(c["species"] for c in creatures),
@@ -274,6 +288,7 @@ def load_world(data, root, now):
             booked[str(row[2]).lower()].add(str(row[1]))
     world["booked"] = booked
     world["assume"] = assumptions(world, ships, read_json(data / "fleet" / "meters.json", {}))
+    world["gauges"] = gauges.read(data, items=world["items"], creatures=seen)    # rule F9: our ships' gauges, each species' hull and weight
     try:                                              # what a bid regains an hour: the fleet's one measure of it
         import hive                                   # here, not at the top: hive.py loads the dispatcher's modules, a pass needs them only here
         world["regains"] = hive.rates(data)[0]
@@ -715,12 +730,64 @@ def loot_per_kill(world):
     return {s: ({item: units / e["kills"] for item, units in e["goods"].items()}, statistics.median(e["minutes"]), e["runs"]) for s, e in seen.items()}
 
 
+def group_for(world, species, kind):
+    """The fewest typical ships of the role that flies `kind` that pass both gauges of rule F9 for a species together
+    (1: one ship alone), or None: out of reach of gauges.GROUP_MAX ships, or no reading holds its hull (gauges.py)."""
+    return gauges.smallest_group(ROLE[kind], species, book=world["gauges"])
+
+
+def solo_prey(world, species, kind):
+    """True where one typical ship of the role that flies `kind` passes both gauges of rule F9 for a species and the
+    hunt runner takes it without a limit of its own in the route (RUNNER_PREY_HULL)."""
+    found = gauges.creature(species, book=world["gauges"])
+    return bool(found) and found[0] <= RUNNER_PREY_HULL and group_for(world, species, kind) == 1
+
+
+def gauge_basis(world, species, kind, group):
+    """What a hunt's gauges rest on (rule F9): the species' hull and weight, one typical ship's gauges, and what the
+    group of `group` such ships kills and stands."""
+    book = world["gauges"]
+    firepower, toughness, label = gauges.typical(ROLE[kind], book=book)
+    hull, weight = gauges.creature(species, book=book)
+    return {"species_hull": hull, "weight": weight, "one_ship": {"firepower": round(firepower, 2), "toughness": toughness, "from": label},
+            "group": group, "kills_up_to": round(gauges.KILL_FACTOR * firepower * group, 1), "stands_up_to": round(gauges.STAND_SHARE * toughness * group, 1)}
+
+
+def best_sale(world, herd, drops, run_minutes):
+    """(credits an hour, credits a run, minutes, base, jumps, sales, floor) of four kills' loot sold at the station
+    that pays most an hour after the trip, or None where no station of our readings bids for it."""
+    best = None
+    for base, station in world["stations"].items():
+        jumps = world["chart"].jumps(herd["system"], station["system"])
+        book = world["books"].get(base)
+        if jumps is None or not book:
+            continue
+        kills = 4
+        income, parts, floor = 0.0, [], 0
+        for item, per_kill in drops.items():
+            sold, got, how = sell_into(world, base, item, kills * per_kill)
+            if sold > 0:
+                income += got
+                parts.append("%s %.1f units for %d cr (%s)" % (item, sold, got, how))
+                floor = max(floor, int(got / sold * 0.8))
+        minutes, fuel = trip(world, jumps)
+        minutes += max(8.0, run_minutes - 7)           # the fight and the looting: a measured run less its own short trip
+        per_hour = 60 * (income - fuel) / minutes
+        if income > 0 and (best is None or per_hour > best[0]):
+            best = (per_hour, income - fuel, minutes, base, jumps, parts, floor)
+    return best
+
+
 def hunt_candidates(world):
-    """A herd of four or more grazers of 100 hull or less, of a species whose loot our own runs have sold."""
+    """A herd of four or more of a species that one typical ship of the hunting role can kill and stand (rule F9,
+    gauges.py), costed from the loot our own runs have sold. A species that only a group of N such ships passes is
+    listed with `group` N, what it needs and no route file, its estimate shared by the N ships; a species beyond
+    gauges.GROUP_MAX ships is no candidate."""
     out, learned = [], loot_per_kill(world)
     for herd in world["herds"]:
         for species, count in herd["species"].items():
-            if count < 4 or herd["hull"].get(species, 999) > 100:
+            group = group_for(world, species, "hunt") if count >= 4 else None
+            if group is None:
                 continue
             place = "%s:%s" % (herd["system"], herd["poi"])
             rid = existing(world, "hunt", place=place)
@@ -731,45 +798,40 @@ def hunt_candidates(world):
             if lawless(world, herd["system"]):
                 warnings.append("lawless space: no police at %s" % herd["system"])
             cid = "hunt-%s-%s" % (herd["poi"].replace("_", "-"), species.replace("_", "-"))
+            alone = group == 1                             # a group's candidate: no route file, so no ship flies it alone
+            needs, extra = ("", None) if alone else (GROUP_NEEDS % group, {"group": group})
+            basis = {"place": place, "herd": count, "hull": herd["hull"].get(species)}
+            if not alone:
+                basis["gauges"] = gauge_basis(world, species, "hunt", group)
             if species not in learned:
-                out.append(candidate(world, cid, "hunt", "%d %s at %s: what a kill yields is not known" % (count, species, place), 0, 0, 0,
-                                     {"place": place, "herd": count, "hull": herd["hull"].get(species)}, warnings + ["no run of ours has sold this species' loot"],
-                                     needs="one test hunt (orders F9): what it drops and what the drop sells for", rid=rid))
+                out.append(candidate(world, cid, "hunt", "%d %s at %s: %swhat a kill yields is not known" % (count, species, place, "" if alone else "a group of %d; " % group),
+                                     0, 0, 0, basis, warnings + ["no run of ours has sold this species' loot"],
+                                     needs="; ".join(n for n in (needs, "one test hunt (orders F9): what it drops and what the drop sells for") if n), rid=rid, extra=extra))
                 continue
             drops, run_minutes, runs = learned[species]
-            best = None
-            for base, station in world["stations"].items():
-                jumps = world["chart"].jumps(herd["system"], station["system"])
-                book = world["books"].get(base)
-                if jumps is None or not book:
-                    continue
-                kills = 4
-                income, parts, floor = 0.0, [], 0
-                for item, per_kill in drops.items():
-                    sold, got, how = sell_into(world, base, item, kills * per_kill)
-                    if sold > 0:
-                        income += got
-                        parts.append("%s %.1f units for %d cr (%s)" % (item, sold, got, how))
-                        floor = max(floor, int(got / sold * 0.8))
-                minutes, fuel = trip(world, jumps)
-                minutes += max(8.0, run_minutes - 7)           # the fight and the looting: a measured run less its own short trip
-                per_hour = 60 * (income - fuel) / minutes
-                if income > 0 and (best is None or per_hour > best[0]):
-                    best = (per_hour, income - fuel, minutes, base, jumps, parts, floor)
+            best = best_sale(world, herd, drops, run_minutes)
             if best is None:
                 continue
             per_hour, per_run, minutes, base, jumps, parts, floor = best
             station = world["stations"][base]
+            basis.update({"loot_a_kill": {k: round(v, 2) for k, v in drops.items()}, "learned_from_runs": runs, "sold_at": base, "jumps": jumps, "four_kills": parts})
+            if not alone:
+                warnings.append("an estimate per ship of a group of %d: four kills' loot shared by %d ships in the time one ship's runs took; no group of ours "
+                                "has flown it" % (group, group))
+                out.append(candidate(world, cid, "hunt", "%s at %s: a group of %d; loot sold at %s" % (species, herd["poi"], group, station["name"]),
+                                     per_hour / group, per_run / group, minutes, basis, warnings, needs=needs, rid=rid, extra=extra))
+                continue
             route = {"id": cid, "kind": "hunt", "title": "%s at %s; loot sold at %s" % (species, herd["poi"], station["name"]),
                      "note": "Written by routemaker.py from the herd's count, the loot of %d runs of ours and the order book; an estimate of %d cr per hunter-hour, not a "
                              "measurement. A test: one ship, the ranching rules kept." % (runs, per_hour),
                      "place": place, "species": [species], "sell_at": station["at"], "min_bid": floor, "kills": 4, "minutes": int(max(40, minutes + 15)),
                      "max_ships": 1, "min_creatures": 4}
+            hull = gauges.creature(species, book=world["gauges"])[0]
+            if hull > RUNNER_PREY_HULL:                      # the runner takes nothing above its own limit unless the route names the prey's hull
+                route["max_prey_hull"] = int(math.ceil(hull))
             if lawless(world, herd["system"]):               # beyond the police: no fight beside a foreign ship, nothing to lose aboard
                 route.update({"alone": True, "requires": {"empty_hold": True}})
-            out.append(candidate(world, cid, "hunt", route["title"], per_hour, per_run, minutes,
-                                 {"place": place, "herd": count, "hull": herd["hull"].get(species), "loot_a_kill": {k: round(v, 2) for k, v in drops.items()},
-                                  "learned_from_runs": runs, "sold_at": base, "jumps": jumps, "four_kills": parts}, warnings, route=route, rid=rid))
+            out.append(candidate(world, cid, "hunt", route["title"], per_hour, per_run, minutes, basis, warnings, route=route, rid=rid))
     return out
 
 
@@ -785,14 +847,16 @@ def herds_named_in(world, text):
 
 
 def herds_for(world, text, kills, system):
-    """[(jumps, creatures, species, system, poi)] of the herds a text names that hold prey of 100 hull or less for `kills`
-    kills and two to spare, no pirate seen there: policed space first, then the nearest, then the largest."""
+    """[(jumps, creatures, species, system, poi)] of the herds a text names that hold prey one ship of the fleet's
+    typical fit can kill and stand (rule F9, solo_prey: a circuit's hunt step is one ship, of any role, and its runner
+    takes prey of RUNNER_PREY_HULL or less) for `kills` kills and two to spare, no pirate seen there: policed space
+    first, then the nearest, then the largest."""
     low, found = text.lower(), []
     for herd in world["herds"]:
         for species, count in herd["species"].items():
             jumps = world["chart"].jumps(system, herd["system"])
             if ((species.replace("_", "-") in low or species.replace("_", " ") in low) and count >= kills + 2
-                    and herd["hull"].get(species, 999) <= 100 and jumps is not None and not herd["pirates"]):
+                    and solo_prey(world, species, "mission") and jumps is not None and not herd["pirates"]):
                 found.append((lawless(world, herd["system"]), jumps, -count, species, herd["system"], herd["poi"]))
     return [(jumps, -count, species, where, poi) for _far, jumps, count, species, where, poi in sorted(found)]
 

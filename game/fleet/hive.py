@@ -3,7 +3,8 @@
 
 WHAT: reads the unit's data folder (fleet/, routes/runs.jsonl, market/, scouting/, wildlife/, stock/, catalog/, intel/) and
       the route files, and prints one answer:
-        fleet                 credits, steady money per hour (rewards paid once left out) over 1, 6 and 24 hours, per division
+        fleet                 credits, the faction's treasury and the fleet's money (wallets + treasury), steady money per
+                              hour (rewards paid once left out) over 1, 6 and 24 hours, per division
         routes                every route: its group, zone, ships on it, what its runs measured, and its runs in the last hours
         route <id>            one route: its file, its last runs, and its credits per ship-hour hour by hour
         history               the fleet's credits hour by hour, with and without the rewards paid once, per division
@@ -27,6 +28,14 @@ WHAT: reads the unit's data folder (fleet/, routes/runs.jsonl, market/, scouting
                               for the fleet; what is paid once stands apart
         refill                what comes back by itself between our readings, per hour: the units a bid regains, what a
                               field grows back, the animals of a herd
+        docs                  the fleet's written knowledge by section, from the store (docs.py mirrors the repository
+                              every minute and keeps every version): the rulebook rule by rule, the orders in force block
+                              by block, strategy, empire, guidebooks, templates, the game's rules; the files, a file's
+                              sections by title, one section whole (--section; its versions, each against the one before:
+                              --history), the sections that hold a word (--grep)
+        changes               the sections whose text changed since a time (default: the member's last turn, its newest
+                              entry in communications/reports.log) and those that left their file; the briefing lists
+                              them too (CHANGED SINCE YOUR LAST TURN)
         briefing              a session's start in one answer: the orders in force, the requests addressed to the member,
                               the fleet's money, its own standing fleet (plan, what each route carries, every ship), its
                               plan file in short (plan.py) and the fill gate
@@ -42,6 +51,9 @@ WHAT: reads the unit's data folder (fleet/, routes/runs.jsonl, market/, scouting
         inventory             what the fleet owns in goods: every item in station storage and in the holds added up, by
                               kind of item (raw, refined, parts, modules ...); `inventory stations` lists it per station
                               (the craft book's own count: craftbook.py inventory)
+        supply                the supply chains (game/supply/chains.tsv): the goods the fleet must never run out of, each
+                              against what stands at its place now, with the ships on its routes: show, check (the
+                              gate) or duty (the plan change for a short chain, a dry run here); supply.py's answers
         flow                  what each division put into the reserve per hour: of every item the reserve asks for
                               (surplus.py reserve), the units it holds (storage and holds) and their change per hour over
                               the last 4, 12 and 24 hours, from the store's hourly samples (store.py, stock_hour); the
@@ -63,6 +75,7 @@ USAGE:
   hive.py route <route id>
   hive.py history [--hours N]
   hive.py ship <pilot>
+  hive.py gauges ship <pilot>... | side <pilot>... | species [--role <role>]
   hive.py levels [<Member>|all]
   hive.py capacity
   hive.py base outpost|station
@@ -72,6 +85,8 @@ USAGE:
   hive.py tasks [--hours N]
   hive.py forecast [<Member>|all] [--hours N]
   hive.py refill
+  hive.py docs [<path|kind|owner>] [--section <id> [--history]] [--grep <word>]
+  hive.py changes [--since <ISO time>|<N>h] [--member <name>]
   hive.py briefing [<Member>|all] [--hours N]
   hive.py store [--hours N]
   hive.py store price <item id> [--hours N]
@@ -79,6 +94,7 @@ USAGE:
   hive.py empire
   hive.py surplus [--top N] [--kind <kind>] [--item <item id>] [--all]
   hive.py reserve
+  hive.py supply [show|check|duty]
   hive.py flow [<Member>|all] [--hours N]
   hive.py sql "<SELECT or WITH statement>" [--limit N]
   hive.py schema [<table or view>]
@@ -253,6 +269,7 @@ def show_fleet(root, data, now):
     print("FLEET | %s ships: %s at work, %s docked without work, %s adrift | credits %s (%s a ship) | read %s"
           % (totals.get("ships"), totals.get("working"), totals.get("parked"), totals.get("adrift"), num(totals.get("credits")), num(totals.get("credits_per_ship")),
              ago(fleet.get("updated_at"), now)))
+    print(treasury_line(data, totals.get("credits"), now))
     away = [a for a in fleet.get("away") or [] if isinstance(a, dict)]
     if away:                                                          # station/fleet.py rejoin: signed in again within minutes
         print("  AWAY | %d pilot(s) the engine holds signed out, not in the count above; the collector signs them in again by itself: %s"
@@ -269,6 +286,12 @@ def show_fleet(root, data, now):
             if w.get("transfers_moved_per_hour"):                     # station/fleet.py: gifts between our ships are neither income nor costs
                 left.append("gifts between our ships, %s an hour (%s of them name one side only and move no division)"
                             % (num(w.get("transfers_moved_per_hour")), num(w.get("transfers_unpaired_per_hour"))))
+            if w.get("treasury_moved_per_hour"):                      # station/fleet.py: a deposit moves money between two purses of ours
+                left.append("deposits into the faction's treasury, %s an hour (a move between two purses of ours, no cost)" % num(w.get("treasury_moved_per_hour")))
+            if w.get("gifts_unseen"):                                 # station/fleet.py matching: each side counts when its wallet was read
+                left.append("held out: %s cr of gifts not yet seen by their receivers" % num(w.get("gifts_unseen")))
+            if w.get("gifts_early"):
+                left.append("held out: %s cr of gifts their receivers showed in this window, given before it" % num(w.get("gifts_early")))
             if seed.get("pilots"):
                 left.append("the first wallets of %s new pilots, %s cr" % (seed.get("pilots"), num(seed.get("credits"))))
             gone = w.get("presence") or {}
@@ -281,10 +304,13 @@ def show_fleet(root, data, now):
     for label, seconds in (("1h", 3600), ("24h", 86400)):
         near = [r for r in once if isinstance(r, list) and len(r) == 4 and isinstance(r[0], (int, float)) and isinstance(r[3], (int, float)) and r[0] >= now - seconds
                 and r[2] != "Wallet top-up"]                    # wallet.py TITLE: half of a gift between our ships, no reward and no buy
+        kept = [-r[3] for r in near if str(r[2]).startswith(routefiles.TREASURY)]       # a deposit into the treasury: no buy either
+        near = [r for r in near if not str(r[2]).startswith(routefiles.TREASURY)]
         rows, tax = [r[3] for r in near if r[2] != "Weekly tax"], [-r[3] for r in near if r[2] == "Weekly tax"]
-        print("    money booked once, last %-3s: rewards %s in %d bookings | bought once (tools, goods for a mission) %s in %d buys%s"
+        print("    money booked once, last %-3s: rewards %s in %d bookings | bought once (tools, goods for a mission) %s in %d buys%s%s"
               % (label, num(sum(v for v in rows if v > 0)), sum(1 for v in rows if v > 0), num(-sum(v for v in rows if v < 0)), sum(1 for v in rows if v < 0),
-                 " | weekly tax %s from %d pilots (once a week; kept out of the steady money)" % (num(sum(tax)), len(tax)) if tax else ""))
+                 " | weekly tax %s from %d pilots (once a week; kept out of the steady money)" % (num(sum(tax)), len(tax)) if tax else "",
+                 " | into the faction's treasury %s in %d deposits (a move between two purses of ours)" % (num(sum(kept)), len(kept)) if kept else ""))
     hour = (windows.get("1h") or {}).get("divisions") or {}
     print("  %-10s %5s %8s %8s %12s %10s %10s %10s %10s %10s" % ("division", "ships", "at work", "docked", "credits", "net/h", "income/h", "costs/h", "metered/h", "gifts/h"))
     for name, row in sorted((totals.get("divisions") or {}).items()):
@@ -296,6 +322,20 @@ def show_fleet(root, data, now):
           " left out of its income and costs")
     print("  why ships are docked and what would give them work: fill.py (tool fill_status)")
     return 0
+
+
+def treasury_line(data, wallets, now):
+    """The faction's treasury beside the wallets (empire.py collect: data/empire/empire.json faction.treasury and its time),
+    and the fleet's money: wallets + treasury (Suggi, 2026-11-17: the treasury is the fleet's main purse)."""
+    state = read(Path(data) / "empire" / "empire.json", {})
+    faction = state.get("faction") if isinstance(state, dict) and isinstance(state.get("faction"), dict) else {}
+    money = faction.get("treasury")
+    if not isinstance(money, (int, float)) or isinstance(money, bool):
+        return "  TREASURY | not measured (no reading in %s: `empire.py collect` writes it) | fleet money = wallets %s + treasury not measured" % (
+            Path(data) / "empire" / "empire.json", num(wallets))
+    total = num(wallets + money) if isinstance(wallets, (int, float)) else "not measured"
+    return "  TREASURY | the faction's treasury %s cr (read %s by empire.py collect) | fleet money = wallets %s + treasury %s = %s cr" % (
+        num(money), ago(state.get("written_at"), now), num(wallets), num(money), total)
 
 
 def window_stats(rows, since):
@@ -1127,6 +1167,8 @@ def show_briefing(root, data, now, who, hours):
             print(done.stdout.rstrip())
         else:
             print("  not read: %s is missing" % comms)
+    import docs as writings                                         # Suggi, 2026-11-17: what changed in the written knowledge, not the whole files
+    writings.briefing(root, data, now, who)
     print("=== THE FLEET'S MONEY")
     show_fleet(root, data, now)
     print("=== MY STANDING FLEET")
@@ -1370,6 +1412,9 @@ def main():
         return show_history(data, now, float(value("--hours", "12")))
     if verb == "ship" and rest:
         return show_ship(data, now, " ".join(rest))
+    if verb == "gauges":                              # rule F9: firepower and toughness against the herds (gauges.py, its own usage)
+        import gauges                                 # here: only this verb needs it
+        return gauges.main(args[args.index(verb) + 1:] + ["--data", data])
     if verb == "levels":
         _kind, me = division.member()
         return show_levels(data, now, rest[0] if rest else (me if me in division.MEMBERS and me != "Unity" else "all"))
@@ -1390,6 +1435,9 @@ def main():
         return show_forecast(root, data, now, rest[0] if rest else "all", float(value("--hours", str(TURN))))
     if verb == "refill":
         return show_refill(root, data, now)
+    if verb in ("docs", "changes"):                                 # the fleet's written knowledge by section, from the store (docs.py)
+        import docs as writings
+        return writings.hive(verb, args, root, data, now)
     if verb == "briefing":
         _kind, me = division.member()
         return show_briefing(root, data, now, rest[0] if rest else (me if me in division.MEMBERS else "all"), float(value("--hours", str(TURN))))
@@ -1402,6 +1450,9 @@ def main():
         if verb == "reserve":
             return spare.show_reserve(found)
         return spare.show(found, int(value("--top", "15")), value("--kind", ""), value("--item", ""), "--all" in args)
+    if verb == "supply":                           # the supply chains (supply.py); hive.py only reads: --write is never handed on
+        import supply as chains
+        return chains.main([rest[0] if rest else "show", "--root", root, "--data", data])
     if verb == "flow":
         return show_flow(root, data, now, rest[0] if rest else "all", value("--hours", str(TURN)))
     if verb == "inventory":

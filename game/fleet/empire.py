@@ -5,12 +5,16 @@ WHAT: four verbs.
         collect   looks through the engine's gate with the leader's flagship, views only: the faction's `info` and
                   tax estimate, every facility and ship garage the faction owns with its rent, and, once per release
                   of the game's catalog, the game's own card of each faction facility type (what the catalog lacks:
-                  its rent per cycle). It joins the public list of stations and outposts (the command station's
-                  data: every base with its owner's tag), the chart, and the sites file, and writes
-                  <data>/empire/empire.json: faction, members, bases, facilities, territory, sites, ladder.
+                  its rent per cycle), and what the faction's storage holds at each place it stores (one storage
+                  `view` per place: each base of ours and each base with an office of the storage line). It joins
+                  the public list of stations and outposts (the command station's data: every base with its
+                  owner's tag), the chart, the sites file and our censuses (scouting/<system>.json: the base id
+                  and the place of each base), and writes <data>/empire/empire.json: faction, members, bases (base
+                  id and place), facilities, territory, sites, ladder, faction_storage (base, base_name, item,
+                  units, read_at; the fuel of a bunker as item `fuel`) and faction_storage_error.
         write     writes governance/empire.md from that file: the faction in figures, the bases and the territory,
                   the offices and their rent, the sites, and the ladder of what the faction can build
-        show      prints the same in plain lines (hive.py empire)
+        show      prints the same in plain lines (hive.py empire), with what each faction storage holds
         site      sets one line of game/map/sites.tsv and commits it by path as the member: a member proposes a
                   `candidate` (its own line it may write again), the Fleet Admiral sets `chosen` or `dropped` (rule
                   F33); `built` is read from the game, never set. The next collect puts it into the tables.
@@ -25,9 +29,13 @@ RULES:
     the chart and the public list of stations say about its system, and reads the site as `built` once a base of ours
     stands in that system. Suggi gives the direction of the expansion; the Fleet Admiral chooses the system.
   - A fact no reading holds is written `not read`, never filled in. The file is rewritten only when a fact changed.
+  - Faction storage: a place whose view fails keeps the rows of its last reading and its error is written in
+    `faction_storage_error`; a view without items is an empty place (no row). The fuel of a bunker is read from the
+    faction's info (`fuel_bunkers`, else `total_fuel_reserve` while one base holds the bunkers); no field: no row.
 WHY:  what we own and where stood in no file: the faction's limit was read by hand, the rent of an office was "not
       read yet" in an order, and a plan for a base had no list of what stands already (Suggi, 2026-11-16: "we need
-      to have scripts also where our bases and territories are, so we know our empire").
+      to have scripts also where our bases and territories are, so we know our empire"). What each faction storage
+      holds and where inside its system our outpost stands were read by hand (DECISIONS Q67 (2) and (3)).
 
 USAGE:
   empire.py collect [--ladder]     one reading, written to <data>/empire/empire.json (--ladder: read the cards again)
@@ -58,7 +66,11 @@ import division                                   # noqa: E402  who may run a co
 GATE = "http://172.30.0.32:7580"
 OPENER = urllib.request.build_opener(urllib.request.ProxyHandler({}))
 VIEWS = {("spacemolt_faction", "info"), ("spacemolt_faction", "tax_estimate"), ("spacemolt_faction", "garages"),
-         ("spacemolt_facility", "faction_owned"), ("spacemolt_facility", "types")}       # the only calls this script sends: each reads
+         ("spacemolt_facility", "faction_owned"), ("spacemolt_facility", "types"),
+         ("spacemolt_storage", "view")}            # the only calls this script sends: each reads (a storage view passes while the ship flies)
+BASE_ID = re.compile(r"[0-9a-f]{32}")             # the game's id of a base of a player faction (an outpost); an empire's station has a word id
+SYSTEM_ID = re.compile(r"[a-z0-9_]{1,60}")        # a system id that names a census file (scouting/<system>.json)
+STORES = ("lockbox", "storage")                   # a facility type that stores goods; the storage line's other tiers come from the ladder
 FILE = "governance/empire.md"
 SITES = "game/map/sites.tsv"
 ID = "20261116T192710Z"                           # the file's id: it stays when the file is rewritten
@@ -178,6 +190,100 @@ def ladder(data, pilot, see, old, force, pause):
     return rows, version
 
 
+def census_bases(data, systems):
+    """{base id: {poi, name, system}} of every base our censuses list in `systems`: scouting/<system>.json is a ship's
+    `get_system` of that system, each place with `base_id` and `base_name` where a base stands (an outpost is a place
+    of its own). Read from disk: no call to the game."""
+    out = {}
+    for system in sorted(s for s in systems if isinstance(s, str) and SYSTEM_ID.fullmatch(s)):
+        scan = read_json(Path(data) / "scouting" / (system + ".json"), {})
+        info = scan.get("system") if isinstance(scan, dict) and isinstance(scan.get("system"), dict) else {}
+        for p in info.get("pois") if isinstance(info.get("pois"), list) else []:
+            if isinstance(p, dict) and p.get("base_id") and p.get("id"):
+                out[str(p["base_id"])] = {"poi": str(p["id"]), "name": ascii_text(p.get("base_name") or p.get("name"), 60), "system": system}
+    return out
+
+
+def place_bases(bases, facilities, known):
+    """Our bases with the game's base id and their place: the census's base of the same name in the system, else the one
+    32-hex base id our facilities in that system name. A base neither gives keeps its name as id and no place."""
+    out = []
+    for b in bases:
+        hit = next((bid for bid, p in sorted(known.items()) if p["system"] == b["system"] and p["name"] == b["name"]), "")
+        if not hit:
+            ids = {f.get("base") for f in facilities if f.get("system") == b["system"] and BASE_ID.fullmatch(str(f.get("base") or ""))}
+            hit = ids.pop() if len(ids) == 1 else ""
+        out.append(dict(b, base=hit or b["base"], poi=(known.get(hit) or {}).get("poi", "") if hit else b.get("poi", "")))
+    return out
+
+
+def storage_places(bases, facilities, rungs):
+    """[(base id, name)] of every place where the faction stores: each base of ours whose id was read, then each base
+    with an office of the storage line (`lockbox` or `storage` in its type, or a type of the ladder's line
+    faction_storage). A facility names its base by id; its name is the base's own where we know it."""
+    line = {r.get("type") for r in rungs or [] if isinstance(r, dict) and r.get("line") == "faction_storage"}
+    out = {}
+    for b in bases or []:
+        if isinstance(b, dict) and b.get("base") and b.get("base") != b.get("name"):        # the name stands in while no id was read
+            out.setdefault(str(b["base"]), str(b.get("name") or b["base"]))
+    for f in facilities or []:
+        kind = str((f or {}).get("type") or "")
+        if isinstance(f, dict) and f.get("base") and (kind in line or any(word in kind for word in STORES)):
+            out.setdefault(str(f["base"]), str(f["base"]))
+    return list(out.items())
+
+
+def read_storage(pilot, see, places, old, pause, now=None):
+    """What the faction's storage holds at each place, one `view` each: (rows, errors). A row: {base, base_name, item,
+    units, read_at}. A place whose view fails keeps its rows of the last reading (`old`); a view without items is an
+    empty place. An item the answer files under another base is left to that base's own view."""
+    rows, errors, stamp = [], [], now_text(now)
+    kept = [r for r in old or [] if isinstance(r, dict) and r.get("item") != "fuel"]
+    for n, (base, name) in enumerate(places):
+        if n and pause:
+            time.sleep(pause)
+        found, why = see(pilot, "spacemolt_storage", "view", {"target": "faction", "station_id": base}) if pilot else (None, "no flagship of the Fleet Admiral")
+        items = found.get("items") if isinstance(found, dict) else None
+        empty = isinstance(found, dict) and (("items" in found and items is None) or "no items" in str(found.get("hint") or "").lower())
+        if not isinstance(items, list) and not empty:            # no answer, or one that is no storage view
+            errors.append("%s: %s" % (name, why or "no list `items` in the answer"))
+            rows += [r for r in kept if r.get("base") == base]
+            continue
+        got = {}
+        for i in items if isinstance(items, list) else []:
+            if not isinstance(i, dict) or not i.get("item_id") or str(i.get("base_id") or i.get("station_id") or base) != base:
+                continue
+            try:
+                units = int(i.get("quantity") or 0)            # the engine's storage rows: item_id, quantity (ledger.py)
+            except (TypeError, ValueError):
+                units = 0
+            if units > 0:
+                got[str(i["item_id"])] = got.get(str(i["item_id"]), 0) + units
+        rows += [{"base": base, "base_name": name, "item": item, "units": units, "read_at": stamp} for item, units in sorted(got.items())]
+    return rows, errors
+
+
+def fuel_rows(info, facilities, names, old, now=None):
+    """The fuel in our bunkers as faction storage rows (item `fuel`), from the faction's info: its list `fuel_bunkers`
+    (each bunker's `fuel_reserve`), else `total_fuel_reserve` while every bunker stands at one base. (rows, note): no
+    info keeps the last rows; a bunker no field reports gives no row and a note."""
+    if info is None:
+        return [r for r in old or [] if isinstance(r, dict) and r.get("item") == "fuel"], ""
+    bunkers = sorted({str(f.get("base")) for f in facilities if "fuel_bunker" in str(f.get("type") or "") and f.get("base")})
+    listed = info.get("fuel_bunkers")
+    listed = [dict(v, base_id=k) if isinstance(v, dict) else {"base_id": k, "fuel_reserve": v} for k, v in listed.items()] if isinstance(listed, dict) else listed
+    got, stamp = {}, now_text(now)
+    for b in listed if isinstance(listed, list) else []:
+        units = next((b[k] for k in ("fuel_reserve", "fuel", "reserve") if isinstance(b, dict) and isinstance(b.get(k), (int, float))), None)
+        base = next((str(b[k]) for k in ("base_id", "station_id", "base", "station") if isinstance(b, dict) and b.get(k)), bunkers[0] if len(bunkers) == 1 else "")
+        if base and units is not None:
+            got[base] = got.get(base, 0) + int(units)
+    if not got and isinstance(info.get("total_fuel_reserve"), (int, float)) and len(bunkers) == 1:
+        got[bunkers[0]] = int(info["total_fuel_reserve"])
+    note = "the fuel of the bunker(s) at %s not read: no field of the faction's info holds it" % ", ".join(bunkers) if bunkers and not got else ""
+    return [{"base": base, "base_name": names.get(base, base), "item": "fuel", "units": units, "read_at": stamp} for base, units in sorted(got.items())], note
+
+
 def collect(data, root, see=look, force=False, pause=0.5, now=None):
     """One reading of the empire; (the state, the lines to print). The state is what <data>/empire/empire.json holds."""
     old = read_json(Path(data) / "empire" / "empire.json", {})
@@ -216,6 +322,8 @@ def collect(data, root, see=look, force=False, pause=0.5, now=None):
                       for f in owned.get("facilities") or [] if isinstance(f, dict)]
         bill = owned.get("faction_rent") or {}
         rent = {"facilities": bill.get("facilities"), "per_cycle": bill.get("total_rent_per_cycle"), "per_day": bill.get("est_rent_per_day"), "arrears": bill.get("arrears")}
+    censused = census_bases(data, {b["system"] for b in bases} | {f.get("system") for f in facilities})      # base ids and places, from our censuses
+    bases = place_bases(bases, facilities, censused)
     garages, _why = see(pilot, "spacemolt_faction", "garages") if pilot else (None, "")
     tax, _why = see(pilot, "spacemolt_faction", "tax_estimate") if pilot else (None, "")
     territory, seen = [], set()
@@ -223,7 +331,7 @@ def collect(data, root, see=look, force=False, pause=0.5, now=None):
         if base["system"] and (base["system"], base["kind"]) not in seen:
             seen.add((base["system"], base["kind"]))
             territory.append({"system": base["system"], "claim": base["kind"], "note": base["name"]})
-    ours = {b["name"] for b in bases}
+    ours = {b["name"] for b in bases} | {b["base"] for b in bases}         # an office inside a base of ours names the base by its id
     for f in facilities:
         if f["system"] and f["base"] not in ours and (f["system"], "office") not in seen:
             seen.add((f["system"], "office"))
@@ -239,7 +347,19 @@ def collect(data, root, see=look, force=False, pause=0.5, now=None):
     rungs, version = ladder(data, pilot, see, old, force, pause)
     recruit = {r.get("type"): r.get("cap") for r in rungs if isinstance(r, dict) and r.get("line") == "faction_recruitment"}
     faction["members_limit"] = members_cap(facilities, recruit)        # the info's own members_limit is a page size
+    names = {bid: p["name"] for bid, p in censused.items()}
+    names.update({b["base"]: b["name"] for b in bases})
+    places = [(base, names.get(base, name)) for base, name in storage_places(bases, facilities, rungs)]
+    stored, errors = read_storage(pilot, see, places, old.get("faction_storage"), pause, now)
+    fuel, unread = fuel_rows(info, facilities, names, old.get("faction_storage"), now)
+    if errors:
+        notes.append("faction storage not read at %s: the last reading of each stays" % "; ".join(errors))
+    if unread:
+        notes.append(unread)
+    order = {base: n for n, (base, _name) in enumerate(places)}
+    stored = sorted(stored + fuel, key=lambda r: (order.get(r["base"], len(order)), r["base"], r["item"] == "fuel", r["item"]))
     state = {"written_at": now_text(now), "faction": faction, "members": members, "bases": bases, "facilities": facilities, "territory": territory, "sites": sites,
+             "faction_storage": stored, "faction_storage_error": "; ".join(errors), "faction_storage_places": [{"base": b, "base_name": n} for b, n in places],
              "rent": rent, "garages": {"stations": (garages or {}).get("station_count"), "ships": (garages or {}).get("total_ships")} if garages is not None else old.get("garages") or {},
              "tax": {k: (tax or {}).get(k) for k in ("domicile", "net_taxable_profit", "income_tax_total", "tax_prepaid")} if tax is not None else old.get("tax") or {},
              "relations": {"allies": [ascii_text(x, 30) for x in feed.get("allies") or []], "enemies": [ascii_text(x, 30) for x in feed.get("enemies") or []],
@@ -352,6 +472,28 @@ def body(text):
     return "\n".join(line for line in text.splitlines() if not line.startswith("Facts as of "))
 
 
+def show_storage(state):
+    """The block `FACTION STORAGE`: each place where the faction stores (the places the reading viewed) with its goods
+    (or `empty`), the fuel of a bunker among them; a reading from before this block existed says so."""
+    rows = [r for r in state.get("faction_storage") or [] if isinstance(r, dict) and r.get("base")]
+    places = [(str(p["base"]), str(p.get("base_name") or p["base"])) for p in state.get("faction_storage_places") or [] if isinstance(p, dict) and p.get("base")]
+    places = places or storage_places(state.get("bases"), state.get("facilities"), state.get("ladder"))
+    names = {b.get("base"): b.get("name") for b in state.get("bases") or [] if isinstance(b, dict)}
+    names.update({r["base"]: r.get("base_name") for r in rows if r.get("base_name")})
+    for r in rows:
+        if r["base"] not in dict(places):
+            places.append((r["base"], r["base"]))
+    if "faction_storage" not in state:
+        print("FACTION STORAGE | not read yet: the next `empire.py collect` reads it")
+        return
+    error = state.get("faction_storage_error") or ""
+    print("FACTION STORAGE | %d place(s) | read %s%s" % (len(places), state.get("written_at"), (" | NOT READ: %s (the last reading stays)" % error) if error else ""))
+    for base, name in places:
+        goods = sorted((r for r in rows if r["base"] == base), key=lambda r: (r.get("item") == "fuel", -(r.get("units") or 0), str(r.get("item"))))
+        label = names.get(base) or name
+        print("  %s%s: %s" % (label, " (%s)" % base if label != base else "", ", ".join("%s %s" % (num(r.get("units")), r.get("item")) for r in goods) or "empty"))
+
+
 def show(data):
     state = read_json(Path(data) / "empire" / "empire.json", {})
     if not state:
@@ -364,11 +506,13 @@ def show(data):
         print("  %-26s %s" % (key, value))
     print("  %-26s %s" % ("Treasury", num(f.get("treasury"), " cr") if isinstance(f.get("treasury"), (int, float)) else "no balance in the game's answer (it shows none while the treasury is empty)"))
     print("BASES | %d" % len(bases))
-    for row in bases:
-        print("  %s (%s) in %s, %s" % (row[0], row[1], row[2].strip("`"), row[3]))
+    for row, b in zip(bases, state.get("bases") or []):
+        where = "place %s, base id %s" % (b.get("poi"), b.get("base")) if b.get("poi") else "place not read (no census of ours lists it)"
+        print("  %s (%s) in %s, %s | %s" % (row[0], row[1], row[2].strip("`"), row[3], where))
     print("OFFICES | %d" % len(offices))
     for row in offices:
         print("  %s tier %s at %s (%s), %s, rent %s per cycle" % (row[0], row[1], row[2], row[3].strip("`"), row[4], row[5]))
+    show_storage(state)
     print("SITES | %d proposed (where a base is built is Suggi's decision)" % len(sites))
     for row in sites:
         print("  %s (%s): %s space, %s jumps from home, stations there: %s | %s, by %s | %s" % (row[0].strip("`"), row[1], row[2], row[3], row[4], row[5], row[6], row[7]))
@@ -458,8 +602,9 @@ def main():
         state, notes = collect(data, root, force="--ladder" in args)
         save(data, state)
         f = state["faction"]
-        print("empire: read %s | members %s of %s | bases %d | offices %d | sites %d | ladder %d types of catalog %s" % (
-            state["written_at"], num(f.get("member_count")), num(f.get("members_limit")), len(state["bases"]), len(state["facilities"]), len(state["sites"]), len(state["ladder"]), state["ladder_of"] or "none"))
+        print("empire: read %s | members %s of %s | bases %d | offices %d | faction storage %d rows | sites %d | ladder %d types of catalog %s" % (
+            state["written_at"], num(f.get("member_count")), num(f.get("members_limit")), len(state["bases"]), len(state["facilities"]), len(state["faction_storage"]),
+            len(state["sites"]), len(state["ladder"]), state["ladder_of"] or "none"))
         for note in notes:
             print("  NOTE %s" % note)
         return 0

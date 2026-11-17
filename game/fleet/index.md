@@ -8,7 +8,7 @@ author: Unity
 # index.md -- The Fleet's Scripts
 
 Built by `python3 -B scripts/fleet-index.py` from the docstring of every script in this
-folder; never edited by hand. Scripts listed: 31.
+folder; never edited by hand. Scripts listed: 34.
 
 - Run a script from the repository root: `python3 -I -B game/fleet/<script> <arguments>`,
   the arguments as listed under "How to Call Each".
@@ -34,10 +34,12 @@ folder; never edited by hand. Scripts listed: 31.
 | `craftbook.py` | Answer what can be made, fitted and built: a recipe, everything a thing takes, and what our stored goods can become. | By hand |
 | `dispatch.py` | Keep every pilot at work: give each free pilot the next task of its role. | Service |
 | `division.py` | Who commands which ship, whose plan is whose, and the check every fleet script runs before it drives a ship. | By hand |
+| `docs.py` | The fleet's written knowledge by section in the store: the rulebook rule by rule, the orders in force block by block, the strategy, the empire, the guidebooks with their class cards and levelling guides, the route templates and the game's rules, each section with every version it had. | By hand |
 | `empire.py` | Keep the picture of our empire: the faction and its limit, the bases and offices we own, the systems they stand in, the sites we may build on, and what the faction can build next. | By hand |
 | `fill.py` | Keep every ship of a division at work: say why ships wait, and fill the plan with the work that stands open. | By hand |
 | `fleetfile.py` | Write the roster into a member's own FLEET.md: one table, every ship of the member on one line with its kind, its hull and the task it is on now. | By hand |
 | `gate.py` | Small client for the fleet engine's gate, with the division's lock. | By hand |
+| `gauges.py` | What a ship or a side of ours can hunt: its firepower and its toughness against a creature (rule F9). | By hand |
 | `guard.py` | Keep one pilot at the place where another route's ship of ours works, for as long as that ship works there. | Runner (`guard` routes) |
 | `hive.py` | The fleet's figures from its own readings: money, routes and their history, levels, what the work carries, what a base takes, a system. | By hand |
 | `hunt.py` | Hunt grazers at one place, loot the carcasses and sell what the kills bring. | Runner (`hunt` routes) |
@@ -55,6 +57,7 @@ folder; never edited by hand. Scripts listed: 31.
 | `sight.py` | What our ships see where they are: the pilots they meet, and a first read of a system nobody read. | Service |
 | `stash.py` | Store what a docked pilot carries in its own storage at that station, so that its hold is free for the next route. | By hand |
 | `store.py` | Keeps the fleet's history and its current state in one SQLite file: the runs, the price moves and the census readings with their sums by hour and by day, the members' own observations, and beside them what the fleet's own files say now. | Service |
+| `supply.py` | The supply chains: the goods the fleet must never run out of, each at its place against what stands there now, with the ships on duty for it. | By hand |
 | `surplus.py` | Say per item what the fleet holds beyond what its build targets reserve: the surplus a trader may sell, where it lies and its best bid. | By hand |
 | `taxes.py` | Keeps each pilot's weekly tax apart, so that no run and no hour reads it as a loss. | By hand |
 | `wallet.py` | No ship of ours goes broke: a ship whose wallet runs low is given credits by a rich ship of its division. | By hand |
@@ -163,6 +166,19 @@ division.py plan [<role>]       the plans in force: per role, who keeps it and i
 --data <dir>                    the unit's data folder (default /srv/collective/data)
 ```
 
+### `docs.py`
+
+The fleet's written knowledge by section in the store: the rulebook rule by rule, the
+orders in force block by block, the strategy, the empire, the guidebooks with their
+class cards and levelling guides, the route templates and the game's rules, each section
+with every version it had.
+
+Run by hand.
+
+```
+docs.py parse <file>      the sections of one file as the store loads them: id, characters, title
+```
+
 ### `empire.py`
 
 Keep the picture of our empire: the faction and its limit, the bases and offices we own,
@@ -234,6 +250,22 @@ gate.py hold <pilot>
 gate.py release <pilot>
 ```
 
+### `gauges.py`
+
+What a ship or a side of ours can hunt: its firepower and its toughness against a
+creature (rule F9).
+
+Run by hand.
+
+```
+gauges.py ship <pilot>...             each ship: its weapons, skills, firepower and toughness, what it kills and stands
+gauges.py side <pilot>...             the pilots as one side: its gauges and the species of our readings it passes
+gauges.py species [--role <role>]     every species seen: hull, weight, whether one typical ship of the role passes
+                                      both gauges, the smallest group that does (default: drone, the hunting role;
+                                      `--role all`: the whole fleet's typical ship)
+--data <dir>                          the unit's data folder (default /srv/collective/data)
+```
+
 ### `guard.py`
 
 Keep one pilot at the place where another route's ship of ours works, for as long as
@@ -260,6 +292,7 @@ hive.py routes [--group once|paying|test|fit|service|losing|off] [--kind <kind>]
 hive.py route <route id>
 hive.py history [--hours N]
 hive.py ship <pilot>
+hive.py gauges ship <pilot>... | side <pilot>... | species [--role <role>]
 hive.py levels [<Member>|all]
 hive.py capacity
 hive.py base outpost|station
@@ -269,6 +302,8 @@ hive.py standing [<Member>|<role>|all] [--hours N]
 hive.py tasks [--hours N]
 hive.py forecast [<Member>|all] [--hours N]
 hive.py refill
+hive.py docs [<path|kind|owner>] [--section <id> [--history]] [--grep <word>]
+hive.py changes [--since <ISO time>|<N>h] [--member <name>]
 hive.py briefing [<Member>|all] [--hours N]
 hive.py store [--hours N]
 hive.py store price <item id> [--hours N]
@@ -276,6 +311,7 @@ hive.py inventory [stations] [--item <item id>] [--top N]
 hive.py empire
 hive.py surplus [--top N] [--kind <kind>] [--item <item id>] [--all]
 hive.py reserve
+hive.py supply [show|check|duty]
 hive.py flow [<Member>|all] [--hours N]
 hive.py sql "<SELECT or WITH statement>" [--limit N]
 hive.py schema [<table or view>]
@@ -440,7 +476,7 @@ Check the route files, write their index, and attach what the runs measured.
 Run by hand.
 
 ```
-routes.py check | index | measure                [--root <dir>] [--data <dir>]
+routes.py check | index | measure | idle         [--root <dir>] [--data <dir>]
 routes.py measure --write <route id>... | --role <role> | --all
                   writes the measured block of the routes named, of a role's plan, or of every route (the hourly
                   job); without one of the three it writes nothing and says so
@@ -504,6 +540,22 @@ store.py status                 from the read copy: rows and newest row of each 
 --keep-days N                   days of raw rows kept (default 7; observations at least 30: KEEP_TABLES)
 ```
 
+### `supply.py`
+
+The supply chains: the goods the fleet must never run out of, each at its place against
+what stands there now, with the ships on duty for it.
+
+Run by hand.
+
+```
+supply.py [show]              every chain: status, stock, keep, need/h, 24 h change, sources, ships on them
+supply.py check               the gate: one line per short chain, broken row or unknown id; exit 1 on any
+supply.py duty [--dry-run]    what duty would change: sources to put into the keepers' plans, ends due
+supply.py duty --write        make that change (refused while DUTY_ENABLED is False)
+--root <dir>   the repository's game/ folder (default: the parent of this file's folder)
+--data <dir>   the unit's data folder (default /srv/collective/data)
+```
+
 ### `surplus.py`
 
 Say per item what the fleet holds beyond what its build targets reserve: the surplus a
@@ -543,5 +595,6 @@ Run by hand.
 ```
 wallet.py [check]            every wallet against the floors; HALT for a pilot under 3,000 cr
 wallet.py topup [--dry-run]  give each pilot under LOW credits up to TARGET from a rich ship of its division
+wallet.py sweep [--dry-run]  the part above KEEP_SHIP of the richest ships to the leader, the leader's into the treasury
 --data <dir>                 the unit's data folder (default: the fleet's)
 ```

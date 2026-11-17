@@ -329,6 +329,16 @@ TOOLS = {
                 "longer drive: a held ship earns nothing.",
         "args": {"pilot": arg(S, "the pilot's name"), "release": arg(B, "true: give it back to the dispatcher")}, "required": ["pilot"],
         "plan": lambda a: [("game/fleet/gate.py", ["release" if a.get("release") else "hold", a["pilot"]])], "door": True},
+    "supply": {
+        "text": "The supply chains: the goods the fleet must never run out of (iron, fuel for our outpost's bunker, later food and power), each at its "
+                "place (game/supply/chains.tsv, kept by the Fleet Admiral with Logistics), against what stands there now. view=show: every chain with "
+                "its status (short: below keep, low: below twice keep, ok, broken: a row of the file that does not count), stock, keep, need per hour, "
+                "the change over 24 hours, its source routes with our ships on them now and how many stand in a plan. view=check: the gate, one "
+                "line per short chain, broken row or unknown id, HALT or PASS. view=duty: for each short chain the source routes its keeper's plan "
+                "does not hold yet and the change that would put them in; read only here. The same rows in SQL: the tool sql, view supply_status.",
+        "args": {"view": arg(S, "show (default), check or duty", ("show", "check", "duty"))},
+        "plan": lambda a: [("game/fleet/supply.py", [a.get("view") or "show"])] if (a.get("view") or "show") in ("show", "check", "duty")
+                          else need(a, "view: show, check or duty")},
     "sql": {
         "text": "Ask the fleet's one database in SQL, read-only: one SELECT over what the fleet knows now and what it measured (ships and where they are, holdings, order "
                 "books, the game's catalog with recipes and facilities, the map, stations, factions, our empire, routes, plans, every run, prices and field readings "
@@ -339,6 +349,24 @@ TOOLS = {
                  "table": arg(S, "instead of a query: a table's or view's name for its columns and examples; all (default) lists every table and view"),
                  "limit": arg(I, "for a query: rows at most")},
         "plan": sql_plan},
+    "docs": {
+        "text": "The fleet's written knowledge by section, from the database (the store mirrors the repository every minute and keeps every version): "
+                "the rulebook rule by rule (F1 to F35), the orders in force block by block (S, G, D and P lines, each member's block), strategy, empire, "
+                "each division's guidebook (its class card: ships, and skills in levelling order; levelling guide; ships and fits) and templates, the "
+                "game's rules row by row. view=list: the files, or one file's sections by title (doc: a file, a kind or an owner; grep: the sections "
+                "that hold a word, whole). view=section: one section whole. view=changes: the sections changed since your last turn (or since). "
+                "view=history: every version of one section with when it was first seen, each against the one before.",
+        "args": {"view": arg(S, "list (default), section, changes or history", ("list", "section", "changes", "history")),
+                 "doc": arg(S, "for list, section and history: a file (governance/rulebook.md, guidebook/mining.md, orders.log), a kind (rulebook, "
+                              "orders, strategy, empire, guidebook, template, rules) or an owner (Fleet, Unity, Mining, Trade, Logistics, Military, Intel, Command)"),
+                 "section": arg(S, "for section and history: the section's id, e.g. F8, D3, zero, class-card/skills"),
+                 "grep": arg(S, "for list: only the sections that hold this word, printed whole"),
+                 "since": arg(S, "for changes: a UTC time (2026-11-17T12:00Z) or hours back (6h); default: your last turn"),
+                 "member": arg(S, "for changes: whose last turn; default: yours", division.MEMBERS)},
+        "plan": lambda a: [("game/fleet/hive.py", ["changes"] + flag(a, "since") + flag(a, "member"))] if a.get("view") == "changes" else
+                          (need(a, "section") if a.get("view") in ("section", "history") else None) or
+                          [("game/fleet/hive.py", ["docs"] + ([str(a["doc"])] if a.get("doc") else []) + flag(a, "section") + flag(a, "grep")
+                            + (["--history"] if a.get("view") == "history" else []))]},
     "hive": {
         "text": "Any verb of game/fleet/hive.py by name, with its arguments as a list: the way to a figure added after this tool list was loaded. verb=help prints "
                 "what exists now.",
