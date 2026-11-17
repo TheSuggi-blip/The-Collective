@@ -79,7 +79,8 @@ Planned:
 
 | What | When |
 |---|---|
-| Goal: circuit boards held by Logistics and the flagship 101 or more (56 at 03:45 UTC; 45 from craft-boards-node-beta), read at the next turn | next turn |
-| Read the first RESULT lines of craft-boards-node-beta and of the any-role steel routes; switch the steel recipe to refine_steel if the Fleet Admiral rules for it (requests.log ENT-200) | next turn |
-| A board route at Central Nexus for the 43 silicon stored there, carbon bought at Node Beta | next turn |
-| One Prayer freighter bought and flown on a carry, inside rule F12 | when a carry with a standing bid needs the hold |
+| Goal: the Lockbox at The Experiment stands (the builder holds 200 steel plate and 50 circuit boards in its storage there by 09:30 UTC, the Fleet Admiral builds), read at the next turn | next turn |
+| Goal: circuit boards held by Logistics for the two offices 66 or more of 125 (1 after the Lockbox; 65 from craft-boards-silicon-central-nexus), read at the next turn | next turn |
+| Switch outpost-kit-ironlight-to-experiment on when the Fleet Admiral names the site and gives the credits, with a guard of Military on the loaded road | when the site is chosen |
+| Read the default stance of every hauler (set_stance.py) and the first RESULT line of craft-boards-silicon-central-nexus | next turn |
+| One Ledger or Prayer freighter quoted and flown on a carry, inside rule F12 | when a carry with a standing bid needs the hold |
