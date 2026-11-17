@@ -153,7 +153,7 @@ def survey(root, data, now=None):
     named = dispatch.flagships(data)
     ammo = set(dispatch.read_json(Path(data) / "catalog" / "ammo.json", []) or [])
     fleet = dispatch.read_json(Path(data) / "fleet" / "fleet.json", {})
-    blank = lambda: {"ships": 0, "work": [], "hand": [], "away": [], "starting": [], "waiting": [], "standing": [], "next": [], "reasons": {}}
+    blank = lambda: {"ships": 0, "work": [], "hand": [], "away": [], "starting": [], "waiting": [], "standing": [], "next": [], "park": [], "reasons": {}}
     crews = {role: blank() for role in roles}
     played = dict(state["orders"])                     # the orders as they stand after the dispatcher's next pass
     for ship in fleet.get("ships") or [] if isinstance(fleet, dict) else []:
@@ -167,6 +167,8 @@ def survey(root, data, now=None):
         elif what:
             crew["hand" if what.startswith("hand ") else "work"].append(name)
             flown = routes.get(what.split(" ", 1)[1]) if " " in what and not what.startswith("hand ") else None
+            if flown and flown.get("park"):
+                crew.setdefault("park", []).append(name)             # at work by its order, yet on the route no ship should reach (rule F8)
             if flown and routefiles.standing(flown) and not flown.get("park"):      # free for paying work and tests when its run ends
                 pilot = dict(dispatch.pilot_of(ship, named, data, ammo), docked=True, goods=0)
                 for rid in own.get(name) or roles.get(role) or []:
@@ -377,7 +379,7 @@ def read_role(seen, role, floor=500, tests=8):
     seen["taken"] = {name: what for name, what in state["orders"].items() if name not in seen["played"]}
     return {"role": role, "owner": seen["owners"].get(role) or division.ROLES.get(role, "?"), "ships": crew["ships"], "work": crew["work"], "hand": crew["hand"],
             "away": crew["away"], "starting": starting, "waiting": [p["name"] for p in waiting], "standing": [p["name"] for p in crew.get("standing") or []],
-            "next": list(crew.get("next") or []),
+            "next": list(crew.get("next") or []), "park": list(crew.get("park") or []),
             "idle": [p["name"] for p in left if p in waiting], "plan": rows,
             "paying": paying, "tests": found, "closed": closed, "by_hand": sorted(by_hand, reverse=True)}
 
@@ -423,10 +425,13 @@ def raise_cap(root, data, who, rid, ships, stamp):
 def verdict(seen, got):
     """(True for PASS, the line). No ship is idle (Suggi, 2026-11-16): PASS only when no ship of the role waits."""
     waiting, places, tests = len(got["waiting"]), sum(len(p) for _r, _v, p in got["paying"]), len(got["tests"])
+    parked = got.get("park") or []
     if not waiting:
         return True, "PASS: no ship of %s waits" % got["role"] + (
             " | %d places of paying work and %d tests stand open to its ships on standing work: python3 -I -B game/fleet/fill.py fill %s --write"
-            % (places, tests, got["role"]) if places or tests else "")
+            % (places, tests, got["role"]) if places or tests else "") + (
+            " | %d on park, the route no ship should reach (rule F8; Apollo's report of 2026-11-17): %s; `fill.py status %s` says what closes the rest"
+            % (len(parked), ", ".join(parked[:4]) + (" ..." if len(parked) > 4 else ""), got["role"]) if parked else "")
     if places or tests:
         return False, ("HALT: %d ships of %s wait while %d places of paying work and %d tests stand open: python3 -I -B game/fleet/fill.py fill %s --write"
                        % (waiting, got["role"], places, tests, got["role"]))

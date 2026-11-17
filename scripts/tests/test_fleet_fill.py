@@ -265,6 +265,20 @@ class WriteTests(Tree):
         self.assertEqual(sorted(ids.index("gather") > ids.index(rid) for ids in lists.values() for rid in ("freight", "trade-x") if rid in ids), [True, True])   # before its standing work
         self.assertEqual(self.run_fill("apollo", "check").stdout, "PASS: no ship of hauler waits\n")
 
+    def test_the_gate_names_the_ships_that_stand_on_park(self):
+        # Apollo's report of 2026-11-17: the gate read PASS while a hauler parked; park is the route no ship should reach (rule F8)
+        self.commit_route({"id": "gather", "kind": "mine", "title": "t", "belt": "far:rocks", "station": "home:core:base", "standing": True, "max_ships": 5})
+        self.assertIn("committed", self.run_fill("apollo", "add", "gather").stdout)
+        orders = self.data / "fleet" / "orders"
+        for name, what in (("hauler-1", "circuit park"), ("hauler-2", "mine gather"), ("hauler-3", "mine gather")):
+            (orders / (name + ".json")).write_text(json.dumps({"pilot": name, "what": what, "since": "2026-11-16T10:00:00Z"}))
+        seen, got = self.read("hauler")
+        self.assertEqual(got["park"], ["hauler-1"])
+        passed, line = self.fill.verdict(seen, got)
+        self.assertTrue(passed)                                                                      # at work by its order: no HALT
+        self.assertIn("1 on park, the route no ship should reach", line)
+        self.assertIn("hauler-1", line)
+
     def test_standing_work_that_is_full_while_ships_wait_is_lifted_as_far_as_its_field_carries(self):
         # 2026-11-16: the gate said HALT three times until a shared gather route was lifted by hand; its field held tens of thousands above its floor
         self.commit_route({"id": "gather", "kind": "mine", "title": "t", "belt": "far:rocks", "station": "home:core:base", "standing": True, "max_ships": 1,
