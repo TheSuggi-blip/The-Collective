@@ -2,12 +2,12 @@
  "id": "mission-deep-core-prospecting-nova-terra",
  "kind": "circuit",
  "title": "Deep Core Prospecting: 5,000 cr, 10 exotic matter and deep core mining XP; 20 platinum ore mined at Markab Belt, accepted and handed in at Nova Terra Central",
- "note": "Foreman Voss on the boards of Nova Terra Central, Node Alpha, Node Beta, Node Gamma, Synchrony and The Experiment (data/missions, read 2026-11-17): mine 20 platinum ore, 5,000 cr, 10 exotic matter, deep_core_mining 25 XP, mining 15 (rule F34; orders ENT-036, task 2). Markab Belt (Solarian space, 2 jumps from Nova Terra by Epsilon Eridani) read 503 platinum of 8,000 among rhodium 309, vanadium 260, carbon 161, gold 158, tungsten 151 at 2026-11-17 07:51 UTC (table fields); the only other platinum we read is GSC-0049's reef (20) and Acubens Belt (2). A test with one ship and an empty hold (rule F12): whether the board offers it to a miner, how many loads 20 platinum take, whether it pays again for the same pilot. Written 2026-11-17 11:10 UTC.",
+ "note": "Foreman Voss on the boards of Nova Terra Central, Node Alpha, Node Beta, Node Gamma, Synchrony and The Experiment (data/missions, read 2026-11-17): mine 20 platinum ore, 5,000 cr, 10 exotic matter, deep_core_mining 25 XP, mining 15 (rule F34; orders ENT-036, task 2). Markab Belt (Solarian space, 2 jumps from Nova Terra by Epsilon Eridani) read 503 platinum of 8,000 among rhodium 309, vanadium 260, carbon 161, gold 158, tungsten 151 at 2026-11-17 07:51 UTC (table fields); the only other platinum we read is GSC-0049's reef (20) and Acubens Belt (2). A test with one ship and an empty hold (rule F12): whether the board offers it to a miner, how many loads 20 platinum take, whether it pays again for the same pilot. Written 2026-11-17 11:10 UTC. 2026-11-17 15:06 UTC (Zero): the first run held: accepted, 20 platinum mined at Markab Belt in one load, handed in at Nova Terra Central, +5,000 cr once and +4,370 cr over the run of 65.7 minutes (data/routes/runs.jsonl, started 11:20 UTC). max_ships 1 -> 4 and max_pilots 16: Markab Belt read 503 platinum at 07:51 UTC before our test took 20, and two prospectors of other factions mine there (table met, 12:22 UTC); 16 pilots take about 320. Orders ENT-037, block ZERO (3).",
  "once": true,
  "requires": {
   "empty_hold": true
  },
- "max_ships": 1,
+ "max_ships": 4,
  "one_time": [
   "Deep Core Prospecting"
  ],
@@ -50,5 +50,6 @@
   "minutes": 66,
   "credits_per_run": 4370,
   "cph_per_ship": 3990
- }
+ },
+ "max_pilots": 16
 }

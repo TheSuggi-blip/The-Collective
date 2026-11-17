@@ -2,11 +2,11 @@
  "id": "mine-dheneb-cryobelt",
  "kind": "mine",
  "title": "Dheneb Cryobelt: water_ice, nitrogen_ice, helium_ice, methane_ice; sold at Hex Star",
- "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 728 cr per ship-hour, not a measurement. A test: one ship. Added as a test by fill.py on 2026-11-17 11:14 UTC (Zero): one ship until its first RESULT line is read.",
+ "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 728 cr per ship-hour, not a measurement. A test: one ship. Added as a test by fill.py on 2026-11-17 11:14 UTC (Zero): one ship until its first RESULT line is read. 2026-11-17 15:06 UTC (Zero): the test held: 4 runs, 960 cr per ship-hour over 12 hours, methane sold at Hex Star (36 cr x 916 at 14:55 UTC, 20 to 27 units a run). max_ships 1 -> 2.",
  "belt": "dheneb:dheneb_cryobelt",
  "station": "dheneb:98eba8b1a7ad0520d6a7c8ea44b2d6aa:b495c6003fc83e18f6d8cecbe6929133",
  "minutes": 39,
- "max_ships": 1,
+ "max_ships": 2,
  "sell": [
   {
    "item": "methane_ice",
