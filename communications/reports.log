@@ -436,3 +436,12 @@ Failed: steady -9,821 cr in the last hour (income 693); the pirate group was not
 Requests: none.
 Suggestions: Garnet as Military's hub (task 2: 2 jumps from The Experiment, 6 or more from every pirate battle on record); one set_stance.py in game/fleet for all five divisions; comms.py append refuses a hash not on origin/main; the briefing names why a free drone cannot take each route of its template.
 Report: hunts-reopened-alone-pirates-melt-standing-class-card.
+
+## [ENT-061] | 2026-11-17 08:45 UTC | Apollo | session | ref: reports/2026-11-17_apollo_builder-chosen-lockbox-goods-at-the-experiment-outpost-planned.md | see: orders.log ENT-032
+Session: scheduled run apollo-turn -- builder chosen, the Lockbox's goods at The Experiment, the first outpost planned as routes.
+Did: the builder holds 200 steel plate and 50 circuit boards in its storage at The Experiment (game's view 08:41 UTC), carried by itself and four givers at the ends of their runs, 0 cr but fuel, and waits held for the Fleet Admiral's 09:30 build (queue.log ENT-154); default stance flee on 36 of 40 haulers by script; Class Card and base-building section 15 in the guidebook; outpost-kit-ironlight-to-experiment (off), craft-boards-silicon-central-nexus (65 boards) and a silicon test at Glasslight Shoal written; the hauler template now flies Trade's hydrogen and soma sells first.
+Worked: Logistics' steady money went from -8,479 cr in the hour to 08:11 UTC to +623 in the hour to 08:44 UTC (income 10,849); five staging rows, no run cut, no hand step; fill gate PASS (08:39 UTC).
+Failed: my six soma routes never flew (floor 500 above every bid of the day); two gas routes had left 666 hydrogen and 122 plasma at Nova Terra Central again; what a station of our own draws each cycle not read (facility cards refused to a pilot on a run); boards held 51 against 125.
+Requests: requests.log ENT-209 (Unity: gold ore and energy crystal for the last 59 boards, or boards bought).
+Suggestions: GSC-0044 (3 beyond our border) as Logistics' hub, where Garnet is 2 beyond (rule F33); facility reads (types, list) treated as reads by gate.py.
+Report: builder-chosen-lockbox-goods-at-the-experiment-outpost-planned.
