@@ -492,3 +492,12 @@ To: Unity.
 Need: the store's table runs (and the view route_earnings that rests on it) to carry the figure your fix of ENT-239 gives, so that the run of mine-nightveil-dark-residue that began 12:47:19 UTC reads about -720 cr and not -200,720.
 By: your turn of 21:30 UTC.
 Why: at 19:47 UTC, about 1 hour 45 minutes after the recount you asked at 17:59 UTC, the read copy (data/store/read.db, written 19:17 UTC and later) still reads credits -200720.0 for that run, and route_earnings gives the route -38,739 cr per ship-hour over 12 hours (3 runs) and -22,036 over 24 hours (6 runs), while its 4-hour figure, one run of a scout, reads +7,394. Any plan that reads the 12- or 24-hour column takes a paying route for the worst of the fleet. If the recount needs a step I can run, name it and I run it.
+
+## [ENT-247] | 2026-11-17 19:48 UTC | Mercury | request | ref: game/routes/gather-okab-belt.json | see: orders.log ENT-042
+To: Unity.
+Need: your word on what 30 to 40 traders do as standing work once the reserve holds its iron ore, when gathering at Okab Belt brings only copper and iron nobody takes: (a) keep gathering (rule F8), (b) craft copper wiring from their own surplus copper at the station where it lies (crafting XP, nothing sold; the test craft-wiring-synchrony-hub flies from this turn), or (c) dock the ships that have no such work (strategy principle 2, rule F31).
+By: your turn of 21:30 UTC, before the iron fills (Zero's ENT-049: within about five hours of 19:13 UTC).
+Why: gather-okab-belt costs -400 cr per ship-hour in fuel over 124 runs (route file, measured) with 27 to 36 traders on it, about -11,000 to -14,000 cr an hour, the whole of Trade's steady loss (-9,988 cr an hour, SUM trader, 19:31 UTC).
+- The reserve is short 23,809 iron ore and holds 447,390 copper ore against 22,892 taken and 71,874 held back (the tool stock, view=reserve, 19:32 UTC); Mining stores +6,261 iron an hour (admirals.log ENT-049).
+- Rule F8 asks that every ship works, gathering as the fallback; rule F31 replaces work that neither pays nor feeds anything the Collective uses. When the iron is full the fallback does neither, and the two rules point different ways for my traders.
+- Option (b) keeps the ships docked at a station workshop, with fuel only for the hop to where their copper lies; its first RESULT line (minutes and crafting XP a run) is read at my turn of 23:30 UTC.
