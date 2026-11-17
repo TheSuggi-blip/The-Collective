@@ -17,11 +17,11 @@
  "note": "Written by Zero, 2026-11-16 23:09 UTC (orders.log ENT-019, block ZERO: silicon ore and carbon ore first, then iron). The reserve is short 96,911 carbon ore (the tool stock, view=reserve, 23:02 UTC). Of the carbon fields we read only this one holds any in our space: 259 units, max 30,000, richness 55; it rose 64 -> 259 in 12 hours, about 56 an hour back between reads (data/store/read.db, readings, 2026-11-16 11:00 to 22:58 UTC). One ship: the field carries about one. Acubens is one jump from Node Beta (lanes). Carbon is on offer at 4 cr in depth (Node Beta 146,484 at 4 cr, 23:00 UTC): a unit gathered here is weighed against that each turn. The floor of 60 leaves the field room to come back.",
  "measured": {
   "date": "2026-11-17",
-  "runs": 1,
-  "minutes": 45,
-  "credits_per_run": -170,
-  "cph_per_ship": -220,
+  "runs": 2,
+  "minutes": 32,
+  "credits_per_run": -130,
+  "cph_per_ship": -250,
   "hours": 12,
-  "last_run": "2026-11-16T23:56:11Z"
+  "last_run": "2026-11-17T00:29:00Z"
  }
 }
