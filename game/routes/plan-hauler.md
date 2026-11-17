@@ -85,8 +85,8 @@ Planned:
 
 | What | When |
 |---|---|
-| Goal: the Lockbox at The Experiment stands (the builder holds 200 steel plate and 50 circuit boards in its storage there by 09:30 UTC, the Fleet Admiral builds), read at the next turn | next turn |
-| Goal: circuit boards held by Logistics for the two offices 66 or more of 125 (1 after the Lockbox; 65 from craft-boards-silicon-central-nexus), read at the next turn | next turn |
-| Switch outpost-kit-ironlight-to-experiment on when the Fleet Admiral names the site and gives the credits, with a guard of Military on the loaded road | when the site is chosen |
-| Read the default stance of every hauler (set_stance.py) and the first RESULT line of craft-boards-silicon-central-nexus | next turn |
+| Goal: the Hiring Board at Node Beta done and the faction's cap read at 50; 100 circuit boards held for the Recruitment Desk (40 at Node Beta, 60 gold boards at The Experiment), read at the next turn | next turn |
+| Switch outpost-kit-ironlight-to-experiment on at the ceiling the Fleet Admiral names (requests.log ENT-218), write the hour in admirals.log for Military; then base_cost at GSC-0044 and deploy_outpost by hand once | on her word |
+| Read the first RESULT lines of mission-workshop-production-run-node-beta and craft-boards-gold-experiment; lift the mission to every hauler that stores iron at Node Beta if it paid | next turn |
+| An accept by mission id in route_run.py (fleet-build.sh) for the Shipyard Supply missions, one ship and one unit first | next turn |
 | One Ledger or Prayer freighter quoted and flown on a carry, inside rule F12 | when a carry with a standing bid needs the hold |
