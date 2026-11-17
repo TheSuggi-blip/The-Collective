@@ -91,11 +91,11 @@ Planned:
 
 | What | When |
 |---|---|
-| Goal of the turn of 19:15 UTC, read at about 23:15 UTC: every system of census-north and census-south read once at least (their rows), the outpost watch's longest gap under 60 minutes (WATCH line), scanning XP gained by the five scanner readers, exploration's median 3 held and the first scout at 4 | next turn |
-| Read the first rows of census-north and census-south (reads an hour, fuel, pirates met) and name the site candidates again on fresh reads | next turn |
-| A Mining Survey Probe (180 cr) with the scanner scout at Homam: does +30 survey power resolve the faint signature | next turn |
+| Goal of the turn of 23:15 UTC, read at about 03:15 UTC: every system of the three roads read at least once (census-north 31, census-east 17, census-south 19; the north road Atria to Yildun twice), WATCH longest gap under 60 minutes, the places our routes use read twice (37 of 38 at 23:30 UTC) | next turn |
+| Name the site candidates of the three roads again on fresh reads: north Atria and Yildun, east Oakridge or Miaplacidus then Tidewater or Ross 154, southeast GSC-0035 then Fomalhaut or Yed Posterior | next turn |
+| Build a probe step in census.py through fleet-build (use_item mining_survey_probe before survey_system on a route that names it) and test it with one scanner scout at Homam: does +30 survey power resolve the faint signature | next turn |
+| Local Sector Survey and Deep Space Cartography (Node Beta board, 6,500 cr together): a route that visits Sirius, Horizon and The Crucible and hands in, one ship first | next turn |
 | Read the RESERVE line of the intel check: a scout route that sells a good the reserve keeps stores from that turn | every turn |
 | Keep GSC-0044 and its six neighbours read every hour (census-watch-gsc-0044, every 35 minutes, 4 ships) | every turn |
 | Keep every Voidborn system read within the hour: census-voidborn every_minutes 30, max_ships 4 | every turn |
-| Signal Fragments for every scout with navigation 3 (requires.skills) | every turn |
 | Read the game's changelog at every turn and name each line of game/rules/ a release makes wrong in a request to the Fleet Admiral | every turn |
