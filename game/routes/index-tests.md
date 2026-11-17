@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 43.
+Routes: 44.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -47,6 +47,7 @@ Routes: 43.
 | [mine-achernar-gas-pocket](mine-achernar-gas-pocket.json) | mine | beyond the border, 4 jumps | Achernar Gas Pocket: hydrogen_gas, argon_gas, plasma_gas, neon_gas; sold at Node Beta Industrial Station | up to 1 ships, needs gas_harvester_i, empty hold | TBD | TBD | TBD | TBD | -- |
 | [mine-gaugewatch-belt](mine-gaugewatch-belt.json) | mine | beyond the border, 7 jumps | Gaugewatch Belt: iron_ore, copper_ore, null_matter; sold at The Core | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [mine-gossamer-null](mine-gossamer-null.json) | mine | beyond the border, 6 jumps | Gossamer Null: iron_ore, copper_ore, null_matter; sold at The Core | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
+| [mine-groombridge-34-ice-fields](mine-groombridge-34-ice-fields.json) | mine | beyond the border, 8 jumps | Groombridge 34 Ice Fields: water_ice, nitrogen_ice, deuterium_ice, helium_ice; sold at Node Beta Industrial Station | up to 1 ships, needs ice_harvester_i, empty hold | TBD | TBD | TBD | TBD | -- |
 | [mine-gsc-0021-ice-fields](mine-gsc-0021-ice-fields.json) | mine | beyond the border, 6 jumps | GSC-0021 Ice Fields: water_ice, nitrogen_ice, ammonia_ice; sold at Synchrony Hub | up to 1 ships, needs ice_harvester_i, empty hold, while synchrony_hub bids 25 cr for water_ice | TBD | TBD | TBD | TBD | -- |
 | [mine-gsc-0033-cryobelt](mine-gsc-0033-cryobelt.json) | mine | beyond the border, 6 jumps | GSC-0033 Cryobelt: water_ice, nitrogen_ice; sold at Synchrony Hub | up to 1 ships, needs ice_harvester_i, empty hold, while synchrony_hub bids 25 cr for water_ice | TBD | TBD | TBD | TBD | -- |
 | [mine-gsc-0033-void-whisper](mine-gsc-0033-void-whisper.json) | mine | beyond the border, 6 jumps | GSC-0033 Void Whisper: iron_ore, copper_ore, null_matter; sold at The Core | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
