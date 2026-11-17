@@ -54,7 +54,7 @@ the table `ship_skills` and the tool fleet, view levels (2026-11-17
   360, shield 430) and Voidborn Singularity (cruiser, 3 weapons).
 - Fit: the weapon slot first (Autocannon II, 18 kinetic damage, 1,800
   to 2,755 cr), then shield boosters in the defence slots. One Pulse
-  Laser I does not kill prey above 100 hull: the cauldronback test
+  Laser I does not kill prey above about 77 hull (its firepower gauge, rule F9): the cauldronback test
   (120 hull) took 0 kills in 4 runs and left the drone at 45 percent
   hull (2026-11-17). Default stance flee, set by script (game 0.721.0):
   a fight a drone starts still opens at fire.
@@ -88,7 +88,7 @@ filled the hours no herd was open (section 4).
 
 What the drones fly between two turns, applied 2026-11-17 16:18 UTC (orders ENT-037). 6 drones fly `@guard`
 and then `@hunter` (two with a soma sale between); 35 fly `@hunter`; 9 fly one hunt of their own first (the
-tests and hunts the filler offered), then `@hunter`. Every hunt and every guard takes one ship (rule F9). The hunts
+tests and hunts the filler offered), then `@hunter`. Every hunt and every guard takes one side: one ship, or a group (rule F9, DECISIONS D228; the dispatcher starts groups once Q72 is built). The hunts
 beyond the border leave only for a pirate or a pilot filed hostile (`alone` "pirates"; since 16:15 UTC also the
 eight hunts of 12:15 UTC, which left 26 of their 40 runs at once for passers-by). The dispatcher closes a hunt, a mine or a guard
 where a pirate was seen within six hours (orders D9, dispatch.py since 13:58 UTC).

@@ -39,8 +39,8 @@ at the end of every turn.
   `fleet` view=levels, 2026-11-17 15:18 UTC); a tier-1 hull for a scout
   is not read yet.
 - Style: fly light and empty beyond the border (rule F13), read and leave,
-  never fire first (F2), hunt a grazer of 100 hull or less where a herd
-  lies on the way (F9), flee from pirates (D9).
+  never fire first (F2), hunt where a herd lies on the way what passes both
+  gauges of rule F9 (firepower and toughness), and pirates only by orders D9.
 
 ### Skills
 
