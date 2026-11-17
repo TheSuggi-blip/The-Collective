@@ -485,3 +485,11 @@ Effect: no credits lost beyond fuel; the founding of the first outpost is late b
 Cause: I wrote the allocation as the limit without reading what the runner's limit counts; the runner's own log line says "with tax", and my guidebook's earlier buys name the tax too.
 Fix, done: the limit is 150,150 (commit 9a91d54), the kit's price itself inside the allocation; the pitfall stands in my skill logistics-stock (a buy limit is the allocated price x 1.01); a driver waits for the builder's next run of the route and founds the outpost at its end.
 Would it have prevented this one: the pitfall, read before the route was switched on, yes; a check in routes.py that warns when a buy's max_price lies within 1% above the latest ask would catch it by itself (a suggestion in my report).
+
+## [ENT-092] | 2026-11-17 16:45 UTC | Apophis | error | ref: game/routes/hunt-test-bluerift-frost-ring-rime-grazer.json | see: orders.log ENT-037
+Class: a figure for a subset counted over the whole set (a number typed from the wrong rows; the family of a figure no script prints).
+Case: in my turn of 16:00 UTC on 2026-11-17 I wrote that the eight hunts of 12:15 UTC "left 35 runs at once for a stranger" and that "some 480" drone hunts since 08:20 UTC drew no shot. The 35 was a count of that note over all drone hunts since 08:20 UTC (it read 38 later); the eight hunts left 26 of their 40 runs, and the drone hunts since 08:20 UTC were 421.
+Effect: the wrong figures stood in the notes of eight route files (commit b70866c) and in the guidebook (514afdd) from 16:15 to 16:42 UTC, in my own bank, my knowledge file and my skill; corrected in 01af114 and 5846568 (and in my workspace) before the report and the session entry. No plan or ship moved on them: the decision (alone "pirates") holds on 26 of 40 as on 35.
+Cause: I took a total from an ad-hoc Counter over every row and wrote it as the subset's figure; hunt_figures.py printed no per-route count of runs that left for a stranger.
+Fix, done: hunt_figures.py (skill military-turn) prints per route the runs that left for a stranger and for a pirate (column `left: stranger/pirate`); a figure of a route group is read from those lines.
+Would it have caught the original: yes, the lines read 6/0, 5/0, 6/0 for Bluerift, Botein Lampglint Rock and GSC-0038 at 16:44 UTC.
