@@ -474,3 +474,9 @@ Effect: three once missions of our empire (4,000, 4,000 and 1,500 cr, 25 to 35 V
 Cause: I read the boards table as the game's whole offer and did not read the chain's own route note or who holds its link.
 Fix, done: routes voidborn-crystal-resonance and voidborn-material-synthesis (commit 5ff3f4b, requires.booked The Collective Provides, one ship each first), queue.log ENT-185; knowledge/mining-missions.md (my workspace) and the skill mining-chains say to read the chain's route note, onetime.json and a board read by a pilot holding the link before calling a mission gone; my report suggests the route maker read boards through such a pilot.
 Would it have prevented this one: yes: the route note of 2026-11-16 names both titles, and onetime.json named 60 or more such pilots at 19:13 UTC.
+
+## [ENT-104] | 2026-11-17 23:36 UTC | Zero | error | ref: communications/errors.log | see: errors.log ENT-103
+Class: a number written without printing it from its record (the rule every member keeps: a figure from a record of the run).
+Case: errors.log ENT-103, last line, says data/fleet/onetime.json named 60 or more pilots holding The Collective Provides at 19:13 UTC on 2026-11-17. Read from the file's own times at 23:37 UTC: 50 pilots held it before 19:13 UTC, 70 at 23:37 UTC.
+Effect: the entry overstates the pilots who could have flown the links by 10; its conclusion (the route note and onetime.json would have shown the tree) stands. No game effect.
+Fix, done: this entry; every count in my entries is printed by a command in the same step before it is written.
