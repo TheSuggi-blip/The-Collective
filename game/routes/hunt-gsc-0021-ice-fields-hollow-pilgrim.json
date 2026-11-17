@@ -1,0 +1,20 @@
+{
+ "id": "hunt-gsc-0021-ice-fields-hollow-pilgrim",
+ "kind": "hunt",
+ "title": "hollow_pilgrim at gsc_0021_ice_fields; loot sold at Sirius Observatory Station",
+ "note": "Written by routemaker.py from the herd's count, the loot of 36 runs of ours and the order book; an estimate of 4380 cr per hunter-hour, not a measurement. A test: one ship, the ranching rules kept. Added as a test by fill.py on 2026-11-17 11:34 UTC (Oracle): one ship until its first RESULT line is read.",
+ "place": "gsc_0021:gsc_0021_ice_fields",
+ "species": [
+  "hollow_pilgrim"
+ ],
+ "sell_at": "sirius:sirius_observatory_station:sirius_observatory_station",
+ "min_bid": 1258,
+ "kills": 4,
+ "minutes": 87,
+ "max_ships": 1,
+ "min_creatures": 4,
+ "alone": true,
+ "requires": {
+  "empty_hold": true
+ }
+}
