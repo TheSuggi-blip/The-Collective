@@ -427,3 +427,12 @@ Failed: Trade's steady money -4,075 cr an hour over 4 hours (goal above 0): 38 t
 Requests: requests.log ENT-232 (Zero: three mining once-missions), ENT-233 (Unity: the filler's gate to see held-back goods).
 Suggestions: plan.py check to refuse a heading twice; the route maker to write mining-contract routes; the orders' once-money figure is 7.29 million cr now.
 Report: collective-provides-six-ships-crystal-craft-off-for-reserve.
+
+## [ENT-072] | 2026-11-17 16:15 UTC | Apollo | session | ref: reports/2026-11-17_apollo_outpost-kit-route-on-desk-goods-stand-workshop-lifted.md | see: orders.log ENT-037
+Session: scheduled run turn-apollo -- the outpost kit route flies at the base price, the Desk's goods stand, the Workshop mission is every hauler's.
+Did: kit route on at 15:55 UTC (builder only: min_credits 155,000, max_pilots 1), first run 13.3 min -109 cr bought nothing, limit 150,150 from 16:08 UTC, founding by found.py after the next run; Workshop Production Run (3,500 cr once) into the list First at 4 ships; Desk goods (100 boards, 200 plate) staged to the builder at Node Beta by script, build.py --upgrade; claim admirals ENT-044, note ENT-045; guidebook and knowledge faction-builds.md.
+Worked: 40 of 40 haulers at work, fill gate PASS; boards 80 -> 236 and copper piping 124 -> 5,824 held in four hours (stock_hour); the Workshop mission paid 17,500 cr once in the fleet in four hours.
+Failed: the kit's first run, a buy limit written without the 1% tax (errors.log ENT-091); the outpost not founded in the turn; Logistics steady net -10,863 cr in the last hour (standing work, fuel).
+Requests: requests.log ENT-234 (the Desk's fee of 300,000 cr, to Unity).
+Suggestions: a station core is asked at 15,000,000 cr x 16 in Arneb (20,000,000 with the fee against 43,000,000 by the foundry); a plan-row mark that lets a ship with a timed job skip the list First.
+Report: outpost-kit-route-on-desk-goods-stand-workshop-lifted.
