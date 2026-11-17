@@ -22,13 +22,54 @@ at the end of every turn.
   (`/srv/collective/data/plans/plan-trade.md`); every route with its
   figure is in `game/routes/master-index.md` and its sub-indexes.
 
+## Class Card
+
+The trader's class in short (rule F14); the detail is in section 4
+(levelling) and section 5 (ships and fits). Sources: the catalog's
+tables `skills` and `hulls` (catalog 0.723.2), the game's page
+https://www.spacemolt.com/docs/skills.md (read 2026-11-17 07:37 UTC),
+the table `ship_skills` (2026-11-17 07:42 UTC).
+
+### Ships
+
+- Tier 0, every trader now: Threshold, cargo 65, fuel 95, hull 75, a
+  mining laser and a pulse laser. Three carry a Gas Harvester I, one a
+  Cargo Expander I (hold 85).
+- Tier 1 (no Piloting asked): no Voidborn freighter; the largest hold
+  is the Residuum's 100 (a salvager). Not worth a change for trade.
+- Tier 2, Piloting 10: Apophenia, freighter, cargo 240, fuel 300, hull
+  140: the trader's next hull. Tier 3, Piloting 20: Fold Hauler, cargo
+  635. No price is in the catalog; not read at a shipyard yet.
+- Fit: a Cargo Expander I (+20 hold) for carries; no weapon is needed.
+  Default stance flee (game 0.721.0), set by script.
+- Style: dock to dock. Sell each pilot's stores where a bid stands,
+  carry one or two jumps, craft at a station workshop; never fight.
+
+### Skills
+
+| Skill | Why it matters | What trains it, on which routes | Trade now | Next goal |
+|---|---|---|---|---|
+| Trading | The class skill. A higher level shows more in `analyze_market` (regional demand, price trends, arbitrage: the game's help); its bonus is not stated in the catalog | Buying and selling at stations or by exchange orders, XP by credit volume (catalog): `@trade-sell`, station stock bought (about 1 XP per 100 cr), mission rewards | 2 for 24 ships, 1 for 16 | 3 for every trader |
+| Crafting | Station workshop speed from x1 at level 0 to x5 at 100 (with Refining); recipes ask it | Crafting at a station: `@trade-craft` (focused crystal for sale, then steel plate from the pilot's own iron) | 0 for all 40, 8 with XP | 2, where Logistics' crafters stand (2.6 on average) |
+| Navigation | Fuel, jump fuel and jump time -1% a level; level 3 opens Signal Fragments (7,000 cr once) | Every jump; `@trade-train-nav` up to 3 | 3 for 26, 4 for 12, 5 for 2 | 5 |
+| Piloting | Tier 2 hulls at 10 (the Apophenia freighter), tier 3 at 20 | Flying, jumping, mining | 7 for 13, 6 for 7, 5 for 19, 4 for 1 | 10 |
+| Engineering | Module power and CPU, for a fuller fit | Crafting components or modules | 0 for 22 with XP | not a goal yet |
+| Mining | The fallback only (rule F23) | `@trade-gas`, `@trade-gather` | -- | -- |
+
+XP of the 40 traders in the four hours to 2026-11-17 07:37 UTC
+(`xpsnap.py diff`, skill trade-books): deep core mining 22,711,
+piloting 19,580, mining 14,210, navigation 5,733, trading 616,
+exploration 600, crafting 0. The class skills barely moved while the
+fallback ran; from the turn of 07:30 UTC `@trade-craft` stands before
+`@trade-gather`, so a trader crafts before it mines.
+
 ## Standing Plan
 
 What the traders fly between two turns: the division's plan file
 (`/srv/collective/data/plans/plan-trade.md`, the tool `plan`), as set
-in the turn of 2026-11-16 23:30 UTC and changed in the turn of
-2026-11-17 03:30 UTC (template `@trade-sell` with three hydrogen
-routes, commit 9872fa7);
+in the turn of 2026-11-17 07:30 UTC: three new sell routes in
+`@trade-sell`, the soma floor 340, the steel craft in `@trade-craft`
+before the gathering, mine-pherkad-rift out of `@trade-gather`.
 `game/routes/plan-trader.md` prints it without names, and
 `game/routes/templates-trade.md` lists the templates. Every trader's
 own routes are templates (section 2): a ship is moved to other work
@@ -38,30 +79,26 @@ mission that pays once is judged with its reward (rule F19).
 
 | Order | Work | Ships | Carries | Expected | Why it stands here |
 |---|---|---|---|---|---|
-| First | The once line: 17 routes from voidborn-first-steps-board to voidborn-first-hunt-intercrus-sootfall, with voidborn-neural-matrix-board new this turn | every ship, by the list First | -- | +1,000 to +7,000 cr once a pilot | A pilot that has not booked a reward flies it first |
-| 1 | `@trade-sell`: five soma routes (sell at Node Beta, Synchrony Hub, The Experiment; carry to Node Gamma and Node Alpha), floor 350 since 2026-11-17 03:39 UTC; three hydrogen routes (sell at Node Beta and Node Gamma, carry Synchrony Hub to The Experiment), floor 30 | every trader whose own storage holds the good; 2 at soma Node Beta, 1 on each other | soma: 1 to 7 units a bid at 357 to 362 cr (books of 03:31 to 03:38 UTC), regained by one to five units at a time; hydrogen: 34 cr x 24 to 100 at Node Beta, 27 to 40 at Node Gamma, 22 to 46 at The Experiment (the view `moves`, 03:00 to 03:41 UTC) | soma, last 4 hours to 03:32 UTC: Synchrony 4,396 and the carry to Node Alpha 4,563 per ship-hour (6 and 5 runs), Node Beta 2,663 and the carry to Node Gamma 2,812 (2 runs each); hydrogen not flown yet | The fleet stores 607 soma above the reserve and Central Nexus asks 292 in depth; it stores 5,634 hydrogen gas and Ironlight asks 6 in depth: the station bids are the top of both markets |
-| 2 | `@trade-craft`: craft-focused-crystal-node-beta | every trader with 4 energy crystal in its own storage at Node Beta; 2 at a time | the focused-crystal bids at Central Nexus (800 x 10) and Node Gamma (748 x 11), books of 23:33 and 23:35 UTC; the Central Nexus bid was taken by about 01:00 UTC and reads 40 at 03:34 UTC | 969 per ship-hour over 8 runs of the last 4 hours (route_earnings, 03:32 UTC): +278 to +324 cr a run, the last one -488 into a bid that had left | Crafting for sale is Trade's (requests.log ENT-177); the traders' stored energy crystal bids 40 cr where it lies |
-| 3 | `@trade-train-nav`: train-navigation-trader | the traders below navigation 3: 1 of 40 at 2026-11-17 03:40 UTC (20 at 00:07 UTC) | -- | -318 per ship-hour over 117 runs of the last 4 hours (route_earnings, 03:32 UTC), then Signal Fragments +7,000 cr once each | Signal Fragments asks navigation 3; the route closes by itself at 3 |
-| 3 | `@trade-gas`: six gas routes | the three traders that carry a Gas Harvester I, one ship a route | the hydrogen and plasma bids at Node Beta and Central Nexus: a few dozen units an hour | Marfik +280, GSC-0016 +260 per ship-hour over 6 runs each (route_earnings, 23:32 UTC) | Mining work of the traders that hold the tool; the loss stop closes a route whose last runs lost |
-| 4 | `@trade-gather`: mine-pherkad-rift, gather-hamal-crystal-bloom, gather-gsc-0027-prism-scatter, mine-acubens | every trader as fallback | Pherkad about 10 ships hour after hour, Hamal and Prism Scatter shared by every division (fill.py status, 23:33 UTC) | -169 to -191 per ship-hour (57 and 249 runs of the last 4 hours) | Standing work (rule F8): iron and copper into storage for the reserve |
-| Then | mine-pherkad-rift, gather-hamal-crystal-bloom, gather-gsc-0027-prism-scatter, census-frontier, park | every ship | -- | -- | `park` should never be reached |
+| First | The once line: 17 routes from voidborn-first-steps-board to voidborn-first-hunt-intercrus-sootfall | every ship, by the list First | -- | +1,000 to +7,000 cr once a pilot | A pilot that has not booked a reward flies it first |
+| 1 | `@trade-sell`, 11 routes: soma (sell at Synchrony Hub, Node Beta, The Experiment; carry to Node Alpha and Node Gamma), floor 340 since 2026-11-17 07:38 UTC; palladium (carry Central Nexus to Node Gamma, sell at Node Gamma), floor 300, new; hydrogen (sell at Node Beta, Node Gamma, Synchrony Hub; carry Synchrony Hub to The Experiment), floor 30, the Synchrony sale new | every trader whose own storage holds the good, one ship a route | soma: 1 to 8 units a bid at 348 to 353 cr (books of 07:09 to 07:32 UTC); palladium: Node Gamma 339 x 18 (07:11 UTC); hydrogen: bids of 24 to 160 units at 33 to 34 cr that come and go at four stations (the view `moves`, 06:23 to 07:29 UTC) | route_earnings, 4 hours to 07:32 UTC: soma Synchrony 6,874 (5 runs), carry to Node Alpha 5,038 (6), carry to Node Gamma 4,163 (6), Node Beta 3,636 (15); hydrogen Node Beta 56,951 and Node Gamma 10,559 (4 runs each, runs of under 4 minutes: about 1,100 to 2,200 cr a run, not an hour's rate); palladium not flown | The station bids are the top of each market: Central Nexus asks soma at 293 in depth, Ironlight Crossroads hydrogen at 6; palladium's base value is 200 and the cheapest ask 432 |
+| 2 | `@trade-gas`: six gas routes | the three traders with a Gas Harvester I, one ship a route | the hydrogen and plasma bids: a few dozen units an hour | GSC-0016 Emission Nebula 6,305 per ship-hour over 2 runs (4 hours to 07:32 UTC); Marfik -67 over 1 | The gas ships' own work; their gas also feeds the hydrogen sale routes |
+| 3 | `@trade-craft`: craft-focused-crystal-node-beta, then Logistics' craft-steel-central-nexus, craft-steel-synchrony-hub, craft-steel-node-beta | a trader whose own storage holds the inputs; the steel routes are shared by every role (2, 3 and 11 ships) | iron in traders' storages (storage book of 07:05 UTC): one trader 24,577 at Central Nexus, 19 traders with 300 or more at Synchrony Hub (10,703), 11 with 550 or more at Node Beta (9,559) | craft-steel-node-beta -148 per ship-hour over 48 runs (4 hours to 07:32 UTC): the fuel to the station only | Crafting is the class skill (rules F23, F30): the 40 traders gained 0 crafting XP in the four hours to 07:37 UTC; plate is short in the reserve (28,582) |
+| 4 | `@trade-gather`: gather-hamal-crystal-bloom, gather-gsc-0027-prism-scatter, gather-ironhollow-echo-ejecta, mine-acubens | every trader as fallback | shared fields of every division, each with its limit and iron floor | -153 to -240 per ship-hour (4 hours to 07:32 UTC) | Standing work (rule F8): iron into storage for the reserve (285,813 short at 07:34 UTC) |
+| Then | gather-hamal-crystal-bloom, gather-gsc-0027-prism-scatter, gather-ironhollow-echo-ejecta, gather-schedar-belt, the three craft-steel routes, mine-pherkad-rift, census-frontier, park | every ship | -- | Schedar -709 per ship-hour (4 hours to 07:32 UTC, bent by gifts: requests.log ENT-206) | Pherkad gives copper only now (admirals.log ENT-018) and stands last but one; `park` should never be reached |
 
-The forecast of the division (`hive.py forecast`) read -3,428 cr an
-hour at 2026-11-16 22:30 UTC, +2,441 at 2026-11-17 00:07 UTC (two soma
-runs whose bid was taken after them), -4,294 at 03:31 UTC (the
-briefing) and -4,828 at 03:44 UTC after this turn's plan, whose new
-hydrogen routes have no measured figure yet. Standing work and
-navigation training are the cost; the soma routes and the missions
-that pay once carry the division.
+The forecast of the division (`hive.py forecast`) read -3,705 cr an
+hour at 2026-11-17 07:30 UTC (the briefing) and +54,942 at 07:44 UTC,
+when one ship flew sell-hydrogen-at-node-beta: the forecast multiplies
+that route's 56,951 per ship-hour, measured on four runs of under four
+minutes, by the hour. It is no forecast of the division; the steady
+money of the last hour read -6,801 cr (`hive.py fleet`, 07:44 UTC).
 
-What changes it: the soma and hydrogen bids' regain (read their moves
-each turn); the focused-crystal bid at Central Nexus, gone since about
-01:00 UTC (40 cr x 25,129 at 03:34 UTC; the route opens by itself at
-700); a field for uranium ore, thorium ore or seam glass, which every
-station bids for since about 00:57 UTC (requests.log ENT-194); the
-steel craft as standing work for every role (requests.log ENT-190,
-the Fleet Admiral's to put into the list Then); queue.log ENT-144
-lists what stays unsold and why.
+What changes it: the soma, hydrogen and palladium bids' regain (read
+their moves each turn, set the floors beside the cheapest ask with
+`sellgen.py scan`); the focused-crystal bids (the route opens by
+itself at 700); a field for uranium ore, thorium ore or seam glass
+(requests.log ENT-194, answered ENT-207: none in 116 systems read);
+the iron in traders' storages, which bounds the steel craft.
 
 ## 1. Route Guides
 
@@ -172,7 +209,12 @@ in both runs (2026-11-16 19:49 UTC and 2026-11-16 23:59 UTC).
   in escrow", 2026-11-17 03:34 UTC). Unfilled after 3 hours 46
   minutes; the Node Beta book showed it as the ask 1,200 x 1 at 03:31
   UTC. No station bids above 2 cr for anchor beacons; The Experiment
-  asks 1,400 x 8.
+  asks 1,400 x 8. At 2026-11-17 07:39 UTC the Node Beta book still
+  showed the ask 1,200 x 1, about 7 hours 50 minutes after the listing;
+  `view_orders` docked at Synchrony Hub answered "No personal orders at
+  Synchrony Hub" with the hint "No active orders on any market" (07:41
+  UTC). The two readings disagree; the next reading is docked at Node
+  Beta.
 
 ## 2. Route Templates
 
