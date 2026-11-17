@@ -73,8 +73,9 @@ Planned:
 
 | What | When |
 |---|---|
-| 75 circuit boards for the faction: etch at the Central Nexus workshop once Mining's 16 silicon and carbon lie in the crafting storage (requests ENT-168); the rest from bought silicon (ask 420 cr x 424), one unit first | next turn |
-| Read the first RESULT line of carry-liquid-hydrogen-node-beta-central (81 liquid hydrogen made at Node Beta) and of the gas tests; drop each that loses twice | next turn |
-| Focused crystal (4 energy crystal, 1 palladium) into the Central Nexus bid of 800 x 10, if Trade says no to it (requests ENT-169) | after Mercury's answer |
-| The next station step tested by hand: draw_copper_piping (12 copper ore, 2 steel plate, 4 piping) at the Node Beta workshop, one hauler and one batch, quoted first | next turn |
-| The faction's 275 steel plate lie in one Logistics storage at Node Beta: deposit them to the builder the Fleet Admiral names | on her word |
+| Goal: 75 circuit boards held for the lockbox and the hiring board, read at the next turn: 49 from this turn's 16 etchings and the board held, 26 from 18 silicon (requests ENT-179) or from gold ore (buy-gold-ironlight-boards) | next turn |
+| Read the first RESULT line of buy-gold-ironlight-boards (3 gold ore at Ironlight Crossroads, 2 boards at Node Beta); if it holds, a load of gold for the last boards | next turn |
+| A hull test with one ship: a Prayer (tier-1 freighter, 540 cargo, speed 3, no slots) is listed at 6,000 cr at Ironlight Crossroads and our pilots may fly it (browse_ships can_fly); bought by the hauler of the gold test after its RESULT, then flown on the stored-goods carries | next turn |
+| refine_steel in a public facility (5 iron ore, 2 plate, a fee) against basic_iron_smelting by hand (10 iron, 1 plate, 0 cr): one quote and one run at Node Beta; iron is the station's largest shortfall | next turn |
+| craft-steel-node-beta from one ship to three once its runs hold (60 plates in 8.7 min for 24 cr, 2026-11-17 00:03 UTC) | after three runs |
+| The faction's steel plate (293) and the boards lie in one Logistics storage at Node Beta: deposit them to the builder the Fleet Admiral names | on her word |
