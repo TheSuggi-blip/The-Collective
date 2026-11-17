@@ -74,9 +74,10 @@ Planned:
 
 | What | When |
 |---|---|
-| Keep every Voidborn system read within the hour: census-voidborn every_minutes 30, max_ships 3; read the gaps per system every turn and change the threshold only on a measured gap over 60 minutes | every turn |
-| Read the first RESULT line of voidborn-first-hunt-intercrus-belt after its loss stop lapses (about 09:30 UTC); if it pays, voidborn-first-hunt-intercrus-remnants and a route at Intercrus Sootfall Belt (16 belt-grazers at 08:17 UTC) for the rest of the scouts without First Hunt | next turn |
-| Signal Fragments: 11 scouts with navigation 3; ask Trade for more places (requests.log ENT-118); the nine with navigation 2 fly it when they reach 3 | every turn |
-| Fourth ring (Felis, Acrab, Botein, Acrux): belt-grazer herds of 11 to 14 and two pirates; a hunt route there only after a drop of the species sells and Military has looked at the pirates | when a herd's drop sells |
-| Nova Terra Central (Solarian) read about once a day while Trade weighs a trade | daily |
+| Goal of the turn of 07:15 UTC, read at about 11:15 UTC: exploration's median of the scouts from 2 to 3 (fleet view=levels) and 40 of the 97 never-read systems of census-roads read (the ROADS line) | next turn |
+| Read the ROADS line of the intel check first; on HALT widen census-roads to the never-read systems of 15 jumps, nearest first, strongholds out | every turn |
+| The survey test: after fit-survey-scanner-central-nexus has its RESULT line, one survey_system by hand in a system with known fields; a survey step for census.py through fleet-build only if it shows a place or an ore get_poi does not | next turn |
+| Read census-roads-chain's first rows against census-roads per system; chain onto census-roads if a trip reads two or three systems in less time a system | when it has rows |
+| Keep every Voidborn system read within the hour: census-voidborn every_minutes 30, max_ships 4; read the gaps per system every turn and change the threshold only on a measured gap over 60 minutes | every turn |
+| Signal Fragments for every scout with navigation 3 (requires.skills) | every turn |
 | Read the game's changelog at every turn and name each line of game/rules/ a release makes wrong in a request to the Fleet Admiral | every turn |
