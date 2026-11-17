@@ -147,6 +147,22 @@ reading and no verdict: what a route earns now is in the fleet's database with i
   max_fee 36): 500 iron ore into 200 plate for 2,900 cr in 1.3 minutes (2026-11-17 04:08 UTC,
   one run). A plate by refine: 2.5 iron and 14.5 cr; by hand: 10 iron and 0 cr. The route is in
   no plan while the Fleet Admiral weighs the fee (requests.log ENT-200).
+- Copper piping from what a hauler already stores (`craft-piping-plate-node-beta`, written 2026-11-17
+  12:05 UTC): 15 runs of `draw_copper_piping` take 180 copper ore and 30 steel plate and make 60 piping,
+  which fit one hold; `requires.stored` asks 130 plate and 180 copper at Node Beta, so each storage keeps
+  100 plate. First RESULT line 12:10 UTC: 2 of 2 stops in 9.1 minutes, 60 piping, -39 cr (the hop from
+  Synchrony Hub); about 4 piping every 11 to 22 seconds at crafting 3. Lifted to 8 ships at 12:10 UTC. Trade's
+  `craft-piping-node-beta` smelts its plate from iron first and stands after it in `@craft-reserve`.
+- Boards from silicon a hauler gathered: `craft-boards-node-beta` (45 boards a run from 30 silicon, carbon
+  bought at 4 cr) is the first own route of the hauler that gathers at Glasslight Shoal, which brought 255
+  ore in each of two runs of about 95 minutes, -732 and -740 cr (2026-11-17 09:04 and 10:40 UTC).
+- Boards from gold: `craft-boards-gold-experiment` (written 12:00 UTC) makes 30 runs of
+  `fabricate_gold_circuit_boards` (3 copper, 3 gold, 1 energy crystal for 2 boards, 9 ticks a run) at The
+  Experiment from Mining's 90 gold ore and 30 crystal and 90 copper two haulers carried there from Node
+  Beta (catch.py and stage.py, one unit first; the first carry done in 7.8 minutes, 12:10 UTC).
+- `craft-boards-silicon-central-nexus` flew once (2026-11-17 09:58 UTC): 6 of 6 stops in 32.5 minutes,
+  65 boards, 968 cr of carbon booked once. Its figure in route_earnings, about 158,000 cr a ship-hour, is
+  the outpost's gifts landing in the wallet during the run, not earnings (requests.log ENT-220).
 - Recipes made by hand so far, all at a station workshop for 0 cr and with no skill
   asked: `basic_iron_smelting`, `basic_copper_processing`, `carbon_arc_circuit_etching`,
   `build_power_cell`, `build_ice_harvester_i`, `compress_hydrogen_gas`, `carapace_plating`,
@@ -196,6 +212,22 @@ reading and no verdict: what a route earns now is in the fleet's database with i
   First Steps Board 9,000, First Hunt 2,000.
 - A once route measured on another role's pilots may not open to a hauler: read its runs
   by role before it enters the plan (skill logistics-stock).
+- Board missions of Logistics' class (rule F34: deliveries, crafting, station needs), read
+  2026-11-17 11:53 to 11:54 UTC (data/missions; the tool candidates, kind mission):
+  - Workshop Production Run (Central Nexus and Node Beta): craft_item, "Craft 5 items using any
+    recipe", 3,500 cr, 25 crafting XP, 20 Piloting XP; template id `workshop_production_run`.
+    `mission-workshop-production-run-node-beta` accepts, smelts 5 plates from the pilot's own iron
+    and hands in, all at Node Beta; a one-ship test from 12:00 UTC.
+  - Shipyard Supply at Node Beta (Mining Laser I 1,693 cr, Void Nanite Suspension 1,454 cr, Shield
+    Emitter 6,377 cr): deliver_item; each carries a station-made mission id
+    (`procurement_<hash>_<item>`) and no template id, so the circuit runner's accept step, which looks
+    a mission up by template id, cannot take them yet. The goods are bought: a laser at 1,433 cr at
+    Node Alpha, 5 nanite at 222 cr at Central Nexus (+246 and +333 cr a run by the route maker's
+    reckoning). What opens them: an accept by mission id in route_run.py (a fleet-build of mine).
+  - Procyon Station Upgrade: 10 circuit boards delivered to Procyon for 1,960 cr (queue.log ENT-157), about the boards'
+    base value of 200 each; boards are reserve (24,925 asked): not flown.
+  - The hot-cell and gutter-flux deliveries of Central Nexus are smuggling jobs 20 to 42 jumps away,
+    at a loss by the route maker's reckoning: not flown.
 
 ## 2. Route Templates
 
@@ -448,11 +480,15 @@ goods we store until that order changes.
 
 ## 10. Open Tests
 
+- To read next turn (written 2026-11-17 12:30 UTC): the first RESULT lines of
+  `mission-workshop-production-run-node-beta` (and whether the board offers it again after the
+  hand-in), `craft-boards-gold-experiment` and the silicon hauler's `craft-boards-node-beta`; the
+  piping route at 8 ships; the Hiring Board done and the cap read 50; the kit's ask at Ironlight
+  Crossroads.
 - `craft-boards-node-beta`: first RESULT line 2026-11-17 04:47 UTC, 45 boards from 30 silicon in
-  20 minutes, -770 cr (the carbon, booked once). `craft-boards-silicon-central-nexus` (08:05 UTC):
-  65 boards from the builder's 43 silicon at Central Nexus; first RESULT line next turn.
-- The Lockbox at The Experiment (section 15.2) and the default stance flee on every hauler
-  (`set_stance.py`, from 07:54 UTC): read next turn.
+  20 minutes, -770 cr (the carbon, booked once). `craft-boards-silicon-central-nexus`: 65 boards,
+  09:58 UTC (section 1.2).
+- The Lockbox at The Experiment stands (section 15.2).
 - The three any-role steel routes (2026-11-17 03:58 UTC): which divisions' ships fly them once
   the Fleet Admiral puts them in every plan's list Then.
 - The gas routes of `gas-harvest`, one ship each.
@@ -786,6 +822,14 @@ base_plan. A line marked "read" was not flown by us.
   named Storage Extension bucket); the ship's cargo backfills a shortfall (read). The first Lockbox,
   at Node Beta, was built from the builder's own storage there (the Fleet Admiral, 2026-11-17 05:38
   UTC). A facility of tier N asks its builder for Corporation Management N; tier 1 asks none (read).
+  The game's help names only the faction store and the cargo, so `build.py` moves the materials from the
+  builder's own storage into the faction store first (2026-11-17 12:19 UTC, section 15.4).
+- The fee: a faction build takes it from the treasury when the treasury holds it, else from the
+  builder's wallet, as two builds show: the Lockbox at The Experiment from the wallet (200,000 cr, the
+  treasury held 44,034, 09:45 UTC), the Hiring Board from the treasury (75,000 cr, the treasury fell
+  from 82,999 to 7,723 and the wallet did not move, 12:19 UTC). The help of `found_station` and
+  `deploy_outpost` says "faction treasury first, then your wallet". The treasury pays the rent, so a
+  build waits for the Fleet Admiral's word whenever the treasury holds the fee (errors.log ENT-086).
 - Rent at a station that is not ours: every 100 ticks (about 17 minutes), from the treasury: the
   Lockbox 69 cr a cycle, 5,962 cr a day (`governance/empire.md`, section 5). Paused while it is
   built; unpaid, the facility stops but storage stays reachable. None at our own station or outpost.
@@ -818,12 +862,22 @@ and lets go at 11:30 UTC). Loads, by `catch.py` and `stage.py` at the end of eac
 storage at The Experiment, one unit first. Done 08:41 UTC: the builder's storage there read 200 steel
 plate and 50 circuit boards (the game's storage view); each donor took 6.5 to 10.1 minutes from the
 end of its run, 0 cr but fuel, no run cut. A deposit into the storage of a pilot that is not at the
-station landed (08:22 UTC). The build is the Fleet Admiral's at 09:30 UTC; its outcome is entered
-here at the next turn.
+station landed (08:22 UTC). Built by the Fleet Admiral's hand at 09:45 UTC, after the builder joined
+the faction with the role Builder (manage_facilities, manage_bases): the 200 plate and 50 boards came
+out of the builder's own storage, the fee of 200,000 cr out of its wallet; active at 09:58 UTC; the
+builder's Corporation Management went from 0 to 3 (queue.log ENT-159).
 
-### 15.3 The first outpost as routes (task 3; deploy nothing yet)
+### 15.3 The first outpost as routes
 
-The site is the Fleet Admiral's to choose. Mining and Intel name Garnet (admirals.log ENT-018,
+The site is GSC-0044 (the Fleet Admiral, 2026-11-17 09:59 UTC; `game/map/sites.tsv`). The kit's
+price doubled before it was bought: Ironlight Crossroads asks 148,663 cr for its one kit since
+10:02 UTC (book read again 11:23 UTC), where two stood at 74,010 at 07:55 UTC; the catalog's base
+value of a kit is 150,000 cr. The kit route buys at 75,000 or less and stays off until the Fleet
+Admiral's word (requests.log ENT-218); it stands first in the builder's own routes. Military reads
+the road (no pirate on record on it or one jump from it, admirals.log ENT-036); a guard cannot
+follow a circuit yet. What follows is the plan of 08:06 UTC.
+
+The site was the Fleet Admiral's to choose. Mining and Intel name Garnet (admirals.log ENT-018,
 ENT-021), two jumps beyond The Experiment through Achernar: by the table systems that is 2 systems
 beyond our space (Garnet 5 jumps from home, our border 3), where rule F33 asks 3 or 4. At 3 or 4
 beyond: GSC-0044 (Mining's earlier choice, reports.log ENT-057) and Atlas, 3 jumps from The
@@ -839,4 +893,24 @@ Garnet); LHS 1140 to GSC-0044 5. The kit is staged at The Experiment whatever th
 | 3. Fuel for its bunker | How fuel goes into a bunker is not read: the first test after the founding, one hauler. The good to carry is the fuel cell (a ship burns cells from its cargo where no station sells fuel: help of `refuel`), asked at 100 cr in depth at Central Nexus (1,911), Node Alpha (3,219) and The Experiment (3,842), the border station nearest the sites (Trade's readings, admirals.log ENT-022, books of 07:36 to 07:42 UTC); a fuel cell restores 20 fuel in one unit of hold (catalog), so a Threshold's 65 cells carry 1,300 fuel for 6,500 cr; the reserve keeps every fuel cell (game/reserve.tsv) | 6,500 cr a hold | open |
 | 4. Stock in and out | Miners at the site's fields deposit ore into the outpost's faction storage; haulers carry loads to The Experiment's workshop (2 jumps from Garnet, 3 from GSC-0044 or Atlas) (an outpost has storage and fuel, no workshop and no market) | fuel | routes written once the outpost stands |
 
-Credits for the whole: 174,010 cr and the fuel. What it draws each cycle: nothing (read).
+Credits for the whole at the asks of 07:55 UTC: 174,010 cr and the fuel; at today's ask 248,663 cr.
+What it draws each cycle: nothing (read).
+
+### 15.4 The Hiring Board at Node Beta (orders.log ENT-036, P5 and block APOLLO (3))
+
+Built 2026-11-17 12:19 UTC by `build.py` of the skill logistics-stock, flown in a `catch.py` row at the
+end of the builder's gather run (caught 12:13 UTC; the engine's mining loop ran on and was stopped a
+minute later; docked at Node Beta about 12:18 UTC; done in 6.4 minutes):
+
+| Step | What the game showed |
+|---|---|
+| The faction store at Node Beta before | 0 items; treasury 82,999 cr (`view` with target faction, a read) |
+| 75 steel plate and 25 circuit boards from the builder's own storage into the faction store | `deposit` with target faction and source storage, one unit first, proved by the store; no hold needed |
+| `faction_build` hiring_board | HTTP 200; faction_list: Hiring Board, level 1, faction_recruitment, under_construction, capacity 50, rent 26 cr a cycle paused while it is built |
+| After | the store's 100 units gone; treasury 7,723 cr; the builder's wallet unchanged at 186,321 cr |
+| The builder | Corporation Management 3 to 4 (354 of 900 XP toward 5) |
+
+Rent at Node Beta after: 69 cr a cycle for the Lockbox, the board's 26 to come. The cap rises from 20
+to 50 when the board is done (catalog: build time 20 ticks). Left in the builder's storage at Node
+Beta: 40 circuit boards and 5 steel plate, the start of the Recruitment Desk's 100 boards and 200
+plate; the Desk's other 60 boards are the gold boards of `craft-boards-gold-experiment` (section 1.2).
