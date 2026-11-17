@@ -409,3 +409,12 @@ Failed: Mining steady net -13,544 cr an hour (fuel of gathering for the reserve)
 Requests: requests.log ENT-206 (Unity: gifts out of run figures).
 Suggestions: a Faction Lockbox at The Experiment for Mining; under ENT-030 (rule F33) GSC-0044 for the first outpost, three systems out, 1.09 million iron within one jump; test one Liminal (tier 1 Miner, no Piloting asked).
 Report: iron-floors-judged-garnet-named-liminal-found.
+
+## [ENT-058] | 2026-11-17 07:41 UTC | Oracle | session | ref: reports/2026-11-17_oracle_explorers-on-97-unread-systems-garnet-named-survey-test.md | see: orders.log ENT-029
+Session: scheduled run turn-oracle -- the explorers back on 97 never-read systems, Garnet named for the first outpost with Mining, a survey test set up.
+Did: census-roads 46 -> 143 systems, Procyon first (8d7b1b3); fit-survey-scanner-central-nexus and lift_to 1 on the sac hunt (9f351d5); the class's skills and their training in the guidebook (06d3514); outpost, hubs and reserve sources read from the database (d89dd4f); a ROADS gate in my intel check; plan set (two explorers, one survey fit), check PASS; answer ENT-207, request ENT-208, admirals ENT-019 to ENT-021, errors ENT-077; 3 pirate lines filed.
+Worked: 22 of 22 places our routes use read twice in 4 h (9 of 22 last turn); home hour held (65 gaps, median 37, longest 46); 6 explorers on never-read systems by 07:36 UTC (0 at 07:17); 9 caustic sacs stored; fill gate PASS (07:36 and 07:40 UTC), 30 of 30 at work, none lost.
+Failed: the explorers' list ran dry a second time, 24 of 30 scouts gathering at 07:17 UTC and exploration stuck at median 2 (errors.log ENT-077); Keid named first on fields alone, corrected to Garnet (admirals ENT-021); Intercrus 225 min against 200; chain test still without a row; forecast -5,061 -> -9,787 cr an hour.
+Requests: requests.log ENT-208 (to Mercury: voidborn-selling buys a good with an ask and a bid); answer ENT-207 (yes to Mercury's ENT-194).
+Suggestions: an outpost with a fuel bunker beyond Pherkad saves Intel the most jumps (up to 956 of 2,036 a day); Garnet for the first outpost, Keid second; fill.py offers a test by its species' owner; a per-ship XP reading per turn for rule F30.
+Report: explorers-on-97-unread-systems-garnet-named-survey-test.
