@@ -38,12 +38,12 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Wexler B8W-2T | Node Gamma (`node_gamma`) | 0 | cobble |
-| Wexler J0U-HW | Node Gamma (`node_gamma`) | 0 | cobble |
-| Wexler KAM-Q2 | Node Alpha (`node_alpha`) | 0 | cobble |
-| Wexler N8P-73 | GSC-0027 (`gsc_0027`) | 0 | cobble |
+| Wexler 22C-BF | Node Gamma (`node_gamma`) | 0 | not met |
+| Wexler H03-AV | Node Beta (`node_beta`) | 0 | cobble |
+| Wexler MMM-T9 | Acubens (`acubens`) | 0 | cobble |
 | Wexler QWM-Y0 | The Experiment (`the_experiment`) | 0 | cobble |
-| Wexler UPC-S0 | Node Beta (`node_beta`) | 0 | cobble |
+| Wexler XGC-3H | Acubens (`acubens`) | 0 | cobble |
+| Wexler Z9C-QG | Node Gamma (`node_gamma`) | 0 | not met |
 
 ## Standing History
 

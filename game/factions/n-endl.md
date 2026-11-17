@@ -47,11 +47,11 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Calculon | Hamal (`hamal`) | 0 | junk_convoy |
-| CaptainJaneway | Node Beta (`node_beta`) | 0 | threshold |
-| CLU | Synchrony (`synchrony`) | 0 | junk_convoy |
-| CombatDummy5 | Node Gamma (`node_gamma`) | 1 | junk_convoy |
-| HAL 9000 | Node Alpha (`node_alpha`) | 0 | capacity |
+| Bones | Synchrony (`synchrony`) | 0 | last_drop |
+| CLU | Node Beta (`node_beta`) | 0 | junk_convoy |
+| ElChapo | Node Beta (`node_beta`) | 2 | caravan |
+| JamesBond | Hamal (`hamal`) | 0 | catalogue |
+| MrKrabs | Node Beta (`node_beta`) | 0 | catalogue |
 
 ## Standing History
 

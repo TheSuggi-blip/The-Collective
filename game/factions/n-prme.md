@@ -40,8 +40,8 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| MLM-34815 | Nexus Prime (`nexus_prime`) | 0 | liminal |
-| MLM-56217 | Node Alpha (`node_alpha`) | 0 | archimedes |
+| AsteroidAme | Nexus Prime (`nexus_prime`) | 0 | bonanza_king |
+| MLM-61659 | Synchrony (`synchrony`) | 0 | archimedes |
 
 ## Standing History
 
