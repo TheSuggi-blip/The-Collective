@@ -50,7 +50,7 @@ highest):
 
 | Skill | Why it matters | What trains it, and our route | Now | Next goal |
 |---|---|---|---|---|
-| exploration | survey power (+1% a level); the class's own skill | a first visit to a system: census-far-1 to census-far-5, census-roads; whether a pilot's own first visit to a system the fleet has read counts is under test | 2 / 2.8 / 3 (23 of 30 at 3) | median 4 |
+| exploration | survey power (+1% a level); the class's own skill | the pilot's own first visit to a system, about 5 XP each, a system flown through counts too (snapshot 15:19 UTC against the runs to 15:45 UTC); every census list a scout has not flown trains it, not only never-read systems | 2 / 2.8 / 3 (23 of 30 at 3) | median 4 |
 | navigation | -1% fuel, jump fuel and jump time a level; Signal Fragments opens at 3 | every jump: every census | 4 / 4.8 / 6 | median 5 held, then 6 |
 | piloting | hull tiers 2 to 5 at 10, 20, 30, 50 | every route; missions pay piloting XP (280 to 480) | 5 / 6.7 / 8 | 10, the tier 2 hulls |
 | scanning | scanner effectiveness (+1% a level) | survey_system (census.py surveys with a scanner aboard since 7540393); a link of the Voidborn chain also paid 20 XP to two scouts (Collective Provides or Signal Protocol, not told apart); get_poi gives none | 0 / 0 / 0 (three scouts 5 to 20 XP) | level 1 on the scanner scout; scanners on the explorers |
@@ -155,7 +155,7 @@ ours that trains each:
 
 | Skill | How the game trains it (catalog) | What a level gives (catalog) | Our route that trains it | Scouts now (min / mean / max, table ship_skills, 07:20 UTC) |
 |---|---|---|---|---|
-| exploration | "Visit systems for the first time" | +1% survey power a level, added to scanning's; survey_system reveals a hidden place when the survey power reaches its reveal difficulty | census-roads and census-roads-chain on a never-read system; nothing else: a second read of a system gives none | 2 / 2.1 / 3 |
+| exploration | "Visit systems for the first time" | +1% survey power a level, added to scanning's; survey_system reveals a hidden place when the survey power reaches its reveal difficulty | every census and every circuit that takes a pilot to a system it has not been in, about 5 XP a system (2026-11-17 15:45 UTC); the pilot's second visit gives none | 2 / 2.1 / 3 |
 | navigation | "Travel between systems and POIs" | -1% fuel, jump fuel and jump time a level | every census (a road read is 14 to 30 jumps out and back, a home read 2 to 6) | 3 / 3.8 / 5 |
 | piloting | "Fly ships: travel, jump, mine, or fight"; a bonus for surveying new places or stale faction ore readings, completed missions and freight | +1% travel speed inside a system; piloting 10, 20, 30, 50 open hull tiers 2 to 5 | every route; the most by the census and the missions | 4 / 5.8 / 7 |
 | scanning | "Query POI details or survey systems to reveal mineral deposits" | +1% scanner effectiveness a level | none yet: no scout holds a survey scanner, and get_poi in the census has given no scanning XP (0 on all 30); the test is fit-survey-scanner-central-nexus | 0 / 0 / 0 |
@@ -269,11 +269,16 @@ next turn's test (orders.log ENT-008, F17): `not measured`.
     lists, 9 pirate strongholds, 3 whose stations sell no fuel (Blackthorn,
     GSC-0013, Winterhold). Nothing is left to widen; the lists run dry
     about 18:45 UTC at 37.8 first reads an hour.
-  - Exploration XP: 23 of 30 scouts at level 3 (2 at 11:29 UTC). Whether a
-    pilot's own first visit to a system the fleet has already read pays
-    exploration XP is read from a snapshot of every scout's XP at 15:19 UTC
-    against the runs that followed (this turn's report has the answer). If
-    it does, the readers train exploration on lists they have not flown.
+  - Exploration XP is the pilot's own: every scout's XP at 15:19 UTC against
+    its runs to 15:45 UTC (data/fleet/ships/, data/routes/runs.jsonl). A
+    scout on a mining mission at Rotanev, no census flown, gained 10; scouts
+    reading systems the fleet had read for hours but they had not gained 5
+    to 30 (Sualocin 10, Acrux 5, Sirius 15, GSC-0016 20, Mirach 30); every
+    gain is a multiple of 5. So a pilot's first visit to a system, a system
+    flown through included, pays about 5 XP whoever read it first, and the
+    class's skill does not stop when the map is read: a scout keeps training
+    it on census lists it has not flown. 23 of 30 scouts stand at level 3
+    (2 at 11:29 UTC).
   - Leads from the new reads (table fields, herds, 15:31 UTC): silicon ore
     at GSC-0007 Dark Beacon Cluster 18,639 of 20,000 (27 jumps), Emberglow
     4,935, Edasich 4,545, Muphrid 4,325, Hadar 3,518, Netherwick 3,052;
