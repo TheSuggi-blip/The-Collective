@@ -213,6 +213,35 @@ def survey(root, data, now=None):
 
 
 HOLD = 65                      # a starter's hold, units
+RESERVE_SHORT = "sells an item the reserve is short of (rule F24)"
+
+
+def sold(route):
+    """The item ids a route sells by name: a mine route's `sell`, each circuit stop's `sell` list (`all` names none)."""
+    items = [s.get("item") for s in route.get("sell") or [] if isinstance(s, dict)]
+    for stop in route.get("stops") or []:
+        if isinstance(stop, dict) and isinstance(stop.get("sell"), list):
+            items += [s.get("item") for s in stop["sell"] if isinstance(s, dict)]
+    return [item for item in items if item]
+
+
+def short_items(seen):
+    """{item: units short}: what the reserve lacks (surplus.py, game/reserve.tsv), read once per survey; {} when it
+    cannot be read, so that a fault there changes nothing else (requests ENT-213)."""
+    if "short" not in seen:
+        try:
+            import surplus
+            res = surplus.surplus(seen["data"], str(Path(seen["root"]).parent))
+            seen["short"] = {r["id"]: r["short"] for r in res["rows"] if (r.get("short") or 0) > 0}
+        except Exception:                                  # noqa: BLE001  no reserve read: no route is closed by it
+            seen["short"] = {}
+    return seen["short"]
+
+
+def sells_short(seen, route):
+    """The items of the reserve a route would sell: such a route is never added or lent by this script (rule F24)."""
+    short = short_items(seen)
+    return [item for item in sold(route) if item in short]
 
 
 def regains(seen):
@@ -357,6 +386,9 @@ def read_role(seen, role, floor=500, tests=8):
             if rid not in plan:
                 by_hand.append((value, rid))
             continue
+        if rid not in plan and sells_short(seen, route):         # a reserve good is kept, never sold by a route this script adds (ENT-213)
+            closed.setdefault(RESERVE_SHORT, []).append((value, rid))
+            continue
         if route.get("once") and refused_to(seen, rid, role):
             if rid not in plan:
                 closed.setdefault("the board refused it to this role", []).append((value, rid))
@@ -382,6 +414,9 @@ def read_role(seen, role, floor=500, tests=8):
             continue
         if buys(route):                                           # a gap is flown once by hand, with one load (errors.log ENT-027)
             by_hand.append((cand["per_ship_hour"], rid))
+            continue
+        if sells_short(seen, route):                              # a test that sells what the reserve lacks is no test of ours (ENT-213)
+            closed.setdefault(RESERVE_SHORT, []).append((cand["per_ship_hour"], rid))
             continue
         took = offer(rid, route, cand["per_ship_hour"], limit=1) if left and len(found) < tests else []
         if took:
@@ -409,6 +444,9 @@ def spare(seen, got, served=(), room=None):
         route = seen["routes"].get(rid) or {}
         closed = sum(count for reason, count in why.items() if str(reason).startswith("max_ships"))
         if need <= 0 or not closed or not isinstance(cap, int) or route.get("kind") != "mine" or route.get("sell") or not routefiles.standing(route):
+            continue
+        if not (seen["by_route"].get(rid) or ((route.get("measured") or {}).get("runs") or 0) >= 1):
+            seen.setdefault("unflown", {})[rid] = "not lifted: it has not flown yet, and a test keeps one ship until its first RESULT line (rules F8, F13; requests ENT-216)"
             continue
         limit = route.get("lift_to") if isinstance(route.get("lift_to"), int) and not isinstance(route.get("lift_to"), bool) else None
         if limit is None and routefiles.zone(route, systems, home)[0] != "home space":    # also a route whose systems the chart does not know
@@ -663,6 +701,9 @@ def main():
                 print("  test %s -> %s (in front of its own routes; keep it when you set that ship's routes)" % (rid, pilot))
             served = {name for _rid, pilots in paying for name in pilots} | {pilot for _rid, _estimate, _draft, pilot in found}
             lifted = spare(seen, got, served, room)
+            for rid, why in sorted((seen.get("unflown") or {}).items()):
+                print("  %s: %s" % (rid, why))
+            seen["unflown"] = {}
             for rid, places in lifted:
                 lifts[rid] += places
             still = len(got["idle"]) - sum(places for _rid, places in lifted)

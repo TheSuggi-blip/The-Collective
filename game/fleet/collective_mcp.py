@@ -64,7 +64,9 @@ def arg(kind, text, enum=None, items=None):
 def flag(args, name, option=None):
     """['--name', value] when the argument is given."""
     value = args.get(name)
-    return [] if value in (None, "", False) else [option or "--" + name.replace("_", "-"), str(value)]
+    if value is None or value is False or value == "":       # by identity: 0 == False, and a 0 is a value (requests ENT-212)
+        return []
+    return [option or "--" + name.replace("_", "-"), str(value)]
 
 
 def need(args, *names):

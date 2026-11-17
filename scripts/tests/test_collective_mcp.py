@@ -29,6 +29,23 @@ def talk(messages, member="zero"):
     return [json.loads(line) for line in done.stdout.splitlines() if line.strip()]
 
 
+class FlagTests(__import__("unittest").TestCase):
+    """requests ENT-212 (Zero, 2026-11-17): the tool fill with tests=0 wrote four tests; flag() dropped the 0."""
+
+    def test_a_zero_is_passed_on_and_only_none_empty_and_false_are_dropped(self):
+        import importlib.util
+        from pathlib import Path as P
+        spec = importlib.util.spec_from_file_location("mcp_flag_under_test", P(__file__).resolve().parents[2] / "game" / "fleet" / "collective_mcp.py")
+        mcp = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mcp)
+        self.assertEqual(mcp.flag({"tests": 0}, "tests"), ["--tests", "0"])
+        self.assertEqual(mcp.flag({"floor": 0}, "floor"), ["--floor", "0"])
+        self.assertEqual(mcp.flag({"tests": 3}, "tests"), ["--tests", "3"])
+        for empty in (None, "", False):
+            self.assertEqual(mcp.flag({"tests": empty}, "tests"), [])
+        self.assertEqual(mcp.flag({}, "tests"), [])
+
+
 class ProtocolTests(unittest.TestCase):
     def test_a_session_from_the_handshake_to_a_call(self):
         answers = talk([

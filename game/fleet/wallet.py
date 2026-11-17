@@ -127,6 +127,8 @@ def give(donor, pilot, credits):
     status, answer = gate.call("post", "/accounts/%s/raw" % gate.q(donor),
                                {"toolGroup": "spacemolt_storage", "action": "deposit", "params": {"item_id": "credits", "quantity": int(credits), "target": pilot}}, timeout=90)
     ok = status == 200 and '"error"' not in answer[:200]
+    if ok:
+        refresh(pilot)                                      # the receiver read at once: the next run starts from a wallet that holds the gift (Q67, ENT-220)
     return ok, answer[:200]
 
 

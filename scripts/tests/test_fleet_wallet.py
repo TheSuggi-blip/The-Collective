@@ -22,6 +22,32 @@ def load(name):
     return module
 
 
+class GiveReadsTests(__import__("unittest").TestCase):
+    """Q67 (5), requests ENT-220: after a gift the receiver's wallet is read at once, so the next run starts from a wallet that holds it."""
+
+    def test_an_answered_gift_reads_the_receiver_and_a_refused_one_does_not(self):
+        import importlib.util
+        from pathlib import Path as P
+        spec = importlib.util.spec_from_file_location("wallet_give_under_test", P(__file__).resolve().parents[2] / "game" / "fleet" / "wallet.py")
+        wallet = importlib.util.module_from_spec(spec)
+        sys.path.insert(0, str(P(__file__).resolve().parents[2] / "game" / "fleet"))
+        spec.loader.exec_module(wallet)
+        import gate
+        calls, answers = [], [(200, '{"result": "ok"}')]
+        saved = gate.call
+        gate.call = lambda method, path, body=None, timeout=None: (calls.append((path, (body or {}).get("action"))), answers[0])[1]
+        try:
+            self.assertTrue(wallet.give("miner-1", "hauler-3", 500)[0])
+            self.assertEqual([a for _p, a in calls], ["deposit", "get_status"])
+            self.assertIn("hauler-3", calls[1][0])
+            calls.clear()
+            answers[0] = (500, '{"error": "no"}')
+            self.assertFalse(wallet.give("miner-1", "hauler-3", 500)[0])
+            self.assertEqual([a for _p, a in calls], ["deposit"])
+        finally:
+            gate.call = saved
+
+
 class WalletTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(prefix="fleet-wallet-test-")

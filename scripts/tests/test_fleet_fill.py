@@ -91,6 +91,12 @@ class Tree(unittest.TestCase):
         seen = self.fill.survey(str(self.root), str(self.data))
         return seen, self.fill.read_role(seen, role, **more)
 
+    def flown(self, rid, pilot="hauler-9"):
+        """One run row of a route: it has flown (fill.spare lifts only a route with a run, requests ENT-216)."""
+        with open(self.data / "routes" / "runs.jsonl", "a") as handle:
+            handle.write(json.dumps({"route": rid, "pilot": pilot, "stops": 1, "of": 1, "started": "2026-11-17T10:00:00Z", "minutes": 30,
+                                     "credits_before": 20000, "credits_after": 19800, "delta": -200}) + "\n")
+
     def run_fill(self, member, *args):
         env = {"PATH": os.environ.get("PATH", "/usr/bin:/bin"), "HERMES_SESSION_PROFILE": member, "HOME": self.temp.name, "FLEET_TAXES": os.devnull,
                "FLEET_COMMIT_WAIT": "0"}                   # a route file in work is looked at again without the seconds between
@@ -289,6 +295,10 @@ class WriteTests(Tree):
         (self.data / "scouting" / "far.json").write_text(json.dumps({"system": "far", "read_at": stamp, "pois": {"rocks": {"resources": [{"resource_id": "iron_ore", "remaining": 100000}]}}}))
         seen, got = self.read("hauler")
         self.assertEqual((len(got["starting"]), len(got["waiting"])), (1, 2))                     # one hauler gathers, two wait at its limit
+        self.assertEqual(self.fill.spare(seen, got), [])                                          # requests ENT-216: never flown, a test keeps one ship
+        self.assertIn("gather", seen.get("unflown") or {})
+        self.flown("gather")
+        seen, got = self.read("hauler")
         self.assertEqual(self.fill.spare(seen, got), [("gather", 1)])                             # 600 units above the floor carry two ships a turn: one place more
         self.assertEqual(self.fill.spare(seen, got, served=set(got["waiting"])), [])              # ships that get other work need no place
         chart = self.root / "map" / "galaxy.tsv"                                                  # 2026-11-17: a lawless test route was raised from 1 ship to 4 by this script
@@ -358,6 +368,32 @@ class WriteTests(Tree):
         self.assertEqual(self.git("status", "--porcelain"), "")
 
 
+class ReserveTests(Tree):
+    """requests ENT-213 (Zero) and Military's report of 2026-11-17: fill.py wrote tests that sold silicon, iron and nickel the
+    reserve is short of, and its hourly job put an armor-plate sale into a drone's routes (rule F24)."""
+
+    def test_a_route_or_a_test_that_sells_a_short_item_is_not_added_and_says_why(self):
+        sells_ice = dict(CANDIDATES[1], id="mine-ice-sell", route=dict(CANDIDATES[1]["route"], id="mine-ice-sell", requires={},
+                                                                          sell=[{"item": "water_ice", "min_price": 20}]))
+        self.put_list([sells_ice] + CANDIDATES)
+        seen = self.fill.survey(str(self.root), str(self.data))
+        seen["short"] = {"water_ice": 500}                                                        # what surplus.py would read: the reserve lacks it
+        got = self.fill.read_role(seen, "hauler")
+        self.assertNotIn("mine-ice-sell", [rid for rid, _v, _d, _p in got["tests"]])
+        self.assertIn("mine-ice-sell", [rid for _v, rid in got["closed"].get(self.fill.RESERVE_SHORT, [])])
+        seen = self.fill.survey(str(self.root), str(self.data))
+        seen["short"] = {}
+        got = self.fill.read_role(seen, "hauler")
+        self.assertIn("mine-ice-sell", [rid for rid, _v, _d, _p in got["tests"]])                # nothing short: it is a test as before
+        self.assertEqual(self.fill.sold({"kind": "circuit", "stops": [{"at": "a", "sell": [{"item": "armor_plate"}]}, {"at": "b", "sell": "all"}]}), ["armor_plate"])
+        seen = self.fill.survey(str(self.root), str(self.data))
+        seen["routes"]["freight"] = dict(seen["routes"]["freight"], stops=[{"at": "home:core:base", "sell": [{"item": "armor_plate", "min_price": 300}]}])
+        seen["short"] = {"armor_plate": 5931}
+        got = self.fill.read_role(seen, "hauler")
+        self.assertNotIn("freight", [rid for rid, _v, _p in got["paying"]])                      # a proven sale of a short item is not lent either
+        self.assertIn("freight", [rid for _v, rid in got["closed"].get(self.fill.RESERVE_SHORT, [])])
+
+
 class FallbackTests(Tree):
     """2026-11-17 03:09 UTC: 68 ships waited eight minutes for a hand: the three large home fields stood at their floors and two
     plans lacked the shared standing routes that had room."""
@@ -416,6 +452,9 @@ class FallbackTests(Tree):
     def test_a_route_beyond_the_border_is_lifted_only_as_far_as_its_lift_to_says(self):
         self.gather(lift_to=2)
         self.assertIn("committed", self.run_fill("apollo", "add", "gather").stdout)
+        seen, got = self.read("hauler")
+        self.assertEqual(self.fill.spare(seen, got), [])                                          # requests ENT-216: lift_to waits for the first RESULT line
+        self.flown("gather")
         seen, got = self.read("hauler")
         chart = self.root / "map" / "galaxy.tsv"
         chart.write_text(chart.read_text(encoding="ascii").replace("far\tFar\t1\t0\tvoidborn", "far\tFar\t1\t0\t"), encoding="ascii")
