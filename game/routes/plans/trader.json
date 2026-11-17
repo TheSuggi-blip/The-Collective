@@ -42,6 +42,7 @@
   "gather-hamal-crystal-bloom",
   "gather-gsc-0027-prism-scatter",
   "mine-acubens",
+  "gather-schedar-belt",
   "census-frontier",
   "park"
  ],
@@ -107,6 +108,7 @@
   "gather-hamal-crystal-bloom": 40,
   "gather-gsc-0027-prism-scatter": 40,
   "mine-acubens": 40,
+  "gather-schedar-belt": 40,
   "census-frontier": 40,
   "park": 40
  },
