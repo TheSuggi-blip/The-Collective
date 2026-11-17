@@ -18,19 +18,19 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 | Group | What it holds | Routes | Home space | Beyond the border | Best measured |
 |---|---|---|---|---|---|
 | [Once per Pilot](index-once-per-pilot.md) | Missions and rewards the game pays once per pilot: a new pilot's first work, and seed money. | 34 | 18 | 16 | voidborn-conductive-lattice: 9,110 cr a run |
-| [Paying Routes](index-paying-routes.md) | Work that repeats and whose runs of the last 12 hours measured above zero. | 78 | 20 | 58 | sell-plasma-node-beta: 104,570 cr per ship-hour |
+| [Paying Routes](index-paying-routes.md) | Work that repeats and whose runs of the last 12 hours measured above zero. | 76 | 20 | 56 | sell-plasma-node-beta: 104,570 cr per ship-hour |
 | [Tests](index-tests.md) | Work that repeats and has no measured figure: new, or no readable run in the last 12 hours. One ship until its first RESULT line is read. | 55 | 18 | 37 | not measured yet |
 | [Fitting](index-fitting.md) | A module bought and fitted: the tool a kind of work needs. | 11 | 10 | 1 | fit-ice-harvester-lhs-1140: -4,320 cr per ship-hour |
-| [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 98 | 26 | 72 | craft-boards-silicon-central-nexus: 10,970 cr per ship-hour |
+| [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 101 | 27 | 74 | craft-boards-silicon-central-nexus: 10,970 cr per ship-hour |
 | [Measured at a Loss](index-measured-at-a-loss.md) | Work that repeats and whose runs of the last 12 hours measured zero or below. | 49 | 4 | 45 | mine-stillwater-belt: -30 cr per ship-hour |
 | [Off](index-off.md) | Written down, not flown. | 24 | 13 | 11 | craft-focused-crystal-node-beta: 6,420 cr per ship-hour |
-| All | | 349 | 109 | 240 | |
+| All | | 350 | 110 | 240 | |
 
 ## Routes by Zone and Kind
 
 | Zone | Routes | census | circuit | guard | hunt | mine | Farthest system, jumps from home |
 |---|---|---|---|---|---|---|---|
-| home space | 109 | 1 | 84 | 0 | 11 | 13 | 3 |
+| home space | 110 | 1 | 84 | 1 | 11 | 13 | 3 |
 | beyond the border | 240 | 15 | 29 | 7 | 119 | 70 | 29 |
 
 ## Plans by Role

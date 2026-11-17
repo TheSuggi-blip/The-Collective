@@ -1,0 +1,14 @@
+{
+ "id": "escort-voidborn-conductive-lattice",
+ "kind": "guard",
+ "title": "Escort: follows one pilot of ours on the Node Beta chain (silver bought at Ironlight Crossroads in LHS 1140, beyond the border); docks at Node Beta",
+ "note": "Written by Apophis 2026-11-17 20:16 UTC (orders ENT-042, block APOPHIS: the escort stands whole, a guard route whose `guards` names a circuit follows the pilot that flies it, requests ENT-237). The first escort the dispatcher starts: while a pilot of ours flies voidborn-conductive-lattice (any division, 4 at a time, Trade's claim admirals ENT-053), one drone runs guard.py --follow beside the first of them alphabetically, from that pilot's place. The outpost circuit of Logistics does not exist yet (no route file names GSC-0044 but the census, 20:15 UTC); its escort follows the same pattern once Apollo names it. Never fires first; leaves under 60 percent hull, in a fight, after `minutes`, or two looks after the guarded pilot's order is gone. A guard trails a moving ship by one jump (2026-11-17 16:14 UTC, the first hand flight): it keeps the stops, not the road. Standing work, one escort, an empty hold.",
+ "guards": "voidborn-conductive-lattice",
+ "station": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+ "minutes": 90,
+ "max_ships": 1,
+ "standing": true,
+ "requires": {
+  "empty_hold": true
+ }
+}

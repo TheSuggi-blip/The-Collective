@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 78.
+Routes: 76.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -63,11 +63,9 @@ Routes: 78.
 | [hunt-gsc-0021-ice-fields-hollow-pilgrim](hunt-gsc-0021-ice-fields-hollow-pilgrim.json) | hunt | beyond the border, 9 jumps | hollow_pilgrim at gsc_0021_ice_fields; loot sold at Sirius Observatory Station | up to 1 ships, empty hold | 2 | 32 | 2,750 | 5,160 | 2026-11-17 |
 | [hunt-gsc-0040-frost-ring-hollow-pilgrim](hunt-gsc-0040-frost-ring-hollow-pilgrim.json) | hunt | beyond the border, 9 jumps | hollow_pilgrim at gsc_0040_frost_ring; loot sold at Sirius Observatory Station | up to 1 ships, empty hold | 5 | 55 | 2,300 | 2,580 | 2026-11-17 |
 | [hunt-harborlight-ice-shelf-hollow-pilgrim](hunt-harborlight-ice-shelf-hollow-pilgrim.json) | hunt | beyond the border, 10 jumps | hollow_pilgrim at harborlight_ice_shelf; loot sold at Sirius Observatory Station | up to 1 ships, empty hold | 4 | 40 | 4,700 | 7,460 | 2026-11-17 |
-| [hunt-hassaleh-ice-halo-frost-moth](hunt-hassaleh-ice-halo-frost-moth.json) | hunt | beyond the border, 9 jumps | frost_moth at hassaleh_ice_halo; loot sold at Ironlight Crossroads | up to 1 ships, empty hold | 7 | 20 | 650 | 1,630 | 2026-11-17 |
 | [hunt-hassaleh-ice-halo-hollow-pilgrim](hunt-hassaleh-ice-halo-hollow-pilgrim.json) | hunt | beyond the border, 9 jumps | hollow_pilgrim at hassaleh_ice_halo; loot sold at Sirius Observatory Station | up to 1 ships, empty hold, while sirius_observatory_station bids 1000 cr for crystal_melt | 4 | 30 | 1,150 | 2,270 | 2026-11-17 |
 | [hunt-hollowcrest-frozen-drift-hollow-pilgrim](hunt-hollowcrest-frozen-drift-hollow-pilgrim.json) | hunt | beyond the border, 11 jumps | hollow_pilgrim at hollowcrest_frozen_drift; loot sold at Sirius Observatory Station | up to 1 ships, empty hold | 4 | 25 | 1,960 | 3,510 | 2026-11-17 |
 | [hunt-intercrus-ice-fields-hollow-pilgrim](hunt-intercrus-ice-fields-hollow-pilgrim.json) | hunt | beyond the border, 9 jumps | hollow_pilgrim at intercrus_ice_fields; loot sold at Sirius Observatory Station | up to 1 ships, empty hold | 2 | 38 | 2,830 | 4,490 | 2026-11-17 |
-| [hunt-oxbow-ice-belt-frost-moth](hunt-oxbow-ice-belt-frost-moth.json) | hunt | beyond the border, 13 jumps | frost_moth at oxbow_ice_belt; loot sold at Node Beta Industrial Station | up to 1 ships, empty hold | 1 | 46 | 3,220 | 4,190 | 2026-11-17 |
 | [hunt-raysheet-nebula-veil-ray](hunt-raysheet-nebula-veil-ray.json) | hunt | beyond the border, 8 jumps | veil_ray at raysheet_nebula; loot sold at Nova Terra Central | up to 1 ships, empty hold | 4 | 14 | 20 | 90 | 2026-11-17 |
 | [hunt-regor-wr-bubble-cinder-sylph](hunt-regor-wr-bubble-cinder-sylph.json) | hunt | beyond the border, 11 jumps | cinder_sylph at regor_wr_bubble; loot sold at Hex Star | up to 1 ships, empty hold | 5 | 42 | 1,570 | 2,240 | 2026-11-17 |
 | [hunt-saltwind-gas-pocket-halo-drifter](hunt-saltwind-gas-pocket-halo-drifter.json) | hunt | beyond the border, 11 jumps | halo_drifter at saltwind_gas_pocket; loot sold at Node Beta Industrial Station | up to 1 ships, empty hold | 2 | 38 | 1,410 | 2,210 | 2026-11-17 |
