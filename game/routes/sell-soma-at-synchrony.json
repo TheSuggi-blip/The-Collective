@@ -1,8 +1,8 @@
 {
  "id": "sell-soma-at-synchrony",
  "kind": "circuit",
- "title": "Stored neural soma sold where it lies, at Synchrony Hub, into the station's bid at 370 cr or more",
- "note": "2026-11-16 23:44 UTC (Mercury, orders.log ENT-019, block MERCURY: a sell route for every surplus good with a bid, rule F24). Synchrony Hub bid 380 x 5 (book of 23:29 UTC); 211 soma lie there in our storages, 39 of them traders'. Floor 370 cr: Central Nexus offers soma at 323 cr in depth (201,539 units, its ladder of 21:26 UTC), so a bid above 370 is the top of the market; the soma's base value is 139. The surplus view counts 622 soma held beyond the reserve. requires.stored sends only a pilot whose own storage there holds soma; requires.bid closes the route while a book read within the hour shows the bid gone or under 370. The withdraw step takes only what the bid takes at its best price. Nothing is bought. Open to every division's ships: each sells its own stores.",
+ "title": "Stored neural soma sold where it lies, at Synchrony Hub, into the station's bid at 350 cr or more",
+ "note": "2026-11-16 23:44 UTC (Mercury, orders.log ENT-019, block MERCURY: a sell route for every surplus good with a bid, rule F24). Synchrony Hub bid 380 x 5 (book of 23:29 UTC); 211 soma lie there in our storages, 39 of them traders'. Floor 370 cr: Central Nexus offers soma at 323 cr in depth (201,539 units, its ladder of 21:26 UTC), so a bid above 370 is the top of the market; the soma's base value is 139. The surplus view counts 622 soma held beyond the reserve. requires.stored sends only a pilot whose own storage there holds soma; requires.bid closes the route while a book read within the hour shows the bid gone or under 370. The withdraw step takes only what the bid takes at its best price. Nothing is bought. Open to every division's ships: each sells its own stores. 2026-11-17 03:39 UTC (Mercury): floor 370 -> 350. Central Nexus asks soma at 292 x 201,192 in depth (book of 03:35 UTC, down from 323) and the station bids stand at 357 to 362 for 1 to 7 units (books of 03:31 to 03:38 UTC), under the old floor; the fleet stores 607 soma above the reserve (surplus.py). 350 stays above the deep ask.",
  "requires": {
   "stored": {
    "at": "synchrony_hub",
@@ -12,7 +12,7 @@
   "bid": {
    "item": "voidborn_neural_soma",
    "base": "synchrony_hub",
-   "min_price": 370,
+   "min_price": 350,
    "min_qty": 1
   }
  },
@@ -29,7 +29,7 @@
    "sell": [
     {
      "item": "voidborn_neural_soma",
-     "min_price": 370
+     "min_price": 350
     }
    ]
   },

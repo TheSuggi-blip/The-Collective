@@ -1,0 +1,45 @@
+{
+ "id": "carry-hydrogen-synchrony-to-experiment",
+ "kind": "circuit",
+ "title": "Stored hydrogen_gas carried from synchrony_hub to the the_experiment_research_station bid at 30 cr or more",
+ "note": "2026-11-17 03:39 UTC (Mercury, written by sellgen.py; orders block MERCURY, rule F24). the_experiment_research_station bid 0 x 0 (book of 2026-11-17T03:38:02Z); the cheapest ask read is 6 x 1119754 at 784309214f105860a16a0c100a70eb14; floor 30 cr; at synchrony_hub 1007 units lie there in our storages. A pilot whose own storage at the first station holds the good withdraws up to 32, sells into the bid at the second and stores what the bid left there. requires.bid closes it while a book read within the hour shows that bid gone or under the floor. Nothing is bought; a run into a bid taken on the way costs the hop's fuel.",
+ "requires": {
+  "stored": {
+   "at": "synchrony_hub",
+   "item": "hydrogen_gas",
+   "min": 1
+  },
+  "bid": {
+   "item": "hydrogen_gas",
+   "base": "the_experiment_research_station",
+   "min_price": 30,
+   "min_qty": 15
+  }
+ },
+ "max_ships": 1,
+ "stops": [
+  {
+   "at": "synchrony:synchrony_hub:synchrony_hub",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "hydrogen_gas",
+     "qty": 32
+    }
+   ]
+  },
+  {
+   "at": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+   "sell": [
+    {
+     "item": "hydrogen_gas",
+     "min_price": 30
+    }
+   ]
+  },
+  {
+   "at": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+   "store": "all"
+  }
+ ]
+}

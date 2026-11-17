@@ -1,8 +1,8 @@
 {
  "id": "carry-soma-beta-to-gamma",
  "kind": "circuit",
- "title": "Stored neural soma carried from Node Beta to the Node Gamma bid at 370 cr or more",
- "note": "2026-11-16 23:44 UTC (Mercury, orders.log ENT-019, block MERCURY: a sell route for every surplus good with a bid, rule F24). Node Gamma bid 376 x 15 (book of 23:04 UTC), the deepest soma bid of our stations; no soma is stored there. Floor 370 cr: Central Nexus offers soma at 323 cr in depth, so a bid above 370 is the top of the market; base value 139. A pilot whose own storage at the first station holds soma withdraws up to 4, sells into the bid at the second and stores what the bid did not take there. requires.bid closes it while a book read within the hour shows that bid gone or under 370. Nothing is bought; a run into a bid that left on the way costs the hop's fuel.",
+ "title": "Stored neural soma carried from Node Beta to the Node Gamma bid at 350 cr or more",
+ "note": "2026-11-16 23:44 UTC (Mercury, orders.log ENT-019, block MERCURY: a sell route for every surplus good with a bid, rule F24). Node Gamma bid 376 x 15 (book of 23:04 UTC), the deepest soma bid of our stations; no soma is stored there. Floor 370 cr: Central Nexus offers soma at 323 cr in depth, so a bid above 370 is the top of the market; base value 139. A pilot whose own storage at the first station holds soma withdraws up to 4, sells into the bid at the second and stores what the bid did not take there. requires.bid closes it while a book read within the hour shows that bid gone or under 370. Nothing is bought; a run into a bid that left on the way costs the hop's fuel. 2026-11-17 03:39 UTC (Mercury): floor 370 -> 350. Central Nexus asks soma at 292 x 201,192 in depth (book of 03:35 UTC, down from 323) and the station bids stand at 357 to 362 for 1 to 7 units (books of 03:31 to 03:38 UTC), under the old floor; the fleet stores 607 soma above the reserve (surplus.py). 350 stays above the deep ask.",
  "requires": {
   "stored": {
    "at": "node_beta_industrial_station",
@@ -12,7 +12,7 @@
   "bid": {
    "item": "voidborn_neural_soma",
    "base": "node_gamma_relay_station",
-   "min_price": 370,
+   "min_price": 350,
    "min_qty": 2
   }
  },
@@ -33,7 +33,7 @@
    "sell": [
     {
      "item": "voidborn_neural_soma",
-     "min_price": 370
+     "min_price": 350
     }
    ]
   },
