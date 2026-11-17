@@ -20,7 +20,7 @@ they store, the members by name and the treasury's balance. They are live
 data of the unit (the tools `hive` with `verb=empire`, `stock`, `ship`;
 `game/fleet/empire.py show`).
 
-Facts as of 2026-11-17T05:21:00Z.
+Facts as of 2026-11-17T06:22:21Z.
 
 ## 1. The Faction
 
@@ -33,7 +33,7 @@ Facts as of 2026-11-17T05:21:00Z.
 | Ships of the fleet in it | 16 of 246 |
 | Stations of our own | 0 of 5 a faction may hold |
 | Outposts | 0 of 8 |
-| Offices at stations | 0, rent 0 cr per cycle (0 cr a day) |
+| Offices at stations | 1, rent 69 cr per cycle (5,934 cr a day) |
 | Shared ships in garages | 0 |
 | At war | no |
 | Allies | none |
@@ -47,8 +47,11 @@ of its own limit.
 
 We hold no station and no outpost yet.
 
-Territory: none. A system counts when a station or an outpost there
-carries our tag, or when an office of ours stands at a station there.
+Systems we hold something in:
+
+| System | What | Note |
+|---|---|---|
+| `node_beta` | office | at node_beta_industrial_station |
 
 What founding a base takes: `game/rules/09-factions.md` (fees and limits)
 and the tool `base_plan` (every part down to the ore, against what we
@@ -56,8 +59,9 @@ hold).
 
 ## 3. Offices at Other Stations
 
-None yet. The first one at a station is the Faction Lockbox: every other
-office there needs it.
+| Office | Tier | Station | System | State | Rent per cycle |
+|---|---|---|---|---|---|
+| Faction Lockbox | 1 | node_beta_industrial_station | `node_beta` | active | 69 |
 
 ## 4. Sites
 
