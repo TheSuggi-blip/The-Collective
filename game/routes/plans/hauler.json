@@ -56,6 +56,7 @@
   "gather-ironhollow-echo-ejecta",
   "gather-okab-belt",
   "gather-gj-3470-dewfall-fray",
+  "gather-acubens-belt-carbon",
   "census-frontier",
   "park"
  ],
@@ -139,6 +140,7 @@
   "gather-ironhollow-echo-ejecta": 40,
   "gather-okab-belt": 40,
   "gather-gj-3470-dewfall-fray": 40,
+  "gather-acubens-belt-carbon": 40,
   "census-frontier": 40,
   "park": 40
  },
