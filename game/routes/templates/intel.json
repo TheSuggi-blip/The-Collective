@@ -5,6 +5,9 @@
   "explorer": {
    "title": "Explore: the roads to the station sites and the systems beside them, then the frontier",
    "routes": [
+    "census-north",
+    "census-east",
+    "census-south",
     "census-roads",
     "census-frontier"
    ],
