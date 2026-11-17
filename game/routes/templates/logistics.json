@@ -53,14 +53,14 @@
   "gas-harvest": {
    "title": "Gas for the haulers with a Gas Harvester I: one ship a cloud, sold at the bid the route names, the rest stored",
    "routes": [
-    "mine-antares-gas-cloud",
-    "mine-amberfall-emission-nebula",
-    "mine-deepwell-haze"
+    "mine-achernar-gas-pocket",
+    "mine-lesath-gas-cloud",
+    "mine-amberfall-emission-nebula"
    ],
    "trains": [
     "mining"
    ],
-   "note": "Each route takes one ship; a route that loses twice is closed by the dispatcher for its six-hour window and opens again by itself (F22). Needs a Gas Harvester I fitted. The Experiment haze, Coldwater and GSC-0016 are Trade's claim (admirals.log ENT-004)."
+   "note": "Each route takes one ship; a route that loses twice is closed by the dispatcher for its six-hour window and opens again by itself (F22). Needs a Gas Harvester I fitted. Since 2026-11-17 08:10 UTC only clouds that sell and store at our own stations (Node Beta, Node Gamma), where Trade's hydrogen routes take what the gas bid leaves (sell-hydrogen-at-node-beta 35,532 cr a ship-hour, 4 hours to 07:52 UTC); Antares and Deepwell haze sold at Nova Terra Central and left 666 hydrogen and 122 plasma stored there, out of reach. The Experiment haze, Coldwater and GSC-0016 are Trade's claim (admirals.log ENT-012)."
   }
  }
 }
