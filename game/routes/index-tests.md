@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 55.
+Routes: 63.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -41,8 +41,14 @@ Routes: 55.
 | [trade-plasma-gas-784309214f105860a16a0c100a70eb14-node](trade-plasma-gas-784309214f105860a16a0c100a70eb14-node.json) | circuit | beyond the border, 6 jumps | Plasma Gas: bought at Ironlight Crossroads for 52 cr, sold at Node Beta Industrial Station for 104 cr | up to 1 ships, from 3,915 cr | TBD | TBD | TBD | TBD | -- |
 | [hunt-denebola-fractured-prism-veil-ray](hunt-denebola-fractured-prism-veil-ray.json) | hunt | beyond the border, 5 jumps | veil_ray at denebola_fractured_prism; loot sold at Node Beta Industrial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-edasich-ice-halo-frost-moth](hunt-edasich-ice-halo-frost-moth.json) | hunt | beyond the border, 25 jumps | frost_moth at edasich_ice_halo; loot sold at Treasure Cache Trading Post | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
+| [hunt-enif-ice-belt-hollow-pilgrim](hunt-enif-ice-belt-hollow-pilgrim.json) | hunt | beyond the border, 25 jumps | hollow_pilgrim at enif_ice_belt; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
+| [hunt-gsc-0035-vapor-fields-cinder-sylph](hunt-gsc-0035-vapor-fields-cinder-sylph.json) | hunt | beyond the border, 20 jumps | cinder_sylph at gsc_0035_vapor_fields; loot sold at War Citadel | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
+| [hunt-gsc-0037-frost-ring-hollow-pilgrim](hunt-gsc-0037-frost-ring-hollow-pilgrim.json) | hunt | beyond the border, 18 jumps | hollow_pilgrim at gsc_0037_frost_ring; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
+| [hunt-gsc-0042-ice-shelf-hollow-pilgrim](hunt-gsc-0042-ice-shelf-hollow-pilgrim.json) | hunt | beyond the border, 18 jumps | hollow_pilgrim at gsc_0042_ice_shelf; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
+| [hunt-gsc-0045-gas-pocket-cinder-sylph](hunt-gsc-0045-gas-pocket-cinder-sylph.json) | hunt | beyond the border, 20 jumps | cinder_sylph at gsc_0045_gas_pocket; loot sold at War Citadel | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-navi-ice-shelf-frost-moth](hunt-navi-ice-shelf-frost-moth.json) | hunt | beyond the border, 20 jumps | frost_moth at navi_ice_shelf; loot sold at Nova Terra Central | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-orphan-nebula-veil-ray](hunt-orphan-nebula-veil-ray.json) | hunt | beyond the border, 9 jumps | veil_ray at orphan_nebula; loot sold at Nova Terra Central | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
+| [hunt-sandrift-ice-fields-hollow-pilgrim](hunt-sandrift-ice-fields-hollow-pilgrim.json) | hunt | beyond the border, 18 jumps | hollow_pilgrim at sandrift_ice_fields; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-test-amberfall-sift-ray](hunt-test-amberfall-sift-ray.json) | hunt | beyond the border, 5 jumps | Yield test: sift_ray, chlorophage at amberfall_emission_nebula (lawless); what a kill drops and whether a bid takes it | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-test-atlas-halo-drifter](hunt-test-atlas-halo-drifter.json) | hunt | beyond the border, 6 jumps | Yield test: halo_drifter at atlas_gas_pocket (lawless); what a kill drops and whether a bid takes it | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-test-atlas-patina-grazer](hunt-test-atlas-patina-grazer.json) | hunt | beyond the border, 6 jumps | Yield test: patina_grazer at gossamer_null (lawless); what a kill drops and whether a bid takes it | up to 1 ships, without piercing_railgun_i, empty hold | TBD | TBD | TBD | TBD | -- |
@@ -50,6 +56,8 @@ Routes: 55.
 | [hunt-test-gsc-0050-cinder-sylph](hunt-test-gsc-0050-cinder-sylph.json) | hunt | beyond the border, 3 jumps | Cinder-sylphs at gsc_0050_gas_plume (lawless); ember glands sold at Node Beta | up to 1 ships, without piercing_railgun_i, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-test-nightveil-rivetshell](hunt-test-nightveil-rivetshell.json) | hunt | beyond the border, 5 jumps | Yield test: rivetshell at nightveil_dark_residue (lawless); what a kill drops and whether a bid takes it | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-test-stormwatch-lantern-slug](hunt-test-stormwatch-lantern-slug.json) | hunt | beyond the border, 5 jumps | Yield test: lantern_slug at stormwatch_belt (lawless); what a kill drops and whether a bid takes it | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
+| [hunt-unukalhai-ice-fields-hollow-pilgrim](hunt-unukalhai-ice-fields-hollow-pilgrim.json) | hunt | beyond the border, 24 jumps | hollow_pilgrim at unukalhai_ice_fields; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
+| [hunt-yildun-outer-ice-hollow-pilgrim](hunt-yildun-outer-ice-hollow-pilgrim.json) | hunt | beyond the border, 18 jumps | hollow_pilgrim at yildun_outer_ice; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [mine-alnair-ice-fields-nexus](mine-alnair-ice-fields-nexus.json) | mine | beyond the border, 5 jumps | Alnair Ice Fields: water_ice, nitrogen_ice, deuterium_ice; sold at Central Nexus | up to 1 ships, needs ice_harvester_i, empty hold, while central_nexus bids 25 cr for water_ice | TBD | TBD | TBD | TBD | -- |
 | [mine-atlas-gas-pocket](mine-atlas-gas-pocket.json) | mine | beyond the border, 6 jumps | Atlas Gas Pocket: plasma_gas, xenon_gas, nebula_gas, neon_gas; sold at Node Beta Industrial Station | up to 1 ships, needs gas_harvester_i, empty hold, while node_beta_industrial_station bids 72 cr for plasma_gas | TBD | TBD | TBD | TBD | -- |
 | [mine-deepwell-haze](mine-deepwell-haze.json) | mine | beyond the border, 8 jumps | Deepwell Haze: hydrogen_gas, argon_gas, plasma_gas, xenon_gas, neon_gas; sold at Nova Terra Central | up to 1 ships, needs gas_harvester_i, empty hold | TBD | TBD | TBD | TBD | -- |
