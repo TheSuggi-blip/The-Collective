@@ -2,7 +2,7 @@
  "id": "hunt-felis-frost-ring-hollow-pilgrim",
  "kind": "hunt",
  "title": "hollow_pilgrim at felis_frost_ring; loot sold at The Experiment Research Station",
- "note": "Written by routemaker.py from the herd's count, the loot of 2 runs of ours and the order book; an estimate of 8429 cr per hunter-hour, not a measurement. A test: one ship, the ranching rules kept. 2026-11-16 19:29 UTC (Apophis): a test, one hunter. The crystal melt bid at The Experiment moves between 54 cr x 50 and about 1,394 cr x 9 to 10 (data/market/history.jsonl, 13:21 to 19:01 UTC); `requires.bid` opens the route only while 1,000 cr or more stands for 4 units. Hollow-pilgrims (70 hull) dropped crystal melt, carapace and meat in the yield test at Tanglewood (guidebook military.md, section 2). Felis Frost Ring read 5 and no pilot at 17:27 UTC. 2026-11-17 04:12 UTC (Apophis): gated on the Sirius bid (1,585 x 60 at 04:03 UTC) instead of The Experiment's, which comes and goes; min_bid 1000 so nothing is sold under it; floor 2.",
+ "note": "Written by routemaker.py from the herd's count, the loot of 2 runs of ours and the order book; an estimate of 8429 cr per hunter-hour, not a measurement. A test: one ship, the ranching rules kept. 2026-11-16 19:29 UTC (Apophis): a test, one hunter. The crystal melt bid at The Experiment moves between 54 cr x 50 and about 1,394 cr x 9 to 10 (data/market/history.jsonl, 13:21 to 19:01 UTC); `requires.bid` opens the route only while 1,000 cr or more stands for 4 units. Hollow-pilgrims (70 hull) dropped crystal melt, carapace and meat in the yield test at Tanglewood (guidebook military.md, section 2). Felis Frost Ring read 5 and no pilot at 17:27 UTC. 2026-11-17 04:12 UTC (Apophis): gated on the Sirius bid (1,585 x 60 at 04:03 UTC) instead of The Experiment's, which comes and goes; min_bid 1000 so nothing is sold under it; floor 2. 2026-11-17 08:14 UTC (Apophis): standing: the melt is stored while Sirius bids 1,000 or more for any depth (it read 1,588 x 2 at 08:05 UTC and 1 to 85 in a day); four hunts of 07:23 to 07:47 UTC looted 11 melt in 138 hunter-minutes, worth about 1,400 to 1,588 cr each; lift_to 1: one hunter or guard to a place (F9, orders ENT-031 task 4 a).",
  "place": "felis:felis_frost_ring",
  "species": [
   "hollow_pilgrim"
@@ -20,7 +20,7 @@
    "item": "crystal_melt",
    "base": "sirius_observatory_station",
    "min_price": 1000,
-   "min_qty": 4
+   "min_qty": 1
   },
   "without_module": "piercing_railgun_i"
  },
@@ -32,5 +32,7 @@
   "cph_per_ship": -360,
   "hours": 12,
   "last_run": "2026-11-17T04:29:16Z"
- }
+ },
+ "standing": true,
+ "lift_to": 1
 }

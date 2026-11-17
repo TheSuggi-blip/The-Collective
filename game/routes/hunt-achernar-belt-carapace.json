@@ -2,7 +2,7 @@
  "id": "hunt-achernar-belt-carapace",
  "kind": "hunt",
  "title": "Belt-grazers and patina-grazers at Achernar Belt; creature carapace into storage at The Experiment",
- "note": "2026-11-16 18:33 UTC (Apophis): a test, one ship, standing work. Orders ENT-017 (block APOPHIS): a station takes 35,640 creature carapace and we hold 904 (base_plan, 18:30 UTC); no station bids above 1 cr for it, so the hunter stores it. The herd read 9 belt-grazers and 5 patina-grazers, no pilot, at 18:26 UTC (data/wildlife/achernar.json). Beyond the border: `alone` and an empty hold (F13). First Hunt hunts the same prey (three kills a run, guidebook military.md, section 3). 2026-11-16 19:23 UTC (Apophis): off. Two runs from 18:58 UTC, a ship not of ours at the belt in both: 1 kill, 2 carapace and 1 raw xeno meat, -99 and -44 cr (data/routes/runs.jsonl). A herd where a foreign ship stood twice leaves the plan. The veil-ray hunts loot 5 carapace a run beside their curd (three runs from 18:33 UTC). 2026-11-17 04:12 UTC (Apophis): on again as standing work (rule F22); min_bid 5000: carapace is the reserve's and is stored, never sold (F24).",
+ "note": "2026-11-16 18:33 UTC (Apophis): a test, one ship, standing work. Orders ENT-017 (block APOPHIS): a station takes 35,640 creature carapace and we hold 904 (base_plan, 18:30 UTC); no station bids above 1 cr for it, so the hunter stores it. The herd read 9 belt-grazers and 5 patina-grazers, no pilot, at 18:26 UTC (data/wildlife/achernar.json). Beyond the border: `alone` and an empty hold (F13). First Hunt hunts the same prey (three kills a run, guidebook military.md, section 3). 2026-11-16 19:23 UTC (Apophis): off. Two runs from 18:58 UTC, a ship not of ours at the belt in both: 1 kill, 2 carapace and 1 raw xeno meat, -99 and -44 cr (data/routes/runs.jsonl). A herd where a foreign ship stood twice leaves the plan. The veil-ray hunts loot 5 carapace a run beside their curd (three runs from 18:33 UTC). 2026-11-17 04:12 UTC (Apophis): on again as standing work (rule F22); min_bid 5000: carapace is the reserve's and is stored, never sold (F24). 2026-11-17 08:14 UTC (Apophis): `alone` \"pirates\": it leaves only for a pirate or a pilot filed hostile (hunt.py 3f8874f); 61 of 161 drone hunts from 04:12 to 08:10 UTC left for a stranger who never fired (data/routes/runs.jsonl), and no ship of ours was fired on at a hunt (errors.log), so the limit is lifted (F13); lift_to 1: one hunter or guard to a place (F9, orders ENT-031 task 4 a).",
  "place": "achernar:achernar_belt",
  "species": [
   "belt_grazer",
@@ -14,7 +14,7 @@
  "minutes": 40,
  "max_ships": 1,
  "min_creatures": 4,
- "alone": true,
+ "alone": "pirates",
  "standing": true,
  "requires": {
   "empty_hold": true,
@@ -28,5 +28,6 @@
   "cph_per_ship": -540,
   "hours": 12,
   "last_run": "2026-11-17T07:01:42Z"
- }
+ },
+ "lift_to": 1
 }

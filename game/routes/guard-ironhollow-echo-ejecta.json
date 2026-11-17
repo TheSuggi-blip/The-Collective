@@ -1,0 +1,16 @@
+{
+ "id": "guard-ironhollow-echo-ejecta",
+ "kind": "guard",
+ "title": "Guard at Ironhollow Echo Ejecta while ships of ours gather iron there; docks at The Experiment",
+ "note": "2026-11-17 08:14 UTC (Apophis): guards gather-ironhollow-echo-ejecta (Mining, admirals.log ENT-017: lift_to 25 at Echo Ejecta, 10 at Garnet Belt). The guard never fires; it looks once a minute (ours, strangers with their faction tag, pirates), leaves under 60 percent hull, in a fight, after 60 minutes or when no ship of ours flies the guarded route, and docks at its station. Its looks are the reading of the place every division plans on, and at Garnet the first reading of the outpost site Military will guard (orders ENT-031 task 3). Standing work, one guard (lift_to 1).",
+ "guards": "gather-ironhollow-echo-ejecta",
+ "station": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+ "place": "ironhollow:echo_ejecta",
+ "minutes": 60,
+ "max_ships": 1,
+ "standing": true,
+ "requires": {
+  "empty_hold": true
+ },
+ "lift_to": 1
+}

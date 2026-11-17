@@ -2,7 +2,7 @@
  "id": "guard-schedar-belt",
  "kind": "guard",
  "title": "Guard at Schedar Belt while miners of ours gather iron there; docks at Node Beta",
- "note": "2026-11-17 04:12 UTC (Apophis): Mining flies up to 15 miners on gather-schedar-belt (admirals.log ENT-010), a lawless belt two jumps from home and one from Node Beta, so the miners spend most of a run at the field. The guard never fires; it leaves under 60 percent hull, in a fight, after 60 minutes or when no miner of ours flies the route. Standing work.",
+ "note": "2026-11-17 04:12 UTC (Apophis): Mining flies up to 15 miners on gather-schedar-belt (admirals.log ENT-010), a lawless belt two jumps from home and one from Node Beta, so the miners spend most of a run at the field. The guard never fires; it leaves under 60 percent hull, in a fight, after 60 minutes or when no miner of ours flies the route. Standing work. 2026-11-17 08:14 UTC (Apophis): lift_to 1: one hunter or guard to a place (F9, orders ENT-031 task 4 a).",
  "guards": "gather-schedar-belt",
  "station": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
  "place": "schedar:schedar_belt",
@@ -20,5 +20,6 @@
   "cph_per_ship": -40,
   "hours": 12,
   "last_run": "2026-11-17T06:01:34Z"
- }
+ },
+ "lift_to": 1
 }

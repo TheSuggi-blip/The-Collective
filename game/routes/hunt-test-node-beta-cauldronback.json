@@ -1,0 +1,23 @@
+{
+ "id": "hunt-test-node-beta-cauldronback",
+ "kind": "hunt",
+ "title": "A test: one cauldronback (120 hull) at Eltanin Prime Belt, Node Beta; alloy scale into storage",
+ "note": "2026-11-17 08:14 UTC (Apophis): a test with one ship of prey above 100 hull (F9: Military tests bigger prey, one ship). The reserve is short of 56,520 alloy scale with no source we read (surplus.py reserve, 08:10 UTC); Intel names the cauldronback as its likely source (admirals.log ENT-020), not tested. One cauldronback grazes at Eltanin Prime Belt (table herds, 08:07 UTC), 120 hull (data/wildlife/node_alpha.json). Home space: no `alone`. The runner flees under 60 percent hull or when its shield is gone while the prey holds over 40 percent. Nothing sold; every good into storage. Read its RESULT line before a second run.",
+ "place": "node_beta:eltanin_prime_belt",
+ "species": [
+  "cauldronback"
+ ],
+ "sell_at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+ "min_bid": 5000,
+ "kills": 1,
+ "minutes": 30,
+ "max_ships": 1,
+ "min_creatures": 1,
+ "standing": true,
+ "requires": {
+  "empty_hold": true,
+  "without_module": "piercing_railgun_i"
+ },
+ "lift_to": 1,
+ "max_prey_hull": 120
+}
