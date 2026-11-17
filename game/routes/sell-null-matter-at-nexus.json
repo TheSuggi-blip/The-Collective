@@ -1,0 +1,41 @@
+{
+ "id": "sell-null-matter-at-nexus",
+ "kind": "circuit",
+ "title": "Stored null matter sold where it lies, at Central Nexus, at 200 cr or more",
+ "note": "2026-11-17 19:41 UTC (Mercury, written by sellgen.py, orders.log ENT-042 block MERCURY, rule F24). The fleet stores 1,455 null matter at Central Nexus itself (14 of them traders'); this route sells each pilot's own where it lies. Central Nexus bid null matter 200 x 7 (17:56 UTC), 200 x 45 (18:05), 210 x 95 (19:09), 200 x 295 (19:14), 210 x 38 (19:20), 200 x 104 (19:38) and 0 at 19:40 UTC (ledger.py prices null_matter): a bid that comes back within minutes; it is the only null matter bid in our 40 books. Central Nexus asks 213 to 220 cr (213 x 16 at 19:40 UTC, 220 x 278 before), so 200 is the spread below the market's ask, not a dump; the catalog's base value is 450, and no book bids near it. Null matter is in no target of game/reserve.tsv (surplus.py, 19:32 UTC; reservecheck.py PASS); it is size 2, so a hold of 65 carries 32. It goes into processed null matter only in a facility we do not own (process_null_matter). A test: max_ships 1, no lift_to, until its first RESULT line is read (rules F8, F13 of the rulebook; my lesson on lift_to).",
+ "requires": {
+  "stored": {
+   "at": "central_nexus",
+   "item": "null_matter",
+   "min": 1
+  },
+  "bid": {
+   "item": "null_matter",
+   "base": "central_nexus",
+   "min_price": 200,
+   "min_qty": 10
+  }
+ },
+ "max_ships": 1,
+ "stops": [
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "null_matter"
+    }
+   ],
+   "sell": [
+    {
+     "item": "null_matter",
+     "min_price": 200
+    }
+   ]
+  },
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "store": "all"
+  }
+ ]
+}
