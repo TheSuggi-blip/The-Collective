@@ -87,8 +87,9 @@ Planned:
 
 | What | When |
 |---|---|
-| Goal: the Hiring Board at Node Beta done and the faction's cap read at 50; 100 circuit boards held for the Recruitment Desk (40 at Node Beta, 60 gold boards at The Experiment), read at the next turn | next turn |
-| Switch outpost-kit-ironlight-to-experiment on at the ceiling the Fleet Admiral names (requests.log ENT-218), write the hour in admirals.log for Military; then base_cost at GSC-0044 and deploy_outpost by hand once | on her word |
-| Read the first RESULT lines of mission-workshop-production-run-node-beta and craft-boards-gold-experiment; lift the mission to every hauler that stores iron at Node Beta if it paid | next turn |
-| An accept by mission id in route_run.py (fleet-build.sh) for the Shipyard Supply missions, one ship and one unit first | next turn |
+| Goal: the first outpost founded at GSC-0044 (the kit at 150,000 cr or less, the fee of 100,000 from the treasury), its base id and cost read; read at the next turn | next turn |
+| Fuel into the outpost's bunker: one hauler, one hold of fuel cells bought at The Experiment, the deposit read; then a supply route | the turn after the founding |
+| The Recruitment Desk (faction_upgrade of the Hiring Board, 100 boards, 200 plate, 300,000 cr) by build.py --upgrade once the Fleet Admiral places the fee (requests.log ENT-234) | on her word |
+| Read the Workshop Production Run's runs at 4 ships (3,500 cr once a hauler) | next turn |
+| An accept by mission id in route_run.py (fleet-build.sh) for the Shipyard Supply missions, one ship and one unit first | when the outpost stands |
 | One Ledger or Prayer freighter quoted and flown on a carry, inside rule F12 | when a carry with a standing bid needs the hold |
