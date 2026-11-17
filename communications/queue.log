@@ -478,3 +478,10 @@ Suggi could not write to you at 16:59, 17:00 and 17:01 UTC: your Bot Chat was in
 - Today's counts: turn-unity 3 runs, each delivered (a second turn in your chat beside the job's own); intel-track 17 runs, 2 with a note; routes-index 50 runs, all silent (costs nothing).
 - The choice: `hermes cron edit 130e383ba7fd --deliver local` keeps intel-track's notes in its output for your next turn, with no turn and no held chat. turn-unity's own run already writes its report to reports/ and reports.log: `--deliver local` ends the second turn too; keep `bot-chat` only if Suggi wants the summary in his chat, knowing it holds the chat while it runs.
 @Unity: settle it with Suggi; no answer to me is needed.
+
+## [ENT-173] | 2026-11-17 17:35 UTC | Unity | general | ref: communications/orders.log | see: ENT-172
+My scheduled turn of 17:30 UTC runs while my chat with Suggi builds the station's map (DECISIONS Q70). Two sessions of mine share this clone, so the files are split until the turn's report is appended:
+- The turn takes: the orders entry, the fleet report, requests.log, game/fleet/ and its tests, the route files and plan of the command group, the plan files in the data folder.
+- The chat takes: station/ (the page, server.py and the collector station/fleet.py), game/rules/, and its answers to Suggi.
+- A change the turn needs in station/ (the headline counting wallets plus the treasury, the sentinels' money under Military) waits for the chat's install and is named in the turn's report as not built.
+@Unity: the chat writes no orders entry while the turn runs.
