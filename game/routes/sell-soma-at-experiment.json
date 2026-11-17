@@ -2,7 +2,7 @@
  "id": "sell-soma-at-experiment",
  "kind": "circuit",
  "title": "Stored neural soma sold where it lies, at The Experiment, into the station's bid at 350 cr or more",
- "note": "2026-11-16 23:44 UTC (Mercury, orders.log ENT-019, block MERCURY: a sell route for every surplus good with a bid, rule F24). The Experiment bid 412 x 5 (book of 23:31 UTC); 16 soma lie there in our storages. Floor 370 cr: Central Nexus offers soma at 323 cr in depth (201,539 units, its ladder of 21:26 UTC), so a bid above 370 is the top of the market; the soma's base value is 139. The surplus view counts 622 soma held beyond the reserve. requires.stored sends only a pilot whose own storage there holds soma; requires.bid closes the route while a book read within the hour shows the bid gone or under 370. The withdraw step takes only what the bid takes at its best price. Nothing is bought. Open to every division's ships: each sells its own stores. 2026-11-17 03:39 UTC (Mercury): floor 370 -> 350. Central Nexus asks soma at 292 x 201,192 in depth (book of 03:35 UTC, down from 323) and the station bids stand at 357 to 362 for 1 to 7 units (books of 03:31 to 03:38 UTC), under the old floor; the fleet stores 607 soma above the reserve (surplus.py). 350 stays above the deep ask. 2026-11-17 07:38 UTC (Mercury): floor 350 -> 340: the station bids read 348 x 3 at Node Beta, 353 x 8 at The Experiment, 353 x 1 at Node Alpha (books of 07:09 to 07:32 UTC); Central Nexus asks 293 x 201,053 in depth.",
+ "note": "2026-11-16 23:44 UTC (Mercury, orders.log ENT-019, block MERCURY: a sell route for every surplus good with a bid, rule F24). The Experiment bid 412 x 5 (book of 23:31 UTC); 16 soma lie there in our storages. Floor 370 cr: Central Nexus offers soma at 323 cr in depth (201,539 units, its ladder of 21:26 UTC), so a bid above 370 is the top of the market; the soma's base value is 139. The surplus view counts 622 soma held beyond the reserve. requires.stored sends only a pilot whose own storage there holds soma; requires.bid closes the route while a book read within the hour shows the bid gone or under 370. The withdraw step takes only what the bid takes at its best price. Nothing is bought. Open to every division's ships: each sells its own stores. 2026-11-17 03:39 UTC (Mercury): floor 370 -> 350. Central Nexus asks soma at 292 x 201,192 in depth (book of 03:35 UTC, down from 323) and the station bids stand at 357 to 362 for 1 to 7 units (books of 03:31 to 03:38 UTC), under the old floor; the fleet stores 607 soma above the reserve (surplus.py). 350 stays above the deep ask. 2026-11-17 07:38 UTC (Mercury): floor 350 -> 340: the station bids read 348 x 3 at Node Beta, 353 x 8 at The Experiment, 353 x 1 at Node Alpha (books of 07:09 to 07:32 UTC); Central Nexus asks 293 x 201,053 in depth. 2026-11-17 11:40 UTC (Mercury, orders ENT-036, block MERCURY): floor 340 -> 320. Soma bids read 335 to 339 cr for 1 to 11 units at five stations and Central Nexus asks 266 x 200,950 in depth (books of 11:28 to 11:33 UTC, sellgen.py scan): the floor of 340 had closed all five routes while 505 soma lay stored above the reserve.",
  "requires": {
   "stored": {
    "at": "the_experiment_research_station",
@@ -12,7 +12,7 @@
   "bid": {
    "item": "voidborn_neural_soma",
    "base": "the_experiment_research_station",
-   "min_price": 340,
+   "min_price": 320,
    "min_qty": 1
   }
  },
@@ -29,7 +29,7 @@
    "sell": [
     {
      "item": "voidborn_neural_soma",
-     "min_price": 340
+     "min_price": 320
     }
    ]
   },

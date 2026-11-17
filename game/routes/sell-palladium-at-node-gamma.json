@@ -2,7 +2,7 @@
  "id": "sell-palladium-at-node-gamma",
  "kind": "circuit",
  "title": "Stored palladium_ore sold where it lies, at node_gamma_relay_station, at 300 cr or more",
- "note": "2026-11-17 07:38 UTC (Mercury, written by sellgen.py; orders block MERCURY, rule F24). node_gamma_relay_station bid 339 x 18 (book of 2026-11-17T07:11:35Z); the cheapest ask read is 432 x 26 at sirius_observatory_station; floor 300 cr; 7 units lie there in our storages. requires.stored sends only a pilot whose own storage there holds the good; requires.bid closes the route while a book read within the hour shows no bid at the floor. The withdraw step takes only what the bid takes. Nothing is bought. Open to every division: each ship sells its own stores.",
+ "note": "2026-11-17 07:38 UTC (Mercury, written by sellgen.py; orders block MERCURY, rule F24). node_gamma_relay_station bid 339 x 18 (book of 2026-11-17T07:11:35Z); the cheapest ask read is 432 x 26 at sirius_observatory_station; floor 300 cr; 7 units lie there in our storages. requires.stored sends only a pilot whose own storage there holds the good; requires.bid closes the route while a book read within the hour shows no bid at the floor. The withdraw step takes only what the bid takes. Nothing is bought. Open to every division: each ship sells its own stores. 2026-11-17 11:40 UTC (Mercury, orders ENT-036): floor 300 -> 270. Node Gamma bids 279 x 15 (book of 11:28 UTC), base value 200, the cheapest ask 200 x 1 at Procyon Colonial Station (sellgen.py scan); 128 palladium stay held back for the superconductor recipes (stock view=reserve).",
  "requires": {
   "stored": {
    "at": "node_gamma_relay_station",
@@ -12,7 +12,7 @@
   "bid": {
    "item": "palladium_ore",
    "base": "node_gamma_relay_station",
-   "min_price": 300,
+   "min_price": 270,
    "min_qty": 1
   }
  },
@@ -29,7 +29,7 @@
    "sell": [
     {
      "item": "palladium_ore",
-     "min_price": 300
+     "min_price": 270
     }
    ]
   },

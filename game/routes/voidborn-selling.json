@@ -1,8 +1,8 @@
 {
  "id": "voidborn-selling",
  "kind": "circuit",
- "title": "Market Participation: Selling: 1,000 cr once; ten liquid nitrogen bought and sold at The Experiment",
- "note": "For the pilots that still hold the starter mission (ten units of anything sold on the exchange). Read 2026-11-15 22:23 UTC at The Experiment: liquid nitrogen on offer at 11 cr for 585 units, bid 2 cr for 500: ten units cost about 91 cr more than they bring, the mission pays 1,000 cr. A pilot that does not hold the mission passes every stop and buys nothing. Flown twice on 2026-11-15 (23:20 and 23:25 UTC): 5.0 minutes, +865 cr each (reward 1,000, goods 111, fuel 24); ten ships at a time since. The price limits are the stops'; when the offer is gone, pick the next item with `game/fleet/ledger.py prices` and view_market.",
+ "title": "Market Participation: Selling: 1,000 cr once; ten copper wiring bought and sold at The Experiment",
+ "note": "For the pilots that still hold the starter mission (ten units of anything sold on the exchange). Read 2026-11-15 22:23 UTC at The Experiment: liquid nitrogen on offer at 11 cr for 585 units, bid 2 cr for 500: ten units cost about 91 cr more than they bring, the mission pays 1,000 cr. A pilot that does not hold the mission passes every stop and buys nothing. Flown twice on 2026-11-15 (23:20 and 23:25 UTC): 5.0 minutes, +865 cr each (reward 1,000, goods 111, fuel 24); ten ships at a time since. The price limits are the stops'; when the offer is gone, pick the next item with `game/fleet/ledger.py prices` and view_market. 2026-11-17 11:40 UTC (Mercury, answer to requests.log ENT-208 of Intel): the good is copper wiring, not liquid nitrogen. The Experiment asks liquid nitrogen at 22 cr, above the old limit of 14, and no station bids for it, so the last 8 runs bought nothing. The Experiment asks copper wiring at 21 x 1,413 and bids 2 x 40 (book of 11:38 UTC): ten units cost about 212 cr with the tax and bring 20 back, for 1,000 cr once. requires.bid closes the route while that bid holds fewer than 10 units, so no pilot is left holding wiring nobody buys; max_price 25 leaves the ask a margin.",
  "once": true,
  "max_ships": 10,
  "one_time": [
@@ -20,9 +20,9 @@
    ],
    "buy": [
     {
-     "item": "liquid_nitrogen",
+     "item": "copper_wiring",
      "qty": 10,
-     "max_price": 14,
+     "max_price": 25,
      "one_time": true
     }
    ]
@@ -34,7 +34,7 @@
    ],
    "sell": [
     {
-     "item": "liquid_nitrogen",
+     "item": "copper_wiring",
      "min_price": 1,
      "all": true
     }
@@ -53,5 +53,13 @@
   "minutes": 5,
   "credits_per_run": 520,
   "cph_per_ship": 6540
+ },
+ "requires": {
+  "bid": {
+   "item": "copper_wiring",
+   "base": "the_experiment_research_station",
+   "min_price": 1,
+   "min_qty": 10
+  }
  }
 }
