@@ -43,11 +43,13 @@
    "note": "Standing work into storage, nothing sold (orders ENT-025: silicon and carbon first, then iron). Needs the Mining Laser I. First a ship a run left loaded stores its hold at Central Nexus (store-hold-central-nexus, requires.hold). Silicon: no field we read holds it. Carbon: Acubens Belt, one ship, floor 60. Iron: Schedar Belt (beyond the border, 2 jumps, into Node Beta, 10 ships), Ironhollow Fading Signal (beyond the border, into The Experiment, 7 ships, guarded by Military), Ironhollow Echo Ejecta (a one-ship test), then the shared fields Prism Scatter, Hamal and Acubens Shadow Pocket, each closed at its floor."
   },
   "reserve-hamal": {
-   "title": "Gather what the reserve is short of: carbon first, then iron, Hamal Crystal Bloom first",
+   "title": "Gather what the reserve is short of: a loaded hold stored first, carbon, then iron, Ironhollow first",
    "routes": [
+    "store-hold-central-nexus",
     "gather-acubens-belt-carbon",
     "gather-ironhollow-fading-signal",
     "gather-schedar-belt",
+    "gather-ironhollow-echo-ejecta",
     "gather-hamal-crystal-bloom",
     "gather-gsc-0027-prism-scatter",
     "mine-acubens"
@@ -55,7 +57,7 @@
    "trains": [
     "mining"
    ],
-   "note": "As reserve-prism with Hamal Crystal Bloom first, so the division is spread over two iron fields. Needs the Mining Laser I."
+   "note": "As reserve-prism with Ironhollow Fading Signal before Schedar and Hamal before Prism Scatter, so the division is spread over the iron fields. Needs the Mining Laser I."
   }
  }
 }
