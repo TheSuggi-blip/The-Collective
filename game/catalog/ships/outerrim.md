@@ -1,6 +1,6 @@
 # Outerrim -- Hulls
 
-Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.719.3; never edited by hand.
+Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.721.1; never edited by hand.
 Up: [master-index.md](../master-index.md). Hulls: 68. The Piloting a tier needs, from the hulls of the catalog: tier 2: Piloting 10; tier 3: Piloting 20; tier 4: Piloting 30; tier 5: Piloting 50.
 What a hull is built from: `python3 -I -B game/fleet/craftbook.py build <hull id>`, or `tables/ships.tsv`.
 
@@ -99,5 +99,5 @@ What a hull is built from: `python3 -I -B game/fleet/craftbook.py build <hull id
 | `finish_line` | Dreadnought | Civilian | 50 | 4 | 2000 / 1000 / 60 | 3 | 1200 | 240 | 5 / 3 / 5 | 80 / 380 | jury_rigged_cannon, jury_rigged_cannon, mass_driver, scrapgun, scrapgun, outer_rim_scrap_armor, reactive_armor_hardener, nanite_hull_coating |
 | `first_step_dreadnought` | Dreadnought | Combat | 50 | 4 | 2500 / 1200 / 90 | 2 | 1000 | 660 | 7 / 4 / 6 | 130 / 350 | siege_railgun, siege_railgun, mass_driver, mass_driver, heavy_mass_driver, void_torpedo_launcher, void_torpedo_launcher, outer_rim_scrap_armor, darksteel_armor, reactive_armor_hardener, nanite_hull_coating |
 | `controlled_chaos` | Drone Carrier | Combat Support | 50 | 4 | 2800 / 1100 / 80 | 2 | 900 | 780 | 5 / 4 / 8 | 95 / 320 | jury_rigged_cannon, jury_rigged_cannon, scrapgun, scrapgun, autocannon_ii, outer_rim_scrap_armor, darksteel_armor, reactive_armor_hardener, nanite_hull_coating |
-| `all_mine` | Miner | Industrial | 50 | 4 | 2000 / 700 / 80 | 1 | 600 | 2640 | 2 / 3 / 8 | 60 / 230 | mining_laser_iv, autocannon_ii, autocannon_ii |
+| `all_mine` | Miner | Industrial | 50 | 4 | 2000 / 700 / 80 | 1 | 600 | 2640 | 2 / 3 / 8 | 60 / 230 | mining_laser_v, mining_laser_v, mining_laser_v, hyper_mining_laser_iii, hyper_mining_laser_iii, autocannon_ii, autocannon_ii |
 | `here_to_stay` | Mobile Base | Support | -- | 4 | 3200 / 1400 / 100 |  |  |  | None / None / None | None / None | -- |

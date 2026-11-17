@@ -1,6 +1,6 @@
 # Voidborn -- Hulls
 
-Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.719.3; never edited by hand.
+Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.721.1; never edited by hand.
 Up: [master-index.md](../master-index.md). Hulls: 65. The Piloting a tier needs, from the hulls of the catalog: tier 2: Piloting 10; tier 3: Piloting 20; tier 4: Piloting 30; tier 5: Piloting 50.
 What a hull is built from: `python3 -I -B game/fleet/craftbook.py build <hull id>`, or `tables/ships.tsv`.
 
@@ -94,7 +94,7 @@ What a hull is built from: `python3 -I -B game/fleet/craftbook.py build <hull id
 | `apotheosis` | Dreadnought | Combat | 50 | 4 | 2200 / 2500 / 80 | 1 | 700 | 505 | 6 / 7 / 7 | 135 / 420 | null_cannon, void_lance_ii, dark_matter_projector, phase_disruptor, focused_beam_iii, focused_beam_iii, voidborn_phase_armor, adaptive_shield_iii, shield_booster_iv, shield_booster_iv, adaptive_shield_ii, nanite_hull_coating |
 | `overmind` | Drone Carrier | Combat Support | 50 | 4 | 2400 / 2500 / 75 | 1 | 650 | 600 | 4 / 7 / 8 | 125 / 400 | phase_disruptor, focused_beam_iii, pulse_laser_iii, pulse_laser_iii, voidborn_phase_armor, adaptive_shield_iii, shield_booster_iv, adaptive_shield_ii, shield_booster_iii, damage_control_system |
 | `omniscience` | Research | Exploration | 50 | 4 | 2000 / 2200 / 65 | 1 | 750 | 575 | 2 / 6 / 9 | 140 / 380 | focused_beam_iii, pulse_laser_iii, voidborn_phase_armor, adaptive_shield_iii, shield_booster_iv, shield_booster_iii, adaptive_shield_ii |
-| `manifold` | Miner | Industrial | 50 | 4 | 1400 / 2000 / 45 | 1 | 600 | 2400 | 0 / 5 / 9 | 90 / 300 | mining_laser_iv |
+| `manifold` | Miner | Industrial | 50 | 4 | 1400 / 2000 / 45 | 1 | 600 | 2400 | 0 / 5 / 9 | 90 / 300 | mining_laser_v, mining_laser_v, mining_laser_v, mining_laser_v, damped_mining_head_ii, shield_booster_iv |
 | `rift_siphon` | Gas Harvester | Industrial | 50 | 4 | 1400 / 2200 / 40 | 1 | 600 | 2400 | 0 / 5 / 9 | 88 / 290 | gas_harvester_iv |
 | `emanation` | Mobile Base | Support | -- | 4 | 2200 / 3600 / 70 |  |  |  | None / None / None | None / None | -- |
 | `pleroma` | Medical | Support | 50 | 4 | 2100 / 2400 / 70 | 1 | 800 | 480 | 2 / 7 / 8 | 150 / 430 | fleet_hospital, shipboard_sickbay |

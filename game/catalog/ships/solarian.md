@@ -1,6 +1,6 @@
 # Solarian -- Hulls
 
-Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.719.3; never edited by hand.
+Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.721.1; never edited by hand.
 Up: [master-index.md](../master-index.md). Hulls: 65. The Piloting a tier needs, from the hulls of the catalog: tier 2: Piloting 10; tier 3: Piloting 20; tier 4: Piloting 30; tier 5: Piloting 50.
 What a hull is built from: `python3 -I -B game/fleet/craftbook.py build <hull id>`, or `tables/ships.tsv`.
 
@@ -96,5 +96,5 @@ What a hull is built from: `python3 -I -B game/fleet/craftbook.py build <hull id
 | `opus_magna` | Dreadnought | Combat | 50 | 4 | 3000 / 1800 / 120 | 1 | 800 | 600 | 8 / 6 / 6 | 125 / 350 | judgment_beam, solar_lance, focused_beam_iii, focused_beam_iii, heavy_pulse_laser, heavy_pulse_laser, pulse_laser_iii, pulse_laser_iii, solarian_aegis, adaptive_shield_iii, shield_booster_iv, shield_booster_iii, darksteel_armor, nanite_hull_coating |
 | `symposium` | Command | Combat Support | 50 | 4 | 2800 / 1600 / 100 | 1 | 900 | 420 | 6 / 6 / 8 | 120 / 380 | judgment_beam, solar_lance, heavy_pulse_laser, focused_beam_iii, pulse_laser_iii, pulse_laser_iii, solarian_aegis, adaptive_shield_iii, shield_booster_iv, shield_booster_iii, darksteel_armor, nanite_hull_coating |
 | `civitas` | Mobile Base | Industrial | -- | 4 | 2200 / 1100 / 80 |  |  |  | None / None / None | None / None | -- |
-| `tellurian` | Miner | Industrial | 50 | 4 | 1800 / 1000 / 65 | 1 | 600 | 2400 | 1 / 3 / 10 | 85 / 280 | mining_laser_iv, pulse_laser_iii |
+| `tellurian` | Miner | Industrial | 50 | 4 | 1800 / 1000 / 65 | 1 | 600 | 2400 | 1 / 3 / 10 | 85 / 280 | mining_laser_v, mining_laser_v, mining_laser_v, mining_laser_v, hyper_mining_laser_iii, modulated_mining_laser, survey_scanner_ii, pulse_laser_iii |
 | `fundament` | Logistics | Support | 50 | 4 | 2500 / 1200 / 90 | 1 | 1000 | 960 | 3 / 5 / 7 | 80 / 280 | pulse_laser_iii, pulse_laser_iii, focused_beam_iii, solarian_aegis, adaptive_shield_iii, shield_booster_iv, darksteel_armor, nanite_hull_coating |

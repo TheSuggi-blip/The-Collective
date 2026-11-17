@@ -1,6 +1,6 @@
 # Consumables -- Recipes
 
-Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.719.3; never edited by hand.
+Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.721.1; never edited by hand.
 Up: [master-index.md](../master-index.md). Recipes: 112; by hand: 52; in a facility only: 60.
 
 | Recipe | Makes | From | Where | Time |

@@ -1,6 +1,6 @@
 # Nebula -- Hulls
 
-Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.719.3; never edited by hand.
+Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.721.1; never edited by hand.
 Up: [master-index.md](../master-index.md). Hulls: 66. The Piloting a tier needs, from the hulls of the catalog: tier 2: Piloting 10; tier 3: Piloting 20; tier 4: Piloting 30; tier 5: Piloting 50.
 What a hull is built from: `python3 -I -B game/fleet/craftbook.py build <hull id>`, or `tables/ships.tsv`.
 
@@ -97,5 +97,5 @@ What a hull is built from: `python3 -I -B game/fleet/craftbook.py build <hull id
 | `exchange` | Drone Carrier | Combat Support | 50 | 4 | 2500 / 1400 / 80 | 1 | 1000 | 720 | 5 / 5 / 8 | 100 / 340 | storm_lance, ion_blaster_iii, ion_blaster_iii, pulse_laser_iii, pulse_laser_iii, nebula_storm_barrier, nebula_bio_regenerator, adaptive_shield_iii, shield_booster_iv, adaptive_shield_ii |
 | `grand_transit` | Fleet Carrier | Commercial | 50 | 4 | 3200 / 800 / 40 | 1 | 800 | 600 | 2 / 4 / 6 | 60 / 150 | -- |
 | `cryo_industrial` | Ice Harvester | Industrial | 50 | 4 | 1800 / 1000 / 55 | 1 | 600 | 3000 | 0 / 3 / 8 | 75 / 250 | ice_harvester_iv |
-| `eldorado` | Miner | Industrial | 50 | 4 | 1500 / 800 / 50 | 1 | 600 | 3600 | 0 / 3 / 8 | 70 / 240 | mining_laser_iv |
+| `eldorado` | Miner | Industrial | 50 | 4 | 1500 / 800 / 50 | 1 | 600 | 3600 | 0 / 3 / 8 | 70 / 240 | mining_laser_v, mining_laser_v, mining_laser_v, mining_laser_v, hyper_mining_laser_iii, crystal_mining_probe |
 | `foundation` | Mobile Base | Industrial | -- | 4 | 2800 / 1200 / 85 |  |  |  | None / None / None | None / None | -- |
