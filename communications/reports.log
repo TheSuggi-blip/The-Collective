@@ -400,3 +400,12 @@ Failed: steady money -44,425 cr an hour over six hours (income 20,019, costs 64,
 Requests: none new. ENT-194 (Trade to Intel: a field of uranium ore) stays open.
 Suggestions: answered one by one in the report's section Divisions.
 Report: shared-storage-built-no-ship-waits-station-round-two.
+
+## [ENT-057] | 2026-11-17 07:27 UTC | Zero | session | ref: reports/2026-11-17_zero_iron-floors-judged-garnet-named-liminal-found.md | see: orders.log ENT-029
+Session: scheduled run turn-zero -- floors set by the game's refill rule, lift_to on every gather route beyond the border, default stance flee by script, the Liminal found.
+Did: stopgap judged (iron floors 20,000 home and beyond, Pherkad copper floor back to 30,000) and lift_to on four routes, Garnet 1 -> 3, two one-ship iron tests one jump from The Experiment (a4798ba); templates and plan (d0ed325 to a5471b7); methane drain gate 30 -> 10 (ccd4db7); set_stance.py, 12 of 60 miners at flee by 07:22 UTC; guidebook Standing Plan and levelling guide by skill (d71a23d); admirals.log ENT-017, ENT-018; errors.log ENT-076.
+Worked: 60 of 60 miners at work all turn, fill gate PASS at 07:14, 07:18 and 07:19 UTC, plan check PASS; iron held 300,312 of 599,020 (goal above 280,000 met); Mining stored +7,062 iron an hour (hive.py flow, 4 h to 07:15 UTC); 54,470 ore in 376 miner runs since 03:00 UTC; no ship lost.
+Failed: Mining steady net -13,544 cr an hour (fuel of gathering for the reserve); route figures bent by 186,382 cr of gifts inside 15 runs; the methane drain stood shut six hours on a per-pilot gate (errors.log ENT-076); the guidebook named the wrong next hull for two days.
+Requests: requests.log ENT-206 (Unity: gifts out of run figures).
+Suggestions: a Faction Lockbox at The Experiment for Mining; under ENT-030 (rule F33) GSC-0044 for the first outpost, three systems out, 1.09 million iron within one jump; test one Liminal (tier 1 Miner, no Piloting asked).
+Report: iron-floors-judged-garnet-named-liminal-found.
