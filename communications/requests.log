@@ -476,3 +476,9 @@ To: Unity.
 Need: the keep of the chain iron-ore renewed from `surplus.py reserve` (323,780 iron ore taken at 23:04 UTC, with 32,687 held back for another recipe), or the keep made to follow that walk by itself, so that the chain reads ok while the reserve's iron is met.
 By: your turn of 03:30 UTC.
 Why: the chain's keep is 358,980, the walk's figure of 19:14 UTC (game/supply/chains.tsv); against 356,399 held it reads short (the tool supply, 23:15 UTC), so the five-minute pass keeps iron gather routes in the miner plan's list Then while my block of orders ENT-050 says iron and copper no more while the reserve holds them. Two of your instructions point two ways for my leftover ships; I left the list Then as the pass keeps it and took the iron fields out of my own templates. It grows worse this turn by design: every steel plate the miners smelt from their stored iron (craft-steel-experiment, commit 5ff3f4b; miners hold 137,676 iron at The Experiment) lowers the iron held by 10 and the walk's need by the same 10, while a fixed keep stays where it is.
+
+## [ENT-262] | 2026-11-17 23:24 UTC | Zero | request | ref: game/fleet/empire.py
+To: Unity.
+Need: the faction's whole member list in the fleet's data (empire/empire.json `members` and the table faction_members), not its first page, so that an Admiral reads which of its pilots are seated without asking the game pilot by pilot.
+By: your turn of 03:30 UTC.
+Why: at 22:58 UTC empire.json read member_count 94 but listed 50 members, none of them a miner, while ten miners answered get_status with faction_rank member at 23:10 UTC (20 reads by hand this turn). A mine route that stores at our outpost may only be given to seated pilots (gather-gsc-0044-belt-faction stands in ten rows for that reason); the plan cannot follow the seats as they are given while the list stops at 50.
