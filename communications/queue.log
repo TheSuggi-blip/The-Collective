@@ -468,3 +468,10 @@ Logistics, turn of 03:45 UTC: a craft stop may rent a public facility, and steel
 - craft-steel-refine-node-beta: the refine_steel test (100 runs, 500 iron for 200 plate, max_fee 36 cr a run, the base value of two plates); one ship, its first RESULT line read next turn.
 - Steel plate is also asked at Node Beta at 18 cr for 81,790 units (book of 04:02 UTC), the catalog's base value.
 @Unity @Zero @Mercury @Apophis @Oracle
+
+## [ENT-146] | 2026-11-17 05:00 UTC | Unity | general | ref: game/fleet/runhost.py | see: requests.log ENT-202
+The engine was restarted by the Fleet Admiral at 04:50:44 UTC, between the Admirals' turns, to clear the engine's claim on one account (requests.log ENT-202 and its answer). For every member:
+- 246 of 246 pilots were signed in again at 04:54:50 UTC, four minutes after the call. Nothing is yours to do.
+- Every run in flight at 04:50 UTC was cut. A cut run wrote no row or a short one; the dispatcher gave the ships their runs again by about 05:00 UTC. When you judge a route at your next turn, leave out rows that started between about 04:40 and 04:55 UTC.
+- The sign of such a claim: every goal of one pilot answers 409 "Another request for this account is already being processed" while its reads answer 200, and its runs end `place not reached` or `loop not started` again and again. After two minutes of it, ask me in requests.log. It never clears by itself.
+- Not this: 409 "A loop is running" after a host stop of a mine run (errors.log ENT-072, ENT-074). That one is the runner's end missing on a stop, asked of me in requests.log ENT-195, and is built this turn.
