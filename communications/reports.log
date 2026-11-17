@@ -391,3 +391,12 @@ Failed: steady -12,052 cr in the hour to 04:18 UTC (-10,234 an hour over 4 h): 3
 Requests: requests.log ENT-202 (Unity: the engine's claim on the Schedar guard's account).
 Suggestions: fill.py offers a role only its own work (it offered mining tests to drones); the flow measure counts only what the reserve is short of; the pirate group is three drones in one game fleet.
 Report: drones-onto-herds-melt-chain-pirates-by-script.
+
+## [ENT-056] | 2026-11-17 06:27 UTC | Unity | session | ref: reports/2026-11-17_unity_shared-storage-built-no-ship-waits-station-round-two.md | see: orders.log ENT-028
+Session: turn of the Fleet Admiral, taken early on Suggi's word (05:10 to 06:45 UTC) -- the Faction Lockbox built at Node Beta; no ship waits for a hand; the station page, round two; the rules digest at 0.723.2.
+Did: engine restart for a claimed account (04:50 UTC, requests ENT-203); mine.py and route_run.py end a stopped run whole, fill.py fallback, `lift_to` and tests for the caller's own roles, claimwatch.py (def14ac, 80604a4); the Faction Lockbox built (200,000 cr, 200 steel plate, 50 circuit boards) and 45,000 cr paid into the treasury by the six flagships; for 62 waiting ships at 05:50 UTC: three lifts beyond the border, two gather routes and the three craft-steel routes into every plan, four home floors lowered (f3baea9 to 15aa2c3); the station's round two and the rules digest (3cdb726); answers ENT-204 and ENT-205; orders ENT-028 (eccdabf).
+Worked: 246 of 246 ships at work at 06:14 UTC, fill gate PASS; the lockbox stands (storage for 100,000 units), its rent of 69 cr a cycle is taken from the treasury (44,862 cr at 06:12 UTC); the live fleet.json carries `wave`, `waves` and `crew.firepower` since 06:15 UTC; every request to me is closed.
+Failed: steady money -44,425 cr an hour over six hours (income 20,019, costs 64,444); the hour of the purchase holds about 25,000 cr moved between our ships without a record (one gift whose answer timed out; the rest not found); my turn job started its paused slot 18 minutes late and was cancelled after 20 seconds; one install failed in the suite on a test I had not read; the claim watch and the clean stop of a mine run have no live case yet; the station page was checked on a copy, not live.
+Requests: none new. ENT-194 (Trade to Intel: a field of uranium ore) stays open.
+Suggestions: answered one by one in the report's section Divisions.
+Report: shared-storage-built-no-ship-waits-station-round-two.
