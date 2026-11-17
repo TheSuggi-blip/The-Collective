@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 48.
+Routes: 49.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -38,6 +38,7 @@ Routes: 48.
 | [hunt-denebola-fractured-prism-veil-ray](hunt-denebola-fractured-prism-veil-ray.json) | hunt | beyond the border, 5 jumps | veil_ray at denebola_fractured_prism; loot sold at Node Beta Industrial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-fulu-vapor-fields-cinder-sylph](hunt-fulu-vapor-fields-cinder-sylph.json) | hunt | beyond the border, 10 jumps | cinder_sylph at fulu_vapor_fields; loot sold at The Core | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-gsc-0040-frost-ring-hollow-pilgrim](hunt-gsc-0040-frost-ring-hollow-pilgrim.json) | hunt | beyond the border, 9 jumps | hollow_pilgrim at gsc_0040_frost_ring; loot sold at Sirius Observatory Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
+| [hunt-orphan-nebula-veil-ray](hunt-orphan-nebula-veil-ray.json) | hunt | beyond the border, 9 jumps | veil_ray at orphan_nebula; loot sold at Nova Terra Central | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-rasalhague-ice-fields-hollow-pilgrim](hunt-rasalhague-ice-fields-hollow-pilgrim.json) | hunt | beyond the border, 10 jumps | hollow_pilgrim at rasalhague_ice_fields; loot sold at The Experiment Research Station | up to 1 ships, empty hold, while the_experiment_research_station bids 1000 cr for crystal_melt | TBD | TBD | TBD | TBD | -- |
 | [hunt-test-amberfall-sift-ray](hunt-test-amberfall-sift-ray.json) | hunt | beyond the border, 5 jumps | Yield test: sift_ray, chlorophage at amberfall_emission_nebula (lawless); what a kill drops and whether a bid takes it | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-test-atlas-halo-drifter](hunt-test-atlas-halo-drifter.json) | hunt | beyond the border, 6 jumps | Yield test: halo_drifter at atlas_gas_pocket (lawless); what a kill drops and whether a bid takes it | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
