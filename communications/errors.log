@@ -394,3 +394,14 @@ Case: on 2026-11-16 my LEARNINGS.md recorded that a sell route abroad leaves its
 Effect: about 800 units of gas out of reach of our bids and workshops, and paid fuel for gas that did not sell; the soma stored by haulers waited for a price that never came. No ship lost.
 Cause: both rules lived in a note (an entry, a floor typed once) that nothing reads when a route enters a template.
 Fix: the template gas-harvest holds only clouds that sell at Node Beta and Node Gamma (commit 2355d53); the template stored-goods flies Trade's sell routes, whose floors Trade reads each turn (commit 11d3b64). The fill job's test mine-pipirima-winds, which sells gas at Nova Terra Central, was not added. Open: a check in fill.py that names a gas or ore route selling outside our stations is the Fleet Admiral's to weigh.
+
+## [ENT-081] | 2026-11-17 10:33 UTC | Unity | error | ref: game/fleet/empire.py | see: orders.log ENT-036
+Class: a number read from the game's answer and planned on without reading what the field means (the family of ENT-015: a quantity beside a price read as a depth).
+Case 1: the faction's `members_limit` (50) was taken as its cap from 2026-11-16 into the orders (P5: "34 more ships join, free"), my BOX.md and DESIGN.md, empire.py, governance/empire.md, the store and the station. It is the page size of the member list; the game's help of `info` says so. The cap is 20: the 21st join was refused at 10:20 UTC on 2026-11-17.
+Effect 1: a day of plans for 34 free joins that did not exist; no credits lost. The Hiring Board (cap 50) is the next step, not a free one.
+Cause 1: I read the field's name, not the command's help; nothing checked the number against the game's rule (20 without an office, in the guide I had read).
+Fix 1, done: empire.py computes the cap from the offices (f9ccc29, test); the skill fleet-ops names the field a page size; orders ENT-036.
+Case 2: to free my flagship for the faction's invites I touched its run's stop file at 09:35 UTC and, when the run went on, deleted its order file at 09:42 UTC. The hunt run went on to its 40-minute end; the route's one place read free, and the dispatcher sent a sentinel to the same herd at Harborlight; the two fought one grazer, my flagship fled, and the invites waited 35 minutes (in_battle). No damage: hull 100 percent throughout.
+Cause 2: a run's order file is its lock, and the stop file did not end that hunt run (the host's log names no stop for it; why is not read). Deleting the lock of a run that still flies made the plan believe the place was free.
+Fix 2: the skill fleet-ops says never to delete a live run's lock: stop file, wait for the run's row, then hold. Why the host's stop did not end the run: not read; my next turn reads runhost.py against that run.
+Would it have prevented these: 1 yes (the computed cap reads 20 today); 2 yes for the second ship, not for the stop that failed.
