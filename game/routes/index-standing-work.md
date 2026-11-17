@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 32.
+Routes: 33.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -34,10 +34,11 @@ Routes: 32.
 | [mine-pherkad-rift](mine-pherkad-rift.json) | mine | home space | Copper and iron at Pherkad Null Rift; ore into storage at Synchrony Hub | up to 125 ships, needs mining_laser_i, standing work | 174 | 45 | -130 | -180 | 2026-11-17 |
 | [census-frontier](census-frontier.json) | census | beyond the border, 7 jumps | Read one lawless system around our space whole: deposits, creatures, stations, order books, mission boards | up to 12 ships, empty hold | 119 | 14 | -140 | -620 | 2026-11-16 |
 | [census-guard-ice](census-guard-ice.json) | census | beyond the border, 7 jumps | Guard by census: read whole, every hour, the lawless systems where our miners work | up to 2 ships, empty hold | 68 | 13 | -140 | -610 | 2026-11-16 |
-| [census-roads](census-roads.json) | census | beyond the border, 15 jumps | Explore the roads to the station sites: read every system on the way to Aldebaran, Yildun, Hawthorne and Alchiba, and those beside them | up to 10 ships, empty hold | 19 | 26 | -320 | -710 | 2026-11-17 |
+| [census-roads](census-roads.json) | census | beyond the border, 15 jumps | Explore the regions of the base sites and the roads to them: the south (Biham, Felis), the east (Diadem, Intercrus), the north (Aldebaran, Yildun, Hawthorne, Alchiba) | up to 10 ships, empty hold | 19 | 26 | -320 | -710 | 2026-11-17 |
 | [census-worked](census-worked.json) | census | beyond the border, 9 jumps | Read the places our routes use beyond home twice in a turn: deposits, creatures, order books, mission boards | up to 6 ships, empty hold | 28 | 15 | -180 | -690 | 2026-11-17 |
 | [guard-ironhollow-fading-signal](guard-ironhollow-fading-signal.json) | guard | beyond the border, 4 jumps | Guard at Ironhollow Fading Signal while miners of ours gather iron there; docks at The Experiment | up to 1 ships, empty hold, standing work | 3 | 63 | -40 | -60 | 2026-11-17 |
 | [guard-marfik-emission-nebula](guard-marfik-emission-nebula.json) | guard | beyond the border, 6 jumps | Guard at Marfik Emission Nebula while a ship of ours mines gas there; docks at Node Beta | up to 1 ships, empty hold, standing work | 2 | 75 | -160 | -120 | 2026-11-17 |
+| [hunt-amberfall-chlorophage-sac](hunt-amberfall-chlorophage-sac.json) | hunt | beyond the border, 5 jumps | Caustic sac for the reserve: chlorophages at Amberfall Emission Nebula (lawless), every drop stored at Node Beta | up to 1 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [hunt-cedarhold-dim-lattice-veil-ray](hunt-cedarhold-dim-lattice-veil-ray.json) | hunt | beyond the border, 5 jumps | veil_ray at cedarhold_dim_lattice; loot sold at The Experiment Research Station | up to 1 ships, without piercing_railgun_i, empty hold, standing work | 7 | 10 | -100 | -490 | 2026-11-17 |
 | [hunt-faintlight-drift-veil-ray](hunt-faintlight-drift-veil-ray.json) | hunt | beyond the border, 5 jumps | veil_ray at faintlight_drift; loot sold at Node Beta Industrial Station | up to 1 ships, without piercing_railgun_i, empty hold, standing work | 10 | 30 | -130 | -290 | 2026-11-17 |
 | [hunt-keid-belt-carapace](hunt-keid-belt-carapace.json) | hunt | beyond the border, 5 jumps | Belt-grazers and patina-grazers at Keid Belt; creature carapace into storage at Node Beta | up to 1 ships, without piercing_railgun_i, empty hold, standing work | 5 | 14 | -110 | -350 | 2026-11-17 |

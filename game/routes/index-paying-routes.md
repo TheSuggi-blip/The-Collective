@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 29.
+Routes: 28.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -37,7 +37,6 @@ Routes: 29.
 | [hunt-raysheet-nebula-veil-ray](hunt-raysheet-nebula-veil-ray.json) | hunt | beyond the border, 8 jumps | veil_ray at raysheet_nebula; loot sold at Nova Terra Central | up to 1 ships, empty hold | 6 | 14 | 250 | 890 | 2026-11-17 |
 | [hunt-tania-vapor-fields-cinder-sylph](hunt-tania-vapor-fields-cinder-sylph.json) | hunt | beyond the border, 11 jumps | cinder_sylph at tania_vapor_fields; loot sold at Node Beta Industrial Station | up to 1 ships, empty hold | 1 | 42 | 1,610 | 2,310 | 2026-11-17 |
 | [hunt-test-achernar-cinder-sylph](hunt-test-achernar-cinder-sylph.json) | hunt | beyond the border, 4 jumps | Cinder-sylphs at Achernar Gas Pocket (lawless); ember glands sold at The Experiment (480 cr) | up to 1 ships, without piercing_railgun_i, empty hold, while the_experiment_research_station bids 100 cr for ember_gland | 7 | 12 | 620 | 3,330 | 2026-11-17 |
-| [hunt-test-amberfall-chlorophage](hunt-test-amberfall-chlorophage.json) | hunt | beyond the border, 5 jumps | Yield test: chlorophage at Amberfall Emission Nebula (lawless); does a kill drop caustic sac | up to 1 ships, empty hold | 5 | 20 | 220 | 660 | 2026-11-17 |
 | [mine-achernar-gas-pocket](mine-achernar-gas-pocket.json) | mine | beyond the border, 4 jumps | Achernar Gas Pocket: hydrogen_gas, argon_gas, plasma_gas, neon_gas; sold at Node Beta Industrial Station | up to 1 ships, needs gas_harvester_i, empty hold | 1 | 66 | 1,300 | 1,170 | 2026-11-17 |
 | [mine-amberfall-emission-nebula](mine-amberfall-emission-nebula.json) | mine | beyond the border, 5 jumps | Amberfall Emission Nebula: hydrogen_gas, neon_gas, chlorine_gas; sold at Node Gamma Relay Station | up to 1 ships, needs gas_harvester_i, empty hold, while node_gamma_relay_station bids 27 cr for hydrogen_gas | 4 | 72 | 120 | 110 | 2026-11-17 |
 | [mine-coldwater-emission-nebula](mine-coldwater-emission-nebula.json) | mine | beyond the border, 5 jumps | Coldwater Emission Nebula: hydrogen_gas, argon_gas, xenon_gas, neon_gas; sold at Node Gamma Relay Station | up to 1 ships, needs gas_harvester_i, empty hold | 3 | 64 | 420 | 450 | 2026-11-17 |

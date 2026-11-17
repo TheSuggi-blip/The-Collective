@@ -1,0 +1,21 @@
+{
+ "id": "hunt-amberfall-chlorophage-sac",
+ "kind": "hunt",
+ "title": "Caustic sac for the reserve: chlorophages at Amberfall Emission Nebula (lawless), every drop stored at Node Beta",
+ "note": "Kept by Oracle; written 2026-11-17 03:24 UTC (orders.log ENT-027, block ORACLE: a source for caustic sac, 428 short in the reserve, surplus.py reserve 03:23 UTC). The test hunt-test-amberfall-chlorophage answered it: 7 runs from 2026-11-16 23:45 to 2026-11-17 02:46 UTC, 13 kills, 5 caustic sac and 17 creature carapace (data/routes/runs.jsonl), +1,704 cr in 141.5 minutes because the sacs were sold into the Node Beta bid of 420 cr. Rule F24: nothing of the reserve is sold, so min_bid stands above every bid read for its drops (caustic sac 420, carapace 2): the hunt sells nothing and stores every drop in the pilot's own storage at Node Beta, where Logistics makes flex polymer (caustic_polymer_synthesis, 3 sacs for 2). Standing work: it pays nothing on the books (rule F8, orders T6 a). The herd read 9, then 2 or 3 chlorophages of 55 hull since 2026-11-16 02:06 UTC (data/wildlife/history.jsonl): one hunter (rule F9), 2 kills a run, floor 2. Beyond policed space (F13): alone, an empty hold.",
+ "place": "amberfall:amberfall_emission_nebula",
+ "species": [
+  "chlorophage"
+ ],
+ "sell_at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+ "min_bid": 5000,
+ "kills": 2,
+ "minutes": 30,
+ "max_ships": 1,
+ "min_creatures": 2,
+ "alone": true,
+ "standing": true,
+ "requires": {
+  "empty_hold": true
+ }
+}

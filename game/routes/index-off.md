@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 13.
+Routes: 14.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -29,3 +29,4 @@ Routes: 13.
 | [voidborn-first-hunt-schedar](voidborn-first-hunt-schedar.json) | circuit | beyond the border, 2 jumps | First Hunt: Belt-Grazers: 1,000 cr once and 50 Weapons XP; three belt-grazers at Schedar Belt (lawless, one jump past GSC-0027) | once per pilot, up to 1 ships, empty hold, off | 27 | 10 | 20 | one-time | 2026-11-16 |
 | [hunt-achernar-belt-carapace](hunt-achernar-belt-carapace.json) | hunt | beyond the border, 4 jumps | Belt-grazers and patina-grazers at Achernar Belt; creature carapace into storage at The Experiment | up to 1 ships, without piercing_railgun_i, empty hold, standing work, off | 2 | 10 | -70 | -420 | 2026-11-16 |
 | [hunt-dimming-pocket-veil-ray](hunt-dimming-pocket-veil-ray.json) | hunt | beyond the border, 4 jumps | veil_ray at dimming_pocket; loot sold at Node Beta Industrial Station | up to 1 ships, empty hold, off | TBD | TBD | TBD | TBD | -- |
+| [hunt-test-amberfall-chlorophage](hunt-test-amberfall-chlorophage.json) | hunt | beyond the border, 5 jumps | Yield test: chlorophage at Amberfall Emission Nebula (lawless); does a kill drop caustic sac | up to 1 ships, empty hold, off | 5 | 20 | 220 | 660 | 2026-11-17 |

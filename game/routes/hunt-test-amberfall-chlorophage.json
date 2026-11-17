@@ -2,7 +2,7 @@
  "id": "hunt-test-amberfall-chlorophage",
  "kind": "hunt",
  "title": "Yield test: chlorophage at Amberfall Emission Nebula (lawless); does a kill drop caustic sac",
- "note": "A test with one scout (orders.log ENT-017, block ORACLE: name a source for caustic sac, 450 for the faction's offices, none held). The catalog names the chlorophage as the animal of caustic sac (data/catalog/0.717.0.json, item caustic_sac). Amberfall Emission Nebula read 3 chlorophages of 55 hull at 14:27 UTC (data/wildlife/amberfall.json). The test of 03:11 UTC hunted sift-rays and chlorophages together: 3 kills, crystallized biogas only (data/routes/runs.jsonl), so which species fell is not known; this one hunts chlorophages alone. Caustic sac is bid 420 cr for 50 at each of our six stations (data/market, 18:28 UTC): a sac sells at Node Beta; a drop no bid of 50 cr takes is stored, so the row's goods show the drop. Beyond policed space (F13): `alone`, an empty hold, the herd floor of 2. Written by Oracle 2026-11-16 18:31 UTC; it leaves the plan after its first RESULT line unless the drop sells.",
+ "note": "A test with one scout (orders.log ENT-017, block ORACLE: name a source for caustic sac, 450 for the faction's offices, none held). The catalog names the chlorophage as the animal of caustic sac (data/catalog/0.717.0.json, item caustic_sac). Amberfall Emission Nebula read 3 chlorophages of 55 hull at 14:27 UTC (data/wildlife/amberfall.json). The test of 03:11 UTC hunted sift-rays and chlorophages together: 3 kills, crystallized biogas only (data/routes/runs.jsonl), so which species fell is not known; this one hunts chlorophages alone. Caustic sac is bid 420 cr for 50 at each of our six stations (data/market, 18:28 UTC): a sac sells at Node Beta; a drop no bid of 50 cr takes is stored, so the row's goods show the drop. Beyond policed space (F13): `alone`, an empty hold, the herd floor of 2. Written by Oracle 2026-11-16 18:31 UTC; it leaves the plan after its first RESULT line unless the drop sells. Off since 2026-11-17 03:24 UTC: the test is answered (5 caustic sac in 13 kills over 7 runs); the work goes on as hunt-amberfall-chlorophage-sac, which stores the sacs for the reserve (rule F24).",
  "place": "amberfall:amberfall_emission_nebula",
  "species": [
   "chlorophage"
@@ -25,5 +25,6 @@
   "cph_per_ship": 660,
   "hours": 12,
   "last_run": "2026-11-17T02:08:57Z"
- }
+ },
+ "status": "off"
 }
