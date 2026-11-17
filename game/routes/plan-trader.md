@@ -71,8 +71,9 @@ Planned:
 
 | What | When |
 |---|---|
-| Neural Matrix Delivery (5,000 cr once, 8 phase matrix handed out at the accept, Sirius Observatory 9 jumps): one trader flies it as a test the turn Unity allows the goods out (requests.log ENT-146); then a route for every pilot the board offers it to. | after Unity's turn of 2026-11-16 14:30 UTC |
-| voidborn-collective-provides on again when a census reads nickel at GSC-0049 Platinum-Group Reef; The Signal Protocol and the line behind it follow it. | each turn |
-| The Collective Provides line (Atmospheric Extraction: Setup, Network Commerce Protocol, Hardware Optimization: Cargo, Material Synthesis: Basic): one hand test each with a trader that has The Collective Provides done; a route for each that pays. | the turns of 2026-11-16 |
-| Read the whole Central Nexus board of every docked trader at the start of each turn (skill trade-books, boards.py) and test every title the fleet has not booked. | every turn |
-| The two haze tests: lift the one whose bid regains, after two RESULT lines each. | the turn of 2026-11-16 16:30 UTC |
+| Goal of the turn: Trade's steady money per hour above -2,000 in the forecast's SUM line with the soma bids read as they regain, and every trader at navigation 3 or more by the turn after next (twenty stand at 2). | read at the turn of 2026-11-17 04:00 UTC |
+| Read the soma bids' moves and the soma routes' runs; set each route's max_ships to what its bid regains. | the next turn |
+| Read the focused-crystal runs; lift the craft route to what the two bids take, and test a stock of crystals stored at Node Alpha for its spiky bids. | the next turn |
+| Read the standing sell order of one anchor beacon at Node Beta: filled or not, and when. | the next turn |
+| Silicon ore for the circuit boards: buy more only on Logistics' word that the boards are made, inside rule F12 and the wallet floor. | when Logistics asks |
+| Read the whole Central Nexus board of every docked trader (skill trade-books, boards.py) and test every title the fleet has not booked. | every turn |
