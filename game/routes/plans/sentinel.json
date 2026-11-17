@@ -261,7 +261,7 @@
    "when": "next Military turn"
   },
   {
-   "what": "Read the first RESULT line of the escort route that follows a pilot on the Node Beta chain; write the escort of Logistics' outpost circuit once its route file exists.",
+   "what": "Read the first RESULT line of the escort route (its one run started 20:33 UTC); no guard or escort in the first ring of outposts and its roads (orders ENT-045): the next escort serves beyond it, at the stations and the outposts past them.",
    "when": "next Military turn"
   },
   {
