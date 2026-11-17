@@ -1,5 +1,5 @@
 # Every module of the game: its slot, what it draws, what it does.
-# Source: the game's public catalog, version 0.723.0 | Rows: 270
+# Source: the game's public catalog, version 0.723.1 | Rows: 270
 # Written by scripts/catalog-index.py. Do not edit by hand.
 id	name	type	slot	cpu	power	size	base_value	damage	reach	cooldown	effect	special
 adaptive_shield_i	Adaptive Shield I	defense	defense	5	10	10	21000					adaptive_resistance_10

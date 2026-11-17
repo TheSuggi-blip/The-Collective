@@ -1,6 +1,6 @@
 # Refining -- Recipes
 
-Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.723.0; never edited by hand.
+Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.723.1; never edited by hand.
 Up: [master-index.md](../master-index.md). Recipes: 189; by hand: 81; in a facility only: 108.
 
 | Recipe | Makes | From | Where | Time |

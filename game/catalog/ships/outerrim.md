@@ -1,6 +1,6 @@
 # Outerrim -- Hulls
 
-Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.723.0; never edited by hand.
+Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.723.1; never edited by hand.
 Up: [master-index.md](../master-index.md). Hulls: 68. The Piloting a tier needs, from the hulls of the catalog: tier 2: Piloting 10; tier 3: Piloting 20; tier 4: Piloting 30; tier 5: Piloting 50.
 What a hull is built from: `python3 -I -B game/fleet/craftbook.py build <hull id>`, or `tables/ships.tsv`.
 
