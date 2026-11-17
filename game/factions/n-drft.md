@@ -38,7 +38,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Colleen Brown | Nexus Prime (`nexus_prime`) | 0 | losers_weepers |
+| Colleen Brown | The Experiment (`the_experiment`) | 0 | losers_weepers |
 
 ## Standing History
 

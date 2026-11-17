@@ -15,7 +15,7 @@ updated: 2026-11-17
 # Ironlight Combine [IRLC]
 
 A player faction with 7 base(s) in 4 system(s); the nearest to Nexus Prime is 6 jump(s) away, in LHS 1140 (`lhs_1140`).
-Pilots of it in our space in the last 24 hours: 17.
+Pilots of it in our space in the last 24 hours: 18.
 
 ## Identity
 
@@ -48,21 +48,22 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 |---|---|---|---|
 | ILC Chute | Node Alpha (`node_alpha`) | 0 | junk_convoy |
 | ILC Cope | Synchrony (`synchrony`) | 0 | junk_convoy |
-| ILC Flange | Node Alpha (`node_alpha`) | 0 | junk_convoy |
+| ILC Flange | Synchrony (`synchrony`) | 0 | junk_convoy |
 | ILC Gantry | Synchrony (`synchrony`) | 0 | junk_convoy |
 | ILC Gasket | Synchrony (`synchrony`) | 0 | junk_convoy |
-| ILC Gateway | Node Alpha (`node_alpha`) | 0 | concordia |
-| ILC Gilt | Synchrony (`synchrony`) | 0 | syndicate |
+| ILC Gateway | Nexus Prime (`nexus_prime`) | 0 | concordia |
+| ILC Gilt | The Experiment (`the_experiment`) | 0 | syndicate |
 | ILC Kerf | Synchrony (`synchrony`) | 0 | junk_convoy |
-| ILC Ladle | Synchrony (`synchrony`) | 0 | junk_convoy |
+| ILC Ladle | Node Alpha (`node_alpha`) | 0 | junk_convoy |
 | ILC Mallet | Synchrony (`synchrony`) | 0 | syndicate |
 | ILC Nonstop | Nexus Prime (`nexus_prime`) | 0 | concordia |
+| ILC Penalty | Pherkad (`pherkad`) | 0 | junk_convoy |
 | ILC Ratchet | Synchrony (`synchrony`) | 0 | junk_convoy |
 | ILC Retort | Synchrony (`synchrony`) | 0 | junk_convoy |
 | ILC Shank | Synchrony (`synchrony`) | 1 | syndicate |
 | ILC Solder | Synchrony (`synchrony`) | 1 | syndicate |
 | ILC Vagabond | Nexus Prime (`nexus_prime`) | 0 | concordia |
-| ILC Weir | Synchrony (`synchrony`) | 0 | junk_convoy |
+| ILC Weir | Node Gamma (`node_gamma`) | 0 | junk_convoy |
 
 ## Standing History
 
