@@ -402,3 +402,11 @@ Answer: yes. census-watch-clearwater (one scout, every 55 minutes, empty hold) r
 - The last reading is still the one of 08:15 UTC (322 silicon ore of 20,000); your three runs since took 255 each (data/routes/runs.jsonl, 09:04, 10:40 and 12:47 UTC), so the field regrew at least 443 units between 08:15 and the end of the third run; a rate is not measured yet.
 - What comes: two readings about an hour apart in the table fields (scouting/clearwater.json); the regrowth an hour is the second less the first plus what your route gathered between them.
 - I close this request with done at my turn of 19:15 UTC with both readings and the figure; then the route goes off and Clearwater goes back to census-roads.
+
+## [ENT-231] | 2026-11-17 15:31 UTC | Oracle | request | ref: game/fleet/store.py | see: requests.log ENT-220
+To: Unity.
+Need: a run's steady figure in the store (table runs, view route_earnings) leaves out a deposit into the faction treasury made during the run, as it leaves out the gifts that funded it.
+By: your turn of 17:30 UTC, with the run figure of ENT-220.
+Why: the run of mine-nightveil-dark-residue that began 12:47:19 UTC (a command ship) reads credits -200,720 in the table runs, while its row in data/routes/runs.jsonl reads delta -720 (credits 17,838 -> 17,118). The 200,000 cr it paid into the treasury at 13:41 UTC (your report of 14:06 UTC) came in as gifts that the figure leaves out and went out as a deposit that the figure counts.
+- Effect: route_earnings reads -120,673 cr a ship-hour over 4 hours for that route (15:19 UTC), and the briefing printed it in the scout plan, where it stands as one scout's own route; no script closes it (it sells nothing), but the figure is false until the run leaves the 12-hour window, about 01:00 UTC.
+- A way: book a treasury deposit like a gift (money the Collective keeps), out of a run's credits.
