@@ -14,7 +14,20 @@ Writes, in the unit's data folder (never the repository):
   wildlife/<system>.json   creatures per place
   market/<base>.json       order book        missions/<base>.json   mission board
 While it runs the pilot carries an order file (census <system>); one row goes
-to data/routes/runs.jsonl. Prints one line per place and a RESULT line."""
+to data/routes/runs.jsonl. Prints one line per place and a RESULT line.
+
+Pirates: each place's entry in wildlife/<system>.json keeps, beside the count
+(`pirates`), every pirate `get_nearby` lists (`pirate_list`: name, faction, tier,
+hull, shield, status), and the history row names them per place, so that
+Military reads what stood where (requests.log ENT-182). A census reads and leaves.
+
+Chain: a census route whose file sets `"chain": N` (and `chain_jumps`, default 2)
+reads, after the first system, up to N more systems of its own list before it
+turns home: the nearest within `chain_jumps` lanes (game/map/galaxy.tsv) that is
+due by the route's `every_minutes`, never read first, not read by another ship
+now (the order files) and not on this run; only while the tank holds the way
+there and home with room to spare. The order file names the system being read
+and each system gets its own row. Without `chain` nothing changes."""
 import atexit
 import fcntl
 import json
@@ -26,10 +39,12 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from collections import Counter
+from pathlib import Path
 
 GATE = 'http://172.30.0.32:7580'
 OPENER = urllib.request.build_opener(urllib.request.ProxyHandler({}))
 DATA = pathlib.Path('/srv/collective/data')
+REPO = pathlib.Path(__file__).resolve().parent.parent       # game/: the route files and the chart
 HOME = {'systemId': 'nexus_prime', 'poiId': 'the_core', 'baseId': 'central_nexus', 'refuel': True}
 FIELDS = ('asteroid_belt', 'ice_field', 'gas_cloud', 'nebula', 'anomaly', 'debris_field', 'comet')
 pilot, system_id = sys.argv[1], sys.argv[2]
@@ -136,12 +151,102 @@ def save_station(base, system):
     return len(items), len(keep)
 
 
-places = creatures_total = 0
-last_station = None
-if goal('navigate-to-system', {'targetSystemId': system_id}):
+def pirate_details(near):
+    """The pirates `get_nearby` lists at a place, each with what Military reads (name, faction, tier, hull, shield,
+    status); an answer without a list keeps nothing."""
+    keys = ('name', 'faction', 'tier', 'hull', 'max_hull', 'shield', 'max_shield', 'status', 'is_boss')
+    found = near.get('pirates') if isinstance(near, dict) else None
+    if not isinstance(found, list):
+        return []
+    return [{k: p.get(k) for k in keys if k in p} for p in found if isinstance(p, dict)]
+
+
+def jumps(lanes, src, reach):
+    """{system: lanes from src} for every system within `reach` lanes, by the chart's lanes."""
+    dist, todo = {src: 0}, [src]
+    while todo:
+        here = todo.pop(0)
+        if dist[here] >= reach:
+            continue
+        for there in lanes.get(here) or []:
+            if there not in dist:
+                dist[there] = dist[here] + 1
+                todo.append(there)
+    return dist
+
+
+def next_system(route, here, lanes, data, busy, done, now, reach):
+    """The system a chained census reads next: of the route's own list, within `reach` lanes of `here`, due by its
+    `every_minutes` (the age of data/scouting/<system>.json, the dispatcher's rule), not being read by another ship
+    (`busy`) and not read on this run (`done`); the nearest first, a never-read one before a stale one, then the
+    stalest. None when no system is due within reach."""
+    near = jumps(lanes, here, reach)
+    best = None
+    for system in route.get('systems') or []:
+        if system in busy or system in done or system not in near:
+            continue
+        try:
+            age = now - (Path(data) / 'scouting' / (system + '.json')).stat().st_mtime
+        except OSError:
+            age = float('inf')
+        if age < route.get('every_minutes', 60) * 60:
+            continue
+        key = (near[system], 0 if age == float('inf') else 1, -age)
+        if best is None or key < best[0]:
+            best = (key, system)
+    return best[1] if best else None
+
+
+def chart():
+    """({system: [lanes]}, {system: jumps from home}) from game/map/galaxy.tsv; empty when the file cannot be read."""
+    lanes, home = {}, {}
+    try:
+        rows = [line.rstrip('\n').split('\t') for line in open(REPO / 'map' / 'galaxy.tsv', encoding='utf-8') if not line.startswith('#')]
+    except OSError:
+        return lanes, home
+    head = rows[0] if rows else []
+    for row in rows[1:]:
+        cell = dict(zip(head, row))
+        if cell.get('id'):
+            lanes[cell['id']] = [x for x in (cell.get('lanes') or '').split(',') if x]
+            home[cell['id']] = int(cell['jumps_from_home']) if str(cell.get('jumps_from_home', '')).isdigit() else None
+    return lanes, home
+
+
+def busy_systems():
+    """The systems other pilots' census orders name now (data/fleet/orders)."""
+    out = set()
+    for f in (DATA / 'fleet' / 'orders').glob('*.json'):
+        if f.name == ORDER.name:
+            continue
+        try:
+            what = str(json.loads(f.read_text(encoding='utf-8')).get('what') or '')
+        except (OSError, ValueError):
+            continue
+        if what.startswith('census '):
+            out.add(what.split(' ', 1)[1])
+    return out
+
+
+def fuel():
+    """The ship's fuel from the engine's answer for the account, or None."""
+    try:
+        with OPENER.open(urllib.request.Request(GATE + f'/accounts/{P}'), timeout=60) as r:
+            value = ((json.loads(r.read().decode('utf-8', 'replace') or '{}').get('state') or {}).get('ship') or {}).get('fuel')
+    except Exception:
+        return None
+    return int(value) if isinstance(value, (int, float)) and not isinstance(value, bool) else None
+
+
+def read_system(sid):
+    """Fly to `sid` and read it whole (places, creatures, pirates, stations); (read, places, creatures, last station)."""
+    places = creatures = 0
+    station = None
+    if not goal('navigate-to-system', {'targetSystemId': sid}):
+        return False, 0, 0, None
     system = raw('get_system').get('system') or {}
     scouting = {'system': system, 'read_at': now(), 'pois': {}}
-    wildlife = {'system': system_id, 'read_at': now(), 'pois': {}}
+    wildlife = {'system': sid, 'read_at': now(), 'pois': {}}
     pois = [p for p in system.get('pois') or [] if isinstance(p, dict)]
     say(f'{system.get("name")}: {len(pois)} places: ' + ', '.join(f'{p.get("id")} ({p.get("type")})' for p in pois)[:400])
     for p in pois:
@@ -154,41 +259,92 @@ if goal('navigate-to-system', {'targetSystemId': system_id}):
         scouting['pois'][p['id']] = read
         found = [c for c in near.get('creatures') or [] if isinstance(c, dict)]
         species = Counter((c.get('species'), c.get('role')) for c in found)
+        pirates = pirate_details(near)
         wildlife['pois'][p['id']] = {'type': p.get('type'), 'read_at': now(),
                                      'creatures': [{k: c.get(k) for k in ('species', 'name', 'role', 'hull', 'max_hull', 'in_combat')} for c in found],
-                                     'pirates': near.get('pirate_count') or 0, 'pilots': near.get('count') or 0}
+                                     'pirates': near.get('pirate_count') or len(pirates), 'pirate_list': pirates, 'pilots': near.get('count') or 0}
         res = read.get('resources') or (read.get('poi') or {}).get('resources') or []
         places += 1
-        creatures_total += len(found)
+        creatures += len(found)
         say(f'{p["id"]} ({p.get("type")}): ' + ('; '.join(f'{r.get("resource_id")} {r.get("remaining")}/{r.get("max_remaining")}' for r in res) or 'no deposit')
             + ' | creatures: ' + (', '.join(f'{n} {s} ({role})' for (s, role), n in species.most_common()) or 'none')
-            + f' | pirates {near.get("pirate_count") or 0}, pilots {near.get("count") or 0}')
+            + f' | pirates {near.get("pirate_count") or len(pirates)}, pilots {near.get("count") or 0}'
+            + (' (' + ', '.join(f'{x.get("name")} {x.get("tier") or "?"} hull {x.get("hull")}' for x in pirates)[:200] + ')' if pirates else ''))
     for p in pois:
         if p.get('type') == 'station' and p.get('base_id'):
-            if goal('prepare-at-station', {'systemId': system_id, 'poiId': p['id'], 'baseId': p['base_id'], 'refuel': True}):
+            if goal('prepare-at-station', {'systemId': sid, 'poiId': p['id'], 'baseId': p['base_id'], 'refuel': True}):
                 scouting['pois'][p['id']] = raw('get_poi')
-                n_items, n_missions = save_station(p['base_id'], system_id)
-                last_station = p['base_id']
+                n_items, n_missions = save_station(p['base_id'], sid)
+                station = p['base_id']
                 say(f'docked at {p["base_id"]}: order book {n_items} items, board {n_missions} missions saved')
-    write_json(DATA / 'scouting' / f'{system_id}.json', scouting)
-    write_json(DATA / 'wildlife' / f'{system_id}.json', wildlife)
+    write_json(DATA / 'scouting' / f'{sid}.json', scouting)
+    write_json(DATA / 'wildlife' / f'{sid}.json', wildlife)
     with open(DATA / 'wildlife' / 'history.jsonl', 'a', encoding='utf-8') as fh:      # herds and deposits over time: what regrows, and how fast
         fcntl.flock(fh, fcntl.LOCK_EX)
-        fh.write(json.dumps({'at': now(), 'system': system_id,
-                             'herds': {poi: dict(Counter(c.get('species') for c in v['creatures'])) for poi, v in wildlife['pois'].items()},
-                             'pilots': {poi: v.get('pilots') for poi, v in wildlife['pois'].items()},
-                             'deposits': {poi: {r.get('resource_id'): r.get('remaining') for r in (v.get('resources') or (v.get('poi') or {}).get('resources') or [])
-                                                if isinstance(r, dict)} for poi, v in scouting['pois'].items()}}, separators=(',', ':')) + '\n')
+        row = {'at': now(), 'system': sid,
+               'herds': {poi: dict(Counter(c.get('species') for c in v['creatures'])) for poi, v in wildlife['pois'].items()},
+               'pilots': {poi: v.get('pilots') for poi, v in wildlife['pois'].items()},
+               'deposits': {poi: {r.get('resource_id'): r.get('remaining') for r in (v.get('resources') or (v.get('poi') or {}).get('resources') or [])
+                                  if isinstance(r, dict)} for poi, v in scouting['pois'].items()}}
+        seen = {poi: v['pirate_list'] for poi, v in wildlife['pois'].items() if v.get('pirate_list')}
+        if seen:
+            row['pirates'] = seen
+        fh.write(json.dumps(row, separators=(',', ':')) + '\n')
+    return True, places, creatures, station
+
+
+def write_row(sid, started, before, after, places, creatures, notes):
+    read = before is not None and after is not None
+    with open(DATA / 'routes' / 'runs.jsonl', 'a', encoding='utf-8') as fh:
+        fcntl.flock(fh, fcntl.LOCK_EX)
+        fh.write(json.dumps({'route': ROUTE_ID or 'census', 'kind': 'census', 'pilot': pilot,
+                             'started': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(started)), 'minutes': round((time.time() - started) / 60, 1),
+                             'system': sid, 'places': places, 'creatures': creatures, 'credits_before': before, 'credits_after': after,
+                             'delta': after - before if read else 0, 'one_time': 0, 'notes': notes + ([] if read else ['wallet not read'])},
+                            separators=(',', ':')) + '\n')
+
+
+ROUTE_ID = sys.argv[sys.argv.index('--route') + 1] if '--route' in sys.argv else None
+ROUTE = {}
+if ROUTE_ID:
+    try:
+        ROUTE = json.loads((REPO / 'routes' / (ROUTE_ID + '.json')).read_text(encoding='utf-8'))
+    except (OSError, ValueError):
+        ROUTE = {}
+CHAIN = int(ROUTE.get('chain') or 0) if ROUTE.get('kind') == 'census' and isinstance(ROUTE.get('chain'), int) else 0
+REACH = int(ROUTE.get('chain_jumps') or 2) if isinstance(ROUTE.get('chain_jumps', 2), int) else 2
+
+places = creatures_total = 0
+last_station = None
+done, target, legs = set(), system_id, 0
+leg_started, leg_before = STARTED, WALLET_BEFORE
+LANES, HOME_JUMPS = chart() if CHAIN else ({}, {})
+while True:
+    if target != system_id:
+        ORDER.write_text(json.dumps({'pilot': pilot, 'what': 'census ' + target, 'since': now()}), encoding='utf-8')
+    ok, n_places, n_creatures, station = read_system(target)
+    done.add(target)
+    places += n_places
+    creatures_total += n_creatures
+    last_station = station
+    nxt, why = None, ''
+    if ok and legs < CHAIN:
+        nxt = next_system(ROUTE, target, LANES, str(DATA), busy_systems(), done, time.time(), REACH)
+        if nxt:
+            way = jumps(LANES, target, REACH).get(nxt, REACH) + (HOME_JUMPS.get(nxt) or 30)
+            tank = fuel()
+            if tank is None or tank < 1.5 * way + 15:
+                say(f'next {nxt}: fuel {tank} short of {1.5 * way + 15:.0f} for the way there and home: turning home')
+                why, nxt = f'chain ended on fuel {tank}', None
+    if not nxt:
+        break
+    say(f'chain: {target} read, next {nxt} ({legs + 1} of {CHAIN})')
+    leg_after = wallet()
+    write_row(target, leg_started, leg_before, leg_after, n_places, n_creatures, [f'chain {legs + 1} of {CHAIN}: next {nxt}'])
+    leg_started, leg_before, target, legs = time.time(), leg_after, nxt, legs + 1
 if not ('--stay' in sys.argv and last_station):
     goal('prepare-at-station', HOME)
 WALLET_AFTER = wallet()
-READ = WALLET_BEFORE is not None and WALLET_AFTER is not None
-with open(DATA / 'routes' / 'runs.jsonl', 'a', encoding='utf-8') as fh:
-    fcntl.flock(fh, fcntl.LOCK_EX)
-    fh.write(json.dumps({'route': sys.argv[sys.argv.index('--route') + 1] if '--route' in sys.argv else 'census', 'kind': 'census', 'pilot': pilot,
-                         'started': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(STARTED)), 'minutes': round((time.time() - STARTED) / 60, 1),
-                         'system': system_id, 'places': places, 'creatures': creatures_total, 'credits_before': WALLET_BEFORE, 'credits_after': WALLET_AFTER,
-                         'delta': WALLET_AFTER - WALLET_BEFORE if READ else 0, 'one_time': 0, 'notes': [] if READ else ['wallet not read']},
-                        separators=(',', ':')) + '\n')
-print(f'RESULT {pilot}: {system_id}: {places} places read, {creatures_total} creatures seen, station {last_station or "none"} | '
+write_row(target, leg_started, leg_before, WALLET_AFTER, n_places, n_creatures, ([why] if why else []) + ([f'chain {legs} of {CHAIN}: last'] if legs else []))
+print(f'RESULT {pilot}: {", ".join(sorted(done)) if legs else system_id}: {places} places read, {creatures_total} creatures seen, station {last_station or "none"} | '
       f'credits {WALLET_BEFORE} -> {WALLET_AFTER}', flush=True)
