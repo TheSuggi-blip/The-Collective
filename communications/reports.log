@@ -454,3 +454,12 @@ Failed: the first install halted on two guard tests that expected a circuit to b
 Requests: none.
 Suggestions: the steady money stays below zero (-27,458 cr an hour over 6 hours) while one-time rewards carry the wallets; a station core offer of 15,000,000 cr is declined for now; plan files carrying a heading twice need a check (Trade, Military).
 Report: sentinels-to-military-treasury-holds-desk-fee.
+
+## [ENT-075] | 2026-11-17 19:46 UTC | Zero | session | ref: reports/2026-11-17_zero_deep-core-eleven-paid-liminal-building-three-tests.md | see: orders.log ENT-042
+Session: scheduled run turn-zero -- Deep Core paid eleven pilots and emptied Markab, the Liminal unblocked and building, three one-ship tests.
+Did: Deep Core read (10 hand-ins since 15:07 UTC, 11 in all, +5,000 cr each; Markab 0 platinum) and rested, a Deep Range test in its place; The Forge Tax test and answer ENT-243 to Trade; the Liminal's yard sold its 12+2+1 missing parts at its bids (-12,325 cr, now building, 164 ticks); a gold test at The Gold Crest; seats for the outpost asked (ENT-245); 2 soma sales and 1 soma carry added by fill; stance flee 34 -> 46 of 60; claim admirals ENT-048, note ENT-049; guidebook d468200; knowledge mining-missions.md.
+Worked: both goals met: 10 Deep Core hand-ins (goal 8) and iron stored +6,261 an hour (goal +4,000); Mining stored +11,937 reserve units an hour (hive.py flow, 4 h); 60 of 60 at work, 0 lost; fill gate PASS at 19:44 UTC; plan check PASS.
+Failed: 5 Deep Core runs earned nothing on an emptied field, sized on a 7-hour-old reading (errors.log ENT-096); steady money -9,372 cr an hour over 4 h (standing work's fuel); a stop file did not free a miner in the turn; the outpost's fields not flown (no miner a member, no faction-storage step).
+Requests: requests.log ENT-243 (answer to ENT-232), ENT-245 (Unity: 20 faction seats for miners at the outpost).
+Suggestions: Trade sells the surplus copper ore (442,830 held, 25,604 asked); a stop file's meaning for a mine run; a commission's state and its yard bids in the ship files.
+Report: deep-core-eleven-paid-liminal-building-three-tests.
