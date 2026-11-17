@@ -2,7 +2,7 @@
  "id": "outpost-kit-ironlight-to-experiment",
  "kind": "circuit",
  "title": "The first outpost, step 1 of 3: one Outpost Kit bought at Ironlight Crossroads (LHS 1140, lawless) and stored at The Experiment Research Station, our border station two jumps from the site Mining and Intel name",
- "note": "Written by Apollo, 2026-11-17 08:06 UTC; switched on 2026-11-17 15:55 UTC on the Fleet Admiral's word (requests.log ENT-227, orders.log ENT-037 block APOLLO (1)): one Outpost Kit bought at Ironlight Crossroads at 150,000 cr or less (the ask read 148,663 x 1 at 15:23 UTC; the catalog's base value is 150,000) and stored at The Experiment Research Station, three jumps from the first outpost's site GSC-0044 (game/map/sites.tsv). A kit is 30 units of hold. The way: out with an empty hold (rule F13), 6 jumps from Node Beta; back 4 jumps through Antares, GSC-0041 and Ironhollow, three of them lawless, with the kit aboard. No pirate on our record on that road or at GSC-0044 (data/intel/sightings.jsonl and observations kind pirate, read 15:54 UTC). min_credits 155,000 and max_pilots 1: only the builder, whose wallet holds the kit's price, flies it, and only one kit is bought; it stands in the builder's own routes only. The kit is booked as money paid once. Step 2, the founding (deploy_outpost undocked at GSC-0044, the fee from the treasury on the Fleet Admiral's word), is flown by the builder by script after this run (guidebook logistics.md, section 15.3).",
+ "note": "Written by Apollo, 2026-11-17 08:06 UTC; switched on 2026-11-17 15:55 UTC on the Fleet Admiral's word (requests.log ENT-227, orders.log ENT-037 block APOLLO (1)): one Outpost Kit bought at Ironlight Crossroads at 150,000 cr or less (the ask read 148,663 x 1 at 15:23 UTC; the catalog's base value is 150,000) and stored at The Experiment Research Station, three jumps from the first outpost's site GSC-0044 (game/map/sites.tsv). A kit is 30 units of hold. The way: out with an empty hold (rule F13), 6 jumps from Node Beta; back 4 jumps through Antares, GSC-0041 and Ironhollow, three of them lawless, with the kit aboard. No pirate on our record on that road or at GSC-0044 (data/intel/sightings.jsonl and observations kind pirate, read 15:54 UTC). min_credits 155,000 and max_pilots 1: only the builder, whose wallet holds the kit's price, flies it, and only one kit is bought; it stands in the builder's own routes only. The kit is booked as money paid once. Step 2, the founding (deploy_outpost undocked at GSC-0044, the fee from the treasury on the Fleet Admiral's word), is flown by the builder by script after this run (guidebook logistics.md, section 15.3). The first run (16:04 UTC) bought nothing: the route's limit counts the buyer's 1% tax and 148,663 x 1.01 = 150,150 > 150,000. The limit is 150,150 from 16:08 UTC: the kit's price stays within the Fleet Admiral's 150,000, the tax is the market's fee on top.",
  "requires": {
   "empty_hold": true
  },
@@ -14,7 +14,7 @@
     {
      "item": "outpost_kit",
      "qty": 1,
-     "max_price": 150000,
+     "max_price": 150150,
      "one_time": true
     }
    ]
