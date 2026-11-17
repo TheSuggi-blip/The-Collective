@@ -2,7 +2,7 @@
  "id": "census-watch-clearwater",
  "kind": "census",
  "title": "Read Clearwater every hour while Logistics measures what Glasslight Shoal grows back (its silicon ore)",
- "note": "Kept by Oracle; written 2026-11-17 15:28 UTC for requests.log ENT-221 (Apollo): two readings of Glasslight Shoal at Clearwater about an hour apart, filed as usual (scouting/clearwater.json, the table fields), so that what the field grows back is measured; Logistics' gather-glasslight-shoal-silicon takes 255 silicon ore a run there (data/routes/runs.jsonl), and the regrowth is the second reading less the first plus what was gathered between them, by the hour. Clearwater is 9 jumps from Node Beta, 8 of them lawless (the route's note in gather-glasslight-shoal-silicon.json): an empty hold (rule F13). One ship, every 55 minutes; it leaves the scout plan and Clearwater goes back to census-roads after the readings are filed and the request is closed.",
+ "note": "Kept by Oracle; written 2026-11-17 15:28 UTC for requests.log ENT-221 (Apollo): two readings of Glasslight Shoal at Clearwater about an hour apart, filed as usual (scouting/clearwater.json, the table fields), so that what the field grows back is measured; Logistics' gather-glasslight-shoal-silicon takes 255 silicon ore a run there (data/routes/runs.jsonl), and the regrowth is the second reading less the first plus what was gathered between them, by the hour. Clearwater is 9 jumps from Node Beta, 8 of them lawless (the route's note in gather-glasslight-shoal-silicon.json): an empty hold (rule F13). One ship, every 55 minutes; it leaves the scout plan and Clearwater goes back to census-roads after the readings are filed and the request is closed. Off by Oracle 2026-11-17 19:26 UTC: requests.log ENT-221 is answered (two readings and more: Glasslight Shoal silicon 18 at 15:52, 148 at 17:01, 15 at 18:18 UTC, table readings); Clearwater moves to census-worked, because Logistics' gather-glasslight-shoal-silicon is a route of ours there.",
  "every_minutes": 55,
  "max_ships": 1,
  "requires": {
@@ -19,5 +19,6 @@
   "cph_per_ship": -750,
   "hours": 12,
   "last_run": "2026-11-17T17:15:11Z"
- }
+ },
+ "status": "off"
 }
