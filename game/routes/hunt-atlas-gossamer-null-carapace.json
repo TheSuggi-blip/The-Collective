@@ -1,0 +1,23 @@
+{
+ "id": "hunt-atlas-gossamer-null-carapace",
+ "kind": "hunt",
+ "title": "Belt-grazers and patina-grazers at Gossamer Null (Atlas); creature carapace into storage at The Experiment Research Station",
+ "note": "2026-11-17 04:12 UTC (Apophis): standing work that trains the combat skills and stores creature carapace for the reserve (orders ENT-027, block APOPHIS and T5, T6; the reserve is short of 34,159 carapace: the tool stock, view reserve). The herd read 8 belt-grazers and 5 patina-grazers (60 hull) at 2026-11-17 01:53 UTC (table herds); 3 jumps to the station. Beyond the border: `alone` and an empty hold (F13). min_bid 5000: nothing is sold, carapace and the rest go into storage (F24). One hunter; the herd floor keeps it.",
+ "place": "atlas:gossamer_null",
+ "species": [
+  "belt_grazer",
+  "patina_grazer"
+ ],
+ "sell_at": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+ "min_bid": 5000,
+ "kills": 5,
+ "minutes": 40,
+ "max_ships": 1,
+ "min_creatures": 6,
+ "alone": true,
+ "standing": true,
+ "requires": {
+  "empty_hold": true,
+  "without_module": "piercing_railgun_i"
+ }
+}

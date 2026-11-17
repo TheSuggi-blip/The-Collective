@@ -1,0 +1,27 @@
+{
+ "id": "hunt-groombridge-34-ice-fields-hollow-pilgrim",
+ "kind": "hunt",
+ "title": "Hollow-pilgrims at Groombridge 34 Ice Fields; crystal melt sold at The Experiment or kept aboard for Sirius",
+ "note": "2026-11-17 04:12 UTC (Apophis): one hunter (F9). The Rasalhague hunt of 2026-11-17 03:06 UTC: 4 kills, 5 crystal melt, 6 carapace in 54.5 minutes (data/routes/runs.jsonl). Crystal melt bid 1,585 cr x 60 at Sirius Observatory (04:03 UTC) and 1,394 x 12 at The Experiment at times (data/market/history.jsonl). Open while Sirius bids 1,000 or more for 4. The hunter sells at The Experiment when its high bid stands; else the melt stays aboard (a fresh bid elsewhere) and store-hold-central-nexus with sell-melt-nexus-sirius carry it on. Herd 3 read 2026-11-16 23:42 UTC (70 hull). Beyond the border: `alone`, an empty hold.",
+ "place": "groombridge_34:groombridge_34_ice_fields",
+ "species": [
+  "hollow_pilgrim"
+ ],
+ "sell_at": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+ "min_bid": 1000,
+ "kills": 3,
+ "minutes": 50,
+ "max_ships": 1,
+ "min_creatures": 2,
+ "alone": true,
+ "requires": {
+  "empty_hold": true,
+  "bid": {
+   "item": "crystal_melt",
+   "base": "sirius_observatory_station",
+   "min_price": 1000,
+   "min_qty": 4
+  },
+  "without_module": "piercing_railgun_i"
+ }
+}

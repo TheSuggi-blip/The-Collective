@@ -1,0 +1,43 @@
+{
+ "id": "sell-melt-experiment-sirius",
+ "kind": "circuit",
+ "title": "Stored crystal melt carried from The Experiment Research Station to the Sirius Observatory bid",
+ "note": "2026-11-17 04:12 UTC (Apophis): crystal melt is not in the reserve (the tool stock, view reserve) and Sirius Observatory bids 1,585 cr x 60 (04:03 UTC), 7 jumps from The Experiment Research Station. A pilot whose own storage there holds 3 melt or more withdraws it, sells it at Sirius at 1,000 cr or more and stores what is left there. Closed by itself without the bid (requires.bid) or the stock (requires.stored). A test with one ship.",
+ "max_ships": 1,
+ "requires": {
+  "stored": {
+   "at": "the_experiment_research_station",
+   "item": "crystal_melt",
+   "min": 3
+  },
+  "bid": {
+   "item": "crystal_melt",
+   "base": "sirius_observatory_station",
+   "min_price": 1000,
+   "min_qty": 3
+  }
+ },
+ "stops": [
+  {
+   "at": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+   "withdraw": [
+    {
+     "item": "crystal_melt"
+    }
+   ]
+  },
+  {
+   "at": "sirius:sirius_observatory_station:sirius_observatory_station",
+   "sell": [
+    {
+     "item": "crystal_melt",
+     "min_price": 1000
+    }
+   ]
+  },
+  {
+   "at": "sirius:sirius_observatory_station:sirius_observatory_station",
+   "store": "all"
+  }
+ ]
+}
