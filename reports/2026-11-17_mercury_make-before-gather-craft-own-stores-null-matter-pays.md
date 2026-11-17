@@ -81,7 +81,7 @@ Apollo the null matter routes paid, Zero of the methane and trade crystal bids, 
 met at 21:53 UTC (requests.log ENT-256), and the trader plan still sent 27 ships to Okab Belt at 23:43 UTC, at
 -398 cr a ship-hour (route_earnings): about 10,700 cr an hour of fuel for goods nothing takes. Cause: the plan
 followed a target that only a turn reads; my Planned line said "every turn", and the target was met between two.
-Done: the routes left the plan at 23:42 UTC; the lesson is an entry in LEARNINGS.md and a step of my skill
+Done: the routes left the plan at 23:42 UTC (errors.log ENT-106); the lesson is an entry in LEARNINGS.md and a step of my skill
 trade-books (the reserve read first each turn). The lasting fix is the Fleet Admiral's open build Q73 (5).
 
 **Crafting fills hours, not a turn.** The workshop smelts in 0.23 ticks a run and draws wiring in 0.27 (the
