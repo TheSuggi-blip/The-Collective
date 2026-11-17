@@ -50,18 +50,18 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | ILC Cope | Pherkad (`pherkad`) | 0 | junk_convoy |
 | ILC Flange | Synchrony (`synchrony`) | 0 | junk_convoy |
 | ILC Gantry | Synchrony (`synchrony`) | 0 | junk_convoy |
-| ILC Gasket | Node Alpha (`node_alpha`) | 0 | junk_convoy |
+| ILC Gasket | Synchrony (`synchrony`) | 0 | junk_convoy |
 | ILC Gateway | Nexus Prime (`nexus_prime`) | 0 | concordia |
 | ILC Gilt | Synchrony (`synchrony`) | 0 | syndicate |
-| ILC Kerf | Pherkad (`pherkad`) | 0 | junk_convoy |
 | ILC Ladle | Synchrony (`synchrony`) | 0 | junk_convoy |
-| ILC Mallet | Node Alpha (`node_alpha`) | 0 | syndicate |
+| ILC Mallet | Synchrony (`synchrony`) | 0 | syndicate |
 | ILC Nonstop | Nexus Prime (`nexus_prime`) | 0 | concordia |
 | ILC Ratchet | Synchrony (`synchrony`) | 0 | junk_convoy |
 | ILC Retort | Synchrony (`synchrony`) | 0 | junk_convoy |
-| ILC Shank | The Experiment (`the_experiment`) | 1 | syndicate |
+| ILC Shank | Synchrony (`synchrony`) | 1 | syndicate |
 | ILC Solder | Node Gamma (`node_gamma`) | 1 | syndicate |
 | ILC Vagabond | Nexus Prime (`nexus_prime`) | 0 | concordia |
+| ILC Verdict | Pherkad (`pherkad`) | 0 | junk_convoy |
 | ILC Weir | Synchrony (`synchrony`) | 0 | prayer |
 
 ## Standing History

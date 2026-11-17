@@ -38,8 +38,8 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Wexler 41U-RH | Hamal (`hamal`) | 0 | not met |
-| Wexler QWM-Y0 | Acubens (`acubens`) | 0 | cobble |
+| Wexler QWM-Y0 | The Experiment (`the_experiment`) | 0 | cobble |
+| Wexler S7M-17 | Hamal (`hamal`) | 0 | cobble |
 
 ## Standing History
 

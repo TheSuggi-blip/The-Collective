@@ -42,8 +42,8 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| 0ef3b4dcf0fd269e9d9d3e88 | Nexus Prime (`nexus_prime`) | 0 | theoria |
-| c63bd4b0d5884bd1bd46657f | Pherkad (`pherkad`) | 0 | gas_tanker |
+| 0376cb910189c29811104e6c | Pherkad (`pherkad`) | 0 | gas_tanker |
+| cbfe6d803a8bd87c4c248852 | Synchrony (`synchrony`) | 0 | workhorse |
 | fb21ffeebed33a1f8ac75cdf | Synchrony (`synchrony`) | 0 | gas_tanker |
 
 ## Standing History

@@ -8,7 +8,7 @@ author: Unity
 # index.md -- Systems We Know
 
 Built by `scripts/intel-index.py` from the system files of this folder;
-never edited by hand. Files listed: 97. The format of a system file:
+never edited by hand. Files listed: 109. The format of a system file:
 `BLUEPRINT.md`.
 
 ## Voidborn space
@@ -94,14 +94,26 @@ never edited by hand. Files listed: 97. The format of a system file:
 | Intercrus | neutral | medium | 0 | 7 | 2026-11-15 | [n-intercrus.md](n-intercrus.md) |
 | Rastaban | neutral | unknown | 0 | 7 | 2026-11-16 | [n-rastaban.md](n-rastaban.md) |
 | Regor | neutral | unknown | 0 | 7 | 2026-11-16 | [n-regor.md](n-regor.md) |
+| Biham | neutral | unknown | 0 | 8 | 2026-11-17 | [n-biham.md](n-biham.md) |
+| Diadem | neutral | unknown | 0 | 8 | 2026-11-17 | [n-diadem.md](n-diadem.md) |
 | Giausar | neutral | unknown | 0 | 8 | 2026-11-16 | [n-giausar.md](n-giausar.md) |
 | Groombridge 34 | neutral | unknown | 0 | 8 | 2026-11-16 | [n-groombridge_34.md](n-groombridge_34.md) |
+| GSC-0024 | neutral | unknown | 0 | 8 | 2026-11-17 | [n-gsc_0024.md](n-gsc_0024.md) |
+| GSC-0035 | neutral | unknown | 0 | 8 | 2026-11-17 | [n-gsc_0035.md](n-gsc_0035.md) |
 | GSC-0040 | neutral | unknown | 0 | 8 | 2026-11-17 | [n-gsc_0040.md](n-gsc_0040.md) |
+| Jasmine | neutral | unknown | 0 | 8 | 2026-11-17 | [n-jasmine.md](n-jasmine.md) |
+| Kitalpha | neutral | unknown | 0 | 8 | 2026-11-17 | [n-kitalpha.md](n-kitalpha.md) |
 | Sadalsuud | neutral | unknown | 0 | 8 | 2026-11-17 | [n-sadalsuud.md](n-sadalsuud.md) |
+| Sualocin | neutral | unknown | 0 | 8 | 2026-11-17 | [n-sualocin.md](n-sualocin.md) |
 | Aldebaran | neutral | unknown | 0 | 9 | 2026-11-16 | [n-aldebaran.md](n-aldebaran.md) |
+| Alderamin | neutral | unknown | 0 | 9 | 2026-11-17 | [n-alderamin.md](n-alderamin.md) |
+| Azha | neutral | unknown | 0 | 9 | 2026-11-17 | [n-azha.md](n-azha.md) |
 | Chalawan | neutral | unknown | 0 | 9 | 2026-11-17 | [n-chalawan.md](n-chalawan.md) |
+| Coppervale | neutral | unknown | 0 | 9 | 2026-11-17 | [n-coppervale.md](n-coppervale.md) |
+| Elnath | neutral | unknown | 0 | 9 | 2026-11-17 | [n-elnath.md](n-elnath.md) |
 | GSC-0028 | neutral | unknown | 0 | 9 | 2026-11-17 | [n-gsc_0028.md](n-gsc_0028.md) |
 | Innes 40 | neutral | unknown | 0 | 9 | 2026-11-17 | [n-innes_40.md](n-innes_40.md) |
+| Mirach | neutral | unknown | 0 | 9 | 2026-11-17 | [n-mirach.md](n-mirach.md) |
 | Fulu | neutral | unknown | 0 | 10 | 2026-11-17 | [n-fulu.md](n-fulu.md) |
 | GSC-0006 | neutral | unknown | 0 | 10 | 2026-11-17 | [n-gsc_0006.md](n-gsc_0006.md) |
 | Hatysa | neutral | unknown | 0 | 10 | 2026-11-16 | [n-hatysa.md](n-hatysa.md) |
