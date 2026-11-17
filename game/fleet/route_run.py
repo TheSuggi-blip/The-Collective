@@ -322,11 +322,17 @@ def workshop(job, base):
     # the game counts `quantity` in made units, rounded up to whole runs (27 liquid hydrogen asked queued 9 runs of 3,
     # queue.log ENT-114): runs x per_run asks every run in one job
     asked = {'recipe_id': recipe, 'quantity': runs * per, 'deliver_to': 'storage', 'preset': 'workshop'}
+    if job.get('venue') == 'facility':               # a facility-only recipe (refine_steel): without `preset` the game rents
+        del asked['preset']                          # a public facility and quotes its fee (requests.log ENT-190)
     quote = craft_fields(raw('craft', dict(asked, dry_run=True)))
     try:
         fee = float(quote.get('credits_total') or 0)
     except (TypeError, ValueError):
         fee = 0.0
+    top = job.get('max_fee')                         # the most one run may cost, cr: what a run makes is worth no more
+    if isinstance(top, (int, float)) and not isinstance(top, bool) and fee > top * runs:
+        say(f'craft {recipe} x{runs}: not crafted, the quote asks {fee:.0f} cr, above max_fee {top} cr a run')
+        return 0, f'craft {recipe}: fee above max_fee'
     pace = quote.get('effective_time_per_run')
     pace = pace if isinstance(pace, (int, float)) and not isinstance(pace, bool) and pace > 0 else 6   # craftchain.py's default
     if quote.get('have_inputs') is not True:

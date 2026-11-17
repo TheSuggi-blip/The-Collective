@@ -402,6 +402,21 @@ class CraftStepTests(unittest.TestCase):
         self.assertIn("craft 16", steps(log), out)                                                     # down to the floor itself: crafted
         self.assertEqual(row["notes"], [])
 
+    def test_a_craft_in_a_facility_asks_no_workshop_and_keeps_to_its_fee_a_run(self):
+        # requests.log ENT-190 (the Fleet Admiral): refine_steel (5 iron ore, 2 steel plate) runs only in a facility; asked
+        # without `preset` the game rents a public one and quotes its fee (guidebook logistics.md section 7, 2026-11-15).
+        # `max_fee` is the most a run may cost: the catalog's base value of what one run makes.
+        stop = dict(CRAFT_STOP, craft=[dict(CRAFT_STOP["craft"][0], venue="facility", max_fee=40)])
+        route = dict(CRAFT_ROUTE, stops=[stop])
+        log, _world, row, out = fly(route, dict(CRAFT_WORLD, quote=dict(CRAFT_WORLD["quote"], credits_total=8 * 40)))
+        crafts = [params for action, params in log if action == "craft"]
+        self.assertEqual(crafts[0], {"recipe_id": "assemble_control_node", "quantity": 16, "deliver_to": "storage", "dry_run": True})
+        self.assertEqual(crafts[1], {"recipe_id": "assemble_control_node", "quantity": 16, "deliver_to": "storage"})
+        self.assertEqual(row["notes"], [], out)
+        log, _world, row, out = fly(route, dict(CRAFT_WORLD, quote=dict(CRAFT_WORLD["quote"], credits_total=8 * 40 + 1)))
+        self.assertEqual([s for s in steps(log) if s.startswith(("craft", "withdraw", "sell"))], ["craft dry_run"], out)
+        self.assertEqual(row["notes"], ["craft assemble_control_node: fee above max_fee"])
+
     def test_the_wait_ends_at_craftchain_s_limit_and_the_row_says_how_many_were_made(self):
         log, _world, row, out = fly(CRAFT_ROUTE, dict(CRAFT_WORLD, ticks=10 ** 6))
         after = steps(log)[steps(log).index("craft 16") + 1:]
