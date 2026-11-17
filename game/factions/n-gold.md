@@ -15,7 +15,7 @@ updated: 2026-11-17
 # Golden Age Compact [GOLD]
 
 A player faction with 1 base(s) in 1 system(s); the nearest to Nexus Prime is 4 jump(s) away, in GSC-0041 (`gsc_0041`).
-Pilots of it in our space in the last 24 hours: 3.
+Pilots of it in our space in the last 24 hours: 4.
 
 ## Identity
 
@@ -40,9 +40,10 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Iron Prospector | Node Beta (`node_beta`) | 0 | liminal |
+| Iron Prospector | Acubens (`acubens`) | 0 | liminal |
 | Nickel Prospector | Pherkad (`pherkad`) | 0 | bonanza |
 | Oryn Celdra | Node Beta (`node_beta`) | 0 | theoria |
+| Zheng He | Nexus Prime (`nexus_prime`) | 0 | congregation |
 
 ## Standing History
 

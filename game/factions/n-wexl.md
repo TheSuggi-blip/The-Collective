@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 11.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 139 | Public event stream |
+| Pilots carrying the tag on the public event stream | 138 | Public event stream |
 
 ## Bases
 
@@ -39,13 +39,13 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
 | Wexler 02W-XD | Node Gamma (`node_gamma`) | 0 | cobble |
-| Wexler D15-GR | Node Alpha (`node_alpha`) | 0 | cobble |
 | Wexler E73-PW | Nexus Prime (`nexus_prime`) | 0 | congregation |
-| Wexler G1C-3U | Node Gamma (`node_gamma`) | 0 | cobble |
 | Wexler H03-AV | Node Gamma (`node_gamma`) | 0 | cobble |
+| Wexler J0U-HW | Node Gamma (`node_gamma`) | 0 | cobble |
+| Wexler P23-R3 | Node Gamma (`node_gamma`) | 0 | cobble |
 | Wexler Q2U-Y4 | Node Gamma (`node_gamma`) | 0 | cobble |
 | Wexler Q75-M5 | Node Gamma (`node_gamma`) | 0 | cobble |
-| Wexler QWM-Y0 | The Experiment (`the_experiment`) | 0 | cobble |
+| Wexler QWM-Y0 | Acubens (`acubens`) | 0 | cobble |
 | Wexler S7M-17 | Node Gamma (`node_gamma`) | 0 | cobble |
 | Wexler UUP-5K | Node Gamma (`node_gamma`) | 0 | cobble |
 | Wexler V0M-CQ | Node Gamma (`node_gamma`) | 0 | cobble |
