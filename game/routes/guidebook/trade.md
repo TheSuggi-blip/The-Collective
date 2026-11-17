@@ -49,54 +49,63 @@ the trader ship files (`xpsnap.py`, 2026-11-17 19:43 UTC).
 
 | Skill | Why it matters | What trains it, on which routes | Trade now | Next goal |
 |---|---|---|---|---|
-| Trading | The class skill. A higher level shows more in `analyze_market` (regional demand, price trends, arbitrage: the game's help); its bonus is not stated in the catalog | Buying and selling at stations or by exchange orders, XP by credit volume (catalog): `@trade-sell`, station stock bought (about 1 XP per 100 cr), mission rewards | 3 for 3, 2 for 21, 1 for 16 | 3 for every trader |
-| Crafting | Station workshop speed from x1 at level 0 to x5 at 100 (with Refining); recipes ask it | Crafting at a station: `@trade-craft` (copper piping and steel plate from the pilot's own iron and copper ore, Logistics' steel crafts) | 5 for 1, 4 for 14, 3 for 23, 2 for 2 | 5 for every trader |
-| Refining | With Crafting, the workshop's speed; smelting asks it | The smelt inside craft-piping and craft-steel | 5 for 1, 4 for 6, 3 for 11, 2 for 21, 1 for 1 | 3 for every trader |
-| Navigation | Fuel, jump fuel and jump time -1% a level; level 3 opens Signal Fragments (7,000 cr once) | Every jump | 6 for 2, 5 for 1, 4 for 37 | 5 |
-| Piloting | Tier 2 hulls at 10 (the Apophenia freighter), tier 3 at 20 | Flying, jumping, mining | 8 for 15, 7 for 5, 6 for 20 | 10 |
+| Trading | The class skill. A higher level shows more in `analyze_market` (regional demand, price trends, arbitrage: the game's help); its bonus is not stated in the catalog | Buying and selling at stations or by exchange orders, XP by credit volume (catalog): `@trade-sell`, station stock bought (about 1 XP per 100 cr), mission rewards | 3 for 5, 2 for 26, 1 for 9 | 3 for every trader |
+| Crafting | Station workshop speed from x1 at level 0 to x5 at 100 (with Refining); recipes ask it | Crafting at a station: `@trade-craft` (steel plate and copper wiring from all of the pilot's own iron and copper in one visit, copper piping, Logistics' steel crafts) | 6 for 1, 5 for 8, 4 for 29, 3 for 1, 2 for 1 | 5 for every trader |
+| Refining | With Crafting, the workshop's speed; smelting asks it | The smelt inside craft-steel-own, craft-piping and craft-steel | 5 for 1, 4 for 16, 3 for 21, 2 for 2 | 4 for every trader |
+| Navigation | Fuel, jump fuel and jump time -1% a level; level 3 opens Signal Fragments (7,000 cr once) | Every jump | 6 for 2, 5 for 14, 4 for 24 | 5 |
+| Piloting | Tier 2 hulls at 10 (the Apophenia freighter), tier 3 at 20 | Flying, jumping, mining | 8 for 20, 7 for 19, 6 for 1 | 10 |
 | Engineering | Module power and CPU, for a fuller fit | Crafting components or modules | 0 | not a goal yet |
-| Mining | The fallback only (rule F23) | `@trade-gas`, `@trade-gather` | -- | -- |
+| Mining | The fallback only (rule F23) | `@trade-gas`, `@trade-gather`, named by no ship since 2026-11-17 23:42 UTC | -- | -- |
 
-Levels: the trader ship files, 2026-11-17 19:43 UTC (`xpsnap.py save`). XP of the 40 traders
+Levels: the trader ship files, 2026-11-17 23:35 UTC (`xpsnap.py save`). XP of the 40 traders
 (`xpsnap.py diff`, skill trade-books), four hours each: to 07:37 UTC
 crafting 0 and trading 616; 07:37 to 11:41 UTC crafting 3,490, trading
 455; 11:41 to 15:37 UTC crafting 10,775, trading 527; 15:37 to 19:43 UTC
 deep core mining 34,542, mining 32,581, piloting 32,136, crafting 15,630,
-navigation 11,557, refining 8,500, trading 379. Every trader gained XP in
-each window; crafting stands at 2 or more for all 40 (3 or more for 38).
-Trading is the skill that lags: it rises only by credit volume, and the
-bids carry few ships.
+navigation 11,557, refining 8,500, trading 379; 19:43 to 23:35 UTC
+piloting 27,151, deep core mining 25,068, crafting 24,445, mining 23,796,
+refining 17,350, navigation 10,909, trading 2,164. Every trader gained XP
+in each window; crafting stands at 4 or more for 38 of 40. Trading is the
+skill that lags: it rises only by credit volume, and the bids carry few
+ships. Voidborn Mastery: level 1 for 14 traders, 0 for 26.
 
 ## Standing Plan
 
 What the traders fly between two turns: the division's plan file
 (`/srv/collective/data/plans/plan-trade.md`, the tool `plan`), as set
-in the turn of 2026-11-17 19:52 UTC. `game/routes/plan-trader.md`
+in the turn of 2026-11-17 23:42 UTC. `game/routes/plan-trader.md`
 prints it without names, and `game/routes/templates-trade.md` lists the
-templates. Every trader's own routes are templates (section 2): a ship
-is moved to other work with one word. A figure is credits per ship-hour
-from the view `route_earnings` (4 hours to 19:33 UTC unless named); a
-mission that pays once is judged with its reward (rule F19).
+templates. Every trader's own routes are two templates (section 2), the
+same for all 40: `@trade-sell > @trade-craft`. A figure is credits per
+ship-hour from the view `route_earnings` (4 hours to 23:32 UTC unless
+named); a mission that pays once is judged with its reward (rule F19).
 
 | Order | Work | Ships | Carries | Expected | Why it stands here |
 |---|---|---|---|---|---|
-| First | The once line: 23 routes from voidborn-first-steps-board to mission-workshop-production-run-node-beta. voidborn-conductive-lattice (Node Beta chain, 20,500 cr over three links) open to all 246 pilots since 19:41 UTC (was 146), 4 at a time; The Collective Provides 6 -> 4 at a time with a nickel floor of 60 | every ship, by the list First | Lattice: 99 pilots of the fleet unflown (data/fleet/onetime.json, 19:40 UTC); silver 170 x 200 at Ironlight Crossroads (18:56 UTC), energy crystal 420 x 1,186 at Central Nexus (19:37 UTC). Rotanev: 1,452 nickel at 14:03 UTC less about 740 taken by 37 paid runs since | Lattice about 10,400 cr a pilot after silver, crystals and fuel (2026-11-16 runs, 34 minutes); The Collective Provides 2,500 cr once in 30 to 35 minutes; Workshop Production Run 3,500 cr once (124 runs of the fleet since 15:56 UTC) | Rules F34, F35: every pilot flies its empire's chains to their end |
-| 1 | `@trade-sell`, 14 routes: null matter first (two one-ship tests from Node Beta and Central Nexus stores, floor 200, beside Mining's Synchrony carry), then soma (floor 320), palladium (270), hydrogen (30) | every trader whose own storage holds the good, one ship a test, one or two a paying route | null matter: Central Nexus bid 200 to 210 for 7 to 295 units six times from 17:56 to 19:38 UTC; soma 342 to 343 x 5 to 17 at four stations; hydrogen: no home bid at 19:33 UTC | Mining's null matter carry +17,050 cr in 4 runs since 15:56 UTC; soma Node Beta 8,924 (12 runs), Synchrony 7,978 (11); hydrogen Node Beta 90,659 (5 runs of minutes): judged by credits a run times the runs a bid's regain allows | Traders store 2,141 null matter; the soma and hydrogen bids are thin and come back |
-| 2 | `@trade-gas`: five gas routes | the three traders with a Gas Harvester I | no home hydrogen bid at 19:33 UTC | not measured in 4 hours | The gas ships' own work |
-| 3 | `@trade-craft`: craft-piping-node-beta, craft-piping-synchrony-hub, craft-wiring-synchrony-hub (copper wiring from surplus copper, nothing sold; 8 ships since its first RESULT: +270 crafting XP in 6.0 minutes for -39 cr), Logistics' three craft-steel routes | a trader whose own storage holds the inputs | copper piping 328 short, steel plate 2,381 short (the tool stock, view=reserve, 19:32 UTC) | craft-piping-node-beta -167 (101 runs of all divisions), craft-steel-node-beta -343 (15): fuel only | Crafting is the class skill (rules F23, F30) |
-| 4 | `@trade-gather`: gather-okab-belt (42, the Fleet Admiral's lift of 18:00 UTC, kept), gather-gj-3470-dewfall-fray (13), then the home fields | every trader as fallback | Okab Belt 88,829 iron and 88,262 copper (census about 18:15 UTC) | Okab -397 (102 runs), Dewfall -327 (36) | Standing work while the reserve is short 23,809 iron; copper ore is 447,390 held against 22,892 taken, so what Okab brings past the iron is no use (requests.log ENT-247) |
-| Then | gather-hamal-crystal-bloom, gather-gsc-0027-prism-scatter, gather-ironhollow-echo-ejecta, gather-schedar-belt, the three craft-steel routes, mine-pherkad-rift, census-frontier, park | every ship | -- | -- | `park` should never be reached |
+| First | The once line: 23 routes from voidborn-first-steps-board to mission-workshop-production-run-node-beta; voidborn-conductive-lattice (Node Beta chain, 20,500 cr over three links) 4 at a time for all 246 pilots, The Collective Provides 4 at a time with a nickel floor of 60 | every ship, by the list First | Lattice: booked by 174 pilots, 85 lack it (oncecheck.py, 23:35 UTC); The Collective Provides: 160 lack it, Rotanev Daylight Seam read 1,452 nickel at 14:03 UTC | 62 hand-ins by traders from 19:43 to 23:35 UTC, 226,159 cr booked once (runs.jsonl): Workshop Production Run 28 x 3,500, the Lattice chain 7 runs 59,159, Signal Protocol 6 x 3,500, Resonance finish 2 x 8,000 | Rules F34, F35: every pilot flies its empire's chains to their end |
+| 1 | `@trade-sell`, 14 routes: null matter first (two Trade routes and Mining's Synchrony carry into the one Central Nexus bid, floor 200), then soma (floor 320), palladium (270), hydrogen (30) | a trader whose own storage holds the good; one ship a route (one or two for soma at Node Beta) | null matter: the Central Nexus bid stood 7 times and was gone 4 times in 11 moves from 22:05 to 23:32 UTC, 13 to 269 units at 204 to 208 cr; soma 332 to 342 x 1 to 10 at four stations; no home hydrogen bid at 23:36 UTC | carry-null-matter-beta-to-nexus 21,029 (9 runs), sell-null-matter-at-nexus 47,338 (6 runs), sell-soma-at-synchrony 8,499 (7), sell-hydrogen-at-node-beta 21,607 (6 runs of minutes): judged by credits a run times the runs a bid's regain allows | Traders store 2,039 null matter at three stations (table holdings, 23:33 UTC); the bids are thin and come back |
+| 2 | `@trade-craft`, 11 routes: copper piping at Node Beta and Synchrony Hub; steel plate from all of the pilot's own iron in one visit (craft-steel-own at Node Beta 10 ships, The Experiment 10, Central Nexus 2); copper wiring from all of its own copper (Synchrony Hub 8, Node Beta 10, The Experiment 8); Logistics' three craft-steel routes | a trader whose own storage at that station holds the input | the traders' own stores: iron 8,843 at Node Beta, 8,623 at The Experiment, 23,114 at Central Nexus; copper 34,983 at Synchrony Hub, 29,990 at Node Beta, 8,285 at The Experiment (table holdings, 23:33 UTC): about 4,270 plate runs and 9,400 wiring runs, at 0.23 and 0.26 ticks a run | first RESULT of craft-steel-own-node-beta: 20 plates in 1.7 minutes, 0 cr (23:42 UTC); craft-wiring-synchrony-hub +99 per ship-hour over 106 runs (20 runs a visit before 23:44 UTC); craft-piping-node-beta -155 over 82 runs | Requests ENT-256 and orders ENT-052: the reserve's iron is met, so a trader makes before it gathers; the reserve still asks 31,999 steel plate and 2,103 copper piping to be made (the tool stock, view=reserve, 23:32 UTC); crafting is the class skill (rules F23, F30) |
+| Then | craft-steel-node-beta, craft-steel-central-nexus, craft-steel-synchrony-hub, census-frontier, park | every ship | -- | -- | `park` should never be reached; a docked trader whose stores are used up waits docked (requests.log ENT-256, step 4) |
 
-Trade's steady money (`hive.py briefing`, SUM trader): -9,988 cr an hour
-over the 4 hours to 19:31 UTC; fill gate PASS at 19:44 UTC, 40 of 40 at
-work. The loss is the fuel of the gather fields; the once-money of the
-same 4 hours was 92,000 cr to traders.
+Not in the plan any more: gather-okab-belt and gather-gj-3470-dewfall-fray
+and the home gather fields of the old list Then (iron and copper, which
+the reserve no longer takes; gather-okab-belt -398 per ship-hour over 113
+runs in the 4 hours to 23:32 UTC), and `@trade-gas` (no home station bids
+for hydrogen; the three gas ships fly `@trade-sell > @trade-craft` like
+the others). No field within reach that holds what the reserve lacks
+(silicon, carbon, gold, nickel ore) is open to traders: the nearest are
+7 to 12 jumps out, thin, and claimed by Mining (admirals.log ENT-060).
 
-What changes it: the iron the reserve still lacks (the tool stock,
-view=reserve), and the Fleet Admiral's answer to requests.log ENT-247 on
-the fallback once it is full; the first RESULT lines of the null matter
-tests and of craft-wiring-synchrony-hub; the silver and crystal asks
-that bound the Node Beta chain; a fresh census of Rotanev Daylight Seam.
+Trade's steady money (`hive.py briefing`, SUM trader): +8,142 cr an hour
+over the 4 hours of runs to 23:31 UTC; the division's last hour read
++20,477 cr net at 23:47 UTC (`hive.py fleet`). Fill gate PASS at 23:44
+UTC, 40 of 40 at work.
+
+What changes it: the traders' stores used up (then most traders dock: the
+fill gate will name them, and the report says how many and why); a home
+bid for hydrogen, plasma or copper ore; a field of silicon, carbon, gold
+or nickel ore near home that Mining does not claim; the Fleet Admiral's
+fallback that reads the reserve by itself (her open build Q73 (5)).
 
 ## 1. Route Guides
 
@@ -188,6 +197,28 @@ the tool `routes`, the view `route_earnings`).
   Hub 10 plates and 20 piping in 7.9 minutes, -39 cr of fuel. Piping
   takes about 1.6 ticks a run. Nine runs in the first 15 minutes.
 
+### Making from one's own stores in one visit (`craft-steel-own-<station>`, `craft-wiring-<station>`)
+
+- Fit and skills: the starter hull. Trains crafting and refining; costs
+  one hop of fuel, nothing bought or sold.
+- Steps: one stop at the station's workshop whose `craft` list asks the
+  same recipe in halving sizes (32, 16, 8, 4, 2, 1 runs; 128 down to 1
+  for wiring, 512 down to 1 for the Central Nexus iron). The runner
+  quotes each entry; where the pilot's storage cannot fill it, the quote
+  says `have_inputs False` and the entry makes nothing ("no inputs" in
+  the run's notes), and the next entry is tried. One visit so makes
+  exactly what the pilot holds, up to the sum of the list. A second stop
+  stores what was taken into the hold.
+- Opens and closes: `requires.stored` 100 iron ore or 80 copper ore at
+  that station; the pilot is sent again only after the ledger read its
+  storage, and by then its stores there are used up.
+- Readings, 2026-11-17 23:42 UTC (runs.jsonl, the trader's log): at Node
+  Beta 16 and then 4 runs made after 32 and 8 found too little iron, 20
+  steel plate in 1.7 minutes, 0 cr; the quotes read 0.23 ticks a smelt
+  and 0.26 to 0.28 ticks a wiring run (23:37 to 23:43 UTC). A fixed
+  `runs` either fails whole on a store a little short or leaves the rest
+  for a visit 40 minutes later.
+
 ### Missions that pay once (`voidborn-<mission>`)
 
 Section 3. Each starts with the accept at the giver's station and
@@ -263,17 +294,17 @@ ship is switched to other work with one word.
 
 | Template | Routes, in the order a ship tries them | Trains | Fit |
 |---|---|---|---|
-| `@trade-sell` | sell-soma-at-synchrony, carry-soma-synchrony-to-alpha, sell-soma-at-node-beta, carry-soma-beta-to-gamma, sell-soma-at-experiment, carry-palladium-nexus-to-gamma, sell-palladium-at-node-gamma, sell-hydrogen-at-node-beta, sell-hydrogen-at-node-gamma, sell-hydrogen-at-synchrony, carry-hydrogen-synchrony-to-experiment | trading | none |
-| `@trade-craft` | craft-piping-node-beta, craft-piping-synchrony-hub, craft-steel-central-nexus, craft-steel-synchrony-hub, craft-steel-node-beta | crafting, refining | none |
+| `@trade-sell` | carry-null-matter-beta-to-nexus, sell-null-matter-at-nexus, carry-null-matter-synchrony-nexus, sell-soma-at-synchrony, carry-soma-synchrony-to-alpha, sell-soma-at-node-beta, carry-soma-beta-to-gamma, sell-soma-at-experiment, carry-palladium-nexus-to-gamma, sell-palladium-at-node-gamma, sell-hydrogen-at-node-beta, sell-hydrogen-at-node-gamma, sell-hydrogen-at-synchrony, carry-hydrogen-synchrony-to-experiment | trading | none |
+| `@trade-craft` | craft-piping-node-beta, craft-piping-synchrony-hub, craft-steel-own-node-beta, craft-steel-own-experiment, craft-steel-own-central-nexus, craft-wiring-synchrony-hub, craft-wiring-node-beta, craft-wiring-experiment, craft-steel-node-beta, craft-steel-central-nexus, craft-steel-synchrony-hub | crafting, refining | none |
 | `@trade-train-nav` | train-navigation-trader | navigation, piloting | none |
 | `@trade-gas` | mine-marfik-emission-nebula, mine-gsc-0016-emission-nebula, mine-the-experiment-haze, mine-coldwater-emission-nebula, mine-stellar-siphon, mine-the-experiment-haze-synchrony | mining | Gas Harvester I |
 | `@trade-gather` | gather-okab-belt, gather-gj-3470-dewfall-fray, gather-hamal-crystal-bloom, gather-gsc-0027-prism-scatter, gather-ironhollow-echo-ejecta, mine-acubens | mining | mining laser |
 
-The rows of the plan, 2026-11-16 23:47 UTC: the three traders with a
-Gas Harvester I fly `@trade-sell > @trade-craft > @trade-gas >
-@trade-gather`; the seventeen other traders at navigation 3 or more
-`@trade-sell > @trade-craft > @trade-gather`; the twenty at navigation
-2 `@trade-sell > @trade-craft > @trade-train-nav > @trade-gather`.
+The rows of the plan, 2026-11-17 23:42 UTC: all 40 traders fly
+`@trade-sell > @trade-craft`. `@trade-gas`, `@trade-gather` (iron and
+copper fields) and `@trade-train-nav` are kept and named by no ship:
+the gas has no home bid, the reserve's iron is met, and every trader
+holds navigation 4 or more.
 
 | Task | How |
 |---|---|
@@ -409,13 +440,22 @@ reading is the state of its hour, not a verdict (rule F22).
   ship, 2026-11-17 19:46 UTC): 20 runs of basic_copper_processing (8
   copper ore make 1 wiring) at Synchrony Hub from the pilot's own copper;
   nothing sold. First RESULT (19:47 UTC): 2/2 stops in 6.0 minutes, -39 cr,
-  crafting XP 215 -> 485 (+270, about 13.5 a run); the 40 traders had gained
-  15,630 crafting XP in the four hours before. Lifted to 8 ships at 19:57 UTC;
-  it may replace gathering at Okab once the reserve holds its iron
-  (requests.log ENT-247). The fleet holds 447,390 copper ore against 22,892 the reserve
-  takes (19:32 UTC).
+  crafting XP 215 -> 485 (+270, about 13.5 a run). Lifted to 8 ships at 19:57
+  UTC; 106 runs in the 4 hours to 23:32 UTC, +99 per ship-hour
+  (route_earnings), while the 40 traders gained 24,445 crafting XP (19:43 to
+  23:35 UTC, xpsnap.py diff). Since 23:44 UTC it asks the halving list
+  (section 1) and replaces the gathering at Okab with its twins at Node Beta
+  and The Experiment (requests.log ENT-256). Not a test any more.
 - **Null matter into the Central Nexus bid** (carry-null-matter-beta-to-nexus,
-  sell-null-matter-at-nexus, one ship each, 2026-11-17 19:41 UTC): section 1.
+  sell-null-matter-at-nexus, one ship each, 2026-11-17 19:41 UTC): paid from
+  the first run; 9 and 6 runs in the 4 hours to 23:32 UTC, 21,029 and 47,338
+  per ship-hour; traders' null matter sales +48,330 cr from 19:43 to 23:35 UTC
+  over the three null matter routes (runs.jsonl). Not a test any more; one
+  ship each, since one bid feeds all three.
+- **Trade crystal and deuterium ice from other divisions' stores**
+  (sell-trade-crystal-at-nexus, floor 340; sell-deuterium-at-node-beta, floor
+  150; written 2026-11-17 23:42 UTC): one ship each, for the miners' and
+  sentinels' stores; the first RESULT lines are read at the next turn.
 - **Iron Ore Resupply** at Trader's Rest Resort Station (Nebula space, 22
   jumps): 80,000 cr for 10,000 iron ore delivered, a faction mission on the
   board read 2026-11-17 17:07 UTC. A Threshold carries 65 and the station
