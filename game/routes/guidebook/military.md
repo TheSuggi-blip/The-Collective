@@ -87,7 +87,7 @@ filled the hours no herd was open (section 4).
 ## Standing Plan
 
 What the drones fly between two turns, applied 2026-11-17 16:18 UTC (orders ENT-037). 6 drones fly `@guard`
-and then `@hunter` (two with a soma sale between); 33 fly `@hunter`; 11 fly one hunt of their own first (the
+and then `@hunter` (two with a soma sale between); 35 fly `@hunter`; 9 fly one hunt of their own first (the
 tests and hunts the filler offered), then `@hunter`. Every hunt and every guard takes one ship (rule F9). The hunts
 beyond the border leave only for a pirate or a pilot filed hostile (`alone` "pirates"; since 16:15 UTC also the
 eight hunts of 12:15 UTC, which left 35 runs at once for passers-by). The dispatcher closes a hunt, a mine or a guard
@@ -96,7 +96,7 @@ where a pirate was seen within six hours (orders D9, dispatch.py since 13:58 UTC
 | Order | Routes | Ships | Carries, expected | Why |
 |---|---|---|---|---|
 | First | The once line of the fleet (17 routes) | every drone; each route's own limit | 1,000 to 7,000 cr once a pilot on the way | Missions that pay once first; Voidborn chain for rule F35 |
-| Own, first | Tests 11 to 17 jumps out: cinder-sylphs at Angetenar, drift-rays at Arneb, frost-moths at Oxbow, halo-drifters at Saltwind, Avior and Willowgate; hollow-pilgrims at Aldhibah and GSC-0040; cinder-sylphs at Etamin, Tania and Silverbend | 1 each | the route maker's 1,546 to 2,711 cr per ship-hour, not measured; Angetenar measured 20,680 while Hex Star bid 4,000 for glands | Far bids: superfluid vial 600 x 42 and noble condensate 690 x 48 at Hex Star; the combat skills on new prey |
+| Own, first | Tests 11 to 17 jumps out: cinder-sylphs at Angetenar, drift-rays at Arneb, frost-moths at Oxbow, halo-drifters at Saltwind, Avior and Willowgate; cinder-sylphs at Etamin, Tania and Silverbend (the hollow-pilgrims at Aldhibah and GSC-0040 wait for Intel's release of its claim) | 1 each | the route maker's 1,546 to 2,711 cr per ship-hour, not measured; Angetenar measured 20,680 while Hex Star bid 4,000 for glands | Far bids: superfluid vial 600 x 42 and noble condensate 690 x 48 at Hex Star; the combat skills on new prey |
 | `@guard` | `guard-ironhollow-fading-signal`, `guard-schedar-belt`, `guard-ironhollow-echo-ejecta`, `guard-garnet-belt`, `guard-achernar-belt`, `guard-gsc-0044-belt`, `guard-marfik-emission-nebula` | 6 drones, 1 a post | -36 to -195 cr a run (18 runs, 12:20 to 15:54 UTC) | Up to 45 ships at Schedar, 45 at Ironhollow, 29 at Garnet, 16 at Achernar (admirals.log ENT-038); GSC-0044 is the first outpost's site |
 | `@hunter`, holds and sales | `store-hold-central-nexus`, two ember-gland sales, `carry-soma-synchrony-to-alpha`, five melt sales | only with goods aboard or stored and a bid | melt: 7 sale runs +30,681 cr, 12:16 to 16:05 UTC; both far bids gone by 14:55 UTC | Melt and glands are sold, not kept (not in the reserve) |
 | `@hunter`, money hunts | six hollow-pilgrim hunts, Hassaleh pilgrims and frost-moths, Gemma halo-drifters, Achernar and Lesath cinder-sylphs, the Bluerift rime-grazer test | 1 each | -102 to -962 cr per hunter-hour while no far bid stands (12:16 to 16:05 UTC); Groombridge +248 | The melt and glands wait in storage for the next far bid |
