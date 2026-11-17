@@ -2,13 +2,13 @@
  "id": "mission-the-forge-tax-crucible",
  "kind": "circuit",
  "title": "The Forge Tax: 5,000 cr, mining 20 XP; 20 cobalt ore mined at Hearsay Cobalt (Sargas), accepted and handed in at The Crucible Garrison",
- "note": "Trial Master Reva on the board of The Crucible Garrison (data/missions/the_crucible_garrison.json, read 2026-11-17 12:23 UTC): mine 20 cobalt ore, 5,000 cr, mining 20 and bounty_hunting 10 XP, reputation 2 (rule F34; requests.log ENT-232 of Trade). The nearest cobalt with a load is Hearsay Cobalt in Sargas, 3,222 of 25,000 (richness 46) beside 100,000 iron and copper, read 17:00 UTC (table fields), 18 jumps from The Crucible; Tabit Cobalt Shelf 270, 29 jumps. The Crucible is 18 jumps from Nexus Prime (Crimson space), Sargas 21 (lawless; a station, Cobalt Reach Range, in the system; no pirate on our record there, observations read 19:14 UTC). A test with one ship and an empty hold (rules F12, F13, F34): whether the board still offers it, the road of some 70 jumps and its fuel, how many loads 20 cobalt take. Written 2026-11-17 19:15 UTC (Zero).",
+ "note": "Trial Master Reva on the board of The Crucible Garrison (data/missions/the_crucible_garrison.json, read 2026-11-17 12:23 UTC): mine 20 cobalt ore, 5,000 cr, mining 20 and bounty_hunting 10 XP, reputation 2 (rule F34; requests.log ENT-232 of Trade). The nearest cobalt with a load is Hearsay Cobalt in Sargas, 3,222 of 25,000 (richness 46) beside 100,000 iron and copper, read 17:00 UTC (table fields), 18 jumps from The Crucible; Tabit Cobalt Shelf 270, 29 jumps. The Crucible is 18 jumps from Nexus Prime (Crimson space), Sargas 21 (lawless; a station, Cobalt Reach Range, in the system; no pirate on our record there, observations read 19:14 UTC). A test with one ship and an empty hold (rules F12, F13, F34): whether the board still offers it, the road of some 70 jumps and its fuel, how many loads 20 cobalt take. Written 2026-11-17 19:15 UTC (Zero). 2026-11-17 23:16 UTC (Zero): two hand-ins (4,364 and 4,340 cr a run after fuel, 67 and 68 minutes; data/routes/runs.jsonl), Hearsay Cobalt 3,222 at 17:00 UTC: max_ships 1 -> 3, max_pilots 1 -> 20 (400 cobalt of the field).",
  "once": true,
  "requires": {
   "empty_hold": true
  },
- "max_ships": 1,
- "max_pilots": 1,
+ "max_ships": 3,
+ "max_pilots": 20,
  "one_time": [
   "The Forge Tax"
  ],

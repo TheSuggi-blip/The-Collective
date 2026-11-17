@@ -1,0 +1,18 @@
+{
+ "id": "gather-jadecove-nickel",
+ "kind": "mine",
+ "title": "A test: nickel ore gathered at Long Errand Band (Jadecove, lawless) into storage at The Crescent Moon (Mebsuta, four jumps)",
+ "note": "Written by Zero, 2026-11-17 23:16 UTC (orders.log ENT-050, block ZERO: gold and nickel where a field has them; rules F3, F13, F24). Long Errand Band read 1,745 nickel ore of 20,000 at richness 40 (table fields, 18:15 UTC); the reserve is short 15,486 nickel ore and holds 2,834 (surplus.py reserve, 23:04 UTC). No field nearer our stations holds nickel above 1,300 without a pirate record (Gliese 876: 37 battles on file). The nearest storage is The Crescent Moon in Mebsuta, four jumps, where the silicon test of Floodlight Flats stores too; no pirate observation in Jadecove or beside it in 24 hours (observations, 23:15 UTC). Stores everything, sells nothing (rule F24). One ship with an empty hold until its first RESULT line (rules F8, F13).",
+ "belt": "jadecove:long_errand_band",
+ "station": "mebsuta:bba58290a3ed25bad530772b15ab3fa4:ec315132a710a7d0fbc68cca05073154",
+ "minutes": 90,
+ "max_ships": 1,
+ "standing": true,
+ "min_left": {
+  "nickel_ore": 100
+ },
+ "requires": {
+  "module": "mining_laser_i",
+  "empty_hold": true
+ }
+}

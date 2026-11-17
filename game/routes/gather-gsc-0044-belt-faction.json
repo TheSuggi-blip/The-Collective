@@ -1,0 +1,20 @@
+{
+ "id": "gather-gsc-0044-belt-faction",
+ "kind": "mine",
+ "title": "A test: ore gathered at GSC-0044 Belt into the faction's storage at our outpost CLTV Outpost GSC-0044 (same system); members of the faction only",
+ "note": "Written by Zero, 2026-11-17 23:16 UTC (orders.log ENT-050, block ZERO (1): a mine route stores at the outpost with deposit faction, one ship first; plan the belts around it). The belt read 100,000 iron ore (richness 46) and 100,000 copper (30) at 22:44 UTC (table fields), in the outpost's own system: no jump between field and store. The outpost has no personal storage and docks members only: this route stands only in the rows of miners seated in the faction (ten, get_status faction_rank member, 23:10 UTC), never in a template. Its bunker refuels members from the faction's reserve for 0 cr (Apollo, queue.log ENT-182). mine.py stores the loop's loads and its last load into the faction storage with deposit faction (commit 9582453, not flown before this). One ship until its first RESULT line (rules F8, F13); lift_to lets fill.py widen it to the seated miners while ships wait.",
+ "belt": "gsc_0044:gsc_0044_belt",
+ "station": "gsc_0044:da9de8c360c46ffee15dee4e7d1b8476:443f0c5b2a1fbbcea95d13b76a797fe9",
+ "deposit": "faction",
+ "minutes": 45,
+ "max_ships": 1,
+ "standing": true,
+ "min_left": {
+  "iron_ore": 20000
+ },
+ "requires": {
+  "module": "mining_laser_i",
+  "empty_hold": true
+ },
+ "lift_to": 10
+}

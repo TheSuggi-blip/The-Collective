@@ -1,0 +1,33 @@
+{
+ "id": "craft-steel-experiment",
+ "kind": "circuit",
+ "title": "Steel plate made by hand at The Experiment's workshop from the pilot's own stored iron ore, kept in its storage there for the reserve; open to a ship of any role",
+ "note": "Written by Zero, 2026-11-17 23:16 UTC (orders.log ENT-050, P2: stored iron becomes steel plate; block ZERO: iron and copper no more while the reserve holds them). A copy of craft-steel-node-beta (Logistics, 400 runs: basic_iron_smelting makes 1 steel plate from 10 iron ore by hand, 0 cr, about 6 minutes for 50) at The Experiment, which has a crafting service (table stations) and where the gather routes of the iron fields one jump out stored their ore: miners alone hold 137,676 iron ore there, every one of the 60 at least 758 (data/stock/storage.json, 23:03 UTC), about 13,700 plates of the 32,378 the reserve still has to make (surplus.py reserve, 23:04 UTC). Standing work: trains crafting and refining, stores reserve goods; requires.stored sends only a pilot with 550 iron ore in its own storage there, and not again until the ledger has read that storage after the run began. One ship until its first RESULT line (rule F8), then lifted.",
+ "standing": true,
+ "requires": {
+  "stored": {
+   "at": "the_experiment_research_station",
+   "item": "iron_ore",
+   "min": 550
+  }
+ },
+ "max_ships": 1,
+ "stops": [
+  {
+   "at": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+   "store": "all",
+   "craft": [
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 50,
+     "per_run": 1,
+     "makes": "steel_plate"
+    }
+   ]
+  },
+  {
+   "at": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+   "store": "all"
+  }
+ ]
+}
