@@ -46,6 +46,7 @@
   "gather-ironhollow-echo-ejecta",
   "craft-steel-node-beta",
   "craft-steel-central-nexus",
+  "craft-steel-synchrony-hub",
   "census-frontier",
   "park"
  ],
@@ -115,6 +116,7 @@
   "gather-ironhollow-echo-ejecta": 40,
   "craft-steel-node-beta": 40,
   "craft-steel-central-nexus": 40,
+  "craft-steel-synchrony-hub": 40,
   "census-frontier": 40,
   "park": 40
  },
