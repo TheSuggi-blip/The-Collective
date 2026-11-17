@@ -1478,7 +1478,7 @@ function trailing(rows, minutes, col) {          // the change of a running sum 
 }
 
 const WINDOWS = { '1h': ['Last hour', 6, 60, 4], '6h': ['6 hours', 24, 60, 6], '24h': ['24 hours', 48, 180, 24] };   // label, hours of graph, minutes behind each point, hours of the routes table
-let metricWin = '1h';
+let metricWin = '24h';   // a trailing day by default (Suggi, 2026-11-17): one purchase or a gift in transit bends an hour, a day far less
 let metricsAt = 0;                               // when the Metrics tab was last drawn: it is drawn again every 30 s, not at every fleet poll
 let routeOrder = { key: '', rank: new Map() };   // the place of each route row while the tab stays open on one window
 function keepOrder(rows) {                       // a table that reorders under the eye cannot be read: rows keep their place, a new route joins at the end
@@ -1520,13 +1520,15 @@ async function renderMetrics(panel, live) {
   kpi('Paid once / h', w ? signed(w.one_time_per_hour) : '--', 'rewards once per pilot, less goods bought for them', w ? tone(w.one_time_per_hour).trim() : '');
   kpi('Net per ship / h', w ? signed(Math.round(net / (t.ships || 1))) : '--', 'everything, per ship', w ? tone(net).trim() : '');
   kpi('Steady income / h', w ? fmt(w.income_per_hour) : '--', 'sales and repeatable rewards', w && w.income_per_hour > 0 ? 'pos' : '');
-  kpi('Running costs / h', w ? fmt(w.costs_per_hour) : '--', 'fuel, repairs, goods, modules', w && w.costs_per_hour > 0 ? 'neg' : '');
+  kpi('Running costs / h', w ? fmt(w.costs_per_hour) : '--', w && w.costs_per_hour < 0 ? 'below zero: money came in that no counter names; read the longer stretch' : 'fuel, repairs, goods, modules',
+    w && w.costs_per_hour > 0 ? 'neg' : w && w.costs_per_hour < 0 ? 'warn' : '');   // a cost below zero is a fault of the books, never good news
   const metered = w && w.fuel_cr_per_hour !== undefined;
   kpi('Fuel / h', metered ? fmt(w.fuel_cr_per_hour) : '--', metered ? fmt(w.fuel_units_per_hour) + ' units bought' : 'not measured in this stretch yet', metered && w.fuel_cr_per_hour > 0 ? 'neg' : '');
   kpi('Repairs / h', metered ? fmt(w.repair_cr_per_hour) : '--', metered ? fmt(w.hull_points_per_hour) + ' hull points' : 'not measured in this stretch yet', metered && w.repair_cr_per_hour > 0 ? 'neg' : '');
   kpi('Ships working', t.ships ? fmt(t.working) + ' of ' + fmt(t.ships) : '--',
     fmt(t.parked) + ' parked at a station' + (t.adrift ? ', ' + fmt(t.adrift) + ' in space without work' : ''));
-  kpi('Credits', fmt(t.credits), fmt(t.credits_per_ship) + ' per ship');
+  const purse = (S.holdings && S.holdings.treasury) || 0;   // the faction's treasury: the fleet's main purse (D225)
+  kpi('Credits', fmt((t.credits || 0) + purse), 'wallets ' + fmt(t.credits) + ' + purse ' + fmt(purse) + '; ' + fmt(t.credits_per_ship) + ' a ship');
   panel.append(grid);
   if (w && w.wallets) {                           // the books close: the wallets at the start plus the net of the stretch are the wallets now
     const made = w.wallets.end - w.wallets.start - (w.wallets.left_out || 0), check = el('p', 'sub', 'The books close: ' + fmt(w.wallets.start) + ' cr in the wallets ' + span + ' ago, ');
@@ -1551,7 +1553,7 @@ async function renderMetrics(panel, live) {
   const div = t.divisions || {}, dw = (w || {}).divisions || {};
   const order = (S ? S.roster : []).filter((a) => a.division !== 'Command' || div.Command).map((a) => [a.division, a.name]);
   if (div.Unassigned) order.push(['Unassigned', '']);
-  const moneyRow = (name, working, y) => [name, working, w ? shade(y.income_per_hour, 'pos') : '--', w ? shade(y.costs_per_hour, 'neg') : '--', w ? tint(y.cph || 0) : '--',
+  const moneyRow = (name, working, y) => [name, working, w ? shade(y.income_per_hour, 'pos') : '--', w ? (y.costs_per_hour < 0 ? el('span', 'warn', fmt(y.costs_per_hour)) : shade(y.costs_per_hour, 'neg')) : '--', w ? tint(y.cph || 0) : '--',
     w ? tint(y.one_time_per_hour || 0) : '--', w ? tint(whole(y)) : '--'];
   panel.append(fitTable(table(['Division', 'Working', 'Steady income', 'Running costs', 'Steady net', 'Paid once', 'Net / h'],
     order.map(([d, adm]) => {

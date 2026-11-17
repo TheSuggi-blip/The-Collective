@@ -295,6 +295,7 @@ class HiveTests(unittest.TestCase):
         spec.loader.exec_module(collector)
         folder, now = self.data / "fleet", time.time()
         collector.DATA, t0 = folder, int(now) - 3600
+        collector.ROLES["sentinel"] = ("Command", "Unity")   # a module of its own: the guard of the command group, as in 2026-11-16
         (folder / "onetime.json").write_text(json.dumps([[t0 + 1800, "sentinel-1", "Wallet top-up", -18000], [t0 + 1800, "trader-1", "Wallet top-up", 18000]]))
         (folder / "gifts.jsonl").write_text(json.dumps({"at": t0 + 1800, "from": "sentinel-1", "to": "trader-1", "credits": 18000}) + "\n")
         (folder / "seed.json").write_text(json.dumps({"sentinel-1": [0, 50000, 1000, 0], "trader-1": [t0 + 600, 100, 0, 0]}))

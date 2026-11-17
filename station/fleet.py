@@ -153,11 +153,12 @@ OPENER = urllib.request.build_opener(urllib.request.ProxyHandler({}))   # the ga
 # A flagship's name carries no role word: <FLEET_DATA>/flagships.json names its
 # division, that division's Admiral and whose ship it is
 # ({pilot: {admiral, division, role, of}}), read at every pass. The six flagships
-# and the guard (`sentinel-<n>`) are the command group: the Command division.
+# are the command group: the Command division. The guard (`sentinel-<n>`) is lent to Military while it trains
+# (Suggi, 2026-11-17; game/fleet/division.py ROLES): back to ("Command", "Unity") when it returns.
 FLAGSHIPS = {}
 ROLES = {
     "miner": ("Mining", "Zero"), "trader": ("Trade", "Mercury"), "hauler": ("Logistics", "Apollo"),
-    "drone": ("Military", "Apophis"), "scout": ("Intel", "Oracle"), "sentinel": ("Command", "Unity"),
+    "drone": ("Military", "Apophis"), "scout": ("Intel", "Oracle"), "sentinel": ("Military", "Apophis"),
 }
 ROLE_NAME = re.compile(r"([a-z]+)-(\d{1,4})")
 STATS = ("credits_earned", "credits_spent", "ore_mined", "trades_completed", "missions_completed", "jumps_completed",

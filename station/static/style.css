@@ -317,6 +317,7 @@ button.member:hover { background: var(--raise); box-shadow: inset 0 -2px 0 var(-
 .winsel button:hover { color: var(--text); border-color: var(--accent); }
 .winsel button.on { color: var(--text); border-color: var(--accent); background: var(--raise); }
 .kpi.neg .v, .panel .neg { color: var(--bad); } .kpi.pos .v { color: var(--good); }
+.kpi.warn .v, .panel span.warn { color: var(--warn); }   /* a figure that cannot be right (a cost below zero) */
 .chartlabel .key { margin-left: 8px; font-weight: 600; }
 .msghead > span.to { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 .chatlog { overflow-x: hidden; }

@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest import mock
 
 
 SCRIPT = Path(__file__).resolve().parents[2] / "station" / "fleet.py"
@@ -59,7 +60,7 @@ class FleetCollectorTests(unittest.TestCase):
         self.addCleanup(self.fleet.FLAGSHIPS.clear)
         self.assertEqual(self.fleet.division_of("Prime Directive"), ("Command", "Unity", 0))
         self.assertEqual(self.fleet.division_of("Zero Point"), ("Command", "Unity", 0))
-        self.assertEqual(self.fleet.division_of("sentinel-3"), ("Command", "Unity", 3))
+        self.assertEqual(self.fleet.division_of("sentinel-3"), ("Military", "Apophis", 3))   # lent to Military (D226)
         self.assertEqual(self.fleet.division_of("One of Seven"), ("Unassigned", "", 0))
         names = ("sentinel-2", "Zero Point", "miner-1", "Hades", "sentinel-1", "Prime Directive")
         rows = sorted((self.fleet.ship_row(account(n)) for n in names), key=self.fleet.row_order)
@@ -67,7 +68,8 @@ class FleetCollectorTests(unittest.TestCase):
                          [("Prime Directive", "Unity"), ("Hades", "Apophis"), ("Zero Point", "Zero"), ("sentinel-1", ""), ("sentinel-2", ""), ("miner-1", "")])
         self.assertEqual([r["flagship"] for r in rows], [True, True, True, False, False, False])
         totals = self.fleet.totals(rows)["divisions"]
-        self.assertEqual((totals["Command"]["ships"], totals["Command"]["admiral"], totals["Mining"]["ships"]), (5, "Unity", 1))
+        self.assertEqual((totals["Command"]["ships"], totals["Command"]["admiral"], totals["Mining"]["ships"]), (3, "Unity", 1))
+        self.assertEqual((totals["Military"]["ships"], totals["Military"]["admiral"]), (2, "Apophis"))
 
     def test_a_pilot_in_no_division_is_not_of_the_fleet(self):
         rows = [self.fleet.ship_row(account(n)) for n in ("miner-1", "One of Seven", "trader-2")]
@@ -358,6 +360,8 @@ class FleetCollectorTests(unittest.TestCase):
             self.assertEqual((w["divisions"]["Mining"]["transfers_per_hour"], w["transfers_moved_per_hour"]), (0, 5000))
 
     def test_a_gift_of_the_command_group_to_another_division_moves_neither_division_nor_the_fleet(self):
+        mock.patch.dict(self.fleet.ROLES, {"sentinel": ("Command", "Unity")}).start()   # the arithmetic of a guard in Command
+        self.addCleanup(mock.patch.stopall)
         # Command (sentinel-1): earned 500, spent 1,500. Trade (trader-1): earned 1,000, spent 400. Then the same hour
         # with sentinel-1 giving trader-1 18,000 (a division without a donor is helped by the command group). The old
         # code read Trade's 18,000 as a reward: income -17,000, costs -17,600.
@@ -435,6 +439,8 @@ class FleetCollectorTests(unittest.TestCase):
         self.assertEqual((r["transfers_moved_per_hour"], r["transfers_unpaired_per_hour"]), (38874, 37974))
 
     def test_net_is_income_less_costs_and_the_divisions_add_up_to_the_fleet_on_a_random_history(self):
+        mock.patch.dict(self.fleet.ROLES, {"sentinel": ("Command", "Unity")}).start()   # six roles, one per division
+        self.addCleanup(mock.patch.stopall)
         import random
         rnd = random.Random(20261116)
         names = {"Mining": "miner", "Trade": "trader", "Logistics": "hauler", "Military": "drone", "Intel": "scout", "Command": "sentinel"}
