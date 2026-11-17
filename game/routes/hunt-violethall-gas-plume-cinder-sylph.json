@@ -1,0 +1,20 @@
+{
+ "id": "hunt-violethall-gas-plume-cinder-sylph",
+ "kind": "hunt",
+ "title": "cinder_sylph at violethall_gas_plume; loot sold at Hex Star",
+ "note": "Written by routemaker.py from the herd's count, the loot of 45 runs of ours and the order book; an estimate of 13213 cr per hunter-hour, not a measurement. A test: one ship, the ranching rules kept. Added as a test by fill.py on 2026-11-17 13:34 UTC (Unity): one ship until its first RESULT line is read.",
+ "place": "violethall:violethall_gas_plume",
+ "species": [
+  "cinder_sylph"
+ ],
+ "sell_at": "dheneb:98eba8b1a7ad0520d6a7c8ea44b2d6aa:b495c6003fc83e18f6d8cecbe6929133",
+ "min_bid": 3331,
+ "kills": 4,
+ "minutes": 83,
+ "max_ships": 1,
+ "min_creatures": 4,
+ "alone": true,
+ "requires": {
+  "empty_hold": true
+ }
+}
