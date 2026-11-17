@@ -5,6 +5,9 @@
   "trade-sell": {
    "title": "Stored goods sold where a station bid stands: each ship sells its own stores, nothing bought",
    "routes": [
+    "carry-null-matter-beta-to-nexus",
+    "sell-null-matter-at-nexus",
+    "carry-null-matter-synchrony-nexus",
     "sell-soma-at-synchrony",
     "carry-soma-synchrony-to-alpha",
     "sell-soma-at-node-beta",
@@ -20,7 +23,7 @@
    "trains": [
     "trading"
    ],
-   "note": "2026-11-17 15:43 UTC (Mercury, orders ENT-037): every route is gated by requires.stored (the pilot's own storage) and requires.bid (a book read within the hour at the floor); a run sells only what the bid takes. Floors read against the cheapest ask (sellgen.py scan, 15:35 UTC): soma 320 (cheapest ask 273 x 4 at Node Alpha; bids 343 x 2 and 343 x 1), palladium 270 (cheapest ask 200 x 1; bids 412 x 2 and 272 x 5), hydrogen 30 (Ironlight asks 6 in depth; one home bid of 31 x 8). Open to every division's ships (rule F24). Starter hull, no module."
+   "note": "2026-11-17 19:42 UTC (Mercury, orders ENT-042): null matter leads: the Central Nexus bid read 200 to 210 cr for 7 to 295 units six times from 17:56 to 19:38 UTC (ledger.py prices null_matter), the only null matter bid in our books; floor 200 against Central Nexus' own ask of 213 to 220; carry-null-matter-beta-to-nexus and sell-null-matter-at-nexus are one-ship tests, carry-null-matter-synchrony-nexus is Mining's route, not claimed, one ship. Then soma 320 (cheapest ask 275 x 200,627 at Central Nexus; bids 342 to 343 x 5 to 17 at four stations), palladium 270 (cheapest ask 200 x 1; bid 548 x 2 at Synchrony Hub), hydrogen 30 (no home bid at 19:33 UTC). Every route gated by requires.stored and requires.bid; open to every division's ships (rule F24). Starter hull, no module."
   },
   "trade-craft": {
    "title": "Crafting from the pilot's own stores: copper piping and steel plate for the reserve",
