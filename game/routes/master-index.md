@@ -18,11 +18,11 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 | Group | What it holds | Routes | Home space | Beyond the border | Best measured |
 |---|---|---|---|---|---|
 | [Once per Pilot](index-once-per-pilot.md) | Missions and rewards the game pays once per pilot: a new pilot's first work, and seed money. | 29 | 17 | 12 | voidborn-conductive-lattice: 9,110 cr a run |
-| [Paying Routes](index-paying-routes.md) | Work that repeats and whose runs of the last 12 hours measured above zero. | 38 | 18 | 20 | drain-ice-node-alpha: 46,050 cr per ship-hour |
-| [Tests](index-tests.md) | Work that repeats and has no measured figure: new, or no readable run in the last 12 hours. One ship until its first RESULT line is read. | 69 | 22 | 47 | not measured yet |
+| [Paying Routes](index-paying-routes.md) | Work that repeats and whose runs of the last 12 hours measured above zero. | 44 | 21 | 23 | drain-ice-node-alpha: 40,500 cr per ship-hour |
+| [Tests](index-tests.md) | Work that repeats and has no measured figure: new, or no readable run in the last 12 hours. One ship until its first RESULT line is read. | 60 | 18 | 42 | not measured yet |
 | [Fitting](index-fitting.md) | A module bought and fitted: the tool a kind of work needs. | 11 | 10 | 1 | fit-ice-harvester-lhs-1140: -4,320 cr per ship-hour |
-| [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 72 | 22 | 50 | hunt-elnath-ice-belt-hollow-pilgrim: 1,740 cr per ship-hour |
-| [Measured at a Loss](index-measured-at-a-loss.md) | Work that repeats and whose runs of the last 12 hours measured zero or below. | 38 | 4 | 34 | mine-coldwater-emission-nebula: -50 cr per ship-hour |
+| [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 72 | 22 | 50 | hunt-elnath-ice-belt-hollow-pilgrim: 950 cr per ship-hour |
+| [Measured at a Loss](index-measured-at-a-loss.md) | Work that repeats and whose runs of the last 12 hours measured zero or below. | 41 | 5 | 36 | mine-coldwater-emission-nebula: -50 cr per ship-hour |
 | [Off](index-off.md) | Written down, not flown. | 14 | 8 | 6 | voidborn-first-steps: 4,020 cr per ship-hour |
 | All | | 271 | 101 | 170 | |
 
