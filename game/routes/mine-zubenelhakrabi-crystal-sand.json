@@ -1,0 +1,27 @@
+{
+ "id": "mine-zubenelhakrabi-crystal-sand",
+ "kind": "mine",
+ "title": "Zubenelhakrabi Crystal Sand: iron_ore, copper_ore, silicon_ore; sold at Node Gamma Relay Station",
+ "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 1388 cr per ship-hour, not a measurement. A test: one ship. Added as a test by fill.py on 2026-11-17 11:14 UTC (Zero): one ship until its first RESULT line is read.",
+ "belt": "zubenelhakrabi:zubenelhakrabi_crystal_sand",
+ "station": "node_gamma:node_gamma_relay_station:node_gamma_relay_station",
+ "minutes": 90,
+ "max_ships": 1,
+ "sell": [
+  {
+   "item": "iron_ore",
+   "min_price": 3
+  },
+  {
+   "item": "copper_ore",
+   "min_price": 2
+  },
+  {
+   "item": "silicon_ore",
+   "min_price": 252
+  }
+ ],
+ "requires": {
+  "empty_hold": true
+ }
+}

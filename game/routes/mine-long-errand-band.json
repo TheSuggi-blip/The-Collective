@@ -1,0 +1,19 @@
+{
+ "id": "mine-long-errand-band",
+ "kind": "mine",
+ "title": "Long Errand Band: nickel_ore; sold at Ironlight Crossroads",
+ "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 572 cr per ship-hour, not a measurement. A test: one ship. Added as a test by fill.py on 2026-11-17 11:14 UTC (Zero): one ship until its first RESULT line is read.",
+ "belt": "jadecove:long_errand_band",
+ "station": "lhs_1140:0321b3e4406021575337b7be26e53dd7:784309214f105860a16a0c100a70eb14",
+ "minutes": 90,
+ "max_ships": 1,
+ "sell": [
+  {
+   "item": "nickel_ore",
+   "min_price": 12
+  }
+ ],
+ "requires": {
+  "empty_hold": true
+ }
+}
