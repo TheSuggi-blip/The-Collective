@@ -1,0 +1,24 @@
+{
+ "id": "fit-survey-scanner-central-nexus",
+ "kind": "circuit",
+ "title": "Test: fit one Survey Scanner I at Central Nexus, so that one scout can survey_system (hidden places, deep core deposits, the scanning skill)",
+ "note": "Kept by Oracle; written 2026-11-17 07:21 UTC (orders.log ENT-029, task 1 and block ORACLE). The catalog (table skills) says scanning rises on querying a place or surveying a system and deep core mining on revealing deep core deposits with survey_system; exploration adds survey power. Every scout stands at scanning 0 (table ship_skills, 2026-11-17 07:20 UTC): the census reads get_poi and has never surveyed. survey_system needs a survey scanner (Survey Scanner I: utility slot, cpu 3, power 4, survey power 30, catalog 0.723.2; a Threshold has 2 utility slots, cpu 16, power 30, and a scout fits a mining laser in one). Since 0.722.0 the game asks frontier explorers to survey again. The question the test answers: does a survey show places or ores (uranium, seam glass, silicon) the census does not. Central Nexus asked 4,892 cr for 1 and The Experiment 4,911 for 2 (books of 07:14 and 07:18 UTC); max_price 5,000 with the 1 percent tax. One scout; the first survey_system is flown by hand (rule F29), then a survey step for the census is built if it shows more than get_poi.",
+ "once": true,
+ "max_ships": 1,
+ "max_pilots": 2,
+ "min_credits": 12000,
+ "requires": {
+  "without_module": "survey_scanner_i"
+ },
+ "stops": [
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "fit": [
+    {
+     "module": "survey_scanner_i",
+     "max_price": 5000
+    }
+   ]
+  }
+ ]
+}

@@ -20,17 +20,17 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 | [Once per Pilot](index-once-per-pilot.md) | Missions and rewards the game pays once per pilot: a new pilot's first work, and seed money. | 29 | 17 | 12 | voidborn-conductive-lattice: 9,110 cr a run |
 | [Paying Routes](index-paying-routes.md) | Work that repeats and whose runs of the last 12 hours measured above zero. | 28 | 15 | 13 | sell-hydrogen-at-node-beta: 56,950 cr per ship-hour |
 | [Tests](index-tests.md) | Work that repeats and has no measured figure: new, or no readable run in the last 12 hours. One ship until its first RESULT line is read. | 68 | 23 | 45 | not measured yet |
-| [Fitting](index-fitting.md) | A module bought and fitted: the tool a kind of work needs. | 10 | 9 | 1 | fit-ice-harvester-lhs-1140: -4,320 cr per ship-hour |
+| [Fitting](index-fitting.md) | A module bought and fitted: the tool a kind of work needs. | 11 | 10 | 1 | fit-ice-harvester-lhs-1140: -4,320 cr per ship-hour |
 | [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 61 | 20 | 41 | gather-ironhollow-fading-signal: 220 cr per ship-hour |
 | [Measured at a Loss](index-measured-at-a-loss.md) | Work that repeats and whose runs of the last 12 hours measured zero or below. | 31 | 3 | 28 | mine-nightveil-dark-residue: 0 cr per ship-hour |
 | [Off](index-off.md) | Written down, not flown. | 13 | 8 | 5 | voidborn-first-steps: 4,020 cr per ship-hour |
-| All | | 240 | 95 | 145 | |
+| All | | 241 | 96 | 145 | |
 
 ## Routes by Zone and Kind
 
 | Zone | Routes | census | circuit | guard | hunt | mine | Farthest system, jumps from home |
 |---|---|---|---|---|---|---|---|
-| home space | 95 | 1 | 71 | 0 | 10 | 13 | 3 |
+| home space | 96 | 1 | 72 | 0 | 10 | 13 | 3 |
 | beyond the border | 145 | 6 | 20 | 3 | 60 | 56 | 15 |
 
 ## Plans by Role
