@@ -20,7 +20,7 @@ they store, the members by name and the treasury's balance. They are live
 data of the unit (the tools `hive` with `verb=empire`, `stock`, `ship`;
 `game/fleet/empire.py show`).
 
-Facts as of 2026-11-17T01:10:27Z.
+Facts as of 2026-11-17T02:14:46Z.
 
 ## 1. The Faction
 
@@ -74,10 +74,13 @@ list of stations. Where a base is built is Suggi's decision.
 | `aldebaran` | Aldebaran | lawless | 9 | none | candidate | Suggi | the region between our space and the Outer Rim: named for a station (Suggi, 2026-11-16); 9 jumps from home, lawless, not read by us yet |
 | `hawthorne` | Hawthorne | lawless | 13 | none | candidate | Suggi | with alchiba the region named for a later station (Suggi, 2026-11-16); 13 jumps from home, lawless, not read by us yet |
 | `alchiba` | Alchiba | lawless | 14 | none | candidate | Suggi | with hawthorne the region named for a later station (Suggi, 2026-11-16); 14 jumps from home, lawless, not read by us yet |
+| `intercrus` | Intercrus | lawless | 7 | none | candidate | Suggi | proposed for a base (Suggi, 2026-11-17); 7 jumps from home, lawless; read once by our census on 2026-11-15 21:41 UTC: two belts and alloy remnants of iron and copper near 100,000 each, sol alloy ore 1,401, null matter 650, an ice field of water and nitrogen ice (game/planets/n-intercrus.md) |
+| `felis` | Felis | lawless | 7 | none | candidate | Suggi | with biham a pair proposed for a base (Suggi, 2026-11-17); 7 jumps from home, lawless, borders Gliese 876 (pirates named in the military guidebook); read once on 2026-11-15 23:34 UTC: two metallic belts and a frost ring, their deposits not read (game/planets/n-felis.md) |
+| `biham` | Biham | lawless | 8 | none | candidate | Suggi | with felis a pair proposed for a base (Suggi, 2026-11-17); 8 jumps from home, lawless, borders Felis and Gliese 876; not read by us yet |
 
 ## 5. What The Faction Can Build
 
-Every faction facility of the game's catalog (0.721.1), line by line and
+Every faction facility of the game's catalog (0.723.0), line by line and
 tier by tier. A higher tier is an upgrade of the one before it and
 replaces its rent. Rent is due every 100 ticks (about 17 minutes) at a
 station that is not ours; at our own station or outpost it is none. The
