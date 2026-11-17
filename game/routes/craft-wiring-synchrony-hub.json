@@ -1,0 +1,35 @@
+{
+ "id": "craft-wiring-synchrony-hub",
+ "kind": "circuit",
+ "title": "Copper wiring made by hand at the Synchrony Hub workshop from the pilot's own stored copper ore, kept in its storage there; a test of the trader's crafting work once the reserve's iron is full",
+ "note": "2026-11-17 19:46 UTC (Mercury, orders.log ENT-042 block MERCURY: a trader without a paying trade crafts; rules F23, F30, F31). basic_copper_processing makes 1 copper wiring from 8 copper ore by hand (catalog 0.723.2). The fleet stores 447,390 copper ore against 22,892 the reserve takes and 71,874 held back for other circuit-board recipes (the tool stock, view=reserve, 19:32 UTC); no book within reach bids for copper ore above 4 cr. The wiring is not sold (nothing is crafted for sale here): it is kept as an input of 32 recipes, among them assemble_control_node, and its base value is 21 against 8 copper ore. What this test reads: minutes and crafting XP a run, against gather-okab-belt (-400 per ship-hour of fuel over 124 runs) once the reserve holds its iron. One ship, no lift_to, until its first RESULT line (rule F8).",
+ "standing": true,
+ "requires": {
+  "stored": [
+   {
+    "at": "synchrony_hub",
+    "item": "copper_ore",
+    "min": 160
+   }
+  ]
+ },
+ "max_ships": 1,
+ "stops": [
+  {
+   "at": "synchrony:synchrony_hub:synchrony_hub",
+   "store": "all",
+   "craft": [
+    {
+     "recipe": "basic_copper_processing",
+     "runs": 20,
+     "per_run": 1,
+     "makes": "copper_wiring"
+    }
+   ]
+  },
+  {
+   "at": "synchrony:synchrony_hub:synchrony_hub",
+   "store": "all"
+  }
+ ]
+}
