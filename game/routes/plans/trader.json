@@ -21,6 +21,10 @@
   "mission-ghosts-in-the-cloud-node",
   "voidborn-first-hunt-intercrus-sootfall",
   "voidborn-first-hunt-intercrus-belt",
+  "voidborn-first-hunt-nexus",
+  "voidborn-first-hunt-gsc",
+  "voidborn-first-hunt-acubens",
+  "voidborn-first-hunt-gsc-0031",
   "sell-soma-at-synchrony",
   "carry-soma-synchrony-to-alpha",
   "sell-soma-at-node-beta",
@@ -56,19 +60,23 @@
  ],
  "planned": [
   {
-   "what": "Goal of the turn: Trade's steady money above 0 cr an hour in the hour before the next turn (hive.py fleet; +1,819 in the hour to 11:55 UTC), and crafting level 1 or more for 35 of 40 traders (table ship_skills; 27 at 11:54 UTC).",
-   "when": "read at the turn of 2026-11-17 15:30 UTC"
+   "what": "Goal of the turn: The Collective Provides paid to 30 more pilots of the fleet by the next turn (data/fleet/onetime.json: 16 at 15:35 UTC), and Trade's steady money above -4,075 cr an hour over 4 hours (hive.py briefing, SUM trader, 15:31 UTC).",
+   "when": "read at the turn of 2026-11-17 19:30 UTC"
   },
   {
-   "what": "Read the first RESULT lines of gather-okab-belt, gather-gj-3470-dewfall-fray and voidborn-collective-provides at Rotanev; give the dewfall test lift_to and the mission max_ships only after them.",
-   "when": "the next turn"
+   "what": "Read Rotanev Daylight Seam's nickel (the tool system) and the mission's runs; keep max_ships 6 while the field holds 20 a pilot for the ships on it, set it back below a floor of 200.",
+   "when": "every turn"
+  },
+  {
+   "what": "Run reservecheck.py of the trade-books skill on the trader plan and on every route of mine: no route sells a good the reserve holds, or crafts one for sale from such an input (rule F24).",
+   "when": "every turn"
   },
   {
    "what": "Read every floor beside its cheapest ask with sellgen.py scan and set it again (soma 320, palladium 270, hydrogen 30).",
    "when": "every turn"
   },
   {
-   "what": "The standing sell order of one anchor beacon at Node Beta stood unfilled at 11:57 UTC, 12 hours after its listing; cancel it at the turn that shows a day without a buyer.",
+   "what": "The standing sell order of one anchor beacon at Node Beta: cancel it at the turn that shows a day without a buyer.",
    "when": "the turn after 2026-11-17 23:48 UTC"
   },
   {
@@ -76,8 +84,8 @@
    "when": "when Intel files one"
   },
   {
-   "what": "Read the whole board of every trader docked at a turn's start (boards.py) and test every title the fleet has not booked.",
-   "when": "every turn"
+   "what": "Buy the reserve's carbon ore at 4 cr in step with the silicon it pairs with (12 carbon and 2 silicon make 3 boards), when a source of silicon stands.",
+   "when": "when silicon is gathered"
   }
  ],
  "ships": {
@@ -99,6 +107,10 @@
   "mission-ghosts-in-the-cloud-node": 40,
   "voidborn-first-hunt-intercrus-sootfall": 40,
   "voidborn-first-hunt-intercrus-belt": 40,
+  "voidborn-first-hunt-nexus": 40,
+  "voidborn-first-hunt-gsc": 40,
+  "voidborn-first-hunt-acubens": 40,
+  "voidborn-first-hunt-gsc-0031": 40,
   "sell-soma-at-synchrony": 40,
   "carry-soma-synchrony-to-alpha": 40,
   "sell-soma-at-node-beta": 40,
