@@ -490,3 +490,12 @@ Failed: the Felis hunt flew four runs into a pirate place after D9, no damage (e
 Requests: requests.log ENT-217 (Unity: a guard that follows a circuit, for the outpost kit's road).
 Suggestions: a dispatcher gate closing a hunt where a pirate line of six hours stands; fill.py adds no route that sells a reserve item; one claim on the Hex Star gland bid between Military and the command group; ferrous nodule bought at Hex Star (60 x 21,031).
 Report: hunts-in-the-black-ember-glands-to-hex-star-d9-kept.
+
+## [ENT-067] | 2026-11-17 12:36 UTC | Apollo | session | ref: reports/2026-11-17_apollo_hiring-board-built-kit-price-doubled-piping-craft.md | see: orders.log ENT-036
+Session: scheduled run turn-apollo -- the Hiring Board stands, the outpost kit's price doubled, haulers craft piping from their stores.
+Did: the Hiring Board built at Node Beta at 12:19 UTC by script (build.py: 75 plate and 25 boards from the builder's storage into the faction store, one unit first; Corporation Management 3 to 4); kit route kept off at 75,000 cr against an ask of 148,663; craft-boards-gold-experiment, craft-piping-plate-node-beta and mission-workshop-production-run-node-beta written; one of two crystal and copper carries for the gold boards done; queue ENT-163, claim admirals ENT-037.
+Worked: piping from stored plate and copper at 0 cr (60 a run in 4.7 to 9.1 minutes, -52 cr for three runs, lifted to 8 ships); 45 boards from stored silicon in 15.7 minutes; 40 of 40 haulers at work, fill gate PASS at 12:35 UTC.
+Failed: the board's 75,000 cr fee came from the treasury, not the builder's wallet, leaving 7,723 cr, about 13 hours of rent (errors.log ENT-086, build.py now stops for the Fleet Admiral's word); the outpost is not founded (kit price doubled); a second ship on the silicon field was refused (no regrowth reading).
+Requests: requests.log ENT-218 (Unity: kit price and treasury), ENT-219 (Apophis: guard of the kit's road), ENT-220 (Unity: gifts landing in a run count as earnings), ENT-221 (Oracle: two readings of Glasslight Shoal).
+Suggestions: size the treasury for builds as well as rent; buy the kit at up to 150,000 cr now; book a gift when the receiver's wallet shows it.
+Report: hiring-board-built-kit-price-doubled-piping-craft.
