@@ -1,0 +1,20 @@
+{
+ "id": "hunt-alnilam-gas-pocket-halo-drifter",
+ "kind": "hunt",
+ "title": "halo_drifter at alnilam_gas_pocket; loot sold at Ironlight Crossroads",
+ "note": "Written by routemaker.py from the herd's count, the loot of 1 runs of ours and the order book; an estimate of 3125 cr per hunter-hour, not a measurement. A test: one ship, the ranching rules kept. Added as a test by fill.py on 2026-11-17 08:26 UTC (Unity): one ship until its first RESULT line is read.",
+ "place": "alnilam:alnilam_gas_pocket",
+ "species": [
+  "halo_drifter"
+ ],
+ "sell_at": "lhs_1140:0321b3e4406021575337b7be26e53dd7:784309214f105860a16a0c100a70eb14",
+ "min_bid": 552,
+ "kills": 4,
+ "minutes": 63,
+ "max_ships": 1,
+ "min_creatures": 4,
+ "alone": true,
+ "requires": {
+  "empty_hold": true
+ }
+}
