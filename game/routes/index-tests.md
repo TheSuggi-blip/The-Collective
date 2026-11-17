@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 59.
+Routes: 60.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -45,6 +45,7 @@ Routes: 59.
 | [trade-hydrogen-gas-784309214f105860a16a0c100a70eb14-synchrony](trade-hydrogen-gas-784309214f105860a16a0c100a70eb14-synchrony.json) | circuit | beyond the border, 6 jumps | Hydrogen Gas: bought at Ironlight Crossroads for 6 cr, sold at Synchrony Hub for 28 cr | up to 1 ships, from 3,429 cr | TBD | TBD | TBD | TBD | -- |
 | [trade-plasma-gas-784309214f105860a16a0c100a70eb14-node](trade-plasma-gas-784309214f105860a16a0c100a70eb14-node.json) | circuit | beyond the border, 6 jumps | Plasma Gas: bought at Ironlight Crossroads for 52 cr, sold at Node Beta Industrial Station for 104 cr | up to 1 ships, from 3,915 cr | TBD | TBD | TBD | TBD | -- |
 | [hunt-ankaa-cryobelt-hollow-pilgrim](hunt-ankaa-cryobelt-hollow-pilgrim.json) | hunt | beyond the border, 14 jumps | hollow_pilgrim at ankaa_cryobelt; loot sold at Sirius Observatory Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
+| [hunt-birchwood-vapor-fields-cinder-sylph](hunt-birchwood-vapor-fields-cinder-sylph.json) | hunt | beyond the border, 18 jumps | cinder_sylph at birchwood_vapor_fields; loot sold at The Crucible Garrison | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-denebola-fractured-prism-veil-ray](hunt-denebola-fractured-prism-veil-ray.json) | hunt | beyond the border, 5 jumps | veil_ray at denebola_fractured_prism; loot sold at Node Beta Industrial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-ran-haze-chlorophage](hunt-ran-haze-chlorophage.json) | hunt | beyond the border, 25 jumps | chlorophage at ran_haze; loot sold at Hex Star | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-regor-wr-bubble-cinder-sylph](hunt-regor-wr-bubble-cinder-sylph.json) | hunt | beyond the border, 11 jumps | cinder_sylph at regor_wr_bubble; loot sold at Hex Star | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |

@@ -1,0 +1,20 @@
+{
+ "id": "hunt-birchwood-vapor-fields-cinder-sylph",
+ "kind": "hunt",
+ "title": "cinder_sylph at birchwood_vapor_fields; loot sold at The Crucible Garrison",
+ "note": "Written by routemaker.py from the herd's count, the loot of 58 runs of ours and the order book; an estimate of 2849 cr per hunter-hour, not a measurement. A test: one ship, the ranching rules kept. Added as a test by fill.py on 2026-11-17 15:33 UTC (Oracle): one ship until its first RESULT line is read.",
+ "place": "birchwood:birchwood_vapor_fields",
+ "species": [
+  "cinder_sylph"
+ ],
+ "sell_at": "the_crucible:the_crucible_garrison:the_crucible_garrison",
+ "min_bid": 5299,
+ "kills": 4,
+ "minutes": 139,
+ "max_ships": 1,
+ "min_creatures": 4,
+ "alone": true,
+ "requires": {
+  "empty_hold": true
+ }
+}
