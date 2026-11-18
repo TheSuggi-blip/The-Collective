@@ -182,6 +182,66 @@ class StoreFactionStepTests(unittest.TestCase):
         self.assertEqual(deposits, [("iron_ore", "self"), ("fuel_cell", "faction")], out)
 
 
+class BunkerStepTests(unittest.TestCase):
+    # 2026-11-17: our outpost's fuel bunker takes fuel only from a ship's tank (`deposit` item_id fuel, target faction);
+    # fuel cells stored there stay items. One hauler filled it by script: 64 cells burnt into its tank four at a time and
+    # the tank above 15 deposited, 1,292 fuel into the reserve (guidebook logistics.md section 15.3). The orders want it
+    # kept by a route (requests.log ENT-251, ENT-252) and the burn of carried cells as a step of its own (ENT-255).
+    BUNKER = {"id": "made-up", "kind": "circuit", "title": "t", "stops": [{"at": "wild:outpost:base", "bunker": {"keep": 25}}]}
+
+    def test_the_bunker_step_burns_every_cell_and_leaves_the_keep_in_the_tank(self):
+        log, world, row, out = fly(self.BUNKER, {"cargo": {"fuel_cell": 65}, "fuel": 87})
+        self.assertEqual(world["cargo"].get("fuel_cell"), 0, out)
+        self.assertEqual(world["fuel"], 25, out)
+        self.assertEqual(world["reserve"], 65 * 20 + 95 - 25, out)       # docked with refuel the tank stood full: 70 above the keep
+        self.assertIn("bunker +1370 fuel from 65 cells, reserve 1370", "; ".join(row["notes"]), out)
+
+    def test_the_bunker_step_burns_whole_cells_in_one_call_and_never_into_less_room_than_a_cell(self):
+        log, world, row, out = fly(self.BUNKER, {"cargo": {"fuel_cell": 10}})
+        burns = [params for action, params in log if action == "refuel"]
+        self.assertTrue(burns, out)
+        self.assertTrue(all(p["item_id"] == "fuel_cell" and p["quantity"] >= 1 for p in burns), burns)
+        self.assertEqual(sum(p["quantity"] for p in burns), 10, burns)
+        self.assertLessEqual(len(burns), 4, burns)                       # 70 of room after the first deposit takes 3 cells at once
+        fuel_deposits = [params for action, params in log if action == "deposit" and params["item_id"] == "fuel"]
+        self.assertTrue(all(p["target"] == "faction" for p in fuel_deposits), fuel_deposits)
+
+    def test_a_refused_deposit_ends_the_step_and_says_so(self):
+        log, world, row, out = fly(self.BUNKER, {"cargo": {"fuel_cell": 5}, "bunker_refuses": True})
+        fuel_deposits = [params for action, params in log if action == "deposit" and params["item_id"] == "fuel"]
+        self.assertEqual(len(fuel_deposits), 1, out)
+        self.assertIn("bunker: deposit refused", "; ".join(row["notes"]), out)
+
+    def test_a_stop_without_cells_and_a_tank_at_the_keep_does_nothing(self):
+        route = {"id": "made-up", "kind": "circuit", "title": "t",
+                 "stops": [{"at": "wild:outpost:base", "refuel": False, "bunker": {"keep": 25}}]}
+        log, world, row, out = fly(route, {"fuel": 20})
+        self.assertFalse([a for a, p in log if a in ("refuel", "deposit")], out)
+        self.assertEqual(world["fuel"], 20, out)
+
+
+class BurnCellsStepTests(unittest.TestCase):
+    # The same saving on the road (requests.log ENT-255 (3)): a ship that carries cells (100 cr for 20 fuel, about 5 cr a
+    # unit) fills its tank from them instead of a station's fuel (12 to 15 cr a unit all-in): `refuel: false` docks
+    # without the station's fuel, `burn_cells` burns as many whole cells as the tank has room for.
+    def test_a_stop_with_refuel_false_docks_without_the_station_s_fuel(self):
+        route = {"id": "made-up", "kind": "circuit", "title": "t", "stops": [{"at": "home:core:base", "refuel": False}]}
+        log, world, row, out = fly(route, {"fuel": 40})
+        self.assertEqual(world["refuel_asked"], [False], out)
+        self.assertEqual(world["fuel"], 40, out)
+
+    def test_every_other_stop_still_refuels_at_the_station(self):
+        route = {"id": "made-up", "kind": "circuit", "title": "t", "stops": [{"at": "home:core:base"}]}
+        log, world, row, out = fly(route, {"fuel": 40})
+        self.assertEqual(world["refuel_asked"], [True], out)
+
+    def test_burn_cells_fills_the_tank_from_the_cells_aboard_by_whole_cells(self):
+        route = {"id": "made-up", "kind": "circuit", "title": "t", "stops": [{"at": "home:core:base", "refuel": False, "burn_cells": True}]}
+        log, world, row, out = fly(route, {"fuel": 40, "cargo": {"fuel_cell": 5}})
+        self.assertEqual([p["quantity"] for a, p in log if a == "refuel"], [2], out)   # 55 of room: two whole cells
+        self.assertEqual((world["fuel"], world["cargo"]["fuel_cell"]), (80, 3), out)
+
+
 class WithdrawStepTests(unittest.TestCase):
     # 2026-11-16: about 14,000 water ice lay in miners' storage at stations whose bids regain slowly (requests.log
     # ENT-117); storage is personal, so only the pilot that stored a load can sell it. A stop's `withdraw` takes it
@@ -272,12 +332,16 @@ def call(method, path, body=None, timeout=900):
             return 200, items("cargo")
         if path.endswith("/loop"):
             return 200, {"running": False}
-        return 200, {"state": {"credits": WORLD["credits"]}, "hasExecutingGoal": False}
+        return 200, {"state": {"credits": WORLD["credits"], "ship": {"fuel": WORLD["fuel"], "max_fuel": WORLD["max_fuel"]}}, "hasExecutingGoal": False}
     if method == "DELETE" or path.endswith("/loop"):
         LOG.append(["loop", method])
         return 200, {}
     if path.endswith("/goal"):
         LOG.append(["goal", body["type"]])
+        if body["type"] == "prepare-at-station":
+            WORLD.setdefault("refuel_asked", []).append(body["options"].get("refuel"))
+            if body["options"].get("refuel"):                    # the station (or our bunker) fills the tank
+                WORLD["fuel"] = WORLD["max_fuel"]
         for want in body["options"].get("items") or []:          # buy-items: at the ask, with the tax of 1 percent
             WORLD["cargo"][want["itemId"]] = WORLD["cargo"].get(want["itemId"], 0) + want["maxQuantity"]
             WORLD["credits"] -= int(round(want["maxQuantity"] * want["maxPrice"] * 1.01))
@@ -290,6 +354,18 @@ def call(method, path, body=None, timeout=900):
         return 200, {"structuredContent": {"items": [dict(row, item_id=k) for k, row in sorted(WORLD["book"].items())]}}
     if action == "get_missions":
         return 200, {"structuredContent": {"missions": WORLD.get("missions") or []}}
+    if action == "deposit" and params["item_id"] == "fuel":          # the tank into the faction's fuel reserve here
+        units = 0 if WORLD.get("bunker_refuses") else min(params["quantity"], WORLD["fuel"])
+        WORLD["fuel"] -= units
+        WORLD["reserve"] = WORLD.get("reserve", 0) + units
+        return 200, ({"error": "refused"} if not units else {})
+    if action == "refuel":                                             # fuel cells from the hold, whole cells, 20 fuel each
+        n = min(params.get("quantity", 1), WORLD["cargo"].get("fuel_cell", 0))
+        WORLD["cargo"]["fuel_cell"] = WORLD["cargo"].get("fuel_cell", 0) - n
+        WORLD["fuel"] = min(WORLD["max_fuel"], WORLD["fuel"] + 20 * n)   # a cell burnt into less room loses the rest
+        return 200, {}
+    if action == "view" and params.get("target") == "faction":
+        return 200, {"structuredContent": {"faction_fuel_reserve": WORLD.get("reserve", 0), "faction_fuel_capacity": 50000, "items": []}}
     if action == "deposit":
         move("cargo", "storage", params["item_id"], params["quantity"])
     if action == "withdraw":
@@ -336,7 +412,8 @@ finally:
 
 def fly(route, world, runner=FLEET / "route_run.py"):
     """(the gate calls in their order, the fake world after, the run's row, the run's output) of one run of `route`."""
-    base = {"credits": 20000, "cargo": {}, "storage": {}, "book": {}, "jobs": [], "queue": [], "quote": {}, "makes": "", "per_run": 1, "ticks": 1}
+    base = {"credits": 20000, "cargo": {}, "storage": {}, "book": {}, "jobs": [], "queue": [], "quote": {}, "makes": "", "per_run": 1, "ticks": 1,
+            "fuel": 95, "max_fuel": 95}
     with tempfile.TemporaryDirectory() as folder:
         root = Path(folder)
         (root / "route.json").write_text(json.dumps(route))

@@ -12,6 +12,10 @@ which pilot flies it, and where a pilot is, stays in the unit's data folder:
               "redock": true,                 undock and dock again (a delivery counts on docking)
               "store":  ["item_id", ...],     hold -> personal storage here; "all": every good aboard
               "store_faction": ["item_id", ...],   hold -> the faction's storage here, after `store`; "all" as above
+              "refuel": false,                dock without the station's fuel (default true: dock and refuel)
+              "burn_cells": true,             the fuel cells aboard into the tank, as many whole cells as it has room for
+              "bunker": {"keep": N},          an outpost of ours: the cells aboard burnt into the tank and the tank above
+                                              N deposited into the faction's fuel reserve here, until no cell is left
               "withdraw": [{"item": "...", "qty": N}],   personal storage here -> hold, at most qty and the free
                                               hold; when the stop sells the item too, at most what its bid takes
               "sell":   [{"item": "...", "min_price": N}],
@@ -32,7 +36,7 @@ which pilot flies it, and where a pilot is, stays in the unit's data folder:
                                               objectives done (a mission that counts units mined), at most
                                               `minutes`; ore that fills the hold goes into storage at the stop
 At every stop, in this order: dock and refuel; hand in every mission whose
-objectives are all done; redock; hand in again; store; store_faction; withdraw; sell; buy; craft (then sell what
+objectives are all done; redock; hand in again; store; store_faction; burn_cells; bunker; withdraw; sell; buy; craft (then sell what
 it made); accept; save the station's order book and mission board (data/market, data/missions).
 --from N starts at stop N (1 is the first). A goal the engine is still carrying
 out for the pilot is waited for, up to ten minutes. While the run lasts the pilot
@@ -226,6 +230,57 @@ def deposit(item, units, target='self'):
     if 'error' in d:
         say(f'store {item}: {str(d.get("error"))[:100]}')
     time.sleep(11)
+
+
+CELL = 20                    # fuel one fuel cell gives the tank (catalog; a cell burnt at 91 of 95 filled the tank and was gone, 2026-11-17)
+
+
+def tank():
+    """(fuel, max_fuel) of the ship now, as the engine reports it (GET /accounts/<pilot>: state.ship)."""
+    ship = (call('GET', f'/accounts/{P}')[1].get('state') or {}).get('ship') or {}
+    return int(ship.get('fuel') or 0), int(ship.get('max_fuel') or 0)
+
+
+def burn_cells():
+    """A stop's `burn_cells`, and the first half of `bunker`: the fuel cells aboard into the tank, as many whole cells as
+    its room takes, in one `refuel` call (item_id fuel_cell, `quantity` cells: the game's help of refuel). A cell burnt
+    into less room than 20 loses the rest (2026-11-17 20:27 UTC), so never more cells than room // 20. Returns cells burnt."""
+    cells = cargo().get('fuel_cell', 0)
+    fuel, top = tank()
+    n = min(cells, max(top - fuel, 0) // CELL)
+    if n <= 0:
+        return 0
+    raw('refuel', {'item_id': 'fuel_cell', 'quantity': n})
+    time.sleep(TICK)
+    burnt = cells - cargo().get('fuel_cell', 0)
+    say(f'burnt {burnt} fuel cells: tank {fuel} -> {tank()[0]} of {top}')
+    return burnt
+
+
+def bunker(keep):
+    """A stop's `bunker` at an outpost of ours: the cells aboard go into the tank (burn_cells) and the tank above `keep`
+    into the faction's fuel reserve here (`deposit` item_id fuel, target faction: the bunker takes fuel only from a tank,
+    cells stored there stay items), turn by turn until no cell is left; a deposit the game refuses ends it. Keep `keep`
+    under the tank's room for a cell (max_fuel - 20) and enough for the way to the next station. 1,292 fuel from 64 cells
+    by outpost.py of the skill logistics-stock, 2026-11-17. Returns (fuel deposited, cells burnt, refused)."""
+    moved = burnt = 0
+    for _ in range(200):
+        b = burn_cells()
+        burnt += b
+        fuel, _top = tank()
+        if fuel <= keep:
+            if b:
+                continue
+            break
+        deposit('fuel', fuel - keep, 'faction')
+        after = tank()[0]
+        if after >= fuel:
+            say(f'bunker: the deposit of {fuel - keep} fuel was refused')
+            return moved, burnt, True
+        moved += fuel - after
+        if not cargo().get('fuel_cell'):
+            break
+    return moved, burnt, False
 
 
 def withdraw_units(want, stored, free, sell, row, aboard, size=1):
@@ -487,7 +542,7 @@ for n, stop in enumerate(ROUTE['stops']):
         reached += 1
         skipped += 1
         continue
-    ok, msg = goal('prepare-at-station', {'systemId': system, 'poiId': poi, 'baseId': base, 'refuel': True})
+    ok, msg = goal('prepare-at-station', {'systemId': system, 'poiId': poi, 'baseId': base, 'refuel': stop.get('refuel', True) is not False})
     if not ok:
         say(f'stop {n + 1} {base}: not reached: {msg[:120]}')
         notes.append(f'stop {n + 1} not reached')
@@ -509,6 +564,15 @@ for n, stop in enumerate(ROUTE['stops']):
         for item in store_list(stop.get('store_faction'), hold):
             if hold.get(item):
                 deposit(item, hold[item], 'faction')
+    if stop.get('burn_cells'):                       # carried cells into the tank instead of a station's fuel
+        burn_cells()
+    if stop.get('bunker'):                           # carried cells -> tank -> the faction's fuel reserve here (an outpost of ours)
+        moved, burnt, refused = bunker(int((stop['bunker'] or {}).get('keep', 25)))
+        reserve = body(raw('view', {'target': 'faction', 'station_id': base}, group='spacemolt_storage')).get('faction_fuel_reserve')
+        say(f'bunker: {moved} fuel deposited from {burnt} cells; the faction fuel reserve here reads {reserve}')
+        notes.append(f'bunker +{moved} fuel from {burnt} cells, reserve {reserve}')
+        if refused:
+            notes.append('bunker: deposit refused')
     book, board = save_station(base, system)
     for want in stop.get('withdraw') or []:              # own storage -> hold: sold here into the bid, or carried on
         sale = next((s for s in stop.get('sell') or [] if s.get('item') == want['item']), None)
