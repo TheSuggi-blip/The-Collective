@@ -38,11 +38,11 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 | Role | Kept by | Routes | The first three, in order | Planned | Ships |
 |---|---|---|---|---|---|
 | [command](plan-command.md) | Unity | 73 | voidborn-first-steps-board > voidborn-collective-provides > voidborn-signal-protocol | 0 | 6 |
-| [drone](plan-drone.md) | Apophis | 117 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 6 | 50 |
-| [hauler](plan-hauler.md) | Apollo | 57 | voidborn-resonance-finish > voidborn-atmospheric-extraction > voidborn-hardware-cargo | 7 | 40 |
-| [miner](plan-miner.md) | Zero | 72 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 5 | 60 |
-| [scout](plan-scout.md) | Oracle | 60 | store-hold-central-nexus > voidborn-first-steps-board > voidborn-network-expansion | 8 | 30 |
-| [sentinel](plan-sentinel.md) | Apophis | 129 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 6 | 20 |
+| [drone](plan-drone.md) | Apophis | 119 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 6 | 50 |
+| [hauler](plan-hauler.md) | Apollo | 58 | voidborn-resonance-finish > voidborn-atmospheric-extraction > voidborn-hardware-cargo | 7 | 40 |
+| [miner](plan-miner.md) | Zero | 73 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 5 | 60 |
+| [scout](plan-scout.md) | Oracle | 61 | store-hold-central-nexus > voidborn-first-steps-board > voidborn-network-expansion | 8 | 30 |
+| [sentinel](plan-sentinel.md) | Apophis | 131 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 6 | 20 |
 | [trader](plan-trader.md) | Mercury | 51 | voidborn-first-steps-board > voidborn-network-expansion > voidborn-collective-provides | 8 | 40 |
 
 ## Templates by Division
