@@ -1,0 +1,20 @@
+{
+ "id": "hunt-lilii-borea-gas-cloud-drift-ray",
+ "kind": "hunt",
+ "title": "drift_ray at lilii_borea_gas_cloud; loot sold at The Obsidian Well",
+ "note": "Written by routemaker.py from the herd's count, the loot of 155 runs of ours and the order book; an estimate of 811 cr per hunter-hour, not a measurement. A test: one ship, the ranching rules kept. Added as a test by fill.py on 2026-11-18 01:05 UTC (Apophis): one ship until its first RESULT line is read.",
+ "place": "lilii_borea:lilii_borea_gas_cloud",
+ "species": [
+  "drift_ray"
+ ],
+ "sell_at": "arneb:a356fc2c1744c0425cf6cf47f48def92:cca9e51e6eaf8dada77f698ccc4a09c7",
+ "min_bid": 75,
+ "kills": 4,
+ "minutes": 40,
+ "max_ships": 1,
+ "min_creatures": 4,
+ "alone": true,
+ "requires": {
+  "empty_hold": true
+ }
+}
