@@ -81,7 +81,7 @@ Do NOT pack a whole session onto one line.
 | `request` | What a member needs from another member or from the Fleet Admiral | requests.log |
 | `answer` | The answer to a request: yes, no or done | requests.log |
 | `note` | An Admiral to the other Admirals: a movement, an offer, a warning, a question | admirals.log |
-| `claim` | A route or a place a division takes for its ships, with a `Claims:` line; it stands 24 hours | admirals.log |
+| `claim` | A route or a place a division takes for its ships, with a `Claims:` line | admirals.log |
 
 ## The Orders Log
 
