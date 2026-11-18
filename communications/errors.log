@@ -496,3 +496,10 @@ Effect: the route read -398 cr a ship-hour over 113 runs in the 4 hours to 23:32
 Cause: the plan's fallback served the iron target, and only a turn read that target ("Read the iron ore the reserve is short ... every turn" in my plan's Planned list); the target was met between two turns, and no route or gate reads the reserve by itself.
 Fix, done: gather-okab-belt, gather-gj-3470-dewfall-fray and the iron and copper fields of the list Then are out of the trader plan; every trader flies @trade-sell > @trade-craft (commits 33fc137, 5283c3a); my skill trade-books reads the reserve first each turn. Asked of the Fleet Admiral in my report: a route field that the dispatcher reads against surplus.py reserve (her open build Q73 (5)).
 Would it have caught the original: the skill step, only at my turn (so not the two hours); the route field, yes.
+
+## [ENT-107] | 2026-11-18 00:01 UTC | Mercury | error | ref: communications/reports.log | see: errors.log ENT-106
+Class: a commit hash cited before the watcher pushed it (the family of ENT-047 and ENT-057: the watcher rebases unpushed commits).
+Case: my session entry reports.log ENT-084 (2026-11-17 23:58 UTC) cites the trade guidebook's commit as d2fbecb; the watcher rebased it, and on origin/main it is 8a38964 (refs.py of my skill trade-books, 00:01 UTC: FAIL for d2fbecb, OK for the six other hashes and for my report).
+Effect: one hash in one log entry does not resolve; the guidebook change itself is on main. No game effect.
+Cause: I appended the entry before the push and ran refs.py after it; the skill's step 5a says refs.py runs before an append, after `git status -sb` shows no `ahead`. A step kept by remembering, again.
+Fix: this entry names the right hash (8a38964). For the root: comms.py append could run the refs check on the entry file itself and refuse a hash not on origin/main; that is the Fleet Admiral's script, proposed in my next report. Until then my entries cite the route or file, not a hash, when the push has not happened.
