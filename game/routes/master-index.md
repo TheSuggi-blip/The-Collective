@@ -21,17 +21,17 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 | [Paying Routes](index-paying-routes.md) | Work that repeats and whose runs of the last 12 hours measured above zero. | 71 | 19 | 52 | drain-ice-nexus: 45,870 cr per ship-hour |
 | [Tests](index-tests.md) | Work that repeats and has no measured figure: new, or no readable run in the last 12 hours. One ship until its first RESULT line is read. | 63 | 20 | 43 | not measured yet |
 | [Fitting](index-fitting.md) | A module bought and fitted: the tool a kind of work needs. | 11 | 10 | 1 | fit-ice-harvester-lhs-1140: -4,320 cr per ship-hour |
-| [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 110 | 33 | 77 | hunt-titawin-gas-cloud-chlorophage: 5,150 cr per ship-hour |
+| [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 111 | 33 | 78 | hunt-titawin-gas-cloud-chlorophage: 5,150 cr per ship-hour |
 | [Measured at a Loss](index-measured-at-a-loss.md) | Work that repeats and whose runs of the last 12 hours measured zero or below. | 56 | 5 | 51 | hunt-gsc-0037-frost-ring-hollow-pilgrim: 0 cr per ship-hour |
 | [Off](index-off.md) | Written down, not flown. | 24 | 13 | 11 | craft-focused-crystal-node-beta: 8,770 cr per ship-hour |
-| All | | 371 | 120 | 251 | |
+| All | | 372 | 120 | 252 | |
 
 ## Routes by Zone and Kind
 
 | Zone | Routes | census | circuit | guard | hunt | mine | Farthest system, jumps from home |
 |---|---|---|---|---|---|---|---|
 | home space | 120 | 1 | 94 | 1 | 11 | 13 | 3 |
-| beyond the border | 251 | 16 | 29 | 7 | 127 | 72 | 29 |
+| beyond the border | 252 | 16 | 30 | 7 | 127 | 72 | 29 |
 
 ## Plans by Role
 

@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 110.
+Routes: 111.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -62,6 +62,7 @@ Routes: 110.
 | [census-south](census-south.json) | census | beyond the border, 12 jumps | Read the southeast road for its sites: Biham and the systems around it, and beyond it Alnilam, Groombridge 1618, Pleione, Yed Posterior and Fomalhaut, every 150 minutes | up to 4 ships, empty hold | 10 | 10 | -130 | -750 | 2026-11-17 |
 | [census-watch-gsc-0044](census-watch-gsc-0044.json) | census | beyond the border, 7 jumps | Watch the first outpost site: GSC-0044 and its six neighbours read every hour (who is there, pirates, fields) | up to 4 ships, empty hold | 77 | 15 | -170 | -740 | 2026-11-17 |
 | [census-worked](census-worked.json) | census | beyond the border, 10 jumps | Read the places our routes use beyond home twice in a turn: deposits, creatures, order books, mission boards | up to 6 ships, empty hold | 121 | 16 | -190 | -710 | 2026-11-17 |
+| [supply-bunker-gsc-0044](supply-bunker-gsc-0044.json) | circuit | beyond the border, 6 jumps | Fuel for our outpost CLTV Outpost GSC-0044: 65 fuel cells bought at The Experiment, burnt into the tank at the outpost and the tank above 30 deposited into the faction's fuel reserve; members of the faction only | once per pilot, up to 1 ships, 3 pilots in all, empty hold, from 12,000 cr, standing work | TBD | TBD | TBD | TBD | -- |
 | [guard-achernar-belt](guard-achernar-belt.json) | guard | beyond the border, 4 jumps | Guard at Achernar Belt while ships of ours gather there; docks at The Experiment | up to 1 ships, empty hold, standing work | 13 | 2 | -30 | -100 | 2026-11-17 |
 | [guard-garnet-belt](guard-garnet-belt.json) | guard | beyond the border, 5 jumps | Guard at Garnet Belt, the site Mining and Intel name for the first outpost, while ships of ours gather there; docks at The Experiment | up to 1 ships, empty hold, standing work | 8 | 68 | -90 | -90 | 2026-11-17 |
 | [guard-gsc-0044-belt](guard-gsc-0044-belt.json) | guard | beyond the border, 6 jumps | Guard at GSC-0044 Belt, the site of the first outpost, while a hunter of ours works there; docks at The Experiment | up to 1 ships, empty hold, standing work | 4 | 60 | -100 | -110 | 2026-11-17 |
