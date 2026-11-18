@@ -55,7 +55,7 @@ Kept by Apophis. Routes: 130. Ships: 50.
 | 33 | [sell-soma-at-synchrony](sell-soma-at-synchrony.json) | [Paying Routes](index-paying-routes.md) | home space | up to 1 ships, with 1 voidborn_neural_soma stored at synchrony_hub, while synchrony_hub bids 320 cr for voidborn_neural_soma | 3 of 50 |
 | 34 | [hunt-gsc-0040-frost-ring-hollow-pilgrim](hunt-gsc-0040-frost-ring-hollow-pilgrim.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 9 jumps | up to 1 ships, empty hold | 1 of 50 |
 | 35 | [hunt-gsc-0035-vapor-fields-cinder-sylph](hunt-gsc-0035-vapor-fields-cinder-sylph.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 20 jumps | up to 1 ships, empty hold | 1 of 50 |
-| 36 | [hunt-dustfall-emission-nebula-cinder-sylph](hunt-dustfall-emission-nebula-cinder-sylph.json) | [Tests](index-tests.md) | beyond the border, 27 jumps | up to 1 ships, empty hold | 1 of 50 |
+| 36 | [hunt-dustfall-emission-nebula-cinder-sylph](hunt-dustfall-emission-nebula-cinder-sylph.json) | [Off](index-off.md) | beyond the border, 27 jumps | up to 1 ships, empty hold, off | 1 of 50 |
 | 37 | [hunt-silverpine-gas-plume-cinder-sylph](hunt-silverpine-gas-plume-cinder-sylph.json) | [Tests](index-tests.md) | beyond the border, 24 jumps | up to 1 ships, empty hold | 1 of 50 |
 | 38 | [hunt-alchiba-ice-belt-hollow-pilgrim](hunt-alchiba-ice-belt-hollow-pilgrim.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 14 jumps | up to 1 ships, empty hold | 1 of 50 |
 | 39 | [hunt-seginus-haze-cinder-sylph](hunt-seginus-haze-cinder-sylph.json) | [Tests](index-tests.md) | beyond the border, 20 jumps | up to 1 ships, empty hold | 1 of 50 |

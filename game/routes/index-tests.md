@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 73.
+Routes: 72.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -46,7 +46,6 @@ Routes: 73.
 | [trade-plasma-gas-784309214f105860a16a0c100a70eb14-node](trade-plasma-gas-784309214f105860a16a0c100a70eb14-node.json) | circuit | beyond the border, 6 jumps | Plasma Gas: bought at Ironlight Crossroads for 52 cr, sold at Node Beta Industrial Station for 104 cr | up to 1 ships, from 3,915 cr | TBD | TBD | TBD | TBD | -- |
 | [hunt-alphecca-vapor-fields-cinder-sylph](hunt-alphecca-vapor-fields-cinder-sylph.json) | hunt | beyond the border, 20 jumps | cinder_sylph at alphecca_vapor_fields; loot sold at War Citadel | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-denebola-fractured-prism-veil-ray](hunt-denebola-fractured-prism-veil-ray.json) | hunt | beyond the border, 5 jumps | veil_ray at denebola_fractured_prism; loot sold at Node Beta Industrial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
-| [hunt-dustfall-emission-nebula-cinder-sylph](hunt-dustfall-emission-nebula-cinder-sylph.json) | hunt | beyond the border, 27 jumps | cinder_sylph at dustfall_emission_nebula; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-edasich-ice-halo-frost-moth](hunt-edasich-ice-halo-frost-moth.json) | hunt | beyond the border, 25 jumps | frost_moth at edasich_ice_halo; loot sold at Treasure Cache Trading Post | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-enif-ice-belt-hollow-pilgrim](hunt-enif-ice-belt-hollow-pilgrim.json) | hunt | beyond the border, 25 jumps | hollow_pilgrim at enif_ice_belt; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-gsc-0045-gas-pocket-cinder-sylph](hunt-gsc-0045-gas-pocket-cinder-sylph.json) | hunt | beyond the border, 20 jumps | cinder_sylph at gsc_0045_gas_pocket; loot sold at War Citadel | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
