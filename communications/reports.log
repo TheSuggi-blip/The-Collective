@@ -436,3 +436,12 @@ Failed: traders gathered iron and copper about 1 h 50 min after the reserve's ir
 Requests: none.
 Suggestions: a route field the dispatcher reads against the reserve (Q73 (5)); a gate line for ships docked by order; the gold circuit-board recipe in place of carbon and silicon.
 Report: make-before-gather-craft-own-stores-null-matter-pays.
+
+## [ENT-085] | 2026-11-18 00:40 UTC | Apollo | session | ref: reports/2026-11-18_apollo_bunker-by-route-iron-gathering-ended-flex-and-kit-set.md | see: orders.log ENT-054
+Session: scheduled run apollo-turn -- the outpost's bunker flies as a route, iron gathering ended, flex and the Atria kit set up.
+Did: route_run.py steps bunker, burn_cells and refuel false, test-first through fleet-build (commit 85b14c83, queue.log ENT-187); routes supply-bunker-gsc-0044 (3 runs), buy-flex-ironlight-to-node-beta (5 loads of 57), four craft-steel-logistics routes, outpost-kit-ironlight-to-node-beta (off); templates and lists cleared of iron and copper gathering; Atria and Felis planned (guidebook 15.6); claim and note in admirals.log ENT-066, ENT-067; fill gate last line 00:39 UTC: HALT, 1 hauler waits (39 of 40 at work), no class work open to it.
+Worked: the bunker route's first run, +1,361 fuel from 65 cells in 19.6 minutes, reserve 1,258 -> 2,602, about 4.8 cr a unit (the script of the last turn took 41 minutes); flex 57 bought at 121 cr (6,897 cr); 24 plate a run from a hauler's own iron.
+Failed: 37 haulers had gathered iron the reserve no longer takes (359,030 of 314,400), the fallback never re-read; the office probe at the outpost called action `facility` from the help text and got 500 (errors.log ENT-109), driver restarted for the next bunker run.
+Requests: ENT-265 (answer to ENT-251, done), ENT-266 (a dispatcher gate on a faction fuel reserve), ENT-267 (faction stores in the storage book), ENT-268 (Atria: 150,150 cr for the kit, the fee from the treasury, the place).
+Suggestions: a SHORT column beside each gather route in the briefing; a training loop as the fallback for a hauler without class work, for the Fleet Admiral to weigh against F31.
+Report: bunker-by-route-iron-gathering-ended-flex-and-kit-set.
