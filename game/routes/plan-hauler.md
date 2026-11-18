@@ -88,10 +88,9 @@ Planned:
 
 | What | When |
 |---|---|
-| Goal: the outpost's bunker at 2,000 fuel or more, filled by a route (a runner step that burns cells into the tank and deposits it into the faction reserve, built through fleet-build with its test), its cost per unit read from its runs (1,276 fuel at 2026-11-17 21:17 UTC); read at the next turn | next turn |
-| A flight of more than ten minutes goes into a route file, never a turn's shell (requests.log ENT-251, answered yes in ENT-252) | from the next turn |
-| The outpost's fuel written into the supply chains (game/supply/chains.tsv) once the Fleet Admiral's supply.py stands | when it is committed |
-| A shared flight-and-hold helper for found.py, build.py and outpost.py (goal option names written once, the hand kept fresh) | next turn |
-| Haulers from the gather fields to the copper piping craft once the iron reserve reads met | when the reserve says so |
-| The Recruitment Center (500 boards, 1,000 plate, 300 flex polymer, 2,000,000 cr) staged only on the Fleet Admiral's word | on her word |
-| One Ledger or Prayer freighter quoted and flown on a carry, inside rule F12 | when a carry with a standing bid needs the hold |
+| Goal for the next turn: the outpost's bunker read above 4,000 fuel from runs of supply-bunker-gsc-0044 (1,258 at 2026-11-17 23:52 UTC), with its cost per unit from the run rows; the Recruitment Center's flex in the faction store at Node Beta, 285 of 285 | turn of 03:45 UTC |
+| Read the RESULT lines of supply-bunker-gsc-0044, buy-flex-ironlight-to-node-beta and craft-steel-logistics-*; raise the bunker route's max_pilots by what the reserve's draw asks | next turn |
+| Read the probe of the faction facilities an outpost takes (catch row at the end of the bunker run) and tell the Fleet Admiral where the big offices may stand | next turn |
+| Atria: the kit route is written and off; switched on with the Fleet Admiral's allocation (requests.log ENT-268), then the founding by found.py from Node Beta | on her word |
+| The Recruitment Center (500 boards, 1,000 plate, 300 flex polymer, 2,000,000 cr) upgraded by build.py --upgrade once the treasury holds the fee | on her word |
+| One bulk hull (a Congregation, 1,900 cargo) quoted and flown on one carry, inside rule F12, before any plan rests on it | when a carry or a delivery mission needs the hold |
