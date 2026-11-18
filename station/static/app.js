@@ -1567,7 +1567,7 @@ async function renderMetrics(panel, live) {
   panel.append(el('h3', null, 'By division'));
   const div = t.divisions || {}, dw = (w || {}).divisions || {};
   const order = (S ? S.roster : []).filter((a) => a.division !== 'Command' || div.Command).map((a) => [a.division, a.name]);
-  if (div.Unassigned) order.push(['Unassigned', '']);
+  if (div.Unassigned || dw.Unassigned) order.push(['Unassigned', '']);   // station/fleet.py window: money no division holds
   const moneyRow = (name, working, y) => [name, working, w ? shade(y.income_per_hour, 'pos') : '--', w ? shade(y.costs_per_hour, 'neg') : '--', w ? tint(y.cph || 0) : '--',
     w ? tint(y.one_time_per_hour || 0) : '--', w ? tint(whole(y)) : '--'];
   panel.append(fitTable(table(['Division', 'Working', 'Steady income', 'Running costs', 'Steady net', 'Paid once', 'Net / h'],

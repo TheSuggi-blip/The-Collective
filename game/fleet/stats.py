@@ -287,6 +287,7 @@ def collector(root):
 def money_records(data, rule, now):
     """What window() reads beside history.json, from the collector's own files under data/fleet."""
     folder = Path(data) / "fleet"
+    rule.load_flagships(folder)          # station/fleet.py division_of: the flagships stand in Command, not in Unassigned
     one = read_json(folder / "onetime.json", [])
     gifts = rule.read_gifts(folder / "gifts.jsonl")
     seeds = read_json(folder / "seed.json", {})

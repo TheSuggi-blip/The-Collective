@@ -103,7 +103,9 @@ hour at the top level and over 1, 6 and 24 hours under `windows`:
     seed             {pilots, credits, earned}: the pilots first seen in the window and
                      what they held then (seed.json); taken out of the change of the
                      wallets and of credits earned, so a new ship adds no income
-    the same per division; `ships_changed` marks a window in which the fleet grew
+    the same per division; `ships_changed` marks a window in which the fleet grew. The divisions add up to the
+                     fleet figure by figure, to the credit; money booked for a pilot outside every division
+                     (a reader that did not load_flagships, a gift record naming one side) is the line `Unassigned`
     earned_per_hour (= income_per_hour), net_per_hour (all wallets, one-time
     money included), ore_per_hour, missions_per_hour: kept for older readers
 Ships in the totals: `working` (a loop, a goal or a script's order), `parked`
@@ -196,6 +198,11 @@ ROLES = {
     "drone": ("Military", "Apophis"), "scout": ("Intel", "Oracle"), "sentinel": ("Military", "Apophis"),
 }
 ROLE_NAME = re.compile(r"([a-z]+)-(\d{1,4})")
+# The line of a window's money that no division holds: what division_of names a pilot outside every division, and the
+# unknown side of a gift whose record names one side only (ONE_SIDED). window() shows it as a division of its own, so the
+# divisions always add up to the fleet: 2026-11-17 20:00 UTC a reader that had not loaded the flagship entries put the
+# flagships' gifts and deposits there, and the hour's divisions summed to -14,053 cr an hour against the fleet's -48,148.
+UNASSIGNED = "Unassigned"
 STATS = ("credits_earned", "credits_spent", "ore_mined", "trades_completed", "missions_completed", "jumps_completed",
          "systems_explored", "ships_lost", "ships_destroyed", "pirates_destroyed", "damage_taken", "time_played")
 
@@ -724,7 +731,8 @@ def in_window(sides, read, t0, t1, place=None):
     fleet's credits of gift sides whose other side the window does not read, credits deposited, gifts unseen, gifts early).
 
     A gift's two sides read in the window cancel for the fleet; one read without the other is half a move the fleet's
-    wallets show. A `lone` side moves its division only while ONE_SIDED is on, and the fleet never."""
+    wallets show. A `lone` side moves its division only while ONE_SIDED is on, and the fleet never: its unknown side then
+    moves the line UNASSIGNED by as much the other way, so the divisions still add up to the fleet."""
     gifts, deposits, half, treasury = {}, {}, 0, 0
     for (_booked, pilot, credits, kind, _move), at in zip(sides, read):
         if at is None or not t0 < at <= t1 or (kind == "lone" and not ONE_SIDED):
@@ -737,6 +745,8 @@ def in_window(sides, read, t0, t1, place=None):
         gifts[division] = gifts.get(division, 0) + credits
         if kind == "gift":
             half += credits
+        else:                                           # lone: the side no record names
+            gifts[UNASSIGNED] = gifts.get(UNASSIGNED, 0) - credits
     unseen = early = 0
     pairs = {}
     for (_booked, _pilot, credits, kind, move), at in zip(sides, read):
@@ -789,14 +799,20 @@ def regrouped(regroups, t0, t1):
     they left lost (below zero) and what the one they joined gained. Taken out of each division's change like a pilot
     the engine stops listing (present): ships that change division are no division's income or loss. 2026-11-17 19:29
     UTC: the 20 sentinels went from Command to Military, and the hour read Command's income -1,341,732 cr and
-    Military's +1,383,882. The fleet's sums do not move."""
+    Military's +1,383,882. The fleet's sums do not move.
+
+    Both divisions move by the same sums, what the division they left lost (`out`): the move itself is nobody's money,
+    and what the ships made between that reading and the one that found them in their new division (`in` less `out`)
+    is the joining division's, read there. 2026-11-17: that line's `in` was 911 cr, 1,437 earned and 526 spent above its
+    `out`; taken out of Military at `in` and out of Command at `out`, it fell out of every division (the hour from 19:00
+    UTC: the divisions 919 cr an hour below the fleet, and every 6 and 24 hour window that held 19:29)."""
     out = {}
-    for at, frm, to, _pilots, _role, gone, come in regroups:
+    for at, frm, to, _pilots, _role, gone, _come in regroups:
         if t0 < at <= t1:
-            for division, sign, sums in ((frm, -1, gone), (to, 1, come)):
+            for division, sign in ((frm, -1), (to, 1)):
                 bucket = out.setdefault(division, [0, 0, 0, 0])
                 for index, key in enumerate(("ships", "credits", "earned", "spent")):
-                    bucket[index] += sign * num(sums.get(key))
+                    bucket[index] += sign * num(gone.get(key))
     return out
 
 
@@ -969,6 +985,33 @@ def figures(hours, ships, credits, earned, one):
             "total_per_ship": round(total / ships) if ships else 0, "wallets_per_hour": round(credits / hours)}
 
 
+# The figures whose division lines add up to the fleet's line, by the credits each is made of (window: `parts`); cph,
+# one_time_per_hour, total_per_hour and metered_per_hour follow from them.
+SUMMED = ("income_per_hour", "costs_per_hour", "rewards_per_hour", "bought_once_per_hour", "wallets_per_hour", "transfers_per_hour",
+          "treasury_moved_per_hour", "fuel_cr_per_hour", "repair_cr_per_hour", "spent_per_hour", "unexplained_per_hour")
+
+
+def settle(target, parts, hours, whole):
+    """{division: whole credits an hour} that sum to `target`, the fleet's figure, from `parts` ({division: credits in
+    the window}) that add up to `whole`, the fleet's credits: each division's own rounding, and where those miss the
+    fleet's by n credits, the n divisions nearest the half moved by one (largest remainder), so each stays within a
+    credit of its rate. None when the parts do not add up to `whole` (the figure keeps each division's own rounding).
+
+    Rounded each by itself, six divisions missed the fleet by up to 3 cr an hour in most windows (2026-11-18, every
+    window of history.json): a reader cannot tell a rounding from a fault."""
+    if abs(sum(parts.values()) - whole) > 1e-6:
+        return None
+    rate = {key: value / hours for key, value in parts.items()}
+    out = {key: round(value) for key, value in rate.items()}
+    left = target - sum(out.values())
+    if abs(left) > len(out):
+        return None
+    step = 1 if left > 0 else -1
+    for key in sorted(rate, key=lambda k: (-step * (rate[k] - out[k]), k))[:abs(left)]:
+        out[key] += step
+    return out
+
+
 def window(history, now, seconds, one, gifts=(), seeds=None, presence=(), sides=None, regroups=()):
     """The steady money of one window, for the fleet and per division; None from less than five minutes of samples.
 
@@ -979,6 +1022,10 @@ def window(history, now, seconds, one, gifts=(), seeds=None, presence=(), sides=
     wallet and counters out of both (seeded), and so do the pilots the engine stopped listing or lists again (present).
     Ships that changed division in the window (`regroups`, read_regroup) take their sums out of both divisions
     (regrouped), and every booking counts for the division that held its pilot at its time (division_then).
+
+    The divisions add up to the fleet, figure by figure, to the credit (settle): a division is every one either end of
+    the window holds and every name a booking, a move, a seed or a presence of the window counts for, so money booked
+    for a pilot outside every division shows as the line UNASSIGNED instead of falling out of the divisions' sum.
     """
     full = [h for h in history if isinstance(h, list) and len(h) >= 8 and now - h[0] <= seconds + 90]
     if len(full) < 2 or full[-1][0] - full[0][0] < MIN_SPAN:
@@ -1011,6 +1058,10 @@ def window(history, now, seconds, one, gifts=(), seeds=None, presence=(), sides=
         p = moves.get(key, [0, 0, 0, 0, 0])
         return {"left": p[0], "back": p[1], "credits": p[2], "earned": p[3]}
 
+    names = set(a[7]) | set(b[7]) | {k for k, v in list(given.items()) + list(deposited.items()) if v}
+    names |= {k for found in (new, moves, shifted) for k, v in found.items() if any(v)}
+    names |= {k for k in set(before) | set(after) if any(booked(k))}
+    names.discard("")
     born, off = new[""], joined("")
     out = figures(hours, b[2], b[1] - a[1] - off[0] - ours, b[3] - a[3] - off[1], booked(""))
     out["wallets"] = {"start": a[1], "end": b[1], "left_out": off[0]}
@@ -1028,8 +1079,22 @@ def window(history, now, seconds, one, gifts=(), seeds=None, presence=(), sides=
     if spent:
         out["spent_per_hour"] = round((xb["s"] - xa["s"] - off[2]) / hours)
         out["unexplained_per_hour"] = round(((b[1] - a[1] - off[0] - ours) - (b[3] - a[3] - off[1]) + (xb["s"] - xa["s"] - off[2])) / hours)
-    for division, d in b[7].items():
-        e = a[7].get(division, [0, 0, 0, 0, 0, 0])
+
+    def made_of(credits, earned, one, moved, deposits, fuel=None, repair=None, paid=None):
+        """{figure of SUMMED: the credits it is made of in the window} of one line (the fleet's or a division's)."""
+        found = {"income_per_hour": earned - one[0], "costs_per_hour": earned - credits - one[1], "rewards_per_hour": one[0],
+                 "bought_once_per_hour": one[1], "wallets_per_hour": credits, "transfers_per_hour": moved, "treasury_moved_per_hour": deposits}
+        if metered:
+            found.update(fuel_cr_per_hour=fuel, repair_cr_per_hour=repair)
+        if spent:
+            found.update(spent_per_hour=paid, unexplained_per_hour=credits - earned + paid)
+        return found
+
+    whole = made_of(b[1] - a[1] - off[0] - ours, b[3] - a[3] - off[1], booked(""), sum(given.values()), treasury,
+                    xb["m"][1] - xa["m"][1] if metered else 0, xb["m"][3] - xa["m"][3] if metered else 0, xb["s"] - xa["s"] - off[2] if spent else 0)
+    parts, ships = {}, {}
+    for division in sorted(names):
+        d, e = b[7].get(division) or [0, 0, 0, 0, 0, 0], a[7].get(division) or [0, 0, 0, 0, 0, 0]
         born, off = new.get(division, [0, 0, 0, 0]), joined(division)
         got = given.get(division, 0) + deposited.get(division, 0)
         row = figures(hours, d[0], d[1] - e[1] - got - off[0], d[2] - e[2] - off[1], booked(division))
@@ -1037,15 +1102,29 @@ def window(history, now, seconds, one, gifts=(), seeds=None, presence=(), sides=
                     "treasury_moved_per_hour": round(-deposited.get(division, 0) / hours)})
         if shifted.get(division):
             row["regroup"] = {"ships": shifted[division][0], "credits": shifted[division][1], "earned": shifted[division][2]}
+        da, db = (xa.get("d") or {}).get(division) or [0, 0, 0, 0], (xb.get("d") or {}).get(division) or [0, 0, 0, 0]
+        paid = num(xb["ds"].get(division)) - num(xa["ds"].get(division)) - off[2] if spent else 0
         if metered:
-            da, db = (xa.get("d") or {}).get(division) or [0, 0, 0, 0], (xb.get("d") or {}).get(division) or [0, 0, 0, 0]
             row.update({"fuel_cr_per_hour": round((db[1] - da[1]) / hours), "repair_cr_per_hour": round((db[3] - da[3]) / hours)})
-            row["metered_per_hour"] = row["fuel_cr_per_hour"] + row["repair_cr_per_hour"]
         if spent:
-            row["spent_per_hour"] = round((num(xb["ds"].get(division)) - num(xa["ds"].get(division)) - off[2]) / hours)
-            row["unexplained_per_hour"] = round(((d[1] - e[1] - got - off[0]) - (d[2] - e[2] - off[1])
-                                                 + (num(xb["ds"].get(division)) - num(xa["ds"].get(division)) - off[2])) / hours)
+            row["spent_per_hour"] = round(paid / hours)
+            row["unexplained_per_hour"] = round(((d[1] - e[1] - got - off[0]) - (d[2] - e[2] - off[1]) + paid) / hours)
+        for key, value in made_of(d[1] - e[1] - got - off[0], d[2] - e[2] - off[1], booked(division), given.get(division, 0),
+                                  -deposited.get(division, 0), db[1] - da[1], db[3] - da[3], paid).items():
+            parts.setdefault(key, {})[division] = value
+        ships[division] = d[0]
         out["divisions"][division] = row
+    for key, values in parts.items():                   # the divisions add up to the fleet, to the credit
+        for division, value in (settle(out[key], values, hours, whole[key]) or {}).items():
+            out["divisions"][division][key] = value
+    for division, row in out["divisions"].items():
+        row["cph"] = row["income_per_hour"] - row["costs_per_hour"]
+        row["one_time_per_hour"] = row["rewards_per_hour"] - row["bought_once_per_hour"]
+        row["total_per_hour"] = row["cph"] + row["one_time_per_hour"]
+        row["cph_per_ship"] = round(row["cph"] / ships[division]) if ships[division] else 0
+        row["total_per_ship"] = round(row["total_per_hour"] / ships[division]) if ships[division] else 0
+        if metered:
+            row["metered_per_hour"] = row["fuel_cr_per_hour"] + row["repair_cr_per_hour"]
     return out
 
 
@@ -1080,7 +1159,7 @@ def rates(history, now, one=None, gifts=None, seeds=None, presence=None, moves=N
                 "ore_per_hour": per_hour(a[5], b[5]), "missions_per_hour": round((b[6] - a[6]) / hours, 1)})
     out["divisions"] = {}
     for division, row in first["divisions"].items():
-        d, e = b[7][division], a[7].get(division, [0, 0, 0, 0, 0, 0])
+        d, e = b[7].get(division) or [0, 0, 0, 0, 0, 0], a[7].get(division) or [0, 0, 0, 0, 0, 0]   # UNASSIGNED: no wallets
         out["divisions"][division] = dict(row, earned_per_hour=row["income_per_hour"], net_per_hour=per_hour(e[1], d[1]),
                                           ore_per_hour=per_hour(e[4], d[4]))
     out["windows"] = {name: (first if seconds == WINDOW else window(history, now, seconds, one, gifts, seeds, presence, sides, regroups)) for name, seconds in WINDOWS}
@@ -1108,9 +1187,10 @@ def row_order(row):
     return (row["division"], row["number"], row.get("flagship_of") != row["admiral"], row["name"])
 
 
-def load_flagships():
-    """Read the flagship entries anew: a ship registered a minute ago stands in its division at the next pass."""
-    found = read(DATA / "flagships.json", {})
+def load_flagships(folder=None):
+    """Read the flagship entries anew: a ship registered a minute ago stands in its division at the next pass. `folder`:
+    another fleet data folder than DATA (a reader that loads this file for window(), e.g. game/fleet/stats.py)."""
+    found = read(Path(folder or DATA) / "flagships.json", {})
     FLAGSHIPS.clear()
     if isinstance(found, dict):
         FLAGSHIPS.update({str(name): entry for name, entry in found.items() if isinstance(entry, dict)})
