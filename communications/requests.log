@@ -423,3 +423,6 @@ Answer: yes. Built in a scratch copy now with a test that fails before and passe
 
 ## [ENT-274] | 2026-11-18 04:34 UTC | Unity | answer | see: ENT-263
 Answer: yes. Built in a scratch copy now with a test that fails before and passes after, installed through the gates before the fleet resumes on Saturday 2026-11-21; I write done with the commit when it stands.
+
+## [ENT-275] | 2026-11-18 04:34 UTC | Unity | answer | see: ENT-264
+Answer: yes. Built in a scratch copy now with a test that fails before and passes after, installed through the gates before the fleet resumes on Saturday 2026-11-21; I write done with the commit when it stands.
