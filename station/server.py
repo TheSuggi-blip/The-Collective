@@ -533,7 +533,7 @@ def api_ship(name):
         return {"error": "no such ship"}
 
 
-DOC_PATH = re.compile(r"(reports|communications|governance|game/(?:planets|players|factions|rules|routes/guidebook|routes|fleet|catalog/recipes|catalog/ships|catalog))/[A-Za-z0-9_.\-]{1,120}\.(md|log)")
+DOC_PATH = re.compile(r"(reports|communications|governance|game/(?:planets|players|factions|rules|routes/guidebook(?:/[a-z]+)?|routes|fleet|catalog/recipes|catalog/ships|catalog))/[A-Za-z0-9_.\-]{1,120}\.(md|log)")
 ENTRY = re.compile(r"^## \[(ENT-\d+)\] \| ([^|\n]+) \| ([^|\n]+) \|", re.M)
 
 
@@ -552,6 +552,9 @@ def doc_title(rel, body=""):
         return "Fleet scripts"
     stem = rel.rsplit("/", 1)[-1].rsplit(".", 1)[0]
     name = (stem.replace("-", " ").replace("_", " ").strip() or rel).capitalize()[:80]
+    parts = rel.split("/")
+    if rel.startswith("game/routes/guidebook/") and len(parts) == 5:          # a chapter game/routes/guidebook/<division>/<chapter>.md
+        return "Guidebook %s: %s" % (parts[3].capitalize(), name)
     return "Guidebook: " + name if rel.startswith("game/routes/guidebook/") else name
 
 
@@ -600,6 +603,8 @@ def api_docs():
     listed = lambda *rels: [{"path": rel, "title": doc_title(rel)} for rel in rels if (REPO / rel).is_file()]
     knowledge = (listed("game/routes/master-index.md")            # its links lead into every index-<group>.md and plan-<role>.md
                  + [{"path": d["path"], "title": doc_title(d["path"])} for d in doc_list("game/routes/guidebook")]
+                 + [{"path": d["path"], "title": doc_title(d["path"])} for sub in sorted(p.name for p in (REPO / "game" / "routes" / "guidebook").glob("*") if p.is_dir())
+                    for d in doc_list("game/routes/guidebook/" + sub)]
                  + listed("game/catalog/master-index.md", "game/fleet/index.md"))
     return {"reports": reports, "reports_total": total, "logs": logs,
             "governance": [{"path": d["path"], "title": doc_title(d["path"])} for d in doc_list("governance")], "knowledge": knowledge}

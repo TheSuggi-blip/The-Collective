@@ -396,6 +396,18 @@ TOOLS = {
         "plan": lambda a: [("game/fleet/hive.py", (["--help"] if a["verb"] == "help" else [a["verb"]] + [str(x) for x in a.get("args") or []]))]},
 }
 
+__import__("guidebook").mcp_view(TOOLS, arg)      # the tool docs gains view=guide: a guidebook by chapter and entry (guidebook.py)
+
+# The tool docs, view=handbook: the store's handbook (game/handbook.md, game/handbook/), written from the code by scripts/handbook.py
+# and read in parts by hive.py handbook (docs_handbook.py). Kept apart from the row above so that it adds to the row, not edits it.
+TOOLS["docs"]["text"] += (" view=handbook: the store's handbook, written from the code: how the data flows, where to ask what, and every "
+                          "table and view with its columns, how long its rows are kept, how often it is refreshed and its example queries "
+                          "(topic: a table's name, a subject or a word; without it the contents).")
+TOOLS["docs"]["args"]["view"]["enum"].append("handbook")
+TOOLS["docs"]["args"]["view"]["description"] += ", or handbook"
+TOOLS["docs"]["args"]["topic"] = arg(S, "for handbook: a table's or view's name (route_earnings), a subject (money) or a word; left out: the contents")
+TOOLS["docs"]["plan"] = (lambda plan: lambda a: [("game/fleet/hive.py", ["handbook"] + ([str(a["topic"])] if a.get("topic") else []))]
+                         if a.get("view") == "handbook" else plan(a))(TOOLS["docs"]["plan"])
 
 WRITES = ("fill", "plan", "command", "goal", "hold")      # every other tool only reads
 

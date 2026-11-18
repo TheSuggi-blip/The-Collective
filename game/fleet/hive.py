@@ -40,6 +40,11 @@ WHAT: reads the unit's data folder (fleet/, routes/runs.jsonl, market/, scouting
         division <name|all>   what each Admiral is doing, from the store alone (docs_division.py): its mission, its block
                               of the orders in force, its plan, its guidebook's sections, its last session entry, the
                               requests open to and from it, its claims in force; one short block a division
+        guide <division|all>  a division's guidebook from the store (guidebook.py; its chapters game/routes/guidebook/
+                              <division>/, command the Fleet Admiral's): its class card whole, the index of its chapters
+                              (entries with status, updated, size, over cap) and the class's computed figures (stats.py);
+                              --chapter one chapter whole, --grep the entries that hold a word, --retired the entries
+                              retired or gone from their chapter, kept in the store
         briefing              a session's start in one answer: the orders in force, the requests addressed to the member,
                               the fleet's money, its own standing fleet (plan, what each route carries, every ship), its
                               plan file in short (plan.py) and the fill gate
@@ -66,6 +71,10 @@ WHAT: reads the unit's data folder (fleet/, routes/runs.jsonl, market/, scouting
                               a time stop), its rows as an aligned table with the column names, values as they are
         schema [<table>]      every table and view of the store with what a row is and its columns; with a table's name its
                               columns and three example questions as SQL
+        handbook [<topic>]    the store's handbook, written from the code (scripts/handbook.py; docs_handbook.py reads
+                              it): how the data flows, where to ask what, every table and view with its columns,
+                              how long its rows are kept, how often refreshed, its examples; a topic: a table's name,
+                              a subject or a word; without one the contents and how the data flows
         stats <view>          the fleet's statistics the store computes by itself (stats.py; definitions: game/metrics.md):
                               kpi, contribution, classes, time, supply, gather, xp, upgrades, alerts, refill, status
 RULES:
@@ -94,6 +103,7 @@ USAGE:
   hive.py docs [<path|kind|owner>] [--section <id> [--history]] [--grep <word>]
   hive.py changes [--since <ISO time>|<N>h] [--member <name>]
   hive.py division [<Member>|<division>|all]
+  hive.py guide [<division>|<Member>|all] [--chapter <name>] [--grep <word>] [--retired]
   hive.py briefing [<Member>|all] [--hours N]
   hive.py store [--hours N]
   hive.py store price <item id> [--hours N]
@@ -105,6 +115,7 @@ USAGE:
   hive.py flow [<Member>|all] [--hours N]
   hive.py sql "<SELECT or WITH statement>" [--limit N]
   hive.py schema [<table or view>]
+  hive.py handbook [<table or view>|<subject>|<word>]
   hive.py stats <view> [--hours N] [--member <Member>]
   --root <dir>   the repository's game/ folder (default: the parent of this file's folder)
   --data <dir>   the unit's data folder (default /srv/collective/data)
@@ -1177,6 +1188,7 @@ def show_briefing(root, data, now, who, hours):
             print("  not read: %s is missing" % comms)
     import docs as writings                                         # Suggi, 2026-11-17: what changed in the written knowledge, not the whole files
     writings.briefing(root, data, now, who)
+    __import__("guidebook").briefing(root, data, now, who)           # Suggi, 2026-11-18: the own class card, and what stands over its cap
     print("=== THE FLEET'S MONEY")
     show_fleet(root, data, now)
     print("=== MY STANDING FLEET")
@@ -1195,6 +1207,8 @@ def show_briefing(root, data, now, who, hours):
     seen = fill.survey(root, data, now)
     for role in sorted(r for r in seen["roles"] if who in ("all", r, division.ROLES.get(r))):
         print(fill.verdict(seen, fill.read_role(seen, role))[1])
+    print("=== THE HANDBOOK: how the data flows, where to ask what, every table and view with its columns and examples: "
+          "hive.py handbook [<table>|<subject>|<word>] (the tool docs, view=handbook)")
     return code
 
 
@@ -1449,6 +1463,8 @@ def main():
         return writings.hive(verb, args, root, data, now)
     if verb == "division":                                          # what each Admiral is doing, from the store (docs_division.py)
         return __import__("docs_division").show(root, data, now, rest[0] if rest else "all")
+    if verb == "guide":                                             # a guidebook by chapter and entry, from the store (guidebook.py)
+        return __import__("guidebook").hive(args, root, data, now)
     if verb == "briefing":
         _kind, me = division.member()
         return show_briefing(root, data, now, rest[0] if rest else (me if me in division.MEMBERS else "all"), float(value("--hours", str(TURN))))
@@ -1471,6 +1487,8 @@ def main():
     if verb == "stats":                              # the fleet's statistics, computed by the store (stats.py, its own usage)
         import stats
         return stats.main(args[args.index(verb) + 1:] + ["--data", data])
+    if verb == "handbook":                         # the store's handbook, written from the code (docs_handbook.py)
+        return __import__("docs_handbook").show(root, data, now, " ".join(rest))
     if verb == "sql":
         return show_sql(data, now, " ".join(rest), value("--limit", str(SQL_ROWS)))
     if verb == "schema":

@@ -8,7 +8,7 @@
  },
  "id": "fit-ice-harvester-node-gamma",
  "title": "Fit an Ice Harvester I at Node Gamma: the tool every ice field needs",
- "note": "A miner without the module docks at Node Gamma, buys one Ice Harvester I and fits it in its free utility slot beside the mining laser (cpu 8 of 16, power 17 of 30: game/routes/guidebook/mining.md, section 5). Sized by the asks (skill mining-chains, errors.log ENT-026): 2 at 1,413 cr at the best price (data/market/node_gamma_relay_station.json, 03:04:11 UTC), so max_pilots 2 and one ship at a time. max_price 1,500 with the 1% tax: the next asks stand higher. A run that finds no ask rests the route for that pilot 60 minutes (requests.log ENT-079). A pilot with a gas harvester and a mining laser has no slot for it: the gas route stands before this one in the plan. 2026-11-16, Zero (orders.log ENT-011, block ZERO (2)).",
+ "note": "A miner without the module docks at Node Gamma, buys one Ice Harvester I and fits it in its free utility slot beside the mining laser (cpu 8 of 16, power 17 of 30: game/routes/guidebook/mining/ships.md, migrated from section 5). Sized by the asks (skill mining-chains, errors.log ENT-026): 2 at 1,413 cr at the best price (data/market/node_gamma_relay_station.json, 03:04:11 UTC), so max_pilots 2 and one ship at a time. max_price 1,500 with the 1% tax: the next asks stand higher. A run that finds no ask rests the route for that pilot 60 minutes (requests.log ENT-079). A pilot with a gas harvester and a mining laser has no slot for it: the gas route stands before this one in the plan. 2026-11-16, Zero (orders.log ENT-011, block ZERO (2)).",
  "max_pilots": 2,
  "stops": [
   {

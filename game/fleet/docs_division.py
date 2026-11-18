@@ -11,8 +11,9 @@ WHAT: `hive.py division <name|all>` and the MCP tool docs (view=division) print 
         PLAN         its plan file data/plans/plan-<division>.md: the lists First and Then, and the own routes of its
                      ships with how many ships have each (plan.py's parser; a template `@<name>` is expanded by the
                      division's templates as the store holds them, and counted by itself too)
-        GUIDEBOOK    game/routes/guidebook/<division>.md: each top section with its characters (its parts added) and
-                     when its text last changed
+        GUIDEBOOK    game/routes/guidebook/<division>/: each chapter with its entries and characters, OVER its cap,
+                     and when it last changed (guidebook.py); a guidebook not split yet (<division>.md): each top
+                     section with its characters (its parts added) and when its text last changed
         LAST REPORT  its newest session entry in communications/reports.log (the archive too): Session, Did, Worked,
                      Failed, each line cut
         REQUESTS     the requests not closed that are addressed to it or that it wrote (comms.py's states)
@@ -158,6 +159,9 @@ def plan_part(conn, name):
 
 
 def guide_part(conn, name):
+    found = __import__("guidebook").division_part(conn, name, clip, CUT["guide"])      # its chapters (guidebook.py), when the store holds them
+    if found:
+        return found
     path = "game/routes/guidebook/%s.md" % name.lower()
     rows = conn.execute("SELECT section, chars, sha FROM docs WHERE path = ? ORDER BY n", (path,)).fetchall()
     if not rows:

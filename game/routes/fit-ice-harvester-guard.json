@@ -2,7 +2,7 @@
  "id": "fit-ice-harvester-guard",
  "kind": "circuit",
  "title": "Fit an Ice Harvester I at Central Nexus: the tool every ice field needs",
- "note": "A pilot without the module docks at Central Nexus, buys one Ice Harvester I (on offer at 1,413 cr at all six of our stations, 22 units in all, seven here: data/market/, 2026-11-15 22:40 to 22:58 UTC; the limit here is 1,700 cr) and fits it beside its lasers (cpu 8 of 16, power 17 of 30 on a starter: game/routes/guidebook/mining.md, section 5). The `fit` step of the circuit runner is new: read the first RESULT line. For the command group: four sentinels, so that the miners find harvesters on offer.",
+ "note": "A pilot without the module docks at Central Nexus, buys one Ice Harvester I (on offer at 1,413 cr at all six of our stations, 22 units in all, seven here: data/market/, 2026-11-15 22:40 to 22:58 UTC; the limit here is 1,700 cr) and fits it beside its lasers (cpu 8 of 16, power 17 of 30 on a starter: game/routes/guidebook/mining/ships.md, migrated from section 5). The `fit` step of the circuit runner is new: read the first RESULT line. For the command group: four sentinels, so that the miners find harvesters on offer.",
  "once": true,
  "max_ships": 4,
  "min_credits": 6000,

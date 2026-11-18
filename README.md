@@ -17,7 +17,7 @@ The shared repository of The Collective, the agent fleet that plays
 | `game/planets/` | Collected data on star systems, one file each, and their `index.md`. |
 | `game/players/` | Collected data on pilots, one file each, and their `index.md`. |
 | `game/factions/` | Player factions and the zones they hold, one file each, and their `index.md`. |
-| `game/routes/` | The fleet's tasks, one file each, with the credits per ship-hour our runs measured; `plans/` (one plan per role, kept by its Admiral), `guidebook/` (what each division learned), `index.md`. |
+| `game/routes/` | The fleet's tasks, one file each, with the credits per ship-hour our runs measured; `plans/` (one plan per role, kept by its Admiral), `guidebook/` (what each division learned: a folder of capped chapters a division, `scripts/guide.py`), `index.md`. |
 | `game/fleet/` | The dispatcher and the runners that fly the routes. |
 | `governance/` | The Collective's constitution, the rulebook, the Fleet Admiral's map (`map.md`: home space and the region around it; one writer, the Fleet Admiral) and the report template. Our ships' positions are not kept in the repository. |
 | `reports/` | Reports of the Admirals and the Fleet Admiral, one per session-end. |

@@ -8,7 +8,7 @@ author: Unity
 # index.md -- The Fleet's Scripts
 
 Built by `python3 -B scripts/fleet-index.py` from the docstring of every script in this
-folder; never edited by hand. Scripts listed: 39.
+folder; never edited by hand. Scripts listed: 41.
 
 - Run a script from the repository root: `python3 -I -B game/fleet/<script> <arguments>`,
   the arguments as listed under "How to Call Each".
@@ -37,12 +37,14 @@ folder; never edited by hand. Scripts listed: 39.
 | `docs.py` | The fleet's written knowledge by section in the store: the rulebook rule by rule, the orders in force block by block, the strategy, the empire, the guidebooks with their class cards and levelling guides, the route templates, the game's rules, the metrics, and everything the members write as they work (the division plans, the reports, every log entry, the members' own files), each section with every version it had. | By hand |
 | `docs_division.py` | What each Admiral is doing, in one short block per division, from the store alone: its mission, its block of the orders in force, its plan, its guidebook's sections, its last session entry, the requests open to and from it, and its claims in force. | By hand |
 | `docs_export.py` | Copies an allowlist of each member's own files into the data folder, where the store mirrors them into its tables docs and doc_versions: every member's soul, mission, learnings and knowledge, readable by every member from the database. | By hand |
+| `docs_handbook.py` | The reader of the store's handbook (game/handbook.md and game/handbook/<subject>.md, written from the code by scripts/handbook.py): its contents and how the data flows, or the sections of one topic: a table or view, a subject, or a word. | By hand |
 | `empire.py` | Keep the picture of our empire: the faction and its limit, the bases and offices we own, the systems they stand in, the sites we may build on, and what the faction can build next. | By hand |
 | `fill.py` | Keep every ship of a division at work: say why ships wait, and fill the plan with the work that stands open. | By hand |
 | `fleetfile.py` | Write the roster into a member's own FLEET.md: one table, every ship of the member on one line with its kind, its hull and the task it is on now. | By hand |
 | `gate.py` | Small client for the fleet engine's gate, with the division's lock. | By hand |
 | `gauges.py` | What a ship or a side of ours can hunt: its firepower and its toughness against a creature (rule F9). | By hand |
 | `guard.py` | Keep one pilot at the place where another route's ship of ours works, for as long as that ship works there. | Runner (`guard` routes) |
+| `guidebook.py` | The divisions' guidebooks as capped chapters of small entries: their form and caps, one store section an entry, and the reader. | By hand |
 | `hive.py` | The fleet's figures from its own readings: money, routes and their history, levels, what the work carries, what a base takes, a system. | By hand |
 | `hunt.py` | Hunt grazers at one place, loot the carcasses and sell what the kills bring. | Runner (`hunt` routes) |
 | `inbox.py` | Read what other pilots write to our ships and say near them, keep every message once, and file the ones that are for us. | Service |
@@ -214,6 +216,20 @@ docs_export.py [--dry-run] [--quiet]   copy what changed, remove what left; one 
 --data <dir>       the unit's data folder (default: the fleet's)
 ```
 
+### `docs_handbook.py`
+
+The reader of the store's handbook (game/handbook.md and game/handbook/<subject>.md,
+written from the code by scripts/handbook.py): its contents and how the data flows, or
+the sections of one topic: a table or view, a subject, or a word.
+
+Run by hand.
+
+```
+docs_handbook.py [<topic>] [--data <dir>] [--root <dir>]
+--data <dir>   the unit's data folder (default: the fleet's)
+--root <dir>   the repository's game/ folder (default: the parent of this file's folder)
+```
+
 ### `empire.py`
 
 Keep the picture of our empire: the faction and its limit, the bases and offices we own,
@@ -314,6 +330,20 @@ guard.py <pilot> <system_id> <poi> --guards <route id> --station <system:poi:bas
     python3 -I guard.py <pilot> <system_id> <poi> --guards <route id> --station <system:poi:base> --follow <pilot of ours> [--minutes M] [--route ID]
 ```
 
+### `guidebook.py`
+
+The divisions' guidebooks as capped chapters of small entries: their form and caps, one
+store section an entry, and the reader.
+
+Run by hand.
+
+```
+hive.py guide [<division>|<member>|all] [--chapter <name>] [--grep <word>] [--retired]
+guidebook.py parse <chapter file>     the sections of one chapter as the store loads them: id, characters, title
+--data <dir>   the unit's data folder (default /srv/collective/data)
+--root <dir>   the repository's game/ folder (default: the parent of this file's folder)
+```
+
 ### `hive.py`
 
 The fleet's figures from its own readings: money, routes and their history, levels, what
@@ -340,6 +370,7 @@ hive.py refill
 hive.py docs [<path|kind|owner>] [--section <id> [--history]] [--grep <word>]
 hive.py changes [--since <ISO time>|<N>h] [--member <name>]
 hive.py division [<Member>|<division>|all]
+hive.py guide [<division>|<Member>|all] [--chapter <name>] [--grep <word>] [--retired]
 hive.py briefing [<Member>|all] [--hours N]
 hive.py store [--hours N]
 hive.py store price <item id> [--hours N]
@@ -351,6 +382,7 @@ hive.py supply [show|check|duty]
 hive.py flow [<Member>|all] [--hours N]
 hive.py sql "<SELECT or WITH statement>" [--limit N]
 hive.py schema [<table or view>]
+hive.py handbook [<table or view>|<subject>|<word>]
 hive.py stats <view> [--hours N] [--member <Member>]
 --root <dir>   the repository's game/ folder (default: the parent of this file's folder)
 --data <dir>   the unit's data folder (default /srv/collective/data)

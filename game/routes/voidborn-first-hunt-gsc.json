@@ -2,7 +2,7 @@
  "id": "voidborn-first-hunt-gsc",
  "kind": "circuit",
  "title": "First Hunt: Belt-Grazers: 1,000 cr once and 50 Weapons XP; three belt-grazers at Spacetime Seep",
- "note": "Accept at Node Beta Industrial Station, three belt-grazers (60 hull) at gsc_0027:spacetime_seep (1 jump(s)) with the rules of hunt.py, hand in where accepted. Flown by hand twice by Military on 2026-11-15: 25 minutes, +922 cr after fuel, no damage (game/routes/guidebook/military.md). The `hunt` step of the circuit runner is new: a test with one ship until its first RESULT line. One hunter per herd; three herds, three routes. 2026-11-16 10:38 UTC (Unity): `\"store\": \"all\"` at the last stop, so that the loot or the ore of the run no longer closes every route with `requires.empty_hold` to the pilot (requests.log ENT-122).",
+ "note": "Accept at Node Beta Industrial Station, three belt-grazers (60 hull) at gsc_0027:spacetime_seep (1 jump(s)) with the rules of hunt.py, hand in where accepted. Flown by hand twice by Military on 2026-11-15: 25 minutes, +922 cr after fuel, no damage (game/routes/guidebook/military/routes.md). The `hunt` step of the circuit runner is new: a test with one ship until its first RESULT line. One hunter per herd; three herds, three routes. 2026-11-16 10:38 UTC (Unity): `\"store\": \"all\"` at the last stop, so that the loot or the ore of the run no longer closes every route with `requires.empty_hold` to the pilot (requests.log ENT-122).",
  "once": true,
  "max_ships": 1,
  "one_time": [

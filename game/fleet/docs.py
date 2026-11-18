@@ -3,7 +3,8 @@
 
 WHAT: the service `store` (store.py) calls it at every pass; the files stay the source, the tables only mirror them:
         files(data, root)  the source files: of the repository governance/rulebook.md, governance/strategy.md,
-                           governance/empire.md, game/routes/guidebook/<division>.md, game/routes/templates/<division>.json,
+                           governance/empire.md, game/routes/guidebook/<division>/<chapter>.md (game/routes/guidebook/
+                           <division>.md before its split), game/routes/templates/<division>.json,
                            game/rules/*.md, game/metrics.md, communications/orders.log, reports/*.md, and the logs
                            requests, queue, admirals, errors and reports (communications/<log>.log and its archive
                            communications/archive/<log>-<date>.log); of the data folder (source name and path
@@ -18,6 +19,8 @@ WHAT: the service `store` (store.py) calls it at every pass; the files stay the 
                      title heading with the text above it is `top`. Each row `| F<n> <title> | <text> |` of the rulebook
                      is its own section `F<n>`, and each table row of game/rules/*.md its own section named by its first
                      cell (`credits`); such rows are not in the text of their heading's section
+        a chapter    game/routes/guidebook/<division>/<chapter>.md (kind guide, guidebook.py): one section an entry, its
+                     id the entry's Id or its title's slug, its title `[<chapter> <status> <updated>] <title>`
         templates    one section per template: its name, its title, its JSON
         orders.log   the newest entry only, by block: `head` (its header and Changed line), each S<n>, G<n>, D<n> and
                      P<n> line, each block's own lines (`standing-orders`, `direction`, `plan`, `turn`, `every-admiral`)
@@ -87,10 +90,12 @@ KINDS = (                      # kind, its files (a glob: a repository path, or 
     ("orders", "communications/orders.log", "Unity"),
     ("strategy", "governance/strategy.md", "Fleet"),
     ("empire", "governance/empire.md", "Fleet"),
+    ("guide", "game/routes/guidebook/*/*.md", ""),           # a guidebook's chapters, one section an entry (guidebook.py); before the row below
     ("guidebook", "game/routes/guidebook/*.md", ""),
     ("template", "game/routes/templates/*.json", ""),
     ("rules", "game/rules/*.md", "Fleet"),
     ("metrics", "game/metrics.md", "Fleet"),
+    ("handbook", "game/handbook.md", "Fleet"), ("handbook", "game/handbook/*.md", "Fleet"),    # the store's handbook (scripts/handbook.py)
     ("plan", "data/plans/plan-*.md", ""),
     ("report", "reports/*.md", ""),
 ) + tuple(("log", pattern % name, "*") for name in LOGS for pattern in ("communications/archive/%s-*.log", "communications/%s.log")) + (
@@ -167,6 +172,8 @@ def owner_of(kind, rel):
         stem = parts[parts.index("members") + 1]
     elif kind == "plan" and stem.startswith("plan-"):
         stem = stem[len("plan-"):]
+    elif kind == "guide":                          # game/routes/guidebook/<division>/<chapter>.md: its folder names the division
+        stem = parts[-2]
     return division_name(stem)
 
 
@@ -355,6 +362,8 @@ def parse(path, kind=None):
         return parse_log(text)
     if kind == "member" and Path(path).name == "COLLECTIVE.md":
         return parse_collective(text, Path(path).parent.name.lower() == "unity")
+    if kind == "guide":                            # a guidebook's chapter: one section an entry (guidebook.py)
+        return __import__("guidebook").sections(text, Path(path).stem)
     return parse_markdown(text, "F" if kind == "rulebook" else "table" if kind == "rules" else "")
 
 
@@ -852,7 +861,7 @@ def ledger_lines(conn, rows):
     return lines
 
 
-ROLE_KINDS = ("guidebook", "template")     # the rules of a division's role, which the briefing counts for its own member
+ROLE_KINDS = ("guide", "guidebook", "template")     # the rules of a division's role, which the briefing counts for its own member
 
 
 def briefing(root, data, now, who):

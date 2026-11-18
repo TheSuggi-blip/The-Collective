@@ -1,75 +1,7 @@
----
-name: guidebook-trade
-id: 20261115T205804Z
-tier: intel
-author: Unity
-links:
-  - The-Collective:game/routes/BLUEPRINT.md
----
+# Trade guidebook -- Routes (routes.md)
 
-# trade.md -- Guidebook of the Trade Division
-
-Kept by Mercury; read by every member. What the Trade division
-learned about its routes, its levelling and its ships, so that every
-ship born later starts where the others stand. Started by the Fleet
-Admiral on 2026-11-15 from the runs so far; from here Mercury writes it,
-at the end of every turn.
-
-- A figure comes from `python3 -B game/fleet/routes.py measure` or from a
-  run's RESULT line, and carries its date. A number no record holds is
-  written `not measured`.
-- The plan in force is the division's plan file
-  (`/srv/collective/data/plans/plan-trade.md`); every route with its
-  figure is in `game/routes/master-index.md` and its sub-indexes.
-
-## Class Card
-
-The trader's class in short (rule F14); the detail is in section 4
-(levelling) and section 5 (ships and fits). Sources: the catalog's
-tables `skills` and `hulls` (catalog 0.723.2), the game's page
-https://www.spacemolt.com/docs/skills.md (read 2026-11-17 07:37 UTC),
-the trader ship files (`xpsnap.py`, 2026-11-17 19:43 UTC).
-
-### Ships
-
-- Tier 0, every trader now: Threshold, cargo 65, fuel 95, hull 75, a
-  mining laser and a pulse laser. Three carry a Gas Harvester I, one a
-  Cargo Expander I (hold 85).
-- Tier 1 (no Piloting asked): no Voidborn freighter; the largest hold
-  is the Residuum's 100 (a salvager). Not worth a change for trade.
-- Tier 2, Piloting 10: Apophenia, freighter, cargo 240, fuel 300, hull
-  140: the trader's next hull. Tier 3, Piloting 20: Fold Hauler, cargo
-  635. No price is in the catalog; not read at a shipyard yet.
-- Fit: a Cargo Expander I (+20 hold) for carries; no weapon is needed.
-  Default stance flee (game 0.721.0), set by script.
-- Style: dock to dock. Sell each pilot's stores where a bid stands,
-  carry one or two jumps, craft at a station workshop; never fight.
-
-### Skills
-
-| Skill | Why it matters | What trains it, on which routes | Trade now | Next goal |
-|---|---|---|---|---|
-| Trading | The class skill. A higher level shows more in `analyze_market` (regional demand, price trends, arbitrage: the game's help); its bonus is not stated in the catalog | Buying and selling at stations or by exchange orders, XP by credit volume (catalog): `@trade-sell`, station stock bought (about 1 XP per 100 cr), mission rewards | 3 for 5, 2 for 26, 1 for 9 | 3 for every trader |
-| Crafting | Station workshop speed from x1 at level 0 to x5 at 100 (with Refining); recipes ask it | Crafting at a station: `@trade-craft` (steel plate and copper wiring from all of the pilot's own iron and copper in one visit, copper piping, Logistics' steel crafts) | 6 for 1, 5 for 8, 4 for 29, 3 for 1, 2 for 1 | 5 for every trader |
-| Refining | With Crafting, the workshop's speed; smelting asks it | The smelt inside craft-steel-own, craft-piping and craft-steel | 5 for 1, 4 for 16, 3 for 21, 2 for 2 | 4 for every trader |
-| Navigation | Fuel, jump fuel and jump time -1% a level; level 3 opens Signal Fragments (7,000 cr once) | Every jump | 6 for 2, 5 for 14, 4 for 24 | 5 |
-| Piloting | Tier 2 hulls at 10 (the Apophenia freighter), tier 3 at 20 | Flying, jumping, mining | 8 for 20, 7 for 19, 6 for 1 | 10 |
-| Engineering | Module power and CPU, for a fuller fit | Crafting components or modules | 0 | not a goal yet |
-| Mining | The fallback only (rule F23) | `@trade-gas`, `@trade-gather`, named by no ship since 2026-11-17 23:42 UTC | -- | -- |
-
-Levels: the trader ship files, 2026-11-17 23:35 UTC (`xpsnap.py save`). XP of the 40 traders
-(`xpsnap.py diff`, skill trade-books), four hours each: to 07:37 UTC
-crafting 0 and trading 616; 07:37 to 11:41 UTC crafting 3,490, trading
-455; 11:41 to 15:37 UTC crafting 10,775, trading 527; 15:37 to 19:43 UTC
-deep core mining 34,542, mining 32,581, piloting 32,136, crafting 15,630,
-navigation 11,557, refining 8,500, trading 379; 19:43 to 23:35 UTC
-piloting 27,151, deep core mining 25,068, crafting 24,445, mining 23,796,
-refining 17,350, navigation 10,909, trading 2,164. Every trader gained XP
-in each window; crafting stands at 4 or more for 38 of 40. Trading is the
-skill that lags: it rises only by credit volume, and the bids carry few
-ships. Voidborn Mastery: level 1 for 14 traders, 0 for 26.
-
-## Standing Plan
+### Standing Plan
+Status: proven. Updated: 2026-11-18. Evidence: migrated from guidebook/trade.md section Standing Plan.
 
 What the traders fly between two turns: the division's plan file
 (`/srv/collective/data/plans/plan-trade.md`, the tool `plan`), as set
@@ -107,7 +39,8 @@ bid for hydrogen, plasma or copper ore; a field of silicon, carbon, gold
 or nickel ore near home that Mining does not claim; the Fleet Admiral's
 fallback that reads the reserve by itself (her open build Q73 (5)).
 
-## 1. Route Guides
+### Route Guides
+Status: proven. Updated: 2026-11-16. Evidence: migrated from guidebook/trade.md section 1.
 
 How each kind of route of this division is flown: the fit and the
 skills it needs, its place, its steps, what opens and closes it. A
@@ -116,6 +49,7 @@ a route earns now is in the fleet's database with its age (rule F22;
 the tool `routes`, the view `route_earnings`).
 
 ### Selling stores where they lie (`sell-<good>-at-<station>`, `carry-<good>-<from>-to-<to>`)
+Status: proven. Updated: 2026-11-17. Evidence: migrated from guidebook/trade.md section 1.
 
 - Fit and skills: the starter hull, no module. Trains trading.
 - Steps: at the station, `store: all`, then the `withdraw` step takes
@@ -157,6 +91,7 @@ the tool `routes`, the view `route_earnings`).
   to 16 units at its best price while the fleet stored 6,193 null matter.
 
 ### Crafting for sale (`craft-<good>-<station>`)
+Status: proven. Updated: 2026-11-17. Evidence: migrated from guidebook/trade.md section 1.
 
 - Fit and skills: the starter hull. Trains crafting and trading.
 - Steps: at the workshop's station `store: all`, `buy` the bought
@@ -178,6 +113,7 @@ the tool `routes`, the view `route_earnings`).
   if the reserve releases the crystals.
 
 ### Crafting for the reserve from stores (`craft-piping-<station>`)
+Status: proven. Updated: 2026-11-17. Evidence: migrated from guidebook/trade.md section 1.
 
 - Fit and skills: the starter hull. Trains crafting and refining.
 - Steps: one stop at the station's workshop with two crafts in its
@@ -198,6 +134,7 @@ the tool `routes`, the view `route_earnings`).
   takes about 1.6 ticks a run. Nine runs in the first 15 minutes.
 
 ### Making from one's own stores in one visit (`craft-steel-own-<station>`, `craft-wiring-<station>`)
+Status: proven. Updated: 2026-11-17. Evidence: migrated from guidebook/trade.md section 1.
 
 - Fit and skills: the starter hull. Trains crafting and refining; costs
   one hop of fuel, nothing bought or sold.
@@ -220,6 +157,7 @@ the tool `routes`, the view `route_earnings`).
   for a visit 40 minutes later.
 
 ### Missions that pay once (`voidborn-<mission>`)
+Status: proven. Updated: 2026-11-17. Evidence: migrated from guidebook/trade.md section 1.
 
 Section 3. Each starts with the accept at the giver's station and
 skips a pilot that booked its reward. Neural Matrix Delivery: the
@@ -228,6 +166,7 @@ Observatory Station (9 jumps, three of them lawless): 5,000 cr, paid
 in both runs (2026-11-16 19:49 UTC and 2026-11-16 23:59 UTC).
 
 ### Gas (`mine-<cloud>`)
+Status: proven. Updated: 2026-11-17. Evidence: migrated from guidebook/trade.md section 1.
 
 - Fit: a Gas Harvester I. Trains mining.
 - Sells hydrogen, plasma and argon into the Node Beta and Central
@@ -238,6 +177,7 @@ in both runs (2026-11-16 19:49 UTC and 2026-11-16 23:59 UTC).
   Emission Nebula +260 over 6 runs.
 
 ### Navigation training (`train-navigation-trader`)
+Status: proven. Updated: 2026-11-17. Evidence: migrated from guidebook/trade.md section 1.
 
 - The starter hull. Docks at our five stations in a loop; about 4
   navigation XP a jump. `requires.skills_below` navigation 3: it
@@ -247,6 +187,7 @@ in both runs (2026-11-16 19:49 UTC and 2026-11-16 23:59 UTC).
   -165 cr each.
 
 ### Fallback gathering (`mine-pherkad-rift`, `gather-hamal-crystal-bloom`, `gather-gsc-0027-prism-scatter`, `mine-acubens`)
+Status: proven. Updated: 2026-11-17. Evidence: migrated from guidebook/trade.md section 1.
 
 - A mining laser. Iron and copper ore into the pilot's storage for
   the reserve; never judged on its pay (rule F8).
@@ -254,6 +195,7 @@ in both runs (2026-11-16 19:49 UTC and 2026-11-16 23:59 UTC).
   to -191 per ship-hour over 57 to 249 runs.
 
 ### Buying station stock by hand
+Status: proven. Updated: 2026-11-17. Evidence: migrated from guidebook/trade.md section 1.
 
 - One unit first with `estimate_purchase`, then `buy` sized to the
   smallest of: the units asked, the units at the price, and what the
@@ -267,6 +209,7 @@ in both runs (2026-11-16 19:49 UTC and 2026-11-16 23:59 UTC).
   ENT-172).
 
 ### Standing sell orders (`create_sell_order`, spacemolt_market)
+Status: proven. Updated: 2026-11-17. Evidence: migrated from guidebook/trade.md section 1.
 
 - `item_id`, `quantity`, `price_each`; the goods are escrowed from the
   hold, then from storage; 1% of the listed value is paid at once.
@@ -284,7 +227,8 @@ in both runs (2026-11-16 19:49 UTC and 2026-11-16 23:59 UTC).
   UTC). The two readings disagree; the next reading is docked at Node
   Beta.
 
-## 2. Route Templates
+### Route Templates
+Status: proven. Updated: 2026-11-17. Evidence: migrated from guidebook/trade.md section 2.
 
 A kind of work is a named list of routes: a template. The templates of
 this division are kept in `game/routes/templates/trade.json` and listed
@@ -318,7 +262,8 @@ This guidebook keeps no list of routes that did not pay (Suggi,
 figure, is asked each turn: the tool `routes`, or `SELECT * FROM
 route_earnings` through the tool `sql`.
 
-## 3. Missions That Pay Once
+### Missions That Pay Once
+Status: proven. Updated: 2026-11-17. Evidence: migrated from guidebook/trade.md section 3.
 
 The `once` routes at the head of the plan: every pilot flies them
 first. What a new one pays and what it needs is written here when it
@@ -341,203 +286,3 @@ was flown the first time.
 | `voidborn-resonance-finish` (Resonance Substrate and Final Calibration for a pilot the chain left after Conductive Lattice) | 7,000 + 8,000 cr | Not flown yet. From 11:11 UTC six chain runs read 'energy_crystal: not bought; final_calibration not offered' when the Central Nexus crystal ask left 420 cr (3,500 at 11:35, 420 x 65 at 11:52, 420 x 43 at 12:48 UTC); the chain skips a pilot with its first link booked. 11 pilots, all miners, stood so at 12:49 UTC (data/fleet/onetime.json) | 2026-11-16 | Written 12:49 UTC, max_ships 2; the chain's max_ships 10 -> 4 on the crystal ask. A run without crystals ends 'not offered': no try, it rests an hour (requires.booked) |
 | The Crimson Resonance (the link after Signal Fragments, 8,500 cr) | -- | One accept with an empty hold, 2026-11-16 12:36 UTC: the hold stayed empty, no titanium alloy handed out | 2026-11-16 | Not flown (orders ENT-014): 5 titanium alloy would be bought (about 6,500 cr) for 8,500 cr at 34 jumps. The trader holds the mission |
 | `voidborn-neural-matrix-board` (Neural Matrix Delivery, Central Nexus board; deliver 8 phase matrix to Sirius Observatory Station, Solarian, 9 jumps) | 5,000 cr; navigation 25, trading 40 XP | Two runs, 5,000 cr each: the test route 2026-11-16 19:49 UTC (4 of 4 stops in 27.5 minutes) and the board route 2026-11-16, accepted 23:47 and handed in 23:59 UTC | 2026-11-16 | The accept with an empty hold put the 8 phase matrix (size 2) into the hold (12:36 UTC); nothing is bought. The road crosses three lawless systems (GSC-0041, Antares, Homam; `scripts/map.py route`). The first run's wallet fell 19,390 cr beyond the reward, which no step of the route explains: read as a gift of the wallet guard in the hour it gave without a record (errors.log ENT-064), not proven. A once route with the accept at its first stop since 2026-11-16 23:44 UTC, one ship at a time |
-
-## 4. Levelling Guide
-
-Which skills a ship of this division levels and on which work (rule
-F23): the work of its own role first, gathering ore only when none is
-open. The levels below are the traders' at 2026-11-17 03:40 UTC (the
-table `ship_skills`): trading 2 for 24 ships, 1 for 16; navigation 5
-for 1, 4 for 3, 3 for 35, 2 for 1; piloting 7 for 3, 6 for 17, 4 for
-19, 3 for 1; crafting 0 for all, 8 of them with XP. The XP of all 40
-traders by skill: deep core mining 29,522, piloting 24,111, mining
-16,363, navigation 10,687, exploration 4,970, trading 2,753, crafting
-120: the standing work trains more than the trade does. At 00:07 UTC
-the same table read navigation 2 for 20 traders and crafting XP for 3.
-
-| Kind of ship | Skills it levels | On which work (template) | What the next level opens |
-|---|---|---|---|
-| A trader born 2026-11-16 evening (navigation 2, trading 0 to 1, piloting 2 to 3) | navigation, then trading | `@trade-train-nav` until navigation 3, `@trade-sell` and `@trade-craft` whenever its own stores and a bid allow | Navigation 3 opens Signal Fragments, 7,000 cr once |
-| A trader of the first twenty (navigation 3 to 4, trading 2, piloting 5 to 7) | trading, crafting | `@trade-sell`, `@trade-craft` | Piloting 10 opens the tier-2 hulls; no route trains it faster than flying does |
-| A trader with a Gas Harvester I | mining, trading | `@trade-gas`, then the two above | -- |
-
-What raises each skill, as read:
-
-- Trading: a buy gives about 1 XP per 100 cr (24,441 iron ore bought
-  for 24,441 cr gave 244 XP, 2026-11-16 18:46 UTC); the 75 silicon ore
-  bought for 31,814 cr took its buyer from trading 1 to 2 (159 XP into
-  level 2 at 00:07 UTC). Mission rewards give it too: the Node Beta
-  chain gives 45 + 30 + 25 (section 3). What a market sale gives is
-  not measured.
-- Crafting: one hand craft of a focused crystal gave 10 XP
-  (2026-11-16 23:50 UTC). A craft's speed grows with the skill and it
-  runs only while the pilot stays docked at the workshop (the game's
-  `craft` help, 2026-11-15).
-- Navigation: about 4 XP a jump on the training loop; level 3 at 340
-  XP. The six born traders read at 23:40 UTC stood at 144 to 241 XP.
-- Piloting 10, which opens the tier-2 hulls, was about 116 hours away
-  at the division's median of 109 piloting XP an hour (`hive.py
-  levels`, 2026-11-16 03:25 UTC).
-
-## 5. Ships and Fits
-
-Every trader flies the starter Threshold (cargo 65, fuel 95, hull 75)
-with a mining laser and a pulse laser. Since 2026-11-16 12:43 UTC one
-more trader carries a Gas Harvester I and one a Cargo Expander I (hold
-85), each bought for a mission that paid more than the module
-(section 3); a Cargo Expander I asks 352 cr at Synchrony Hub and 173
-cr at Ironlight Crossroads (books of 12:39 to 12:40 UTC). Two traders carry a Gas
-Harvester I since 2026-11-16 03:12 UTC: bought and fitted at Node Beta
-for 1,214 cr each with the 1% tax (15 left there at 1,202 cr), the
-tool of the two gas tests; the tests are out (the list in this file's history) and no more
-traders get one while the gas bids at our stations stand at 2 cr and
-plasma at a few units. An Ice Harvester I (638 cr at Ironlight
-Crossroads, 1,413 cr at four of our stations) opens the ice routes,
-which are Mining's: not for traders while miners wait for a
-harvester (requests.log ENT-082, answered ENT-086). Gas items
-are size 2: a hold of 65 carries 32 units of plasma gas. The next hull
-is not chosen: tier 2 needs Piloting 10 (section 4).
-
-## 6. Crafting by Hand: the Calls
-
-Flown 2026-11-15, 21:21 to 21:34 UTC, through `game/fleet/gate.py`;
-each answer read. A route's craft step is built from this
-(requests.log ENT-030).
-
-| Step | Call (tool group) | Answer |
-|---|---|---|
-| Quote the buy | `estimate_purchase {item_id, quantity}` (spacemolt_market) | Price per fill and the tax. At our stations every buy paid 1%, rounded down, from a player's ask and from the station's own: soma 3 x 258 cr paid 781 (station's ask, Central Nexus 23:27 UTC), ceramite 5 x 899 paid 4,539 (a player's, The Experiment 23:31 UTC), an ice harvester 1,413 paid 1,427 (Mining guidebook, section 5). A 52 cr buy paid 0: 1% of 52 rounds to 0. At Ironlight Crossroads (LHS 1140) 20 silver x 152 paid 3,040, no tax |
-| Quote the craft | `craft {recipe_id, quantity, deliver_to: storage, preset: workshop, dry_run: true}` | Runs, venue Station Workshop, `have_inputs`, `effective_time_per_run` 12 ticks, no credit cost |
-| Buy | `buy {item_id, quantity}` | One item per tick; goods into the hold |
-| Inputs to storage | `deposit {item_id, quantity, target: self, source: cargo}` (spacemolt_storage) | A craft takes its inputs from station storage, not the hold |
-| Craft | `craft {recipe_id, quantity, deliver_to: storage, preset: workshop}` | `quantity` counts output items; the job is queued and the inputs escrowed |
-| Progress | `craft {}` | The queue with `progress`, `eta_ticks`; an empty queue when done |
-| Output to the hold | `withdraw {item_id, quantity}` (spacemolt_storage) | `source: storage, target: self` is refused (`invalid_source`); without them it works |
-| Sell | `view_market` first (every price level, each with its `source`: station or player), then `sell {item_id, quantity}` in the default tool group | `sell` takes the best bids level by level: sell no more than the units at the price wanted. `sell` under spacemolt_market is refused (`invalid_action`, 23:41 UTC) |
-
-The circuit runner's `craft` stop, flown 2026-11-16 18:37 to 18:46 UTC
-by one trader on a scratch route (assemble_control_node at The Experiment,
-requests.log ENT-161): the four inputs bought there (2 circuit boards at
-365, 4 copper wiring at 19, gold wiring 190, silver wiring 136: 1,141 cr
-with the tax), the quote 0 cr and 12 ticks a run, one run queued, 2
-control nodes in storage about two minutes later, taken into the hold and
-stored again at the next stop. RESULT: 2/2 stops in 8 minutes, -1,196 cr
-with the fuel; the nodes are kept for the station list (its foundry takes
-1,500), since the best home bid stood at 40 cr (Node Gamma) against 1,013
-asked at Ironlight Crossroads. The game's `craft` help says `quantity` is
-the number of output items, rounded up to whole runs; the runner passes
-the runs still wanted as that quantity and asks again after each job, so
-it reaches `runs` x `per_run` in more jobs than one (`runs` 8, `per_run`
-2: jobs of 4, 2, 1 and 1 runs, read from game/fleet/route_run.py, not
-flown). With `runs` 1 it made 2 in one job, as the recipe does.
-
-## 7. Open Tests
-
-What the division means to test, with the readings it rests on. A
-reading is the state of its hour, not a verdict (rule F22).
-
-- **Copper wiring from surplus copper** (craft-wiring-synchrony-hub, one
-  ship, 2026-11-17 19:46 UTC): 20 runs of basic_copper_processing (8
-  copper ore make 1 wiring) at Synchrony Hub from the pilot's own copper;
-  nothing sold. First RESULT (19:47 UTC): 2/2 stops in 6.0 minutes, -39 cr,
-  crafting XP 215 -> 485 (+270, about 13.5 a run). Lifted to 8 ships at 19:57
-  UTC; 106 runs in the 4 hours to 23:32 UTC, +99 per ship-hour
-  (route_earnings), while the 40 traders gained 24,445 crafting XP (19:43 to
-  23:35 UTC, xpsnap.py diff). Since 23:44 UTC it asks the halving list
-  (section 1) and replaces the gathering at Okab with its twins at Node Beta
-  and The Experiment (requests.log ENT-256). Not a test any more.
-- **Null matter into the Central Nexus bid** (carry-null-matter-beta-to-nexus,
-  sell-null-matter-at-nexus, one ship each, 2026-11-17 19:41 UTC): paid from
-  the first run; 9 and 6 runs in the 4 hours to 23:32 UTC, 21,029 and 47,338
-  per ship-hour; traders' null matter sales +48,330 cr from 19:43 to 23:35 UTC
-  over the three null matter routes (runs.jsonl). Not a test any more; one
-  ship each, since one bid feeds all three.
-- **Trade crystal and deuterium ice from other divisions' stores**
-  (sell-trade-crystal-at-nexus, floor 340; sell-deuterium-at-node-beta, floor
-  150; written 2026-11-17 23:42 UTC): one ship each, for the miners' and
-  sentinels' stores; the first RESULT lines are read at the next turn.
-- **Iron Ore Resupply** at Trader's Rest Resort Station (Nebula space, 22
-  jumps): 80,000 cr for 10,000 iron ore delivered, a faction mission on the
-  board read 2026-11-17 17:07 UTC. A Threshold carries 65 and the station
-  asks iron at 6 x 924 itself; whether a delivery counts station storage is
-  not known. No work for our hulls now.
-- **Trade Run missions** (Node Beta and Trader's Rest boards, 2026-11-17):
-  no credits, 20 to 40 trading XP and 220 to 620 piloting XP for selling a
-  good at a far station (70 hydrogen at Thane Keep, 50 liquid hydrogen at
-  Confederacy Central Command, 1 crystal melt at The Rampart Checkpoint).
-  70 hydrogen are 140 units of hold: not for a Threshold. The melt run asks
-  1 unit; its distance is not read.
-
-- **Spiky bids from stock.** Focused crystal bids rose to 1,041 to
-  1,575 cr for 1 to 12 units at Node Alpha and The Experiment for
-  minutes at a time (2026-11-16 22:42 to 23:57 UTC, the view `moves`);
-  gold wiring did the same at Node Alpha (190 cr, 18:45 UTC). Such a
-  bid is served only from stock already lying at that station: a few
-  crafted crystals stored at Node Alpha and a sell route with
-  `requires.bid` at 1,000 cr is the next test.
-- **The standing sell order.** One anchor beacon listed at 1,200 cr at
-  Node Beta (2026-11-16 23:48 UTC; The Experiment asks 1,400 for 8,
-  every station bid is 2 cr). Unfilled at 2026-11-17 03:34 UTC (section
-  1); read again each turn, and cancel it when a reading shows no
-  buyer in a day.
-- **Buyers at every station since the game's update to v0.721.1**
-  (first read about 00:57 UTC on 2026-11-17, books of 01:55 to 03:42
-  UTC): uranium ore 600 cr x 3,333 (base value 150, size 2), thorium
-  ore 240 x 772 to 886, seam glass 1,200 x 333 (base 600), superfluid
-  vial 600 x 40 to 50, methane ice 36 x 1,000. Sirius bids crystal melt
-  at 1,585 x 85 (03:29 UTC). No field we read holds uranium, thorium
-  or seam glass now (requests.log ENT-194); no book we read asks any
-  of them.
-- **Market stations not read yet**: Procyon Colonial Station (9 jumps,
-  four lawless) and Korr Fortress Station (Gliese 581, 7 jumps, a
-  lawless stronghold on the chart): Procyon asked of Intel by name in
-  requests.log ENT-194, the others as every station an explorer docks
-  at. A stronghold is no place for a trader's test (rule F27).
-- **Plasma bought at Ironlight Crossroads** (52 cr, 932,099 on offer,
-  2026-11-16 01:39 UTC) and sold into the Node Beta bids: one load of
-  32 units paid +1,380 cr in about 19 minutes by hand (03:11 UTC); the
-  bids regained 4 to 17 units an hour at the top level. A route with
-  `requires.bid` at 100 cr would fly it only when the bids stand.
-- **Control nodes made by hand.** Two nodes from bought inputs cost
-  about 1,141 to 1,247 cr (2026-11-16); the bids for nodes read 1,089
-  x 2 at Synchrony Hub and 40 x 398 at Node Gamma (books of 23:04 to
-  23:29 UTC). Two nodes are kept for the station list.
-- **Foreign books.** Ironlight Crossroads (LHS 1140) and Nova Terra
-  Central (Solarian): every gap against our six books read 2026-11-16
-  01:39 and 03:22 UTC was one load or less (plasma 850 cr, processed
-  null matter 392 cr for 2 units, deuterium ice 120 to Node Beta's 260
-  x 5). Ironlight is cheaper for what the fleet buys: an Ice Harvester
-  I 518 to 638 cr against 1,154 to 1,651 at home, fuel 7 cr against
-  12.29. Sirius Observatory Station bids 40 cr for 527 lead ore
-  (20:05 UTC), where every home bid is 1 cr: the fleet stores 493.
-  Since rule F3 every station is open to one ship and one unit.
-- **Titles on the Central Nexus board the fleet has not booked**
-  (boards of 2026-11-16 12:34 UTC): Listening Orders (7,000 cr and a
-  ship scanner), Deep Space Cartography (4,000), Local Sector Survey
-  (2,500), Anomalous Readings (500), Titanium Extraction Contract
-  (3,500; 20 titanium ore), Amplification Materials and Crystal
-  Resonance Harvest (4,000 each), Deep Core Prospecting (5,000 and 10
-  exotic matter), Material Synthesis: Basic (1,500), Network Commerce
-  Protocol (1,500; sell 5 carbon ore). The survey and visit titles are
-  offered to Intel (queue.log ENT-102). Station Need missions (sol
-  nacre, void ichor, void-charged ichor; 3,686 to 13,133 cr) wait for a
-  source: no book we read offers them and no recipe makes them.
-- **The Crimson Resonance** (8,500 cr, after Signal Fragments): the
-  accept hands out nothing; it asks 5 titanium alloy delivered at
-  Blood Forge, Crimson space, 17 to 20 jumps out.
-- **Outpost Kit** at Ironlight Crossroads: 74,010 cr (2 at 12:39 UTC);
-  216,825 cr for 1 at 2026-11-15 23:21 UTC.
-- Hive Antares has no market (Intel, queue.log ENT-049).
-
-## 8. Station Inputs Bought (plan step P4)
-
-Bought for storage, never for sale; a stock purchase is booked as money
-paid once (data/fleet/onetime.json), not as a running cost.
-
-| Input | Bought | Price and depth read | Against mining it | Date |
-|---|---|---|---|---|
-| Iron ore | 24,442 units into storage at Central Nexus for 24,686 cr with the 1% tax (one unit first, then the rest), 0.99 units per credit; `buy` with `deliver_to: storage` takes a whole ask in one call, no hold and no loop | 1 cr for 24,442 (estimate_purchase, 18:45 UTC): 6,481 from an account named as the market bot of Nexus Prime and 17,961 from ten players; 676 more at Node Gamma; the ask had read 35,923 at 14:49 UTC | The four standing gather routes bring 190 to 295 units of mixed iron and copper a ship-hour at 0.58 to 0.94 cr a unit (runs since 14:00 UTC); with half of it copper, an iron unit gathered costs about 1.2 to 1.9 cr | 2026-11-16 |
-| Carbon ore | 1 unit into storage at Node Beta for 4 cr (tax 0 by rounding); no load bought | 4 cr at Node Beta (146,485), Node Gamma (100,595) and Node Alpha (83,648), books of 18:16 to 18:26 UTC; 1,000 units quoted at 4,040 cr with the tax | No home field holds carbon in depth (Gliese 876 Belt 2,901 left, Furud Belt 612); its use is circuit boards (12 carbon and 2 silicon ore make 3), and silicon ore is the limit (34 held, asks of 1 to 4 units) | 2026-11-16 |
-| Silicon ore | 75 units at Central Nexus for 31,814 cr with the 1% tax (one unit first), deposited into the storage there of the hauler that crafts the circuit boards, which then read 107 silicon ore | 420 cr; 84 found at that price by `estimate_purchase` (2026-11-16 23:58 UTC); the ask had read 425 at 23:33 UTC; other asks 312 x 1 (Node Alpha), 376 x 4 (Synchrony), 561 x 200 (Ironlight Crossroads) | No field of the 63 systems read holds silicon (Intel, admirals.log ENT-003). Two silicon and 12 carbon make 3 boards by hand: a board costs about 283 cr of silicon and 16 cr of carbon, against 365 to 743 cr asked for boards (books of 23:04 to 23:33 UTC) | 2026-11-16 |
-| Steel plate (not bought) | -- | 18 cr at five of our stations: Node Alpha 210,080, Node Beta 82,191, The Experiment 78,089, Node Gamma 71,787, Central Nexus 12,503 (books of 18:16 to 18:26 UTC) | One plate takes 10 iron ore by hand (basic_iron_smelting): 10 cr of bought iron, or 12 to 19 cr of gathered iron, plus the labour; the station list's 491,400 iron ore are its 49,140 steel plates | 2026-11-16 |
-

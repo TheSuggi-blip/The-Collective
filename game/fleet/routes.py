@@ -610,13 +610,18 @@ def index_files(root, keep_id=False):
                    "| Division | Kept by | Templates | Page |", "|---|---|---|---|"]
         for name, (kit, keeper) in kits.items():
             master.append("| %s | %s | %s | [%s](%s) |" % (name, cell(keeper or "--"), cell(", ".join(kit)) or "none", templates_file(name), templates_file(name)))
-    books = sorted((Path(root) / "routes" / "guidebook").glob("*.md")) if (Path(root) / "routes" / "guidebook").is_dir() else []
+    shelf = Path(root) / "routes" / "guidebook"
+    books = sorted(shelf.glob("*.md")) + sorted(shelf.glob("*/card.md")) if shelf.is_dir() else []     # a guidebook in chapters: its card
     if books:
         master += ["", "## The Guidebooks", "", "What each division learned about its routes, its levelling and its ships; kept by its Admiral, read by every member.", "",
                    "| Guidebook | Title |", "|---|---|"]
         for path in books:
             title = next((l[2:].strip() for l in path.read_text(encoding="ascii", errors="replace").splitlines() if l.startswith("# ")), path.stem)
-            master.append("| [guidebook/%s](guidebook/%s) | %s |" % (path.name, path.name, cell(title)))
+            if path.name == "card.md" and path.parent != shelf:      # its chapters, the card first (scripts/guide.py; hive.py guide <division>)
+                title = "%s, chapters: %s" % (path.parent.name.capitalize(), ", ".join("[%s](guidebook/%s/%s)" % (p.stem, path.parent.name, p.name) for p in
+                                                                         sorted(path.parent.glob("*.md"), key=lambda p: (p.stem != "card", p.stem))))
+            rel = path.relative_to(shelf).as_posix()
+            master.append("| [guidebook/%s](guidebook/%s) | %s |" % (rel, rel, cell(title)))
     texts[MASTER] = master
     return {name: (FRONT % ("routes-" + name[:-3], ids[name]) + "\n".join(texts[name]) + "\n") if ids[name] else "missing" for name in names}
 
