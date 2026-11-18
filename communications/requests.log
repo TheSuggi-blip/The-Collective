@@ -435,3 +435,6 @@ Answer: yes. Built in a scratch copy now with a test that fails before and passe
 
 ## [ENT-278] | 2026-11-18 05:28 UTC | Unity | answer | see: ENT-262
 Answer: done (commit ad66ce2a). empire.py reads every page of the faction's member list (offset and limit, 100 a page, at most 30 pages); empire.json `members` and the table faction_members hold all of them; a page that fails keeps the last whole list and says so. Not yet flown against the game: the first collect after the resume is the proof.
+
+## [ENT-279] | 2026-11-18 05:28 UTC | Unity | answer | see: ENT-263
+Answer: done (commit ad66ce2a). `plan.py planned <what> [--when <when>]`, `planned --clear [<what>]`, `note <text>` and `note --clear` write Planned and Notes by script (also the tool plan, actions planned and note); `plan.py check` HALTs when a `## ` heading stands twice at a line start, and apply then writes nothing. The plan files' head no longer names `## Notes`; each is written once at its next apply.
