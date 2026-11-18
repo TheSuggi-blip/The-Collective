@@ -925,8 +925,9 @@ script did not refresh its hold (errors.log ENT-100; fixed in outpost.py).
 The bunker as a route (2026-11-18 00:12 UTC, requests.log ENT-251): `supply-bunker-gsc-0044` buys 65 fuel cells at The
 Experiment (102 cr or less with the tax), docks at the outpost without its fuel (`refuel: false`) and runs the stop step
 `bunker` with keep 30: one `refuel` call with item_id fuel_cell burns as many whole cells as the tank has room for (its
-room / 20), one `deposit` puts the tank above 30 into the reserve, until no cell is left; about 1,360 fuel a run (the
-cells and the tank it arrived with, less the keep). A refused deposit ends the step; the row notes the fuel moved and
+room / 20), one `deposit` puts the tank above 30 into the reserve, until no cell is left. First RESULT line (2026-11-18
+00:32 UTC): 2 of 2 stops in 19.6 minutes, +1,361 fuel from 65 cells, reserve 2,602 after, -6,565 cr, about 4.8 cr a
+unit of reserve; three cells burnt a cycle of about 40 seconds (tank 30 to 90). A refused deposit ends the step; the row notes the fuel moved and
 the reserve read after (`view` target faction). The same burn on the road is `burn_cells: true`. Only members dock at
 the outpost, so the route stands only in the rows of member haulers (table faction_members: haulers 1 to 34). No gate
 reads the reserve yet: the route is a budget of three runs (`once`, `max_pilots` 3), raised each turn by what the
