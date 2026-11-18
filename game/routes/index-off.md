@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 24.
+Routes: 25.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -32,6 +32,7 @@ Routes: 24.
 | [census-roads-chain](census-roads-chain.json) | census | beyond the border, 15 jumps | Test: the explorers' census with a chain, up to three systems of census-roads in one trip | up to 1 ships, empty hold, off | TBD | TBD | TBD | TBD | -- |
 | [census-route-places](census-route-places.json) | census | beyond the border, 8 jumps | Read twice a turn every system beyond our space that a route of any plan uses and no hourly census reads | up to 4 ships, empty hold, off | TBD | TBD | TBD | TBD | -- |
 | [census-watch-clearwater](census-watch-clearwater.json) | census | beyond the border, 10 jumps | Read Clearwater every hour while Logistics measures what Glasslight Shoal grows back (its silicon ore) | up to 1 ships, empty hold, off | 4 | 28 | -370 | -750 | 2026-11-17 |
+| [outpost-kit-ironlight-to-node-beta](outpost-kit-ironlight-to-node-beta.json) | circuit | beyond the border, 6 jumps | The Atria outpost, step 1 of 3: one Outpost Kit bought at Ironlight Crossroads (LHS 1140, lawless) and stored at Node Beta, six jumps from Atria on the north road | up to 1 ships, 1 pilots in all, empty hold, from 155,000 cr, off | TBD | TBD | TBD | TBD | -- |
 | [voidborn-first-hunt-schedar](voidborn-first-hunt-schedar.json) | circuit | beyond the border, 2 jumps | First Hunt: Belt-Grazers: 1,000 cr once and 50 Weapons XP; three belt-grazers at Schedar Belt (lawless, one jump past GSC-0027) | once per pilot, up to 1 ships, empty hold, off | 27 | 10 | 20 | one-time | 2026-11-16 |
 | [hunt-dimming-pocket-veil-ray](hunt-dimming-pocket-veil-ray.json) | hunt | beyond the border, 4 jumps | veil_ray at dimming_pocket; loot sold at Node Beta Industrial Station | up to 1 ships, empty hold, off | TBD | TBD | TBD | TBD | -- |
 | [hunt-felis-frost-ring-hollow-pilgrim](hunt-felis-frost-ring-hollow-pilgrim.json) | hunt | beyond the border, 7 jumps | hollow_pilgrim at felis_frost_ring; loot sold at The Experiment Research Station | up to 1 ships, without piercing_railgun_i, empty hold, while sirius_observatory_station bids 1000 cr for crystal_melt, standing work, off | 5 | 19 | -160 | -480 | 2026-11-17 |

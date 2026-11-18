@@ -1,0 +1,30 @@
+{
+ "id": "outpost-kit-ironlight-to-node-beta",
+ "kind": "circuit",
+ "title": "The Atria outpost, step 1 of 3: one Outpost Kit bought at Ironlight Crossroads (LHS 1140, lawless) and stored at Node Beta, six jumps from Atria on the north road",
+ "note": "Written by Apollo, 2026-11-18 00:20 UTC, off (orders.log ENT-052, P4 (b) and block APOLLO (2): Atria is chosen for the north outpost; plan its kit and road, build it once GSC-0044 runs by routes). The kit: Ironlight Crossroads asks 148,663 cr for its one kit (book of 2026-11-18 00:13 UTC), the same ask the first kit was bought at; the limit 150,150 is that price with the buyer's 1% tax, as for the first kit (route_run.py `offer`). The way: out with an empty hold (rule F13), 6 jumps from Node Beta (Pherkad, Synchrony, Node Alpha on the way back); the kit is stored at Node Beta, from where the road to Atria runs GSC-0027, GSC-0050, Brachium, GSC-0049, Acrab, Atria (6 jumps, table lanes). Step 2 is found.py of the skill logistics-stock from Node Beta (deploy_outpost, fee 100,000 cr, the treasury first); step 3 the bunker's supply from Central Nexus cells (7 jumps) by the runner's `bunker` step. Switched on only on the Fleet Admiral's allocation of the kit's credits (no hauler holds 150,150 cr: wallets stop at 50,000 by orders D11) and her word for the founding fee (requests.log). min_credits 155,000 and max_pilots 1 keep it to the one pilot that holds the allocation.",
+ "status": "off",
+ "requires": {
+  "empty_hold": true
+ },
+ "max_ships": 1,
+ "max_pilots": 1,
+ "min_credits": 155000,
+ "stops": [
+  {
+   "at": "lhs_1140:0321b3e4406021575337b7be26e53dd7:784309214f105860a16a0c100a70eb14",
+   "buy": [
+    {
+     "item": "outpost_kit",
+     "qty": 1,
+     "max_price": 150150,
+     "one_time": true
+    }
+   ]
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store": "all"
+  }
+ ]
+}
