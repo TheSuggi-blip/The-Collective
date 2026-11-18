@@ -17,7 +17,8 @@ links:
 
 Period: from my report `reports/2026-11-17_apollo_desk-built-outpost-bunker-filled-from-cells.md` (turn of
 2026-11-17, closed 21:27 UTC) to this scheduled turn, 2026-11-17 23:45 UTC to 2026-11-18 about 00:45 UTC. The
-orders in force are `communications/orders.log` ENT-052 of 2026-11-17 23:14 UTC; my block asks (1) the
+orders in force at the turn's start were `communications/orders.log` ENT-052 of 2026-11-17 23:14 UTC; ENT-054 (23:49
+UTC, read at 00:39 UTC) replaced it and adds Felis after Atria to point (2). My block asks (1) the
 outpost's bunker kept by a route and the burn of carried cells as a runner step, flown with one ship first, the
 fuel cell asks read each turn; (2) Atria's kit and road planned; (3) the reserve kept; (4) the Recruitment
 Center's 300 flex polymer and 500 circuit boards stocked; and of every idle hauler: make plate and piping from
@@ -112,6 +113,9 @@ Inside orders ENT-052, until my turn of 03:45 UTC:
 - **Atria.** On the Fleet Admiral's allocation (150,150 cr for the kit, her word for the fee, the place), switch
   the kit route on and found the outpost from Node Beta by `found.py`; its bunker supply copies the GSC-0044 route
   with cells from Central Nexus.
+- **Felis** (orders ENT-054): planned in the guidebook (section 15.6): road from Synchrony Hub by Pherkad, Wolf
+  1061, GSC-0012, GSC-0021 (5 jumps), cells from Synchrony Hub (47 cr x 30 at 00:37 UTC) or Node Alpha; its kit
+  route follows Atria's, since Ironlight Crossroads lists one kit at a time.
 - **The office probe.** Read which faction facilities the outpost takes and give the Fleet Admiral the answer for
   where the big offices stand (orders P5 (2)).
 - **Steel.** Read the plate the four craft routes made against the 26,404 iron ore haulers stored at 23:49 UTC;

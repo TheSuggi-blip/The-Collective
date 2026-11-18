@@ -1031,3 +1031,12 @@ from home and 6 from Node Beta (table lanes); Intel reads its nearest station wi
 (admirals.log ENT-063) and no pirate line
 on our record within two jumps of the north road. Whether an outpost takes a faction office, which
 decides where the big recruitment offices stand (orders P5 (2)), is read at GSC-0044 this turn (section 10).
+
+Felis, the south outpost (orders.log ENT-054, block APOLLO (2): Atria, then Felis), planned 2026-11-18 00:40 UTC from the
+tables lanes, fields and books. Road: from Synchrony Hub by Pherkad, Wolf 1061, GSC-0012 and GSC-0021 (5 jumps); from
+Node Beta by Acubens, Hamal, Okab, Coldwater and Tanglewood (6); the kit from Ironlight Crossroads by Antares, GSC-0041,
+Pherkad, Wolf 1061, GSC-0012, GSC-0021 (7). Felis lies 7 jumps from home; its belts hold about 100,000 iron and 100,000
+copper each (Belt A, Belt B, Dim Lattice, Dark Residue, with 577 null matter at Dark Residue), its Frost Ring water
+39,481, nitrogen 50,000 and deuterium 1,528 (table fields, 2026-11-17 23:35 UTC). Its bunker's cells would come from
+Synchrony Hub (asked 47 cr x 30 at 00:37 UTC, the cheapest ask read) or Node Alpha (100 x 3,201). The same three steps
+as Atria; its kit route is written when Atria's kit is bought, since Ironlight Crossroads lists one kit at a time.
