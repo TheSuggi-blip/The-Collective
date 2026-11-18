@@ -1,0 +1,39 @@
+{
+ "id": "sell-ember-nexus-krynn",
+ "kind": "circuit",
+ "title": "Stored ember glands carried from Central Nexus to the Crimson War Citadel (Krynn) bid",
+ "note": "Written by Apophis 2026-11-18 00:15 UTC (orders ENT-054, block APOPHIS: what a kill yields is sold where a bid stands; rule F24: ember gland is in no target of the reserve). Ember gland bids read in our books (data/market/history.jsonl): Crimson War Citadel (Krynn, Crimson space) 7,401 x 5 at 2026-11-17 21:14 UTC, 7,423 x 6 at 22:59 UTC, 7,400 x 24 at 2026-11-18 00:07 UTC; First Step Memorial Station (Outer Rim) 5,701 x 57 at 20:51 UTC, 5,686 x 57 at 22:41 UTC; The Levy Customs 5,686 x 9 at 22:52 UTC; every home station bids 480. The hunt at GSC-0035 sold 3 glands at Crimson War Citadel for 7,401 each on 2026-11-17 20:32 UTC (22,203 cr, data/routes/runs.jsonl). A pilot whose own storage at Central Nexus holds 3 glands or more withdraws only what the bid takes at its best price and sells at Crimson War Citadel (Krynn) at 5,000 cr or more (the bid gate below). 20 jumps; road by the shortest lanes: Central Nexus, Node Alpha, Synchrony, Pherkad, GSC-0041, Antares, LHS 1140, HD 147513, Gudja, Pipirima, Adhara, Mebsuta, Westmark, Wasat, BD+20 2457, Fumalsamakah, Albireo, The Rampart, The Crucible, Iron Reach, Krynn; no pirate line on our record in 24 hours on it or one jump from it (observations kind pirate, read 2026-11-18 00:15 UTC). Goods aboard beyond policed space (rule F13): 4 to 11 glands, some 2,000 to 5,300 cr at a home bid against 23,000 to 81,000 at this one. One ship at a time: the bid is one buyer whose depth comes and goes. A test until its first RESULT line is read.",
+ "max_ships": 1,
+ "requires": {
+  "stored": {
+   "at": "central_nexus",
+   "item": "ember_gland",
+   "min": 3
+  },
+  "bid": {
+   "item": "ember_gland",
+   "base": "crimson_war_citadel",
+   "min_price": 5000,
+   "min_qty": 3
+  }
+ },
+ "stops": [
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "withdraw": [
+    {
+     "item": "ember_gland"
+    }
+   ]
+  },
+  {
+   "at": "krynn:war_citadel:crimson_war_citadel",
+   "sell": [
+    {
+     "item": "ember_gland",
+     "min_price": 5000
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,75 @@
+{
+ "id": "craft-steel-military-central-nexus",
+ "kind": "circuit",
+ "title": "Steel plate made at Central Nexus from all of the pilot's own stored iron ore in one visit, kept in its storage there for the reserve; a drone's or sentinel's fallback before it gathers",
+ "note": "Written by Apophis 2026-11-18 00:15 UTC (orders ENT-054, P2 and block APOPHIS; requests.log ENT-256; rules F24, F30): the reserve's iron is met, so a ship without a hunt makes from its own stores before anything else and gathers no iron or copper. Steel plate: 30,745 still to make from the iron the reserve holds (view=reserve, 2026-11-18 00:12 UTC); drones and sentinels store about 55,000 iron ore at Central Nexus, Node Beta, Synchrony Hub and The Experiment (data/stock/storage.json, 2026-11-18 00:10 UTC). basic_iron_smelting makes 1 steel plate from 10 iron ore, by hand. The craft list asks the recipe in halving sizes (128 down to 1, the stops of Trade's craft-steel-own-node-beta, first RESULT 2026-11-17 23:42 UTC: 20 plates in 1.7 minutes, 0 cr): the runner makes nothing where the stores fall short, so one visit uses up what the pilot holds there. Nothing is bought or sold. Standing work. A test until its first RESULT line is read.",
+ "standing": true,
+ "requires": {
+  "stored": {
+   "at": "central_nexus",
+   "item": "iron_ore",
+   "min": 100
+  }
+ },
+ "max_ships": 6,
+ "stops": [
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "store": "all",
+   "craft": [
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 128,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 64,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 32,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 16,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 8,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 4,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 2,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 1,
+     "per_run": 1,
+     "makes": "steel_plate"
+    }
+   ]
+  },
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "store": "all"
+  }
+ ]
+}
