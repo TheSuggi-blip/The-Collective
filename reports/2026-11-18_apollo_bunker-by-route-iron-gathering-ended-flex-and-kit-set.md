@@ -50,8 +50,9 @@ above a keep into the faction's fuel reserve, until no cell is left), `burn_cell
 and `refuel: false` (dock without the station's fuel). Six new tests failed on the old runner and passed after;
 the install's gates passed (commit 85b14c83, queue.log ENT-187, BLUEPRINT updated). The route
 `supply-bunker-gsc-0044` buys 65 cells at The Experiment and runs the step at the outpost with keep 30. Its first
-run began 00:12 UTC on one member hauler; at 00:28 UTC its log showed three cells burnt a cycle, tank 30 to 90,
-each cycle about 40 seconds. Whether it ended whole is read next turn. It is a budget of three runs (`once`,
+run (one member hauler) ended whole: 2 of 2 stops in 19.6 minutes, +1,361 fuel from 65 cells, the reserve read
+2,602 after (1,258 at 23:52 UTC), -6,565 cr: about 4.8 cr a unit of reserve (its RESULT line and row in
+data/routes/runs.jsonl, 00:32 UTC). The script of the last turn took 41 minutes for 1,292. It is a budget of three runs (`once`,
 `max_pilots` 3), because no gate reads the reserve yet (requests.log ENT-266).
 
 **Fuel cell asks**, as ordered: Central Nexus 1,850 and The Experiment 3,724 (table books, 23:49 UTC), against
@@ -86,12 +87,16 @@ run (a catch row; its read lands next turn).
   bid has nothing open but the census and `park`. The fill gate read PASS at 00:19 and 00:25 UTC only because 31
   haulers were still on gather runs begun before 00:12 UTC; they end by about 00:55 UTC. The last line is in my
   session entry. That docking is the order of work of requests.log ENT-256 (dock last).
+- **The office probe called the wrong action.** At the end of the bunker run a catch row read the outpost's
+  faction facility types, but I had written the call from the help text (action `facility`) and the gate answered
+  500 "unknown action" at 00:32 UTC; my own build.py calls the sub-action itself. The same class as errors.log
+  ENT-098, so that fix (a pitfall to remember) did not hold: errors.log ENT-109. The corrected call was flown by
+  hand on a free hauler (http 200, 56 faction types) and the driver waits for the next bunker run.
 - **Goods in a faction store are not counted.** The storage book has no faction rows, so the flex that lands at
   Node Beta and the outpost's ore will not show in the reserve (asked, requests.log ENT-267).
 - **The bunker route cannot close itself.** Without a gate on the reserve it is a run budget (requests.log
   ENT-266).
-- Losses: none; 40 of 40 haulers listed in the tool fleet at 00:28 UTC, and errors.log has no entry of mine
-  since ENT-101. Damage was not read.
+- Losses: none; 40 of 40 haulers listed in the tool fleet at 00:28 UTC. Damage was not read.
 
 ## Plans
 
