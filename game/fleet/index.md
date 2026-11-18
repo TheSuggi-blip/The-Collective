@@ -8,7 +8,7 @@ author: Unity
 # index.md -- The Fleet's Scripts
 
 Built by `python3 -B scripts/fleet-index.py` from the docstring of every script in this
-folder; never edited by hand. Scripts listed: 34.
+folder; never edited by hand. Scripts listed: 35.
 
 - Run a script from the repository root: `python3 -I -B game/fleet/<script> <arguments>`,
   the arguments as listed under "How to Call Each".
@@ -61,6 +61,7 @@ folder; never edited by hand. Scripts listed: 34.
 | `surplus.py` | Say per item what the fleet holds beyond what its build targets reserve: the surplus a trader may sell, where it lies and its best bid. | By hand |
 | `taxes.py` | Keeps each pilot's weekly tax apart, so that no run and no hour reads it as a loss. | By hand |
 | `wallet.py` | No ship of ours goes broke: a ship whose wallet runs low is given credits by a rich ship of its division. | By hand |
+| `workclass.py` | Whose work a route is: the work class of every route and the classes each role flies | By hand |
 
 ## How to Call Each
 
@@ -597,4 +598,16 @@ wallet.py [check]            every wallet against the floors; HALT for a pilot u
 wallet.py topup [--dry-run]  give each pilot under LOW credits up to TARGET from a rich ship of its division
 wallet.py sweep [--dry-run]  the part above KEEP_SHIP of the richest ships to the leader, the leader's into the treasury
 --data <dir>                 the unit's data folder (default: the fleet's)
+```
+
+### `workclass.py`
+
+Whose work a route is: the work class of every route and the classes each role flies
+
+Run by hand.
+
+```
+workclass.py show [<route id>]   the class and the roles of one route, or the count of routes per class
+workclass.py roles               the classes each role flies
+workclass.py plans               per role plan (game/routes/plans/<role>.json): the routes that are not of its class
 ```
