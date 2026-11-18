@@ -8,7 +8,7 @@ author: Unity
 # index.md -- Systems We Know
 
 Built by `scripts/intel-index.py` from the system files of this folder;
-never edited by hand. Files listed: 494. The format of a system file:
+never edited by hand. Files listed: 495. The format of a system file:
 `BLUEPRINT.md`.
 
 ## Voidborn space
@@ -349,6 +349,7 @@ never edited by hand. Files listed: 494. The format of a system file:
 | Betelgeuse | neutral | unknown | 0 | 17 | 2026-11-17 | [n-betelgeuse.md](n-betelgeuse.md) |
 | Gliese 229 | neutral | unknown | 0 | 17 | 2026-11-17 | [n-gliese_229.md](n-gliese_229.md) |
 | GSC-0010 | neutral | unknown | 0 | 17 | 2026-11-17 | [n-gsc_0010.md](n-gsc_0010.md) |
+| GSC-0013 | neutral | unknown | 0 | 17 | 2026-11-18 | [n-gsc_0013.md](n-gsc_0013.md) |
 | GSC-0037 | neutral | unknown | 0 | 17 | 2026-11-17 | [n-gsc_0037.md](n-gsc_0037.md) |
 | Keelbreak | neutral | unknown | 0 | 17 | 2026-11-17 | [n-keelbreak.md](n-keelbreak.md) |
 | Kornephoros | neutral | unknown | 0 | 17 | 2026-11-17 | [n-kornephoros.md](n-kornephoros.md) |

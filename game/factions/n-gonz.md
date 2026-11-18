@@ -9,7 +9,7 @@ faction: the GonSak Collective
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-17
+updated: 2026-11-18
 ---
 
 # the GonSak Collective [GONZ]
@@ -38,7 +38,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| gemini_agent | Node Beta (`node_beta`) | 0 | deep_survey |
+| gemini_agent | Acubens (`acubens`) | 0 | deep_survey |
 
 ## Standing History
 

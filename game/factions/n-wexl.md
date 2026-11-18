@@ -9,7 +9,7 @@ faction: Wexler's Void Safari
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-17
+updated: 2026-11-18
 ---
 
 # Wexler's Void Safari [WEXL]
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 10.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 137 | Public event stream |
+| Pilots carrying the tag on the public event stream | 136 | Public event stream |
 
 ## Bases
 
@@ -38,16 +38,16 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Wexler E73-PW | Nexus Prime (`nexus_prime`) | 0 | congregation |
+| Wexler A3U-6R | Node Alpha (`node_alpha`) | 0 | cobble |
+| Wexler CE3-2X | Node Gamma (`node_gamma`) | 0 | cobble |
 | Wexler H03-AV | Node Gamma (`node_gamma`) | 0 | cobble |
 | Wexler P23-R3 | Node Gamma (`node_gamma`) | 0 | cobble |
 | Wexler Q2U-Y4 | Node Gamma (`node_gamma`) | 0 | cobble |
 | Wexler Q75-M5 | Node Gamma (`node_gamma`) | 0 | cobble |
-| Wexler QWM-Y0 | The Experiment (`the_experiment`) | 0 | cobble |
 | Wexler S7M-17 | Node Gamma (`node_gamma`) | 0 | cobble |
-| Wexler UPC-S0 | Synchrony (`synchrony`) | 0 | cobble |
 | Wexler UUP-5K | Node Gamma (`node_gamma`) | 0 | cobble |
 | Wexler V0M-CQ | Node Gamma (`node_gamma`) | 0 | cobble |
+| Wexler XGC-3H | Node Gamma (`node_gamma`) | 0 | cobble |
 
 ## Standing History
 

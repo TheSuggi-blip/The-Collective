@@ -9,13 +9,13 @@ faction: Hive Swarm
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-17
+updated: 2026-11-18
 ---
 
 # Hive Swarm [HIVE]
 
 A player faction with 3 base(s) in 3 system(s); the nearest to Nexus Prime is 5 jump(s) away, in Antares (`antares`).
-Pilots of it in our space in the last 24 hours: 7.
+Pilots of it in our space in the last 24 hours: 8.
 
 ## Identity
 
@@ -42,13 +42,14 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| 0ef3b4dcf0fd269e9d9d3e88 | Synchrony (`synchrony`) | 0 | theoria |
-| 6ce9fcc5d675364f5a7de638 | Hamal (`hamal`) | 0 | workhorse |
+| 41f0a85ee5fe4d71232d03a8 | Node Beta (`node_beta`) | 0 | workhorse |
+| 492927e413c5b9ce2fe52212 | Node Beta (`node_beta`) | 0 | runner |
+| 721dd9c50961cdb453bf284b | Nexus Prime (`nexus_prime`) | 0 | runner |
+| 75bbbd91a1584939b84b0a01 | Nexus Prime (`nexus_prime`) | 0 | runner |
+| b1175909078c49082d98be1b | Synchrony (`synchrony`) | 0 | runner |
 | ba6ca244f9215d9ee62431df | Hamal (`hamal`) | 0 | workhorse |
-| d48365dfbe9d322efb4559f1 | Node Alpha (`node_alpha`) | 0 | runner |
-| dd23b0ca1cc14350d2b0b023 | Pherkad (`pherkad`) | 0 | workhorse |
-| e039279d45eefa288b1c7717 | Node Alpha (`node_alpha`) | 0 | futures |
-| hiver | Pherkad (`pherkad`) | 0 | bonanza |
+| f202f17f1c83f02a54492789 | Nexus Prime (`nexus_prime`) | 0 | runner |
+| hiver | Node Alpha (`node_alpha`) | 0 | bonanza |
 
 ## Standing History
 

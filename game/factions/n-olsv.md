@@ -9,7 +9,7 @@ faction: Our Lord And Savior
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-17
+updated: 2026-11-18
 ---
 
 # Our Lord And Savior [OLSV]
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 5.
 | Allies | HIVE | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 83 | Public event stream |
+| Pilots carrying the tag on the public event stream | 61 | Public event stream |
 
 ## Bases
 

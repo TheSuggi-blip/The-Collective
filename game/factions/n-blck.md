@@ -9,13 +9,13 @@ faction: The Black Flag
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-17
+updated: 2026-11-18
 ---
 
 # The Black Flag [BLCK]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 1.
+Pilots of it in our space in the last 24 hours: 0.
 
 ## Identity
 
@@ -36,9 +36,7 @@ None on the public record.
 
 Pilots carrying this tag whose last known system is one of ours (public event stream, last 24 hours).
 
-| Pilot | System | Player ships destroyed | Ship when one of ours met it |
-|---|---|---|---|
-| Grumpy Jack | Nexus Prime (`nexus_prime`) | 0 | threshold |
+None in the last 24 hours.
 
 ## Standing History
 

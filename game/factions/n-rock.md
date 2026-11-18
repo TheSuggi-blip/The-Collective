@@ -9,7 +9,7 @@ faction: Bedrock Materials
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-17
+updated: 2026-11-18
 ---
 
 # Bedrock Materials [ROCK]
@@ -38,8 +38,8 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Space Hulk | Synchrony (`synchrony`) | 0 | shard |
-| William Hill | Synchrony (`synchrony`) | 0 | cobble |
+| Space Hulk | Nexus Prime (`nexus_prime`) | 0 | shard |
+| Steve from Accounting | Nexus Prime (`nexus_prime`) | 0 | prospect |
 
 ## Standing History
 
