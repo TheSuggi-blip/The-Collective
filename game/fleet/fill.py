@@ -43,7 +43,15 @@ RULES:
     open or can be lifted is lent standing work of other plans, into its list Then: a mine route in home space that
     sells nothing, that a waiting ship can fly and whose field carries more ships; two routes a pass at most. Its
     Admiral reorders or drops them. 2026-11-17 03:09 UTC: 68 ships waited eight minutes for a hand, because two plans
-    lacked the shared routes that had room.
+    lacked the shared routes that had room. Only a route of the role's own class is lent (rule F23, workclass.own):
+    a gather route to miners alone, unless its file's `open_to` names the role.
+  - Rule F23, each class flies its own work (workclass.py; Suggi, 2026-11-18: "Ore is miners job"): a route outside
+    the role's own class is never offered, added as a paying route or a test, lent, or lifted for the role's waiting
+    ships by this script; it is listed under `class: <class> is <roles>' work`. A mission that pays once, selling or
+    crafting a ship's own stores and fitting stay every role's. `add` of such a route prints a note and adds it (the
+    Admiral's own word): the dispatcher refuses it to the role's ships while data/fleet/class-guard-on exists; the
+    route file's `open_to` is the way to open it to another class. 2026-11-17: the fallback lent the miners' iron
+    routes to traders, haulers, drones and scouts, who gathered iron for hours after the reserve's iron was met.
   - A test goes to a ship of the caller's own roles only: the Fleet Admiral's hourly job gives tests to the command
     group, and each Admiral chooses the tests of its ships (2026-11-17: tests the job put on miners, haulers and drones
     were taken off by their Admirals turn after turn).
@@ -86,7 +94,9 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import dispatch                                   # noqa: E402  the rule that closes a route to a pilot
 import division                                   # noqa: E402  who commands which ship, and the plan files
 import plan as planfile                           # noqa: E402  each division's plan file: every ship with its own routes
+import pull                                       # noqa: E402  the class reason of rule F23, in the dispatcher's words
 import routes as routefiles                       # noqa: E402  the route gate and the index files
+import workclass                                  # noqa: E402  whose work a route is (rule F23)
 
 STALE = 60 * 60                # a list of the route maker older than this is no ground for PASS
 HOURS = 4                      # a turn: what a bid must carry
@@ -214,9 +224,7 @@ def survey(root, data, now=None):
 
 HOLD = 65                      # a starter's hold, units
 RESERVE_SHORT = "sells an item the reserve is short of or holds back (rule F24)"
-NOT_MINE = "a mine test is the miners' (rule F23): not for this role"
 CLAIMED = "claimed by another division (admirals.log, rule F25)"
-NO_MINE_TESTS = ("drone", "sentinel", "scout")        # roles that gather only as their fallback: no mine test is offered to them (ENT-236)
 
 
 def sold(route):
@@ -457,6 +465,11 @@ def read_role(seen, role, floor=500, tests=8):
         if rule:
             closed.setdefault(rule, []).append((value, rid))
             continue
+        other = pull.class_reason(role, route, rid)                # rule F23: never offered outside the role's own class
+        if other:
+            if rid not in plan:
+                closed.setdefault(other, []).append((value, rid))
+            continue
         if buys(route):                                           # it buys goods: in a plan by its Admiral's word only, never by this script
             if rid not in plan:
                 by_hand.append((value, rid))
@@ -497,8 +510,9 @@ def read_role(seen, role, floor=500, tests=8):
         if sells_short(seen, route):                              # a test that sells what the reserve lacks is no test of ours (ENT-213)
             closed.setdefault(RESERVE_SHORT, []).append((cand["per_ship_hour"], rid))
             continue
-        if route.get("kind") == "mine" and role in NO_MINE_TESTS:   # a mine test is the miners' (ENT-236)
-            closed.setdefault(NOT_MINE, []).append((cand["per_ship_hour"], rid))
+        other = pull.class_reason(role, route, rid)                # rule F23: a test of another class is not this role's (ENT-236: a mine test is the miners')
+        if other:
+            closed.setdefault(other, []).append((cand["per_ship_hour"], rid))
             continue
         owner = seen["owners"].get(role) or division.ROLES.get(role)
         if claims(seen).get(rid, owner) != owner:
@@ -521,7 +535,8 @@ def spare(seen, got, served=(), room=None):
     keeps busy hour after hour plus those it carries for one turn above its floor). `served` are waiting pilots this
     call gives other work; `room` ({route id: places left to give}) is shared by the roles of one call, so that a route
     several plans hold is lifted once for all of them. Only a mine route that sells nothing: what a bid carries is no
-    script's to lift. Only a route in home space: beyond the border the limit is its Admiral's (rule F13)."""
+    script's to lift. Only a route in home space: beyond the border the limit is its Admiral's (rule F13). Only a route
+    of the role's own class (rule F23, workclass.own): a gather route is lifted for waiting miners alone."""
     room = {} if room is None else room
     systems, home = routefiles.atlas(seen["root"])
     need = len([name for name in got["waiting"] if name not in served])
@@ -530,6 +545,8 @@ def spare(seen, got, served=(), room=None):
         route = seen["routes"].get(rid) or {}
         closed = sum(count for reason, count in why.items() if str(reason).startswith("max_ships"))
         if need <= 0 or not closed or not isinstance(cap, int) or route.get("kind") != "mine" or route.get("sell") or not routefiles.standing(route):
+            continue
+        if not workclass.own(got["role"], route, rid):              # rule F23: never lifted for ships of another class
             continue
         if not (seen["by_route"].get(rid) or ((route.get("measured") or {}).get("runs") or 0) >= 1):
             seen.setdefault("unflown", {})[rid] = "not lifted: it has not flown yet, and a test keeps one ship until its first RESULT line (rules F8, F13; requests ENT-216)"
@@ -560,7 +577,9 @@ def borrow(seen, got, role, need, most=2):
     open (the fallback). Only what a hand would have added: a mine route that sells nothing, in home space (beyond the
     border a plan is its Admiral's alone, rule F13), switched on, with a ship limit, whose field carries more ships than
     fly it now (carries()), and that at least one of the waiting ships can fly (the dispatcher's rule says open, or
-    full: a full one is lifted by spare() on the next pass). The routes with the most places first, `most` at most."""
+    full: a full one is lifted by spare() on the next pass). The routes with the most places first, `most` at most.
+    Only a route of the waiting role's own class (rule F23, workclass.own): never a gather route to a role that does not
+    gather, unless its file's `open_to` names the role."""
     if need <= 0:
         return []
     systems, home = routefiles.atlas(seen["root"])
@@ -574,6 +593,8 @@ def borrow(seen, got, role, need, most=2):
         cap = route.get("max_ships")
         if (route.get("status") == "off" or route.get("park") or route.get("kind") != "mine" or route.get("sell")
                 or not isinstance(cap, int) or isinstance(cap, bool)):
+            continue
+        if not workclass.own(role, route, rid):                     # rule F23: each class flies its own work
             continue
         if routefiles.zone(route, systems, home)[0] != "home space":
             continue
@@ -869,6 +890,10 @@ def main():
         word = "added" if verb == "add" else "taken out"
         ok, out = planfile.apply(root, data, [name], who, changes={name: change}, message="%s plan: %s %s (fill.py)" % (role, rid, word), commit=commit)
         print("\n".join(out))
+        other = pull.class_reason(role, seen["routes"][rid], rid) if verb == "add" else None
+        if other:                                              # rule F23: the Admiral's own word, said plainly
+            print("note: %s is not %s work (%s): the dispatcher refuses it to the %s ships while data/fleet/class-guard-on exists; the route "
+                  "file's `open_to` opens it to another class" % (rid, role, other, role))
         holds = [key for key, entry in routefiles.templates_of(root, name)[0].items() if rid in entry["routes"]] if verb == "drop" else []
         if holds:                                              # take_out reaches the lists and the ships' cells, never a template's own routes
             print("note: %s still stands in the template%s %s of the %s division: a ship that names it flies the route on. `plan.py template <name> <routes>` "

@@ -131,6 +131,7 @@ import division                                   # noqa: E402  who commands a p
 import routes as routefiles                       # noqa: E402  what a run earned, a route's group: one rule for the store and for hive.py
 import docs as writings                           # noqa: E402  the fleet's written knowledge by section: docs, doc_versions
 import supply as supplychains                     # noqa: E402  the supply chains: the reader of game/supply/chains.tsv and the view
+import stats                                      # noqa: E402  the fleet's statistics: their tables and the figures computed in the pass
 
 EVERY = 60                     # seconds between two passes
 KEEP_DAYS = 7                  # days of raw rows kept; the sums stay for good
@@ -1312,6 +1313,10 @@ def one_pass(data, now=None, keep_days=KEEP_DAYS, root=None):
             out["snapshot"] = {"loaded": Counter(), "rows": 0, "problems": [], "gone": 0, "flies": 0, "error": "%s: %s" % (type(error).__name__, error)}
         out["versions"] = writings.keep(conn, now, out["snapshot"]["problems"])   # every version of each section of docs, kept for good
         try:
+            out["stats"] = stats.compute(conn, data, root or ROOT, now)     # the fleet's statistics: stats.py decides itself what is due
+        except Exception as error:                     # a failing figure never holds up the pass (stats.py names it: hive.py stats status)
+            out["stats"] = {"rows": 0, "parts": {}, "errors": ["%s: %s" % (type(error).__name__, error)]}
+        try:
             out["sampled"] = sample_stock(conn, now, bool(out["snapshot"]["loaded"].get("holdings")))
         except sqlite3.Error as error:                 # nor does a fault of the hour's sample: the next pass writes it
             out["records"]["stock_hour"] = {"added": 0, "bad": 0, "old": 0, "cut": False, "moved": False, "error": "%s: %s" % (type(error).__name__, error)}
@@ -1775,6 +1780,9 @@ EXAMPLES = {                   # three questions per table and view, as SQL (hiv
 
 DESCRIPTIONS.update(supplychains.DESCRIPTIONS)    # the supply chains' table and view, described where they are made (supply.py)
 EXAMPLES.update(supplychains.EXAMPLES)
+SCHEMA += stats.SCHEMA                            # the statistics' tables (stats.py): history kept by stats.py itself, the figures rewritten when due
+DESCRIPTIONS.update(stats.DESCRIPTIONS)
+EXAMPLES.update(stats.EXAMPLES)
 
 
 def schema(conn):

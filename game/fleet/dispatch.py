@@ -61,6 +61,13 @@ RULES:
     start shows back what the route names (`wakes`: its bid, its field above `min_left`, its herd at `min_creatures`).
     Every rest carries its end; a route that pays once and standing work never rest. --dry-run prints the rests a
     real pass would write.
+  - Behind the switch file data/fleet/class-guard-on (absent = off; rule F23): a route that is not the pilot's own
+    class of work (workclass.own; the role as role_of reads it) is refused, `class: <class> is <roles>' work`. A
+    mission that pays once, selling or crafting its own stores, fitting and training stay open to every role.
+  - Behind the switch file data/fleet/pull-on (absent = off): a route that only brings goods of the reserve and earns
+    nothing is closed while every one of them holds its max (game/reserve.tsv, else what the reserve asks), and opens
+    again when one falls below its min (else 90 percent of max), `full: <item> <held> of max <max>`; the levels and
+    marks are kept in data/routes/pull.json by the real pass, each with its own end (game/fleet/pull.py).
   - Why ships wait, and what would give them work: game/fleet/fill.py, which uses this script's own rule.
 WHY:  no ship waits for a hand to give it work, and a new ship climbs the same
       ladder as the ones before it: what we learned is in the route files.
@@ -89,6 +96,7 @@ from pathlib import Path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import division                                   # noqa: E402  who commands which ship, and the plan files
 import gate                                       # noqa: E402  the one call the dispatcher sends itself: stop a loop no runner owns
+import pull                                       # noqa: E402  the class guard and the pull rule, each behind its switch file (r21)
 import runhost                                    # noqa: E402  the program that flies hosted runs as threads
 import routes as routefiles                       # noqa: E402  what standing work is
 import taxes                                      # noqa: E402  the weekly tax a run in flight carried is no loss of its route
@@ -436,6 +444,9 @@ def why_not(pilot, rid, route, state):
         return "off", None
     if route.get("park") and pilot.get("docked"):
         return "the pilot is docked", None
+    held = pull.closes(pilot, rid, route, state)  # r21: the class guard and the pull rule, each only while its switch file exists
+    if held:
+        return held, None
     answered = False
     if ENABLED_RESTS and not route.get("once") and judged(route):     # D227: a route that does not pay rests by its record
         reason, answered = rest_of(rid, state)
@@ -1041,6 +1052,7 @@ def one_pass(root, data, dry_run, children):
         lines += told
         if book is not None:
             state["rests"] = book
+    lines += pull.keep(root, data, now, dry_run, state)      # r21: the two switches of this pass, and with pull-on the reserve's levels
     logs = Path(data) / "routes" / "logs"
     kinds, cap = hosting(data)
     hosted = runhost.load(data) if kinds and runhost.accepting(data, now) else None      # runs the host has; None: no host takes runs now

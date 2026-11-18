@@ -33,6 +33,14 @@ RULES (check):
   - a header has the protocol's form, and the ENT numbers of a log rise by one;
   - orders.log: written by Unity only, category `order`, with a `Changed:` line
     and an `In force` line;
+  - orders.log, its newest entry only (an older entry is history): the whole
+    entry at most ENTRY_CHARS characters, Suggi's standing orders and goals
+    included; the `Changed:` line at most CHANGED_WORDS words; PLAN, from the line
+    after its heading to the first member block, at most PLAN_WORDS; each member's
+    block (`UNITY, ...` to the next block heading), its heading line not counted,
+    at most BLOCK_WORDS. A word is a run of characters between spaces; Suggi's
+    standing orders and goals are no part of a word count (Suggi, 2026-11-18:
+    lean orders);
   - reports.log: category `session`, with the lines Session, Did, Worked,
     Failed, Requests, Suggestions and Report;
   - requests.log: a `request` has a `To:` and a `Need:` line; an `answer` names
@@ -74,6 +82,11 @@ LOGS = {"orders": ("order",), "reports": ("session",), "requests": ("request", "
         "admirals": ("note", "claim")}
 CLAIM_HOURS = 24              # a claim in admirals.log stands this long: nothing is taken for good (Suggi, 2026-11-16)
 GATED = ("orders", "reports", "requests")
+ENTRY_CHARS = 8000            # the newest orders entry, whole, Suggi's S and G lines included (Suggi, 2026-11-18)
+PLAN_WORDS = 150              # ... PLAN, its heading line not counted
+BLOCK_WORDS = 80              # ... each member's block, its heading line not counted
+CHANGED_WORDS = 60            # ... the `Changed:` line
+MEMBER_BLOCK = re.compile(r"^([A-Z]{3,}), ")      # a member's block heading: `UNITY, Fleet Admiral (...)`, as members() reads it
 DRAFT = re.compile(r"^## \[ENT-NEXT\] \| NOW \| ([A-Za-z][A-Za-z0-9_-]*) \| ([a-z]+)((?: \| (?:ref|see): [^|]+)*)$")
 
 
@@ -287,6 +300,57 @@ def show_admirals(root, last, member):
     return 0
 
 
+def block_pattern():
+    """The pattern of a block heading line of the orders (`PLAN (...)`, `EVERY ADMIRAL`, `ZERO, Mining ...`): the
+    store's one reading of the orders' blocks (game/fleet/docs.py, BLOCK)."""
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "game" / "fleet"))
+    try:
+        import docs
+        return docs.BLOCK
+    finally:
+        sys.path.pop(0)
+
+
+def orders_words(entry):
+    """[(part, words, limit, name of the limit)] of one orders entry: the `Changed:` line, PLAN (from the line after
+    its heading to the first member block, every line between counted), each member's block (its heading line not
+    counted, to the next block heading). Suggi's standing orders and goals, and any part outside these, are not counted."""
+    parts, counts, current, pattern = [], {}, None, block_pattern()
+    changed = next((line for line in entry["body"] if line.startswith("Changed:")), None)
+    if changed is not None:
+        parts.append(("the `Changed:` line", len(changed.split()), CHANGED_WORDS, "CHANGED_WORDS"))
+    for line in entry["body"]:
+        found = pattern.match(line)
+        head = found.group(1) if found else None
+        member = MEMBER_BLOCK.match(line)
+        if member:
+            current = "block " + member.group(1)
+            counts.setdefault(current, 0)
+            continue
+        if head == "PLAN":
+            current = "PLAN"
+            counts.setdefault(current, 0)
+            continue
+        if head is not None and current != "PLAN":
+            current = None                                 # a block heading that is no member's ends a member's block
+        if current is not None:
+            counts[current] += len(line.split())
+    for part, words in counts.items():
+        parts.append((part, words) + ((PLAN_WORDS, "PLAN_WORDS") if part == "PLAN" else (BLOCK_WORDS, "BLOCK_WORDS")))
+    return parts
+
+
+def orders_size(entry):
+    """Error lines for the newest orders entry: the whole entry over ENTRY_CHARS, each part over its word limit, each
+    named with its count."""
+    where = "orders.log ENT-%03d: " % entry["num"]
+    chars = len("\n".join([entry["head"]] + entry["body"]))
+    errors = [where + "the entry is %s characters, more than ENTRY_CHARS %s" % (format(chars, ","), format(ENTRY_CHARS, ","))
+              ] if chars > ENTRY_CHARS else []
+    return errors + [where + "%s is %s words, more than %s %s" % (part, format(words, ","), name, format(limit, ","))
+                     for part, words, limit, name in orders_words(entry) if words > limit]
+
+
 def check(root):
     """Error lines for the three logs this script reads."""
     errors = []
@@ -325,6 +389,8 @@ def check(root):
                     errors.append(where + "the `Answer:` line starts with yes, no or done")
             else:
                 errors.append(where + "category must be `request` or `answer` (found `%s`)" % entry["category"])
+        if name == "orders" and entries:
+            errors += orders_size(entries[-1])             # the newest entry only: an older one is history
     return errors
 
 

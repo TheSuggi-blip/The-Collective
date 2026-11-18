@@ -312,6 +312,29 @@ class SurplusTests(unittest.TestCase):
         self.choices("polymer\tpress_polymer\tgood\n")
         self.assertEqual(self.run_script("check").returncode, 0)
 
+    # round r21: game/reserve.tsv names per good a `max` and a `min` (the dispatcher's pull rule, game/fleet/pull.py); they reserve nothing
+    def test_max_and_min_lines_are_read_and_change_no_figure(self):
+        self.targets("facility\tlockbox\t1\t\n")
+        before = self.rows()
+        self.targets("facility\tlockbox\t1\t\nmax\tiron_ore\t300\tthe most to gather\nmin\tiron_ore\t0\tgathered again only when none is left\n"
+                     "max\tsteel_plate\t20\t\nmax\tsteel_plate\t25\tthe later line counts\n")
+        res = self.result()
+        self.assertEqual(res["errors"], [])
+        self.assertEqual(res["levels"], {"iron_ore": {"max": 300, "min": 0}, "steel_plate": {"max": 25}})
+        self.assertEqual(res["warnings"], ["line 6: max steel_plate stands on line 5 too: this one counts"])
+        self.assertEqual({k: (r["reserved"], r["surplus"], r["demand"], r["short"]) for k, r in self.rows().items()},
+                         {k: (r["reserved"], r["surplus"], r["demand"], r["short"]) for k, r in before.items()})
+        done = self.run_script("reserve")
+        self.assertIn("  max iron_ore 300: the pull level of the dispatcher's pull rule (pull.py) | the most to gather", done.stdout)
+        self.assertEqual(self.run_script("check").returncode, 0)
+
+    def test_a_level_line_breaks_its_rules_alone(self):
+        self.targets("max\tiron_ore\t0\t\nmin\tiron_ore\tx\t\nmax\tghost\t5\t\nmin\tiron_ore\t3\t\n")
+        res = self.result()
+        self.assertEqual(res["errors"], ["line 2: units must be a whole number above 0, not `0`", "line 3: units must be a whole number 0 or more, not `x`",
+                                         "line 4: no item `ghost` in the catalog 9.9.9"])
+        self.assertEqual(res["levels"], {"iron_ore": {"min": 3}})
+
     def test_the_real_reserve_file_reads_without_an_error(self):
         targets, errors, _warnings, present = self.mod.read_targets(REPO / "game" / "reserve.tsv", None)
         self.assertTrue(present)

@@ -16,7 +16,11 @@ RULES:
   - The targets file is tab-separated, `#` starts a comment, the header is `kind<TAB>id<TAB>units<TAB>note`.
     kind `facility` (a facility id of the catalog, units = how many), `hull` (a ship class id), `item` (an item
     id, units = how many to have on hand), `keep` (an item id; units a number, or `all` = never surplus),
-    `keepkind` (a kind of item as craftbook.kind_of names it, units `all`: every item of it is kept whole). An
+    `keepkind` (a kind of item as craftbook.kind_of names it, units `all`: every item of it is kept whole), and the
+    pull levels of a good: `max` (an item id, units = the most the fleet gathers of it, above 0) and `min` (an item
+    id, units = the level below which it is gathered again, 0 or more). Without them a good the reserve asks for has
+    max = what the reserve asks of it and min = 90 percent of max (pull.py, the dispatcher's pull rule); they reserve
+    nothing and move no figure of this script. A second `max` or `min` line of an item replaces the first. An
     unknown kind or id is an error in `check` and is skipped elsewhere with a NOTE line: never guessed. A
     facility's earlier steps (`upgrades_from`) are targets of their own lines, never added by the script.
   - DEMAND at the top is the build materials of every facility and hull target times its units, plus the item
@@ -73,7 +77,8 @@ import division                                   # noqa: E402  the data folder'
 
 FILE = "game/reserve.tsv"
 HEADER = ["kind", "id", "units", "note"]
-TARGETS = ("facility", "hull", "item", "keep", "keepkind")
+LEVELS = ("max", "min")       # the pull levels of a good (pull.py): no target, nothing reserved
+TARGETS = ("facility", "hull", "item", "keep", "keepkind") + LEVELS
 ITEM_KINDS = tuple(key for key, _title in craftbook.KINDS if key != "unknown")      # the kinds a `keepkind` line may name
 OPTIONS = ("--root", "--data", "--top", "--kind", "--item")
 RULE = ("Split over places: the reserve of an item is taken first from the place that holds the most of it (building happens where the goods are "
@@ -126,13 +131,14 @@ def read_targets(path, cat):
                 continue
             if kind == "keep" and units == "all":
                 pass
-            elif units.isdigit() and int(units) > 0:
+            elif units.isdigit() and (int(units) > 0 or kind == "min"):
                 units = int(units)
             else:
-                errors.append("line %d: units must be a whole number above 0%s, not `%s`" % (number, " or `all`" if kind == "keep" else "", units))
+                errors.append("line %d: units must be a whole number %s%s, not `%s`" % (number, "0 or more" if kind == "min" else "above 0",
+                                                                                     " or `all`" if kind == "keep" else "", units))
                 continue
         if (kind, key) in seen:
-            warnings.append("line %d: %s %s stands on line %d too: both count" % (number, kind, key, seen[(kind, key)]))
+            warnings.append("line %d: %s %s stands on line %d too: %s" % (number, kind, key, seen[(kind, key)], "this one counts" if kind in LEVELS else "both count"))
         seen.setdefault((kind, key), number)
         targets.append({"line": number, "kind": kind, "id": key, "units": units, "note": note})
     return targets, errors, warnings, True
@@ -274,7 +280,8 @@ def why_text(labels, keep, kinds, kind, could=()):
 def surplus(data, root, cat=None, now=None):
     """The reserve and the surplus of every item held or asked for: {written, catalog, file, present, targets, errors, warnings,
     books: {read, oldest, age}, rows, totals, rule, choices (craftbook.choose: game/reserve-recipes.tsv, its rows and errors),
-    taken (craftbook.taken_lines: the recipe the walk took of every item that has more than one)}. A row is {id, name, kind, held, demand, taken, make, recipe, how, level,
+    taken (craftbook.taken_lines: the recipe the walk took of every item that has more than one), levels ({item: {max, min}}
+    of the file's `max` and `min` lines)}. A row is {id, name, kind, held, demand, taken, make, recipe, how, level,
     kept, reserved, surplus, short, why, bid, bid_units, bid_at, bid_at_name, worth_at_bid, at: [{place, name, units, bid,
     bid_units}]}, the most worth at a bid first; bid is None where no order book bids for the item, and worth_at_bid is then 0."""
     cat = craftbook.choose(cat or craftbook.load(data) or dict(EMPTY), root)      # the recipes the fleet chose (game/reserve-recipes.tsv)
@@ -283,9 +290,12 @@ def surplus(data, root, cat=None, now=None):
     inv = craftbook.inventory(data, cat)
     have = {r["id"]: r for g in inv["groups"] for r in g["rows"]}
     held = {item: r["units"] for item, r in have.items()}
-    top, labels, keep, kinds = {}, {}, {}, set()
+    top, labels, keep, kinds, levels = {}, {}, {}, set(), {}
     for t in targets:
         t["takes"], t["fee"] = {}, None
+        if t["kind"] in LEVELS:                                 # a pull level: no demand, nothing reserved (pull.py reads it)
+            levels.setdefault(t["id"], {})[t["kind"]] = t["units"]
+            continue
         if t["kind"] in ("facility", "hull"):
             row = cat["facilities" if t["kind"] == "facility" else "ships"][t["id"]]
             for m in row.get("build_materials") or []:
@@ -337,7 +347,8 @@ def surplus(data, root, cat=None, now=None):
               "fees": sum(t["fee"] or 0 for t in targets)}
     return {"written": inv["written"], "catalog": cat["version"], "file": FILE, "present": present, "targets": targets, "errors": errors,
             "warnings": warnings, "books": {"read": read, "oldest": oldest, "age": age(oldest, now) if oldest else ""}, "rows": rows, "totals": totals,
-            "rule": RULE, "choices": cat["choices"], "taken": craftbook.taken_lines(cat, {item: s["recipe"] for item, s in steps.items() if s["recipe"]})}
+            "rule": RULE, "choices": cat["choices"], "taken": craftbook.taken_lines(cat, {item: s["recipe"] for item, s in steps.items() if s["recipe"]}),
+            "levels": levels}
 
 
 def first_line(title, res):
@@ -418,6 +429,8 @@ def show_reserve(res):
         if t["kind"] in ("facility", "hull", "item"):
             what = ", ".join("%s %s" % (num(n), i) for i, n in sorted(t["takes"].items())) or "no build materials in the catalog"
             print("  %s %s x %s: %s%s%s" % (t["kind"], t["id"], t["units"], what, " | fee %s cr" % num(t["fee"]) if t["fee"] else "", " | " + t["note"] if t["note"] else ""))
+        elif t["kind"] in LEVELS:
+            print("  %s %s %s: the pull level of the dispatcher's pull rule (pull.py)%s" % (t["kind"], t["id"], num(t["units"]), " | " + t["note"] if t["note"] else ""))
         elif t["kind"] == "keep":
             r = rows.get(t["id"])
             print("  keep %s %s: %s held, %s reserved%s" % (t["id"], t["units"] if t["units"] == "all" else num(t["units"]), num(r["held"] if r else 0),

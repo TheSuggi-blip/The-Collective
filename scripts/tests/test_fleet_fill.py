@@ -15,6 +15,7 @@ os.environ.setdefault("FLEET_TAXES", os.devnull)   # no test reads the fleet's o
 
 FLEET = Path(__file__).resolve().parents[2] / "game" / "fleet"
 HOME = {"at": "home:core:base"}
+GATHER = "class: gather is miners' work"          # rule F23's reason for a gather route offered to another role (game/fleet/pull.py)
 MEASURED = lambda cph: {"date": "2026-11-15", "runs": 3, "minutes": 30, "credits_per_run": cph // 2, "cph_per_ship": cph}
 ROUTES = {
     "park": {"id": "park", "kind": "circuit", "title": "t", "park": True, "stops": [HOME]},
@@ -120,8 +121,8 @@ class ReadTests(Tree):
         self.assertEqual(got["paying"], [("freight", 1500, ["hauler-1"])])                        # one place: one pilot
         self.assertEqual([(rid, value, pilot) for rid, value, _draft, pilot in got["tests"]], [("trade-x", 900, "hauler-2")])
         self.assertEqual(got["idle"], ["hauler-3"])
-        self.assertEqual(got["closed"], {"needs ice_harvester": [(5000, "ice")], self.fill.NO_HUNT: [(3000, "rays"), (2000, "herd2")],    # rule F16: haulers earn
-                                         "needs gas_harvester": [(800, "mine-gas")]})             # never `bad`, `craft-y`, `trade-low`
+        self.assertEqual(got["closed"], {GATHER: [(5000, "ice"), (800, "mine-gas")], self.fill.NO_HUNT: [(3000, "rays"), (2000, "herd2")]})    # rule F16: haulers earn;
+        # rule F23: gathering is the miners' (2026-11-17: the filler lent iron routes to every waiting ship); never `bad`, `craft-y`, `trade-low`
         self.assertEqual(got["by_hand"], [(5000, "trade-buys")])                                 # it buys goods: never added by itself, however high its estimate
         _seen, got = self.read("hauler", tests=0)
         self.assertEqual((got["tests"], got["idle"]), ([], ["hauler-2", "hauler-3"]))
@@ -288,7 +289,7 @@ class WriteTests(Tree):
     def test_standing_work_that_is_full_while_ships_wait_is_lifted_as_far_as_its_field_carries(self):
         # 2026-11-16: the gate said HALT three times until a shared gather route was lifted by hand; its field held tens of thousands above its floor
         self.commit_route({"id": "gather", "kind": "mine", "title": "t", "belt": "far:rocks", "station": "home:core:base", "standing": True, "max_ships": 1,
-                           "min_left": {"iron_ore": 99400}})
+                           "min_left": {"iron_ore": 99400}, "open_to": ["hauler"]})                 # its Admiral's word: haulers gather here (rule F23)
         self.assertIn("committed", self.run_fill("apollo", "add", "gather").stdout)
         (self.data / "scouting").mkdir(exist_ok=True)
         stamp = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
@@ -373,7 +374,7 @@ class ReserveTests(Tree):
     reserve is short of, and its hourly job put an armor-plate sale into a drone's routes (rule F24)."""
 
     def test_a_route_or_a_test_that_sells_a_short_item_is_not_added_and_says_why(self):
-        sells_ice = dict(CANDIDATES[1], id="mine-ice-sell", route=dict(CANDIDATES[1]["route"], id="mine-ice-sell", requires={},
+        sells_ice = dict(CANDIDATES[1], id="mine-ice-sell", route=dict(CANDIDATES[1]["route"], id="mine-ice-sell", requires={}, open_to=["hauler"],
                                                                           sell=[{"item": "water_ice", "min_price": 20}]))
         self.put_list([sells_ice] + CANDIDATES)
         seen = self.fill.survey(str(self.root), str(self.data))
@@ -414,7 +415,7 @@ class FallbackTests(Tree):
             {"resource_id": "iron_ore", "remaining": remaining}]}}}))
 
     def test_a_role_whose_ships_wait_is_lent_standing_work_of_another_plan(self):
-        self.gather()
+        self.gather(open_to=["hauler"])                                                          # rule F23: lent to haulers only by its file's word
         self.assertIn("committed", self.run_fill("zero", "add", "gather").stdout)                 # Mining's plan holds it; Logistics' does not
         seen, got = self.read("hauler", tests=0)
         self.assertEqual(len(got["idle"]), 2)                                                     # three wait, one is offered the paying route
@@ -434,7 +435,7 @@ class FallbackTests(Tree):
         self.assertEqual(self.fill.borrow(seen, got, "hauler", 2), [])
 
     def test_the_fallback_writes_the_plan_only_with_its_switch(self):
-        self.gather()
+        self.gather(open_to=["hauler"])
         self.assertIn("committed", self.run_fill("zero", "add", "gather").stdout)
         done = self.run_fill("unity", "fill", "all", "--once", "--write")
         self.assertNotIn("lent", done.stdout)                                                     # the switch file is not there
@@ -450,7 +451,7 @@ class FallbackTests(Tree):
         self.assertNotIn("lent", self.run_fill("unity", "fill", "all", "--once", "--write").stdout)   # it is in the plan now: lent once
 
     def test_a_route_beyond_the_border_is_lifted_only_as_far_as_its_lift_to_says(self):
-        self.gather(lift_to=2)
+        self.gather(lift_to=2, open_to=["hauler"])
         self.assertIn("committed", self.run_fill("apollo", "add", "gather").stdout)
         seen, got = self.read("hauler")
         self.assertEqual(self.fill.spare(seen, got), [])                                          # requests ENT-216: lift_to waits for the first RESULT line
@@ -516,10 +517,10 @@ class HeldBackTests(Tree):
         got = self.fill.read_role(seen, "drone")
         given = [p for _rid, _v, pilots in got["paying"] for p in pilots] + [p for _rid, _v, _d, p in got["tests"]]
         self.assertNotIn("drone-1", given)                                                         # its post stays kept
-        self.assertIn("mine-gas", [rid for _v, rid in got["closed"].get(self.fill.NOT_MINE, [])])
+        self.assertIn("mine-gas", [rid for _v, rid in got["closed"].get(GATHER, [])])
         self.assertNotIn("mine-gas", [rid for rid, _v, _d, _p in got["tests"]])
         _seen, hauler = self.read("hauler")
-        self.assertNotIn(self.fill.NOT_MINE, hauler["closed"])                                       # a hauler may still test a gas field
+        self.assertIn("mine-gas", [rid for _v, rid in hauler["closed"].get(GATHER, [])])           # rule F23 (r21): a gas field is the miners' too
 
     def test_a_route_another_division_claimed_is_not_added(self):
         far = dict(ROUTES["freight"], id="far-freight")                                          # a route id holds a dash (comms.claimed_routes)
@@ -586,6 +587,53 @@ class HuntRuleTests(Tree):
         self.assertEqual(got["starting"], [("miner-1", "ice"), ("miner-2", "herd2")])               # the dispatcher sends it
         self.assertEqual([rid for rid, _f, _c, _w, _h in got["plan"]], ["ice", "herd2", "park"])
         self.assertEqual(got["closed"].get(self.fill.NO_HUNT), [(3000, "rays")])                # the hunt outside the plan stays closed
+
+
+class ClassRuleTests(Tree):
+    """Rule F23, round r21 (Suggi, 2026-11-18: "Ore is miners job, its not something everyone does"): on 2026-11-17 the
+    fallback lent the miners' iron routes to traders, haulers, drones and scouts, who gathered iron for one to two hours
+    after the reserve's iron was met. The filler offers, lends and lifts a route only for a role of its class."""
+
+    def gather(self, **more):
+        route = dict({"id": "gather", "kind": "mine", "title": "t", "belt": "far:rocks", "station": "home:core:base", "standing": True, "max_ships": 1,
+                      "min_left": {"iron_ore": 99400}}, **more)
+        (self.root / "routes" / "gather.json").write_text(json.dumps(route, indent=1) + "\n", encoding="ascii")
+        self.fill.routefiles.write_index(str(self.root))
+        self.git("add", "-A")
+        self.git("-c", "user.name=T", "-c", "user.email=t@example.invalid", "commit", "-q", "-m", "a route")
+        (self.data / "scouting").mkdir(exist_ok=True)
+        stamp = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+        (self.data / "scouting" / "far.json").write_text(json.dumps({"system": "far", "read_at": stamp, "pois": {"rocks": {"resources": [
+            {"resource_id": "iron_ore", "remaining": 100000}]}}}))
+
+    def test_the_fallback_never_lends_a_gather_route_to_a_role_that_does_not_gather(self):
+        self.gather()
+        self.assertIn("committed", self.run_fill("zero", "add", "gather").stdout)                # Mining's standing work, with room
+        seen, got = self.read("hauler", tests=0)
+        self.assertEqual(len(got["idle"]), 2)
+        self.assertEqual(self.fill.borrow(seen, got, "hauler", 2), [])                            # 2026-11-17: lent to every waiting role
+        self.assertIn(GATHER, got["closed"])
+
+    def test_a_gather_route_in_another_plan_is_lent_to_waiting_miners(self):
+        self.gather()
+        done = self.run_fill("apollo", "add", "gather")                                          # the Admiral's own word: added, with a note
+        self.assertIn("committed", done.stdout)
+        self.assertIn("note: gather is not hauler work (class: gather is miners' work): the dispatcher refuses it to the hauler ships while "
+                      "data/fleet/class-guard-on exists", done.stdout)
+        (self.root / "routes" / "freight.json").unlink()                                         # no paying work outside the plan
+        seen, got = self.read("miner", tests=0)
+        self.assertEqual(got["idle"], ["miner-2"])                                                # it lacks the ice harvester
+        self.assertEqual(self.fill.borrow(seen, got, "miner", 1), ["gather"])
+
+    def test_standing_work_of_another_class_is_not_lifted_for_the_waiting_ships(self):
+        self.gather()
+        self.assertIn("committed", self.run_fill("apollo", "add", "gather").stdout)
+        self.flown("gather")
+        seen, got = self.read("hauler")
+        self.assertEqual((len(got["starting"]), len(got["waiting"])), (1, 2))                     # the class guard is off: one hauler gathers
+        self.assertEqual(self.fill.spare(seen, got), [])                                          # until 2026-11-18 lifted for the waiting haulers
+        seen["routes"]["gather"] = dict(seen["routes"]["gather"], open_to=["hauler"])
+        self.assertEqual(self.fill.spare(seen, got), [("gather", 1)])                             # its file's `open_to`: the Admiral's word
 
 
 if __name__ == "__main__":

@@ -184,7 +184,7 @@ RESIDUAL = {}                # pilot name -> credits - earned + spent at the pas
 MOVES = {"started": 0, "pruned": 0}      # when this process wrote its start line, when it last cut moves.jsonl
 OPENER = urllib.request.build_opener(urllib.request.ProxyHandler({}))   # the gate is inside the unit
 
-# Pilot name -> division and its Admiral (COLLECTIVE.md; names: <role>-<n>).
+# Pilot name -> division and its Admiral (ROSTER.md; names: <role>-<n>).
 # A flagship's name carries no role word: <FLEET_DATA>/flagships.json names its
 # division, that division's Admiral and whose ship it is
 # ({pilot: {admiral, division, role, of}}), read at every pass. The six flagships

@@ -30,12 +30,16 @@ WHAT: reads the unit's data folder (fleet/, routes/runs.jsonl, market/, scouting
                               field grows back, the animals of a herd
         docs                  the fleet's written knowledge by section, from the store (docs.py mirrors the repository
                               every minute and keeps every version): the rulebook rule by rule, the orders in force block
-                              by block, strategy, empire, guidebooks, templates, the game's rules; the files, a file's
+                              by block, strategy, empire, guidebooks, templates, the game's rules, the metrics, and the
+                              members' writing (plans, reports, every log entry, their own files); the files, a file's
                               sections by title, one section whole (--section; its versions, each against the one before:
                               --history), the sections that hold a word (--grep)
         changes               the sections whose text changed since a time (default: the member's last turn, its newest
                               entry in communications/reports.log) and those that left their file; the briefing lists
                               them too (CHANGED SINCE YOUR LAST TURN)
+        division <name|all>   what each Admiral is doing, from the store alone (docs_division.py): its mission, its block
+                              of the orders in force, its plan, its guidebook's sections, its last session entry, the
+                              requests open to and from it, its claims in force; one short block a division
         briefing              a session's start in one answer: the orders in force, the requests addressed to the member,
                               the fleet's money, its own standing fleet (plan, what each route carries, every ship), its
                               plan file in short (plan.py) and the fill gate
@@ -62,6 +66,8 @@ WHAT: reads the unit's data folder (fleet/, routes/runs.jsonl, market/, scouting
                               a time stop), its rows as an aligned table with the column names, values as they are
         schema [<table>]      every table and view of the store with what a row is and its columns; with a table's name its
                               columns and three example questions as SQL
+        stats <view>          the fleet's statistics the store computes by itself (stats.py; definitions: game/metrics.md):
+                              kpi, contribution, classes, time, supply, gather, xp, upgrades, alerts, refill, status
 RULES:
   - It reads only: it moves no ship and writes no file.
   - Every figure names what it rests on; what no reading holds is printed as `not measured`, never filled in.
@@ -87,6 +93,7 @@ USAGE:
   hive.py refill
   hive.py docs [<path|kind|owner>] [--section <id> [--history]] [--grep <word>]
   hive.py changes [--since <ISO time>|<N>h] [--member <name>]
+  hive.py division [<Member>|<division>|all]
   hive.py briefing [<Member>|all] [--hours N]
   hive.py store [--hours N]
   hive.py store price <item id> [--hours N]
@@ -98,6 +105,7 @@ USAGE:
   hive.py flow [<Member>|all] [--hours N]
   hive.py sql "<SELECT or WITH statement>" [--limit N]
   hive.py schema [<table or view>]
+  hive.py stats <view> [--hours N] [--member <Member>]
   --root <dir>   the repository's game/ folder (default: the parent of this file's folder)
   --data <dir>   the unit's data folder (default /srv/collective/data)
 
@@ -1433,11 +1441,14 @@ def main():
         return show_tasks(root, data, now, float(value("--hours", str(TURN))))
     if verb == "forecast":
         return show_forecast(root, data, now, rest[0] if rest else "all", float(value("--hours", str(TURN))))
-    if verb == "refill":
-        return show_refill(root, data, now)
+    if verb == "refill":                             # the store's table stats_refill (stats.py); before its first computation, the records
+        import stats
+        return stats.main(["refill", "--data", data]) if stats.ready(data) else show_refill(root, data, now)
     if verb in ("docs", "changes"):                                 # the fleet's written knowledge by section, from the store (docs.py)
         import docs as writings
         return writings.hive(verb, args, root, data, now)
+    if verb == "division":                                          # what each Admiral is doing, from the store (docs_division.py)
+        return __import__("docs_division").show(root, data, now, rest[0] if rest else "all")
     if verb == "briefing":
         _kind, me = division.member()
         return show_briefing(root, data, now, rest[0] if rest else (me if me in division.MEMBERS else "all"), float(value("--hours", str(TURN))))
@@ -1457,6 +1468,9 @@ def main():
         return show_flow(root, data, now, rest[0] if rest else "all", value("--hours", str(TURN)))
     if verb == "inventory":
         return craftbook.show_inventory(craftbook.load(data) or {"version": "none", "items": {}}, data, rest[0] if rest else "total", value("--item", ""), int(value("--top", "40")))
+    if verb == "stats":                              # the fleet's statistics, computed by the store (stats.py, its own usage)
+        import stats
+        return stats.main(args[args.index(verb) + 1:] + ["--data", data])
     if verb == "sql":
         return show_sql(data, now, " ".join(rest), value("--limit", str(SQL_ROWS)))
     if verb == "schema":

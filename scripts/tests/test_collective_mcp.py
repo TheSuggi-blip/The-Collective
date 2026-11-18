@@ -116,6 +116,13 @@ class PlanTests(unittest.TestCase):
     def test_each_tool_builds_the_line_of_one_script(self):
         self.assertEqual(self.plan("fleet"), [("game/fleet/hive.py", ["fleet"])])
         self.assertEqual(self.plan("fleet", view="board", member="Zero", hours=8), [("game/fleet/board.py", ["Zero", "--hours", "8"])])
+        self.assertEqual(self.plan("fleet", view="kpi"), [("game/fleet/hive.py", ["stats", "kpi"])])
+        self.assertEqual(self.plan("fleet", view="contribution", member="Oracle", hours=6),
+                         [("game/fleet/hive.py", ["stats", "contribution", "--member", "Oracle", "--hours", "6"])])
+        for view in ("classes", "time", "supply", "xp", "upgrades", "alerts"):
+            self.assertEqual(self.plan("fleet", view=view), [("game/fleet/hive.py", ["stats", view])])
+        self.assertEqual(self.plan("fleet", view="refill"), [("game/fleet/hive.py", ["refill"])])      # the store's table stats_refill
+        self.assertIn("kpi", self.server.TOOLS["fleet"]["args"]["view"]["enum"])
         self.assertEqual(self.plan("routes", group="paying", zone="beyond"), [("game/fleet/hive.py", ["routes", "--group", "paying", "--zone", "beyond"])])
         self.assertEqual(self.plan("fill"), [("game/fleet/fill.py", ["status"])])
         self.assertEqual(self.plan("fill", action="fill", who="miner", write=True, tests=4), [("game/fleet/fill.py", ["fill", "miner", "--write", "--tests", "4"])])

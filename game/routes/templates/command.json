@@ -3,30 +3,17 @@
  "owner": "Unity",
  "templates": {
   "ice-and-hunt": {
-   "title": "Ice for the stations that bid, then veil-ray hunts and two missions",
+   "title": "Veil-ray hunts and two missions",
    "routes": [
-    "fit-ice-harvester-guard",
-    "mine-node-beta-frozen-drift",
-    "mine-ruchbah-ice-belt",
-    "mine-achernar-frost-ring",
-    "mine-wolf-1061-frozen-drift",
-    "mine-keid-ice-shelf",
-    "mine-cryogenic-reserve",
-    "mine-alnair-ice-fields",
-    "mine-gsc-0041-frost-ring",
-    "mine-antares-ice-fields",
-    "mine-intercrus-ice-fields",
-    "mine-deepwell-volatile-ice",
     "hunt-starveling-nebula-veil-ray",
     "hunt-felis-dim-lattice-veil-ray",
     "voidborn-network-expansion",
     "mission-ghosts-in-the-cloud-node"
    ],
    "trains": [
-    "mining",
     "weapons"
    ],
-   "note": "the first route fits the ice harvester the mines need"
+   "note": "the flagships hunt and fly missions; ice is the miners' (rule F23, 2026-11-18)"
   }
  }
 }

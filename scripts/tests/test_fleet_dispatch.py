@@ -1017,3 +1017,60 @@ class TurnT2130Tests(Tree):
         line = self.dispatch.command(route, "miner-1", None, self.root)
         self.assertEqual(line[-2:], ["--deposit", "faction"])
         self.assertNotIn("--deposit", self.dispatch.command(ROUTES["mine"], "miner-1", None, self.root))
+
+
+class ClassGuardPullTests(Tree):
+    """Round r21 (rule F23; Suggi, 2026-11-18: "Ore is miners job"): on 2026-11-17 the reserve's iron was met, yet traders,
+    haulers, drones and scouts gathered iron for one to two hours more. The class guard and the pull rule close such
+    routes in the dispatcher's one rule, each only while its switch file exists (game/fleet/pull.py)."""
+
+    def fleet(self, names):
+        (self.data / "fleet" / "fleet.json").write_text(json.dumps({"ships": [{"name": n, "status": "connected", "credits": 9000, "activity": {"kind": "idle"}}
+                                                                              for n in names]}))
+
+    def switch(self, name, on=True):
+        path = self.data / "fleet" / name
+        path.write_text("") if on else path.unlink()
+        reader = getattr(self.dispatch, "pull", None)
+        if reader is not None:
+            reader.SWITCHES.clear()                    # a pass reads its switch files once per clock reading: this test keeps one clock
+
+    def test_a_route_of_another_class_is_refused_only_while_the_class_guard_file_exists(self):
+        routes = self.dispatch.load_routes(self.root)
+        scout = {"name": "scout-1", "role": "scout", "credits": 20000, "modules": [], "docked": True}
+        why = lambda pilot, rid: self.dispatch.why_not(pilot, rid, routes[rid], self.state())[0]
+        self.assertIsNone(why(scout, "mine"))                                               # off: the rule as it was
+        self.switch("class-guard-on")
+        self.assertEqual(why(scout, "mine"), "class: gather is miners' work")
+        self.assertIsNone(why(dict(scout, name="Zero Point", role="miner"), "mine"))        # the role the pilot carries, a flagship's too
+        self.assertEqual(why({"name": "scout-2", "credits": 20000, "modules": [], "docked": True}, "mine"), "class: gather is miners' work")   # no role: its name's
+        self.assertIsNone(why(scout, "missions"))                                           # a mission paid once is every role's
+        self.assertEqual(why(dict(scout, name="drone-1", role="drone"), "census"), "class: census is scouts' work")
+        self.switch("class-guard-on", on=False)
+        self.assertIsNone(why(scout, "mine"))
+
+    def test_a_dry_pass_gives_a_scout_its_own_work_only_with_the_guard(self):
+        self.put_plan({"scout": ["mine", "census"]})
+        self.fleet(["scout-1"])
+        self.assertEqual(self.dispatch.one_pass(str(self.root), str(self.data), True, []), ["scout-1 -> mine mine"])
+        self.switch("class-guard-on")
+        self.assertEqual(self.dispatch.one_pass(str(self.root), str(self.data), True, []), ["scout-1 -> census home"])
+
+    def test_a_route_whose_goods_are_full_closes_only_with_the_pull_file_and_a_dry_pass_writes_no_record(self):
+        self.put_plan({"miner": ["mine", "open"]})
+        self.fleet(["miner-1"])
+        now, stamp = time.time(), lambda t: time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(t))
+        record = {"written_at": stamp(now), "until": stamp(now + 3600), "makes": {},
+                  "items": {"iron_ore": {"held": 900, "need": 500, "max": 500, "min": 450, "full": True, "since": stamp(now), "until": stamp(now + 3600)}},
+                  "yields": {"far:belt": ["iron_ore"], "far:rift": ["iron_ore", "silver_ore"]}}
+        (self.data / "routes" / "pull.json").write_text(json.dumps(record))
+        self.assertEqual(self.dispatch.one_pass(str(self.root), str(self.data), True, []), ["miner-1 -> mine mine"])
+        self.switch("pull-on")
+        self.assertEqual(self.dispatch.one_pass(str(self.root), str(self.data), True, []), ["miner-1 -> mine open"])    # silver is no reserve good: open
+        miner = {"name": "miner-1", "role": "miner", "credits": 20000, "modules": [], "docked": True}
+        routes = self.dispatch.load_routes(self.root)
+        self.assertEqual(self.dispatch.why_not(miner, "mine", routes["mine"], self.state())[0], "full: iron_ore 900 of max 500")
+        self.assertIsNone(self.dispatch.why_not(miner, "mine", dict(routes["mine"], sell=[{"item": "iron_ore", "min_price": 5}]), self.state())[0])   # it sells
+        self.assertEqual(json.loads((self.data / "routes" / "pull.json").read_text()), record)                    # the dry pass changed nothing
+        self.switch("pull-on", on=False)
+        self.assertIsNone(self.dispatch.why_not(miner, "mine", routes["mine"], self.state())[0])

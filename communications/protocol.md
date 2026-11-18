@@ -85,56 +85,62 @@ Do NOT pack a whole session onto one line.
 
 ## The Orders Log
 
-`orders.log` holds the orders in force: Suggi's standing orders, the
-Fleet Admiral's plan in at most five steps, the turn, what every
-Admiral does and a short block for each member. It replaced
-`governance/orders.md` on 2026-11-15, on Suggi's word; the short form
-is his of 2026-11-16. The standing rules the orders work inside (F1
-to F21) are section 12 of the rulebook, not the orders.
+`orders.log` holds the orders in force: the newest entry, complete;
+every older entry is history and orders nothing. It replaced
+`governance/orders.md` on 2026-11-15; its short form with word limits
+is Suggi's of 2026-11-18 ("no infinite bloat; it has to be capped").
 
-- One writer: the Fleet Admiral, on Suggi's decisions. No other member
-  appends to it. An Admiral proposes a change in its session entry
-  (`Suggestions:`) and its report, or asks for one in `requests.log`.
-- The Fleet Admiral writes the orders from what she and Suggi decide,
-  after reading every new entry of `reports.log`, `requests.log` and
-  `errors.log`.
-- Every entry is complete. The newest entry is the orders in force;
-  every older entry is history and orders nothing.
-- A new entry is written only when the orders change: at the Fleet
-  Admiral's session-end, from a session with Suggi or from her
-  scheduled turn. No change, no entry.
-- Its first line says what changed against the entry before, its
-  second from when it is in force.
-- Every member reads the newest entry in full at every session start
-  (preflight), whatever its cursor says, and works inside it. The
-  orders rank below the constitution, a member's AGENTS.md and SOUL.md
-  and the rulebook (`governance/rulebook.md`), and above the task at
-  hand.
-- An order names its goal, its limits and what changes it. The
-  standing orders (S1 to S6) are Suggi's, carried over word for word;
-  only he changes them. The plan's steps are discussed with him.
-- The log is public. Where our ships are, and which pilot flies which
+- One writer: the Fleet Admiral. An Admiral proposes a change in its
+  session entry (`Suggestions:`) and its report, or asks in
+  `requests.log`. A new entry is written only when the orders change.
+- Every member reads the newest entry at session start (preflight) and
+  works inside it. The orders rank below the constitution, a member's
+  AGENTS.md and SOUL.md and the rulebook, and above the task at hand.
+- The log is public: where our ships are, and which pilot flies which
   route, is never written in it.
 
+How the Fleet Admiral writes them (Suggi, 2026-11-18: "you only give
+general direction, you don't micro manage ... Then they figure it
+out"):
+
+- **Intent, not instructions.** What to achieve and why; how is the
+  Admiral's. No route ids, no ship names or counts, no step lists.
+- **Nothing restated.** A lasting rule is a rule of
+  `governance/rulebook.md`, cited by its number; who does what is
+  `ROSTER.md`; a member's standing job and its measures are its
+  `MISSION.md`. The orders hold only what is to be achieved now.
+- **Division of labour.** Never the same task for every division; a
+  task that crosses divisions names its owner.
+- **Lean by limit.** The parts and their limits below are held by
+  `python3 -B scripts/comms.py check`, which refuses an entry over
+  them. A task leaves when it is done; what lasts becomes a rule.
+
+| Part | Holds | Limit |
+|:--|:--|:--|
+| Head, `Changed:`, `In force` | what changed against the entry before, and why | `Changed:` 60 words |
+| STANDING ORDERS, STANDING GOALS | Suggi's `S<n>` and `G<n>` lines, copied word for word; changed only on his instruction | his |
+| PLAN | the Fleet Admiral's order to the fleet: the medium-term goal, its main efforts with their owners, a threat or a change of ground the fleet must know | 150 words |
+| One block per member | UNITY, ZERO, MERCURY, APOLLO, APOPHIS, ORACLE: the member's task now, its purpose and a limit special to now | 80 words each, heading excluded |
+| The whole entry | Suggi's lines included | 8,000 characters |
+
 ```
-## [ENT-NNN] | YYYY-MM-DD HH:MM UTC | Unity | order | ref: <file the change rests on> | see: <the entry before>
-Changed: <what is new against the entry before, and why>.
-In force from <UTC time> until a newer entry.
-STANDING ORDERS (Suggi; for the whole fleet; set and changed by him alone)
+## [ENT-NNN] | YYYY-MM-DD HH:MM UTC | Unity | order | ref: <file the change rests on> | see: ENT-<the entry before>
+Changed: <what changed against the entry before, and why>.
+In force from this entry until a newer one.
+STANDING ORDERS (Suggi; set and changed by him alone)
 S<n>. <Suggi's standing order, word for word>.
-PLAN (the Fleet Admiral's reading of the standing orders, in five steps at most)
-P<n>. <step> (<the standing orders it serves>).
-  Goal: <goal>.
-  The plan changes when Suggi and the Fleet Admiral change it.
-TURN
-T<n>. <the turn's order>.
-  Done when: <measure>.
-EVERY ADMIRAL
-Order: <what every Admiral does each turn>.
-Limits: <what no Admiral does; what it asks first>.
-<MEMBER>, <division> (<its ships, by role word>)
-Order: <what this member does each turn until the orders change>.
-Measure: <the number it should move>.
+STANDING GOALS (Suggi; set and changed by him alone)
+G<n>. <Suggi's standing goal, word for word>.
+PLAN (the Fleet Admiral's order to the fleet)
+P<n>. <goal> -- <owner>, with <who supports>.
+UNITY, Fleet Admiral (the command group)
+<the task now and its purpose>.
+ZERO, Mining (miner- ships)
+<the task now and its purpose>.
+MERCURY, Trade (trader- ships)
+APOLLO, Logistics (hauler- ships)
+APOPHIS, Military (drone- and sentinel- ships)
+ORACLE, Intel (scout- ships)
 ```
 
 ## The Reports Log

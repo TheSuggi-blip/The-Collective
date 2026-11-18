@@ -75,6 +75,9 @@ def need(args, *names):
         raise ValueError("this needs: " + ", ".join(missing))
 
 
+STATS_VIEWS = ('kpi', 'contribution', 'classes', 'time', 'supply', 'xp', 'upgrades', 'alerts')       # hive.py stats <view>: definitions in game/metrics.md
+
+
 def fleet_plan(a):
     view = a.get("view") or "money"
     if view == "money":
@@ -95,7 +98,9 @@ def fleet_plan(a):
         return [("game/fleet/hive.py", ["refill"])]
     if view == "forecast":
         return [("game/fleet/hive.py", ["forecast"] + ([a["member"]] if a.get("member") else []) + flag(a, "hours"))]
-    raise ValueError("view is one of: money, history, levels, capacity, board, standing, tasks, refill, forecast")
+    if view in STATS_VIEWS:                         # the fleet's statistics, computed by the store (stats.py)
+        return [("game/fleet/hive.py", ["stats", view] + flag(a, "member") + flag(a, "hours"))]
+    raise ValueError("view is one of: money, history, levels, capacity, board, standing, tasks, refill, forecast, " + ", ".join(STATS_VIEWS))
 
 
 def plan_file(a):
@@ -202,10 +207,20 @@ TOOLS = {
                 "with their orders and last runs. view=standing: the standing fleet of a member: its plan route by route with the credits per ship-hour of each, and "
                 "every ship with what it flies, what it earned per hour and what closes the best route to it. view=tasks: credits per ship-hour by kind of work and by "
                 "division, idle ships counted. view=refill: what comes back per hour between our readings: bids, fields, herds. view=forecast: the hours ahead per "
-                "division: every route with the ships on it now, what a ship-hour on it measured, and what that makes per hour and per turn.",
-        "args": {"view": arg(S, "money (default), history, levels, capacity, board, standing, tasks, refill or forecast",
-                             ("money", "history", "levels", "capacity", "board", "standing", "tasks", "refill", "forecast")),
-                 "member": arg(S, "for levels, board, standing and forecast: a member's name, or all", MEMBERS),
+                "division: every route with the ships on it now, what a ship-hour on it measured, and what that makes per hour and per turn. "
+                "The statistics the store computes by itself (definitions: game/metrics.md; every figure with its window and n, `not measured` "
+                "where no record holds it): view=kpi: the fleet as one purse over 1, 6, 24 and 72 hours: throughput, operating expense, steady "
+                "net, paid once, net of everything, net per ship-hour, the trend, the reserve and the surplus at the best bid. view=contribution: "
+                "per division its own net, the income its route files enabled for every division, its service. view=classes: per role the "
+                "places of its own class work open now against its ships, and the spill. view=time: where the ship-hours went: own work, "
+                "another class's, once, shared, docked or in space without work, offline. view=supply: per reserve good held, needed, min "
+                "and max, change an hour, days of supply, the routes and ships that feed it, and gather against buy. view=xp: XP per "
+                "ship-hour per role, skill and route, hours to the next tier. view=upgrades: per ship its tier, Piloting, the next tier's "
+                "hulls, empty slots. view=alerts: the hours outside their control band.",
+        "args": {"view": arg(S, "money (default), history, levels, capacity, board, standing, tasks, refill, forecast, kpi, contribution, "
+                                "classes, time, supply, xp, upgrades or alerts",
+                             ("money", "history", "levels", "capacity", "board", "standing", "tasks", "refill", "forecast") + STATS_VIEWS),
+                 "member": arg(S, "for levels, board, standing, forecast, contribution, classes, time, xp and upgrades: a member's name, or all", MEMBERS),
                  "hours": arg(I, "for history, board, standing, tasks and forecast: the window in hours")},
         "plan": fleet_plan},
     "ship": {
@@ -350,20 +365,27 @@ TOOLS = {
                  "limit": arg(I, "for a query: rows at most")},
         "plan": sql_plan},
     "docs": {
-        "text": "The fleet's written knowledge by section, from the database (the store mirrors the repository every minute and keeps every version): "
+        "text": "The fleet's written knowledge by section, from the database (the store mirrors the files every minute and keeps every version): "
                 "the rulebook rule by rule (F1 to F35), the orders in force block by block (S, G, D and P lines, each member's block), strategy, empire, "
                 "each division's guidebook (its class card: ships, and skills in levelling order; levelling guide; ships and fits) and templates, the "
-                "game's rules row by row. view=list: the files, or one file's sections by title (doc: a file, a kind or an owner; grep: the sections "
+                "game's rules row by row, the metrics; and what the members write as they work: each division's plan (data/plans), every report, "
+                "every entry of the logs requests, queue, admirals, errors and reports, each member's own files (soul, mission, learnings, knowledge). "
+                "view=list: the files, or one file's sections by title (doc: a file, a kind or an owner; grep: the sections "
                 "that hold a word, whole). view=section: one section whole. view=changes: the sections changed since your last turn (or since). "
-                "view=history: every version of one section with when it was first seen, each against the one before.",
-        "args": {"view": arg(S, "list (default), section, changes or history", ("list", "section", "changes", "history")),
+                "view=history: every version of one section with when it was first seen, each against the one before. view=division: what each "
+                "Admiral is doing, one short block a division: its mission, its orders block, its plan, its guidebook's sections, its last report, "
+                "the requests open to and from it, its claims in force.",
+        "args": {"view": arg(S, "list (default), section, changes, history or division", ("list", "section", "changes", "history", "division")),
                  "doc": arg(S, "for list, section and history: a file (governance/rulebook.md, guidebook/mining.md, orders.log), a kind (rulebook, "
-                              "orders, strategy, empire, guidebook, template, rules) or an owner (Fleet, Unity, Mining, Trade, Logistics, Military, Intel, Command)"),
+                              "orders, strategy, empire, guidebook, template, rules, metrics, plan, report, log, member) or an owner (Fleet, Unity, Mining, Trade, "
+                              "Logistics, Military, Intel, Command)"),
                  "section": arg(S, "for section and history: the section's id, e.g. F8, D3, zero, class-card/skills"),
                  "grep": arg(S, "for list: only the sections that hold this word, printed whole"),
                  "since": arg(S, "for changes: a UTC time (2026-11-17T12:00Z) or hours back (6h); default: your last turn"),
-                 "member": arg(S, "for changes: whose last turn; default: yours", division.MEMBERS)},
+                 "member": arg(S, "for changes: whose last turn; default: yours", division.MEMBERS),
+                 "division": arg(S, "for division: a member's or a division's name, or all (default)")},
         "plan": lambda a: [("game/fleet/hive.py", ["changes"] + flag(a, "since") + flag(a, "member"))] if a.get("view") == "changes" else
+                          [("game/fleet/hive.py", ["division", str(a.get("division") or "all")])] if a.get("view") == "division" else
                           (need(a, "section") if a.get("view") in ("section", "history") else None) or
                           [("game/fleet/hive.py", ["docs"] + ([str(a["doc"])] if a.get("doc") else []) + flag(a, "section") + flag(a, "grep")
                             + (["--history"] if a.get("view") == "history" else []))]},

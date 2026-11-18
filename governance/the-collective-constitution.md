@@ -39,10 +39,10 @@ Admiral and recorded in the Fleet Admiral's reports.
 |:--|:--|:--|
 | Owner | Suggi | The Collective. His word is final. |
 | Fleet Admiral | Unity | The fleet. Sets strategy with Suggi, conducts diplomacy and negotiations, builds the fleet's systems. |
-| Admiral | Five agents, named in `COLLECTIVE.md` | One division of the fleet each, 100 ships or more at full strength. |
+| Admiral | Five agents, named in `ROSTER.md` | One division of the fleet each, 100 ships or more at full strength. |
 | Ships | Pilot accounts of the game | Nothing. Each ship belongs to exactly one division. |
 
-- [MUST] The members and their divisions are listed in `COLLECTIVE.md`.
+- [MUST] The members and their divisions are listed in `ROSTER.md`; each member's standing job is its `MISSION.md`.
   Every member's workspace holds a copy: the roster is identical in
   all of them, and below it stands that member's own mission; the
   Fleet Admiral keeps it.
@@ -221,3 +221,4 @@ conflicts with Ethics, Ethics wins. No exceptions.
 | 2 | 2026-11-15 | Morpheus | On Suggi's instruction: the Fleet Admiral manages the inside of the unit with Suggi, every member's Hermes profile included (II); credentials stay inside the Collective (IV, Containment). |
 | 3 | 2026-11-16 | Unity | On Suggi's approval of 2026-11-16: `governance/strategy.md` ranks beside this file (I). |
 | 4 | 2026-11-16 | Unity | On Suggi's instruction and approval of 2026-11-16: every member's copy of `COLLECTIVE.md` holds the same roster and, below it, that member's own mission (II). |
+| 5 | 2026-11-18 | Unity | On Suggi's instruction of 2026-11-18: `COLLECTIVE.md` is split into `ROSTER.md` (the roster and how the Collective works together, the same in every workspace) and each member's `MISSION.md` (its standing job) (II). |

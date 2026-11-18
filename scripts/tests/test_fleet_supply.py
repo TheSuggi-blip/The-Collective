@@ -318,3 +318,32 @@ class DoorTests(Base):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class DutyClassTests(Base):
+    """Rule F23, round r21: duty puts a source only into the plan of a division whose class of work it is (Suggi,
+    2026-11-18: "Ore is miners job"); a gather source of a Logistics chain went into the haulers' plan before."""
+
+    def setUp(self):
+        super().setUp()
+        write(self.root / "routes" / "mine-c.json", {"id": "mine-c", "kind": "mine", "title": "C", "belt": "sys_a:sys_a_belt", "standing": True})
+        write(self.root / "routes" / "supply-ice.json", {"id": "supply-ice", "kind": "circuit", "title": "Ice to base A", "stops": [
+            {"at": "sys_a:base_a:base_a", "withdraw": [{"item": "water_ice"}]}, {"at": "sys_a:base_a:base_a", "store": "all"}]})
+        write(self.root / "supply" / "chains.tsv", CHAINS.replace("ice\twater_ice\tbase_a\t2\t0\t\tLogistics\tlow: 3 at base_a\n",
+                                                                "ice\twater_ice\tbase_a\t9\t0\tmine-c,supply-ice\tLogistics\tshort: 3 at base_a\n"))
+        self.one()
+
+    def test_a_gather_source_is_not_put_into_the_haulers_plan(self):
+        code, text = self.run_main("duty")
+        self.assertEqual(code, 0, text)
+        self.assertIn("not the logistics plan's class of work, not added: mine-c (gather work, the miners' (rule F23))", text)
+        self.assertIn("  ADD supply-ice -> the list Then of the logistics plan", text)
+        self.assertNotIn("ADD mine-c", text)
+        self.assertIn("  ADD mine-b -> the list Then of the mining plan", text)                  # a gather source of Mining's chain still goes in
+
+    def test_a_route_duty_put_in_that_is_not_the_divisions_class_ends(self):
+        record = {"logistics/mine-c": {"division": "logistics", "route": "mine-c", "chain": "ice", "added": supply.stamp(self.now), "until": supply.stamp(self.now + 3600)}}
+        res = supply.read(str(self.data))
+        plan_steps = supply.steps(res, record, self.now, str(self.root))
+        self.assertEqual(plan_steps["divisions"]["logistics"]["end"], [("logistics/mine-c", "mine-c", "it is gather work, the miners' (rule F23), not the logistics division's")])
+        self.assertEqual(supply.steps(res, record, self.now)["divisions"]["logistics"]["end"], [])     # without the route files nothing is judged

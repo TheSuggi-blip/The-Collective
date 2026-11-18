@@ -323,5 +323,105 @@ class AppendTests(Tree):
         self.assertEqual(git("status", "--short"), "A  communications/errors.log")            # still staged, still theirs
 
 
+def words(n, word="w"):
+    """n words on one line."""
+    return " ".join([word] * n)
+
+
+LEAN = """## [ENT-003] | 2026-01-02 08:00 UTC | Unity | order | ref: game/routes/plan.json | see: ENT-002
+Changed: %s
+In force from 2026-01-02 08:00 UTC until a newer entry.
+STANDING ORDERS (Suggi; no part of a word count)
+S1. %s
+STANDING GOALS (Suggi; no part of a word count)
+G1. %s
+PLAN (the heading line is not counted: %s)
+P1. %s
+TURN
+T1. %s
+UNITY, Fleet Admiral (the command group: %s)
+Order: %s
+ZERO, Mining (the miner- ships)
+Order: %s
+"""
+
+
+class OrdersSizeTests(Tree):
+    """Suggi, 2026-11-18: lean orders. The newest entry: at most ENTRY_CHARS characters whole; its `Changed:` line, its
+    PLAN and each member's block counted in words, his standing orders and goals in no word count."""
+
+    def entry(self, changed=10, plan=40, turn=10, unity=40, zero=40, standing=300):
+        return LEAN % (words(changed - 1), words(standing), words(standing), words(80), words(plan - turn - 2), words(turn - 1),
+                       words(80), words(unity - 1), words(zero - 1))
+
+    def errors_for(self, text):
+        self.write("orders", ORDERS + "\n" + text)
+        return [line for line in comms.check(str(self.root)) if "words" in line or "characters" in line]
+
+    def over(self, part, count, name):
+        return "orders.log ENT-003: %s is %s words, more than %s %s" % (part, format(count, ","), name, format(getattr(comms, name), ","))
+
+    def test_the_parts_at_their_limits_pass_and_the_heading_lines_are_not_counted(self):
+        text = self.entry(changed=comms.CHANGED_WORDS, plan=comms.PLAN_WORDS, unity=comms.BLOCK_WORDS, zero=comms.BLOCK_WORDS)
+        self.assertEqual(self.errors_for(text), [])
+        parts = {part: count for part, count, _limit, _name in comms.orders_words(comms.parse(text)[0][0])}
+        self.assertEqual(parts, {"the `Changed:` line": comms.CHANGED_WORDS, "PLAN": comms.PLAN_WORDS,
+                                 "block UNITY": comms.BLOCK_WORDS, "block ZERO": comms.BLOCK_WORDS})
+        self.assertEqual((comms.ENTRY_CHARS, comms.PLAN_WORDS, comms.BLOCK_WORDS, comms.CHANGED_WORDS), (8000, 150, 80, 60))
+
+    def test_each_part_over_its_limit_halts_alone_and_names_its_count(self):
+        self.assertEqual(self.errors_for(self.entry(changed=comms.CHANGED_WORDS + 1)),
+                         [self.over("the `Changed:` line", comms.CHANGED_WORDS + 1, "CHANGED_WORDS")])
+        self.assertEqual(self.errors_for(self.entry(plan=comms.PLAN_WORDS + 1)), [self.over("PLAN", comms.PLAN_WORDS + 1, "PLAN_WORDS")])
+        self.assertEqual(self.errors_for(self.entry(zero=comms.BLOCK_WORDS + 1)), [self.over("block ZERO", comms.BLOCK_WORDS + 1, "BLOCK_WORDS")])
+
+    def test_the_whole_entry_has_a_character_cap_that_counts_suggis_lines_too(self):
+        text = self.entry(standing=comms.ENTRY_CHARS // 4)                         # S1 and G1: half the cap each, in no word count
+        size = len(text.rstrip("\n"))
+        self.assertGreater(size, comms.ENTRY_CHARS)
+        self.assertEqual(self.errors_for(text), ["orders.log ENT-003: the entry is %s characters, more than ENTRY_CHARS %s"
+                                                 % (format(size, ","), format(comms.ENTRY_CHARS, ","))])
+
+    def test_plan_runs_to_the_first_member_block_and_takes_the_turn_with_it(self):
+        found = self.errors_for(self.entry(plan=comms.PLAN_WORDS + 20, turn=comms.PLAN_WORDS - 20))
+        self.assertEqual(found, [self.over("PLAN", comms.PLAN_WORDS + 20, "PLAN_WORDS")])
+
+    def test_only_the_newest_entry_is_counted(self):
+        big = self.entry(plan=900, unity=400, zero=400, changed=200)
+        lean = self.entry().replace("## [ENT-003] | 2026-01-02 08:00", "## [ENT-004] | 2026-01-02 09:00")
+        self.assertEqual(len(self.errors_for(big)), 4)
+        self.assertEqual(self.errors_for(big + "\n" + lean), [])                     # history is never checked
+
+    def test_an_append_over_the_limits_is_refused_and_a_lean_one_follows_an_old_fat_entry(self):
+        self.write("orders", ORDERS + "\n" + self.entry(plan=900))                 # the newest entry over its limit
+        before = (self.root / "communications" / "orders.log").read_text(encoding="ascii")
+        draft = Path(self.temp.name) / "draft.txt"
+        fat = self.entry(zero=comms.BLOCK_WORDS + 30).replace("## [ENT-003] | 2026-01-02 08:00 UTC", "## [ENT-NEXT] | NOW")
+        draft.write_text(fat, encoding="ascii")
+        code, text = self.run_command(comms.append, "orders", str(draft), "Unity")
+        self.assertEqual(code, 1)
+        self.assertIn("NOT APPENDED: orders.log the entry: block ZERO is %d words, more than BLOCK_WORDS %d"
+                      % (comms.BLOCK_WORDS + 30, comms.BLOCK_WORDS), text)
+        self.assertEqual((self.root / "communications" / "orders.log").read_text(encoding="ascii"), before)
+        draft.write_text(self.entry().replace("## [ENT-003] | 2026-01-02 08:00 UTC", "## [ENT-NEXT] | NOW"), encoding="ascii")
+        code, text = self.run_command(comms.append, "orders", str(draft), "Unity")
+        self.assertEqual((code, text.strip()), (0, "appended ENT-004 to communications/orders.log (not committed)"))
+        self.assertEqual(comms.check(str(self.root)), [])
+
+    def test_the_newest_entry_of_2026_11_18_halts(self):
+        # ENT-054 was the orders in force when the gate was built: 24,857 characters, 1,166 words of PLAN
+        repo = SCRIPT.parents[1]
+        entries, _errors = comms.read_log(str(repo), "orders", archive=True)
+        old = [e for e in entries if e["num"] == 54]
+        if not old:
+            self.skipTest("orders.log ENT-054 is not in this tree")
+        self.write("orders", COMMENT + "\n".join([old[0]["head"]] + old[0]["body"]) + "\n")
+        found = comms.check(str(self.root))
+        self.assertIn("orders.log ENT-054: the entry is 24,857 characters, more than ENTRY_CHARS 8,000", found)
+        self.assertIn("orders.log ENT-054: PLAN is 1,166 words, more than PLAN_WORDS 150", found)
+        for member in ("UNITY", "ZERO", "MERCURY", "APOLLO", "APOPHIS", "ORACLE"):
+            self.assertTrue(any(line.startswith("orders.log ENT-054: block %s is " % member) for line in found), member)
+        self.assertEqual(len(found), 8, found)                                      # its Changed: line holds 55 words
+
 if __name__ == "__main__":
     unittest.main()

@@ -56,36 +56,6 @@
     "piloting"
    ],
    "note": "requires.skills_below navigation 3: the route closes by itself at navigation 3, and Signal Fragments in the list First takes the pilot. About 4 navigation XP a jump, a loop of 17 to 18 minutes for about 165 cr of fuel."
-  },
-  "trade-gas": {
-   "title": "Gas harvested and sold into the Node Beta and Central Nexus gas bids",
-   "routes": [
-    "mine-marfik-emission-nebula",
-    "mine-gsc-0016-emission-nebula",
-    "mine-the-experiment-haze",
-    "mine-coldwater-emission-nebula",
-    "mine-stellar-siphon",
-    "mine-the-experiment-haze-synchrony"
-   ],
-   "trains": [
-    "mining"
-   ],
-   "note": "Needs a Gas Harvester I. One ship a route: the hydrogen and plasma bids take a few dozen units an hour; the loss stop closes a route whose last runs lost."
-  },
-  "trade-gather": {
-   "title": "Fallback: iron ore gathered into storage for the reserve when no trade or craft is open",
-   "routes": [
-    "gather-okab-belt",
-    "gather-gj-3470-dewfall-fray",
-    "gather-hamal-crystal-bloom",
-    "gather-gsc-0027-prism-scatter",
-    "gather-ironhollow-echo-ejecta",
-    "mine-acubens"
-   ],
-   "trains": [
-    "mining"
-   ],
-   "note": "2026-11-17 15:43 UTC (Mercury, orders ENT-037): fallback while no trade or craft is open. Okab Belt (28 ships) and GJ 3470 Dewfall Fray (13), one jump past Hamal, lead: lifted by the Fleet Admiral at 14:18 and 14:44 UTC while traders waited (queue.log ENT-165, ENT-166) and kept: each field holds about 200,000 iron and copper and no pirate is on record there. Their ore goes into Node Beta storage for craft-piping-node-beta; the home fields after them stand at their floors."
   }
  }
 }

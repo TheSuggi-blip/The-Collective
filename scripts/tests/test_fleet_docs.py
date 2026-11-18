@@ -245,12 +245,12 @@ class StoreTests(unittest.TestCase):
     def test_the_store_mirrors_every_section_and_keeps_a_version_only_when_a_text_changed(self):
         self.assertIn("docs", [name for name, _columns, _key in self.store.SNAPSHOT], "store.py has no table docs: the written knowledge is not in the store")
         out = self.one(self.t0)
-        self.assertEqual(out["snapshot"]["loaded"]["docs"], 6)
+        self.assertEqual(out["snapshot"]["loaded"]["docs"], 7)
         self.assertEqual(out["versions"]["error"], None)
         sections = self.read("SELECT COUNT(*) FROM docs")[0][0]
-        self.assertEqual(sections, 8 + 2 + 5 + 2 + 3 + 10)                  # rulebook, strategy, guidebook, templates, rules, orders
+        self.assertEqual(sections, 8 + 2 + 5 + 2 + 3 + 10 + 3)              # rulebook, strategy, guidebook, templates, rules, orders, reports.log's entries
         self.assertEqual(self.read("SELECT COUNT(*) FROM doc_versions")[0][0], sections)
-        self.assertEqual(self.read("SELECT owner, COUNT(*) FROM docs GROUP BY owner ORDER BY owner"), [("Fleet", 13), ("Mining", 7), ("Unity", 10)])
+        self.assertEqual(self.read("SELECT owner, COUNT(*) FROM docs GROUP BY owner ORDER BY owner"), [("Fleet", 13), ("Mining", 9), ("Trade", 1), ("Unity", 10)])
         self.assertEqual(self.read("SELECT value FROM meta WHERE key = 'docs.baseline'"), [(self.t0,)])
         self.assertEqual(self.read("SELECT section, n, kind FROM docs WHERE path = 'governance/rulebook.md' AND section LIKE 'F%' ORDER BY n"),
                          [("F1", 6, "rulebook"), ("F2", 7, "rulebook"), ("F7", 8, "rulebook")])
@@ -344,10 +344,10 @@ class StoreTests(unittest.TestCase):
         self.assertTrue(out["published"])                                     # the pass went on and published its copy
         self.assertIn("doc_versions (not kept: RuntimeError: boom)", self.store.said(out))   # named in the pass's line
         self.assertEqual(self.read("SELECT COUNT(*) FROM doc_versions"), [(0,)])          # rolled back: nothing half kept
-        self.assertEqual(self.read("SELECT COUNT(*) FROM docs"), [(30,)])
+        self.assertEqual(self.read("SELECT COUNT(*) FROM docs"), [(33,)])
         writings.meta_of = real
         out = self.one(self.t0 + 60)                                         # the next pass compares again and keeps them all
-        self.assertEqual((out["versions"]["error"], out["versions"]["added"]), (None, 30))
+        self.assertEqual((out["versions"]["error"], out["versions"]["added"]), (None, 33))
 
     def test_the_readers_list_print_and_find_a_section(self):
         self.one(self.t0)

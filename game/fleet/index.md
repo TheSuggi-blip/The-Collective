@@ -8,7 +8,7 @@ author: Unity
 # index.md -- The Fleet's Scripts
 
 Built by `python3 -B scripts/fleet-index.py` from the docstring of every script in this
-folder; never edited by hand. Scripts listed: 35.
+folder; never edited by hand. Scripts listed: 39.
 
 - Run a script from the repository root: `python3 -I -B game/fleet/<script> <arguments>`,
   the arguments as listed under "How to Call Each".
@@ -34,7 +34,9 @@ folder; never edited by hand. Scripts listed: 35.
 | `craftbook.py` | Answer what can be made, fitted and built: a recipe, everything a thing takes, and what our stored goods can become. | By hand |
 | `dispatch.py` | Keep every pilot at work: give each free pilot the next task of its role. | Service |
 | `division.py` | Who commands which ship, whose plan is whose, and the check every fleet script runs before it drives a ship. | By hand |
-| `docs.py` | The fleet's written knowledge by section in the store: the rulebook rule by rule, the orders in force block by block, the strategy, the empire, the guidebooks with their class cards and levelling guides, the route templates and the game's rules, each section with every version it had. | By hand |
+| `docs.py` | The fleet's written knowledge by section in the store: the rulebook rule by rule, the orders in force block by block, the strategy, the empire, the guidebooks with their class cards and levelling guides, the route templates, the game's rules, the metrics, and everything the members write as they work (the division plans, the reports, every log entry, the members' own files), each section with every version it had. | By hand |
+| `docs_division.py` | What each Admiral is doing, in one short block per division, from the store alone: its mission, its block of the orders in force, its plan, its guidebook's sections, its last session entry, the requests open to and from it, and its claims in force. | By hand |
+| `docs_export.py` | Copies an allowlist of each member's own files into the data folder, where the store mirrors them into its tables docs and doc_versions: every member's soul, mission, learnings and knowledge, readable by every member from the database. | By hand |
 | `empire.py` | Keep the picture of our empire: the faction and its limit, the bases and offices we own, the systems they stand in, the sites we may build on, and what the faction can build next. | By hand |
 | `fill.py` | Keep every ship of a division at work: say why ships wait, and fill the plan with the work that stands open. | By hand |
 | `fleetfile.py` | Write the roster into a member's own FLEET.md: one table, every ship of the member on one line with its kind, its hull and the task it is on now. | By hand |
@@ -50,12 +52,14 @@ folder; never edited by hand. Scripts listed: 35.
 | `observe.py` | A member writes down what it saw in the game (a scan far away, a price at a station we read no book of, a fight with a species) as one checked line of its division's own record; the store makes the lines one SQL table, `observations`. | By hand |
 | `plan.py` | Each division's plan file: every ship with the routes it flies, in their order; the dispatcher sends the ships by it. | By hand |
 | `plate.py` | Make our pilots' stored creature carapace into armor plate where each is docked, and sell plates into the bid there. | By hand |
+| `pull.py` | Each class flies its own work, and goods are gathered only while the reserve needs them: the class guard and the pull rule of the dispatcher, with their dry run. | By hand |
 | `route_run.py` | Fly one pilot along a route file: dock at each stop and do what the stop says. | Runner (`circuit` routes) |
 | `routemaker.py` | Find every way to earn that the fleet's own data shows, cost it, and write the route file for it. | Service |
 | `routes.py` | Check the route files, write their index, and attach what the runs measured. | By hand |
 | `runhost.py` | One program that flies the runs the dispatcher starts, each run as a thread instead of a process. | Service |
 | `sight.py` | What our ships see where they are: the pilots they meet, and a first read of a system nobody read. | Service |
 | `stash.py` | Store what a docked pilot carries in its own storage at that station, so that its hold is free for the next route. | By hand |
+| `stats.py` | The fleet's statistics, computed by the store into tables of its own: the fleet as one purse, what each division gives the whole, class capacity, where the ship-hours go, the reserve's days of supply, refill and regrowth, XP per ship-hour, the next upgrade of each ship, gather against buy, and control-chart alerts. | By hand |
 | `store.py` | Keeps the fleet's history and its current state in one SQLite file: the runs, the price moves and the census readings with their sums by hour and by day, the members' own observations, and beside them what the fleet's own files say now. | Service |
 | `supply.py` | The supply chains: the goods the fleet must never run out of, each at its place against what stands there now, with the ships on duty for it. | By hand |
 | `surplus.py` | Say per item what the fleet holds beyond what its build targets reserve: the surplus a trader may sell, where it lies and its best bid. | By hand |
@@ -171,13 +175,43 @@ division.py plan [<role>]       the plans in force: per role, who keeps it and i
 
 The fleet's written knowledge by section in the store: the rulebook rule by rule, the
 orders in force block by block, the strategy, the empire, the guidebooks with their
-class cards and levelling guides, the route templates and the game's rules, each section
-with every version it had.
+class cards and levelling guides, the route templates, the game's rules, the metrics,
+and everything the members write as they work (the division plans, the reports, every
+log entry, the members' own files), each section with every version it had.
 
 Run by hand.
 
 ```
 docs.py parse <file>      the sections of one file as the store loads them: id, characters, title
+```
+
+### `docs_division.py`
+
+What each Admiral is doing, in one short block per division, from the store alone: its
+mission, its block of the orders in force, its plan, its guidebook's sections, its last
+session entry, the requests open to and from it, and its claims in force.
+
+Run by hand.
+
+```
+docs_division.py [<Member>|<division>|all] [--data <dir>] [--root <dir>]
+--data <dir>   the unit's data folder (default: the fleet's)
+--root <dir>   the repository's game/ folder (default: the parent of this file's folder)
+```
+
+### `docs_export.py`
+
+Copies an allowlist of each member's own files into the data folder, where the store
+mirrors them into its tables docs and doc_versions: every member's soul, mission,
+learnings and knowledge, readable by every member from the database.
+
+Run by hand.
+
+```
+docs_export.py [--dry-run] [--quiet]   copy what changed, remove what left; one line of counts (--quiet: only when
+                                       something was copied, removed or held back); --dry-run says what it would do
+--profiles <dir>   the members' profiles (default /opt/data/profiles)
+--data <dir>       the unit's data folder (default: the fleet's)
 ```
 
 ### `empire.py`
@@ -305,6 +339,7 @@ hive.py forecast [<Member>|all] [--hours N]
 hive.py refill
 hive.py docs [<path|kind|owner>] [--section <id> [--history]] [--grep <word>]
 hive.py changes [--since <ISO time>|<N>h] [--member <name>]
+hive.py division [<Member>|<division>|all]
 hive.py briefing [<Member>|all] [--hours N]
 hive.py store [--hours N]
 hive.py store price <item id> [--hours N]
@@ -316,6 +351,7 @@ hive.py supply [show|check|duty]
 hive.py flow [<Member>|all] [--hours N]
 hive.py sql "<SELECT or WITH statement>" [--limit N]
 hive.py schema [<table or view>]
+hive.py stats <view> [--hours N] [--member <Member>]
 --root <dir>   the repository's game/ folder (default: the parent of this file's folder)
 --data <dir>   the unit's data folder (default /srv/collective/data)
 ```
@@ -444,6 +480,20 @@ Run by hand.
 plate.py <pilot> [<pilot> ...] [--min-bid N] [--no-craft] [--no-sell] [--dry-run]
 ```
 
+### `pull.py`
+
+Each class flies its own work, and goods are gathered only while the reserve needs them:
+the class guard and the pull rule of the dispatcher, with their dry run.
+
+Run by hand.
+
+```
+pull.py check [<division>|<Member>|all] [--now <UTC time>]   the dry run: what the two rules would refuse and close, who would wait
+pull.py levels [--now <UTC time>]                             the goods of the reserve with their levels and marks
+--root <dir>   the repository's game/ folder (default: the parent of this file's folder)
+--data <dir>   the unit's data folder (default /srv/collective/data)
+```
+
 ### `route_run.py`
 
 Fly one pilot along a route file: dock at each stop and do what the stop says.
@@ -518,6 +568,24 @@ Run by hand.
 
 ```
 stash.py <pilot> [<pilot> ...] [--dry-run]
+```
+
+### `stats.py`
+
+The fleet's statistics, computed by the store into tables of its own: the fleet as one
+purse, what each division gives the whole, class capacity, where the ship-hours go, the
+reserve's days of supply, refill and regrowth, XP per ship-hour, the next upgrade of
+each ship, gather against buy, and control-chart alerts.
+
+Run by hand.
+
+```
+hive.py stats <view> [--hours N] [--member <Member>]     views: kpi, contribution, classes, time, supply, gather, xp,
+                                                         upgrades, alerts, refill, status
+stats.py <view> [--hours N] [--member <Member>] [--data <dir>]    the same
+--hours N      kept for the tool's argument: the store computes kpi over 1, 6, 24 and 72 hours and contribution, time
+               and xp over 24; another N is said `not measured` and those are shown
+--data <dir>   the unit's data folder (default /srv/collective/data)
 ```
 
 ### `store.py`

@@ -229,3 +229,13 @@ queries:
   gold_files:
   - governance/empire.md
   domain: governance
+- qid: c047
+  question: How is the fleet's steady net per ship-hour computed, and over which window and n?
+  gold_files:
+  - game/metrics.md
+  domain: fleet
+- qid: c048
+  question: When does an alert fire for a route's credits per ship-hour, and why median and MAD instead of the mean?
+  gold_files:
+  - game/metrics.md
+  domain: fleet

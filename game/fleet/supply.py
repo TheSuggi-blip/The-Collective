@@ -45,6 +45,10 @@ RULES:
     later. A later `duty --write` takes it out of the list Then when its chain is ok, gone, kept by another division or
     no longer names it, or when its end came and the chain is not short; a chain still short at the end renews it.
     Duty takes out only what it put in, and only from the list Then.
+  - Rule F23, each class flies its own work (workclass.own): duty puts a source into a division's plan only when it is
+    the own work of every role of that division (a gather route into Mining's alone, unless its file's `open_to`
+    names the other roles); another is named and never added, and a route duty put in earlier that is not of the
+    division's class is taken out at the next `duty --write`. A mission that pays once stays every role's.
   - DUTY_ENABLED = False: `duty --write` is refused (exit 1); `duty` and `duty --dry-run` only say what would change.
   - It reads the store's read copy and the route files; it moves no ship. Only `duty --write` writes: the plan of a
     division (data/plans, game/routes/plans) and data/supply/duty.json.
@@ -75,6 +79,7 @@ from pathlib import Path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import board                                      # noqa: E402  the divisions' names
 import division                                   # noqa: E402  who runs this, which roles are whose, the data folder
+import workclass                                  # noqa: E402  whose work a route is (rule F23)
 
 # store.py imports this file for its reader: store, plan and dispatch are imported inside the functions that need them.
 
@@ -406,11 +411,26 @@ def gatherers(root, item, place="fleet"):
     return out
 
 
+def not_own(name, route, rid):
+    """Why a route is not the own work of every role of division `name` (rule F23, workclass.own), or None."""
+    if route is None:
+        return None                                   # no route file read: judged by the lines that name it
+    roles = roles_of(name)
+    other = [role for role in roles if not workclass.own(role, route, rid)]
+    if not other and roles:
+        return None
+    import pull                                   # the words of the dispatcher's class reason
+    return "%s work, the %s' (rule F23)" % (workclass.work_class(route, rid), pull.role_words(workclass.roles_for(route, rid)))
+
+
 def steps(res, record, now, root=None):
     """What duty would change: {lines: [text], divisions: {division: {add: [(route, chain)], end: [(key, route, why)]}}, renew: [key],
-    hints}. Only short chains with sources add; every route of the record whose end came or whose chain no longer asks for it ends."""
+    hints}. Only short chains with sources add; every route of the record whose end came or whose chain no longer asks for it ends.
+    With `root` (the game/ folder) the route files are read: a source that is not the keeper division's own class is
+    never added, and a route of the record that is not ends (rule F23)."""
     by_chain = {r["chain"]: r for r in res["rows"] if r["chain"]}
     plans, lines, divisions, renew = res["plans"], [], {}, []
+    files = workclass.load(root) if root else {}
     for r in res["rows"]:
         if r["status"] != "short":
             continue
@@ -427,12 +447,17 @@ def steps(res, record, now, root=None):
         unknown = [rid for rid in sources_of(r) if rid not in res["routes"]]
         off = [rid for rid in sources_of(r) if rid in res["routes"] and res["routes"][rid][1] == "off"]
         missing = [rid for rid in sources_of(r) if rid not in held and rid not in unknown and rid not in off]
+        foreign = [(rid, not_own(name, files.get(rid), rid)) for rid in missing]
+        foreign = [(rid, why) for rid, why in foreign if why]
+        missing = [rid for rid in missing if rid not in dict(foreign)]
         lines.append("%s: the %s plan (roles %s) holds %d of its %d sources%s" % (head, name, ", ".join(roles) or "none", len(have), len(sources_of(r)),
                                                                               ": " + ", ".join(have) if have else ""))
         if unknown:
             lines.append("  no route file, not added: %s" % ", ".join(unknown))
         if off:
             lines.append("  switched off (status off), not added: %s" % ", ".join(off))
+        for rid, why in foreign:
+            lines.append("  not the %s plan's class of work, not added: %s (%s)" % (name, rid, why))
         if missing:
             lines.append("  ADD %s -> the list Then of the %s plan, in front of its census and park routes (standing work for every ship of the "
                          "division; plan.put_then + plan.apply, as fill.py add), ending %s unless the chain is still short then"
@@ -442,7 +467,9 @@ def steps(res, record, now, root=None):
         row = by_chain.get(entry.get("chain"))
         due = epoch(entry.get("until")) <= now
         broken = row is not None and row["status"] == "broken"            # a row with a typo ends nothing before its end
-        why = ("its chain %s is gone from the file" % entry.get("chain") if row is None else
+        foreign = not_own(entry["division"], files.get(entry["route"]), entry["route"])
+        why = ("it is %s, not the %s division's" % (foreign, entry["division"]) if foreign else
+               "its chain %s is gone from the file" % entry.get("chain") if row is None else
                "its chain is ok" if row["status"] == "ok" else
                "its chain is kept by %s now" % row["keeper"] if not broken and (row["keeper"] or "").lower() != entry["division"] else
                "its chain no longer names it" if not broken and entry["route"] not in sources_of(row) else

@@ -4,6 +4,10 @@
 # Tab-separated; `#` starts a comment.
 # kind: facility (a facility id, units = how many) | hull (a ship class id) | item (an item id, units on hand)
 #       keep (an item id; units a number, or `all` = never surplus) | keepkind (a kind of item, units `all`)
+#       max (an item id; units = the most the fleet gathers of it) | min (an item id; units = the level below which it
+#       is gathered again): the pull levels of the dispatcher's pull rule (game/fleet/pull.py), which closes a route
+#       that only brings goods of the reserve while each holds its max. Without a line: max = what the reserve asks of
+#       the good, min = 90 percent of max. They reserve nothing.
 # A facility's earlier steps (upgrades_from) stand on lines of their own: the script adds nothing by itself.
 kind	id	units	note
 item	station_core	1	one station of our own (orders, plan step P4): the part its founding takes

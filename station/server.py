@@ -63,7 +63,7 @@ AGENTS_API = Path(os.environ.get("STATION_AGENTS", "/srv/collective/services/age
 OFFLINE = os.environ.get("STATION_OFFLINE") == "1"      # development: no polling of the game, no live stream
 TOKEN = secrets.token_urlsafe(24)                       # new at every start; the page reads it with the state
 LOCAL = urllib.request.build_opener(urllib.request.ProxyHandler({}))    # for addresses inside the unit
-# Who is who (COLLECTIVE.md). The order is the order on the page.
+# Who is who (ROSTER.md). The order is the order on the page.
 ROSTER = [
     {"id": "unity", "name": "Unity", "rank": "Fleet Admiral", "division": "Command"},
     {"id": "zero", "name": "Zero", "rank": "Admiral", "division": "Mining"},
