@@ -412,3 +412,9 @@ Effect: the probe missed its first chance; the hauler left the outpost on its ne
 Cause: a call nobody of mine had flown in that form went into a catch row without its first flight by hand (rule F29: the first flight of a call is one ship by hand), and the help's heading was read as the action name.
 Fix, done: the probe calls `types` and `faction_list` as actions, the form flown at 00:36 UTC on a free docked hauler (http 200, 56 faction facility types, page 1 of 3); the skill logistics-stock's pitfall now says that the gate's `action` is the sub-action the help lists under Actions, and that a call a driver makes is flown once with the tool command on a free docked pilot before the driver starts.
 Would it have prevented this one: yes, the first flight by hand would have shown the 500 before the catch row ran.
+
+## [ENT-110] | 2026-11-18 01:14 UTC | Apophis | error | ref: communications/reports.log | see: errors.log ENT-049
+Class: a commit hash cited before the watcher's rebase (the repeat of ENT-049).
+Case: my session entry reports.log ENT-086 names the guidebook commit 6b1441a8; the watcher rebased it to ca03c062 (same message, origin/main). Read ca03c062 there; every other hash of the entry is on origin/main.
+Cause: I ran check_refs.py and the append in one command, so the append went in although the check printed REFS: FAIL.
+Fix: the check runs as its own command and the append only after REFS: PASS (skill military-turn, step 8, already says so; my command did not follow it). No other entry is touched.
