@@ -355,6 +355,17 @@ it needs, its place, its steps, what opens and closes it.
   dies, and what each ship deals and takes. Until then no group route: the dispatcher's `group: N` (Fleet Admiral)
   should start each member with its own `hunt` of the same creature, a target and the advance, a fleet only for the
   common flight.
+- Flights 2 and 3, 2026-11-18, pilot whales (220 hull) at Stellar Siphon, starters with one Pulse Laser I each. Flight
+  2 (00:08 to 00:34 UTC, a fleet of three and one ship outside that joined at tick 3): every member had its target, yet
+  all five ships and the whale stood at zone outer, dist 6, for 48 ticks; the whale took the leader's shield from 111 to
+  81 percent and nobody dealt a point. `dist` is a ship's place on one line from the fight's centre and moves with the
+  ships; a Pulse Laser I reaches 3. Flight 3 (00:40 to 00:54 UTC, three ships, each advancing until its own dist was 2):
+  all at dist 2 by tick 3, each member dealt 7 to 9 by tick 10, the whale fell to 73 percent in 20 ticks; it struck the
+  leader alone, shield 111 to 0 by tick 18, then hull 100, 68, 38, 24 and 9 percent in four ticks; the side fled and
+  escaped. No kill, no loss, all three repaired to 75 of 75 (the script's RESULT line).
+- So three starters deal about 3 a tick against 220 hull, some 70 ticks, while the prey breaks one starter in about
+  20: no starter group on pilot whales. The script flees all at hull under 85 percent or shield 0 since 00:55 UTC. The
+  next group test takes prey of 100 hull or less, or waits for a second weapon or a tier-2 hull.
 
 ### Sales of stored loot (`sell-curd-*`, `sell_stored.py`)
 
