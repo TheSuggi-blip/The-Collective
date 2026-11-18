@@ -8,7 +8,7 @@ author: Unity
 # index.md -- The Fleet's Scripts
 
 Built by `python3 -B scripts/fleet-index.py` from the docstring of every script in this
-folder; never edited by hand. Scripts listed: 41.
+folder; never edited by hand. Scripts listed: 43.
 
 - Run a script from the repository root: `python3 -I -B game/fleet/<script> <arguments>`,
   the arguments as listed under "How to Call Each".
@@ -39,6 +39,7 @@ folder; never edited by hand. Scripts listed: 41.
 | `docs_export.py` | Copies an allowlist of each member's own files into the data folder, where the store mirrors them into its tables docs and doc_versions: every member's soul, mission, learnings and knowledge, readable by every member from the database. | By hand |
 | `docs_handbook.py` | The reader of the store's handbook (game/handbook.md and game/handbook/<subject>.md, written from the code by scripts/handbook.py): its contents and how the data flows, or the sections of one topic: a table or view, a subject, or a word. | By hand |
 | `empire.py` | Keep the picture of our empire: the faction and its limit, the bases and offices we own, the systems they stand in, the sites we may build on, and what the faction can build next. | By hand |
+| `factionbook.py` | The faction's storage in the storage book: the entry `Faction` of data/stock/storage.json, so that the tools stock, surplus.py and the table holdings count what lies in the Lockboxes and at our outposts. | By hand |
 | `fill.py` | Keep every ship of a division at work: say why ships wait, and fill the plan with the work that stands open. | By hand |
 | `fleetfile.py` | Write the roster into a member's own FLEET.md: one table, every ship of the member on one line with its kind, its hull and the task it is on now. | By hand |
 | `gate.py` | Small client for the fleet engine's gate, with the division's lock. | By hand |
@@ -55,6 +56,7 @@ folder; never edited by hand. Scripts listed: 41.
 | `plan.py` | Each division's plan file: every ship with the routes it flies, in their order; the dispatcher sends the ships by it. | By hand |
 | `plate.py` | Make our pilots' stored creature carapace into armor plate where each is docked, and sell plates into the bid there. | By hand |
 | `pull.py` | Each class flies its own work, and goods are gathered only while the reserve needs them: the class guard and the pull rule of the dispatcher, with their dry run. | By hand |
+| `reserves.py` | The gate `requires.reserve` of a route: open only while the last reading of a faction reserve (the fuel in a bunker, or an item of the faction's storage at a base) stands under a floor. | By hand |
 | `route_run.py` | Fly one pilot along a route file: dock at each stop and do what the stop says. | Runner (`circuit` routes) |
 | `routemaker.py` | Find every way to earn that the fleet's own data shows, cost it, and write the route file for it. | Service |
 | `routes.py` | Check the route files, write their index, and attach what the runs measured. | By hand |
@@ -245,6 +247,19 @@ empire.py show
 empire.py site <system> candidate|chosen|dropped [--poi <poi id>] [--note "<why>"]
 empire.py check
 --root <dir>   the repository's root (default: two folders above this file)
+--data <dir>   the unit's data folder (default /srv/collective/data)
+```
+
+### `factionbook.py`
+
+The faction's storage in the storage book: the entry `Faction` of
+data/stock/storage.json, so that the tools stock, surplus.py and the table holdings
+count what lies in the Lockboxes and at our outposts.
+
+Run by hand.
+
+```
+factionbook.py show [--data <dir>]
 --data <dir>   the unit's data folder (default /srv/collective/data)
 ```
 
@@ -497,6 +512,12 @@ plan.py template <name> <routes|none> [--title "..."] [--trains a,b] [--note "..
                                                       it, refused while a ship names it
 plan.py use <ships> <name[,name...]> [--division <name>]
                                                       `set` with `@` before each name: the ships fly the templates
+plan.py planned <what> [--when <when>] [--division <name>]
+                                                      one line into Planned (`- what | when`; it names no ship)
+plan.py planned --clear [<what> [--when <when>]] [--division <name>]
+                                                      Planned emptied, or replaced by the one line given
+plan.py note <text> [--division <name>]               one line into Notes, stamped with the UTC time
+plan.py note --clear [--division <name>]              Notes emptied
 --root <dir>   the repository's game/ folder (default: the parent of this file's folder)
 --data <dir>   the unit's data folder (default: the fleet's)
 ```
@@ -522,6 +543,20 @@ Run by hand.
 ```
 pull.py check [<division>|<Member>|all] [--now <UTC time>]   the dry run: what the two rules would refuse and close, who would wait
 pull.py levels [--now <UTC time>]                             the goods of the reserve with their levels and marks
+--root <dir>   the repository's game/ folder (default: the parent of this file's folder)
+--data <dir>   the unit's data folder (default /srv/collective/data)
+```
+
+### `reserves.py`
+
+The gate `requires.reserve` of a route: open only while the last reading of a faction
+reserve (the fuel in a bunker, or an item of the faction's storage at a base) stands
+under a floor.
+
+Run by hand.
+
+```
+reserves.py show [--root <dir>] [--data <dir>]
 --root <dir>   the repository's game/ folder (default: the parent of this file's folder)
 --data <dir>   the unit's data folder (default /srv/collective/data)
 ```

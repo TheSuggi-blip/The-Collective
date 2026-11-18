@@ -26,7 +26,10 @@ RULES:
   - A member changes the file of its own division; the Fleet Admiral any. A shell that is no member changes nothing.
   - A file that fails the check changes nothing: the plan applied last stays in force, and the ships fly on.
   - The level columns and the form of the file are the script's: `apply` writes the file again in its one form. Free
-    text of the Admiral stands under `## Notes` and is kept as it is.
+    text of the Admiral stands under `## Notes` and is kept as it is. Planned and Notes are written by `planned` and
+    `note`, like every other part, never by hand (requests ENT-263).
+  - A `## ` heading that stands twice at a line start fails the check: a copy of the file stands inside it (2026-11-17,
+    three files carried every heading twice and passed). `note --clear` empties Notes, where such a copy lies.
   - A ship of the division without a row gets one by itself, with the own routes most ships of its role have.
   - Before a division has a file, its plan is read from the role's plan in force: First is its opening run of
     missions that pay once and fittings, Then is the rest. The first `apply` writes the file; no ship changes its work.
@@ -68,6 +71,12 @@ USAGE:
                                                         it, refused while a ship names it
   plan.py use <ships> <name[,name...]> [--division <name>]
                                                         `set` with `@` before each name: the ships fly the templates
+  plan.py planned <what> [--when <when>] [--division <name>]
+                                                        one line into Planned (`- what | when`; it names no ship)
+  plan.py planned --clear [<what> [--when <when>]] [--division <name>]
+                                                        Planned emptied, or replaced by the one line given
+  plan.py note <text> [--division <name>]               one line into Notes, stamped with the UTC time
+  plan.py note --clear [--division <name>]              Notes emptied
   --root <dir>   the repository's game/ folder (default: the parent of this file's folder)
   --data <dir>   the unit's data folder (default: the fleet's)
 
@@ -96,6 +105,7 @@ SECTIONS = (("first", "First, for Every Ship"), ("ships", "Ships"), ("then", "Th
 NONE = ("", "-", "--", "none")
 KEEP = 40                      # applied versions of one division kept in history/
 TEMPLATES = "routes/templates/"  # a division's templates file, under the game folder: <division>.json
+LINE = 500                      # characters of one line of Planned or Notes at most
 
 
 def roles_of(name):
@@ -145,9 +155,30 @@ def tokens(text):
     return unique(out)
 
 
+def twice(text):
+    """The faults of a text whose `## ` heading stands twice at a line start, one line per heading (requests ENT-263: a
+    hand edit that looked for `## Notes` as plain text wrote the whole file again under Notes, and parse() read the
+    copy as notes)."""
+    first, out = {}, []
+    for n, line in enumerate(str(text).split("\n"), 1):
+        if line.startswith("## "):
+            key = " ".join(line[3:].split()).lower()
+            if key in first:
+                out.append("line %d: the heading `%s` stands twice at a line start (first at line %d): a copy of the file stands in it; "
+                           "`plan.py note --clear` empties Notes, where such a copy lies" % (n, line.strip(), first[key]))
+            else:
+                first[key] = n
+    return list(dict.fromkeys(out))
+
+
+def heads(plan):
+    """The text of the headings the file in its one form carries: the five parts, then whatever Notes holds."""
+    return "\n".join("## " + name for _key, name in SECTIONS) + "\n" + str(plan.get("notes") or "")
+
+
 def parse(text):
-    """{first, ships {ship: own routes}, then, planned [{what, when}], notes, errors} of a plan file's text."""
-    plan = {"first": [], "ships": {}, "then": [], "planned": [], "notes": "", "errors": []}
+    """{first, ships {ship: own routes}, then, planned [{what, when}], notes, errors, twice} of a plan file's text."""
+    plan = {"first": [], "ships": {}, "then": [], "planned": [], "notes": "", "errors": [], "twice": twice(text)}
     part, lines = None, text.split("\n")
     for n, line in enumerate(lines, 1):
         if line.startswith("## "):
@@ -204,7 +235,7 @@ def seed(root, name, routes, crew):
         except (OSError, ValueError):
             items = []
         planned += [{"what": str(i.get("what")), "when": str(i.get("when") or "--")} for i in items if isinstance(i, dict) and i.get("what") and i not in planned]
-    return {"first": first, "ships": {ship: list(own.get(role) or []) for ship, role, _row in crew}, "then": then, "planned": planned, "notes": "", "errors": []}
+    return {"first": first, "ships": {ship: list(own.get(role) or []) for ship, role, _row in crew}, "then": then, "planned": planned, "notes": "", "errors": [], "twice": []}
 
 
 def load(root, data, name, routes=None, crew=None, kit=None):
@@ -257,7 +288,7 @@ def merge(lists):
 
 def check(plan, routes, crew, name):
     """(errors, warnings) of a plan: an error means nothing is applied."""
-    errors, warnings = list(plan["errors"]), []
+    errors, warnings = list(plan["errors"]) + list(plan.get("twice") or []), []
     known = {ship for ship, _role, _row in crew}
     kit, home = plan.get("templates") or {}, "game/routes/templates/%s.json" % name
     errors += ["%s: %s" % (home, line) for line in routefiles.template_faults(kit, routes)]
@@ -333,7 +364,7 @@ def render(data, name, plan, crew):
              "`@<name>` for a template of the division, `plan.py templates`), then run",
              "`python3 -I -B game/fleet/plan.py apply` (the tool plan, action=apply). The other",
              "columns and the form of this file are the script's; a file that fails the check",
-             "changes nothing. Free text goes under `## Notes`.", "",
+             "changes nothing. Planned and Notes: `plan.py planned` and `plan.py note`.", "",
              "## First, for Every Ship", ""]
     lines += ["%d. %s" % (n, rid) for n, rid in enumerate(plan["first"], 1)] or ["None."]
     lines += ["", "## Ships", "", "| " + " | ".join(HEAD) + " |", "|" + "---|" * len(HEAD)]
@@ -343,8 +374,8 @@ def render(data, name, plan, crew):
                                        + [cell(" > ".join(plan["ships"].get(ship) or []))]) + " |")
     lines += ["", "## Then, for Every Ship", ""]
     lines += ["%d. %s" % (n, rid) for n, rid in enumerate(plan["then"], 1)] or ["None."]
-    lines += ["", "## Planned", "", "What you mean to do next, one line each as `- what | when`. Every member reads it in",
-              "`game/routes/plan-<role>.md`: it names no ship of ours.", ""]
+    lines += ["", "## Planned", "", "What you mean to do next, one line each as `- what | when` (`plan.py planned`). Every",
+              "member reads it in `game/routes/plan-<role>.md`: it names no ship of ours.", ""]
     lines += ["- %s | %s" % (cell(item["what"]), cell(item["when"])) for item in plan["planned"]] or ["None."]
     lines += ["", "## Notes", "", plan["notes"].strip("\n") or "None."]
     return "\n".join(lines) + "\n"
@@ -396,6 +427,7 @@ def prepare(root, data, name, routes, change=None, kit=None):
     plan, exists = load(root, data, name, routes, crew, kit)
     if change is not None:
         change(plan)
+        plan["twice"] = twice(heads(plan))                   # the file as it will be written: a change that empties Notes mends it
     for key in ("first", "then"):
         plan[key] = unique(plan[key])
     plan["ships"] = {ship: unique(ids) for ship, ids in plan["ships"].items()}
@@ -436,7 +468,7 @@ def write_private(data, ready, who, now):
         write(home / "history" / ("plan-%s.%s.%s.md" % (name, time.strftime("%Y%m%dT%H%M%SZ", time.gmtime(now)), ready["digest"][:6])), ready["text"])
         for old in sorted((home / "history").glob("plan-%s.*.md" % name))[:-KEEP]:
             old.unlink(missing_ok=True)
-    return ("applied" if changed else "written again (levels or form)" if was != ready["text"] else "unchanged"), changed
+    return ("applied" if changed else "written again (levels, form, Planned or Notes)" if was != ready["text"] else "unchanged"), changed
 
 
 def apply(root, data, names, who, changes=None, extra=None, message=None, commit=None, now=None):
@@ -531,6 +563,32 @@ def take_out(plan, rid):
     plan["first"] = [r for r in plan["first"] if r != rid]
     plan["then"] = [r for r in plan["then"] if r != rid]
     plan["ships"] = {ship: [r for r in ids if r != rid] for ship, ids in plan["ships"].items()}
+
+
+def put_planned(plan, what, when, clear=False):
+    """A line into Planned (`- what | when`), behind the others; with `clear` the list is emptied first."""
+    if clear:
+        plan["planned"] = []
+    if what:
+        plan["planned"].append({"what": what, "when": when or "--"})
+
+
+def put_note(plan, text, now, clear=False):
+    """A line into Notes, stamped with the UTC time, behind what stands there; with `clear` Notes is emptied first."""
+    notes = "" if clear or str(plan.get("notes") or "").strip() in NONE + ("None.",) else str(plan["notes"]).rstrip()
+    if text:
+        line = "- %s: %s" % (time.strftime("%Y-%m-%d %H:%M UTC", time.gmtime(now)), text)
+        notes = line if not notes else notes + ("\n" if notes.split("\n")[-1].startswith("- ") else "\n\n") + line
+    plan["notes"] = notes
+
+
+def one_line(text):
+    """Why a text is no line for Planned or Notes, or ''."""
+    if any(ord(c) > 127 or c in "\n\r\t" for c in text):
+        return "a line of Planned or Notes is one line of ASCII"
+    if len(text) > LINE:
+        return "a line of Planned or Notes holds %d characters at most (%d given)" % (LINE, len(text))
+    return ""
 
 
 def ships_named(words, crew):
@@ -645,8 +703,8 @@ def main(argv=None):
     value = lambda name, default: args[args.index(name) + 1] if name in args and args.index(name) + 1 < len(args) else default
     here = Path(__file__).resolve().parent
     root, data = value("--root", str(here.parent)), value("--data", division.DATA)
-    words = [a for n, a in enumerate(args) if not a.startswith("--") and (n == 0 or args[n - 1] not in ("--root", "--data", "--division", "--title", "--trains", "--note"))]
-    verb = words[0] if words and words[0] in ("show", "check", "apply", "set", "first", "then", "templates", "template", "use") else "show"
+    words = [a for n, a in enumerate(args) if not a.startswith("--") and (n == 0 or args[n - 1] not in ("--root", "--data", "--division", "--title", "--trains", "--note", "--when"))]
+    verb = words[0] if words and words[0] in ("show", "check", "apply", "set", "first", "then", "templates", "template", "use", "planned", "note") else "show"
     rest = words[1:] if words and words[0] == verb else words
     kind, who = division.member()
     who = who if kind == "member" else ""
@@ -732,6 +790,22 @@ def main(argv=None):
         ids = tokens(rest[0])
         change = lambda plan: plan.update({verb: list(ids)})
         note = "%s plan: the list %s set (plan.py, %s)" % (name, verb.capitalize(), who)
+    elif verb in ("planned", "note") and (rest or "--clear" in args):          # requests ENT-263: the free parts by script, never by hand
+        text, when, clear = " ".join(" ".join(rest).split()), " ".join(value("--when", "").split()), "--clear" in args
+        why = one_line(text) or one_line(when)
+        if why:
+            sys.exit("REFUSED: " + why)
+        named_ships = division.pilots_named(text + " " + when) if verb == "planned" else []
+        if named_ships:
+            sys.exit("REFUSED: Planned is read by every member and the public (game/routes/plan-<role>.md): it names no pilot of ours (%s); write the role and a count"
+                     % ", ".join(named_ships[:5]))
+        stamp = time.time()
+        if verb == "planned":
+            change = lambda plan: put_planned(plan, text, when, clear)
+            note = "%s plan: Planned %s (plan.py, %s)" % (name, ("emptied" if not text else "replaced by one line") if clear else "+ one line", who)
+        else:
+            change = lambda plan: put_note(plan, text, stamp, clear)
+            note = "%s plan: Notes %s (plan.py, %s)" % (name, ("emptied" if not text else "replaced by one line") if clear else "+ one line", who)
     else:
         sys.exit(__doc__)
     good, lines = apply(root, data, [name], who, changes={name: change}, message=note)

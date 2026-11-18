@@ -78,14 +78,14 @@ what the faction's storage holds per base (a station's id or our outpost's) and 
 
 ## inventory_faction
 
-view: what the faction's storage holds per place (`faction:<base id>`) and item, with its base value and worth (units x base value); apart from inventory and inventory_by_station, which are the storage book's sums as craftbook.py counts them
+view: what the faction's storage holds per place (`faction:<base id>`) and item, with its base value and worth (units x base value), a bunker's fuel too; inventory and inventory_by_station count the same goods already (holdings, member `Faction`)
 
 - Kind: view over faction_storage, items
 - Columns: place, base, base_name, item, name, category, units, base_value, worth, t
 - Kept: nothing: a view stores no row
 - Refreshed: computed when asked, from its tables
 - The worth of each faction storage: `SELECT place, base_name, SUM(worth) FROM inventory_faction GROUP BY place ORDER BY 3 DESC`
-- Where steel_plate lies, our own storage and the faction's: `SELECT place, units FROM inventory_by_station WHERE item = 'steel_plate' UNION ALL SELECT place, units FROM inventory_faction WHERE item = 'steel_plate'`
+- Where steel_plate lies, our own storage and the faction's: `SELECT place, member, SUM(units) FROM holdings WHERE item = 'steel_plate' GROUP BY place, member`
 - What the faction stores that no catalog item names: `SELECT place, item, units FROM inventory_faction WHERE name IS NULL`
 
 ## territory

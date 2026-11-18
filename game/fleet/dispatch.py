@@ -97,6 +97,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import division                                   # noqa: E402  who commands which ship, and the plan files
 import gate                                       # noqa: E402  the one call the dispatcher sends itself: stop a loop no runner owns
 import pull                                       # noqa: E402  the class guard and the pull rule, each behind its switch file (r21)
+import reserves                                   # noqa: E402  requires.reserve: a faction reserve under a floor (requests ENT-266)
 import runhost                                    # noqa: E402  the program that flies hosted runs as threads
 import routes as routefiles                       # noqa: E402  what standing work is
 import taxes                                      # noqa: E402  the weekly tax a run in flight carried is no loss of its route
@@ -535,6 +536,9 @@ def why_not(pilot, rid, route, state):
     lacking = bid_missing(state["data"], route, state["now"]) or stored_missing(state["data"], route, pilot, state["rows"])
     if lacking:
         return lacking, None
+    floor = reserves.closed(route, state)        # requests ENT-266: open only while the faction reserve reads under `below`
+    if floor:
+        return floor, None
     if route["kind"] in ("circuit", "mine"):
         floor = (hunt_floor(state["data"], route, state["now"]) if route["kind"] == "circuit" else None) or field_floor(state["data"], route, state["now"])
         if floor:

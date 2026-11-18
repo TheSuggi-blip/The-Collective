@@ -105,6 +105,59 @@ class SiteTests(Tree):
         self.assertEqual((ok, "not committed" in line), (False, True))
 
 
+class MemberPageTests(Tree):
+    """Requests ENT-262 (Zero): the faction's whole member list, not its first page. `info` answers one page (the help:
+    paginated, default limit 50, max 100; `offset` and `limit` page through it; members_offset, members_limit and
+    members_truncated describe that page). The fake below gives at most 50 a page, whatever is asked."""
+
+    ROSTER = [{"username": "Lead Ship", "role": "Leader"}] + [{"username": "miner-%d" % n, "role": "Member"} for n in range(1, 94)]     # 94 members
+
+    def paged(self, fail_at=None, ignore_offset=False):
+        asked = []
+
+        def info(params):
+            offset, limit = int(params.get("offset") or 0), min(int(params.get("limit") or 50), 50)
+            asked.append((params.get("offset"), params.get("limit")))
+            if fail_at is not None and offset >= fail_at:
+                return None
+            start = 0 if ignore_offset else offset
+            page = self.ROSTER[start:start + limit]
+            return dict(INFO, member_count=len(self.ROSTER), members=page, members_offset=start, members_limit=limit,
+                        members_truncated=start + len(page) < len(self.ROSTER))
+        answers = self.answers()
+        answers[("spacemolt_faction", "info")] = info
+        return answers, asked
+
+    def test_every_page_of_the_member_list_goes_into_members_and_the_table_faction_members(self):
+        answers, asked = self.paged()
+        state, notes = empire.collect(str(self.data), str(self.root), see=self.see(answers), pause=0, now=0)
+        self.assertEqual(notes, [])
+        self.assertEqual(len(state["members"]), 94)                                      # the first page alone held 50
+        self.assertEqual(state["members"][-1], {"pilot": "miner-93", "role": "Member"})
+        self.assertEqual(asked, [(None, 100), (50, 100)])                                # the page size asked, then the next page by offset
+        self.assertIn({"pilot": "miner-60", "role": "Member"}, state["members"])          # a miner of the second page reads as seated
+        self.assertEqual(state["fleet"]["in_faction"], 3)                                # the three ships of the fleet file
+        empire.save(str(self.data), state)
+        store = load("store")
+        rows = store.read_empire(self.data / "empire" / "empire.json", {})["faction_members"]
+        self.assertEqual((len(rows), rows[93]["pilot"]), (94, "miner-93"))
+
+    def test_a_page_that_fails_keeps_the_last_whole_list_and_says_so(self):
+        answers, _asked = self.paged()
+        state, _notes = empire.collect(str(self.data), str(self.root), see=self.see(answers), pause=0, now=0)
+        empire.save(str(self.data), state)
+        broken, _asked = self.paged(fail_at=50)
+        state, notes = empire.collect(str(self.data), str(self.root), see=self.see(broken), pause=0, now=60)
+        self.assertEqual(len(state["members"]), 94)                                      # never half a list
+        self.assertTrue(any("was not read whole (the page at offset 50" in n for n in notes), notes)
+
+    def test_a_game_that_ignores_the_offset_ends_the_paging_with_a_note(self):
+        answers, asked = self.paged(ignore_offset=True)
+        state, notes = empire.collect(str(self.data), str(self.root), see=self.see(answers), pause=0, now=0)
+        self.assertEqual((len(state["members"]), len(asked)), (50, 2))
+        self.assertTrue(any("holds 50 of 94" in n for n in notes), notes)
+
+
 class CollectTests(Tree):
     def test_the_member_cap_is_twenty_without_an_office_and_the_best_office_plus_a_quarter_with_them(self):
         recruit = {"hiring_board": 50, "recruitment_desk": 100}

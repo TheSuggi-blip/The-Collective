@@ -6,7 +6,7 @@ One table alone: `hive.py handbook <table>`; its rows: `hive.py sql "SELECT ..."
 
 ## holdings
 
-now: what we hold per pilot, station and item (stock/storage.json); place `hold`: the holds per member as the book sums them, no pilot
+now: what we hold per pilot, station and item (stock/storage.json); place `hold`: the holds per member as the book sums them, no pilot; pilot and member `Faction`: the faction's storage at a base (the reading of faction_storage, without a bunker's fuel)
 
 - Kind: snapshot
 - Columns: pilot, member, place, item, units, t, src

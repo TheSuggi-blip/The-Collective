@@ -258,6 +258,8 @@ def check(root):
             errors.append(where + "`requires.hold` and `requires.empty_hold` together close the route to every pilot")
         if "skills_below" in need and not levels(need["skills_below"]):
             errors.append(where + "`requires.skills_below` must be {skill: level}")
+        if "reserve" in need:                          # requests ENT-266: the gate on a faction reserve (reserves.py)
+            errors += [where + line for line in reserve_faults(need["reserve"])]
         floors = [("`min_left`", route.get("min_left"))] + [("stop %d: the `min_left` of a `mine` step" % n, step.get("min_left"))
                                                              for n, stop in enumerate(route.get("stops") or [], 1) if isinstance(stop, dict)
                                                              for step in stop.get("mine") or [] if isinstance(step, dict)]
@@ -316,6 +318,12 @@ def check(root):
             errors.append("game/routes/%s is written no longer (master-index.md and its sub-indexes took its place): run "
                           "`python3 -B game/fleet/routes.py index`, which removes it" % name)
     return errors, len(routes)
+
+
+def reserve_faults(need):
+    """reserves.faults, imported here: reserves.py imports this file to read a run's end."""
+    import reserves
+    return reserves.faults(need)
 
 
 def current_plan(root, role):
@@ -648,6 +656,9 @@ RUNS = {"path": None, "stamp": None, "spans": {}}      # each pilot's runs (span
 EDGE = 120                    # seconds at a run's start and end in which a wallet reading may fall on either side of a gift
 PRE = 30 * 60                 # a gift booked this long before a run's span may land in it: the game shows a gift minutes after its answer (ENT-220)
 TREASURY = "Faction treasury: credits deposited"     # the title a deposit into the faction's treasury is booked under (onetime.json)
+SWEEPS = {"path": None, "stamp": None, "rows": []}     # the sweep's booked gifts with the giver's wallet after each, read again only when the file changed
+SWEEP_MATCH = 60              # seconds between a gift's booking (gifts.jsonl) and the sweep's row of it (sweep.jsonl): one gift
+PLAYER = re.compile(r'"player":\{[^{}]*?"username":"([^"]*)"[^{}]*?"credits":(-?\d+)')     # the giver's wallet in the gift's answer
 
 
 def gifts(data=None):
@@ -675,6 +686,43 @@ def gifts(data=None):
             return []
         GIFTS.update(path=str(path), stamp=stamp, rows=rows)
     return GIFTS["rows"]
+
+
+def sweep_walls(data=None):
+    """[(epoch, giver, taker, credits, the giver's wallet after the gift)] of the gifts the wallet sweep booked
+    (wallet.py sweep: data/fleet/sweep.jsonl, kind gift, state booked): the gift's answer names the giver's credits
+    after it, the sweep's keep (50,000). A row whose answer names no wallet of the giver is left out."""
+    path = Path(taxes.record_file(data)).with_name("sweep.jsonl")
+    try:
+        found = path.stat()
+    except OSError:
+        return []
+    stamp = (found.st_mtime_ns, found.st_size)
+    if SWEEPS["path"] != str(path) or SWEEPS["stamp"] != stamp:
+        rows = []
+        try:
+            with open(path, encoding="utf-8") as handle:
+                for line in handle:
+                    try:
+                        row = json.loads(line)
+                    except ValueError:
+                        continue
+                    if not (isinstance(row, dict) and row.get("kind") == "gift" and row.get("state") == "booked" and isinstance(row.get("at"), (int, float))
+                            and isinstance(row.get("credits"), int) and not isinstance(row.get("credits"), bool)):
+                        continue
+                    said = PLAYER.search(str(row.get("text") or ""))
+                    if said and said.group(1) == str(row.get("from") or ""):
+                        rows.append((row["at"], said.group(1), str(row.get("to") or ""), row["credits"], int(said.group(2))))
+        except OSError:
+            return []
+        SWEEPS.update(path=str(path), stamp=stamp, rows=rows)
+    return SWEEPS["rows"]
+
+
+def wall_after(walls, at, giver, taker, credits):
+    """The giver's wallet after one gift as the sweep's row of it reads, or None for a gift the sweep did not book."""
+    hits = [after for when, frm, to, units, after in walls if frm == giver and to == taker and units == credits and abs(when - at) <= SWEEP_MATCH]
+    return hits[0] if len(set(hits)) == 1 else None
 
 
 def deposits(data=None):
@@ -761,22 +809,32 @@ def late_gifts(row, found, data=None):
 
 def moved(row, data=None):
     """Credits another hand of ours took out of (+) or put into (-) the row's pilot while its run flew (taxes.span): the
-    wallet guard's top-ups between our own ships, the deposits into the faction's treasury (deposits) and a gift that
-    landed in the run although booked just before it (late_gifts). Nobody earned or lost them, so no route is credited
-    or charged with them: 2026-11-16, the guard's gifts to a hundred new ships read as a loss of 298,508 cr an hour for
-    the fleet; 2026-11-17, a deposit of 200,000 cr read as -120,673 cr a ship-hour of a mine route (ENT-231)."""
+    wallet guard's top-ups between our own ships, the sweep's gifts (a gift whose giver's wallet after it, sweep_walls,
+    is the run's last wallet is that run's, wherever it fell in the span), the deposits into the faction's treasury
+    (deposits) and a gift that landed in the run although booked just before it (late_gifts). Nobody earned or lost
+    them, so no route is credited or charged with them: 2026-11-16, the guard's gifts to a hundred new ships read as a
+    loss of 298,508 cr an hour for the fleet; 2026-11-17, a deposit of 200,000 cr read as -120,673 cr a ship-hour of a
+    mine route (ENT-231)."""
     pilot, found = row.get("pilot"), taxes.span(row)
     if not pilot or not found:
         return 0
     # One gift, one run. The spans of two runs in a row overlap (the wallet readings lag), so a gift near the seam lies
     # in both: it counts where it fell well inside the run, and near a seam only where the run's own wallet shows it
-    # (taking it out brings the run's change nearer to nothing).
+    # (taking it out brings the run's change nearer to nothing). A sweep's gift names the giver's wallet after it: the
+    # run that ended on that figure gave it, wherever it fell in the span, and the run that began on it did not
+    # (requests ENT-264: a hunt that sold 10,717 cr and was swept to 50,000 at its end read -8,917 cr).
     start, end = found[0] + taxes.LAG, found[1] - taxes.SLACK
     plain = (row.get("delta") or 0) + taxes.in_run(row, data)
+    before, after = row.get("credits_before"), row.get("credits_after")
+    walls = sweep_walls(data)
     total = 0
     for at, giver, taker, credits, loose in sorted(gifts(data) + deposits(data)):
         sign = (giver == pilot) - (taker == pilot)
         if not sign or not found[0] <= at <= found[1]:
+            continue
+        wall = wall_after(walls, at, giver, taker, credits) if sign > 0 and walls else None
+        if wall is not None and (wall == after) != (wall == before):
+            total += credits * sign if wall == after else 0
             continue
         inside = not loose and start + EDGE <= at <= end - EDGE
         if inside or abs(plain + total + credits * sign) < abs(plain + total):

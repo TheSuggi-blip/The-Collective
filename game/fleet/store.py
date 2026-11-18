@@ -619,7 +619,7 @@ def read_storage(path, ctx):
     for pilot, entry in need(book.get("pilots"), dict, "no `pilots`").items():
         if not isinstance(entry, dict):
             continue
-        member, at = division.owner(pilot, data), when(entry.get("read_at"), read)
+        member, at = entry.get("member") or division.owner(pilot, data), when(entry.get("read_at"), read)     # `Faction`: the faction's storage
         for base, goods in (entry.get("stations") or {}).items() if isinstance(entry.get("stations"), dict) else []:
             for item, units in (goods or {}).items() if isinstance(goods, dict) else []:
                 rows.append({"pilot": pilot, "member": member, "place": base, "item": item, "units": number(units), "t": at})
@@ -1506,7 +1506,8 @@ DESCRIPTIONS = {               # one line per table and view: what a row is and 
     "ship_skills": "now: every skill of every ship with its level and XP (fleet/ships/<pilot>.json)",
     "ship_modules": "now: every module fitted to every ship (fleet/ships/<pilot>.json)",
     "ship_cargo": "now: what each ship carries in its hold, from its own live file (fleet/ships/<pilot>.json)",
-    "holdings": "now: what we hold per pilot, station and item (stock/storage.json); place `hold`: the holds per member as the book sums them, no pilot",
+    "holdings": "now: what we hold per pilot, station and item (stock/storage.json); place `hold`: the holds per member as the book sums them, no pilot; "
+                "pilot and member `Faction`: the faction's storage at a base (the reading of faction_storage, without a bunker's fuel)",
     "books": "now: each station's order book as our ship read it: best bid and ask with their units per item (market/<base>.json); no price is NULL",
     "ladders": "now: the price ladder of an item at a station, every bid and ask step with its units, step 1 the best (market/ladders.json)",
     "items": "catalog: every item of the game: name, category (NULL where the catalog gives none), size, base value, rarity, module type and slot",
@@ -1547,7 +1548,7 @@ DESCRIPTIONS = {               # one line per table and view: what a row is and 
     "inventory": "view: what the fleet holds per item, in storage and in the holds, with its base value and worth (units x base value): craftbook.py inventory's sums",
     "inventory_by_station": "view: what the fleet holds per place (a station's base id, or `hold`) and item",
     "inventory_faction": "view: what the faction's storage holds per place (`faction:<base id>`) and item, with its base value and worth (units x base "
-                         "value); apart from inventory and inventory_by_station, which are the storage book's sums as craftbook.py counts them",
+                         "value), a bunker's fuel too; inventory and inventory_by_station count the same goods already (holdings, member `Faction`)",
     "fleet_positions": "view: our ships per system: the system's name, empire and jumps from home, ships, docked, flying (in space), ships per division",
     "our_stations": "view: the stations and outposts whose owner's tag is our faction's, joined to our bases",
     "route_earnings": "view: what each route earned per ship-hour (steady credits) over the last 4, 12 and 24 hours and over all hours kept, the runs behind each "
@@ -1760,8 +1761,8 @@ EXAMPLES = {                   # three questions per table and view, as SQL (hiv
                              ("The worth of the goods per place", "SELECT v.place, SUM(v.units * i.base_value) FROM inventory_by_station v "
                               "LEFT JOIN items i ON i.id = v.item GROUP BY v.place ORDER BY 2 DESC")),
     "inventory_faction": (("The worth of each faction storage", "SELECT place, base_name, SUM(worth) FROM inventory_faction GROUP BY place ORDER BY 3 DESC"),
-                          ("Where steel_plate lies, our own storage and the faction's", "SELECT place, units FROM inventory_by_station WHERE item = 'steel_plate' "
-                           "UNION ALL SELECT place, units FROM inventory_faction WHERE item = 'steel_plate'"),
+                          ("Where steel_plate lies, our own storage and the faction's", "SELECT place, member, SUM(units) FROM holdings WHERE item = 'steel_plate' "
+                           "GROUP BY place, member"),
                           ("What the faction stores that no catalog item names", "SELECT place, item, units FROM inventory_faction WHERE name IS NULL")),
     "fleet_positions": (("Where are our ships, by system and division", "SELECT * FROM fleet_positions ORDER BY ships DESC"),
                         ("Our ships away from home", "SELECT system, name, empire, jumps, ships FROM fleet_positions WHERE jumps > 0 ORDER BY jumps DESC"),

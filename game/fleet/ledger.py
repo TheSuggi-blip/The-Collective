@@ -13,6 +13,9 @@ WHAT: the service `ledger` runs it. Every 30 s it does two things.
                   order for 45 s whose last run ended after its reading (the
                   dispatcher closes a route with `requires.stored` to it
                   until the storage is read again), the longest wait first.
+                  The faction's storage stands in the book as the entry and
+                  member `Faction`, from the faction's own reading
+                  (factionbook.py: empire.json, every 15 minutes; no call).
         market    looks at the order books our ships saved (data/market/) and,
                   for every book that was read again, appends one line per
                   item whose best bid or best ask changed to
@@ -58,6 +61,7 @@ from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import division                                   # noqa: E402
+import factionbook                                # noqa: E402  the faction's storage as the book's entry `Faction` (requests ENT-267)
 
 GATE = "http://172.30.0.32:7580"
 OPENER = urllib.request.build_opener(urllib.request.ProxyHandler({}))
@@ -130,7 +134,7 @@ def totals(pilots, data):
         for base, items in (entry.get("stations") or {}).items():
             for item, quantity in items.items():
                 by_station[base][item] += quantity
-                by_member[division.owner(pilot, data)][base][item] += quantity
+                by_member[entry.get("member") or division.owner(pilot, data)][base][item] += quantity      # `Faction`: the faction's storage
     holds = defaultdict(lambda: defaultdict(int))
     folder = Path(data) / "fleet" / "ships"
     for path in folder.glob("*.json") if folder.is_dir() else []:
@@ -254,7 +258,7 @@ def roster(data):
 def leave(book, data):
     """Take the pilots out of the book that the fleet has no longer; the names taken out."""
     known = roster(data)
-    gone = sorted(set(book["pilots"]) - known) if known is not None else []
+    gone = sorted(set(book["pilots"]) - known - {factionbook.MEMBER}) if known is not None else []      # the faction's entry is no pilot
     for name in gone:
         del book["pilots"][name]
     return gone
@@ -322,13 +326,15 @@ def main():
     once = "--once" in args
     book = read_json(Path(data) / "stock" / "storage.json", {})
     book = {"what": "Personal station storage of every pilot of ours, per station; totals per station and per member's division; the holds",
-            "source": "storage view with station_id, read through each pilot (read only)", "pilots": book.get("pilots") or {}}
+            "source": "storage view with station_id, read through each pilot (read only); the entry Faction from empire.json (factionbook.py)",
+            "pilots": book.get("pilots") or {}}
     seen, turn = {}, 0
     while True:
         try:
             wrote = market_pass(data, seen)
             names = pilots_of(data)
             leave(book, data)
+            faction = factionbook.put(book, data)            # the faction's storage, from its own reading: no call
             batch, step = (names, len(names)) if once or not names else batch_of(names, turn, book, data)
             turn += step
             for pilot in batch:
@@ -339,7 +345,7 @@ def main():
                     entry = dict(book["pilots"][pilot], error=entry["error"], error_at=entry["read_at"])
                 book["pilots"][pilot] = entry
                 time.sleep(1)
-            if batch:
+            if batch or faction:
                 save_storage(book, data)
             if wrote or once:
                 print(now_text(), "market moves written: %d | pilots read this pass: %d" % (wrote, len(batch)), flush=True)

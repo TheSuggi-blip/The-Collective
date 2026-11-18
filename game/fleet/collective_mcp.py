@@ -122,7 +122,13 @@ def plan_file(a):
     if action == "use":
         need(a, "ships", "name")
         return [("game/fleet/plan.py", ["use", a["ships"], a["name"]] + where)]
-    raise ValueError("action is one of: show, check, apply, set, first, then, templates, template, use")
+    if action in ("planned", "note"):                 # requests ENT-263: Planned and Notes by script, never by hand
+        text = a.get("what") if action == "planned" else a.get("note")
+        if not text and not a.get("clear"):
+            raise ValueError("action=%s needs %s (or clear=true)" % (action, "what" if action == "planned" else "note"))
+        return [("game/fleet/plan.py", [action] + ([str(text)] if text else []) + (["--clear"] if a.get("clear") else [])
+                 + (flag(a, "when") if action == "planned" else []) + where)]
+    raise ValueError("action is one of: show, check, apply, set, first, then, templates, template, use, planned, note")
 
 
 def fill_plan(a):
@@ -259,16 +265,20 @@ TOOLS = {
                 "routes: route ids with commas in their order, or none). action=first or then: set that list whole. action=apply: after you changed the file by hand. Every change "
                 "is checked first: a plan that fails changes nothing. action=check: PASS or HALT. You change your own division's plan only. A template is a named list of routes "
                 "your division keeps in the repository, which a ship's own routes name as @<name> so that one word switches it to that work and a change of the template moves "
-                "every ship that names it (action=templates lists them, action=template makes, replaces or with routes=none removes one, action=use puts ships on templates).",
-        "args": {"action": arg(S, "show (default), check, apply, set, first, then, templates, template or use",
-                               ("show", "check", "apply", "set", "first", "then", "templates", "template", "use")),
+                "every ship that names it (action=templates lists them, action=template makes, replaces or with routes=none removes one, action=use puts ships on templates). "
+                "action=planned: one line into Planned (what, when; clear=true empties it first); action=note: one line into Notes (note; clear=true empties it first).",
+        "args": {"action": arg(S, "show (default), check, apply, set, first, then, templates, template, use, planned or note",
+                               ("show", "check", "apply", "set", "first", "then", "templates", "template", "use", "planned", "note")),
                  "division": arg(S, "command, mining, trade, logistics, military or intel; default: your own (for show, check and templates also all)"),
                  "ships": arg(S, "for set and use: ship names with commas, a range (miner-1..10), a role, or all"),
                  "routes": arg(S, "for set, first, then and template: route ids with commas, in their order (for set also @<template>); none for no route, or to remove a template"),
                  "name": arg(S, "for template: the template's name (2 to 40 lower-case letters, digits and dashes); for use: one name or several with commas"),
                  "title": arg(S, "for template: one line on what it is for; left out: kept as it was"),
                  "trains": arg(S, "for template: the skills it trains, with commas; left out: kept as it was"),
-                 "note": arg(S, "for template: a note for the reader; left out: kept as it was"),
+                 "note": arg(S, "for template: a note for the reader; left out: kept as it was; for note: the line written into Notes"),
+                 "what": arg(S, "for planned: what the division means to do next, one line that names no ship"),
+                 "when": arg(S, "for planned: when, e.g. next turn; left out: --"),
+                 "clear": arg(B, "for planned and note: empty the part first"),
                  "brief": arg(B, "for show: the plan in a few lines instead of the whole file")},
         "plan": plan_file},
     "candidates": {

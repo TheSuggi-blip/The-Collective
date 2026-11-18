@@ -2,10 +2,11 @@
 """empire.py -- keep the picture of our empire: the faction and its limit, the bases and offices we own, the systems they stand in, the sites we may build on, and what the faction can build next.
 
 WHAT: four verbs.
-        collect   looks through the engine's gate with the leader's flagship, views only: the faction's `info` and
-                  tax estimate, every facility and ship garage the faction owns with its rent, and, once per release
-                  of the game's catalog, the game's own card of each faction facility type (what the catalog lacks:
-                  its rent per cycle), and what the faction's storage holds at each place it stores (one storage
+        collect   looks through the engine's gate with the leader's flagship, views only: the faction's `info` (every
+                  page of its member list, by `offset` and `limit`) and tax estimate, every facility and ship garage
+                  the faction owns with its rent, and, once per release of the game's catalog, the game's own card
+                  of each faction facility type (what the catalog lacks: its rent per cycle), and what the
+                  faction's storage holds at each place it stores (one storage
                   `view` per place: each base of ours and each base with an office of the storage line). It joins
                   the public list of stations and outposts (the command station's data: every base with its
                   owner's tag), the chart, the sites file and our censuses (scouting/<system>.json: the base id
@@ -32,6 +33,8 @@ RULES:
   - Faction storage: a place whose view fails keeps the rows of its last reading and its error is written in
     `faction_storage_error`; a view without items is an empty place (no row). The fuel of a bunker is read from the
     faction's info (`fuel_bunkers`, else `total_fuel_reserve` while one base holds the bunkers); no field: no row.
+  - Members: every page of the list, PAGE a page, until the game says it is whole (`members_truncated`) or the pages
+    hold `member_count`; a page that fails keeps the last whole list and says so in a note, never half a list.
 WHY:  what we own and where stood in no file: the faction's limit was read by hand, the rent of an office was "not
       read yet" in an order, and a plan for a base had no list of what stands already (Suggi, 2026-11-16: "we need
       to have scripts also where our bases and territories are, so we know our empire"). What each faction storage
@@ -78,6 +81,8 @@ CYCLES_A_DAY = 86.4                               # rent is due every 100 ticks 
 BASE_CAP = 20                                   # members a faction holds without a recruitment office: the game's refusal of a
                                                 # join (faction_full, "maximum of 20 members", 2026-11-17 10:20 UTC)
 STATIONS, OUTPOSTS = 5, 8                         # bases a faction may hold (game/rules/09-factions.md)
+PAGE = 100                                        # members per page of `info`: its help says paginated, default limit 50, max 100
+PAGES = 30                                        # pages one collect asks at most (3,000 members): a game that ignores `offset` ends the loop
 GIVES = {"faction_recruitment": "members", "faction_storage": "units per item type", "faction_storage_extension": "units per item type in a named bucket",
          "faction_market": "open faction orders", "faction_company_store": "members-only listings", "faction_missions": "posted missions",
          "faction_commons": "rooms", "faction_ship_garage": "shared ships", "faction_transit": "connecting passengers"}      # what a line's `faction_cap` counts
@@ -284,13 +289,41 @@ def fuel_rows(info, facilities, names, old, now=None):
     return [{"base": base, "base_name": names.get(base, base), "item": "fuel", "units": units, "read_at": stamp} for base, units in sorted(got.items())], note
 
 
+def member_pages(pilot, see, first, pause):
+    """The faction's whole member list: ([{pilot, role}], a note or ''). `info` answers one page of it (`members_offset`,
+    `members_limit` = the page size, `members_truncated`: that page only, its help); the next pages are asked with
+    `offset` and `limit` until the game says the list is whole (`members_truncated` false), else until the pages hold
+    `member_count`. A page that is not read: (None, why), and the caller keeps the last whole list (requests ENT-262: the
+    first page alone read 50 of 94 members, and a seated miner looked unseated)."""
+    out, seen, answer = [], set(), first
+    offset = first.get("members_offset") if isinstance(first.get("members_offset"), int) else 0
+    for _page in range(PAGES):
+        listed = [m for m in answer.get("members") or [] if isinstance(m, dict)]
+        fresh = [{"pilot": ascii_text(m.get("username"), 40), "role": ascii_text(m.get("role"), 20)} for m in listed if m.get("username")]
+        fresh = [m for m in fresh if not (m["pilot"] in seen or seen.add(m["pilot"]))]
+        out += fresh
+        total = answer.get("member_count") if isinstance(answer.get("member_count"), int) else first.get("member_count")
+        cut = answer.get("members_truncated")
+        if not (cut if isinstance(cut, bool) else isinstance(total, int) and len(out) < total):
+            return out, ""
+        if not fresh:
+            return out, "the member list holds %d of %s: the game's page at offset %d brought no new member" % (len(out), num(total), offset)
+        offset = (answer["members_offset"] if isinstance(answer.get("members_offset"), int) else offset) + len(listed)
+        if pause:
+            time.sleep(pause)
+        answer, why = see(pilot, "spacemolt_faction", "info", {"limit": PAGE, "offset": offset})
+        if answer is None:
+            return None, "the faction's member list was not read whole (the page at offset %d: %s): the last whole list stays" % (offset, why)
+    return out, "the member list holds %d of %s after %d pages: the rest was not read" % (len(out), num(first.get("member_count")), PAGES)
+
+
 def collect(data, root, see=look, force=False, pause=0.5, now=None):
     """One reading of the empire; (the state, the lines to print). The state is what <data>/empire/empire.json holds."""
     old = read_json(Path(data) / "empire" / "empire.json", {})
     notes, pilot = [], leader(data)
     if not pilot:
         notes.append("no flagship of the Fleet Admiral in fleet/flagships.json: the faction was not read")
-    info, why = see(pilot, "spacemolt_faction", "info") if pilot else (None, "no leader")
+    info, why = see(pilot, "spacemolt_faction", "info", {"limit": PAGE}) if pilot else (None, "no leader")
     if info is None:
         notes.append("faction info not read (%s): the last reading stays" % why)
     faction = dict(old.get("faction") or {})
@@ -300,7 +333,10 @@ def collect(data, root, see=look, force=False, pause=0.5, now=None):
         faction = {"id": str(info.get("id") or ""), "name": ascii_text(info.get("name"), 60), "tag": ascii_text(info.get("tag"), 8), "leader": ascii_text(info.get("leader_username"), 40),
                    "member_count": info.get("member_count"), "members_limit": info.get("members_limit"), "treasury": money, "owned_bases": info.get("owned_bases"),
                    "at_war": bool(info.get("at_war")), "created_at": str(info.get("created_at") or "")}
-        members = [{"pilot": ascii_text(m.get("username"), 40), "role": ascii_text(m.get("role"), 20)} for m in info.get("members") or [] if isinstance(m, dict) and m.get("username")]
+        listed, short = member_pages(pilot, see, info, pause)          # every page of the member list (requests ENT-262)
+        members = listed if listed is not None else members
+        if short:
+            notes.append(short)
     tag = faction.get("tag") or ""
     systems = chart(data, root)
     public = [s for s in read_json(Path(data) / "station" / "stations.json", []) or [] if isinstance(s, dict)]

@@ -34,7 +34,7 @@ empire = load("empire_storage_under_test", REPO / "game" / "fleet" / "empire.py"
 store = load("store_storage_under_test", REPO / "game" / "fleet" / "store.py")
 state_tests = load("store_state_fixture_for_storage", REPO / "scripts" / "tests" / "test_fleet_store_state.py")
 
-INFO = {"id": "f1", "name": "The Test", "tag": "TEST", "leader_username": "Lead Ship", "member_count": 2, "owned_bases": 1, "at_war": False,
+INFO = {"id": "f1", "name": "The Test", "tag": "TEST", "leader_username": "Lead Ship", "member_count": 1, "owned_bases": 1, "at_war": False,
         "created_at": "2026-11-15T18:09:32Z", "members": [{"username": "Lead Ship", "role": "Leader"}]}
 OWNED = {"facilities": [
     {"facility_id": "b1", "type_id": "faction_fuel_bunker", "name": "Faction Fuel Bunker", "base_id": OUTPOST, "system_id": "wild", "status": "active", "rent_per_cycle": 0},

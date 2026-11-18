@@ -216,6 +216,80 @@ class PlanTests(Tree):
         self.assertEqual(self.assign()["pilots"]["miner-7"][2], "ice-a")
 
 
+class FreePartTests(Tree):
+    """Requests ENT-263 (Oracle): Planned and Notes are written by the script like every other part, never by hand; a
+    `## ` heading twice at a line start fails the check (three plan files carried every heading twice on 2026-11-17)."""
+
+    def setUp(self):
+        super().setUp()
+        self.run_plan("zero", "apply")
+
+    def test_planned_and_notes_are_written_by_script_with_the_same_commit_and_permission_rules(self):
+        done = self.run_plan("zero", "planned", "a test of ice-b at far", "--when", "next turn")
+        self.assertEqual(done.returncode, 0, done.stdout)
+        self.assertIn("- a test at far | next turn\n- a test of ice-b at far | next turn\n", self.file("mining").read_text())
+        self.assertEqual(self.role("miner")["planned"][-1], {"what": "a test of ice-b at far", "when": "next turn"})     # every member reads it
+        self.assertEqual((self.git("log", "-1", "--format=%an %s"), self.git("status", "--porcelain")),
+                         ("Zero mining plan: Planned + one line (plan.py, Zero)\n", ""))
+        done = self.run_plan("zero", "planned", "--clear", "gather", "far", "first", "--when", "today")      # replace the list by one line
+        self.assertEqual(done.returncode, 0, done.stdout)
+        self.assertEqual(self.role("miner")["planned"], [{"what": "gather far first", "when": "today"}])
+        self.run_plan("zero", "planned", "--clear")
+        self.assertEqual(self.role("miner")["planned"], [])
+        self.assertIn("## Planned\n\nWhat you mean", self.file("mining").read_text())
+        self.assertIn("plan.py planned`). Every\nmember reads it in `game/routes/plan-<role>.md`: it names no ship of ours.\n\nNone.\n", self.file("mining").read_text())
+        before = self.git("rev-parse", "HEAD")
+        self.assertEqual(self.run_plan("zero", "note", "ice", "at", "far:b", "is", "for", "the", "best").returncode, 0)
+        self.run_plan("zero", "note", "the second line")
+        notes = self.file("mining").read_text().split("## Notes\n\n")[1]
+        lines = notes.strip().split("\n")
+        self.assertEqual(len(lines), 2, notes)
+        self.assertRegex(lines[0], r"^- \d{4}-\d{2}-\d{2} \d{2}:\d{2} UTC: ice at far:b is for the best$")
+        self.assertTrue(lines[1].endswith(" UTC: the second line"))
+        self.assertEqual(self.git("rev-parse", "HEAD"), before)                                  # Notes stay in the data folder: nothing to commit
+        self.run_plan("zero", "note", "--clear")
+        self.assertTrue(self.file("mining").read_text().endswith("## Notes\n\nNone.\n"))
+        self.assertEqual(self.run_plan("zero", "check").stdout.split(":")[0], "PASS mining")
+
+    def test_a_free_part_is_refused_to_another_member_to_a_pilots_name_and_to_more_than_one_line_of_ascii(self):
+        before = self.still()
+        for member, args, says in (("oracle", ("planned", "x", "--division", "mining"), "REFUSED: the plan of the mining division is kept by Zero"),
+                                   ("oracle", ("note", "x", "--division", "mining"), "REFUSED: the plan of the mining division is kept by Zero"),
+                                   (None, ("note", "x"), "REFUSED: this shell is no member"),
+                                   ("zero", ("planned", "miner-3 first"), "it names no pilot of ours (miner-3)"),
+                                   ("zero", ("note", "ice " + chr(0xe9)), "one line of ASCII"),
+                                   ("zero", ("planned", "y" * 501), "500 characters at most")):
+            done = self.run_plan(member, *args)
+            self.assertIn(says, done.stdout, args)
+            self.assertNotEqual(done.returncode, 0)
+        self.assertEqual(self.still(), before)
+
+    def test_a_heading_twice_at_a_line_start_halts_the_check_and_note_clear_mends_it(self):
+        text = self.file("mining").read_text()
+        doubled = text.replace("## Notes\n\nNone.", "## Notes\n\n" + text)       # the hand edit of 2026-11-17: the whole file again under Notes
+        self.file("mining").write_text(doubled)
+        done = self.run_plan("zero", "check")
+        self.assertEqual(done.returncode, 1, done.stdout)
+        self.assertIn("HALT mining: the file fails the check", done.stdout)
+        self.assertIn("the heading `## First, for Every Ship` stands twice at a line start (first at line 12)", done.stdout)
+        before = (self.assign(), self.git("rev-parse", "HEAD"))
+        done = self.run_plan("zero", "apply")
+        self.assertEqual((done.returncode, self.file("mining").read_text(), (self.assign(), self.git("rev-parse", "HEAD"))), (1, doubled, before))
+        done = self.run_plan("zero", "note", "an extra line")                                   # still a copy under Notes: refused
+        self.assertEqual(done.returncode, 1, done.stdout)
+        self.assertIn("stands twice at a line start", done.stdout)
+        self.assertEqual(self.file("mining").read_text(), doubled)
+        done = self.run_plan("zero", "note", "--clear")
+        self.assertEqual(done.returncode, 0, done.stdout)
+        mended = self.file("mining").read_text()
+        self.assertEqual([line for line in mended.split("\n") if line.startswith("## ")],
+                         ["## First, for Every Ship", "## Ships", "## Then, for Every Ship", "## Planned", "## Notes"])
+        self.assertEqual(self.run_plan("zero", "check").stdout.split(":")[0], "PASS mining")
+        self.assertEqual(self.plan.twice("## Notes\n`## Notes` in a line\n## notes \n"), [
+            "line 3: the heading `## notes` stands twice at a line start (first at line 1): a copy of the file stands in it; "
+            "`plan.py note --clear` empties Notes, where such a copy lies"])                    # a heading at a line start only, case and spaces aside
+
+
 class TemplateTests(Tree):
     """Templates: a division's named lists of routes (game/routes/templates/<division>.json), named in a ship's own
     routes as `@<name>` (Suggi, 2026-11-16: ships switched between kinds of work, preconfigured)."""
