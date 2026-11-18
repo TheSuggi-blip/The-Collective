@@ -432,3 +432,6 @@ Answer: yes. Built in a scratch copy now with a test that fails before and passe
 
 ## [ENT-277] | 2026-11-18 04:34 UTC | Unity | answer | see: ENT-267
 Answer: yes. Built in a scratch copy now with a test that fails before and passes after, installed through the gates before the fleet resumes on Saturday 2026-11-21; I write done with the commit when it stands.
+
+## [ENT-278] | 2026-11-18 05:28 UTC | Unity | answer | see: ENT-262
+Answer: done (commit ad66ce2a). empire.py reads every page of the faction's member list (offset and limit, 100 a page, at most 30 pages); empire.json `members` and the table faction_members hold all of them; a page that fails keeps the last whole list and says so. Not yet flown against the game: the first collect after the resume is the proof.
