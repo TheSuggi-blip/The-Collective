@@ -2,7 +2,7 @@
  "id": "craft-steel-logistics-experiment",
  "kind": "circuit",
  "title": "Steel plate smelted at the The Experiment workshop from all of the pilot's own stored iron ore in one visit, kept in its storage there for the reserve (Logistics' haulers)",
- "note": "Written by Apollo, 2026-11-18 00:12 UTC (orders.log ENT-052, block APOLLO: a hauler without that work makes steel plate from stored iron; P2: the reserve's iron is met, 31,440 plate still to make, the tool stock view=reserve 23:49 UTC). Stops copied from Trade's craft-steel-own-node-beta (admirals.log ENT-065): the craft list asks basic_iron_smelting in halving sizes (128 to 1 runs, 10 iron ore a plate, 0 cr at the workshop); the runner quotes each entry and makes nothing where the stores fall short, so the pilot smelts what it holds, up to 2,550 iron. The second stop stores what the craft step took aboard. Logistics' haulers held 16,129 iron ore at The Experiment (39 storages), 6,483 at Node Beta (40), 2,003 at Central Nexus (35) and 1,789 at Synchrony Hub (13) (table holdings, 23:49 UTC). Standing work: it feeds the reserve and trains crafting and refining; opens on 100 iron stored there, once per reading of the storage book.",
+ "note": "Written by Apollo, 2026-11-18 00:12 UTC (orders.log ENT-052, block APOLLO: a hauler without that work makes steel plate from stored iron; P2: the reserve's iron is met, 31,440 plate still to make, the tool stock view=reserve 23:49 UTC). Stops copied from Trade's craft-steel-own-node-beta (admirals.log ENT-065): the craft list asks basic_iron_smelting in halving sizes (128 to 1 runs, 10 iron ore a plate, 0 cr at the workshop); the runner quotes each entry and makes nothing where the stores fall short, so the pilot smelts what it holds, up to 2,550 iron. The second stop stores what the craft step took aboard. Logistics' haulers held 16,129 iron ore at The Experiment (39 storages), 6,483 at Node Beta (40), 2,003 at Central Nexus (35) and 1,789 at Synchrony Hub (13) (table holdings, 23:49 UTC). Standing work: it feeds the reserve and trains crafting and refining; opens on 100 iron stored there, once per reading of the storage book. 2026-11-18 00:34 UTC: max_ships 8 -> 12: the first runs took 7 minutes each and haulers wait for a place while their gather runs end.",
  "standing": true,
  "requires": {
   "stored": {
@@ -11,7 +11,7 @@
    "min": 100
   }
  },
- "max_ships": 8,
+ "max_ships": 12,
  "stops": [
   {
    "at": "the_experiment:the_experiment_research_station:the_experiment_research_station",
