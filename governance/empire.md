@@ -20,7 +20,7 @@ they store, the members by name and the treasury's balance. They are live
 data of the unit (the tools `hive` with `verb=empire`, `stock`, `ship`;
 `game/fleet/empire.py show`).
 
-Facts as of 2026-11-17T22:58:55Z.
+Facts as of 2026-11-18T00:01:48Z.
 
 ## 1. The Faction
 
@@ -29,7 +29,7 @@ Facts as of 2026-11-17T22:58:55Z.
 | Name and tag | The Collective [CLTV] |
 | Founded | 2026-11-15 |
 | Leader | the Fleet Admiral's flagship |
-| Members | 94 of a limit of 100 |
+| Members | 99 of a limit of 100 |
 | Ships of the fleet in it | 50 of 246 |
 | Stations of our own | 0 of 5 a faction may hold |
 | Outposts | 1 of 8 |
@@ -87,13 +87,14 @@ list of stations. Where a base is built is Suggi's decision.
 | `hawthorne` | Hawthorne | lawless | 13 | none | candidate | Suggi | north region, two large bases there, for instance Aldebaran and Hawthorne (Suggi, 2026-11-17); with alchiba the region named for a later station (Suggi, 2026-11-16); 13 jumps from home, lawless, not read by us yet |
 | `alchiba` | Alchiba | lawless | 14 | none | candidate | Suggi | north region, two large bases there, for instance Aldebaran and Hawthorne (Suggi, 2026-11-17); with hawthorne the region named for a later station (Suggi, 2026-11-16); 14 jumps from home, lawless, not read by us yet |
 | `intercrus` | Intercrus | lawless | 7 | none | candidate | Suggi | east region, beside Diadem, one large base (Suggi, 2026-11-17); proposed for a base (Suggi, 2026-11-17); 7 jumps from home, lawless; read once by our census on 2026-11-15 21:41 UTC: two belts and alloy remnants of iron and copper near 100,000 each, sol alloy ore 1,401, null matter 650, an ice field  |
-| `felis` | Felis | lawless | 7 | none | candidate | Suggi | south region, the region of Biham, one large base (Suggi, 2026-11-17); with biham a pair proposed for a base (Suggi, 2026-11-17); 7 jumps from home, lawless, borders Gliese 876 (pirates named in the military guidebook); read once on 2026-11-15 23:34 UTC: two metallic belts and a frost ring, their de |
+| `felis` | Felis | lawless | 7 | none | chosen | Suggi | the south outpost (Suggi, 2026-11-17 about 23:40 UTC); 4 beyond our border, between Tanglewood and Biham; no station beyond it now; built after Atria and Oakridge |
 | `biham` | Biham | lawless | 8 | none | candidate | Suggi | south region, the region of Biham, one large base (Suggi, 2026-11-17); with felis a pair proposed for a base (Suggi, 2026-11-17); 8 jumps from home, lawless, borders Felis and Gliese 876; not read by us yet |
 | `diadem` | Diadem | lawless | 8 | none | candidate | Suggi | east region, one large base (Suggi, 2026-11-17: "then maybe Diadem"); 8 jumps from home, lawless by the chart, a neighbour of Intercrus; not read by us yet |
 | `gsc_0044` | GSC-0044 | lawless | 6 | CLTV Outpost GSC-0044 (outpost, CLTV) | built | Zero, Apollo | the first outpost (the Fleet Admiral chose it on 2026-11-17, orders P4 and rule F33; Logistics builds it): 3 systems beyond our border, 3 jumps from The Experiment through Achernar and Cedarhold, 6 from home; two belts of iron and copper, 100,000 each (census 2026-11-17 06:30 UTC), sol alloy ore 1,5 |
 | `acrab` | Acrab | lawless | 6 | none | dropped | Unity | replaced by Atria on Suggi's word (2026-11-17 about 22:30 UTC) |
 | `gsc_0006` | GSC-0006 | lawless | 10 | none | dropped | Unity | the north station goes toward Yildun instead, at the end of the choke point (Suggi, 2026-11-17 about 22:30 UTC) |
 | `atria` | Atria | lawless | 7 | none | chosen | Unity | the north outpost (Suggi, 2026-11-17 about 22:30 UTC: the site on Atria instead of Acrab): 5 systems beyond our border, 7 jumps from home, on the north road (Marfik > Atria > Regor), 5 jumps short of Yildun; belt iron 98,472, copper 100,000, gold 1,482; ice water, nitrogen, deuterium; no flag near |
+| `oakridge` | Oakridge | lawless | 11 | none | candidate | Unity | the east station's site (Suggi, 2026-11-17 about 23:45 UTC: Oakridge can be a station), when we decide to build one in the east, which other factions crowd; 8 beyond our border, 5 beyond GSC-0044; copper 299,999, iron 256,837, zinc 15,999 (Intel); Solarian space 3 jumps away |
 
 ## 5. What The Faction Can Build
 
