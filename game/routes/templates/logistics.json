@@ -43,16 +43,14 @@
    "note": "2026-11-18: the reserve's iron is met, 31,440 plate still to make; piping nearly met (1,168 to make), so the piping route holds 2 ships"
   },
   "gather-reserve": {
-   "title": "Fallback: gather iron and copper ore into storage at Node Beta for the reserve when no hauling or crafting stands open",
+   "title": "Gather only what the reserve lacks: silicon at Glasslight Shoal",
    "routes": [
-    "gather-hamal-crystal-bloom",
-    "gather-gsc-0027-prism-scatter",
-    "gather-gsc-0027-spacetime-seep"
+    "gather-glasslight-shoal-silicon"
    ],
    "trains": [
     "mining"
    ],
-   "note": "Shared fields: their max_ships count across the fleet and Mining claims up to 58 places on the first two (admirals.log ENT-001). min_left closes a field. Not judged on pay."
+   "note": "2026-11-18: iron and copper are met (orders ENT-052, P2); the iron and copper fields left the template. Silicon, carbon, gold and nickel fields within 8 jumps hold little and are claimed by Mining and Intel (table fields 00:07 UTC)"
   },
   "gas-harvest": {
    "title": "Gas for the haulers with a Gas Harvester I: one ship a cloud, sold at the bid the route names, the rest stored",
