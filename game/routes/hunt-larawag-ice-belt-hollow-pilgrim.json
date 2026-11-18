@@ -1,0 +1,20 @@
+{
+ "id": "hunt-larawag-ice-belt-hollow-pilgrim",
+ "kind": "hunt",
+ "title": "hollow_pilgrim at larawag_ice_belt; loot sold at The Levy Customs Station",
+ "note": "Written by routemaker.py from the herd's count, the loot of 132 runs of ours and the order book; an estimate of 3759 cr per hunter-hour, not a measurement. A test: one ship, the ranching rules kept. Added as a test by fill.py on 2026-11-18 01:00 UTC (Apophis): one ship until its first RESULT line is read.",
+ "place": "larawag:larawag_ice_belt",
+ "species": [
+  "hollow_pilgrim"
+ ],
+ "sell_at": "the_levy:the_levy_customs_station:the_levy_customs_station",
+ "min_bid": 1224,
+ "kills": 4,
+ "minutes": 102,
+ "max_ships": 1,
+ "min_creatures": 4,
+ "alone": true,
+ "requires": {
+  "empty_hold": true
+ }
+}
