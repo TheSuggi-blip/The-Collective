@@ -395,3 +395,35 @@ Measure: income per hour; inputs the reserve is short of stored per hour; drones
 ORACLE, Intel (the scout- ships)
 Order: a scout scans all the time, on templates of reads: the places our routes use are read twice in a turn, the order books the fleet sells to every hour, the oldest reading first; a scout gathers ore only when nothing the fleet plans on is stale. About ten scouts explore the three roads of D4 first (P4 b): Atria is chosen for the north outpost and Yildun is the north station's candidate (Suggi); keep Atria, Yildun, the road between them and their neighbours read every three hours, with the pirate record of the choke point, and keep Oakridge, Felis and the roads to them read every three hours with their pirate record; around Oakridge read which factions hold what, for the question of an east station later. Your scouts hunt as well (D8): where a herd lies on a scout's way it hunts, inside rule F9. Keep GSC-0044 and its six neighbours read hourly. Find a source for each input of the reserve that has none: a field of uranium ore first, then caustic sac and silicon ore. Write down where pirates stand, for Military (observe.py add pirate ...): your scouts look and leave (rule F27). Your scouts are light military where it serves: they escort, watch an outpost or a field and warn; the stance of rule F2 holds for them.
 Measure: the age of the oldest reading the fleet plans on, at the end of the turn; places our routes use that were read twice; inputs of the reserve with a known source; scouts at work, 30 of 30; what scanning, exploration and navigation gained; candidates for the next two sites; GSC-0044 and its neighbours read every hour.
+
+## [ENT-055] | 2026-11-18 03:17 UTC | Unity | order | ref: communications/protocol.md | see: ENT-054
+Changed: rewritten in the short form Suggi set on 2026-11-18 (communications/protocol.md): intent only, the plan in 150 words, each member in 80. The game in short moved to SPACEMOLT.md, roles to ROSTER.md and each MISSION.md, lasting words to the rulebook. The game is paused until Saturday 2026-11-21.
+In force from this entry until a newer one.
+STANDING ORDERS (Suggi; set and changed by him alone)
+S1. Explore freely.
+S2. Dominate the galaxy.
+S3. Grow the fleet.
+S4. Build a galactic empire.
+STANDING GOALS (Suggi; set and changed by him alone)
+G1. The empire: "Your goal as Unity is to build and command the biggest and strongest empire in the galaxy, The Collective, and to be the most powerful presence in the game as The Collective. Standing goal."
+G2. The grand fleet: "I want you to have the overall goal to get to the faction limit of 1,000, so we can build the grand fleet. This will take time: you have to do the levels 1, 2, 3, 4, 5 and so on."
+G3. The stations: "Explore the territory between the Frontier empire and our own. We build one or two stations in the area in between: maybe Yildun, and Aldebaran can be one too. That way we have two station locations. Also Hawthorne and Alchiba: that region can be another station. So in the medium to long term we expand to that region and keep the systems from our starting place to there all running with profitable routes and things to do."
+G4. Mastery: each member "has an overarching goal to improve, learn and master their class": Military all things military, Trade trading and all its aspects, Intel scouting, Mining and Logistics theirs, the Fleet Admiral the fleet as a whole.
+PLAN (the Fleet Admiral's order to the fleet)
+P1. An economy that pays for itself: the fleet's steady net above zero over 24 hours, every ship on work of its own class, no ship idle -- every Admiral.
+P2. Lean supply: the reserve made while short, stopped when full -- Apollo, with Zero.
+P3. North first, then east: the outpost Atria, then the station Yildun at the end of the north choke point; Oakridge east, Felis south later -- Apollo builds, Oracle reads the roads, Unity chooses and pays.
+P4. The faction's ladder: 200 seats at Node Beta, then 400 on our own ground -- Unity, with Apollo.
+Watch: a pirate pack on record at Merak; the north road clean within two jumps on Intel's last reading.
+UNITY, Fleet Admiral (the command group)
+Install the reworked system before Saturday: statistics, the full record, division of labour, pull levels, the lean rulebook, SPACEMOLT.md, ROSTER.md and the missions. Resume the fleet on Saturday, answer every request before the Admirals' turns, and fund Atria when Apollo is ready.
+ZERO, Mining (miner- ships)
+Gather what the reserve lacks, by its levels (silicon, carbon, gold and nickel now), then what buyers pay for. Fly the outpost's belts with your faction miners. Level mining and reach your next hulls.
+MERCURY, Trade (trader- ships)
+Find buyers and trade that repeats, so the fleet's steady net turns positive; sell every division's surplus. Give your traders trading and crafting work of their own, not docking.
+APOLLO, Logistics (hauler- ships)
+Keep the reserve by its levels and the outpost's bunker by route. Prepare Atria's kit and road and found it once GSC-0044 runs by itself. Build the Recruitment Center when the purse holds its fee.
+APOPHIS, Military (drone- and sentinel- ships)
+Guard and escort our ships from our stations outward, never the first ring of outposts and its roads (rule F33), and fight the fleet's wars when Suggi declares one. Until a station of ours stands, bring the fleet into fighting shape: hunts that pay, combat skills, weapons and armour fitted, the next hulls, and a group hunt that kills, on prey it can beat. Pirates stay your call, a test first.
+ORACLE, Intel (scout- ships)
+Keep the readings the fleet plans on fresh. Read the north road from Atria to Yildun and the pirate record of its choke point; watch Oakridge's neighbours; explore beyond and hunt on the way.
