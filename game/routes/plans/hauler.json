@@ -55,11 +55,6 @@
   "craft-steel-logistics-central-nexus",
   "craft-piping-plate-node-beta",
   "gather-glasslight-shoal-silicon",
-  "gather-schedar-belt",
-  "gather-ironhollow-echo-ejecta",
-  "gather-okab-belt",
-  "gather-gj-3470-dewfall-fray",
-  "gather-acubens-belt-carbon",
   "census-frontier",
   "park"
  ],
@@ -146,11 +141,6 @@
   "craft-steel-logistics-central-nexus": 40,
   "craft-piping-plate-node-beta": 40,
   "gather-glasslight-shoal-silicon": 40,
-  "gather-schedar-belt": 40,
-  "gather-ironhollow-echo-ejecta": 40,
-  "gather-okab-belt": 40,
-  "gather-gj-3470-dewfall-fray": 40,
-  "gather-acubens-belt-carbon": 40,
   "census-frontier": 40,
   "park": 40
  },
