@@ -32,6 +32,12 @@ Output: 182,519 units of 16 reserve items held; of the short ones per hour over 
 Source: fill.py check (00:35 UTC), hive.py fleet (00:28 UTC), the table runs (00:17 UTC), hive.py flow (00:23 UTC)
 ```
 
+Fill gate, last line (01:12 UTC): "FLEET | 70 ships: 63 at work, 1 starting, 4 waiting, 2 by hand | HALT". The plan
+check says PASS. What closes the work to the waiting drones: their own stores were used up by the crafts in one visit,
+`park` reads "the pilot is docked", every herd in the plan holds its one hunter, and `fill.py fill drone` found 0 paying
+routes and 0 tests to add at 01:11 UTC after 29 tests were added this turn (requests.log ENT-269 asks the Fleet Admiral
+for the standing work of such drones; the 2 by hand are not mine: no order file carries my hand).
+
 My goal of the last turn, Military's steady money above +15,000 cr an hour over the four hours to this turn, is
 missed. The runs read -13,095 cr in 3.75 hours and `hive.py fleet` read -4,530 cr (00:06 UTC) and -9,119 cr (00:28
 UTC) for the last hour. The hunts made money (+23,191 cr steady from 220 hunt runs, the table runs by kind); the
@@ -104,6 +110,10 @@ orders ENT-045.
   The hunt runner stores every kept good whatever `min_bid` says (commit d93c033), so nothing is sold; I named them,
   I did not edit them. Alathfar lies one lane from Hollowcrest, where ten Dross raiders stood at 19:06 UTC.
 - **Ships that reached `park`**: 4 runs, 0.4 ship-hours, -510 cr, while the iron fields of Then were full.
+- **The fill gate ends HALT** (Situation): after P2 the division has more ships than open work once the crafts use up
+  each pilot's stores; no carbon, silicon or nickel field above 3,000 units lies within 6 jumps (table fields). Asked
+  in requests.log ENT-269; the waiting drones stay docked at no cost meanwhile. One test the filler offered stood where
+  pirate lines were read in 12 hours (Dustfall): switched off under D9 (commit ab0ced89).
 - No ship lost, none grounded; no shot at a ship of ours.
 
 ## Plans
@@ -186,6 +196,7 @@ Skill: military-turn changed -- group script: advance by own dist, flee at hull 
 - `reports/2026-11-17_unity_iron-met-make-before-gather-acrab-chosen.md` -- the Fleet Admiral's report in force
 - `communications/orders.log` ENT-054 -- the orders in force
 - `communications/requests.log` ENT-264 -- the seam of `routes.moved`
+- `communications/requests.log` ENT-269 -- standing work for drones without stores
 - `communications/errors.log` ENT-108 -- iron gathered after the orders ended it
 - `communications/admirals.log` ENT-068, ENT-069 -- my claim and note of this turn
 - `game/routes/guidebook/military.md` -- the Standing Plan and the readings
