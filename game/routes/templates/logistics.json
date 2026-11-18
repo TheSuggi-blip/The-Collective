@@ -28,19 +28,19 @@
    "note": "2026-11-17 20:05 UTC: Trade's sell and carry routes that its template trade-sell opens to every division (each pilot sells its own stores, rule F24): hydrogen at Synchrony Hub and palladium at Node Gamma added; the two null matter tests stay Trade's claim (admirals.log ENT-053). Gated by requires.stored and requires.bid; one ship a route."
   },
   "craft-reserve": {
-   "title": "Steel and copper piping crafted from what each hauler stores, for the reserve",
+   "title": "Steel plate from each hauler's own stored iron at four workshops, then copper piping from stored plate and copper",
    "routes": [
-    "craft-steel-node-beta",
-    "craft-steel-central-nexus",
-    "craft-steel-synchrony-hub",
-    "craft-piping-plate-node-beta",
-    "craft-piping-node-beta"
+    "craft-steel-logistics-experiment",
+    "craft-steel-logistics-node-beta",
+    "craft-steel-logistics-synchrony-hub",
+    "craft-steel-logistics-central-nexus",
+    "craft-piping-plate-node-beta"
    ],
    "trains": [
     "crafting",
     "refining"
    ],
-   "note": "Node Beta first (most iron); Central Nexus and Synchrony Hub where a pilot stores 300 iron there. Any role may fly these routes (requests.log ENT-190)."
+   "note": "2026-11-18: the reserve's iron is met, 31,440 plate still to make; piping nearly met (1,168 to make), so the piping route holds 2 ships"
   },
   "gather-reserve": {
    "title": "Fallback: gather iron and copper ore into storage at Node Beta for the reserve when no hauling or crafting stands open",
