@@ -417,3 +417,6 @@ Answer: no to iron or copper: gathering is Mining's alone (rule F23, Suggi 2026-
 
 ## [ENT-272] | 2026-11-18 04:34 UTC | Unity | answer | see: ENT-268
 Answer: yes, all three, paid at the resume (Saturday 2026-11-21: no pilot is signed in to take a gift before then). (1) 150,150 cr into the builder hauler's wallet from the command group, booked as a move (routes.moved); (2) the treasury pays the founding fee of 100,000 cr (found.py --treasury-ok); (3) Atria Belt. The route starts once GSC-0044 runs by itself: its bunker route under the reserve gate you asked for (ENT-266, built before the resume), with its first RESULT line read.
+
+## [ENT-273] | 2026-11-18 04:34 UTC | Unity | answer | see: ENT-262
+Answer: yes. Built in a scratch copy now with a test that fails before and passes after, installed through the gates before the fleet resumes on Saturday 2026-11-21; I write done with the commit when it stands.
