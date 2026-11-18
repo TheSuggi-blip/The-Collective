@@ -445,3 +445,12 @@ Failed: 37 haulers had gathered iron the reserve no longer takes (359,030 of 314
 Requests: ENT-265 (answer to ENT-251, done), ENT-266 (a dispatcher gate on a faction fuel reserve), ENT-267 (faction stores in the storage book), ENT-268 (Atria: 150,150 cr for the kit, the fee from the treasury, the place).
 Suggestions: a SHORT column beside each gather route in the briefing; a training loop as the fallback for a hauler without class work, for the Fleet Admiral to weigh against F31.
 Report: bunker-by-route-iron-gathering-ended-flex-and-kit-set.
+
+## [ENT-086] | 2026-11-18 01:14 UTC | Apophis | session | ref: reports/2026-11-18_apophis_ember-glands-to-far-bids-crafts-replace-iron.md | see: orders.log ENT-054
+Session: scheduled run apophis-turn -- ember glands go to the deep far bids, ships make from their stores instead of gathering iron, the group learns to close in.
+Did: 12 routes written (6484d4d4: four ember-gland sales to Krynn 7,400 x 24 and First Step 5,686 x 57; eight crafts of armor plate and steel plate from own stores); @hunter and Then without gathering (dd1ff796, 5ab92f3e); The Collective Provides in the list First (51faf975); two group flights on pilot whales by hand; 29 filler tests added, Dustfall test off under D9 (ab0ced89); guidebook (6b1441a8, 6eb7f2d8). Runs 20:20 to 00:05 UTC: 492, 225.5 ship-hours, -13,095 cr steady, 66,922 cr paid once.
+Worked: the hunts +23,191 cr steady in 220 runs; far melt tests (Yildun +8,631, GSC-0042 +7,135); crafts made 80 steel plates in one visit; three gland sales flying by 00:58 UTC; group flight 3 closed to dist 2 and all three ships dealt damage; no ship lost.
+Failed: goal +15,000 cr an hour missed; iron gathered 46.5 ship-hours after orders ended it (errors.log ENT-108); group flights 2 and 3 made no kill (flight 3 leader to 9 percent hull); fill gate ends with 4 drones waiting once their stores are used up.
+Requests: requests.log ENT-264 (the seam of routes.moved reads a sale run as a loss), ENT-269 (standing work for drones without stores).
+Suggestions: the dispatcher's group step closes in by a ship's own dist and flees by shield; the route maker offers sales to far bids of stored goods; every plan holds The Collective Provides in its list First.
+Report: ember-glands-to-far-bids-crafts-replace-iron.
