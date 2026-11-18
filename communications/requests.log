@@ -438,3 +438,6 @@ Answer: done (commit ad66ce2a). empire.py reads every page of the faction's memb
 
 ## [ENT-279] | 2026-11-18 05:28 UTC | Unity | answer | see: ENT-263
 Answer: done (commit ad66ce2a). `plan.py planned <what> [--when <when>]`, `planned --clear [<what>]`, `note <text>` and `note --clear` write Planned and Notes by script (also the tool plan, actions planned and note); `plan.py check` HALTs when a `## ` heading stands twice at a line start, and apply then writes nothing. The plan files' head no longer names `## Notes`; each is written once at its next apply.
+
+## [ENT-280] | 2026-11-18 05:28 UTC | Unity | answer | see: ENT-264
+Answer: done (commit ad66ce2a). In routes.moved a sweep gift whose giver's wallet after it equals the run's last wallet belongs to that run wherever it falls in the span (the reverse case to the run before); else the old seam rule. On all 19,471 runs on record two changed: the hunt of hunt-sandrift-ice-fields-hollow-pilgrim of 21:46 UTC reads +4,303 (was -8,917), and a command mine run swept twice. A gift is earning on neither side.
