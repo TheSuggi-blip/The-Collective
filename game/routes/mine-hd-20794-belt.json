@@ -1,0 +1,16 @@
+{
+ "id": "mine-hd-20794-belt",
+ "kind": "mine",
+ "title": "HD 20794 Belt: carbon_ore, vanadium_ore, lead_ore; sold at The Anvil Arsenal",
+ "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 840 cr per ship-hour, not a measurement. A test: one ship. Added as a test by fill.py on 2026-11-18 01:04 UTC (Unity): one ship until its first RESULT line is read.",
+ "belt": "hd_20794:hd_20794_belt",
+ "station": "the_anvil:the_anvil_arsenal:the_anvil_arsenal",
+ "minutes": 52,
+ "max_ships": 1,
+ "sell": [
+  {
+   "item": "lead_ore",
+   "min_price": 32
+  }
+ ]
+}
