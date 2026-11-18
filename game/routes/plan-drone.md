@@ -153,9 +153,8 @@ Planned:
 
 | What | When |
 |---|---|
-| Goal: Military's steady money above +15,000 cr an hour over the four hours to the next Military turn (hive.py fleet, the division's net per hour), read at that turn. | next Military turn |
-| The second group flight: each member sets its target and closes in; read the kill, the loot and the damage per ship, and give the Fleet Admiral the dispatcher's steps for `group: N`. | next Military turn |
-| Read the first RESULT line of the escort route (its one run started 20:33 UTC); no guard or escort in the first ring of outposts and its roads (orders ENT-045): the next escort serves beyond it, at the stations and the outposts past them. | next Military turn |
-| Read the first runs of the six far tests of 20:19 UTC (GSC-0035, GSC-0045 cinder-sylphs; GSC-0037, GSC-0042, Sandrift, Yildun hollow-pilgrims); a test that pays gets its herd's one hunter for good. | next Military turn |
-| Each turn: reserve_hunts.py and pirate_places.py over both roles; a pirate pack at or one lane from a hunt takes it out of the plans. | every turn |
-| Read one drone's Shields and Armor XP before and after a hunt that dents its hull. | next Military turn |
+| Goal: Military's steady money above 0 cr an hour over the four hours to the next Military turn (hive.py fleet, the division's net per hour), read at that turn; the last turn's goal of +15,000 was missed (iron fallback, errors.log ENT-108). | next Military turn |
+| Read the first RESULT lines of the four ember-gland sales (Krynn 7,400 x 24, First Step 5,686 x 57); when Krynn's bid is filled, the stores go to First Step. | next Military turn |
+| Read the crafts from own stores (armor plate, steel plate): plates made, visits the stores carry, ships that dock for want of stores; add hunts, never gather routes. | next Military turn |
+| The group: read the third flight's record (own dist, close to 2) and give the Fleet Admiral the dispatcher's steps for `group: N`. | next Military turn |
+| Each turn: reserve_hunts.py, pirate_places.py, loot_bids.py against every sale route's bid base, and the holders of each once-chain link. | every turn |
