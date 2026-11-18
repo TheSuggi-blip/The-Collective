@@ -29,5 +29,14 @@
    "at": "the_experiment:the_experiment_research_station:the_experiment_research_station",
    "store": "all"
   }
- ]
+ ],
+ "measured": {
+  "date": "2026-11-18",
+  "runs": 84,
+  "minutes": 6,
+  "credits_per_run": 70,
+  "cph_per_ship": 610,
+  "hours": 12,
+  "last_run": "2026-11-18T01:03:58Z"
+ }
 }
