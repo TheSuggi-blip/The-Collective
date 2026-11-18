@@ -1,0 +1,32 @@
+{
+ "id": "buy-flex-ironlight-to-node-beta",
+ "kind": "circuit",
+ "title": "Flex polymer for the Recruitment Center: 57 bought at Ironlight Crossroads (LHS 1140, lawless, six jumps) and put into the faction's storage at Node Beta, where the upgrade takes its materials; members of the faction only",
+ "note": "Written by Apollo, 2026-11-18 00:15 UTC (orders.log ENT-052, block APOLLO (4): stock the Recruitment Center's 300 flex polymer, 15 held). The nearest deep ask: Ironlight Crossroads 121 cr x 300 (book of 2026-11-18 00:00 UTC); Node Alpha 117 x 6, Node Beta 171 x 9, Central Nexus 372 x 279; the ask of 116 named in the orders stands 20 jumps out (The Levy Customs Station, 2,601). The upgrade takes its materials from the faction's store at Node Beta (build.py moves only what that store lacks from the builder's storage), so each load goes straight into the faction store with `store_faction`. Five loads of 57 are the 285 missing: `once` with `max_pilots` 5 is that budget, about 34,800 cr booked once as a build's input (`one_time`). The road to LHS 1140 is flown by our ships since 2026-11-16 (the kit, the gold, 14 hunter sales) without a loss; hold empty on the way out (rule F13).",
+ "once": true,
+ "max_pilots": 5,
+ "max_ships": 2,
+ "min_credits": 15000,
+ "requires": {
+  "empty_hold": true
+ },
+ "stops": [
+  {
+   "at": "lhs_1140:0321b3e4406021575337b7be26e53dd7:784309214f105860a16a0c100a70eb14",
+   "buy": [
+    {
+     "item": "flex_polymer",
+     "qty": 57,
+     "max_price": 123,
+     "one_time": true
+    }
+   ]
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store_faction": [
+    "flex_polymer"
+   ]
+  }
+ ]
+}
