@@ -64,6 +64,10 @@
   {
    "what": "Read the 39 systems of census-worked-far every three hours (WORKED line of the intel check PASS), and move every new place where another division flies onto it",
    "when": "every turn"
+  },
+  {
+   "what": "Uranium after the pause: read the depleted deposits (Acubens, Markeb, Node Gamma, Nova Terra) for regrowth and name any source to Mining",
+   "when": "next turn"
   }
  ],
  "ships": {
