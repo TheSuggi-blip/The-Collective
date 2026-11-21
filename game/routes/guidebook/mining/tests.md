@@ -59,32 +59,23 @@ its notes. The field grew back about 520 iron an hour between reads with
 no ship of ours on it. Lifted to 5 ships at 23:25 UTC.
 
 ### Open Tests
-Status: proven. Updated: 2026-11-17. Evidence: migrated from guidebook/mining.md section 7.
+Status: test. Updated: 2026-11-21. Evidence: the runs of each route (hive.py route <id>); the hand-in lines of data/fleet/dispatch.log; table faction_storage.
 
-- The Liminal: one hull ordered at Node Beta (58,881 cr, 2026-11-17
-  11:11 UTC); its yard bought its last parts at its own bids once a miner
-  sold them there (19:33 UTC, -12,325 cr); built by 20:01 UTC; its pilot
-  switched in at 23:17 UTC (commission.py --switch-only). Its first runs
-  fly `gather-goldcrest-gold` against the Threshold's 325 gold in 90
-  minutes on the same field; a second hull only on that figure.
-- `craft-steel-experiment` (from 23:19 UTC, 10 ships): plates a run and
-  minutes; how often the ledger lets one pilot run again.
-- `voidborn-material-synthesis`, `voidborn-crystal-resonance` (one ship
-  each): whether the craft step counts for the objective; crystals a
-  load at Prism Scatter.
-- `gather-gsc-0044-belt-faction` (one ship, seated miners only): whether
-  mine.py's `deposit: faction` stores the loads into the outpost's
-  faction storage; then lift_to 10, and Botein and Acrux the same way.
-- `gather-jadecove-nickel` (one ship): nickel a run, stored at The
-  Crescent Moon beside the silicon of Floodlight Flats.
-- Silicon beyond Floodlight Flats: Zubenelhakrabi Crystal Sand 771 (its
-  nearest station is a pirate station, Dross Citadel in Algol: not flown);
-  Emberglow 4,935 and GSC-0007 Dark Beacon Cluster 18,639 lie 19 and 27
-  jumps out (table fields, 2026-11-17 15:03 UTC). A test stores, never
-  sells (rule F24).
-- The default stance `flee`: 34 of 60 miners set by 15:17 UTC (the
-  script's state file); the other 26 from 19:22 UTC by the same script,
-  22 minutes, inside the turn.
-- A Flotation Cell (filter_copper_ore) on one iron miner: the iron share
-  of its loads against about 50%. Not bought yet; a Liminal has the third
-  slot for it.
+- The Liminal: its gold runs at The Gold Crest against a Threshold's 325
+  gold in 90 minutes; it flew none before the pause of 2026-11-18. A
+  second hull only on that figure.
+- `gather-gsc-0044-belt-faction`: proved, 342 and 367 ore in runs of 47
+  minutes into the outpost's faction storage (2026-11-17/18); 10 ships
+  from 2026-11-21, seated miners only. Next: Botein and Acrux the same
+  way.
+- `gather-jadecove-nickel`: 325 ore in a run of 90 minutes (2026-11-17);
+  3 ships from 2026-11-21. The nickel share of a load is not measured.
+- `voidborn-crystal-resonance`, `voidborn-material-synthesis`: each paid
+  on its first run (2026-11-17); 4 ships each from 2026-11-21.
+- `craft-steel-experiment`: 96 runs to the pause, 50 plates a run of 6 to
+  7 minutes at the fuel's cost.
+- Silicon beyond Floodlight Flats: Zubenelhakrabi Crystal Sand (its
+  nearest station a pirate station), Undercliff and Mekbuda (9 jumps
+  from a station of ours): not flown.
+- A Flotation Cell on one iron miner: not bought; the Liminal's third
+  slot can take one.
