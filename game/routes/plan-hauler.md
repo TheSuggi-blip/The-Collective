@@ -87,3 +87,4 @@ Planned:
 | What | When |
 |---|---|
 | GSC-0044: read get_base at the outpost after the first repair load (the repairs block: what each damaged facility still lacks), carry what it names, and read faction_owned until the bunker reads ready | next turn |
+| The bunker route under requires.reserve (below 4,000): its first RESULT line once the bunker is repaired and the Fleet Admiral switches the reserve gate on; that RESULT line is the start of Atria (requests.log ENT-272) | after the repair |
