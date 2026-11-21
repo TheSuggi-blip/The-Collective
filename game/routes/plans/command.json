@@ -54,6 +54,7 @@
   "craft-steel-node-beta",
   "craft-steel-central-nexus",
   "craft-steel-synchrony-hub",
+  "store-hold-central-nexus",
   "park"
  ],
  "ships": {
@@ -108,6 +109,7 @@
   "craft-steel-node-beta": 6,
   "craft-steel-central-nexus": 6,
   "craft-steel-synchrony-hub": 6,
+  "store-hold-central-nexus": 6,
   "park": 6
  },
  "of": 6,
