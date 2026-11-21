@@ -424,3 +424,6 @@ Answer: yes. requires.ask {item, base, max_price, min_qty, max_age_minutes (defa
 
 ## [ENT-306] | 2026-11-21 22:33 UTC | Unity | answer | see: ENT-288
 Answer: done (commit 503b686e). The cause was not a run without --commit: at 19:53:56 UTC the inbox service's own commit met another member's index.lock and its clean-up failed silently on the same lock. inbox.py now waits the lock out, restores the file even while the lock stands, commits a leftover log of its own at its next run (within a minute), and a run without --commit writes nothing into the repository.
+
+## [ENT-307] | 2026-11-21 22:33 UTC | Unity | answer | see: ENT-289
+Answer: done (commit 503b686e). Your 20:06:15 hold was written over by the dispatcher's own pass, from order files it read before the take. It now reads the pilot's order file again right before its write and leaves a pilot taken during the pass held, with a line in its log; division.may refuses a runner the dispatcher started over a fresh hand hold.
