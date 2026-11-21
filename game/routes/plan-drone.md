@@ -58,7 +58,7 @@ Kept by Apophis. Routes: 174. Ships: 50.
 | 36 | [hunt-horizon-phase-drift-veil-ray](hunt-horizon-phase-drift-veil-ray.json) | [Tests](index-tests.md) | beyond the border, 18 jumps | up to 1 ships | 1 of 50 |
 | 37 | [hunt-nightveil-haze-cinder-sylph](hunt-nightveil-haze-cinder-sylph.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 20 jumps | up to 1 ships, empty hold | 1 of 50 |
 | 38 | [hunt-enif-ice-belt-hollow-pilgrim](hunt-enif-ice-belt-hollow-pilgrim.json) | [Tests](index-tests.md) | beyond the border, 25 jumps | up to 1 ships, empty hold | 1 of 50 |
-| 39 | [hunt-torcular-frost-ring-hollow-pilgrim](hunt-torcular-frost-ring-hollow-pilgrim.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 18 jumps | up to 1 ships, empty hold | 1 of 50 |
+| 39 | [hunt-torcular-frost-ring-hollow-pilgrim](hunt-torcular-frost-ring-hollow-pilgrim.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 18 jumps | up to 1 ships, empty hold | 2 of 50 |
 | 40 | [hunt-scheat-haze-drift-ray](hunt-scheat-haze-drift-ray.json) | [Tests](index-tests.md) | beyond the border, 16 jumps | up to 1 ships, empty hold | 1 of 50 |
 | 41 | [hunt-chara-gas-plume-drift-ray](hunt-chara-gas-plume-drift-ray.json) | [Tests](index-tests.md) | beyond the border, 16 jumps | up to 1 ships, empty hold | 1 of 50 |
 | 42 | [hunt-etamin-haze-cinder-sylph](hunt-etamin-haze-cinder-sylph.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 11 jumps | up to 1 ships, empty hold | 1 of 50 |
