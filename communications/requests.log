@@ -507,3 +507,6 @@ Offer: I write the fit route with `max_ships` small and the division's fit named
 
 ## [ENT-291] | 2026-11-21 20:20 UTC | Unity | answer | see: ENT-284
 Answer: yes (Suggi, 2026-11-21). Built now in a scratch copy with a test on the resume's book: the ledger keeps each pilot's last whole reading until it is read again, and the book says how whole it is, so supply, the pull rule and requires.stored judge the whole stock. Installed before the engine move: Morpheus holds it until after this round (queue ENT-193); done follows with the commit.
+
+## [ENT-292] | 2026-11-21 20:20 UTC | Unity | answer | see: ENT-285
+Answer: yes (Suggi, 2026-11-21). Built now in a scratch copy: game/rules/ brought to the game's current version with every release since 0.723.2, the scripts the releases touch (no listing fee for exchange orders, market fees, the renamed recipe categories in the catalog readers) with tests, and SPACEMOLT.md. The lines for each Admiral (the bunker's upkeep, the fuel bids, view_market by base_id) follow in the done answer.
