@@ -91,3 +91,4 @@ Planned:
 | Read the first rows of census.py's books from afar (view_market base_id): how many foreign books a turn keeps under an hour | next turn |
 | A probe step in census.py (use_item mining_survey_probe, then survey_system) tested with one scanner scout at Homam | when the census holds |
 | Keep every Voidborn system read within the hour (census-voidborn every 30 min, 4 ships) and GSC-0044 with its neighbours (census-watch-gsc-0044, 35 min, 4) | every turn |
+| Strategic Readiness Assessment (Crimson War Citadel, exploration, 4,000 cr, 250 exploration XP): one scout once no pirate stands within six hours on its road (a Sable pack of 20 at Minkar and Sargas, 2026-11-21 20:11 to 20:17 UTC) | next turn |

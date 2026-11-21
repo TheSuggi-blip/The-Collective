@@ -81,6 +81,10 @@
   {
    "what": "Keep every Voidborn system read within the hour (census-voidborn every 30 min, 4 ships) and GSC-0044 with its neighbours (census-watch-gsc-0044, 35 min, 4)",
    "when": "every turn"
+  },
+  {
+   "what": "Strategic Readiness Assessment (Crimson War Citadel, exploration, 4,000 cr, 250 exploration XP): one scout once no pirate stands within six hours on its road (a Sable pack of 20 at Minkar and Sargas, 2026-11-21 20:11 to 20:17 UTC)",
+   "when": "next turn"
   }
  ],
  "ships": {
