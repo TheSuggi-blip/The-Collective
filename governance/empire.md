@@ -20,7 +20,7 @@ they store, the members by name and the treasury's balance. They are live
 data of the unit (the tools `hive` with `verb=empire`, `stock`, `ship`;
 `game/fleet/empire.py show`).
 
-Facts as of 2026-11-18T00:01:48Z.
+Facts as of 2026-11-21T21:06:59Z.
 
 ## 1. The Faction
 
@@ -30,10 +30,10 @@ Facts as of 2026-11-18T00:01:48Z.
 | Founded | 2026-11-15 |
 | Leader | the Fleet Admiral's flagship |
 | Members | 99 of a limit of 100 |
-| Ships of the fleet in it | 50 of 246 |
+| Ships of the fleet in it | 99 of 246 |
 | Stations of our own | 0 of 5 a faction may hold |
 | Outposts | 1 of 8 |
-| Offices at stations | 5, rent 177 cr per cycle (15,222 cr a day) |
+| Offices at stations | 5, rent 242 cr per cycle (20,812 cr a day) |
 | Shared ships in garages | 0 |
 | At war | no |
 | Allies | none |
@@ -68,7 +68,7 @@ hold).
 | Faction Fuel Bunker | 1 | 443f0c5b2a1fbbcea95d13b76a797fe9 | `gsc_0044` | active | 0 |
 | Faction Lockbox | 1 | 443f0c5b2a1fbbcea95d13b76a797fe9 | `gsc_0044` | active | 0 |
 | Faction Lockbox | 1 | node_beta_industrial_station | `node_beta` | active | 69 |
-| Recruitment Desk | 1 | node_beta_industrial_station | `node_beta` | active | 39 |
+| Recruitment Desk | 1 | node_beta_industrial_station | `node_beta` | active | 104 |
 | Faction Lockbox | 1 | the_experiment_research_station | `the_experiment` | active | 69 |
 
 ## 4. Sites
@@ -98,7 +98,7 @@ list of stations. Where a base is built is Suggi's decision.
 
 ## 5. What The Faction Can Build
 
-Every faction facility of the game's catalog (0.723.2), line by line and
+Every faction facility of the game's catalog (0.732.0), line by line and
 tier by tier. A higher tier is an upgrade of the one before it and
 replaces its rent. Rent is due every 100 ticks (about 17 minutes) at a
 station that is not ours; at our own station or outpost it is none. The
