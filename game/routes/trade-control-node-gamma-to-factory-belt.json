@@ -1,0 +1,55 @@
+{
+ "id": "trade-control-node-gamma-to-factory-belt",
+ "kind": "circuit",
+ "title": "Control nodes bought at Node Gamma for 410 cr or less, sold into Factory Belt's bid at 700 or more: a trade test beyond the border",
+ "note": "2026-11-21 23:50 UTC (Mercury, orders.log ENT-059 block MERCURY: trade beyond our borders). Node Gamma asks control node 398 x 100 (112 in all; book of 23:3x UTC, table books); Factory Belt Manufacturing Hub (22 jumps, 14 of them lawless: scripts/map.py route node_gamma factory_belt) bids 777 x 200 (book read 0.3 h before). About 375 cr a unit after the buyer's 1 percent: 24,400 cr a Threshold load of 65, 37,500 a freighter load of 100 (gaps.py, skill trade-books). Size 1 a unit. A test: one ship (max_ships 1), an empty hold out of home, the buy gated by requires.ask (a book of Node Gamma read within the hour) and the sale by requires.bid; stop_on_failed_buy ends the run at Node Gamma when the ask is gone, so no ship flies 22 jumps empty. What the bid leaves is stored at Factory Belt. Pirates: kitalpha on the road had 16 battles since 2026-11-15, the last 2026-11-21 11:28 UTC (observations kind pirate); no ship of ours lost in the store's 8 days (stats_pilot_hour). Whether Node Gamma's ask and Factory Belt's bid come back decides if this repeats.",
+ "max_ships": 1,
+ "min_credits": 30000,
+ "requires": {
+  "empty_hold": true,
+  "ask": {
+   "item": "control_node",
+   "base": "node_gamma_relay_station",
+   "max_price": 410,
+   "min_qty": 60
+  },
+  "bid": {
+   "item": "control_node",
+   "base": "factory_belt_manufacturing_hub",
+   "min_price": 700,
+   "min_qty": 60
+  }
+ },
+ "stops": [
+  {
+   "at": "node_gamma:node_gamma_relay_station:node_gamma_relay_station",
+   "buy": [
+    {
+     "item": "control_node",
+     "qty": 100,
+     "max_price": 415
+    }
+   ],
+   "stop_on_failed_buy": true
+  },
+  {
+   "at": "factory_belt:factory_belt_manufacturing_hub:factory_belt_manufacturing_hub",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "control_node"
+    }
+   ],
+   "sell": [
+    {
+     "item": "control_node",
+     "min_price": 700
+    }
+   ]
+  },
+  {
+   "at": "factory_belt:factory_belt_manufacturing_hub:factory_belt_manufacturing_hub",
+   "store": "all"
+  }
+ ]
+}

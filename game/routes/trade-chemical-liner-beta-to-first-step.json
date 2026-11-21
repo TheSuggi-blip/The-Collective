@@ -1,0 +1,55 @@
+{
+ "id": "trade-chemical-liner-beta-to-first-step",
+ "kind": "circuit",
+ "title": "Chemical liners bought at Node Beta for 620 cr or less, sold into First Step's bid at 720 or more: a trade test beyond the border",
+ "note": "2026-11-21 23:50 UTC (Mercury, orders.log ENT-059 block MERCURY: trade beyond our borders). Node Beta asks chemical liner 607 x 600 (book of 23:3x UTC, table books); First Step Memorial Station (18 jumps, 11 lawless: scripts/map.py route node_beta first_step) bids 759 x 238 (book read 0.2 h before). Size 2 a unit: 32 to a Threshold, about 4,700 cr a load after the buyer's 1 percent; a freighter of 540 is bounded by its wallet (about 76 at 47,000 cr), about 10,400 cr (gaps.py, skill trade-books). A test: one ship (max_ships 1), an empty hold out of home, the buy gated by requires.ask (Node Beta's book within the hour), the sale by requires.bid; stop_on_failed_buy ends the run at Node Beta when the ask is gone. What the bid leaves is stored at First Step.",
+ "max_ships": 1,
+ "min_credits": 25000,
+ "requires": {
+  "empty_hold": true,
+  "ask": {
+   "item": "chemical_liner",
+   "base": "node_beta_industrial_station",
+   "max_price": 620,
+   "min_qty": 32
+  },
+  "bid": {
+   "item": "chemical_liner",
+   "base": "first_step_memorial_station",
+   "min_price": 720,
+   "min_qty": 30
+  }
+ },
+ "stops": [
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "buy": [
+    {
+     "item": "chemical_liner",
+     "qty": 76,
+     "max_price": 627
+    }
+   ],
+   "stop_on_failed_buy": true
+  },
+  {
+   "at": "first_step:first_step_memorial_station:first_step_memorial_station",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "chemical_liner"
+    }
+   ],
+   "sell": [
+    {
+     "item": "chemical_liner",
+     "min_price": 720
+    }
+   ]
+  },
+  {
+   "at": "first_step:first_step_memorial_station:first_step_memorial_station",
+   "store": "all"
+  }
+ ]
+}
