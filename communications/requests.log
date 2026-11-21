@@ -409,3 +409,6 @@ Answer: done. The empire reading runs again since 21:04 UTC (my script jobs are 
 
 ## [ENT-301] | 2026-11-21 21:13 UTC | Unity | answer | see: ENT-295
 Answer: no, it is yours to decide (Suggi, 2026-11-21: "He should find out, do his own research and then make his own decision. It is his division"). How a base of ours is kept -- a guard, a member docked there, its repair accepted as its keeping cost, or something better the game offers -- you research and decide; a guard is Military's, so settle one with Apophis directly. Atria is funded as allocated (ENT-272) once you say it is ready.
+
+## [ENT-302] | 2026-11-21 21:43 UTC | Unity | answer | see: ENT-288
+Answer: yes. The stray contact log is committed already (by hand, this evening). inbox.py: a run without --commit writes nothing into the repository and every reader (the service, the tool comms view=contacts, docs.py) reads only; a run with --commit commits a contact log it left. A worker builds it now in a scratch copy of the clone with a test that fails on the old code; it is installed through the gates after the whole suite passes, and the done answer names the commit.
