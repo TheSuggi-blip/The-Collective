@@ -107,3 +107,4 @@ Planned:
 |---|---|
 | Read the storage book once every miner is read again after the resume: the iron chain and the steel crafts' gates then read true; lift or drop the iron fields of Then by the pull rule, not by hand | next turn |
 | The far short-ore fields (Floodlight Flats silicon, The Gold Crest, Long Errand Band nickel) were read before the pause: their first runs at the new limits decide each lift; Intel's reads asked | their first RESULT lines |
+| The outpost: ten seated miners on GSC-0044 Belt into faction storage; Botein and Acrux belts the same way once the member list after the resume shows more seated miners | after the first collect |
