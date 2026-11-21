@@ -1,0 +1,37 @@
+{
+ "id": "supply-repair-gsc-0044-plate",
+ "kind": "circuit",
+ "title": "Steel plate for the repair of our outpost CLTV Outpost GSC-0044: 60 plate of the pilot's own storage at Node Beta put into the faction's storage at the outpost; members of the faction only",
+ "note": "Written by Apollo, 2026-11-21 20:15 UTC (orders.log ENT-056, block APOLLO: keep the outpost's bunker by route; MISSION.md: keep every base running). After the 3-day pause the outpost's Faction Fuel Bunker and Faction Lockbox read `damaged` (spacemolt_facility faction_owned, 19:50 UTC) and the storage view says of the bunker's 4,672 fuel: 'preserved; no active fuel capacity. Rebuild or repair a fuel bunker before using this reserve.' The game's help (spacemolt_facility, action repair): a repair costs 30% of the facility's original build materials and 30% of its build time, and a player-founded station rebuilds its facilities by itself from the faction's storage there when it is stocked. The catalog: the bunker took 400 steel plate and 100 circuit boards, the Lockbox 200 and 50, so the two repairs ask about 180 plate and 45 boards (not read yet: get_base docked there prints the exact list). The outpost's faction storage held no plate or boards (19:50 UTC). A budget: `once` with `max_pilots` 3 is three loads of 60; supply-repair-gsc-0044-boards carries the boards. No refuel at the outpost while its bunker is down; the tank of 95 carries the ship there and back.",
+ "once": true,
+ "max_pilots": 3,
+ "max_ships": 2,
+ "standing": true,
+ "min_credits": 5000,
+ "requires": {
+  "stored": {
+   "at": "node_beta_industrial_station",
+   "item": "steel_plate",
+   "min": 100
+  }
+ },
+ "stops": [
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "steel_plate",
+     "qty": 60
+    }
+   ]
+  },
+  {
+   "at": "gsc_0044:da9de8c360c46ffee15dee4e7d1b8476:443f0c5b2a1fbbcea95d13b76a797fe9",
+   "refuel": false,
+   "store_faction": [
+    "steel_plate"
+   ]
+  }
+ ]
+}

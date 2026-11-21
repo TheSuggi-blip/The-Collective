@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 126.
+Routes: 128.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -75,7 +75,9 @@ Routes: 126.
 | [census-watch-gsc-0044](census-watch-gsc-0044.json) | census | beyond the border, 7 jumps | Watch the first outpost site: GSC-0044 and its six neighbours read every hour (who is there, pirates, fields) | up to 4 ships, empty hold | 77 | 15 | -170 | -740 | 2026-11-17 |
 | [census-worked](census-worked.json) | census | beyond the border, 10 jumps | Read the places our routes use beyond home twice in a turn: deposits, creatures, order books, mission boards | up to 6 ships, empty hold | 121 | 16 | -190 | -710 | 2026-11-17 |
 | [census-worked-far](census-worked-far.json) | census | beyond the border, 26 jumps | Read the places beyond our roads where the other divisions fly now, every three hours: deposits, creatures, pirates, order books, mission boards | up to 6 ships, empty hold | TBD | TBD | TBD | TBD | -- |
-| [supply-bunker-gsc-0044](supply-bunker-gsc-0044.json) | circuit | beyond the border, 6 jumps | Fuel for our outpost CLTV Outpost GSC-0044: 65 fuel cells bought at The Experiment, burnt into the tank at the outpost and the tank above 30 deposited into the faction's fuel reserve; members of the faction only | once per pilot, up to 1 ships, 3 pilots in all, empty hold, from 12,000 cr, standing work | 1 | 20 | -6,560 | one-time | 2026-11-18 |
+| [supply-bunker-gsc-0044](supply-bunker-gsc-0044.json) | circuit | beyond the border, 6 jumps | Fuel for our outpost CLTV Outpost GSC-0044: 65 fuel cells bought at The Experiment, burnt into the tank at the outpost and the tank above 30 deposited into the faction's fuel reserve; members of the faction only | up to 1 ships, empty hold, from 12,000 cr, standing work | 1 | 20 | -6,560 | -20,100 | 2026-11-18 |
+| [supply-repair-gsc-0044-boards](supply-repair-gsc-0044-boards.json) | circuit | beyond the border, 6 jumps | Circuit boards for the repair of our outpost CLTV Outpost GSC-0044: 60 boards of the pilot's own storage at Node Beta put into the faction's storage at the outpost; members of the faction only | once per pilot, up to 1 ships, 1 pilots in all, from 5,000 cr, with 60 circuit_board stored at node_beta_industrial_station, standing work | TBD | TBD | TBD | TBD | -- |
+| [supply-repair-gsc-0044-plate](supply-repair-gsc-0044-plate.json) | circuit | beyond the border, 6 jumps | Steel plate for the repair of our outpost CLTV Outpost GSC-0044: 60 plate of the pilot's own storage at Node Beta put into the faction's storage at the outpost; members of the faction only | once per pilot, up to 2 ships, 3 pilots in all, from 5,000 cr, with 100 steel_plate stored at node_beta_industrial_station, standing work | TBD | TBD | TBD | TBD | -- |
 | [guard-achernar-belt](guard-achernar-belt.json) | guard | beyond the border, 4 jumps | Guard at Achernar Belt while ships of ours gather there; docks at The Experiment | up to 1 ships, empty hold, standing work | 13 | 2 | -30 | -100 | 2026-11-17 |
 | [guard-garnet-belt](guard-garnet-belt.json) | guard | beyond the border, 5 jumps | Guard at Garnet Belt, the site Mining and Intel name for the first outpost, while ships of ours gather there; docks at The Experiment | up to 1 ships, empty hold, standing work | 8 | 68 | -90 | -90 | 2026-11-17 |
 | [guard-gsc-0044-belt](guard-gsc-0044-belt.json) | guard | beyond the border, 6 jumps | Guard at GSC-0044 Belt, the site of the first outpost, while a hunter of ours works there; docks at The Experiment | up to 1 ships, empty hold, standing work | 4 | 60 | -100 | -110 | 2026-11-17 |

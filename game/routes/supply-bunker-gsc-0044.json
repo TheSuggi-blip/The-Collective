@@ -2,14 +2,17 @@
  "id": "supply-bunker-gsc-0044",
  "kind": "circuit",
  "title": "Fuel for our outpost CLTV Outpost GSC-0044: 65 fuel cells bought at The Experiment, burnt into the tank at the outpost and the tank above 30 deposited into the faction's fuel reserve; members of the faction only",
- "note": "Written by Apollo, 2026-11-18 00:06 UTC (orders.log ENT-052, block APOLLO (1): keep the outpost's bunker filled by a route, not a hand; requests.log ENT-251, ENT-252, ENT-255). The bunker takes fuel only from a ship's tank (`deposit` item_id fuel, target faction); cells stored there stay items; a member's refuel there draws the reserve back for 0 cr (guidebook logistics.md section 15.3). The first fill by script: 1,292 fuel from 64 cells bought at 101 cr with the tax, about 5.1 cr a unit against 11 to 15 cr at our stations' tanks (2026-11-17 20:39 to 21:17 UTC). The step `bunker` of route_run.py (commit 85b14c83) burns whole cells into the tank's room and deposits the tank above `keep`, one call each, until no cell is left. The reserve read 1,258 of 50,000 at 23:52 UTC. A budget, not a loop: `once` with `max_pilots` 3 is three runs in all, about 4,000 fuel for about 20,000 cr; its Admiral raises max_pilots each turn by what the reserve's draw asks, until a dispatcher gate on the reserve stands (requests.log). Only in the rows of haulers seated in the faction (table faction_members): the outpost docks members only.",
- "once": true,
- "max_pilots": 3,
+ "note": "Written by Apollo, 2026-11-18 00:06 UTC (orders.log ENT-052, block APOLLO (1): keep the outpost's bunker filled by a route, not a hand; requests.log ENT-251, ENT-252, ENT-255). The bunker takes fuel only from a ship's tank (`deposit` item_id fuel, target faction); cells stored there stay items; a member's refuel there draws the reserve back for 0 cr (guidebook logistics.md section 15.3). The first fill by script: 1,292 fuel from 64 cells bought at 101 cr with the tax, about 5.1 cr a unit against 11 to 15 cr at our stations' tanks (2026-11-17 20:39 to 21:17 UTC). The step `bunker` of route_run.py (commit 85b14c83) burns whole cells into the tank's room and deposits the tank above `keep`, one call each, until no cell is left. The reserve read 1,258 of 50,000 at 23:52 UTC. A budget, not a loop: `once` with `max_pilots` 3 is three runs in all, about 4,000 fuel for about 20,000 cr; its Admiral raises max_pilots each turn by what the reserve's draw asks, until a dispatcher gate on the reserve stands (requests.log). Only in the rows of haulers seated in the faction (table faction_members): the outpost docks members only. 2026-11-21 20:15 UTC (Apollo; requests.log ENT-266, ENT-281): `once` and `max_pilots` out, `requires.reserve` in: open only while the newest reading of the bunker's fuel is under 4,000 (one run brings about 1,361, so the bunker stands between about 4,000 and 5,400). Below 4,000 and not Unity's 5,000: the bunker reads 4,672 fuel but is damaged (faction_owned, 19:50 UTC), so the route stays closed until the repair (supply-repair-gsc-0044-*) and the draw of members' refuels take it under the floor; the gate itself is the Fleet Admiral's switch (data/fleet/reserve-gate-on).",
  "max_ships": 1,
  "standing": true,
  "min_credits": 12000,
  "requires": {
-  "empty_hold": true
+  "empty_hold": true,
+  "reserve": {
+   "base": "443f0c5b2a1fbbcea95d13b76a797fe9",
+   "item": "fuel",
+   "below": 4000
+  }
  },
  "stops": [
   {
