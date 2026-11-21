@@ -89,3 +89,4 @@ Planned:
 | Keep WORKED and FRESH at PASS: census-worked-far 64 systems every 180 minutes, census-frontier before it for the readers; move every new place another division flies onto census-worked-far every turn | -- |
 | Read the battle record (category pirate and npc) of the north road and of every base of ours each turn, and name a raid on a base the same turn every turn | -- |
 | Turn the scouts' hunt sales into gifts to a trader once Trade names receivers (strict classes, queue.log ENT-201) when receivers stand | -- |
+| Far uranium: Markeb, HD 20794, Khambalia and Mirfak re-read on the far lists; name any source to Mining next turn | -- |
