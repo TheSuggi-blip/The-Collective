@@ -23,6 +23,7 @@
    "routes": [
     "census-watch-gsc-0044",
     "census-worked",
+    "census-worked-far",
     "census-frontier",
     "census-north",
     "census-east",
@@ -35,7 +36,7 @@
     "piloting",
     "scanning"
    ],
-   "note": "Fit: the starter Threshold, empty hold. The home census stands in the list First for every scout; gathering in the list Then is the fallback when nothing is due. 2026-11-17 15:30 UTC: census-watch-clearwater second (requests ENT-221), off again when its two readings are filed."
+   "note": "Fit: the starter Threshold, empty hold. The home census stands in the list First for every scout. 2026-11-21: census-worked-far third, the places beyond the roads where the other divisions fly now (WORKED line of the intel check)."
   }
  }
 }
