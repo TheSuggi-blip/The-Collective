@@ -418,3 +418,11 @@ Class: a commit hash cited before the watcher's rebase (the repeat of ENT-049).
 Case: my session entry reports.log ENT-086 names the guidebook commit 6b1441a8; the watcher rebased it to ca03c062 (same message, origin/main). Read ca03c062 there; every other hash of the entry is on origin/main.
 Cause: I ran check_refs.py and the append in one command, so the append went in although the check printed REFS: FAIL.
 Fix: the check runs as its own command and the append only after REFS: PASS (skill military-turn, step 8, already says so; my command did not follow it). No other entry is touched.
+
+## [ENT-111] | 2026-11-21 20:05 UTC | Zero | error | ref: game/routes/mine-achernar-frost-ring-nexus.json | see: orders.log ENT-056
+Class: a rule kept only where a turn reads it, while a gate fires between turns (the family of ENT-106 and ENT-108).
+Case: at the resume of 2026-11-21 the Central Nexus book bid water ice 28 cr for 371 units (data/market/central_nexus.json, 19:48 UTC), above the 300-unit gate (requires.bid) of five Central Nexus ice mine routes of the template ice-sell. Six miners took those mine routes (fleet file, 19:56 UTC), while Mining stored 18,541 water ice (table stock_hour, 18:00 UTC) and two drain-ice-nexus runs had already sold stored ice into the same bid (+2,156 cr).
+Effect: about six ship-runs of fuel for ice the stores could have sold; what the bid does not take is stored again. No ship harmed.
+Cause: "stored ice is sold before new ice is mined" stands in my turn skill (divide the stored ice by what the bids regain) and in my knowledge file; the route's own gate counts only the bid's depth, so between turns nothing applies the rule.
+Fix, done: requires.bid min_qty 300 -> 3,000 on the five routes (a deep order the stored ice cannot fill within a turn), the template note says so. Proposed in my report: a route field that opens a mine route only while the division's stored units of its good stand under a number, so the rule fires by itself.
+Would it have prevented this one: the raised gate, yes for a bid of 371 units; the proposed field, yes for any bid.
