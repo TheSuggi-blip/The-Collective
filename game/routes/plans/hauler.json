@@ -26,9 +26,9 @@
   "mission-workshop-production-run-node-beta",
   "voidborn-first-hunt-achernar",
   "voidborn-first-hunt-gsc",
+  "supply-repair-gsc-0044-boards",
+  "supply-repair-gsc-0044-plate",
   "supply-bunker-gsc-0044",
-  "buy-flex-ironlight-to-node-beta",
-  "craft-boards-node-beta",
   "sell-hydrogen-at-node-beta",
   "sell-hydrogen-at-node-gamma",
   "sell-hydrogen-at-synchrony",
@@ -51,6 +51,7 @@
   "craft-steel-logistics-synchrony-hub",
   "craft-steel-logistics-central-nexus",
   "craft-piping-plate-node-beta",
+  "train-jumps-hauler",
   "park"
  ],
  "planned": [
@@ -103,9 +104,9 @@
   "mission-workshop-production-run-node-beta": 40,
   "voidborn-first-hunt-achernar": 40,
   "voidborn-first-hunt-gsc": 40,
-  "supply-bunker-gsc-0044": 3,
-  "buy-flex-ironlight-to-node-beta": 5,
-  "craft-boards-node-beta": 1,
+  "supply-repair-gsc-0044-boards": 34,
+  "supply-repair-gsc-0044-plate": 34,
+  "supply-bunker-gsc-0044": 34,
   "sell-hydrogen-at-node-beta": 40,
   "sell-hydrogen-at-node-gamma": 40,
   "sell-hydrogen-at-synchrony": 40,
@@ -128,12 +129,15 @@
   "craft-steel-logistics-synchrony-hub": 40,
   "craft-steel-logistics-central-nexus": 40,
   "craft-piping-plate-node-beta": 40,
+  "train-jumps-hauler": 34,
   "park": 40
  },
  "of": 40,
  "derived": "Written by game/fleet/plan.py from the division's plan file (data/plans/plan-logistics.md), never by hand.",
  "templates": {
   "stored-goods": 40,
-  "craft-reserve": 40
+  "craft-reserve": 40,
+  "outpost-supply": 34,
+  "train-hauler": 34
  }
 }
