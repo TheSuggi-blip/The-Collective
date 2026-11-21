@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 31.
+Routes: 32.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -41,6 +41,7 @@ Routes: 31.
 | [hunt-dimming-pocket-veil-ray](hunt-dimming-pocket-veil-ray.json) | hunt | beyond the border, 4 jumps | veil_ray at dimming_pocket; loot sold at Node Beta Industrial Station | up to 1 ships, empty hold, off | TBD | TBD | TBD | TBD | -- |
 | [hunt-dustfall-emission-nebula-cinder-sylph](hunt-dustfall-emission-nebula-cinder-sylph.json) | hunt | beyond the border, 27 jumps | cinder_sylph at dustfall_emission_nebula; loot sold at First Step Memorial Station | up to 1 ships, empty hold, off | TBD | TBD | TBD | TBD | -- |
 | [hunt-felis-frost-ring-hollow-pilgrim](hunt-felis-frost-ring-hollow-pilgrim.json) | hunt | beyond the border, 7 jumps | hollow_pilgrim at felis_frost_ring; loot sold at The Experiment Research Station | up to 1 ships, without piercing_railgun_i, empty hold, while sirius_observatory_station bids 1000 cr for crystal_melt, standing work, off | TBD | TBD | TBD | TBD | -- |
+| [hunt-merak-dim-phase-pocket-veil-ray](hunt-merak-dim-phase-pocket-veil-ray.json) | hunt | beyond the border, 18 jumps | veil_ray at merak_dim_phase_pocket; loot sold at First Step Memorial Station | up to 1 ships, empty hold, off | TBD | TBD | TBD | TBD | -- |
 | [hunt-test-amberfall-chlorophage](hunt-test-amberfall-chlorophage.json) | hunt | beyond the border, 5 jumps | Yield test: chlorophage at Amberfall Emission Nebula (lawless); does a kill drop caustic sac | up to 1 ships, empty hold, off | TBD | TBD | TBD | TBD | -- |
 | [hunt-test-garnet-slag-tortoise](hunt-test-garnet-slag-tortoise.json) | hunt | beyond the border, 5 jumps | Yield test: slag_tortoise at garnet_belt (lawless); what a kill drops and whether a bid takes it | up to 1 ships, without piercing_railgun_i, empty hold, off | TBD | TBD | TBD | TBD | -- |
 | [hunt-violethall-gas-plume-cinder-sylph](hunt-violethall-gas-plume-cinder-sylph.json) | hunt | beyond the border, 17 jumps | cinder_sylph at violethall_gas_plume; loot sold at Hex Star | up to 1 ships, empty hold, off | 3 | 43 | 5,530 | 7,760 | 2026-11-17 |

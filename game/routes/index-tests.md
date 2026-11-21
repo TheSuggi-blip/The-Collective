@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 133.
+Routes: 132.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -83,7 +83,6 @@ Routes: 133.
 | [hunt-lilii-borea-gas-cloud-drift-ray](hunt-lilii-borea-gas-cloud-drift-ray.json) | hunt | beyond the border, 16 jumps | drift_ray at lilii_borea_gas_cloud; loot sold at The Obsidian Well | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-lurker-veil-veil-ray](hunt-lurker-veil-veil-ray.json) | hunt | beyond the border, 18 jumps | veil_ray at lurker_veil; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-menkib-stellar-wind-cinder-sylph](hunt-menkib-stellar-wind-cinder-sylph.json) | hunt | beyond the border, 18 jumps | cinder_sylph at menkib_stellar_wind; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
-| [hunt-merak-dim-phase-pocket-veil-ray](hunt-merak-dim-phase-pocket-veil-ray.json) | hunt | beyond the border, 18 jumps | veil_ray at merak_dim_phase_pocket; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-merope-gas-plume-cinder-sylph](hunt-merope-gas-plume-cinder-sylph.json) | hunt | beyond the border, 18 jumps | cinder_sylph at merope_gas_plume; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-minkar-cryobelt-hollow-pilgrim](hunt-minkar-cryobelt-hollow-pilgrim.json) | hunt | beyond the border, 21 jumps | hollow_pilgrim at minkar_cryobelt; loot sold at The Levy Customs Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-navi-ice-shelf-frost-moth](hunt-navi-ice-shelf-frost-moth.json) | hunt | beyond the border, 20 jumps | frost_moth at navi_ice_shelf; loot sold at Nova Terra Central | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
