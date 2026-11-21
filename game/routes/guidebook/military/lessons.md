@@ -41,6 +41,10 @@ Status: proven. Updated: 2026-11-21. Evidence: errors.log 2026-11-16 and 2026-11
   first that is free in the same second.
 - A script that takes free drones takes the first to come free, far or
   near: name the candidates or bound them (`--max-jumps`).
+- A runner the dispatcher starts in the same seconds may write its order
+  over a fresh hold (2026-11-21, requests.log ENT-289): wait one pass
+  after a take and keep the pilot only while its order file still reads
+  `hand Apophis`; dock again right before a fit.
 - A killed background script may leave holds: release each by hand.
 - `withdraw` with `target: cargo` is refused by the gate's wall: the plain
   withdraw goes to the own hold; a wall refusal is reported, never worked
