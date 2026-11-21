@@ -60,36 +60,8 @@
  ],
  "planned": [
   {
-   "what": "Goal of the turn: the traders' own iron made into steel plate (8,843 at Node Beta, 8,623 at The Experiment, 23,114 at Central Nexus in table holdings at 23:33 UTC: under 2,000 left in trader storages at those three), Trade's steady money above +5,000 cr an hour over 4 hours (SUM trader, +8,142 at 23:31 UTC), and 20 more pilots through the Node Beta chain (174 booked at 23:35 UTC).",
-   "when": "read at the turn of 2026-11-18 03:30 UTC"
-  },
-  {
-   "what": "Read the first RESULT lines of sell-trade-crystal-at-nexus and sell-deuterium-at-node-beta, and how many traders dock once their stores are used up; name them and why in the report (requests.log ENT-256, step 4).",
+   "what": "Read the first RESULT lines of the four tests beyond the border (silver bars to Arneb, hydrogen and heat sinks to The Crucible, the freighter's bulk carry): what each far bid took, its regain, the fuel of the road; lift a test only on its own runs",
    "when": "next turn"
-  },
-  {
-   "what": "Read the silver ask at Ironlight Crossroads and the energy crystal ask at Central Nexus against the chain's limits (175, 430) and its max_ships 4.",
-   "when": "every turn"
-  },
-  {
-   "what": "Read Rotanev Daylight Seam's nickel (the tool system) against The Collective Provides' 4 ships and its floor of 60.",
-   "when": "every turn"
-  },
-  {
-   "what": "Run reservecheck.py and oncecheck.py of the trade-books skill on the trader plan; sellgen.py scan for every floor beside its cheapest ask (null matter 200, soma 320, palladium 270, hydrogen 30, trade crystal 340, deuterium 150).",
-   "when": "every turn"
-  },
-  {
-   "what": "Write a sell route the same day a home station bids for hydrogen, plasma or copper ore again, or Intel files a field of uranium ore, thorium ore or seam glass (requests.log ENT-194).",
-   "when": "when it stands"
-  },
-  {
-   "what": "Buy the reserve's carbon ore at 4 cr in step with the silicon it pairs with (12 carbon and 2 silicon make 3 boards), when a source of silicon stands.",
-   "when": "when silicon is gathered"
-  },
-  {
-   "what": "The standing sell order of one anchor beacon at Node Beta stays: unfilled a day (the Node Beta book shows its ask 1,200 x 1 at 23:42 UTC), but it costs nothing to stand and no station bids above 2 cr.",
-   "when": "kept"
   }
  ],
  "ships": {
