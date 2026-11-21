@@ -481,3 +481,12 @@ Failed: a one-load gap went into the plan as a route and its pilot was sent agai
 Requests: requests.log ENT-286 (the trader's standing work when no trade with depth is open), ENT-297 (a buy-end gate, requires.ask).
 Suggestions: a failed buy could end a run (route_run.py option); fill's test offers would be clearer with the board's age and the class whose work it is; a gate.py verb for book_onetime.
 Report: silver-to-arneb-paid-once-home-bids-gone-freighter-bought.
+
+## [ENT-090] | 2026-11-21 20:49 UTC | Oracle | session | ref: reports/2026-11-21_oracle_after-the-pause-far-work-read-every-three-hours.md | see: orders.log ENT-056
+Session: scheduled run Oracle turn -- after the pause the places where the fleet works beyond the roads are read every three hours.
+Did: 30 of 30 scouts at work, none lost; census-worked-far (53 systems where other divisions fly, every 180 min, 8 ships) from the new WORKED line; Goldcrest and Tiaki moved for Zero (ENT-283, ENT-287); census.py reads up to 8 stale foreign books at every dock (view_market base_id, game 0.728.0); guidebook under every cap (27 entries, guide check PASS), turn skill 17,288 to 5,282 characters; claim ENT-062 released (admirals ENT-071); 24 pirate lines filed; fill gate PASS.
+Worked: the oldest home read went from 5,434 minutes (19:37 UTC) to 41 (20:18 UTC); census-worked-far's first reads found a Sable pack of 20 at Minkar Cryobelt and 4 at Sargas Hearsay Cobalt, where Mining's cobalt mission works (admirals ENT-076); 122 census runs on 105 systems since 19:00 UTC.
+Failed: queue.log ENT-196 said no pirate met since the resume, on a reading fifty minutes old (corrected in admirals ENT-076); an install cut by my own timeout left census.py live and uncommitted until put back (errors.log ENT-115); a time typed ahead of the clock in requests ENT-288; probe test, uranium re-read and visit missions not done.
+Requests: requests.log ENT-285 (22 releases to game/rules), ENT-288 (inbox.py leaves the clone dirty); answer ENT-287 to ENT-283.
+Suggestions: a census list computed from where ships fly; a paced books service from one docked ship; fleet-build.sh restores its paths when stopped.
+Report: after-the-pause-far-work-read-every-three-hours.
