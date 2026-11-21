@@ -454,3 +454,12 @@ Failed: goal +15,000 cr an hour missed; iron gathered 46.5 ship-hours after orde
 Requests: requests.log ENT-264 (the seam of routes.moved reads a sale run as a loss), ENT-269 (standing work for drones without stores).
 Suggestions: the dispatcher's group step closes in by a ship's own dist and flees by shield; the route maker offers sales to far bids of stored goods; every plan holds The Collective Provides in its list First.
 Report: ember-glands-to-far-bids-crafts-replace-iron.
+
+## [ENT-087] | 2026-11-21 20:05 UTC | Zero | session | ref: reports/2026-11-21_zero_resume-short-ores-lifted-gathers-first-guidebook-capped.md | see: orders.log ENT-056
+Session: scheduled run turn-zero -- after the pause the short ores get the ships first, and the guidebook fits its caps.
+Did: preflight PASS; five tests read (both Voidborn links paid 4,000 and 1,500 cr once, the outpost belt stored 342 and 367 ore a run into faction storage); lifts to what each field carries: silicon 2 -> 8, gold 3 -> 6, nickel 1 -> 3, outpost belt 1 -> 10, Voidborn links 1 -> 4, carbon 2 -> 1; templates gather before they craft; two one-ship tests (Acrux lithium into faction storage, Tiaki nickel); Central Nexus ice gate 300 -> 3,000; guidebook refined (guide.py check PASS, 8 chapters, 31 entries); skill mining-chains 26,325 -> 6,248 characters; claim admirals.log ENT-070 (releases ENT-060); fill gate PASS at 19:55 and 19:56 UTC.
+Worked: 60 of 60 miners at work, none lost; Mining's credits 2,715,946 -> 2,727,020; last hour -4,919 cr steady (hive.py fleet, 20:00 UTC).
+Failed: six miners took ice mine routes on a 371-unit bid while about 18,500 water ice lay stored (errors.log ENT-111); the storage book after the resume held no miner, so iron read short and 29 miners flew an iron field of Then.
+Requests: requests.log ENT-283 (Oracle: five field reads), ENT-284 (Unity: a guard on a partial storage book).
+Suggestions: a route gate on what a division stores; the route maker run once before fill offers tests after a pause; a line in the briefing on how whole the storage book is.
+Report: resume-short-ores-lifted-gathers-first-guidebook-capped.
