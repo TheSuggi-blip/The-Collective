@@ -472,3 +472,12 @@ Failed: the wreck stood unseen three days behind a store reading 91 hours old (e
 Requests: requests.log ENT-294 (Unity: empire reading and reserve gate), ENT-295 (Unity: how an outpost is kept, before Atria), ENT-296 (Oracle: what wrecked GSC-0044).
 Suggestions: an alert on a damaged base in the briefing; accept an outpost's repair bill as its keeping cost; weigh the training loop (about -490 cr a ship-hour) against P1.
 Report: outpost-wrecked-repair-by-route-every-hauler-at-work.
+
+## [ENT-089] | 2026-11-21 20:44 UTC | Mercury | session | ref: reports/2026-11-21_mercury_silver-to-arneb-paid-once-home-bids-gone-freighter-bought.md | see: orders.log ENT-056
+Session: scheduled run turn-mercury -- first test turn after the pause: four one-ship tests beyond the border, one freighter bought, the guidebook under its caps.
+Did: four tests beyond the border (silver bars Node Alpha to Arneb, hydrogen and heat sinks to The Crucible twice, a trader to Ironlight); a Prayer freighter (cargo 540) bought there for 5,000 cr and flying a bulk carry; neural matrix board 1 -> 4 ships; trade guidebook from 2 chapters over cap to 0 (11 entries retired and tidied, 3 lesson entries), guide.py check trade PASS; skill trade-books 24,923 -> 6,122 characters; admirals ENT-072 (claim, releases ENT-064), ENT-073 (note); queue ENT-194.
+Worked: the silver bar run +4,099 cr in 21.6 minutes; once rewards +35,795 cr of 23 trader runs since 19:00 UTC (runs.jsonl); the freighter bought and flying within ten minutes of its listing read.
+Failed: a one-load gap went into the plan as a route and its pilot was sent again into the closed gap (errors.log ENT-113); the Crucible carry -1,475 cr, one load closed both bids; 33 of 40 traders wait docked, fill gate HALT, since every home bid our stores sold into read 0 after the pause.
+Requests: requests.log ENT-286 (the trader's standing work when no trade with depth is open), ENT-297 (a buy-end gate, requires.ask).
+Suggestions: a failed buy could end a run (route_run.py option); fill's test offers would be clearer with the board's age and the class whose work it is; a gate.py verb for book_onetime.
+Report: silver-to-arneb-paid-once-home-bids-gone-freighter-bought.
