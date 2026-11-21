@@ -72,6 +72,10 @@
   {
    "what": "Read the first rows of census.py's books from afar (view_market base_id): how many foreign books a turn keeps under an hour",
    "when": "next turn"
+  },
+  {
+   "what": "A probe step in census.py (use_item mining_survey_probe, then survey_system) tested with one scanner scout at Homam",
+   "when": "when the census holds"
   }
  ],
  "ships": {

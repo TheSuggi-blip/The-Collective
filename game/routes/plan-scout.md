@@ -88,3 +88,4 @@ Planned:
 | Read the 39 systems of census-worked-far every three hours (WORKED line of the intel check PASS), and move every new place where another division flies onto it | every turn |
 | Uranium after the pause: read the depleted deposits (Acubens, Markeb, Node Gamma, Nova Terra) for regrowth and name any source to Mining | next turn |
 | Read the first rows of census.py's books from afar (view_market base_id): how many foreign books a turn keeps under an hour | next turn |
+| A probe step in census.py (use_item mining_survey_probe, then survey_system) tested with one scanner scout at Homam | when the census holds |
