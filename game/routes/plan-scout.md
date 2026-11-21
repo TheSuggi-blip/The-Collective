@@ -89,3 +89,4 @@ Planned:
 | Uranium after the pause: read the depleted deposits (Acubens, Markeb, Node Gamma, Nova Terra) for regrowth and name any source to Mining | next turn |
 | Read the first rows of census.py's books from afar (view_market base_id): how many foreign books a turn keeps under an hour | next turn |
 | A probe step in census.py (use_item mining_survey_probe, then survey_system) tested with one scanner scout at Homam | when the census holds |
+| Keep every Voidborn system read within the hour (census-voidborn every 30 min, 4 ships) and GSC-0044 with its neighbours (census-watch-gsc-0044, 35 min, 4) | every turn |

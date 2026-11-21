@@ -76,6 +76,10 @@
   {
    "what": "A probe step in census.py (use_item mining_survey_probe, then survey_system) tested with one scanner scout at Homam",
    "when": "when the census holds"
+  },
+  {
+   "what": "Keep every Voidborn system read within the hour (census-voidborn every 30 min, 4 ships) and GSC-0044 with its neighbours (census-watch-gsc-0044, 35 min, 4)",
+   "when": "every turn"
   }
  ],
  "ships": {
