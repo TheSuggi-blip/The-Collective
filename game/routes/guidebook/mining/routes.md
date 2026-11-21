@@ -3,27 +3,25 @@
 ### Standing Plan
 Status: proven. Updated: 2026-11-21. Evidence: the plan file (tool plan, show); fill.py status miner; surplus.py reserve; the runs of each route (hive.py route <id>).
 
-Turn of 2026-11-21 19:30 UTC (orders ENT-056, block ZERO). A free miner
-takes the list First (the Voidborn links, The Forge Tax, Deep Core at
-Deep Range, the First Hunts), its own routes, then the list Then as the
-supply pass keeps it.
+Turn of 2026-11-21 19:30 UTC (orders ENT-056). A free miner takes the
+list First (the once missions), its own routes, then the list Then.
 
 | Route | Ships | For |
 |---|---|---|
 | soma sales and carries, `@ice-sell` | 1 each, on goods stored and a bid | stored goods sold |
 | `mine-dheneb-cryobelt` | 2 | methane where a bid stands |
 | `gather-gsc-0044-belt-faction` | 10, seated miners only | the outpost's faction storage |
-| `craft-steel-experiment`, `craft-steel-node-beta` | 10; 11 shared | steel plate of our own iron |
 | `gather-subra-floodlight-flats-silicon` | 8 | silicon |
 | `gather-goldcrest-gold` | 6 | gold |
 | `gather-jadecove-nickel` | 3 | nickel |
 | `gather-acubens-belt-carbon` | 1 | carbon: the field carries one |
+| `gather-acrux-belt-faction`, `gather-tiaki-worldsend-nickel` | 1 each, tests | lithium into the outpost's store; nickel |
+| `craft-steel-experiment`, `craft-steel-node-beta`, `craft-piping-node-beta` | 10; 11; 14 shared | plate and piping of own stores, after the gathers |
 | Then | shared | iron while the chain iron-ore reads short, the steel crafts, park |
 
 Each limit stays under what its field carries (the briefing's column
-`carries`). What would change it: fresh reads of the far fields, the
-storage book's read of every miner after the resume, more seats in the
-faction, a deep water-ice bid. Each turn: stalled.py, fill.py status
+`carries`). What would change it: fresh reads of the far fields, a whole storage
+book after the resume, more seats in the faction, a deep water-ice bid. Each turn: stalled.py, fill.py status
 miner, surplus.py reserve.
 
 ### Drains and carries of stored goods (kind `circuit`)
