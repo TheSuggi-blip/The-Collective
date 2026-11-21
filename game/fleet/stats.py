@@ -29,7 +29,8 @@ WHAT: the store (store.py) calls compute(conn, data, root, now) in every pass; c
         gather        per reserve good: what a unit gathered cost against the best ask and the best bid
         xp            XP per ship-hour per role and skill and per route (24 h); per ship the hours to its next tier
         upgrades      per ship: hull, tier, Piloting, the Piloting and the hulls of the next tier, empty module slots
-        alerts        the newest hour outside median +- MAD_K x MAD_SCALE x MAD of its own 7-day hourly history
+        alerts        the newest hour outside median +- MAD_K x MAD_SCALE x MAD of its own 7-day hourly history; first,
+                      every base of ours that reads wrecked and every facility of ours not active (basewatch.py)
         refill        per bid, field and herd: units back an hour, median over events with n (hive.py refill reads it)
         status        when each part ran, its rows, its seconds, its last fault
 RULES:
@@ -1576,6 +1577,8 @@ def main(argv):
             return 1
         args["member"] = named
     data = args.get("data") or division.DATA
+    if view == "alerts":                                   # Q75 (3), errors.log ENT-112: our bases first, read from the files
+        __import__("basewatch").show(data, time.time())
     computed = {"kpi": (1, 6, 24, 72)}.get(view, (24,))
     if args.get("hours") and view not in ("upgrades", "classes", "refill", "status", "alerts", "supply", "gather") and \
             float(args["hours"]) not in computed:

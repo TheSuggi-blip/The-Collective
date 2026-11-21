@@ -45,6 +45,9 @@ RULES:
     census has no system older than `every_minutes` (default 60); a guard sees no pilot of
     ours on the route it guards (`nobody flies <id>`); a guard route without `max_ships`
     takes one ship.
+  - `requires.held_below` (item, units, division; game/fleet/heldgate.py, off until switched on there): a route is
+    open only while the division's pilots hold fewer units of the item, storage and holds (data/stock/storage.json);
+    a book that is not whole closes nothing and opens nothing new (Zero, errors.log ENT-111).
   - An engine loop that runs for a pilot with no fresh order file for five
     minutes belongs to no runner (an engine restart, a dead runner): the
     dispatcher stops that loop through the gate and names it in its log.
@@ -577,6 +580,7 @@ def why_not(pilot, rid, route, state):
         return "the place rests", None
     lacking = bid_missing(state["data"], route, state["now"]) or stored_missing(state["data"], route, pilot, state["rows"])
     lacking = lacking or ask_missing(state["data"], route, state["now"])    # requests ENT-297: the buy end, read like requires.bid
+    lacking = lacking or __import__("heldgate").closed(pilot, rid, route, state)     # Q75 (1), ENT-111: open while the division holds less
     if lacking:
         return lacking, None
     floor = reserves.closed(route, state)        # requests ENT-266: open only while the faction reserve reads under `below`

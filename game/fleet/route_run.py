@@ -28,6 +28,9 @@ which pilot flies it, and where a pilot is, stays in the unit's data folder:
               "buy":    [{"item": "...", "qty": N, "max_price": N, "one_time": true}],   max_price: the most a unit may cost, tax included
                                               qty = units wanted in the hold; one_time: goods for a
                                               one-time mission, their cost is booked against its reward
+              "stop_on_failed_buy": true,     a buy entry of this stop that gets nothing (no ask at its limit, the
+                                              wallet floor, a buy that took nothing) ends the run here: no later step
+                                              or stop, the goods stay where they are, the RESULT line says why (Q75)
               "craft":  [{"recipe": "...", "runs": N, "makes": "item_id", "per_run": M, "inputs": ["item_id", ...]}],
                                               after the buy, at the station's workshop: the `inputs` aboard go into
                                               storage, a quote, then `runs` runs (per_run units each, default 1) made
@@ -675,16 +678,19 @@ for n, stop in enumerate(ROUTE['stops']):
             say(f'withdraw {want["item"]}: nothing to take (stored, hold or bid)')
     for want in stop.get('sell') or []:
         sell_into_bid(want, book)
+    unbought = ''                                        # Q75 (6), errors.log ENT-113: the first buy of this stop that got nothing
     for want in stop.get('buy') or []:
         need = want['qty'] - cargo().get(want['item'], 0)
         if need > 0 and credits() - need * want['max_price'] * 1.01 < FLOOR:
             say(f'buy {need} {want["item"]}: not bought, the wallet would fall under {FLOOR} cr')
             notes.append(f'{want["item"]}: wallet floor')
+            unbought = unbought or want['item']
         elif need > 0:
             ask, units = offer(book, want['item'], want['max_price'], need)
             if not units:                                # nothing stands at the limit or under it, tax included: nothing is bought
                 say(f'buy {need} {want["item"]}: not bought, the best ask is {ask or "none"} and the limit is {want["max_price"]} with tax')
                 notes.append(f'{want["item"]}: not bought')
+                unbought = unbought or want['item']
                 continue
             c0, had = credits(), cargo().get(want['item'], 0)
             ok, msg = goal('buy-items', {'items': [{'itemId': want['item'], 'maxPrice': ask, 'maxQuantity': units}]}, tries=1)
@@ -698,6 +704,12 @@ for n, stop in enumerate(ROUTE['stops']):
                 onetime[0] += spent
             if got < want['qty']:
                 notes.append(f'{want["item"]}: {got} of {want["qty"]}')
+            if got <= had:
+                unbought = unbought or want['item']
+    if unbought and stop.get('stop_on_failed_buy'):      # Q75 (6): the dispatcher reads the route's requires.ask again instead
+        say(f'stop {n + 1} {base}: the buy of {unbought} got nothing: the run ends here (stop_on_failed_buy); the goods stay where they are')
+        notes.append(f'stop {n + 1}: the buy of {unbought} got nothing: run ended (stop_on_failed_buy)')
+        break
     made = {}                                            # item -> units this stop's crafts put into storage (requests ENT-013)
     for job in stop.get('craft') or []:
         units, note = workshop(job, base)

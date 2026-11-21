@@ -12,7 +12,8 @@ WHAT: four verbs.
                   owner's tag), the chart, the sites file and our censuses (scouting/<system>.json: the base id
                   and the place of each base), and writes <data>/empire/empire.json: faction, members, bases (base
                   id and place), facilities, territory, sites, ladder, faction_storage (base, base_name, item,
-                  units, read_at; the fuel of a bunker as item `fuel`) and faction_storage_error.
+                  units, read_at; the fuel of a bunker as item `fuel`), faction_storage_error and base_alerts
+                  (basewatch.py: a base of ours wrecked or a facility not active, with the time first read so).
         write     writes governance/empire.md from that file: the faction in figures, the bases and the territory,
                   the offices and their rent, the sites, and the ladder of what the faction can build
         show      prints the same in plain lines (hive.py empire), with what each faction storage holds
@@ -402,6 +403,7 @@ def collect(data, root, see=look, force=False, pause=0.5, now=None):
                            "wars": [ascii_text(x, 30) for x in feed.get("wars") or []]},
              "fleet": {"ships": len(ships), "in_faction": len({m["pilot"] for m in members} & {s["name"] for s in ships})},
              "ladder": rungs, "ladder_of": version, "notes": notes}
+    state["base_alerts"] = __import__("basewatch").stamped(state, old, public, state["written_at"])     # Q75 (3), ENT-112: since when
     return state, notes
 
 

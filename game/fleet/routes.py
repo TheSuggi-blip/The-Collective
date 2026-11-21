@@ -265,6 +265,8 @@ def check(root):
             errors += [where + line for line in reserve_faults(need["reserve"])]
         if "ask" in need:                              # requests ENT-297: the buy end of a route (dispatch.ask_missing)
             errors += [where + line for line in ask_faults(need["ask"])]
+        if "held_below" in need:                       # Q75 (1), errors.log ENT-111: what the division holds (heldgate.py)
+            errors += [where + line for line in __import__("heldgate").faults(need["held_below"])]
         floors = [("`min_left`", route.get("min_left"))] + [("stop %d: the `min_left` of a `mine` step" % n, step.get("min_left"))
                                                              for n, stop in enumerate(route.get("stops") or [], 1) if isinstance(stop, dict)
                                                              for step in stop.get("mine") or [] if isinstance(step, dict)]

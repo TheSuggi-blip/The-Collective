@@ -47,7 +47,8 @@ WHAT: reads the unit's data folder (fleet/, routes/runs.jsonl, market/, scouting
                               retired or gone from their chapter, kept in the store
         briefing              a session's start in one answer: the orders in force, the requests addressed to the member,
                               the fleet's money, its own standing fleet (plan, what each route carries, every ship), its
-                              plan file in short (plan.py) and the fill gate
+                              plan file in short (plan.py) and the fill gate; above it all one line while a base of ours
+                              reads wrecked or a facility of ours damaged or offline (basewatch.py)
         store                 the history store (store.py): what it holds, and every route's credits per ship-hour over
                               the whole hours of a window, also beyond what the records still hold
         store price <item>    one item's lowest and highest best bid and best ask per station over a window
@@ -1178,6 +1179,7 @@ def show_briefing(root, data, now, who, hours):
     """A session's start in one answer (Suggi, 2026-11-16: the orders and the overview loaded at preflight): the orders in
     force, the requests not closed that are addressed to the member, the fleet's money, the member's standing fleet
     and the fill gate of its roles."""
+    __import__("basewatch").briefing(data, now)                       # Q75 (3), errors.log ENT-112: a wrecked base, a damaged facility: first
     import fill
     repo = Path(root).resolve().parent
     comms = repo / "scripts" / "comms.py"

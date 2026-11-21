@@ -17,7 +17,9 @@ WHAT: every pilot pays its own fuel, repairs, fittings and tax from its own wall
       deposit once in onetime.json under routes.TREASURY (minus for the leader): a move between two purses of ours,
       no cost (routes.deposits, station/fleet.py). What the sweep tried is kept in data/fleet/sweep.jsonl; a deposit
       is written there as `sent` before its call, so a pass the job cuts (its `timeout 200`) loses no deposit: the
-      next pass reads the treasury and books it, with the time it was sent, or keeps it unsure.
+      next pass reads the treasury and books it, with the time it was sent, or keeps it unsure. A gift is written the
+      same way (sweep.jsonl kind `gift` for the sweep's, `topup` for a top-up, with both wallets read right before
+      the call): the next pass settles a `sent` gift from the receiver's wallet (errors.log ENT-116, DECISIONS Q75).
 RULES:
   - A donor keeps KEEP credits at least; one gift per pilot per COOLDOWN (the wallets are read every ten seconds,
     the game's answer can lag): a pilot is never given twice for one low reading.
@@ -34,6 +36,12 @@ RULES:
     given or giving in the last COOLDOWN. A gift or a deposit is booked only when the giver's wallet, read again, shows
     the money gone (SHOW_WAIT); one that does not show is kept unsure (no booking, the pilot on cooldown; a deposit:
     none again for UNSURE_HOLD). A refused deposit is tried again at the next pass, never twice in one.
+  - A gift left `sent` by a cut pass is settled once, at the start of the next pass of its kind: booked with the time
+    it was sent when the receiver's wallet, read after the call, rose by most of it and the giver's did not keep it
+    (it fell by half of it at least: the receiver's reading before the call can lag an earlier gift of the pass);
+    kept unsure otherwise (no booking, both on cooldown from the time it was sent); left `sent` while the receiver
+    has no reading after the call, and kept unsure after SENT_KEEP. Its pilots are on cooldown while it stands
+    open, so a gift is never given twice and never booked twice.
   - The sweep acts only while SWEEP_ENABLED is on; `sweep --dry-run` says what it would do in any case.
 WHY:  Suggi, 2026-11-16: "No ships can go broke, this is important." Standing work costs fuel and earns nothing, and
       the weekly tax takes a share of every wallet in one moment.
@@ -47,6 +55,7 @@ USAGE:
 Stdlib only. ASCII only.
 """
 
+import calendar
 import fcntl
 import json
 import os
@@ -83,6 +92,7 @@ UNSURE_HOLD = 60 * 60          # after a deposit the wallet did not show, no new
 DEPOSIT_BY = 90                # seconds into a pass after which the deposit waits for the next pass: the job cuts a pass at
                                # 200 s, and a deposit's call, read and check take up to about 100 s (2026-11-21 21:08 UTC)
 DEPOSIT_TITLE = "Faction treasury: credits deposited (the Collective keeps them)"     # begins with routes.TREASURY
+SENT_KEEP = 60 * 60            # a gift left `sent` whose receiver has no reading after its call is kept unsure after this long
 
 
 def wallets(data):
@@ -327,15 +337,20 @@ def swept(data):
     return out
 
 
-def note(data, kind, giver, taker, credits, state, text="", before=None):
+def note(data, kind, giver, taker, credits, state, text="", before=None, wallets=None, sent_at=None):
     row = {"at": int(time.time()), "kind": kind, "from": giver, "to": taker, "credits": int(credits), "state": state,
            "text": str(text)[:200].encode("ascii", "replace").decode("ascii")}
     if before is not None:
         row["before"] = int(before)                              # the treasury read before a deposit's call
+    if wallets is not None:
+        row["wallets"] = {str(k): int(v) for k, v in wallets.items() if isinstance(v, (int, float)) and not isinstance(v, bool)}   # a gift's two wallets before its call
+    if sent_at is not None:
+        row["sent_at"] = int(sent_at)                            # the `sent` row of a gift this row ends
     with open(Path(data) / "fleet" / "sweep.jsonl", "a", encoding="utf-8") as handle:
         handle.write(json.dumps(row, sort_keys=True) + "\n")
         handle.flush()
         os.fsync(handle.fileno())                                  # written before the call it announces
+    return row["at"]
 
 
 def pending(log):
@@ -366,6 +381,71 @@ def settle(data, row):
           "it (%s before, %s now). Read `view` target faction: if it landed, book it once (wallet.book_deposit)"
           % (format(credits, ","), when, before, format(after, ",")))
     return "unsure"
+
+
+def open_gifts(log, kind):
+    """The gift rows of `kind` (gift: the sweep's, topup: a top-up's) written `sent` that no later row ends (no row of
+    the same kind and pilots names its time in `sent_at`): what a pass the job cut left between the call and its
+    booking (DECISIONS Q75, errors.log ENT-116)."""
+    ended = {(r.get("from"), r.get("to"), r.get("sent_at")) for r in log if r.get("kind") == kind and r.get("sent_at") is not None}
+    return [r for r in log if r.get("kind") == kind and r.get("state") == "sent" and (r.get("from"), r.get("to"), r.get("at")) not in ended]
+
+
+def read_at(ship):
+    """The epoch of a fleet file row's wallet reading (`state_at`, UTC), or None when the row does not say."""
+    try:
+        return calendar.timegm(time.strptime(str(ship.get("state_at"))[:19].replace("T", " "), "%Y-%m-%d %H:%M:%S"))
+    except (TypeError, ValueError):
+        return None
+
+
+def settle_gift(data, row, fleet, now, dry=False):
+    """A gift a cut pass left `sent`: 'booked' (once, with the time it was sent) when the receiver's wallet, read after
+    the call, rose by most of it and the giver's did not keep it; 'unsure' when the readings do not show it (kept
+    with 0 credits in gifts.jsonl from the time it was sent: both on cooldown, booked nowhere); 'open' while the
+    receiver has no reading after the call (unsure after SENT_KEEP). A dry run writes nothing and says what it would."""
+    giver, taker, credits, sent = row.get("from"), row.get("to"), int(row.get("credits") or 0), int(row["at"])
+    was = row.get("wallets") or {}
+    when = time.strftime("%H:%M", time.gmtime(sent))
+    what = "the %s %s -> %s %s cr sent at %s UTC" % ("top-up" if row.get("kind") == "topup" else "gift", giver, taker, format(credits, ","), when)
+    got, gave = fleet.get(taker) or {}, fleet.get(giver) or {}
+    fresh = lambda ship: isinstance(ship.get("credits"), (int, float)) and (read_at(ship) is None or read_at(ship) > sent)
+    if not (fresh(got) and isinstance(was.get(taker), int)):
+        if now - sent < SENT_KEEP:
+            print("open: %s: the receiver's wallet was not read since the call; settled at a later pass" % what)
+            return "open"
+        state, why = "unsure", "the receiver's wallet was not read in %d minutes" % (SENT_KEEP // 60)
+    else:
+        rose = got["credits"] - was[taker] >= credits * 0.9
+        kept = fresh(gave) and isinstance(was.get(giver), int) and gave["credits"] > was[giver] - credits * 0.5
+        state = "booked" if rose and not kept else "unsure"
+        why = "the receiver %s -> %s, the giver %s -> %s" % (was.get(taker), got["credits"], was.get(giver), gave.get("credits"))
+    if dry:
+        print("would settle: %s: %s (%s)" % (what, state, why))
+        return state
+    if state == "booked":
+        book(data, [(giver, taker, credits)], sent)
+        note(data, row.get("kind"), giver, taker, credits, "booked", "settled at the next pass: " + why, sent_at=sent)
+        print("booked at the next pass: %s landed (%s)" % (what, why))
+        return "booked"
+    unsure(data, giver, taker, credits, sent)
+    note(data, row.get("kind"), giver, taker, credits, "unsure", "the pass ended before its answer: " + why, sent_at=sent)
+    print("HALT: %s is not booked: its pass ended before the answer and the wallets do not show it (%s). Read both wallets: if it "
+          "landed, book it once (wallet.book)" % (what, why))
+    return "unsure"
+
+
+def settle_gifts(data, kind, now, dry=False):
+    """Every gift of `kind` left `sent` settled (settle_gift): ({pilot: the time of its open gift}, 1 when one is kept
+    unsure, else 0). The pilots of a gift still open are on cooldown: given and giving nothing until it is settled."""
+    fleet, waiting, failed = ships(data), {}, 0
+    for row in open_gifts(swept(data), kind):
+        state = settle_gift(data, row, fleet, now, dry)
+        failed = 1 if state == "unsure" else failed
+        if state == "open" or dry:
+            for name in (row.get("from"), row.get("to")):
+                waiting[name] = row["at"]
+    return waiting, failed
 
 
 def plan_sweep(fleet, leader, skip):
@@ -418,10 +498,13 @@ def sweep(data, now, dry):
         log = swept(data)
     elif waiting:
         print("would settle: the deposit of %s cr sent at %s UTC" % (format(int(waiting.get("credits") or 0), ","), time.strftime("%H:%M", time.gmtime(waiting["at"]))))
+    flying, unsettled = settle_gifts(data, "gift", now, dry)    # Q75: a gift a cut pass left `sent`, settled before any new one
+    failed = failed or unsettled
+    log = swept(data)
     battle = {r.get("from"): r["at"] for r in log if r.get("state") == "battle" and now - r["at"] < BATTLE_WAIT}
     held = [r for r in log if r.get("kind") == "deposit" and r.get("state") == "unsure" and now - r["at"] < UNSURE_HOLD]
     skip = {leader} | SKIP_PILOTS | builders(data)
-    cool = touched(data, now)
+    cool = dict(touched(data, now), **{name: at for name, at in flying.items() if name})
     above = [(name, s["credits"]) for name, s in fleet.items() if s["credits"] >= SWEEP_AT and name != leader]
     print("SWEEP | leader %s holds %s cr | %d ships at %s cr or more hold %s cr above %s | the treasury read %s"
           % (leader, format(fleet[leader]["credits"], ","), len(above), format(SWEEP_AT, ","), format(sum(c - KEEP_SHIP for _n, c in above), ","),
@@ -442,13 +525,14 @@ def sweep(data, now, dry):
             print("the pass's %d seconds are used up: %s waits for the next pass" % (BUDGET, pilot))
             break
         was = fleet[pilot]["credits"]
-        try:
+        sent = note(data, "gift", pilot, leader, credits, "sent", "", wallets={pilot: was, leader: (ships(data).get(leader) or {}).get("credits")})
+        try:                                                    # Q75: on disk before the call; a cut pass leaves it for settle_gift
             ok, text = give(pilot, leader, credits)
         except Exception as error:                              # the gate did not answer: the game may still have taken it
             ok, text = None, "the gate did not answer (%s: %s)" % (type(error).__name__, error)
         if ok is False:
             fight = "in_battle" in text.lower().replace(" ", "_")
-            note(data, "gift", pilot, leader, credits, "battle" if fight else "refused", text)
+            note(data, "gift", pilot, leader, credits, "battle" if fight else "refused", text, sent_at=sent)
             if fight:
                 print("in a fight: %s gives nothing now; asked again after %d minutes" % (pilot, BATTLE_WAIT // 60))
             else:
@@ -457,11 +541,11 @@ def sweep(data, now, dry):
             continue
         if shows(data, pilot, was, credits):
             book(data, [(pilot, leader, credits)], time.time())
-            note(data, "gift", pilot, leader, credits, "booked", text)
+            note(data, "gift", pilot, leader, credits, "booked", text, sent_at=sent)
             print("given: %s -> %s %s cr" % (pilot, leader, format(credits, ",")))
         else:
             unsure(data, pilot, leader, credits, time.time())
-            note(data, "gift", pilot, leader, credits, "unsure", text)
+            note(data, "gift", pilot, leader, credits, "unsure", text, sent_at=sent)
             failed = 1
             print("HALT: the gift %s -> %s %s cr is not booked: %s; the wallet of %s does not show it gone after %d s (kept unsure, the pilot on cooldown)"
                   % (pilot, leader, format(credits, ","), "answered" if ok else text, pilot, SHOW_WAIT))
@@ -543,7 +627,9 @@ def main(argv=None):
     kind, who = division.member()
     if "--dry-run" not in args and not (who == "Unity" or kind == "service"):
         sys.exit("REFUSED: a real top-up is the Fleet Admiral's or the five-minute job's; use --dry-run")
-    gifts = plan_gifts(rows, recent(data, now))
+    flying, unsettled = settle_gifts(data, "topup", now, "--dry-run" in args)    # Q75: a top-up a cut pass left `sent`, settled first
+    given = dict(recent(data, now), **{name: at for name, at in flying.items() if name})
+    gifts = [(d, p, c) for d, p, c in plan_gifts(rows, given) if d not in flying]      # a donor whose gift is open gives nothing now
     done, failed = [], []
     for donor, pilot, credits in gifts:
         if "--dry-run" in args:
@@ -551,7 +637,9 @@ def main(argv=None):
             continue
         if time.time() - now > BUDGET:                          # a gate that answers slowly: the rest waits for the next pass
             break
-        try:
+        purse = {name: credits_now for name, credits_now, _owner in wallets(data)}      # both wallets right before the call
+        sent = note(data, "topup", donor, pilot, credits, "sent", "", wallets={donor: purse.get(donor), pilot: purse.get(pilot)})
+        try:                                                    # Q75: on disk before the call; a cut pass leaves it for settle_gift
             ok, text = give(donor, pilot, credits)
         except Exception as error:                              # the gate did not answer (a timeout): the game may still have taken the gift
             was = next((have for name, have, _owner in rows if name == pilot), 0)
@@ -563,6 +651,7 @@ def main(argv=None):
             done.append((donor, pilot, credits))
         else:
             failed.append((donor, pilot, text))
+        note(data, "topup", donor, pilot, credits, "booked" if ok else "unsure" if "did not answer" in text else "refused", text, sent_at=sent)
     for pilot in dict.fromkeys(p for _d, p, _c in done):          # once per receiver, after its last gift
         refresh(pilot)
     for donor, pilot, credits in done:
@@ -573,7 +662,7 @@ def main(argv=None):
     for name in stranded:
         if name not in recent(data, now):
             print("HALT: %s is under %s cr and no ship of its division or of the command group can give without going under %s" % (name, format(LOW, ","), format(KEEP, ",")))
-    return 1 if failed else 0
+    return 1 if failed or unsettled else 0
 
 
 if __name__ == "__main__":

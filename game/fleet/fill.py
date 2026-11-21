@@ -57,7 +57,13 @@ RULES:
     were taken off by their Admirals turn after turn).
   - `fill --once` adds only missions that pay once and buy nothing: the five-minute job runs it for every role, so a
     new once route reaches every plan without waiting for a turn (requests ENT-144).
-  - A list of the route maker older than an hour is no ground for PASS while ships wait: the gate says so.
+  - A list of the route maker older than an hour is no ground for PASS while ships wait: the gate says so. A list
+    older than OFFER_STALE (a day) offers no test at all: its figures are from before (Zero, Apophis, 2026-11-21: after
+    the pause the filler offered tests from a list 5,429 minutes old; DECISIONS Q75 (2)).
+  - Never offered or added (Q75 (2)): a route set `off` (its own file), or a route or a test whose place is the place of
+    a route set off for danger (`danger:` in its note: rule F27), one another division claims (admirals.log, claims in
+    force until released: comms.claims_in_force), one of another class (workclass.own). Each such refusal is printed
+    once in a call, with its reason (`not offered: <route>: <reason>`).
   - A hunt (a hunt route, or a circuit with a stop that hunts) is offered and added outside the plan only to a role that
     hunts (HUNTERS, rule F16: Military and Intel hunt, Mining, Trade and Logistics earn; one hunter per herd, rule F9). A
     mission that pays once per pilot is every pilot's, its first hunt too, and what an Admiral put into its own plan
@@ -99,6 +105,7 @@ import routes as routefiles                       # noqa: E402  the route gate a
 import workclass                                  # noqa: E402  whose work a route is (rule F23)
 
 STALE = 60 * 60                # a list of the route maker older than this is no ground for PASS
+OFFER_STALE = 24 * 60 * 60     # Q75 (2): a list older than this offers no test at all
 HOURS = 4                      # a turn: what a bid must carry
 HUNTERS = ("drone", "scout", "command", "sentinel")     # the roles that hunt, rule F16: Military's drones, Intel's scouts and the command group; miners, traders and haulers earn
 NO_HUNT = "a hunt: this role does not hunt (rule F16)"
@@ -315,6 +322,37 @@ def claims(seen):
     return seen["claims"]
 
 
+def work_systems(route):
+    """The systems a route works in (its `place`, its `belt`, the `at` of its mine and hunt steps): where its danger is."""
+    places = [str(route.get(key) or "") for key in ("place", "belt")]
+    places += [str(step.get("at") or "") for stop in route.get("stops") or [] if isinstance(stop, dict)
+               for key in ("mine", "hunt") for step in stop.get(key) or [] if isinstance(step, dict)]
+    return {p.split(":")[0] for p in places if p}
+
+
+def danger_places(seen):
+    """{system: route id} of the routes set `off` whose note says `danger:` (rule F27: an Admiral sets a route off for
+    pirates as `status off, danger: <why>`; a prey too strong for a hull is no danger of the place); read once per
+    survey (Q75 (2), Apophis 2026-11-21: the filler offered the Violethall hunt again)."""
+    if "danger" not in seen:
+        seen["danger"] = {}
+        for rid, route in sorted(seen["routes"].items()):
+            if route.get("status") == "off" and "danger:" in str(route.get("note") or "").lower():     # `status off, danger: <why>`
+                for system in work_systems(route):
+                    seen["danger"].setdefault(system, rid)
+    return seen["danger"]
+
+
+def refusal(seen, rid, route):
+    """Why the filler never offers this route (Q75 (2)), or None: set off, or its place is a place set off for danger."""
+    if route.get("status") == "off":
+        return "set off: " + (" ".join(str(route.get("note") or "").split()[-24:]) or "its file says off")[-160:]
+    near = sorted(system for system in work_systems(route) if system in danger_places(seen) and danger_places(seen)[system] != rid)
+    if near:
+        return "off for danger: %s, set off for danger, works at %s" % (danger_places(seen)[near[0]], near[0])
+    return None
+
+
 def guard_ship(seen, name):
     """True for a ship whose own list, past the missions that pay once and the fittings, begins with a guard: it keeps a
     post, and no test or paying route is put in front of it (requests ENT-236: five of seven posts would have stood
@@ -435,7 +473,7 @@ def read_role(seen, role, floor=500, tests=8):
                                                                                deep["extra"], deep["text"]) if deep else ""
         rows.append((rid, flying_now(route, rid, seen["state"]["orders"]), route.get("max_ships"), why, hint))
     left = list(waiting) + list(crew.get("standing") or [])           # a ship on standing work is free for what pays
-    paying, closed = [], {}
+    paying, closed, refused = [], {}, []                         # refused: [(route id, why)] the filler never offers (Q75 (2))
 
     def offer(rid, route, value, limit=None):
         """The pilots the route is open to (waiting, or on standing work), taken off the list; the commonest reason
@@ -469,6 +507,11 @@ def read_role(seen, role, floor=500, tests=8):
         if other:
             if rid not in plan:
                 closed.setdefault(other, []).append((value, rid))
+                refused.append((rid, other))
+            continue
+        danger = refusal(seen, rid, route) if rid not in plan else None
+        if danger:                                                # Q75 (2): a place set off for danger is never offered
+            refused.append((rid, danger))
             continue
         if buys(route):                                           # it buys goods: in a plan by its Admiral's word only, never by this script
             if rid not in plan:
@@ -480,6 +523,7 @@ def read_role(seen, role, floor=500, tests=8):
         owner = seen["owners"].get(role) or division.ROLES.get(role)
         if rid not in plan and claims(seen).get(rid, owner) != owner:     # another division's claim stands (rule F25)
             closed.setdefault(CLAIMED, []).append((value, rid))
+            refused.append((rid, "%s: %s's" % (CLAIMED, claims(seen)[rid])))
             continue
         if route.get("once") and refused_to(seen, rid, role):
             if rid not in plan:
@@ -489,7 +533,11 @@ def read_role(seen, role, floor=500, tests=8):
         if took:
             paying.append((rid, value, took))
     found, seen_ids = [], set(plan) | {rid for rid, _v, _t in paying} | {rid for _v, rid in by_hand}
-    for cand in sorted(seen["candidates"], key=lambda c: -(c.get("per_ship_hour") or 0)):
+    stale = seen["list_age"] > OFFER_STALE and bool(seen["candidates"])
+    if stale:                                                     # Q75 (2): no test from a list older than a day
+        refused.append(("the route maker's list", "%s old, over %d hours: no test of it is offered until the route maker runs again"
+                        % ("%d hours" % (seen["list_age"] // 3600) if seen["list_age"] != float("inf") else "not dated", OFFER_STALE // 3600)))
+    for cand in [] if stale else sorted(seen["candidates"], key=lambda c: -(c.get("per_ship_hour") or 0)):
         draft = cand.get("route")
         if not isinstance(draft, dict) or cand.get("needs") or (cand.get("per_ship_hour") or 0) < floor or str(cand.get("status", "")).startswith("off"):
             continue
@@ -498,6 +546,10 @@ def read_role(seen, role, floor=500, tests=8):
             continue                                              # proven ones are judged above, by their figure; one measured at a loss is no test
         seen_ids.add(rid)
         route = routes.get(rid) or dict(draft, id=rid)
+        danger = refusal(seen, rid, route)                        # Q75 (2): set off, or at a place set off for danger
+        if danger:
+            refused.append((rid, danger))
+            continue
         rule = not_for(route, role)                               # never in the plan here: seen_ids holds the plan
         if rule:
             closed.setdefault(rule, []).append((cand["per_ship_hour"], rid))
@@ -513,10 +565,12 @@ def read_role(seen, role, floor=500, tests=8):
         other = pull.class_reason(role, route, rid)                # rule F23: a test of another class is not this role's (ENT-236: a mine test is the miners')
         if other:
             closed.setdefault(other, []).append((cand["per_ship_hour"], rid))
+            refused.append((rid, other))
             continue
         owner = seen["owners"].get(role) or division.ROLES.get(role)
         if claims(seen).get(rid, owner) != owner:
             closed.setdefault(CLAIMED, []).append((cand["per_ship_hour"], rid))
+            refused.append((rid, "%s: %s's" % (CLAIMED, claims(seen)[rid])))
             continue
         took = offer(rid, route, cand["per_ship_hour"], limit=1) if left and len(found) < tests else []
         if took:
@@ -526,7 +580,25 @@ def read_role(seen, role, floor=500, tests=8):
             "away": crew["away"], "starting": starting, "waiting": [p["name"] for p in waiting], "standing": [p["name"] for p in crew.get("standing") or []],
             "next": list(crew.get("next") or []), "park": list(crew.get("park") or []),
             "idle": [p["name"] for p in left if p in waiting], "plan": rows,
-            "paying": paying, "tests": found, "closed": closed, "by_hand": sorted(by_hand, reverse=True)}
+            "paying": paying, "tests": found, "closed": closed, "by_hand": sorted(by_hand, reverse=True), "refused": refused}
+
+
+def tell_refused(seen, got):
+    """Q75 (2): each route the filler never offers, printed once in a call with its reason (`seen` keeps what was told):
+    a line each for a list too old, a route set off or at a place set off for danger and a claim; the routes of another
+    class (hundreds: every gather route to every other role) in one line per class reason, the first few named."""
+    told = seen.setdefault("told", set())
+    grouped = {}
+    for rid, why in got.get("refused") or []:
+        if (rid, why) in told:
+            continue
+        told.add((rid, why))
+        if why.startswith("class: "):
+            grouped.setdefault(why, []).append(rid)
+        else:
+            print("  not offered: %s: %s" % (rid, why))
+    for why, ids in sorted(grouped.items()):
+        print("  not offered, %s (rule F23): %d route%s: %s%s" % (why, len(ids), "" if len(ids) == 1 else "s", ", ".join(ids[:6]), " ..." if len(ids) > 6 else ""))
 
 
 def spare(seen, got, served=(), room=None):
@@ -676,6 +748,7 @@ def show(seen, got):
                         for f in (s.get("fit") if isinstance(s.get("fit"), list) else [s.get("fit")])))
                     print("        %s on offer in our books: %s | routes that fit it: %s"
                           % (module, "; ".join("%d at %s cr (%s)" % o for o in offers[:6]) or "none", ", ".join(fits) or "none"))
+    tell_refused(seen, got)                                       # Q75 (2): each refusal once, with its reason
     if seen["list_age"] > STALE / 2:
         print("  NOTE: the route maker's list is %s old" % ("%d minutes" % (seen["list_age"] // 60) if seen["list_age"] != float("inf") else "missing or not dated"))
     ok, line = verdict(seen, got)
@@ -806,6 +879,7 @@ def main():
                     print("  %s -> %s (in front of its own routes)" % (rid, ", ".join(pilots)))
             for rid, _estimate, _draft, pilot in found:
                 print("  test %s -> %s (in front of its own routes; keep it when you set that ship's routes)" % (rid, pilot))
+            tell_refused(seen, got)                                 # Q75 (2): what is never offered, each once, with its reason
             served = {name for _rid, pilots in paying for name in pilots} | {pilot for _rid, _estimate, _draft, pilot in found}
             lifted = spare(seen, got, served, room)
             for rid, why in sorted((seen.get("unflown") or {}).items()):

@@ -22,6 +22,9 @@ Usage:
   gate.py patch|delete <path> ['<json body>']
   gate.py hold <pilot>
   gate.py release <pilot>
+  gate.py book_onetime <pilot> "<title>" <credits>
+                                    one row of data/fleet/onetime.json by hand, no game call: a reward paid once (+) or a
+                                    hull or tool bought once (-) of a pilot of your own division (Mercury, Q75 (6))
 Prints the JSON answer (passwords masked), cut to 3000 chars unless FULL=1.
 """
 import json
@@ -133,6 +136,42 @@ def book_onetime(pilot, title, amount):
         os.replace(tmp, path)
 
 
+ONCE_AGAIN = 10 * 60          # the same row (pilot, title, credits) booked by hand again within this long is refused
+WALLETS = ('Wallet top-up', 'Faction treasury: credits deposited')     # wallet.py's own titles: moves between our purses
+
+
+def book_by_hand(pilot, title, credits):
+    """The verb `book_onetime`: book_onetime() for a pilot of the member's own division, without a script of its own.
+    Refused: a shell that is no member, a pilot of another division, a title of wallet.py's own, an amount that is no
+    whole number other than 0, and the same row booked by hand within ONCE_AGAIN (a command typed twice)."""
+    kind, name = division.member()
+    if kind is None:
+        sys.exit('REFUSED: this shell is no member of The Collective: it books nothing')
+    if kind != 'service' and name != 'Unity' and division.owner(pilot, division.DATA) != name:
+        sys.exit('REFUSED: %s is commanded by %s, not by %s: its money is booked by its own division (orders F1)' % (pilot, division.owner(pilot, division.DATA), name))
+    title = ' '.join(str(title).split())
+    if not title or len(title) > 120 or not title.isascii() or title.startswith(WALLETS):
+        sys.exit('REFUSED: a title is 1 to 120 ASCII characters and none of wallet.py\'s own (%s)' % ', '.join(WALLETS))
+    try:
+        amount = int(str(credits).replace(',', '').replace('+', ''))
+    except ValueError:
+        sys.exit('REFUSED: the credits are a whole number, + for a reward paid once, - for a thing bought once: %s' % credits)
+    if amount == 0:
+        sys.exit('REFUSED: 0 credits books nothing')
+    path = os.path.join(division.DATA, 'fleet', 'onetime.json')
+    try:
+        with open(path, encoding='utf-8') as handle:
+            rows = json.load(handle)
+    except (OSError, ValueError):
+        rows = []
+    again = [r for r in rows if isinstance(r, list) and len(r) == 4 and r[1:] == [pilot, title, amount] and time.time() - (r[0] or 0) < ONCE_AGAIN]
+    if again:
+        sys.exit('REFUSED: %s %+d cr `%s` was booked at %s UTC already: once is once (again after %d minutes, if it was paid twice)'
+                 % (pilot, amount, title, time.strftime('%H:%M:%S', time.gmtime(again[-1][0])), ONCE_AGAIN // 60))
+    book_onetime(pilot, title, amount)
+    return 'one-time money booked: %s %+d cr, %s (data/fleet/onetime.json; kept out of the steady money)' % (pilot, amount, title)
+
+
 def engine_only():
     kind, name = division.member()
     if not (kind == 'service' or name == 'Unity'):
@@ -177,6 +216,9 @@ def main():
         else:
             engine_only()
         status, text = call(verb, args[1], body)
+    elif verb == 'book_onetime' and len(args) == 4:     # Q75 (6): book_onetime by hand, no game call
+        print(book_by_hand(args[1], args[2], args[3]))
+        return
     elif verb == 'hold' and len(args) == 2:
         take(args[1])
         print('held: %s (%s)' % (args[1], division.order_of(args[1])))

@@ -9,6 +9,9 @@
 # RULES:
 #   - `install` waits up to four minutes for a clean clone, copies, runs every gate in the clone and commits by path;
 #     when a gate fails it puts the paths back as they were and exits 1. It never pushes (the watcher does).
+#   - Stopped (INT, TERM, HUP) or past its own limit (FLEET_BUILD_LIMIT seconds, default 1500) once it has copied, it
+#     stops its gates and puts the paths back the same way, so a cut install never leaves a live file uncommitted
+#     (errors.log ENT-115); stopped before the copy it has nothing to put back. A kill -9 no script can catch.
 #   - A path another member changed since your copy was made is refused: make a new copy and carry your change over.
 #     Otherwise one member's work would silently overwrite another's.
 #   - A changed script under game/fleet/ needs its test in the same install: a path under scripts/tests/.
@@ -27,7 +30,7 @@ set -u
 R=${REPO:-/srv/collective/the-collective}
 CLOSED='^(game/fleet/(gate|division|dispatch|runhost|fill|plan|collective_mcp|store)\.py|scripts/(comms\.py|fleet-build\.sh)|(station|governance|communications|collective-index|\.github|\.githooks)(/|$))'
 verb=${1:-}; T=${2:-}
-usage() { sed -n '2,26p' "$0" | sed 's/^# \{0,1\}//'; exit 2; }
+usage() { sed -n '2,29p' "$0" | sed 's/^# \{0,1\}//'; exit 2; }
 [ -n "$verb" ] && [ -n "$T" ] || usage
 
 who() { python3 -I -B -c "
@@ -84,22 +87,35 @@ install)
   done
   [ $script -eq 1 ] && [ $test -eq 0 ] && { echo "HALT: a changed script under game/fleet/ comes with its test: name a path under scripts/tests/ too"; exit 1; }
   cd "$R" || exit 1
+  LIMIT=${FLEET_BUILD_LIMIT:-1500}                   # seconds the install may take from its copy on: its own timeout (ENT-115)
+  trap 'echo "HALT: stopped before anything was copied: nothing to put back"; exit 1' INT TERM HUP
   n=0; while [ -n "$(git status --short)" ] && [ $n -lt 48 ]; do sleep 5; n=$((n + 1)); done
   [ -z "$(git status --short)" ] || { echo "HALT: the clone was not clean in four minutes: [$(git status --short | head -3 | tr '\n' ';')]"; exit 1; }
   for p in "${PATHS[@]}"; do
     git diff --quiet "$BASE" HEAD -- "$p" 2>/dev/null || { echo "HALT: $p changed in the repository since your copy was made ($(git log -1 --format='%h %an' -- "$p")): make a new copy and carry your change over"; exit 1; }
   done
+  GATES=; WATCH=
   undo() {
+    trap '' INT TERM HUP                            # one undo, never cut by a second signal
+    [ -n "$GATES" ] && { pkill -TERM -P "$GATES" 2>/dev/null; kill -TERM "$GATES" 2>/dev/null; wait "$GATES" 2>/dev/null; }
+    [ -n "$WATCH" ] && kill -TERM "$WATCH" 2>/dev/null
+    rm -f "${TMPDIR:-/tmp}/fleet-build.$$"           # the log of gates that were stopped
     echo "HALT: $1 -- putting the paths back"
     git reset -q -- "${PATHS[@]}" 2>/dev/null
     for p in "${PATHS[@]}"; do if git cat-file -e "HEAD:$p" 2>/dev/null; then git checkout -q HEAD -- "$p"; else rm -f -- "$p"; fi; done
     echo "status after: [$(git status --short)]"; exit 1
   }
+  trap 'undo "stopped (INT)"' INT; trap 'undo "stopped (TERM)"' TERM; trap 'undo "stopped (HUP)"' HUP
+  ( trap 'kill "$s" 2>/dev/null; exit 0' TERM; sleep "$LIMIT" & s=$!; wait "$s"; echo "HALT: the install ran past its limit of $LIMIT s (FLEET_BUILD_LIMIT)"; kill -TERM $$ ) &
+  WATCH=$!
   for p in "${PATHS[@]}"; do mkdir -p "$(dirname "$p")" && cp "$T/$p" "$p" || undo "copy $p"; done
   if LC_ALL=C grep -nP '[^\x00-\x7F]' "${PATHS[@]}" | head -3 | grep .; then undo "non-ASCII"; fi
-  gates "" || undo "a gate failed"
+  gates "" & GATES=$!                                # in the background: a signal is taken at once, not after the suite
+  wait "$GATES" || undo "a gate failed"
+  GATES=
   git add -- "${PATHS[@]}" || undo "git add"
   git -c user.name="$NAME" -c user.email="$(printf '%s' "$NAME" | tr 'A-Z' 'a-z')@suggi-workspace.dev" commit -q -m "$MSG" -- "${PATHS[@]}" || undo "git commit"
+  trap - INT TERM HUP; kill -TERM "$WATCH" 2>/dev/null   # committed: nothing to put back any more
   git log -1 --format='committed %h %an %s' | cut -c1-120
   echo "status after: [$(git status --short)] | now one line in queue.log: what changed, for whom, and its test"
   ;;
