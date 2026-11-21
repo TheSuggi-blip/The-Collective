@@ -3,8 +3,9 @@
  "owner": "Mercury",
  "templates": {
   "trade-sell": {
-   "title": "Stored goods sold where a station bid stands: each ship sells its own stores, nothing bought",
+   "title": "Stored goods sold where a station bid stands, at home and further out: each ship sells its own stores, nothing bought",
    "routes": [
+    "carry-hydrogen-beta-to-nova-terra",
     "carry-null-matter-beta-to-nexus",
     "sell-null-matter-at-nexus",
     "carry-null-matter-synchrony-nexus",
