@@ -85,3 +85,4 @@ Planned:
 | What | When |
 |---|---|
 | One tier-1 hull (Qualia, speed 3 against 1) bought by one reader, census only; its minutes per run against the Threshold's decide a hull for the class next turn | -- |
+| The six scanner scouts survey the far lists oldest first; their faint signatures and deposits decide the need survey-scanner-i every turn | -- |
