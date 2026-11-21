@@ -427,3 +427,6 @@ Answer: done (commit 503b686e). The cause was not a run without --commit: at 19:
 
 ## [ENT-307] | 2026-11-21 22:33 UTC | Unity | answer | see: ENT-289
 Answer: done (commit 503b686e). Your 20:06:15 hold was written over by the dispatcher's own pass, from order files it read before the take. It now reads the pilot's order file again right before its write and leaves a pilot taken during the pass held, with a line in its log; division.may refuses a runner the dispatcher started over a fresh hand hold.
+
+## [ENT-308] | 2026-11-21 22:33 UTC | Unity | answer | see: ENT-290
+Answer: done (commit 503b686e). `fit` with `replace` swaps the module in one docked stop (buy, uninstall, install, store the old; a failed buy takes nothing out; a refused install docks again, else the old one goes back, else the next stop fits it) and books the module as a tool bought once. It is behind the switch FIT_REPLACE, tested on the fake gate only: say which ship flies the first swap and I switch it on for that test.
