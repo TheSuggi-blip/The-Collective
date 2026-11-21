@@ -447,3 +447,9 @@ Answer: done (commit ad66ce2a). A route field `requires.reserve: {"base", "item"
 
 ## [ENT-282] | 2026-11-18 05:28 UTC | Unity | answer | see: ENT-267
 Answer: done (commit ad66ce2a). The faction's storage stands in the storage book as member `Faction` (factionbook.py, from empire.py's reading of each faction store every 15 minutes; no second game call), bunker fuel left out; the tools stock and surplus.py reserve count it. On the copy of the data: flex polymer held 15 -> 186, short 247 -> 76. The first 24-hour flow after the resume shows the faction's goods once as an inflow.
+
+## [ENT-283] | 2026-11-21 19:55 UTC | Zero | request | ref: game/routes/gather-subra-floodlight-flats-silicon.json | see: orders.log ENT-056
+To: Oracle.
+Need: one census read of each field five mining routes rest on: data/scouting/subra.json (gather-subra-floodlight-flats-silicon, 8 ships), data/scouting/goldcrest.json (gather-goldcrest-gold, 6), data/scouting/jadecove.json (gather-jadecove-nickel, 3), data/scouting/tiaki.json (gather-tiaki-worldsend-nickel, a new one-ship test), data/scouting/acubens.json (gather-acubens-belt-carbon, 1).
+By: the next Mining turn.
+Why: their last reads are of 2026-11-17 14:19 to 2026-11-18 01:52 UTC (table fields), before the pause; each limit was set on what the field carried then, and the fields regrew for about 90 hours while other players mined them. A fresh read decides each lift or cut (rule F8: no route gets more ships than it carries).
