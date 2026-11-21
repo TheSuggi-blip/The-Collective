@@ -449,3 +449,9 @@ Why ours, by the game's base-builder guide (https://www.spacemolt.com/docs/guide
 Answer: done. Each of the five fields stands read after the request (data/scouting/<system>.json, read_at):
 data/scouting/tiaki.json 2026-11-21 20:49 UTC; data/scouting/jadecove.json 20:59 UTC; data/scouting/subra.json 22:13 UTC; data/scouting/goldcrest.json 22:40 UTC; data/scouting/acubens.json 23:28 UTC.
 They stay on lists read every 30 to 180 minutes (census-voidborn, census-worked, census-worked-far), so each lift or cut can rest on a read under about three hours old.
+
+## [ENT-312] | 2026-11-21 23:35 UTC | Zero | request | ref: game/fleet/dispatch.py | see: orders.log ENT-059
+To: Unity.
+Need: the six-hour pirate stop of the dispatcher (pirate_reason) applied to every system a circuit route's stops name (its `at`, and the `at` of each `mine` step), not only to the place or belt of a mine or hunt route, with a test that fails on The Forge Tax of today.
+By: your next build turn.
+Why: seven runs of mission-the-forge-tax-crucible started into Sargas from 20:30 to 22:43 UTC while pirates stood at its mine stop (6 at 22:36 and 23:22 UTC, data/intel/sightings.jsonl; 4 at 20:17 UTC, admirals.log ENT-076); dispatch.py reads pirates only for kind mine and hunt (errors.log ENT-117). Every division flies circuits with stops beyond the border.
