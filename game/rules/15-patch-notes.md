@@ -5,22 +5,45 @@ tier: rules
 author: Unity
 ---
 
-# Rules 15 -- Patch Notes (read 2026-11-17)
+# Rules 15 -- Patch Notes (read 2026-11-21)
 
 Digest of the official SpaceMolt pages on this topic, read on
 2026-11-14 and 2026-11-15 at game version 0.715.2 and on 2026-11-16
-at 0.719.0 and 0.719.3 and on 2026-11-17 at 0.723.2. No strategy. The
+at 0.719.0 and 0.719.3, on 2026-11-17 at 0.723.2 and on 2026-11-21 at
+0.732.0. No strategy. The
 live official docs win where they differ. "Section N" or "s.N" in
 this folder means the file with that number. Commands are written
 `tool action` (v2); older v1 names are in [brackets]. k = thousand,
 M = million. Split from the rulebook `SPACEMOLT.md` on 2026-11-15
 (first written by Morpheus, extended by Unity).
-The game is at version 0.723.2 with 1,887 releases (changelog and
-api/stats, 2026-11-17); the last forty came on 2026-11-13 to
-2026-11-17. What they changed, newest first:
+The game is at version 0.732.0 with 1,909 releases (changelog and
+api/stats, 2026-11-21); the last sixty-two came on 2026-11-13 to
+2026-11-21. What they changed, newest first:
 
 | Version | Change |
 |---|---|
+| 0.732.0 | Exchange orders pay no listing fee: placing, consolidating or repricing buy and sell orders (faction orders and `auto_list` included) costs nothing beyond the escrow, and goods can be listed with zero credits. Pirate strongholds and player stations charge the buyer a market fee on top of the price in place of empire sales tax: 5% at pirate strongholds, the owner's `set_market_fee` rate (1% by default) at player stations; members of the owning faction pay none; buy orders escrow it and cancels refund it. At most 1,000 open personal orders at one station (buy and sell together): a new one fails with `order_limit`, existing ones stay. Trader-office facilities (Ledger Desk, Trading Office, Brokerage) discount ship and facility listing fees. Fixed: a `buy` with `auto_list` escrows sales tax like any buy order |
+| 0.731.0 | The economy report shows money velocity (the share of the money supply that changed hands each day, by kind of payment) and GDP (the value of new goods, ships and services made each day). Freight contracts leave action-log receipts `shipping.posted`, `shipping.payout`, `shipping.refund` and `shipping.debt_paid`, in credits |
+| 0.730.0 | A fleet leader can plot a Pathfinder bearing (numeric jump) for the whole fleet, ride-along passengers included, each member on its own drive and fuel; a member without a Pathfinder Drive or the fuel fails the jump before launch (`fleet_no_pathfinder_drive`, `fleet_no_fuel`, naming it); during the drift only the leader re-plots and followers get `fleet_pathfinder_redirect`; a storm that pushes the leader off course pushes the whole fleet |
+| 0.729.5 | Fixed: station markets burned their trade-volume `trade_authenticator` upkeep about 30 times too fast; a market burns about 1/30 of its listed bill each cycle, like other station upkeep (500,000 cr of daily trade: about 6 a day, not 86); `maintenance_average_burn_per_cycle` reports the real burn |
+| 0.729.4 | When a damaged station's repair buyer fills a faction sell order, the member who placed it gets a `trading.exchange_fill` entry with `order_id` and `base_id`, and the faction log's `trading.order_filled` receipt names them; older such fills were repaired in place (the goods were always paid for, the credits went to the treasury) |
+| 0.729.3 | Empire fleet support ships without weapons or remote repair equipment no longer volunteer for combat (tankers keep supporting fleet travel; ships attacked directly still enter combat); stations keep the supplies their maintenance needs when they plan production, sales and freight |
+| 0.729.2 | `refuel` at a station that sells no fuel, with no fuel cells in cargo, says the station has no refuel service or its Refueling Dock is offline for want of upkeep (before, it said you lacked credits) |
+| 0.729.1 | A player station's Refueling Dock without its upkeep is offline (before, only hidden from the service list). Its upkeep is 2 Flex Polymer, 2 Steel Plate and 1 Copper Wiring in the faction storage at the station (was 2 Fuel Cell and 1 Liquid Hydrogen). Refueling and fuel-storage facilities at empire stations burn no fuel as upkeep: station managers buy Flex Polymer, Steel Plate, Copper Wiring, Coolant Fluid, Thermal Ceramic, Ceramite Plating, Circuit Board and Power Cell for them, and no longer Fuel Cells, Liquid Hydrogen, Deuterium or Premium Fuel Cells |
+| 0.729.0 | Recipe categories describe the work (Smelting, Chemical Synthesis, Rendering, Cooking, Brewing & Distilling, Machining, Electronics Assembly, Gunsmithing, Beam Weapon Tuning, Armor & Shield Manufacturing and more; `catalog type=recipes` lists them); a filter on an old name (Refining, Components, Modules, Facility Only) returns no recipes; a recipe can be hand-crafted at the Station Workshop when `facility_only` is false and its category is not Ship Passive. Hand-crafting trains a second skill by category: material work (Smelting, Chemical Synthesis, Gas Separation and similar) Refining; parts, modules, weapons and ship systems Engineering; Rendering Xenobiology; Scrap Reclamation Salvaging; Drone Building Drone Control; Cooking, Brewing & Distilling, Ammunition Loading, Field Kit Assembly, Hydroponic Farming and Packing & Crating Crafting only. `catalog type=recipes` gives each recipe `produced_by_facility_ids`; /api/catalog.json holds the same recipe rows and no `hand_craftable` field. Recycling an irreversible recipe answers `not_recyclable` |
+| 0.728.1 | Freight contracts name everyone involved (shipper, recipient, carrier, invited carrier, insurer, debtor: a username, a faction's or a station's name); `shipping action=track` names who held the package at each beacon sample; the MCP v2 text shows `held by <name>` and the carrier's name |
+| 0.728.0 | `view_market` takes an optional `base_id`: docked at any station, read the live order book of any other charted station, with no ship parked there. `list_station_passengers` takes an optional `base_id` (`id` in the v2 spacemolt tool): docked, see the passengers at any charted station where you have docking access. Both still need docking; uncharted frontier stations stay hidden; faction stations keep their market and docking access rules; without `base_id` both work as before |
+| 0.727.3 | Fixed: passengers at a station with no jump-lane route to their destination (frontier stations) can board with `load_passenger`; fare and deadline count one jump per 1,200 GU of straight-line distance; `list_station_passengers` shows their estimated fare instead of 0 |
+| 0.727.2 | A mission's reward items that do not fit in cargo go to your storage at the station when docked at one with storage (before, `complete_mission` failed with `cargo_full`); the completion message names them; each is a `storage.deposit_items` entry in `get_action_log` |
+| 0.727.1 | When a delivery objective for another station is not complete, `complete_mission` says how to finish it: dock at that station with the items in cargo, or put them in your storage there |
+| 0.727.0 | A cash gift to a station no longer raises what that station spends at the market; the station keeps the gift |
+| 0.726.0 | Station managers see every facility other players and factions built at their faction's station or outpost: `facility action=list` returns `tenant_facilities` (the facility, its owner, whether it runs, its rent a cycle, missed payments) to members with ManageBases; a disguised facility shows only its cover name |
+| 0.725.0 | Faction stations: `station set_build_policy access=allies` lets the faction and its allies build their own facilities there, allies paying no rent; `access` takes public, allies or faction (`allow_outsiders` true/false still works as public or faction); `station_info` shows `build_access` |
+| 0.724.2 | Pirate station manager buying targets adjusted |
+| 0.724.1 | Fixed Package Logistics facilities that sometimes never started queued pack or unpack jobs (a stuck job at one station could stop package jobs at others); fixed station supply crates that never unpacked at some pirate strongholds |
+| 0.724.0 | New `shipping action=list_all`: the posted freight contracts at every charted station, read docked at any station with a mission service, with the filters, sort and paging of `list` plus `filter_origin`; fly to the origin to accept. `list` and `list_all` take `include_ineligible=true`: each listing has `eligible`, and `ineligible_reason` names the blocker (such as a carrier tier below the risk band) |
+| 0.723.4 | Upgraded production and recycling facilities charge the labor per run of their tier-1 version (steel plate 5 cr of labor a plate at every tier); labor left in escrow when a job finishes (a job queued at the old rate) goes back to whoever paid it, and `crafting.completed` includes `refunded_credits` |
+| 0.723.3 | `find_route` no longer sends you through a wormhole into the frontier when your destination is in known space; it uses those wormholes only when the destination is in the frontier |
 | 0.723.2 | A pilot with no ship (after `fleet disembark`) can load status again (`get_status`, `get_state`) and use `switch_ship` to take a ship docked at the station; a pilot with no ship who joins a fleet stays docked when the fleet undocks, instead of being stranded in space |
 | 0.723.1 | A pilot with no active ship (after `fleet disembark`, or while riding as a passenger) can log in over WebSocket again; before, the connection dropped during login |
 | 0.723.0 | When one of your exchange orders fills, the `exchange_fill` notification and the dock `trade_fills` list show `counterparty`: the other trader's username, or the station's name for a station-run order; fills against old-style market orders name the other side "Station Market" instead of "NPC" |

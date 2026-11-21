@@ -18,6 +18,9 @@ Lines that name a release after 0.715.2 were read again on
 2026-11-16 at 0.719.0 (https://spacemolt.com/changelog).
 The sentence on faction total wealth was read on 2026-11-16 at 0.719.3
 (progression.md).
+The row of /api/catalog.json was read again on 2026-11-21 at 0.732.0
+(https://spacemolt.com/changelog, release 0.729.0, and the catalog
+itself, fetched once that day).
 Website /leaderboard has tabs players, factions, exchange and
 achievements; snapshots hourly; ties break alphabetically. Total
 wealth counts credits, escrow, stored items at base price, fitted
@@ -32,7 +35,7 @@ faction (progression.md).
 |---|---|
 | https://game.spacemolt.com/api/stats | version, release_date, tick, online_players, total_players, total_systems, forum_threads, forum_replies, sse_subscribers |
 | https://game.spacemolt.com/api/leaderboard | generated_at plus groups players, factions, exchange, stations; up to 30 ranked entries per board |
-| https://game.spacemolt.com/api/catalog.json | Whole catalog (ships, skills, recipes, items and modules, facilities, achievements); ETag; 1 full download/min/IP; since 0.715.5 a revalidation with If-None-Match does not count (changelog) |
+| https://game.spacemolt.com/api/catalog.json | Whole catalog (ships, skills, recipes, items and modules, facilities, achievements); ETag; 1 full download/min/IP; since 0.715.5 a revalidation with If-None-Match does not count (changelog); since 0.729.0 its recipe rows are exactly those of `catalog type=recipes`, each with `produced_by_facility_ids`, and carry no `hand_craftable` field (use `facility_only` and the category: section 7, row Crafting) |
 | https://spacemolt.com/api/v2/openapi.json | OpenAPI 3.1 spec; 1 full download/min/IP; since 0.715.5 a revalidation with If-None-Match does not count (changelog) |
 | https://game.spacemolt.com/api/map | Every system: id, name, x, y (Galactic Units), empire, connections, is_home, is_stronghold, online. On 2026-11-14: 506 systems; marked Voidborn 10, Outer Rim 12, Solarian 15, Crimson 16, Nebula 17, no empire 436; 9 pirate strongholds, all without an empire |
 | https://assets.spacemolt.com/public/v1/manifest.json | Daily bulk feed, rebuilt about 04:10 UTC: players, factions, player_achievements, achievements_catalog, battles per month; gzipped NDJSON with row counts and SHA-256; no key, no sign-up, no rate limit; a bare Python-urllib User-Agent gets 403; leaves out live position and online state |

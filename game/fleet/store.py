@@ -127,6 +127,7 @@ from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import board                                      # noqa: E402  the divisions' names (fleet_positions)
+import craftbook                                  # noqa: E402  by_hand: whether a recipe is made by hand (catalog 0.729.0 on: no hand_craftable)
 import division                                   # noqa: E402  who commands a pilot, its role, the order it flies
 import routes as routefiles                       # noqa: E402  what a run earned, a route's group: one rule for the store and for hive.py
 import docs as writings                           # noqa: E402  the fleet's written knowledge by section: docs, doc_versions
@@ -683,7 +684,7 @@ def read_catalog(path, ctx):
                               "stackable": flag(i.get("stackable")), "type": text(i.get("type")), "slot": text(i.get("slot")),
                               "extracted_by": text(i.get("extracted_by")), "description": text(i.get("description"))})
     for r in listed("recipes"):
-        rows["recipes"].append({"id": r["id"], "name": text(r.get("name")), "category": text(r.get("category")), "hand": flag(r.get("hand_craftable")),
+        rows["recipes"].append({"id": r["id"], "name": text(r.get("name")), "category": text(r.get("category")), "hand": flag(craftbook.by_hand(r)),
                                 "facility_only": flag(r.get("facility_only")), "time": number(r.get("crafting_time")), "fuel_output": number(r.get("fuel_output")),
                                 "requires_unlock": flag(r.get("requires_unlock")), "description": text(r.get("description"))})
         rows["recipe_inputs"] += pairs(r, "inputs", ("recipe", r["id"]))

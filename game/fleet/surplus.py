@@ -255,7 +255,7 @@ def how_made(cat, item, step):
     """How the reserve gets an item: `by hand` or `facility` (the recipe it follows), `mined`, `no recipe` (hunted, dropped or bought),
     `stock` (what is held covers the demand), `circle` (asked again inside a circle of recipes); empty when nothing asks for it."""
     if step and step["recipe"]:
-        return "by hand" if step["recipe"].get("hand_craftable") else "facility"
+        return "by hand" if craftbook.by_hand(step["recipe"]) else "facility"
     if craftbook.mined(cat, item):
         return "mined"
     if not cat["makers"].get(item):

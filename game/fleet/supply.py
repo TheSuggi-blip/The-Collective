@@ -49,6 +49,9 @@ RULES:
     the own work of every role of that division (a gather route into Mining's alone, unless its file's `open_to`
     names the other roles); another is named and never added, and a route duty put in earlier that is not of the
     division's class is taken out at the next `duty --write`. A mission that pays once stays every role's.
+  - A storage book that is not whole (ledger.decides: a reading of fewer than ledger.WHOLE_SHARE of the fleet's
+    pilots) reads less than the fleet holds: duty puts no source in and renews no end on it, and every answer's first
+    line says how whole the book is (requests ENT-284, r22).
   - DUTY_ENABLED = False: `duty --write` is refused (exit 1); `duty` and `duty --dry-run` only say what would change.
   - It reads the store's read copy and the route files; it moves no ship. Only `duty --write` writes: the plan of a
     division (data/plans, game/routes/plans) and data/supply/duty.json.
@@ -238,6 +241,8 @@ def read(data):
     items, places, routes {id: (kind, status)}, plans {role: set of routes}}."""
     import store                                  # here, not at the top: store.py imports this file
     out = {"rows": [], "error": None, "file": None, "book": None, "sample": None, "items": set(), "places": set(), "routes": {}, "plans": {}}
+    import ledger                                 # r22 (requests ENT-284): how whole the storage book is; duty puts no source in on a book that is not
+    out["whole"], out["whole_words"] = ledger.decides(ledger.book_whole(data))
     conn = store.connect(data)
     if conn is None:
         out["error"] = "no read copy of the store yet: %s (the service `store` publishes it)" % (Path(data) / "store" / "read.db")
@@ -274,7 +279,7 @@ def first_line(title, res):
         said = "the store has not read %s (no file, or not read yet)" % NAME
     else:
         said = "%s read by the store %s%s" % (NAME, stamp(found[0]), " (NOT READ NOW: %s; its rows are as last read)" % found[1] if found[1] else "")
-    return "%s | %s | storage book of %s | newest hourly sample %s" % (title, said, stamp(res["book"]), stamp(res["sample"]))
+    return "%s | %s | storage book of %s%s | newest hourly sample %s" % (title, said, stamp(res["book"]), " (%s)" % res["whole_words"] if res.get("whole_words") else "", stamp(res["sample"]))
 
 
 def stock_text(row):
@@ -437,6 +442,9 @@ def steps(res, record, now, root=None):
         name = (r["keeper"] or "").lower()
         roles = roles_of(name)
         head = "%s (%s: %s at %s, %s of %s)" % (r["chain"], r["keeper"], r["item"], r["place"], num(r["stock"] or 0), num(r["keep"]))
+        if not res.get("whole", True):            # r22: a book that is not whole reads less than the fleet holds: short is not measured
+            lines.append("%s: not judged, the storage book is not whole (the first line): no source goes in until it is" % head)
+            continue
         if not sources_of(r):
             found = gatherers(root, r["item"], r["place"]) if root else []
             lines.append("%s: no source route: %s writes one%s" % (head, r["keeper"], "; route files that bring %s: %s" % (r["item"], ", ".join(found)) if found
@@ -477,6 +485,8 @@ def steps(res, record, now, root=None):
         if why:
             lines.append("END %s: out of the list Then of the %s plan: %s" % (entry["route"], entry["division"], why))
             divisions.setdefault(entry["division"], {"add": [], "end": []})["end"].append((key, entry["route"], why))
+        elif due and not res.get("whole", True):  # r22: renewed only on a whole book; ended above as before
+            lines.append("HOLD %s in the %s plan: its end came while the storage book is not whole: judged when it is" % (entry["route"], entry["division"]))
         elif due:
             lines.append("RENEW %s in the %s plan: its chain %s is still short; new end %s" % (entry["route"], entry["division"], entry["chain"],
                                                                                           stamp(now + DUTY_HOURS * 3600)))

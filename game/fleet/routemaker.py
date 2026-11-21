@@ -52,6 +52,16 @@ RULES:
     the hour, every item of the field together; a sale's `min_price` is
     four fifths of the lowest level the hour reaches, rounded up
     (requests.log ENT-069).
+  - What a purchase pays on top of its price is the station's (changelog
+    0.732.0, buy_share): 5% at a pirate stronghold (a system the chart
+    flags `stronghold`), the owner's market fee at a player's station (its
+    `market_fee_bps` as the census read it, else the game's default 1%;
+    none at a station of our own faction), the empire's sales tax
+    elsewhere (the assumption `tax`). A sale pays nothing, and an order
+    on the book pays no listing fee since 0.732.0.
+  - A hand recipe is one craftbook.by_hand calls so (the catalog's
+    `hand_craftable`, else, from catalog 0.729.0 on, facility_only false
+    and a category other than Ship Passive).
   - A route it writes is a test: `max_ships` 1. The Admiral who flies it
     lifts the limit after the first RESULT line (game/routes/BLUEPRINT.md).
   - A herd is hunted by its species' gauges (rule F9, gauges.py), never by a
@@ -93,6 +103,7 @@ from pathlib import Path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import division                                   # noqa: E402
 import gauges                                     # noqa: E402  rule F9: what one ship or a group of ours can hunt
+import craftbook                                  # noqa: E402  by_hand: which recipes are made by hand (catalog 0.729.0 on: no hand_craftable)
 
 ROOT = Path(__file__).resolve().parent.parent     # the game/ folder
 EVERY = 600                  # seconds between two passes
@@ -118,7 +129,10 @@ ASSUME = {
     "leg_minutes": 1.5,      # minutes for one flight inside a system
     "dock_minutes": 1.5,     # minutes for a stop at a station
     "mine_rate": 0.05,       # units a minute per point of a field's richness; replaced by the mine runs' own figure
-    "tax": 0.01,             # share of a purchase that goes to tax
+    "tax": 0.01,             # share of a purchase that goes to the empire's sales tax (Voidborn citizens, get_tax_estimate 2026-11-15)
+    "stronghold_fee": 0.05,  # share a buyer pays on top at a pirate stronghold, instead of sales tax (changelog 0.732.0)
+    "station_fee": 0.01,     # share a buyer pays on top at a player's station whose fee the census did not read: the game's default
+                             # set_market_fee (changelog 0.732.0); members of the owning faction pay none
 }
 
 
@@ -207,8 +221,10 @@ def load_world(data, root, now):
             for poi_id, entry in (scout.get("pois") or {}).items():
                 poi = entry.get("poi") if isinstance(entry.get("poi"), dict) else {}
                 if poi.get("type") == "station" and poi.get("base_id"):
+                    base = entry.get("base") if isinstance(entry.get("base"), dict) else {}
                     world["stations"][poi["base_id"]] = {"system": system, "poi": poi_id, "name": poi.get("name") or poi_id,
-                                                         "at": "%s:%s:%s" % (system, poi_id, poi["base_id"])}
+                                                         "at": "%s:%s:%s" % (system, poi_id, poi["base_id"]),
+                                                         "faction_id": base.get("faction_id"), "market_fee_bps": base.get("market_fee_bps")}
                 resources = [{"id": r.get("resource_id"), "richness": num(r.get("richness")), "remaining": num(r.get("remaining"))}
                              for r in entry.get("resources") or poi.get("resources") or [] if isinstance(r, dict) and r.get("resource_id")]
                 if resources:
@@ -256,9 +272,11 @@ def load_world(data, root, now):
     items = catalog.get("items") or []
     recipes = catalog.get("recipes") or []
     world["items"] = {i["id"]: i for i in (items.values() if isinstance(items, dict) else items) if isinstance(i, dict) and i.get("id")}
-    world["recipes"] = [r for r in (recipes.values() if isinstance(recipes, dict) else recipes) if isinstance(r, dict) and r.get("hand_craftable")]
+    world["recipes"] = [r for r in (recipes.values() if isinstance(recipes, dict) else recipes) if isinstance(r, dict) and craftbook.by_hand(r)]
     world["catalog_version"] = catalog.get("version") or ""
     world["stock"] = (read_json(data / "stock" / "storage.json", {}).get("totals") or {}).get("by_station") or {}
+    world["strongholds"] = stronghold_systems(root)
+    world["faction_id"] = ((read_json(data / "empire" / "empire.json", {}) or {}).get("faction") or {}).get("id") or ""
     world["runs"] = []
     try:
         with open(data / "routes" / "runs.jsonl", encoding="utf-8") as handle:
@@ -342,6 +360,24 @@ def assumptions(world, ships, meters):
 
 def value(world, key):
     return world["assume"][key]["value"]
+
+
+def buy_share(world, base):
+    """The share of the price a buyer pays on top at a station (changelog 0.732.0): 5% at a pirate stronghold, the owner's
+    market fee at a player's station (the census's market_fee_bps, else the default 1%; 0 at a station of our own
+    faction), the empire's sales tax elsewhere. The one place a purchase's surcharge is reckoned: trade, craft and
+    mission candidates ask here."""
+    station = world["stations"].get(base) or {}
+    system = station.get("system") or (world["books"].get(base) or {}).get("system")
+    if system and system in world.get("strongholds", ()):
+        return value(world, "stronghold_fee")
+    owner = station.get("faction_id")
+    if owner or re.fullmatch(r"[0-9a-f]{32}", str(base)):            # a player's station: an id of 32 hex digits (craftbook.place_name's rule)
+        if owner and owner == world.get("faction_id"):
+            return 0.0
+        bps = station.get("market_fee_bps")
+        return bps / 10000.0 if isinstance(bps, (int, float)) and not isinstance(bps, bool) and bps >= 0 else value(world, "station_fee")
+    return value(world, "tax")
 
 
 def trip(world, jumps, legs=2, docks=1):
@@ -610,9 +646,11 @@ def mine_candidates(world):
 
 
 def trade_candidates(world):
-    """An item on offer at one station and bid for at another, capped by both depths, the hold and the tax."""
-    out, cargo, tax = [], value(world, "cargo"), value(world, "tax")
+    """An item on offer at one station and bid for at another, capped by both depths, the hold and what the buyer pays on
+    top at the station of purchase (buy_share)."""
+    out, cargo = [], value(world, "cargo")
     for a, book_a in world["books"].items():
+        tax = buy_share(world, a)
         for item, ask in book_a["items"].items():
             if ask["ask"] <= 0 or ask["ask_qty"] <= 0:
                 continue
@@ -660,7 +698,7 @@ def trade_candidates(world):
 
 def craft_candidates(world):
     """A hand recipe whose inputs are on offer at a station or lie in our storage there, its output sold into the best bid."""
-    out, tax = [], value(world, "tax")
+    out = []
     for recipe in world["recipes"]:
         outputs = [o for o in recipe.get("outputs") or [] if isinstance(o, dict) and o.get("item_id")]
         inputs = [i for i in recipe.get("inputs") or [] if isinstance(i, dict) and i.get("item_id")]
@@ -690,7 +728,7 @@ def craft_candidates(world):
                     from_stock += 1
                 else:
                     got, paid, how = buy_from(world, base, item, qty * batches)
-                    cost += paid * (1 + tax)
+                    cost += paid * (1 + buy_share(world, base))
                     parts.append("%d %s for %d cr (%s)" % (got, item, paid, how))
             sold, income, how_sell = sell_into(world, sell_base, made, per_batch * batches)
             jumps = world["chart"].jumps(book["system"], world["books"][sell_base]["system"])
@@ -886,7 +924,7 @@ def mission_candidates(world):
                     offers = sorted((row["ask"], b) for b, bk in world["books"].items() for row in [bk["items"].get(item)] if row and row["ask"] > 0 and row["ask_qty"] >= qty)
                     held = sorted(((num((world["stock"].get(b) or {}).get(item)), b) for b in world["stock"]), reverse=True)
                     if offers:
-                        cost += qty * offers[0][0] * (1 + value(world, "tax"))
+                        cost += qty * offers[0][0] * (1 + buy_share(world, offers[0][1]))
                         asks.append("%d %s: on offer at %s for %d cr" % (qty, item, offers[0][1], offers[0][0]))
                         stops.append(("buy", offers[0][1], item, qty, offers[0][0]))
                     elif held and held[0][0] >= qty:
@@ -1022,6 +1060,21 @@ def policed_systems(root):
     head = {name: n for n, name in enumerate(rows[0])} if rows else {}
     for row in rows[1:]:
         if "empire" in head and len(row) > head["empire"] and row[head["empire"]] not in ("-", ""):
+            out.add(row[head["id"]])
+    return out
+
+
+def stronghold_systems(root):
+    """The systems the chart flags `stronghold`: a pirate stronghold's station charges the buyer 5% (changelog 0.732.0)."""
+    out = set()
+    try:
+        lines = (Path(root) / "map" / "galaxy.tsv").read_text(encoding="utf-8").splitlines()
+    except OSError:
+        return out
+    rows = [l.split("\t") for l in lines if l and not l.startswith("#")]
+    head = {name: n for n, name in enumerate(rows[0])} if rows else {}
+    for row in rows[1:]:
+        if "flags" in head and len(row) > head["flags"] and "stronghold" in row[head["flags"]].split(","):
             out.add(row[head["id"]])
     return out
 

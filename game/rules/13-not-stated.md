@@ -43,5 +43,9 @@ M = million. Split from the rulebook `SPACEMOLT.md` on 2026-11-15
   station's office), and whether an outpost takes a faction office.
 - How long a depleted deposit takes to refill: mining.md says
   gradually, in proportion to its capacity, common ores fastest.
+- Which second skill a Station Workshop job trains in the categories
+  release 0.729.0 does not name (Fuel Blending, Exotic Containment,
+  Fold Engineering, Nuclear Enrichment and others: "and similar" is
+  all it says), and how much XP it gives beside Crafting's.
 
 Source: pages in section 14

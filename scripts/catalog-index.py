@@ -48,6 +48,9 @@ import sys
 import time
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "game" / "fleet"))
+import craftbook                                  # noqa: E402  by_hand: the one rule of what is made by hand (catalog 0.729.0 on: no hand_craftable)
+
 FOLDER = "game/catalog"
 DATA = "/srv/collective/data/catalog"
 HOME_EMPIRE = "voidborn"
@@ -127,7 +130,7 @@ def tables(cat):
     rows = {
         "recipes.tsv": ("Every recipe of the game: what it makes, from what, and where.",
                         [[r["id"], r.get("name"), r.get("category"), parts(r.get("outputs")), parts(r.get("inputs")), r.get("crafting_time"),
-                          "yes" if r.get("hand_craftable") else "no", ", ".join(r.get("produced_by_facility_ids") or []),
+                          "yes" if craftbook.by_hand(r) else "no", ", ".join(r.get("produced_by_facility_ids") or []),
                           flags(r, ("requires_unlock", "fuel_output", "package_operation", "no_recycle"))] for r in sorted(recipes, key=lambda r: r["id"])]),
         "facilities.tsv": ("Every facility of the game: what it makes or gives, and what building it takes.",
                            [[f["id"], f.get("name"), f.get("category"), f.get("level"), f.get("upgrades_from"), f.get("recipe_id"), f.get("build_cost"),
@@ -155,7 +158,7 @@ def tables(cat):
 
 def where(recipe):
     plants = recipe.get("produced_by_facility_ids") or []
-    if recipe.get("hand_craftable"):
+    if craftbook.by_hand(recipe):
         return "by hand" + (", or in: " + ", ".join(plants[:3]) if plants else "")
     return "in: " + ", ".join(plants[:4]) + (" (and %d more)" % (len(plants) - 4) if len(plants) > 4 else "") if plants else "in a facility"
 
@@ -174,7 +177,7 @@ def pages(cat):
         cats.setdefault(r.get("category") or "(none)", []).append(r)
     recipe_rows = []
     for name in sorted(cats, key=lambda n: (-len(cats[n]), n)):
-        rows, hand = sorted(cats[name], key=lambda r: r["id"]), sum(1 for r in cats[name] if r.get("hand_craftable"))
+        rows, hand = sorted(cats[name], key=lambda r: r["id"]), sum(1 for r in cats[name] if craftbook.by_hand(r))
         out["recipes/%s.md" % slug(name)] = "\n".join(
             ["# %s -- Recipes" % name, "", built, "Up: [master-index.md](../master-index.md). Recipes: %d; by hand: %d; in a facility only: %d." % (len(rows), hand, len(rows) - hand), ""]
             + table(["Recipe", "Makes", "From", "Where", "Time"], [["`%s`" % r["id"], parts(r.get("outputs")), parts(r.get("inputs")), where(r), r.get("crafting_time")] for r in rows])) + "\n"

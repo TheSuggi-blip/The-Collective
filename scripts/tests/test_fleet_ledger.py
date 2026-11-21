@@ -114,7 +114,9 @@ class MarketTests(Tree):
         fleet.write_text(json.dumps({"engine": {"ok": True}, "ships": []}))
         self.assertEqual(ledger.leave(book, str(self.data)), [])                                  # a file that names nobody is no roster
         fleet.write_text(json.dumps({"engine": {"ok": True}, "ships": ships}))
-        self.assertEqual((ledger.leave(book, str(self.data)), sorted(book["pilots"])), (["miner-9"], ["miner-1", "miner-2"]))        # only the pilot the fleet has no longer
+        now = time.time()
+        self.assertEqual(ledger.leave(book, str(self.data), now), [])                            # left out once: its count starts (r22, requests ENT-284)
+        self.assertEqual((ledger.leave(book, str(self.data), now + ledger.LEAVE_LONG), sorted(book["pilots"])), (["miner-9"], ["miner-1", "miner-2"]))   # only the pilot the fleet has no longer
         self.assertEqual(ledger.pilots_of(str(self.data)), ["miner-1"])                           # and only a connected pilot is read
 
     def test_only_a_changed_best_bid_or_ask_is_a_move(self):

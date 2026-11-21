@@ -1266,7 +1266,7 @@ def api_item(item):
 
     def recipe(r):
         rel = "game/catalog/recipes/%s.md" % re.sub(r"[^a-z0-9]+", "-", str(r.get("category") or "").lower()).strip("-")
-        return {"id": text(r.get("id"), 60), "name": text(r.get("name"), 60), "category": text(r.get("category"), 30), "by_hand": bool(r.get("hand_craftable")),
+        return {"id": text(r.get("id"), 60), "name": text(r.get("name"), 60), "category": text(r.get("category"), 30), "by_hand": craftbook().by_hand(r),
                 "inputs": part(r.get("inputs")), "outputs": part(r.get("outputs")), "doc": rel if DOC_PATH.fullmatch(rel) and (REPO / rel).is_file() else ""}
 
     built = []

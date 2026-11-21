@@ -36,6 +36,10 @@ RULES:
     (`surplus.py check` fails on it).
   - What a result sells for is the best bid of a saved order book and the
     units at that price: an estimate until sold (orders F12).
+  - By hand means at the Station Workshop: the catalog's `hand_craftable`
+    where it has one, else (catalog 0.729.0 on) facility_only false and a
+    category other than Ship Passive (by_hand, the rule every reader asks).
+    A category the catalog does not hold answers with the categories it does.
 WHY:  what a base, a hull or a module takes was worked out by hand, call by
       call, and what lay in storage was never held against the recipes. The
       same tables as files: game/catalog/ in the repository.
@@ -302,6 +306,22 @@ def mined(cat, item):
     return row.get("category") == "ore" or bool(row.get("extracted_by"))
 
 
+NOT_BY_HAND = ("Ship Passive",)                 # the category that is never crafted by hand (changelog 0.729.0)
+
+
+def by_hand(recipe):
+    """Whether a recipe is crafted by hand at the Station Workshop. The one place the rule stands: every reader of the
+    catalog (store.py, surplus.py, routemaker.py, catalog-index.py, the station) asks here. A catalog before 0.729.0
+    says it in `hand_craftable`; since 0.729.0 the bulk catalog has no such field and the game's rule is: facility_only
+    is false and the category is not Ship Passive (changelog 0.729.0; the rule gives the same answer for all 892
+    recipes of catalog 0.723.2, which carried both)."""
+    if not isinstance(recipe, dict):
+        return False
+    if "hand_craftable" in recipe:
+        return bool(recipe.get("hand_craftable"))
+    return not recipe.get("facility_only") and recipe.get("category") not in NOT_BY_HAND
+
+
 def rank(cat, item, open_items=()):
     """How many recipes lie between an item and what is mined: 0 for what is mined or has no recipe; 99 inside a circle."""
     memo = cat.setdefault("rank", {})
@@ -322,7 +342,7 @@ def rank(cat, item, open_items=()):
 
 def pick(cat, recipes):
     """The recipe a list of needs follows when the fleet chose none: nearest to what is mined, by hand first, then the fewest inputs."""
-    return sorted(recipes, key=lambda r: (max([rank(cat, i.get("item_id")) for i in r.get("inputs") or []] or [0]), not r.get("hand_craftable"),
+    return sorted(recipes, key=lambda r: (max([rank(cat, i.get("item_id")) for i in r.get("inputs") or []] or [0]), not by_hand(r),
                                           len(r.get("inputs") or []), r["id"]))[0]
 
 
@@ -371,7 +391,7 @@ def expand(cat, item, units, steps, raw, trail=()):
 
 
 def where(cat, recipe):
-    if recipe.get("hand_craftable"):
+    if by_hand(recipe):
         return "by hand"
     return "in a facility: " + ", ".join(recipe.get("produced_by_facility_ids") or ["?"])
 
@@ -409,7 +429,7 @@ def print_needs(cat, wanted, have, when):
         value = (cat["items"].get(item) or {}).get("base_value")
         print("  %-34s %12s %12s %12s %10s" % (item, "{:,}".format(units), "{:,}".format(have.get(item, 0)), "{:,}".format(max(0, units - have.get(item, 0))),
                                            value if value is not None else "?"))
-    plants = sorted({f for _u, _r, recipe, _d in steps.values() if not recipe.get("hand_craftable") for f in recipe.get("produced_by_facility_ids") or []})
+    plants = sorted({f for _u, _r, recipe, _d in steps.values() if not by_hand(recipe) for f in recipe.get("produced_by_facility_ids") or []})
     if plants:
         print("Facilities the steps run in (any one per step): " + ", ".join(plants))
 
@@ -434,7 +454,7 @@ def show_item(cat, text, have):
     print("Made by %d recipe(s)%s" % (len(makers), "" if makers else ": mined, dropped or bought only"))
     followed = recipe_for(cat, item["id"]) if len(makers) > 1 and not mined(cat, item["id"]) else None      # every recipe is listed: a member chooses from them
     row = ((cat.get("choices") or {}).get("rows") or {}).get(item["id"])
-    for r in sorted(makers, key=lambda r: (not r.get("hand_craftable"), r["id"])):
+    for r in sorted(makers, key=lambda r: (not by_hand(r), r["id"])):
         mark = "" if r is not followed else " | <- every list of needs follows this one (%s)" % (
             "chosen in %s line %d" % (CHOICES, row["line"]) if row and (cat.get("chosen") or {}).get(item["id"]) is r else "the rule: nearest to what is mined, by hand, fewest inputs")
         print("  %s: %s <- %s | %s%s" % (r["id"], parts(r.get("outputs")), parts(r.get("inputs")), where(cat, r), mark))
@@ -489,7 +509,7 @@ def show_can(cat, data, who, top):
             continue
         for recipe in cat["recipes"].values():
             inputs = recipe.get("inputs") or []
-            if not recipe.get("hand_craftable") or not inputs:
+            if not by_hand(recipe) or not inputs:
                 continue
             runs = min(int(goods.get(i.get("item_id"), 0)) // max(1, i.get("quantity") or 1) for i in inputs)
             if runs > 0:
@@ -525,7 +545,15 @@ def show_recipes(cat, args, value):
     if value("--uses", ""):
         rows = [r for r in rows if any(i.get("item_id") == value("--uses", "") for i in r.get("inputs") or [])]
     if "--hand" in args:
-        rows = [r for r in rows if r.get("hand_craftable")]
+        rows = [r for r in rows if by_hand(r)]
+    if not rows and value("--category", ""):                       # a name the catalog does not use: say which it uses
+        counts = {}
+        for r in cat["recipes"].values():
+            counts[r.get("category")] = counts.get(r.get("category"), 0) + 1
+        print("no recipe in the category `%s` (catalog %s; the game renamed its recipe categories in 0.729.0: Refining, Components, Modules and "
+              "Facility Only are old names). Its %d categories: %s" % (value("--category", ""), cat["version"], len(counts),
+                                                                      ", ".join("%s %d" % (name, n) for name, n in sorted(counts.items(), key=lambda kv: (-kv[1], str(kv[0]))))))
+        return 1
     if len(rows) == len(cat["recipes"]):
         counts = {}
         for r in rows:

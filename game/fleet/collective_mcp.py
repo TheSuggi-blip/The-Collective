@@ -310,7 +310,7 @@ TOOLS = {
                 "use an item. The same tables as files: game/catalog/master-index.md.",
         "args": {"ask": arg(S, "item (default), needs, build, can or recipes", ("item", "needs", "build", "can", "recipes")),
                  "name": arg(S, "for item: text or an item id; for needs: an item id; for build: a facility id or a hull id"), "quantity": arg(I, "for needs: units, default 1"),
-                 "member": arg(S, "for can: a member's name or all", MEMBERS), "top": arg(I, "for can: how many rows"), "category": arg(S, "for recipes: a category name"),
+                 "member": arg(S, "for can: a member's name or all", MEMBERS), "top": arg(I, "for can: how many rows"), "category": arg(S, "for recipes: a category name as the catalog writes it (renamed in the game's 0.729.0: Smelting, Machining ...; ask=recipes alone lists them)"),
                  "makes": arg(S, "for recipes: an item id it makes"), "uses": arg(S, "for recipes: an item id it uses"), "by_hand": arg(B, "for recipes: only those crafted by hand")},
         "plan": catalog_plan},
     "base_plan": {

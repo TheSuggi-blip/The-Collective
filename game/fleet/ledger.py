@@ -24,9 +24,23 @@ WHAT: the service `ledger` runs it. Every 30 s it does two things.
 RULES:
   - It reads only. It moves no ship, buys and sells nothing.
   - A pilot it could not read keeps its last reading and its error; a total
-    never counts a pilot twice. A pilot leaves the book only when the fleet
-    file, read while the engine answers, names it no longer: one that is not
-    connected for a moment keeps its stores in the book.
+    never counts a pilot twice. A pilot not read since it was signed in again
+    (an engine start, a resume) keeps its last whole reading, with the time it
+    was read, until its turn reads it again.
+  - A pilot leaves the book only when it left the fleet: the fleet file, read
+    while the engine answers, has not named it (nor its list `away`) for
+    LEAVE_AFTER seconds on end while it named at least LEAVE_SHARE of the
+    book's pilots, or for LEAVE_LONG seconds whatever it named; a flagship
+    never. A file written while the engine signs its pilots in names a part
+    of the fleet: nobody leaves on it (2026-11-21 19:20 UTC: a file of 5 ships
+    took 241 pilots out of the book and the iron chain read 33,107 of 250,690).
+  - The book says how whole it is (`whole`): the pilots of the fleet, how many
+    it holds a reading of, how many were read since their last sign in or the
+    engine's start (fleet.json, presence.jsonl), how many it keeps from before,
+    the ones it lacks and the oldest reading. It is whole when it holds a
+    reading of WHOLE_SHARE of the fleet's pilots; decides() gives a reader
+    that answer and its words (supply.py duty adds no source on a book that is
+    not whole).
   - The files are the unit's data, never the repository's.
   - No ship waits on the book (rule F32): a free pilot is read within about a
     minute or two of the end of its run; a reading that failed is tried again
@@ -71,6 +85,11 @@ DUE_PER_PASS = 3             # and on top of them the pilots that wait on the bo
 RETRY = 120                  # seconds until a waiting pilot whose reading failed is tried again
 WAIT = 45                    # a pilot waits on the book when the dispatcher (a pass every 30 s) did not send it on within this
 HOME = "central_nexus"       # any station answers with the list of the pilot's storage locations
+LEAVE_AFTER = 3600           # seconds on end a pilot stands outside a fleet file that names the fleet before it leaves the book
+LEAVE_SHARE = 0.9            # a fleet file names the fleet when it names this share of the book's pilots (fewer: a fleet signing in)
+LEAVE_LONG = 86400           # seconds on end outside every fleet file after which a pilot leaves whatever the file named
+WHOLE_SHARE = 0.95           # the book is whole when it holds a reading of this share of the fleet's pilots
+PRESENCE_TAIL = 1_000_000    # bytes read from the end of fleet/presence.jsonl for the pilots' last sign in
 
 
 def read_json(path, default):
@@ -150,7 +169,79 @@ def totals(pilots, data):
 def save_storage(book, data):
     book["updated_at"] = now_text()
     book["totals"] = totals(book["pilots"], data)
+    book["whole"] = wholeness(book, data, book.get("whole"))
     write_json(Path(data) / "stock" / "storage.json", book)
+
+
+def signed_in(data, names, start=0):
+    """{pilot: seconds since the epoch of its last sign in}: the engine's start (`start`) or, later, the line of
+    fleet/presence.jsonl that the collector wrote when the engine listed the pilot again (`sign` 1); 0 when neither."""
+    out = {name: start for name in names}
+    try:
+        with open(Path(data) / "fleet" / "presence.jsonl", "rb") as handle:
+            handle.seek(0, os.SEEK_END)
+            handle.seek(max(0, handle.tell() - PRESENCE_TAIL))
+            lines = handle.read().decode("utf-8", "replace").splitlines()
+    except OSError:
+        return out
+    for line in lines:
+        try:
+            row = json.loads(line)
+        except ValueError:
+            continue                                         # the first line of the tail may be cut
+        if isinstance(row, dict) and row.get("sign") == 1 and row.get("pilot") in out and isinstance(row.get("at"), (int, float)):
+            out[row["pilot"]] = max(out[row["pilot"]], int(row["at"]))
+    return out
+
+
+def wholeness(book, data, before=None):
+    """How whole the book is (its entry `whole`): the fleet's pilots (the fleet file's ships and `away`, and every pilot the
+    book keeps; the faction's entry is no pilot), how many it holds a reading of, how many of those were read since the
+    pilot's last sign in or the engine's start (fresh) and how many it keeps from before, the pilots it lacks, the oldest
+    reading it carries, and `whole`: a reading of WHOLE_SHARE of the pilots at least. `before`: the entry of the pass
+    before, whose engine start stands in while the fleet file does not say it (the collector holds a sign-in back)."""
+    pilots = book.get("pilots") or {}
+    names = sorted((set(pilots) | (roster(data) or set())) - {factionbook.MEMBER})
+    engine = read_json(Path(data) / "fleet" / "fleet.json", {}).get("engine") or {}
+    started = str(engine.get("started_at") or (before or {}).get("engine_started") or "")
+    since = signed_in(data, names, stamp(started))
+    held, fresh, missing, read = 0, 0, [], []
+    for name in names:
+        entry = pilots.get(name) or {}
+        if not isinstance(entry.get("stations"), dict):
+            missing.append(name)
+            continue
+        held += 1
+        fresh += 1 if stamp(entry.get("read_at")) >= since.get(name, 0) else 0
+        read.append(str(entry.get("read_at") or ""))
+    last = max(since.values(), default=0)
+    return {"pilots": len(names), "held": held, "fresh": fresh, "kept": held - fresh, "missing": len(missing), "missing_names": missing[:12],
+            "oldest": min(read, default=""), "engine_started": started, "signed_in": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(last)) if last else "",
+            "whole": bool(names) and held >= WHOLE_SHARE * len(names)}
+
+
+def words(whole):
+    """One line of how whole a book's entry `whole` says it is."""
+    if not isinstance(whole, dict) or "whole" not in whole:
+        return "how whole it is not said (a book written before the ledger said it)"
+    text = "%d of %d pilots held, %d read since their sign in, %d kept from before, the oldest reading %s" % (
+        whole.get("held") or 0, whole.get("pilots") or 0, whole.get("fresh") or 0, whole.get("kept") or 0, whole.get("oldest") or "--")
+    if whole.get("missing"):
+        text += "; no reading of %d: %s%s" % (whole["missing"], ", ".join(whole.get("missing_names") or []), " ..." if whole["missing"] > len(whole.get("missing_names") or []) else "")
+    return text + ("" if whole.get("whole") else "; NOT WHOLE (below %d percent of the fleet)" % round(WHOLE_SHARE * 100))
+
+
+def decides(whole):
+    """(True when a reader may decide on the book, its words) for a book's entry `whole`. A book that does not say is
+    judged as it stands, as before the ledger said it."""
+    return (not isinstance(whole, dict) or "whole" not in whole or bool(whole["whole"])), words(whole)
+
+
+def book_whole(data):
+    """The entry `whole` of the storage book in the data folder; {} when there is no book or it does not say."""
+    found = read_json(Path(data) / "stock" / "storage.json", {})
+    whole = found.get("whole") if isinstance(found, dict) else None
+    return whole if isinstance(whole, dict) else {}
 
 
 def price_row(item):
@@ -248,19 +339,39 @@ def batch_of(names, turn, book, data, now=None):
 
 
 def roster(data):
-    """Every pilot the fleet file names, connected or not; None while the engine does not answer or the file names nobody
-    (then nobody leaves the book: a pilot that reconnects for a moment still owns what it stored)."""
+    """Every pilot the fleet file names, connected or not, with the pilots it holds signed out (`away`); None while the
+    engine does not answer or the file names nobody (then nobody leaves the book: a pilot that reconnects for a moment
+    still owns what it stored)."""
     fleet = read_json(Path(data) / "fleet" / "fleet.json", {})
-    names = {s["name"] for s in fleet.get("ships") or [] if isinstance(s, dict) and s.get("name")}
+    names = {s["name"] for s in (fleet.get("ships") or []) + (fleet.get("away") or []) if isinstance(s, dict) and s.get("name")}
     return names if names and (fleet.get("engine") or {}).get("ok", True) else None
 
 
-def leave(book, data):
-    """Take the pilots out of the book that the fleet has no longer; the names taken out."""
+def leave(book, data, now=None):
+    """Take the pilots out of the book that left the fleet; the names taken out. The book's `unlisted` keeps, per pilot the
+    fleet file leaves out, the first pass that did: one leaves after LEAVE_AFTER seconds on end while the file names
+    LEAVE_SHARE of the book's pilots, or after LEAVE_LONG whatever it names. A file that is no roster (the engine away,
+    a sign-in held back, nobody named) takes nobody out and ends every count: the fleet file read next starts them anew.
+    A flagship and the faction's entry never leave."""
+    now = time.time() if now is None else now
     known = roster(data)
-    gone = sorted(set(book["pilots"]) - known - {factionbook.MEMBER}) if known is not None else []      # the faction's entry is no pilot
+    clocks = book.setdefault("unlisted", {})
+    if known is None:
+        clocks.clear()
+        return []
+    stays = known | set(division.flagships(data)) | {factionbook.MEMBER}
+    pilots = [name for name in book["pilots"] if name != factionbook.MEMBER]
+    named = sum(1 for name in pilots if name in known) >= LEAVE_SHARE * len(pilots)
+    for name in [n for n in clocks if n in stays or n not in book["pilots"]]:
+        del clocks[name]
+    gone = []
+    for name in sorted(set(pilots) - stays):
+        out = now - (stamp(clocks.setdefault(name, time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(now)))) or now)
+        if out >= LEAVE_LONG or (named and out >= LEAVE_AFTER):
+            gone.append(name)
     for name in gone:
         del book["pilots"][name]
+        del clocks[name]
     return gone
 
 
@@ -272,6 +383,7 @@ def show(data, who, item):
     read = [p for p, e in pilots.items() if "stations" in e]
     print("STOCK | written %s | pilots read %d, with an error %d | oldest reading %s" % (
         book.get("updated_at"), len(read), len(pilots) - len(read), min((pilots[p]["read_at"] for p in read), default="--")))
+    print("WHOLE | %s" % words(book.get("whole")))
     members = sorted(total.get("by_member") or {}) if who == "all" else [who]
     for member in members:
         print("%s: storage" % member)
@@ -327,7 +439,7 @@ def main():
     book = read_json(Path(data) / "stock" / "storage.json", {})
     book = {"what": "Personal station storage of every pilot of ours, per station; totals per station and per member's division; the holds",
             "source": "storage view with station_id, read through each pilot (read only); the entry Faction from empire.json (factionbook.py)",
-            "pilots": book.get("pilots") or {}}
+            "pilots": book.get("pilots") or {}, "unlisted": book.get("unlisted") or {}, "whole": book.get("whole") or {}}      # a restart keeps the counts
     seen, turn = {}, 0
     while True:
         try:
