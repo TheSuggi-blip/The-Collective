@@ -86,3 +86,7 @@ Planned:
 |---|---|
 | One tier-1 hull (Qualia, speed 3 against 1) bought by one reader, census only; its minutes per run against the Threshold's decide a hull for the class | next turn |
 | The six scanner scouts survey the far lists oldest first; their faint signatures and deposits decide the need survey-scanner-i | every turn |
+| Keep WORKED and FRESH at PASS: census-worked-far 64 systems every 180 minutes, census-frontier before it for the readers; every new place another division flies moves onto census-worked-far | every turn |
+| Read the battle record (categories pirate and npc) of the north road and of every base of ours, and name a raid on a base the same turn | every turn |
+| Turn the scouts' hunt sales into gifts to a trader once Trade names receivers (strict classes, queue.log ENT-201) | when receivers stand |
+| Far uranium: Markeb, HD 20794, Khambalia and Mirfak re-read on the far lists; name any source to Mining | next turn |
