@@ -88,3 +88,7 @@ Status: proven. Updated: 2026-11-21. Evidence: game/fleet/gate.py; the game's he
   by the shell's blocklist: write such text with the file tools.
 - First Steps in the Void leaves 13 to 38 ore aboard: stash.py stores
   it, or every empty-hold route stays closed to the scout (HOLDS line).
+- fleet-build.sh install waits up to four minutes for a clean clone, then
+  runs the whole test suite (over eight minutes on 2026-11-21): run it in
+  the background and poll it; a call cut between copy and commit leaves
+  the change live and ungated in the clone (errors.log ENT-115).

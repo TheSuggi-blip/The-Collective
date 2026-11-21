@@ -1,12 +1,5 @@
 # Intel guidebook -- Tests (tests.md)
 
-### Open Tests
-Status: retired. Updated: 2026-11-21. Evidence: replaced by the entries below (2026-11-21).
-
-The dated findings of the turns of 2026-11-15 to 2026-11-17 are kept in
-the store (hive.py docs Intel --history), in admirals.log ENT-063 and in
-the reports of those turns; what is still open stands below.
-
 ### Base sites on the three roads
 Status: test. Updated: 2026-11-21. Evidence: admirals.log ENT-063; reports/2026-11-17_oracle_three-roads-census-lists-site-candidates.md; tables fields, lanes, stations, observations kind pirate.
 
