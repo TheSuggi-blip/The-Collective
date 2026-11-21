@@ -26,15 +26,6 @@ storage book's read of every miner after the resume, more seats in the
 faction, a deep water-ice bid. Each turn: stalled.py, fill.py status
 miner, surplus.py reserve.
 
-### Route Guides
-Status: retired. Updated: 2026-11-21. Evidence: migrated from guidebook/mining.md section 1.
-
-How each kind of route of this division is flown: the fit and the
-skills it needs, its place, its steps, what opens and closes it. A
-credits figure in this section is a dated reading and no verdict: what
-a route earns now is in the fleet's database with its age (rule F22;
-the tool `routes`, the view `route_earnings`).
-
 ### Drains and carries of stored goods (kind `circuit`)
 Status: proven. Updated: 2026-11-21. Evidence: drain-methane-experiment and carry-null-matter-synchrony-nexus (hive.py route <id>).
 
@@ -90,15 +81,6 @@ Status: proven. Updated: 2026-11-21. Evidence: rule F3; table met; fill.py.
   drones fought at Ironhollow and Gliese 876 (2026-11-16). A test of a
   reserve good stores, never sells (rule F24).
 
-### Fits by hand
-Status: retired. Updated: 2026-11-21. Evidence: migrated from guidebook/mining.md section 1.
-
-- `refit.py` of the mining-chains skill swaps a module at a station.
-  When the engine's goal answers 409 ("another request ... is already
-  being processed") for minutes, the raw market `buy` takes the best ask
-  at once: read the ask first (2026-11-16 23:16 UTC, one Mining Laser I
-  at 1,600 cr plus 1% at Central Nexus).
-
 ### Route Templates
 Status: proven. Updated: 2026-11-21. Evidence: game/routes/templates/mining.json; plan.py templates.
 
@@ -117,32 +99,3 @@ put ships on one: `plan.py set <ships> @ice-sell,@reserve-prism`. A
 one-ship test stands in front of a ship's templates as a route of its
 own. No list of routes that did not pay (rule F22): ask
 `route_earnings`.
-
-### Missions That Pay Once
-Status: retired. Updated: 2026-11-21. Evidence: migrated from guidebook/mining.md section 3.
-
-The `once` routes at the head of the plan: every pilot flies them
-first.
-
-| Route | Pays | Measured | Date | Note |
-|---|---|---|---|---|
-| `voidborn-concurrent` (Concurrent Approval) | 3,000 cr | 39 miner runs, +115,037 cr, of it 117,000 once | 2026-11-15 | Its two neural soma come with the accept |
-| `voidborn-mining-missions` (Iron Supply Run, Copper Requisition) | 1,500 + 1,800 cr | 3 runs by 22:24 UTC, +6,430 cr | 2026-11-15 | Booked for every miner now |
-| `voidborn-precedence` | 4,000 cr | 146 runs of the fleet, 580,000 cr once | 2026-11-16 | Booked for every miner now |
-| `voidborn-first-hunt-*` (three herds) | 930 to 970 cr | one ship each at a time | 2026-11-16 | The home herds read 0 to 3 grazers (queue.log ENT-063): slow |
-| `voidborn-signal-fragments` | 7,000 cr | 40 miner runs, +275,879 cr | 2026-11-16 08:00 to 12:20 UTC | Pilots with navigation 3 |
-| `voidborn-conductive-lattice` | about 10,900 cr | 32 miner runs, +273,451 cr | 2026-11-16 08:00 to 12:20 UTC | The Node Beta chain |
-| `voidborn-network-expansion` | 1,500 cr | 12 miner runs, +17,374 cr | 2026-11-16 08:00 to 12:20 UTC | After First Steps |
-
-The mining missions of the boards (rule F34; data/missions, read
-2026-11-17 11:05 UTC); each counts only units the pilot mines itself:
-
-| Mission | Asks | Pays | Where the ore lies | State |
-|---|---|---|---|---|
-| Deep Core Prospecting (nine boards) | 20 platinum ore | 5,000 cr, 10 exotic matter, deep core mining 25 XP | Markab Belt 503 of 8,000 at 07:57 UTC, 0 at 17:04 UTC; Deep Range Mineral Fields 531 (2 jumps from First Step Memorial's board); 82 Eridani Belt 563; Stillwater 199 | `mission-deep-core-prospecting-nova-terra`: 11 pilots handed in from 11:20 to 18:40 UTC (+5,000 cr each, runs of 41 to 66 minutes), 5 runs found too little; it rests. The pilot keeps its 20 platinum in storage after the hand-in. `mission-deep-core-prospecting-first-step`: two hand-ins (+4,631 and +4,604 cr a run, 76 and 79 minutes), 2 ships and 12 pilots from 23:16 UTC |
-| Titanium Extraction Contract (ten boards) | 20 titanium ore | 3,500 cr, mining 25 XP | 70 at GSC-0028, 50 at Jasmine, 12 or less elsewhere (7 to 11 jumps) | not flown: no field holds a load |
-| The Forge Tax (The Crucible Garrison) | 20 cobalt ore | 5,000 cr, mining 20 XP | Hearsay Cobalt in Sargas 3,222 (18 jumps from the board); Tabit 270 (29 jumps) | `mission-the-forge-tax-crucible`: two hand-ins (+4,364 and +4,340 cr a run, 67 and 68 minutes), 3 ships and 20 pilots from 23:16 UTC |
-| Crystal Resonance Harvest (Central Nexus, after The Collective Provides) | 20 energy crystal | 4,000 cr, Voidborn Mastery 35, mining 45 XP | Prism Scatter 86 (2 jumps), Thornhaven 69, Cedarhold 66, Okab 58 | `voidborn-crystal-resonance`: one-ship test from 23:19 UTC |
-| Material Synthesis: Basic (Central Nexus, after The Collective Provides) | 10 iron ore mined and 1 steel plate smelted | 1,500 cr, Voidborn Mastery 25, crafting 25 XP | Spacetime Seep 15,844 iron (2 jumps) | `voidborn-material-synthesis`: one-ship test from 23:19 UTC |
-| Amplification Materials (Central Nexus, after The Collective Provides) | 15 silver ore | 4,000 cr, Voidborn Mastery 25 XP | Errai Belt 284 (14 jumps, read 12:13 UTC); Elnath and Avior 0 | not flown: no silver field near |
-| The Collective Provides (Central Nexus, the Voidborn chain) | 20 nickel ore | 2,500 cr, Voidborn Mastery 25 XP | Gliese 876 Belt 635 of 12,000, about 28 back an hour (7 jumps, 3 from the pirate stronghold Gliese 581); Algorab 1,342 (12 jumps); Jadecove 609, Azha 570, Rotanev 424; GSC-0049 reef 39, about 10 back an hour | Trade's route, off; the readings in admirals.log ENT-029 |
