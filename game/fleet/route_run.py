@@ -11,6 +11,12 @@ which pilot flies it, and where a pilot is, stays in the unit's data folder:
               "skip_if_hold": {"item_id": N},        skip the stop when the hold has these already
               "redock": true,                 undock and dock again (a delivery counts on docking)
               "store":  ["item_id", ...],     hold -> personal storage here; "all": every good aboard
+              "gift":   {"to": "trader", "items": "all", "source": "storage", "keep": {"item_id": N}},   (or a list of them)
+                                              after `store`, before `store_faction`: the goods given into the storage of
+                                              another pilot of ours here (handover.py; `to` a role named in
+                                              data/fleet/receivers.json, or a pilot of ours), read back from the
+                                              giver's storage and hold; a refused gift leaves them with the giver. Only
+                                              with data/fleet/strict-classes-on; off, nothing is given
               "store_faction": ["item_id", ...],   hold -> the faction's storage here, after `store`; "all" as above
               "refuel": false,                dock without the station's fuel (default true: dock and refuel)
               "burn_cells": true,             the fuel cells aboard into the tank, as many whole cells as it has room for
@@ -635,6 +641,12 @@ for n, stop in enumerate(ROUTE['stops']):
     for item in store_list(stop.get('store'), hold):
         if hold.get(item):
             deposit(item, hold[item])
+    for want in stop['gift'] if isinstance(stop.get('gift'), list) else [stop['gift']] if stop.get('gift') else []:   # r22: goods into the storage of another pilot of ours
+        import handover                              # here, not at the top: only a stop that gives loads it (the switch strict-classes-on inside)
+        handed = handover.give(raw, cargo, say, time.sleep, pilot, base, want, str(DATA), ROUTE['id'])
+        print(handed['line'], flush=True)            # one RESULT line per gift: what went to whom, what stayed
+        if handed['note']:
+            notes.append(handed['note'])
     if stop.get('store_faction'):                    # hold -> the faction's storage here (an outpost of ours, a lockbox)
         hold = cargo()
         for item in store_list(stop.get('store_faction'), hold):

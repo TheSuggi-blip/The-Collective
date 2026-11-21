@@ -8,7 +8,7 @@ author: Unity
 # index.md -- The Fleet's Scripts
 
 Built by `python3 -B scripts/fleet-index.py` from the docstring of every script in this
-folder; never edited by hand. Scripts listed: 44.
+folder; never edited by hand. Scripts listed: 45.
 
 - Run a script from the repository root: `python3 -I -B game/fleet/<script> <arguments>`,
   the arguments as listed under "How to Call Each".
@@ -46,6 +46,7 @@ folder; never edited by hand. Scripts listed: 44.
 | `gauges.py` | What a ship or a side of ours can hunt: its firepower and its toughness against a creature (rule F9). | By hand |
 | `guard.py` | Keep one pilot at the place where another route's ship of ours works, for as long as that ship works there. | Runner (`guard` routes) |
 | `guidebook.py` | The divisions' guidebooks as capped chapters of small entries: their form and caps, one store section an entry, and the reader. | By hand |
+| `handover.py` | Goods given into the storage of another pilot of ours: a circuit stop's `gift`, a mine route's `gift`, a hunt route's `gift_to`. | By hand |
 | `hive.py` | The fleet's figures from its own readings: money, routes and their history, levels, what the work carries, what a base takes, a system. | By hand |
 | `hunt.py` | Hunt grazers at one place, loot the carcasses and sell what the kills bring. | Runner (`hunt` routes) |
 | `inbox.py` | Read what other pilots write to our ships and say near them, keep every message once, and file the ones that are for us. | Service |
@@ -360,6 +361,20 @@ guidebook.py parse <chapter file>     the sections of one chapter as the store l
 --root <dir>   the repository's game/ folder (default: the parent of this file's folder)
 ```
 
+### `handover.py`
+
+Goods given into the storage of another pilot of ours: a circuit stop's `gift`, a mine
+route's `gift`, a hunt route's `gift_to`.
+
+Run by hand.
+
+```
+handover.py receivers [set <role> <base|*> <pilot> | drop <role> <base|*>]
+handover.py dry-run <route id> [<giver>]
+--data <dir>   the unit's data folder (default FLEET_DATA_ROOT or /srv/collective/data)
+--root <dir>   the repository's game/ folder (default: the parent of this file's folder)
+```
+
 ### `hive.py`
 
 The fleet's figures from its own readings: money, routes and their history, levels, what
@@ -414,7 +429,7 @@ A runner: the dispatcher starts it for a route of the kind `hunt`; by hand only 
 ```
 hunt.py <pilot> <system_id> <poi> [--species a,b] [--kills N] [--minutes M]
     [--min-bid CR] [--sell-at system:poi:base] [--max-prey-hull N]
-    [--route ID] [--keep]
+    [--route ID] [--keep] [--gift-to <role|pilot>]
 ```
 
 ### `inbox.py`
@@ -473,6 +488,7 @@ A runner: the dispatcher starts it for a route of the kind `mine`; by hand only 
 
 ```
 mine.py <pilot> <system:poi> <system:poi:base> [--minutes M] [--sell-items item:min_price,...] [--route ID] [--deposit faction]
+        [--gift <JSON>]
 ```
 
 ### `needs.py`
@@ -771,7 +787,13 @@ Whose work a route is: the work class of every route and the classes each role f
 Run by hand.
 
 ```
-workclass.py show [<route id>]   the class and the roles of one route, or the count of routes per class
-workclass.py roles               the classes each role flies
-workclass.py plans               per role plan (game/routes/plans/<role>.json): the routes that are not of its class
+workclass.py show [<route id>] [--strict]   the class and the roles of one route, or the count of routes per class;
+                                            --strict: the answer with the switch off and with it on
+workclass.py roles [--strict]               the classes each role flies (--strict: in both states)
+workclass.py plans [--strict]               per role plan (game/routes/plans/<role>.json): the routes that are not of
+                                            its class (--strict: in both states)
+workclass.py sales                          the dry run of the sale rule: the routes it would refuse with the switch
+                                            on, per class and per Admiral (whose role plans name them for a role that
+                                            is not the traders'), each with the roles it would be closed to
+--data <dir>   the unit's data folder whose switch is read (default FLEET_DATA_ROOT or /srv/collective/data)
 ```

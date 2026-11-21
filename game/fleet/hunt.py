@@ -2,7 +2,7 @@
 
 Usage: python3 -I hunt.py <pilot> <system_id> <poi> [--species a,b] [--kills N] [--minutes M]
                           [--min-bid CR] [--sell-at system:poi:base] [--max-prey-hull N]
-                          [--route ID] [--keep]
+                          [--route ID] [--keep] [--gift-to <role|pilot>]
 
 Only creatures whose role is `grazer` are hunted (the game: prey that
 does not start a fight; wildlife never joins a herd-mate's fight; hunting
@@ -55,7 +55,12 @@ joins the fight still makes it flee.
 the circuit's order file stands, and there is no station trip, no sale and
 no row of its own; it prints a STEP line. When it leaves, the runner writes
 the herd it sees into data/wildlife/ (the dispatcher's count), and the row
-records the hull before, after and at its lowest."""
+records the hull before, after and at its lowest.
+--gift-to (a hunt route's `gift_to`: a role named in data/fleet/receivers.json,
+or a pilot of ours; handover.py), with the switch data/fleet/strict-classes-on:
+at the station of --sell-at nothing is sold; every good aboard but ammunition
+goes into the storage there of that pilot of ours, and what the gift leaves
+aboard is stored. Off, --gift-to changes nothing."""
 import atexit
 import calendar
 import fcntl
@@ -78,12 +83,14 @@ pilot, system_id, poi = args[0], args[1], args[2]
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import division                                   # noqa: E402  the division's lock: own ships only, never a pilot another program flies
 division.require(pilot)
+import handover                                   # noqa: E402  r22: a hunt route's gift_to (behind data/fleet/strict-classes-on)
 species = set(args[args.index('--species') + 1].split(',')) if '--species' in args else None
 max_kills = int(args[args.index('--kills') + 1]) if '--kills' in args else 5
 max_minutes = int(args[args.index('--minutes') + 1]) if '--minutes' in args else 40
 min_bid = int(args[args.index('--min-bid') + 1]) if '--min-bid' in args else 50
 sell_at = args[args.index('--sell-at') + 1].split(':') if '--sell-at' in args else ['nexus_prime', 'the_core', 'central_nexus']
 route_id = args[args.index('--route') + 1] if '--route' in args else 'hunt-' + poi
+GIFT_TO = args[args.index('--gift-to') + 1] if '--gift-to' in args else ''   # r22: a hunt route's `gift_to`, the hand-over instead of the sale
 STEP = '--step' in args                      # a step of a circuit: the order file, the station and the row are the circuit's
 ALONE = '--alone' in args                    # no fight where a ship that is not ours stands
 LOW = [100]                                  # our hull at its lowest in this run, percent
@@ -461,6 +468,11 @@ if goal('prepare-at-station', {'systemId': sell_at[0], 'poiId': sell_at[1], 'bas
     KEPT = kept_goods(os.path.dirname(os.path.dirname(MARKET)), os.path.dirname(GAME))
     for item in sorted(set(cargo()) & set(KEPT)):
         say(f'{item}: kept for the reserve (surplus.py: no unit to spare): stored, not sold')
+    if GIFT_TO and handover.on():                    # r22: with data/fleet/strict-classes-on the goods go to a pilot of ours, nothing is sold
+        handed = handover.give(raw, cargo, say, time.sleep, pilot, sell_at[2], {'to': GIFT_TO, 'items': 'all', 'source': 'cargo'}, None, route_id)
+        print(handed['line'], flush=True)
+        notes += [handed['note']] if handed['note'] else []
+        KEPT = dict(KEPT, **{item: qty for item, qty in cargo().items() if qty})   # what the gift left aboard is stored below, never sold
     for item, qty in saleable(cargo(), KEPT, AMMO).items():
         row = book.get(item) or {}
         bid = row.get('best_buy') or 0

@@ -1074,3 +1074,64 @@ class ClassGuardPullTests(Tree):
         self.assertEqual(json.loads((self.data / "routes" / "pull.json").read_text()), record)                    # the dry pass changed nothing
         self.switch("pull-on", on=False)
         self.assertIsNone(self.dispatch.why_not(miner, "mine", routes["mine"], self.state())[0])
+
+
+class StrictClassesTests(Tree):
+    """r22 (Suggi, 2026-11-21: "Only Zero mines, only Mercury trades"): behind data/fleet/strict-classes-on selling is
+    Trade's alone. The dispatcher refuses a route that sells to a pilot that is not a trader; the goods go to a trader by
+    gift (handover.py), which the mine and hunt command lines carry; the gate refuses a gift to a stranger."""
+
+    SALE = "sells: Trade's work (F23); give the goods to a trader with `gift`"
+
+    def switch(self, on=True):
+        path = self.data / "fleet" / "strict-classes-on"
+        path.write_text("") if on else (path.exists() and path.unlink())
+        self.dispatch.workclass.SEEN.clear()                  # one look at the switch holds a second
+        self.addCleanup(self.dispatch.workclass.SEEN.clear)
+
+    def test_a_sale_outside_trade_s_class_is_refused_only_while_the_switch_stands(self):
+        routes = self.dispatch.load_routes(self.root)
+        selling = dict(routes["mine"], sell=[{"item": "iron_ore", "min_price": 5}])
+        circuit = {"id": "sell-x", "kind": "circuit", "title": "t", "stops": [{"at": "home:core:base", "sell": [{"item": "x", "min_price": 1}]}]}
+        miner, drone = {"name": "miner-1", "role": "miner", "credits": 20000, "modules": [], "docked": True}, {"name": "drone-1", "credits": 20000, "modules": [], "docked": True}
+        trader, hauler = dict(miner, name="trader-2", role="trader"), dict(miner, name="hauler-2", role="hauler")
+        why = lambda pilot, rid, route: self.dispatch.why_not(pilot, rid, route, self.state())[0]
+        self.switch(False)
+        self.assertIsNone(why(miner, "mine", selling))                                      # off: the rule as it was
+        self.assertIsNone(why(hauler, "sell-x", circuit))
+        self.switch(True)
+        self.assertEqual(why(miner, "mine", selling), self.SALE)
+        self.assertEqual(why(drone, "rays", dict(routes["rays"], max_ships=5)), self.SALE)  # a hunt sells its loot at sell_at
+        self.assertNotEqual(why(drone, "rays", dict(routes["rays"], gift_to="trader")), self.SALE)
+        self.assertEqual(why(hauler, "sell-x", circuit), self.SALE)
+        self.assertNotEqual(why(trader, "sell-x", circuit), self.SALE)
+        self.assertIsNone(why(miner, "mine", routes["mine"]))                               # gathering into storage sells nothing
+        self.assertIsNone(why(drone, "missions", dict(routes["missions"], stops=[dict(circuit["stops"][0])])))   # a mission paid once keeps its sale
+        self.switch(False)
+        self.assertIsNone(why(miner, "mine", selling))
+
+    def test_the_mine_and_hunt_command_lines_carry_the_hand_over(self):
+        routes = self.dispatch.load_routes(self.root)
+        line = self.dispatch.command(dict(routes["mine"], gift={"to": "trader", "items": ["water_ice"]}), "miner-1", None, self.root)
+        self.assertEqual(line[-2:], ["--gift", json.dumps({"items": ["water_ice"], "to": "trader"}, sort_keys=True)])
+        self.assertNotIn("--gift", self.dispatch.command(routes["mine"], "miner-1", None, self.root))
+        line = self.dispatch.command(dict(routes["rays"], gift_to="trader"), "drone-1", None, self.root)
+        self.assertEqual(line[line.index("--gift-to") + 1], "trader")
+        self.assertNotIn("--gift-to", self.dispatch.command(routes["rays"], "drone-1", None, self.root))
+
+    def test_the_gate_refuses_a_gift_to_a_stranger_and_takes_a_role_or_a_flagship(self):
+        (self.data / "fleet" / "flagships.json").write_text(json.dumps({"Golden Chariot": {"role": "command"}}))
+        self.routes.GIFT_DATA = str(self.data)
+        stops = lambda gift: [{"at": "home:core:base", "store": "all", "gift": gift}]
+        for rid, route in (("give-a", {"kind": "circuit", "stops": stops({"to": "Strange Pilot"})}),
+                           ("give-b", {"kind": "circuit", "stops": stops([{"to": "trader"}, {"to": "Golden Chariot", "source": "hold"}])}),
+                           ("give-c", {"kind": "mine", "belt": "far:belt", "station": "home:core:base", "gift": "trader", "deposit": "faction"}),
+                           ("give-d", {"kind": "hunt", "place": "far:nebula", "sell_at": "home:core:base", "gift_to": "Somebody"}),
+                           ("give-e", {"kind": "circuit", "stops": stops({"to": "hauler", "items": ["iron_ore"], "keep": {"iron_ore": 10}})})):
+            (self.root / "routes" / (rid + ".json")).write_text(json.dumps(dict(route, id=rid, title="t")), encoding="ascii")
+        found = [e for e in self.routes.check(str(self.root))[0] if e.startswith("game/routes/give-")]
+        self.assertEqual(found, [
+            "game/routes/give-a.json: stop 1: a gift to `Strange Pilot`: neither a role (miner, trader, hauler, drone, sentinel, scout, command) nor a flagship of ours: a gift to a stranger is a loss",
+            "game/routes/give-b.json: stop 1: a gift's `source` is one of storage, cargo, both",
+            "game/routes/give-c.json: `gift` with `deposit` faction: the faction's storage gives nothing without manage_treasury; gift from personal storage",
+            "game/routes/give-d.json: a gift to `Somebody`: neither a role (miner, trader, hauler, drone, sentinel, scout, command) nor a flagship of ours: a gift to a stranger is a loss"])

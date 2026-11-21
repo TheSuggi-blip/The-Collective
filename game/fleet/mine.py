@@ -23,9 +23,16 @@ WHY:  a ship without paying work still earns skill, and its ore feeds the worksh
 
 USAGE:
   mine.py <pilot> <system:poi> <system:poi:base> [--minutes M] [--sell-items item:min_price,...] [--route ID] [--deposit faction]
+          [--gift <JSON>]
 
 With --deposit faction the engine's loop and the last load go into the faction's storage at the station (an
 outpost of ours has no personal storage; the route field `"deposit": "faction"`).
+
+With --gift (the route field `gift`: a receiver's word, or {"to", "items", "source", "keep"}; handover.py) and the
+switch data/fleet/strict-classes-on, the run ends with a hand-over instead of a sale: the pilot docks at the
+station, stores its hold and gives the goods into the storage there of the pilot of ours the gift names (a role
+through data/fleet/receivers.json); nothing is sold. A refused gift leaves them in its own storage. Off, --gift
+changes nothing.
 
 Writes one row to data/routes/runs.jsonl (minutes, credits before and after, ore mined).
 The wallet is read from the engine's answer for the account (state.credits), the ore
@@ -165,6 +172,41 @@ def store_last_load(call, say, quoted, station, notes, target="self"):
     return aboard
 
 
+def gift_of(text):
+    """A mine route's `gift` as dispatch.command passes it (JSON), or None; a bare word is the receiver alone."""
+    if not text:
+        return None
+    try:
+        return json.loads(text)
+    except ValueError:
+        return str(text)
+
+
+def strict_classes():
+    """True while the switch data/fleet/strict-classes-on stands (handover.on): a route's `gift` replaces its sale."""
+    import handover                                      # here, not at the top: main() puts the fleet folder on the path
+    return handover.on(DATA)
+
+
+def give_at_station(call, say, quoted, pilot, station, gift, notes, route_id=None, data=None):
+    """The hand-over at the end of a run (r22): dock at the route's station and store the hold (sell_at_station with
+    no sale), then give the goods the gift names from the storage there to the receiver (handover.give, read back
+    from the storage). Returns handover.give's answer, or None when the dock did not hold."""
+    import handover                                      # here, not at the top: only a run that gives loads it
+    docked = len(notes)
+    sell_at_station(call, say, quoted, station, [], notes)
+    if any(note.startswith("not docked for the sale") for note in notes[docked:]):
+        return None
+    raw = lambda action, params, group="spacemolt": call("POST", "/accounts/%s/raw" % quoted, {"toolGroup": group, "action": action, "params": params})[1]
+    cargo = lambda: {r.get("item_id"): int(r.get("quantity") or 0) for r in (lambda rows: rows if isinstance(rows, list) else [])(
+        call("GET", "/accounts/%s/state/cargo" % quoted)[1]) if isinstance(r, dict)}
+    spec = handover.spec_of(gift)
+    handed = handover.give(raw, cargo, say, time.sleep, pilot, station[2], dict(spec, source=spec.get("source") or "both"), data or DATA, route_id)
+    if handed["note"]:
+        notes.append(handed["note"])
+    return handed
+
+
 def option(args, name, default):
     return args[args.index(name) + 1] if name in args else default
 
@@ -251,8 +293,13 @@ def main():
         time.sleep(15)
     sold = {}
     wanted = [(pair.split(":")[0], int(pair.split(":")[1])) for pair in option(args, "--sell-items", "").split(",") if pair.count(":") == 1]
+    gift, handed = gift_of(option(args, "--gift", "")), None       # r22: a mine route's `gift`, the hand-over instead of the sale
     if stopped:
         pass                                             # whoever stopped the run wants the ship now
+    elif gift and target == "self" and "loop not started" not in notes and not os.path.exists(os.path.join(DATA, "fleet", "STOP")) \
+            and strict_classes():                        # r22: with data/fleet/strict-classes-on the goods go to a pilot of ours, nothing is sold
+        handed = give_at_station(call, say, quoted, pilot, station, gift, notes, route_id)
+        print(handed["line"] if handed else "RESULT gift %s at %s: not docked, nothing given" % (pilot, station[2]), flush=True)
     elif wanted and "loop not started" not in notes and not os.path.exists(os.path.join(DATA, "fleet", "STOP")):
         sold = sell_at_station(call, say, quoted, station, wanted, notes, target)
     elif "loop not started" not in notes and not os.path.exists(os.path.join(DATA, "fleet", "STOP")):
@@ -266,6 +313,8 @@ def main():
     row = {"route": route_id, "kind": "mine", "pilot": pilot, "started": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(started)), "minutes": round(took, 1),
            "credits_before": credits_before, "credits_after": credits_after, "delta": delta, "one_time": 0,
            "ore": ore, "sold": sold, "notes": notes}
+    if handed:                                           # r22: what the hand-over gave, and to whom (no wallet moves: no earning)
+        row.update(given=handed["given"], given_to=handed["to"])
     os.makedirs(os.path.join(DATA, "routes"), exist_ok=True)
     with open(os.path.join(DATA, "routes", "runs.jsonl"), "a", encoding="utf-8") as handle:
         fcntl.flock(handle, fcntl.LOCK_EX)

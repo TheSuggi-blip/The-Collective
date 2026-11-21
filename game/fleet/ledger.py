@@ -23,6 +23,9 @@ WHAT: the service `ledger` runs it. Every 30 s it does two things.
       `show` prints the books for a member or the fleet.
 RULES:
   - It reads only. It moves no ship, buys and sells nothing.
+  - A gift between two pilots of ours (handover.py: data/stock/handover.jsonl)
+    puts its giver and its receiver first in the next pass, both in one pass,
+    so that no unit stands in the book on both sides or on neither (r22).
   - A pilot it could not read keeps its last reading and its error; a total
     never counts a pilot twice. A pilot not read since it was signed in again
     (an engine start, a resume) keeps its last whole reading, with the time it
@@ -76,6 +79,7 @@ from pathlib import Path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import division                                   # noqa: E402
 import factionbook                                # noqa: E402  the faction's storage as the book's entry `Faction` (requests ENT-267)
+import handover                                   # noqa: E402  r22: both sides of a gift between our pilots are read again first
 
 GATE = "http://172.30.0.32:7580"
 OPENER = urllib.request.build_opener(urllib.request.ProxyHandler({}))
@@ -335,6 +339,7 @@ def batch_of(names, turn, book, data, now=None):
     front of them up to DUE_PER_PASS pilots that wait on the book. The rotation never loses its turn."""
     turns = [names[(turn + n) % len(names)] for n in range(min(PER_PASS, len(names)))]
     first = [pilot for pilot in due(names, book, data, now) if pilot not in turns][:DUE_PER_PASS]
+    first = handover.sides_first(names, book, data, now, first, turns)     # r22: the giver and the receiver of a gift since their reading, in one pass
     return first + turns, len(turns)
 
 

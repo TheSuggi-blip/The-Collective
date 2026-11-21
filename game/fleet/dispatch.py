@@ -70,6 +70,10 @@ RULES:
   - Behind the switch file data/fleet/class-guard-on (absent = off; rule F23): a route that is not the pilot's own
     class of work (workclass.own; the role as role_of reads it) is refused, `class: <class> is <roles>' work`. A
     mission that pays once, selling or crafting its own stores, fitting and training stay open to every role.
+  - Behind the switch file data/fleet/strict-classes-on (absent = off; rule F23, workclass.py): selling is Trade's
+    alone. A route that sells (a mine route's `sell`, a hunt route without `gift_to`, a circuit stop's `sell`) is
+    refused to a pilot that is not a trader, `sells: Trade's work (F23); give the goods to a trader with `gift``; a
+    mission that pays once keeps its sale. The switch also gives the class guard the strict classes.
   - Behind the switch file data/fleet/pull-on (absent = off): a route that only brings goods of the reserve and earns
     nothing is closed while every one of them holds its max (game/reserve.tsv, else what the reserve asks), and opens
     again when one falls below its min (else 90 percent of max), `full: <item> <held> of max <max>`; the levels and
@@ -103,6 +107,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import division                                   # noqa: E402  who commands which ship, and the plan files
 import gate                                       # noqa: E402  the one call the dispatcher sends itself: stop a loop no runner owns
 import pull                                       # noqa: E402  the class guard and the pull rule, each behind its switch file (r21)
+import workclass                                  # noqa: E402  r22: the sale rule, behind data/fleet/strict-classes-on
 import reserves                                   # noqa: E402  requires.reserve: a faction reserve under a floor (requests ENT-266)
 import runhost                                    # noqa: E402  the program that flies hosted runs as threads
 import routes as routefiles                       # noqa: E402  what standing work is
@@ -479,6 +484,9 @@ def why_not(pilot, rid, route, state):
         return "off", None
     if route.get("park") and pilot.get("docked"):
         return "the pilot is docked", None
+    sells = workclass.sale_refused(pilot, rid, route, state)      # r22: with data/fleet/strict-classes-on selling is Trade's alone (rule F23)
+    if sells:
+        return sells, None
     held = pull.closes(pilot, rid, route, state)  # r21: the class guard and the pull rule, each only while its switch file exists
     if held:
         return held, None
@@ -633,7 +641,8 @@ def command(route, pilot, argument, root):
     if route["kind"] == "mine":
         sell = ",".join("%s:%d" % (s["item"], s["min_price"]) for s in route.get("sell") or [])
         return (base + [route["belt"], route["station"], "--minutes", str(route.get("minutes", 45)), "--route", route["id"]] + (["--sell-items", sell] if sell else [])
-                + (["--deposit", "faction"] if route.get("deposit") == "faction" else []))
+                + (["--deposit", "faction"] if route.get("deposit") == "faction" else [])
+                + (["--gift", json.dumps(route["gift"], sort_keys=True)] if route.get("gift") else []))     # r22: the hand-over (handover.py)
     if route["kind"] == "guard":                  # the place why_not found: the guard's own, else the guarded route's; an escort follows a pilot
         follow = argument.get("follow") if isinstance(argument, dict) else None
         spot = argument.get("place") if isinstance(argument, dict) else argument
@@ -645,6 +654,7 @@ def command(route, pilot, argument, root):
                   "--min-bid", str(route.get("min_bid", 100)), "--sell-at", route["sell_at"], "--route", route["id"]]
     out += ["--max-prey-hull", str(route["max_prey_hull"])] if route.get("max_prey_hull") else []
     out += ["--alone"] if route.get("alone") else []
+    out += ["--gift-to", str(route["gift_to"])] if route.get("gift_to") else []     # r22: the hand-over instead of the sale (handover.py)
     return out + (["--species", ",".join(route["species"])] if route.get("species") else [])
 
 

@@ -354,6 +354,18 @@ def call(method, path, body=None, timeout=900):
         return 200, {"structuredContent": {"items": [dict(row, item_id=k) for k, row in sorted(WORLD["book"].items())]}}
     if action == "get_missions":
         return 200, {"structuredContent": {"missions": WORLD.get("missions") or []}}
+    if action == "deposit" and params.get("target") not in (None, "self", "faction"):   # a gift into another pilot's storage (r22)
+        if WORLD.get("gift_refuses") or ("items" in params and WORLD.get("bulk") is False):
+            return 200, {"error": "refused"}
+        source = "storage" if params.get("source") == "storage" else "cargo"
+        given = WORLD.setdefault("given", {}).setdefault(params["target"], {})
+        for row in params.get("items") or [{"item_id": params["item_id"], "quantity": params["quantity"]}]:
+            if row["item_id"] in (WORLD.get("gift_refuses_items") or []):
+                continue
+            units = min(row["quantity"], WORLD[source].get(row["item_id"], 0))
+            WORLD[source][row["item_id"]] -= units
+            given[row["item_id"]] = given.get(row["item_id"], 0) + units
+        return 200, {}
     if action == "deposit" and params["item_id"] == "fuel":          # the tank into the faction's fuel reserve here
         units = 0 if WORLD.get("bunker_refuses") else min(params["quantity"], WORLD["fuel"])
         WORLD["fuel"] -= units
@@ -410,18 +422,24 @@ finally:
 '''
 
 
-def fly(route, world, runner=FLEET / "route_run.py"):
-    """(the gate calls in their order, the fake world after, the run's row, the run's output) of one run of `route`."""
+def fly(route, world, runner=FLEET / "route_run.py", files=None):
+    """(the gate calls in their order, the fake world after, the run's row, the run's output) of one run of `route`;
+    `files`: {path under the data folder: JSON value} written before the run (r22: the fleet, receivers, switch)."""
     base = {"credits": 20000, "cargo": {}, "storage": {}, "book": {}, "jobs": [], "queue": [], "quote": {}, "makes": "", "per_run": 1, "ticks": 1,
             "fuel": 95, "max_fuel": 95}
     with tempfile.TemporaryDirectory() as folder:
         root = Path(folder)
         (root / "route.json").write_text(json.dumps(route))
+        for name, value in (files or {}).items():
+            (root / "data" / name).parent.mkdir(parents=True, exist_ok=True)
+            (root / "data" / name).write_text(value if isinstance(value, str) else json.dumps(value))
         config = {"world": dict(base, **world), "route": str(root / "route.json"), "data": str(root / "data"), "runner": str(runner), "log": str(root / "log.json")}
         (root / "config.json").write_text(json.dumps(config))
         done = subprocess.run([sys.executable, "-I", "-B", "-c", FAKE_RUN, str(root / "config.json")], stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                               text=True, timeout=120)
         out = json.loads((root / "log.json").read_text())
+        record = root / "data" / "stock" / "handover.jsonl"          # r22: the gifts the run recorded for the ledger
+        out["world"]["handover"] = [json.loads(line) for line in record.read_text().splitlines()] if record.exists() else []
         rows = [json.loads(line) for line in (root / "data" / "routes" / "runs.jsonl").read_text().splitlines()]
     return out["log"], out["world"], rows[-1], done.stdout
 
@@ -558,6 +576,80 @@ class CraftStepTests(unittest.TestCase):
         defined = {node.name for node in ast.parse(source).body if isinstance(node, ast.FunctionDef)}
         self.assertTrue({"workshop", "craft_fields", "deposit", "sell_into_bid"} <= defined)
         self.assertEqual(rebound(FLEET / "route_run.py"), [])                                         # no step binds a function's name
+
+
+GIFT_FILES = {"fleet/fleet.json": {"ships": [{"name": "trader-1"}, {"name": "trader-9"}]}, "fleet/receivers.json": {"trader": {"base": "trader-9"}},
+              "fleet/strict-classes-on": ""}
+GIFT_STOP = {"at": "home:core:base", "store": "all", "gift": {"to": "trader", "items": "all"}}
+GIFT_ROUTE = {"id": "made-up", "kind": "circuit", "title": "t", "stops": [GIFT_STOP]}
+GIFT_WORLD = {"cargo": {"water_ice": 30, "iron_ore": 5}, "storage": {"water_ice": 100}}
+
+
+class GiftStepTests(unittest.TestCase):
+    # r22 (Suggi, 2026-11-21: "Only Zero mines, only Mercury trades"): selling is Trade's alone; the goods of the other
+    # divisions go by gift into a trader's storage, where its sell routes find them. A stop's `gift` (handover.py) gives
+    # them there in one call where the v2 `items` list is taken, else one call per good, read back from the storage.
+    def gifts(self, log):
+        return [params for action, params in log if action == "deposit" and params.get("target") not in ("self", "faction")]
+
+    def test_a_gift_gives_the_stored_goods_to_the_receiver_named_for_the_station_in_one_call(self):
+        log, world, row, out = fly(GIFT_ROUTE, GIFT_WORLD, files=GIFT_FILES)
+        self.assertEqual(self.gifts(log), [{"items": [{"item_id": "iron_ore", "quantity": 5}, {"item_id": "water_ice", "quantity": 130}],
+                                            "source": "storage", "target": "trader-9"}], out)
+        self.assertEqual(world["given"], {"trader-9": {"iron_ore": 5, "water_ice": 130}})
+        self.assertEqual({k: v for k, v in world["storage"].items() if v}, {})
+        self.assertIn("RESULT gift trader-1 -> trader-9 at base: iron_ore 5, water_ice 130", out)
+        self.assertEqual(row["notes"], [], out)
+        self.assertEqual(row["delta"], 0)                                     # a gift moves no wallet: nobody earned it
+
+    def test_a_refused_gift_leaves_the_goods_with_the_giver_and_says_so(self):
+        log, world, row, out = fly(GIFT_ROUTE, dict(GIFT_WORLD, gift_refuses=True), files=GIFT_FILES)
+        self.assertEqual(world["storage"], {"water_ice": 130, "iron_ore": 5}, out)
+        self.assertEqual(len(self.gifts(log)), 3, out)                        # the list, then one call per good
+        self.assertEqual(row["notes"], ["gift to trader-9 at base: 0 of 135 given, kept iron_ore 5, water_ice 130 (iron_ore: refused; water_ice: refused)"])
+        self.assertIn("refused, kept by the giver: iron_ore 5, water_ice 130", out)
+
+    def test_a_list_the_game_refuses_goes_one_good_at_a_time_and_a_good_refused_stays(self):
+        world = dict(GIFT_WORLD, bulk=False, gift_refuses_items=["iron_ore"])
+        log, world, row, out = fly(GIFT_ROUTE, world, files=GIFT_FILES)
+        self.assertEqual([("items" in p, p.get("item_id")) for p in self.gifts(log)], [(True, None), (False, "iron_ore"), (False, "water_ice")], out)
+        self.assertEqual(world["given"], {"trader-9": {"water_ice": 130}})
+        self.assertEqual(world["storage"]["iron_ore"], 5)
+        self.assertEqual(row["notes"], ["gift to trader-9 at base: 130 of 135 given, kept iron_ore 5"], out)
+
+    def test_keep_and_named_items_and_the_hold_as_source(self):
+        stop = {"at": "home:core:base", "gift": {"to": "trader-9", "items": ["water_ice"], "source": "both", "keep": {"water_ice": 20}}}
+        log, world, row, out = fly(dict(GIFT_ROUTE, stops=[stop]), GIFT_WORLD, files=GIFT_FILES)
+        self.assertEqual([(p.get("source"), p.get("item_id"), p.get("quantity")) for p in self.gifts(log)], [("cargo", "water_ice", 30), ("storage", "water_ice", 80)], out)
+        self.assertEqual((world["cargo"]["iron_ore"], world["storage"]["water_ice"]), (5, 20))
+
+    def test_a_gift_to_a_stranger_or_to_a_role_with_no_receiver_calls_nothing(self):
+        for to, why in (("trader-77", "`trader-77` is not a pilot of ours"), ("hauler", "no hauler named to receive at base")):
+            stop = dict(GIFT_STOP, gift={"to": to})
+            log, world, row, out = fly(dict(GIFT_ROUTE, stops=[stop]), GIFT_WORLD, files=GIFT_FILES)
+            self.assertEqual(self.gifts(log), [], out)
+            self.assertTrue(row["notes"] and why in row["notes"][0], row["notes"])
+            self.assertEqual(world["storage"], {"water_ice": 130, "iron_ore": 5})
+
+    def test_with_the_switch_off_a_gift_stop_gives_nothing_and_the_run_is_as_before(self):
+        files = {k: v for k, v in GIFT_FILES.items() if k != "fleet/strict-classes-on"}
+        log, world, row, out = fly(GIFT_ROUTE, GIFT_WORLD, files=files)
+        plain, _w, _r, _o = fly(dict(GIFT_ROUTE, stops=[{k: v for k, v in GIFT_STOP.items() if k != "gift"}]), GIFT_WORLD, files=files)
+        self.assertEqual(self.gifts(log), [], out)
+        self.assertEqual(steps(log), steps(plain))
+        self.assertIn("not given, strict classes are off", out)
+
+    def test_every_gift_is_recorded_for_the_ledger_after_store_and_before_store_faction(self):
+        log, world, row, out = fly(GIFT_ROUTE, GIFT_WORLD, files=GIFT_FILES)
+        self.assertEqual([(r["from"], r["to"], r["base"], r["items"], r["route"]) for r in world["handover"]],
+                         [("trader-1", "trader-9", "base", {"iron_ore": 5, "water_ice": 130}, "made-up")], out)
+        log, world, row, out = fly(GIFT_ROUTE, dict(GIFT_WORLD, gift_refuses=True), files=GIFT_FILES)
+        self.assertEqual(world["handover"], [])                               # nothing moved: nothing for the ledger
+        source = (FLEET / "route_run.py").read_text(encoding="ascii")
+        self.assertIn("handover.give(raw, cargo, say, time.sleep, pilot, base, want, str(DATA), ROUTE['id'])", source)
+        store, gift, faction = (source.index("for item in store_list(stop.get('store'), hold):"), source.index("handover.give("),
+                                source.index("if stop.get('store_faction'):"))
+        self.assertTrue(store < gift < faction)                               # after `store`, before `store_faction`
 
 
 class MineStepStopTests(unittest.TestCase):

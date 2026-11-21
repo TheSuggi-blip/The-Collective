@@ -73,6 +73,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import division                                   # noqa: E402  the plan files and who keeps them
+import workclass                                  # noqa: E402  r22: whose work a route is, the sale rule's switch
 import taxes                                      # noqa: E402  the weekly tax a run in flight carried
 
 KINDS = {"circuit": ("stops",), "hunt": ("place", "sell_at"), "census": ("systems",), "mine": ("belt", "station"), "guard": ("guards", "station")}
@@ -276,6 +277,7 @@ def check(root):
         for system in systems_of(route):
             if known and system not in known:
                 errors.append(where + "system `%s` is not on the chart" % system)
+    errors += gift_faults(routes)                 # r22: a gift goes to a role or a flagship of ours, never to a stranger
     roles, _owners, plan_errors = division.load_plan(root)
     errors += plan_errors
     if (Path(root) / "routes" / "plan.json").exists():
@@ -378,6 +380,53 @@ def fit_faults(want):
     return out
 
 
+GIFT_DATA = None              # the data folder whose flagships a gift may name (None: division.DATA); a test sets its own
+
+
+def gift_faults(routes):
+    """What is wrong with the gifts of the route files (handover.py, r22), one line each: a circuit stop's `gift`, a
+    mine route's `gift` (never with `deposit` faction: the faction's storage gives only with manage_treasury), a hunt
+    route's `gift_to` (a receiver's word). The receiver is a role word or a flagship of ours: any other name is a
+    stranger, and a gift to a stranger is a loss; a numbered pilot of ours is named by the gate's own rule."""
+    import handover                                   # here, not at the top: handover.py imports workclass only
+    flags = set(division.flagships(GIFT_DATA or division.DATA))
+    out = []
+    for rid, route in sorted(routes.items()):
+        if not isinstance(route, dict):
+            continue
+        where = "game/routes/%s.json: " % rid
+        for n, stop in enumerate(route.get("stops") or [], 1):
+            if isinstance(stop, dict) and "gift" in stop:
+                for value in stop["gift"] if isinstance(stop["gift"], list) else [stop["gift"]]:
+                    out += [where + "stop %d: " % n + line for line in handover.faults(value, flags)]
+        if route.get("kind") == "mine" and "gift" in route:
+            out += [where + line for line in handover.faults(route["gift"], flags)]
+            if route.get("deposit") == "faction":
+                out.append(where + "`gift` with `deposit` faction: the faction's storage gives nothing without manage_treasury; gift from personal storage")
+        if "gift_to" in route:
+            if route.get("kind") != "hunt" or not isinstance(route["gift_to"], str):
+                out.append(where + "`gift_to` is a hunt route's receiver: a role word or a flagship of ours")
+            else:
+                out += [where + line for line in handover.faults(route["gift_to"], flags)]
+    return out
+
+
+def gives(route):
+    """True for a route whose goods go to a pilot of ours while data/fleet/strict-classes-on stands: a hunt route
+    with `gift_to`, a circuit whose stops only give (workclass `deliver`). Standing work: no wallet moves by a gift,
+    so its runs earn nothing of their own and the loss stop would close them; what they give is sold by Trade."""
+    if not workclass.strict_on():
+        return False
+    return bool(route.get("kind") == "hunt" and route.get("gift_to")) or (route.get("kind") == "circuit" and workclass.work_class(route, None, True) == "deliver")
+
+
+def sale_warnings(routes):
+    """[(route id, its strict class, the roles it is closed to)] of the routes that sell outside Trade's class: with
+    data/fleet/strict-classes-on the dispatcher refuses them to every pilot that is not a trader (workclass.sales)."""
+    rows, _by_class, _by_admiral = workclass.sales(routes, {})
+    return [(rid, cls, closed) for rid, cls, closed, _admirals in rows]
+
+
 def current_plan(root, role):
     """The text of a role's plan file, or '' when it cannot be read."""
     try:
@@ -431,7 +480,7 @@ def standing(route):
     earns nothing and keeps another route's ship company (requests ENT-070)."""
     need = route.get("requires") or {}
     return bool(route.get("standing") or need.get("skills_below") or (route.get("kind") == "mine" and not route.get("sell"))
-                or route.get("kind") == "guard")
+                or route.get("kind") == "guard" or gives(route))
 
 
 def guarded_place(guard, guarded):
@@ -1085,7 +1134,14 @@ def main():
         for line in errors:
             print("ERROR " + line)
         print("Checked %d route files." % count)
-        print("Errors: %d | Warnings: 0" % len(errors))
+        warned = sale_warnings(routes_of(args.root)[0])      # r22: a sale outside Trade's class; each named only while the switch is on
+        workclass.follow(args.data)
+        for rid, cls, closed in warned if workclass.strict_on() else []:
+            print("WARNING game/routes/%s.json: %s route that sells: the dispatcher refuses it to every %s (%s)" % (rid, cls, ", ".join(closed), workclass.SALE))
+        if warned and not workclass.strict_on():
+            print("WARNING %d route files sell outside Trade's class: with data/fleet/strict-classes-on the dispatcher refuses them to every pilot "
+                  "that is not a trader; the list: `python3 -B game/fleet/workclass.py sales`" % len(warned))
+        print("Errors: %d | Warnings: %d" % (len(errors), len(warned) if workclass.strict_on() else min(len(warned), 1)))
         return 1 if errors else 0
     if args.command == "idle":
         for line in idle(args.root, args.data):
