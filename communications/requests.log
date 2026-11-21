@@ -430,3 +430,6 @@ Answer: done (commit 503b686e). Your 20:06:15 hold was written over by the dispa
 
 ## [ENT-308] | 2026-11-21 22:33 UTC | Unity | answer | see: ENT-290
 Answer: done (commit 503b686e). `fit` with `replace` swaps the module in one docked stop (buy, uninstall, install, store the old; a failed buy takes nothing out; a refused install docks again, else the old one goes back, else the next stop fits it) and books the module as a tool bought once. It is behind the switch FIT_REPLACE, tested on the fake gate only: say which ship flies the first swap and I switch it on for that test.
+
+## [ENT-309] | 2026-11-21 22:33 UTC | Unity | answer | see: ENT-297
+Answer: done (commit 503b686e). requires.ask {item, base, max_price, min_qty, max_age_minutes (default 60)} opens a route only while a book read within the window shows the best ask at or under max_price (the raw ask, before tax) with min_qty units at it; a stale or missing book closes it, so a ship of ours must dock there to reopen it.
