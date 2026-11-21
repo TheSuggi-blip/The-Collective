@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 124.
+Routes: 126.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -128,6 +128,7 @@ Routes: 124.
 | [hunt-test-homam-frost-moth](hunt-test-homam-frost-moth.json) | hunt | beyond the border, 6 jumps | Yield test: frost_moth at homam_cryobelt (lawless); what a kill drops and whether a bid takes it | up to 1 ships, empty hold, standing work | 4 | 13 | -140 | -600 | 2026-11-17 |
 | [hunt-titawin-gas-cloud-chlorophage](hunt-titawin-gas-cloud-chlorophage.json) | hunt | beyond the border, 12 jumps | chlorophage at titawin_gas_cloud; loot sold at Hex Star | up to 1 ships, empty hold, standing work | 4 | 32 | 3,000 | 5,150 | 2026-11-17 |
 | [gather-achernar-belt](gather-achernar-belt.json) | mine | beyond the border, 4 jumps | Standing work, a test: iron at Achernar Belt (beyond the border, one jump from The Experiment) into storage at The Experiment | up to 16 ships, needs mining_laser_i, empty hold, standing work | 46 | 48 | -170 | -220 | 2026-11-17 |
+| [gather-acrux-belt-faction](gather-acrux-belt-faction.json) | mine | beyond the border, 7 jumps | A test: ore gathered at Acrux Belt (lithium, iron, copper) into the faction's storage at our outpost CLTV Outpost GSC-0044 (one jump); members of the faction only | up to 1 ships, needs mining_laser_i, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [gather-garnet-belt](gather-garnet-belt.json) | mine | beyond the border, 5 jumps | Standing work, a test: iron at Garnet Belt (beyond the border, two jumps from The Experiment) into storage there | up to 29 ships, needs mining_laser_i, empty hold, standing work | 258 | 46 | -240 | -310 | 2026-11-17 |
 | [gather-gj-3470-dewfall-fray](gather-gj-3470-dewfall-fray.json) | mine | beyond the border, 4 jumps | Standing work, a test: iron and copper ore at GJ 3470 Dewfall Fray (beyond the border, one jump past Hamal) into storage at Node Beta, for the reserve and for craft-piping-node-beta | up to 13 ships, needs mining_laser_i, empty hold, standing work | 66 | 50 | -270 | -330 | 2026-11-17 |
 | [gather-glasslight-shoal-silicon](gather-glasslight-shoal-silicon.json) | mine | beyond the border, 10 jumps | A test: silicon ore gathered at Glasslight Shoal (Clearwater, lawless) into storage at Node Beta for the faction's circuit boards | up to 1 ships, empty hold, standing work | 4 | 98 | -760 | -460 | 2026-11-17 |
@@ -140,3 +141,4 @@ Routes: 124.
 | [gather-ruchbah-broken-glass-veil](gather-ruchbah-broken-glass-veil.json) | mine | beyond the border, 4 jumps | Standing work, a test: iron at Ruchbah Broken Glass Veil (beyond the border, one jump from The Experiment) into storage at The Experiment | up to 6 ships, needs mining_laser_i, empty hold, standing work | 19 | 48 | -170 | -220 | 2026-11-17 |
 | [gather-schedar-belt](gather-schedar-belt.json) | mine | beyond the border, 2 jumps | Standing work, a test: iron at Schedar Belt (beyond the border, one jump from Node Beta) into storage at Node Beta | up to 45 ships, needs mining_laser_i, empty hold, standing work | 535 | 46 | -210 | -260 | 2026-11-17 |
 | [gather-subra-floodlight-flats-silicon](gather-subra-floodlight-flats-silicon.json) | mine | beyond the border, 12 jumps | A test: silicon ore (with iron and copper) gathered at Floodlight Flats (Subra, lawless) into storage at The Crescent Moon (Mebsuta, two jumps) | up to 8 ships, needs mining_laser_i, empty hold, standing work | 4 | 94 | -40 | -30 | 2026-11-18 |
+| [gather-tiaki-worldsend-nickel](gather-tiaki-worldsend-nickel.json) | mine | beyond the border, 18 jumps | A test: nickel ore gathered at Worldsend Field (Tiaki) into storage at The Crucible Garrison (six jumps) | up to 1 ships, needs mining_laser_i, empty hold, standing work | TBD | TBD | TBD | TBD | -- |

@@ -7,6 +7,7 @@
  "station": "mebsuta:bba58290a3ed25bad530772b15ab3fa4:ec315132a710a7d0fbc68cca05073154",
  "minutes": 90,
  "max_ships": 8,
+ "lift_to": 12,
  "standing": true,
  "min_left": {
   "silicon_ore": 500
