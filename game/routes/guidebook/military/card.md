@@ -13,7 +13,8 @@ Status: proven. Updated: 2026-11-21. Evidence: table hulls; catalog spacemolt_ca
 
 - Tier 0, every ship now: the Threshold, hull 75, shield 80, CPU 16, power
   30; 1 weapon, 2 defence, 2 utility slots; a Pulse Laser I and a Mining
-  Laser I. Six drones carry one or two Shield Booster I.
+  Laser I. Six drones carry one or two Shield Booster I; one flies a
+  Pulse Laser III as a test (tests.md, Weapon fits).
 - Tier 1 (no Piloting gate): Vigil (2 weapons), Paradox. Tier 2 at Piloting
   10: Recursion (3 weapons, speed 4), Dualism, Census. Tier 3 at 20:
   Annihilation, Voidborn Singularity.
