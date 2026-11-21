@@ -6,9 +6,9 @@
 # Tab-separated; `#` starts a comment. kind: facility (a facility id, units = how many) | hull (a ship class id) |
 # item (an item id, units on hand). priority 1 high to 3. status open | done | dropped (closed rows leave after 14 days).
 id	project	division	kind	ref	units	priority	place	due	status	note	added	added_by	changed	changed_by
-hiring-board	faction ladder: 200 seats at Node Beta (orders P4)	command	facility	hiring_board	1	1	node_beta_industrial_station		open	step 1 of the members of the faction; from game/reserve.tsv	2026-11-21T20:47Z	Unity	2026-11-21T20:47Z	Unity
 recruitment-center	faction ladder: 200 seats at Node Beta (orders P4)	command	facility	recruitment_center	1	1	node_beta_industrial_station		open	step 3: an upgrade of the recruitment desk; from game/reserve.tsv	2026-11-21T20:47Z	Unity	2026-11-21T20:47Z	Unity
 recruitment-desk	faction ladder: 200 seats at Node Beta (orders P4)	command	facility	recruitment_desk	1	1	node_beta_industrial_station		open	step 2: an upgrade of the hiring board; from game/reserve.tsv	2026-11-21T20:47Z	Unity	2026-11-21T20:47Z	Unity
 core-foundry	station of our own: Yildun (orders P3)	command	facility	station_core_foundry	1	2			open	the facility that makes the station core; from game/reserve.tsv	2026-11-21T20:47Z	Unity	2026-11-21T20:47Z	Unity
 station-core	station of our own: Yildun (orders P3)	command	item	station_core	1	2			open	the part a station founding takes; from game/reserve.tsv	2026-11-21T20:47Z	Unity	2026-11-21T20:47Z	Unity
+hiring-board	faction ladder: 200 seats at Node Beta (orders P4)	command	facility	hiring_board	1	1	node_beta_industrial_station		done	built: our empire holds it (empire.json facilities, 2026-11-21 21:06 UTC)	2026-11-21T20:47Z	Unity	2026-11-21T21:25Z	Unity
 lockbox	faction ladder: 200 seats at Node Beta (orders P4)	command	facility	faction_lockbox	1	1	node_beta_industrial_station		done	built: our empire holds it (empire.json facilities, 2026-11-21 21:06 UTC)	2026-11-21T20:47Z	Unity	2026-11-21T21:25Z	Unity
