@@ -32,11 +32,12 @@ Status: proven. Updated: 2026-11-21. Evidence: found.py 2026-11-17 16:36 UTC; ou
 - `supply-bunker-gsc-0044` buys 65 cells at The Experiment (102 cr or less with the tax), docks with `refuel: false`; its `bunker` step (keep 30) burns whole cells and deposits the tank above 30: +1,361 fuel, -6,565 cr, 19.6 min. Member haulers only. Three runs (`once`, `max_pilots` 3); ENT-281 offers `requires.reserve` (below 5,000) in their place.
 
 ### The outpost's facilities damaged after the pause
-Status: test. Updated: 2026-11-21. Evidence: faction_owned and the storage view, 2026-11-21 about 19:50 UTC; the help of spacemolt_facility, action repair.
+Status: proven. Updated: 2026-11-21. Evidence: faction_owned 19:50 UTC; get_base docked at the outpost 20:26 UTC (the repairs block); routes supply-repair-gsc-0044-plate, -boards; errors.log ENT-112.
 
-- At CLTV Outpost GSC-0044 the Faction Fuel Bunker and the Faction Lockbox read `damaged` after the 3-day pause; the bunker's 4,672 fuel is "preserved; no active fuel capacity".
-- The help: a repair costs 30% of the facility's original build materials and 30% of its build time; a player-founded station rebuilds its own facilities from the faction's storage there when stocked.
-- Not read yet: what each repair asks, and whether the bunker takes fuel before it.
+- During the pause CLTV Outpost GSC-0044 was wrecked (get_base); its Fuel Bunker and Lockbox read damaged, waiting_for_materials; the bunker's 4,672 fuel is kept but gives none. Deposits there still work.
+- The repair bill is 30% of each facility's build materials: the bunker 120 steel plate and 30 circuit boards, the Lockbox 60 and 15, 180 and 45 in all. Deposited into the faction's storage there, a fully supplied repair starts on the next repair cycle, bunker first; no command, no credits.
+- get_base docked there (a free read) prints the bill, what stands and what is missing.
+- Who wrecked it is not read (requests.log ENT-296).
 
 ### The Recruitment Desk (orders.log ENT-037, block APOLLO (2))
 Status: proven. Updated: 2026-11-21. Evidence: build.py 2026-11-17 12:19 and 20:25 UTC; table faction 20:35 UTC; orders.log ENT-036, ENT-056; requests.log ENT-242.
