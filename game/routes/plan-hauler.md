@@ -86,9 +86,4 @@ Planned:
 
 | What | When |
 |---|---|
-| Goal for the next turn: the outpost's bunker read above 4,000 fuel from runs of supply-bunker-gsc-0044 (1,258 at 2026-11-17 23:52 UTC), with its cost per unit from the run rows; the Recruitment Center's flex in the faction store at Node Beta, 285 of 285 | turn of 03:45 UTC |
-| Read the RESULT lines of supply-bunker-gsc-0044, buy-flex-ironlight-to-node-beta and craft-steel-logistics-*; raise the bunker route's max_pilots by what the reserve's draw asks | next turn |
-| Read the probe of the faction facilities an outpost takes (catch row at the end of the bunker run) and tell the Fleet Admiral where the big offices may stand | next turn |
-| Atria: the kit route is written and off; switched on with the Fleet Admiral's allocation (requests.log ENT-268), then the founding by found.py from Node Beta | on her word |
-| The Recruitment Center (500 boards, 1,000 plate, 300 flex polymer, 2,000,000 cr) upgraded by build.py --upgrade once the treasury holds the fee | on her word |
-| One bulk hull (a Congregation, 1,900 cargo) quoted and flown on one carry, inside rule F12, before any plan rests on it | when a carry or a delivery mission needs the hold |
+| GSC-0044: read get_base at the outpost after the first repair load (the repairs block: what each damaged facility still lacks), carry what it names, and read faction_owned until the bunker reads ready | next turn |
