@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 29.
+Routes: 31.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -37,11 +37,13 @@ Routes: 29.
 | [outpost-kit-ironlight-to-node-beta](outpost-kit-ironlight-to-node-beta.json) | circuit | beyond the border, 6 jumps | The Atria outpost, step 1 of 3: one Outpost Kit bought at Ironlight Crossroads (LHS 1140, lawless) and stored at Node Beta, six jumps from Atria on the north road | up to 1 ships, 1 pilots in all, empty hold, from 155,000 cr, off | TBD | TBD | TBD | TBD | -- |
 | [trade-silver-bar-alpha-to-arneb](trade-silver-bar-alpha-to-arneb.json) | circuit | beyond the border, 16 jumps | Silver bars bought at Node Alpha for 420 cr or less, sold into the Obsidian Well's bid at Arneb at 480 or more: a trade test beyond the border | up to 1 ships, 1 pilots in all, empty hold, from 30,000 cr, while cca9e51e6eaf8dada77f698ccc4a09c7 bids 480 cr for silver_bar, off | TBD | TBD | TBD | TBD | -- |
 | [voidborn-first-hunt-schedar](voidborn-first-hunt-schedar.json) | circuit | beyond the border, 2 jumps | First Hunt: Belt-Grazers: 1,000 cr once and 50 Weapons XP; three belt-grazers at Schedar Belt (lawless, one jump past GSC-0027) | once per pilot, up to 1 ships, empty hold, off | 27 | 10 | 20 | one-time | 2026-11-16 |
+| [hunt-biham-ice-shelf-hollow-pilgrim](hunt-biham-ice-shelf-hollow-pilgrim.json) | hunt | beyond the border, 18 jumps | hollow_pilgrim at biham_ice_shelf; loot sold at The Crucible Garrison | up to 1 ships, empty hold, off | 4 | 34 | 600 | 1,010 | 2026-11-17 |
 | [hunt-dimming-pocket-veil-ray](hunt-dimming-pocket-veil-ray.json) | hunt | beyond the border, 4 jumps | veil_ray at dimming_pocket; loot sold at Node Beta Industrial Station | up to 1 ships, empty hold, off | TBD | TBD | TBD | TBD | -- |
 | [hunt-dustfall-emission-nebula-cinder-sylph](hunt-dustfall-emission-nebula-cinder-sylph.json) | hunt | beyond the border, 27 jumps | cinder_sylph at dustfall_emission_nebula; loot sold at First Step Memorial Station | up to 1 ships, empty hold, off | TBD | TBD | TBD | TBD | -- |
 | [hunt-felis-frost-ring-hollow-pilgrim](hunt-felis-frost-ring-hollow-pilgrim.json) | hunt | beyond the border, 7 jumps | hollow_pilgrim at felis_frost_ring; loot sold at The Experiment Research Station | up to 1 ships, without piercing_railgun_i, empty hold, while sirius_observatory_station bids 1000 cr for crystal_melt, standing work, off | TBD | TBD | TBD | TBD | -- |
 | [hunt-test-amberfall-chlorophage](hunt-test-amberfall-chlorophage.json) | hunt | beyond the border, 5 jumps | Yield test: chlorophage at Amberfall Emission Nebula (lawless); does a kill drop caustic sac | up to 1 ships, empty hold, off | TBD | TBD | TBD | TBD | -- |
 | [hunt-test-garnet-slag-tortoise](hunt-test-garnet-slag-tortoise.json) | hunt | beyond the border, 5 jumps | Yield test: slag_tortoise at garnet_belt (lawless); what a kill drops and whether a bid takes it | up to 1 ships, without piercing_railgun_i, empty hold, off | TBD | TBD | TBD | TBD | -- |
+| [hunt-violethall-gas-plume-cinder-sylph](hunt-violethall-gas-plume-cinder-sylph.json) | hunt | beyond the border, 17 jumps | cinder_sylph at violethall_gas_plume; loot sold at Hex Star | up to 1 ships, empty hold, off | 3 | 43 | 5,530 | 7,760 | 2026-11-17 |
 | [mine-floodlight-flats](mine-floodlight-flats.json) | mine | beyond the border, 12 jumps | Floodlight Flats: iron_ore, copper_ore, silicon_ore, neodymium_ore; sold at Node Gamma Relay Station | up to 1 ships, empty hold, off | TBD | TBD | TBD | TBD | -- |
 | [mine-long-errand-band](mine-long-errand-band.json) | mine | beyond the border, 10 jumps | Long Errand Band: nickel_ore; sold at Ironlight Crossroads | up to 1 ships, empty hold, off | TBD | TBD | TBD | TBD | -- |
 | [mine-zubenelhakrabi-crystal-sand](mine-zubenelhakrabi-crystal-sand.json) | mine | beyond the border, 11 jumps | Zubenelhakrabi Crystal Sand: iron_ore, copper_ore, silicon_ore; sold at Node Gamma Relay Station | up to 1 ships, empty hold, off | TBD | TBD | TBD | TBD | -- |

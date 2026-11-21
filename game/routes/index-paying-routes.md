@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 61.
+Routes: 59.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -44,7 +44,6 @@ Routes: 61.
 | [hunt-atlas-gas-pocket](hunt-atlas-gas-pocket.json) | hunt | beyond the border, 6 jumps | Halo-drifters and cinder-sylphs at Atlas Gas Pocket (lawless); noble condensate (690 cr) and ember glands (480 cr) sold at The Experiment | up to 1 ships, empty hold | 6 | 14 | 1,090 | 4,540 | 2026-11-18 |
 | [hunt-avior-cryobelt-hollow-pilgrim](hunt-avior-cryobelt-hollow-pilgrim.json) | hunt | beyond the border, 12 jumps | hollow_pilgrim at avior_cryobelt; loot sold at Sirius Observatory Station | up to 1 ships, empty hold | 7 | 50 | 490 | 570 | 2026-11-18 |
 | [hunt-avior-gas-pocket-halo-drifter](hunt-avior-gas-pocket-halo-drifter.json) | hunt | beyond the border, 12 jumps | halo_drifter at avior_gas_pocket; loot sold at Node Beta Industrial Station | up to 1 ships, empty hold | 4 | 40 | 2,270 | 3,450 | 2026-11-17 |
-| [hunt-biham-ice-shelf-hollow-pilgrim](hunt-biham-ice-shelf-hollow-pilgrim.json) | hunt | beyond the border, 18 jumps | hollow_pilgrim at biham_ice_shelf; loot sold at The Crucible Garrison | up to 1 ships, empty hold | 4 | 34 | 600 | 1,010 | 2026-11-17 |
 | [hunt-birchwood-vapor-fields-cinder-sylph](hunt-birchwood-vapor-fields-cinder-sylph.json) | hunt | beyond the border, 18 jumps | cinder_sylph at birchwood_vapor_fields; loot sold at The Crucible Garrison | up to 1 ships, empty hold | 4 | 56 | 2,880 | 3,070 | 2026-11-18 |
 | [hunt-epsilon-eridani-ice-fields-hollow-pilgrim](hunt-epsilon-eridani-ice-fields-hollow-pilgrim.json) | hunt | beyond the border, 9 jumps | hollow_pilgrim at epsilon_eridani_ice_fields; loot sold at Sirius Observatory Station | up to 1 ships, empty hold, while sirius_observatory_station bids 1000 cr for crystal_melt | 3 | 14 | 310 | 1,140 | 2026-11-18 |
 | [hunt-gemma-haze-halo-drifter](hunt-gemma-haze-halo-drifter.json) | hunt | beyond the border, 8 jumps | halo_drifter at gemma_haze; loot sold at Ironlight Crossroads | up to 1 ships, empty hold | 6 | 12 | 40 | 170 | 2026-11-18 |
@@ -64,7 +63,6 @@ Routes: 61.
 | [hunt-summervale-gas-pocket-cinder-sylph](hunt-summervale-gas-pocket-cinder-sylph.json) | hunt | beyond the border, 21 jumps | cinder_sylph at summervale_gas_pocket; loot sold at Hex Star | up to 1 ships, empty hold | 4 | 51 | 4,060 | 5,090 | 2026-11-17 |
 | [hunt-tania-vapor-fields-cinder-sylph](hunt-tania-vapor-fields-cinder-sylph.json) | hunt | beyond the border, 11 jumps | cinder_sylph at tania_vapor_fields; loot sold at Node Beta Industrial Station | up to 1 ships, empty hold | 8 | 36 | 1,310 | 2,180 | 2026-11-17 |
 | [hunt-torcular-frost-ring-hollow-pilgrim](hunt-torcular-frost-ring-hollow-pilgrim.json) | hunt | beyond the border, 18 jumps | hollow_pilgrim at torcular_frost_ring; loot sold at First Step Memorial Station | up to 1 ships, empty hold | 4 | 54 | 2,010 | 2,180 | 2026-11-18 |
-| [hunt-violethall-gas-plume-cinder-sylph](hunt-violethall-gas-plume-cinder-sylph.json) | hunt | beyond the border, 17 jumps | cinder_sylph at violethall_gas_plume; loot sold at Hex Star | up to 1 ships, empty hold | 3 | 43 | 5,530 | 7,760 | 2026-11-17 |
 | [hunt-wasat-cryobelt-hollow-pilgrim](hunt-wasat-cryobelt-hollow-pilgrim.json) | hunt | beyond the border, 18 jumps | hollow_pilgrim at wasat_cryobelt; loot sold at The Crucible Garrison | up to 1 ships, empty hold | 3 | 28 | 1,030 | 1,850 | 2026-11-17 |
 | [hunt-willowgate-vapor-fields-halo-drifter](hunt-willowgate-vapor-fields-halo-drifter.json) | hunt | beyond the border, 17 jumps | halo_drifter at willowgate_vapor_fields; loot sold at Nova Terra Central | up to 1 ships, empty hold | 2 | 46 | 3,920 | 5,160 | 2026-11-17 |
 | [hunt-yildun-outer-ice-hollow-pilgrim](hunt-yildun-outer-ice-hollow-pilgrim.json) | hunt | beyond the border, 18 jumps | hollow_pilgrim at yildun_outer_ice; loot sold at First Step Memorial Station | up to 1 ships, empty hold | 3 | 50 | 4,760 | 5,320 | 2026-11-18 |
