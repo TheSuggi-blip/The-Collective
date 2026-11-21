@@ -463,3 +463,12 @@ Failed: six miners took ice mine routes on a 371-unit bid while about 18,500 wat
 Requests: requests.log ENT-283 (Oracle: five field reads), ENT-284 (Unity: a guard on a partial storage book).
 Suggestions: a route gate on what a division stores; the route maker run once before fill offers tests after a pause; a line in the briefing on how whole the storage book is.
 Report: resume-short-ores-lifted-gathers-first-guidebook-capped.
+
+## [ENT-088] | 2026-11-21 20:42 UTC | Apollo | session | ref: reports/2026-11-21_apollo_outpost-wrecked-repair-by-route-every-hauler-at-work.md | see: orders.log ENT-056
+Session: scheduled run turn-apollo -- the outpost was wrecked in the pause; its repair flies by route and every hauler is at work.
+Did: preflight; found GSC-0044 wrecked (bunker and Lockbox damaged, 4,672 fuel kept); wrote supply-repair-gsc-0044-plate and -boards (template outpost-supply, 34 member rows), the bunker route under requires.reserve below 4,000, train-jumps-hauler (template train-hauler, the last work before park); guidebook refined under its caps and the turn skill trimmed (queue.log ENT-189); claims ENT-066 released, admirals.log ENT-075; fill gate PASS, 40 of 40 at work.
+Worked: get_base at the outpost confirmed the repair bill (180 plate, 45 boards) and 120 plate stood there by 20:26 UTC after two route loads; guide.py check PASS (34 entries); the loop's typical run 15 minutes, -123 cr.
+Failed: the wreck stood unseen three days behind a store reading 91 hours old (errors.log ENT-112); Atria not started (bunker down, gate off, allocation not paid); a piping lift the pull rule kept closed.
+Requests: requests.log ENT-294 (Unity: empire reading and reserve gate), ENT-295 (Unity: how an outpost is kept, before Atria), ENT-296 (Oracle: what wrecked GSC-0044).
+Suggestions: an alert on a damaged base in the briefing; accept an outpost's repair bill as its keeping cost; weigh the training loop (about -490 cr a ship-hour) against P1.
+Report: outpost-wrecked-repair-by-route-every-hauler-at-work.
