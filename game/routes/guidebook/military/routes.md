@@ -1,175 +1,133 @@
 # Military guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-18. Evidence: migrated from guidebook/military.md section Standing Plan.
+Status: proven. Updated: 2026-11-21. Evidence: the tool plan (show); hive.py briefing (the plan table, column carries); hive.py forecast Apophis; fill.py check.
 
-What the 70 ships of the division (50 drones, 20 sentinels lent until Piloting 20) fly between two turns, applied
-2026-11-18 00:15 UTC (orders ENT-054). No guard and no escort in the first ring of outposts and its roads (rule F33):
-Military levels, hunts and farms; it guards from the stations outward when they stand. 22 drones and every sentinel
-fly hunts or sales of their own first (tests, far herds the filler offered), then `@hunter`; 28 drones fly `@hunter`.
-Every hunt takes one side: one ship, or a group by hand (rule F9; the dispatcher's `group: N` is the Fleet Admiral's,
-queue.log ENT-175). Hunts beyond the border leave only for a pirate or a pilot filed hostile (`alone` "pirates"); the
-dispatcher closes a hunt where a pirate was seen within six hours, and a system for 24 hours after a pack of 1,000
-hull and shield or more (dispatch.py, commit 9582453).
+What the 70 ships fly between two turns (orders ENT-056, block APOPHIS):
+hunts that pay, combat skills, fits, a group that kills. No guard or escort
+in the first ring (F33). Every hunt takes one side, one hunter to a herd.
 
-| Order | Routes | Ships | Carries, expected | Why |
-|---|---|---|---|---|
-| First | The once line (21 routes): from 2026-11-18 00:15 UTC with `voidborn-collective-provides` after Network Expansion and `voidborn-crystal-resonance`, `voidborn-material-synthesis` after Signal Protocol | every ship; each route's own limit (The Collective Provides 4 at a time, fleet-wide) | 66,922 cr paid once to the division 2026-11-17 20:20 to 2026-11-18 00:05 UTC (table runs) | Rule F35: no drone held Voidborn Mastery 1 because The Collective Provides, the link every later link asks for, stood in no list of ours (9 of 70 had flown it) |
-| Own, first | The far tests and herds the filler offered: hollow-pilgrims at Yildun, GSC-0042, GSC-0037, Sandrift, Harborlight, Wasat, Avior and more; halo-drifters at Avior, Willowgate, Saltwind; cinder-sylphs at GSC-0035, Tania, Etamin, Silverbend, Angetenar; Unity's soma carries and sales | 1 each | route_earnings 2026-11-18 00:17 UTC, 12 h: Yildun 4,695, Willowgate 4,677, GSC-0042 3,662, Avior halo-drifters 3,454, Saltwind 2,187 cr per ship-hour; GSC-0035 16,875 (2 runs) | Far herds whose loot has a far bid: melt at First Step Memorial (1,522 to 1,546 x 81 to 92), noble condensate, ember glands |
-| `@hunter`, sales | `store-hold-central-nexus`; from 00:15 UTC four ember-gland sales to the deep far bids (`sell-ember-nexus-krynn`, `sell-ember-node-beta-krynn`, `sell-ember-hexstar-krynn`, `sell-ember-hexstar-first-step`); the two Hex Star sales; soma; five melt sales | 1 each, only with goods stored and a bid of 5,000 or more (glands) | ember glands 7,400 x 24 at Crimson War Citadel, 5,686 x 57 at First Step (00:07 and 22:41 UTC); the division stores about 58 | A gland is 480 cr at home and 5,686 to 7,423 at these bids |
-| `@hunter`, money hunts | hollow-pilgrim hunts, Hassaleh, Gemma, the Achernar and Lesath cinder-sylphs | 1 each | see section 1 | Melt and glands go to far bids |
-| `@hunter`, reserve hunts | 24 grazer carapace hunts, seven veil-ray and five drift-ray hunts, frost-moths | 1 each | -114 to -486 cr per hunter-hour, 2.2 to 16.5 kills an hour (2026-11-17 20:20 to 2026-11-18 00:05 UTC) | Carapace (28,994 short), biogas (3,444 short) and caustic sac stored for the reserve (rule F24) |
-| `@hunter`, fallback | from 00:15 UTC: `craft-armor-military-*` (carapace into armor plate, 4,833 short) and `craft-steel-military-*` (own iron into steel plate, 30,745 to make) at The Experiment, Node Beta, Synchrony Hub, Central Nexus; `craft-piping-node-beta` | 6 each | 0 cr a run expected (nothing bought or sold; fuel to the station) | The reserve's iron is met: the iron gather fallback cost -22,528 cr in 93 ship-hours from 20:20 UTC (table runs) |
-| Then | the same crafts, `census-frontier`, `park` | -- | -- | No iron or copper gathered; a ship with nothing to make docks (orders P2) |
-| `@guard`, escort | none (rule F33) | 0 | -- | The template stays for posts beyond the first ring |
+| Order | Routes | Ships | Why |
+|---|---|---|---|
+| First | the once line (21 routes), each under its own limit | every ship | rule F35, money paid once |
+| Own | far herds and the tests the filler offers (`fill.py fill <role> --write`), Unity's soma carries | 1 each | the far bids for melt, glands, condensate |
+| `@hunter` | sales from storage, money hunts, reserve hunts (templates entry) | 1 each | see the hunt entries |
+| Then | the crafts from own stores, `park` | 6 each | ships with no herd make, never gather (F23) |
 
-What would change the plan: the group flight's record (section 1, Group hunts) and the dispatcher's `group: N`; the
-first RESULT lines of the four gland sales (a far bid emptied, or a road that costs a ship); a far bid that comes back
-for melt or curd; the crafts using up the stores (then ships dock); a station or an outpost past the first ring (its
-guard); a pirate at a hunt's place.
+Sized by the briefing's column carries: a herd carries one hunter. What
+changes it: a weapon fit that opens prey of 80 to 140 hull (tests.md), a
+group that kills, a far bid that comes or goes, a station of ours past the
+first ring (its guard), a pirate at a hunt's place (dispatch closes it).
+
+### Hunts of grazers (`hunt.py`)
+Status: proven. Updated: 2026-11-21. Evidence: game/fleet/hunt.py; skill military-turn hunt_figures.py; routes.md entry versions of 2026-11-17 (--history).
+
+- The runner picks the most hurt creature of the route's species, closes
+  in, fires, loots the carcass outside the battle within 30 minutes and
+  flees under 60 percent hull or when a second ship joins.
+- `alone` true leaves when any ship not ours stands at the place; `alone`
+  "pirates" only for a pirate or a hostile pilot. Tests beyond the border
+  start with `alone` (F3); true cost the eight hunts of 2026-11-17 12:15
+  UTC 26 of 40 runs with no shot fired.
+- After the hunt it docks at `sell_at`, sells what a bid of `min_bid` or
+  more takes, keeps aboard what a fresh book elsewhere bids for, stores the
+  rest.
+- A money hunt names its loot's bid (`requires.bid`); a reserve hunt has
+  `min_bid` 5000 and `standing: true` and stores everything (F24).
+- Figures per place: `hunt_figures.py --since <time> --role drone`.
+
+### Grazer hunts for carapace (`hunt-*-carapace`)
+Status: proven. Updated: 2026-11-21. Evidence: hunt_figures.py; the tool stock (reserve); routes.md entry versions of 2026-11-17 and 2026-11-18 (--history).
+
+Belt-, patina- and soot-grazers (60 hull) at about 24 belts within 7
+jumps: five kills or 40 minutes, a herd floor of 6 or 8, an empty hold, the
+nearest station of ours, `min_bid` 5000: every carapace is stored for the
+reserve. A kill gives about 2.5 carapace. They run at a small loss per
+hunter-hour and train the combat skills: standing work, never judged on
+pay (F22). Places where pirates fought stay out.
+
+### Hollow-pilgrim hunts and the melt chain
+Status: proven. Updated: 2026-11-21. Evidence: data/market/history.jsonl (crystal_melt); loot_bids.py; routes.md entry versions of 2026-11-17 and 2026-11-18 (--history).
+
+- Hollow-pilgrims (70 hull) drop crystal melt, carapace and raw xeno meat.
+- Melt bids come deep and go within one to two hours: Sirius Observatory
+  1,480 to 1,585 x 27 to 98 on 2026-11-17, else 54; First Step Memorial
+  1,522 to 1,814 x 81 to 99. The hunts keep melt aboard while a fresh book
+  bids 1,000 or more, else store it; `store-hold-central-nexus` empties a
+  full hold.
+- Five sales carry 2 to 3 stored melt to the Sirius bid from Central
+  Nexus, The Experiment, Node Beta and Synchrony, each with `requires.bid`;
+  12 sale runs took +55,996 cr on 2026-11-17 16:45 to 20:20 UTC.
+- Read the best melt book every turn (`loot_bids.py`): the sale follows the
+  buyer.
+
+### Cinder-sylph hunts and the ember-gland chain
+Status: proven. Updated: 2026-11-21. Evidence: table runs (route sell-ember-*, 2026-11-18 00:23 to 01:26 UTC); loot_bids.py; data/market/history.jsonl (ember_gland).
+
+- Cinder-sylphs (40 hull) drop ember glands and crystallized biogas. Home
+  stations bid 480 a gland; far stations of other empires 5,686 to 8,184
+  (Crimson War Citadel at Krynn, First Step Memorial, The Levy Customs).
+- The hunts carry a `min_bid` above the home bid, so glands stay aboard or
+  are stored; four sales (`sell-ember-nexus-krynn`, `-node-beta-krynn`,
+  `-hexstar-krynn`, `-hexstar-first-step`) carry 3 or more stored glands to
+  a bid of 5,000 or more, one ship each.
+- Their first runs, 2026-11-18 00:23 to 01:05 UTC: five runs, +216,337 cr
+  in 2.4 ship-hours, the fifth with nothing to carry (table runs). The road from Node Beta to First Step
+  passes Hollowcrest (a raider pack on record) and was not written.
+
+### Making from own stores, the fallback
+Status: proven. Updated: 2026-11-21. Evidence: table runs (craft-*-military-*, 2026-11-18); requests.log ENT-271; the tool stock (member Apophis).
+
+- A ship with no herd open makes from its own stores: `craft-armor-
+  military-<station>` (carapace into armor plate) and `craft-steel-
+  military-<station>` (iron into steel plate) at The Experiment, Node Beta,
+  Synchrony Hub, Central Nexus; `craft-piping-node-beta`,
+  `craft-wiring-synchrony-hub` for copper. One visit uses up what the pilot
+  holds there; nothing is bought or sold.
+- No iron or copper is gathered: gathering is Mining's alone (F23; Unity's
+  no, requests.log ENT-271). A class with no work at home takes its work
+  further out: far hunts, groups, fits.
+- Stored loot is sold by circuits with `requires.stored` and `requires.bid`
+  (the ledger reads storage about every 40 minutes).
+
+### Route Templates
+Status: proven. Updated: 2026-11-21. Evidence: game/routes/templates/military.json; game/routes/templates-military.md; the tool plan (templates).
+
+| Template | Routes, in order | Trains |
+|---|---|---|
+| `@hunter` | `store-hold-central-nexus`; the gland, soma and melt sales; hollow-pilgrim, frost-moth, halo-drifter, cinder-sylph hunts; the carapace hunts; the veil-ray and drift-ray hunts; the crafts from own stores | gunnery, weapons, tactics, xenobiology, piloting; crafting |
+| `@guard` | the guard posts (topic-pirates.md); no ship while F33 holds | piloting, navigation |
+
+A ship born tomorrow gets `@hunter` with one word: `plan.py use <ship>
+hunter`. A new herd is one change of the template.
+
+### Missions That Pay Once
+Status: proven. Updated: 2026-11-21. Evidence: data/fleet/onetime.json; the tool plan (show, First); routes.md entry versions of 2026-11-18 (--history).
+
+The list First of the plan: every pilot flies them first, each under its
+own limit; the five-minute job adds a new once route by itself.
+
+| Mission | Pays once | How |
+|---|---|---|
+| Signal Fragments | 7,000 cr | from navigation 3 |
+| First Hunt (three herds) | 1,000 cr, 50 weapons XP | three grazer kills, `min_creatures` 3 |
+| Cracking the Shell | 1,500 cr, 55 weapons XP | after First Hunt (`requires.booked`) |
+| Conductive Lattice | 10,893 cr in three links | buys silver and crystal |
+| The Collective Provides | 2,500 cr, Voidborn Mastery 25 | Trade's route, 4 at a time; the first link of the Voidborn chain |
+| Crystal Resonance, Material Synthesis | 4,000 and 1,500 cr, Voidborn Mastery | Mining's routes, after The Collective Provides |
+| Pirate Bounty | 2,000 cr | kill a pirate: topic-pirates.md |
+
+Each turn count the holders of each link (onetime.json): a link another
+division writes goes into First once its first runs pay.
 
 ### Route Guides
-Status: proven. Updated: 2026-11-17. Evidence: migrated from guidebook/military.md section 1.
+Status: retired. Updated: 2026-11-21. Evidence: migrated from guidebook/military.md section 1.
 
 How each kind of route of this division is flown: the fit and skills
 it needs, its place, its steps, what opens and closes it.
 
-### Hunts of grazers (`hunt.py`)
-Status: proven. Updated: 2026-11-17. Evidence: migrated from guidebook/military.md section 1.
-
-- Fit: the starter Pulse Laser I (10 damage, reach 3). The runner sets
-  the combat mode `external`, picks the most hurt grazer of 100 hull or
-  less, closes in, fires, and flees under 60 percent hull or when a
-  second ship joins. A kill leaves a carcass that must be looted
-  outside the battle within 30 minutes.
-- `alone` (every hunt beyond the border): before each fight the hunter
-  looks who stands at the place and leaves when a ship not of ours or a
-  pirate is there.
-- After the hunt the runner docks at the route's station, sells what a
-  bid there takes, keeps aboard only goods a book read within the hour
-  bids for (since 2026-11-16, commit 0b27fa7), and stores the rest.
-- Standing hunts (`standing: true`, no `requires.bid`) store their
-  goods for the station list and are not judged on their pay; money
-  hunts carry `requires.bid` and close while their loot has no bid.
-- Readings, drone hunts 2026-11-16 19:55 to 2026-11-17 00:25 UTC
-  (`hunt_figures.py`, credits by `routes.earned`: tax and the wallet
-  guard's gifts out): 949 hunter-minutes, -2,497 cr, -158 cr per
-  hunter-hour; looted 67 verdigris curd, 78 creature carapace, 49
-  crystallized biogas, 4 ember glands, 1 crystal melt, 5 raw xeno meat.
-  Achernar cinder-sylphs 3 runs, 4 kills, +1,700 cr (2,642 per
-  hunter-hour); the drift-ray hunt at home 16 runs, 38 kills, 46 biogas,
-  -200 per hunter-hour; the veil-ray hunts 5 to 6 kills an hour each.
-
-### Grazer hunts for carapace (`hunt-*-carapace`)
-Status: proven. Updated: 2026-11-18. Evidence: migrated from guidebook/military.md section 1.
-
-- `hunt.py` on belt-grazers and patina-grazers (60 hull) with the starter
-  Pulse Laser I; five kills or 40 minutes, a herd floor of 6 (herds of 11
-  to 15) or 8 (16 or more), `alone`, an empty hold, the nearest of our
-  stations. `min_bid` 5000: nothing is sold, every good goes into storage
-  for the reserve (rule F24). Standing work: the loss stop leaves it alone.
-- Readings, drone hunts 2026-11-17 04:12 to 08:10 UTC (`hunt_figures.py`): 161 runs, 3,389
-  hunter-minutes, -16,292 cr, -288 cr per hunter-hour; 71 runs without a kill, 61 of them
-  ended at once by `alone` (a ship not ours at the place: BUSY combat drones, passing
-  miners; none fired). Best: Ironhollow Fading Signal 7.3 kills an hour, Acrab Thinspace
-  Rubble 6.1, GSC-0044 Forgotten Tailings 5.8; Achernar Belt, Goldcrest Belt and the
-  Glitterback Scatter no kill in 2 to 6 runs. From 2026-11-17 08:20 UTC the hunts beyond the border
-  carry `alone` "pirates" (hunt.py e138722).
-- A belt-grazer kill gave about 2.5 carapace at Keid (18 carapace and 6
-  raw xeno meat from 7 kills, 2026-11-16 to 2026-11-17, data/routes/runs.jsonl).
-  21 herds of 11 to 24 grazers within 7 jumps of home were written at
-  2026-11-17 04:12 UTC from the table `herds`; places where pirates fought
-  (Stormwatch, Gliese 876, GSC-0021, Felis, Thornhaven) were left out.
-- Readings 2026-11-17 08:20 to 12:00 UTC (`hunt_figures.py --since 2026-11-17T08:20:00Z --role drone`):
-  163 drone hunt runs, 21 without a kill (71 of 161 before), all hunts +18,878 cr in 5,473 hunter-minutes,
-  207 cr per hunter-hour (-288 before); the carapace hunts 3.9 to 8.6 kills an hour at -65 to -326 cr per
-  hunter-hour, 2.9 to 8.6 kills an hour. Under `alone` "pirates" no stranger fired on a hunter; the lowest
-  hull read 76 to 98 percent on the grazer hunts (the prey hits back), 45 to 81 on the cauldronback test.
-- Readings 2026-11-17 12:16 to 16:05 UTC (`hunt_figures.py --since 2026-11-17T12:16:00Z --role drone`): all drone
-  hunts -15,538 cr in 6,030 hunter-minutes, -155 cr per hunter-hour (no far bid for melt or glands after 14:55 UTC);
-  the carapace hunts 3.1 to 8.1 kills an hour at -102 to -445 cr per hunter-hour. The eight hunts written at 12:15 UTC
-  with `alone` true left 26 of their 40 runs at once for a stranger who was no pirate (to 16:40 UTC); Bluerift and GSC-0038 6 of 6. Since 16:15 UTC they carry
-  `alone` "pirates". The division as a whole: 317 runs, +9,916 cr in 150.8 ship-hours (+66 per ship-hour), the seven melt
-  sale runs +30,681 of it.
-- Readings 2026-11-17 16:45 to 20:20 UTC (`hunt_figures.py --since 2026-11-17T16:45:00Z`, credits by `routes.earned`): the
-  drone hunts -174 cr in 4,395 hunter-minutes (-2 cr per hunter-hour); the sentinel hunts +16,782 cr in 1,755
-  (574). The carapace hunts 2.6 to 8.2 kills an hour at -119 to -232 cr per hunter-hour; the drift-ray hunt at home
-  14.5 kills an hour (39 biogas in 15 runs). No run left for a stranger or a pirate at a home hunt; one far test each
-  at Arneb and Wasat left for a stranger. The division as a whole: 448 runs, +69,938 cr in 203.9 ship-hours (+343
-  per ship-hour), 230,601 cr paid once beside it (table runs).
-- Readings 2026-11-17 20:20 to 2026-11-18 00:05 UTC (`hunt_figures.py --since 2026-11-17T20:20:00Z`, credits by
-  `routes.earned`): the drone hunts +21,851 cr in 3,874.6 hunter-minutes (338 cr per hunter-hour), the sentinel hunts
-  +4,529 in 2,262.4 (120). The carapace hunts 2.2 to 7.4 kills an hour at -114 to -486 cr per hunter-hour; the home
-  drift-ray hunt 16.5. The division as a whole: 492 runs, -13,095 cr steady in 225.5 ship-hours, 66,922 cr paid once
-  (table runs); its iron gathering alone -22,528 cr in 93.0 ship-hours.
-
-### Hollow-pilgrim hunts and the melt chain
-Status: proven. Updated: 2026-11-18. Evidence: migrated from guidebook/military.md section 1.
-
-- Hollow-pilgrims (70 hull) drop crystal melt, carapace and raw xeno meat.
-  Readings: Rasalhague 4 kills and 5 melt in 54.5 minutes (2026-11-17 03:06
-  UTC); Felis 2 kills and 1 melt in 41 minutes (2026-11-16); the command
-  group's GSC-0040 hunt 3 kills and 1 melt in two runs (sold at 1,582).
-- Bids: Sirius Observatory 1,580 to 1,585 cr, its depth from 1 to 85 in a
-  day; The Experiment 1,389 to 1,394 cr x 9 to 12, which comes and goes
-  beside a standing 54 cr x 50 (data/market/history.jsonl, 2026-11-16 18:41
-  to 2026-11-17 04:03 UTC); a Station Need mission at The Experiment pays
-  1,603 cr for one melt.
-- The chain: the hunt (`min_bid` 1000) sells at The Experiment when its
-  high bid stands; else the melt stays aboard while a fresh book bids
-  1,000 or more. A hold of more than five units takes
-  `store-hold-central-nexus` (Central Nexus storage); `sell-melt-nexus-sirius`
-  and `sell-melt-experiment-sirius` carry 3 melt or more from storage to
-  the Sirius bid (9 and 7 jumps). Since 2026-11-17 08:20 UTC three more carry it from Node Beta and
-  Synchrony and sell what lies at Sirius, each from 2 units stored and a bid of 2.
-  First melt: four hunts of 07:23 to 07:47 UTC looted 11 (Elnath 3, Atria 5, Groombridge
-  3; GSC-0024 none) in 138 hunter-minutes; 19 melt stored at 08:20 UTC.
-
-- Readings 2026-11-17 08:20 to 12:00 UTC: Elnath 14 melt in 3 runs (+8,782 cr), Groombridge 34 12 in 4
-  (+5,244), GSC-0024 13 in 5, Atria 6 in 4, Epsilon Eridani 4 in 2 (+5,948), Felis 4 in 4, Hassaleh 2 in 2;
-  Rasalhague none in 2. Sirius bid 1,570 x 98 at 11:57 UTC; 1,528 x 74 at 14:22 UTC, then 54 x 48 at 14:24 UTC
-  (the deep bid left; The Experiment 1,431 x 1 at 15:44 UTC). From 12:16 to 16:05 UTC seven melt sale runs brought +30,681 cr. Felis is off from 12:11 UTC by D9: three of its
-  four runs left because a pirate stood at the place.
-- Readings 2026-11-17 16:45 to 20:20 UTC: the Sirius bid came back (1,502 x 39 at 18:04 UTC, 1,484 x 27 at 18:57 UTC) and
-  the five melt sales took it to 1 by 19:44 UTC: 12 sale runs, +55,996 cr (sell-melt-at-sirius 24,699, from The
-  Experiment 18,727, from Node Beta 12,570). First Step Memorial Station (Outer Rim, 18 jumps) bid 1,814 x 99 at 19:33
-  UTC and 1,794 x 11 at 19:57 UTC: another fleet sold some 88 there in 24 minutes. Sirius 55 x 20 at 20:18 UTC. A melt
-  bid of depth stands for one to two hours and is emptied by whoever comes first; the sales that wait for it with
-  `requires.bid` take their share without a hand.
-- Readings 2026-11-17 20:20 to 2026-11-18 00:05 UTC: the far tests sell melt at First Step Memorial Station (Outer Rim):
-  Yildun 2 runs +8,631 cr (6 melt), GSC-0042 3 runs +7,135 (5), GSC-0037 3 runs +1,261 (6), Sandrift 2 runs (7 melt sold
-  for 10,717 cr in one). First Step bid 1,546 x 83 at 20:51 UTC to 1,522 x 81 at 23:12 UTC; Sirius 54 x 48 all evening.
-- A figure that lies: the Sandrift run of 21:46 UTC reads -8,917 cr in `routes.earned`; it earned about +4,303. The
-  wallet sweep gave 13,220 cr to a flagship 138 s before the run's end, and the seam rule of `routes.moved` counts that
-  gift in neither run (requests.log ENT-264).
-
-### Cinder-sylph hunts and the ember-gland chain
-Status: proven. Updated: 2026-11-18. Evidence: migrated from guidebook/military.md section 1.
-
-- Cinder-sylphs (40 hull) drop ember glands and crystallized biogas. Achernar Gas Pocket: 16 kills and 17
-  glands in 8 runs and 79.7 hunter-minutes, 2026-11-17 08:20 to 12:00 UTC (5,809 cr per hunter-hour while
-  the glands sold at 480).
-- Bids: every home station 480; Hex Star in Dheneb (lawless, 9 jumps from The Experiment, 11 from home)
-  3,692 x 46 at 09:17 UTC to 3,919 x 37 at 11:49 UTC; Nova Terra asked 14,274 x 2 (data/market/history.jsonl).
-- The chain from 2026-11-17 12:11 UTC: the hunt has `min_bid` 2000, so no home bid takes a gland; a gland
-  stays aboard while a book read within the hour bids 2,000 or more, else it is stored at The Experiment;
-  `store-hold-central-nexus` empties a full hold at Central Nexus; `sell-ember-experiment-dheneb` and
-  `sell-ember-nexus-dheneb` carry 6 stored glands or more to the Hex Star bid (2,000 x 5). The command
-  group's cinder-sylph hunts sell into the same bid.
-- Hex Star bid 4,058 x 31 at 12:53 UTC, 4,265 x 16 at 14:05 UTC, then 480 x 50 at 14:55 UTC: the bid was filled within
-  three hours. The Crucible Garrison bid 7,302 x 1 at 15:51 UTC (a depth of one is no bid). 24 glands held at 16:03 UTC
-  (19 stored, 5 aboard); the sales did not fly.
-- Bids 2026-11-17 20:51 to 2026-11-18 00:07 UTC (data/market/history.jsonl): Crimson War Citadel (Krynn, Crimson space)
-  7,401 x 5, 7,423 x 6, 7,400 x 24; First Step Memorial 5,701 x 57, 5,686 x 57; The Levy Customs 5,686 x 9; Hex Star no
-  move on record since 14:55 UTC. The GSC-0035 test sold 3 glands at Krynn for 22,203 cr (20:32 UTC, 4 kills in 42
-  minutes). The division stores about 58 glands: 26 at Hex Star, 21 at Node Beta, the rest at home stations and aboard.
-- From 2026-11-18 00:15 UTC four sales carry stored glands to those bids, one ship at a time, each from 3 or 4 glands of
-  the pilot's own and a bid of 5,000 x 3 or more: Central Nexus and Node Beta to Krynn (20 jumps), Hex Star to Krynn and
-  to First Step (15 jumps each); no pirate line on our record in 24 hours on or beside those roads at 00:15 UTC. The road
-  from Node Beta to First Step passes Hollowcrest (ten Dross raiders, 19:06 UTC) and was not written.
-
 ### Guard (`guard.py`)
-Status: proven. Updated: 2026-11-18. Evidence: migrated from guidebook/military.md section 1.
+Status: retired. Updated: 2026-11-21. Evidence: migrated from guidebook/military.md section 1.
 
 - Keeps one drone at the place where a miner or hunter of ours flies
   the guarded route; opens only while one does. It never fires; it
@@ -244,7 +202,7 @@ Status: proven. Updated: 2026-11-18. Evidence: migrated from guidebook/military.
   guarded run ended. Not flown since orders ENT-045 (no escort in the first ring).
 
 ### Group hunts (`group_hunt.py`, a skill script, by hand)
-Status: proven. Updated: 2026-11-18. Evidence: migrated from guidebook/military.md section 1.
+Status: retired. Updated: 2026-11-21. Evidence: migrated from guidebook/military.md section 1.
 
 - Rule F9 and orders D14: a side of three Thresholds with a Pulse Laser I reads firepower 33 (x7 = 231) and
   toughness 465 to 490 (half 232 to 245), so a pilot whale of 220 hull passes both gauges on paper. The script waits
@@ -284,7 +242,7 @@ Status: proven. Updated: 2026-11-18. Evidence: migrated from guidebook/military.
   next group test takes prey of 100 hull or less, or waits for a second weapon or a tier-2 hull.
 
 ### Sales of stored loot (`sell-curd-*`, `sell_stored.py`)
-Status: proven. Updated: 2026-11-17. Evidence: migrated from guidebook/military.md section 1.
+Status: retired. Updated: 2026-11-21. Evidence: migrated from guidebook/military.md section 1.
 
 - A circuit with `requires.stored` and `requires.bid`: a pilot that
   stores curd at the station withdraws only what the bid takes at its
@@ -294,7 +252,7 @@ Status: proven. Updated: 2026-11-17. Evidence: migrated from guidebook/military.
   (surplus.py reserve, 607 of 607; rule F24), and the veil-ray hunts store it (min_bid 5000).
 
 ### Pirate hunt (`pirate_test.py`, a skill script, by hand)
-Status: proven. Updated: 2026-11-17. Evidence: migrated from guidebook/military.md section 1.
+Status: retired. Updated: 2026-11-21. Evidence: migrated from guidebook/military.md section 1.
 
 - One drone held by hand visits the places of the systems named, reads
   `get_nearby` at each, writes every pirate it lists into the division's
@@ -307,51 +265,3 @@ Status: proven. Updated: 2026-11-17. Evidence: migrated from guidebook/military.
   combat pirates in the system (the command's help).
 - After the fight: loot the own kill, dock, hand in Pirate Bounty.
   The test's reading is in section 6.
-
-### Making from own stores, the fallback
-Status: proven. Updated: 2026-11-18. Evidence: migrated from guidebook/military.md section 1.
-
-- Since 2026-11-18 00:15 UTC (orders ENT-054, P2: the reserve's iron is met) a drone with no herd open makes before it
-  gathers: `craft-armor-military-<station>` turns its own stored carapace into armor plate (carapace_plating, 6 to 1,
-  by hand) and `craft-steel-military-<station>` its own stored iron into steel plate (basic_iron_smelting, 10 to 1), at
-  The Experiment, Node Beta, Synchrony Hub and Central Nexus; the craft list asks halving sizes, so one visit uses up
-  what the pilot holds there. Nothing is bought or sold. No iron or copper is gathered; a ship with nothing left to
-  make docks.
-- Before it: `mine.py` with the Mining Laser I put iron and copper into storage at the shared fields under fleet-wide
-  caps; from 2026-11-17 20:20 UTC to 2026-11-18 00:05 UTC that cost -22,528 cr in 93.0 ship-hours (table runs).
-
-### Route Templates
-Status: proven. Updated: 2026-11-18. Evidence: migrated from guidebook/military.md section 2.
-
-The templates of this division are kept in
-`game/routes/templates/military.json` and listed in
-`game/routes/templates-military.md`; the tool plan with
-`action=templates` shows them with the ships on each.
-
-| Template | Routes, in order | Trains | For |
-|---|---|---|---|
-| `@hunter` | `store-hold-central-nexus`; four ember-gland sales to Krynn and First Step and the two to Hex Star; `carry-soma-synchrony-to-alpha`; five melt sales; hollow-pilgrim, frost-moth, halo-drifter and cinder-sylph hunts; 24 grazer carapace hunts; seven veil-ray and five drift-ray hunts; then the crafts from own stores: armor plate (`craft-armor-military-*`), steel plate (`craft-steel-military-*`), `craft-piping-node-beta`; no gathering since 2026-11-18 00:15 UTC | gunnery, weapons, tactics, xenobiology, piloting; crafting in the fallback | every drone: a herd for each hunter, a far bid for its loot, the reserve made from stores when no herd is open |
-| `@guard` | `guard-ironhollow-fading-signal`, `guard-schedar-belt`, `guard-ironhollow-echo-ejecta`, `guard-garnet-belt`, `guard-achernar-belt`, `guard-gsc-0044-belt`, `guard-marfik-emission-nebula` | piloting, navigation | six drones, before `@hunter` in their cell |
-
-A ship born tomorrow gets `@hunter` with one word: `plan.py use
-<ship> hunter`. A new herd or a new guard post is one change of the
-template, and every ship that names it follows within the minute.
-
-### Missions That Pay Once
-Status: proven. Updated: 2026-11-18. Evidence: migrated from guidebook/military.md section 3.
-
-The once routes at the head of the plan: every pilot flies them first,
-each under its own limit. The 30 drones of 2026-11-15 have booked
-nearly all of them (`data/fleet/onetime.json`); the 20 drones born
-2026-11-16 fly them now. The forecast of 00:28 UTC counts 31,580 cr
-paid once on the way.
-
-| Mission | Pays once | How it is flown |
-|---|---|---|
-| Signal Fragments | 7,000 cr | From navigation 3 (`requires.skills`); every drone stood at navigation 3 or above by 2026-11-16 18:27 UTC |
-| First Hunt (nexus, gsc, achernar) | 1,000 cr, 50 weapons XP, 15 xenobiology XP, 20 piloting XP | The circuit runner's `hunt` step: three belt-grazer kills; one hunter per herd, `min_creatures` 3 |
-| Cracking the Shell | 1,500 cr, 55 weapons XP | Offered only to pilots with First Hunt booked (`requires.booked`) |
-| Conductive Lattice | 10,893 cr in a chain of three | Buys silver and crystal; 29 of the first 30 drones flew it |
-| Pirate Bounty | 2,000 cr, 20 weapons XP, 20 piloting XP: kill 1 pirate | Offered on the board of Central Nexus to a drone that had flown First Hunt (2026-11-17 00:19 UTC); not flown while orders D9 and D10 stand (a mission that asks to destroy a pirate waits for Suggi's word) |
-| The Collective Provides | 2,500 cr, Voidborn Mastery 25 | Trade's `voidborn-collective-provides` (20 nickel at Rotanev, 4 at a time fleet-wide; 63 paid in 73 runs from 2026-11-17 12:00 UTC); in the drone list First since 2026-11-18 00:15 UTC: 9 of 70 of ours had it |
-| Crystal Resonance Harvest, Material Synthesis: Basic | 4,000 and 1,500 cr, Voidborn Mastery 35 and 25 | Mining's `voidborn-crystal-resonance`, `voidborn-material-synthesis` (one paid test each, 23:25 and 23:27 UTC); after The Collective Provides |
