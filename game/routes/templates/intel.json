@@ -8,6 +8,7 @@
     "census-north",
     "census-east",
     "census-south",
+    "census-worked-far",
     "census-roads",
     "census-frontier"
    ],
@@ -16,7 +17,7 @@
     "exploration",
     "piloting"
    ],
-   "note": "Fit: the starter Threshold, empty hold (rule F13). Long jumps train navigation fastest; navigation 3 opens Signal Fragments in the list First."
+   "note": "Fit: the starter Threshold, empty hold (rule F3). Long jumps train navigation fastest. 2026-11-21: the map holds no never-read system a list can take (ROADS END), so after the three roads the explorers read where the other divisions fly beyond them (census-worked-far), then their far list for first visits of their own."
   },
   "reader": {
    "title": "Read where the fleet works: the outpost site and its neighbours, the places our routes use, the frontier, the roads",
