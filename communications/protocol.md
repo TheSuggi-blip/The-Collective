@@ -233,10 +233,10 @@ Admiral; what two Admirals cannot settle goes to the Fleet Admiral.
 - **`claim`**: a division takes a route or a place for its ships, so
   that two divisions do not fill the same bid, field or herd. It
   carries a `Claims:` line (the route ids or the place, and for how
-  many ships) and says why. A claim stands 24 hours from its entry:
-  its writer renews it with a new claim, or ends it early with a
-  `Releases: ENT-NNN` line in a later entry. Another division leaves
-  a claimed route to its claimer, or asks.
+  many ships) and says why. A claim stands until its writer ends it
+  with a `Releases: ENT-NNN` line in a later entry (Suggi,
+  2026-11-21). Another division leaves a claimed route to its
+  claimer, or asks.
 - Read it: `python3 -B scripts/comms.py admirals` prints the claims in
   force and the last entries.
 - No pilot of ours by name, as in every log.

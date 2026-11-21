@@ -17,7 +17,7 @@ WHAT: `hive.py division <name|all>` and the MCP tool docs (view=division) print 
         LAST REPORT  its newest session entry in communications/reports.log (the archive too): Session, Did, Worked,
                      Failed, each line cut
         REQUESTS     the requests not closed that are addressed to it or that it wrote (comms.py's states)
-        CLAIMS       its claims in admirals.log in force (comms.py: younger than CLAIM_HOURS, not released)
+        CLAIMS       its claims in admirals.log in force (comms.py: every claim not released)
 RULES:
   - The store only: no file of the repository or the data folder is read, no ship's state. A part the store does not
     hold says so (`not in the store: ...`), never filled in.
@@ -209,7 +209,7 @@ def requests_part(conn, comms, member):
 
 def claims_part(conn, comms, member, now):
     claims = [e for e in comms.claims_in_force(entries(conn, comms, "admirals"), now) if e["by"] == member]
-    out = ["CLAIMS in force (admirals.log, %d hours from the entry, not released): %d" % (comms.CLAIM_HOURS, len(claims))]
+    out = ["CLAIMS in force (admirals.log, until released): %d" % len(claims)]
     for entry in claims[-CLAIM_ROWS:]:
         out.append("  " + clip("ENT-%03d %s UTC: %s" % (entry["num"], entry["when"][5:], comms.line_of(entry, "Claims")), CUT["claim"]))
     if len(claims) > CLAIM_ROWS:

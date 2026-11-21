@@ -80,7 +80,6 @@ SESSION_LINES = ("Session", "Did", "Worked", "Failed", "Requests", "Suggestions"
 ANSWER_WORDS = ("yes", "no", "done")
 LOGS = {"orders": ("order",), "reports": ("session",), "requests": ("request", "answer"), "queue": ("general",), "errors": ("error",),
         "admirals": ("note", "claim")}
-CLAIM_HOURS = 24              # a claim in admirals.log stands this long: nothing is taken for good (Suggi, 2026-11-16)
 GATED = ("orders", "reports", "requests")
 ENTRY_CHARS = 8000            # the newest orders entry, whole, Suggi's S and G lines included (Suggi, 2026-11-18)
 PLAN_WORDS = 150              # ... PLAN, its heading line not counted
@@ -234,12 +233,10 @@ def line_of(entry, label):
 
 
 def claims_in_force(entries, now=None):
-    """The claims of admirals.log still in force: younger than CLAIM_HOURS and not ended by a `Releases: ENT-NNN` line
-    of their own writer."""
+    """The claims of admirals.log still in force: every claim not ended by a `Releases: ENT-NNN` line of its own
+    writer. A claim stands until it is released (Suggi, 2026-11-21); `now` is kept for the callers and unused."""
     released = {(entry["by"], int(number)) for entry in entries for number in re.findall(r"ENT-(\d+)", line_of(entry, "Releases"))}
-    now = time.time() if now is None else now
-    return [e for e in entries if e["category"] == "claim" and (e["by"], e["num"]) not in released
-            and now - calendar.timegm(time.strptime(e["when"], "%Y-%m-%d %H:%M")) < CLAIM_HOURS * 3600]
+    return [e for e in entries if e["category"] == "claim" and (e["by"], e["num"]) not in released]
 
 
 def claimed_routes(root, text):
@@ -281,15 +278,15 @@ def claim_overlaps(root, name, claims_line):
 
 
 def show_admirals(root, last, member):
-    """The Admirals' own log: the claims in force, then the last entries. A claim stands CLAIM_HOURS hours from its
-    entry unless a later entry of its writer ends it with a `Releases: ENT-NNN` line."""
+    """The Admirals' own log: the claims in force, then the last entries. A claim stands until a later entry of its
+    writer ends it with a `Releases: ENT-NNN` line (Suggi, 2026-11-21)."""
     if not (Path(root) / "communications" / "admirals.log").is_file():
         print("no communications/admirals.log")
         return 0
     entries, _errors = read_log(root, "admirals")
     claims = claims_in_force(entries)
-    print("CLAIMS IN FORCE: %d (a claim stands %d hours from its entry; its writer renews it with a new claim or ends it "
-          "with a `Releases: ENT-NNN` line; another division leaves a claimed route to its claimer, or asks)" % (len(claims), CLAIM_HOURS))
+    print("CLAIMS IN FORCE: %d (a claim stands until its writer ends it with a `Releases: ENT-NNN` line; another "
+          "division leaves a claimed route to its claimer, or asks)" % len(claims))
     for entry in claims:
         print("  ENT-%03d | %s UTC | %s | %s" % (entry["num"], entry["when"], entry["by"], line_of(entry, "Claims")))
     shown = [e for e in entries if not member or e["by"].lower() == member.lower()][-last:]
@@ -465,11 +462,9 @@ def append(root, log, entry_file, name, commit=True):
             claims_line = next((line[len("Claims:"):] for line in lines[1:] if line.startswith("Claims:")), "")
             overlaps = claim_overlaps(root, name, claims_line)
             for route, entry in overlaps:                     # read under the lock: a claim a minute old counts
-                until = time.strftime("%Y-%m-%d %H:%M UTC", time.gmtime(calendar.timegm(time.strptime(entry["when"], "%Y-%m-%d %H:%M"))
-                                                                        + CLAIM_HOURS * 3600))
-                print("NOT APPENDED: %s is claimed by %s in admirals.log ENT-%03d (in force until %s): leave it out of your claim, "
-                      "ask %s in requests.log, or claim it once %s releases it" % (route, entry["by"], entry["num"], until,
-                                                                                  entry["by"], entry["by"]))
+                print("NOT APPENDED: %s is claimed by %s in admirals.log ENT-%03d (in force until it is released): leave it out "
+                      "of your claim, ask %s in requests.log, or claim it once %s releases it" % (route, entry["by"], entry["num"],
+                                                                                    entry["by"], entry["by"]))
             if overlaps:
                 return 1
         entries, _errors = parse(before)

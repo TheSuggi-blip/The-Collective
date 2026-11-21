@@ -296,7 +296,9 @@ class AppendTests(Tree):
         self.assertIn("CLAIMS IN FORCE: 0", self.run_command(comms.show_admirals, 12, None)[1])
         old = COMMENT + "## [ENT-001] | 2026-01-01 08:00 UTC | Zero | claim\nClaims: mine-a, for 12 ships.\n"
         self.write("admirals", old)
-        self.assertIn("CLAIMS IN FORCE: 0", self.run_command(comms.show_admirals, 12, None)[1])     # a claim lapses by itself
+        self.assertIn("CLAIMS IN FORCE: 1", self.run_command(comms.show_admirals, 12, None)[1])     # a claim stands until released
+        self.write("admirals", old + "## [ENT-002] | 2026-01-03 08:00 UTC | Zero | note\nReleases: ENT-001.\n")
+        self.assertIn("CLAIMS IN FORCE: 0", self.run_command(comms.show_admirals, 12, None)[1])     # ... and ends when released
 
     def test_the_counter_goes_on_after_an_archive_run_and_queue_takes_general(self):
         (self.root / "communications" / "archive" / "queue-2026-01-01.log").write_text(

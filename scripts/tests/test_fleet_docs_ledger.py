@@ -324,12 +324,12 @@ class DivisionTests(Fixture):
         self.assertIn("REQUESTS not closed: 1 to Zero, 1 from it", block)
         self.assertIn("ENT-001 OPEN 01-01 08:00 from Apophis: a guard at the belt.", block)
         self.assertIn("ENT-002 ACCEPTED 01-01 09:00 to Mercury: a buyer for iron.", block)
-        self.assertIn("CLAIMS in force (admirals.log, 24 hours from the entry, not released): 1", block)
+        self.assertIn("CLAIMS in force (admirals.log, until released): 1", block)
         self.assertIn("mine-alpha-belt for 4 ships", block)
         out = io.StringIO()
         with contextlib.redirect_stdout(out):
-            reader.show(str(self.root), str(self.data), T0 + 40 * 3600, "mining")   # a division's name; the claim is older than 24 hours
-        self.assertIn("CLAIMS in force (admirals.log, 24 hours from the entry, not released): 0", out.getvalue())
+            reader.show(str(self.root), str(self.data), T0 + 40 * 3600, "mining")   # a division's name; a claim 40 hours old still stands
+        self.assertIn("CLAIMS in force (admirals.log, until released): 1", out.getvalue())
         out = io.StringIO()
         with contextlib.redirect_stdout(out):
             reader.show(str(self.root), str(self.data), T0 + 13 * 3600, "Mercury")
