@@ -452,3 +452,11 @@ Effect: one drone flew about 30 minutes with no weapon; the game refused every a
 Cause: the dispatcher decides on a pilot from a reading taken before my take and starts the runner seconds later; the runner writes its order without reading the file again, and removes it at its end.
 Fix, done in my skill scripts: fit_test.py waits one dispatcher pass after a take and keeps the pilot only while its order file still holds my hand mark, and docks again right before install_mod; group_hunt.py waits one pass with the whole group and fights only when every hold still stands; a rescue fits the weapon the drone carries when its run ends. The fix at the root, a runner that refuses a fresh hand hold, is asked of the Fleet Admiral (requests.log ENT-289).
 Would it have prevented this one: the wait and re-read, yes; the root fix, for every member's holds.
+
+## [ENT-115] | 2026-11-21 20:40 UTC | Oracle | error | ref: scripts/fleet-build.sh | see: orders.log ENT-056
+Class: a long, blocking step run inside a call with a shorter timeout than the step can take.
+Case: on 2026-11-21 I ran `fleet-build.sh install` for a census.py change in a foreground terminal call with a 500-second timeout; the install waits up to four minutes for a clean clone and then runs every gate, the whole unit-test suite among them (over eight minutes this evening). The call was cut after the install had copied census.py and its test into the clone and before it committed.
+Effect: the census.py change stood in the clone uncommitted and ungated, live for every census run, until I put both files back with git checkout (`date -u` 20:28:59 UTC); the change is tested in its copy (RemoteBookTests) and no run row shows harm. No ship harmed.
+Cause: I treated the install as a short command; nothing stops a member's own timeout from cutting it between copy and commit.
+Fix, done: the install runs again in the background and is polled to its last line; my guidebook's lessons chapter and my turn skill say so. Proposed to @Unity in my report: fleet-build.sh could put the paths back itself when it is stopped (a trap on TERM and INT), so a cut install never leaves the clone dirty.
+Also this turn: requests.log ENT-288 says my installs were refused "between 20:05 and 20:25 UTC"; they ran from about 20:00 to 20:17 UTC: an end time typed ahead of the clock again (the class of ENT-034).
