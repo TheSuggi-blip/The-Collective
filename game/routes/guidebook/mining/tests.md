@@ -61,21 +61,23 @@ no ship of ours on it. Lifted to 5 ships at 23:25 UTC.
 ### Open Tests
 Status: test. Updated: 2026-11-21. Evidence: the runs of each route (hive.py route <id>); the hand-in lines of data/fleet/dispatch.log; table faction_storage.
 
-- The Liminal: its gold runs at The Gold Crest against a Threshold's 325
-  gold in 90 minutes; it flew none before the pause of 2026-11-18. A
-  second hull only on that figure.
-- `gather-gsc-0044-belt-faction`: proved, 342 and 367 ore in runs of 47
-  minutes into the outpost's faction storage (2026-11-17/18); 10 ships
-  from 2026-11-21, seated miners only. Next: Botein and Acrux the same
-  way.
-- `gather-jadecove-nickel`: 325 ore in a run of 90 minutes (2026-11-17);
-  3 ships from 2026-11-21. The nickel share of a load is not measured.
+- Mining Laser III on one seated miner (refit.py, booked 2026-11-21 23:22 UTC,
+  5,881 cr): its outpost-belt runs against Laser I's median 345 ore in
+  47 minutes. A second ship only on that figure; then a fit route per
+  station with asks.
+- `gather-jishui-plainrock-carbon` (the Liminal, 8 jumps to The Crescent
+  Moon) and `gather-gsc-0049-reef-nickel` (4 jumps to Node Beta): their
+  first RESULT lines decide a lift.
+- `mine-epsilon-eridani-ice-fields` (Sirius) and `mine-hd-20794-ice-fields`
+  (The Anvil Arsenal): one ship each; fields read 2026-11-17.
+- The Liminal: 229 ore a run of 49 minutes on the iron seep against a
+  Threshold's median 184 (2026-11-21); its one gold run took 149 before
+  The Gold Crest ran empty.
+- `gather-gsc-0044-belt-faction`: proved, median 345 ore in 47 minutes
+  into faction storage at no fuel cost; 10 seated ships.
 - `voidborn-crystal-resonance`, `voidborn-material-synthesis`: each paid
-  on its first run (2026-11-17); 4 ships each from 2026-11-21.
-- `craft-steel-experiment`: 96 runs to the pause, 50 plates a run of 6 to
-  7 minutes at the fuel's cost.
-- Silicon beyond Floodlight Flats: Zubenelhakrabi Crystal Sand (its
-  nearest station a pirate station), Undercliff and Mekbuda (9 jumps
-  from a station of ours): not flown.
-- A Flotation Cell on one iron miner: not bought; the Liminal's third
-  slot can take one.
+  on its first run; 4 ships each.
+- Silicon: the near fields are empty; the large ones lie 25 to 27 jumps
+  out (Stormward, Dark Beacon), by Bellatrix, a stronghold on our chart:
+  not flown.
+- Cargo Expander I on a laser miner, a Flotation Cell: not tried.

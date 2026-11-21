@@ -21,23 +21,26 @@ Status: proven. Updated: 2026-11-21. Evidence: table hulls (catalog 0.723.2); co
   brings an hour, so the hold is the class's first upgrade.
 
 ### Mining tools and filters
-Status: proven. Updated: 2026-11-21. Evidence: catalog items; one-run tests of 2026-11-16 (data/routes/runs.jsonl); queue.log ENT-046.
+Status: test. Updated: 2026-11-21. Evidence: catalog 0.732.0 items; docs/guides/miner.md (read 2026-11-21); refit.py booking 2026-11-21 23:22 UTC (data/fleet/onetime.json); one-run tests of 2026-11-16 (data/routes/runs.jsonl).
 
-- Mining Laser I (power 5) takes ore and energy crystal; Ice Harvester I
-  (power 8) ice; Gas Harvester I gas. A laser alone takes no ice. A fit
-  of power 20 or less never locks onto a deposit, so no field refuses it.
-- Nitrogen Vent (cpu 4, power 9) in place of the laser lifted the water
-  share of an ice load from 59% to 83% (one run each, 2026-11-16).
-- Ice Harvester II: by hand from 1 Ice Harvester I, 2 ceramite plating, 3
-  liquid nitrogen and 1 power cell (cpu 6, power 12); its gain is not
-  measured.
-- Extraction filters take one ore out of a pull's draw: Magnetic Ore
-  Separator (iron; power 12, cpu 2), Flotation Cell (copper; power 4, cpu
-  8), Electromagnetic Refinery (both; power 18, cpu 12). Worth a slot only
-  where the rare ore is wanted: half of an iron load is copper, and a
-  Liminal's third slot can take a Flotation Cell.
-- A gas miner (laser and gas harvester) has no slot left for ice;
-  `requires.module` and `requires.without_module` take one value each.
+- A pull's yield scales with mining power (the guide: Laser II 2.4x I,
+  III 1.8x II). Mining Laser I power 5 (cpu 2, power 5); II 12 (cpu 4,
+  power 8); III 22 (cpu 6, power 12); IV 40 (cpu 10, power 18). Every
+  miner flew Laser I until 2026-11-21. A III fits a Threshold ice miner
+  (cpu 12 of 16, power 24 of 30); one seated miner tests it on the
+  outpost belt against Laser I's 345 ore in 47 minutes. Asks: the tool
+  market, item mining_laser_iii.
+- P x F over 20 can lock: under a quarter of capacity a deposit refuses
+  the fit below P x 20 / 4 (110 units for a III); 20 or less never locks.
+- Cargo Expander I: +20 hold (cpu 1, power 1); fits a laser miner's
+  free utility slot. Not tried yet.
+- Ice Harvester I (power 8) ice; Gas Harvester I gas; a laser takes no
+  ice. Nitrogen Vent in place of the laser lifted water from 59% to 83%
+  of an ice load (2026-11-16). Ice Harvester II by hand: 1 Ice Harvester
+  I, 2 ceramite plating, 3 liquid nitrogen, 1 power cell; not measured.
+- Filters take one ore out of the draw: Magnetic Ore Separator (iron),
+  Flotation Cell (copper), Electromagnetic Refinery (both); a slot only
+  where the rarer ore is wanted.
 
 ### Buying, refitting and moving goods
 Status: proven. Updated: 2026-11-21. Evidence: errors.log ENT-026; the fit runs of 2026-11-16 (data/routes/runs.jsonl); refit.py and give.py of the skill mining-chains.

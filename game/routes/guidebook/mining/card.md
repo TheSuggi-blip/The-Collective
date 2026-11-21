@@ -1,11 +1,15 @@
 # Mining guidebook -- the Class Card (card.md)
 
 ### Class Card
-Status: proven. Updated: 2026-11-21. Evidence: hive.py levels Zero; table hulls; the plan file (tool plan, show).
+Status: proven. Updated: 2026-11-21. Evidence: hive.py levels Zero; table hulls; the plan file (tool plan, show); spacemolt.com/docs/mining.md and docs/guides/miner.md, read 2026-11-21 23:20 UTC.
 
-The mining class in short (rule F14): 60 miners. Their levels now: the
-tool fleet, view=levels, member Zero. Hulls and fits: ships.md; the work
-and its limits: routes.md; the calls and scripts: topic-scripts.md.
+The miner's role, in the game's words: mining is the bedrock of the
+economy; every deposit is shared, depletes and regrows slowly; a pull's
+yield rises with the module's mining power, the deposit's richness and
+the Mining skill. Ours (MISSION.md): gather into storage what the
+reserve lacks, then what buyers pay for, no field worked harder than it
+regains. 60 miners; levels: the tool fleet, view=levels, member Zero.
+Hulls and fits: ships.md; work and limits: routes.md; calls: topic-scripts.md.
 
 ### Ships
 Status: proven. Updated: 2026-11-21. Evidence: table hulls (catalog 0.723.2); commission_quote 2026-11-17 11:06 UTC; ships.md.
@@ -19,6 +23,8 @@ Status: proven. Updated: 2026-11-21. Evidence: table hulls (catalog 0.723.2); co
   gold runs against a Threshold's. For ice: the Rime.
 - Tier 2, Piloting 10: the Resonance Miner (hold 180, 4 utility slots);
   for ice the Hoarfrost.
+- Fit: the laser is the first lever: Mining Laser II (power 12) and III
+  (22) against I (5); one III on test since 2026-11-21 (ships.md).
 - Style: a gather shuttle to a station of ours, every field with a
   floor; ice and gas sold only as far as a bid regains; every new field,
   hull or fit first on one ship.
