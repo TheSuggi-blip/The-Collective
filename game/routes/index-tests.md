@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 118.
+Routes: 119.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -38,6 +38,7 @@ Routes: 118.
 | [trade-voidborn-neural-soma-central-the](trade-voidborn-neural-soma-central-the.json) | circuit | home space | Voidborn Neural Soma: bought at The Core for 258 cr, sold at The Experiment Research Station for 690 cr | up to 1 ships, from 3,851 cr | TBD | TBD | TBD | TBD | -- |
 | [trade-voidborn-neural-soma-node-node](trade-voidborn-neural-soma-node-node.json) | circuit | home space | Voidborn Neural Soma: bought at Node Beta Industrial Station for 268 cr, sold at Node Gamma Relay Station for 622 cr | up to 1 ships, from 3,589 cr | TBD | TBD | TBD | TBD | -- |
 | [train-navigation-home](train-navigation-home.json) | circuit | home space | Navigation test: five jumps through our own stations (Node Alpha, Synchrony, Node Gamma, Node Beta, Central Nexus), nothing carried, for the drones that do not yet reach navigation 3 | up to 1 ships | TBD | TBD | TBD | TBD | -- |
+| [hunt-test-acubens-bulwark-pl3](hunt-test-acubens-bulwark-pl3.json) | hunt | home space | Weapon test: bulwark (95 hull) at acubens_shadow_pocket with a Pulse Laser III; loot stored at Central Nexus | up to 1 ships, needs pulse_laser_iii, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-test-acubens-patina-grazer](hunt-test-acubens-patina-grazer.json) | hunt | home space | Yield test: patina_grazer at acubens_shadow_pocket; what a kill drops and whether a bid takes it | up to 1 ships, without piercing_railgun_i | TBD | TBD | TBD | TBD | -- |
 | [mine-cryogenic-reserve](mine-cryogenic-reserve.json) | mine | home space | Cryogenic Reserve: water_ice, nitrogen_ice, oxygen_ice; sold at Synchrony Hub | up to 1 ships, needs ice_harvester_i, while central_nexus bids 25 cr for water_ice | TBD | TBD | TBD | TBD | -- |
 | [mine-node-beta-frozen-drift](mine-node-beta-frozen-drift.json) | mine | home space | Node Beta Frozen Drift: water_ice, nitrogen_ice, deuterium_ice; sold at Node Alpha Processing Station | up to 1 ships, needs ice_harvester_i, while node_alpha_processing_station bids 25 cr for water_ice | TBD | TBD | TBD | TBD | -- |

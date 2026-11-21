@@ -1,0 +1,21 @@
+{
+ "id": "hunt-test-acubens-bulwark-pl3",
+ "kind": "hunt",
+ "title": "Weapon test: bulwark (95 hull) at acubens_shadow_pocket with a Pulse Laser III; loot stored at Central Nexus",
+ "note": "Written by Apophis 2026-11-21 20:51 UTC (orders.log ENT-056, block APOPHIS: weapons fitted, prey the division can beat; rule F17: a new module on one ship first). One ship that fits a Pulse Laser III (28 energy damage against 10 for the starter). A starter does not kill a bulwark: the group log of 2026-11-21 20:38 to 20:47 UTC read 100 to 65 percent in 45 ticks for one Pulse Laser I, the leader's shield 111 to 7 percent. Policed space (Acubens, police 55), herd of 3 bulwarks at the last census (19:42 UTC), floor 2. Every good is stored (min_bid 5000) so the row shows the drop. Read its kills an hour and its lowest hull before the division's fit is named.",
+ "place": "acubens:acubens_shadow_pocket",
+ "species": [
+  "bulwark"
+ ],
+ "sell_at": "nexus_prime:the_core:central_nexus",
+ "min_bid": 5000,
+ "kills": 2,
+ "minutes": 40,
+ "max_ships": 1,
+ "min_creatures": 2,
+ "alone": "pirates",
+ "requires": {
+  "module": "pulse_laser_iii",
+  "empty_hold": true
+ }
+}
