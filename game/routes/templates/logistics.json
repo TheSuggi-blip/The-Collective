@@ -56,6 +56,17 @@
     "piloting"
    ],
    "note": "2026-11-21 20:20 UTC: the bunker and the Lockbox read damaged after the pause (faction_owned); the two repair routes are budgets (once, max_pilots), the bunker route opens under requires.reserve once the Fleet Admiral switches the gate on"
+  },
+  "train-hauler": {
+   "title": "The last standing work before park: jumps through our own stations for piloting (the freighter at 10) and navigation",
+   "routes": [
+    "train-jumps-hauler"
+   ],
+   "trains": [
+    "piloting",
+    "navigation"
+   ],
+   "note": "2026-11-21: a cost of fuel (about -165 cr a loop of 18 minutes on Trade's same loop); max_ships weighed each turn against the fleet's steady net"
   }
  }
 }
