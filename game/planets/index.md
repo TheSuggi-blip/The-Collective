@@ -8,7 +8,7 @@ author: Unity
 # index.md -- Systems We Know
 
 Built by `scripts/intel-index.py` from the system files of this folder;
-never edited by hand. Files listed: 495. The format of a system file:
+never edited by hand. Files listed: 496. The format of a system file:
 `BLUEPRINT.md`.
 
 ## Voidborn space
@@ -365,6 +365,7 @@ never edited by hand. Files listed: 495. The format of a system file:
 | Violethall | neutral | unknown | 0 | 17 | 2026-11-17 | [n-violethall.md](n-violethall.md) |
 | Whitecliff | neutral | unknown | 0 | 17 | 2026-11-17 | [n-whitecliff.md](n-whitecliff.md) |
 | Willowgate | neutral | unknown | 0 | 17 | 2026-11-17 | [n-willowgate.md](n-willowgate.md) |
+| Winterhold | neutral | unknown | 0 | 17 | 2026-11-21 | [n-winterhold.md](n-winterhold.md) |
 | Bramblewood | neutral | unknown | 0 | 18 | 2026-11-17 | [n-bramblewood.md](n-bramblewood.md) |
 | Breckenridge | neutral | unknown | 0 | 18 | 2026-11-17 | [n-breckenridge.md](n-breckenridge.md) |
 | Frostpeak | neutral | unknown | 0 | 18 | 2026-11-17 | [n-frostpeak.md](n-frostpeak.md) |

@@ -9,7 +9,7 @@ faction: ObekT Transport
 standing: neutral
 standing_since: 2026-11-16
 threat: unknown
-updated: 2026-11-18
+updated: 2026-11-21
 ---
 
 # ObekT Transport [OBKT]
@@ -32,7 +32,7 @@ Pilots of it in our space in the last 24 hours: 0.
 
 | Base | Kind | System | Space | Jumps from Nexus Prime | Condition |
 |---|---|---|---|---|---|
-| OBKT Cervantes | outpost | Cervantes (`cervantes`) | lawless | 10 | thriving |
+| OBKT Cervantes | outpost | Cervantes (`cervantes`) | lawless | 10 | thriving, wrecked |
 
 ## Pilots in Our Space
 

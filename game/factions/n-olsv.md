@@ -9,13 +9,13 @@ faction: Our Lord And Savior
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-18
+updated: 2026-11-21
 ---
 
 # Our Lord And Savior [OLSV]
 
-A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 5.
+A player faction with 1 base(s) in 1 system(s); the nearest to Nexus Prime is 17 jump(s) away, in Mirfak (`mirfak`).
+Pilots of it in our space in the last 24 hours: 0.
 
 ## Identity
 
@@ -26,23 +26,19 @@ Pilots of it in our space in the last 24 hours: 5.
 | Allies | HIVE | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 61 | Public event stream |
+| Pilots carrying the tag on the public event stream | 68 | Public event stream |
 
 ## Bases
 
-None on the public record.
+| Base | Kind | System | Space | Jumps from Nexus Prime | Condition |
+|---|---|---|---|---|---|
+| OLSV Mirfak Sanctum | outpost | Mirfak (`mirfak`) | lawless | 17 | thriving |
 
 ## Pilots in Our Space
 
 Pilots carrying this tag whose last known system is one of ours (public event stream, last 24 hours).
 
-| Pilot | System | Player ships destroyed | Ship when one of ours met it |
-|---|---|---|---|
-| OLS Almach | The Experiment (`the_experiment`) | 0 | threshold |
-| OLS Caph | The Experiment (`the_experiment`) | 0 | threshold |
-| OLS Mintaka | The Experiment (`the_experiment`) | 0 | threshold |
-| OLS Naos | The Experiment (`the_experiment`) | 0 | threshold |
-| OLS Sadr | The Experiment (`the_experiment`) | 0 | threshold |
+None in the last 24 hours.
 
 ## Standing History
 

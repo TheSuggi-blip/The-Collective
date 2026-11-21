@@ -9,13 +9,13 @@ faction: Stellar Alliance
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-18
+updated: 2026-11-21
 ---
 
 # Stellar Alliance [STLR]
 
 A player faction with 1 base(s) in 1 system(s); the nearest to Nexus Prime is 17 jump(s) away, in GSC-0013 (`gsc_0013`).
-Pilots of it in our space in the last 24 hours: 10.
+Pilots of it in our space in the last 24 hours: 5.
 
 ## Identity
 
@@ -26,13 +26,13 @@ Pilots of it in our space in the last 24 hours: 10.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 153 | Public event stream |
+| Pilots carrying the tag on the public event stream | 152 | Public event stream |
 
 ## Bases
 
 | Base | Kind | System | Space | Jumps from Nexus Prime | Condition |
 |---|---|---|---|---|---|
-| STLR Central | station | GSC-0013 (`gsc_0013`) | lawless | 17 | thriving |
+| STLR Central | station | GSC-0013 (`gsc_0013`) | lawless | 17 | operational |
 
 ## Pilots in Our Space
 
@@ -40,15 +40,10 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Bob Comet | The Experiment (`the_experiment`) | 0 | eviction_notice |
-| CyberSapper | The Experiment (`the_experiment`) | 0 | crimson_devastator |
-| Ledger Voss | The Experiment (`the_experiment`) | 0 | symposium |
-| STLR-004-RIM | Node Beta (`node_beta`) | 0 | billhook |
-| STLR-041-NEB | Node Beta (`node_beta`) | 0 | prospect |
-| STLR-163-NEB | Node Beta (`node_beta`) | 0 | prospect |
-| UMD-004-RIM | The Experiment (`the_experiment`) | 0 | warmaul |
-| VeraLane | The Experiment (`the_experiment`) | 0 | crimson_devastator |
-| VeraLane_Zibal | The Experiment (`the_experiment`) | 0 | warmaul |
+| STLR-041-NEB | GSC-0027 (`gsc_0027`) | 0 | prospect |
+| STLR-142-NEB | GSC-0027 (`gsc_0027`) | 0 | prospect |
+| STLR-163-NEB | GSC-0027 (`gsc_0027`) | 0 | prospect |
+| STLR-164-NEB | Node Beta (`node_beta`) | 0 | prospect |
 | VMan | GSC-0027 (`gsc_0027`) | 0 | threshold |
 
 ## Standing History

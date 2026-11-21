@@ -9,7 +9,7 @@ faction: Culte du Vide
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-18
+updated: 2026-11-21
 ---
 
 # Culte du Vide [VIDE]
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 4.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 8 | Public event stream |
+| Pilots carrying the tag on the public event stream | 10 | Public event stream |
 
 ## Bases
 
@@ -38,10 +38,10 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Daemia | Node Beta (`node_beta`) | 0 | threshold |
-| Ellara | Nexus Prime (`nexus_prime`) | 0 | threshold |
+| Aveline | Node Alpha (`node_alpha`) | 0 | prospect |
+| Ellara | Synchrony (`synchrony`) | 0 | threshold |
+| Hesser | Synchrony (`synchrony`) | 0 | cobble |
 | Nythera | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| Slyreus | Node Alpha (`node_alpha`) | 0 | threshold |
 
 ## Standing History
 

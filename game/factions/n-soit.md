@@ -9,7 +9,7 @@ faction: Soit
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-17
+updated: 2026-11-21
 ---
 
 # Soit [SOIT]
@@ -23,10 +23,10 @@ Pilots of it in our space in the last 24 hours: 0.
 |---|---|---|
 | Leader | KellyDiote | Daily feed, factions |
 | Members | 20 | Daily feed, factions |
-| Allies | none | Daily feed, factions |
+| Allies | AURC, NVPT, OKLM, SGC., SOLS | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 19 | Public event stream |
+| Pilots carrying the tag on the public event stream | 2 | Public event stream |
 
 ## Bases
 

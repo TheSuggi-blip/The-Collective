@@ -9,7 +9,7 @@ faction: The Sisterhood
 standing: neutral
 standing_since: 2026-11-17
 threat: unknown
-updated: 2026-11-17
+updated: 2026-11-21
 ---
 
 # The Sisterhood [SIST]
@@ -22,11 +22,11 @@ Pilots of it in our space in the last 24 hours: 0.
 | Field | Value | Source |
 |---|---|---|
 | Leader | LadyVestra | Daily feed, factions |
-| Members | 33 | Daily feed, factions |
+| Members | 36 | Daily feed, factions |
 | Allies | TRUE | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 36 | Public event stream |
+| Pilots carrying the tag on the public event stream | 0 | Public event stream |
 
 ## Bases
 

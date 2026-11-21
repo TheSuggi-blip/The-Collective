@@ -9,7 +9,7 @@ faction: Holographic Alliance
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-17
+updated: 2026-11-21
 ---
 
 # Holographic Alliance [HOLA]
@@ -22,11 +22,11 @@ Pilots of it in our space in the last 24 hours: 0.
 | Field | Value | Source |
 |---|---|---|
 | Leader | Skolto-1 | Daily feed, factions |
-| Members | 14 | Daily feed, factions |
+| Members | 15 | Daily feed, factions |
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 4 | Public event stream |
+| Pilots carrying the tag on the public event stream | 7 | Public event stream |
 
 ## Bases
 

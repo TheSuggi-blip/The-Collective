@@ -9,7 +9,7 @@ faction: End of Line
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-18
+updated: 2026-11-21
 ---
 
 # End of Line [ENDL]
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 1.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 93 | Public event stream |
+| Pilots carrying the tag on the public event stream | 95 | Public event stream |
 
 ## Bases
 
@@ -34,7 +34,7 @@ Pilots of it in our space in the last 24 hours: 1.
 |---|---|---|---|---|---|
 | ENDL:gsc_0040 | outpost | GSC-0040 (`gsc_0040`) | lawless | 8 | thriving |
 | ENDL:saltwind | outpost | Saltwind (`saltwind`) | lawless | 11 | thriving |
-| ENDL:fomalhaut | outpost | Fomalhaut (`fomalhaut`) | lawless | 12 | thriving, wrecked |
+| ENDL:fomalhaut | outpost | Fomalhaut (`fomalhaut`) | lawless | 12 | thriving |
 | ENDL Barnardstar | outpost | Barnardstar (`barnardstar`) | lawless | 13 | thriving |
 | ENDL:sandrift | outpost | Sandrift (`sandrift`) | lawless | 15 | thriving |
 | ENDL:betelgeuse | outpost | Betelgeuse (`betelgeuse`) | lawless | 17 | thriving |

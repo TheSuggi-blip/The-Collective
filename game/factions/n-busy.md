@@ -9,13 +9,13 @@ faction: Busy Being Dead
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-18
+updated: 2026-11-21
 ---
 
 # Busy Being Dead [BUSY]
 
 A player faction with 6 base(s) in 6 system(s); the nearest to Nexus Prime is 14 jump(s) away, in 40 Eridani (`40_eridani`).
-Pilots of it in our space in the last 24 hours: 5.
+Pilots of it in our space in the last 24 hours: 1.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 5.
 | Allies | BEIN, DEAD, MOON | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 404 | Public event stream |
+| Pilots carrying the tag on the public event stream | 401 | Public event stream |
 
 ## Bases
 
@@ -35,7 +35,7 @@ Pilots of it in our space in the last 24 hours: 5.
 | The Second Ledger | station | 40 Eridani (`40_eridani`) | lawless | 14 | thriving |
 | The Veil Anchor | station | BD+20 2457 (`bd20_2457`) | lawless | 14 | thriving |
 | The Deep Current | station | GSC-0019 (`gsc_0019`) | lawless | 15 | thriving |
-| The Obsidian Well | station | Arneb (`arneb`) | lawless | 16 | operational |
+| The Obsidian Well | station | Arneb (`arneb`) | lawless | 16 | thriving |
 | Plasma Echo Station | station | GSC-0010 (`gsc_0010`) | lawless | 17 | thriving |
 | To The Dark Moon | outpost | Tiaki (`tiaki`) | lawless | 17 | thriving |
 
@@ -45,11 +45,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Combat Drone 135 | Pherkad (`pherkad`) | 0 | dialectic |
-| Combat Drone 139 | The Experiment (`the_experiment`) | 0 | dialectic |
-| Combat Drone 188 | Acubens (`acubens`) | 0 | dialectic |
-| Mining Drone 036 | Node Beta (`node_beta`) | 0 | not met |
-| Mining Drone 167 | Node Gamma (`node_gamma`) | 0 | floor_price |
+| Combat Drone 014 | Node Alpha (`node_alpha`) | 0 | opus_magna |
 
 ## Standing History
 

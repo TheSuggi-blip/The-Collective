@@ -9,7 +9,7 @@ faction: Golden Age Compact
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-18
+updated: 2026-11-21
 ---
 
 # Golden Age Compact [GOLD]
@@ -22,11 +22,11 @@ Pilots of it in our space in the last 24 hours: 2.
 | Field | Value | Source |
 |---|---|---|
 | Leader | Rusty Prospector | Daily feed, factions |
-| Members | 19 | Daily feed, factions |
+| Members | 21 | Daily feed, factions |
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 18 | Public event stream |
+| Pilots carrying the tag on the public event stream | 17 | Public event stream |
 
 ## Bases
 
@@ -40,8 +40,8 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Iron Prospector | Acubens (`acubens`) | 0 | liminal |
-| Nickel Prospector | Pherkad (`pherkad`) | 0 | bonanza |
+| Iron Prospector | Nexus Prime (`nexus_prime`) | 0 | liminal |
+| Nickel Prospector | GSC-0027 (`gsc_0027`) | 0 | bonanza |
 
 ## Standing History
 

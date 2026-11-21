@@ -9,24 +9,24 @@ faction: Hive Swarm
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-18
+updated: 2026-11-21
 ---
 
 # Hive Swarm [HIVE]
 
 A player faction with 3 base(s) in 3 system(s); the nearest to Nexus Prime is 5 jump(s) away, in Antares (`antares`).
-Pilots of it in our space in the last 24 hours: 8.
+Pilots of it in our space in the last 24 hours: 5.
 
 ## Identity
 
 | Field | Value | Source |
 |---|---|---|
 | Leader | hive leader | Daily feed, factions |
-| Members | 186 | Daily feed, factions |
+| Members | 189 | Daily feed, factions |
 | Allies | OLSV, VEIL | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 101 | Public event stream |
+| Pilots carrying the tag on the public event stream | 103 | Public event stream |
 
 ## Bases
 
@@ -42,14 +42,11 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| 41f0a85ee5fe4d71232d03a8 | Node Beta (`node_beta`) | 0 | workhorse |
-| 492927e413c5b9ce2fe52212 | Node Beta (`node_beta`) | 0 | runner |
-| 721dd9c50961cdb453bf284b | Nexus Prime (`nexus_prime`) | 0 | runner |
-| 75bbbd91a1584939b84b0a01 | Nexus Prime (`nexus_prime`) | 0 | runner |
+| a2b005c64a75e5188f89b67b | Synchrony (`synchrony`) | 0 | runner |
 | b1175909078c49082d98be1b | Synchrony (`synchrony`) | 0 | runner |
-| ba6ca244f9215d9ee62431df | Hamal (`hamal`) | 0 | workhorse |
-| f202f17f1c83f02a54492789 | Nexus Prime (`nexus_prime`) | 0 | runner |
-| hiver | Node Alpha (`node_alpha`) | 0 | bonanza |
+| d48365dfbe9d322efb4559f1 | Node Gamma (`node_gamma`) | 0 | runner |
+| d6dd920cb9af326e71c06f73 | Synchrony (`synchrony`) | 0 | runner |
+| dffe230ab864d7efef98b1fc | Node Alpha (`node_alpha`) | 0 | workhorse |
 
 ## Standing History
 
