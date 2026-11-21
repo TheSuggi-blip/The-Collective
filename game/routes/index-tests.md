@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 110.
+Routes: 116.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -56,12 +56,15 @@ Routes: 110.
 | [hunt-denebola-fractured-prism-veil-ray](hunt-denebola-fractured-prism-veil-ray.json) | hunt | beyond the border, 5 jumps | veil_ray at denebola_fractured_prism; loot sold at Node Beta Industrial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-duskfield-cryobelt-hollow-pilgrim](hunt-duskfield-cryobelt-hollow-pilgrim.json) | hunt | beyond the border, 18 jumps | hollow_pilgrim at duskfield_cryobelt; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-edasich-ice-halo-frost-moth](hunt-edasich-ice-halo-frost-moth.json) | hunt | beyond the border, 25 jumps | frost_moth at edasich_ice_halo; loot sold at Treasure Cache Trading Post | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
+| [hunt-elbowroom-veil-veil-ray](hunt-elbowroom-veil-veil-ray.json) | hunt | beyond the border, 19 jumps | veil_ray at elbowroom_veil; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-enif-ice-belt-hollow-pilgrim](hunt-enif-ice-belt-hollow-pilgrim.json) | hunt | beyond the border, 25 jumps | hollow_pilgrim at enif_ice_belt; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-gsc-0010-gas-pocket-drift-ray](hunt-gsc-0010-gas-pocket-drift-ray.json) | hunt | beyond the border, 17 jumps | drift_ray at gsc_0010_gas_pocket; loot sold at The Obsidian Well | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-gsc-0016-emission-nebula-cinder-sylph](hunt-gsc-0016-emission-nebula-cinder-sylph.json) | hunt | beyond the border, 11 jumps | cinder_sylph at gsc_0016_emission_nebula; loot sold at Hex Star | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-gsc-0021-ice-fields-hollow-pilgrim](hunt-gsc-0021-ice-fields-hollow-pilgrim.json) | hunt | beyond the border, 9 jumps | hollow_pilgrim at gsc_0021_ice_fields; loot sold at Sirius Observatory Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-gsc-0034-gas-plume-drift-ray](hunt-gsc-0034-gas-plume-drift-ray.json) | hunt | beyond the border, 16 jumps | drift_ray at gsc_0034_gas_plume; loot sold at The Obsidian Well | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-gsc-0045-gas-pocket-cinder-sylph](hunt-gsc-0045-gas-pocket-cinder-sylph.json) | hunt | beyond the border, 20 jumps | cinder_sylph at gsc_0045_gas_pocket; loot sold at War Citadel | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
+| [hunt-horizon-phase-drift-veil-ray](hunt-horizon-phase-drift-veil-ray.json) | hunt | beyond the border, 18 jumps | veil_ray at horizon_phase_drift; loot sold at First Step Memorial Station | up to 1 ships | TBD | TBD | TBD | TBD | -- |
+| [hunt-ironpeak-weak-superposition-veil-ray](hunt-ironpeak-weak-superposition-veil-ray.json) | hunt | beyond the border, 20 jumps | veil_ray at ironpeak_weak_superposition; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-lanternwick-frozen-drift-hollow-pilgrim](hunt-lanternwick-frozen-drift-hollow-pilgrim.json) | hunt | beyond the border, 18 jumps | hollow_pilgrim at lanternwick_frozen_drift; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-larawag-ice-belt-hollow-pilgrim](hunt-larawag-ice-belt-hollow-pilgrim.json) | hunt | beyond the border, 20 jumps | hollow_pilgrim at larawag_ice_belt; loot sold at The Levy Customs Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-lilii-borea-gas-cloud-bell-jelly](hunt-lilii-borea-gas-cloud-bell-jelly.json) | hunt | beyond the border, 16 jumps | bell_jelly at lilii_borea_gas_cloud; loot sold at The Obsidian Well | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
@@ -80,6 +83,7 @@ Routes: 110.
 | [hunt-seginus-haze-cinder-sylph](hunt-seginus-haze-cinder-sylph.json) | hunt | beyond the border, 20 jumps | cinder_sylph at seginus_haze; loot sold at The Levy Customs Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-silverpine-gas-plume-cinder-sylph](hunt-silverpine-gas-plume-cinder-sylph.json) | hunt | beyond the border, 24 jumps | cinder_sylph at silverpine_gas_plume; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-stillwater-emission-nebula-drift-ray](hunt-stillwater-emission-nebula-drift-ray.json) | hunt | beyond the border, 19 jumps | drift_ray at stillwater_emission_nebula; loot sold at The Obsidian Well | up to 1 ships | TBD | TBD | TBD | TBD | -- |
+| [hunt-superposition-pocket-veil-ray](hunt-superposition-pocket-veil-ray.json) | hunt | beyond the border, 18 jumps | veil_ray at superposition_pocket; loot sold at First Step Memorial Station | up to 1 ships | TBD | TBD | TBD | TBD | -- |
 | [hunt-tania-frozen-drift-hollow-pilgrim](hunt-tania-frozen-drift-hollow-pilgrim.json) | hunt | beyond the border, 18 jumps | hollow_pilgrim at tania_frozen_drift; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-test-amberfall-sift-ray](hunt-test-amberfall-sift-ray.json) | hunt | beyond the border, 5 jumps | Yield test: sift_ray, chlorophage at amberfall_emission_nebula (lawless); what a kill drops and whether a bid takes it | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-test-atlas-halo-drifter](hunt-test-atlas-halo-drifter.json) | hunt | beyond the border, 6 jumps | Yield test: halo_drifter at atlas_gas_pocket (lawless); what a kill drops and whether a bid takes it | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
@@ -88,6 +92,8 @@ Routes: 110.
 | [hunt-test-gsc-0050-cinder-sylph](hunt-test-gsc-0050-cinder-sylph.json) | hunt | beyond the border, 3 jumps | Cinder-sylphs at gsc_0050_gas_plume (lawless); ember glands sold at Node Beta | up to 1 ships, without piercing_railgun_i, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-test-nightveil-rivetshell](hunt-test-nightveil-rivetshell.json) | hunt | beyond the border, 5 jumps | Yield test: rivetshell at nightveil_dark_residue (lawless); what a kill drops and whether a bid takes it | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-test-stormwatch-lantern-slug](hunt-test-stormwatch-lantern-slug.json) | hunt | beyond the border, 5 jumps | Yield test: lantern_slug at stormwatch_belt (lawless); what a kill drops and whether a bid takes it | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
+| [hunt-the-telescope-entangled-drift-veil-ray](hunt-the-telescope-entangled-drift-veil-ray.json) | hunt | beyond the border, 18 jumps | veil_ray at the_telescope_entangled_drift; loot sold at First Step Memorial Station | up to 1 ships | TBD | TBD | TBD | TBD | -- |
+| [hunt-the-telescope-flicker-field-veil-ray](hunt-the-telescope-flicker-field-veil-ray.json) | hunt | beyond the border, 18 jumps | veil_ray at the_telescope_flicker_field; loot sold at First Step Memorial Station | up to 1 ships | TBD | TBD | TBD | TBD | -- |
 | [hunt-tureis-vapor-fields-bell-jelly](hunt-tureis-vapor-fields-bell-jelly.json) | hunt | beyond the border, 16 jumps | bell_jelly at tureis_vapor_fields; loot sold at The Obsidian Well | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-unukalhai-ice-fields-hollow-pilgrim](hunt-unukalhai-ice-fields-hollow-pilgrim.json) | hunt | beyond the border, 24 jumps | hollow_pilgrim at unukalhai_ice_fields; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-veritate-emission-nebula-halo-drifter](hunt-veritate-emission-nebula-halo-drifter.json) | hunt | beyond the border, 18 jumps | halo_drifter at veritate_emission_nebula; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |

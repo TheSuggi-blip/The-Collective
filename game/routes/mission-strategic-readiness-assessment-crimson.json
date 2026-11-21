@@ -1,0 +1,50 @@
+{
+ "id": "mission-strategic-readiness-assessment-crimson",
+ "kind": "circuit",
+ "title": "Strategic Readiness Assessment: 4000 cr at War Citadel",
+ "note": "Written by routemaker.py from the board and the order books: goods for about 0 cr, reward 4000 cr. A test: one ship; whether the mission hands its goods out at the accept is not known until one accept with an empty hold. Added as a test by fill.py on 2026-11-21 19:57 UTC (Apophis): one ship until its first RESULT line is read.",
+ "once": true,
+ "max_ships": 1,
+ "one_time": [
+  "Strategic Readiness Assessment"
+ ],
+ "skip_if_booked": [
+  "Strategic Readiness Assessment"
+ ],
+ "stops": [
+  {
+   "at": "krynn:war_citadel:crimson_war_citadel",
+   "accept": [
+    "strategic_readiness_assessment"
+   ]
+  },
+  {
+   "at": "the_crucible:the_crucible_garrison:the_crucible_garrison",
+   "redock": true
+  },
+  {
+   "at": "the_anvil:the_anvil_arsenal:the_anvil_arsenal",
+   "redock": true
+  },
+  {
+   "at": "blood_forge:blood_forge_smelting_works:blood_forge_smelting_works",
+   "redock": true
+  },
+  {
+   "at": "iron_reach:iron_reach_mining_colony:iron_reach_mining_colony",
+   "redock": true
+  },
+  {
+   "at": "ironhearth:ironhearth_station:ironhearth_station",
+   "redock": true
+  },
+  {
+   "at": "the_rampart:the_rampart_checkpoint:the_rampart_checkpoint",
+   "redock": true
+  },
+  {
+   "at": "krynn:war_citadel:crimson_war_citadel",
+   "redock": true
+  }
+ ]
+}
