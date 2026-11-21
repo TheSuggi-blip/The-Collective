@@ -71,8 +71,8 @@ Kept by Apophis. Routes: 179. Ships: 50.
 | 49 | [hunt-yildun-outer-ice-hollow-pilgrim](hunt-yildun-outer-ice-hollow-pilgrim.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 18 jumps | up to 1 ships, empty hold | 1 of 50 |
 | 50 | [hunt-starless-drift-veil-ray](hunt-starless-drift-veil-ray.json) | [Tests](index-tests.md) | beyond the border, 22 jumps | up to 1 ships, empty hold | 1 of 50 |
 | 51 | [hunt-gsc-0034-gas-plume-drift-ray](hunt-gsc-0034-gas-plume-drift-ray.json) | [Tests](index-tests.md) | beyond the border, 16 jumps | up to 1 ships, empty hold | 1 of 50 |
-| 52 | [hunt-hollow-light-veil-ray](hunt-hollow-light-veil-ray.json) | [Tests](index-tests.md) | beyond the border, 18 jumps | up to 1 ships, empty hold | 1 of 50 |
-| 53 | [hunt-test-acubens-bulwark-pl3](hunt-test-acubens-bulwark-pl3.json) | [Tests](index-tests.md) | home space | up to 1 ships, needs pulse_laser_iii, empty hold | 1 of 50 |
+| 52 | [hunt-test-acubens-bulwark-pl3](hunt-test-acubens-bulwark-pl3.json) | [Tests](index-tests.md) | home space | up to 1 ships, needs pulse_laser_iii, empty hold | 1 of 50 |
+| 53 | [hunt-hollow-light-veil-ray](hunt-hollow-light-veil-ray.json) | [Tests](index-tests.md) | beyond the border, 18 jumps | up to 1 ships, empty hold | 1 of 50 |
 | 54 | [hunt-alsciaukat-vapor-fields-cinder-sylph](hunt-alsciaukat-vapor-fields-cinder-sylph.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 13 jumps | up to 1 ships, empty hold | 2 of 50 |
 | 55 | [hunt-the-quiet-shimmer-veil-ray](hunt-the-quiet-shimmer-veil-ray.json) | [Tests](index-tests.md) | beyond the border, 18 jumps | up to 1 ships, empty hold | 1 of 50 |
 | 56 | [hunt-willowgate-vapor-fields-halo-drifter](hunt-willowgate-vapor-fields-halo-drifter.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 17 jumps | up to 1 ships, empty hold | 1 of 50 |
