@@ -435,3 +435,12 @@ Cause: the tool system still printed both facilities `active` (the faction readi
 Fix, done: the turn skill logistics-stock now opens with step 0, a free faction_owned read: any facility not ready is the turn's first work. Asked: the empire reading running again and the reserve gate (requests.log ENT-294); how an outpost is kept while the fleet is away, before Atria (ENT-295); what wrecked it (ENT-296, Oracle).
 Proposed, @Unity: empire.py collect raises an alert (fleet view=alerts, the briefing) when a facility of ours reads damaged or a base wrecked, so it fires without a member's read.
 Would it have prevented this one: the wreck, no; the three days unseen, yes for my turns from now; the alert would show it to every member at once.
+
+## [ENT-113] | 2026-11-21 20:30 UTC | Mercury | error | ref: game/routes/trade-silver-bar-alpha-to-arneb.json
+What: a one-load gap went into the plan as a route; its pilot started a second run into a gap the first run had closed.
+Where: trade-silver-bar-alpha-to-arneb, written 2026-11-21 19:59 UTC with max_ships 1 and max_pilots 1 but without once.
+Seen: first run +4,099 cr in 21.6 minutes (data/routes/runs.jsonl, start 20:00:54 UTC); Node Alpha's silver bar ask was gone after its 50 units (table books, 20:24 UTC); the same pilot was sent again at once and flies back to buy at an ask that no longer stands, then on to Arneb empty (a failed buy only notes and goes on, game/fleet/route_run.py).
+Cause: I took max_pilots 1 for a limit on runs; it limits pilots, and max_ships limits ships at one time. The lesson stood in my skill already (the soma gap, 2026-11-15) and I did not apply it to a route beyond the border.
+Fixed: the route is status off since 20:26 UTC (its note says why); the same check removed the heat sink buys of the two Crucible carries, where two ships carry 24 heat sinks each to a bid of 24.
+Gate: a buy-and-sell route needs a field that closes it while the buy end has no ask (requires.ask, asked of Unity in requests.log); until then a one-load gap gets once with max_pilots 1, or a hand run.
+Cost: the empty second leg's fuel, not measured yet.
