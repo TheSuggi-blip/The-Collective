@@ -77,3 +77,16 @@ Status: proven. Updated: 2026-11-17. Evidence: migrated from DESIGN.md section 2
   agents amplify errors 17 times, a central orchestrator 4 times;
   beyond about 20 coordinating agents success drops; many agents cost
   3 to 15 times the tokens of one.
+
+### A booking after a wait dies with its pass
+Status: proven. Updated: 2026-11-21. Evidence: errors.log of 2026-11-21 (the deposit of 84,115 cr); wallet.py sweep, its tests in test_fleet_money (SweepTests); hive.py stats contribution.
+
+A step that calls the game and then waits to see the answer land
+(a gift, a deposit) loses its record when the job around it is cut
+by a `timeout` between the call and the booking: the money moved and
+no file says so, and the figures read it as a cost. The fix is a
+write-ahead: the step writes `sent` before its call, and the next
+pass settles it where the money lands (the treasury), booking it once
+with the time it was sent. A step that may not finish inside the
+job's limit starts only early in the pass. Look for the same shape in
+every pass that writes after it waits.
