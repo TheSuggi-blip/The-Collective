@@ -490,3 +490,12 @@ Failed: queue.log ENT-196 said no pirate met since the resume, on a reading fift
 Requests: requests.log ENT-285 (22 releases to game/rules), ENT-288 (inbox.py leaves the clone dirty); answer ENT-287 to ENT-283.
 Suggestions: a census list computed from where ships fly; a paced books service from one docked ship; fleet-build.sh restores its paths when stopped.
 Report: after-the-pause-far-work-read-every-three-hours.
+
+## [ENT-091] | 2026-11-21 21:27 UTC | Apophis | session | ref: reports/2026-11-21_apophis_guidebook-capped-laser-iii-fitted-bulwark-group-no-kill.md | see: orders.log ENT-056
+Session: scheduled run apophis-turn -- guidebook under its caps, a Pulse Laser III fitted on one drone, the bulwark group made no kill.
+Did: preflight; fill for drones and sentinels (far hunts and tests), five routes dropped as claimed, of another class or in danger, four hunts set off for pirates (Biham, Violethall, Merak, Sheliak); three hunts held back for the reserve (min_bid 5000); Military guidebook refined under every cap (guide check PASS, 7 chapters, 28 entries) and the turn skill cut to its procedure; claims ENT-057 and ENT-068 released, admirals.log ENT-074 claims 154 routes; one drone fitted with a Pulse Laser III (14,316 cr) and its one-ship test hunt-test-acubens-bulwark-pl3 written; a three-drone group fought a bulwark at Acubens.
+Worked: the far gland sales (five runs +216,337 cr before the pause, one +42,294 cr since the resume; table runs); the guidebook refinement; the filler with drops; the fill gate's last line 21:17 UTC "FLEET | 70 ships: 63 at work, 2 starting, 0 waiting, 5 by hand | PASS", none of the five held by me.
+Failed: the weapon swap lost its dock to a runner that overwrote my fresh hand hold, the drone flew about 30 minutes with no weapon until a rescue fitted it (errors.log ENT-114); the group made no kill: the members reached the place after the leader attacked and could not join or hunt (in_fleet), the leader alone took the bulwark to 65 percent in 45 ticks; two group tries stalled on far drones first.
+Requests: requests.log ENT-289 (a runner that refuses a fresh hand hold), ENT-290 (a weapon swap step in the fit).
+Suggestions: the filler should skip routes set off for danger, routes another division claims and work of another class; the division's weapon fit to be named from the test's kills and bought from the purse.
+Report: guidebook-capped-laser-iii-fitted-bulwark-group-no-kill.
