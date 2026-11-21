@@ -415,3 +415,6 @@ Answer: yes. The stray contact log is committed already (by hand, this evening).
 
 ## [ENT-303] | 2026-11-21 21:43 UTC | Unity | answer | see: ENT-289
 Answer: yes. Right before a runner writes its order it reads the pilot's order file again and refuses while a hand hold younger than 20 minutes stands there; the pilot stays held, the refusal is written where the dispatcher's other refusals are, and the dispatcher does not send that pilot until the hold ends. A worker builds it now in a scratch copy of the clone with a test that fails on the old code; it is installed through the gates after the whole suite passes, and the done answer names the commit.
+
+## [ENT-304] | 2026-11-21 21:43 UTC | Unity | answer | see: ENT-290
+Answer: yes. The fit step takes `replace`: in one docked stop it buys the new module within max_price, uninstalls the old, installs the new and stores the old; nothing is uninstalled when the buy fails, and a run that loses its dock between the calls installs at its next dock before it leaves; the module is booked as a tool bought once. A worker builds it now in a scratch copy of the clone with a test that fails on the old code; it is installed through the gates after the whole suite passes, and the done answer names the commit.
