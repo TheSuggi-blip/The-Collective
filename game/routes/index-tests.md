@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 132.
+Routes: 136.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -83,19 +83,23 @@ Routes: 132.
 | [hunt-lilii-borea-gas-cloud-drift-ray](hunt-lilii-borea-gas-cloud-drift-ray.json) | hunt | beyond the border, 16 jumps | drift_ray at lilii_borea_gas_cloud; loot sold at The Obsidian Well | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-lurker-veil-veil-ray](hunt-lurker-veil-veil-ray.json) | hunt | beyond the border, 18 jumps | veil_ray at lurker_veil; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-menkib-stellar-wind-cinder-sylph](hunt-menkib-stellar-wind-cinder-sylph.json) | hunt | beyond the border, 18 jumps | cinder_sylph at menkib_stellar_wind; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
+| [hunt-merope-dim-phase-pocket-veil-ray](hunt-merope-dim-phase-pocket-veil-ray.json) | hunt | beyond the border, 18 jumps | veil_ray at merope_dim_phase_pocket; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-merope-gas-plume-cinder-sylph](hunt-merope-gas-plume-cinder-sylph.json) | hunt | beyond the border, 18 jumps | cinder_sylph at merope_gas_plume; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-minkar-cryobelt-hollow-pilgrim](hunt-minkar-cryobelt-hollow-pilgrim.json) | hunt | beyond the border, 21 jumps | hollow_pilgrim at minkar_cryobelt; loot sold at The Levy Customs Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-navi-ice-shelf-frost-moth](hunt-navi-ice-shelf-frost-moth.json) | hunt | beyond the border, 20 jumps | frost_moth at navi_ice_shelf; loot sold at Nova Terra Central | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-orphan-nebula-veil-ray](hunt-orphan-nebula-veil-ray.json) | hunt | beyond the border, 9 jumps | veil_ray at orphan_nebula; loot sold at Nova Terra Central | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-proxima-centauri-frost-ring-hollow-pilgrim](hunt-proxima-centauri-frost-ring-hollow-pilgrim.json) | hunt | beyond the border, 18 jumps | hollow_pilgrim at proxima_centauri_frost_ring; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
+| [hunt-rayfall-shimmer-veil-ray](hunt-rayfall-shimmer-veil-ray.json) | hunt | beyond the border, 18 jumps | veil_ray at rayfall_shimmer; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-relay-station-ice-shelf-hollow-pilgrim](hunt-relay-station-ice-shelf-hollow-pilgrim.json) | hunt | beyond the border, 18 jumps | hollow_pilgrim at relay_station_ice_shelf; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-rigel-gas-plume-drift-ray](hunt-rigel-gas-plume-drift-ray.json) | hunt | beyond the border, 16 jumps | drift_ray at rigel_gas_plume; loot sold at The Obsidian Well | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-saiph-emission-nebula-drift-ray](hunt-saiph-emission-nebula-drift-ray.json) | hunt | beyond the border, 16 jumps | drift_ray at saiph_emission_nebula; loot sold at The Obsidian Well | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-saltwind-ice-shelf-hollow-pilgrim](hunt-saltwind-ice-shelf-hollow-pilgrim.json) | hunt | beyond the border, 18 jumps | hollow_pilgrim at saltwind_ice_shelf; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-scheat-haze-drift-ray](hunt-scheat-haze-drift-ray.json) | hunt | beyond the border, 16 jumps | drift_ray at scheat_haze; loot sold at The Obsidian Well | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-seginus-haze-cinder-sylph](hunt-seginus-haze-cinder-sylph.json) | hunt | beyond the border, 20 jumps | cinder_sylph at seginus_haze; loot sold at The Levy Customs Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
+| [hunt-sheliak-weak-superposition-veil-ray](hunt-sheliak-weak-superposition-veil-ray.json) | hunt | beyond the border, 18 jumps | veil_ray at sheliak_weak_superposition; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-silverpine-gas-plume-cinder-sylph](hunt-silverpine-gas-plume-cinder-sylph.json) | hunt | beyond the border, 24 jumps | cinder_sylph at silverpine_gas_plume; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-stillwater-emission-nebula-drift-ray](hunt-stillwater-emission-nebula-drift-ray.json) | hunt | beyond the border, 19 jumps | drift_ray at stillwater_emission_nebula; loot sold at The Obsidian Well | up to 1 ships | TBD | TBD | TBD | TBD | -- |
+| [hunt-sunbeam-dust-veil-ray](hunt-sunbeam-dust-veil-ray.json) | hunt | beyond the border, 18 jumps | veil_ray at sunbeam_dust; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-superposition-pocket-veil-ray](hunt-superposition-pocket-veil-ray.json) | hunt | beyond the border, 18 jumps | veil_ray at superposition_pocket; loot sold at First Step Memorial Station | up to 1 ships | TBD | TBD | TBD | TBD | -- |
 | [hunt-tall-tale-nebula-veil-ray](hunt-tall-tale-nebula-veil-ray.json) | hunt | beyond the border, 18 jumps | veil_ray at tall_tale_nebula; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-tania-frozen-drift-hollow-pilgrim](hunt-tania-frozen-drift-hollow-pilgrim.json) | hunt | beyond the border, 18 jumps | hollow_pilgrim at tania_frozen_drift; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
