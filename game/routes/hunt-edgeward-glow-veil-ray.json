@@ -1,0 +1,20 @@
+{
+ "id": "hunt-edgeward-glow-veil-ray",
+ "kind": "hunt",
+ "title": "veil_ray at edgeward_glow; loot sold at The Levy Customs Station",
+ "note": "Written by routemaker.py from the herd's count, the loot of 368 runs of ours and the order book; an estimate of 1590 cr per hunter-hour, not a measurement. A test: one ship, the ranching rules kept. Added as a test by fill.py on 2026-11-21 20:55 UTC (Apophis): one ship until its first RESULT line is read.",
+ "place": "gsc_0005:edgeward_glow",
+ "species": [
+  "veil_ray"
+ ],
+ "sell_at": "the_levy:the_levy_customs_station:the_levy_customs_station",
+ "min_bid": 264,
+ "kills": 4,
+ "minutes": 60,
+ "max_ships": 1,
+ "min_creatures": 4,
+ "alone": true,
+ "requires": {
+  "empty_hold": true
+ }
+}

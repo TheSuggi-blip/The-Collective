@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 119.
+Routes: 125.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -52,14 +52,20 @@ Routes: 119.
 | [hunt-ancha-frozen-drift-frost-moth](hunt-ancha-frozen-drift-frost-moth.json) | hunt | beyond the border, 19 jumps | frost_moth at ancha_frozen_drift; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-ancha-frozen-drift-hollow-pilgrim](hunt-ancha-frozen-drift-hollow-pilgrim.json) | hunt | beyond the border, 19 jumps | hollow_pilgrim at ancha_frozen_drift; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-ancha-haze-halo-drifter](hunt-ancha-haze-halo-drifter.json) | hunt | beyond the border, 19 jumps | halo_drifter at ancha_haze; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
+| [hunt-askance-nebula-veil-ray](hunt-askance-nebula-veil-ray.json) | hunt | beyond the border, 12 jumps | veil_ray at askance_nebula; loot sold at Nova Terra Central | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
+| [hunt-broadwing-veil-veil-ray](hunt-broadwing-veil-veil-ray.json) | hunt | beyond the border, 11 jumps | veil_ray at broadwing_veil; loot sold at Nova Terra Central | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-chara-gas-plume-drift-ray](hunt-chara-gas-plume-drift-ray.json) | hunt | beyond the border, 16 jumps | drift_ray at chara_gas_plume; loot sold at The Obsidian Well | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
+| [hunt-coinflip-nebula-veil-ray](hunt-coinflip-nebula-veil-ray.json) | hunt | beyond the border, 11 jumps | veil_ray at coinflip_nebula; loot sold at Nova Terra Central | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-dawnbreak-frozen-drift-hollow-pilgrim](hunt-dawnbreak-frozen-drift-hollow-pilgrim.json) | hunt | beyond the border, 20 jumps | hollow_pilgrim at dawnbreak_frozen_drift; loot sold at The Levy Customs Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-denebola-fractured-prism-veil-ray](hunt-denebola-fractured-prism-veil-ray.json) | hunt | beyond the border, 5 jumps | veil_ray at denebola_fractured_prism; loot sold at Node Beta Industrial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-driftwood-ghost-resonance-veil-ray](hunt-driftwood-ghost-resonance-veil-ray.json) | hunt | beyond the border, 20 jumps | veil_ray at driftwood_ghost_resonance; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-duskfield-cryobelt-hollow-pilgrim](hunt-duskfield-cryobelt-hollow-pilgrim.json) | hunt | beyond the border, 18 jumps | hollow_pilgrim at duskfield_cryobelt; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-edasich-ice-halo-frost-moth](hunt-edasich-ice-halo-frost-moth.json) | hunt | beyond the border, 25 jumps | frost_moth at edasich_ice_halo; loot sold at Treasure Cache Trading Post | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
+| [hunt-edgeward-glow-veil-ray](hunt-edgeward-glow-veil-ray.json) | hunt | beyond the border, 21 jumps | veil_ray at edgeward_glow; loot sold at The Levy Customs Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-elbowroom-veil-veil-ray](hunt-elbowroom-veil-veil-ray.json) | hunt | beyond the border, 19 jumps | veil_ray at elbowroom_veil; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-enif-ice-belt-hollow-pilgrim](hunt-enif-ice-belt-hollow-pilgrim.json) | hunt | beyond the border, 25 jumps | hollow_pilgrim at enif_ice_belt; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
+| [hunt-errai-faint-entanglement-veil-ray](hunt-errai-faint-entanglement-veil-ray.json) | hunt | beyond the border, 18 jumps | veil_ray at errai_faint_entanglement; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
+| [hunt-giausar-frost-ring-frost-moth](hunt-giausar-frost-ring-frost-moth.json) | hunt | beyond the border, 8 jumps | frost_moth at giausar_frost_ring; loot sold at Node Beta Industrial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-gsc-0010-gas-pocket-drift-ray](hunt-gsc-0010-gas-pocket-drift-ray.json) | hunt | beyond the border, 17 jumps | drift_ray at gsc_0010_gas_pocket; loot sold at The Obsidian Well | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-gsc-0016-emission-nebula-cinder-sylph](hunt-gsc-0016-emission-nebula-cinder-sylph.json) | hunt | beyond the border, 11 jumps | cinder_sylph at gsc_0016_emission_nebula; loot sold at Hex Star | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-gsc-0021-ice-fields-hollow-pilgrim](hunt-gsc-0021-ice-fields-hollow-pilgrim.json) | hunt | beyond the border, 9 jumps | hollow_pilgrim at gsc_0021_ice_fields; loot sold at Sirius Observatory Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
