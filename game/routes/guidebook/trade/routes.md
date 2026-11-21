@@ -111,8 +111,7 @@ Tests of 2026-11-21, one ship and one run each (runs.jsonl):
   ships.md; its first carry reads the Prayer's fuel and time.
 
 What a far test needs: both ends read the same hour, the depth at both
-ends against the hold, and the road's fuel both ways (about 20 to 26 cr a
-jump for a Threshold, skill trade-books). The road past Pherkad is lawless
+ends against the hold, and the road's fuel both ways. The road past Pherkad is lawless
 and no pirate is on our record in it (`scripts/map.py route`,
 data/intel/sightings.jsonl). A far book read days ago is a guess.
 
