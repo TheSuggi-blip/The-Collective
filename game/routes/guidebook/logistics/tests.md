@@ -3,7 +3,7 @@
 ### Open Tests
 Status: test. Updated: 2026-11-21. Evidence: the tests of 2026-11-17 and 2026-11-18 (route_run.py commits 85b14c83 and 6d69c52, queue.log ENT-187); requests.log ENT-281; faction_owned and the storage view 2026-11-21 19:50 UTC.
 
-- Open: the outpost's damaged bunker and Lockbox, what a repair takes (topic-bases.md); `supply-bunker-gsc-0044` on `requires.reserve` (ENT-281) in place of `once` and `max_pilots` 3; `buy-flex-ironlight-to-node-beta`, the loads into the faction store at Node Beta; which faction facilities an outpost takes (`facility types` category faction).
+- Open (2026-11-21): `supply-repair-gsc-0044-plate` (3 loads of 60) and `-boards` (60): whether the outpost rebuilds its damaged bunker and Lockbox by itself from the faction's storage there, and what get_base's repairs block asks (topic-bases.md); `train-jumps-hauler`: its cost a loop (`hive.py route train-jumps-hauler`) and the piloting it brings; `supply-bunker-gsc-0044` on `requires.reserve` below 4,000 (ENT-281) in place of `once` and `max_pilots` 3, closed while the gate is off; `buy-flex-ironlight-to-node-beta`, the loads into the faction store at Node Beta; which faction facilities an outpost takes (`facility types` category faction).
 - Open: a Prayer bought and flown by one hauler (ships.md). `craft-steel-refine-node-beta` (refine_steel) was flown once; its use waits on the Fleet Admiral's word (requests.log ENT-200).
 - Open: the any-role steel routes of 2026-11-17 03:58 UTC (requests.log ENT-190): which divisions' ships fly them once they stand in every plan's list Then.
 - What the fleet owns and where: `python3 -I -B game/fleet/ledger.py show all`; a station's inputs: topic-station.md.

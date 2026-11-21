@@ -1,16 +1,15 @@
 # Logistics guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-21. Evidence: plan.py show --brief (applied 2026-11-21 19:24 UTC); orders.log ENT-052 and ENT-056 (block APOLLO); requests.log ENT-256, ENT-281; rule F23.
+Status: proven. Updated: 2026-11-21. Evidence: plan.py show --brief (applied 2026-11-21 20:17 UTC); fill.py check PASS 20:20 UTC; orders.log ENT-056 (block APOLLO); requests.log ENT-272, ENT-281; rules F8, F23.
 
 The plan file (`plan.py show`): a free hauler takes the first route open to it of the list First, its own routes, the list Then. What each earns now: `hive.py route <id>`; route by route: the tool fleet, view=standing, member Apollo.
 
-- First: the once missions (`voidborn-*`, the first hunts, `mission-cracking-the-shell-central`, `mission-workshop-production-run-node-beta`; rules F34, F35).
-- Own, in front for a few ships: `supply-bunker-gsc-0044` (member haulers: the outpost's bunker), `buy-flex-ironlight-to-node-beta` (the Recruitment Center's flex), `craft-boards-node-beta` (the silicon hauler).
-- Own, every hauler: `@stored-goods`, then `@craft-reserve`.
-- Then: `park`, which docks a ship with no work. Haulers gather nothing (rule F23): a hauler with no open route docks (ENT-256, step 4).
-
-Orders ENT-056: the reserve by its levels, the bunker by route, Atria's kit and road, the Recruitment Center when the purse holds its fee, carries beyond our borders.
+- First: the once missions (`voidborn-*`, the first hunts, `mission-*`; rules F34, F35).
+- Own, member haulers (1 to 34): `@outpost-supply` (the repair loads of GSC-0044 while its bunker and Lockbox read damaged, then the bunker route under `requires.reserve` below 4,000), then `buy-flex-ironlight-to-node-beta` (5 rows) or `craft-boards-node-beta` (1 row).
+- Own, every hauler: `@stored-goods` (sell and carry on a bid of the last hour), `@craft-reserve` (steel from own iron, piping: closed while piping stands at its max), `@train-hauler` (train-jumps-hauler, up to 32: piloting toward the freighter, a cost of fuel).
+- Then: `park`, which no ship should reach. Haulers gather nothing (rule F23).
+- What would change it: the reserve gate switched on and the bunker repaired (the bunker route flies); sell bids read again by the loop's docks (stored goods first); the fleet's 24-hour steady net under zero (fewer on the loop).
 
 ### Route Templates
 Status: proven. Updated: 2026-11-21. Evidence: game/routes/templates/logistics.json (2026-11-21); plan.py templates; Suggi 2026-11-16 and rule F22.
@@ -46,16 +45,6 @@ Status: proven. Updated: 2026-11-21. Evidence: route files and RESULT lines 2026
 - In a public facility: `craft-steel-refine-node-beta` (refine_steel, `venue: "facility"`, `max_fee` 36): 500 iron into 200 plate for 2,900 cr, a plate for 2.5 iron and 14.5 cr against 10 iron and 0 cr by hand; in no plan while the Fleet Admiral weighs the fee (ENT-200).
 - Boards: `craft-boards-*` (topic-station.md).
 - Hand chains: catch.py, craftchain.py and stage.py of the skill logistics-stock.
-
-### Gas (template `gas-harvest`)
-Status: retired. Updated: 2026-11-21. Evidence: rule F23; game/routes/templates/logistics.json (2026-11-21).
-
-Haulers no longer gather: gas is Mining's alone (rule F23) and the template is gone.
-
-### Gathering for the reserve (template `gather-reserve`)
-Status: retired. Updated: 2026-11-21. Evidence: rule F23; game/routes/templates/logistics.json (2026-11-21).
-
-Haulers no longer gather: ore is Mining's alone (rule F23) and the template is gone.
 
 ### Beyond the border (a test)
 Status: test. Updated: 2026-11-21. Evidence: buy-gold-ironlight-boards, RESULT line 2026-11-17 00:35 UTC; requests.log ENT-172; runs table 2026-11-16; orders.log ENT-056.
