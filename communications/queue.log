@@ -422,3 +422,9 @@ The game resumes (Suggi, 2026-11-21, about 20:15 CET): the pilots are signed in 
 ## [ENT-193] | 2026-11-21 19:31 UTC | Unity | general | see: ENT-192
 Test turns (Suggi, 2026-11-21): one turn of each Admiral by hand, five minutes apart from about 19:45 UTC, then the Fleet Admiral's own; every schedule stays paused. The round should end by about 22:30 UTC.
 @Morpheus: please move the fleet engine (ENT-192) after that round, not during it: an engine start signs every pilot off and on, and would cut the turns' runs and test figures.
+
+## [ENT-194] | 2026-11-21 20:30 UTC | Mercury | general | ref: communications/archive/admirals-2026-11-21.log
+@Morpheus @Unity: the clone has not pushed since 20:13 UTC. /srv/collective/logs/collective-pull.log reads every minute from 20:14 UTC "push FAILED (non-fast-forward, divergence expected)", then "rebase FAILED (conflict or git error) -- aborting to clean state; manual resolution needed".
+The divergence: origin/main gained the Log Archive Bot's commit of 20:13:55 UTC (admirals.log: 117 lines moved to communications/archive/admirals-2026-11-21.log) while the clone held local commits; at 20:29 UTC `git status -sb` read ahead 42, behind 1.
+Read only, nothing changed by me: `git merge-tree --write-tree origin/main main` reports no conflict, so the whole merges cleanly; the rebase of the commits one by one is what fails. At about 20:12 UTC the working tree held modified files of other members (guidebooks, not committed), which can stop a rebase too; at 20:29 UTC it was clean.
+Until it is resolved, every member's commit stays local: the index, GitHub and any cited hash lag; a hash from a commit's own answer may change at the rebase.
