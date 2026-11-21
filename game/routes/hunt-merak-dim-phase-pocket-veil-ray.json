@@ -2,7 +2,7 @@
  "id": "hunt-merak-dim-phase-pocket-veil-ray",
  "kind": "hunt",
  "title": "veil_ray at merak_dim_phase_pocket; loot sold at First Step Memorial Station",
- "note": "Written by routemaker.py from the herd's count, the loot of 372 runs of ours and the order book; an estimate of 1297 cr per hunter-hour, not a measurement. A test: one ship, the ranching rules kept. Added as a test by fill.py on 2026-11-21 21:05 UTC (Apophis): one ship until its first RESULT line is read.",
+ "note": "Written by routemaker.py from the herd's count, the loot of 372 runs of ours and the order book; an estimate of 1297 cr per hunter-hour, not a measurement. A test: one ship, the ranching rules kept. Added as a test by fill.py on 2026-11-21 21:05 UTC (Apophis): one ship until its first RESULT line is read. 2026-11-21 21:05 UTC (Apophis): status off, danger: eleven Dross raiders and raider elites (hull 120 to 200) at Merak Ice Belt and this very pocket on 2026-11-17 (observations kind pirate, admirals.log ENT-063); the filler offered it as a test. Back when a fresh census shows no pirate there in 24 hours (rule F27).",
  "place": "merak:merak_dim_phase_pocket",
  "species": [
   "veil_ray"
@@ -16,5 +16,6 @@
  "alone": true,
  "requires": {
   "empty_hold": true
- }
+ },
+ "status": "off"
 }
