@@ -1,0 +1,51 @@
+{
+ "id": "carry-curd-nexus-to-procyon",
+ "kind": "circuit",
+ "title": "Stored verdigris curd carried from central_nexus to procyon_colonial_station and sold into its bid at 315 cr or more",
+ "note": "2026-11-21 23:55 UTC (Mercury, orders.log ENT-059 block MERCURY: buyers further out, every division's surplus sold; rule F24). No home station bids for verdigris curd (books of 23:4x UTC); 1,149 curd lie in our storages beyond the reserve, almost all Military's, in lots of 25 to 37 a pilot. Procyon Colonial Station (9 jumps, 4 lawless) bids 330 x 50, the bid twelve more stations show (books of 22:4x to 23:4x UTC). Floor 315: Central Nexus asks curd at 313 x 50, so a sale at 330 is above what it costs to buy at home. requires.stored sends only a pilot whose own storage at the start holds 25 units; requires.bid closes the route while the buyer's book shows the bid under 315 cr or under 25 units. Nothing is bought. Open to every division's ships (each sells its own stores) and to the trader named receiver at the start once strict classes are on (queue.log ENT-201). A test: one ship.",
+ "max_ships": 1,
+ "requires": {
+  "stored": {
+   "at": "central_nexus",
+   "item": "verdigris_curd",
+   "min": 25
+  },
+  "bid": {
+   "item": "verdigris_curd",
+   "base": "procyon_colonial_station",
+   "min_price": 315,
+   "min_qty": 25
+  }
+ },
+ "stops": [
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "verdigris_curd",
+     "qty": 65
+    }
+   ]
+  },
+  {
+   "at": "procyon:procyon_colonial_station:procyon_colonial_station",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "verdigris_curd"
+    }
+   ],
+   "sell": [
+    {
+     "item": "verdigris_curd",
+     "min_price": 315
+    }
+   ]
+  },
+  {
+   "at": "procyon:procyon_colonial_station:procyon_colonial_station",
+   "store": "all"
+  }
+ ]
+}

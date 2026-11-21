@@ -1,0 +1,51 @@
+{
+ "id": "carry-lead-nexus-to-grand-exchange",
+ "kind": "circuit",
+ "title": "Stored lead ore carried from central_nexus to grand_exchange_station and sold into its bid at 200 cr or more",
+ "note": "2026-11-21 23:55 UTC (Mercury, orders.log ENT-059 block MERCURY: buyers further out, every division's surplus sold; rule F24). No home station bids for lead ore above 5 cr (books of 23:4x UTC); 1,380 lead ore lie in our storages beyond the reserve (stock view=surplus), in lots of 25 to 117 a pilot. Grand Exchange Station at Haven (21 jumps, 14 lawless) bids 240 x 752 (book of 22:4x UTC; 1,650 at 20:47 UTC, so others sell into it too); Confederacy Central Command at Sol bids 40 x 163,332 (read from afar 23:5x UTC). Floor 200: Central Nexus asks lead ore at 250 x 136, so 240 is a fair price for ore that sells at home for 1 to 5. requires.stored sends only a pilot whose own storage at the start holds 30 units; requires.bid closes the route while the buyer's book shows the bid under 200 cr or under 30 units. Nothing is bought. Open to every division's ships (each sells its own stores) and to the trader named receiver at the start once strict classes are on (queue.log ENT-201). A test: one ship.",
+ "max_ships": 1,
+ "requires": {
+  "stored": {
+   "at": "central_nexus",
+   "item": "lead_ore",
+   "min": 30
+  },
+  "bid": {
+   "item": "lead_ore",
+   "base": "grand_exchange_station",
+   "min_price": 200,
+   "min_qty": 30
+  }
+ },
+ "stops": [
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "lead_ore",
+     "qty": 65
+    }
+   ]
+  },
+  {
+   "at": "haven:grand_exchange:grand_exchange_station",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "lead_ore"
+    }
+   ],
+   "sell": [
+    {
+     "item": "lead_ore",
+     "min_price": 200
+    }
+   ]
+  },
+  {
+   "at": "haven:grand_exchange:grand_exchange_station",
+   "store": "all"
+  }
+ ]
+}
