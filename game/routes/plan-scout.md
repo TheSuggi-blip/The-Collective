@@ -87,3 +87,4 @@ Planned:
 | Read every system of the three roads again after the pause (census-north 31, census-east 17, census-south 19) and name the site candidates on the fresh reads: north Atria and Yildun with the pirate record of the choke point, east Oakridge and its neighbours | next turn |
 | Read the 39 systems of census-worked-far every three hours (WORKED line of the intel check PASS), and move every new place where another division flies onto it | every turn |
 | Uranium after the pause: read the depleted deposits (Acubens, Markeb, Node Gamma, Nova Terra) for regrowth and name any source to Mining | next turn |
+| Read the first rows of census.py's books from afar (view_market base_id): how many foreign books a turn keeps under an hour | next turn |

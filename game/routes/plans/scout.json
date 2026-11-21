@@ -68,6 +68,10 @@
   {
    "what": "Uranium after the pause: read the depleted deposits (Acubens, Markeb, Node Gamma, Nova Terra) for regrowth and name any source to Mining",
    "when": "next turn"
+  },
+  {
+   "what": "Read the first rows of census.py's books from afar (view_market base_id): how many foreign books a turn keeps under an hour",
+   "when": "next turn"
   }
  ],
  "ships": {
