@@ -2,7 +2,7 @@
  "id": "mine-cryogenic-reserve",
  "kind": "mine",
  "title": "Cryogenic Reserve: water_ice, nitrogen_ice, oxygen_ice; sold at Synchrony Hub",
- "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 2575 cr per ship-hour, not a measurement. A test: one ship. Estimate of 2026-11-15 23:10 UTC from: {\"a_load\": [\"water_ice 32 of 32 units for 1097 cr (depth at the best price)\"], \"field\": \"nexus_prime:cryogenic_reserve\", \"jumps\": 2, \"left\": {\"nitrogen_ice\": 813, \"oxygen_ice\": 476, \"water_ice\": 809}, \"richness\": {\"nitrogen_ice\": 60, \"oxygen_ice\": 11, \"water_ice\": 70}, \"sold_at\": \"synchrony_hub\"}. Uncertain: needs the module ice_harvester_i (base value 1000 cr), not the mining laser; the rate is measured with the laser on ore. In no plan: its Admiral adds it. 2026-11-16 08:24 UTC, Zero: station synchrony_hub -> central_nexus: the field lies in Nexus Prime, Central Nexus is the station there (0 jumps) and holds the one deep water-ice bid (44,100 units in all levels at 08:17 UTC); Synchrony bid 0 for water ice from 04:13 UTC. Its two losing runs ended \"not docked for the sale\" before the dock fix of 04:47 UTC. 2026-11-16 12:11 UTC, Zero: requires.bid water ice at central_nexus, 25 cr for 300 units at the best price (orders.log ENT-014 (a)): the route closes while a book read within the hour shows less, and opens when one shows it back. 2026-11-21 19:49 UTC (Zero): requires.bid min_qty 300 -> 3000: miners store about 18,500 water ice (stock_hour 18:00 UTC) and the drains and carries sell stored ice first; the Central Nexus bid read 28 cr x 371 at 19:48 UTC, so new ice is mined only on a deep order.",
+ "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 2575 cr per ship-hour, not a measurement. A test: one ship. Estimate of 2026-11-15 23:10 UTC from: {\"a_load\": [\"water_ice 32 of 32 units for 1097 cr (depth at the best price)\"], \"field\": \"nexus_prime:cryogenic_reserve\", \"jumps\": 2, \"left\": {\"nitrogen_ice\": 813, \"oxygen_ice\": 476, \"water_ice\": 809}, \"richness\": {\"nitrogen_ice\": 60, \"oxygen_ice\": 11, \"water_ice\": 70}, \"sold_at\": \"synchrony_hub\"}. Uncertain: needs the module ice_harvester_i (base value 1000 cr), not the mining laser; the rate is measured with the laser on ore. In no plan: its Admiral adds it. 2026-11-16 08:24 UTC, Zero: station synchrony_hub -> central_nexus: the field lies in Nexus Prime, Central Nexus is the station there (0 jumps) and holds the one deep water-ice bid (44,100 units in all levels at 08:17 UTC); Synchrony bid 0 for water ice from 04:13 UTC. Its two losing runs ended \"not docked for the sale\" before the dock fix of 04:47 UTC. 2026-11-16 12:11 UTC, Zero: requires.bid water ice at central_nexus, 25 cr for 300 units at the best price (orders.log ENT-014 (a)): the route closes while a book read within the hour shows less, and opens when one shows it back. 2026-11-21 19:49 UTC (Zero): requires.bid min_qty 300 -> 3000: miners store about 18,500 water ice (stock_hour 18:00 UTC) and the drains and carries sell stored ice first; the Central Nexus bid read 28 cr x 371 at 19:48 UTC, so new ice is mined only on a deep order. 2026-11-21 23:17 UTC (Zero): `gift` to the trader Trade names for this station, of the goods this route sells (water_ice), for the strict classes (queue.log ENT-200, Suggi's D244): with data/fleet/strict-classes-on the run hands them over instead of selling; off, nothing changes.",
  "belt": "nexus_prime:cryogenic_reserve",
  "station": "nexus_prime:the_core:central_nexus",
  "minutes": 46,
@@ -30,5 +30,11 @@
   "cph_per_ship": 5650,
   "hours": 12,
   "last_run": "2026-11-21T20:25:43Z"
+ },
+ "gift": {
+  "to": "trader",
+  "items": [
+   "water_ice"
+  ]
  }
 }

@@ -2,7 +2,7 @@
  "id": "mine-dheneb-cryobelt",
  "kind": "mine",
  "title": "Dheneb Cryobelt: water_ice, nitrogen_ice, helium_ice, methane_ice; sold at Hex Star",
- "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 728 cr per ship-hour, not a measurement. A test: one ship. Added as a test by fill.py on 2026-11-17 11:14 UTC (Zero): one ship until its first RESULT line is read. 2026-11-17 15:06 UTC (Zero): the test held: 4 runs, 960 cr per ship-hour over 12 hours, methane sold at Hex Star (36 cr x 916 at 14:55 UTC, 20 to 27 units a run). max_ships 1 -> 2.",
+ "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 728 cr per ship-hour, not a measurement. A test: one ship. Added as a test by fill.py on 2026-11-17 11:14 UTC (Zero): one ship until its first RESULT line is read. 2026-11-17 15:06 UTC (Zero): the test held: 4 runs, 960 cr per ship-hour over 12 hours, methane sold at Hex Star (36 cr x 916 at 14:55 UTC, 20 to 27 units a run). max_ships 1 -> 2. 2026-11-21 23:17 UTC (Zero): `gift` to the trader Trade names for this station, of the goods this route sells (methane_ice), for the strict classes (queue.log ENT-200, Suggi's D244): with data/fleet/strict-classes-on the run hands them over instead of selling; off, nothing changes.",
  "belt": "dheneb:dheneb_cryobelt",
  "station": "dheneb:98eba8b1a7ad0520d6a7c8ea44b2d6aa:b495c6003fc83e18f6d8cecbe6929133",
  "minutes": 39,
@@ -25,5 +25,11 @@
   "cph_per_ship": 690,
   "hours": 12,
   "last_run": "2026-11-21T22:06:07Z"
+ },
+ "gift": {
+  "to": "trader",
+  "items": [
+   "methane_ice"
+  ]
  }
 }
