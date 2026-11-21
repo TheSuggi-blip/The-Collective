@@ -16,7 +16,7 @@ means to do next. What a route earns now is not written here, because it changes
 hour: ask the tool `route` or `routes`, or the database (`hive.py sql`), which carry each
 figure with its age. Up: [master-index.md](master-index.md).
 
-Kept by Apophis. Routes: 149. Ships: 50.
+Kept by Apophis. Routes: 148. Ships: 50.
 
 | # | Route | Group | Zone | Open to | Ships planned |
 |---|---|---|---|---|---|
@@ -167,8 +167,7 @@ Kept by Apophis. Routes: 149. Ships: 50.
 | 145 | [craft-steel-military-synchrony-hub](craft-steel-military-synchrony-hub.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 6 ships, with 100 iron_ore stored at synchrony_hub, standing work | all 50 |
 | 146 | [craft-steel-military-central-nexus](craft-steel-military-central-nexus.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 6 ships, with 100 iron_ore stored at central_nexus, standing work | all 50 |
 | 147 | [craft-piping-node-beta](craft-piping-node-beta.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 14 ships, with 300 iron_ore stored at node_beta_industrial_station, 180 copper_ore stored at node_beta_industrial_station, standing work | all 50 |
-| 148 | [census-frontier](census-frontier.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 7 jumps | up to 12 ships, empty hold | all 50 |
-| 149 | [park](park.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | the park route | all 50 |
+| 148 | [park](park.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | the park route | all 50 |
 
 Templates its ships fly (a ship's own routes name one as `@<name>`):
 

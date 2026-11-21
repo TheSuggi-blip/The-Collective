@@ -28,7 +28,6 @@
   "voidborn-first-hunt-gsc",
   "supply-bunker-gsc-0044",
   "buy-flex-ironlight-to-node-beta",
-  "mine-grumium-belt",
   "craft-boards-node-beta",
   "sell-hydrogen-at-node-beta",
   "sell-hydrogen-at-node-gamma",
@@ -47,16 +46,11 @@
   "sell-liquid-hydrogen-central",
   "sell-liquid-hydrogen-node-beta",
   "carry-liquid-hydrogen-node-beta-central",
-  "mine-achernar-gas-pocket",
-  "mine-lesath-gas-cloud",
-  "mine-amberfall-emission-nebula",
   "craft-steel-logistics-experiment",
   "craft-steel-logistics-node-beta",
   "craft-steel-logistics-synchrony-hub",
   "craft-steel-logistics-central-nexus",
   "craft-piping-plate-node-beta",
-  "gather-glasslight-shoal-silicon",
-  "census-frontier",
   "park"
  ],
  "planned": [
@@ -111,7 +105,6 @@
   "voidborn-first-hunt-gsc": 40,
   "supply-bunker-gsc-0044": 3,
   "buy-flex-ironlight-to-node-beta": 5,
-  "mine-grumium-belt": 1,
   "craft-boards-node-beta": 1,
   "sell-hydrogen-at-node-beta": 40,
   "sell-hydrogen-at-node-gamma": 40,
@@ -130,24 +123,17 @@
   "sell-liquid-hydrogen-central": 40,
   "sell-liquid-hydrogen-node-beta": 40,
   "carry-liquid-hydrogen-node-beta-central": 40,
-  "mine-achernar-gas-pocket": 4,
-  "mine-lesath-gas-cloud": 4,
-  "mine-amberfall-emission-nebula": 4,
   "craft-steel-logistics-experiment": 40,
   "craft-steel-logistics-node-beta": 40,
   "craft-steel-logistics-synchrony-hub": 40,
   "craft-steel-logistics-central-nexus": 40,
   "craft-piping-plate-node-beta": 40,
-  "gather-glasslight-shoal-silicon": 40,
-  "census-frontier": 40,
   "park": 40
  },
  "of": 40,
  "derived": "Written by game/fleet/plan.py from the division's plan file (data/plans/plan-logistics.md), never by hand.",
  "templates": {
   "stored-goods": 40,
-  "craft-reserve": 40,
-  "gather-reserve": 40,
-  "gas-harvest": 4
+  "craft-reserve": 40
  }
 }

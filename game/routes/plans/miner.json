@@ -74,7 +74,6 @@
   "gather-ruchbah-broken-glass-veil",
   "gather-schedar-belt",
   "mine-acubens",
-  "census-frontier",
   "park"
  ],
  "planned": [
@@ -171,7 +170,6 @@
   "gather-ruchbah-broken-glass-veil": 60,
   "gather-schedar-belt": 60,
   "mine-acubens": 60,
-  "census-frontier": 60,
   "park": 60
  },
  "of": 60,

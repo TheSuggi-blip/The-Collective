@@ -16,7 +16,7 @@ means to do next. What a route earns now is not written here, because it changes
 hour: ask the tool `route` or `routes`, or the database (`hive.py sql`), which carry each
 figure with its age. Up: [master-index.md](master-index.md).
 
-Kept by Zero. Routes: 73. Ships: 60.
+Kept by Zero. Routes: 72. Ships: 60.
 
 | # | Route | Group | Zone | Open to | Ships planned |
 |---|---|---|---|---|---|
@@ -91,8 +91,7 @@ Kept by Zero. Routes: 73. Ships: 60.
 | 69 | [gather-ruchbah-broken-glass-veil](gather-ruchbah-broken-glass-veil.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 4 jumps | up to 6 ships, needs mining_laser_i, empty hold, standing work | all 60 |
 | 70 | [gather-schedar-belt](gather-schedar-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 2 jumps | up to 45 ships, needs mining_laser_i, empty hold, standing work | all 60 |
 | 71 | [mine-acubens](mine-acubens.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 18 ships, needs mining_laser_i, standing work | all 60 |
-| 72 | [census-frontier](census-frontier.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 7 jumps | up to 12 ships, empty hold | all 60 |
-| 73 | [park](park.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | the park route | all 60 |
+| 72 | [park](park.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | the park route | all 60 |
 
 Templates its ships fly (a ship's own routes name one as `@<name>`):
 

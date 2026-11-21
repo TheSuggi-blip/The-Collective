@@ -150,7 +150,6 @@
   "craft-steel-military-synchrony-hub",
   "craft-steel-military-central-nexus",
   "craft-piping-node-beta",
-  "census-frontier",
   "park"
  ],
  "planned": [
@@ -323,7 +322,6 @@
   "craft-steel-military-synchrony-hub": 50,
   "craft-steel-military-central-nexus": 50,
   "craft-piping-node-beta": 50,
-  "census-frontier": 50,
   "park": 50
  },
  "of": 50,
