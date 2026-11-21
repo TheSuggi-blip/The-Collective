@@ -1,0 +1,19 @@
+{
+ "id": "go-ironlight-trader",
+ "kind": "circuit",
+ "once": true,
+ "title": "One trader docks at Ironlight Crossroads with an empty hold, for the freighter test: a Prayer (540 cargo, speed 3) bought there by hand",
+ "note": "2026-11-21 19:59 UTC (Mercury, rule F17: a new hull is tried on one ship first; MISSION: the trader climbs to the freighter hulls). browse_ships (all stations, can_fly, read through a docked trader at 19:55 UTC): ten Prayers listed at Ironlight Crossroads (LHS 1140, 6 jumps, lawless) at 5,000 cr each; a tier-1 hull asks no Piloting. The route only brings one pilot there (once, max_pilots 1); the purchase is one call by hand and the Threshold stays stored at Ironlight.",
+ "max_ships": 1,
+ "max_pilots": 1,
+ "min_credits": 20000,
+ "requires": {
+  "empty_hold": true
+ },
+ "stops": [
+  {
+   "at": "lhs_1140:0321b3e4406021575337b7be26e53dd7:784309214f105860a16a0c100a70eb14",
+   "store": "all"
+  }
+ ]
+}

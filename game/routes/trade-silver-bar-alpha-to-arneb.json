@@ -1,0 +1,43 @@
+{
+ "id": "trade-silver-bar-alpha-to-arneb",
+ "kind": "circuit",
+ "title": "Silver bars bought at Node Alpha for 420 cr or less, sold into the Obsidian Well's bid at Arneb at 480 or more: a trade test beyond the border",
+ "note": "2026-11-21 19:59 UTC (Mercury, orders.log ENT-056 block MERCURY: trade beyond our borders). Node Alpha asks silver bar 414 x 50 (book of 19:36 UTC), the first such ask in our books; The Obsidian Well, a player station at Arneb (16 jumps, lawless), bids 501 x 44,527 (book of 19:52 UTC), the bid it showed on 2026-11-17 (table market_hour). About 83 cr a unit before the station's market fee, 50 units, about 4,150 cr a load against about 30 jumps of fuel. No pirate on record in any system of the road (data/intel/sightings.jsonl, scripts/map.py route node_alpha arneb). A test: one ship, one pilot (max_pilots 1), an empty hold out of home; the buy and the sale carry price limits; what the bid leaves is stored at Arneb. Whether Node Alpha's ask comes back is the second question: two runs at a loss rest the route.",
+ "max_ships": 1,
+ "max_pilots": 1,
+ "min_credits": 30000,
+ "requires": {
+  "empty_hold": true,
+  "bid": {
+   "item": "silver_bar",
+   "base": "cca9e51e6eaf8dada77f698ccc4a09c7",
+   "min_price": 480,
+   "min_qty": 50
+  }
+ },
+ "stops": [
+  {
+   "at": "node_alpha:node_alpha_processing_station:node_alpha_processing_station",
+   "buy": [
+    {
+     "item": "silver_bar",
+     "qty": 50,
+     "max_price": 420
+    }
+   ]
+  },
+  {
+   "at": "arneb:a356fc2c1744c0425cf6cf47f48def92:cca9e51e6eaf8dada77f698ccc4a09c7",
+   "sell": [
+    {
+     "item": "silver_bar",
+     "min_price": 480
+    }
+   ]
+  },
+  {
+   "at": "arneb:a356fc2c1744c0425cf6cf47f48def92:cca9e51e6eaf8dada77f698ccc4a09c7",
+   "store": "all"
+  }
+ ]
+}

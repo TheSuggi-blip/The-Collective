@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 38.
+Routes: 39.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -37,6 +37,7 @@ Routes: 38.
 | [voidborn-signal-protocol](voidborn-signal-protocol.json) | circuit | home space | The Signal Protocol: 3,500 cr once, the voidborn mastery line after The Collective Provides; docks at Node Beta and Node Gamma, handed in at Central Nexus | once per pilot, up to 20 ships, after the reward The Collective Provides | 51 | 14 | 3,400 | one-time | 2026-11-17 |
 | [voidborn-substrate](voidborn-substrate.json) | circuit | home space | Substrate Delivery: two neural soma bought at Central Nexus, the mission taken at Node Alpha and handed in at Central Nexus; 2 jumps | once per pilot, from 3,000 cr | 221 | 8 | 2,020 | one-time | 2026-11-16 |
 | [buy-flex-ironlight-to-node-beta](buy-flex-ironlight-to-node-beta.json) | circuit | beyond the border, 6 jumps | Flex polymer for the Recruitment Center: 57 bought at Ironlight Crossroads (LHS 1140, lawless, six jumps) and put into the faction's storage at Node Beta, where the upgrade takes its materials; members of the faction only | once per pilot, up to 2 ships, 5 pilots in all, empty hold, from 15,000 cr | 3 | 17 | -7,030 | one-time | 2026-11-18 |
+| [go-ironlight-trader](go-ironlight-trader.json) | circuit | beyond the border, 6 jumps | One trader docks at Ironlight Crossroads with an empty hold, for the freighter test: a Prayer (540 cargo, speed 3) bought there by hand | once per pilot, up to 1 ships, 1 pilots in all, empty hold, from 20,000 cr | TBD | TBD | TBD | TBD | -- |
 | [mission-cracking-the-shell-achernar](mission-cracking-the-shell-achernar.json) | circuit | beyond the border, 4 jumps | Cracking the Shell: 1,500 cr once; three pressblisters at Achernar Frost Ring (lawless), accepted and handed in at Central Nexus | once per pilot, up to 1 ships, empty hold, after the reward First Hunt: Belt-Grazers | 19 | 20 | -330 | one-time | 2026-11-16 |
 | [mission-cracking-the-shell-central](mission-cracking-the-shell-central.json) | circuit | beyond the border, 4 jumps | Cracking the Shell: 1,500 cr once; three pressblisters at GSC-0041 Frost Ring (lawless, 4 jumps), accepted and handed in at Central Nexus | once per pilot, up to 1 ships, empty hold, after the reward First Hunt: Belt-Grazers | 47 | 14 | 60 | one-time | 2026-11-17 |
 | [mission-deep-core-prospecting-first-step](mission-deep-core-prospecting-first-step.json) | circuit | beyond the border, 19 jumps | Deep Core Prospecting: 5,000 cr, 10 exotic matter and deep core mining XP; 20 platinum ore mined at Deep Range Mineral Fields, accepted and handed in at First Step Memorial Station | once per pilot, up to 2 ships, 12 pilots in all, empty hold | 5 | 65 | 2,650 | one-time | 2026-11-18 |

@@ -1,0 +1,56 @@
+{
+ "id": "carry-hydrogen-beta-to-crucible",
+ "kind": "circuit",
+ "title": "Stored hydrogen carried from Node Beta to The Crucible Garrison's bid at 33 cr or more, with heat sinks bought at Node Beta for its heat sink bid: a test beyond the border",
+ "note": "2026-11-21 19:59 UTC (Mercury, orders.log ENT-056 block MERCURY: sell every division's surplus, trade beyond our borders). No home station bids for hydrogen (books of 19:36 to 19:52 UTC) while traders store 4,438 at Node Beta; The Crucible Garrison (Crimson, 18 jumps, 13 lawless systems on the road, no pirate on record) bids hydrogen 37 x 184 and heat sink 193 x 24 (book of 19:46 UTC); Node Beta asks heat sink 147 x 427. A Threshold carries 41 hydrogen and 24 heat sinks (65): about 1,500 cr of hydrogen and 1,080 cr of heat sink margin a load against about 36 jumps of fuel. One ship; requires.bid closes it when a book read within the hour shows the hydrogen bid gone; what the bids leave is stored at The Crucible.",
+ "max_ships": 1,
+ "requires": {
+  "stored": {
+   "at": "node_beta_industrial_station",
+   "item": "hydrogen_gas",
+   "min": 41
+  },
+  "bid": {
+   "item": "hydrogen_gas",
+   "base": "the_crucible_garrison",
+   "min_price": 33,
+   "min_qty": 20
+  }
+ },
+ "stops": [
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "hydrogen_gas",
+     "qty": 41
+    }
+   ],
+   "buy": [
+    {
+     "item": "heat_sink",
+     "qty": 24,
+     "max_price": 152
+    }
+   ]
+  },
+  {
+   "at": "the_crucible:the_crucible_garrison:the_crucible_garrison",
+   "sell": [
+    {
+     "item": "hydrogen_gas",
+     "min_price": 33
+    },
+    {
+     "item": "heat_sink",
+     "min_price": 185
+    }
+   ]
+  },
+  {
+   "at": "the_crucible:the_crucible_garrison:the_crucible_garrison",
+   "store": "all"
+  }
+ ]
+}
