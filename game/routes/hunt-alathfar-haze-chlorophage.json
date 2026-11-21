@@ -2,13 +2,13 @@
  "id": "hunt-alathfar-haze-chlorophage",
  "kind": "hunt",
  "title": "chlorophage at alathfar_haze; loot sold at Hex Star",
- "note": "Written by routemaker.py from the herd's count, the loot of 18 runs of ours and the order book; an estimate of 6938 cr per hunter-hour, not a measurement. A test: one ship, the ranching rules kept. Added as a test by fill.py on 2026-11-17 10:08 UTC (Unity): one ship until its first RESULT line is read.",
+ "note": "Written by routemaker.py from the herd's count, the loot of 18 runs of ours and the order book; an estimate of 6938 cr per hunter-hour, not a measurement. A test: one ship, the ranching rules kept. Added as a test by fill.py on 2026-11-17 10:08 UTC (Unity): one ship until its first RESULT line is read. 2026-11-21 19:56 UTC (Apophis): min_bid 1688 -> 5000, its loot holds caustic_sac, held back or short in the reserve (reserve_hunts.py FLAG, rule F24): stored, not sold.",
  "place": "alathfar:alathfar_haze",
  "species": [
   "chlorophage"
  ],
  "sell_at": "dheneb:98eba8b1a7ad0520d6a7c8ea44b2d6aa:b495c6003fc83e18f6d8cecbe6929133",
- "min_bid": 1688,
+ "min_bid": 5000,
  "kills": 4,
  "minutes": 74,
  "max_ships": 1,
