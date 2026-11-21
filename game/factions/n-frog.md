@@ -15,7 +15,7 @@ updated: 2026-11-21
 # Leap Frog Freight [FROG]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 4.
+Pilots of it in our space in the last 24 hours: 3.
 
 ## Identity
 
@@ -38,8 +38,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Alder Burrowes | Synchrony (`synchrony`) | not on record | theoria |
-| Anne Marie | The Experiment (`the_experiment`) | 0 | theoria |
+| Clover Quickstep | Synchrony (`synchrony`) | not on record | cobble |
 | Hob Meadowsweet | Node Gamma (`node_gamma`) | not on record | not met |
 | Mossy Thistlewick | Nexus Prime (`nexus_prime`) | not on record | not met |
 

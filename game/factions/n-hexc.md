@@ -51,9 +51,9 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
 | Elara Orris | Hamal (`hamal`) | 0 | lithosphere |
-| HexCraft2 | The Experiment (`the_experiment`) | 0 | syndicate |
-| HexTitan | Node Beta (`node_beta`) | 0 | lithosphere |
+| HexBot7 | Node Alpha (`node_alpha`) | 0 | not met |
 | Olthoi | The Experiment (`the_experiment`) | 0 | cryogenic_survey |
+| Zhou | The Experiment (`the_experiment`) | 0 | pithead |
 
 ## Standing History
 
