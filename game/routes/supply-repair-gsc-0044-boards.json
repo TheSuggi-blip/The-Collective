@@ -2,9 +2,7 @@
  "id": "supply-repair-gsc-0044-boards",
  "kind": "circuit",
  "title": "Circuit boards for the repair of our outpost CLTV Outpost GSC-0044: 60 boards of the pilot's own storage at Node Beta put into the faction's storage at the outpost; members of the faction only",
- "note": "Written by Apollo, 2026-11-21 20:15 UTC, beside supply-repair-gsc-0044-plate (its note says why): the two damaged facilities ask about 45 circuit boards at 30% of their build materials (bunker 100, Lockbox 50 in the catalog); one hauler stores 480 boards at Node Beta (table holdings, 19:52 UTC), so `requires.stored` 60 there sends only that pilot. One load, `once` with `max_pilots` 1; what the repairs leave stays in the faction's storage at the outpost for its next build.",
- "once": true,
- "max_pilots": 1,
+ "note": "Written by Apollo, 2026-11-21 20:15 UTC, beside supply-repair-gsc-0044-plate (its note says why): the two damaged facilities ask about 45 circuit boards at 30% of their build materials (bunker 100, Lockbox 50 in the catalog); one hauler stores 480 boards at Node Beta (table holdings, 19:52 UTC), so `requires.stored` 60 there sends only that pilot. One load, `once` with `max_pilots` 1; what the repairs leave stays in the faction's storage at the outpost for its next build. 2026-11-22 00:00 UTC, Apollo: the outpost's repair stock, kept by itself (the game's base-builder guide, read 2026-11-21: a wrecked station starts every cycle the repairs its stores can pay for). Facilities ready again (faction_owned, 23:48 UTC); the bill of a wreck is 30% of the build: 180 steel plate and 45 circuit boards. Open while the faction store at the outpost reads under 45 boards (requires.reserve; 15 at 23:49 UTC); 30 a run; once and max_pilots out.",
  "max_ships": 1,
  "standing": true,
  "min_credits": 5000,
@@ -12,7 +10,13 @@
   "stored": {
    "at": "node_beta_industrial_station",
    "item": "circuit_board",
-   "min": 60
+   "min": 30
+  },
+  "reserve": {
+   "base": "443f0c5b2a1fbbcea95d13b76a797fe9",
+   "item": "circuit_board",
+   "below": 45,
+   "max_age_minutes": 60
   }
  },
  "stops": [
@@ -22,7 +26,7 @@
    "withdraw": [
     {
      "item": "circuit_board",
-     "qty": 60
+     "qty": 30
     }
    ]
   },
