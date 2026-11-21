@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 136.
+Routes: 140.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -75,6 +75,7 @@ Routes: 136.
 | [hunt-gsc-0021-ice-fields-hollow-pilgrim](hunt-gsc-0021-ice-fields-hollow-pilgrim.json) | hunt | beyond the border, 9 jumps | hollow_pilgrim at gsc_0021_ice_fields; loot sold at Sirius Observatory Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-gsc-0034-gas-plume-drift-ray](hunt-gsc-0034-gas-plume-drift-ray.json) | hunt | beyond the border, 16 jumps | drift_ray at gsc_0034_gas_plume; loot sold at The Obsidian Well | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-gsc-0045-gas-pocket-cinder-sylph](hunt-gsc-0045-gas-pocket-cinder-sylph.json) | hunt | beyond the border, 20 jumps | cinder_sylph at gsc_0045_gas_pocket; loot sold at War Citadel | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
+| [hunt-hollow-light-veil-ray](hunt-hollow-light-veil-ray.json) | hunt | beyond the border, 18 jumps | veil_ray at hollow_light; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-horizon-phase-drift-veil-ray](hunt-horizon-phase-drift-veil-ray.json) | hunt | beyond the border, 18 jumps | veil_ray at horizon_phase_drift; loot sold at First Step Memorial Station | up to 1 ships | TBD | TBD | TBD | TBD | -- |
 | [hunt-ironpeak-weak-superposition-veil-ray](hunt-ironpeak-weak-superposition-veil-ray.json) | hunt | beyond the border, 20 jumps | veil_ray at ironpeak_weak_superposition; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-lanternwick-frozen-drift-hollow-pilgrim](hunt-lanternwick-frozen-drift-hollow-pilgrim.json) | hunt | beyond the border, 18 jumps | hollow_pilgrim at lanternwick_frozen_drift; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
@@ -98,6 +99,7 @@ Routes: 136.
 | [hunt-seginus-haze-cinder-sylph](hunt-seginus-haze-cinder-sylph.json) | hunt | beyond the border, 20 jumps | cinder_sylph at seginus_haze; loot sold at The Levy Customs Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-sheliak-weak-superposition-veil-ray](hunt-sheliak-weak-superposition-veil-ray.json) | hunt | beyond the border, 18 jumps | veil_ray at sheliak_weak_superposition; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-silverpine-gas-plume-cinder-sylph](hunt-silverpine-gas-plume-cinder-sylph.json) | hunt | beyond the border, 24 jumps | cinder_sylph at silverpine_gas_plume; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
+| [hunt-starless-drift-veil-ray](hunt-starless-drift-veil-ray.json) | hunt | beyond the border, 22 jumps | veil_ray at starless_drift; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-stillwater-emission-nebula-drift-ray](hunt-stillwater-emission-nebula-drift-ray.json) | hunt | beyond the border, 19 jumps | drift_ray at stillwater_emission_nebula; loot sold at The Obsidian Well | up to 1 ships | TBD | TBD | TBD | TBD | -- |
 | [hunt-sunbeam-dust-veil-ray](hunt-sunbeam-dust-veil-ray.json) | hunt | beyond the border, 18 jumps | veil_ray at sunbeam_dust; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-superposition-pocket-veil-ray](hunt-superposition-pocket-veil-ray.json) | hunt | beyond the border, 18 jumps | veil_ray at superposition_pocket; loot sold at First Step Memorial Station | up to 1 ships | TBD | TBD | TBD | TBD | -- |
@@ -110,6 +112,8 @@ Routes: 136.
 | [hunt-test-gsc-0050-cinder-sylph](hunt-test-gsc-0050-cinder-sylph.json) | hunt | beyond the border, 3 jumps | Cinder-sylphs at gsc_0050_gas_plume (lawless); ember glands sold at Node Beta | up to 1 ships, without piercing_railgun_i, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-test-nightveil-rivetshell](hunt-test-nightveil-rivetshell.json) | hunt | beyond the border, 5 jumps | Yield test: rivetshell at nightveil_dark_residue (lawless); what a kill drops and whether a bid takes it | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-test-stormwatch-lantern-slug](hunt-test-stormwatch-lantern-slug.json) | hunt | beyond the border, 5 jumps | Yield test: lantern_slug at stormwatch_belt (lawless); what a kill drops and whether a bid takes it | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
+| [hunt-the-dim-lantern-veil-ray](hunt-the-dim-lantern-veil-ray.json) | hunt | beyond the border, 29 jumps | veil_ray at the_dim_lantern; loot sold at Treasure Cache Trading Post | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
+| [hunt-the-quiet-shimmer-veil-ray](hunt-the-quiet-shimmer-veil-ray.json) | hunt | beyond the border, 18 jumps | veil_ray at the_quiet_shimmer; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-the-telescope-entangled-drift-veil-ray](hunt-the-telescope-entangled-drift-veil-ray.json) | hunt | beyond the border, 18 jumps | veil_ray at the_telescope_entangled_drift; loot sold at First Step Memorial Station | up to 1 ships | TBD | TBD | TBD | TBD | -- |
 | [hunt-the-telescope-flicker-field-veil-ray](hunt-the-telescope-flicker-field-veil-ray.json) | hunt | beyond the border, 18 jumps | veil_ray at the_telescope_flicker_field; loot sold at First Step Memorial Station | up to 1 ships | TBD | TBD | TBD | TBD | -- |
 | [hunt-thin-breath-haze-veil-ray](hunt-thin-breath-haze-veil-ray.json) | hunt | beyond the border, 18 jumps | veil_ray at thin_breath_haze; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
