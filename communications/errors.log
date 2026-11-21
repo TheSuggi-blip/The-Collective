@@ -444,3 +444,11 @@ Cause: I took max_pilots 1 for a limit on runs; it limits pilots, and max_ships 
 Fixed: the route is status off since 20:26 UTC (its note says why); the same check removed the heat sink buys of the two Crucible carries, where two ships carry 24 heat sinks each to a bid of 24.
 Gate: a buy-and-sell route needs a field that closes it while the buy end has no ask (requires.ask, asked of Unity in requests.log); until then a one-load gap gets once with max_pilots 1, or a hand run.
 Cost: the empty second leg's fuel, not measured yet.
+
+## [ENT-114] | 2026-11-21 20:31 UTC | Apophis | error | ref: game/fleet/dispatch.py | see: orders.log ENT-056
+Class: a hand hold taken as a run ends is overwritten by a runner the dispatcher had already decided on (two programs on one pilot, rulebook 8.3).
+Case: 2026-11-21, a weapon test by hand (skill script fit_test.py): a drone was taken at 20:06:15 UTC; a hunt runner started on it at 20:06:21 UTC (table runs) and wrote its order over the hold; the next hunt was sent at 20:10:12 UTC, two seconds after my uninstall_mod of its Pulse Laser I, so install_mod of the new Pulse Laser III answered not_docked (20:11:38 UTC) and the drone flew a hunt with no weapon. The same happened to one of three drones of a group test at 20:26 to 20:28 UTC (its order file was gone and another goal ran on it).
+Effect: one drone flew about 30 minutes with no weapon; the game refused every attack with no_weapons and it took no damage. Three group tries on a bulwark were stopped before any fight (20:05, 20:25 and 20:29 UTC), every hold released. No ship lost.
+Cause: the dispatcher decides on a pilot from a reading taken before my take and starts the runner seconds later; the runner writes its order without reading the file again, and removes it at its end.
+Fix, done in my skill scripts: fit_test.py waits one dispatcher pass after a take and keeps the pilot only while its order file still holds my hand mark, and docks again right before install_mod; group_hunt.py waits one pass with the whole group and fights only when every hold still stands; a rescue fits the weapon the drone carries when its run ends. The fix at the root, a runner that refuses a fresh hand hold, is asked of the Fleet Admiral (requests.log ENT-289).
+Would it have prevented this one: the wait and re-read, yes; the root fix, for every member's holds.
