@@ -55,3 +55,66 @@ the same station. Booked as money paid once (`gate.book_onetime`).
   Node Alpha (gathered iron makes a plate for about 10 cr).
 - The view `fleet`, view=supply, prints per reserve good the gathered cost
   against the best ask: read it before any stock buy.
+
+### Reading order books
+Status: proven. Updated: 2026-11-21. Evidence: errors.log ENT-016, ENT-028; the skill trade-books (its pitfalls, moved here on queue.log ENT-189).
+
+- A total is not a depth: `buy_quantity` and `sell_quantity` add every
+  price level; the units at the best price are `best_buy_qty` and
+  `best_sell_qty`. `view_market` at the station lists every level
+  (focused crystal "1,466 for 879" was 1 unit, 2026-11-15).
+- `best_buy` is the bid, `best_sell` the ask. A copy is not a read:
+  `held.py` counts reads by `read_at`.
+- A thin ask can vanish between reads (water ice 125, 83, then none in
+  14 minutes); after a game update every book is read again (v0.721.1 put
+  new bids into every station at once).
+- A floor in a file goes stale as the deep ask moves: set it each turn
+  beside `sellgen.py scan`.
+- A far book read days ago is a guess; the ship that docks reads it again.
+- `view_orders` answers for the station where the pilot is docked.
+- Tax: 1% rounded down on every buy at our stations; none at Ironlight
+  Crossroads; a player station adds its market fee. A rule needs two
+  readings that could tell its explanations apart: "no tax on a station's
+  ask" came from one 52 cr buy, where rounding explains it too.
+
+### Routes, plans and the clone
+Status: proven. Updated: 2026-11-21. Evidence: errors.log ENT-035, ENT-039, ENT-106; requests.log ENT-148, ENT-216; the skill trade-books.
+
+- A file in the clone is live before it is committed, and the hourly
+  measure pass commits a modified route under its own name: draft in
+  scratch, then copy, `routes.py check`, `routes.py index` and commit by
+  explicit paths in one shell call; never a directory pathspec.
+- `fill.py` and `plan.py` refuse while a file under game/routes is
+  modified and not committed, another member's too.
+- `max_ships` limits ships at one time, not runs: a gap one load closes
+  is flown once (a route with `once` and `max_pilots` 1, or by hand).
+- No `lift_to` on a route that has not flown: the filler lifts it at once.
+- A time in a note is the clock's: `{NOW}` and `stamp.py`.
+- A once route without the accept serves only holders; a chain is sized
+  on its scarcest input; a mining mission is bounded by its field.
+- A ship that waits where the plan says it flies: open its log in
+  data/routes/logs the same turn (a crashed runner writes no row).
+- Each turn the reserve first: a target met between turns kept 27 traders
+  gathering for two hours (errors.log ENT-106).
+- Read the plan file's `## ` headings once a turn.
+
+### Money, calls and the runner
+Status: proven. Updated: 2026-11-21. Evidence: errors.log ENT-047, ENT-066, ENT-067, ENT-090, ENT-107; requests.log ENT-176; the skill trade-books.
+
+- `buy` never refuses: it fills as far as the wallet reaches (a trader
+  left at 298 cr); `stockbuy.py` cuts the units to keep 3,000 cr.
+- `gate.py raw` cuts its answer at 3,000 characters unless `FULL=1`.
+- The engine's goals can answer 409 for minutes while raw calls work:
+  move a held ship by `jump`, `travel`, `dock`.
+- The weekly tax lands in the runs in flight; read them without it.
+- An acquire-module mission counts a module bought after the accept.
+- A craft is all or nothing: ask it in halving sizes. The runner's
+  `sell` takes the best level only.
+- Held back is not surplus: `reservecheck.py` decides, not the books.
+- A carry needs a load in one pilot's storage: read the per-pilot spread.
+- A mine test the filler offers can rest on a bid our stores already fill.
+- The watcher rebases unpushed commits: cite a hash only after the push
+  (`refs.py`).
+- `wallet.py topup --dry-run` before a spend that nears the floor.
+- A listed ship is bought docked at its station (`buy_listed_ship`,
+  spacemolt_ship); the old ship stays stored there.
