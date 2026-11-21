@@ -68,6 +68,10 @@
   {
    "what": "Atria: the kit route switched on and the founding by found.py --treasury-ok at Atria Belt, once the builder's wallet holds the 150,150 cr allocation and GSC-0044 runs by itself",
    "when": "on the allocation"
+  },
+  {
+   "what": "train-jumps-hauler: max_ships weighed each turn against the fleet's 24-hour steady net; haulers leave it at each loop's end for any paying or reserve route that opens in their rows",
+   "when": "every turn"
   }
  ],
  "ships": {
