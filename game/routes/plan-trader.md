@@ -88,3 +88,4 @@ Planned:
 |---|---|
 | Read the first RESULT lines of the four tests beyond the border (silver bars to Arneb, hydrogen and heat sinks to The Crucible, the freighter's bulk carry): what each far bid took, its regain, the fuel of the road; lift a test only on its own runs | next turn |
 | The freighter step: if the Prayer's first carry pays its fuel, one Prayer (5,000 cr, Ironlight Crossroads) for each trader that has a load worth its road, inside rule F12, with the Fleet Admiral's answer to requests.log ENT-286 | after the first freighter RESULT |
+| Read every sell floor beside its cheapest deep ask (sellgen.py scan) and the home bids that read 0 after the pause (null matter, hydrogen, palladium); run reservecheck.py and oncecheck.py; read Neural Matrix Delivery's runs at 4 ships | every turn |
