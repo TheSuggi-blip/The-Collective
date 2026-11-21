@@ -2,13 +2,13 @@
  "id": "voidborn-crystal-resonance",
  "kind": "circuit",
  "title": "Crystal Resonance Harvest: 4,000 cr once, Voidborn Mastery 35 and mining 45 XP; 20 energy crystal mined at Prism Scatter, accepted and handed in at Central Nexus",
- "note": "Signal Master Threx on the Central Nexus board (data/missions/central_nexus.json, read 2026-11-17 23:12 UTC, a pilot that holds The Collective Provides): mine 20 energy crystal; 4,000 cr, voidborn_mastery 35, mining 45, piloting 20 XP (rules F34, F35; 68 pilots hold The Collective Provides, none this link). Prism Scatter (GSC-0027, 2 jumps from Nexus Prime) read 86 energy crystal of 105 at richness 4 beside 18,990 iron and 61,867 copper (table fields, 22:44 UTC); a crystal is a rare pull there, so the loop may fill the hold with iron and copper several times: what fills the hold goes into storage at Central Nexus. min_left keeps one mission's crystals in the field. A test with one ship (rule F12): crystals a load, minutes to 20. Written 2026-11-17 23:16 UTC (Zero).",
+ "note": "Signal Master Threx on the Central Nexus board (data/missions/central_nexus.json, read 2026-11-17 23:12 UTC, a pilot that holds The Collective Provides): mine 20 energy crystal; 4,000 cr, voidborn_mastery 35, mining 45, piloting 20 XP (rules F34, F35; 68 pilots hold The Collective Provides, none this link). Prism Scatter (GSC-0027, 2 jumps from Nexus Prime) read 86 energy crystal of 105 at richness 4 beside 18,990 iron and 61,867 copper (table fields, 22:44 UTC); a crystal is a rare pull there, so the loop may fill the hold with iron and copper several times: what fills the hold goes into storage at Central Nexus. min_left keeps one mission's crystals in the field. A test with one ship (rule F12): crystals a load, minutes to 20. Written 2026-11-17 23:16 UTC (Zero). 2026-11-21 19:38 UTC (fill.py, Zero): max_ships 1 -> 4.",
  "once": true,
  "requires": {
   "booked": "The Collective Provides",
   "empty_hold": true
  },
- "max_ships": 1,
+ "max_ships": 4,
  "max_pilots": 1,
  "one_time": [
   "Crystal Resonance Harvest"
