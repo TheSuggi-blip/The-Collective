@@ -24,8 +24,8 @@
    "routes": [
     "census-watch-gsc-0044",
     "census-worked",
-    "census-worked-far",
     "census-frontier",
+    "census-worked-far",
     "census-north",
     "census-east",
     "census-south",
@@ -37,7 +37,7 @@
     "piloting",
     "scanning"
    ],
-   "note": "Fit: the starter Threshold, empty hold. The home census stands in the list First for every scout. 2026-11-21: census-worked-far third, the places beyond the roads where the other divisions fly now (WORKED line of the intel check)."
+   "note": "Fit: the starter Threshold, empty hold. The home census stands in the list First for every scout. 2026-11-21 23:36 UTC: census-frontier before census-worked-far (the frontier lies near home, a read there takes about 17 minutes against 27 far out; it stood 30 minutes over its cadence), and the explorers now go to their far lists before census-worked-far."
   }
  }
 }
