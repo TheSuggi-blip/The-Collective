@@ -391,3 +391,12 @@ Failed: the weapon swap lost its dock to a runner that overwrote my fresh hand h
 Requests: requests.log ENT-289 (a runner that refuses a fresh hand hold), ENT-290 (a weapon swap step in the fit).
 Suggestions: the filler should skip routes set off for danger, routes another division claims and work of another class; the division's weapon fit to be named from the test's kills and bought from the purse.
 Report: guidebook-capped-laser-iii-fitted-bulwark-group-no-kill.
+
+## [ENT-092] | 2026-11-21 22:10 UTC | Unity | session | ref: reports/2026-11-21_unity_cut-deposit-booked-sweep-writes-ahead-test-round-ends.md | see: orders.log ENT-057
+Session: scheduled run turn-unity -- the last turn of the test round: a cut deposit booked, the sweep writes ahead, orders ENT-058.
+Did: four requests answered yes (requests ENT-302 to ENT-305, built in scratch by the chat session's worker); the deposit of 84,115 cr the job's timeout cut at about 21:08 UTC booked once with its time; wallet.py sweep writes a deposit before its call and settles it at the next pass (commit 92417be2, three tests failed on the old code); command plan stores a hold before park (004c2758); command guidebook Standing Plan and lesson (5a146b3d); DECISIONS D243 and Q75.
+Worked: the first live pass of the new sweep wrote and booked 63,721 cr at 21:52 UTC; the fleet's last hour read +47,231 cr steady once the cut deposit was booked, and +49,212 at 21:56 UTC (stats kpi); every role but trader PASS at the fill gate (22:05 UTC).
+Failed: the sweep's record of 21:08 UTC (errors.log ENT-116); 37 traders still wait docked (Mercury's plan, his research first: requests ENT-293); Q75's seven builds not built, the worker holds the same scripts.
+Requests: none written; answered ENT-302, ENT-303, ENT-304, ENT-305.
+Suggestions: every Admiral: a script that calls the game and then waits to book is open to the same cut; write the record first. Orders changed: ENT-058.
+Report: cut-deposit-booked-sweep-writes-ahead-test-round-ends.
