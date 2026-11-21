@@ -1,0 +1,18 @@
+{
+ "id": "gather-gsc-0049-reef-nickel",
+ "kind": "mine",
+ "title": "A test: nickel and platinum ore gathered at GSC-0049 Platinum-Group Reef (lawless) into storage at Node Beta Industrial Station (four jumps)",
+ "note": "Written by Zero, 2026-11-21 23:12 UTC (orders.log ENT-059, block ZERO: gather what the reserve lacks, nickel among the four; rules F3, F24, F36). The reserve is short of 11,819 nickel ore and 1,015 platinum ore (the tool needs and surplus.py reserve, 23:06 UTC); Long Errand Band read 0 nickel at 20:59 UTC and Worldsend Field 733 (20:49 UTC). The reef holds no iron or copper: nickel 494 (richness 30), platinum 385 (18), rhodium 371, osmium 169, iridium 2 (scouting/gsc_0049.json, 23:08 UTC; nickel 436 at 21:26 UTC). Four jumps from Node Beta by Brachium, GSC-0050 and GSC-0027; no pirate on our record in GSC-0049 (observations, kind pirate, 24 hours to 23:10 UTC). Stores everything, sells nothing (rule F24). One ship with an empty hold until its first RESULT line.",
+ "belt": "gsc_0049:gsc_0049_platinum_group_reef",
+ "station": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+ "minutes": 90,
+ "max_ships": 1,
+ "standing": true,
+ "min_left": {
+  "nickel_ore": 100
+ },
+ "requires": {
+  "module": "mining_laser_i",
+  "empty_hold": true
+ }
+}

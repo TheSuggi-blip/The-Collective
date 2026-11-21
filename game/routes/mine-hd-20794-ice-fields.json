@@ -1,0 +1,20 @@
+{
+ "id": "mine-hd-20794-ice-fields",
+ "kind": "mine",
+ "title": "HD 20794 Ice Fields: water_ice, nitrogen_ice, carbon_dioxide_ice; sold at The Anvil Arsenal",
+ "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 2321 cr per ship-hour, not a measurement. A test: one ship. 2026-11-21 23:12 UTC (Zero): taken as a one-ship test by orders.log ENT-059, block ZERO (what buyers pay for, beyond our systems; rules F3, F22). The Anvil Arsenal (Crimson, 20 jumps from home) bids water ice 42 cr, 60 units an hour (routemaker.py, 23:01 UTC); three candidates sell into it, so one ship only. The field was read 2026-11-17 16:42 UTC (41,810 water ice): a guess until this run reads it. Our stored water ice lies at home stations, not there. Hold empty on the way out (rule F3).",
+ "belt": "hd_20794:hd_20794_ice_fields",
+ "station": "the_anvil:the_anvil_arsenal:the_anvil_arsenal",
+ "minutes": 46,
+ "max_ships": 1,
+ "sell": [
+  {
+   "item": "water_ice",
+   "min_price": 34
+  }
+ ],
+ "requires": {
+  "module": "ice_harvester_i",
+  "empty_hold": true
+ }
+}

@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 129.
+Routes: 131.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -137,9 +137,11 @@ Routes: 129.
 | [gather-glasslight-shoal-silicon](gather-glasslight-shoal-silicon.json) | mine | beyond the border, 10 jumps | A test: silicon ore gathered at Glasslight Shoal (Clearwater, lawless) into storage at Node Beta for the faction's circuit boards | up to 1 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [gather-goldcrest-gold](gather-goldcrest-gold.json) | mine | beyond the border, 7 jumps | A test: gold ore gathered at The Gold Crest (Goldcrest, lawless) into storage at Synchrony Hub (five jumps) | up to 6 ships, needs mining_laser_i, empty hold, standing work | 13 | 90 | -750 | -510 | 2026-11-21 |
 | [gather-gsc-0044-belt-faction](gather-gsc-0044-belt-faction.json) | mine | beyond the border, 6 jumps | A test: ore gathered at GSC-0044 Belt into the faction's storage at our outpost CLTV Outpost GSC-0044 (same system); members of the faction only | up to 10 ships, needs mining_laser_i, empty hold, standing work | 30 | 47 | 0 | 0 | 2026-11-21 |
+| [gather-gsc-0049-reef-nickel](gather-gsc-0049-reef-nickel.json) | mine | beyond the border, 5 jumps | A test: nickel and platinum ore gathered at GSC-0049 Platinum-Group Reef (lawless) into storage at Node Beta Industrial Station (four jumps) | up to 1 ships, needs mining_laser_i, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [gather-ironhollow-echo-ejecta](gather-ironhollow-echo-ejecta.json) | mine | beyond the border, 4 jumps | Standing work, a test: iron at Ironhollow Echo Ejecta (beyond the border) into storage at The Experiment | up to 35 ships, needs mining_laser_i, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [gather-ironhollow-fading-signal](gather-ironhollow-fading-signal.json) | mine | beyond the border, 4 jumps | Standing work, a test: iron at Ironhollow Fading Signal (beyond the border) into storage at The Experiment | up to 20 ships, needs mining_laser_i, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [gather-jadecove-nickel](gather-jadecove-nickel.json) | mine | beyond the border, 11 jumps | A test: nickel ore gathered at Long Errand Band (Jadecove, lawless) into storage at The Crescent Moon (Mebsuta, four jumps) | up to 3 ships, needs mining_laser_i, empty hold, standing work | 9 | 36 | -20 | -20 | 2026-11-21 |
+| [gather-jishui-plainrock-carbon](gather-jishui-plainrock-carbon.json) | mine | beyond the border, 11 jumps | A test: carbon ore gathered at Plainrock Field (Jishui, lawless) into storage at The Crescent Moon (Mebsuta, eight jumps) | up to 1 ships, needs mining_laser_i, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [gather-okab-belt](gather-okab-belt.json) | mine | beyond the border, 4 jumps | Standing work, a test: iron and copper ore at Okab Belt (beyond the border, one jump past Hamal) into storage at Node Beta, where the craft-piping route makes them into steel plate and copper piping | up to 42 ships, needs mining_laser_i, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [gather-ruchbah-broken-glass-veil](gather-ruchbah-broken-glass-veil.json) | mine | beyond the border, 4 jumps | Standing work, a test: iron at Ruchbah Broken Glass Veil (beyond the border, one jump from The Experiment) into storage at The Experiment | up to 6 ships, needs mining_laser_i, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [gather-schedar-belt](gather-schedar-belt.json) | mine | beyond the border, 2 jumps | Standing work, a test: iron at Schedar Belt (beyond the border, one jump from Node Beta) into storage at Node Beta | up to 45 ships, needs mining_laser_i, empty hold, standing work | TBD | TBD | TBD | TBD | -- |

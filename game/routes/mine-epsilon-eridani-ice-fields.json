@@ -1,0 +1,20 @@
+{
+ "id": "mine-epsilon-eridani-ice-fields",
+ "kind": "mine",
+ "title": "Epsilon Eridani Ice Fields: water_ice, nitrogen_ice; sold at Sirius Observatory Station",
+ "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 2938 cr per ship-hour, not a measurement. A test: one ship. 2026-11-21 23:12 UTC (Zero): taken as a one-ship test by orders.log ENT-059, block ZERO (what buyers pay for, beyond our systems; rules F3, F22). Sirius Observatory Station (Solarian, 9 jumps from home) bids water ice 34 cr, 36 units at its best price, about 92 an hour (routemaker.py, 23:01 UTC, 46 books read 21:49 to 23:04 UTC); five candidates sell into this one bid, so one ship only. The field was read 2026-11-17 16:33 UTC (40,380 water ice): a guess until this run reads it. Our stored water ice lies at home stations, not at Sirius, so this sells nothing the stores could. Hold empty on the way out (rule F3).",
+ "belt": "epsilon_eridani:epsilon_eridani_ice_fields",
+ "station": "sirius:sirius_observatory_station:sirius_observatory_station",
+ "minutes": 47,
+ "max_ships": 1,
+ "sell": [
+  {
+   "item": "water_ice",
+   "min_price": 28
+  }
+ ],
+ "requires": {
+  "module": "ice_harvester_i",
+  "empty_hold": true
+ }
+}
