@@ -53,7 +53,7 @@ Named lists of routes a ship's own routes in its division's plan file name as `@
 |---|---|---|---|
 | command | Unity | ice-and-hunt | [templates-command.md](templates-command.md) |
 | intel | Oracle | explorer, reader | [templates-intel.md](templates-intel.md) |
-| logistics | Apollo | stored-goods, craft-reserve | [templates-logistics.md](templates-logistics.md) |
+| logistics | Apollo | stored-goods, craft-reserve, outpost-supply | [templates-logistics.md](templates-logistics.md) |
 | military | Apophis | hunter, guard | [templates-military.md](templates-military.md) |
 | mining | Zero | ice-sell, reserve-prism, reserve-hamal | [templates-mining.md](templates-mining.md) |
 | trade | Mercury | trade-sell, trade-craft, trade-train-nav | [templates-trade.md](templates-trade.md) |

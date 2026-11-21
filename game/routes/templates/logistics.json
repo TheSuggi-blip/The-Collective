@@ -43,6 +43,19 @@
     "refining"
    ],
    "note": "2026-11-18: the reserve's iron is met, 31,440 plate still to make; piping nearly met (1,168 to make), so the piping route holds 2 ships"
+  },
+  "outpost-supply": {
+   "title": "What our outpost GSC-0044 takes: repair materials while its facilities are damaged, then fuel cells into its bunker while the reserve gate reads it under its floor; faction members only",
+   "routes": [
+    "supply-repair-gsc-0044-boards",
+    "supply-repair-gsc-0044-plate",
+    "supply-bunker-gsc-0044"
+   ],
+   "trains": [
+    "navigation",
+    "piloting"
+   ],
+   "note": "2026-11-21 20:20 UTC: the bunker and the Lockbox read damaged after the pause (faction_owned); the two repair routes are budgets (once, max_pilots), the bunker route opens under requires.reserve once the Fleet Admiral switches the gate on"
   }
  }
 }
