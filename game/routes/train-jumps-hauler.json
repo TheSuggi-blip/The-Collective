@@ -2,9 +2,9 @@
  "id": "train-jumps-hauler",
  "kind": "circuit",
  "title": "Piloting and navigation for haulers without hauling or crafting open: five jumps through our own stations, nothing bought, the hold stored at the end",
- "note": "Written by Apollo, 2026-11-21 20:20 UTC (orders.log ENT-056, P1: every ship on work of its own class, none idle; rule F8; rule F23: training is shared work; requests.log ENT-271: docked and waiting is never the plan). The haulers' hauls at home are few after the pause (30 of 40 waited at 19:49 UTC: every stored-goods route closed on its bid, every steel route on the iron its pilot stores). Piloting 10 opens the Voidborn freighter Apophenia (cargo 240 against 65): the hauler's next hull (guidebook logistics, card). The same loop as Trade's train-navigation-trader (-165 cr a loop of about 18 minutes, about 4 navigation XP a jump, 2026-11-16); each dock also reads the station's order book for every division. Standing work, the last before park: a cost of fuel, not judged on its pay; any paying or reserve work ahead of it in a row takes the ship first. Its Admiral weighs max_ships against the fleet's steady net each turn.",
+ "note": "Written by Apollo, 2026-11-21 20:20 UTC (orders.log ENT-056, P1: every ship on work of its own class, none idle; rule F8; rule F23: training is shared work; requests.log ENT-271: docked and waiting is never the plan). The haulers' hauls at home are few after the pause (30 of 40 waited at 19:49 UTC: every stored-goods route closed on its bid, every steel route on the iron its pilot stores). Piloting 10 opens the Voidborn freighter Apophenia (cargo 240 against 65): the hauler's next hull (guidebook logistics, card). The same loop as Trade's train-navigation-trader (-165 cr a loop of about 18 minutes, about 4 navigation XP a jump, 2026-11-16); each dock also reads the station's order book for every division. Standing work, the last before park: a cost of fuel, not judged on its pay; any paying or reserve work ahead of it in a row takes the ship first. Its Admiral weighs max_ships against the fleet's steady net each turn. 2026-11-21 20:19 UTC (fill.py, Apollo): max_ships 20 -> 32.",
  "standing": true,
- "max_ships": 20,
+ "max_ships": 32,
  "min_credits": 5000,
  "requires": {
   "skills_below": {
