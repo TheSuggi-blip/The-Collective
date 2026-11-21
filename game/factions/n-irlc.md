@@ -15,7 +15,7 @@ updated: 2026-11-21
 # Ironlight Combine [IRLC]
 
 A player faction with 8 base(s) in 5 system(s); the nearest to Nexus Prime is 6 jump(s) away, in LHS 1140 (`lhs_1140`).
-Pilots of it in our space in the last 24 hours: 17.
+Pilots of it in our space in the last 24 hours: 16.
 
 ## Identity
 
@@ -38,7 +38,7 @@ Pilots of it in our space in the last 24 hours: 17.
 | Ironlight Ferrous Range | outpost | Goldcrest (`goldcrest`) | lawless | 7 | thriving |
 | Ironlight Verdigris Range | outpost | Goldcrest (`goldcrest`) | lawless | 7 | thriving |
 | Civitas | station | GSC-0026 (`gsc_0026`) | lawless | 22 | thriving, mobile |
-| Ironlight Refuge | station | GSC-0026 (`gsc_0026`) | lawless | 22 | operational |
+| Ironlight Refuge | station | GSC-0026 (`gsc_0026`) | lawless | 22 | thriving |
 | Ironlight Glint Reef | outpost | Silverpine (`silverpine`) | lawless | 24 | thriving |
 
 ## Pilots in Our Space
@@ -48,16 +48,15 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
 | ILC Chute | Synchrony (`synchrony`) | 0 | junk_convoy |
-| ILC Cope | Synchrony (`synchrony`) | 0 | frankenhauler |
 | ILC Flange | Synchrony (`synchrony`) | 0 | syndicate |
 | ILC Gantry | Synchrony (`synchrony`) | 0 | syndicate |
 | ILC Gasket | Synchrony (`synchrony`) | 0 | syndicate |
 | ILC Gateway | Nexus Prime (`nexus_prime`) | 0 | concordia |
+| ILC Geode | Synchrony (`synchrony`) | 0 | paydirt |
 | ILC Gilt | Synchrony (`synchrony`) | 0 | syndicate |
 | ILC Ladle | Synchrony (`synchrony`) | 0 | syndicate |
 | ILC Mallet | Synchrony (`synchrony`) | 0 | syndicate |
 | ILC Nonstop | Nexus Prime (`nexus_prime`) | 0 | concordia |
-| ILC Penalty | Synchrony (`synchrony`) | 0 | syndicate |
 | ILC Ratchet | Synchrony (`synchrony`) | 0 | syndicate |
 | ILC Retort | Synchrony (`synchrony`) | 0 | syndicate |
 | ILC Shank | Synchrony (`synchrony`) | 1 | syndicate |

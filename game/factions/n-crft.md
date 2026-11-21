@@ -15,7 +15,7 @@ updated: 2026-11-21
 # Crafting Collective [CRFT]
 
 A player faction with 2 base(s) in 2 system(s); the nearest to Nexus Prime is 19 jump(s) away, in Cloverfield (`cloverfield`).
-Pilots of it in our space in the last 24 hours: 1.
+Pilots of it in our space in the last 24 hours: 2.
 
 ## Identity
 
@@ -42,6 +42,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
 | Nova 'Navigator' Nash | Nexus Prime (`nexus_prime`) | 0 | survey_vessel |
+| u_mother_trucker_108 | Nexus Prime (`nexus_prime`) | 0 | congregation |
 
 ## Standing History
 
