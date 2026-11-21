@@ -84,10 +84,4 @@ Planned:
 
 | What | When |
 |---|---|
-| Read every system of the three roads again after the pause (census-north 31, census-east 17, census-south 19) and name the site candidates on the fresh reads: north Atria and Yildun with the pirate record of the choke point, east Oakridge and its neighbours | next turn |
-| Read the 39 systems of census-worked-far every three hours (WORKED line of the intel check PASS), and move every new place where another division flies onto it | every turn |
-| Uranium after the pause: read the depleted deposits (Acubens, Markeb, Node Gamma, Nova Terra) for regrowth and name any source to Mining | next turn |
-| Read the first rows of census.py's books from afar (view_market base_id): how many foreign books a turn keeps under an hour | next turn |
-| A probe step in census.py (use_item mining_survey_probe, then survey_system) tested with one scanner scout at Homam | when the census holds |
-| Keep every Voidborn system read within the hour (census-voidborn every 30 min, 4 ships) and GSC-0044 with its neighbours (census-watch-gsc-0044, 35 min, 4) | every turn |
-| Strategic Readiness Assessment (Crimson War Citadel, exploration, 4,000 cr, 250 exploration XP): one scout once no pirate stands within six hours on its road (a Sable pack of 20 at Minkar and Sargas, 2026-11-21 20:11 to 20:17 UTC) | next turn |
+| One tier-1 hull (Qualia, speed 3 against 1) bought by one reader, census only; its minutes per run against the Threshold's decide a hull for the class next turn | -- |
