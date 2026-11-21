@@ -24,6 +24,8 @@ RULES:
   - Two programs never drive one pilot: a pilot that carries a fresh order
     file (data/fleet/orders/<pilot>.json) of a runner is left alone. A
     member's own hand hold (`hand <Member>`, written by gate.py) is its own.
+    A runner the dispatcher started (a service shell with FLEET_HOLD) is
+    refused over a fresh hand hold: the pilot stays held (requests ENT-289).
   - It is a lock on our own scripts, not a wall: the engine's gate asks no
     name. A member that calls the gate around these scripts breaks order F1.
 WHY:  five Admirals command through one gate from one working copy. The
@@ -115,6 +117,13 @@ def order_of(pilot, data=DATA, now=None):
         return ""
 
 
+def hand_hold(pilot, data=DATA, now=None):
+    """The hand mark of the pilot's order file (`hand <Member>`, written by gate.py) while that file is fresh (younger
+    than ORDER_FRESH), else '': a pilot taken by hand that no runner may write over (requests ENT-289)."""
+    what = order_of(pilot, data, now)
+    return what if what.startswith("hand ") else ""
+
+
 def hand_mark(env=None):
     kind, name = member(env)
     return "hand " + name if kind else ""
@@ -126,6 +135,10 @@ def may(pilot, data=DATA, env=None, now=None):
     if kind is None:
         return False, "this shell is no member of The Collective and no service (HERMES_SESSION_PROFILE and HERMES_HOME name no member, FLEET_MEMBER is not set): it drives no ship"
     if kind == "service":
+        held, run = hand_hold(pilot, data, now), str((os.environ if env is None else env).get("FLEET_HOLD") or "")
+        if held and run and not run.startswith("hand "):     # requests ENT-289: a runner never starts over a fresh hand hold
+            return False, ("%s is held by hand (`%s`): the run `%s` does not start, and the pilot stays held until the hold ends "
+                           "(release, or %d minutes after its last command)" % (pilot, held, run, ORDER_FRESH // 60))
         return True, "service %s" % name
     own = owner(pilot, data)
     if name != "Unity" and own != name:

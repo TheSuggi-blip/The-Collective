@@ -30,6 +30,15 @@ RULES:
     contact log says who wrote, when and how much. Public chat that names
     us is filed with its text.
   - A contact log is written by this script only, never by hand.
+  - A run without --commit writes nothing into the repository: it prints
+    what a run with --commit would write, or writes the logs into a folder
+    outside it (--out). A failed commit takes its files out again, another
+    git's lock of the clone waited out; a log it still could not take out
+    the next run with --commit commits as its own (a file of another hand
+    stops it), and the service tries again within a minute. Requests
+    ENT-288: on 2026-11-21 19:53 UTC a member's commit held the lock, the
+    reset after the failed commit failed on it too, and the log left
+    modified stopped every member's fleet-build.sh install.
 WHY:  other factions fly through our space. What they say to us must not be
       lost in 146 inboxes nobody opens, and every exchange with a faction
       has to be on record in one place.
@@ -40,7 +49,11 @@ USAGE:
   inbox.py show [--to-us] [--channel private|system|local|faction] [--last N]
                                     the newest messages (default 20), oldest first
   inbox.py new                      the messages to us not reported yet, and mark them reported
-  inbox.py contacts [--commit]      write communications/contacts/<tag>.log from the messages to us
+  inbox.py contacts [--out <dir>]   what a run with --commit would write, printed; with --out the logs written into
+                                    <dir>, a folder outside the repository. Nothing is written into the repository
+  inbox.py contacts --commit [--dry-run]
+                                    write communications/contacts/<tag>.log from the messages to us and commit exactly
+                                    those files, a log this script left uncommitted among them; --dry-run: what it would do
   --data <dir>                      the unit's data folder (default /srv/collective/data)
   --root <dir>                      the repository (default: the one this script lies in)
 
@@ -69,6 +82,10 @@ PRIVATE_PER_PASS = 6         # pilots whose private messages are read in one pas
 PLACES_PER_PASS = 3          # systems whose chat is read in one pass
 FACTION_EVERY = 10           # the faction channel is read every so many passes
 FILE_EVERY = 15 * 60         # seconds between two commits of the contact logs, at least
+RETRY_EVERY = 60             # seconds to the next try after a commit that could not take its files out again (ENT-288)
+LOCK_TRIES, LOCK_WAIT = 4, 2.0   # a git call that meets another git's index.lock is tried so often, so many seconds apart
+COMMIT_LEFTOVERS = True      # a run with --commit commits a contact log this script left uncommitted; False: it stops there, as before r22
+LEFT = "the next run with --commit commits them"     # the words of a failed commit whose files still differ from the last commit
 SEEN_KEEP = 20000            # message ids remembered
 OUR_WORDS = ("cltv",)        # not "the collective": the empire's stations call the empire that
 OUR_NAMES = re.compile(r"\b(?:miner|trader|hauler|drone|scout|sentinel)-\d{1,3}\b")
@@ -307,33 +324,115 @@ def git(root, *args):
     return done.returncode, done.stdout
 
 
-def file_contacts(data, root, commit):
-    """Write the contact logs into the repository; with commit, one commit of exactly those files. Returns what it did."""
+def git_locked(root, *args):
+    """git(), tried again while another git holds the clone's index.lock: the members commit in the same clone. On
+    2026-11-21 19:53:56 UTC the commit of the contact logs failed on that lock, and so did the reset and the checkout
+    that were to take them out again (requests ENT-288)."""
+    code, out = git(root, *args)
+    for _ in range(LOCK_TRIES - 1):
+        if code == 0 or "index.lock" not in out:
+            break
+        time.sleep(LOCK_WAIT)
+        code, out = git(root, *args)
+    return code, out
+
+
+def uncommitted(root):
+    """The paths below communications/contacts that differ from the last commit (changed, staged or new), one by one;
+    None when git cannot tell."""
+    code, out = git(root, "status", "--porcelain", "--untracked-files=all", "--", "communications/contacts")
+    if code != 0:
+        return None
+    return sorted({line[3:].split(" -> ")[-1].strip().strip('"') for line in out.splitlines() if len(line) > 3})
+
+
+def own_log(root, path):
+    """True for a path of uncommitted() that this script wrote: communications/contacts/<name>.log on disk that opens
+    with the head this script writes (HEAD). A file of another hand, a log taken away or anything else is not its own."""
+    name = path[len("communications/contacts/"):] if path.startswith("communications/contacts/") else ""
+    if not re.match(r"^[a-z0-9-]+[.]log$", name):
+        return False
+    try:
+        lines = (Path(root) / path).read_text(encoding="ascii").splitlines()
+    except (OSError, UnicodeDecodeError):
+        return False
+    return len(lines) > 1 and lines[0].startswith("# Contact log: ") and lines[1] == HEAD.splitlines()[1]
+
+
+def preview(files, changed, folder, root, out):
+    """A run without commit writes nothing into the repository: what a run with commit would write, the new lines of
+    each log; with `out`, the logs written into that folder, which lies outside the repository."""
+    if not changed:
+        return "contact logs: nothing new"
+    if out:
+        target, repo = Path(out).resolve(), Path(root).resolve()
+        if target == repo or repo in target.parents:
+            return "HALT: --out %s lies inside the repository: a run without --commit writes nothing there" % out
+        target.mkdir(parents=True, exist_ok=True)
+        for name in changed:
+            (target / name).write_text(files[name], encoding="ascii")
+        return "contact logs written to %s, not into the repository: %s" % (target, ", ".join(changed))
+    parts = []
+    for name in changed:
+        old, lines = (folder / name).read_text(encoding="ascii", errors="replace").splitlines() if (folder / name).is_file() else [], files[name].splitlines()
+        new = lines[len(old):] if lines[:len(old)] == old else [line for line in lines if line not in set(old)]     # a log grows at its end
+        new = [line for line in new if not line.startswith("# ")]                                                       # the messages, not the head
+        parts.append("communications/contacts/%s: %d new lines%s" % (name, len(new), "".join("\n  + " + line for line in new[-20:])))
+    return "contact logs not written (a run without --commit writes nothing into the repository); --commit would write:\n" + "\n".join(parts)
+
+
+def take_out(root, paths, said):
+    """After a failed commit: every path back as the last commit holds it (a new one removed), another git's lock
+    waited out (git_locked), the text put back without the index while the lock stands; so the clone stays clean. A
+    path that still differs (staged while the lock stood) is named: LEFT, and the service tries again (RETRY_EVERY)."""
+    git_locked(root, "reset", "-q", "--", *paths)
+    for path in paths:
+        if git(root, "cat-file", "-e", "HEAD:" + path)[0] != 0:
+            (Path(root) / path).unlink(missing_ok=True)
+        elif git_locked(root, "checkout", "HEAD", "--", path)[0] != 0:
+            code, text = git(root, "show", "HEAD:" + path)
+            if code == 0:
+                (Path(root) / path).write_text(text, encoding="ascii")
+    found = uncommitted(root)
+    still = list(paths) if found is None else [path for path in found if path in paths]
+    if still:
+        return "HALT: the commit failed and %s still differ from the last commit; %s: %s" % (", ".join(still), LEFT, said.strip()[-200:])
+    return "HALT: the commit failed; the files were taken out again: " + said.strip()[-200:]
+
+
+def file_contacts(data, root, commit, out="", dry_run=False):
+    """The contact logs from the messages to us; returns what it did. Without commit nothing is written into the
+    repository (preview). With commit: the logs into communications/contacts and one commit of exactly those files,
+    any contact log this script left uncommitted before among them (COMMIT_LEFTOVERS); any other change there stops it
+    before anything is written; dry_run says what it would write and commit. A failed commit: take_out."""
     files = contact_files(data)
     folder = Path(root) / "communications" / "contacts"
     changed = [name for name, text in sorted(files.items()) if not (folder / name).is_file() or (folder / name).read_text(encoding="ascii", errors="replace") != text]
-    if not changed:
+    if not commit:
+        return preview(files, changed, folder, root, out)
+    found = uncommitted(root)
+    if found is None:
+        return "HALT: git cannot read %s; nothing written" % root
+    left = [path for path in found if COMMIT_LEFTOVERS and own_log(root, path)]
+    other = [path for path in found if path not in left]
+    if other:
+        return "HALT: communications/contacts holds changes that are not committed%s: %s; nothing written" % (
+            "" if COMMIT_LEFTOVERS else " (COMMIT_LEFTOVERS is off)", ", ".join(other[:5]))
+    paths = sorted(set("communications/contacts/" + name for name in changed) | set(left))
+    if not paths:
         return "contact logs: nothing new"
-    paths = ["communications/contacts/" + name for name in changed]
-    if commit and git(root, "status", "--porcelain", "--", "communications/contacts")[1].strip():
-        return "HALT: communications/contacts holds changes that are not committed; nothing written"
+    if dry_run:
+        return "dry run, nothing written: would write %s and commit %s" % (", ".join(changed) or "nothing", ", ".join(paths))
     folder.mkdir(parents=True, exist_ok=True)
     for name in changed:
         (folder / name).write_text(files[name], encoding="ascii")
-    if not commit:
-        return "contact logs written, not committed: " + ", ".join(paths)
-    git(root, "add", "--", *paths)
-    code, out = git(root, "-c", "user.name=Unity", "-c", "user.email=unity@suggi-workspace.dev", "commit", "-q", "-m",
-                    "contacts: messages of other pilots to us, filed by game/fleet/inbox.py (%s)" % ", ".join(changed), "--", *paths)
-    if code != 0:                                              # take this pass's files out again: the clone stays clean
-        git(root, "reset", "-q", "--", *paths)
-        for path in paths:
-            if git(root, "ls-files", "--error-unmatch", "--", path)[0] == 0:
-                git(root, "checkout", "--", path)
-            else:
-                (Path(root) / path).unlink(missing_ok=True)
-        return "HALT: the commit failed; the files were taken out again: " + out.strip()[-200:]
-    return "contact logs committed: " + ", ".join(paths)
+    git_locked(root, "add", "--", *paths)
+    code, said = git_locked(root, "-c", "user.name=Unity", "-c", "user.email=unity@suggi-workspace.dev", "commit", "-q", "-m",
+                            "contacts: messages of other pilots to us, filed by game/fleet/inbox.py (%s)" % ", ".join(p.rsplit("/", 1)[1] for p in paths),
+                            "--", *paths)
+    if code != 0:
+        return take_out(root, paths, said)
+    return "contact logs committed: " + ", ".join(paths) + ("; %d of them left uncommitted before" % len(left) if left else "")
 
 
 def show_line(row):
@@ -370,7 +469,7 @@ def main():
             write_json(mark, sorted(done | {r.get("id") for r in fresh})[-SEEN_KEEP:])
         return 0
     if verb == "contacts":
-        answer = file_contacts(data, root, "--commit" in args)
+        answer = file_contacts(data, root, "--commit" in args, out=value("--out", ""), dry_run="--dry-run" in args)
         if not answer.endswith("nothing new"):
             print(answer)
         return 1 if answer.startswith("HALT") else 0
@@ -390,7 +489,7 @@ def main():
             if state["unfiled"] and time.time() - state["filed_at"] >= FILE_EVERY and not (Path(data) / "fleet" / "STOP").exists():
                 answer = file_contacts(data, root, True)
                 print(now_text(), answer, flush=True)
-                state["filed_at"], state["unfiled"] = time.time(), answer.startswith("HALT")
+                state["filed_at"], state["unfiled"] = time.time() - (FILE_EVERY - RETRY_EVERY if LEFT in answer else 0), answer.startswith("HALT")
             save_state(data, state)
         except Exception as error:                             # a lost gate or a bad file must not end the service
             print(now_text(), "pass failed: %s: %s" % (type(error).__name__, error), flush=True)

@@ -28,6 +28,10 @@ which pilot flies it, and where a pilot is, stays in the unit's data folder:
                                               into storage and counted there; what was made comes into the hold and
                                               the stop's `sell` runs once more for it. No inputs, a fee that would take
                                               the wallet under FLOOR, or no `makes`: nothing is made, the run goes on
+              "fit":    [{"module": "...", "max_price": N, "replace": "..."}],
+                                              after the craft: a module bought here (max_price with tax; booked as a
+                                              tool bought once) and fitted; `replace`: the module it takes the place
+                                              of, taken out once the new one is aboard and stored here (ENT-290)
               "accept": ["template_id", {"template": "...", "needs": {"item_id": N}}],
                                               needs: accept only with these goods in the hold
               "mine":   [{"at": "system:poi", "for": ["Mission Title"], "minutes": 25}]}, ...]}
@@ -74,6 +78,7 @@ P = urllib.parse.quote(pilot, safe='')
 
 
 TAX = 1.01                   # what a buy costs above its ask at our stations (1 percent, seen 2026-11-15); the wallet is read after every buy
+FIT_REPLACE = True           # requests ENT-290: a `fit` entry with `replace` swaps the module; False: such an entry buys and fits nothing
 
 
 def now():
@@ -429,6 +434,76 @@ def workshop(job, base):
     return made, (None if made >= wanted else f'craft {recipe}: {made} of {wanted} made')
 
 
+PENDING_FIT = []             # (new, old) of a swap whose install was refused at a stop: fitted at the next dock, before its work
+
+
+def modules_now():
+    """The modules fitted now as the engine answers `get_ship` (each with its `type_id` and its instance's `module_id`):
+    the live file lags a command by seconds. refit.py of the skill mining-chains read them so (2026-11-16)."""
+    sc = body(raw('get_ship'))
+    mods = sc.get('modules') or (sc.get('ship') or {}).get('modules') or []
+    return [m for m in mods if isinstance(m, dict)]
+
+
+def install_now(module, system, poi, base):
+    """`install_mod` of a module aboard, read back from the engine: True when it is fitted. An install refused because
+    the ship is no longer docked (a swap by hand lost its dock between its two calls, 2026-11-21, requests ENT-289 and
+    ENT-290) docks at the stop's station again and installs once more, before the pilot leaves."""
+    for attempt in range(2):
+        d = raw('install_mod', {'module_id': module})
+        time.sleep(TICK)
+        if module in [m.get('type_id') or m.get('type') for m in modules_now()]:
+            say(f'fit {module}: fitted')
+            return True
+        said = text(d)[:120].replace('\n', ' / ')
+        say(f'fit {module}: not fitted: {said}')
+        if attempt or 'dock' not in said.lower():
+            return False
+        ok, msg = goal('prepare-at-station', {'systemId': system, 'poiId': poi, 'baseId': base, 'refuel': False})
+        say(f'fit {module}: docked again at {base}: {ok} {msg[:80]}')
+    return False
+
+
+def swap_module(want, system, poi, base):
+    """A `fit` entry with `replace` (requests ENT-290), the new module aboard (bought by the fit step inside max_price):
+    `uninstall_mod` of the old one by its instance id, read back; `install_mod` of the new one (install_now); the old
+    one, which the game puts into the hold (into storage when the hold is full), stored here. A slot the uninstall left
+    full fits nothing. A new one that cannot be fitted puts the old one back; failing that too, both wait for the
+    next dock of the run (PENDING_FIT). Returns the note for the run's row, or None."""
+    new, old = want['module'], want['replace']
+    have = [m for m in modules_now() if (m.get('type_id') or m.get('type')) == old]
+    if have:
+        d = raw('uninstall_mod', {'module_id': have[0].get('module_id') or have[0].get('id') or old})
+        time.sleep(TICK)
+        if any((m.get('type_id') or m.get('type')) == old for m in modules_now()):
+            say(f'fit {new}: uninstall_mod left {old} fitted: {text(d)[:100]}; {new} stays in the hold')
+            return f'{new}: {old} not taken out'
+        say(f'fit {new}: {old} taken out')
+    if not install_now(new, system, poi, base):
+        if cargo().get(old) and install_now(old, system, poi, base):
+            return f'{new}: not fitted, {old} fitted again'
+        PENDING_FIT.append((new, old))
+        return f'{new}: not fitted, {old} out'
+    if cargo().get(old):
+        deposit(old, cargo()[old])
+    return None
+
+
+def fit_pending(system, poi, base):
+    """At a stop just docked: a swap of an earlier stop whose install was refused fits the new module, else the old one
+    back, before the stop's work and before the pilot leaves; the run's row says which (requests ENT-290)."""
+    while PENDING_FIT:
+        new, old = PENDING_FIT.pop(0)
+        if install_now(new, system, poi, base):
+            notes.append(f'{new}: fitted at {base}')
+            if cargo().get(old):
+                deposit(old, cargo()[old])
+        elif cargo().get(old) and install_now(old, system, poi, base):
+            notes.append(f'{new}: not fitted, {old} fitted again at {base}')
+        else:
+            notes.append(f'{new}: not fitted at {base} either')
+
+
 def book_onetime(title, amount):
     with open(ONETIME_FILE + '.lock', 'w') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
@@ -548,6 +623,7 @@ for n, stop in enumerate(ROUTE['stops']):
         notes.append(f'stop {n + 1} not reached')
         break
     reached += 1
+    fit_pending(system, poi, base)                   # requests ENT-290: a swap a stop before could not fit is fitted here first
     hand_in(done, onetime)
     if stop.get('redock'):
         raw('undock')
@@ -632,13 +708,21 @@ for n, stop in enumerate(ROUTE['stops']):
         for want in [s for s in stop.get('sell') or [] if s.get('item') in made]:
             sell_into_bid(want, book)
     for want in stop.get('fit') or []:                   # a module bought here and fitted, one of its kind
+        if want.get('replace') and not FIT_REPLACE:      # requests ENT-290: the swap is switched off; nothing is bought for it
+            say(f'fit {want["module"]}: not fitted, `replace` is switched off (FIT_REPLACE)')
+            notes.append(f'{want["module"]}: replace off')
+            continue
         try:
             live = json.load(open(DATA / 'fleet' / 'ships' / ((re.sub(r'[^A-Za-z0-9_.-]', '_', pilot)[:60] or 'pilot') + '.json'), encoding='utf-8'))
             fitted = [m.get('type') for m in live.get('modules') or [] if isinstance(m, dict)]
         except (OSError, ValueError):
             fitted = []
+        if want.get('replace'):                          # a swap reads the slots from the engine: the live file lags a command
+            fitted = [m.get('type_id') or m.get('type') for m in modules_now()]
         if want['module'] in fitted:
             say(f'fit {want["module"]}: fitted already')
+            if want.get('replace') and cargo().get(want['replace']):     # what an earlier swap took out is still aboard: stored here
+                deposit(want['replace'], cargo()[want['replace']])
             continue
         if not cargo().get(want['module']):
             if credits() - want['max_price'] * 1.01 < FLOOR:
@@ -661,6 +745,11 @@ for n, stop in enumerate(ROUTE['stops']):
                 onetime[0] -= paid
         if not cargo().get(want['module']):
             notes.append(f'{want["module"]}: not bought')
+            continue
+        if want.get('replace'):                          # requests ENT-290: the old one out, the new one in, the old one stored
+            note = swap_module(want, system, poi, base)
+            if note:
+                notes.append(note)
             continue
         d = raw('install_mod', {'module_id': want['module']})
         time.sleep(11)

@@ -252,6 +252,8 @@ def check(root):
                         errors.append(where + "stop %d: the `craft` of %s needs `runs`, a whole number of 1 or more" % (n, job["recipe"]))
                     if not (isinstance(job.get("makes"), str) and job["makes"]):
                         errors.append(where + "stop %d: the `craft` of %s needs `makes`: the runner counts what was made by that item in storage" % (n, job["recipe"]))
+                for want in stop["fit"] if isinstance(stop.get("fit"), list) else []:     # a `replace` of the fit step (requests ENT-290)
+                    errors += [where + "stop %d: " % n + line for line in fit_faults(want)]
         levels = lambda value: isinstance(value, dict) and all(isinstance(v, int) and not isinstance(v, bool) for v in value.values())
         need = route.get("requires") if isinstance(route.get("requires"), dict) else {}
         if need.get("hold") and need.get("empty_hold"):
@@ -260,6 +262,8 @@ def check(root):
             errors.append(where + "`requires.skills_below` must be {skill: level}")
         if "reserve" in need:                          # requests ENT-266: the gate on a faction reserve (reserves.py)
             errors += [where + line for line in reserve_faults(need["reserve"])]
+        if "ask" in need:                              # requests ENT-297: the buy end of a route (dispatch.ask_missing)
+            errors += [where + line for line in ask_faults(need["ask"])]
         floors = [("`min_left`", route.get("min_left"))] + [("stop %d: the `min_left` of a `mine` step" % n, step.get("min_left"))
                                                              for n, stop in enumerate(route.get("stops") or [], 1) if isinstance(stop, dict)
                                                              for step in stop.get("mine") or [] if isinstance(step, dict)]
@@ -324,6 +328,54 @@ def reserve_faults(need):
     """reserves.faults, imported here: reserves.py imports this file to read a run's end."""
     import reserves
     return reserves.faults(need)
+
+
+ASK_FIELDS = ("item", "base", "max_price", "min_qty", "max_age_minutes")
+
+
+def ask_faults(need):
+    """What is wrong with a route's `requires.ask` (dispatch.ask_missing reads it): one {item, base, max_price,
+    min_qty, max_age_minutes} or a list of them; `item` and `base` ids, `max_price` a number above 0, `min_qty` and
+    `max_age_minutes` whole numbers of 1 or more when given (requests ENT-297)."""
+    wants = [need] if isinstance(need, dict) else need if isinstance(need, list) and need else None
+    if wants is None:
+        return ["`requires.ask` must be {item, base, max_price, min_qty, max_age_minutes} or a list of them"]
+    out = []
+    for want in wants:
+        if not isinstance(want, dict):
+            out.append("`requires.ask` holds an entry that is no {item, base, max_price}")
+            continue
+        for key in ("item", "base"):
+            if not (isinstance(want.get(key), str) and want[key]):
+                out.append("`requires.ask` needs `%s`, an id" % key)
+        price = want.get("max_price")
+        if not isinstance(price, (int, float)) or isinstance(price, bool) or price <= 0:
+            out.append("`requires.ask` of %s needs `max_price`, the most a unit may be asked, above 0" % want.get("item"))
+        for key in ("min_qty", "max_age_minutes"):
+            value = want.get(key)
+            if value is not None and (not isinstance(value, int) or isinstance(value, bool) or value < 1):
+                out.append("`requires.ask` of %s: `%s` must be a whole number of 1 or more" % (want.get("item"), key))
+        unknown = sorted(set(want) - set(ASK_FIELDS))
+        if unknown:
+            out.append("`requires.ask` of %s names fields no reader knows: %s" % (want.get("item"), ", ".join(unknown)))
+    return out
+
+
+def fit_faults(want):
+    """What is wrong with a `fit` entry of a circuit stop that swaps a module (`replace`, route_run.py's fit step,
+    requests ENT-290): `module`, a module id; `max_price`, a number above 0; `replace`, the id of the module it takes
+    the place of, other than `module`. An entry without `replace` is read as before r22: not at all."""
+    if not isinstance(want, dict) or "replace" not in want:
+        return []
+    if not (isinstance(want.get("module"), str) and want["module"]):
+        return ["a `fit` entry with `replace` needs `module`, a module id"]
+    out = []
+    price = want.get("max_price")
+    if not isinstance(price, (int, float)) or isinstance(price, bool) or price <= 0:
+        out.append("the `fit` of %s needs `max_price`, the most it may cost with tax, above 0" % want["module"])
+    if "replace" in want and not (isinstance(want["replace"], str) and want["replace"] and want["replace"] != want["module"]):
+        out.append("the `fit` of %s: `replace` names the module it takes the place of, an id other than `module`" % want["module"])
+    return out
 
 
 def current_plan(root, role):
@@ -416,6 +468,7 @@ def open_to(route):
             "from %s" % ", ".join("%s %s" % (k, v) for k, v in sorted(need["skills"].items())) if isinstance(need.get("skills"), dict) and need["skills"] else "",
             "with %s" % ", ".join("%s %s stored at %s" % (w.get("min", 1), w.get("item"), w.get("at")) for w in ([need["stored"]] if isinstance(need["stored"], dict) else need["stored"]) if isinstance(w, dict)) if need.get("stored") else "",
             "while %s" % ", ".join("%s bids %s cr for %s" % (b.get("base"), b.get("min_price", 1), b.get("item")) for b in ([need["bid"]] if isinstance(need["bid"], dict) else need["bid"]) if isinstance(b, dict)) if need.get("bid") else "",
+            "while %s" % ", ".join("%s asks %s cr or less for %s" % (a.get("base"), a.get("max_price"), a.get("item")) for a in ([need["ask"]] if isinstance(need["ask"], dict) else need["ask"]) if isinstance(a, dict)) if isinstance(need.get("ask"), (dict, list)) and need["ask"] else "",
             "under %s" % ", ".join("%s %s" % (k, v) for k, v in sorted(need["skills_below"].items())) if isinstance(need.get("skills_below"), dict) and need["skills_below"] else "",
             "standing work" if standing(route) and not route.get("park") else "",
             route.get("status", "")]

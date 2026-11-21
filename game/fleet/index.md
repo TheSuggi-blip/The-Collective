@@ -430,7 +430,11 @@ inbox.py --once                   one pass over every pilot and every system, th
 inbox.py show [--to-us] [--channel private|system|local|faction] [--last N]
                                   the newest messages (default 20), oldest first
 inbox.py new                      the messages to us not reported yet, and mark them reported
-inbox.py contacts [--commit]      write communications/contacts/<tag>.log from the messages to us
+inbox.py contacts [--out <dir>]   what a run with --commit would write, printed; with --out the logs written into
+                                  <dir>, a folder outside the repository. Nothing is written into the repository
+inbox.py contacts --commit [--dry-run]
+                                  write communications/contacts/<tag>.log from the messages to us and commit exactly
+                                  those files, a log this script left uncommitted among them; --dry-run: what it would do
 --data <dir>                      the unit's data folder (default /srv/collective/data)
 --root <dir>                      the repository (default: the one this script lies in)
 ```

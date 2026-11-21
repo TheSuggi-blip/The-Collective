@@ -35,7 +35,10 @@ RULES:
     last census (younger than 90 minutes) shows fewer than `min_creatures`, and a
     circuit's hunt step that names `min_creatures` is judged the same way; the
     station's book, read within the hour, shows no bid the route names in
-    `requires.bid` (item, base, min_price, min_qty); the pilot's own storage at a
+    `requires.bid` (item, base, min_price, min_qty); the station's book, read
+    within `max_age_minutes` (default 60), shows no ask the route names in
+    `requires.ask` (item, base, max_price, min_qty), or was not read in that
+    time (requests ENT-297); the pilot's own storage at a
     station holds less than `requires.stored` asks (at, item, min), or was not
     read again since the pilot's last run of the route; a once run whose every stop
     was skipped (`every stop skipped`) is no try and the route rests; a
@@ -46,6 +49,9 @@ RULES:
     minutes belongs to no runner (an engine restart, a dead runner): the
     dispatcher stops that loop through the gate and names it in its log.
   - It sends no command to the game itself: the runners do.
+  - Right before it writes a pilot's order it reads the pilot's order file again: a pilot taken during the pass (a
+    hand hold of gate.py) keeps that order, is not started and is named in the pass's lines; it is given work when
+    that order ends. A runner it started refuses to start over a fresh hand hold (division.may). Requests ENT-289.
   - A runner is started as a process of its own, or handed to the run host (game/fleet/runhost.py: one
     program that flies runs as threads, under 1 MB a waiting run where a process holds 13 MB) when
     data/fleet/hosting.json names the route's kind: {"kinds": ["mine", ...], "max_runs": N}. Without that
@@ -396,6 +402,34 @@ def bid_read(data, want, now, fresh=BID_FRESH):
     return int(row.get("best_buy") or 0), int(row.get("best_buy_qty") or 0)
 
 
+ASK_FRESH = 60               # minutes: a book older than this shows no ask (`requires.ask`, its `max_age_minutes`; requests ENT-297)
+
+
+def asks(route):
+    """The asks a route buys from (`requires.ask`: one {item, base, max_price, min_qty, max_age_minutes} or a list of them)."""
+    need = (route.get("requires") or {}).get("ask")
+    return [need] if isinstance(need, dict) else [a for a in need or [] if isinstance(a, dict)] if isinstance(need, list) else []
+
+
+def ask_missing(data, route, now):
+    """Why a route is closed by `requires.ask`, or None: it opens only while the station's book, read by a docked ship
+    of ours within `max_age_minutes` (default ASK_FRESH), shows the item's best ask at `max_price` or under with
+    `min_qty` units (default 1) at it (a book keeps the units of its best ask only: deeper levels count for nothing).
+    Unlike a bid, a book older than that closes the route: an ask not read is no ask. Mercury, requests ENT-297: Node
+    Alpha's silver ask was gone after one load, a failed buy does not end a run, and the route would fly 16 jumps empty."""
+    for want in asks(route):
+        fresh = float(want.get("max_age_minutes") or ASK_FRESH) * 60
+        book = read_json(Path(data) / "market" / (str(want.get("base")) + ".json"), {})
+        read = read_time(book.get("read_at")) if isinstance(book, dict) else None
+        if read is None or now - read > fresh:
+            return "no ask for %s at %s: its book not read in %d minutes" % (want.get("item"), want.get("base"), fresh // 60)
+        row = next((i for i in book.get("items") or [] if isinstance(i, dict) and i.get("item_id") == want.get("item")), {})
+        price, depth = int(row.get("best_sell") or 0), int(row.get("best_sell_qty") or 0)
+        if price <= 0 or price > float(want.get("max_price") or 0) or depth < int(want.get("min_qty") or 1):
+            return "no ask for %s at %s: best %d cr x %d" % (want.get("item"), want.get("base"), price, depth)
+    return None
+
+
 def stored_missing(data, route, pilot, rows):
     """Why a route is closed by `requires.stored`, or None: the pilot's own storage at the station named (`at`, a base
     id) holds fewer than `min` units of `item` by data/stock/storage.json (the service ledger reads each pilot about
@@ -534,6 +568,7 @@ def why_not(pilot, rid, route, state):
     if state["now"] < state["rest"].get(rid, 0):
         return "the place rests", None
     lacking = bid_missing(state["data"], route, state["now"]) or stored_missing(state["data"], route, pilot, state["rows"])
+    lacking = lacking or ask_missing(state["data"], route, state["now"])    # requests ENT-297: the buy end, read like requires.bid
     if lacking:
         return lacking, None
     floor = reserves.closed(route, state)        # requests ENT-266: open only while the faction reserve reads under `below`
@@ -1095,6 +1130,11 @@ def one_pass(root, data, dry_run, children):
         state["orders"][name] = what
         lines.append("%s -> %s" % (name, what))
         if dry_run:
+            continue
+        taken = division.order_of(name, data)      # requests ENT-289: read again right before the write; a hold taken during this pass stands
+        if taken:
+            state["orders"][name] = taken
+            lines[-1] = "%s: `%s` not started: the pilot was taken during this pass (`%s`); it stays so, and gets work when that order ends" % (name, what, taken)
             continue
         orders = Path(data) / "fleet" / "orders"
         orders.mkdir(parents=True, exist_ok=True)
