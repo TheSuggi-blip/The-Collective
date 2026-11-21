@@ -72,6 +72,10 @@
   {
    "what": "train-jumps-hauler: max_ships weighed each turn against the fleet's 24-hour steady net; haulers leave it at each loop's end for any paying or reserve route that opens in their rows",
    "when": "every turn"
+  },
+  {
+   "what": "The Recruitment Center (500 boards, 1,000 plate, 300 flex polymer, 2,000,000 cr) by build.py --upgrade once the treasury holds the fee",
+   "when": "on her word"
   }
  ],
  "ships": {
