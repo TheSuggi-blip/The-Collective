@@ -26,22 +26,24 @@
    "note": "Every route here is gated: a drain or carry opens only on goods the pilot itself stores and a fresh bid (requires.stored, requires.bid); a mine route only on a deep water-ice order at Central Nexus (300 units at its best price) and with an Ice Harvester I fitted. Drains and carries need no harvester. What miners store is sold before new ice is mined."
   },
   "reserve-prism": {
-   "title": "Make, then gather what the reserve lacks: a loaded hold stored, steel plate from stored iron, then gold, silicon, nickel and carbon",
+   "title": "Gather what the reserve lacks, then make: a loaded hold stored, gold, silicon, nickel and carbon, then steel plate and copper piping from the pilot's own stores",
    "routes": [
     "store-hold-central-nexus",
-    "craft-steel-experiment",
-    "craft-steel-node-beta",
     "gather-goldcrest-gold",
     "gather-subra-floodlight-flats-silicon",
     "gather-jadecove-nickel",
-    "gather-acubens-belt-carbon"
+    "gather-tiaki-worldsend-nickel",
+    "gather-acubens-belt-carbon",
+    "craft-steel-experiment",
+    "craft-steel-node-beta",
+    "craft-piping-node-beta"
    ],
    "trains": [
     "mining",
     "crafting",
     "refining"
    ],
-   "note": "Orders ENT-050, block ZERO: iron and copper no more while the reserve holds them; P2: stored iron becomes steel plate. The iron gather fields left this template on 2026-11-17 23:20 UTC (Zero)."
+   "note": "Orders ENT-056, block ZERO: the reserve's short ores first (silicon, carbon, gold, nickel), each gather limited to what its field carries; P2: stored iron and copper become steel plate and piping where they lie. Gathers before crafts since 2026-11-21 (Zero): the crafts had taken the ships the short ores need."
   },
   "reserve-hamal": {
    "title": "Make, then gather what the reserve lacks, the short-ore fields in the other order so the division is spread",
