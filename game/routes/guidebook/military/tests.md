@@ -31,9 +31,8 @@ under 85 percent or shield 0, docks for repair, releases all.
   hunts the same creature.
 - `dist` is a ship's own distance from the fight's centre, not from the
   prey: an advance rule that compares with the prey's dist never fires.
-- Three starters on a pilot whale (220 hull): about 3 hull a tick for the
-  side, while the whale broke the leader (shield 111 to 0, hull to 9
-  percent) in about 20 ticks. No starter group on pilot whales.
+- Three starters on a pilot whale (220 hull): about 3 hull a tick, while
+  the whale broke the leader in about 20 ticks. No starter group on it.
 - 2026-11-21, a bulwark (95 hull) at Acubens: the members did not follow
   the flight, reached the place a tick after the leader attacked and were
   not pulled in; their own `hunt` was refused (`in_fleet`). The leader
