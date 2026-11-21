@@ -86,3 +86,4 @@ Planned:
 |---|---|
 | One tier-1 hull (Qualia, speed 3 against 1) bought by one reader, census only; its minutes per run against the Threshold's decide a hull for the class next turn | -- |
 | The six scanner scouts survey the far lists oldest first; their faint signatures and deposits decide the need survey-scanner-i every turn | -- |
+| Keep WORKED and FRESH at PASS: census-worked-far 64 systems every 180 minutes, census-frontier before it for the readers; move every new place another division flies onto census-worked-far every turn | -- |

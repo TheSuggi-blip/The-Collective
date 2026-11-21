@@ -64,6 +64,10 @@
   {
    "what": "The six scanner scouts survey the far lists oldest first; their faint signatures and deposits decide the need survey-scanner-i every turn",
    "when": "--"
+  },
+  {
+   "what": "Keep WORKED and FRESH at PASS: census-worked-far 64 systems every 180 minutes, census-frontier before it for the readers; move every new place another division flies onto census-worked-far every turn",
+   "when": "--"
   }
  ],
  "ships": {
