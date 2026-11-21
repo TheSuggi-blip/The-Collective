@@ -5,15 +5,14 @@ Status: proven. Updated: 2026-11-21. Evidence: plan.py show; fill.py status trad
 
 What the traders fly between two turns: the division's plan file
 (`/srv/collective/data/plans/plan-trade.md`, the tool `plan`), as set on
-2026-11-21 at 20:00 UTC, the first turn after the pause.
+2026-11-21 at 20:32 UTC, the first turn after the pause.
 
 - First, every ship: the once line of 24 routes; for the traders nearly
-  all are booked or full (`fill.py status trader`).
-- Own routes: `@trade-sell > @trade-craft` for all 40; ahead of them one
-  ship each on a test beyond the border (entry `Trade beyond the border`):
-  trade-silver-bar-alpha-to-arneb, carry-hydrogen-beta-to-crucible (two
-  hydrogen holders, one ship at a time), go-ironlight-trader then
-  carry-hydrogen-beta-to-crucible-bulk (the freighter test).
+  all are booked or full (`fill.py status trader`); Neural Matrix
+  Delivery runs 4 at a time for every plan's pilots.
+- Own routes: `@trade-sell > @trade-craft` for all 40. The four tests
+  beyond the border flew one run each and are off (entry `Trade beyond
+  the border`); one trader flies a Prayer freighter.
 - Then: craft-steel-node-beta, craft-steel-central-nexus,
   craft-steel-synchrony-hub, park.
 
@@ -24,9 +23,9 @@ used up (under 100 a pilot) and copper wiring stands far over its max, so
 most traders wait docked at no cost and the gate reads HALT.
 
 What opens work: a home bid back (`requires.bid` opens a sell route by
-itself), a far bid with depth on a fresh book, a freighter whose load is
-worth the road, the Fleet Admiral's word on the trader fallback
-(requests.log, 2026-11-21).
+itself), a buy-end gate (`requires.ask`, asked of the Fleet Admiral) for
+the silver bar run, a far bid with depth on a fresh book, the Fleet
+Admiral's word on the trader fallback (requests.log, 2026-11-21).
 
 ### Selling stores where they lie (`sell-<good>-at-<station>`, `carry-<good>-<from>-to-<to>`)
 Status: proven. Updated: 2026-11-21. Evidence: the sell and carry route files with their measured figures; sellgen.py of the skill trade-books.
@@ -91,29 +90,31 @@ bought; they train crafting and refining.
 - The calls behind a craft step: lessons.md, `Crafting by Hand: the Calls`.
 
 ### Trade beyond the border
-Status: test. Updated: 2026-11-21. Evidence: table books 2026-11-21; scripts/map.py route; data/intel/sightings.jsonl; route files of the four tests.
+Status: test. Updated: 2026-11-21. Evidence: runs.jsonl (trade-silver-bar-alpha-to-arneb, carry-hydrogen-beta-to-crucible, 2026-11-21); table books 20:24 to 20:27 UTC; the route files' notes.
 
-Home bids are thin and come back slowly; the far books hold the depth
-(table `books`, 2026-11-21 19:36 to 19:52 UTC): The Obsidian Well, a
-player station at Arneb (16 jumps, lawless), bids silver bar 501 x 44,527
-and silver ore 101 x 502,177; The Crucible Garrison (Crimson, 18 jumps)
-bids hydrogen 37 x 184 and heat sink 193 x 24.
+Home bids are thin and come back slowly; a few far books hold the depth
+(table `books`, 2026-11-21): The Obsidian Well, a player station at Arneb
+(16 jumps, lawless), bids silver bar 501 x 44,477 after our sale.
 
-- Tests, one ship each, from 2026-11-21 20:00 UTC:
-  trade-silver-bar-alpha-to-arneb (Node Alpha asks 50 at 414),
-  carry-hydrogen-beta-to-crucible (41 of our own hydrogen and 24 heat
-  sinks bought at Node Beta at 147 in a hold of 65), go-ironlight-trader
-  then carry-hydrogen-beta-to-crucible-bulk (a Prayer freighter of 540).
-- The road: past Pherkad every system to Arneb or The Crucible is
-  lawless; no pirate on our record in any of them
-  (`scripts/map.py route`, data/intel/sightings.jsonl). Each test leaves
-  home with an empty hold or our own goods, carries price limits at both
-  ends, and stores at the far station what its bid left.
-- A far book read days ago is a guess, not a price: most foreign books in
-  the routemaker's trade candidates date from 2026-11-17; a ship that
-  docks reads the book again.
-- Each test answers: what the far bid takes and regains, what the road
-  costs, whether Node Alpha's silver bar ask comes back.
+Tests of 2026-11-21, one ship and one run each (runs.jsonl):
+
+- trade-silver-bar-alpha-to-arneb: 50 bars bought at Node Alpha at 414,
+  sold at 501: +4,099 cr in 21.6 minutes. Node Alpha's ask was gone after
+  the buy: a one-load gap, off until a route can wait for the ask
+  (`requires.ask`); a failed buy does not end a run, so without it the
+  pilot flew back and on empty (errors.log, 2026-11-21).
+- carry-hydrogen-beta-to-crucible: 41 own hydrogen and 24 heat sinks
+  bought at 147 to The Crucible Garrison's bids of 37 x 184 and 193 x 24:
+  -1,475 cr in 26.3 minutes; the book after read 38 x 21 and 133 x 11.
+  One load closed both bids: off.
+- The freighter (go-ironlight-trader, then the bulk carry): see
+  ships.md; its first carry reads the Prayer's fuel and time.
+
+What a far test needs: both ends read the same hour, the depth at both
+ends against the hold, and the road's fuel both ways (about 20 to 26 cr a
+jump for a Threshold, skill trade-books). The road past Pherkad is lawless
+and no pirate is on our record in it (`scripts/map.py route`,
+data/intel/sightings.jsonl). A far book read days ago is a guess.
 
 ### Once missions: what they taught
 Status: proven. Updated: 2026-11-21. Evidence: data/fleet/onetime.json; the voidborn-* and mission-* route files; errors.log ENT-039, ENT-058, ENT-096.
