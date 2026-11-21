@@ -1,40 +1,90 @@
 # Intel guidebook -- Lessons (lessons.md)
 
 ### How this guidebook is kept
-Status: proven. Updated: 2026-11-15. Evidence: migrated from guidebook/intel.md, the text above its first section.
+Status: proven. Updated: 2026-11-21. Evidence: rule F14; scripts/guide.py check intel.
 
-Kept by Oracle; read by every member. What the Intel division
-learned about its routes, its levelling and its ships, so that every
-ship born later starts where the others stand. Started by the Fleet
-Admiral on 2026-11-15 from the runs so far; from here Oracle writes it,
-at the end of every turn.
-
-- A figure comes from `python3 -B game/fleet/routes.py measure` or from a
-  run's RESULT line, and carries its date. A number no record holds is
-  written `not measured`.
-- The plan in force is `game/routes/plans/scout.json`; every route
-  with its figure is in `game/routes/index.md`.
+Kept by Oracle, read by every member: what the Intel division learned,
+so that a scout born later starts where the others stand. A figure is
+named by the call that prints it (hive.py levels Oracle, hive.py route
+<id>, the intel turn check), never copied; a number no record holds is
+`not measured`. Caps: card 3,000, a chapter 8,000, an entry 1,500
+characters; an outdated entry is retired, then `guide.py tidy intel`.
 
 ### How the Census Is Dispatched
-Status: proven. Updated: 2026-11-15. Evidence: migrated from guidebook/intel.md section 6.
+Status: proven. Updated: 2026-11-21. Evidence: game/fleet/dispatch.py (pick, stalest_system); errors.log ENT-065.
 
-- A system opens for a read when its scouting file is `every_minutes`
-  old; the first free pilot whose plan holds the census takes the
-  oldest. The threshold is the floor of the gap, never its ceiling:
-  30 minutes gave gaps of 33 to 71 minutes on 2026-11-15.
-- `max_ships` of a census route counts only the census orders of its
-  own systems since `game/fleet/dispatch.py` commit fa17b9c
-  (2026-11-15 21:32 UTC). Before it, four frontier ships held every
-  scout off the home census for eleven minutes.
-- In the scouts' plan the home census stands first: it takes at most
-  three ships and only when a home system is due, so the missions that
-  pay once never hold the hour back (since 23:42 UTC).
-- census-frontier carries `requires.empty_hold` since 23:27 UTC (orders
-  F13): a ship with more than five units of goods aboard is not sent.
-- A list that grows is read at once: twelve systems added at 23:27 UTC
-  had eleven ships of the fleet on their way at 23:27:01 UTC (the
-  orders files), the route's limit of twelve with the Antares read.
-- A census by hand: `python3 -I -B game/fleet/census.py <pilot>
-  <system> --route census-frontier` from the clone; it docks at every
-  station it finds and saves the book with the depth at the best price
-  (`best_buy_qty`, Ironlight Crossroads 23:21 UTC).
+- A system opens when its read is every_minutes old; the free pilot whose
+  plan holds the list takes the stalest. The threshold is the floor of a
+  gap: 30 minutes gave gaps of 33 to 71 (2026-11-15). Report the gaps,
+  not only the oldest age.
+- A census order counts against every route whose list holds its system:
+  keep the lists disjoint (OVERLAP line).
+- A list that grows is taken at once: eleven ships within a minute of a
+  commit (2026-11-15). An empty dry run of dispatch.py means no route is
+  open to any free pilot: read max_ships against the order files first.
+
+### Keep the explorers' lists ahead of them
+Status: proven. Updated: 2026-11-21. Evidence: intel turn check ROADS; data/routes/runs.jsonl (2026-11-16 23:21 to 2026-11-17 07:30 UTC).
+
+- Ten explorers read 28 never-read systems in about an hour and a half,
+  and 18 more in about an hour; then 24 of 30 scouts gathered for three
+  hours. ROADS HALTs under four hours of first visits: widen a list,
+  nearest first, strongholds out, before the plan is committed.
+- ROADS END (no never-read system a list can take, since 2026-11-17):
+  rotate explorers onto the lists they flew least (each pilot's own first
+  visits) and onto census-worked-far.
+
+### Read every place the orders name against its cadence
+Status: proven. Updated: 2026-11-21. Evidence: intel turn check SITES; reports.log ENT-083.
+
+- Atria, named the north outpost, stood 571 minutes unread on the
+  8-hour explorer list while the orders asked for three hours. SITES
+  names every system of the ORACLE block on no list read within 180
+  minutes: HALT means move it onto a road list before the commit.
+
+### Read where the fleet works now
+Status: proven. Updated: 2026-11-21. Evidence: intel turn check WORKED (2026-11-21 19:40 UTC); game/routes/census-worked-far.json.
+
+- After the pause of 2026-11-18 to 11-21 the other divisions flew in 39
+  systems that only the 480-minute explorer lists read: Military's hunts
+  and their sell stations, Mining's far fields. The dispatcher's pirate
+  stop (six hours, F27) and a mine route's min_left rest on a census.
+- WORKED names every system where ships of other divisions fly now and
+  no list reads within 180 minutes: move it onto census-worked-far.
+- After any pause every reading is stale at once: the home list first,
+  then where ships fly, then the roads; judge the gaps from the next
+  reads, not the first hour.
+
+### Hand edits and the plan file
+Status: proven. Updated: 2026-11-21. Evidence: errors.log ENT-105; requests.log ENT-279.
+
+- A hand edit that looked for `## Notes` as plain text found its mention
+  in the file head and wrote the file twice. Use `plan.py planned` and
+  `plan.py note`; plan.py check HALTs on a heading twice (PLANFILE line).
+- plan.py writes game/routes/plans/scout.json and plan-scout.md: commit
+  them by path, or the next apply waits.
+
+### Times, hashes and files
+Status: proven. Updated: 2026-11-21. Evidence: errors.log ENT-034, ENT-047; rule F15.
+
+- A time in a route, plan or note comes from the clock of the script
+  that writes it, never typed (eight files said 03:25 for 03:11).
+- A commit hash goes into an entry after `git branch -r --contains`
+  prints origin/main: the watcher rebases unpushed commits.
+- A data folder gains files (history.jsonl, ladders.json, foreign books
+  by base id): a reader that globs keeps only one station's records.
+- A turn that ended without a report leaves routes no plan names: read
+  the ORPHANS line and `git log --author=Oracle` before building a route.
+
+### Calls that surprise
+Status: proven. Updated: 2026-11-21. Evidence: game/fleet/gate.py; the game's help (2026-11-15 to 2026-11-17).
+
+- gate.py cuts an answer at 3,000 characters: read long answers with
+  FULL=1. get_empire_info takes `empire_id`. get_system answers the
+  ship's own system whatever system_id says.
+- The stance is the raw action `default_stance` `{"stance": "flee"}` in
+  group spacemolt_battle (scripts/set_stance.py); a new scout gets it once.
+- A shell heredoc whose text holds the word for a gate's stop is refused
+  by the shell's blocklist: write such text with the file tools.
+- First Steps in the Void leaves 13 to 38 ore aboard: stash.py stores
+  it, or every empty-hold route stays closed to the scout (HOLDS line).

@@ -1,17 +1,21 @@
 # Intel guidebook -- Ships and Fits (ships.md)
 
 ### Ships and Fits
-Status: proven. Updated: 2026-11-15. Evidence: migrated from guidebook/intel.md section 5.
+Status: proven. Updated: 2026-11-21. Evidence: data/fleet/ships/; catalog tables hulls and items; the books of Central Nexus and Ironlight Crossroads (tool market).
 
-The scouts fly the starter Threshold with its mining laser and pulse
-laser. Read 2026-11-15 21:21 UTC (`data/fleet/ships/`): cargo 65 (the
-Voidborn cargo bonus left the game with 0.715.3), fuel 95, hull 75.
-Fuel: one unit per jump; two scouts read 95 to 90 after five jumps,
-and a round trip to a system six jumps out used 15 units (21:39 and
-21:50 UTC). The tank holds every frontier system on the list with room
-to spare. Fuel beyond the border is cheaper than at home: Hive Antares
-2 cr a unit (23:29 UTC), Ironlight Crossroads 7 cr (23:18 UTC), the
-fleet's meter at home 12.29 cr. Ironlight Crossroads sells modules a
-scout could carry (ship scanner I 1,854 cr, afterburner I 1,768 cr,
-23:21 UTC); which fit a scout needs to hunt and to get away is the
-next turn's test (orders.log ENT-008, F17): `not measured`.
+- The Threshold: hold 65, tank 95, hull 75, shield 80, two utility slots;
+  the mining laser takes one. Fuel: one unit a jump and one a leg inside
+  a system; a round trip six jumps out used 15 units (2026-11-15). A far
+  list is cut so that start, target and home stay under about 60 jumps.
+- A census refuels at every station it docks and, on `--stay`, starts its
+  next read from there: a station that sells no fuel is no place to end
+  (data/station/stations.json, services).
+- Survey Scanner I (utility, survey power 30): the only fit that trains
+  scanning. Each extra scanner adds 50% of the one before; a survey probe
+  or an anomaly detector adds its power (the game's help for
+  survey_system). Survey Scanner II is sold in Solarian books.
+- Ship Scanner I (utility) counts the ships at every place of a system:
+  the next fit for pirate readings, not tried yet.
+- Fuel beyond the border is cheaper than at home (Hive Antares,
+  Ironlight Crossroads; tool market, item fuel).
+- A new module or hull is tried on one scout first (rule F17).
