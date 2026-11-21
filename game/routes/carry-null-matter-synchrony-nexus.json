@@ -41,14 +41,5 @@
    "store": "all"
   }
  ],
- "note": "Written by Zero, 2026-11-16 23:13 UTC (orders.log ENT-019: sell what your own ships store above the reserve). Null matter is in no target of game/reserve.tsv. Miners store 350 null matter at Synchrony Hub (28 pilots, the most 58) and 329 at Node Beta (the storage book, 23:12 UTC), gathered beside iron; Central Nexus is the one station that bids for it: 221 cr x 10 at its best price, 106 in all levels (data/market, 23:03 UTC). A test: one ship; the bid's depth, not our stock, is the limit (the fleet holds 2,759). The rest of a load is stored at Central Nexus.",
- "measured": {
-  "date": "2026-11-17",
-  "runs": 8,
-  "minutes": 10,
-  "credits_per_run": 3020,
-  "cph_per_ship": 20050,
-  "hours": 12,
-  "last_run": "2026-11-17T20:52:08Z"
- }
+ "note": "Written by Zero, 2026-11-16 23:13 UTC (orders.log ENT-019: sell what your own ships store above the reserve). Null matter is in no target of game/reserve.tsv. Miners store 350 null matter at Synchrony Hub (28 pilots, the most 58) and 329 at Node Beta (the storage book, 23:12 UTC), gathered beside iron; Central Nexus is the one station that bids for it: 221 cr x 10 at its best price, 106 in all levels (data/market, 23:03 UTC). A test: one ship; the bid's depth, not our stock, is the limit (the fleet holds 2,759). The rest of a load is stored at Central Nexus."
 }

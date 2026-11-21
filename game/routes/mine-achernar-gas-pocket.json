@@ -24,14 +24,5 @@
  "requires": {
   "module": "gas_harvester_i",
   "empty_hold": true
- },
- "measured": {
-  "date": "2026-11-17",
-  "runs": 8,
-  "minutes": 62,
-  "credits_per_run": 600,
-  "cph_per_ship": 580,
-  "hours": 12,
-  "last_run": "2026-11-17T22:30:44Z"
  }
 }

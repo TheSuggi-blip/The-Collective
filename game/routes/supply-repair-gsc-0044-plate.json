@@ -33,5 +33,12 @@
     "steel_plate"
    ]
   }
- ]
+ ],
+ "measured": {
+  "date": "2026-11-21",
+  "runs": 3,
+  "minutes": 9,
+  "credits_per_run": -10,
+  "cph_per_ship": -50
+ }
 }

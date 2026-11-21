@@ -12,12 +12,12 @@
   "iron_ore": 20000
  },
  "measured": {
-  "date": "2026-11-17",
-  "runs": 161,
-  "minutes": 45,
-  "credits_per_run": -140,
-  "cph_per_ship": -190,
+  "date": "2026-11-21",
+  "runs": 46,
+  "minutes": 50,
+  "credits_per_run": -190,
+  "cph_per_ship": -230,
   "hours": 12,
-  "last_run": "2026-11-17T04:57:25Z"
+  "last_run": "2026-11-21T22:08:10Z"
  }
 }

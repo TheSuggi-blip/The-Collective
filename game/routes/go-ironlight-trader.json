@@ -15,5 +15,12 @@
    "at": "lhs_1140:0321b3e4406021575337b7be26e53dd7:784309214f105860a16a0c100a70eb14",
    "store": "all"
   }
- ]
+ ],
+ "measured": {
+  "date": "2026-11-21",
+  "runs": 1,
+  "minutes": 8,
+  "credits_per_run": -10,
+  "cph_per_ship": -110
+ }
 }

@@ -39,14 +39,5 @@
    "at": "sirius:sirius_observatory_station:sirius_observatory_station",
    "store": "all"
   }
- ],
- "measured": {
-  "date": "2026-11-18",
-  "runs": 2,
-  "minutes": 18,
-  "credits_per_run": 6620,
-  "cph_per_ship": 21690,
-  "hours": 12,
-  "last_run": "2026-11-17T14:26:55Z"
- }
+ ]
 }

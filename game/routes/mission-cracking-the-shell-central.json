@@ -38,11 +38,11 @@
   }
  ],
  "measured": {
-  "date": "2026-11-17",
-  "runs": 47,
+  "date": "2026-11-21",
+  "runs": 51,
   "minutes": 14,
-  "credits_per_run": 60,
-  "cph_per_ship": 290
+  "credits_per_run": 40,
+  "cph_per_ship": 190
  },
  "requires": {
   "booked": "First Hunt: Belt-Grazers",

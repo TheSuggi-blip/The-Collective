@@ -65,14 +65,5 @@
    "at": "synchrony:synchrony_hub:synchrony_hub",
    "store": "all"
   }
- ],
- "measured": {
-  "date": "2026-11-18",
-  "runs": 2,
-  "minutes": 5,
-  "credits_per_run": -30,
-  "cph_per_ship": -380,
-  "hours": 12,
-  "last_run": "2026-11-18T00:59:12Z"
- }
+ ]
 }

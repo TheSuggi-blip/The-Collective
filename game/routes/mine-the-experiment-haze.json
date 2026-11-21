@@ -21,14 +21,5 @@
    "min_price": 26,
    "min_qty": 20
   }
- },
- "measured": {
-  "date": "2026-11-17",
-  "runs": 1,
-  "minutes": 80,
-  "credits_per_run": -620,
-  "cph_per_ship": -470,
-  "hours": 12,
-  "last_run": "2026-11-17T13:12:36Z"
  }
 }
