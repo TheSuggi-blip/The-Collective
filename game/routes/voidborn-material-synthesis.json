@@ -2,12 +2,12 @@
  "id": "voidborn-material-synthesis",
  "kind": "circuit",
  "title": "Material Synthesis: Basic: 1,500 cr once, Voidborn Mastery 25 and crafting 25 XP; 10 iron ore mined at Spacetime Seep and one steel plate smelted, accepted and handed in at Central Nexus",
- "note": "Fabrication Unit Theta on the Central Nexus board (data/missions/central_nexus.json, read 2026-11-17 23:12 UTC, a pilot that holds The Collective Provides): objectives mine 10 iron ore and craft 1 (smelt iron ore into steel); 1,500 cr, voidborn_mastery 25, crafting 25, piloting 20 XP (rules F34, F35: a link of the tree The Collective Provides opens; 68 pilots of the fleet hold that link, none this one, data/fleet/onetime.json 23:14 UTC). Spacetime Seep (GSC-0027, 2 jumps) read 15,844 iron ore and 237 copper (table fields, 22:44 UTC): almost every pull is iron. Stop 2 stores the hold and smelts one plate from storage (basic_iron_smelting, 10 iron, 0 cr); stop 3 redocks so the hand-in sees both objectives. A test with one ship (rule F12): whether the craft step counts for the objective. Written 2026-11-17 23:16 UTC (Zero).",
+ "note": "Fabrication Unit Theta on the Central Nexus board (data/missions/central_nexus.json, read 2026-11-17 23:12 UTC, a pilot that holds The Collective Provides): objectives mine 10 iron ore and craft 1 (smelt iron ore into steel); 1,500 cr, voidborn_mastery 25, crafting 25, piloting 20 XP (rules F34, F35: a link of the tree The Collective Provides opens; 68 pilots of the fleet hold that link, none this one, data/fleet/onetime.json 23:14 UTC). Spacetime Seep (GSC-0027, 2 jumps) read 15,844 iron ore and 237 copper (table fields, 22:44 UTC): almost every pull is iron. Stop 2 stores the hold and smelts one plate from storage (basic_iron_smelting, 10 iron, 0 cr); stop 3 redocks so the hand-in sees both objectives. A test with one ship (rule F12): whether the craft step counts for the objective. Written 2026-11-17 23:16 UTC (Zero). 2026-11-21 19:38 UTC (fill.py, Zero): max_ships 1 -> 4.",
  "once": true,
  "requires": {
   "booked": "The Collective Provides"
  },
- "max_ships": 1,
+ "max_ships": 4,
  "max_pilots": 1,
  "one_time": [
   "Material Synthesis: Basic"
