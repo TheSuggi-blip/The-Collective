@@ -2,7 +2,7 @@
  "id": "census-worked-far",
  "kind": "census",
  "title": "Read the places beyond our roads where the other divisions fly now, every three hours: deposits, creatures, pirates, order books, mission boards",
- "note": "Kept by Oracle; written 2026-11-21 19:43 UTC (orders.log ENT-056, block ORACLE: keep the readings the fleet plans on fresh; MISSION.md: the places our routes use read twice a turn). After the pause of 2026-11-18 to 2026-11-21 the other divisions fly in 39 systems that only the 480-minute explorer lists read (census-roads, census-far-1 to 5): Military's hunts and their sell stations (First Step, The Obsidian Well at Arneb, Hex Star at Dheneb, The Crucible, The Levy, Crimson War Citadel at Krynn), Mining's silicon and nickel at Subra and Jadecove sold at The Crescent Moon (Mebsuta). The dispatcher closes work where a pirate was seen in six hours (rule F27) and a mine route closes under its min_left: both rest on a census. The list is the WORKED line of the intel turn check (systems where ships of other divisions fly now, read less often than every 180 minutes), taken out of the lists that held them so no system stands on two lists. chain 3 within 2 lanes like the far lists: the hunt places lie around stations with fuel. Empty hold (rule F3). Every 180 minutes: about 13 reads an hour at a median far read of 23 minutes (census-far-1, data/routes/runs.jsonl) is about 5 ships; max_ships 6.",
+ "note": "Kept by Oracle; written 2026-11-21 19:43 UTC (orders.log ENT-056, block ORACLE: keep the readings the fleet plans on fresh; MISSION.md: the places our routes use read twice a turn). After the pause of 2026-11-18 to 2026-11-21 the other divisions fly in 39 systems that only the 480-minute explorer lists read (census-roads, census-far-1 to 5): Military's hunts and their sell stations (First Step, The Obsidian Well at Arneb, Hex Star at Dheneb, The Crucible, The Levy, Crimson War Citadel at Krynn), Mining's silicon and nickel at Subra and Jadecove sold at The Crescent Moon (Mebsuta). The dispatcher closes work where a pirate was seen in six hours (rule F27) and a mine route closes under its min_left: both rest on a census. The list is the WORKED line of the intel turn check (systems where ships of other divisions fly now, read less often than every 180 minutes), taken out of the lists that held them so no system stands on two lists. chain 3 within 2 lanes like the far lists: the hunt places lie around stations with fuel. Empty hold (rule F3). Every 180 minutes: about 13 reads an hour at a median far read of 23 minutes (census-far-1, data/routes/runs.jsonl) is about 5 ships; max_ships 6. 2026-11-21 20:12 UTC, Oracle: tiaki added from census-far-5 for gather-tiaki-worldsend-nickel (requests.log ENT-283).",
  "systems": [
   "almach",
   "alphecca",
@@ -42,7 +42,8 @@
   "unukalhai",
   "veritate",
   "wasat",
-  "willowgate"
+  "willowgate",
+  "tiaki"
  ],
  "every_minutes": 180,
  "max_ships": 6,
