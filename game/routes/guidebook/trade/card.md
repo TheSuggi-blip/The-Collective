@@ -1,51 +1,44 @@
 # Trade guidebook -- the Class Card (card.md)
 
 ### Class Card
-Status: proven. Updated: 2026-11-17. Evidence: migrated from guidebook/trade.md section Class Card.
+Status: proven. Updated: 2026-11-21. Evidence: the catalog's tables skills and hulls; table ship_skills; browse_ships 2026-11-21.
 
-The trader's class in short (rule F14); the detail is in section 4
-(levelling) and section 5 (ships and fits). Sources: the catalog's
-tables `skills` and `hulls` (catalog 0.723.2), the game's page
-https://www.spacemolt.com/docs/skills.md (read 2026-11-17 07:37 UTC),
-the trader ship files (`xpsnap.py`, 2026-11-17 19:43 UTC).
+The trader's class in short (rule F14): what it flies and what it
+levels, in that order. Detail: ships.md and levelling.md; the work and
+the plan: routes.md. Sources: the catalog's tables `skills` and `hulls`
+(0.723.2), the trader ship files (table `ship_skills`).
 
 ### Ships
-Status: proven. Updated: 2026-11-17. Evidence: migrated from guidebook/trade.md section Class Card.
+Status: proven. Updated: 2026-11-21. Evidence: table hulls; browse_ships (all stations, can_fly) through a docked trader, 2026-11-21 19:55 UTC; Logistics' ships.md.
 
-- Tier 0, every trader now: Threshold, cargo 65, fuel 95, hull 75, a
-  mining laser and a pulse laser. Three carry a Gas Harvester I, one a
-  Cargo Expander I (hold 85).
-- Tier 1 (no Piloting asked): no Voidborn freighter; the largest hold
-  is the Residuum's 100 (a salvager). Not worth a change for trade.
-- Tier 2, Piloting 10: Apophenia, freighter, cargo 240, fuel 300, hull
-  140: the trader's next hull. Tier 3, Piloting 20: Fold Hauler, cargo
-  635. No price is in the catalog; not read at a shipyard yet.
-- Fit: a Cargo Expander I (+20 hold) for carries; no weapon is needed.
-  Default stance flee (game 0.721.0), set by script.
-- Style: dock to dock. Sell each pilot's stores where a bid stands,
-  carry one or two jumps, craft at a station workshop; never fight.
+- Tier 0, every trader: Threshold, cargo 65, speed 1, hull 75; a mining
+  laser and a pulse laser.
+- Tier 1 asks no Piloting, and other empires' tier-1 freighters stand on
+  the ship exchange, flyable by our pilots (`browse_ships` with
+  `can_fly`, 2026-11-21 19:55 UTC): Prayer (Outer Rim; cargo 540, speed
+  3, hull 40, no shield, no slot) ten times at Ironlight Crossroads at
+  5,000 cr; Worship (1,100) and Congregation (1,900, speed 1) 18 to 19
+  jumps out. The trader's next hull; the first is tried on one ship
+  (go-ironlight-trader, rule F17).
+- Tier 2, Piloting 10: Apophenia, the Voidborn freighter, cargo 240.
+- Style: dock to dock, never fight, stance flee. A freighter without
+  slots cannot mine: it carries and trades.
 
 ### Skills
-Status: proven. Updated: 2026-11-17. Evidence: migrated from guidebook/trade.md section Class Card.
+Status: proven. Updated: 2026-11-21. Evidence: table ship_skills 2026-11-21 19:51 UTC; the catalog's table skills; xpsnap.py.
 
-| Skill | Why it matters | What trains it, on which routes | Trade now | Next goal |
+In levelling order. Levels: `SELECT skill, level, COUNT(*) FROM
+ship_skills WHERE pilot LIKE 'trader-%' GROUP BY skill, level`
+(2026-11-21 19:51 UTC); XP a turn: `xpsnap.py diff` (skill trade-books).
+
+| Skill | Why | Trained by | Now (level:ships) | Goal |
 |---|---|---|---|---|
-| Trading | The class skill. A higher level shows more in `analyze_market` (regional demand, price trends, arbitrage: the game's help); its bonus is not stated in the catalog | Buying and selling at stations or by exchange orders, XP by credit volume (catalog): `@trade-sell`, station stock bought (about 1 XP per 100 cr), mission rewards | 3 for 5, 2 for 26, 1 for 9 | 3 for every trader |
-| Crafting | Station workshop speed from x1 at level 0 to x5 at 100 (with Refining); recipes ask it | Crafting at a station: `@trade-craft` (steel plate and copper wiring from all of the pilot's own iron and copper in one visit, copper piping, Logistics' steel crafts) | 6 for 1, 5 for 8, 4 for 29, 3 for 1, 2 for 1 | 5 for every trader |
-| Refining | With Crafting, the workshop's speed; smelting asks it | The smelt inside craft-steel-own, craft-piping and craft-steel | 5 for 1, 4 for 16, 3 for 21, 2 for 2 | 4 for every trader |
-| Navigation | Fuel, jump fuel and jump time -1% a level; level 3 opens Signal Fragments (7,000 cr once) | Every jump | 6 for 2, 5 for 14, 4 for 24 | 5 |
-| Piloting | Tier 2 hulls at 10 (the Apophenia freighter), tier 3 at 20 | Flying, jumping, mining | 8 for 20, 7 for 19, 6 for 1 | 10 |
-| Engineering | Module power and CPU, for a fuller fit | Crafting components or modules | 0 | not a goal yet |
-| Mining | The fallback only (rule F23) | `@trade-gas`, `@trade-gather`, named by no ship since 2026-11-17 23:42 UTC | -- | -- |
+| Trading | the class skill; more of `analyze_market` | buying and selling, about 1 XP per 100 cr bought; mission rewards | 3:5, 2:29, 1:6 | 3 for all |
+| Crafting | workshop speed with Refining | `@trade-craft` | 6:16, 5:19, 4:4, 10:1 | 6 |
+| Refining | workshop speed; smelting | the smelts of `@trade-craft` | 6:6, 5:14, 4:17, 3:2, 10:1 | 5 |
+| Navigation | fuel and jump time, -1% a level | every jump | 6:2, 5:17, 4:21 | 6 |
+| Piloting | tier-2 hulls at 10, tier 3 at 20 | flying, jumping | 8:20, 7:20 | 10 |
+| Engineering | module CPU and power | crafting components | 0 | later |
 
-Levels: the trader ship files, 2026-11-17 23:35 UTC (`xpsnap.py save`). XP of the 40 traders
-(`xpsnap.py diff`, skill trade-books), four hours each: to 07:37 UTC
-crafting 0 and trading 616; 07:37 to 11:41 UTC crafting 3,490, trading
-455; 11:41 to 15:37 UTC crafting 10,775, trading 527; 15:37 to 19:43 UTC
-deep core mining 34,542, mining 32,581, piloting 32,136, crafting 15,630,
-navigation 11,557, refining 8,500, trading 379; 19:43 to 23:35 UTC
-piloting 27,151, deep core mining 25,068, crafting 24,445, mining 23,796,
-refining 17,350, navigation 10,909, trading 2,164. Every trader gained XP
-in each window; crafting stands at 4 or more for 38 of 40. Trading is the
-skill that lags: it rises only by credit volume, and the bids carry few
-ships. Voidborn Mastery: level 1 for 14 traders, 0 for 26.
+Trading lags: it rises by credit volume and the home bids are thin; buys
+for the fleet and far trades train it.

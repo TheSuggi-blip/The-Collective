@@ -1,21 +1,23 @@
 # Trade guidebook -- Ships and Fits (ships.md)
 
 ### Ships and Fits
-Status: proven. Updated: 2026-11-16. Evidence: migrated from guidebook/trade.md section 5.
+Status: proven. Updated: 2026-11-21. Evidence: table ship_modules; the fit and module mission routes; browse_ships 2026-11-21 19:55 UTC.
 
-Every trader flies the starter Threshold (cargo 65, fuel 95, hull 75)
-with a mining laser and a pulse laser. Since 2026-11-16 12:43 UTC one
-more trader carries a Gas Harvester I and one a Cargo Expander I (hold
-85), each bought for a mission that paid more than the module
-(section 3); a Cargo Expander I asks 352 cr at Synchrony Hub and 173
-cr at Ironlight Crossroads (books of 12:39 to 12:40 UTC). Two traders carry a Gas
-Harvester I since 2026-11-16 03:12 UTC: bought and fitted at Node Beta
-for 1,214 cr each with the 1% tax (15 left there at 1,202 cr), the
-tool of the two gas tests; the tests are out (the list in this file's history) and no more
-traders get one while the gas bids at our stations stand at 2 cr and
-plasma at a few units. An Ice Harvester I (638 cr at Ironlight
-Crossroads, 1,413 cr at four of our stations) opens the ice routes,
-which are Mining's: not for traders while miners wait for a
-harvester (requests.log ENT-082, answered ENT-086). Gas items
-are size 2: a hold of 65 carries 32 units of plasma gas. The next hull
-is not chosen: tier 2 needs Piloting 10 (section 4).
+- Every trader flies the Threshold (cargo 65, fuel 95, hull 75) with a
+  mining laser and a pulse laser; three carry a Gas Harvester I and some
+  a Cargo Expander I (+20 hold; 352 cr at Synchrony Hub, 173 at Ironlight
+  Crossroads), each bought for a mission that paid more than it
+  (voidborn-hardware-cargo, voidborn-atmospheric-extraction).
+- An Ice Harvester I opens the ice routes, which are Mining's.
+- An item's size decides a load: `craftbook.py item <id>` (hydrogen gas
+  reads size 1 in catalog 0.723.2).
+- The freighter test (2026-11-21, rule F17): one trader docks at
+  Ironlight Crossroads with an empty hold (go-ironlight-trader) and buys
+  a listed Prayer by hand (`buy_listed_ship`, tool group spacemolt_ship,
+  docked there; `browse_ships` lists the listings with `all_stations`
+  and `can_fly`). The Threshold stays stored at that station with its
+  modules. A slotless freighter's routes carry `requires.without_module
+  mining_laser_i`, which keeps every Threshold off them
+  (carry-hydrogen-beta-to-crucible-bulk).
+- What a freighter burns a jump and how long it takes are read on its
+  first run (`hive.py route <id>`).

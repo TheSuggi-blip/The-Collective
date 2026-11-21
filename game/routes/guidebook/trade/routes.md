@@ -1,46 +1,35 @@
 # Trade guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-18. Evidence: migrated from guidebook/trade.md section Standing Plan.
+Status: proven. Updated: 2026-11-21. Evidence: plan.py show; fill.py status trader (20:01 UTC); table books (19:36 to 19:52 UTC).
 
 What the traders fly between two turns: the division's plan file
-(`/srv/collective/data/plans/plan-trade.md`, the tool `plan`), as set
-in the turn of 2026-11-17 23:42 UTC. `game/routes/plan-trader.md`
-prints it without names, and `game/routes/templates-trade.md` lists the
-templates. Every trader's own routes are two templates (section 2), the
-same for all 40: `@trade-sell > @trade-craft`. A figure is credits per
-ship-hour from the view `route_earnings` (4 hours to 23:32 UTC unless
-named); a mission that pays once is judged with its reward (rule F19).
+(`/srv/collective/data/plans/plan-trade.md`, the tool `plan`), as set on
+2026-11-21 at 20:00 UTC, the first turn after the pause.
 
-| Order | Work | Ships | Carries | Expected | Why it stands here |
-|---|---|---|---|---|---|
-| First | The once line: 24 routes from voidborn-first-steps-board to mission-workshop-production-run-node-beta and voidborn-first-hunt-achernar (put there by the five-minute pass at 23:57 UTC; its last eleven runs were lost or 'not offered', the tool route at 23:48 UTC); voidborn-conductive-lattice (Node Beta chain, 20,500 cr over three links) 4 at a time for all 246 pilots, The Collective Provides 4 at a time with a nickel floor of 60 | every ship, by the list First | Lattice: booked by 174 pilots, 85 lack it (oncecheck.py, 23:35 UTC); The Collective Provides: 160 lack it, Rotanev Daylight Seam read 1,452 nickel at 14:03 UTC | 62 hand-ins by traders from 19:43 to 23:35 UTC, 226,159 cr booked once (runs.jsonl): Workshop Production Run 28 x 3,500, the Lattice chain 7 runs 59,159, Signal Protocol 6 x 3,500, Resonance finish 2 x 8,000 | Rules F34, F35: every pilot flies its empire's chains to their end |
-| 1 | `@trade-sell`, 14 routes: null matter first (two Trade routes and Mining's Synchrony carry into the one Central Nexus bid, floor 200), then soma (floor 320), palladium (270), hydrogen (30) | a trader whose own storage holds the good; one ship a route (one or two for soma at Node Beta) | null matter: the Central Nexus bid stood 7 times and was gone 4 times in 11 moves from 22:05 to 23:32 UTC, 13 to 269 units at 204 to 208 cr; soma 332 to 342 x 1 to 10 at four stations; no home hydrogen bid at 23:36 UTC | carry-null-matter-beta-to-nexus 21,029 (9 runs), sell-null-matter-at-nexus 47,338 (6 runs), sell-soma-at-synchrony 8,499 (7), sell-hydrogen-at-node-beta 21,607 (6 runs of minutes): judged by credits a run times the runs a bid's regain allows | Traders store 2,039 null matter at three stations (table holdings, 23:33 UTC); the bids are thin and come back |
-| 2 | `@trade-craft`, 11 routes: copper piping at Node Beta and Synchrony Hub; steel plate from all of the pilot's own iron in one visit (craft-steel-own at Node Beta 10 ships, The Experiment 10, Central Nexus 2); copper wiring from all of its own copper (Synchrony Hub 8, Node Beta 10, The Experiment 8); Logistics' three craft-steel routes | a trader whose own storage at that station holds the input | the traders' own stores: iron 8,843 at Node Beta, 8,623 at The Experiment, 23,114 at Central Nexus; copper 34,983 at Synchrony Hub, 29,990 at Node Beta, 8,285 at The Experiment (table holdings, 23:33 UTC): about 4,270 plate runs and 9,400 wiring runs, at 0.23 and 0.26 ticks a run | first RESULT of craft-steel-own-node-beta: 20 plates in 1.7 minutes, 0 cr (23:42 UTC); craft-wiring-synchrony-hub +99 per ship-hour over 106 runs (20 runs a visit before 23:44 UTC); craft-piping-node-beta -155 over 82 runs | Requests ENT-256 and orders ENT-052: the reserve's iron is met, so a trader makes before it gathers; the reserve still asks 31,999 steel plate and 2,103 copper piping to be made (the tool stock, view=reserve, 23:32 UTC); crafting is the class skill (rules F23, F30) |
-| Then | craft-steel-node-beta, craft-steel-central-nexus, craft-steel-synchrony-hub, census-frontier, park | every ship | -- | -- | `park` should never be reached; a docked trader whose stores are used up waits docked (requests.log ENT-256, step 4) |
+- First, every ship: the once line of 24 routes; for the traders nearly
+  all are booked or full (`fill.py status trader`).
+- Own routes: `@trade-sell > @trade-craft` for all 40; ahead of them one
+  ship each on a test beyond the border (entry `Trade beyond the border`):
+  trade-silver-bar-alpha-to-arneb, carry-hydrogen-beta-to-crucible (two
+  hydrogen holders, one ship at a time), go-ironlight-trader then
+  carry-hydrogen-beta-to-crucible-bulk (the freighter test).
+- Then: craft-steel-node-beta, craft-steel-central-nexus,
+  craft-steel-synchrony-hub, park.
 
-Not in the plan any more: gather-okab-belt and gather-gj-3470-dewfall-fray
-and the home gather fields of the old list Then (iron and copper, which
-the reserve no longer takes; gather-okab-belt -398 per ship-hour over 113
-runs in the 4 hours to 23:32 UTC), and `@trade-gas` (no home station bids
-for hydrogen; the three gas ships fly `@trade-sell > @trade-craft` like
-the others). No field within reach that holds what the reserve lacks
-(silicon, carbon, gold, nickel ore) is open to traders: the nearest are
-7 to 12 jumps out, thin, and claimed by Mining (admirals.log ENT-060).
+What it carries: little. After the pause the home bids that paid on
+2026-11-17 are gone (null matter and hydrogen 0 at every home station,
+soma 2 to 3 units; books of 19:36 to 19:52 UTC), the traders' own iron is
+used up (under 100 a pilot) and copper wiring stands far over its max, so
+most traders wait docked at no cost and the gate reads HALT.
 
-Trade's steady money (`hive.py briefing`, SUM trader): +8,142 cr an hour
-over the 4 hours of runs to 23:31 UTC; the division's last hour read
-+20,477 cr net at 23:47 UTC (`hive.py fleet`). Fill gate PASS at 23:44
-UTC, 40 of 40 at work.
-
-What changes it: the traders' stores used up (then most traders dock: the
-fill gate will name them, and the report says how many and why); a home
-bid for hydrogen, plasma or copper ore; a field of silicon, carbon, gold
-or nickel ore near home that Mining does not claim; the Fleet Admiral's
-fallback that reads the reserve by itself (her open build Q73 (5)).
+What opens work: a home bid back (`requires.bid` opens a sell route by
+itself), a far bid with depth on a fresh book, a freighter whose load is
+worth the road, the Fleet Admiral's word on the trader fallback
+(requests.log, 2026-11-21).
 
 ### Route Guides
-Status: proven. Updated: 2026-11-16. Evidence: migrated from guidebook/trade.md section 1.
+Status: retired. Updated: 2026-11-21. Evidence: merged into `Selling stores where they lie` (refined under the caps, queue.log ENT-189).
 
 How each kind of route of this division is flown: the fit and the
 skills it needs, its place, its steps, what opens and closes it. A
@@ -49,49 +38,31 @@ a route earns now is in the fleet's database with its age (rule F22;
 the tool `routes`, the view `route_earnings`).
 
 ### Selling stores where they lie (`sell-<good>-at-<station>`, `carry-<good>-<from>-to-<to>`)
-Status: proven. Updated: 2026-11-17. Evidence: migrated from guidebook/trade.md section 1.
+Status: proven. Updated: 2026-11-21. Evidence: the sell and carry route files with their measured figures; sellgen.py of the skill trade-books.
 
-- Fit and skills: the starter hull, no module. Trains trading.
-- Steps: at the station, `store: all`, then the `withdraw` step takes
-  from the pilot's own storage only what the bid takes at its best
-  price, then `sell` at the floor; a carry withdraws a few units,
-  sells them one or two jumps on and stores what the bid left.
-- Opens and closes: `requires.stored` (the pilot's own storage holds
-  the good) and `requires.bid` (a book read within the hour shows the
-  bid at the floor). Each ship sells its own stores; the routes are
-  open to every division's ships (rule F24).
-- Floor: above the best ask of the same good in depth elsewhere. Soma:
-  370 cr, against 323 asked at Central Nexus in depth.
-- Readings, 2026-11-16 23:49 to 2026-11-17 00:01 UTC (runs.jsonl):
-  soma at Synchrony Hub +1,828 cr in 6.7 minutes, at Node Beta +321
-  and +714, carried to Node Alpha +666 in 7.9 minutes; three later
-  runs found the bid taken and cost -24 to -36 cr of fuel. Over the 12
-  hours to 2026-11-17 03:32 UTC (route_earnings): Synchrony 6,247 per
-  ship-hour over 8 runs, the carry to Node Alpha 9,178 over 7, Node
-  Beta 2,735 over 6, the carry to Node Gamma 2,812 over 2.
-- How a route is written: `sellgen.py scan` (the trade-books skill)
-  lists every good we store above the reserve with the bid where it
-  lies, the best bid elsewhere, the cheapest ask and the routes that
-  sell it already; `sellgen.py sell` and `sellgen.py carry` write the
-  route from the book and the storage book, with the readings in its
-  note; the floor is set by hand above the cheapest ask in depth.
-  Hydrogen gas (2026-11-17 03:39 UTC): floor 30 against Ironlight's
-  ask of 6 for about 1.1 million; gas is size 2, so a carry takes 32.
-- Null matter (2026-11-17 19:41 UTC): floor 200. Central Nexus is the one
-  station of our 40 books that bids for it, 200 to 210 cr for 7 to 295
-  units, six readings from 17:56 to 19:38 UTC, gone at 19:40 and back
-  within minutes; it asks 213 to 220 itself, so the floor sits in the
-  spread, not under the market. The catalog's base value is 450 and no
-  book bids near it; processed null matter (910) needs a facility we do
-  not own. Size 2: a carry takes 32. Mining's Synchrony carry made
-  +17,050 cr in 4 runs from 15:56 to 19:33 UTC (runs.jsonl).
-- Before a mine test the filler offers is let in, read what it sells
-  into: on 2026-11-17 eight mine tests (Stillwork, Gaugewatch, GSC-0033,
-  Deepwell, Sootfall and more) rested on that same null matter bid of 10
-  to 16 units at its best price while the fleet stored 6,193 null matter.
+- The starter hull, nothing bought; trains trading. Each ship sells its
+  own stores; the routes are open to every division (rule F24).
+- Steps: `store: all`, `withdraw` from the pilot's own storage (the
+  runner takes only what the bid takes when the same stop sells), `sell`
+  at the floor; a carry sells one or two jumps on and stores the rest.
+- Gates: `requires.stored` and `requires.bid` (a book read within the
+  hour); a route opens again by itself when a docked ship reads the bid
+  back.
+- Floor: above the cheapest ask of the good in depth elsewhere, set again
+  each turn beside `sellgen.py scan` (skill trade-books): soma's deep ask
+  fell from 323 to 292 cr overnight and five routes stood closed by their
+  own floor (2026-11-17).
+- A route whose runs last minutes is judged by credits a run times the
+  runs its bid's regain allows (table `stats_refill`), never by its
+  per-hour figure.
+- A standing sell order (`create_sell_order`, spacemolt_market) costs 1%
+  of the listed value at once; one anchor beacon at 1,200 cr stood a day
+  unfilled at Node Beta (2026-11-16 to 17).
+- Readings: `hive.py route <id>` (sell-null-matter-at-nexus,
+  sell-soma-at-node-beta, carry-soma-beta-to-gamma).
 
 ### Crafting for sale (`craft-<good>-<station>`)
-Status: proven. Updated: 2026-11-17. Evidence: migrated from guidebook/trade.md section 1.
+Status: retired. Updated: 2026-11-21. Evidence: merged into `Making goods from own stores` (refined under the caps, queue.log ENT-189).
 
 - Fit and skills: the starter hull. Trains crafting and trading.
 - Steps: at the workshop's station `store: all`, `buy` the bought
@@ -113,7 +84,7 @@ Status: proven. Updated: 2026-11-17. Evidence: migrated from guidebook/trade.md 
   if the reserve releases the crystals.
 
 ### Crafting for the reserve from stores (`craft-piping-<station>`)
-Status: proven. Updated: 2026-11-17. Evidence: migrated from guidebook/trade.md section 1.
+Status: retired. Updated: 2026-11-21. Evidence: merged into `Making goods from own stores` (refined under the caps, queue.log ENT-189).
 
 - Fit and skills: the starter hull. Trains crafting and refining.
 - Steps: one stop at the station's workshop with two crafts in its
@@ -134,7 +105,7 @@ Status: proven. Updated: 2026-11-17. Evidence: migrated from guidebook/trade.md 
   takes about 1.6 ticks a run. Nine runs in the first 15 minutes.
 
 ### Making from one's own stores in one visit (`craft-steel-own-<station>`, `craft-wiring-<station>`)
-Status: proven. Updated: 2026-11-17. Evidence: migrated from guidebook/trade.md section 1.
+Status: retired. Updated: 2026-11-21. Evidence: merged into `Making goods from own stores` (refined under the caps, queue.log ENT-189).
 
 - Fit and skills: the starter hull. Trains crafting and refining; costs
   one hop of fuel, nothing bought or sold.
@@ -157,7 +128,7 @@ Status: proven. Updated: 2026-11-17. Evidence: migrated from guidebook/trade.md 
   for a visit 40 minutes later.
 
 ### Missions that pay once (`voidborn-<mission>`)
-Status: proven. Updated: 2026-11-17. Evidence: migrated from guidebook/trade.md section 1.
+Status: retired. Updated: 2026-11-21. Evidence: merged into `Once missions: what they taught` (refined under the caps, queue.log ENT-189).
 
 Section 3. Each starts with the accept at the giver's station and
 skips a pilot that booked its reward. Neural Matrix Delivery: the
@@ -166,7 +137,7 @@ Observatory Station (9 jumps, three of them lawless): 5,000 cr, paid
 in both runs (2026-11-16 19:49 UTC and 2026-11-16 23:59 UTC).
 
 ### Gas (`mine-<cloud>`)
-Status: proven. Updated: 2026-11-17. Evidence: migrated from guidebook/trade.md section 1.
+Status: retired. Updated: 2026-11-21. Evidence: merged into `Route Templates` (refined under the caps, queue.log ENT-189).
 
 - Fit: a Gas Harvester I. Trains mining.
 - Sells hydrogen, plasma and argon into the Node Beta and Central
@@ -177,7 +148,7 @@ Status: proven. Updated: 2026-11-17. Evidence: migrated from guidebook/trade.md 
   Emission Nebula +260 over 6 runs.
 
 ### Navigation training (`train-navigation-trader`)
-Status: proven. Updated: 2026-11-17. Evidence: migrated from guidebook/trade.md section 1.
+Status: retired. Updated: 2026-11-21. Evidence: merged into `Route Templates` (refined under the caps, queue.log ENT-189).
 
 - The starter hull. Docks at our five stations in a loop; about 4
   navigation XP a jump. `requires.skills_below` navigation 3: it
@@ -187,7 +158,7 @@ Status: proven. Updated: 2026-11-17. Evidence: migrated from guidebook/trade.md 
   -165 cr each.
 
 ### Fallback gathering (`mine-pherkad-rift`, `gather-hamal-crystal-bloom`, `gather-gsc-0027-prism-scatter`, `mine-acubens`)
-Status: proven. Updated: 2026-11-17. Evidence: migrated from guidebook/trade.md section 1.
+Status: retired. Updated: 2026-11-21. Evidence: merged into `Route Templates` (refined under the caps, queue.log ENT-189).
 
 - A mining laser. Iron and copper ore into the pilot's storage for
   the reserve; never judged on its pay (rule F8).
@@ -195,7 +166,7 @@ Status: proven. Updated: 2026-11-17. Evidence: migrated from guidebook/trade.md 
   to -191 per ship-hour over 57 to 249 runs.
 
 ### Buying station stock by hand
-Status: proven. Updated: 2026-11-17. Evidence: migrated from guidebook/trade.md section 1.
+Status: retired. Updated: 2026-11-21. Evidence: merged into `Station Inputs Bought (plan step P4)` (refined under the caps, queue.log ENT-189).
 
 - One unit first with `estimate_purchase`, then `buy` sized to the
   smallest of: the units asked, the units at the price, and what the
@@ -209,7 +180,7 @@ Status: proven. Updated: 2026-11-17. Evidence: migrated from guidebook/trade.md 
   ENT-172).
 
 ### Standing sell orders (`create_sell_order`, spacemolt_market)
-Status: proven. Updated: 2026-11-17. Evidence: migrated from guidebook/trade.md section 1.
+Status: retired. Updated: 2026-11-21. Evidence: merged into `Selling stores where they lie` (refined under the caps, queue.log ENT-189).
 
 - `item_id`, `quantity`, `price_each`; the goods are escrowed from the
   hold, then from storage; 1% of the listed value is paid at once.
@@ -228,42 +199,21 @@ Status: proven. Updated: 2026-11-17. Evidence: migrated from guidebook/trade.md 
   Beta.
 
 ### Route Templates
-Status: proven. Updated: 2026-11-17. Evidence: migrated from guidebook/trade.md section 2.
+Status: proven. Updated: 2026-11-21. Evidence: game/routes/templates/trade.json; plan.py templates.
 
-A kind of work is a named list of routes: a template. The templates of
-this division are kept in `game/routes/templates/trade.json` and listed
-in `game/routes/templates-trade.md`. A ship's row in the plan file
-names a template as `@<name>`, alone or beside routes of its own, and a
-ship is switched to other work with one word.
-
-| Template | Routes, in the order a ship tries them | Trains | Fit |
-|---|---|---|---|
-| `@trade-sell` | carry-null-matter-beta-to-nexus, sell-null-matter-at-nexus, carry-null-matter-synchrony-nexus, sell-soma-at-synchrony, carry-soma-synchrony-to-alpha, sell-soma-at-node-beta, carry-soma-beta-to-gamma, sell-soma-at-experiment, carry-palladium-nexus-to-gamma, sell-palladium-at-node-gamma, sell-hydrogen-at-node-beta, sell-hydrogen-at-node-gamma, sell-hydrogen-at-synchrony, carry-hydrogen-synchrony-to-experiment | trading | none |
-| `@trade-craft` | craft-piping-node-beta, craft-piping-synchrony-hub, craft-steel-own-node-beta, craft-steel-own-experiment, craft-steel-own-central-nexus, craft-wiring-synchrony-hub, craft-wiring-node-beta, craft-wiring-experiment, craft-steel-node-beta, craft-steel-central-nexus, craft-steel-synchrony-hub | crafting, refining | none |
-| `@trade-train-nav` | train-navigation-trader | navigation, piloting | none |
-| `@trade-gas` | mine-marfik-emission-nebula, mine-gsc-0016-emission-nebula, mine-the-experiment-haze, mine-coldwater-emission-nebula, mine-stellar-siphon, mine-the-experiment-haze-synchrony | mining | Gas Harvester I |
-| `@trade-gather` | gather-okab-belt, gather-gj-3470-dewfall-fray, gather-hamal-crystal-bloom, gather-gsc-0027-prism-scatter, gather-ironhollow-echo-ejecta, mine-acubens | mining | mining laser |
-
-The rows of the plan, 2026-11-17 23:42 UTC: all 40 traders fly
-`@trade-sell > @trade-craft`. `@trade-gas`, `@trade-gather` (iron and
-copper fields) and `@trade-train-nav` are kept and named by no ship:
-the gas has no home bid, the reserve's iron is met, and every trader
-holds navigation 4 or more.
-
-| Task | How |
-|---|---|
-| See the templates and how many ships use each | the tool `plan` with `action=templates` (`plan.py templates`) |
-| Make or change one | `plan.py template <name> <routes with commas> --title "..." --trains <skills> --note "..."` |
-| Put ships on one | `plan.py use <ships> <name>`, or `plan.py set <ships> @a,@b` for several |
-| Take one away | `plan.py template <name> none`, once no ship names it |
-
-This guidebook keeps no list of routes that did not pay (Suggi,
-2026-11-16; rule F22). What a route earns now, with the age of the
-figure, is asked each turn: the tool `routes`, or `SELECT * FROM
-route_earnings` through the tool `sql`.
+The division's kinds of work are templates in
+`game/routes/templates/trade.json`, listed in
+`game/routes/templates-trade.md`: `@trade-sell` (stored goods into the
+bids where they lie; trading), `@trade-craft` (making from own stores;
+crafting, refining), `@trade-train-nav` (navigation to 3 for Signal
+Fragments). A ship's row names one as `@<name>`; `plan.py template` and
+`plan.py use` change them. `@trade-gas` and `@trade-gather` are gone since
+2026-11-18: gathering is the miners' work (rule F23). This guidebook keeps
+no list of routes that did not pay (rule F22): what a route earns now is
+the view `route_earnings`.
 
 ### Missions That Pay Once
-Status: proven. Updated: 2026-11-17. Evidence: migrated from guidebook/trade.md section 3.
+Status: retired. Updated: 2026-11-21. Evidence: merged into `Once missions: what they taught` (refined under the caps, queue.log ENT-189).
 
 The `once` routes at the head of the plan: every pilot flies them
 first. What a new one pays and what it needs is written here when it
@@ -286,3 +236,78 @@ was flown the first time.
 | `voidborn-resonance-finish` (Resonance Substrate and Final Calibration for a pilot the chain left after Conductive Lattice) | 7,000 + 8,000 cr | Not flown yet. From 11:11 UTC six chain runs read 'energy_crystal: not bought; final_calibration not offered' when the Central Nexus crystal ask left 420 cr (3,500 at 11:35, 420 x 65 at 11:52, 420 x 43 at 12:48 UTC); the chain skips a pilot with its first link booked. 11 pilots, all miners, stood so at 12:49 UTC (data/fleet/onetime.json) | 2026-11-16 | Written 12:49 UTC, max_ships 2; the chain's max_ships 10 -> 4 on the crystal ask. A run without crystals ends 'not offered': no try, it rests an hour (requires.booked) |
 | The Crimson Resonance (the link after Signal Fragments, 8,500 cr) | -- | One accept with an empty hold, 2026-11-16 12:36 UTC: the hold stayed empty, no titanium alloy handed out | 2026-11-16 | Not flown (orders ENT-014): 5 titanium alloy would be bought (about 6,500 cr) for 8,500 cr at 34 jumps. The trader holds the mission |
 | `voidborn-neural-matrix-board` (Neural Matrix Delivery, Central Nexus board; deliver 8 phase matrix to Sirius Observatory Station, Solarian, 9 jumps) | 5,000 cr; navigation 25, trading 40 XP | Two runs, 5,000 cr each: the test route 2026-11-16 19:49 UTC (4 of 4 stops in 27.5 minutes) and the board route 2026-11-16, accepted 23:47 and handed in 23:59 UTC | 2026-11-16 | The accept with an empty hold put the 8 phase matrix (size 2) into the hold (12:36 UTC); nothing is bought. The road crosses three lawless systems (GSC-0041, Antares, Homam; `scripts/map.py route`). The first run's wallet fell 19,390 cr beyond the reward, which no step of the route explains: read as a gift of the wallet guard in the hour it gave without a record (errors.log ENT-064), not proven. A once route with the accept at its first stop since 2026-11-16 23:44 UTC, one ship at a time |
+
+### Making goods from own stores
+Status: proven. Updated: 2026-11-21. Evidence: craft-steel-own-node-beta, craft-wiring-synchrony-hub, craft-piping-node-beta (route files, runs.jsonl 2026-11-17).
+
+Routes `craft-steel-own-<station>`, `craft-wiring-<station>`,
+`craft-piping-<station>`: the starter hull, one hop of fuel, nothing
+bought; they train crafting and refining.
+
+- One stop at the workshop; its `craft` list asks one recipe in halving
+  sizes (32, 16, 8, 4, 2, 1 runs). An entry the pilot's storage cannot
+  fill makes nothing (`have_inputs` False) and the next is tried, so one
+  visit makes exactly what the pilot holds. Two crafts in one list chain
+  (a smelt, then piping): the runner withdraws only after the last.
+- Gate: `requires.stored` the input at that station; a pilot goes again
+  only after the ledger read its storage (about 40 minutes).
+- Read: 20 steel plates in 1.7 minutes for 0 cr (craft-steel-own-node-beta,
+  2026-11-17 23:42 UTC); a smelt about 0.23 ticks, a wiring run 0.26 to
+  0.28.
+- For sale only when every input and the output have surplus
+  (`reservecheck.py`, rule F24): focused crystal made from held-back
+  energy crystal was sold once (errors.log ENT-090).
+- The pull rule closes a craft whose output stands at its max: copper
+  wiring 10,732 of 96 on 2026-11-21 (`fill.py status trader`).
+- The calls behind a craft step: lessons.md, `Crafting by Hand: the Calls`.
+
+### Trade beyond the border
+Status: test. Updated: 2026-11-21. Evidence: table books 2026-11-21; scripts/map.py route; data/intel/sightings.jsonl; route files of the four tests.
+
+Home bids are thin and come back slowly; the far books hold the depth
+(table `books`, 2026-11-21 19:36 to 19:52 UTC): The Obsidian Well, a
+player station at Arneb (16 jumps, lawless), bids silver bar 501 x 44,527
+and silver ore 101 x 502,177; The Crucible Garrison (Crimson, 18 jumps)
+bids hydrogen 37 x 184 and heat sink 193 x 24.
+
+- Tests, one ship each, from 2026-11-21 20:00 UTC:
+  trade-silver-bar-alpha-to-arneb (Node Alpha asks 50 at 414),
+  carry-hydrogen-beta-to-crucible (41 of our own hydrogen and 24 heat
+  sinks bought at Node Beta at 147 in a hold of 65), go-ironlight-trader
+  then carry-hydrogen-beta-to-crucible-bulk (a Prayer freighter of 540).
+- The road: past Pherkad every system to Arneb or The Crucible is
+  lawless; no pirate on our record in any of them
+  (`scripts/map.py route`, data/intel/sightings.jsonl). Each test leaves
+  home with an empty hold or our own goods, carries price limits at both
+  ends, and stores at the far station what its bid left.
+- A far book read days ago is a guess, not a price: most foreign books in
+  the routemaker's trade candidates date from 2026-11-17; a ship that
+  docks reads the book again.
+- Each test answers: what the far bid takes and regains, what the road
+  costs, whether Node Alpha's silver bar ask comes back.
+
+### Once missions: what they taught
+Status: proven. Updated: 2026-11-21. Evidence: data/fleet/onetime.json; the voidborn-* and mission-* route files; errors.log ENT-039, ENT-058, ENT-096.
+
+The `once` routes head every plan's list First; a pilot flies each one
+time and a route skips a pilot that booked its reward
+(data/fleet/onetime.json; `oncecheck.py`, `boards.py` of the skill
+trade-books). What they taught:
+
+- A board mission is accepted at the route's first stop: a route without
+  the accept serves only pilots that hold the mission and counts every
+  other pilot as done (voidborn-first-steps, 2026-11-16).
+- One accept with an empty hold decides whether a delivery hands out its
+  goods: Concurrent Approval, Final Calibration and Neural Matrix Delivery
+  do; Conductive Lattice, Resonance Substrate and The Crimson Resonance do
+  not.
+- An acquire-module mission counts a module bought after the accept and
+  carried in the hold; one owned before does not.
+- A board is one pilot's: Signal Fragments is offered from navigation 3
+  (`requires.skills`).
+- A chain is sized on its scarcest input and gets a finisher
+  (voidborn-resonance-finish, `requires.booked` its first link).
+- A mining mission is bounded by one shared field: read its census and
+  set `min_left` (voidborn-collective-provides).
+
+What each title paid: its route's note and `hive.py route <id>`.
