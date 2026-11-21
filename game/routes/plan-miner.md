@@ -106,3 +106,4 @@ Planned:
 | What | When |
 |---|---|
 | Read the storage book once every miner is read again after the resume: the iron chain and the steel crafts' gates then read true; lift or drop the iron fields of Then by the pull rule, not by hand | next turn |
+| The far short-ore fields (Floodlight Flats silicon, The Gold Crest, Long Errand Band nickel) were read before the pause: their first runs at the new limits decide each lift; Intel's reads asked | their first RESULT lines |
