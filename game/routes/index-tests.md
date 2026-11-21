@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 116.
+Routes: 118.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -54,6 +54,7 @@ Routes: 116.
 | [hunt-chara-gas-plume-drift-ray](hunt-chara-gas-plume-drift-ray.json) | hunt | beyond the border, 16 jumps | drift_ray at chara_gas_plume; loot sold at The Obsidian Well | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-dawnbreak-frozen-drift-hollow-pilgrim](hunt-dawnbreak-frozen-drift-hollow-pilgrim.json) | hunt | beyond the border, 20 jumps | hollow_pilgrim at dawnbreak_frozen_drift; loot sold at The Levy Customs Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-denebola-fractured-prism-veil-ray](hunt-denebola-fractured-prism-veil-ray.json) | hunt | beyond the border, 5 jumps | veil_ray at denebola_fractured_prism; loot sold at Node Beta Industrial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
+| [hunt-driftwood-ghost-resonance-veil-ray](hunt-driftwood-ghost-resonance-veil-ray.json) | hunt | beyond the border, 20 jumps | veil_ray at driftwood_ghost_resonance; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-duskfield-cryobelt-hollow-pilgrim](hunt-duskfield-cryobelt-hollow-pilgrim.json) | hunt | beyond the border, 18 jumps | hollow_pilgrim at duskfield_cryobelt; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-edasich-ice-halo-frost-moth](hunt-edasich-ice-halo-frost-moth.json) | hunt | beyond the border, 25 jumps | frost_moth at edasich_ice_halo; loot sold at Treasure Cache Trading Post | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-elbowroom-veil-veil-ray](hunt-elbowroom-veil-veil-ray.json) | hunt | beyond the border, 19 jumps | veil_ray at elbowroom_veil; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
@@ -94,6 +95,7 @@ Routes: 116.
 | [hunt-test-stormwatch-lantern-slug](hunt-test-stormwatch-lantern-slug.json) | hunt | beyond the border, 5 jumps | Yield test: lantern_slug at stormwatch_belt (lawless); what a kill drops and whether a bid takes it | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-the-telescope-entangled-drift-veil-ray](hunt-the-telescope-entangled-drift-veil-ray.json) | hunt | beyond the border, 18 jumps | veil_ray at the_telescope_entangled_drift; loot sold at First Step Memorial Station | up to 1 ships | TBD | TBD | TBD | TBD | -- |
 | [hunt-the-telescope-flicker-field-veil-ray](hunt-the-telescope-flicker-field-veil-ray.json) | hunt | beyond the border, 18 jumps | veil_ray at the_telescope_flicker_field; loot sold at First Step Memorial Station | up to 1 ships | TBD | TBD | TBD | TBD | -- |
+| [hunt-thin-breath-haze-veil-ray](hunt-thin-breath-haze-veil-ray.json) | hunt | beyond the border, 18 jumps | veil_ray at thin_breath_haze; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-tureis-vapor-fields-bell-jelly](hunt-tureis-vapor-fields-bell-jelly.json) | hunt | beyond the border, 16 jumps | bell_jelly at tureis_vapor_fields; loot sold at The Obsidian Well | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-unukalhai-ice-fields-hollow-pilgrim](hunt-unukalhai-ice-fields-hollow-pilgrim.json) | hunt | beyond the border, 24 jumps | hollow_pilgrim at unukalhai_ice_fields; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-veritate-emission-nebula-halo-drifter](hunt-veritate-emission-nebula-halo-drifter.json) | hunt | beyond the border, 18 jumps | halo_drifter at veritate_emission_nebula; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |

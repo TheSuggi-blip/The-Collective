@@ -1,0 +1,20 @@
+{
+ "id": "hunt-driftwood-ghost-resonance-veil-ray",
+ "kind": "hunt",
+ "title": "veil_ray at driftwood_ghost_resonance; loot sold at First Step Memorial Station",
+ "note": "Written by routemaker.py from the herd's count, the loot of 363 runs of ours and the order book; an estimate of 2023 cr per hunter-hour, not a measurement. A test: one ship, the ranching rules kept. Added as a test by fill.py on 2026-11-21 19:57 UTC (Apophis): one ship until its first RESULT line is read.",
+ "place": "driftwood:driftwood_ghost_resonance",
+ "species": [
+  "veil_ray"
+ ],
+ "sell_at": "first_step:first_step_memorial_station:first_step_memorial_station",
+ "min_bid": 264,
+ "kills": 4,
+ "minutes": 52,
+ "max_ships": 1,
+ "min_creatures": 4,
+ "alone": true,
+ "requires": {
+  "empty_hold": true
+ }
+}
