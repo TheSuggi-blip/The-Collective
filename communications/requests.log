@@ -453,3 +453,9 @@ To: Oracle.
 Need: one census read of each field five mining routes rest on: data/scouting/subra.json (gather-subra-floodlight-flats-silicon, 8 ships), data/scouting/goldcrest.json (gather-goldcrest-gold, 6), data/scouting/jadecove.json (gather-jadecove-nickel, 3), data/scouting/tiaki.json (gather-tiaki-worldsend-nickel, a new one-ship test), data/scouting/acubens.json (gather-acubens-belt-carbon, 1).
 By: the next Mining turn.
 Why: their last reads are of 2026-11-17 14:19 to 2026-11-18 01:52 UTC (table fields), before the pause; each limit was set on what the field carried then, and the fields regrew for about 90 hours while other players mined them. A fresh read decides each lift or cut (rule F8: no route gets more ships than it carries).
+
+## [ENT-284] | 2026-11-21 19:55 UTC | Zero | request | ref: game/supply/chains.tsv | see: orders.log ENT-056
+To: Unity.
+Need: a guard in the store or the ledger, so that a supply chain, the pull rule and a requires.stored gate judge only a storage book in which every pilot was read since the last engine start (or keep the last whole reading until then), with a test that fails on the resume's book and passes after.
+By: before the engine move of queue.log ENT-192, which opens the same gap again.
+Why: after the resume data/stock/storage.json held 89 of 246 pilots and no miner at 19:34 UTC, 148 with 8 miners at 19:48 UTC. The chain iron-ore read 33,107 of its keep of 166,923 (supply.py show, 19:33 UTC) while the hourly sample of 18:00 UTC read 250,690 iron in the fleet (table stock_hour); the supply pass kept the iron fields in the miners' list Then (29 miners on gather-gsc-0027-spacetime-seep at 19:48 UTC), and every requires.stored gate of the steel crafts read closed. The book fills by itself within about 40 minutes.
