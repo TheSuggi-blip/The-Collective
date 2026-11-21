@@ -105,8 +105,4 @@ Planned:
 
 | What | When |
 |---|---|
-| Goal of the turn of 03:00 UTC: steel plate made from our own stored iron, 3,000 plates or more in 4 hours (storage book, steel_plate held by miners: 4,935 at 23:03 UTC); the five tests read (craft-steel-experiment, voidborn-material-synthesis, voidborn-crystal-resonance, gather-gsc-0044-belt-faction, gather-jadecove-nickel) | turn of 03:00 UTC |
-| The Liminal: its pilot switched in this turn (commission.py --switch-only); its gold runs at The Gold Crest against the Threshold's 325 gold in 90 minutes; a second hull only on that figure | its first gather runs |
-| Mission links: The Forge Tax 3 ships, Deep Core at Deep Range 2 ships (two hand-ins each, +4,340 to +4,631 cr a run); the field reads before each lift | each turn |
-| The outpost at GSC-0044: the ten seated miners take gather-gsc-0044-belt-faction once its first run stores into faction storage (lift_to 10); then Botein and Acrux the same way | after its RESULT line |
-| When the stored water ice is under about 2,000 units, lift the Central Nexus mine routes back toward what the bid regains | each turn |
+| Read the storage book once every miner is read again after the resume: the iron chain and the steel crafts' gates then read true; lift or drop the iron fields of Then by the pull rule, not by hand | next turn |
