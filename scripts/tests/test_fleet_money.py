@@ -390,6 +390,73 @@ class SweepTests(unittest.TestCase):
         self.assertEqual(self.calls, [])                                                     # no second deposit on top of an unsure one
         self.assertIn("no deposit: the deposit of 45,000 cr at", text)
 
+    def test_a_pass_cut_after_the_deposit_landed_books_it_at_the_next_pass_and_never_twice(self):
+        # 2026-11-21 21:08 UTC: the five-minute job's `timeout 200` ended a sweep after its deposit of 84,115 cr had
+        # landed (the treasury 365,083 -> 449,198) and before it was booked: Command read 84,115 cr of costs that hour.
+        class Cut(BaseException):
+            pass
+        self.wallet.SWEEP_ENABLED, self.wallet.PER_PASS = True, 0
+        self.wallets[LEADER] = 134115
+        self.write()
+        purse, reads = [365083], []
+
+        def deposit(pilot, credits):
+            self.calls.append(("deposit", pilot, credits))
+            self.wallets[pilot] -= credits
+            purse[0] += credits
+            self.write()
+            return True, "ok"
+
+        def read(pilot):
+            reads.append(purse[0])
+            if len(reads) == 2:                                   # the check after the deposit: the job's limit ends the pass here
+                raise Cut()
+            return purse[0]
+        self.wallet.deposit, self.wallet.treasury_read = deposit, read
+        with self.assertRaises(Cut):
+            self.run_sweep()
+        self.assertEqual(self.calls, [("deposit", LEADER, 84115)])
+        rows = [json.loads(line) for line in (self.data / "fleet" / "sweep.jsonl").read_text().splitlines()]
+        self.assertEqual([(r["kind"], r["credits"], r["state"], r.get("before")) for r in rows], [("deposit", 84115, "sent", 365083)])
+        sent_at = rows[0]["at"]
+        self.assertFalse((self.data / "fleet" / "onetime.json").exists())
+        # the next pass: the treasury shows it, so the deposit is booked once, with the time it was sent; none again
+        self.wallet.treasury_read = lambda pilot: purse[0]
+        self.calls.clear()
+        code, text = self.run_sweep()
+        self.assertEqual((code, self.calls), (0, []))
+        self.assertIn("booked at the next pass: the deposit of 84,115 cr", text)
+        once = json.loads((self.data / "fleet" / "onetime.json").read_text())
+        self.assertEqual([(r[0], r[1], r[3]) for r in once if r[2] == self.wallet.DEPOSIT_TITLE], [(sent_at, LEADER, -84115)])
+        self.run_sweep()
+        once = json.loads((self.data / "fleet" / "onetime.json").read_text())
+        self.assertEqual(len([r for r in once if r[2] == self.wallet.DEPOSIT_TITLE]), 1)
+
+    def test_a_cut_deposit_the_treasury_does_not_show_is_kept_unsure_and_holds_the_next_one(self):
+        self.wallet.SWEEP_ENABLED, self.wallet.PER_PASS = True, 0
+        self.wallets[LEADER] = 95000
+        self.write()
+        (self.data / "fleet" / "sweep.jsonl").write_text(json.dumps({"at": int(time.time()) - 300, "kind": "deposit", "from": LEADER,
+            "to": "faction", "credits": 45000, "state": "sent", "before": 400000, "text": ""}) + "\n")
+        self.wallet.treasury_read = lambda pilot: 400000          # it did not land
+        self.wallet.deposit = lambda pilot, credits: (self.calls.append(("deposit", pilot, credits)), (True, "ok"))[1]
+        code, text = self.run_sweep()
+        self.assertEqual((code, self.calls), (1, []))
+        self.assertIn("HALT: the deposit of 45,000 cr sent", text)
+        self.assertIn("no deposit: the deposit of 45,000 cr at", text)
+        self.assertFalse((self.data / "fleet" / "onetime.json").exists())
+        rows = [json.loads(line) for line in (self.data / "fleet" / "sweep.jsonl").read_text().splitlines()]
+        self.assertEqual([r["state"] for r in rows], ["sent", "unsure"])
+
+    def test_the_deposit_waits_for_the_next_pass_when_the_gifts_used_its_time(self):
+        self.wallet.SWEEP_ENABLED, self.wallet.PER_PASS, self.wallet.DEPOSIT_BY = True, 0, -1
+        self.wallets[LEADER] = 95000
+        self.write()
+        self.wallet.deposit = lambda pilot, credits: (self.calls.append(("deposit", pilot, credits)), (True, "ok"))[1]
+        code, text = self.run_sweep()
+        self.assertEqual(self.calls, [])
+        self.assertIn("the deposit waits for the next pass", text)
+
 
 class HiveFleetTests(unittest.TestCase):
     def setUp(self):

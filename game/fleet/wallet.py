@@ -15,7 +15,9 @@ WHAT: every pilot pays its own fuel, repairs, fittings and tax from its own wall
       deposits what it holds above KEEP_SHIP into the treasury (the same storage `deposit` of `credits`, target
       `faction`) once that is MIN_DEPOSIT or more. A gift is booked as a top-up is (gifts.jsonl, onetime.json), a
       deposit once in onetime.json under routes.TREASURY (minus for the leader): a move between two purses of ours,
-      no cost (routes.deposits, station/fleet.py). What the sweep tried is kept in data/fleet/sweep.jsonl.
+      no cost (routes.deposits, station/fleet.py). What the sweep tried is kept in data/fleet/sweep.jsonl; a deposit
+      is written there as `sent` before its call, so a pass the job cuts (its `timeout 200`) loses no deposit: the
+      next pass reads the treasury and books it, with the time it was sent, or keeps it unsure.
 RULES:
   - A donor keeps KEEP credits at least; one gift per pilot per COOLDOWN (the wallets are read every ten seconds,
     the game's answer can lag): a pilot is never given twice for one low reading.
@@ -78,6 +80,8 @@ SKIP_PILOTS = set()            # pilots that never give in a sweep (one that hol
 SHOW_WAIT = 45                 # seconds the sweep waits for the giver's wallet to show the money gone before it books
 BATTLE_WAIT = 10 * 60          # a pilot refused `in_battle` is not asked again in this long
 UNSURE_HOLD = 60 * 60          # after a deposit the wallet did not show, no new deposit in this long
+DEPOSIT_BY = 90                # seconds into a pass after which the deposit waits for the next pass: the job cuts a pass at
+                               # 200 s, and a deposit's call, read and check take up to about 100 s (2026-11-21 21:08 UTC)
 DEPOSIT_TITLE = "Faction treasury: credits deposited (the Collective keeps them)"     # begins with routes.TREASURY
 
 
@@ -323,10 +327,45 @@ def swept(data):
     return out
 
 
-def note(data, kind, giver, taker, credits, state, text=""):
+def note(data, kind, giver, taker, credits, state, text="", before=None):
+    row = {"at": int(time.time()), "kind": kind, "from": giver, "to": taker, "credits": int(credits), "state": state,
+           "text": str(text)[:200].encode("ascii", "replace").decode("ascii")}
+    if before is not None:
+        row["before"] = int(before)                              # the treasury read before a deposit's call
     with open(Path(data) / "fleet" / "sweep.jsonl", "a", encoding="utf-8") as handle:
-        handle.write(json.dumps({"at": int(time.time()), "kind": kind, "from": giver, "to": taker, "credits": int(credits), "state": state,
-                                 "text": str(text)[:200].encode("ascii", "replace").decode("ascii")}, sort_keys=True) + "\n")
+        handle.write(json.dumps(row, sort_keys=True) + "\n")
+        handle.flush()
+        os.fsync(handle.fileno())                                  # written before the call it announces
+
+
+def pending(log):
+    """The deposit row written `sent` whose pass ended before any answer (the newest deposit row of the log), or None."""
+    rows = [r for r in log if r.get("kind") == "deposit"]
+    return rows[-1] if rows and rows[-1].get("state") == "sent" else None
+
+
+def settle(data, row):
+    """A deposit a cut pass left `sent`: booked once, with the time it was sent, when the treasury rose by most of it
+    since the read before its call; kept unsure when the treasury does not show it; left `sent` when the treasury does
+    not answer. 'booked', 'unsure' or 'open'."""
+    leader, credits, before = row.get("from"), int(row.get("credits") or 0), row.get("before")
+    after = treasury_read(leader)
+    when = time.strftime("%H:%M", time.gmtime(row["at"]))
+    if after is None:
+        print("no deposit: the deposit of %s cr sent at %s UTC is not settled: the treasury did not answer; read again at the next pass"
+              % (format(credits, ","), when))
+        return "open"
+    if isinstance(before, (int, float)) and after >= before + credits * 0.9:
+        book_deposit(data, leader, credits, row["at"])
+        note(data, "deposit", leader, "faction", credits, "booked", "settled at the next pass: the treasury %s -> %s" % (before, after))
+        print("booked at the next pass: the deposit of %s cr sent at %s UTC landed (the treasury %s -> %s cr)"
+              % (format(credits, ","), when, format(int(before), ","), format(after, ",")))
+        return "booked"
+    note(data, "deposit", leader, "faction", credits, "unsure", "the pass ended before its answer; the treasury %s -> %s" % (before, after))
+    print("HALT: the deposit of %s cr sent at %s UTC is not booked: its pass ended before the answer and the treasury does not show "
+          "it (%s before, %s now). Read `view` target faction: if it landed, book it once (wallet.book_deposit)"
+          % (format(credits, ","), when, before, format(after, ",")))
+    return "unsure"
 
 
 def plan_sweep(fleet, leader, skip):
@@ -372,6 +411,13 @@ def sweep(data, now, dry):
         print("SWEEP | the leader %s holds no wallet reading in the fleet file: nothing given, nothing deposited" % leader)
         return 1
     log = swept(data)
+    waiting, failed = pending(log), 0
+    if waiting and not dry:
+        state = settle(data, waiting)
+        failed = 1 if state == "unsure" else 0
+        log = swept(data)
+    elif waiting:
+        print("would settle: the deposit of %s cr sent at %s UTC" % (format(int(waiting.get("credits") or 0), ","), time.strftime("%H:%M", time.gmtime(waiting["at"]))))
     battle = {r.get("from"): r["at"] for r in log if r.get("state") == "battle" and now - r["at"] < BATTLE_WAIT}
     held = [r for r in log if r.get("kind") == "deposit" and r.get("state") == "unsure" and now - r["at"] < UNSURE_HOLD]
     skip = {leader} | SKIP_PILOTS | builders(data)
@@ -388,7 +434,6 @@ def sweep(data, now, dry):
         if why:
             print("  left out: %s (%s cr): %s" % (name, format(fleet[name]["credits"], ","), why))
     plan = plan_sweep(fleet, leader, skip | set(battle) | set(cool))
-    failed = 0
     for pilot, credits in plan:
         if dry:
             print("would give: %s -> %s %s cr (keeps %s)" % (pilot, leader, format(credits, ","), format(KEEP_SHIP, ",")))
@@ -422,7 +467,9 @@ def sweep(data, now, dry):
                   % (pilot, leader, format(credits, ","), "answered" if ok else text, pilot, SHOW_WAIT))
     have = (ships(data).get(leader) or {}).get("credits", 0)
     part = int(have - KEEP_SHIP)
-    if held:
+    if pending(log) and not dry:
+        pass                                                    # settle() said why: no second deposit on top of an open one
+    elif held:
         print("no deposit: the deposit of %s cr at %s UTC answered but the leader's wallet did not show it; none again until %s UTC "
               "(read `view` target faction and book it by hand if it landed)"
               % (format(held[-1].get("credits", 0), ","), time.strftime("%H:%M", time.gmtime(held[-1]["at"])), time.strftime("%H:%M", time.gmtime(held[-1]["at"] + UNSURE_HOLD))))
@@ -430,10 +477,11 @@ def sweep(data, now, dry):
         print("no deposit: the leader holds %s cr, under %s" % (format(have, ","), format(KEEP_SHIP + MIN_DEPOSIT, ",")))
     elif dry:
         print("would deposit: %s %s cr into the faction's treasury (keeps %s)" % (leader, format(part, ","), format(KEEP_SHIP, ",")))
-    elif time.time() - now > BUDGET:
-        print("the pass's %d seconds are used up: the deposit waits for the next pass" % BUDGET)
+    elif time.time() - now > DEPOSIT_BY:
+        print("the pass used %d seconds: the deposit waits for the next pass" % int(time.time() - now))
     else:
         before = treasury_read(leader)
+        note(data, "deposit", leader, "faction", part, "sent", "", before)    # first: a cut pass loses no deposit (settle)
         try:
             ok, text = deposit(leader, part)
         except Exception as error:
