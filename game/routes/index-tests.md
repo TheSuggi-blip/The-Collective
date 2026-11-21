@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 140.
+Routes: 139.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -97,7 +97,6 @@ Routes: 140.
 | [hunt-saltwind-ice-shelf-hollow-pilgrim](hunt-saltwind-ice-shelf-hollow-pilgrim.json) | hunt | beyond the border, 18 jumps | hollow_pilgrim at saltwind_ice_shelf; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-scheat-haze-drift-ray](hunt-scheat-haze-drift-ray.json) | hunt | beyond the border, 16 jumps | drift_ray at scheat_haze; loot sold at The Obsidian Well | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-seginus-haze-cinder-sylph](hunt-seginus-haze-cinder-sylph.json) | hunt | beyond the border, 20 jumps | cinder_sylph at seginus_haze; loot sold at The Levy Customs Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
-| [hunt-sheliak-weak-superposition-veil-ray](hunt-sheliak-weak-superposition-veil-ray.json) | hunt | beyond the border, 18 jumps | veil_ray at sheliak_weak_superposition; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-silverpine-gas-plume-cinder-sylph](hunt-silverpine-gas-plume-cinder-sylph.json) | hunt | beyond the border, 24 jumps | cinder_sylph at silverpine_gas_plume; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-starless-drift-veil-ray](hunt-starless-drift-veil-ray.json) | hunt | beyond the border, 22 jumps | veil_ray at starless_drift; loot sold at First Step Memorial Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-stillwater-emission-nebula-drift-ray](hunt-stillwater-emission-nebula-drift-ray.json) | hunt | beyond the border, 19 jumps | drift_ray at stillwater_emission_nebula; loot sold at The Obsidian Well | up to 1 ships | TBD | TBD | TBD | TBD | -- |

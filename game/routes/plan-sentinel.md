@@ -44,7 +44,7 @@ Kept by Apophis. Routes: 153. Ships: 20.
 | 22 | [voidborn-first-hunt-gsc-0031](voidborn-first-hunt-gsc-0031.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 5 jumps | once per pilot, up to 1 ships, empty hold | all 20 |
 | 23 | [hunt-sunbeam-dust-veil-ray](hunt-sunbeam-dust-veil-ray.json) | [Tests](index-tests.md) | beyond the border, 18 jumps | up to 1 ships, empty hold | 1 of 20 |
 | 24 | [hunt-thin-breath-haze-veil-ray](hunt-thin-breath-haze-veil-ray.json) | [Tests](index-tests.md) | beyond the border, 18 jumps | up to 1 ships, empty hold | 1 of 20 |
-| 25 | [hunt-sheliak-weak-superposition-veil-ray](hunt-sheliak-weak-superposition-veil-ray.json) | [Tests](index-tests.md) | beyond the border, 18 jumps | up to 1 ships, empty hold | 1 of 20 |
+| 25 | [hunt-sheliak-weak-superposition-veil-ray](hunt-sheliak-weak-superposition-veil-ray.json) | [Off](index-off.md) | beyond the border, 18 jumps | up to 1 ships, empty hold, off | 1 of 20 |
 | 26 | [hunt-rayfall-shimmer-veil-ray](hunt-rayfall-shimmer-veil-ray.json) | [Tests](index-tests.md) | beyond the border, 18 jumps | up to 1 ships, empty hold | 1 of 20 |
 | 27 | [hunt-gsc-0035-vapor-fields-cinder-sylph](hunt-gsc-0035-vapor-fields-cinder-sylph.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 20 jumps | up to 1 ships, empty hold | 1 of 20 |
 | 28 | [hunt-merope-dim-phase-pocket-veil-ray](hunt-merope-dim-phase-pocket-veil-ray.json) | [Tests](index-tests.md) | beyond the border, 18 jumps | up to 1 ships, empty hold | 1 of 20 |
