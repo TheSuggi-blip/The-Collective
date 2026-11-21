@@ -1,7 +1,7 @@
-# Defense -- Recipes
+# Armor & Shield Manufacturing -- Recipes
 
-Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.723.2; never edited by hand.
-Up: [master-index.md](../master-index.md). Recipes: 46; by hand: 34; in a facility only: 12.
+Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.732.0; never edited by hand.
+Up: [master-index.md](../master-index.md). Recipes: 46; by hand: 33; in a facility only: 13.
 
 | Recipe | Makes | From | Where | Time |
 |---|---|---|---|---|
@@ -34,7 +34,7 @@ Up: [master-index.md](../master-index.md). Recipes: 46; by hand: 34; in a facili
 | `build_nanocarbon_hull_lattice` | nanocarbon_hull_lattice x 1 | darksteel_plating x 3; graphene_sheet x 4; carbon_fiber_weave x 3; titanium_ingot x 3 | by hand, or in: carbon_weave_assembly_line, nanocarbon_fabrication_plant, advanced_composite_works | 42 |
 | `build_nebula_bio_regenerator` | nebula_bio_regenerator x 1 | biofiber_mesh x 3; bioactive_compound x 4; bioluminescent_culture x 2; life_support_unit x 1 | in: biofiber_culture_chamber, bio_regeneration_laboratory, nebula_biofacture_plant, stellar_genesis_foundry | 37.5 |
 | `build_nebula_storm_barrier` | nebula_storm_barrier x 1 | nebulium_core x 2; nebula_essence x 4; shield_emitter x 2; ion_emitter x 2; superconductor x 3; circuit_board x 2 | by hand, or in: storm_barrier_synthesis_line, nebula_shield_assembly_plant, storm_barrier_manufacturing_works | 270 |
-| `build_outer_rim_scrap_armor` | outer_rim_scrap_armor x 1 | salvage_metal x 15; salvage_components x 8; durasteel_plate x 4; hull_plating x 3; wiring_harness x 3 | by hand, or in: scrap_armor_fabrication_line, scrap_armor_assembly_works, scrap_armor_production_plant | 49.5 |
+| `build_quantum_entanglement_shield` | quantum_entanglement_shield x 1 | void_crystal x 2; refined_quantum_matrix x 6; exotic_crystal x 4; shield_matrix x 5; power_core x 4 | in: exotic_shield_assembly, entanglement_lattice_lab, parallel_dimension_barrier_plant, dimensional_convergence_array | 1245 |
 | `build_quantum_shield_iv` | quantum_shield_iv x 1 | shield_matrix x 3; refined_quantum_matrix x 2; exotic_crystal x 2; circuit_board x 5 | in: phase_barrier_workshop, quantum_phase_laboratory, dimensional_barrier_foundry, void_resonance_fabricator | 315 |
 | `build_reactive_armor_hardener` | reactive_armor_hardener x 1 | processing_core x 1; sensor_array x 2; hull_plating x 6; darksteel_plating x 4; durasteel_plate x 4 | by hand, or in: armor_response_assembly, reactive_armor_manufacturing, advanced_armor_response_plant | 129 |
 | `build_regenerative_armor_i` | regenerative_armor_i x 1 | hull_plating x 2; repair_nanite_container x 1; durasteel_plate x 3; graphene_sheet x 2 | by hand, or in: regenerative_armor_i_workshop, regenerative_armor_i_production_lab, regenerative_armor_i_assembly_plant | 64.5 |

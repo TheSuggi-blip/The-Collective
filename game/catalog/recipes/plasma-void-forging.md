@@ -1,0 +1,23 @@
+# Plasma & Void Forging -- Recipes
+
+Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.732.0; never edited by hand.
+Up: [master-index.md](../master-index.md). Recipes: 16; by hand: 0; in a facility only: 16.
+
+| Recipe | Makes | From | Where | Time |
+|---|---|---|---|---|
+| `build_dark_matter_projector` | dark_matter_projector x 1 | stabilized_exotic x 3; crystalline_lattice x 3; condensed_dark_matter x 4; refined_quantum_matrix x 2; power_cell x 3; weapon_housing x 1 | in: exotic_matter_weapon_assembly, dark_matter_projection_manufacturing, quantum_targeting_weapons_facility, exotic_annihilation_weapons_factory | 780 |
+| `build_entropy_beam` | entropy_beam x 1 | void_condensate x 3; darksteel_plating x 2; laser_focus_array x 2; power_cell x 2; weapon_housing x 1 | in: entropy_beam_fabrication_line, entropy_beam_workshop, entropy_beam_forge, entropy_beam_foundry | 195 |
+| `build_null_cannon` | null_cannon x 1 | voidborn_null_matrix x 4; void_condensate x 4; processed_null_matter x 3; crystalline_lattice x 2; power_cell x 3; weapon_housing x 1 | in: null_cannon_assembly_line, null_cannon_production_plant, null_cannon_manufacturing_works, null_cannon_fabrication_complex | 690 |
+| `build_phase_disruptor` | phase_disruptor x 1 | processed_null_matter x 3; void_condensate x 2; stabilized_exotic x 2; power_cell x 3; weapon_housing x 1 | in: null_matter_forge, phase_disruptor_workshop, phase_disruptor_forge, phase_disruptor_foundry | 315 |
+| `build_plasma_cannon_i` | plasma_cannon_i x 1 | plasma_injector x 1; weapon_housing x 1; ceramite_plating x 2; circuit_board x 2 | in: plasma_gun_forge, plasma_projection_workshop, plasma_armament_arsenal, plasma_ordnance_works | 33 |
+| `build_plasma_cannon_ii` | plasma_cannon_ii x 1 | plasma_cannon_i x 1; plasma_injector x 1; ceramite_plating x 1; superconductor x 1 | in: plasma_cannon_workshop, plasma_fabrication_plant, plasma_ordnance_factory, plasma_weapons_foundry | 57 |
+| `build_plasma_cannon_iii` | plasma_cannon_iii x 1 | plasma_cannon_ii x 1; plasma_injector x 1; ceramite_plating x 2; fury_alloy x 2; heat_sink x 2 | in: heavy_plasma_cannon_assembly, plasma_cannon_iii_workshop, plasma_cannon_iii_forge, plasma_cannon_iii_foundry | 121.5 |
+| `build_plasma_cannon_iv` | plasma_cannon_iv x 1 | plasma_cannon_iii x 1; weapon_core x 1; refined_plasma_core x 1; titanium_ingot x 2; exotic_crystal x 1 | in: plasma_forge, plasma_compression_chamber, thermonuclear_fabrication_plant, stellar_annihilation_works | 142.5 |
+| `build_plasma_repeater_i` | plasma_repeater_i x 1 | plasma_injector x 1; ceramite_plating x 2; circuit_board x 3; weapon_housing x 1 | in: plasma_repeater_assembly_line, plasma_repeater_i_workshop, plasma_repeater_i_forge, plasma_repeater_i_foundry | 36 |
+| `build_plasma_repeater_ii` | plasma_repeater_ii x 1 | plasma_repeater_i x 1; plasma_injector x 1; ceramite_plating x 2; circuit_board x 1; heat_sink x 2 | in: advanced_plasma_repeater_line, plasma_repeater_ii_workshop, plasma_repeater_ii_forge, plasma_repeater_ii_foundry | 73.5 |
+| `build_plasma_torpedo_launcher` | plasma_torpedo_launcher x 1 | plasma_injector x 2; tracking_system x 1; durasteel_plate x 4; power_cell x 2 | in: plasma_torpedo_workshop, torpedo_construction_yard, plasma_ordnance_yard, strategic_weapons_arsenal | 112.5 |
+| `build_void_cannon` | void_cannon x 1 | void_crystal x 2; weapon_housing x 1; stabilized_exotic x 2; power_cell x 3 | in: void_cannon_assembly_line, void_containment_lab, void_cannon_foundry, singularity_armaments_factory | 375 |
+| `build_void_lance_i` | void_lance_i x 1 | void_condensate x 3; crystalline_lattice x 2; power_cell x 3; stabilized_exotic x 2; weapon_housing x 1 | in: void_lance_assembly_line, void_lance_i_workshop, void_lance_i_forge, void_lance_i_foundry | 450 |
+| `build_void_lance_ii` | void_lance_ii x 1 | void_lance_i x 1; void_condensate x 1; stabilized_exotic x 1; processed_null_matter x 2 | in: advanced_void_lance_assembly_line, heavy_void_weapon_manufacturing_plant, industrial_advanced_void_lance_works, state_of_the_art_void_ordnance_facility | 600 |
+| `build_void_mine_launcher` | void_mine_launcher x 1 | void_crystal x 4; titanium_alloy x 6; superconductor x 2; tracking_system x 2; contained_antimatter x 1; weapon_housing x 1 | in: void_mine_launcher_assembly, void_mine_launcher_workshop, void_mine_launcher_forge, void_mine_launcher_foundry | 840 |
+| `build_void_torpedo_launcher` | void_torpedo_launcher x 1 | void_crystal x 3; phase_drive x 1; tracking_system x 1; contained_antimatter x 1 | in: rift_assembly_station, phase_torpedo_works, void_strike_ordnance_plant, dimensional_breach_arsenal | 1620 |

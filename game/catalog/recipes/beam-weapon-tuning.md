@@ -1,0 +1,33 @@
+# Beam Weapon Tuning -- Recipes
+
+Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.732.0; never edited by hand.
+Up: [master-index.md](../master-index.md). Recipes: 26; by hand: 7; in a facility only: 19.
+
+| Recipe | Makes | From | Where | Time |
+|---|---|---|---|---|
+| `build_em_disruptor_i` | em_disruptor_i x 1 | superconductor x 2; circuit_board x 4; ion_emitter x 1; weapon_housing x 1 | by hand, or in: em_disruptor_assembly_line, em_disruptor_i_workshop, em_disruptor_i_forge | 58.5 |
+| `build_emp_cannon_i` | emp_cannon_i x 1 | superconductor x 2; power_cell x 2; weapon_housing x 1; circuit_board x 4 | by hand, or in: pulse_coil_workshop, capacitor_assembly_plant, electromagnetic_forge | 45 |
+| `build_emp_pulse_i` | emp_pulse_i x 1 | superconductor x 3; power_cell x 2; circuit_board x 5; weapon_housing x 1 | by hand, or in: emp_pulse_generator_line, emp_pulse_i_workshop, emp_pulse_i_forge | 57 |
+| `build_emp_pulse_ii` | emp_pulse_ii x 1 | emp_pulse_i x 1; superconductor x 1; power_cell x 1; circuit_board x 1; ion_emitter x 1 | in: enhanced_emp_pulse_assembly, emp_pulse_ii_workshop, emp_pulse_ii_forge, emp_pulse_ii_foundry | 102 |
+| `build_emp_pulse_iii` | emp_pulse_iii x 1 | emp_pulse_ii x 1; superconductor x 2; power_cell x 1; metamaterial_panel x 2; ion_emitter x 1 | in: military_emp_pulse_assembly, emp_pulse_iii_workshop, emp_pulse_iii_forge, emp_pulse_iii_foundry | 615 |
+| `build_energy_siphon` | energy_siphon x 1 | nebulium_core x 4; prismatic_lens x 3; nebula_essence x 4; ion_emitter x 3; superconductor x 3; power_cell x 3; weapon_housing x 1 | in: energy_siphon_assembly_line, modular_energy_weapon_plant, energy_siphon_production_complex, automated_energy_extraction_system | 495 |
+| `build_focused_beam_i` | focused_beam_i x 1 | focused_crystal x 3; circuit_board x 3; laser_focus_array x 1; power_cell x 1; weapon_housing x 1 | by hand, or in: beam_assembly_line, focused_beam_i_workshop, focused_beam_i_forge | 130.5 |
+| `build_focused_beam_ii` | focused_beam_ii x 1 | focused_beam_i x 1; focused_crystal x 2; optical_fiber_bundle x 2; laser_focus_array x 1; power_cell x 1 | in: advanced_beam_assembly_line, focused_beam_ii_workshop, focused_beam_ii_forge, focused_beam_ii_foundry | 255 |
+| `build_focused_beam_iii` | focused_beam_iii x 1 | focused_beam_ii x 1; crystalline_lattice x 2; laser_focus_array x 1; power_cell x 1 | in: elite_beam_assembly_line, focused_beam_iii_workshop, focused_beam_iii_forge, focused_beam_iii_foundry | 405 |
+| `build_galvanic_hull_grid` | galvanic_hull_grid x 1 | power_core x 2; superconductor x 6; shield_emitter x 2; metallic_aerogel x 4; reinforced_bulkhead x 6; processing_core x 2 | in: galvanic_hull_grid_foundry | 720 |
+| `build_heavy_pulse_laser` | heavy_pulse_laser x 1 | crystalline_lattice x 2; focused_crystal x 5; laser_focus_array x 3; power_cell x 2; weapon_housing x 1 | in: pulse_laser_assembly_station, heavy_pulse_laser_workshop, heavy_pulse_laser_forge, heavy_pulse_laser_foundry | 405 |
+| `build_ion_beam_array` | ion_beam_array x 1 | ion_emitter x 3; focused_crystal x 2; superconductor x 3; power_cell x 2 | in: ion_emitter_assembly_line, ion_beam_laboratory, beam_weapons_factory, coherent_beam_arsenal | 165 |
+| `build_ion_blaster_i` | ion_blaster_i x 1 | ion_solution x 3; circuit_board x 3; ion_emitter x 1; weapon_housing x 1 | by hand, or in: ion_blaster_assembly_station, ion_blaster_i_workshop, ion_blaster_i_forge | 58.5 |
+| `build_ion_blaster_ii` | ion_blaster_ii x 1 | ion_blaster_i x 1; ion_solution x 2; circuit_board x 1; ion_emitter x 1; power_cell x 1 | in: enhanced_ion_blaster_line, ion_blaster_ii_workshop, ion_blaster_ii_forge, ion_blaster_ii_foundry | 108 |
+| `build_ion_blaster_iii` | ion_blaster_iii x 1 | ion_blaster_ii x 1; ion_solution x 1; superconductor x 2; ion_emitter x 1; power_cell x 1 | in: military_ion_blaster_line, ion_blaster_iii_workshop, ion_blaster_iii_forge, ion_blaster_iii_foundry | 165 |
+| `build_ion_cannon_i` | ion_cannon_i x 1 | ion_emitter x 1; weapon_housing x 1; circuit_board x 3 | by hand, or in: ion_emitter_lab, ion_cannon_fabrication, ion_weapons_facility | 39 |
+| `build_ion_cannon_ii` | ion_cannon_ii x 1 | ion_cannon_i x 1; ion_emitter x 1; superconductor x 1; power_cell x 1 | in: capacitor_workshop, ion_capacitor_plant, advanced_ion_factory, capacitor_weapons_forge | 81 |
+| `build_judgment_beam` | judgment_beam x 1 | solarian_composite x 5; solarian_legacy_alloy x 3; crystalline_lattice x 3; laser_focus_array x 3; stabilized_exotic x 1; power_cell x 3; weapon_housing x 1 | in: judgment_beam_assembly_line, automated_beam_works, judgment_beam_production_plant, state_of_the_art_beam_fabrication | 600 |
+| `build_neural_disruptor` | neural_disruptor x 1 | superconductor x 4; neural_interface_gel x 2; ion_emitter x 2; circuit_board x 5; weapon_housing x 1 | in: neural_disruptor_assembly_line, neural_disruptor_workshop, neural_disruptor_forge, neural_disruptor_foundry | 150 |
+| `build_pulse_laser_i` | pulse_laser_i x 1 | steel_plate x 3; circuit_board x 3; focused_crystal x 1; weapon_housing x 1 | by hand, or in: laser_gun_production_line, energy_weapon_forge, directed_energy_arsenal | 37.5 |
+| `build_pulse_laser_ii` | pulse_laser_ii x 1 | pulse_laser_i x 1; steel_plate x 1; circuit_board x 1; focused_crystal x 1; laser_focus_array x 1 | in: advanced_laser_assembly, pulse_laser_ii_workshop, pulse_laser_ii_forge, pulse_laser_ii_foundry | 103.5 |
+| `build_pulse_laser_iii` | pulse_laser_iii x 1 | pulse_laser_ii x 1; focused_crystal x 2; superconductor x 1; laser_focus_array x 1; power_cell x 1 | in: military_laser_production_facility, pulse_laser_iii_workshop, pulse_laser_iii_forge, pulse_laser_iii_foundry | 195 |
+| `build_solar_lance` | solar_lance x 1 | solarian_composite x 3; crystalline_lattice x 3; laser_focus_array x 3; power_cell x 3; weapon_housing x 1 | in: stellar_weapon_assembly, solar_lance_workshop, solar_lance_forge, solar_lance_foundry | 405 |
+| `build_storm_lance` | storm_lance x 1 | nebulium_core x 3; nebula_essence x 2; ion_emitter x 3; power_cell x 3; weapon_housing x 1 | in: ionic_weapon_assembly_line, storm_lance_workshop, storm_lance_forge, storm_lance_foundry | 225 |
+| `build_system_disabler` | system_disabler x 1 | superconductor x 4; ion_emitter x 2; sensor_array x 2; circuit_board x 6; weapon_housing x 1 | in: emp_weapon_assembly_line, system_disabler_workshop, system_disabler_forge, system_disabler_foundry | 132 |
+| `build_void_laser` | void_laser x 1 | void_crystal x 3; exotic_crystal x 5; refined_quantum_matrix x 4; jump_drive_core x 1; power_core x 3 | in: rift_beam_assembly, rift_forge_station, dimensional_breach_foundry, singularity_weapon_assembly | 2145 |

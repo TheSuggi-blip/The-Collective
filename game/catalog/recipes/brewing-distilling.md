@@ -1,11 +1,14 @@
-# Distillery -- Recipes
+# Brewing & Distilling -- Recipes
 
-Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.723.2; never edited by hand.
-Up: [master-index.md](../master-index.md). Recipes: 28; by hand: 28; in a facility only: 0.
+Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.732.0; never edited by hand.
+Up: [master-index.md](../master-index.md). Recipes: 36; by hand: 29; in a facility only: 7.
 
 | Recipe | Makes | From | Where | Time |
 |---|---|---|---|---|
 | `blend_frostmoth_frappe` | frostmoth_frappe x 2 | crystal_melt x 1; honeyglobe x 1; whale_blubber x 1 | by hand, or in: frostmoth_frappe_bar | 1 |
+| `bottle_nebula_stellar_vintage` | nebula_stellar_vintage x 1 | bioluminescent_algae x 2; purified_water x 6; liquid_nitrogen x 3 | in: haven_vintner_complex | 2.25 |
+| `brew_crimson_bloodwine` | crimson_bloodwine x 1 | honeyglobe x 2; fermentation_culture x 1; purified_water x 8; liquid_nitrogen x 4 | in: fleet_forge_distillery | 1.2 |
+| `brew_frontier_spore_spirits` | frontier_spore_spirits x 1 | gloomcap_mash x 2; fermentation_culture x 1; purified_water x 8; liquid_nitrogen x 4 | in: patchwork_spore_still | 1.2 |
 | `brew_nitro_cold_brew` | nitro_cold_brew x 2 | gloomcap_mash x 1; nitrogen_bladder x 1; crystal_melt x 1 | by hand, or in: nitro_cold_brew_bar | 1.2 |
 | `brew_station_lager` | station_lager x 4 | sunspindle x 2; fermentation_culture x 1; purified_water x 1 | by hand, or in: station_lager_brewery | 1.8 |
 | `brew_umbral_stout` | umbral_stout x 3 | umbral_residue x 1; fermentation_culture x 1; sunspindle x 1 | by hand, or in: umbral_stout_brewery | 2 |
@@ -17,10 +20,14 @@ Up: [master-index.md](../master-index.md). Recipes: 28; by hand: 28; in a facili
 | `charge_ion_sparkling_water` | ion_sparkling_water x 3 | ion_nodule x 1; crystal_melt x 1; noble_condensate x 1 | by hand, or in: ion_sparkling_water_bar | 1 |
 | `culture_verdigris_kefir` | verdigris_kefir x 3 | verdigris_curd x 1; fermentation_culture x 1; honeyglobe x 1 | by hand, or in: verdigris_kefir_bar | 1.5 |
 | `distill_ember_spirit` | ember_spirit x 2 | ember_gland x 1; gloomshine x 2 | by hand, or in: ember_spirit_still | 1.8 |
+| `distill_frontier_rotgut` | frontier_rotgut x 1 | sunspindle x 1; gloomcap_mash x 1; fermentation_culture x 1; purified_water x 8; liquid_nitrogen x 4 | in: the_magazine_still | 1.2 |
+| `distill_gloomshine` | gloomshine x 3 | gloomcap_mash x 2; purified_water x 1 | by hand, or in: gloomshine_still | 1.2 |
 | `distill_glowsail_cordial` | glowsail_cordial x 2 | glow_sac x 1; honeyglobe x 1; crystal_melt x 1 | by hand, or in: glowsail_cordial_still | 1.2 |
+| `distill_moonshine` | pirate_moonshine x 6 | water_ice x 10; pharmaceutical_culture x 2 | in: backwater_still, sables_still, bootleg_distillery, moonshine_works (and 1 more) | 13.5 |
 | `distill_void_ichor_liqueur` | void_ichor_liqueur x 2 | void_ichor x 1; gloomshine x 2 | by hand, or in: void_ichor_liqueur_bar | 2.5 |
 | `ferment_krypton_kvass` | krypton_kvass x 3 | krypton_bladder x 1; sunspindle x 1; fermentation_culture x 1 | by hand, or in: krypton_kvass_brewery | 1.5 |
 | `ferment_orchard_wine` | orchard_wine x 3 | honeyglobe x 3; fermentation_culture x 1; purified_water x 1 | by hand, or in: orchard_wine_cellar | 2 |
+| `infuse_starshine` | starshine x 1 | pirate_moonshine x 3; energy_crystal x 1 | in: crystal_infusion_still, the_crystal_cellar, starshine_distillery, crystal_aging_works (and 1 more) | 6.75 |
 | `mix_cobalt_cordial` | cobalt_cordial x 3 | cobalt_ink x 1; honeyglobe x 2; purified_water x 1 | by hand, or in: cobalt_cordial_bar | 1.2 |
 | `mix_noble_gas_spritz` | noble_gas_spritz x 2 | noble_condensate x 1; crystal_melt x 1; honeyglobe x 1 | by hand, or in: noble_gas_spritz_bar | 1.2 |
 | `mix_prism_charged_cocktail` | prism_charged_cocktail x 2 | prism_charged_ichor x 1; gloomshine x 1; honeyglobe x 1 | by hand, or in: prism_charged_cocktail_bar | 1.8 |
@@ -33,3 +40,4 @@ Up: [master-index.md](../master-index.md). Recipes: 28; by hand: 28; in a facili
 | `sour_caustic_ale` | caustic_sour_ale x 3 | caustic_sac x 1; fermentation_culture x 1; sunspindle x 1 | by hand, or in: caustic_sour_ale_brewery | 2 |
 | `spin_quantum_fizz` | quantum_fizz x 2 | quantum_silk x 1; crystallized_biogas x 1; honeyglobe x 1 | by hand, or in: quantum_fizz_bar | 1.5 |
 | `steep_lumen_liqueur` | lumen_liqueur x 2 | lumen_oil x 1; gloomshine x 2 | by hand, or in: lumen_liqueur_still | 2 |
+| `synthesize_voidborn_neural_soma` | voidborn_neural_soma x 1 | gloomcap_mash x 1; purified_water x 2; liquid_nitrogen x 2 | in: nexus_soma_dispensary | 4.5 |

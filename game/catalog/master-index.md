@@ -7,7 +7,7 @@ author: Unity
 
 # master-index.md -- The Game's Catalog
 
-Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.723.2; never edited by hand.
+Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.732.0; never edited by hand.
 Start here: every name below is a link into one of the sub-indexes of this folder.
 Recipes: 892. Facilities: 2953. Hulls: 385. Modules: 270. Items: 879. Skills: 30.
 
@@ -23,32 +23,40 @@ Recipes: 892. Facilities: 2953. Hulls: 385. Modules: 270. Items: 879. Skills: 30
 
 | Category | Recipes | By hand | In a facility only |
 |---|---|---|---|
-| [Refining](recipes/refining.md) | 189 | 81 | 108 |
-| [Consumables](recipes/consumables.md) | 112 | 52 | 60 |
-| [Components](recipes/components.md) | 111 | 70 | 41 |
-| [Utility](recipes/utility.md) | 81 | 63 | 18 |
-| [Weapons](recipes/weapons.md) | 68 | 16 | 52 |
-| [Modules](recipes/modules.md) | 56 | 26 | 30 |
-| [Defense](recipes/defense.md) | 46 | 34 | 12 |
-| [Galley](recipes/galley.md) | 38 | 38 | 0 |
-| [Distillery](recipes/distillery.md) | 28 | 28 | 0 |
-| [Facility Only](recipes/facility-only.md) | 28 | 0 | 28 |
+| [Chemical Synthesis](recipes/chemical-synthesis.md) | 50 | 18 | 32 |
+| [Cooking](recipes/cooking.md) | 48 | 45 | 3 |
+| [Armor & Shield Manufacturing](recipes/armor-shield-manufacturing.md) | 46 | 33 | 13 |
+| [Rendering](recipes/rendering.md) | 44 | 39 | 5 |
+| [Smelting](recipes/smelting.md) | 37 | 16 | 21 |
+| [Brewing & Distilling](recipes/brewing-distilling.md) | 36 | 29 | 7 |
+| [Crystal Growing & Glasswork](recipes/crystal-growing-glasswork.md) | 35 | 23 | 12 |
+| [Electronics Assembly](recipes/electronics-assembly.md) | 35 | 19 | 16 |
+| [Exotic Containment](recipes/exotic-containment.md) | 35 | 2 | 33 |
+| [Habitat Outfitting](recipes/habitat-outfitting.md) | 35 | 23 | 12 |
+| [Machining](recipes/machining.md) | 35 | 29 | 6 |
+| [Ammunition Loading](recipes/ammunition-loading.md) | 29 | 26 | 3 |
+| [Mining Gear Fabrication](recipes/mining-gear-fabrication.md) | 27 | 19 | 8 |
+| [Refinery Module Fitting](recipes/refinery-module-fitting.md) | 27 | 5 | 22 |
+| [Beam Weapon Tuning](recipes/beam-weapon-tuning.md) | 26 | 7 | 19 |
+| [Gunsmithing](recipes/gunsmithing.md) | 26 | 8 | 18 |
 | [Shipbuilding](recipes/shipbuilding.md) | 26 | 15 | 11 |
-| [Biological Refining](recipes/biological-refining.md) | 13 | 8 | 5 |
-| [Gas Processing](recipes/gas-processing.md) | 13 | 7 | 6 |
-| [Facility Construction](recipes/facility-construction.md) | 12 | 8 | 4 |
-| [Drones](recipes/drones.md) | 11 | 11 | 0 |
-| [Hydroponics](recipes/hydroponics.md) | 11 | 7 | 4 |
-| [Ice Refining](recipes/ice-refining.md) | 11 | 4 | 7 |
+| [Nuclear Enrichment](recipes/nuclear-enrichment.md) | 25 | 1 | 24 |
+| [Reactor & Hull Fitting](recipes/reactor-hull-fitting.md) | 25 | 21 | 4 |
+| [Field Kit Assembly](recipes/field-kit-assembly.md) | 23 | 10 | 13 |
+| [Fold Engineering](recipes/fold-engineering.md) | 22 | 1 | 21 |
+| [Packing & Crating](recipes/packing-crating.md) | 22 | 1 | 21 |
+| [Pharmaceutical Compounding](recipes/pharmaceutical-compounding.md) | 22 | 5 | 17 |
+| [Scrap Reclamation](recipes/scrap-reclamation.md) | 21 | 15 | 6 |
+| [Plasma & Void Forging](recipes/plasma-void-forging.md) | 16 | 0 | 16 |
+| [Cloak & Jammer Rigging](recipes/cloak-jammer-rigging.md) | 15 | 11 | 4 |
+| [Engine & Hold Fitting](recipes/engine-hold-fitting.md) | 15 | 13 | 2 |
+| [Sensor Calibration](recipes/sensor-calibration.md) | 15 | 10 | 5 |
+| [Drone Building](recipes/drone-building.md) | 14 | 14 | 0 |
+| [Fuel Blending](recipes/fuel-blending.md) | 14 | 4 | 10 |
+| [Gas Separation](recipes/gas-separation.md) | 13 | 7 | 6 |
+| [Hydroponic Farming](recipes/hydroponic-farming.md) | 12 | 6 | 6 |
+| [Ice Melting](recipes/ice-melting.md) | 11 | 4 | 7 |
 | [Ship Passive](recipes/ship-passive.md) | 10 | 0 | 10 |
-| [Equipment](recipes/equipment.md) | 9 | 7 | 2 |
-| [Fuel Production](recipes/fuel-production.md) | 8 | 0 | 8 |
-| [Stealth](recipes/stealth.md) | 4 | 1 | 3 |
-| [Legendary](recipes/legendary.md) | 2 | 0 | 2 |
-| [Logistics](recipes/logistics.md) | 2 | 1 | 1 |
-| [Electronic Warfare](recipes/electronic-warfare.md) | 1 | 0 | 1 |
-| [Gate Science](recipes/gate-science.md) | 1 | 1 | 0 |
-| [Mining](recipes/mining.md) | 1 | 1 | 0 |
 
 ## Bases and Facilities
 

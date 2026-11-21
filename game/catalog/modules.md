@@ -1,6 +1,6 @@
 # Modules
 
-Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.723.2; never edited by hand.
+Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.732.0; never edited by hand.
 Up: [master-index.md](master-index.md). Modules: 270. A hull's slots and its cpu and power: the hull's row in `ships/`.
 
 ## Defense
