@@ -2,7 +2,7 @@
  "id": "trade-silver-bar-alpha-to-arneb",
  "kind": "circuit",
  "title": "Silver bars bought at Node Alpha for 420 cr or less, sold into the Obsidian Well's bid at Arneb at 480 or more: a trade test beyond the border",
- "note": "2026-11-21 19:59 UTC (Mercury, orders.log ENT-056 block MERCURY: trade beyond our borders). Node Alpha asks silver bar 414 x 50 (book of 19:36 UTC), the first such ask in our books; The Obsidian Well, a player station at Arneb (16 jumps, lawless), bids 501 x 44,527 (book of 19:52 UTC), the bid it showed on 2026-11-17 (table market_hour). About 83 cr a unit before the station's market fee, 50 units, about 4,150 cr a load against about 30 jumps of fuel. No pirate on record in any system of the road (data/intel/sightings.jsonl, scripts/map.py route node_alpha arneb). A test: one ship, one pilot (max_pilots 1), an empty hold out of home; the buy and the sale carry price limits; what the bid leaves is stored at Arneb. Whether Node Alpha's ask comes back is the second question: two runs at a loss rest the route.",
+ "note": "2026-11-21 19:59 UTC (Mercury, orders.log ENT-056 block MERCURY: trade beyond our borders). Node Alpha asks silver bar 414 x 50 (book of 19:36 UTC), the first such ask in our books; The Obsidian Well, a player station at Arneb (16 jumps, lawless), bids 501 x 44,527 (book of 19:52 UTC), the bid it showed on 2026-11-17 (table market_hour). About 83 cr a unit before the station's market fee, 50 units, about 4,150 cr a load against about 30 jumps of fuel. No pirate on record in any system of the road (data/intel/sightings.jsonl, scripts/map.py route node_alpha arneb). A test: one ship, one pilot (max_pilots 1), an empty hold out of home; the buy and the sale carry price limits; what the bid leaves is stored at Arneb. Whether Node Alpha's ask comes back is the second question: two runs at a loss rest the route. 2026-11-21 20:26 UTC (Mercury): first run +4,099 cr in 21.6 minutes (runs.jsonl, 20:00 UTC start): 50 bars bought at 414, sold at 501; the Arneb bid read 44,477 after it. Node Alpha's ask was gone after the buy (table books), so the gap is one load: off, since a failed buy does not end a run and the route would fly 16 jumps empty (rule: a one-load gap is flown once). It opens again when a field `requires.ask` exists or by hand when an ask stands.",
  "max_ships": 1,
  "max_pilots": 1,
  "min_credits": 30000,
@@ -39,5 +39,6 @@
    "at": "arneb:a356fc2c1744c0425cf6cf47f48def92:cca9e51e6eaf8dada77f698ccc4a09c7",
    "store": "all"
   }
- ]
+ ],
+ "status": "off"
 }

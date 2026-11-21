@@ -1,8 +1,8 @@
 {
  "id": "carry-hydrogen-beta-to-crucible-bulk",
  "kind": "circuit",
- "title": "Stored hydrogen carried by a freighter from Node Beta to The Crucible Garrison's bid at 33 cr or more, with heat sinks for its heat sink bid",
- "note": "2026-11-21 19:59 UTC (Mercury, the freighter test, rule F17). The same sale as carry-hydrogen-beta-to-crucible for a slotless freighter: requires.without_module mining_laser_i keeps every Threshold off it. 184 hydrogen (the whole Crucible bid of 19:46 UTC) and 24 heat sinks in one hold of 540; one ship.",
+ "title": "Stored hydrogen carried by a freighter from Node Beta to The Crucible Garrison's bid at 33 cr or more",
+ "note": "2026-11-21 19:59 UTC (Mercury, the freighter test, rule F17). The same sale as carry-hydrogen-beta-to-crucible for a slotless freighter: requires.without_module mining_laser_i keeps every Threshold off it. 184 hydrogen (the whole Crucible bid of 19:46 UTC) and 24 heat sinks in one hold of 540; one ship. 2026-11-21 20:26 UTC (Mercury): the heat sink buy is taken out until the first sale at The Crucible is read: two ships carry 24 heat sinks each to a bid of 24, so more would lie stored there; the sell step stays and sells any heat sink in the hold.",
  "max_ships": 1,
  "requires": {
   "without_module": "mining_laser_i",
@@ -26,13 +26,6 @@
     {
      "item": "hydrogen_gas",
      "qty": 184
-    }
-   ],
-   "buy": [
-    {
-     "item": "heat_sink",
-     "qty": 24,
-     "max_price": 152
     }
    ]
   },
