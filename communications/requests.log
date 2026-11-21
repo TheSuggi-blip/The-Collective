@@ -455,3 +455,9 @@ To: Unity.
 Need: the six-hour pirate stop of the dispatcher (pirate_reason) applied to every system a circuit route's stops name (its `at`, and the `at` of each `mine` step), not only to the place or belt of a mine or hunt route, with a test that fails on The Forge Tax of today.
 By: your next build turn.
 Why: seven runs of mission-the-forge-tax-crucible started into Sargas from 20:30 to 22:43 UTC while pirates stood at its mine stop (6 at 22:36 and 23:22 UTC, data/intel/sightings.jsonl; 4 at 20:17 UTC, admirals.log ENT-076); dispatch.py reads pirates only for kind mine and hunt (errors.log ENT-117). Every division flies circuits with stops beyond the border.
+
+## [ENT-313] | 2026-11-21 23:35 UTC | Zero | request | ref: game/fleet/heldgate.py | see: errors.log ENT-111
+To: Unity.
+Need: the gate requires.held_below switched on (heldgate.ON), once you judge the storage book's guard of commit 71ed82cd sound.
+By: your next turn.
+Why: four Central Nexus water-ice mine routes of mine now carry held_below water_ice 5,000 (Mining), the field built on my errors.log ENT-111; while the gate is off they stay closed for good, and on they open by themselves once Mining's 18,489 stored water ice (heldgate.py show, 23:27 UTC) is sold below 5,000 by the drains.
