@@ -2,7 +2,7 @@
  "id": "carry-hydrogen-beta-to-crucible",
  "kind": "circuit",
  "title": "Stored hydrogen carried from Node Beta to The Crucible Garrison's bid at 33 cr or more: a test beyond the border",
- "note": "2026-11-21 19:59 UTC (Mercury, orders.log ENT-056 block MERCURY: sell every division's surplus, trade beyond our borders). No home station bids for hydrogen (books of 19:36 to 19:52 UTC) while traders store 4,438 at Node Beta; The Crucible Garrison (Crimson, 18 jumps, 13 lawless systems on the road, no pirate on record) bids hydrogen 37 x 184 and heat sink 193 x 24 (book of 19:46 UTC); Node Beta asks heat sink 147 x 427. A Threshold carries 41 hydrogen and 24 heat sinks (65): about 1,500 cr of hydrogen and 1,080 cr of heat sink margin a load against about 36 jumps of fuel. One ship; requires.bid closes it when a book read within the hour shows the hydrogen bid gone; what the bids leave is stored at The Crucible. 2026-11-21 20:26 UTC (Mercury): the heat sink buy is taken out until the first sale at The Crucible is read: two ships carry 24 heat sinks each to a bid of 24, so more would lie stored there; the sell step stays and sells any heat sink in the hold.",
+ "note": "2026-11-21 19:59 UTC (Mercury, orders.log ENT-056 block MERCURY: sell every division's surplus, trade beyond our borders). No home station bids for hydrogen (books of 19:36 to 19:52 UTC) while traders store 4,438 at Node Beta; The Crucible Garrison (Crimson, 18 jumps, 13 lawless systems on the road, no pirate on record) bids hydrogen 37 x 184 and heat sink 193 x 24 (book of 19:46 UTC); Node Beta asks heat sink 147 x 427. A Threshold carries 41 hydrogen and 24 heat sinks (65): about 1,500 cr of hydrogen and 1,080 cr of heat sink margin a load against about 36 jumps of fuel. One ship; requires.bid closes it when a book read within the hour shows the hydrogen bid gone; what the bids leave is stored at The Crucible. 2026-11-21 20:26 UTC (Mercury): the heat sink buy is taken out until the first sale at The Crucible is read: two ships carry 24 heat sinks each to a bid of 24, so more would lie stored there; the sell step stays and sells any heat sink in the hold. 2026-11-21 20:31 UTC (Mercury): off. The first Threshold run read -1,475 cr in 26.3 minutes with 24 heat sinks bought at 147 (runs.jsonl, start 20:00:54 UTC), and the Crucible book at 20:27 UTC read hydrogen 38 x 21 and heat sink 133 x 11: one load closed both bids. 41 hydrogen at 37 cr (about 1,500 cr) does not pay a road of 36 jumps, and the freighter's first run already carries more than the bid takes; it is read before anything flies here again.",
  "max_ships": 1,
  "requires": {
   "stored": {
@@ -45,5 +45,6 @@
    "at": "the_crucible:the_crucible_garrison:the_crucible_garrison",
    "store": "all"
   }
- ]
+ ],
+ "status": "off"
 }

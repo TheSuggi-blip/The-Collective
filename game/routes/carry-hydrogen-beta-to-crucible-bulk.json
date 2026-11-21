@@ -2,7 +2,7 @@
  "id": "carry-hydrogen-beta-to-crucible-bulk",
  "kind": "circuit",
  "title": "Stored hydrogen carried by a freighter from Node Beta to The Crucible Garrison's bid at 33 cr or more",
- "note": "2026-11-21 19:59 UTC (Mercury, the freighter test, rule F17). The same sale as carry-hydrogen-beta-to-crucible for a slotless freighter: requires.without_module mining_laser_i keeps every Threshold off it. 184 hydrogen (the whole Crucible bid of 19:46 UTC) and 24 heat sinks in one hold of 540; one ship. 2026-11-21 20:26 UTC (Mercury): the heat sink buy is taken out until the first sale at The Crucible is read: two ships carry 24 heat sinks each to a bid of 24, so more would lie stored there; the sell step stays and sells any heat sink in the hold.",
+ "note": "2026-11-21 19:59 UTC (Mercury, the freighter test, rule F17). The same sale as carry-hydrogen-beta-to-crucible for a slotless freighter: requires.without_module mining_laser_i keeps every Threshold off it. 184 hydrogen (the whole Crucible bid of 19:46 UTC) and 24 heat sinks in one hold of 540; one ship. 2026-11-21 20:26 UTC (Mercury): the heat sink buy is taken out until the first sale at The Crucible is read: two ships carry 24 heat sinks each to a bid of 24, so more would lie stored there; the sell step stays and sells any heat sink in the hold. 2026-11-21 20:31 UTC (Mercury): off. The first Threshold run read -1,475 cr in 26.3 minutes with 24 heat sinks bought at 147 (runs.jsonl, start 20:00:54 UTC), and the Crucible book at 20:27 UTC read hydrogen 38 x 21 and heat sink 133 x 11: one load closed both bids. 41 hydrogen at 37 cr (about 1,500 cr) does not pay a road of 36 jumps, and the freighter's first run already carries more than the bid takes; it is read before anything flies here again.",
  "max_ships": 1,
  "requires": {
   "without_module": "mining_laser_i",
@@ -46,5 +46,6 @@
    "at": "the_crucible:the_crucible_garrison:the_crucible_garrison",
    "store": "all"
   }
- ]
+ ],
+ "status": "off"
 }
