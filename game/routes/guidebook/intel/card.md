@@ -9,17 +9,18 @@ view=levels, member Oracle. Fits: ships.md; the census lists and the
 plan: routes.md; what is under test: tests.md; the traps: lessons.md.
 
 ### Ships
-Status: proven. Updated: 2026-11-21. Evidence: data/fleet/ships/; catalog table hulls; scouting/<system>.json `survey`; ships.md.
+Status: proven. Updated: 2026-11-21. Evidence: data/fleet/ships/; catalog table hulls; browse_ships all_stations (2026-11-21); scouting/<system>.json `survey`; ships.md.
 
-- Tier 0, every scout: the starter Threshold (hold 65, tank 95, two
-  utility slots), Mining Laser I and Pulse Laser I, default stance flee.
-- Fit next: Survey Scanner I in the second utility slot (five scouts carry
-  one; the route fit-survey-scanner-central-nexus buys under its
-  max_price only). A ship with a scanner surveys every system it reads
-  (census.py). Then a Mining Survey Probe for the faint signatures (tests.md),
-  then Ship Scanner I.
-- Next hull: tier 2 at Piloting 10 (hours left: hive.py levels Oracle); a
-  scout hull of tier 1 or 2 is not read yet.
+- Tier 0, every scout: the starter Threshold (speed 1, hold 65, tank 95,
+  two utility slots), Mining Laser I and Pulse Laser I, stance flee.
+- Fit next: Survey Scanner I in the second utility slot (six scouts carry
+  one; need survey-scanner-i). A ship with a scanner surveys every system
+  it reads (census.py). Then a Mining Survey Probe for the faint
+  signatures (tests.md), then Ship Scanner I.
+- Next hull: tier 1 needs no Piloting (table hulls): Qualia (explorer,
+  speed 3, tank 130, three utility slots, no weapon slot), Eigenstate
+  (scout, speed 3) or Fugue (courier, speed 4). One ship first (tests.md);
+  tier 2 at Piloting 10.
 - Style: read and leave, hold empty beyond the border (rule F3), never
   fire first (F2), hunt on the way only what passes both gauges of F9,
   pirates by F27 with a test first.

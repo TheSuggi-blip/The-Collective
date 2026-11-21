@@ -3,26 +3,24 @@
 ### Standing Plan
 Status: proven. Updated: 2026-11-21. Evidence: the plan file (tool plan, show); hive.py briefing (MY STANDING FLEET); fill.py check; intel turn check (WORKED, SITES, WATCH).
 
-- First, every scout: store-hold-central-nexus (a hold over five units),
-  the missions paid once and the Voidborn chain (rules F34, F35), and
-  census-voidborn after the Central Nexus board: the ten home systems
-  every 30 minutes, 4 ships.
-- Readers (@reader): census-watch-gsc-0044 (the outpost and its six
-  neighbours, 35 min, 4), census-worked (the places our routes use near
-  home and Goldcrest, 90 min, 6), census-worked-far (where the other
-  divisions fly beyond the roads, 53 systems, 180 min, 8), census-frontier
-  (170 min), then the roads.
-- Explorers: their road first (census-north 6, census-east 3,
-  census-south 4: the three roads of rule F33, 150 min), then
-  census-worked-far, then the far list each has flown least (480 min).
-- Hunters: one reader each on a hunt of its own, one hunter a herd
-  (F9), then @reader.
-- Then: the steel crafts of each pilot's own stores, census-frontier,
-  park.
-- What each route earns now: the tool routes, or route_earnings; what
-  closes a route to a ship: fill.py status. What would change the plan:
-  a WORKED or SITES line that HALTs, a road list read under its cadence,
-  a pirate on a road, a once mission announced in queue.log.
+- First, every scout: store-hold-central-nexus, the missions paid once
+  and the Voidborn chain (F34, F35), census-voidborn (home, 30 min, 4).
+- Readers (@reader): census-watch-gsc-0044 (35 min, 4), census-worked
+  (90 min, 6), census-frontier (170 min: near, cheap), census-worked-far
+  (where others fly beyond the roads, 180 min, 10), then the roads.
+- The six scanner scouts: a far list first (720 min, oldest first), so
+  every far system is surveyed; then @reader.
+- Explorers: their road (census-north 6, -east 3, -south 4: rule F33,
+  150 min), then census-worked-far, then their far list.
+- Hunters: one reader a hunt, one hunter a herd (F9), then @reader.
+- Then: the steel crafts of own stores, census-frontier, park.
+- Capacity: the lists ask more reads than 30 scouts give (census runs
+  of 4 hours and minutes per run by route, data/routes/runs.jsonl,
+  against systems / every_minutes); the far lists take what is left. A
+  faster hull (tests.md) is the fix, not longer cadences.
+- What changes it: a WORKED, SITES or FRESH line that HALTs, a pirate on
+  a road, a once mission in queue.log; what closes a route: fill.py
+  status; what it earns: route_earnings.
 
 ### Census lists
 Status: proven. Updated: 2026-11-21. Evidence: game/routes/census-*.json; dispatch.py (pick, stalest_system); intel turn check (OVERLAP, ROADS, WORKED).
@@ -31,9 +29,10 @@ Status: proven. Updated: 2026-11-21. Evidence: game/routes/census-*.json; dispat
   every route whose systems hold its system, so a shared system closes
   the smaller route (OVERLAP line). A system moves, it is never copied.
 - Cadence by use: home 30, the outpost watch 35, places our routes use
-  90 (home side) and 180 (beyond), frontier 170, roads 150, the explorer
-  lists 480. A system opens when its read is every_minutes old; the
-  threshold is the floor of a gap, never its ceiling.
+  90 (home side) and 180 (beyond), frontier 170, roads 150, census-roads
+  480, the far lists 720 (every system read once: oldest first). A
+  system opens when its read is every_minutes old; the threshold is the
+  floor of a gap, never its ceiling.
 - A far list has `chain` 3 within 2 lanes and ends docked where it last
   read (`--stay`): it reads up to three more due systems on one tank.
 - A new list or a moved system is judged from its next reads; the turn
@@ -54,10 +53,10 @@ background; it ends docked, its order file gone.
 ### Route Templates
 Status: proven. Updated: 2026-11-21. Evidence: game/routes/templates/intel.json; game/routes/templates-intel.md.
 
-- @reader: census-watch-gsc-0044, census-worked, census-worked-far,
-  census-frontier, census-north, census-east, census-south, census-roads.
-- @explorer: census-north, census-east, census-south, census-worked-far,
-  census-roads, census-frontier.
+- @reader: census-watch-gsc-0044, census-worked, census-frontier,
+  census-worked-far, census-north, census-east, census-south, census-roads.
+- @explorer: census-north, census-east, census-south, census-roads,
+  census-worked-far, census-frontier.
 - Calls: `plan.py templates`; `plan.py template <name> <routes>`;
   `plan.py use <ships> <name>`; a hunter keeps its hunt first:
   `plan.py set <ship> <hunt>,@reader`.

@@ -76,6 +76,20 @@ Status: proven. Updated: 2026-11-21. Evidence: errors.log ENT-034, ENT-047; rule
 - A turn that ended without a report leaves routes no plan names: read
   the ORPHANS line and `git log --author=Oracle` before building a route.
 
+### The game's own records answer what no census saw
+Status: proven. Updated: 2026-11-21. Evidence: requests.log ENT-310; admirals.log ENT-077; observations kind raid; https://game.spacemolt.com/api/battles.
+
+- A base raid is category `npc` in /api/battles, not `pirate`: a pirate
+  reading misses every raid. The list takes `category`, `limit` (100 read
+  well) and `offset`; a `system` filter is ignored, so page back by
+  offset to the time asked and filter in code, one call a second.
+- The faction's own log: get_action_log with `faction_id` (category
+  faction: deposits, refuels, repairs) dates when a base last worked.
+- The daily bulk feed's battle file stopped at 2026-11-15 04:22 UTC
+  though rebuilt each night: read the live list for anything newer.
+- Our outpost stood wrecked three days before any member read it: a
+  question about the past goes to these records first, the census after.
+
 ### Calls that surprise
 Status: proven. Updated: 2026-11-21. Evidence: game/fleet/gate.py; the game's help (2026-11-15 to 2026-11-17).
 

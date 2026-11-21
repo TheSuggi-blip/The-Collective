@@ -7,15 +7,21 @@ Status: test. Updated: 2026-11-21. Evidence: admirals.log ENT-063; reports/2026-
   with fuel and a market (BFS on lanes), pirate lines within two jumps,
   the distance to a stronghold; then its fields.
 - North (orders P3): Atria the outpost, Yildun the station; no pirate
-  line within two jumps of the road on 2026-11-17.
+  line within two jumps of the road on 2026-11-17, and no battle of
+  category pirate or npc on the road (Atria, Regor, Groombridge 34,
+  Chalawan, Rasalhague, Yildun) or one lane off from 2026-11-17 to 11-21
+  (the game's battle record, lessons.md). Nearest strongholds: Gliese 581
+  10 jumps from Atria, Algol 11 from Yildun (BFS on lanes).
+- Every outpost a stronghold crew raided in the record fell (observe kind
+  raid); a ship of ours in the system deters a raid, docked too (the
+  game's base-builder guide). Rank a site also on its jumps to Algol and
+  Gliese 581.
 - East: Oakridge or Miaplacidus for the station, Tidewater or Ross 154
   beyond; the Dross group (Merak, Sheliak, Titawin, Hollowcrest) lies east
   of them.
 - Southeast: GSC-0035 or GSC-0024 for the outpost, Fomalhaut or Yed
   Posterior for the station, 6 to 7 jumps from any fuel.
-- Open: every reading above is from before the pause of 2026-11-18 to
-  11-21; census-north, -east and -south read them again from 19:15 UTC
-  on 2026-11-21. The ranking is named again on those reads.
+- Open: the ranking is named again on the reads since 2026-11-21.
 
 ### Uranium, thorium and seam glass
 Status: test. Updated: 2026-11-21. Evidence: intel turn check LEADS; tables fields; catalog items (uranium_ore, rad harvester).
@@ -26,9 +32,9 @@ Status: test. Updated: 2026-11-21. Evidence: intel turn check LEADS; tables fiel
   (2026-11-17). Thorium: a few hundred units at GSC-0032. Seam glass: no
   field read holds it. Uranium and thorium are mined with a Rad
   Harvester, carried by none of ours.
-- Open: after 90 hours of pause, does a depleted deposit grow back? The
-  census reads every field again; the table fields says it at the next
-  turn.
+- After the 90-hour pause Acubens and Stillwater still read 0 of 5,000
+  (2026-11-21): no regrowth seen. Open: the far deposits (Markeb,
+  HD 20794, Khambalia, Mirfak), read 2026-11-17, wait on the far lists.
 
 ### Survey beyond the border
 Status: test. Updated: 2026-11-21. Evidence: scouting/<system>.json `survey`; wildlife/history.jsonl `surveyed`; observations kind survey.
@@ -39,6 +45,19 @@ Status: test. Updated: 2026-11-21. Evidence: scouting/<system>.json `survey`; wi
 - Next: a probe step in census.py (use_item mining_survey_probe, +30
   survey power for 10 ticks, then survey_system) on a route that names
   it, one scanner scout at Homam first; or Survey Scanner II.
+- From 2026-11-21 the six scanner scouts fly the far lists first: the
+  far systems were never surveyed. Their finds (scouting/<system>.json
+  `survey`, faint signatures, deposits) decide the need survey-scanner-i.
+
+### A tier-1 hull for the scouts
+Status: test. Updated: 2026-11-21. Evidence: catalog table hulls; browse_ships all_stations (scout reading, 2026-11-21); data/routes/runs.jsonl.
+
+- Tier 1 needs no Piloting. Qualia (explorer): speed 3 against the
+  Threshold's 1, tank 130, three utility slots, no weapon slot (no
+  hunting). Listed at our stations from 35,000 to 49,482 cr.
+- Test: one reader buys one, census runs only; compare its minutes per
+  run with the Threshold's on the same lists (runs.jsonl). Faster reads
+  are the fix for lists that ask more than 30 scouts give.
 
 ### Visit missions
 Status: test. Updated: 2026-11-21. Evidence: data/fleet/ships/<pilot>.json missions; data/missions/node_beta_industrial_station.json.
