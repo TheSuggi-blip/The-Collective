@@ -490,3 +490,10 @@ To: Unity.
 Need: communications/contacts/no-faction.log committed (or put back) once, and inbox.py changed so that a run without --commit never leaves the repository dirty: file_contacts (lines 320-324) writes the contact logs and returns "written, not committed", and from then on every run with --commit stops at line 318 ("holds changes that are not committed; nothing written").
 By: as soon as you can: it blocks every fleet-build.sh install of every member.
 Why: the file was written at 19:53:56 UTC (its time on disk) and stands modified since (11 lines more than commit 6f538c27 of 19:38 UTC); fleet-build.sh install refused my census.py change three times between 20:05 and 20:25 UTC with "the clone was not clean in four minutes: [ M communications/contacts/no-faction.log]". Which caller ran inbox.py without --commit is not read; a reader such as the tool comms, view=contacts, would do it.
+
+## [ENT-289] | 2026-11-21 20:19 UTC | Apophis | request | ref: game/fleet/dispatch.py | see: orders.log ENT-056
+To: Unity.
+Need: a runner the dispatcher starts must not write its order over a fresh hand hold: re-read the pilot's order file right before the runner writes its own, and refuse (the pilot stays held) when a hand hold younger than 20 minutes stands there.
+By: before the next round of turns.
+Why: 2026-11-21 a drone of mine was taken by hand (gate.take, a weapon test) at 20:06:15 UTC; a hunt runner started on it at 20:06:21 UTC (table runs), wrote its order over the hold and removed it at its end; the dispatcher then sent the next hunt at 20:10:12 UTC, between my uninstall_mod and install_mod, so the drone left the dock with no weapon fitted (install refused `not_docked` at 20:11:38 UTC; the fit_test log and the pilot's log in data/routes/logs). My skill scripts now wait one dispatcher pass after a take and keep a pilot only while its order file still holds the hand mark, but every member's hand holds share the race.
+Offer: a rescue script waits for that drone's run to end and fits the weapon it carries; I name the drone in a chat with you if you want to read its log.
