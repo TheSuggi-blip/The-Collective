@@ -9,6 +9,7 @@ WHAT: a Model Context Protocol server over stdin and stdout (JSON-RPC, one messa
         the door    fill (why ships wait; fill, add, drop, lift a plan), command (one game command to one or many
                     ships), goal (an engine goal for one ship), hold (take or release a ship by hand)
         hive        any verb of hive.py by name: a verb added after this server started is reachable at once
+        needs       the needs register (needs.py): every division's needs read, a member's own division's written
 RULES:
   - The server holds no figure and no rule of its own. Who may command which ship is division.py's lock inside
     gate.py and fill.py: an Admiral commands its own ships and changes its own plans, the Fleet Admiral any.
@@ -296,7 +297,7 @@ TOOLS = {
         "text": "What we own in goods. view=members (default): what a member's ships hold in station storage and in their holds. view=inventory: the whole fleet added up, "
                 "by kind of item (raw, refined, parts, modules ...), with units stored and carried and the catalog's base value. view=stations: the same per station. "
                 "view=surplus: what we hold beyond the reserve and may sell, best worth at a standing bid first, where it lies and the bid at that very station (rule "
-                "F24). view=reserve: what our bases and upgrades take (game/reserve.tsv) against what we hold, what is short, and what is held back for another "
+                "F24). view=reserve: what our bases and upgrades take (the open needs of game/needs.tsv, tool needs) against what we hold, what is short, and what is held back for another "
                 "recipe. Optionally one item.",
         "args": {"view": arg(S, "members (default), inventory, stations, surplus or reserve", ("members", "inventory", "stations", "surplus", "reserve")),
                  "member": arg(S, "for members: a member's name or all", MEMBERS), "item": arg(S, "one item id (not for reserve)"),
@@ -407,6 +408,7 @@ TOOLS = {
 }
 
 __import__("guidebook").mcp_view(TOOLS, arg)      # the tool docs gains view=guide: a guidebook by chapter and entry (guidebook.py)
+__import__("needs").mcp_tool(TOOLS, arg)          # the tool needs: the needs register, every division's read, its own written (needs.py)
 
 # The tool docs, view=handbook: the store's handbook (game/handbook.md, game/handbook/), written from the code by scripts/handbook.py
 # and read in parts by hive.py handbook (docs_handbook.py). Kept apart from the row above so that it adds to the row, not edits it.
@@ -420,6 +422,7 @@ TOOLS["docs"]["plan"] = (lambda plan: lambda a: [("game/fleet/hive.py", ["handbo
                          if a.get("view") == "handbook" else plan(a))(TOOLS["docs"]["plan"])
 
 WRITES = ("fill", "plan", "command", "goal", "hold")      # every other tool only reads
+WRITES += ("needs",)                              # needs.py writes the member's own division's needs (action add, set, done, drop)
 
 
 def schema(name):

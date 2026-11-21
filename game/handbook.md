@@ -22,7 +22,7 @@ Read it in parts: `hive.py handbook [<topic>]` (MCP: the tool docs, view=handboo
 contents and how the data flows; a table's name, a subject or a word gives its sections. The store holds every file
 as kind `handbook` of the table docs, one row a section, every version in doc_versions.
 
-The store: 57 tables and 7 views (37 snapshot, 9 history, 8 statistics, 3 bookkeeping); the MCP tool `collective`: 21 tools.
+The store: 59 tables and 7 views (38 snapshot, 9 history, 9 statistics, 3 bookkeeping); the MCP tool `collective`: 22 tools.
 Kinds: snapshot = what a file says now (replaced when the file changes; it also carries `src`, the file its row came
 from; dropped and loaded again when its definition changes); history = rows kept over time (raw rows for days, sums
 for good); statistics = computed by stats.py when due; view = a query over tables, computed when asked; bookkeeping =
@@ -38,7 +38,7 @@ the store's own marks. Columns come from a fresh empty schema; every example run
 - Markets, `game/handbook/markets.md`: books, ladders, moves, market_hour
 - Map and intel, `game/handbook/map-and-intel.md`: systems, lanes, places, fields, herds, readings, reading_day, stations, factions, met, observations
 - Our faction, `game/handbook/our-faction.md`: faction, faction_members, bases, our_stations, faction_facilities, faction_storage, inventory_faction, territory, sites
-- Stock and reserve, `game/handbook/stock-and-reserve.md`: holdings, inventory, inventory_by_station, stock_hour
+- Stock and reserve, `game/handbook/stock-and-reserve.md`: holdings, inventory, inventory_by_station, stock_hour, needs, need_status
 - The catalog, `game/handbook/the-catalog.md`: items, recipes, recipe_inputs, recipe_outputs, recipe_facilities, facilities, facility_materials, hulls, hull_materials, skills
 - Supply, `game/handbook/supply.md`: supply_chains, supply_status, stats_supply_hour
 - Statistics, `game/handbook/statistics.md`: stats_time, stats_refill, stats_figures and the figures
@@ -144,7 +144,15 @@ per question, from the tools' own texts (collective_mcp.TOOLS) and hive.py's usa
 | the whole fleet added up, by kind of item (raw, refined, parts, modules ...), with units stored and... | stock view=inventory | craftbook.py inventory |
 | the same per station. | stock view=stations | craftbook.py inventory stations |
 | what we hold beyond the reserve and may sell, best worth at a standing bid first, where it lies and... | stock view=surplus | surplus.py show |
-| what our bases and upgrades take (game/reserve.tsv) against what we hold, what is short, and what is... | stock view=reserve | surplus.py reserve |
+| what our bases and upgrades take (the open needs of game/needs.tsv, tool needs) against what we hold... | stock view=reserve | surplus.py reserve |
+| the open needs, highest priority first, each with covered percent, colour (red under 50, yellow 50 to... | needs action=list | needs.py list |
+| one need whole (id) or every need of a project (project). | needs action=show id=<id> | needs.py show <id> |
+| per item for the whole fleet its gross need, held and net short. | needs action=items | needs.py items |
+| a need of your division (kind, ref, units, project; priority 1 high to 3, place, due, note, id)... | needs action=add kind=<kind> ref=<ref> units=<units> project=<project> | needs.py add <kind> <ref> <units> --project <project> |
+| a need changed (id and what changes). | needs action=set id=<id> | needs.py set <id> |
+| a need closed (id), built or no longer wanted. | needs action=done id=<id> | needs.py done <id> |
+| a need closed (id), built or no longer wanted. | needs action=drop id=<id> | needs.py drop <id> |
+| the gate. | needs action=check | needs.py check |
 | what each division put into the reserve per hour: of every item the reserve asks for (surplus.py... | hive verb=flow | hive.py flow |
 
 ### The catalog

@@ -8,7 +8,7 @@ author: Unity
 # index.md -- The Fleet's Scripts
 
 Built by `python3 -B scripts/fleet-index.py` from the docstring of every script in this
-folder; never edited by hand. Scripts listed: 43.
+folder; never edited by hand. Scripts listed: 44.
 
 - Run a script from the repository root: `python3 -I -B game/fleet/<script> <arguments>`,
   the arguments as listed under "How to Call Each".
@@ -52,6 +52,7 @@ folder; never edited by hand. Scripts listed: 43.
 | `ledger.py` | Keep the fleet's books: what we own and where it lies, and how every order book moved. | Service |
 | `loot_own.py` | Loot every carcass and wreck at the pilot's place that the pilot itself killed. | By hand |
 | `mine.py` | One pilot mines at one field for a set time, through the engine's mining loop. | Runner (`mine` routes) |
+| `needs.py` | The fleet's needs register: what each division needs for its upgrades and for the empire, one row a need in game/needs.tsv, written by this script alone; the open needs are the reserve's targets, covered by stock in priority order. | By hand |
 | `observe.py` | A member writes down what it saw in the game (a scan far away, a price at a station we read no book of, a fight with a species) as one checked line of its division's own record; the store makes the lines one SQL table, `observations`. | By hand |
 | `plan.py` | Each division's plan file: every ship with the routes it flies, in their order; the dispatcher sends the ships by it. | By hand |
 | `plate.py` | Make our pilots' stored creature carapace into armor plate where each is docked, and sell plates into the bid there. | By hand |
@@ -394,6 +395,7 @@ hive.py empire
 hive.py surplus [--top N] [--kind <kind>] [--item <item id>] [--all]
 hive.py reserve
 hive.py supply [show|check|duty]
+hive.py needs [list [<division>] [--project <text>] [--all] | show <id>|<project> | items | check]
 hive.py flow [<Member>|all] [--hours N]
 hive.py sql "<SELECT or WITH statement>" [--limit N]
 hive.py schema [<table or view>]
@@ -467,6 +469,29 @@ A runner: the dispatcher starts it for a route of the kind `mine`; by hand only 
 
 ```
 mine.py <pilot> <system:poi> <system:poi:base> [--minutes M] [--sell-items item:min_price,...] [--route ID] [--deposit faction]
+```
+
+### `needs.py`
+
+The fleet's needs register: what each division needs for its upgrades and for the
+empire, one row a need in game/needs.tsv, written by this script alone; the open needs
+are the reserve's targets, covered by stock in priority order.
+
+Run by hand.
+
+```
+needs.py list [<division>|<Member>|all] [--project <text>] [--all]
+needs.py show <id>|<project text>
+needs.py items
+needs.py add <facility|hull|item> <ref> <units> --project "<text>" [--priority 1|2|3] [--place <base id>] [--due YYYY-MM-DD] [--note "<text>"] [--id <id>] [--division <name>] [--dry-run]
+needs.py set <id> [--project ..] [--kind ..] [--ref ..] [--units N] [--priority N] [--place ..] [--due ..] [--note ..] [--status open|done|dropped] [--division ..] [--dry-run]
+needs.py done <id> [--note "<text>"] [--dry-run]
+needs.py drop <id> [--note "<text>"] [--dry-run]
+needs.py tidy [--dry-run]
+needs.py check
+--root <dir>      the repository (default: two folders above this file)
+--data <dir>      the unit's data folder (default /srv/collective/data)
+--where and --by are taken for --place and --due; `-` or `none` empties a cell.
 ```
 
 ### `observe.py`

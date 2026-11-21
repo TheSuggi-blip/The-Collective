@@ -98,5 +98,6 @@ jobs:
           python3 -B scripts/validate-intel.py
           python3 -B scripts/comms.py check
           python3 -B game/fleet/routes.py check
+          python3 -B game/fleet/needs.py check
           python3 -B scripts/fleet-index.py --check
           python3 -B scripts/report-words.py --template-check

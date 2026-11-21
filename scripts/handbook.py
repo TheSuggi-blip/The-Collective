@@ -113,7 +113,7 @@ SUBJECTS = (    # (title, the tables and views it holds, in their order); the ca
     ("Map and intel", ("systems", "lanes", "places", "fields", "herds", "readings", "reading_day", "stations", "factions", "met", "observations")),
     ("Our faction", ("faction", "faction_members", "bases", "our_stations", "faction_facilities", "faction_storage", "inventory_faction",
                      "territory", "sites")),
-    ("Stock and reserve", ("holdings", "inventory", "inventory_by_station", "stock_hour")),
+    ("Stock and reserve", ("holdings", "inventory", "inventory_by_station", "stock_hour", "needs", "need_status")),
     ("The catalog", ("items", "recipes", "recipe_inputs", "recipe_outputs", "recipe_facilities", "facilities", "facility_materials", "hulls",
                      "hull_materials", "skills")),
     ("Supply", ("supply_chains", "supply_status", "stats_supply_hour")),
@@ -136,11 +136,13 @@ ASKS = {        # MCP tool -> {view, action or ask (or '' for every other value)
     "fill": {"": "Plans and the door"}, "plan": {"": "Plans and the door"}, "command": {"": "Plans and the door"},
     "goal": {"": "Plans and the door"}, "hold": {"": "Plans and the door"},
 }
+ASKS["needs"] = {"": "Stock and reserve"}          # the needs register (needs.py): its table, need_status and the tool
 VERBS = {       # hive.py verbs that no tool reaches as hive.py <verb> (the tool `hive` passes them): subject; None: a tool gives
     "gauges": "Ships and pilots", "store": "Routes and runs", "store price": "Markets", "empire": "Our faction",   # the same answer
     "flow": "Stock and reserve", "briefing": "Plans and the door", "handbook": "Written knowledge",               # through its own script
     "surplus": None, "inventory": None, "supply": None,
 }
+VERBS["needs"] = None                              # the tool needs gives the same answers (needs.py)
 READERS = {     # docs.py kind -> the readers beside `docs doc=<kind>` (hive.py docs <kind>) that answer it
     "orders": "comms view=orders", "log": "comms view=requests, view=digest", "plan": "plan action=show; docs view=division",
     "metrics": "fleet view=<figure>", "handbook": "docs view=handbook (hive.py handbook)", "member": "docs view=division",
@@ -162,7 +164,7 @@ def modules(root):
     folder = str(Path(root).resolve() / "game" / "fleet")
     if folder not in sys.path:
         sys.path.insert(0, folder)
-    return {name: importlib.import_module(name) for name in ("store", "stats", "docs", "supply", "collective_mcp")}
+    return {name: importlib.import_module(name) for name in ("store", "stats", "docs", "supply", "collective_mcp", "needs")}
 
 
 def fresh_schema(store):
@@ -176,7 +178,7 @@ def fresh_schema(store):
 def functions(mods):
     """[(module.name, source)] of every function and method the store's modules define: who writes a table."""
     out = []
-    for key in ("store", "stats", "docs", "supply"):
+    for key in ("store", "stats", "docs", "supply") + (("needs",) if "needs" in mods else ()):     # needs.py writes need_status
         module = mods[key]
         for name, thing in sorted(vars(module).items()):
             found = [(name, thing)] if inspect.isfunction(thing) and thing.__module__ == module.__name__ else []
@@ -377,7 +379,7 @@ def kinds_of(mods, conn):
     out = {}
     for name, kind in found.items():
         out[name] = ("view" if kind == "view" else "bookkeeping" if name in BOOKKEEPING else "snapshot" if name in snapshot
-                     else "statistics" if name in getattr(stats, "TABLES", ()) else "history")
+                     else "statistics" if name in getattr(stats, "TABLES", ()) + getattr(mods.get("needs"), "TABLES", ()) else "history")
     return out
 
 

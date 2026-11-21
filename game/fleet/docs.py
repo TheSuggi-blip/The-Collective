@@ -95,6 +95,7 @@ KINDS = (                      # kind, its files (a glob: a repository path, or 
     ("template", "game/routes/templates/*.json", ""),
     ("rules", "game/rules/*.md", "Fleet"),
     ("metrics", "game/metrics.md", "Fleet"),
+    ("needs", "game/needs.md", "Fleet"),                     # what a need is and how one is added (needs.py: the register itself)
     ("handbook", "game/handbook.md", "Fleet"), ("handbook", "game/handbook/*.md", "Fleet"),    # the store's handbook (scripts/handbook.py)
     ("plan", "data/plans/plan-*.md", ""),
     ("report", "reports/*.md", ""),

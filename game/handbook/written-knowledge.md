@@ -43,6 +43,7 @@ What docs.py mirrors into the tables docs and doc_versions (docs.KINDS); the fil
 | template | `game/routes/templates/*.json` | the division its file's name or folder names | docs doc=template (hive.py docs template) |
 | rules | `game/rules/*.md` | Fleet | docs doc=rules (hive.py docs rules) |
 | metrics | `game/metrics.md` | Fleet | docs doc=metrics (hive.py docs metrics); fleet view=<figure> |
+| needs | `game/needs.md` | Fleet | docs doc=needs (hive.py docs needs) |
 | handbook | `game/handbook.md`, `game/handbook/*.md` | Fleet | docs doc=handbook (hive.py docs handbook); docs view=handbook (hive.py handbook) |
 | plan | `data/plans/plan-*.md` | the division its file's name or folder names | docs doc=plan (hive.py docs plan); plan action=show; docs view=division |
 | report | `reports/*.md` | the division its file's name or folder names | docs doc=report (hive.py docs report) |

@@ -51,3 +51,27 @@ history: one sample an hour of what each division (Mining, Trade, Logistics, Mil
 - What the Military division holds now, the most first: `SELECT item, units FROM stock_hour WHERE division = 'Military' AND hour = (SELECT MAX(hour) FROM stock_hour) ORDER BY units DESC LIMIT 20`
 - Units each division gained per hour over the last 4 hours, per item (an item gone to 0 is missing from the newest sample): `SELECT n.division, n.item, n.units, ROUND((n.units - COALESCE(o.units, 0)) * 3600.0 / (n.t - b.t), 1) AS per_hour FROM stock_hour n JOIN (SELECT MAX(hour) AS hour, MAX(t) AS t FROM stock_hour WHERE hour <= (SELECT MAX(hour) FROM stock_hour) - 4 * 3600) b LEFT JOIN stock_hour o ON o.hour = b.hour AND o.division = n.division AND o.item = n.item WHERE n.hour = (SELECT MAX(hour) FROM stock_hour) AND n.t > b.t ORDER BY per_hour DESC LIMIT 20`
 - Copper ore held per division hour by hour: `SELECT datetime(hour, 'unixepoch') AS hour, division, units FROM stock_hour WHERE item = 'copper_ore' ORDER BY hour DESC, division LIMIT 48`
+
+## needs
+
+the needs register (game/needs.tsv, written by needs.py only): per need its id, project, owner division, kind (facility, hull, item), ref (the catalog's id), units, priority (1 high to 3), place, due date, status (open, done, dropped), note, added and changed with who did it, the file's line, and error (why a broken row does not count; NULL for a good one). The open needs are the reserve's targets
+
+- Kind: snapshot
+- Columns: id, project, division, kind, ref, units, priority, place, due, status, note, added, added_by, changed, changed_by, line, error, src; one row per line
+- Kept: while its file stands: a file's rows are replaced when it changes and go when it goes
+- Refreshed: the store's pass (every 60 s), when a file changed (size or mtime): loader `needs`, game/needs.tsv
+- The open needs by division and priority: `SELECT division, priority, id, kind, ref, units, project FROM needs WHERE status = 'open' ORDER BY division, priority, id`
+- Rows of the register that do not count, and why: `SELECT line, id, error FROM needs WHERE error IS NOT NULL ORDER BY line`
+- Open needs per project: `SELECT project, COUNT(*), GROUP_CONCAT(id) FROM needs WHERE status = 'open' GROUP BY project ORDER BY 2 DESC`
+
+## need_status
+
+per open need, computed by the store on its pass (needs.py compute: when game/needs.tsv changed, else every 300 s): its rank (the order stock is given to the needs: priority, due, added), covered (percent of its raw units stock covers), colour (red under 50, yellow 50 to 99, green nothing short, broken), stale, raw units, raw units short, what is short, to gather, to buy, to craft, what it takes from stock, the fee, the facilities of its kind our empire holds: needs.py list
+
+- Kind: statistics
+- Columns: id, rank, project, division, priority, kind, ref, units, place, due, stale, covered, colour, raw_units, raw_short, short_items, gather, buy, craft, stock, fee, stands, problem, storage_book, catalog, t; one row per id
+- Kept: not over time: needs.compute deletes rows, what stands is the newest
+- Refreshed: the store's pass (every 60 s), by needs.compute
+- The open needs, highest first, with their colour: `SELECT rank, colour, covered, id, division, ref, short_items FROM need_status ORDER BY rank`
+- The red needs of each division: `SELECT division, COUNT(*), GROUP_CONCAT(id) FROM need_status WHERE colour = 'red' GROUP BY division`
+- What the open needs still ask to gather: `SELECT id, gather FROM need_status WHERE gather IS NOT NULL ORDER BY rank`

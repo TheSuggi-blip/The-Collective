@@ -34,8 +34,8 @@ the store's settings: the sealed hour (day) of each raw table, the snapshot sche
 
 - Kind: bookkeeping
 - Columns: key, value; one row per key
-- Kept: for good: no step of the code deletes its rows
-- Refreshed: the store's pass (every 60 s), by docs.keep, docs.mark_baselines, stats.meta_put, stats.run_part and 3 more
+- Kept: not over time: needs.setup deletes rows, what stands is the newest
+- Refreshed: the store's pass (every 60 s), by docs.keep, docs.mark_baselines, needs.compute, needs.setup and 5 more
 - Which hours and days are sealed?: `SELECT key, datetime(value, 'unixepoch') FROM meta WHERE key LIKE 'sealed.%'`
 - Which snapshot schema is in use?: `SELECT value FROM meta WHERE key = 'snapshot.schema'`
 - Every setting: `SELECT key, value FROM meta ORDER BY key`

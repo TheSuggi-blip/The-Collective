@@ -27,6 +27,8 @@ WHAT: the service `store` runs it. Every minute it reads the new whole lines of 
         game/routes/*.json, game/routes/plans/<role>.json (the
         repository's game/ folder, --root)                          -> routes, plan_routes
         game/supply/chains.tsv (supply.py reads it)                 -> supply_chains (view supply_status)
+        game/needs.tsv (needs.py reads it)                          -> needs (and need_status: needs.py computes it
+                                                                       on the pass, when the file changed or due)
         governance/rulebook.md, strategy.md and empire.md, the
         guidebooks and templates of each division, game/rules/*.md,
         the newest entry of communications/orders.log (docs.py)     -> docs (one row a section), and doc_versions:
@@ -132,6 +134,7 @@ import division                                   # noqa: E402  who commands a p
 import routes as routefiles                       # noqa: E402  what a run earned, a route's group: one rule for the store and for hive.py
 import docs as writings                           # noqa: E402  the fleet's written knowledge by section: docs, doc_versions
 import supply as supplychains                     # noqa: E402  the supply chains: the reader of game/supply/chains.tsv and the view
+import needs as needbook                          # noqa: E402  the needs register: the reader of game/needs.tsv, need_status
 import stats                                      # noqa: E402  the fleet's statistics: their tables and the figures computed in the pass
 
 EVERY = 60                     # seconds between two passes
@@ -454,6 +457,7 @@ SNAPSHOT = (
     ("plan_routes", "role TEXT, n INTEGER, route TEXT, ships INTEGER", "role, n"),
     ("docs", "path TEXT, kind TEXT, owner TEXT, section TEXT, n INTEGER, title TEXT, text TEXT, sha TEXT, chars INTEGER, t INTEGER", "path, section"),
 )
+SNAPSHOT += needbook.SNAPSHOT                     # needs: the needs register, a snapshot of game/needs.tsv (needs.py)
 COLUMNS = {name: [part.split()[0] for part in columns.split(", ")] for name, columns, _key in SNAPSHOT}
 LOOKUPS = (("ships", "system"), ("holdings", "item"), ("books", "item"), ("ladders", "item"), ("recipe_inputs", "item"),
            ("recipe_outputs", "item"), ("facility_materials", "item"), ("fields", "resource"), ("herds", "creature"), ("lanes", "a"),
@@ -951,6 +955,7 @@ LOADERS = (    # loader, the tables it fills, its files, whole (one file holds a
     ("plans", ("plan_routes",), repo_files("routes/plans", read_plan), False),
     ("docs", ("docs",), writings.files, False),     # the repository's governance/, guidebooks, templates, game/rules/, orders.log
 )
+LOADERS += (("needs", ("needs",), needbook.need_files, False),)      # the needs register (needs.py reads game/needs.tsv)
 FED = dict([(table, ("fleet", "orders")) for table in ("ships",)] + [(table, (loader,)) for loader, tables, _f, _w in LOADERS for table in tables])
 BAD = (OSError, ValueError, TypeError, KeyError, AttributeError, IndexError, RecursionError)
 
@@ -1317,6 +1322,10 @@ def one_pass(data, now=None, keep_days=KEEP_DAYS, root=None):
             out["stats"] = stats.compute(conn, data, root or ROOT, now)     # the fleet's statistics: stats.py decides itself what is due
         except Exception as error:                     # a failing figure never holds up the pass (stats.py names it: hive.py stats status)
             out["stats"] = {"rows": 0, "parts": {}, "errors": ["%s: %s" % (type(error).__name__, error)]}
+        try:
+            out["needs"] = needbook.compute(conn, data, root or ROOT, now)      # need_status, when due (needs.py)
+        except Exception as error:                     # a failing need never holds up the pass (meta needs.error names it)
+            out["needs"] = {"rows": 0, "error": "%s: %s" % (type(error).__name__, error)}
         try:
             out["sampled"] = sample_stock(conn, now, bool(out["snapshot"]["loaded"].get("holdings")))
         except sqlite3.Error as error:                 # nor does a fault of the hour's sample: the next pass writes it
@@ -1783,8 +1792,11 @@ EXAMPLES = {                   # three questions per table and view, as SQL (hiv
 DESCRIPTIONS.update(supplychains.DESCRIPTIONS)    # the supply chains' table and view, described where they are made (supply.py)
 EXAMPLES.update(supplychains.EXAMPLES)
 SCHEMA += stats.SCHEMA                            # the statistics' tables (stats.py): history kept by stats.py itself, the figures rewritten when due
+SCHEMA += needbook.SCHEMA                         # need_status (needs.py): the gross to net per open need, rewritten when due
 DESCRIPTIONS.update(stats.DESCRIPTIONS)
 EXAMPLES.update(stats.EXAMPLES)
+DESCRIPTIONS.update(needbook.DESCRIPTIONS)        # the needs register's table and need_status, described where they are made (needs.py)
+EXAMPLES.update(needbook.EXAMPLES)
 
 
 def schema(conn):

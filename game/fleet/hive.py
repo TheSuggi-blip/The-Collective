@@ -55,7 +55,7 @@ WHAT: reads the unit's data folder (fleet/, routes/runs.jsonl, market/, scouting
                               stations and their rent, the sites proposed for a base, the next steps of the member
                               limit (empire.py show; the file: governance/empire.md)
         surplus, reserve      what we hold beyond what our bases and upgrades take, where it lies and its best bid
-                              (surplus: what the fleet may sell); what the targets of game/reserve.tsv take against
+                              (surplus: what the fleet may sell); what the reserve's targets (the open needs of game/needs.tsv) take against
                               what we hold, and what is short (reserve). Both are surplus.py's answers
         inventory             what the fleet owns in goods: every item in station storage and in the holds added up, by
                               kind of item (raw, refined, parts, modules ...); `inventory stations` lists it per station
@@ -63,6 +63,9 @@ WHAT: reads the unit's data folder (fleet/, routes/runs.jsonl, market/, scouting
         supply                the supply chains (game/supply/chains.tsv): the goods the fleet must never run out of, each
                               against what stands at its place now, with the ships on its routes: show, check (the
                               gate) or duty (the plan change for a short chain, a dry run here); supply.py's answers
+        needs                 the needs register (game/needs.tsv, needs.py): the open needs, highest priority first, with
+                              their covered percent, colour and what is short (list), one need or project (show), per
+                              item (items), the gate (check); it only reads: a need is written by needs.py or the tool needs
         flow                  what each division put into the reserve per hour: of every item the reserve asks for
                               (surplus.py reserve), the units it holds (storage and holds) and their change per hour over
                               the last 4, 12 and 24 hours, from the store's hourly samples (store.py, stock_hour); the
@@ -112,6 +115,7 @@ USAGE:
   hive.py surplus [--top N] [--kind <kind>] [--item <item id>] [--all]
   hive.py reserve
   hive.py supply [show|check|duty]
+  hive.py needs [list [<division>] [--project <text>] [--all] | show <id>|<project> | items | check]
   hive.py flow [<Member>|all] [--hours N]
   hive.py sql "<SELECT or WITH statement>" [--limit N]
   hive.py schema [<table or view>]
@@ -1189,6 +1193,7 @@ def show_briefing(root, data, now, who, hours):
     import docs as writings                                         # Suggi, 2026-11-17: what changed in the written knowledge, not the whole files
     writings.briefing(root, data, now, who)
     __import__("guidebook").briefing(root, data, now, who)           # Suggi, 2026-11-18: the own class card, and what stands over its cap
+    __import__("needs").briefing(root, data, now, who)               # Suggi, 2026-11-21: the division's open needs, how many are red
     print("=== THE FLEET'S MONEY")
     show_fleet(root, data, now)
     print("=== MY STANDING FLEET")
@@ -1480,6 +1485,8 @@ def main():
     if verb == "supply":                           # the supply chains (supply.py); hive.py only reads: --write is never handed on
         import supply as chains
         return chains.main([rest[0] if rest else "show", "--root", root, "--data", data])
+    if verb == "needs":                            # the needs register (needs.py); hive.py only reads: a write verb is refused there
+        return __import__("needs").hive(args[args.index(verb) + 1:], root, data)
     if verb == "flow":
         return show_flow(root, data, now, rest[0] if rest else "all", value("--hours", str(TURN)))
     if verb == "inventory":

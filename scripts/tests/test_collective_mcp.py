@@ -176,7 +176,7 @@ class PlanTests(unittest.TestCase):
 
     def test_the_tools_carry_the_protocols_hints(self):
         hints = {name: self.server.schema(name)["annotations"] for name in self.server.TOOLS}
-        self.assertEqual(sorted(name for name, h in hints.items() if not h["readOnlyHint"]), ["command", "fill", "goal", "hold", "plan"])
+        self.assertEqual(sorted(name for name, h in hints.items() if not h["readOnlyHint"]), ["command", "fill", "goal", "hold", "needs", "plan"])
         self.assertEqual(sorted(name for name, h in hints.items() if h["destructiveHint"]), ["command", "goal", "hold"])
 
     def test_the_door_is_marked_and_every_script_exists(self):

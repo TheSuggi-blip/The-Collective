@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """surplus.py -- say per item what the fleet holds beyond what its build targets reserve: the surplus a trader may sell, where it lies and its best bid.
 
-WHAT: reads the reserve targets (game/reserve.tsv in the repository: what the fleet means to build or keep), the
+WHAT: reads the reserve targets (the open needs of game/needs.tsv: what the fleet means to build, kept by every division
+      with needs.py; and game/reserve.tsv in the repository: what it keeps, its pull levels, and any legacy target), the
       game's catalog, what the fleet owns (stock/storage.json: station storage and the holds, as
       craftbook.inventory adds it up) and the saved order books (market/). It answers:
         show      the items with surplus, best worth at a bid first: units held, reserved, surplus, the best bid
@@ -74,6 +75,7 @@ from pathlib import Path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import craftbook                                  # noqa: E402  the catalog, the inventory, the bids and the recipe rule
 import division                                   # noqa: E402  the data folder's default
+import needs as needbook                          # noqa: E402  the needs register: its open needs are the reserve's targets
 
 FILE = "game/reserve.tsv"
 HEADER = ["kind", "id", "units", "note"]
@@ -287,6 +289,7 @@ def surplus(data, root, cat=None, now=None):
     cat = craftbook.choose(cat or craftbook.load(data) or dict(EMPTY), root)      # the recipes the fleet chose (game/reserve-recipes.tsv)
     now = time.time() if now is None else now
     targets, errors, warnings, present = read_targets(Path(root) / FILE, cat)
+    targets += needbook.targets(root, cat, warnings)    # the open needs of game/needs.tsv, in priority order (needs.py): one demand
     inv = craftbook.inventory(data, cat)
     have = {r["id"]: r for g in inv["groups"] for r in g["rows"]}
     held = {item: r["units"] for item, r in have.items()}
@@ -357,6 +360,7 @@ def first_line(title, res):
         file = "reserve file %s (%d targets%s)" % (res["file"], len(res["targets"]), ", %d lines skipped" % len(res["errors"]) if res["errors"] else "")
     else:
         file = "NO RESERVE FILE %s: no targets, nothing kept, everything held is surplus" % res["file"]
+    file += needbook.said(res)                      # how many of the targets are open needs of game/needs.tsv (needs.py)
     books = "%d order books, the oldest read %s (%s)" % (res["books"]["read"], res["books"]["oldest"] or "--", res["books"]["age"] or "age unknown") \
         if res["books"]["read"] else "no order book read: no bid anywhere"
     chosen = res.get("choices") or {}
