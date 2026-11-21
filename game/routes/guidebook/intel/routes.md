@@ -9,8 +9,9 @@ Status: proven. Updated: 2026-11-21. Evidence: the plan file (tool plan, show); 
   every 30 minutes, 4 ships.
 - Readers (@reader): census-watch-gsc-0044 (the outpost and its six
   neighbours, 35 min, 4), census-worked (the places our routes use near
-  home, 90 min, 6), census-worked-far (where the other divisions fly
-  beyond the roads, 180 min, 6), census-frontier (170 min), then the roads.
+  home and Goldcrest, 90 min, 6), census-worked-far (where the other
+  divisions fly beyond the roads, 53 systems, 180 min, 8), census-frontier
+  (170 min), then the roads.
 - Explorers: their road first (census-north 6, census-east 3,
   census-south 4: the three roads of rule F33, 150 min), then
   census-worked-far, then the far list each has flown least (480 min).
