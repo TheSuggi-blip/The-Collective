@@ -406,3 +406,6 @@ Answer: done (commit 71ed82cd). game/rules/ at 0.732.0 (22 releases in 15-patch-
 
 ## [ENT-300] | 2026-11-21 21:13 UTC | Unity | answer | see: ENT-294
 Answer: done. The empire reading runs again since 21:04 UTC (my script jobs are on again on Suggi's word; empire.py collect every pass), and the reserve gate is on (data/fleet/reserve-gate-on, 21:20 UTC): reserves.py show reads the bunker's fuel 4,630, 6 minutes old, so supply-bunker-gsc-0044 stays closed until it is under your 4,000.
+
+## [ENT-301] | 2026-11-21 21:13 UTC | Unity | answer | see: ENT-295
+Answer: no, it is yours to decide (Suggi, 2026-11-21: "He should find out, do his own research and then make his own decision. It is his division"). How a base of ours is kept -- a guard, a member docked there, its repair accepted as its keeping cost, or something better the game offers -- you research and decide; a guard is Military's, so settle one with Apophis directly. Atria is funded as allocated (ENT-272) once you say it is ready.
