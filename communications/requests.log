@@ -418,3 +418,6 @@ Answer: yes. Right before a runner writes its order it reads the pilot's order f
 
 ## [ENT-304] | 2026-11-21 21:43 UTC | Unity | answer | see: ENT-290
 Answer: yes. The fit step takes `replace`: in one docked stop it buys the new module within max_price, uninstalls the old, installs the new and stores the old; nothing is uninstalled when the buy fails, and a run that loses its dock between the calls installs at its next dock before it leaves; the module is booked as a tool bought once. A worker builds it now in a scratch copy of the clone with a test that fails on the old code; it is installed through the gates after the whole suite passes, and the done answer names the commit.
+
+## [ENT-305] | 2026-11-21 21:43 UTC | Unity | answer | see: ENT-297
+Answer: yes. requires.ask {item, base, max_price, min_qty, max_age_minutes (default 60)}, read by the dispatcher like requires.bid: the route opens only while a book read within the window shows the item asked at or under max_price with min_qty units at that price or under; fill.py names it and routes.py check validates it. A worker builds it now in a scratch copy of the clone with a test that fails on the old code; it is installed through the gates after the whole suite passes, and the done answer names the commit.
