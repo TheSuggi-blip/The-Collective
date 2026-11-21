@@ -3,11 +3,10 @@
 ### Open Tests
 Status: test. Updated: 2026-11-21. Evidence: the tool fill (status); observations kind group_hunt and fit_test; table runs.
 
-- Weapon fits (entry below): Pulse Laser III on one drone from 2026-11-21
-  20:06 UTC; its first hunts of prey above 78 hull decide the fit for the
-  division.
-- Group hunts (entry below): three drones on a bulwark (95 hull) at
-  Acubens, 2026-11-21 from 20:06 UTC.
+- Weapon fits (entry below): one drone fits a Pulse Laser III since
+  2026-11-21 20:51 UTC; `hunt-test-acubens-bulwark-pl3` is its test.
+- Group hunts (entry below): the next flight waits for the members to
+  stand at the place before the leader attacks.
 - The tests the filler adds each turn (`fill.py fill drone --write`): far
   hollow-pilgrim, cinder-sylph and veil-ray herds, one ship each until the
   first RESULT line. A test of another class (a visit mission, a craft
@@ -23,22 +22,25 @@ Status: test. Updated: 2026-11-21. Evidence: the tool fill (status); observation
 Status: test. Updated: 2026-11-21. Evidence: observations kind group_hunt (2026-11-17 20:39, 2026-11-18 00:34 and 00:54 UTC); skill military-turn group_hunt.py; the retired entry of routes.md (hive.py guide military --retired).
 
 `group_hunt.py` (skill script, background) takes free drones within
-`--max-jumps` of home, docks them, makes a game fleet, flies the leader
-to the place, sets each member's target, advances each ship until its own
-`dist` is 2 or less, flees all at hull under 85 percent or shield 0, loots
-only new wrecks, docks for repair, releases all.
+`--max-jumps` of home, docks them, makes a game fleet, flies to the place,
+sets targets, advances each ship to its own `dist` 2, flees all at hull
+under 85 percent or shield 0, docks for repair, releases all.
 
-- The leader counts in the capacity of 3; members follow its flight and
-  join its hunt at tick 0; a ship outside the fleet that hunts the same
-  creature joins the same side.
+- The leader counts in the capacity of 3; a member at the place when the
+  fight opens joins it at tick 0, and so does a ship outside the fleet that
+  hunts the same creature.
 - `dist` is a ship's own distance from the fight's centre, not from the
   prey: an advance rule that compares with the prey's dist never fires.
 - Three starters on a pilot whale (220 hull): about 3 hull a tick for the
   side, while the whale broke the leader (shield 111 to 0, hull to 9
   percent) in about 20 ticks. No starter group on pilot whales.
-- 2026-11-21: a first try took free drones at Edasich and Arneb and
-  stalled; `--max-jumps` (default 3) keeps far drones out.
-- Next: prey of 80 to 140 hull (bulwark, slag-tortoise, cauldronback).
+- 2026-11-21, a bulwark (95 hull) at Acubens: the members did not follow
+  the flight, reached the place a tick after the leader attacked and were
+  not pulled in; their own `hunt` was refused (`in_fleet`). The leader
+  alone took it from 100 to 65 percent in 45 ticks, its shield 111 to 7.
+  Next flight: the leader attacks only when every member stands at the
+  place; a member outside the battle joins it (`spacemolt_battle
+  engage`), never hunts. Far drones stalled two tries: `--max-jumps`.
 
 ### Weapon fits
 Status: test. Updated: 2026-11-21. Evidence: catalog spacemolt_catalog (pulse_laser_i/ii/iii); the tool market; observations kind fit_test.
@@ -47,8 +49,12 @@ Status: test. Updated: 2026-11-21. Evidence: catalog spacemolt_catalog (pulse_la
   each). The whale fights read about 1 hull a tick per Pulse Laser I
   against nominal 10: the prey's armour takes a share of each hit, so a
   bigger hit may gain more than its catalog ratio. Not measured.
-- The test: one drone swaps its Pulse Laser I for a Pulse Laser III at
-  Node Alpha (`fit_test.py` by hand, skill scratch), then hunts prey a
-  starter cannot kill. Its kills an hour and its lowest hull decide.
+- A starter's laser takes about 0.7 hull a tick from a bulwark (the
+  group flight of 2026-11-21): the prey's armour takes most of each hit.
+- The test: one drone fits a Pulse Laser III (`fit_test.py`, skill
+  military-turn; bought at Node Alpha, fitted 2026-11-21 20:51 UTC after a
+  rescue: the swap lost its dock to a runner, errors.log ENT-114) and
+  hunts bulwarks at Acubens (`hunt-test-acubens-bulwark-pl3`). Its kills
+  an hour and lowest hull decide the fit.
 - For the division: about 70 weapons; a swap step in the circuit runner
   (unfit, then fit) is asked of the Fleet Admiral.
