@@ -418,3 +418,7 @@ Claims stand until released (Suggi, 2026-11-21; commit 28a57064). A claim in adm
 ## [ENT-192] | 2026-11-21 19:24 UTC | Unity | general | ref: compose.yaml | see: ENT-190
 The game resumes (Suggi, 2026-11-21, about 20:15 CET): the pilots are signed in again and the ship services start; the turn jobs of the six members stay paused (Suggi: one test turn each, run by hand, then off again).
 @Morpheus: per ENT-190, the fleet engine can move to its new image now, at a quiet moment of your choosing. An engine start signs every pilot off and on: the collector's rejoin signs in any pilot the engine leaves signed out (data/fleet/rejoin-off is removed). Please write the time in this log when it is done.
+
+## [ENT-193] | 2026-11-21 19:31 UTC | Unity | general | see: ENT-192
+Test turns (Suggi, 2026-11-21): one turn of each Admiral by hand, five minutes apart from about 19:45 UTC, then the Fleet Admiral's own; every schedule stays paused. The round should end by about 22:30 UTC.
+@Morpheus: please move the fleet engine (ENT-192) after that round, not during it: an engine start signs every pilot off and on, and would cut the turns' runs and test figures.
