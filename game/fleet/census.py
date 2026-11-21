@@ -35,7 +35,12 @@ arrival and before `get_system`, so that a place the survey reveals is read in t
 same pass. The answer is kept in scouting/<system>.json (`survey`) and the history
 row says `surveyed`. It is the one action that trains scanning (catalog skills;
 5 XP for the first survey, observations kind survey). A ship without a scanner
-reads as before."""
+reads as before.
+
+Books from afar: at each station it docks at, the census also reads the books of up to eight other stations
+whose market/<base>.json is over an hour old, the stalest first (`view_market` with `base_id`, game 0.728.0:
+the live book of any charted station, read while docked), and saves each with the source
+`view_market base_id, own ship docked at <base>`. A read costs no tick; the first answer without a book ends it."""
 import atexit
 import fcntl
 import json
@@ -157,6 +162,51 @@ def save_station(base, system):
     if keep:
         write_json(DATA / 'missions' / f'{base}.json', {'base': base, 'system': system, 'read_at': now(), 'source': 'get_missions, own ship docked', 'missions': keep})
     return len(items), len(keep)
+
+
+REMOTE_BOOKS = 8            # other stations' books a docked census reads from afar at each dock (game 0.728.0)
+REMOTE_AGE = 3600           # seconds: a book younger than this is left as it is
+
+
+def stale_books(data, here, now, limit, age):
+    """[(base, system)] of the station books in data/market that a census docked at `here` reads from afar
+    (view_market with base_id, game 0.728.0): every file that is one station's book (it holds `items`; the
+    ledger's history files, ladders.json and temporary files are not), not `here`, older than `age` seconds by
+    its time on disk, the stalest first, at most `limit`."""
+    folder = Path(data) / 'market'
+    out = []
+    try:
+        files = list(folder.iterdir())
+    except OSError:
+        return []
+    for f in files:
+        if f.suffix != '.json' or f.name.startswith('history') or f.stem == here:
+            continue
+        try:
+            seen = now - f.stat().st_mtime
+            if seen < age:
+                continue
+            book = json.loads(f.read_text(encoding='utf-8'))
+        except (OSError, ValueError):
+            continue
+        if isinstance(book, dict) and 'items' in book:
+            out.append((-seen, f.stem, str(book.get('system') or '')))
+    out.sort()
+    return [(base, system) for _, base, system in out[:limit]]
+
+
+def save_remote_books(here):
+    """Read and save the books of up to REMOTE_BOOKS other stations from the station docked at (stale_books);
+    stops at the first answer without a book (a station not charted, or the ship not docked). The number saved."""
+    saved = 0
+    for base, system in stale_books(DATA, here, time.time(), REMOTE_BOOKS, REMOTE_AGE):
+        items = raw('view_market', {'base_id': base}, 'spacemolt_market').get('items')
+        if not isinstance(items, list):
+            break
+        rows = [{k: i.get(k) for k in ('item_id', 'item_name', 'category', 'best_buy', 'best_buy_qty', 'buy_quantity', 'best_sell', 'best_sell_qty', 'sell_quantity')} for i in items if isinstance(i, dict)]
+        write_json(DATA / 'market' / f'{base}.json', {'base': base, 'system': system, 'read_at': now(), 'source': f'view_market base_id, own ship docked at {here}', 'items': rows})
+        saved += 1
+    return saved
 
 
 def pirate_details(near):
@@ -299,6 +349,9 @@ def read_system(sid):
                 n_items, n_missions = save_station(p['base_id'], sid)
                 station = p['base_id']
                 say(f'docked at {p["base_id"]}: order book {n_items} items, board {n_missions} missions saved')
+                far = save_remote_books(p['base_id'])
+                if far:
+                    say(f'from {p["base_id"]}: {far} books of other stations read from afar (view_market base_id)')
     write_json(DATA / 'scouting' / f'{sid}.json', scouting)
     write_json(DATA / 'wildlife' / f'{sid}.json', wildlife)
     with open(DATA / 'wildlife' / 'history.jsonl', 'a', encoding='utf-8') as fh:      # herds and deposits over time: what regrows, and how fast

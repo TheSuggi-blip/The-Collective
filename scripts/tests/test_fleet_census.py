@@ -113,5 +113,50 @@ class ChainTests(unittest.TestCase):
         self.assertIsNone(self.next_system({"systems": ["e"], "every_minutes": 60}, "zz", LANES, str(self.data), set(), set(), self.now, 2))
 
 
+class RemoteBookTests(unittest.TestCase):
+    """Game 0.728.0: view_market takes base_id, so a docked census reads the books of other stations from afar.
+    Which books: those of data/market that are station books, not the one it is docked at, older than the age,
+    the stalest first, at most `limit`."""
+
+    def setUp(self):
+        (self.stale_books,) = load("stale_books")
+        self.tmp = tempfile.TemporaryDirectory()
+        self.data = Path(self.tmp.name)
+        (self.data / "market").mkdir()
+        self.now = time.time()
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def book(self, base, minutes_ago, system="s", items=True):
+        path = self.data / "market" / (base + ".json")
+        body = {"base": base, "system": system, "read_at": "x"}
+        if items:
+            body["items"] = []
+        path.write_text(json.dumps(body), encoding="utf-8")
+        os.utime(path, (self.now - minutes_ago * 60, self.now - minutes_ago * 60))
+
+    def test_the_stalest_books_first_and_never_the_station_docked_at(self):
+        self.book("here", 500)
+        self.book("old", 300, "far")
+        self.book("older", 900, "farther")
+        self.book("fresh", 10)
+        got = self.stale_books(str(self.data), "here", self.now, 8, 3600)
+        self.assertEqual(got, [("older", "farther"), ("old", "far")])
+
+    def test_the_limit_holds_and_files_that_are_no_station_book_are_left_out(self):
+        for i in range(5):
+            self.book("b%d" % i, 100 + i)
+        self.book("history", 999)                               # the ledger's files are not books
+        (self.data / "market" / "ladders.json").write_text("{}", encoding="utf-8")
+        (self.data / "market" / "b9.json.123.tmp").write_text("{}", encoding="utf-8")
+        self.book("noitems", 999, items=False)
+        got = self.stale_books(str(self.data), "here", self.now, 2, 3600)
+        self.assertEqual([b for b, _ in got], ["b4", "b3"])
+
+    def test_no_market_folder_gives_nothing(self):
+        self.assertEqual(self.stale_books(str(self.data / "none"), "here", self.now, 8, 3600), [])
+
+
 if __name__ == "__main__":
     unittest.main()
