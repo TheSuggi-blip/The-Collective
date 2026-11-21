@@ -64,6 +64,10 @@
   {
    "what": "The bunker route under requires.reserve (below 4,000): its first RESULT line once the bunker is repaired and the Fleet Admiral switches the reserve gate on; that RESULT line is the start of Atria (requests.log ENT-272)",
    "when": "after the repair"
+  },
+  {
+   "what": "Atria: the kit route switched on and the founding by found.py --treasury-ok at Atria Belt, once the builder's wallet holds the 150,150 cr allocation and GSC-0044 runs by itself",
+   "when": "on the allocation"
   }
  ],
  "ships": {

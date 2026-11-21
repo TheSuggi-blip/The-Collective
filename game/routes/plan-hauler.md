@@ -88,3 +88,4 @@ Planned:
 |---|---|
 | GSC-0044: read get_base at the outpost after the first repair load (the repairs block: what each damaged facility still lacks), carry what it names, and read faction_owned until the bunker reads ready | next turn |
 | The bunker route under requires.reserve (below 4,000): its first RESULT line once the bunker is repaired and the Fleet Admiral switches the reserve gate on; that RESULT line is the start of Atria (requests.log ENT-272) | after the repair |
+| Atria: the kit route switched on and the founding by found.py --treasury-ok at Atria Belt, once the builder's wallet holds the 150,150 cr allocation and GSC-0044 runs by itself | on the allocation |
