@@ -46,22 +46,24 @@
    "note": "Orders ENT-056, block ZERO: the reserve's short ores first (silicon, carbon, gold, nickel), each gather limited to what its field carries; P2: stored iron and copper become steel plate and piping where they lie. Gathers before crafts since 2026-11-21 (Zero): the crafts had taken the ships the short ores need."
   },
   "reserve-hamal": {
-   "title": "Make, then gather what the reserve lacks, the short-ore fields in the other order so the division is spread",
+   "title": "Gather what the reserve lacks, then make: the short-ore fields in the other order so the division is spread, then steel plate and copper piping from own stores",
    "routes": [
     "store-hold-central-nexus",
-    "craft-steel-experiment",
-    "craft-steel-node-beta",
     "gather-acubens-belt-carbon",
     "gather-jadecove-nickel",
+    "gather-tiaki-worldsend-nickel",
     "gather-subra-floodlight-flats-silicon",
-    "gather-goldcrest-gold"
+    "gather-goldcrest-gold",
+    "craft-steel-experiment",
+    "craft-steel-node-beta",
+    "craft-piping-node-beta"
    ],
    "trains": [
     "mining",
     "crafting",
     "refining"
    ],
-   "note": "Orders ENT-050, block ZERO: iron and copper no more while the reserve holds them; P2: stored iron becomes steel plate. The iron gather fields left this template on 2026-11-17 23:20 UTC (Zero)."
+   "note": "Orders ENT-056, block ZERO: the reserve's short ores first, each gather limited to what its field carries; P2: stored iron and copper become steel plate and piping where they lie. Gathers before crafts since 2026-11-21 (Zero)."
   }
  }
 }
