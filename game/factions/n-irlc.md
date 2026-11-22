@@ -15,7 +15,7 @@ updated: 2026-11-22
 # Ironlight Combine [IRLC]
 
 A player faction with 8 base(s) in 5 system(s); the nearest to Nexus Prime is 6 jump(s) away, in LHS 1140 (`lhs_1140`).
-Pilots of it in our space in the last 24 hours: 20.
+Pilots of it in our space in the last 24 hours: 18.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 20.
 | Allies | HEXC | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 196 | Public event stream |
+| Pilots carrying the tag on the public event stream | 174 | Public event stream |
 
 ## Bases
 
@@ -47,15 +47,13 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| ILC Chute | Node Alpha (`node_alpha`) | 0 | junk_convoy |
+| ILC Chute | Synchrony (`synchrony`) | 0 | junk_convoy |
 | ILC Constellation | Nexus Prime (`nexus_prime`) | 0 | concordia |
 | ILC Flange | Synchrony (`synchrony`) | 0 | syndicate |
-| ILC Gantry | Synchrony (`synchrony`) | 0 | syndicate |
-| ILC Gasket | Nexus Prime (`nexus_prime`) | 0 | syndicate |
+| ILC Gantry | Node Alpha (`node_alpha`) | 0 | syndicate |
+| ILC Gasket | Synchrony (`synchrony`) | 0 | syndicate |
 | ILC Gateway | Nexus Prime (`nexus_prime`) | 0 | concordia |
-| ILC Geyser | Node Beta (`node_beta`) | 0 | accumulator |
 | ILC Gilt | Synchrony (`synchrony`) | 0 | syndicate |
-| ILC Journal | Node Gamma (`node_gamma`) | 0 | rock_eater |
 | ILC Ladle | Synchrony (`synchrony`) | 0 | syndicate |
 | ILC Mallet | Synchrony (`synchrony`) | 0 | syndicate |
 | ILC Nonstop | Nexus Prime (`nexus_prime`) | 0 | concordia |
@@ -66,7 +64,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | ILC Solder | Synchrony (`synchrony`) | 1 | syndicate |
 | ILC Tappet | Pherkad (`pherkad`) | 0 | rock_eater |
 | ILC Vagabond | Nexus Prime (`nexus_prime`) | 0 | concordia |
-| ILC Weir | Node Gamma (`node_gamma`) | 0 | junk_convoy |
+| ILC Weir | Synchrony (`synchrony`) | 0 | junk_convoy |
 
 ## Standing History
 

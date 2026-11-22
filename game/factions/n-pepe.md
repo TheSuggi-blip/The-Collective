@@ -15,7 +15,7 @@ updated: 2026-11-22
 # Pepemos Trading Company [PEPE]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 16.
+Pilots of it in our space in the last 24 hours: 17.
 
 ## Identity
 
@@ -42,18 +42,19 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | MimicClaw | Nexus Prime (`nexus_prime`) | 0 | cobble |
 | MimicComet | Nexus Prime (`nexus_prime`) | 0 | cobble |
 | MimicDelve | Pherkad (`pherkad`) | 0 | cobble |
-| MimicFlake | Pherkad (`pherkad`) | 0 | cobble |
 | MimicFlare | Nexus Prime (`nexus_prime`) | 0 | cobble |
 | MimicFlint | Pherkad (`pherkad`) | 0 | cobble |
-| MimicGrain | Pherkad (`pherkad`) | 0 | cobble |
+| MimicForge | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicFrost | Nexus Prime (`nexus_prime`) | 0 | threshold |
 | MimicGrit | Pherkad (`pherkad`) | 0 | cobble |
 | MimicHew | Pherkad (`pherkad`) | 0 | cobble |
 | MimicLode | Pherkad (`pherkad`) | 0 | cobble |
-| MimicSand | Pherkad (`pherkad`) | 0 | cobble |
+| MimicRota | Nexus Prime (`nexus_prime`) | 0 | prospect |
 | MimicSeam | Pherkad (`pherkad`) | 0 | cobble |
-| MimicSlag | Pherkad (`pherkad`) | 0 | cobble |
-| MimicTern | Nexus Prime (`nexus_prime`) | 0 | theoria |
-| MimicWafer | Pherkad (`pherkad`) | 0 | cobble |
+| MimicSextant | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicTally | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicVent | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| Pepemos | Nexus Prime (`nexus_prime`) | 0 | shard |
 
 ## Standing History
 
