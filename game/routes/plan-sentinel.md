@@ -225,4 +225,4 @@ Planned:
 
 | What | When |
 |---|---|
-| Read the first runs of the Plasma Cannon II swap and the three Pulse Laser III tests (bulwark, deuteron slug, slag tortoise); name the division's weapon fit to the Fleet Admiral when both weapons have kills an hour | next turn |
+| Two more whale group kills with three Pulse Laser III ships for three results (F37); read the four new laser hunts on slag tortoises and deuteron slugs; read the Plasma Cannon II ammo loader | next turn |
