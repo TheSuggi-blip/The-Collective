@@ -18,6 +18,8 @@
   "craft-reserve": {
    "title": "Fuel cells from stored hydrogen gas, steel plate from each hauler's own stored iron at four workshops, then copper piping",
    "routes": [
+    "craft-gold-wiring-synchrony-hub",
+    "craft-gold-wiring-experiment",
     "craft-cells-hydrogen-node-beta",
     "craft-steel-logistics-experiment",
     "craft-steel-logistics-node-beta",
@@ -29,7 +31,7 @@
     "crafting",
     "refining"
    ],
-   "note": "2026-11-22 00:15 UTC: fuel cells (keep fuel_cell all) from the hydrogen gas no bid takes, a test of one ship; steel as before (iron gifted to the hauler receivers once strict classes are on, queue.log ENT-201)"
+   "note": "2026-11-22 Apollo: gold wiring first (1,860 to make for the open needs, gold held at the receivers); steel plate next (7,937 to make from iron). Each opens only on the pilot's own stored inputs, so the receivers craft docked."
   },
   "outpost-supply": {
    "title": "What our outpost GSC-0044 takes: repair materials while its facilities are damaged, then fuel cells into its bunker while the reserve gate reads it under its floor; faction members only",
