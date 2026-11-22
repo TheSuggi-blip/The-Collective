@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 18.
 | Allies | HEXC | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 174 | Public event stream |
+| Pilots carrying the tag on the public event stream | 175 | Public event stream |
 
 ## Bases
 
@@ -48,21 +48,21 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
 | ILC Chute | Node Alpha (`node_alpha`) | 0 | junk_convoy |
-| ILC Cope | Pherkad (`pherkad`) | 0 | frankenhauler |
+| ILC Constellation | Nexus Prime (`nexus_prime`) | 0 | concordia |
+| ILC Crater | Pherkad (`pherkad`) | 0 | atmospheric_sampler |
 | ILC Flange | Synchrony (`synchrony`) | 0 | syndicate |
-| ILC Gantry | Node Alpha (`node_alpha`) | 0 | syndicate |
-| ILC Gasket | Synchrony (`synchrony`) | 0 | syndicate |
+| ILC Gantry | Synchrony (`synchrony`) | 0 | syndicate |
+| ILC Gasket | Nexus Prime (`nexus_prime`) | 0 | syndicate |
 | ILC Gateway | Nexus Prime (`nexus_prime`) | 0 | concordia |
-| ILC Geyser | Node Beta (`node_beta`) | 0 | accumulator |
 | ILC Gilt | Synchrony (`synchrony`) | 0 | syndicate |
-| ILC Ladle | Node Alpha (`node_alpha`) | 0 | syndicate |
+| ILC Ladle | Synchrony (`synchrony`) | 0 | syndicate |
 | ILC Mallet | Synchrony (`synchrony`) | 0 | syndicate |
 | ILC Nonstop | Nexus Prime (`nexus_prime`) | 0 | concordia |
-| ILC Ratchet | Synchrony (`synchrony`) | 0 | syndicate |
+| ILC Penalty | Synchrony (`synchrony`) | 0 | syndicate |
+| ILC Ratchet | The Experiment (`the_experiment`) | 0 | syndicate |
 | ILC Retort | Synchrony (`synchrony`) | 0 | syndicate |
 | ILC Shank | Synchrony (`synchrony`) | 1 | syndicate |
 | ILC Solder | Synchrony (`synchrony`) | 1 | syndicate |
-| ILC Tappet | Pherkad (`pherkad`) | 0 | rock_eater |
 | ILC Vagabond | Nexus Prime (`nexus_prime`) | 0 | concordia |
 | ILC Weir | Synchrony (`synchrony`) | 0 | junk_convoy |
 
