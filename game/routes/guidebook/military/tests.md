@@ -6,7 +6,8 @@ Status: test. Updated: 2026-11-22. Evidence: the tool fill (status); observation
 - Pulse Laser III hunts on four herds of slag tortoises and deuteron
   slugs (`*-pl3`, 2026-11-22), one ship each until three results; carapace
   for the reserve.
-- Group hunts (entry below): a pilot whale with three Pulse Laser III ships.
+- Group hunts (entry below): two more whale kills with three Pulse
+  Laser III ships for three results (F37).
 - Caustic sac: chlorophage herds at Alathfar, Fulu and Chara, stored at
   Node Beta; standing work while the tool needs names it short.
 - The tests the filler adds each turn (`fill.py fill drone --write`): far
@@ -18,7 +19,7 @@ Status: test. Updated: 2026-11-22. Evidence: the tool fill (status); observation
   Pulse Laser III kills prey of 85 to 95 hull (Weapon fits).
 
 ### Group hunts
-Status: test. Updated: 2026-11-22. Evidence: observations kind group_hunt (2026-11-17 to 2026-11-22 00:45 UTC); spacemolt.com/docs/combat; skill military-turn group_hunt.py.
+Status: test. Updated: 2026-11-22. Evidence: observations kind group_hunt (2026-11-17 to 2026-11-22 08:43 UTC); errors.log ENT-129, ENT-130; spacemolt.com/docs/combat; skill military-turn group_hunt.py.
 
 `group_hunt.py` (skill script, background) takes free drones within
 `--max-jumps` of home, docks them, makes a game fleet, waits until every
@@ -32,10 +33,12 @@ docks for repair, releases all.
   left out joins with `spacemolt_battle engage`, never `hunt` (`in_fleet`).
 - `dist` is a ship's own distance from the fight's centre, not from the
   prey: an advance rule that compares with the prey's dist never fires.
-- Three starters on a pilot whale (220 hull), 2026-11-22 at Stellar
-  Siphon, all three in the fight from tick 0: the whale 100 to 89 percent
-  in 9 ticks, the leader's shield gone and its hull 75 to 36; no kill. A
-  starter group loses the race to the stalemate: weapon first.
+- Pilot whale (220 hull), Stellar Siphon: three starters took it to 89
+  percent in 9 ticks and fled; three Pulse Laser III ships killed it in 6
+  ticks (2026-11-22 08:40 UTC), every hull 100, the leader's shield 96 to
+  51; loot whale oil, blubber, meat, carapace. Weapon first, then the group.
+- Take only a ship with no engine goal (`--module`, goal check); stop a
+  running group with `stop_script.sh`, never a kill of the shell's PID.
 
 ### Weapon fits
 Status: proven. Updated: 2026-11-22. Evidence: table runs, routes hunt-test-keid-ice-shelf-deuteron-slug-pl3, hunt-test-gsc-0035-belt-b-slag-tortoise-pl3, hunt-test-acubens-bulwark-pl3, hunt-test-acubens-bulwark-pc2, fit-pulse-laser-iii-lhs-1140; tool stock (dispersal_plasma_cell_pack); catalog 0.732.0 (plasma_cannon_ii); spacemolt.com/docs/wildlife.
