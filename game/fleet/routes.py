@@ -481,6 +481,32 @@ def fit_gate_warnings(root, routes):
     return sorted(set(out))
 
 
+BUY_TAX = 1.01                 # route_run.TAX: the runner refuses an ask whose price with this tax tops a buy's max_price
+
+
+def buy_limit_warnings(routes):
+    """[(route id, stop number, item, the ask gate's max_price, the buy's max_price)] of the circuits whose
+    `requires.ask` opens on an ask their own buy step refuses: the buy's max_price under the gate x BUY_TAX, so every
+    run ends at its failed buy (requests ENT-357; errors.log ENT-138: gate 231, buy 231, ask 230, nothing bought)."""
+    out = []
+    for rid, route in sorted(routes.items()):
+        if not isinstance(route, dict) or route.get("kind") != "circuit":
+            continue
+        need = route.get("requires") if isinstance(route.get("requires"), dict) else {}
+        asks = need.get("ask")
+        gates = {}
+        for ask in ([asks] if isinstance(asks, dict) else asks if isinstance(asks, list) else []):
+            if isinstance(ask, dict) and isinstance(ask.get("max_price"), (int, float)) and not isinstance(ask.get("max_price"), bool):
+                gates[ask.get("item")] = max(gates.get(ask.get("item"), 0), ask["max_price"])
+        for n, stop in enumerate(route.get("stops") or [], 1):
+            for want in stop.get("buy") or [] if isinstance(stop, dict) and isinstance(stop.get("buy"), list) else []:
+                limit = want.get("max_price") if isinstance(want, dict) else None
+                gate = gates.get(want.get("item")) if isinstance(want, dict) else None
+                if gate and isinstance(limit, (int, float)) and not isinstance(limit, bool) and limit < gate * BUY_TAX:
+                    out.append((rid, n, want["item"], gate, limit))
+    return out
+
+
 def sale_warnings(routes):
     """[(route id, its strict class, the roles it is closed to)] of the routes that sell outside Trade's class: with
     data/fleet/strict-classes-on the dispatcher refuses them to every pilot that is not a trader (workclass.sales)."""
@@ -990,7 +1016,7 @@ def moved(row, data=None):
     plain = (row.get("delta") or 0) + taxes.in_run(row, data)
     before, after = row.get("credits_before"), row.get("credits_after")
     walls = sweep_walls(data)
-    total = 0
+    total, seam = 0, []
     for at, giver, taker, credits, loose in sorted(gifts(data) + deposits(data)):
         sign = (giver == pilot) - (taker == pilot)
         if not sign or not found[0] <= at <= found[1]:
@@ -999,9 +1025,16 @@ def moved(row, data=None):
         if wall is not None and (wall == after) != (wall == before):
             total += credits * sign if wall == after else 0
             continue
-        inside = not loose and start + EDGE <= at <= end - EDGE
-        if inside or abs(plain + total + credits * sign) < abs(plain + total):
+        if not loose and start + EDGE <= at <= end - EDGE:
             total += credits * sign
+        else:
+            seam.append(credits * sign)
+    # The moves near a seam are weighed after every move that is surely the run's: one weighed first, in time order,
+    # misses its partner (requests ENT-359: the leader's deposit of 23,198 cr eleven seconds into a hunt and a gift of
+    # 12,008 cr inside it read -23,558 cr where the hunt spent about 360 cr of fuel).
+    for moved_credits in seam:
+        if abs(plain + total + moved_credits) < abs(plain + total):
+            total += moved_credits
     return total + late_gifts(dict(row, delta=plain - taxes.in_run(row, data) + total), found, data)
 
 
@@ -1206,7 +1239,11 @@ def main():
         for fid, role, rid, module in gated:
             print("WARNING game/routes/%s.json: replaces %s in the %s plan, while %s asks `requires.module` %s: a refitted ship is refused it "
                   "(a list of modules means any one of them)" % (fid, module, role, rid, module))
-        print("Errors: %d | Warnings: %d" % (len(errors), (len(warned) if workclass.strict_on() else min(len(warned), 1)) + len(gated)))
+        limits = buy_limit_warnings(routes_of(args.root)[0])        # requests ENT-357: a gate on an ask the buy refuses
+        for rid, n, item, gate, limit in limits:
+            print("WARNING game/routes/%s.json: stop %d buys %s at a max_price of %s, under the `requires.ask` gate of %s x %.2f (the runner's tax): "
+                  "the gate opens on an ask the buy refuses; set max_price to %d or more" % (rid, n, item, limit, gate, BUY_TAX, -(-gate * BUY_TAX // 1)))
+        print("Errors: %d | Warnings: %d" % (len(errors), (len(warned) if workclass.strict_on() else min(len(warned), 1)) + len(gated) + len(limits)))
         return 1 if errors else 0
     if args.command == "idle":
         for line in idle(args.root, args.data):

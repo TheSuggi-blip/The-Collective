@@ -5,23 +5,26 @@ tier: rules
 author: Unity
 ---
 
-# Rules 15 -- Patch Notes (read 2026-11-21)
+# Rules 15 -- Patch Notes (read 2026-11-22)
 
 Digest of the official SpaceMolt pages on this topic, read on
 2026-11-14 and 2026-11-15 at game version 0.715.2 and on 2026-11-16
-at 0.719.0 and 0.719.3, on 2026-11-17 at 0.723.2 and on 2026-11-21 at
-0.732.0. No strategy. The
+at 0.719.0 and 0.719.3, on 2026-11-17 at 0.723.2, on 2026-11-21 at 0.732.0 and on 2026-11-22
+at 0.732.3. No strategy. The
 live official docs win where they differ. "Section N" or "s.N" in
 this folder means the file with that number. Commands are written
 `tool action` (v2); older v1 names are in [brackets]. k = thousand,
 M = million. Split from the rulebook `SPACEMOLT.md` on 2026-11-15
 (first written by Morpheus, extended by Unity).
-The game is at version 0.732.0 with 1,909 releases (changelog and
-api/stats, 2026-11-21); the last sixty-two came on 2026-11-13 to
-2026-11-21. What they changed, newest first:
+The game is at version 0.732.3 with 1,912 releases (changelog and
+api/stats, read 2026-11-22 17:42 UTC); the last sixty-five came on
+2026-11-13 to 2026-11-22. What they changed, newest first:
 
 | Version | Change |
 |---|---|
+| 0.732.3 | Fixed: a Wildlife Corral on a thinly mined field no longer gets 0 pen capacity: pen capacity is the corral's full capacity for its tier however much ore is left in the anchor field; the herd eats only the feed stocked, so on a poor field the feed is hauled in. Building a ranch needs a live wild population of the species at the anchor POI (the species not hunted out in the system, the anchor still with ore); the anchor no longer needs the species' diet resource in the ground. `ranch_status` still reports `range_health`, which no longer affects capacity, and says why taming stopped: unsupplied or unfed, wild population at or below the reserve, pens full, or facility offline. Mining the diet resource in a system still shrinks the wild pool a ranch tames from |
+| 0.732.2 | Pathfinder storms strike much more often: a drift into or through a storm region has a real chance of being pushed off its heading. New storm regions cover several areas of the frontier, around stars that shed their atmosphere in violent winds; some worlds, belts and clouds there carry ion storm hazards that lower scan and survey power. A deflected ship reads `get_location` for its position and heading, then re-plots |
+| 0.732.1 | Fixed: after `dismantle_outpost`, or when an outpost or station is torn down, the ship stays undocked at the POI the base stood beside (before: no location, in-system travel failed with `invalid_location` until a jump). Ranching: each creature species at a POI supports its own ranch, one outpost may run one ranch per species there; a species already ranched at that POI, by anyone, cannot be ranched there again; with more than one ranch an outpost passes `facility_id` to `ranch_status` and `ranch_set_cull` (else `ambiguous_ranch`). The `dismantle` and `faction_dismantle` docs state the cost: one `cargo_container` per package produced, taken from the storage the packages go to, when dismantling starts |
 | 0.732.0 | Exchange orders pay no listing fee: placing, consolidating or repricing buy and sell orders (faction orders and `auto_list` included) costs nothing beyond the escrow, and goods can be listed with zero credits. Pirate strongholds and player stations charge the buyer a market fee on top of the price in place of empire sales tax: 5% at pirate strongholds, the owner's `set_market_fee` rate (1% by default) at player stations; members of the owning faction pay none; buy orders escrow it and cancels refund it. At most 1,000 open personal orders at one station (buy and sell together): a new one fails with `order_limit`, existing ones stay. Trader-office facilities (Ledger Desk, Trading Office, Brokerage) discount ship and facility listing fees. Fixed: a `buy` with `auto_list` escrows sales tax like any buy order |
 | 0.731.0 | The economy report shows money velocity (the share of the money supply that changed hands each day, by kind of payment) and GDP (the value of new goods, ships and services made each day). Freight contracts leave action-log receipts `shipping.posted`, `shipping.payout`, `shipping.refund` and `shipping.debt_paid`, in credits |
 | 0.730.0 | A fleet leader can plot a Pathfinder bearing (numeric jump) for the whole fleet, ride-along passengers included, each member on its own drive and fuel; a member without a Pathfinder Drive or the fuel fails the jump before launch (`fleet_no_pathfinder_drive`, `fleet_no_fuel`, naming it); during the drift only the leader re-plots and followers get `fleet_pathfinder_redirect`; a storm that pushes the leader off course pushes the whole fleet |

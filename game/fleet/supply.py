@@ -350,13 +350,35 @@ def faults(res):
     return out
 
 
-def check(res):
+def level_faults(rows, root):
+    """[("ERROR", text)] of the chains at `fleet` whose keep differs from the `min` line of game/reserve.tsv for their
+    item: one good, one figure (requests ENT-355: the chain iron-ore short at 166,923 while the reserve called the
+    same iron full, and the miners' plan followed one of them). No reserve file or no min line: nothing to compare."""
+    mins = {}
+    try:
+        text = (Path(root) / "reserve.tsv").read_text(encoding="ascii")
+    except (OSError, UnicodeDecodeError):
+        return []
+    for line in text.split("\n"):
+        cells = [c.strip() for c in line.split("\t")]
+        if len(cells) >= 3 and cells[0] == "min" and cells[2].isdigit():
+            mins[cells[1]] = int(cells[2])
+    out = []
+    for r in rows:
+        low = mins.get(r.get("item"))
+        if r.get("place") == "fleet" and low is not None and isinstance(r.get("keep"), int) and r["keep"] != low:
+            out.append(("ERROR", "%s: keep %s differs from game/reserve.tsv `min %s %s`: one figure for one good (set both alike)"
+                        % (r.get("chain"), num(r["keep"]), r.get("item"), num(low))))
+    return out
+
+
+def check(res, root=None):
     print(first_line("CHECK %s" % NAME, res))
     if res["error"]:
         print("  " + res["error"])
         print("HALT: the chains cannot be read")
         return 1
-    found = faults(res)
+    found = faults(res) + (level_faults(res["rows"], root) if root else [])
     for kind, text in found:
         print("  %s %s" % (kind, text))
     count = {kind: sum(1 for k, _t in found if k == kind) for kind in ("SHORT", "BROKEN", "ERROR")}
@@ -596,7 +618,7 @@ def main(argv=None):
     verb = words[0] if words else "show"
     res = read(data)
     if verb == "check":
-        return check(res)
+        return check(res, root)
     if verb == "duty":
         return duty(res, root, data, "--write" in args and "--dry-run" not in args)
     return show(res)

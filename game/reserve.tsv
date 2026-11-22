@@ -14,3 +14,6 @@
 kind	id	units	note
 keepkind	module	all	modules are kept for fitting our ships (rule F17)
 keep	fuel_cell	all	fuel for our own ships beyond the border
+min	iron_ore	60000	the one iron figure (requests ENT-355, Unity 2026-11-22): iron is gathered again below 60,000; the chain iron-ore keeps the same (supply.py check names a difference). The recipes took 43,040 then (surplus.py reserve 17:38 UTC) of 151,626 held
+max	iron_ore	80000	gathered up to 80,000 (requests ENT-355): above it the iron gathers close (pull.py), the jump-free reserve goods first (orders ENT-064: silicon, carbon, gold, nickel)
+keep	iron_ore	60000	never surplus below 60,000 beside what the recipes take, so Trade does not sell what the miners gather again (requests ENT-355)
