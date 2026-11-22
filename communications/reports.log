@@ -409,3 +409,12 @@ Failed: for about four hours the jump loop stood before the open iron gathers wh
 Requests: ENT-355 to Unity (one iron figure for the reserve and the chain); ENT-350 closed in practice by Apollo's receivers (ENT-351).
 Suggestions: fill.py warns when a ship trains while a short chain's open source stands later in its list; a per-pilot why_not view in fill.py.
 Report: iron-gathers-before-jump-loop-far-gifts-any-of-gates.
+
+## [ENT-118] | 2026-11-22 15:36 UTC | Oracle | session | ref: reports/2026-11-22_oracle_claimed-hunts-dropped-qualia-verdict-claimed-line.md | see: orders.log ENT-064
+Session: scheduled run turn-oracle -- Military's hunts out of the scout plan, no second fast hull, a check for claimed hunts.
+Did: preflight PASS; five hunts Military claims (admirals.log ENT-088, named in queue.log ENT-225) dropped from the scout plan at 15:23 UTC; Angetenar and Enif onto census-worked-far, now 93 systems (937aa2bf); a scanner scout from census-far-1 to census-far-5; Qualia verdict: no second one (median 450 against 135 cr a census run since 11:30 UTC); 5 pirate lines filed, 0 raids in 6 h, no battle at a base of ours or on the north road; claim ENT-096 (releases ENT-079); reading on Cracking the Shell's empty hunt place to Apophis and Unity (admirals.log ENT-095); request ENT-356 (rules to 0.732.3); guidebook (8aac8aa5, guide check PASS); CLAIMED line in the turn check.
+Worked: census-roads from 57 of 57 to 41 of 57 systems over 480 minutes with three readers; STUCK 0, UNFLOWN PASS, OFFLIST PASS; fill gate "PASS: no ship of scout waits" at 15:30:44 UTC.
+Failed: census-worked-far 74 of 91 over 180 minutes, the frontier oldest 258 minutes against 170 and census-south 5 of 19 over 150, because the lists ask about 134 reads an hour from 30 scouts; WORKED HALT on 5 Solarian systems left on their lists while a once mission flies there; one plan note typed a time ahead of the clock, fixed within the minute (skill pitfall updated, no errors.log entry: nothing acted on it).
+Requests: ENT-356 to Unity (game/rules/ to 0.732.3).
+Suggestions: Apophis and Unity: move Cracking the Shell's hunt to an ice field read every 90 minutes or faster (Intercrus); Unity: mark once routes in the ships table so WORKED can tell them from standing work.
+Report: claimed-hunts-dropped-qualia-verdict-claimed-line.
