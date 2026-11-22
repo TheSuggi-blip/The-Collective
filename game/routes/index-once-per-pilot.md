@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 51.
+Routes: 52.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -55,6 +55,7 @@ Routes: 51.
 | [mission-frontier-wayfinder-circuit-frontier](mission-frontier-wayfinder-circuit-frontier.json) | circuit | beyond the border, 19 jumps | Frontier Wayfinder Circuit: 4000 cr, +530 XP at Mobile Capital | once per pilot, up to 3 ships | 93 | 15 | 80 | one-time | 2026-11-22 |
 | [mission-strategic-readiness-assessment-crimson](mission-strategic-readiness-assessment-crimson.json) | circuit | beyond the border, 21 jumps | Strategic Readiness Assessment: 4000 cr at War Citadel | once per pilot, up to 1 ships | 1 | 60 | -620 | one-time | 2026-11-21 |
 | [mission-voidborn-trajectory-unknown](mission-voidborn-trajectory-unknown.json) | circuit | beyond the border, 16 jumps | Voidborn Trajectory: 6000 cr at Unknown Edge Waystation | once per pilot, up to 3 ships | 2 | 50 | 2,600 | one-time | 2026-11-22 |
+| [mission-who-buys-old-charts-frontier](mission-who-buys-old-charts-frontier.json) | circuit | beyond the border, 19 jumps | Who Buys Old Charts: 3500 cr, +80 XP at Mobile Capital | once per pilot, up to 3 ships | TBD | TBD | TBD | TBD | -- |
 | [trade-run-cinderspice-nova-terra](trade-run-cinderspice-nova-terra.json) | circuit | beyond the border, 8 jumps | Trade Run: Cinderspice to Nova Terra Central (Node Alpha board): ten cinderspice bought at Central Nexus, sold into Nova Terra's bid; XP, no credits | once per pilot, up to 1 ships, from 35,000 cr, while nova_terra_central bids 3000 cr for cinderspice, while central_nexus asks 3020 cr or less for cinderspice | 1 | 21 | -520 | one-time | 2026-11-22 |
 | [voidborn-collective-provides](voidborn-collective-provides.json) | circuit | beyond the border, 10 jumps | The Collective Provides: 2,500 cr once, the link after Network Expansion; 20 nickel ore mined at Rotanev Daylight Seam, handed in at Central Nexus | once per pilot, up to 4 ships, empty hold, after the reward Network Expansion | 232 | 35 | 1,670 | one-time | 2026-11-22 |
 | [voidborn-conductive-lattice](voidborn-conductive-lattice.json) | circuit | beyond the border, 6 jumps | Technician Pale-6's chain at Node Beta, once per pilot: Conductive Lattice (5,500 cr, 20 silver ore from Ironlight Crossroads), Resonance Substrate (7,000 cr, 15 energy crystal from Central Nexus), Final Calibration (8,000 cr, 5 circuit boards handed out, delivered to Node Gamma) | once per pilot, up to 4 ships, 246 pilots in all, empty hold, from 13,000 cr | 221 | 34 | 7,580 | one-time | 2026-11-21 |
