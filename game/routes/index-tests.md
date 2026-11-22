@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 126.
+Routes: 128.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -90,6 +90,7 @@ Routes: 126.
 | [mine-alnair-ice-fields](mine-alnair-ice-fields.json) | mine | beyond the border, 5 jumps | Alnair Ice Fields: water_ice, nitrogen_ice, deuterium_ice; sold at Node Alpha Processing Station | up to 1 ships, needs ice_harvester_i, empty hold, while node_alpha_processing_station bids 25 cr for water_ice | TBD | TBD | TBD | TBD | -- |
 | [mine-alnair-ice-fields-nexus](mine-alnair-ice-fields-nexus.json) | mine | beyond the border, 5 jumps | Alnair Ice Fields: water_ice, nitrogen_ice, deuterium_ice; sold at Central Nexus | up to 1 ships, needs ice_harvester_i, empty hold, while central_nexus bids 25 cr for water_ice | TBD | TBD | TBD | TBD | -- |
 | [mine-alrescha-ice-fields](mine-alrescha-ice-fields.json) | mine | beyond the border, 23 jumps | Alrescha Ice Fields: water_ice, nitrogen_ice, helium_ice; sold at Factory Belt Manufacturing Hub | up to 3 ships, needs ice_harvester_i, empty hold | TBD | TBD | TBD | TBD | -- |
+| [mine-altais-outer-ice](mine-altais-outer-ice.json) | mine | beyond the border, 17 jumps | Altais Outer Ice: water_ice, nitrogen_ice; sold at Unknown Edge Waystation | up to 3 ships, needs ice_harvester_i | TBD | TBD | TBD | TBD | -- |
 | [mine-amberfall-emission-nebula](mine-amberfall-emission-nebula.json) | mine | beyond the border, 5 jumps | Amberfall Emission Nebula: hydrogen_gas, neon_gas, chlorine_gas; sold at Node Gamma Relay Station | up to 1 ships, needs gas_harvester_i, empty hold, while node_gamma_relay_station bids 27 cr for hydrogen_gas | TBD | TBD | TBD | TBD | -- |
 | [mine-antares-gas-cloud](mine-antares-gas-cloud.json) | mine | beyond the border, 8 jumps | Antares Gas Cloud: hydrogen_gas, argon_gas, plasma_gas, nebula_gas, neon_gas, chlorine_gas; sold at Nova Terra Central | up to 1 ships, needs gas_harvester_i, empty hold | TBD | TBD | TBD | TBD | -- |
 | [mine-antares-ice-fields](mine-antares-ice-fields.json) | mine | beyond the border, 5 jumps | Antares Ice Fields: water_ice, nitrogen_ice, deuterium_ice, helium_ice; sold at Node Alpha Processing Station | up to 1 ships, needs ice_harvester_i, empty hold, while node_alpha_processing_station bids 25 cr for water_ice | TBD | TBD | TBD | TBD | -- |
@@ -121,6 +122,7 @@ Routes: 126.
 | [mine-hd-147513-belt](mine-hd-147513-belt.json) | mine | beyond the border, 7 jumps | HD 147513 Belt: iron_ore, copper_ore, titanium_ore, gold_ore; sold at The Experiment Research Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [mine-hd-20794-belt](mine-hd-20794-belt.json) | mine | beyond the border, 21 jumps | HD 20794 Belt: carbon_ore, vanadium_ore, lead_ore; sold at The Anvil Arsenal | up to 1 ships | TBD | TBD | TBD | TBD | -- |
 | [mine-homam-cryobelt](mine-homam-cryobelt.json) | mine | beyond the border, 6 jumps | Homam Cryobelt: water_ice, nitrogen_ice, helium_ice; sold at The Experiment Research Station | up to 1 ships, needs ice_harvester_i, empty hold, while the_experiment_research_station bids 25 cr for water_ice | TBD | TBD | TBD | TBD | -- |
+| [mine-icecap-drift](mine-icecap-drift.json) | mine | beyond the border, 18 jumps | Icecap Drift: water_ice, nitrogen_ice, carbon_dioxide_ice; sold at Unknown Edge Waystation | up to 3 ships, needs ice_harvester_i | TBD | TBD | TBD | TBD | -- |
 | [mine-intercrus-ice-fields](mine-intercrus-ice-fields.json) | mine | beyond the border, 7 jumps | Intercrus Ice Fields: water_ice, nitrogen_ice; sold at The Experiment Research Station | up to 2 ships, needs ice_harvester_i, empty hold, while the_experiment_research_station bids 25 cr for water_ice | TBD | TBD | TBD | TBD | -- |
 | [mine-keid-ice-shelf](mine-keid-ice-shelf.json) | mine | beyond the border, 5 jumps | Keid Ice Shelf: water_ice, deuterium_ice; sold at Node Alpha Processing Station | up to 2 ships, needs ice_harvester_i, empty hold, while node_alpha_processing_station bids 25 cr for water_ice | TBD | TBD | TBD | TBD | -- |
 | [mine-lesath-gas-cloud](mine-lesath-gas-cloud.json) | mine | beyond the border, 5 jumps | Lesath Gas Cloud: hydrogen_gas, plasma_gas, xenon_gas, neon_gas, ion_gas; sold at Node Beta Industrial Station | up to 1 ships, needs gas_harvester_i, empty hold | TBD | TBD | TBD | TBD | -- |

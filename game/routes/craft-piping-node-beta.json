@@ -42,14 +42,5 @@
    "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
    "store": "all"
   }
- ],
- "measured": {
-  "date": "2026-11-22",
-  "runs": 7,
-  "minutes": 12,
-  "credits_per_run": -70,
-  "cph_per_ship": -310,
-  "hours": 12,
-  "last_run": "2026-11-22T09:01:02Z"
- }
+ ]
 }
