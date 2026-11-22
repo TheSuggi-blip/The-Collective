@@ -36,13 +36,14 @@
    "routes": [
     "supply-repair-gsc-0044-boards",
     "supply-repair-gsc-0044-plate",
+    "supply-bunker-gsc-0044-own-cells",
     "supply-bunker-gsc-0044"
    ],
    "trains": [
     "navigation",
     "piloting"
    ],
-   "note": "2026-11-22 00:15 UTC: both facilities ready again (faction_owned 2026-11-21 23:48 UTC); the repair routes keep the outpost's repair stock (boards by requires.reserve below 45, plate by three more loads of 60), the bunker opens under 4,000 by the reserve gate"
+   "note": "2026-11-22 04:10 UTC: the bunker first from our own cells at Node Beta while the reserve reads under the chain's keep of 5,000 (a test, F37 three runs), the buying route the backup under 4,000; repair stock as before"
   },
   "train-hauler": {
    "title": "The last standing work before park: jumps through our own stations for piloting (the freighter at 10) and navigation",
