@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 192.
+Routes: 193.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -84,6 +84,7 @@ Routes: 192.
 | [census-watch-gsc-0044](census-watch-gsc-0044.json) | census | beyond the border, 7 jumps | Watch the first outpost site: GSC-0044 and its six neighbours read every hour (who is there, pirates, fields) | up to 3 ships, empty hold | 77 | 15 | -170 | -740 | 2026-11-17 |
 | [census-worked](census-worked.json) | census | beyond the border, 10 jumps | Read the places our routes use beyond home twice in a turn: deposits, creatures, order books, mission boards | up to 6 ships, empty hold | 108 | 16 | -250 | -880 | 2026-11-22 |
 | [census-worked-far](census-worked-far.json) | census | beyond the border, 29 jumps | Read the places beyond our roads where the other divisions fly now, every three hours: deposits, creatures, pirates, order books, mission boards | up to 12 ships, empty hold | 176 | 24 | -300 | -740 | 2026-11-22 |
+| [load-plasma-ammo-nova-terra](load-plasma-ammo-nova-terra.json) | circuit | beyond the border, 8 jumps | Plasma ammunition back aboard: withdraw the stored dispersal plasma cell packs at Nova Terra Central into the Plasma Cannon II ship's hold | up to 1 ships, 2 pilots in all, needs plasma_cannon_ii, with 1 dispersal_plasma_cell_pack stored at nova_terra_central, standing work | TBD | TBD | TBD | TBD | -- |
 | [supply-bunker-gsc-0044](supply-bunker-gsc-0044.json) | circuit | beyond the border, 6 jumps | Fuel for our outpost CLTV Outpost GSC-0044: 65 fuel cells bought at The Experiment, burnt into the tank at the outpost and the tank above 30 deposited into the faction's fuel reserve; members of the faction only | up to 1 ships, empty hold, from 12,000 cr, standing work | 1 | 21 | -5,050 | -14,700 | 2026-11-22 |
 | [supply-bunker-gsc-0044-own-cells](supply-bunker-gsc-0044-own-cells.json) | circuit | beyond the border, 6 jumps | Fuel for our outpost CLTV Outpost GSC-0044 from our own fuel cells: up to 65 cells taken from the pilot's storage at Node Beta (made there from hydrogen no bid takes), burnt into the tank at the outpost and the tank above 30 deposited into the faction's fuel reserve; members of the faction only | up to 1 ships, empty hold, from 5,000 cr, with 29 fuel_cell stored at node_beta_industrial_station, standing work | 2 | 19 | -30 | -80 | 2026-11-22 |
 | [supply-repair-gsc-0044-boards](supply-repair-gsc-0044-boards.json) | circuit | beyond the border, 6 jumps | Circuit boards for the repair of our outpost CLTV Outpost GSC-0044: 60 boards of the pilot's own storage at Node Beta put into the faction's storage at the outpost; members of the faction only | up to 1 ships, from 5,000 cr, with 30 circuit_board stored at node_beta_industrial_station, standing work | 2 | 9 | 0 | 0 | 2026-11-22 |
