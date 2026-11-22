@@ -42,15 +42,15 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| 10c1432ce43efedb9c7f9632 | Hamal (`hamal`) | 0 | workhorse |
-| 4011f46410f19d6243276018 | Hamal (`hamal`) | 0 | workhorse |
-| 4c671b9675ba73f0025d603d | Hamal (`hamal`) | 0 | deep_survey |
-| 6ce9fcc5d675364f5a7de638 | Acubens (`acubens`) | 0 | workhorse |
-| 7ae29ec97dfdbf377fe58274 | Hamal (`hamal`) | 0 | workhorse |
-| a41fe11e5e1e54e9d8f60ebb | Nexus Prime (`nexus_prime`) | 0 | futures |
-| ec43cfe9e4293184f10e08ca | Hamal (`hamal`) | 0 | workhorse |
-| f5736d218d41c0675a22c3d6 | Hamal (`hamal`) | 0 | workhorse |
-| f8c3f4c38ee48a37ee21926b | Hamal (`hamal`) | 0 | workhorse |
+| 000879643f8e56059852ed87 | The Experiment (`the_experiment`) | 0 | ice_trawler |
+| 0376cb910189c29811104e6c | Node Alpha (`node_alpha`) | 0 | futures |
+| 0637bfdf8ba6a997093332c9 | Node Beta (`node_beta`) | 0 | futures |
+| 0a5266cdbbc00fe268e0948a | Acubens (`acubens`) | 0 | workhorse |
+| 2d6ffeda232aa324424edb53 | Node Alpha (`node_alpha`) | 0 | futures |
+| 4369ebe51c415d3d0756ceba | Node Beta (`node_beta`) | 0 | futures |
+| 5a5a2c9677d0713f238cec9c | Hamal (`hamal`) | 0 | workhorse |
+| cf4b7e30a1bd46d6579db7e7 | Acubens (`acubens`) | 0 | workhorse |
+| e039279d45eefa288b1c7717 | Nexus Prime (`nexus_prime`) | 0 | futures |
 
 ## Standing History
 

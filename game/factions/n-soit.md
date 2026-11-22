@@ -15,7 +15,7 @@ updated: 2026-11-22
 # Soit [SOIT]
 
 A player faction with 1 base(s) in 1 system(s); the nearest to Nexus Prime is 24 jump(s) away, in Longshore (`longshore`).
-Pilots of it in our space in the last 24 hours: 1.
+Pilots of it in our space in the last 24 hours: 4.
 
 ## Identity
 
@@ -41,6 +41,9 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
 | BipBip | Node Alpha (`node_alpha`) | 0 | prospect |
+| Colos Copik | Node Beta (`node_beta`) | 0 | bonanza |
+| Juno Drev | Node Beta (`node_beta`) | 0 | archimedes |
+| Vex Dralor | Synchrony (`synchrony`) | 0 | congregation |
 
 ## Standing History
 

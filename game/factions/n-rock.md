@@ -15,7 +15,7 @@ updated: 2026-11-22
 # Bedrock Materials [ROCK]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 5.
+Pilots of it in our space in the last 24 hours: 3.
 
 ## Identity
 
@@ -38,11 +38,9 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Brokk Deepdelve | The Experiment (`the_experiment`) | not on record | theoria |
 | Harbek Haulstone | Nexus Prime (`nexus_prime`) | not on record | not met |
 | Meph Addict | The Experiment (`the_experiment`) | 0 | prospect |
 | Ragna Cartwright | The Experiment (`the_experiment`) | not on record | not met |
-| William Hill | Nexus Prime (`nexus_prime`) | 0 | accretion |
 
 ## Standing History
 

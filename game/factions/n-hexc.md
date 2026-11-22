@@ -15,7 +15,7 @@ updated: 2026-11-22
 # Hex Collective [HEXC]
 
 A player faction with 11 base(s) in 11 system(s); the nearest to Nexus Prime is 9 jump(s) away, in Chalawan (`chalawan`).
-Pilots of it in our space in the last 24 hours: 7.
+Pilots of it in our space in the last 24 hours: 6.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 7.
 | Allies | IRLC, QTCG, SLKV | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 61 | Public event stream |
+| Pilots carrying the tag on the public event stream | 60 | Public event stream |
 
 ## Bases
 
@@ -52,11 +52,10 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 |---|---|---|---|
 | Elara Orris | Hamal (`hamal`) | 0 | lithosphere |
 | HexBot7 | Node Alpha (`node_alpha`) | 0 | not met |
-| HexCraft2 | The Experiment (`the_experiment`) | 0 | syndicate |
-| Liora Vessand | Nexus Prime (`nexus_prime`) | 0 | liquidity_event |
-| SolarCortex | Node Beta (`node_beta`) | 0 | pithead |
-| VoltFix | Synchrony (`synchrony`) | 13 | opus_magna |
-| Zhou | Pherkad (`pherkad`) | 0 | pithead |
+| HexCraft1 | Synchrony (`synchrony`) | 0 | axiomata |
+| HexCraft2 | Pherkad (`pherkad`) | 0 | syndicate |
+| Olthoi | The Experiment (`the_experiment`) | 0 | cryogenic_survey |
+| SolarCortex | Pherkad (`pherkad`) | 0 | pithead |
 
 ## Standing History
 
