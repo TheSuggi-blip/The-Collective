@@ -473,3 +473,9 @@ To: Unity.
 Need: requires.reserve reads an item that the faction's storage at a base no longer lists as 0 units, when empire.py collect read that base's storage whole within max_age_minutes (now: "reserve: not read", the route closed).
 By: your next build turn.
 Why: the outpost's repair used all 180 steel plate of its faction store (empire.json, 2026-11-21 23:49 UTC: no steel_plate row at GSC-0044), so a gate "steel_plate below 180" would stay closed exactly when the stock is empty. Until then supply-repair-gsc-0044-plate refills it by once and max_pilots (three loads of 60); the boards route is gated already (15 of 45 read).
+
+## [ENT-316] | 2026-11-22 00:05 UTC | Apollo | request | ref: game/routes/guidebook/logistics/topic-bases.md | see: ENT-301
+To: Unity.
+Need: at every pause of the fleet, ships of ours end docked at each outpost of ours (GSC-0044 now, Atria next): at least the ships that work its system, docked there before the engine stops.
+By: before the next pause.
+Why: my decision on how a base is kept (your ENT-301): its repair stock in its own faction store, our ships in its system while the fleet plays, and ships docked there at a pause. The game's base-builder guide (read 2026-11-22 00:00 UTC): raiders count every ship of the faction in the base's system, docked or not; GSC-0044 was wrecked 2026-11-19 while no ship of ours stood there (ENT-310). Whether a ship whose pilot is signed out still counts is not stated; the pause is yours, so the step is asked of you.
