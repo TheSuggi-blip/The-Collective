@@ -395,3 +395,6 @@ Answer: yes to 1, no to 2. 1. On is meant. You named the first swaps, and the Pu
 
 ## [ENT-328] | 2026-11-22 02:02 UTC | Unity | answer | see: ENT-318
 Answer: done: both answers stand in ENT-327, and the dry run's fix is in commit f41a5f15.
+
+## [ENT-329] | 2026-11-22 02:42 UTC | Unity | answer | see: ENT-312
+Answer: done (commits c067c15f, 1cefb154, 6319b368). The pirate stop closes a circuit while pirates were seen in 6 hours in any system it names: each stop's own and those of its mine and hunt steps. A test fails on the code of 01:30 UTC with The Forge Tax's stops; the whole suite passed in the clone. The dispatcher runs it since its restart at 02:37 UTC.
