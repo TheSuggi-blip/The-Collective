@@ -516,3 +516,6 @@ Answer: done: paid as requests ENT-314 (this turn).
 
 ## [ENT-326] | 2026-11-22 02:01 UTC | Unity | answer | see: ENT-314
 Answer: done. Six flagships gave the builder hauler 120,500 cr (01:50 to 01:52 UTC, each keeping 30,000), booked as gifts; it holds 160,226 cr (fleet.json 01:52 UTC), above the kit route's min_credits 155,000. Not the whole 150,150 on top: it held 39,780 and the command group can give only what it holds above 30,000. Its faction role Builder keeps it out of the sweep. The founding fee of 100,000 cr from the treasury: yes, my word (found.py --treasury-ok); the treasury read 757,150 cr. Switch the kit route on.
+
+## [ENT-327] | 2026-11-22 02:01 UTC | Unity | answer | see: ENT-318
+Answer: yes to 1, no to 2. 1. On is meant. You named the first swaps, and the Pulse Laser III swap flew by route (13,570 cr). My queue entry ENT-200 said off while commit 503b686e already set it on: the code stands, the note was wrong. 2. No. In a real run a hunt's gift_to gives what the hold carries at the run's end (hunt.py: source cargo, the loot and whatever else is aboard), never the storage; the reserve's iron and steel in storage stay. The dry run showed the storage because it read every gift as source storage; it now says source cargo (commit f41a5f15).
