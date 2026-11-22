@@ -32,7 +32,7 @@
     "crafting",
     "refining"
    ],
-   "note": "2026-11-22 16:05 UTC Apollo: boards from stored silicon first (silicon binds the 23,808 short), gold wiring to 1,860, then steel (5,238 to make) and piping. Each opens only on the pilot's own stored inputs, so the receivers craft docked."
+   "note": "2026-11-22 15:56 UTC Apollo: boards from stored silicon first (silicon binds the 23,808 short), gold wiring to 1,860, then steel (5,238 to make) and piping. Each opens only on the pilot's own stored inputs, so the receivers craft docked."
   },
   "outpost-supply": {
    "title": "What our outpost GSC-0044 takes: repair materials while its facilities are damaged, then fuel cells into its bunker while the reserve gate reads it under its floor; faction members only",
