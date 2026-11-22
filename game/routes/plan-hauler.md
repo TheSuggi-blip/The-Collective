@@ -84,6 +84,4 @@ Planned:
 
 | What | When |
 |---|---|
-| Read the first three runs of craft-boards-stored-node-beta and of craft-boards-crescent-moon (does a player workshop craft for us); lift or drop by them (F37) | next turn |
-| Found Atria with found.py the hour the builder's kit lands at Node Beta (the kit route flies only on an ask at Ironlight; no ask in any book 2026-11-22) | on the kit |
-| Weigh train-jumps-hauler (about -450 cr a ship-hour, Piloting 10 in 25 to 40 hours) against the fleet's 24-hour steady net; move ships to crafting as gifts give them inputs | every turn |
+| Read the first runs of craft-wiring-logistics-* and how many haulers left train-jumps-hauler; size max_ships by the queue next turn | -- |
