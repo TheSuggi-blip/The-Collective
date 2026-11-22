@@ -76,7 +76,7 @@ class Generator(unittest.TestCase):
         store, stats = self.mods["store"], self.mods["stats"]
         self.assertIn("%g days" % max(store.KEEP_DAYS, store.KEEP_TABLES["observations"]), found["observations"]["keep"])
         self.assertIn("%g days" % store.KEEP_DAYS, found["runs"]["keep"])
-        self.assertIn("for good", found["route_hour"]["keep"])
+        self.assertIn("90 days by `hour`" if store.retention.on(None) else "for good", found["route_hour"]["keep"])     # retention.py RETAIN_ENABLED
         self.assertIn("summed again", found["route_hour"]["refresh"])
         self.assertIn("%g days (stats.py KEEP)" % stats.KEEP["stats_time"], found["stats_time"]["keep"])
         self.assertIn("part `time`", found["stats_time"]["refresh"])

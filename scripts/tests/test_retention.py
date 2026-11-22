@@ -44,6 +44,10 @@ class Retention(unittest.TestCase):
         for name in ("RETAIN_ENABLED", "RETAIN_BATCH"):
             self.addCleanup(setattr, self.rules, name, getattr(self.rules, name))
         store.one_pass(str(self.data), now=NOW)          # the tables, the snapshot (the routes of the repository)
+        setup = sqlite3.connect(str(self.data / "store" / "live.db"))    # with the switch on, the setup pass judged the empty tables:
+        setup.execute("DELETE FROM meta WHERE key IN ('retain.at', 'retain.more')")    # each test starts with the rules due
+        setup.commit()
+        setup.close()
 
     def db(self):
         conn = sqlite3.connect(str(self.data / "store" / "live.db"), isolation_level=None)
@@ -138,7 +142,7 @@ class Retention(unittest.TestCase):
         done = subprocess.run([sys.executable, "-I", "-B", str(FLEET / "retention.py"), "--dry-run", "--db", str(path), "--now", str(NOW)],
                               stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, timeout=120)
         self.assertEqual(done.returncode, 0, done.stdout)
-        self.assertIn("the switch retention.RETAIN_ENABLED is OFF", done.stdout)
+        self.assertIn("the switch retention.RETAIN_ENABLED is %s" % ("ON" if self.rules.on(None) else "OFF"), done.stdout)
         line = lambda table: next(l for l in done.stdout.splitlines() if l.startswith("  %s " % table))
         self.assertIn("would go now: 5 |", line("route_hour"))
         self.assertIn("would go now: 5 |", line("doc_versions"))
@@ -151,7 +155,7 @@ class Retention(unittest.TestCase):
         handbook = load("handbook_for_retention", ROOT / "scripts" / "handbook.py")
         kept = {name: entry["keep"] for name, entry in handbook.describe(handbook.modules(ROOT))}
         self.assertEqual([name for name, text in kept.items() if text.startswith("for good: no step")], [])
-        self.assertTrue(kept["market_hour"].startswith("for good while retention.py RETAIN_ENABLED is off; on: 90 days"))
+        self.assertTrue(kept["market_hour"].startswith("90 days by `hour`" if self.rules.on(None) else "for good while retention.py RETAIN_ENABLED is off; on: 90 days"))
         self.assertTrue(self.rules.kept("market_hour", True).startswith("90 days by `hour`"))
         self.assertTrue(kept["cursor"].startswith("for good, bounded"))
 

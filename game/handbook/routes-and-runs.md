@@ -42,11 +42,11 @@ history: one row per run of a route (pilot, route, start, minutes, steady credit
 
 ## route_hour
 
-history: per route and UTC hour the runs, minutes, read minutes, steady credits and paid once; kept for good while retention.py is off (on: 90 days)
+history: per route and UTC hour the runs, minutes, read minutes, steady credits and paid once; kept 90 days (retention.py)
 
 - Kind: history
 - Columns: route, hour, runs, minutes, read_minutes, credits, one_time; one row per route, hour
-- Kept: for good while retention.py RETAIN_ENABLED is off; on: 90 days by `hour`, then deleted (hourly, at most 5000 rows a table and pass)
+- Kept: 90 days by `hour`, then deleted (retention.py RETAIN; hourly, at most 5000 rows a table and pass)
 - Refreshed: the store's pass (every 60 s): summed again for the hours that got new rows of runs
 - Credits per ship-hour per route over the last 24 hours: `SELECT route, SUM(runs) AS runs, ROUND(60.0 * SUM(credits) / SUM(read_minutes)) AS per_ship_hour FROM route_hour WHERE hour >= strftime('%s', 'now') - 86400 GROUP BY route HAVING SUM(read_minutes) > 0 ORDER BY per_ship_hour DESC`
 - The fleet's steady credits hour by hour: `SELECT datetime(hour, 'unixepoch') AS hour, SUM(runs), SUM(credits) FROM route_hour GROUP BY 1 ORDER BY 1 DESC LIMIT 24`
@@ -70,7 +70,7 @@ state (stats.py): the first author of every route file (git log --diff-filter=A)
 
 - Kind: statistics
 - Columns: route, author, member, division, added, t; one row per route
-- Kept: for good while retention.py RETAIN_ENABLED is off; on: a route whose file is gone and that no route_hour row of the last 90 days names goes (hourly, at most 5000 rows a table and pass)
+- Kept: a route whose file is gone and that no route_hour row of the last 90 days names goes (retention.py RETAIN; hourly, at most 5000 rows a table and pass)
 - Refreshed: stats.py part `authors`, every 600 s (FIGURES_EVERY)
 - Route files per division: `SELECT division, COUNT(*) FROM stats_route_author GROUP BY division ORDER BY 2 DESC`
 - Who wrote the routes that earned most in 24 hours: `SELECT a.route, a.division, ROUND(SUM(h.credits)) FROM route_hour h JOIN stats_route_author a ON a.route = h.route WHERE h.hour >= strftime('%s', 'now') - 86400 GROUP BY a.route ORDER BY 3 DESC LIMIT 10`

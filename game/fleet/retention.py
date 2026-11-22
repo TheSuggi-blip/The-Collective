@@ -50,7 +50,7 @@ import urllib.parse
 from pathlib import Path
 
 HOUR, DAY = 3600, 86400
-RETAIN_ENABLED = False         # r22: off. On, the store's prune deletes by RETAIN; off, nothing of these tables is deleted
+RETAIN_ENABLED = True          # on since 2026-11-22 (Suggi); on, the store's prune deletes by RETAIN; off, nothing of these tables is deleted
 RETAIN = {                     # table -> days its rows stay (doc_versions and stats_route_author: see WHERE)
     "route_hour": 90, "market_hour": 90, "stats_money_hour": 90, "stats_supply_hour": 90,
     "reading_day": 400,
