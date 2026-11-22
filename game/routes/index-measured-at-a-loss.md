@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 71.
+Routes: 70.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -68,7 +68,6 @@ Routes: 71.
 | [hunt-seginus-haze-cinder-sylph](hunt-seginus-haze-cinder-sylph.json) | hunt | beyond the border, 20 jumps | cinder_sylph at seginus_haze; loot sold at The Levy Customs Station | up to 1 ships, empty hold | 2 | 36 | 0 | 0 | 2026-11-22 |
 | [hunt-silverpine-gas-plume-cinder-sylph](hunt-silverpine-gas-plume-cinder-sylph.json) | hunt | beyond the border, 24 jumps | cinder_sylph at silverpine_gas_plume; loot sold at First Step Memorial Station | up to 1 ships, empty hold | 2 | 53 | -380 | -430 | 2026-11-21 |
 | [hunt-starless-drift-veil-ray](hunt-starless-drift-veil-ray.json) | hunt | beyond the border, 22 jumps | veil_ray at starless_drift; loot sold at First Step Memorial Station | up to 1 ships, empty hold | 2 | 43 | -360 | -500 | 2026-11-22 |
-| [hunt-summervale-gas-pocket-cinder-sylph](hunt-summervale-gas-pocket-cinder-sylph.json) | hunt | beyond the border, 21 jumps | cinder_sylph at summervale_gas_pocket; loot sold at Hex Star | up to 1 ships, empty hold | 2 | 46 | -230 | -290 | 2026-11-22 |
 | [hunt-sunbeam-dust-veil-ray](hunt-sunbeam-dust-veil-ray.json) | hunt | beyond the border, 18 jumps | veil_ray at sunbeam_dust; loot sold at First Step Memorial Station | up to 1 ships, empty hold | 2 | 42 | -200 | -290 | 2026-11-21 |
 | [hunt-tania-frozen-drift-hollow-pilgrim](hunt-tania-frozen-drift-hollow-pilgrim.json) | hunt | beyond the border, 18 jumps | hollow_pilgrim at tania_frozen_drift; loot sold at First Step Memorial Station | up to 1 ships, empty hold | 2 | 61 | -270 | -270 | 2026-11-21 |
 | [hunt-test-lesath-cinder-sylph](hunt-test-lesath-cinder-sylph.json) | hunt | beyond the border, 5 jumps | Cinder-sylphs at lesath_gas_cloud (lawless); ember glands kept for the Hex Star bid (Dheneb) | up to 1 ships, without piercing_railgun_i, empty hold, while b495c6003fc83e18f6d8cecbe6929133 bids 2000 cr for ember_gland | 5 | 13 | -120 | -550 | 2026-11-16 |

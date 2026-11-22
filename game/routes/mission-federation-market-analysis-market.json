@@ -38,5 +38,12 @@
    "at": "market_prime:market_prime_exchange:market_prime_exchange",
    "redock": true
   }
- ]
+ ],
+ "measured": {
+  "date": "2026-11-22",
+  "runs": 1,
+  "minutes": 36,
+  "credits_per_run": 5530,
+  "cph_per_ship": 9090
+ }
 }

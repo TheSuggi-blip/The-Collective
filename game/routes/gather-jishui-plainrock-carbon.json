@@ -14,5 +14,14 @@
  "requires": {
   "module": "mining_laser_i",
   "empty_hold": true
+ },
+ "measured": {
+  "date": "2026-11-22",
+  "runs": 1,
+  "minutes": 160,
+  "credits_per_run": -140,
+  "cph_per_ship": -50,
+  "hours": 12,
+  "last_run": "2026-11-22T03:43:42Z"
  }
 }
