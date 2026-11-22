@@ -97,3 +97,4 @@ Planned:
 | What | When |
 |---|---|
 | Read the six region lists' first rows (fuel a read, gaps against 120 and 180 min) and size their caps by what they carry | next turn |
+| Test the Outer Rim and Nebula exploration missions on their boards (Local Sector Survey, Why the Rim Stopped, The Memorial, Anomalous Readings) with one newborn scout each | next turn |
