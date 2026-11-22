@@ -21,17 +21,17 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 | [Paying Routes](index-paying-routes.md) | Work that repeats and whose runs of the last 12 hours measured above zero. | 24 | 7 | 17 | sell-loot-at-dheneb: 190,760 cr per ship-hour |
 | [Tests](index-tests.md) | Work that repeats and has no measured figure: new, or no readable run in the last 12 hours. One ship until its first RESULT line is read. | 137 | 43 | 94 | not measured yet |
 | [Fitting](index-fitting.md) | A module bought and fitted: the tool a kind of work needs. | 14 | 10 | 4 | fit-ice-harvester-lhs-1140: -4,320 cr per ship-hour |
-| [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 320 | 82 | 238 | hunt-flintrock-vapor-fields-cinder-sylph: 37,670 cr per ship-hour |
+| [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 323 | 84 | 239 | hunt-flintrock-vapor-fields-cinder-sylph: 37,670 cr per ship-hour |
 | [Measured at a Loss](index-measured-at-a-loss.md) | Work that repeats and whose runs of the last 12 hours measured zero or below. | 9 | 1 | 8 | carry-lead-nexus-to-sirius: 0 cr per ship-hour |
 | [Off](index-off.md) | Written down, not flown. | 36 | 15 | 21 | voidborn-first-steps: 4,020 cr per ship-hour |
-| All | | 587 | 181 | 406 | |
+| All | | 590 | 183 | 407 | |
 
 ## Routes by Zone and Kind
 
 | Zone | Routes | census | circuit | guard | hunt | mine | Farthest system, jumps from home |
 |---|---|---|---|---|---|---|---|
-| home space | 181 | 1 | 151 | 1 | 15 | 13 | 3 |
-| beyond the border | 406 | 17 | 77 | 7 | 210 | 95 | 29 |
+| home space | 183 | 1 | 153 | 1 | 15 | 13 | 3 |
+| beyond the border | 407 | 17 | 78 | 7 | 210 | 95 | 29 |
 
 ## Plans by Role
 
