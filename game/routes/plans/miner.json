@@ -111,6 +111,10 @@
   {
    "what": "Far gathers give each load at The Crescent Moon and Ramen's Rest once Logistics names a receiver there (requests ENT-350)",
    "when": "on Apollo's answer"
+  },
+  {
+   "what": "Yildun carbon: lift on its third result (F37)",
+   "when": "next turn"
   }
  ],
  "ships": {
