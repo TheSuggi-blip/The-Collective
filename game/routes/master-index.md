@@ -21,16 +21,16 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 | [Paying Routes](index-paying-routes.md) | Work that repeats and whose runs of the last 12 hours measured above zero. | 27 | 11 | 16 | sell-loot-at-nexus: 327,650 cr per ship-hour |
 | [Tests](index-tests.md) | Work that repeats and has no measured figure: new, or no readable run in the last 12 hours. One ship until its first RESULT line is read. | 129 | 40 | 89 | not measured yet |
 | [Fitting](index-fitting.md) | A module bought and fitted: the tool a kind of work needs. | 16 | 11 | 5 | fit-ice-harvester-lhs-1140: -4,320 cr per ship-hour |
-| [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 353 | 94 | 259 | hunt-altais-outer-ice-hollow-pilgrim: 32,450 cr per ship-hour |
+| [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 356 | 97 | 259 | hunt-altais-outer-ice-hollow-pilgrim: 32,450 cr per ship-hour |
 | [Measured at a Loss](index-measured-at-a-loss.md) | Work that repeats and whose runs of the last 12 hours measured zero or below. | 14 | 5 | 9 | carry-lead-nexus-to-sirius: 0 cr per ship-hour |
 | [Off](index-off.md) | Written down, not flown. | 42 | 20 | 22 | voidborn-first-steps: 4,020 cr per ship-hour |
-| All | | 632 | 204 | 428 | |
+| All | | 635 | 207 | 428 | |
 
 ## Routes by Zone and Kind
 
 | Zone | Routes | census | circuit | guard | hunt | mine | Farthest system, jumps from home |
 |---|---|---|---|---|---|---|---|
-| home space | 204 | 1 | 173 | 1 | 16 | 13 | 3 |
+| home space | 207 | 1 | 176 | 1 | 16 | 13 | 3 |
 | beyond the border | 428 | 17 | 89 | 7 | 219 | 96 | 29 |
 
 ## Plans by Role

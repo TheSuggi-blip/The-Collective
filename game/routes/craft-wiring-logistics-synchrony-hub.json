@@ -1,0 +1,77 @@
+{
+ "id": "craft-wiring-logistics-synchrony-hub",
+ "kind": "circuit",
+ "title": "Copper wiring made at the Synchrony Hub workshop from all of the pilot's own stored copper ore in one visit, kept in its storage there (Logistics' haulers: docked crafting in place of the jump loop)",
+ "note": "Written by Apollo, 2026-11-22 19:59 UTC (orders.log ENT-065, block APOLLO: craft docked where the goods lie rather than fly jump loops; rule F8: zero empty burn; MISSION.md: zero-fuel docked crafting in place of the -500 cr/h jump loop; P1: the least fuel per XP). The twin of Trade's craft-wiring-synchrony-hub (same stops, same halving craft list): over 200 trader runs of 2026-11-17/18 made copper wiring this way, about 6 to 10 minutes and -26 to -52 cr a visit (data/routes/runs.jsonl), so the mechanism is proven and this route starts at 4 ships. basic_copper_processing: 1 copper wiring of 8 copper ore, by hand, no fee. Copper ore is surplus with no bid of worth (the tool stock, view=surplus, 19:50 UTC: not among the 25 best); the wiring is held back for the 32 recipes that use it (control nodes and power cells among them), never sold (rule F24). 12 haulers store 49,887 there (table holdings, 19:54 UTC). Standing work, Crafting XP, ahead of train-jumps-hauler in @craft-reserve: a ship takes it while its own copper there stands at 80 or more, then falls back to the loop.",
+ "standing": true,
+ "requires": {
+  "stored": [
+   {
+    "at": "synchrony_hub",
+    "item": "copper_ore",
+    "min": 80
+   }
+  ]
+ },
+ "max_ships": 4,
+ "stops": [
+  {
+   "at": "synchrony:synchrony_hub:synchrony_hub",
+   "store": "all",
+   "craft": [
+    {
+     "recipe": "basic_copper_processing",
+     "runs": 128,
+     "per_run": 1,
+     "makes": "copper_wiring"
+    },
+    {
+     "recipe": "basic_copper_processing",
+     "runs": 64,
+     "per_run": 1,
+     "makes": "copper_wiring"
+    },
+    {
+     "recipe": "basic_copper_processing",
+     "runs": 32,
+     "per_run": 1,
+     "makes": "copper_wiring"
+    },
+    {
+     "recipe": "basic_copper_processing",
+     "runs": 16,
+     "per_run": 1,
+     "makes": "copper_wiring"
+    },
+    {
+     "recipe": "basic_copper_processing",
+     "runs": 8,
+     "per_run": 1,
+     "makes": "copper_wiring"
+    },
+    {
+     "recipe": "basic_copper_processing",
+     "runs": 4,
+     "per_run": 1,
+     "makes": "copper_wiring"
+    },
+    {
+     "recipe": "basic_copper_processing",
+     "runs": 2,
+     "per_run": 1,
+     "makes": "copper_wiring"
+    },
+    {
+     "recipe": "basic_copper_processing",
+     "runs": 1,
+     "per_run": 1,
+     "makes": "copper_wiring"
+    }
+   ]
+  },
+  {
+   "at": "synchrony:synchrony_hub:synchrony_hub",
+   "store": "all"
+  }
+ ]
+}
