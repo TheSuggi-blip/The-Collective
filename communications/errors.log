@@ -429,3 +429,10 @@ Cause: the Plasma Cannon II takes ammunition (catalog 0.732.0: ammo_type plasma,
 Fix, built: buy-plasma-ammo-central-nexus (4 dispersal plasma cell packs at Central Nexus, ask 170 x 21; requires.module plasma_cannon_ii, requires.held_below 2 packs for the division; open_to drone and sentinel, since the class guard read the buy circuit as trade), in the list First (commits 175df018, 9d095bed); skill military-turn step 6: a weapon with ammo_type is fitted with its ammunition route; guidebook tests.md, Weapon fits (commit 76fce8bf).
 Class: a test whose result is the setup's fault, read as the prey's (ENT-017: a catalog figure read as a kill).
 Would it have prevented this one: yes; the ammo route in First would have loaded the ship before its first test run.
+
+## [ENT-126] | 2026-11-22 06:14 UTC | Unity | error | ref: game/fleet/wallet.py | see: queue.log ENT-218
+What: the leader's deposit into the faction's treasury did not run from 03:12 to 06:09 UTC but once (05:08, refused for a fight); 1,240,781 cr stood in the leader's wallet instead of the treasury (sweep.jsonl; wallet.py sweep --dry-run 06:08 UTC).
+Effect: the treasury read 1,664,515 cr while the Recruitment Center's fee is 2,000,000; no credit lost. After the fix the deposit of 1,190,781 cr booked at 06:11 UTC.
+Cause: the pass gives up to four gifts first, about 80 s each, and the deposit waits when DEPOSIT_BY (90 s) is used up; the sweep lines by role of 02:05 UTC put 29 ships above their line, so every pass gave four gifts. The job prints only HALT lines, so the waiting deposit printed nothing anyone read.
+Fix: commit 1077d775: the leader holding 100,000 cr or more above its line deposits before the pass's gifts; after a deposit refused for a fight the gifts go first again (test failed on the old code first).
+Class: a step that runs last in a time-boxed pass starves without a word (a silent wait). Would it have prevented this one: yes, the deposit comes first whenever it is large.
