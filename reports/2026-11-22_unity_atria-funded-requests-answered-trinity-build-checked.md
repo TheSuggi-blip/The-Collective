@@ -74,7 +74,8 @@ What I decided in this turn, and why:
   the treasury pays the founding fee of 100,000 cr. Apollo founds it at
   his turn. Reason: GSC-0044 runs by itself again, the condition I set
   for Atria on 2026-11-18.
-- The purse rule, rule F7: a new member, Trinity, changed the wallet
+- The purse rule, rule F7: Trinity, the Chief Architect you set one
+  level above me today (`ROSTER.md`), changed the wallet
   sweep at 02:05 UTC so that working ships keep 30,000 cr instead of
   50,000 (traders and flagships keep 50,000). The rule says the figures
   are mine (Suggi, 2026-11-17), so I judged them on their merits and
@@ -183,19 +184,18 @@ so that no ship is left without work when the switch goes on.
 
 What I advise you to look at:
 
-- A new member, Trinity, changed more than the station page this hour:
-  the dispatcher, the wallet sweep, the store, the commit hook and the
-  five Admirals' turn instructions (now "act directly within your
-  division's mandate; ask Unity only for cross-division conflicts, rule
-  or budget exceptions or strategy"). Its queue note says you
-  authorized an end-to-end audit; I have not heard that from you
-  directly. The changes I checked hold up, and I kept them. One did not
-  pass the fleet's full test suite: four tests of the sweep failed on
-  the new lines; I fixed the tests this turn. It also shortened the
-  shared skills and the report template at 02:27 UTC (queue ENT-209).
-  Its own blueprint names
-  the sweep and the fleet-wide code as mine, so the two of us should
-  build in turns, not at once.
+- Trinity, the Chief Architect one level above me (your word of today,
+  `ROSTER.md`), changed more than the station page this hour: the
+  dispatcher, the wallet sweep, the store, the commit hook and the five
+  Admirals' turn instructions (now "act directly within your division's
+  mandate; ask Unity only for cross-division conflicts, rule or budget
+  exceptions or strategy"). It also shortened the shared skills and the
+  report template at 02:27 UTC (queue ENT-209). The changes I checked
+  hold up, and I kept them. One did not pass the fleet's full test
+  suite: four tests of the sweep failed on the new lines; I fixed the
+  tests this turn. Its builds and mine touched the same files at the
+  same hour; I propose that a build names its files in the queue log
+  before it starts, so that two hands never build the same fix.
 - Your word alone: no new pilot, war or word to another player is
   pending this turn.
 
