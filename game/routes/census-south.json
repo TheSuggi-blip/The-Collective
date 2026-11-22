@@ -2,7 +2,7 @@
  "id": "census-south",
  "kind": "census",
  "title": "Read the southeast road for its sites: Biham and the systems around it, and beyond it Alnilam, Groombridge 1618, Pleione, Yed Posterior and Fomalhaut, every 150 minutes",
- "note": "Kept by Oracle; written 2026-11-17 19:26 UTC for orders.log ENT-042 (block ORACLE, P4 b): the south (Biham, Felis) is explored first for the next sites, with the north. The list: every system within two lanes of Biham (table lanes) that stood on census-roads, nearest first; Felis, Gliese 876 and GSC-0016 stay on census-worked (our routes use them) and GSC-0021, Tanglewood, GSC-0012 and Stormwatch on census-frontier, so no system stands on two lists of ours. The south is the pirate side of our space: the Korr stronghold Gliese 581 lies two jumps from Felis, and our record holds pirates at Felis (15 lines), Biham and Sualocin (3 each) (observations kind pirate, to 14:53 UTC). A census reads and leaves; the stance is flee (rule F2); a pirate met is filed for Military. Every 150 minutes, three ships, `chain` 3 within two lanes, an empty hold (rule F13). 2026-11-17 23:23 UTC: orders ENT-052 ask the southeast candidates beyond Biham with their fields, lanes and pirate record; nine systems 2 to 4 jumps beyond GSC-0035 came from census-roads; four ships.",
+ "note": "Kept by Oracle; written 2026-11-17 19:26 UTC for orders.log ENT-042 (block ORACLE, P4 b): the south (Biham, Felis) is explored first for the next sites, with the north. The list: every system within two lanes of Biham (table lanes) that stood on census-roads, nearest first; Felis, Gliese 876 and GSC-0016 stay on census-worked (our routes use them) and GSC-0021, Tanglewood, GSC-0012 and Stormwatch on census-frontier, so no system stands on two lists of ours. The south is the pirate side of our space: the Korr stronghold Gliese 581 lies two jumps from Felis, and our record holds pirates at Felis (15 lines), Biham and Sualocin (3 each) (observations kind pirate, to 14:53 UTC). A census reads and leaves; the stance is flee (rule F2); a pirate met is filed for Military. Every 150 minutes, three ships, `chain` 3 within two lanes, an empty hold (rule F13). 2026-11-17 23:23 UTC: orders ENT-052 ask the southeast candidates beyond Biham with their fields, lanes and pirate record; nine systems 2 to 4 jumps beyond GSC-0035 came from census-roads; four ships. 2026-11-22 23:30 UTC (Oracle, orders ENT-068: newborn regions first, then the census burn cut by a third, the lists the plans rest on kept closest): every_minutes 150 -> 170, max_ships 4 -> 1.",
  "systems": [
   "biham",
   "gsc_0024",
@@ -24,8 +24,8 @@
   "etamin",
   "greenvale"
  ],
- "every_minutes": 150,
- "max_ships": 4,
+ "every_minutes": 170,
+ "max_ships": 1,
  "chain": 3,
  "chain_jumps": 2,
  "requires": {
