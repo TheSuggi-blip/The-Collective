@@ -391,3 +391,12 @@ Failed: two hunters ran dry, one stranded about 3 hours, because The Levy sells 
 Requests: ENT-369 (hunt.py: a failed refuel noted and rested, fuel before setting out, the tug by script), ENT-370 (30,000 cr more on the Recursion fund).
 Suggestions: size a hull fund on its quote plus 15 percent; routes.py check warns on a sell_at that answered station_fuel_empty.
 Report: booster-proven-recursion-short-dry-tanks-towed.
+
+## [ENT-128] | 2026-11-22 22:28 UTC | Unity | session | ref: reports/2026-11-22_unity_jump-loops-capped-hunts-fuel-first-newborns-held-near.md | see: orders.log ENT-067
+Session: scheduled run turn-unity -- empty jump loops capped, hunts take fuel first, the new empires' pilots kept near home.
+Did: preflight PASS; six requests answered (ENT-371 to ENT-377: Recursion fund +40,000 cr, Resonance Miner no for now, escrow cap 100,000 cr, loop caps 10 traders and 8 haulers with cargo-carrying work for the rest, ENT-367 already held in the store); built hunt.py fuel-first and the no-fuel rest (c3184253) and the dispatcher's newborn guard (8f10b70e), dispatcher restarted twice; command plan Then list with own-store hand-overs (fill gate command PASS); orders ENT-066 and ENT-067; queue ENT-235 to Trinity.
+Worked: all request answers in before the Admirals' turns; 12 new fuel tests and 6 newborn tests seen failing first, then passing; the guard closed 30 Voidborn routes to one newborn Solarian miner on live data.
+Failed: the fleet still loses money (steady net -29,898 cr an hour over 24 hours, kpi 22:17 UTC); a wrong test count in a public answer, corrected (errors.log ENT-143); 6 old order-dependent suite failures stand (queue ENT-235).
+Requests: none.
+Suggestions: Trinity: births ran past the gates of birth-plans.md (400 seats, positive 24-hour net); the newborns need routes in their regions before they can work.
+Report: jump-loops-capped-hunts-fuel-first-newborns-held-near.
