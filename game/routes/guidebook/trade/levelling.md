@@ -22,6 +22,5 @@ What raises each skill, as read:
 - Piloting: flying and jumping, and missions: a Trade Run 80 to 580,
   Local Sector Survey 280, Deep Space Cartography 380. A mission's XP by
   skill stands in its board file: `rewards.skill_xp` and `piloting_xp`.
-- Crafting: a wiring run about 13.5 XP (craft-wiring-synchrony-hub,
-  2026-11-17 19:47 UTC).
+- Crafting: a wiring run about 13.5 XP (craft-wiring-synchrony-hub).
 - Navigation: about 4 XP a jump; level 3 at 340 XP.
