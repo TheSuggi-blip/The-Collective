@@ -26,14 +26,16 @@ a Pulse Laser I (CPU 2, power 5) leave both defence slots free.
   (2026-11-15).
 
 ### Hulls
-Status: proven. Updated: 2026-11-21. Evidence: commission_quote Central Nexus 2026-11-16 03:16 UTC; game/catalog/ships/; hive.py stats upgrades --member Apophis.
+Status: proven. Updated: 2026-11-22. Evidence: commission_quote Central Nexus 2026-11-16 03:16 UTC and Node Beta 2026-11-22 08:11 UTC; game/catalog/ships/; hive.py stats upgrades --member Apophis.
 
 - Tier 1, no Piloting gate: Vigil (patrol, hull 75, shield 90, 2 weapons),
   111,316 cr in credits or 15,706 cr plus materials (87 ticks); Paradox
   (hull 60, shield 130, 2 weapons).
 - Tier 2 at Piloting 10: Recursion (hull 150, shield 150, 3 weapons, speed
   4), the drone's next hull; Dualism (160 / 175, 2 weapons, 3 defence).
-  Price not read yet. The upgrades view names who reaches 10.
+  Node Beta commissions it for 315,699 cr, or 45,247 cr plus materials
+  (commission_quote 2026-11-22 08:11 UTC, default fit two Pulse Laser II);
+  asked of the purse (requests ENT-345). The upgrades view names who is 10.
 - Tier 3 at Piloting 20: Annihilation (4 weapons, hull 360, shield 430),
   Voidborn Singularity (3 weapons); the sentinels go back to the command
   group at 20.
