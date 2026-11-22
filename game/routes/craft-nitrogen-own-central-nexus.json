@@ -1,0 +1,75 @@
+{
+ "id": "craft-nitrogen-own-central-nexus",
+ "kind": "circuit",
+ "title": "Liquid nitrogen made by hand at Central Nexus from the trader's own stored nitrogen ice, docked, no jump",
+ "note": "2026-11-22 15:37 UTC (Mercury): orders ENT-064, block MERCURY (every trader operating at the least fuel per XP, before jump loops), P1 and P5; rule F23 (every ship crafts its own stores). Traders store 10344 nitrogen ice at Central Nexus (table holdings, storage book 2026-11-22 15:32 UTC); its best bid is 2 cr (the tool stock view=surplus) and none of it is reserved. process_nitrogen_ice (by hand, 0 cr): 4 liquid nitrogen (base 22, an input of 30 recipes: coolant loop, ice harvester II and III ...) from 5 nitrogen ice (base 15). A trader docked here trains Crafting with no jump and no fuel, in place of the jump loop (train-jumps-trader, -551 cr a ship-hour in 4 hours). The craft list asks the recipe in halving sizes (128 down to 1, as craft-armor-own-*): a size the stores cannot fill makes nothing and the next is asked. Nothing is bought or sold; the liquid nitrogen stays in the pilot's storage. Standing work; closes by itself under 100 nitrogen ice stored here. A test: three results decide (F37); max_ships 2, the traders that hold the ice here.",
+ "standing": true,
+ "requires": {
+  "stored": {
+   "at": "central_nexus",
+   "item": "nitrogen_ice",
+   "min": 100
+  }
+ },
+ "max_ships": 2,
+ "stops": [
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "store": "all",
+   "craft": [
+    {
+     "recipe": "process_nitrogen_ice",
+     "runs": 128,
+     "per_run": 4,
+     "makes": "liquid_nitrogen"
+    },
+    {
+     "recipe": "process_nitrogen_ice",
+     "runs": 64,
+     "per_run": 4,
+     "makes": "liquid_nitrogen"
+    },
+    {
+     "recipe": "process_nitrogen_ice",
+     "runs": 32,
+     "per_run": 4,
+     "makes": "liquid_nitrogen"
+    },
+    {
+     "recipe": "process_nitrogen_ice",
+     "runs": 16,
+     "per_run": 4,
+     "makes": "liquid_nitrogen"
+    },
+    {
+     "recipe": "process_nitrogen_ice",
+     "runs": 8,
+     "per_run": 4,
+     "makes": "liquid_nitrogen"
+    },
+    {
+     "recipe": "process_nitrogen_ice",
+     "runs": 4,
+     "per_run": 4,
+     "makes": "liquid_nitrogen"
+    },
+    {
+     "recipe": "process_nitrogen_ice",
+     "runs": 2,
+     "per_run": 4,
+     "makes": "liquid_nitrogen"
+    },
+    {
+     "recipe": "process_nitrogen_ice",
+     "runs": 1,
+     "per_run": 4,
+     "makes": "liquid_nitrogen"
+    }
+   ]
+  },
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "store": "all"
+  }
+ ]
+}

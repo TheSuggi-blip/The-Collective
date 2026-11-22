@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 128.
+Routes: 131.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -28,6 +28,9 @@ Routes: 128.
 | [carry-soma-synchrony-node-gamma](carry-soma-synchrony-node-gamma.json) | circuit | home space | Stored neural soma carried one jump from Synchrony Hub to the Node Gamma soma bid | up to 1 ships, with 1 voidborn_neural_soma stored at synchrony_hub, while node_gamma_relay_station bids 500 cr for voidborn_neural_soma | TBD | TBD | TBD | TBD | -- |
 | [carry-soma-synchrony-to-alpha](carry-soma-synchrony-to-alpha.json) | circuit | home space | Stored neural soma carried from Synchrony Hub to the Node Alpha bid at 350 cr or more | up to 1 ships, with 1 voidborn_neural_soma stored at synchrony_hub, while node_alpha_processing_station bids 320 cr for voidborn_neural_soma | TBD | TBD | TBD | TBD | -- |
 | [drain-methane-experiment](drain-methane-experiment.json) | circuit | home space | Stored methane ice sold where it lies, at The Experiment, into the bid there | up to 1 ships, with 10 methane_ice stored at the_experiment_research_station, while the_experiment_research_station bids 30 cr for methane_ice | TBD | TBD | TBD | TBD | -- |
+| [sell-curd-at-central-nexus](sell-curd-at-central-nexus.json) | circuit | home space | Verdigris curd and noble condensate stored by Trade's receivers at Central Nexus sold where they lie into the standing NPC bids | up to 1 ships, with 20 verdigris_curd stored at central_nexus, while central_nexus bids 300 cr for verdigris_curd | TBD | TBD | TBD | TBD | -- |
+| [sell-curd-at-experiment](sell-curd-at-experiment.json) | circuit | home space | Verdigris curd and noble condensate stored by Trade's receivers at The Experiment sold where they lie into the standing NPC bids | up to 1 ships, with 20 verdigris_curd stored at the_experiment_research_station, while the_experiment_research_station bids 300 cr for verdigris_curd | TBD | TBD | TBD | TBD | -- |
+| [sell-curd-at-node-beta](sell-curd-at-node-beta.json) | circuit | home space | Verdigris curd and noble condensate stored by Trade's receivers at Node Beta sold where they lie into the standing NPC bids | up to 1 ships, with 20 verdigris_curd stored at node_beta_industrial_station, while node_beta_industrial_station bids 300 cr for verdigris_curd | TBD | TBD | TBD | TBD | -- |
 | [sell-hydrogen-at-node-beta](sell-hydrogen-at-node-beta.json) | circuit | home space | Stored hydrogen_gas sold where it lies, at node_beta_industrial_station, at 30 cr or more | up to 1 ships, with 1 hydrogen_gas stored at node_beta_industrial_station, while node_beta_industrial_station bids 30 cr for hydrogen_gas | TBD | TBD | TBD | TBD | -- |
 | [sell-hydrogen-at-node-gamma](sell-hydrogen-at-node-gamma.json) | circuit | home space | Stored hydrogen_gas sold where it lies, at node_gamma_relay_station, at 30 cr or more | up to 1 ships, with 1 hydrogen_gas stored at node_gamma_relay_station, while node_gamma_relay_station bids 30 cr for hydrogen_gas | TBD | TBD | TBD | TBD | -- |
 | [sell-hydrogen-at-synchrony](sell-hydrogen-at-synchrony.json) | circuit | home space | Stored hydrogen_gas sold where it lies, at synchrony_hub, at 30 cr or more | up to 1 ships, with 1 hydrogen_gas stored at synchrony_hub, while synchrony_hub bids 30 cr for hydrogen_gas | TBD | TBD | TBD | TBD | -- |

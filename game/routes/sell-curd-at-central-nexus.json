@@ -1,0 +1,48 @@
+{
+ "id": "sell-curd-at-central-nexus",
+ "kind": "circuit",
+ "title": "Verdigris curd and noble condensate stored by Trade's receivers at Central Nexus sold where they lie into the standing NPC bids",
+ "note": "2026-11-22 15:37 UTC (Mercury): orders ENT-064, block MERCURY and P5: the hunts hand their curd to Trade's receivers; traders store 575 verdigris curd at Central Nexus (sellgen.py scan, storage book 2026-11-22 15:32 UTC). The station's own curd bid stands at 330 cr x 50 (3 x the base value 110; it comes and goes, the tool market item=verdigris_curd since 2026-11-15), noble condensate at 690 x 45-50 (3 x base 230). Curd is no longer held back: the tool stock view=surplus reads 0 reserved (the copper piping hold of 2026-11-17 is gone; piping stands above its target). A pilot whose own storage here holds 20 curd withdraws what the bid takes and sells it docked, no jump; requires.bid closes it while a book read within the hour shows no curd bid at 300 for 10. Floors at the standing bids less a margin, never under a standing bid (F12). Nothing is bought. A test: one ship, three results decide (F37). Replaces Military's sell-curd-* routes (off since 2026-11-17) under P5.",
+ "max_ships": 1,
+ "requires": {
+  "stored": {
+   "at": "central_nexus",
+   "item": "verdigris_curd",
+   "min": 20
+  },
+  "bid": {
+   "item": "verdigris_curd",
+   "base": "central_nexus",
+   "min_price": 300,
+   "min_qty": 10
+  }
+ },
+ "stops": [
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "verdigris_curd"
+    },
+    {
+     "item": "noble_condensate"
+    }
+   ],
+   "sell": [
+    {
+     "item": "verdigris_curd",
+     "min_price": 300
+    },
+    {
+     "item": "noble_condensate",
+     "min_price": 680
+    }
+   ]
+  },
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "store": "all"
+  }
+ ]
+}
