@@ -5,7 +5,8 @@ Status: proven. Updated: 2026-11-22. Evidence: the plan file (tool plan, show); 
 
 - First, every scout: store-hold-central-nexus, give-scout-stores-*
   (requires.strict: open when strict classes go on), the missions paid
-  once and the Voidborn chain (F34, F35), census-voidborn (home, 30 min).
+  once and the Voidborn chain (F34, F35), census-voidborn (home, 30 min);
+  the Sol audit last (paid 24 of 25, 2026-11-22).
 - Readers (@reader): census-watch-gsc-0044 (50 min, 3: the outpost
   stands), census-worked (90 min), census-frontier (170 min: near,
   cheap), census-worked-far (where others fly, 180 min), then the roads.
@@ -64,10 +65,14 @@ Status: proven. Updated: 2026-11-21. Evidence: game/routes/templates/intel.json;
   `plan.py set <ship> <hunt>,@reader`.
 
 ### Missions That Pay Once
-Status: proven. Updated: 2026-11-21. Evidence: data/routes/runs.jsonl (one_time); game/routes/index-once-per-pilot.md.
+Status: proven. Updated: 2026-11-22. Evidence: data/routes/runs.jsonl (one_time); game/routes/index-once-per-pilot.md; table runs (paid share, 2026-11-22 19:26 UTC).
 
-- The once routes reach the list First by themselves within five
-  minutes; a route that holds nothing for a pilot passes it.
+- Most once routes reach the list First by themselves within five
+  minutes; a route that holds nothing for a pilot passes it. Not all:
+  the Sol audit (another division's file) stood outside it until read.
+- Weigh a visit mission by its paid share (runs with one_time over all
+  runs, every division): the Sol audit paid 24 of 25 and went First;
+  the frontier wayfinder paid 1 of 58 (stop 1 not reached) and stays out.
 - A visit mission ("sensors will automatically log the data as you jump
   between systems") may be done by a census's jumps: read the holder's
   objectives before a route is written for it (tests.md).
