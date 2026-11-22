@@ -2,7 +2,7 @@
  "id": "craft-armor-own-node-beta",
  "kind": "circuit",
  "title": "Armor plate made by hand at Node Beta from all of the trader's own stored creature carapace in one visit, kept in its storage there for the reserve",
- "note": "2026-11-22 11:36 UTC (Mercury): orders ENT-063, P1 (train at the least fuel per XP) and P5 (Trade crafts what it is given); rule F23 (every ship crafts its own stores), F24, F36. The hunts now hand their carapace to Trade's receivers: they store 1,394 creature carapace at Node Beta (table holdings, storage book 2026-11-22 11:32 UTC), and no bid above 1 cr takes it. Armor plate is short 3,718 for the reserve (the tool stock, view=reserve, 11:34 UTC: demand 5,940, held 672) and carapace is its input (carapace_plating: 1 armor plate from 6 carapace, by hand, 0 cr). A trader docked here crafts with no jump and no fuel: Crafting is the class's second skill (guidebook trade card). The craft list asks the recipe in halving sizes (128 down to 1, the stops of craft-armor-military-node-beta and craft-steel-own-node-beta): the runner makes nothing where the stores fall short. Nothing is bought or sold; the plates stay in the pilot's storage for Logistics. Standing work; closes by itself when the pilot holds under 30 carapace here. A test: three results decide (F37).",
+ "note": "2026-11-22 11:36 UTC (Mercury): orders ENT-063, P1 (train at the least fuel per XP) and P5 (Trade crafts what it is given); rule F23 (every ship crafts its own stores), F24, F36. The hunts now hand their carapace to Trade's receivers: they store 1,394 creature carapace at Node Beta (table holdings, storage book 2026-11-22 11:32 UTC), and no bid above 1 cr takes it. Armor plate is short 3,718 for the reserve (the tool stock, view=reserve, 11:34 UTC: demand 5,940, held 672) and carapace is its input (carapace_plating: 1 armor plate from 6 carapace, by hand, 0 cr). A trader docked here crafts with no jump and no fuel: Crafting is the class's second skill (guidebook trade card). The craft list asks the recipe in halving sizes (128 down to 1, the stops of craft-armor-military-node-beta and craft-steel-own-node-beta): the runner makes nothing where the stores fall short. Nothing is bought or sold; the plates stay in the pilot's storage for Logistics. Standing work; closes by itself when the pilot holds under 30 carapace here. A test: three results decide (F37). 2026-11-22 11:38 UTC (Mercury): max_ships 2 -> 3: Trade's receivers here are now 3 (handover.py receivers add; the gifts are spread over them), each crafts its own carapace.",
  "standing": true,
  "requires": {
   "stored": {
@@ -11,7 +11,7 @@
    "min": 30
   }
  },
- "max_ships": 2,
+ "max_ships": 3,
  "stops": [
   {
    "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
