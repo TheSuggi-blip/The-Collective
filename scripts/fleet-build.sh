@@ -97,6 +97,7 @@ tree)
   ;;
 test)
   [ -f "$T/.base" ] || { echo "HALT: $T is no copy made by \`fleet-build.sh tree\`"; exit 1; }
+  [ -d "$T/.git" ] || git -C "$T" init -q || { echo "HALT: could not make the copy a git folder"; exit 1; }   # validate-ids.sh lists the Markdown by `git ls-files` (32416700): an empty repository lists every file as untracked
   cd "$T" && gates "${3:-}" && echo "PASS: the gates hold in the copy"
   ;;
 install)

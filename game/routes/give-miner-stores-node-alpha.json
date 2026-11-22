@@ -2,15 +2,15 @@
  "id": "give-miner-stores-node-alpha",
  "kind": "circuit",
  "title": "A miner gives its stores at Node Alpha Processing Station: building inputs and the reserve ores to the haulers, ices, null matter, lead and soma to the traders (strict classes)",
- "note": "2026-11-22 03:35 UTC (Zero): orders ENT-061, block ZERO and P5 (the sales left in the plan become gifts to Trade's receivers; each class's activities its own, Suggi D244); rules F23, F24. Replaces in the miners' plan the sell and carry circuits of their stored ice, soma and null matter (Trade's work with strict classes on) and hands the iron, copper, plate, piping and the reserve's ores to the hauler Apollo names for this station (admirals.log ENT-081: a gift to: hauler lands in a crafter's storage, where @craft-reserve makes it into what we build with). One stop, docked: the hold stored, then two gifts from storage (handover.py; receivers in data/fleet/receivers.json). A gift gives nothing while data/fleet/strict-classes-on is absent, so the route stands off until the switch is on (requests.log, this turn: a requires gate on the switch); then on. requires.stored: only a pilot whose own storage here holds 50 iron ore or more, and not again until its storage was read after its run.",
+ "note": "2026-11-22 03:35 UTC (Zero): orders ENT-061, block ZERO and P5 (the sales left in the plan become gifts to Trade's receivers; each class's activities its own, Suggi D244); rules F23, F24. Replaces in the miners' plan the sell and carry circuits of their stored ice, soma and null matter (Trade's work with strict classes on) and hands the iron, copper, plate, piping and the reserve's ores to the hauler Apollo names for this station (admirals.log ENT-081: a gift to: hauler lands in a crafter's storage, where @craft-reserve makes it into what we build with). One stop, docked: the hold stored, then two gifts from storage (handover.py; receivers in data/fleet/receivers.json). A gift gives nothing while data/fleet/strict-classes-on is absent, so the route stands off until the switch is on (requests.log, this turn: a requires gate on the switch); then on. requires.stored: only a pilot whose own storage here holds 50 iron ore or more, and not again until its storage was read after its run. 2026-11-22 05:50 UTC (Unity, requests ENT-332): `status: off` replaced by `requires.strict: true`: open by itself while strict classes are on, closed while off.",
  "max_ships": 3,
- "status": "off",
  "requires": {
   "stored": {
    "at": "node_alpha_processing_station",
    "item": "iron_ore",
    "min": 50
-  }
+  },
+  "strict": true
  },
  "stops": [
   {

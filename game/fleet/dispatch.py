@@ -48,6 +48,10 @@ RULES:
   - `requires.held_below` (item, units, division; game/fleet/heldgate.py, off until switched on there): a route is
     open only while the division's pilots hold fewer units of the item, storage and holds (data/stock/storage.json);
     a book that is not whole closes nothing and opens nothing new (Zero, errors.log ENT-111).
+  - `requires.strict` (true or false): a route is open only while data/fleet/strict-classes-on stands (true) or only
+    while it is absent (false), so a hand-over route starts by itself the minute strict classes go on (requests ENT-332).
+  - A (route, pilot) pair rests 30 minutes after three runs in a row that read or reached nothing, whatever their
+    minutes: a census row with no place read and no credit moved, or a note `not reached` / `not flown` (ENT-334).
   - An engine loop that runs for a pilot with no fresh order file for five
     minutes belongs to no runner (an engine restart, a dead runner): the
     dispatcher stops that loop through the gate and names it in its log.
@@ -313,8 +317,9 @@ def pairs(rows):
 
 
 def stalled_reason(rid, route, pilot_name, rows, now):
-    """Why (rid, pilot_name) rests after repeated zero-minute loops or non-ask stop_on_failed_buy (requests ENT-317), or None."""
-    if route.get("park") or route.get("kind") in ("census", "guard"):
+    """Why (rid, pilot_name) rests after repeated zero-minute loops, runs that read or reached nothing (ENT-334) or non-ask
+    stop_on_failed_buy (requests ENT-317), or None."""
+    if route.get("park") or route.get("kind") == "guard":
         return None
     mine = pairs(rows).get((rid, pilot_name)) or []
     if not mine:
@@ -327,11 +332,24 @@ def stalled_reason(rid, route, pilot_name, rows, now):
     if any("run ended (stop_on_failed_buy)" in n for n in notes) and any(c in n for n in notes for c in FAILED_BUY_CAUSES):
         return "rests after failed buy (wallet floor or refused)"
     tail = mine[-STALL_RUNS:]
-    if len(tail) == STALL_RUNS and all(
+    if len(tail) < STALL_RUNS:
+        return None
+    if route.get("kind") != "census" and all(
         float(r.get("minutes") or 0) < STALL_MINUTES and (r.get("delta") or 0) == 0 and not r.get("sold") for r in tail
     ):
         return "rests after %d short zero-credit runs" % STALL_RUNS
+    if all(failed_run(r) for r in tail):            # requests ENT-334, errors.log ENT-121: whatever their minutes
+        return "rests after %d runs in a row that read or reached nothing" % STALL_RUNS
     return None
+
+
+def failed_run(row):
+    """True for a run that read or earned nothing: a census row with no place read and no credit moved, or a row whose
+    note says `not reached` or `not flown` (census.py, requests ENT-334)."""
+    notes = " ".join(str(n) for n in (row.get("notes") or []))
+    if "not reached" in notes or "not flown" in notes:
+        return True
+    return row.get("kind") == "census" and not row.get("places") and not row.get("delta") and not row.get("sold")
 
 
 def done_once(route, rows):
@@ -556,6 +574,11 @@ def why_not(pilot, rid, route, state):
         return "no route file", None
     if route.get("status") == "off":
         return "off", None
+    strict = (route.get("requires") or {}).get("strict")          # requests ENT-332: open only in one state of data/fleet/strict-classes-on
+    if isinstance(strict, bool):
+        workclass.follow(state.get("data"))
+        if strict != workclass.strict_on():
+            return ("open only while strict classes are on" if strict else "open only while strict classes are off"), None
     if route.get("park") and pilot.get("docked"):
         return "the pilot is docked", None
     sells = workclass.sale_refused(pilot, rid, route, state)      # r22: with data/fleet/strict-classes-on selling is Trade's alone (rule F23)

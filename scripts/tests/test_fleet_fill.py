@@ -188,6 +188,16 @@ class ReadTests(Tree):
         self.assertIn("what its field grows back is not measured; 100,000 units lie in it, 60,000 above its floor", deep["text"])
         self.assertEqual(self.fill.carried(None), "--")
         self.assertEqual(self.fill.asks(seen, "ice_harvester"), [(2, 1413, "base")])
+        # requests ENT-333: a gather on a mixed field counts only the goods its floor names (silicon none: it carries no ship)
+        (self.data / "scouting" / "mixed.json").write_text(json.dumps({"system": "mixed", "read_at": stamp(0), "pois": {"flats": {"resources": [
+            {"resource_id": "iron_ore", "remaining": 78875}, {"resource_id": "copper_ore", "remaining": 96000}, {"resource_id": "silicon_ore", "remaining": 0}]}}}))
+        silicon = {"id": "silicon", "kind": "mine", "belt": "mixed:flats", "station": "home:core:base", "min_left": {"silicon_ore": 500}}
+        deep = self.fill.carries(seen, silicon)
+        self.assertEqual((deep["ships"], deep["extra"], self.fill.carried(deep)), (0, 0, "0"))
+        self.assertIn("none of its goods (silicon_ore)", deep["text"])
+        iron = dict(silicon, min_left={"iron_ore": 40000})
+        deep = self.fill.carries(seen, iron)
+        self.assertIn("78,875 units lie in it, 38,875 above its floor", deep["text"])
 
     def test_the_gate_passes_only_on_a_fresh_list(self):
         for name in ("herd2", "freight"):                                                         # no paying work outside the plan

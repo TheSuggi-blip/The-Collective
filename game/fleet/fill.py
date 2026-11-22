@@ -422,6 +422,11 @@ def carries(seen, route):
     if not back and not left:
         return None
     floor = route.get("min_left") if isinstance(route.get("min_left"), dict) else {}
+    if floor:                                          # requests ENT-333: a gather counts only the goods its floor names, never the other ores of a mixed field
+        back = [rate[0] for key, rate in fields.items() if key[0] == system and key[1] == poi and len(key) > 2 and key[2] in floor and (rate[0] or rate[1])]
+        left = {item: units for item, units in left.items() if item in floor}
+        if not back and not any(left.values()):
+            return {"ships": 0, "extra": 0, "text": "none of its goods (%s) lie in its field or grow back there" % ", ".join(sorted(floor))}
     free = sum(max(0, units - int(floor.get(item, 0))) for item, units in left.items())          # what may be taken before the route's own floor closes it
     text = "its field grew back %s units an hour" % format(int(sum(back)), ",") if back else "what its field grows back is not measured"
     text += "; %s units lie in it%s" % (format(sum(left.values()), ","), ", %s above its floor" % format(free, ",") if floor else "") if left else ""

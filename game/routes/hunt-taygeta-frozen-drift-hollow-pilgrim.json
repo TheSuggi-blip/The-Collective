@@ -2,7 +2,7 @@
  "id": "hunt-taygeta-frozen-drift-hollow-pilgrim",
  "kind": "hunt",
  "title": "hollow_pilgrim at taygeta_frozen_drift; loot sold at Hex Star",
- "note": "Written by routemaker.py from the herd's count, the loot of 197 runs of ours and the order book; an estimate of 12734 cr per hunter-hour, not a measurement. A test: one ship, the ranching rules kept. Added as a test by fill.py on 2026-11-22 05:31 UTC (Unity): up to 3 ships, one result each, until 3 runs are read (rule F37).",
+ "note": "Written by routemaker.py from the herd's count, the loot of 197 runs of ours and the order book; an estimate of 12734 cr per hunter-hour, not a measurement. A test: one ship, the ranching rules kept. Added as a test by fill.py on 2026-11-22 05:31 UTC (Unity): up to 3 ships, one result each, until 3 runs are read (rule F37). 2026-11-22 05:55 UTC (Unity, orders ENT-061 P5): gift_to trader: with strict classes on the loot goes to Trade's receiver instead of the sale at sell_at; off, it sells as before.",
  "place": "taygeta:taygeta_frozen_drift",
  "species": [
   "hollow_pilgrim"
@@ -16,5 +16,6 @@
  "alone": true,
  "requires": {
   "empty_hold": true
- }
+ },
+ "gift_to": "trader"
 }

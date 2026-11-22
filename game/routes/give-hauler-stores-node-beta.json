@@ -2,15 +2,15 @@
  "id": "give-hauler-stores-node-beta",
  "kind": "circuit",
  "title": "A hauler gives its stored goods of Trade's class at Node Beta Industrial Station to the trader named there: gases, ices, null matter, soma, loot and ores no reserve recipe takes (strict classes)",
- "note": "Written by Apollo, 2026-11-22 04:05 UTC (orders.log ENT-061, P5: each class's activities its own, the sales left in a plan become gifts to Trade's receivers; rules F23, F24). Replaces in the hauler plan the sell and carry circuits of template stored-goods. The items: what haulers hold here that the reserve does not keep (stock view=reserve, 03:52 UTC: demand of null matter 20 of 6,922, water ice 80 of 34,174, argon 50 of 4,379); kept back: hydrogen gas and liquid hydrogen (our fuel cells), ores and parts a reserve recipe takes (tungsten, palladium, platinum, aluminum, carapace, energy crystal). The form of give-miner-stores-node-beta (Zero). A gift gives nothing while data/fleet/strict-classes-on is absent, so it stands off until the switch is on (requests.log ENT-332); then on. requires.stored: a pilot whose own storage here holds 50 neon_gas or more (the largest of these goods here, storage book 03:51 UTC: 6196 units of them in haulers' storage).",
+ "note": "Written by Apollo, 2026-11-22 04:05 UTC (orders.log ENT-061, P5: each class's activities its own, the sales left in a plan become gifts to Trade's receivers; rules F23, F24). Replaces in the hauler plan the sell and carry circuits of template stored-goods. The items: what haulers hold here that the reserve does not keep (stock view=reserve, 03:52 UTC: demand of null matter 20 of 6,922, water ice 80 of 34,174, argon 50 of 4,379); kept back: hydrogen gas and liquid hydrogen (our fuel cells), ores and parts a reserve recipe takes (tungsten, palladium, platinum, aluminum, carapace, energy crystal). The form of give-miner-stores-node-beta (Zero). A gift gives nothing while data/fleet/strict-classes-on is absent, so it stands off until the switch is on (requests.log ENT-332); then on. requires.stored: a pilot whose own storage here holds 50 neon_gas or more (the largest of these goods here, storage book 03:51 UTC: 6196 units of them in haulers' storage). 2026-11-22 05:50 UTC (Unity, requests ENT-332): `status: off` replaced by `requires.strict: true`: open by itself while strict classes are on, closed while off.",
  "max_ships": 2,
- "status": "off",
  "requires": {
   "stored": {
    "at": "node_beta_industrial_station",
    "item": "neon_gas",
    "min": 50
-  }
+  },
+  "strict": true
  },
  "stops": [
   {

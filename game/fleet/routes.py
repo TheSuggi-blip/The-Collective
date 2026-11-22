@@ -267,6 +267,8 @@ def check(root):
             errors += [where + line for line in ask_faults(need["ask"])]
         if "held_below" in need:                       # Q75 (1), errors.log ENT-111: what the division holds (heldgate.py)
             errors += [where + line for line in __import__("heldgate").faults(need["held_below"])]
+        if "strict" in need and not isinstance(need["strict"], bool):     # requests ENT-332: dispatch.why_not reads true or false only
+            errors.append(where + "`requires.strict` must be true (open only while strict classes are on) or false (only while off)")
         floors = [("`min_left`", route.get("min_left"))] + [("stop %d: the `min_left` of a `mine` step" % n, step.get("min_left"))
                                                              for n, stop in enumerate(route.get("stops") or [], 1) if isinstance(stop, dict)
                                                              for step in stop.get("mine") or [] if isinstance(step, dict)]

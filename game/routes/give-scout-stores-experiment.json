@@ -2,15 +2,15 @@
  "id": "give-scout-stores-experiment",
  "kind": "circuit",
  "title": "A scout gives its stores at The Experiment: building inputs to the haulers, everything else it holds to the traders (strict classes)",
- "note": "2026-11-22 03:45 UTC (Oracle): orders ENT-061, block ORACLE and P5 (the sales left in the plan become gifts to Trade's receivers; each class's activities its own); rules F23, F24. Replaces in the scouts' plan the sale and carry circuits of their stored soma (Trade's work with strict classes on) and hands the ores, plate, piping and wiring the scouts gathered or made to the hauler named for this station (admirals.log ENT-081), the soma, null matter, rare ores and loot to the trader named for it (data/fleet/receivers.json, handover.py). The form of give-miner-stores-node-beta (Zero). A gift gives nothing while data/fleet/strict-classes-on is absent, so the route stands off until the switch is on (requests.log ENT-332 asks a requires gate on the switch); then on. requires.stored: a pilot whose own storage here holds 50 iron ore or more.",
+ "note": "2026-11-22 03:45 UTC (Oracle): orders ENT-061, block ORACLE and P5 (the sales left in the plan become gifts to Trade's receivers; each class's activities its own); rules F23, F24. Replaces in the scouts' plan the sale and carry circuits of their stored soma (Trade's work with strict classes on) and hands the ores, plate, piping and wiring the scouts gathered or made to the hauler named for this station (admirals.log ENT-081), the soma, null matter, rare ores and loot to the trader named for it (data/fleet/receivers.json, handover.py). The form of give-miner-stores-node-beta (Zero). A gift gives nothing while data/fleet/strict-classes-on is absent, so the route stands off until the switch is on (requests.log ENT-332 asks a requires gate on the switch); then on. requires.stored: a pilot whose own storage here holds 50 iron ore or more. 2026-11-22 05:50 UTC (Unity, requests ENT-332): `status: off` replaced by `requires.strict: true`: open by itself while strict classes are on, closed while off.",
  "max_ships": 2,
- "status": "off",
  "requires": {
   "stored": {
    "at": "the_experiment_research_station",
    "item": "iron_ore",
    "min": 50
-  }
+  },
+  "strict": true
  },
  "stops": [
   {

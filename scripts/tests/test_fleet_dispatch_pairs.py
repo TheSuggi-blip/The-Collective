@@ -48,5 +48,43 @@ class PairsTests(unittest.TestCase):
         self.assertIsNone(self.dispatch.stalled_reason("r", {"kind": "circuit"}, "y", rows, now))
 
 
+    def test_runs_that_read_or_reached_nothing_rest_whatever_their_minutes(self):
+        # requests ENT-334, errors.log ENT-121: 63 refused census runs of 1.5 minutes each, places 0, delta 0, no note
+        now = 1_800_000_000
+        stamp = lambda ago: __import__("time").strftime("%Y-%m-%dT%H:%M:%SZ", __import__("time").gmtime(now - ago))
+        refused = [{"route": "census-worked-far", "kind": "census", "pilot": "x", "started": stamp(600 - 150 * i), "minutes": 1.5,
+                    "places": 0, "creatures": 0, "delta": 0, "notes": []} for i in range(3)]
+        census = {"kind": "census"}
+        self.assertIn("read or reached nothing", self.dispatch.stalled_reason("census-worked-far", census, "x", refused, now))
+        read = refused[:2] + [dict(refused[2], places=3, delta=-95)]
+        self.assertIsNone(self.dispatch.stalled_reason("census-worked-far", census, "x", read, now))
+        noted = [{"route": "c", "kind": "circuit", "pilot": "x", "started": stamp(900 - 200 * i), "minutes": 4, "delta": -40,
+                  "notes": ["alderamin not reached"]} for i in range(3)]
+        self.assertIn("read or reached nothing", self.dispatch.stalled_reason("c", {"kind": "circuit"}, "x", noted, now))
+        self.assertIsNone(self.dispatch.stalled_reason("c", {"kind": "circuit"}, "x", noted[:2], now))
+        self.assertIsNone(self.dispatch.stalled_reason("c", {"kind": "guard"}, "x", noted, now))
+        long_ago = [dict(r, started=stamp(4 * 3600)) for r in refused]
+        self.assertIsNone(self.dispatch.stalled_reason("census-worked-far", census, "x", long_ago, now))
+
+    def test_requires_strict_follows_the_switch_file(self):
+        # requests ENT-332: a hand-over route opens by itself the minute strict classes go on
+        import tempfile
+        keep = self.dispatch.workclass.DATA
+        self.addCleanup(setattr, self.dispatch.workclass, "DATA", keep)
+        with tempfile.TemporaryDirectory() as data:
+            (Path(data) / "fleet").mkdir()
+            state = {"data": data, "rows": [], "orders": {}, "now": 1_800_000_000}
+            pilot = {"name": "miner-1", "role": "miner", "docked": True}
+            on = {"kind": "circuit", "requires": {"strict": True}, "stops": []}
+            off = {"kind": "circuit", "requires": {"strict": False}, "stops": []}
+            self.dispatch.workclass.SEEN.clear()
+            self.assertEqual(self.dispatch.why_not(pilot, "give", on, state)[0], "open only while strict classes are on")
+            self.assertNotEqual(self.dispatch.why_not(pilot, "keep", off, state)[0], "open only while strict classes are off")
+            (Path(data) / "fleet" / "strict-classes-on").write_text("")
+            self.dispatch.workclass.SEEN.clear()
+            self.assertNotEqual(self.dispatch.why_not(pilot, "give", on, state)[0], "open only while strict classes are on")
+            self.assertEqual(self.dispatch.why_not(pilot, "keep", off, state)[0], "open only while strict classes are off")
+            self.dispatch.workclass.SEEN.clear()
+
 if __name__ == "__main__":
     unittest.main()
