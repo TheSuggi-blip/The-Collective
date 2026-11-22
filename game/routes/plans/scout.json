@@ -69,6 +69,10 @@
   {
    "what": "census-roads read by three readers of its own until UNFLOWN passes and its 57 systems stand under 480 minutes",
    "when": "every turn"
+  },
+  {
+   "what": "Keep WORKED, SITES and FRESH at PASS; every new place another division flies moves onto census-worked-far",
+   "when": "every turn"
   }
  ],
  "ships": {

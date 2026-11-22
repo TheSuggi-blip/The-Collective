@@ -91,3 +91,4 @@ Planned:
 |---|---|
 | The faster hull's verdict from its 12-hour window: fuel per run against the Threshold's; no second hull above 1.5 times | next turn |
 | census-roads read by three readers of its own until UNFLOWN passes and its 57 systems stand under 480 minutes | every turn |
+| Keep WORKED, SITES and FRESH at PASS; every new place another division flies moves onto census-worked-far | every turn |
