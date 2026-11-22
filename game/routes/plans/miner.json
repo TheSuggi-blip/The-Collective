@@ -107,6 +107,10 @@
   {
    "what": "Read the give-miner-stores copies' first hand-overs; drop them once requires.stored takes any one item (requests ENT-349)",
    "when": "next turn"
+  },
+  {
+   "what": "Far gathers give each load at The Crescent Moon and Ramen's Rest once Logistics names a receiver there (requests ENT-350)",
+   "when": "on Apollo's answer"
   }
  ],
  "ships": {
