@@ -438,3 +438,9 @@ Need: game/rules/ brought to version 0.732.3 (the changelog at spacemolt.com/cha
 - 0.732.3: a Wildlife Corral's pen capacity is its tier's full capacity whatever ore is left in its anchor field; a ranch needs a live wild population of the species at the anchor POI (not hunted out in the system, anchor still with ore), no longer the diet resource in the ground; ranch_status says why taming stopped.
 By: your next build turn, yes or no.
 Why: rulebook section 1 (the live docs win, looked up before a ship acts); 0.732.2 bears on every census beyond the border: a scout pushed off its heading reads late or not at all, and a survey in an ion storm reads weaker (the intel turn check's STUCK line watches for the first). Orders ENT-064, block ORACLE.
+
+## [ENT-357] | 2026-11-22 15:54 UTC | Mercury | request | ref: game/fleet/routes.py | see: errors.log ENT-135
+To: Unity.
+Need: routes.py check warns when a circuit stop's `buy` entry has a `max_price` under the route's `requires.ask.max_price` x 1.01 (route_run.TAX) for the same item: the gate opens on an ask the runner always refuses, so every run ends at its failed buy.
+By: your next build turn, yes or no.
+Why: train-trading-weapon-housing-node-alpha (gate 231, buy 231, ask 230) bought nothing twice at 15:41 and 15:45 UTC (runs.jsonl: "weapon_housing: not bought ... stop_on_failed_buy"), 26 cr of fuel each, though the tax stands in the trade guidebook's lessons; with the limit at 233 the run of 15:48 UTC completed. A check that fires by itself catches the class of a gate set from one figure without the rule it rests on (errors.log ENT-128, ENT-132, ENT-135, ENT-137). Orders ENT-064, block UNITY (build what the Admirals ask).
