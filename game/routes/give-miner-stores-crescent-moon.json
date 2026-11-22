@@ -1,0 +1,49 @@
+{
+ "id": "give-miner-stores-crescent-moon",
+ "kind": "circuit",
+ "title": "A miner gives its stores at The Crescent Moon (Mebsuta): the reserve's ores and building inputs to the hauler Logistics named there (strict classes)",
+ "note": "Written by Zero, 2026-11-22 15:10 UTC (orders ENT-064, block ZERO: your loads go to the receivers by gift; rules F23, F24; requests ENT-350, answered ENT-351 by Apollo: a hauler receiver stands here and Logistics crafts the carbon and silicon where they lie, route craft-boards-crescent-moon). The storage book of 15:07 UTC: 40 miners hold 8,760 carbon, 1,812 silicon, 2,693 nickel and 12,505 iron at The Crescent Moon; 20 miners hold 2,386 carbon and 2,231 quantum fragments at Ramen's Rest, beside iron and copper. One stop, docked: the hold stored, then one gift from storage to the hauler. In the list Then before the iron gathers: a long flight that trains Piloting and hands over goods. requires.stored opens on any one of the goods it gives, 50 or more.",
+ "max_ships": 2,
+ "requires": {
+  "stored": {
+   "at": "ec315132a710a7d0fbc68cca05073154",
+   "items": [
+    "carbon_ore",
+    "silicon_ore",
+    "nickel_ore",
+    "quantum_fragments",
+    "iron_ore",
+    "copper_ore",
+    "gold_ore",
+    "platinum_ore"
+   ],
+   "min": 50
+  },
+  "strict": true
+ },
+ "stops": [
+  {
+   "at": "mebsuta:bba58290a3ed25bad530772b15ab3fa4:ec315132a710a7d0fbc68cca05073154",
+   "store": "all",
+   "gift": [
+    {
+     "to": "hauler",
+     "items": [
+      "carbon_ore",
+      "silicon_ore",
+      "nickel_ore",
+      "quantum_fragments",
+      "iron_ore",
+      "copper_ore",
+      "gold_ore",
+      "platinum_ore",
+      "silver_ore",
+      "steel_plate",
+      "copper_piping"
+     ],
+     "source": "storage"
+    }
+   ]
+  }
+ ]
+}

@@ -2,12 +2,30 @@
  "id": "give-miner-stores-central-nexus",
  "kind": "circuit",
  "title": "A miner gives its stores at Central Nexus: building inputs and the reserve ores to the haulers, ices, null matter, lead and soma to the traders (strict classes)",
- "note": "2026-11-22 03:35 UTC (Zero): orders ENT-061, block ZERO and P5 (the sales left in the plan become gifts to Trade's receivers; each class's activities its own, Suggi D244); rules F23, F24. Replaces in the miners' plan the sell and carry circuits of their stored ice, soma and null matter (Trade's work with strict classes on) and hands the iron, copper, plate, piping and the reserve's ores to the hauler Apollo names for this station (admirals.log ENT-081: a gift to: hauler lands in a crafter's storage, where @craft-reserve makes it into what we build with). One stop, docked: the hold stored, then two gifts from storage (handover.py; receivers in data/fleet/receivers.json). A gift gives nothing while data/fleet/strict-classes-on is absent, so the route stands off until the switch is on (requests.log, this turn: a requires gate on the switch); then on. requires.stored: only a pilot whose own storage here holds 50 iron ore or more, and not again until its storage was read after its run. 2026-11-22 05:50 UTC (Unity, requests ENT-332): `status: off` replaced by `requires.strict: true`: open by itself while strict classes are on, closed while off.",
+ "note": "2026-11-22 03:35 UTC (Zero): orders ENT-061, block ZERO and P5 (the sales left in the plan become gifts to Trade's receivers; each class's activities its own, Suggi D244); rules F23, F24. Replaces in the miners' plan the sell and carry circuits of their stored ice, soma and null matter (Trade's work with strict classes on) and hands the iron, copper, plate, piping and the reserve's ores to the hauler Apollo names for this station (admirals.log ENT-081: a gift to: hauler lands in a crafter's storage, where @craft-reserve makes it into what we build with). One stop, docked: the hold stored, then two gifts from storage (handover.py; receivers in data/fleet/receivers.json). A gift gives nothing while data/fleet/strict-classes-on is absent, so the route stands off until the switch is on (requests.log, this turn: a requires gate on the switch); then on. requires.stored: only a pilot whose own storage here holds 50 iron ore or more, and not again until its storage was read after its run. 2026-11-22 05:50 UTC (Unity, requests ENT-332): `status: off` replaced by `requires.strict: true`: open by itself while strict classes are on, closed while off. 15:10 UTC (Zero, requests ENT-353): requires.stored opens on any one of the goods the stop gives (`items`), 50 or more; the bridge copies gated on copper, nitrogen ice or gold are off, replaced by this gate.",
  "max_ships": 3,
  "requires": {
   "stored": {
    "at": "central_nexus",
-   "item": "iron_ore",
+   "items": [
+    "iron_ore",
+    "copper_ore",
+    "steel_plate",
+    "copper_piping",
+    "carbon_ore",
+    "silicon_ore",
+    "nickel_ore",
+    "gold_ore",
+    "platinum_ore",
+    "water_ice",
+    "nitrogen_ice",
+    "deuterium_ice",
+    "helium_ice",
+    "null_matter",
+    "lead_ore",
+    "voidborn_neural_soma",
+    "exotic_matter"
+   ],
    "min": 50
   },
   "strict": true
