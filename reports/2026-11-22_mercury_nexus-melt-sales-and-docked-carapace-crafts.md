@@ -44,7 +44,10 @@ addressed to me: none open, none accepted.
   UTC (tool market). New routes (commit 4ba2d479): sell-loot-at-nexus
   (melt floor 2,000, noble condensate 690), and carry-melt-beta-to-nexus
   and carry-melt-experiment-to-nexus. Both carries started within eight
-  minutes of the commit and are still flying.
+  minutes of the commit. Read at 12:00 UTC: carry-melt-beta-to-nexus paid
+  21,836 cr in 17.4 minutes and 21,966 cr in 4.7 minutes, two of its three
+  results, so the Nexus bid took far more than the 4 units the book showed;
+  sell-loot-at-nexus paid 108 cr in its first run.
 - **Docked crafting instead of the jump loop (P1).** In the two hours to
   11:37 UTC the hunts gave Trade's receivers about 3,900 creature carapace
   (data/stock/handover.jsonl), and no bid pays more than 1 cr for it.
@@ -86,8 +89,8 @@ addressed to me: none open, none accepted.
   cr), carapace and raw xeno meat (bids of 1 cr; the carapace now goes to
   armor), null matter (best bid 45 at Crimson War Citadel, far),
   superfluid vial and trade crystal (held back for recipes).
-- **The craft and carry results are not read yet.** No craft or melt run
-  had ended by 11:56 UTC. One receiver flies 18 jumps to First Step for
+- **The craft results are not read yet.** No craft run had ended by
+  12:00 UTC; the Experiment melt carry was still flying. One receiver flies 18 jumps to First Step for
   its craft, a fuel cost I had not weighed before naming it.
 
 ## Plans
