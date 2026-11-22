@@ -129,3 +129,4 @@ Planned:
 | What | When |
 |---|---|
 | Read the Jishui field against its pull of about 176 carbon a ship-hour; lower it under 8 hours of stock above its floor | next turn |
+| Read the give-miner-stores copies' first hand-overs; drop them once requires.stored takes any one item (requests ENT-349) | next turn |
