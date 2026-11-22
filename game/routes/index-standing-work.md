@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 143.
+Routes: 144.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -118,6 +118,7 @@ Routes: 143.
 | [hunt-gsc-0044-forgotten-tailings-carapace](hunt-gsc-0044-forgotten-tailings-carapace.json) | hunt | beyond the border, 6 jumps | Belt-grazers and patina-grazers at Forgotten Tailings (Gsc 0044); creature carapace into storage at The Experiment Research Station | up to 1 ships, without piercing_railgun_i, empty hold, standing work | 13 | 42 | -110 | -170 | 2026-11-17 |
 | [hunt-harborlight-prospectors-leavings-patina-grazer](hunt-harborlight-prospectors-leavings-patina-grazer.json) | hunt | beyond the border, 10 jumps | patina_grazer at harborlight_prospectors_leavings; loot stored at Nova Terra Central | up to 1 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [hunt-hassaleh-ice-halo-frost-moth](hunt-hassaleh-ice-halo-frost-moth.json) | hunt | beyond the border, 9 jumps | frost_moth at hassaleh_ice_halo; loot sold at Ironlight Crossroads | up to 1 ships, empty hold, standing work | 2 | 24 | -270 | -690 | 2026-11-21 |
+| [hunt-hd-20794-ice-fields-hollow-pilgrim](hunt-hd-20794-ice-fields-hollow-pilgrim.json) | hunt | beyond the border, 21 jumps | hollow_pilgrim at hd_20794_ice_fields; loot stored at The Anvil Arsenal | up to 1 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [hunt-intercrus-alloy-remnants-carapace](hunt-intercrus-alloy-remnants-carapace.json) | hunt | beyond the border, 7 jumps | Belt-grazers and patina-grazers at Intercrus Alloy Remnants (Intercrus); creature carapace into storage at The Experiment Research Station | up to 1 ships, without piercing_railgun_i, empty hold, standing work | 4 | 46 | -170 | -230 | 2026-11-21 |
 | [hunt-intercrus-belt-carapace](hunt-intercrus-belt-carapace.json) | hunt | beyond the border, 7 jumps | Belt-grazers and patina-grazers at Intercrus Belt (Intercrus); creature carapace into storage at The Experiment Research Station | up to 1 ships, without piercing_railgun_i, empty hold, standing work | 3 | 46 | -180 | -240 | 2026-11-21 |
 | [hunt-intercrus-sootfall-belt-carapace](hunt-intercrus-sootfall-belt-carapace.json) | hunt | beyond the border, 7 jumps | Belt-grazers and patina-grazers at Sootfall Belt (Intercrus); creature carapace into storage at The Experiment Research Station | up to 1 ships, without piercing_railgun_i, empty hold, standing work | 4 | 43 | -150 | -220 | 2026-11-21 |

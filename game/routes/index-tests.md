@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 122.
+Routes: 121.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -76,7 +76,6 @@ Routes: 122.
 | [hunt-felis-dim-lattice-veil-ray](hunt-felis-dim-lattice-veil-ray.json) | hunt | beyond the border, 7 jumps | veil_ray at felis_dim_lattice; loot sold at Synchrony Hub | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-gsc-0004-gas-pocket-cinder-sylph](hunt-gsc-0004-gas-pocket-cinder-sylph.json) | hunt | beyond the border, 14 jumps | cinder_sylph at gsc_0004_gas_pocket; loot sold at Hex Star | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-gsc-0016-emission-nebula-cinder-sylph](hunt-gsc-0016-emission-nebula-cinder-sylph.json) | hunt | beyond the border, 11 jumps | cinder_sylph at gsc_0016_emission_nebula; loot sold at Hex Star | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
-| [hunt-hd-20794-ice-fields-hollow-pilgrim](hunt-hd-20794-ice-fields-hollow-pilgrim.json) | hunt | beyond the border, 21 jumps | hollow_pilgrim at hd_20794_ice_fields; loot sold at Synchrony Hub | up to 3 ships | TBD | TBD | TBD | TBD | -- |
 | [hunt-hollowcrest-frozen-drift-hollow-pilgrim](hunt-hollowcrest-frozen-drift-hollow-pilgrim.json) | hunt | beyond the border, 11 jumps | hollow_pilgrim at hollowcrest_frozen_drift; loot sold at Sirius Observatory Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-navi-ice-shelf-frost-moth](hunt-navi-ice-shelf-frost-moth.json) | hunt | beyond the border, 20 jumps | frost_moth at navi_ice_shelf; loot sold at Nova Terra Central | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-test-amberfall-sift-ray](hunt-test-amberfall-sift-ray.json) | hunt | beyond the border, 5 jumps | Yield test: sift_ray, chlorophage at amberfall_emission_nebula (lawless); what a kill drops and whether a bid takes it | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
