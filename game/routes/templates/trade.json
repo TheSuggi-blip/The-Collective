@@ -23,7 +23,6 @@
     "sell-melt-node-beta-sirius",
     "sell-melt-synchrony-sirius",
     "sell-loot-at-node-beta",
-    "sell-superfluid-at-node-beta",
     "sell-loot-at-first-step",
     "sell-noble-at-first-step",
     "sell-loot-at-nova-terra",
@@ -58,8 +57,7 @@
     "sell-deuterium-at-node-beta",
     "sell-liquid-hydrogen-central",
     "sell-liquid-hydrogen-node-beta",
-    "carry-liquid-hydrogen-node-beta-central",
-    "sell-trade-crystal-at-nexus"
+    "carry-liquid-hydrogen-node-beta-central"
    ],
    "trains": [
     "trading"
