@@ -93,6 +93,10 @@
   {
    "what": "Read Unity's answer to requests ENT-365 (Resonance Miner budget); on yes, quote and commission one hull next turn",
    "when": "--"
+  },
+  {
+   "what": "Read the first three results of Welcome to Sol Central and the two Mining-skill gathers of the newborns; lift what holds (F37)",
+   "when": "next turn"
   }
  ],
  "ships": {
