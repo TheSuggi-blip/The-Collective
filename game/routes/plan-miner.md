@@ -104,7 +104,4 @@ Planned:
 
 | What | When |
 |---|---|
-| Read Yildun carbon at 4 ships and Jishui at 8 against their fields; lower either under 8 hours of stock above min_left | next turn |
-| Read the first hand-overs at The Crescent Moon and Ramen's Rest (gift to the hauler receivers) and the give routes' any-of gates | next turn |
-| Forgotten Tailings at outpost GSC-0044: lift on its third result (F37) | next turn |
-| Laser III on the seated outpost miners once an ask under 10,000 cr stands or Logistics crafts one | on an ask |
+| Read the Laser II second-slot test's fit and three gather runs against Laser I ships of the same route; lift max_pilots on a 3-result gain next turn | -- |
