@@ -106,11 +106,11 @@ its read copy (read.db) -> hive.py and the MCP tool `collective` -> the members.
 """
 
 SUBJECTS = (    # (title, the tables and views it holds, in their order); the calls of each subject: ASKS and VERBS
-    ("Ships and pilots", ("ships", "ship_skills", "ship_modules", "ship_cargo", "fleet_positions", "stats_pilot_hour", "stats_pilot_last")),
+    ("Ships and pilots", ("ships", "ship_skills", "ship_modules", "ship_cargo", "fleet_positions", "hull_readiness", "stats_pilot_hour", "stats_pilot_last")),
     ("Routes and runs", ("routes", "plan_routes", "runs", "route_hour", "route_earnings", "stats_route_author", "missions")),
     ("Money", ("stats_money_hour",)),
     ("Markets", ("books", "ladders", "moves", "market_hour")),
-    ("Map and intel", ("systems", "lanes", "places", "fields", "herds", "readings", "reading_day", "stations", "factions", "public_battles", "leaderboards", "met", "observations")),
+    ("Map and intel", ("systems", "lanes", "places", "fields", "herds", "readings", "reading_day", "stations", "outpost_candidates", "factions", "public_battles", "leaderboards", "met", "observations")),
     ("Our faction", ("faction", "faction_members", "bases", "our_stations", "faction_facilities", "faction_storage", "inventory_faction",
                      "territory", "sites")),
     ("Stock and reserve", ("holdings", "inventory", "inventory_by_station", "stock_hour", "needs", "need_status")),
@@ -128,7 +128,7 @@ ASKS = {        # MCP tool -> {view, action or ask (or '' for every other value)
     "fleet": {"money": "Money", "history": "Money", "forecast": "Money", "levels": "Ships and pilots", "board": "Ships and pilots",
               "capacity": "Routes and runs", "standing": "Routes and runs", "tasks": "Routes and runs", "refill": "Statistics",
               "kpi": "Statistics", "contribution": "Statistics", "classes": "Statistics", "time": "Statistics", "supply": "Statistics",
-              "xp": "Statistics", "upgrades": "Statistics", "alerts": "Statistics", "watchdog": "Statistics"},
+              "xp": "Statistics", "upgrades": "Statistics", "alerts": "Statistics", "watchdog": "Statistics", "rival": "Map and intel"},
     "ship": {"": "Ships and pilots"}, "routes": {"": "Routes and runs"}, "route": {"": "Routes and runs"}, "candidates": {"": "Routes and runs"},
     "market": {"": "Markets"}, "stock": {"": "Stock and reserve"}, "catalog": {"": "The catalog"}, "base_plan": {"": "Our faction"},
     "system": {"": "Map and intel"}, "comms": {"contacts": "Map and intel", "": "Written knowledge"}, "search": {"": "Written knowledge"},

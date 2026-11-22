@@ -8,7 +8,7 @@ author: Unity
 # index.md -- The Fleet's Scripts
 
 Built by `python3 -B scripts/fleet-index.py` from the docstring of every script in this
-folder; never edited by hand. Scripts listed: 49.
+folder; never edited by hand. Scripts listed: 50.
 
 - Run a script from the repository root: `python3 -I -B game/fleet/<script> <arguments>`,
   the arguments as listed under "How to Call Each".
@@ -62,6 +62,7 @@ folder; never edited by hand. Scripts listed: 49.
 | `pull.py` | Each class flies its own work, and goods are gathered only while the reserve needs them: the class guard and the pull rule of the dispatcher, with their dry run. | By hand |
 | `reserves.py` | The gate `requires.reserve` of a route: open only while the last reading of a faction reserve (the fuel in a bunker, or an item of the faction's storage at a base) stands under a floor. | By hand |
 | `retention.py` | How long the store keeps the tables it kept for good: the hourly sums 90 days, the daily sums 400, the written knowledge's versions the newest 20 of each section and every one of the last 30 days; one table of rules, applied in the store's prune step behind a switch that is off, with a dry run. | By hand |
+| `rival_playbook.py` | Benchmark The Collective against #1 [HEXC] and surface resource-monopoly outpost sites, zero-fuel docked factory margins, and multi-empire hull upgrades. | By hand |
 | `route_run.py` | Fly one pilot along a route file: dock at each stop and do what the stop says. | Runner (`circuit` routes) |
 | `routemaker.py` | Find every way to earn that the fleet's own data shows, cost it, and write the route file for it. | Service |
 | `routes.py` | Check the route files, write their index, and attach what the runs measured. | By hand |
@@ -657,6 +658,17 @@ retention.py --dry-run [--data <dir>] [--db <file>] [--now <epoch>] [--keep-days
                 opened immutable, so it must be a whole copy (VACUUM INTO, as read.db is), not a file with a WAL beside it
 --now <epoch>   the time the rules are judged at (default: now)
 --keep-days N   the store's --keep-days (default store.py KEEP_DAYS, 7)
+```
+
+### `rival_playbook.py`
+
+Benchmark The Collective against #1 [HEXC] and surface resource-monopoly outpost sites,
+zero-fuel docked factory margins, and multi-empire hull upgrades.
+
+Run by hand.
+
+```
+game/fleet/rival_playbook.py [--data /srv/collective/data] [--brief]
 ```
 
 ### `route_run.py`

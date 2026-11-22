@@ -491,7 +491,7 @@ def views():
         "CREATE VIEW IF NOT EXISTS our_stations AS SELECT st.name AS name, st.kind AS kind, st.system AS system, st.tag AS tag, "
         "st.faction AS faction, st.condition AS condition, st.services AS services, st.wrecked AS wrecked, st.mobile AS mobile, b.base AS base, "
         "b.poi AS poi, b.kind AS base_kind FROM stations st JOIN faction f ON st.tag = f.tag "
-        "LEFT JOIN bases b ON b.system = st.system AND b.name = st.name;\n" % per) + EARNINGS + supplychains.STATUS_VIEW
+        "LEFT JOIN bases b ON b.system = st.system AND b.name = st.name;\n" % per) + EARNINGS + EXTRA_VIEWS + supplychains.STATUS_VIEW
 
 
 def window(hours, column):
@@ -507,7 +507,23 @@ EARNINGS = ("CREATE VIEW IF NOT EXISTS route_earnings AS SELECT r.route AS route
             + ", ".join("COALESCE(%s, 0) AS runs_%s, ROUND(60.0 * %s / NULLIF(%s, 0)) AS cph_%s" % (window(h, "runs"), name, window(h, "credits"), window(h, "read_minutes"), name)
                         for h, name in ((4, "4h"), (12, "12h"), (24, "24h"), (0, "all")))
             + ", ROUND(SUM(r.one_time)) AS paid_once FROM route_hour r LEFT JOIN routes x ON x.id = r.route GROUP BY r.route;\n")
-VIEWS = ("inventory", "inventory_by_station", "inventory_faction", "fleet_positions", "our_stations", "route_earnings")
+EXTRA_VIEWS = (
+    "CREATE VIEW IF NOT EXISTS outpost_candidates AS "
+    "SELECT y.id AS system, y.name AS name, y.jumps AS jumps, "
+    "COUNT(DISTINCT f.poi || ':' || f.resource) AS fields, GROUP_CONCAT(DISTINCT f.resource) AS resources, "
+    "COALESCE((SELECT SUM(hd.count) FROM herds hd WHERE hd.system = y.id AND hd.role = 'grazer'), 0) AS grazers "
+    "FROM systems y LEFT JOIN fields f ON f.system = y.id AND COALESCE(f.remaining, 1) > 0 "
+    "WHERE (y.empire IS NULL OR y.empire = '') AND COALESCE(y.stronghold, 0) = 0 "
+    "AND NOT EXISTS (SELECT 1 FROM stations st WHERE st.system = y.id AND COALESCE(st.wrecked, 0) = 0) "
+    "GROUP BY y.id;\n"
+    "CREATE VIEW IF NOT EXISTS hull_readiness AS "
+    "SELECT s.pilot AS pilot, s.division AS division, s.role AS role, s.class AS hull_class, "
+    "COALESCE(h.tier, 0) AS hull_tier, COALESCE(sk.level, 0) AS piloting, s.credits AS credits, s.docked AS docked "
+    "FROM ships s LEFT JOIN ship_skills sk ON sk.pilot = s.pilot AND sk.skill = 'piloting' "
+    "LEFT JOIN hulls h ON LOWER(s.class) = LOWER(h.name) OR LOWER(s.class) = LOWER(h.id) "
+    "WHERE COALESCE(sk.level, 0) >= 10 AND COALESCE(h.tier, 0) < 2;\n"
+)
+VIEWS = ("inventory", "inventory_by_station", "inventory_faction", "fleet_positions", "our_stations", "route_earnings", "outpost_candidates", "hull_readiness")
 VIEWS += supplychains.VIEWS                       # supply_status: each supply chain against what stands at its place (supply.py)
 
 
@@ -1610,6 +1626,8 @@ DESCRIPTIONS = {               # one line per table and view: what a row is and 
                          "value), a bunker's fuel too; inventory and inventory_by_station count the same goods already (holdings, member `Faction`)",
     "fleet_positions": "view: our ships per system: the system's name, empire and jumps from home, ships, docked, flying (in space), ships per division",
     "our_stations": "view: the stations and outposts whose owner's tag is our faction's, joined to our bases",
+    "outpost_candidates": "view: lawless non-stronghold systems without an existing station, with jump distance, resource fields and grazer counts for outpost siting",
+    "hull_readiness": "view: pilots at Piloting >= 10 still flying below Tier 2 hulls, with division, role, wallet credits and dock",
     "route_earnings": "view: what each route earned per ship-hour (steady credits) over the last 4, 12 and 24 hours and over all hours kept, the runs behind each "
                       "figure, and the hours since it last flew: ask here what a route earns now; an empty cph_4h means it did not fly, not that it does not pay",
 }
@@ -1841,6 +1859,12 @@ EXAMPLES = {                   # three questions per table and view, as SQL (hiv
     "our_stations": (("Our stations and outposts", "SELECT name, kind, system, condition, base FROM our_stations"),
                      ("Our stations and their jumps from home", "SELECT o.name, o.system, y.jumps FROM our_stations o LEFT JOIN systems y ON y.id = o.system"),
                      ("Our stations that no base row of empire.json names", "SELECT name, system FROM our_stations WHERE base IS NULL")),
+    "outpost_candidates": (("Unclaimed lawless systems within 5 jumps with resource fields", "SELECT system, name, jumps, fields, resources, grazers FROM outpost_candidates WHERE jumps <= 5 AND fields > 0 ORDER BY fields DESC, jumps"),
+                           ("Unclaimed lawless systems holding cobalt, argon or silicon", "SELECT system, name, jumps, resources FROM outpost_candidates WHERE resources LIKE '%cobalt%' OR resources LIKE '%argon%' OR resources LIKE '%silicon%' ORDER BY jumps"),
+                           ("Unclaimed lawless systems with grazer herds", "SELECT system, name, jumps, grazers, resources FROM outpost_candidates WHERE grazers > 0 ORDER BY grazers DESC")),
+    "hull_readiness": (("Pilots ready for Tier 2 hulls by division", "SELECT division, role, COUNT(*) AS ready, MAX(piloting) AS max_piloting FROM hull_readiness GROUP BY division, role ORDER BY ready DESC"),
+                       ("Pilots at Piloting >= 10 with >= 200,000 cr on hand", "SELECT pilot, division, hull_class, piloting, credits, docked FROM hull_readiness WHERE credits >= 200000 ORDER BY credits DESC"),
+                       ("Pilots at Piloting >= 20 still in starter hulls", "SELECT pilot, division, hull_class, piloting, credits FROM hull_readiness WHERE piloting >= 20 ORDER BY piloting DESC")),
 }
 
 

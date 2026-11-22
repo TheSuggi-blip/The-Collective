@@ -536,10 +536,64 @@ def append(root, log, entry_file, name, commit=True):
             lock.close()
 
 
+def post_one(root, log, writer, category, body, ref="", see="", commit=True):
+    """1-step atomic log append: formats the protocol header into a self-cleaning temp file outside the repository,
+    validates and commits via append(), and removes the temp file immediately."""
+    import os, tempfile
+    if not writer:
+        prof = os.environ.get("HERMES_SESSION_PROFILE", "").strip()
+        writer = prof.capitalize() if prof else ""
+    if not writer:
+        print("NOT APPENDED: pass --as <Name> or set HERMES_SESSION_PROFILE")
+        return 1
+    hdr = "## [ENT-NEXT] | NOW | %s | %s" % (writer, category)
+    if ref:
+        hdr += " | ref: %s" % ref.strip()
+    if see:
+        hdr += " | see: %s" % see.strip()
+    clean_body = "\n".join(ln.rstrip() for ln in str(body or "").replace("\\n", "\n").splitlines()).strip()
+    if not clean_body:
+        print("NOT APPENDED: body is empty")
+        return 1
+    fd, tmp_path = tempfile.mkstemp(prefix="comms-post-", suffix=".md", dir="/tmp")
+    try:
+        with os.fdopen(fd, "w", encoding="ascii") as fh:
+            fh.write(hdr + "\n" + clean_body + "\n")
+        return append(root, log, tmp_path, writer, commit=commit)
+    except UnicodeEncodeError:
+        print("NOT APPENDED: entry contains non-ASCII characters")
+        return 1
+    finally:
+        try:
+            os.unlink(tmp_path)
+        except OSError:
+            pass
+
+
+def show_turn_pack(root, member=None):
+    """All log context a member needs at turn start in one call: orders in force, open/accepted requests, active claims & recent errors."""
+    import os
+    who = member or (os.environ.get("HERMES_SESSION_PROFILE", "").strip().capitalize() or None)
+    print("=== 1. ACTIVE ORDERS IN FORCE ===")
+    show_orders(root)
+    print("\n=== 2. OPEN & ACCEPTED REQUESTS (%s) ===" % (who or "ALL"))
+    show_requests(root, who if who and who != "Unity" else None, None, False)
+    if who and who != "Unity":
+        print("--- Sent by %s ---" % who)
+        show_requests(root, None, who, False)
+    print("\n=== 3. ACTIVE CLAIMS & RECENT ADMIRALS NOTES ===")
+    show_admirals(root, 6, None)
+    print("\n=== 4. NEWEST 5 ERRORS.LOG HEADERS ===")
+    errs, _ = read_log(root, "errors")
+    for e in errs[-5:]:
+        print("  ENT-%03d | %s | %s | %s" % (e["num"], e["when"], e["by"], (e["body"][0][:110] if e["body"] else "")))
+    return 0
+
+
 def main():
     here = Path(__file__).resolve().parent
-    parser = argparse.ArgumentParser(description="Read the fleet's logs: orders in force, requests by state, last session entries.")
-    parser.add_argument("command", choices=("orders", "requests", "digest", "check", "admirals", "append"))
+    parser = argparse.ArgumentParser(description="Read and post to the fleet's logs in one step.")
+    parser.add_argument("command", choices=("orders", "requests", "digest", "check", "admirals", "append", "post", "turn-pack"))
     parser.add_argument("target", nargs="*", help="append: the log's name and the entry file")
     parser.add_argument("--root", default=str(here.parent))
     parser.add_argument("--as", dest="writer")
@@ -549,13 +603,23 @@ def main():
     parser.add_argument("--all", action="store_true")
     parser.add_argument("--last", type=int)
     parser.add_argument("--member")
+    parser.add_argument("--cat", default="")
+    parser.add_argument("--body", default="")
+    parser.add_argument("--ref", default="")
+    parser.add_argument("--see", default="")
     args = parser.parse_args()
+    if args.command == "post":
+        if len(args.target) != 1 or args.target[0] not in LOGS or not args.cat:
+            parser.error("post takes: <%s> --cat <category> --body '<text>' [--ref ...] [--see ...] [--as <Name>]" % "|".join(LOGS))
+        return post_one(args.root, args.target[0], args.writer, args.cat, args.body, args.ref, args.see, commit=not args.no_commit)
+    if args.command == "turn-pack":
+        return show_turn_pack(args.root, args.member)
     if args.command == "append":
         if len(args.target) != 2 or args.target[0] not in LOGS or not args.writer:
             parser.error("append takes: <%s> <entry file> --as <Name>" % "|".join(LOGS))
         return append(args.root, args.target[0], args.target[1], args.writer, commit=not args.no_commit)
     if args.target:
-        parser.error("only append takes a log and an entry file")
+        parser.error("only append and post take positional log arguments")
     if args.command == "orders":
         return show_orders(args.root)
     if args.command == "requests":

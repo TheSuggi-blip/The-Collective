@@ -100,6 +100,18 @@ every station and outpost of the galaxy: kind, system, its owner's faction tag a
 - Stations per faction: `SELECT tag, faction, COUNT(*) FROM stations GROUP BY tag, faction ORDER BY 3 DESC`
 - Wrecked or mobile stations: `SELECT name, system, kind, wrecked, mobile FROM stations WHERE wrecked = 1 OR mobile = 1`
 
+## outpost_candidates
+
+view: lawless non-stronghold systems without an existing station, with jump distance, resource fields and grazer counts for outpost siting
+
+- Kind: view over herds, systems, fields, stations
+- Columns: system, name, jumps, fields, resources, grazers
+- Kept: nothing: a view stores no row
+- Refreshed: computed when asked, from its tables
+- Unclaimed lawless systems within 5 jumps with resource fields: `SELECT system, name, jumps, fields, resources, grazers FROM outpost_candidates WHERE jumps <= 5 AND fields > 0 ORDER BY fields DESC, jumps`
+- Unclaimed lawless systems holding cobalt, argon or silicon: `SELECT system, name, jumps, resources FROM outpost_candidates WHERE resources LIKE '%cobalt%' OR resources LIKE '%argon%' OR resources LIKE '%silicon%' ORDER BY jumps`
+- Unclaimed lawless systems with grazer herds: `SELECT system, name, jumps, grazers, resources FROM outpost_candidates WHERE grazers > 0 ORDER BY grazers DESC`
+
 ## factions
 
 every faction of the game: tag, name, members, leader, allies, enemies, wars as comma text (station/feed.json)

@@ -267,6 +267,16 @@ def ammo_ids():
     return fitted_ammo(body(raw('get_ship')).get('modules') or [], catalog_items(os.path.join(os.path.dirname(os.path.dirname(MARKET)), 'catalog')))
 
 
+def ranch_keep(route_file, default=2):
+    """Minimum healthy breeders left alive in a shoal so natural regrowth stays at maximum sustainable yield (rule F38)."""
+    try:
+        with open(route_file, encoding='utf-8') as fh:
+            val = json.load(fh).get('keep_herd')
+            return max(0, int(val)) if isinstance(val, (int, float)) and not isinstance(val, bool) else default
+    except (OSError, ValueError, AttributeError):
+        return default
+
+
 def alone_mode(route_file):
     """How a hunt with --alone judges a place: 'pirates' when its route file says `"alone": "pirates"` (it leaves only
     for a pirate or a pilot of the hostile list), else 'strangers' (it leaves for every ship that is not ours). A file
@@ -389,6 +399,7 @@ before_credits, before_cargo = credits(), cargo()
 HULL_BEFORE, OWN, notes = hull()[0], own_names(), []
 GAME = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ALONE_MODE = alone_mode(os.path.join(GAME, 'routes', route_id + '.json')) if ALONE and not STEP else 'strangers'
+KEEP_HERD = int(args[args.index('--keep-herd') + 1]) if '--keep-herd' in args else ranch_keep(os.path.join(GAME, 'routes', route_id + '.json'), 2)
 HOSTILE = hostile_names(os.path.join(GAME, 'players')) if ALONE_MODE == 'pirates' else set()
 if ALONE:
     say('alone: leaves for ' + ('a pirate or a pilot of the hostile list (%d filed)' % len(HOSTILE) if ALONE_MODE == 'pirates' else 'every ship that is not ours'))
@@ -426,7 +437,13 @@ if goal('navigate-to-system', {'targetSystemId': system_id}) and goal('go-to-poi
             if not prey:
                 say(f'no free grazer here (creatures listed: {near.get("creature_count")})')
                 break
-            target = min(prey, key=lambda c: (c.get('hull') or 0, str(c.get('creature_id'))))   # the most hurt one: its damage stays
+            hurt = [c for c in prey if (c.get('hull') or 0) < (c.get('max_hull') or c.get('hull') or 0)]
+            if not hurt and KEEP_HERD > 0 and len(prey) <= KEEP_HERD:
+                say(f'ranch floor: leaving {len(prey)} healthy grazers so the shoal regrows fast (keep_herd={KEEP_HERD})')
+                if 'ranch floor kept' not in notes:
+                    notes.append('ranch floor kept')
+                break
+            target = min(hurt or prey, key=lambda c: (c.get('hull') or 0, str(c.get('creature_id'))))   # the most hurt one: its damage stays
             for _ in range(6):
                 d = raw('hunt', {'target_id': target['creature_id']})
                 if 'action_pending' not in text(d):

@@ -97,6 +97,8 @@ def fleet_plan(a):
         return [("game/fleet/hive.py", ["tasks"] + flag(a, "hours"))]
     if view == "refill":
         return [("game/fleet/hive.py", ["refill"])]
+    if view == "rival":
+        return [("game/fleet/hive.py", ["rival"])]
     if view == "forecast":
         return [("game/fleet/hive.py", ["forecast"] + ([a["member"]] if a.get("member") else []) + flag(a, "hours"))]
     if view == "watchdog":
@@ -191,7 +193,9 @@ def comms_plan(a):
         return [("game/fleet/inbox.py", ["show", "--to-us"] + flag(a, "last"))]
     if view == "learnings":
         return [("game/fleet/hive.py", ["learnings"] + flag(a, "hours"))]
-    raise ValueError("view is one of: orders, requests, digest, contacts, learnings")
+    if view == "turn_pack":
+        return [("scripts/comms.py", ["turn-pack"] + flag(a, "member"))]
+    raise ValueError("view is one of: orders, requests, digest, contacts, learnings, turn_pack")
 
 
 def command_plan(a):
@@ -225,10 +229,10 @@ TOOLS = {
                 "another class's, once, shared, docked or in space without work, offline. view=supply: per reserve good held, needed, min "
                 "and max, change an hour, days of supply, the routes and ships that feed it, and gather against buy. view=xp: XP per "
                 "ship-hour per role, skill and route, hours to the next tier. view=upgrades: per ship its tier, Piloting, the next tier's "
-                "hulls, empty slots. view=alerts: the hours outside their control band.",
+                "hulls, empty slots. view=alerts: the hours outside their control band. view=rival: live benchmark vs #1 [HEXC], unclaimed resource-monopoly outpost sites, zero-fuel docked crafting spreads & hull targets.",
         "args": {"view": arg(S, "money (default), history, levels, capacity, board, standing, tasks, refill, forecast, kpi, contribution, "
                                 "classes, time, supply, xp, upgrades or alerts",
-                             ("money", "history", "levels", "capacity", "board", "standing", "tasks", "refill", "forecast") + STATS_VIEWS),
+                             ("money", "history", "levels", "capacity", "board", "standing", "tasks", "refill", "rival", "forecast") + STATS_VIEWS),
                  "member": arg(S, "for levels, board, standing, forecast, contribution, classes, time, xp and upgrades: a member's name, or all", MEMBERS),
                  "hours": arg(I, "for history, board, standing, tasks and forecast: the window in hours")},
         "plan": fleet_plan},
@@ -330,8 +334,8 @@ TOOLS = {
     "comms": {
         "text": "The Collective's logs. view=orders: the orders in force, complete. view=requests: the board of requests not closed. view=digest: the last entries of "
                 "every log. view=contacts: messages other players wrote to our ships. view=learnings: each member's newest report and the knowledge files it wrote "
-                "or changed.",
-        "args": {"view": arg(S, "orders (default), requests, digest, contacts or learnings", ("orders", "requests", "digest", "contacts", "learnings")),
+                "or changed. view=turn_pack: orders in force, open requests, active claims and recent errors in one call.",
+        "args": {"view": arg(S, "orders (default), requests, digest, contacts, learnings or turn_pack", ("orders", "requests", "digest", "contacts", "learnings", "turn_pack")),
                  "member": arg(S, "for requests: addressed to this member; for digest: entries of this member"), "last": arg(I, "for digest and contacts: how many entries"),
                  "hours": arg(I, "for learnings: the window in hours, default 8")},
         "plan": comms_plan},

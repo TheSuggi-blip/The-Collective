@@ -68,6 +68,7 @@ WHAT: reads the unit's data folder (fleet/, routes/runs.jsonl, market/, scouting
         needs                 the needs register (game/needs.tsv, needs.py): the open needs, highest priority first, with
                               their covered percent, colour and what is short (list), one need or project (show), per
                               item (items), the gate (check); it only reads: a need is written by needs.py or the tool needs
+        rival                 benchmark vs #1 [HEXC], unclaimed resource-monopoly outpost sites, docked crafting spreads & hull targets
         flow                  what each division put into the reserve per hour: of every item the reserve asks for
                               (surplus.py reserve), the units it holds (storage and holds) and their change per hour over
                               the last 4, 12 and 24 hours, from the store's hourly samples (store.py, stock_hour); the
@@ -1313,6 +1314,13 @@ def show_eyes(data, who):
                 lines.append("  RAID / PVP BATTLES (public_battles): " + "; ".join(
                     "%s [%s/%s, lost %d, tags %s]" % (sn or sy, cat, stt, d or 0, tg or "-") for sn, sy, cat, stt, d, tg in brows
                 ))
+        try:
+            import rival_playbook
+            bline = rival_playbook.benchmark_line(data)
+            if bline:
+                lines.insert(0, bline)
+        except Exception:
+            pass
         if lines:
             print("=== EYES & EARS: BOTTLENECKS, PRIORITIES, SUPPLY & ALERTS")
             print("\n".join(lines))
@@ -1651,6 +1659,9 @@ def main():
         return show_flow(root, data, now, rest[0] if rest else "all", value("--hours", str(TURN)))
     if verb == "inventory":
         return craftbook.show_inventory(craftbook.load(data) or {"version": "none", "items": {}}, data, rest[0] if rest else "total", value("--item", ""), int(value("--top", "40")))
+    if verb == "rival":                              # #1 [HEXC] benchmark, resource-monopoly outposts, docked factory spreads & hull targets
+        import rival_playbook
+        return rival_playbook.main(["--data", data])
     if verb == "watchdog":                           # cross-turn velocity, loops and bottlenecks (watchdog.py)
         import watchdog
         wd_args = ["show", "--hours", value("--hours", str(TURN)), "--root", root, "--data", data]

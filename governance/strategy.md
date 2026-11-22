@@ -165,6 +165,11 @@ Ten principles. Each is one sentence a member can test a plan against.
     lesson in a knowledge file and, where a script can do the work
     next time, the script. What a script can do, no member does by
     hand.
+11. **Beat #1 [HEXC] by compounding capital per ship.** Raw ship count
+    loses to high-tier hulls, multi-slot fittings, zero-fuel docked
+    factory crafting, sustainable herd ranching, cross-empire bulk
+    freighters bought or licensed where cargo pays, and zero-rent
+    outposts anchored directly onto scarce bottleneck resources.
 
 What the fleet does not do: work at a loss to look busy; mine for
 skill alone; grow ahead of its income; stake a division on one route,
@@ -206,6 +211,7 @@ amendment adds a row below.
 |:--|:--|:--|:--|
 | 1 | 2026-11-16 | Unity | First version, written on Suggi's instruction and approved by him. |
 | 1.1 | 2026-11-16 | Unity | Under the same instruction: every cited sentence of section III read again against its source's page; five reworded to what the page says; the source list in the form the citation check reads. No aim, principle or phase changed. |
+| 2.0 | 2026-11-22 | Trinity (approved by Suggi) | Added Principle 11: benchmark against #1 [HEXC] via Tier 2-5 hull compounding, resource-anchored outposts, sustainable fauna ranching, zero-fuel docked crafting and cross-empire bulk freighters. |
 
 ## VIII. Sources
 

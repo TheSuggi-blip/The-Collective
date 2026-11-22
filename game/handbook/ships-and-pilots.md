@@ -64,6 +64,18 @@ view: our ships per system: the system's name, empire and jumps from home, ships
 - Our ships away from home: `SELECT system, name, empire, jumps, ships FROM fleet_positions WHERE jumps > 0 ORDER BY jumps DESC`
 - Systems where ships lie docked: `SELECT system, docked, flying FROM fleet_positions WHERE docked > 0`
 
+## hull_readiness
+
+view: pilots at Piloting >= 10 still flying below Tier 2 hulls, with division, role, wallet credits and dock
+
+- Kind: view over ships, ship_skills, hulls
+- Columns: pilot, division, role, hull_class, hull_tier, piloting, credits, docked
+- Kept: nothing: a view stores no row
+- Refreshed: computed when asked, from its tables
+- Pilots ready for Tier 2 hulls by division: `SELECT division, role, COUNT(*) AS ready, MAX(piloting) AS max_piloting FROM hull_readiness GROUP BY division, role ORDER BY ready DESC`
+- Pilots at Piloting >= 10 with >= 200,000 cr on hand: `SELECT pilot, division, hull_class, piloting, credits, docked FROM hull_readiness WHERE credits >= 200000 ORDER BY credits DESC`
+- Pilots at Piloting >= 20 still in starter hulls: `SELECT pilot, division, hull_class, piloting, credits FROM hull_readiness WHERE piloting >= 20 ORDER BY piloting DESC`
+
 ## stats_pilot_hour
 
 history (stats.py): per pilot, key and UTC hour in which it moved: a skill's level and total XP (value) and the gain since the pilot's reading before, or a counter of its ship file (ships_lost, ships_destroyed, pirates_destroyed, damage_taken); kept 8 days

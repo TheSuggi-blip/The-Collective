@@ -662,6 +662,46 @@ class NeedsAutoSatisfyAndLoopTests(unittest.TestCase):
             self.assertIn("auto-closed", needs.need_fulfilled_reason(kit_row, td))
             self.assertEqual(needs.need_fulfilled_reason(buf_row, td), "")
 
+    def test_hunt_ranch_keep_reads_route_override_and_defaults_to_two(self):
+        import ast, tempfile
+        hunt_p = Path(__file__).resolve().parents[2] / "game" / "fleet" / "hunt.py"
+        tree = ast.parse(hunt_p.read_text(encoding="utf-8"))
+        fn_node = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == "ranch_keep")
+        ns = {"json": json}
+        exec(compile(ast.Module(body=[fn_node], type_ignores=[]), str(hunt_p), "exec"), ns)
+        ranch_keep = ns["ranch_keep"]
+        self.assertEqual(ranch_keep("/nonexistent/route.json"), 2)
+        with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as tf:
+            json.dump({"keep_herd": 4}, tf)
+            tname = tf.name
+        try:
+            self.assertEqual(ranch_keep(tname), 4)
+        finally:
+            os.unlink(tname)
+
+    def test_comms_post_one_writes_valid_entry_without_leaving_temp_files(self):
+        import tempfile
+        comms_p = Path(__file__).resolve().parents[2] / "scripts" / "comms.py"
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("comms_post_test", comms_p)
+        comms = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(comms)
+        with tempfile.TemporaryDirectory() as td:
+            rdir = Path(td)
+            (rdir / "communications").mkdir()
+            (rdir / "communications" / "queue.log").write_text("", encoding="ascii")
+            rc = comms.post_one(str(rdir), "queue", "Zero", "general", "Tested 1-step atomic post.", commit=False)
+            self.assertEqual(rc, 0)
+            written = (rdir / "communications" / "queue.log").read_text(encoding="ascii")
+            self.assertIn("## [ENT-001] |", written)
+            self.assertIn("| Zero | general", written)
+            self.assertIn("Tested 1-step atomic post.", written)
+
+    def test_rival_playbook_runs_cleanly_on_live_or_empty_data(self):
+        import rival_playbook, tempfile
+        with tempfile.TemporaryDirectory() as td:
+            self.assertEqual(rival_playbook.benchmark_line(td), "")
+
 
 if __name__ == "__main__":
     unittest.main()
