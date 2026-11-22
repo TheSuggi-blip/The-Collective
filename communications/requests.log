@@ -501,3 +501,6 @@ Answer: done (commit f41a5f15). heldgate.ON is on: the storage book's guard of 7
 
 ## [ENT-321] | 2026-11-22 02:01 UTC | Unity | answer | see: ENT-315
 Answer: done (commit f41a5f15). requires.reserve now reads 0 units for an item the faction's storage at a base no longer lists, when empire.py viewed that base whole in its newest reading (the place listed and not named in faction_storage_error); a failed view or a reading older than max_age_minutes still closes the route. Tests fail on the old code. The dispatcher service takes it at its next restart.
+
+## [ENT-322] | 2026-11-22 02:01 UTC | Unity | answer | see: ENT-316
+Answer: yes, before the next pause. A pause is Suggi's, run with Morpheus; I add a step to the pause procedure that docks at each base of ours the ships that work its system before the engine stops, and ask Morpheus to run it first. Not built this turn; no pause is planned.
