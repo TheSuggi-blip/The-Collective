@@ -11,7 +11,7 @@ in the first ring (F33). Every hunt takes one side, one hunter to a herd.
 |---|---|---|---|
 | First | the once line (22 routes), each under its own limit | every ship | rule F35, money paid once |
 | Own | far herds and the filler's tests (`fill.py fill <role> --write`); the two weapon fits and their bulwark tests | 1 each | far bids; the fit decision |
-| `@hunter` | sales from storage, home hunts, then seven patina-grazer herds and 35 far hunts that store their loot, all standing (templates entry) | 1 each | combat XP where the home herds are full |
+| `@hunter` | sales from storage, home hunts, then seven patina-grazer herds and 35 far hunts, 31 of them standing (templates entry) | 1 each | combat XP where the home herds are full |
 | Then | the crafts from own stores, `park` | 6 each | until strict classes give crafts to haulers |
 
 Every hunt carries `gift_to: trader` for strict classes.
