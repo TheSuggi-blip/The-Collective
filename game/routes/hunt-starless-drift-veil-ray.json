@@ -2,7 +2,7 @@
  "id": "hunt-starless-drift-veil-ray",
  "kind": "hunt",
  "title": "veil_ray at starless_drift; loot sold at First Step Memorial Station",
- "note": "Written by routemaker.py from the herd's count, the loot of 372 runs of ours and the order book; an estimate of 908 cr per hunter-hour, not a measurement. A test: one ship, the ranching rules kept. Added as a test by fill.py on 2026-11-21 21:13 UTC (Apophis): one ship until its first RESULT line is read.",
+ "note": "Written by routemaker.py from the herd's count, the loot of 372 runs of ours and the order book; an estimate of 908 cr per hunter-hour, not a measurement. A test: one ship, the ranching rules kept. Added as a test by fill.py on 2026-11-21 21:13 UTC (Apophis): one ship until its first RESULT line is read. 2026-11-22 00:08 UTC (Apophis): gift_to trader (queue.log ENT-200, ENT-201: strict classes, Suggi D244): with the switch on, the loot goes into the trader named for sell_at; off, nothing changes.",
  "place": "gsc_0026:starless_drift",
  "species": [
   "veil_ray"
@@ -25,5 +25,6 @@
   "cph_per_ship": -500,
   "hours": 12,
   "last_run": "2026-11-21T22:33:00Z"
- }
+ },
+ "gift_to": "trader"
 }

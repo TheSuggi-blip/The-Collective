@@ -2,7 +2,7 @@
  "id": "hunt-home-drift-ray",
  "kind": "hunt",
  "title": "Drift-rays at Stellar Siphon in Nexus Prime; goods sold or stored at Central Nexus",
- "note": "On trial 2026-11-15: nine drift-rays of 45 hull counted at 17:10 UTC. What they carry is not known: no item of the catalog names them. Three pilot-whales of 220 hull share the cloud; the hunter takes drift-rays only. 2026-11-16 18:33 UTC (Apophis): back as standing work in home space. A drift-ray drops crystallized biogas, bid 1 to 2 cr (guidebook military.md, section 2); a station takes 4,420 and we hold 116 (base_plan, 18:30 UTC): the hunter stores it at Central Nexus. Ten drift-rays read at 17:50 UTC (data/wildlife/nexus_prime.json). It trains the combat skills.",
+ "note": "On trial 2026-11-15: nine drift-rays of 45 hull counted at 17:10 UTC. What they carry is not known: no item of the catalog names them. Three pilot-whales of 220 hull share the cloud; the hunter takes drift-rays only. 2026-11-16 18:33 UTC (Apophis): back as standing work in home space. A drift-ray drops crystallized biogas, bid 1 to 2 cr (guidebook military.md, section 2); a station takes 4,420 and we hold 116 (base_plan, 18:30 UTC): the hunter stores it at Central Nexus. Ten drift-rays read at 17:50 UTC (data/wildlife/nexus_prime.json). It trains the combat skills. 2026-11-22 00:08 UTC (Apophis): gift_to trader (queue.log ENT-200, ENT-201: strict classes, Suggi D244): with the switch on, the loot goes into the trader named for sell_at; off, nothing changes.",
  "place": "nexus_prime:stellar_siphon",
  "species": [
   "drift_ray"
@@ -22,5 +22,6 @@
   "hours": 12,
   "last_run": "2026-11-21T22:00:54Z"
  },
- "standing": true
+ "standing": true,
+ "gift_to": "trader"
 }
