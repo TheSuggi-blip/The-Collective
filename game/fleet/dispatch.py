@@ -582,6 +582,67 @@ def stalest_system(data, route, orders, now):
     return best[1] if best else None
 
 
+FOREIGN_REACH = 6               # jumps: how far from where it stands a pilot of another empire is sent (queue.log ENT-234)
+LANES_CACHE = {"lanes": None}
+
+
+def route_place(route):
+    """The system of a route's first place: a hunt's or mine's place, else its first stop; None when it names none."""
+    for key in ("place", "belt"):
+        if route.get(key):
+            return str(route[key]).split(":")[0] or None
+    systems = circuit_systems(route) if route.get("stops") else []
+    if systems:
+        return systems[0]
+    if route.get("station"):
+        return str(route["station"]).split(":")[0] or None
+    return None
+
+
+def newborn_reason(pilot, rid, route):
+    """Why a route is closed to a pilot born in another empire, or None (the Plan-500 wave of 2026-11-22, queue.log
+    ENT-234: 250 pilots born at Sol, Haven, Altais and Krynn, 10 to 21 jumps from our home, lawless space between).
+    A Voidborn empire mission is never theirs (rule F35: a pilot's empire skill comes from its own empire's missions);
+    a route whose first place lies more than FOREIGN_REACH jumps from where the pilot stands waits for its Admiral to
+    write work in the pilot's own region, unless the route says `far_ok`. A Voidborn pilot, or one whose empire or
+    place is not read, is judged as before."""
+    empire = pilot.get("empire")
+    if not empire or empire == "voidborn":
+        return None
+    if str(rid).startswith("voidborn-"):
+        return "a Voidborn empire mission: the pilot was born %s (rule F35)" % empire
+    if route.get("far_ok") or route.get("kind") == "census" or not pilot.get("system"):
+        return None
+    if LANES_CACHE["lanes"] is None:
+        import fuelplan
+        LANES_CACHE["lanes"] = fuelplan.chart(Path(__file__).resolve().parent.parent)[0]
+    place = route_place(route)
+    if not place:
+        return None
+    reach = jumps_between(LANES_CACHE["lanes"], pilot["system"], place)
+    if reach is not None and reach > FOREIGN_REACH:
+        return "%d jumps from the pilot, born %s: work in its own region first (`far_ok` lifts it)" % (reach, empire)
+    return None
+
+
+DIST_CACHE = {}
+
+
+def jumps_between(lanes, src, dst):
+    """Lanes from src to dst by the chart, None when no way; each source's whole map is walked once (cached)."""
+    key = (id(lanes), src)
+    if key not in DIST_CACHE:
+        dist, todo = {src: 0}, [src]
+        while todo:
+            here = todo.pop(0)
+            for there in lanes.get(here) or []:
+                if there not in dist:
+                    dist[there] = dist[here] + 1
+                    todo.append(there)
+        DIST_CACHE[key] = dist
+    return DIST_CACHE[key].get(dst)
+
+
 def why_not(pilot, rid, route, state):
     """(why the route is closed to the pilot now, or None when it is open; for an open census the system to read).
     The one rule: pick() and fill.py both use it."""
@@ -589,6 +650,9 @@ def why_not(pilot, rid, route, state):
         return "no route file", None
     if route.get("status") == "off":
         return "off", None
+    born = newborn_reason(pilot, rid, route)                     # queue.log ENT-234: pilots of other empires stay in their region
+    if born:
+        return born, None
     strict = (route.get("requires") or {}).get("strict")          # requests ENT-332: open only in one state of data/fleet/strict-classes-on
     if isinstance(strict, bool):
         workclass.follow(state.get("data"))
@@ -761,6 +825,7 @@ def pilot_of(ship, named, data, ammo):
     name = ship.get("name") or ""
     detail = read_json(Path(data) / "fleet" / "ships" / ship_file(name), {})
     return {"name": name, "role": role_of(name, named), "credits": ship.get("credits", 0), "docked": bool(ship.get("docked")),
+            "empire": ship.get("empire") or detail.get("empire"), "system": ship.get("system") or detail.get("system"),
             "modules": [m.get("type") or m.get("type_id") for m in detail.get("modules") or [] if isinstance(m, dict)],
             "skills": {str(k): int((v or {}).get("level") or 0) if isinstance(v, dict) else int(v or 0)
                        for k, v in (detail.get("skills") or {}).items() if isinstance(v, (dict, int))} if isinstance(detail.get("skills"), dict) else {},
