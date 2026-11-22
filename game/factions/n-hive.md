@@ -15,7 +15,7 @@ updated: 2026-11-22
 # Hive Swarm [HIVE]
 
 A player faction with 3 base(s) in 3 system(s); the nearest to Nexus Prime is 5 jump(s) away, in Antares (`antares`).
-Pilots of it in our space in the last 24 hours: 9.
+Pilots of it in our space in the last 24 hours: 12.
 
 ## Identity
 
@@ -42,15 +42,18 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| 000879643f8e56059852ed87 | The Experiment (`the_experiment`) | 0 | ice_trawler |
-| 0376cb910189c29811104e6c | Node Alpha (`node_alpha`) | 0 | futures |
-| 0637bfdf8ba6a997093332c9 | Node Beta (`node_beta`) | 0 | futures |
+| 0376cb910189c29811104e6c | The Experiment (`the_experiment`) | 0 | futures |
 | 0a5266cdbbc00fe268e0948a | Acubens (`acubens`) | 0 | workhorse |
-| 2d6ffeda232aa324424edb53 | Node Alpha (`node_alpha`) | 0 | futures |
-| 4369ebe51c415d3d0756ceba | Node Beta (`node_beta`) | 0 | futures |
-| 5a5a2c9677d0713f238cec9c | Hamal (`hamal`) | 0 | workhorse |
+| 15d19b56cf753aee3a9bca4e | Node Alpha (`node_alpha`) | 0 | gas_tanker |
+| 6d3e8d906d454ef5c87b6e4c | Acubens (`acubens`) | 0 | workhorse |
+| 841d796c5af478d71c4485d6 | Pherkad (`pherkad`) | 0 | gas_tanker |
+| 9140cf6907be68f776da37ea | Node Alpha (`node_alpha`) | 0 | gas_tanker |
+| c560f1f71312e41fa9c0f091 | Acubens (`acubens`) | 0 | deep_survey |
+| c63bd4b0d5884bd1bd46657f | Synchrony (`synchrony`) | 0 | gas_tanker |
 | cf4b7e30a1bd46d6579db7e7 | Acubens (`acubens`) | 0 | workhorse |
-| e039279d45eefa288b1c7717 | Nexus Prime (`nexus_prime`) | 0 | futures |
+| ddac9c7dba6b0465e059d88b | Acubens (`acubens`) | 0 | workhorse |
+| f5736d218d41c0675a22c3d6 | Acubens (`acubens`) | 0 | workhorse |
+| fe19de71467052c40784bf24 | Pherkad (`pherkad`) | 0 | gas_tanker |
 
 ## Standing History
 
