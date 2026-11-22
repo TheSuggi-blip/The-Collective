@@ -84,4 +84,4 @@ Planned:
 
 | What | When |
 |---|---|
-| Read the first runs of craft-wiring-logistics-* and how many haulers left train-jumps-hauler; size max_ships by the queue next turn | -- |
+| Read the first runs of craft-wiring-logistics-* and how many haulers left train-jumps-hauler; size max_ships by the queue | next turn |
