@@ -1,26 +1,25 @@
 # Mining guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-22. Evidence: the plan file (tool plan, show); fill.py status miner; surplus.py reserve; workclass.py sales; hive.py route gather-jishui-plainrock-carbon.
+Status: proven. Updated: 2026-11-22. Evidence: the plan file (tool plan, show); fill.py status miner; surplus.py reserve; data/stock/storage.json; hive.py route gather-jishui-plainrock-carbon.
 
-Turn of 2026-11-22 07:00 UTC (orders ENT-062). A free miner takes the
-list First (the Laser III fit, the gifts, the once missions), its own
-routes, then the list Then.
+Turn of 2026-11-22 11:00 UTC (orders ENT-063, strict classes on since
+09:35 UTC: no miner sells, every load goes by gift). A free miner takes
+the list First, its own routes, then the list Then.
 
 | Route | Ships | For |
 |---|---|---|
-| `fit-mining-laser-iii-lhs-1140` | 3 at a time, 20 pilots | the laser |
-| `give-miner-stores-<station>` | `requires.strict`: open with strict classes | stores to receivers (P5) |
-| `@ice-sell` mine routes, Dheneb methane, ice tests | 1 or 2, on a bid | ice; sold now, closed to miners with strict classes |
-| `gather-gsc-0044-belt-faction` | 10, seated only | outpost belt, no fuel |
-| far carbon: Jishui, Yildun, Last Light | 5, 1, 1 | carbon, the largest short |
-| short-ore gathers near home | 1 to 3 | closed by `min_left` while empty |
-| tests beyond the border | 1 or 2 each | nickel, quantum fragments, silver, platinum |
-| crafts | shared | plate and piping from own stores |
-| Then | shared | iron seep (closed while iron is above its max), crafts, `train-jumps-miner`, park |
+| `fit-mining-laser-iii-lhs-1140` | 3 at a time, 20 pilots; ask gone | the laser |
+| `give-miner-stores-<station>` and the `-nitrogen`, `-gold`, `-copper` copies | 3 each | stores to Trade's and Logistics' receivers |
+| ice routes with `gift` (Epsilon Eridani, HD 20794, Dheneb) | 1, 1, 2 | ice to Trade; Dheneb also hands the ices stored at Hex Star |
+| outpost belts (GSC-0044, Acrux), seated miners | 10, 3 | iron and copper into faction storage |
+| far carbon: Jishui, Yildun, Last Light | 10, 1, 1 | carbon, the largest short |
+| short-ore gathers | 1 to 3 | silicon, nickel, gold, platinum, quantum fragments; closed by `min_left` or a max |
+| Then | shared | iron seep, Pherkad copper (both under their floors), `train-jumps-miner`, park |
 
-What would change it: a field read back above its floor; the tests'
-results (tests.md); strict classes on.
+What would change it: the Jishui field under 8 hours of pull (lower
+it); Yildun's third result (F37); a silicon or nickel field read near
+a station of storage; a receiver at The Crescent Moon (requests ENT-350).
 
 ### Drains and carries of stored goods (kind `circuit`)
 Status: proven. Updated: 2026-11-21. Evidence: drain-methane-experiment and carry-null-matter-synchrony-nexus (hive.py route <id>).

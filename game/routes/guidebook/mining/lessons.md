@@ -57,7 +57,7 @@ Status: proven. Updated: 2026-11-21. Evidence: spacemolt.com/docs/guides/miner.m
 - Mining XP is one point a unit mined, plus mission XP.
 
 ### Runs, holds and the dispatcher
-Status: proven. Updated: 2026-11-21. Evidence: errors.log ENT-032; dispatch.py; the runners' notes; data/fleet/gifts.jsonl; data/stock/storage.json of 2026-11-21 19:34 UTC.
+Status: proven. Updated: 2026-11-22. Evidence: errors.log ENT-032; dispatch.py stored_missing; the runners' notes; data/fleet/gifts.jsonl; data/stock/storage.json of 2026-11-21 19:34 UTC.
 
 - More than five units aboard close every `empty_hold` route to a ship:
   read a waiting miner's `cargo` before calling it idle; dock and store,
@@ -77,6 +77,9 @@ Status: proven. Updated: 2026-11-21. Evidence: errors.log ENT-032; dispatch.py; 
   or a chain on stored goods reads short until every pilot is read again
   (89 of 246 pilots and no miner 10 minutes after the resume of
   2026-11-21).
+- `requires.stored` names one item, a list all of them: a give route
+  gated on iron never sends a miner whose storage holds only ice or
+  copper; gate a copy on the station's main other good (2026-11-22).
 
 ### Writing to the repository
 Status: proven. Updated: 2026-11-21. Evidence: errors.log ENT-021; requests.log ENT-078; the skill mining-chains.

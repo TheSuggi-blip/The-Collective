@@ -27,9 +27,14 @@ Status: proven. Updated: 2026-11-22. Evidence: catalog 0.732.0 items; docs/guide
   a Threshold ice miner beside its Ice Harvester. Proven (F37, one ship
   three times): a III mined 390 ore a seep run of about 49 minutes, the
   Laser I median 184 over 101 runs: 2.1x the ore and the Mining XP for
-  the same fuel, as the loop's travel stays the same.
-  `fit-mining-laser-iii-lhs-1140` swaps it in (Ironlight Crossroads
-  asks the most; the tool market, item mining_laser_iii).
+  the same fuel, as the loop's travel stays the same. Runs of 03:00 to
+  11:00 UTC on 2026-11-22 (runs.jsonl ore per hour, by module): GSC-0044
+  belt 1,328 (III, 12 runs) against 467 (I, 52); seep 446 against 213;
+  a far gather (Jishui, 8 jumps to storage) 176 against 164: the III pays
+  near storage, a far shuttle is bound by its hold and the road.
+  `fit-mining-laser-iii-lhs-1140` swaps it in at Ironlight Crossroads;
+  its ask was bought out on 2026-11-22, the others ask 12,000 to 14,000
+  (the tool market, item mining_laser_iii).
 - P x F over 20 can lock: under a quarter of capacity a deposit refuses
   the fit below P x 20 / 4 (110 units for a III); 20 or less never locks.
 - Cargo Expander I: +20 hold (cpu 1, power 1); not tried yet.
