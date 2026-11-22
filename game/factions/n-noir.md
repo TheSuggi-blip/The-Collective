@@ -15,7 +15,7 @@ updated: 2026-11-22
 # Interstellar Continental [NOIR]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 6.
+Pilots of it in our space in the last 24 hours: 8.
 
 ## Identity
 
@@ -38,9 +38,11 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Arbiter71 | Node Alpha (`node_alpha`) | 0 | dust_devil |
+| Arbiter59 | Pherkad (`pherkad`) | 0 | dust_devil |
+| Arbiter73 | Node Beta (`node_beta`) | 0 | dust_devil |
 | Arbuckle | Synchrony (`synchrony`) | 0 | dust_devil |
-| Cook | Synchrony (`synchrony`) | 0 | futures |
+| Bickle | Node Gamma (`node_gamma`) | 0 | macguffin |
+| Cook | The Experiment (`the_experiment`) | 0 | futures |
 | Fabrini | The Experiment (`the_experiment`) | 0 | tellurian |
 | Marlowe | The Experiment (`the_experiment`) | 0 | all_mine |
 | Speke | Nexus Prime (`nexus_prime`) | 0 | futures |
