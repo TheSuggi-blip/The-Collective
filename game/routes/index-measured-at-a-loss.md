@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 73.
+Routes: 71.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -39,7 +39,6 @@ Routes: 73.
 | [hunt-denebola-fractured-prism-veil-ray](hunt-denebola-fractured-prism-veil-ray.json) | hunt | beyond the border, 5 jumps | veil_ray at denebola_fractured_prism; loot sold at Node Beta Industrial Station | up to 1 ships, empty hold | 3 | 14 | -260 | -860 | 2026-11-22 |
 | [hunt-edasich-ice-halo-frost-moth](hunt-edasich-ice-halo-frost-moth.json) | hunt | beyond the border, 25 jumps | frost_moth at edasich_ice_halo; loot sold at Treasure Cache Trading Post | up to 1 ships, empty hold | 2 | 50 | -560 | -680 | 2026-11-22 |
 | [hunt-enif-ice-belt-hollow-pilgrim](hunt-enif-ice-belt-hollow-pilgrim.json) | hunt | beyond the border, 25 jumps | hollow_pilgrim at enif_ice_belt; loot sold at First Step Memorial Station | up to 1 ships, empty hold | 2 | 36 | -200 | -330 | 2026-11-21 |
-| [hunt-epsilon-eridani-ice-fields-hollow-pilgrim](hunt-epsilon-eridani-ice-fields-hollow-pilgrim.json) | hunt | beyond the border, 9 jumps | hollow_pilgrim at epsilon_eridani_ice_fields; loot sold at Sirius Observatory Station | up to 1 ships, empty hold, while sirius_observatory_station bids 1000 cr for crystal_melt | 1 | 6 | -340 | -3,310 | 2026-11-21 |
 | [hunt-garnet-dim-lattice-veil-ray](hunt-garnet-dim-lattice-veil-ray.json) | hunt | beyond the border, 5 jumps | veil_ray at garnet_dim_lattice; loot sold at The Experiment Research Station | up to 1 ships, without piercing_railgun_i, empty hold | 4 | 10 | -110 | -680 | 2026-11-17 |
 | [hunt-giausar-frost-ring-frost-moth](hunt-giausar-frost-ring-frost-moth.json) | hunt | beyond the border, 8 jumps | frost_moth at giausar_frost_ring; loot sold at Node Beta Industrial Station | up to 1 ships, empty hold | 2 | 29 | -210 | -440 | 2026-11-22 |
 | [hunt-groombridge-1618-frozen-drift-hollow-pilgrim](hunt-groombridge-1618-frozen-drift-hollow-pilgrim.json) | hunt | beyond the border, 10 jumps | hollow_pilgrim at groombridge_1618_frozen_drift; loot sold at Sirius Observatory Station | up to 1 ships, empty hold | 4 | 28 | -440 | -930 | 2026-11-17 |
@@ -50,7 +49,6 @@ Routes: 73.
 | [hunt-gsc-0040-frost-ring-hollow-pilgrim](hunt-gsc-0040-frost-ring-hollow-pilgrim.json) | hunt | beyond the border, 9 jumps | hollow_pilgrim at gsc_0040_frost_ring; loot sold at Sirius Observatory Station | up to 1 ships, empty hold | 2 | 62 | -560 | -540 | 2026-11-21 |
 | [hunt-gsc-0042-ice-shelf-hollow-pilgrim](hunt-gsc-0042-ice-shelf-hollow-pilgrim.json) | hunt | beyond the border, 18 jumps | hollow_pilgrim at gsc_0042_ice_shelf; loot sold at First Step Memorial Station | up to 1 ships, empty hold | 2 | 51 | -390 | -460 | 2026-11-21 |
 | [hunt-harborlight-ice-shelf-hollow-pilgrim](hunt-harborlight-ice-shelf-hollow-pilgrim.json) | hunt | beyond the border, 10 jumps | hollow_pilgrim at harborlight_ice_shelf; loot sold at Sirius Observatory Station | up to 1 ships, empty hold | 2 | 33 | -240 | -440 | 2026-11-22 |
-| [hunt-hassaleh-ice-halo-hollow-pilgrim](hunt-hassaleh-ice-halo-hollow-pilgrim.json) | hunt | beyond the border, 9 jumps | hollow_pilgrim at hassaleh_ice_halo; loot sold at Sirius Observatory Station | up to 1 ships, empty hold, while sirius_observatory_station bids 1000 cr for crystal_melt | 1 | 24 | -360 | -920 | 2026-11-21 |
 | [hunt-hd-10647-ice-field-frost-moth](hunt-hd-10647-ice-field-frost-moth.json) | hunt | beyond the border, 23 jumps | frost_moth at hd_10647_ice_field; loot sold at Factory Belt Manufacturing Hub | up to 1 ships, empty hold | 3 | 50 | -590 | -800 | 2026-11-21 |
 | [hunt-lanternwick-frozen-drift-hollow-pilgrim](hunt-lanternwick-frozen-drift-hollow-pilgrim.json) | hunt | beyond the border, 18 jumps | hollow_pilgrim at lanternwick_frozen_drift; loot sold at First Step Memorial Station | up to 1 ships, empty hold | 2 | 45 | -110 | -150 | 2026-11-22 |
 | [hunt-larawag-ice-belt-hollow-pilgrim](hunt-larawag-ice-belt-hollow-pilgrim.json) | hunt | beyond the border, 20 jumps | hollow_pilgrim at larawag_ice_belt; loot sold at The Levy Customs Station | up to 1 ships, empty hold | 2 | 44 | -10 | -10 | 2026-11-21 |
