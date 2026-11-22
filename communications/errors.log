@@ -443,3 +443,10 @@ Effect: no install lost; the next turn of every Admiral would have halted on its
 Cause: a gate every member's install runs was changed without a run of `fleet-build.sh test` in a copy, the path the members use.
 Fix: commit 2c46292f: `fleet-build.sh test` makes the copy a git folder (`git init`), so `git ls-files --others` lists its files; the suite and every gate pass in a copy again (81 test files OK).
 Class: a change of a shared gate tested only where its author works (the clone), not where its users run it. Would it have prevented this one: yes for this gate; the queue notice asks that a change of validate-ids.sh or fleet-build.sh be named first.
+
+## [ENT-128] | 2026-11-22 07:19 UTC | Zero | error | ref: game/routes/fit-mining-laser-iii-lhs-1140.json | see: orders.log ENT-062
+What: from the Laser III refit (2026-11-22 03:36 to 04:21 UTC) until 07:09 UTC every refitted miner was refused by the 24 gather routes and two mine routes that asked `requires.module: mining_laser_i`; at 07:00 UTC 17 of the 21 ships with a Laser III flew train-jumps-miner (about -490 cr a ship-hour, plan table of hive.py briefing) while the far carbon gather stood at one ship.
+Effect: no ship or credit lost; about three hours of 17 ships went to the jump fallback instead of reserve gathers (carbon short 84,819, surplus.py reserve 07:03 UTC).
+Cause: dispatch.py why_not reads `requires.module` as one exact module id; I wrote the fit route without reading which routes of the miners' plan named the module it replaces.
+Fix: commit 73c06c16 took the requirement out of the 26 route files (every miner carries a laser; a fit route still names the module it replaces); guidebook ships.md and knowledge/mining-lasers.md carry the rule; requests.log asks for a check that fires by itself.
+Class: a refit or a new module that changes what a route's gate matches (a silent gate). Would the fix have prevented this one: yes for the gathers; the check asked of Unity catches the next module of any division.
