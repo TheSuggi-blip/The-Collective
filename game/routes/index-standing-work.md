@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 189.
+Routes: 192.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -48,6 +48,9 @@ Routes: 189.
 | [craft-wiring-node-beta](craft-wiring-node-beta.json) | circuit | home space | Copper wiring made at the Node Beta workshop from all of the pilot's own stored copper ore in one visit, kept in its storage there; the trader's crafting work once the reserve's iron is met | up to 10 ships, with 80 copper_ore stored at node_beta_industrial_station, standing work | 38 | 10 | -40 | -250 | 2026-11-18 |
 | [craft-wiring-synchrony-hub](craft-wiring-synchrony-hub.json) | circuit | home space | Copper wiring made by hand at the Synchrony Hub workshop from the pilot's own stored copper ore, kept in its storage there; a test of the trader's crafting work once the reserve's iron is full | up to 8 ships, with 80 copper_ore stored at synchrony_hub, standing work | TBD | TBD | TBD | TBD | -- |
 | [park](park.json) | circuit | home space | Dock at Central Nexus and wait there: a docked ship costs nothing | the park route | 23 | 7 | -260 | -1,770 | 2026-11-22 |
+| [stock-rc-boards-node-beta](stock-rc-boards-node-beta.json) | circuit | home space | Circuit boards for the Recruitment Center: 500 boards of the pilot's own storage at Node Beta put into the faction store there, eight loads of 60 and one of 20; members of the faction only | once per pilot, up to 1 ships, 1 pilots in all, empty hold, from 3,000 cr, with 500 circuit_board stored at node_beta_industrial_station, standing work | TBD | TBD | TBD | TBD | -- |
+| [stock-rc-flex-carry-central-nexus](stock-rc-flex-carry-central-nexus.json) | circuit | home space | Flex polymer for the Recruitment Center: the pilot's own flex at Central Nexus carried to the faction store at Node Beta (one jump); members of the faction only | once per pilot, up to 1 ships, 1 pilots in all, empty hold, from 3,000 cr, with 10 flex_polymer stored at central_nexus, standing work | TBD | TBD | TBD | TBD | -- |
+| [stock-rc-plate-node-beta](stock-rc-plate-node-beta.json) | circuit | home space | Steel plate for the Recruitment Center: 120 plate of the pilot's own storage at Node Beta put into the faction store there, two loads of 60; members of the faction only | once per pilot, up to 3 ships, 9 pilots in all, empty hold, from 3,000 cr, with 120 steel_plate stored at node_beta_industrial_station, standing work | TBD | TBD | TBD | TBD | -- |
 | [store-hold-central-nexus](store-hold-central-nexus.json) | circuit | home space | A ship a run left loaded docks at Central Nexus and stores its hold | up to 40 ships, goods aboard, standing work | 156 | 8 | -140 | -780 | 2026-11-22 |
 | [train-jumps-hauler](train-jumps-hauler.json) | circuit | home space | Piloting and navigation for haulers without hauling or crafting open: five jumps through our own stations, nothing bought, the hold stored at the end | up to 40 ships, from 5,000 cr, under navigation 6, piloting 10, standing work | 1464 | 15 | -110 | -450 | 2026-11-22 |
 | [train-jumps-miner](train-jumps-miner.json) | circuit | home space | Piloting and navigation for miners without class work open: five jumps through our own stations, nothing bought, the hold stored at the end | up to 25 ships, from 5,000 cr, under navigation 6, piloting 10, standing work | 89 | 15 | -120 | -490 | 2026-11-22 |

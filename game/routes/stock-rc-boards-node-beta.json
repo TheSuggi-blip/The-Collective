@@ -1,0 +1,133 @@
+{
+ "id": "stock-rc-boards-node-beta",
+ "kind": "circuit",
+ "title": "Circuit boards for the Recruitment Center: 500 boards of the pilot's own storage at Node Beta put into the faction store there, eight loads of 60 and one of 20; members of the faction only",
+ "note": "Written by Apollo, 2026-11-22 07:55 UTC (orders.log ENT-062, block APOLLO: ready the Recruitment Center's parts; the treasury pays its fee; P4). The Recruitment Center (catalog: recruitment_center, level 3, an upgrade of the Recruitment Desk at Node Beta) takes 1,000 steel plate, 500 circuit boards and 300 flex polymer from the faction store at Node Beta; faction_owned 07:47 UTC: all five facilities ready; the faction store at Node Beta holds 221 flex and no plate or boards (storage book 07:47 UTC). One hauler stores 1,020 boards at Node Beta (storage book 07:47 UTC), made by craft-boards-node-beta; the outpost's repair boards (45) already stand in its own store. once, max_pilots 1: the one pilot that holds 500 or more.",
+ "once": true,
+ "max_pilots": 1,
+ "max_ships": 1,
+ "standing": true,
+ "min_credits": 3000,
+ "requires": {
+  "empty_hold": true,
+  "stored": {
+   "at": "node_beta_industrial_station",
+   "item": "circuit_board",
+   "min": 500
+  }
+ },
+ "stops": [
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "circuit_board",
+     "qty": 60
+    }
+   ]
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store_faction": [
+    "circuit_board"
+   ],
+   "withdraw": [
+    {
+     "item": "circuit_board",
+     "qty": 60
+    }
+   ]
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store_faction": [
+    "circuit_board"
+   ],
+   "withdraw": [
+    {
+     "item": "circuit_board",
+     "qty": 60
+    }
+   ]
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store_faction": [
+    "circuit_board"
+   ],
+   "withdraw": [
+    {
+     "item": "circuit_board",
+     "qty": 60
+    }
+   ]
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store_faction": [
+    "circuit_board"
+   ],
+   "withdraw": [
+    {
+     "item": "circuit_board",
+     "qty": 60
+    }
+   ]
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store_faction": [
+    "circuit_board"
+   ],
+   "withdraw": [
+    {
+     "item": "circuit_board",
+     "qty": 60
+    }
+   ]
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store_faction": [
+    "circuit_board"
+   ],
+   "withdraw": [
+    {
+     "item": "circuit_board",
+     "qty": 60
+    }
+   ]
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store_faction": [
+    "circuit_board"
+   ],
+   "withdraw": [
+    {
+     "item": "circuit_board",
+     "qty": 60
+    }
+   ]
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store_faction": [
+    "circuit_board"
+   ],
+   "withdraw": [
+    {
+     "item": "circuit_board",
+     "qty": 20
+    }
+   ]
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store_faction": [
+    "circuit_board"
+   ]
+  }
+ ]
+}

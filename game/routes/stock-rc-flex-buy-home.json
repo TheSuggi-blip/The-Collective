@@ -1,0 +1,71 @@
+{
+ "id": "stock-rc-flex-buy-home",
+ "kind": "circuit",
+ "title": "Flex polymer for the Recruitment Center: bought at four home books (Node Alpha, Synchrony, Node Gamma, Node Beta, one jump apart) and put into the faction store at Node Beta; members of the faction only",
+ "note": "Written by Apollo, 2026-11-22 07:55 UTC (orders.log ENT-062, block APOLLO: ready the Recruitment Center's parts; the treasury pays its fee; P4). The Recruitment Center (catalog: recruitment_center, level 3, an upgrade of the Recruitment Desk at Node Beta) takes 1,000 steel plate, 500 circuit boards and 300 flex polymer from the faction store at Node Beta; faction_owned 07:47 UTC: all five facilities ready; the faction store at Node Beta holds 221 flex and no plate or boards (storage book 07:47 UTC). 64 flex are short after the 15 of a hauler's own storage. Central Nexus asks 544 now (it asked 123 x 50 at 03:49 UTC; we bought them). The asks on record (the tool market): Node Alpha 161 x 12 (06:55 UTC), Synchrony 143 x 6 (07:41), Node Gamma 122 x 22 (05:58), Node Beta 170 x 24 (07:04): 64 in all, about 9,550 cr; Ironlight Crossroads 144 x 300 is six jumps out in lawless space. Each buy is capped a little above its ask with the buyer's 1 percent; a buy that gets nothing goes on to the next book. requires.reserve: open only while the faction store at Node Beta reads under 300 flex (empire.py collect, within 60 min); once, max_pilots 2 as a budget; one ship at a time on the books. The goods are booked as bought once (a build's input).",
+ "once": true,
+ "max_pilots": 2,
+ "max_ships": 1,
+ "min_credits": 15000,
+ "requires": {
+  "empty_hold": true,
+  "reserve": {
+   "base": "node_beta_industrial_station",
+   "item": "flex_polymer",
+   "below": 300,
+   "max_age_minutes": 60
+  }
+ },
+ "stops": [
+  {
+   "at": "node_alpha:node_alpha_processing_station:node_alpha_processing_station",
+   "buy": [
+    {
+     "item": "flex_polymer",
+     "qty": 12,
+     "max_price": 165,
+     "one_time": true
+    }
+   ]
+  },
+  {
+   "at": "synchrony:synchrony_hub:synchrony_hub",
+   "buy": [
+    {
+     "item": "flex_polymer",
+     "qty": 10,
+     "max_price": 147,
+     "one_time": true
+    }
+   ]
+  },
+  {
+   "at": "node_gamma:node_gamma_relay_station:node_gamma_relay_station",
+   "buy": [
+    {
+     "item": "flex_polymer",
+     "qty": 25,
+     "max_price": 126,
+     "one_time": true
+    }
+   ]
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "buy": [
+    {
+     "item": "flex_polymer",
+     "qty": 30,
+     "max_price": 175,
+     "one_time": true
+    }
+   ]
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store_faction": [
+    "flex_polymer"
+   ]
+  }
+ ]
+}

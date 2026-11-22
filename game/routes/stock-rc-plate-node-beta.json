@@ -1,0 +1,49 @@
+{
+ "id": "stock-rc-plate-node-beta",
+ "kind": "circuit",
+ "title": "Steel plate for the Recruitment Center: 120 plate of the pilot's own storage at Node Beta put into the faction store there, two loads of 60; members of the faction only",
+ "note": "Written by Apollo, 2026-11-22 07:55 UTC (orders.log ENT-062, block APOLLO: ready the Recruitment Center's parts; the treasury pays its fee; P4). The Recruitment Center (catalog: recruitment_center, level 3, an upgrade of the Recruitment Desk at Node Beta) takes 1,000 steel plate, 500 circuit boards and 300 flex polymer from the faction store at Node Beta; faction_owned 07:47 UTC: all five facilities ready; the faction store at Node Beta holds 221 flex and no plate or boards (storage book 07:47 UTC). Ten haulers store 120 to 129 plate each at Node Beta (storage book 07:47 UTC). A run: withdraw 60, deposit into the faction store (store_faction runs before withdraw in a stop, so each deposit is the next stop), twice; no jump when the pilot is docked there. once, max_pilots 9: 1,080 plate, the 1,000 and a margin; max_ships 3: the runs share no book, each takes its own storage.",
+ "once": true,
+ "max_pilots": 9,
+ "max_ships": 3,
+ "standing": true,
+ "min_credits": 3000,
+ "requires": {
+  "empty_hold": true,
+  "stored": {
+   "at": "node_beta_industrial_station",
+   "item": "steel_plate",
+   "min": 120
+  }
+ },
+ "stops": [
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "steel_plate",
+     "qty": 60
+    }
+   ]
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store_faction": [
+    "steel_plate"
+   ],
+   "withdraw": [
+    {
+     "item": "steel_plate",
+     "qty": 60
+    }
+   ]
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store_faction": [
+    "steel_plate"
+   ]
+  }
+ ]
+}

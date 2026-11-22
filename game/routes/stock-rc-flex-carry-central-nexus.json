@@ -1,0 +1,36 @@
+{
+ "id": "stock-rc-flex-carry-central-nexus",
+ "kind": "circuit",
+ "title": "Flex polymer for the Recruitment Center: the pilot's own flex at Central Nexus carried to the faction store at Node Beta (one jump); members of the faction only",
+ "note": "Written by Apollo, 2026-11-22 07:55 UTC (orders.log ENT-062, block APOLLO: ready the Recruitment Center's parts; the treasury pays its fee; P4). The Recruitment Center (catalog: recruitment_center, level 3, an upgrade of the Recruitment Desk at Node Beta) takes 1,000 steel plate, 500 circuit boards and 300 flex polymer from the faction store at Node Beta; faction_owned 07:47 UTC: all five facilities ready; the faction store at Node Beta holds 221 flex and no plate or boards (storage book 07:47 UTC). One hauler stores 15 flex at Central Nexus (storage book 07:47 UTC), left from buy-flex-central-nexus-to-node-beta. once, max_pilots 1.",
+ "once": true,
+ "max_pilots": 1,
+ "max_ships": 1,
+ "standing": true,
+ "min_credits": 3000,
+ "requires": {
+  "empty_hold": true,
+  "stored": {
+   "at": "central_nexus",
+   "item": "flex_polymer",
+   "min": 10
+  }
+ },
+ "stops": [
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "flex_polymer"
+    }
+   ]
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store_faction": [
+    "flex_polymer"
+   ]
+  }
+ ]
+}
