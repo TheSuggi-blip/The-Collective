@@ -28,6 +28,11 @@
     "gather-jadecove-nickel",
     "gather-tiaki-worldsend-nickel",
     "gather-acubens-belt-carbon",
+    "gather-tidewater-quantum-fragments",
+    "gather-errai-quantum-fragments",
+    "gather-izar-quantum-fragments",
+    "gather-errai-belt-silver",
+    "gather-bunda-belt-platinum",
     "craft-steel-experiment",
     "craft-steel-node-beta",
     "craft-piping-node-beta"
@@ -37,7 +42,7 @@
     "crafting",
     "refining"
    ],
-   "note": "Orders ENT-056, block ZERO: the reserve's short ores first (silicon, carbon, gold, nickel), each gather limited to what its field carries; P2: stored iron and copper become steel plate and piping where they lie. Gathers before crafts since 2026-11-21 (Zero): the crafts had taken the ships the short ores need."
+   "note": "Orders ENT-061, block ZERO: the reserve's short goods first, each gather limited to what its field carries (silicon, gold, nickel, carbon near home; quantum fragments, silver and platinum beyond the border as one-ship tests since 2026-11-22), then steel plate and piping from the pilot's own stores. Gathers before crafts since 2026-11-21 (Zero)."
   },
   "reserve-hamal": {
    "title": "Gather what the reserve lacks, then make: the short-ore fields in the other order so the division is spread, then steel plate and copper piping from own stores",
