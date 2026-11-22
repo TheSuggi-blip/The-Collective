@@ -36,7 +36,7 @@ What docs.py mirrors into the tables docs and doc_versions (docs.KINDS); the fil
 |---|---|---|---|
 | rulebook | `governance/rulebook.md` | Fleet | docs doc=rulebook (hive.py docs rulebook) |
 | orders | `communications/orders.log` | Unity | docs doc=orders (hive.py docs orders); comms view=orders |
-| strategy | `governance/strategy.md` | Fleet | docs doc=strategy (hive.py docs strategy) |
+| strategy | `governance/strategy.md`, `governance/birth-plans.md` | Fleet | docs doc=strategy (hive.py docs strategy) |
 | empire | `governance/empire.md` | Fleet | docs doc=empire (hive.py docs empire) |
 | guide | `game/routes/guidebook/*/*.md` | the division its file's name or folder names | docs doc=guide (hive.py docs guide) |
 | guidebook | `game/routes/guidebook/*.md` | the division its file's name or folder names | docs doc=guidebook (hive.py docs guidebook); docs view=division |

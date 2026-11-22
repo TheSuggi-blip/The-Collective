@@ -90,6 +90,7 @@ KINDS = (                      # kind, its files (a glob: a repository path, or 
     ("rulebook", "governance/rulebook.md", "Fleet"),          # ('': the division its file's name or folder names; '*': each entry's author's)
     ("orders", "communications/orders.log", "Unity"),
     ("strategy", "governance/strategy.md", "Fleet"),
+    ("strategy", "governance/birth-plans.md", "Fleet"),
     ("empire", "governance/empire.md", "Fleet"),
     ("guide", "game/routes/guidebook/*/*.md", ""),           # a guidebook's chapters, one section an entry (guidebook.py); before the row below
     ("guidebook", "game/routes/guidebook/*.md", ""),

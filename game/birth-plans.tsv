@@ -1,0 +1,48 @@
+# Approved Multi-Empire Fleet Birthing & Rollout Plans (Suggi, 2026-11-22)
+# Mirrored automatically into read.db table `birth_plans` by game/fleet/store.py.
+# Waves 0..3 = Plan 500 (246 -> 500, +254 births). Wave 4 extends seamlessly to Plan 600 (500 -> 600, +100 births).
+cohort_id	plan_scope	wave	wave_target	division	role	wing	empire	ships	flagship_hulls	gate	note
+w0-mining-vb	500+600	0	246	Mining	miner	Phase Miners	voidborn	60	Liminal, Resonance Miner, Harmonic, Manifold, Rift Siphon	standing	Existing Voidborn miners (+12% shield, phase ore compression)
+w0-logistics-vb	500+600	0	246	Logistics	hauler	Phase Haulers	voidborn	40	Dimensional Fold, Poiesis, Plenum	standing	Existing Voidborn haulers and workshop tenders
+w0-trade-vb	500+600	0	246	Trade	trader	Void Traders	voidborn	40	Dimensional Fold + secondhand Prayer/Ledger/Syndicate	standing	Existing Voidborn traders
+w0-strike-vb	500+600	0	246	Military	drone	Strike Wing	voidborn	50	Recursion, Dualism, Annihilation, Voidborn Event Horizon	standing	Existing Voidborn energy/cloak strike wing
+w0-sentinel-vb	500+600	0	246	Military	sentinel	Royal Guard: Phase Wardens	voidborn	20	Penumbra, Aporia, Pleroma, Overmind, Apotheosis	standing	Existing Voidborn high-shield EWAR/interdictor/medical Sentinels
+w0-intel-vb	500+600	0	246	Intel	scout	Covert Recon	voidborn	30	Qualia, Interstice, Catharsis, Palimpsest, Omniscience	standing	Existing Voidborn 9-utility stealth scouts
+w0-command-vb	500+600	0	246	Command	command	Flagship & Moving City	voidborn	6	Consensus, Voidborn Singularity, Emanation (Mobile Base)	standing	Unity Flagship Fleet + 1 unique Tier-5 Emanation Moving City
+w1-trade-neb	500+600	1	320	Trade	trader	Bulk Market Makers	nebula	25	Syndicate, Conglomerate	400 seats (Guild Hall Recruiting) + 24h steady net > 0	0.5% citizen sales tax, 0.25% storage tax, +10% cargo
+w1-logistics-or	500+600	1	320	Logistics	hauler	Fast Frontier Supply	outerrim	25	Prayer, Junk Convoy, Frankenhauler	400 seats (Guild Hall Recruiting) + 24h steady net > 0	+10% in-system speed, 1.5% weekly income tax, field repair
+w1-mining-sol	500+600	1	320	Mining	miner	Deep-Core Strip Miners	solarian	24	Lithosphere, Tellurian (10 utility slots)	400 seats (Guild Hall Recruiting) + 24h steady net > 0	+3% yield/cargo/speed; unlocks 10-slot Tellurian & Lithosphere
+w2-mining-neb	500+600	2	420	Mining	miner	Gas & Cryo Harvesters	nebula	35	Bonanza, Cryo Industrial (3300c), Eldorado (3960c)	Northern base online (Atria/Yildun) + Wave 1 self-funding	+10% cargo, +1%/lv gas yield; biggest mining holds in galaxy
+w2-logistics-neb	500+600	2	420	Logistics	hauler	Factory Bulk Carriers	nebula	25	Syndicate, Conglomerate (2640c)	Northern base online (Atria/Yildun) + Wave 1 self-funding	+10% cargo, 0.25% vault tax for zero-fuel station crafting
+w2-trade-sol	500+600	2	420	Trade	trader	Central Hub Arbitrage	solarian	15	Logistics Prime (2160c)	Northern base online (Atria/Yildun) + Wave 1 self-funding	1.0% citizen sales tax across central Solarian order books
+w2-strike-crim	500+600	2	420	Military	drone	Strike Wing: Siege	crimson	15	Broadaxe, Warmaul, Crimson Devastator, Annihilator (9w)	Northern base online (Atria/Yildun) + Wave 1 self-funding	+8% weapon dmg, +1%/lv armor bypass; native Crimson birth required
+w2-intel-or	500+600	2	420	Intel	scout	Frontier Salvage Recon	outerrim	10	Manifest Destiny, Need to Know	Northern base online (Atria/Yildun) + Wave 1 self-funding	+10% speed, +1%/lv wreck salvage & self-repair in lawless space
+w3-strike-crim	500+600	3	500	Military	drone	Strike Wing: Siege	crimson	15	Crimson Devastator (7w), Armageddon/Annihilator (9w)	500+ seats raised + positive 24h steady net	Completes 30 Crimson dreadnought pilots for Plan 500
+w3-strike-sol	500+600	3	500	Military	drone	Strike Wing: Line Cruisers	solarian	15	Dialectic (5w), Axiomata (6w), Opus Magna (8w)	500+ seats raised + positive 24h steady net	+1%/lv weapon accuracy + 8-weapon line battlecruisers
+w3-sentinel-crim	500+600	3	500	Military	sentinel	Royal Guard: Iron Praetorians	crimson	10	Stockade (8d), Bastille, Portcullis, Anvil, Subjugator	500+ seats raised + positive 24h steady net	Heavy 60-150 armor walls & warp interdictors guarding Flagships/Bases
+w3-sentinel-sol	500+600	3	500	Military	sentinel	Royal Guard: Aegis Paladins	solarian	5	Warrant, Paradox Engine, Panacea, Fundament, Symposium	500+ seats raised + positive 24h steady net	Shield/medical/logistics tenders & command interdictors
+w3-mining-sol	500+600	3	500	Mining	miner	Deep-Core Strip Miners	solarian	11	Lithosphere, Tellurian	500+ seats raised + positive 24h steady net	Completes 35 Solarian miners for Plan 500
+w3-logistics-or	500+600	3	500	Logistics	hauler	Fast Frontier Supply	outerrim	5	Frankenhauler, No Fixed Address	500+ seats raised + positive 24h steady net	Completes 30 Outer Rim haulers for Plan 500
+w3-trade-neb	500+600	3	500	Trade	trader	Bulk Market Makers	nebula	5	Conglomerate	500+ seats raised + positive 24h steady net	Completes 30 Nebula traders for Plan 500
+w3-intel-or	500+600	3	500	Intel	scout	Frontier Salvage Recon	outerrim	2	Manifest Destiny	500+ seats raised + positive 24h steady net	Completes 12 Outer Rim scouts for Plan 500
+w3-intel-neb	500+600	3	500	Intel	scout	Long-Range Sensor Recon	nebula	8	Insider	500+ seats raised + positive 24h steady net	+1%/lv sensor range & +10% fuel/loot hold
+w3-command-sol	500+600	3	500	Command	command	Empire Liaison Flagship	solarian	1	Concordance, Symposium	500+ seats raised + positive 24h steady net	Solarian diplomatic & capital shipyard flagship
+w3-command-neb	500+600	3	500	Command	command	Empire Liaison Flagship	nebula	1	Paramount, Ascendancy	500+ seats raised + positive 24h steady net	Nebula diplomatic & trade flagship
+w3-command-or	500+600	3	500	Command	command	Empire Liaison Flagship	outerrim	1	Plausible Deniability	500+ seats raised + positive 24h steady net	Outer Rim frontier command flagship
+w3-command-crim	500+600	3	500	Command	command	Empire Liaison Flagship	crimson	1	Vanguard, Overlord	500+ seats raised + positive 24h steady net	Crimson siege command flagship
+w4-sentinel-crim	600_only	4	600	Military	sentinel	Royal Guard: Iron Praetorians	crimson	10	Stockade (8d), Portcullis, Subjugator (3715 hull, 120 armor)	600+ seats across sovereign bases + T3-T5 hull pipeline	Brings Crimson Iron Praetorians to 20 (escorting Moving City & Chokes)
+w4-sentinel-sol	600_only	4	600	Military	sentinel	Royal Guard: Aegis Paladins	solarian	15	Paradox Engine, Panacea, Fundament, Symposium (6w/6d/8u)	600+ seats across sovereign bases + T3-T5 hull pipeline	Brings Solarian Aegis Paladins to 20 (60 total Royal Guard: 20 VB/20 CR/20 SOL)
+w4-command-sol	600_only	4	600	Command	command	Task-Force Flagships	solarian	2	Symposium, Reliquary	600+ seats across sovereign bases + T3-T5 hull pipeline	Multi-theater command wing alongside Unity Flagships
+w4-command-crim	600_only	4	600	Command	command	Task-Force Flagships	crimson	2	Overlord, Iron Fleet	600+ seats across sovereign bases + T3-T5 hull pipeline	Heavy armored task-force command leaders
+w4-command-neb	600_only	4	600	Command	command	Task-Force Flagships	nebula	1	Ascendancy	600+ seats across sovereign bases + T3-T5 hull pipeline	Economic/carrier sector flagship
+w4-command-or	600_only	4	600	Command	command	Task-Force Flagships	outerrim	1	Plausible Deniability, Controlled Chaos	600+ seats across sovereign bases + T3-T5 hull pipeline	Frontier expedition flagship (16 total Command)
+w4-strike-crim	600_only	4	600	Military	drone	Strike Wing: Siege	crimson	15	Annihilator (9w, 150 armor, 4280 hull), Reckoning (8w)	600+ seats across sovereign bases + T3-T5 hull pipeline	Brings Crimson Strike dreadnoughts to 45
+w4-strike-sol	600_only	4	600	Military	drone	Strike Wing: Line Cruisers	solarian	5	Opus Magna (8w, 1800 shield, 3000 hull)	600+ seats across sovereign bases + T3-T5 hull pipeline	Brings Solarian Strike cruisers to 20 (115 total Strike)
+w4-mining-sol	600_only	4	600	Mining	miner	Deep-Core Strip Miners	solarian	10	Tellurian (10 utility slots)	600+ seats across sovereign bases + T3-T5 hull pipeline	Brings Solarian miners to 45
+w4-mining-or	600_only	4	600	Mining	miner	Armed Frontier Strip Miners	outerrim	10	All Mine (2640c, 8u, 2w, 80 armor, 2000 hull)	600+ seats across sovereign bases + T3-T5 hull pipeline	Self-defending heavy frontier miners for contested belts (150 total Miners)
+w4-logistics-or	600_only	4	600	Logistics	hauler	Outpost & Frontier Tenders	outerrim	10	Frankenhauler, No Fixed Address (Outpost Tender)	600+ seats across sovereign bases + T3-T5 hull pipeline	Dedicated outpost tenders & fast frontier supply
+w4-logistics-neb	600_only	4	600	Logistics	hauler	Factory Bulk Carriers	nebula	5	Conglomerate (2640c)	600+ seats across sovereign bases + T3-T5 hull pipeline	Brings Logistics to 110 super-haulers
+w4-trade-neb	600_only	4	600	Trade	trader	Bulk Market Makers	nebula	6	Conglomerate	600+ seats across sovereign bases + T3-T5 hull pipeline	Low-tax bulk market liquidity
+w4-trade-sol	600_only	4	600	Trade	trader	Central Hub Arbitrage	solarian	3	Logistics Prime	600+ seats across sovereign bases + T3-T5 hull pipeline	Brings Trade to 94 bulk traders
+w4-intel-or	600_only	4	600	Intel	scout	Frontier Salvage Recon	outerrim	3	Manifest Destiny, Need to Know	600+ seats across sovereign bases + T3-T5 hull pipeline	Deep frontier storm/pirate recon
+w4-intel-neb	600_only	4	600	Intel	scout	Long-Range Sensor Recon	nebula	2	Insider	600+ seats across sovereign bases + T3-T5 hull pipeline	Brings Intel to 55 scouts

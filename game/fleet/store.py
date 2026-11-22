@@ -466,6 +466,8 @@ SNAPSHOT = (
     ("docs", "path TEXT, kind TEXT, owner TEXT, section TEXT, n INTEGER, title TEXT, text TEXT, sha TEXT, chars INTEGER, t INTEGER", "path, section"),
 )
 SNAPSHOT += needbook.SNAPSHOT                     # needs: the needs register, a snapshot of game/needs.tsv (needs.py)
+SNAPSHOT += (("birth_plans", "cohort_id TEXT, plan_scope TEXT, wave INTEGER, wave_target INTEGER, division TEXT, role TEXT, "
+              "wing TEXT, empire TEXT, ships INTEGER, flagship_hulls TEXT, gate TEXT, note TEXT", "cohort_id"),)
 COLUMNS = {name: [part.split()[0] for part in columns.split(", ")] for name, columns, _key in SNAPSHOT}
 LOOKUPS = (("ships", "system"), ("holdings", "item"), ("books", "item"), ("ladders", "item"), ("recipe_inputs", "item"),
            ("recipe_outputs", "item"), ("facility_materials", "item"), ("fields", "resource"), ("herds", "creature"), ("lanes", "a"),
@@ -1017,7 +1019,30 @@ LOADERS = (    # loader, the tables it fills, its files, whole (one file holds a
     ("plans", ("plan_routes",), repo_files("routes/plans", read_plan), False),
     ("docs", ("docs",), writings.files, False),     # the repository's governance/, guidebooks, templates, game/rules/, orders.log
 )
+def read_birth_plans(path, ctx):
+    """game/birth-plans.tsv -> birth_plans, one row per cohort of the 500-ship and 600-ship rollout plans."""
+    lines = [ln for ln in Path(path).read_bytes().decode("ascii").splitlines() if ln.strip() and not ln.lstrip().startswith("#")]
+    if not lines:
+        return {"birth_plans": []}
+    hdr = lines[0].split("\t")
+    out = []
+    for ln in lines[1:]:
+        parts = ln.split("\t")
+        row = dict(zip(hdr, parts))
+        for k in ("wave", "wave_target", "ships"):
+            row[k] = int(row.get(k) or 0)
+        out.append(row)
+    return {"birth_plans": out}
+
+
+def birth_plan_files(data, root):
+    """game/birth-plans.tsv: Suggi-approved 500-ship and 600-ship multi-empire birthing and phased rollout plans."""
+    path = Path(root) / "birth-plans.tsv"
+    return [("birth-plans.tsv", path, read_birth_plans, False, "")] if path.is_file() else []
+
+
 LOADERS += (("needs", ("needs",), needbook.need_files, False),)      # the needs register (needs.py reads game/needs.tsv)
+LOADERS += (("birth_plans", ("birth_plans",), birth_plan_files, False),)
 FED = dict([(table, ("fleet", "orders")) for table in ("ships",)] + [(table, (loader,)) for loader, tables, _f, _w in LOADERS for table in tables])
 BAD = (OSError, ValueError, TypeError, KeyError, AttributeError, IndexError, RecursionError)
 
@@ -1613,6 +1638,7 @@ DESCRIPTIONS = {               # one line per table and view: what a row is and 
     "missions": "now: the missions on offer at each station our ships read: kind, reward in credits, items, XP, objectives (missions/<base>.json)",
     "met": "the pilots of OTHER players our ships met: faction, ship class, where last seen, first and last seen (t), times met (intel/met.json)",
     "routes": "the repository's route files (game/routes/<id>.json): kind, group (routes.py stage), cap, what the runs measured (cph per ship-hour)",
+    "birth_plans": "Suggi-approved 500-ship (waves 0-3) and 600-ship Praetorian Royal Guard (waves 0-4) multi-empire birthing cohorts, target hulls and readiness gates (game/birth-plans.tsv)",
     "plan_routes": "each role's plan in its order: the routes its ships try and the ships the plan puts on each (game/routes/plans/<role>.json)",
     "docs": "now: the fleet's written knowledge by section (docs.py): the rulebook (each rule F<n> of section 12 its own section), the newest "
             "entry of communications/orders.log (head, each S/G/D/P line, each block and member's block), governance/strategy.md and empire.md, "
@@ -1856,6 +1882,9 @@ EXAMPLES = {                   # three questions per table and view, as SQL (hiv
     "leaderboards": (("Top 10 factions by total wealth", "SELECT rank, name, tag, value FROM leaderboards WHERE grp = 'factions' AND board = 'total_wealth' ORDER BY rank LIMIT 10"),
                      ("Top 10 factions by ships destroyed", "SELECT rank, name, tag, value FROM leaderboards WHERE grp = 'factions' AND board = 'ships_destroyed' ORDER BY rank LIMIT 10"),
                      ("Available leaderboard groups and boards", "SELECT grp, board, COUNT(*) FROM leaderboards GROUP BY grp, board ORDER BY grp, board")),
+    "birth_plans": (("Approved 500-ship fleet composition by division, role and empire", "SELECT division, role, empire, SUM(ships) AS ships FROM birth_plans WHERE wave <= 3 GROUP BY division, role, empire ORDER BY division, ships DESC"),
+                    ("Approved 600-ship fleet and 60-ship Royal Guard composition", "SELECT division, role, wing, empire, SUM(ships) AS ships FROM birth_plans GROUP BY division, role, wing, empire ORDER BY division, ships DESC"),
+                    ("Phased birthing waves from 246 to 600 ships with readiness gates", "SELECT wave, wave_target, SUM(ships) AS wave_ships, gate FROM birth_plans WHERE wave >= 1 GROUP BY wave, wave_target, gate ORDER BY wave")),
     "our_stations": (("Our stations and outposts", "SELECT name, kind, system, condition, base FROM our_stations"),
                      ("Our stations and their jumps from home", "SELECT o.name, o.system, y.jumps FROM our_stations o LEFT JOIN systems y ON y.id = o.system"),
                      ("Our stations that no base row of empire.json names", "SELECT name, system FROM our_stations WHERE base IS NULL")),
