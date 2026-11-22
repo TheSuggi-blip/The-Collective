@@ -21,11 +21,11 @@ Kept by Zero. Routes: 83. Ships: 60.
 | # | Route | Group | Zone | Open to | Ships planned |
 |---|---|---|---|---|---|
 | 1 | [fit-mining-laser-iii-lhs-1140](fit-mining-laser-iii-lhs-1140.json) | [Fitting](index-fitting.md) | beyond the border, 6 jumps | once per pilot, up to 3 ships, 20 pilots in all, needs mining_laser_i, without mining_laser_iii, empty hold, from 20,000 cr, while 784309214f105860a16a0c100a70eb14 asks 7700 cr or less for mining_laser_iii | all 60 |
-| 2 | [give-miner-stores-node-beta](give-miner-stores-node-beta.json) | [Measured at a Loss](index-measured-at-a-loss.md) | home space | up to 3 ships, with 50 iron_ore stored at node_beta_industrial_station | all 60 |
-| 3 | [give-miner-stores-experiment](give-miner-stores-experiment.json) | [Measured at a Loss](index-measured-at-a-loss.md) | home space | up to 3 ships, with 50 iron_ore stored at the_experiment_research_station | all 60 |
-| 4 | [give-miner-stores-central-nexus](give-miner-stores-central-nexus.json) | [Measured at a Loss](index-measured-at-a-loss.md) | home space | up to 3 ships, with 50 iron_ore stored at central_nexus | all 60 |
-| 5 | [give-miner-stores-synchrony](give-miner-stores-synchrony.json) | [Measured at a Loss](index-measured-at-a-loss.md) | home space | up to 3 ships, with 50 iron_ore stored at synchrony_hub | all 60 |
-| 6 | [give-miner-stores-node-alpha](give-miner-stores-node-alpha.json) | [Tests](index-tests.md) | home space | up to 3 ships, with 50 iron_ore stored at node_alpha_processing_station | all 60 |
+| 2 | [give-miner-stores-node-beta](give-miner-stores-node-beta.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 3 ships, with 50 iron_ore stored at node_beta_industrial_station, standing work | all 60 |
+| 3 | [give-miner-stores-experiment](give-miner-stores-experiment.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 3 ships, with 50 iron_ore stored at the_experiment_research_station, standing work | all 60 |
+| 4 | [give-miner-stores-central-nexus](give-miner-stores-central-nexus.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 3 ships, with 50 iron_ore stored at central_nexus, standing work | all 60 |
+| 5 | [give-miner-stores-synchrony](give-miner-stores-synchrony.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 3 ships, with 50 iron_ore stored at synchrony_hub, standing work | all 60 |
+| 6 | [give-miner-stores-node-alpha](give-miner-stores-node-alpha.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 3 ships, with 50 iron_ore stored at node_alpha_processing_station, standing work | all 60 |
 | 7 | [voidborn-signal-fragments](voidborn-signal-fragments.json) | [Once per Pilot](index-once-per-pilot.md) | home space | once per pilot, up to 10 ships, from navigation 3 | all 60 |
 | 8 | [voidborn-first-steps-board](voidborn-first-steps-board.json) | [Once per Pilot](index-once-per-pilot.md) | home space | once per pilot, up to 3 ships | all 60 |
 | 9 | [voidborn-network-expansion](voidborn-network-expansion.json) | [Once per Pilot](index-once-per-pilot.md) | home space | once per pilot, up to 20 ships, after the reward First Steps in the Void | all 60 |
