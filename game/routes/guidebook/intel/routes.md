@@ -15,8 +15,9 @@ Status: proven. Updated: 2026-11-22. Evidence: the plan file (tool plan, show); 
   min), then census-worked-far, then their far list.
 - Hunters: one reader a hunt, one hunter a herd (F9), then @reader. P5:
   every scout hunt carries gift_to trader; no route sells or crafts.
-- Then: census-frontier, census-roads (the oldest readings on no list
-  since ROADS END), park.
+- census-roads (the oldest readings, 480 min): three readers take it
+  first, since a list last in every order is never reached (lessons.md).
+- Then: census-frontier, census-roads, park.
 - Capacity: the lists ask more reads than 30 scouts give (census runs of
   4 hours, minutes a run, against systems / every_minutes); the far
   lists take what is left. The faster hull costs more fuel a read
