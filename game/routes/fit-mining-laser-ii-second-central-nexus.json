@@ -1,0 +1,33 @@
+{
+  "id": "fit-mining-laser-ii-second-central-nexus",
+  "kind": "circuit",
+  "title": "A test: a Mining Laser II into the empty second utility slot of a laser-only Threshold at Central Nexus (one ship, one unit)",
+  "note": "2026-11-22 19:20 UTC (Zero): orders ENT-065, block ZERO (fit the stronger lasers where three results prove them; level mining). The Mining Laser III that proved 2.1x a Laser I is bought out (tool market mining_laser_iii: no ask under 9,902 since 12:58 UTC; 20 pilots fitted). The laser-only miners carry one Mining Laser I and leave their second utility slot empty (tool ship); the game's docs speak of the ship's fitted extraction array (spacemolt.com/docs/mining.md, read 19:17 UTC), so a second laser may add its power: not proven. Central Nexus asks 4,252 cr x 2 for the Mining Laser II (table books 19:14 UTC; base 2,500, power 12 against 5). One ship, one unit (rules F12, F17); then three gather runs against the Laser I ships of the same route decide (F37) before max_pilots rises. Only a ship with a Laser I, no Laser II or III and no Ice Harvester is sent (its second slot is free). min_credits 20,000 keeps the wallet above the top-up line after the buy (F7).",
+  "once": true,
+  "max_ships": 1,
+  "max_pilots": 1,
+  "min_credits": 20000,
+  "requires": {
+    "module": "mining_laser_i",
+    "without_module": ["mining_laser_ii", "mining_laser_iii", "ice_harvester_i"],
+    "empty_hold": true,
+    "ask": {
+      "item": "mining_laser_ii",
+      "base": "central_nexus",
+      "max_price": 4300,
+      "min_qty": 1,
+      "max_age_minutes": 240
+    }
+  },
+  "stops": [
+    {
+      "at": "nexus_prime:the_core:central_nexus",
+      "fit": [
+        {
+          "module": "mining_laser_ii",
+          "max_price": 4350
+        }
+      ]
+    }
+  ]
+}
