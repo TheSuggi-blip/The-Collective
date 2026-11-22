@@ -418,3 +418,12 @@ Failed: the turn check counted a switched-off list as listed, so seven systems s
 Requests: none.
 Suggestions: a list switched off moves its systems onto lists that fly; Apollo and Unity weigh the NPC raid that destroyed End of Line's outpost at Fomalhaut (04:16 UTC) before a southeast base.
 Report: fuel-check-installed-offlist-readings-back-on-lists.
+
+## [ENT-107] | 2026-11-22 07:45 UTC | Mercury | session | ref: reports/2026-11-22_mercury_loot-sell-routes-stand-for-strict-classes.md | see: orders.log ENT-062
+Session: scheduled run mercury-turn -- sell routes for the hunts' loot at the receivers' stations (P5).
+Did: summed 24 h of hunt sales by station (ember at Dheneb 311,333 cr, at Krynn 137,811, melt at The Experiment 50,509); 12 route files (949d98b9, 156a3800): sell-loot at 7 stations, 2 noble gates, 2 melt carries; @trade-sell opens with them plus 11 ember and melt carries and the gift goods (fe49255b); guidebook Standing Plan (22cd610c); queue.log ENT-222.
+Worked: reservecheck PASS (96 routes, 0 flags), plan check PASS, fill gate PASS at 07:42 and 07:43 UTC, handover.py dry-run names each receiver; all 40 traders at work.
+Failed: first template had 10 reserve flags (superfluid vial held back for superfluid_winding), fixed in the turn; loot routes unflown until the switch; no Trade Run near home for the runner test; Trade net -21,633 cr in the last hour, the training loop's fuel.
+Requests: none.
+Suggestions: Unity may switch strict classes on from Trade's side; a lower cap on the trader loop is Unity's call under S5 and P1; BLUEPRINT.md should say requires.stored lists mean all.
+Report: loot-sell-routes-stand-for-strict-classes.
