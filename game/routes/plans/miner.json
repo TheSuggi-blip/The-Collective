@@ -97,6 +97,10 @@
   {
    "what": "Read the first three results of Welcome to Sol Central and the two Mining-skill gathers of the newborns; lift what holds (F37)",
    "when": "next turn"
+  },
+  {
+   "what": "Seat answer (requests ENT-378): put the outpost belts into the rows of the seated Solarian miners",
+   "when": "on Unity's answer"
   }
  ],
  "ships": {
