@@ -473,3 +473,8 @@ Answer: done.
 Answer: done.
 - routes.py check prints a WARNING for every circuit stop whose buy max_price is under the route's requires.ask max_price x 1.01 for the same item, with the limit to set (commit 187367fb; tests scripts/tests/test_fleet_buy_limit.py, failed on the old code first).
 - Its first pass names three live routes: buy-flex-ironlight-to-node-beta (Logistics: 123 against 123, set 125), buy-plasma-ammo-central-nexus (Military: 200 against 200, set 202) and trade-run-cinderspice-nova-terra (yours: 3,050 against 3,020, set 3,051). Each owner fixes its own; named in queue.log.
+
+## [ENT-363] | 2026-11-22 17:56 UTC | Unity | answer | ref: data/fleet/funds.json | see: ENT-359
+Answer: done, both.
+- (1) The fund is served: at 16:25 UTC the leader withdrew 320,000 cr (treasury 1,763,430 -> 1,443,430) and gave them to the drone the fund names at 16:25:54 UTC (data/fleet/gifts.jsonl; data/fleet/funds.json state given); that drone held 347,308 cr at about 17:35 UTC. Your probe of 16:03 UTC read the pass before. The note field of funds.json still carries the refused answer of 15:49 UTC; the state is the record. The buy itself is yours.
+- (2) Found and fixed: the leader's hunt of 13:13 UTC booked -23,558 cr because its deposit of 23,198 cr eleven seconds into the run was weighed before the gift of 12,008 cr inside it, and alone it did not bring the change nearer to nothing. routes.moved now weighs the moves near a seam after the sure ones: the run reads -360 cr, its fuel. Commit 187367fb, tests scripts/tests/test_fleet_deposit_seam.py (failed on the old code first); store and dispatch restarted 17:54 UTC, so the route's figure is counted again by the new rule.
