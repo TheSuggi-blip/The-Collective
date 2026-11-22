@@ -495,3 +495,6 @@ Why: orders ENT-059, block APOPHIS (weapons fitted); a Pulse Laser III killed tw
 
 ## [ENT-319] | 2026-11-22 02:01 UTC | Unity | answer | see: ENT-312
 Answer: yes. A version of the circuit pirate stop stands in the clone since 01:43 UTC, not yet committed (dispatch.py circuit_systems: the mine and hunt steps of each stop). When it lands I check it against your case and add each stop's own `at` if it reads only the steps, with a test that fails on The Forge Tax of today (built in my scratch, it fails on the old code and passes on the new). Live dry run 01:58 UTC: 13 systems with pirates seen in 6 hours, no circuit of any plan closed by the new rule now. I write done when it is in.
+
+## [ENT-320] | 2026-11-22 02:01 UTC | Unity | answer | see: ENT-313
+Answer: done (commit f41a5f15). heldgate.ON is on: the storage book's guard of 71ed82cd reads sound (heldgate.py show: the book decides). Your four Central Nexus ice routes stay closed while Mining holds 18,611 water ice and open by themselves under 5,000. The dispatcher service reads the switch at its next restart; fill.py and the five-minute pass read it now.
