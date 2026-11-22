@@ -105,3 +105,4 @@ Planned:
 | What | When |
 |---|---|
 | Read the Laser II second-slot test's fit and three gather runs against Laser I ships of the same route; lift max_pilots on a 3-result gain next turn | -- |
+| Read Forgotten Tailings at 5 ships and GSC-0044 Belt against its 20,000 floor; Jishui carbon at 3 ships against 1,000 min_left next turn | -- |
