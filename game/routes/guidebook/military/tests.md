@@ -1,25 +1,25 @@
 # Military guidebook -- Tests (tests.md)
 
 ### Open Tests
-Status: test. Updated: 2026-11-22. Evidence: the tool fill (status); observations kind group_hunt and fit_test; table runs.
+Status: test. Updated: 2026-11-22. Evidence: the tool fill (status); observations kinds group_hunt and fit_test; table runs; tables ship_skills and stats_pilot_hour.
 
 - Pulse Laser III hunts on four herds of slag tortoises and deuteron
-  slugs (`*-pl3`, 2026-11-22), one ship each until three results; carapace
-  for the reserve.
-- Group hunts (entry below): two more whale kills with three Pulse
-  Laser III ships for three results (F37).
-- Caustic sac: chlorophage herds at Alathfar, Fulu and Chara, stored at
-  Node Beta; standing work while the tool needs names it short.
-- The tests the filler adds each turn (`fill.py fill drone --write`): far
-  herds, one ship each until three results (F37). A test of another class
-  is dropped from the drone plan.
-- Not tested: which hit trains Shields and Armor; a tier-1 or tier-2 hull
-  with two or three weapons; cloudwhales (508 to 3,304 hull).
+  slugs (`*-pl3`): the tortoises kill 2 to 3 a run (ferrous nodule and
+  carapace, both short); the deuteron slugs at Node Beta and Aldhibah
+  read zero kills in four of six runs. Three results each before a lift.
+- Plasma ammunition: a circuit stop `store: all` stores the packs too;
+  `load-plasma-ammo-*` take them back aboard (requests.log ENT-352).
+- Shields and Armor: the catalog trains them by shield or hull damage
+  taken in combat, yet no ship of the fleet holds either skill after
+  eight days of hunts. Open: what does train them.
+- Not tested: a Shield Booster II; a tier-1 or tier-2 hull with two or
+  three weapons; cloudwhales (508 to 3,304 hull).
 - Answered: one Pulse Laser I kills no cauldronback or slag tortoise; the
-  Pulse Laser III kills prey of 85 to 95 hull (Weapon fits).
+  Pulse Laser III kills prey of 85 to 95 hull alone and a pilot whale in
+  a side of three (Group hunts).
 
 ### Group hunts
-Status: test. Updated: 2026-11-22. Evidence: observations kind group_hunt (2026-11-17 to 2026-11-22 08:43 UTC); errors.log ENT-129, ENT-130; spacemolt.com/docs/combat; skill military-turn group_hunt.py.
+Status: proven. Updated: 2026-11-22. Evidence: observations kind group_hunt (2026-11-17 to 2026-11-22 12:41 UTC); errors.log ENT-129, ENT-130; spacemolt.com/docs/combat; skill military-turn group_hunt.py.
 
 `group_hunt.py` (skill script, background) takes free drones within
 `--max-jumps` of home, docks them, makes a game fleet, waits until every
@@ -34,9 +34,9 @@ docks for repair, releases all.
 - `dist` is a ship's own distance from the fight's centre, not from the
   prey: an advance rule that compares with the prey's dist never fires.
 - Pilot whale (220 hull), Stellar Siphon: three starters took it to 89
-  percent in 9 ticks and fled; three Pulse Laser III ships killed it in 6
-  ticks (2026-11-22 08:40 UTC), every hull 100, the leader's shield 96 to
-  51; loot whale oil, blubber, meat, carapace. Weapon first, then the group.
+  percent in 9 ticks and fled; three Pulse Laser III ships killed it
+  three times (08:40, 12:30, 12:39 UTC on 2026-11-22), 6 ticks each, every
+  hull at 100 (F37 met). Weapon first, then the group.
 - Take only a ship with no engine goal (`--module`, goal check); stop a
   running group with `stop_script.sh`, never a kill of the shell's PID.
 

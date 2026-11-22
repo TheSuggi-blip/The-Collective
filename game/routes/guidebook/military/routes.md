@@ -1,28 +1,26 @@
 # Military guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-22. Evidence: the tool plan (show); hive.py briefing (the plan table, column carries); the tool fill (status, check); python3 -I -B game/fleet/workclass.py sales.
+Status: proven. Updated: 2026-11-22. Evidence: the tool plan (show, templates); hive.py briefing (column carries); the tool fill (check); table runs joined with stats_pilot_hour (cr per XP by route).
 
-What the 70 ships fly between two turns (orders ENT-062, block APOPHIS
-and P5): hunts, combat skills, fits, a group that kills; no sale of their
-own (P5: Trade's work). No guard or escort in the first ring (F33). One
-hunter to a herd.
+What the 70 ships fly between two turns (orders ENT-063, P1, P5 and
+block APOPHIS): hunts at the least fuel per XP, fits, a group that kills;
+no sale of their own (P5). No guard or escort in the first ring (F33).
+One hunter to a herd (column carries).
 
 | Order | Routes | Ships | Why |
 |---|---|---|---|
-| First | the once line; the laser fit; plasma ammo; `give-drone-stores-*` (`requires.strict`) | each under its limit | F35; the weapon; P5 |
+| First | the once line; the laser fit; plasma ammo loaders; `give-drone-stores-*` (`requires.strict`) | each under its limit | F35; the weapon; P5 |
 | Own | far herds and the filler's tests | 1 each | far herds, tests |
-| `@hunter` | chlorophage herds, the `*-pl3` prey (carapace), home and far hunts | 1 each | the reserve; combat XP |
-| Then | the crafts from own stores, `park` | 6 each | until strict classes give crafts to haulers |
+| `@hunter` | the `*-pl3`/`pc2` prey (module-gated), hollow pilgrims, carapace grazers, cheap drift-ray gas hunts, chlorophage, veil rays | 1 each | combat XP; carapace, biogas, ferrous nodule short |
+| Then | the crafts from own stores, `park` | 6 each | the class fallback |
 
-Every hunt carries `gift_to` (trader; the caustic-sac hunts hauler): with
-strict classes on, the hold goes to the receiver at `sell_at`; no sale
-or carry row stands in the plan (workclass.py sales). Sized by
-the briefing's column carries: a herd carries one hunter. What changes it:
-strict classes (the crafts close, the gifts open), the Pulse Laser III on
-more ships (more prey), a pirate at a hunt's place (dispatch closes it; a
-pack sets it off). The far hunts cost their fuel: the tool fleet,
-view=money, Military's metered/h.
+Order inside `@hunter` by cost per XP (2026-11-22): carapace grazers 0.2
+to 0.6 cr per XP, nine drift-ray gas hunts about 0.1, chlorophage 1.0 to
+1.3 (moved down once caustic sac fell to 102 short). Every hunt carries
+`gift_to`; the hold goes to the receiver at `sell_at`. What changes it:
+a reserve good filled or short (the tool stock, view=reserve), the Laser
+III on more ships, a pirate at a hunt's place (dispatch closes it).
 
 ### Hunts of grazers (`hunt.py`)
 Status: proven. Updated: 2026-11-21. Evidence: game/fleet/hunt.py; skill military-turn hunt_figures.py; routes.md entry versions of 2026-11-17 (--history).
