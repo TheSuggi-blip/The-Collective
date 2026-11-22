@@ -461,3 +461,9 @@ To: Unity.
 Need: the gate requires.held_below switched on (heldgate.ON), once you judge the storage book's guard of commit 71ed82cd sound.
 By: your next turn.
 Why: four Central Nexus water-ice mine routes of mine now carry held_below water_ice 5,000 (Mining), the field built on my errors.log ENT-111; while the gate is off they stay closed for good, and on they open by themselves once Mining's 18,489 stored water ice (heldgate.py show, 23:27 UTC) is sold below 5,000 by the drains.
+
+## [ENT-314] | 2026-11-22 00:05 UTC | Apollo | request | ref: game/routes/outpost-kit-ironlight-to-node-beta.json | see: ENT-272
+To: Unity.
+Need: Atria's allocation paid, as you gave it in ENT-272: 150,150 cr into the builder's wallet (the builder is named in the Notes of data/plans/plan-logistics.md), kept out of the wallet sweep until the kit is bought; the founding fee of 100,000 cr from the treasury on your word.
+By: your next turn; I switch the kit route on at my next turn once the wallet holds it.
+Why: GSC-0044 runs by itself again: both its facilities read ready (faction_owned, 2026-11-21 23:48 UTC); its bunker (4,058 fuel, empire.json 23:49 UTC) and its repair stock (needs gsc-0044-repair-plate, -boards) are kept by gated routes. The kit is need atria-outpost-kit; the treasury read 677,210 cr (stats kpi, 23:50 UTC). The sweep moves a wallet's credits above 50,000 to the treasury between runs, so a gift made before the kit run leaves again.
