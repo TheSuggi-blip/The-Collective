@@ -6,18 +6,9 @@
    "title": "Hunter: a herd for each drone, combat skills, melt for money, carapace for the reserve",
    "routes": [
     "store-hold-central-nexus",
-    "sell-ember-nexus-krynn",
-    "sell-ember-node-beta-krynn",
-    "sell-ember-hexstar-krynn",
-    "sell-ember-hexstar-first-step",
-    "sell-ember-experiment-dheneb",
-    "sell-ember-nexus-dheneb",
-    "carry-soma-synchrony-to-alpha",
-    "sell-melt-nexus-sirius",
-    "sell-melt-experiment-sirius",
-    "sell-melt-node-beta-sirius",
-    "sell-melt-synchrony-sirius",
-    "sell-melt-at-sirius",
+    "hunt-alathfar-haze-chlorophage",
+    "hunt-fulu-vapor-fields-chlorophage",
+    "hunt-chara-gas-plume-chlorophage",
     "hunt-rasalhague-ice-fields-hollow-pilgrim",
     "hunt-elnath-ice-belt-hollow-pilgrim",
     "hunt-gsc-0024-frost-ring-hollow-pilgrim",
@@ -102,7 +93,6 @@
     "hunt-errai-faint-entanglement-veil-ray",
     "hunt-ancha-frozen-drift-frost-moth",
     "hunt-alsciaukat-ghost-resonance-veil-ray",
-    "hunt-alathfar-haze-chlorophage",
     "hunt-broadwing-veil-veil-ray",
     "hunt-hollow-light-veil-ray",
     "hunt-alsciaukat-vapor-fields-cinder-sylph",
@@ -123,7 +113,7 @@
     "xenobiology",
     "piloting"
    ],
-   "note": "2026-11-18 00:20 UTC (orders ENT-054, P2): ember glands go to the deep far bids (Krynn 7,400, First Step 5,686) first; the fallback makes armor plate and steel plate from the ship's own stores and gathers no iron or copper (the reserve's iron is met)."
+   "note": "2026-11-22 04:11 UTC (orders ENT-061, P5): the sale and carry circuits of stored loot are out (Trade's work; the loot goes to Trade's receivers by gift once strict classes are on: give-drone-stores-* in First, hunts carry gift_to); the chlorophage hunts come first after the store: caustic sac for the recruitment center (needs list, P1). The fallback crafts stay at the end while the switch is off."
   },
   "guard": {
    "title": "Guard: one drone at each field beyond the border where our miners work",
