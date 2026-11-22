@@ -8,7 +8,7 @@
 </head>
 <body>
 <header class="topbar">
-  <div class="brand"><i class="sigil"></i><span class="word">THE COLLECTIVE</span><small>Command Station</small></div>
+  <div class="brand" title="The Collective -- Sovereign Multi-Division Enterprise"><svg class="brand-emblem" viewBox="0 0 36 36" width="28" height="28" aria-hidden="true"><polygon points="18,2 32,10 32,26 18,34 4,26 4,10" fill="rgba(164,139,224,0.12)" stroke="#a48be0" stroke-width="1.5"/><circle cx="18" cy="18" r="10.2" fill="none" stroke="#6fa8dc" stroke-width="1" stroke-dasharray="3 2"/><line x1="18" y1="7.8" x2="18" y2="28.2" stroke="#a48be0" stroke-width="1" opacity="0.65"/><line x1="9.2" y1="13" x2="26.8" y2="23" stroke="#a48be0" stroke-width="1" opacity="0.65"/><line x1="26.8" y1="13" x2="9.2" y2="23" stroke="#a48be0" stroke-width="1" opacity="0.65"/><circle cx="18" cy="7.8" r="1.9" fill="#d98a4e"/><circle cx="26.8" cy="13" r="1.9" fill="#58c08c"/><circle cx="26.8" cy="23" r="1.9" fill="#6fa8dc"/><circle cx="18" cy="28.2" r="1.9" fill="#e06c66"/><circle cx="9.2" cy="23" r="1.9" fill="#a48be0"/><circle cx="9.2" cy="13" r="1.9" fill="#8ad1c2"/><polygon points="18,12.5 23,18 18,23.5 13,18" fill="#e6c15c" stroke="#0c0f15" stroke-width="1.1"/></svg><div class="brand-txt"><span class="word">THE COLLECTIVE</span><small>Command Station</small></div></div>
   <div id="purse" class="purse"></div>
   <div id="members" class="members"></div>
   <div class="search">
@@ -74,19 +74,28 @@
       <button id="btn-all" type="button" title="Fit galaxy (G)">Galaxy</button>
       <button id="btn-help" type="button" title="Keyboard shortcuts (?)">?</button>
     </div>
+    <button class="chatpill" id="chat-pill" type="button" hidden title="Open Command Comms">
+      <i class="chatpill-dot"></i>
+      <span>Comms</span>
+      <span class="chatpill-sub" id="pill-sub">6 agents</span>
+      <span class="unseen" id="pill-unseen" hidden></span>
+    </button>
     <div class="chatdock" id="chat-dock">
       <div class="docklog" id="dock-log">
         <div id="chat-log" class="chatlog"></div>
       </div>
       <div class="dockbar">
         <div class="dockrow">
-          <span class="docklabel">Comms <span class="fresh">all hands</span></span>
+          <span class="docklabel">Comms</span>
           <div id="chat-who" class="chatwho"></div>
           <div id="chat-state" class="chatstate"></div>
-          <button class="docktoggle" id="dock-toggle" type="button" title="Hide the messages" aria-expanded="true"><span class="unseen" id="dock-unseen" hidden></span><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M3.5 6 8 10.5 12.5 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          <div class="dockbtns">
+            <button class="docktoggle" id="dock-toggle" type="button" title="Show/hide message log" aria-expanded="true"><span class="unseen" id="dock-unseen" hidden></span><svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path d="M3.5 6 8 10.5 12.5 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            <button class="docktoggle dockmin" id="dock-min" type="button" title="Minimize Comms to bottom edge"><svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path d="M3 12.5h10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+          </div>
         </div>
         <div class="chatform">
-          <textarea id="chat-input" rows="2" placeholder="Message" spellcheck="true"></textarea>
+          <textarea id="chat-input" rows="1" placeholder="Message Unity or click portraits above to select 1, several, or All..." spellcheck="true"></textarea>
           <button id="chat-send" type="button">Send</button>
         </div>
       </div>

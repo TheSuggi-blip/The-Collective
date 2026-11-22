@@ -1315,6 +1315,19 @@ def show_eyes(data, who):
                 lines.append("  RAID / PVP BATTLES (public_battles): " + "; ".join(
                     "%s [%s/%s, lost %d, tags %s]" % (sn or sy, cat, stt, d or 0, tg or "-") for sn, sy, cat, stt, d, tg in brows
                 ))
+        if "fuel_sinks" in tables:
+            frows = {r[0]: (r[1], r[2], r[3]) for r in conn.execute("SELECT category, runs_24h, ship_hours_24h, net_credits_24h FROM fuel_sinks").fetchall()}
+            jl = frows.get("jump_loops")
+            pr = frows.get("productive")
+            if jl and jl[1] > 50:
+                lines.append(
+                    "  24H FLIGHT EFFICIENCY | productive: %.0fh (%+d cr) vs empty train-jumps: %.0fh (%+d cr) -> replace empty jump loops with zero-fuel docked crafting, Station Bursar bids (`hive.py contracts`) & cargo-carrying runs!"
+                    % (pr[1] if pr else 0.0, int(pr[2]) if pr else 0, jl[1], int(jl[2]))
+                )
+        if "contract_candidates" in tables and who in ("all", "Unity", "Mercury", "Apollo"):
+            cc_n = conn.execute("SELECT COUNT(*) FROM contract_candidates WHERE priority <= 2").fetchone()[0]
+            if cc_n:
+                lines.append("  BOTTLENECK CONTRACTS (%d open P1/P2 needs) | run `hive.py contracts` (MCP: `fleet view=contracts`) to post zero-fee Station Bursar buy bids & Notice Board contracts (`communications/contracts.log`)." % cc_n)
         try:
             import rival_playbook
             bline = rival_playbook.benchmark_line(data)

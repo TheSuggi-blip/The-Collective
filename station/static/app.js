@@ -114,58 +114,82 @@ function shipSvg(shape, colour, size) {                  // the same silhouette 
 
 // Face portraits of the six members: robots drawn to fit each one's role. A list of SVG primitives in a box of
 // 40 x 40; 'C' is the member's colour, 'K' the dark of the page. The same portrait stands in the top bar and in comms.
-const LINE = { fill: 'none', stroke: 'C', 'stroke-linecap': 'round' };
-const HEAD = { fill: 'C', 'fill-opacity': 0.2, stroke: 'C', 'stroke-width': 1.6, 'stroke-linejoin': 'round' };
+const LINE = { fill: 'none', stroke: 'C', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' };
+const HEAD = { fill: 'C', 'fill-opacity': 0.22, stroke: 'C', 'stroke-width': 1.45, 'stroke-linejoin': 'round' };
 const FACES = {
-  unity: [                                          // the Fleet Admiral: one calm head under a halo, six lights in its visor: many agents, one purpose
-    ['path', { ...LINE, d: 'M9 9.5 Q20 3 31 9.5', 'stroke-width': 1.6 }],
-    ['rect', { ...HEAD, x: 9, y: 12, width: 22, height: 23, rx: 9 }],
-    ['rect', { x: 11.5, y: 19, width: 17, height: 6.4, rx: 3.2, fill: 'K', stroke: 'C', 'stroke-width': 0.8 }],
-    ...[13.6, 16.16, 18.72, 21.28, 23.84, 26.4].map((x) => ['circle', { cx: x, cy: 22.2, r: 0.95, fill: 'C' }]),
-    ['path', { ...LINE, d: 'M16 30.5 H24', 'stroke-width': 1.4 }],
+  unity: [                                          // Command (Unity): Sovereign Fleet Admiral -- crown crest, neural halo, panoramic star-visor & high collar
+    ['circle', { cx: 20, cy: 20, r: 18, fill: 'C', 'fill-opacity': 0.08, stroke: 'C', 'stroke-opacity': 0.35, 'stroke-width': 1 }],
+    ['path', { d: 'M6 36 L11 29 H29 L34 36 Z', fill: 'C', 'fill-opacity': 0.28, stroke: 'C', 'stroke-width': 1.2 }],
+    ['path', { d: 'M12 11 L15.5 5.5 L20 9 L24.5 5.5 L28 11', fill: 'C', 'fill-opacity': 0.35, stroke: 'C', 'stroke-width': 1.4, 'stroke-linejoin': 'round' }],
+    ['circle', { cx: 20, cy: 4.8, r: 1.5, fill: 'W' }],
+    ['path', { ...HEAD, d: 'M10.5 12.5 L20 9.5 L29.5 12.5 L30.5 23.5 L25 32 H15 L9.5 23.5 Z' }],
+    ['path', { d: 'M12 18.2 L20 20.2 L28 18.2 L27 23.2 L20 25 L13 23.2 Z', fill: 'K', stroke: 'C', 'stroke-width': 1.1 }],
+    ['path', { d: 'M14 20.8 L20 22.3 L26 20.8', fill: 'none', stroke: 'W', 'stroke-width': 1.5, 'stroke-linecap': 'round' }],
+    ['path', { ...LINE, d: 'M16.5 28 H23.5 M20 10 V15.5', 'stroke-width': 1.2 }],
   ],
-  zero: [                                           // Mining, the prospector: a hard hat with its lamp, goggles, a grille
-    ['path', { d: 'M10 17 Q10 8 20 8 Q30 8 30 17 Z', fill: 'C' }],
-    ['path', { ...LINE, d: 'M6.5 17.5 H33.5', 'stroke-width': 2.2 }],
-    ['circle', { cx: 20, cy: 12.6, r: 2.6, fill: 'K' }], ['circle', { cx: 20, cy: 12.6, r: 1.2, fill: 'C' }],
-    ['path', { ...HEAD, d: 'M10.5 19 V30 Q10.5 35 15.5 35 H24.5 Q29.5 35 29.5 30 V19 Z' }],
-    ['circle', { cx: 15.6, cy: 24, r: 3.1, fill: 'K', stroke: 'C', 'stroke-width': 1.2 }], ['circle', { cx: 24.4, cy: 24, r: 3.1, fill: 'K', stroke: 'C', 'stroke-width': 1.2 }],
-    ['path', { ...LINE, d: 'M18.7 24 H21.3', 'stroke-width': 1.2 }],
-    ['path', { ...LINE, d: 'M16.5 30.5 V33 M20 30.5 V33 M23.5 30.5 V33', 'stroke-width': 1.2 }],
+  zero: [                                           // Mining (Zero): Deep-Core Exo-Prospector -- twin bore-lamps, heavy dome helm, laser visor & industrial respirator
+    ['circle', { cx: 20, cy: 20, r: 18, fill: 'C', 'fill-opacity': 0.08, stroke: 'C', 'stroke-opacity': 0.32, 'stroke-width': 1 }],
+    ['path', { d: 'M5.5 36 L9.5 29.5 H30.5 L34.5 36 Z', fill: 'C', 'fill-opacity': 0.25, stroke: 'C', 'stroke-width': 1.2 }],
+    ['path', { d: 'M9 17 C9 8.5 31 8.5 31 17 Z', fill: 'C', 'fill-opacity': 0.42, stroke: 'C', 'stroke-width': 1.4 }],
+    ['rect', { x: 15, y: 7.2, width: 10, height: 4.6, rx: 1.6, fill: 'K', stroke: 'C', 'stroke-width': 1.2 }],
+    ['circle', { cx: 17.8, cy: 9.5, r: 1.2, fill: 'W' }], ['circle', { cx: 22.2, cy: 9.5, r: 1.2, fill: 'W' }],
+    ['path', { ...HEAD, d: 'M9.5 17 H30.5 V26.5 L26 33 H14 L9.5 26.5 Z' }],
+    ['rect', { x: 11.8, y: 19.2, width: 7.2, height: 4.6, rx: 1.4, fill: 'K', stroke: 'C', 'stroke-width': 1.1 }],
+    ['rect', { x: 21, y: 19.2, width: 7.2, height: 4.6, rx: 1.4, fill: 'K', stroke: 'C', 'stroke-width': 1.1 }],
+    ['line', { x1: 13.5, y1: 21.5, x2: 17.2, y2: 21.5, stroke: 'W', 'stroke-width': 1.3 }],
+    ['line', { x1: 22.8, y1: 21.5, x2: 26.5, y2: 21.5, stroke: 'W', 'stroke-width': 1.3 }],
+    ['rect', { x: 14.2, y: 26.2, width: 11.6, height: 5.4, rx: 1.8, fill: 'K', stroke: 'C', 'stroke-width': 1.1 }],
+    ['path', { ...LINE, d: 'M17 27.6 V30.2 M20 27.6 V30.2 M23 27.6 V30.2', 'stroke-width': 1.1 }],
   ],
-  mercury: [                                        // Trade, the merchant: the winged helm, a coin on the brow, a smile
-    ['path', { d: 'M11 15 L3.5 8.5 L6.5 14 L2.5 13.5 L7 18 L5 19 L10.5 21 Z', fill: 'C' }],
-    ['path', { d: 'M29 15 L36.5 8.5 L33.5 14 L37.5 13.5 L33 18 L35 19 L29.5 21 Z', fill: 'C' }],
-    ['ellipse', { ...HEAD, cx: 20, cy: 22, rx: 9.6, ry: 12.5 }],
-    ['circle', { cx: 20, cy: 14.6, r: 2.5, fill: 'K', stroke: 'C', 'stroke-width': 1.1 }], ['path', { ...LINE, d: 'M20 13.3 V15.9', 'stroke-width': 1.1 }],
-    ['path', { ...LINE, d: 'M13.5 21.8 Q15.8 19.6 18 21.8 M22 21.8 Q24.2 19.6 26.5 21.8', 'stroke-width': 1.5 }],
-    ['path', { ...LINE, d: 'M15 27.5 Q20 31.6 25 27.5', 'stroke-width': 1.5 }],
+  mercury: [                                        // Trade (Mercury): Syndicate High-Broker -- swept Hermes cyber-wings, guild collar & HUD market monocle
+    ['circle', { cx: 20, cy: 20, r: 18, fill: 'C', 'fill-opacity': 0.08, stroke: 'C', 'stroke-opacity': 0.32, 'stroke-width': 1 }],
+    ['path', { d: 'M7 36 L11.5 28.5 L20 32.5 L28.5 28.5 L33 36 Z', fill: 'C', 'fill-opacity': 0.28, stroke: 'C', 'stroke-width': 1.2 }],
+    ['path', { d: 'M10.5 16.5 L3.8 10.5 L6.8 16.8 L4.2 19 L10.5 21 Z', fill: 'C' }],
+    ['path', { d: 'M29.5 16.5 L36.2 10.5 L33.2 16.8 L35.8 19 L29.5 21 Z', fill: 'C' }],
+    ['path', { ...HEAD, d: 'M11 14 C11 8 29 8 29 14 L28.5 25 Q20 33.5 11.5 25 Z' }],
+    ['polygon', { points: '20,10.2 22.2,12.8 20,15.4 17.8,12.8', fill: 'W' }],
+    ['circle', { cx: 15.6, cy: 20.5, r: 3.4, fill: 'K', stroke: 'W', 'stroke-width': 1.2 }],
+    ['circle', { cx: 15.6, cy: 20.5, r: 1.2, fill: 'C' }],
+    ['path', { ...LINE, d: 'M15.6 15.8 V17.1 M15.6 23.9 V25.2 M10.9 20.5 H12.2', 'stroke-width': 0.9 }],
+    ['path', { d: 'M22.2 19.8 L26.8 19.2 L25.8 21.6 L22.2 21.4 Z', fill: 'W' }],
+    ['path', { ...LINE, d: 'M16.5 26.8 Q20.5 28.8 24 26.2', 'stroke-width': 1.3 }],
   ],
-  apollo: [                                         // Logistics, the builder: the sun's rays over a square head, a brow plate, a level mouth, two bolts
-    ['path', { ...LINE, d: 'M20 3.5 V8 M11.5 5.6 L13.8 9.4 M28.5 5.6 L26.2 9.4', 'stroke-width': 1.7 }],
-    ['rect', { ...HEAD, x: 8.5, y: 11.5, width: 23, height: 23.5, rx: 3.5 }],
-    ['rect', { x: 8.5, y: 11.5, width: 23, height: 5, rx: 2.5, fill: 'C' }],
-    ['rect', { x: 12, y: 20, width: 6.2, height: 4.2, rx: 0.8, fill: 'K', stroke: 'C', 'stroke-width': 1 }], ['rect', { x: 21.8, y: 20, width: 6.2, height: 4.2, rx: 0.8, fill: 'K', stroke: 'C', 'stroke-width': 1 }],
-    ['rect', { x: 14, y: 28.3, width: 12, height: 2.6, rx: 0.6, fill: 'C' }],
-    ['circle', { cx: 11.4, cy: 32.2, r: 0.9, fill: 'C' }], ['circle', { cx: 28.6, cy: 32.2, r: 0.9, fill: 'C' }],
+  apollo: [                                         // Logistics (Apollo): Orbital Starwright -- solar gantry arch, structural engineer helm & dual blueprint optics
+    ['circle', { cx: 20, cy: 20, r: 18, fill: 'C', 'fill-opacity': 0.08, stroke: 'C', 'stroke-opacity': 0.32, 'stroke-width': 1 }],
+    ['path', { d: 'M5.5 36 L8.5 29 H31.5 L34.5 36 Z', fill: 'C', 'fill-opacity': 0.28, stroke: 'C', 'stroke-width': 1.3 }],
+    ['path', { ...LINE, d: 'M7.5 16 A13 13 0 0 1 32.5 16', 'stroke-width': 1.5 }],
+    ['circle', { cx: 20, cy: 3.5, r: 1.6, fill: 'W' }],
+    ['circle', { cx: 10.2, cy: 8.8, r: 1.3, fill: 'C' }], ['circle', { cx: 29.8, cy: 8.8, r: 1.3, fill: 'C' }],
+    ['rect', { ...HEAD, x: 10, y: 11.5, width: 20, height: 20.5, rx: 4 }],
+    ['path', { d: 'M10 15.5 H30', stroke: 'C', 'stroke-width': 1.8 }],
+    ['rect', { x: 12.2, y: 18.2, width: 15.6, height: 5.2, rx: 1.4, fill: 'K', stroke: 'C', 'stroke-width': 1.1 }],
+    ['rect', { x: 13.8, y: 19.8, width: 4.8, height: 2, rx: 0.6, fill: 'W' }],
+    ['rect', { x: 21.4, y: 19.8, width: 4.8, height: 2, rx: 0.6, fill: 'W' }],
+    ['path', { ...LINE, d: 'M15 27.5 H25 M17.5 29.8 H22.5', 'stroke-width': 1.3 }],
   ],
-  apophis: [                                        // Military, the warrior: a horned helm with a crest, the visor one narrow V
-    ['path', { d: 'M10.5 13 L4 4.5 L8.5 17 Z', fill: 'C' }], ['path', { d: 'M29.5 13 L36 4.5 L31.5 17 Z', fill: 'C' }],
-    ['path', { ...HEAD, d: 'M20 6.5 L30 12 L32 24 L26 35 H14 L8 24 L10 12 Z' }],
-    ['path', { d: 'M11.5 18.5 L20 23 L28.5 18.5 L27.5 22.5 L20 26.5 L12.5 22.5 Z', fill: 'C' }],
-    ['path', { ...LINE, d: 'M20 6.5 V15', 'stroke-width': 1.6 }],
-    ['path', { ...LINE, d: 'M17 30.5 H23', 'stroke-width': 1.3 }],
+  apophis: [                                        // Military (Apophis): Praetorian Dreadnought Warlord -- swept battle-crest, armored cheek plates & V-slit visor
+    ['circle', { cx: 20, cy: 20, r: 18, fill: 'C', 'fill-opacity': 0.08, stroke: 'C', 'stroke-opacity': 0.35, 'stroke-width': 1 }],
+    ['path', { d: 'M6 36 L10 28.5 L20 33 L30 28.5 L34 36 Z', fill: 'C', 'fill-opacity': 0.3, stroke: 'C', 'stroke-width': 1.2 }],
+    ['path', { d: 'M10.5 14 L4.5 6 L8.8 18.5 Z', fill: 'C' }],
+    ['path', { d: 'M29.5 14 L35.5 6 L31.2 18.5 Z', fill: 'C' }],
+    ['polygon', { points: '20,3.8 22.4,11.5 20,15 17.6,11.5', fill: 'C' }],
+    ['path', { ...HEAD, d: 'M10.5 11.5 L20 8.5 L29.5 11.5 L31 23.5 L24.5 33 H15.5 L9 23.5 Z' }],
+    ['polygon', { points: '11.2,18 20,22.2 28.8,18 27.4,22.4 20,25.8 12.6,22.4', fill: 'K', stroke: 'C', 'stroke-width': 1 }],
+    ['polyline', { points: '13,19.6 20,23 27,19.6', fill: 'none', stroke: 'W', 'stroke-width': 1.6, 'stroke-linecap': 'round' }],
+    ['path', { ...LINE, d: 'M16.5 29.2 L20 27.6 L23.5 29.2', 'stroke-width': 1.3 }],
   ],
-  oracle: [                                         // Intel, the seer: one great eye, an antenna, and it listens to both sides
-    ['path', { ...LINE, d: 'M20 10.5 V6', 'stroke-width': 1.4 }], ['circle', { cx: 20, cy: 4.7, r: 1.7, fill: 'C' }],
-    ['path', { ...LINE, d: 'M5.2 16.5 Q2.6 22 5.2 27.5 M34.8 16.5 Q37.4 22 34.8 27.5', 'stroke-width': 1.3 }],
-    ['circle', { ...HEAD, cx: 20, cy: 22.5, r: 12 }],
-    ['circle', { cx: 20, cy: 21.5, r: 6, fill: 'K', stroke: 'C', 'stroke-width': 1.1 }],
-    ['circle', { cx: 20, cy: 21.5, r: 3.1, fill: 'none', stroke: 'C', 'stroke-width': 1.1 }], ['circle', { cx: 20, cy: 21.5, r: 1.3, fill: 'C' }],
-    ['path', { ...LINE, d: 'M16.5 31 H23.5', 'stroke-width': 1.2 }],
+  oracle: [                                         // Intel (Oracle): Voidborn Recon Seer -- stealth cowl hood, tri-optic sensor triangle & telemetry arcs
+    ['circle', { cx: 20, cy: 20, r: 18, fill: 'C', 'fill-opacity': 0.08, stroke: 'C', 'stroke-opacity': 0.32, 'stroke-width': 1 }],
+    ['path', { d: 'M6.5 36 C8.5 27 12 24 20 24 C28 24 31.5 27 33.5 36 Z', fill: 'C', 'fill-opacity': 0.22 }],
+    ['path', { d: 'M20 5.5 C10 6.5 7.5 16.5 8.5 28.5 L14.5 33.5 H25.5 L31.5 28.5 C32.5 16.5 30 6.5 20 5.5 Z', fill: 'C', 'fill-opacity': 0.24, stroke: 'C', 'stroke-width': 1.45 }],
+    ['path', { d: 'M12 14.5 Q20 10.5 28 14.5 L26.5 29 H13.5 Z', fill: 'K', stroke: 'C', 'stroke-width': 1 }],
+    ['circle', { cx: 20, cy: 20.5, r: 4.3, fill: 'K', stroke: 'C', 'stroke-width': 1.2 }],
+    ['circle', { cx: 20, cy: 20.5, r: 1.8, fill: 'W' }],
+    ['circle', { cx: 14.8, cy: 16.2, r: 1.1, fill: 'C' }], ['circle', { cx: 25.2, cy: 16.2, r: 1.1, fill: 'C' }],
+    ['path', { ...LINE, d: 'M5.2 16 Q3 20.5 5.2 25 M34.8 16 Q37 20.5 34.8 25', 'stroke-width': 1.2 }],
   ],
 };
-function faceSvg(id, division, colour, size) {      // a member's portrait; a member without one gets its division's ship
+function faceSvg(id, division, colour, size) {
   const parts = FACES[id];
   if (!parts) return shipSvg(division === 'Command' ? 'Flagship' : division, colour, Math.round(size * 0.7));
   const NS = 'http://www.w3.org/2000/svg', svg = document.createElementNS(NS, 'svg');
@@ -173,7 +197,7 @@ function faceSvg(id, division, colour, size) {      // a member's portrait; a me
   svg.setAttribute('class', 'face'); svg.setAttribute('aria-hidden', 'true');
   for (const [tag, attrs] of parts) {
     const e = document.createElementNS(NS, tag);
-    Object.entries(attrs).forEach(([k, v]) => e.setAttribute(k, v === 'C' ? colour : v === 'K' ? '#0b0e15' : v));
+    Object.entries(attrs).forEach(([k, v]) => e.setAttribute(k, v === 'C' ? colour : v === 'K' ? '#0b0e15' : v === 'W' ? '#f4f7ff' : v));
     svg.append(e);
   }
   return svg;
@@ -964,37 +988,61 @@ function liveAge() { return F.age < 0 ? -1 : F.age + Math.round((Date.now() - fe
 
 function isWorking(r) { return ['work', 'move', 'wait'].includes(shipState(r)[0]); }
 
-function renderMembers() {                       // the top bar: the six members, each with its portrait and its ships; then the fleet
+function renderMembers() {                       // the top bar: dual purse (Liquid Credits + 24h /h & Enterprise Value), six bespoke Admiral cards, and Fleet total
   const box = $('members'), by = new Map();
   box.replaceChildren();
-  const purse = $('purse'), have = F.totals || {}, hour = have.rates && have.rates.windows ? have.rates.windows[metricWin] : null;   // the Metrics' window: one figure on both
-  const treasury = (S && S.holdings && S.holdings.treasury) || 0;   // the faction's treasury, the fleet's main purse (D225)
-  purse.replaceChildren(el('div', 'k', 'Credits'), el('div', 'v', have.ships ? fmt((have.credits || 0) + treasury) : '--'));
-  if (hour) {                                     // what all wallets changed by per hour over the last hour, everything counted
+  const purse = $('purse'), have = F.totals || {};
+  const wins = (have.rates && have.rates.windows) || {};
+  const win24 = wins['24h'] || wins[metricWin] || null;
+  const treasury = (S && S.holdings && S.holdings.treasury) || 0;
+  const liquid = (have.credits || 0) + treasury;
+  const bs = (OPS.data && OPS.data.balance_sheet) || null;
+  const netWorth = bs && bs.net_worth ? bs.net_worth : null;
+
+  purse.replaceChildren();
+  const cCol = el('div', 'pcol');
+  cCol.append(el('div', 'k', 'Credits'), el('div', 'v', have.ships ? fmt(liquid) : '--'));
+  if (win24) {
     const line = el('div', 's');
-    line.append(tint(purseNet(hour)), ' /h ', el('span', 'win', WINDOWS[metricWin][0].toLowerCase()));
-    purse.append(line);
+    line.append(tint(purseNet(win24)), ' /h ', el('span', 'win', wins['24h'] ? '24h' : WINDOWS[metricWin][0].toLowerCase()));
+    cCol.append(line);
   }
-  purse.title = 'The fleet\'s money: all wallets (' + fmt(have.credits) + ' cr) plus the faction purse (' + fmt(treasury) + ' cr). '
-    + 'Below: the net of everything per hour over the ' + WINDOWS[metricWin][0].toLowerCase() + ' (the window chosen under Metrics): steady money, rewards paid once '
-    + 'and what the treasury itself paid or got; money moved between our own purses cancels. The same figure as Net / h under Metrics';
+  cCol.title = 'Liquid Purse: ship wallets (' + fmt(have.credits) + ' cr) + faction treasury (' + fmt(treasury) + ' cr). Rate below is net cash flow /h over 24 hours.';
+
+  const eCol = el('div', 'pcol ent');
+  eCol.append(el('div', 'k', 'Enterprise'), el('div', 'v', netWorth ? fmtCompact(netWorth) + ' cr' : '--'));
+  const eSub = el('div', 's', bs ? 'vault ' + fmtCompact(bs.vault_worth || 0) + ' + bases' : 'loading balance sheet');
+  eCol.append(eSub);
+  if (bs) {
+    eCol.title = 'Consolidated Enterprise Value: ' + fmt(bs.net_worth) + ' cr\n'
+      + '- Liquid Cash: ' + fmt(bs.liquid_cash) + ' cr\n'
+      + '- Station Vault Inventory: ' + fmt(bs.vault_worth) + ' cr\n'
+      + '- Fleet Hulls & Fitted Modules: ' + fmt(bs.fleet_book) + ' cr\n'
+      + '- Sovereign Facilities: ' + fmt(bs.facility_invested) + ' cr\nClick to open Metrics.';
+  }
+  purse.onclick = () => { tab = 'Metrics'; render(); };
+  purse.append(cCol, eCol);
+
   F.ships.forEach((r) => { if (!by.has(r.division)) by.set(r.division, []); by.get(r.division).push(r); });
   for (const a of (S ? S.roster : [])) {
     const list = by.get(a.division) || [], c = DIV[a.division] || DIV.Unassigned, b = el('button', 'member');
     const working = list.filter(isWorking).length, who = el('div', 'who');
     b.type = 'button';
+    const med = el('span', 'face-medallion');
+    med.append(faceSvg(a.id, a.division, c, 30));
     who.append(el('div', 'n', a.name), el('div', 'd', a.division));
-    b.append(faceSvg(a.id, a.division, c, 30), who, el('div', 'c', String(list.length)));
+    const cnt = el('div', 'c', String(list.length));
+    if (working < list.length) cnt.classList.add('has-idle');
+    b.append(med, who, cnt);
     b.style.setProperty('--c', c);
-    b.title = a.name + ', ' + a.rank + ' | ' + a.division + ': ' + list.length + ' ships, ' + working + ' working, '
-      + (list.length - working) + ' without work | click to write to ' + a.name;
-    b.addEventListener('click', () => address(a.id));
+    b.title = a.name + ' (' + a.rank + ' -- ' + a.division + '): ' + working + '/' + list.length + ' active | Click to message ' + a.name;
+    b.addEventListener('click', () => openCommsFor(a.id));
     box.append(b);
   }
   const t = F.totals || {}, all = el('div', 'member total'), who = el('div', 'who');
-  who.append(el('div', 'n', 'Fleet'), el('div', 'd', t.ships ? (t.working || 0) + ' working' : 'no data'));
+  who.append(el('div', 'n', 'Fleet'), el('div', 'd', t.ships ? (t.working || 0) + ' active' : 'no data'));
   all.append(who, el('div', 'c', fmt(t.ships)));
-  all.title = 'All ships: ' + fmt(t.working) + ' working, ' + fmt(t.parked) + ' parked at a station without work, ' + fmt(t.adrift) + ' in space without work';
+  all.title = 'Total Fleet: ' + fmt(t.working) + ' active, ' + fmt(t.parked) + ' docked, ' + fmt(t.adrift) + ' adrift';
   box.append(all);
 }
 
@@ -1172,7 +1220,6 @@ function renderRoster() {
   ensureDivStrip(divisions);
 
   const filtering = rosterMode !== 'all' || Boolean(rosterQuery) || rosterDiv !== 'all';
-  const win1h = ((((F.totals || {}).rates || {}).windows || {})['1h'] || {}).divisions || {};
   let shownTotal = 0;
 
   for (const [division, admiral] of divisions) {
@@ -1184,14 +1231,27 @@ function renderRoster() {
 
     let atWork = 0;
     raw.forEach((r) => { const st = shipState(r)[0]; if (st === 'work' || st === 'move' || st === 'wait') atWork++; });
-    const hasSel = selShip && raw.some((r) => r.name === selShip);
-    const folded = !filtering && !hasSel && collapsed.has(division);
+    const forceOpen = rosterMode !== 'all' || Boolean(rosterQuery) || rosterDiv === division;
+    const folded = !forceOpen && collapsed.has(division);
     const c = DIV[division] || DIV.Unassigned;
 
     const block = el('div', 'div');
     const card = el('div', 'divcard');
     const head = el('div', 'divhead');
     head.style.borderLeftColor = c;
+
+    const toggleDivisionFold = () => {
+      if (rosterDiv === division) {
+        rosterDiv = 'all';
+        collapsed.add(division);
+      } else if (folded) {
+        collapsed.delete(division);
+      } else {
+        collapsed.add(division);
+      }
+      saveFolds();
+      renderRoster();
+    };
 
     const name = el('button', 'name', division);
     name.type = 'button';
@@ -1201,28 +1261,18 @@ function renderRoster() {
     name.style.color = c;
     name.title = (folded ? 'Unfold ' : 'Fold ') + division + ' (' + raw.length + ' ships)';
     name.setAttribute('aria-expanded', folded ? 'false' : 'true');
-    name.addEventListener('click', () => {
-      if (rosterDiv === division) { rosterDiv = 'all'; }
-      else if (collapsed.has(division)) collapsed.delete(division);
-      else collapsed.add(division);
-      saveFolds(); renderRoster();
-    });
+    name.addEventListener('click', toggleDivisionFold);
     head.append(name);
 
     if (admiral) {
-      const b = linkButton('@' + admiral.name, () => address(admiral.id), 'adm');
+      const b = linkButton('@' + admiral.name, (ev) => { if (ev && ev.stopPropagation) ev.stopPropagation(); openCommsFor(admiral.id); }, 'adm');
       b.title = 'Message ' + admiral.name + ' in Comms';
       head.append(b);
     }
 
     const metaRight = el('span', 'divmeta');
-    const d1h = win1h[division] || {};
-    if (typeof d1h.cph === 'number') {
-      const cphTxt = (d1h.cph >= 0 ? '+' : '') + Math.round(d1h.cph / 1000) + 'k/h';
-      const cphEl = el('span', 'divcph ' + (d1h.cph >= 0 ? 'pos' : 'neg'), cphTxt);
-      cphEl.title = division + ' 1h steady operating net: ' + fmt(d1h.cph) + ' cr/h';
-      metaRight.append(cphEl);
-    }
+    metaRight.style.cursor = 'pointer';
+    metaRight.addEventListener('click', toggleDivisionFold);
     const crew = (((F.totals || {}).divisions || {})[division] || {}).crew;
     if (crew && crew.ships) {
       const lvEl = el('span', 'divcph', 'Lv ' + oneDecimal(crew.piloting));
@@ -1230,7 +1280,7 @@ function renderRoster() {
       metaRight.append(lvEl);
     }
     const wp = el('span', 'divpill' + (atWork < raw.length ? ' warn' : ''), atWork + '/' + raw.length);
-    wp.title = atWork + ' active of ' + raw.length + ' ships';
+    wp.title = atWork + ' active of ' + raw.length + ' ships (click to fold/unfold)';
     metaRight.append(wp);
     head.append(metaRight);
 
@@ -1391,6 +1441,10 @@ function renderShip(panel) {
 async function selectShip(name, center) {
   selShip = name; shipCard = null; shipMark = ''; pilotCard = null; docView = null; tab = 'Selection';
   const row = F.ships.find((r) => r.name === name);
+  if (row && row.division && collapsed.has(row.division)) {
+    collapsed.delete(row.division);
+    saveFolds();
+  }
   if (row && sys.has(row.system)) {
     selected = row.system; route = pathFromHome(selected);
     if (center) { const s = sys.get(selected); flyTo(s.x, s.y, view.k < 0.12 ? 0.35 : view.k); }
@@ -2507,7 +2561,7 @@ async function loadOps() {
   await opsOf();
   battleSystems.clear();
   ((OPS.data && OPS.data.alerts && OPS.data.alerts.battles) || []).forEach((b) => { if (b.system) battleSystems.add(b.system); });
-  if (S) status();
+  if (S) { status(); renderMembers(); }
   renderAlerts();
   draw();
 }
@@ -3354,38 +3408,109 @@ function status() {
 // ---------------------------------------------------------------- comms: one conversation with all six members
 
 const chat = { after: 0, timer: 0, busy: false, first: true, unseen: 0 };
-function markUnseen(n) {                         // answers that came while the messages are hidden: a count on the dock's toggle
+let chatTargets = new Set(['unity']);            // selected recipients when no explicit @Name is typed in chat-input
+
+function markUnseen(n) {
   chat.unseen = n;
-  const u = $('dock-unseen');
-  u.textContent = n ? n + ' new' : '';
-  u.hidden = !n;
+  for (const id of ['dock-unseen', 'pill-unseen']) {
+    const u = $(id);
+    if (u) { u.textContent = n ? n + ' new' : ''; u.hidden = !n; }
+  }
 }
 const agentOf = (id) => ((S && S.roster) || []).find((a) => a.id === id) || { id, name: id, division: 'Command', rank: '' };
 
-function address(id) {                           // put @Name at the head of the message, or take it out again
-  const input = $('chat-input'), tag = '@' + (id === 'all' ? 'all' : agentOf(id).name);
-  const has = new RegExp('(^|\\s)' + tag + '(?![A-Za-z0-9_])\\s*', 'i');
-  input.value = has.test(input.value) ? input.value.replace(has, '$1') : tag + ' ' + input.value;
-  input.focus();
-  markWho();
+function applyChatMin() {
+  const isMin = shut.has('chatmin');
+  const dock = $('chat-dock'), pill = $('chat-pill');
+  if (dock) dock.hidden = isMin;
+  if (pill) pill.hidden = !isMin;
+  const col = $('map-col');
+  if (col && dock) col.style.setProperty('--dockh', isMin ? '42px' : dock.offsetHeight + 'px');
 }
 
-function markWho() {                             // light the portraits the message is for; nobody named: the Fleet Admiral
-  const names = ($('chat-input').value.match(/@[A-Za-z]+/g) || []).map((s) => s.slice(1).toLowerCase());
-  const all = names.some((n) => ['all', 'everyone', 'fleet'].includes(n)), admirals = names.includes('admirals');
-  const to = [];
-  document.querySelectorAll('#chat-who button').forEach((b) => {
-    const a = agentOf(b.dataset.id);
-    const on = b.dataset.id === 'all' ? all : (all || names.includes(a.name.toLowerCase()) || (admirals && a.rank === 'Admiral'));
-    b.classList.toggle('on', on);
-    if (on && b.dataset.id !== 'all') to.push(a.name);
-  });
-  if (!to.length) {
-    const unity = document.querySelector('#chat-who button[data-id="unity"]');
-    if (unity) unity.classList.add('on');
-    to.push('Unity');
+function setChatMin(min) {
+  if (min) shut.add('chatmin'); else shut.delete('chatmin');
+  saveShut();
+  applyChatMin();
+  if (!min) {
+    markUnseen(0);
+    const log = $('chat-log');
+    if (log) log.scrollTop = log.scrollHeight;
   }
-  $('chat-input').placeholder = 'To ' + (all ? 'everyone' : to.join(', ')) + '. Click a face or type @Name to choose. Enter sends.';
+}
+
+function openCommsFor(id) {                      // clicked from Top Bar or Fleet Outliner: unminimize Comms and focus this agent
+  if (shut.has('chatmin')) setChatMin(false);
+  chatTargets = new Set([id]);
+  markWho();
+  const inp = $('chat-input');
+  if (inp) inp.focus();
+}
+
+function address(id) {                           // toggle 1, multiple, 5 Admirals, or All 6 recipients cleanly
+  if (shut.has('chatmin')) setChatMin(false);
+  const allIds = ((S && S.roster) || []).map((a) => a.id);
+  const admIds = ((S && S.roster) || []).filter((a) => a.rank === 'Admiral').map((a) => a.id);
+  if (id === 'all') {
+    chatTargets = chatTargets.size === allIds.length ? new Set(['unity']) : new Set(allIds);
+  } else if (id === 'admirals') {
+    const allAdm = admIds.length > 0 && admIds.every((x) => chatTargets.has(x)) && chatTargets.size === admIds.length;
+    chatTargets = allAdm ? new Set(['unity']) : new Set(admIds);
+  } else {
+    if (chatTargets.size === allIds.length) {
+      chatTargets = new Set([id]);               // coming off All -> solo the clicked member
+    } else if (chatTargets.has(id)) {
+      chatTargets.delete(id);
+      if (!chatTargets.size) chatTargets.add('unity');
+    } else {
+      chatTargets.add(id);
+    }
+  }
+  markWho();
+  const input = $('chat-input');
+  if (input) input.focus();
+}
+
+function effectiveTargets(rawText) {             // explicit @mentions in text win; otherwise use selected chatTargets pills
+  const roster = (S && S.roster) || [];
+  const typed = (String(rawText || '').match(/@[A-Za-z]+/g) || []).map((s) => s.slice(1).toLowerCase());
+  if (typed.length) {
+    if (typed.some((n) => ['all', 'everyone', 'fleet'].includes(n))) return roster.map((a) => a.id);
+    const out = [];
+    for (const w of typed) {
+      if (w === 'admirals') roster.filter((a) => a.rank === 'Admiral').forEach((a) => { if (!out.includes(a.id)) out.push(a.id); });
+      else {
+        const hit = roster.find((a) => a.id === w || a.name.toLowerCase() === w);
+        if (hit && !out.includes(hit.id)) out.push(hit.id);
+      }
+    }
+    if (out.length) return out;
+  }
+  return [...chatTargets];
+}
+
+function markWho() {
+  const roster = (S && S.roster) || [];
+  const input = $('chat-input');
+  const activeIds = new Set(effectiveTargets(input ? input.value : ''));
+  const allOn = roster.length > 0 && roster.every((a) => activeIds.has(a.id));
+  const admIds = roster.filter((a) => a.rank === 'Admiral').map((a) => a.id);
+  const admOn = !allOn && admIds.length > 0 && admIds.every((id) => activeIds.has(id)) && activeIds.size === admIds.length;
+  const names = [];
+  document.querySelectorAll('#chat-who button').forEach((b) => {
+    const bid = b.dataset.id;
+    if (bid === 'all') b.classList.toggle('on', allOn);
+    else if (bid === 'admirals') b.classList.toggle('on', admOn);
+    else {
+      const on = activeIds.has(bid);
+      b.classList.toggle('on', on);
+      if (on) names.push(agentOf(bid).name);
+    }
+  });
+  if (input) {
+    const dest = allOn ? 'All 6 (Group)' : admOn ? 'All 5 Admirals' : names.join(' + ') || 'Unity';
+    input.placeholder = 'Message -> ' + dest + '  (click portraits to toggle 1, several, Admirals or All; Enter sends)';
+  }
 }
 
 function chatNote(text) {
@@ -3400,7 +3525,7 @@ function groupMessage(m) {
   if (hint) hint.remove();
   const mine = m.who === 'suggi', a = mine ? null : agentOf(m.who);
   const box = el('div', 'msg ' + (mine ? 'user' : m.kind === 'error' ? 'err' : 'agent')), head = el('div', 'msghead');
-  if (mine) head.append(el('b', null, 'Suggi'), el('span', 'to', ' to ' + ((m.to || []).length >= 6 ? 'everyone' : (m.to || []).map((i) => agentOf(i).name).join(', ') || 'the group')));
+  if (mine) head.append(el('b', null, 'Suggi'), el('span', 'to', ' -> ' + ((m.to || []).length >= 6 ? 'All 6' : (m.to || []).map((i) => agentOf(i).name).join(', ') || 'Unity')));
   else {
     const name = el('b', null, a.name), c = DIV[a.division] || DIV.Command;
     name.style.color = c; box.style.borderLeftColor = c;
@@ -3408,7 +3533,8 @@ function groupMessage(m) {
   }
   head.append(el('span', 'when', clock((m.t || 0) * 1000)));
   box.append(head);
-  if (mine || m.kind === 'error') box.append(el('div', 'msgtext', m.text)); else box.append(markdown(m.text, '', false));
+  const cleanTxt = mine ? String(m.text || '').replace(/^(?:@[A-Za-z]+\s+)+/, '') : m.text;
+  if (mine || m.kind === 'error') box.append(el('div', 'msgtext', cleanTxt || m.text)); else box.append(markdown(m.text, '', false));
   log.append(box);
 }
 
@@ -3419,28 +3545,44 @@ async function pollGroup() {
   if (d && d.messages) {
     const log = $('chat-log'), stick = chat.first || log.scrollHeight - log.scrollTop - log.clientHeight < 80;
     d.messages.forEach((m) => { groupMessage(m); chat.after = Math.max(chat.after, m.n); });
-    if (!chat.first && shut.has('dock')) markUnseen(chat.unseen + d.messages.filter((m) => m.who !== 'suggi').length);
+    if (!chat.first && (shut.has('dock') || shut.has('chatmin'))) {
+      markUnseen(chat.unseen + d.messages.filter((m) => m.who !== 'suggi').length);
+    }
     if (chat.first && !log.children.length) {
-      log.append(el('div', 'chathint', 'One conversation with Unity and the five Admirals. A message goes to Unity unless it names someone: click a face below or type @Name; @all reaches everyone.'));
+      log.append(el('div', 'chathint', 'Direct & Group Command Channel. Toggle any combination of portraits below (1 agent, several, 5 Admirals, or All 6) and press Enter.'));
     }
     if (d.messages.length && stick) log.scrollTop = log.scrollHeight;
     chat.first = false;
     chat.busy = d.running.length > 0;
-    $('chat-state').textContent = d.running.map((r) => agentOf(r.agent).name + ' is working, ' + r.seconds + ' s' + (r.tool ? ' (' + r.tool + ')' : '')).join('  |  ');
+    const stateStr = d.running.map((r) => agentOf(r.agent).name + ' working (' + r.seconds + 's' + (r.tool ? ', ' + r.tool : '') + ')').join(' | ');
+    $('chat-state').textContent = stateStr;
+    const pSub = $('pill-sub');
+    if (pSub) pSub.textContent = d.running.length ? d.running.length + ' answering...' : '6 agents';
+    const pill = $('chat-pill');
+    if (pill) pill.classList.toggle('busy', chat.busy);
     document.querySelectorAll('#chat-who button').forEach((b) => b.classList.toggle('busy', d.running.some((r) => r.agent === b.dataset.id)));
   }
   chat.timer = setTimeout(pollGroup, chat.busy ? 1500 : 5000);
 }
 
 async function sendGroup() {
-  const input = $('chat-input'), message = input.value.trim(), send = $('chat-send');
-  if (!message || send.disabled) return;
+  const input = $('chat-input'), raw = input.value.trim(), send = $('chat-send');
+  if (!raw || send.disabled) return;
+  const roster = (S && S.roster) || [];
+  const hasExplicit = /@[A-Za-z]+/.test(raw);
+  let payload = raw;
+  if (!hasExplicit) {
+    const ids = [...chatTargets];
+    if (roster.length > 0 && ids.length === roster.length) payload = '@all ' + raw;
+    else if (ids.length) payload = ids.map((i) => '@' + agentOf(i).name).join(' ') + ' ' + raw;
+  }
   send.disabled = true;
   try {
-    const d = await post('/api/group/send', { text: message });
+    const d = await post('/api/group/send', { text: payload });
     input.value = '';
     markWho();
-    if (d.busy && d.busy.length) chatNote('Not sent to ' + d.busy.map((i) => agentOf(i).name).join(', ') + ': still answering the last message.');
+    if (shut.has('dock')) toggleShut('dock');     // pop open the message stream when sending so the reply is visible
+    if (d.busy && d.busy.length) chatNote('Busy (still answering prior turn): ' + d.busy.map((i) => agentOf(i).name).join(', '));
   } catch (e) { chatNote('Not sent: ' + e.message); }
   send.disabled = false;
   pollGroup();
@@ -3449,20 +3591,33 @@ async function sendGroup() {
 function initChat() {
   const who = $('chat-who');
   who.replaceChildren();
+  const all = el('button', 'all', 'All 6');
+  all.type = 'button'; all.dataset.id = 'all';
+  all.title = 'Broadcast to Unity + all 5 Admirals (@all)';
+  all.addEventListener('click', () => address('all'));
+  who.append(all);
+
+  const adms = el('button', 'all', '5 Adm');
+  adms.type = 'button'; adms.dataset.id = 'admirals';
+  adms.title = 'Message all 5 Division Admirals (@admirals)';
+  adms.addEventListener('click', () => address('admirals'));
+  who.append(adms);
+
   for (const a of S.roster) {
     const b = el('button', null), c = DIV[a.division] || DIV.Command;
     b.type = 'button'; b.dataset.id = a.id;
     b.style.setProperty('--c', c);
-    b.append(faceSvg(a.id, a.division, c, 22), el('span', null, a.name));
-    b.title = a.name + ', ' + a.rank + (a.division === 'Command' ? '' : ' of ' + a.division) + ': write to ' + a.name;
+    b.append(faceSvg(a.id, a.division, c, 20), el('span', null, a.name));
+    b.title = 'Toggle ' + a.name + ' (' + a.division + ') -- double-click to solo ' + a.name;
     b.addEventListener('click', () => address(a.id));
+    b.addEventListener('dblclick', () => { chatTargets = new Set([a.id]); markWho(); $('chat-input').focus(); });
     who.append(b);
   }
-  const all = el('button', 'all', 'All');
-  all.type = 'button'; all.dataset.id = 'all';
-  all.title = 'Write to all six';
-  all.addEventListener('click', () => address('all'));
-  who.append(all);
+  const minBtn = $('dock-min'), pillBtn = $('chat-pill');
+  if (minBtn) minBtn.addEventListener('click', () => setChatMin(true));
+  if (pillBtn) pillBtn.addEventListener('click', () => setChatMin(false));
+  applyChatMin();
+
   $('chat-send').addEventListener('click', sendGroup);
   $('chat-input').addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendGroup(); } });
   $('chat-input').addEventListener('input', markWho);
