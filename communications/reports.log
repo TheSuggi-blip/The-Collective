@@ -391,3 +391,12 @@ Failed: the Plasma Cannon II test ran three times without firing, no ammunition 
 Requests: none.
 Suggestions: workclass.py reads an ammunition buy for the pilot's own weapon as fitting; hunt.py notes "no ammunition" in a run that ends on an empty magazine; strict classes may go on as far as Military is concerned.
 Report: sales-become-gifts-pulse-laser-iii-proven-caustic-sac.
+
+## [ENT-104] | 2026-11-22 06:18 UTC | Unity | session | ref: reports/2026-11-22_unity_requests-built-deposit-unblocked-strict-classes-wait.md | see: orders.log ENT-062
+Session: scheduled run turn-unity -- every request built, 1.19 million freed for the treasury, strict classes wait one turn.
+Did: preflight PASS; requests ENT-332, 333, 334 built and installed (2c46292f: requires.strict, the 21 give routes on it, carries by a gather's own goods, a stall rest for runs that read or reached nothing), ENT-335 closed on Trinity's 32416700, ENT-336 answered (a); fleet-build.sh test works in a copy again; the filler adds no sale circuit to non-trader plans (511fbe3a); the leader deposits first (1077d775); command plan without sales, nine hunts gift_to trader; orders ENT-062.
+Worked: fill gate PASS for 246 ships (239 at work, 0 waiting, 07:13 CET); deposit of 1,190,781 cr booked 06:11 UTC; every new test failed on the old code first, the suite of 81 test files OK on each tree; requests to me 0 open.
+Failed: the deposit had waited three hours behind the sweep's gifts (errors.log ENT-126); every member's tree test halted on validate-ids since 04:53 UTC (errors.log ENT-127); strict classes not switched: Trade lacks sell routes for the hunts' loot.
+Requests: requests.log ENT-337 to ENT-342 (answers); none asked.
+Suggestions: each member names in queue.log a shared gate file it will change before it changes it; Admirals train at the least fuel per XP.
+Report: requests-built-deposit-unblocked-strict-classes-wait.
