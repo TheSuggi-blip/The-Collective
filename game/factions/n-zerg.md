@@ -38,7 +38,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Overqueen | Node Alpha (`node_alpha`) | 0 | fugue |
+| haunted01 | Node Gamma (`node_gamma`) | 0 | prospect |
 
 ## Standing History
 

@@ -38,8 +38,8 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Alder Burrowes | Nexus Prime (`nexus_prime`) | not on record | theoria |
 | Hob Meadowsweet | Node Gamma (`node_gamma`) | not on record | not met |
+| JenBeth SicK | Synchrony (`synchrony`) | 0 | prospect |
 | Mossy Thistlewick | Nexus Prime (`nexus_prime`) | not on record | not met |
 
 ## Standing History
