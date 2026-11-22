@@ -38,7 +38,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Alder Burrowes | Synchrony (`synchrony`) | not on record | theoria |
+| Anne Marie | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | Hob Meadowsweet | Node Gamma (`node_gamma`) | not on record | not met |
 | Mossy Thistlewick | Nexus Prime (`nexus_prime`) | not on record | not met |
 

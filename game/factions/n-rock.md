@@ -9,13 +9,13 @@ faction: Bedrock Materials
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-21
+updated: 2026-11-22
 ---
 
 # Bedrock Materials [ROCK]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 3.
+Pilots of it in our space in the last 24 hours: 5.
 
 ## Identity
 
@@ -41,6 +41,8 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Harbek Haulstone | Nexus Prime (`nexus_prime`) | not on record | not met |
 | Meph Addict | The Experiment (`the_experiment`) | 0 | prospect |
 | Ragna Cartwright | The Experiment (`the_experiment`) | not on record | not met |
+| Roland de Tortuga | Nexus Prime (`nexus_prime`) | 0 | residuum |
+| William Hill | Pherkad (`pherkad`) | 0 | accretion |
 
 ## Standing History
 

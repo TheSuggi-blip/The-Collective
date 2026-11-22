@@ -8,7 +8,7 @@ author: Unity
 # index.md -- Pilots We Know
 
 Built by `scripts/intel-index.py` from the pilot files of this folder;
-never edited by hand. Files listed: 23. The format of a pilot file:
+never edited by hand. Files listed: 25. The format of a pilot file:
 `BLUEPRINT.md`.
 
 ## Hostile
@@ -41,7 +41,9 @@ None filed.
 | MasterChief | medium | crimson | ENDL | 2026-11-15 | 2026-11-15 | [n-masterchief.md](n-masterchief.md) |
 | NovaExidosRim | medium | outerrim | none | 2026-11-15 | 2026-11-15 | [n-novaexidosrim.md](n-novaexidosrim.md) |
 | ObekT-MCP | medium | solarian | OBKT | 2026-11-16 | 2026-11-16 | [n-obekt-mcp.md](n-obekt-mcp.md) |
+| VoltFix | medium | voidborn | HEXC | 2026-11-22 | 2026-11-22 | [n-voltfix.md](n-voltfix.md) |
 | WALL-E | medium | solarian | ENDL | 2026-11-15 | 2026-11-15 | [n-wall-e.md](n-wall-e.md) |
+| Wexler GHM-33 | medium | outerrim | WEXL | 2026-11-22 | 2026-11-22 | [n-wexler_ghm-33.md](n-wexler_ghm-33.md) |
 
 ## Ally
 

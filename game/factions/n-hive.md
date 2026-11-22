@@ -42,7 +42,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| regodock01 | Synchrony (`synchrony`) | 0 | runner |
+| c09a6a25dc5785fc01d126c3 | Node Gamma (`node_gamma`) | 0 | runner |
 
 ## Standing History
 
