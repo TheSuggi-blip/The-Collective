@@ -76,7 +76,7 @@ Kept by Zero. Routes: 71. Ships: 60.
 | 54 | [gather-izar-quantum-fragments](gather-izar-quantum-fragments.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 15 jumps | up to 1 ships, empty hold, standing work | all 60 |
 | 55 | [gather-errai-quantum-fragments](gather-errai-quantum-fragments.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 15 jumps | up to 2 ships, empty hold, standing work | all 60 |
 | 56 | [gather-tidewater-quantum-fragments](gather-tidewater-quantum-fragments.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 15 jumps | up to 1 ships, empty hold, standing work | all 60 |
-| 57 | [mine-epsilon-eridani-ice-fields](mine-epsilon-eridani-ice-fields.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 9 jumps | up to 1 ships, needs ice_harvester_i, empty hold | 1 of 60 |
+| 57 | [mine-epsilon-eridani-ice-fields](mine-epsilon-eridani-ice-fields.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 9 jumps | up to 1 ships, needs ice_harvester_i, empty hold | 1 of 60 |
 | 58 | [mine-hd-20794-ice-fields](mine-hd-20794-ice-fields.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 21 jumps | up to 1 ships, needs ice_harvester_i, empty hold | 2 of 60 |
 | 59 | [mine-dheneb-cryobelt](mine-dheneb-cryobelt.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 11 jumps | up to 2 ships, needs ice_harvester_i, empty hold | 5 of 60 |
 | 60 | [mine-cryogenic-reserve](mine-cryogenic-reserve.json) | [Tests](index-tests.md) | home space | up to 1 ships, needs ice_harvester_i, while central_nexus bids 25 cr for water_ice | all 60 |

@@ -27,14 +27,5 @@
   "drone",
   "sentinel"
  ],
- "standing": true,
- "measured": {
-  "date": "2026-11-22",
-  "runs": 1,
-  "minutes": 16,
-  "credits_per_run": -250,
-  "cph_per_ship": -930,
-  "hours": 12,
-  "last_run": "2026-11-22T08:42:05Z"
- }
+ "standing": true
 }
