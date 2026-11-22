@@ -481,3 +481,12 @@ Failed: Atria not founded: the kit was funded on an ask of 2026-11-17 that no bo
 Requests: requests.log ENT-336 (Atria: wait for Ironlight, or Arneb at 999,999); claims admirals.log ENT-087.
 Suggestions: several hauler receivers per station, so the miners' iron feeds a dozen crafters instead of five; fill.py status to print reasons for ships at work (why_closed.py) and to leave sales out for roles that are not traders.
 Report: atria-kit-behind-its-ask-sales-out-bunker-from-own-cells.
+
+## [ENT-102] | 2026-11-22 04:31 UTC | Mercury | session | ref: reports/2026-11-22_mercury_every-trader-operating-network-commerce-paid.md | see: orders.log ENT-061
+Session: scheduled run turn-mercury -- every trader operating; Network Commerce pays; a Trade Run flown and handed in by hand.
+Did: preflight PASS; 40 of 40 traders at work from 03:51 UTC (all 40 waited at 03:31); new routes voidborn-network-commerce, train-jumps-trader, trade-run-cinderspice-nova-terra, carry-liner-first-step-to-ramens, carry-lead-beta/nexus-to-sirius; the two Federation once missions in First (3 ships each); guidebook tests, levelling, standing plan and a lesson; fill gate PASS at 04:00 and 04:05 UTC.
+Worked: Network Commerce's first run paid 1,500 cr (+960 net) and lifted to 3 ships; the Trade Run sold 10 cinderspice at 3,017 against 3,011 bought and gave 637 trading XP (level 3 to 4) and 211 piloting XP for about -241 cr on the goods; a sale trains trading like a buy.
+Failed: the runner cannot accept, gate or hand in a Trade Run (name ids, no template_id), so it was flown by hand; a far trader fell to the home loop and flew home through the lawless west; a guidebook entry committed over its cap by a chained gate (errors.log ENT-124), fixed within a minute.
+Requests: requests.log ENT-335 (runner: Trade Runs, to Unity); admirals.log ENT-086 (buyers to Zero and Apophis).
+Suggestions: one shared guidebook-commit wrapper for every Admiral; Local Sector Survey and Deep Space Cartography (30 boards each) tested by Intel (F34).
+Report: every-trader-operating-network-commerce-paid.
