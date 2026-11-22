@@ -1,0 +1,24 @@
+{
+ "id": "hunt-test-siphon-pilot-whale-sb2",
+ "kind": "hunt",
+ "title": "Fit test: one Pulse Laser III ship with a Shield Booster II against a pilot whale (220 hull) at Stellar Siphon, alone",
+ "note": "Written by Apophis 2026-11-22 16:11 UTC (orders ENT-064, block APOPHIS; rule F9: prey above the one-ship gauges is a test, one side at a time; F37: three results). Does one PL3 ship with a Shield Booster II kill a pilot whale alone over 60 percent hull? A side of three PL3 ships did, three of three at full hull (observations kind group_hunt, 2026-11-22). The whale hits back: a railgun starter fell from 73 to 15 of 75 hull in one fight (hunt-home-whale, 2026-11-15); the hunter flees under 60 percent. Herd: 4 pilot whales at 16:05 UTC (data/wildlife/nexus_prime.json), claimed by Military (admirals.log ENT-093). The loot goes to a trader receiver (gift_to, P5).",
+ "place": "nexus_prime:stellar_siphon",
+ "species": [
+  "pilot_whale"
+ ],
+ "sell_at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+ "min_bid": 5000,
+ "kills": 1,
+ "minutes": 30,
+ "max_ships": 1,
+ "min_creatures": 2,
+ "max_prey_hull": 220,
+ "alone": "pirates",
+ "requires": {
+  "module": "shield_booster_ii",
+  "empty_hold": true
+ },
+ "gift_to": "trader",
+ "standing": true
+}

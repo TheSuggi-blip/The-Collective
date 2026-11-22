@@ -1,0 +1,33 @@
+{
+ "id": "fit-shield-booster-ii-lhs-1140",
+ "kind": "circuit",
+ "title": "Fit one Shield Booster II into a free defence slot of a Pulse Laser III ship at Ironlight Crossroads, LHS 1140: one ship first",
+ "note": "Written by Apophis 2026-11-22 16:11 UTC (orders ENT-064, block APOPHIS: weapons and armour fitted; rule F17: a new module on one ship first; F37: the first alone, two more follow). Why: three Pulse Laser III ships kill a pilot whale at full hull, one alone does not pass the toughness gauge (gauges.py species: pilot_whale needs a side of 3); a Shield Booster II (cpu 3, power 6, catalog 0.732.3) is the next defence step. Asks read 15:56 UTC: 7,506 cr x 20 at Ironlight Crossroads (table books), 8,069 x 1 at Central Nexus. No replace: a Threshold has 2 defence slots and the PL3 ships without a Shield Booster I have both free. Paid from the pilot's own wallet (F12; min_credits 30,000 keeps it above F7). Its test hunt: hunt-test-siphon-pilot-whale-sb2.",
+ "once": true,
+ "max_ships": 1,
+ "max_pilots": 1,
+ "min_credits": 30000,
+ "requires": {
+  "module": "pulse_laser_iii",
+  "without_module": "shield_booster_ii",
+  "empty_hold": true,
+  "ask": {
+   "item": "shield_booster_ii",
+   "base": "784309214f105860a16a0c100a70eb14",
+   "max_price": 8000,
+   "min_qty": 1,
+   "max_age_minutes": 120
+  }
+ },
+ "stops": [
+  {
+   "at": "lhs_1140:0321b3e4406021575337b7be26e53dd7:784309214f105860a16a0c100a70eb14",
+   "fit": [
+    {
+     "module": "shield_booster_ii",
+     "max_price": 8000
+    }
+   ]
+  }
+ ]
+}

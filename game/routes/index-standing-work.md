@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 331.
+Routes: 332.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -96,6 +96,7 @@ Routes: 331.
 | [hunt-node-beta-frozen-drift-deuteron-slug-pl3](hunt-node-beta-frozen-drift-deuteron-slug-pl3.json) | hunt | home space | deuteron slug (85 hull) at node_beta_frozen_drift with a Pulse Laser III; loot stored, carapace for the reserve | up to 1 ships, needs pulse_laser_iii, empty hold, standing work | 4 | 12 | -100 | -390 | 2026-11-22 |
 | [hunt-test-acubens-bulwark-pc2](hunt-test-acubens-bulwark-pc2.json) | hunt | home space | Weapon test: bulwark (95 hull) at acubens_shadow_pocket with a Plasma Cannon II; loot stored at Central Nexus | up to 1 ships, needs plasma_cannon_ii, empty hold, standing work | 8 | 13 | -100 | -400 | 2026-11-22 |
 | [hunt-test-acubens-bulwark-pl3](hunt-test-acubens-bulwark-pl3.json) | hunt | home space | Weapon test: bulwark (95 hull) at acubens_shadow_pocket with a Pulse Laser III; loot stored at Central Nexus | up to 1 ships, needs pulse_laser_iii, empty hold, standing work | 9 | 26 | -220 | -570 | 2026-11-22 |
+| [hunt-test-siphon-pilot-whale-sb2](hunt-test-siphon-pilot-whale-sb2.json) | hunt | home space | Fit test: one Pulse Laser III ship with a Shield Booster II against a pilot whale (220 hull) at Stellar Siphon, alone | up to 1 ships, needs shield_booster_ii, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [gather-acubens-belt-carbon](gather-acubens-belt-carbon.json) | mine | home space | Standing work: carbon ore at Acubens Belt into storage at Node Beta (the faction's circuit boards) | up to 1 ships, empty hold, standing work | 13 | 50 | -210 | -260 | 2026-11-17 |
 | [gather-gsc-0027-prism-scatter](gather-gsc-0027-prism-scatter.json) | mine | home space | Standing work: iron and copper at GSC-0027 Prism Scatter into storage at Node Beta (S6) | up to 66 ships, standing work | TBD | TBD | TBD | TBD | -- |
 | [gather-gsc-0027-spacetime-seep](gather-gsc-0027-spacetime-seep.json) | mine | home space | Standing work: iron at GSC-0027 Spacetime Seep into storage at Node Beta (S6) | up to 50 ships, standing work | 51 | 49 | -260 | -320 | 2026-11-22 |
