@@ -1212,6 +1212,15 @@ def show_eyes(data, who):
                     cap_flag = ""
                 lines.append("  FACTION | seats %d/%d%s | treasury %s cr | bases %d%s%s"
                              % (mc, ml, cap_flag, num(trs), ob, hulls_txt, vb_txt))
+                if who in ("all", "Unity") and "ship_modules" in tables and "ships" in tables:
+                    off_tot = conn.execute(
+                        "SELECT COUNT(DISTINCT s.pilot) FROM ships s JOIN ship_modules m ON m.pilot=s.pilot "
+                        "WHERE (s.division='Mining' AND m.module='pulse_laser_i') "
+                        "OR (s.division IN ('Trade','Logistics','Intel') AND m.module IN ('mining_laser_i','ice_harvester_i','gas_harvester_i','pulse_laser_i')) "
+                        "OR (s.division='Military' AND m.module IN ('mining_laser_i','ice_harvester_i','gas_harvester_i'))"
+                    ).fetchone()[0]
+                    lines.append("  FLEET SLOTS | %d/%d division ships still carry off-role starter modules (`unfit` + multi-slot `fit` `count: 2` live)"
+                                 % (off_tot, tot_fl))
         if "ships" in tables and who not in ("all", "Unity"):
             div_name = {"Zero": "Mining", "Mercury": "Trade", "Apollo": "Logistics", "Apophis": "Military", "Oracle": "Intel"}.get(who, who)
             drow = conn.execute(
@@ -1228,6 +1237,40 @@ def show_eyes(data, who):
                 ).fetchone()[0]
                 lines.append("  MY UPGRADE READINESS (%s) | %d/%d ships still Tier-0 hull | Piloting avg %s, max %d (%d ships >= Lv10 ready for T2 hulls)"
                              % (div_name, drow[1], drow[0], drow[3], drow[2], ready10))
+                if "ship_modules" in tables:
+                    off_map = {
+                        "Mining": ("pulse_laser_i",),
+                        "Trade": ("mining_laser_i", "ice_harvester_i", "gas_harvester_i", "pulse_laser_i"),
+                        "Logistics": ("mining_laser_i", "ice_harvester_i", "gas_harvester_i", "pulse_laser_i"),
+                        "Military": ("mining_laser_i", "ice_harvester_i", "gas_harvester_i"),
+                        "Intel": ("mining_laser_i", "ice_harvester_i", "gas_harvester_i", "pulse_laser_i"),
+                    }
+                    off_mods = off_map.get(div_name, ())
+                    if off_mods:
+                        q_marks = ",".join("?" for _ in off_mods)
+                        off_ships = conn.execute(
+                            "SELECT COUNT(DISTINCT s.pilot) FROM ships s JOIN ship_modules m ON m.pilot=s.pilot "
+                            "WHERE s.division=? AND m.module IN (%s)" % q_marks,
+                            (div_name,) + off_mods,
+                        ).fetchone()[0]
+                        u_under2 = conn.execute(
+                            "SELECT COUNT(*) FROM ships s WHERE s.division=? AND "
+                            "(SELECT COUNT(*) FROM ship_modules m WHERE m.pilot=s.pilot AND m.slot='utility' AND m.module NOT IN (%s)) < 2" % q_marks,
+                            (div_name,) + off_mods,
+                        ).fetchone()[0]
+                        hold65 = conn.execute("SELECT COUNT(*) FROM ships WHERE division=? AND cargo_capacity <= 65", (div_name,)).fetchone()[0]
+                        if off_ships or u_under2:
+                            hint = {
+                                "Mining": "Threshold fits 2x mining_laser_iii (44 pwr=2.0x) + shield_booster_i once pulse_laser_i (-5 pwr) is stripped, or laser_iii + cargo_expander_iii (165 hold)",
+                                "Trade": "Threshold 2U slots fit 2x cargo_expander_ii/iii -> 165-265 hold (2.5x-4.1x/trip) once starter mods are stripped",
+                                "Logistics": "Threshold 2U slots fit 2x cargo_expander_ii/iii -> 165-265 hold (2.5x-4.1x/trip) once starter/harvester mods are stripped",
+                                "Military": "Stripping mining_laser_i/harvesters frees +5 pwr & 2U slots for 2x shield_booster_ii + afterburner/web/expander",
+                                "Intel": "Stripping mining_laser_i + pulse_laser_i frees +10 pwr & 2U slots for survey_scanner_ii + afterburner/cloak",
+                            }.get(div_name, "")
+                            lines.append(
+                                "  SLOT & LOADOUT MULTIPLIER (%s) | %d/%d ships carry off-role starter mods | %d/%d have <2 role utility mods (%d at <=65 hold) | use stop `unfit` + `fit` (`count: 2`, `requires.modules_below`/`any_module`): %s"
+                                % (div_name, off_ships, drow[0], u_under2, drow[0], hold65, hint)
+                            )
         if "need_status" in tables:
             nrows = conn.execute(
                 "SELECT priority, id, division, ROUND(covered, 1), gather, buy, craft, fee "

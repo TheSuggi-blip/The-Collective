@@ -669,15 +669,30 @@ def why_not(pilot, rid, route, state):
         return "wallet below %s cr" % route["min_credits"], None
     if pilot.get("credits", 0) < FLOOR and not (route.get("park") or routefiles.stage(route) in ("once", "paying")):
         return "wallet below %s cr: only work that pays" % format(FLOOR, ","), None     # no ship goes broke (wallet.py tops it up)
-    need = (route.get("requires") or {}).get("module")
-    if need and need not in pilot.get("modules", []):
+    p_mods = pilot.get("modules") or []
+    req = route.get("requires") or {}
+    need = req.get("module")
+    if isinstance(need, str) and need and need not in p_mods:
         return "needs " + need, None
-    if (route.get("requires") or {}).get("empty_hold") and pilot.get("goods", 0) > 5:      # nothing to lose aboard (orders F13); five units count as nothing
+    if isinstance(need, dict):
+        for m_id, min_n in need.items():
+            if p_mods.count(m_id) < min_n:
+                return "needs %dx %s" % (min_n, m_id), None
+    if req.get("empty_hold") and pilot.get("goods", 0) > 5:                                 # nothing to lose aboard (orders F13); five units count as nothing
         return "hold not empty", None
-    if (route.get("requires") or {}).get("hold") and pilot.get("goods", 0) <= 5:            # a route that stores what is aboard: not for a pilot that carries nothing
+    if req.get("hold") and pilot.get("goods", 0) <= 5:                                      # a route that stores what is aboard: not for a pilot that carries nothing
         return "nothing aboard", None
-    if (route.get("requires") or {}).get("without_module") in pilot.get("modules", []):     # the route fits this module: not for a pilot that has it
+    without = req.get("without_module")
+    if isinstance(without, str) and without in p_mods:                                      # the route fits this module: not for a pilot that has it
         return "has the module already", None
+    if isinstance(without, list) and any(m in p_mods for m in without):
+        return "has the module already", None
+    mods_below = req.get("modules_below")
+    if isinstance(mods_below, dict) and mods_below and all(p_mods.count(m_id) >= want_n for m_id, want_n in mods_below.items()):
+        return "has target modules already", None
+    any_mod = req.get("any_module")
+    if isinstance(any_mod, list) and any_mod and not any(m_id in p_mods for m_id in any_mod):
+        return "no target module to strip", None
     if state["now"] < state["rest"].get(rid, 0):
         return "the place rests", None
     lacking = bid_missing(state["data"], route, state["now"]) or stored_missing(state["data"], route, pilot, state["rows"])

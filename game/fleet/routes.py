@@ -253,14 +253,26 @@ def check(root):
                         errors.append(where + "stop %d: the `craft` of %s needs `runs`, a whole number of 1 or more" % (n, job["recipe"]))
                     if not (isinstance(job.get("makes"), str) and job["makes"]):
                         errors.append(where + "stop %d: the `craft` of %s needs `makes`: the runner counts what was made by that item in storage" % (n, job["recipe"]))
-                for want in stop["fit"] if isinstance(stop.get("fit"), list) else []:     # a `replace` of the fit step (requests ENT-290)
+                if "unfit" in stop:
+                    if not (isinstance(stop["unfit"], list) and stop["unfit"] and all(isinstance(m, str) and m for m in stop["unfit"])):
+                        errors.append(where + "stop %d: `unfit` must be a non-empty list of module ids" % n)
+                for want in stop["fit"] if isinstance(stop.get("fit"), list) else []:     # a `replace` or `count` of the fit step (requests ENT-290)
                     errors += [where + "stop %d: " % n + line for line in fit_faults(want)]
         levels = lambda value: isinstance(value, dict) and all(isinstance(v, int) and not isinstance(v, bool) for v in value.values())
+        pos_counts = lambda value: isinstance(value, dict) and bool(value) and all(isinstance(k, str) and k and isinstance(v, int) and not isinstance(v, bool) and v >= 1 for k, v in value.items())
         need = route.get("requires") if isinstance(route.get("requires"), dict) else {}
         if need.get("hold") and need.get("empty_hold"):
             errors.append(where + "`requires.hold` and `requires.empty_hold` together close the route to every pilot")
         if "skills_below" in need and not levels(need["skills_below"]):
             errors.append(where + "`requires.skills_below` must be {skill: level}")
+        if "modules_below" in need and not pos_counts(need["modules_below"]):
+            errors.append(where + "`requires.modules_below` must be {module_id: count >= 1}")
+        if "any_module" in need and not (isinstance(need["any_module"], list) and need["any_module"] and all(isinstance(m, str) and m for m in need["any_module"])):
+            errors.append(where + "`requires.any_module` must be a non-empty list of module ids")
+        if "module" in need and not ((isinstance(need["module"], str) and need["module"]) or pos_counts(need["module"])):
+            errors.append(where + "`requires.module` must be a module id or {module_id: count >= 1}")
+        if "without_module" in need and not ((isinstance(need["without_module"], str) and need["without_module"]) or (isinstance(need["without_module"], list) and need["without_module"] and all(isinstance(m, str) and m for m in need["without_module"]))):
+            errors.append(where + "`requires.without_module` must be a module id or a non-empty list of module ids")
         if "reserve" in need:                          # requests ENT-266: the gate on a faction reserve (reserves.py)
             errors += [where + line for line in reserve_faults(need["reserve"])]
         if "ask" in need:                              # requests ENT-297: the buy end of a route (dispatch.ask_missing)
@@ -368,17 +380,18 @@ def ask_faults(need):
 
 
 def fit_faults(want):
-    """What is wrong with a `fit` entry of a circuit stop that swaps a module (`replace`, route_run.py's fit step,
-    requests ENT-290): `module`, a module id; `max_price`, a number above 0; `replace`, the id of the module it takes
-    the place of, other than `module`. An entry without `replace` is read as before r22: not at all."""
-    if not isinstance(want, dict) or "replace" not in want:
+    """What is wrong with a `fit` entry of a circuit stop (`replace` or `count`, route_run.py's fit step,
+    requests ENT-290): `module`, a module id; `max_price`, a number above 0; optional `count` >= 1; optional `replace`."""
+    if not isinstance(want, dict) or ("replace" not in want and "count" not in want):
         return []
     if not (isinstance(want.get("module"), str) and want["module"]):
-        return ["a `fit` entry with `replace` needs `module`, a module id"]
+        return ["a `fit` entry needs `module`, a module id"]
     out = []
     price = want.get("max_price")
     if not isinstance(price, (int, float)) or isinstance(price, bool) or price <= 0:
         out.append("the `fit` of %s needs `max_price`, the most it may cost with tax, above 0" % want["module"])
+    if "count" in want and (not isinstance(want["count"], int) or isinstance(want["count"], bool) or want["count"] < 1):
+        out.append("the `fit` of %s: `count` must be a whole number of 1 or more" % want["module"])
     if "replace" in want and not (isinstance(want["replace"], str) and want["replace"] and want["replace"] != want["module"]):
         out.append("the `fit` of %s: `replace` names the module it takes the place of, an id other than `module`" % want["module"])
     return out
@@ -502,7 +515,7 @@ def stage(route):
         return "off"
     if route.get("park") or route.get("kind") == "census" or standing(route):
         return "service"
-    if any(isinstance(s, dict) and s.get("fit") for s in route.get("stops") or []):
+    if any(isinstance(s, dict) and (s.get("fit") or s.get("unfit")) for s in route.get("stops") or []):
         return "fit"
     if route.get("once"):
         return "once"

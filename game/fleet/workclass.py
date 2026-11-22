@@ -159,7 +159,7 @@ def work_class(route, rid=None, strict=None):
         return "hunt"
     if keys & {"bunker", "store_faction"} or rid.startswith(HAUL_PREFIXES):
         return "haul"
-    if "fit" in keys:
+    if keys & {"fit", "unfit"}:
         return "fit"
     if strict and "craft" in keys:
         return "craft"

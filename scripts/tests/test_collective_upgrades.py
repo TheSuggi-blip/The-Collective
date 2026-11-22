@@ -429,5 +429,93 @@ class TradeRunAndAgilityTests(unittest.TestCase):
         self.assertEqual(c["route"]["stops"][2]["sell"][0]["item"], "precision_optic")
 
 
+
+
+class SlotMultiplierAndUnfitTests(unittest.TestCase):
+    def test_dispatch_modules_below_and_any_module(self):
+        import dispatch, routes, workclass
+        r_double = {
+            "id": "fit-double-expander",
+            "title": "Fit 2x Cargo Expander III",
+            "kind": "circuit",
+            "requires": {"modules_below": {"cargo_expander_iii": 2}},
+            "stops": [{"at": "s:p:b", "unfit": ["mining_laser_i", "pulse_laser_i"], "fit": [{"module": "cargo_expander_iii", "max_price": 4500, "count": 2}]}],
+        }
+        self.assertEqual(routes.fit_faults(r_double["stops"][0]["fit"][0]), [])
+        self.assertEqual(routes.stage(r_double), "fit")
+        self.assertEqual(workclass.work_class(r_double, "fit-double-expander", True), "fit")
+
+        r_strip_only = {
+            "id": "strip-starter-mods",
+            "title": "Strip off-role starter modules",
+            "kind": "circuit",
+            "requires": {"any_module": ["mining_laser_i", "ice_harvester_i"]},
+            "stops": [{"at": "s:p:b", "unfit": ["mining_laser_i", "ice_harvester_i"]}],
+        }
+        self.assertEqual(routes.stage(r_strip_only), "fit")
+        self.assertEqual(workclass.work_class(r_strip_only, "strip-starter-mods", True), "fit")
+
+        with tempfile.TemporaryDirectory(prefix="slots-upg-") as td:
+            Path(td, "fleet").mkdir()
+            Path(td, "routes").mkdir()
+            state = {"now": 1000.0, "data": td, "rows": [], "orders": {}, "rest": {}, "booked": {}, "loss": {}, "late": {}, "pirates": {}}
+            p0 = {"name": "trader-1", "role": "trader", "credits": 25000, "docked": True, "skills": {}, "goods": 0, "modules": ["mining_laser_i", "pulse_laser_i"]}
+            p1 = {"name": "trader-1", "role": "trader", "credits": 25000, "docked": True, "skills": {}, "goods": 0, "modules": ["cargo_expander_iii"]}
+            p2 = {"name": "trader-1", "role": "trader", "credits": 25000, "docked": True, "skills": {}, "goods": 0, "modules": ["cargo_expander_iii", "cargo_expander_iii"]}
+
+            # p2 already has 2 copies -> rejected by modules_below; p0 and p1 are accepted (reason is None)
+            reason2, _ = dispatch.why_not(p2, "fit-double-expander", r_double, state)
+            self.assertEqual(reason2, "has target modules already")
+            reason1, _ = dispatch.why_not(p1, "fit-double-expander", r_double, state)
+            self.assertIsNone(reason1)
+
+            # any_module: p0 has mining_laser_i -> accepted; p1 stripped -> rejected
+            reason_strip_p1, _ = dispatch.why_not(p1, "strip-starter-mods", r_strip_only, state)
+            self.assertEqual(reason_strip_p1, "no target module to strip")
+            reason_strip_p0, _ = dispatch.why_not(p0, "strip-starter-mods", r_strip_only, state)
+            self.assertIsNone(reason_strip_p0)
+
+    def test_route_run_install_min_count_and_unfit(self):
+        import ast
+        src = (ROOT / "game/fleet/route_run.py").read_text(encoding="utf-8")
+        tree = ast.parse(src)
+        fns = [n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name in ("install_now", "unfit_module")]
+        mod = ast.Module(body=fns, type_ignores=[])
+        fitted_state = [{"type_id": "cargo_expander_iii", "module_id": "inst-1"}, {"type_id": "mining_laser_i", "module_id": "ml-1"}]
+        deposited = []
+        hold = {}
+        def fake_raw(cmd, payload=None):
+            if cmd == "uninstall_mod":
+                mid = (payload or {}).get("module_id")
+                for idx, m in enumerate(list(fitted_state)):
+                    if m["module_id"] == mid:
+                        fitted_state.pop(idx)
+                        hold[m["type_id"]] = hold.get(m["type_id"], 0) + 1
+                        break
+                return {"ok": True}
+            if cmd == "install_mod":
+                tp = (payload or {}).get("module_id")
+                fitted_state.append({"type_id": tp, "module_id": f"new-{len(fitted_state)}"})
+                return {"ok": True}
+            return {}
+        ns = {
+            "raw": fake_raw,
+            "TICK": 0,
+            "time": type("T", (), {"sleep": staticmethod(lambda _s: None)})(),
+            "modules_now": lambda: list(fitted_state),
+            "say": lambda _m: None,
+            "text": lambda d: str(d),
+            "goal": lambda *_a, **_k: (True, "ok"),
+            "cargo": lambda: dict(hold),
+            "deposit": lambda item, qty: (deposited.append((item, qty)), hold.pop(item, None)),
+        }
+        exec(compile(mod, "<route_run_slots>", "exec"), ns)
+        err = ns["unfit_module"]("mining_laser_i", "s", "p", "b")
+        self.assertIsNone(err)
+        self.assertEqual(deposited, [("mining_laser_i", 1)])
+        self.assertTrue(ns["install_now"]("cargo_expander_iii", "s", "p", "b", min_count=2))
+        self.assertEqual(sum(1 for m in fitted_state if m["type_id"] == "cargo_expander_iii"), 2)
+
+
 if __name__ == "__main__":
     unittest.main()

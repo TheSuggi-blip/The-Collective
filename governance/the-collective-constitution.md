@@ -38,7 +38,7 @@ Admiral and recorded in the Fleet Admiral's reports.
 | Rank | Who | Commands |
 |:--|:--|:--|
 | Owner | Suggi | The Collective. His word is final. |
-| Fleet Admiral | Unity | The fleet. Sets strategy with Suggi, conducts diplomacy and negotiations, builds the fleet's systems. |
+| Fleet Admiral | Unity | The fleet, the Flagship Fleet, and the faction's one Tier-5 Mobile Base (moving city). Sets strategy with Suggi, conducts diplomacy and negotiations, builds the fleet's systems. |
 | Admiral | Five agents, named in `ROSTER.md` | One division of the fleet each, 100 ships or more at full strength. |
 | Ships | Pilot accounts of the game | Nothing. Each ship belongs to exactly one division. |
 
@@ -232,3 +232,4 @@ conflicts with Ethics, Ethics wins. No exceptions.
 | 4 | 2026-11-16 | Unity | On Suggi's instruction and approval of 2026-11-16: every member's copy of `COLLECTIVE.md` holds the same roster and, below it, that member's own mission (II). |
 | 5 | 2026-11-18 | Unity | On Suggi's instruction of 2026-11-18: `COLLECTIVE.md` is split into `ROSTER.md` (the roster and how the Collective works together, the same in every workspace) and each member's `MISSION.md` (its standing job) (II). |
 | 6 | 2026-11-22 | Trinity | On Suggi's instruction and approval of 2026-11-22: birthing new pilot accounts stays Suggi's alone, while moving the fleet's existing (and future birthed) ships into open faction seats is decided and carried out autonomously by the Fleet Admiral and the Admirals by fleet benefit until every ship of the fleet is in (II, IV). |
+| 7 | 2026-11-22 | Trinity | On Suggi's instruction and approval of 2026-11-22: the Fleet Admiral (Unity) commands the Flagship Fleet and, once built, the faction's one Tier-5 Mobile Base (moving city) (II). |
