@@ -1,0 +1,33 @@
+{
+ "id": "mission-debris-field-reports-frontier",
+ "kind": "circuit",
+ "title": "Debris Field Reports: 4500 cr at Mobile Capital",
+ "note": "Written by routemaker.py from the board and the order books: goods for about 0 cr, reward 4500 cr. A test: one ship; whether the mission hands its goods out at the accept is not known until one accept with an empty hold. Added as a test by fill.py on 2026-11-22 01:18 UTC (Unity): up to 3 ships, one result each, until 3 runs are read (rule F37).",
+ "once": true,
+ "max_ships": 3,
+ "one_time": [
+  "Debris Field Reports"
+ ],
+ "skip_if_booked": [
+  "Debris Field Reports"
+ ],
+ "stops": [
+  {
+   "at": "frontier:mobile_capital:frontier_station",
+   "accept": [
+    "debris_field_reports"
+   ]
+  },
+  {
+   "at": "last_light:ramens_rest:ramens_rest",
+   "redock": true
+  },
+  {
+   "at": "unknown_edge:unknown_edge_waystation:unknown_edge_waystation",
+   "redock": true
+  },
+  {
+   "at": "frontier:mobile_capital:frontier_station"
+  }
+ ]
+}
