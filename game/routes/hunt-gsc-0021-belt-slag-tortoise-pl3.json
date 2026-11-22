@@ -1,0 +1,23 @@
+{
+ "id": "hunt-gsc-0021-belt-slag-tortoise-pl3",
+ "kind": "hunt",
+ "title": "slag tortoise (90 hull) at gsc_0021_belt with a Pulse Laser III; loot stored, carapace for the reserve",
+ "note": "2026-11-22 08:17 UTC (Apophis): prey above a starter's gauge (gauges.py species: one Pulse Laser I kills up to about 81 hull) for the 21 ships that carry the Pulse Laser III, proven on deuteron slugs, slag tortoises and bulwarks (guidebook tests.md, Weapon fits; rule F37). Herd: 7 slag_tortoise at the last census (table herds, 08:16 UTC), 6 jumps from home. Creature carapace is short in the reserve (tool needs, items: 23,913 net short), so every good is stored (min_bid 5000) and given to Logistics' receiver under strict classes (gift_to hauler). One ship until three results (F37); it leaves for a pirate; standing (combat XP and reserve goods, its fuel is its price).",
+ "place": "gsc_0021:gsc_0021_belt",
+ "species": [
+  "slag_tortoise"
+ ],
+ "sell_at": "sirius:sirius_observatory_station:sirius_observatory_station",
+ "min_bid": 5000,
+ "kills": 3,
+ "minutes": 40,
+ "max_ships": 1,
+ "min_creatures": 3,
+ "alone": "pirates",
+ "standing": true,
+ "requires": {
+  "module": "pulse_laser_iii",
+  "empty_hold": true
+ },
+ "gift_to": "hauler"
+}
