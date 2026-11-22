@@ -187,8 +187,10 @@ def compute_progression(repo_root, data="/srv/collective/data", now=None):
                 steady_24h = int(((rates.get("24h") or {}).get("steady_net")) or 0)
             fl_ships = [s for s in (fobj.get("ships") or []) if isinstance(s, dict)]
             fl_away = [a for a in (fobj.get("away") or []) if isinstance(a, dict)]
-            ships_away = len(fl_away)
-            standing_ships = len(fl_ships) + ships_away
+            online_names = {str(s.get("name") or "") for s in fl_ships if s.get("name")}
+            away_names = {str(a.get("name") or "") for a in fl_away if a.get("name")} - online_names
+            ships_away = len(away_names)
+            standing_ships = len(online_names | away_names)
             wallets = int(sum((s.get("credits") or 0) for s in fl_ships))
         except (OSError, ValueError):
             pass

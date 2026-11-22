@@ -1510,8 +1510,10 @@ def api_ops():
         fleet_doc = read_json(FLEET / "fleet.json")
         ships_list = fleet_doc.get("ships") if isinstance(fleet_doc, dict) else []
         away_list = fleet_doc.get("away") if isinstance(fleet_doc, dict) else []
-        away_count = len(away_list) if isinstance(away_list, list) else 0
-        online_count = len(ships_list) if isinstance(ships_list, list) else 0
+        on_names = {str(s.get("name") or "") for s in (ships_list or []) if isinstance(s, dict) and s.get("name")}
+        aw_names = {str(a.get("name") or "") for a in (away_list or []) if isinstance(a, dict) and a.get("name")} - on_names
+        away_count = len(aw_names)
+        online_count = len(on_names) if on_names else (len(ships_list) if isinstance(ships_list, list) else 0)
         ages = []
         sweep_ships, sweep_cr = 0, 0
         for ship in ships_list or []:
@@ -2398,7 +2400,7 @@ def api_diplomacy():
             "members_limit": our_limit,
             "max_cap": our_max_cap,
             "open_seats": max(0, our_limit - our_members),
-            "standing_ships": max(len(fl_ships) + len(fl_away), sum(h["count"] for h in our_hulls)),
+            "standing_ships": max(len(our_pilots | {str(a.get("name") or "") for a in fl_away if isinstance(a, dict) and a.get("name")}), sum(h["count"] for h in our_hulls)),
             "fleet_ships": len(fl_ships),
             "by_empire": our_by_empire,
             "treasury": our_treasury,
