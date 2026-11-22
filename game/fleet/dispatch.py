@@ -133,6 +133,27 @@ def read_json(path, default):
         return default
 
 
+_JSON_CACHE = {}
+
+
+def _read_cached_json(path, default):
+    p = Path(path)
+    try:
+        st = p.stat()
+    except OSError:
+        return default
+    key = str(p)
+    stamp = (st.st_mtime_ns, st.st_size)
+    hit = _JSON_CACHE.get(key)
+    if hit and hit[0] == stamp:
+        return hit[1]
+    val = read_json(p, default)
+    if len(_JSON_CACHE) > 256:
+        _JSON_CACHE.clear()
+    _JSON_CACHE[key] = (stamp, val)
+    return val
+
+
 def flagships(data):
     """{pilot: {admiral, division, role}} from data/fleet/flagships.json: the ships whose names carry no role word."""
     found = read_json(Path(data) / "fleet" / "flagships.json", {})
@@ -248,6 +269,23 @@ STUCK = 3                      # runs in a row that ended before their first sto
 STUCK_REST = 30 * 60           # seconds of that rest, counted from the end of the last of those runs
 
 
+_BY_PILOT = {"rows": None, "count": -1, "by": {}, "by_route": {}}
+
+
+def _row_indexes(rows):
+    if _BY_PILOT["rows"] is not rows or _BY_PILOT["count"] != len(rows):
+        by_p, by_r = {}, {}
+        for row in rows:
+            p = row.get("pilot")
+            r = row.get("route")
+            if p:
+                by_p.setdefault(p, []).append(row)
+            if r and p:
+                by_r.setdefault(r, set()).add(p)
+        _BY_PILOT.update(rows=rows, count=len(rows), by=by_p, by_route=by_r)
+    return _BY_PILOT["by"], _BY_PILOT["by_route"]
+
+
 def stuck(name, rows, now=None):
     """True when the pilot's last STUCK runs all ended `stop 1 not reached` and the last of them ended less than STUCK_REST
     seconds before `now`: a ship held in a fight or a lost goal would otherwise be handed one route after another, each
@@ -255,14 +293,13 @@ def stuck(name, rows, now=None):
     ends by itself when its cause is gone: until 2026-11-17 it ended only with a run that reached a stop, which a held
     pilot never got, and two ships the engine had held claimed stood for two hours and waited for a hand. Without `now`,
     or with a last run whose time does not read, the rest is not counted."""
-    mine = [r for r in rows if r.get("pilot") == name][-STUCK:]
+    mine = (_row_indexes(rows)[0].get(name) or ())[-STUCK:]
     if len(mine) != STUCK or not all("stop 1 not reached" in (r.get("notes") or []) for r in mine):
         return False
     if now is None:
         return True
-    try:
-        ended = calendar.timegm(time.strptime(mine[-1]["started"], "%Y-%m-%dT%H:%M:%SZ")) + float(mine[-1].get("minutes") or 0) * 60
-    except (KeyError, TypeError, ValueError):
+    ended = run_end(mine[-1])
+    if ended is None:
         return True
     return now - ended < STUCK_REST
 
@@ -278,7 +315,7 @@ FUEL_NOT_FLOWN = ": not flown (fuel)"    # hunt.py: the tank was short of the wa
 def run_end(row):
     """Epoch second a run ended, or None when started is unreadable."""
     try:
-        return calendar.timegm(time.strptime(row["started"], "%Y-%m-%dT%H:%M:%SZ")) + float(row.get("minutes") or 0) * 60
+        return taxes.parse_utc(row["started"]) + float(row.get("minutes") or 0) * 60
     except (KeyError, TypeError, ValueError):
         return None
 
@@ -469,7 +506,7 @@ FLOOR = 5000                 # a pilot under this many credits is sent only on w
 def read_time(text):
     """Seconds since the epoch of a UTC time written YYYY-MM-DDTHH:MM:SS..., or None."""
     try:
-        return calendar.timegm(time.strptime(str(text)[:19], "%Y-%m-%dT%H:%M:%S"))
+        return taxes.parse_utc(text)
     except ValueError:
         return None
 
@@ -547,10 +584,12 @@ def stored_missing(data, route, pilot, rows):
     wants = [need] if isinstance(need, dict) else [w for w in need or [] if isinstance(w, dict)]
     if not wants:
         return None
-    book = read_json(Path(data) / "stock" / "storage.json", {})
+    spath = Path(data) / "stock" / "storage.json"
+    book = _read_cached_json(spath, {})
     mine = ((book.get("pilots") or {}) if isinstance(book, dict) else {}).get(pilot["name"]) or {}
     read = read_time(mine.get("read_at"))
-    last = max((read_time(r.get("started")) or 0 for r in rows if r.get("route") == route.get("id") and r.get("pilot") == pilot["name"]), default=0)
+    mine_runs = pairs(rows).get((route.get("id"), pilot["name"])) or ()
+    last = max((read_time(r.get("started")) or 0 for r in mine_runs), default=0)
     for want in wants:
         there = (mine.get("stations") or {}).get(str(want.get("at"))) or {}
         if isinstance(want.get("items"), list):          # any one of them opens it (Zero, requests ENT-349)
@@ -710,7 +749,7 @@ def why_not(pilot, rid, route, state):
         return stall, None
     mark = route["kind"] + " " + rid
     if route.get("max_pilots"):                   # at most this many different pilots ever: those that flew it and those on it now
-        flew = {r.get("pilot") for r in state["rows"] if r.get("route") == rid} | {p for p, what in state["orders"].items() if what == mark}
+        flew = _row_indexes(state["rows"])[1].get(rid, set()) | {p for p, what in state["orders"].items() if what == mark}
         if pilot["name"] not in flew and len(flew) >= route["max_pilots"]:
             return "max_pilots %s reached" % route["max_pilots"], None
     if route["kind"] == "census":                 # a census order names its system: it counts for the route that lists that system
@@ -962,7 +1001,7 @@ def losing(routes, rows, now):
         if not all(isinstance(v, (int, float)) and not isinstance(v, bool) for v in (before, after)) or not (before > 0 and after > 0):
             continue                                              # the run read no wallet at one end: it says nothing about credits
         try:
-            started = calendar.timegm(time.strptime(row.get("started") or "", "%Y-%m-%dT%H:%M:%SZ"))
+            started = taxes.parse_utc(row.get("started") or "")
         except ValueError:
             continue
         route = routes.get(row.get("route"))
@@ -1003,7 +1042,7 @@ def lately_losing(routes, rows, now):
         if route is None or route.get("once") or not judged(route):
             continue
         try:
-            started = calendar.timegm(time.strptime(row.get("started") or "", "%Y-%m-%dT%H:%M:%SZ"))
+            started = taxes.parse_utc(row.get("started") or "")
         except ValueError:
             continue
         last.setdefault(route["id"], []).append((started, earned_by(row, route)))
@@ -1017,17 +1056,21 @@ def lately_losing(routes, rows, now):
 
 def resting(routes, rows, now):
     """{route id: time before which a hunt's place rests}: its last run ended without a kill."""
-    out = {}
-    for rid, route in routes.items():
-        if route["kind"] != "hunt":
+    hunts = {rid: route for rid, route in routes.items() if route["kind"] == "hunt"}
+    if not hunts:
+        return {}
+    out, seen = {}, set()
+    for last in reversed(rows):
+        rid = last.get("route")
+        if rid not in hunts or rid in seen:
             continue
-        last = next((r for r in reversed(rows) if r.get("route") == rid), None)
-        if last and not last.get("kills"):
-            try:
-                ended = calendar.timegm(time.strptime(last["started"], "%Y-%m-%dT%H:%M:%SZ")) + last.get("minutes", 0) * 60
-            except (KeyError, ValueError):
-                continue
-            out[rid] = ended + route.get("rest_minutes", 30) * 60
+        seen.add(rid)
+        if not last.get("kills"):
+            ended = run_end(last)
+            if ended is not None:
+                out[rid] = ended + hunts[rid].get("rest_minutes", 30) * 60
+        if len(seen) == len(hunts):
+            break
     return out
 
 

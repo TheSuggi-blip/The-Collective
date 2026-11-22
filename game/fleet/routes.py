@@ -976,7 +976,7 @@ def late_gifts(row, found, data=None):
     previous run's last reading and this run's first is what landed before: the rest of the gifts, latest first,
     landed in the run, each taken out only while that brings the run's change nearer to nothing."""
     pilot = row.get("pilot")
-    early = [(at, credits) for at, giver, taker, credits, _loose in gifts(data) if taker == pilot and giver != pilot and found[0] - PRE <= at < found[0]]
+    early = [(at, credits) for at, giver, taker, credits, _loose in _gifts_for(pilot, data) if taker == pilot and giver != pilot and found[0] - PRE <= at < found[0]]
     if not early:
         return 0
     spans = run_spans(data).get(pilot) or []
@@ -988,7 +988,8 @@ def late_gifts(row, found, data=None):
     landed = 0
     if prior and isinstance(before, (int, float)) and isinstance(max(prior)[3], (int, float)) and max(prior)[3] > 0:
         landed = max(0, before - max(prior)[3])               # what reached the wallet between the two runs
-    plain = (row.get("delta") or 0) + taxes.in_run(row, data)
+    tax_paid = row.get("_tax_paid")
+    plain = (row.get("delta") or 0) + (tax_paid if tax_paid is not None else taxes.in_run(row, data))
     total = 0
     for at, credits in sorted(early):                          # the earliest landed first
         if landed >= credits * 0.9:
@@ -997,6 +998,42 @@ def late_gifts(row, found, data=None):
         if abs(plain - total - credits) < abs(plain - total):
             total += credits
     return -total
+
+
+_PILOT_EVENTS = {"g_id": None, "d_id": None, "g_len": -1, "d_len": -1, "by_pilot": {}, "gifts_by_taker": {}}
+
+
+def _indexed_events(data=None):
+    """Per-pilot sorted (gifts + deposits) and taker-only gifts, rebuilt only when gifts(data) or deposits(data) change."""
+    g = gifts(data)
+    d = deposits(data)
+    if (_PILOT_EVENTS["g_id"] is not g or _PILOT_EVENTS["d_id"] is not d
+            or _PILOT_EVENTS["g_len"] != len(g) or _PILOT_EVENTS["d_len"] != len(d)):
+        by_p = {}
+        by_t = {}
+        for ev in g:
+            giver, taker = ev[1], ev[2]
+            if giver:
+                by_p.setdefault(giver, []).append(ev)
+            if taker and taker != giver:
+                by_p.setdefault(taker, []).append(ev)
+            if taker:
+                by_t.setdefault(taker, []).append(ev)
+        for ev in d:
+            giver, taker = ev[1], ev[2]
+            if giver:
+                by_p.setdefault(giver, []).append(ev)
+            if taker and taker != giver:
+                by_p.setdefault(taker, []).append(ev)
+        for lst in by_p.values():
+            lst.sort()
+        _PILOT_EVENTS.update(g_id=g, d_id=d, g_len=len(g), d_len=len(d), by_pilot=by_p, gifts_by_taker=by_t)
+    return _PILOT_EVENTS["by_pilot"], _PILOT_EVENTS["gifts_by_taker"]
+
+
+def _gifts_for(pilot, data=None):
+    _, by_t = _indexed_events(data)
+    return by_t.get(pilot, ())
 
 
 def moved(row, data=None):
@@ -1010,35 +1047,40 @@ def moved(row, data=None):
     pilot, found = row.get("pilot"), taxes.span(row)
     if not pilot or not found:
         return 0
-    # One gift, one run. The spans of two runs in a row overlap (the wallet readings lag), so a gift near the seam lies
-    # in both: it counts where it fell well inside the run, and near a seam only where the run's own wallet shows it
-    # (taking it out brings the run's change nearer to nothing). A sweep's gift names the giver's wallet after it: the
-    # run that ended on that figure gave it, wherever it fell in the span, and the run that began on it did not
-    # (requests ENT-264: a hunt that sold 10,717 cr and was swept to 50,000 at its end read -8,917 cr).
-    start, end = found[0] + taxes.LAG, found[1] - taxes.SLACK
-    plain = (row.get("delta") or 0) + taxes.in_run(row, data)
-    before, after = row.get("credits_before"), row.get("credits_after")
-    walls = sweep_walls(data)
+    by_p, _ = _indexed_events(data)
+    evs = by_p.get(pilot)
+    tax_paid = taxes.paid(pilot, found[0], found[1], data)
+    plain = (row.get("delta") or 0) + tax_paid
     total, seam = 0, []
-    for at, giver, taker, credits, loose in sorted(gifts(data) + deposits(data)):
-        sign = (giver == pilot) - (taker == pilot)
-        if not sign or not found[0] <= at <= found[1]:
-            continue
-        wall = wall_after(walls, at, giver, taker, credits) if sign > 0 and walls else None
-        if wall is not None and (wall == after) != (wall == before):
-            total += credits * sign if wall == after else 0
-            continue
-        if not loose and start + EDGE <= at <= end - EDGE:
-            total += credits * sign
-        else:
-            seam.append(credits * sign)
-    # The moves near a seam are weighed after every move that is surely the run's: one weighed first, in time order,
-    # misses its partner (requests ENT-359: the leader's deposit of 23,198 cr eleven seconds into a hunt and a gift of
-    # 12,008 cr inside it read -23,558 cr where the hunt spent about 360 cr of fuel).
-    for moved_credits in seam:
-        if abs(plain + total + moved_credits) < abs(plain + total):
-            total += moved_credits
-    return total + late_gifts(dict(row, delta=plain - taxes.in_run(row, data) + total), found, data)
+    if evs:
+        start, end = found[0] + taxes.LAG, found[1] - taxes.SLACK
+        before, after = row.get("credits_before"), row.get("credits_after")
+        walls = None
+        for at, giver, taker, credits, loose in evs:
+            if at < found[0]:
+                continue
+            if at > found[1]:
+                break
+            sign = (giver == pilot) - (taker == pilot)
+            if not sign:
+                continue
+            if sign > 0:
+                if walls is None:
+                    walls = sweep_walls(data)
+                wall = wall_after(walls, at, giver, taker, credits) if walls else None
+            else:
+                wall = None
+            if wall is not None and (wall == after) != (wall == before):
+                total += credits * sign if wall == after else 0
+                continue
+            if not loose and start + EDGE <= at <= end - EDGE:
+                total += credits * sign
+            else:
+                seam.append(credits * sign)
+        for moved_credits in seam:
+            if abs(plain + total + moved_credits) < abs(plain + total):
+                total += moved_credits
+    return total + late_gifts(dict(row, delta=plain - tax_paid + total, _tax_paid=tax_paid), found, data)
 
 
 def earned(row):

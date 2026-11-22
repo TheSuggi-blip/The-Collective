@@ -32,6 +32,7 @@ Stdlib only. ASCII only.
 """
 
 import calendar
+from datetime import datetime, timezone
 import fcntl
 import json
 import os
@@ -97,12 +98,30 @@ def paid(pilot, start, end, data=None):
     return sum(amount for at, amount in by_pilot(data).get(pilot, ()) if start <= at <= end)
 
 
+_TS_CACHE = {}
+
+
+def parse_utc(text):
+    """Fast UTC epoch parser for YYYY-MM-DDTHH:MM:SS prefixes (exact parity with calendar.timegm/strptime)."""
+    key = str(text)[:19]
+    got = _TS_CACHE.get(key)
+    if got is not None:
+        return got
+    if len(key) != 19 or key[10] != "T":
+        raise ValueError(key)
+    val = int(datetime.fromisoformat(key).replace(tzinfo=timezone.utc).timestamp())
+    if len(_TS_CACHE) > 200000:
+        _TS_CACHE.clear()
+    _TS_CACHE[key] = val
+    return val
+
+
 def span(row):
     """(first, last) second in which a movement of the pilot's wallet falls into the row's run: from LAG seconds before
     its start (the first wallet reading can lag the game) to its end and the seconds its last wallet reading may take.
     None for a row without a start. The one span: the tax here and the wallet guard's top-ups (routes.moved) use it."""
     try:
-        start = calendar.timegm(time.strptime(str(row.get("started"))[:19], "%Y-%m-%dT%H:%M:%S"))
+        start = parse_utc(row.get("started"))
     except ValueError:
         return None
     minutes = row.get("minutes") if isinstance(row.get("minutes"), (int, float)) else 0
