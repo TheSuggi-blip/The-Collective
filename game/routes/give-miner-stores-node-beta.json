@@ -41,7 +41,8 @@
       "helium_ice",
       "null_matter",
       "lead_ore",
-      "voidborn_neural_soma"
+      "voidborn_neural_soma",
+      "exotic_matter"
      ],
      "source": "storage"
     }
