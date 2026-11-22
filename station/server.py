@@ -1069,8 +1069,10 @@ def holding_kind(kind):
         return "fuel"
     if any(w in word for w in ("lockbox", "storage", "warehouse", "vault", "depot")):
         return "storage"
-    if "hiring" in word or "recruit" in word:
+    if "hiring" in word or "recruit" in word or "guild_hall" in word:
         return "recruit"
+    if any(w in word for w in ("foundry", "refinery", "smelter", "assembler", "shipyard", "workshop")):
+        return "foundry"
     return "office"
 
 
@@ -1414,16 +1416,18 @@ def api_ops():
                 } for r in rows]
             if "need_status" in tables:
                 rows = conn.execute(
-                    "SELECT id, priority, kind, ref, division, covered, colour, short_items, fee FROM need_status "
-                    "ORDER BY priority, rank LIMIT 12"
+                    "SELECT id, priority, kind, ref, division, project, place, units, stands, covered, colour, short_items, fee "
+                    "FROM need_status ORDER BY CASE WHEN COALESCE(short_items,'')='' AND COALESCE(fee,0)=0 THEN 1 ELSE 0 END, priority, rank LIMIT 16"
                 ).fetchall()
                 out["needs"] = [{
                     "id": text(r["id"], 40), "priority": "P" + str(int(num(r["priority"]))), "kind": text(r["kind"], 20),
                     "what": text(r["ref"], 40), "owner": text(r["division"], 20),
+                    "project": text(r["project"], 80), "place": text(r["place"], 60),
                     "pct": round(float(r["covered"]), 1) if isinstance(r["covered"], (int, float)) else 0.0,
                     "short": text(r["short_items"], 80), "fee": int(num(r["fee"])),
                     "colour": text(r["colour"], 12),
-                } for r in rows]
+                    "stocked": bool(not text(r["short_items"], 10) and int(num(r["fee"])) == 0 and (r["covered"] or 0) >= 99.9),
+                } for r in rows if not (r["kind"] == "facility" and r["place"] and int(num(r["stands"])) >= max(1, int(num(r["units"]))))]
             if "stats_figures" in tables:
                 rows = conn.execute(
                     "SELECT subject, value, text FROM stats_figures "
@@ -1469,6 +1473,88 @@ def api_ops():
     except (OSError, ValueError):
         pass
 
+    # Enrich with full Empire buildings, rent, purposes & site roadmap notes for Map + Empire tab
+    emp_info = {"rent": {"facilities": 0, "per_cycle": 0, "per_day": 0}, "buildings": [], "sites": []}
+    try:
+        emp_raw = read_json(FLEET.parent / "empire" / "empire.json")
+    except (OSError, ValueError):
+        emp_raw = {}
+    if isinstance(emp_raw, dict):
+        r_obj = emp_raw.get("rent") if isinstance(emp_raw.get("rent"), dict) else {}
+        emp_info["rent"] = {
+            "facilities": int(num(r_obj.get("facilities"))),
+            "per_cycle": int(num(r_obj.get("per_cycle"))),
+            "per_day": int(num(r_obj.get("per_day"))),
+        }
+        purpose_map = {
+            "outpost": "Frontier outpost: members-only dock, lockbox & free fuel reserve (0 rent)",
+            "station": "Sovereign station: our own market, 0 facility rent & full build slots",
+            "faction_fuel_bunker": "Free fleet refueling tank (50,000 fuel capacity)",
+            "faction_lockbox": "Shared faction storage (100,000 units per item)",
+            "hiring_board": "Raises faction member limit to 50 seats (+25% if secondary)",
+            "recruitment_desk": "Raises faction member limit to 100 seats (+25% if secondary)",
+            "recruitment_center": "Raises faction member limit to 200 seats (+25% if secondary)",
+            "guild_hall_recruiting": "Raises faction member limit to 400 seats",
+            "grand_recruitment_bureau": "Raises faction member limit to 1,000 seats",
+            "station_core_foundry": "Level-4 foundry that assembles Station Cores",
+            "faction_ship_garage": "Shared garage holding up to 20 faction ships",
+            "faction_shipyard_berth": "Faction shipyard berth for commissioning hulls",
+            "transit_lounge": "Passenger transit hub (20 seats)",
+        }
+        fuel_by_place = {s["place"]: s for s in out.get("supply") or [] if s.get("item") == "fuel"}
+        based_names = {}
+        for b in (emp_raw.get("bases") if isinstance(emp_raw.get("bases"), list) else [])[:100]:
+            if isinstance(b, dict) and b.get("system"):
+                bname = text(b.get("name"), 80)
+                sys_id = text(b["system"], 80)
+                based_names[sys_id] = bname
+                f_sup = fuel_by_place.get(bname)
+                emp_info["buildings"].append({
+                    "system": sys_id, "kind": holding_kind(b.get("kind")), "type": text(b.get("kind"), 40),
+                    "name": bname, "level": 0, "status": text(b.get("condition") or b.get("status"), 30) or "active",
+                    "at": "our own base", "part": False, "base": text(b.get("base"), 80), "rent": 0,
+                    "fuel": f_sup["have"] if f_sup else None,
+                    "purpose": purpose_map.get(str(b.get("kind") or "").lower(), "Faction base"),
+                })
+        for f in (emp_raw.get("facilities") if isinstance(emp_raw.get("facilities"), list) else [])[:300]:
+            if isinstance(f, dict) and f.get("system"):
+                sys_id = text(f["system"], 80)
+                base_id = text(f.get("base"), 80)
+                is_part = bool(BASE_ID.fullmatch(base_id))
+                at_name = (based_names.get(sys_id) or "our base here") if is_part else base_id.replace("_", " ").title()
+                ftype = text(f.get("type"), 50)
+                emp_info["buildings"].append({
+                    "system": sys_id, "kind": holding_kind(ftype or f.get("name")), "type": ftype,
+                    "name": text(f.get("name") or ftype, 80), "level": int(num(f.get("level"))),
+                    "status": text(f.get("status"), 30) or "active", "at": at_name, "part": is_part,
+                    "base": base_id, "rent": int(num(f.get("rent_per_cycle"))),
+                    "fuel": None,
+                    "purpose": purpose_map.get(ftype.lower(), "Faction station facility"),
+                })
+    try:
+        s_lines = (REPO / "game" / "map" / "sites.tsv").read_text(encoding="utf-8", errors="replace").splitlines()[:500]
+    except OSError:
+        s_lines = []
+    based_sys = {b["system"] for b in emp_info["buildings"] if b["kind"] in ("outpost", "station")}
+    for s_ln in s_lines:
+        cells = s_ln.split("	")
+        if len(cells) >= 4 and not s_ln.startswith("#") and cells[0] and cells[0] != "system":
+            st_raw = text(cells[2], 20)
+            if st_raw == "dropped":
+                continue
+            sys_id = text(cells[0], 80)
+            st_eff = "built" if sys_id in based_sys else st_raw
+            s_note = text(cells[4], 220) if len(cells) >= 5 else ""
+            matched_need = next(
+                (n for n in out.get("needs") or [] if sys_id in n["id"].replace("-", "_") or sys_id.replace("_", " ") in n.get("project", "").lower()),
+                None,
+            )
+            emp_info["sites"].append({
+                "system": sys_id, "status": st_eff, "by": text(cells[3], 30), "note": s_note,
+                "need_id": matched_need["id"] if matched_need else "",
+                "need_pct": matched_need["pct"] if matched_need else None,
+            })
+    out["empire"] = emp_info
     OPS["at"], OPS["value"] = now, out
     return out
 

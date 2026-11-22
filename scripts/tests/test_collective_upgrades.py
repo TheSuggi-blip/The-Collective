@@ -517,5 +517,52 @@ class SlotMultiplierAndUnfitTests(unittest.TestCase):
         self.assertEqual(sum(1 for m in fitted_state if m["type_id"] == "cargo_expander_iii"), 2)
 
 
+
+
+class NeedsAutoSatisfyAndLoopTests(unittest.TestCase):
+    def test_placed_facility_already_built_at_station_skips_shortfall(self):
+        import needs
+        with tempfile.TemporaryDirectory(prefix="needs-placed-") as td:
+            dpath = Path(td, "data")
+            rpath = Path(td, "repo")
+            (dpath / "empire").mkdir(parents=True)
+            (dpath / "catalog").mkdir(parents=True)
+            (rpath / "game").mkdir(parents=True)
+            (dpath / "empire/empire.json").write_text(json.dumps({
+                "facilities": [{"type": "recruitment_center", "base": "node_beta_industrial_station", "system": "node_beta", "status": "active"}]
+            }), encoding="ascii")
+            cat = {
+                "version": "0.732.0",
+                "facilities": {
+                    "recruitment_desk": {"id": "recruitment_desk", "build_cost": 300000, "build_materials": [{"item_id": "steel_plate", "quantity": 200}]},
+                    "recruitment_center": {"id": "recruitment_center", "upgrades_from": "recruitment_desk", "build_cost": 2000000, "build_materials": [{"item_id": "flex_polymer", "quantity": 300}]},
+                },
+                "ships": {},
+                "items": {"steel_plate": {"id": "steel_plate"}, "flex_polymer": {"id": "flex_polymer"}},
+                "recipes": {},
+            }
+            row_rc = {"id": "rec-center", "project": "200 seats", "division": "command", "kind": "facility", "ref": "recruitment_center", "units": 1, "priority": 1, "place": "node_beta_industrial_station", "due": "", "status": "open", "note": "", "added": "2026-11-22T00:00Z", "added_by": "Unity", "changed": "2026-11-22T00:00Z", "changed_by": "Unity", "line": 2, "errors": []}
+            row_desk = dict(row_rc, id="rec-desk", ref="recruitment_desk")
+            row_other = dict(row_rc, id="rec-other", place="synchrony_hub")
+            self.assertTrue(needs.facility_built_at_place(row_rc, dpath, cat))
+            self.assertTrue(needs.facility_built_at_place(row_desk, dpath, cat))     # satisfied by higher upgrade tier at same place!
+            self.assertFalse(needs.facility_built_at_place(row_other, dpath, cat))   # different station is NOT satisfied
+
+    def test_fast_negative_delta_non_gift_loop_triggers_stall_rest(self):
+        import dispatch
+        now = time.time()
+        ts = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(now - 60))
+        route = {"id": "give-miner-stores-nitrogen", "kind": "circuit", "stops": [{"at": "s:p:b"}]}
+        rows_bleed = [
+            {"route": "give-miner-stores-nitrogen", "pilot": "miner-1", "started": ts, "minutes": 0.5, "delta": -12, "notes": []},
+            {"route": "give-miner-stores-nitrogen", "pilot": "miner-1", "started": ts, "minutes": 0.4, "delta": -12, "notes": []},
+            {"route": "give-miner-stores-nitrogen", "pilot": "miner-1", "started": ts, "minutes": 0.4, "delta": -12, "notes": []},
+        ]
+        self.assertIsNotNone(dispatch.stalled_reason("give-miner-stores-nitrogen", route, "miner-1", rows_bleed, now))
+        # Real gift in notes does NOT trigger stall rest
+        rows_real_gift = [dict(r, notes=["gift to trader-1 at central_nexus: 65 nitrogen_ice"]) for r in rows_bleed]
+        self.assertIsNone(dispatch.stalled_reason("give-miner-stores-nitrogen", route, "miner-1", rows_real_gift, now))
+
+
 if __name__ == "__main__":
     unittest.main()

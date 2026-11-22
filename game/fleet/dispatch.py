@@ -335,7 +335,11 @@ def stalled_reason(rid, route, pilot_name, rows, now):
     if len(tail) < STALL_RUNS:
         return None
     if route.get("kind") != "census" and all(
-        float(r.get("minutes") or 0) < STALL_MINUTES and (r.get("delta") or 0) == 0 and not r.get("sold") for r in tail
+        float(r.get("minutes") or 0) < STALL_MINUTES
+        and (r.get("delta") or 0) <= 0
+        and not r.get("sold")
+        and not any("gift to " in str(n) for n in (r.get("notes") or []))
+        for r in tail
     ):
         return "rests after %d short zero-credit runs" % STALL_RUNS
     if all(failed_run(r) for r in tail):            # requests ENT-334, errors.log ENT-121: whatever their minutes

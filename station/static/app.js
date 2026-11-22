@@ -207,7 +207,7 @@ let selected = null, hover = null, route = [], tab = 'Selection', pilotCard = nu
 let selShip = null, shipCard = null, shipMark = '', docView = null;
 const groupsBy = new Map();
 const battleSystems = new Set();                    // system id -> the larger groups of one foreign faction seen there
-let groupHits = [];                            // their tags as drawn
+let groupHits = [], infraHits = [];            // foreign tags and our own building/site pills as drawn
 let pop = null, hoverBadge = null, badgeHits = [];   // the open fleet card {system, kind}; the marker under the pointer; the markers drawn
 let cam = null, raf = 0, pulse = 0;                  // an eased move of the view; the frame that is asked for; the timer of the next quiet frame
 
@@ -309,6 +309,7 @@ const GLYPHS = {
   outpost: { d: 'M6 1.3 10.1 3.65V8.35L6 10.7 1.9 8.35V3.65Z', fill: true },          // a solid hexagon
   station: { d: 'M6 1.6a4.4 4.4 0 1 0 0 8.8a4.4 4.4 0 1 0 0-8.8Z M6 4.4a1.6 1.6 0 1 1 0 3.2a1.6 1.6 0 1 1 0-3.2Z', fill: true },   // a ring: the inner circle runs the other way round, so it stays open
   fuel: { d: 'M6 1.5C6 1.5 2.6 5.5 2.6 7.6a3.4 3.4 0 0 0 6.8 0C9.4 5.5 6 1.5 6 1.5Z', fill: true },   // a drop
+  foundry: { d: 'M2.2 9.8H9.8L10.6 7.3H7.8V4.6L9.4 2.8H2.6L4.2 4.6V7.3H1.4Z', fill: true },           // an industrial anvil
   flag: { d: 'M3 10.8V1.7 M3 1.9 9.8 3.9 3 5.9Z', fill: true },
   pip: { d: 'M6 2.4 9.6 6 6 9.6 2.4 6Z', fill: true },
   cross: { d: 'M3 3 9 9 M9 3 3 9' },
@@ -541,7 +542,7 @@ function paint(t) {
     ctx.fillStyle = c; ctx.beginPath(); ctx.arc(x, y, q, 0, 6.2832); ctx.fill();
     ctx.fillStyle = 'rgba(255,255,255,0.3)'; ctx.beginPath(); ctx.arc(x - q * 0.28, y - q * 0.28, q * 0.34, 0, 6.2832); ctx.fill();
   }
-  badgeHits = []; groupHits = [];
+  badgeHits = []; groupHits = []; infraHits = [];
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = '700 9.5px system-ui, sans-serif';
   for (const tok of [...tokens.values()].sort((a, b) => Number(b.full) - Number(a.full))) {   // the markers with a number first, the small ones over them
     const { id, x, y, R, core, n, list } = tok, groups = fleetGroups(list), c = color(sys.get(id)), rim = core ? 1.9 : 1.5, ro = R - rim - (core ? 1.3 : 1.1);
@@ -581,13 +582,66 @@ function paint(t) {
     }
     const own = layers['Our bases'] ? holdBy.get(s.id) || [] : [], site = layers['Our bases'] ? sitesBy.get(s.id) : null;
     const planned = site && site.status !== 'dropped' && site.status !== 'built' && !own.some((b) => b.kind === 'outpost' || b.kind === 'station');
-    if (own.length || planned) {                                    // ours, above the system: one mark per kind of building, amber while one is not active; a flag for a planned base
+    if (own.length || planned) {                                    // ours: beacon halo + frosted building/site pill with glyphs & smart tag
       const kinds = new Map(), row = [];
-      const based = own.some((b) => b.kind === 'outpost' || b.kind === 'station');   // a base of our own: what stands inside it is part of it and gets no mark of its own
+      const based = own.some((b) => b.kind === 'outpost' || b.kind === 'station');
+      const chosen = planned && site.status === 'chosen';
+      const siteInfo = ((OPS.data && OPS.data.empire && OPS.data.empire.sites) || []).find((x) => x.system === s.id);
+      const pctTag = siteInfo && siteInfo.need_pct !== null && siteInfo.need_pct !== undefined ? ' ' + Math.round(siteInfo.need_pct) + '%' : '';
+      // Beacon ring around the star so our buildings & chosen sites stand out at galaxy zoom
+      const haloR = (ours ? q + 3.8 : q + 5.5);
+      ctx.save();
+      if (based) {
+        ctx.strokeStyle = rgba(OURS, 0.92); ctx.lineWidth = 2.0;
+        ctx.beginPath(); ctx.arc(x, y, haloR, 0, 6.2832); ctx.stroke();
+        ctx.strokeStyle = rgba(OURS, 0.28); ctx.lineWidth = 4.5;
+        ctx.beginPath(); ctx.arc(x, y, haloR + 2.2, 0, 6.2832); ctx.stroke();
+      } else if (own.length) {
+        ctx.strokeStyle = 'rgba(110, 220, 165, 0.85)'; ctx.lineWidth = 1.6;
+        ctx.beginPath(); ctx.arc(x, y, haloR, 0, 6.2832); ctx.stroke();
+      } else if (chosen) {
+        ctx.setLineDash([3.5, 3]); ctx.strokeStyle = '#e8c35a'; ctx.lineWidth = 1.6;
+        ctx.beginPath(); ctx.arc(x, y, haloR, 0, 6.2832); ctx.stroke();
+      }
+      ctx.restore();
       for (const b of own) { if (based && b.part) continue; if (!kinds.has(b.kind)) kinds.set(b.kind, true); if (!stands(b)) kinds.set(b.kind, false); }
       for (const [kind, done] of kinds) row.push([kind, done ? BUILT : RAISING, false]);
-      if (planned) row.push(['flag', site.status === 'candidate' ? rgba(OURS, 0.7) : OURS, site.status === 'candidate']);
-      row.forEach(([name, colour, hollow], i) => glyph(ctx, name, x - (row.length - 1) * 7 + i * 14, y - q - 10.5, 12, colour, hollow));
+      if (planned) row.push(['flag', chosen ? '#e8c35a' : rgba(OURS, 0.72), !chosen]);
+      const showTag = s.id === selected || s.id === hover || ((based || own.length || chosen) ? k >= 0.055 : k >= 0.11);
+      let tagWord = '';
+      if (showTag) {
+        if (based) tagWord = own.some((b) => b.kind === 'station') ? 'STATION' : 'OUTPOST';
+        else if (own.length) {
+          const tags = [];
+          if (kinds.has('recruit')) tags.push('200 CAP');
+          if (kinds.has('foundry')) tags.push('FOUNDRY');
+          if (kinds.has('storage')) tags.push(tags.length ? 'STORE' : 'LOCKBOX');
+          if (kinds.has('fuel')) tags.push('FUEL');
+          if (!tags.length) tags.push('OFFICE');
+          tagWord = tags.slice(0, 2).join('+');
+        } else if (chosen) tagWord = 'NEXT SITE' + pctTag;
+        else if (planned) tagWord = 'SITE' + pctTag;
+      }
+      if (row.length && (based || own.length || chosen || k >= 0.045 || s.id === selected || s.id === hover)) {
+        ctx.save();
+        ctx.font = '600 9.5px ui-monospace, SFMono-Regular, Consolas, monospace';
+        const iconSpan = row.length * 13 + 2;
+        const textW = tagWord ? ctx.measureText(tagWord).width + 6 : 0;
+        const pw = iconSpan + textW + 6, ph = 16;
+        const px = x - pw / 2, py = y - q - ph - 7;
+        pill(px, py, pw, ph);
+        ctx.fillStyle = 'rgba(11, 16, 25, 0.92)'; ctx.fill();
+        ctx.strokeStyle = based ? rgba(OURS, 0.85) : own.length ? 'rgba(110, 220, 165, 0.7)' : chosen ? 'rgba(232, 195, 90, 0.8)' : rgba(OURS, 0.42);
+        ctx.lineWidth = based || chosen ? 1.25 : 1; ctx.stroke();
+        row.forEach(([gname, colour, hollow], i) => glyph(ctx, gname, px + 9.5 + i * 13, py + ph / 2, 11, colour, hollow));
+        if (tagWord) {
+          ctx.textBaseline = 'middle';
+          ctx.fillStyle = based ? '#b8f297' : own.length ? '#9fe8c3' : chosen ? '#f3d783' : '#b7d9a5';
+          ctx.fillText(tagWord, px + iconSpan + 4, py + ph / 2 + 0.5);
+        }
+        ctx.restore();
+        infraHits.push({ x: px, y: py, w: pw, h: ph, system: s.id, own, site, siteInfo });
+      }
     }
     if (s.id === selected) {
       const beat = (Math.sin(t * 2.6) + 1) / 2, ring = ours ? q + 4.5 : q + 8.5;
@@ -637,7 +691,7 @@ function paint(t) {
     ctx.textBaseline = 'alphabetic';
   }
   labels.sort((a, b) => b.rank - a.rank);                           // names last: beside their system, right or left, where no marker and no other name stands
-  const taken = badgeHits.concat(groupHits).map((b) => [b.x, b.y, b.x + b.w, b.y + b.h]);
+  const taken = badgeHits.concat(groupHits, infraHits).map((b) => [b.x, b.y, b.x + b.w, b.y + b.h]);
   ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(9,12,18,0.85)'; ctx.lineJoin = 'round';
   for (const l of labels) {
     ctx.font = (l.bold ? '600 ' : '') + '11px system-ui, sans-serif';
@@ -1233,11 +1287,49 @@ async function renderSelection(panel, live) {
   const here = [['Ships of ours', ours.length ? ours.length + ', their wallets ' + fmt(wallets) + ' cr' : 'none'],
     ['Goods we store here', !inv ? 'not read' : units ? fmt(units) + ' units, worth about ' + fmt(worth) + ' cr' : 'none']];
   if (own.length) {
-    here.push(['Our buildings', own.map((b) => b.name + (stands(b) ? '' : ' (' + String(b.status).replace(/_/g, ' ') + ')')).join(', ')]);
     here.push(['Faction purse', fmt((S.holdings || {}).treasury) + ' cr, one purse for all our buildings']);
   }
-  if (site && site.status !== 'dropped' && site.status !== 'built') here.push(['Site for a base', site.status + (site.by ? ', proposed by ' + site.by : '')]);
+  const siteRich = ((OPS.data && OPS.data.empire && OPS.data.empire.sites) || []).find((x) => x.system === s.id);
+  if (site && site.status !== 'dropped' && site.status !== 'built') {
+    here.push(['Planned site', site.status + (site.by ? ' (proposed by ' + site.by + ')' : '') + (siteRich && siteRich.need_pct !== null ? ' -- ' + siteRich.need_pct + '% stocked' : '')]);
+  }
   panel.append(el('h3', null, 'Ours here'), facts(here));
+  if (own.length) {
+    const richB = ((OPS.data && OPS.data.empire && OPS.data.empire.buildings) || []).filter((x) => x.system === s.id);
+    const list = richB.length ? richB : own;
+    const bwrap = el('div', 'iblist');
+    for (const b of list) {
+      const ok = stands(b), row = el('div', 'ibldg');
+      const head = el('div', 'ibhead');
+      head.append(glyphSvg(b.kind || 'office', ok ? BUILT : RAISING, 15), el('b', null, b.name));
+      head.append(el('span', 'pill ' + (ok ? 'good' : 'warn'), (b.status || 'active').replace(/_/g, ' ')));
+      row.append(head);
+      const meta = [];
+      if (b.at && b.at !== 'our own base') meta.push('in ' + b.at);
+      if (b.purpose) meta.push(b.purpose);
+      if (b.fuel !== null && b.fuel !== undefined) meta.push('fuel tank: ' + fmt(b.fuel) + ' / 50,000');
+      if (b.rent) meta.push('rent: ' + fmt(b.rent) + ' cr/cycle');
+      else if (b.kind === 'outpost' || b.kind === 'station' || b.part) meta.push('0 cr rent');
+      if (meta.length) row.append(el('div', 'ibsub', meta.join(' | ')));
+      bwrap.append(row);
+    }
+    panel.append(bwrap);
+  }
+  if (siteRich && siteRich.status !== 'built') {
+    const sc = el('div', 'icard sitecard');
+    const sh = el('div', 'ichead');
+    sh.append(glyphSvg('flag', siteRich.status === 'chosen' ? '#e8c35a' : OURS, 14, siteRich.status !== 'chosen'),
+      el('b', null, siteRich.status === 'chosen' ? 'Chosen next base site' : 'Candidate expansion site'),
+      el('span', 'pill ' + (siteRich.status === 'chosen' ? 'warn' : ''), siteRich.status.toUpperCase()));
+    sc.append(sh);
+    if (siteRich.need_pct !== null && siteRich.need_pct !== undefined) {
+      const prow = el('div', 'ibsub');
+      prow.textContent = 'Material readiness (' + siteRich.need_id + '): ' + siteRich.need_pct + '%';
+      sc.append(prow, pbar(siteRich.need_pct, 100, siteRich.need_pct >= 99 ? 'good' : 'warn'));
+    }
+    if (siteRich.note) sc.append(el('div', 'ibsub', siteRich.note));
+    panel.append(sc);
+  }
   // Every station, outpost and building here, whom it belongs to and what of ours it holds.
   const theirs = (t) => (t.tag && t.tag === S.our_tag ? 'us, The Collective' : t.faction ? t.faction + (t.tag ? ' [' + t.tag + ']' : '') : t.empire ? 'the ' + t.empire + ' empire' : 'nobody');
   const heldAt = (name) => { const x = inv && inv.stations.find((y) => y.name === name); return x ? fmt(x.worth) + ' cr' : ''; };
@@ -1849,9 +1941,9 @@ async function renderMetrics(panel, live) {
       panel.append(fitTable(table(['P', 'Need', 'Owner', 'Covered', 'Missing / Fee'],
         needs.map((n) => {
           const stCls = n.colour === 'green' ? 'good' : n.colour === 'red' ? 'bad' : 'warn';
-          const gap = [n.short, n.fee ? fmt(n.fee) + ' cr fee' : ''].filter(Boolean).join(' | ') || 'ready';
+          const gap = n.stocked ? 'standing reserve stocked' : ([n.short, n.fee ? fmt(n.fee) + ' cr fee' : ''].filter(Boolean).join(' | ') || 'ready to build');
           const cov = el('div', 'progcell');
-          cov.append(el('span', 'pill ' + stCls, n.pct + '%'), pbar(n.pct, 100, stCls));
+          cov.append(el('span', 'pill ' + stCls, n.stocked ? 'STOCKED' : n.pct + '%'), pbar(n.pct, 100, stCls));
           return [n.priority, n.id, n.owner, cov, gap];
         }))));
     }
@@ -1896,7 +1988,120 @@ async function renderMetrics(panel, live) {
     chart('Credits, all wallets', [{ pts: rows.map((p) => [p[0], p[1]]), colour: '#dcae58' }]));
 }
 
-const TABS = { Selection: renderSelection, Metrics: renderMetrics, Inventory: renderInventory, Docs: renderDocs };
+async function renderEmpire(panel, live) {
+  const ops = await opsOf(), inv = await inventoryOf();
+  if (!live()) return;
+  const emp = (ops && ops.empire) || { rent: {}, buildings: [], sites: [] };
+  const fac = (ops && ops.readiness && ops.readiness.faction) || {};
+  const bldgs = emp.buildings.length ? emp.buildings : ((S && S.holdings && S.holdings.buildings) || []);
+  const outposts = bldgs.filter((b) => b.kind === 'outpost'), stations = bldgs.filter((b) => b.kind === 'station');
+  const facOnly = bldgs.filter((b) => b.kind !== 'outpost' && b.kind !== 'station');
+  const bySys = new Map();
+  for (const b of bldgs) { if (!bySys.has(b.system)) bySys.set(b.system, []); bySys.get(b.system).push(b); }
+
+  panel.append(el('h2', null, 'Empire & buildings'));
+  panel.append(el('p', 'sub', 'Every base, station building, lockbox, bunker and recruitment office we own across the galaxy, plus our planned expansion sites. Click any star system to fly the map camera there.'));
+
+  const kgrid = el('div', 'kpis');
+  const ekpi = (k, v, sub, cls) => { const d = el('div', 'kpi' + (cls ? ' ' + cls : '')); d.append(el('div', 'k', k), el('div', 'v', v)); if (sub) d.append(el('div', 's', sub)); kgrid.append(d); };
+  ekpi('Sovereign bases', outposts.length + ' / 8 outposts', stations.length + ' / 5 player stations built', outposts.length || stations.length ? 'main pos' : '');
+  ekpi('Station buildings', fmt(facOnly.length) + ' active', 'across ' + bySys.size + ' star systems', 'pos');
+  const seatsOpen = Math.max(0, (fac.limit || 0) - (fac.members || 0));
+  ekpi('Faction seats', fac.limit ? fmt(fac.members) + ' / ' + fmt(fac.limit) : '--',
+    seatsOpen ? seatsOpen + ' open badges ready to seat ships' : 'at seat cap', seatsOpen ? 'pos' : 'warn');
+  ekpi('Facility rent / day', fmt((emp.rent && emp.rent.per_day) || 0) + ' cr',
+    fmt((emp.rent && emp.rent.per_cycle) || 0) + ' cr/cycle at NPC stations (0 on our bases)', '');
+  panel.append(kgrid);
+
+  panel.append(el('h3', null, 'Where our buildings stand (' + bySys.size + ' systems)'));
+  if (!bySys.size) {
+    panel.append(el('p', 'empty', 'No bases or buildings recorded yet.'));
+  } else {
+    const cards = el('div', 'icards');
+    const orderedSys = [...bySys.entries()].sort((a, b) => {
+      const aBase = a[1].some((x) => x.kind === 'outpost' || x.kind === 'station') ? 0 : 1;
+      const bBase = b[1].some((x) => x.kind === 'outpost' || x.kind === 'station') ? 0 : 1;
+      return aBase - bBase || b[1].length - a[1].length;
+    });
+    for (const [sid, list] of orderedSys) {
+      const sObj = sys.get(sid) || { name: sid, empire: '' };
+      const hasOwnBase = list.some((x) => x.kind === 'outpost' || x.kind === 'station');
+      const card = el('div', 'icard' + (hasOwnBase ? ' ownbase' : ''));
+      const head = el('div', 'ichead');
+      const goBtn = el('button', 'sysjump', sObj.name || sid);
+      goBtn.type = 'button';
+      goBtn.addEventListener('click', () => { select(sid, true); });
+      const zone = sObj.empire ? sObj.empire + ' space' : 'lawless frontier';
+      const shipsHere = (shipsBy.get(sid) || []).length;
+      const baseIds = new Set(list.map((b) => b.base).filter(Boolean));
+      const stNames = new Set((stationsBy.get(sid) || []).map((t) => t.name));
+      const worthHere = inv ? inv.stations.filter((x) => stNames.has(x.name) || baseIds.has(x.base)).reduce((a, x) => a + (x.worth || 0), 0) : 0;
+      head.append(goBtn, el('span', 'pill ' + (hasOwnBase ? 'good' : ''), hasOwnBase ? 'OUR BASE' : 'NPC STATION'));
+      card.append(head);
+      card.append(el('div', 'icsub', zone + ' | ' + shipsHere + ' ships here' + (worthHere ? ' | ~' + fmt(worthHere) + ' cr stored' : '')));
+      const blist = el('div', 'iblist');
+      for (const b of list) {
+        const ok = stands(b), row = el('div', 'ibldg');
+        const bh = el('div', 'ibhead');
+        bh.append(glyphSvg(b.kind || 'office', ok ? BUILT : RAISING, 15), el('b', null, b.name));
+        bh.append(el('span', 'pill ' + (ok ? 'good' : 'warn'), (b.status || 'active').replace(/_/g, ' ')));
+        row.append(bh);
+        const details = [];
+        if (b.at && b.at !== 'our own base' && !b.part) details.push('at ' + b.at);
+        if (b.part && b.at) details.push('inside ' + b.at);
+        if (b.purpose) details.push(b.purpose);
+        if (b.fuel !== null && b.fuel !== undefined) details.push('bunker: ' + fmt(b.fuel) + ' / 50,000 fuel');
+        if (b.rent) details.push('rent: ' + fmt(b.rent) + ' cr/cycle');
+        else details.push('0 cr rent');
+        row.append(el('div', 'ibsub', details.join(' | ')));
+        blist.append(row);
+      }
+      card.append(blist);
+      cards.append(card);
+    }
+    panel.append(cards);
+  }
+
+  const sites = (emp.sites || []).filter((x) => x.status !== 'built' && x.status !== 'dropped');
+  const chosenSites = sites.filter((x) => x.status === 'chosen');
+  const candSites = sites.filter((x) => x.status !== 'chosen');
+
+  if (chosenSites.length) {
+    panel.append(el('h3', null, 'Next chosen build sites (' + chosenSites.length + ')'));
+    const cwrap = el('div', 'icards');
+    for (const st of chosenSites) {
+      const sObj = sys.get(st.system) || { name: st.system };
+      const card = el('div', 'icard sitecard');
+      const ch = el('div', 'ichead');
+      const goBtn = el('button', 'sysjump', sObj.name || st.system);
+      goBtn.type = 'button';
+      goBtn.addEventListener('click', () => { select(st.system, true); });
+      ch.append(glyphSvg('flag', '#e8c35a', 15), goBtn, el('span', 'pill warn', st.need_pct !== null && st.need_pct !== undefined ? 'CHOSEN - ' + st.need_pct + '%' : 'CHOSEN'));
+      card.append(ch);
+      if (st.need_pct !== null && st.need_pct !== undefined) {
+        card.append(el('div', 'ibsub', 'Supply progress (' + st.need_id + '): ' + st.need_pct + '% stocked -- turns green on the map automatically once deployed'), pbar(st.need_pct, 100, st.need_pct >= 99 ? 'good' : 'warn'));
+      } else {
+        card.append(el('div', 'ibsub', 'Queued after active priority builds -- turns green on the map automatically once deployed'));
+      }
+      if (st.note) card.append(el('div', 'ibsub', st.note));
+      cwrap.append(card);
+    }
+    panel.append(cwrap);
+  }
+
+  if (candSites.length) {
+    panel.append(el('h3', null, 'Candidate station & frontier sites (' + candSites.length + ')'));
+    panel.append(fitTable(table(['System', 'Proposed by', 'Readiness', 'Strategic note'],
+      candSites.map((st) => {
+        const sObj = sys.get(st.system);
+        const link = sObj ? sysLink(st.system) : st.system;
+        const rdy = st.need_pct !== null && st.need_pct !== undefined ? el('span', 'pill warn', st.need_pct + '%') : '--';
+        return [link, st.by || '--', rdy, (st.note || '').slice(0, 140)];
+      }))));
+  }
+}
+
+const TABS = { Selection: renderSelection, Empire: renderEmpire, Metrics: renderMetrics, Inventory: renderInventory, Docs: renderDocs };
 let renderSeq = 0, viewKey = '';
 function render() {
   const panel = $('panel'), mine = ++renderSeq, live = () => mine === renderSeq;
@@ -1905,7 +2110,7 @@ function render() {
   viewKey = key;
   document.querySelectorAll('nav button').forEach((b) => b.classList.toggle('on', b.textContent === tab));
   $('rail-right-label').textContent = tab;
-  if (tab !== 'Docs') setWide(tab === 'Metrics' || tab === 'Inventory' ? 'metrics' : false);
+  if (tab !== 'Docs') setWide(tab === 'Empire' || tab === 'Metrics' || tab === 'Inventory' ? 'metrics' : false);
   if (tab === 'Metrics') {
     metricsAt = Date.now();
     if (!same) routeOrder.key = '';                // the tab was opened anew: the routes are sorted afresh
@@ -2142,9 +2347,10 @@ async function loadState() {
   row(glyphSvg('storage', BUILT, 13), 'shared storage');
   row(glyphSvg('fuel', BUILT, 13), 'fuel bunker');
   row(glyphSvg('recruit', BUILT, 13), 'hiring office');
+  row(glyphSvg('foundry', BUILT, 13), 'foundry / shipyard');
   row(glyphSvg('office', BUILT, 13), 'other office');
-  row(glyphSvg('storage', RAISING, 13), 'amber: not active yet');
-  row(glyphSvg('flag', OURS, 13), 'site chosen for a base');
+  row(glyphSvg('storage', RAISING, 13), 'amber: building / damaged');
+  row(glyphSvg('flag', '#e8c35a', 13), 'next chosen build site');
   row(glyphSvg('flag', rgba(OURS, 0.7), 13, true), 'candidate site');
   head('Others');
   row(glyphSvg('pip', '#aeb5cc', 12), 'station');
@@ -2239,13 +2445,20 @@ function init() {
   canvas.addEventListener('mousemove', (e) => {
     const r = canvas.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top;
     if (drag) { dragTo(e); return; }
-    const tip = $('tip'), badge = S && badgeAt(mx, my), grp = !badge && S && groupAt(mx, my), s = !badge && !grp && S && nearest(mx, my);
-    hover = s ? s.id : null; hoverBadge = badge || null;
-    canvas.style.cursor = badge || grp ? 'pointer' : '';
+    const infraAt = (px, py) => infraHits.find((h) => px >= h.x && px <= h.x + h.w && py >= h.y && py <= h.y + h.h);
+    const tip = $('tip'), badge = S && badgeAt(mx, my), inf = !badge && S && infraAt(mx, my), grp = !badge && !inf && S && groupAt(mx, my), s = !badge && !inf && !grp && S && nearest(mx, my);
+    hover = inf ? inf.system : s ? s.id : null; hoverBadge = badge || null;
+    canvas.style.cursor = badge || inf || grp ? 'pointer' : '';
     const placeName = (b) => { const o = sys.get(b.system); return o ? o.name : b.system; };
     if (badge) {
       const at = sys.get(badge.system) || {};
       tip.textContent = badge.count + (badge.count === 1 ? ' ship' : ' ships') + ' of ours at ' + placeName(badge) + ' (' + (at.empire || 'lawless') + '): ' + badge.parts + ' | click for the card';
+      tip.style.left = mx + 14 + 'px'; tip.style.top = my + 12 + 'px'; tip.hidden = false;
+    } else if (inf) {
+      const btxt = inf.own.length ? 'Our buildings: ' + inf.own.map((b) => b.name + (b.at && !b.part ? ' @ ' + b.at : '') + (stands(b) ? '' : ' [' + b.status + ']')).join(', ') : '';
+      const stxt = inf.site && inf.site.status !== 'built' && inf.site.status !== 'dropped'
+        ? 'Planned base (' + inf.site.status + (inf.siteInfo && inf.siteInfo.need_pct !== null ? ', ' + inf.siteInfo.need_pct + '% stocked' : '') + ')' : '';
+      tip.textContent = placeName(inf) + ' -- ' + [btxt, stxt].filter(Boolean).join(' | ') + ' | click to inspect';
       tip.style.left = mx + 14 + 'px'; tip.style.top = my + 12 + 'px'; tip.hidden = false;
     } else if (grp) {
       const g = grp.group;
@@ -2265,6 +2478,8 @@ function init() {
     if (moved || !S) return;
     const r = canvas.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top, badge = badgeAt(mx, my);
     if (badge) { $('tip').hidden = true; select(badge.system, false); openPop(badge.system, badge.kind); return; }   // our ships stand in the system's own place: the system is picked and their card opens
+    const inf = infraHits.find((h) => mx >= h.x && mx <= h.x + h.w && my >= h.y && my <= h.y + h.h);
+    if (inf) { $('tip').hidden = true; if (pop) closePop(); select(inf.system, false); return; }
     const grp = groupAt(mx, my);
     if (grp) { $('tip').hidden = true; openGroup(grp.system, grp.group); return; }
     const s = nearest(mx, my);
@@ -2281,6 +2496,7 @@ function init() {
   }, { passive: false });
   $('btn-all').addEventListener('click', () => fit(S.systems, 1200));
   $('btn-home').addEventListener('click', () => fit(S.systems.filter((s) => s.jumps >= 0 && s.jumps <= 4), 500));
+  if ($('btn-bases')) $('btn-bases').addEventListener('click', () => fitBases(false));
   $('btn-fleet').addEventListener('click', () => fitFleet(false));
   const input = $('search'), results = $('results');
   let timer = 0;
@@ -2323,12 +2539,15 @@ function init() {
     if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || e.ctrlKey || e.metaKey || e.altKey) return;
     const k = e.key.toLowerCase();
     if (k === 'f') fitFleet(false);
+    else if (k === 'b') fitBases(false);
+    else if (k === 'e') { tab = 'Empire'; pilotCard = null; docView = null; render(); }
     else if (k === 'h' && S) fit(S.systems.filter((s) => s.jumps >= 0 && s.jumps <= 4), 500);
     else if (k === 'g' && S) fit(S.systems, 1200);
     else if (k === '1') { tab = 'Selection'; render(); }
-    else if (k === '2') { tab = 'Metrics'; pilotCard = null; docView = null; render(); }
-    else if (k === '3') { tab = 'Inventory'; pilotCard = null; docView = null; invItem = null; render(); }
-    else if (k === '4') { tab = 'Docs'; pilotCard = null; render(); }
+    else if (k === '2') { tab = 'Empire'; pilotCard = null; docView = null; render(); }
+    else if (k === '3') { tab = 'Metrics'; pilotCard = null; docView = null; render(); }
+    else if (k === '4') { tab = 'Inventory'; pilotCard = null; docView = null; invItem = null; render(); }
+    else if (k === '5') { tab = 'Docs'; pilotCard = null; render(); }
     else if (k === '[') toggleShut('left');
     else if (k === ']') toggleShut('right');
     else if (k === '/') { e.preventDefault(); const inp = $('search'); if (inp) inp.focus(); }
@@ -2340,6 +2559,14 @@ function fitFleet(jump) {
   const list = [...shipsBy.keys()].map((id) => sys.get(id)).filter(Boolean);
   if (!list.length) { fit(S.systems.filter((s) => s.jumps >= 0 && s.jumps <= 4), 500, jump); return; }
   fit(list.concat(list.flatMap((s) => s.lanes.map((id) => sys.get(id)).filter(Boolean))), 300, jump);
+}
+
+function fitBases(jump) {
+  const ids = new Set([...holdBy.keys()]);
+  for (const [id, st] of sitesBy) { if (st.status === 'chosen') ids.add(id); }
+  const list = [...ids].map((id) => sys.get(id)).filter(Boolean);
+  if (!list.length) { fitFleet(jump); return; }
+  fit(list.concat(list.flatMap((s) => s.lanes.map((id) => sys.get(id)).filter(Boolean))), 420, jump);
 }
 
 (async function main() {

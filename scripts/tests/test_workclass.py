@@ -11,6 +11,11 @@ import workclass  # noqa: E402
 
 
 class WorkClassTests(unittest.TestCase):
+    def setUp(self):
+        prev = workclass.STRICT
+        workclass.STRICT = False
+        self.addCleanup(setattr, workclass, "STRICT", prev)
+
     def test_gathering_is_the_miners(self):
         route = {"kind": "mine", "belt": "x"}
         self.assertEqual(workclass.work_class(route, "gather-x"), "gather")

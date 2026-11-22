@@ -521,3 +521,22 @@ button.member:hover { background: var(--raise); box-shadow: inset 0 -2px 0 var(-
 .pbar.warn i { background: var(--warn); }
 .pbar.bad i { background: var(--bad); }
 @media (max-width: 1500px) { .alertbar { max-width: calc(100% - 260px); border-radius: var(--r2); } }
+
+/* ---- 2026-11-22 HUD v3: Empire & Infrastructure cards, building rows, site progress */
+.icards { display: flex; flex-direction: column; gap: 10px; margin: 8px 0 14px; }
+.icard { background: linear-gradient(180deg, rgba(22, 30, 44, 0.78), rgba(13, 17, 26, 0.94));
+  border: 1px solid var(--line2); border-radius: var(--r2); padding: 10px 12px; display: flex; flex-direction: column; gap: 6px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.03); }
+.icard.ownbase { border-color: rgba(134, 214, 91, 0.55); box-shadow: 0 6px 20px rgba(0, 0, 0, 0.32), inset 0 0 0 1px rgba(134, 214, 91, 0.12); }
+.icard.sitecard { border-color: rgba(232, 195, 90, 0.48); }
+.ichead { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.ichead .pill { margin-left: auto; }
+.icsub { font-size: 11.5px; color: var(--dim); }
+.sysjump { background: none; border: none; padding: 0; color: var(--text); font: 600 13.5px/1.25 system-ui, sans-serif; cursor: pointer; text-align: left; }
+.sysjump:hover { color: var(--accent); text-decoration: underline; }
+.iblist { display: flex; flex-direction: column; gap: 6px; margin-top: 2px; }
+.ibldg { background: rgba(10, 13, 20, 0.65); border: 1px solid var(--line); border-radius: var(--r); padding: 7px 9px; display: flex; flex-direction: column; gap: 3px; }
+.ibhead { display: flex; align-items: center; gap: 7px; font-size: 12.5px; }
+.ibhead svg { flex: none; }
+.ibhead .pill { margin-left: auto; }
+.ibsub { font-size: 11.5px; color: var(--dim); line-height: 1.4; }

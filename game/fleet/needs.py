@@ -324,6 +324,9 @@ def targets(repo, cat, notes=None):
         if row["ref"] not in (cat or {}).get(TABLE[row["kind"]], {}):
             notes.append("%s line %d (%s): no %s `%s` in the catalog %s: skipped" % (FILE, row["line"], row["id"], row["kind"], row["ref"], (cat or {}).get("version")))
             continue
+        if facility_built_at_place(row, division.DATA, cat):
+            notes.append("%s line %d (%s): already stands at %s in empire.json: skipped" % (FILE, row["line"], row["id"], row["place"]))
+            continue
         out.append({"line": row["line"], "kind": row["kind"], "id": row["ref"], "units": row["units"], "need": row["id"], "division": row["division"],
                     "priority": row["priority"], "note": "need %s (%s, priority %d): %s%s" % (row["id"], row["division"], row["priority"], row["project"],
                                                                                           " | " + row["note"] if row["note"] else "")})
@@ -364,6 +367,33 @@ def built(data):
         if isinstance(row, dict) and row.get("type"):
             out[row["type"]] = out.get(row["type"], 0) + 1
     return out
+
+
+def facility_built_at_place(row, data, cat=None):
+    """True when a facility need names a specific `place` and `empire.json` already holds at least `units` of that
+    facility (or a higher tier upgraded from it) at that base/system -- preventing phantom reserve lockups after a build."""
+    if row.get("kind") != "facility" or not row.get("place"):
+        return False
+    try:
+        found = json.loads((Path(data) / "empire" / "empire.json").read_text(encoding="utf-8")).get("facilities") or []
+    except (OSError, ValueError, AttributeError):
+        return False
+    valid = {row["ref"]}
+    fac_cat = (cat or {}).get("facilities") or {}
+    if isinstance(fac_cat, dict) and fac_cat:
+        changed = True
+        while changed:
+            changed = False
+            for fid, fdef in fac_cat.items():
+                if isinstance(fdef, dict) and fdef.get("upgrades_from") in valid and fid not in valid:
+                    valid.add(fid)
+                    changed = True
+    place = row["place"]
+    cnt = sum(
+        1 for f in (found if isinstance(found, list) else [])
+        if isinstance(f, dict) and f.get("type") in valid and place in (f.get("base"), f.get("system"))
+    )
+    return cnt >= int(row.get("units") or 1)
 
 
 def colour_of(covered, short):
@@ -407,6 +437,9 @@ def status(data, repo, cat=None, now=None, rows=None):
             continue
         if row["ref"] not in cat[TABLE[row["kind"]]]:
             entry.update(colour="broken", problem="no %s `%s` in the catalog %s" % (row["kind"], row["ref"], cat["version"]))
+            continue
+        if facility_built_at_place(row, data, cat):
+            entry.update(covered=100.0, colour="green", fee=0, stands=max(1, entry.get("stands") or 1))
             continue
         top, entry["fee"] = takes(cat, row)
         entry["takes"] = top
