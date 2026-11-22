@@ -46,7 +46,7 @@
     "crafting",
     "refining"
    ],
-   "note": "Orders ENT-062, block ZERO: the reserve's short goods first, each gather limited to what its own good carries; since 2026-11-22 07:10 UTC the far carbon (Jishui, Yildun, Last Light) and the GSC-0049 nickel stand here, and every gather takes any mining laser. Then steel plate and piping from the pilot's own stores. Gathers before crafts since 2026-11-21 (Zero)."
+   "note": "Orders ENT-062, block ZERO: the reserve's short goods first, each gather limited to what its own good carries; since 2026-11-22 07:09 UTC the far carbon (Jishui, Yildun, Last Light) and the GSC-0049 nickel stand here, and every gather takes any mining laser. Then steel plate and piping from the pilot's own stores. Gathers before crafts since 2026-11-21 (Zero)."
   },
   "reserve-hamal": {
    "title": "Gather what the reserve lacks, then make: the short-ore fields in the other order so the division is spread, then steel plate and copper piping from own stores",
@@ -76,7 +76,7 @@
     "crafting",
     "refining"
    ],
-   "note": "Orders ENT-062, block ZERO: the reserve's short goods first in the other order so the division is spread, carbon first (the largest short); far carbon and the GSC-0049 nickel since 2026-11-22 07:10 UTC, any mining laser. Then steel plate and piping from own stores. Gathers before crafts since 2026-11-21 (Zero)."
+   "note": "Orders ENT-062, block ZERO: the reserve's short goods first in the other order so the division is spread, carbon first (the largest short); far carbon and the GSC-0049 nickel since 2026-11-22 07:09 UTC, any mining laser. Then steel plate and piping from own stores. Gathers before crafts since 2026-11-21 (Zero)."
   }
  }
 }
