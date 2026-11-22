@@ -1,28 +1,27 @@
 # Trade guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-22. Evidence: plan.py show; fill.py status trader (2026-11-22 00:0x UTC); gaps.py and sellgen.py scan (skill trade-books).
+Status: proven. Updated: 2026-11-22. Evidence: plan.py show; data/fleet/orders (03:51 UTC); fill.py status trader.
 
-The plan file as set on 2026-11-22 at 00:00 UTC (orders ENT-059: trade
-beyond our borders):
+The plan file as set on 2026-11-22 at 03:50 UTC (orders ENT-061 and
+standing order S5: every trader operating):
 
-- First, every ship: the once line of 24 routes; nearly all booked.
-- Own routes: two far buy-and-sell tests at the head of one trader each
-  (control nodes Node Gamma to Factory Belt, chemical liners Node Beta
-  to First Step; `requires.ask` and `stop_on_failed_buy`), then for all
-  40 `@trade-sell > @trade-craft`. `@trade-sell` now leads with five far
-  carries of stored surplus: hydrogen to Nova Terra, lead ore to Grand
-  Exchange, verdigris curd to Procyon.
-- Then: the three steel crafts, park.
+- First, every ship: the once line (the Voidborn chain, with
+  voidborn-network-commerce after Signal Protocol), then the two
+  Federation once missions, three ships each (rule F37).
+- Own routes: a far test or carry at the head of the row of the ship
+  whose load or mission it is, then for all `@trade-sell > @trade-craft`.
+- Then: the three steel crafts, train-jumps-trader (standing: five jumps
+  through our stations for piloting and navigation, each dock reading
+  the home book), park.
 
-What it carries: one ship a gap or a far bid; each closes on its book.
-The rest wait docked at no cost (gate HALT): no route trains trading
-without a buy, and a jump loop costs about 358 cr a ship-hour for about
-80 piloting XP (train-jumps-hauler, route_earnings 12 h).
+What it carries: one ship a gap or far bid; three ships a once mission;
+the loop every ship left (34 of 40 at 03:51 UTC), at the fuel cost its
+route figure shows (`hive.py route train-jumps-trader`).
 
-What would change it: a far test that pays twice (lift it), a Trade Run
-mission taken on the same road (tests.md), strict classes switched on
-(the receivers sell the others' goods: data/fleet/receivers.json).
+What would change it: the runner reading Trade Runs (requests ENT-335),
+the Federation missions paying (then every trader), strict classes on
+(the receivers sell what the others give), local work for a far ship.
 
 ### Selling stores where they lie (`sell-<good>-at-<station>`, `carry-<good>-<from>-to-<to>`)
 Status: proven. Updated: 2026-11-22. Evidence: the sell and carry route files with their measured figures; sellgen.py of the skill trade-books.

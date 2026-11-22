@@ -118,3 +118,13 @@ Status: proven. Updated: 2026-11-22. Evidence: errors.log ENT-047, ENT-066, ENT-
 - `wallet.py topup --dry-run` before a spend that nears the floor.
 - A listed ship is bought docked at its station (`buy_listed_ship`,
   spacemolt_ship); the old ship stays stored there.
+
+### A fallback is flown from where the ship stands
+Status: proven. Updated: 2026-11-22. Evidence: data/fleet/orders 03:51 UTC; dispatch.why_not on carry-liner-first-step-to-ramens (best bid 1060 x 1, book of 03:46 UTC).
+
+The dispatcher gives a ship the first open route of its row wherever
+the ship stands. A trader docked 18 jumps out, whose local carry closed
+on a bid sold out, took the home training loop and flew home with an
+empty hold through the lawless west. A far ship's row holds local work
+first and a local fallback (a carry or a loop of the stations where it
+lies), so no ship crosses a lawless road for training alone.
