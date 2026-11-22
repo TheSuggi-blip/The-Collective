@@ -15,7 +15,7 @@ updated: 2026-11-22
 # Crafting Collective [CRFT]
 
 A player faction with 2 base(s) in 2 system(s); the nearest to Nexus Prime is 19 jump(s) away, in Cloverfield (`cloverfield`).
-Pilots of it in our space in the last 24 hours: 0.
+Pilots of it in our space in the last 24 hours: 1.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 0.
 | Allies | DB , HELP, XPLR, YSMT | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 47 | Public event stream |
+| Pilots carrying the tag on the public event stream | 40 | Public event stream |
 
 ## Bases
 
@@ -39,7 +39,9 @@ Pilots of it in our space in the last 24 hours: 0.
 
 Pilots carrying this tag whose last known system is one of ours (public event stream, last 24 hours).
 
-None in the last 24 hours.
+| Pilot | System | Player ships destroyed | Ship when one of ours met it |
+|---|---|---|---|
+| Arthur 'Artificer' Artis | Nexus Prime (`nexus_prime`) | 2 | axiomata |
 
 ## Standing History
 

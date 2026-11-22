@@ -8,7 +8,7 @@ author: Unity
 # index.md -- Pilots We Know
 
 Built by `scripts/intel-index.py` from the pilot files of this folder;
-never edited by hand. Files listed: 25. The format of a pilot file:
+never edited by hand. Files listed: 26. The format of a pilot file:
 `BLUEPRINT.md`.
 
 ## Hostile
@@ -20,6 +20,7 @@ None filed.
 | Pilot | Threat | Empire | Faction | Standing since | Updated | File |
 |---|---|---|---|---|---|---|
 | AetherWraith | high | crimson | none | 2026-11-14 | 2026-11-14 | [n-aetherwraith.md](n-aetherwraith.md) |
+| Arthur 'Artificer' Artis | medium | nebula | CRFT | 2026-11-22 | 2026-11-22 | [n-arthur_artificer_artis.md](n-arthur_artificer_artis.md) |
 | Blackbeard | medium | crimson | ENDL | 2026-11-15 | 2026-11-15 | [n-blackbeard.md](n-blackbeard.md) |
 | Bootstrap | medium | crimson | ENDL | 2026-11-15 | 2026-11-15 | [n-bootstrap.md](n-bootstrap.md) |
 | Combat Drone 001 | medium | crimson | BUSY | 2026-11-15 | 2026-11-15 | [n-combat_drone_001.md](n-combat_drone_001.md) |

@@ -9,13 +9,13 @@ faction: Rise and Fall of Goldcrest Moon
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-21
+updated: 2026-11-22
 ---
 
 # Rise and Fall of Goldcrest Moon [MOON]
 
 A player faction with 4 base(s) in 4 system(s); the nearest to Nexus Prime is 11 jump(s) away, in Mebsuta (`mebsuta`).
-Pilots of it in our space in the last 24 hours: 0.
+Pilots of it in our space in the last 24 hours: 1.
 
 ## Identity
 
@@ -41,7 +41,9 @@ Pilots of it in our space in the last 24 hours: 0.
 
 Pilots carrying this tag whose last known system is one of ours (public event stream, last 24 hours).
 
-None in the last 24 hours.
+| Pilot | System | Player ships destroyed | Ship when one of ours met it |
+|---|---|---|---|
+| Darien Vey | Node Alpha (`node_alpha`) | 0 | axiomata |
 
 ## Standing History
 
