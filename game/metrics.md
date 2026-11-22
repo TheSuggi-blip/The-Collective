@@ -61,14 +61,20 @@ first, then built.
   reserve units it holds, net change. Military: kills and hunts flown (runs), ships lost (ship files' counter),
   combat XP per hour read. Trade: credits and credits per ship-hour of its sell runs. Mining: ore per run-hour and
   per ship-hour, the median days of supply of the reserve.
+  (d) handed over (every division, since 2026-11-22): the units each gave by gift to the receivers of Trade and
+  Logistics (data/stock/handover.jsonl) and what they would sell for now: per item, all givers' units within the
+  depth of the best bid of any saved book, shared by units; beyond the depth or without a bid at 0, named.
 - Formula: (b) sum of route_hour credits per route, grouped by the route file's first author (`git log
   --diff-filter=A`, cached in stats_route_author; asked again only for a new file).
-- Sources: fleet.json, route_hour, runs, stats_route_author, readings, books, stats_supply_hour, stats_pilot_hour.
+- Sources: fleet.json, route_hour, runs, stats_route_author, readings, books, stats_supply_hour, stats_pilot_hour,
+  data/stock/handover.jsonl, data/market/*.json.
 - Follows: throughput of the whole system over local efficiency (theory of constraints, above); data timeliness
   for Intel (https://www.canada.ca/en/government/system/digital-government/digital-government-innovations/information-management/guidance-data-quality.html).
 - Caveats: the first author is who wrote the file, not who keeps it. A division's own net over 72 h is not measured:
   the collector's window over one hour does not add up per division (a move between our purses whose two sides fall
-  into different hours); only the fleet's hours are summed. Whether a unit sold was surplus at that moment is not recorded.
+  into different hours); only the fleet's hours are summed. Whether a unit sold was surplus at that moment is not recorded. (d) is worth at today's books,
+  not money: when Trade sells the goods it becomes Trade's income, so (d) and Trade's income are never added; one
+  bid's depth is shared over the whole window.
 
 ## classes -- class capacity
 

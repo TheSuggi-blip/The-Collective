@@ -753,6 +753,7 @@ def figures_contribution(conn, data, root, now, hours):
     rows += service_logistics(conn, data, root, now, since, hours)
     rows += service_military(conn, data, runs, since, hours)
     rows += service_trade_mining(conn, data, routes, runs, now, since, hours)
+    rows += service_handover(data, now, since, hours)     # orders ENT-064: what hunts and gathers hand over, at its worth
     return rows
 
 
@@ -834,6 +835,57 @@ def service_military(conn, data, runs, since, hours):
             ("Military", "combat_xp_per_ship_hour", hours, (gained or 0) / total if total and sampled else None, samples,
              "XP gained in the Combat skills (table skills) over the hours Military's pilots were read (stats_pilot_hour, read_hours)" if total and sampled else
              "not measured: needs two hourly readings of the pilots' skills (stats_pilot_hour)")]
+
+
+def service_handover(data, now, since, hours):
+    """[(division, figure, hours, value, n, text)]: the goods each division handed over by gift (data/stock/handover.jsonl,
+    handover.py: one line per gift of goods) in the window, by the giver's division, at what they would sell for now:
+    per item, the units of all givers together within the depth of the best bid of any saved order book (craftbook.bids
+    rule), shared among the divisions by their units; beyond the depth and without a bid they count 0, and how many such
+    units there are is named. Orders ENT-064, block UNITY: under strict classes a hunt or a gather earns nothing in its
+    wallet, so P1 reads what it enabled here; never more than the books would pay today."""
+    path = Path(data) / "stock" / "handover.jsonl"
+    try:
+        lines = path.read_text(encoding="utf-8").splitlines()
+    except (OSError, UnicodeDecodeError) as error:
+        return [("Command", "handed_over_worth", hours, None, 0, "not measured: %s cannot be read (%s)" % (path.name, type(error).__name__))]
+    best = {}
+    for book_path in sorted((Path(data) / "market").glob("*.json")):
+        book = read_json(book_path, {})
+        for row in book.get("items") or [] if isinstance(book, dict) else []:
+            bid = row.get("best_buy") if isinstance(row.get("best_buy"), (int, float)) else 0
+            depth = row.get("best_buy_qty") if isinstance(row.get("best_buy_qty"), (int, float)) else 1     # no depth saved: one unit (F12)
+            if bid > best.get(row.get("item_id"), (0, 0))[0]:
+                best[row.get("item_id")] = (bid, depth)
+    given, gifts = defaultdict(Counter), Counter()          # item -> {division: units}
+    for line in lines:
+        try:
+            gift = json.loads(line)
+        except ValueError:
+            continue
+        if not isinstance(gift, dict) or not isinstance(gift.get("at"), (int, float)) or not since <= gift["at"] <= now:
+            continue
+        name = owner_division(str(gift.get("from") or ""), data)
+        gifts[name] += 1
+        for item, count in (gift.get("items") or {}).items() if isinstance(gift.get("items"), dict) else []:
+            if isinstance(count, (int, float)) and not isinstance(count, bool) and count > 0:
+                given[item][name] += count
+    worth, units, beyond = Counter(), Counter(), Counter()
+    for item, by in given.items():
+        total = float(sum(by.values()))
+        bid, depth = best.get(item, (0, 0))
+        sold = min(total, max(depth, 0)) if bid > 0 else 0
+        for name, count in by.items():
+            units[name] += count
+            worth[name] += bid * sold * count / total
+            beyond[name] += count - sold * count / total
+    rows = []
+    for name in sorted(gifts):
+        rows.append((name, "handed_over_worth", hours, worth[name], gifts[name],
+                     "credits the goods given by gift (handover.jsonl, %d gifts) would sell for now: each item within the depth of its best bid in any "
+                     "saved book, shared by units; %s units beyond the depth or without a bid, at 0" % (gifts[name], num(beyond[name]))))
+        rows.append((name, "handed_over_units", hours, units[name], gifts[name], "units of goods given by gift to the receivers of Trade and Logistics"))
+    return rows
 
 
 def service_trade_mining(conn, data, routes, runs, now, since, hours):
