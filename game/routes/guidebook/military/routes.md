@@ -1,25 +1,27 @@
 # Military guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-22. Evidence: the tool plan (show); hive.py briefing (the plan table, column carries); the tool fill (status, check); hive.py forecast Apophis.
+Status: proven. Updated: 2026-11-22. Evidence: the tool plan (show); hive.py briefing (the plan table, column carries); the tool fill (status, check); python3 -I -B game/fleet/workclass.py sales.
 
-What the 70 ships fly between two turns (orders ENT-059, block APOPHIS):
-hunts that pay, combat skills, fits, a group that kills. No guard or escort
-in the first ring (F33). Every hunt takes one side, one hunter to a herd.
+What the 70 ships fly between two turns (orders ENT-061, block APOPHIS
+and P5): hunts, combat skills, fits, a group that kills; no sale of their
+own (P5: Trade's work). No guard or escort in the first ring (F33). One
+hunter to a herd.
 
 | Order | Routes | Ships | Why |
 |---|---|---|---|
-| First | the once line (22 routes), each under its own limit | every ship | rule F35, money paid once |
-| Own | far herds and the filler's tests (`fill.py fill <role> --write`); the two weapon fits and their bulwark tests | 1 each | far bids; the fit decision |
-| `@hunter` | sales from storage, home hunts, then seven patina-grazer herds and 35 far hunts, 31 of them standing (templates entry) | 1 each | combat XP where the home herds are full |
+| First | the once line; the Pulse Laser III fit; plasma ammo; `give-drone-stores-*` (off until strict classes) | each under its limit | F35; the weapon; P5 |
+| Own | far herds and the filler's tests | 1 each | far herds, tests |
+| `@hunter` | chlorophage herds (caustic sac), the Pulse Laser III prey, home hunts, far standing hunts | 1 each | the reserve; combat XP |
 | Then | the crafts from own stores, `park` | 6 each | until strict classes give crafts to haulers |
 
-Every hunt carries `gift_to: trader` for strict classes.
-Sized by the briefing's column carries: a herd carries one hunter. What
-changes it: a weapon that opens prey of 80 to 100 hull (tests.md), a group
-that kills, strict classes (no sales, no crafts for drones), a pirate at a
-hunt's place (dispatch closes it; a pack sets it off). The far standing
-hunts cost their fuel: the tool fleet, view=money, Military's metered/h.
+Every hunt carries `gift_to` (trader; the caustic-sac hunts hauler): with
+strict classes on, the hold goes to the receiver at `sell_at`. Sized by
+the briefing's column carries: a herd carries one hunter. What changes it:
+strict classes (the crafts close, the gifts open), the Pulse Laser III on
+more ships (more prey), a pirate at a hunt's place (dispatch closes it; a
+pack sets it off). The far hunts cost their fuel: the tool fleet,
+view=money, Military's metered/h.
 
 ### Hunts of grazers (`hunt.py`)
 Status: proven. Updated: 2026-11-21. Evidence: game/fleet/hunt.py; skill military-turn hunt_figures.py; routes.md entry versions of 2026-11-17 (--history).

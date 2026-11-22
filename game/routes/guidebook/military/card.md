@@ -12,17 +12,17 @@ tool fleet, view=levels, member Apophis. Hulls and fits: ships.md; work:
 routes.md; tests: tests.md; pirates, raids, guards: topic-pirates.md.
 
 ### Ships
-Status: proven. Updated: 2026-11-22. Evidence: table hulls; catalog spacemolt_catalog (pulse_laser_i/ii/iii); ships.md; tests.md entry Weapon fits.
+Status: proven. Updated: 2026-11-22. Evidence: table hulls; catalog spacemolt_catalog (pulse_laser_i/ii/iii); ships.md; tests.md entry Weapon fits; table runs (hunt-test-*-pl3).
 
 - Tier 0, every ship now: the Threshold, hull 75, shield 80, CPU 16, power
   30; 1 weapon, 2 defence, 2 utility slots; a Pulse Laser I and a Mining
-  Laser I. Six drones carry one or two Shield Booster I; one flies a
-  Pulse Laser III as a test (tests.md, Weapon fits).
+  Laser I. Six drones carry one or two Shield Booster I; the Pulse Laser
+  III is the division's weapon, fitted by route (tests.md, Weapon fits).
 - Tier 1 (no Piloting gate): Vigil (2 weapons), Paradox. Tier 2 at Piloting
   10: Recursion (3 weapons, speed 4), Dualism, Census. Tier 3 at 20:
   Annihilation, Voidborn Singularity.
-- Fit order: the weapon first (Pulse Laser III or Plasma Cannon II, both
-  in test), then two Shield Booster I. The gauges (rule F9, gauges.py): one
+- Fit order: the Pulse Laser III first (proven on 85 to 95 hull), then
+  two Shield Booster I; the Plasma Cannon II is in test, with ammunition. The gauges (rule F9, gauges.py): one
   Pulse Laser I kills about 78 hull and stands about 77 weight; prey above
   that waits for a better weapon, boosters or a group.
 - Style: one hunter to a herd; never the first shot at a player or an

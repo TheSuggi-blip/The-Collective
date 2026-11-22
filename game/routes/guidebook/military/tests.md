@@ -3,22 +3,20 @@
 ### Open Tests
 Status: test. Updated: 2026-11-22. Evidence: the tool fill (status); observations kind group_hunt and fit_test; table runs.
 
-- Weapon fits (entry below): Pulse Laser III against Plasma Cannon II on
-  the bulwarks of Acubens, one ship each.
-- Group hunts (entry below): a pilot whale at the Stellar Siphon with the
-  wait for every member at the place.
-- Patina grazers beyond the border (seven herds, one ship each, standing
-  work since 2026-11-22): the work for drones the home herds leave idle.
+- Plasma Cannon II against the bulwarks of Acubens, now with ammunition
+  (Weapon fits).
+- Group hunts (entry below): a pilot whale with three ships that carry
+  the Pulse Laser III, once three stand fitted.
+- Caustic sac for the reserve: chlorophage herds at Alathfar, Fulu and
+  Chara, one ship each, stored at Node Beta for the recruitment center
+  (the tool needs); standing work.
 - The tests the filler adds each turn (`fill.py fill drone --write`): far
-  hollow-pilgrim, cinder-sylph and veil-ray herds, one ship each until the
-  first RESULT line. A test of another class (a visit mission, a craft
-  another division claims) is dropped from the drone plan.
+  herds, one ship each until three results (F37). A test of another class
+  is dropped from the drone plan.
 - Not tested: which hit trains Shields and Armor; a tier-1 or tier-2 hull
-  with two or three weapons; Cloudwhale Oil Wanted (lumen oil from
-  cloudwhales of 508 to 3,304 hull, beyond any side of ours).
-- Answered and off (2026-11-17): the cauldronback at Node Beta (0 kills in
-  4 runs, hull to 45 percent) and the slag-tortoises at Garnet (0 in 2) with
-  one Pulse Laser I: a better weapon or a group first.
+  with two or three weapons; cloudwhales (508 to 3,304 hull).
+- Answered: one Pulse Laser I kills no cauldronback or slag tortoise; the
+  Pulse Laser III kills prey of 85 to 95 hull (Weapon fits).
 
 ### Group hunts
 Status: test. Updated: 2026-11-22. Evidence: observations kind group_hunt (2026-11-17 to 2026-11-22 00:45 UTC); spacemolt.com/docs/combat; skill military-turn group_hunt.py.
@@ -41,20 +39,20 @@ docks for repair, releases all.
   starter group loses the race to the stalemate: weapon first.
 
 ### Weapon fits
-Status: test. Updated: 2026-11-22. Evidence: game/catalog/tables/modules.tsv; spacemolt.com/docs/wildlife and /docs/combat (read 2026-11-22); hive.py route hunt-test-acubens-bulwark-pl3; routes fit-pulse-laser-iii-lhs-1140, fit-plasma-cannon-ii-krynn.
+Status: proven. Updated: 2026-11-22. Evidence: table runs, routes hunt-test-keid-ice-shelf-deuteron-slug-pl3, hunt-test-gsc-0035-belt-b-slag-tortoise-pl3, hunt-test-acubens-bulwark-pl3, hunt-test-acubens-bulwark-pc2; catalog 0.732.0 (plasma_cannon_ii); spacemolt.com/docs/wildlife.
 
 - Creatures have hull and armor and no shields (the game's docs):
-  thermal bypasses 75 percent of armor, energy 25, so a thermal weapon
-  gains on every prey; `hull_damage_bonus_50` adds half against hull.
-- A starter's laser takes about 0.7 hull a tick from a bulwark (group
-  flight, 2026-11-21): the armor takes most of each hit.
-- Pulse Laser III (28 energy, cooldown 1): one drone killed two bulwarks
-  (hull 95) in 13 minutes at 100 percent hull in its first run; its second
-  run killed nothing in 26 minutes. Two runs are no record yet.
-- Plasma Cannon II (38 thermal, cooldown 2, hull bonus; CPU 6, power 14)
-  hunts the same prey: `hunt-test-acubens-bulwark-pc2`.
-- The swap is a route step now: `fit` with `replace` (BLUEPRINT.md), one
-  pilot first. The cheap asks move by the hour: read the tool market for
-  the item before a fit route is lifted.
-- The division's fit goes to the Fleet Admiral when both tests have read
-  kills an hour and lowest hull.
+  thermal bypasses 75 percent of armor, energy 25.
+- Pulse Laser III (28 energy, cooldown 1, no ammunition) is the
+  division's weapon (rule F37 held): two drones killed deuteron slugs (85
+  hull) 3 a run, slag tortoises (90) 3 a run and bulwarks (95) 2 a run,
+  the lowest hull 100 percent in every run; the Pulse Laser I had killed
+  no slag tortoise. Fitted by `fit-pulse-laser-iii-lhs-1140` (fit with
+  replace, 3 at a time, 20 pilots, `requires.ask`), each from its own
+  wallet; the bigger prey hunts need the module (`requires.module`).
+- Plasma Cannon II (38 thermal, cooldown 2, hull bonus) takes plasma
+  ammunition (magazine 80): its fit bought none, so three test runs never
+  fought (0 kills, hull 100). `buy-plasma-ammo-central-nexus` brings packs;
+  a weapon that takes ammunition is fitted with its ammunition.
+- The swap is a route step: `fit` with `replace` (BLUEPRINT.md). The cheap
+  asks move by the hour: read the tool market before a fit is lifted.
