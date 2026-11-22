@@ -53,8 +53,12 @@
    "routes": [
     "store-hold-central-nexus",
     "gather-acubens-belt-carbon",
+    "gather-jishui-plainrock-carbon",
+    "gather-last-light-mineral-carbon",
+    "gather-yildun-neverworld-carbon",
     "gather-jadecove-nickel",
     "gather-tiaki-worldsend-nickel",
+    "gather-gsc-0049-reef-nickel",
     "gather-glasslight-shoal-silicon",
     "gather-subra-floodlight-flats-silicon",
     "gather-goldcrest-gold",
@@ -72,7 +76,7 @@
     "crafting",
     "refining"
    ],
-   "note": "Orders ENT-061, block ZERO: the reserve's short goods first in the other order so the division is spread (near home, then the one-ship tests beyond the border since 2026-11-22), then steel plate and piping from own stores. Gathers before crafts since 2026-11-21 (Zero)."
+   "note": "Orders ENT-062, block ZERO: the reserve's short goods first in the other order so the division is spread, carbon first (the largest short); far carbon and the GSC-0049 nickel since 2026-11-22 07:10 UTC, any mining laser. Then steel plate and piping from own stores. Gathers before crafts since 2026-11-21 (Zero)."
   }
  }
 }
