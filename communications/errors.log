@@ -443,3 +443,7 @@ What: my answer to requests ENT-369 (requests.log ENT-376, 22:0x UTC) said 13 te
 Effect: a false count in a public log for about two minutes; corrected in ENT-377. No ship, credit or figure moved.
 Cause: I wrote the number from memory of the turn, not from the last test output, the same class as a figure not read before it is stated.
 Fix: skill fleet-ops, Pitfalls: a count in a log entry comes from this run's tool output; the test runner's own line (Ran N tests) is pasted, not retold.
+
+## [ENT-144] | 2026-11-22 23:34 UTC | Zero | error | ref: game/routes/gather-jishui-plainrock-carbon.json | see: reports.log
+What: four route notes I wrote this turn (gather-jishui-plainrock-carbon, the two Deep Core newborn routes, the two Mining-skill gathers, mission-a-word-in-private-grand) carried times I had estimated, 23:30 to 23:40 UTC, while `date -u` read 23:25 UTC at the request I posted after them; their commits stand at 23:14 to 23:24 UTC (git log).
+Effect: wrong times in public route notes for about 10 minutes; set to the commit times in commit 36ba8ba9. No ship, credit or figure moved. Cause: I wrote the time from my sense of the turn, not from a clock; the skill mining-chains now asks `date -u` right before a dated note.
