@@ -24,17 +24,12 @@ Status: proven. Updated: 2026-11-21. Evidence: table hulls (catalog 0.723.2); co
 Status: proven. Updated: 2026-11-22. Evidence: catalog 0.732.0 items; docs/guides/miner.md (read 2026-11-21); hive.py route gather-gsc-0027-spacetime-seep (the runs with ore, 2026-11-21 22:00 to 2026-11-22 03:00 UTC); route fit-mining-laser-iii-lhs-1140.
 
 - Laser power: I 5, II 12, III 22, IV 40 (cpu 2, 4, 6, 10). A III fits
-  a Threshold ice miner beside its Ice Harvester. Proven (F37, one ship
-  three times): a III mined 390 ore a seep run of about 49 minutes, the
-  Laser I median 184 over 101 runs: 2.1x the ore and the Mining XP for
-  the same fuel, as the loop's travel stays the same. Runs of 03:00 to
-  11:00 UTC on 2026-11-22 (runs.jsonl ore per hour, by module): GSC-0044
-  belt 1,328 (III, 12 runs) against 467 (I, 52); seep 446 against 213;
-  a far gather (Jishui, 8 jumps to storage) 176 against 164: the III pays
-  near storage, a far shuttle is bound by its hold and the road.
-  `fit-mining-laser-iii-lhs-1140` swaps it in at Ironlight Crossroads;
-  its ask was bought out on 2026-11-22, the others ask 12,000 to 14,000
-  (the tool market, item mining_laser_iii).
+  a Threshold ice miner beside its Ice Harvester. Proven (F37): ore an
+  hour, III against I, runs of 2026-11-22 03:00 to 11:00 UTC (runs.jsonl
+  by module): GSC-0044 belt 1,328 (12 runs) to 467 (52), seep 446 to
+  213; far Jishui 176 to 164. It pays near storage; a far shuttle is
+  bound by its hold. `fit-mining-laser-iii-lhs-1140`: its ask was bought
+  out on 2026-11-22 (tool market, item mining_laser_iii).
 - P x F over 20 can lock: under a quarter of capacity a deposit refuses
   the fit below P x 20 / 4 (110 units for a III); 20 or less never locks.
 - Cargo Expander I: +20 hold (cpu 1, power 1); not tried yet.
