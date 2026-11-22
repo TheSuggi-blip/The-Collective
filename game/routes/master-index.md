@@ -38,12 +38,12 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 | Role | Kept by | Routes | The first three, in order | Planned | Ships |
 |---|---|---|---|---|---|
 | [command](plan-command.md) | Unity | 49 | voidborn-first-steps-board > voidborn-collective-provides > voidborn-signal-protocol | 0 | 10 |
-| [drone](plan-drone.md) | Apophis | 219 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 2 | 80 |
+| [drone](plan-drone.md) | Apophis | 219 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 2 | 83 |
 | [hauler](plan-hauler.md) | Apollo | 47 | voidborn-resonance-finish > voidborn-atmospheric-extraction > voidborn-hardware-cargo | 3 | 70 |
-| [miner](plan-miner.md) | Zero | 71 | fit-mining-laser-iii-lhs-1140 > fit-mining-laser-ii-second-central-nexus > give-miner-stores-node-beta | 3 | 94 |
-| [scout](plan-scout.md) | Oracle | 54 | store-hold-central-nexus > give-scout-stores-node-beta > give-scout-stores-central-nexus | 5 | 32 |
-| [sentinel](plan-sentinel.md) | Apophis | 215 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 2 | 21 |
-| [trader](plan-trader.md) | Mercury | 120 | voidborn-first-steps-board > voidborn-network-expansion > voidborn-collective-provides | 1 | 70 |
+| [miner](plan-miner.md) | Zero | 71 | fit-mining-laser-iii-lhs-1140 > fit-mining-laser-ii-second-central-nexus > give-miner-stores-node-beta | 3 | 110 |
+| [scout](plan-scout.md) | Oracle | 54 | store-hold-central-nexus > give-scout-stores-node-beta > give-scout-stores-central-nexus | 5 | 38 |
+| [sentinel](plan-sentinel.md) | Apophis | 215 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 2 | 25 |
+| [trader](plan-trader.md) | Mercury | 120 | voidborn-first-steps-board > voidborn-network-expansion > voidborn-collective-provides | 1 | 82 |
 
 ## Templates by Division
 
