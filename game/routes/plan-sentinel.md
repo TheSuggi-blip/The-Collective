@@ -228,3 +228,4 @@ Planned:
 | What | When |
 |---|---|
 | Commission the first Recursion by hand at Node Beta once the Fleet Admiral's fund step pays the first drone at Piloting 10 (one ship, F17); fly its first hunts by route | next turn |
+| Group whale hunt proven (three kills): ask for a group route kind so the dispatcher flies it, and test one Shield Booster II on a Laser III ship against a whale alone | next turn |

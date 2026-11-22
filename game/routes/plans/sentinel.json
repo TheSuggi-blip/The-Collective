@@ -403,6 +403,10 @@
   {
    "what": "Commission the first Recursion by hand at Node Beta once the Fleet Admiral's fund step pays the first drone at Piloting 10 (one ship, F17); fly its first hunts by route",
    "when": "next turn"
+  },
+  {
+   "what": "Group whale hunt proven (three kills): ask for a group route kind so the dispatcher flies it, and test one Shield Booster II on a Laser III ship against a whale alone",
+   "when": "next turn"
   }
  ],
  "derived": "Written by game/fleet/plan.py from the division's plan file (data/plans/plan-military.md), never by hand.",
