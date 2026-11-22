@@ -22,7 +22,7 @@ Pilots of it in our space in the last 24 hours: 4.
 | Field | Value | Source |
 |---|---|---|
 | Leader | Space Hulk | Daily feed, factions |
-| Members | 5 | Daily feed, factions |
+| Members | 20 | Daily feed, factions |
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
@@ -38,10 +38,10 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Harbek Haulstone | Nexus Prime (`nexus_prime`) | not on record | not met |
+| Durgan Forgebeard | Pherkad (`pherkad`) | 0 | threshold |
+| Harbek Haulstone | Nexus Prime (`nexus_prime`) | 0 | not met |
 | Meph Addict | The Experiment (`the_experiment`) | 0 | prospect |
-| Ragna Cartwright | The Experiment (`the_experiment`) | not on record | not met |
-| Roland de Tortuga | Nexus Prime (`nexus_prime`) | 0 | residuum |
+| Ragna Cartwright | The Experiment (`the_experiment`) | 0 | not met |
 
 ## Standing History
 

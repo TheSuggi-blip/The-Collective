@@ -9,7 +9,7 @@ faction: Busy Being Deadz
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-15
+updated: 2026-11-22
 ---
 
 # Busy Being Deadz [DEAD]
@@ -32,7 +32,7 @@ Pilots of it in our space in the last 24 hours: 0.
 
 | Base | Kind | System | Space | Jumps from Nexus Prime | Condition |
 |---|---|---|---|---|---|
-| Starlight Cartographer | station | Alpheratz (`alpheratz`) | lawless | 15 | thriving |
+| Starlight Cartographer | station | Alpheratz (`alpheratz`) | lawless | 15 | operational |
 | Private Rain | station | Crosshaven (`crosshaven`) | lawless | 16 | thriving |
 | The Whisper Point | station | GSC-0034 (`gsc_0034`) | lawless | 16 | thriving |
 | Cryo Zenith | station | Saiph (`saiph`) | lawless | 16 | thriving |

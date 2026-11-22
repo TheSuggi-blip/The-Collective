@@ -15,14 +15,14 @@ updated: 2026-11-22
 # Leap Frog Freight [FROG]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 3.
+Pilots of it in our space in the last 24 hours: 2.
 
 ## Identity
 
 | Field | Value | Source |
 |---|---|---|
 | Leader | Anne Marie | Daily feed, factions |
-| Members | 5 | Daily feed, factions |
+| Members | 15 | Daily feed, factions |
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
@@ -38,9 +38,8 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Hob Meadowsweet | Node Gamma (`node_gamma`) | not on record | not met |
-| JenBeth SicK | Synchrony (`synchrony`) | 0 | prospect |
-| Mossy Thistlewick | Nexus Prime (`nexus_prime`) | not on record | not met |
+| Hob Meadowsweet | Node Gamma (`node_gamma`) | 0 | not met |
+| Mossy Thistlewick | Nexus Prime (`nexus_prime`) | 0 | not met |
 
 ## Standing History
 

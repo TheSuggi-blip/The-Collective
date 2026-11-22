@@ -15,18 +15,18 @@ updated: 2026-11-22
 # Pepemos Trading Company [PEPE]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 15.
+Pilots of it in our space in the last 24 hours: 30.
 
 ## Identity
 
 | Field | Value | Source |
 |---|---|---|
 | Leader | Mimic | Daily feed, factions |
-| Members | 50 | Daily feed, factions |
+| Members | 64 | Daily feed, factions |
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 52 | Public event stream |
+| Pilots carrying the tag on the public event stream | 51 | Public event stream |
 
 ## Bases
 
@@ -38,21 +38,36 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| MimicBasalt | Nexus Prime (`nexus_prime`) | not on record | cobble |
-| MimicClaw | The Experiment (`the_experiment`) | 0 | cobble |
-| MimicCobalt | Nexus Prime (`nexus_prime`) | not on record | cobble |
-| MimicComet | The Experiment (`the_experiment`) | 0 | cobble |
+| MimicAstra | Nexus Prime (`nexus_prime`) | 0 | bonanza |
+| MimicBasalt | The Experiment (`the_experiment`) | 0 | cobble |
+| MimicChip | Node Alpha (`node_alpha`) | 0 | cobble |
+| MimicCobalt | The Experiment (`the_experiment`) | 0 | cobble |
+| MimicDelve | Node Alpha (`node_alpha`) | 0 | cobble |
+| MimicDrift | Nexus Prime (`nexus_prime`) | 0 | bonanza |
 | MimicEcho | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| MimicFlare | The Experiment (`the_experiment`) | 0 | cobble |
-| MimicForge | Node Alpha (`node_alpha`) | 0 | cobble |
+| MimicFlake | Pherkad (`pherkad`) | 0 | cobble |
+| MimicFlint | Node Alpha (`node_alpha`) | 0 | cobble |
+| MimicForge | Synchrony (`synchrony`) | 0 | cobble |
+| MimicFrost | Nexus Prime (`nexus_prime`) | 0 | threshold |
+| MimicGrain | Pherkad (`pherkad`) | 0 | cobble |
+| MimicGrit | Node Alpha (`node_alpha`) | 0 | cobble |
+| MimicHew | Node Alpha (`node_alpha`) | 0 | cobble |
+| MimicLode | Node Alpha (`node_alpha`) | 0 | cobble |
 | MimicNeb | Nexus Prime (`nexus_prime`) | 0 | worship |
-| MimicRota | Node Alpha (`node_alpha`) | 0 | prospect |
-| MimicSextant | Node Alpha (`node_alpha`) | 0 | cobble |
-| MimicShale | Nexus Prime (`nexus_prime`) | not on record | cobble |
+| MimicPorter | Nexus Prime (`nexus_prime`) | 0 | bonanza |
+| MimicQuarry | Nexus Prime (`nexus_prime`) | 0 | bonanza |
+| MimicRota | The Experiment (`the_experiment`) | 0 | prospect |
+| MimicSand | Pherkad (`pherkad`) | 0 | cobble |
+| MimicSeam | Node Alpha (`node_alpha`) | 0 | cobble |
+| MimicSextant | The Experiment (`the_experiment`) | 0 | cobble |
+| MimicShale | The Experiment (`the_experiment`) | 0 | cobble |
+| MimicSlag | Pherkad (`pherkad`) | 0 | cobble |
 | MimicSol | Nexus Prime (`nexus_prime`) | 0 | excavation |
-| MimicTally | Node Alpha (`node_alpha`) | 0 | cobble |
+| MimicTally | The Experiment (`the_experiment`) | 0 | cobble |
 | MimicTern | Nexus Prime (`nexus_prime`) | 0 | theoria |
-| Pepemos | Nexus Prime (`nexus_prime`) | 0 | shard |
+| MimicVent | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicWafer | Pherkad (`pherkad`) | 0 | cobble |
+| Pepemos | The Experiment (`the_experiment`) | 0 | shard |
 
 ## Standing History
 

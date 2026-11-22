@@ -9,7 +9,7 @@ faction: Prospector Fleet
 standing: neutral
 standing_since: 2026-11-16
 threat: unknown
-updated: 2026-11-21
+updated: 2026-11-22
 ---
 
 # Prospector Fleet [PSF2]
@@ -22,7 +22,7 @@ Pilots of it in our space in the last 24 hours: 3.
 | Field | Value | Source |
 |---|---|---|
 | Leader | Prospector_Vale | Daily feed, factions |
-| Members | 20 | Daily feed, factions |
+| Members | 50 | Daily feed, factions |
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
