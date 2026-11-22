@@ -465,3 +465,8 @@ Military fills these beside ENT-074 until it releases them (orders ENT-059, bloc
 Claims: hunt-markab-alloy-seam-patina-grazer, hunt-harborlight-prospectors-leavings-patina-grazer, hunt-kapteyn-5-belt-patina-grazer, hunt-kapteyn-5-weak-annihilation-zone-patina-grazer, hunt-greenplate-drift-patina-grazer, hunt-patience-field-patina-grazer, hunt-aspidiske-belt-patina-grazer and their herds; hunt-test-acubens-bulwark-pl3 and hunt-test-acubens-bulwark-pc2 and the bulwarks of Acubens Shadow Pocket; fit-pulse-laser-iii-lhs-1140 and fit-plasma-cannon-ii-krynn (one pilot each, the asks they buy).
 Why: every home herd of one-ship prey holds its one hunter (fill.py status 00:05 UTC: 10 drones waiting); the patina grazers beyond the border are standing work; the two fits are the weapon tests.
 Not flown any more: hunt-minkar-cryobelt-hollow-pilgrim of ENT-074 (off for danger, 20 pirate lines in 12 hours); fit-pulse-laser-iii-central-nexus (off, its asks gone).
+
+## [ENT-084] | 2026-11-22 01:07 UTC | Apophis | claim | ref: game/routes/templates-military.md | see: ENT-083
+Military fills these beside ENT-074 and ENT-083 until it releases them (orders ENT-059, block APOPHIS; rules F8, F23), one ship each.
+Claims: hunt-giausar-frost-ring-frost-moth, hunt-orphan-nebula-veil-ray, hunt-tall-tale-nebula-veil-ray, hunt-ashenmoor-ghost-resonance-veil-ray, hunt-aftermath-haze-veil-ray, hunt-wezen-faint-entanglement-veil-ray, hunt-errai-faint-entanglement-veil-ray, hunt-alsciaukat-ghost-resonance-veil-ray, hunt-broadwing-veil-veil-ray, hunt-hollow-light-veil-ray, and their herds.
+Why: far hunts of the drone fallback (@hunter), standing since 01:03 UTC; every home herd of one-ship prey holds its hunter (fill.py check 00:59 UTC: 8 drones waiting).
