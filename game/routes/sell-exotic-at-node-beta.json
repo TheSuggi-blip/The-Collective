@@ -1,0 +1,41 @@
+{
+ "id": "sell-exotic-at-node-beta",
+ "kind": "circuit",
+ "title": "Stored exotic_matter sold where it lies, at node_beta_industrial_station, at 55 cr or more",
+ "note": "2026-11-22 19:46 UTC (Mercury, written by sellgen.py; orders block MERCURY, rule F24). node_beta_industrial_station bid 60 x 701 (book of 2026-11-22T19:46:05Z); the cheapest ask read is 1200 x 715 at b495c6003fc83e18f6d8cecbe6929133; floor 55 cr; 30 units lie there in our storages. requires.stored sends only a pilot whose own storage there holds the good; requires.bid closes the route while a book read within the hour shows no bid at the floor. The withdraw step takes only what the bid takes. Nothing is bought. Open to every division: each ship sells its own stores.",
+ "requires": {
+  "stored": {
+   "at": "node_beta_industrial_station",
+   "item": "exotic_matter",
+   "min": 1
+  },
+  "bid": {
+   "item": "exotic_matter",
+   "base": "node_beta_industrial_station",
+   "min_price": 55,
+   "min_qty": 20
+  }
+ },
+ "max_ships": 1,
+ "stops": [
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "exotic_matter"
+    }
+   ],
+   "sell": [
+    {
+     "item": "exotic_matter",
+     "min_price": 55
+    }
+   ]
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store": "all"
+  }
+ ]
+}

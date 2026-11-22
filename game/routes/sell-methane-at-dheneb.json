@@ -1,0 +1,41 @@
+{
+ "id": "sell-methane-at-dheneb",
+ "kind": "circuit",
+ "title": "Stored methane_ice sold where it lies, at b495c6003fc83e18f6d8cecbe6929133, at 34 cr or more",
+ "note": "2026-11-22 19:46 UTC (Mercury, written by sellgen.py; orders block MERCURY, rule F24). b495c6003fc83e18f6d8cecbe6929133 bid 36 x 1000 (book of 2026-11-22T19:40:17Z); the cheapest ask read is 200 x 1 at traders_rest_resort_station; floor 34 cr; 370 units lie there in our storages. requires.stored sends only a pilot whose own storage there holds the good; requires.bid closes the route while a book read within the hour shows no bid at the floor. The withdraw step takes only what the bid takes. Nothing is bought. Open to every division: each ship sells its own stores.",
+ "requires": {
+  "stored": {
+   "at": "b495c6003fc83e18f6d8cecbe6929133",
+   "item": "methane_ice",
+   "min": 1
+  },
+  "bid": {
+   "item": "methane_ice",
+   "base": "b495c6003fc83e18f6d8cecbe6929133",
+   "min_price": 34,
+   "min_qty": 50
+  }
+ },
+ "max_ships": 1,
+ "stops": [
+  {
+   "at": "dheneb:98eba8b1a7ad0520d6a7c8ea44b2d6aa:b495c6003fc83e18f6d8cecbe6929133",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "methane_ice"
+    }
+   ],
+   "sell": [
+    {
+     "item": "methane_ice",
+     "min_price": 34
+    }
+   ]
+  },
+  {
+   "at": "dheneb:98eba8b1a7ad0520d6a7c8ea44b2d6aa:b495c6003fc83e18f6d8cecbe6929133",
+   "store": "all"
+  }
+ ]
+}

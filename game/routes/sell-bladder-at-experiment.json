@@ -1,0 +1,41 @@
+{
+ "id": "sell-bladder-at-experiment",
+ "kind": "circuit",
+ "title": "Stored nitrogen_bladder sold where it lies, at the_experiment_research_station, at 46 cr or more",
+ "note": "2026-11-22 19:46 UTC (Mercury, written by sellgen.py; orders block MERCURY, rule F24). the_experiment_research_station bid 50 x 284 (book of 2026-11-22T19:43:15Z); the cheapest ask read is 15 x 4 at 2779fe259d6835829df185104259b3e4; floor 46 cr; 192 units lie there in our storages. requires.stored sends only a pilot whose own storage there holds the good; requires.bid closes the route while a book read within the hour shows no bid at the floor. The withdraw step takes only what the bid takes. Nothing is bought. Open to every division: each ship sells its own stores.",
+ "requires": {
+  "stored": {
+   "at": "the_experiment_research_station",
+   "item": "nitrogen_bladder",
+   "min": 1
+  },
+  "bid": {
+   "item": "nitrogen_bladder",
+   "base": "the_experiment_research_station",
+   "min_price": 46,
+   "min_qty": 50
+  }
+ },
+ "max_ships": 1,
+ "stops": [
+  {
+   "at": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "nitrogen_bladder"
+    }
+   ],
+   "sell": [
+    {
+     "item": "nitrogen_bladder",
+     "min_price": 46
+    }
+   ]
+  },
+  {
+   "at": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+   "store": "all"
+  }
+ ]
+}

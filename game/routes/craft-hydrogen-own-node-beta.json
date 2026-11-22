@@ -1,0 +1,123 @@
+{
+ "id": "craft-hydrogen-own-node-beta",
+ "kind": "circuit",
+ "title": "Liquid hydrogen made by hand at Node Beta from the trader's own stored hydrogen gas, docked, no jump",
+ "note": "2026-11-22 19:46 UTC (Mercury): orders ENT-065, block MERCURY (every trader operating at the least fuel per XP) and P1 (train at the least fuel per XP), rule F8 (docked zero-fuel crafting before jump loops) and F23 (every ship crafts its own stores). Traders store 3,197 (3 traders) of hydrogen gas here (table holdings, 2026-11-22 19:44 UTC); its bids at home are none or thin (sellgen.py scan 19:42 UTC) and none of it is reserved (pull.py levels 19:37 UTC: liquid_hydrogen is no good of the reserve, so the pull rule does not close this route). 8 hydrogen gas (base 8) into 3 liquid hydrogen (best bid 112 x 30 at Sirius; an input of craft_fuel_cell, Logistics' fuel cells for the outpost bunker) (by hand, 0 cr). A trader docked here trains Crafting with no jump and no fuel, in place of the jump loop (train-jumps-trader, -540 cr a ship-hour in 12 hours; docked crafts measured 1,400 to 2,000 XP a ship-hour, fleet view=xp 19:27 UTC). The craft list asks the recipe in halving sizes (128 down to 1, as craft-nitrogen-own-*): a size the stores cannot fill makes nothing and the next is asked. The list then asks extract_xenon (6 xenon gas into 3 purified xenon) in the same sizes, for the xenon some of these traders store here. Nothing is bought or sold; the output stays in the pilot's storage. Standing work; closes by itself under 80 hydrogen gas stored here. A test: three results decide (F37); max_ships 3, the traders that hold the gas here.",
+ "standing": true,
+ "requires": {
+  "stored": {
+   "at": "node_beta_industrial_station",
+   "item": "hydrogen_gas",
+   "min": 80
+  }
+ },
+ "max_ships": 3,
+ "stops": [
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store": "all",
+   "craft": [
+    {
+     "recipe": "compress_hydrogen_gas",
+     "runs": 128,
+     "per_run": 3,
+     "makes": "liquid_hydrogen"
+    },
+    {
+     "recipe": "compress_hydrogen_gas",
+     "runs": 64,
+     "per_run": 3,
+     "makes": "liquid_hydrogen"
+    },
+    {
+     "recipe": "compress_hydrogen_gas",
+     "runs": 32,
+     "per_run": 3,
+     "makes": "liquid_hydrogen"
+    },
+    {
+     "recipe": "compress_hydrogen_gas",
+     "runs": 16,
+     "per_run": 3,
+     "makes": "liquid_hydrogen"
+    },
+    {
+     "recipe": "compress_hydrogen_gas",
+     "runs": 8,
+     "per_run": 3,
+     "makes": "liquid_hydrogen"
+    },
+    {
+     "recipe": "compress_hydrogen_gas",
+     "runs": 4,
+     "per_run": 3,
+     "makes": "liquid_hydrogen"
+    },
+    {
+     "recipe": "compress_hydrogen_gas",
+     "runs": 2,
+     "per_run": 3,
+     "makes": "liquid_hydrogen"
+    },
+    {
+     "recipe": "compress_hydrogen_gas",
+     "runs": 1,
+     "per_run": 3,
+     "makes": "liquid_hydrogen"
+    },
+    {
+     "recipe": "extract_xenon",
+     "runs": 128,
+     "per_run": 3,
+     "makes": "purified_xenon"
+    },
+    {
+     "recipe": "extract_xenon",
+     "runs": 64,
+     "per_run": 3,
+     "makes": "purified_xenon"
+    },
+    {
+     "recipe": "extract_xenon",
+     "runs": 32,
+     "per_run": 3,
+     "makes": "purified_xenon"
+    },
+    {
+     "recipe": "extract_xenon",
+     "runs": 16,
+     "per_run": 3,
+     "makes": "purified_xenon"
+    },
+    {
+     "recipe": "extract_xenon",
+     "runs": 8,
+     "per_run": 3,
+     "makes": "purified_xenon"
+    },
+    {
+     "recipe": "extract_xenon",
+     "runs": 4,
+     "per_run": 3,
+     "makes": "purified_xenon"
+    },
+    {
+     "recipe": "extract_xenon",
+     "runs": 2,
+     "per_run": 3,
+     "makes": "purified_xenon"
+    },
+    {
+     "recipe": "extract_xenon",
+     "runs": 1,
+     "per_run": 3,
+     "makes": "purified_xenon"
+    }
+   ]
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store": "all"
+  }
+ ]
+}
