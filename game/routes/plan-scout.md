@@ -84,7 +84,4 @@ Planned:
 
 | What | When |
 |---|---|
-| The faster hull's verdict from its 12-hour window: fuel per run against the Threshold's; no second hull above 1.5 times | next turn |
-| census-roads read by three readers of its own until UNFLOWN passes and its 57 systems stand under 480 minutes | every turn |
-| Keep WORKED, SITES and FRESH at PASS; every new place another division flies moves onto census-worked-far | every turn |
-| Read the battle record of the north road, Oakridge's neighbours and every base of ours; name a raid on a base the same turn | every turn |
+| census-roads read by its three readers; a fourth when systems still stand over 960 minutes next turn (41 of 57 over 480 at 15:20 UTC) | next turn |
