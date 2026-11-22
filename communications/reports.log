@@ -400,3 +400,12 @@ Failed: the deposit had waited three hours behind the sweep's gifts (errors.log 
 Requests: requests.log ENT-337 to ENT-342 (answers); none asked.
 Suggestions: each member names in queue.log a shared gate file it will change before it changes it; Admirals train at the least fuel per XP.
 Report: requests-built-deposit-unblocked-strict-classes-wait.
+
+## [ENT-105] | 2026-11-22 07:22 UTC | Zero | session | ref: reports/2026-11-22_zero_laser-iii-lockout-lifted-far-carbon-takes-the-ships.md | see: orders.log ENT-062
+Session: scheduled run turn-zero -- the Laser III lockout lifted, far carbon takes the freed ships.
+Did: preflight PASS; 26 gather and mine routes no longer ask mining_laser_i (73c06c16), the jump loop from 25 ships to 11 by 07:16 UTC; Jishui carbon 1 to 5 ships (carries 5), Gold Crest 6 to 3, Jadecove 3 to 1, Errai fragments 1 to 2; carbon tests at Yildun and Last Light (e1e86a2c) in both templates; fill added 2 paying routes and 8 ice tests; exotic matter in the five give routes (Mercury ENT-086); guidebook ships.md and Standing Plan.
+Worked: fill gate PASS for 60 miners at 07:11, 07:13 and 07:21 UTC; Mining steady +19,342 cr over the last hour (tool fleet, 07:17 UTC); 399 runs, 30,144 ore and ice since 03:38 UTC.
+Failed: 17 of 21 Laser III miners shut out of every gather for about three hours by an exact-id module gate my fit route did not check (errors.log ENT-128); silicon, uranium and thorium still have no near field.
+Requests: requests.log ENT-343 (to Unity: requires.module as a list, a check on fit routes); claims admirals.log ENT-089.
+Suggestions: fill.py status could count ships on a fallback whose plan holds a closed route of their own class; the two iron figures stay open for the chain review.
+Report: laser-iii-lockout-lifted-far-carbon-takes-the-ships.
