@@ -194,14 +194,18 @@ let fetchedAt = 0;                             // when /api/fleet last answered 
 let noticeShut = '';                           // the wave notice closed by hand: its key (since and whether it ended)
 const NOTICE_GOOD_SECONDS = 120;               // the green 'all back' notice goes by itself this long after the wave ended
 let HIST = { rows: [], at: 0 };                // /api/history, for the Metrics tab
-const collapsed = new Set();                   // divisions folded in the roster; remembered by the browser
-try { JSON.parse(localStorage.getItem('station.folded') || '[]').forEach((d) => collapsed.add(String(d))); } catch (e) { /* no storage */ }
+const collapsed = new Set();                   // divisions folded in the roster; default folds bulk divisions for a clean outliner
+try {
+  const savedFolds = localStorage.getItem('station.folded');
+  if (savedFolds === null) ['Mining', 'Trade', 'Logistics', 'Military', 'Intel'].forEach((d) => collapsed.add(d));
+  else JSON.parse(savedFolds).forEach((d) => collapsed.add(String(d)));
+} catch (e) { /* no storage */ }
 function saveFolds() { try { localStorage.setItem('station.folded', JSON.stringify([...collapsed])); } catch (e) { /* no storage */ } }
 const shut = new Set();                        // what Suggi has hidden: the side panels, the messages of comms, the legend, the layers; remembered
 try { JSON.parse(localStorage.getItem('station.hidden') || '[]').forEach((d) => shut.add(String(d))); } catch (e) { /* no storage */ }
 function saveShut() { try { localStorage.setItem('station.hidden', JSON.stringify([...shut])); } catch (e) { /* no storage */ } }
 let board = null;
-let rosterMode = 'all', rosterQuery = '', rosterSort = 'name';
+let rosterMode = 'all', rosterQuery = '', rosterSort = 'name', rosterDiv = 'all', selSub = 'Overview', shipSub = 'Loadout';
 const sys = new Map();
 const stationsBy = new Map();
 const shipsBy = new Map();                     // system id -> our ships there
@@ -1036,24 +1040,32 @@ function tickAges() {                          // every second: the one age labe
   if (time) time.textContent = clockZ(Date.now());
 }
 
+function isUpgradedHull(clsName) {
+  return Boolean(clsName && !/^threshold$/i.test(String(clsName).trim()));
+}
+
 function shipRow(r) {
   const [cls, what] = shipState(r), b = el('button', 'ship' + (r.name === selShip ? ' on' : ''));
   b.type = 'button';
-  const who = el('div', 'who'), bars = el('div', 'bars'), cr = el('div', 'cr', r.piloting ? 'Lv ' + r.piloting : '');
+  const who = el('div', 'who'), bars = el('div', 'bars'), cr = el('div', 'cr');
+  const lvSpan = el('span', !isUpgradedHull(r.class) && (r.piloting || 0) >= 10 ? 'ready-lv' : null, r.piloting ? 'Lv ' + r.piloting : '');
+  cr.append(lvSpan);
   const nm = el('div', 'nm', r.name);
-  if (r.flagship) {                               // a star after the name: a word would be cut off behind a long name
+  if (r.flagship) {
     const of = r.flagship_of || r.admiral || '';
     const flag = el('span', 'flag', '\u2605' + (of && of !== r.admiral ? ' ' + of : ''));
     flag.title = 'Flagship' + (of ? ' of ' + of : '');
     nm.append(flag);
   }
-  who.append(nm, el('div', 'at', (r.system_name || r.system || 'position unknown') + ' | ' + what));
+  if (isUpgradedHull(r.class)) nm.append(el('span', 't2badge', r.class));
+  const locTxt = (r.system_name || r.system || '?') + ' - ' + what;
+  who.append(nm, el('div', 'at', locTxt));
   bars.append(bar('hull', r.hull, r.max_hull, 0.5), bar('fuel', r.fuel, r.max_fuel, 0.25), bar('cargo', r.cargo_used, r.cargo_capacity));
   const best = (r.skill && r.skill[1] ? r.skill : r.top_skill) || ['', 0];
-  cr.append(el('small', null, best[1] ? best[0].replace(/_/g, ' ').replace('deep core mining', 'deep core') + ' ' + best[1] : (r.class || '')));
+  cr.append(el('small', null, best[1] ? best[0].replace(/_/g, ' ').replace('deep core mining', 'core').replace('asteroid mining', 'mining') + ' ' + best[1] : (r.class || '')));
   b.append(el('i', 'glyph ' + cls), who, bars, cr);
-  b.title = r.name + ': hull ' + r.hull + '/' + r.max_hull + ', fuel ' + r.fuel + '/' + r.max_fuel + ', cargo ' + r.cargo_used + '/' + r.cargo_capacity
-    + (r.piloting ? ' | Piloting ' + r.piloting : '') + (r.class ? ' | ' + r.class : '');
+  b.title = r.name + ' (' + (r.class || 'Threshold') + ') | hull ' + r.hull + '/' + r.max_hull + ', fuel ' + r.fuel + '/' + r.max_fuel
+    + ', cargo ' + r.cargo_used + '/' + r.cargo_capacity + (r.piloting ? ' | Piloting ' + r.piloting : '');
   b.addEventListener('click', () => selectShip(r.name, true));
   b.addEventListener('dblclick', () => {
     selectShip(r.name, true);
@@ -1063,18 +1075,6 @@ function shipRow(r) {
 }
 
 const oneDecimal = (n) => (typeof n === 'number' ? n.toFixed(1) : '--');
-function crewLine(list, crew) {                  // under a division's head: what its average ship can take and deal, and its ships at work
-  const line = el('div', 'crew'), n = { work: 0, move: 0, dock: 0, idle: 0, wait: 0, bad: 0, off: 0 };
-  list.forEach((r) => { n[shipState(r)[0]] += 1; });
-  const part = (label, value, title, cls) => { const s = el('span', cls || null); s.append(label + ' ', el('b', null, value)); s.title = title; line.append(s); };
-  part('hull+shield', fmt(crew.hp), 'Hull and shield points of the average ship: what it can take');
-  part('firepower', oneDecimal(crew.firepower), 'Damage per tick the weapons of the average ship deal: each weapon\'s damage divided by its cooldown, from the game\'s catalog. '
-    + 'The starter\'s Pulse Laser I deals 10');
-  const rest = [[n.dock, 'parked'], [n.idle, 'idle in space'], [n.bad, 'failing'], [n.off, F.wave && F.wave.since && !F.wave.end ? 'reconnecting' : 'offline']].filter((p) => p[0]);
-  part('at work', (n.work + n.move + n.wait) + '/' + list.length, rest.length ? 'Without work: ' + rest.map((p) => p[0] + ' ' + p[1]).join(', ')
-    : 'Every ship of the division has work' + (n.wait ? ' (' + n.wait + ' wait for ore at an empty field)' : ''), rest.length ? 'short' : null);
-  return line;
-}
 
 function shipAlert(r) {
   const cls = shipState(r)[0];
@@ -1127,6 +1127,27 @@ function setRosterMode(mode) {
   document.querySelectorAll('#rfilters .rf').forEach((b) => b.classList.toggle('on', b.dataset.mode === mode));
   renderRoster();
 }
+function ensureDivStrip(divisions) {
+  const tools = $('roster-tools');
+  if (!tools) return;
+  let strip = $('divstrip');
+  if (!strip) {
+    strip = el('div', 'divstrip');
+    strip.id = 'divstrip';
+    tools.prepend(strip);
+  }
+  strip.replaceChildren();
+  const shortLbl = { Command: 'Cmd', Mining: 'Min', Trade: 'Trd', Logistics: 'Log', Military: 'Mil', Intel: 'Int', Unassigned: 'Un' };
+  const items = [['all', 'All', 'var(--accent)']].concat(divisions.map(([d]) => [d, shortLbl[d] || d.slice(0, 3), DIV[d] || DIV.Unassigned]));
+  for (const [key, lbl, col] of items) {
+    const b = el('button', 'divchip' + (rosterDiv === key ? ' on' : ''), lbl);
+    b.type = 'button';
+    b.style.setProperty('--c', col);
+    b.title = key === 'all' ? 'Show all 6 divisions' : 'Focus ' + key + ' division';
+    b.addEventListener('click', () => { rosterDiv = rosterDiv === key && key !== 'all' ? 'all' : key; renderRoster(); });
+    strip.append(b);
+  }
+}
 function renderRoster() {
   const box = $('roster'), keep = box.scrollTop, by = new Map();
   box.replaceChildren();
@@ -1146,51 +1167,88 @@ function renderRoster() {
     b.classList.toggle('haswarn', m === 'idle' && counts.idle > 0);
     b.classList.toggle('hasbad', m === 'alert' && counts.alert > 0);
   });
-  const filtering = rosterMode !== 'all' || Boolean(rosterQuery);
-  let shownTotal = 0;
   const divisions = (S ? S.roster : []).filter((a) => a.division !== 'Command' || by.has('Command')).map((a) => [a.division, a]);
   if (by.has('Unassigned')) divisions.push(['Unassigned', null]);
+  ensureDivStrip(divisions);
+
+  const filtering = rosterMode !== 'all' || Boolean(rosterQuery) || rosterDiv !== 'all';
+  const win1h = ((((F.totals || {}).rates || {}).windows || {})['1h'] || {}).divisions || {};
+  let shownTotal = 0;
+
   for (const [division, admiral] of divisions) {
+    if (rosterDiv !== 'all' && division !== rosterDiv) continue;
     const raw = by.get(division) || [];
-    const list = filtering ? sortShips(raw.filter(shipMatches)) : sortShips(raw);
-    if (filtering && !list.length) continue;
+    const list = (rosterMode !== 'all' || rosterQuery) ? sortShips(raw.filter(shipMatches)) : sortShips(raw);
+    if ((rosterMode !== 'all' || rosterQuery) && !list.length) continue;
     shownTotal += list.length;
-    const block = el('div', 'div'), head = el('div', 'divhead'), c = DIV[division] || DIV.Unassigned;
-    const folded = !filtering && collapsed.has(division), sum = el('span', 'sum');
-    const name = el('button', 'name', division), fold = el('span', 'fold', folded ? '+' : '-');
+
+    let atWork = 0;
+    raw.forEach((r) => { const st = shipState(r)[0]; if (st === 'work' || st === 'move' || st === 'wait') atWork++; });
+    const hasSel = selShip && raw.some((r) => r.name === selShip);
+    const folded = !filtering && !hasSel && collapsed.has(division);
+    const c = DIV[division] || DIV.Unassigned;
+
+    const block = el('div', 'div');
+    const card = el('div', 'divcard');
+    const head = el('div', 'divhead');
+    head.style.borderLeftColor = c;
+
+    const name = el('button', 'name', division);
     name.type = 'button';
+    const fold = el('span', 'fold', folded ? '+' : '-');
     name.prepend(fold);
     fold.after(shipSvg(division === 'Command' ? 'Flagship' : division, c, 13));
-    name.append(el('b', 'count', filtering ? list.length + '/' + raw.length : String(raw.length)));
-    head.style.borderLeftColor = c; name.style.color = c;
-    name.title = (folded ? 'Unfold' : 'Fold') + ' the ' + raw.length + ' ships of ' + division;
+    name.style.color = c;
+    name.title = (folded ? 'Unfold ' : 'Fold ') + division + ' (' + raw.length + ' ships)';
     name.setAttribute('aria-expanded', folded ? 'false' : 'true');
-    name.addEventListener('click', () => { if (collapsed.has(division)) collapsed.delete(division); else collapsed.add(division); saveFolds(); renderRoster(); });
+    name.addEventListener('click', () => {
+      if (rosterDiv === division) { rosterDiv = 'all'; }
+      else if (collapsed.has(division)) collapsed.delete(division);
+      else collapsed.add(division);
+      saveFolds(); renderRoster();
+    });
     head.append(name);
+
     if (admiral) {
-      const b = linkButton('Adm. ' + admiral.name, () => address(admiral.id), 'adm');
-      b.title = 'Write to ' + admiral.name + ' in comms';
+      const b = linkButton('@' + admiral.name, () => address(admiral.id), 'adm');
+      b.title = 'Message ' + admiral.name + ' in Comms';
       head.append(b);
     }
-    const crew = (((F.totals || {}).divisions || {})[division] || {}).crew, known = raw.length && crew && crew.ships;
-    if (known) {
-      sum.append('Lv ', el('b', null, oneDecimal(crew.piloting)));
-      sum.title = 'The average Piloting level of the division. Piloting 10, 20, 30 and 50 open the hull tiers 2 to 5';
+
+    const metaRight = el('span', 'divmeta');
+    const d1h = win1h[division] || {};
+    if (typeof d1h.cph === 'number') {
+      const cphTxt = (d1h.cph >= 0 ? '+' : '') + Math.round(d1h.cph / 1000) + 'k/h';
+      const cphEl = el('span', 'divcph ' + (d1h.cph >= 0 ? 'pos' : 'neg'), cphTxt);
+      cphEl.title = division + ' 1h steady operating net: ' + fmt(d1h.cph) + ' cr/h';
+      metaRight.append(cphEl);
     }
-    head.append(sum); block.append(head);
-    if (raw.length) block.append(divMeter(raw));
-    if (known) block.append(crewLine(raw, crew));
-    if (!raw.length) block.append(el('div', 'noships', 'No ships yet'));
+    const crew = (((F.totals || {}).divisions || {})[division] || {}).crew;
+    if (crew && crew.ships) {
+      const lvEl = el('span', 'divcph', 'Lv ' + oneDecimal(crew.piloting));
+      lvEl.title = 'Avg Piloting ' + oneDecimal(crew.piloting) + ' | Avg Hull+Shield ' + fmt(crew.hp) + ' | Avg Firepower ' + oneDecimal(crew.firepower);
+      metaRight.append(lvEl);
+    }
+    const wp = el('span', 'divpill' + (atWork < raw.length ? ' warn' : ''), atWork + '/' + raw.length);
+    wp.title = atWork + ' active of ' + raw.length + ' ships';
+    metaRight.append(wp);
+    head.append(metaRight);
+
+    card.append(head);
+    if (raw.length) card.append(divMeter(raw));
+    block.append(card);
+
+    if (!raw.length) block.append(el('div', 'noships', 'No ships assigned'));
     if (!folded) list.forEach((r) => block.append(shipRow(r)));
     box.append(block);
   }
   const meta = $('roster-meta');
   if (meta) {
     if (filtering) {
-      meta.replaceChildren(el('span', null, 'Showing ' + shownTotal + ' of ' + F.ships.length + ' ships'));
-      const clr = el('button', 'mini', 'Clear');
+      meta.replaceChildren(el('span', null, (rosterDiv !== 'all' ? rosterDiv + ': ' : 'Showing ') + shownTotal + ' of ' + F.ships.length + ' ships'));
+      const clr = el('button', 'mini', 'Reset');
       clr.type = 'button';
-      clr.addEventListener('click', () => { rosterMode = 'all'; rosterQuery = ''; const inp = $('roster-filter'); if (inp) inp.value = ''; renderRoster(); });
+      clr.addEventListener('click', () => { rosterMode = 'all'; rosterDiv = 'all'; rosterQuery = ''; const inp = $('roster-filter'); if (inp) inp.value = ''; renderRoster(); });
       meta.append(clr);
       meta.hidden = false;
     } else meta.hidden = true;
@@ -1199,7 +1257,7 @@ function renderRoster() {
   box.scrollTop = keep;
   const all = $('fold-all'), names = divisions.map((d) => d[0]), everyFolded = names.length > 0 && names.every((d) => collapsed.has(d));
   all.textContent = everyFolded ? 'Unfold all' : 'Fold all';
-  all.onclick = () => { names.forEach((d) => (everyFolded ? collapsed.delete(d) : collapsed.add(d))); saveFolds(); renderRoster(); };
+  all.onclick = () => { rosterDiv = 'all'; names.forEach((d) => (everyFolded ? collapsed.delete(d) : collapsed.add(d))); saveFolds(); renderRoster(); };
   const fresh = $('fleet-fresh'), ok = fleetLive();
   fresh.textContent = ok ? F.ships.length + ' ships' : (F.age < 0 ? 'no data' : 'stale');
   fresh.className = 'fresh' + (ok ? '' : ' bad');
@@ -1207,64 +1265,127 @@ function renderRoster() {
 }
 
 function renderShip(panel) {
+  setWide('metrics');
   const d = shipCard;
-  panel.append(linkButton('Back to the system', () => { selShip = null; shipCard = null; shipMark = ''; renderRoster(); draw(); render(); }));
-  if (!d) { panel.append(el('p', 'empty', 'Loading the ship...')); return; }
-  if (d.error) { panel.append(el('p', 'empty', 'The fleet data has no file for this ship.')); return; }
-  const chips = el('div', 'chips'), [cls, what] = shipState(d);
-  panel.append(el('h2', null, d.name), el('p', 'sub', [d.class, d.empire].filter(Boolean).join(' | ')));
-  chips.append(divTag(d.division));
-  if (d.admiral) chips.append(el('span', 'tag', 'Adm. ' + d.admiral));
-  chips.append(el('span', 'tag ' + (cls === 'bad' ? 'bad' : cls === 'idle' || cls === 'wait' ? 'warn' : cls === 'work' ? 'good' : ''), what));
-  panel.append(chips);
+  const barTop = el('div', 'reader-bar');
+  const backBtn = el('button', 'subtab', '<- System');
+  backBtn.type = 'button';
+  backBtn.addEventListener('click', () => { selShip = null; shipCard = null; shipMark = ''; renderRoster(); draw(); render(); });
+  barTop.append(backBtn);
+  if (d && d.system && sys.has(d.system)) {
+    const centerBtn = el('button', 'rf', 'Center on Map');
+    centerBtn.type = 'button';
+    centerBtn.addEventListener('click', () => { const s = sys.get(d.system); flyTo(s.x, s.y, Math.max(view.k, 0.35)); });
+    barTop.append(centerBtn);
+  }
+  panel.append(barTop);
+
+  if (!d) { panel.append(el('p', 'empty', 'Loading ship telemetry...')); return; }
+  if (d.error) { panel.append(el('p', 'empty', 'No telemetry file for this ship.')); return; }
+
+  const [cls, what] = shipState(d);
+  const hero = el('div', 'sel-hero');
+  const heroLeft = el('div');
+  heroLeft.append(el('h2', null, d.name));
+  const sub = el('div', 'sel-sub');
+  sub.append(divTag(d.division));
+  if (d.admiral) sub.append(el('span', 'pill', 'Adm. ' + d.admiral));
+  sub.append(el('span', 'pill ' + (cls === 'bad' ? 'bad' : cls === 'idle' || cls === 'wait' ? 'warn' : cls === 'work' ? 'good' : 'info'), what));
+  heroLeft.append(sub);
+  hero.append(heroLeft);
+  panel.append(hero);
+
+  const skills = Object.entries(d.skills || {}).sort((x, y) => (y[1].level - x[1].level) || (y[1].xp - x[1].xp));
+  const pLv = ((d.skills || {}).piloting || {}).level || d.piloting || 0;
+  const topSk = skills.find(([k]) => k !== 'piloting') || skills[0];
+  const readyT2 = !isUpgradedHull(d.class) && pLv >= 10;
+
+  const kgrid = el('div', 'kpis');
+  const skpi = (k, v, sTxt, c) => { const b = el('div', 'kpi' + (c ? ' ' + c : '')); b.append(el('div', 'k', k), el('div', 'v', v)); if (sTxt) b.append(el('div', 's', sTxt)); kgrid.append(b); };
+  skpi('Hull & Empire', d.class || 'Threshold', (d.empire || 'voidborn') + (readyT2 ? ' | READY FOR T2 HULL' : ''), isUpgradedHull(d.class) ? 'main pos' : readyT2 ? 'warn' : '');
+  skpi('Pilot Wallet', fmt(d.credits) + ' cr', d.docked ? 'Docked: ' + d.docked : (d.system_name || d.system || 'in space'), d.credits >= 30000 ? 'pos' : d.credits < 10000 ? 'warn' : '');
+  skpi('Piloting & Specialty', 'Piloting ' + pLv, topSk ? topSk[0].replace(/_/g, ' ') + ' Lv ' + topSk[1].level : 'no specialty yet', pLv >= 10 ? 'pos' : '');
+  const loopTxt = d.loop && d.loop.type ? d.loop.type : what;
+  const failN = d.loop_failures || 0;
+  skpi('Active Loop', loopTxt, failN ? failN + ' failure(s): ' + (d.loop_last_failure || '') : (d.loop && d.loop.last_step ? 'step: ' + d.loop.last_step : 'nominal'), failN ? 'neg' : '');
+  panel.append(kgrid);
+
+  const vcard = el('div', 'icard vitals-card');
   const g = el('div', 'gauges');
   for (const [k, kind, a, b, low] of [['Hull', 'hull', d.hull, d.max_hull, 0.5], ['Shield', 'shield', d.shield, d.max_shield, 0],
     ['Fuel', 'fuel', d.fuel, d.max_fuel, 0.25], ['Cargo', 'cargo', d.cargo_used, d.cargo_capacity, 0]]) {
     g.append(el('span', 'k', k), bar(kind, a, b, low), el('span', 'v', fmt(a) + ' / ' + fmt(b)));
   }
-  panel.append(g);
-  const skills = Object.entries(d.skills || {}).sort((x, y) => (y[1].level - x[1].level) || (y[1].xp - x[1].xp));
-  panel.append(el('h3', null, 'Levels'));
-  if (!skills.length) panel.append(el('p', 'empty', 'No skill trained yet.'));
-  else {
-    const lv = el('div', 'levels');
-    for (const [k, v] of skills) {
-      const row = el('div', 'lv'), b = el('div', 'bar xp'), i = el('i');
-      i.style.width = pct(v.xp, v.next) + '%'; b.append(i);
-      row.title = k.replace(/_/g, ' ') + ': level ' + v.level + ', ' + fmt(v.xp) + ' of ' + fmt(v.next) + ' XP to the next level';
-      row.append(el('span', 'n', k.replace(/_/g, ' ')), el('b', null, String(v.level)), b);
-      lv.append(row);
+  vcard.append(g);
+  panel.append(vcard);
+
+  const subBar = el('div', 'subtabs');
+  for (const [id, lbl] of [['Loadout', 'Loadout & Cargo (' + (d.modules || []).length + ')'], ['Skills', 'Skills (' + skills.length + ')'], ['Missions', 'Missions & Record']]) {
+    const sb = el('button', 'subtab' + (shipSub === id ? ' on' : ''), lbl);
+    sb.type = 'button';
+    sb.addEventListener('click', () => { shipSub = id; render(); });
+    subBar.append(sb);
+  }
+  panel.append(subBar);
+
+  if (shipSub === 'Skills') {
+    const scard = el('div', 'icard');
+    if (!skills.length) scard.append(el('p', 'empty', 'No skill trained yet.'));
+    else {
+      const lv = el('div', 'levels');
+      for (const [k, v] of skills) {
+        const row = el('div', 'lv'), b = el('div', 'bar xp'), i = el('i');
+        i.style.width = pct(v.xp, v.next) + '%'; b.append(i);
+        row.title = k.replace(/_/g, ' ') + ': level ' + v.level + ', ' + fmt(v.xp) + ' / ' + fmt(v.next) + ' XP';
+        row.append(el('span', 'n', k.replace(/_/g, ' ')), el('b', null, String(v.level)), b);
+        lv.append(row);
+      }
+      scard.append(lv);
     }
-    panel.append(lv);
+    panel.append(scard);
+    return;
   }
+
+  if (shipSub === 'Missions') {
+    panel.append(el('h3', null, 'Accepted Missions (' + (d.mission_list || []).length + ' / 5)'));
+    if (!(d.mission_list || []).length) panel.append(el('p', 'empty', 'No active mission contracts on this ship.'));
+    for (const m of d.mission_list || []) {
+      const box = el('div', 'icard'), top = el('div', 'ichead'), b = el('div', 'bar'), i = el('i');
+      top.append(el('b', null, m.title), el('span', 'pill good', fmt(m.credits) + ' cr'));
+      i.style.width = Math.round(m.percent) + '%'; b.append(i);
+      box.append(top, b);
+      m.objectives.forEach((o) => box.append(el('div', 'ibsub', (o.done ? '[done] ' : '[' + o.current + '/' + o.required + '] ') + o.text)));
+      panel.append(box);
+    }
+    panel.append(el('h3', null, 'Lifetime Service Record'));
+    const rcard = el('div', 'icard');
+    rcard.append(facts(Object.entries(d.stats || {}).map(([k, v]) => [k.replace(/_/g, ' '), fmt(v)])));
+    panel.append(rcard);
+    return;
+  }
+
+  // Default: Loadout, Position & Cargo
   const loc = d.system && sys.has(d.system) ? sysLink(d.system) : (d.system_name || 'unknown');
-  panel.append(facts([
-    ['System', loc], ['Place', d.jumping ? 'jumping to the next system' : d.in_transit ? 'in transit to ' + (d.dest_poi || '?') : (d.poi_name || '-')],
-    ['Docked at', d.docked || 'not docked'], ['Credits', fmt(d.credits)], ['Home base', d.home_base || '-'],
-    ['Security here', d.security || '-'], ['State as of', stampCet(d.state_at)],
+  const pcard = el('div', 'icard');
+  pcard.append(facts([
+    ['System', loc],
+    ['Location / Vector', d.jumping ? 'jumping lanes' : d.in_transit ? 'in transit -> ' + (d.dest_poi || '?') : (d.poi_name || '-')],
+    ['Home Base', d.home_base || '-'],
+    ['Security / Updated', (d.security || '-') + ' | ' + stampCet(d.state_at)],
   ]));
-  if (d.loop && d.loop.type) {
-    panel.append(el('h3', null, 'Loop'));
-    panel.append(facts([['Type', d.loop.type + (d.loop.running ? ' (running)' : ' (stopped)')], ['Last step', d.loop.last_step || '-'],
-      ['Failures in a row', d.loop_failures], ['Last failure', d.loop_last_failure || 'none']]));
-  }
-  panel.append(el('h3', null, 'Missions (' + (d.mission_list || []).length + ' of 5)'));
-  if (!(d.mission_list || []).length) panel.append(el('p', 'empty', 'None accepted.'));
-  for (const m of d.mission_list || []) {
-    const box = el('div', 'mission'), top = el('div', 't'), b = el('div', 'bar'), i = el('i');
-    top.append(el('b', null, m.title), el('span', null, fmt(m.credits) + ' cr'));
-    i.style.width = Math.round(m.percent) + '%'; b.append(i);
-    box.append(top, b);
-    m.objectives.forEach((o) => box.append(el('div', 'o' + (o.done ? ' done' : ''), (o.done ? '[done] ' : '[' + o.current + '/' + o.required + '] ') + o.text)));
-    panel.append(box);
-  }
-  panel.append(el('h3', null, 'Cargo'));
-  if (d.cargo.length) panel.append(table(['Item', 'Units'], d.cargo.map((c) => [c.name || c.item, fmt(c.quantity)]), [1]));
-  else panel.append(el('p', 'empty', 'Empty hold.'));
-  panel.append(el('h3', null, 'Modules'));
-  panel.append(table(['Module', 'Kind', 'Slot'], d.modules.map((m) => [m.name, m.kind, m.slot])));
-  panel.append(el('h3', null, 'Service record'));
-  panel.append(facts(Object.entries(d.stats || {}).map(([k, v]) => [k.replace(/_/g, ' '), fmt(v)])));
+  panel.append(pcard);
+
+  panel.append(el('h3', null, 'Fitted Modules (' + (d.modules || []).length + ')'));
+  const mcard = el('div', 'icard');
+  if ((d.modules || []).length) mcard.append(fitTable(table(['Module', 'Category', 'Slot'], d.modules.map((m) => [m.name, m.kind, el('span', 'pill info', m.slot)]))));
+  else mcard.append(el('p', 'empty', 'No modules fitted.'));
+  panel.append(mcard);
+
+  panel.append(el('h3', null, 'Cargo Hold (' + fmt(d.cargo_used) + ' / ' + fmt(d.cargo_capacity) + ')'));
+  const ccard = el('div', 'icard');
+  if ((d.cargo || []).length) ccard.append(fitTable(table(['Item', 'Units'], d.cargo.map((c) => [c.item ? itemLink(c.item, c.name || c.item) : (c.name || '?'), fmt(c.quantity)]), [1])));
+  else ccard.append(el('p', 'empty', 'Cargo hold empty.'));
+  panel.append(ccard);
 }
 
 async function selectShip(name, center) {
@@ -1282,7 +1403,7 @@ async function selectShip(name, center) {
 
 // ---------------------------------------------------------------- right panel
 
-let INVCACHE = { at: 0, value: null };          // the inventory for the system card: asked at most once a minute
+let INVCACHE = { at: 0, value: null };
 async function inventoryOf() {
   if (Date.now() - INVCACHE.at < 60000 && INVCACHE.value) return INVCACHE.value;
   try { INVCACHE = { at: Date.now(), value: await get('/api/inventory') }; } catch (e) { return INVCACHE.value; }
@@ -1291,141 +1412,212 @@ async function inventoryOf() {
 async function renderSelection(panel, live) {
   if (selShip) { renderShip(panel); return; }
   if (pilotCard) { renderPilot(panel, pilotCard); return; }
-  if (!selected) { panel.append(el('p', 'empty', 'Click a system on the map or a ship in the roster.')); return; }
+  setWide('metrics');
+  if (!selected) { panel.append(el('p', 'empty', 'Select a star system on the galaxy map or click any ship in the Fleet Outliner.')); return; }
   const s = sys.get(selected);
-  panel.append(el('h2', null, s.name), el('p', 'sub', s.id));
   const intel = S.intel.systems[s.id];
-  if (intel) {
-    const chips = el('div', 'chips');
-    chips.append(el('span', 'tag ' + intel.standing, intel.standing), el('span', 'tag ' + intel.threat, 'threat ' + intel.threat));
-    panel.append(chips);
-  }
-  panel.append(facts([
-    ['Empire', s.empire || 'lawless'], ['Position', 'x ' + s.x + ', y ' + s.y],
-    ['Jumps from home', s.jumps < 0 ? 'no lane route' : s.jumps],
-    ['Pilots seen (1 h / 24 h)', (L.hour[s.id] || 0) + ' / ' + (L.day[s.id] || 0)],
-    ['Flags', [s.home ? 'empire home' : '', s.stronghold ? 'pirate stronghold' : ''].filter(Boolean).join(', ') || 'none'],
-  ]));
-  // What is ours here and what it is worth: the wallets of our ships, the goods we store at its stations (catalog
-  // values: what a unit is worth, not what a buyer pays today), our buildings and the faction's purse.
   const own = holdBy.get(s.id) || [], site = sitesBy.get(s.id), ours = shipsBy.get(s.id) || [], st = stationsBy.get(s.id) || [];
+
+  const hero = el('div', 'sel-hero');
+  const heroLeft = el('div');
+  heroLeft.append(el('h2', null, s.name));
+  const sub = el('div', 'sel-sub');
+  sub.append(el('span', 'pill ' + (s.empire ? 'info' : 'warn'), s.empire || 'lawless'));
+  if (s.home) sub.append(el('span', 'pill good', 'empire capital'));
+  if (s.stronghold) sub.append(el('span', 'pill bad', 'pirate stronghold'));
+  if (intel) {
+    sub.append(el('span', 'pill ' + (intel.standing === 'ally' || intel.standing === 'home' ? 'good' : intel.standing === 'hostile' ? 'bad' : ''), intel.standing));
+    if (intel.threat && intel.threat !== 'none') sub.append(el('span', 'pill ' + (intel.threat === 'high' ? 'bad' : 'warn'), 'threat: ' + intel.threat));
+  }
+  heroLeft.append(sub);
+  const centerBtn = el('button', 'maploc', 'Center');
+  centerBtn.type = 'button';
+  centerBtn.addEventListener('click', () => flyTo(s.x, s.y, Math.max(view.k, 0.32)));
+  hero.append(heroLeft, centerBtn);
+  panel.append(hero);
+
   const named = new Set(st.map((t) => t.name)), bases = new Set(own.map((b) => b.base).filter(Boolean));
   const inv = await inventoryOf();
   if (!live()) return;
   const goods = inv ? inv.stations.filter((x) => named.has(x.name) || bases.has(x.base)) : [];
   const worth = goods.reduce((a, x) => a + (x.worth || 0), 0), units = goods.reduce((a, x) => a + (x.units || 0), 0);
   const wallets = ours.reduce((a, r) => a + (r.credits || 0), 0);
-  const here = [['Ships of ours', ours.length ? ours.length + ', their wallets ' + fmt(wallets) + ' cr' : 'none'],
-    ['Goods we store here', !inv ? 'not read' : units ? fmt(units) + ' units, worth about ' + fmt(worth) + ' cr' : 'none']];
-  if (own.length) {
-    here.push(['Faction purse', fmt((S.holdings || {}).treasury) + ' cr, one purse for all our buildings']);
-  }
+  const workingHere = ours.filter((r) => ['work', 'move', 'wait'].includes(shipState(r)[0])).length;
   const siteRich = ((OPS.data && OPS.data.empire && OPS.data.empire.sites) || []).find((x) => x.system === s.id);
-  if (site && site.status !== 'dropped' && site.status !== 'built') {
-    here.push(['Planned site', site.status + (site.by ? ' (proposed by ' + site.by + ')' : '') + (siteRich && siteRich.need_pct !== null ? ' -- ' + siteRich.need_pct + '% stocked' : '')]);
+
+  const kgrid = el('div', 'kpis');
+  const ykpi = (k, v, sTxt, c) => { const b = el('div', 'kpi' + (c ? ' ' + c : '')); b.append(el('div', 'k', k), el('div', 'v', v)); if (sTxt) b.append(el('div', 's', sTxt)); kgrid.append(b); };
+  ykpi('Our Fleet Here', fmt(ours.length) + ' ships', ours.length ? workingHere + ' active | ' + fmtCompact(wallets) + ' cr wallets' : 'no CLTV ships in system', ours.length ? 'main pos' : '');
+  ykpi('Vault Stock Here', units ? fmtCompact(worth) + ' cr' : '0 cr', units ? fmt(units) + ' units stored' : 'no stored inventory', worth > 0 ? 'pos' : '');
+  const fpVal = own.length ? own.length + (own.length === 1 ? ' asset' : ' assets') : (siteRich && siteRich.status !== 'built' ? siteRich.status.toUpperCase() : '0 assets');
+  const fpSub = own.length ? 'CLTV sovereign / leased' : (siteRich && siteRich.need_pct != null ? siteRich.need_pct + '% kit ready' : st.length + ' public station(s)');
+  ykpi('Our Footprint', fpVal, fpSub, own.length ? 'pos' : siteRich ? 'warn' : '');
+  ykpi('Distance & Traffic', (s.jumps < 0 ? 'isolated' : s.jumps + 'j from Home'), (L.hour[s.id] || 0) + ' pilots (1h) | ' + (L.day[s.id] || 0) + ' (24h)', '');
+  panel.append(kgrid);
+
+  const subBar = el('div', 'subtabs');
+  for (const [id, lbl] of [['Overview', 'Colony & Stations'], ['Ships', 'Our Ships (' + ours.length + ')'], ['Intel', 'Intel & Traffic']]) {
+    const sb = el('button', 'subtab' + (selSub === id ? ' on' : ''), lbl);
+    sb.type = 'button';
+    sb.addEventListener('click', () => { selSub = id; render(); });
+    subBar.append(sb);
   }
-  panel.append(el('h3', null, 'Ours here'), facts(here));
+  panel.append(subBar);
+
+  if (selSub === 'Ships') {
+    if (!ours.length) {
+      panel.append(el('p', 'empty', 'No Collective ships are currently in ' + s.name + '.'));
+      return;
+    }
+    const byDiv = {};
+    ours.forEach((r) => { byDiv[r.division] = (byDiv[r.division] || 0) + 1; });
+    const dchips = el('div', 'chips');
+    for (const [dv, cnt] of Object.entries(byDiv)) dchips.append(el('span', 'pill info', dv + ': ' + cnt));
+    if (ours.length > 25) dchips.append(linkButton('Open floating map card (' + ours.length + ')', () => openPop(s.id, 'All')));
+    panel.append(dchips);
+
+    const scard = el('div', 'icard');
+    scard.append(fitTable(table(['Ship', 'Div', 'Task', 'Cargo', 'Lv'],
+      ours.slice(0, 40).map((r) => [
+        shipLink(r.name),
+        r.division.slice(0, 3),
+        shipState(r)[1],
+        r.cargo_used + '/' + r.cargo_capacity,
+        r.piloting || '-',
+      ]), [3, 4])));
+    panel.append(scard);
+    return;
+  }
+
+  if (selSub === 'Intel') {
+    const box = el('div');
+    panel.append(box);
+    box.append(el('p', 'sub', 'Loading live traffic & scout dossier...'));
+    try {
+      const d = await get('/api/system?id=' + encodeURIComponent(s.id));
+      if (!live()) return;
+      box.replaceChildren();
+      box.append(el('h3', null, 'Foreign Factions Active (Last 1h)'));
+      const gcard = el('div', 'icard');
+      if (d.groups.length) {
+        gcard.append(fitTable(table(['Tag', 'Faction', 'Pilots', 'Standing'],
+          d.groups.map((g) => [el('span', 'rtag', '[' + g.tag + ']'), g.name || '-', g.count, el('span', 'pill ' + (g.standing === 'hostile' ? 'bad' : g.standing === 'ally' ? 'good' : ''), g.standing)]), [2])));
+      } else gcard.append(el('p', 'empty', 'Zero foreign multi-pilot groups jumped here in the last hour (' + fmt(d.pilot_count) + ' solo jumps in 24h).'));
+      box.append(gcard);
+
+      if (d.battles.length) {
+        box.append(el('h3', null, 'Recent Combat Engagements'));
+        const bcard = el('div', 'icard');
+        bcard.append(fitTable(table(['Type', 'Participants', 'Losses'], d.battles.map((b) => [b.category, b.pilots.join(', '), b.lost.join(', ') || 'none']))));
+        box.append(bcard);
+      }
+      if (d.intel) {
+        box.append(el('h3', null, 'Scouted System Dossier'));
+        const icard = el('div', 'icard doc-reader-card');
+        icard.append(markdown(d.intel_text, d.intel.file, false));
+        box.append(icard);
+      } else {
+        box.append(el('p', 'empty', 'No scout dossier filed yet for ' + s.name + '.'));
+      }
+    } catch (e) { if (live()) box.replaceChildren(el('p', 'empty', 'Detail unavailable: ' + e.message)); }
+    return;
+  }
+
+  // Default Sub-Tab: Colony, Our Buildings, Stations & Jump Lanes
   if (own.length) {
+    panel.append(el('h3', null, 'Our Sovereign Bases & Facilities (' + own.length + ')'));
     const richB = ((OPS.data && OPS.data.empire && OPS.data.empire.buildings) || []).filter((x) => x.system === s.id);
     const list = richB.length ? richB : own;
-    const bwrap = el('div', 'iblist');
+    const bwrap = el('div', 'icards');
     for (const b of list) {
-      const ok = stands(b), row = el('div', 'ibldg');
-      const head = el('div', 'ibhead');
+      const ok = stands(b), card = el('div', 'icard' + (ok ? ' ownbase' : ' sitecard'));
+      const head = el('div', 'ichead');
       head.append(glyphSvg(b.kind || 'office', ok ? BUILT : RAISING, 15), el('b', null, b.name));
       head.append(el('span', 'pill ' + (ok ? 'good' : 'warn'), (b.status || 'active').replace(/_/g, ' ')));
-      row.append(head);
+      card.append(head);
       const meta = [];
-      if (b.at && b.at !== 'our own base') meta.push('in ' + b.at);
+      if (b.at && b.at !== 'our own base') meta.push('at ' + b.at);
       if (b.purpose) meta.push(b.purpose);
-      if (b.fuel !== null && b.fuel !== undefined) meta.push('fuel tank: ' + fmt(b.fuel) + ' / 50,000');
-      if (b.rent) meta.push('rent: ' + fmt(b.rent) + ' cr/cycle');
-      else if (b.kind === 'outpost' || b.kind === 'station' || b.part) meta.push('0 cr rent');
-      if (meta.length) row.append(el('div', 'ibsub', meta.join(' | ')));
-      bwrap.append(row);
+      if (b.rent) meta.push('rent ' + fmt(b.rent) + ' cr');
+      else if (b.kind === 'outpost' || b.kind === 'station' || b.part) meta.push('sovereign (0 cr rent)');
+      if (meta.length) card.append(el('div', 'icsub', meta.join(' | ')));
+      if (b.fuel !== null && b.fuel !== undefined) {
+        card.append(el('div', 'ibsub', 'Fuel bunker reserve: ' + fmt(b.fuel) + ' / 50,000'), pbar(b.fuel, 50000, b.fuel >= 5000 ? 'good' : 'warn'));
+      }
+      bwrap.append(card);
     }
     panel.append(bwrap);
   }
+
   if (siteRich && siteRich.status !== 'built') {
     const sc = el('div', 'icard sitecard');
     const sh = el('div', 'ichead');
     sh.append(glyphSvg('flag', siteRich.status === 'chosen' ? '#e8c35a' : OURS, 14, siteRich.status !== 'chosen'),
-      el('b', null, siteRich.status === 'chosen' ? 'Chosen next base site' : 'Candidate expansion site'),
-      el('span', 'pill ' + (siteRich.status === 'chosen' ? 'warn' : ''), siteRich.status.toUpperCase()));
+      el('b', null, siteRich.status === 'chosen' ? 'Chosen Expansion Site' : 'Candidate Expansion Site'),
+      el('span', 'pill ' + (siteRich.status === 'chosen' ? 'warn' : 'info'), siteRich.status.toUpperCase()));
     sc.append(sh);
     if (siteRich.need_pct !== null && siteRich.need_pct !== undefined) {
-      const prow = el('div', 'ibsub');
-      prow.textContent = 'Material readiness (' + siteRich.need_id + '): ' + siteRich.need_pct + '%';
-      sc.append(prow, pbar(siteRich.need_pct, 100, siteRich.need_pct >= 99 ? 'good' : 'warn'));
+      sc.append(el('div', 'ibsub', 'Kit readiness (' + siteRich.need_id + '): ' + siteRich.need_pct + '%'), pbar(siteRich.need_pct, 100, siteRich.need_pct >= 99 ? 'good' : 'warn'));
     }
     if (siteRich.note) sc.append(el('div', 'ibsub', siteRich.note));
     panel.append(sc);
   }
-  // Every station, outpost and building here, whom it belongs to and what of ours it holds.
-  const theirs = (t) => (t.tag && t.tag === S.our_tag ? 'us, The Collective' : t.faction ? t.faction + (t.tag ? ' [' + t.tag + ']' : '') : t.empire ? 'the ' + t.empire + ' empire' : 'nobody');
-  const heldAt = (name) => { const x = inv && inv.stations.find((y) => y.name === name); return x ? fmt(x.worth) + ' cr' : ''; };
-  const places = st.map((t) => [t.name, t.type || 'station', theirs(t), heldAt(t.name), t.wrecked ? 'wrecked' : t.condition || '']);
-  const KIND = { storage: 'shared storage', fuel: 'fuel bunker', recruit: 'hiring office', office: 'office', outpost: 'outpost', station: 'station' };
-  own.filter((b) => b.part || b.kind === 'outpost' || b.kind === 'station').forEach((b) => { if (!st.some((t) => t.name === b.name)) places.push([b.name, KIND[b.kind] || b.kind, 'us, The Collective', '', (b.status || 'active').replace(/_/g, ' ')]); });
-  own.filter((b) => !b.part && b.kind !== 'outpost' && b.kind !== 'station').forEach((b) => places.push([b.name + ' (in ' + (b.at || 'a station') + ')', KIND[b.kind] || 'our building', 'us, The Collective', '', (b.status || 'active').replace(/_/g, ' ')]));
-  panel.append(el('h3', null, 'Stations, outposts and buildings here'));
-  if (places.length) panel.append(table(['Name', 'Kind', 'Belongs to', 'Ours stored', 'State'], places));
-  else panel.append(el('p', 'empty', 'None on the public list.'));
-  if (ours.length) {
-    panel.append(el('h3', null, 'Our ships here (' + ours.length + ')'));
-    panel.append(table(['Ship', 'Doing', 'Cargo'], ours.slice(0, 12).map((r) => [shipLink(r.name), shipState(r)[1], r.cargo_used + ' / ' + r.cargo_capacity])));
-    if (ours.length > 12) panel.append(linkButton('All ' + ours.length + ' ships: open the card', () => openPop(s.id, 'All')));
-  }
-  panel.append(el('h3', null, 'Lanes'));
+
+  const theirs = (t) => (t.tag && t.tag === S.our_tag ? 'CLTV (Ours)' : t.faction ? t.faction + (t.tag ? ' [' + t.tag + ']' : '') : t.empire ? t.empire : 'independent');
+  const heldAt = (name) => { const x = inv && inv.stations.find((y) => y.name === name); return x ? fmtCompact(x.worth) + ' cr' : '-'; };
+  panel.append(el('h3', null, 'Stations & Port Services (' + st.length + ')'));
+  const stCard = el('div', 'icard');
+  if (st.length) {
+    stCard.append(fitTable(table(['Station', 'Owner', 'Our Stock', 'Services'],
+      st.map((t) => [
+        t.name,
+        t.tag === S.our_tag ? el('span', 'pill good', 'CLTV') : theirs(t),
+        heldAt(t.name),
+        el('span', 'rmeta-sub', (t.services || []).join(', ') || (t.type || 'port')),
+      ]), [2])));
+  } else stCard.append(el('p', 'empty', 'Zero public stations in this system.'));
+  panel.append(stCard);
+
+  panel.append(el('h3', null, 'Hyperlanes (' + s.lanes.length + ')' + (route.length > 1 ? ' & Route from Home (' + (route.length - 1) + 'j)' : '')));
+  const navCard = el('div', 'icard');
   const lanes = el('div', 'chips');
   s.lanes.forEach((id) => lanes.append(sysLink(id)));
-  panel.append(lanes);
+  navCard.append(el('div', 'icsub', 'Adjacent lanes:'), lanes);
   if (route.length > 1) {
-    panel.append(el('h3', null, 'Route from home'));
     const way = el('div', 'chips');
     route.forEach((id) => way.append(sysLink(id)));
-    panel.append(way);
+    navCard.append(el('div', 'icsub', 'Shortest path from Home:'), way);
   }
-  if (st.some((t) => t.services.length)) {
-    panel.append(el('h3', null, 'Services'));
-    panel.append(table(['Station', 'Services'], st.filter((t) => t.services.length).map((t) => [t.name, t.services.join(', ')])));
-  }
-  const id = s.id, box = el('div');
-  panel.append(box);
-  try {
-    const d = await get('/api/system?id=' + encodeURIComponent(id));
-    if (!live()) return;
-    box.append(el('h3', null, 'Foreign factions here, last hour'));
-    if (d.groups.length) {
-      box.append(table(['Tag', 'Faction', 'Pilots', 'Standing'], d.groups.map((g) => [g.tag, g.name || '', g.count, g.standing]), [2]));
-    } else box.append(el('p', 'empty', 'No faction had two or more pilots jump here in the last hour.'));
-    box.append(el('p', 'sub', fmt(d.pilot_count) + ' pilots of any kind made their last jump here in the last 24 h.'));
-    if (d.battles.length) {
-      box.append(el('h3', null, 'Recent battles'));
-      box.append(table(['Kind', 'Pilots', 'Lost'], d.battles.map((b) => [b.category, b.pilots.join(', '), b.lost.join(', ')])));
-    }
-    if (d.intel) {
-      box.append(el('h3', null, 'Intel'));
-      box.append(markdown(d.intel_text, d.intel.file, false));
-    }
-  } catch (e) { if (live()) box.append(el('p', 'empty', 'Detail not available: ' + e.message)); }
+  panel.append(navCard);
 }
 
 function renderPilot(panel, d) {
-  panel.append(linkButton('Back to the system', () => { pilotCard = null; render(); }), el('h2', null, d.name));
+  setWide('metrics');
+  const barTop = el('div', 'reader-bar');
+  const backBtn = el('button', 'subtab', '<- System');
+  backBtn.type = 'button';
+  backBtn.addEventListener('click', () => { pilotCard = null; render(); });
+  barTop.append(backBtn);
+  panel.append(barTop);
+
+  panel.append(el('h2', null, d.name));
   if (d.intel) {
     const chips = el('div', 'chips');
-    chips.append(el('span', 'tag ' + d.intel.standing, d.intel.standing), el('span', 'tag ' + d.intel.threat, 'threat ' + d.intel.threat));
-    panel.append(chips, linkButton('Intel file: ' + d.intel.file, () => openDoc(d.intel.file)));
+    chips.append(el('span', 'pill ' + (d.intel.standing === 'hostile' ? 'bad' : 'info'), d.intel.standing),
+      el('span', 'pill ' + (d.intel.threat === 'high' ? 'bad' : 'warn'), 'threat ' + d.intel.threat),
+      linkButton('Open Dossier', () => openDoc(d.intel.file)));
+    panel.append(chips);
   }
   const rows = [];
   if (d.seen) rows.push(['Last jump', sysLink(d.seen.system)], ['Seen', ago(d.seen.age) + ' ago'], ['Faction', d.seen.tag || 'none'], ['Empire', d.seen.empire]);
-  else rows.push(['Last jump', 'not seen on the live stream in the last 24 h']);
+  else rows.push(['Last jump', 'not seen in last 24h']);
   if (d.profile) {
-    rows.push(['Registered', d.profile.created], ['Faction (daily feed)', d.profile.faction || 'none'], ['Empire (daily feed)', d.profile.empire]);
+    rows.push(['Registered', d.profile.created], ['Faction (feed)', d.profile.faction || 'none'], ['Empire (feed)', d.profile.empire]);
     for (const [k, v] of Object.entries(d.profile.stats)) rows.push([k.replace(/_/g, ' '), fmt(v)]);
   }
-  panel.append(facts(rows));
+  const card = el('div', 'icard');
+  card.append(facts(rows));
+  panel.append(card);
 }
 
 let invMode = 'total', invItem = null, invCat = 'all', invSort = 'worth', invQuery = '';
@@ -3430,26 +3622,84 @@ function init() {
     hover = inf ? inf.system : s ? s.id : null; hoverBadge = badge || null;
     canvas.style.cursor = badge || inf || grp ? 'pointer' : '';
     const placeName = (b) => { const o = sys.get(b.system); return o ? o.name : b.system; };
+    const placeTip = () => {
+      tip.hidden = false;
+      const tw = tip.offsetWidth || 250, th = tip.offsetHeight || 110;
+      const left = mx + 16 + tw > W - 10 ? Math.max(8, mx - tw - 14) : mx + 16;
+      const top = my + 14 + th > H - 10 ? Math.max(8, my - th - 12) : my + 14;
+      tip.style.left = Math.round(left) + 'px';
+      tip.style.top = Math.round(top) + 'px';
+    };
+    const tipKV = (grid, k, v) => { const c = el('div', 'tip-cell'); c.append(el('span', null, k), el('b', null, String(v))); grid.append(c); };
     if (badge) {
       const at = sys.get(badge.system) || {};
-      tip.textContent = badge.count + (badge.count === 1 ? ' ship' : ' ships') + ' of ours at ' + placeName(badge) + ' (' + (at.empire || 'lawless') + '): ' + badge.parts + ' | click for the card';
-      tip.style.left = mx + 14 + 'px'; tip.style.top = my + 12 + 'px'; tip.hidden = false;
+      tip.replaceChildren();
+      const hd = el('div', 'tip-head'), bgs = el('div', 'tip-badges');
+      bgs.append(el('span', 'pill good', badge.count + (badge.count === 1 ? ' ship' : ' ships')), el('span', 'pill info', at.empire || 'lawless'));
+      hd.append(el('span', 'tip-title', placeName(badge)), bgs);
+      tip.append(hd, el('div', 'tip-own', badge.parts), el('div', 'tip-foot', 'Click marker for live fleet card'));
+      placeTip();
     } else if (inf) {
-      const btxt = inf.own.length ? 'Our buildings: ' + inf.own.map((b) => b.name + (b.at && !b.part ? ' @ ' + b.at : '') + (stands(b) ? '' : ' [' + b.status + ']')).join(', ') : '';
-      const stxt = inf.site && inf.site.status !== 'built' && inf.site.status !== 'dropped'
-        ? 'Planned base (' + inf.site.status + (inf.siteInfo && inf.siteInfo.need_pct !== null ? ', ' + inf.siteInfo.need_pct + '% stocked' : '') + ')' : '';
-      tip.textContent = placeName(inf) + ' -- ' + [btxt, stxt].filter(Boolean).join(' | ') + ' | click to inspect';
-      tip.style.left = mx + 14 + 'px'; tip.style.top = my + 12 + 'px'; tip.hidden = false;
+      tip.replaceChildren();
+      const hd = el('div', 'tip-head');
+      hd.append(el('span', 'tip-title', placeName(inf)), el('span', 'pill good', 'CLTV INFRA'));
+      tip.append(hd);
+      if (inf.own.length) {
+        const lst = el('div', 'tip-list');
+        inf.own.forEach((b) => lst.append(el('div', 'tip-own', b.name + (b.at && !b.part ? ' @ ' + b.at : '') + (stands(b) ? '' : ' [' + b.status + ']'))));
+        tip.append(lst);
+      }
+      if (inf.site && inf.site.status !== 'built' && inf.site.status !== 'dropped') {
+        const pctTxt = inf.siteInfo && inf.siteInfo.need_pct !== null ? ' -- ' + inf.siteInfo.need_pct + '% kit ready' : '';
+        tip.append(el('div', 'tip-site', 'Planned site: ' + inf.site.status.toUpperCase() + pctTxt));
+      }
+      tip.append(el('div', 'tip-foot', 'Click to inspect buildings & stock'));
+      placeTip();
     } else if (grp) {
       const g = grp.group;
-      tip.textContent = '[' + g.tag + '] ' + (g.name || 'a faction') + ': ' + g.count + ' pilots jumped into ' + placeName(grp) + ' in the last hour | our standing: ' + g.standing + ' | click for the pilots and their ships';
-      tip.style.left = mx + 14 + 'px'; tip.style.top = my + 12 + 'px'; tip.hidden = false;
+      tip.replaceChildren();
+      const hd = el('div', 'tip-head');
+      hd.append(el('span', 'tip-title', '[' + g.tag + '] ' + (g.name || 'Foreign Group')),
+        el('span', 'pill ' + (g.standing === 'hostile' ? 'bad' : g.standing === 'ally' ? 'good' : 'warn'), g.standing));
+      const gr = el('div', 'tip-grid');
+      tipKV(gr, 'System', placeName(grp));
+      tipKV(gr, 'Pilots (1h)', g.count);
+      tip.append(hd, gr, el('div', 'tip-foot', 'Click for pilot & hull intel'));
+      placeTip();
     } else if (s) {
-      const ours = (shipsBy.get(s.id) || []).length, own = holdBy.get(s.id) || [], site = sitesBy.get(s.id);
-      tip.textContent = s.name + (s.empire ? ' (' + s.empire + ')' : '') + ' | ' + (L.hour[s.id] || 0) + ' pilots in the last hour' + (ours ? ' | ' + ours + ' of ours' : '')
-        + (own.length ? ' | ours: ' + own.map((b) => b.name + (stands(b) ? '' : ' (' + String(b.status).replace(/_/g, ' ') + ')')).join(', ') : '')
-        + (site && site.status !== 'dropped' && site.status !== 'built' ? ' | a site for a base: ' + site.status : '');
-      tip.style.left = mx + 14 + 'px'; tip.style.top = my + 12 + 'px'; tip.hidden = false;
+      const ours = shipsBy.get(s.id) || [], own = holdBy.get(s.id) || [], site = sitesBy.get(s.id), st = stationsBy.get(s.id) || [];
+      tip.replaceChildren();
+      const hd = el('div', 'tip-head'), bgs = el('div', 'tip-badges');
+      if (s.stronghold) bgs.append(el('span', 'pill bad', 'stronghold'));
+      bgs.append(el('span', 'pill ' + (s.empire ? 'info' : 'warn'), s.empire || 'lawless'));
+      if (s.jumps >= 0) bgs.append(el('span', 'pill', s.jumps + 'j'));
+      hd.append(el('span', 'tip-title', s.name), bgs);
+      tip.append(hd);
+      if (own.length) {
+        tip.append(el('div', 'tip-own', 'CLTV: ' + own.map((b) => b.name + (stands(b) ? '' : ' (' + String(b.status).replace(/_/g, ' ') + ')')).join(', ')));
+      }
+      if (site && site.status !== 'dropped' && site.status !== 'built') {
+        const sr = ((OPS.data && OPS.data.empire && OPS.data.empire.sites) || []).find((x) => x.system === s.id);
+        tip.append(el('div', 'tip-site', 'Expansion site: ' + site.status.toUpperCase() + (sr && sr.need_pct != null ? ' (' + sr.need_pct + '%)' : '')));
+      }
+      const gr = el('div', 'tip-grid');
+      tipKV(gr, 'Our ships', ours.length ? ours.length + ' active' : '0');
+      tipKV(gr, 'Stations', st.length);
+      tipKV(gr, 'Traffic 1h', (L.hour[s.id] || 0) + ' pilots');
+      tipKV(gr, 'Traffic 24h', (L.day[s.id] || 0) + ' pilots');
+      if (INVCACHE.value && st.length) {
+        const sNames = new Set(st.map((t) => t.name));
+        const stWorth = INVCACHE.value.stations.filter((x) => sNames.has(x.name)).reduce((a, x) => a + (x.worth || 0), 0);
+        if (stWorth > 0) tipKV(gr, 'Our stock', fmtCompact(stWorth) + ' cr');
+      }
+      tip.append(gr);
+      const ft = el('div', 'tip-foot');
+      ft.append(el('span', null, 'Click to open Selection'));
+      if (S.intel.systems[s.id] && S.intel.systems[s.id].threat && S.intel.systems[s.id].threat !== 'none') {
+        ft.append(el('span', null, 'threat: ' + S.intel.systems[s.id].threat));
+      }
+      tip.append(ft);
+      placeTip();
     } else tip.hidden = true;
     draw();
   });

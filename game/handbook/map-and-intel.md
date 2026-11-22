@@ -166,7 +166,7 @@ external and fleet chat messages classified and sanitized by comms_guard.py (qua
 
 - Kind: snapshot
 - Columns: id, t, channel, system, sender, tag, to_us, own, intent, risk_level, risk_flags, extracted, safe_text, src; one row per id
-- Kept: the last reading of its file, replaced when the file changes; a missing or bad file keeps them (source.note says why)
+- Kept: while its file stands: a file's rows are replaced when it changes and go when it goes
 - Refreshed: the store's pass (every 60 s), when a file changed (size or mtime): loader `player_comms`, data/comms/messages.jsonl
 - Sanitized messages addressed to us by commercial or diplomatic intent: `SELECT t, channel, sender, tag, intent, risk_level, safe_text FROM player_comms WHERE to_us = 1 AND own = 0 ORDER BY t DESC LIMIT 20`
 - Quarantined or suspicious prompt-injection attempts blocked by comms_guard: `SELECT t, channel, sender, tag, risk_level, risk_flags, safe_text FROM player_comms WHERE risk_level != 'clean' ORDER BY t DESC`

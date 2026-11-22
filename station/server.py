@@ -1562,7 +1562,7 @@ def api_ops():
                 fl_book = int(num(mod_w[0])) + int(num(hull_w[0]))
                 fac_inv = int(num(fac_inv_r[0])) or 3400000
                 ho_r = conn.execute(
-                    "SELECT value FROM stats_figures WHERE view = 'contribution' AND figure LIKE '%handed%' ORDER BY hours DESC LIMIT 1"
+                    "SELECT COALESCE(SUM(value), 0) FROM stats_figures WHERE view = 'contribution' AND figure = 'handed_over_worth' AND hours = 24"
                 ).fetchone() if "stats_figures" in tables else None
                 hexc_r = conn.execute(
                     "SELECT value FROM leaderboards WHERE grp = 'factions' AND board = 'total_wealth' AND tag = 'HEXC' ORDER BY t DESC LIMIT 1"
@@ -1756,6 +1756,21 @@ def api_ops():
     except OSError:
         out["contracts_count"] = 0
     out["empire"] = emp_info
+    try:
+        live_st = read_json(DATA / "stats.json") or {}
+        live_ver = str(live_st.get("version") or "")
+        cat_files = [p for p in (FLEET.parent / "catalog").glob("*.json") if re.fullmatch(r"\d+(\.\d+)*", p.stem)] if (FLEET.parent / "catalog").is_dir() else []
+        cat_ver = max(cat_files, key=lambda p: tuple(int(n) for n in p.stem.split("."))).stem if cat_files else ""
+        rel_obj = read_json(FLEET.parent / "catalog" / "releases.json") or {}
+        rel_ver = str(rel_obj.get("latest") or "")
+        out["game_version"] = {
+            "live": live_ver,
+            "catalog": cat_ver,
+            "latest_patch": rel_ver,
+            "in_sync": bool(live_ver and cat_ver and live_ver == cat_ver),
+        }
+    except OSError:
+        out["game_version"] = {"live": "", "catalog": "", "latest_patch": "", "in_sync": False}
     OPS["at"], OPS["value"] = now, out
     return out
 

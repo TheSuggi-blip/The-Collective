@@ -115,7 +115,7 @@ SUBJECTS = (    # (title, the tables and views it holds, in their order); the ca
                      "territory", "sites")),
     ("Stock and reserve", ("holdings", "inventory", "inventory_by_station", "stock_hour", "needs", "need_status")),
     ("The catalog", ("items", "recipes", "recipe_inputs", "recipe_outputs", "recipe_facilities", "facilities", "facility_materials", "hulls",
-                     "hull_materials", "skills")),
+                     "hull_materials", "skills", "game_releases")),
     ("Supply", ("supply_chains", "supply_status", "stats_supply_hour")),
     ("Statistics", ("stats_time", "stats_refill", "stats_figures")),
     ("Written knowledge", ("docs", "doc_versions")),

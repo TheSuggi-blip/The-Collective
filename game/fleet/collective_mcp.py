@@ -163,7 +163,9 @@ def catalog_plan(a):
         return [("game/fleet/craftbook.py", ["can"] + ([a["member"]] if a.get("member") else []) + flag(a, "top"))]
     if ask == "recipes":
         return [("game/fleet/craftbook.py", ["recipes"] + flag(a, "category") + flag(a, "makes") + flag(a, "uses") + (["--hand"] if a.get("by_hand") else []))]
-    raise ValueError("ask is one of: item, needs, build, can, recipes")
+    if ask == "releases":
+        return [("game/fleet/craftbook.py", ["releases"] + flag(a, "top"))]
+    raise ValueError("ask is one of: item, needs, build, can, recipes, releases")
 
 
 def stock_plan(a):
@@ -319,8 +321,8 @@ TOOLS = {
         "text": "The game's catalog asked as a question. ask=item: find an item by text; for one item how it is made, what uses it, what is built with it. ask=needs: "
                 "everything a number of units takes down to what is mined or bought, beside what we store. ask=build: what a facility or a hull costs and takes. "
                 "ask=can: what a member's stored goods can be made into by hand today and what that sells for. ask=recipes: the recipes of a category, or that make or "
-                "use an item. The same tables as files: game/catalog/master-index.md.",
-        "args": {"ask": arg(S, "item (default), needs, build, can or recipes", ("item", "needs", "build", "can", "recipes")),
+                "use an item. ask=releases: newest SpaceMolt patch notes and active catalog version. The same tables as files: game/catalog/master-index.md.",
+        "args": {"ask": arg(S, "item (default), needs, build, can, recipes or releases", ("item", "needs", "build", "can", "recipes", "releases")),
                  "name": arg(S, "for item: text or an item id; for needs: an item id; for build: a facility id or a hull id"), "quantity": arg(I, "for needs: units, default 1"),
                  "member": arg(S, "for can: a member's name or all", MEMBERS), "top": arg(I, "for can: how many rows"), "category": arg(S, "for recipes: a category name as the catalog writes it (renamed in the game's 0.729.0: Smelting, Machining ...; ask=recipes alone lists them)"),
                  "makes": arg(S, "for recipes: an item id it makes"), "uses": arg(S, "for recipes: an item id it uses"), "by_hand": arg(B, "for recipes: only those crafted by hand")},

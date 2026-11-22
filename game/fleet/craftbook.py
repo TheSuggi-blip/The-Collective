@@ -602,6 +602,19 @@ def main():
         return show_recipes(cat, args, value)
     if verb == "inventory":
         return show_inventory(cat, data, rest[0] if rest else "total", value("--item", ""), int(value("--top", "40")))
+    if verb == "releases":
+        rel_file = Path(data) / "catalog" / "releases.json"
+        top_n = max(1, int(value("--top", "8")))
+        print("CATALOG VERSION IN FORCE: %s" % cat["version"])
+        if not rel_file.is_file():
+            print("  releases.json not yet synced; run scripts/changelog-refresh.py refresh")
+            return 0
+        rels = (json.loads(rel_file.read_text(encoding="ascii")).get("releases") or [])[:top_n]
+        for r in rels:
+            print("  v%s (%s)" % (r.get("version", "?"), r.get("pub_date", "")))
+            for b in (r.get("bullets") or []):
+                print("    - %s" % b)
+        return 0
     sys.exit(__doc__)
 
 

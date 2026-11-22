@@ -123,3 +123,15 @@ catalog: every skill: category, highest level, how it is trained, the empire tha
 - Every skill: `SELECT id, name, category, max_level FROM skills ORDER BY category, id`
 - How mining is trained: `SELECT id, training FROM skills WHERE id = 'mining'`
 - Skills only one empire may learn: `SELECT id, empire FROM skills WHERE empire IS NOT NULL`
+
+## game_releases
+
+SpaceMolt official release notes and patch changes from catalog/releases.json (synced automatically by scripts/changelog-refresh.py)
+
+- Kind: snapshot
+- Columns: version, sort_key, pub_date, summary, bullets, src; one row per version
+- Kept: while its file stands: a file's rows are replaced when it changes and go when it goes
+- Refreshed: the store's pass (every 60 s), when a file changed (size or mtime): loader `game_releases`, data/catalog/releases.json
+- Newest 10 SpaceMolt releases and patch summaries: `SELECT version, pub_date, summary FROM game_releases ORDER BY sort_key DESC LIMIT 10`
+- Releases mentioning recipes, hulls or storms: `SELECT version, pub_date, summary FROM game_releases WHERE summary LIKE '%recipe%' OR summary LIKE '%hull%' OR summary LIKE '%storm%' ORDER BY sort_key DESC`
+- Count of synced releases and latest version: `SELECT COUNT(*) AS releases, MAX(version) AS max_ver FROM game_releases`

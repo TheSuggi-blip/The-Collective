@@ -470,7 +470,8 @@ SNAPSHOT += needbook.SNAPSHOT                     # needs: the needs register, a
 SNAPSHOT += (("birth_plans", "cohort_id TEXT, plan_scope TEXT, wave INTEGER, wave_target INTEGER, division TEXT, role TEXT, "
               "wing TEXT, empire TEXT, ships INTEGER, flagship_hulls TEXT, gate TEXT, note TEXT", "cohort_id"),
              ("player_comms", "id TEXT, t TEXT, channel TEXT, system TEXT, sender TEXT, tag TEXT, to_us INTEGER, own INTEGER, "
-              "intent TEXT, risk_level TEXT, risk_flags TEXT, extracted TEXT, safe_text TEXT", "id"),)
+              "intent TEXT, risk_level TEXT, risk_flags TEXT, extracted TEXT, safe_text TEXT", "id"),
+             ("game_releases", "version TEXT, sort_key TEXT, pub_date TEXT, summary TEXT, bullets TEXT", "version"),)
 COLUMNS = {name: [part.split()[0] for part in columns.split(", ")] for name, columns, _key in SNAPSHOT}
 LOOKUPS = (("ships", "system"), ("holdings", "item"), ("books", "item"), ("ladders", "item"), ("recipe_inputs", "item"),
            ("recipe_outputs", "item"), ("facility_materials", "item"), ("fields", "resource"), ("herds", "creature"), ("lanes", "a"),
@@ -1060,8 +1061,38 @@ def read_player_comms(path, ctx):
     return {"player_comms": commshield.read_comms_rows(path)}
 
 
+def read_game_releases(path, ctx):
+    """data/catalog/releases.json -> game_releases: latest SpaceMolt patch notes from official RSS."""
+    obj = json.loads(Path(path).read_text(encoding="ascii"))
+    rows = []
+    for r in (obj.get("releases") or []):
+        if not isinstance(r, dict) or not r.get("version"):
+            continue
+        rows.append({
+            "version": str(r["version"]),
+            "sort_key": str(r.get("sort_key") or r["version"]),
+            "pub_date": str(r.get("pub_date") or ""),
+            "summary": str(r.get("summary") or ""),
+            "bullets": json.dumps(r.get("bullets") or [], ensure_ascii=True),
+        })
+    return {"game_releases": rows}
+
+
+def game_release_files(data, root):
+    """data/catalog/releases.json: SpaceMolt release notes fetched by scripts/changelog-refresh.py."""
+    path = Path(data) / "catalog" / "releases.json"
+    return [("catalog/releases.json", path, read_game_releases, True, "")] if path.is_file() else []
+
+
+def player_comms_files(data, root):
+    """data/comms/messages.jsonl: optional in minimal test fixtures, sanitized via comms_guard.py."""
+    path = Path(data) / "comms" / "messages.jsonl"
+    return [("comms/messages.jsonl", path, read_player_comms, True, "")] if path.is_file() else []
+
+
 LOADERS += (("birth_plans", ("birth_plans",), birth_plan_files, False),
-            ("player_comms", ("player_comms",), data_file("comms/messages.jsonl", read_player_comms), True),)
+            ("player_comms", ("player_comms",), player_comms_files, True),
+            ("game_releases", ("game_releases",), game_release_files, True),)
 FED = dict([(table, ("fleet", "orders")) for table in ("ships",)] + [(table, (loader,)) for loader, tables, _f, _w in LOADERS for table in tables])
 BAD = (OSError, ValueError, TypeError, KeyError, AttributeError, IndexError, RecursionError)
 
@@ -1674,6 +1705,7 @@ DESCRIPTIONS = {               # one line per table and view: what a row is and 
     "outpost_candidates": "view: lawless non-stronghold systems without an existing station, with jump distance, resource fields and grazer counts for outpost siting",
     "hull_readiness": "view: pilots at Piloting >= 10 still flying below Tier 2 hulls, with division, role, wallet credits and dock",
     "player_comms": "external and fleet chat messages classified and sanitized by comms_guard.py (quarantining prompt-injection attempts and extracting typed trade/contract intent)",
+    "game_releases": "SpaceMolt official release notes and patch changes from catalog/releases.json (synced automatically by scripts/changelog-refresh.py)",
     "fuel_sinks": "view: trailing 24-hour runs, ship-hours and net credits grouped into productive work vs jump_loops, census and handovers",
     "contract_candidates": "view: open priority needs with missing items where Station Bursars or Notice Board contracts can source bottlenecks",
     "route_earnings": "view: what each route earned per ship-hour (steady credits) over the last 4, 12 and 24 hours and over all hours kept, the runs behind each "
@@ -1913,6 +1945,9 @@ EXAMPLES = {                   # three questions per table and view, as SQL (hiv
     "outpost_candidates": (("Unclaimed lawless systems within 5 jumps with resource fields", "SELECT system, name, jumps, fields, resources, grazers FROM outpost_candidates WHERE jumps <= 5 AND fields > 0 ORDER BY fields DESC, jumps"),
                            ("Unclaimed lawless systems holding cobalt, argon or silicon", "SELECT system, name, jumps, resources FROM outpost_candidates WHERE resources LIKE '%cobalt%' OR resources LIKE '%argon%' OR resources LIKE '%silicon%' ORDER BY jumps"),
                            ("Unclaimed lawless systems with grazer herds", "SELECT system, name, jumps, grazers, resources FROM outpost_candidates WHERE grazers > 0 ORDER BY grazers DESC")),
+    "game_releases": (("Newest 10 SpaceMolt releases and patch summaries", "SELECT version, pub_date, summary FROM game_releases ORDER BY sort_key DESC LIMIT 10"),
+                      ("Releases mentioning recipes, hulls or storms", "SELECT version, pub_date, summary FROM game_releases WHERE summary LIKE '%recipe%' OR summary LIKE '%hull%' OR summary LIKE '%storm%' ORDER BY sort_key DESC"),
+                      ("Count of synced releases and latest version", "SELECT COUNT(*) AS releases, MAX(version) AS max_ver FROM game_releases")),
     "player_comms": (("Sanitized messages addressed to us by commercial or diplomatic intent", "SELECT t, channel, sender, tag, intent, risk_level, safe_text FROM player_comms WHERE to_us = 1 AND own = 0 ORDER BY t DESC LIMIT 20"),
                      ("Quarantined or suspicious prompt-injection attempts blocked by comms_guard", "SELECT t, channel, sender, tag, risk_level, risk_flags, safe_text FROM player_comms WHERE risk_level != 'clean' ORDER BY t DESC"),
                      ("Extracted item/price trade offers from player chat", "SELECT t, sender, tag, system, extracted, safe_text FROM player_comms WHERE extracted != '' ORDER BY t DESC LIMIT 20")),

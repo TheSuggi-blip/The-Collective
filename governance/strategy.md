@@ -43,6 +43,7 @@ data (the tools of the collective MCP server).
 | Growth paid by income | "Once we have a system and it is earning money we can birth more ships." (2026-11-15) |
 | No ship idle | Every ship holds work for four hours and longer; no work at a loss; no mining only for skill (2026-11-15) |
 | One system | Intel patrols and hunts, Military patrols, protects, escorts and hunts, the others earn: "All symbiotic system. Harmony." (2026-11-15) |
+| CEO / Enterprise discipline | Run the fleet like a capital-allocating industrial enterprise: measure Consolidated Net Worth (cash + vault inventory + fitted hulls + sovereign facilities), eliminate zero-return fuel sinks in favor of zero-fuel docked crafting and Station Bursars, outsource bottlenecks via `contracts.log`, and guard external comms behind strict anti-injection firewalls (2026-11-22) |
 | Ships fit for their job | Every ship is upgraded for its work all the time (2026-11-15) |
 | Data by itself | "This is key, the speed of which we can automate the data we get into structured information for the fleet to use." (2026-11-15) |
 | A defensive stance | "We do not engage first. When fired upon we defend or flee." An attacker stays an enemy until Suggi says otherwise. An escort may fire to defend a ship of ours that was attacked, then it escapes too (2026-11-15, 2026-11-16) |

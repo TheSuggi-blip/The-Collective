@@ -133,8 +133,13 @@ main { flex: 1; display: flex; min-height: 0; }
   background: radial-gradient(ellipse at 42% 38%, #151c2e 0%, #0d111a 52%, #090c12 100%); }
 canvas { display: block; width: 100%; height: 100%; cursor: grab; }
 canvas.drag { cursor: grabbing; }
-.tip { position: absolute; z-index: 7; pointer-events: none; padding: 5px 10px; background: var(--raise); border: 1px solid var(--line2); border-radius: 999px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4); white-space: nowrap; font-size: 12px; }
+.tip { position: absolute; z-index: 7; pointer-events: none; min-width: 220px; max-width: 320px; padding: 9px 11px;
+  background: linear-gradient(180deg, rgba(22, 29, 44, 0.96), rgba(12, 16, 25, 0.98));
+  border: 1px solid var(--line2); border-radius: var(--r2);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.58), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  white-space: normal; font-size: 11.5px; line-height: 1.35; display: flex; flex-direction: column; gap: 6px; }
+.tip[hidden] { display: none; }
 .mapbuttons, .box { background: rgba(16, 21, 32, 0.88); border: 1px solid var(--line); border-radius: var(--r2); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3); }
 .layers .boxbody { display: grid; gap: 0; padding: 0 11px 7px; font-size: 12px; line-height: 1.4; color: var(--dim); }
 .layers label { cursor: pointer; } .layers label:hover { color: var(--text); }
@@ -597,3 +602,41 @@ button.member:hover { background: var(--raise); box-shadow: inset 0 -2px 0 var(-
 .log-last { font-size: 11.5px; color: var(--dim); display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
 .icard-entry { background: linear-gradient(180deg, rgba(20, 27, 40, 0.78), rgba(12, 16, 24, 0.94)); border-color: var(--line2); border-left-width: 3px; }
 .doc-reader-card { padding: 14px 16px; }
+
+/* ---- 2026-11-22 HUD v5: Stellaris Tiny Outliner, Rich Map Hover Card & Endless-Space Selection Inspector */
+.divstrip { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 3px; }
+.divchip { padding: 3px 2px; background: rgba(10, 13, 20, 0.85); border: 1px solid var(--line); border-radius: 6px;
+  color: var(--dim); font: 600 9.5px/1.2 var(--mono); text-transform: uppercase; letter-spacing: 0.02em; cursor: pointer; text-align: center; }
+.divchip:hover { color: var(--text); border-color: var(--c, var(--accent)); background: var(--raise); }
+.divchip.on { background: rgba(164, 139, 224, 0.16); color: #fff; border-color: var(--c, var(--accent)); box-shadow: inset 0 -2px 0 var(--c, var(--accent)); }
+.div { border-bottom: 1px solid rgba(37, 45, 63, 0.75); }
+.divcard { background: linear-gradient(90deg, rgba(22, 29, 44, 0.55), rgba(16, 21, 32, 0.25)); transition: background 140ms ease; }
+.divcard:hover { background: linear-gradient(90deg, rgba(28, 37, 56, 0.75), rgba(18, 24, 36, 0.45)); }
+.divhead { padding: 7px 9px 5px 8px; gap: 6px; }
+.divmeta { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; font: 600 10.5px/1.2 var(--mono); white-space: nowrap; }
+.divpill { padding: 1px 6px; border-radius: 999px; border: 1px solid var(--line2); background: rgba(10, 13, 20, 0.75); color: var(--good); font-size: 10px; }
+.divpill.warn { color: var(--warn); border-color: rgba(220, 174, 88, 0.55); }
+.divcph { font-size: 10px; color: var(--dim); }
+.divcph.pos { color: var(--good); }
+.divcph.neg { color: var(--faint); }
+.divcard .divbar { height: 2px; margin: 0 9px 0 8px; opacity: 0.88; }
+.ship { padding: 4px 9px 4px 8px; gap: 7px; border-bottom: 1px solid rgba(37, 45, 63, 0.32); }
+.ship .nm { font-size: 12px; display: flex; align-items: center; gap: 4px; }
+.ship .at { font-size: 10.5px; color: var(--faint); }
+.ship .t2badge { padding: 0 4px; border-radius: 4px; background: rgba(88, 192, 140, 0.16); border: 1px solid rgba(88, 192, 140, 0.55); color: var(--good); font: 600 9px/1.3 var(--mono); }
+.ship .cr .ready-lv { color: var(--good); }
+.tip-head { display: flex; align-items: center; gap: 6px; justify-content: space-between; border-bottom: 1px solid rgba(53, 65, 91, 0.55); padding-bottom: 5px; }
+.tip-title { font-size: 13px; font-weight: 650; color: #f1f4fb; line-height: 1.2; }
+.tip-badges { display: inline-flex; align-items: center; gap: 4px; flex: none; }
+.tip-own { padding: 4px 7px; border-radius: 6px; background: rgba(88, 192, 140, 0.12); border: 1px solid rgba(88, 192, 140, 0.42); color: #bfead3; font-size: 11px; }
+.tip-site { padding: 4px 7px; border-radius: 6px; background: rgba(220, 174, 88, 0.12); border: 1px solid rgba(220, 174, 88, 0.45); color: #f3dc9c; font-size: 11px; }
+.tip-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 10px; }
+.tip-cell { display: flex; justify-content: space-between; gap: 6px; font-size: 11px; }
+.tip-cell span { color: var(--dim); }
+.tip-cell b { color: var(--text); font-family: var(--mono); font-weight: 600; }
+.tip-list { display: flex; flex-direction: column; gap: 2px; color: var(--text); font-size: 11px; }
+.tip-foot { font: 500 10px/1.2 var(--mono); color: var(--faint); border-top: 1px solid rgba(37, 45, 63, 0.65); padding-top: 4px; display: flex; justify-content: space-between; }
+.sel-hero { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+.sel-hero h2 { margin: 0; font-size: 18px; line-height: 1.2; }
+.sel-sub { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; margin-top: 4px; }
+.vitals-card { padding: 10px 12px; }
