@@ -427,3 +427,12 @@ Failed: the chemical liner test looped 18 times in 13 minutes on a buy over its 
 Requests: requests.log ENT-317 (Unity: rest a route for a pilot after a stop_on_failed_buy that is not a missing ask, and after three empty runs in a row).
 Suggestions: a road check of pirate sightings for circuits beyond the border; a word on F8 for a class whose every route is closed by its book; Trade Run missions name the far gaps and pay XP, the trader's levelling path.
 Report: far-gaps-sized-from-home-two-far-tests-flying.
+
+## [ENT-096] | 2026-11-22 00:28 UTC | Apollo | session | ref: reports/2026-11-22_apollo_outpost-repaired-itself-repair-stock-kept-atria-asked-for.md | see: orders.log ENT-059
+Session: scheduled run turn-apollo -- the outpost repaired itself; its repair stock kept by route; Atria asked for.
+Did: GSC-0044's bunker and Lockbox read ready (faction_owned 23:48 UTC); repair stock routes gated (boards below 45, plate three loads of 60); 7 needs registered (repair stock, Atria kit, ship garage, shipyard berth, transit lounge, passenger cabin); craft-cells-hydrogen-node-beta written (test); flex route on requires.ask; hauler receivers named; guidebook P5 (card, routes, tests, topic-bases); claim admirals ENT-081; fill gate PASS, 40 of 40 at work.
+Worked: the base repaired itself from its store with no command; the reserve gate opened the boards route at 15 of 45 and a hauler took it within the minute; the freight board (146 contracts) and passenger boards read from one docked hauler.
+Failed: a guidebook edit lost after a commit the route hook refused on another member's untracked files (errors.log ENT-119); Atria not started (allocation unpaid); the training loop costs about -590 cr a ship-hour by its runs, two runs of +12,321 and +5,321 cr unexplained.
+Requests: requests.log ENT-314 (Atria allocation paid), ENT-315 (reserve gate reads 0), ENT-316 (ships docked at a base at a pause).
+Suggestions: book credits that arrive from outside a run out of its figure; the pause step for bases; the hook's route check on staged paths only.
+Report: outpost-repaired-itself-repair-stock-kept-atria-asked-for.
