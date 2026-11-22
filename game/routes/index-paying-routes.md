@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 31.
+Routes: 29.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -38,9 +38,7 @@ Routes: 31.
 | [sell-loot-at-first-step](sell-loot-at-first-step.json) | circuit | beyond the border, 18 jumps | Hunt loot stored by Trade's receiver at First Step Memorial Station sold where it lies | up to 1 ships, with 30 verdigris_curd stored at first_step_memorial_station, while first_step_memorial_station bids 300 cr for verdigris_curd | 2 | 28 | 18,360 | 39,780 | 2026-11-22 |
 | [sell-loot-at-krynn](sell-loot-at-krynn.json) | circuit | beyond the border, 20 jumps | Hunt loot stored by Trade's receiver at the Crimson War Citadel (Krynn) sold where it lies | up to 1 ships, with 2 ember_gland stored at crimson_war_citadel, while crimson_war_citadel bids 5000 cr for ember_gland | 2 | 16 | 14,350 | 54,150 | 2026-11-22 |
 | [sell-loot-at-nova-terra](sell-loot-at-nova-terra.json) | circuit | beyond the border, 8 jumps | Hunt loot stored by Trade's receiver at Nova Terra Central sold where it lies | up to 1 ships, with 20 verdigris_curd stored at nova_terra_central, while nova_terra_central bids 300 cr for verdigris_curd | 6 | 11 | 830 | 5,330 | 2026-11-22 |
-| [hunt-altais-outer-ice-hollow-pilgrim](hunt-altais-outer-ice-hollow-pilgrim.json) | hunt | beyond the border, 18 jumps | hollow_pilgrim at altais_outer_ice; loot sold at Mobile Capital | up to 3 ships | 1 | 19 | 12,600 | 40,000 | 2026-11-22 |
 | [hunt-deep-range-cryobelt-hollow-pilgrim](hunt-deep-range-cryobelt-hollow-pilgrim.json) | hunt | beyond the border, 19 jumps | hollow_pilgrim at deep_range_cryobelt; loot sold at Mobile Capital | up to 3 ships | 1 | 58 | 2,720 | 2,790 | 2026-11-22 |
-| [hunt-hatysa-vapor-fields-cinder-sylph](hunt-hatysa-vapor-fields-cinder-sylph.json) | hunt | beyond the border, 11 jumps | cinder_sylph at hatysa_vapor_fields; loot sold at Hex Star | up to 3 ships, empty hold | 1 | 32 | 19,860 | 37,230 | 2026-11-22 |
 | [mine-alula-frost-ring](mine-alula-frost-ring.json) | mine | beyond the border, 23 jumps | Alula Frost Ring: water_ice, helium_ice; sold at Factory Belt Manufacturing Hub | up to 3 ships, needs ice_harvester_i, empty hold | 2 | 95 | 50 | 30 | 2026-11-22 |
 | [mine-dheneb-cryobelt](mine-dheneb-cryobelt.json) | mine | beyond the border, 11 jumps | Dheneb Cryobelt: water_ice, nitrogen_ice, helium_ice, methane_ice; sold at Hex Star | up to 2 ships, needs ice_harvester_i, empty hold | 28 | 42 | 400 | 580 | 2026-11-22 |
 | [mine-epsilon-eridani-ice-fields](mine-epsilon-eridani-ice-fields.json) | mine | beyond the border, 9 jumps | Epsilon Eridani Ice Fields: water_ice, nitrogen_ice; sold at Sirius Observatory Station | up to 1 ships, needs ice_harvester_i, empty hold | 11 | 50 | 4,820 | 5,810 | 2026-11-22 |

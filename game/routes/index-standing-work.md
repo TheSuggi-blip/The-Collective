@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 335.
+Routes: 338.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -158,6 +158,7 @@ Routes: 335.
 | [hunt-alsciaukat-faint-entanglement-veil-ray](hunt-alsciaukat-faint-entanglement-veil-ray.json) | hunt | beyond the border, 18 jumps | veil_ray at alsciaukat_faint_entanglement; loot sold at First Step Memorial Station | up to 1 ships, empty hold, standing work | 9 | 25 | -160 | -370 | 2026-11-22 |
 | [hunt-alsciaukat-ghost-resonance-veil-ray](hunt-alsciaukat-ghost-resonance-veil-ray.json) | hunt | beyond the border, 18 jumps | veil_ray at alsciaukat_ghost_resonance; loot sold at First Step Memorial Station | up to 1 ships, empty hold, standing work | 12 | 35 | -190 | -340 | 2026-11-22 |
 | [hunt-alsciaukat-vapor-fields-cinder-sylph](hunt-alsciaukat-vapor-fields-cinder-sylph.json) | hunt | beyond the border, 13 jumps | cinder_sylph at alsciaukat_vapor_fields; loot sold at Hex Star | up to 1 ships, empty hold, standing work | 6 | 36 | 6,460 | 12,720 | 2026-11-22 |
+| [hunt-altais-outer-ice-hollow-pilgrim](hunt-altais-outer-ice-hollow-pilgrim.json) | hunt | beyond the border, 18 jumps | hollow_pilgrim at altais_outer_ice; loot sold at Mobile Capital | up to 3 ships, standing work | 1 | 19 | 12,600 | 40,000 | 2026-11-22 |
 | [hunt-amberfall-belt-carapace](hunt-amberfall-belt-carapace.json) | hunt | beyond the border, 5 jumps | Belt-grazers and patina-grazers at Amberfall Belt (Amberfall); creature carapace into storage at Node Beta Industrial Station | up to 1 ships, without piercing_railgun_i, empty hold, standing work | 13 | 48 | -160 | -240 | 2026-11-22 |
 | [hunt-amberfall-chlorophage-sac](hunt-amberfall-chlorophage-sac.json) | hunt | beyond the border, 5 jumps | Caustic sac for the reserve: chlorophages at Amberfall Emission Nebula (lawless), every drop stored at Node Beta | up to 1 ships, empty hold, standing work | 16 | 18 | -150 | -450 | 2026-11-22 |
 | [hunt-ancha-frozen-drift-frost-moth](hunt-ancha-frozen-drift-frost-moth.json) | hunt | beyond the border, 19 jumps | frost_moth at ancha_frozen_drift; loot sold at First Step Memorial Station | up to 1 ships, empty hold, standing work | 7 | 30 | -280 | -550 | 2026-11-22 |
@@ -237,6 +238,7 @@ Routes: 335.
 | [hunt-harborlight-prospectors-leavings-patina-grazer](hunt-harborlight-prospectors-leavings-patina-grazer.json) | hunt | beyond the border, 10 jumps | patina_grazer at harborlight_prospectors_leavings; loot stored at Nova Terra Central | up to 1 ships, empty hold, standing work | 4 | 42 | -260 | -400 | 2026-11-22 |
 | [hunt-hassaleh-ice-halo-frost-moth](hunt-hassaleh-ice-halo-frost-moth.json) | hunt | beyond the border, 9 jumps | frost_moth at hassaleh_ice_halo; loot sold at Ironlight Crossroads | up to 1 ships, empty hold, standing work | 8 | 25 | -250 | -600 | 2026-11-22 |
 | [hunt-hassaleh-ice-halo-hollow-pilgrim](hunt-hassaleh-ice-halo-hollow-pilgrim.json) | hunt | beyond the border, 9 jumps | hollow_pilgrim at hassaleh_ice_halo; loot sold at Sirius Observatory Station | up to 1 ships, empty hold, standing work | 4 | 24 | -270 | -850 | 2026-11-22 |
+| [hunt-hatysa-vapor-fields-cinder-sylph](hunt-hatysa-vapor-fields-cinder-sylph.json) | hunt | beyond the border, 11 jumps | cinder_sylph at hatysa_vapor_fields; loot sold at Hex Star | up to 3 ships, empty hold, standing work | 1 | 32 | 19,860 | 37,230 | 2026-11-22 |
 | [hunt-hd-10647-ice-field-frost-moth](hunt-hd-10647-ice-field-frost-moth.json) | hunt | beyond the border, 23 jumps | frost_moth at hd_10647_ice_field; loot sold at Factory Belt Manufacturing Hub | up to 1 ships, empty hold, standing work | 6 | 37 | -500 | -730 | 2026-11-22 |
 | [hunt-hd-20794-ice-fields-hollow-pilgrim](hunt-hd-20794-ice-fields-hollow-pilgrim.json) | hunt | beyond the border, 21 jumps | hollow_pilgrim at hd_20794_ice_fields; loot stored at The Anvil Arsenal | up to 1 ships, empty hold, standing work | 2 | 44 | -360 | -500 | 2026-11-22 |
 | [hunt-hollow-light-veil-ray](hunt-hollow-light-veil-ray.json) | hunt | beyond the border, 18 jumps | veil_ray at hollow_light; loot sold at First Step Memorial Station | up to 1 ships, empty hold, standing work | 9 | 35 | -250 | -410 | 2026-11-22 |
@@ -289,6 +291,7 @@ Routes: 335.
 | [hunt-schedar-belt-carapace](hunt-schedar-belt-carapace.json) | hunt | beyond the border, 2 jumps | Belt-grazers and patina-grazers at Schedar Belt (Schedar); creature carapace into storage at Node Beta Industrial Station | up to 1 ships, without piercing_railgun_i, empty hold, standing work | 10 | 38 | -200 | -370 | 2026-11-22 |
 | [hunt-seginus-haze-cinder-sylph](hunt-seginus-haze-cinder-sylph.json) | hunt | beyond the border, 20 jumps | cinder_sylph at seginus_haze; loot sold at The Levy Customs Station | up to 1 ships, empty hold, standing work | 2 | 36 | 0 | 0 | 2026-11-22 |
 | [hunt-shaula-gas-plume-drift-ray](hunt-shaula-gas-plume-drift-ray.json) | hunt | beyond the border, 4 jumps | drift-ray at shaula gas plume; goods into storage at Synchrony Hub | up to 1 ships, without piercing_railgun_i, empty hold, standing work | 14 | 17 | -200 | -630 | 2026-11-22 |
+| [hunt-sidelong-nebula-veil-ray](hunt-sidelong-nebula-veil-ray.json) | hunt | beyond the border, 9 jumps | veil_ray at sidelong_nebula; loot sold at Sirius Observatory Station | up to 3 ships, standing work | TBD | TBD | TBD | TBD | -- |
 | [hunt-silverbend-emission-nebula-cinder-sylph](hunt-silverbend-emission-nebula-cinder-sylph.json) | hunt | beyond the border, 11 jumps | cinder_sylph at silverbend_emission_nebula; loot sold at Hex Star | up to 1 ships, empty hold, standing work | 5 | 36 | 7,830 | 13,200 | 2026-11-22 |
 | [hunt-silverpine-gas-plume-cinder-sylph](hunt-silverpine-gas-plume-cinder-sylph.json) | hunt | beyond the border, 24 jumps | cinder_sylph at silverpine_gas_plume; loot sold at First Step Memorial Station | up to 1 ships, empty hold, standing work | 4 | 52 | -420 | -460 | 2026-11-22 |
 | [hunt-starless-drift-veil-ray](hunt-starless-drift-veil-ray.json) | hunt | beyond the border, 22 jumps | veil_ray at starless_drift; loot sold at First Step Memorial Station | up to 1 ships, empty hold, standing work | 2 | 43 | -360 | -500 | 2026-11-22 |
