@@ -1,0 +1,18 @@
+{
+ "id": "gather-errai-belt-silver",
+ "kind": "mine",
+ "title": "A test: silver ore gathered at Errai Belt into storage at Ramen's Rest, Last Light (two jumps)",
+ "note": "Written by Zero, 2026-11-22 03:45 UTC (orders.log ENT-061, block ZERO: gather what the reserve lacks, beyond our systems; rules F3, F23, F24, F36, F37). Our home iron and copper stand above their max (gather-gsc-0027-spacetime-seep reads full: iron 174,768 of max 108,500, fill.py 03:28 UTC) and the near fields of the short ores read empty, so the class takes its work further out (F23). The reserve is short of 45 silver ore (surplus.py reserve, 03:05 UTC). Errai Belt read 741 silver, 44,461 iron and 100,000 copper (table fields, 2.5 h before 03:20 UTC); min_left 600 closes the route once about 140 silver are taken, three times the need. The road from home passes Kitalpha (7 pirates seen in 24 hours, none in the last 6, data/intel/sightings.jsonl 03:40 UTC): one ship, hold empty on the way out (F3). A test of three results (F37): on one field, one ship three times; stores everything, sells nothing (F24). ",
+ "belt": "errai:errai_belt",
+ "station": "last_light:ramens_rest:ramens_rest",
+ "minutes": 120,
+ "max_ships": 1,
+ "standing": true,
+ "min_left": {
+  "silver_ore": 600
+ },
+ "requires": {
+  "module": "mining_laser_i",
+  "empty_hold": true
+ }
+}

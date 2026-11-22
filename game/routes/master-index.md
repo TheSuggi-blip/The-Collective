@@ -21,17 +21,17 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 | [Paying Routes](index-paying-routes.md) | Work that repeats and whose runs of the last 12 hours measured above zero. | 45 | 9 | 36 | hunt-flintrock-vapor-fields-cinder-sylph: 72,890 cr per ship-hour |
 | [Tests](index-tests.md) | Work that repeats and has no measured figure: new, or no readable run in the last 12 hours. One ship until its first RESULT line is read. | 111 | 34 | 77 | not measured yet |
 | [Fitting](index-fitting.md) | A module bought and fitted: the tool a kind of work needs. | 14 | 10 | 4 | fit-ice-harvester-lhs-1140: -4,320 cr per ship-hour |
-| [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 175 | 49 | 126 | hunt-silverbend-emission-nebula-cinder-sylph: 14,970 cr per ship-hour |
+| [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 181 | 50 | 131 | hunt-silverbend-emission-nebula-cinder-sylph: 14,970 cr per ship-hour |
 | [Measured at a Loss](index-measured-at-a-loss.md) | Work that repeats and whose runs of the last 12 hours measured zero or below. | 73 | 1 | 72 | hunt-dawnbreak-frozen-drift-hollow-pilgrim: 0 cr per ship-hour |
 | [Off](index-off.md) | Written down, not flown. | 41 | 19 | 22 | hunt-violethall-gas-plume-cinder-sylph: 7,760 cr per ship-hour |
-| All | | 501 | 142 | 359 | |
+| All | | 507 | 143 | 364 | |
 
 ## Routes by Zone and Kind
 
 | Zone | Routes | census | circuit | guard | hunt | mine | Farthest system, jumps from home |
 |---|---|---|---|---|---|---|---|
-| home space | 142 | 1 | 114 | 1 | 13 | 13 | 3 |
-| beyond the border | 359 | 17 | 57 | 7 | 198 | 80 | 29 |
+| home space | 143 | 1 | 115 | 1 | 13 | 13 | 3 |
+| beyond the border | 364 | 17 | 57 | 7 | 198 | 85 | 29 |
 
 ## Plans by Role
 
