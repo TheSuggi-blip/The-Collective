@@ -232,7 +232,8 @@ def run_sizes(root, which):
           % (which or "all", docs.num(book.CARD_MAX), docs.num(book.CHAPTER_MAX), docs.num(book.ENTRY_MAX)))
     print("  %-10s %-15s %7s %8s %7s %6s %13s %8s" % ("division", "chapter", "entries", "chars", "cap", "over", "entries over", "largest"))
     for name, chapter, count, chars, cap, over, largest in rows:
-        print("  %-10s %-15s %7d %8s %7s %6s %13d %8s" % (name, chapter, count, docs.num(chars), docs.num(cap), "OVER" if chars > cap else "", over, docs.num(largest)))
+        flag = "OVER" if chars > cap else ("NEAR" if chars >= int(cap * getattr(book, "HIGH_WATERMARK", 0.85)) else "")
+        print("  %-10s %-15s %7d %8s %7s %6s %13d %8s" % (name, chapter, count, docs.num(chars), docs.num(cap), flag, over, docs.num(largest)))
     print("  %d chapters, %d over their cap; %d entries, %d over theirs" % (len(rows), sum(1 for r in rows if r[3] > r[4]), sum(r[2] for r in rows), sum(r[5] for r in rows)))
     return 0
 
@@ -490,24 +491,73 @@ def tidy(root, data, name, dry=False):
     return out
 
 
-def run_tidy(root, data, which, dry):
+def run_tidy(root, data, which, dry, commit=False):
+    dirty_before = set()
+    if commit and not dry:
+        st = subprocess.run(["git", "-C", str(root), "status", "--porcelain", "--", book.FOLDER],
+                            stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        if st.returncode == 0 and st.stdout.strip():
+            for line in st.stdout.splitlines():
+                if line.strip():
+                    dirty_before.add(line.split()[-1])
+    touched = []
     for name in divisions(which):
+        if commit and not dry and any(p.startswith("%s/%s/" % (book.FOLDER, name)) for p in dirty_before):
+            continue
         done = tidy(root, data, name, dry)
         print("TIDY %s | %d retired entries: %d %s (each stands in the store: doc_versions, hive.py guide %s --retired), %d wait for the store's next pass%s"
               % (name, len(done["removed"]) + len(done["waiting"]), len(done["removed"]), "would leave its chapter" if dry else "left its chapter", name,
                  len(done["waiting"]), " (%s)" % done["why"] if done["why"] else ""))
         for chapter, sid, title in done["removed"]:
+            rel = "%s/%s/%s.md" % (book.FOLDER, name, chapter)
+            if rel not in touched:
+                touched.append(rel)
             print("  %s %s.md %s: %s" % ("would remove" if dry else "removed", chapter, sid, title[:70]))
         for chapter, sid, title in done["waiting"]:
             print("  waits  %s.md %s: the store's read copy holds no version with this text yet; tidy again after its next pass" % (chapter, sid))
-    if not dry:
+    if commit and not dry and touched:
+        chk_errors, _w, _c, _e = check(root, "all")
+        if chk_errors:
+            print("HALT tidy --commit: check failed after tidy; not committing")
+            return 1
+        subprocess.run(["git", "-C", str(root), "add", "--"] + touched, check=False)
+        res = subprocess.run(
+            ["git", "-C", str(root), "-c", "user.name=Unity", "-c", "user.email=unity@suggi-workspace.dev",
+             "commit", "-q", "-m", "guidebook: auto-tidy retired entries archived in doc_versions", "--"] + touched,
+            stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
+        )
+        if res.returncode != 0:
+            print("HALT tidy --commit: " + (res.stdout or "").strip()[-200:])
+            return 1
+        print("  committed %d tidied chapter file(s) by path" % len(touched))
+    elif not dry:
         print("  commit the chapters by path under your name; the store keeps every version")
+    return 0
+
+
+def run_drift(root, data, which):
+    import playbook_anchor
+    names = divisions(which)
+    total_near, total_drift = 0, 0
+    for name in names:
+        cur = playbook_anchor.scan_division_curation(root, name, data=data)
+        near = [c for c in cur["chapters"] if c["band"] in ("near", "over")]
+        total_near += len(near)
+        total_drift += len(cur["drift_warnings"])
+        print("DRIFT %s | max %.1f%% of cap | near/over (>=85%%): %s | empirical drift items: %d" % (
+            name, cur["max_pct"],
+            ", ".join("%s.md %.1f%%" % (c["chapter"], c["pct"]) for c in near) or "none",
+            len(cur["drift_warnings"]),
+        ))
+        for w in cur["drift_warnings"]:
+            print("  WARN %s/%s.md `%s` [%s]: %s" % (name, w["chapter"], w["entry"][:50], w["kind"], w["detail"]))
+    print("GUIDE DRIFT | %s | %d chapter(s) >= 85%% cap, %d drift item(s)" % (which or "all", total_near, total_drift))
     return 0
 
 
 def main(argv):
     parser = argparse.ArgumentParser(prog="guide.py", description=__doc__.split("\n")[0], add_help=True)
-    parser.add_argument("verb", choices=("check", "sizes", "split", "tidy"))
+    parser.add_argument("verb", choices=("check", "sizes", "split", "tidy", "drift"))
     parser.add_argument("division", nargs="?", default="all")
     parser.add_argument("--root", default=str(Path(__file__).resolve().parents[1]))
     parser.add_argument("--data", default=DATA)
@@ -515,6 +565,7 @@ def main(argv):
     parser.add_argument("--updated", default=None)
     parser.add_argument("--source", default=None)
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--commit", action="store_true")
     args = parser.parse_args(argv)
     if args.verb == "check":
         return run_check(args.root, args.division)
@@ -522,7 +573,9 @@ def main(argv):
         return run_sizes(args.root, args.division)
     if args.verb == "split":
         return run_split(args.root, args.division, args.git, args.updated, args.dry_run, args.source)
-    return run_tidy(args.root, args.data, args.division, args.dry_run)
+    if args.verb == "drift":
+        return run_drift(args.root, args.data, args.division)
+    return run_tidy(args.root, args.data, args.division, args.dry_run, commit=args.commit)
 
 
 if __name__ == "__main__":

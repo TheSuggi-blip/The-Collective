@@ -668,6 +668,43 @@ def api_docs():
             "governance": [{"path": d["path"], "title": doc_title(d["path"])} for d in doc_list("governance")], "knowledge": knowledge}
 
 
+PLAYBOOKS_CACHE = {"at": 0.0, "data": None}
+
+
+def api_playbooks():
+    """Live Anchor-and-Delta Division Playbooks (cached 30s, strictly read-only): combines real-time read.db ship
+    builds, skill leveling rungs, open needs, and open requests with capped guidebook chapter metrics and drift alerts."""
+    import sys
+    now = time.time()
+    cached = PLAYBOOKS_CACHE.get("data")
+    if cached is not None and now - PLAYBOOKS_CACHE.get("at", 0.0) < 30.0:
+        return cached
+    fleet_dir = str(Path(__file__).resolve().parents[1] / "game" / "fleet")
+    if fleet_dir not in sys.path:
+        sys.path.insert(0, fleet_dir)
+    import guidebook as book
+    import playbook_anchor
+    conn = playbook_anchor.open_ro_db(str(DATA))
+    try:
+        divisions = [
+            playbook_anchor.compute_division_anchor(conn, str(REPO), data=str(DATA), division_name=d, now=now)
+            for d in book.DIVISIONS
+        ]
+    finally:
+        if conn is not None:
+            conn.close()
+    order = ("command", "mining", "trade", "logistics", "military", "intel")
+    divisions.sort(key=lambda x: order.index(x["division"]) if x["division"] in order else 99)
+    out = {
+        "updated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(now)),
+        "caps": {"card": book.CARD_MAX, "chapter": book.CHAPTER_MAX, "entry": book.ENTRY_MAX, "high_watermark_pct": 85},
+        "divisions": divisions,
+    }
+    PLAYBOOKS_CACHE["at"] = now
+    PLAYBOOKS_CACHE["data"] = out
+    return out
+
+
 def doc_list(folder):
     """The Markdown files of one repository folder: path and the title after its first '# '."""
     out = []
@@ -2327,7 +2364,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 "/api/fleet": api_fleet, "/api/ship": lambda: api_ship(arg),
                 "/api/history": lambda: api_history(min(48, max(1, int(arg) if arg.isdigit() else 6))),
                 "/api/income": lambda: api_income(min(48, max(1, int(arg) if arg.isdigit() else 4))),
-                "/api/docs": api_docs, "/api/doc": lambda: api_doc(doc),
+                "/api/docs": api_docs, "/api/doc": lambda: api_doc(doc), "/api/playbooks": api_playbooks,
                 "/api/group": lambda: api_group(after),
                 "/api/faction": lambda: api_faction(arg),
                 "/api/ops": api_ops,

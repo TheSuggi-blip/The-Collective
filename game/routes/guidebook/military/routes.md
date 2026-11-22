@@ -77,12 +77,6 @@ Status: proven. Updated: 2026-11-21. Evidence: table runs (route sell-ember-*, 2
   in 2.4 ship-hours, the fifth with nothing to carry (table runs). The road from Node Beta to First Step
   passes Hollowcrest (a raider pack on record) and was not written.
 
-### Making from own stores, the fallback
-Status: retired. Updated: 2026-11-22. Evidence: orders.log ENT-064, P5; workclass.py sales (craft-* closed to drones and sentinels, 2026-11-22 16:17 UTC).
-
-Under strict classes a craft is Logistics' or Trade's work; the stores go
-to their receivers by `give-drone-stores-*`.
-
 ### Route Templates
 Status: proven. Updated: 2026-11-21. Evidence: game/routes/templates/military.json; game/routes/templates-military.md; the tool plan (templates).
 

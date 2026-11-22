@@ -81,6 +81,7 @@ CARD_MAX = 3000                # characters of card.md's entries: read whole at 
 CHAPTER_MAX = 8000             # characters of the entries of every other chapter
 ENTRY_MAX = 1500               # characters of one entry (its status line and its body); aim at about 1,200
 HEAD_MAX = 300                 # characters a chapter may hold between its title line and its first entry
+HIGH_WATERMARK = 0.85          # soft curation trigger (85% of cap): merge or mark outdated entries retired before overflow
 STATUSES = ("proven", "test", "retired")
 NAMES = {"card": "the Class Card", "ships": "Ships and Fits", "levelling": "Levelling", "routes": "Routes",
          "tests": "Tests", "lessons": "Lessons"}                                # a chapter's title, after its division's name
@@ -294,6 +295,28 @@ def over_lines(name, chapters, most=12):
     return out
 
 
+def near_caps(chapters):
+    """[(chapter, size, cap, pct)] for chapters at >= HIGH_WATERMARK (85%) up to 100% of their cap."""
+    out = []
+    for chapter, rows in chapters.items():
+        cap = cap_of(chapter)
+        size = chapter_chars(rows)
+        if int(cap * HIGH_WATERMARK) <= size <= cap:
+            out.append((chapter, size, cap, round(100.0 * size / cap, 1)))
+    return out
+
+
+def near_lines(name, chapters):
+    """Soft high-watermark curation notice before a chapter hits its hard gate."""
+    found = near_caps(chapters)
+    if not found:
+        return []
+    return [
+        "  NEAR ITS CAP (>= 85%%), %s: curate proactively (merge overlapping rules or mark superseded entries `Status: retired` for hourly tidy): %s"
+        % (name.capitalize(), ", ".join("%s.md %s/%s (%.0f%%)" % (c, num(s), num(cap), pct) for c, s, cap, pct in found))
+    ]
+
+
 def text_of(conn, path, section):
     row = conn.execute("SELECT text FROM docs WHERE path = ? AND section = ?", (path, section)).fetchone()
     return (row[0] if row else "") or ""
@@ -383,9 +406,20 @@ def show_division(conn, root, data, now, name, chapters):
             print("  %-8s %-10s %6s  %-40s %s%s" % (r["status"], r["updated"], num(r["chars"]), r["section"][:40], r["title"][:70], "  OVER" if r["chars"] > ENTRY_MAX else ""))
     for line in over_lines(name, chapters):
         print(line)
+    for line in near_lines(name, chapters):
+        print(line)
     print("=== THE FIGURES OF THE CLASS (computed by the store, stats.py; an entry names the call, never the number)")
     for line in class_figures(conn, root, data, name):
         print(line)
+    try:
+        import playbook_anchor
+        repo_root = str(Path(root).resolve().parent if Path(root).name == "game" else Path(root))
+        anc = playbook_anchor.compute_division_anchor(conn, repo_root, data=data, division_name=name, now=now)
+        print("=== LIVE DIVISION ANCHOR (auto-computed from read.db, catalog & logs; never copy volatile counts into chapters)")
+        for line in playbook_anchor.anchor_lines(anc):
+            print(line)
+    except Exception:
+        pass
     print("  a chapter whole: hive.py guide %s --chapter <name>; a word: --grep <word>; retired entries: --retired; an entry's versions: "
           "hive.py docs %s<chapter>.md --section <id> --history; the gate: python3 -B scripts/guide.py check %s" % (name, path, name))
     return 0
@@ -544,6 +578,19 @@ def briefing(root, data, now, who):
             lines = over_lines(name, found.get(name) or {})
             print("\n".join(lines) if lines else "  every chapter of %s within its cap" % name.capitalize())
             print("  the chapters: hive.py guide %s (the tool docs, view=guide)" % name)
+            for nline in near_lines(name, found.get(name) or {}):
+                print(nline)
+            try:
+                import playbook_anchor
+                repo_root = str(Path(root).resolve().parent if Path(root).name == "game" else Path(root))
+                if len(list((Path(repo_root) / "game" / "routes").glob("*.json"))) >= 5:
+                    cur = playbook_anchor.scan_division_curation(repo_root, name, data=data, now=now)
+                    if cur["drift_warnings"]:
+                        print("  DRIFT CHECK (%d item(s) in %s guidebook -- re-verify or mark Status: retired):" % (len(cur["drift_warnings"]), name))
+                        for w in cur["drift_warnings"][:4]:
+                            print("    %s.md `%s`: %s" % (w["chapter"], w["entry"][:42], w["detail"]))
+            except Exception:
+                pass
             if name != "command":
                 return
             print("=== THE GUIDEBOOKS' CAPS (every chapter or entry over its cap; a division: hive.py guide <division>)")

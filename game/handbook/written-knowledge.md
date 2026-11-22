@@ -28,6 +28,18 @@ history: every version of every section of docs, kept the newest 20 versions of 
 - Every version of rule F8: `SELECT version, sha, datetime(first_seen, 'unixepoch'), datetime(last_seen, 'unixepoch'), LENGTH(text) FROM doc_versions WHERE path = 'governance/rulebook.md' AND section = 'F8' ORDER BY version`
 - Sections that left their file: `SELECT v.path, v.section, MAX(v.title), datetime(MAX(v.last_seen), 'unixepoch') FROM doc_versions v WHERE NOT EXISTS (SELECT 1 FROM docs d WHERE d.path = v.path AND d.section = v.section) GROUP BY v.path, v.section`
 
+## division_playbooks
+
+One live summary row per division combining active ships, Piloting-10+ hull readiness, open/ready needs, and guidebook chapter utilization against caps.
+
+- Kind: view over ships, hull_readiness, ship_skills, need_status, docs
+- Columns: division, ships, flying, ready_t2_pilots, max_piloting, open_needs, ready_needs, guide_chapters, guide_entries, guide_chars, max_chapter_pct
+- Kept: nothing: a view stores no row
+- Refreshed: computed when asked, from its tables
+- All 6 divisions' live fleet readiness, open priorities, and guidebook cap utilization: `SELECT * FROM division_playbooks ORDER BY division`
+- Divisions with chapters near or over the 85% curation watermark: `SELECT division, guide_chapters, guide_entries, guide_chars, max_chapter_pct FROM division_playbooks WHERE max_chapter_pct >= 85.0`
+- Divisions with 100%-stocked priorities ready to execute or mark done: `SELECT division, open_needs, ready_needs FROM division_playbooks WHERE ready_needs > 0`
+
 ## The kinds
 
 What docs.py mirrors into the tables docs and doc_versions (docs.KINDS); the files stay the source.

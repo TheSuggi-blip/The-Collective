@@ -118,7 +118,7 @@ SUBJECTS = (    # (title, the tables and views it holds, in their order); the ca
                      "hull_materials", "skills", "game_releases")),
     ("Supply", ("supply_chains", "supply_status", "stats_supply_hour")),
     ("Statistics", ("stats_time", "stats_refill", "stats_figures")),
-    ("Written knowledge", ("docs", "doc_versions")),
+    ("Written knowledge", ("docs", "doc_versions", "division_playbooks")),
     ("Plans and the door", ("birth_plans",)),
     ("The store itself", ("source", "cursor", "meta")),
 )

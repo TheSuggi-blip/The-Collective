@@ -1290,7 +1290,7 @@ def show_eyes(data, who):
                         parts.append("craft: " + str(crf).split(";")[0][:55])
                     if fee:
                         parts.append("fee: %s cr" % num(fee))
-                    lines.append("    [P%d %5.1f%%] %-22s (%s) -> %s" % (pr or 0, cov or 0.0, str(nid)[:22], div, " | ".join(parts) or "stocked, ready to build"))
+                    lines.append("    [P%d %5.1f%%] %-22s (%s) -> %s" % (pr or 0, cov or 0.0, str(nid)[:22], div, " | ".join(parts) or "READY (100% stocked, nothing short -> execute or close via needs action=done)"))
         if "supply_status" in tables:
             srows = conn.execute(
                 "SELECT chain, item, place, stock, keep, status FROM supply_status "

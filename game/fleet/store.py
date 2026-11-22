@@ -140,6 +140,7 @@ import routes as routefiles                       # noqa: E402  what a run earne
 import docs as writings                           # noqa: E402  the fleet's written knowledge by section: docs, doc_versions
 import supply as supplychains                     # noqa: E402  the supply chains: the reader of game/supply/chains.tsv and the view
 import needs as needbook
+import playbook_anchor
 import comms_guard as commshield                          # noqa: E402  the needs register: the reader of game/needs.tsv, need_status
 import stats                                      # noqa: E402  the fleet's statistics: their tables and the figures computed in the pass
 import retention                                  # noqa: E402  r22: how long the tables once kept for good stay (RETAIN_ENABLED, off)
@@ -1971,6 +1972,9 @@ DESCRIPTIONS.update(stats.DESCRIPTIONS)
 EXAMPLES.update(stats.EXAMPLES)
 DESCRIPTIONS.update(needbook.DESCRIPTIONS)        # the needs register's table and need_status, described where they are made (needs.py)
 EXAMPLES.update(needbook.EXAMPLES)
+SCHEMA += playbook_anchor.SCHEMA                  # division_playbooks (playbook_anchor.py): live fleet/build/need/guidebook summary per division
+DESCRIPTIONS.update(playbook_anchor.DESCRIPTIONS)
+EXAMPLES.update(playbook_anchor.EXAMPLES)
 
 
 def schema(conn):

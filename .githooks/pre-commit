@@ -78,4 +78,37 @@ if git diff --cached --name-only --diff-filter=ACMR | grep -qE '^game/fleet/([^/
     fi
   fi
 fi
+
+# Guidebook gate: any staged change under game/routes/guidebook/ must pass scripts/guide.py check (caps, form, ASCII).
+if git diff --cached --name-only --diff-filter=ACMR | grep -qE '^game/routes/guidebook/'; then
+  if [ -f scripts/guide.py ]; then
+    if ! python3 -B scripts/guide.py check; then
+      echo ""
+      echo "COMMIT BLOCKED: guidebook chapter over cap or malformed (refine/retire entries, then commit again)."
+      exit 1
+    fi
+  fi
+fi
+
+# Needs & reserve gate: any staged change to game/needs.tsv or game/reserve.tsv must pass needs.py check.
+if git diff --cached --name-only --diff-filter=ACMR | grep -qE '^game/(needs|reserve)\.tsv$'; then
+  if [ -f game/fleet/needs.py ]; then
+    if ! python3 -B game/fleet/needs.py check; then
+      echo ""
+      echo "COMMIT BLOCKED: fix game/needs.tsv or game/reserve.tsv via needs.py, then commit again."
+      exit 1
+    fi
+  fi
+fi
+
+# Comms log gate: any staged change to communications/*.log must pass scripts/comms.py check.
+if git diff --cached --name-only --diff-filter=ACMR | grep -qE '^communications/[^/]+\.log$'; then
+  if [ -f scripts/comms.py ]; then
+    if ! python3 -B scripts/comms.py check; then
+      echo ""
+      echo "COMMIT BLOCKED: communications log failed scripts/comms.py check."
+      exit 1
+    fi
+  fi
+fi
 exit 0

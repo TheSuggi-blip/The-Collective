@@ -2139,6 +2139,7 @@ function markdown(text, base, hard) {            // hard: every line is its own 
 }
 let docSub = 'Reports', docAuthor = 'all', docQuery = '', logQuery = '', logAuthor = 'all';
 let DOCSCACHE = { data: null, at: 0 };
+let playbookDiv = 'mining', playbookChap = 'card', PLAYBOOKS = { at: 0, data: null };
 async function docsOf() {
   if (Date.now() - DOCSCACHE.at < 30000 && DOCSCACHE.data) return DOCSCACHE.data;
   try { DOCSCACHE = { data: await get('/api/docs'), at: Date.now() }; } catch (e) { return DOCSCACHE.data; }
@@ -2188,6 +2189,224 @@ function docTitle(path) {                         // a file's short name: govern
   return stem.charAt(0).toUpperCase() + stem.slice(1);
 }
 
+async function playbooksOf(force) {
+  const now = Date.now();
+  if (!force && PLAYBOOKS.data && now - PLAYBOOKS.at < 30000) return PLAYBOOKS.data;
+  try {
+    const res = await get('/api/playbooks');
+    if (res && res.divisions) PLAYBOOKS = { at: now, data: res };
+  } catch (_e) {}
+  return PLAYBOOKS.data;
+}
+
+function renderPlaybooksSubtab(panel, pbData, live) {
+  if (!pbData || !pbData.divisions || !pbData.divisions.length) {
+    panel.append(el('p', 'empty', 'Loading live division playbooks and telemetry anchors...'));
+    return;
+  }
+  const divs = pbData.divisions;
+  const active = divs.find((x) => x.division === playbookDiv) || divs[0];
+  playbookDiv = active.division;
+
+  const dBar = el('div', 'pb-divbar');
+  for (const dv of divs) {
+    const col = DIV[dv.title] || DIV.Command;
+    const isOn = dv.division === active.division;
+    const btn = el('button', 'pb-divpill' + (isOn ? ' on' : ''));
+    btn.type = 'button';
+    if (isOn) { btn.style.borderColor = col; btn.style.boxShadow = 'inset 0 0 0 1px ' + col; }
+    const dot = el('span', 'pb-dot');
+    dot.style.background = col;
+    const warnN = ((dv.curation && dv.curation.near_count) || 0) + ((dv.curation && dv.curation.over_count) || 0) + (((dv.curation && dv.curation.drift_warnings) || []).length);
+    btn.append(
+      dot,
+      el('span', 'pb-dname', dv.title),
+      el('span', 'pb-dmeta', dv.member + ' | ' + fmt((dv.fleet && dv.fleet.ships_total) || 0) + 'sh'),
+      warnN ? el('span', 'pill warn', String(warnN)) : ''
+    );
+    btn.addEventListener('click', () => { playbookDiv = dv.division; playbookChap = 'card'; render(); });
+    dBar.append(btn);
+  }
+  panel.append(dBar);
+
+  const fl = active.fleet || {}, cur = active.curation || {}, caps = pbData.caps || {};
+  const chaps = cur.chapters || [], drifts = cur.drift_warnings || [];
+  const totalChars = chaps.reduce((a, c) => a + (c.chars || 0), 0);
+  const totalEntries = chaps.reduce((a, c) => a + (c.entries || 0), 0);
+  const readyNeeds = (active.open_needs || []).filter((n) => n.ready_to_close).length;
+
+  const banner = el('div', 'icard pb-anchor-head');
+  banner.style.borderLeft = '3px solid ' + (DIV[active.title] || DIV.Command);
+  const bTop = el('div', 'pb-head-row');
+  bTop.append(
+    el('b', null, active.title + ' Division -- Live Ground-Truth Anchor (' + active.member + ')'),
+    el('span', 'pill good', 'Catalog ' + (active.catalog_version || '--')),
+    el('span', 'when', 'Auto-computed ' + stampCet(active.computed_at || ''))
+  );
+  banner.append(
+    bTop,
+    el('p', 'sub', 'Anchor-and-Delta loop: ship builds, skill rungs, open priorities and open requests below update automatically from read.db; curated guidebook chapters stay capped (card ' + fmt(caps.card || 3000) + ', chapter ' + fmt(caps.chapter || 8000) + ', warn >=85%) and archive retired entries into doc_versions.')
+  );
+  panel.append(banner);
+
+  const pKpis = el('div', 'kpis');
+  const pk = (k, v, sub, cls) => { const b = el('div', 'kpi' + (cls ? ' ' + cls : '')); b.append(el('div', 'k', k), el('div', 'v', v)); if (sub) b.append(el('div', 's', sub)); pKpis.append(b); };
+  const hullSummary = (fl.hulls || []).slice(0, 2).map((h) => h.class + ' (T' + h.tier + ') x' + h.count).join(', ') || 'no hulls';
+  pk('Live Fleet & Hulls', fmt(fl.ships_total || 0) + ' ships', (fl.flying || 0) + ' flying, ' + (fl.docked || 0) + ' docked | ' + hullSummary, 'pos');
+  pk('Tier 2+ Readiness', fmt(fl.ready_pilots || 0) + ' ready', 'Piloting avg ' + (fl.avg_piloting != null ? fl.avg_piloting.toFixed(1) : '0') + ' | max ' + fmt(fl.max_piloting || 0), (fl.ready_pilots || 0) > 0 ? 'warn' : '');
+  pk('Open Priorities & Reqs', fmt((active.open_needs || []).length) + ' needs | ' + fmt((active.open_requests || []).length) + ' reqs', readyNeeds ? readyNeeds + ' priority 100% stocked (ready)' : 'live from needs.tsv & requests.log', readyNeeds ? 'pos' : '');
+  pk('Guidebook Cap Health', (cur.max_pct != null ? cur.max_pct.toFixed(0) : '0') + '% peak', fmt(totalEntries) + ' entries (' + fmt(totalChars) + ' chars) | ' + drifts.length + ' drift check(s)', cur.over_count ? 'neg' : (cur.near_count || drifts.length ? 'warn' : 'pos'));
+  panel.append(pKpis);
+
+  const twoCol = el('div', 'pb-grid');
+
+  const buildCard = el('div', 'icard');
+  const es = active.empty_slots || {};
+  buildCard.append(el('h3', null, 'Live Ship Builds & Module Loadouts'), el('p', 'sub', 'Fitted modules across active ships | Empty slots: ' + fmt(es.weapon || 0) + 'W / ' + fmt(es.defense || 0) + 'D / ' + fmt(es.utility || 0) + 'U'));
+  if ((active.ship_builds || []).length) {
+    buildCard.append(fitTable(table(
+      ['Hull', 'Tier', 'Fitted Loadout', 'Ships'],
+      active.ship_builds.map((b) => [b.hull, 'T' + b.tier, b.loadout, fmt(b.ships)]),
+      [3]
+    )));
+  } else {
+    buildCard.append(el('p', 'empty', 'No ships in this division.'));
+  }
+  if ((fl.next_unlocks || []).length) {
+    buildCard.append(el('div', 'pb-subhead', 'Catalog Upgrade Ladder (Tier 1-3)'), fitTable(table(
+      ['Catalog Hull', 'Tier', 'Piloting', 'Hold', 'Slots'],
+      fl.next_unlocks.slice(0, 4).map((u) => [u.name, 'T' + u.tier, 'P' + u.piloting_req, fmt(u.cargo), u.slots]),
+      [2, 3]
+    )));
+  }
+  twoCol.append(buildCard);
+
+  const lvlCard = el('div', 'icard');
+  lvlCard.append(el('h3', null, 'Live Skill Leveling Rungs & XP Velocity'), el('p', 'sub', 'Pilot skill distribution (ship_skills) & empirical 24h XP/ship-h'));
+  if ((active.leveling && active.leveling.skills || []).length) {
+    lvlCard.append(fitTable(table(
+      ['Skill', 'Avg', 'Range', '24h XP/sh-h'],
+      active.leveling.skills.map((s) => [s.name, s.avg.toFixed(1), s.min + '..' + s.max, s.xp_per_ship_h != null ? s.xp_per_ship_h.toFixed(1) : '--']),
+      [1, 3]
+    )));
+  } else {
+    lvlCard.append(el('p', 'empty', 'No skill telemetry recorded yet.'));
+  }
+  if ((active.leveling && active.leveling.top_xp_routes || []).length) {
+    lvlCard.append(el('div', 'pb-subhead', 'Top Empirical Training Routes (24h)'), fitTable(table(
+      ['Route', 'Kind', 'XP/sh-h', '24h cr/h'],
+      active.leveling.top_xp_routes.slice(0, 4).map((r) => [r.route, r.kind, r.xp_per_ship_h.toFixed(1), r.cph_24h != null ? fmt(r.cph_24h) : '--']),
+      [2, 3]
+    )));
+  }
+  twoCol.append(lvlCard);
+  panel.append(twoCol);
+
+  const qGrid = el('div', 'pb-grid');
+  const needCard = el('div', 'icard');
+  needCard.append(el('h3', null, 'Open Division Priorities (needs.tsv)'), el('p', 'sub', 'Auto-reconciled against live stock, facilities & hulls'));
+  if ((active.open_needs || []).length) {
+    needCard.append(fitTable(table(
+      ['Pri', 'Need', 'Target', 'Covered', 'Status / Short'],
+      active.open_needs.slice(0, 8).map((n) => [
+        'P' + n.priority,
+        n.id,
+        n.ref + ' x' + fmt(n.units),
+        n.covered.toFixed(0) + '%',
+        n.ready_to_close ? 'READY (100% stocked)' : (n.short_items || n.craft || (n.fee ? 'fee ' + fmt(n.fee) + ' cr' : 'in progress')).slice(0, 56)
+      ]),
+      [3]
+    )));
+  } else {
+    needCard.append(el('p', 'empty', '0 open material/facility priorities for ' + active.title + '.'));
+  }
+  qGrid.append(needCard);
+
+  const reqCard = el('div', 'icard');
+  reqCard.append(el('h3', null, 'Open Division Requests (requests.log)'), el('p', 'sub', 'Active engineering & coordination requests involving ' + active.member));
+  if ((active.open_requests || []).length) {
+    for (const rq of active.open_requests.slice(0, 6)) {
+      const row = el('div', 'pb-reqrow');
+      row.append(
+        el('span', 'pill ' + (rq.stale_days ? 'bad' : (rq.state === 'ACCEPTED' ? 'good' : 'warn')), rq.ent + ' ' + rq.state + (rq.stale_days ? ' STALE' : '')),
+        el('b', null, ' ' + rq.from + ' -> ' + rq.to + ' '),
+        el('span', 'when', '(' + stampCet(rq.when) + ') '),
+        el('div', 'pb-reqtxt', rq.need)
+      );
+      reqCard.append(row);
+    }
+  } else {
+    reqCard.append(el('p', 'empty', '0 open requests involving ' + active.member + '.'));
+  }
+  qGrid.append(reqCard);
+  panel.append(qGrid);
+
+  const capCard = el('div', 'icard');
+  capCard.append(
+    el('h3', null, 'Capped Guidebook Chapters & Drift Guard (' + chaps.length + ' chapters)'),
+    el('p', 'sub', 'Click any chapter below to inspect its curated tactical entries inline. Chapters >=85% trigger proactive curation; retired entries archive to doc_versions.')
+  );
+  if (drifts.length) {
+    const dBox = el('div', 'pb-driftbox');
+    dBox.append(el('b', null, 'Empirical Drift & Freshness Checks (' + drifts.length + '):'));
+    for (const w of drifts) {
+      dBox.append(el('div', 'pb-driftline', '[' + w.chapter + '.md :: ' + w.entry + '] ' + w.detail));
+    }
+    capCard.append(dBox);
+  }
+
+  const cStrip = el('div', 'pb-chapbar');
+  if (!chaps.some((c) => c.chapter === playbookChap) && chaps.length) playbookChap = chaps[0].chapter;
+  const readerWrap = el('div', 'pb-chapreader');
+
+  const loadChapterInline = async (ch) => {
+    readerWrap.replaceChildren(el('p', 'empty', 'Loading ' + ch.path + '...'));
+    try {
+      const res = await get('/api/doc?path=' + encodeURIComponent(ch.path));
+      if (!live()) return;
+      readerWrap.replaceChildren();
+      const headRow = el('div', 'pb-chaphead');
+      const fullBtn = el('button', 'rf', 'Open Full Reader ->');
+      fullBtn.type = 'button';
+      fullBtn.addEventListener('click', () => openDoc(ch.path));
+      headRow.append(
+        el('b', null, ch.path + ' (' + ch.entries + ' entries, ' + fmt(ch.chars) + ' / ' + fmt(ch.cap) + ' chars, ' + ch.pct.toFixed(1) + '%)'),
+        fullBtn
+      );
+      readerWrap.append(headRow);
+      if (res && res.text) {
+        readerWrap.append(markdown(res.text, ch.path, false));
+      } else {
+        readerWrap.append(el('p', 'empty', (res && res.error) || 'Empty chapter.'));
+      }
+    } catch (_e) {
+      readerWrap.replaceChildren(el('p', 'empty', 'Could not load chapter.'));
+    }
+  };
+
+  for (const ch of chaps) {
+    const isSel = ch.chapter === playbookChap;
+    const cBtn = el('button', 'pb-chappill ' + ch.band + (isSel ? ' on' : ''));
+    cBtn.type = 'button';
+    const fill = el('span', 'pb-meter-fill ' + ch.band);
+    fill.style.width = Math.min(100, Math.max(2, ch.pct)) + '%';
+    const meter = el('span', 'pb-meter');
+    meter.append(fill);
+    cBtn.append(
+      el('span', 'pb-cname', ch.chapter + '.md'),
+      el('span', 'pb-cpct', ch.pct.toFixed(0) + '% (' + ch.entries + ')'),
+      meter
+    );
+    cBtn.addEventListener('click', () => { playbookChap = ch.chapter; render(); });
+    cStrip.append(cBtn);
+  }
+  capCard.append(cStrip, readerWrap);
+  panel.append(capCard);
+
+  const selChap = chaps.find((c) => c.chapter === playbookChap);
+  if (selChap) loadChapterInline(selChap);
+}
+
 async function renderDocs(panel, live) {
   setWide(docView ? 'wide' : 'metrics');
   const d = await docsOf();
@@ -2232,6 +2451,24 @@ async function renderDocs(panel, live) {
       logsJump.type = 'button';
       logsJump.addEventListener('click', () => { docView = null; docSub = 'Logs'; render(); });
       nav.append(prevBtn, nextBtn, logsJump);
+      bar.append(nav);
+    } else if (docView.path.startsWith('game/routes/guidebook/') && d && d.knowledge) {
+      const parts = docView.path.split('/');
+      const gDiv = parts.length >= 5 ? parts[3] : '';
+      const sibs = d.knowledge.filter((k) => gDiv && k.path.startsWith('game/routes/guidebook/' + gDiv + '/'));
+      bar.append(el('span', 'reader-sep'));
+      const pbJump = el('button', 'rf', '<- ' + (gDiv ? gDiv.charAt(0).toUpperCase() + gDiv.slice(1) + ' Playbook' : 'Playbooks'));
+      pbJump.type = 'button';
+      pbJump.addEventListener('click', () => { if (gDiv) playbookDiv = gDiv; docView = null; docSub = 'Playbooks'; render(); });
+      nav.append(pbJump);
+      for (const sb of sibs) {
+        const active = sb.path === docView.path;
+        const chStem = sb.path.split('/').pop().replace(/\.md$/, '');
+        const gb = el('button', 'rf' + (active ? ' on' : ''), chStem);
+        gb.type = 'button';
+        gb.addEventListener('click', () => { if (!active) openDoc(sb.path); });
+        nav.append(gb);
+      }
       bar.append(nav);
     } else if (isGov && d && d.governance) {
       bar.append(el('span', 'reader-sep'));
@@ -2312,6 +2549,7 @@ async function renderDocs(panel, live) {
 
   const subBar = el('div', 'subtabs');
   const tabs = [
+    ['Playbooks', 'Playbooks (6)'],
     ['Reports', 'Briefings (' + reports.length + ')'],
     ['Logs', 'Command Logs (' + logs.length + ')'],
     ['Governance', 'Governance (' + gov.length + ')'],
@@ -2324,6 +2562,13 @@ async function renderDocs(panel, live) {
     subBar.append(b);
   }
   panel.append(subBar);
+
+  if (docSub === 'Playbooks') {
+    const pbData = await playbooksOf(false);
+    if (!live()) return;
+    renderPlaybooksSubtab(panel, pbData, live);
+    return;
+  }
 
   if (docSub === 'Logs') {
     const cards = el('div', 'icards');
