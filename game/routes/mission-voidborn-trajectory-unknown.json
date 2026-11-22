@@ -29,5 +29,12 @@
   {
    "at": "unknown_edge:unknown_edge_waystation:unknown_edge_waystation"
   }
- ]
+ ],
+ "measured": {
+  "date": "2026-11-22",
+  "runs": 2,
+  "minutes": 50,
+  "credits_per_run": 2600,
+  "cph_per_ship": 3100
+ }
 }
