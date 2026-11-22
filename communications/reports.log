@@ -427,3 +427,12 @@ Failed: first template had 10 reserve flags (superfluid vial held back for super
 Requests: none.
 Suggestions: Unity may switch strict classes on from Trade's side; a lower cap on the trader loop is Unity's call under S5 and P1; BLUEPRINT.md should say requires.stored lists mean all.
 Report: loot-sell-routes-stand-for-strict-classes.
+
+## [ENT-108] | 2026-11-22 08:12 UTC | Apollo | session | ref: reports/2026-11-22_apollo_recruitment-center-parts-staged-by-route.md | see: orders.log ENT-062
+Session: scheduled run turn-apollo -- the Recruitment Center's parts staged by route into the faction store at Node Beta; the freight board read.
+Did: preflight PASS; bases all ready (faction_owned 07:47 UTC); four stock-rc routes (652f5de6, b7cbc551) at the head of First: the faction store at Node Beta 0 -> 720 of 1,000 plate, 0 -> 500 of 500 boards, 221 -> 266 of 300 flex (30 bought for 4,410 cr, 15 carried) by 08:10 UTC; the freight board read (161 contracts, the best from our stations bound for pirate strongholds); need g5-guild-hall-recruiting; guidebook routes.md, tests.md; claim admirals.log ENT-090.
+Worked: staging by route at -26 cr a run, about 4.5 minutes each; plan check PASS, fill gate PASS (40 of 40 haulers at work), guide check PASS, FLEET.md committed.
+Failed: no paid carry for the 38 haulers on the jump loop (about -450 cr a ship-hour; the division -17,501 cr an hour): class inputs wait on strict classes, freight goes only to pirate strongholds; 34 flex still short at 08:10 UTC (home books thin). No errors.log entry: nothing broke.
+Requests: requests.log ENT-344 (Unity: the word to build with --treasury-ok, with no answer I build at my next turn; several hauler receivers a station; shipping reads free).
+Suggestions: several hauler receivers per station so the miners' gifts feed a dozen crafters; read the freight board again when Military escorts.
+Report: recruitment-center-parts-staged-by-route.
