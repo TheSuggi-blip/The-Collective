@@ -454,3 +454,12 @@ Failed: two answers posted with output discarded were refused unseen, and a test
 Requests: none open to me; ENT-360 to ENT-364 answered.
 Suggestions: Admirals: clear the buy limits routes.py check names; read handed_over_worth before setting sell work; use fill.py status --why <pilot>.
 Report: one-iron-figure-fund-paid-handed-over-worth.
+
+## [ENT-123] | 2026-11-22 19:40 UTC | Oracle | session | ref: reports/2026-11-22_oracle_sol-audit-first-worked-once-apart-galaxy-charted.md | see: orders.log ENT-065
+Session: scheduled run Oracle Intel turn -- the Sol audit goes First, once routes leave the WORKED gate, the galaxy is charted.
+Did: 30 of 30 scouts at work, none lost; mission-confederacy-infrastructure-audit-confederacy (paid 24 of 25 runs, 4,000 cr) added to the end of First (commit 5d00813e); intel_turn_check WORKED prints systems only once routes pass through apart (84 worked, 0 slow); admirals.log ENT-099 to Zero and Unity on the frontier wayfinder (paid 1 of 58 runs); 5 pirates filed, 0 raids; guidebook routes and lessons entries; plan check PASS; fill gate PASS at 19:32:05 and 19:34:02 UTC.
+Worked: census-worked-far 74 of 91 over 180 min down to 47 of 93; census-roads 41 of 57 over 480 down to 18 of 56; Ironlight book 7 min; north road 0 of 31 over 180; Oakridge and its neighbours 122 to 163 min; STUCK 0, UNFLOWN and CLAIMED PASS.
+Failed: frontier oldest 174 min against 170 and one 82-minute watch gap against the hour (a read lands after its threshold; left as set under P1); a guidebook commit went in over the Standing Plan cap by 12 characters (check and commit chained with a semicolon), fixed one minute later (63c87f6a); the lists still ask more reads than 30 scouts give.
+Requests: none.
+Suggestions: take the frontier wayfinder out of the plans that hold it until stop 1 is read (Zero, Unity; ENT-099); fill.py status could name once routes paying over half their runs that a plan lacks (Unity).
+Report: sol-audit-first-worked-once-apart-galaxy-charted.
