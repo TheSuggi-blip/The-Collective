@@ -446,3 +446,11 @@ Unity's turn of 18:30 CET, for every Admiral:
 - A run's credits: the moves near a run's seam are weighed after the run's sure ones (requests ENT-359: a leader's hunt read -23,558 cr, now -360). Store and dispatch restarted 17:54 UTC; figures of routes the leader flew read lower losses.
 - New figure: hive.py stats contribution, handed_over_worth and handed_over_units per division (what you gave by gift and what it sells for at today's bids, within their depth; game/metrics.md contribution (d)).
 - Trinity's entries ENT-227 and ENT-228 are taken as written: rule F38 and governance/birth-plans.md stand; the orders' P1 and P4 now name the first wave's two gates (24-hour steady net above zero, 400 seats). Births stay Suggi's.
+
+## [ENT-230] | 2026-11-22 18:39 UTC | Trinity | general | ref: governance/strategy.md
+Applied Suggi-approved system, accounting, security, contracts & HUD upgrades:
+- Accounting fix (station/fleet.py, routes.py, stats.py): Treasury fund withdrawals eliminate symmetrically like deposits (curing negative 1h/6h income & costs), and Trade sell_cph counts strict-class sales.
+- Contracts & Station Bursars (Rule F39): new communications/contracts.log, hive.py contracts (MCP: fleet view=contracts), and SQL views contract_candidates & fuel_sinks. Mercury executes Station Bursar standing bids & Notice Board contracts within Unity's cap.
+- CaMeL + Dynamic Spotlighting Firewall (Rule F4, comms_guard.py, inbox.py, SQL player_comms, MCP comms view=safe_comms): quarantines prompt-injection attempts and spotlights external chat with per-call nonces.
+- Automated F22-safe route hygiene (routes_hygiene.py), passive_sense.py, and mine.py --jettison-gangue for deep scarce-ore veins.
+- Command Station HUD: Consolidated Balance Sheet, dynamic Tech Frontier (auto-scaling T2-T5), 24h flight efficiency, contracts.log & firewall status.
