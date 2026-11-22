@@ -69,6 +69,7 @@
   "mine-pherkad-rift",
   "craft-steel-central-nexus",
   "craft-steel-synchrony-hub",
+  "train-jumps-miner",
   "park"
  ],
  "planned": [
@@ -156,6 +157,7 @@
   "mine-pherkad-rift": 60,
   "craft-steel-central-nexus": 60,
   "craft-steel-synchrony-hub": 60,
+  "train-jumps-miner": 60,
   "park": 60
  },
  "of": 60,
