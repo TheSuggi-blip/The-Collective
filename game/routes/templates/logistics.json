@@ -26,10 +26,7 @@
     "craft-steel-logistics-node-beta",
     "craft-steel-logistics-synchrony-hub",
     "craft-steel-logistics-central-nexus",
-    "craft-piping-plate-node-beta",
-    "craft-wiring-logistics-node-beta",
-    "craft-wiring-logistics-experiment",
-    "craft-wiring-logistics-synchrony-hub"
+    "craft-piping-plate-node-beta"
    ],
    "trains": [
     "crafting",

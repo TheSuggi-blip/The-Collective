@@ -48,9 +48,6 @@
   "craft-steel-logistics-synchrony-hub",
   "craft-steel-logistics-central-nexus",
   "craft-piping-plate-node-beta",
-  "craft-wiring-logistics-node-beta",
-  "craft-wiring-logistics-experiment",
-  "craft-wiring-logistics-synchrony-hub",
   "train-jumps-hauler",
   "park"
  ],
@@ -114,9 +111,6 @@
   "craft-steel-logistics-synchrony-hub": 40,
   "craft-steel-logistics-central-nexus": 40,
   "craft-piping-plate-node-beta": 40,
-  "craft-wiring-logistics-node-beta": 40,
-  "craft-wiring-logistics-experiment": 40,
-  "craft-wiring-logistics-synchrony-hub": 40,
   "train-jumps-hauler": 40,
   "park": 40
  },
