@@ -34,7 +34,8 @@ RULES:
     Builder: it holds credits for a buy), a pilot of SKIP_PILOTS, a ship not connected, a ship whose loop fails in a
     fight, a pilot refused for a fight in the last BATTLE_WAIT (`in_battle`: asked again at a later pass), or a pilot
     given or giving in the last COOLDOWN. A gift or a deposit is booked only when the giver's wallet, read again, shows
-    the money gone (SHOW_WAIT); one that does not show is kept unsure (no booking, the pilot on cooldown; a deposit:
+    the money gone (SHOW_WAIT; for a gift also the call's own answer, which carries the giver's wallet after it:
+    answer_shows); one that does not show is kept unsure (no booking, the pilot on cooldown; a deposit:
     none again for UNSURE_HOLD). A refused deposit is tried again at the next pass, never twice in one.
   - A gift left `sent` by a cut pass is settled once, at the start of the next pass of its kind: booked with the time
     it was sent when the receiver's wallet, read after the call, rose by most of it and the giver's did not keep it
@@ -451,6 +452,20 @@ def settle_gifts(data, kind, now, dry=False):
     return waiting, failed
 
 
+def answer_shows(text, pilot, was, credits):
+    """True when the gift's own answer shows the giver's wallet with the credits gone: the game answers a credit gift
+    with the giver's player state (`username`, then `credits`), which the fleet file shows only once the engine read
+    the pilot again (2026-11-22 00:45 UTC: drone-11's 11,168 cr to the leader answered `credits` 50,000 from 61,168,
+    and the gift stood unsure while the engine's copy of a docked pilot was minutes old)."""
+    import re
+    text = str(text or "")
+    name = re.search(r'"username"\s*:\s*"([^"]*)"', text)
+    have = re.search(r'"credits"\s*:\s*(-?\d+)', text[name.end():]) if name else None
+    if not have or name.group(1) != pilot or not isinstance(was, (int, float)) or isinstance(was, bool):
+        return False
+    return int(have.group(1)) <= was - credits * 0.9
+
+
 def keep_for(name, named=None):
     """(keep, sweep_at) by role: traders and command keep KEEP_SHIP (sweep at SWEEP_AT); other working roles keep KEEP_WORK
     (sweep at SWEEP_WORK), keeping every ship at or above top-up donor KEEP while freeing excess cash for the treasury."""
@@ -557,7 +572,7 @@ def sweep(data, now, dry):
                 failed = 1
                 print("HALT: the gift %s -> %s %s cr was refused: %s" % (pilot, leader, format(credits, ","), text))
             continue
-        if shows(data, pilot, was, credits):
+        if (ok and answer_shows(text, pilot, was, credits)) or shows(data, pilot, was, credits):
             book(data, [(pilot, leader, credits)], time.time())
             note(data, "gift", pilot, leader, credits, "booked", text, sent_at=sent)
             print("given: %s -> %s %s cr" % (pilot, leader, format(credits, ",")))

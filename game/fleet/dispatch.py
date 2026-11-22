@@ -298,11 +298,25 @@ def circuit_systems(route):
     return out
 
 
+_PAIRS = {"rows": None, "count": -1, "by": {}}
+
+
+def pairs(rows):
+    """{(route, pilot): [run rows in order]} of one pass's run list, built once per list (the cache holds the list
+    itself, so a new list is never taken for an old one; a list that grew is indexed again)."""
+    if _PAIRS["rows"] is not rows or _PAIRS["count"] != len(rows):
+        by = {}
+        for row in rows:
+            by.setdefault((row.get("route"), row.get("pilot")), []).append(row)
+        _PAIRS.update(rows=rows, count=len(rows), by=by)
+    return _PAIRS["by"]
+
+
 def stalled_reason(rid, route, pilot_name, rows, now):
     """Why (rid, pilot_name) rests after repeated zero-minute loops or non-ask stop_on_failed_buy (requests ENT-317), or None."""
     if route.get("park") or route.get("kind") in ("census", "guard"):
         return None
-    mine = [r for r in rows if r.get("route") == rid and r.get("pilot") == pilot_name]
+    mine = pairs(rows).get((rid, pilot_name)) or []
     if not mine:
         return None
     last = mine[-1]
@@ -582,7 +596,7 @@ def why_not(pilot, rid, route, state):
     if reached:
         return "holds %s already" % reached, None
     if route.get("once"):
-        mine = [r for r in state["rows"] if r.get("route") == rid and r.get("pilot") == pilot["name"]]
+        mine = list(pairs(state["rows"]).get((rid, pilot["name"])) or [])
         if done_once(route, mine):
             return "done once", None
         if waits_once(route, mine, state["now"]):
