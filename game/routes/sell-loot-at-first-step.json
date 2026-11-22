@@ -1,0 +1,62 @@
+{
+ "id": "sell-loot-at-first-step",
+ "kind": "circuit",
+ "title": "Hunt loot stored by Trade's receiver at First Step Memorial Station sold where it lies",
+ "note": "2026-11-22 07:37 UTC (Mercury): orders ENT-062, block MERCURY and P5: a sell route at a station where our hunts hand their loot to Trade's receiver (data/fleet/receivers.json; hunt routes with gift_to trader and sell_at here). With strict classes on the hunt gives every good into the receiver's storage here; this route withdraws what sells and sells it at the floors, then stores what the bids left. Evidence: hunts with sell_at here took 466 verdigris curd and sold 50 for 16,500 cr in 24 h (330 each), sold 23 noble condensate for 15,870; book 2026-11-22 07:33 UTC: no curd bid, noble 690 x 27, superfluid 600 x 50, ember 480 x 7 (the gate keeps the trip home while no curd bid stands). requires.stored sends only a pilot whose own storage here holds 30 verdigris_curd; requires.bid closes it while a book read within the hour shows no verdigris_curd bid at 300. Floors at or near the standing NPC bids, never under a standing bid (F12); goods without a bid above 25 cr (carapace, raw xeno meat, crystallized biogas, fusion pearl, levity bladder) stay stored. Nothing is bought. A test: one ship (F37: three results decide).",
+ "max_ships": 1,
+ "requires": {
+  "stored": {
+   "at": "first_step_memorial_station",
+   "item": "verdigris_curd",
+   "min": 30
+  },
+  "bid": {
+   "item": "verdigris_curd",
+   "base": "first_step_memorial_station",
+   "min_price": 300,
+   "min_qty": 1
+  }
+ },
+ "stops": [
+  {
+   "at": "first_step:first_step_memorial_station:first_step_memorial_station",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "verdigris_curd"
+    },
+    {
+     "item": "noble_condensate"
+    },
+    {
+     "item": "superfluid_vial"
+    },
+    {
+     "item": "ember_gland"
+    }
+   ],
+   "sell": [
+    {
+     "item": "verdigris_curd",
+     "min_price": 300
+    },
+    {
+     "item": "noble_condensate",
+     "min_price": 680
+    },
+    {
+     "item": "superfluid_vial",
+     "min_price": 590
+    },
+    {
+     "item": "ember_gland",
+     "min_price": 4500
+    }
+   ]
+  },
+  {
+   "at": "first_step:first_step_memorial_station:first_step_memorial_station",
+   "store": "all"
+  }
+ ]
+}

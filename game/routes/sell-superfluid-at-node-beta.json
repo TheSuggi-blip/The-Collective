@@ -1,0 +1,55 @@
+{
+ "id": "sell-superfluid-at-node-beta",
+ "kind": "circuit",
+ "title": "Hunt loot stored by Trade's receiver at Node Beta sold where it lies",
+ "note": "2026-11-22 07:37 UTC (Mercury): orders ENT-062, block MERCURY and P5: a sell route at a station where our hunts hand their loot to Trade's receiver (data/fleet/receivers.json; hunt routes with gift_to trader and sell_at here). With strict classes on the hunt gives every good into the receiver's storage here; this route withdraws what sells and sells it at the floors, then stores what the bids left. Evidence: hunts with sell_at here took 32 superfluid vials in 24 h and sold none; book 2026-11-22 07:33 UTC: superfluid 697 x 50 (depth 96). requires.stored sends only a pilot whose own storage here holds 10 superfluid_vial; requires.bid closes it while a book read within the hour shows no superfluid_vial bid at 650. Floors at or near the standing NPC bids, never under a standing bid (F12); goods without a bid above 25 cr (carapace, raw xeno meat, crystallized biogas, fusion pearl, levity bladder) stay stored. Nothing is bought. A test: one ship (F37: three results decide).",
+ "max_ships": 1,
+ "requires": {
+  "stored": {
+   "at": "node_beta_industrial_station",
+   "item": "superfluid_vial",
+   "min": 10
+  },
+  "bid": {
+   "item": "superfluid_vial",
+   "base": "node_beta_industrial_station",
+   "min_price": 650,
+   "min_qty": 1
+  }
+ },
+ "stops": [
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "superfluid_vial"
+    },
+    {
+     "item": "noble_condensate"
+    },
+    {
+     "item": "crystal_melt"
+    }
+   ],
+   "sell": [
+    {
+     "item": "superfluid_vial",
+     "min_price": 650
+    },
+    {
+     "item": "noble_condensate",
+     "min_price": 680
+    },
+    {
+     "item": "crystal_melt",
+     "min_price": 1000
+    }
+   ]
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store": "all"
+  }
+ ]
+}

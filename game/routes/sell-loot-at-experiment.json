@@ -1,0 +1,62 @@
+{
+ "id": "sell-loot-at-experiment",
+ "kind": "circuit",
+ "title": "Hunt loot stored by Trade's receiver at The Experiment sold where it lies",
+ "note": "2026-11-22 07:37 UTC (Mercury): orders ENT-062, block MERCURY and P5: a sell route at a station where our hunts hand their loot to Trade's receiver (data/fleet/receivers.json; hunt routes with gift_to trader and sell_at here). With strict classes on the hunt gives every good into the receiver's storage here; this route withdraws what sells and sells it at the floors, then stores what the bids left. Evidence: hunts with sell_at here took 51 crystal melt and sold 36 for 50,509 cr in 24 h (avg 1,403); book 2026-11-22 07:33 UTC: crystal melt 1,403 x 18 (depth 564), noble 690 x 47, superfluid 600 x 37, nitrogen bladder 31 x 284. requires.stored sends only a pilot whose own storage here holds 5 crystal_melt; requires.bid closes it while a book read within the hour shows no crystal_melt bid at 1000. Floors at or near the standing NPC bids, never under a standing bid (F12); goods without a bid above 25 cr (carapace, raw xeno meat, crystallized biogas, fusion pearl, levity bladder) stay stored. Nothing is bought. A test: one ship (F37: three results decide).",
+ "max_ships": 1,
+ "requires": {
+  "stored": {
+   "at": "the_experiment_research_station",
+   "item": "crystal_melt",
+   "min": 5
+  },
+  "bid": {
+   "item": "crystal_melt",
+   "base": "the_experiment_research_station",
+   "min_price": 1000,
+   "min_qty": 1
+  }
+ },
+ "stops": [
+  {
+   "at": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "crystal_melt"
+    },
+    {
+     "item": "noble_condensate"
+    },
+    {
+     "item": "superfluid_vial"
+    },
+    {
+     "item": "nitrogen_bladder"
+    }
+   ],
+   "sell": [
+    {
+     "item": "crystal_melt",
+     "min_price": 1000
+    },
+    {
+     "item": "noble_condensate",
+     "min_price": 680
+    },
+    {
+     "item": "superfluid_vial",
+     "min_price": 590
+    },
+    {
+     "item": "nitrogen_bladder",
+     "min_price": 25
+    }
+   ]
+  },
+  {
+   "at": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+   "store": "all"
+  }
+ ]
+}

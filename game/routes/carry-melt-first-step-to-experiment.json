@@ -1,0 +1,45 @@
+{
+ "id": "carry-melt-first-step-to-experiment",
+ "kind": "circuit",
+ "title": "Stored crystal_melt carried from first_step_memorial_station to the the_experiment_research_station bid at 1000 cr or more",
+ "note": "2026-11-22 07:37 UTC (Mercury, written by sellgen.py; orders block MERCURY, rule F24). the_experiment_research_station bid 1403 x 18 (book of 2026-11-22T07:34:34Z); the cheapest ask read is 2964 x 4 at the_anvil_arsenal; floor 1000 cr; at first_step_memorial_station 6 units lie there in our storages. A pilot whose own storage at the first station holds the good withdraws up to 40, sells into the bid at the second and stores what the bid left there. requires.bid closes it while a book read within the hour shows that bid gone or under the floor. Nothing is bought; a run into a bid taken on the way costs the hop's fuel. Hunts with sell_at First Step took 138 crystal melt in 24 h and sold none (its bid 54); the gate of 20 makes the 15-jump carry (11 lawless jumps on the shortest road, goods aboard) worth its fuel and its risk; one ship, a test (F3, F37).",
+ "requires": {
+  "stored": {
+   "at": "first_step_memorial_station",
+   "item": "crystal_melt",
+   "min": 20
+  },
+  "bid": {
+   "item": "crystal_melt",
+   "base": "the_experiment_research_station",
+   "min_price": 1000,
+   "min_qty": 1
+  }
+ },
+ "max_ships": 1,
+ "stops": [
+  {
+   "at": "first_step:first_step_memorial_station:first_step_memorial_station",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "crystal_melt",
+     "qty": 40
+    }
+   ]
+  },
+  {
+   "at": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+   "sell": [
+    {
+     "item": "crystal_melt",
+     "min_price": 1000
+    }
+   ]
+  },
+  {
+   "at": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+   "store": "all"
+  }
+ ]
+}
