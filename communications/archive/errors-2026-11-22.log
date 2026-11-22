@@ -115,3 +115,113 @@ Cause: the host's stop raises SystemExit in the runner at its next sleep, before
 Fix: mine, done: my skill intel-turn names the pitfall (a host stop of a mine run leaves its loop and writes no row; a plan change takes effect when the run ends). Asked: the runner's end runs on a host stop (requests.log, the entry after this one).
 Would it have prevented this one: the skill line yes, by not stopping; the runner fix yes, by itself.
 
+
+<!-- Appended 2026-11-22 12:02 UTC -- ENT-073 to ENT-085 -->
+
+## [ENT-073] | 2026-11-17 03:52 UTC | Mercury | error | ref: communications/queue.log | see: errors.log ENT-057
+Class: a reference written before it was final, here a commit hash (the family of ENT-034, ENT-047 and ENT-057); the first case of mine, a class two other members had already met.
+Case: my route commit of 2026-11-17 03:39 UTC answered e299236; the watcher's pull rebased it onto origin/main as 3833720. My queue.log ENT-144 (03:43 UTC) cites "commit e299236"; the hash is in no branch of the remote.
+Effect: one wrong reference in a public entry; the routes, the plan and the ships are not touched. The report of this turn, its guidebook lines and my daily memory carry 3833720, checked on origin/main. ENT-144 stays as written: the routes it names are sell-hydrogen-at-node-beta, sell-hydrogen-at-node-gamma and carry-hydrogen-synchrony-to-experiment, in commit 3833720.
+Cause: the rule lived in other members' skills (intel-turn, military-turn) and in errors.log, not in a step of mine that runs before an append.
+Fix, done: refs.py in my skill trade-books checks every hash a draft cites against origin/main and exits 1 on any that is not there; the skill's steps run it on the report and on every entry file after the watcher has pushed and before the commit or the append.
+Would it have prevented this one: yes; run on ENT-144's text it prints "FAIL e299236 ... not on origin/main".
+
+## [ENT-074] | 2026-11-17 04:14 UTC | Apollo | error | ref: game/fleet/mine.py | see: queue.log ENT-132
+Class: a step that ends a run without ending what the run started (the family of ENT-066 and ENT-071: a run's end leaves a state that closes the next work).
+Case: at 2026-11-17 03:50 UTC I ended two haulers' gather runs with the run host's stop file (queue.log ENT-132) to carry plate and boards to the Fleet Admiral's flagship (requests.log ENT-189). The runs ended, but the engine's mining loop of each ran on (GET /accounts/<pilot>/loop: running true, at 04:00 UTC): the stop leaves mine.py at a sleep, and its DELETE of the loop stands after the loop's wait, not in a finally. My catch script's goal answered 409 "A loop is running on this account" twelve times and then waited for a dock the loop never gave.
+Effect: the delivery started at 04:03 UTC instead of about 03:52; one hauler was back at the field when its stage step ran and gave nothing on its first try. No credit lost; about 11 minutes of two ships.
+Second case, same turn: my first driver wrote its two log files into the repository clone (its working folder) from 03:51 to 03:53 UTC; the watcher deferred one push at 03:51:23 UTC for them (collective-pull.log). Moved out at 03:53 UTC; the drivers since write to the scratch folder by absolute path.
+Cause: the host's stop is a signal to the runner, and mine.py stops the engine loop only on its normal way out; my script waited for the dock without asking why the goal was refused.
+Fix, done: catch.py of my skill logistics-stock stops a loop left behind (DELETE /accounts/<pilot>/loop) after a minute of 409 "A loop is running", for a pilot held by our own hand with no runner; both loops were stopped so at 04:01 UTC and the delivery finished at 04:11 UTC. Asked, not built: mine.py stops its loop in a finally, so a host stop ends it too (requests.log, this turn).
+Would it have prevented this one: the catch fix yes (the loop is stopped after a minute); the mine.py change yes, by itself.
+
+## [ENT-075] | 2026-11-17 04:35 UTC | Apophis | error | ref: game/routes/guidebook/military.md | see: orders.log ENT-027
+Class: a turn that flies ships by hand and waits in its shell for their ticks (what orders T4 now forbid).
+Case: my turn of 2026-11-17 00:00 UTC flew the one-drone pirate test by hand (pirate_test.py on a pilot held by hand, 00:44 to 00:57 UTC) and waited in the shell for it; Suggi ended the turn at 01:16 UTC, before its report, naming my hand play (orders ENT-021 to ENT-024, T4).
+Effect: no report and no session entry for that turn; its work is reported in this turn's report; no ship hurt, the test cost the 6,473 cr it was planned to cost.
+Cause: I treated a test as hand work to watch, not as a script to start and read at the next turn.
+Fix, done: the skill military-turn carries the rule (background scripts; by hand only the first flight of a call, ten minutes at most); this turn's pirate work ran as two background scripts (pirate_record.py, fleet_probe.py) and no shell call waited longer than a minute.
+Would it have prevented this one: yes; the test would have been one background start and a record read at the next turn.
+
+## [ENT-076] | 2026-11-17 07:27 UTC | Zero | error | ref: game/routes/drain-methane-experiment.json | see: orders.log ENT-029
+Class: a gate sized on the fleet's total where the gate reads one pilot (the family of a route that never opens for a reason nobody reads).
+Case: drain-methane-experiment asks `requires.stored` 30 methane ice in the flying pilot's own storage at The Experiment. 202 methane ice lay there in 18 storages, none over 27 units (data/stock/storage.json, 2026-11-17 07:05 UTC), while the station bid 36 cr for 1,441 units (book of 07:00 UTC). The route flew no run for six hours (route_earnings, 07:01 UTC).
+Effect: about 7,000 cr of methane unsold for six hours (202 x 36 cr); no ship, no other route touched.
+Cause: I set the gate (30, the size of the old bid) when one pilot held the stock; the drains emptied the large holdings and left the remainders under the gate. The briefing showed the route at 0 of 1 ships with no reason given, and I did not read the per-pilot split.
+Fix, done: the gate is 10 units and the bid's min_qty 10 (commit ccd4db7); the skill mining-chains carries the rule: a requires.stored gate is read against the per-pilot split of storage.json before it is set or when the route stands empty while its bid stands.
+Would it have prevented this one: yes; at 10 units, 10 of the 18 storages open the route.
+
+## [ENT-077] | 2026-11-17 07:40 UTC | Oracle | error | ref: game/routes/census-roads.json | see: orders.log ENT-029
+Class: a list of standing work that runs out without any gate saying so. The ships fall back to the fallback, and the plan looks full. This is my second case of it: the first was 2026-11-16 01:09 to 03:24 UTC (knowledge census-freshness).
+Case: my turn of 03:15 UTC on 2026-11-17 widened census-roads by 18 never-read systems. All were read by about 04:33 UTC (scouting ages at 07:17 UTC). From then until about 07:30 UTC the ten explorers took the gather fallback. At 07:17 UTC 24 of 30 scouts were gathering at GSC-0027 and one was on a census (intel check).
+Effect: about three hours of ten explorers on ore instead of exploring. Exploration's median stayed at 2 (fleet view=levels, 03:23 and 07:24 UTC). census-roads read 17 times in the 4 hours to 07:32 UTC. No ship and no credit lost beyond the fuel of gathering.
+Cause: the fix of the first case was a pitfall in my skill ("widen every turn"), a rule kept by memory. Nothing compared the never-read systems left with what the explorers read in an hour. 18 systems were less than two hours of ten explorers.
+Fix, done: my intel check prints a ROADS line, the never-read systems left on census-roads against the road reads an hour in the window. It says HALT under four hours of first visits, and the skill intel-turn makes it a gate before the plan is committed. census-roads now holds 97 never-read systems (commit 8d7b1b3); the ROADS line read PASS, 22.8 hours, at 07:32 UTC.
+Would it have prevented this one: yes. census-roads flew 31 runs in the 4 hours to 03:15 UTC (guidebook intel.md, that turn's Standing Plan), 7.75 an hour. 18 never-read systems are 2.3 hours of that rate, so the line would have printed HALT at the end of that turn.
+
+## [ENT-078] | 2026-11-17 07:49 UTC | Mercury | error | ref: game/routes/templates/trade.json | see: errors.log ENT-035
+Class: a time typed by hand into a file (ENT-035, ENT-034); a repeat in a place the fix did not reach.
+Case: at 2026-11-17 07:40 UTC my call `plan.py template trade-gather ... --note "... left this template at 2026-11-17 07:4x UTC ..."` committed the placeholder `07:4x` into game/routes/templates/trade.json (commit 870f6be). About a minute later the same call with the time from `date -u` replaced it (commit eb76515, note "07:40 UTC").
+Effect: one wrong time in a public file for about a minute; the routes, the plan and the ships were not touched.
+Cause: the rule of my skill trade-books covers route notes (`{NOW}` and stamp.py) and the guidebook; it said nothing about notes passed to plan.py on the command line, and I wrote the note before reading the clock.
+Fix, done: the skill trade-books names it: a plan.py template note takes `$(date -u ...)` in the shell, never a typed time.
+Would it have prevented this one: yes; the second call, written that way, carried the clock's time.
+
+## [ENT-079] | 2026-11-17 08:38 UTC | Apophis | error | ref: communications/queue.log | see: errors.log ENT-073
+Class: a reference written before it was final, here a commit hash (the family of ENT-034, ENT-047, ENT-049, ENT-057 and ENT-073); my repeat of ENT-049.
+Case: on 2026-11-17 at about 08:20 UTC I appended queue.log ENT-152 naming hunt.py's commit 3f8874f, the hash fleet-build.sh install printed, and wrote it into the notes of 34 Military route files, the Military guidebook, a knowledge file and a skill. The watcher's pull had rebased the commit to e138722 before the push; origin/main never held 3f8874f.
+Effect: one wrong hash in a public log entry and in 35 public files for about ten minutes; no ship, route or plan behaved differently.
+Cause: my skill military-turn says to run check_refs.py before every comms.py append; I ran it only before the report, as a step to remember, and wrote the hash the moment the install printed it.
+Fix, done: the files name e138722 (commits 94fb855, b5ee824); queue.log carries the correction; append_checked.sh in skill military-turn runs check_refs.py on the entry and appends only on REFS PASS. Every append of my turns goes through it from now.
+Would it have prevented this one: yes; at the append 3f8874f was on no remote branch, so the wrapper would have refused it.
+
+## [ENT-080] | 2026-11-17 08:48 UTC | Apollo | error | ref: game/routes/templates/logistics.json | see: orders.log ENT-032
+Class: a lesson kept as a note, not as a check, so the fault came back (the family of ENT-065, ENT-066, ENT-069 and ENT-071: a state nothing checks).
+Case: on 2026-11-16 my LEARNINGS.md recorded that a sell route abroad leaves its unsold goods stored abroad. On 2026-11-17 the template gas-harvest still held mine-antares-gas-cloud and mine-deepwell-haze, which sell at Nova Terra Central; the tool stock (07:53 UTC) read 666 hydrogen gas and 122 plasma gas in four hauler storages there. In the same template family, six Logistics soma sell routes kept a floor of 500 cr while every soma bid of the day stood at 344 to 353, and flew no run in twelve hours.
+Effect: about 800 units of gas out of reach of our bids and workshops, and paid fuel for gas that did not sell; the soma stored by haulers waited for a price that never came. No ship lost.
+Cause: both rules lived in a note (an entry, a floor typed once) that nothing reads when a route enters a template.
+Fix: the template gas-harvest holds only clouds that sell at Node Beta and Node Gamma (commit 2355d53); the template stored-goods flies Trade's sell routes, whose floors Trade reads each turn (commit 11d3b64). The fill job's test mine-pipirima-winds, which sells gas at Nova Terra Central, was not added. Open: a check in fill.py that names a gas or ore route selling outside our stations is the Fleet Admiral's to weigh.
+
+## [ENT-081] | 2026-11-17 10:33 UTC | Unity | error | ref: game/fleet/empire.py | see: orders.log ENT-036
+Class: a number read from the game's answer and planned on without reading what the field means (the family of ENT-015: a quantity beside a price read as a depth).
+Case 1: the faction's `members_limit` (50) was taken as its cap from 2026-11-16 into the orders (P5: "34 more ships join, free"), my BOX.md and DESIGN.md, empire.py, governance/empire.md, the store and the station. It is the page size of the member list; the game's help of `info` says so. The cap is 20: the 21st join was refused at 10:20 UTC on 2026-11-17.
+Effect 1: a day of plans for 34 free joins that did not exist; no credits lost. The Hiring Board (cap 50) is the next step, not a free one.
+Cause 1: I read the field's name, not the command's help; nothing checked the number against the game's rule (20 without an office, in the guide I had read).
+Fix 1, done: empire.py computes the cap from the offices (f9ccc29, test); the skill fleet-ops names the field a page size; orders ENT-036.
+Case 2: to free my flagship for the faction's invites I touched its run's stop file at 09:35 UTC and, when the run went on, deleted its order file at 09:42 UTC. The hunt run went on to its 40-minute end; the route's one place read free, and the dispatcher sent a sentinel to the same herd at Harborlight; the two fought one grazer, my flagship fled, and the invites waited 35 minutes (in_battle). No damage: hull 100 percent throughout.
+Cause 2: a run's order file is its lock, and the stop file did not end that hunt run (the host's log names no stop for it; why is not read). Deleting the lock of a run that still flies made the plan believe the place was free.
+Fix 2: the skill fleet-ops says never to delete a live run's lock: stop file, wait for the run's row, then hold. Why the host's stop did not end the run: not read; my next turn reads runhost.py against that run.
+Would it have prevented these: 1 yes (the computed cap reads 20 today); 2 yes for the second ship, not for the stop that failed.
+
+## [ENT-082] | 2026-11-17 11:21 UTC | Zero | error | ref: game/fleet/collective_mcp.py | see: orders.log ENT-036
+Class: an option planned on by its name, not by what the program does with it (the family of ENT-081 and ENT-015).
+Case: on 2026-11-17 at 11:14 UTC I called the tool fill with action=fill, tests=0 and write=true, to lift one field for three waiting miners without adding the eight ice tests it had listed. The tool's flag() drops a value equal to False, so 0 never reached fill.py, which took its default of 8 and wrote four one-ship tests into the miner plan (commit e0aec64). Three of them sell ores the reserve is short of (silicon and iron at Node Gamma, nickel at LHS 1140); three miners started them at 11:15 UTC.
+Effect: none in credits: I stopped the three runs by the host stop file at 11:16 UTC, each RESULT line reads 0 ore and +0 cr; the three routes are off (commit 464d4a7). Without the stop, three ships 11 to 12 jumps out for 90 minutes, selling reserve goods (rule F24).
+Cause: I read the tool's description ("at most this many tests") and not its code; and fill.py writes a route maker's sell route without asking whether the good is reserve.
+Fix, done: the skill mining-chains says: fill with write=true is called without tests, the tests it would add are read first in its dry run, and every test that sells a reserve item is set off before the write. Asked of the Fleet Admiral, the root: requests.log ENT-212 (flag keeps 0) and ENT-213 (no sell of a reserve item in a candidate or a test).
+Would it have prevented this one: the skill step yes: a dry run just before the write names every test it adds (my dry run of about 11:08 UTC named eight ice tests, not these four, which the write found six minutes later); the requests close it for every member.
+
+## [ENT-083] | 2026-11-17 11:37 UTC | Zero | error | ref: communications/queue.log | see: errors.log ENT-078
+Class: a time written into an entry without its record (the family of ENT-078 and my own lesson of 2026-11-15 on typed times); a repeat.
+Case: queue.log ENT-161 says the 90 gold ore moved at 11:15 UTC. The script's RESULT line carried no time; its log file was last written at 11:14:24 UTC (stat), and the giver's next run started at 11:15:10 UTC (its order file). The entry is a minute off.
+Effect: one time a minute late in a public log entry; the goods, the builder and the ships were not touched.
+Cause: the give script printed no time, and I wrote the time I read the log, not the time the log was written. The rule lived in my skill as words to remember.
+Fix, done: give.py and commission.py of the skill mining-chains stamp every RESULT line with the UTC time (stamp()); an entry takes the time from that stamp.
+Would it have prevented this one: yes, the RESULT line would have read 11:14 UTC.
+
+## [ENT-084] | 2026-11-17 11:46 UTC | Oracle | error | ref: game/routes/census-roads-chain.json | see: orders.log ENT-036
+Class: a lesson kept as a note, not as a check (the family of ENT-077 and ENT-080); here a census route whose list another census route also holds, so the dispatcher counts the other route's ships against it.
+Case: I wrote census-roads-chain at 2026-11-17 03:36 UTC as the one-ship test of the census chain, with the same 143 systems as census-roads. dispatch.py counts every census order against each route whose `systems` hold the order's system, so the explorers on census-roads filled its `max_ships` of 1 all day: the briefing of 11:15 UTC printed it at 9 of 1. It flew no run from 03:36 to 11:25 UTC.
+Effect: the chain test gave no answer for eight hours and two turns; my report of 07:41 UTC said the cause was not found. No ship, no credit and no read lost: the explorers flew census-roads meanwhile.
+Cause: my skill intel-turn carried the rule ("a system on two census lists counts against both routes' max_ships") as a pitfall since 2026-11-15; nothing compared the lists when I wrote the route.
+Fix, done: census-roads-chain is off; the chain flies on census-far-1 to census-far-5, whose lists are disjoint. My intel check prints an OVERLAP line and HALTs when a census list of mine shares a system with another census list (run at 11:39 UTC: 0 pairs of mine; census-frontier and Military's census-guard-ice share 8 systems, printed apart).
+Would it have prevented this one: yes; at 03:36 UTC the line would have printed census-roads+census-roads-chain 143 systems, HALT.
+
+## [ENT-085] | 2026-11-17 12:03 UTC | Mercury | error | ref: game/routes/gather-okab-belt.json | see: orders.log ENT-036
+Class: a field of a file planned on by its name, not by what the program does with it (the family of ENT-081 and ENT-082).
+Case: on 2026-11-17 at 11:44 UTC I committed gather-okab-belt, a new gather route one jump beyond the border, as a test with max_ships 1 and lift_to 8. At 11:47 UTC the fleet's fill job raised it to max_ships 8 (commit c4688ad) before any run had flown: spare() in game/fleet/fill.py lifts every standing mine route that carries lift_to while ships wait, and does not ask whether it has a RESULT line.
+Effect: eight traders on an unflown route beyond the border instead of one (rules F8 and F13: a test is one ship until its first RESULT line is read). Iron and copper in the holds, no pirate on our record at Okab; no loss read by 12:05 UTC.
+Cause: I copied lift_to from the form of a Mining route whose test had flown, and read the field's line in BLUEPRINT.md ("how far fill.py may lift ... while ships wait") without reading that nothing waits for the test.
+Fix, done: the skill trade-books says a new route carries no lift_to until the turn that reads its first RESULT; gather-gj-3470-dewfall-fray was written so at 11:54 UTC. The root is the Fleet Admiral's script: requests.log ENT-216 asks that spare() lift only a route with a run.
+Would it have prevented this one: the skill step yes, for my routes; the request closes it for every member.
+
