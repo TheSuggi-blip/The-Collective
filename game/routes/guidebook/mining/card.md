@@ -23,8 +23,8 @@ Status: proven. Updated: 2026-11-21. Evidence: table hulls (catalog 0.723.2); co
   gold runs against a Threshold's. For ice: the Rime.
 - Tier 2, Piloting 10: the Resonance Miner (hold 180, 4 utility slots);
   for ice the Hoarfrost.
-- Fit: the laser is the first lever: Mining Laser II (power 12) and III
-  (22) against I (5); one III on test since 2026-11-21 (ships.md).
+- Fit: the laser is the first lever: a Mining Laser III (power 22)
+  mines 2.1x a Laser I (5) on one loop; its fit route since 2026-11-22.
 - Style: a gather shuttle to a station of ours, every field with a
   floor; ice and gas sold only as far as a bid regains; every new field,
   hull or fit first on one ship.

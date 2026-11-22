@@ -21,23 +21,21 @@ Status: proven. Updated: 2026-11-21. Evidence: table hulls (catalog 0.723.2); co
   brings an hour, so the hold is the class's first upgrade.
 
 ### Mining tools and filters
-Status: test. Updated: 2026-11-21. Evidence: catalog 0.732.0 items; docs/guides/miner.md (read 2026-11-21); refit.py booking 2026-11-21 23:22 UTC (data/fleet/onetime.json); one-run tests of 2026-11-16 (data/routes/runs.jsonl).
+Status: proven. Updated: 2026-11-22. Evidence: catalog 0.732.0 items; docs/guides/miner.md (read 2026-11-21); hive.py route gather-gsc-0027-spacetime-seep (the runs with ore, 2026-11-21 22:00 to 2026-11-22 03:00 UTC); route fit-mining-laser-iii-lhs-1140.
 
-- A pull's yield scales with mining power (the guide: Laser II 2.4x I,
-  III 1.8x II). Mining Laser I power 5 (cpu 2, power 5); II 12 (cpu 4,
-  power 8); III 22 (cpu 6, power 12); IV 40 (cpu 10, power 18). Every
-  miner flew Laser I until 2026-11-21. A III fits a Threshold ice miner
-  (cpu 12 of 16, power 24 of 30); one seated miner tests it on the
-  outpost belt against Laser I's 345 ore in 47 minutes. Asks: the tool
-  market, item mining_laser_iii.
+- Laser power: I 5, II 12, III 22, IV 40 (cpu 2, 4, 6, 10). A III fits
+  a Threshold ice miner beside its Ice Harvester. Proven (F37, one ship
+  three times): a III mined 390 ore a seep run of about 49 minutes, the
+  Laser I median 184 over 101 runs: 2.1x the ore and the Mining XP for
+  the same fuel, as the loop's travel stays the same.
+  `fit-mining-laser-iii-lhs-1140` swaps it in (Ironlight Crossroads
+  asks the most; the tool market, item mining_laser_iii).
 - P x F over 20 can lock: under a quarter of capacity a deposit refuses
   the fit below P x 20 / 4 (110 units for a III); 20 or less never locks.
-- Cargo Expander I: +20 hold (cpu 1, power 1); fits a laser miner's
-  free utility slot. Not tried yet.
+- Cargo Expander I: +20 hold (cpu 1, power 1); not tried yet.
 - Ice Harvester I (power 8) ice; Gas Harvester I gas; a laser takes no
   ice. Nitrogen Vent in place of the laser lifted water from 59% to 83%
-  of an ice load (2026-11-16). Ice Harvester II by hand: 1 Ice Harvester
-  I, 2 ceramite plating, 3 liquid nitrogen, 1 power cell; not measured.
+  of an ice load (2026-11-16).
 - Filters take one ore out of the draw: Magnetic Ore Separator (iron),
   Flotation Cell (copper), Electromagnetic Refinery (both); a slot only
   where the rarer ore is wanted.

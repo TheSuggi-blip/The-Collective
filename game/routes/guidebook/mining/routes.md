@@ -1,26 +1,25 @@
 # Mining guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-21. Evidence: the plan file (tool plan, show); fill.py status miner; surplus.py reserve; the runs of each route (hive.py route <id>).
+Status: proven. Updated: 2026-11-22. Evidence: the plan file (tool plan, show); fill.py status miner; surplus.py reserve; workclass.py sales.
 
-Turn of 2026-11-21 23:00 UTC (orders ENT-059). A free miner takes the
-list First (the once missions), its own routes, then the list Then.
+Turn of 2026-11-22 03:00 UTC (orders ENT-061). A free miner takes the
+list First (the Laser III fit, the gifts, the once missions), its own
+routes, then the list Then.
 
 | Route | Ships | For |
 |---|---|---|
-| soma sales and carries, `@ice-sell` | 1 each, on stored goods and a bid | stored goods sold; `gift` to Trade once strict classes are on |
-| `mine-dheneb-cryobelt` | 2 | methane where a bid stands |
-| `gather-gsc-0044-belt-faction` | 10, seated only | iron and copper into faction storage, no fuel |
-| gold, silicon and nickel gathers (Gold Crest, Floodlight, Jadecove) | 6, 8, 3 | each field read empty (20:59 to 22:47 UTC): closed by `min_left` until it grows back |
-| Tiaki nickel, Acubens carbon, Acrux | 1 each | nickel, carbon, lithium |
-| four tests | 1 each | Jishui carbon, GSC-0049 reef, ice sold at Sirius and The Anvil |
-| steel and piping crafts | shared | plate and piping from own stores |
-| Then | shared | iron while the chain iron-ore reads low, the crafts, park |
+| `fit-mining-laser-iii-lhs-1140` | 3 at a time, 20 pilots | the laser |
+| `give-miner-stores-<station>` | off until strict classes | stores to Trade's and Logistics' receivers (P5) |
+| `@ice-sell` mine routes, Dheneb methane | 1 or 2, on a bid | ice; `gift` to Trade with strict classes |
+| `gather-gsc-0044-belt-faction` | 10, seated only | outpost belt, no fuel |
+| short-ore gathers near home | 1 to 6 | closed by `min_left` while empty |
+| tests beyond the border | 1 each | carbon, nickel, quantum fragments, silver, platinum |
+| crafts | shared | plate and piping from own stores |
+| Then | shared | iron seep (closed while iron is above its max), crafts, `train-jumps-miner`, park |
 
-Each limit stays under what its field carries (the briefing's column
-`carries`). What would change it: a field read back above its floor; the
-first RESULT lines of the tests and of Mining Laser III (tests.md); Trade's
-receivers named. Each turn: stalled.py, fill.py status miner, surplus.py reserve.
+What would change it: a field read back above its floor; the tests'
+results (tests.md); strict classes on.
 
 ### Drains and carries of stored goods (kind `circuit`)
 Status: proven. Updated: 2026-11-21. Evidence: drain-methane-experiment and carry-null-matter-synchrony-nexus (hive.py route <id>).
