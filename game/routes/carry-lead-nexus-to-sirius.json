@@ -1,0 +1,51 @@
+{
+ "id": "carry-lead-nexus-to-sirius",
+ "kind": "circuit",
+ "title": "Stored lead ore carried from Central Nexus to Sirius Observatory Station and sold into its bid at 35 cr or more",
+ "note": "2026-11-22 03:59 UTC (Mercury, orders.log ENT-061 block MERCURY and P5: sell routes for what the other divisions give Trade's receivers; Mining gives lead ore to the trader receivers, requests.log ENT-332). No home station bids for lead ore above 5 cr; Sirius Observatory Station bids 40 x 526 (its book read 03:49 UTC, data/market). Road: Central Nexus, Node Alpha, Synchrony, Pherkad, GSC-0041, Antares, Homam, Furud, Nova Terra, Sirius (9 jumps, 3 lawless, no pirate on our record in 24 hours, data/intel/sightings.jsonl). About 2,600 cr a load of 65 before fuel. requires.stored opens it only to a pilot whose own storage holds a load. One ship (rule F37: one buyer, one ship three times).",
+ "max_ships": 1,
+ "requires": {
+  "stored": {
+   "at": "central_nexus",
+   "item": "lead_ore",
+   "min": 30
+  },
+  "bid": {
+   "item": "lead_ore",
+   "base": "sirius_observatory_station",
+   "min_price": 35,
+   "min_qty": 30
+  }
+ },
+ "stops": [
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "lead_ore",
+     "qty": 65
+    }
+   ]
+  },
+  {
+   "at": "sirius:sirius_observatory_station:sirius_observatory_station",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "lead_ore"
+    }
+   ],
+   "sell": [
+    {
+     "item": "lead_ore",
+     "min_price": 35
+    }
+   ]
+  },
+  {
+   "at": "sirius:sirius_observatory_station:sirius_observatory_station",
+   "store": "all"
+  }
+ ]
+}
