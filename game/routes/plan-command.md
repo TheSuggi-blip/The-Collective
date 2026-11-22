@@ -16,7 +16,7 @@ means to do next. What a route earns now is not written here, because it changes
 hour: ask the tool `route` or `routes`, or the database (`hive.py sql`), which carry each
 figure with its age. Up: [master-index.md](master-index.md).
 
-Kept by Unity. Routes: 55. Ships: 6.
+Kept by Unity. Routes: 58. Ships: 6.
 
 | # | Route | Group | Zone | Open to | Ships planned |
 |---|---|---|---|---|---|
@@ -73,5 +73,8 @@ Kept by Unity. Routes: 55. Ships: 6.
 | 51 | [hunt-raysheet-nebula-veil-ray](hunt-raysheet-nebula-veil-ray.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 8 jumps | up to 1 ships, empty hold | all 6 |
 | 52 | [voidborn-network-expansion](voidborn-network-expansion.json) | [Once per Pilot](index-once-per-pilot.md) | home space | once per pilot, up to 20 ships, after the reward First Steps in the Void | all 6 |
 | 53 | [mission-ghosts-in-the-cloud-node](mission-ghosts-in-the-cloud-node.json) | [Once per Pilot](index-once-per-pilot.md) | home space | once per pilot, up to 1 ships | all 6 |
-| 54 | [store-hold-central-nexus](store-hold-central-nexus.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 40 ships, goods aboard, standing work | all 6 |
-| 55 | [park](park.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | the park route | all 6 |
+| 54 | [give-miner-stores-central-nexus](give-miner-stores-central-nexus.json) | [Tests](index-tests.md) | home space | up to 3 ships, with 50 iron_ore stored at central_nexus | all 6 |
+| 55 | [give-miner-stores-node-beta](give-miner-stores-node-beta.json) | [Tests](index-tests.md) | home space | up to 3 ships, with 50 iron_ore stored at node_beta_industrial_station | all 6 |
+| 56 | [give-drone-stores-central-nexus](give-drone-stores-central-nexus.json) | [Tests](index-tests.md) | home space | up to 3 ships, with 20 copper_ore stored at central_nexus | all 6 |
+| 57 | [store-hold-central-nexus](store-hold-central-nexus.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 40 ships, goods aboard, standing work | all 6 |
+| 58 | [park](park.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | the park route | all 6 |

@@ -56,6 +56,9 @@
   "hunt-raysheet-nebula-veil-ray",
   "voidborn-network-expansion",
   "mission-ghosts-in-the-cloud-node",
+  "give-miner-stores-central-nexus",
+  "give-miner-stores-node-beta",
+  "give-drone-stores-central-nexus",
   "store-hold-central-nexus",
   "park"
  ],
@@ -113,6 +116,9 @@
   "hunt-raysheet-nebula-veil-ray": 6,
   "voidborn-network-expansion": 6,
   "mission-ghosts-in-the-cloud-node": 6,
+  "give-miner-stores-central-nexus": 6,
+  "give-miner-stores-node-beta": 6,
+  "give-drone-stores-central-nexus": 6,
   "store-hold-central-nexus": 6,
   "park": 6
  },
