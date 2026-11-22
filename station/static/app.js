@@ -1891,7 +1891,7 @@ function markdown(text, base, hard) {            // hard: every line is its own 
   }
   return out;
 }
-let docSub = 'Reports', docAuthor = 'all', docQuery = '', logQuery = '';
+let docSub = 'Reports', docAuthor = 'all', docQuery = '', logQuery = '', logAuthor = 'all';
 let DOCSCACHE = { data: null, at: 0 };
 async function docsOf() {
   if (Date.now() - DOCSCACHE.at < 30000 && DOCSCACHE.data) return DOCSCACHE.data;
@@ -1899,14 +1899,23 @@ async function docsOf() {
   return DOCSCACHE.data;
 }
 
-function logView(text, cut, base, filterText) {   // an append-only log as entry cards, newest first, with optional instant filter
+function logView(text, cut, base, filterText, authorFilter) {   // an append-only log as entry cards, newest first, with optional instant filter
   const out = el('div', 'entries'), parts = String(text).split(/^(?=## \[ENT-\d+\])/m);
   const entries = parts.filter((p) => p.startsWith('## [ENT-'));
   if (!entries.length) { out.append(markdown(text, base, true)); return out; }
   const q = String(filterText || '').trim().toLowerCase();
-  const matched = q ? entries.filter((raw) => raw.toLowerCase().includes(q)) : entries;
+  const af = String(authorFilter || 'all').toLowerCase();
+  const matched = entries.filter((raw) => {
+    if (af !== 'all') {
+      const nl0 = raw.indexOf('\n'), h0 = (nl0 < 0 ? raw : raw.slice(0, nl0)).replace(/^## /, '').split('|').map((s) => s.trim());
+      const who0 = (h0[2] || '').toLowerCase();
+      if (who0 !== af && !raw.toLowerCase().includes('@' + af)) return false;
+    }
+    if (q && !raw.toLowerCase().includes(q)) return false;
+    return true;
+  });
   if (!matched.length) {
-    out.append(el('p', 'empty', 'No log entry matches "' + filterText + '".'));
+    out.append(el('p', 'empty', 'No log entry matches the active filter.'));
     return out;
   }
   for (const raw of [...matched].reverse()) {
@@ -1940,20 +1949,56 @@ async function renderDocs(panel, live) {
 
   if (docView) {
     const isLog = docView.path.endsWith('.log');
+    const isReport = docView.path.startsWith('reports/');
+    const isGov = docView.path.startsWith('governance/');
     const bar = el('div', 'reader-bar');
-    const backBtn = el('button', 'subtab on', '<- Back to Docs');
+    const backBtn = el('button', 'subtab', '<- Docs');
     backBtn.type = 'button';
     backBtn.addEventListener('click', () => { docView = null; render(); });
     bar.append(backBtn);
+
+    const nav = el('div', 'reader-nav');
     if (isLog && d && d.logs) {
+      bar.append(el('span', 'reader-sep'));
       for (const lg of d.logs) {
         const active = lg.path === docView.path;
-        const lb = el('button', 'rf' + (active ? ' on' : ''), lg.name || docTitle(lg.path));
+        const baseLbl = docTitle(lg.name || lg.path);
+        const lbl = lg.entries != null ? baseLbl + ' (' + fmt(lg.entries) + ')' : baseLbl;
+        const cls = 'rf' + (active ? ' on' : (lg.name === 'errors' && lg.entries > 0 ? ' haswarn' : ''));
+        const lb = el('button', cls, lbl);
         lb.type = 'button';
         lb.addEventListener('click', () => { if (!active) openDoc(lg.path); });
-        bar.append(lb);
+        nav.append(lb);
       }
+      bar.append(nav);
+    } else if (isReport && d && d.reports && d.reports.length) {
+      bar.append(el('span', 'reader-sep'));
+      const idx = d.reports.findIndex((r) => r.path === docView.path);
+      const newer = idx > 0 ? d.reports[idx - 1] : null;
+      const older = idx >= 0 && idx + 1 < d.reports.length ? d.reports[idx + 1] : null;
+      const prevBtn = el('button', 'rf', newer ? '<- Newer (' + (newer.author || '') + ')' : '<- Newest');
+      prevBtn.type = 'button'; prevBtn.disabled = !newer;
+      if (newer) prevBtn.addEventListener('click', () => openDoc(newer.path));
+      const nextBtn = el('button', 'rf', older ? 'Older (' + (older.author || '') + ') ->' : 'Oldest ->');
+      nextBtn.type = 'button'; nextBtn.disabled = !older;
+      if (older) nextBtn.addEventListener('click', () => openDoc(older.path));
+      const logsJump = el('button', 'rf', 'Command Logs');
+      logsJump.type = 'button';
+      logsJump.addEventListener('click', () => { docView = null; docSub = 'Logs'; render(); });
+      nav.append(prevBtn, nextBtn, logsJump);
+      bar.append(nav);
+    } else if (isGov && d && d.governance) {
+      bar.append(el('span', 'reader-sep'));
+      for (const g of d.governance) {
+        const active = g.path === docView.path;
+        const gb = el('button', 'rf' + (active ? ' on' : ''), docTitle(g.path));
+        gb.type = 'button';
+        gb.addEventListener('click', () => { if (!active) openDoc(g.path); });
+        nav.append(gb);
+      }
+      bar.append(nav);
     }
+
     bar.append(el('span', 'rmeta-sub reader-path', docView.path));
     panel.append(bar);
     panel.append(el('h2', null, docView.title || docTitle(docView.path)));
@@ -1962,20 +2007,37 @@ async function renderDocs(panel, live) {
     if (docView.cut) panel.append(el('p', 'sub', isLog ? 'Showing newest entries from log tail.' : 'Showing first section of large file.'));
 
     if (isLog) {
+      const aBar = el('div', 'sortbar');
+      aBar.append(el('span', 'sortlbl', 'Admiral / author:'));
+      const logAuthors = ['all', 'Unity', 'Zero', 'Mercury', 'Apollo', 'Apophis', 'Oracle', 'Trinity'];
+      const wrap = el('div');
+      const redrawLog = () => { wrap.replaceChildren(logView(docView.text, docView.cut, docView.path, logQuery, logAuthor)); };
+      const refreshAuthorPills = () => {
+        for (const ch of aBar.querySelectorAll('button.rf')) {
+          ch.classList.toggle('on', ch.dataset.author === logAuthor);
+        }
+      };
+      for (const a of logAuthors) {
+        const ab = el('button', 'rf' + (logAuthor === a ? ' on' : ''), a === 'all' ? 'All' : a);
+        ab.type = 'button';
+        ab.dataset.author = a;
+        ab.addEventListener('click', () => { logAuthor = a; refreshAuthorPills(); redrawLog(); });
+        aBar.append(ab);
+      }
+      panel.append(aBar);
+
       const sRow = el('div', 'rsearch');
       const inp = el('input');
       inp.type = 'search';
       inp.placeholder = 'Filter log entries by @agent, ENT-#, or keyword...';
       inp.value = logQuery;
-      const clr = el('button', 'rf', 'Clear');
+      const clr = el('button', 'rf', 'Reset');
       clr.type = 'button';
       sRow.append(inp, clr);
       panel.append(sRow);
-      const wrap = el('div');
       panel.append(wrap);
-      const redrawLog = () => { wrap.replaceChildren(logView(docView.text, docView.cut, docView.path, logQuery)); };
       inp.addEventListener('input', () => { logQuery = inp.value; redrawLog(); });
-      clr.addEventListener('click', () => { logQuery = ''; inp.value = ''; redrawLog(); });
+      clr.addEventListener('click', () => { logQuery = ''; logAuthor = 'all'; inp.value = ''; refreshAuthorPills(); redrawLog(); });
       redrawLog();
     } else {
       const card = el('div', 'icard doc-reader-card');
