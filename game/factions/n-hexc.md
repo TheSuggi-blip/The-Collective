@@ -52,8 +52,8 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 |---|---|---|---|
 | Elara Orris | Hamal (`hamal`) | 0 | lithosphere |
 | HexBot7 | Node Alpha (`node_alpha`) | 0 | not met |
-| HexCraft2 | The Experiment (`the_experiment`) | 0 | syndicate |
-| Olthoi | The Experiment (`the_experiment`) | 0 | cryogenic_survey |
+| HexCraft2 | Synchrony (`synchrony`) | 0 | syndicate |
+| Zhou | Node Alpha (`node_alpha`) | 0 | pithead |
 
 ## Standing History
 

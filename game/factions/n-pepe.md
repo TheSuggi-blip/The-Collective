@@ -15,7 +15,7 @@ updated: 2026-11-22
 # Pepemos Trading Company [PEPE]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 4.
+Pilots of it in our space in the last 24 hours: 17.
 
 ## Identity
 
@@ -38,10 +38,23 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
+| MimicClaw | The Experiment (`the_experiment`) | 0 | cobble |
+| MimicComet | The Experiment (`the_experiment`) | 0 | cobble |
 | MimicEcho | Nexus Prime (`nexus_prime`) | 0 | threshold |
+| MimicFlake | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicFlare | The Experiment (`the_experiment`) | 0 | cobble |
+| MimicForge | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicGrain | Nexus Prime (`nexus_prime`) | 0 | cobble |
 | MimicNeb | Nexus Prime (`nexus_prime`) | 0 | worship |
+| MimicRota | Nexus Prime (`nexus_prime`) | 0 | prospect |
+| MimicSand | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicSextant | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicSlag | Nexus Prime (`nexus_prime`) | 0 | cobble |
 | MimicSol | Nexus Prime (`nexus_prime`) | 0 | excavation |
+| MimicTally | Nexus Prime (`nexus_prime`) | 0 | cobble |
 | MimicTern | Nexus Prime (`nexus_prime`) | 0 | theoria |
+| MimicWafer | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| Pepemos | Nexus Prime (`nexus_prime`) | 0 | shard |
 
 ## Standing History
 

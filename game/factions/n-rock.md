@@ -41,7 +41,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Durgan Forgebeard | Synchrony (`synchrony`) | 0 | threshold |
 | Harbek Haulstone | Nexus Prime (`nexus_prime`) | 0 | not met |
 | Ragna Cartwright | The Experiment (`the_experiment`) | 0 | not met |
-| Roland de Tortuga | Nexus Prime (`nexus_prime`) | 0 | residuum |
+| Space Hulk | Nexus Prime (`nexus_prime`) | 0 | shard |
 
 ## Standing History
 

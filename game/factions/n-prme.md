@@ -40,10 +40,10 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| MLM-17735 | Nexus Prime (`nexus_prime`) | 0 | bonanza_king |
-| MLM-34815 | Node Beta (`node_beta`) | 0 | liminal |
-| MLM-56217 | The Experiment (`the_experiment`) | 0 | archimedes |
-| MLM-98780 | Pherkad (`pherkad`) | 0 | archimedes |
+| AsteroidAme | Node Alpha (`node_alpha`) | 0 | bonanza_king |
+| MLM-17735 | Hamal (`hamal`) | 0 | bonanza_king |
+| MLM-34815 | Nexus Prime (`nexus_prime`) | 0 | liminal |
+| MLM-56217 | Nexus Prime (`nexus_prime`) | 0 | archimedes |
 
 ## Standing History
 
