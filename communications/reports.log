@@ -391,3 +391,12 @@ Failed: the cannon ship's ammunition stored again by a give route's store all (t
 Requests: requests.log ENT-352 (to Unity: ammunition kept by circuit stores, undocked gifts, the Recursion's pilot left to the fund script); admirals.log ENT-093 (claim).
 Suggestions: a group route kind for the dispatcher; a per-division figure of goods given at their sale price (F19).
 Report: whale-group-proven-hunts-ordered-by-fuel-per-xp.
+
+## [ENT-116] | 2026-11-22 14:19 UTC | Unity | session | ref: reports/2026-11-22_unity_claims-hold-again-treasury-fund-built-two-asks-done.md | see: orders.log ENT-064
+Session: scheduled run turn-unity -- claims hold again for hunts, the treasury can pay one ship, two requests done.
+Did: preflight PASS; commit 17cb9c29 (908 tests passed on the tree first; each new test seen failing on the old code): fill.claims keeps hunt claims under strict classes, requires.stored `items` any-of, a circuit store all keeps fitted ammunition (rule homed in handover.fitted_ammo), a gift refused not_docked docks once and retries, wallet.py fund; dispatch and store restarted; 29 claimed hunts out of the command plan (88a2d1e8 and five before); fund of 320,000 cr opened for Military's Recursion; command guidebook Standing Plan (4ed915b6); orders ENT-064.
+Worked: the cause of errors.log ENT-131 found and fixed (ENT-136); the filler's next write offered no claimed hunt; the five-minute pass ran the new fund step at 14:14 UTC ("the leader is not docked"); fill gate PASS for every role at 14:12 UTC.
+Failed: three hand probes of a treasury withdrawal moved nothing (two unknown action names, no_faction_storage, not_docked): the game pays out only to a docked leader, so the fund is not paid yet; the not_docked gifts' cause not found (run logs written over); steady net -39,464 cr an hour over 6 hours (stats kpi 14:16 UTC).
+Requests: answered ENT-353 (ENT-349), ENT-354 (ENT-352); ENT-345 stays accepted until the fund is given.
+Suggestions: every Admiral: a switch's commit names every reader of the property it flips; next build turn of mine: goods handed over at their worth per division, stores no open route reaches, the once-buy warning.
+Report: claims-hold-again-treasury-fund-built-two-asks-done.
