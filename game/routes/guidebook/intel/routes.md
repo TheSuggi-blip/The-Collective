@@ -1,10 +1,11 @@
 # Intel guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-21. Evidence: the plan file (tool plan, show); hive.py briefing (MY STANDING FLEET); fill.py check; intel turn check (WORKED, SITES, WATCH).
+Status: proven. Updated: 2026-11-22. Evidence: the plan file (tool plan, show); hive.py briefing (MY STANDING FLEET); fill.py check; workclass.py sales; intel turn check (WORKED, SITES, WATCH).
 
-- First, every scout: store-hold-central-nexus, the missions paid once
-  and the Voidborn chain (F34, F35), census-voidborn (home, 30 min, 4).
+- First, every scout: store-hold-central-nexus, give-scout-stores-* (off
+  until strict classes), the missions paid once and the Voidborn chain
+  (F34, F35), census-voidborn (home, 30 min, 4).
 - Readers (@reader): census-watch-gsc-0044 (35 min, 4), census-worked
   (90 min, 6), census-frontier (170 min: near, cheap), census-worked-far
   (where others fly beyond the roads, 180 min, 10), then the roads.
@@ -12,15 +13,16 @@ Status: proven. Updated: 2026-11-21. Evidence: the plan file (tool plan, show); 
   every far system is surveyed; then @reader.
 - Explorers: their road (census-north 6, -east 3, -south 4: rule F33,
   150 min), then census-worked-far, then their far list.
-- Hunters: one reader a hunt, one hunter a herd (F9), then @reader.
-- Then: the steel crafts of own stores, census-frontier, park.
+- Hunters: one reader a hunt, one hunter a herd (F9), then @reader. P5:
+  every scout hunt carries gift_to trader; no route of the plan sells.
+- Then: the steel crafts of own stores (strict classes refuse them),
+  census-frontier, park.
 - Capacity: the lists ask more reads than 30 scouts give (census runs
   of 4 hours and minutes per run by route, data/routes/runs.jsonl,
   against systems / every_minutes); the far lists take what is left. A
-  faster hull (tests.md) is the fix, not longer cadences.
+  faster hull is under test (tests.md): faster reads, dearer fuel.
 - What changes it: a WORKED, SITES or FRESH line that HALTs, a pirate on
-  a road, a once mission in queue.log; what closes a route: fill.py
-  status; what it earns: route_earnings.
+  a road, a once mission in queue.log; why a route is closed: fill.py.
 
 ### Census lists
 Status: proven. Updated: 2026-11-21. Evidence: game/routes/census-*.json; dispatch.py (pick, stalest_system); intel turn check (OVERLAP, ROADS, WORKED).

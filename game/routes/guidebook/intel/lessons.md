@@ -76,6 +76,20 @@ Status: proven. Updated: 2026-11-21. Evidence: errors.log ENT-034, ENT-047; rule
 - A turn that ended without a report leaves routes no plan names: read
   the ORPHANS line and `git log --author=Oracle` before building a route.
 
+### A census can strand its ship where no station stands
+Status: proven. Updated: 2026-11-22. Evidence: errors.log ENT-121; requests.log ENT-334; data/routes/runs.jsonl (2026-11-22 01:12 to 03:18 UTC).
+
+- A far list holds systems without a station. A read that ends there
+  leaves the ship in space, and a tank short of home keeps it there:
+  every next census is refused for fuel, each run 1.5 minutes long, so
+  the dispatcher's rest for runs under a minute never fires.
+- Read the runs, not only the ages: a pilot with many census rows of 0
+  places and 0 credits in a row is stuck; the ship tool gives its fuel
+  and place. Rescue by hand: hold, the nearest station with fuel by
+  lanes (one whose read lists `refuel`), dock, refuel, release.
+- census.py takes fuel first when the tank is short of the way there
+  and on to fuel (built 2026-11-22; installed once the suite passes).
+
 ### The game's own records answer what no census saw
 Status: proven. Updated: 2026-11-21. Evidence: requests.log ENT-310; admirals.log ENT-077; observations kind raid; https://game.spacemolt.com/api/battles.
 

@@ -50,16 +50,28 @@ Status: test. Updated: 2026-11-21. Evidence: scouting/<system>.json `survey`; wi
   `survey`, faint signatures, deposits) decide the need survey-scanner-i.
 
 ### A tier-1 hull for the scouts
-Status: test. Updated: 2026-11-21. Evidence: catalog table hulls; browse_ships all_stations (scout reading, 2026-11-21); data/routes/runs.jsonl.
+Status: test. Updated: 2026-11-22. Evidence: catalog table hulls; browse_ships all_stations (scout reading, 2026-11-21); data/routes/runs.jsonl (census rows of 12 h, refused runs left out).
 
 - Tier 1 needs no Piloting. Qualia (explorer): speed 3 against the
   Threshold's 1, tank 130, three utility slots, no weapon slot (no
   hunting). Listed at our stations from 35,000 to 49,482 cr.
-- Test: one reader bought one on 2026-11-21 (observe kind hull_test;
-  data/fleet/onetime.json); it flies @reader, census only. Compare its
-  minutes per run with the Threshold's on the same lists (runs.jsonl).
-  Faster reads are the fix for lists that ask more than 30 scouts give.
-  The Qualia carries no module: a scanner scout is never the one moved.
+- One reader flies one since 2026-11-21 (observe kind hull_test), census
+  only. First result (2026-11-22 03:30 UTC, the same lists): fewer
+  minutes a read on census-frontier, -north, -worked and -voidborn, and
+  more credits of fuel a read on every list, on most of them about
+  twice the Threshold's (n of 3 to 10 runs a list: one window).
+- Rule F37: one hull first (F17), two more follow before the verdict.
+  They follow when a second 12-hour window of the first ship holds its
+  fuel a read under 1.5 times the Threshold's; above it the class keeps
+  the Threshold and the cadences carry the shortfall.
+
+### How a scout test gets three results
+Status: proven. Updated: 2026-11-22. Evidence: rule F37; queue.log ENT-203.
+
+- A census list or a runner step: three scouts on it (a read uses no
+  buyer, field or herd), their rows compared with the old ones.
+- A hunt: one herd is shared, so one ship three times (F9).
+- A hull or a module: one first (F17), then two more ships.
 
 ### Visit missions
 Status: test. Updated: 2026-11-21. Evidence: data/fleet/ships/<pilot>.json missions; data/missions/node_beta_industrial_station.json.
