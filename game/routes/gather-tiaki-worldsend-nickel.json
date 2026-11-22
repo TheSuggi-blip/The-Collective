@@ -2,11 +2,11 @@
  "id": "gather-tiaki-worldsend-nickel",
  "kind": "mine",
  "title": "A test: nickel ore gathered at Worldsend Field (Tiaki) into storage at The Crucible Garrison (six jumps)",
- "note": "Written by Zero, 2026-11-21 19:51 UTC (orders.log ENT-056, block ZERO: gather what the reserve lacks, by its levels, in our systems and beyond them; rules F3, F23, F24). Worldsend Field read 2,074 nickel ore of 20,000 at richness 30 (table fields, 2026-11-17 14:19 UTC, before the pause: a read is asked of Intel); the reserve is short of about 16,800 nickel ore (the tool stock, view=reserve, 19:34 UTC). Long Errand Band (gather-jadecove-nickel) carries 3 ships. The nearest station of ours with storage is The Crucible Garrison, six jumps by Diphda, Thuban, Kornephoros, Albireo and The Rampart (table lanes); no pirate observation on that road (observations, 19:55 UTC). Stores everything, sells nothing (rule F24). One ship with an empty hold until its first RESULT line (rule F3).",
+ "note": "Written by Zero, 2026-11-21 19:51 UTC (orders.log ENT-056, block ZERO: gather what the reserve lacks, by its levels, in our systems and beyond them; rules F3, F23, F24). Worldsend Field read 2,074 nickel ore of 20,000 at richness 30 (table fields, 2026-11-17 14:19 UTC, before the pause: a read is asked of Intel); the reserve is short of about 16,800 nickel ore (the tool stock, view=reserve, 19:34 UTC). Long Errand Band (gather-jadecove-nickel) carries 3 ships. The nearest station of ours with storage is The Crucible Garrison, six jumps by Diphda, Thuban, Kornephoros, Albireo and The Rampart (table lanes); no pirate observation on that road (observations, 19:55 UTC). Stores everything, sells nothing (rule F24). One ship with an empty hold until its first RESULT line (rule F3). 2026-11-22 06:31 UTC (fill.py, Unity): max_ships 1 -> 2.",
  "belt": "tiaki:worldsend_field",
  "station": "the_crucible:the_crucible_garrison:the_crucible_garrison",
  "minutes": 90,
- "max_ships": 1,
+ "max_ships": 2,
  "standing": true,
  "min_left": {
   "nickel_ore": 100
