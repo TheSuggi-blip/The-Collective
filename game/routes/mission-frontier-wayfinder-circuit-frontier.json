@@ -46,5 +46,12 @@
  ],
  "skip_if_booked": [
   "Frontier Wayfinder Circuit"
- ]
+ ],
+ "measured": {
+  "date": "2026-11-22",
+  "runs": 1,
+  "minutes": 47,
+  "credits_per_run": 3640,
+  "cph_per_ship": 4640
+ }
 }
