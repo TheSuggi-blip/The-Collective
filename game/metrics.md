@@ -40,6 +40,11 @@ first, then built.
   prints). 72 h and every trend: the minute-weighted mean of whole hours of `stats_money_hour`, each hour the
   collector's `window()` over its own samples. Net per ship-hour = net / mean ships. Holdings at bid = units x best
   bid within its depth (surplus.py).
+- Net of the purse (`purse_per_hour`, the station's headline in the top bar and under Metrics, one window on both):
+  net of everything + the treasury's own flows, i.e. its change between its two readings at the window's ends less
+  the deposits our ships booked between them (rent, buildings it paid, money paid in or out). The fleet is one entity
+  (consolidation): a move between two of its purses is neither income nor cost. Absent until both ends of a window
+  carry a treasury reading (empire.json, carried in each sample since 2026-11-22).
 - Window and n: n = minutes behind a window (1-24 h) or whole hours on record (72 h, trends).
 - Sources: fleet/fleet.json, fleet/history.json, empire.json, stats_money_hour, surplus.py.
 - Follows: throughput accounting (throughput, inventory, operating expense; https://en.wikipedia.org/wiki/Throughput_accounting).

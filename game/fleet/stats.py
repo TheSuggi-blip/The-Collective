@@ -597,7 +597,7 @@ def fleet_windows(data):
 
 
 KPI_KEYS = (("income", "income_per_hour"), ("costs", "costs_per_hour"), ("net", "cph"), ("once", "one_time_per_hour"), ("total", "total_per_hour"),
-            ("per_ship", "cph_per_ship"), ("fuel", "fuel_cr_per_hour"), ("repair", "repair_cr_per_hour"))
+            ("purse", "purse_per_hour"), ("per_ship", "cph_per_ship"), ("fuel", "fuel_cr_per_hour"), ("repair", "repair_cr_per_hour"))
 
 
 def figures_kpi(conn, data, root, now):
@@ -1329,7 +1329,8 @@ def show_kpi(conn, data, now, args):
     print("  %-34s %14s %14s %14s %14s" % ("per hour, last", "1 h", "6 h", "24 h", "72 h"))
     for key, title in (("income", "throughput (income)"), ("costs", "operating expense (costs)"), ("fuel", "  of it fuel (metered)"),
                        ("repair", "  of it repairs (metered)"), ("net", "steady net"), ("once", "paid once (rewards - bought)"),
-                       ("total", "net of everything"), ("per_ship", "net per ship-hour"), ("net_tiled", "steady net, whole hours"),
+                       ("total", "net of everything (wallets)"), ("purse", "net of the purse (+ treasury)"),
+                       ("per_ship", "net per ship-hour"), ("net_tiled", "steady net, whole hours"),
                        ("net_before", "  the window before (trend)")):
         print("  %-34s %14s %14s %14s %14s" % (title, *(cell(fleet.get((key, float(h)))) for h in WINDOWS)))
     print("  %-34s %14s %14s %14s %14s" % ("n (minutes or hours behind)", *(num((fleet.get(("net", float(h))) or (0, 0))[1]) for h in WINDOWS)))

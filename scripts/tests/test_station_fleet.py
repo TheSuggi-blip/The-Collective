@@ -516,6 +516,37 @@ class FleetCollectorTests(unittest.TestCase):
         self.assertEqual(r["wallets"], {"start": 10000, "end": 12300, "left_out": 0})
         self.assertNotIn("unexplained_per_hour", r)                                                 # these samples carry no counter of credits spent
 
+    def test_the_purse_counts_the_treasury_s_own_flows_and_moves_between_purses_cancel(self):
+        # one hour: wallets +1,000 after a 3,000 deposit into the treasury (so the ships made 4,000); the treasury read
+        # 10,000 then 12,500: 3,000 of it our deposit, -500 its own (rent). The whole purse made 3,500 an hour
+        a = [0, 20000, 2, 0, 0, 0, 0, {"Mining": [2, 20000, 0, 0, 0, 0]}, {"t": [10000, 0]}]
+        b = [3600, 21000, 2, 4000, 0, 0, 0, {"Mining": [2, 21000, 4000, 0, 0, 0]}, {"t": [12500, 3600]}]
+        one = [[1800, "miner-1", self.fleet.TREASURY + " (the sweep)", -3000]]
+        r = self.fleet.rates([a, b], 3600, one=one)
+        self.assertEqual((r["total_per_hour"], r["treasury_moved_per_hour"]), (4000, 3000))
+        self.assertEqual((r["treasury_own_per_hour"], r["purse_per_hour"]), (-500, 3500))
+        self.assertEqual(r["treasury"], {"start": 10000, "end": 12500, "read_from": 0, "read_to": 3600, "deposited": 3000, "own": -500})
+        self.assertEqual(r["windows"]["24h"]["purse_per_hour"], 3500)
+
+    def test_without_two_treasury_readings_the_purse_is_not_guessed(self):
+        a = [0, 20000, 2, 0, 0, 0, 0, {"Mining": [2, 20000, 0, 0, 0, 0]}, {"t": [10000, 0]}]
+        b = [3600, 21000, 2, 1000, 0, 0, 0, {"Mining": [2, 21000, 1000, 0, 0, 0]}, {"t": [10000, 0]}]
+        r = self.fleet.rates([a, b], 3600, one=[])
+        self.assertNotIn("purse_per_hour", r)
+        self.assertNotIn("treasury_own_per_hour", r)
+
+    def test_a_sample_carries_the_treasury_s_newest_reading(self):
+        empire = Path(self.temp.name).parent / "empire"
+        state = {"written_at": "2026-11-21T23:00:00Z", "faction": {"treasury": 656122}}
+        with mock.patch.object(self.fleet, "DATA", Path(self.temp.name) / "fleet"):
+            path = Path(self.temp.name) / "empire" / "empire.json"
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(json.dumps(state))
+            self.assertEqual(self.fleet.read_treasury(), [656122, 1795302000])
+            path.write_text("{}")
+            self.assertIsNone(self.fleet.read_treasury())
+        self.assertEqual(self.fleet.sample(60, [], treasury=[5, 1])[8]["t"], [5, 1])
+
     def test_what_the_game_s_own_counters_do_not_explain_is_named(self):
         # one hour: 900 earned and 700 spent by the game's counters, the wallets rose by 150: 50 left without a record (a tax)
         history = [self.at(0, {"Mining": [1, 5000, 0]}, {"Mining": 1000}), self.at(3600, {"Mining": [1, 5150, 900]}, {"Mining": 1700})]

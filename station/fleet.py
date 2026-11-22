@@ -83,6 +83,13 @@ hour at the top level and over 1, 6 and 24 hours under `windows`:
                      transfers_moved_per_hour all the credits the gifts moved and
                      transfers_unpaired_per_hour those of gifts whose record names one
                      side only (left out of every division while ONE_SIDED is off)
+    treasury_own_per_hour  what the faction's treasury changed by an hour besides our deposits (its rent, the
+                     buildings it paid for, money paid out or in): the treasury's newest reading at each end
+                     (empire.json, carried in every sample) less the deposits booked between those readings;
+                     absent until both ends carry a reading of different times; `treasury` {start, end,
+                     read_from, read_to, deposited, own} holds its parts
+    purse_per_hour   total_per_hour + treasury_own_per_hour: the net of everything of the whole purse,
+                     wallets and treasury as one (consolidation: moves between them cancel); the headline
     treasury_moved_per_hour  the credits our pilots deposited into the faction's treasury
                      (onetime.json rows titled TREASURY) whose wallet drop the window
                      read: a move between two purses of ours, taken out of the change of
@@ -499,12 +506,24 @@ def meter(row, prev, meters):
     meters["repair_cr"] += hull_cr
 
 
-def sample(now, rows, meters=None):
+def read_treasury(path=None):
+    """[balance, epoch it was read] of the faction's treasury from empire.json (empire.py collect), or None."""
+    path = path or DATA.parent / "empire" / "empire.json"
+    try:
+        state = json.loads(Path(path).read_text(encoding="utf-8"))
+        money = state["faction"]["treasury"]
+        read = calendar.timegm(time.strptime(str(state["written_at"])[:19], "%Y-%m-%dT%H:%M:%S"))
+    except (OSError, ValueError, KeyError, TypeError):
+        return None
+    return [money, read] if isinstance(money, (int, float)) and not isinstance(money, bool) else None
+
+
+def sample(now, rows, meters=None, treasury=None):
     """One history row: [t, credits, ships, earned, onetime, ore, missions, {division: [...]}, extra].
 
     extra: {"w": [working, parked, adrift], "dw": {division: working}, "s": the game's counter of credits spent,
     "ds": {division: credits spent}} and, with the meters, "m": [fuel units, fuel credits, hull points, repair credits,
-    fuel burned] and "d": the first four per division.
+    fuel burned] and "d": the first four per division; with a treasury reading, "t": [balance, epoch read].
     """
     one = onetime_by_division(now)
     divisions = {}
@@ -526,6 +545,8 @@ def sample(now, rows, meters=None):
     if meters is not None:
         extra["m"] = [meters["fuel_units"], meters["fuel_cr"], meters["hull_points"], meters["repair_cr"], meters["burned"]]
         extra["d"] = {division: list(values) for division, values in meters["div"].items()}
+    if treasury is not None:
+        extra["t"] = list(treasury)
     return [int(now), sum(r["credits"] for r in rows), len(rows), sum(r["earned"] for r in rows), sum(one.values()),
             sum(r["ore_mined"] for r in rows), sum(r["missions_done"] for r in rows), divisions, extra]
 
@@ -1070,6 +1091,14 @@ def window(history, now, seconds, one, gifts=(), seeds=None, presence=(), sides=
                 "transfers_unpaired_per_hour": round(unpaired / hours), "treasury_moved_per_hour": round(treasury / hours),
                 "gifts_unseen": unseen, "gifts_early": early})
     xa, xb = (a[8] if len(a) > 8 else {}), (b[8] if len(b) > 8 else {})
+    ta, tb = xa.get("t"), xb.get("t")
+    if all(isinstance(x, list) and len(x) == 2 and all(isinstance(v, (int, float)) for v in x) for x in (ta, tb)) and tb[1] > ta[1]:
+        landed = sum(abs(num(row[3])) for row in one or () if isinstance(row, list) and len(row) == 4
+                     and isinstance(row[0], (int, float)) and ta[1] < row[0] <= tb[1] and str(row[2]).startswith(TREASURY))
+        own = tb[0] - ta[0] - landed                       # the treasury's own flows: its change less our deposits
+        out["treasury"] = {"start": ta[0], "end": tb[0], "read_from": ta[1], "read_to": tb[1], "deposited": round(landed), "own": round(own)}
+        out["treasury_own_per_hour"] = round(own / ((tb[1] - ta[1]) / 3600))
+        out["purse_per_hour"] = out["total_per_hour"] + out["treasury_own_per_hour"]
     metered = "m" in xa and "m" in xb
     if metered:
         for index, key in enumerate(("fuel_units_per_hour", "fuel_cr_per_hour", "hull_points_per_hour", "repair_cr_per_hour", "fuel_burned_per_hour")):
@@ -1469,7 +1498,7 @@ def collect_once(last):
     for division, d in total["divisions"].items():
         d["crew"] = strength.get(division, {})
     if not history or now - history[-1][0] >= HISTORY_EVERY:
-        history.append(sample(now, rows, METERS))
+        history.append(sample(now, rows, METERS, read_treasury()))
         write(DATA / "history.json", history[-HISTORY_CAP:])
         write(DATA / "meters.json", METERS)
     total["credits_per_ship"] = round(total["credits"] / total["ships"]) if total["ships"] else 0

@@ -852,6 +852,10 @@ function shipState(r) {
 }
 
 function signed(n) { return (n > 0 ? '+' : '') + fmt(n); }
+function purseNet(y) {                         // the net of everything of the whole purse an hour: wallets and treasury as one
+  const total = y.total_per_hour !== undefined ? y.total_per_hour : (y.cph || 0) + (y.one_time_per_hour || 0);   // a fleet file of before 2026-11-17 has no total
+  return y.purse_per_hour !== undefined ? y.purse_per_hour : total;
+}
 function tint(n) { return el('span', n < 0 ? 'neg' : n > 0 ? 'pos' : null, signed(n)); }   // a signed number: green above zero, red below
 function shade(n, cls) {                       // an amount without a sign: income green, a cost red; below zero it cannot be: amber
   const s = el('span', n > 0 ? cls : n < 0 ? 'warn' : null, fmt(n));
@@ -865,16 +869,17 @@ function isWorking(r) { return ['work', 'move', 'wait'].includes(shipState(r)[0]
 function renderMembers() {                       // the top bar: the six members, each with its portrait and its ships; then the fleet
   const box = $('members'), by = new Map();
   box.replaceChildren();
-  const purse = $('purse'), have = F.totals || {}, hour = have.rates && have.rates.windows ? have.rates.windows['1h'] : null;
+  const purse = $('purse'), have = F.totals || {}, hour = have.rates && have.rates.windows ? have.rates.windows[metricWin] : null;   // the Metrics' window: one figure on both
   const treasury = (S && S.holdings && S.holdings.treasury) || 0;   // the faction's treasury, the fleet's main purse (D225)
   purse.replaceChildren(el('div', 'k', 'Credits'), el('div', 'v', have.ships ? fmt((have.credits || 0) + treasury) : '--'));
   if (hour) {                                     // what all wallets changed by per hour over the last hour, everything counted
     const line = el('div', 's');
-    line.append(tint(hour.total_per_hour !== undefined ? hour.total_per_hour : hour.cph + hour.one_time_per_hour), ' /h');
+    line.append(tint(purseNet(hour)), ' /h ', el('span', 'win', WINDOWS[metricWin][0].toLowerCase()));
     purse.append(line);
   }
   purse.title = 'The fleet\'s money: all wallets (' + fmt(have.credits) + ' cr) plus the faction purse (' + fmt(treasury) + ' cr). '
-    + 'Below: what the wallets changed by per hour over the last hour, everything counted: steady money and rewards paid once';
+    + 'Below: the net of everything per hour over the ' + WINDOWS[metricWin][0].toLowerCase() + ' (the window chosen under Metrics): steady money, rewards paid once '
+    + 'and what the treasury itself paid or got; money moved between our own purses cancels. The same figure as Net / h under Metrics';
   F.ships.forEach((r) => { if (!by.has(r.division)) by.set(r.division, []); by.get(r.division).push(r); });
   for (const a of (S ? S.roster : [])) {
     const list = by.get(a.division) || [], c = DIV[a.division] || DIV.Unassigned, b = el('button', 'member');
@@ -1528,11 +1533,13 @@ async function renderMetrics(panel, live) {
   const kpi = (k, v, sub, cls) => { const b = el('div', 'kpi' + (cls ? ' ' + cls : '')); b.append(el('div', 'k', k), el('div', 'v', v)); if (sub) b.append(el('div', 's', sub)); grid.append(b); return b; };
   const tone = (n) => (n < 0 ? ' neg' : n > 0 ? ' pos' : '');
   const whole = (y) => (y.total_per_hour !== undefined ? y.total_per_hour : (y.cph || 0) + (y.one_time_per_hour || 0));   // a fleet file of before 2026-11-17 has no total
-  const net = w ? whole(w) : 0;
-  kpi('Net / h', w ? signed(net) : '--', 'everything: steady money plus paid once', 'main' + (w ? tone(net) : ''));
+  const net = w ? purseNet(w) : 0, own = w && w.treasury_own_per_hour !== undefined;
+  kpi('Net / h', w ? signed(net) : '--', own ? 'everything: steady money, paid once and the treasury\'s own' : 'everything: steady money plus paid once', 'main' + (w ? tone(net) : ''));
   kpi('Steady net / h', w ? signed(w.cph) : '--', 'income minus costs: what repeats', 'main' + (w ? tone(w.cph) : ''));
   kpi('Paid once / h', w ? signed(w.one_time_per_hour) : '--', 'rewards once per pilot, less goods bought for them', w ? tone(w.one_time_per_hour).trim() : '');
   kpi('Net per ship / h', w ? signed(Math.round(net / (t.ships || 1))) : '--', 'everything, per ship', w ? tone(net).trim() : '');
+  kpi('Treasury, own / h', own ? signed(w.treasury_own_per_hour) : '--', own ? 'rent and buildings it paid, less money in besides our deposits' : 'not read at both ends of this stretch yet',
+    own ? tone(w.treasury_own_per_hour).trim() : '');
   kpi('Steady income / h', w ? fmt(w.income_per_hour) : '--', w && w.income_per_hour < 0 ? 'below zero: a fault of the books' : 'sales and repeatable rewards',
     w && w.income_per_hour > 0 ? 'pos' : w && w.income_per_hour < 0 ? 'warn' : '');
   kpi('Running costs / h', w ? fmt(w.costs_per_hour) : '--', w && w.costs_per_hour < 0 ? 'below zero: money came in that no counter names; read the longer stretch' : 'fuel, repairs, goods, modules',
@@ -1556,6 +1563,11 @@ async function renderMetrics(panel, live) {
           + '. No record names the cause; it may be a wallet the engine had not read again after a gift between our ships. Income, costs and net of this stretch may be '
           + 'off by that much; a longer stretch evens it out.');
     }
+    if (w.treasury) {                              // the treasury's own books: its readings, our deposits between them, the rest its own
+      const x = w.treasury;
+      check.append(' The treasury read ' + fmt(x.start) + ' cr at ' + stampOf(x.read_from * 1000) + ' and ' + fmt(x.end) + ' cr at ' + stampOf(x.read_to * 1000)
+        + ': ' + fmt(x.deposited) + ' cr deposited by our ships, ', tint(x.own), ' its own (rent, buildings, money paid out or in).');
+    }
     panel.append(check);
   }
   const b = F.birth;
@@ -1575,9 +1587,10 @@ async function renderMetrics(panel, live) {
       const x = div[d] || {}, y = dw[d] || {}, name = el('span', null, d);
       name.style.color = DIV[d] || DIV.Unassigned; name.title = adm ? 'Admiral ' + adm : '';
       return moneyRow(name, fmt(x.working) + ' / ' + fmt(x.ships), y);
-    }).concat([moneyRow(el('b', null, 'Fleet'), fmt(t.working) + ' / ' + fmt(t.ships), w || {})]), [1, 2, 3, 4, 5, 6])));
+    }).concat(w && w.treasury_own_per_hour !== undefined ? [['Treasury, own', '', '', '', '', '', tint(w.treasury_own_per_hour)]] : [])
+      .concat([moneyRow(el('b', null, 'Fleet'), fmt(t.working) + ' / ' + fmt(t.ships), w || {}).map((cell, i) => (i === 6 && w ? tint(purseNet(w)) : cell))]), [1, 2, 3, 4, 5, 6])));
   panel.append(el('p', 'sub', 'Per hour. Steady net = steady income - running costs. Net = steady net + paid once: what the division\'s wallets changed by, '
-    + 'gifts between our own ships left out.'));
+    + 'gifts between our own ships and deposits into the treasury left out. The fleet\'s net adds the treasury\'s own line: the divisions and the treasury add up to it.'));
   const waves = (F.waves || []).slice().reverse();     // many ships off the game at once: written down by the collector, newest first
   panel.append(el('h3', null, 'Ships off the game'));
   if (waves.length) {
