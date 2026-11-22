@@ -7,6 +7,9 @@
    "routes": [
     "sell-loot-at-krynn",
     "sell-loot-at-dheneb",
+    "sell-loot-at-nexus",
+    "carry-melt-beta-to-nexus",
+    "carry-melt-experiment-to-nexus",
     "sell-ember-node-beta-krynn",
     "sell-ember-nexus-krynn",
     "sell-ember-hexstar-krynn",
@@ -62,7 +65,7 @@
    "trains": [
     "trading"
    ],
-   "note": "Hunt loot at the receivers' stations first (orders ENT-062 P5), then what the gift routes hand the receivers (null matter, lead, curd, soma, plasma, water ice, hydrogen), then the stored surplus of every division"
+   "note": "Hunt loot at the receivers' stations first (orders ENT-063 P5), crystal melt carried to the Central Nexus bid, then what the gift routes hand the receivers (null matter, lead, curd, soma, plasma, water ice, hydrogen), then the stored surplus of every division"
   },
   "trade-craft": {
    "title": "Make from the pilot's own stores where they lie: copper piping, steel plate, then copper wiring",
