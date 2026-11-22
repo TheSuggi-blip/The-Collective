@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 139.
+Routes: 143.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -55,6 +55,8 @@ Routes: 139.
 | [hunt-gsc-veil-ray](hunt-gsc-veil-ray.json) | hunt | home space | Veil-rays at GSC-0027 Prism Scatter; verdigris curd sold at Central Nexus | up to 1 ships, without piercing_railgun_i, standing work | 4 | 31 | -150 | -280 | 2026-11-21 |
 | [hunt-hamal-veil-ray](hunt-hamal-veil-ray.json) | hunt | home space | Veil-rays at Hamal Crystal Bloom; verdigris curd sold at Central Nexus | up to 1 ships, without piercing_railgun_i, standing work | TBD | TBD | TBD | TBD | -- |
 | [hunt-home-drift-ray](hunt-home-drift-ray.json) | hunt | home space | Drift-rays at Stellar Siphon in Nexus Prime; goods sold or stored at Central Nexus | up to 1 ships, standing work | 8 | 11 | -100 | -420 | 2026-11-21 |
+| [hunt-test-acubens-bulwark-pc2](hunt-test-acubens-bulwark-pc2.json) | hunt | home space | Weapon test: bulwark (95 hull) at acubens_shadow_pocket with a Plasma Cannon II; loot stored at Central Nexus | up to 1 ships, needs plasma_cannon_ii, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
+| [hunt-test-acubens-bulwark-pl3](hunt-test-acubens-bulwark-pl3.json) | hunt | home space | Weapon test: bulwark (95 hull) at acubens_shadow_pocket with a Pulse Laser III; loot stored at Central Nexus | up to 1 ships, needs pulse_laser_iii, empty hold, standing work | 2 | 20 | -200 | -620 | 2026-11-21 |
 | [gather-acubens-belt-carbon](gather-acubens-belt-carbon.json) | mine | home space | Standing work: carbon ore at Acubens Belt into storage at Node Beta (the faction's circuit boards) | up to 1 ships, needs mining_laser_i, empty hold, standing work | 13 | 50 | -210 | -260 | 2026-11-17 |
 | [gather-gsc-0027-prism-scatter](gather-gsc-0027-prism-scatter.json) | mine | home space | Standing work: iron and copper at GSC-0027 Prism Scatter into storage at Node Beta (S6) | up to 66 ships, needs mining_laser_i, standing work | TBD | TBD | TBD | TBD | -- |
 | [gather-gsc-0027-spacetime-seep](gather-gsc-0027-spacetime-seep.json) | mine | home space | Standing work: iron at GSC-0027 Spacetime Seep into storage at Node Beta (S6) | up to 50 ships, standing work | 46 | 50 | -190 | -230 | 2026-11-21 |
@@ -136,7 +138,9 @@ Routes: 139.
 | [hunt-schedar-belt-carapace](hunt-schedar-belt-carapace.json) | hunt | beyond the border, 2 jumps | Belt-grazers and patina-grazers at Schedar Belt (Schedar); creature carapace into storage at Node Beta Industrial Station | up to 1 ships, without piercing_railgun_i, empty hold, standing work | 5 | 45 | -90 | -130 | 2026-11-21 |
 | [hunt-shaula-gas-plume-drift-ray](hunt-shaula-gas-plume-drift-ray.json) | hunt | beyond the border, 4 jumps | drift-ray at shaula gas plume; goods into storage at Synchrony Hub | up to 1 ships, without piercing_railgun_i, empty hold, standing work | 8 | 15 | -80 | -370 | 2026-11-17 |
 | [hunt-test-bluerift-frost-ring-rime-grazer](hunt-test-bluerift-frost-ring-rime-grazer.json) | hunt | beyond the border, 7 jumps | rime-grazer, pressblister at bluerift frost ring; goods into storage at The Experiment Research Station | up to 1 ships, without piercing_railgun_i, empty hold, standing work | 5 | 21 | -140 | -360 | 2026-11-21 |
+| [hunt-test-gsc-0035-belt-b-slag-tortoise-pl3](hunt-test-gsc-0035-belt-b-slag-tortoise-pl3.json) | hunt | beyond the border, 20 jumps | Weapon test: slag tortoise with a Pulse Laser III at gsc_0035_belt_b; loot stored | up to 1 ships, needs pulse_laser_iii, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [hunt-test-homam-frost-moth](hunt-test-homam-frost-moth.json) | hunt | beyond the border, 6 jumps | Yield test: frost_moth at homam_cryobelt (lawless); what a kill drops and whether a bid takes it | up to 1 ships, empty hold, standing work | 1 | 16 | -270 | -990 | 2026-11-21 |
+| [hunt-test-keid-ice-shelf-deuteron-slug-pl3](hunt-test-keid-ice-shelf-deuteron-slug-pl3.json) | hunt | beyond the border, 5 jumps | Weapon test: deuteron slug with a Pulse Laser III at keid_ice_shelf; loot stored | up to 1 ships, needs pulse_laser_iii, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [hunt-titawin-gas-cloud-chlorophage](hunt-titawin-gas-cloud-chlorophage.json) | hunt | beyond the border, 12 jumps | chlorophage at titawin_gas_cloud; loot sold at Hex Star | up to 1 ships, empty hold, standing work | 2 | 29 | -310 | -630 | 2026-11-21 |
 | [gather-achernar-belt](gather-achernar-belt.json) | mine | beyond the border, 4 jumps | Standing work, a test: iron at Achernar Belt (beyond the border, one jump from The Experiment) into storage at The Experiment | up to 16 ships, needs mining_laser_i, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [gather-acrux-belt-faction](gather-acrux-belt-faction.json) | mine | beyond the border, 7 jumps | A test: ore gathered at Acrux Belt (lithium, iron, copper) into the faction's storage at our outpost CLTV Outpost GSC-0044 (one jump); members of the faction only | up to 1 ships, needs mining_laser_i, empty hold, standing work | 4 | 47 | 0 | 0 | 2026-11-21 |

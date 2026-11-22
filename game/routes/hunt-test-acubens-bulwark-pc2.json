@@ -2,7 +2,7 @@
  "id": "hunt-test-acubens-bulwark-pc2",
  "kind": "hunt",
  "title": "Weapon test: bulwark (95 hull) at acubens_shadow_pocket with a Plasma Cannon II; loot stored at Central Nexus",
- "note": "2026-11-22 00:33 UTC (Apophis): the thermal twin of hunt-test-acubens-bulwark-pl3 (same prey, same place): kills an hour and the lowest hull against the Pulse Laser III, before the division fit is named (fit-plasma-cannon-ii-krynn). Policed space (Acubens, police 55). Every good is stored (min_bid 5000); gift_to trader for strict classes (queue.log ENT-200, ENT-201).",
+ "note": "2026-11-22 00:33 UTC (Apophis): the thermal twin of hunt-test-acubens-bulwark-pl3 (same prey, same place): kills an hour and the lowest hull against the Pulse Laser III, before the division fit is named (fit-plasma-cannon-ii-krynn). Policed space (Acubens, police 55). Every good is stored (min_bid 5000); gift_to trader for strict classes (queue.log ENT-200, ENT-201). 2026-11-22 00:41 UTC (Apophis): standing (rule F22: class-skill work never rests for its pay; a test that stores every good reads only its fuel).",
  "place": "acubens:acubens_shadow_pocket",
  "species": [
   "bulwark"
@@ -18,5 +18,6 @@
   "module": "plasma_cannon_ii",
   "empty_hold": true
  },
- "gift_to": "trader"
+ "gift_to": "trader",
+ "standing": true
 }

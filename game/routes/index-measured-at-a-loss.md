@@ -12,12 +12,11 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 96.
+Routes: 95.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
 | [carry-soma-beta-to-gamma](carry-soma-beta-to-gamma.json) | circuit | home space | Stored neural soma carried from Node Beta to the Node Gamma bid at 350 cr or more | up to 1 ships, with 1 voidborn_neural_soma stored at node_beta_industrial_station, while node_gamma_relay_station bids 320 cr for voidborn_neural_soma | 1 | 10 | -80 | -450 | 2026-11-21 |
-| [hunt-test-acubens-bulwark-pl3](hunt-test-acubens-bulwark-pl3.json) | hunt | home space | Weapon test: bulwark (95 hull) at acubens_shadow_pocket with a Pulse Laser III; loot stored at Central Nexus | up to 1 ships, needs pulse_laser_iii, empty hold | 2 | 20 | -200 | -620 | 2026-11-21 |
 | [sell-melt-node-beta-sirius](sell-melt-node-beta-sirius.json) | circuit | beyond the border, 9 jumps | Stored crystal melt carried from Node Beta to the Sirius Observatory bid | up to 1 ships, with 2 crystal_melt stored at node_beta_industrial_station, while sirius_observatory_station bids 1000 cr for crystal_melt | 1 | 12 | -190 | -940 | 2026-11-21 |
 | [hunt-achernar-frost-ring-hollow-pilgrim](hunt-achernar-frost-ring-hollow-pilgrim.json) | hunt | beyond the border, 9 jumps | hollow_pilgrim at achernar_frost_ring; loot sold at Sirius Observatory Station | up to 1 ships, empty hold | 2 | 13 | -240 | -1,090 | 2026-11-17 |
 | [hunt-aftermath-haze-veil-ray](hunt-aftermath-haze-veil-ray.json) | hunt | beyond the border, 18 jumps | veil_ray at aftermath_haze; loot sold at First Step Memorial Station | up to 1 ships, empty hold | 1 | 46 | -270 | -350 | 2026-11-21 |

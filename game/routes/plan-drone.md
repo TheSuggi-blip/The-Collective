@@ -60,7 +60,7 @@ Kept by Apophis. Routes: 191. Ships: 50.
 | 38 | [hunt-horizon-phase-drift-veil-ray](hunt-horizon-phase-drift-veil-ray.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 18 jumps | up to 1 ships | 1 of 50 |
 | 39 | [hunt-nightveil-haze-cinder-sylph](hunt-nightveil-haze-cinder-sylph.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 20 jumps | up to 1 ships, empty hold | 1 of 50 |
 | 40 | [fit-plasma-cannon-ii-krynn](fit-plasma-cannon-ii-krynn.json) | [Fitting](index-fitting.md) | beyond the border, 20 jumps | once per pilot, up to 1 ships, 1 pilots in all, needs pulse_laser_i, without plasma_cannon_ii, from 25,000 cr | 1 of 50 |
-| 41 | [hunt-test-acubens-bulwark-pc2](hunt-test-acubens-bulwark-pc2.json) | [Tests](index-tests.md) | home space | up to 1 ships, needs plasma_cannon_ii, empty hold | 1 of 50 |
+| 41 | [hunt-test-acubens-bulwark-pc2](hunt-test-acubens-bulwark-pc2.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 1 ships, needs plasma_cannon_ii, empty hold, standing work | 1 of 50 |
 | 42 | [hunt-cervantes-vapor-fields-halo-drifter](hunt-cervantes-vapor-fields-halo-drifter.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 10 jumps | up to 1 ships, empty hold | 1 of 50 |
 | 43 | [hunt-torcular-frost-ring-hollow-pilgrim](hunt-torcular-frost-ring-hollow-pilgrim.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 18 jumps | up to 1 ships, empty hold | 2 of 50 |
 | 44 | [hunt-scheat-haze-drift-ray](hunt-scheat-haze-drift-ray.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 16 jumps | up to 1 ships, empty hold | 1 of 50 |
@@ -72,7 +72,7 @@ Kept by Apophis. Routes: 191. Ships: 50.
 | 50 | [hunt-summervale-gas-pocket-cinder-sylph](hunt-summervale-gas-pocket-cinder-sylph.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 21 jumps | up to 1 ships, empty hold | 1 of 50 |
 | 51 | [hunt-wasat-gas-cloud-drift-ray](hunt-wasat-gas-cloud-drift-ray.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 16 jumps | up to 1 ships, empty hold | 1 of 50 |
 | 52 | [hunt-yildun-outer-ice-hollow-pilgrim](hunt-yildun-outer-ice-hollow-pilgrim.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 18 jumps | up to 1 ships, empty hold | 1 of 50 |
-| 53 | [hunt-test-acubens-bulwark-pl3](hunt-test-acubens-bulwark-pl3.json) | [Measured at a Loss](index-measured-at-a-loss.md) | home space | up to 1 ships, needs pulse_laser_iii, empty hold | 1 of 50 |
+| 53 | [hunt-test-acubens-bulwark-pl3](hunt-test-acubens-bulwark-pl3.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 1 ships, needs pulse_laser_iii, empty hold, standing work | 1 of 50 |
 | 54 | [hunt-hollow-light-veil-ray](hunt-hollow-light-veil-ray.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 18 jumps | up to 1 ships, empty hold | 1 of 50 |
 | 55 | [hunt-alsciaukat-vapor-fields-cinder-sylph](hunt-alsciaukat-vapor-fields-cinder-sylph.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 13 jumps | up to 1 ships, empty hold | 2 of 50 |
 | 56 | [hunt-the-quiet-shimmer-veil-ray](hunt-the-quiet-shimmer-veil-ray.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 18 jumps | up to 1 ships, empty hold | 1 of 50 |
