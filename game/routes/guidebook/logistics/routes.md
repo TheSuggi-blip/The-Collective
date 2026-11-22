@@ -1,13 +1,13 @@
 # Logistics guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-22. Evidence: plan.py show --brief (applied 2026-11-22 20:01 UTC); fill.py check; orders.log ENT-065 (block APOLLO, P1, P2); rule F8 (zero empty burn); data/fleet/receivers.json; the tool stock, view=reserve.
+Status: proven. Updated: 2026-11-22. Evidence: plan.py show --brief (applied 2026-11-22 20:10 UTC); fill.py check; orders.log ENT-065 (block APOLLO, P1, P2); rule F8 (zero empty burn); data/fleet/receivers.json; the tool stock, view=reserve.
 
 A free hauler takes the first open route of First, its own routes, Then (`plan.py show`). Earnings: the tool fleet, view=standing, member Apollo.
 
 - First: the once missions (`voidborn-*`, first hunts, `mission-*`; F34, F35); a mission test whose runs reach none of its stops leaves the list.
 - Own, members: `@outpost-supply` (GSC-0044's repair stock; the bunker bought under the chain's keep); the builder first `outpost-kit-ironlight-to-node-beta`; the receiver at The Crescent Moon first `craft-boards-crescent-moon`.
-- Own, every hauler: `@stored-goods`, `@craft-reserve` (boards, gold wiring, cells, steel, piping, then copper wiring: docked, each opens on the pilot's own stored inputs), `@train-hauler` last (Piloting toward the freighter, a cost of fuel).
+- Own, every hauler: `@stored-goods`, `@craft-reserve` (boards, gold wiring, cells, steel, piping: docked, each opens on the pilot's own stored inputs and closes at its reserve max, F36), `@train-hauler` last (Piloting toward the freighter, a cost of fuel).
 - Receivers: several haulers a station where many give (`handover.py receivers`). Silicon binds the boards.
 - Then: `park`, which none should reach.
 - What would change it: a kit at Ironlight; Piloting 10; silicon given in quantity; a paid carry (tests.md) in place of the loop.

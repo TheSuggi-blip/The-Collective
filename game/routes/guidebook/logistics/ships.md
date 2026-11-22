@@ -21,4 +21,4 @@ Status: proven. Updated: 2026-11-21. Evidence: browse_ships, all charted station
 | Congregation | Bulk Hauler, 1 | 1,900 | 1 | 100, 0 | none | 12,080 cr at First Step Memorial Station (18) |
 
 - A freighter without slots carries no mining laser. Buying a listed ship stores the pilot's present ship at that station.
-- No Ledger (480) was listed; `commission_quote` asks a docked ship. The read: `browse_ships` (group spacemolt_ship, free) with `all_stations`, `class_id`, `can_fly` true. The first hull test is planned (plan file, Planned).
+- Ledger (480): a prestige hull; `commission_quote` answers `achievement_required` (the faction must have earned the "Syndicate" achievement; Central Nexus, 2026-11-22 20:08 UTC). Apophenia (240, Piloting 10): 433,072 cr credits only, or 60,444 cr with eleven parts we lack (shield emitters, void nanite suspension, phase matrix ...), same quote. Listings: `browse_ships` (group spacemolt_ship, free) with `all_stations`, `class_id`, `can_fly` true.
