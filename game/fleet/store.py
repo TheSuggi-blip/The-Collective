@@ -139,7 +139,8 @@ import division                                   # noqa: E402  who commands a p
 import routes as routefiles                       # noqa: E402  what a run earned, a route's group: one rule for the store and for hive.py
 import docs as writings                           # noqa: E402  the fleet's written knowledge by section: docs, doc_versions
 import supply as supplychains                     # noqa: E402  the supply chains: the reader of game/supply/chains.tsv and the view
-import needs as needbook                          # noqa: E402  the needs register: the reader of game/needs.tsv, need_status
+import needs as needbook
+import comms_guard as commshield                          # noqa: E402  the needs register: the reader of game/needs.tsv, need_status
 import stats                                      # noqa: E402  the fleet's statistics: their tables and the figures computed in the pass
 import retention                                  # noqa: E402  r22: how long the tables once kept for good stay (RETAIN_ENABLED, off)
 
@@ -467,7 +468,9 @@ SNAPSHOT = (
 )
 SNAPSHOT += needbook.SNAPSHOT                     # needs: the needs register, a snapshot of game/needs.tsv (needs.py)
 SNAPSHOT += (("birth_plans", "cohort_id TEXT, plan_scope TEXT, wave INTEGER, wave_target INTEGER, division TEXT, role TEXT, "
-              "wing TEXT, empire TEXT, ships INTEGER, flagship_hulls TEXT, gate TEXT, note TEXT", "cohort_id"),)
+              "wing TEXT, empire TEXT, ships INTEGER, flagship_hulls TEXT, gate TEXT, note TEXT", "cohort_id"),
+             ("player_comms", "id TEXT, t TEXT, channel TEXT, system TEXT, sender TEXT, tag TEXT, to_us INTEGER, own INTEGER, "
+              "intent TEXT, risk_level TEXT, risk_flags TEXT, extracted TEXT, safe_text TEXT", "id"),)
 COLUMNS = {name: [part.split()[0] for part in columns.split(", ")] for name, columns, _key in SNAPSHOT}
 LOOKUPS = (("ships", "system"), ("holdings", "item"), ("books", "item"), ("ladders", "item"), ("recipe_inputs", "item"),
            ("recipe_outputs", "item"), ("facility_materials", "item"), ("fields", "resource"), ("herds", "creature"), ("lanes", "a"),
@@ -524,8 +527,18 @@ EXTRA_VIEWS = (
     "FROM ships s LEFT JOIN ship_skills sk ON sk.pilot = s.pilot AND sk.skill = 'piloting' "
     "LEFT JOIN hulls h ON LOWER(s.class) = LOWER(h.name) OR LOWER(s.class) = LOWER(h.id) "
     "WHERE COALESCE(sk.level, 0) >= 10 AND COALESCE(h.tier, 0) < 2;\n"
+    "CREATE VIEW IF NOT EXISTS fuel_sinks AS "
+    "SELECT CASE WHEN route LIKE 'train-jumps-%' THEN 'jump_loops' WHEN kind = 'census' THEN 'census' "
+    "WHEN route LIKE 'give-%' THEN 'handovers' ELSE 'productive' END AS category, "
+    "COUNT(*) AS runs_24h, ROUND(SUM(COALESCE(minutes, 0)) / 60.0, 2) AS ship_hours_24h, "
+    "ROUND(SUM(COALESCE(credits, 0))) AS net_credits_24h "
+    "FROM runs WHERE t > strftime('%s', 'now') - 86400 GROUP BY 1;\n"
+    "CREATE VIEW IF NOT EXISTS contract_candidates AS "
+    "SELECT ns.id AS need_id, ns.priority AS priority, ns.division AS division, ns.ref AS target_ref, "
+    "ROUND(ns.covered, 1) AS covered_pct, ns.short_items AS short_items, ns.fee AS fee "
+    "FROM need_status ns WHERE COALESCE(ns.short_items, '') != '' ORDER BY ns.priority, ns.rank;\n"
 )
-VIEWS = ("inventory", "inventory_by_station", "inventory_faction", "fleet_positions", "our_stations", "route_earnings", "outpost_candidates", "hull_readiness")
+VIEWS = ("inventory", "inventory_by_station", "inventory_faction", "fleet_positions", "our_stations", "route_earnings", "outpost_candidates", "hull_readiness", "fuel_sinks", "contract_candidates")
 VIEWS += supplychains.VIEWS                       # supply_status: each supply chain against what stands at its place (supply.py)
 
 
@@ -1042,7 +1055,13 @@ def birth_plan_files(data, root):
 
 
 LOADERS += (("needs", ("needs",), needbook.need_files, False),)      # the needs register (needs.py reads game/needs.tsv)
-LOADERS += (("birth_plans", ("birth_plans",), birth_plan_files, False),)
+def read_player_comms(path, ctx):
+    """data/comms/messages.jsonl -> player_comms, sanitized through comms_guard.py (quarantining prompt injections)."""
+    return {"player_comms": commshield.read_comms_rows(path)}
+
+
+LOADERS += (("birth_plans", ("birth_plans",), birth_plan_files, False),
+            ("player_comms", ("player_comms",), data_file("comms/messages.jsonl", read_player_comms), True),)
 FED = dict([(table, ("fleet", "orders")) for table in ("ships",)] + [(table, (loader,)) for loader, tables, _f, _w in LOADERS for table in tables])
 BAD = (OSError, ValueError, TypeError, KeyError, AttributeError, IndexError, RecursionError)
 
@@ -1654,6 +1673,9 @@ DESCRIPTIONS = {               # one line per table and view: what a row is and 
     "our_stations": "view: the stations and outposts whose owner's tag is our faction's, joined to our bases",
     "outpost_candidates": "view: lawless non-stronghold systems without an existing station, with jump distance, resource fields and grazer counts for outpost siting",
     "hull_readiness": "view: pilots at Piloting >= 10 still flying below Tier 2 hulls, with division, role, wallet credits and dock",
+    "player_comms": "external and fleet chat messages classified and sanitized by comms_guard.py (quarantining prompt-injection attempts and extracting typed trade/contract intent)",
+    "fuel_sinks": "view: trailing 24-hour runs, ship-hours and net credits grouped into productive work vs jump_loops, census and handovers",
+    "contract_candidates": "view: open priority needs with missing items where Station Bursars or Notice Board contracts can source bottlenecks",
     "route_earnings": "view: what each route earned per ship-hour (steady credits) over the last 4, 12 and 24 hours and over all hours kept, the runs behind each "
                       "figure, and the hours since it last flew: ask here what a route earns now; an empty cph_4h means it did not fly, not that it does not pay",
 }
@@ -1891,6 +1913,15 @@ EXAMPLES = {                   # three questions per table and view, as SQL (hiv
     "outpost_candidates": (("Unclaimed lawless systems within 5 jumps with resource fields", "SELECT system, name, jumps, fields, resources, grazers FROM outpost_candidates WHERE jumps <= 5 AND fields > 0 ORDER BY fields DESC, jumps"),
                            ("Unclaimed lawless systems holding cobalt, argon or silicon", "SELECT system, name, jumps, resources FROM outpost_candidates WHERE resources LIKE '%cobalt%' OR resources LIKE '%argon%' OR resources LIKE '%silicon%' ORDER BY jumps"),
                            ("Unclaimed lawless systems with grazer herds", "SELECT system, name, jumps, grazers, resources FROM outpost_candidates WHERE grazers > 0 ORDER BY grazers DESC")),
+    "player_comms": (("Sanitized messages addressed to us by commercial or diplomatic intent", "SELECT t, channel, sender, tag, intent, risk_level, safe_text FROM player_comms WHERE to_us = 1 AND own = 0 ORDER BY t DESC LIMIT 20"),
+                     ("Quarantined or suspicious prompt-injection attempts blocked by comms_guard", "SELECT t, channel, sender, tag, risk_level, risk_flags, safe_text FROM player_comms WHERE risk_level != 'clean' ORDER BY t DESC"),
+                     ("Extracted item/price trade offers from player chat", "SELECT t, sender, tag, system, extracted, safe_text FROM player_comms WHERE extracted != '' ORDER BY t DESC LIMIT 20")),
+    "fuel_sinks": (("24h ship-hours and net credits across productive work vs jump loops, census and handovers", "SELECT * FROM fuel_sinks ORDER BY ship_hours_24h DESC"),
+                   ("Share of fleet ship-hours spent on empty jump loops", "SELECT category, ship_hours_24h, net_credits_24h FROM fuel_sinks WHERE category = 'jump_loops'"),
+                   ("Productive vs non-productive 24h credit balance", "SELECT CASE WHEN category = 'productive' THEN 'productive' ELSE 'overhead' END AS grp, SUM(ship_hours_24h), SUM(net_credits_24h) FROM fuel_sinks GROUP BY 1")),
+    "contract_candidates": (("Open bottleneck needs for Station Bursar buy-bids and Notice Board contracts", "SELECT * FROM contract_candidates ORDER BY priority"),
+                            ("Priority 1 bottlenecks needing procurement", "SELECT need_id, division, covered_pct, short_items FROM contract_candidates WHERE priority = 1"),
+                            ("Needs by division with missing items", "SELECT division, COUNT(*) AS open_needs, GROUP_CONCAT(need_id) FROM contract_candidates GROUP BY division")),
     "hull_readiness": (("Pilots ready for Tier 2 hulls by division", "SELECT division, role, COUNT(*) AS ready, MAX(piloting) AS max_piloting FROM hull_readiness GROUP BY division, role ORDER BY ready DESC"),
                        ("Pilots at Piloting >= 10 with >= 200,000 cr on hand", "SELECT pilot, division, hull_class, piloting, credits, docked FROM hull_readiness WHERE credits >= 200000 ORDER BY credits DESC"),
                        ("Pilots at Piloting >= 20 still in starter hulls", "SELECT pilot, division, hull_class, piloting, credits FROM hull_readiness WHERE piloting >= 20 ORDER BY piloting DESC")),

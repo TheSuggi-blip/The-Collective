@@ -64,6 +64,18 @@ view: what each route earned per ship-hour (steady credits) over the last 4, 12 
 - Routes that have not flown for 12 hours or more: their figure is old, a test tells what they pay now: `SELECT route, kind, hours_since, runs_all, cph_all FROM route_earnings WHERE hours_since >= 12 ORDER BY hours_since`
 - Routes that pay less now than over the day (a bid or a field that is running out): `SELECT route, cph_4h, cph_24h, runs_4h FROM route_earnings WHERE runs_4h >= 2 AND cph_4h < cph_24h ORDER BY cph_4h - cph_24h`
 
+## fuel_sinks
+
+view: trailing 24-hour runs, ship-hours and net credits grouped into productive work vs jump_loops, census and handovers
+
+- Kind: view over runs
+- Columns: category, runs_24h, ship_hours_24h, net_credits_24h
+- Kept: nothing: a view stores no row
+- Refreshed: computed when asked, from its tables
+- 24h ship-hours and net credits across productive work vs jump loops, census and handovers: `SELECT * FROM fuel_sinks ORDER BY ship_hours_24h DESC`
+- Share of fleet ship-hours spent on empty jump loops: `SELECT category, ship_hours_24h, net_credits_24h FROM fuel_sinks WHERE category = 'jump_loops'`
+- Productive vs non-productive 24h credit balance: `SELECT CASE WHEN category = 'productive' THEN 'productive' ELSE 'overhead' END AS grp, SUM(ship_hours_24h), SUM(net_credits_24h) FROM fuel_sinks GROUP BY 1`
+
 ## stats_route_author
 
 state (stats.py): the first author of every route file (git log --diff-filter=A) with its member and division: whose work a route's income is (view contribution)

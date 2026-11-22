@@ -1,0 +1,6 @@
+## [ENT-001] | 2026-11-22 18:28 UTC | Trinity | contract | ref: governance/strategy.md
+Initialized append-only Procurement & Market-Maker Contracts Ledger (Suggi, 2026-11-22).
+Operational owner: Mercury (Trade Admiral) within the escrow budget set by Unity in orders.log.
+Record every standing Station Bursar buy/sell program and Notice Board / Faction Mission Board supply contract here:
+- State: POSTED | FILLED | UPDATED | EXPIRED | CANCELLED
+- Fields: station, item, qty, unit_price, escrow_cr, target_need (from game/needs.tsv or reserve), and fill result.

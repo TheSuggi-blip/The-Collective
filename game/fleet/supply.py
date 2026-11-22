@@ -600,6 +600,11 @@ def duty(res, root, data, writing, now=None):
     if not plan_steps["divisions"] and not plan_steps["renew"]:
         print("nothing to write")
         return 0
+    try:
+        import routes_hygiene
+        routes_hygiene.run_hygiene(root, write=True, commit=True, now=now)
+    except Exception:
+        pass
     good, lines = write(root, data, plan_steps, record, who, now)
     for line in lines:
         print(line)

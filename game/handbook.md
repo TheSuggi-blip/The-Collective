@@ -22,7 +22,7 @@ Read it in parts: `hive.py handbook [<topic>]` (MCP: the tool docs, view=handboo
 contents and how the data flows; a table's name, a subject or a word gives its sections. The store holds every file
 as kind `handbook` of the table docs, one row a section, every version in doc_versions.
 
-The store: 62 tables and 9 views (41 snapshot, 9 history, 9 statistics, 3 bookkeeping); the MCP tool `collective`: 22 tools.
+The store: 63 tables and 11 views (42 snapshot, 9 history, 9 statistics, 3 bookkeeping); the MCP tool `collective`: 22 tools.
 Kinds: snapshot = what a file says now (replaced when the file changes; it also carries `src`, the file its row came
 from; dropped and loaded again when its definition changes); history = rows kept over time (raw rows for days, sums
 as each table's Kept line says); statistics = computed by stats.py when due; view = a query over tables, computed when
@@ -34,10 +34,10 @@ the store's own marks. Columns come from a fresh empty schema; every example run
 - How the data flows (below): the game to the members; what is private, what is public
 - Where to ask what (below): a question -> the MCP call and the shell line, by subject
 - Ships and pilots, `game/handbook/ships-and-pilots.md`: ships, ship_skills, ship_modules, ship_cargo, fleet_positions, hull_readiness, stats_pilot_hour, stats_pilot_last
-- Routes and runs, `game/handbook/routes-and-runs.md`: routes, plan_routes, runs, route_hour, route_earnings, stats_route_author, missions
+- Routes and runs, `game/handbook/routes-and-runs.md`: routes, plan_routes, runs, route_hour, route_earnings, fuel_sinks, stats_route_author, missions
 - Money, `game/handbook/money.md`: stats_money_hour
-- Markets, `game/handbook/markets.md`: books, ladders, moves, market_hour
-- Map and intel, `game/handbook/map-and-intel.md`: systems, lanes, places, fields, herds, readings, reading_day, stations, outpost_candidates, factions, public_battles, leaderboards, met, observations
+- Markets, `game/handbook/markets.md`: books, ladders, moves, market_hour, contract_candidates
+- Map and intel, `game/handbook/map-and-intel.md`: systems, lanes, places, fields, herds, readings, reading_day, stations, outpost_candidates, factions, public_battles, leaderboards, met, player_comms, observations
 - Our faction, `game/handbook/our-faction.md`: faction, faction_members, bases, our_stations, faction_facilities, faction_storage, inventory_faction, territory, sites
 - Stock and reserve, `game/handbook/stock-and-reserve.md`: holdings, inventory, inventory_by_station, stock_hour, needs, need_status
 - The catalog, `game/handbook/the-catalog.md`: items, recipes, recipe_inputs, recipe_outputs, recipe_facilities, facilities, facility_materials, hulls, hull_materials, skills
@@ -121,6 +121,7 @@ per question, from the tools' own texts (collective_mcp.TOOLS) and hive.py's usa
 
 | What it answers | MCP | Shell |
 |---|---|---|
+| bottleneck procurement candidates for Station Bursars, rival board supply contracts & contracts.log. | fleet view=contracts | hive.py contracts |
 | The last moves of one item's best bid and best ask at the stations whose order books our ships read... | market item=<item> | ledger.py prices <item> |
 | one item's lowest and highest best bid and best ask per station over a window | hive verb=store args=[price, <item>] | hive.py store price <item> |
 
@@ -131,6 +132,7 @@ per question, from the tools' own texts (collective_mcp.TOOLS) and hive.py's usa
 | live benchmark vs #1 [HEXC], unclaimed resource-monopoly outpost sites, zero-fuel docked crafting... | fleet view=rival | hive.py rival |
 | one system: chart, places, what is left in its fields, its herds, its market, who was met, our ships | system id=<id> | hive.py system <id> |
 | messages other players wrote to our ships. | comms view=contacts | inbox.py show --to-us |
+| player hails through the CaMeL + dynamic spotlighting injection firewall. | comms view=safe_comms | comms_guard.py |
 
 ### Our faction
 

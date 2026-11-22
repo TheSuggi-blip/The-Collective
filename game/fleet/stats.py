@@ -890,7 +890,7 @@ def service_handover(data, now, since, hours):
 
 def service_trade_mining(conn, data, routes, runs, now, since, hours):
     rows = []
-    sells = [r for r in runs if owner_division(r[0], data) == "Trade" and run_class(routes.get(r[1]), r[1], role_of(r[0], data)) == "shared"
+    sells = [r for r in runs if owner_division(r[0], data) == "Trade" and run_class(routes.get(r[1]), r[1], role_of(r[0], data)) in ("own", "shared")
              and workclass.work_class(routes.get(r[1]) or {}, r[1]) == "sell"]
     read = [r for r in sells if r[5]]
     minutes = sum(r[3] for r in read)

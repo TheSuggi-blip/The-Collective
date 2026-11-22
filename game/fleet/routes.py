@@ -845,6 +845,7 @@ RUNS = {"path": None, "stamp": None, "spans": {}}      # each pilot's runs (span
 EDGE = 120                    # seconds at a run's start and end in which a wallet reading may fall on either side of a gift
 PRE = 30 * 60                 # a gift booked this long before a run's span may land in it: the game shows a gift minutes after its answer (ENT-220)
 TREASURY = "Faction treasury: credits deposited"     # the title a deposit into the faction's treasury is booked under (onetime.json)
+TREASURY_FUND = "Treasury fund: credits withdrawn"   # a withdrawal from the faction treasury into the leader's wallet (wallet.py fund)
 SWEEPS = {"path": None, "stamp": None, "rows": []}     # the sweep's booked gifts with the giver's wallet after each, read again only when the file changed
 SWEEP_MATCH = 60              # seconds between a gift's booking (gifts.jsonl) and the sweep's row of it (sweep.jsonl): one gift
 PLAYER = re.compile(r'"player":\{[^{}]*?"username":"([^"]*)"[^{}]*?"credits":(-?\d+)')     # the giver's wallet in the gift's answer
@@ -931,9 +932,11 @@ def deposits(data=None):
         except (OSError, ValueError):
             loaded = []
         for one in loaded if isinstance(loaded, list) else []:
-            if (isinstance(one, list) and len(one) == 4 and isinstance(one[0], (int, float)) and isinstance(one[3], (int, float))
-                    and str(one[2]).startswith(TREASURY) and one[3] < 0):
-                rows.append((one[0], str(one[1]), "", -one[3], False))
+            if isinstance(one, list) and len(one) == 4 and isinstance(one[0], (int, float)) and isinstance(one[3], (int, float)):
+                if str(one[2]).startswith(TREASURY) and one[3] < 0:
+                    rows.append((one[0], str(one[1]), "", -one[3], False))
+                elif str(one[2]).startswith(TREASURY_FUND) and one[3] > 0:
+                    rows.append((one[0], "", str(one[1]), one[3], False))
         DEPOSITS.update(path=str(path), stamp=stamp, rows=rows)
     return DEPOSITS["rows"]
 

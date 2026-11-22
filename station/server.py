@@ -586,12 +586,13 @@ def doc_title(rel, body=""):
 
 REPORT_ID = re.compile(r"(\d{4})(\d\d)(\d\d)T(\d\d)(\d\d)(\d\d)Z")
 REPORTS_SHOWN = 30
-LOG_ORDER = {"orders.log": 0, "queue.log": 1, "admirals.log": 2, "requests.log": 3, "errors.log": 4, "reports.log": 5}
+LOG_ORDER = {"orders.log": 0, "queue.log": 1, "admirals.log": 2, "requests.log": 3, "contracts.log": 4, "errors.log": 5, "reports.log": 6}
 LOG_DESC = {
     "orders.log": "Standing orders S1-S5, goals G1-G5 & Unity's current division directives",
     "queue.log": "Live inter-agent coordination notices, build handoffs & turn announcements",
     "admirals.log": "Peer-to-peer tactical coordination between the five Division Admirals",
     "requests.log": "Division engineering requests to Unity and closed tool/gate answers",
+    "contracts.log": "Station Bursar standing buy/sell books, Notice Board supply contracts & escrow history",
     "errors.log": "Operational faults, root-cause investigations & structural gate fixes",
     "reports.log": "Append-only index of session-end division and fleet reports",
 }
@@ -1502,10 +1503,101 @@ def api_ops():
             if "ship_modules" in tables:
                 rows = conn.execute(
                     "SELECT name, COUNT(*) AS n FROM ship_modules "
-                    "WHERE name LIKE '% III' OR name LIKE '% IV' OR name LIKE '%Survey Scanner%' OR name LIKE '%Cargo Expander%' "
-                    "GROUP BY name ORDER BY n DESC LIMIT 10"
+                    "WHERE name LIKE '% II' OR name LIKE '% III' OR name LIKE '% IV' OR name LIKE '% V' "
+                    "OR name LIKE '%Scanner%' OR name LIKE '%Expander%' OR name LIKE '%Cabin%' OR name LIKE '%Booster%' "
+                    "GROUP BY name ORDER BY CASE WHEN name LIKE '% V' THEN 5 WHEN name LIKE '% IV' THEN 4 WHEN name LIKE '% III' THEN 3 WHEN name LIKE '% II' THEN 2 ELSE 1 END DESC, n DESC LIMIT 14"
                 ).fetchall()
                 out["readiness"]["modules"] = [{"name": text(r["name"], 50), "count": int(num(r["n"]))} for r in rows]
+
+            # Dynamic Tech Frontier, Consolidated Balance Sheet, Fuel-Sink Efficiency & Birth Wave
+            if "ships" in tables and "ship_skills" in tables:
+                sk_r = conn.execute(
+                    "SELECT COUNT(*) AS n, COALESCE(MAX(level),0) AS mx, ROUND(COALESCE(AVG(level),0),1) AS av, "
+                    "SUM(CASE WHEN level >= 10 THEN 1 ELSE 0 END) AS p10, "
+                    "SUM(CASE WHEN level >= 20 THEN 1 ELSE 0 END) AS p20, "
+                    "SUM(CASE WHEN level >= 30 THEN 1 ELSE 0 END) AS p30, "
+                    "SUM(CASE WHEN level >= 50 THEN 1 ELSE 0 END) AS p50 "
+                    "FROM ship_skills WHERE skill = 'piloting'"
+                ).fetchone()
+                h_map = {h["tier"]: h["count"] for h in out["readiness"].get("hulls") or []}
+                t2p = sum(c for tr, c in h_map.items() if tr >= 2)
+                t3p = sum(c for tr, c in h_map.items() if tr >= 3)
+                t4p = sum(c for tr, c in h_map.items() if tr >= 4)
+                t5p = sum(c for tr, c in h_map.items() if tr >= 5)
+                p10, p20, p30, p50 = int(num(sk_r["p10"])), int(num(sk_r["p20"])), int(num(sk_r["p30"])), int(num(sk_r["p50"]))
+                if p50 > 0 and t5p < p50:
+                    ft_tier, ft_ready, ft_have, ft_next = 5, p50, t5p, "Endgame T5 Capital & Moving City"
+                elif p30 > 0 and t4p < p30:
+                    ft_tier, ft_ready, ft_have, ft_next = 4, p30, t4p, "T5 Capital at Piloting 50"
+                elif p20 > 0 and t3p < p20:
+                    ft_tier, ft_ready, ft_have, ft_next = 3, p20, t3p, "T4 Heavy at Piloting 30"
+                elif p10 > 0:
+                    ft_tier, ft_ready, ft_have, ft_next = 2, p10, t2p, "T3 Cruisers/Bulk at Piloting 20"
+                else:
+                    ft_tier, ft_ready, ft_have, ft_next = 1, int(num(sk_r["n"])), sum(c for tr, c in h_map.items() if tr >= 1), "T2 Hulls at Piloting 10"
+                out["tech_frontier"] = {
+                    "target_tier": ft_tier, "ready_pilots": ft_ready, "at_or_above": ft_have,
+                    "max_piloting": int(num(sk_r["mx"])), "avg_piloting": float(sk_r["av"] or 0.0),
+                    "p10": p10, "p20": p20, "p30": p30, "p50": p50, "next_milestone": ft_next,
+                }
+            if "holdings" in tables and "items" in tables:
+                vw_r = conn.execute(
+                    "SELECT COALESCE(SUM(h.units * COALESCE((SELECT MAX(b.bid) FROM books b WHERE b.item = h.item AND b.bid > 0 AND b.bid_qty > 0), i.base_value, 0)), 0) "
+                    "FROM holdings h LEFT JOIN items i ON i.id = h.item"
+                ).fetchone()
+                vault_worth = int(num(vw_r[0])) if vw_r else 0
+                mod_w = conn.execute(
+                    "SELECT COALESCE(SUM(COALESCE(i.base_value, 0)), 0) FROM ship_modules sm LEFT JOIN items i ON LOWER(i.name) = LOWER(sm.name)"
+                ).fetchone() if "ship_modules" in tables else (0,)
+                hull_w = conn.execute(
+                    "SELECT COALESCE(SUM(COALESCE(hm.units, 0) * COALESCE(i.base_value, 0)), 0) "
+                    "FROM ships s JOIN hulls h ON LOWER(h.id) = LOWER(s.class) OR LOWER(h.name) = LOWER(s.class) "
+                    "JOIN hull_materials hm ON hm.hull = h.id LEFT JOIN items i ON i.id = hm.item"
+                ).fetchone() if "hull_materials" in tables else (0,)
+                fac_inv_r = conn.execute(
+                    "SELECT COALESCE(MAX(value), 0) FROM leaderboards WHERE grp = 'factions' AND board = 'facility_investment' AND tag = 'CLTV'"
+                ).fetchone() if "leaderboards" in tables else (0,)
+                wal_cr = int(num(conn.execute("SELECT COALESCE(SUM(credits), 0) FROM ships").fetchone()[0]))
+                tr_cr = int(num((out["readiness"].get("faction") or {}).get("treasury")))
+                fl_book = int(num(mod_w[0])) + int(num(hull_w[0]))
+                fac_inv = int(num(fac_inv_r[0])) or 3400000
+                ho_r = conn.execute(
+                    "SELECT value FROM stats_figures WHERE view = 'contribution' AND figure LIKE '%handed%' ORDER BY hours DESC LIMIT 1"
+                ).fetchone() if "stats_figures" in tables else None
+                hexc_r = conn.execute(
+                    "SELECT value FROM leaderboards WHERE grp = 'factions' AND board = 'total_wealth' AND tag = 'HEXC' ORDER BY t DESC LIMIT 1"
+                ).fetchone() if "leaderboards" in tables else None
+                out["balance_sheet"] = {
+                    "liquid_cash": wal_cr + tr_cr, "wallets": wal_cr, "treasury": tr_cr,
+                    "vault_worth": vault_worth, "fleet_book": fl_book, "facility_invested": fac_inv,
+                    "net_worth": wal_cr + tr_cr + vault_worth + fl_book + fac_inv,
+                    "handed_over_24h": int(num(ho_r[0])) if ho_r else 0,
+                    "hexc_wealth": int(num(hexc_r[0])) if hexc_r else 0,
+                }
+            if "runs" in tables:
+                fs_rows = conn.execute(
+                    "SELECT CASE WHEN route LIKE 'train-jumps-%' THEN 'jump_loops' WHEN kind = 'census' THEN 'census' "
+                    "WHEN route LIKE 'give-%' THEN 'handovers' ELSE 'productive' END AS cat, "
+                    "COUNT(*) AS n, ROUND(SUM(COALESCE(minutes, 0)) / 60.0, 1) AS sh, ROUND(SUM(COALESCE(credits, 0))) AS cr "
+                    "FROM runs WHERE t > strftime('%s', 'now') - 86400 GROUP BY 1"
+                ).fetchall()
+                eff = {r["cat"]: {"runs": int(num(r["n"])), "hours": float(r["sh"] or 0.0), "credits": int(num(r["cr"]))} for r in fs_rows}
+                tot_sh = sum(v["hours"] for v in eff.values()) or 1.0
+                prod_sh = (eff.get("productive") or {}).get("hours", 0.0)
+                eff["productive_pct"] = round(100.0 * prod_sh / tot_sh, 1)
+                out["efficiency"] = eff
+            if "birth_plans" in tables:
+                cur_n = int(num((out.get("freshness") or {}).get("ships") or 246))
+                w_row = conn.execute(
+                    "SELECT wave, wave_target, SUM(ships) AS add_n, MAX(gate) AS gate "
+                    "FROM birth_plans WHERE wave >= 1 AND wave_target > ? GROUP BY wave, wave_target ORDER BY wave LIMIT 1",
+                    (cur_n,)
+                ).fetchone()
+                if w_row:
+                    out["birth_wave"] = {
+                        "wave": int(num(w_row["wave"])), "target": int(num(w_row["wave_target"])),
+                        "add_ships": int(num(w_row["add_n"])), "gate": text(w_row["gate"], 120),
+                    }
             if "supply_status" in tables:
                 rows = conn.execute(
                     "SELECT chain, item, place, stock, keep, status, hours_left FROM supply_status "
@@ -1657,6 +1749,12 @@ def api_ops():
                 "need_pct": matched_need["pct"] if matched_need else None,
             })
     out["requests"] = active_requests_summary()
+    try:
+        clog_txt = (REPO / "communications" / "contracts.log").read_text(encoding="utf-8", errors="replace")
+        c_ents = ENTRY.findall(clog_txt)
+        out["contracts_count"] = len(c_ents)
+    except OSError:
+        out["contracts_count"] = 0
     out["empire"] = emp_info
     OPS["at"], OPS["value"] = now, out
     return out
@@ -1718,6 +1816,17 @@ def read_comms_summary(our_pilots):
         is_npc = (sid in ("salvage_authority",) or sid.startswith("npc_")
                   or snd.startswith("[CUSTOMS]") or snd.startswith("[POLICE]") or snd.startswith("[STATION]")
                   or snd in ("Galactic Salvage Authority", "Interstellar Revenue Service", "Shipyard Authority"))
+        try:
+            import sys as _sys
+            if str(REPO / "game/fleet") not in _sys.path:
+                _sys.path.insert(0, str(REPO / "game/fleet"))
+            import comms_guard as _cg
+            _g = _cg.inspect_message(msg_txt, snd, ch, bool(m.get("own") or snd in our_pilots), is_npc)
+            risk_lvl, intent_lbl = _g["risk_level"], _g["intent"]
+            if risk_lvl == "quarantined":
+                msg_txt = _g["safe_text"]
+        except Exception:
+            risk_lvl, intent_lbl = "clean", "chatter"
         row = {"t": ts, "channel": ch, "sender": snd, "tag": tag, "system": sys_id, "poi": poi, "text": msg_txt}
         if m.get("own") or snd in our_pilots:
             if ch != "faction":

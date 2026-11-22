@@ -165,11 +165,18 @@ Ten principles. Each is one sentence a member can test a plan against.
     lesson in a knowledge file and, where a script can do the work
     next time, the script. What a script can do, no member does by
     hand.
-11. **Beat #1 [HEXC] by compounding capital per ship.** Raw ship count
-    loses to high-tier hulls, multi-slot fittings, zero-fuel docked
-    factory crafting, sustainable herd ranching, cross-empire bulk
-    freighters bought or licensed where cargo pays, and zero-rent
-    outposts anchored directly onto scarce bottleneck resources.
+11. **Beat #1 [HEXC] & #1 [BUSY] by compounding capital per ship and
+    eliminating empty flight.** Raw ship count loses to high-tier hulls,
+    multi-slot fittings, zero-fuel docked factory crafting, **Station
+    Bursars** (designated hub traders maintaining standing buy/sell
+    orders and `Notice Board` procurement contracts logged in
+    `communications/contracts.log` instead of flying `-500 cr/h` empty
+    jump loops), **selective gangue jettisoning** on deep scarce-ore
+    belts (`mine.py --jettison-gangue`), **wormhole shortcut mapping**,
+    **opportunistic fleet sensing** (cutting redundant home census
+    burn), **frontier fuel toll-booths & station tourism appeal** on our
+    sovereign stations, and strict **CaMeL + Dynamic Spotlighting**
+    quarantine of all external player messages (`comms_guard.py`).
 
 What the fleet does not do: work at a loss to look busy; mine for
 skill alone; grow ahead of its income; stake a division on one route,

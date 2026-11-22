@@ -272,6 +272,7 @@ def main():
             time.sleep(15)
         say("mining loop at %s, ore to %s: %s %s" % (belt[1], station[2], status, str(answer.get("error") or "started")[:100]))
         notes = [] if status in (200, 201) and "error" not in answer else ["loop not started"]
+        gangue = [g.strip() for g in option(args, "--jettison-gangue", "").split(",") if g.strip()]
         while not notes and time.time() - started < minutes * 60 and not os.path.exists(os.path.join(DATA, "fleet", "STOP")):
             time.sleep(30)
             try:
@@ -279,6 +280,16 @@ def main():
             except OSError:
                 pass
             loop_state = call("GET", "/accounts/%s/loop" % quoted)[1]
+            if gangue and loop_state.get("running"):
+                try:
+                    st_acc = (call("GET", "/accounts/" + quoted)[1].get("state") or {})
+                    if not st_acc.get("docked_at_base"):
+                        for c_row in (st_acc.get("ship") or {}).get("cargo") or []:
+                            cid, cqty = c_row.get("item_id"), int(c_row.get("quantity") or 0)
+                            if cid in gangue and cqty >= 10:
+                                call("POST", "/accounts/%s/raw" % quoted, {"toolGroup": "spacemolt", "action": "jettison", "params": {"item_id": cid, "quantity": cqty}})
+                except Exception:
+                    pass
             if not loop_state.get("running"):
                 notes.append("the loop ended by itself: " + str(loop_state.get("lastFailure") or "")[:80])
     except SystemExit as leave:                          # told to stop (runhost.py's stop file or its end, a signal): the run still ends whole

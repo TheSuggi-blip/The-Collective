@@ -186,6 +186,7 @@ ONE_SIDED = False
 # A deposit into the faction's treasury is booked once in onetime.json under a title beginning with this (the same as
 # game/fleet/routes.py TREASURY): money that goes from a pilot's wallet into the Collective's own purse, no purchase.
 TREASURY = "Faction treasury: credits deposited"
+TREASURY_FUND = "Treasury fund: credits withdrawn"
 MOVES_LEAD = 600             # seconds a booking may follow the reading of its wallet change (a script books once the wallet shows it)
 TRANSIT_MAX = 2 * 3600       # a side of a gift or deposit no reading matched in this long counts at its booking time
 MOVES_KEEP = 48 * 3600       # moves.jsonl keeps this long (the longest window is 24 hours)
@@ -562,7 +563,7 @@ def one_time_until(one, t, place=None):
     out = {"": [0, 0]}
     for row in one:
         if (isinstance(row, list) and len(row) == 4 and isinstance(row[0], (int, float)) and row[0] <= t and row[2] != TRANSFER
-                and not str(row[2]).startswith(TREASURY)):
+                and not str(row[2]).startswith(TREASURY) and not str(row[2]).startswith(TREASURY_FUND)):
             value = num(row[3])
             name = row[1] if isinstance(row[1], str) else ""
             for key in ("", place(name, row[0]) if place else division_of(name)[0]):
@@ -690,9 +691,9 @@ def sides_of(gifts, one):
         kind = "gift" if giver and taker else "lone"
         out += [(at, name, sign * credits, kind, number) for name, sign in ((giver, -1), (taker, 1)) if name]
     for number, row in enumerate(one if isinstance(one, list) else []):
-        if (isinstance(row, list) and len(row) == 4 and num(row[0]) and isinstance(row[1], str) and str(row[2]).startswith(TREASURY)
-                and num(row[3]) < 0):
-            out.append((row[0], row[1], row[3], "deposit", -1 - number))
+        if isinstance(row, list) and len(row) == 4 and num(row[0]) and isinstance(row[1], str):
+            if (str(row[2]).startswith(TREASURY) and num(row[3]) < 0) or (str(row[2]).startswith(TREASURY_FUND) and num(row[3]) > 0):
+                out.append((row[0], row[1], row[3], "deposit", -1 - number))
     return out
 
 
@@ -1093,8 +1094,9 @@ def window(history, now, seconds, one, gifts=(), seeds=None, presence=(), sides=
     xa, xb = (a[8] if len(a) > 8 else {}), (b[8] if len(b) > 8 else {})
     ta, tb = xa.get("t"), xb.get("t")
     if all(isinstance(x, list) and len(x) == 2 and all(isinstance(v, (int, float)) for v in x) for x in (ta, tb)) and tb[1] > ta[1]:
-        landed = sum(abs(num(row[3])) for row in one or () if isinstance(row, list) and len(row) == 4
-                     and isinstance(row[0], (int, float)) and ta[1] < row[0] <= tb[1] and str(row[2]).startswith(TREASURY))
+        landed = sum(-num(row[3]) for row in one or () if isinstance(row, list) and len(row) == 4
+                     and isinstance(row[0], (int, float)) and ta[1] < row[0] <= tb[1]
+                     and (str(row[2]).startswith(TREASURY) or str(row[2]).startswith(TREASURY_FUND)))
         own = tb[0] - ta[0] - landed                       # the treasury's own flows: its change less our deposits
         out["treasury"] = {"start": ta[0], "end": tb[0], "read_from": ta[1], "read_to": tb[1], "deposited": round(landed), "own": round(own)}
         out["treasury_own_per_hour"] = round(own / ((tb[1] - ta[1]) / 3600))

@@ -85,7 +85,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import board                                      # noqa: E402  the divisions' names: a file's owner
 import division                                   # noqa: E402  the members, who runs this
 
-LOGS = ("requests", "queue", "admirals", "errors", "reports")     # the logs kept entry by entry (orders.log: its newest entry, by block)
+LOGS = ("requests", "queue", "admirals", "errors", "reports", "contracts")     # the logs kept entry by entry (orders.log: its newest entry, by block)
 KINDS = (                      # kind, its files (a glob: a repository path, or `data/...` in the unit's data folder), its owner
     ("rulebook", "governance/rulebook.md", "Fleet"),          # ('': the division its file's name or folder names; '*': each entry's author's)
     ("orders", "communications/orders.log", "Unity"),

@@ -8,7 +8,7 @@ author: Unity
 # index.md -- The Fleet's Scripts
 
 Built by `python3 -B scripts/fleet-index.py` from the docstring of every script in this
-folder; never edited by hand. Scripts listed: 50.
+folder; never edited by hand. Scripts listed: 54.
 
 - Run a script from the repository root: `python3 -I -B game/fleet/<script> <arguments>`,
   the arguments as listed under "How to Call Each".
@@ -32,6 +32,8 @@ folder; never edited by hand. Scripts listed: 50.
 | `census.py` | Read one system whole with one pilot: every place's deposits and creatures, and the station's order book and mission board. | Runner (`census` routes) |
 | `claimwatch.py` | Find a pilot the engine holds claimed and free it by an engine restart, without a hand. | By hand |
 | `collective_mcp.py` | The collective MCP server: the fleet's knowledge and the door to its ships, as tools for every member. | By hand |
+| `comms_guard.py` | CaMeL + Microsoft Spotlighting security firewall for untrusted external player messages. | By hand |
+| `contracts.py` | CLTV Procurement Contracts, Station Bursar order-book advisor & rival contract arbitrage. | By hand |
 | `craftbook.py` | Answer what can be made, fitted and built: a recipe, everything a thing takes, and what our stored goods can become. | By hand |
 | `dispatch.py` | Keep every pilot at work: give each free pilot the next task of its role. | Service |
 | `division.py` | Who commands which ship, whose plan is whose, and the check every fleet script runs before it drives a ship. | By hand |
@@ -57,6 +59,7 @@ folder; never edited by hand. Scripts listed: 50.
 | `mine.py` | One pilot mines at one field for a set time, through the engine's mining loop. | Runner (`mine` routes) |
 | `needs.py` | The fleet's needs register: what each division needs for its upgrades and for the empire, one row a need in game/needs.tsv, written by this script alone; the open needs are the reserve's targets, covered by stock in priority order. | By hand |
 | `observe.py` | A member writes down what it saw in the game (a scan far away, a price at a station we read no book of, a fight with a species) as one checked line of its division's own record; the store makes the lines one SQL table, `observations`. | By hand |
+| `passive_sense.py` | Zero-fuel opportunistic market & herd freshness updates when any fleet ship docks or works. | By hand |
 | `plan.py` | Each division's plan file: every ship with the routes it flies, in their order; the dispatcher sends the ships by it. | By hand |
 | `plate.py` | Make our pilots' stored creature carapace into armor plate where each is docked, and sell plates into the bid there. | By hand |
 | `pull.py` | Each class flies its own work, and goods are gathered only while the reserve needs them: the class guard and the pull rule of the dispatcher, with their dry run. | By hand |
@@ -66,6 +69,7 @@ folder; never edited by hand. Scripts listed: 50.
 | `route_run.py` | Fly one pilot along a route file: dock at each stop and do what the stop says. | Runner (`circuit` routes) |
 | `routemaker.py` | Find every way to earn that the fleet's own data shows, cost it, and write the route file for it. | Service |
 | `routes.py` | Check the route files, write their index, and attach what the runs measured. | By hand |
+| `routes_hygiene.py` | Automated structural legacy-route cleanliness (strictly honoring Rule F22). | By hand |
 | `runhost.py` | One program that flies the runs the dispatcher starts, each run as a thread instead of a process. | Service |
 | `sight.py` | What our ships see where they are: the pilots they meet, and a first read of a system nobody read. | Service |
 | `stash.py` | Store what a docked pilot carries in its own storage at that station, so that its hold is free for the next route. | By hand |
@@ -144,6 +148,27 @@ collective_mcp.py --call <tool> ['<json arguments>']
                                        run one tool and print its answer: a test without Hermes
 --root <dir>   the repository (default: the one this file lies in)
 --data <dir>   the unit's data folder, handed to the scripts (default: theirs)
+```
+
+### `comms_guard.py`
+
+CaMeL + Microsoft Spotlighting security firewall for untrusted external player messages.
+
+Run by hand.
+
+```
+game/fleet/comms_guard.py [--data /srv/collective/data] [--last 25] [--quarantined]
+```
+
+### `contracts.py`
+
+CLTV Procurement Contracts, Station Bursar order-book advisor & rival contract
+arbitrage.
+
+Run by hand.
+
+```
+game/fleet/contracts.py [--data /srv/collective/data] [--root /srv/collective/the-collective]
 ```
 
 ### `craftbook.py`
@@ -568,6 +593,17 @@ observe.py kinds [--division <name>|all]                                        
 --subject      the rows whose subject holds the text (any case)
 ```
 
+### `passive_sense.py`
+
+Zero-fuel opportunistic market & herd freshness updates when any fleet ship docks or
+works.
+
+Run by hand.
+
+```
+imported by mine.py, hunt.py and route_run.py: maybe_refresh_market(call_raw, base_id, system_id)
+```
+
 ### `plan.py`
 
 Each division's plan file: every ship with the routes it flies, in their order; the
@@ -711,6 +747,16 @@ routes.py check | index | measure | idle         [--root <dir>] [--data <dir>]
 routes.py measure --write <route id>... | --role <role> | --all
                   writes the measured block of the routes named, of a role's plan, or of every route (the hourly
                   job); without one of the three it writes nothing and says so
+```
+
+### `routes_hygiene.py`
+
+Automated structural legacy-route cleanliness (strictly honoring Rule F22).
+
+Run by hand.
+
+```
+game/fleet/routes_hygiene.py [--root /srv/collective/the-collective] [--write]
 ```
 
 ### `runhost.py`

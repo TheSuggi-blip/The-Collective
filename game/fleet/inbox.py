@@ -73,6 +73,7 @@ from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import division                                   # noqa: E402
+import comms_guard                                # noqa: E402
 
 REPO = Path(__file__).resolve().parent.parent.parent
 GATE = "http://172.30.0.32:7580"
@@ -300,10 +301,13 @@ def contact_line(row):
     when = (str(row.get("t") or row.get("seen_at"))[:16].replace("T", " ") + " UTC")
     other = row.get("with") if row.get("channel") == "private" else row.get("sender")
     who = "own ship -> %s" % (other or "?") if row.get("own") else "%s%s" % (other or "?", " [%s]" % row["tag"] if row.get("tag") else "")
-    if row.get("channel") == "private":
+    guard = comms_guard.inspect_message(row.get("text") or "", row.get("sender") or "", row.get("channel") or "", bool(row.get("own")), bool(row.get("station")))
+    if guard["risk_level"] == "quarantined":
+        text = guard["safe_text"]
+    elif row.get("channel") == "private":
         text = "(private message, %d characters; the text is in the unit's data folder: `game/fleet/inbox.py show --to-us`)" % len(row.get("text") or "")
     else:
-        text = plain(row.get("text"), 1500)
+        text = plain(guard["safe_text"], 1500)
     place = row.get("channel") + (" at %s" % row["system"] if row.get("system") else "")
     return "%s | %s | %s | %s | %s" % (when, "out" if row.get("own") else "in", place, plain(who, 80), text)
 
@@ -436,6 +440,9 @@ def file_contacts(data, root, commit, out="", dry_run=False):
 
 
 def show_line(row):
+    _g = comms_guard.inspect_message(row.get("text") or "", row.get("sender") or "", row.get("channel") or "", bool(row.get("own")), bool(row.get("station")))
+    if _g["risk_level"] == "quarantined":
+        row = dict(row, text=_g["safe_text"])
     where = row.get("system") or ("to " + str(row.get("pilot")) if row.get("channel") == "private" else "")
     return "%s  %-8s %-14s %s%s%s: %s" % (str(row.get("t") or row.get("seen_at"))[:19], row.get("channel"), where[:14], "* " if row.get("to_us") else "",
                                         row.get("sender"), " [%s]" % row["tag"] if row.get("tag") else "", row.get("text"))

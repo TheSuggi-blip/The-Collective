@@ -454,6 +454,23 @@ def inspect(root, data, hours=4.0, now=None, save=False):
         elif supply_low:
             add_finding("WARN", "supply", "SUPPLY_BELOW_KEEP", "Supply chain below target keep: " + ", ".join(supply_low))
 
+        if "runs" in tables:
+            jl = con.execute(
+                "SELECT ROUND(SUM(COALESCE(minutes,0))/60.0,1), ROUND(SUM(COALESCE(credits,0))) "
+                "FROM runs WHERE route LIKE 'train-jumps-%' AND t > strftime('%s','now') - 14400"
+            ).fetchone()
+            if jl and (jl[0] or 0) >= 80:
+                add_finding("WARN", "efficiency", "JUMP_LOOP_BURN",
+                            "Empty jump loops burned %s ship-h (%s cr) in 4h -- shift to Station Bursars / docked craft" % (jl[0], format(int(jl[1] or 0), ",")))
+        try:
+            import comms_guard
+            q_msgs = [r for r in comms_guard.read_comms_rows(Path(data) / "comms" / "messages.jsonl") if r["risk_level"] == "quarantined"]
+            if q_msgs:
+                add_finding("WARN", "security", "COMMS_QUARANTINED",
+                            "%d external message(s) quarantined by comms_guard firewall (newest: %s)" % (len(q_msgs), q_msgs[-1]["sender"]))
+        except Exception:
+            pass
+
         mad_out = []
         if "stats_figures" in tables:
             for a in con.execute("SELECT subject, figure, value FROM stats_figures WHERE view='alerts' AND text='OUT'"):

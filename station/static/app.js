@@ -2426,30 +2426,51 @@ async function renderMetrics(panel, live) {
     panel.append(el('h3', null, 'Fleet readiness & bottlenecks'));
     const rgrid = el('div', 'kpis');
     const rkpi = (k, v, sub, cls) => { const b = el('div', 'kpi' + (cls ? ' ' + cls : '')); b.append(el('div', 'k', k), el('div', 'v', v)); if (sub) b.append(el('div', 's', sub)); rgrid.append(b); };
+    const bs = ops.balance_sheet || null;
+    if (bs) {
+      panel.insertBefore(el('h3', null, 'Consolidated balance sheet & enterprise net worth'), panel.lastChild);
+      const bgrid = el('div', 'kpis');
+      const bkpi = (k, v, sub, cls) => { const d = el('div', 'kpi' + (cls ? ' ' + cls : '')); d.append(el('div', 'k', k), el('div', 'v', v)); if (sub) d.append(el('div', 's', sub)); bgrid.append(d); };
+      bkpi('Enterprise net worth', fmtCompact(bs.net_worth) + ' cr', fmtCompact(Math.round(bs.net_worth / Math.max(1, t.ships || 246))) + ' / ship (cash + vaults + ships + bases)', 'main pos');
+      bkpi('Liquid purse', fmtCompact(bs.liquid_cash) + ' cr', 'wallets ' + fmtCompact(bs.wallets) + ' + treasury ' + fmtCompact(bs.treasury), 'pos');
+      bkpi('Vault stock @ bid', fmtCompact(bs.vault_worth) + ' cr', bs.handed_over_24h ? '24h handed over: ' + fmtCompact(bs.handed_over_24h) + ' cr' : 'ores, refined parts & hunt loot stored', 'pos');
+      bkpi('Fleet & facilities', fmtCompact((bs.fleet_book || 0) + (bs.facility_invested || 0)) + ' cr', 'ships/fits ' + fmtCompact(bs.fleet_book) + ' + facilities ' + fmtCompact(bs.facility_invested), '');
+      panel.insertBefore(bgrid, panel.lastChild);
+    }
     const fac = (ops.readiness || {}).faction || {};
     const capPct = fac.limit ? Math.round((fac.members / fac.limit) * 100) : 0;
-    rkpi('Faction cap', fac.limit ? fmt(fac.members) + ' / ' + fmt(fac.limit) : '--',
-      fac.limit ? (fac.members >= fac.limit - 2 ? 'at cap: recruitment center needed' : (fac.limit - fac.members) + ' slots open') : 'not read',
+    const nextSeatBldg = !fac.limit ? 'not read' : fac.limit < 100 ? 'next: Recruitment Desk (100)' : fac.limit < 200 ? 'next: Recruitment Center (200)' : fac.limit < 400 ? 'next: Guild Hall Recruiting (400)' : fac.limit < 1000 ? 'next: Grand Recruitment Bureau (1,000)' : 'multi-station +25% offices';
+    rkpi('Faction seats', fac.limit ? fmt(fac.members) + ' / ' + fmt(fac.limit) : '--',
+      fac.limit ? (fac.members >= fac.limit - 2 ? 'at cap -- ' + nextSeatBldg : (fac.limit - fac.members) + ' open (' + nextSeatBldg + ')') : 'not read',
       capPct >= 95 ? 'warn' : 'pos');
-    const fr = ops.freshness || {};
-    const frCls = fr.max_s < 0 ? '' : fr.max_s <= 35 ? 'pos' : fr.max_s <= 90 ? 'warn' : 'neg';
-    rkpi('Pilot tick lag', fr.ships ? fr.median_s + 's med' : '--',
-      fr.ships ? 'p95 ' + fr.p95_s + 's, max ' + fr.max_s + 's (' + fmt(fr.ships) + ' ships)' : 'no timestamps', frCls);
+    const tf = ops.tech_frontier || {};
     const hulls = (ops.readiness || {}).hulls || [];
     const byTier = new Map();
     hulls.forEach((h) => byTier.set(h.tier, (byTier.get(h.tier) || 0) + h.count));
     const tierTxt = [...byTier.entries()].sort((x, y) => y[0] - x[0]).map(([tr, n]) => fmt(n) + ' T' + tr).join(', ') || '--';
-    const topHull = hulls.slice(0, 3).map((h) => h.class + ' (' + h.count + ')').join(', ');
-    rkpi('Hull tiers', tierTxt, topHull || 'no hull data', (byTier.get(0) || 0) > 200 ? 'warn' : '');
-    const sw = (ops.readiness || {}).sweepable || {};
-    rkpi('Sweepable wallets', fmt(sw.credits || 0) + ' cr',
-      fmt(sw.ships || 0) + ' ships above role cap (50k trade, 30k work)', (sw.credits || 0) >= 500000 ? 'warn' : '');
-    const sv = ops.services || {};
-    rkpi('Unit services', sv.total ? sv.running + ' / ' + sv.total : '--',
-      sv.down && sv.down.length ? 'down: ' + sv.down.join(', ') : 'all running', sv.down && sv.down.length ? 'neg' : 'pos');
+    const ftTier = tf.target_tier || 2;
+    rkpi('Active hull frontier: T' + ftTier, tf.ready_pilots !== undefined ? fmt(tf.at_or_above || 0) + ' / ' + fmt(tf.ready_pilots) + ' T' + ftTier + '+' : tierTxt,
+      'Piloting avg ' + (tf.avg_piloting || '--') + ' / max ' + (tf.max_piloting || '--') + ' | ' + tierTxt + ' | next: ' + (tf.next_milestone || ''),
+      (tf.ready_pilots || 0) > (tf.at_or_above || 0) ? 'warn' : 'pos');
     const mods = (ops.readiness || {}).modules || [];
-    rkpi('High-tier modules', mods.length ? fmt(mods.reduce((acc, m) => acc + m.count, 0)) + ' fitted' : '0',
-      mods.length ? mods.slice(0, 3).map((m) => m.name + ': ' + m.count).join(', ') : 'no T3/scanner/expander fitted');
+    rkpi('Advanced modules (T2-T5)', mods.length ? fmt(mods.reduce((acc, m) => acc + m.count, 0)) + ' fitted' : '0',
+      mods.length ? mods.slice(0, 3).map((m) => m.name + ': ' + m.count).join(', ') : 'no T2+ modules fitted yet', mods.length ? 'pos' : 'warn');
+    const eff = ops.efficiency || null;
+    if (eff) {
+      const jl = eff.jump_loops || { hours: 0, credits: 0 }, cn = eff.census || { hours: 0, credits: 0 };
+      rkpi('24h flight efficiency', (eff.productive_pct || 0) + '% productive',
+        'jump loops: ' + jl.hours + 'h (' + fmtCompact(jl.credits) + ' cr) | census: ' + cn.hours + 'h (' + fmtCompact(cn.credits) + ' cr)',
+        (eff.productive_pct || 0) < 65 ? 'warn' : 'pos');
+    }
+    const bw = ops.birth_wave || null;
+    if (bw) {
+      rkpi('Next birth rollout: Wave ' + bw.wave, (t.ships || 246) + ' -> ' + bw.target + ' (+' + bw.add_ships + ')',
+        'gate: ' + bw.gate, '');
+    }
+    const fr = ops.freshness || {};
+    const frCls = fr.max_s < 0 ? '' : fr.max_s <= 35 ? 'pos' : fr.max_s <= 90 ? 'warn' : 'neg';
+    rkpi('Pilot tick & services', fr.ships ? fr.median_s + 's med / p95 ' + fr.p95_s + 's' : '--',
+      ((ops.services || {}).running || 0) + '/' + ((ops.services || {}).total || 10) + ' services up | ' + fmt(ops.contracts_count || 0) + ' contracts logged', frCls);
     panel.append(rgrid);
 
     const mad = (ops.alerts && ops.alerts.mad) || [], raids = (ops.alerts && ops.alerts.battles) || [];
@@ -2632,7 +2653,7 @@ async function renderEmpire(panel, live) {
   panel.append(kgrid);
 
   if (our.hulls && our.hulls.length) {
-    panel.append(el('h3', null, 'Fleet hull lineage (' + fmt(our.fleet_ships || 246) + ' ships -- 100% Voidborn-born pilots)'));
+    panel.append(el('h3', null, 'Active fleet hull lineage (' + fmt(our.fleet_ships || 246) + ' ships -- multi-empire 500/600 rollout in Docs -> Birth plans)'));
     panel.append(fitTable(table(['Hull class', 'Design empire', 'Tier', 'Role category', 'Ships'],
       our.hulls.map((h) => [
         h.class,
@@ -2947,7 +2968,7 @@ function renderEmpireComms(panel, dip) {
   ekpi('Player hails to us', fmt(s.direct_human_in || 0), 'private DMs or @CLTV mentions from real players', s.direct_human_in ? 'warn' : 'main pos');
   ekpi('Sent by our fleet', fmt(s.sent_by_us || 0), 'Rule F4 radio silence holds (Suggi-only outbound)', s.sent_by_us ? 'warn' : 'pos');
   ekpi('Local pilot radio', fmt(s.local_human || 0), 'unique human messages heard near our ships', '');
-  ekpi('Authority notices', fmt(s.npc_notices || 0), 'shipyard builds, tax statements & salvage tows', '');
+  ekpi('Comms firewall', 'CaMeL + Nonce', 'prompt-injection quarantine active (Rule F4) + contracts.log', 'pos');
   panel.append(kgrid);
 
   panel.append(el('h3', null, 'Direct diplomatic hails -- received from & sent to players'));

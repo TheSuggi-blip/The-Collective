@@ -85,7 +85,7 @@ HEADER = re.compile(r"^## \[ENT-(\d{3,})\] \| (\d{4}-\d{2}-\d{2} \d{2}:\d{2}) UT
 SESSION_LINES = ("Session", "Did", "Worked", "Failed", "Requests", "Suggestions", "Report")
 ANSWER_WORDS = ("yes", "no", "done")
 LOGS = {"orders": ("order",), "reports": ("session",), "requests": ("request", "answer"), "queue": ("general",), "errors": ("error",),
-        "admirals": ("note", "claim")}
+        "admirals": ("note", "claim"), "contracts": ("contract", "bursar", "filled", "expired")}
 GATED = ("orders", "reports", "requests")
 ENTRY_CHARS = 8000            # the newest orders entry, whole, Suggi's S and G lines included (Suggi, 2026-11-18)
 PLAN_WORDS = 150              # ... PLAN, its heading line not counted

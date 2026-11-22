@@ -160,6 +160,18 @@ the pilots of OTHER players our ships met: faction, ship class, where last seen,
 - The factions we meet most: `SELECT faction, COUNT(*), SUM(times) FROM met GROUP BY faction ORDER BY 3 DESC LIMIT 10`
 - Pilots seen in combat: `SELECT name, faction, system, datetime(in_combat, 'unixepoch') FROM met WHERE in_combat IS NOT NULL ORDER BY in_combat DESC`
 
+## player_comms
+
+external and fleet chat messages classified and sanitized by comms_guard.py (quarantining prompt-injection attempts and extracting typed trade/contract intent)
+
+- Kind: snapshot
+- Columns: id, t, channel, system, sender, tag, to_us, own, intent, risk_level, risk_flags, extracted, safe_text, src; one row per id
+- Kept: the last reading of its file, replaced when the file changes; a missing or bad file keeps them (source.note says why)
+- Refreshed: the store's pass (every 60 s), when a file changed (size or mtime): loader `player_comms`, data/comms/messages.jsonl
+- Sanitized messages addressed to us by commercial or diplomatic intent: `SELECT t, channel, sender, tag, intent, risk_level, safe_text FROM player_comms WHERE to_us = 1 AND own = 0 ORDER BY t DESC LIMIT 20`
+- Quarantined or suspicious prompt-injection attempts blocked by comms_guard: `SELECT t, channel, sender, tag, risk_level, risk_flags, safe_text FROM player_comms WHERE risk_level != 'clean' ORDER BY t DESC`
+- Extracted item/price trade offers from player chat: `SELECT t, sender, tag, system, extracted, safe_text FROM player_comms WHERE extracted != '' ORDER BY t DESC LIMIT 20`
+
 ## observations
 
 history: one row per observation a member wrote with observe.py (observations/<division>.jsonl): division, member, kind, subject, when it was seen (t, at), note; `fields` is JSON text, one field read by json_extract(fields, '$.<key>'); kept 30 days at least

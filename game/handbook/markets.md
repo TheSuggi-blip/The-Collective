@@ -51,3 +51,15 @@ history: per station, item and UTC hour the lowest and highest best bid and best
 - The highest bid for iron_ore per station in the last day: `SELECT base, MAX(bid_hi) FROM market_hour WHERE item = 'iron_ore' AND hour >= strftime('%s', 'now') - 86400 GROUP BY base ORDER BY 2 DESC`
 - The cheapest ask ever seen for steel_plate: `SELECT base, MIN(ask_lo), datetime(MAX(hour), 'unixepoch') FROM market_hour WHERE item = 'steel_plate' GROUP BY base ORDER BY 2`
 - Hours of prices per item: `SELECT item, COUNT(*) FROM market_hour GROUP BY item ORDER BY 2 DESC LIMIT 20`
+
+## contract_candidates
+
+view: open priority needs with missing items where Station Bursars or Notice Board contracts can source bottlenecks
+
+- Kind: view over need_status
+- Columns: need_id, priority, division, target_ref, covered_pct, short_items, fee
+- Kept: nothing: a view stores no row
+- Refreshed: computed when asked, from its tables
+- Open bottleneck needs for Station Bursar buy-bids and Notice Board contracts: `SELECT * FROM contract_candidates ORDER BY priority`
+- Priority 1 bottlenecks needing procurement: `SELECT need_id, division, covered_pct, short_items FROM contract_candidates WHERE priority = 1`
+- Needs by division with missing items: `SELECT division, COUNT(*) AS open_needs, GROUP_CONCAT(need_id) FROM contract_candidates GROUP BY division`
