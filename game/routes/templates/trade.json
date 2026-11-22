@@ -48,12 +48,23 @@
     "sell-hydrogen-at-node-beta",
     "sell-hydrogen-at-node-gamma",
     "sell-hydrogen-at-synchrony",
-    "carry-hydrogen-synchrony-to-experiment"
+    "carry-hydrogen-synchrony-to-experiment",
+    "sell-plasma-node-beta",
+    "drain-ice-node-alpha",
+    "drain-ice-nexus",
+    "carry-ice-experiment-nexus",
+    "carry-ice-node-alpha-nexus",
+    "carry-ice-synchrony-nexus",
+    "sell-deuterium-at-node-beta",
+    "sell-liquid-hydrogen-central",
+    "sell-liquid-hydrogen-node-beta",
+    "carry-liquid-hydrogen-node-beta-central",
+    "sell-trade-crystal-at-nexus"
    ],
    "trains": [
     "trading"
    ],
-   "note": "Hunt loot at the receivers' stations first (orders ENT-062 P5: ember, melt, noble, curd, superfluid where the hunts give them), then the stored surplus of every division"
+   "note": "Hunt loot at the receivers' stations first (orders ENT-062 P5), then what the gift routes hand the receivers (null matter, lead, curd, soma, plasma, water ice, hydrogen), then the stored surplus of every division"
   },
   "trade-craft": {
    "title": "Make from the pilot's own stores where they lie: copper piping, steel plate, then copper wiring",
