@@ -2,22 +2,23 @@
 """progression.py -- live enterprise progression roadmap, strategic rung gauges, and historical milestone chronicle.
 
 WHAT: tracks where The Collective came from, where it stands right now, and where it is going across Days, Weeks,
-      and Months toward Strategic Goals G1-G5 and Operational Subgoals O1-O9.
+      and Months toward Eternal Strategic Goals G1-G5 and Anchored Operational Subgoals O1-O9.
         1. Verified Historical Chronicle: combines dated foundational milestones since Founding (2026-11-14) with
            live auto-detected unlocks from read.db, empire.json, and fleet.json (first Tier-2 hulls, frontier outposts,
-           full 246-ship seating, purse/enterprise thresholds, Yildun sovereign station, Wave 4/5 fleet births).
+           standing multi-empire armada milestones, full seating, purse/enterprise thresholds, sovereign stations).
         2. Strategic Rung Ladder (0-100%): computes real-time completion across 12 concrete rungs grouped into
-           Immediate Horizon (Days), Mid-Term Horizon (1-3 Weeks), and Long-Term Horizon (1-3+ Months).
+           Immediate Horizon (Days), Mid-Term Horizon (1-3 Weeks), and Long-Term Horizon (1-3+ Months). Every gauge,
+           ceiling, unfitted headroom count, leaderboard rank, and bottleneck is derived live from read.db/fleet.json.
         3. Rolling Weekly & Monthly Snapshots: aggregates historical performance by ISO week and calendar month
-           from stats_money_hour, runs, and filed reports, bounded so it never bloats.
+           from stats_money_hour, bounded to 12 periods so it never bloats.
         4. Auto-Updated Governance Blueprint: `progression.py write [--commit]` updates `governance/progression-roadmap.md`
            between `<!-- PROGRESSION-AUTO:BEGIN -->` and `<!-- PROGRESSION-AUTO:END -->` markers on the hourly pass.
 RULES:
   - Read-only on game state and read.db; writes only `governance/progression-roadmap.md` when `write` is called.
-  - Every metric is derived live from read.db, empire.json, fleet.json, or repository history -- never guessed.
+  - Every metric, ceiling, and bottleneck is derived live from read.db, empire.json, fleet.json, or repo history.
   - Pure 7-bit ASCII (`U+0000-U+007F`).
-WHY:  Suggi, 2026-11-22: "I want to see also a progression guide, of where we are going and the milestones over the
-      past days/weeks/months etc. So we can keep track of progress as well."
+WHY:  Suggi, 2026-11-22/23: dynamic progression roadmap showing capacity utilization, upgrade saturation, unfitted
+      headroom, and standing fleet vs current/max possible faction size across Days/Weeks/Months.
 
 USAGE:
   progression.py [show] [--json]
@@ -47,9 +48,9 @@ END_MARK = "<!-- PROGRESSION-AUTO:END -->"
 FOUNDATIONAL_MILESTONES = (
     ("2026-11-14", "Day 1 -- Founding", "Constitution, 6-Division Charter & Five Admirals Born",
      "The Collective [CLTV] chartered; Unity (Fleet Admiral) + Zero, Mercury, Apollo, Apophis, and Oracle initialized inside sealed gVisor unit."),
-    ("2026-11-15", "Day 2 -- Early Waves", "Waves 1 & 2 Deployed (5 -> 50 Ships) & First Profitable Creature Hunts",
+    ("2026-11-15", "Day 2 -- Early Fleet", "Initial Fleet Deployed (5 -> 50 Ships) & First Profitable Creature Hunts",
      "Setpoint engine + container gate proven; starter missions (~22k cr/pilot) and early creature-good hunting established initial working capital."),
-    ("2026-11-16", "Day 3 -- Wave 3 Scale", "Wave 3 Armada (246 Ships), SQLite Warehouse & First Outpost (GSC-0044)",
+    ("2026-11-16", "Day 3 -- Core Armada", "246-Ship Voidborn Armada, SQLite Warehouse & First Outpost (GSC-0044)",
      "Scaled to 246 specialized ships (6 Cmd, 60 Min, 40 Trd, 40 Log, 70 Mil, 30 Int); store.py live.db->read.db pipeline & CLTV Outpost GSC-0044 built."),
     ("2026-11-17", "Day 4 -- Faction & T1", "100-Seat Offices, First Tier-1 Liminal Miner & 490+ Systems Mapped",
      "Hiring Board + Recruitment Desk unlocked 100 faction seats; first Tier-1 Voidborn Liminal commissioned; declarative plan.py & supply chains live."),
@@ -57,36 +58,62 @@ FOUNDATIONAL_MILESTONES = (
      "Monolithic guidebooks split into 6-8 capped chapters mirrored into doc_versions; game/handbook.md auto-generated from live store schema."),
     ("2026-11-21", "Day 8 -- Pull Reserve", "Shared Needs Register (needs.tsv) & Synchronous Admiral Self-Build",
      "Priority-ordered pull reserve (needs.tsv -> need_status) unified division material targets; Admirals gained 1-call synchronous runner/script builds."),
-    ("2026-11-22", "Day 9 -- Enterprise Era", "Constitution v8, 200 Seats, T3 Modules, 506/506 Galaxy & Anchor-Delta Loop",
-     "Recruitment Center raised cap to 200; 506/506 galaxy charted; 21 Mining Laser III + 21 Pulse Laser III + 11 Shield Booster II fitted; 54 pilots hit Piloting 10+; Comms Firewall, Station Bursar contracts.log & Playbooks live."),
+    ("2026-11-22", "Day 9 -- Enterprise Era", "Constitution v9, 3-Tier Mandate (G1-G5 / O1-O9), 200 Seats & 506/506 Galaxy",
+     "Recruitment Center raised cap to 200; 506/506 galaxy charted; T3 lasers & Shield Booster II proven; 3-Tier Orders & multi-empire standing fleet launched."),
 )
 
 
-def _has_table(conn, name):
-    if conn is None:
-        return False
-    return conn.execute(
-        "SELECT 1 FROM sqlite_master WHERE type IN ('table', 'view') AND name = ?",
-        (name,),
-    ).fetchone() is not None
+def _clamp_pct(v):
+    return round(max(0.0, min(100.0, float(v))), 1)
 
 
-def _open_ro(data):
-    dbp = Path(data) / "store" / "read.db"
-    if not dbp.is_file():
+def _open_ro(data_dir):
+    db = Path(data_dir) / "store" / "read.db"
+    if not db.is_file() or db.is_symlink():
         return None
     try:
-        return sqlite3.connect("file:%s?mode=ro" % dbp, uri=True, timeout=2.0)
+        return sqlite3.connect("file:%s?mode=ro" % db, uri=True, timeout=2.0)
     except sqlite3.Error:
         return None
 
 
-def _clamp_pct(val):
-    return round(max(0.0, min(100.0, float(val))), 1)
+def _has_table(conn, name):
+    r = conn.execute(
+        "SELECT 1 FROM sqlite_master WHERE type IN ('table','view') AND name = ?",
+        (name,),
+    ).fetchone()
+    return r is not None
+
+
+def _next_seat_building(seats_cap, max_cap):
+    if seats_cap < 50:
+        return "Hiring Board (50)"
+    if seats_cap < 100:
+        return "Recruitment Desk (100)"
+    if seats_cap < 200:
+        return "Recruitment Center (200)"
+    if seats_cap < 400:
+        return "Guild Hall Recruiting (400)"
+    if seats_cap < max_cap:
+        return "Grand Recruitment Bureau (%s)" % format(max_cap, ",")
+    return "Max single-station cap (%s) reached" % format(max_cap, ",")
+
+
+def _short_summary(need_rec, fallback):
+    if not need_rec:
+        return fallback
+    short = (need_rec.get("short") or "").strip()
+    fee = int(need_rec.get("fee") or 0)
+    parts = []
+    if short:
+        parts.append("short: " + short[:95])
+    if fee > 0:
+        parts.append("fee %s cr" % format(fee, ","))
+    return " | ".join(parts) if parts else "fully stocked & funded -- ready to execute"
 
 
 def compute_progression(repo_root, data="/srv/collective/data", now=None):
-    """Compute live snapshot, 12 strategic rungs (Days/Weeks/Months), verified milestones, and weekly/monthly rollups."""
+    """Compute live enterprise progression snapshot, 12 horizon rungs, milestones, and rolling weekly/monthly ledgers."""
     now = time.time() if now is None else float(now)
     stamp = time.strftime("%Y-%m-%d %H:%M UTC", time.gmtime(now))
     today_str = time.strftime("%Y-%m-%d", time.gmtime(now))
@@ -94,7 +121,11 @@ def compute_progression(repo_root, data="/srv/collective/data", now=None):
     data_p = Path(data)
 
     # Defaults if DB/files are minimal (e.g. unit tests)
-    ships_total = 0
+    ships_synced = 0
+    ships_away = 0
+    standing_ships = 0
+    t0_hulls = 0
+    t1_hulls = 0
     t1_plus = 0
     t2_plus = 0
     t3_plus = 0
@@ -102,6 +133,7 @@ def compute_progression(repo_root, data="/srv/collective/data", now=None):
     p20_count = 0
     max_piloting = 0
     seats_used, seats_cap = 0, 20
+    max_faction_cap = 1000
     treasury = 0
     wallets = 0
     vault_worth = 0
@@ -116,9 +148,18 @@ def compute_progression(repo_root, data="/srv/collective/data", now=None):
     jump_loop_h_24h = 0.0
     productive_h_24h = 0.0
     t3_mods = 0
+    adv_mods_fitted = 0
+    total_installed_mods = 0
+    total_slots = 0
+    w_slots = 0
+    d_slots = 0
+    u_slots = 0
+    ships_with_adv = 0
     contracts_count = 0
     needs_map = {}
     leaderboard_ranks = {}
+    top_rival_wealth = 0
+    by_empire = {}
     weekly_rows = []
     monthly_rows = []
 
@@ -130,15 +171,25 @@ def compute_progression(repo_root, data="/srv/collective/data", now=None):
         except OSError:
             contracts_count = 0
 
-    # Read fleet.json rates if present
+    # Read fleet.json rates, wallets, online + away standing count
     fjson = data_p / "fleet" / "fleet.json"
     if fjson.is_file():
         try:
             fobj = json.loads(fjson.read_text(encoding="utf-8", errors="replace"))
-            rates = fobj.get("rates") or {}
-            steady_1h = int(((rates.get("1h") or {}).get("steady_net")) or 0)
-            steady_24h = int(((rates.get("24h") or {}).get("steady_net")) or 0)
-            wallets = int(sum((s.get("credits") or 0) for s in (fobj.get("ships") or []) if isinstance(s, dict)))
+            tot_block = fobj.get("totals") or {}
+            win = ((tot_block.get("rates") or {}).get("windows")) or {}
+            if win:
+                steady_1h = int(((win.get("1h") or {}).get("cph")) or 0)
+                steady_24h = int(((win.get("24h") or {}).get("cph")) or 0)
+            else:
+                rates = fobj.get("rates") or {}
+                steady_1h = int(((rates.get("1h") or {}).get("steady_net")) or 0)
+                steady_24h = int(((rates.get("24h") or {}).get("steady_net")) or 0)
+            fl_ships = [s for s in (fobj.get("ships") or []) if isinstance(s, dict)]
+            fl_away = [a for a in (fobj.get("away") or []) if isinstance(a, dict)]
+            ships_away = len(fl_away)
+            standing_ships = len(fl_ships) + ships_away
+            wallets = int(sum((s.get("credits") or 0) for s in fl_ships))
         except (OSError, ValueError):
             pass
 
@@ -147,9 +198,11 @@ def compute_progression(repo_root, data="/srv/collective/data", now=None):
         if conn is not None:
             if _has_table(conn, "ships"):
                 row = conn.execute("SELECT COUNT(*), COALESCE(SUM(credits), 0) FROM ships").fetchone()
-                ships_total = int(row[0] or 0)
+                ships_synced = int(row[0] or 0)
                 if not wallets:
                     wallets = int(row[1] or 0)
+                for emp, cnt in conn.execute("SELECT LOWER(COALESCE(NULLIF(empire,''), 'voidborn')), COUNT(*) FROM ships GROUP BY 1 ORDER BY 2 DESC"):
+                    by_empire[str(emp)] = int(cnt or 0)
                 if _has_table(conn, "hulls"):
                     for tier, cnt in conn.execute(
                         "SELECT COALESCE(h.tier, 0), COUNT(*) FROM ships s "
@@ -157,6 +210,10 @@ def compute_progression(repo_root, data="/srv/collective/data", now=None):
                     ):
                         t = int(tier or 0)
                         c = int(cnt or 0)
+                        if t == 0:
+                            t0_hulls += c
+                        elif t == 1:
+                            t1_hulls += c
                         if t >= 1:
                             t1_plus += c
                         if t >= 2:
@@ -164,6 +221,15 @@ def compute_progression(repo_root, data="/srv/collective/data", now=None):
                         if t >= 3:
                             t3_plus += c
                         fleet_book_worth += c * ({0: 5000, 1: 65000, 2: 350000, 3: 1500000, 4: 6000000, 5: 25000000}.get(t, 5000))
+                    srow = conn.execute(
+                        "SELECT COALESCE(SUM(COALESCE(h.weapon_slots,0)),0), "
+                        "COALESCE(SUM(COALESCE(h.defense_slots,0)),0), "
+                        "COALESCE(SUM(COALESCE(h.utility_slots,0)),0) "
+                        "FROM ships s LEFT JOIN hulls h ON LOWER(h.id) = LOWER(s.class) OR LOWER(h.name) = LOWER(s.class)"
+                    ).fetchone()
+                    if srow:
+                        w_slots, d_slots, u_slots = int(srow[0] or 0), int(srow[1] or 0), int(srow[2] or 0)
+                        total_slots = w_slots + d_slots + u_slots
             if _has_table(conn, "ship_skills"):
                 prow = conn.execute(
                     "SELECT COALESCE(MAX(level), 0), "
@@ -177,13 +243,28 @@ def compute_progression(repo_root, data="/srv/collective/data", now=None):
                     p20_count = int(prow[2] or 0)
             if _has_table(conn, "ship_modules"):
                 mrow = conn.execute(
-                    "SELECT COUNT(*) FROM ship_modules WHERE module LIKE '%_iii' OR module LIKE '%_iv' OR module LIKE 'shield_booster_ii%'"
+                    "SELECT COUNT(*), "
+                    "SUM(CASE WHEN name LIKE '% II' OR name LIKE '% III' OR name LIKE '% IV' OR name LIKE '% V' THEN 1 ELSE 0 END), "
+                    "COUNT(DISTINCT CASE WHEN name LIKE '% II' OR name LIKE '% III' OR name LIKE '% IV' OR name LIKE '% V' THEN pilot END), "
+                    "SUM(CASE WHEN module LIKE '%_iii' OR module LIKE '%_iv' OR module LIKE 'shield_booster_ii%' THEN 1 ELSE 0 END) "
+                    "FROM ship_modules"
                 ).fetchone()
-                t3_mods = int((mrow[0] if mrow else 0) or 0)
+                if mrow:
+                    total_installed_mods = int(mrow[0] or 0)
+                    adv_mods_fitted = int(mrow[1] or 0)
+                    ships_with_adv = int(mrow[2] or 0)
+                    t3_mods = int(mrow[3] or 0)
             if _has_table(conn, "faction"):
                 frow = conn.execute("SELECT COALESCE(member_count, 0), COALESCE(members_limit, 20), COALESCE(treasury, 0) FROM faction LIMIT 1").fetchone()
                 if frow:
                     seats_used, seats_cap, treasury = int(frow[0]), int(frow[1]), int(frow[2])
+            if _has_table(conn, "facilities"):
+                cap_r = conn.execute(
+                    "SELECT COALESCE(MAX(faction_cap), 1000) FROM facilities "
+                    "WHERE LOWER(id) LIKE '%recruit%' OR LOWER(id) LIKE '%hiring%' OR LOWER(id) LIKE '%guild_hall%'"
+                ).fetchone()
+                if cap_r and int(cap_r[0] or 0) >= 200:
+                    max_faction_cap = int(cap_r[0])
             if _has_table(conn, "bases"):
                 for bkind, bcnt in conn.execute("SELECT LOWER(COALESCE(kind, 'outpost')), COUNT(*) FROM bases GROUP BY 1"):
                     if "station" in bkind:
@@ -202,12 +283,21 @@ def compute_progression(repo_root, data="/srv/collective/data", now=None):
             if _has_table(conn, "systems"):
                 srow = conn.execute("SELECT COUNT(*) FROM systems").fetchone()
                 systems_charted = int((srow[0] if srow else 0) or 0)
+                if systems_charted > total_systems:
+                    total_systems = systems_charted
             if _has_table(conn, "need_status"):
-                for nid, nref, cov, col in conn.execute("SELECT id, COALESCE(ref, ''), COALESCE(covered, 0), COALESCE(colour, '') FROM need_status"):
-                    val = (round(float(cov or 0.0), 1), str(col or ""))
-                    needs_map[str(nid)] = val
+                for nid, nref, cov, col, shrt, fee in conn.execute(
+                    "SELECT id, COALESCE(ref, ''), COALESCE(covered, 0), COALESCE(colour, ''), COALESCE(short_items, ''), COALESCE(fee, 0) FROM need_status"
+                ):
+                    rec = {
+                        "pct": round(float(cov or 0.0), 1),
+                        "colour": str(col or ""),
+                        "short": str(shrt or ""),
+                        "fee": int(fee or 0),
+                    }
+                    needs_map[str(nid)] = rec
                     if nref:
-                        needs_map["ref:" + str(nref)] = val
+                        needs_map["ref:" + str(nref)] = rec
             if _has_table(conn, "stats_money_hour") and not steady_24h:
                 cutoff_24 = int(now) - 86400
                 s24 = conn.execute(
@@ -227,8 +317,12 @@ def compute_progression(repo_root, data="/srv/collective/data", now=None):
                     "SELECT board, rank, value FROM leaderboards WHERE grp = 'factions' AND tag = 'CLTV' ORDER BY rank"
                 ):
                     leaderboard_ranks[str(board_name)] = {"rank": int(rnk or 0), "value": int(val or 0)}
+                top_r = conn.execute(
+                    "SELECT COALESCE(MAX(value), 0) FROM leaderboards WHERE grp = 'factions' AND board = 'total_wealth'"
+                ).fetchone()
+                if top_r:
+                    top_rival_wealth = int(top_r[0] or 0)
             if _has_table(conn, "stats_money_hour"):
-                # Aggregate rolling ISO weeks and calendar months from fleet-wide stats_money_hour
                 w_sql = (
                     "SELECT strftime('%Y-W%W', hour, 'unixepoch') AS wk, "
                     "MIN(date(hour, 'unixepoch')), MAX(date(hour, 'unixepoch')), "
@@ -261,16 +355,38 @@ def compute_progression(repo_root, data="/srv/collective/data", now=None):
         if conn is not None:
             conn.close()
 
+    ships_total = max(standing_ships, ships_synced)
+    open_seats = max(0, seats_cap - seats_used)
+    unseated_ships = max(0, ships_total - seats_used)
+    pct_max_faction = round(100.0 * seats_used / max(1, max_faction_cap), 1)
+    pct_fleet_vs_max = round(100.0 * ships_total / max(1, max_faction_cap), 1)
+    empty_slots = max(0, total_slots - total_installed_mods)
+    adv_slots_unfitted = max(0, total_slots - adv_mods_fitted)
+    ships_unfitted = max(0, ships_synced - ships_with_adv)
+    adv_slot_pct = round(100.0 * adv_mods_fitted / max(1, total_slots), 1) if total_slots else 0.0
+    adv_ship_pct = round(100.0 * ships_with_adv / max(1, ships_synced), 1) if ships_synced else 0.0
+    hulls_upgraded = t1_plus
+    hull_upgrade_pct = round(100.0 * hulls_upgraded / max(1, ships_synced), 1) if ships_synced else 0.0
+
     liquid_purse = wallets + treasury
     enterprise_value = liquid_purse + vault_worth + facility_worth + fleet_book_worth
     total_flight_h = productive_h_24h + jump_loop_h_24h
     productive_share = round(100.0 * productive_h_24h / total_flight_h, 1) if total_flight_h > 0 else 100.0
 
-    # Build dynamic milestones list (foundational + any live auto-unlocked achievements)
+    # Build dynamic milestones list (foundational + live auto-unlocked achievements)
     milestones = [
         {"date": d, "era": era, "title": t, "detail": det, "status": "achieved"}
         for (d, era, t, det) in FOUNDATIONAL_MILESTONES
     ]
+    if ships_total >= 480 and len(by_empire) >= 4:
+        milestones.append({
+            "date": today_str, "era": "Live Auto-Unlock",
+            "title": "Plan-500 Multi-Empire Standing Armada Active (%d Ships)" % ships_total,
+            "detail": "%d standing ships across %d empires (%s)." % (
+                ships_total, len(by_empire), ", ".join("%s %d" % (e, c) for e, c in sorted(by_empire.items(), key=lambda kv: -kv[1]))
+            ),
+            "status": "achieved",
+        })
     if t2_plus >= 1:
         milestones.append({
             "date": today_str, "era": "Live Auto-Unlock", "title": "First Tier-2 Hull Commissioned",
@@ -286,10 +402,10 @@ def compute_progression(repo_root, data="/srv/collective/data", now=None):
             "date": today_str, "era": "Live Auto-Unlock", "title": "First Sovereign Player Station Built",
             "detail": "%d sovereign station(s) active in empire.json." % stations_count, "status": "achieved",
         })
-    if ships_total >= 246 and seats_used >= ships_total:
+    if ships_total > 0 and seats_used >= ships_total:
         milestones.append({
-            "date": today_str, "era": "Live Auto-Unlock", "title": "100% Faction Seating of Wave-3 Armada",
-            "detail": "All %d ships seated inside [CLTV]." % ships_total, "status": "achieved",
+            "date": today_str, "era": "Live Auto-Unlock", "title": "100% Standing Armada Seated in [CLTV]",
+            "detail": "All %d standing ships seated inside [CLTV]." % ships_total, "status": "achieved",
         })
     if enterprise_value >= 100_000_000:
         milestones.append({
@@ -297,19 +413,45 @@ def compute_progression(repo_root, data="/srv/collective/data", now=None):
             "detail": "Consolidated Enterprise Net Worth reached %s cr." % format(enterprise_value, ","), "status": "achieved",
         })
 
-    # 12 Strategic Rungs across Days -> Weeks -> Months
-    atria_pct = needs_map.get("atria-outpost-kit", needs_map.get("ref:outpost_kit", (0.0, "")))[0]
-    res_miner_pct = needs_map.get("resonance-miner", needs_map.get("ref:resonance_miner", (0.0, "")))[0]
-    recursion_pct = needs_map.get("military-recursion-1", needs_map.get("ref:recursion", (0.0, "")))[0]
-    foundry_pct = needs_map.get("core-foundry", needs_map.get("ref:station_core_foundry", (0.0, "")))[0]
-    score_pct = needs_map.get("station-core", needs_map.get("ref:station_core", (0.0, "")))[0]
-    guild_pct = needs_map.get("ref:guild_hall_recruiting", (0.0, ""))[0]
-    lounge_pct = needs_map.get("transit-lounge", needs_map.get("ref:transit_lounge", (0.0, "")))[0]
+    # Live need lookups
+    def _need(nid, ref_key):
+        return needs_map.get(nid) or needs_map.get("ref:" + ref_key) or {}
+
+    atria_n = _need("atria-outpost-kit", "outpost_kit")
+    res_n = _need("resonance-miner", "resonance_miner")
+    rec_n = _need("military-recursion-1", "recursion")
+    foundry_n = _need("core-foundry", "station_core_foundry")
+    score_n = _need("station-core", "station_core")
+    guild_n = _need("guild-hall-recruiting", "guild_hall_recruiting")
+    lounge_n = _need("transit-lounge", "transit_lounge")
+
+    atria_pct = float(atria_n.get("pct") or 0.0)
+    res_miner_pct = float(res_n.get("pct") or 0.0)
+    recursion_pct = float(rec_n.get("pct") or 0.0)
+    foundry_pct = float(foundry_n.get("pct") or 0.0)
+    score_pct = float(score_n.get("pct") or 0.0)
+    guild_pct = float(guild_n.get("pct") or 0.0)
+    lounge_pct = float(lounge_n.get("pct") or 0.0)
 
     # Cashflow gauge: -50k cr/h -> 25%, 0 cr/h -> 75%, +25k cr/h -> 100%
     cashflow_pct = _clamp_pct(75.0 + (steady_24h / 1000.0)) if steady_24h < 25000 else 100.0
     if steady_24h < 0:
         cashflow_pct = _clamp_pct(max(10.0, 75.0 + (steady_24h / 1000.0)))
+
+    # Dynamic armada horizon: 500 until 500 reached, then scales automatically to max_faction_cap (1,000)
+    armada_target = 500 if ships_total < 500 else max_faction_cap
+    armada_pct = _clamp_pct(100.0 * ships_total / max(1, armada_target))
+
+    # Dynamic leaderboard string
+    rank_bits = []
+    for key, label in (("member_count", "members"), ("damage_dealt", "dmg"), ("facility_investment", "fac"), ("total_wealth", "wealth")):
+        if key in leaderboard_ranks and leaderboard_ranks[key].get("rank"):
+            rank_bits.append("#%d %s" % (leaderboard_ranks[key]["rank"], label))
+    rank_str = ", ".join(rank_bits) if rank_bits else "unranked in live feed"
+    rival_str = ("top rival %.1fB cr" % (top_rival_wealth / 1e9)) if top_rival_wealth >= 1e9 else ("top rival %.1fM cr" % (top_rival_wealth / 1e6) if top_rival_wealth > 0 else "leaderboard rivals")
+
+    uncharted = max(0, total_systems - systems_charted)
+    hull_mod_pct = _clamp_pct(0.5 * (100.0 * (t1_hulls * 0.5 + t2_plus) / max(1, ships_synced)) + 0.5 * adv_ship_pct)
 
     rungs = [
         # Horizon 1: Immediate (Days)
@@ -317,99 +459,114 @@ def compute_progression(repo_root, data="/srv/collective/data", now=None):
             "id": "h1-galaxy-recon", "horizon": "Days (Now)", "orders": "G5, O7",
             "title": "Full Galaxy Reconnaissance & Freshness Net",
             "pct": _clamp_pct(100.0 * systems_charted / max(1, total_systems)),
-            "current": "%d / %d systems charted" % (systems_charted, total_systems),
-            "target": "506charted + <3h road freshness",
-            "bottleneck": "9 pirate strongholds unread; trimming redundant home census fuel burn",
+            "current": "%d / %d systems charted (%d remaining)" % (systems_charted, total_systems, uncharted),
+            "target": "%d / %d systems charted + <3h road freshness" % (total_systems, total_systems),
+            "bottleneck": ("%d uncharted system(s) remaining" % uncharted) if uncharted else "All systems charted; maintain <3h market/belt freshness while trimming redundant census fuel",
         },
         {
-            "id": "h1-productive-cashflow", "horizon": "Days (Now)", "orders": "G4, O1, O3, F8",
-            "title": "Steady Cashflow Flip & Zero Empty Jump Burn",
+            "id": "h1-productive-cashflow", "horizon": "Days (Now)", "orders": "G4, O1, O3",
+            "title": "Enterprise Steady Cashflow Flip & Zero Empty Jump Burn",
             "pct": cashflow_pct if steady_24h > 0 else _clamp_pct(productive_share),
-            "current": "24h steady %+d cr/h | %.0f%% productive flight-h" % (steady_24h, productive_share),
+            "current": "1h %+d cr/h | 24h %+d cr/h | %.1f%% productive flight-h" % (steady_1h, steady_24h, productive_share),
             "target": "24h steady > +25,000 cr/h & jump loops < 10% flight-h",
-            "bottleneck": "%.0f ship-h/24h still on empty jump loops (Mercury/Apollo loop cap in Unity 22:30 queue)" % jump_loop_h_24h,
+            "bottleneck": "%.1f ship-h/24h on jump loops (shift idle hulls to home-empire extraction, missions & zero-fuel crafting)" % jump_loop_h_24h,
         },
         {
-            "id": "h1-first-t2-hulls", "horizon": "Days (Now)", "orders": "G2, O2, F17",
-            "title": "First Tier-2 Hulls (Resonance Miner, Recursion, Apophenia)",
+            "id": "h1-first-t2-hulls", "horizon": "Days (Now)", "orders": "G2, O2",
+            "title": "First Tier-2 Hulls & Empire-Matched Fleet Upgrades",
             "pct": _clamp_pct(100.0 if t2_plus >= 3 else (33.3 * t2_plus + 0.4 * max(res_miner_pct, recursion_pct, 80.0 if p10_ready >= 50 else 0.0))),
-            "current": "%d T2+ active | %d pilots at Piloting 10+ | Recursion 351k/357k cr" % (t2_plus, p10_ready),
-            "target": "First 3 Tier-2 class hulls proven on 3-run F37 trials",
-            "bottleneck": "Recursion quote rose +13% to 356.5k cr (+30k top-up ENT-370); Resonance Miner quote ask ENT-365",
+            "current": "%d T2+ active (%d T1, %d T0 left) | %d pilots P10+ ready" % (t2_plus, t1_hulls, t0_hulls, p10_ready),
+            "target": "First 3 Tier-2 class hulls commissioned & proven",
+            "bottleneck": "Resonance Miner %.0f%% | Recursion %.0f%% (%s)" % (
+                res_miner_pct, recursion_pct, _short_summary(rec_n or res_n, "%d P10+ pilots awaiting T2 hulls" % p10_ready),
+            ),
         },
         {
-            "id": "h1-atria-outpost", "horizon": "Days (Now)", "orders": "G3, O4, F33",
-            "title": "Frontier Outpost #2 at Atria (North Road Anchor)",
+            "id": "h1-atria-outpost", "horizon": "Days (Now)", "orders": "G3, O4",
+            "title": "Frontier Outpost #2 (Strategic Footprint Anchor)",
             "pct": 100.0 if outposts_count >= 2 else _clamp_pct(atria_pct),
-            "current": "%d outpost active | Atria kit %.1f%% stocked" % (outposts_count, atria_pct),
-            "target": "Atria outpost founded + fuel bunker stocked",
-            "bottleneck": "Short creature/salvage scales (foil_scale, alloy_scale, anchor_plate) -> Bursar buy-bids",
+            "current": "%d / 8 outposts active | next outpost kit %.1f%% stocked" % (outposts_count, atria_pct),
+            "target": "2+ frontier outposts founded with stocked fuel bunkers",
+            "bottleneck": _short_summary(atria_n, "No active outpost_kit need registered"),
         },
         # Horizon 2: Mid-Term (1-3 Weeks)
         {
-            "id": "h2-seat-wave3", "horizon": "Weeks (1-3w)", "orders": "G2, O5, F11",
-            "title": "Seat Standing Multi-Empire Fleet in [CLTV] (200 -> 400 -> 500 Cap)",
-            "pct": _clamp_pct(100.0 * seats_used / max(1, ships_total or 246)),
-            "current": "%d / %d seated (cap %d; Guild Hall %.0f%%)" % (seats_used, ships_total or 246, seats_cap, guild_pct),
-            "target": "%d / %d standing fleet ships seated (400 -> 500+ cap)" % (ships_total or 500, ships_total or 500),
-            "bottleneck": "101 open seats ready under 200 cap now; Guild Hall needs 8.0M cr fee + anchor_plate",
+            "id": "h2-seat-wave3", "horizon": "Weeks (1-3w)", "orders": "G2, O5",
+            "title": "Standing Fleet Faction Seating (%d Cap -> %s Max)" % (seats_cap, format(max_faction_cap, ",")),
+            "pct": _clamp_pct(100.0 * seats_used / max(1, ships_total or seats_cap)),
+            "current": "%d / %d seated (%d open now) | %.1f%% of %s max faction | %d standing awaiting seats" % (
+                seats_used, seats_cap, open_seats, pct_max_faction, format(max_faction_cap, ","), unseated_ships,
+            ),
+            "target": "%d / %d standing ships seated (unlock up to %s max cap)" % (ships_total, ships_total, format(max_faction_cap, ",")),
+            "bottleneck": "%d open seat(s) ready now | next cap: %s (%.0f%% stocked; %s)" % (
+                open_seats, _next_seat_building(seats_cap, max_faction_cap), guild_pct, _short_summary(guild_n, "needs cap upgrade facility"),
+            ),
         },
         {
             "id": "h2-t2-standardization", "horizon": "Weeks (1-3w)", "orders": "G2, O2",
-            "title": "Fleet-Wide Tier-2 Hulls & Tier-3 Module Standardization",
-            "pct": _clamp_pct(0.5 * (100.0 * p10_ready / max(1, ships_total or 246)) + 0.5 * min(100.0, 100.0 * t3_mods / 120.0)),
-            "current": "%d/%d P10+ | %d T2/T3 high-output modules fitted" % (p10_ready, ships_total or 500, t3_mods),
-            "target": "120+ Tier-2 hulls & full role T3 lasers/boosters/scanners",
-            "bottleneck": "Scaling hull working-capital generation & shipyard part chains",
+            "title": "Fleet Hull Modernization & T2-T5 Module Fit Saturation",
+            "pct": hull_mod_pct,
+            "current": "%d/%d hulls upgraded (%d T0 left) | %d/%d ships T2+ fitted (%d unfitted; %d/%d slots = %.1f%%)" % (
+                hulls_upgraded, ships_synced, t0_hulls, ships_with_adv, ships_synced, ships_unfitted, adv_mods_fitted, total_slots, adv_slot_pct,
+            ),
+            "target": "100% upgraded empire-matched hulls & T2-T5 role-saturated module slots",
+            "bottleneck": "%d ships still unfitted (%d empty slots; %d slots below T2) | %d P10+ pilots awaiting T2 hulls" % (
+                ships_unfitted, empty_slots, adv_slots_unfitted, p10_ready,
+            ),
         },
         {
-            "id": "h2-outpost-ring", "horizon": "Weeks (1-3w)", "orders": "G3, O4, F33",
-            "title": "Three-Road Resource Outpost Network (Up to 8 Outposts)",
+            "id": "h2-outpost-ring", "horizon": "Weeks (1-3w)", "orders": "G3, O4",
+            "title": "Maximal Footprint Outpost Network (Up to 8 Outposts)",
             "pct": _clamp_pct(100.0 * outposts_count / 8.0),
-            "current": "%d / 8 faction outposts active" % outposts_count,
-            "target": "8 / 8 strategic resource & highway outposts",
-            "bottleneck": "Sequential outpost_kit crafting + frontier military patrol coverage",
+            "current": "%d / 8 faction outposts active (%d open outpost slots)" % (outposts_count, max(0, 8 - outposts_count)),
+            "target": "8 / 8 high-centrality hub & wormhole-junction outposts",
+            "bottleneck": "%d outpost slot(s) open; prioritize widest effective reach across multi-empire extraction & trade corridors" % max(0, 8 - outposts_count),
         },
         {
-            "id": "h2-bursar-contracts", "horizon": "Weeks (1-3w)", "orders": "G4, O3, F39",
+            "id": "h2-bursar-contracts", "horizon": "Weeks (1-3w)", "orders": "G4, O3",
             "title": "Station Bursar Market-Making & Bottleneck Contract Desk",
             "pct": _clamp_pct(min(100.0, 20.0 + contracts_count * 16.0)),
             "current": "%d contract(s) logged in contracts.log" % contracts_count,
-            "target": "Standing zero-fee buy/sell books across major hubs",
-            "bottleneck": "Setting Trade Bursar escrow ceiling in orders.log (ENT-366) + automated order steps",
+            "target": "Standing zero-fee buy/sell books across all 5 empire hubs",
+            "bottleneck": "Expand automated Bursar buy-bids & escrow volume across Nebula, Solarian, Outer Rim & Crimson capitals",
         },
         # Horizon 3: Long-Term Empire (1-3+ Months)
         {
             "id": "h3-yildun-station", "horizon": "Months (1-3m)", "orders": "G3, O4",
-            "title": "First Sovereign Player Station at Yildun",
-            "pct": 100.0 if stations_count >= 1 else _clamp_pct(0.35 * foundry_pct + 0.35 * score_pct + 0.30 * min(100.0, 100.0 * liquid_purse / 43_000_000.0)),
-            "current": "Foundry %.1f%% | Core %.1f%% | Purse %.2fM / 43M cr" % (foundry_pct, score_pct, liquid_purse / 1e6),
-            "target": "Sovereign station built at Yildun (zero-tax workshop, market & shipyard)",
-            "bottleneck": "38M cr foundry fee + salvage_metal / silicon / carbon / quantum_fragments",
+            "title": "Sovereign Player Stations (Up to 5 Stations)",
+            "pct": _clamp_pct(100.0 * stations_count / 5.0) if stations_count >= 1 else _clamp_pct(0.35 * foundry_pct + 0.35 * score_pct + 0.30 * min(100.0, 100.0 * liquid_purse / 43_000_000.0)),
+            "current": "%d / 5 stations | Foundry %.1f%% | Core %.1f%% | Purse %.2fM / 43M cr" % (
+                stations_count, foundry_pct, score_pct, liquid_purse / 1e6,
+            ),
+            "target": "5 / 5 sovereign zero-tax stations across high-centrality galaxy hubs",
+            "bottleneck": _short_summary(foundry_n, "Foundry + Station Core materials & build fee"),
         },
         {
             "id": "h3-armada-500", "horizon": "Months (1-3m)", "orders": "G2, O5",
-            "title": "500-Ship Multi-Empire Standing Armada (Plan-500 -> Plan-600)",
-            "pct": _clamp_pct(100.0 * (ships_total or 246) / 500.0),
-            "current": "%d / 500 ships (Garage/Berth 81-85%% stocked)" % (ships_total or 246),
-            "target": "500 active ships with positive per-ship steady net",
-            "bottleneck": "Plan-500 standing fleet birthed across all 5 empires; seat onboarding + local routes active",
+            "title": "Grand Multi-Empire Standing Armada (%s Horizon)" % format(armada_target, ","),
+            "pct": armada_pct,
+            "current": "%d / %s standing ships (%.1f%% of %s max faction cap) across %d empires" % (
+                ships_total, format(armada_target, ","), pct_fleet_vs_max, format(max_faction_cap, ","), len(by_empire) or 1,
+            ),
+            "target": "%s active multi-empire ships with positive fleetwide steady net/h" % format(armada_target, ","),
+            "bottleneck": ("%d ships left to %s target" % (max(0, armada_target - ships_total), format(armada_target, ",")))
+                          + ("; %d ship(s) reconnecting" % ships_away if ships_away else "; expand seating & multi-empire local routes"),
         },
         {
-            "id": "h3-passengers-t5", "horizon": "Months (1-3m)", "orders": "G2, O2, F10, F16",
+            "id": "h3-passengers-t5", "horizon": "Months (1-3m)", "orders": "G2, O2",
             "title": "Passenger Lines, Tier-3/4 Capital Ships & Tier-5 Mobile City",
-            "pct": _clamp_pct(0.4 * lounge_pct + 0.3 * (100.0 * p20_count / 20.0) + 0.3 * (100.0 * max_piloting / 50.0)),
-            "current": "Transit Lounge %.0f%% | Max Piloting %d/50 | %d at P20+" % (lounge_pct, max_piloting, p20_count),
+            "pct": _clamp_pct(0.4 * lounge_pct + 0.3 * min(100.0, 100.0 * p20_count / 20.0) + 0.3 * min(100.0, 100.0 * max_piloting / 50.0)),
+            "current": "Transit Lounge %.0f%% | Max Piloting %d/50 | %d at P20+ | %d T3+ hulls" % (lounge_pct, max_piloting, p20_count, t3_plus),
             "target": "Active civilian passenger network + Tier-4 Shipyard + Flagship Mobile Base",
-            "bottleneck": "Requires sovereign station shipyard tiers + long-horizon Piloting 20/30/50 training",
+            "bottleneck": _short_summary(lounge_n, "Requires sovereign station shipyard tiers + Piloting 20/30/50 training"),
         },
         {
             "id": "h3-galactic-top3", "horizon": "Months (1-3m)", "orders": "G1-G5, O1-O9",
-            "title": "Top-3 Galactic Faction Contention vs [BUSY], [HEXC] & [IRLC]",
+            "title": "Top-3 Galactic Faction Supremacy",
             "pct": _clamp_pct(min(100.0, 100.0 * enterprise_value / 500_000_000.0)),
-            "current": "EV %.2fM cr | Rank #12 members (#13 dmg, #21 fac)" % (enterprise_value / 1e6),
-            "target": "Top-3 faction wealth, industrial output & sovereign multi-station network",
-            "bottleneck": "Compounding T2/T3 fleet throughput + sovereign station workshops (rivals at 7B-10B EV)",
+            "current": "EV %.2fM cr | Live ranks: %s" % (enterprise_value / 1e6, rank_str),
+            "target": "Top-3 galactic wealth, industrial output & sovereign multi-station network",
+            "bottleneck": "Compounding empire-matched T2/T3 fleet throughput & sovereign stations (%s)" % rival_str,
         },
     ]
 
@@ -417,8 +574,16 @@ def compute_progression(repo_root, data="/srv/collective/data", now=None):
         "computed_at": stamp,
         "days_active": max(1, (datetime.date.fromtimestamp(now) - datetime.date(2026, 11, 14)).days + 1),
         "ships_total": ships_total,
+        "ships_synced": ships_synced,
+        "ships_away": ships_away,
         "seats_used": seats_used,
         "seats_cap": seats_cap,
+        "max_faction_cap": max_faction_cap,
+        "open_seats": open_seats,
+        "unseated_ships": unseated_ships,
+        "pct_max_faction": pct_max_faction,
+        "pct_fleet_vs_max": pct_fleet_vs_max,
+        "by_empire": [{"empire": e, "count": c, "pct": round(100.0 * c / max(1, ships_synced), 1)} for e, c in sorted(by_empire.items(), key=lambda kv: -kv[1])],
         "liquid_purse": liquid_purse,
         "treasury": treasury,
         "vault_worth": vault_worth,
@@ -427,11 +592,28 @@ def compute_progression(repo_root, data="/srv/collective/data", now=None):
         "enterprise_value": enterprise_value,
         "steady_1h": steady_1h,
         "steady_24h": steady_24h,
+        "t0_hulls": t0_hulls,
+        "t1_hulls": t1_hulls,
         "t1_plus": t1_plus,
         "t2_plus": t2_plus,
+        "t3_plus": t3_plus,
+        "hulls_upgraded": hulls_upgraded,
+        "hull_upgrade_pct": hull_upgrade_pct,
         "p10_ready": p10_ready,
         "max_piloting": max_piloting,
         "t3_mods": t3_mods,
+        "total_slots": total_slots,
+        "w_slots": w_slots,
+        "d_slots": d_slots,
+        "u_slots": u_slots,
+        "total_installed_mods": total_installed_mods,
+        "empty_slots": empty_slots,
+        "adv_mods_fitted": adv_mods_fitted,
+        "adv_slots_unfitted": adv_slots_unfitted,
+        "adv_slot_pct": adv_slot_pct,
+        "ships_with_adv": ships_with_adv,
+        "ships_unfitted": ships_unfitted,
+        "adv_ship_pct": adv_ship_pct,
         "outposts": outposts_count,
         "stations": stations_count,
         "systems_charted": systems_charted,
@@ -451,6 +633,7 @@ def compute_progression(repo_root, data="/srv/collective/data", now=None):
 def render_auto_block(prog):
     """Render pure 7-bit ASCII Markdown block for governance/progression-roadmap.md."""
     s = prog["summary"]
+    emp_txt = ", ".join("%s %d" % (x["empire"], x["count"]) for x in (s.get("by_empire") or [])) or "multi-empire"
     lines = [
         BEGIN_MARK,
         "",
@@ -463,13 +646,20 @@ def render_auto_block(prog):
             format(s["enterprise_value"], ","), format(s["liquid_purse"], ","), format(s["treasury"], ","),
             format(s["vault_worth"], ","), format(s["facility_worth"], ","), format(s["fleet_book_worth"], ","),
         ),
-        "| Fleet & Faction Seats | %d ships (%d / %d seated) | Wave 3 active; 500-ship G5 target |" % (
-            s["ships_total"], s["seats_used"], s["seats_cap"],
+        "| Standing Fleet & Faction Size | %d / %s max (%.1f%%) | %d / %d seated (%.1f%% of %s max; %d open; %d awaiting seats) -- %s |" % (
+            s["ships_total"], format(s["max_faction_cap"], ","), s["pct_fleet_vs_max"],
+            s["seats_used"], s["seats_cap"], s["pct_max_faction"], format(s["max_faction_cap"], ","),
+            s["open_seats"], s["unseated_ships"], emp_txt,
         ),
-        "| Hull & Tech Readiness | %d T1+ / %d T2+ | %d pilots at Piloting 10+ (max P%d), %d T2/T3 key modules |" % (
-            s["t1_plus"], s["t2_plus"], s["p10_ready"], s["max_piloting"], s["t3_mods"],
+        "| Hull Modernization | %d / %d upgraded (%.1f%%) | %d T0 starter hulls left (%d T1, %d T2+); %d pilots P10+ (max P%d) |" % (
+            s["hulls_upgraded"], s["ships_synced"], s["hull_upgrade_pct"], s["t0_hulls"], s["t1_hulls"], s["t2_plus"],
+            s["p10_ready"], s["max_piloting"],
         ),
-        "| Territory & Exploration | %d outpost(s), %d station(s) | %d / %d galaxy systems charted |" % (
+        "| Module Fit Saturation (T2-T5) | %d / %d ships (%.1f%%) | %d ships unfitted; %d / %d potential slots (%.1f%%; %d empty slots) |" % (
+            s["ships_with_adv"], s["ships_synced"], s["adv_ship_pct"], s["ships_unfitted"],
+            s["adv_mods_fitted"], s["total_slots"], s["adv_slot_pct"], s["empty_slots"],
+        ),
+        "| Territory & Exploration | %d / 8 outposts, %d / 5 stations | %d / %d galaxy systems charted |" % (
             s["outposts"], s["stations"], s["systems_charted"], s["total_systems"],
         ),
         "",
@@ -521,98 +711,81 @@ def render_auto_block(prog):
                 m["steady_net"], m["paid_once"], format(m["peak_purse"], ","),
             ))
 
-    lines.append("")
-    lines.append(END_MARK)
+    lines += ["", "*Last live refresh: %s (`game/fleet/progression.py`)*" % s["computed_at"], "", END_MARK]
     return "\n".join(lines)
 
 
-def _without_volatile_rates(text):
-    """Compare roadmap blocks ignoring tiny minute-to-minute purse/rate jitter only? No: hourly pass commits real hourly progress."""
-    return text.strip()
-
-
 def write_roadmap(repo_root, data="/srv/collective/data", commit=False, now=None):
+    """Replace the auto-updated block inside governance/progression-roadmap.md (pure 7-bit ASCII)."""
     repo_p = Path(repo_root)
-    target = repo_p / ROADMAP_REL
-    if not target.is_file():
-        raise FileNotFoundError("Missing %s" % target)
-    raw = target.read_text(encoding="ascii")
-    if BEGIN_MARK not in raw or END_MARK not in raw:
-        raise ValueError("%s lacks %s .. %s markers" % (ROADMAP_REL, BEGIN_MARK, END_MARK))
+    roadmap = repo_p / ROADMAP_REL
+    if not roadmap.is_file():
+        return "missing"
     prog = compute_progression(repo_root, data=data, now=now)
     block = render_auto_block(prog)
-    before, rest = raw.split(BEGIN_MARK, 1)
-    _old_auto, after = rest.split(END_MARK, 1)
+    text = roadmap.read_text(encoding="ascii")
+    if BEGIN_MARK not in text or END_MARK not in text:
+        return "no-markers"
+    before = text.split(BEGIN_MARK, 1)[0]
+    after = text.split(END_MARK, 1)[1]
     updated = before + block + after
-    if _without_volatile_rates(updated) == _without_volatile_rates(raw):
+    if updated == text:
         return "unchanged"
+    roadmap.write_text(updated, encoding="ascii")
     if commit:
-        dirty = subprocess.run(
-            ["git", "-C", str(repo_p), "status", "--porcelain", "--", ROADMAP_REL],
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
-        )
-        if dirty.returncode == 0 and dirty.stdout.strip():
-            return "skipped: uncommitted edit present on %s" % ROADMAP_REL
-    target.write_text(updated, encoding="ascii")
-    if not commit:
-        return "written"
-    subprocess.run(["git", "-C", str(repo_p), "add", "--", ROADMAP_REL], check=False)
-    res = subprocess.run(
-        ["git", "-C", str(repo_p), "-c", "user.name=Unity", "-c", "user.email=unity@suggi-workspace.dev",
-         "commit", "-q", "-m", "governance: hourly progression-roadmap.md refresh (progression.py)", "--", ROADMAP_REL],
-        stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
-    )
-    if res.returncode != 0:
-        return "written; not committed: " + (res.stdout or "").strip()[-160:]
-    return "committed"
+        try:
+            subprocess.run(["git", "-C", str(repo_p), "add", "--", ROADMAP_REL], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            subprocess.run(
+                [
+                    "git", "-C", str(repo_p),
+                    "-c", "user.name=Progression Engine", "-c", "user.email=progression@the-collective.local",
+                    "commit", "-m", "governance: hourly progression-roadmap.md refresh (progression.py)", "--", ROADMAP_REL,
+                ],
+                check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+            )
+            return "committed"
+        except subprocess.CalledProcessError:
+            return "written"
+    return "written"
 
 
-def show_text(prog):
+def format_cli(prog):
     s = prog["summary"]
-    print(
-        "PROGRESSION | Day %d | EV %s cr (Purse %s cr, Treasury %s cr) | %d ships (%d/%d seated) | "
-        "T1+ %d, T2+ %d, P10+ %d | Outposts %d, Stations %d | Charted %d/%d"
-        % (
-            s["days_active"], format(s["enterprise_value"], ","), format(s["liquid_purse"], ","),
-            format(s["treasury"], ","), s["ships_total"], s["seats_used"], s["seats_cap"],
-            s["t1_plus"], s["t2_plus"], s["p10_ready"], s["outposts"], s["stations"],
-            s["systems_charted"], s["total_systems"],
+    out = [
+        "PROGRESSION | Day %d | EV %s cr | Purse %s cr (Treasury %s) | Fleet %d/%s (%.1f%%) | Seated %d/%d (%.1f%% of %s) | Hulls %d/%d upg (%d T0) | T2+ Fits %d/%d ships (%d unfitted; %d/%d slots)" % (
+            s["days_active"], format(s["enterprise_value"], ","), format(s["liquid_purse"], ","), format(s["treasury"], ","),
+            s["ships_total"], format(s["max_faction_cap"], ","), s["pct_fleet_vs_max"],
+            s["seats_used"], s["seats_cap"], s["pct_max_faction"], format(s["max_faction_cap"], ","),
+            s["hulls_upgraded"], s["ships_synced"], s["t0_hulls"],
+            s["ships_with_adv"], s["ships_synced"], s["ships_unfitted"], s["adv_mods_fitted"], s["total_slots"],
         )
-    )
-    print("=== STRATEGIC RUNGS (Days -> Weeks -> Months)")
+    ]
     for r in prog["rungs"]:
-        print("  [%-12s | %5.1f%%] %-52s | %s" % (r["horizon"], r["pct"], r["title"][:52], r["current"]))
-        print("    bottleneck: %s" % r["bottleneck"])
-    print("=== MILESTONES ACHIEVED (%d)" % len(prog["milestones"]))
-    for m in prog["milestones"]:
-        print("  %s | %-24s | %s" % (m["date"], m["era"][:24], m["title"]))
-    return 0
+        out.append("  [%-13s] %5.1f%% | %-48s | %s" % (r["horizon"], r["pct"], r["title"][:48], r["current"]))
+    return "\n".join(out)
 
 
 def main(argv=None):
-    parser = argparse.ArgumentParser(prog="progression.py", description=__doc__.split("\n")[0])
-    parser.add_argument("verb", nargs="?", default="show", choices=("show", "write"))
-    parser.add_argument("--json", action="store_true")
-    parser.add_argument("--commit", action="store_true")
-    parser.add_argument("--data", default="/srv/collective/data")
-    parser.add_argument("--root", default=str(Path(__file__).resolve().parents[2]))
-    args = parser.parse_args(sys.argv[1:] if argv is None else argv)
+    ap = argparse.ArgumentParser(description="Live Collective progression roadmap & milestone engine.")
+    ap.add_argument("cmd", nargs="?", default="show", choices=("show", "write"))
+    ap.add_argument("--json", action="store_true", help="Emit JSON output (for show).")
+    ap.add_argument("--commit", action="store_true", help="Commit governance/progression-roadmap.md after writing.")
+    ap.add_argument("--data", default="/srv/collective/data")
+    ap.add_argument("--root", default=str(Path(__file__).resolve().parents[2]))
+    args = ap.parse_args(argv)
 
-    if args.verb == "write":
-        status = write_roadmap(args.root, data=args.data, commit=args.commit)
-        if status not in ("unchanged",):
-            print("PROGRESSION write | %s: %s" % (ROADMAP_REL, status))
+    if args.cmd == "write":
+        st = write_roadmap(args.root, data=args.data, commit=args.commit)
+        print("progression-roadmap.md: %s" % st)
         return 0
-
     prog = compute_progression(args.root, data=args.data)
     if args.json:
         print(json.dumps(prog, indent=2))
-        return 0
-    return show_text(prog)
+    else:
+        print(format_cli(prog))
+    return 0
 
 
 if __name__ == "__main__":
-    try:
-        sys.exit(main())
-    except BrokenPipeError:
-        sys.exit(0)
+    raise SystemExit(main())
+

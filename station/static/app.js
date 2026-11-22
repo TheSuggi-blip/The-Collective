@@ -2440,16 +2440,20 @@ function renderProgressionSubtab(panel, prData) {
   hTop.append(fullDocBtn);
   headCard.append(
     hTop,
-    el('p', 'sub', 'Tracks where The Collective came from (since 14 Nov Founding), where we stand right now, and our 12 strategic rungs across Days, Weeks, and Months toward S1-S5 and G1-G5.')
+    el('p', 'sub', 'Tracks where The Collective came from (since 14 Nov Founding), where we stand right now, and our 12 dynamic rungs across Days, Weeks, and Months toward G1-G5 and O1-O9.')
   );
   panel.append(headCard);
 
   const kpis = el('div', 'kpis');
   const pk = (k, v, sub, cls) => { const b = el('div', 'kpi' + (cls ? ' ' + cls : '')); b.append(el('div', 'k', k), el('div', 'v', v)); if (sub) b.append(el('div', 's', sub)); kpis.append(b); };
+  const maxCap = s.max_faction_cap || 1000;
   pk('Enterprise Net Worth', fmt(s.enterprise_value || 0) + ' cr', fmt(s.liquid_purse || 0) + ' cash | ' + fmt(s.vault_worth || 0) + ' vault | ' + fmt(s.facility_worth || 0) + ' fac', 'main pos');
-  pk('Armada & Seating', fmt(s.ships_total || 0) + ' / 500 ships', fmt(s.seats_used || 0) + ' / ' + fmt(s.seats_cap || 0) + ' seated in [CLTV]', 'pos');
-  pk('Tier 2+ & Tech Rung', fmt(s.p10_ready || 0) + ' P10+ ready', fmt(s.t1_plus || 0) + ' T1+ hulls | ' + fmt(s.t3_mods || 0) + ' T2/T3 key mods', (s.p10_ready || 0) > 0 ? 'warn' : '');
-  pk('12-Rung Roadmap Avg', avgPct.toFixed(1) + '%', fmt(s.outposts || 0) + '/8 outposts | ' + fmt(s.stations || 0) + ' stations | ' + fmt(s.systems_charted || 0) + '/' + fmt(s.total_systems || 506) + ' sys', 'pos');
+  pk('Armada & Max Faction', fmt(s.ships_total || 0) + ' / ' + fmt(maxCap) + ' max',
+    fmt(s.seats_used || 0) + '/' + fmt(s.seats_cap || 0) + ' seated (' + (s.pct_max_faction || 0) + '% of ' + fmt(maxCap) + ' max; ' + fmt(s.open_seats || 0) + ' open)', 'pos');
+  pk('Hull & Module Saturation', fmt(s.hulls_upgraded || 0) + '/' + fmt(s.ships_synced || s.ships_total || 0) + ' hulls | ' + fmt(s.ships_with_adv || 0) + ' T2+ fit',
+    fmt(s.t0_hulls || 0) + ' T0 left | ' + fmt(s.ships_unfitted || 0) + ' ships unfitted (' + fmt(s.adv_mods_fitted || 0) + '/' + fmt(s.total_slots || 0) + ' slots = ' + (s.adv_slot_pct || 0) + '%)',
+    (s.ships_unfitted || 0) > 0 || (s.t0_hulls || 0) > 0 ? 'warn' : 'pos');
+  pk('12-Rung Roadmap Avg', avgPct.toFixed(1) + '%', fmt(s.outposts || 0) + '/8 outposts | ' + fmt(s.stations || 0) + '/5 stations | ' + fmt(s.systems_charted || 0) + '/' + fmt(s.total_systems || 506) + ' sys', 'pos');
   panel.append(kpis);
 
   const hFilter = el('div', 'sortbar');
@@ -2463,7 +2467,7 @@ function renderProgressionSubtab(panel, prData) {
   panel.append(hFilter);
 
   const rungCard = el('div', 'icard');
-  rungCard.append(el('h3', null, 'Where We Are Going -- Strategic Progression Ladder (S1-S5, G1-G5)'));
+  rungCard.append(el('h3', null, 'Where We Are Going -- Strategic Progression Ladder (G1-G5, O1-O9)'));
   const rungList = el('div', 'pr-rungs');
   for (const r of rungs) {
     if (progHorizon !== 'all' && !String(r.horizon || '').startsWith(progHorizon)) continue;
@@ -3114,30 +3118,40 @@ async function renderMetrics(panel, live) {
       panel.insertBefore(el('h3', null, 'Consolidated balance sheet & enterprise net worth'), panel.lastChild);
       const bgrid = el('div', 'kpis');
       const bkpi = (k, v, sub, cls) => { const d = el('div', 'kpi' + (cls ? ' ' + cls : '')); d.append(el('div', 'k', k), el('div', 'v', v)); if (sub) d.append(el('div', 's', sub)); bgrid.append(d); };
-      bkpi('Enterprise net worth', fmtCompact(bs.net_worth) + ' cr', fmtCompact(Math.round(bs.net_worth / Math.max(1, t.ships || 246))) + ' / ship (cash + vaults + ships + bases)', 'main pos');
+      const standingN = (ops.fleet_capacity && ops.fleet_capacity.standing) || t.ships || 1;
+      bkpi('Enterprise net worth', fmtCompact(bs.net_worth) + ' cr', fmtCompact(Math.round(bs.net_worth / Math.max(1, standingN))) + ' / ship across ' + fmt(standingN) + ' ships (cash + vaults + ships + bases)', 'main pos');
       bkpi('Liquid purse', fmtCompact(bs.liquid_cash) + ' cr', 'wallets ' + fmtCompact(bs.wallets) + ' + treasury ' + fmtCompact(bs.treasury), 'pos');
       bkpi('Vault stock @ bid', fmtCompact(bs.vault_worth) + ' cr', bs.handed_over_24h ? '24h handed over: ' + fmtCompact(bs.handed_over_24h) + ' cr' : 'ores, refined parts & hunt loot stored', 'pos');
       bkpi('Fleet & facilities', fmtCompact((bs.fleet_book || 0) + (bs.facility_invested || 0)) + ' cr', 'ships/fits ' + fmtCompact(bs.fleet_book) + ' + facilities ' + fmtCompact(bs.facility_invested), '');
       panel.insertBefore(bgrid, panel.lastChild);
     }
     const fac = (ops.readiness || {}).faction || {};
+    const maxCap = fac.max_cap || 1000;
     const capPct = fac.limit ? Math.round((fac.members / fac.limit) * 100) : 0;
-    const nextSeatBldg = !fac.limit ? 'not read' : fac.limit < 100 ? 'next: Recruitment Desk (100)' : fac.limit < 200 ? 'next: Recruitment Center (200)' : fac.limit < 400 ? 'next: Guild Hall Recruiting (400)' : fac.limit < 1000 ? 'next: Grand Recruitment Bureau (1,000)' : 'multi-station +25% offices';
-    rkpi('Faction seats', fac.limit ? fmt(fac.members) + ' / ' + fmt(fac.limit) : '--',
-      fac.limit ? (fac.members >= fac.limit - 2 ? 'at cap -- ' + nextSeatBldg : (fac.limit - fac.members) + ' open (' + nextSeatBldg + ')') : 'not read',
+    const openSeats = fac.open_seats !== undefined ? fac.open_seats : Math.max(0, (fac.limit || 0) - (fac.members || 0));
+    const nextSeatBldg = !fac.limit ? 'not read' : fac.limit < 100 ? 'next: Recruitment Desk (100)' : fac.limit < 200 ? 'next: Recruitment Center (200)' : fac.limit < 400 ? 'next: Guild Hall (400)' : fac.limit < maxCap ? 'next: Grand Bureau (' + fmt(maxCap) + ')' : 'max cap reached';
+    rkpi('Faction filled & max size', fac.limit ? fmt(fac.members) + ' / ' + fmt(fac.limit) + ' (' + capPct + '%)' : '--',
+      fac.limit ? (fmt(openSeats) + ' open | ' + (fac.pct_of_max || 0) + '% of ' + fmt(maxCap) + ' max | ' + fmt(fac.unseated_ships || 0) + ' standing awaiting seats | ' + nextSeatBldg) : 'not read',
       capPct >= 95 ? 'warn' : 'pos');
     const tf = ops.tech_frontier || {};
+    const hs = (ops.readiness || {}).hull_summary || null;
     const hulls = (ops.readiness || {}).hulls || [];
     const byTier = new Map();
     hulls.forEach((h) => byTier.set(h.tier, (byTier.get(h.tier) || 0) + h.count));
     const tierTxt = [...byTier.entries()].sort((x, y) => y[0] - x[0]).map(([tr, n]) => fmt(n) + ' T' + tr).join(', ') || '--';
     const ftTier = tf.target_tier || 2;
-    rkpi('Active hull frontier: T' + ftTier, tf.ready_pilots !== undefined ? fmt(tf.at_or_above || 0) + ' / ' + fmt(tf.ready_pilots) + ' T' + ftTier + '+' : tierTxt,
-      'Piloting avg ' + (tf.avg_piloting || '--') + ' / max ' + (tf.max_piloting || '--') + ' | ' + tierTxt + ' | next: ' + (tf.next_milestone || ''),
-      (tf.ready_pilots || 0) > (tf.at_or_above || 0) ? 'warn' : 'pos');
+    rkpi('Hull upgrades (T1-T5)', hs ? fmt(hs.upgraded) + ' / ' + fmt(hs.total) + ' (' + hs.upgraded_pct + '%)' : tierTxt,
+      (hs ? fmt(hs.t0_remaining) + ' T0 still un-upgraded (' + tierTxt + ') | ' : tierTxt + ' | ')
+      + 'T' + ftTier + ' ready: ' + fmt(tf.at_or_above || 0) + '/' + fmt(tf.ready_pilots || 0) + ' (P avg ' + (tf.avg_piloting || '--') + '/max ' + (tf.max_piloting || '--') + ')',
+      (hs && hs.t0_remaining > 0) || (tf.ready_pilots || 0) > (tf.at_or_above || 0) ? 'warn' : 'pos');
     const mods = (ops.readiness || {}).modules || [];
-    rkpi('Advanced modules (T2-T5)', mods.length ? fmt(mods.reduce((acc, m) => acc + m.count, 0)) + ' fitted' : '0',
-      mods.length ? mods.slice(0, 3).map((m) => m.name + ': ' + m.count).join(', ') : 'no T2+ modules fitted yet', mods.length ? 'pos' : 'warn');
+    const fs = (ops.readiness || {}).fit_summary || null;
+    const topMods = mods.slice(0, 3).map((m) => m.name + ': ' + m.count).join(', ');
+    rkpi('Advanced fits (T2-T5)', fs ? fmt(fs.ships_with_adv) + ' / ' + fmt(fs.ships) + ' ships (' + fs.adv_ship_pct + '%)' : (mods.length ? fmt(mods.reduce((a, m) => a + m.count, 0)) + ' fitted' : '0'),
+      fs
+        ? fmt(fs.ships_unfitted) + ' ships & ' + fmt(fs.adv_unfitted_slots) + ' slots still unfitted (' + fmt(fs.adv_mods) + '/' + fmt(fs.total_slots) + ' slots = ' + fs.adv_slot_pct + '%; ' + fmt(fs.empty_slots) + ' empty)' + (topMods ? ' | ' + topMods : '')
+        : (topMods || 'no T2+ modules fitted yet'),
+      fs && fs.ships_unfitted > 0 ? 'warn' : (mods.length ? 'pos' : 'warn'));
     const eff = ops.efficiency || null;
     if (eff) {
       const jl = eff.jump_loops || { hours: 0, credits: 0 }, cn = eff.census || { hours: 0, credits: 0 };
@@ -3145,10 +3159,12 @@ async function renderMetrics(panel, live) {
         'jump loops: ' + jl.hours + 'h (' + fmtCompact(jl.credits) + ' cr) | census: ' + cn.hours + 'h (' + fmtCompact(cn.credits) + ' cr)',
         (eff.productive_pct || 0) < 65 ? 'warn' : 'pos');
     }
-    const bw = ops.birth_wave || null;
-    if (bw) {
-      rkpi('Next birth rollout: Wave ' + bw.wave, (t.ships || 246) + ' -> ' + bw.target + ' (+' + bw.add_ships + ')',
-        'gate: ' + bw.gate, '');
+    const fc = ops.fleet_capacity || null;
+    if (fc) {
+      const empLine = (fc.by_empire || []).map((x) => x.empire + ' ' + fmt(x.count)).join(' | ');
+      rkpi('Standing fleet vs max cap', fmt(fc.standing) + ' / ' + fmt(fc.max_cap) + ' (' + fc.pct_max_cap + '%)',
+        (fc.away ? fmt(fc.online) + ' online, ' + fmt(fc.away) + ' rejoining | ' : '') + (empLine || 'multi-empire fleet'),
+        fc.away ? 'warn' : 'pos');
     }
     const fr = ops.freshness || {};
     const frCls = fr.max_s < 0 ? '' : fr.max_s <= 35 ? 'pos' : fr.max_s <= 90 ? 'warn' : 'neg';
@@ -3328,15 +3344,35 @@ async function renderEmpire(panel, live) {
   const ekpi = (k, v, sub, cls) => { const d = el('div', 'kpi' + (cls ? ' ' + cls : '')); d.append(el('div', 'k', k), el('div', 'v', v)); if (sub) d.append(el('div', 's', sub)); kgrid.append(d); };
   ekpi('Sovereign bases', outposts.length + ' / 8 outposts', stations.length + ' / 5 player stations built', outposts.length || stations.length ? 'main pos' : '');
   ekpi('Station buildings', fmt(facOnly.length) + ' active', 'across ' + bySys.size + ' star systems', 'pos');
+  const maxCap = our.max_cap || 1000;
+  const standingN = our.standing_ships || our.fleet_ships || (F.totals && F.totals.ships) || 0;
   const seatsOpen = Math.max(0, (fac.limit || 0) - (fac.members || 0));
-  ekpi('Faction seats', fac.limit ? fmt(fac.members) + ' / ' + fmt(fac.limit) : '--',
-    seatsOpen ? seatsOpen + ' open seats (Recruitment Center active)' : 'at seat cap', seatsOpen ? 'pos' : 'warn');
+  const pctOfMax = maxCap ? ((100 * (fac.members || 0)) / maxCap).toFixed(1) : '0.0';
+  const pctFleetMax = maxCap ? ((100 * standingN) / maxCap).toFixed(1) : '0.0';
+  const pctFleetSeated = standingN ? ((100 * (fac.members || 0)) / standingN).toFixed(1) : '0.0';
+  ekpi('Faction filled & cap', fac.limit ? fmt(fac.members) + ' / ' + fmt(fac.limit) : '--',
+    fmt(seatsOpen) + ' open | ' + pctOfMax + '% of ' + fmt(maxCap) + ' max possible faction size', seatsOpen ? 'pos' : 'warn');
+  ekpi('Standing fleet vs max cap', fmt(standingN) + ' / ' + fmt(maxCap) + ' (' + pctFleetMax + '%)',
+    fmt(fac.members || 0) + ' seated (' + pctFleetSeated + '% of fleet) | ' + fmt(Math.max(0, standingN - (fac.members || 0))) + ' awaiting seats', 'pos');
   ekpi('Facility rent / day', fmt((emp.rent && emp.rent.per_day) || 0) + ' cr',
     fmt((emp.rent && emp.rent.per_cycle) || 0) + ' cr/cycle at NPC stations (0 on our bases)', '');
   panel.append(kgrid);
 
+  if (our.by_empire && our.by_empire.length) {
+    panel.append(el('h3', null, 'Standing fleet by empire (' + our.by_empire.length + ' empires, live)'));
+    panel.append(fitTable(table(['Empire', 'Synced ships', 'Fleet share', '% of ' + fmt(maxCap) + ' max cap'],
+      our.by_empire.map((e) => [
+        el('span', 'pill ' + (e.empire === 'voidborn' ? 'good' : 'info'), e.empire),
+        fmt(e.count),
+        e.pct + '%',
+        ((100 * e.count) / maxCap).toFixed(1) + '%',
+      ]), [1, 2, 3])));
+  }
+
   if (our.hulls && our.hulls.length) {
-    panel.append(el('h3', null, 'Active fleet hull lineage (' + fmt(our.fleet_ships || 246) + ' ships -- multi-empire 500/600 rollout in Docs -> Birth plans)'));
+    const hullSum = our.hulls.reduce((a, h) => a + (h.count || 0), 0);
+    const upgSum = our.hulls.filter((h) => (h.tier || 0) >= 1).reduce((a, h) => a + (h.count || 0), 0);
+    panel.append(el('h3', null, 'Active fleet hull lineage (' + fmt(hullSum) + ' synced ships -- ' + fmt(upgSum) + ' upgraded, ' + fmt(Math.max(0, hullSum - upgSum)) + ' T0 starter)'));
     panel.append(fitTable(table(['Hull class', 'Design empire', 'Tier', 'Role category', 'Ships'],
       our.hulls.map((h) => [
         h.class,

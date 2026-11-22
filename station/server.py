@@ -1509,6 +1509,9 @@ def api_ops():
     try:
         fleet_doc = read_json(FLEET / "fleet.json")
         ships_list = fleet_doc.get("ships") if isinstance(fleet_doc, dict) else []
+        away_list = fleet_doc.get("away") if isinstance(fleet_doc, dict) else []
+        away_count = len(away_list) if isinstance(away_list, list) else 0
+        online_count = len(ships_list) if isinstance(ships_list, list) else 0
         ages = []
         sweep_ships, sweep_cr = 0, 0
         for ship in ships_list or []:
@@ -1533,7 +1536,7 @@ def api_ops():
             }
         out["readiness"]["sweepable"] = {"ships": sweep_ships, "credits": sweep_cr}
     except (OSError, ValueError):
-        pass
+        away_count, online_count = 0, 0
 
     # 2. Read-only SQLite summary from data/store/read.db
     db_path = FLEET.parent / "store" / "read.db"
@@ -1543,23 +1546,72 @@ def api_ops():
             conn = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True, timeout=2.0)
             conn.row_factory = sqlite3.Row
             tables = {r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type IN ('table', 'view')")}
+            max_fac_cap = 1000
+            if "facilities" in tables:
+                mc_r = conn.execute(
+                    "SELECT COALESCE(MAX(faction_cap), 1000) FROM facilities "
+                    "WHERE LOWER(id) LIKE '%recruit%' OR LOWER(id) LIKE '%hiring%' OR LOWER(id) LIKE '%guild_hall%'"
+                ).fetchone()
+                if mc_r and int(num(mc_r[0])) >= 200:
+                    max_fac_cap = int(num(mc_r[0]))
+            synced_ships = 0
+            emp_rows = []
+            if "ships" in tables:
+                emp_rows = conn.execute(
+                    "SELECT LOWER(COALESCE(NULLIF(empire,''), 'voidborn')) AS emp, COUNT(*) AS n FROM ships GROUP BY 1 ORDER BY 2 DESC"
+                ).fetchall()
+                synced_ships = sum(int(num(r["n"])) for r in emp_rows)
+            standing_ships = max(synced_ships, online_count + away_count)
             if "faction" in tables:
                 row = conn.execute("SELECT member_count, members_limit, treasury, owned_bases, at_war FROM faction LIMIT 1").fetchone()
                 if row:
+                    f_mem = int(num(row["member_count"]))
+                    f_lim = int(num(row["members_limit"]))
                     out["readiness"]["faction"] = {
-                        "members": int(num(row["member_count"])),
-                        "limit": int(num(row["members_limit"])),
+                        "members": f_mem,
+                        "limit": f_lim,
+                        "max_cap": max_fac_cap,
+                        "standing_ships": standing_ships,
+                        "open_seats": max(0, f_lim - f_mem),
+                        "unseated_ships": max(0, standing_ships - f_mem),
+                        "pct_of_cap": round(100.0 * f_mem / max(1, f_lim), 1) if f_lim else 0.0,
+                        "pct_of_max": round(100.0 * f_mem / max(1, max_fac_cap), 1),
+                        "pct_fleet_seated": round(100.0 * f_mem / max(1, standing_ships), 1) if standing_ships else 0.0,
                         "treasury": int(num(row["treasury"])),
                         "bases": int(num(row["owned_bases"])),
                         "at_war": bool(row["at_war"]),
                     }
+            tier_counts = {}
+            total_slots = w_slots = d_slots = u_slots = 0
             if "ships" in tables and "hulls" in tables:
                 rows = conn.execute(
                     "SELECT COALESCE(h.tier, 0) AS tier, s.class, COUNT(*) AS n "
-                    "FROM ships s LEFT JOIN hulls h ON h.id = s.class OR h.name = s.class "
+                    "FROM ships s LEFT JOIN hulls h ON LOWER(h.id) = LOWER(s.class) OR LOWER(h.name) = LOWER(s.class) "
                     "GROUP BY COALESCE(h.tier, 0), s.class ORDER BY tier DESC, n DESC"
                 ).fetchall()
-                out["readiness"]["hulls"] = [{"tier": int(num(r["tier"])), "class": text(r["class"], 40), "count": int(num(r["n"]))} for r in rows[:12]]
+                out["readiness"]["hulls"] = [{"tier": int(num(r["tier"])), "class": text(r["class"], 40), "count": int(num(r["n"]))} for r in rows[:16]]
+                for r in rows:
+                    tr = int(num(r["tier"]))
+                    tier_counts[tr] = tier_counts.get(tr, 0) + int(num(r["n"]))
+                sl_r = conn.execute(
+                    "SELECT COALESCE(SUM(COALESCE(h.weapon_slots,0)),0), "
+                    "COALESCE(SUM(COALESCE(h.defense_slots,0)),0), "
+                    "COALESCE(SUM(COALESCE(h.utility_slots,0)),0) "
+                    "FROM ships s LEFT JOIN hulls h ON LOWER(h.id) = LOWER(s.class) OR LOWER(h.name) = LOWER(s.class)"
+                ).fetchone()
+                if sl_r:
+                    w_slots, d_slots, u_slots = int(num(sl_r[0])), int(num(sl_r[1])), int(num(sl_r[2]))
+                    total_slots = w_slots + d_slots + u_slots
+                h_tot = sum(tier_counts.values())
+                h_t0 = tier_counts.get(0, 0)
+                h_t1 = tier_counts.get(1, 0)
+                h_t2p = sum(c for tr, c in tier_counts.items() if tr >= 2)
+                h_upg = h_t1 + h_t2p
+                out["readiness"]["hull_summary"] = {
+                    "total": h_tot, "t0": h_t0, "t1": h_t1, "t2_plus": h_t2p,
+                    "upgraded": h_upg, "t0_remaining": h_t0,
+                    "upgraded_pct": round(100.0 * h_upg / max(1, h_tot), 1) if h_tot else 0.0,
+                }
             if "ship_modules" in tables:
                 rows = conn.execute(
                     "SELECT name, COUNT(*) AS n FROM ship_modules "
@@ -1568,8 +1620,41 @@ def api_ops():
                     "GROUP BY name ORDER BY CASE WHEN name LIKE '% V' THEN 5 WHEN name LIKE '% IV' THEN 4 WHEN name LIKE '% III' THEN 3 WHEN name LIKE '% II' THEN 2 ELSE 1 END DESC, n DESC LIMIT 14"
                 ).fetchall()
                 out["readiness"]["modules"] = [{"name": text(r["name"], 50), "count": int(num(r["n"]))} for r in rows]
+                fs_r = conn.execute(
+                    "SELECT COUNT(*) AS inst, "
+                    "SUM(CASE WHEN name LIKE '% II' OR name LIKE '% III' OR name LIKE '% IV' OR name LIKE '% V' THEN 1 ELSE 0 END) AS adv, "
+                    "COUNT(DISTINCT CASE WHEN name LIKE '% II' OR name LIKE '% III' OR name LIKE '% IV' OR name LIKE '% V' THEN pilot END) AS sh_adv "
+                    "FROM ship_modules"
+                ).fetchone()
+                if fs_r:
+                    inst_m = int(num(fs_r["inst"]))
+                    adv_m = int(num(fs_r["adv"]))
+                    sh_adv = int(num(fs_r["sh_adv"]))
+                    sh_base = synced_ships or online_count
+                    out["readiness"]["fit_summary"] = {
+                        "ships": sh_base, "total_slots": total_slots,
+                        "w_slots": w_slots, "d_slots": d_slots, "u_slots": u_slots,
+                        "installed_mods": inst_m, "empty_slots": max(0, total_slots - inst_m),
+                        "adv_mods": adv_m, "adv_unfitted_slots": max(0, total_slots - adv_m),
+                        "ships_with_adv": sh_adv, "ships_unfitted": max(0, sh_base - sh_adv),
+                        "adv_slot_pct": round(100.0 * adv_m / max(1, total_slots), 1) if total_slots else 0.0,
+                        "adv_ship_pct": round(100.0 * sh_adv / max(1, sh_base), 1) if sh_base else 0.0,
+                    }
+            out["fleet_capacity"] = {
+                "standing": standing_ships,
+                "online": online_count,
+                "away": away_count,
+                "synced": synced_ships,
+                "target": 500 if standing_ships < 500 else max_fac_cap,
+                "max_cap": max_fac_cap,
+                "pct_max_cap": round(100.0 * standing_ships / max(1, max_fac_cap), 1),
+                "by_empire": [
+                    {"empire": text(r["emp"], 20), "count": int(num(r["n"])), "pct": round(100.0 * int(num(r["n"])) / max(1, synced_ships), 1)}
+                    for r in emp_rows
+                ],
+            }
 
-            # Dynamic Tech Frontier, Consolidated Balance Sheet, Fuel-Sink Efficiency & Birth Wave
+            # Dynamic Tech Frontier, Consolidated Balance Sheet & Fuel-Sink Efficiency
             if "ships" in tables and "ship_skills" in tables:
                 sk_r = conn.execute(
                     "SELECT COUNT(*) AS n, COALESCE(MAX(level),0) AS mx, ROUND(COALESCE(AVG(level),0),1) AS av, "
@@ -1579,7 +1664,7 @@ def api_ops():
                     "SUM(CASE WHEN level >= 50 THEN 1 ELSE 0 END) AS p50 "
                     "FROM ship_skills WHERE skill = 'piloting'"
                 ).fetchone()
-                h_map = {h["tier"]: h["count"] for h in out["readiness"].get("hulls") or []}
+                h_map = dict(tier_counts)
                 t2p = sum(c for tr, c in h_map.items() if tr >= 2)
                 t3p = sum(c for tr, c in h_map.items() if tr >= 3)
                 t4p = sum(c for tr, c in h_map.items() if tr >= 4)
@@ -1646,18 +1731,7 @@ def api_ops():
                 prod_sh = (eff.get("productive") or {}).get("hours", 0.0)
                 eff["productive_pct"] = round(100.0 * prod_sh / tot_sh, 1)
                 out["efficiency"] = eff
-            if "birth_plans" in tables:
-                cur_n = int(num((out.get("freshness") or {}).get("ships") or 246))
-                w_row = conn.execute(
-                    "SELECT wave, wave_target, SUM(ships) AS add_n, MAX(gate) AS gate "
-                    "FROM birth_plans WHERE wave >= 1 AND wave_target > ? GROUP BY wave, wave_target ORDER BY wave LIMIT 1",
-                    (cur_n,)
-                ).fetchone()
-                if w_row:
-                    out["birth_wave"] = {
-                        "wave": int(num(w_row["wave"])), "target": int(num(w_row["wave_target"])),
-                        "add_ships": int(num(w_row["add_n"])), "gate": text(w_row["gate"], 120),
-                    }
+
             if "supply_status" in tables:
                 rows = conn.execute(
                     "SELECT chain, item, place, stock, keep, status, hours_left FROM supply_status "
@@ -1985,6 +2059,9 @@ def api_diplomacy():
     emp_rel = (emp_state.get("relations") or {}) if isinstance(emp_state, dict) else {}
     fl_state = read_json(FLEET / "fleet.json") or {}
     fl_ships = (fl_state.get("ships") or []) if isinstance(fl_state, dict) else []
+    fl_away = (fl_state.get("away") or []) if isinstance(fl_state, dict) else []
+    our_by_empire = []
+    our_max_cap = 1000
     our_pilots = {str(s.get("name") or "") for s in fl_ships if isinstance(s, dict) and s.get("name")}
     our_wallets = sum(int(num(s.get("credits"))) for s in fl_ships if isinstance(s, dict))
     our_treasury = int(num(emp_fac.get("treasury")))
@@ -2066,6 +2143,21 @@ def api_diplomacy():
                         "category": clean_ascii(r["cat"], 24),
                         "count": int(num(r["n"])),
                     })
+                emp_cnts = conn.execute(
+                    "SELECT LOWER(COALESCE(NULLIF(empire,''), 'voidborn')) AS emp, COUNT(*) AS n FROM ships GROUP BY 1 ORDER BY 2 DESC"
+                ).fetchall()
+                emp_tot = sum(int(num(x["n"])) for x in emp_cnts) or 1
+                our_by_empire = [
+                    {"empire": clean_ascii(x["emp"], 20), "count": int(num(x["n"])), "pct": round(100.0 * int(num(x["n"])) / emp_tot, 1)}
+                    for x in emp_cnts
+                ]
+            if "facilities" in tables:
+                mc_r = conn.execute(
+                    "SELECT COALESCE(MAX(faction_cap), 1000) FROM facilities "
+                    "WHERE LOWER(id) LIKE '%recruit%' OR LOWER(id) LIKE '%hiring%' OR LOWER(id) LIKE '%guild_hall%'"
+                ).fetchone()
+                if mc_r and int(num(mc_r[0])) >= 200:
+                    our_max_cap = int(num(mc_r[0]))
             if "ship_skills" in tables:
                 sk = conn.execute("SELECT ROUND(AVG(level), 1) as avg_lv, MAX(level) as max_lv FROM ship_skills WHERE skill='piloting'").fetchone()
                 if sk:
@@ -2304,8 +2396,11 @@ def api_diplomacy():
             "leader": clean_ascii(emp_fac.get("leader") or "Prime Directive", 40),
             "members": our_members,
             "members_limit": our_limit,
-            "open_seats": max(0, min(len(fl_ships) or our_limit, our_limit) - our_members),
+            "max_cap": our_max_cap,
+            "open_seats": max(0, our_limit - our_members),
+            "standing_ships": max(len(fl_ships) + len(fl_away), sum(h["count"] for h in our_hulls)),
             "fleet_ships": len(fl_ships),
+            "by_empire": our_by_empire,
             "treasury": our_treasury,
             "wallets": our_wallets,
             "total_purse": our_wealth,
