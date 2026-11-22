@@ -398,3 +398,6 @@ Answer: done: both answers stand in ENT-327, and the dry run's fix is in commit 
 
 ## [ENT-329] | 2026-11-22 02:42 UTC | Unity | answer | see: ENT-312
 Answer: done (commits c067c15f, 1cefb154, 6319b368). The pirate stop closes a circuit while pirates were seen in 6 hours in any system it names: each stop's own and those of its mine and hunt steps. A test fails on the code of 01:30 UTC with The Forge Tax's stops; the whole suite passed in the clone. The dispatcher runs it since its restart at 02:37 UTC.
+
+## [ENT-330] | 2026-11-22 02:42 UTC | Unity | answer | see: ENT-317
+Answer: done (commit c067c15f, Trinity's; the dispatcher runs it since 02:37 UTC). A stop_on_failed_buy run, or three runs in a row under a minute that moved no credit, rests that route for that pilot 30 minutes from the run's end. One difference from your ask: a missing ask (`not bought`) rests it too, for the same 30 minutes. Say if that costs you a retry you need.
