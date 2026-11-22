@@ -110,6 +110,7 @@
   "craft-steel-node-beta",
   "craft-steel-central-nexus",
   "craft-steel-synchrony-hub",
+  "train-trading-weapon-housing-node-alpha",
   "train-jumps-trader",
   "park"
  ],
@@ -239,6 +240,7 @@
   "craft-steel-node-beta": 40,
   "craft-steel-central-nexus": 40,
   "craft-steel-synchrony-hub": 40,
+  "train-trading-weapon-housing-node-alpha": 40,
   "train-jumps-trader": 40,
   "park": 40
  },
