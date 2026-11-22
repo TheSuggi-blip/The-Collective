@@ -22,7 +22,7 @@ Status: proven. Updated: 2026-11-22. Evidence: table hulls; catalog spacemolt_ca
   10: Recursion (3 weapons, speed 4), Dualism, Census. Tier 3 at 20:
   Annihilation, Voidborn Singularity.
 - Fit order: the Pulse Laser III first (proven on 85 to 95 hull), then
-  two Shield Booster I; the Plasma Cannon II is in test, with ammunition. The gauges (rule F9, gauges.py): one
+  two Shield Booster I; three of them kill a pilot whale (tests.md). The gauges (rule F9, gauges.py): one
   Pulse Laser I kills about 78 hull and stands about 77 weight; prey above
   that waits for a better weapon, boosters or a group.
 - Style: one hunter to a herd; never the first shot at a player or an
