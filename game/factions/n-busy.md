@@ -15,7 +15,7 @@ updated: 2026-11-22
 # Busy Being Dead [BUSY]
 
 A player faction with 6 base(s) in 6 system(s); the nearest to Nexus Prime is 14 jump(s) away, in 40 Eridani (`40_eridani`).
-Pilots of it in our space in the last 24 hours: 7.
+Pilots of it in our space in the last 24 hours: 3.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 7.
 | Allies | BEIN, DEAD, MOON | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 357 | Public event stream |
+| Pilots carrying the tag on the public event stream | 348 | Public event stream |
 
 ## Bases
 
@@ -45,13 +45,9 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Combat Drone 018 | Pherkad (`pherkad`) | 0 | opus_magna |
-| Combat Drone 019 | Hamal (`hamal`) | 1 | opus_magna |
+| Combat Drone 133 | Pherkad (`pherkad`) | 0 | dialectic |
 | Combat Drone 135 | Pherkad (`pherkad`) | 0 | dialectic |
-| Combat Drone 139 | The Experiment (`the_experiment`) | 0 | dialectic |
-| Combat Drone 169 | Pherkad (`pherkad`) | 0 | dialectic |
-| Combat Drone 172 | Pherkad (`pherkad`) | 0 | dialectic |
-| Combat Drone 188 | Hamal (`hamal`) | 0 | dialectic |
+| Combat Drone 190 | Node Gamma (`node_gamma`) | 0 | dialectic |
 
 ## Standing History
 
