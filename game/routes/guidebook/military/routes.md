@@ -1,26 +1,25 @@
 # Military guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-22. Evidence: the tool plan (show, templates); hive.py briefing (column carries); the tool fill (check); table runs joined with stats_pilot_hour (cr per XP by route).
+Status: proven. Updated: 2026-11-22. Evidence: the tool plan (show, templates); hive.py briefing (column carries); the tool fill (check); table runs joined with stats_pilot_hour (cr per XP by prey, scratch).
 
-What the 70 ships fly between two turns (orders ENT-063, P1, P5 and
+What the 70 ships fly between two turns (orders ENT-064, P1, P5 and
 block APOPHIS): hunts at the least fuel per XP, fits, a group that kills;
-no sale of their own (P5). No guard or escort in the first ring (F33).
-One hunter to a herd (column carries).
+no sale, carry or craft of their own (P5). No guard in the first ring
+(F33). One hunter to a herd (column carries).
 
 | Order | Routes | Ships | Why |
 |---|---|---|---|
-| First | the once line; the laser fit; plasma ammo loaders; `give-drone-stores-*` (`requires.strict`) | each under its limit | F35; the weapon; P5 |
-| Own | far herds and the filler's tests | 1 each | far herds, tests |
-| `@hunter` | the `*-pl3`/`pc2` prey (module-gated), hollow pilgrims, carapace grazers, cheap drift-ray gas hunts, chlorophage, veil rays | 1 each | combat XP; carapace, biogas, ferrous nodule short |
-| Then | the crafts from own stores, `park` | 6 each | the class fallback |
+| First | the once line; the laser and booster fits; plasma loaders; `give-drone-stores-*` | each under its limit | F35; fits; P5 |
+| Own | a cheap near hunt first on the costliest ships; far herds; the filler's tests | 1 each | P1; tests |
+| `@hunter` | `*-pl3`/`pc2` (module-gated: tortoises, slugs, bulwarks), near drift-ray hunts, hollow pilgrims, carapace, drift rays, chlorophage, veil rays | 1 each | combat XP; ferrous nodule, carapace, biogas short |
+| Then | `park` behind the crafts (closed to drones under P5) | -- | never reached |
 
-Order inside `@hunter` by cost per XP (2026-11-22): carapace grazers 0.2
-to 0.6 cr per XP, nine drift-ray gas hunts about 0.1, chlorophage 1.0 to
-1.3 (moved down once caustic sac fell to 102 short). Every hunt carries
-`gift_to`; the hold goes to the receiver at `sell_at`. What changes it:
-a reserve good filled or short (the tool stock, view=reserve), the Laser
-III on more ships, a pirate at a hunt's place (dispatch closes it).
+Fuel per XP by prey since 12:00 UTC, 2026-11-22, at 410 to 640 XP an
+hour alike: drift ray 0.32 cr, carapace 0.53, veil ray 0.59, hollow
+pilgrim 0.83, cinder sylph 0.91, halo drifter 0.96. Every hunt carries
+`gift_to`. What changes it: a reserve good filled or short (the tool
+stock, view=reserve), more laser ships, a pirate at the place.
 
 ### Hunts of grazers (`hunt.py`)
 Status: proven. Updated: 2026-11-21. Evidence: game/fleet/hunt.py; skill military-turn hunt_figures.py; routes.md entry versions of 2026-11-17 (--history).
@@ -79,19 +78,10 @@ Status: proven. Updated: 2026-11-21. Evidence: table runs (route sell-ember-*, 2
   passes Hollowcrest (a raider pack on record) and was not written.
 
 ### Making from own stores, the fallback
-Status: proven. Updated: 2026-11-21. Evidence: table runs (craft-*-military-*, 2026-11-18); requests.log ENT-271; the tool stock (member Apophis).
+Status: retired. Updated: 2026-11-22. Evidence: orders.log ENT-064, P5; workclass.py sales (craft-* closed to drones and sentinels, 2026-11-22 16:17 UTC).
 
-- A ship with no herd open makes from its own stores: `craft-armor-
-  military-<station>` (carapace into armor plate) and `craft-steel-
-  military-<station>` (iron into steel plate) at The Experiment, Node Beta,
-  Synchrony Hub, Central Nexus; `craft-piping-node-beta`,
-  `craft-wiring-synchrony-hub` for copper. One visit uses up what the pilot
-  holds there; nothing is bought or sold.
-- No iron or copper is gathered: gathering is Mining's alone (F23; Unity's
-  no, requests.log ENT-271). A class with no work at home takes its work
-  further out: far hunts, groups, fits.
-- Stored loot is sold by circuits with `requires.stored` and `requires.bid`
-  (the ledger reads storage about every 40 minutes).
+Under strict classes a craft is Logistics' or Trade's work; the stores go
+to their receivers by `give-drone-stores-*`.
 
 ### Route Templates
 Status: proven. Updated: 2026-11-21. Evidence: game/routes/templates/military.json; game/routes/templates-military.md; the tool plan (templates).

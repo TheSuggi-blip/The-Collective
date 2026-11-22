@@ -1,22 +1,22 @@
 # Military guidebook -- Tests (tests.md)
 
 ### Open Tests
-Status: test. Updated: 2026-11-22. Evidence: the tool fill (status); observations kinds group_hunt and fit_test; table runs; tables ship_skills and stats_pilot_hour.
+Status: test. Updated: 2026-11-22. Evidence: hive.py route fit-shield-booster-ii-lhs-1140; hive.py route hunt-test-siphon-pilot-whale-sb2; table runs (*-pl3); observations kind group_hunt; tables ship_skills and stats_pilot_hour.
 
-- Pulse Laser III hunts on four herds of slag tortoises and deuteron
-  slugs (`*-pl3`): the tortoises kill 2 to 3 a run (ferrous nodule and
-  carapace, both short); the deuteron slugs at Node Beta and Aldhibah
-  read zero kills in four of six runs. Three results each before a lift.
-- Plasma ammunition: a circuit stop `store: all` stores the packs too;
-  `load-plasma-ammo-*` take them back aboard (requests.log ENT-352).
-- Shields and Armor: the catalog trains them by shield or hull damage
-  taken in combat, yet no ship of the fleet holds either skill after
-  eight days of hunts. Open: what does train them.
-- Not tested: a Shield Booster II; a tier-1 or tier-2 hull with two or
-  three weapons; cloudwhales (508 to 3,304 hull).
-- Answered: one Pulse Laser I kills no cauldronback or slag tortoise; the
-  Pulse Laser III kills prey of 85 to 95 hull alone and a pilot whale in
-  a side of three (Group hunts).
+- Shield Booster II (`fit-shield-booster-ii-lhs-1140`, 3 pilots): shield
+  80 to 130; one Pulse Laser III ship with it killed a pilot whale alone
+  at full hull (`hunt-test-siphon-pilot-whale-sb2`). One result of
+  three (F37).
+- Pulse Laser III hunts: tortoises at seven belts and deuteron slugs at
+  three ice fields; the slugs kill 2 to 3 a run since 12:48 UTC.
+- Cloudwhales (1,400 to 3,400 hull, 20 jumps out): the first group flew
+  on a census 9 hours old and found none. A group sets out only on a
+  census under 120 minutes (`--census-minutes`).
+- Shields and Armor: no ship holds either skill after eight days, though
+  the catalog trains them by damage taken. Open.
+- Not tested: a tier-1 or tier-2 hull with two or three weapons.
+- Answered: one Pulse Laser I kills no slag tortoise; the laser III kills
+  85 to 95 hull alone, a pilot whale in a side of three.
 
 ### Group hunts
 Status: proven. Updated: 2026-11-22. Evidence: observations kind group_hunt (2026-11-17 to 2026-11-22 12:41 UTC); errors.log ENT-129, ENT-130; spacemolt.com/docs/combat; skill military-turn group_hunt.py.
