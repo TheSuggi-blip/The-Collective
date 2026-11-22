@@ -140,3 +140,16 @@ Status: proven. Updated: 2026-11-22. Evidence: route mission-cracking-the-shell-
 - So a hunt place that a route gates by count belongs on a list read
   faster than the gate's window; else name the reading to the route's
   owner with a place that is.
+
+### A cut in reads is a cut in ship-hours
+Status: proven. Updated: 2026-11-22. Evidence: table runs (census, 24 h to 23:25 UTC: 2,416 runs, 608 ship-hours); requests.log ENT-373, ENT-374, ENT-381; commits 786f71c9, ad738674.
+
+- Census fuel follows the ship-hours that read, not the cadences: while
+  the lists ask more reads than the scouts give, a longer cadence only
+  moves reads from fresh places to old ones, at the same burn.
+- So a burn cut means fewer scouts reading. The fill gate counts a
+  scout docked without an open route as waiting, and F8 names no
+  zero-fuel work a scout has. Ask before capping, never after.
+- A newborn region's minutes a read were no shorter than the home
+  side's (worked-far reads at Altais and Haven, 16 to 17 minutes against
+  25), likely since a census ends docked where it last read.

@@ -5,22 +5,30 @@ Status: proven. Updated: 2026-11-22. Evidence: the plan file (tool plan, show); 
 
 - First, every scout: store-hold-central-nexus, give-scout-stores-*
   (requires.strict: open when strict classes go on), the missions paid
-  once and the Voidborn chain (F34, F35), census-voidborn (home, 30 min);
-  the Sol audit last (paid 24 of 25, 2026-11-22).
-- Readers (@reader): census-watch-gsc-0044 (50 min, 3: the outpost
-  stands), census-worked (90 min), census-frontier (170 min: near,
-  cheap), census-worked-far (where others fly, 180 min), then the roads.
+  once and the Voidborn chain (F34, F35); the Sol audit last (paid 24
+  of 25). No census in First or Then: a census is open to a pilot of
+  another empire wherever it reads (dispatch.newborn_reason).
+- Newborn scouts: their capital's region only, @outerrim (Altais) and
+  @nebula (Haven): census-region-<capital> (120 min, four jumps and the
+  places others work within six) and its ring (360 min). Sol and Krynn
+  regions (180 min) go to Voidborn scouts stationed near them.
+- Readers (@reader): census-voidborn (home, 45 min), the outpost watch
+  (50 min), census-worked (120 min: twice a turn), census-frontier
+  (170 min), census-worked-far (where others fly, 180 min), the roads.
 - The six scanner scouts: a far list first (720 min, oldest first), so
   every far system is surveyed; then @reader.
-- Explorers: their road (census-north, -east, -south: rule F33, 150
+- Explorers: their road (census-north, -east, -south: rule F33, 170
   min), then census-worked-far, then their far list.
 - Hunters: one reader a hunt, one hunter a herd (F9), then @reader. P5:
   every scout hunt carries gift_to trader; no route sells or crafts.
   Only hunts Intel claims; one another claims is dropped.
 - census-roads (the oldest readings, 480 min): three readers take it
   first, since a list last in every order is never reached (lessons.md).
-- Then: census-frontier, census-roads, park.
-- Capacity: the lists ask more reads than 30 scouts give.
+- Then: park alone.
+- Capacity: the home-side lists ask more reads than the Voidborn scouts
+  give; a newborn region keeps fewer readers busy than it has newborns
+  (an estimate from its cadence and a read's minutes; fill.py names
+  the rest).
 - Changed by: a WORKED, SITES or FRESH HALT, a pirate on a road, a once
   mission in queue.log; why a route is closed: fill.py.
 
