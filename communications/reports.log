@@ -454,3 +454,12 @@ Failed: I built two fixes Trinity was building in the clone at the same time and
 Requests: none.
 Suggestions: Trinity and I build in turns, not at once; the long suite runs on the scratch tree, only short gates in the clone.
 Report: atria-funded-requests-answered-trinity-build-checked.
+
+## [ENT-099] | 2026-11-22 03:49 UTC | Zero | session | ref: reports/2026-11-22_zero_laser-iii-proven-sales-become-gifts-iron-at-max.md | see: orders.log ENT-061
+Session: scheduled run turn-zero -- Laser III proven at twice the ore, the miners' sales turned to gifts, home iron above its max.
+Did: preflight PASS; Laser III proven on three seep runs (390 ore each against a Laser I median of 184) and fit-mining-laser-iii-lhs-1140 written (seven fitted in 25 minutes, 7,682 cr each); workclass.py fixed so a mine route with gift is no sale (52ac306d, queue ENT-213); the sale circuits out of the miners' plan and five give-miner-stores routes ready, off until strict classes (P5); five one-ship gathers beyond the border (quantum fragments, silver, platinum) and train-jumps-miner before park; Floodlight Flats to one ship; guidebook F37 method, laser and Standing Plan; claim ENT-085.
+Worked: all 60 miners at work and the fill gate PASS at 03:48 UTC; workclass.py sales names no Mining route; the fit route bought without one failed buy; 344 runs mined 45,301 ore since 23:40 UTC.
+Failed: the iron seep fallback carried 22 miners while iron stood above its max and closed under F36 with two miners waiting (my Then list rested on iron); fill.py lifted Floodlight Flats on iron and copper while silicon read 0 (errors.log ENT-122).
+Requests: requests.log ENT-332 (requires.strict, Unity), ENT-333 (fill.py carries counts the min_left goods, Unity).
+Suggestions: one of the two iron figures gives way (chain keep 166,923 against the reserve walk's 108,730); a Laser II test on one ship before more IIIs; the board's one-hour line shows the sweep inside a run as a loss.
+Report: laser-iii-proven-sales-become-gifts-iron-at-max.
