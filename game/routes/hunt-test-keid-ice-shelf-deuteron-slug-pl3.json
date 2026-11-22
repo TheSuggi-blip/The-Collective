@@ -2,7 +2,7 @@
  "id": "hunt-test-keid-ice-shelf-deuteron-slug-pl3",
  "kind": "hunt",
  "title": "Weapon test: deuteron slug with a Pulse Laser III at keid_ice_shelf; loot stored",
- "note": "2026-11-22 00:41 UTC (Apophis): a Pulse Laser III on prey of 85 to 90 hull, above the one-ship gauge of a starter (gauges.py species): deuteron slugs (hull 85) at Keid Ice Shelf, 5 jumps from home: 7 at the last census (table herds). Slag tortoises stand in some fifty herds of 6 to 8 from 5 to 8 jumps out (table herds): if one ship kills them, the drones the home herds leave idle have work. One ship (rule F9 test), an empty hold, it leaves for a pirate; every good stored (min_bid 5000); gift_to trader for strict classes; standing (its fuel is its price).",
+ "note": "2026-11-22 00:41 UTC (Apophis): a Pulse Laser III on prey of 85 to 90 hull, above the one-ship gauge of a starter (gauges.py species): deuteron slugs (hull 85) at Keid Ice Shelf, 5 jumps from home: 7 at the last census (table herds). Slag tortoises stand in some fifty herds of 5 to 8, from 5 to 26 jumps out (table herds, the first 60 rows of herds of 3 or more): if one ship kills them, the drones the home herds leave idle have work. One ship (rule F9 test), an empty hold, it leaves for a pirate; every good stored (min_bid 5000); gift_to trader for strict classes; standing (its fuel is its price).",
  "place": "keid:keid_ice_shelf",
  "species": [
   "deuteron_slug"
