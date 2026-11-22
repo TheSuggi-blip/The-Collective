@@ -40,15 +40,6 @@
    "division": "Mining"
   }
  },
- "measured": {
-  "date": "2026-11-21",
-  "runs": 2,
-  "minutes": 54,
-  "credits_per_run": 680,
-  "cph_per_ship": 750,
-  "hours": 12,
-  "last_run": "2026-11-21T20:32:20Z"
- },
  "gift": {
   "to": "trader",
   "items": [

@@ -32,5 +32,12 @@
     "flex_polymer"
    ]
   }
- ]
+ ],
+ "measured": {
+  "date": "2026-11-22",
+  "runs": 1,
+  "minutes": 4,
+  "credits_per_run": -30,
+  "cph_per_ship": -410
+ }
 }

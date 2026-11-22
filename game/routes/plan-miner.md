@@ -59,8 +59,8 @@ Kept by Zero. Routes: 83. Ships: 60.
 | 37 | [carry-ice-node-alpha-nexus](carry-ice-node-alpha-nexus.json) | [Paying Routes](index-paying-routes.md) | home space | up to 3 ships, with 65 water_ice stored at node_alpha_processing_station, while central_nexus bids 25 cr for water_ice | 3 of 60 |
 | 38 | [mine-gsc-0015-cryobelt](mine-gsc-0015-cryobelt.json) | [Tests](index-tests.md) | beyond the border, 16 jumps | up to 3 ships, needs ice_harvester_i, empty hold | 1 of 60 |
 | 39 | [mine-ain-ice-belt](mine-ain-ice-belt.json) | [Tests](index-tests.md) | beyond the border, 16 jumps | up to 3 ships, needs ice_harvester_i, empty hold | 1 of 60 |
-| 40 | [mine-altais-outer-ice](mine-altais-outer-ice.json) | [Tests](index-tests.md) | beyond the border, 17 jumps | up to 3 ships, needs ice_harvester_i | 1 of 60 |
-| 41 | [mine-icecap-drift](mine-icecap-drift.json) | [Tests](index-tests.md) | beyond the border, 18 jumps | up to 3 ships, needs ice_harvester_i | 1 of 60 |
+| 40 | [mine-altais-outer-ice](mine-altais-outer-ice.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 17 jumps | up to 3 ships, needs ice_harvester_i | 1 of 60 |
+| 41 | [mine-icecap-drift](mine-icecap-drift.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 18 jumps | up to 3 ships, needs ice_harvester_i | 1 of 60 |
 | 42 | [mine-khambalia-ice-fields](mine-khambalia-ice-fields.json) | [Tests](index-tests.md) | beyond the border, 23 jumps | up to 3 ships, needs ice_harvester_i | 1 of 60 |
 | 43 | [mine-epsilon-eridani-ice-fields](mine-epsilon-eridani-ice-fields.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 9 jumps | up to 1 ships, needs ice_harvester_i, empty hold | 1 of 60 |
 | 44 | [mine-hd-20794-ice-fields](mine-hd-20794-ice-fields.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 21 jumps | up to 1 ships, needs ice_harvester_i, empty hold | 2 of 60 |
@@ -70,9 +70,9 @@ Kept by Zero. Routes: 83. Ships: 60.
 | 48 | [craft-wiring-synchrony-hub](craft-wiring-synchrony-hub.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 8 ships, with 80 copper_ore stored at synchrony_hub, standing work | 1 of 60 |
 | 49 | [drain-ice-nexus](drain-ice-nexus.json) | [Paying Routes](index-paying-routes.md) | home space | up to 1 ships, with 5 water_ice stored at central_nexus, while central_nexus bids 25 cr for water_ice | 2 of 60 |
 | 50 | [mine-dheneb-cryobelt](mine-dheneb-cryobelt.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 11 jumps | up to 2 ships, needs ice_harvester_i, empty hold | 4 of 60 |
-| 51 | [mine-cryogenic-reserve](mine-cryogenic-reserve.json) | [Paying Routes](index-paying-routes.md) | home space | up to 1 ships, needs ice_harvester_i, while central_nexus bids 25 cr for water_ice | all 60 |
-| 52 | [mine-achernar-frost-ring-nexus](mine-achernar-frost-ring-nexus.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 4 jumps | up to 2 ships, needs ice_harvester_i, empty hold, while central_nexus bids 25 cr for water_ice | all 60 |
-| 53 | [mine-ruchbah-ice-belt-nexus](mine-ruchbah-ice-belt-nexus.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 4 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while central_nexus bids 25 cr for water_ice | all 60 |
+| 51 | [mine-cryogenic-reserve](mine-cryogenic-reserve.json) | [Tests](index-tests.md) | home space | up to 1 ships, needs ice_harvester_i, while central_nexus bids 25 cr for water_ice | all 60 |
+| 52 | [mine-achernar-frost-ring-nexus](mine-achernar-frost-ring-nexus.json) | [Tests](index-tests.md) | beyond the border, 4 jumps | up to 2 ships, needs ice_harvester_i, empty hold, while central_nexus bids 25 cr for water_ice | all 60 |
+| 53 | [mine-ruchbah-ice-belt-nexus](mine-ruchbah-ice-belt-nexus.json) | [Tests](index-tests.md) | beyond the border, 4 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while central_nexus bids 25 cr for water_ice | all 60 |
 | 54 | [mine-wolf-1061-frozen-drift-nexus](mine-wolf-1061-frozen-drift-nexus.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 4 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while central_nexus bids 25 cr for water_ice | all 60 |
 | 55 | [mine-nova-terra-ice-shelf](mine-nova-terra-ice-shelf.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 8 jumps | up to 1 ships, needs ice_harvester_i, while central_nexus bids 25 cr for water_ice | all 60 |
 | 56 | [mine-wolf-1061-vent](mine-wolf-1061-vent.json) | [Tests](index-tests.md) | beyond the border, 4 jumps | up to 1 ships, needs nitrogen_vent, empty hold, while synchrony_hub bids 25 cr for water_ice | all 60 |
