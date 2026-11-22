@@ -1,0 +1,54 @@
+{
+ "id": "train-trading-weapon-housing-node-alpha",
+ "kind": "circuit",
+ "title": "Trading trained docked at Node Alpha: weapon housings bought at its ask and sold back into its bid at the same station, no jump",
+ "note": "2026-11-22 15:41 UTC (Mercury): orders ENT-064, block MERCURY (every trader operating at the least fuel per XP, before jump loops) and rule F23 (a trader with no class work open trains trading). Trading is the class skill and lags (guidebook trade card: 2 on 29 ships); it rises about 1 XP per 100 cr bought and as much per 100 cr sold (levelling guide). Node Alpha's book (table books, read 2026-11-22 15:40 UTC): weapon_housing bid 223 x 46, ask 230 x 174, a spread of 3%: a round trip of 10 units costs about 70 cr for about 45 Trading XP, docked, no fuel, against train-jumps-trader at -551 cr a ship-hour. Both ends are the station's own NPC orders, no player is traded with. requires.ask and requires.bid close it while either end is gone or the spread widens; stop_on_failed_buy ends the run when the buy gets nothing; what the bid does not take is stored and sold on the next run. A test: one ship, one unit first (F12), three results decide (F37); the qty rises only after the first answer is read.",
+ "standing": true,
+ "max_ships": 1,
+ "requires": {
+  "ask": {
+   "item": "weapon_housing",
+   "base": "node_alpha_processing_station",
+   "max_price": 231,
+   "min_qty": 10
+  },
+  "bid": {
+   "item": "weapon_housing",
+   "base": "node_alpha_processing_station",
+   "min_price": 221,
+   "min_qty": 10
+  }
+ },
+ "stops": [
+  {
+   "at": "node_alpha:node_alpha_processing_station:node_alpha_processing_station",
+   "buy": [
+    {
+     "item": "weapon_housing",
+     "qty": 1,
+     "max_price": 231
+    }
+   ],
+   "stop_on_failed_buy": true
+  },
+  {
+   "at": "node_alpha:node_alpha_processing_station:node_alpha_processing_station",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "weapon_housing"
+    }
+   ],
+   "sell": [
+    {
+     "item": "weapon_housing",
+     "min_price": 221
+    }
+   ]
+  },
+  {
+   "at": "node_alpha:node_alpha_processing_station:node_alpha_processing_station",
+   "store": "all"
+  }
+ ]
+}

@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 328.
+Routes: 329.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -85,6 +85,7 @@ Routes: 328.
 | [train-jumps-miner](train-jumps-miner.json) | circuit | home space | Piloting and navigation for miners without class work open: five jumps through our own stations, nothing bought, the hold stored at the end | up to 25 ships, from 5,000 cr, under navigation 6, piloting 10, standing work | 453 | 15 | -130 | -500 | 2026-11-22 |
 | [train-jumps-trader](train-jumps-trader.json) | circuit | home space | Piloting and navigation for traders with no trade open: five jumps through our own stations, nothing bought, each dock reading the station's book | up to 40 ships, from 5,000 cr, under navigation 6, piloting 10, standing work | 826 | 15 | -150 | -540 | 2026-11-22 |
 | [train-navigation-trader](train-navigation-trader.json) | circuit | home space | Navigation for traders one level short of Signal Fragments: five jumps through our own stations, nothing carried | up to 20 ships, under navigation 3, standing work | TBD | TBD | TBD | TBD | -- |
+| [train-trading-weapon-housing-node-alpha](train-trading-weapon-housing-node-alpha.json) | circuit | home space | Trading trained docked at Node Alpha: weapon housings bought at its ask and sold back into its bid at the same station, no jump | up to 1 ships, while node_alpha_processing_station bids 221 cr for weapon_housing, while node_alpha_processing_station asks 231 cr or less for weapon_housing, standing work | TBD | TBD | TBD | TBD | -- |
 | [escort-voidborn-conductive-lattice](escort-voidborn-conductive-lattice.json) | guard | home space | Escort: follows one pilot of ours on the Node Beta chain (silver bought at Ironlight Crossroads in LHS 1140, beyond the border); docks at Node Beta | up to 1 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [hunt-cryogenic-reserve-hollow-pilgrim](hunt-cryogenic-reserve-hollow-pilgrim.json) | hunt | home space | hollow_pilgrim at cryogenic_reserve; loot sold at Synchrony Hub | up to 3 ships, standing work | 3 | 25 | 2,390 | 6,750 | 2026-11-22 |
 | [hunt-gsc-veil-ray](hunt-gsc-veil-ray.json) | hunt | home space | Veil-rays at GSC-0027 Prism Scatter; verdigris curd sold at Central Nexus | up to 1 ships, without piercing_railgun_i, standing work | 11 | 22 | -160 | -390 | 2026-11-22 |
