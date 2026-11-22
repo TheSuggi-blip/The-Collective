@@ -15,7 +15,7 @@ updated: 2026-11-22
 # Wexler's Void Safari [WEXL]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 9.
+Pilots of it in our space in the last 24 hours: 3.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 9.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 135 | Public event stream |
+| Pilots carrying the tag on the public event stream | 133 | Public event stream |
 
 ## Bases
 
@@ -38,15 +38,9 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Wexler 2V5-BB | Node Gamma (`node_gamma`) | 0 | cobble |
-| Wexler CQW-LK | Synchrony (`synchrony`) | 0 | cobble |
-| Wexler FVE-K7 | Pherkad (`pherkad`) | 0 | congregation |
-| Wexler JAW-H1 | Synchrony (`synchrony`) | 0 | congregation |
-| Wexler P8E-E4 | The Experiment (`the_experiment`) | 0 | cobble |
-| Wexler TDU-2B | Node Alpha (`node_alpha`) | 0 | cobble |
-| Wexler YTM-ZP | Node Beta (`node_beta`) | 0 | cobble |
-| Wexler ZFU-HK | Pherkad (`pherkad`) | 0 | prayer |
-| WexlerLegionnaire | Node Alpha (`node_alpha`) | 0 | theoria |
+| Wexler 2V5-BB | Pherkad (`pherkad`) | 0 | cobble |
+| Wexler TDU-2B | The Experiment (`the_experiment`) | 0 | cobble |
+| Wexler XMP-SJ | Acubens (`acubens`) | 0 | cobble |
 
 ## Standing History
 

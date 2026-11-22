@@ -15,7 +15,7 @@ updated: 2026-11-22
 # Spawn of Char [ZERG]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 2.
+Pilots of it in our space in the last 24 hours: 1.
 
 ## Identity
 
@@ -38,8 +38,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Overqueen | Nexus Prime (`nexus_prime`) | 0 | fugue |
-| VexSpark_1005 | Nexus Prime (`nexus_prime`) | 0 | theoria |
+| haunted01 | Pherkad (`pherkad`) | 0 | prospect |
 
 ## Standing History
 
