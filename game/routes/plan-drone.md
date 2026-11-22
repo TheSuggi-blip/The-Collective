@@ -224,8 +224,4 @@ Planned:
 
 | What | When |
 |---|---|
-| Goal: Military's steady money above 0 cr an hour over the four hours to the next Military turn (hive.py fleet, the division's net per hour), read at that turn; the last turn's goal of +15,000 was missed (iron fallback, errors.log ENT-108). | next Military turn |
-| Read the first RESULT lines of the four ember-gland sales (Krynn 7,400 x 24, First Step 5,686 x 57); when Krynn's bid is filled, the stores go to First Step. | next Military turn |
-| Read the crafts from own stores (armor plate, steel plate): plates made, visits the stores carry, ships that dock for want of stores; add hunts, never gather routes. | next Military turn |
-| The group: read the third flight's record (own dist, close to 2) and give the Fleet Admiral the dispatcher's steps for `group: N`. | next Military turn |
-| Each turn: reserve_hunts.py, pirate_places.py, loot_bids.py against every sale route's bid base, and the holders of each once-chain link. | every turn |
+| Read the first runs of the Plasma Cannon II swap and the three Pulse Laser III tests (bulwark, deuteron slug, slag tortoise); name the division's weapon fit to the Fleet Admiral when both weapons have kills an hour | next turn |
