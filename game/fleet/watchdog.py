@@ -329,8 +329,11 @@ def inspect(root, data, hours=4.0, now=None, save=False):
         facilities_n = int(con.execute("SELECT COUNT(*) FROM faction_facilities").fetchone()[0]) if "faction_facilities" in tables else 0
         systems_read = int(con.execute("SELECT COUNT(DISTINCT system) FROM places").fetchone()[0]) if "places" in tables else 0
 
+        open_seats = max(0, min(total_ships, members_limit) - member_count) if members_limit > 0 else 0
         if members_limit > 0 and member_count >= members_limit - 2:
-            add_finding("WARN", "empire", "FACTION_CAP_NEAR", "Faction seats at %d/%d (treasury %s cr)" % (member_count, members_limit, format(treasury, ",")))
+            add_finding("WARN", "empire", "FACTION_CAP_NEAR", "Faction seats at %d/%d (%d/%d fleet ships seated; treasury %s cr)" % (member_count, members_limit, member_count, total_ships, format(treasury, ",")))
+        elif open_seats >= 2:
+            add_finding("WARN", "empire", "OPEN_FACTION_SEATS", "%d open faction seat(s) ready to fill (%d/%d cap, %d/%d fleet ships seated; rule F11)" % (open_seats, member_count, members_limit, member_count, total_ships))
 
         steady_1h = steady_24h = None
         if "stats_figures" in tables:

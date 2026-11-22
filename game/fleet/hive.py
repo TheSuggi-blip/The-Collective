@@ -1202,7 +1202,14 @@ def show_eyes(data, who):
                 vb_txt = " | Voidborn >=1: %d/%d" % (vb, tot_s)
             if fac:
                 mc, ml, trs, ob = fac[0] or 0, fac[1] or 0, fac[2] or 0, fac[3] or 0
-                cap_flag = " (AT CAP -- P1 recruitment-center)" if ml and mc >= ml - 2 else ""
+                tot_fl = conn.execute("SELECT COUNT(*) FROM ships").fetchone()[0] if "ships" in tables else mc
+                open_seats = max(0, min(tot_fl, ml) - mc) if ml else 0
+                if ml and mc >= ml - 2:
+                    cap_flag = " (AT CAP -- P1 recruitment-center; %d/%d fleet ships seated)" % (mc, tot_fl)
+                elif open_seats > 0:
+                    cap_flag = " (%d OPEN SEATS READY TO FILL -- %d/%d ships outside CLTV, rule F11)" % (open_seats, tot_fl - mc, tot_fl)
+                else:
+                    cap_flag = ""
                 lines.append("  FACTION | seats %d/%d%s | treasury %s cr | bases %d%s%s"
                              % (mc, ml, cap_flag, num(trs), ob, hulls_txt, vb_txt))
         if "ships" in tables and who not in ("all", "Unity"):
