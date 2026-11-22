@@ -409,3 +409,12 @@ Failed: lifts on regrown stock lasted under three hours; seven Forge Tax runs in
 Requests: requests.log ENT-312 (pirate stop on circuit stops), ENT-313 (heldgate on), both to Unity.
 Suggestions: the foundry's carbon and silicon will not come from home at this regrowth: test scale until Laser III and tier 2 holds; a gift's default items = the route's sell items.
 Report: short-ore-fields-empty-four-far-tests-first-laser-iii.
+
+## [ENT-094] | 2026-11-22 00:09 UTC | Oracle | session | ref: reports/2026-11-22_oracle_outpost-raid-read-from-the-battle-record-far-work-on-70.md | see: orders.log ENT-059
+Session: scheduled run turn-oracle -- the outpost's wrecker read from the game's battle record; far work read on 70 systems.
+Did: Apollo's ENT-296 answered done (ENT-310): our outpost fell 2026-11-19 21:38 UTC to 16 ships of the Algol crew, battle record category npc; 17 raids on bases filed (observe kind raid, admirals.log ENT-077); Zero's ENT-283 closed (ENT-311); 17 systems where Military hunts now moved onto census-worked-far (70 systems, 10 ships), far lists every 720 min; templates reordered (census-frontier before far work for readers; the six scanner scouts survey the far lists first); one tier-1 hull (Qualia, speed 3) bought by one reader as a test, 35,350 cr booked once; need survey-scanner-i added; raid_record.py in the turn skill; 9 pirates filed; claim renewed (ENT-079).
+Worked: home readings under the hour all turn (oldest 42 min at 23:19, 43 at 00:00 UTC); WORKED line 11 then 6 systems moved within the turn; no ship lost; fill gate PASS (fill.py check, 23:59 UTC).
+Failed: census-frontier 200 min against 170 and three road systems over 180 at 00:00 UTC: the lists ask about 37 ships of reads from 30 (runs.jsonl); no reading of mine had looked at the battle record, so the raid stood three days unseen (errors.log ENT-112, Apollo's).
+Requests: none written; answered ENT-310, ENT-311.
+Suggestions: a raid alert in every briefing from the battle list, category npc; a ship docked at each base before any pause (the game's guide: raiders count docked ships); gate.py hold --when-free; rules 11: the bulk feed's battle file ended 2026-11-15.
+Report: outpost-raid-read-from-the-battle-record-far-work-on-70.
