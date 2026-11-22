@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 43.
+Routes: 38.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -31,18 +31,15 @@ Routes: 43.
 | [hunt-ankaa-cryobelt-hollow-pilgrim](hunt-ankaa-cryobelt-hollow-pilgrim.json) | hunt | beyond the border, 14 jumps | hollow_pilgrim at ankaa_cryobelt; loot sold at Sirius Observatory Station | up to 1 ships, empty hold | 1 | 33 | 980 | 1,810 | 2026-11-21 |
 | [hunt-askance-nebula-veil-ray](hunt-askance-nebula-veil-ray.json) | hunt | beyond the border, 12 jumps | veil_ray at askance_nebula; loot sold at Nova Terra Central | up to 1 ships, empty hold | 3 | 31 | 300 | 560 | 2026-11-21 |
 | [hunt-avior-gas-pocket-halo-drifter](hunt-avior-gas-pocket-halo-drifter.json) | hunt | beyond the border, 12 jumps | halo_drifter at avior_gas_pocket; loot sold at Node Beta Industrial Station | up to 1 ships, empty hold | 2 | 40 | 3,820 | 5,680 | 2026-11-21 |
-| [hunt-broadwing-veil-veil-ray](hunt-broadwing-veil-veil-ray.json) | hunt | beyond the border, 11 jumps | veil_ray at broadwing_veil; loot sold at Nova Terra Central | up to 1 ships, empty hold | 3 | 24 | 40 | 100 | 2026-11-21 |
 | [hunt-cervantes-vapor-fields-halo-drifter](hunt-cervantes-vapor-fields-halo-drifter.json) | hunt | beyond the border, 10 jumps | halo_drifter at cervantes_vapor_fields; loot sold at Nova Terra Central | up to 1 ships, empty hold | 1 | 20 | 1,130 | 3,490 | 2026-11-21 |
 | [hunt-coinflip-nebula-veil-ray](hunt-coinflip-nebula-veil-ray.json) | hunt | beyond the border, 11 jumps | veil_ray at coinflip_nebula; loot sold at Nova Terra Central | up to 1 ships, empty hold | 3 | 25 | 700 | 1,660 | 2026-11-21 |
 | [hunt-deepwell-haze-cinder-sylph](hunt-deepwell-haze-cinder-sylph.json) | hunt | beyond the border, 7 jumps | cinder_sylph at deepwell_haze; loot sold at Ironlight Crossroads | up to 1 ships, empty hold | 2 | 7 | 470 | 3,880 | 2026-11-21 |
 | [hunt-driftwood-ghost-resonance-veil-ray](hunt-driftwood-ghost-resonance-veil-ray.json) | hunt | beyond the border, 20 jumps | veil_ray at driftwood_ghost_resonance; loot sold at First Step Memorial Station | up to 1 ships, empty hold | 3 | 26 | 970 | 1,950 | 2026-11-21 |
 | [hunt-edgeward-glow-veil-ray](hunt-edgeward-glow-veil-ray.json) | hunt | beyond the border, 21 jumps | veil_ray at edgeward_glow; loot sold at The Levy Customs Station | up to 1 ships, empty hold | 3 | 36 | 1,210 | 1,780 | 2026-11-21 |
-| [hunt-errai-faint-entanglement-veil-ray](hunt-errai-faint-entanglement-veil-ray.json) | hunt | beyond the border, 18 jumps | veil_ray at errai_faint_entanglement; loot sold at First Step Memorial Station | up to 1 ships, empty hold | 1 | 29 | 140 | 290 | 2026-11-21 |
 | [hunt-etamin-haze-cinder-sylph](hunt-etamin-haze-cinder-sylph.json) | hunt | beyond the border, 11 jumps | cinder_sylph at etamin_haze; loot sold at Hex Star | up to 1 ships, empty hold | 2 | 38 | 2,870 | 4,580 | 2026-11-21 |
 | [hunt-gsc-0035-vapor-fields-cinder-sylph](hunt-gsc-0035-vapor-fields-cinder-sylph.json) | hunt | beyond the border, 20 jumps | cinder_sylph at gsc_0035_vapor_fields; loot sold at War Citadel | up to 1 ships, empty hold | 1 | 37 | 15,200 | 24,650 | 2026-11-21 |
 | [hunt-gsc-0045-gas-pocket-cinder-sylph](hunt-gsc-0045-gas-pocket-cinder-sylph.json) | hunt | beyond the border, 20 jumps | cinder_sylph at gsc_0045_gas_pocket; loot sold at War Citadel | up to 1 ships, empty hold | 1 | 66 | 15,360 | 13,880 | 2026-11-21 |
 | [hunt-intercrus-ice-fields-hollow-pilgrim](hunt-intercrus-ice-fields-hollow-pilgrim.json) | hunt | beyond the border, 9 jumps | hollow_pilgrim at intercrus_ice_fields; loot sold at Sirius Observatory Station | up to 1 ships, empty hold | 1 | 28 | 970 | 2,090 | 2026-11-21 |
-| [hunt-ironpeak-weak-superposition-veil-ray](hunt-ironpeak-weak-superposition-veil-ray.json) | hunt | beyond the border, 20 jumps | veil_ray at ironpeak_weak_superposition; loot sold at First Step Memorial Station | up to 1 ships, empty hold | 5 | 23 | 430 | 940 | 2026-11-21 |
 | [hunt-lurker-veil-veil-ray](hunt-lurker-veil-veil-ray.json) | hunt | beyond the border, 18 jumps | veil_ray at lurker_veil; loot sold at First Step Memorial Station | up to 1 ships, empty hold | 1 | 44 | 1,070 | 1,460 | 2026-11-21 |
 | [hunt-rayfall-shimmer-veil-ray](hunt-rayfall-shimmer-veil-ray.json) | hunt | beyond the border, 18 jumps | veil_ray at rayfall_shimmer; loot sold at First Step Memorial Station | up to 1 ships, empty hold | 3 | 31 | 30 | 60 | 2026-11-21 |
 | [hunt-raysheet-nebula-veil-ray](hunt-raysheet-nebula-veil-ray.json) | hunt | beyond the border, 8 jumps | veil_ray at raysheet_nebula; loot sold at Nova Terra Central | up to 1 ships, empty hold | 4 | 20 | 510 | 1,450 | 2026-11-21 |
@@ -51,8 +48,6 @@ Routes: 43.
 | [hunt-superposition-pocket-veil-ray](hunt-superposition-pocket-veil-ray.json) | hunt | beyond the border, 18 jumps | veil_ray at superposition_pocket; loot sold at First Step Memorial Station | up to 1 ships | 1 | 38 | 1,430 | 2,230 | 2026-11-21 |
 | [hunt-tania-vapor-fields-cinder-sylph](hunt-tania-vapor-fields-cinder-sylph.json) | hunt | beyond the border, 11 jumps | cinder_sylph at tania_vapor_fields; loot sold at Node Beta Industrial Station | up to 1 ships, empty hold | 8 | 36 | 1,310 | 2,180 | 2026-11-17 |
 | [hunt-the-dim-lantern-veil-ray](hunt-the-dim-lantern-veil-ray.json) | hunt | beyond the border, 29 jumps | veil_ray at the_dim_lantern; loot sold at Treasure Cache Trading Post | up to 1 ships, empty hold | 1 | 62 | 440 | 430 | 2026-11-21 |
-| [hunt-the-telescope-entangled-drift-veil-ray](hunt-the-telescope-entangled-drift-veil-ray.json) | hunt | beyond the border, 18 jumps | veil_ray at the_telescope_entangled_drift; loot sold at First Step Memorial Station | up to 1 ships | 3 | 34 | 690 | 1,130 | 2026-11-21 |
-| [hunt-the-telescope-flicker-field-veil-ray](hunt-the-telescope-flicker-field-veil-ray.json) | hunt | beyond the border, 18 jumps | veil_ray at the_telescope_flicker_field; loot sold at First Step Memorial Station | up to 1 ships | 6 | 23 | 650 | 1,560 | 2026-11-21 |
 | [hunt-toi-2257-gas-pocket-cinder-sylph](hunt-toi-2257-gas-pocket-cinder-sylph.json) | hunt | beyond the border, 26 jumps | cinder_sylph at toi_2257_gas_pocket; loot sold at Hex Star | up to 1 ships, empty hold | 3 | 34 | 1,810 | 2,590 | 2026-11-21 |
 | [hunt-veritate-emission-nebula-halo-drifter](hunt-veritate-emission-nebula-halo-drifter.json) | hunt | beyond the border, 18 jumps | halo_drifter at veritate_emission_nebula; loot sold at First Step Memorial Station | up to 1 ships, empty hold | 1 | 44 | 1,760 | 2,430 | 2026-11-21 |
 | [hunt-willowgate-vapor-fields-halo-drifter](hunt-willowgate-vapor-fields-halo-drifter.json) | hunt | beyond the border, 17 jumps | halo_drifter at willowgate_vapor_fields; loot sold at Nova Terra Central | up to 1 ships, empty hold | 1 | 39 | 5,030 | 7,650 | 2026-11-21 |
