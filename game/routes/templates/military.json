@@ -9,6 +9,10 @@
     "hunt-alathfar-haze-chlorophage",
     "hunt-fulu-vapor-fields-chlorophage",
     "hunt-chara-gas-plume-chlorophage",
+    "hunt-test-keid-ice-shelf-deuteron-slug-pl3",
+    "hunt-test-gsc-0035-belt-b-slag-tortoise-pl3",
+    "hunt-test-acubens-bulwark-pl3",
+    "hunt-test-acubens-bulwark-pc2",
     "hunt-rasalhague-ice-fields-hollow-pilgrim",
     "hunt-elnath-ice-belt-hollow-pilgrim",
     "hunt-gsc-0024-frost-ring-hollow-pilgrim",
@@ -113,7 +117,7 @@
     "xenobiology",
     "piloting"
    ],
-   "note": "2026-11-22 04:11 UTC (orders ENT-061, P5): the sale and carry circuits of stored loot are out (Trade's work; the loot goes to Trade's receivers by gift once strict classes are on: give-drone-stores-* in First, hunts carry gift_to); the chlorophage hunts come first after the store: caustic sac for the recruitment center (needs list, P1). The fallback crafts stay at the end while the switch is off."
+   "note": "2026-11-22 04:17 UTC (orders ENT-061, P5 and block APOPHIS): the sale and carry circuits of stored loot are out (Trade's work; the loot goes to Trade's receivers by gift once strict classes are on: give-drone-stores-* in First, the hunts carry gift_to); first the chlorophage hunts (caustic sac for the recruitment center, needs list P1), then the bigger prey of the Pulse Laser III and the Plasma Cannon II (requires.module: only a ship that carries it). The fallback crafts stay at the end while the switch is off."
   },
   "guard": {
    "title": "Guard: one drone at each field beyond the border where our miners work",
