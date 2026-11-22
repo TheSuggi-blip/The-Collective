@@ -1,0 +1,23 @@
+{
+ "id": "hunt-fulu-vapor-fields-chlorophage",
+ "kind": "hunt",
+ "title": "Caustic sac for the reserve: chlorophages at fulu_vapor_fields (lawless), every drop stored at Node Beta",
+ "note": "2026-11-22 04:10 UTC (Apophis): caustic sac for the reserve: the recruitment center (needs list, P1, the faction's ladder P4: seats 99/100) is short of 91 caustic sac and no station asks it (market caustic_sac: bids only, 420 to 840 cr). Chlorophages drop it (hunt_figures since 01:15 UTC: Alathfar 9 sacs in 2 runs, Amberfall 7 in 6). min_bid 5000 stands above every bid read, so the hunt sells nothing and stores every drop at Node Beta, where the center is built; with strict classes on, gift_to hauler hands the hold to the hauler named there (Logistics builds it, orders ENT-061 block APOLLO). Standing work (rule F23; F22: reserve work never rests for its pay); one ship, alone, a test of three results (F37). Herd: 3 chlorophages (table herds, census of 2026-11-22).",
+ "place": "fulu:fulu_vapor_fields",
+ "species": [
+  "chlorophage"
+ ],
+ "sell_at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+ "min_bid": 5000,
+ "kills": 3,
+ "minutes": 60,
+ "max_ships": 1,
+ "lift_to": 1,
+ "min_creatures": 2,
+ "alone": true,
+ "standing": true,
+ "requires": {
+  "empty_hold": true
+ },
+ "gift_to": "hauler"
+}

@@ -1,0 +1,75 @@
+{
+ "id": "give-drone-stores-node-alpha",
+ "kind": "circuit",
+ "title": "A drone or sentinel gives its stores at Node Alpha Processing Station: building inputs to the haulers, its loot to the traders (strict classes)",
+ "note": "2026-11-22 04:10 UTC (Apophis): orders ENT-061, P5 (each class's activities its own: the sales left in a plan become gifts to Trade's receivers) and rules F23, F24. Replaces in the drone and sentinel plans the sale and carry circuits of their stored loot (ember gland, crystal melt, soma, ice: Trade's work with strict classes on). The form of give-scout-stores-node-beta (Oracle) and give-miner-stores-node-beta (Zero): building inputs and the caustic sac the reserve needs (recruitment-center, needs list) to the hauler named for this station, the loot, rare ores and ices to the trader named for it (data/fleet/receivers.json, handover.py). A gift gives nothing while data/fleet/strict-classes-on is absent, so the route stands off until the switch is on (requests.log ENT-332 asks a requires gate on the switch). requires.stored: a pilot whose own storage here holds 20 nitrogen_ice or more (storage book 04:07 UTC: the item most drones store here).",
+ "max_ships": 2,
+ "status": "off",
+ "requires": {
+  "stored": {
+   "at": "node_alpha_processing_station",
+   "item": "nitrogen_ice",
+   "min": 20
+  }
+ },
+ "stops": [
+  {
+   "at": "node_alpha:node_alpha_processing_station:node_alpha_processing_station",
+   "store": "all",
+   "gift": [
+    {
+     "to": "hauler",
+     "items": [
+      "iron_ore",
+      "copper_ore",
+      "steel_plate",
+      "copper_piping",
+      "copper_wiring",
+      "armor_plate",
+      "carbon_ore",
+      "silicon_ore",
+      "nickel_ore",
+      "gold_ore",
+      "platinum_ore",
+      "caustic_sac"
+     ],
+     "source": "storage"
+    },
+    {
+     "to": "trader",
+     "items": [
+      "voidborn_neural_soma",
+      "null_matter",
+      "lead_ore",
+      "tungsten_ore",
+      "palladium_ore",
+      "sol_alloy_ore",
+      "iridium_ore",
+      "energy_crystal",
+      "quantum_fragments",
+      "crystal_melt",
+      "raw_xeno_meat",
+      "creature_carapace",
+      "crystallized_biogas",
+      "ember_gland",
+      "verdigris_curd",
+      "superfluid_vial",
+      "levity_bladder",
+      "nitrogen_bladder",
+      "noble_condensate",
+      "ferrous_nodule",
+      "liquid_nitrogen",
+      "water_ice",
+      "nitrogen_ice",
+      "deuterium_ice",
+      "helium_ice",
+      "tritium_ice",
+      "oxygen_ice",
+      "ammonia_ice"
+     ],
+     "source": "storage"
+    }
+   ]
+  }
+ ]
+}
