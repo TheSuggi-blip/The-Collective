@@ -684,10 +684,11 @@ def api_playbooks():
         sys.path.insert(0, fleet_dir)
     import guidebook as book
     import playbook_anchor
-    conn = playbook_anchor.open_ro_db(str(DATA))
+    unit_data = os.environ.get("COLLECTIVE_DATA") or str(DATA.parent)
+    conn = playbook_anchor.open_ro_db(unit_data)
     try:
         divisions = [
-            playbook_anchor.compute_division_anchor(conn, str(REPO), data=str(DATA), division_name=d, now=now)
+            playbook_anchor.compute_division_anchor(conn, str(REPO), data=unit_data, division_name=d, now=now)
             for d in book.DIVISIONS
         ]
     finally:

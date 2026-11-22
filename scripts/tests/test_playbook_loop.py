@@ -95,5 +95,35 @@ class PlaybookLoopTests(unittest.TestCase):
         self.assertIn("scripts/comms.py check", pc)
 
 
+
+    def test_station_api_playbooks_uses_unit_data_parent_not_station_subdir(self):
+        import server
+        with tempfile.TemporaryDirectory(prefix="pb-srv-") as tmp:
+            unit = Path(tmp) / "data"
+            station_sub = unit / "station"
+            station_sub.mkdir(parents=True)
+            (unit / "catalog").mkdir(parents=True)
+            (unit / "catalog" / "0.732.3.json").write_text("{}", encoding="ascii")
+            store.one_pass(str(unit), now=1795377600.0, root=str(REPO / "game"))
+            conn = sqlite3.connect(str(unit / "store" / "read.db"))
+            try:
+                conn.execute("INSERT INTO ships (pilot, member, division, role, number, class, docked, flies, t, src) VALUES ('m-1', 'Zero', 'Mining', 'miner', 1, 'Threshold', 0, 'mine-x', 1, 't')")
+                conn.commit()
+            finally:
+                conn.close()
+            old_data, old_cache = server.DATA, dict(server.PLAYBOOKS_CACHE)
+            try:
+                server.DATA = station_sub
+                server.PLAYBOOKS_CACHE["at"] = 0.0
+                server.PLAYBOOKS_CACHE["data"] = None
+                res = server.api_playbooks()
+                mining = next(d for d in res["divisions"] if d["division"] == "mining")
+                self.assertEqual(mining["fleet"]["ships_total"], 1)
+                self.assertEqual(mining["catalog_version"], "0.732.3")
+            finally:
+                server.DATA = old_data
+                server.PLAYBOOKS_CACHE.update(old_cache)
+
+
 if __name__ == "__main__":
     unittest.main()
