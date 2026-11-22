@@ -1,5 +1,5 @@
 # Every recipe of the game: what it makes, from what, and where.
-# Source: the game's public catalog, version 0.732.3 | Rows: 892
+# Source: the game's public catalog, version 0.733.0 | Rows: 892
 # Written by scripts/catalog-index.py. Do not edit by hand.
 id	name	category	makes	from	time	by_hand	facilities	notes
 accelerate_bioluminescent_algae_growth	Accelerate Bioluminescent Algae Growth	Hydroponic Farming	bioluminescent_algae x 3	purified_water x 2; liquid_nitrogen x 1; carbon_dioxide_ice x 1	2.02	no	algae_cultivation_array, bioluminescent_production_greenhouse, automated_algae_synthesis_plant	

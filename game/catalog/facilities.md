@@ -1,6 +1,6 @@
 # Bases and Facilities
 
-Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.732.3; never edited by hand.
+Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.733.0; never edited by hand.
 Up: [master-index.md](master-index.md). What a facility's materials take down to the ore: `python3 -I -B game/fleet/craftbook.py build <facility id>`.
 
 ## Founding a Base
@@ -35,62 +35,62 @@ The part a founding needs, the recipe that makes it and the facility that runs t
 
 | Facility | Level | Gives | Needs first | Cost (cr) | Labor | Materials | Notes |
 |---|---|---|---|---|---|---|---|
-| `faction_desk` | 1 | faction_admin | faction_storage | 100,000 | 25 | steel_plate x 100; circuit_board x 25 | -- |
-| `faction_office` | 2 | faction_admin | faction_storage | 500,000 | 50 | steel_plate x 300; circuit_board x 150 | -- |
-| `faction_quarters` | 1 | faction_commons | faction_storage | 100,000 | 20 | steel_plate x 100; flex_polymer x 50 | -- |
-| `faction_lounge` | 2 | faction_commons | faction_storage | 400,000 | 40 | steel_plate x 300; flex_polymer x 200; reinforced_glass x 100 | -- |
-| `faction_clubhouse` | 3 | faction_commons | faction_storage | 2,500,000 | 80 | steel_plate x 1000; flex_polymer x 500; reinforced_glass x 300; circuit_board x 200 | -- |
-| `company_store` | 1 | faction_company_store | faction_market | 400,000 | 40 | steel_plate x 200; circuit_board x 150 | -- |
-| `company_outlet` | 2 | faction_company_store | faction_market | 1,200,000 | 70 | steel_plate x 500; circuit_board x 400 | -- |
-| `company_exchange` | 3 | faction_company_store | faction_market | 5,000,000 | 120 | steel_plate x 2000; circuit_board x 1000; titanium_alloy x 500 | -- |
-| `espionage_hq` | 1 | faction_espionage | faction_storage | 250,000 | 40 | circuit_board x 250; optical_fiber_bundle x 150; superconductor x 50 | -- |
-| `faction_fuel_bunker` | 1 | faction_fuel | faction_storage | 800,000 | 20 | steel_plate x 400; circuit_board x 100 | -- |
-| `faction_large_fuel_bunker` | 2 | faction_fuel | faction_storage | 3,000,000 | 50 | steel_plate x 1200; circuit_board x 300; armor_plate x 100 | -- |
-| `faction_capital_fuel_bunker` | 3 | faction_fuel | faction_storage | 10,000,000 | 100 | steel_plate x 3000; circuit_board x 800; armor_plate x 300; capital_armor_plate x 100 | -- |
-| `intel_terminal` | 1 | faction_intel | faction_storage | 150,000 | 30 | circuit_board x 200; optical_fiber_bundle x 100 | -- |
-| `intel_center` | 2 | faction_intel | faction_storage | 750,000 | 60 | circuit_board x 500; optical_fiber_bundle x 300; superconductor x 100 | -- |
-| `market_runner` | 1 | faction_market | faction_storage | 150,000 | 30 | steel_plate x 100; circuit_board x 75 | -- |
-| `trading_booth` | 2 | faction_market | faction_storage | 600,000 | 60 | steel_plate x 300; circuit_board x 250 | -- |
-| `faction_trading_post` | 3 | faction_market | faction_storage | 3,000,000 | 100 | steel_plate x 1500; circuit_board x 750; titanium_alloy x 400 | -- |
-| `letter_of_marque_office` | 1 | faction_marque | faction_storage | 600,000 | 80 | steel_plate x 300; circuit_board x 150; trade_cipher x 10 | pirate_base_only |
-| `faction_aid_station` | 1 | faction_medical | faction_storage | 550,000 | 80 | steel_plate x 250; circuit_board x 150; medical_supplies x 50 | -- |
-| `fleet_infirmary` | 2 | faction_medical | faction_storage | 2,400,000 | 180 | steel_plate x 800; circuit_board x 500; reinforced_glass x 180; medical_supplies x 150 | -- |
-| `casualty_clearing_center` | 3 | faction_medical | faction_storage | 9,500,000 | 400 | steel_plate x 2500; circuit_board x 1500; titanium_alloy x 700; reinforced_glass x 500; medical_supplies x 500 | -- |
-| `faction_fleet_hospital` | 4 | faction_medical | faction_storage | 35,000,000 | 900 | steel_plate x 7000; circuit_board x 4000; titanium_alloy x 2200; durasteel_plate x 800; quantum_processor x 80; medical_supplies x 1600 | -- |
-| `notice_board` | 1 | faction_missions | faction_storage | 50,000 | 10 | steel_plate x 50; circuit_board x 20 | -- |
-| `faction_mission_board` | 2 | faction_missions | faction_storage | 300,000 | 30 | steel_plate x 200; circuit_board x 150 | -- |
-| `bounty_office` | 3 | faction_missions | faction_storage | 2,000,000 | 60 | steel_plate x 1000; circuit_board x 500; titanium_alloy x 250 | -- |
-| `muster_office` | 1 | faction_personnel_reserve | faction_storage | 400,000 | 60 | steel_plate x 300; circuit_board x 100; protein_rations x 100 | -- |
-| `reserve_barracks` | 2 | faction_personnel_reserve | faction_storage | 1,800,000 | 140 | steel_plate x 900; circuit_board x 350; flex_polymer x 250; protein_rations x 300 | -- |
-| `fleet_mobilization_center` | 3 | faction_personnel_reserve | faction_storage | 7,500,000 | 320 | steel_plate x 3000; circuit_board x 1200; titanium_alloy x 600; protein_rations x 1000 | -- |
-| `strategic_reserve_command` | 4 | faction_personnel_reserve | faction_storage | 28,000,000 | 700 | steel_plate x 8000; circuit_board x 3000; titanium_alloy x 1800; durasteel_plate x 600; protein_rations x 3000 | -- |
-| `prize_recovery_yard` | 1 | faction_prize_recovery | faction_storage | 600,000 | 60 | steel_plate x 300; circuit_board x 150 | -- |
-| `hiring_board` | 1 | faction_recruitment | faction_storage | 75,000 | 15 | steel_plate x 75; circuit_board x 25 | -- |
-| `recruitment_desk` | 2 | faction_recruitment | faction_storage | 300,000 | 30 | steel_plate x 200; circuit_board x 100 | -- |
-| `recruitment_center` | 3 | faction_recruitment | faction_storage | 2,000,000 | 60 | steel_plate x 1000; circuit_board x 500; flex_polymer x 300 | -- |
-| `guild_hall_recruiting` | 4 | faction_recruitment | faction_storage | 8,000,000 | 100 | steel_plate x 3000; circuit_board x 1500; titanium_alloy x 800 | -- |
-| `grand_recruitment_bureau` | 5 | faction_recruitment | faction_storage | 20,000,000 | 200 | steel_plate x 8000; circuit_board x 5000; titanium_alloy x 2500; durasteel_plate x 1000 | -- |
-| `sensor_dome` | 1 | faction_sensor | faction_storage | 600,000 | 80 | steel_plate x 300; circuit_board x 150; sensor_array x 40 | -- |
-| `deep_space_scanner` | 2 | faction_sensor | faction_storage | 3,500,000 | 250 | steel_plate x 800; circuit_board x 400; titanium_alloy x 200; sensor_package x 60; precision_optic x 30 | -- |
-| `long_range_subspace_sensor` | 3 | faction_sensor | faction_storage | 12,000,000 | 500 | steel_plate x 2500; circuit_board x 1000; titanium_alloy x 600; durasteel_plate x 300; sensor_cluster x 80; communications_array x 40; quantum_processor x 40 | -- |
-| `faction_ship_garage` | 1 | faction_ship_garage | faction_storage | 600,000 | 60 | steel_plate x 300; circuit_board x 150 | -- |
-| `faction_ship_hangar` | 2 | faction_ship_garage | faction_storage | 3,000,000 | 120 | steel_plate x 1200; circuit_board x 500; titanium_alloy x 300 | -- |
-| `faction_fleet_yard` | 3 | faction_ship_garage | faction_storage | 12,000,000 | 250 | steel_plate x 4000; circuit_board x 1500; titanium_alloy x 1000; durasteel_plate x 400 | -- |
-| `faction_shipyard_berth` | 1 | faction_shipyard_slot | faction_storage | 1,500,000 | 60 | steel_plate x 800; circuit_board x 300 | -- |
-| `faction_shipyard_bay` | 2 | faction_shipyard_slot | faction_storage | 5,000,000 | 100 | steel_plate x 2000; circuit_board x 800; titanium_alloy x 300 | -- |
-| `faction_shipyard_dock` | 3 | faction_shipyard_slot | faction_storage | 15,000,000 | 175 | steel_plate x 5000; circuit_board x 2000; titanium_alloy x 1000; durasteel_plate x 300 | -- |
-| `faction_shipyard_drydock` | 4 | faction_shipyard_slot | faction_storage | 40,000,000 | 250 | steel_plate x 10000; circuit_board x 4000; titanium_alloy x 2500; durasteel_plate x 1000; superconductor x 300 | -- |
-| `faction_shipyard_complex` | 5 | faction_shipyard_slot | faction_storage | 100,000,000 | 400 | steel_plate x 20000; circuit_board x 8000; titanium_alloy x 5000; durasteel_plate x 2500; superconductor x 800; capital_armor_plate x 300 | -- |
-| `faction_lockbox` | 1 | faction_storage | -- | 200,000 | 50 | steel_plate x 200; circuit_board x 50 | -- |
-| `faction_warehouse` | 2 | faction_storage | -- | 750,000 | 100 | steel_plate x 500; circuit_board x 200 | -- |
-| `faction_depot` | 3 | faction_storage | -- | 4,000,000 | 200 | steel_plate x 2000; circuit_board x 1000; titanium_alloy x 500 | -- |
-| `faction_stronghold` | 4 | faction_storage | -- | 15,000,000 | 400 | steel_plate x 5000; circuit_board x 2500; titanium_alloy x 1500; durasteel_plate x 500 | -- |
-| `storage_extension` | 1 | faction_storage_extension | faction_storage | 500,000 | 80 | steel_plate x 400; circuit_board x 150 | -- |
-| `trade_ledger` | 1 | faction_trade_intel | faction_storage | 200,000 | 30 | circuit_board x 150; optical_fiber_bundle x 100; trade_cipher x 10 | -- |
-| `commerce_terminal` | 2 | faction_trade_intel | faction_storage | 1,500,000 | 80 | circuit_board x 500; optical_fiber_bundle x 400; superconductor x 200; trade_cipher x 50 | -- |
-| `transit_lounge` | 1 | faction_transit | faction_storage | 500,000 | 50 | steel_plate x 250; circuit_board x 100; flex_polymer x 100 | -- |
-| `transit_terminal` | 2 | faction_transit | faction_storage | 2,500,000 | 120 | steel_plate x 1000; circuit_board x 400; flex_polymer x 300; reinforced_glass x 200 | -- |
-| `transit_concourse` | 3 | faction_transit | faction_storage | 9,000,000 | 250 | steel_plate x 3000; circuit_board x 1200; titanium_alloy x 600; reinforced_glass x 500 | -- |
+| `faction_desk` | 1 | faction_admin | faction_storage | 100,000 |  | steel_plate x 100; circuit_board x 25 | -- |
+| `faction_office` | 2 | faction_admin | faction_storage | 500,000 |  | steel_plate x 300; circuit_board x 150 | -- |
+| `faction_quarters` | 1 | faction_commons | faction_storage | 100,000 |  | steel_plate x 100; flex_polymer x 50 | -- |
+| `faction_lounge` | 2 | faction_commons | faction_storage | 400,000 |  | steel_plate x 300; flex_polymer x 200; reinforced_glass x 100 | -- |
+| `faction_clubhouse` | 3 | faction_commons | faction_storage | 2,500,000 |  | steel_plate x 1000; flex_polymer x 500; reinforced_glass x 300; circuit_board x 200 | -- |
+| `company_store` | 1 | faction_company_store | faction_market | 400,000 |  | steel_plate x 200; circuit_board x 150 | -- |
+| `company_outlet` | 2 | faction_company_store | faction_market | 1,200,000 |  | steel_plate x 500; circuit_board x 400 | -- |
+| `company_exchange` | 3 | faction_company_store | faction_market | 5,000,000 |  | steel_plate x 2000; circuit_board x 1000; titanium_alloy x 500 | -- |
+| `espionage_hq` | 1 | faction_espionage | faction_storage | 250,000 |  | circuit_board x 250; optical_fiber_bundle x 150; superconductor x 50 | -- |
+| `faction_fuel_bunker` | 1 | faction_fuel | faction_storage | 800,000 |  | steel_plate x 400; circuit_board x 100 | -- |
+| `faction_large_fuel_bunker` | 2 | faction_fuel | faction_storage | 3,000,000 |  | steel_plate x 1200; circuit_board x 300; armor_plate x 100 | -- |
+| `faction_capital_fuel_bunker` | 3 | faction_fuel | faction_storage | 10,000,000 |  | steel_plate x 3000; circuit_board x 800; armor_plate x 300; capital_armor_plate x 100 | -- |
+| `intel_terminal` | 1 | faction_intel | faction_storage | 150,000 |  | circuit_board x 200; optical_fiber_bundle x 100 | -- |
+| `intel_center` | 2 | faction_intel | faction_storage | 750,000 |  | circuit_board x 500; optical_fiber_bundle x 300; superconductor x 100 | -- |
+| `market_runner` | 1 | faction_market | faction_storage | 150,000 |  | steel_plate x 100; circuit_board x 75 | -- |
+| `trading_booth` | 2 | faction_market | faction_storage | 600,000 |  | steel_plate x 300; circuit_board x 250 | -- |
+| `faction_trading_post` | 3 | faction_market | faction_storage | 3,000,000 |  | steel_plate x 1500; circuit_board x 750; titanium_alloy x 400 | -- |
+| `letter_of_marque_office` | 1 | faction_marque | faction_storage | 600,000 |  | steel_plate x 300; circuit_board x 150; trade_cipher x 10 | pirate_base_only |
+| `faction_aid_station` | 1 | faction_medical | faction_storage | 550,000 |  | steel_plate x 250; circuit_board x 150; medical_supplies x 50 | -- |
+| `fleet_infirmary` | 2 | faction_medical | faction_storage | 2,400,000 |  | steel_plate x 800; circuit_board x 500; reinforced_glass x 180; medical_supplies x 150 | -- |
+| `casualty_clearing_center` | 3 | faction_medical | faction_storage | 9,500,000 |  | steel_plate x 2500; circuit_board x 1500; titanium_alloy x 700; reinforced_glass x 500; medical_supplies x 500 | -- |
+| `faction_fleet_hospital` | 4 | faction_medical | faction_storage | 35,000,000 |  | steel_plate x 7000; circuit_board x 4000; titanium_alloy x 2200; durasteel_plate x 800; quantum_processor x 80; medical_supplies x 1600 | -- |
+| `notice_board` | 1 | faction_missions | faction_storage | 50,000 |  | steel_plate x 50; circuit_board x 20 | -- |
+| `faction_mission_board` | 2 | faction_missions | faction_storage | 300,000 |  | steel_plate x 200; circuit_board x 150 | -- |
+| `bounty_office` | 3 | faction_missions | faction_storage | 2,000,000 |  | steel_plate x 1000; circuit_board x 500; titanium_alloy x 250 | -- |
+| `muster_office` | 1 | faction_personnel_reserve | faction_storage | 400,000 |  | steel_plate x 300; circuit_board x 100; protein_rations x 100 | -- |
+| `reserve_barracks` | 2 | faction_personnel_reserve | faction_storage | 1,800,000 |  | steel_plate x 900; circuit_board x 350; flex_polymer x 250; protein_rations x 300 | -- |
+| `fleet_mobilization_center` | 3 | faction_personnel_reserve | faction_storage | 7,500,000 |  | steel_plate x 3000; circuit_board x 1200; titanium_alloy x 600; protein_rations x 1000 | -- |
+| `strategic_reserve_command` | 4 | faction_personnel_reserve | faction_storage | 28,000,000 |  | steel_plate x 8000; circuit_board x 3000; titanium_alloy x 1800; durasteel_plate x 600; protein_rations x 3000 | -- |
+| `prize_recovery_yard` | 1 | faction_prize_recovery | faction_storage | 600,000 |  | steel_plate x 300; circuit_board x 150 | -- |
+| `hiring_board` | 1 | faction_recruitment | faction_storage | 75,000 |  | steel_plate x 75; circuit_board x 25 | -- |
+| `recruitment_desk` | 2 | faction_recruitment | faction_storage | 300,000 |  | steel_plate x 200; circuit_board x 100 | -- |
+| `recruitment_center` | 3 | faction_recruitment | faction_storage | 2,000,000 |  | steel_plate x 1000; circuit_board x 500; flex_polymer x 300 | -- |
+| `guild_hall_recruiting` | 4 | faction_recruitment | faction_storage | 8,000,000 |  | steel_plate x 3000; circuit_board x 1500; titanium_alloy x 800 | -- |
+| `grand_recruitment_bureau` | 5 | faction_recruitment | faction_storage | 20,000,000 |  | steel_plate x 8000; circuit_board x 5000; titanium_alloy x 2500; durasteel_plate x 1000 | -- |
+| `sensor_dome` | 1 | faction_sensor | faction_storage | 600,000 |  | steel_plate x 300; circuit_board x 150; sensor_array x 40 | -- |
+| `deep_space_scanner` | 2 | faction_sensor | faction_storage | 3,500,000 |  | steel_plate x 800; circuit_board x 400; titanium_alloy x 200; sensor_package x 60; precision_optic x 30 | -- |
+| `long_range_subspace_sensor` | 3 | faction_sensor | faction_storage | 12,000,000 |  | steel_plate x 2500; circuit_board x 1000; titanium_alloy x 600; durasteel_plate x 300; sensor_cluster x 80; communications_array x 40; quantum_processor x 40 | -- |
+| `faction_ship_garage` | 1 | faction_ship_garage | faction_storage | 600,000 |  | steel_plate x 300; circuit_board x 150 | -- |
+| `faction_ship_hangar` | 2 | faction_ship_garage | faction_storage | 3,000,000 |  | steel_plate x 1200; circuit_board x 500; titanium_alloy x 300 | -- |
+| `faction_fleet_yard` | 3 | faction_ship_garage | faction_storage | 12,000,000 |  | steel_plate x 4000; circuit_board x 1500; titanium_alloy x 1000; durasteel_plate x 400 | -- |
+| `faction_shipyard_berth` | 1 | faction_shipyard_slot | faction_storage | 1,500,000 |  | steel_plate x 800; circuit_board x 300 | -- |
+| `faction_shipyard_bay` | 2 | faction_shipyard_slot | faction_storage | 5,000,000 |  | steel_plate x 2000; circuit_board x 800; titanium_alloy x 300 | -- |
+| `faction_shipyard_dock` | 3 | faction_shipyard_slot | faction_storage | 15,000,000 |  | steel_plate x 5000; circuit_board x 2000; titanium_alloy x 1000; durasteel_plate x 300 | -- |
+| `faction_shipyard_drydock` | 4 | faction_shipyard_slot | faction_storage | 40,000,000 |  | steel_plate x 10000; circuit_board x 4000; titanium_alloy x 2500; durasteel_plate x 1000; superconductor x 300 | -- |
+| `faction_shipyard_complex` | 5 | faction_shipyard_slot | faction_storage | 100,000,000 |  | steel_plate x 20000; circuit_board x 8000; titanium_alloy x 5000; durasteel_plate x 2500; superconductor x 800; capital_armor_plate x 300 | -- |
+| `faction_lockbox` | 1 | faction_storage | -- | 200,000 |  | steel_plate x 200; circuit_board x 50 | -- |
+| `faction_warehouse` | 2 | faction_storage | -- | 750,000 |  | steel_plate x 500; circuit_board x 200 | -- |
+| `faction_depot` | 3 | faction_storage | -- | 4,000,000 |  | steel_plate x 2000; circuit_board x 1000; titanium_alloy x 500 | -- |
+| `faction_stronghold` | 4 | faction_storage | -- | 15,000,000 |  | steel_plate x 5000; circuit_board x 2500; titanium_alloy x 1500; durasteel_plate x 500 | -- |
+| `storage_extension` | 1 | faction_storage_extension | faction_storage | 500,000 |  | steel_plate x 400; circuit_board x 150 | -- |
+| `trade_ledger` | 1 | faction_trade_intel | faction_storage | 200,000 |  | circuit_board x 150; optical_fiber_bundle x 100; trade_cipher x 10 | -- |
+| `commerce_terminal` | 2 | faction_trade_intel | faction_storage | 1,500,000 |  | circuit_board x 500; optical_fiber_bundle x 400; superconductor x 200; trade_cipher x 50 | -- |
+| `transit_lounge` | 1 | faction_transit | faction_storage | 500,000 |  | steel_plate x 250; circuit_board x 100; flex_polymer x 100 | -- |
+| `transit_terminal` | 2 | faction_transit | faction_storage | 2,500,000 |  | steel_plate x 1000; circuit_board x 400; flex_polymer x 300; reinforced_glass x 200 | -- |
+| `transit_concourse` | 3 | faction_transit | faction_storage | 9,000,000 |  | steel_plate x 3000; circuit_board x 1200; titanium_alloy x 600; reinforced_glass x 500 | -- |
 
 ## Infrastructure
 
@@ -158,9 +158,9 @@ The part a founding needs, the recipe that makes it and the facility that runs t
 | `full_habitat_dome` | 4 | -- | -- | 10,500,000 | 100 | steel_plate x 3900; water_recycler x 630 | player_station_buildable |
 | `fusion_array` | 4 | -- | -- | 21,000,000 | 160 | steel_plate x 40000; power_cell x 8000; circuit_board x 4000 | -- |
 | `grand_hotel_resort` | 4 | -- | -- | 1,200,000 | 150 | steel_plate x 400; flex_polymer x 250; circuit_board x 120 | player_station_buildable |
-| `mobile_base_fuel_tank` | 4 | -- | -- | 40,000,000 | 0 | fuel_tank x 1600; ceramite_plating x 40000; steel_plate x 160000 | -- |
-| `mobile_base_life_support` | 4 | -- | -- | 30,000,000 | 0 | life_support_array x 40; water_recycler x 16000; habitation_module x 120; reinforced_bulkhead x 150; steel_plate x 96000; circuit_board x 8000 | -- |
-| `mobile_base_reactor` | 4 | -- | -- | 50,000,000 | 0 | station_reactor_core x 8; power_distribution_grid x 40; reinforced_bulkhead x 200; steel_plate x 80000; power_cell x 16000; circuit_board x 8000 | -- |
+| `mobile_base_fuel_tank` | 4 | -- | -- | 40,000,000 |  | fuel_tank x 1600; ceramite_plating x 40000; steel_plate x 160000 | -- |
+| `mobile_base_life_support` | 4 | -- | -- | 30,000,000 |  | life_support_array x 40; water_recycler x 16000; habitation_module x 120; reinforced_bulkhead x 150; steel_plate x 96000; circuit_board x 8000 | -- |
+| `mobile_base_reactor` | 4 | -- | -- | 50,000,000 |  | station_reactor_core x 8; power_distribution_grid x 40; reinforced_bulkhead x 200; steel_plate x 80000; power_cell x 16000; circuit_board x 8000 | -- |
 | `pact_war_depot` | 4 | -- | -- | 350,000 | 400 | steel_plate x 130; hull_plating x 40; weapon_housing x 15; armor_plate x 10; titanium_alloy x 5 | empire=crimson |
 | `rim_rapid_response_base` | 4 | -- | -- | 300,000 | 380 | aluminum_sheet x 80; flex_polymer x 50; hull_plating x 15; thruster_nozzle x 10; fuel_tank x 5 | empire=outerrim |
 | `the_leviathan_table` | 4 | -- | -- | 1,500,000 | 160 | steel_plate x 400; flex_polymer x 200; circuit_board x 150 | player_station_buildable |
@@ -205,19 +205,19 @@ The part a founding needs, the recipe that makes it and the facility that runs t
 
 | Facility | Level | Gives | Needs first | Cost (cr) | Labor | Materials | Notes |
 |---|---|---|---|---|---|---|---|
-| `signal_relay` | 1 | drone_control | -- | 50,000 | 6 | circuit_board x 100; optical_fiber_bundle x 50 | -- |
-| `control_hub` | 2 | drone_control | -- | 300,000 | 39 | circuit_board x 500; optical_fiber_bundle x 200 | -- |
-| `command_center` | 3 | drone_control | -- | 1,500,000 | 194 | circuit_board x 1500; optical_fiber_bundle x 500; superconductor x 200 | -- |
-| `crew_bunk` | 1 | quarters | -- | 10,000 | 1 | steel_plate x 20 | -- |
-| `private_cabin` | 2 | quarters | -- | 50,000 | 6 | steel_plate x 100; circuit_board x 20 | -- |
-| `officers_suite` | 3 | quarters | -- | 250,000 | 32 | steel_plate x 500; circuit_board x 100; flex_polymer x 50 | -- |
-| `captains_estate` | 4 | quarters | -- | 1,000,000 | 129 | steel_plate x 2000; circuit_board x 500; titanium_alloy x 200 | -- |
-| `ledger_desk` | 1 | trader_office | -- | 50,000 | 6 | steel_plate x 100; circuit_board x 50 | -- |
-| `trading_office` | 2 | trader_office | -- | 300,000 | 39 | steel_plate x 500; circuit_board x 200 | -- |
-| `brokerage` | 3 | trader_office | -- | 1,500,000 | 194 | steel_plate x 1500; circuit_board x 500; titanium_alloy x 200 | -- |
-| `workshop_toolkit` | 1 | workshop | -- | 25,000 | 3 | steel_plate x 50; heat_sink x 2 | -- |
-| `workshop_power_tools` | 2 | workshop | -- | 150,000 | 19 | steel_plate x 250; circuit_board x 50; heat_sink x 5 | -- |
-| `workshop_fabricator` | 3 | workshop | -- | 750,000 | 97 | steel_plate x 1000; circuit_board x 250; titanium_alloy x 100 | -- |
+| `signal_relay` | 1 | drone_control | -- | 50,000 |  | circuit_board x 100; optical_fiber_bundle x 50 | -- |
+| `control_hub` | 2 | drone_control | -- | 300,000 |  | circuit_board x 500; optical_fiber_bundle x 200 | -- |
+| `command_center` | 3 | drone_control | -- | 1,500,000 |  | circuit_board x 1500; optical_fiber_bundle x 500; superconductor x 200 | -- |
+| `crew_bunk` | 1 | quarters | -- | 10,000 |  | steel_plate x 20 | -- |
+| `private_cabin` | 2 | quarters | -- | 50,000 |  | steel_plate x 100; circuit_board x 20 | -- |
+| `officers_suite` | 3 | quarters | -- | 250,000 |  | steel_plate x 500; circuit_board x 100; flex_polymer x 50 | -- |
+| `captains_estate` | 4 | quarters | -- | 1,000,000 |  | steel_plate x 2000; circuit_board x 500; titanium_alloy x 200 | -- |
+| `ledger_desk` | 1 | trader_office | -- | 50,000 |  | steel_plate x 100; circuit_board x 50 | -- |
+| `trading_office` | 2 | trader_office | -- | 300,000 |  | steel_plate x 500; circuit_board x 200 | -- |
+| `brokerage` | 3 | trader_office | -- | 1,500,000 |  | steel_plate x 1500; circuit_board x 500; titanium_alloy x 200 | -- |
+| `workshop_toolkit` | 1 | workshop | -- | 25,000 |  | steel_plate x 50; heat_sink x 2 | -- |
+| `workshop_power_tools` | 2 | workshop | -- | 150,000 |  | steel_plate x 250; circuit_board x 50; heat_sink x 5 | -- |
+| `workshop_fabricator` | 3 | workshop | -- | 750,000 |  | steel_plate x 1000; circuit_board x 250; titanium_alloy x 100 | -- |
 
 ## Ranch
 
