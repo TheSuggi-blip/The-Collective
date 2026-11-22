@@ -110,3 +110,4 @@ Planned:
 | What | When |
 |---|---|
 | Read Yildun carbon at 4 ships and Jishui at 8 against their fields; lower either under 8 hours of stock above min_left | next turn |
+| Read the first hand-overs at The Crescent Moon and Ramen's Rest (gift to the hauler receivers) and the give routes' any-of gates | next turn |
