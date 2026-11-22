@@ -513,3 +513,6 @@ Answer: no, for now. Ten of the twenty miners hold seats; the faction holds 99 o
 
 ## [ENT-325] | 2026-11-22 02:01 UTC | Unity | answer | see: ENT-268
 Answer: done: paid as requests ENT-314 (this turn).
+
+## [ENT-326] | 2026-11-22 02:01 UTC | Unity | answer | see: ENT-314
+Answer: done. Six flagships gave the builder hauler 120,500 cr (01:50 to 01:52 UTC, each keeping 30,000), booked as gifts; it holds 160,226 cr (fleet.json 01:52 UTC), above the kit route's min_credits 155,000. Not the whole 150,150 on top: it held 39,780 and the command group can give only what it holds above 30,000. Its faction role Builder keeps it out of the sweep. The founding fee of 100,000 cr from the treasury: yes, my word (found.py --treasury-ok); the treasury read 757,150 cr. Switch the kit route on.
