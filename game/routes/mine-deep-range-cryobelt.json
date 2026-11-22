@@ -1,0 +1,23 @@
+{
+ "id": "mine-deep-range-cryobelt",
+ "kind": "mine",
+ "title": "Deep Range Cryobelt: water_ice, carbon_dioxide_ice; sold at Deep Range Outpost",
+ "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 2700 cr per ship-hour, not a measurement. A test: one ship. Added as a test by fill.py on 2026-11-22 07:12 UTC (Zero): up to 3 ships, one result each, until 3 runs are read (rule F37).",
+ "belt": "deep_range:deep_range_cryobelt",
+ "station": "deep_range:deep_range_outpost:deep_range_outpost",
+ "minutes": 70,
+ "max_ships": 3,
+ "sell": [
+  {
+   "item": "water_ice",
+   "min_price": 36
+  },
+  {
+   "item": "carbon_dioxide_ice",
+   "min_price": 3
+  }
+ ],
+ "requires": {
+  "module": "ice_harvester_i"
+ }
+}

@@ -1,0 +1,19 @@
+{
+ "id": "mine-altais-outer-ice",
+ "kind": "mine",
+ "title": "Altais Outer Ice: water_ice, nitrogen_ice; sold at Unknown Edge Waystation",
+ "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 3225 cr per ship-hour, not a measurement. A test: one ship. Added as a test by fill.py on 2026-11-22 07:12 UTC (Zero): up to 3 ships, one result each, until 3 runs are read (rule F37).",
+ "belt": "altais:altais_outer_ice",
+ "station": "unknown_edge:unknown_edge_waystation:unknown_edge_waystation",
+ "minutes": 59,
+ "max_ships": 3,
+ "sell": [
+  {
+   "item": "water_ice",
+   "min_price": 36
+  }
+ ],
+ "requires": {
+  "module": "ice_harvester_i"
+ }
+}

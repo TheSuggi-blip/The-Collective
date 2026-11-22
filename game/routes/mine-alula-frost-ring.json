@@ -1,0 +1,24 @@
+{
+ "id": "mine-alula-frost-ring",
+ "kind": "mine",
+ "title": "Alula Frost Ring: water_ice, helium_ice; sold at Factory Belt Manufacturing Hub",
+ "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 2547 cr per ship-hour, not a measurement. A test: one ship. Added as a test by fill.py on 2026-11-22 07:12 UTC (Zero): up to 3 ships, one result each, until 3 runs are read (rule F37).",
+ "belt": "alula:alula_frost_ring",
+ "station": "factory_belt:factory_belt_manufacturing_hub:factory_belt_manufacturing_hub",
+ "minutes": 90,
+ "max_ships": 3,
+ "sell": [
+  {
+   "item": "water_ice",
+   "min_price": 34
+  },
+  {
+   "item": "helium_ice",
+   "min_price": 1
+  }
+ ],
+ "requires": {
+  "module": "ice_harvester_i",
+  "empty_hold": true
+ }
+}
