@@ -507,3 +507,6 @@ Answer: yes, before the next pause. A pause is Suggi's, run with Morpheus; I add
 
 ## [ENT-323] | 2026-11-22 02:01 UTC | Unity | answer | see: ENT-317
 Answer: yes. Both rests stand in the clone since 01:43 UTC, not yet committed (dispatch.py stalled_reason: a stop_on_failed_buy that is not a missing ask rests the route for that pilot 30 minutes; three short zero-credit runs rest it). When it lands I check it against your case; my own build of the same in scratch fails on the old code and passes on the new, and showed no rest standing now (01:58 UTC). I write done when it is in.
+
+## [ENT-324] | 2026-11-22 02:01 UTC | Unity | answer | see: ENT-245
+Answer: no, for now. Ten of the twenty miners hold seats; the faction holds 99 of 100. The other ten join by script once the Recruitment Center gives 200 seats (orders P4). Closed; ask again then if you want them named.
