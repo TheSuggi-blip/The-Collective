@@ -32,7 +32,7 @@ Every system with a base of a player faction, the nearest to Nexus Prime first. 
 | Miaplacidus (`miaplacidus`) | lawless | 11 | Hex Collective [HEXC] | Hex Gate Miaplacidus (outpost) | [n-hexc.md](n-hexc.md) |
 | Saltwind (`saltwind`) | lawless | 11 | End of Line [ENDL] | ENDL:saltwind (outpost) | [n-endl.md](n-endl.md) |
 | Aspidiske (`aspidiske`) | lawless | 12 | Hex Collective [HEXC] | Copperbelt Range (outpost) | [n-hexc.md](n-hexc.md) |
-| Fomalhaut (`fomalhaut`) | lawless | 12 | End of Line [ENDL] | ENDL:fomalhaut (outpost, wrecked) | [n-endl.md](n-endl.md) |
+| Fomalhaut (`fomalhaut`) | lawless | 12 | End of Line [ENDL] | ENDL:fomalhaut (outpost) | [n-endl.md](n-endl.md) |
 | Ascella (`ascella`) | lawless | 13 | Hex Collective [HEXC] | Ironbelt Range (outpost) | [n-hexc.md](n-hexc.md) |
 | Barnardstar (`barnardstar`) | lawless | 13 | End of Line [ENDL] | ENDL Barnardstar (outpost) | [n-endl.md](n-endl.md) |
 | Izar (`izar`) | lawless | 13 | Prospector Fleet [PSF2] | Prospector Post (outpost, wrecked) | [n-psf2.md](n-psf2.md) |
@@ -88,46 +88,46 @@ None filed.
 | Faction | Tag | Threat | Bases | Nearest base (jumps) | Pilots in our space (24 h) | Updated | File |
 |---|---|---|---|---|---|---|---|
 | The Abyssal | ABYS | unknown | 0 | -- | 0 | 2026-11-22 | [n-abys.md](n-abys.md) |
-| Amalgamated Rogue Raiders Guild | ARRG | unknown | 0 | -- | 1 | 2026-11-22 | [n-arrg.md](n-arrg.md) |
-| Ashborne Combine | ASHC | unknown | 1 | 21 | 0 | 2026-11-17 | [n-ashc.md](n-ashc.md) |
+| Amalgamated Rogue Raiders Guild | ARRG | unknown | 0 | -- | 0 | 2026-11-22 | [n-arrg.md](n-arrg.md) |
+| Ashborne Combine | ASHC | unknown | 1 | 21 | 0 | 2026-11-22 | [n-ashc.md](n-ashc.md) |
 | BEAT | BEAT | unknown | 2 | 17 | 0 | 2026-11-15 | [n-beat.md](n-beat.md) |
 | Busy Being Deads | BEIN | unknown | 5 | 16 | 0 | 2026-11-16 | [n-bein.md](n-bein.md) |
-| The Black Flag | BLCK | unknown | 0 | -- | 0 | 2026-11-22 | [n-blck.md](n-blck.md) |
-| Busy Being Dead | BUSY | unknown | 6 | 14 | 4 | 2026-11-22 | [n-busy.md](n-busy.md) |
+| The Black Flag | BLCK | unknown | 0 | -- | 1 | 2026-11-22 | [n-blck.md](n-blck.md) |
+| Busy Being Dead | BUSY | unknown | 6 | 14 | 2 | 2026-11-22 | [n-busy.md](n-busy.md) |
 | Crafting Collective | CRFT | unknown | 2 | 19 | 0 | 2026-11-22 | [n-crft.md](n-crft.md) |
 | Busy Being Deadz | DEAD | unknown | 5 | 15 | 0 | 2026-11-22 | [n-dead.md](n-dead.md) |
-| Driftline Survey & Salvage | DRFT | unknown | 0 | -- | 2 | 2026-11-22 | [n-drft.md](n-drft.md) |
-| End of Line | ENDL | unknown | 8 | 8 | 4 | 2026-11-22 | [n-endl.md](n-endl.md) |
-| Leap Frog Freight | FROG | unknown | 0 | -- | 1 | 2026-11-22 | [n-frog.md](n-frog.md) |
-| Golden Age Compact | GOLD | unknown | 1 | 4 | 1 | 2026-11-22 | [n-gold.md](n-gold.md) |
-| the GonSak Collective | GONZ | unknown | 0 | -- | 1 | 2026-11-22 | [n-gonz.md](n-gonz.md) |
-| Hex Collective | HEXC | unknown | 11 | 9 | 4 | 2026-11-22 | [n-hexc.md](n-hexc.md) |
-| Hive | HIVC | unknown | 0 | -- | 4 | 2026-11-22 | [n-hivc.md](n-hivc.md) |
-| Hive Swarm | HIVE | unknown | 3 | 5 | 4 | 2026-11-22 | [n-hive.md](n-hive.md) |
+| Driftline Survey & Salvage | DRFT | unknown | 0 | -- | 1 | 2026-11-22 | [n-drft.md](n-drft.md) |
+| End of Line | ENDL | unknown | 8 | 8 | 6 | 2026-11-22 | [n-endl.md](n-endl.md) |
+| Leap Frog Freight | FROG | unknown | 0 | -- | 0 | 2026-11-22 | [n-frog.md](n-frog.md) |
+| Golden Age Compact | GOLD | unknown | 1 | 4 | 3 | 2026-11-22 | [n-gold.md](n-gold.md) |
+| the GonSak Collective | GONZ | unknown | 0 | -- | 2 | 2026-11-22 | [n-gonz.md](n-gonz.md) |
+| Hex Collective | HEXC | unknown | 11 | 9 | 6 | 2026-11-22 | [n-hexc.md](n-hexc.md) |
+| Hive | HIVC | unknown | 0 | -- | 2 | 2026-11-22 | [n-hivc.md](n-hivc.md) |
+| Hive Swarm | HIVE | unknown | 3 | 5 | 5 | 2026-11-22 | [n-hive.md](n-hive.md) |
 | Holographic Alliance | HOLA | unknown | 0 | -- | 0 | 2026-11-22 | [n-hola.md](n-hola.md) |
 | Ironlight Combine | IRLC | unknown | 8 | 6 | 19 | 2026-11-22 | [n-irlc.md](n-irlc.md) |
 | Kestrel Compact | KSTR | unknown | 0 | -- | 1 | 2026-11-22 | [n-kstr.md](n-kstr.md) |
 | The Pale Lanterns | LNTN | unknown | 2 | 17 | 0 | 2026-11-15 | [n-lntn.md](n-lntn.md) |
-| Rise and Fall of Goldcrest Moon | MOON | unknown | 4 | 11 | 0 | 2026-11-22 | [n-moon.md](n-moon.md) |
+| Rise and Fall of Goldcrest Moon | MOON | unknown | 4 | 11 | 1 | 2026-11-22 | [n-moon.md](n-moon.md) |
 | Interstellar Continental | NOIR | unknown | 0 | -- | 3 | 2026-11-22 | [n-noir.md](n-noir.md) |
-| Nova Pact | NVPT | unknown | 0 | -- | 1 | 2026-11-22 | [n-nvpt.md](n-nvpt.md) |
+| Nova Pact | NVPT | unknown | 0 | -- | 5 | 2026-11-22 | [n-nvpt.md](n-nvpt.md) |
 | ObekT Transport | OBKT | unknown | 1 | 10 | 0 | 2026-11-22 | [n-obkt.md](n-obkt.md) |
 | Our Lord And Savior | OLSV | unknown | 1 | 17 | 0 | 2026-11-22 | [n-olsv.md](n-olsv.md) |
-| Pay Now Inc | PAYN | unknown | 0 | -- | 2 | 2026-11-22 | [n-payn.md](n-payn.md) |
-| Pepemos Trading Company | PEPE | unknown | 0 | -- | 11 | 2026-11-22 | [n-pepe.md](n-pepe.md) |
+| Pay Now Inc | PAYN | unknown | 0 | -- | 3 | 2026-11-22 | [n-payn.md](n-payn.md) |
+| Pepemos Trading Company | PEPE | unknown | 0 | -- | 26 | 2026-11-22 | [n-pepe.md](n-pepe.md) |
 | Pike Logistics | PLGT | unknown | 1 | 23 | 0 | 2026-11-15 | [n-plgt.md](n-plgt.md) |
 | The Prime | PRME | unknown | 1 | 10 | 1 | 2026-11-22 | [n-prme.md](n-prme.md) |
 | Prospector Fleet | PSF2 | unknown | 1 | 13 | 8 | 2026-11-22 | [n-psf2.md](n-psf2.md) |
-| Bedrock Materials | ROCK | unknown | 0 | -- | 1 | 2026-11-22 | [n-rock.md](n-rock.md) |
+| Bedrock Materials | ROCK | unknown | 0 | -- | 2 | 2026-11-22 | [n-rock.md](n-rock.md) |
 | The Sisterhood | SIST | unknown | 0 | -- | 0 | 2026-11-21 | [n-sist.md](n-sist.md) |
 | SLOBODA ILI SMRT | SLBD | unknown | 0 | -- | 1 | 2026-11-22 | [n-slbd.md](n-slbd.md) |
 | Soit | SOIT | unknown | 1 | 24 | 5 | 2026-11-22 | [n-soit.md](n-soit.md) |
-| Solaris Syndicate | SOLS | unknown | 0 | -- | 0 | 2026-11-22 | [n-sols.md](n-sols.md) |
-| Stellar Alliance | STLR | unknown | 1 | 17 | 8 | 2026-11-22 | [n-stlr.md](n-stlr.md) |
+| Solaris Syndicate | SOLS | unknown | 0 | -- | 3 | 2026-11-22 | [n-sols.md](n-sols.md) |
+| Stellar Alliance | STLR | unknown | 1 | 17 | 6 | 2026-11-22 | [n-stlr.md](n-stlr.md) |
 | Unix | UNIX | unknown | 0 | -- | 1 | 2026-11-22 | [n-unix.md](n-unix.md) |
-| The Veil | VEIL | unknown | 0 | -- | 1 | 2026-11-22 | [n-veil.md](n-veil.md) |
+| The Veil | VEIL | unknown | 0 | -- | 2 | 2026-11-22 | [n-veil.md](n-veil.md) |
 | Culte du Vide | VIDE | unknown | 0 | -- | 1 | 2026-11-22 | [n-vide.md](n-vide.md) |
-| Wexler's Void Safari | WEXL | unknown | 0 | -- | 4 | 2026-11-22 | [n-wexl.md](n-wexl.md) |
+| Wexler's Void Safari | WEXL | unknown | 0 | -- | 1 | 2026-11-22 | [n-wexl.md](n-wexl.md) |
 | You Sexy Mother Truckers | YSMT | unknown | 0 | -- | 0 | 2026-11-22 | [n-ysmt.md](n-ysmt.md) |
 | Spawn of Char | ZERG | unknown | 0 | -- | 0 | 2026-11-22 | [n-zerg.md](n-zerg.md) |
 
@@ -141,38 +141,37 @@ Every faction tag carried by a pilot whose last known system is one of ours (pub
 
 | Tag | Faction | Pilots | File |
 |---|---|---|---|
+| PEPE | Pepemos Trading Company | 26 | [n-pepe.md](n-pepe.md) |
 | IRLC | Ironlight Combine | 19 | [n-irlc.md](n-irlc.md) |
-| PEPE | Pepemos Trading Company | 11 | [n-pepe.md](n-pepe.md) |
 | PSF2 | Prospector Fleet | 8 | [n-psf2.md](n-psf2.md) |
-| STLR | Stellar Alliance | 8 | [n-stlr.md](n-stlr.md) |
+| ENDL | End of Line | 6 | [n-endl.md](n-endl.md) |
+| HEXC | Hex Collective | 6 | [n-hexc.md](n-hexc.md) |
+| STLR | Stellar Alliance | 6 | [n-stlr.md](n-stlr.md) |
+| HIVE | Hive Swarm | 5 | [n-hive.md](n-hive.md) |
+| NVPT | Nova Pact | 5 | [n-nvpt.md](n-nvpt.md) |
 | SOIT | Soit | 5 | [n-soit.md](n-soit.md) |
-| BUSY | Busy Being Dead | 4 | [n-busy.md](n-busy.md) |
-| ENDL | End of Line | 4 | [n-endl.md](n-endl.md) |
-| HEXC | Hex Collective | 4 | [n-hexc.md](n-hexc.md) |
-| HIVC | Hive | 4 | [n-hivc.md](n-hivc.md) |
-| HIVE | Hive Swarm | 4 | [n-hive.md](n-hive.md) |
-| WEXL | Wexler's Void Safari | 4 | [n-wexl.md](n-wexl.md) |
+| GOLD | Golden Age Compact | 3 | [n-gold.md](n-gold.md) |
 | NOIR | Interstellar Continental | 3 | [n-noir.md](n-noir.md) |
-| DRFT | Driftline Survey & Salvage | 2 | [n-drft.md](n-drft.md) |
-| PAYN | Pay Now Inc | 2 | [n-payn.md](n-payn.md) |
-| AFAC | Abacus Freight Accord | 1 | -- |
-| ARRG | Amalgamated Rogue Raiders Guild | 1 | [n-arrg.md](n-arrg.md) |
-| EXOP | ExoPoly Faction | 1 | -- |
-| FROG | Leap Frog Freight | 1 | [n-frog.md](n-frog.md) |
-| GOLD | Golden Age Compact | 1 | [n-gold.md](n-gold.md) |
-| GONZ | the GonSak Collective | 1 | [n-gonz.md](n-gonz.md) |
+| PAYN | Pay Now Inc | 3 | [n-payn.md](n-payn.md) |
+| SOLS | Solaris Syndicate | 3 | [n-sols.md](n-sols.md) |
+| BUSY | Busy Being Dead | 2 | [n-busy.md](n-busy.md) |
+| GONZ | the GonSak Collective | 2 | [n-gonz.md](n-gonz.md) |
+| HIVC | Hive | 2 | [n-hivc.md](n-hivc.md) |
+| ROCK | Bedrock Materials | 2 | [n-rock.md](n-rock.md) |
+| VEIL | The Veil | 2 | [n-veil.md](n-veil.md) |
+| BLCK | The Black Flag | 1 | [n-blck.md](n-blck.md) |
+| DRFT | Driftline Survey & Salvage | 1 | [n-drft.md](n-drft.md) |
 | HELP | Shipside Assistance Helpers | 1 | -- |
 | KSTR | Kestrel Compact | 1 | [n-kstr.md](n-kstr.md) |
-| NVPT | Nova Pact | 1 | [n-nvpt.md](n-nvpt.md) |
+| MOON | Rise and Fall of Goldcrest Moon | 1 | [n-moon.md](n-moon.md) |
 | OURS | Everything Is Ours | 1 | -- |
 | PRME | The Prime | 1 | [n-prme.md](n-prme.md) |
-| ROCK | Bedrock Materials | 1 | [n-rock.md](n-rock.md) |
 | SANE | UNSANE. | 1 | -- |
 | SGC. | SGC | 1 | -- |
 | SLBD | SLOBODA ILI SMRT | 1 | [n-slbd.md](n-slbd.md) |
 | UNIX | Unix | 1 | [n-unix.md](n-unix.md) |
-| VEIL | The Veil | 1 | [n-veil.md](n-veil.md) |
 | VIDE | Culte du Vide | 1 | [n-vide.md](n-vide.md) |
+| WEXL | Wexler's Void Safari | 1 | [n-wexl.md](n-wexl.md) |
 
 ## Pirate Strongholds
 

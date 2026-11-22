@@ -15,7 +15,7 @@ updated: 2026-11-22
 # End of Line [ENDL]
 
 A player faction with 8 base(s) in 8 system(s); the nearest to Nexus Prime is 8 jump(s) away, in GSC-0040 (`gsc_0040`).
-Pilots of it in our space in the last 24 hours: 4.
+Pilots of it in our space in the last 24 hours: 6.
 
 ## Identity
 
@@ -34,7 +34,7 @@ Pilots of it in our space in the last 24 hours: 4.
 |---|---|---|---|---|---|
 | ENDL:gsc_0040 | outpost | GSC-0040 (`gsc_0040`) | lawless | 8 | thriving |
 | ENDL:saltwind | outpost | Saltwind (`saltwind`) | lawless | 11 | thriving |
-| ENDL:fomalhaut | outpost | Fomalhaut (`fomalhaut`) | lawless | 12 | thriving, wrecked |
+| ENDL:fomalhaut | outpost | Fomalhaut (`fomalhaut`) | lawless | 12 | thriving |
 | ENDL Barnardstar | outpost | Barnardstar (`barnardstar`) | lawless | 13 | thriving |
 | ENDL:sandrift | outpost | Sandrift (`sandrift`) | lawless | 15 | thriving |
 | ENDL:betelgeuse | outpost | Betelgeuse (`betelgeuse`) | lawless | 17 | thriving |
@@ -48,9 +48,11 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
 | Bones | Pherkad (`pherkad`) | 0 | last_drop |
-| Django | Node Beta (`node_beta`) | 0 | junk_convoy |
-| HAL 9000 | Node Alpha (`node_alpha`) | 0 | capacity |
-| SantaClaus | The Experiment (`the_experiment`) | 0 | archimedes |
+| Bootstrap | Acubens (`acubens`) | 180 | shard |
+| CaptainJaneway | Node Beta (`node_beta`) | 0 | threshold |
+| Ferengi1 | The Experiment (`the_experiment`) | 1 | frankenhauler |
+| JoannaDark | Pherkad (`pherkad`) | 0 | threshold |
+| MalfunctioningEddie | Node Beta (`node_beta`) | 0 | junk_convoy |
 
 ## Standing History
 

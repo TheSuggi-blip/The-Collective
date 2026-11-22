@@ -15,7 +15,7 @@ updated: 2026-11-22
 # Pay Now Inc [PAYN]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 2.
+Pilots of it in our space in the last 24 hours: 3.
 
 ## Identity
 
@@ -39,6 +39,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
 | Atervisus | The Experiment (`the_experiment`) | 0 | hells_bells |
+| Stoleas | Nexus Prime (`nexus_prime`) | 0 | paradox |
 | VedaFlux | Synchrony (`synchrony`) | 0 | threshold |
 
 ## Standing History
