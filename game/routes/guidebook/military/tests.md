@@ -1,22 +1,21 @@
 # Military guidebook -- Tests (tests.md)
 
 ### Open Tests
-Status: test. Updated: 2026-11-22. Evidence: hive.py route fit-shield-booster-ii-lhs-1140; hive.py route hunt-test-siphon-pilot-whale-sb2; table runs (*-pl3); observations kind group_hunt; tables ship_skills and stats_pilot_hour.
+Status: test. Updated: 2026-11-22. Evidence: hive.py route hunt-test-siphon-pilot-whale-sb2; table runs (*-pl3, *-pilot-whale-sb2); data/fleet/funds.json; observations kinds group_hunt, fit_test.
 
-- Shield Booster II (`fit-shield-booster-ii-lhs-1140`, 3 pilots): shield
-  80 to 130; one Pulse Laser III ship with it killed a pilot whale alone
-  at full hull (`hunt-test-siphon-pilot-whale-sb2`). One result of
-  three (F37).
-- Pulse Laser III hunts: tortoises at six belts (a seventh off for
-  danger) and deuteron slugs at three ice fields; the slugs kill 2 to 3 a run since 12:48 UTC.
-- Cloudwhales (1,400 to 3,400 hull, 20 jumps out): the first group flew
-  on a census 9 hours old and found none. A group sets out only on a
-  census under 120 minutes (`--census-minutes`).
-- Shields and Armor: no ship holds either skill after eight days, though
-  the catalog trains them by damage taken. Open.
-- Not tested: a tier-1 or tier-2 hull with two or three weapons.
+- Shield Booster II: proven (F37), see Weapon fits. Whale hunts for the
+  booster ships at four herds 4 to 5 jumps out (`*-pilot-whale-sb2`).
+- The Recursion (tier 2, 3 weapons, hull 150, shield 150; table hulls):
+  one ship first (F17), credits only at Node Beta, built in 702 ticks by
+  its quote; then its three results (F37). Script commission_hull.py.
+- Pulse Laser III hunts: tortoises at six belts, deuteron slugs at three
+  ice fields; reserve goods (ferrous nodule, carapace).
+- Cloudwhales (20 jumps out): a group sets out only on a census under
+  120 minutes (`--census-minutes`).
+- Shields and Armor: no ship holds either skill. Open.
 - Answered: one Pulse Laser I kills no slag tortoise; the laser III kills
-  85 to 95 hull alone, a pilot whale in a side of three.
+  85 to 95 hull alone, a pilot whale in a side of three, or alone with a
+  Shield Booster II.
 
 ### Group hunts
 Status: proven. Updated: 2026-11-22. Evidence: observations kind group_hunt (2026-11-17 to 2026-11-22 12:41 UTC); errors.log ENT-129, ENT-130; spacemolt.com/docs/combat; skill military-turn group_hunt.py.
@@ -52,11 +51,11 @@ Status: proven. Updated: 2026-11-22. Evidence: table runs, routes hunt-test-keid
   slag tortoise). `fit-pulse-laser-iii-lhs-1140` fitted its cap of 20
   pilots by 2026-11-22 05:25 UTC, each from its own wallet; the bigger
   prey hunts (`*-pl3`) need the module (`requires.module`).
-- Plasma Cannon II (38 thermal, cooldown 2, hull bonus) takes plasma
-  ammunition (magazine 80), fitted with it or it never fires. With four
-  packs (686 cr) one ship killed bulwarks 2, 2, 2, 2, 1 in five runs at
-  hull 100 (F37 held), about 76 cr of ammunition a kill: no better than
-  the laser against hull, so the laser stays the fit; the cannon stays on
-  one ship for armoured prey. A hunt's store can take the packs into
-  storage: `load-plasma-ammo-nova-terra` puts them back aboard.
+- Plasma Cannon II (38 thermal, ammunition): no better than the laser
+  against hull (bulwarks 2 a run, about 76 cr of packs a kill); it stays
+  on one ship for armoured prey, packs reloaded by `load-plasma-ammo-*`.
+- Shield Booster II (cpu 3, power 6): shield 80 to 130; one Pulse Laser
+  III ship with it killed a pilot whale (220 hull) alone in 8 of 9 runs
+  by two ships, the lowest hull 97 percent (F37 held, 2026-11-22). Lifted
+  for the role in First (`fit-shield-booster-ii-lhs-1140`).
 - The swap: `fit` with `replace` (BLUEPRINT.md).

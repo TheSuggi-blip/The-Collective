@@ -105,7 +105,7 @@ Status: proven. Updated: 2026-11-21. Evidence: fill.py; comms.py; requests.log E
   Voidborn Mastery at 0 for every drone.
 
 ### Battles and stuck ships
-Status: proven. Updated: 2026-11-21. Evidence: errors.log 2026-11-16; stuck_check.py; group_hunt.py logs.
+Status: proven. Updated: 2026-11-22. Evidence: errors.log 2026-11-16; stuck_check.py; group_hunt.py logs; requests.log ENT-369; tow_rescue.py output 2026-11-22 20:22 UTC.
 
 - A ship left in a battle (three runs that never reach stop 1, or
   `in_battle` in its log) is freed with the battle stance flee
@@ -114,3 +114,8 @@ Status: proven. Updated: 2026-11-21. Evidence: errors.log 2026-11-16; stuck_chec
   stance: a drone sat 65 minutes at range 4 with stance fire.
 - A ship with an ammunition weapon hunts only with ammunition aboard.
 - A fight a drone starts opens at fire whatever its default stance.
+- A dry tank where no station stands: the game's tug (`distress_signal`
+  tow, 5 minutes, 500 cr) docks the ship at the nearest public station;
+  `tow_rescue.py` holds, tows, refuels, releases. A hunt whose runs buy no
+  fuel never docked at its sell_at: set it off before the tank runs dry
+  (errors.log, 2026-11-22: two ships, about three hours stranded).
