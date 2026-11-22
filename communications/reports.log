@@ -481,3 +481,12 @@ Failed: the jump loop still flies 29 of 40 traders (-545 cr a ship-hour, 24 h); 
 Requests: requests.log ENT-366 (to Unity: Bursar escrow cap, order steps in route_run.py, the loop's cap), ENT-367 (to Unity: a sweep inside a run).
 Suggestions: Apollo may take the traders' liquid hydrogen for fuel cells; the contracts view could show the sell-order side.
 Report: docked-gas-crafts-sell-where-it-lies-first-bursar-order.
+
+## [ENT-126] | 2026-11-22 20:17 UTC | Apollo | session | ref: reports/2026-11-22_apollo_boards-from-stores-proven-jump-loop-put-to-unity.md | see: orders.log ENT-065
+Session: scheduled run turn-apollo -- boards from stores proven, bunker kept at its keep, the jump loop put to the Fleet Admiral.
+Did: preflight PASS (0 open requests); all five facilities ready; boards from stored silicon decided (fleet boards 1,499 at 15:48 UTC to 3,305; The Crescent Moon workshop crafts for us, 615 there); bunker buy opens under the chain's keep 5,000 (was 4,000) and flew; flex buy limit 125 (ENT-362); Trade's sell routes out of two lists; Ledger and Apophenia quoted (Syndicate achievement; 433,072 cr); request ENT-368.
+Worked: boards from stores; routes.py check names no Logistics file; plan check, guide check and fill gate PASS (PASS: no ship of hauler waits).
+Failed: three copper wiring routes written without reading their output's reserve max; the gate closed them at once, no run (errors.log ENT-141); the division still loses -25,898 cr an hour, the jump loop (33 of 40 haulers, -498 cr a ship-hour) the most of it.
+Requests: ENT-368 (to Unity: keep, cut to 8 or end the hauler jump loop).
+Suggestions: Unity: answer ENT-368, I recommend keeping the loop for the 8 haulers nearest Piloting 10; the reserve's recipe rows for control nodes and power cells decided together; a craft step's run notes could list what it made.
+Report: boards-from-stores-proven-jump-loop-put-to-unity.
