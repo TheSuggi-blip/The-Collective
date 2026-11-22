@@ -13,9 +13,12 @@ Which skills a trader levels and on which work (rule F23).
 
 What raises each skill, as read:
 
-- Trading: a buy gives about 1 XP per 100 cr (24,441 iron ore bought for
-  24,441 cr gave 244 XP, 2026-11-16 18:46 UTC); missions: a Trade Run 20
-  to 40, Network Commerce Protocol 20.
+- Trading: about 1 XP per 100 cr of goods bought and as much again per
+  100 cr sold (one Trade Run: 30,411 bought and 30,170 sold for 637 XP
+  with the mission's 35, level 3 to 4, xpsnap.py diff 2026-11-22 04:2x
+  UTC; 24,441 cr of iron ore bought gave 244 XP, 2026-11-16); missions: a
+  Trade Run 20 to 40, Network Commerce Protocol 20. A dear good bought
+  and sold near one price trains it cheapest.
 - Piloting: flying and jumping, and missions: a Trade Run 80 to 580,
   Local Sector Survey 280, Deep Space Cartography 380. A mission's XP by
   skill stands in its board file: `rewards.skill_xp` and `piloting_xp`.
