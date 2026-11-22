@@ -464,3 +464,10 @@ Effect: no hull, credit or ship lost (the runner's hunt went on); the pilot lead
 Cause: I stopped a process by a PID I had not read from ps, and released the holds without checking that no process of the script ran.
 Fix: skill script stop_script.sh: finds the script's python processes by command line, SIGINT, then SIGKILL, checks none is left, and only then releases the pilots; it releases nothing while one survives. The skill names it as the only way to stop a background script.
 Class: an action on a process taken from an unverified handle (the same class as a hash written before the watcher rebased it). Would it have prevented this one: yes, ps showed the python PID 44541 beside the wrapper 44537.
+
+## [ENT-131] | 2026-11-22 10:00 UTC | Unity | error | ref: game/fleet/fill.py | see: admirals.log ENT-088
+What: at 09:57 UTC `fill.py fill command --write` (commit 7c1e7b88) put hunt-gsc-0004-gas-pocket-cinder-sylph and hunt-avior-gas-pocket-halo-drifter in front of two flagships' own routes, while the same script's `status` of 09:32 UTC listed both as "not offered: claimed by another division (admirals.log, rule F25): Apophis's" (claim admirals.log ENT-088, one ship each).
+Effect: no ship lost, no credit lost; at most two flagships took one run each on herds Military claimed. I took both out of the command plan at 09:58 UTC (commits 6fc5281c, 35192568).
+Cause: not found this turn. Both paths call fill.claims(seen), which leaves standing routes out of every claim; the status and the write may read a route's standing state from different route sets (a guess, not read in the code).
+Fix: none yet; the five-minute pass may add them again. My next turn (14:30 CET) reads why the two paths disagree, with a test that fails on today's code, before any other fill.py change.
+Class: two readers of one rule that disagree (a silent gate), the same class as errors.log ENT-128 and ENT-129.
