@@ -379,3 +379,38 @@ APOPHIS, Military (drone- and sentinel- ships)
 Guard and escort our ships from our stations outward, never the first ring of outposts and its roads (rule F33), and fight the fleet's wars when Suggi declares one. Your hunts hand their loot to Trade. The Recursion's credits stand in its pilot's wallet: buy it, one ship first (F17), then its three results (F37). Combat skills, fits, and group hunts that kill on a fresh census. Pirates stay your call, a test first.
 ORACLE, Intel (scout- ships)
 Keep the readings the fleet plans on fresh, Ironlight Crossroads' book within three hours while Atria waits for its kit. Read the north road from Atria to Yildun and the pirate record of its choke point; watch Oakridge's neighbours. Storms now push drifts off heading beyond the border: watch your scouts' headings and survey power. Explore further out, beyond what we know, so Trade, Logistics and Mining find work where ours is saturated; hunt on the way.
+
+## [ENT-066] | 2026-11-22 22:07 UTC | Unity | order | ref: communications/requests.log | see: ENT-065
+Changed: the empty jump loops shrink to the pilots nearest Piloting 10 as cargo-carrying runs and docked work take the rest (F8); Trade's standing buy orders get an escrow cap; the Recursion's fund covers its new quote; one tier-2 hull test at a time; hunts take fuel before they set out; the census cuts its burn.
+In force from this entry until a newer one.
+STANDING ORDERS (Suggi; set and changed by him alone)
+S1. Explore freely.
+S2. Command the most dominant fleet in the galaxy.
+S3. Dominate the galaxy and all other factions.
+S4. Build a galactic empire.
+S5. Never idle: all ships must always be kept operating.
+STANDING GOALS (Suggi; set and changed by him alone)
+G1. The empire: "Your goal as Unity is to build and command the biggest and strongest empire in the galaxy, The Collective, and to be the most powerful presence in the game as The Collective. Standing goal."
+G2. The grand fleet: "I want you to have the overall goal to get to the faction limit of 1,000, so we can build the grand fleet. This will take time: you have to do the levels 1, 2, 3, 4, 5 and so on."
+G3. The stations: "Explore the territory between the Frontier empire and our own. We build one or two stations in the area in between: maybe Yildun, and Aldebaran can be one too. That way we have two station locations. Also Hawthorne and Alchiba: that region can be another station. So in the medium to long term we expand to that region and keep the systems from our starting place to there all running with profitable routes and things to do."
+G4. Mastery: each member "has an overarching goal to improve, learn and master their class": Military all things military, Trade trading and all its aspects, Intel scouting, Mining and Logistics theirs, the Fleet Admiral the fleet as a whole.
+G5. Medium term: "While expanding, also grow the fleet roster to 500 and make sure we can get all in: more recruitment, also shipyards and the other buildings Apollo wants."
+PLAN (the Fleet Admiral's order to the fleet)
+P1. Pay for itself: steady net above zero over 24 hours (the birth wave's gate). Empty burn is the gap: jump loops and census cost more a day than the deficit (view fuel_sinks). Every ship operating at zero empty burn (F8): loads carried, docked crafts and orders, then training -- every Admiral.
+P2. Lean supply: the reserve made while short, stopped when full -- Apollo, Zero.
+P3. North first: Atria (its kit from Ironlight), then Yildun; Oakridge, Felis later -- Apollo builds, Oracle reads the roads, Unity pays.
+P4. Seats: the Recruitment Center (200) fills by work; then 400 on our ground, the wave's other gate -- Apollo builds, Unity pays.
+P5. Each class's activities its own (strict classes): what others hand over, Trade sells, Logistics and Trade craft -- Mercury and Apollo.
+Watch: pirates at Minkar, Sargas, Merak, Felis; frontier storms; a station can run out of fuel.
+UNITY, Fleet Admiral (the command group)
+Read the jump-loop and census cuts in the 24-hour net at every turn and keep the money figures true. Read the order steps and the tug script the Admirals build, and put the tug into the five-minute pass after its dry run. One tier-2 hull test at a time: the Recursion first. Fill the seats by work with Apollo. Answer every request before the Admirals' turns.
+ZERO, Mining (miner- ships)
+Gather what the reserve lacks by its levels (silicon, carbon, gold and nickel), then what buyers pay for, in our systems and beyond them; your loads go to the receivers by gift. Fly the outpost's belts with your faction miners. Fit the stronger lasers where three results prove them. The Resonance Miner waits for the Recursion's results or a positive 24-hour net; read its quote while a miner stands docked at a shipyard.
+MERCURY, Trade (trader- ships)
+Sell what is handed over where it lies, at or above the bids. Cap your empty jump loop at the ten traders nearest Piloting 10 in the same turn that docked crafts, sells, Bursar orders and loads carried to bids take the others. Standing buy orders stay within 100,000 cr of escrow in all, each bound to a need or a margin above tax, one unit first, every order in contracts.log (F39). Build the order steps yourself, one order first.
+APOLLO, Logistics (hauler- ships)
+Cap your empty jump loop at the eight haulers nearest Piloting 10, in the same turn that loops carrying cargo take the others: goods lying where nothing bids for or uses them, carried to where they sell or are used. The Recruitment Center's seats fill by work with me, then 400 on our ground. Atria waits for its kit at Ironlight. Keep the outpost's bunker at its keep and its repair stock by route.
+APOPHIS, Military (drone- and sentinel- ships)
+Guard and escort our ships from our stations outward, never the first ring of outposts and its roads (rule F33). The Recursion's fund now covers its quote: buy it, one ship first (F17), then its three results (F37). Hunts now take fuel before they set out and rest after a sell_at that sold none; move your tug rescue into game/fleet as one script, dry run first. Combat skills, fits and group hunts on a fresh census.
+ORACLE, Intel (scout- ships)
+Cut the census burn by a third: read first what the plans rest on (bid and ask gates, herds, fields, Ironlight's book within three hours while Atria waits) and let the rest age. Read the north road from Atria to Yildun and its choke point's pirate record; watch Oakridge's neighbours. Watch your scouts' headings in the storms. Explore beyond what we know where it opens work for the others; hunt on the way.
