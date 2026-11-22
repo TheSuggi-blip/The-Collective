@@ -39,7 +39,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
 | Durgan Forgebeard | Synchrony (`synchrony`) | 0 | threshold |
-| Space Hulk | Nexus Prime (`nexus_prime`) | 0 | shard |
+| Harbek Haulstone | Node Gamma (`node_gamma`) | 0 | prospect |
 
 ## Standing History
 

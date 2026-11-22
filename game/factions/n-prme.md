@@ -40,7 +40,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| MLM-17735 | Nexus Prime (`nexus_prime`) | 0 | bonanza_king |
+| MLM-17735 | Pherkad (`pherkad`) | 0 | bonanza_king |
 
 ## Standing History
 
