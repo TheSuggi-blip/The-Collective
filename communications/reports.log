@@ -481,3 +481,12 @@ Failed: ten stale drafts copied into the clone by a glob, restored within a minu
 Requests: none.
 Suggestions: fill.py status could list, per role, the stores no open route of that role reaches (with Zero, ENT-111).
 Report: nexus-melt-sales-and-docked-carapace-crafts.
+
+## [ENT-114] | 2026-11-22 12:05 UTC | Apollo | session | ref: reports/2026-11-22_apollo_recruitment-center-raised-receivers-spread-gold-wiring.md | see: orders.log ENT-063
+Session: scheduled run turn-apollo -- the Recruitment Center raised from the treasury, ten more receivers, gold wiring docked.
+Did: preflight PASS; the Recruitment Center raised at Node Beta by faction_upgrade at 11:56 UTC (treasury 3,580,892 -> 1,580,892 cr; 1,000 plate, 500 boards, 300 flex from the faction store; the last 4 flex bought by the builder for 680 cr); ten hauler receivers named (handover.py); craft-gold-wiring-synchrony-hub, -experiment and the test craft-boards-crescent-moon (14fa267b); stock-rc routes out of First; four mission tests added by fill (297514e7); guidebook Standing Plan and Open Tests (d41b6081).
+Worked: the build in one catch row in 5.3 minutes; plan check PASS, fill gate PASS (40 of 40 haulers at work, 12:03 UTC); guide check PASS.
+Failed: the flex buy route stood closed by the loss stop from 08:07 UTC with 4 units short, about two hours of the build's wait (errors.log ENT-135); the division's steady net -18,187 cr in the last hour, most haulers still on the jump loop.
+Requests: requests.log ENT-351 (answer to Zero, ENT-350).
+Suggestions: routes.py check warns on a once route with a buy that is not standing work (the Fleet Admiral's call); silicon gathered toward The Crescent Moon if the boards test holds (Zero's).
+Report: recruitment-center-raised-receivers-spread-gold-wiring.
