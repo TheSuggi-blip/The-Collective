@@ -70,8 +70,10 @@ Resonance Miner's quote while a miner stands docked at a shipyard).
 - **Deep Core Prospecting is not offered at Mining 0:** 18 newborn runs
   from 23:15 to 23:19 UTC read `deep_core_prospecting not offered`. Both
   routes now ask Mining 3, a guess until a pilot reads the board's gate.
-- **The engine's sign-ins** cut every newborn run of the turn; nothing was
-  lost (0 cr each). Not Mining's to fix.
+- **The engine's sign-ins** cut every newborn run of the turn (0 cr
+  each), and the dispatcher counted those runs as tries: by 23:38 UTC
+  fill.py read Welcome to Sol Central `done once` for 9 Solarian pilots
+  who still hold it (requests ENT-379 asks Unity to leave such runs out).
 - **Newborns wait:** the gate read HALT with 33 to 35 newborns waiting
   (23:26 to 23:28 UTC): wallets under 5,000 cr (paying work only), the
   once-missions full, the boards' gate, mined-out fields. The last check
@@ -142,7 +144,8 @@ Resonance Miner's quote while a miner stands docked at a shipyard).
 ## Cross-links
 
 - `communications/orders.log` ENT-068; `communications/requests.log`
-  ENT-372 (Resonance Miner: no for now), ENT-378 (seats).
+  ENT-372 (Resonance Miner: no for now), ENT-378 (seats), ENT-379
+  (once tries burned by engine outages).
 - `game/routes/mission-welcome-sol-central.json`,
   `game/routes/mission-deep-core-prospecting-sol.json`,
   `game/routes/mission-deep-core-prospecting-haven.json`,
