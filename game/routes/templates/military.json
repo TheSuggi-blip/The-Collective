@@ -12,6 +12,10 @@
     "hunt-test-keid-ice-shelf-deuteron-slug-pl3",
     "hunt-test-gsc-0035-belt-b-slag-tortoise-pl3",
     "hunt-test-acubens-bulwark-pl3",
+    "hunt-stormwatch-belt-slag-tortoise-pl3",
+    "hunt-node-beta-frozen-drift-deuteron-slug-pl3",
+    "hunt-gsc-0021-belt-slag-tortoise-pl3",
+    "hunt-aldhibah-ice-shelf-deuteron-slug-pl3",
     "hunt-test-acubens-bulwark-pc2",
     "hunt-rasalhague-ice-fields-hollow-pilgrim",
     "hunt-elnath-ice-belt-hollow-pilgrim",
@@ -117,7 +121,7 @@
     "xenobiology",
     "piloting"
    ],
-   "note": "2026-11-22 04:17 UTC (orders ENT-061, P5 and block APOPHIS): the sale and carry circuits of stored loot are out (Trade's work; the loot goes to Trade's receivers by gift once strict classes are on: give-drone-stores-* in First, the hunts carry gift_to); first the chlorophage hunts (caustic sac for the recruitment center, needs list P1), then the bigger prey of the Pulse Laser III and the Plasma Cannon II (requires.module: only a ship that carries it). The fallback crafts stay at the end while the switch is off."
+   "note": "2026-11-22 08:18 UTC (orders ENT-062, P5 and block APOPHIS): no sale or carry circuit (Trade's work; the loot goes to Trade's and Logistics' receivers by gift once strict classes are on: give-drone-stores-* in First, the hunts carry gift_to); first the chlorophage hunts (caustic sac for the reserve), then the bigger prey of the Pulse Laser III (requires.module: only a ship that carries it; four new herds of slag tortoises and deuteron slugs for carapace, short in the reserve) and the Plasma Cannon II test. The fallback crafts stay at the end while the switch is off."
   },
   "guard": {
    "title": "Guard: one drone at each field beyond the border where our miners work",
