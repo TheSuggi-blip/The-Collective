@@ -222,5 +222,58 @@ class StorePublicFeedsAndStationOpsTests(unittest.TestCase):
             self.assertIn(key, res)
 
 
+
+class DispatchPairsCacheAndBriefingEyesTests(unittest.TestCase):
+    def test_pairs_cache_indexes_runs_once_in_o1(self):
+        dispatch = load("dispatch_pairs_test", FLEET / "dispatch.py")
+        now = time.time()
+        rows = [
+            {"route": "trade-x", "pilot": "trader-9", "started": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(now - 180 + i * 30)),
+             "minutes": 0.2, "delta": 0, "notes": []}
+            for i in range(5)
+        ]
+        by = dispatch.pairs(rows)
+        self.assertIs(dispatch.pairs(rows), by)
+        self.assertEqual(len(by[("trade-x", "trader-9")]), 5)
+        pilot = {"name": "trader-9", "role": "trader", "credits": 45000, "docked": True, "modules": [], "skills": {}, "goods": 0}
+        route = {"id": "trade-x", "kind": "trade", "buy_at": "a:b", "sell_at": "c:d"}
+        state = {"now": now, "data": "", "rows": rows, "orders": {}, "rest": {}, "booked": {}, "loss": {}, "late": {}, "pirates": {}}
+        reason, _ = dispatch.why_not(pilot, "trade-x", route, state)
+        self.assertIsNotNone(reason)
+        self.assertIn("short zero-credit runs", reason)
+
+    def test_hive_show_eyes_prints_priorities_supply_bottlenecks_and_raids(self):
+        import contextlib, io
+        store = load("store_eyes_test", FLEET / "store.py")
+        hive = load("hive_eyes_test", FLEET / "hive.py")
+        with tempfile.TemporaryDirectory(prefix="hive-eyes-test-") as tmp:
+            base = Path(tmp)
+            (base / "store").mkdir()
+            conn = sqlite3.connect(str(base / "store" / "read.db"))
+            conn.executescript(store.SCHEMA)
+            store.setup_snapshot(conn)
+            conn.execute("INSERT INTO faction (id, name, tag, leader, member_count, members_limit, treasury, owned_bases, at_war, created, t, src) "
+                         "VALUES ('f1', 'The Collective', 'CLTV', 'Prime Directive', 99, 100, 800000, 1, 0, 1, 100, 'empire.json')")
+            conn.execute("INSERT INTO ships (pilot, division, role, class, t, src) VALUES ('miner-1', 'Mining', 'miner', 'Threshold', 100, 'fleet.json')")
+            conn.execute("INSERT INTO ship_skills (pilot, skill, level, xp, src) VALUES ('miner-1', 'piloting', 11, 500, 'ships')")
+            conn.execute("INSERT INTO supply_chains (chain, item, place, keep, need_per_hour, sources, keeper, note, line, error, src) "
+                         "VALUES ('outpost-fuel', 'fuel', 'CLTV Outpost', 5000, 0.0, '', 'Logistics', '', 1, NULL, 'supply.tsv')")
+            conn.execute("INSERT INTO public_battles (system, system_name, category, status, tick, destroyed, lost, pilots, tags, ended_at, t, src) "
+                         "VALUES ('algol', 'Algol', 'npc', 'active', 999, 2, 'Outpost', 'Raider', 'NPC', '', 100, 'battles.json')")
+            conn.commit()
+            conn.close()
+            buf = io.StringIO()
+            with contextlib.redirect_stdout(buf):
+                hive.show_eyes(str(base), "Zero")
+            out = buf.getvalue()
+            self.assertIn("=== EYES & EARS:", out)
+            self.assertIn("seats 99/100 (AT CAP", out)
+            self.assertIn("MY UPGRADE READINESS (Mining)", out)
+            self.assertIn("1 ships >= Lv10 ready for T2 hulls", out)
+            self.assertIn("outpost-fuel", out)
+            self.assertIn("RAID / PVP BATTLES", out)
+            self.assertIn("Algol [npc/active", out)
+
+
 if __name__ == "__main__":
     unittest.main()

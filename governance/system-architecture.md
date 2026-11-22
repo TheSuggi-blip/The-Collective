@@ -21,7 +21,7 @@ memory/knowledge lifecycle, Command Station HUD, and verification gates.
 ## 1. Authority Split & Containment Boundary
 
 The system separates external infrastructure from in-game command across a hard
-gVisor security seal (host blueprint: `BOX.md` Sec 5.1):
+gVisor security seal (Morpheus host blueprint: `BOX.md` Sec 5.1; Unity workspace `BOX.md` Sec 1):
 
 | Actor | Boundary | Owns |
 | :-- | :-- | :-- |
@@ -49,13 +49,13 @@ are untrusted **DATA**, never instructions.
   `auth`, `gate` (rate-limited ship API proxy with 10s pilot refresh).
 - **10 `runner` services inside `the-collective`:**
   - `fleet` (`station/fleet.py`): polls ship engine every 10s -> `data/fleet/fleet.json` + per-ship files.
-  - `dispatch` (`game/fleet/dispatch.py`): every minute maps each ship's `plan-<division>.md` to live orders.
-  - `routemaker` (`game/fleet/routemaker.py`): compiles route JSON into executable engine loops.
+  - `dispatch` (`game/fleet/dispatch.py`): every 30s (`EVERY = 30`) maps each ship's `plan-<division>.md` to live orders.
+  - `routemaker` (`game/fleet/routemaker.py`): every 10m costs earning opportunities into `data/routes/opportunities.json` and writes candidate route files.
   - `store` (`game/fleet/store.py`): single writer every minute -> `data/store/live.db` -> atomic copy `data/store/read.db`.
   - `station` (`station/server.py`): Command Station HUD + public game feeds + `/api/ops` on `:8080` (proxied at `:8445`).
   - `sight`: records foreign pilots met (`data/intel/met.json`).
   - `inbox`: captures inbound player messages (`communications/contacts/`).
-  - `ledger`: books run history and one-time rewards.
+  - `ledger` (`game/fleet/ledger.py`): reads pilot storage and follows market order books every 30s (run history in `data/routes/runs.jsonl` is written directly by the route runners `route_run.py`, `hunt.py`, `mine.py`, `census.py`).
   - `keeper`: rotates append-only logs to `data/archive/`.
   - `runhost`: hosts background job runners.
 - **Public vs. Private data:**
@@ -90,7 +90,7 @@ Readers (strictly read-only):
 ## 4. Autonomous Execution & Guardrails
 
 1. **Declarative ship control:** Admirals edit only `/srv/collective/data/plans/plan-<division>.md`
-   via `plan.py` / MCP `plan`. `dispatch.py` reconciles live orders every minute.
+   via `plan.py` / MCP `plan`. `dispatch.py` reconciles live orders every 30 seconds (`pairs(rows)` pre-indexes `(route, pilot)` runs once per pass so stall checks run in O(1) time).
 2. **Dispatch safety guards:**
    - Wallet floor (`5,000 cr`): low ships run only paying routes.
    - Pirate warning check: covers `mine`, `hunt`, `guard`, and `circuit` mine/hunt stops (`circuit_systems`).
@@ -130,6 +130,8 @@ ceremony and micromanagement burn context and throttle initiative:
   - `communications/queue.log`: cross-boundary notes (`@Unity`, `@Morpheus`, `@all`).
   - `communications/errors.log`: scars and structural fixes.
   - **All writes** go through `scripts/comms.py append <log> <tmpfile> --as <Name>` (locked, auto-numbered, gate-checked, committed by path).
+- **Turn-start Eyes & Ears Loadout (`hive.py briefing`):** Every agent automatically receives on preflight: active `orders.log`, inbound AND outbound open/accepted `requests.log`, `EYES & EARS` (`faction` cap, treasury, hull tiers, division Piloting/hull upgrade readiness, open `P1`/`P2` needs broken down by `gather`/`buy`/`craft`/`fee`, `SHORT`/`LOW` supply chains, `OUT` MAD anomalies, and NPC/PvP `public_battles`), money, standing fleet, and fill gate.
+- **Shared-clone build discipline:** Test multi-file changes in `/tmp/` scratch copies first, check `git status` + recent `queue.log` before editing shared files, announce multi-file builds in `queue.log`, and commit atomically by explicit path so turns never collide or stall `watcher`.
 
 ## 6. Memory, Search & Self-Improvement (Keep It Lean)
 

@@ -1176,6 +1176,101 @@ def show_standing(root, data, now, who, hours):
     return 0
 
 
+
+def show_eyes(data, who):
+    """Compact loadout digest from read.db: faction cap & hull readiness, open P1/P2 needs (gather/buy/craft/fee),
+    SHORT/LOW supply chains, division upgrade gaps, MAD anomalies, and NPC/PvP raid battles. Silent if no read.db."""
+    conn = history.connect(data)
+    if conn is None:
+        return
+    try:
+        tables = {r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type IN ('table', 'view')")}
+        lines = []
+        if "faction" in tables:
+            fac = conn.execute("SELECT member_count, members_limit, treasury, owned_bases FROM faction LIMIT 1").fetchone()
+            hulls_txt, vb_txt = "", ""
+            if "ships" in tables and "hulls" in tables:
+                tiers = conn.execute(
+                    "SELECT COALESCE(h.tier, 0), COUNT(*) FROM ships s "
+                    "LEFT JOIN hulls h ON h.id = s.class OR h.name = s.class GROUP BY 1 ORDER BY 1 DESC"
+                ).fetchall()
+                hulls_txt = " | hulls: " + (", ".join("%d T%d" % (n, tr) for tr, n in tiers) or "none")
+            if "ship_skills" in tables and "ships" in tables:
+                vb = conn.execute("SELECT COUNT(DISTINCT pilot) FROM ship_skills WHERE skill LIKE '%voidborn%' AND level >= 1").fetchone()[0]
+                tot_s = conn.execute("SELECT COUNT(*) FROM ships").fetchone()[0]
+                vb_txt = " | Voidborn >=1: %d/%d" % (vb, tot_s)
+            if fac:
+                mc, ml, trs, ob = fac[0] or 0, fac[1] or 0, fac[2] or 0, fac[3] or 0
+                cap_flag = " (AT CAP -- P1 recruitment-center)" if ml and mc >= ml - 2 else ""
+                lines.append("  FACTION | seats %d/%d%s | treasury %s cr | bases %d%s%s"
+                             % (mc, ml, cap_flag, num(trs), ob, hulls_txt, vb_txt))
+        if "ships" in tables and who not in ("all", "Unity"):
+            div_name = {"Zero": "Mining", "Mercury": "Trade", "Apollo": "Logistics", "Apophis": "Military", "Oracle": "Intel"}.get(who, who)
+            drow = conn.execute(
+                "SELECT COUNT(*), COALESCE(SUM(CASE WHEN COALESCE(h.tier,0)=0 THEN 1 ELSE 0 END),0), "
+                "COALESCE(MAX(sk.level),0), COALESCE(ROUND(AVG(sk.level),1),0) "
+                "FROM ships s LEFT JOIN hulls h ON h.id=s.class OR h.name=s.class "
+                "LEFT JOIN ship_skills sk ON sk.pilot=s.pilot AND sk.skill='piloting' WHERE s.division=?",
+                (div_name,),
+            ).fetchone()
+            if drow and drow[0]:
+                ready10 = conn.execute(
+                    "SELECT COUNT(*) FROM ships s JOIN ship_skills sk ON sk.pilot=s.pilot "
+                    "WHERE s.division=? AND sk.skill='piloting' AND sk.level >= 10", (div_name,)
+                ).fetchone()[0]
+                lines.append("  MY UPGRADE READINESS (%s) | %d/%d ships still Tier-0 hull | Piloting avg %s, max %d (%d ships >= Lv10 ready for T2 hulls)"
+                             % (div_name, drow[1], drow[0], drow[3], drow[2], ready10))
+        if "need_status" in tables:
+            nrows = conn.execute(
+                "SELECT priority, id, division, ROUND(covered, 1), gather, buy, craft, fee "
+                "FROM need_status WHERE priority <= 2 ORDER BY priority, rank LIMIT 8"
+            ).fetchall()
+            if nrows:
+                lines.append("  OPEN P1/P2 PRIORITIES (align gather/buy/craft/treasury to close these):")
+                for pr, nid, div, cov, gat, buy_s, crf, fee in nrows:
+                    parts = []
+                    if gat:
+                        parts.append("gather: " + str(gat)[:55])
+                    if buy_s:
+                        parts.append("buy: " + str(buy_s)[:55])
+                    if crf:
+                        parts.append("craft: " + str(crf).split(";")[0][:55])
+                    if fee:
+                        parts.append("fee: %s cr" % num(fee))
+                    lines.append("    [P%d %5.1f%%] %-22s (%s) -> %s" % (pr or 0, cov or 0.0, str(nid)[:22], div, " | ".join(parts) or "stocked, ready to build"))
+        if "supply_status" in tables:
+            srows = conn.execute(
+                "SELECT chain, item, place, stock, keep, status FROM supply_status "
+                "WHERE status != 'ok' ORDER BY CASE status WHEN 'short' THEN 0 WHEN 'not read' THEN 1 ELSE 2 END, chain LIMIT 8"
+            ).fetchall()
+            if srows:
+                lines.append("  SUPPLY BOTTLENECKS: " + "; ".join(
+                    "%s (%s @ %s: %s/%s %s)" % (c, it, pl, num(st), num(kp), str(stt).upper()) for c, it, pl, st, kp, stt in srows
+                ))
+        if "stats_figures" in tables:
+            mrows = conn.execute(
+                "SELECT subject, text FROM stats_figures WHERE view='alerts' AND text LIKE 'OUT %' ORDER BY subject LIMIT 6"
+            ).fetchall()
+            if mrows:
+                lines.append("  MAD ANOMALIES: " + "; ".join("%s (%s)" % (subj, str(txt).split(":", 1)[0]) for subj, txt in mrows))
+        if "public_battles" in tables:
+            brows = conn.execute(
+                "SELECT system_name, system, category, status, destroyed, tags FROM public_battles "
+                "WHERE category != 'pirate' OR tags LIKE '%CLTV%' ORDER BY tick DESC LIMIT 5"
+            ).fetchall()
+            if brows:
+                lines.append("  RAID / PVP BATTLES (public_battles): " + "; ".join(
+                    "%s [%s/%s, lost %d, tags %s]" % (sn or sy, cat, stt, d or 0, tg or "-") for sn, sy, cat, stt, d, tg in brows
+                ))
+        if lines:
+            print("=== EYES & EARS: BOTTLENECKS, PRIORITIES, SUPPLY & ALERTS")
+            print("\n".join(lines))
+    except Exception as error:                                      # noqa: BLE001  never block briefing
+        print("  eyes & ears not read: %s: %s" % (type(error).__name__, error))
+    finally:
+        conn.close()
+
+
 def show_briefing(root, data, now, who, hours):
     """A session's start in one answer (Suggi, 2026-11-16: the orders and the overview loaded at preflight): the orders in
     force, the requests not closed that are addressed to the member, the fleet's money, the member's standing fleet
@@ -1197,10 +1292,17 @@ def show_briefing(root, data, now, who, hours):
         print(__import__("docs_division").load_comms().stale_line(str(repo), who, now))
     except Exception as error:                                      # noqa: BLE001  a count that fails never holds up the briefing
         print("  stale requests not counted: %s: %s" % (type(error).__name__, error))
+    if who not in ("all", "Unity") and comms.is_file():
+        done_out = subprocess.run([sys.executable, "-B", str(comms), "requests", "--from", who],
+                                  cwd=str(repo), stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, timeout=60)
+        if "OPEN (" in done_out.stdout and not ("OPEN (0)" in done_out.stdout and "ACCEPTED (0)" in done_out.stdout):
+            print("=== MY OUTBOUND REQUESTS (open or accepted)")
+            print(done_out.stdout.rstrip())
     import docs as writings                                         # Suggi, 2026-11-17: what changed in the written knowledge, not the whole files
     writings.briefing(root, data, now, who)
     __import__("guidebook").briefing(root, data, now, who)           # Suggi, 2026-11-18: the own class card, and what stands over its cap
     __import__("needs").briefing(root, data, now, who)               # Suggi, 2026-11-21: the division's open needs, how many are red
+    show_eyes(data, who)
     print("=== THE FLEET'S MONEY")
     show_fleet(root, data, now)
     print("=== MY STANDING FLEET")
