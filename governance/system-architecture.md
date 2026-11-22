@@ -29,7 +29,7 @@ gVisor security seal (host blueprint: `BOX.md` Sec 5.1):
 | **Unity** | Inside gVisor seal | Fleet Admiral: sets medium-term campaign direction in `orders.log`, resolves cross-division conflicts, controls treasury/sweeps and fleet-wide code/policy. |
 | **5 Admirals** | Inside gVisor seal | **Zero** (Mining), **Mercury** (Trade), **Apollo** (Logistics), **Apophis** (Military), **Oracle** (Intel). Autonomous execution of division mandates and `plan-<division>.md`. |
 | **Morpheus** | VPS host | Docker/gVisor containers, `compose.yaml`, engine image, 10s gate state-refresh, `watcher` sync, host security & backups. |
-| **Trinity** | External PC | Chief Architect & Auditor: system design, code/SQL/HUD engineering (on authorization), end-to-end audits via `query-collective` and `collective-ops`. |
+| **Trinity** | External PC | Chief Architect, Auditor & Command Station HUD Keeper: owns `:8445` HUD UX/UI, system/agent engineering, skill refinement, and scheduled executive briefings (`collective-analyst`) so in-seal agents stay focused on gameplay. |
 
 **Why Unity stays inside the seal:** SpaceMolt feeds untrusted player/game text
 into the fleet. Keeping Unity inside the isolated container preserves the 7-part
@@ -148,7 +148,8 @@ ceremony and micromanagement burn context and throttle initiative:
 picture (strict CSP, zero `innerHTML`, pure DOM `textContent`):
 
 - **Top bar:** division roster, total purse + net/h, fleet age, live **Tick lag** (`median / max state_at`), online count, SSE stream health, and source status.
-- **Map & Selection:** galaxy systems, lanes, foreign faction groups, our ships/buildings/outposts, system intel.
+- **RTS Fleet Outliner (left):** live `All / Active / Idle / Alerts` filter pills with counts, instant ship/route/system search, sort (`Name / Low hull-fuel / Credits / Piloting`), per-division utilization micro-bars, and double-click camera snap.
+- **Map, Tactical Alert Ribbon & Hotkeys:** galaxy systems, lanes, foreign faction groups, our ships/buildings/outposts, pulsing red battle reticles, clickable top-center alert chips (down services, battles, faction cap, short supply, MAD anomalies, idle count), and RTS hotkeys (`F`/`H`/`G`, `1-4`, `[`/`]`, `/`, `?`).
 - **Metrics tab:** fleet economy KPIs & rolling graphs, per-division P&L, plus live operational panels powered by `/api/ops`:
   - **Fleet readiness & bottlenecks:** faction member cap (`99/100`), pilot tick lag, hull tier breakdown, sweepable wallet cash, unit services (`10/10`), high-tier modules fitted.
   - **Alerts & anomalies:** live MAD `OUT HIGH`/`OUT LOW` alerts and active/non-pirate galaxy battles.

@@ -193,6 +193,7 @@ const shut = new Set();                        // what Suggi has hidden: the sid
 try { JSON.parse(localStorage.getItem('station.hidden') || '[]').forEach((d) => shut.add(String(d))); } catch (e) { /* no storage */ }
 function saveShut() { try { localStorage.setItem('station.hidden', JSON.stringify([...shut])); } catch (e) { /* no storage */ } }
 let board = null;
+let rosterMode = 'all', rosterQuery = '', rosterSort = 'name';
 const sys = new Map();
 const stationsBy = new Map();
 const shipsBy = new Map();                     // system id -> our ships there
@@ -204,7 +205,8 @@ let bounds = null, terrR = 250, homeEmpire = '';   // the galaxy's extent; the r
 const view = { x: 0, y: 0, k: 0.05 };
 let selected = null, hover = null, route = [], tab = 'Selection', pilotCard = null;
 let selShip = null, shipCard = null, shipMark = '', docView = null;
-const groupsBy = new Map();                    // system id -> the larger groups of one foreign faction seen there
+const groupsBy = new Map();
+const battleSystems = new Set();                    // system id -> the larger groups of one foreign faction seen there
 let groupHits = [];                            // their tags as drawn
 let pop = null, hoverBadge = null, badgeHits = [];   // the open fleet card {system, kind}; the marker under the pointer; the markers drawn
 let cam = null, raf = 0, pulse = 0;                  // an eased move of the view; the frame that is asked for; the timer of the next quiet frame
@@ -594,6 +596,13 @@ function paint(t) {
       ctx.strokeStyle = 'rgba(255,255,255,' + (0.3 * (1 - beat)).toFixed(2) + ')'; ctx.lineWidth = 1.2;
       ctx.beginPath(); ctx.arc(x, y, ring + 0.5 + beat * 6, 0, 6.2832); ctx.stroke();
     }
+    if (battleSystems.has(s.id)) {
+      const beat = (Math.sin(t * 4.2) + 1) / 2, ring = (ours ? q + 6 : q + 9);
+      ctx.strokeStyle = 'rgba(224,108,102,0.9)'; ctx.lineWidth = 1.6;
+      ctx.beginPath(); ctx.arc(x, y, ring, 0, 6.2832); ctx.stroke();
+      ctx.strokeStyle = 'rgba(224,108,102,' + (0.5 * (1 - beat)).toFixed(2) + ')'; ctx.lineWidth = 1.4;
+      ctx.beginPath(); ctx.arc(x, y, ring + 1 + beat * 11, 0, 6.2832); ctx.stroke();
+    }
     if (layers.Names) {                                             // names are drawn after the systems: the important ones first, none over another
       const picked = s.id === selected || s.id === hover;
       const rank = picked ? 2000 : s.home ? 1500 : own.length || planned ? 800 : ours && k > 0.085 ? 500 + shipsBy.get(s.id).length : k > 0.16 ? 100 : 0;
@@ -961,6 +970,10 @@ function shipRow(r) {
   b.title = r.name + ': hull ' + r.hull + '/' + r.max_hull + ', fuel ' + r.fuel + '/' + r.max_fuel + ', cargo ' + r.cargo_used + '/' + r.cargo_capacity
     + (r.piloting ? ' | Piloting ' + r.piloting : '') + (r.class ? ' | ' + r.class : '');
   b.addEventListener('click', () => selectShip(r.name, true));
+  b.addEventListener('dblclick', () => {
+    selectShip(r.name, true);
+    if (r.system && sys.has(r.system)) { const o = sys.get(r.system); flyTo(o.x, o.y, Math.max(view.k, 0.28)); }
+  });
   return b;
 }
 
@@ -978,22 +991,94 @@ function crewLine(list, crew) {                  // under a division's head: wha
   return line;
 }
 
+function shipAlert(r) {
+  const cls = shipState(r)[0];
+  if (cls === 'bad' || cls === 'off') return true;
+  if (r.max_hull > 0 && r.hull / r.max_hull < 0.6) return true;
+  if (r.max_fuel > 0 && r.fuel / r.max_fuel < 0.25) return true;
+  if (typeof r.credits === 'number' && r.credits < 10000) return true;
+  return false;
+}
+function shipMatches(r) {
+  const [cls, what] = shipState(r);
+  if (rosterMode === 'active' && !['work', 'move', 'wait'].includes(cls)) return false;
+  if (rosterMode === 'idle' && !['dock', 'idle'].includes(cls)) return false;
+  if (rosterMode === 'alert' && !shipAlert(r)) return false;
+  if (rosterQuery) {
+    const hay = (r.name + ' ' + (r.system_name || r.system || '') + ' ' + what + ' ' + (r.division || '') + ' ' + (r.class || '')).toLowerCase();
+    if (!hay.includes(rosterQuery)) return false;
+  }
+  return true;
+}
+function sortShips(list) {
+  const out = list.slice();
+  if (rosterSort === 'health') {
+    const score = (r) => Math.min(r.max_hull > 0 ? r.hull / r.max_hull : 1, r.max_fuel > 0 ? r.fuel / r.max_fuel : 1) + (shipAlert(r) ? -1 : 0);
+    out.sort((a, b) => score(a) - score(b) || a.name.localeCompare(b.name));
+  } else if (rosterSort === 'credits') {
+    out.sort((a, b) => (a.credits || 0) - (b.credits || 0) || a.name.localeCompare(b.name));
+  } else if (rosterSort === 'piloting') {
+    out.sort((a, b) => (b.piloting || 0) - (a.piloting || 0) || a.name.localeCompare(b.name));
+  }
+  return out;
+}
+function divMeter(list) {
+  const m = el('div', 'divbar'), n = list.length || 1;
+  let w = 0, id = 0, bad = 0;
+  list.forEach((r) => {
+    const c = shipState(r)[0];
+    if (c === 'work' || c === 'move' || c === 'wait') w++;
+    else if (c === 'dock' || c === 'idle') id++;
+    else bad++;
+  });
+  if (w) { const s = el('i', 'w'); s.style.width = (100 * w / n).toFixed(1) + '%'; m.append(s); }
+  if (id) { const s = el('i', 'id'); s.style.width = (100 * id / n).toFixed(1) + '%'; m.append(s); }
+  if (bad) { const s = el('i', 'b'); s.style.width = (100 * bad / n).toFixed(1) + '%'; m.append(s); }
+  m.title = w + ' working, ' + id + ' idle/parked, ' + bad + ' failing/offline';
+  return m;
+}
+function setRosterMode(mode) {
+  rosterMode = mode;
+  document.querySelectorAll('#rfilters .rf').forEach((b) => b.classList.toggle('on', b.dataset.mode === mode));
+  renderRoster();
+}
 function renderRoster() {
   const box = $('roster'), keep = box.scrollTop, by = new Map();
   box.replaceChildren();
-  F.ships.forEach((r) => { if (!by.has(r.division)) by.set(r.division, []); by.get(r.division).push(r); });
+  const counts = { all: F.ships.length, active: 0, idle: 0, alert: 0 };
+  F.ships.forEach((r) => {
+    const c = shipState(r)[0];
+    if (['work', 'move', 'wait'].includes(c)) counts.active++;
+    if (['dock', 'idle'].includes(c)) counts.idle++;
+    if (shipAlert(r)) counts.alert++;
+    if (!by.has(r.division)) by.set(r.division, []);
+    by.get(r.division).push(r);
+  });
+  document.querySelectorAll('#rfilters .rf').forEach((b) => {
+    const m = b.dataset.mode, lbl = m === 'all' ? 'All' : m === 'active' ? 'Active' : m === 'idle' ? 'Idle' : 'Alerts';
+    b.textContent = counts[m] && m !== 'all' ? lbl + ' ' + counts[m] : lbl;
+    b.classList.toggle('on', m === rosterMode);
+    b.classList.toggle('haswarn', m === 'idle' && counts.idle > 0);
+    b.classList.toggle('hasbad', m === 'alert' && counts.alert > 0);
+  });
+  const filtering = rosterMode !== 'all' || Boolean(rosterQuery);
+  let shownTotal = 0;
   const divisions = (S ? S.roster : []).filter((a) => a.division !== 'Command' || by.has('Command')).map((a) => [a.division, a]);
   if (by.has('Unassigned')) divisions.push(['Unassigned', null]);
   for (const [division, admiral] of divisions) {
-    const list = by.get(division) || [], block = el('div', 'div'), head = el('div', 'divhead'), c = DIV[division] || DIV.Unassigned;
-    const folded = collapsed.has(division), sum = el('span', 'sum');
+    const raw = by.get(division) || [];
+    const list = filtering ? sortShips(raw.filter(shipMatches)) : sortShips(raw);
+    if (filtering && !list.length) continue;
+    shownTotal += list.length;
+    const block = el('div', 'div'), head = el('div', 'divhead'), c = DIV[division] || DIV.Unassigned;
+    const folded = !filtering && collapsed.has(division), sum = el('span', 'sum');
     const name = el('button', 'name', division), fold = el('span', 'fold', folded ? '+' : '-');
     name.type = 'button';
     name.prepend(fold);
     fold.after(shipSvg(division === 'Command' ? 'Flagship' : division, c, 13));
-    name.append(el('b', 'count', String(list.length)));
+    name.append(el('b', 'count', filtering ? list.length + '/' + raw.length : String(raw.length)));
     head.style.borderLeftColor = c; name.style.color = c;
-    name.title = (folded ? 'Unfold' : 'Fold') + ' the ' + list.length + ' ships of ' + division;
+    name.title = (folded ? 'Unfold' : 'Fold') + ' the ' + raw.length + ' ships of ' + division;
     name.setAttribute('aria-expanded', folded ? 'false' : 'true');
     name.addEventListener('click', () => { if (collapsed.has(division)) collapsed.delete(division); else collapsed.add(division); saveFolds(); renderRoster(); });
     head.append(name);
@@ -1002,17 +1087,30 @@ function renderRoster() {
       b.title = 'Write to ' + admiral.name + ' in comms';
       head.append(b);
     }
-    const crew = (((F.totals || {}).divisions || {})[division] || {}).crew, known = list.length && crew && crew.ships;
-    if (known) {                                 // the division's average Piloting level; its money stands in the Metrics tab
+    const crew = (((F.totals || {}).divisions || {})[division] || {}).crew, known = raw.length && crew && crew.ships;
+    if (known) {
       sum.append('Lv ', el('b', null, oneDecimal(crew.piloting)));
       sum.title = 'The average Piloting level of the division. Piloting 10, 20, 30 and 50 open the hull tiers 2 to 5';
     }
     head.append(sum); block.append(head);
-    if (known) block.append(crewLine(list, crew));
-    if (!list.length) block.append(el('div', 'noships', 'No ships yet'));
+    if (raw.length) block.append(divMeter(raw));
+    if (known) block.append(crewLine(raw, crew));
+    if (!raw.length) block.append(el('div', 'noships', 'No ships yet'));
     if (!folded) list.forEach((r) => block.append(shipRow(r)));
     box.append(block);
   }
+  const meta = $('roster-meta');
+  if (meta) {
+    if (filtering) {
+      meta.replaceChildren(el('span', null, 'Showing ' + shownTotal + ' of ' + F.ships.length + ' ships'));
+      const clr = el('button', 'mini', 'Clear');
+      clr.type = 'button';
+      clr.addEventListener('click', () => { rosterMode = 'all'; rosterQuery = ''; const inp = $('roster-filter'); if (inp) inp.value = ''; renderRoster(); });
+      meta.append(clr);
+      meta.hidden = false;
+    } else meta.hidden = true;
+  }
+  if (filtering && !shownTotal) box.append(el('p', 'empty', 'No ships match this filter.'));
   box.scrollTop = keep;
   const all = $('fold-all'), names = divisions.map((d) => d[0]), everyFolded = names.length > 0 && names.every((d) => collapsed.has(d));
   all.textContent = everyFolded ? 'Unfold all' : 'Fold all';
@@ -1020,6 +1118,7 @@ function renderRoster() {
   const fresh = $('fleet-fresh'), ok = fleetLive();
   fresh.textContent = ok ? F.ships.length + ' ships' : (F.age < 0 ? 'no data' : 'stale');
   fresh.className = 'fresh' + (ok ? '' : ' bad');
+  renderAlerts();
 }
 
 function renderShip(panel) {
@@ -1512,6 +1611,87 @@ async function opsOf() {
   try { OPS = { data: await get('/api/ops'), at: Date.now() }; } catch (e) { return OPS.data; }
   return OPS.data;
 }
+async function loadOps() {
+  await opsOf();
+  battleSystems.clear();
+  ((OPS.data && OPS.data.alerts && OPS.data.alerts.battles) || []).forEach((b) => { if (b.system) battleSystems.add(b.system); });
+  if (S) status();
+  renderAlerts();
+  draw();
+}
+function pbar(val, max, cls) {
+  const w = el('span', 'pbar ' + (cls || '')), fill = el('i');
+  fill.style.width = pct(val, max) + '%';
+  w.append(fill);
+  return w;
+}
+function renderAlerts() {
+  const barEl = $('alertbar');
+  if (!barEl) return;
+  barEl.replaceChildren();
+  const chips = [];
+  const addChip = (cls, label, title, go) => {
+    const b = el('button', 'achip ' + cls, label);
+    b.type = 'button'; b.title = title;
+    b.addEventListener('click', go);
+    chips.push(b);
+  };
+  const ops = OPS.data;
+  if (ops) {
+    const sv = ops.services || {};
+    if (sv.down && sv.down.length) {
+      addChip('bad', 'Service down: ' + sv.down.join(', '), 'Open Metrics readiness', () => { tab = 'Metrics'; render(); });
+    }
+    const battles = (ops.alerts && ops.alerts.battles) || [];
+    battles.slice(0, 2).forEach((b) => {
+      addChip('bad', (b.category || 'battle').toUpperCase() + ': ' + (b.system_name || b.system), 'Jump camera to battle system',
+        () => { if (sys.has(b.system)) select(b.system, true); else { tab = 'Metrics'; render(); } });
+    });
+    const fac = (ops.readiness && ops.readiness.faction) || {};
+    if (fac.limit && fac.members >= fac.limit - 2) {
+      addChip('warn', 'Faction cap ' + fac.members + '/' + fac.limit, 'Open Metrics needs (recruitment-center)', () => { tab = 'Metrics'; render(); });
+    }
+    const shorts = (ops.supply || []).filter((x) => x.state === 'SHORT');
+    if (shorts.length) {
+      const top = shorts[0];
+      addChip('warn', 'Supply short: ' + top.chain + (shorts.length > 1 ? ' (+' + (shorts.length - 1) + ')' : ''), 'Open Metrics supply chains', () => { tab = 'Metrics'; render(); });
+    }
+    const mad = ((ops.alerts && ops.alerts.mad) || []).filter((m) => m.verdict.startsWith('OUT'));
+    if (mad.length) {
+      addChip('warn', mad.length + ' MAD anomal' + (mad.length === 1 ? 'y' : 'ies'), 'Open Metrics anomaly table', () => { tab = 'Metrics'; render(); });
+    }
+  }
+  const idleCount = F.ships.filter((r) => ['dock', 'idle'].includes(shipState(r)[0])).length;
+  if (idleCount > 0) {
+    addChip('info', idleCount + ' idle ship' + (idleCount === 1 ? '' : 's'), 'Filter Fleet outliner to Idle ships', () => {
+      if (shut.has('left')) toggleShut('left');
+      setRosterMode('idle');
+    });
+  }
+  if (!chips.length) { barEl.hidden = true; return; }
+  chips.forEach((c) => barEl.append(c));
+  const noticeOpen = $('notice') && !$('notice').hidden;
+  barEl.classList.toggle('below-notice', Boolean(noticeOpen));
+  barEl.hidden = false;
+}
+function toggleHelp(force) {
+  const card = $('helpcard');
+  if (!card) return;
+  const show = force !== undefined ? force : card.hidden;
+  if (!show) { card.hidden = true; return; }
+  card.replaceChildren(
+    el('div', 'helphead', 'Command Station Shortcuts'),
+    table(['Key', 'Action'], [
+      ['F / H / G', 'Camera: Fit Fleet / Home / Galaxy'],
+      ['1 / 2 / 3 / 4', 'Right panel: Selection / Metrics / Inventory / Docs'],
+      ['[ / ]', 'Toggle left Fleet outliner / right Inspector'],
+      ['/', 'Focus global system & pilot search'],
+      ['Double-click ship', 'Snap camera onto ship system'],
+      ['Esc', 'Close card / shortcuts / blur search'],
+    ])
+  );
+  card.hidden = false;
+}
 
 function fitTable(t) { const w = el('div', 'mtable'); w.append(t); return w; }   // a Metrics table that fits the panel
 
@@ -1644,14 +1824,23 @@ async function renderMetrics(panel, live) {
       panel.append(el('p', 'empty', 'No statistical anomalies (MAD) or active non-pirate battles.'));
     }
 
+    if (F.ships.length) {
+      const strip = el('div', 'compbar');
+      strip.append(divMeter(F.ships));
+      panel.append(strip);
+    }
+
     const sup = ops.supply || [];
     if (sup.length) {
       panel.append(el('h3', null, 'Supply chains'));
       panel.append(fitTable(table(['Chain', 'Item', 'Place', 'Have / Keep', 'Hours', 'State'],
         sup.map((x) => {
           const stCls = x.state === 'OK' ? 'good' : x.state === 'LOW' ? 'warn' : 'bad';
-          return [x.chain, x.item, x.place, fmt(x.have) + ' / ' + fmt(x.keep), x.hours === null ? '--' : x.hours + 'h', el('span', 'pill ' + stCls, x.state)];
-        }), [3, 4])));
+          const cell = el('div', 'progcell');
+          cell.append(el('span', null, fmt(x.have) + ' / ' + fmt(x.keep)));
+          if (x.keep > 0) cell.append(pbar(x.have, x.keep, stCls));
+          return [x.chain, x.item, x.place, cell, x.hours === null ? '--' : x.hours + 'h', el('span', 'pill ' + stCls, x.state)];
+        }), [4])));
     }
 
     const needs = ops.needs || [];
@@ -1661,7 +1850,9 @@ async function renderMetrics(panel, live) {
         needs.map((n) => {
           const stCls = n.colour === 'green' ? 'good' : n.colour === 'red' ? 'bad' : 'warn';
           const gap = [n.short, n.fee ? fmt(n.fee) + ' cr fee' : ''].filter(Boolean).join(' | ') || 'ready';
-          return [n.priority, n.id, n.owner, el('span', 'pill ' + stCls, n.pct + '%'), gap];
+          const cov = el('div', 'progcell');
+          cov.append(el('span', 'pill ' + stCls, n.pct + '%'), pbar(n.pct, 100, stCls));
+          return [n.priority, n.id, n.owner, cov, gap];
         }))));
     }
   }
@@ -2115,7 +2306,34 @@ function init() {
   });
   document.addEventListener('click', (e) => { if (!e.target.closest('.search')) results.hidden = true; });
   window.addEventListener('resize', resize);
-  window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && pop) closePop(); });
+  document.querySelectorAll('#rfilters .rf').forEach((b) => b.addEventListener('click', () => setRosterMode(b.dataset.mode)));
+  const rInp = $('roster-filter'), rSort = $('roster-sort'), bHelp = $('btn-help');
+  if (rInp) rInp.addEventListener('input', () => { rosterQuery = rInp.value.trim().toLowerCase(); renderRoster(); });
+  if (rSort) rSort.addEventListener('change', () => { rosterSort = rSort.value; renderRoster(); });
+  if (bHelp) bHelp.addEventListener('click', (e) => { e.stopPropagation(); toggleHelp(); });
+  document.addEventListener('click', (e) => { if (!e.target.closest('#helpcard') && !e.target.closest('#btn-help')) toggleHelp(false); });
+  window.addEventListener('keydown', (e) => {
+    const tag = (document.activeElement && document.activeElement.tagName) || '';
+    if (e.key === 'Escape') {
+      if (pop) closePop();
+      toggleHelp(false);
+      if (tag === 'INPUT' || tag === 'TEXTAREA') document.activeElement.blur();
+      return;
+    }
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || e.ctrlKey || e.metaKey || e.altKey) return;
+    const k = e.key.toLowerCase();
+    if (k === 'f') fitFleet(false);
+    else if (k === 'h' && S) fit(S.systems.filter((s) => s.jumps >= 0 && s.jumps <= 4), 500);
+    else if (k === 'g' && S) fit(S.systems, 1200);
+    else if (k === '1') { tab = 'Selection'; render(); }
+    else if (k === '2') { tab = 'Metrics'; pilotCard = null; docView = null; render(); }
+    else if (k === '3') { tab = 'Inventory'; pilotCard = null; docView = null; invItem = null; render(); }
+    else if (k === '4') { tab = 'Docs'; pilotCard = null; render(); }
+    else if (k === '[') toggleShut('left');
+    else if (k === ']') toggleShut('right');
+    else if (k === '/') { e.preventDefault(); const inp = $('search'); if (inp) inp.focus(); }
+    else if (e.key === '?') toggleHelp();
+  });
 }
 
 function fitFleet(jump) {
@@ -2131,10 +2349,12 @@ function fitFleet(jump) {
   await loadFleet();
   fitFleet(true);
   await loadLive();
+  await loadOps();
   render();
   initChat();
   setInterval(loadLive, 5000);
   setInterval(loadFleet, 5000);
+  setInterval(loadOps, 30000);
   setInterval(tickAges, 1000);
   setInterval(async () => { await loadState(); draw(); if (tab === 'Docs' && !docView) render(); }, 120000);
 })().catch((e) => { $('panel').replaceChildren(el('p', 'empty', 'The station could not load its data: ' + e.message)); });
