@@ -80,3 +80,4 @@ Planned:
 | Read the first three runs of supply-bunker-gsc-0044-own-cells and of buy-flex-central-nexus-to-node-beta; lift or drop by them (F37) | next turn |
 | Found Atria with found.py the hour the builder's kit lands at Node Beta (the kit route flies only on an ask at Ironlight) | on the kit |
 | Take status off out of the four give-hauler-stores routes when strict classes go on (or Unity does it) | at the switch |
+| Build the Recruitment Center with build.py --upgrade when the treasury holds 2,000,000 cr and the flex stands at 300 | on the fee |
