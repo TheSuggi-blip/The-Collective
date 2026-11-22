@@ -21,7 +21,7 @@ Status: test. Updated: 2026-11-22. Evidence: the tool fill (status); observation
   one Pulse Laser I: a better weapon or a group first.
 
 ### Group hunts
-Status: test. Updated: 2026-11-21. Evidence: observations kind group_hunt (2026-11-17 20:39, 2026-11-18 00:34 and 00:54 UTC); skill military-turn group_hunt.py; the retired entry of routes.md (hive.py guide military --retired).
+Status: test. Updated: 2026-11-22. Evidence: observations kind group_hunt (2026-11-17 20:39, 2026-11-18 00:34 and 00:54, 2026-11-21 20:52, 2026-11-22 00:45 UTC); spacemolt.com/docs/combat; skill military-turn group_hunt.py; the retired entry of routes.md (hive.py guide military --retired).
 
 `group_hunt.py` (skill script, background) takes free drones within
 `--max-jumps` of home, docks them, makes a game fleet, flies to the place,
@@ -33,8 +33,10 @@ under 85 percent or shield 0, docks for repair, releases all.
   hunts the same creature.
 - `dist` is a ship's own distance from the fight's centre, not from the
   prey: an advance rule that compares with the prey's dist never fires.
-- Three starters on a pilot whale (220 hull): about 3 hull a tick, while
-  the whale broke the leader in about 20 ticks. No starter group on it.
+- Three starters on a pilot whale (220 hull), 2026-11-22 at Stellar
+  Siphon, all three in the fight from tick 0: the whale 100 to 89 percent
+  in 9 ticks, the leader's shield gone and its hull 75 to 36; no kill. A
+  starter group loses the race to the stalemate: weapon first.
 - 2026-11-21, a bulwark (95 hull) at Acubens: the members reached the
   place a tick after the leader attacked and were not pulled in; their own
   `hunt` was refused (`in_fleet`). The game's docs: members auto-join only
