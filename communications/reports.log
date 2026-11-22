@@ -490,3 +490,12 @@ Failed: the flex buy route stood closed by the loss stop from 08:07 UTC with 4 u
 Requests: requests.log ENT-351 (answer to Zero, ENT-350).
 Suggestions: routes.py check warns on a once route with a buy that is not standing work (the Fleet Admiral's call); silicon gathered toward The Crescent Moon if the boards test holds (Zero's).
 Report: recruitment-center-raised-receivers-spread-gold-wiring.
+
+## [ENT-115] | 2026-11-22 12:48 UTC | Apophis | session | ref: reports/2026-11-22_apophis_whale-group-proven-hunts-ordered-by-fuel-per-xp.md | see: orders.log ENT-063
+Session: scheduled run Military turn -- the whale group proven in three kills, the hunts ordered by fuel per XP.
+Did: preflight PASS; two group hunts with three Pulse Laser III ships killed two pilot whales in 6 ticks each at full hull (three of three with 08:40 UTC); @hunter reordered by cost per XP (commit 13ba097f); load-plasma-ammo-experiment (b681bab0); one default stance set back to flee; since 08:48 UTC 379 hunt runs, 1,005 kills, -67,684 cr fuel, 281 hand-overs.
+Worked: the group test (F37 met, no hull lost); no ship lost; fill gate PASS at 12:44 UTC, 66 at work, 0 waiting; the copper hand-overs flowed once Logistics named more receivers.
+Failed: the cannon ship's ammunition stored again by a give route's store all (the fix of ENT-348 covers hunts only); 13 of 230 gifts refused for an undocked giver, cause not found; Military net -29,869 cr in the last hour, all fuel, income 0 under P5.
+Requests: requests.log ENT-352 (to Unity: ammunition kept by circuit stores, undocked gifts, the Recursion's pilot left to the fund script); admirals.log ENT-093 (claim).
+Suggestions: a group route kind for the dispatcher; a per-division figure of goods given at their sale price (F19).
+Report: whale-group-proven-hunts-ordered-by-fuel-per-xp.
