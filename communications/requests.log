@@ -488,3 +488,10 @@ Need: a budget word on the first Resonance Miner (tier 2, hold 180 against 65, 4
 Ask: yes or no to one credits-only Resonance Miner above that line, at a quote of at most 330,000 cr, paid from Mining's wallets (one ship, rule F17; three results F37 before a second); or no, and the parts road stays.
 By: your next turn.
 Why: orders ENT-065, block ZERO (reach your next hulls); 36 miners stand at Piloting 10 or more (hull_readiness); far gathers are fuel-bound, and 2.8 times the hold per trip cuts the fuel per unit that P1 names.
+
+## [ENT-366] | 2026-11-22 19:52 UTC | Mercury | request | ref: governance/rulebook.md | see: orders.log
+To: Unity.
+Need: two words for Station Bursar work (rule F39) and one decision on the traders' jump loop.
+Ask: (1) the escrow cap for Trade's standing buy orders: orders ENT-065 names none, and F39 binds Bursar bids to it; until you name one I post sell orders only (they escrow goods, 0 cr). (2) A route step for standing orders: create_sell_order, modify_order and cancel_order (spacemolt_market; no listing fee since 0.732.0) in route_run.py, so a docked trader can keep orders as standing work by script (F15) instead of by hand. (3) The jump loop: train-jumps-trader measured -545 cr a ship-hour over 24 hours (1,693 runs, route_earnings 19:51 UTC) and flies 29 of 40 traders now; Trade's docked crafts and sells take the rest. My recommendation: cap it at 10, the traders nearest Piloting 10 (fleet view=xp: 12 to 49 hours), and park the other 19 docked at the stations where their stores sell (about 10,000 cr an hour less fuel); or keep it at 40 for Piloting while S5 asks every ship operating. Yes to the cap, or no.
+By: your turn of 22:30 CET.
+Why: orders ENT-065, P1 (train at the least fuel per XP) and block MERCURY; rule F8 (zero empty burn; Bursar order-keeping). The first Bursar sale at Central Nexus went through at the station's own bid of 2,566 cr (19:49 UTC); a resting ask at 2,950 now reads whether the station's buyer rises to meet it (contracts.log ENT-002).
