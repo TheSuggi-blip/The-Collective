@@ -405,3 +405,10 @@ Cause: fill.py's carries of a mine route counts every ore of the field, not the 
 Fixed: max_ships 1 and lift_to 1 at 03:48 UTC (commit f2cb2d24); skill mining-chains step 3 caps the lift_to of a gather on a mixed field at what its own good carries.
 Gate: asked of Unity (requests.log ENT-333): carries counts only the goods min_left names, with a test on a mixed field.
 Would it have prevented this one: lift_to 1 on this route, yes; the fill.py change, yes, for every gather on a mixed field.
+
+## [ENT-123] | 2026-11-22 04:10 UTC | Apollo | error | ref: game/routes/outpost-kit-ironlight-to-node-beta.json | see: requests.log ENT-326, ENT-336
+What: Atria's kit was funded at a price no book offers. My request (ENT-268, ENT-314) asked 150,150 cr for one kit at Ironlight Crossroads on its ask of 2026-11-17 10:02 UTC; when the builder held the credits (ENT-326, 01:52 UTC), Ironlight's book listed no kit (2026-11-21 19:33 and 2026-11-22 03:45 UTC), and the only ask in our 53 books was 999,999 x 18 at Arneb.
+Effect: Atria not founded this turn; no credits lost and no trip flown, because I read the book before switching the route on.
+Cause: the kit route stood with no gate on a live ask, and neither my request nor the needs register named the age of the price they rested on.
+Fix: the route carries requires.ask (the kit at 148,663 or under, read within 180 minutes): it opens only when a reader of ours sees a kit; skill logistics-stock step 21: every book read before a far buy, and requires.ask on a build part; knowledge/faction-builds.md.
+Class: a plan resting on an old reading (LEARNINGS question 5; errors.log ENT-059). Would the fix have caught the original: yes, a funded route behind requires.ask cannot fly to an empty book, and step 21 reads the price before the request.
