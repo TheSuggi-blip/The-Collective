@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 321.
+Routes: 322.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -323,6 +323,7 @@ Routes: 321.
 | [gather-glasslight-shoal-silicon](gather-glasslight-shoal-silicon.json) | mine | beyond the border, 10 jumps | A test: silicon ore gathered at Glasslight Shoal (Clearwater, lawless) into storage at Node Beta for the faction's circuit boards | up to 1 ships, empty hold, standing work | 4 | 103 | -590 | -360 | 2026-11-22 |
 | [gather-goldcrest-gold](gather-goldcrest-gold.json) | mine | beyond the border, 7 jumps | A test: gold ore gathered at The Gold Crest (Goldcrest, lawless) into storage at Synchrony Hub (five jumps) | up to 3 ships, empty hold, standing work | 30 | 90 | -730 | -510 | 2026-11-22 |
 | [gather-gsc-0044-belt-faction](gather-gsc-0044-belt-faction.json) | mine | beyond the border, 6 jumps | A test: ore gathered at GSC-0044 Belt into the faction's storage at our outpost CLTV Outpost GSC-0044 (same system); members of the faction only | up to 10 ships, empty hold, standing work | 66 | 47 | 0 | 0 | 2026-11-22 |
+| [gather-gsc-0044-forgotten-tailings-faction](gather-gsc-0044-forgotten-tailings-faction.json) | mine | beyond the border, 6 jumps | A test: ore gathered at Forgotten Tailings (GSC-0044) into the faction's storage at our outpost CLTV Outpost GSC-0044 (same system); members of the faction only | up to 1 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [gather-gsc-0049-reef-nickel](gather-gsc-0049-reef-nickel.json) | mine | beyond the border, 5 jumps | A test: nickel and platinum ore gathered at GSC-0049 Platinum-Group Reef (lawless) into storage at Node Beta Industrial Station (four jumps) | up to 1 ships, empty hold, standing work | 8 | 93 | -440 | -280 | 2026-11-22 |
 | [gather-ironhollow-echo-ejecta](gather-ironhollow-echo-ejecta.json) | mine | beyond the border, 4 jumps | Standing work, a test: iron at Ironhollow Echo Ejecta (beyond the border) into storage at The Experiment | up to 35 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [gather-ironhollow-fading-signal](gather-ironhollow-fading-signal.json) | mine | beyond the border, 4 jumps | Standing work, a test: iron at Ironhollow Fading Signal (beyond the border) into storage at The Experiment | up to 20 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
