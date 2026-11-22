@@ -30,8 +30,9 @@
    "note": "2026-11-17 20:05 UTC: Trade's sell and carry routes that its template trade-sell opens to every division (each pilot sells its own stores, rule F24): hydrogen at Synchrony Hub and palladium at Node Gamma added; the two null matter tests stay Trade's claim (admirals.log ENT-053). Gated by requires.stored and requires.bid; one ship a route."
   },
   "craft-reserve": {
-   "title": "Steel plate from each hauler's own stored iron at four workshops, then copper piping from stored plate and copper",
+   "title": "Fuel cells from stored hydrogen gas, steel plate from each hauler's own stored iron at four workshops, then copper piping",
    "routes": [
+    "craft-cells-hydrogen-node-beta",
     "craft-steel-logistics-experiment",
     "craft-steel-logistics-node-beta",
     "craft-steel-logistics-synchrony-hub",
@@ -42,7 +43,7 @@
     "crafting",
     "refining"
    ],
-   "note": "2026-11-18: the reserve's iron is met, 31,440 plate still to make; piping nearly met (1,168 to make), so the piping route holds 2 ships"
+   "note": "2026-11-22 00:15 UTC: fuel cells (keep fuel_cell all) from the hydrogen gas no bid takes, a test of one ship; steel as before (iron gifted to the hauler receivers once strict classes are on, queue.log ENT-201)"
   },
   "outpost-supply": {
    "title": "What our outpost GSC-0044 takes: repair materials while its facilities are damaged, then fuel cells into its bunker while the reserve gate reads it under its floor; faction members only",
