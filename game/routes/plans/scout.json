@@ -33,6 +33,8 @@
   "mission-federation-market-analysis-market",
   "mission-form-ta-1-confederacy",
   "mission-confederacy-infrastructure-audit-confederacy",
+  "census-region-altais",
+  "census-region-altais-ring",
   "hunt-pleione-ice-fields-hollow-pilgrim",
   "census-far-5",
   "hunt-alnilam-frozen-drift-hollow-pilgrim",
@@ -111,6 +113,8 @@
   "mission-federation-market-analysis-market": 50,
   "mission-form-ta-1-confederacy": 50,
   "mission-confederacy-infrastructure-audit-confederacy": 50,
+  "census-region-altais": 12,
+  "census-region-altais-ring": 12,
   "hunt-pleione-ice-fields-hollow-pilgrim": 1,
   "census-far-5": 2,
   "hunt-alnilam-frozen-drift-hollow-pilgrim": 1,
@@ -126,20 +130,21 @@
   "hunt-birchwood-vapor-fields-cinder-sylph": 1,
   "hunt-amberfall-chlorophage-sac": 1,
   "census-roads": 50,
-  "census-voidborn": 40,
-  "census-watch-gsc-0044": 40,
-  "census-worked": 40,
+  "census-voidborn": 28,
+  "census-watch-gsc-0044": 28,
+  "census-worked": 28,
   "census-frontier": 50,
-  "census-worked-far": 50,
-  "census-north": 50,
-  "census-east": 50,
-  "census-south": 50,
+  "census-worked-far": 38,
+  "census-north": 38,
+  "census-east": 38,
+  "census-south": 38,
   "park": 50
  },
  "of": 50,
  "derived": "Written by game/fleet/plan.py from the division's plan file (data/plans/plan-intel.md), never by hand.",
  "templates": {
   "explorer": 10,
-  "reader": 40
+  "reader": 28,
+  "outerrim": 12
  }
 }
