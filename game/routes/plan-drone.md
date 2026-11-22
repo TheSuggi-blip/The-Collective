@@ -234,4 +234,4 @@ Planned:
 
 | What | When |
 |---|---|
-| Two more whale group kills with three Pulse Laser III ships for three results (F37); read the four new laser hunts on slag tortoises and deuteron slugs; read the Plasma Cannon II ammo loader | next turn |
+| Commission the first Recursion by hand at Node Beta once the Fleet Admiral's fund step pays the first drone at Piloting 10 (one ship, F17); fly its first hunts by route | next turn |
