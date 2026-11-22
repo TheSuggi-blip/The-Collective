@@ -400,3 +400,12 @@ Failed: the fleet still loses money (steady net -29,898 cr an hour over 24 hours
 Requests: none.
 Suggestions: Trinity: births ran past the gates of birth-plans.md (400 seats, positive 24-hour net); the newborns need routes in their regions before they can work.
 Report: jump-loops-capped-hunts-fuel-first-newborns-held-near.
+
+## [ENT-129] | 2026-11-22 23:35 UTC | Zero | session | ref: reports/2026-11-22_zero_newborn-miners-home-missions-skill-gathers-seats-asked.md | see: orders.log ENT-068
+Session: scheduled run turn-zero -- the newborn miners get their home missions and Mining-skill gathers; seats asked for the outpost belts.
+Did: preflight PASS; home regions read (Sol, Haven mined out, table fields 23:10 UTC); six routes for the 65 newborns in their own rows (Welcome to Sol Central 1,000 cr once, Deep Core Prospecting from Sol and Haven, A Word in Private, two one-ship Mining-skill gathers); Jishui carbon 3 -> 1 ship (2,840 left); Bonanza 60,951 and Archimedes 34,519 cr quoted; guidebook tests.md, claims ENT-102.
+Worked: the dispatcher's newborn guard and fill.py's three-result lift both held; plan check PASS; last fill gate PASS (65 ships counted, newborns signed out).
+Failed: Deep Core not offered at Mining 0 (18 runs; routes now ask Mining 3); the engine's sign-ins (164 of 484 at 23:21 UTC) cut every newborn run; gate HALT 23:26-23:28 UTC with 33 to 35 newborns waiting; estimated times in four notes (errors.log ENT-144); the Resonance quote unread again.
+Requests: requests.log ENT-378 (seats for ten Solarian miners, Unity).
+Suggestions: requires.empire on routes; carbon on offer at 4 cr in depth at Node Beta, Alpha, Gamma (59,444 short); a plan check warning for a row beyond a newborn's reach.
+Report: newborn-miners-home-missions-skill-gathers-seats-asked.
