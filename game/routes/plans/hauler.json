@@ -55,6 +55,10 @@
   {
    "what": "Found Atria with found.py the hour the builder's kit lands at Node Beta (the kit route flies only on an ask at Ironlight)",
    "when": "on the kit"
+  },
+  {
+   "what": "Take status off out of the four give-hauler-stores routes when strict classes go on (or Unity does it)",
+   "when": "at the switch"
   }
  ],
  "ships": {
