@@ -38,14 +38,5 @@
  "open_to": [
   "drone",
   "sentinel"
- ],
- "measured": {
-  "date": "2026-11-22",
-  "runs": 1,
-  "minutes": 24,
-  "credits_per_run": -970,
-  "cph_per_ship": -2450,
-  "hours": 12,
-  "last_run": "2026-11-22T04:53:16Z"
- }
+ ]
 }
