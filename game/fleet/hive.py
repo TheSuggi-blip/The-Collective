@@ -122,6 +122,7 @@ USAGE:
   hive.py sql "<SELECT or WITH statement>" [--limit N]
   hive.py schema [<table or view>]
   hive.py handbook [<table or view>|<subject>|<word>]
+  hive.py watchdog [--hours N] [--json]
   hive.py stats <view> [--hours N] [--member <Member>]
   --root <dir>   the repository's game/ folder (default: the parent of this file's folder)
   --data <dir>   the unit's data folder (default /srv/collective/data)
@@ -1600,6 +1601,12 @@ def main():
         return show_flow(root, data, now, rest[0] if rest else "all", value("--hours", str(TURN)))
     if verb == "inventory":
         return craftbook.show_inventory(craftbook.load(data) or {"version": "none", "items": {}}, data, rest[0] if rest else "total", value("--item", ""), int(value("--top", "40")))
+    if verb == "watchdog":                           # cross-turn velocity, loops and bottlenecks (watchdog.py)
+        import watchdog
+        wd_args = ["show", "--hours", value("--hours", str(TURN)), "--root", root, "--data", data]
+        if "--json" in args:
+            wd_args.append("--json")
+        return watchdog.main(wd_args)
     if verb == "stats":                              # the fleet's statistics, computed by the store (stats.py, its own usage)
         import stats
         return stats.main(args[args.index(verb) + 1:] + ["--data", data])

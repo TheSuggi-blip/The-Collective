@@ -275,5 +275,76 @@ class DispatchPairsCacheAndBriefingEyesTests(unittest.TestCase):
             self.assertIn("Algol [npc/active", out)
 
 
+
+
+class WatchdogTests(unittest.TestCase):
+    def test_watchdog_detects_fast_zero_loops_ready_needs_and_velocity(self):
+        import sqlite3
+        import tempfile
+        import watchdog
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "repo"
+            (root / "game").mkdir(parents=True)
+            (root / "communications").mkdir(parents=True)
+            (root / "communications" / "requests.log").write_text(
+                "## [ENT-001] | 2026-11-21 18:00 UTC | Zero | request | ref: game/needs.tsv\n@Unity need site approval\n",
+                encoding="ascii",
+            )
+            (root / "communications" / "errors.log").write_text("", encoding="ascii")
+            data = Path(tmp) / "data"
+            (data / "services").mkdir(parents=True)
+            (data / "store").mkdir(parents=True)
+            (data / "services" / "status.json").write_text(
+                json.dumps({s: {"state": "running"} for s in watchdog.CORE_SERVICES}),
+                encoding="ascii",
+            )
+
+            now = 1795315200.0  # 2026-11-22 02:40:00 UTC
+            db = data / "store" / "read.db"
+            con = sqlite3.connect(str(db))
+            con.executescript(
+                """
+                CREATE TABLE ships (pilot TEXT, division TEXT, role TEXT, class TEXT, status TEXT, activity TEXT, flies TEXT, credits INTEGER, t INTEGER);
+                CREATE TABLE runs (pilot TEXT, route TEXT, kind TEXT, t INTEGER, minutes REAL, credits REAL);
+                CREATE TABLE faction (treasury INTEGER, member_count INTEGER, members_limit INTEGER, owned_bases INTEGER);
+                CREATE TABLE faction_facilities (id TEXT);
+                CREATE TABLE places (system TEXT, poi TEXT);
+                CREATE TABLE stats_figures (view TEXT, subject TEXT, figure TEXT, hours REAL, value REAL, text TEXT);
+                CREATE TABLE need_status (id TEXT, rank INTEGER, project TEXT, division TEXT, priority INTEGER, kind TEXT, ref TEXT, covered REAL, fee INTEGER, stands INTEGER, short_items TEXT, gather TEXT, buy TEXT, craft TEXT);
+                CREATE TABLE ship_skills (pilot TEXT, skill TEXT, level INTEGER);
+                CREATE TABLE ship_modules (pilot TEXT, module TEXT);
+                CREATE TABLE supply_status (chain TEXT, place TEXT, status TEXT, stock INTEGER, keep INTEGER, hours_left REAL);
+                """
+            )
+            con.execute("INSERT INTO ships VALUES ('trader-1','trade','trader','Threshold','active','docked','bad-loop',55000,?)", (int(now - 10),))
+            con.execute("INSERT INTO ships VALUES ('miner-1','mining','miner','Prospect','active','mining','mine-iron',40000,?)", (int(now - 12),))
+            for i in range(5):
+                con.execute("INSERT INTO runs VALUES ('trader-1','bad-loop','circuit',?,0.4,0.0)", (int(now - 600 + i * 60),))
+            con.execute("INSERT INTO faction VALUES (2500000, 99, 100, 2)")
+            con.execute("INSERT INTO faction_facilities VALUES ('fac-1')")
+            con.execute("INSERT INTO places VALUES ('SYS-1','POI-1')")
+            con.execute("INSERT INTO stats_figures VALUES ('kpi','fleet','steady_net_per_hour',24,42000,'')")
+            con.execute("INSERT INTO need_status VALUES ('rec-center',1,'Cap','command',1,'facility','recruitment_office',1.0,2000000,0,'','','','')")
+            con.execute("INSERT INTO need_status VALUES ('stalled-hull',2,'Hull','mining',1,'hull','prospect',0.50,0,0,'20 silicon','','','')")
+            con.execute("INSERT INTO ship_skills VALUES ('trader-1','piloting',22)")
+            con.execute("INSERT INTO ship_modules VALUES ('miner-1','mining_laser_iii')")
+            con.execute("INSERT INTO supply_status VALUES ('outpost-fuel','GSC-0044','OK',4600,5000,120.0)")
+            con.commit()
+            con.close()
+
+            r1 = watchdog.inspect(root / "game", data, hours=4.0, now=now - 5 * 3600.0, save=True)
+            self.assertIsNone(r1["velocity"])
+            r2 = watchdog.inspect(root / "game", data, hours=4.0, now=now, save=True)
+            codes = {f["code"] for f in r2["findings"]}
+            self.assertIn("FAST_ZERO_WARN", codes)
+            self.assertIn("NEED_READY_NOW", codes)
+            self.assertIn("FACTION_CAP_NEAR", codes)
+            self.assertIn("P1_NEED_STALLED", codes)
+            self.assertIn("OVERDUE_REQUESTS", codes)
+            self.assertIsNotNone(r2["velocity"])
+            self.assertAlmostEqual(r2["velocity"]["dt_hours"], 5.0, places=1)
+
+
 if __name__ == "__main__":
     unittest.main()

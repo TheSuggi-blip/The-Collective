@@ -8,7 +8,7 @@ author: Unity
 # index.md -- The Fleet's Scripts
 
 Built by `python3 -B scripts/fleet-index.py` from the docstring of every script in this
-folder; never edited by hand. Scripts listed: 48.
+folder; never edited by hand. Scripts listed: 49.
 
 - Run a script from the repository root: `python3 -I -B game/fleet/<script> <arguments>`,
   the arguments as listed under "How to Call Each".
@@ -74,6 +74,7 @@ folder; never edited by hand. Scripts listed: 48.
 | `surplus.py` | Say per item what the fleet holds beyond what its build targets reserve: the surplus a trader may sell, where it lies and its best bid. | By hand |
 | `taxes.py` | Keeps each pilot's weekly tax apart, so that no run and no hour reads it as a loss. | By hand |
 | `wallet.py` | No ship of ours goes broke: a ship whose wallet runs low is given credits by a rich ship of its division. | By hand |
+| `watchdog.py` | Check whether the fleet is advancing across turns or stuck in loops, bottlenecks, or idle states. | By hand |
 | `workclass.py` | Whose work a route is: the work class of every route and the classes each role flies | By hand |
 
 ## How to Call Each
@@ -446,6 +447,7 @@ hive.py flow [<Member>|all] [--hours N]
 hive.py sql "<SELECT or WITH statement>" [--limit N]
 hive.py schema [<table or view>]
 hive.py handbook [<table or view>|<subject>|<word>]
+hive.py watchdog [--hours N] [--json]
 hive.py stats <view> [--hours N] [--member <Member>]
 --root <dir>   the repository's game/ folder (default: the parent of this file's folder)
 --data <dir>   the unit's data folder (default /srv/collective/data)
@@ -829,6 +831,23 @@ wallet.py [check]            every wallet against the floors; HALT for a pilot u
 wallet.py topup [--dry-run]  give each pilot under LOW credits up to TARGET from a rich ship of its division
 wallet.py sweep [--dry-run]  the part above KEEP_SHIP of the richest ships to the leader, the leader's into the treasury
 --data <dir>                 the unit's data folder (default: the fleet's)
+```
+
+### `watchdog.py`
+
+Check whether the fleet is advancing across turns or stuck in loops, bottlenecks, or
+idle states.
+
+Run by hand.
+
+```
+watchdog.py [show] [--hours N] [--json] [--save] [--data <dir>] [--root <dir>]
+watchdog.py check [--hours N] [--data <dir>] [--root <dir>]
+--hours N      window for run-loop and log checks (default 4)
+--json         print structured JSON instead of plain text
+--save         update <data>/fleet/watchdog.state.json for cross-turn velocity tracking
+--data <dir>   the unit's data folder (default /srv/collective/data)
+--root <dir>   the repository's game/ folder (default: the parent of this file's folder)
 ```
 
 ### `workclass.py`

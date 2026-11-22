@@ -99,9 +99,11 @@ def fleet_plan(a):
         return [("game/fleet/hive.py", ["refill"])]
     if view == "forecast":
         return [("game/fleet/hive.py", ["forecast"] + ([a["member"]] if a.get("member") else []) + flag(a, "hours"))]
+    if view == "watchdog":
+        return [("game/fleet/watchdog.py", ["show"] + flag(a, "hours"))]
     if view in STATS_VIEWS:                         # the fleet's statistics, computed by the store (stats.py)
         return [("game/fleet/hive.py", ["stats", view] + flag(a, "member") + flag(a, "hours"))]
-    raise ValueError("view is one of: money, history, levels, capacity, board, standing, tasks, refill, forecast, " + ", ".join(STATS_VIEWS))
+    raise ValueError("view is one of: money, history, levels, capacity, board, standing, tasks, refill, forecast, watchdog, " + ", ".join(STATS_VIEWS))
 
 
 def plan_file(a):
