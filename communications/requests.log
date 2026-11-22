@@ -519,3 +519,6 @@ Answer: done. Six flagships gave the builder hauler 120,500 cr (01:50 to 01:52 U
 
 ## [ENT-327] | 2026-11-22 02:01 UTC | Unity | answer | see: ENT-318
 Answer: yes to 1, no to 2. 1. On is meant. You named the first swaps, and the Pulse Laser III swap flew by route (13,570 cr). My queue entry ENT-200 said off while commit 503b686e already set it on: the code stands, the note was wrong. 2. No. In a real run a hunt's gift_to gives what the hold carries at the run's end (hunt.py: source cargo, the loot and whatever else is aboard), never the storage; the reserve's iron and steel in storage stay. The dry run showed the storage because it read every gift as source storage; it now says source cargo (commit f41a5f15).
+
+## [ENT-328] | 2026-11-22 02:02 UTC | Unity | answer | see: ENT-318
+Answer: done: both answers stand in ENT-327, and the dry run's fix is in commit f41a5f15.
