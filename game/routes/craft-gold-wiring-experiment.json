@@ -1,0 +1,77 @@
+{
+ "id": "craft-gold-wiring-experiment",
+ "kind": "circuit",
+ "title": "Gold wiring drawn by hand at the The Experiment Research Station workshop from the gold ore the miners give the hauler receivers there, kept in its storage for the reserve",
+ "note": "Written by Apollo, 2026-11-22 11:58 UTC (orders.log ENT-063, block APOLLO: craft the reserve's parts docked rather than fly jump loops; P2 lean supply). draw_gold_wire makes 1 gold wiring from 4 gold ore by hand (catalog 0.732.0). The open needs take 1,860 gold wiring (core-foundry, station-core) and the fleet holds none; gold ore is held for it (tool needs, action=items, 11:50 UTC: gold wiring 1,860 to make, net short 0). The storage book of 11:53 UTC: the hauler receiver at The Experiment stores 1,638 gold ore there. Close it when the fleet holds 1,860 gold wiring (rule F36).",
+ "requires": {
+  "stored": [
+   {
+    "at": "the_experiment_research_station",
+    "item": "gold_ore",
+    "min": 40
+   }
+  ]
+ },
+ "max_ships": 3,
+ "standing": true,
+ "stops": [
+  {
+   "at": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+   "store": "all",
+   "craft": [
+    {
+     "recipe": "draw_gold_wire",
+     "runs": 128,
+     "per_run": 1,
+     "makes": "gold_wiring"
+    },
+    {
+     "recipe": "draw_gold_wire",
+     "runs": 64,
+     "per_run": 1,
+     "makes": "gold_wiring"
+    },
+    {
+     "recipe": "draw_gold_wire",
+     "runs": 32,
+     "per_run": 1,
+     "makes": "gold_wiring"
+    },
+    {
+     "recipe": "draw_gold_wire",
+     "runs": 16,
+     "per_run": 1,
+     "makes": "gold_wiring"
+    },
+    {
+     "recipe": "draw_gold_wire",
+     "runs": 8,
+     "per_run": 1,
+     "makes": "gold_wiring"
+    },
+    {
+     "recipe": "draw_gold_wire",
+     "runs": 4,
+     "per_run": 1,
+     "makes": "gold_wiring"
+    },
+    {
+     "recipe": "draw_gold_wire",
+     "runs": 2,
+     "per_run": 1,
+     "makes": "gold_wiring"
+    },
+    {
+     "recipe": "draw_gold_wire",
+     "runs": 1,
+     "per_run": 1,
+     "makes": "gold_wiring"
+    }
+   ]
+  },
+  {
+   "at": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+   "store": "all"
+  }
+ ]
+}
