@@ -7,8 +7,8 @@ Status: test. Updated: 2026-11-22. Evidence: hive.py route fit-shield-booster-ii
   80 to 130; one Pulse Laser III ship with it killed a pilot whale alone
   at full hull (`hunt-test-siphon-pilot-whale-sb2`). One result of
   three (F37).
-- Pulse Laser III hunts: tortoises at seven belts and deuteron slugs at
-  three ice fields; the slugs kill 2 to 3 a run since 12:48 UTC.
+- Pulse Laser III hunts: tortoises at six belts (a seventh off for
+  danger) and deuteron slugs at three ice fields; the slugs kill 2 to 3 a run since 12:48 UTC.
 - Cloudwhales (1,400 to 3,400 hull, 20 jumps out): the first group flew
   on a census 9 hours old and found none. A group sets out only on a
   census under 120 minutes (`--census-minutes`).
