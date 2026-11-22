@@ -3,15 +3,8 @@
  "owner": "Zero",
  "templates": {
   "ice-sell": {
-   "title": "Stored goods and ice sold where a bid stands: stored null matter, methane and ice first, then the ice fields",
+   "title": "Ice mined where a bid stands; with strict classes on each run gives its ice to Trade's receiver instead of selling (P5)",
    "routes": [
-    "carry-null-matter-synchrony-nexus",
-    "drain-methane-experiment",
-    "drain-ice-nexus",
-    "drain-ice-node-alpha",
-    "carry-ice-node-alpha-nexus",
-    "carry-ice-synchrony-nexus",
-    "carry-ice-experiment-nexus",
     "mine-cryogenic-reserve",
     "mine-achernar-frost-ring-nexus",
     "mine-ruchbah-ice-belt-nexus",
@@ -23,7 +16,7 @@
     "mining",
     "piloting"
    ],
-   "note": "Every route here is gated: a drain or carry opens only on goods the pilot itself stores and a fresh bid (requires.stored, requires.bid); a Central Nexus mine route only on a deep water-ice order (3,000 units at its best price since 2026-11-21: about 18,500 water ice stored) and with an Ice Harvester I fitted. What miners store is sold before new ice is mined."
+   "note": "2026-11-22 03:40 UTC (Zero), orders ENT-061 P5: the drains and carries of stored null matter, methane and ice left this template (sales are Trade's); the miners' stores go to Trade's and Logistics' receivers by the give-miner-stores-<station> routes of the list First once strict classes are on. Every mine route here carries gift trader and is gated: a Central Nexus mine route only on a deep water-ice order and while Mining stores under 5,000 water ice (requires.held_below), with an Ice Harvester I fitted."
   },
   "reserve-prism": {
    "title": "Gather what the reserve lacks, then make: a loaded hold stored, gold, silicon, nickel and carbon, then steel plate and copper piping from the pilot's own stores",
