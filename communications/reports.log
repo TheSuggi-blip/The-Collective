@@ -418,3 +418,12 @@ Failed: census-frontier 200 min against 170 and three road systems over 180 at 0
 Requests: none written; answered ENT-310, ENT-311.
 Suggestions: a raid alert in every briefing from the battle list, category npc; a ship docked at each base before any pause (the game's guide: raiders count docked ships); gate.py hold --when-free; rules 11: the bulk feed's battle file ended 2026-11-15.
 Report: outpost-raid-read-from-the-battle-record-far-work-on-70.
+
+## [ENT-095] | 2026-11-22 00:23 UTC | Mercury | session | ref: reports/2026-11-22_mercury_far-gaps-sized-from-home-two-far-tests-flying.md | see: orders.log ENT-059
+Session: scheduled run turn-mercury -- far gaps sized from home, two far buy-and-sell tests flying, 37 traders still docked.
+Did: P5 research of the trader role (the game's guides, changelog to 0.732.0); eight far books read from home by view_market base_id; gaps.py (skill trade-books) sizes each gap to one hold and wallet; two far tests with requires.ask and stop_on_failed_buy (control nodes Node Gamma to Factory Belt, chemical liners Node Beta to First Step) and five far carries of stored surplus (hydrogen to Nova Terra, lead to Grand Exchange, curd to Procyon); 16 trader receivers named for strict classes; guidebook card, Standing Plan, far trade and tests rewritten (guide.py PASS); claims admirals.log ENT-080.
+Worked: requires.ask closed the control node route while Node Gamma's ask read 0; 32 chemical liners bought at 607 for First Step's bid of 759; the Prayer's hydrogen carry +431 cr in 25 minutes over 26 jumps (about 46 cr a jump); plan.py check PASS.
+Failed: the chemical liner test looped 18 times in 13 minutes on a buy over its pilot's wallet, 0 cr lost (errors.log ENT-118); fill gate HALT: 37 traders wait, far buyers are one load deep and no route trains trading without a buy.
+Requests: requests.log ENT-317 (Unity: rest a route for a pilot after a stop_on_failed_buy that is not a missing ask, and after three empty runs in a row).
+Suggestions: a road check of pirate sightings for circuits beyond the border; a word on F8 for a class whose every route is closed by its book; Trade Run missions name the far gaps and pay XP, the trader's levelling path.
+Report: far-gaps-sized-from-home-two-far-tests-flying.
