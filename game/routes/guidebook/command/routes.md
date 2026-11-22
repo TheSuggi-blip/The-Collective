@@ -3,12 +3,19 @@
 ### Standing Plan
 Status: proven. Updated: 2026-11-22. Evidence: the plan file (tool plan, show); fill.py status command; hive.py standing Unity; workclass.py sales.
 
-Turn of 2026-11-22 13:30 UTC (orders ENT-063). The six flagships take
+Turn of 2026-11-22 21:30 UTC (orders ENT-067). The flagships take
 the list First (the missions paid once), then their own routes: a test
 the filler adds in front (three ships at most, rule F37), the missions
 paid once of their boards, and the far hunts no other division claims
 (one ship a herd, `max_ships` 1; the loot goes to a trader by
-`gift_to`); the hand-over routes, `store-hold` and `park` last. A herd
+`gift_to`); then the hand-over routes of their own stores at each
+station where they hold goods (to the receivers of Trade and Logistics,
+rule F23 shared work), `store-hold` and `park` last. When the near
+herds read under their floor, those hand-overs are the work that keeps
+a flagship operating (fill gate PASS at 22:00 UTC). The flagships born
+in other empires take work of their own region first: the dispatcher
+keeps any route over six jumps from them closed unless it says
+`far_ok` (rule F35, orders P6). A herd
 another division claims is never in this plan (admirals.log; the filler
 refuses it since commit 17cb9c29). They hunt for Combat and Piloting and
 lead groups when Military flies one (rule F10); Leadership and Tactics
