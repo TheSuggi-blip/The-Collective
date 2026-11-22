@@ -24,8 +24,8 @@ WHAT: one answer, used by every script that gives ships work (the dispatcher's r
         once, deliver, fit, other                                                          every role
                  deliver: a circuit whose stops only `gift` (handover.py), with `store` and `withdraw`; no buy, sell
                  or craft (off: such a circuit is `other`)
-      and the sale rule (sale_refused, called by dispatch.why_not): a route that sells (a mine route's `sell`, a
-      hunt route without `gift_to`, which sells its loot at `sell_at`, a circuit stop's `sell`) is refused to a pilot
+      and the sale rule (sale_refused, called by dispatch.why_not): a route that sells (a mine route's `sell` without
+      `gift`, a hunt route without `gift_to`, which sells its loot at `sell_at`, a circuit stop's `sell`) is refused to a pilot
       that is not a trader: `sells: Trade's work (F23); give the goods to a trader with `gift``. A mission that pays
       once keeps its sale. The goods reach a trader by gift (handover.py).
       A route file may add roles by `open_to` (a list of roles): its Admiral's word that another class may fly it,
@@ -197,11 +197,12 @@ def classes_of(role, strict=None):
 
 
 def sells(route):
-    """True for a route that sells: a mine route's `sell`, a hunt route without `gift_to` (hunt.py sells its loot at
-    `sell_at`), a circuit with a stop's `sell`."""
+    """True for a route that sells: a mine route's `sell` without `gift` (with the switch on mine.py hands the goods
+    over instead of selling them, as hunt.py does with `gift_to`), a hunt route without `gift_to` (hunt.py sells its
+    loot at `sell_at`), a circuit with a stop's `sell`."""
     kind = route.get("kind")
     if kind == "mine":
-        return bool(route.get("sell"))
+        return bool(route.get("sell")) and not route.get("gift")
     if kind == "hunt":
         return not route.get("gift_to")
     if kind == "circuit":

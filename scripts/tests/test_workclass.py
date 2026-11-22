@@ -109,6 +109,8 @@ class StrictClassTests(unittest.TestCase):
         self.assertEqual(workclass.sale_refused(drone, "h", self.HUNT, {}), workclass.SALE)
         self.assertIsNone(workclass.sale_refused(drone, "h", dict(self.HUNT, gift_to="trader"), {}))        # the loot is given
         self.assertIsNone(workclass.sale_refused(miner, "m", dict(self.MINE_SELL, sell=[]), {}))
+        self.assertIsNone(workclass.sale_refused(miner, "m", dict(self.MINE_SELL, gift={"to": "trader"}), {}))   # mine.py gives
+        self.assertIsNone(workclass.sale_refused(miner, "m", dict(self.MINE_SELL, gift="trader"), {}))           # a bare word too
         self.assertIsNone(workclass.sale_refused(trader, "s", self.SELL, {}))
         self.assertEqual(workclass.sale_refused({"name": "hauler-1"}, "s", self.SELL, {}), workclass.SALE)
         self.assertIsNone(workclass.sale_refused(miner, "voidborn-sell", dict(self.SELL, once=True), {}))    # a mission paid once
@@ -117,8 +119,9 @@ class StrictClassTests(unittest.TestCase):
         self.assertIsNone(workclass.sale_refused(miner, "m", self.MINE_SELL, {}))
 
     def test_the_dry_run_counts_the_sales_per_class_and_per_admiral(self):
-        routes = {"m": self.MINE_SELL, "h": self.HUNT, "g": dict(self.HUNT, gift_to="trader"), "s": self.SELL, "o": dict(self.HUNT, status="off")}
-        rows, by_class, by_admiral = workclass.sales(routes, {"miner": ["m"], "drone": ["h"], "trader": ["s"]})
+        routes = {"m": self.MINE_SELL, "h": self.HUNT, "g": dict(self.HUNT, gift_to="trader"), "s": self.SELL, "o": dict(self.HUNT, status="off"),
+                  "mg": dict(self.MINE_SELL, gift={"to": "trader", "items": ["x"]})}
+        rows, by_class, by_admiral = workclass.sales(routes, {"miner": ["m", "mg"], "drone": ["h"], "trader": ["s"]})
         self.assertEqual([r[0] for r in rows], ["h", "m"])
         self.assertEqual((by_class, by_admiral), ({"gather": 1, "hunt": 1}, {"Zero": 1, "Apophis": 1}))
         taken, by_class, by_admiral = workclass.narrowed({"s": self.SELL}, {"drone": ["s"], "trader": ["s"]})
