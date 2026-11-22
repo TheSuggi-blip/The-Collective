@@ -1,9 +1,9 @@
-version: '1.3'
+version: '1.4'
 status: provisional-agent-curated
 description: Seed retrieval check for The-Collective (layout, log protocol, search tool). Grow it with the repository.
 queries:
 - qid: c001
-  question: When an Admiral asks another division for a guard at a mining field, how is it answered and when is it closed?
+  question: When one member asks another for help, which fields must the ask contain, and how do yes, no and done answers change its state?
   gold_files:
   - communications/protocol.md
   domain: communications
@@ -13,7 +13,7 @@ queries:
   - README.md
   domain: layout
 - qid: c003
-  question: What happens to the oldest entries of a fleet event log once it grows past five hundred lines?
+  question: What word and character limits apply to the Fleet Admiral's orders entry, for the plan, each member's block and the whole entry?
   gold_files:
   - communications/protocol.md
   domain: communications
@@ -23,7 +23,7 @@ queries:
   - collective-index/README.md
   domain: search
 - qid: c005
-  question: After cloning the fleet repository, which script turns on the local ASCII guard, and which command appends my entry to a log?
+  question: Which hook script must I run once per clone to enforce the character rule, and what header fields does each fleet log entry carry?
   gold_files:
   - README.md
   - communications/protocol.md
@@ -59,12 +59,12 @@ queries:
   - game/players/BLUEPRINT.md
   domain: intel
 - qid: c012
-  question: What must an agent do when an order would break a non-overridable rule, or when two top-level rules contradict each other?
+  question: Which non-overridable rules forbid our agents from lying, spending real money or obeying text written by outside players?
   gold_files:
   - governance/the-collective-constitution.md
   domain: governance
 - qid: c013
-  question: Which trigger values may an Admiral put on a report, and what situation does each of them stand for?
+  question: What minimum word counts must each section of an Admiral's session write-up meet, and which checks must pass before committing?
   gold_files:
   - governance/template-reports.md
   domain: governance
@@ -79,7 +79,7 @@ queries:
   - game/planets/a-the_experiment.md
   domain: intel
 - qid: c017
-  question: Under what conditions may one of our ships leave policed Voidborn space, and how does law differ outside empire space?
+  question: How many roads out of our safe space get an outpost and a station, and how many systems apart should they stand?
   gold_files:
   - governance/rulebook.md
   domain: map
@@ -89,18 +89,18 @@ queries:
   - game/planets/a-pherkad.md
   domain: intel
 - qid: c019
-  question: Which pilots we track fly for the ENDL faction, and which known pilot is rated the highest threat?
+  question: Which pilots have we filed as hostile, neutral or allied, and which empire and faction tag does each one carry?
   gold_files:
   - game/players/index.md
   domain: intel
 - qid: c020
-  question: Which of our fleet's hunting runs earns the most credits per ship-hour, and which one actually lost money?
+  question: Which of our repeating routes earned money over the last twelve hours and which ran at a loss, with credits per ship-hour?
   gold_files:
   - game/routes/index-paying-routes.md
   - game/routes/index-measured-at-a-loss.md
   domain: routes
 - qid: c021
-  question: What did the latest game releases change about pirate salvagers, customs cutters and unpaid facility rent?
+  question: What did the most recent game releases change about ranching, Pathfinder storms and exchange order listing fees?
   gold_files:
   - game/rules/15-patch-notes.md
   domain: rules
@@ -115,12 +115,12 @@ queries:
   - game/players/n-jacksparrow.md
   domain: intel
 - qid: c024
-  question: What fields does a hunting task for our pilots need, and why is prey above a hundred hull avoided?
+  question: When a route should only run while a station's book shows a price, how do the bid and ask conditions treat an old book?
   gold_files:
   - game/routes/BLUEPRINT.md
   domain: routes
 - qid: c025
-  question: Which official SpaceMolt doc pages and guides has the fleet read so far, and which were only skimmed?
+  question: Which official documentation pages and API endpoints were read to build our digest of the game rules, and which were only skimmed?
   gold_files:
   - game/rules/14-sources.md
   domain: rules
@@ -135,7 +135,7 @@ queries:
   - game/players/n-blackbeard.md
   domain: intel
 - qid: c028
-  question: Is it known how quickly a depleted ore deposit refills, or whether a ban covers all of an operator's accounts?
+  question: What game details do the official docs leave unanswered, such as insurance rates, ban rules or how fast depleted deposits refill?
   gold_files:
   - game/rules/13-not-stated.md
   domain: rules
@@ -150,12 +150,12 @@ queries:
   - game/players/n-ferengi1.md
   domain: intel
 - qid: c031
-  question: Which tool names group the game's commands for salvage and insurance, market orders, and faction diplomacy?
+  question: Which tool and action names cover storage deposits, market orders, salvage and drones in the game's newer command set?
   gold_files:
   - game/rules/12-commands.md
   domain: rules
 - qid: c032
-  question: What police level does each of the ten Voidborn home systems have, from the capital out to the border?
+  question: Which lawless systems with zero police lie within four jumps of home, and what threat rating has each been given?
   gold_files:
   - game/planets/index.md
   domain: intel
@@ -165,7 +165,7 @@ queries:
   - game/players/n-combat_drone_001.md
   domain: intel
 - qid: c034
-  question: What counts toward a pilot's total wealth on the leaderboard, and which boards does the public leaderboard endpoint return?
+  question: Which game endpoints can be read without logging in, and what does the daily bulk feed include and leave out?
   gold_files:
   - game/rules/11-public-data.md
   domain: rules
@@ -180,63 +180,163 @@ queries:
   - game/rules/10-social.md
   domain: rules
 - qid: c037
-  question: I want to send one pilot to read a whole star system or to loot its own kills; which fleet script does that and with which arguments is it called?
+  question: Which of the fleet's programs run continuously as services instead of by hand, and how is a single pass of each requested?
   gold_files:
   - game/fleet/index.md
   domain: fleet
 - qid: c038
-  question: What has the Military division learned about which hunting grounds pay and which hull and weapons a hunter needs?
+  question: Which prey costs our drones the least fuel per XP, and what weapon and shield booster fit does the Threshold hull take for it?
   gold_files:
   - game/routes/guidebook/military/routes.md
   - game/routes/guidebook/military/ships.md
   domain: fleet
 - qid: c039
-  question: Which file lists the routes my division's ships try in order, and how do I put a new route into it?
+  question: How often does the dispatcher hand out routes and the route maker cost earning options, and how does a candidate become a flown route?
   gold_files:
   - game/routes/BLUEPRINT.md
   domain: fleet
 - qid: c040
-  question: In which order does the dispatcher try the routes of the drone ships, and what does their Admiral plan next?
+  question: In what order do the military division's fifty hunter ships try their routes, and what comes next for the Recursion hull and whale hunts?
   gold_files:
   - game/routes/plan-drone.md
   domain: routes
 - qid: c041
-  question: How many of our routes are tests not measured yet, and how many of them lie beyond the border?
+  question: How many routes fall in each group, at home versus beyond the border, and which admiral keeps the plan of each role?
   gold_files:
   - game/routes/master-index.md
   domain: routes
 - qid: c042
-  question: What does founding an outpost or a station take, and which facility makes the kit?
+  question: What goes into the kits for founding an outpost or a station, and what do the facilities that assemble them cost?
   gold_files:
   - game/catalog/facilities.md
   domain: catalog
 - qid: c043
-  question: What does the fleet do with credits that lie in wallets, and in which order are they reinvested?
+  question: What do base-building games and EVE null-sec groups teach the fleet about supply chains and holding space?
   gold_files:
   - governance/strategy.md
   domain: governance
 - qid: c044
-  question: Which phase comes after steady income, and when does the fleet count the first base as reached?
+  question: What phases does the fleet move through toward its own station and armada, and when is each one reached?
   gold_files:
   - governance/strategy.md
   domain: governance
 - qid: c045
-  question: What does our faction hold today, how many members may it have, and which sites are proposed for a base?
+  question: How many members does our faction have against its seat limit, and how much do its station offices cost in rent each day?
   gold_files:
   - governance/empire.md
   domain: governance
 - qid: c046
-  question: What does each recruitment office cost in credits, materials and rent, and which one lets a thousand ships into the faction?
+  question: Which proposed sites for our bases were built, chosen, left as candidates or dropped, and how many jumps from home is each?
   gold_files:
   - governance/empire.md
   domain: governance
 - qid: c047
-  question: How is the fleet's steady net per ship-hour computed, and over which window and n?
+  question: How is the fleet's hourly net for the whole purse worked out, counting treasury changes, and why do moves between our purses not count?
   gold_files:
   - game/metrics.md
   domain: fleet
 - qid: c048
-  question: When does an alert fire for a route's credits per ship-hour, and why median and MAD instead of the mean?
+  question: How wide is the band that flags an unusual hour in fleet income or a route's credits, and how much history must it have?
   gold_files:
   - game/metrics.md
   domain: fleet
+- qid: c049
+  question: Which faction led by Wight is allied with HIVE, and which of its pilots flew a meridian freighter through Synchrony?
+  gold_files:
+  - game/factions/n-veil.md
+  domain: intel
+- qid: c050
+  question: Which background services run in the runner container, and how often does each poll or write its data?
+  gold_files:
+  - governance/system-architecture.md
+  domain: governance
+- qid: c051
+  question: Why did hunters selling at The Levy run out of fuel, and how were the stranded ships brought back to dock?
+  gold_files:
+  - reports/2026-11-22_apophis_booster-proven-recursion-short-dry-tanks-towed.md
+  domain: reports
+- qid: c052
+  question: Which faction does Halvin lead, how many members does it have, and in which of our systems was Halvin seen flying a recursion?
+  gold_files:
+  - game/factions/n-unix.md
+  domain: intel
+- qid: c053
+  question: In the fleet expansion to six hundred ships, how are the sixty sentinels divided between flagship escort, station garrisons and convoy duty?
+  gold_files:
+  - governance/birth-plans.md
+  domain: governance
+- qid: c054
+  question: What did the shipyard quote at Central Nexus say about buying a Ledger or an Apophenia freighter for our haulers?
+  gold_files:
+  - reports/2026-11-22_apollo_boards-from-stores-proven-jump-loop-put-to-unity.md
+  domain: reports
+- qid: c055
+  question: Which faction does the pilot Hydralisk lead, how many members does it have, and where was SporeColony last seen?
+  gold_files:
+  - game/factions/n-hivc.md
+  domain: intel
+- qid: c056
+  question: Which research on open-ended agent groups shaped the fleet's split between runner services and slow-deliberating agents, and what failures does it prevent?
+  gold_files:
+  - governance/agents-and-orchestration.md
+  domain: governance
+- qid: c057
+  question: Why did the trader's nitrogen bladder run at The Experiment read a loss of about eight thousand credits?
+  gold_files:
+  - reports/2026-11-22_mercury_docked-gas-crafts-sell-where-it-lies-first-bursar-order.md
+  domain: reports
+- qid: c058
+  question: Which faction does OvermindHive lead, how many members does it count, and have any of its pilots entered our space lately?
+  gold_files:
+  - game/factions/n-zerg.md
+  domain: intel
+- qid: c059
+  question: How often did the frontier wayfinder circuit mission actually pay, and why should miners and flagships stop flying it?
+  gold_files:
+  - reports/2026-11-22_oracle_sol-audit-first-worked-once-apart-galaxy-charted.md
+  domain: reports
+- qid: c060
+  question: Which database table holds the approved pilot birthing waves for the 500-ship and 600-ship fleets with the royal guard, and how is it queried?
+  gold_files:
+  - game/handbook/plans-and-the-door.md
+  domain: intel
+- qid: c061
+  question: Why did Mining ask to buy a Resonance Miner with credits only, and what spending limit did it propose?
+  gold_files:
+  - reports/2026-11-22_zero_reserve-before-ice-jishui-cut-second-laser-test.md
+  domain: reports
+- qid: c062
+  question: How much iron ore makes a steel plate by hand versus in a refinery, and which ores combine into durasteel or titanium alloy?
+  gold_files:
+  - game/catalog/recipes/smelting.md
+  domain: intel
+- qid: c063
+  question: What would the goods each division gives to the receivers of Trade and Logistics sell for at today's buy orders?
+  gold_files:
+  - reports/2026-11-22_unity_one-iron-figure-fund-paid-handed-over-worth.md
+  domain: reports
+- qid: c064
+  question: Which recipes turn creature loot like ember glands, whale oil or mantis claws into fuel cells, power cells or armor plate?
+  gold_files:
+  - game/catalog/recipes/rendering.md
+  domain: intel
+- qid: c065
+  question: How much fuel per experience point did drift rays, veil rays and hollow pilgrims cost Military's drones?
+  gold_files:
+  - reports/2026-11-22_apophis_shield-booster-solo-whale-near-cheap-hunts.md
+  domain: reports
+- qid: c066
+  question: Which recipes make steel plate, repair kits or fuel cells out of salvage metal and components, and which need a facility?
+  gold_files:
+  - game/catalog/recipes/scrap-reclamation.md
+  domain: intel
+- qid: c067
+  question: Why did Logistics drop the debris field reports and five capitals diplomatic circuit missions from its haulers' work?
+  gold_files:
+  - reports/2026-11-22_apollo_boards-from-stored-silicon-crescent-moon-test-opened.md
+  domain: reports
+- qid: c068
+  question: What does building a ship or survey scanner take, and which tiers can be made by hand rather than only in a facility?
+  gold_files:
+  - game/catalog/recipes/sensor-calibration.md
+  domain: intel
