@@ -6,6 +6,11 @@
    "title": "Hunter: a herd for each drone, combat skills, melt for money, carapace for the reserve",
    "routes": [
     "store-hold-central-nexus",
+    "hunt-test-siphon-pilot-whale-sb2",
+    "hunt-okab-haze-pilot-whale-sb2",
+    "hunt-achernar-gas-pocket-pilot-whale-sb2",
+    "hunt-antares-gas-cloud-pilot-whale-sb2",
+    "hunt-coldwater-emission-nebula-pilot-whale-sb2",
     "hunt-test-keid-ice-shelf-deuteron-slug-pl3",
     "hunt-test-gsc-0035-belt-b-slag-tortoise-pl3",
     "hunt-test-acubens-bulwark-pl3",
