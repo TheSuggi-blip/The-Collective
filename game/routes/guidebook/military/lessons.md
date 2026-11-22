@@ -117,5 +117,5 @@ Status: proven. Updated: 2026-11-22. Evidence: errors.log 2026-11-16; stuck_chec
 - A dry tank where no station stands: the game's tug (`distress_signal`
   tow, 5 minutes, 500 cr) docks the ship at the nearest public station;
   `tow_rescue.py` holds, tows, refuels, releases. A hunt whose runs buy no
-  fuel never docked at its sell_at: set it off before the tank runs dry
+  fuel never refuelled at its sell_at (`station_fuel_empty`): set it off
   (errors.log, 2026-11-22: two ships, about three hours stranded).
