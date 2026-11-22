@@ -1,0 +1,47 @@
+{
+ "id": "craft-cells-hydrogen-node-beta",
+ "kind": "circuit",
+ "title": "Fuel cells made at the Node Beta workshop from the pilot's own stored hydrogen gas and steel plate (hydrogen gas into liquid hydrogen, then cells), kept in its storage for our own tanks and the outpost's bunker (the reserve: keep fuel_cell all)",
+ "standing": true,
+ "requires": {
+  "stored": {
+   "at": "node_beta_industrial_station",
+   "item": "hydrogen_gas",
+   "min": 160
+  }
+ },
+ "max_ships": 1,
+ "stops": [
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store": "all",
+   "craft": [
+    {
+     "recipe": "compress_hydrogen_gas",
+     "runs": 20,
+     "per_run": 3,
+     "makes": "liquid_hydrogen"
+    }
+   ]
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "craft": [
+    {
+     "recipe": "craft_fuel_cell",
+     "runs": 30,
+     "per_run": 1,
+     "makes": "fuel_cell",
+     "inputs": [
+      "liquid_hydrogen"
+     ]
+    }
+   ]
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store": "all"
+  }
+ ],
+ "note": "Written by Apollo, 2026-11-22 00:12 UTC (orders.log ENT-059, block APOLLO and P1: the fleet's steady net above zero; rule F23: haulers craft for the reserve; game/reserve.tsv keeps every fuel cell). Haulers store 2,476 hydrogen gas at Node Beta (ledger.py show all, 2026-11-22 00:07 UTC) that no bid takes (requests.log ENT-299: hydrogen bids gone; the sell-hydrogen routes have not flown for 94 hours). By hand: compress_hydrogen_gas makes 3 liquid hydrogen of 8 hydrogen gas, craft_fuel_cell 1 cell of 2 liquid hydrogen and 1 steel plate. One run: 160 gas and 30 plate into 30 cells (600 fuel: a cell is 20, about 102 cr bought at The Experiment, station fuel 11 to 15 cr a unit). The 60 liquid hydrogen fit the hold (65) before they go back into storage (`inputs`). Docked work: no fuel but the dock, Crafting XP. A test: one ship until its first RESULT line; then the cells feed supply-bunker-gsc-0044 in place of bought ones."
+}
