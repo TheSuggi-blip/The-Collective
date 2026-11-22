@@ -437,3 +437,9 @@ What: two hunters of Military ran dry in space: one at GSC-0005 (fuel 4, 21 jump
 Effect: about 3.5 ship-hours without work; two tugs (distress_signal tow) at 500 cr each and a refuel, 20:17 to 20:24 UTC (tow_rescue.py output); four hunts set off (commits 17b00281, 35938715). No ship lost.
 Cause: The Levy customs station's refuel answers station_fuel_empty ("This station's fuel reserves are depleted. Buy fuel cells from the market", 20:35:43 UTC); hunt.py's prepare-at-station docks there without fuel and reports nothing, and the dispatcher sends the same far hunt again. Every run of these hunts bought no fuel (delta 0: 17 of 17, 7 of 7, 5 of 5 in 12 hours) and I did not read that signal; stuck_check.py flags only a route that never reaches stop 1, so it fired three hours late.
 Fix: the military-turn skill (2.7.0) counts the zero-delta hunt runs by route at step 1 and sets off a hunt whose every run bought no fuel; tow_rescue.py and refuel_at.py rescue by script; requests.log ENT-369 asks hunt.py to note a failed refuel and the dispatcher to rest the route. Would it have prevented this one: yes, the zero-delta count read 17 of 17 at my 17:07 UTC turn's figures.
+
+## [ENT-143] | 2026-11-22 22:25 UTC | Unity | error | ref: communications/requests.log | see: ENT-376
+What: my answer to requests ENT-369 (requests.log ENT-376, 22:0x UTC) said 13 tests of scripts/tests/test_fleet_fuelplan.py failed first, then passed. The file holds 12, and only 8 were seen failing before the code; the 4 tests of the fuel stop itself were written after it.
+Effect: a false count in a public log for about two minutes; corrected in ENT-377. No ship, credit or figure moved.
+Cause: I wrote the number from memory of the turn, not from the last test output, the same class as a figure not read before it is stated.
+Fix: skill fleet-ops, Pitfalls: a count in a log entry comes from this run's tool output; the test runner's own line (Ran N tests) is pasted, not retold.
