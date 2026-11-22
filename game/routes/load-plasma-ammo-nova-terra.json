@@ -1,0 +1,31 @@
+{
+ "id": "load-plasma-ammo-nova-terra",
+ "kind": "circuit",
+ "title": "Plasma ammunition back aboard: withdraw the stored dispersal plasma cell packs at Nova Terra Central into the Plasma Cannon II ship's hold",
+ "note": "2026-11-22 08:08 UTC (Apophis): the Plasma Cannon II ship's hold was empty while 3 dispersal plasma cell packs lay in its storage at Nova Terra Central (tool stock, 08:06 UTC); its last test run (07:18 UTC) killed nothing, with the hull at 100 percent: the magazine was empty. A hunt stores its hold at its station; hunt.py keeps only the loaded ammo id out of the store (AMMO = ammo_ids(), read once at the start), so packs can land in storage when no ammo id is loaded (a guess, not measured). This circuit puts them back aboard; it opens only for a pilot with the cannon and packs in its own storage there (requires.stored). Fitting for the ship's own weapon, shared work (rule F23): nothing is sold or bought.",
+ "max_ships": 1,
+ "max_pilots": 2,
+ "requires": {
+  "module": "plasma_cannon_ii",
+  "stored": {
+   "at": "nova_terra_central",
+   "item": "dispersal_plasma_cell_pack",
+   "min": 1
+  }
+ },
+ "stops": [
+  {
+   "at": "nova_terra:nova_terra_central:nova_terra_central",
+   "withdraw": [
+    {
+     "item": "dispersal_plasma_cell_pack"
+    }
+   ]
+  }
+ ],
+ "open_to": [
+  "drone",
+  "sentinel"
+ ],
+ "standing": true
+}
