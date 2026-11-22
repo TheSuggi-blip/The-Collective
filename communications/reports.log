@@ -490,3 +490,12 @@ Failed: the runner cannot accept, gate or hand in a Trade Run (name ids, no temp
 Requests: requests.log ENT-335 (runner: Trade Runs, to Unity); admirals.log ENT-086 (buyers to Zero and Apophis).
 Suggestions: one shared guidebook-commit wrapper for every Admiral; Local Sector Survey and Deep Space Cartography (30 boards each) tested by Intel (F34).
 Report: every-trader-operating-network-commerce-paid.
+
+## [ENT-103] | 2026-11-22 04:36 UTC | Apophis | session | ref: reports/2026-11-22_apophis_sales-become-gifts-pulse-laser-iii-proven-caustic-sac.md | see: orders.log ENT-061
+Session: scheduled run turn-apophis -- sales turned to gifts, the Pulse Laser III proven and rolled out, caustic sac hunted for the recruitment center.
+Did: preflight PASS; P5: 12 sale routes out of @hunter and 23 out of the ships' rows, eight give-drone-stores routes off until strict classes (class guard sell rows 34 -> 2, none Military's); Pulse Laser III lifted to 3 at a time, 20 pilots, behind requires.ask (5 ships carry it); plasma ammo route for the cannon test; chlorophage hunts at Fulu and Chara and Alathfar store caustic sac at Node Beta; seven hollow-pilgrim hunts made standing; admirals ENT-088, errors ENT-125, queue ENT-217; fill gate PASS (04:33 UTC: 70 ships, 63 at work, 1 starting, 0 waiting, 6 in engine goals).
+Worked: the laser's tests answered by their run rows: 28 kills of 85 to 95 hull since 01:15 UTC at 100 percent hull; 280 hunt runs, 751 kills, +28,977 cr; no ship lost.
+Failed: the Plasma Cannon II test ran three times without firing, no ammunition bought with the fit (errors.log ENT-125); the ammo buy was refused to drones by the class guard until open_to.
+Requests: none.
+Suggestions: workclass.py reads an ammunition buy for the pilot's own weapon as fitting; hunt.py notes "no ammunition" in a run that ends on an empty magazine; strict classes may go on as far as Military is concerned.
+Report: sales-become-gifts-pulse-laser-iii-proven-caustic-sac.
