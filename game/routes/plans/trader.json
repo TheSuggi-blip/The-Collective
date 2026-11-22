@@ -108,6 +108,10 @@
   {
    "what": "Take one Trade Run mission by hand on a far gap's road (deadline, hand-in, which skill), then an accept stop on the route",
    "when": "next turn"
+  },
+  {
+   "what": "lead ore carries to Sirius and the Grand Exchange back into @trade-sell only with a lead bid of 40 or more within 4 jumps",
+   "when": "when a book shows it"
   }
  ],
  "ships": {
