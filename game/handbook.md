@@ -25,7 +25,8 @@ as kind `handbook` of the table docs, one row a section, every version in doc_ve
 The store: 59 tables and 7 views (38 snapshot, 9 history, 9 statistics, 3 bookkeeping); the MCP tool `collective`: 22 tools.
 Kinds: snapshot = what a file says now (replaced when the file changes; it also carries `src`, the file its row came
 from; dropped and loaded again when its definition changes); history = rows kept over time (raw rows for days, sums
-for good); statistics = computed by stats.py when due; view = a query over tables, computed when asked; bookkeeping =
+as each table's Kept line says); statistics = computed by stats.py when due; view = a query over tables, computed when
+asked; bookkeeping =
 the store's own marks. Columns come from a fresh empty schema; every example runs in test_fleet_store_state.py.
 
 ## Contents
@@ -226,7 +227,7 @@ per question, from the tools' own texts (collective_mcp.TOOLS) and hive.py's usa
 | Send one game command to one or many of your ships through the engine's gate, at once (up to 40... | command pilots=[<pilots>] action=<action> | gate.py raw <pilots> <action> {} |
 | Give one of your ships an engine goal: a task the engine carries out by itself over many ticks... | goal pilot=<pilot> type=<type> | gate.py goal <pilot> <type> {} |
 | Take one of your ships by hand (the dispatcher gives it no route) or, with release=true, give it back... | hold pilot=<pilot> | gate.py hold <pilot> |
-| a session's start in one answer: the orders in force, the requests addressed to the member, the... | hive verb=briefing | hive.py briefing |
+| a session's start in one answer: the orders in force, the requests addressed to the member (and how... | hive verb=briefing | hive.py briefing |
 
 ### The store itself
 

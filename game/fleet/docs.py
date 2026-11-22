@@ -45,8 +45,9 @@ RULES:
     the sha of its newest version (a text set back to an older one is a new row: the order of changes is kept).
     last_seen is the last pass in which a version stood: exact for a version that stands no more (set when it stops);
     for one that stands, the newest pass that changed a section, at most KEEP_EVERY (15 minutes) old, so a quiet pass
-    writes no row. A section that left (its file changed or went) keeps every row; its last_seen stops. Rows of
-    doc_versions are never deleted.
+    writes no row. A section that left (its file changed or went) keeps its rows; its last_seen stops. How long a
+    version stays is retention.py's rule (RETAIN_ENABLED off: for good; on: the newest 20 of each section and every
+    one that stood in the last 30 days; the newest version of every section always stays, git keeps every text).
   - The first pass that finds doc_versions empty is the baseline (meta `docs.baseline`): what it loads counts as no
     change, or every member would read the whole fleet's knowledge as new once. So is, for each kind, the pass that
     first loads a kind with no version on record (meta `docs.baseline.<kind>`): a kind added later (the logs, the
@@ -645,8 +646,9 @@ def show_section(conn, data, now, path, section, history):
         print(text)
         return 0
     standing = row[4] if row else None
-    print("HISTORY %s %s | %d versions on record, kept for good from the store's first reading | %s | %s"
-          % (path, section, len(versions), "stands now" if row else "gone from its file", copy_line(data, now)))
+    print("HISTORY %s %s | %d versions on record since the store's first reading, kept %s | %s | %s"
+          % (path, section, len(versions), __import__("retention").short("doc_versions"), "stands now" if row else "gone from its file",
+             copy_line(data, now)))
     for n, (version, digest, title, text, first, last) in enumerate(versions, 1):
         print("  v%d  first seen %s  last seen %s%s  %s chars  sha %s  %s" % (n, stamp(first), stamp(last), " (stands)" if n == len(versions) and digest == standing else "",
                                                                          num(len(text or "")), digest[:10], title[:70]))

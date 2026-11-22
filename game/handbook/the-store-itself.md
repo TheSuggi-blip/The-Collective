@@ -22,7 +22,7 @@ history bookkeeping: where each record (routes/runs.jsonl, market/history.jsonl,
 
 - Kind: bookkeeping
 - Columns: record, offset, head; one row per record
-- Kept: for good: no step of the code deletes its rows
+- Kept: for good, bounded: one row per record the store reads (store.RECORDS), its place in the record (retention.py BOUNDED)
 - Refreshed: the store's pass (every 60 s), by store.take_record
 - Where is each record read to?: `SELECT record, offset FROM cursor ORDER BY record`
 - How far is the run record read?: `SELECT offset FROM cursor WHERE record = 'routes/runs.jsonl'`

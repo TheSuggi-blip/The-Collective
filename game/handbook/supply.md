@@ -30,11 +30,11 @@ view: each supply chain against what stands at its place now (holdings): stock, 
 
 ## stats_supply_hour
 
-history (stats.py): per hour and supply chain its stock against its keep and its status (view supply_status); kept for good
+history (stats.py): per hour and supply chain its stock against its keep and its status (view supply_status); kept for good while retention.py is off (on: 90 days)
 
 - Kind: statistics
 - Columns: hour, chain, item, place, stock, keep, status, t; one row per hour, chain
-- Kept: for good: no step of the code deletes its rows
+- Kept: for good while retention.py RETAIN_ENABLED is off; on: 90 days by `hour`, then deleted (hourly, at most 5000 rows a table and pass)
 - Refreshed: stats.py part `supply`, once an hour (the store's first pass of a UTC hour)
 - The share of hours each chain stood at its keep: `SELECT chain, item, ROUND(100.0 * SUM(stock >= keep) / COUNT(*)) AS pct_ok, COUNT(*) AS hours FROM stats_supply_hour GROUP BY chain`
 - One chain hour by hour: `SELECT datetime(hour, 'unixepoch'), stock, keep, status FROM stats_supply_hour ORDER BY chain, hour DESC LIMIT 24`

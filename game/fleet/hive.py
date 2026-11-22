@@ -45,9 +45,10 @@ WHAT: reads the unit's data folder (fleet/, routes/runs.jsonl, market/, scouting
                               (entries with status, updated, size, over cap) and the class's computed figures (stats.py);
                               --chapter one chapter whole, --grep the entries that hold a word, --retired the entries
                               retired or gone from their chapter, kept in the store
-        briefing              a session's start in one answer: the orders in force, the requests addressed to the member,
-                              the fleet's money, its own standing fleet (plan, what each route carries, every ship), its
-                              plan file in short (plan.py) and the fill gate; above it all one line while a base of ours
+        briefing              a session's start in one answer: the orders in force, the requests addressed to the member
+                              (and how many of them are stale: untouched for more than 3 days, comms.py), the fleet's
+                              money, its own standing fleet (plan, what each route carries, every ship), its plan file
+                              in short (plan.py) and the fill gate; above it all one line while a base of ours
                               reads wrecked or a facility of ours damaged or offline (basewatch.py)
         store                 the history store (store.py): what it holds, and every route's credits per ship-hour over
                               the whole hours of a window, also beyond what the records still hold
@@ -1192,6 +1193,10 @@ def show_briefing(root, data, now, who, hours):
             print(done.stdout.rstrip())
         else:
             print("  not read: %s is missing" % comms)
+    try:                                                            # r22: the requests addressed to the reader untouched over 3 days, counted
+        print(__import__("docs_division").load_comms().stale_line(str(repo), who, now))
+    except Exception as error:                                      # noqa: BLE001  a count that fails never holds up the briefing
+        print("  stale requests not counted: %s: %s" % (type(error).__name__, error))
     import docs as writings                                         # Suggi, 2026-11-17: what changed in the written knowledge, not the whole files
     writings.briefing(root, data, now, who)
     __import__("guidebook").briefing(root, data, now, who)           # Suggi, 2026-11-18: the own class card, and what stands over its cap
@@ -1222,7 +1227,7 @@ def show_briefing(root, data, now, who, hours):
 def show_store(data, now, hours, rest):
     """The history store's read copy (store.py, the service `store`): its tables and every route's credits per ship-hour
     over the whole hours of the window; with `price <item>`, the item's price range per station. The store keeps sums by
-    hour for good, so a window may reach back past what the records still hold."""
+    hour as retention.py says (90 days once it is on), so a window may reach back past what the records still hold."""
     conn = history.connect(data)
     if conn is None:
         print("STORE | no read copy at %s: the service `store` has not published one yet (services/status.json)" % (Path(data) / "store" / "read.db"))

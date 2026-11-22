@@ -42,11 +42,11 @@ history: one row per change of an item's best bid or ask at a station (market/hi
 
 ## market_hour
 
-history: per station, item and UTC hour the lowest and highest best bid and best ask; kept for good
+history: per station, item and UTC hour the lowest and highest best bid and best ask; kept for good while retention.py is off (on: 90 days)
 
 - Kind: history
 - Columns: base, item, hour, bid_lo, bid_hi, ask_lo, ask_hi, moves; one row per base, item, hour
-- Kept: for good: no step of the code deletes its rows
+- Kept: for good while retention.py RETAIN_ENABLED is off; on: 90 days by `hour`, then deleted (hourly, at most 5000 rows a table and pass)
 - Refreshed: the store's pass (every 60 s): summed again for the hours that got new rows of moves
 - The highest bid for iron_ore per station in the last day: `SELECT base, MAX(bid_hi) FROM market_hour WHERE item = 'iron_ore' AND hour >= strftime('%s', 'now') - 86400 GROUP BY base ORDER BY 2 DESC`
 - The cheapest ask ever seen for steel_plate: `SELECT base, MIN(ask_lo), datetime(MAX(hour), 'unixepoch') FROM market_hour WHERE item = 'steel_plate' GROUP BY base ORDER BY 2`

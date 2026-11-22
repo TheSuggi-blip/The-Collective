@@ -18,11 +18,11 @@ now: the fleet's written knowledge by section (docs.py): the rulebook (each rule
 
 ## doc_versions
 
-history: every version of every section of docs, kept for good: a new row when a section's sha is new (version rises), first_seen, last_seen (the last pass it stood; a section that left its file keeps its rows); hive.py changes, docs --history
+history: every version of every section of docs, kept for good while retention.py is off (on: the newest 20 versions of each section and those of the last 30 days): a new row when a section's sha is new (version rises), first_seen, last_seen (the last pass it stood; a section that left its file keeps its rows); hive.py changes, docs --history
 
 - Kind: history
 - Columns: version, path, section, sha, title, text, first_seen, last_seen; one row per version
-- Kept: for good: no step of the code deletes its rows
+- Kept: for good while retention.py RETAIN_ENABLED is off; on: the newest 20 versions of each section stay whatever their age, and every version that stood in the last 30 days (by last_seen); git keeps every text (hourly, at most 5000 rows a table and pass)
 - Refreshed: the store's pass (every 60 s), by docs.keep
 - Sections changed in the last 24 hours (a section's first version is no change): `SELECT v.path, v.section, v.title, datetime(v.first_seen, 'unixepoch') AS changed FROM doc_versions v WHERE v.first_seen >= strftime('%s', 'now') - 86400 AND v.version > (SELECT MIN(w.version) FROM doc_versions w WHERE w.path = v.path AND w.section = v.section) ORDER BY v.first_seen DESC`
 - Every version of rule F8: `SELECT version, sha, datetime(first_seen, 'unixepoch'), datetime(last_seen, 'unixepoch'), LENGTH(text) FROM doc_versions WHERE path = 'governance/rulebook.md' AND section = 'F8' ORDER BY version`

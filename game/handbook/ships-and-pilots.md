@@ -82,7 +82,7 @@ state (stats.py): each pilot's and key's newest reading, against which the next 
 
 - Kind: statistics
 - Columns: pilot, key, level, value, t; one row per pilot, key
-- Kept: for good: no step of the code deletes its rows
+- Kept: for good, bounded: one row per pilot and key: the pilots ever registered times the keys (the skills a pilot trained, stats.COUNTERS and read_hours); made again empty when stats.SCHEMA changes (retention.py BOUNDED)
 - Refreshed: stats.py part `pilots`, once an hour (the store's first pass of a UTC hour)
 - The highest Piloting levels: `SELECT pilot, level, value FROM stats_pilot_last WHERE key = 'piloting' ORDER BY level DESC, value DESC LIMIT 10`
 - Pilots per Piloting level: `SELECT level, COUNT(*) FROM stats_pilot_last WHERE key = 'piloting' GROUP BY level ORDER BY level`

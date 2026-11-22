@@ -78,11 +78,11 @@ history: one row per census count of a field (units left) or a herd (animals) at
 
 ## reading_day
 
-history: per place, field or herd and UTC day the first and the last count; kept for good
+history: per place, field or herd and UTC day the first and the last count; kept for good while retention.py is off (on: 400 days)
 
 - Kind: history
 - Columns: system, poi, what, kind, day, first, last, t_first, t_last; one row per system, poi, what, day
-- Kept: for good: no step of the code deletes its rows
+- Kept: for good while retention.py RETAIN_ENABLED is off; on: 400 days by `day`, then deleted (hourly, at most 5000 rows a table and pass)
 - Refreshed: the store's pass (every 60 s): summed again for the days that got new rows of readings
 - How the fields changed per day: `SELECT system, poi, what, date(day, 'unixepoch') AS day, first, last, last - first AS change FROM reading_day WHERE kind = 'field' ORDER BY day DESC, change LIMIT 20`
 - Herds that shrank in a day: `SELECT system, poi, what, date(day, 'unixepoch'), first, last FROM reading_day WHERE kind = 'herd' AND last < first ORDER BY day DESC`

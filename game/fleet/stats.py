@@ -5,9 +5,9 @@ WHAT: the store (store.py) calls compute(conn, data, root, now) in every pass; c
       and writes these tables into live.db (the read copy carries them to every reader):
         stats_money_hour    per whole UTC hour and division (and Fleet): the steady money of that hour by station/fleet.py's
                             own window(), the wallets at its end, the treasury when read near its end, the idle share of
-                            the collector's minute samples; kept for good (hourly, a backfill of history.json's hours).
+                            the collector's minute samples; kept by retention.py (hourly, a backfill of history.json's hours).
                             Only the Fleet rows are summed over hours: a division's hour need not add up (see DESCRIPTIONS)
-        stats_supply_hour   per hour and supply chain: its stock against its keep (view supply_status); kept for good
+        stats_supply_hour   per hour and supply chain: its stock against its keep (view supply_status); kept by retention.py
         stats_time          every TIME_EVERY seconds: ships per role and state (own, other, once, shared, hand, docked,
                             space, offline) from the table ships; kept KEEP days
         stats_pilot_hour    per pilot, key and hour in which it moved: a skill (level, total XP) from ship_skills, or a
@@ -76,13 +76,14 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import board                                      # noqa: E402  the divisions' names
 import division                                   # noqa: E402  roles, owners, members
 import workclass                                  # noqa: E402  whose work a route is
+import retention                                  # noqa: E402  r22: how long stats_money_hour, stats_supply_hour, stats_route_author stay
 
 # store.py imports this file: store, hive, fill, dispatch, surplus and routes are imported inside the functions.
 
 HOUR, DAY = 3600, 86400
 TIME_EVERY = 600               # seconds between two samples of where the ships are (stats_time)
 FIGURES_EVERY = 600            # seconds between two computations of the figures (the heavy part: about 2 s)
-KEEP = {"stats_time": 30, "stats_pilot_hour": 8}     # days a sample table keeps; stats_money_hour and stats_supply_hour stay for good
+KEEP = {"stats_time": 30, "stats_pilot_hour": 8}     # days a sample table keeps; stats_money_hour, stats_supply_hour: retention.py RETAIN
 WINDOWS = (1, 6, 24, 72)       # hours of the kpi
 MIN_N = 24                     # hours of history an alert needs; a rate from fewer events says so
 SPLIT_SPAN = 2.0               # hours: a skill reading spanning more is not split over routes (it would give each its mean)
@@ -125,10 +126,11 @@ TABLES = ("stats_money_hour", "stats_supply_hour", "stats_time", "stats_pilot_ho
 DESCRIPTIONS = {
     "stats_money_hour": "history (stats.py): per whole UTC hour and division (Fleet: the whole) the steady money of that hour by station/fleet.py's "
                         "window(): income, costs, net (= income - costs), paid once (rewards - bought), total, per hour over `minutes`; wallets at the "
-                        "hour's end, the treasury when read near it, the idle share of the collector's minute samples (Fleet); kept for good. The Fleet "
+                        "hour's end, the treasury when read near it, the idle share of the collector's minute samples (Fleet); kept " + retention.short("stats_money_hour") + ". The Fleet "
                         "rows add up to the collector's window over a longer span; a division's rows of one hour need not add up to the Fleet's (a "
                         "move between our purses whose two sides fall into different hours): sum the Fleet rows only",
-    "stats_supply_hour": "history (stats.py): per hour and supply chain its stock against its keep and its status (view supply_status); kept for good",
+    "stats_supply_hour": "history (stats.py): per hour and supply chain its stock against its keep and its status (view supply_status); kept %s"
+                         % retention.short("stats_supply_hour"),
     "stats_time": "history (stats.py): every 10 minutes the ships per role and state: own, other (another class's work), once, shared, hand, "
                   "docked, space (without work), offline; a sample is the state at that moment (work sampling); kept 30 days",
     "stats_pilot_hour": "history (stats.py): per pilot, key and UTC hour in which it moved: a skill's level and total XP (value) and the gain since "

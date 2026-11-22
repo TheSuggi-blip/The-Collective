@@ -16,8 +16,8 @@ WHAT: the members ask the store through hive.py's verbs and the MCP tool `collec
                                its kind (snapshot, history, statistics, view, bookkeeping), store.DESCRIPTIONS,
                                its columns and key from PRAGMA table_info of a fresh empty schema made in memory by
                                the store's own setup (store.SCHEMA, store.setup_snapshot), never the live
-                               database; how long its rows are kept (store.KEEP_DAYS, KEEP_TABLES, stats.KEEP, a
-                               DELETE in the code); how often it is refreshed (store.RECORDS, LOADERS, the
+                               database; how long its rows are kept (store.KEEP_DAYS, KEEP_TABLES, stats.KEEP,
+                               retention.py's RETAIN and BOUNDED, a DELETE in the code); how often it is refreshed (store.RECORDS, LOADERS, the
                                functions that write it, stats.compute's parts); store.EXAMPLES, which
                                test_fleet_store_state.py runs. statistics.md adds The figures (stats.VIEWS_SHOWN,
                                each with its section of game/metrics.md), written-knowledge.md The kinds (docs.KINDS
@@ -485,6 +485,9 @@ def keep_text(mods, name, kind, deleters):
         return "%g days (store.py %s), then deleted by whole %s" % (days, why, "days" if raw.get(name) == store.DAY else "hours")
     if name in getattr(stats, "KEEP", {}):
         return "%g days (stats.py KEEP)" % stats.KEEP[name]
+    rules = getattr(store, "retention", None)              # r22: the tables once kept for good (retention.py RETAIN, BOUNDED)
+    if rules is not None and (name in rules.RETAIN or name in rules.BOUNDED):
+        return rules.kept(name)
     if deleters:
         return "not over time: %s delete%s rows, what stands is the newest" % (", ".join(deleters[:3]), "" if len(deleters) > 1 else "s")
     return "for good: no step of the code deletes its rows"
@@ -622,7 +625,8 @@ def master(mods, root, ident, described, subjects):
                  counts["bookkeeping"], len(mods["collective_mcp"].TOOLS)),
               "Kinds: snapshot = what a file says now (replaced when the file changes; it also carries `src`, the file its row came",
               "from; dropped and loaded again when its definition changes); history = rows kept over time (raw rows for days, sums",
-              "for good); statistics = computed by stats.py when due; view = a query over tables, computed when asked; bookkeeping =",
+              "as each table's Kept line says); statistics = computed by stats.py when due; view = a query over tables, computed when",
+              "asked; bookkeeping =",
               "the store's own marks. Columns come from a fresh empty schema; every example runs in test_fleet_store_state.py.", "",
               "## Contents", "",
               "- How the data flows (below): the game to the members; what is private, what is public",

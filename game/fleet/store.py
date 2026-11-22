@@ -32,7 +32,8 @@ WHAT: the service `store` runs it. Every minute it reads the new whole lines of 
         governance/rulebook.md, strategy.md and empire.md, the
         guidebooks and templates of each division, game/rules/*.md,
         the newest entry of communications/orders.log (docs.py)     -> docs (one row a section), and doc_versions:
-                                                                       every version of every section, kept for good
+                                                                       every version of every section (retention.py:
+                                                                       the newest 20 and those of the last 30 days)
       After a pass that wrote, and at least every five minutes, it publishes a copy, <data>/store/read.db,
       which every other program reads; the first pass of a UTC day also writes
       <data>/store/backup/collective-<date>.db (the five newest stay). `hive.py sql` and `hive.py schema`
@@ -56,6 +57,10 @@ RULES:
     than --keep-days are deleted by whole hours (readings by whole days); their sums stay, and a line of
     such an hour that turns up again is not taken in: those sums are final. Observations have no sums: they are kept
     KEEP_TABLES days (30), or --keep-days when that is longer, cut and sealed by whole days.
+  - The tables once kept for good (the sums route_hour, market_hour, reading_day, the statistics' stats_money_hour and
+    stats_supply_hour, doc_versions, stats_route_author) keep what retention.py's one table of rules says (RETAIN,
+    behind its switch RETAIN_ENABLED, off: then for good): prune() calls retention.apply after the raw rows, at most a
+    batch a table and transaction; `retention.py --dry-run` prints what would go now and in a year.
   - stock_hour: after the snapshot, a pass that loaded the storage book again, or the first pass of a UTC hour,
     writes the hour's sample from the table holdings: per division (division.owner's member, by its division's name)
     and item the units held in station storage and in the holds, rows above 0 only. A later pass of the same hour
@@ -136,9 +141,10 @@ import docs as writings                           # noqa: E402  the fleet's writ
 import supply as supplychains                     # noqa: E402  the supply chains: the reader of game/supply/chains.tsv and the view
 import needs as needbook                          # noqa: E402  the needs register: the reader of game/needs.tsv, need_status
 import stats                                      # noqa: E402  the fleet's statistics: their tables and the figures computed in the pass
+import retention                                  # noqa: E402  r22: how long the tables once kept for good stay (RETAIN_ENABLED, off)
 
 EVERY = 60                     # seconds between two passes
-KEEP_DAYS = 7                  # days of raw rows kept; the sums stay for good
+KEEP_DAYS = 7                  # days of raw rows kept; the sums stay as retention.py says (for good while it is off)
 PUBLISH = 300                  # seconds: the read copy is renewed at least this often
 BACKUPS = 5                    # daily backups kept
 LEASE_FRESH = 300              # seconds: a writer lease renewed this recently belongs to a living writer
@@ -1254,6 +1260,7 @@ def prune(conn, now, keep_days):
     except BaseException:
         conn.execute("ROLLBACK")
         raise
+    gone += retention.apply(conn, now, keep_days)     # r22: the tables once kept for good, by retention.RETAIN (off: nothing)
     return gone
 
 
@@ -1317,7 +1324,7 @@ def one_pass(data, now=None, keep_days=KEEP_DAYS, root=None):
             out["snapshot"] = take_snapshot(conn, data, root or ROOT, now)
         except Exception as error:                     # a fault of the snapshot never holds up the history
             out["snapshot"] = {"loaded": Counter(), "rows": 0, "problems": [], "gone": 0, "flies": 0, "error": "%s: %s" % (type(error).__name__, error)}
-        out["versions"] = writings.keep(conn, now, out["snapshot"]["problems"])   # every version of each section of docs, kept for good
+        out["versions"] = writings.keep(conn, now, out["snapshot"]["problems"])   # every version of each section of docs (how long: retention.py)
         try:
             out["stats"] = stats.compute(conn, data, root or ROOT, now)     # the fleet's statistics: stats.py decides itself what is due
         except Exception as error:                     # a failing figure never holds up the pass (stats.py names it: hive.py stats status)
@@ -1503,9 +1510,9 @@ DESCRIPTIONS = {               # one line per table and view: what a row is and 
     "runs": "history: one row per run of a route (pilot, route, start, minutes, steady credits, paid once, read a wallet), the raw rows of --keep-days days",
     "moves": "history: one row per change of an item's best bid or ask at a station (market/history.jsonl), the raw rows of --keep-days days",
     "readings": "history: one row per census count of a field (units left) or a herd (animals) at a place, the raw rows of --keep-days days",
-    "route_hour": "history: per route and UTC hour the runs, minutes, read minutes, steady credits and paid once; kept for good",
-    "market_hour": "history: per station, item and UTC hour the lowest and highest best bid and best ask; kept for good",
-    "reading_day": "history: per place, field or herd and UTC day the first and the last count; kept for good",
+    "route_hour": "history: per route and UTC hour the runs, minutes, read minutes, steady credits and paid once; kept %s" % retention.short("route_hour"),
+    "market_hour": "history: per station, item and UTC hour the lowest and highest best bid and best ask; kept %s" % retention.short("market_hour"),
+    "reading_day": "history: per place, field or herd and UTC day the first and the last count; kept %s" % retention.short("reading_day"),
     "observations": "history: one row per observation a member wrote with observe.py (observations/<division>.jsonl): division, member, kind, "
                     "subject, when it was seen (t, at), note; `fields` is JSON text, one field read by json_extract(fields, '$.<key>'); kept 30 days at least",
     "stock_hour": "history: one sample an hour of what each division (Mining, Trade, Logistics, Military, Intel, Command) holds of each item, station storage "
@@ -1553,7 +1560,7 @@ DESCRIPTIONS = {               # one line per table and view: what a row is and 
             "entry of communications/orders.log (head, each S/G/D/P line, each block and member's block), governance/strategy.md and empire.md, "
             "the guidebooks and templates of each division, game/rules/*.md row by row: kind, owner, section id, n (its place in the file), title, "
             "text, sha, chars, t (the file's mtime); hive.py docs",
-    "doc_versions": "history: every version of every section of docs, kept for good: a new row when a section's sha is new (version rises), "
+    "doc_versions": "history: every version of every section of docs, kept " + retention.short("doc_versions") + ": a new row when a section's sha is new (version rises), "
                     "first_seen, last_seen (the last pass it stood; a section that left its file keeps its rows); hive.py changes, docs --history",
     "inventory": "view: what the fleet holds per item, in storage and in the holds, with its base value and worth (units x base value): craftbook.py inventory's sums",
     "inventory_by_station": "view: what the fleet holds per place (a station's base id, or `hold`) and item",

@@ -7,7 +7,9 @@ WHAT: communications/ holds the append-only logs of The Collective
         orders     the newest entry of orders.log: the orders in force, complete
         requests   the requests of requests.log by state: OPEN (no answer yet),
                    ACCEPTED (the last answer says yes) and, with --all, CLOSED
-                   (the last answer says done or no)
+                   (the last answer says done or no); a request not closed whose
+                   newest entry (the request, or its last answer) is older than
+                   STALE_DAYS (3) is marked STALE and counted
         digest     the last session entries of each member from reports.log and
                    the requests not closed: the record a summary of the
                    divisions is written from
@@ -46,6 +48,10 @@ RULES (check):
   - requests.log: a `request` has a `To:` and a `Need:` line; an `answer` names
     a request of this log in `see:` and its `Answer:` line starts with yes, no
     or done.
+RULES (requests):
+  - STALE is a mark, never a state: no machine closes a request. Only an
+    answer (yes, no or done) moves it; a stale one is answered or closed by its
+    members (Suggi, 2026-11-22: nothing piles up forever).
 WHY:  an order that has to be searched for is guessed, and a request without a
       state is lost. The newest order and the open requests are one command
       away for every member, and the board of requests is computed from the
@@ -85,6 +91,7 @@ ENTRY_CHARS = 8000            # the newest orders entry, whole, Suggi's S and G 
 PLAN_WORDS = 150              # ... PLAN, its heading line not counted
 BLOCK_WORDS = 80              # ... each member's block, its heading line not counted
 CHANGED_WORDS = 60            # ... the `Changed:` line
+STALE_DAYS = 3                # r22: a request not closed whose newest entry is older than this is marked STALE (never closed)
 MEMBER_BLOCK = re.compile(r"^([A-Z]{3,}), ")      # a member's block heading: `UNITY, Fleet Admiral (...)`, as members() reads it
 DRAFT = re.compile(r"^## \[ENT-NEXT\] \| NOW \| ([A-Za-z][A-Za-z0-9_-]*) \| ([a-z]+)((?: \| (?:ref|see): [^|]+)*)$")
 
@@ -164,8 +171,31 @@ def addressed(request, name):
     return name.lower() in names or "all" in names
 
 
-def request_line(state, request, answer):
-    line = "  ENT-%03d | %s | %s -> %s | by %s | %s" % (request["num"], request["when"], request["by"], field(request, "To").rstrip(".") or "?",
+def stale_days(state, request, answer, now):
+    """The days since the newest entry of a request not closed (the request, or its last answer) when they are more than
+    STALE_DAYS; None for a closed or a fresh one."""
+    if state == "CLOSED":
+        return None
+    try:
+        age = (now - calendar.timegm(time.strptime((answer or request)["when"], "%Y-%m-%d %H:%M"))) / 86400.0
+    except (ValueError, KeyError, TypeError):
+        return None
+    return age if age > STALE_DAYS else None
+
+
+def stale_line(root, who, now=None):
+    """The briefing's line: how many requests not closed and addressed to `who` (all: every one) are stale, and which."""
+    now = time.time() if now is None else now
+    entries, _errors = read_log(root, "requests", archive=True)
+    found = [r for r in request_states(entries) if stale_days(r[0], r[1], r[2], now) is not None and (who in (None, "all") or addressed(r[1], who))]
+    return ("STALE REQUESTS%s: %d not closed and untouched for more than %d days%s%s"
+            % ("" if who in (None, "all") else " ADDRESSED TO " + who, len(found), STALE_DAYS, ": " if found else "",
+               ", ".join("ENT-%03d" % r[1]["num"] for r in found)) + (" | answer each (yes, no or done); no machine closes one" if found else ""))
+
+
+def request_line(state, request, answer, now=None):
+    days = stale_days(state, request, answer, now) if now is not None else None
+    line = ("  STALE (%.0f d) " % days if days is not None else "  ") + "ENT-%03d | %s | %s -> %s | by %s | %s" % (request["num"], request["when"], request["by"], field(request, "To").rstrip(".") or "?",
                                                       field(request, "By").rstrip(".") or "not said", field(request, "Need")[:160])
     if answer is not None:
         line += "\n          answered ENT-%03d by %s, %s: %s" % (answer["num"], answer["by"], answer["when"], field(answer, "Answer")[:140])
@@ -182,14 +212,19 @@ def show_orders(root):
     return 0
 
 
-def show_requests(root, to, sender, everything):
+def show_requests(root, to, sender, everything, now=None):
+    now = time.time() if now is None else now
     entries, _errors = read_log(root, "requests", archive=True)
     rows = [r for r in request_states(entries) if (to is None or addressed(r[1], to)) and (sender is None or r[1]["by"].lower() == sender.lower())]
     for state in ("OPEN", "ACCEPTED") + (("CLOSED",) if everything else ()):
         mine = [r for r in rows if r[0] == state]
         print("%s (%d)" % (state, len(mine)))
         for row in mine:
-            print(request_line(*row))
+            print(request_line(*row, now=now))
+    stale = [r for r in rows if stale_days(r[0], r[1], r[2], now) is not None]
+    if stale:
+        print("Stale: %d not closed and untouched for more than %d days (%s): answer each (yes, no or done); no machine closes one"
+              % (len(stale), STALE_DAYS, ", ".join("ENT-%03d" % r[1]["num"] for r in stale)))
     print("Open: %d | Accepted: %d | Closed: %d" % tuple(sum(1 for r in rows if r[0] == s) for s in ("OPEN", "ACCEPTED", "CLOSED")))
     return 0
 
@@ -204,7 +239,8 @@ def members(root, sessions):
     return ["Unity"] + sorted(names)
 
 
-def show_digest(root, last, member):
+def show_digest(root, last, member, now=None):
+    now = time.time() if now is None else now
     sessions, _errors = read_log(root, "reports")
     requests, _errors = read_log(root, "requests", archive=True)
     pending = [r for r in request_states(requests) if r[0] != "CLOSED"]
@@ -222,7 +258,7 @@ def show_digest(root, last, member):
         for row in pending:
             if row[1]["by"] == name or addressed(row[1], name):
                 print("  request %s:" % row[0].lower())
-                print("  " + request_line(*row).replace("\n", "\n  "))
+                print("  " + request_line(*row, now=now).replace("\n", "\n  "))
         print()
     return 0
 
