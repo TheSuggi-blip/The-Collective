@@ -1,0 +1,22 @@
+{
+ "id": "hunt-gsc-0024-emission-nebula-drift-ray",
+ "kind": "hunt",
+ "title": "drift_ray at gsc_0024_emission_nebula; crystallized biogas for the reserve, loot to a trader receiver",
+ "note": "Written by Apophis 2026-11-22 16:20 UTC (orders ENT-064, P1: train at the least fuel per XP; rule F23: work bringing two beats one). Drift-ray hunts cost the least fuel per combat-and-piloting XP of all our hunts since 12:00 UTC: 0.32 cr per XP against 0.53 for carapace and 0.83 to 0.96 for hollow pilgrims, cinder sylphs, frost moths and halo drifters, at about the same XP an hour (table runs joined with stats_pilot_hour, scratch); crystallized biogas is short in the reserve (tool stock, view reserve, 16:12 UTC: 1,966). Herd: 14 drift rays, no pirate, at 14:44 UTC (data/wildlife/gsc_0024.json), 8 jumps from home; no drift-ray hunt of ours at the place (the hunt there takes another species, its own herd). sell_at as hunt-gsc-0024-frost-ring-hollow-pilgrim, a station with a trader receiver (data/fleet/receivers.json); gift_to trader (P5). One ship; standing work.",
+ "place": "gsc_0024:gsc_0024_emission_nebula",
+ "species": [
+  "drift_ray"
+ ],
+ "sell_at": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+ "min_bid": 5000,
+ "kills": 4,
+ "minutes": 40,
+ "max_ships": 1,
+ "min_creatures": 4,
+ "alone": "pirates",
+ "requires": {
+  "empty_hold": true
+ },
+ "gift_to": "trader",
+ "standing": true
+}
