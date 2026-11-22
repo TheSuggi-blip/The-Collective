@@ -1,0 +1,20 @@
+{
+ "id": "hunt-flintrock-vapor-fields-cinder-sylph",
+ "kind": "hunt",
+ "title": "cinder_sylph at flintrock_vapor_fields; loot sold at War Citadel",
+ "note": "Written by routemaker.py from the herd's count, the loot of 124 runs of ours and the order book; an estimate of 12680 cr per hunter-hour, not a measurement. A test: one ship, the ranching rules kept. Added as a test by fill.py on 2026-11-22 01:53 UTC (Unity): up to 3 ships, one result each, until 3 runs are read (rule F37).",
+ "place": "flintrock:flintrock_vapor_fields",
+ "species": [
+  "cinder_sylph"
+ ],
+ "sell_at": "krynn:war_citadel:crimson_war_citadel",
+ "min_bid": 6547,
+ "kills": 4,
+ "minutes": 90,
+ "max_ships": 3,
+ "min_creatures": 4,
+ "alone": true,
+ "requires": {
+  "empty_hold": true
+ }
+}

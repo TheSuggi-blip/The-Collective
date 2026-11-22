@@ -1,0 +1,33 @@
+{
+ "id": "mission-voidborn-trajectory-unknown",
+ "kind": "circuit",
+ "title": "Voidborn Trajectory: 6000 cr at Unknown Edge Waystation",
+ "note": "Written by routemaker.py from the board and the order books: goods for about 0 cr, reward 6000 cr. A test: one ship; whether the mission hands its goods out at the accept is not known until one accept with an empty hold. Added as a test by fill.py on 2026-11-22 01:53 UTC (Unity): up to 3 ships, one result each, until 3 runs are read (rule F37).",
+ "once": true,
+ "max_ships": 3,
+ "one_time": [
+  "Voidborn Trajectory"
+ ],
+ "skip_if_booked": [
+  "Voidborn Trajectory"
+ ],
+ "stops": [
+  {
+   "at": "unknown_edge:unknown_edge_waystation:unknown_edge_waystation",
+   "accept": [
+    "voidborn_trajectory"
+   ]
+  },
+  {
+   "at": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+   "redock": true
+  },
+  {
+   "at": "synchrony:synchrony_hub:synchrony_hub",
+   "redock": true
+  },
+  {
+   "at": "unknown_edge:unknown_edge_waystation:unknown_edge_waystation"
+  }
+ ]
+}
