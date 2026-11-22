@@ -19,19 +19,19 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 |---|---|---|---|---|---|
 | [Once per Pilot](index-once-per-pilot.md) | Missions and rewards the game pays once per pilot: a new pilot's first work, and seed money. | 47 | 23 | 24 | voidborn-conductive-lattice: 7,580 cr a run |
 | [Paying Routes](index-paying-routes.md) | Work that repeats and whose runs of the last 12 hours measured above zero. | 22 | 7 | 15 | sell-loot-at-dheneb: 140,300 cr per ship-hour |
-| [Tests](index-tests.md) | Work that repeats and has no measured figure: new, or no readable run in the last 12 hours. One ship until its first RESULT line is read. | 135 | 40 | 95 | not measured yet |
+| [Tests](index-tests.md) | Work that repeats and has no measured figure: new, or no readable run in the last 12 hours. One ship until its first RESULT line is read. | 138 | 43 | 95 | not measured yet |
 | [Fitting](index-fitting.md) | A module bought and fitted: the tool a kind of work needs. | 14 | 10 | 4 | fit-ice-harvester-lhs-1140: -4,320 cr per ship-hour |
-| [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 315 | 78 | 237 | hunt-flintrock-vapor-fields-cinder-sylph: 37,670 cr per ship-hour |
+| [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 320 | 82 | 238 | hunt-flintrock-vapor-fields-cinder-sylph: 37,670 cr per ship-hour |
 | [Measured at a Loss](index-measured-at-a-loss.md) | Work that repeats and whose runs of the last 12 hours measured zero or below. | 10 | 1 | 9 | trade-chemical-liner-beta-to-first-step: -200 cr per ship-hour |
 | [Off](index-off.md) | Written down, not flown. | 36 | 15 | 21 | voidborn-first-steps: 4,020 cr per ship-hour |
-| All | | 579 | 174 | 405 | |
+| All | | 587 | 181 | 406 | |
 
 ## Routes by Zone and Kind
 
 | Zone | Routes | census | circuit | guard | hunt | mine | Farthest system, jumps from home |
 |---|---|---|---|---|---|---|---|
-| home space | 174 | 1 | 144 | 1 | 15 | 13 | 3 |
-| beyond the border | 405 | 17 | 76 | 7 | 210 | 95 | 29 |
+| home space | 181 | 1 | 151 | 1 | 15 | 13 | 3 |
+| beyond the border | 406 | 17 | 77 | 7 | 210 | 95 | 29 |
 
 ## Plans by Role
 

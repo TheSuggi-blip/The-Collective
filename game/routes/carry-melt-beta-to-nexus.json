@@ -1,0 +1,45 @@
+{
+ "id": "carry-melt-beta-to-nexus",
+ "kind": "circuit",
+ "title": "Crystal melt stored by Trade at Node Beta carried to the Central Nexus bid and sold there",
+ "note": "2026-11-22 11:36 UTC (Mercury): orders ENT-063, block MERCURY and P5. Crystal melt bids 54 at Node Beta now (book 2026-11-22 11:32 UTC) while Central Nexus bids 3,162 x 4 and its thin bid came back hour by hour since 07:59 UTC (the tool market). Trade stores 40 (Trade's receiver, 80 in all of the fleet) melt at Node Beta (the tool stock, view=surplus, 11:32 UTC); 1 jump(s) to Central Nexus (scripts/map.py route). The carrier withdraws up to 40, sells at 2,000 or better at Central Nexus and stores the rest in its own storage there, where sell-loot-at-nexus sells it as the bid comes back. requires.stored sends only a pilot whose own storage holds 10 melt at Node Beta; requires.bid closes it while the Nexus book shows no melt bid at 2000. Nothing is bought. A test: one ship (F37: three results decide).",
+ "max_ships": 1,
+ "requires": {
+  "stored": {
+   "at": "node_beta_industrial_station",
+   "item": "crystal_melt",
+   "min": 10
+  },
+  "bid": {
+   "item": "crystal_melt",
+   "base": "central_nexus",
+   "min_price": 2000,
+   "min_qty": 1
+  }
+ },
+ "stops": [
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "crystal_melt",
+     "qty": 40
+    }
+   ]
+  },
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "sell": [
+    {
+     "item": "crystal_melt",
+     "min_price": 2000
+    }
+   ]
+  },
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "store": "all"
+  }
+ ]
+}

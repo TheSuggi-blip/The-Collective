@@ -1,0 +1,48 @@
+{
+ "id": "sell-loot-at-nexus",
+ "kind": "circuit",
+ "title": "Hunt loot stored by Trade's receivers at Central Nexus sold where it lies",
+ "note": "2026-11-22 11:36 UTC (Mercury): orders ENT-063, block MERCURY and P5: the hunts and gift routes hand their goods to Trade's receivers; sell them where they lie at or above the standing bids. Central Nexus had no sell route for its loot. Evidence: Trade's receivers store 38 to 49 crystal melt at Central Nexus (table holdings, storage book 2026-11-22 11:32 UTC); the book bids crystal melt 3,162 x 4 (11:01 UTC), thin bids that came back hour by hour (2,733 x 1 07:59, 2,869 x 1 09:22, 3,012 x 2 10:00; the tool market), noble condensate 690 x 50. requires.stored sends only a pilot whose own storage here holds 2 crystal_melt; requires.bid closes it while a book read within the hour shows no crystal_melt bid at 2000. Floors at or under the standing bids, never under one (F12): melt 2,000 (every other melt bid but four thin ones reads 54), noble 690. Nothing is bought. A test: one ship (F37: three results decide).",
+ "max_ships": 1,
+ "requires": {
+  "stored": {
+   "at": "central_nexus",
+   "item": "crystal_melt",
+   "min": 2
+  },
+  "bid": {
+   "item": "crystal_melt",
+   "base": "central_nexus",
+   "min_price": 2000,
+   "min_qty": 1
+  }
+ },
+ "stops": [
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "crystal_melt"
+    },
+    {
+     "item": "noble_condensate"
+    }
+   ],
+   "sell": [
+    {
+     "item": "crystal_melt",
+     "min_price": 2000
+    },
+    {
+     "item": "noble_condensate",
+     "min_price": 690
+    }
+   ]
+  },
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "store": "all"
+  }
+ ]
+}

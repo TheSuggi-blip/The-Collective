@@ -1,0 +1,75 @@
+{
+ "id": "craft-armor-own-first-step",
+ "kind": "circuit",
+ "title": "Armor plate made by hand at First Step from all of the trader's own stored creature carapace in one visit, kept in its storage there for the reserve",
+ "note": "2026-11-22 11:36 UTC (Mercury): orders ENT-063, P1 (train at the least fuel per XP) and P5 (Trade crafts what it is given); rule F23 (every ship crafts its own stores), F24, F36. The hunts now hand their carapace to Trade's receivers: they store 287 creature carapace at First Step (table holdings, storage book 2026-11-22 11:32 UTC), and no bid above 1 cr takes it. Armor plate is short 3,718 for the reserve (the tool stock, view=reserve, 11:34 UTC: demand 5,940, held 672) and carapace is its input (carapace_plating: 1 armor plate from 6 carapace, by hand, 0 cr). A trader docked here crafts with no jump and no fuel: Crafting is the class's second skill (guidebook trade card). The craft list asks the recipe in halving sizes (128 down to 1, the stops of craft-armor-military-node-beta and craft-steel-own-node-beta): the runner makes nothing where the stores fall short. Nothing is bought or sold; the plates stay in the pilot's storage for Logistics. Standing work; closes by itself when the pilot holds under 30 carapace here. A test: three results decide (F37).",
+ "standing": true,
+ "requires": {
+  "stored": {
+   "at": "first_step_memorial_station",
+   "item": "creature_carapace",
+   "min": 30
+  }
+ },
+ "max_ships": 1,
+ "stops": [
+  {
+   "at": "first_step:first_step_memorial_station:first_step_memorial_station",
+   "store": "all",
+   "craft": [
+    {
+     "recipe": "carapace_plating",
+     "runs": 128,
+     "per_run": 1,
+     "makes": "armor_plate"
+    },
+    {
+     "recipe": "carapace_plating",
+     "runs": 64,
+     "per_run": 1,
+     "makes": "armor_plate"
+    },
+    {
+     "recipe": "carapace_plating",
+     "runs": 32,
+     "per_run": 1,
+     "makes": "armor_plate"
+    },
+    {
+     "recipe": "carapace_plating",
+     "runs": 16,
+     "per_run": 1,
+     "makes": "armor_plate"
+    },
+    {
+     "recipe": "carapace_plating",
+     "runs": 8,
+     "per_run": 1,
+     "makes": "armor_plate"
+    },
+    {
+     "recipe": "carapace_plating",
+     "runs": 4,
+     "per_run": 1,
+     "makes": "armor_plate"
+    },
+    {
+     "recipe": "carapace_plating",
+     "runs": 2,
+     "per_run": 1,
+     "makes": "armor_plate"
+    },
+    {
+     "recipe": "carapace_plating",
+     "runs": 1,
+     "per_run": 1,
+     "makes": "armor_plate"
+    }
+   ]
+  },
+  {
+   "at": "first_step:first_step_memorial_station:first_step_memorial_station",
+   "store": "all"
+  }
+ ]
+}
