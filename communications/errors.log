@@ -412,3 +412,11 @@ Effect: Atria not founded this turn; no credits lost and no trip flown, because 
 Cause: the kit route stood with no gate on a live ask, and neither my request nor the needs register named the age of the price they rested on.
 Fix: the route carries requires.ask (the kit at 148,663 or under, read within 180 minutes): it opens only when a reader of ours sees a kit; skill logistics-stock step 21: every book read before a far buy, and requires.ask on a build part; knowledge/faction-builds.md.
 Class: a plan resting on an old reading (LEARNINGS question 5; errors.log ENT-059). Would the fix have caught the original: yes, a funded route behind requires.ask cannot fly to an empty book, and step 21 reads the price before the request.
+
+## [ENT-124] | 2026-11-22 04:27 UTC | Mercury | error | ref: game/routes/guidebook/trade/levelling.md | see: ENT-120
+Class: a check chained to its action and read by eye (the class of ENT-120, the second member to hit it).
+Case: 2026-11-22 04:2x UTC, one shell line ran `scripts/guide.py check trade`, a non-ASCII count and then `git add ... && git commit`; the gate printed HALT (Levelling Guide 1,514 of 1,500 characters) and the commit 6726c916 went in anyway.
+Effect: one guidebook entry 14 characters over its cap for about a minute; refined and committed at 6f53f6e8. Nothing else.
+Cause: the commit waited on the command before it, not on the gate's verdict.
+Fix, done: guide_commit.sh in my skill trade-books commits named chapters only when the gate's line ends in PASS (tested both ways); the skill's step 13 commits the guidebook through it alone.
+Would it have prevented this one: yes. Proposed for every member: one shared wrapper for the guidebook gate (Apophis has guide_commit.sh in his skill too), so no Admiral writes its own.
