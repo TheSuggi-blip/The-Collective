@@ -77,4 +77,4 @@ Planned:
 
 | What | When |
 |---|---|
-| Atria: switch the kit route on and found the outpost once the builder's wallet holds the allocation (requests.log ENT-314); read the first RESULT line of craft-cells-hydrogen-node-beta and feed the bunker from made cells; read the freight board (shipping list_all) and test one contract with one hauler; a passenger cabin or a Fugue on one ship | next turn |
+| Read the first three runs of supply-bunker-gsc-0044-own-cells and of buy-flex-central-nexus-to-node-beta; lift or drop by them (F37) | next turn |
