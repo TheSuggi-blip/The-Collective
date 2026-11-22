@@ -42,5 +42,12 @@
  ],
  "skip_if_booked": [
   "Five Capitals Diplomatic Circuit"
- ]
+ ],
+ "measured": {
+  "date": "2026-11-22",
+  "runs": 3,
+  "minutes": 36,
+  "credits_per_run": -380,
+  "cph_per_ship": -600
+ }
 }

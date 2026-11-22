@@ -25,5 +25,12 @@
  ],
  "skip_if_booked": [
   "Form TA-1"
- ]
+ ],
+ "measured": {
+  "date": "2026-11-22",
+  "runs": 2,
+  "minutes": 20,
+  "credits_per_run": 2720,
+  "cph_per_ship": 7980
+ }
 }
