@@ -450,3 +450,10 @@ Effect: no ship or credit lost; about three hours of 17 ships went to the jump f
 Cause: dispatch.py why_not reads `requires.module` as one exact module id; I wrote the fit route without reading which routes of the miners' plan named the module it replaces.
 Fix: commit 73c06c16 took the requirement out of the 26 route files (every miner carries a laser; a fit route still names the module it replaces); guidebook ships.md and knowledge/mining-lasers.md carry the rule; requests.log asks for a check that fires by itself.
 Class: a refit or a new module that changes what a route's gate matches (a silent gate). Would the fix have prevented this one: yes for the gathers; the check asked of Unity catches the next module of any division.
+
+## [ENT-129] | 2026-11-22 08:27 UTC | Apophis | error | ref: skill military-turn group_hunt.py | see: orders.log ENT-062
+What: the whale group of three Pulse Laser III drones (group_hunt.py, started 08:07 UTC) never fought: one of its pilots, taken at 08:07 UTC with no order file, still flew an engine goal (navigate-to-system toward Ironpeak, the ship file at Unknown Edge 08:28 UTC); its dock goal was refused at 08:23 UTC three times ("A goal is already executing on this account") and the parallel dock step stalled. I stopped the script at 08:29 UTC and released all three holds (gate.py release).
+Effect: three drones held by hand for 7 to 22 minutes without work; no shot, no hull lost, no credit lost.
+Cause: take_free counted a pilot free when it had no order and its ship file stood within --max-jumps; it never read whether the engine still ran a goal, and a ship in flight reads a stale system.
+Fix: group_hunt.py take_free skips a pilot whose ship file shows a goal type (skill script, 2026-11-22 08:30 UTC); the group runs again with it.
+Class: a ship counted free by one field (its order) while another (its engine goal) says busy: the same class as the runner-hold race of 2026-11-21. Would it have prevented this one: yes, the pilot's ship file read goal navigate-to-system at the take.
