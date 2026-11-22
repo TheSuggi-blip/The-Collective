@@ -5,6 +5,29 @@
   "trade-sell": {
    "title": "Stored goods sold where a station bid stands, at home and further out: each ship sells its own stores, nothing bought",
    "routes": [
+    "sell-loot-at-krynn",
+    "sell-loot-at-dheneb",
+    "sell-ember-node-beta-krynn",
+    "sell-ember-nexus-krynn",
+    "sell-ember-hexstar-krynn",
+    "sell-ember-nexus-dheneb",
+    "sell-ember-experiment-dheneb",
+    "sell-ember-hexstar-first-step",
+    "sell-loot-at-synchrony",
+    "sell-loot-at-experiment",
+    "carry-melt-sirius-to-experiment",
+    "carry-melt-first-step-to-experiment",
+    "sell-melt-at-sirius",
+    "sell-melt-experiment-sirius",
+    "sell-melt-nexus-sirius",
+    "sell-melt-node-beta-sirius",
+    "sell-melt-synchrony-sirius",
+    "sell-loot-at-node-beta",
+    "sell-superfluid-at-node-beta",
+    "sell-loot-at-first-step",
+    "sell-noble-at-first-step",
+    "sell-loot-at-nova-terra",
+    "sell-noble-at-nova-terra",
     "carry-hydrogen-beta-to-nova-terra",
     "carry-lead-beta-to-sirius",
     "carry-lead-nexus-to-sirius",
@@ -30,7 +53,7 @@
    "trains": [
     "trading"
    ],
-   "note": "2026-11-17 19:42 UTC (Mercury, orders ENT-042): null matter leads: the Central Nexus bid read 200 to 210 cr for 7 to 295 units six times from 17:56 to 19:38 UTC (ledger.py prices null_matter), the only null matter bid in our books; floor 200 against Central Nexus' own ask of 213 to 220; carry-null-matter-beta-to-nexus and sell-null-matter-at-nexus are one-ship tests, carry-null-matter-synchrony-nexus is Mining's route, not claimed, one ship. Then soma 320 (cheapest ask 275 x 200,627 at Central Nexus; bids 342 to 343 x 5 to 17 at four stations), palladium 270 (cheapest ask 200 x 1; bid 548 x 2 at Synchrony Hub), hydrogen 30 (no home bid at 19:33 UTC). Every route gated by requires.stored and requires.bid; open to every division's ships (rule F24). Starter hull, no module."
+   "note": "Hunt loot at the receivers' stations first (orders ENT-062 P5: ember, melt, noble, curd, superfluid where the hunts give them), then the stored surplus of every division"
   },
   "trade-craft": {
    "title": "Make from the pilot's own stores where they lie: copper piping, steel plate, then copper wiring",
