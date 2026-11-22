@@ -15,13 +15,14 @@ Status: proven. Updated: 2026-11-22. Evidence: the plan file (tool plan, show); 
   min), then census-worked-far, then their far list.
 - Hunters: one reader a hunt, one hunter a herd (F9), then @reader. P5:
   every scout hunt carries gift_to trader; no route sells or crafts.
+  Only hunts Intel claims; one another claims is dropped.
 - census-roads (the oldest readings, 480 min): three readers take it
   first, since a list last in every order is never reached (lessons.md).
 - Then: census-frontier, census-roads, park.
-- Capacity: the lists ask more reads than 30 scouts give (runs of 4
-  hours against systems / every_minutes); the far lists take the rest.
-- What changes it: a WORKED, SITES or FRESH line that HALTs, a pirate on
-  a road, a once mission in queue.log; why a route is closed: fill.py.
+- Capacity: the lists ask more reads than 30 scouts give; the far
+  lists take the rest.
+- Changed by: a WORKED, SITES or FRESH HALT, a pirate on a road, a once
+  mission in queue.log; why a route is closed: fill.py.
 
 ### Census lists
 Status: proven. Updated: 2026-11-21. Evidence: game/routes/census-*.json; dispatch.py (pick, stalest_system); intel turn check (OVERLAP, ROADS, WORKED).

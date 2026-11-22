@@ -19,8 +19,9 @@ Status: proven. Updated: 2026-11-21. Evidence: data/fleet/ships/; catalog table 
   signatures (tests.md), then Ship Scanner I.
 - Next hull: tier 1 needs no Piloting (table hulls): Qualia (explorer,
   speed 3, tank 130, three utility slots, no weapon slot), Eigenstate
-  (scout, speed 3) or Fugue (courier, speed 4). One ship first (tests.md);
-  tier 2 at Piloting 10.
+  (scout, speed 3) or Fugue (courier, speed 4). The Qualia test is closed:
+  over three times the fuel a read, no second one (tests.md); tier 2 at
+  Piloting 10, judged by fuel a read.
 - Style: read and leave, hold empty beyond the border (rule F3), never
   fire first (F2), hunt on the way only what passes both gauges of F9,
   pirates by F27 with a test first.

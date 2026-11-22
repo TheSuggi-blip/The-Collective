@@ -50,19 +50,19 @@ Status: test. Updated: 2026-11-21. Evidence: scouting/<system>.json `survey`; wi
   `survey`, faint signatures, deposits) decide the need survey-scanner-i.
 
 ### A tier-1 hull for the scouts
-Status: test. Updated: 2026-11-22. Evidence: catalog table hulls; browse_ships all_stations (2026-11-21); table runs (census rows with credits under 0, the hull by pilot, from 2026-11-22 03:30 UTC).
+Status: proven. Updated: 2026-11-22. Evidence: catalog table hulls; browse_ships all_stations (2026-11-21); table runs (kind census, scout pilots, minutes over 0; the hull by pilot; windows 07:30 to 11:30 and from 11:30 UTC, 2026-11-22).
 
 - Tier 1 needs no Piloting. Qualia (explorer): speed 3 against the
   Threshold's 1, tank 130, three utility slots, no weapon slot (no
   hunting). Listed at our stations from 35,000 to 49,482 cr.
-- One reader flies one since 2026-11-21 (observe kind hull_test). First
-  window (to 03:30 UTC): fewer minutes a read, about twice the fuel.
-  Second window, first four hours (03:30 to 07:20 UTC, the same lists):
-  minutes a run 4.8 against 8.4 (census-voidborn) and 13.3 against 17.4
-  (census-worked); credits a run about 2.6 and 3 times the Threshold's.
-- Rule F37: one hull first (F17), two more only when the second 12-hour
-  window holds fuel a read under 1.5 times the Threshold's; it stands
-  near 3 so far: no second hull is bought, the verdict at 15:30 UTC.
+- One reader flew one from 2026-11-21. Every window read the same way:
+  a run in about two thirds of the minutes, three times the fuel or more
+  (medians: 405 against 105 cr a run to 11:30 UTC, 450 against 135 from
+  11:30 UTC on 2026-11-22).
+- Verdict (rule F37, four windows): no second Qualia for the census; a
+  read costs over three times the fuel, and fuel is the fleet's cost
+  (orders P1). The one bought keeps reading. The next hull step for a
+  scout is tier 2 at Piloting 10, judged by fuel a read the same way.
 
 ### How a scout test gets three results
 Status: proven. Updated: 2026-11-22. Evidence: rule F37; queue.log ENT-203.

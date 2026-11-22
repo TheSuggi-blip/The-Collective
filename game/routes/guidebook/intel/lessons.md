@@ -128,3 +128,13 @@ Status: proven. Updated: 2026-11-21. Evidence: game/fleet/gate.py; the game's he
   runs the whole test suite (over eight minutes on 2026-11-21): run it in
   the background and poll it; a call cut between copy and commit leaves
   the change live and ungated in the clone (errors.log ENT-115).
+
+### A gate on a fresh read is open on an old one
+Status: proven. Updated: 2026-11-22. Evidence: route mission-cracking-the-shell-central (its runs); data/wildlife/gsc_0041.json; admirals.log ENT-095.
+
+- A step's `min_creatures` closes a hunt only while the place's census
+  is younger than 90 minutes; on a list read every 170 minutes the gate
+  stands open most of the time, and ships fly to an empty field.
+- So a hunt place that a route gates by count belongs on a list read
+  faster than the gate's window; else name the reading to the route's
+  owner with a place that is.
