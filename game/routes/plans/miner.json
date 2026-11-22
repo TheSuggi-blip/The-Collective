@@ -80,6 +80,10 @@
   {
    "what": "Read the five one-ship tests beyond the border (quantum fragments at Tidewater, Errai and Izar; silver at Errai; platinum at Bunda): three fields at once give the quantum-fragment verdict (F37); lift or drop each",
    "when": "next turn"
+  },
+  {
+   "what": "Strict classes: switch the five give-miner-stores routes on with the switch (requests ENT-332), then take the seven craft rows out of the miners' lists",
+   "when": "when strict classes go on"
   }
  ],
  "ships": {

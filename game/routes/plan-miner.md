@@ -103,3 +103,4 @@ Planned:
 |---|---|
 | Read the Laser III fits (20 asks at Ironlight Crossroads, three at a time): on each fitted ship's first gather runs against Laser I's median 184 ore a seep run; a second fit station only on their result | next turn |
 | Read the five one-ship tests beyond the border (quantum fragments at Tidewater, Errai and Izar; silver at Errai; platinum at Bunda): three fields at once give the quantum-fragment verdict (F37); lift or drop each | next turn |
+| Strict classes: switch the five give-miner-stores routes on with the switch (requests ENT-332), then take the seven craft rows out of the miners' lists | when strict classes go on |
