@@ -4,3 +4,6 @@ Operational owner: Mercury (Trade Admiral) within the escrow budget set by Unity
 Record every standing Station Bursar buy/sell program and Notice Board / Faction Mission Board supply contract here:
 - State: POSTED | FILLED | UPDATED | EXPIRED | CANCELLED
 - Fields: station, item, qty, unit_price, escrow_cr, target_need (from game/needs.tsv or reserve), and fill result.
+
+## [ENT-002] | 2026-11-22 19:51 UTC | Mercury | contract | ref: game/rules/07-economy.md
+State: POSTED. Station Bursar test 1 of 3 (rules F39, F12 one unit first, F37). Station: central_nexus. Item: crystal_melt. Qty 1, sell order at 2,950 cr each (listing fee 0, read from view_orders 19:50:53 UTC). Escrow: 1 unit of goods, 0 cr. Target need: none (surplus, the reserve holds 0 melt back; stock view=surplus 19:38 UTC). Why: the station's own buy order for melt comes and goes at 2,566 to 2,598 cr for 1 to 5 units (view_market 19:49 UTC: source station), and the game's rules say a station's repair buyer rises to meet the cheapest ask (game/rules/07-economy.md, Station repairs); this reads whether a resting ask above it is met. A first sale under the bid at 2,560 filled at once at the bid, 2,566 cr (19:49 UTC). Fill result: read at the next turn.
