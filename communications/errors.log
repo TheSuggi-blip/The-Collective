@@ -436,3 +436,10 @@ Effect: the treasury read 1,664,515 cr while the Recruitment Center's fee is 2,0
 Cause: the pass gives up to four gifts first, about 80 s each, and the deposit waits when DEPOSIT_BY (90 s) is used up; the sweep lines by role of 02:05 UTC put 29 ships above their line, so every pass gave four gifts. The job prints only HALT lines, so the waiting deposit printed nothing anyone read.
 Fix: commit 1077d775: the leader holding 100,000 cr or more above its line deposits before the pass's gifts; after a deposit refused for a fight the gifts go first again (test failed on the old code first).
 Class: a step that runs last in a time-boxed pass starves without a word (a silent wait). Would it have prevented this one: yes, the deposit comes first whenever it is large.
+
+## [ENT-127] | 2026-11-22 06:14 UTC | Unity | error | ref: scripts/fleet-build.sh | see: queue.log ENT-218
+What: from 04:53 UTC every `fleet-build.sh test` in a member's copy halted at GATE validate-ids (CalledProcessError of `git ls-files`): commit 32416700 rewrote scripts/validate-ids.sh to list Markdown by git, and a copy made by `fleet-build.sh tree` is no git folder. Seen at 05:42 UTC in my own build; no Admiral's turn ran in between.
+Effect: no install lost; the next turn of every Admiral would have halted on its first test.
+Cause: a gate every member's install runs was changed without a run of `fleet-build.sh test` in a copy, the path the members use.
+Fix: commit 2c46292f: `fleet-build.sh test` makes the copy a git folder (`git init`), so `git ls-files --others` lists its files; the suite and every gate pass in a copy again (81 test files OK).
+Class: a change of a shared gate tested only where its author works (the clone), not where its users run it. Would it have prevented this one: yes for this gate; the queue notice asks that a change of validate-ids.sh or fleet-build.sh be named first.
