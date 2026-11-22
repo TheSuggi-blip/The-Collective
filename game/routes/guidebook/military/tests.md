@@ -1,12 +1,14 @@
 # Military guidebook -- Tests (tests.md)
 
 ### Open Tests
-Status: test. Updated: 2026-11-21. Evidence: the tool fill (status); observations kind group_hunt and fit_test; table runs.
+Status: test. Updated: 2026-11-22. Evidence: the tool fill (status); observations kind group_hunt and fit_test; table runs.
 
-- Weapon fits (entry below): one drone fits a Pulse Laser III since
-  2026-11-21 20:51 UTC; `hunt-test-acubens-bulwark-pl3` is its test.
-- Group hunts (entry below): the next flight waits for the members to
-  stand at the place before the leader attacks.
+- Weapon fits (entry below): Pulse Laser III against Plasma Cannon II on
+  the bulwarks of Acubens, one ship each.
+- Group hunts (entry below): a pilot whale at the Stellar Siphon with the
+  wait for every member at the place.
+- Patina grazers beyond the border (seven herds, one ship each, standing
+  work since 2026-11-22): the work for drones the home herds leave idle.
 - The tests the filler adds each turn (`fill.py fill drone --write`): far
   hollow-pilgrim, cinder-sylph and veil-ray herds, one ship each until the
   first RESULT line. A test of another class (a visit mission, a craft
@@ -33,27 +35,28 @@ under 85 percent or shield 0, docks for repair, releases all.
   prey: an advance rule that compares with the prey's dist never fires.
 - Three starters on a pilot whale (220 hull): about 3 hull a tick, while
   the whale broke the leader in about 20 ticks. No starter group on it.
-- 2026-11-21, a bulwark (95 hull) at Acubens: the members did not follow
-  the flight, reached the place a tick after the leader attacked and were
-  not pulled in; their own `hunt` was refused (`in_fleet`). The leader
-  alone took it from 100 to 65 percent in 45 ticks, its shield 111 to 7.
-  Next flight: the leader attacks only when every member stands at the
-  place; a member outside the battle joins it (`spacemolt_battle
-  engage`), never hunts. Far drones stalled two tries: `--max-jumps`.
+- 2026-11-21, a bulwark (95 hull) at Acubens: the members reached the
+  place a tick after the leader attacked and were not pulled in; their own
+  `hunt` was refused (`in_fleet`). The game's docs: members auto-join only
+  when they are in the system as the leader engages. The script now waits
+  until every pilot stands at the place (`--arrive-ticks`); a member left
+  out joins with `spacemolt_battle engage`, never `hunt`.
 
 ### Weapon fits
-Status: test. Updated: 2026-11-21. Evidence: catalog spacemolt_catalog (pulse_laser_i/ii/iii); the tool market; observations kind fit_test.
+Status: test. Updated: 2026-11-22. Evidence: game/catalog/tables/modules.tsv; spacemolt.com/docs/wildlife and /docs/combat (read 2026-11-22); hive.py route hunt-test-acubens-bulwark-pl3; routes fit-pulse-laser-iii-lhs-1140, fit-plasma-cannon-ii-krynn.
 
-- Pulse Laser II deals 18, III 28 against 10 for the starter (cooldown 1
-  each). The whale fights read about 1 hull a tick per Pulse Laser I
-  against nominal 10: the prey's armour takes a share of each hit, so a
-  bigger hit may gain more than its catalog ratio. Not measured.
-- A starter's laser takes about 0.7 hull a tick from a bulwark (the
-  group flight of 2026-11-21): the prey's armour takes most of each hit.
-- The test: one drone fits a Pulse Laser III (`fit_test.py`, skill
-  military-turn; bought at Node Alpha, fitted 2026-11-21 20:51 UTC after a
-  rescue: the swap lost its dock to a runner, errors.log ENT-114) and
-  hunts bulwarks at Acubens (`hunt-test-acubens-bulwark-pl3`). Its kills
-  an hour and lowest hull decide the fit.
-- For the division: about 70 weapons; a swap step in the circuit runner
-  (unfit, then fit) is asked of the Fleet Admiral.
+- Creatures have hull and armor and no shields (the game's docs):
+  thermal bypasses 75 percent of armor, energy 25, so a thermal weapon
+  gains on every prey; `hull_damage_bonus_50` adds half against hull.
+- A starter's laser takes about 0.7 hull a tick from a bulwark (group
+  flight, 2026-11-21): the armor takes most of each hit.
+- Pulse Laser III (28 energy, cooldown 1): one drone killed two bulwarks
+  (hull 95) in 13 minutes at 100 percent hull in its first run; its second
+  run killed nothing in 26 minutes. Two runs are no record yet.
+- Plasma Cannon II (38 thermal, cooldown 2, hull bonus; CPU 6, power 14)
+  hunts the same prey: `hunt-test-acubens-bulwark-pc2`.
+- The swap is a route step now: `fit` with `replace` (BLUEPRINT.md), one
+  pilot first. The cheap asks move by the hour: read the tool market for
+  the item before a fit route is lifted.
+- The division's fit goes to the Fleet Admiral when both tests have read
+  kills an hour and lowest hull.

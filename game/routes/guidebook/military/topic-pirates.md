@@ -21,6 +21,26 @@ hours.
 - Read by script each turn: `pirate_record.py --write` and
   `pirate_places.py` (skill military-turn).
 
+### Raids on bases
+Status: proven. Updated: 2026-11-22. Evidence: spacemolt.com/docs/combat and /docs/guides/pirate-hunter (read 2026-11-22 00:35 UTC); observations kind raid (Intel) and pirate (pirate_record.py, categories pirate and npc); admirals.log ENT-077, ENT-082.
+
+- The game files raids on bases under category `npc`, not `pirate`:
+  `pirate_record.py` reads both since 2026-11-22.
+- A raid on a faction base calls in the faction: every ship of ours
+  undocked anywhere in that system joins the base's side. A wildlife hunt
+  calls in nobody; a fight with one pirate brings its whole stronghold in
+  the system.
+- A raid fleet is 4 to 12 hulls with salvagers and haulers; it sits a few
+  minutes in each system on its road and gives up after about three hours
+  on target. Its chatter carries seven jumps in three stages over about an
+  hour: rumour, target named, imminent.
+- Kill the haulers first: they carry the ammunition, and a raid without
+  it goes home. A crew mauled on the road turns back, and a stronghold
+  that loses several ships in one system sends its next raids elsewhere.
+- Our outpost fell in 19 ticks to 16 raiders (observations kind raid):
+  far beyond a side of starters. Military meets a raid only with a side
+  its tests size; until then the answer is to dock or leave.
+
 ### The pirate test
 Status: proven. Updated: 2026-11-21. Evidence: pirate_test.py log 2026-11-17 00:37 to 00:57 UTC; data/fleet/ships/.
 

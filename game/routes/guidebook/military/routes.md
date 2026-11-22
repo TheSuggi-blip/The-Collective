@@ -1,23 +1,25 @@
 # Military guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-21. Evidence: the tool plan (show); hive.py briefing (the plan table, column carries); hive.py forecast Apophis; fill.py check.
+Status: proven. Updated: 2026-11-22. Evidence: the tool plan (show); hive.py briefing (the plan table, column carries); the tool fill (status, check); hive.py forecast Apophis.
 
-What the 70 ships fly between two turns (orders ENT-056, block APOPHIS):
+What the 70 ships fly between two turns (orders ENT-059, block APOPHIS):
 hunts that pay, combat skills, fits, a group that kills. No guard or escort
 in the first ring (F33). Every hunt takes one side, one hunter to a herd.
 
 | Order | Routes | Ships | Why |
 |---|---|---|---|
-| First | the once line (21 routes), each under its own limit | every ship | rule F35, money paid once |
-| Own | far herds and the tests the filler offers (`fill.py fill <role> --write`), Unity's soma carries | 1 each | the far bids for melt, glands, condensate |
-| `@hunter` | sales from storage, money hunts, reserve hunts (templates entry) | 1 each | see the hunt entries |
-| Then | the crafts from own stores, `park` | 6 each | ships with no herd make, never gather (F23) |
+| First | the once line (22 routes), each under its own limit | every ship | rule F35, money paid once |
+| Own | far herds and the filler's tests (`fill.py fill <role> --write`); the two weapon fits and their bulwark tests | 1 each | far bids; the fit decision |
+| `@hunter` | sales from storage, home hunts, then seven patina-grazer herds beyond the border (templates entry) | 1 each | combat XP where the home herds are full |
+| Then | the crafts from own stores, `park` | 6 each | until strict classes give crafts to haulers |
 
+Every hunt carries `gift_to: trader`: with strict classes on, the loot goes
+to the trader named at its sell station and the hunt is standing work.
 Sized by the briefing's column carries: a herd carries one hunter. What
-changes it: a weapon fit that opens prey of 80 to 140 hull (tests.md), a
-group that kills, a far bid that comes or goes, a station of ours past the
-first ring (its guard), a pirate at a hunt's place (dispatch closes it).
+changes it: a weapon that opens prey of 80 to 100 hull (tests.md), a group
+that kills, strict classes (no sales, no crafts for drones), a pirate at a
+hunt's place (dispatch closes it; a pack sets it off).
 
 ### Hunts of grazers (`hunt.py`)
 Status: proven. Updated: 2026-11-21. Evidence: game/fleet/hunt.py; skill military-turn hunt_figures.py; routes.md entry versions of 2026-11-17 (--history).
