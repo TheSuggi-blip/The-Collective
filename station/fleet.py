@@ -1253,7 +1253,7 @@ LOOK_EVERY = 60              # seconds between two looks at the engine's own lis
 LOOK_QUIET = 600             # ... after a look that found none away
 REJOIN_AFTER = 600           # seconds the engine must have run before a pilot is signed in again
 REJOIN_EVERY = 900           # seconds between two tries for one pilot
-REJOIN_MOST = 5              # pilots signed in again in one look
+REJOIN_MOST = 25             # pilots signed in again in one look (scaled for 500-1000 ship fleet)
 AWAY = {}                    # "at": the last look, "every": seconds to the next, "list": the pilots away, "first"/"tried": {pilot: when}
 
 

@@ -25,6 +25,8 @@ def load(name):
 class WhyTests(unittest.TestCase):
     def setUp(self):
         self.fill = load("fill")
+        for attr in ("why_not", "pilot_of", "role_of"):
+            self.addCleanup(setattr, self.fill.dispatch, attr, getattr(self.fill.dispatch, attr))
         closed = {"gather-a": "the field is at its floor", "train-loop": None, "park": None}
         self.fill.dispatch.why_not = lambda pilot, rid, route, state: (closed.get(rid), None)
         self.fill.dispatch.pilot_of = lambda ship, named, data, ammo: {"name": ship["name"]}
