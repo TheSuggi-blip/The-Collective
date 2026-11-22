@@ -41,5 +41,12 @@
   "skills": {
    "mining": 3
   }
+ },
+ "measured": {
+  "date": "2026-11-22",
+  "runs": 2,
+  "minutes": 1,
+  "credits_per_run": 0,
+  "cph_per_ship": 0
  }
 }
