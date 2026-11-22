@@ -89,5 +89,4 @@ Planned:
 
 | What | When |
 |---|---|
-| Read the two far buy-and-sell tests and the far carries; lift a test that paid twice, one ship more next turn | -- |
-| Take one Trade Run mission by hand on a far gap's road (deadline, hand-in, which skill), then an accept stop on the route next turn | -- |
+| Read the two far buy-and-sell tests and the far carries; lift a test that paid twice, one ship more | next turn |
