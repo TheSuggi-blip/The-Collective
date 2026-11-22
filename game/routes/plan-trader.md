@@ -16,7 +16,7 @@ means to do next. What a route earns now is not written here, because it changes
 hour: ask the tool `route` or `routes`, or the database (`hive.py sql`), which carry each
 figure with its age. Up: [master-index.md](master-index.md).
 
-Kept by Mercury. Routes: 110. Ships: 40.
+Kept by Mercury. Routes: 117. Ships: 40.
 
 | # | Route | Group | Zone | Open to | Ships planned |
 |---|---|---|---|---|---|
@@ -115,21 +115,28 @@ Kept by Mercury. Routes: 110. Ships: 40.
 | 93 | [craft-armor-own-central-nexus](craft-armor-own-central-nexus.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 3 ships, with 30 creature_carapace stored at central_nexus, standing work | all 40 |
 | 94 | [craft-armor-own-first-step](craft-armor-own-first-step.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 18 jumps | up to 2 ships, with 30 creature_carapace stored at first_step_memorial_station, standing work | all 40 |
 | 95 | [craft-armor-own-synchrony](craft-armor-own-synchrony.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 1 ships, with 30 creature_carapace stored at synchrony_hub, standing work | all 40 |
-| 96 | [craft-nitrogen-own-experiment](craft-nitrogen-own-experiment.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 3 ships, with 100 nitrogen_ice stored at the_experiment_research_station, standing work | all 40 |
-| 97 | [craft-nitrogen-own-central-nexus](craft-nitrogen-own-central-nexus.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 2 ships, with 100 nitrogen_ice stored at central_nexus, standing work | all 40 |
-| 98 | [craft-nitrogen-own-node-alpha](craft-nitrogen-own-node-alpha.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 1 ships, with 100 nitrogen_ice stored at node_alpha_processing_station, standing work | all 40 |
-| 99 | [craft-nitrogen-own-dheneb](craft-nitrogen-own-dheneb.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 11 jumps | up to 1 ships, with 100 nitrogen_ice stored at b495c6003fc83e18f6d8cecbe6929133, standing work | all 40 |
-| 100 | [craft-nitrogen-own-synchrony](craft-nitrogen-own-synchrony.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 1 ships, with 100 nitrogen_ice stored at synchrony_hub, standing work | all 40 |
-| 101 | [craft-nitrogen-own-node-beta](craft-nitrogen-own-node-beta.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 2 ships, with 100 nitrogen_ice stored at node_beta_industrial_station, standing work | all 40 |
-| 102 | [craft-steel-own-node-beta](craft-steel-own-node-beta.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 10 ships, with 100 iron_ore stored at node_beta_industrial_station, standing work | all 40 |
-| 103 | [craft-steel-own-experiment](craft-steel-own-experiment.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 10 ships, with 100 iron_ore stored at the_experiment_research_station, standing work | all 40 |
-| 104 | [craft-steel-own-central-nexus](craft-steel-own-central-nexus.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 2 ships, with 100 iron_ore stored at central_nexus, standing work | all 40 |
-| 105 | [craft-steel-node-beta](craft-steel-node-beta.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 11 ships, with 550 iron_ore stored at node_beta_industrial_station, standing work | all 40 |
-| 106 | [craft-steel-central-nexus](craft-steel-central-nexus.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 2 ships, with 300 iron_ore stored at central_nexus, standing work | all 40 |
-| 107 | [craft-steel-synchrony-hub](craft-steel-synchrony-hub.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 3 ships, with 300 iron_ore stored at synchrony_hub, standing work | all 40 |
-| 108 | [train-trading-weapon-housing-node-alpha](train-trading-weapon-housing-node-alpha.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 1 ships, while node_alpha_processing_station bids 221 cr for weapon_housing, while node_alpha_processing_station asks 230 cr or less for weapon_housing, standing work | all 40 |
-| 109 | [train-jumps-trader](train-jumps-trader.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 40 ships, from 5,000 cr, under navigation 6, piloting 10, standing work | all 40 |
-| 110 | [park](park.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | the park route | all 40 |
+| 96 | [craft-neon-own-node-beta](craft-neon-own-node-beta.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 3 ships, with 60 neon_gas stored at node_beta_industrial_station, standing work | all 40 |
+| 97 | [craft-neon-own-node-gamma](craft-neon-own-node-gamma.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 3 ships, with 60 neon_gas stored at node_gamma_relay_station, standing work | all 40 |
+| 98 | [craft-neon-own-nova-terra](craft-neon-own-nova-terra.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 8 jumps | up to 1 ships, with 60 neon_gas stored at nova_terra_central, standing work | all 40 |
+| 99 | [craft-hydrogen-own-node-beta](craft-hydrogen-own-node-beta.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 3 ships, with 80 hydrogen_gas stored at node_beta_industrial_station, standing work | all 40 |
+| 100 | [craft-hydrogen-own-synchrony](craft-hydrogen-own-synchrony.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 3 ships, with 80 hydrogen_gas stored at synchrony_hub, standing work | all 40 |
+| 101 | [craft-hydrogen-own-nova-terra](craft-hydrogen-own-nova-terra.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 8 jumps | up to 3 ships, with 80 hydrogen_gas stored at nova_terra_central, standing work | all 40 |
+| 102 | [craft-hydrogen-own-node-gamma](craft-hydrogen-own-node-gamma.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 2 ships, with 80 hydrogen_gas stored at node_gamma_relay_station, standing work | all 40 |
+| 103 | [craft-nitrogen-own-experiment](craft-nitrogen-own-experiment.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 3 ships, with 100 nitrogen_ice stored at the_experiment_research_station, standing work | all 40 |
+| 104 | [craft-nitrogen-own-central-nexus](craft-nitrogen-own-central-nexus.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 2 ships, with 100 nitrogen_ice stored at central_nexus, standing work | all 40 |
+| 105 | [craft-nitrogen-own-node-alpha](craft-nitrogen-own-node-alpha.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 1 ships, with 100 nitrogen_ice stored at node_alpha_processing_station, standing work | all 40 |
+| 106 | [craft-nitrogen-own-dheneb](craft-nitrogen-own-dheneb.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 11 jumps | up to 1 ships, with 100 nitrogen_ice stored at b495c6003fc83e18f6d8cecbe6929133, standing work | all 40 |
+| 107 | [craft-nitrogen-own-synchrony](craft-nitrogen-own-synchrony.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 1 ships, with 100 nitrogen_ice stored at synchrony_hub, standing work | all 40 |
+| 108 | [craft-nitrogen-own-node-beta](craft-nitrogen-own-node-beta.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 2 ships, with 100 nitrogen_ice stored at node_beta_industrial_station, standing work | all 40 |
+| 109 | [craft-steel-own-node-beta](craft-steel-own-node-beta.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 10 ships, with 100 iron_ore stored at node_beta_industrial_station, standing work | all 40 |
+| 110 | [craft-steel-own-experiment](craft-steel-own-experiment.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 10 ships, with 100 iron_ore stored at the_experiment_research_station, standing work | all 40 |
+| 111 | [craft-steel-own-central-nexus](craft-steel-own-central-nexus.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 2 ships, with 100 iron_ore stored at central_nexus, standing work | all 40 |
+| 112 | [craft-steel-node-beta](craft-steel-node-beta.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 11 ships, with 550 iron_ore stored at node_beta_industrial_station, standing work | all 40 |
+| 113 | [craft-steel-central-nexus](craft-steel-central-nexus.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 2 ships, with 300 iron_ore stored at central_nexus, standing work | all 40 |
+| 114 | [craft-steel-synchrony-hub](craft-steel-synchrony-hub.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 3 ships, with 300 iron_ore stored at synchrony_hub, standing work | all 40 |
+| 115 | [train-trading-weapon-housing-node-alpha](train-trading-weapon-housing-node-alpha.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 1 ships, while node_alpha_processing_station bids 221 cr for weapon_housing, while node_alpha_processing_station asks 230 cr or less for weapon_housing, standing work | all 40 |
+| 116 | [train-jumps-trader](train-jumps-trader.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 40 ships, from 5,000 cr, under navigation 6, piloting 10, standing work | all 40 |
+| 117 | [park](park.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | the park route | all 40 |
 
 Templates its ships fly (a ship's own routes name one as `@<name>`):
 
