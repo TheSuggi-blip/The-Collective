@@ -88,6 +88,10 @@
   {
    "what": "Read the first hand-overs at The Crescent Moon and Ramen's Rest (gift to the hauler receivers) and the give routes' any-of gates",
    "when": "next turn"
+  },
+  {
+   "what": "Forgotten Tailings at outpost GSC-0044: lift on its third result (F37)",
+   "when": "next turn"
   }
  ],
  "ships": {
