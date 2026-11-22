@@ -6,6 +6,8 @@
    "title": "Stored goods sold where a station bid stands, at home and further out: each ship sells its own stores, nothing bought",
    "routes": [
     "carry-hydrogen-beta-to-nova-terra",
+    "carry-lead-beta-to-sirius",
+    "carry-lead-nexus-to-sirius",
     "carry-lead-beta-to-grand-exchange",
     "carry-lead-nexus-to-grand-exchange",
     "carry-curd-beta-to-procyon",
