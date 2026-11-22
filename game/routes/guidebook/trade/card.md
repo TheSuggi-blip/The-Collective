@@ -1,12 +1,18 @@
 # Trade guidebook -- the Class Card (card.md)
 
 ### Class Card
-Status: proven. Updated: 2026-11-21. Evidence: the catalog's tables skills and hulls; table ship_skills; browse_ships 2026-11-21.
+Status: proven. Updated: 2026-11-22. Evidence: the catalog's tables skills and hulls; table ship_skills; browse_ships 2026-11-21.
 
 The trader's class in short (rule F14): what it flies and what it
 levels, in that order. Detail: ships.md and levelling.md; the work and
 the plan: routes.md. Sources: the catalog's tables `skills` and `hulls`
-(0.723.2), the trader ship files (table `ship_skills`).
+(0.732.0), the trader ship files (table `ship_skills`).
+
+The role in the game's words (spacemolt.com/docs/guides/trader and
+arbitrage, read 2026-11-22): missions first, then arbitrage, then
+crafting; cargo over speed; both ends of a gap read on one side of the
+book; thin far books pay most. Trade Run missions pay XP for the hauls
+the station names. Full notes: Mercury's knowledge file on order books.
 
 ### Ships
 Status: proven. Updated: 2026-11-21. Evidence: table hulls; browse_ships (all stations, can_fly) through a docked trader, 2026-11-21 19:55 UTC; Logistics' ships.md.

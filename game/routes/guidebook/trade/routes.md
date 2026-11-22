@@ -1,34 +1,31 @@
 # Trade guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-21. Evidence: plan.py show; fill.py status trader (20:01 UTC); table books (19:36 to 19:52 UTC).
+Status: proven. Updated: 2026-11-22. Evidence: plan.py show; fill.py status trader (2026-11-22 00:0x UTC); gaps.py and sellgen.py scan (skill trade-books).
 
-What the traders fly between two turns: the division's plan file
-(`/srv/collective/data/plans/plan-trade.md`, the tool `plan`), as set on
-2026-11-21 at 20:32 UTC, the first turn after the pause.
+The plan file as set on 2026-11-22 at 00:00 UTC (orders ENT-059: trade
+beyond our borders):
 
-- First, every ship: the once line of 24 routes; for the traders nearly
-  all are booked or full (`fill.py status trader`); Neural Matrix
-  Delivery runs 4 at a time for every plan's pilots.
-- Own routes: `@trade-sell > @trade-craft` for all 40. The four tests
-  beyond the border flew one run each and are off (entry `Trade beyond
-  the border`); one trader flies a Prayer freighter.
-- Then: craft-steel-node-beta, craft-steel-central-nexus,
-  craft-steel-synchrony-hub, park.
+- First, every ship: the once line of 24 routes; nearly all booked.
+- Own routes: two far buy-and-sell tests at the head of one trader each
+  (control nodes Node Gamma to Factory Belt, chemical liners Node Beta
+  to First Step; `requires.ask` and `stop_on_failed_buy`), then for all
+  40 `@trade-sell > @trade-craft`. `@trade-sell` now leads with five far
+  carries of stored surplus: hydrogen to Nova Terra, lead ore to Grand
+  Exchange, verdigris curd to Procyon.
+- Then: the three steel crafts, park.
 
-What it carries: little. After the pause the home bids that paid on
-2026-11-17 are gone (null matter and hydrogen 0 at every home station,
-soma 2 to 3 units; books of 19:36 to 19:52 UTC), the traders' own iron is
-used up (under 100 a pilot) and copper wiring stands far over its max, so
-most traders wait docked at no cost and the gate reads HALT.
+What it carries: one ship a gap or a far bid; each closes on its book.
+The rest wait docked at no cost (gate HALT): no route trains trading
+without a buy, and a jump loop costs about 358 cr a ship-hour for about
+80 piloting XP (train-jumps-hauler, route_earnings 12 h).
 
-What opens work: a home bid back (`requires.bid` opens a sell route by
-itself), a buy-end gate (`requires.ask`, asked of the Fleet Admiral) for
-the silver bar run, a far bid with depth on a fresh book, the Fleet
-Admiral's word on the trader fallback (requests.log, 2026-11-21).
+What would change it: a far test that pays twice (lift it), a Trade Run
+mission taken on the same road (tests.md), strict classes switched on
+(the receivers sell the others' goods: data/fleet/receivers.json).
 
 ### Selling stores where they lie (`sell-<good>-at-<station>`, `carry-<good>-<from>-to-<to>`)
-Status: proven. Updated: 2026-11-21. Evidence: the sell and carry route files with their measured figures; sellgen.py of the skill trade-books.
+Status: proven. Updated: 2026-11-22. Evidence: the sell and carry route files with their measured figures; sellgen.py of the skill trade-books.
 
 - The starter hull, nothing bought; trains trading. Each ship sells its
   own stores; the routes are open to every division (rule F24).
@@ -45,9 +42,9 @@ Status: proven. Updated: 2026-11-21. Evidence: the sell and carry route files wi
 - A route whose runs last minutes is judged by credits a run times the
   runs its bid's regain allows (table `stats_refill`), never by its
   per-hour figure.
-- A standing sell order (`create_sell_order`, spacemolt_market) costs 1%
-  of the listed value at once; one anchor beacon at 1,200 cr stood a day
-  unfilled at Node Beta (2026-11-16 to 17).
+- A standing sell order (`create_sell_order`, spacemolt_market) lists
+  free since game 0.732.0 (it cost 1% before); one anchor beacon at
+  1,200 cr stood a day unfilled at Node Beta (2026-11-16 to 17).
 - Readings: `hive.py route <id>` (sell-null-matter-at-nexus,
   sell-soma-at-node-beta, carry-soma-beta-to-gamma).
 
@@ -90,30 +87,23 @@ bought; they train crafting and refining.
 - The calls behind a craft step: lessons.md, `Crafting by Hand: the Calls`.
 
 ### Trade beyond the border
-Status: test. Updated: 2026-11-21. Evidence: runs.jsonl (trade-silver-bar-alpha-to-arneb, carry-hydrogen-beta-to-crucible, 2026-11-21); table books 20:24 to 20:27 UTC; the route files' notes.
+Status: test. Updated: 2026-11-22. Evidence: runs.jsonl 2026-11-21 and 22; gaps.py (skill trade-books) on table books; view_market base_id read from home 2026-11-21 23:53 UTC.
 
-Home bids are thin and come back slowly; a few far books hold the depth
-(table `books`, 2026-11-21): The Obsidian Well, a player station at Arneb
-(16 jumps, lawless), bids silver bar 501 x 44,477 after our sale.
-
-Tests of 2026-11-21, one ship and one run each (runs.jsonl):
-
-- trade-silver-bar-alpha-to-arneb: 50 bars bought at Node Alpha at 414,
-  sold at 501: +4,099 cr in 21.6 minutes. Node Alpha's ask was gone after
-  the buy: a one-load gap, off until a route can wait for the ask
-  (`requires.ask`); a failed buy does not end a run, so without it the
-  pilot flew back and on empty (errors.log, 2026-11-21).
-- carry-hydrogen-beta-to-crucible: 41 own hydrogen and 24 heat sinks
-  bought at 147 to The Crucible Garrison's bids of 37 x 184 and 193 x 24:
-  -1,475 cr in 26.3 minutes; the book after read 38 x 21 and 133 x 11.
-  One load closed both bids: off.
-- The freighter (go-ironlight-trader, then the bulk carry): see
-  ships.md; its first carry reads the Prayer's fuel and time.
-
-What a far test needs: both ends read the same hour, the depth at both
-ends against the hold, and the road's fuel both ways. The road past Pherkad is lawless
-and no pirate is on our record in it (`scripts/map.py route`,
-data/intel/sightings.jsonl). A far book read days ago is a guess.
+- A docked ship reads any charted station's book for free (view_market
+  with `base_id`, game 0.728.0; `FULL=1 gate.py raw`): eight far
+  stations read from Central Nexus in one minute.
+- `gaps.py` sizes every gap to one load and wallet, with its jumps and
+  the lawless ones: control nodes Node Gamma 398 x 100 to Factory Belt
+  777 x 200 (about 24,000 cr a load), chemical liners Node Beta 607 to
+  First Step 759 x 238 and Cargo Lanes 759 x 404 (2026-11-21 23:3x UTC).
+- Every road west passes Kitalpha and Kepler-442, where a pirate crew
+  fights almost daily (admirals.log ENT-077): one ship a road until its
+  runs read.
+- A buy-and-sell route carries `requires.ask` on its buy end and
+  `stop_on_failed_buy` on that stop; size `qty` to the wallet (lessons).
+- One load usually closes a far bid (silver bars to Arneb +4,099 cr once;
+  The Crucible -1,475 and -2,904 cr): read the bid's depth against the
+  hold, and the regain in `stats_refill`, before a second ship.
 
 ### Once missions: what they taught
 Status: proven. Updated: 2026-11-21. Evidence: data/fleet/onetime.json; the voidborn-* and mission-* route files; errors.log ENT-039, ENT-058, ENT-096.

@@ -99,10 +99,10 @@ Status: proven. Updated: 2026-11-21. Evidence: errors.log ENT-035, ENT-039, ENT-
 - Read the plan file's `## ` headings once a turn.
 
 ### Money, calls and the runner
-Status: proven. Updated: 2026-11-21. Evidence: errors.log ENT-047, ENT-066, ENT-067, ENT-090, ENT-107; requests.log ENT-176; the skill trade-books.
+Status: proven. Updated: 2026-11-22. Evidence: errors.log ENT-047, ENT-066, ENT-067, ENT-090, ENT-107; requests.log ENT-176; the skill trade-books.
 
-- `buy` never refuses: it fills as far as the wallet reaches (a trader
-  left at 298 cr); `stockbuy.py` cuts the units to keep 3,000 cr.
+- A circuit `buy` whose qty x max_price would take the wallet under
+  3,000 cr buys nothing (2026-11-22): size qty to the poorest pilot.
 - `gate.py raw` cuts its answer at 3,000 characters unless `FULL=1`.
 - The engine's goals can answer 409 for minutes while raw calls work:
   move a held ship by `jump`, `travel`, `dock`.
