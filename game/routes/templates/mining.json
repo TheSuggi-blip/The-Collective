@@ -45,7 +45,7 @@
    "note": "Orders ENT-063, block ZERO: the reserve's short goods by its levels, each gather limited to what its own good carries; any mining laser. 2026-11-22 11:15 UTC (Zero): the crafts left (strict classes: crafting is Logistics' and Trade's, P5) and the silver gather left (silver held 135 against a need of 45, surplus.py reserve 11:05 UTC)."
   },
   "reserve-hamal": {
-   "title": "Gather what the reserve lacks, then make: the short-ore fields in the other order so the division is spread, then steel plate and copper piping from own stores",
+   "title": "Gather what the reserve lacks, the other order so the division is spread: carbon first, then nickel, silicon, gold, platinum, quantum fragments",
    "routes": [
     "store-hold-central-nexus",
     "gather-acubens-belt-carbon",
@@ -59,20 +59,16 @@
     "gather-subra-floodlight-flats-silicon",
     "gather-goldcrest-gold",
     "gather-bunda-belt-platinum",
-    "gather-errai-belt-silver",
     "gather-izar-quantum-fragments",
     "gather-errai-quantum-fragments",
-    "gather-tidewater-quantum-fragments",
-    "craft-steel-experiment",
-    "craft-steel-node-beta",
-    "craft-piping-node-beta"
+    "gather-tidewater-quantum-fragments"
    ],
    "trains": [
     "mining",
     "crafting",
     "refining"
    ],
-   "note": "Orders ENT-062, block ZERO: the reserve's short goods first in the other order so the division is spread, carbon first (the largest short); far carbon and the GSC-0049 nickel since 2026-11-22 07:09 UTC, any mining laser. Then steel plate and piping from own stores. Gathers before crafts since 2026-11-21 (Zero)."
+   "note": "Orders ENT-063, block ZERO: the reserve's short goods, carbon first (the largest short, 83,867, surplus.py reserve 11:05 UTC); any mining laser. 2026-11-22 11:15 UTC (Zero): the crafts left (strict classes, P5) and the silver gather left (silver not short)."
   }
  }
 }
