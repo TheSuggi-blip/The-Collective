@@ -80,9 +80,6 @@
   "gather-tidewater-quantum-fragments",
   "gather-gsc-0027-spacetime-seep",
   "mine-pherkad-rift",
-  "craft-steel-node-beta",
-  "craft-steel-central-nexus",
-  "craft-steel-synchrony-hub",
   "train-jumps-miner",
   "park"
  ],
@@ -178,9 +175,6 @@
   "gather-tidewater-quantum-fragments": 60,
   "gather-gsc-0027-spacetime-seep": 60,
   "mine-pherkad-rift": 60,
-  "craft-steel-node-beta": 60,
-  "craft-steel-central-nexus": 60,
-  "craft-steel-synchrony-hub": 60,
   "train-jumps-miner": 60,
   "park": 60
  },
