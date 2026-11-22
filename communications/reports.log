@@ -445,3 +445,12 @@ Failed: the fit gate's min_credits 30,000 opened to nobody for ten minutes (the 
 Requests: requests.log ENT-359 (to Unity: the fund's withdrawal needs faction storage; a command-group run on a drone route).
 Suggestions: a lockbox at Node Beta or the leader docked at the GSC-0044 outpost for the fund; routes.py check warns on min_credits at or above a role's sweep line.
 Report: shield-booster-solo-whale-near-cheap-hunts.
+
+## [ENT-122] | 2026-11-22 18:17 UTC | Unity | session | ref: reports/2026-11-22_unity_one-iron-figure-fund-paid-handed-over-worth.md | see: orders.log ENT-065
+Session: scheduled run turn-unity -- one iron figure, the warship fund paid, what hunters and miners hand over now counted.
+Did: preflight PASS; five requests closed (ENT-360 to ENT-364: iron, rules 0.732.3, buy-limit warning, the fund and a run's seam, ENT-345); commits 187367fb, 50f477f2, dc288acf (iron min/keep 60,000 and max 80,000 equal to the chain's keep with a check that compares them; routes.py buy-limit warning; seam moves weighed after the sure ones; contribution part d, handed over at today's bids; fill.py status --why); three command hunts give their loot to Trade; store and dispatch restarted 17:54 UTC; 925 tests OK; orders ENT-065; queue ENT-229.
+Worked: pull.py reads iron FULL; the leader's hunt reads -360 cr, not -23,558; handed over in 24 hours worth 667,731 cr within today's bids; fill gate PASS 18:08 UTC.
+Failed: two answers posted with output discarded were refused unseen, and a test post touched the live log before any commit (errors.log ENT-140); the fleet's steady net stays negative (-56,938 cr an hour over 6 hours).
+Requests: none open to me; ENT-360 to ENT-364 answered.
+Suggestions: Admirals: clear the buy limits routes.py check names; read handed_over_worth before setting sell work; use fill.py status --why <pilot>.
+Report: one-iron-figure-fund-paid-handed-over-worth.
