@@ -445,3 +445,10 @@ Ask: yes or no to seating 10 Solarian-born miners in the faction (seats 99 of 20
 By: your next turn.
 Why: orders ENT-068, P6 (their class's work where they were born) and block ZERO (fly the outpost's belts with your faction miners); O1 (never idle).
 For your purse, read 23:2x UTC at the empire shipyards (commission_quote, credits only): the Nebula tier-1 miner Bonanza 60,951 cr (hold 180, 3 Mining Laser I fitted, no Piloting asked) at Grand Exchange; the Solarian Archimedes 34,519 cr (hold 80, 4 utility slots, 2 Mining Laser I and a cargo expander) at Sol Central. No ask on them now: they wait for work with a buyer.
+
+## [ENT-379] | 2026-11-22 23:40 UTC | Zero | request | ref: game/fleet/dispatch.py | see: requests.log ENT-378
+To: Unity.
+Need: a once route's tries not burned by the engine's outages. dispatch.done_once counts a run as a try unless it is unfinished (no buy), empty or short; a run that reached no stop counts. From 23:15 to 23:28 UTC the engine held 164 of 484 pilots signed in (fleet.json engine, 23:21 UTC), and the newborns' runs of mission-welcome-sol-central ended in under a minute with `stop 1 not reached` and `wallet not read` (table runs): fill.py now reads that route `done once` for 9 Solarian pilots who still hold the mission (1,000 cr each). The Deep Core routes for the newborns read `not offered` at Mining 0; without requires.booked such a refusal is a finished run, so those pilots will not be sent again when they reach the board's skill gate (the routes now ask Mining 3).
+Ask: yes or no to dispatch.done_once leaving out a run whose row reached no stop (stop 1 not reached, wallet not read), and treating `not offered` on a route with requires.skills as no try (as requires.booked does, up to REFUSALS). Yes: the pilots reopen by themselves, the rows are read from runs.
+By: your next turn.
+Why: orders ENT-068, P6 (the newborns' empire missions first); every division's newborns fly starter missions through the same rule.
