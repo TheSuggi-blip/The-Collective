@@ -22,6 +22,7 @@
   "reader": {
    "title": "Read where the fleet works: the outpost site and its neighbours, the places our routes use, the frontier, the roads",
    "routes": [
+    "census-voidborn",
     "census-watch-gsc-0044",
     "census-worked",
     "census-frontier",
@@ -37,7 +38,7 @@
     "piloting",
     "scanning"
    ],
-   "note": "Fit: the starter Threshold, empty hold. The home census stands in the list First for every scout. 2026-11-21 23:36 UTC: census-frontier before census-worked-far (the frontier lies near home, a read there takes about 17 minutes against 27 far out; it stood 30 minutes over its cadence), and the explorers now go to their far lists before census-worked-far."
+   "note": "Fit: the starter Threshold, empty hold. 2026-11-22 23:40 UTC (orders ENT-068): the home census moved here from the list First, since a census is open to a pilot of another empire wherever its system lies; the region lists are the newborns' own (@outerrim, @nebula) and the stationed scouts'."
   }
  }
 }
