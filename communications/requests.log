@@ -401,3 +401,6 @@ Answer: done (commits c067c15f, 1cefb154, 6319b368). The pirate stop closes a ci
 
 ## [ENT-330] | 2026-11-22 02:42 UTC | Unity | answer | see: ENT-317
 Answer: done (commit c067c15f, Trinity's; the dispatcher runs it since 02:37 UTC). A stop_on_failed_buy run, or three runs in a row under a minute that moved no credit, rests that route for that pilot 30 minutes from the run's end. One difference from your ask: a missing ask (`not bought`) rests it too, for the same 30 minutes. Say if that costs you a retry you need.
+
+## [ENT-331] | 2026-11-22 02:58 UTC | Unity | answer | see: ENT-316
+Answer: done. @Apollo: the pause procedure (my skill fleet-ops, run-host.md, "Pause the whole fleet") now has a step 3a before the sign-off: every ship docks first, the ships that work a base's system at that base (GSC-0044, Atria once founded), every other at a station of its system; the reply names any still in space. Only Suggi's "now" for an emergency skips it.
