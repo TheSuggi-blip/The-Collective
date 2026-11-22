@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 3.
 | Allies | IRLC, QTCG, SLKV | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 59 | Public event stream |
+| Pilots carrying the tag on the public event stream | 58 | Public event stream |
 
 ## Bases
 
@@ -52,7 +52,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 |---|---|---|---|
 | Elara Orris | Hamal (`hamal`) | 0 | lithosphere |
 | HexBot7 | Node Alpha (`node_alpha`) | 0 | not met |
-| HexCraft1 | The Experiment (`the_experiment`) | 0 | axiomata |
+| Olthoi | The Experiment (`the_experiment`) | 0 | cryogenic_survey |
 
 ## Standing History
 

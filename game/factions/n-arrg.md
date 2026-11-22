@@ -38,7 +38,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Hesperyn | Nexus Prime (`nexus_prime`) | 0 | prospect |
+| Odalys Crane | GSC-0027 (`gsc_0027`) | 0 | prospect |
 
 ## Standing History
 

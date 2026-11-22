@@ -8,7 +8,7 @@ author: Unity
 # index.md -- Pilots We Know
 
 Built by `scripts/intel-index.py` from the pilot files of this folder;
-never edited by hand. Files listed: 26. The format of a pilot file:
+never edited by hand. Files listed: 28. The format of a pilot file:
 `BLUEPRINT.md`.
 
 ## Hostile
@@ -26,7 +26,9 @@ None filed.
 | Combat Drone 001 | medium | crimson | BUSY | 2026-11-15 | 2026-11-15 | [n-combat_drone_001.md](n-combat_drone_001.md) |
 | Combat Drone 003 | medium | crimson | BUSY | 2026-11-16 | 2026-11-16 | [n-combat_drone_003.md](n-combat_drone_003.md) |
 | Combat Drone 004 | medium | crimson | BUSY | 2026-11-16 | 2026-11-16 | [n-combat_drone_004.md](n-combat_drone_004.md) |
+| Combat Drone 007 | medium | crimson | BUSY | 2026-11-22 | 2026-11-22 | [n-combat_drone_007.md](n-combat_drone_007.md) |
 | Combat Drone 010 | medium | crimson | BUSY | 2026-11-15 | 2026-11-15 | [n-combat_drone_010.md](n-combat_drone_010.md) |
+| Combat Drone 019 | medium | crimson | BUSY | 2026-11-22 | 2026-11-22 | [n-combat_drone_019.md](n-combat_drone_019.md) |
 | Combat Drone 020 | medium | crimson | BUSY | 2026-11-15 | 2026-11-15 | [n-combat_drone_020.md](n-combat_drone_020.md) |
 | CombatDummy5 | medium | crimson | ENDL | 2026-11-16 | 2026-11-16 | [n-combatdummy5.md](n-combatdummy5.md) |
 | ElChapo | medium | solarian | ENDL | 2026-11-16 | 2026-11-16 | [n-elchapo.md](n-elchapo.md) |

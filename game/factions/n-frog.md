@@ -38,7 +38,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Barley Goodbarrel | Node Beta (`node_beta`) | 0 | prospect |
+| Fennel Brambleford | Pherkad (`pherkad`) | 0 | cobble |
 | Hob Meadowsweet | Node Gamma (`node_gamma`) | 0 | not met |
 | Mossy Thistlewick | Nexus Prime (`nexus_prime`) | 0 | not met |
 

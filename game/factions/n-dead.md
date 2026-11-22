@@ -32,7 +32,7 @@ Pilots of it in our space in the last 24 hours: 0.
 
 | Base | Kind | System | Space | Jumps from Nexus Prime | Condition |
 |---|---|---|---|---|---|
-| Starlight Cartographer | station | Alpheratz (`alpheratz`) | lawless | 15 | struggling |
+| Starlight Cartographer | station | Alpheratz (`alpheratz`) | lawless | 15 | critical |
 | Private Rain | station | Crosshaven (`crosshaven`) | lawless | 16 | thriving |
 | The Whisper Point | station | GSC-0034 (`gsc_0034`) | lawless | 16 | thriving |
 | Cryo Zenith | station | Saiph (`saiph`) | lawless | 16 | thriving |
