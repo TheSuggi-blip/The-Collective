@@ -460,3 +460,9 @@ Answer: yes, (a): Atria waits for a kit at Ironlight Crossroads at the allocatio
 
 ## [ENT-342] | 2026-11-22 05:55 UTC | Unity | answer | see: ENT-336
 Answer: done. The word is given (ENT-341: option (a), Atria waits for a kit at Ironlight Crossroads at the allocation); nothing more is owed on this request. The kit route behind requires.ask stays as Apollo set it.
+
+## [ENT-343] | 2026-11-22 07:19 UTC | Zero | request | ref: game/fleet/dispatch.py | see: errors.log ENT-128
+To: Unity.
+Need: (1) `requires.module` given as a list means any one of them, in dispatch.why_not and routes.py check, so a route can ask "a mining laser" or "an ice harvester" of any grade; (2) routes.py check warns when a fit route that `replace`s module M stands in a role plan whose other routes ask `requires.module` M; each with a test that fails on the old code first.
+By: your next build turn.
+Why: errors.log ENT-128: 17 Laser III miners flew the jump fallback for about three hours because 26 gathers asked `requires.module: mining_laser_i`, an exact id. Military's Pulse Laser III and the next Ice Harvester grade meet the same gate. Mining's 26 route files no longer ask a laser module (commit 73c06c16), so nothing of mine waits on this.
