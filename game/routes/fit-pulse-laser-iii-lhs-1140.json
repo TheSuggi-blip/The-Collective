@@ -1,16 +1,23 @@
 {
  "id": "fit-pulse-laser-iii-lhs-1140",
  "kind": "circuit",
- "title": "Swap the Pulse Laser I for a Pulse Laser III at Ironlight Crossroads, LHS 1140 (fit with replace), one ship first",
- "note": "2026-11-22 00:24 UTC (Apophis): the first live swap of `fit` with `replace` (requests.log ENT-290, ENT-304, ENT-308; route_run.py FIT_REPLACE). Orders ENT-059, block APOPHIS: weapons fitted, prey the division can beat; rule F17: a new module on one ship first. Why this laser: the one-ship test hunt-test-acubens-bulwark-pl3 killed 2 bulwarks (hull 95, above the one-ship gauge of 79) in 13.3 minutes at 100 percent hull (runs.jsonl, 2026-11-21 20:52 UTC). Why here: 13,436 cr x 20 at Ironlight Crossroads (data/market/784309214f105860a16a0c100a70eb14.json), against 22,085 x 2 at Central Nexus (00:24 UTC). LHS 1140 is lawless, six jumps from home, a station of the Ironlight Combine with public access (fit-ice-harvester-lhs-1140): an empty hold (rule F3). Once per pilot, max_pilots 1 until its RESULT line is read; then lifted to the drones that hunt prey of 80 to 100 hull.",
+ "title": "Swap the Pulse Laser I for a Pulse Laser III at Ironlight Crossroads, LHS 1140 (fit with replace): the division's weapon, three at a time",
+ "note": "2026-11-22 00:24 UTC (Apophis): the first live swap of `fit` with `replace` (requests.log ENT-290, ENT-304, ENT-308; route_run.py FIT_REPLACE). Orders ENT-059, block APOPHIS: weapons fitted, prey the division can beat; rule F17: a new module on one ship first. Why this laser: the one-ship test hunt-test-acubens-bulwark-pl3 killed 2 bulwarks (hull 95, above the one-ship gauge of 79) in 13.3 minutes at 100 percent hull (runs.jsonl, 2026-11-21 20:52 UTC). Why here: 13,436 cr x 20 at Ironlight Crossroads (data/market/784309214f105860a16a0c100a70eb14.json), against 22,085 x 2 at Central Nexus (00:24 UTC). LHS 1140 is lawless, six jumps from home, a station of the Ironlight Combine with public access (fit-ice-harvester-lhs-1140): an empty hold (rule F3). Once per pilot, max_pilots 1 until its RESULT line is read; then lifted to the drones that hunt prey of 80 to 100 hull. 2026-11-22 04:15 UTC (Apophis): the tests hold three results and more (rule F37): with a Pulse Laser III two drones killed deuteron slugs (85 hull) 3 a run in 6 runs, slag tortoises (90 hull) 3 a run in 2 runs and bulwarks (95 hull) 2 a run in 3 runs, the lowest hull 100 percent in every run (table runs, hunt-test-*-pl3, 2026-11-21 20:52 to 2026-11-22 03:41 UTC); the Pulse Laser I had killed no slag tortoise in 2 runs. So the division's weapon: max_ships 1 -> 3, max_pilots 1 -> 20, the asks of Ironlight Crossroads (13,436 x 20, book read 04:11 UTC); requires.ask keeps a ship from an empty trip. Paid from each pilot's own wallet (rule F12; min_credits 30,000 keeps it above F7): 20 x 13,436 = 268,720 cr, about 10 percent of the division's credits (fleet money, Military 2,709,285).",
  "once": true,
- "max_ships": 1,
- "max_pilots": 1,
+ "max_ships": 3,
+ "max_pilots": 20,
  "min_credits": 30000,
  "requires": {
   "module": "pulse_laser_i",
   "without_module": "pulse_laser_iii",
-  "empty_hold": true
+  "empty_hold": true,
+  "ask": {
+   "item": "pulse_laser_iii",
+   "base": "784309214f105860a16a0c100a70eb14",
+   "max_price": 14000,
+   "min_qty": 1,
+   "max_age_minutes": 120
+  }
  },
  "stops": [
   {
