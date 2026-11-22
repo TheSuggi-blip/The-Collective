@@ -51,9 +51,9 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
 | Elara Orris | Hamal (`hamal`) | 0 | lithosphere |
-| HexBot2 | Pherkad (`pherkad`) | 0 | frankenhauler |
+| HexBot13 | Synchrony (`synchrony`) | 0 | frankenhauler |
 | HexBot7 | Node Alpha (`node_alpha`) | 0 | not met |
-| Morgan Drake | Node Alpha (`node_alpha`) | 0 | bulk_terms |
+| Olthoi | The Experiment (`the_experiment`) | 0 | cryogenic_survey |
 
 ## Standing History
 
