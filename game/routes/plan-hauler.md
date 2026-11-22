@@ -83,3 +83,4 @@ Planned:
 | What | When |
 |---|---|
 | Read the first three runs of craft-boards-stored-node-beta and of craft-boards-crescent-moon (does a player workshop craft for us); lift or drop by them (F37) | next turn |
+| Found Atria with found.py the hour the builder's kit lands at Node Beta (the kit route flies only on an ask at Ironlight; no ask in any book 2026-11-22) | on the kit |
