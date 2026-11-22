@@ -2,7 +2,7 @@
  "id": "buy-plasma-ammo-central-nexus",
  "kind": "circuit",
  "title": "Plasma ammunition for the Plasma Cannon II test: four dispersal plasma cell packs at Central Nexus",
- "note": "2026-11-22 04:15 UTC (Apophis): the test hunt-test-acubens-bulwark-pc2 flew 3 runs from 01:10 to 03:46 UTC with 0 kills and the hull at 100 percent: the ship never fought. The Plasma Cannon II takes ammunition (catalog 0.732.0: ammo_type plasma, magazine 80) and the fit route bought none: the hold was empty (ship file 04:12 UTC), and hunt.py ends a hunt when a magazine is empty and no ammo of its kind is aboard. Central Nexus asks dispersal plasma cell packs at 170 x 21 (book 04:13 UTC; -15 percent damage, +15 hit chance). requires.held_below opens it again when the division holds fewer than 2 packs; ammunition does not count against empty_hold. A buy for the test, booked once. 2026-11-22 04:22 UTC (Apophis): open_to drone and sentinel (rule F23, the Admiral's exception): the class guard read this buy as trade (workclass.py: a circuit with buy and no fit), but it is ammunition for the ship's own fitted weapon, which every ship does for itself (fitting); nothing is sold.",
+ "note": "2026-11-22 04:15 UTC (Apophis): the test hunt-test-acubens-bulwark-pc2 flew 3 runs from 01:10 to 03:46 UTC with 0 kills and the hull at 100 percent: the ship never fought. The Plasma Cannon II takes ammunition (catalog 0.732.0: ammo_type plasma, magazine 80) and the fit route bought none: the hold was empty (ship file 04:12 UTC), and hunt.py ends a hunt when a magazine is empty and no ammo of its kind is aboard. Central Nexus asks dispersal plasma cell packs at 170 x 21 (book 04:13 UTC; -15 percent damage, +15 hit chance). requires.held_below opens it again when the division holds fewer than 2 packs; ammunition does not count against empty_hold. A buy for the test, booked once. 2026-11-22 04:22 UTC (Apophis): open_to drone and sentinel (rule F23, the Admiral's exception): the class guard read this buy as trade (workclass.py: a circuit with buy and no fit), but it is ammunition for the ship's own fitted weapon, which every ship does for itself (fitting); nothing is sold. 2026-11-22 20:21 UTC (Apophis): buy max_price 200 -> 202, the ask gate plus the 1 percent tax (queue.log ENT-229).",
  "max_ships": 1,
  "max_pilots": 2,
  "min_credits": 15000,
@@ -28,7 +28,7 @@
     {
      "item": "dispersal_plasma_cell_pack",
      "qty": 4,
-     "max_price": 200,
+     "max_price": 202,
      "one_time": true
     }
    ],

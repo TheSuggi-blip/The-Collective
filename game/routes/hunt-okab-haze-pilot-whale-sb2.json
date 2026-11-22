@@ -1,0 +1,24 @@
+{
+ "id": "hunt-okab-haze-pilot-whale-sb2",
+ "kind": "hunt",
+ "title": "Pilot whales at okab_haze, one Pulse Laser III ship with a Shield Booster II, alone; loot to a trader receiver",
+ "note": "Written by Apophis 2026-11-22 20:21 UTC (orders ENT-065, block APOPHIS: fits and combat skills; P1: the least fuel per XP). The fit is proven (F37: hunt-test-siphon-pilot-whale-sb2, 8 kills alone in 9 runs, lowest hull 97 percent, runs.jsonl). Herd: 5 pilot whales (herds table, data/wildlife/okab.json, read 20:04 to 20:09 UTC), 4 jumps from home; min_creatures 4 and 2 kills leave 2 whales (F38). The hunter flees under 60 percent hull. gift_to trader (P5). One ship; standing work.",
+ "place": "okab:okab_haze",
+ "species": [
+  "pilot_whale"
+ ],
+ "sell_at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+ "min_bid": 5000,
+ "kills": 2,
+ "minutes": 40,
+ "max_ships": 1,
+ "min_creatures": 4,
+ "max_prey_hull": 220,
+ "alone": "pirates",
+ "requires": {
+  "module": "shield_booster_ii",
+  "empty_hold": true
+ },
+ "gift_to": "trader",
+ "standing": true
+}

@@ -2,7 +2,7 @@
  "id": "hunt-seginus-haze-cinder-sylph",
  "kind": "hunt",
  "title": "cinder_sylph at seginus_haze; loot sold at The Levy Customs Station",
- "note": "Written by routemaker.py from the herd's count, the loot of 90 runs of ours and the order book; an estimate of 16669 cr per hunter-hour, not a measurement. A test: one ship, the ranching rules kept. Added as a test by fill.py on 2026-11-18 00:59 UTC (Apophis): one ship until its first RESULT line is read. 2026-11-22 00:08 UTC (Apophis): gift_to trader (queue.log ENT-200, ENT-201: strict classes, Suggi D244): with the switch on, the loot goes into the trader named for sell_at; off, nothing changes.",
+ "note": "Written by routemaker.py from the herd's count, the loot of 90 runs of ours and the order book; an estimate of 16669 cr per hunter-hour, not a measurement. A test: one ship, the ranching rules kept. Added as a test by fill.py on 2026-11-18 00:59 UTC (Apophis): one ship until its first RESULT line is read. 2026-11-22 00:08 UTC (Apophis): gift_to trader (queue.log ENT-200, ENT-201: strict classes, Suggi D244): with the switch on, the loot goes into the trader named for sell_at; off, nothing changes. 2026-11-22 20:21 UTC (Apophis): status off: its sell_at, The Levy customs station, never took the hunter in: every run of the last 12 hours bought no fuel (runs.jsonl, delta 0: edgeward 17 of 17, larawag 7 of 7, dawnbreak 5 of 5), and two hunters ran dry in space (fuel 4 at GSC-0005, 1 at Intercrus; ship files), towed home by the game tug. Back on with a sell_at where a ship of ours docked and refuelled.",
  "place": "seginus:seginus_haze",
  "species": [
   "cinder_sylph"
@@ -17,5 +17,6 @@
  "requires": {
   "empty_hold": true
  },
- "gift_to": "trader"
+ "gift_to": "trader",
+ "status": "off"
 }
