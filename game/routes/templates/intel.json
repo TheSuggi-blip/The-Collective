@@ -52,6 +52,19 @@
     "piloting"
    ],
    "note": "For scouts born Outer Rim: the region of their capital only, no census of our home side (orders ENT-068 P6: far only by far_ok)."
+  },
+  "nebula": {
+   "title": "Nebula scouts: their home region around Haven (P6)",
+   "routes": [
+    "census-region-haven",
+    "census-region-haven-ring"
+   ],
+   "trains": [
+    "navigation",
+    "exploration",
+    "piloting"
+   ],
+   "note": "For scouts born Nebula: the region of their capital only (orders ENT-068 P6)."
   }
  }
 }
