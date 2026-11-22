@@ -2,11 +2,11 @@
  "id": "gather-jishui-plainrock-carbon",
  "kind": "mine",
  "title": "A test: carbon ore gathered at Plainrock Field (Jishui, lawless) into storage at The Crescent Moon (Mebsuta, eight jumps)",
- "note": "Written by Zero, 2026-11-21 23:12 UTC (orders.log ENT-059, block ZERO: gather what the reserve lacks, carbon among the four; rules F3, F24, F36). The reserve is short of 82,321 carbon ore for the core foundry (the tool needs, 23:06 UTC); Acubens Belt, our only carbon field near home, read 406 at 22:53 UTC after 2,283 at 22:18 UTC (others mine it). Plainrock Field is a carbon-only belt: 16,042 of 30,000 at richness 31 (scouting/jishui.json, 20:12 UTC), grown from 3,888 on 2026-11-17 (about 130 an hour). No pilot of another on our record in Jishui; the nearest storage of ours is The Crescent Moon by Jadecove and Menkent (eight jumps), which keeps the road off Gliese 876 (77 pirate battles on the public record, last 2026-11-21 15:00 UTC). Stores everything, sells nothing (rule F24). One ship with an empty hold until its first RESULT line; a long haul, so the Liminal (about 150 ore a load) flies it first.",
+ "note": "Written by Zero, 2026-11-21 23:12 UTC (orders.log ENT-059, block ZERO: gather what the reserve lacks, carbon among the four; rules F3, F24, F36). The reserve is short of 82,321 carbon ore for the core foundry (the tool needs, 23:06 UTC); Acubens Belt, our only carbon field near home, read 406 at 22:53 UTC after 2,283 at 22:18 UTC (others mine it). Plainrock Field is a carbon-only belt: 16,042 of 30,000 at richness 31 (scouting/jishui.json, 20:12 UTC), grown from 3,888 on 2026-11-17 (about 130 an hour). No pilot of another on our record in Jishui; the nearest storage of ours is The Crescent Moon by Jadecove and Menkent (eight jumps), which keeps the road off Gliese 876 (77 pirate battles on the public record, last 2026-11-21 15:00 UTC). Stores everything, sells nothing (rule F24). One ship with an empty hold until its first RESULT line; a long haul, so the Liminal (about 150 ore a load) flies it first. 2026-11-22 11:08 UTC (fill.py, Zero): max_ships 5 -> 10.",
  "belt": "jishui:plainrock_field",
  "station": "mebsuta:bba58290a3ed25bad530772b15ab3fa4:ec315132a710a7d0fbc68cca05073154",
  "minutes": 150,
- "max_ships": 5,
+ "max_ships": 10,
  "standing": true,
  "min_left": {
   "carbon_ore": 1000
