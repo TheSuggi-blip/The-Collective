@@ -11,8 +11,5 @@
  "min_left": {
   "iron_ore": 20000,
   "copper_ore": 20000
- },
- "requires": {
-  "module": "mining_laser_i"
  }
 }

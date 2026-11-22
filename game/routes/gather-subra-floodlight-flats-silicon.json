@@ -13,7 +13,6 @@
   "silicon_ore": 500
  },
  "requires": {
-  "module": "mining_laser_i",
   "empty_hold": true
  },
  "measured": {

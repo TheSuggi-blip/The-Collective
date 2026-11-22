@@ -12,7 +12,6 @@
   "silver_ore": 600
  },
  "requires": {
-  "module": "mining_laser_i",
   "empty_hold": true
  },
  "measured": {

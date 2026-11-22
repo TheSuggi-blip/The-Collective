@@ -6,13 +6,12 @@
  "belt": "errai:errai_faint_entanglement",
  "station": "last_light:ramens_rest:ramens_rest",
  "minutes": 120,
- "max_ships": 1,
+ "max_ships": 2,
  "standing": true,
  "min_left": {
   "quantum_fragments": 100
  },
  "requires": {
-  "module": "mining_laser_i",
   "empty_hold": true
  },
  "measured": {

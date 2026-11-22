@@ -13,7 +13,6 @@
   "iron_ore": 20000
  },
  "requires": {
-  "module": "mining_laser_i",
   "empty_hold": true
  }
 }

@@ -10,8 +10,5 @@
  "standing": true,
  "min_left": {
   "copper_ore": 30000
- },
- "requires": {
-  "module": "mining_laser_i"
  }
 }

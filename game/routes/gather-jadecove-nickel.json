@@ -6,14 +6,13 @@
  "belt": "jadecove:long_errand_band",
  "station": "mebsuta:bba58290a3ed25bad530772b15ab3fa4:ec315132a710a7d0fbc68cca05073154",
  "minutes": 90,
- "max_ships": 3,
- "lift_to": 3,
+ "max_ships": 1,
+ "lift_to": 1,
  "standing": true,
  "min_left": {
   "nickel_ore": 100
  },
  "requires": {
-  "module": "mining_laser_i",
   "empty_hold": true
  },
  "measured": {

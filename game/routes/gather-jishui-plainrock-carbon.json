@@ -6,13 +6,12 @@
  "belt": "jishui:plainrock_field",
  "station": "mebsuta:bba58290a3ed25bad530772b15ab3fa4:ec315132a710a7d0fbc68cca05073154",
  "minutes": 150,
- "max_ships": 1,
+ "max_ships": 5,
  "standing": true,
  "min_left": {
   "carbon_ore": 1000
  },
  "requires": {
-  "module": "mining_laser_i",
   "empty_hold": true
  },
  "measured": {

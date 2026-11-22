@@ -12,7 +12,6 @@
   "quantum_fragments": 100
  },
  "requires": {
-  "module": "mining_laser_i",
   "empty_hold": true
  },
  "measured": {

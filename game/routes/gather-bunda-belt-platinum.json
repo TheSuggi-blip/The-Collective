@@ -12,7 +12,6 @@
   "platinum_ore": 300
  },
  "requires": {
-  "module": "mining_laser_i",
   "empty_hold": true
  },
  "measured": {
