@@ -73,6 +73,7 @@ WHY:  a plan of one-ship tests and routes that pay once left 102 of 146 ships do
 
 USAGE:
   fill.py [status] [<Member>|<role>|all]
+  fill.py status --why <pilot>   one pilot's whole list in order: why each route is closed now, or open
   fill.py check [<Member>|<role>|all]
   fill.py fill [<role>|all] [--write] [--once] [--tests N] [--floor CR]
   fill.py add <route id> [--role <role>] [--first]
@@ -229,6 +230,7 @@ def survey(root, data, now=None):
     book = dispatch.read_json(Path(data) / "routes" / "opportunities.json", {})
     book = book if isinstance(book, dict) else {}
     return {"now": now, "data": data, "root": root, "roles": roles, "owners": owners, "own": own, "routes": routes, "state": state, "crews": crews, "by_route": by_route, "named": named,
+            "fleet": fleet,
             "played": played, "taken": {}, "candidates": book.get("candidates") or [], "list_age": age_of(book.get("written_at") or "", now),
             "fleet_at": fleet.get("updated_at") or "?" if isinstance(fleet, dict) else "?"}
 
@@ -833,12 +835,33 @@ def may_change(who, role):
     return who == "Unity" or division.ROLES.get(role) == who
 
 
+def why_lines(seen, name):
+    """The lines of `fill.py status --why <pilot>`: every route of the pilot's whole list in order, with the reason the
+    dispatcher's own rule (dispatch.why_not) closes it now or `open`, and the one it flies (the reports of Zero and
+    Mercury, 2026-11-22: each wrote the same scratch loop to learn why working ships took a training loop)."""
+    fleet = seen.get("fleet") or dispatch.read_json(Path(seen["data"]) / "fleet" / "fleet.json", {})
+    ship = next((s for s in (fleet.get("ships") or [] if isinstance(fleet, dict) else []) if s.get("name") == name), None)
+    if ship is None:
+        return ["WHY %s: no ship of that name in fleet.json" % name]
+    role = dispatch.role_of(name, seen["named"])
+    pilot = dispatch.pilot_of(ship, seen["named"], seen["data"], set(dispatch.read_json(Path(seen["data"]) / "catalog" / "ammo.json", []) or []))
+    order = seen["state"]["orders"].get(name) or ""
+    flown = order.split(" ", 1)[1] if " " in order and not order.startswith("hand ") else ""
+    ids = seen["own"].get(name) or seen["roles"].get(role) or []
+    out = ["WHY %s | role %s | flies %s | %d routes in its list, in order" % (name, role, flown or (order or "nothing"), len(ids))]
+    for n, rid in enumerate(ids, 1):
+        reason, _argument = dispatch.why_not(pilot, rid, seen["routes"].get(rid), dict(seen["state"], orders=seen["played"] or seen["state"]["orders"], rows=seen["by_route"].get(rid, [])))
+        mark = "  <- flies it now" if rid == flown else ""
+        out.append("  %2d %-40s %s%s" % (n, rid[:40], "open" if reason is None else "closed: " + str(reason), mark))
+    return out
+
+
 def main():
     args = sys.argv[1:]
     value = lambda name, default: args[args.index(name) + 1] if name in args and args.index(name) + 1 < len(args) else default
     here = Path(__file__).resolve().parent
     root, data = value("--root", str(here.parent)), value("--data", division.DATA)
-    words = [a for n, a in enumerate(args) if not a.startswith("--") and (n == 0 or args[n - 1] not in ("--root", "--data", "--tests", "--floor", "--role"))]
+    words = [a for n, a in enumerate(args) if not a.startswith("--") and (n == 0 or args[n - 1] not in ("--root", "--data", "--tests", "--floor", "--role", "--why"))]
     if any(a in ("-h", "--help") for a in args):
         sys.exit(__doc__)
     verb = words[0] if words and words[0] in ("status", "check", "fill", "add", "drop", "lift") else "status"
@@ -858,6 +881,10 @@ def main():
             return sorted(r for r in seen["roles"] if division.ROLES.get(r) == word)
         sys.exit("`%s` is no member and no role: %s, %s, or all" % (word, ", ".join(division.MEMBERS), ", ".join(sorted(seen["roles"]))))
 
+    if verb == "status" and "--why" in args:          # one pilot's whole list with the reason each route is closed
+        for line in why_lines(seen, value("--why", "")):
+            print(line)
+        return 0
     if verb in ("status", "check"):
         chosen = roles_of(rest[0] if rest else ("all" if who in ("Unity", "") else who))
         results = [(role, read_role(seen, role, floor, tests)) for role in chosen]

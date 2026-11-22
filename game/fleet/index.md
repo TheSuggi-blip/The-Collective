@@ -291,6 +291,7 @@ Run by hand.
 
 ```
 fill.py [status] [<Member>|<role>|all]
+fill.py status --why <pilot>   one pilot's whole list in order: why each route is closed now, or open
 fill.py check [<Member>|<role>|all]
 fill.py fill [<role>|all] [--write] [--once] [--tests N] [--floor CR]
 fill.py add <route id> [--role <role>] [--first]
