@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 13.
+Routes: 14.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -27,5 +27,6 @@ Routes: 13.
 | [fit-shield-booster-pirate-group](fit-shield-booster-pirate-group.json) | circuit | home space | Fit a Shield Booster I at Central Nexus: the first step of the drone group against pirates | once per pilot, up to 2 ships, 5 pilots in all, without shield_booster_i, from 8,000 cr, from gunnery 3 | 5 | 6 | -3,030 | one-time | 2026-11-17 |
 | [fit-survey-scanner-central-nexus](fit-survey-scanner-central-nexus.json) | circuit | home space | Test: fit one Survey Scanner I at Central Nexus, so that one scout can survey_system (hidden places, deep core deposits, the scanning skill) | once per pilot, up to 1 ships, 7 pilots in all, without survey_scanner_i, from 12,000 cr | 9 | 1 | -3,280 | one-time | 2026-11-21 |
 | [fit-ice-harvester-lhs-1140](fit-ice-harvester-lhs-1140.json) | circuit | beyond the border, 6 jumps | Fit an Ice Harvester I at Ironlight Crossroads (LHS 1140), beyond the border: a test with one miner | once per pilot, up to 5 ships, 20 pilots in all, without ice_harvester_i, empty hold, from 6,000 cr | 19 | 9 | -690 | one-time | 2026-11-16 |
+| [fit-mining-laser-iii-lhs-1140](fit-mining-laser-iii-lhs-1140.json) | circuit | beyond the border, 6 jumps | Swap the Mining Laser I for a Mining Laser III at Ironlight Crossroads, LHS 1140 (fit with replace), three at a time | once per pilot, up to 3 ships, 20 pilots in all, needs mining_laser_i, without mining_laser_iii, empty hold, from 20,000 cr, while 784309214f105860a16a0c100a70eb14 asks 7700 cr or less for mining_laser_iii | TBD | TBD | TBD | TBD | -- |
 | [fit-plasma-cannon-ii-krynn](fit-plasma-cannon-ii-krynn.json) | circuit | beyond the border, 20 jumps | Swap the Pulse Laser I for a Plasma Cannon II at Crimson War Citadel, Krynn (fit with replace), one ship first | once per pilot, up to 1 ships, 1 pilots in all, needs pulse_laser_i, without plasma_cannon_ii, empty hold, from 25,000 cr | 1 | 22 | -10,010 | one-time | 2026-11-22 |
 | [fit-pulse-laser-iii-lhs-1140](fit-pulse-laser-iii-lhs-1140.json) | circuit | beyond the border, 6 jumps | Swap the Pulse Laser I for a Pulse Laser III at Ironlight Crossroads, LHS 1140 (fit with replace), one ship first | once per pilot, up to 1 ships, 1 pilots in all, needs pulse_laser_i, without pulse_laser_iii, empty hold, from 30,000 cr | 1 | 9 | -13,580 | one-time | 2026-11-22 |

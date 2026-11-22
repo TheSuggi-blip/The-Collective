@@ -1,0 +1,34 @@
+{
+ "id": "fit-mining-laser-iii-lhs-1140",
+ "kind": "circuit",
+ "title": "Swap the Mining Laser I for a Mining Laser III at Ironlight Crossroads, LHS 1140 (fit with replace), three at a time",
+ "note": "2026-11-22 03:25 UTC (Zero): orders ENT-061, block ZERO (level mining, reach the next fits and hulls); rules F17 (a module a whole role needs is a fit route, tried on one ship first) and F37 (three results). The one Laser III fitted on 2026-11-21 mined 390, 390 and 390 ore in three gather-gsc-0027-spacetime-seep runs of about 49 minutes (runs.jsonl, 2026-11-21 23:51 to 2026-11-22 02:13 UTC) against a median of 184 over 101 Laser I runs of that route since 2026-11-21 22:00 UTC: 2.1 times the ore and the Mining XP for the same fuel. Why here: Ironlight Crossroads asks 7,606 cr x 20 (data/market/784309214f105860a16a0c100a70eb14.json, 03:08 UTC) against 6,207 x 1 at Node Alpha and 6,974 x 2 at Central Nexus. LHS 1140 is lawless, six jumps from home, a station of the Ironlight Combine with public access (fit-ice-harvester-lhs-1140, fit-pulse-laser-iii-lhs-1140): an empty hold (rule F3). The Ice Harvester stays; only the Laser I is replaced and stored there. max_pilots 20 = the asks; max_ships 3 at a time; min_credits 20,000 keeps the pilot above the wallet top-up line after the buy (rule F7).",
+ "once": true,
+ "max_ships": 3,
+ "max_pilots": 20,
+ "min_credits": 20000,
+ "requires": {
+  "module": "mining_laser_i",
+  "without_module": "mining_laser_iii",
+  "empty_hold": true,
+  "ask": {
+   "item": "mining_laser_iii",
+   "base": "784309214f105860a16a0c100a70eb14",
+   "max_price": 7700,
+   "min_qty": 1,
+   "max_age_minutes": 240
+  }
+ },
+ "stops": [
+  {
+   "at": "lhs_1140:0321b3e4406021575337b7be26e53dd7:784309214f105860a16a0c100a70eb14",
+   "fit": [
+    {
+     "module": "mining_laser_iii",
+     "max_price": 7800,
+     "replace": "mining_laser_i"
+    }
+   ]
+  }
+ ]
+}
