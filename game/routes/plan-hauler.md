@@ -87,8 +87,4 @@ Planned:
 
 | What | When |
 |---|---|
-| GSC-0044: read get_base at the outpost after the first repair load (the repairs block: what each damaged facility still lacks), carry what it names, and read faction_owned until the bunker reads ready | next turn |
-| The bunker route under requires.reserve (below 4,000): its first RESULT line once the bunker is repaired and the Fleet Admiral switches the reserve gate on; that RESULT line is the start of Atria (requests.log ENT-272) | after the repair |
-| Atria: the kit route switched on and the founding by found.py --treasury-ok at Atria Belt, once the builder's wallet holds the 150,150 cr allocation and GSC-0044 runs by itself | on the allocation |
-| train-jumps-hauler: max_ships weighed each turn against the fleet's 24-hour steady net; haulers leave it at each loop's end for any paying or reserve route that opens in their rows | every turn |
-| The Recruitment Center (500 boards, 1,000 plate, 300 flex polymer, 2,000,000 cr) by build.py --upgrade once the treasury holds the fee | on her word |
+| Atria: switch the kit route on and found the outpost once the builder's wallet holds the allocation (requests.log ENT-314); read the first RESULT line of craft-cells-hydrogen-node-beta and feed the bunker from made cells; read the freight board (shipping list_all) and test one contract with one hauler; a passenger cabin or a Fugue on one ship | next turn |
