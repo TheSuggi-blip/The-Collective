@@ -9,7 +9,7 @@ faction: Ironlight Combine
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-21
+updated: 2026-11-22
 ---
 
 # Ironlight Combine [IRLC]
@@ -48,24 +48,24 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
 | ILC Chute | Synchrony (`synchrony`) | 0 | junk_convoy |
-| ILC Cope | Pherkad (`pherkad`) | 0 | frankenhauler |
+| ILC Fissure | Synchrony (`synchrony`) | 0 | accumulator |
 | ILC Flange | Synchrony (`synchrony`) | 0 | syndicate |
 | ILC Gantry | Synchrony (`synchrony`) | 0 | syndicate |
-| ILC Gasket | Nexus Prime (`nexus_prime`) | 0 | syndicate |
+| ILC Gasket | Synchrony (`synchrony`) | 0 | syndicate |
 | ILC Gateway | Nexus Prime (`nexus_prime`) | 0 | concordia |
+| ILC Geode | Synchrony (`synchrony`) | 0 | paydirt |
 | ILC Gilt | Synchrony (`synchrony`) | 0 | syndicate |
+| ILC Kerf | Pherkad (`pherkad`) | 0 | syndicate |
 | ILC Ladle | Synchrony (`synchrony`) | 0 | syndicate |
 | ILC Mallet | Synchrony (`synchrony`) | 0 | syndicate |
 | ILC Nonstop | Nexus Prime (`nexus_prime`) | 0 | concordia |
-| ILC Penalty | Synchrony (`synchrony`) | 0 | syndicate |
 | ILC Ratchet | Synchrony (`synchrony`) | 0 | syndicate |
 | ILC Retort | Synchrony (`synchrony`) | 0 | syndicate |
 | ILC Shank | Synchrony (`synchrony`) | 1 | syndicate |
 | ILC Solder | Synchrony (`synchrony`) | 1 | syndicate |
-| ILC Stope | Acubens (`acubens`) | 0 | rock_eater |
 | ILC Vagabond | Nexus Prime (`nexus_prime`) | 0 | concordia |
-| ILC Vein | The Experiment (`the_experiment`) | 0 | deep_survey |
-| ILC Verdict | Synchrony (`synchrony`) | 0 | frankenhauler |
+| ILC Vein | Synchrony (`synchrony`) | 0 | deep_survey |
+| ILC Verdict | Pherkad (`pherkad`) | 0 | frankenhauler |
 | ILC Weir | Synchrony (`synchrony`) | 0 | junk_convoy |
 
 ## Standing History

@@ -9,7 +9,7 @@ faction: Amalgamated Rogue Raiders Guild
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-21
+updated: 2026-11-22
 ---
 
 # Amalgamated Rogue Raiders Guild [ARRG]
@@ -38,7 +38,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Ulvaren | Nexus Prime (`nexus_prime`) | 0 | prospect |
+| Rafferty Doyle | Nexus Prime (`nexus_prime`) | 0 | cobble |
 
 ## Standing History
 

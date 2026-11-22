@@ -9,7 +9,7 @@ faction: Leap Frog Freight
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-21
+updated: 2026-11-22
 ---
 
 # Leap Frog Freight [FROG]
@@ -38,7 +38,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Clover Quickstep | Synchrony (`synchrony`) | not on record | cobble |
+| Alder Burrowes | Synchrony (`synchrony`) | not on record | theoria |
 | Hob Meadowsweet | Node Gamma (`node_gamma`) | not on record | not met |
 | Mossy Thistlewick | Nexus Prime (`nexus_prime`) | not on record | not met |
 

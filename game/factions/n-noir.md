@@ -9,13 +9,13 @@ faction: Interstellar Continental
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-21
+updated: 2026-11-22
 ---
 
 # Interstellar Continental [NOIR]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 5.
+Pilots of it in our space in the last 24 hours: 4.
 
 ## Identity
 
@@ -38,11 +38,10 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Arbiter61 | Synchrony (`synchrony`) | 0 | dust_devil |
-| Arbuckle | Node Alpha (`node_alpha`) | 0 | dust_devil |
-| Cook | The Experiment (`the_experiment`) | 0 | futures |
+| Arbiter41 | Node Alpha (`node_alpha`) | 0 | dust_devil |
+| Cook | Node Beta (`node_beta`) | 0 | futures |
 | Marlowe | The Experiment (`the_experiment`) | 0 | all_mine |
-| Speke | Nexus Prime (`nexus_prime`) | 0 | futures |
+| Speke | Synchrony (`synchrony`) | 0 | futures |
 
 ## Standing History
 
