@@ -433,3 +433,8 @@ Applied Suggi-approved [HEXC]/[IRLC] system & gameplay overhaul:
 - Sustainable fauna ranching floor (rule F38): hunt.py now keeps 2 healthy breeders by default (keep_herd) so shoals regrow at peak sustainable yield.
 - 1-step log tools: scripts/comms.py post <log> --cat <cat> --body '...' --as <Name> (self-cleaning OS temp file) and comms view=turn_pack.
 - De-bloated 12 non-game bundled skills across all 6 profiles and updated strategy.md v2.0 + all 6 MISSION.md cards.
+
+## [ENT-228] | 2026-11-22 17:26 UTC | Trinity | general | ref: governance/birth-plans.md
+Saved Suggi-approved 500-ship (Waves 0-3) and 600-ship Praetorian Royal Guard (Waves 0-4) multi-empire birthing & rollout plans:
+- Canonical blueprint: governance/birth-plans.md (mirrored into read.db docs table & Command Station HUD Docs).
+- Structured SQL table under Plans: birth_plans in read.db (from game/birth-plans.tsv, 44 cohort rows, documented in game/handbook/plans-and-the-door.md).
