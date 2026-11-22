@@ -346,5 +346,88 @@ class WatchdogTests(unittest.TestCase):
             self.assertAlmostEqual(r2["velocity"]["dt_hours"], 5.0, places=1)
 
 
+
+
+class TradeRunAndAgilityTests(unittest.TestCase):
+    def test_route_run_active_parses_both_hex_and_named_trade_run_ids(self):
+        import ast, re
+        src = (Path(__file__).resolve().parents[2] / "game" / "fleet" / "route_run.py").read_text(encoding="utf-8")
+        tree = ast.parse(src)
+        fn_node = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == "active")
+        ns = {
+            "re": re,
+            "verbose": False,
+            "say": lambda *a: None,
+            "text": lambda d: d["text"],
+            "raw": lambda *a, **kw: {
+                "text": (
+                    "--- Say Hello [0123456789abcdef0123456789abcdef]\nObjectives:\n- Visit Nexus [DONE]\nRewards: 1000\n"
+                    "--- Trade Run: Precision Optic to Market Prime [trade_alpha_centauri_market_prime_precision_optic]\n"
+                    "Objectives:\n- Sell 1 Precision Optic [DONE]\nRewards: 260 XP\n"
+                )
+            },
+        }
+        exec(compile(ast.Module(body=[fn_node], type_ignores=[]), "<route_run.active>", "exec"), ns)
+        got = ns["active"]()
+        self.assertEqual(len(got), 2)
+        self.assertEqual(got[0], ("Say Hello", "0123456789abcdef0123456789abcdef", True))
+        self.assertEqual(got[1], ("Trade Run: Precision Optic to Market Prime", "trade_alpha_centauri_market_prime_precision_optic", True))
+
+    def test_routemaker_synthesizes_xp_trade_run_with_named_mission_id(self):
+        import routemaker
+        world = {
+            "now": 1795320000.0,
+            "pilots": 40,
+            "routes": {},
+            "booked": {},
+            "items": {"precision_optic": {"name": "Precision Optic", "size": 1}},
+            "fields": [],
+            "herds": [],
+            "stock": {},
+            "stations": {
+                "alpha_base": {"at": "alpha:p1:alpha_base", "name": "Alpha Base", "system": "alpha"},
+                "prime_base": {"at": "prime:p2:prime_base", "name": "Prime Exchange", "system": "prime"},
+            },
+            "books": {
+                "alpha_base": {"items": {"precision_optic": {"ask": 400, "ask_qty": 10, "bid": 0, "bid_qty": 0}}},
+                "prime_base": {"items": {"precision_optic": {"ask": 0, "ask_qty": 0, "bid": 650, "bid_qty": 10}}},
+            },
+            "boards": {
+                "alpha_base": {
+                    "system": "alpha",
+                    "read_at": 1795319900.0,
+                    "missions": [{
+                        "template_id": None,
+                        "mission_id": "trade_alpha_prime_optic",
+                        "title": "Trade Run: Precision Optic to Prime",
+                        "type": "trading",
+                        "rewards": {"credits": 0, "skill_xp": {"trading": 40}, "piloting_xp": 260},
+                        "objectives": [{"type": "sell_item", "system_id": "prime", "target_base_id": "prime_base", "item_id": "precision_optic", "quantity": 2}],
+                    }],
+                }
+            },
+            "assume": {
+                "jump_minutes": {"value": 0.5},
+                "dock_minutes": {"value": 0.5},
+                "leg_minutes": {"value": 0.5},
+                "fuel_per_jump": {"value": 2.0},
+                "fuel_price": {"value": 5.0},
+                "tax": {"value": 0.01},
+            },
+            "strongholds": set(),
+            "player_fees": {},
+            "chart": type("C", (), {"jumps": staticmethod(lambda a, b: 3 if a != b else 0), "systems": {"alpha": {"empire": "voidborn"}, "prime": {"empire": "voidborn"}}})(),
+        }
+        cands = routemaker.mission_candidates(world)
+        self.assertEqual(len(cands), 1)
+        c = cands[0]
+        self.assertEqual(c["xp"], 300)
+        self.assertIsNotNone(c["route"])
+        self.assertNotIn("once", c["route"])
+        # Stop 0 buys at alpha_base, Stop 1 accepts mission_id, Stop 2 sells at prime_base
+        self.assertEqual(c["route"]["stops"][1]["accept"][0]["template"], "trade_alpha_prime_optic")
+        self.assertEqual(c["route"]["stops"][2]["sell"][0]["item"], "precision_optic")
+
+
 if __name__ == "__main__":
     unittest.main()

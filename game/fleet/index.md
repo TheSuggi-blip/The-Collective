@@ -682,6 +682,8 @@ routemaker.py --once              one pass, then stop
 routemaker.py show [<Member>|all] [--kind mine|trade|craft|hunt|mission] [--top N]
                                   the candidates for a member's ships (default: the member this shell belongs to), best first
 routemaker.py route <id>          the route file of one candidate, with what its estimate rests on
+routemaker.py write <id> [--commit]
+                                  write the candidate's route file to game/routes/<id>.json, check & index it
 --data <dir>                      the unit's data folder (default /srv/collective/data)
 ```
 

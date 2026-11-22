@@ -53,7 +53,33 @@ gates() {                                           # run inside a tree or the c
   python3 -B scripts/fleet-index.py --check > "$log" 2>&1 || { echo "GATE fleet index (run: python3 -B scripts/fleet-index.py):"; tail -4 "$log"; rm -f "$log"; return 1; }
   python3 -B scripts/validate-intel.py > "$log" 2>&1 || { echo "GATE validate-intel:"; tail -5 "$log"; rm -f "$log"; return 1; }
   bash scripts/validate-ids.sh > "$log" 2>&1 || { echo "GATE validate-ids:"; tail -5 "$log"; rm -f "$log"; return 1; }
-  if [ -n "${1:-}" ]; then python3 -B -m unittest "$1" > "$log" 2>&1; else python3 -B -m unittest discover -s scripts/tests > "$log" 2>&1; fi
+  if [ -n "${1:-}" ]; then
+    python3 -B -m unittest "$1" > "$log" 2>&1
+  else
+    python3 -B - <<'PY' > "$log" 2>&1
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import glob, subprocess, sys
+
+files = sorted(glob.glob("scripts/tests/test_*.py"))
+failed = []
+def run_one(f):
+    r = subprocess.run([sys.executable, "-B", f], capture_output=True, text=True, timeout=120)
+    return f, r.returncode, r.stdout + r.stderr
+
+with ThreadPoolExecutor(max_workers=4) as pool:
+    futs = [pool.submit(run_one, f) for f in files]
+    for fut in as_completed(futs):
+        f, rc, out = fut.result()
+        if rc != 0:
+            failed.append((f, rc, out))
+
+if failed:
+    for f, rc, out in failed:
+        print(f"FAIL: {f} (rc={rc})\n{out[-1200:]}")
+    sys.exit(1)
+print(f"OK ({len(files)} test files passed in parallel)")
+PY
+  fi
   local code=$?
   [ $code -eq 0 ] || { echo "GATE unit tests:"; grep -E '^(FAIL|ERROR)|Error' "$log" | head -8; tail -3 "$log"; }
   [ $code -eq 0 ] && tail -1 "$log"

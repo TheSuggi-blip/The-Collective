@@ -533,7 +533,7 @@ def active():
     if verbose:
         say('active missions, raw: ' + t[:1500].replace('\n', ' / '))
     out = []
-    for m in re.finditer(r'--- (.+?) \[([0-9a-f]{32})\](.*?)(?=\n--- |\Z)', t, re.S):
+    for m in re.finditer(r'--- (.+?) \[([A-Za-z0-9_-]+)\](.*?)(?=\n--- |\Z)', t, re.S):
         objectives = re.search(r'Objectives:\n(.*?)(?:\nRewards:|\Z)', m.group(3), re.S)
         lines = [l for l in (objectives.group(1).splitlines() if objectives else []) if l.strip().startswith('- ')]   # not the Target lines
         out.append((m.group(1).strip(), m.group(2), bool(lines) and all('[DONE]' in l for l in lines)))
@@ -791,14 +791,15 @@ for n, stop in enumerate(ROUTE['stops']):
                 say(f'{template}: not accepted, the hold lacks {short}')
                 notes.append(f'{template}: goods missing')
                 continue
-            posted = next((m for m in board if m.get('template_id') == template), None)   # never `offer`: that is the function the buy and fit steps call
+            posted = next((m for m in board if m.get('template_id') == template or m.get('mission_id') == template), None)   # never `offer`: that is the function the buy and fit steps call
             if posted is None:
                 say(f'{template}: not on the board of {base}')
                 notes.append(f'{template} not offered')
             elif posted.get('title') in have:
                 say(f'{template}: already accepted')
             else:
-                ok, msg = goal('accept-mission', {'missionId': template}, tries=1)
+                target_mid = posted.get('mission_id') or posted.get('template_id') or template
+                ok, msg = goal('accept-mission', {'missionId': target_mid}, tries=1)
                 say(f'accept {template}: {ok} {msg[:100]}')
                 if not ok:
                     notes.append(f'{template} not accepted')

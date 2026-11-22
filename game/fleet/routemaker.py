@@ -81,6 +81,8 @@ USAGE:
   routemaker.py show [<Member>|all] [--kind mine|trade|craft|hunt|mission] [--top N]
                                     the candidates for a member's ships (default: the member this shell belongs to), best first
   routemaker.py route <id>          the route file of one candidate, with what its estimate rests on
+  routemaker.py write <id> [--commit]
+                                    write the candidate's route file to game/routes/<id>.json, check & index it
   --data <dir>                      the unit's data folder (default /srv/collective/data)
 
 Stdlib only. ASCII only.
@@ -106,7 +108,7 @@ import gauges                                     # noqa: E402  rule F9: what on
 import craftbook                                  # noqa: E402  by_hand: which recipes are made by hand (catalog 0.729.0 on: no hand_craftable)
 
 ROOT = Path(__file__).resolve().parent.parent     # the game/ folder
-EVERY = 600                  # seconds between two passes
+EVERY = 180                  # seconds between two passes (3 minutes)
 STALE = 6 * 3600             # a book or a field read longer ago is marked stale
 LADDER_FRESH = 45 * 60       # a ladder read longer ago is read again when a candidate needs it
 LADDER_READS = 16            # ladders read through docked pilots in one pass, at most
@@ -910,12 +912,16 @@ def mission_candidates(world):
     for base, board in world["boards"].items():
         giver = world["stations"].get(base)
         for mission in board["missions"]:
-            reward = num((mission.get("rewards") or {}).get("credits"))
-            key = (mission.get("template_id") or mission.get("title"), base if not mission.get("template_id") else "")
-            if reward <= 0 or key in seen:
+            rew_obj = mission.get("rewards") or {}
+            reward = num(rew_obj.get("credits"))
+            s_xp = rew_obj.get("skill_xp") or {}
+            xp_total = int(num(rew_obj.get("piloting_xp")) + (sum(num(v) for v in s_xp.values()) if isinstance(s_xp, dict) else 0))
+            mid = mission.get("template_id") or mission.get("mission_id")
+            key = (mid or mission.get("title"), base if not mission.get("template_id") else "")
+            if (reward <= 0 and xp_total <= 0) or key in seen:
                 continue
             seen.add(key)
-            cost, jumps_total, asks, blockers, stops, hunt_minutes = 0.0, 0, [], [], [], 0.0
+            cost, sale_inc, jumps_total, asks, blockers, stops, hunt_minutes = 0.0, 0.0, 0, [], [], [], 0.0
             here = board["system"]
             for goal in mission.get("objectives") or []:
                 kind, item, qty = goal.get("type"), goal.get("item_id"), max(1, num(goal.get("quantity")))
@@ -937,7 +943,18 @@ def mission_candidates(world):
                                                                          ". Seen: " + "; ".join(herds) if herds else ""))
                         blockers.append("a source of %s%s" % (item, " (a hunt: the herd is known)" if herds else ""))
                     if goal.get("target_base_id"):
-                        stops.append(("deliver", goal["target_base_id"], item, qty, 0))
+                        t_base = goal["target_base_id"]
+                        if kind == "sell_item":
+                            t_row = ((world["books"].get(t_base) or {}).get("items") or {}).get(item)
+                            bid_p = int(t_row["bid"]) if t_row and t_row.get("bid", 0) > 0 and t_row.get("bid_qty", 0) >= qty else 0
+                            if bid_p > 0:
+                                sale_inc += qty * bid_p
+                                stops.append(("sell", t_base, item, qty, bid_p))
+                            else:
+                                blockers.append("a standing bid for %d %s at %s" % (qty, item, t_base))
+                                stops.append(("sell", t_base, item, qty, 0))
+                        else:
+                            stops.append(("deliver", t_base, item, qty, 0))
                 elif kind == "mine_resource":
                     fields = [f for f in world["fields"] if any(r["id"] == item and r["remaining"] >= qty for r in f["resources"])]
                     asks.append("mine %d %s: %s" % (qty, item, ("at %s:%s" % (fields[0]["system"], fields[0]["poi"])) if fields else "no field with it in our readings"))
@@ -978,46 +995,60 @@ def mission_candidates(world):
             jumps = jumps_total + back
             minutes = jumps * value(world, "jump_minutes") + (2 + len(stops)) * value(world, "dock_minutes") + 5 + hunt_minutes
             fuel = jumps * value(world, "fuel_per_jump") * value(world, "fuel_price")
-            net = reward - cost - fuel
-            title = str(mission.get("title") or mission.get("template_id") or "mission")
-            names = {title.lower(), str(mission.get("template_id") or "").lower()} - {""}
+            net = reward + sale_inc - cost - fuel
+            title = str(mission.get("title") or mid or "mission")
+            names = {title.lower(), str(mid or "").lower()} - {""}
             done = len(set().union(*(world["booked"].get(n, set()) for n in names))) if names else 0
             fixed = bool(mission.get("template_id"))
+            can_accept = bool(mid)
             warnings = ["whether it pays again for the same pilot is not known"] if fixed else ["a mission the station made up: it may be gone at the next read"]
             warn_age(world, board["read_at"], "the board of %s" % base, warnings)
             if jumps > 12:
                 warnings.append("a long way: %d jumps there and back, beyond the systems the orders name" % jumps)
-            rid = known_routes.get(mission.get("template_id")) or ""
-            cid = "mission-%s-%s" % (str(mission.get("template_id") or title).lower().replace("_", "-").replace(" ", "-")[:44], base.split("_")[0])
+            rid = known_routes.get(mid) or ""
+            cid = "mission-%s-%s" % (str(mid or title).lower().replace("_", "-").replace(" ", "-")[:44], base.split("_")[0])
+            route_id = re.sub(r"[^a-z0-9-]+", "-", cid).strip("-")
             route = None
             buys = [s for s in stops if s[0] == "buy"]
-            drops = [s for s in stops if s[0] in ("deliver", "dock")]
+            drops = [s for s in stops if s[0] in ("deliver", "dock", "sell")]
             hunts = [s for s in stops if s[0] == "hunt"]
-            flyable = all(g.get("type") in ("deliver_item", "dock_at_base", "kill_creature") for g in mission.get("objectives") or [])
-            if fixed and giver and not blockers and flyable and (drops or hunts) and all(world["stations"].get(s[1]) for s in buys + drops):
+            flyable = all(g.get("type") in ("deliver_item", "sell_item", "dock_at_base", "kill_creature") for g in mission.get("objectives") or [])
+            if can_accept and giver and not blockers and flyable and (drops or hunts) and all(world["stations"].get(s[1]) for s in buys + drops):
                 plan = []
+                is_once = bool(fixed and reward > 0)
                 for _, where, item, qty, price in buys:
-                    plan.append({"at": world["stations"][where]["at"], "skip_if_hold": {item: qty}, "buy": [{"item": item, "qty": qty, "max_price": int(price * 1.15) + 1, "one_time": True}]})
-                plan.append({"at": giver["at"], "accept": [{"template": mission["template_id"], "needs": {s[2]: s[3] for s in buys}}] if buys else [mission["template_id"]]})
+                    buy_entry = {"item": item, "qty": qty, "max_price": int(price * 1.15) + 1, "stop_on_failed_buy": True}
+                    if is_once:
+                        buy_entry["one_time"] = True
+                    plan.append({"at": world["stations"][where]["at"], "skip_if_hold": {item: qty}, "buy": [buy_entry]})
+                plan.append({"at": giver["at"], "accept": [{"template": mid, "needs": {s[2]: s[3] for s in buys}}] if buys else [mid]})
                 if hunts:
                     plan[-1]["hunt"] = [dict({"at": place, "species": [species], "kills": kills, "minutes": 35, "for": [title]},
                                              **({"alone": True} if lawless(world, place.split(":")[0]) else {}))
                                         for _, place, species, kills, _price in hunts]
-                for _, where, _item, _qty, _price in drops:
-                    plan.append({"at": world["stations"][where]["at"], "redock": True})
+                for skind, where, item, qty, price in drops:
+                    st_stop = {"at": world["stations"][where]["at"], "redock": True}
+                    if skind == "sell" and item and price > 0:
+                        st_stop["sell"] = [{"item": item, "min_price": max(1, int(price * 0.85))}]
+                    plan.append(st_stop)
                 if hunts or plan[-1]["at"] != giver["at"]:
                     plan.append({"at": giver["at"]})
-                route = {"id": cid, "kind": "circuit", "title": "%s: %d cr at %s" % (title, reward, giver["name"]),
-                         "note": "Written by routemaker.py from the board and the order books: goods for about %d cr, reward %d cr. A test: one ship; whether the mission "
-                                 "hands its goods out at the accept is not known until one accept with an empty hold." % (cost, reward),
-                         "once": True, "max_ships": 1, "one_time": [title], "skip_if_booked": [title], "stops": plan}
+                xp_note = (", +%d XP" % xp_total) if xp_total else ""
+                route = {"id": route_id, "kind": "circuit", "title": "%s: %d cr%s at %s" % (title[:60], int(reward + sale_inc), xp_note, giver["name"]),
+                         "note": "Written by routemaker.py from the board and the order books: goods for about %d cr, reward %d cr, sale %d cr%s. Test with one ship first."
+                                 % (cost, reward, sale_inc, xp_note),
+                         "max_ships": 1, "stops": plan}
+                if is_once:
+                    route.update({"once": True, "one_time": [title], "skip_if_booked": [title]})
                 if cost:
-                    route["min_credits"] = int(cost) + 3000
-            out.append(candidate(world, cid, "mission", "%s (%s)" % (title, base), 60 * net / max(minutes, 1), net, minutes,
-                                 {"board": base, "reward": reward, "asks": asks, "goods_cost": int(cost), "jumps": jumps}, warnings, route=route,
+                    route["min_credits"] = int(cost) + 3500
+            xp_tag = (" [%+d XP]" % xp_total) if xp_total else ""
+            out.append(candidate(world, cid, "mission", "%s%s (%s)" % (title, xp_tag, base), 60 * net / max(minutes, 1), net, minutes,
+                                 {"board": base, "reward": reward, "sale": int(sale_inc), "xp": xp_total, "asks": asks, "goods_cost": int(cost), "jumps": jumps}, warnings, route=route,
                                  needs="; ".join(sorted(set(blockers))), rid=rid,
                                  extra={"pilots_booked": done, "pilots_open": max(0, world["pilots"] - done) if fixed else None,
-                                        "open_credits": int(max(0, world["pilots"] - done) * net) if fixed and net > 0 else None}))
+                                        "open_credits": int(max(0, world["pilots"] - done) * net) if fixed and net > 0 else None,
+                                        "xp": xp_total}))
     return out
 
 
@@ -1114,7 +1145,7 @@ def main():
     if any(a in ("-h", "--help") for a in args):
         sys.exit(__doc__)
     path = Path(data) / "routes" / "opportunities.json"
-    if rest and rest[0] in ("show", "route"):
+    if rest and rest[0] in ("show", "route", "write"):
         book = read_json(path, None) or build(data, ROOT, time.time())
         if rest[0] == "show":
             who = (rest[1] if len(rest) > 1 else division.member()[1] or "Unity").capitalize()
@@ -1123,6 +1154,36 @@ def main():
         found = next((c for c in book.get("candidates") or [] if len(rest) > 1 and c["id"] == rest[1]), None)
         if not found:
             sys.exit("routemaker.py: no candidate `%s`; `routemaker.py show all` lists them" % (rest[1] if len(rest) > 1 else ""))
+        if rest[0] == "write":
+            if not found.get("route"):
+                sys.exit("routemaker.py: candidate `%s` has no ready route file (%s)" % (found["id"], found.get("needs") or "not flyable"))
+            import fcntl, subprocess
+            r_obj = dict(found["route"])
+            rid = r_obj["id"]
+            r_file = Path(ROOT) / "routes" / ("%s.json" % rid)
+            if r_file.exists():
+                sys.exit("routemaker.py: game/routes/%s.json already exists; edit it or use its id `%s`" % (rid, rid))
+            lock_p = Path(data) / "routes" / "fill.lock"
+            lock_p.parent.mkdir(parents=True, exist_ok=True)
+            with open(lock_p, "w") as lk:
+                fcntl.flock(lk, fcntl.LOCK_EX)
+                r_file.write_text(json.dumps(r_obj, indent=2) + "\n", encoding="ascii")
+                chk = subprocess.run([sys.executable, "-I", "-B", str(Path(__file__).parent / "routes.py"), "check", "--root", str(ROOT), "--data", str(data)],
+                                     capture_output=True, text=True)
+                if chk.returncode != 0:
+                    r_file.unlink(missing_ok=True)
+                    sys.exit("routemaker.py: route check refused `%s`:\n%s" % (rid, (chk.stdout + chk.stderr).strip()))
+                subprocess.run([sys.executable, "-I", "-B", str(Path(__file__).parent / "routes.py"), "index", "--root", str(ROOT), "--data", str(data)],
+                               capture_output=True, text=True)
+                if "--commit" in args and (Path(ROOT).parent / ".git").is_dir():
+                    _k, who_m = division.member()
+                    author = who_m if who_m in division.MEMBERS else "Unity"
+                    repo_dir = Path(ROOT).parent
+                    subprocess.run(["git", "-C", str(repo_dir), "add", "--", "game/routes"], check=True)
+                    subprocess.run(["git", "-C", str(repo_dir), "-c", "user.name=%s" % author, "-c", "user.email=%s@suggi-workspace.dev" % author.lower(),
+                                    "commit", "-q", "-m", "routes: %s (routemaker write, %s)" % (rid, author), "--", "game/routes"], check=True)
+            print("WROTE game/routes/%s.json | est %+d cr/h, %+d cr/run%s" % (rid, found["per_ship_hour"], found["per_run"], " (committed)" if "--commit" in args else ""))
+            return 0
         print("# %s | estimate %+d cr per ship-hour, %+d cr a run of %.0f minutes | %s" % (found["title"], found["per_ship_hour"], found["per_run"], found["minutes"], found["status"]))
         print("# rests on: " + json.dumps(found["basis"]))
         for warning in found["warnings"]:

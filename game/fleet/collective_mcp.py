@@ -285,11 +285,12 @@ TOOLS = {
                  "brief": arg(B, "for show: the plan in a few lines instead of the whole file")},
         "plan": plan_file},
     "candidates": {
-        "text": "Ways to earn that the route maker computed from our own readings (fields, order books, mission boards, herds, recipes), best first, with the estimate "
-                "per ship-hour, what it rests on, its warnings and what it still needs. With id: the ready route file of one candidate.",
+        "text": "Ways to earn that the route maker computed every 3 minutes from our own readings (fields, order books, mission boards incl. Trade Runs, herds, recipes), best first, with the estimate "
+                "per ship-hour, what it rests on, its warnings and what it still needs. With id: prints the ready route file; with id and write=true: writes game/routes/<id>.json, checks, indexes and commits it in one step.",
         "args": {"member": arg(S, "whose ships: a member's name or all", MEMBERS), "kind": arg(S, "mine, trade, craft, hunt or mission", ("mine", "trade", "craft", "hunt", "mission")),
-                 "top": arg(I, "how many, default 20"), "id": arg(S, "one candidate's id: prints its route file instead of the list")},
-        "plan": lambda a: [("game/fleet/routemaker.py", ["route", a["id"]])] if a.get("id") else
+                 "top": arg(I, "how many, default 20"), "id": arg(S, "one candidate's id: prints or writes its route file"),
+                 "write": arg(B, "with id: write game/routes/<id>.json, check, index and commit it immediately")},
+        "plan": lambda a: [("game/fleet/routemaker.py", (["write", a["id"], "--commit"] if a.get("write") else ["route", a["id"]]))] if a.get("id") else
                           [("game/fleet/routemaker.py", ["show"] + ([a["member"]] if a.get("member") else []) + flag(a, "kind") + flag(a, "top"))]},
     "market": {
         "text": "The last moves of one item's best bid and best ask at the stations whose order books our ships read: what it sells for, what it costs, how deep, when read.",

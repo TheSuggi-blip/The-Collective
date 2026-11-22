@@ -104,8 +104,8 @@ per question, from the tools' own texts (collective_mcp.TOOLS) and hive.py's usa
 | credits per ship-hour by kind of work and by division, idle ships counted. | fleet view=tasks | hive.py tasks |
 | every route: its group, zone, ships on it, what its runs measured, and its runs in the last hours | routes | hive.py routes |
 | one route: its file, its last runs, and its credits per ship-hour hour by hour | route id=<id> | hive.py route <id> |
-| Ways to earn that the route maker computed from our own readings (fields, order books, mission... | candidates | routemaker.py show |
-| With id: the ready route file of one candidate. | candidates id=<id> | routemaker.py route <id> |
+| Ways to earn that the route maker computed every 3 minutes from our own readings (fields, order... | candidates | routemaker.py show |
+| With id: prints the ready route file; with id and write=true: writes game/routes/<id>.json, checks... | candidates id=<id> | routemaker.py route <id> |
 | the history store (store.py): what it holds, and every route's credits per ship-hour over the whole... | hive verb=store | hive.py store |
 
 ### Money

@@ -34,7 +34,7 @@ workspace `BOX.md` Sec 1):
 | **Trinity** | External PC | Chief Architect, Watchdog & HUD Keeper (one level above Fleet Admiral, `ROSTER.md`): designs and maintains surrounding systems, tools, skills, `:8445` HUD, and quiet 4h `watchdog.py` monitoring. Never flies ships or sends gameplay instructions. |
 | **Unity** | Inside gVisor seal | Fleet Admiral (`command` flagships + lent `sentinel-` ships): sets campaign intent in `orders.log`, controls treasury/sweeps and base sites (`F33`), coordinates faction-seat onboarding with Admirals (`F11`), maintains shared fleet plumbing. |
 | **5 Admirals** | Inside gVisor seal | **Zero** (Mining), **Mercury** (Trade), **Apollo** (Logistics), **Apophis** (Military), **Oracle** (Intel). Full autonomy inside their divisions: research, test (`F37`), plan (`plan-<division>.md`), fit hulls/modules (`F12`, `F17`), and coordinate peer needs. |
-| **Morpheus** | VPS host | Docker/gVisor containers, `compose.yaml`, proxy/firewall wall, `fleet` engine image & 10s state refresh, `watcher` sync, `hindsight-api`, host security & updates. |
+| **Morpheus** | VPS host (Co-CEO) | Sole keeper of the `fleet` engine (holding the game key), the HTTP gate in front of it, and the security wall (`compose.yaml`, gVisor, proxy/firewall, `watcher`, `hindsight-api`, host updates). Changes to the engine, its gate, or the wall go strictly through Morpheus. |
 
 **Puppeteer Doctrine (Suggi, 2026-11-22):** Suggi and Trinity never issue
 tactical gameplay instructions or route coaching to the agents. At most, Suggi
@@ -66,7 +66,7 @@ never instructions.
   - `dispatch` (`game/fleet/dispatch.py`): every 30s (`EVERY = 30`) assigns each free ship its next open route from `plan-<division>.md` (`pairs(rows)` pre-indexes `(route, pilot)` runs once per pass in O(1) lookup time).
   - `runhost` (`game/fleet/runhost.py`): executes started runs (`route_run.py`, `mine.py`, `hunt.py`, `census.py`, `guard.py`) as threads under per-pilot order locks (`data/fleet/orders/<pilot>.json`).
   - `ledger` (`game/fleet/ledger.py`): reads every pilot's station storage and tracks market order-book moves every 30s (run history in `data/routes/runs.jsonl` is written directly by the runners).
-  - `routemaker` (`game/fleet/routemaker.py`): every 10m costs earning candidates across fields, order books, herds, missions, and recipes into `data/routes/opportunities.json` and candidate route files.
+  - `routemaker` (`game/fleet/routemaker.py`): every 3m (`EVERY = 180`) costs earning candidates across fields, order books, herds, missions (including XP Trade Runs), and recipes into `data/routes/opportunities.json`, with 1-step route creation (`routemaker.py write <id> --commit` / MCP `candidates` `write=true`).
   - `store` (`game/fleet/store.py`): single SQLite writer every 60s -> `data/store/live.db` (WAL) -> atomic `VACUUM INTO` + `os.replace` -> `data/store/read.db`.
   - `station` (`station/server.py`): serves Command Station HUD + `/api/ops` on `:8080` (Caddy `:8445`) and polls public game feeds.
   - `sight` (`game/fleet/sight.py`): logs foreign pilots met and first reads of unvisited systems (`data/intel/`).
