@@ -87,3 +87,4 @@ Planned:
 | census-roads read by its three readers; a fourth when systems still stand over 960 minutes next turn (41 of 57 over 480 at 15:20 UTC) | next turn |
 | census-worked-far holds 74 of 91 over 180 minutes: weigh hunts against reads by fuel per XP and order @reader by what the fleet plans on | next turn |
 | Keep WORKED, SITES and FRESH at PASS; every new place another division flies moves onto census-worked-far | every turn |
+| Read the battle record of the north road, Oakridge's neighbours and every base of ours; name a raid on a base the same turn | every turn |
