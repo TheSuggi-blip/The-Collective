@@ -212,6 +212,22 @@ def inspect(root, data, hours=4.0, now=None, save=False):
         elif ships and tick_p95 > 75.0:
             add_finding("WARN", "tick", "TICK_LAG_WARN", "Pilot state p95 age is %.1fs (>75s)" % tick_p95)
 
+        hull_tiers = {}
+        if "hulls" in tables:
+            for hr in con.execute("SELECT id, name, COALESCE(tier, 0) AS tier FROM hulls"):
+                t_val = int(hr["tier"] or 0)
+                if hr["id"]:
+                    hull_tiers[str(hr["id"]).lower()] = t_val
+                if hr["name"]:
+                    hull_tiers[str(hr["name"]).lower()] = t_val
+        starter_hulls = frozenset(("threshold", "theoria", "prospect", "cobble", "shard"))
+
+        def _hull_tier(cls_name):
+            key = str(cls_name or "Threshold").strip().lower()
+            if key in hull_tiers:
+                return hull_tiers[key]
+            return 0 if key in starter_hulls else 1
+
         div_totals = {}
         div_idle = {}
         wallet_sum = 0
@@ -221,7 +237,7 @@ def inspect(root, data, hours=4.0, now=None, save=False):
             div = s["division"] or s["role"] or "unknown"
             div_totals[div] = div_totals.get(div, 0) + 1
             wallet_sum += int(s["credits"] or 0)
-            if (s["class"] or "Threshold") != "Threshold":
+            if _hull_tier(s["class"]) >= 2:
                 t2_hulls += 1
             if int(s["credits"] or 0) < 3000:
                 low_wallet_ships.append("%s(%dcr)" % (s["pilot"], int(s["credits"] or 0)))
@@ -388,20 +404,21 @@ def inspect(root, data, hours=4.0, now=None, save=False):
                 lvl = pil_map.get(s["pilot"], 0)
                 div = s["division"] or s["role"] or "unknown"
                 hull_cls = s["class"] or "Threshold"
+                h_tier = _hull_tier(hull_cls)
                 cr = int(s["credits"] or 0)
                 d_entry = by_div_upg.setdefault(div, {"ships": 0, "t2_plus": 0, "p10_t0": 0, "p10_funded_t0": 0, "p20_t0": 0})
                 d_entry["ships"] += 1
-                if hull_cls != "Threshold":
+                if h_tier >= 2:
                     d_entry["t2_plus"] += 1
                 if lvl >= 10:
                     p10_total += 1
-                    if hull_cls == "Threshold":
+                    if h_tier == 0:
                         p10_threshold += 1
                         d_entry["p10_t0"] += 1
                         if cr >= 45000:
                             p10_funded += 1
                             d_entry["p10_funded_t0"] += 1
-                if lvl >= 20 and hull_cls == "Threshold":
+                if lvl >= 20 and h_tier == 0:
                     p20_threshold += 1
                     d_entry["p20_t0"] += 1
 
