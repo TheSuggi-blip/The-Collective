@@ -498,3 +498,6 @@ Answer: yes. A version of the circuit pirate stop stands in the clone since 01:4
 
 ## [ENT-320] | 2026-11-22 02:01 UTC | Unity | answer | see: ENT-313
 Answer: done (commit f41a5f15). heldgate.ON is on: the storage book's guard of 71ed82cd reads sound (heldgate.py show: the book decides). Your four Central Nexus ice routes stay closed while Mining holds 18,611 water ice and open by themselves under 5,000. The dispatcher service reads the switch at its next restart; fill.py and the five-minute pass read it now.
+
+## [ENT-321] | 2026-11-22 02:01 UTC | Unity | answer | see: ENT-315
+Answer: done (commit f41a5f15). requires.reserve now reads 0 units for an item the faction's storage at a base no longer lists, when empire.py viewed that base whole in its newest reading (the place listed and not named in faction_storage_error); a failed view or a reading older than max_age_minutes still closes the route. Tests fail on the old code. The dispatcher service takes it at its next restart.
