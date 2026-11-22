@@ -51,7 +51,7 @@ KEYS = ("base", "item", "below", "max_age_minutes")
 BUNKER = re.compile(r"^bunker \+\d+ fuel from \d+ cells, reserve (\d+)$")     # route_run.py's note of its bunker step
 BASE = re.compile(r"[a-z0-9_]{1,80}")               # a base id: a station's word id or an outpost's 32 hex digits
 ITEM = re.compile(r"[a-z0-9_]{1,80}")
-EMPIRE = {"path": None, "stamp": None, "rows": {}}   # empire.json's faction storage, read again only when the file changed
+EMPIRE = {"path": None, "stamp": None, "rows": {}, "whole": {}}   # empire.json's faction storage, read again only when the file changed
 RUNS = {"key": None, "found": {}}                    # the bunker readings of one list of run rows (one pass of the dispatcher)
 
 
@@ -108,8 +108,36 @@ def empire_rows(data):
             at = stamp_of(r.get("read_at") or state.get("written_at"))
             if at is not None:
                 rows[(str(r.get("base")), str(r.get("item")))] = (int(r["units"]), at, str(r.get("base_name") or r.get("base")))
-        EMPIRE.update(path=str(path), stamp=stamp, rows=rows)
+        EMPIRE.update(path=str(path), stamp=stamp, rows=rows, whole=whole_bases(state))
     return EMPIRE["rows"]
+
+
+def whole_bases(state):
+    """{base: epoch} of the places whose faction storage the reading viewed whole (empire.py read_storage): each place
+    of `faction_storage_places` that `faction_storage_error` does not name ("<name>: <why>"), at the reading's
+    `written_at`. A place whose view failed keeps its old rows and is no whole reading."""
+    at = stamp_of(state.get("written_at")) if isinstance(state, dict) else None
+    if at is None:
+        return {}
+    error, out = str(state.get("faction_storage_error") or ""), {}
+    for place in state.get("faction_storage_places") or []:
+        if isinstance(place, dict) and place.get("base"):
+            names = (str(place.get("base_name") or place["base"]), str(place["base"]))
+            if not any(name + ":" in error for name in names):
+                out[str(place["base"])] = at
+    return out
+
+
+def empire_whole(data):
+    """{base: epoch} of the places the newest empire.json viewed whole, {} when it cannot be read."""
+    path = Path(data) / "empire" / "empire.json"
+    empire_rows(data)
+    try:
+        found = path.stat()
+    except OSError:
+        return {}
+    same = EMPIRE["path"] == str(path) and EMPIRE["stamp"] == (found.st_ino, found.st_mtime_ns, found.st_size)
+    return EMPIRE.get("whole") or {} if same else {}
 
 
 def bunkers_at(route):
@@ -144,6 +172,10 @@ def reading(data, route, rows):
     need = need_of(route)
     found = empire_rows(data).get((need["base"], need["item"]))
     best = {"units": found[0], "at": found[1], "source": "empire.json (empire.py collect)", "name": found[2]} if found else None
+    if best is None and need["item"] != "fuel":     # requests ENT-315: a base viewed whole that lists no row of the item holds none
+        at = empire_whole(data).get(need["base"])
+        if at is not None:
+            best = {"units": 0, "at": at, "source": "empire.json (empire.py collect): the base read whole, no row of the item", "name": need["base"]}
     if need["item"] == "fuel" and need["base"] in bunkers_at(route):
         run = bunker_reading(route, rows or [])
         if run and (best is None or run[1] > best["at"]):

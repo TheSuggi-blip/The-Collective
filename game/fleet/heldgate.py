@@ -40,7 +40,7 @@ from pathlib import Path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import division                                   # noqa: E402  the data folder, which member keeps which role
 
-ON = False                     # the gate judges by the book; off: every route with the field stays closed (house rule: off until switched on)
+ON = True                      # on since 2026-11-22 (requests ENT-313): the book's guard read sound; off: every route with the field stays closed
 RECENT = 2 * 60 * 60           # a book that is not whole keeps the route open to a pilot that flew it this recently
 MAX_AGE = 3                    # hours: a book older than this counts as not whole (the ledger reads every pilot about every 40 minutes)
 KEYS = ("item", "units", "division")

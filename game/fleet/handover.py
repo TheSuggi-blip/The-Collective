@@ -413,7 +413,9 @@ def dry_run(root, data, rid, giver=None):
         spec = spec_of(value)
         to, why = receiver(spec.get("to"), base, data, giver)
         print("  at %-34s to %s" % (base, to or ("nobody: " + why)))
-        if giver:
+        if giver and (spec.get("source") or "storage") == "cargo":     # a hunt's gift_to: what its hold carries at the run's end
+            print("     gives what the hold carries at the run's end (source cargo): %s's storage there stays where it is" % giver)
+        elif giver:
             stored = (entry.get("stations") or {}).get(base) or {}
             plan = planned(dict(spec, source="storage"), stored, {}, ammo(data))
             print("     %s's storage there by the book (read %s): would go %s" % (giver, entry.get("read_at") or "never",
