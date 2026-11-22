@@ -24,7 +24,7 @@ Status: proven. Updated: 2026-11-21. Evidence: game/fleet/dispatch.py (pick, sta
   open to any free pilot: read max_ships against the order files first.
 
 ### Keep the explorers' lists ahead of them
-Status: proven. Updated: 2026-11-21. Evidence: intel turn check ROADS; data/routes/runs.jsonl (2026-11-16 23:21 to 2026-11-17 07:30 UTC).
+Status: proven. Updated: 2026-11-22. Evidence: intel turn check ROADS, OFFLIST; data/routes/runs.jsonl (2026-11-16 23:21 to 2026-11-17 07:30 UTC); data/scouting/sol.json.
 
 - Ten explorers read 28 never-read systems in about an hour and a half,
   and 18 more in about an hour; then 24 of 30 scouts gathered for three
@@ -33,6 +33,10 @@ Status: proven. Updated: 2026-11-21. Evidence: intel turn check ROADS; data/rout
 - ROADS END (no never-read system a list can take, since 2026-11-17):
   rotate explorers onto the lists they flew least (each pilot's own first
   visits) and onto census-worked-far.
+- A system read once by hand and left on no list that is on (an `off`
+  list counts as none) grows into the oldest reading of the galaxy
+  unseen: on 2026-11-22 Sol and six more stood 718 to 8,958 minutes old.
+  The turn check's OFFLIST line names each; it moves onto census-roads.
 
 ### Read every place the orders name against its cadence
 Status: proven. Updated: 2026-11-21. Evidence: intel turn check SITES; reports.log ENT-083.
