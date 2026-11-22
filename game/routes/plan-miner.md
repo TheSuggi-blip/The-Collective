@@ -109,7 +109,4 @@ Planned:
 
 | What | When |
 |---|---|
-| Read the Jishui field against its pull of about 176 carbon a ship-hour; lower it under 8 hours of stock above its floor | next turn |
-| Read the give-miner-stores copies' first hand-overs; drop them once requires.stored takes any one item (requests ENT-349) | next turn |
-| Far gathers give each load at The Crescent Moon and Ramen's Rest once Logistics names a receiver there (requests ENT-350) | on Apollo's answer |
-| Yildun carbon: lift on its third result (F37) | next turn |
+| Read Yildun carbon at 4 ships and Jishui at 8 against their fields; lower either under 8 hours of stock above min_left | next turn |
