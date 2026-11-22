@@ -74,6 +74,10 @@
   {
    "what": "Test the Outer Rim and Nebula exploration missions on their boards (Local Sector Survey, Why the Rim Stopped, The Memorial, Anomalous Readings) with one newborn scout each",
    "when": "next turn"
+  },
+  {
+   "what": "Cut the census burn by a third as Unity answers requests ENT-381",
+   "when": "after her answer"
   }
  ],
  "ships": {
