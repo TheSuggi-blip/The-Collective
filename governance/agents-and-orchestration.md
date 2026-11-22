@@ -8,6 +8,8 @@ links:
   - governance/strategy.md
   - governance/rulebook.md
   - governance/system-architecture.md
+  - governance/knowledge-and-memory-loop.md
+  - governance/progression-roadmap.md
   - communications/protocol.md
 ---
 
@@ -104,7 +106,7 @@ bunkers, and lockboxes serve **faction members only**, while faction member
 capacity is gated by recruitment facilities (`20` base; best station's office
 in full `+ 25%` of each other station's office, `game/rules/09-factions.md`).
 
-Per `governance/the-collective-constitution.md` (Version 6, Suggi `2026-11-22`)
+Per `governance/the-collective-constitution.md` (Version 8, Suggi `2026-11-22`)
 and standing rule `F11`, fleet scaling separates **account creation** from
 **seat onboarding**:
 
@@ -155,3 +157,12 @@ concrete operational failure mode observed in live data:
 7. **Point-in-Time Dashboards Hiding Multi-Turn Stalls -> `watchdog.py` + `EYES & EARS`:**
    - *Scar:* High ship assignment can mask a `P1` build stuck at `99.3%` for 12 hours, unflipped `P5` class switches, or open faction seats sitting unfilled after an office upgrade.
    - *Structural gate:* `hive.py briefing` front-loads `EYES & EARS` on every turn, and `game/fleet/watchdog.py` tracks 4-hour velocity deltas across turns so both the autonomous fleet and the external Watchdog see real progression vs. stagnation immediately.
+8. **Treasury Withdrawal & Handover Blindness -> Consolidated Enterprise Accounting (`station/fleet.py`, `routes.py`, `stats.py`):**
+   - *Scar:* `Treasury fund` withdrawals looked like external cost spikes (`unexplained_per_hour`), while non-selling extraction/combat divisions showed negative wallets after handing loot/ore to Trade.
+   - *Structural gate:* Symmetric internal transfer elimination (`unexplained_per_hour = 0`) + `handed_over_worth` valuation at live bid depth + 4-pillar Consolidated Enterprise Net Worth.
+9. **Playbook Cap Leaks & Volatile Prose Drift -> Anchor-and-Delta Loop (`playbook_anchor.py`, `guide.py`, `size-guard.py`):**
+   - *Scar:* Two divisions committed entries 6-12 chars over cap because `.githooks/pre-commit` lacked `guide.py check`, retired entries stayed in chapters, 5 Admiral workspaces lacked `size-guard.py`, and prose pinned old catalog versions.
+   - *Structural gate:* Live telemetry moved into `playbook_anchor.py` (`division_playbooks` + HUD `Playbooks`), `.githooks/pre-commit` enforces `guide.py check` + `needs.py check` + `comms.py check`, `85%` watermarks + `guide.py drift` warn early, `intel-pass.sh` auto-tidies retired entries into `doc_versions`, and all 6 workspaces enforce `size-guard.py`.
+10. **4-Hour Tool Bottleneck on Routine Runner Tweaks -> Synchronous Admiral Self-Build (`fleet-build.sh` / MCP `build`):**
+   - *Scar:* Admirals waited up to 4 hours requesting small runner steps (`route_run.py`, `hunt.py`) they were already trusted to test.
+   - *Structural gate:* Admirals build, unit-test, and atomically install changes to open fleet scripts (`route_run.py`, `mine.py`, `hunt.py`, `census.py`, `routemaker.py`, `workclass.py`, `hive.py`) in one synchronous call (`governance/knowledge-and-memory-loop.md` Sec 2).

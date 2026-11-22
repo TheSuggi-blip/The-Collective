@@ -9,6 +9,8 @@ links:
   - governance/strategy.md
   - governance/rulebook.md
   - governance/agents-and-orchestration.md
+  - governance/knowledge-and-memory-loop.md
+  - governance/progression-roadmap.md
   - game/handbook.md
   - communications/protocol.md
 ---
@@ -20,7 +22,7 @@ authority boundaries, runtime containers and services, 10-second tick/data
 pipeline, autonomous dispatch guards, cross-turn velocity watchdog, memory
 layers, Command Station HUD (`:8445`), and CI verification gates.
 
-Companion role and orchestration blueprint: `governance/agents-and-orchestration.md`.
+Companion blueprints: `governance/agents-and-orchestration.md` (roles & self-build), `governance/knowledge-and-memory-loop.md` (Anchor-and-Delta playbooks, contracts & comms firewall), and `governance/progression-roadmap.md` (3-horizon progression & milestone ledger).
 
 ## 1. Authority Split, Puppeteer Doctrine & Containment Seal
 
@@ -130,7 +132,7 @@ Lock-free Readers (immutable read.db):
 
 ## 6. Memory, Search & Opus 5.5+ Context Hygiene
 
-- **Three memory tiers:** (1) `read.db` (`hive.py` / `collective` MCP) for all live numbers; (2) `watcher` hybrid RAG (`collective-index` + 6 workspace indexes) and `docs`/`doc_versions` for written knowledge; (3) Hindsight (`private-<agent>` + `collective-shared`) for durable scars and cross-turn observations.
+- **Anchor-and-Delta memory tiers (`governance/knowledge-and-memory-loop.md`):** (1) `read.db` (`hive.py`, `playbook_anchor.py` / SQL `division_playbooks`, `progression.py`) for zero-drift live telemetry; (2) capped chapter guidebooks (`85%` soft curation watermark, `100%` pre-commit gate, hourly `guide.py tidy --commit` eviction into `doc_versions`, `guide.py drift` empirical scanner) + universal workspace `size-guard.py` across all 6 profiles + `docs.py` (`blueprint` indexing of all `governance/*.md`); (3) Hindsight (`private-<agent>` + `collective-shared`) for cross-turn episodes and scars.
 - **Lean skill catalogs:** Shared lifecycle/play skills in `/opt/data/.agents/skills/` (`0444`) and `governance/template-reports.md` are compressed (`-55%` byte volume) to crisp checklists, and 29 unrelated default consumer/macOS/video/office skills are disabled in `/opt/data/profiles/*/config.yaml` (`skills.disabled`), keeping `31` focused skills for Unity and `26` for each Admiral.
 
 ## 7. Command Station HUD (`:8445`)
@@ -138,9 +140,9 @@ Lock-free Readers (immutable read.db):
 `station/server.py` + `station/static/` provide Suggi's real-time RTS interface
 (strict CSP, zero `innerHTML`, pure DOM `textContent`):
 
-- **Top bar & Tactical Alert Ribbon:** division summary, total purse + steady net/h, live **Tick lag** badge, clickable top-center alert chips (services, battles, faction cap, supply, MAD alerts, idle ships).
+- **Top bar, Commander Medallions & Minimizable Multi-Agent Comms (HUD v6):** bespoke Collective hex emblem, dual top-bar Purse (`Liquid Credits + 24h /h` and `Enterprise Net Worth`), 6 division commander SVG portraits, live **Tick lag** badge, tactical alert chips, and minimizable `#chat-pill` dock supporting 1-to-6 multi-agent broadcasts (`All 6`, `5 Adm`, or custom selection).
 - **Tiny-Outliner Fleet Sidebar & Structured Map Hover Cards:** 1-click Division Focus strip (`All / Cmd / Min / Trd / Log / Mil / Int`), compact collapsible Executive Division Cards (`active/total`, `1h cph`, `Avg Lv`, embedded health bar), single-line ship rows with T2-ready badges, and viewport-clamped dark-glass map hover cards (`#tip`) with progressive disclosure.
-- **Progressive-Disclosure Selection Inspector, Metrics (`/api/ops`), Empire, Inventory & Docs:** 3-mode System/Building & Ship inspectors (`Overview / Ships / Intel` & `Loadout / Skills / Missions`), 4-pillar Consolidated Balance Sheet (`Enterprise Net Worth`), auto-scaling `T2->T5` Tech Frontier, 24h Flight Efficiency (`fuel_sinks`), `contracts.log`, Comms Firewall status, and dark-console Docs reader with 1-click Admiral filters.
+- **Progressive-Disclosure Selection Inspector, Metrics (`/api/ops`), Empire, Inventory & Docs:** 3-mode System/Building & Ship inspectors (`Overview / Ships / Intel` & `Loadout / Skills / Missions`), 4-pillar Consolidated Balance Sheet (`Enterprise Net Worth`), auto-scaling `T2->T5` Tech Frontier, 24h Flight Efficiency (`fuel_sinks`), `contracts.log`, Comms Firewall status, dark-console Docs reader with 1-click Admiral filters, live **Playbooks (6)** (`Anchor-and-Delta` division builds/rungs/caps), and live **Progression** (`Days -> Weeks -> Months` strategic rungs & milestone chronicle).
 
 ## 8. Verification & CI Gates
 

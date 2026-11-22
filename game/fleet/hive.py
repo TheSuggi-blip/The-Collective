@@ -1676,6 +1676,9 @@ def main():
     if verb == "contracts":                          # bottleneck procurement contracts, Station Bursar bids & rival board contracts
         import contracts
         return contracts.main(["--data", data, "--root", str(Path(root).parent if Path(root).name == "game" else root)])
+    if verb == "progression":                        # live enterprise progression roadmap, rungs & milestones
+        import progression
+        return progression.main(["show", "--data", data, "--root", str(Path(root).parent if Path(root).name == "game" else root)])
     if verb == "rival":                              # #1 [HEXC] benchmark, resource-monopoly outposts, docked factory spreads & hull targets
         import rival_playbook
         return rival_playbook.main(["--data", data])

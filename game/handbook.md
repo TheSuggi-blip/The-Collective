@@ -138,6 +138,7 @@ per question, from the tools' own texts (collective_mcp.TOOLS) and hive.py's usa
 
 | What it answers | MCP | Shell |
 |---|---|---|
+| live 3-horizon strategic progression rungs (Days/Weeks/Months), verified milestones & weekly/monthly... | fleet view=progression | hive.py progression |
 | what founding one takes, down to the ore: credits, parts, the facility that makes the part, what we... | base_plan kind=<kind> | hive.py base <kind> |
 | what we hold: the faction with its members and limit, our bases, our offices at other stations and... | hive verb=empire | hive.py empire |
 

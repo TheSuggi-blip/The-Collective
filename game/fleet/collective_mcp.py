@@ -101,6 +101,8 @@ def fleet_plan(a):
         return [("game/fleet/hive.py", ["rival"])]
     if view == "contracts":
         return [("game/fleet/hive.py", ["contracts"])]
+    if view == "progression":
+        return [("game/fleet/hive.py", ["progression"])]
     if view == "forecast":
         return [("game/fleet/hive.py", ["forecast"] + ([a["member"]] if a.get("member") else []) + flag(a, "hours"))]
     if view == "watchdog":
@@ -235,10 +237,10 @@ TOOLS = {
                 "another class's, once, shared, docked or in space without work, offline. view=supply: per reserve good held, needed, min "
                 "and max, change an hour, days of supply, the routes and ships that feed it, and gather against buy. view=xp: XP per "
                 "ship-hour per role, skill and route, hours to the next tier. view=upgrades: per ship its tier, Piloting, the next tier's "
-                "hulls, empty slots. view=alerts: the hours outside their control band. view=rival: live benchmark vs #1 [HEXC], unclaimed resource-monopoly outpost sites, zero-fuel docked crafting spreads & hull targets. view=contracts: bottleneck procurement candidates for Station Bursars, rival board supply contracts & contracts.log.",
+                "hulls, empty slots. view=alerts: the hours outside their control band. view=rival: live benchmark vs #1 [HEXC], unclaimed resource-monopoly outpost sites, zero-fuel docked crafting spreads & hull targets. view=contracts: bottleneck procurement candidates for Station Bursars, rival board supply contracts & contracts.log. view=progression: live 3-horizon strategic progression rungs (Days/Weeks/Months), verified milestones & weekly/monthly ledgers.",
         "args": {"view": arg(S, "money (default), history, levels, capacity, board, standing, tasks, refill, forecast, kpi, contribution, "
                                 "classes, time, supply, xp, upgrades or alerts",
-                             ("money", "history", "levels", "capacity", "board", "standing", "tasks", "refill", "rival", "contracts", "forecast") + STATS_VIEWS),
+                             ("money", "history", "levels", "capacity", "board", "standing", "tasks", "refill", "rival", "contracts", "progression", "forecast") + STATS_VIEWS),
                  "member": arg(S, "for levels, board, standing, forecast, contribution, classes, time, xp and upgrades: a member's name, or all", MEMBERS),
                  "hours": arg(I, "for history, board, standing, tasks and forecast: the window in hours")},
         "plan": fleet_plan},

@@ -2140,6 +2140,7 @@ function markdown(text, base, hard) {            // hard: every line is its own 
 let docSub = 'Reports', docAuthor = 'all', docQuery = '', logQuery = '', logAuthor = 'all';
 let DOCSCACHE = { data: null, at: 0 };
 let playbookDiv = 'mining', playbookChap = 'card', PLAYBOOKS = { at: 0, data: null };
+let progHorizon = 'all', PROGCACHE = { at: 0, data: null };
 async function docsOf() {
   if (Date.now() - DOCSCACHE.at < 30000 && DOCSCACHE.data) return DOCSCACHE.data;
   try { DOCSCACHE = { data: await get('/api/docs'), at: Date.now() }; } catch (e) { return DOCSCACHE.data; }
@@ -2245,7 +2246,7 @@ function renderPlaybooksSubtab(panel, pbData, live) {
   );
   banner.append(
     bTop,
-    el('p', 'sub', 'Anchor-and-Delta loop: ship builds, skill rungs, open priorities and open requests below update automatically from read.db; curated guidebook chapters stay capped (card ' + fmt(caps.card || 3000) + ', chapter ' + fmt(caps.chapter || 8000) + ', warn >=85%) and archive retired entries into doc_versions.')
+    el('p', 'sub', 'Anchor-and-Delta loop: ship builds, skill rungs, open priorities and open requests below update automatically from read.db; curated guidebook chapters stay capped (card ' + fmt(caps.card || 4500) + ', chapter ' + fmt(caps.chapter || 12000) + ', warn >=85%) and archive retired entries into doc_versions.')
   );
   panel.append(banner);
 
@@ -2407,6 +2408,127 @@ function renderPlaybooksSubtab(panel, pbData, live) {
   if (selChap) loadChapterInline(selChap);
 }
 
+async function progressionOf(force) {
+  const now = Date.now();
+  if (!force && PROGCACHE.data && now - PROGCACHE.at < 30000) return PROGCACHE.data;
+  try {
+    const res = await get('/api/progression');
+    if (res && res.summary) PROGCACHE = { at: now, data: res };
+  } catch (_e) {}
+  return PROGCACHE.data;
+}
+
+function renderProgressionSubtab(panel, prData) {
+  if (!prData || !prData.summary) {
+    panel.append(el('p', 'empty', 'Loading enterprise progression roadmap and milestone chronicle...'));
+    return;
+  }
+  const s = prData.summary, rungs = prData.rungs || [], miles = prData.milestones || [];
+  const avgPct = rungs.length ? (rungs.reduce((a, r) => a + (r.pct || 0), 0) / rungs.length) : 0;
+
+  const headCard = el('div', 'icard pb-anchor-head');
+  headCard.style.borderLeft = '3px solid var(--good)';
+  const hTop = el('div', 'pb-head-row');
+  hTop.append(
+    el('b', null, 'Enterprise Progression Guide & Milestone Chronicle -- Campaign Day ' + fmt(s.days_active || 1)),
+    el('span', 'pill good', fmt(miles.length) + ' Milestones Achieved'),
+    el('span', 'when', 'Updated ' + stampCet(s.computed_at || ''))
+  );
+  const fullDocBtn = el('button', 'rf', 'Open Blueprint Markdown ->');
+  fullDocBtn.type = 'button';
+  fullDocBtn.addEventListener('click', () => openDoc('governance/progression-roadmap.md'));
+  hTop.append(fullDocBtn);
+  headCard.append(
+    hTop,
+    el('p', 'sub', 'Tracks where The Collective came from (since 14 Nov Founding), where we stand right now, and our 12 strategic rungs across Days, Weeks, and Months toward S1-S5 and G1-G5.')
+  );
+  panel.append(headCard);
+
+  const kpis = el('div', 'kpis');
+  const pk = (k, v, sub, cls) => { const b = el('div', 'kpi' + (cls ? ' ' + cls : '')); b.append(el('div', 'k', k), el('div', 'v', v)); if (sub) b.append(el('div', 's', sub)); kpis.append(b); };
+  pk('Enterprise Net Worth', fmt(s.enterprise_value || 0) + ' cr', fmt(s.liquid_purse || 0) + ' cash | ' + fmt(s.vault_worth || 0) + ' vault | ' + fmt(s.facility_worth || 0) + ' fac', 'main pos');
+  pk('Armada & Seating', fmt(s.ships_total || 0) + ' / 500 ships', fmt(s.seats_used || 0) + ' / ' + fmt(s.seats_cap || 0) + ' seated in [CLTV]', 'pos');
+  pk('Tier 2+ & Tech Rung', fmt(s.p10_ready || 0) + ' P10+ ready', fmt(s.t1_plus || 0) + ' T1+ hulls | ' + fmt(s.t3_mods || 0) + ' T2/T3 key mods', (s.p10_ready || 0) > 0 ? 'warn' : '');
+  pk('12-Rung Roadmap Avg', avgPct.toFixed(1) + '%', fmt(s.outposts || 0) + '/8 outposts | ' + fmt(s.stations || 0) + ' stations | ' + fmt(s.systems_charted || 0) + '/' + fmt(s.total_systems || 506) + ' sys', 'pos');
+  panel.append(kpis);
+
+  const hFilter = el('div', 'sortbar');
+  hFilter.append(el('span', 'sortlbl', 'Horizon:'));
+  for (const [id, lbl] of [['all', 'All Horizons (12)'], ['Days', 'Immediate (Days)'], ['Weeks', 'Mid-Term (Weeks)'], ['Months', 'Long-Term (Months)']]) {
+    const fb = el('button', 'rf' + (progHorizon === id ? ' on' : ''), lbl);
+    fb.type = 'button';
+    fb.addEventListener('click', () => { progHorizon = id; render(); });
+    hFilter.append(fb);
+  }
+  panel.append(hFilter);
+
+  const rungCard = el('div', 'icard');
+  rungCard.append(el('h3', null, 'Where We Are Going -- Strategic Progression Ladder (S1-S5, G1-G5)'));
+  const rungList = el('div', 'pr-rungs');
+  for (const r of rungs) {
+    if (progHorizon !== 'all' && !String(r.horizon || '').startsWith(progHorizon)) continue;
+    const row = el('div', 'pr-rung');
+    const top = el('div', 'pr-rung-top');
+    const hCls = String(r.horizon).startsWith('Days') ? 'warn' : (String(r.horizon).startsWith('Weeks') ? 'info' : '');
+    const pctCls = r.pct >= 90 ? 'good' : (r.pct >= 50 ? 'warn' : '');
+    top.append(
+      el('span', 'pill ' + hCls, r.horizon),
+      el('span', 'pill', r.orders),
+      el('b', 'pr-rtitle', r.title),
+      el('span', 'pill ' + pctCls, r.pct.toFixed(1) + '%')
+    );
+    const bar = el('div', 'pr-bar');
+    const fill = el('div', 'pr-bar-fill' + (r.pct >= 90 ? ' good' : (r.pct >= 45 ? ' mid' : ' low')));
+    fill.style.width = Math.min(100, Math.max(2, r.pct)) + '%';
+    bar.append(fill);
+    const meta = el('div', 'pr-rmeta');
+    meta.append(
+      el('span', null, 'Now: ' + r.current + '  ->  Target: ' + r.target),
+      el('div', 'pr-rbottle', 'Rate-limiting step: ' + r.bottleneck)
+    );
+    row.append(top, bar, meta);
+    rungList.append(row);
+  }
+  rungCard.append(rungList);
+  panel.append(rungCard);
+
+  const mCard = el('div', 'icard');
+  mCard.append(el('h3', null, 'Where We Came From -- Verified Milestone Chronicle (' + miles.length + ')'), el('p', 'sub', 'Chronological breakthroughs from Day 1 Founding plus live auto-detected empire unlocks.'));
+  const tl = el('div', 'pr-timeline');
+  for (const m of [...miles].reverse()) {
+    const item = el('div', 'pr-mile');
+    const mTop = el('div', 'pr-mile-top');
+    mTop.append(el('span', 'pill good', m.date), el('span', 'pill', m.era), el('b', null, m.title));
+    item.append(mTop, el('div', 'pr-mile-det', m.detail));
+    tl.append(item);
+  }
+  mCard.append(tl);
+  panel.append(mCard);
+
+  const pGrid = el('div', 'pb-grid');
+  if ((prData.weekly || []).length) {
+    const wCard = el('div', 'icard');
+    wCard.append(el('h3', null, 'Weekly Trajectory Ledger'), el('p', 'sub', 'Rolling ISO-week operating cashflow & peak purse (stats_money_hour)'));
+    wCard.append(fitTable(table(
+      ['Week', 'Span', 'Hrs', 'Income', 'Costs', 'Steady Net', 'Once Net', 'Peak Purse'],
+      prData.weekly.map((w) => [w.period, w.span, fmt(w.active_hours), fmt(w.income), fmt(w.costs), (w.steady_net >= 0 ? '+' : '') + fmt(w.steady_net), (w.paid_once >= 0 ? '+' : '') + fmt(w.paid_once), fmt(w.peak_purse)]),
+      [2, 3, 4, 5, 6, 7]
+    )));
+    pGrid.append(wCard);
+  }
+  if ((prData.monthly || []).length) {
+    const moCard = el('div', 'icard');
+    moCard.append(el('h3', null, 'Monthly Trajectory Ledger'), el('p', 'sub', 'Rolling calendar-month operating summary'));
+    moCard.append(fitTable(table(
+      ['Month', 'Span', 'Hrs', 'Steady Net', 'Once Net', 'Peak Purse'],
+      prData.monthly.map((m) => [m.period, m.span, fmt(m.active_hours), (m.steady_net >= 0 ? '+' : '') + fmt(m.steady_net), (m.paid_once >= 0 ? '+' : '') + fmt(m.paid_once), fmt(m.peak_purse)]),
+      [2, 3, 4, 5]
+    )));
+    pGrid.append(moCard);
+  }
+  if (pGrid.childNodes.length) panel.append(pGrid);
+}
+
 async function renderDocs(panel, live) {
   setWide(docView ? 'wide' : 'metrics');
   const d = await docsOf();
@@ -2549,6 +2671,7 @@ async function renderDocs(panel, live) {
 
   const subBar = el('div', 'subtabs');
   const tabs = [
+    ['Progression', 'Progression'],
     ['Playbooks', 'Playbooks (6)'],
     ['Reports', 'Briefings (' + reports.length + ')'],
     ['Logs', 'Command Logs (' + logs.length + ')'],
@@ -2562,6 +2685,13 @@ async function renderDocs(panel, live) {
     subBar.append(b);
   }
   panel.append(subBar);
+
+  if (docSub === 'Progression') {
+    const prData = await progressionOf(false);
+    if (!live()) return;
+    renderProgressionSubtab(panel, prData);
+    return;
+  }
 
   if (docSub === 'Playbooks') {
     const pbData = await playbooksOf(false);

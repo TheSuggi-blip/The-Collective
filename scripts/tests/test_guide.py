@@ -172,7 +172,7 @@ class FormTests(Base):
         source = SCRIPT.read_text(encoding="ascii")
         for name in ("CARD_MAX =", "CHAPTER_MAX =", "ENTRY_MAX =", "CHAPTERS_MAX =", "TOPICS ="):
             self.assertNotIn(name, source, "a cap stands twice: %s" % name)
-        self.assertEqual((self.book.CARD_MAX, self.book.CHAPTER_MAX, self.book.ENTRY_MAX, self.book.CHAPTERS_MAX), (3000, 8000, 1500, 8))
+        self.assertEqual((self.book.CARD_MAX, self.book.CHAPTER_MAX, self.book.ENTRY_MAX, self.book.CHAPTERS_MAX), (4500, 12000, 2250, 8))
         self.assertIn("command", self.book.DIVISIONS)
 
     def test_each_fault_alone_halts(self):
@@ -181,16 +181,16 @@ class FormTests(Base):
             "is none of": {"ships": chapter("mining", "ships", entry("A", "x", status="maybe"))},
             "is no date": {"ships": chapter("mining", "ships", entry("A", "x", updated="2099-13-40"))},
             "lies in the future": {"ships": chapter("mining", "ships", entry("A", "x", updated="2099-02-01"))},
-            "over the entry's cap": {"ships": chapter("mining", "ships", entry("A", "y" * 1500))},
-            "card.md: 3,": {"card": chapter("mining", "card", entry("A", "c" * 1400), entry("B", "c" * 1400), entry("C", "c" * 300))},
-            "over its cap of 8,000": {"lessons": chapter("mining", "lessons", *[entry("L%d" % n, "l" * 1400) for n in range(6)])},
+            "over the entry's cap": {"ships": chapter("mining", "ships", entry("A", "y" * 2300))},
+            "card.md: 4,": {"card": chapter("mining", "card", entry("A", "c" * 2100), entry("B", "c" * 2100), entry("C", "c" * 500))},
+            "over its cap of 12,000": {"lessons": chapter("mining", "lessons", *[entry("L%d" % n, "l" * 2100) for n in range(6)])},
             "the id `ships-entry`": {"lessons": chapter("mining", "lessons", entry("Ships entry", "a second of that title"))},
             "the id `same`": {"lessons": chapter("mining", "lessons", entry("One", "a", extra=" Id: same."), entry("Two", "b", extra=" Id: same."))},
             "a heading `## Part`": {"tests": chapter("mining", "tests", entry("A", "x")) + "\n## Part\n"},
             "no chapter": {"notes": "# notes\n"},
             "3 topic chapters": {"topic-a": chapter("mining", "topic-a"), "topic-b": chapter("mining", "topic-b"), "topic-c": chapter("mining", "topic-c")},
             "not ASCII": {"routes": chapter("mining", "routes", entry("A", "caf" + chr(0xe9)))},
-            "between its title and its first entry": {"routes": chapter("mining", "routes", "h" * 400 + "\n\n" + entry("A", "x"))},
+            "between its title and its first entry": {"routes": chapter("mining", "routes", "h" * 500 + "\n\n" + entry("A", "x"))},
             "no title": {"routes": entry("A", "x")},
         }
         for word, chapters in cases.items():
@@ -403,14 +403,14 @@ class StoreTests(Base):
 
     def test_the_readers_show_the_card_the_index_the_figures_and_the_caps(self):
         path = self.shelf / "mining" / "lessons.md"
-        write(path, chapter("mining", "lessons", entry("Long", "l" * 1600)))
+        write(path, chapter("mining", "lessons", entry("Long", "l" * 2400)))
         self.one(NOW)
         done = self.hive("guide", "mining")
         self.assertEqual(done.returncode, 0, done.stdout + done.stderr)
         text = done.stdout
         self.assertIn("=== THE CLASS CARD (game/routes/guidebook/mining/card.md, 2 entries", text)
         self.assertIn("### Ships\nStatus: proven. Updated: 2026-11-01. Evidence: hive.py route x.\n\nTier 0: the Threshold.", text)
-        self.assertRegex(text, r"routes.md \| 2 entries, \d+ of 8,000 characters")
+        self.assertRegex(text, r"routes.md \| 2 entries, \d+ of 12,000 characters")
         self.assertRegex(text, r"proven\s+2026-11-01\s+[\d,]+\s+long\s+Long\s+OVER")
         self.assertIn("lessons.md entry `long`", text)
         self.assertRegex(text, r"XP per ship-hour of its roles' skills \(24 h, n = pilots that gained; computed [^)]*\): not measured")   # no figure yet

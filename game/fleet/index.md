@@ -8,7 +8,7 @@ author: Unity
 # index.md -- The Fleet's Scripts
 
 Built by `python3 -B scripts/fleet-index.py` from the docstring of every script in this
-folder; never edited by hand. Scripts listed: 55.
+folder; never edited by hand. Scripts listed: 56.
 
 - Run a script from the repository root: `python3 -I -B game/fleet/<script> <arguments>`,
   the arguments as listed under "How to Call Each".
@@ -63,6 +63,7 @@ folder; never edited by hand. Scripts listed: 55.
 | `plan.py` | Each division's plan file: every ship with the routes it flies, in their order; the dispatcher sends the ships by it. | By hand |
 | `plate.py` | Make our pilots' stored creature carapace into armor plate where each is docked, and sell plates into the bid there. | By hand |
 | `playbook_anchor.py` | Live division telemetry anchor, chapter high-watermark monitor, and empirical drift scanner. | By hand |
+| `progression.py` | Live enterprise progression roadmap, strategic rung gauges, and historical milestone chronicle. | By hand |
 | `pull.py` | Each class flies its own work, and goods are gathered only while the reserve needs them: the class guard and the pull rule of the dispatcher, with their dry run. | By hand |
 | `reserves.py` | The gate `requires.reserve` of a route: open only while the last reading of a faction reserve (the fuel in a bunker, or an item of the faction's storage at a base) stands under a floor. | By hand |
 | `retention.py` | How long the store keeps the tables it kept for good: the hourly sums 90 days, the daily sums 400, the written knowledge's versions the newest 20 of each section and every one of the last 30 days; one table of rules, applied in the store's prune step behind a switch that is off, with a dry run. | By hand |
@@ -659,6 +660,20 @@ Run by hand.
 
 ```
 playbook_anchor.py [<division>|<member>|all] [--json] [--drift-only]
+--data <dir>   the unit's data folder (default /srv/collective/data)
+--root <dir>   the repository root (default: two folders above this file)
+```
+
+### `progression.py`
+
+Live enterprise progression roadmap, strategic rung gauges, and historical milestone
+chronicle.
+
+Run by hand.
+
+```
+progression.py [show] [--json]
+progression.py write [--commit]
 --data <dir>   the unit's data folder (default /srv/collective/data)
 --root <dir>   the repository root (default: two folders above this file)
 ```

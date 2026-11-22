@@ -114,7 +114,7 @@ SCHEMA = (
     "SUM(CASE WHEN section != '_head' THEN 1 ELSE 0 END) AS entries, "
     "SUM(CASE WHEN section != '_head' THEN COALESCE(chars, 0) ELSE 0 END) AS chars, "
     "100.0 * SUM(CASE WHEN section != '_head' THEN COALESCE(chars, 0) ELSE 0 END) / "
-    "(CASE WHEN path LIKE '%/card.md' THEN 3000.0 ELSE 8000.0 END) AS pct "
+    "(CASE WHEN path LIKE '%/card.md' THEN 4500.0 ELSE 12000.0 END) AS pct "
     "FROM docs WHERE kind = 'guide' AND path LIKE 'game/routes/guidebook/%/%.md' GROUP BY path"
     ") GROUP BY division"
     ") gd ON gd.division = d.division;\n"

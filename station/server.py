@@ -707,6 +707,27 @@ def api_playbooks():
     return out
 
 
+PROGRESSION_CACHE = {"at": 0.0, "data": None}
+
+
+def api_progression():
+    """Live 3-Horizon Enterprise Progression Roadmap & Milestone Chronicle (cached 30s, strictly read-only)."""
+    import sys
+    now = time.time()
+    cached = PROGRESSION_CACHE.get("data")
+    if cached is not None and now - PROGRESSION_CACHE.get("at", 0.0) < 30.0:
+        return cached
+    fleet_dir = str(Path(__file__).resolve().parents[1] / "game" / "fleet")
+    if fleet_dir not in sys.path:
+        sys.path.insert(0, fleet_dir)
+    import progression
+    unit_data = os.environ.get("COLLECTIVE_DATA") or str(DATA.parent)
+    out = progression.compute_progression(str(REPO), data=unit_data, now=now)
+    PROGRESSION_CACHE["at"] = now
+    PROGRESSION_CACHE["data"] = out
+    return out
+
+
 def doc_list(folder):
     """The Markdown files of one repository folder: path and the title after its first '# '."""
     out = []
@@ -2366,7 +2387,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 "/api/fleet": api_fleet, "/api/ship": lambda: api_ship(arg),
                 "/api/history": lambda: api_history(min(48, max(1, int(arg) if arg.isdigit() else 6))),
                 "/api/income": lambda: api_income(min(48, max(1, int(arg) if arg.isdigit() else 4))),
-                "/api/docs": api_docs, "/api/doc": lambda: api_doc(doc), "/api/playbooks": api_playbooks,
+                "/api/docs": api_docs, "/api/doc": lambda: api_doc(doc), "/api/playbooks": api_playbooks, "/api/progression": api_progression,
                 "/api/group": lambda: api_group(after),
                 "/api/faction": lambda: api_faction(arg),
                 "/api/ops": api_ops,

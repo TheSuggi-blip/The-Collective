@@ -50,6 +50,7 @@ What docs.py mirrors into the tables docs and doc_versions (docs.KINDS); the fil
 | orders | `communications/orders.log` | Unity | docs doc=orders (hive.py docs orders); comms view=orders |
 | strategy | `governance/strategy.md`, `governance/birth-plans.md` | Fleet | docs doc=strategy (hive.py docs strategy) |
 | empire | `governance/empire.md` | Fleet | docs doc=empire (hive.py docs empire) |
+| blueprint | `governance/the-collective-constitution.md`, `governance/system-architecture.md`, `governance/agents-and-orchestration.md`, `governance/knowledge-and-memory-loop.md`, `governance/progression-roadmap.md`, `governance/map.md`, `governance/template-reports.md`, `communications/protocol.md` | Fleet | docs doc=blueprint (hive.py docs blueprint) |
 | guide | `game/routes/guidebook/*/*.md` | the division its file's name or folder names | docs doc=guide (hive.py docs guide) |
 | guidebook | `game/routes/guidebook/*.md` | the division its file's name or folder names | docs doc=guidebook (hive.py docs guidebook); docs view=division |
 | template | `game/routes/templates/*.json` | the division its file's name or folder names | docs doc=template (hive.py docs template) |
