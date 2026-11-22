@@ -1,0 +1,27 @@
+{
+ "id": "fit-pulse-laser-iii-lhs-1140",
+ "kind": "circuit",
+ "title": "Swap the Pulse Laser I for a Pulse Laser III at Ironlight Crossroads, LHS 1140 (fit with replace), one ship first",
+ "note": "2026-11-22 00:24 UTC (Apophis): the first live swap of `fit` with `replace` (requests.log ENT-290, ENT-304, ENT-308; route_run.py FIT_REPLACE). Orders ENT-059, block APOPHIS: weapons fitted, prey the division can beat; rule F17: a new module on one ship first. Why this laser: the one-ship test hunt-test-acubens-bulwark-pl3 killed 2 bulwarks (hull 95, above the one-ship gauge of 79) in 13.3 minutes at 100 percent hull (runs.jsonl, 2026-11-21 20:52 UTC). Why here: 13,436 cr x 20 at Ironlight Crossroads (data/market/784309214f105860a16a0c100a70eb14.json), against 22,085 x 2 at Central Nexus (00:24 UTC). LHS 1140 is lawless, six jumps from home, a station of the Ironlight Combine with public access (fit-ice-harvester-lhs-1140): an empty hold (rule F3). Once per pilot, max_pilots 1 until its RESULT line is read; then lifted to the drones that hunt prey of 80 to 100 hull.",
+ "once": true,
+ "max_ships": 1,
+ "max_pilots": 1,
+ "min_credits": 30000,
+ "requires": {
+  "module": "pulse_laser_i",
+  "without_module": "pulse_laser_iii",
+  "empty_hold": true
+ },
+ "stops": [
+  {
+   "at": "lhs_1140:0321b3e4406021575337b7be26e53dd7:784309214f105860a16a0c100a70eb14",
+   "fit": [
+    {
+     "module": "pulse_laser_iii",
+     "max_price": 14000,
+     "replace": "pulse_laser_i"
+    }
+   ]
+  }
+ ]
+}

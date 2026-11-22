@@ -12,12 +12,13 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 35.
+Routes: 36.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
 | [craft-focused-crystal-node-beta](craft-focused-crystal-node-beta.json) | circuit | home space | Focused crystal made by hand at Node Beta from stored energy crystal and one bought palladium ore, sold into the Central Nexus bid | up to 2 ships, with 4 energy_crystal stored at node_beta_industrial_station, while central_nexus bids 700 cr for focused_crystal, off | TBD | TBD | TBD | TBD | -- |
 | [first-survey](first-survey.json) | circuit | home space | Signal Propagation Survey: dock at the five other Voidborn stations (4,000 cr since 0.715.4) | once per pilot, off | TBD | TBD | TBD | TBD | -- |
+| [fit-pulse-laser-iii-central-nexus](fit-pulse-laser-iii-central-nexus.json) | circuit | home space | Swap the Pulse Laser I for a Pulse Laser III at Central Nexus (fit with replace), one ship first | once per pilot, up to 1 ships, 1 pilots in all, needs pulse_laser_i, without pulse_laser_iii, from 30,000 cr, off | TBD | TBD | TBD | TBD | -- |
 | [sell-curd-central-nexus](sell-curd-central-nexus.json) | circuit | home space | Stored verdigris curd sold into the curd bid at Central Nexus, where the drones stored it | up to 1 ships, with 2 verdigris_curd stored at central_nexus, while central_nexus bids 250 cr for verdigris_curd, off | TBD | TBD | TBD | TBD | -- |
 | [sell-curd-experiment](sell-curd-experiment.json) | circuit | home space | Stored verdigris curd sold into the curd bid at The Experiment, where the drones stored it | up to 1 ships, with 2 verdigris_curd stored at the_experiment_research_station, while the_experiment_research_station bids 250 cr for verdigris_curd, off | TBD | TBD | TBD | TBD | -- |
 | [sell-curd-node-beta](sell-curd-node-beta.json) | circuit | home space | Stored verdigris curd sold into the curd bid at Node Beta, where the drones stored it | up to 1 ships, with 2 verdigris_curd stored at node_beta_industrial_station, while node_beta_industrial_station bids 250 cr for verdigris_curd, off | TBD | TBD | TBD | TBD | -- |

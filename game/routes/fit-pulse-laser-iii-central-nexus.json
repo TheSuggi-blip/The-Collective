@@ -2,7 +2,7 @@
  "id": "fit-pulse-laser-iii-central-nexus",
  "kind": "circuit",
  "title": "Swap the Pulse Laser I for a Pulse Laser III at Central Nexus (fit with replace), one ship first",
- "note": "2026-11-22 00:14 UTC (Apophis): the first live swap of `fit` with `replace` (requests.log ENT-290, ENT-304, ENT-308; route_run.py FIT_REPLACE). Orders ENT-059, block APOPHIS: weapons fitted, prey the division can beat; rule F17: a new module on one ship first. Why this laser: the one-ship test hunt-test-acubens-bulwark-pl3 killed 2 bulwarks (hull 95, above the one-ship gauge of 79) in 13.3 minutes at 100 percent hull (runs.jsonl, 2026-11-21 20:52 UTC); a Pulse Laser I took one to 65 percent in 45 ticks (observe kind group_hunt, 2026-11-21 20:52 UTC). Asks read 2026-11-21 20:45 UTC: 14,316 cr x 4 at Central Nexus. once per pilot, max_ships 1, max_pilots 1 until its RESULT line is read; then lifted to the drones that hunt prey of 80 to 100 hull.",
+ "note": "2026-11-22 00:14 UTC (Apophis): the first live swap of `fit` with `replace` (requests.log ENT-290, ENT-304, ENT-308; route_run.py FIT_REPLACE). Orders ENT-059, block APOPHIS: weapons fitted, prey the division can beat; rule F17: a new module on one ship first. Why this laser: the one-ship test hunt-test-acubens-bulwark-pl3 killed 2 bulwarks (hull 95, above the one-ship gauge of 79) in 13.3 minutes at 100 percent hull (runs.jsonl, 2026-11-21 20:52 UTC); a Pulse Laser I took one to 65 percent in 45 ticks (observe kind group_hunt, 2026-11-21 20:52 UTC). Asks read 2026-11-21 20:45 UTC: 14,316 cr x 4 at Central Nexus. once per pilot, max_ships 1, max_pilots 1 until its RESULT line is read; then lifted to the drones that hunt prey of 80 to 100 hull. 2026-11-22 00:24 UTC (Apophis): status off, replaced by fit-pulse-laser-iii-lhs-1140: its first run (00:14 UTC) bought nothing, the 14,316 cr asks were gone and the best ask read 22,085 x 2 at 00:24 UTC (data/market/central_nexus.json).",
  "once": true,
  "max_ships": 1,
  "max_pilots": 1,
@@ -22,5 +22,6 @@
     }
    ]
   }
- ]
+ ],
+ "status": "off"
 }
