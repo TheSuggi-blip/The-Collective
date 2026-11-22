@@ -92,6 +92,10 @@
   {
    "what": "Forgotten Tailings (outpost GSC-0044): lift on its third result (F37)",
    "when": "next turn"
+  },
+  {
+   "what": "Laser III on the seated outpost miners once an ask under 10,000 cr stands or Logistics crafts one",
+   "when": "on an ask"
   }
  ],
  "ships": {
