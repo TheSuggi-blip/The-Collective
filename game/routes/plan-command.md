@@ -62,7 +62,7 @@ Kept by Unity. Routes: 59. Ships: 6.
 | 40 | [hunt-angetenar-gas-pocket-cinder-sylph](hunt-angetenar-gas-pocket-cinder-sylph.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 13 jumps | up to 1 ships, empty hold | 1 of 6 |
 | 41 | [hunt-ridgecrest-ice-shelf-hollow-pilgrim](hunt-ridgecrest-ice-shelf-hollow-pilgrim.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 10 jumps | up to 1 ships, empty hold | 1 of 6 |
 | 42 | [hunt-test-homam-frost-moth](hunt-test-homam-frost-moth.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 6 jumps | up to 1 ships, empty hold, standing work | 1 of 6 |
-| 43 | [hunt-taygeta-frozen-drift-hollow-pilgrim](hunt-taygeta-frozen-drift-hollow-pilgrim.json) | [Tests](index-tests.md) | beyond the border, 15 jumps | up to 3 ships, empty hold | 1 of 6 |
+| 43 | [hunt-taygeta-frozen-drift-hollow-pilgrim](hunt-taygeta-frozen-drift-hollow-pilgrim.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 15 jumps | up to 3 ships, empty hold | 1 of 6 |
 | 44 | [hunt-titawin-gas-cloud-chlorophage](hunt-titawin-gas-cloud-chlorophage.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 12 jumps | up to 1 ships, empty hold, standing work | 1 of 6 |
 | 45 | [hunt-silverbend-emission-nebula-cinder-sylph](hunt-silverbend-emission-nebula-cinder-sylph.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 11 jumps | up to 1 ships, empty hold, standing work | 2 of 6 |
 | 46 | [hunt-cervantes-vapor-fields-halo-drifter](hunt-cervantes-vapor-fields-halo-drifter.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 10 jumps | up to 1 ships, empty hold | 1 of 6 |
@@ -74,8 +74,8 @@ Kept by Unity. Routes: 59. Ships: 6.
 | 52 | [hunt-raysheet-nebula-veil-ray](hunt-raysheet-nebula-veil-ray.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 8 jumps | up to 1 ships, empty hold | all 6 |
 | 53 | [voidborn-network-expansion](voidborn-network-expansion.json) | [Once per Pilot](index-once-per-pilot.md) | home space | once per pilot, up to 20 ships, after the reward First Steps in the Void | all 6 |
 | 54 | [mission-ghosts-in-the-cloud-node](mission-ghosts-in-the-cloud-node.json) | [Once per Pilot](index-once-per-pilot.md) | home space | once per pilot, up to 1 ships | all 6 |
-| 55 | [give-miner-stores-central-nexus](give-miner-stores-central-nexus.json) | [Tests](index-tests.md) | home space | up to 3 ships, with 50 iron_ore stored at central_nexus | all 6 |
-| 56 | [give-miner-stores-node-beta](give-miner-stores-node-beta.json) | [Tests](index-tests.md) | home space | up to 3 ships, with 50 iron_ore stored at node_beta_industrial_station | all 6 |
-| 57 | [give-drone-stores-central-nexus](give-drone-stores-central-nexus.json) | [Tests](index-tests.md) | home space | up to 3 ships, with 20 copper_ore stored at central_nexus | all 6 |
+| 55 | [give-miner-stores-central-nexus](give-miner-stores-central-nexus.json) | [Measured at a Loss](index-measured-at-a-loss.md) | home space | up to 3 ships, with 50 iron_ore stored at central_nexus | all 6 |
+| 56 | [give-miner-stores-node-beta](give-miner-stores-node-beta.json) | [Measured at a Loss](index-measured-at-a-loss.md) | home space | up to 3 ships, with 50 iron_ore stored at node_beta_industrial_station | all 6 |
+| 57 | [give-drone-stores-central-nexus](give-drone-stores-central-nexus.json) | [Paying Routes](index-paying-routes.md) | home space | up to 3 ships, with 20 copper_ore stored at central_nexus | all 6 |
 | 58 | [store-hold-central-nexus](store-hold-central-nexus.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 40 ships, goods aboard, standing work | all 6 |
 | 59 | [park](park.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | the park route | all 6 |

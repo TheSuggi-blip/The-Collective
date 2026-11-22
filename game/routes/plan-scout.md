@@ -21,9 +21,9 @@ Kept by Oracle. Routes: 52. Ships: 30.
 | # | Route | Group | Zone | Open to | Ships planned |
 |---|---|---|---|---|---|
 | 1 | [store-hold-central-nexus](store-hold-central-nexus.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 40 ships, goods aboard, standing work | all 30 |
-| 2 | [give-scout-stores-node-beta](give-scout-stores-node-beta.json) | [Tests](index-tests.md) | home space | up to 2 ships, with 50 iron_ore stored at node_beta_industrial_station | all 30 |
-| 3 | [give-scout-stores-central-nexus](give-scout-stores-central-nexus.json) | [Tests](index-tests.md) | home space | up to 2 ships, with 50 iron_ore stored at central_nexus | all 30 |
-| 4 | [give-scout-stores-synchrony](give-scout-stores-synchrony.json) | [Tests](index-tests.md) | home space | up to 2 ships, with 50 iron_ore stored at synchrony_hub | all 30 |
+| 2 | [give-scout-stores-node-beta](give-scout-stores-node-beta.json) | [Measured at a Loss](index-measured-at-a-loss.md) | home space | up to 2 ships, with 50 iron_ore stored at node_beta_industrial_station | all 30 |
+| 3 | [give-scout-stores-central-nexus](give-scout-stores-central-nexus.json) | [Measured at a Loss](index-measured-at-a-loss.md) | home space | up to 2 ships, with 50 iron_ore stored at central_nexus | all 30 |
+| 4 | [give-scout-stores-synchrony](give-scout-stores-synchrony.json) | [Measured at a Loss](index-measured-at-a-loss.md) | home space | up to 2 ships, with 50 iron_ore stored at synchrony_hub | all 30 |
 | 5 | [give-scout-stores-experiment](give-scout-stores-experiment.json) | [Tests](index-tests.md) | home space | up to 2 ships, with 50 iron_ore stored at the_experiment_research_station | all 30 |
 | 6 | [voidborn-first-steps-board](voidborn-first-steps-board.json) | [Once per Pilot](index-once-per-pilot.md) | home space | once per pilot, up to 3 ships | all 30 |
 | 7 | [voidborn-network-expansion](voidborn-network-expansion.json) | [Once per Pilot](index-once-per-pilot.md) | home space | once per pilot, up to 20 ships, after the reward First Steps in the Void | all 30 |

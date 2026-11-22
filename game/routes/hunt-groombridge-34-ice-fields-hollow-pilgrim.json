@@ -22,12 +22,12 @@
  "lift_to": 1,
  "measured": {
   "date": "2026-11-22",
-  "runs": 2,
+  "runs": 4,
   "minutes": 40,
-  "credits_per_run": 1850,
-  "cph_per_ship": 2810,
+  "credits_per_run": 2910,
+  "cph_per_ship": 4490,
   "hours": 12,
-  "last_run": "2026-11-22T05:06:44Z"
+  "last_run": "2026-11-22T06:24:10Z"
  },
  "gift_to": "trader"
 }
