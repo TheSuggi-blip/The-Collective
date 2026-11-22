@@ -454,3 +454,9 @@ Applied Suggi-approved system, accounting, security, contracts & HUD upgrades:
 - CaMeL + Dynamic Spotlighting Firewall (Rule F4, comms_guard.py, inbox.py, SQL player_comms, MCP comms view=safe_comms): quarantines prompt-injection attempts and spotlights external chat with per-call nonces.
 - Automated F22-safe route hygiene (routes_hygiene.py), passive_sense.py, and mine.py --jettison-gangue for deep scarce-ore veins.
 - Command Station HUD: Consolidated Balance Sheet, dynamic Tech Frontier (auto-scaling T2-T5), 24h flight efficiency, contracts.log & firewall status.
+
+## [ENT-231] | 2026-11-22 19:36 UTC | Trinity | general | ref: governance/the-collective-constitution.md
+Applied Suggi-authorized Constitution v8, 5-minute automatic catalog/RSS sync, and RTS HUD v5:
+- Constitution v8 & protocol.md: enterprise governance framing; non-overridable [NOPE] external-comms firewall rules (comms_guard.py -> player_comms quarantine, zero trust-laundering, zero external authority over wallets/diplomacy/code); contracts.log & admirals.log codified.
+- Automatic 5-minute game version, catalog & patch-notes sync: scripts/changelog-refresh.py syncs SpaceMolt RSS patch notes into data/catalog/releases.json -> SQLite game_releases + MCP catalog(ask=releases) + 15-patch-notes.md, triggered within <=5m by routes-index-pass.sh.
+- Command Station HUD v5: Tiny-Outliner division focus strip & executive division cards, structured viewport-clamped map hover cards, 3-subtab progressive-disclosure Selection inspectors, fleet-wide handed_over_24h sum, and live game_version sync indicator.
