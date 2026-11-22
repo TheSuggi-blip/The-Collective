@@ -128,7 +128,7 @@ ASKS = {        # MCP tool -> {view, action or ask (or '' for every other value)
     "fleet": {"money": "Money", "history": "Money", "forecast": "Money", "levels": "Ships and pilots", "board": "Ships and pilots",
               "capacity": "Routes and runs", "standing": "Routes and runs", "tasks": "Routes and runs", "refill": "Statistics",
               "kpi": "Statistics", "contribution": "Statistics", "classes": "Statistics", "time": "Statistics", "supply": "Statistics",
-              "xp": "Statistics", "upgrades": "Statistics", "alerts": "Statistics"},
+              "xp": "Statistics", "upgrades": "Statistics", "alerts": "Statistics", "watchdog": "Statistics"},
     "ship": {"": "Ships and pilots"}, "routes": {"": "Routes and runs"}, "route": {"": "Routes and runs"}, "candidates": {"": "Routes and runs"},
     "market": {"": "Markets"}, "stock": {"": "Stock and reserve"}, "catalog": {"": "The catalog"}, "base_plan": {"": "Our faction"},
     "system": {"": "Map and intel"}, "comms": {"contacts": "Map and intel", "": "Written knowledge"}, "search": {"": "Written knowledge"},
@@ -143,6 +143,7 @@ VERBS = {       # hive.py verbs that no tool reaches as hive.py <verb> (the tool
     "surplus": None, "inventory": None, "supply": None,
 }
 VERBS["needs"] = None                              # the tool needs gives the same answers (needs.py)
+VERBS["watchdog"] = None                           # the tool fleet view=watchdog gives the same answer (watchdog.py)
 READERS = {     # docs.py kind -> the readers beside `docs doc=<kind>` (hive.py docs <kind>) that answer it
     "orders": "comms view=orders", "log": "comms view=requests, view=digest", "plan": "plan action=show; docs view=division",
     "metrics": "fleet view=<figure>", "handbook": "docs view=handbook (hive.py handbook)", "member": "docs view=division",
