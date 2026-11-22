@@ -72,6 +72,10 @@
   {
    "what": "Read the battle record of the north road, Oakridge's neighbours and every base of ours; name a raid on a base the same turn",
    "when": "every turn"
+  },
+  {
+   "what": "Watch census runs beyond the border for storm deflection (0.732.2): STUCK and failed reads",
+   "when": "every turn"
   }
  ],
  "ships": {
