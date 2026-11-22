@@ -68,16 +68,16 @@
    "note": "Hunt loot at the receivers' stations first (orders ENT-063 P5), crystal melt carried to the Central Nexus bid, then what the gift routes hand the receivers (null matter, lead, curd, soma, plasma, water ice, hydrogen), then the stored surplus of every division"
   },
   "trade-craft": {
-   "title": "Make from the pilot's own stores where they lie: copper piping, steel plate, then copper wiring",
+   "title": "Make from the pilot's own stores where they lie, docked: armor plate from the carapace the hunts hand over, then steel plate",
    "routes": [
-    "craft-piping-node-beta",
-    "craft-piping-synchrony-hub",
+    "craft-armor-own-node-beta",
+    "craft-armor-own-experiment",
+    "craft-armor-own-central-nexus",
+    "craft-armor-own-first-step",
+    "craft-armor-own-synchrony",
     "craft-steel-own-node-beta",
     "craft-steel-own-experiment",
     "craft-steel-own-central-nexus",
-    "craft-wiring-synchrony-hub",
-    "craft-wiring-node-beta",
-    "craft-wiring-experiment",
     "craft-steel-node-beta",
     "craft-steel-central-nexus",
     "craft-steel-synchrony-hub"
@@ -86,7 +86,7 @@
     "crafting",
     "refining"
    ],
-   "note": "2026-11-17 23:41 UTC (Mercury, orders.log ENT-052 block MERCURY, requests.log ENT-256): the reserve's iron is met, so a trader without a paying trade makes before it gathers: piping and plate for the reserve first, then wiring from surplus copper; the -own- routes use up a pilot's stores at a station in one visit."
+   "note": "2026-11-22 (Mercury, orders ENT-063 P1 and P5): docked crafting trains Crafting at no fuel; armor plate is short for the reserve and the hunts hand Trade's receivers about 1,900 carapace an hour (data/stock/handover.jsonl, 09:37-11:37 UTC). Piping and wiring out: the reserve holds 35,484 piping for 26,400 asked and 11,480 wiring for 266 (the tool stock, view=reserve, 11:34 UTC; rule F36)."
   },
   "trade-train-nav": {
    "title": "Navigation trained to 3 on a loop of our five stations, for Signal Fragments (7,000 cr once)",
