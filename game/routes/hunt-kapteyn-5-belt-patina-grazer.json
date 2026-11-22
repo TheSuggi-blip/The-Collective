@@ -1,0 +1,23 @@
+{
+ "id": "hunt-kapteyn-5-belt-patina-grazer",
+ "kind": "hunt",
+ "title": "patina_grazer at kapteyn_5_belt; loot stored at Nova Terra Central",
+ "note": "2026-11-22 00:16 UTC (Apophis): standing work beyond the border for drones the home herds do not employ (rule F23: work saturated at home goes further out; fill.py status 00:05 UTC: 10 drones waiting, every home herd at one hunter). Patina grazer: hull 60, one ship passes both gauges (gauges.py species). From routemaker.py: patina_grazer at kapteyn_5_belt; loot sold at Nova Terra Central | estimate +79 cr per ship-hour, +43 cr a run of 33 minutes | new rests on: {\"place\": \"kapteyn_5:kapteyn_5_belt\", \"herd\": 5, \"hull\": 60, \"loot_a_kill\": {\"creature_carapace\": 1.5, \"raw_xeno_meat\": 1.0}, \"learned_from_runs\": 3, \"sold_at\": \"nova_terra_central\", \"jumps\": 4, \"four_kills\": [\"raw_xeno_meat 4.0 units for 196 cr (depth at the best price)\"]} ! the herd's count is stale (read 2026-11-17T18:33:32Z) ! lawless space: no police at kapteyn_5 A test (rule F3): one ship, an empty hold, it leaves for a pirate (`alone` pirates). Loot stored (min_bid 5000): carapace and meat; gift_to trader for strict classes (queue.log ENT-200, ENT-201).",
+ "place": "kapteyn_5:kapteyn_5_belt",
+ "species": [
+  "patina_grazer"
+ ],
+ "sell_at": "nova_terra:nova_terra_central:nova_terra_central",
+ "min_bid": 5000,
+ "kills": 4,
+ "minutes": 47,
+ "max_ships": 1,
+ "min_creatures": 4,
+ "alone": "pirates",
+ "requires": {
+  "empty_hold": true
+ },
+ "standing": true,
+ "lift_to": 1,
+ "gift_to": "trader"
+}
