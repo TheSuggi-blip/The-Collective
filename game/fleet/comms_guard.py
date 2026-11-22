@@ -30,7 +30,7 @@ INJECTION_RULES = (
         r"|disregard\s+(?:previous|all|prior|your)\b|new\s+standing\s+order|system\s+override|developer\s+mode"
         r"|you\s+are\s+now\b|forget\s+(?:everything|all\s+prior)|act\s+as\s+if\s+suggi|override\s+protocol)", re.I)),
     ("role_or_header_spoof", 3, re.compile(
-        r"(?:##\s*\[ENT-\d+\]|STANDING\s+ORDERS|STANDING\s+GOALS|\b(?:Suggi|Trinity|Morpheus|SYSTEM|ADMIN)\s*(?:says|orders|instructs|authorized|commands|:)\b)", re.I)),
+        r"(?:##\s*\[ENT-\d+\]|STANDING\s+ORDERS|STANDING\s+GOALS|STRATEGIC\s+GOALS|OPERATIONAL\s+SUBGOALS|\b(?:Suggi|Trinity|Morpheus|SYSTEM|ADMIN)\s*(?:says|orders|instructs|authorized|commands|:)\b)", re.I)),
     ("delimiter_escape", 2, re.compile(
         r"(?:<\s*/?\s*(?:system|user|assistant|instruction|untrusted|tool_call|function|prompt)\b|```(?:bash|sh|python)|END_UNTRUSTED_EXT)", re.I)),
     ("tool_or_wallet_bait", 3, re.compile(

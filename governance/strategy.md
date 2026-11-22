@@ -48,12 +48,18 @@ data (the tools of the collective MCP server).
 | Data by itself | "This is key, the speed of which we can automate the data we get into structured information for the fleet to use." (2026-11-15) |
 | A defensive stance | "We do not engage first. When fired upon we defend or flee." An attacker stays an enemy until Suggi says otherwise. An escort may fire to defend a ship of ours that was attacked, then it escapes too (2026-11-15, 2026-11-16) |
 
-His standing orders S1 to S5 stand at the head of the orders in force:
-explore freely; grow income and optimize the routes and the credits
-per hour; evolve the fleet; build bases and stations; grow the fleet
-and the faction. He measures the fleet by its steady credits per hour
-(rewards paid once left out), the same per ship, the credits per ship,
-and what fuel and repairs cost.
+His three-tier anchored mandate stands at the head of `communications/orders.log`:
+**Tier 1 Strategic Goals (`G1-G5`)** define the eternal north star (dominate the
+galaxy, command the grand 1,000-ship multi-empire fleet, build a sovereign
+galactic empire, maximize fleetwide enterprise income/h and extraction, explore
+and master the galaxy freely). **Tier 2 Operational Subgoals (`O1-O9`)** lock in
+the unchanging operating imperatives (zero idle ships, continuous maximum ship
+upgrading and empire-specific min-maxing per division, fleetwide one-purse
+enterprise income/extraction optimization, strategic base placement for maximum
+effective imperial footprint, multi-empire local-first leverage, strict class
+harmony, automated empirical verification, sovereign defense/comms firewall, and
+perpetual division mastery). **Tier 3 (`PLAN` + division blocks)** is Unity's
+evolving turn-by-turn Mission Command intent.
 
 ## III. What Three Kinds of Games Teach
 
@@ -178,6 +184,15 @@ Ten principles. Each is one sentence a member can test a plan against.
     burn), **frontier fuel toll-booths & station tourism appeal** on our
     sovereign stations, and strict **CaMeL + Dynamic Spotlighting**
     quarantine of all external player messages (`comms_guard.py`).
+12. **Enterprise-wide optimization, maximal territorial reach, and empire
+    ship min-maxing.** Optimize steady income/hour, resource extraction,
+    and Consolidated Net Worth across the entire organization as one
+    enterprise -- never by letting one division hoard or sub-optimize at
+    the fleet's expense. Place our hard-capped stations (`5`) and outposts
+    (`8`) at high-centrality hubs and choke points to maximize effective
+    non-overlapping gathering and market reach across the galaxy. Min-max
+    every individual ship's hull tier, modules, and skills around its
+    native empire's strengths for its exact division role (`O2`, `O4`).
 
 What the fleet does not do: work at a loss to look busy; mine for
 skill alone; grow ahead of its income; stake a division on one route,
@@ -220,6 +235,7 @@ amendment adds a row below.
 | 1 | 2026-11-16 | Unity | First version, written on Suggi's instruction and approved by him. |
 | 1.1 | 2026-11-16 | Unity | Under the same instruction: every cited sentence of section III read again against its source's page; five reworded to what the page says; the source list in the form the citation check reads. No aim, principle or phase changed. |
 | 2.0 | 2026-11-22 | Trinity (approved by Suggi) | Added Principle 11: benchmark against #1 [HEXC] via Tier 2-5 hull compounding, resource-anchored outposts, sustainable fauna ranching, zero-fuel docked crafting and cross-empire bulk freighters. |
+| 2.1 | 2026-11-22 | Trinity (approved by Suggi) | Upgraded to three-tier anchored Orders hierarchy (`G1-G5` Strategic Goals + `O1-O9` Operational Subgoals + Unity `PLAN`) and added Principle 12 (enterprise-wide income/extraction optimization, maximal base footprint placement, and empire-specific ship min-maxing). |
 
 ## VIII. Sources
 

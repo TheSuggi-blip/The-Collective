@@ -168,7 +168,7 @@ class GateTests(Tree):
 
     def test_each_rule_fails_alone(self):
         self.assertIn("header not in the protocol's form", self.errors_with("orders", "| 2026-01-01 12:00 UTC | Unity", "| 12:00 | Unity")[0])
-        self.assertIn("orders.log ENT-002: the orders are written by Unity only",
+        self.assertIn("orders.log ENT-002: the orders are written by Unity (or Trinity for Suggi mandate sync) only",
                       self.errors_with("orders", "12:00 UTC | Unity | order", "12:00 UTC | Zero | order")[0])
         self.assertIn("category `order`", self.errors_with("orders", "12:00 UTC | Unity | order", "12:00 UTC | Unity | general")[0])
         self.assertEqual(self.errors_with("orders", "Changed: F1 reworded.\n", ""), ["orders.log ENT-002: no `Changed:` line"])
@@ -213,7 +213,7 @@ class AppendTests(Tree):
     def test_a_refused_entry_leaves_the_log_byte_for_byte(self):
         before = {name: self.log(name) for name in ("orders", "reports", "requests")}
         order = "## [ENT-NEXT] | NOW | %s | order\nChanged: x.\nIn force from now until a newer entry.\nFLEET\nF1. y.\n"
-        cases = [("orders", order % "Zero", "Zero", "orders.log is written by the Fleet Admiral only"),
+        cases = [("orders", order % "Zero", "Zero", "orders.log is written by the Fleet Admiral (or Trinity for Suggi mandate sync) only"),
                  ("orders", order % "Unity", "Zero", "the entry names Unity as its writer, the append is made as Zero"),
                  ("reports", "## [ENT-NEXT] | NOW | Zero | request\nTo: Unity.\nNeed: x.\n", "Zero", "category `request` does not belong in reports.log (it takes: session)"),
                  ("requests", "## [ENT-008] | 2026-01-01 16:00 UTC | Zero | request\nTo: Unity.\nNeed: x.\n", "Zero", "the first line must be `## [ENT-NEXT] | NOW |"),
@@ -424,6 +424,28 @@ class OrdersSizeTests(Tree):
         for member in ("UNITY", "ZERO", "MERCURY", "APOLLO", "APOPHIS", "ORACLE"):
             self.assertTrue(any(line.startswith("orders.log ENT-054: block %s is " % member) for line in found), member)
         self.assertEqual(len(found), 8, found)                                      # its Changed: line holds 55 words
+
+
+    def test_three_tier_goals_and_operational_subgoals_do_not_count_toward_plan_words(self):
+        entry = (
+            "## [ENT-NEXT] | NOW | Trinity | order | ref: governance/strategy.md | see: ENT-002\n"
+            "Changed: updated Suggi's anchored strategic goals and operational subgoals.\n"
+            "In force from this entry until a newer one.\n"
+            "STRATEGIC GOALS (Suggi; set and changed by him alone)\n"
+            "G1. Dominate the galaxy.\n"
+            "OPERATIONAL SUBGOALS (Suggi; anchored and unchanging)\n"
+            "O1. Never idle and always upgrade every ship for its division and empire.\n"
+            "PLAN (the Fleet Admiral's order to the fleet)\n"
+            "P1. Keep every ship earning.\n"
+            "UNITY, Fleet Admiral (the command group)\n"
+            "Coordinate fleet capital and sites.\n"
+        )
+        draft = self.root.parent / "three-tier.md"
+        draft.write_text(entry, encoding="ascii")
+        code, out = self.run_command(comms.append, "orders", str(draft), "Trinity", False)
+        self.assertEqual(code, 0, out)
+        self.assertEqual(comms.check(str(self.root)), [])
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -87,7 +87,8 @@ ANSWER_WORDS = ("yes", "no", "done")
 LOGS = {"orders": ("order",), "reports": ("session",), "requests": ("request", "answer"), "queue": ("general",), "errors": ("error",),
         "admirals": ("note", "claim"), "contracts": ("contract", "bursar", "filled", "expired")}
 GATED = ("orders", "reports", "requests")
-ENTRY_CHARS = 8000            # the newest orders entry, whole, Suggi's S and G lines included (Suggi, 2026-11-18)
+ENTRY_CHARS = 8000            # the newest orders entry, whole, Suggi's G and O lines included (Suggi, 2026-11-22)
+ORDERS_WRITERS = ("Unity", "Trinity")   # Unity writes turns; Trinity only syncs Suggi's anchored G/O tiers
 PLAN_WORDS = 150              # ... PLAN, its heading line not counted
 BLOCK_WORDS = 80              # ... each member's block, its heading line not counted
 CHANGED_WORDS = 60            # ... the `Changed:` line
@@ -402,8 +403,8 @@ def check(root):
             if not entry["body"]:
                 errors.append(where + "has no body")
             if name == "orders":
-                if entry["by"] != "Unity" or entry["category"] != "order":
-                    errors.append(where + "the orders are written by Unity only, category `order` (found %s, `%s`)" % (entry["by"], entry["category"]))
+                if entry["by"] not in ORDERS_WRITERS or entry["category"] != "order":
+                    errors.append(where + "the orders are written by Unity (or Trinity for Suggi mandate sync) only, category `order` (found %s, `%s`)" % (entry["by"], entry["category"]))
                 if not field(entry, "Changed"):
                     errors.append(where + "no `Changed:` line")
                 if not any(line.startswith("In force") for line in entry["body"]):
@@ -469,8 +470,8 @@ def append(root, log, entry_file, name, commit=True):
             problems.append("the entry names %s as its writer, the append is made as %s" % (draft.group(1), name))
         if draft.group(2) not in LOGS[log]:
             problems.append("category `%s` does not belong in %s.log (it takes: %s)" % (draft.group(2), log, ", ".join(LOGS[log])))
-    if log == "orders" and name != "Unity":
-        problems.append("orders.log is written by the Fleet Admiral only")
+    if log == "orders" and name not in ORDERS_WRITERS:
+        problems.append("orders.log is written by the Fleet Admiral (or Trinity for Suggi mandate sync) only")
     if any(line.startswith("## [ENT-") for line in lines[1:]):
         problems.append("one entry per call")
     if not any(line.strip() for line in lines[1:]):

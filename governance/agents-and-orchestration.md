@@ -33,10 +33,14 @@ To dominate an open-ended world without turning human oversight into a bottlenec
 The Collective enforces a strict two-plane **Puppeteer Model**:
 
 1. **Above the Glass (Suggi + Trinity -- Architecture & Guidestones Only):**
-   - **Suggi (Owner):** Sets only the everlasting north stars -- Standing Orders
-     (`S1` explore freely, `S2` command the most dominant fleet, `S3` dominate
-     the galaxy and rival factions, `S4` build a galactic empire, `S5` never
-     idle) and Standing Goals (`G1-G5`) -- plus permanent/external choices
+   - **Suggi (Owner):** Sets only the everlasting three-tier north stars --
+     Eternal Strategic Goals (`G1-G5`: dominate the galaxy, grand multi-empire
+     fleet, sovereign empire, fleetwide enterprise income/extraction supremacy,
+     explore freely) and Anchored Operational Subgoals (`O1-O9`: never idle,
+     continuous max upgrading & empire ship min-maxing, one-purse fleetwide
+     optimization, maximal base footprint, multi-empire leverage, class harmony,
+     automated intel, sovereign defense/firewall, perpetual mastery) -- plus
+     permanent/external choices
      reserved by `governance/the-collective-constitution.md` (birthing new pilot
      accounts, adding a new Admiral, war/alliances/external words, locked core
      files).
@@ -49,7 +53,7 @@ The Collective enforces a strict two-plane **Puppeteer Model**:
      If a division stalls across multiple turns, the fix is architectural (a
      better dispatch guard, SQL signal, skill, or tool), never manual piloting.
 2. **Inside the Arena (Unity + Five Admirals -- 100% Autonomous Execution):**
-   - **Unity (Fleet Admiral)** translates `S1-S5` and `G1-G5` into concise
+   - **Unity (Fleet Admiral)** translates `G1-G5` and `O1-O9` into concise
      campaign intent (`orders.log` `PLAN` + per-member blocks: *what* and *why*,
      never *how*), manages the one purse (`wallet.py` sweep & treasury fees),
      picks base sites (`F33`), coordinates faction-seat onboarding (`F11`), and

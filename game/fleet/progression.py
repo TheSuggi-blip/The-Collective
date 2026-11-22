@@ -2,7 +2,7 @@
 """progression.py -- live enterprise progression roadmap, strategic rung gauges, and historical milestone chronicle.
 
 WHAT: tracks where The Collective came from, where it stands right now, and where it is going across Days, Weeks,
-      and Months toward Standing Orders S1-S5 and Standing Goals G1-G5.
+      and Months toward Strategic Goals G1-G5 and Operational Subgoals O1-O9.
         1. Verified Historical Chronicle: combines dated foundational milestones since Founding (2026-11-14) with
            live auto-detected unlocks from read.db, empire.json, and fleet.json (first Tier-2 hulls, frontier outposts,
            full 246-ship seating, purse/enterprise thresholds, Yildun sovereign station, Wave 4/5 fleet births).
@@ -314,7 +314,7 @@ def compute_progression(repo_root, data="/srv/collective/data", now=None):
     rungs = [
         # Horizon 1: Immediate (Days)
         {
-            "id": "h1-galaxy-recon", "horizon": "Days (Now)", "orders": "S1",
+            "id": "h1-galaxy-recon", "horizon": "Days (Now)", "orders": "G5, O7",
             "title": "Full Galaxy Reconnaissance & Freshness Net",
             "pct": _clamp_pct(100.0 * systems_charted / max(1, total_systems)),
             "current": "%d / %d systems charted" % (systems_charted, total_systems),
@@ -322,7 +322,7 @@ def compute_progression(repo_root, data="/srv/collective/data", now=None):
             "bottleneck": "9 pirate strongholds unread; trimming redundant home census fuel burn",
         },
         {
-            "id": "h1-productive-cashflow", "horizon": "Days (Now)", "orders": "S2, F8",
+            "id": "h1-productive-cashflow", "horizon": "Days (Now)", "orders": "G4, O1, O3, F8",
             "title": "Steady Cashflow Flip & Zero Empty Jump Burn",
             "pct": cashflow_pct if steady_24h > 0 else _clamp_pct(productive_share),
             "current": "24h steady %+d cr/h | %.0f%% productive flight-h" % (steady_24h, productive_share),
@@ -330,7 +330,7 @@ def compute_progression(repo_root, data="/srv/collective/data", now=None):
             "bottleneck": "%.0f ship-h/24h still on empty jump loops (Mercury/Apollo loop cap in Unity 22:30 queue)" % jump_loop_h_24h,
         },
         {
-            "id": "h1-first-t2-hulls", "horizon": "Days (Now)", "orders": "S3, G4, F17",
+            "id": "h1-first-t2-hulls", "horizon": "Days (Now)", "orders": "G2, O2, F17",
             "title": "First Tier-2 Hulls (Resonance Miner, Recursion, Apophenia)",
             "pct": _clamp_pct(100.0 if t2_plus >= 3 else (33.3 * t2_plus + 0.4 * max(res_miner_pct, recursion_pct, 80.0 if p10_ready >= 50 else 0.0))),
             "current": "%d T2+ active | %d pilots at Piloting 10+ | Recursion 351k/357k cr" % (t2_plus, p10_ready),
@@ -338,7 +338,7 @@ def compute_progression(repo_root, data="/srv/collective/data", now=None):
             "bottleneck": "Recursion quote rose +13% to 356.5k cr (+30k top-up ENT-370); Resonance Miner quote ask ENT-365",
         },
         {
-            "id": "h1-atria-outpost", "horizon": "Days (Now)", "orders": "S4, G3, F33",
+            "id": "h1-atria-outpost", "horizon": "Days (Now)", "orders": "G3, O4, F33",
             "title": "Frontier Outpost #2 at Atria (North Road Anchor)",
             "pct": 100.0 if outposts_count >= 2 else _clamp_pct(atria_pct),
             "current": "%d outpost active | Atria kit %.1f%% stocked" % (outposts_count, atria_pct),
@@ -347,23 +347,23 @@ def compute_progression(repo_root, data="/srv/collective/data", now=None):
         },
         # Horizon 2: Mid-Term (1-3 Weeks)
         {
-            "id": "h2-seat-wave3", "horizon": "Weeks (1-3w)", "orders": "G2, F11",
-            "title": "Seat All 246 Existing Ships in [CLTV] (200 -> 400 Cap)",
+            "id": "h2-seat-wave3", "horizon": "Weeks (1-3w)", "orders": "G2, O5, F11",
+            "title": "Seat Standing Multi-Empire Fleet in [CLTV] (200 -> 400 -> 500 Cap)",
             "pct": _clamp_pct(100.0 * seats_used / max(1, ships_total or 246)),
             "current": "%d / %d seated (cap %d; Guild Hall %.0f%%)" % (seats_used, ships_total or 246, seats_cap, guild_pct),
-            "target": "246 / 246 fleet ships seated (400 cap via Guild Hall)",
+            "target": "%d / %d standing fleet ships seated (400 -> 500+ cap)" % (ships_total or 500, ships_total or 500),
             "bottleneck": "101 open seats ready under 200 cap now; Guild Hall needs 8.0M cr fee + anchor_plate",
         },
         {
-            "id": "h2-t2-standardization", "horizon": "Weeks (1-3w)", "orders": "S3, G4",
+            "id": "h2-t2-standardization", "horizon": "Weeks (1-3w)", "orders": "G2, O2",
             "title": "Fleet-Wide Tier-2 Hulls & Tier-3 Module Standardization",
             "pct": _clamp_pct(0.5 * (100.0 * p10_ready / max(1, ships_total or 246)) + 0.5 * min(100.0, 100.0 * t3_mods / 120.0)),
-            "current": "%d/246 P10+ | %d T2/T3 high-output modules fitted" % (p10_ready, t3_mods),
+            "current": "%d/%d P10+ | %d T2/T3 high-output modules fitted" % (p10_ready, ships_total or 500, t3_mods),
             "target": "120+ Tier-2 hulls & full role T3 lasers/boosters/scanners",
             "bottleneck": "Scaling hull working-capital generation & shipyard part chains",
         },
         {
-            "id": "h2-outpost-ring", "horizon": "Weeks (1-3w)", "orders": "S4, G3, F33",
+            "id": "h2-outpost-ring", "horizon": "Weeks (1-3w)", "orders": "G3, O4, F33",
             "title": "Three-Road Resource Outpost Network (Up to 8 Outposts)",
             "pct": _clamp_pct(100.0 * outposts_count / 8.0),
             "current": "%d / 8 faction outposts active" % outposts_count,
@@ -371,7 +371,7 @@ def compute_progression(repo_root, data="/srv/collective/data", now=None):
             "bottleneck": "Sequential outpost_kit crafting + frontier military patrol coverage",
         },
         {
-            "id": "h2-bursar-contracts", "horizon": "Weeks (1-3w)", "orders": "S2, F39",
+            "id": "h2-bursar-contracts", "horizon": "Weeks (1-3w)", "orders": "G4, O3, F39",
             "title": "Station Bursar Market-Making & Bottleneck Contract Desk",
             "pct": _clamp_pct(min(100.0, 20.0 + contracts_count * 16.0)),
             "current": "%d contract(s) logged in contracts.log" % contracts_count,
@@ -380,7 +380,7 @@ def compute_progression(repo_root, data="/srv/collective/data", now=None):
         },
         # Horizon 3: Long-Term Empire (1-3+ Months)
         {
-            "id": "h3-yildun-station", "horizon": "Months (1-3m)", "orders": "S4, G3",
+            "id": "h3-yildun-station", "horizon": "Months (1-3m)", "orders": "G3, O4",
             "title": "First Sovereign Player Station at Yildun",
             "pct": 100.0 if stations_count >= 1 else _clamp_pct(0.35 * foundry_pct + 0.35 * score_pct + 0.30 * min(100.0, 100.0 * liquid_purse / 43_000_000.0)),
             "current": "Foundry %.1f%% | Core %.1f%% | Purse %.2fM / 43M cr" % (foundry_pct, score_pct, liquid_purse / 1e6),
@@ -388,15 +388,15 @@ def compute_progression(repo_root, data="/srv/collective/data", now=None):
             "bottleneck": "38M cr foundry fee + salvage_metal / silicon / carbon / quantum_fragments",
         },
         {
-            "id": "h3-armada-500", "horizon": "Months (1-3m)", "orders": "S5, G5",
-            "title": "500-Ship Specialized Armada (Birth Waves 4 & 5)",
+            "id": "h3-armada-500", "horizon": "Months (1-3m)", "orders": "G2, O5",
+            "title": "500-Ship Multi-Empire Standing Armada (Plan-500 -> Plan-600)",
             "pct": _clamp_pct(100.0 * (ships_total or 246) / 500.0),
             "current": "%d / 500 ships (Garage/Berth 81-85%% stocked)" % (ships_total or 246),
             "target": "500 active ships with positive per-ship steady net",
-            "bottleneck": "Gated on 400+ faction seats, sustained 24h steady net > 0, and Suggi birth go-ahead",
+            "bottleneck": "Plan-500 standing fleet birthed across all 5 empires; seat onboarding + local routes active",
         },
         {
-            "id": "h3-passengers-t5", "horizon": "Months (1-3m)", "orders": "S2, G1, F10, F16",
+            "id": "h3-passengers-t5", "horizon": "Months (1-3m)", "orders": "G2, O2, F10, F16",
             "title": "Passenger Lines, Tier-3/4 Capital Ships & Tier-5 Mobile City",
             "pct": _clamp_pct(0.4 * lounge_pct + 0.3 * (100.0 * p20_count / 20.0) + 0.3 * (100.0 * max_piloting / 50.0)),
             "current": "Transit Lounge %.0f%% | Max Piloting %d/50 | %d at P20+" % (lounge_pct, max_piloting, p20_count),
@@ -404,7 +404,7 @@ def compute_progression(repo_root, data="/srv/collective/data", now=None):
             "bottleneck": "Requires sovereign station shipyard tiers + long-horizon Piloting 20/30/50 training",
         },
         {
-            "id": "h3-galactic-top3", "horizon": "Months (1-3m)", "orders": "S2, S3, G1-G5",
+            "id": "h3-galactic-top3", "horizon": "Months (1-3m)", "orders": "G1-G5, O1-O9",
             "title": "Top-3 Galactic Faction Contention vs [BUSY], [HEXC] & [IRLC]",
             "pct": _clamp_pct(min(100.0, 100.0 * enterprise_value / 500_000_000.0)),
             "current": "EV %.2fM cr | Rank #12 members (#13 dmg, #21 fac)" % (enterprise_value / 1e6),

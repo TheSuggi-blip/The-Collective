@@ -32,7 +32,7 @@ workspace `BOX.md` Sec 1):
 
 | Actor | Boundary | Owns |
 | :-- | :-- | :-- |
-| **Suggi** | Human owner | Eternal Standing Orders (`S1-S5`) and Goals (`G1-G5`), birthing new pilot accounts, war/diplomacy, locked governance approvals, Command Station (`:8445`). |
+| **Suggi** | Human owner | Three-tier anchored mandate: Eternal Strategic Goals (`G1-G5`) and Operational Subgoals (`O1-O9`), birthing new pilot accounts, war/diplomacy, locked governance approvals, Command Station (`:8445`). |
 | **Trinity** | External PC | Chief Architect, Watchdog & HUD Keeper (one level above Fleet Admiral, `ROSTER.md`): designs and maintains surrounding systems, tools, skills, `:8445` HUD, and quiet 4h `watchdog.py` monitoring. Never flies ships or sends gameplay instructions. |
 | **Unity** | Inside gVisor seal | Fleet Admiral (`command` flagships + lent `sentinel-` ships): sets campaign intent in `orders.log`, controls treasury/sweeps and base sites (`F33`), coordinates faction-seat onboarding with Admirals (`F11`), maintains shared fleet plumbing. |
 | **5 Admirals** | Inside gVisor seal | **Zero** (Mining), **Mercury** (Trade), **Apollo** (Logistics), **Apophis** (Military), **Oracle** (Intel). Full autonomy inside their divisions: research, test (`F37`), plan (`plan-<division>.md`), fit hulls/modules (`F12`, `F17`), and coordinate peer needs. |
@@ -40,7 +40,7 @@ workspace `BOX.md` Sec 1):
 
 **Puppeteer Doctrine (Suggi, 2026-11-22):** Suggi and Trinity never issue
 tactical gameplay instructions or route coaching to the agents. At most, Suggi
-updates eternal Standing Orders (`S1-S5`) or Goals (`G1-G5`). All gameplay
+updates eternal Strategic Goals (`G1-G5`) or Operational Subgoals (`O1-O9`). All gameplay
 plans, subgoals, routes, and faction-seat prioritizations (`99 -> 200 -> 400+`
 until every fleet ship is in, plus any future birthed ships) are decided by
 Unity and the Admirals themselves; Suggi and Trinity intervene solely by
