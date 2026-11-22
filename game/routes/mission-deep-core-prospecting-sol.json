@@ -1,0 +1,40 @@
+{
+ "id": "mission-deep-core-prospecting-sol",
+ "kind": "circuit",
+ "title": "Deep Core Prospecting from Sol Central: 5,000 cr, 10 exotic matter, deep core mining XP; 20 platinum ore mined at Markab Belt (3 jumps)",
+ "note": "Written by Zero, 2026-11-22 23:20 UTC (orders ENT-068, P6; rules F34, F37). Foreman Voss offers Deep Core Prospecting (mine 20 platinum ore, 5,000 cr and 10 exotic matter) on the board of Confederacy Central Command (table missions, read 23:01 UTC); our Nova Terra copy of it paid 3,500 cr a ship-hour over 10 runs on 2026-11-17 and is once per pilot (mission-deep-core-prospecting-nova-terra). Markab Belt (Solarian, policed, 3 jumps by Sirius and Epsilon Eridani) reads 198 platinum of 8,000, richness 18 (census 4.6 h old); min_left 40 keeps a floor, so about 7 pilots take it: max_pilots 7. For the Solarian-born miners' rows only: a Voidborn pilot has its own copies nearer home. The first stop stores the starter cargo.",
+ "once": true,
+ "max_ships": 2,
+ "max_pilots": 7,
+ "one_time": [
+  "Deep Core Prospecting"
+ ],
+ "skip_if_booked": [
+  "Deep Core Prospecting"
+ ],
+ "stops": [
+  {
+   "at": "sol:sol_central:confederacy_central_command",
+   "store": "all",
+   "accept": [
+    "deep_core_prospecting"
+   ],
+   "mine": [
+    {
+     "at": "markab:markab_belt",
+     "for": [
+      "Deep Core Prospecting"
+     ],
+     "minutes": 50,
+     "min_left": {
+      "platinum_ore": 40
+     }
+    }
+   ]
+  },
+  {
+   "at": "sol:sol_central:confederacy_central_command",
+   "store": "all"
+  }
+ ]
+}

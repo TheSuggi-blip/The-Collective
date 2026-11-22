@@ -1,0 +1,36 @@
+{
+ "id": "mission-welcome-sol-central",
+ "kind": "circuit",
+ "title": "Welcome to Sol Central: 1,000 cr once; 15 iron ore mined at Lacaille 9352 Deep Vein (2 jumps), handed in at Sol Central",
+ "note": "Written by Zero, 2026-11-22 23:20 UTC (orders ENT-068, P6: newborns do their class's work where they were born, their empire's missions first; rules F34, F35, F37). Every Solarian miner of the birth wave holds the starter mission 'Welcome to Sol Central' (mine 15 iron ore, 1,000 cr; its live file of 22:44 UTC: current 0 of 15). Sol's Main Belt reads 2 iron of 100,000 (census 11 h old); Lacaille 9352 Deep Vein read 4,791 iron (richness 30), 2 jumps by Sirius, Solarian policed space (table fields, systems). The first stop stores the starter cargo (argon gas, patches) so the hold is free; the last hands the mission in and stores the ore. Only in the rows of Solarian-born miners, never in First or a template: a Voidborn pilot holds no such mission. max_ships 3: each pilot's own mission, 45 units drawn from a field of 4,791 (under 1%), so the three runs share no buyer and do not contend for the field (F37).",
+ "once": true,
+ "max_ships": 3,
+ "one_time": [
+  "Welcome to Sol Central"
+ ],
+ "skip_if_booked": [
+  "Welcome to Sol Central"
+ ],
+ "stops": [
+  {
+   "at": "sol:sol_central:confederacy_central_command",
+   "store": "all",
+   "mine": [
+    {
+     "at": "lacaille_9352:lacaille_9352_deep_vein",
+     "for": [
+      "Welcome to Sol Central"
+     ],
+     "minutes": 40,
+     "min_left": {
+      "iron_ore": 500
+     }
+    }
+   ]
+  },
+  {
+   "at": "sol:sol_central:confederacy_central_command",
+   "store": "all"
+  }
+ ]
+}
