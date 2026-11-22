@@ -1,0 +1,51 @@
+{
+ "id": "carry-liner-first-step-to-ramens",
+ "kind": "circuit",
+ "title": "Stored chemical liners carried from First Step to Ramen's Rest and sold into its bid at 900 cr or more",
+ "note": "2026-11-22 03:45 UTC (Mercury, orders.log ENT-061 block MERCURY: carry to far buyers). The liner test's load sold 26 of 32 into First Step's bid of 759 (route trade-chemical-liner-beta-to-first-step, runs of 2026-11-22 00:30 UTC); the rest lies in storage there. Ramen's Rest at Last Light, 3 jumps from First Step, all of them Outer Rim and none with a pirate on our record in 24 hours (data/intel/sightings.jsonl), bids 1,010 x 10 (table books, read 02:43 UTC). requires.stored opens it only to the pilot whose storage holds the load. One ship, one run (rule F37: the same buyer, so one ship three times).",
+ "max_ships": 1,
+ "requires": {
+  "stored": {
+   "at": "first_step_memorial_station",
+   "item": "chemical_liner",
+   "min": 6
+  },
+  "bid": {
+   "item": "chemical_liner",
+   "base": "ramens_rest",
+   "min_price": 900,
+   "min_qty": 6
+  }
+ },
+ "stops": [
+  {
+   "at": "first_step:first_step_memorial_station:first_step_memorial_station",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "chemical_liner",
+     "qty": 6
+    }
+   ]
+  },
+  {
+   "at": "last_light:ramens_rest:ramens_rest",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "chemical_liner"
+    }
+   ],
+   "sell": [
+    {
+     "item": "chemical_liner",
+     "min_price": 900
+    }
+   ]
+  },
+  {
+   "at": "last_light:ramens_rest:ramens_rest",
+   "store": "all"
+  }
+ ]
+}

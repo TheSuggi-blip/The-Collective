@@ -1,0 +1,62 @@
+{
+ "id": "voidborn-network-commerce",
+ "kind": "circuit",
+ "title": "Network Commerce Protocol: 1,500 cr once, a link after The Collective Provides; five carbon ore bought at Node Beta and sold at Central Nexus",
+ "note": "2026-11-22 03:45 UTC (Mercury, rule F35: every Voidborn mastery mission, each chain to its end; orders.log ENT-061 block MERCURY: missions that pay the trader's skills). Central Nexus board, Exchange Node Sigma (data/missions/central_nexus.json, 03:42 UTC): sell 5 carbon ore on the exchange; rewards 1,500 cr, trading 20, voidborn mastery 15 and piloting 20 XP. The board offers it after The Collective Provides (voidborn-collective-provides, its note), booked by 17 traders. Node Beta asks carbon ore 4 x 136,788 and Central Nexus bids 8 x 39 (table books, 03:37 UTC): five units cost about 20 cr and sell for about 40. The reserve, short of carbon ore, loses nothing: an empty hold, and the run sells only the five it buys. A test: one ship first (rules F12, F37), then two more; once per pilot.",
+ "once": true,
+ "max_ships": 1,
+ "one_time": [
+  "Network Commerce Protocol"
+ ],
+ "skip_if_booked": [
+  "Network Commerce Protocol"
+ ],
+ "requires": {
+  "booked": "The Collective Provides",
+  "empty_hold": true,
+  "bid": {
+   "item": "carbon_ore",
+   "base": "central_nexus",
+   "min_price": 4,
+   "min_qty": 5
+  }
+ },
+ "stops": [
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "accept": [
+    "network_commerce_protocol"
+   ]
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "only_if_active": [
+    "Network Commerce Protocol"
+   ],
+   "buy": [
+    {
+     "item": "carbon_ore",
+     "qty": 5,
+     "max_price": 8,
+     "one_time": true
+    }
+   ],
+   "stop_on_failed_buy": true
+  },
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "only_if_active": [
+    "Network Commerce Protocol"
+   ],
+   "sell": [
+    {
+     "item": "carbon_ore",
+     "min_price": 4
+    }
+   ]
+  },
+  {
+   "at": "nexus_prime:the_core:central_nexus"
+  }
+ ]
+}

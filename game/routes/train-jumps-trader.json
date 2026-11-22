@@ -1,0 +1,33 @@
+{
+ "id": "train-jumps-trader",
+ "kind": "circuit",
+ "title": "Piloting and navigation for traders with no trade open: five jumps through our own stations, nothing bought, each dock reading the station's book",
+ "note": "2026-11-22 03:45 UTC (Mercury, standing order S5 and rule F8: every ship operating; orders.log ENT-061 block MERCURY: where no trade stands open, traders train instead of docking; rule F23: traders train their class). The same loop as Logistics' train-jumps-hauler (measured about -358 cr a ship-hour, route_earnings 12 h to 2026-11-22 00:00 UTC) and Trade's train-navigation-trader (about 4 navigation XP a jump). Piloting 10 opens the Apophenia (cargo 240; guidebook trade, card). Each dock saves the home book, which keeps the requires.ask and requires.bid gates of the far routes read within the hour. Standing work, the last route before park: any paying route, test or mission earlier in a ship's list takes it first. Its Admiral weighs max_ships against the fleet's steady net each turn.",
+ "standing": true,
+ "max_ships": 40,
+ "min_credits": 5000,
+ "requires": {
+  "skills_below": {
+   "piloting": 10,
+   "navigation": 6
+  }
+ },
+ "stops": [
+  {
+   "at": "node_alpha:node_alpha_processing_station:node_alpha_processing_station"
+  },
+  {
+   "at": "synchrony:synchrony_hub:synchrony_hub"
+  },
+  {
+   "at": "node_gamma:node_gamma_relay_station:node_gamma_relay_station"
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station"
+  },
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "store": "all"
+  }
+ ]
+}
