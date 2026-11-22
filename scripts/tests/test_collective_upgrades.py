@@ -642,6 +642,26 @@ class NeedsAutoSatisfyAndLoopTests(unittest.TestCase):
         encoded = json.dumps(d, ensure_ascii=False)
         self.assertTrue(all(ord(ch) <= 127 for ch in encoded))
 
+    def test_needs_fulfilled_reason_detects_hull_and_outpost_completion(self):
+        import tempfile, needs
+        with tempfile.TemporaryDirectory() as td:
+            dpath = Path(td)
+            (dpath / "empire").mkdir()
+            (dpath / "fleet").mkdir()
+            (dpath / "empire" / "empire.json").write_text(json.dumps({
+                "bases": [{"name": "CLTV Atria", "system": "atria"}],
+                "facilities": [],
+            }), encoding="utf-8")
+            (dpath / "fleet" / "fleet.json").write_text(json.dumps({
+                "ships": [{"name": "drone-1", "division": "Military", "class": "Recursion"}]
+            }), encoding="utf-8")
+            hull_row = {"id": "mil-rec-1", "status": "open", "kind": "hull", "ref": "recursion", "units": 1, "division": "military", "project": "first T2"}
+            kit_row = {"id": "atria-outpost-kit", "status": "open", "kind": "item", "ref": "outpost_kit", "units": 1, "division": "logistics", "project": "Atria outpost"}
+            buf_row = {"id": "gsc-0044-repair-plate", "status": "open", "kind": "item", "ref": "steel_plate", "units": 180, "division": "logistics", "project": "repair stock"}
+            self.assertIn("auto-closed", needs.need_fulfilled_reason(hull_row, td))
+            self.assertIn("auto-closed", needs.need_fulfilled_reason(kit_row, td))
+            self.assertEqual(needs.need_fulfilled_reason(buf_row, td), "")
+
 
 if __name__ == "__main__":
     unittest.main()

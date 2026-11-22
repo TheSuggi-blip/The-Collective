@@ -396,6 +396,93 @@ def facility_built_at_place(row, data, cat=None):
     return cnt >= int(row.get("units") or 1)
 
 
+UNIQUE_FACTION_OFFICES = frozenset(("guild_hall_recruiting", "grand_recruitment_bureau", "station_core_foundry"))
+
+
+def need_fulfilled_reason(row, data, cat=None):
+    '''Return a concise audit reason when an open need in needs.tsv is already physically completed
+    in live game state (empire.json facilities/bases or fleet.json hulls), else ''.'''
+    if row.get("status") != "open":
+        return ""
+    kind = row.get("kind")
+    ref = str(row.get("ref") or "")
+    want = int(row.get("units") or 1)
+    if kind == "facility":
+        if row.get("place") and facility_built_at_place(row, data, cat):
+            return "auto-closed: %s active at %s (empire.json)" % (ref, row["place"])
+        if not row.get("place") and ref in UNIQUE_FACTION_OFFICES and built(data).get(ref, 0) >= want:
+            return "auto-closed: %s active in empire.json" % ref
+        return ""
+    if kind == "hull":
+        try:
+            ships = (json.loads((Path(data) / "fleet" / "fleet.json").read_text(encoding="utf-8")).get("ships")) or []
+        except (OSError, ValueError, AttributeError):
+            return ""
+        div = str(row.get("division") or "").lower()
+        owned = sum(
+            1 for s in ships
+            if isinstance(s, dict)
+            and (not div or str(s.get("division") or "").lower() == div)
+            and str(s.get("class") or "").lower().replace(" ", "_") == ref.lower()
+        )
+        if owned >= want:
+            return "auto-closed: %d %s hull(s) active in %s fleet (fleet.json)" % (owned, ref, row.get("division") or "our")
+        return ""
+    if kind == "item" and ref == "outpost_kit":
+        try:
+            bases = (json.loads((Path(data) / "empire" / "empire.json").read_text(encoding="utf-8")).get("bases")) or []
+        except (OSError, ValueError, AttributeError):
+            return ""
+        hay = (" " + str(row.get("id") or "").replace("-", "_") + " " + str(row.get("project") or "").lower().replace("-", "_") + " ")
+        for b in bases:
+            sy = str((b or {}).get("system") or "").strip().lower()
+            if sy and re.search(r"(?<![a-z0-9_])" + re.escape(sy) + r"(?![a-z0-9_])", hay):
+                return "auto-closed: outpost active in %s (empire.json)" % sy
+    return ""
+
+
+def reconciler(who, data, cat):
+    def change(rows, now):
+        closed_ids = []
+        out = []
+        for r in rows:
+            why = need_fulfilled_reason(r, data, cat) if r.get("status") == "open" and may(who, r.get("division", "")) else ""
+            if why:
+                nr = dict(r)
+                nr["status"] = "done"
+                old_note = str(nr.get("note") or "").strip()
+                nr["note"] = cell((why + (" | " + old_note if old_note else ""))[:NOTE_MAX], "note")
+                nr["changed"], nr["changed_by"] = now_stamp(now), who
+                out.append(nr)
+                closed_ids.append(nr["id"])
+            else:
+                out.append(r)
+        if not closed_ids:
+            return rows, "", ""
+        return out, ",".join(closed_ids), "all"
+    return change
+
+
+def reconcile(repo, data, who, dry=False, now=None):
+    '''Auto-close open needs whose target facility, hull or outpost is verified live in empire.json/fleet.json.'''
+    import craftbook
+    import surplus
+    repo_p = Path(repo)
+    if not path_of(repo_p).is_file():
+        return 0, []
+    rows, problem, present = read(repo_p)
+    if not present or problem:
+        return 0, []
+    cat = craftbook.choose(craftbook.load(data) or dict(surplus.EMPTY), repo_p)
+    hits = [(r["id"], need_fulfilled_reason(r, data, cat)) for r in rows if r.get("status") == "open"]
+    hits = [(rid, why) for rid, why in hits if why]
+    if not hits:
+        return 0, []
+    if dry:
+        return 0, ["would auto-close %s: %s" % (rid, why) for rid, why in hits]
+    return write(repo_p, data, who, reconciler(who, data, cat), "done", False, now=now)
+
+
 def colour_of(covered, short):
     if covered is None:
         return "broken"
@@ -1039,6 +1126,10 @@ def main(argv=None):
         code, lines = write(repo, data, who, changer(who, rest[0], opts, {"done": "done", "drop": "dropped"}.get(verb)), verb, dry)
     elif verb == "tidy":
         code, lines = write(repo, data, who, tidier, "tidy", dry)
+    elif verb == "reconcile":
+        code, lines = reconcile(repo, data, who or "Unity", dry)
+        if not lines:
+            lines = ["NEEDS reconcile | 0 open needs newly fulfilled"]
     else:
         sys.exit(__doc__)
     print("\n".join(lines))

@@ -1582,6 +1582,7 @@ async function renderInventory(panel, live) {
 
   if (invMode === 'supply') {
     const needs = (ops && ops.needs) || [];
+    const reqs = (ops && ops.requests) || [];
     panel.append(el('h3', null, 'Standing supply buffers (' + supList.length + ')'));
     if (!supList.length) {
       panel.append(el('p', 'empty', 'No supply chains configured.'));
@@ -1589,9 +1590,10 @@ async function renderInventory(panel, live) {
       const scard = el('div', 'icard');
       scard.append(fitTable(table(['Chain', 'Item', 'Hub / Base', 'Buffer Progress', 'State'],
         supList.map((s) => {
-          const pctFill = s.keep > 0 ? Math.min(100, Math.round((100 * s.stock) / s.keep)) : 0;
+          const haveVal = s.have !== undefined ? s.have : (s.stock || 0);
+          const pctFill = s.keep > 0 ? Math.min(100, Math.round((100 * haveVal) / s.keep)) : 0;
           const pCell = el('div', 'progcell');
-          pCell.append(el('span', 'mono', fmt(s.stock) + ' / ' + fmt(s.keep)), pbar(pctFill, 100, s.state === 'OK' ? 'good' : 'warn'));
+          pCell.append(el('span', 'mono', fmt(haveVal) + ' / ' + fmt(s.keep)), pbar(pctFill, 100, s.state === 'OK' ? 'good' : 'warn'));
           const isFull = s.state === 'OK' && pctFill >= 100;
           return [
             s.chain,
@@ -1609,15 +1611,30 @@ async function renderInventory(panel, live) {
     } else {
       const ncards = el('div', 'icards');
       for (const n of needs) {
-        const nc = el('div', 'icard' + (n.pct >= 99 ? ' ownbase' : ' sitecard'));
+        const nc = el('div', 'icard' + (n.stocked || n.pct >= 99 ? ' ownbase' : ' sitecard'));
         const nh = el('div', 'ichead');
-        nh.append(el('b', null, '[P' + n.priority + '] ' + n.id), el('span', 'rmeta-sub', n.division), el('span', 'pill ' + (n.pct >= 99 ? 'good' : 'warn'), n.pct.toFixed(1) + '%'));
-        nc.append(nh, pbar(n.pct, 100, n.pct >= 99 ? 'good' : 'warn'));
+        const pTag = String(n.priority || '').startsWith('P') ? n.priority : 'P' + n.priority;
+        nh.append(el('b', null, '[' + pTag + '] ' + n.id), el('span', 'rmeta-sub', n.owner || n.division || ''),
+          el('span', 'pill ' + (n.stocked || n.pct >= 99 ? 'good' : 'warn'), n.stocked ? 'STOCKED' : n.pct.toFixed(1) + '%'));
+        nc.append(nh, pbar(n.pct, 100, n.stocked || n.pct >= 99 ? 'good' : 'warn'));
         if (n.project) nc.append(el('div', 'ibsub', n.project));
-        if (n.short) nc.append(el('div', 'rmeta-sub', 'Remaining: ' + n.short));
+        if (!n.stocked && (n.short || n.fee)) nc.append(el('div', 'rmeta-sub', 'Remaining: ' + [n.short, n.fee ? fmt(n.fee) + ' cr fee' : ''].filter(Boolean).join(' | ')));
         ncards.append(nc);
       }
       panel.append(ncards);
+    }
+    if (reqs.length) {
+      panel.append(el('h3', null, 'Active division requests (' + reqs.length + ' open/accepted)'));
+      const rcard = el('div', 'icard');
+      rcard.append(fitTable(table(['State', 'Entry', 'From -> To', 'Updated', 'Need / Status'],
+        reqs.map((r) => [
+          el('span', 'pill ' + (r.state === 'OPEN' ? 'warn' : 'info'), r.state),
+          linkButton(r.ent, () => openDoc('communications/requests.log'), 'doclink'),
+          r.by + ' -> ' + r.to,
+          stampCet(r.when),
+          r.need + (r.answer ? ' [' + r.answer + ']' : ''),
+        ]))));
+      panel.append(rcard);
     }
     return;
   }
@@ -2480,6 +2497,19 @@ async function renderMetrics(panel, live) {
           cov.append(el('span', 'pill ' + stCls, n.stocked ? 'STOCKED' : n.pct + '%'), pbar(n.pct, 100, stCls));
           return [n.priority, n.id, n.owner, cov, gap];
         }))));
+    }
+
+    const reqs = ops.requests || [];
+    if (reqs.length) {
+      panel.append(el('h3', null, 'Active division requests (' + reqs.length + ' open / accepted)'));
+      panel.append(fitTable(table(['State', 'Entry', 'Route', 'Updated', 'Summary'],
+        reqs.slice(0, 12).map((r) => [
+          el('span', 'pill ' + (r.state === 'OPEN' ? 'warn' : 'info'), r.state),
+          linkButton(r.ent, () => openDoc('communications/requests.log'), 'doclink'),
+          r.by + ' -> ' + r.to,
+          stampCet(r.when),
+          r.need + (r.answer ? ' [' + r.answer + ']' : ''),
+        ]))));
     }
   }
   const waves = (F.waves || []).slice().reverse();     // many ships off the game at once: written down by the collector, newest first

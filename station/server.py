@@ -1347,6 +1347,77 @@ def api_item(item):
 
 
 OPS = {"at": 0.0, "value": None}
+REQ_MEM = {"mtime": 0.0, "size": 0, "value": []}
+REQ_HEAD_RE = re.compile(r"^## \[(ENT-\d+)\]\s*\|\s*([^|]+)\|\s*([^|]+)\|\s*([^|\n]+)(?:\|(.*))?$", re.M)
+
+
+def active_requests_summary():
+    '''Parse communications/requests.log (cached by mtime/size) using comms.py's exact OPEN/ACCEPTED/CLOSED rule.'''
+    req_path = REPO / "communications" / "requests.log"
+    if not req_path.is_file():
+        return []
+    try:
+        st = req_path.stat()
+    except OSError:
+        return REQ_MEM["value"]
+    if REQ_MEM["mtime"] == st.st_mtime and REQ_MEM["size"] == st.st_size:
+        return REQ_MEM["value"]
+    try:
+        raw = req_path.read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return []
+    matches = list(REQ_HEAD_RE.finditer(raw))
+    requests_by_num = {}
+    last_answer = {}
+    for idx, m in enumerate(matches):
+        ent_id = m.group(1).strip()
+        num_v = int(ent_id.split("-")[1])
+        when = clean_ascii(m.group(2).strip(), 24)
+        by = clean_ascii(m.group(3).strip(), 24)
+        cat = m.group(4).strip().lower()
+        rest_hdr = m.group(5) or ""
+        body_start = m.end()
+        body_end = matches[idx + 1].start() if idx + 1 < len(matches) else len(raw)
+        body_lines = [ln.strip() for ln in raw[body_start:body_end].splitlines() if ln.strip()]
+        fields = {}
+        for ln in body_lines:
+            if ":" in ln:
+                k, v = ln.split(":", 1)
+                kl = k.strip().lower()
+                if kl in ("to", "by", "need", "answer") and kl not in fields:
+                    fields[kl] = clean_ascii(v.strip(), 160)
+        if cat == "request":
+            summary = fields.get("need") or (clean_ascii(body_lines[0], 160) if body_lines else "")
+            requests_by_num[num_v] = {
+                "ent": ent_id, "num": num_v, "when": when, "by": by,
+                "to": fields.get("to", "Unity").rstrip("."),
+                "due": fields.get("by", "").rstrip("."),
+                "need": summary,
+            }
+        elif cat == "answer":
+            ans_txt = fields.get("answer") or (clean_ascii(body_lines[0], 160) if body_lines else "")
+            first_w = re.split(r"[^a-z]+", ans_txt.lower())[0] if ans_txt else ""
+            for ref_m in re.finditer(r"ENT-(\d+)", rest_hdr):
+                rnum = int(ref_m.group(1))
+                last_answer[rnum] = {"by": by, "when": when, "first": first_w, "text": ans_txt}
+    out = []
+    for num_v in sorted(requests_by_num, reverse=True):
+        req = requests_by_num[num_v]
+        ans = last_answer.get(num_v)
+        state = "OPEN" if ans is None else ("ACCEPTED" if ans["first"] == "yes" else "CLOSED")
+        if state == "CLOSED":
+            continue
+        out.append({
+            "ent": req["ent"],
+            "state": state,
+            "by": req["by"],
+            "to": req["to"],
+            "when": ans["when"] if ans else req["when"],
+            "need": req["need"],
+            "answer": (ans["by"] + ": " + ans["text"])[:140] if ans else "",
+        })
+    REQ_MEM.update(mtime=st.st_mtime, size=st.st_size, value=out[:25])
+    return REQ_MEM["value"]
 
 
 def parse_iso_utc(stamp):
@@ -1585,6 +1656,7 @@ def api_ops():
                 "need_id": matched_need["id"] if matched_need else "",
                 "need_pct": matched_need["pct"] if matched_need else None,
             })
+    out["requests"] = active_requests_summary()
     out["empire"] = emp_info
     OPS["at"], OPS["value"] = now, out
     return out

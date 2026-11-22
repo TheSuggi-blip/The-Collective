@@ -567,6 +567,14 @@ def duty(res, root, data, writing, now=None):
     if kind != "member":
         print("REFUSED: this shell is no member of The Collective: it changes no plan")
         return 1
+    if who == "Unity":
+        try:
+            import needs as needbook
+            _rc, nlines = needbook.reconcile(Path(root).resolve().parent, data, who, False, now=now)
+            for nl in nlines:
+                print("  NEEDS auto-closed: " + nl)
+        except Exception:
+            pass
     if not plan_steps["divisions"] and not plan_steps["renew"]:
         print("nothing to write")
         return 0
