@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 336.
+Routes: 335.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -209,7 +209,6 @@ Routes: 336.
 | [hunt-gemma-haze-halo-drifter](hunt-gemma-haze-halo-drifter.json) | hunt | beyond the border, 8 jumps | halo_drifter at gemma_haze; loot sold at Ironlight Crossroads | up to 1 ships, empty hold, standing work | 4 | 12 | -20 | -110 | 2026-11-22 |
 | [hunt-giausar-frost-ring-frost-moth](hunt-giausar-frost-ring-frost-moth.json) | hunt | beyond the border, 8 jumps | frost_moth at giausar_frost_ring; loot sold at Node Beta Industrial Station | up to 1 ships, empty hold, standing work | 2 | 30 | -270 | -550 | 2026-11-22 |
 | [hunt-gj-3470-dewfall-fray-carapace](hunt-gj-3470-dewfall-fray-carapace.json) | hunt | beyond the border, 4 jumps | Belt-grazers and patina-grazers at Dewfall Fray (Gj 3470); creature carapace into storage at Node Beta Industrial Station | up to 1 ships, without piercing_railgun_i, empty hold, standing work | 22 | 32 | -120 | -240 | 2026-11-22 |
-| [hunt-gliese-876-stillwork-belt-slag-tortoise-pl3](hunt-gliese-876-stillwork-belt-slag-tortoise-pl3.json) | hunt | beyond the border, 7 jumps | slag tortoise (90 hull) at stillwork_belt with a Pulse Laser III; ferrous nodules and carapace for the reserve | up to 1 ships, needs pulse_laser_iii, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [hunt-goldcrest-belt-carapace](hunt-goldcrest-belt-carapace.json) | hunt | beyond the border, 7 jumps | Belt-grazers and patina-grazers at Goldcrest Belt (Goldcrest); creature carapace into storage at The Experiment Research Station | up to 1 ships, without piercing_railgun_i, empty hold, standing work | 14 | 41 | -210 | -330 | 2026-11-22 |
 | [hunt-goldcrest-glitterback-scatter-carapace](hunt-goldcrest-glitterback-scatter-carapace.json) | hunt | beyond the border, 7 jumps | Belt-grazers and patina-grazers at Glitterback Scatter (Goldcrest); creature carapace into storage at The Experiment Research Station | up to 1 ships, without piercing_railgun_i, empty hold, standing work | 5 | 13 | -150 | -630 | 2026-11-22 |
 | [hunt-greenplate-drift-patina-grazer](hunt-greenplate-drift-patina-grazer.json) | hunt | beyond the border, 11 jumps | patina_grazer at greenplate_drift; loot stored at Nova Terra Central | up to 1 ships, empty hold, standing work | 8 | 40 | -300 | -490 | 2026-11-22 |

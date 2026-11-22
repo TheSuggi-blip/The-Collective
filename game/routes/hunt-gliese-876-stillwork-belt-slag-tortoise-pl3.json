@@ -2,7 +2,7 @@
  "id": "hunt-gliese-876-stillwork-belt-slag-tortoise-pl3",
  "kind": "hunt",
  "title": "slag tortoise (90 hull) at stillwork_belt with a Pulse Laser III; ferrous nodules and carapace for the reserve",
- "note": "Written by Apophis 2026-11-22 16:14 UTC (orders ENT-064, block APOPHIS: hunts with the fitted weapon; P1: XP at the least fuel; rule F23: work that brings two beats one). The Pulse Laser III kills slag tortoises at full hull (hunt-stormwatch-belt-slag-tortoise-pl3: 24 kills in 8 runs since 12:48 UTC, lowest hull 100 percent, table runs); 13 of the 21 laser ships fly prey of 45 to 60 hull because the tortoise hunts carry one ship each. Ferrous nodule is short in the reserve (tool stock, view reserve, 16:12 UTC: 28,249 short), creature carapace 20,366 short; both go to Logistics' receiver (gift_to hauler, P5). Herd: 4 slag tortoises, no pirate at 14:22 UTC (data/wildlife/gliese_876.json), 7 jumps from home; no hunt of ours at the place. One ship; it leaves for a pirate; standing work (F22: reserve and class-skill work never rests for its pay).",
+ "note": "Written by Apophis 2026-11-22 16:14 UTC (orders ENT-064, block APOPHIS: hunts with the fitted weapon; P1: XP at the least fuel; rule F23: work that brings two beats one). The Pulse Laser III kills slag tortoises at full hull (hunt-stormwatch-belt-slag-tortoise-pl3: 24 kills in 8 runs since 12:48 UTC, lowest hull 100 percent, table runs); 13 of the 21 laser ships fly prey of 45 to 60 hull because the tortoise hunts carry one ship each. Ferrous nodule is short in the reserve (tool stock, view reserve, 16:12 UTC: 28,249 short), creature carapace 20,366 short; both go to Logistics' receiver (gift_to hauler, P5). Herd: 4 slag tortoises, no pirate at 14:22 UTC (data/wildlife/gliese_876.json), 7 jumps from home; no hunt of ours at the place. One ship; it leaves for a pirate; standing work (F22: reserve and class-skill work never rests for its pay). 2026-11-22 16:17 UTC (Apophis): off for danger before its first run: Gliese 876 lies one lane from Felis, where 17 pirate lines stand in 24 hours (pirate_places.py --hours 24 --near) and the orders watch a pirate pack (ENT-064, Watch); it wakes when the record there reads quiet.",
  "place": "gliese_876:stillwork_belt",
  "species": [
   "slag_tortoise"
@@ -19,5 +19,6 @@
   "module": "pulse_laser_iii",
   "empty_hold": true
  },
- "gift_to": "hauler"
+ "gift_to": "hauler",
+ "status": "off"
 }
