@@ -1,20 +1,21 @@
 # Mining guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-22. Evidence: the plan file (tool plan, show); fill.py status miner; surplus.py reserve; workclass.py sales.
+Status: proven. Updated: 2026-11-22. Evidence: the plan file (tool plan, show); fill.py status miner; surplus.py reserve; workclass.py sales; hive.py route gather-jishui-plainrock-carbon.
 
-Turn of 2026-11-22 03:00 UTC (orders ENT-061). A free miner takes the
+Turn of 2026-11-22 07:00 UTC (orders ENT-062). A free miner takes the
 list First (the Laser III fit, the gifts, the once missions), its own
 routes, then the list Then.
 
 | Route | Ships | For |
 |---|---|---|
 | `fit-mining-laser-iii-lhs-1140` | 3 at a time, 20 pilots | the laser |
-| `give-miner-stores-<station>` | off until strict classes | stores to Trade's and Logistics' receivers (P5) |
-| `@ice-sell` mine routes, Dheneb methane | 1 or 2, on a bid | ice; `gift` to Trade with strict classes |
+| `give-miner-stores-<station>` | `requires.strict`: open with strict classes | stores to receivers (P5) |
+| `@ice-sell` mine routes, Dheneb methane, ice tests | 1 or 2, on a bid | ice; sold now, closed to miners with strict classes |
 | `gather-gsc-0044-belt-faction` | 10, seated only | outpost belt, no fuel |
-| short-ore gathers near home | 1 to 6 | closed by `min_left` while empty |
-| tests beyond the border | 1 each | carbon, nickel, quantum fragments, silver, platinum |
+| far carbon: Jishui, Yildun, Last Light | 5, 1, 1 | carbon, the largest short |
+| short-ore gathers near home | 1 to 3 | closed by `min_left` while empty |
+| tests beyond the border | 1 or 2 each | nickel, quantum fragments, silver, platinum |
 | crafts | shared | plate and piping from own stores |
 | Then | shared | iron seep (closed while iron is above its max), crafts, `train-jumps-miner`, park |
 

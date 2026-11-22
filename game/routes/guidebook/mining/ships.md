@@ -41,7 +41,7 @@ Status: proven. Updated: 2026-11-22. Evidence: catalog 0.732.0 items; docs/guide
   where the rarer ore is wanted.
 
 ### Buying, refitting and moving goods
-Status: proven. Updated: 2026-11-21. Evidence: errors.log ENT-026; the fit runs of 2026-11-16 (data/routes/runs.jsonl); refit.py and give.py of the skill mining-chains.
+Status: proven. Updated: 2026-11-22. Evidence: errors.log ENT-026; the fit runs of 2026-11-16 (data/routes/runs.jsonl); refit.py and give.py of the skill mining-chains; dispatch.py why_not; commit 73c06c16.
 
 - A route that buys a module: one route per station with asks,
   `max_pilots` = the asks at max_price there (`best_sell_qty`), `max_ships`
@@ -58,6 +58,9 @@ Status: proven. Updated: 2026-11-21. Evidence: errors.log ENT-026; the fit runs 
   pilot that docks free.
 - A hold is space, not units: a cargo row has `size` (tungsten and lead
   ore 2).
+- `requires.module` matches one exact id: a refit to a Laser III shut
+  its ships out of every gather asking `mining_laser_i`. Gathers ask no
+  laser; only a fit route names the module it replaces.
 - Goods from one of our pilots to another at one station: `deposit`
   (spacemolt_storage) with `source` storage and `target` the other
   pilot; `give.py` flies it there and reads both storages.
