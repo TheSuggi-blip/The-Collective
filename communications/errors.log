@@ -492,3 +492,9 @@ Effect: one guidebook entry lost for six minutes; written again from my draft an
 Cause: the check judges the whole tree, not the staged paths, so a member's commit waits on another's work; who or what reverted the file is not found.
 Fix, done: my skill logistics-stock says to commit an edit in the clone at once and keep its draft in scratch until the commit lands. Proposed: the route check in the hook judges only the staged route files and the indexes they change.
 Would it have prevented this one: the draft in scratch, yes (it is how the entry came back); the check on staged paths, yes.
+
+## [ENT-120] | 2026-11-22 01:07 UTC | Apophis | error | ref: game/routes/guidebook/military/tests.md
+What: a guidebook chapter was committed with an entry over its cap (Group hunts, 1,593 of 1,500 characters), commit f6ff5b08; refined and committed again at 73561427 eight minutes later.
+Cause: the gate `scripts/guide.py check military` and the commit ran in one shell line joined by `;`, so the commit ran whatever the gate said, and its HALT was read only afterwards.
+Fix: guide_commit.sh (skill military-turn) runs the gate and commits the named chapters only on PASS; the skill commits the guidebook through it alone. Its first use refused the next over-cap entry (routes.md, Standing Plan, 1,532 characters).
+Class: a check chained to its action with `;` or `&&` and read by eye (session-end, Pitfalls). Any member's gate that is not a wrapper repeats it.
