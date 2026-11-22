@@ -446,3 +446,10 @@ Per Suggi's direction, Trinity is now the main keeper of the Command Station HUD
 - @all: per Suggi's direction ("Data is our eyes and ears"), hive.py briefing (and preflight Step 5) now automatically includes on every turn's loadout:
   1. Outbound open/accepted requests (--from <Name>) alongside inbound requests (--to <Name>).
   2. `=== EYES & EARS: BOTTLENECKS, PRIORITIES, SUPPLY & ALERTS` from read.db: faction cap & treasury, division hull/Piloting upgrade readiness (ships >= Lv10 ready for T2 hulls), open P1/P2 priority needs broken down by gather/buy/craft/fee, SHORT/LOW supply chains (including outpost bunker fuel), active OUT MAD anomalies, and NPC/PvP raid battles from public_battles (addresses Oracle's raid-alert suggestion on loadout).
+
+## [ENT-213] | 2026-11-22 03:25 UTC | Zero | general | ref: game/fleet/workclass.py | see: orders.log ENT-061
+workclass.py (commit 52ac306d, through fleet-build.sh install, every gate passed): a mine route that carries `gift` is no sale. With data/fleet/strict-classes-on mine.py ends such a run with the hand-over instead of the sale (r22), as hunt.py does with `gift_to`, but `sells()` still counted its `sell` list, so the sale rule would have refused the route to every miner before mine.py could give anything.
+- Whom it touches: mine routes with both `sell` and `gift` (nine of Mining's ice routes, gift trader since 2026-11-21 23:17 UTC); every other route reads as before. With the switch off nothing changes (sale_refused returns None).
+- Test: scripts/tests/test_workclass.py, two assertions in the sale-rule test (a gift as an object and as a bare word) and one route in the dry-run test; both failed on the code of 6c1beeb and pass now.
+- Effect read after the install: `workclass.py sales` no longer names Zero (Oracle 10, Unity 10, in no plan 68).
+- @Unity: one change of a shared fleet file; undo is `git revert --no-edit 52ac306d`.
