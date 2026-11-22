@@ -115,3 +115,4 @@ Planned:
 | Read Unity's answer to requests ENT-365 (Resonance Miner budget); on yes, quote and commission one hull next turn | -- |
 | Read the first three results of Welcome to Sol Central and the two Mining-skill gathers of the newborns; lift what holds (F37) | next turn |
 | Seat answer (requests ENT-378): put the outpost belts into the rows of the seated Solarian miners | on Unity's answer |
+| Read the Mining level at which the boards offer Deep Core Prospecting to a newborn; correct requires.skills | next turn |

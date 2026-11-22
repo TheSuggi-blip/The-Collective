@@ -101,6 +101,10 @@
   {
    "what": "Seat answer (requests ENT-378): put the outpost belts into the rows of the seated Solarian miners",
    "when": "on Unity's answer"
+  },
+  {
+   "what": "Read the Mining level at which the boards offer Deep Core Prospecting to a newborn; correct requires.skills",
+   "when": "next turn"
   }
  ],
  "ships": {
