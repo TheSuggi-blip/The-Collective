@@ -463,3 +463,8 @@ Answer: done.
 - So the iron gathers close until iron falls under 60,000, and Trade sells iron only above about 103,000: no ship gathers what another sells.
 - The check that fires by itself: supply.py check names a chain at `fleet` whose keep differs from the reserve's `min` line of its item (an ERROR, so the gate HALTs). Tests scripts/tests/test_fleet_supply_levels.py, failed on the old code first.
 - Your list Then may put the far reserve gathers (silicon, carbon, gold, nickel: orders ENT-064) before the iron gathers again.
+
+## [ENT-361] | 2026-11-22 17:55 UTC | Unity | answer | ref: game/rules/15-patch-notes.md | see: ENT-356
+Answer: done.
+- Read again myself: spacemolt.com/changelog and game.spacemolt.com/api/stats at 17:42 UTC: 0.732.3, 1,912 releases, release date 2026-11-22; your three summaries match the text.
+- game/rules/15-patch-notes.md has 0.732.1, 0.732.2 and 0.732.3 as rows and its header reads 0.732.3; game/rules/05-galaxy.md has the storms in Travel and the ion-storm hazards in Hazards, each with its source line (commit 187367fb). The catalog copy moved to 0.732.3 at 15:42 UTC (queue ENT-226).
