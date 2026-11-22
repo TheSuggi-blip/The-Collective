@@ -1,23 +1,26 @@
-# Sites proposed for a base of The Collective: one line per system. Kept by hand by the Fleet Admiral; Intel
+# Sites proposed for a base of The Collective: one line per system. Kept by the Fleet Admiral; Intel
 # proposes (its guidebook, queue.log). game/fleet/empire.py reads this file and adds what the chart and the public
-# list of stations say about each system; governance/empire.md shows the result. Suggi gives the direction of the
-# expansion (orders P4, 2026-11-17: south, north and east; the systems he named are suggestions inside those regions;
-# large bases are spread out; outposts and hubs are built freely); the Fleet Admiral chooses the system.
-# status: candidate (proposed, not decided), chosen (the Fleet Admiral decided), built, dropped. poi: a place id, or - for none.
+# list of stations say about each system; governance/empire.md shows the result.
+# Final reviewed three-road plan (Suggi, 2026-11-17 22:30-23:45 UTC; rule F33, orders P3):
+#   - East road: GSC-0044 inner outpost (built) -> Oakridge station (candidate, when we decide) -> outer outpost chosen by agents.
+#   - North road (first): Atria inner outpost (chosen) -> Yildun choke-point station (chosen) -> outer outpost chosen by agents.
+#   - South road (later): Felis inner outpost (chosen) -> south station & outer outpost chosen by agents when ready.
+#   - Deep frontier later: two stations deep out by jump gates, one outpost each (8 outposts & 5 stations total), chosen autonomously by the agents from Intel's readings.
+# status: candidate (proposed, not decided), chosen (decided), built, dropped. poi: a place id, or - for none.
 system	poi	status	proposed_by	note
-achernar	-	candidate	Oracle	first of three beside the best ice: the only one with belt, gas and ice (game/routes/guidebook/intel.md; queue.log ENT-067, ENT-090)
-alnair	-	candidate	Oracle	second of three beside the best ice (game/routes/guidebook/intel.md; queue.log ENT-067, ENT-090)
-wolf_1061	-	candidate	Oracle	third of three beside the best ice (game/routes/guidebook/intel.md; queue.log ENT-067, ENT-090)
-yildun	-	candidate	Suggi	the north station (Suggi, 2026-11-17 about 22:30 UTC): at the end of the choke point of the north road, so both sides of the road are ours; 9 systems beyond our border, 5 jumps beyond Atria (Regor, Groombridge 34, Chalawan, Rasalhague), beside Avior; a standing goal (G3)
-aldebaran	-	candidate	Suggi	north region, two large bases there, for instance Aldebaran and Hawthorne (Suggi, 2026-11-17); the region between our space and the Outer Rim: named for a station (Suggi, 2026-11-16); 9 jumps from home, lawless, not read by us yet
-hawthorne	-	candidate	Suggi	north region, two large bases there, for instance Aldebaran and Hawthorne (Suggi, 2026-11-17); with alchiba the region named for a later station (Suggi, 2026-11-16); 13 jumps from home, lawless, not read by us yet
-alchiba	-	candidate	Suggi	north region, two large bases there, for instance Aldebaran and Hawthorne (Suggi, 2026-11-17); with hawthorne the region named for a later station (Suggi, 2026-11-16); 14 jumps from home, lawless, not read by us yet
-intercrus	-	candidate	Suggi	east region, beside Diadem, one large base (Suggi, 2026-11-17); proposed for a base (Suggi, 2026-11-17); 7 jumps from home, lawless; read once by our census on 2026-11-15 21:41 UTC: two belts and alloy remnants of iron and copper near 100,000 each, sol alloy ore 1,401, null matter 650, an ice field of water and nitrogen ice (game/planets/n-intercrus.md)
-felis	-	chosen	Suggi	the south outpost (Suggi, 2026-11-17 about 23:40 UTC); 4 beyond our border, between Tanglewood and Biham; no station beyond it now; built after Atria and Oakridge
-biham	-	candidate	Suggi	south region, the region of Biham, one large base (Suggi, 2026-11-17); with felis a pair proposed for a base (Suggi, 2026-11-17); 8 jumps from home, lawless, borders Felis and Gliese 876; not read by us yet
-diadem	-	candidate	Suggi	east region, one large base (Suggi, 2026-11-17: "then maybe Diadem"); 8 jumps from home, lawless by the chart, a neighbour of Intercrus; not read by us yet
-gsc_0044	-	built	Zero, Apollo	the first outpost (the Fleet Admiral chose it on 2026-11-17, orders P4 and rule F33; Logistics builds it): 3 systems beyond our border, 3 jumps from The Experiment through Achernar and Cedarhold, 6 from home; two belts of iron and copper, 100,000 each (census 2026-11-17 06:30 UTC), sol alloy ore 1,527, grazer herds; lanes to Acrux, Atlas, Botein, Cedarhold, HD 40307 and Intercrus (east, toward Diadem); no pirate on our record in it or one jump away; two BUSY pilots met; Garnet, named by Intel and Military, lies 2 jumps from it
-acrab	-	dropped	Unity	replaced by Atria on Suggi's word (2026-11-17 about 22:30 UTC)
-gsc_0006	-	dropped	Unity	the north station goes toward Yildun instead, at the end of the choke point (Suggi, 2026-11-17 about 22:30 UTC)
-atria	-	chosen	Unity	the north outpost (Suggi, 2026-11-17 about 22:30 UTC: the site on Atria instead of Acrab): 5 systems beyond our border, 7 jumps from home, on the north road (Marfik > Atria > Regor), 5 jumps short of Yildun; belt iron 98,472, copper 100,000, gold 1,482; ice water, nitrogen, deuterium; no flag near
-oakridge	-	candidate	Unity	the east station's site (Suggi, 2026-11-17 about 23:45 UTC: Oakridge can be a station), when we decide to build one in the east, which other factions crowd; 8 beyond our border, 5 beyond GSC-0044; copper 299,999, iron 256,837, zinc 15,999 (Intel); Solarian space 3 jumps away
+gsc_0044	-	built	Zero, Apollo	east road inner outpost (built 2026-11-17, rule F33): 3 systems beyond border, 6 jumps from home; two belts of iron and copper near 100,000 each, sol alloy ore, grazer herds
+atria	-	chosen	Unity	north road inner outpost (Suggi, 2026-11-17 22:30 UTC, orders P3): 5 systems beyond border, 7 jumps from home on Marfik > Atria > Regor, 5 jumps short of Yildun; iron, copper, gold, argon, ices, grazers
+yildun	-	chosen	Suggi	north road choke-point station (Suggi, 2026-11-17 22:30 UTC, orders P3; needs core-foundry & station-core): far end of the north choke point, 5 jumps beyond Atria, 11 from home
+oakridge	-	candidate	Unity	east road station site (Suggi, 2026-11-17 23:45 UTC, orders ENT-054 & P3): built when the agents decide to raise an east station; 8 beyond border, 5 beyond GSC-0044, 3 from Solarian space
+felis	-	chosen	Suggi	south road inner outpost (Suggi, 2026-11-17 23:40 UTC, orders ENT-053 & P3): 4 beyond border, 7 from home between Tanglewood and Biham; built after Atria and Oakridge
+achernar	-	dropped	Oracle	overtaken when gsc_0044, atria and felis were chosen as the three inner road outposts under rule F33
+alnair	-	dropped	Oracle	overtaken when gsc_0044, atria and felis were chosen as the three inner road outposts under rule F33
+wolf_1061	-	dropped	Oracle	overtaken when gsc_0044, atria and felis were chosen as the three inner road outposts under rule F33
+acrab	-	dropped	Unity	replaced by Atria on Suggi's word (2026-11-17 22:30 UTC, orders ENT-048)
+gsc_0006	-	dropped	Unity	replaced by Yildun at the far end of the north choke point (Suggi, 2026-11-17 22:30 UTC, orders ENT-048)
+aldebaran	-	dropped	Suggi	early 2026-11-16 north suggestion overtaken by the reviewed Atria -> Yildun north road (orders ENT-048, F33); outer outpost beyond Yildun is chosen by the agents
+intercrus	-	dropped	Suggi	early 2026-11-17 east suggestion overtaken by GSC-0044 (built) -> Oakridge station in the final review (orders ENT-054)
+diadem	-	dropped	Suggi	early 2026-11-17 east suggestion overtaken by GSC-0044 (built) -> Oakridge station in the final review (orders ENT-054)
+biham	-	dropped	Suggi	early 2026-11-17 south suggestion overtaken by Felis outpost in the final review (orders ENT-053); south station later is chosen by the agents
+hawthorne	-	dropped	Suggi	2026-11-16 deep-corridor example only; under rule F33 the two deep jump-gate stations and outer outposts are chosen autonomously by the agents from Intel's readings
+alchiba	-	dropped	Suggi	2026-11-16 deep-corridor example only; under rule F33 the two deep jump-gate stations and outer outposts are chosen autonomously by the agents from Intel's readings

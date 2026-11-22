@@ -61,8 +61,11 @@ triples from `20` to **`60` ships** arranged as a symmetrical **20 / 20 /
    multi-layer shield/armor/medical/interdictor screen escorting Unity's
    Flagship Fleet and our 1 unique Tier-5 `Emanation` Moving City.
 2. **Sovereign Station & Choke-Point Bastions (24 Sentinels):** Garrison
-   squadrons stationed at Yildun (north choke), Aldebaran,
-   Hawthorne/Alchiba, and scarce-resource outposts.
+   squadrons from our stations outward (rule F33: never the first ring of
+   inner outposts): `Yildun` (north choke-point station beyond `Atria`),
+   `Oakridge` (east station beyond `GSC-0044`), the future south station
+   beyond `Felis`, plus the two deep jump-gate stations and outer outposts
+   chosen autonomously by Unity and the Admirals from Intel's readings.
 3. **Capital Convoy Escorts (12 Sentinels):** Heavy escorts protecting
    `3,960`-cargo `Eldorado` and `2,640`-cargo `Frankenhauler` supply runs
    across lawless corridors.
@@ -72,7 +75,7 @@ triples from `20` to **`60` ships** arranged as a symmetrical **20 / 20 /
 | Wave | Fleet Step | New Births | Readiness Gate Before Birthing | Cohort Breakdown |
 | :--- | :--- | ---: | :--- | :--- |
 | **Wave 1** | `246 -> 320` | `+74` | `Guild Hall Recruiting` (`400` seats) active + 24h steady net `> 0` | `+25` Neb Traders, `+25` OR Haulers, `+24` Sol Miners |
-| **Wave 2** | `320 -> 420` | `+100` | Northern outpost/station online (Atria/Yildun) + Wave 1 self-funding | `+35` Neb Miners, `+25` Neb Haulers, `+15` Sol Traders, `+15` Crim Strike, `+10` OR Scouts |
+| **Wave 2** | `320 -> 420` | `+100` | North road online (`Atria` outpost -> `Yildun` station, orders P3) + Wave 1 self-funding | `+35` Neb Miners, `+25` Neb Haulers, `+15` Sol Traders, `+15` Crim Strike, `+10` OR Scouts |
 | **Wave 3** | `420 -> 500` | `+80` | `500+` seats raised (`Grand Recruitment Bureau` / multi-base) | `+15` Crim Strike, `+15` Sol Strike, `+10` Crim Guard, `+5` Sol Guard, `+11` Sol Miners, `+5` OR Haulers, `+5` Neb Traders, `+8` Neb Scouts, `+2` OR Scouts, `+4` Command (**Completes Plan 500**) |
 | **Wave 4** | `500 -> 600` | `+100` | `600+` seats across sovereign stations + T3-T5 shipyard pipeline | `+10` Crim Guard, `+15` Sol Guard, `+6` Command, `+15` Crim Strike, `+5` Sol Strike, `+10` Sol Miners, `+10` OR `All Mine` Miners, `+10` OR Haulers, `+5` Neb Haulers, `+6` Neb Traders, `+3` Sol Traders, `+3` OR Scouts, `+2` Neb Scouts (**Completes Plan 600**) |
 

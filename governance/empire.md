@@ -20,7 +20,7 @@ they store, the members by name and the treasury's balance. They are live
 data of the unit (the tools `hive` with `verb=empire`, `stock`, `ship`;
 `game/fleet/empire.py show`).
 
-Facts as of 2026-11-22T15:44:25Z.
+Facts as of 2026-11-22T17:24:49Z.
 
 ## 1. The Faction
 
@@ -79,22 +79,22 @@ list of stations. Where a base is built is Suggi's decision.
 
 | System | Name | Space | Jumps from home | Stations there | Status | Proposed by | Note |
 |---|---|---|---|---|---|---|---|
-| `achernar` | Achernar | lawless | 4 | none | candidate | Oracle | first of three beside the best ice: the only one with belt, gas and ice (game/routes/guidebook/intel.md; queue.log ENT-067, ENT-090) |
-| `alnair` | Alnair | lawless | 5 | none | candidate | Oracle | second of three beside the best ice (game/routes/guidebook/intel.md; queue.log ENT-067, ENT-090) |
-| `wolf_1061` | Wolf 1061 | lawless | 4 | none | candidate | Oracle | third of three beside the best ice (game/routes/guidebook/intel.md; queue.log ENT-067, ENT-090) |
-| `yildun` | Yildun | lawless | 11 | none | candidate | Suggi | the north station (Suggi, 2026-11-17 about 22:30 UTC): at the end of the choke point of the north road, so both sides of the road are ours; 9 systems beyond our border, 5 jumps beyond Atria (Regor, Groombridge 34, Chalawan, Rasalhague), beside Avior; a standing goal (G3) |
-| `aldebaran` | Aldebaran | lawless | 9 | none | candidate | Suggi | north region, two large bases there, for instance Aldebaran and Hawthorne (Suggi, 2026-11-17); the region between our space and the Outer Rim: named for a station (Suggi, 2026-11-16); 9 jumps from home, lawless, not read by us yet |
-| `hawthorne` | Hawthorne | lawless | 13 | none | candidate | Suggi | north region, two large bases there, for instance Aldebaran and Hawthorne (Suggi, 2026-11-17); with alchiba the region named for a later station (Suggi, 2026-11-16); 13 jumps from home, lawless, not read by us yet |
-| `alchiba` | Alchiba | lawless | 14 | none | candidate | Suggi | north region, two large bases there, for instance Aldebaran and Hawthorne (Suggi, 2026-11-17); with hawthorne the region named for a later station (Suggi, 2026-11-16); 14 jumps from home, lawless, not read by us yet |
-| `intercrus` | Intercrus | lawless | 7 | none | candidate | Suggi | east region, beside Diadem, one large base (Suggi, 2026-11-17); proposed for a base (Suggi, 2026-11-17); 7 jumps from home, lawless; read once by our census on 2026-11-15 21:41 UTC: two belts and alloy remnants of iron and copper near 100,000 each, sol alloy ore 1,401, null matter 650, an ice field  |
-| `felis` | Felis | lawless | 7 | none | chosen | Suggi | the south outpost (Suggi, 2026-11-17 about 23:40 UTC); 4 beyond our border, between Tanglewood and Biham; no station beyond it now; built after Atria and Oakridge |
-| `biham` | Biham | lawless | 8 | none | candidate | Suggi | south region, the region of Biham, one large base (Suggi, 2026-11-17); with felis a pair proposed for a base (Suggi, 2026-11-17); 8 jumps from home, lawless, borders Felis and Gliese 876; not read by us yet |
-| `diadem` | Diadem | lawless | 8 | none | candidate | Suggi | east region, one large base (Suggi, 2026-11-17: "then maybe Diadem"); 8 jumps from home, lawless by the chart, a neighbour of Intercrus; not read by us yet |
-| `gsc_0044` | GSC-0044 | lawless | 6 | CLTV Outpost GSC-0044 (outpost, CLTV) | built | Zero, Apollo | the first outpost (the Fleet Admiral chose it on 2026-11-17, orders P4 and rule F33; Logistics builds it): 3 systems beyond our border, 3 jumps from The Experiment through Achernar and Cedarhold, 6 from home; two belts of iron and copper, 100,000 each (census 2026-11-17 06:30 UTC), sol alloy ore 1,5 |
-| `acrab` | Acrab | lawless | 6 | none | dropped | Unity | replaced by Atria on Suggi's word (2026-11-17 about 22:30 UTC) |
-| `gsc_0006` | GSC-0006 | lawless | 10 | none | dropped | Unity | the north station goes toward Yildun instead, at the end of the choke point (Suggi, 2026-11-17 about 22:30 UTC) |
-| `atria` | Atria | lawless | 7 | none | chosen | Unity | the north outpost (Suggi, 2026-11-17 about 22:30 UTC: the site on Atria instead of Acrab): 5 systems beyond our border, 7 jumps from home, on the north road (Marfik > Atria > Regor), 5 jumps short of Yildun; belt iron 98,472, copper 100,000, gold 1,482; ice water, nitrogen, deuterium; no flag near |
-| `oakridge` | Oakridge | lawless | 11 | none | candidate | Unity | the east station's site (Suggi, 2026-11-17 about 23:45 UTC: Oakridge can be a station), when we decide to build one in the east, which other factions crowd; 8 beyond our border, 5 beyond GSC-0044; copper 299,999, iron 256,837, zinc 15,999 (Intel); Solarian space 3 jumps away |
+| `gsc_0044` | GSC-0044 | lawless | 6 | CLTV Outpost GSC-0044 (outpost, CLTV) | built | Zero, Apollo | east road inner outpost (built 2026-11-17, rule F33): 3 systems beyond border, 6 jumps from home; two belts of iron and copper near 100,000 each, sol alloy ore, grazer herds |
+| `atria` | Atria | lawless | 7 | none | chosen | Unity | north road inner outpost (Suggi, 2026-11-17 22:30 UTC, orders P3): 5 systems beyond border, 7 jumps from home on Marfik > Atria > Regor, 5 jumps short of Yildun; iron, copper, gold, argon, ices, grazers |
+| `yildun` | Yildun | lawless | 11 | none | chosen | Suggi | north road choke-point station (Suggi, 2026-11-17 22:30 UTC, orders P3; needs core-foundry & station-core): far end of the north choke point, 5 jumps beyond Atria, 11 from home |
+| `oakridge` | Oakridge | lawless | 11 | none | candidate | Unity | east road station site (Suggi, 2026-11-17 23:45 UTC, orders ENT-054 & P3): built when the agents decide to raise an east station; 8 beyond border, 5 beyond GSC-0044, 3 from Solarian space |
+| `felis` | Felis | lawless | 7 | none | chosen | Suggi | south road inner outpost (Suggi, 2026-11-17 23:40 UTC, orders ENT-053 & P3): 4 beyond border, 7 from home between Tanglewood and Biham; built after Atria and Oakridge |
+| `achernar` | Achernar | lawless | 4 | none | dropped | Oracle | overtaken when gsc_0044, atria and felis were chosen as the three inner road outposts under rule F33 |
+| `alnair` | Alnair | lawless | 5 | none | dropped | Oracle | overtaken when gsc_0044, atria and felis were chosen as the three inner road outposts under rule F33 |
+| `wolf_1061` | Wolf 1061 | lawless | 4 | none | dropped | Oracle | overtaken when gsc_0044, atria and felis were chosen as the three inner road outposts under rule F33 |
+| `acrab` | Acrab | lawless | 6 | none | dropped | Unity | replaced by Atria on Suggi's word (2026-11-17 22:30 UTC, orders ENT-048) |
+| `gsc_0006` | GSC-0006 | lawless | 10 | none | dropped | Unity | replaced by Yildun at the far end of the north choke point (Suggi, 2026-11-17 22:30 UTC, orders ENT-048) |
+| `aldebaran` | Aldebaran | lawless | 9 | none | dropped | Suggi | early 2026-11-16 north suggestion overtaken by the reviewed Atria -> Yildun north road (orders ENT-048, F33); outer outpost beyond Yildun is chosen by the agents |
+| `intercrus` | Intercrus | lawless | 7 | none | dropped | Suggi | early 2026-11-17 east suggestion overtaken by GSC-0044 (built) -> Oakridge station in the final review (orders ENT-054) |
+| `diadem` | Diadem | lawless | 8 | none | dropped | Suggi | early 2026-11-17 east suggestion overtaken by GSC-0044 (built) -> Oakridge station in the final review (orders ENT-054) |
+| `biham` | Biham | lawless | 8 | none | dropped | Suggi | early 2026-11-17 south suggestion overtaken by Felis outpost in the final review (orders ENT-053); south station later is chosen by the agents |
+| `hawthorne` | Hawthorne | lawless | 13 | none | dropped | Suggi | 2026-11-16 deep-corridor example only; under rule F33 the two deep jump-gate stations and outer outposts are chosen autonomously by the agents from Intel's readings |
+| `alchiba` | Alchiba | lawless | 14 | none | dropped | Suggi | 2026-11-16 deep-corridor example only; under rule F33 the two deep jump-gate stations and outer outposts are chosen autonomously by the agents from Intel's readings |
 
 ## 5. What The Faction Can Build
 
