@@ -1,0 +1,29 @@
+{
+ "id": "mission-the-proposal-frontier",
+ "kind": "circuit",
+ "title": "The Proposal: 800 cr, +80 XP at Mobile Capital",
+ "note": "Written by routemaker.py from the board and the order books: goods for about 0 cr, reward 800 cr, sale 0 cr, +80 XP. Test with one ship first. Added as a test by fill.py on 2026-11-22 23:45 UTC (Oracle): up to 3 ships, one result each, until 3 runs are read (rule F37).",
+ "max_ships": 3,
+ "stops": [
+  {
+   "at": "altais:mobile_capital:frontier_station",
+   "accept": [
+    "the_proposal"
+   ]
+  },
+  {
+   "at": "deep_range:deep_range_outpost:deep_range_outpost",
+   "redock": true
+  },
+  {
+   "at": "altais:mobile_capital:frontier_station"
+  }
+ ],
+ "once": true,
+ "one_time": [
+  "The Proposal"
+ ],
+ "skip_if_booked": [
+  "The Proposal"
+ ]
+}
