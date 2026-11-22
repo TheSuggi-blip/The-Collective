@@ -1,30 +1,30 @@
 {
-  "id": "census-watch-gsc-0044",
-  "kind": "census",
-  "title": "Watch the first outpost site: GSC-0044 and its six neighbours read every hour (who is there, pirates, fields)",
-  "note": "Kept by Oracle; written 2026-11-17 11:25 UTC for orders.log ENT-036 (P4 a, block ORACLE: read GSC-0044 and its six neighbours again before the outpost is founded; scouts watch an outpost and warn). GSC-0044 is the site the Fleet Admiral chose (game/map/sites.tsv). Its lanes go to Acrux, Atlas, Botein, Cedarhold, HD 40307 and Intercrus; Intercrus, and Achernar on the road from The Experiment, stay on Military's census-guard-ice (every 60 minutes), so they are not listed here. Six systems, 3 to 7 jumps from home, all lawless: an empty hold (rule F13). A census reads and leaves; a pirate it meets is filed for Military (observe.py). Changed by Oracle 2026-11-17 15:28 UTC: the reads of 11:15 to 15:15 UTC came 70 to 75 minutes apart (every_minutes 60 is the floor of the gap, never its ceiling) and Intercrus, the sixth neighbour, was read once in four hours (census-frontier, census-guard-ice): Intercrus moves here from census-frontier, the threshold goes to 45 minutes and `chain` 3 reads the neighbours due within two lanes in the same trip; max_ships 3. Changed by Oracle 2026-11-17 19:26 UTC: the reads of 15:30 to 19:15 UTC came 43 to 72 minutes apart at 45 minutes (Acrux 70 twice, Atlas 72, Cedarhold 65, GSC-0044 63; intel_turn_check WATCH): the threshold goes to 35 minutes and max_ships to 4, so that the longest gap stays under the hour. 2026-11-22 07:25 UTC: the outpost stands (founded); every 35 -> 50 min and 4 -> 3 ships, still inside the hour (WATCH), the ship freed for census-worked-far and the far lists (orders ENT-062: readings the fleet plans on, explore further out).",
-  "systems": [
-    "gsc_0044",
-    "hd_40307",
-    "acrux",
-    "atlas",
-    "botein",
-    "cedarhold",
-    "intercrus"
-  ],
-  "every_minutes": 50,
-  "max_ships": 3,
-  "requires": {
-    "empty_hold": true
-  },
-  "measured": {
-    "date": "2026-11-17",
-    "runs": 77,
-    "minutes": 15,
-    "credits_per_run": -170,
-    "cph_per_ship": -740,
-    "hours": 12,
-    "last_run": "2026-11-17T21:46:23Z"
-  },
-  "chain": 3
+ "id": "census-watch-gsc-0044",
+ "kind": "census",
+ "title": "Watch the first outpost site: GSC-0044 and its six neighbours read every hour (who is there, pirates, fields)",
+ "note": "Kept by Oracle; written 2026-11-17 11:25 UTC for orders.log ENT-036 (P4 a, block ORACLE: read GSC-0044 and its six neighbours again before the outpost is founded; scouts watch an outpost and warn). GSC-0044 is the site the Fleet Admiral chose (game/map/sites.tsv). Its lanes go to Acrux, Atlas, Botein, Cedarhold, HD 40307 and Intercrus; Intercrus, and Achernar on the road from The Experiment, stay on Military's census-guard-ice (every 60 minutes), so they are not listed here. Six systems, 3 to 7 jumps from home, all lawless: an empty hold (rule F13). A census reads and leaves; a pirate it meets is filed for Military (observe.py). Changed by Oracle 2026-11-17 15:28 UTC: the reads of 11:15 to 15:15 UTC came 70 to 75 minutes apart (every_minutes 60 is the floor of the gap, never its ceiling) and Intercrus, the sixth neighbour, was read once in four hours (census-frontier, census-guard-ice): Intercrus moves here from census-frontier, the threshold goes to 45 minutes and `chain` 3 reads the neighbours due within two lanes in the same trip; max_ships 3. Changed by Oracle 2026-11-17 19:26 UTC: the reads of 15:30 to 19:15 UTC came 43 to 72 minutes apart at 45 minutes (Acrux 70 twice, Atlas 72, Cedarhold 65, GSC-0044 63; intel_turn_check WATCH): the threshold goes to 35 minutes and max_ships to 4, so that the longest gap stays under the hour. 2026-11-22 07:25 UTC: the outpost stands (founded); every 35 -> 50 min and 4 -> 3 ships, still inside the hour (WATCH), the ship freed for census-worked-far and the far lists (orders ENT-062: readings the fleet plans on, explore further out).",
+ "systems": [
+  "gsc_0044",
+  "hd_40307",
+  "acrux",
+  "atlas",
+  "botein",
+  "cedarhold",
+  "intercrus"
+ ],
+ "every_minutes": 50,
+ "max_ships": 3,
+ "requires": {
+  "empty_hold": true
+ },
+ "measured": {
+  "date": "2026-11-22",
+  "runs": 112,
+  "minutes": 9,
+  "credits_per_run": -160,
+  "cph_per_ship": -900,
+  "hours": 12,
+  "last_run": "2026-11-22T09:31:51Z"
+ },
+ "chain": 3
 }

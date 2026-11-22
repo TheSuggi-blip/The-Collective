@@ -65,7 +65,7 @@ Kept by Apophis. Routes: 200. Ships: 50.
 | 43 | [hunt-the-quiet-shimmer-veil-ray](hunt-the-quiet-shimmer-veil-ray.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 18 jumps | up to 1 ships, empty hold | 1 of 50 |
 | 44 | [hunt-saltwind-gas-pocket-halo-drifter](hunt-saltwind-gas-pocket-halo-drifter.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 11 jumps | up to 1 ships, empty hold | 1 of 50 |
 | 45 | [hunt-the-dim-lantern-veil-ray](hunt-the-dim-lantern-veil-ray.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 29 jumps | up to 1 ships, empty hold | 1 of 50 |
-| 46 | [hunt-altais-outer-ice-hollow-pilgrim](hunt-altais-outer-ice-hollow-pilgrim.json) | [Tests](index-tests.md) | beyond the border, 18 jumps | up to 3 ships | 1 of 50 |
+| 46 | [hunt-altais-outer-ice-hollow-pilgrim](hunt-altais-outer-ice-hollow-pilgrim.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 18 jumps | up to 3 ships | 1 of 50 |
 | 47 | [hunt-edgeward-glow-veil-ray](hunt-edgeward-glow-veil-ray.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 21 jumps | up to 1 ships, empty hold | 2 of 50 |
 | 48 | [hunt-starless-drift-veil-ray](hunt-starless-drift-veil-ray.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 22 jumps | up to 1 ships, empty hold | 1 of 50 |
 | 49 | [hunt-unukalhai-ice-fields-hollow-pilgrim](hunt-unukalhai-ice-fields-hollow-pilgrim.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 24 jumps | up to 1 ships, empty hold | 1 of 50 |
@@ -78,7 +78,7 @@ Kept by Apophis. Routes: 200. Ships: 50.
 | 56 | [hunt-alsciaukat-faint-entanglement-veil-ray](hunt-alsciaukat-faint-entanglement-veil-ray.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 18 jumps | up to 1 ships, empty hold | 1 of 50 |
 | 57 | [hunt-gsc-0045-gas-pocket-cinder-sylph](hunt-gsc-0045-gas-pocket-cinder-sylph.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 20 jumps | up to 1 ships, empty hold | 1 of 50 |
 | 58 | [hunt-harborlight-ice-shelf-hollow-pilgrim](hunt-harborlight-ice-shelf-hollow-pilgrim.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 10 jumps | up to 1 ships, empty hold | 1 of 50 |
-| 59 | [hunt-hatysa-vapor-fields-cinder-sylph](hunt-hatysa-vapor-fields-cinder-sylph.json) | [Tests](index-tests.md) | beyond the border, 11 jumps | up to 3 ships, empty hold | 1 of 50 |
+| 59 | [hunt-hatysa-vapor-fields-cinder-sylph](hunt-hatysa-vapor-fields-cinder-sylph.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 11 jumps | up to 3 ships, empty hold | 1 of 50 |
 | 60 | [hunt-cryogenic-reserve-hollow-pilgrim](hunt-cryogenic-reserve-hollow-pilgrim.json) | [Paying Routes](index-paying-routes.md) | home space | up to 3 ships | 3 of 50 |
 | 61 | [hunt-merope-gas-plume-cinder-sylph](hunt-merope-gas-plume-cinder-sylph.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 18 jumps | up to 1 ships, empty hold | 1 of 50 |
 | 62 | [hunt-coinflip-nebula-veil-ray](hunt-coinflip-nebula-veil-ray.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 11 jumps | up to 1 ships, empty hold | 2 of 50 |
@@ -184,7 +184,7 @@ Kept by Apophis. Routes: 200. Ships: 50.
 | 162 | [hunt-test-achernar-cinder-sylph](hunt-test-achernar-cinder-sylph.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 4 jumps | up to 1 ships, without piercing_railgun_i, empty hold, while b495c6003fc83e18f6d8cecbe6929133 bids 2000 cr for ember_gland, standing work | all 50 |
 | 163 | [hunt-silverbend-emission-nebula-cinder-sylph](hunt-silverbend-emission-nebula-cinder-sylph.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 11 jumps | up to 1 ships, empty hold, standing work | all 50 |
 | 164 | [hunt-orphan-nebula-veil-ray](hunt-orphan-nebula-veil-ray.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 9 jumps | up to 1 ships, empty hold, standing work | all 50 |
-| 165 | [hunt-superposition-pocket-veil-ray](hunt-superposition-pocket-veil-ray.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 18 jumps | up to 1 ships | 1 of 50 |
+| 165 | [hunt-superposition-pocket-veil-ray](hunt-superposition-pocket-veil-ray.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 18 jumps | up to 1 ships | 1 of 50 |
 | 166 | [hunt-ironpeak-weak-superposition-veil-ray](hunt-ironpeak-weak-superposition-veil-ray.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 20 jumps | up to 1 ships, empty hold, standing work | all 50 |
 | 167 | [hunt-minkar-cryobelt-hollow-pilgrim](hunt-minkar-cryobelt-hollow-pilgrim.json) | [Off](index-off.md) | beyond the border, 21 jumps | up to 1 ships, empty hold, off | 1 of 50 |
 | 168 | [hunt-elbowroom-veil-veil-ray](hunt-elbowroom-veil-veil-ray.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 19 jumps | up to 1 ships, empty hold, standing work | all 50 |
