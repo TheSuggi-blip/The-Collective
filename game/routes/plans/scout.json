@@ -51,9 +51,6 @@
   "census-east",
   "census-south",
   "census-roads",
-  "craft-steel-node-beta",
-  "craft-steel-central-nexus",
-  "craft-steel-synchrony-hub",
   "park"
  ],
  "planned": [
@@ -131,9 +128,6 @@
   "census-east": 30,
   "census-south": 30,
   "census-roads": 30,
-  "craft-steel-node-beta": 30,
-  "craft-steel-central-nexus": 30,
-  "craft-steel-synchrony-hub": 30,
   "park": 30
  },
  "of": 30,
