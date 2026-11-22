@@ -15,7 +15,7 @@ updated: 2026-11-22
 # Bedrock Materials [ROCK]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 4.
+Pilots of it in our space in the last 24 hours: 5.
 
 ## Identity
 
@@ -40,8 +40,9 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 |---|---|---|---|
 | Durgan Forgebeard | Synchrony (`synchrony`) | 0 | threshold |
 | Harbek Haulstone | Nexus Prime (`nexus_prime`) | 0 | not met |
+| Meph Addict | Nexus Prime (`nexus_prime`) | 0 | prospect |
 | Ragna Cartwright | The Experiment (`the_experiment`) | 0 | not met |
-| Space Hulk | Nexus Prime (`nexus_prime`) | 0 | shard |
+| Steve from Accounting | Nexus Prime (`nexus_prime`) | 0 | prospect |
 
 ## Standing History
 

@@ -38,12 +38,12 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Arbiter47 | Node Beta (`node_beta`) | 0 | macguffin |
-| Arbuckle | Node Alpha (`node_alpha`) | 0 | dust_devil |
-| Cook | Node Gamma (`node_gamma`) | 0 | futures |
+| Arbiter43 | Synchrony (`synchrony`) | 0 | dust_devil |
+| Arbiter59 | Node Alpha (`node_alpha`) | 0 | dust_devil |
+| Cook | Node Beta (`node_beta`) | 0 | futures |
 | Fabrini | The Experiment (`the_experiment`) | 0 | tellurian |
 | Marlowe | The Experiment (`the_experiment`) | 0 | all_mine |
-| Speke | Node Alpha (`node_alpha`) | 0 | futures |
+| Speke | Synchrony (`synchrony`) | 0 | futures |
 
 ## Standing History
 

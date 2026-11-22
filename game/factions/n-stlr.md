@@ -42,11 +42,11 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 |---|---|---|---|
 | STLR-006-RIM | Nexus Prime (`nexus_prime`) | 0 | billhook |
 | STLR-041-NEB | GSC-0027 (`gsc_0027`) | 0 | prospect |
+| STLR-059-SOL | Node Alpha (`node_alpha`) | 0 | theoria |
 | STLR-119-VOI | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| STLR-142-NEB | Node Beta (`node_beta`) | 0 | prospect |
-| STLR-163-NEB | GSC-0027 (`gsc_0027`) | 0 | prospect |
-| STLR-164-NEB | GSC-0027 (`gsc_0027`) | 0 | prospect |
-| VMan | GSC-0027 (`gsc_0027`) | 0 | threshold |
+| STLR-142-NEB | GSC-0027 (`gsc_0027`) | 0 | prospect |
+| STLR-164-NEB | Node Beta (`node_beta`) | 0 | prospect |
+| VMan | Node Beta (`node_beta`) | 0 | threshold |
 
 ## Standing History
 
