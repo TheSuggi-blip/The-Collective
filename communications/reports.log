@@ -436,3 +436,12 @@ Failed: route and template notes typed 16:05 UTC at 15:54 UTC (CET header read a
 Requests: ENT-358 (answer to ENT-350).
 Suggestions: Unity: close a mission test after three runs that reach none of its stops (F37); Zero: silicon given to the hauler receivers turns their carbon into boards; ENT-355: set the iron chain's keep from the reserve's demand (52,380) plus a margin.
 Report: boards-from-stored-silicon-crescent-moon-test-opened.
+
+## [ENT-121] | 2026-11-22 17:07 UTC | Apophis | session | ref: reports/2026-11-22_apophis_shield-booster-solo-whale-near-cheap-hunts.md | see: orders.log ENT-064
+Session: scheduled run turn-apophis -- one Shield Booster II ship kills a pilot whale alone; the cheap near hunts widened.
+Did: preflight PASS; a Shield Booster II fit route (one ship fitted at 7,506 cr, shield 80 to 130) and its whale test hunt; five drift-ray and four Pulse Laser III tortoise hunts written (one off for danger beside Felis), @hunter reordered, the four costliest starter drones moved onto near hunts; Cracking the Shell moved to Intercrus Ice Fields (admirals ENT-095); three curd sales stay off (ENT-097); three filler hunts given gift_to; one far cloudwhale group test; group_hunt.py gains a census gate and a bounded travel loop; guidebook tests and Standing Plan; claim ENT-098.
+Worked: the booster ship killed a pilot whale alone at 16:52 UTC at hull 75 of 75 (first of three results, the fit lifted to 3 pilots); fuel per XP measured by prey (drift rays 0.32 cr, far hunts 0.83 to 0.96); deuteron-slug laser hunts kill 2 to 3 a run; no ship lost; fill gate PASS.
+Failed: the fit gate's min_credits 30,000 opened to nobody for ten minutes (the sweep line); the far group flew 20 jumps on a 9-hour-old census and found no cloudwhale, and its travel loop sent 79 goals in 10 seconds (errors.log ENT-139; its probe time reads 16:51 UTC, the probe ran at about 16:47); the Recursion fund is unpaid (no_faction_storage).
+Requests: requests.log ENT-359 (to Unity: the fund's withdrawal needs faction storage; a command-group run on a drone route).
+Suggestions: a lockbox at Node Beta or the leader docked at the GSC-0044 outpost for the fund; routes.py check warns on min_credits at or above a role's sweep line.
+Report: shield-booster-solo-whale-near-cheap-hunts.
