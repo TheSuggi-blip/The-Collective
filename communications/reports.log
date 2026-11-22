@@ -463,3 +463,12 @@ Failed: the iron seep fallback carried 22 miners while iron stood above its max 
 Requests: requests.log ENT-332 (requires.strict, Unity), ENT-333 (fill.py carries counts the min_left goods, Unity).
 Suggestions: one of the two iron figures gives way (chain keep 166,923 against the reserve walk's 108,730); a Laser II test on one ship before more IIIs; the board's one-hour line shows the sweep inside a run as a loss.
 Report: laser-iii-proven-sales-become-gifts-iron-at-max.
+
+## [ENT-100] | 2026-11-22 03:57 UTC | Oracle | session | ref: reports/2026-11-22_oracle_stranded-scout-rescued-fuel-check-built-p5-gifts.md | see: orders.log ENT-061
+Session: scheduled run turn-oracle -- a stranded scout rescued, a census fuel check built, P5 done for the scouts.
+Did: preflight PASS; one scout stranded at a station-less system with 17 of 95 fuel (63 refused census runs, about 01:12 to 03:21 UTC) rescued by hand to the nearest station with fuel and released 03:26 UTC; census.py fuel check built with failing-first tests; STUCK line in my turn check; nine scout hunts gift_to trader, soma sales out of the plan, four give-scout-stores routes (off) in First, workclass.py sales names no Oracle route (was 10); 14 systems where other divisions fly moved onto census-worked-far (84, max 12); 30 pirate lines filed, 0 raids, no base of ours fought; guidebook Standing Plan, hull test, three results, lesson (guide check PASS); fill gate PASS.
+Worked: 30 of 30 scouts at work, none lost; census-east back under 180 minutes, census-south from 6 systems over to 1; oldest home read 37 minutes.
+Failed: the stranding went unseen two hours (errors.log ENT-121: census.py weighed fuel only between chain legs; the stall rest counts runs under a minute); the fuel check is not installed: the suite fails on the committed tree since 65b95886 (queue.log ENT-215).
+Requests: requests.log ENT-334 (Unity: a stall rest that reads failed runs).
+Suggestions: handbook tests before a hive verb or store table lands; the give routes of Mining and Intel on with the strict-classes switch.
+Report: stranded-scout-rescued-fuel-check-built-p5-gifts.
