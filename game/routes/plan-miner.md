@@ -101,7 +101,4 @@ Planned:
 
 | What | When |
 |---|---|
-| Read the Mining Laser III test on the outpost belt against Laser I's median 345 ore in 47 minutes; on a clear gain, one fit route per station with asks, laser miners and seated miners first | its first two RESULT lines |
-| Four one-ship tests (Jishui carbon to The Crescent Moon, GSC-0049 reef nickel and platinum to Node Beta, ice sold at Sirius and at The Anvil Arsenal): lift or drop each on its first RESULT line | next turn |
-| The Gold Crest, Floodlight Flats and Long Errand Band read empty: their gathers reopen by min_left when they grow back; read their regrowth (table readings) before any lift | each turn |
-| Sale ends as gifts: nine ice mine routes carry gift trader; the drains and carries of stored goods follow once Trade names its receivers (handover.py receivers) | after Trade names receivers |
+| Read the Laser III fits (20 asks at Ironlight Crossroads, three at a time): on each fitted ship's first gather runs against Laser I's median 184 ore a seep run; a second fit station only on their result | next turn |

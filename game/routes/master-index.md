@@ -40,7 +40,7 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 | [command](plan-command.md) | Unity | 61 | voidborn-first-steps-board > voidborn-collective-provides > voidborn-signal-protocol | 0 | 6 |
 | [drone](plan-drone.md) | Apophis | 193 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 1 | 50 |
 | [hauler](plan-hauler.md) | Apollo | 53 | voidborn-resonance-finish > voidborn-atmospheric-extraction > voidborn-hardware-cargo | 1 | 40 |
-| [miner](plan-miner.md) | Zero | 68 | fit-mining-laser-iii-lhs-1140 > give-miner-stores-node-beta > give-miner-stores-experiment | 4 | 60 |
+| [miner](plan-miner.md) | Zero | 68 | fit-mining-laser-iii-lhs-1140 > give-miner-stores-node-beta > give-miner-stores-experiment | 1 | 60 |
 | [scout](plan-scout.md) | Oracle | 52 | store-hold-central-nexus > voidborn-first-steps-board > voidborn-network-expansion | 6 | 30 |
 | [sentinel](plan-sentinel.md) | Apophis | 187 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 1 | 20 |
 | [trader](plan-trader.md) | Mercury | 57 | voidborn-first-steps-board > voidborn-network-expansion > voidborn-collective-provides | 2 | 40 |
