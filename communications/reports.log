@@ -409,3 +409,12 @@ Failed: 17 of 21 Laser III miners shut out of every gather for about three hours
 Requests: requests.log ENT-343 (to Unity: requires.module as a list, a check on fit routes); claims admirals.log ENT-089.
 Suggestions: fill.py status could count ships on a fallback whose plan holds a closed route of their own class; the two iron figures stay open for the chain review.
 Report: laser-iii-lockout-lifted-far-carbon-takes-the-ships.
+
+## [ENT-106] | 2026-11-22 07:29 UTC | Oracle | session | ref: reports/2026-11-22_oracle_fuel-check-installed-offlist-readings-back-on-lists.md | see: orders.log ENT-062
+Session: scheduled run turn-oracle -- census fuel check installed, the oldest readings back on lists.
+Did: preflight PASS; census.py fuel check installed (d07c3294, suite of 81 test files OK; queue.log ENT-221); 7 systems on no flying list (Sol 8,958 min the oldest) onto census-roads, 5 worked systems onto census-worked-far (6cf7df93, 66a5fb7a); census-watch-gsc-0044 50 min, 3 ships; 5 craft rows out of the plan, voidborn-first-hunt-nexus in (12ac61f7); 26 pirate lines and 1 raid filed; OFFLIST line added to the turn check.
+Worked: 30 of 30 scouts at work, none lost; fill gate PASS; Atria 125, Yildun 149, Oakridge 137 min, Ironlight's book 37 min; OFFLIST 0 after the move; no battle at a base of ours.
+Failed: the turn check counted a switched-off list as listed, so seven systems stood 4 to 6 days unread unseen (fixed in the check); far lists and census-worked-far still over cadence; Homam probe test and visit missions not set up.
+Requests: none.
+Suggestions: a list switched off moves its systems onto lists that fly; Apollo and Unity weigh the NPC raid that destroyed End of Line's outpost at Fomalhaut (04:16 UTC) before a southeast base.
+Report: fuel-check-installed-offlist-readings-back-on-lists.
