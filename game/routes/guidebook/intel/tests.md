@@ -55,9 +55,11 @@ Status: test. Updated: 2026-11-21. Evidence: catalog table hulls; browse_ships a
 - Tier 1 needs no Piloting. Qualia (explorer): speed 3 against the
   Threshold's 1, tank 130, three utility slots, no weapon slot (no
   hunting). Listed at our stations from 35,000 to 49,482 cr.
-- Test: one reader buys one, census runs only; compare its minutes per
-  run with the Threshold's on the same lists (runs.jsonl). Faster reads
-  are the fix for lists that ask more than 30 scouts give.
+- Test: one reader bought one on 2026-11-21 (observe kind hull_test;
+  data/fleet/onetime.json); it flies @reader, census only. Compare its
+  minutes per run with the Threshold's on the same lists (runs.jsonl).
+  Faster reads are the fix for lists that ask more than 30 scouts give.
+  The Qualia carries no module: a scanner scout is never the one moved.
 
 ### Visit missions
 Status: test. Updated: 2026-11-21. Evidence: data/fleet/ships/<pilot>.json missions; data/missions/node_beta_industrial_station.json.
