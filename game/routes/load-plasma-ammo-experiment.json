@@ -1,0 +1,31 @@
+{
+ "id": "load-plasma-ammo-experiment",
+ "kind": "circuit",
+ "title": "Plasma ammunition back aboard: withdraw the stored dispersal plasma cell packs at The Experiment Research Station into the Plasma Cannon II ship's hold",
+ "note": "2026-11-22 12:11 UTC (Apophis): the copy of load-plasma-ammo-nova-terra for The Experiment. The Plasma Cannon II ship's hold read empty at 12:09 UTC while 2 dispersal plasma cell packs lay in its storage at The Experiment Research Station (data/stock/storage.json, read 11:13 UTC): a circuit stop `store: all` (the give-drone-stores routes) stores the packs with the rest; hunt.py keeps them aboard since commit c3a8f585, the circuit runner does not (asked of the Fleet Admiral, requests.log). Opens only for a pilot with the cannon and packs in its own storage here (requires.stored). Fitting for the ship's own weapon, shared work (rule F23): nothing is sold or bought.",
+ "max_ships": 1,
+ "max_pilots": 2,
+ "requires": {
+  "module": "plasma_cannon_ii",
+  "stored": {
+   "at": "the_experiment_research_station",
+   "item": "dispersal_plasma_cell_pack",
+   "min": 1
+  }
+ },
+ "stops": [
+  {
+   "at": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+   "withdraw": [
+    {
+     "item": "dispersal_plasma_cell_pack"
+    }
+   ]
+  }
+ ],
+ "open_to": [
+  "drone",
+  "sentinel"
+ ],
+ "standing": true
+}
