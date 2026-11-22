@@ -78,3 +78,4 @@ Planned:
 | What | When |
 |---|---|
 | Read the first three runs of supply-bunker-gsc-0044-own-cells and of buy-flex-central-nexus-to-node-beta; lift or drop by them (F37) | next turn |
+| Found Atria with found.py the hour the builder's kit lands at Node Beta (the kit route flies only on an ask at Ironlight) | on the kit |
