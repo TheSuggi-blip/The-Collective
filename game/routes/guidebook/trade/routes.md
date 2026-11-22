@@ -1,28 +1,30 @@
 # Trade guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-22. Evidence: plan.py show; templates/trade.json (@trade-sell); handover.py dry-run; reservecheck.py --plan trader.
+Status: proven. Updated: 2026-11-22. Evidence: plan.py show; templates/trade.json (@trade-sell, @trade-craft); handover.py receivers; reservecheck.py --plan trader; hive.py route sell-loot-at-dheneb.
 
-The plan file as set on 2026-11-22 at 07:40 UTC (orders ENT-062, P5
-and standing order S5):
+The plan file as set on 2026-11-22 at 11:39 UTC (orders ENT-063, P1,
+P5 and standing order S5; strict classes on since 09:35 UTC):
 
 - First, every ship: the once line (the Voidborn chain), then the two
   Federation once missions, three ships each (rule F37).
-- Own routes: a far test or carry at the head of its ship's row, then
-  for all `@trade-sell > @trade-craft`. `@trade-sell` opens with the
-  hunts' loot where the hunts hand it to the receivers
-  (`sell-loot-at-<station>`, `sell-noble-at-<station>`, the ember and
-  melt carries), then the gift routes' goods (null matter, lead, curd,
-  soma, plasma, water ice, hydrogen), then older surplus.
+- Own routes: a far test at the head of its ship's row, then for all
+  `@trade-sell > @trade-craft`. `@trade-sell` opens with the hunts' loot
+  where the receivers store it (`sell-loot-at-<station>`, Central Nexus
+  and crystal melt carried to its bid first), then the gift routes'
+  goods, then older surplus.
+- `@trade-craft`: armor plate from the receivers' own carapace, docked
+  (`craft-armor-own-<station>`), then steel; piping and wiring out
+  (the reserve holds more than it asks, F36).
 - Then: the three steel crafts, train-jumps-trader, park.
 
-What it carries: one ship a station's loot (only its receiver stores
-it); three a once mission; the loop every ship left.
+What it carries: one ship a station's loot; at Node Beta and The
+Experiment three receivers, two at Central Nexus and First Step (the
+gifts are spread over them), each a docked crafter; the loop every
+ship left.
 
-What would change it: strict classes on (the loot routes' first runs
-are their test); a hold-back gone (superfluid vial, trade crystal);
-a Trade Run near home for the runner's first flight.
-
+What would change it: the carapace crafts' first three results; a
+melt bid back above 2,000 elsewhere; a Trade Run near home.
 ### Selling stores where they lie (`sell-<good>-at-<station>`, `carry-<good>-<from>-to-<to>`)
 Status: proven. Updated: 2026-11-22. Evidence: the sell and carry route files with their measured figures; sellgen.py of the skill trade-books.
 
