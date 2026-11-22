@@ -1,16 +1,16 @@
 # Logistics guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-22. Evidence: plan.py show --brief (applied 2026-11-22 11:57 UTC); fill.py check; orders.log ENT-063 (block APOLLO, P4, P5); requests.log ENT-347, ENT-350, ENT-351; data/fleet/receivers.json; rules F8, F23, F37.
+Status: proven. Updated: 2026-11-22. Evidence: plan.py show --brief (applied 2026-11-22 15:55 UTC); fill.py check; orders.log ENT-064 (block APOLLO, P2, P4, P5); requests.log ENT-350, ENT-358; data/fleet/receivers.json; the tool stock, view=reserve; rules F8, F23, F37.
 
-The plan file (`plan.py show`): a free hauler takes the first route open to it of the list First, its own routes, the list Then. Earnings: `hive.py route <id>`; the tool fleet, view=standing, member Apollo.
+A free hauler takes the first open route of First, its own routes, Then (`plan.py show`). Earnings: the tool fleet, view=standing, member Apollo.
 
-- First: the once missions (`voidborn-*`, first hunts, `mission-*`; F34, F35).
-- Own, member haulers: `@outpost-supply` (GSC-0044's repair stock; the bunker from our cells under 5,000, bought ones under 4,000); the builder first `outpost-kit-ironlight-to-node-beta` (on `requires.ask`); the receiver at The Crescent Moon first `craft-boards-crescent-moon` (a test).
-- Own, every hauler: `@stored-goods` (Trade's goods given to Trade's receivers), `@craft-reserve` (gold wiring, cells, steel, piping: each opens on the pilot's own stored inputs), `@train-hauler` (piloting toward the freighter at 10, a cost of fuel).
-- Receivers (strict classes on): several haulers a station where many give (`handover.py receivers add`); the gifts spread over them, so each crafts docked what it is given.
-- Then: `park`, which no ship should reach.
-- What would change it: a kit at Ironlight (the builder flies); Piloting 10 (the freighter, then far hauls); a paid carry found (tests.md) in place of the loop.
+- First: the once missions (`voidborn-*`, first hunts, `mission-*`; F34, F35); a mission test whose runs reach none of its stops leaves the list.
+- Own, members: `@outpost-supply` (GSC-0044's repair stock and bunker); the builder first `outpost-kit-ironlight-to-node-beta` (on `requires.ask`); the receiver at The Crescent Moon first `craft-boards-crescent-moon` (a test).
+- Own, every hauler: `@stored-goods`, `@craft-reserve` (boards from stored silicon and carbon, gold wiring, cells, steel, piping: each opens on the pilot's own stored inputs), `@train-hauler` (piloting toward the freighter at 10, a cost of fuel).
+- Receivers (strict classes on): several haulers a station where many give (`handover.py receivers`); each crafts docked what it is given. Silicon binds the boards; copper ore lies far beyond any recipe we need.
+- Then: `park`, which none should reach.
+- What would change it: a kit at Ironlight (the builder flies); Piloting 10 (the freighter, then far hauls); silicon given in quantity (more board crafters); a paid carry found (tests.md) in place of the loop.
 
 ### Route Templates
 Status: proven. Updated: 2026-11-21. Evidence: game/routes/templates/logistics.json (2026-11-21); plan.py templates; Suggi 2026-11-16 and rule F22.
