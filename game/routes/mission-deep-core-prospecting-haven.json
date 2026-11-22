@@ -2,7 +2,7 @@
  "id": "mission-deep-core-prospecting-haven",
  "kind": "circuit",
  "title": "Deep Core Prospecting from the Grand Exchange (Haven): 5,000 cr, 10 exotic matter, deep core mining XP; 20 platinum ore mined at Bunda Belt (3 jumps)",
- "note": "Written by Zero, 2026-11-22 23:20 UTC (orders ENT-068, P6; rules F34, F37). Foreman Voss offers Deep Core Prospecting on the board of Grand Exchange Station and on six more Nebula boards (table missions, 23:09 UTC); once per pilot (our older copies). Bunda Belt (Nebula space, 3 jumps by Market Prime and Gold Run) reads 1,946 platinum of 8,000, richness 12, beside carbon 1,589 and tungsten 1,067 (census 5.9 h old); min_left 300 keeps the floor our gather there keeps. For the Nebula-born miners' rows only. A test of three results (F37): max_ships 3, the three pilots share the field but draw 60 of 1,646 above the floor. The first stop stores the starter cargo.",
+ "note": "Written by Zero, 2026-11-22 23:20 UTC (orders ENT-068, P6; rules F34, F37). Foreman Voss offers Deep Core Prospecting on the board of Grand Exchange Station and on six more Nebula boards (table missions, 23:09 UTC); once per pilot (our older copies). Bunda Belt (Nebula space, 3 jumps by Market Prime and Gold Run) reads 1,946 platinum of 8,000, richness 12, beside carbon 1,589 and tungsten 1,067 (census 5.9 h old); min_left 300 keeps the floor our gather there keeps. For the Nebula-born miners' rows only. A test of three results (F37): max_ships 3, the three pilots share the field but draw 60 of 1,646 above the floor. The first stop stores the starter cargo. 2026-11-22 23:33 UTC (Zero): its first runs (23:15 to 23:19 UTC, 2 at Sol Central, 16 at the Grand Exchange) read `deep_core_prospecting not offered` to newborn pilots of Mining 0 (table runs); our Voidborn pilots that took it held Mining near 10. The board's own gate is not read: requires.skills mining 3 is a guess that closes it to the newborns until they have mined, to be read again on the first pilot that reaches it.",
  "once": true,
  "max_ships": 3,
  "max_pilots": 30,
@@ -36,5 +36,10 @@
    "at": "haven:grand_exchange:grand_exchange_station",
    "store": "all"
   }
- ]
+ ],
+ "requires": {
+  "skills": {
+   "mining": 3
+  }
+ }
 }
