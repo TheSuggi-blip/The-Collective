@@ -48,10 +48,10 @@ Status: proven. Updated: 2026-11-21. Evidence: build.py 2026-11-17 12:19 and 20:
 - Next, the Recruitment Center (cap 200): 2,000,000 cr, 500 boards, 1,000 plate, 300 flex polymer, Corporation Management 3; when the purse holds its fee (ENT-056). Its flex: `buy-flex-ironlight-to-node-beta`.
 
 ### The Atria outpost, planned (orders.log ENT-052, P4 (b) and block APOLLO (2))
-Status: test. Updated: 2026-11-22. Evidence: tables lanes, fields and books, 2026-11-17 23:35 to 2026-11-18 00:40 UTC; admirals.log ENT-063; requests.log ENT-268, ENT-272; orders.log ENT-059; need atria-outpost-kit.
+Status: test. Updated: 2026-11-22. Evidence: tables lanes and fields; market books 2026-11-22 03:45 UTC; base_plan outpost; requests.log ENT-326; orders.log ENT-061; need atria-outpost-kit.
 
-Atria, the north outpost (the Fleet Admiral's choice), is founded once GSC-0044 runs by itself (ENT-056) on her allocation (ENT-268).
-- The kit: `outpost-kit-ironlight-to-node-beta`, one member hauler with an empty hold to Ironlight Crossroads (6 jumps from Node Beta), 1 kit at 150,150 cr or less with the tax, stored at Node Beta. Off until the allocation is in the builder's wallet.
-- The founding: found.py from Node Beta by GSC-0027, GSC-0050, Brachium, GSC-0049, Acrab, Atria (6 jumps), at the place she names (proposed: Atria Belt); 100,000 cr, the treasury first.
-- Its bunker: cells from Central Nexus (7 jumps), a route like `supply-bunker-gsc-0044`.
-- The place: Atria Belt aluminum and gold; Ice Fields water, nitrogen, deuterium; Emission Nebula argon, neon, hydrogen (table fields). Nearest station with fuel and a market: 6 jumps (ENT-063).
+Atria, the north outpost (the Fleet Admiral's choice), is funded (ENT-326: the builder holds the kit's credits; the fee from the treasury).
+- The kit: `outpost-kit-ironlight-to-node-beta`, on since 2026-11-22 behind `requires.ask`: Ironlight Crossroads (6 jumps from Node Beta) listed none at 03:45 UTC (before: 1 to 3 kits at 74,010 to 216,825 cr); the builder flies when a reader sees one at 148,663 or less. The one other ask: 999,999 at Arneb. Made by us, it takes an outpost frame assembler (600,000 cr) first.
+- The founding: found.py from Node Beta by Schedar, GSC-0050, Brachium, Nightveil, Acrab, Atria (6 jumps); 100,000 cr, the treasury.
+- Its bunker: our own cells, as at GSC-0044.
+- The place: Atria Belt aluminum, gold; Ice Fields water, nitrogen, deuterium; Emission Nebula argon, neon, hydrogen. Nearest fuel and market: 6 jumps.

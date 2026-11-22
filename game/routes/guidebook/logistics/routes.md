@@ -1,15 +1,15 @@
 # Logistics guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-22. Evidence: plan.py show --brief (applied 2026-11-22 00:10 UTC); fill.py check PASS 00:16 UTC; orders.log ENT-059 (block APOLLO); requests.log ENT-314, ENT-315; rules F8, F23.
+Status: proven. Updated: 2026-11-22. Evidence: plan.py show --brief (applied 2026-11-22 03:56 UTC); fill.py check; orders.log ENT-061 (block APOLLO, P5); requests.log ENT-326; rules F8, F23, F37.
 
-The plan file (`plan.py show`): a free hauler takes the first route open to it of the list First, its own routes, the list Then. What each earns now: `hive.py route <id>`; route by route: the tool fleet, view=standing, member Apollo.
+The plan file (`plan.py show`): a free hauler takes the first route open to it of the list First, its own routes, the list Then. Earnings: `hive.py route <id>`; the tool fleet, view=standing, member Apollo.
 
-- First: the once missions (`voidborn-*`, the first hunts, `mission-*`; rules F34, F35).
-- Own, member haulers (1 to 34): `@outpost-supply` (GSC-0044's repair stock: boards under `requires.reserve` below 45, plate in loads of 60; then the bunker under 4,000), then `buy-flex-ironlight-to-node-beta` (5 rows, on `requires.ask`) or `craft-boards-node-beta` (1 row).
-- Own, every hauler: `@stored-goods` (sell and carry on a bid of the last hour), `@craft-reserve` (fuel cells from stored hydrogen gas, a test of 1; steel from own iron; piping), `@train-hauler` (train-jumps-hauler, up to 40: piloting toward the freighter, a cost of fuel).
-- Then: `park`, which no ship should reach. Haulers gather nothing (rule F23).
-- What would change it: Atria's allocation paid (the kit route on); iron gifted to the hauler receivers (strict classes on: the steel crafts fill); a paid carry found (freight, passengers: tests.md) in place of the loop; the fleet's 24-hour steady net under zero (the loop weighed).
+- First: the once missions (`voidborn-*`, first hunts, `mission-*`; F34, F35).
+- Own, member haulers: `@outpost-supply` (GSC-0044's repair stock; the bunker from our own cells under 5,000, from bought cells under 4,000); the builder first `outpost-kit-ironlight-to-node-beta` (on `requires.ask`); 5 rows the flex for the Recruitment Center (Central Nexus, then Ironlight); 1 row `craft-boards-node-beta`.
+- Own, every hauler: `@stored-goods` (gifts of Trade's goods to Trade's receivers, off until strict classes, P5), `@craft-reserve` (cells, steel from own iron, piping), `@train-hauler` (up to 40: piloting toward the freighter, a cost of fuel).
+- Then: `park`, which no ship should reach.
+- What would change it: a kit at Ironlight (the builder flies); strict classes on (gifts, and the steel crafts fill); a paid carry found (tests.md) in place of the loop; the fleet's 24-hour steady net under zero.
 
 ### Route Templates
 Status: proven. Updated: 2026-11-21. Evidence: game/routes/templates/logistics.json (2026-11-21); plan.py templates; Suggi 2026-11-16 and rule F22.
