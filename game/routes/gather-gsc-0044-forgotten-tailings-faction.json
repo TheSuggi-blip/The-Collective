@@ -2,12 +2,12 @@
  "id": "gather-gsc-0044-forgotten-tailings-faction",
  "kind": "mine",
  "title": "A test: ore gathered at Forgotten Tailings (GSC-0044) into the faction's storage at our outpost CLTV Outpost GSC-0044 (same system); members of the faction only",
- "note": "Written by Zero, 2026-11-22 15:12 UTC (orders ENT-064, block ZERO: fly the outpost's belts with your faction miners; the supply chain iron-ore, kept by Mining, reads short: 152,514 of 166,923, -98,176 in 24 hours, hive.py supply show 15:07 UTC). Forgotten Tailings read 100,000 iron, 100,000 copper and 1,527 sol alloy ore at 15:05 UTC (tool system gsc_0044), untouched, beside GSC-0044 Belt (49,015 iron) where ten seated miners work. A copy of gather-gsc-0044-belt-faction with another belt: no jump between field and store, the outpost's bunker refuels members. Only in the rows of miners seated in the faction (twenty, table faction_members), never in a template. One ship, three results before a lift (rules F3, F37).",
+ "note": "Written by Zero, 2026-11-22 15:12 UTC (orders ENT-064, block ZERO: fly the outpost's belts with your faction miners; the supply chain iron-ore, kept by Mining, reads short: 152,514 of 166,923, -98,176 in 24 hours, hive.py supply show 15:07 UTC). Forgotten Tailings read 100,000 iron, 100,000 copper and 1,527 sol alloy ore at 15:05 UTC (tool system gsc_0044), untouched, beside GSC-0044 Belt (49,015 iron) where ten seated miners work. A copy of gather-gsc-0044-belt-faction with another belt: no jump between field and store, the outpost's bunker refuels members. Only in the rows of miners seated in the faction (twenty, table faction_members), never in a template. One ship, three results before a lift (rules F3, F37). 2026-11-22 19:21 UTC (fill.py, Zero): max_ships 1 -> 5.",
  "belt": "gsc_0044:forgotten_tailings",
  "station": "gsc_0044:da9de8c360c46ffee15dee4e7d1b8476:443f0c5b2a1fbbcea95d13b76a797fe9",
  "deposit": "faction",
  "minutes": 45,
- "max_ships": 1,
+ "max_ships": 5,
  "standing": true,
  "min_left": {
   "iron_ore": 20000
