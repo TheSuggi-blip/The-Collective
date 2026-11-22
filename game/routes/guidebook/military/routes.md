@@ -11,15 +11,15 @@ in the first ring (F33). Every hunt takes one side, one hunter to a herd.
 |---|---|---|---|
 | First | the once line (22 routes), each under its own limit | every ship | rule F35, money paid once |
 | Own | far herds and the filler's tests (`fill.py fill <role> --write`); the two weapon fits and their bulwark tests | 1 each | far bids; the fit decision |
-| `@hunter` | sales from storage, home hunts, then seven patina-grazer herds beyond the border (templates entry) | 1 each | combat XP where the home herds are full |
+| `@hunter` | sales from storage, home hunts, then seven patina-grazer herds and 35 far hunts that store their loot, all standing (templates entry) | 1 each | combat XP where the home herds are full |
 | Then | the crafts from own stores, `park` | 6 each | until strict classes give crafts to haulers |
 
-Every hunt carries `gift_to: trader`: with strict classes on, the loot goes
-to the trader named at its sell station and the hunt is standing work.
+Every hunt carries `gift_to: trader` for strict classes.
 Sized by the briefing's column carries: a herd carries one hunter. What
 changes it: a weapon that opens prey of 80 to 100 hull (tests.md), a group
 that kills, strict classes (no sales, no crafts for drones), a pirate at a
-hunt's place (dispatch closes it; a pack sets it off).
+hunt's place (dispatch closes it; a pack sets it off). The far standing
+hunts cost their fuel: the tool fleet, view=money, Military's metered/h.
 
 ### Hunts of grazers (`hunt.py`)
 Status: proven. Updated: 2026-11-21. Evidence: game/fleet/hunt.py; skill military-turn hunt_figures.py; routes.md entry versions of 2026-11-17 (--history).
