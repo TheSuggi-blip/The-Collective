@@ -2,7 +2,7 @@
  "id": "hunt-atlas-gas-pocket",
  "kind": "hunt",
  "title": "Halo-drifters and cinder-sylphs at Atlas Gas Pocket (lawless); noble condensate (690 cr) and ember glands (480 cr) sold at The Experiment",
- "note": "One hunter at the place (orders F9), a scout (orders.log ENT-011, block ORACLE (2): scouts hunt between reads). The halo-drifter test (hunt-test-atlas-halo-drifter) paid on its first run, 2026-11-16 03:11 UTC: 2 kills, 2 noble condensate sold at 690 cr, +1,259 cr in 18.7 minutes, hull 100% (data/routes/runs.jsonl). Cinder-sylphs graze the same place; Military's test at Achernar Gas Pocket sold their ember glands at 480 cr (3 runs, guidebook military.md), and Apophis gave the Atlas herd to Intel (queue.log ENT-065). Both species are hunted here so that the place opens on the two herds together: it read 2 halo-drifters and 3 cinder-sylphs at 03:25 UTC (data/wildlife/atlas.json). Ranched: 2 kills a run, no hunt below 4 animals. Noble condensate is bid 690 cr for 46 to 50 units at each of our six stations, ember gland 480 cr for about 50 (books of 04:10 to 04:19 UTC). Beyond policed space (F13): `alone` and an empty hold. Rainbow leviathans (predators, over 900 hull) stand at gossamer_null in the same system; this route never goes there. Written by Oracle 2026-11-16 04:23 UTC; it replaces the halo-drifter test in the scout plan.",
+ "note": "One hunter at the place (orders F9), a scout (orders.log ENT-011, block ORACLE (2): scouts hunt between reads). The halo-drifter test (hunt-test-atlas-halo-drifter) paid on its first run, 2026-11-16 03:11 UTC: 2 kills, 2 noble condensate sold at 690 cr, +1,259 cr in 18.7 minutes, hull 100% (data/routes/runs.jsonl). Cinder-sylphs graze the same place; Military's test at Achernar Gas Pocket sold their ember glands at 480 cr (3 runs, guidebook military.md), and Apophis gave the Atlas herd to Intel (queue.log ENT-065). Both species are hunted here so that the place opens on the two herds together: it read 2 halo-drifters and 3 cinder-sylphs at 03:25 UTC (data/wildlife/atlas.json). Ranched: 2 kills a run, no hunt below 4 animals. Noble condensate is bid 690 cr for 46 to 50 units at each of our six stations, ember gland 480 cr for about 50 (books of 04:10 to 04:19 UTC). Beyond policed space (F13): `alone` and an empty hold. Rainbow leviathans (predators, over 900 hull) stand at gossamer_null in the same system; this route never goes there. Written by Oracle 2026-11-16 04:23 UTC; it replaces the halo-drifter test in the scout plan. 2026-11-22 03:45 UTC (Oracle): gift_to trader (orders ENT-061, P5: the sales left in the plan become gifts to Trade's receivers; queue.log ENT-201): with data/fleet/strict-classes-on the loot goes to the trader named for sell_at (hunt.py, handover.py); off, nothing changes.",
  "place": "atlas:atlas_gas_pocket",
  "species": [
   "halo_drifter",
@@ -17,5 +17,6 @@
  "alone": true,
  "requires": {
   "empty_hold": true
- }
+ },
+ "gift_to": "trader"
 }

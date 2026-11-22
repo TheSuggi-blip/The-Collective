@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 41.
+Routes: 45.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -24,6 +24,10 @@ Routes: 41.
 | [give-miner-stores-node-alpha](give-miner-stores-node-alpha.json) | circuit | home space | A miner gives its stores at Node Alpha Processing Station: building inputs and the reserve ores to the haulers, ices, null matter, lead and soma to the traders (strict classes) | up to 3 ships, with 50 iron_ore stored at node_alpha_processing_station, off | TBD | TBD | TBD | TBD | -- |
 | [give-miner-stores-node-beta](give-miner-stores-node-beta.json) | circuit | home space | A miner gives its stores at Node Beta Industrial Station: building inputs and the reserve ores to the haulers, ices, null matter, lead and soma to the traders (strict classes) | up to 3 ships, with 50 iron_ore stored at node_beta_industrial_station, off | TBD | TBD | TBD | TBD | -- |
 | [give-miner-stores-synchrony](give-miner-stores-synchrony.json) | circuit | home space | A miner gives its stores at Synchrony Hub: building inputs and the reserve ores to the haulers, ices, null matter, lead and soma to the traders (strict classes) | up to 3 ships, with 50 iron_ore stored at synchrony_hub, off | TBD | TBD | TBD | TBD | -- |
+| [give-scout-stores-central-nexus](give-scout-stores-central-nexus.json) | circuit | home space | A scout gives its stores at Central Nexus: building inputs to the haulers, everything else it holds to the traders (strict classes) | up to 2 ships, with 50 iron_ore stored at central_nexus, off | TBD | TBD | TBD | TBD | -- |
+| [give-scout-stores-experiment](give-scout-stores-experiment.json) | circuit | home space | A scout gives its stores at The Experiment: building inputs to the haulers, everything else it holds to the traders (strict classes) | up to 2 ships, with 50 iron_ore stored at the_experiment_research_station, off | TBD | TBD | TBD | TBD | -- |
+| [give-scout-stores-node-beta](give-scout-stores-node-beta.json) | circuit | home space | A scout gives its stores at Node Beta Industrial Station: building inputs to the haulers, everything else it holds to the traders (strict classes) | up to 2 ships, with 50 iron_ore stored at node_beta_industrial_station, off | TBD | TBD | TBD | TBD | -- |
+| [give-scout-stores-synchrony](give-scout-stores-synchrony.json) | circuit | home space | A scout gives its stores at Synchrony Hub: building inputs to the haulers, everything else it holds to the traders (strict classes) | up to 2 ships, with 50 iron_ore stored at synchrony_hub, off | TBD | TBD | TBD | TBD | -- |
 | [sell-curd-central-nexus](sell-curd-central-nexus.json) | circuit | home space | Stored verdigris curd sold into the curd bid at Central Nexus, where the drones stored it | up to 1 ships, with 2 verdigris_curd stored at central_nexus, while central_nexus bids 250 cr for verdigris_curd, off | TBD | TBD | TBD | TBD | -- |
 | [sell-curd-experiment](sell-curd-experiment.json) | circuit | home space | Stored verdigris curd sold into the curd bid at The Experiment, where the drones stored it | up to 1 ships, with 2 verdigris_curd stored at the_experiment_research_station, while the_experiment_research_station bids 250 cr for verdigris_curd, off | TBD | TBD | TBD | TBD | -- |
 | [sell-curd-node-beta](sell-curd-node-beta.json) | circuit | home space | Stored verdigris curd sold into the curd bid at Node Beta, where the drones stored it | up to 1 ships, with 2 verdigris_curd stored at node_beta_industrial_station, while node_beta_industrial_station bids 250 cr for verdigris_curd, off | TBD | TBD | TBD | TBD | -- |

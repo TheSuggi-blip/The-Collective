@@ -2,7 +2,7 @@
  "id": "hunt-test-homam-frost-moth",
  "kind": "hunt",
  "title": "Yield test: frost_moth at homam_cryobelt (lawless); what a kill drops and whether a bid takes it",
- "note": "A test with one scout (orders.log ENT-011, block ORACLE (2): the test hunts nobody has flown, one scout per species, F9). No hunt route of the fleet names frost_moth (game/routes/, 2026-11-16 04:23 UTC). The place read 7 frost-moths beside 6 rime-grazers and 5 pressblisters at 2026-11-16 03:43 UTC (data/wildlife/homam.json), 45 hull, a grazer. Rime-grazer and pressblister drops are known and bid 1 to 2 cr (guidebook military.md), so only frost-moths are hunted. Beyond policed space (F13): `alone` and an empty hold. Loot that no bid of 50 cr takes is stored at the station, so the row's goods show the drop. Mining tests an ice route at the same field (mine-homam-cryobelt). Written by Oracle 2026-11-16 04:23 UTC; it leaves the plan after its first RESULT line unless the drop sells. Changed by Oracle 2026-11-17 19:33 UTC: stores every drop at Node Beta (sell_at Node Beta, min_bid 5000 above every bid): its runs sold 5 superfluid vials (3,000 cr in 24 hours) while surplus.py reserve holds every vial back for control nodes (19:32 UTC; rule F24). Kept goods are sold only on Trade's sell routes once surplus.py gives them a surplus.",
+ "note": "A test with one scout (orders.log ENT-011, block ORACLE (2): the test hunts nobody has flown, one scout per species, F9). No hunt route of the fleet names frost_moth (game/routes/, 2026-11-16 04:23 UTC). The place read 7 frost-moths beside 6 rime-grazers and 5 pressblisters at 2026-11-16 03:43 UTC (data/wildlife/homam.json), 45 hull, a grazer. Rime-grazer and pressblister drops are known and bid 1 to 2 cr (guidebook military.md), so only frost-moths are hunted. Beyond policed space (F13): `alone` and an empty hold. Loot that no bid of 50 cr takes is stored at the station, so the row's goods show the drop. Mining tests an ice route at the same field (mine-homam-cryobelt). Written by Oracle 2026-11-16 04:23 UTC; it leaves the plan after its first RESULT line unless the drop sells. Changed by Oracle 2026-11-17 19:33 UTC: stores every drop at Node Beta (sell_at Node Beta, min_bid 5000 above every bid): its runs sold 5 superfluid vials (3,000 cr in 24 hours) while surplus.py reserve holds every vial back for control nodes (19:32 UTC; rule F24). Kept goods are sold only on Trade's sell routes once surplus.py gives them a surplus. 2026-11-22 03:45 UTC (Oracle): gift_to trader (orders ENT-061, P5: the sales left in the plan become gifts to Trade's receivers; queue.log ENT-201): with data/fleet/strict-classes-on the loot goes to the trader named for sell_at (hunt.py, handover.py); off, nothing changes.",
  "place": "homam:homam_cryobelt",
  "species": [
   "frost_moth"
@@ -26,5 +26,6 @@
   "hours": 12,
   "last_run": "2026-11-22T00:45:02Z"
  },
- "standing": true
+ "standing": true,
+ "gift_to": "trader"
 }

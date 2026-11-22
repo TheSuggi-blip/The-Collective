@@ -1,0 +1,60 @@
+{
+ "id": "give-scout-stores-central-nexus",
+ "kind": "circuit",
+ "title": "A scout gives its stores at Central Nexus: building inputs to the haulers, everything else it holds to the traders (strict classes)",
+ "note": "2026-11-22 03:45 UTC (Oracle): orders ENT-061, block ORACLE and P5 (the sales left in the plan become gifts to Trade's receivers; each class's activities its own); rules F23, F24. Replaces in the scouts' plan the sale and carry circuits of their stored soma (Trade's work with strict classes on) and hands the ores, plate, piping and wiring the scouts gathered or made to the hauler named for this station (admirals.log ENT-081), the soma, null matter, rare ores and loot to the trader named for it (data/fleet/receivers.json, handover.py). The form of give-miner-stores-node-beta (Zero). A gift gives nothing while data/fleet/strict-classes-on is absent, so the route stands off until the switch is on (requests.log ENT-332 asks a requires gate on the switch); then on. requires.stored: a pilot whose own storage here holds 50 iron ore or more.",
+ "max_ships": 2,
+ "status": "off",
+ "requires": {
+  "stored": {
+   "at": "central_nexus",
+   "item": "iron_ore",
+   "min": 50
+  }
+ },
+ "stops": [
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "store": "all",
+   "gift": [
+    {
+     "to": "hauler",
+     "items": [
+      "iron_ore",
+      "copper_ore",
+      "steel_plate",
+      "copper_piping",
+      "copper_wiring",
+      "carbon_ore",
+      "silicon_ore",
+      "nickel_ore",
+      "gold_ore",
+      "platinum_ore"
+     ],
+     "source": "storage"
+    },
+    {
+     "to": "trader",
+     "items": [
+      "voidborn_neural_soma",
+      "null_matter",
+      "lead_ore",
+      "tungsten_ore",
+      "palladium_ore",
+      "sol_alloy_ore",
+      "energy_crystal",
+      "crystal_melt",
+      "raw_xeno_meat",
+      "creature_carapace",
+      "caustic_sac",
+      "crystallized_biogas",
+      "ember_gland",
+      "liquid_nitrogen",
+      "nitrogen_bladder"
+     ],
+     "source": "storage"
+    }
+   ]
+  }
+ ]
+}
