@@ -2,7 +2,7 @@
  "id": "hunt-lilii-borea-gas-cloud-drift-ray",
  "kind": "hunt",
  "title": "drift_ray at lilii_borea_gas_cloud; loot sold at The Obsidian Well",
- "note": "Written by routemaker.py from the herd's count, the loot of 155 runs of ours and the order book; an estimate of 811 cr per hunter-hour, not a measurement. A test: one ship, the ranching rules kept. Added as a test by fill.py on 2026-11-18 01:05 UTC (Apophis): one ship until its first RESULT line is read. 2026-11-22 00:08 UTC (Apophis): gift_to trader (queue.log ENT-200, ENT-201: strict classes, Suggi D244): with the switch on, the loot goes into the trader named for sell_at; off, nothing changes.",
+ "note": "Written by routemaker.py from the herd's count, the loot of 155 runs of ours and the order book; an estimate of 811 cr per hunter-hour, not a measurement. A test: one ship, the ranching rules kept. Added as a test by fill.py on 2026-11-18 01:05 UTC (Apophis): one ship until its first RESULT line is read. 2026-11-22 00:08 UTC (Apophis): gift_to trader (queue.log ENT-200, ENT-201: strict classes, Suggi D244): with the switch on, the loot goes into the trader named for sell_at; off, nothing changes. 2026-11-22 01:00 UTC (Apophis): standing work (rule F23: drones hunt for experience where the home herds are full; fill.py check 00:59 UTC: 8 drones waiting). Its two runs lost 29 to 84 cr in all, the fuel of a hunt whose loot waits for a bid.",
  "place": "lilii_borea:lilii_borea_gas_cloud",
  "species": [
   "drift_ray"
@@ -26,5 +26,6 @@
   "hours": 12,
   "last_run": "2026-11-21T20:06:02Z"
  },
- "gift_to": "trader"
+ "gift_to": "trader",
+ "standing": true
 }
