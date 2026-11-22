@@ -228,13 +228,24 @@ def cargo():
     return {r.get('item_id'): int(r.get('quantity') or 0) for r in rows if isinstance(r, dict)} if isinstance(rows, list) else {}
 
 
-def store_list(want, hold):
+def store_list(want, hold, keep=()):
     """The goods a stop's `store` moves from the hold into storage: the named ones that are aboard, or with `store: "all"`
-    every good aboard. The once routes of First Hunt and First Steps left loot and ore aboard, and a few units closed every
-    route with `requires.empty_hold` to the pilot (requests.log ENT-120, 2026-11-16)."""
+    every good aboard but `keep` (the ammunition of a fitted weapon: aboard_ammo). The once routes of First Hunt and First
+    Steps left loot and ore aboard, and a few units closed every route with `requires.empty_hold` to the pilot (requests.log
+    ENT-120, 2026-11-16); a give route's `store: "all"` stored a cannon ship's plasma packs (requests.log ENT-352)."""
     if want == 'all':
-        return [item for item, n in hold.items() if n]
+        return [item for item, n in hold.items() if n and item not in keep]
     return [item for item in (want or []) if hold.get(item)]
+
+
+def aboard_ammo(hold):
+    """The ammunition aboard that a fitted weapon fires: kept aboard by `store: "all"`, as hunt.py keeps it (requests
+    ENT-345, ENT-352). No ammunition aboard: no call. The rule: handover.fitted_ammo."""
+    import handover
+    ids = handover.ammo(str(DATA)) & {item for item, n in hold.items() if n}
+    if not ids:
+        return set()
+    return handover.fitted_ammo(body(raw('get_ship')).get('modules') or [], handover.catalog_items(str(DATA / 'catalog'))) & ids
 
 
 def deposit(item, units, target='self'):
@@ -673,7 +684,8 @@ for n, stop in enumerate(ROUTE['stops']):
         time.sleep(11)
         hand_in(done, onetime)
     hold = cargo()
-    for item in store_list(stop.get('store'), hold):
+    keep = aboard_ammo(hold) if 'all' in (stop.get('store'), stop.get('store_faction')) else set()
+    for item in store_list(stop.get('store'), hold, keep):
         if hold.get(item):
             deposit(item, hold[item])
     for want in stop['gift'] if isinstance(stop.get('gift'), list) else [stop['gift']] if stop.get('gift') else []:   # r22: goods into the storage of another pilot of ours
@@ -684,7 +696,7 @@ for n, stop in enumerate(ROUTE['stops']):
             notes.append(handed['note'])
     if stop.get('store_faction'):                    # hold -> the faction's storage here (an outpost of ours, a lockbox)
         hold = cargo()
-        for item in store_list(stop.get('store_faction'), hold):
+        for item in store_list(stop.get('store_faction'), hold, keep):
             if hold.get(item):
                 deposit(item, hold[item], 'faction')
     if stop.get('burn_cells'):                       # carried cells into the tank instead of a station's fuel

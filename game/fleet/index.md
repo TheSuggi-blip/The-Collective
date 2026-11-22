@@ -832,6 +832,10 @@ Run by hand.
 wallet.py [check]            every wallet against the floors; HALT for a pilot under 3,000 cr
 wallet.py topup [--dry-run]  give each pilot under LOW credits up to TARGET from a rich ship of its division
 wallet.py sweep [--dry-run]  the part above KEEP_SHIP of the richest ships to the leader, the leader's into the treasury
+wallet.py fund <pilot> <credits> --why "<text>" [--hours H]
+                             the treasury pays one pilot for a buy: the next pass the leader stands docked withdraws the
+                             credits and gives them; the sweep and the top-ups leave that much with the pilot for H hours
+wallet.py fund --show        the funds on record and their state
 --data <dir>                 the unit's data folder (default: the fleet's)
 ```
 

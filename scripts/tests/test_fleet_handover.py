@@ -341,3 +341,35 @@ class HuntHandOverTests(Data):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class UndockedGiverTests(Data):
+    """Apophis, requests ENT-352 (2): 15 of 783 give runs since 09:35 UTC on 2026-11-22 gave nothing, every deposit
+    answered `not_docked`; the goods stayed with the giver and the same ship was sent again. A refused gift docks
+    once and tries again; the note says so."""
+
+    def test_a_gift_refused_for_an_undocked_giver_docks_once_and_gives(self):
+        state = {"docked": False, "hold": {"creature_carapace": 12, "lead_ore": 3}, "given": {}}
+        calls = []
+
+        def raw(action, params=None, group="spacemolt"):
+            calls.append(action)
+            if action == "dock":
+                state["docked"] = True
+                return {"structuredContent": {"ok": True}}
+            if action == "view":
+                return {"structuredContent": {"items": []}}
+            if action == "deposit":
+                if not state["docked"]:
+                    return {"error": "API call failed: not_docked: You must be docked at a station to perform this act"}
+                for row in params.get("items") or [{"item_id": params["item_id"], "quantity": params["quantity"]}]:
+                    state["hold"][row["item_id"]] -= row["quantity"]
+                return {"structuredContent": {"ok": True}}
+            return {}
+
+        out = handover.give(raw, lambda: dict(state["hold"]), lambda text: None, lambda s: None, "drone-8", "central_nexus",
+                            {"to": "trader", "items": "all", "source": "cargo"}, str(self.data), "give-drone-stores-central-nexus")
+        self.assertEqual(out["given"], {"creature_carapace": 12, "lead_ore": 3})
+        self.assertEqual(calls.count("dock"), 1)
+        self.assertIn("docked again", out["note"] or "")
+        self.assertIn("docked again", out["line"])

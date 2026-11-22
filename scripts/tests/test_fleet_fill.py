@@ -561,6 +561,24 @@ class HeldBackTests(Tree):
         _seen, miner = self.read("miner")
         self.assertNotIn("far-freight", [rid for _v, rid in miner["closed"].get(self.fill.CLAIMED, [])])  # the claimer's own
 
+    def test_a_claimed_hunt_that_gives_its_loot_stays_claimed_under_strict_classes(self):
+        # errors.log ENT-131: with data/fleet/strict-classes-on a hunt with `gift_to` is standing work (routes.gives),
+        # and claims() left standing work out of every claim, so the filler put two hunts Military claimed (admirals.log
+        # ENT-088) into the command plan at 09:57 and again at 12:39 UTC. A claim names a herd: it holds for a hunt.
+        hunt = {"id": "hunt-far-rays", "kind": "hunt", "title": "t", "max_ships": 1, "place": "home:core", "gift_to": "trader"}
+        (self.root / "routes" / "hunt-far-rays.json").write_text(json.dumps(hunt, indent=1) + "\n", encoding="ascii")
+        stamp = time.strftime("%Y-%m-%d %H:%M", time.gmtime())
+        (self.top / "communications").mkdir()
+        (self.top / "communications" / "admirals.log").write_text(
+            "## [ENT-001] | %s UTC | Apophis | claim | ref: game/routes/hunt-far-rays.json\nClaims: hunt-far-rays (1).\nWhy: a test.\n" % stamp, encoding="ascii")
+        workclass = sys.modules["workclass"]
+        old = workclass.STRICT
+        workclass.STRICT = True
+        self.addCleanup(setattr, workclass, "STRICT", old)
+        seen = self.fill.survey(str(self.root), str(self.data))
+        self.assertTrue(self.fill.routefiles.standing(hunt))                                   # strict classes: standing work
+        self.assertEqual((self.fill.claims(seen), seen.get("claims_error")), ({"hunt-far-rays": "Apophis"}, None))
+
 
 class HuntRuleTests(Tree):
     # Zero, report of 2026-11-16: the gate offered Intel's herd to a miner. Rule F16: Intel and Military hunt, Mining,

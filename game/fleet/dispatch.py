@@ -533,7 +533,8 @@ def stored_missing(data, route, pilot, rows):
     every 40 minutes), or that storage was not read again since the pilot's last run of this route began: a carry
     run takes the load out, and the old reading must not send the pilot a second time. Storage is personal: only the
     pilot that stored a load can withdraw it (Zero, requests ENT-117: about 11,100 water ice in miners' storage at
-    stations whose bids are gone)."""
+    stations whose bids are gone). A want with `items` (a list) is met by any one of them at `min` (requests ENT-349);
+    a list of wants means all of them."""
     need = (route.get("requires") or {}).get("stored")
     wants = [need] if isinstance(need, dict) else [w for w in need or [] if isinstance(w, dict)]
     if not wants:
@@ -543,7 +544,13 @@ def stored_missing(data, route, pilot, rows):
     read = read_time(mine.get("read_at"))
     last = max((read_time(r.get("started")) or 0 for r in rows if r.get("route") == route.get("id") and r.get("pilot") == pilot["name"]), default=0)
     for want in wants:
-        held = int(((mine.get("stations") or {}).get(str(want.get("at"))) or {}).get(str(want.get("item")), 0) or 0)
+        there = (mine.get("stations") or {}).get(str(want.get("at"))) or {}
+        if isinstance(want.get("items"), list):          # any one of them opens it (Zero, requests ENT-349)
+            names = [str(i) for i in want["items"]]
+            if not any(int(there.get(name, 0) or 0) >= int(want.get("min") or 1) for name in names):
+                return "stores none of %s at %s at %s or more" % (", ".join(names), want.get("at"), want.get("min") or 1)
+            continue
+        held = int(there.get(str(want.get("item")), 0) or 0)
         if held < int(want.get("min") or 1):
             return "stores %d %s at %s, %s wanted" % (held, want.get("item"), want.get("at"), want.get("min") or 1)
     if read is None or (last and read <= last):

@@ -157,9 +157,35 @@ class StoreStepTests(unittest.TestCase):
         self.assertEqual(pick(None, hold), [])
         self.assertEqual(pick("all", {}), [])
 
+    def test_store_all_keeps_the_ammunition_of_a_fitted_weapon_aboard(self):
+        # Apophis, requests ENT-352: a give route's `store: "all"` put a Plasma Cannon II ship's 2 plasma packs into
+        # its storage at The Experiment; hunt.py keeps them aboard since c3a8f585. The circuit stop keeps them too.
+        sys.path.insert(0, str(FLEET))                                                  # route_run.py puts its folder there itself
+        self.addCleanup(sys.path.remove, str(FLEET))
+        space = functions("store_list", "aboard_ammo")
+        pick = space["store_list"]
+        hold = {"dispersal_plasma_cell_pack": 2, "creature_carapace": 7, "iron_slug_case": 4}
+        with tempfile.TemporaryDirectory() as folder:
+            data = Path(folder)
+            (data / "catalog").mkdir()
+            (data / "catalog" / "ammo.json").write_text(json.dumps(["dispersal_plasma_cell_pack", "iron_slug_case"]))
+            (data / "catalog" / "0.732.0.json").write_text(json.dumps({"items": [
+                {"id": "plasma_cannon_ii", "type": "weapon", "ammo_type": "plasma"},
+                {"id": "dispersal_plasma_cell_pack", "category": "ammo", "effect": {"type": "ammo", "subtype": "plasma"}},
+                {"id": "iron_slug_case", "category": "ammo", "effect": {"type": "ammo", "subtype": "kinetic"}}]}))
+            calls = []
+            space.update(DATA=data, body=lambda d: d, raw=lambda action, params=None, group="spacemolt": calls.append(action) or
+                         {"modules": [{"type_id": "plasma_cannon_ii", "magazine_size": 80, "current_ammo": 0}]})
+            keep = space["aboard_ammo"](hold)
+            self.assertEqual(keep, {"dispersal_plasma_cell_pack"})                       # the slugs fit no weapon aboard
+            self.assertEqual(pick("all", hold, keep), ["creature_carapace", "iron_slug_case"])
+            self.assertEqual(pick(["dispersal_plasma_cell_pack"], hold, keep), ["dispersal_plasma_cell_pack"])  # named: stored
+            self.assertEqual(space["aboard_ammo"]({"creature_carapace": 7}), set())
+            self.assertEqual(calls, ["get_ship"])                                          # no ammunition aboard: no call
+
     def test_the_store_step_uses_store_list(self):
         source = (FLEET / "route_run.py").read_text(encoding="ascii")
-        self.assertIn("for item in store_list(stop.get('store'), hold):", source)
+        self.assertIn("for item in store_list(stop.get('store'), hold, keep):", source)
 
 
 class StoreFactionStepTests(unittest.TestCase):
@@ -647,7 +673,7 @@ class GiftStepTests(unittest.TestCase):
         self.assertEqual(world["handover"], [])                               # nothing moved: nothing for the ledger
         source = (FLEET / "route_run.py").read_text(encoding="ascii")
         self.assertIn("handover.give(raw, cargo, say, time.sleep, pilot, base, want, str(DATA), ROUTE['id'])", source)
-        store, gift, faction = (source.index("for item in store_list(stop.get('store'), hold):"), source.index("handover.give("),
+        store, gift, faction = (source.index("for item in store_list(stop.get('store'), hold, keep):"), source.index("handover.give("),
                                 source.index("if stop.get('store_faction'):"))
         self.assertTrue(store < gift < faction)                               # after `store`, before `store_faction`
 

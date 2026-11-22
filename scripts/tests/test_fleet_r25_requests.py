@@ -163,14 +163,14 @@ class FittedAmmoTests(unittest.TestCase):
              {"id": "ember_gland", "category": "loot"}]
 
     def test_an_empty_magazine_keeps_the_packs_its_weapon_fires(self):
-        fitted_ammo = hunt_function("fitted_ammo")
+        fitted_ammo = handover.fitted_ammo
         modules = [{"type_id": "plasma_cannon_ii", "magazine_size": 80, "current_ammo": 0}, {"type_id": "pulse_laser_i"}]
         self.assertEqual(fitted_ammo(modules, self.ITEMS), {"dispersal_plasma_cell_pack"})
         self.assertEqual(fitted_ammo([{"type_id": "x", "loaded_ammo_id": "iron_slug_case"}], self.ITEMS), {"iron_slug_case"})
         self.assertEqual(fitted_ammo([{"type_id": "plasma_cannon_ii"}], []), set())                 # no catalog: the loaded id only
 
     def test_the_newest_catalog_copy_is_read(self):
-        catalog_items = hunt_function("catalog_items")
+        catalog_items = handover.catalog_items
         with tempfile.TemporaryDirectory() as folder:
             for name, items in (("0.723.2.json", [{"id": "old"}]), ("0.732.0.json", [{"id": "new"}]), ("ammo.json", ["x"])):
                 Path(folder, name).write_text(json.dumps({"items": items} if name[0].isdigit() else items))

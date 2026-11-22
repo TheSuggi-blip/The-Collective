@@ -172,6 +172,43 @@ def ammo(data=None):
     return set(found) if isinstance(found, list) else set()
 
 
+def fitted_ammo(modules, items):
+    """The ammunition the fitted weapons fire (requests ENT-345): each weapon's loaded ammo id, and every catalog ammo
+    whose `effect.subtype` is a fitted weapon's `ammo_type` (an empty magazine names no loaded id, and its packs in
+    the hold were stored). modules: the get_ship rows; items: the catalog's items ([] when none was read). The one
+    home of the rule: hunt.py and route_run.py both call it."""
+    by_id = {i.get("id"): i for i in items or [] if isinstance(i, dict)}
+    out, kinds = set(), set()
+    for m in modules or []:
+        if not isinstance(m, dict):
+            continue
+        if m.get("loaded_ammo_id"):
+            out.add(m["loaded_ammo_id"])
+        kind = m.get("ammo_type") or (by_id.get(m.get("type_id")) or {}).get("ammo_type")
+        if kind:
+            kinds.add(kind)
+    for item in by_id.values():
+        effect = item.get("effect") if isinstance(item.get("effect"), dict) else {}
+        if item.get("category") == "ammo" and effect.get("subtype") in kinds:
+            out.add(item["id"])
+    return out
+
+
+def catalog_items(folder):
+    """The items of the newest catalog copy in data/catalog (<version>.json), [] when none is readable."""
+    best = None
+    for path in Path(folder).glob("*.json"):
+        try:
+            key = tuple(int(p) for p in path.name[:-5].split("."))
+        except ValueError:
+            continue
+        if best is None or key > best[0]:
+            best = (key, path)
+    found = read_json(best[1], {}) if best else {}
+    items = found.get("items") if isinstance(found, dict) else []
+    return items if isinstance(items, list) else []
+
+
 def view(raw, base):
     """{item: units} of the pilot's own storage here (`view` with station_id), or None when the answer holds no items."""
     d = raw("view", {"station_id": base}, "spacemolt_storage")
@@ -244,7 +281,19 @@ def give(raw, cargo, say, sleep, giver, base, value, data=None, route=None, cloc
     if not plan:
         out["line"] = "RESULT gift %s -> %s at %s: nothing to give (%s)" % (giver, to, base, "items %s" % (spec.get("items", "all")))
         return out
-    given, errors = {}, []
+    given, errors, docked_again = {}, [], []
+
+    def put(params):
+        """One deposit; a giver found undocked docks once and tries again (Apophis, requests ENT-352 (2))."""
+        d = raw("deposit", params, "spacemolt_storage")
+        if not docked_again and isinstance(d, dict) and "not_docked" in str(d.get("error")):
+            docked_again.append(True)
+            say("gift to %s: the giver is not docked at %s: dock and try again" % (to, base))
+            raw("dock", {}, "spacemolt")
+            sleep(TICK)
+            d = raw("deposit", params, "spacemolt_storage")
+        return d
+
     for source in ("cargo", "storage"):
         batch = {item: p[source] for item, p in plan.items() if p[source]}
         if not batch:
@@ -255,8 +304,8 @@ def give(raw, cargo, say, sleep, giver, base, value, data=None, route=None, cloc
         went, bulk = {}, False
         if len(batch) > 1:                               # the v2 `items` list: many goods in one call
             bulk = True
-            d = raw("deposit", {"items": [{"item_id": item, "quantity": units} for item, units in sorted(batch.items())],
-                                "source": source, "target": to}, "spacemolt_storage")
+            d = put({"items": [{"item_id": item, "quantity": units} for item, units in sorted(batch.items())],
+                     "source": source, "target": to})
             sleep(TICK)
             went = moved(read())
             if not any(went.values()) and "error" not in (d if isinstance(d, dict) else {}):
@@ -268,7 +317,7 @@ def give(raw, cargo, say, sleep, giver, base, value, data=None, route=None, cloc
             rest = units - went.get(item, 0)
             if rest <= 0:
                 continue
-            d = raw("deposit", {"item_id": item, "quantity": rest, "source": source, "target": to}, "spacemolt_storage")
+            d = put({"item_id": item, "quantity": rest, "source": source, "target": to})
             sleep(TICK)
             if isinstance(d, dict) and "error" in d:
                 errors.append("%s: %s" % (item, " ".join(str(d.get("error")).split())[:80]))
@@ -285,6 +334,9 @@ def give(raw, cargo, say, sleep, giver, base, value, data=None, route=None, cloc
         out["note"] = "gift to %s at %s: %s of %s given, kept %s%s" % (to, base, sum(given.values()), sum(out["asked"].values()), words(out["left"]),
                                                                          (" (%s)" % "; ".join(errors[:3])) if errors else "")
     out["line"] = "RESULT gift %s -> %s at %s: %s%s" % (giver, to, base, words(given), (" | refused, kept by the giver: %s" % words(out["left"])) if out["left"] else "")
+    if docked_again:                                   # the run's row says how often a giver stood undocked (ENT-352)
+        out["note"] = (out["note"] + "; " if out["note"] else "gift to %s at %s: " % (to, base)) + "the giver was not docked, docked again"
+        out["line"] += " | the giver was not docked, docked again"
     return out
 
 

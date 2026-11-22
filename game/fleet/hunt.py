@@ -259,43 +259,8 @@ def loot_own():
     return new
 
 
-def fitted_ammo(modules, items):
-    """The ammunition the fitted weapons fire (requests ENT-345): each weapon's loaded ammo id, and every catalog ammo
-    whose `effect.subtype` is a fitted weapon's `ammo_type` (an empty magazine names no loaded id, and its packs in
-    the hold were stored). modules: the get_ship rows; items: the catalog's items ([] when none was read)."""
-    by_id = {i.get('id'): i for i in items or [] if isinstance(i, dict)}
-    out, kinds = set(), set()
-    for m in modules or []:
-        if not isinstance(m, dict):
-            continue
-        if m.get('loaded_ammo_id'):
-            out.add(m['loaded_ammo_id'])
-        kind = m.get('ammo_type') or (by_id.get(m.get('type_id')) or {}).get('ammo_type')
-        if kind:
-            kinds.add(kind)
-    for item in by_id.values():
-        effect = item.get('effect') if isinstance(item.get('effect'), dict) else {}
-        if item.get('category') == 'ammo' and effect.get('subtype') in kinds:
-            out.add(item['id'])
-    return out
-
-
-def catalog_items(folder):
-    """The items of the newest catalog copy in data/catalog (<version>.json), [] when none is readable."""
-    best, items = None, []
-    for path in glob.glob(os.path.join(folder, '*.json')):
-        try:
-            key = tuple(int(p) for p in os.path.basename(path)[:-5].split('.'))
-        except ValueError:
-            continue
-        if best is None or key > best[0]:
-            best = (key, path)
-    try:
-        with open(best[1], encoding='utf-8') as fh:
-            items = json.load(fh).get('items') or []
-    except (TypeError, OSError, ValueError, AttributeError):
-        items = []
-    return items if isinstance(items, list) else []
+fitted_ammo = handover.fitted_ammo               # requests ENT-345, ENT-352: the rule's one home is handover.py
+catalog_items = handover.catalog_items
 
 
 def ammo_ids():

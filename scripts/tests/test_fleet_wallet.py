@@ -164,5 +164,91 @@ class WalletTests(unittest.TestCase):
         self.assertIsNone(dispatch.why_not(dict(pilot, credits=5000), "gather", gather, state)[0])
 
 
+class FundTests(unittest.TestCase):
+    """Orders ENT-063 (Unity's block), requests ENT-345/ENT-348: the treasury pays one pilot for a buy (one Recursion
+    for Military). The game withdraws from the treasury only while the leader stands docked (2026-11-22 13:58 UTC:
+    `not_docked`); the first fund ever takes 1 cr first (rule F12); the sweep and the top-ups leave the fund alone."""
+
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory(prefix="fleet-fund-test-")
+        self.addCleanup(self.temp.cleanup)
+        self.data = Path(self.temp.name)
+        (self.data / "fleet").mkdir()
+        (self.data / "fleet" / "flagships.json").write_text(json.dumps({"Prime Directive": {"admiral": "Unity", "division": "Command", "role": "command"}}))
+        (self.data / "fleet" / "onetime.json").write_text("[]")
+        self.wallet = load("wallet")
+        self.treasury = [1663512]
+        self.calls, self.booked = [], []
+        w = self.wallet
+        w.FUND_READ = 0
+        w.treasury_read = lambda leader: self.treasury[0]
+
+        def withdraw(leader, credits):
+            self.calls.append(("withdraw", leader, credits))
+            self.treasury[0] -= credits
+            return True, '{"result": "ok"}'
+        w.withdraw = withdraw
+        w.give = lambda donor, pilot, credits: (self.calls.append(("give", donor, pilot, credits)), (True, "ok"))[1]
+        w.gate_book = lambda pilot, title, amount: self.booked.append((pilot, title, amount))
+        self.put(docked=False)
+
+    def put(self, docked, drone=20000):
+        ships = [{"name": "Prime Directive", "credits": 61648, "docked": docked}, {"name": "drone-4", "credits": drone}]
+        (self.data / "fleet" / "fleet.json").write_text(json.dumps({"ships": ships}))
+
+    def test_a_fund_waits_for_a_docked_leader_probes_one_credit_then_withdraws_and_gives(self):
+        w, now = self.wallet, time.time()
+        self.assertEqual(w.add_fund(str(self.data), "drone-4", 315699, "Recursion for Military", 6, now), 0)
+        self.assertEqual(w.add_fund(str(self.data), "drone-4", 1000, "twice", 6, now), 1)            # one open fund a pilot
+        self.assertEqual(w.serve_funds(str(self.data), "Prime Directive", now, False), 0)
+        self.assertEqual(self.calls, [])                                                             # not docked: nothing called
+        self.put(docked=True)
+        self.assertEqual(w.serve_funds(str(self.data), "Prime Directive", now, False), 0)
+        self.assertEqual(self.calls, [("withdraw", "Prime Directive", 1), ("withdraw", "Prime Directive", 315699),
+                                      ("give", "Prime Directive", "drone-4", 315699)])
+        self.assertEqual([a for _p, _t, a in self.booked], [1, 315699])                              # paid once, never steady
+        self.assertFalse(any(t.startswith("Faction treasury: credits deposited") for _p, t, _a in self.booked))
+        self.assertEqual(w.funds(str(self.data))[0]["state"], "given")
+        self.assertEqual(w.funded(str(self.data), time.time()), {"drone-4": 315699})
+        self.assertEqual(w.funded(str(self.data), time.time() + 7 * 3600), {})                        # it ends by itself
+        gifts = [json.loads(l) for l in (self.data / "fleet" / "gifts.jsonl").read_text().splitlines()]
+        self.assertEqual([(g["from"], g["to"], g["credits"]) for g in gifts], [("Prime Directive", "drone-4", 315699)])
+        self.calls.clear()
+        self.assertEqual(w.add_fund(str(self.data), "drone-4", 1000, "a second buy", 6, now), 0)
+        w.serve_funds(str(self.data), "Prime Directive", now, False)
+        self.assertEqual(self.calls[0], ("withdraw", "Prime Directive", 1000))                       # no probe after the first fund
+
+    def test_the_treasury_keeps_its_floor_and_a_funded_pilot_gives_nothing(self):
+        w, now = self.wallet, time.time()
+        self.treasury[0] = w.FUND_FLOOR + 1000
+        self.put(docked=True, drone=320000)
+        w.add_fund(str(self.data), "drone-4", 315699, "Recursion", 6, now)
+        self.assertEqual(w.serve_funds(str(self.data), "Prime Directive", now, False), 0)
+        self.assertEqual(self.calls, [])                                                             # under the floor: waits
+        rows = w.funds(str(self.data))
+        rows[0].update(state="given", given_at=int(now))
+        w.write_funds(str(self.data), rows)
+        named = {}
+        skip = {"Prime Directive"} | set(w.funded(str(self.data), now))
+        self.assertEqual(w.plan_sweep(w.ships(str(self.data)), "Prime Directive", skip, named), [])  # the sweep leaves it
+        rows = [("drone-4", 320000, "Apophis"), ("drone-9", 2000, "Apophis")]
+        held = w.funded(str(self.data), now)
+        self.assertEqual(w.plan_gifts([(n, c - held.get(n, 0), o) for n, c, o in rows], {}), [])     # no top-up from a fund
+
+    def test_a_withdrawal_whose_gift_failed_stays_with_the_leader_and_is_given_next_pass(self):
+        w, now = self.wallet, time.time()
+        self.put(docked=True)
+        w.add_fund(str(self.data), "drone-4", 315699, "Recursion", 6, now)
+        w.give = lambda donor, pilot, credits: (False, "in_battle")
+        self.assertEqual(w.serve_funds(str(self.data), "Prime Directive", now, False), 1)
+        self.assertEqual(w.funds(str(self.data))[0]["state"], "withdrawn")
+        self.assertEqual(w.withdrawn(str(self.data)), 315699)                                         # kept out of the deposit
+        w.give = lambda donor, pilot, credits: (self.calls.append(("give", donor, pilot, credits)), (True, "ok"))[1]
+        self.put(docked=False)
+        self.assertEqual(w.serve_funds(str(self.data), "Prime Directive", now, False), 0)            # a gift needs no dock
+        self.assertEqual(self.calls[-1], ("give", "Prime Directive", "drone-4", 315699))
+        self.assertEqual([c[0] for c in self.calls].count("withdraw"), 2)                            # the probe and one withdrawal
+
+
 if __name__ == "__main__":
     unittest.main()

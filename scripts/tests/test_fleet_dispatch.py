@@ -236,6 +236,26 @@ class PickTests(Tree):
         self.assertEqual(why(rows=[ran]), "storage not read since its last run")                  # the reading is older than the run
         self.assertIsNone(why(rows=[dict(ran, started=stamp(120))]))
 
+    def test_a_stored_gate_with_items_opens_on_any_one_of_them(self):
+        # Zero, requests ENT-349: a give route gated on iron alone never sent a miner whose storage held ice, copper or
+        # gold but no iron (errors.log ENT-132). `items` (a list) opens when any one of them stands at `min`; a list of
+        # dicts keeps meaning all of them.
+        routes = self.dispatch.load_routes(self.root)
+        give = dict(routes["missions"], id="missions", once=False,
+                    requires={"stored": {"at": "base", "items": ["iron_ore", "nitrogen_ice", "gold_ore"], "min": 50}})
+        pilot = {"name": "miner-1", "credits": 20000, "modules": [], "docked": True}
+        stock = self.data / "stock"
+        stock.mkdir(exist_ok=True)
+        stamp = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(self.now - 60))
+        put = lambda goods: (stock / "storage.json").write_text(json.dumps({"pilots": {"miner-1": {"read_at": stamp, "stations": {"base": goods}}}}))
+        why = lambda route=give: self.dispatch.why_not(pilot, "missions", route, self.state())[0]
+        put({"iron_ore": 10, "nitrogen_ice": 49})
+        self.assertEqual(why(), "stores none of iron_ore, nitrogen_ice, gold_ore at base at 50 or more")
+        put({"iron_ore": 10, "nitrogen_ice": 2650})
+        self.assertIsNone(why())                                                                   # no iron, but ice: open
+        both = dict(give, requires={"stored": [{"at": "base", "item": "iron_ore", "min": 50}, {"at": "base", "item": "nitrogen_ice", "min": 50}]})
+        self.assertEqual(why(both), "stores 10 iron_ore at base, 50 wanted")                      # a list of dicts: all of them
+
     def test_a_circuit_hunt_step_with_a_herd_floor_waits_for_its_herd(self):
         # Apophis, report of 2026-11-16 05:27 UTC; requests ENT-126
         shell = {"id": "shell", "kind": "circuit", "title": "t", "once": True, "stops": [

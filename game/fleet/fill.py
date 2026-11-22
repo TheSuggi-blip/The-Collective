@@ -305,8 +305,9 @@ def sells_short(seen, route):
 
 def claims(seen):
     """{route id: the member whose claim in force names it} of admirals.log (rule F25; requests ENT-236): a route another
-    division claimed is not added to a plan by this script. Standing work is shared and never claimed. {} when the log
-    cannot be read."""
+    division claimed is not added to a plan by this script. Standing work is shared and never claimed, but for a hunt:
+    a claim names a herd, which carries one side, and with strict classes on every hunt that gives its loot is standing
+    work (routes.gives; errors.log ENT-131). {} when the log cannot be read."""
     if "claims" not in seen:
         seen["claims"] = {}
         try:
@@ -318,7 +319,8 @@ def claims(seen):
             entries, _errors = comms.read_log(repo, "admirals")
             for entry in comms.claims_in_force(entries):
                 for rid in comms.claimed_routes(repo, comms.line_of(entry, "Claims")):
-                    if not routefiles.standing(seen["routes"].get(rid) or {}):
+                    route = seen["routes"].get(rid) or {}
+                    if route.get("kind") == "hunt" or not routefiles.standing(route):
                         seen["claims"].setdefault(rid, entry["by"])
         except Exception as error:                         # noqa: BLE001  no log read: no route is closed by it
             seen["claims"] = {}
