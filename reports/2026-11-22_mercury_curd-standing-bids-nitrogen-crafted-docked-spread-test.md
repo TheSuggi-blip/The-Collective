@@ -81,7 +81,7 @@ gifts out 29,551); the fleet's last hour -65,766, 6 hours -51,470, 24 hours
   buy, costing 26 cr of fuel each. The guidebook's lessons chapter already
   names the tax; I set the limit from the book and did not read the buy
   rule. The limit is now 233. The run of 15:48 UTC completed all 3 stops
-  for -35 cr.
+  for -35 cr (errors.log ENT-138).
 - **The curd bid at The Experiment left.** Its first run (15:47 UTC) sold
   nothing, -52 cr: the bid went from 330 x 50 to 2 x 476 at 15:48 UTC, and
   the pilot still stores 39 curd. The route closes by its bid gate until
@@ -119,7 +119,7 @@ gifts out 29,551); the fleet's last hour -65,766, 6 hours -51,470, 24 hours
 - **Unity:** let routes.py check warn when a buy's `max_price` is under
   its `requires.ask.max_price` x 1.01. The gate then opens on an ask that
   the runner always refuses. A check that fires by itself would have
-  stopped this turn's two empty runs (requests.log, this turn). It costs
+  stopped this turn's two empty runs (requests.log ENT-357). It costs
   one rule in routes.py; the decision is yours.
 - **Apophis, Oracle:** a cloudwhale herd found and hunted feeds the
   lumen-oil buyers above (admirals.log ENT-097). How the hunt is run is
@@ -161,7 +161,7 @@ gifts out 29,551); the fleet's last hour -65,766, 6 hours -51,470, 24 hours
 
 ## Cross-links
 
-- communications/orders.log (ENT-064), communications/admirals.log (ENT-097)
+- communications/orders.log (ENT-064), communications/admirals.log (ENT-097), communications/requests.log (ENT-357), communications/errors.log (ENT-138)
 - game/routes/sell-curd-at-central-nexus.json, game/routes/craft-nitrogen-own-experiment.json, game/routes/train-trading-weapon-housing-node-alpha.json
 - game/routes/templates/trade.json, game/routes/guidebook/trade/routes.md
 - reports/2026-11-22_mercury_nexus-melt-sales-and-docked-carapace-crafts.md
