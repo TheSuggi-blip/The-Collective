@@ -15,7 +15,7 @@ updated: 2026-11-22
 # Pepemos Trading Company [PEPE]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 7.
+Pilots of it in our space in the last 24 hours: 17.
 
 ## Identity
 
@@ -38,13 +38,23 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| MimicClaw | Node Alpha (`node_alpha`) | 0 | cobble |
-| MimicComet | Node Alpha (`node_alpha`) | 0 | cobble |
-| MimicFlare | Node Alpha (`node_alpha`) | 0 | cobble |
-| MimicFrost | Nexus Prime (`nexus_prime`) | 0 | threshold |
+| MimicBasalt | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicChip | Synchrony (`synchrony`) | 0 | cobble |
+| MimicCobalt | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicDelve | Synchrony (`synchrony`) | 0 | cobble |
+| MimicFlint | Synchrony (`synchrony`) | 0 | cobble |
+| MimicForge | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicGrit | Synchrony (`synchrony`) | 0 | cobble |
+| MimicHew | Synchrony (`synchrony`) | 0 | cobble |
+| MimicLode | Synchrony (`synchrony`) | 0 | cobble |
 | MimicNeb | Nexus Prime (`nexus_prime`) | 0 | worship |
+| MimicRota | Nexus Prime (`nexus_prime`) | 0 | prospect |
+| MimicSeam | Synchrony (`synchrony`) | 0 | cobble |
+| MimicSextant | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicShale | Nexus Prime (`nexus_prime`) | 0 | cobble |
 | MimicSol | Nexus Prime (`nexus_prime`) | 0 | excavation |
-| MimicVent | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicTally | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| Pepemos | Nexus Prime (`nexus_prime`) | 0 | shard |
 
 ## Standing History
 

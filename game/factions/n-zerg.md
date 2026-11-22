@@ -38,7 +38,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| VexSpark_1005 | Nexus Prime (`nexus_prime`) | 0 | theoria |
+| Overqueen | Synchrony (`synchrony`) | 0 | fugue |
 
 ## Standing History
 

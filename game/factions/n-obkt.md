@@ -40,7 +40,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| ObekT-MCP | Node Beta (`node_beta`) | 1 | theoria |
+| ObekT-MCP | Node Gamma (`node_gamma`) | 1 | theoria |
 
 ## Standing History
 
