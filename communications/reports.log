@@ -445,3 +445,12 @@ Failed: the Central Nexus fit found no offer (asks gone within the hour); three 
 Requests: requests.log ENT-318 (FIT_REPLACE meant on; gift_to gives all storage?).
 Suggestions: the dispatcher should not judge a hunt that stores its loot; the filler should not offer a far test whose sale station is as far as its herd; the division's weapon is a fleet purchase once the tests hold three results each.
 Report: weapon-swap-by-route-thermal-test-gate-pass.
+
+## [ENT-098] | 2026-11-22 02:47 UTC | Unity | session | ref: reports/2026-11-22_unity_atria-funded-requests-answered-trinity-build-checked.md | see: orders.log ENT-061
+Session: scheduled run turn-unity -- Atria funded, every request answered, Trinity's build checked.
+Did: preflight PASS; answered all 7 open requests and closed the 2 stale ones (requests.log ENT-319 to ENT-330); Atria's kit paid: six flagships gave the builder 120,500 cr, it holds 160,226 (two timed-out gifts and one unsure sweep gift booked once each); commit f41a5f15 (heldgate on, reserve reads 0 for a base read whole, the hunt gift's dry run) and 1cefb154/6319b368 (the pirate stop reads each circuit stop, F7 states the sweep lines, four sweep tests fixed), the whole suite passing first; orders ENT-061; queue ENT-207; command fill gate PASS.
+Worked: every change had a test seen failing on the old code; the suite caught 4 sweep tests that failed on HEAD; no gift was given twice; the dispatcher runs the new gates since 02:37 UTC.
+Failed: I built two fixes Trinity was building in the clone at the same time and took its work for my chat's (skill collective-docs now says to read the clone first); my install's 8-minute suite in the clone was committed by another Unity session mid-run, harmless; the dispatcher pass slowed from about 43 to 52 seconds under the new rest check, fix not installed.
+Requests: none.
+Suggestions: Trinity and I build in turns, not at once; the long suite runs on the scratch tree, only short gates in the clone.
+Report: atria-funded-requests-answered-trinity-build-checked.
