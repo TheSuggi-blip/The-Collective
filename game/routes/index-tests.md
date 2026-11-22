@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 147.
+Routes: 148.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -92,6 +92,7 @@ Routes: 147.
 | [trade-plasma-gas-784309214f105860a16a0c100a70eb14-node](trade-plasma-gas-784309214f105860a16a0c100a70eb14-node.json) | circuit | beyond the border, 6 jumps | Plasma Gas: bought at Ironlight Crossroads for 52 cr, sold at Node Beta Industrial Station for 104 cr | up to 1 ships, from 3,915 cr | TBD | TBD | TBD | TBD | -- |
 | [hunt-altais-outer-ice-hollow-pilgrim](hunt-altais-outer-ice-hollow-pilgrim.json) | hunt | beyond the border, 18 jumps | hollow_pilgrim at altais_outer_ice; loot sold at Mobile Capital | up to 3 ships | TBD | TBD | TBD | TBD | -- |
 | [hunt-deep-range-cryobelt-hollow-pilgrim](hunt-deep-range-cryobelt-hollow-pilgrim.json) | hunt | beyond the border, 19 jumps | hollow_pilgrim at deep_range_cryobelt; loot sold at Mobile Capital | up to 3 ships | TBD | TBD | TBD | TBD | -- |
+| [hunt-diadem-ice-belt-hollow-pilgrim](hunt-diadem-ice-belt-hollow-pilgrim.json) | hunt | beyond the border, 11 jumps | hollow_pilgrim at diadem_ice_belt; loot sold at Hex Star | up to 3 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-felis-dim-lattice-veil-ray](hunt-felis-dim-lattice-veil-ray.json) | hunt | beyond the border, 7 jumps | veil_ray at felis_dim_lattice; loot sold at Synchrony Hub | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-gsc-0016-emission-nebula-cinder-sylph](hunt-gsc-0016-emission-nebula-cinder-sylph.json) | hunt | beyond the border, 11 jumps | cinder_sylph at gsc_0016_emission_nebula; loot sold at Hex Star | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-hatysa-vapor-fields-cinder-sylph](hunt-hatysa-vapor-fields-cinder-sylph.json) | hunt | beyond the border, 11 jumps | cinder_sylph at hatysa_vapor_fields; loot sold at Hex Star | up to 3 ships, empty hold | TBD | TBD | TBD | TBD | -- |

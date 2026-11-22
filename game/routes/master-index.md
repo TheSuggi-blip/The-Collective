@@ -19,25 +19,25 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 |---|---|---|---|---|---|
 | [Once per Pilot](index-once-per-pilot.md) | Missions and rewards the game pays once per pilot: a new pilot's first work, and seed money. | 47 | 23 | 24 | voidborn-conductive-lattice: 7,580 cr a run |
 | [Paying Routes](index-paying-routes.md) | Work that repeats and whose runs of the last 12 hours measured above zero. | 46 | 9 | 37 | hunt-flintrock-vapor-fields-cinder-sylph: 72,890 cr per ship-hour |
-| [Tests](index-tests.md) | Work that repeats and has no measured figure: new, or no readable run in the last 12 hours. One ship until its first RESULT line is read. | 147 | 43 | 104 | not measured yet |
+| [Tests](index-tests.md) | Work that repeats and has no measured figure: new, or no readable run in the last 12 hours. One ship until its first RESULT line is read. | 148 | 43 | 105 | not measured yet |
 | [Fitting](index-fitting.md) | A module bought and fitted: the tool a kind of work needs. | 14 | 10 | 4 | fit-ice-harvester-lhs-1140: -4,320 cr per ship-hour |
 | [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 197 | 55 | 142 | hunt-silverbend-emission-nebula-cinder-sylph: 23,630 cr per ship-hour |
 | [Measured at a Loss](index-measured-at-a-loss.md) | Work that repeats and whose runs of the last 12 hours measured zero or below. | 86 | 14 | 72 | hunt-dawnbreak-frozen-drift-hollow-pilgrim: 0 cr per ship-hour |
 | [Off](index-off.md) | Written down, not flown. | 36 | 15 | 21 | hunt-violethall-gas-plume-cinder-sylph: 7,760 cr per ship-hour |
-| All | | 573 | 169 | 404 | |
+| All | | 574 | 169 | 405 | |
 
 ## Routes by Zone and Kind
 
 | Zone | Routes | census | circuit | guard | hunt | mine | Farthest system, jumps from home |
 |---|---|---|---|---|---|---|---|
 | home space | 169 | 1 | 139 | 1 | 15 | 13 | 3 |
-| beyond the border | 404 | 17 | 76 | 7 | 209 | 95 | 29 |
+| beyond the border | 405 | 17 | 76 | 7 | 210 | 95 | 29 |
 
 ## Plans by Role
 
 | Role | Kept by | Routes | The first three, in order | Planned | Ships |
 |---|---|---|---|---|---|
-| [command](plan-command.md) | Unity | 61 | voidborn-first-steps-board > voidborn-collective-provides > voidborn-signal-protocol | 0 | 6 |
+| [command](plan-command.md) | Unity | 63 | voidborn-first-steps-board > voidborn-collective-provides > voidborn-signal-protocol | 0 | 6 |
 | [drone](plan-drone.md) | Apophis | 200 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 1 | 50 |
 | [hauler](plan-hauler.md) | Apollo | 49 | stock-rc-boards-node-beta > stock-rc-plate-node-beta > stock-rc-flex-carry-central-nexus | 4 | 40 |
 | [miner](plan-miner.md) | Zero | 83 | fit-mining-laser-iii-lhs-1140 > give-miner-stores-node-beta > give-miner-stores-experiment | 3 | 60 |
