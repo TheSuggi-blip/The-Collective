@@ -50,20 +50,19 @@ Status: test. Updated: 2026-11-21. Evidence: scouting/<system>.json `survey`; wi
   `survey`, faint signatures, deposits) decide the need survey-scanner-i.
 
 ### A tier-1 hull for the scouts
-Status: test. Updated: 2026-11-22. Evidence: catalog table hulls; browse_ships all_stations (scout reading, 2026-11-21); data/routes/runs.jsonl (census rows of 12 h, refused runs left out).
+Status: test. Updated: 2026-11-22. Evidence: catalog table hulls; browse_ships all_stations (2026-11-21); table runs (census rows with credits under 0, the hull by pilot, from 2026-11-22 03:30 UTC).
 
 - Tier 1 needs no Piloting. Qualia (explorer): speed 3 against the
   Threshold's 1, tank 130, three utility slots, no weapon slot (no
   hunting). Listed at our stations from 35,000 to 49,482 cr.
-- One reader flies one since 2026-11-21 (observe kind hull_test), census
-  only. First result (2026-11-22 03:30 UTC, the same lists): fewer
-  minutes a read on census-frontier, -north, -worked and -voidborn, and
-  more credits of fuel a read on every list, on most of them about
-  twice the Threshold's (n of 3 to 10 runs a list: one window).
-- Rule F37: one hull first (F17), two more follow before the verdict.
-  They follow when a second 12-hour window of the first ship holds its
-  fuel a read under 1.5 times the Threshold's; above it the class keeps
-  the Threshold and the cadences carry the shortfall.
+- One reader flies one since 2026-11-21 (observe kind hull_test). First
+  window (to 03:30 UTC): fewer minutes a read, about twice the fuel.
+  Second window, first four hours (03:30 to 07:20 UTC, the same lists):
+  minutes a run 4.8 against 8.4 (census-voidborn) and 13.3 against 17.4
+  (census-worked); credits a run about 2.6 and 3 times the Threshold's.
+- Rule F37: one hull first (F17), two more only when the second 12-hour
+  window holds fuel a read under 1.5 times the Threshold's; it stands
+  near 3 so far: no second hull is bought, the verdict at 15:30 UTC.
 
 ### How a scout test gets three results
 Status: proven. Updated: 2026-11-22. Evidence: rule F37; queue.log ENT-203.
