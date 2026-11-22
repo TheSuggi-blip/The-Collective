@@ -687,8 +687,9 @@ def api_playbooks():
     unit_data = os.environ.get("COLLECTIVE_DATA") or str(DATA.parent)
     conn = playbook_anchor.open_ro_db(unit_data)
     try:
+        shared = playbook_anchor.preload_shared_context(conn, str(REPO), data=unit_data, now=now)
         divisions = [
-            playbook_anchor.compute_division_anchor(conn, str(REPO), data=unit_data, division_name=d, now=now)
+            playbook_anchor.compute_division_anchor(conn, str(REPO), data=unit_data, division_name=d, now=now, shared=shared)
             for d in book.DIVISIONS
         ]
     finally:

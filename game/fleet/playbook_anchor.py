@@ -187,14 +187,52 @@ def _archived_routes_set(data):
     return {p.stem for p in arch_dir.glob("*.json")}
 
 
-def scan_division_curation(repo_root, division_name, data="/srv/collective/data", now=None):
+def preload_shared_context(conn, repo_root, data="/srv/collective/data", now=None):
+    """Read shared repo/store maps once so computing all 6 divisions takes <0.4s instead of 6x repeated scans."""
+    now = time.time() if now is None else float(now)
+    active_routes = _active_routes_map(repo_root)
+    archived_routes = _archived_routes_set(data)
+    cat_ver = latest_catalog_version(data)
+    try:
+        import workclass
+        wroutes = workclass.load(str(Path(repo_root) / "game"))
+    except Exception:
+        wroutes = {}
+    cph_map = {}
+    if conn is not None and _has_table(conn, "route_hour"):
+        cutoff = int(now) - 86400
+        for rid, mins, cr in conn.execute(
+            "SELECT route, SUM(read_minutes), SUM(credits) FROM route_hour WHERE hour >= ? GROUP BY route",
+            (cutoff,),
+        ):
+            cph_map[rid] = ("", round(60.0 * cr / mins) if mins and mins >= 5 else None)
+    comms = _load_comms(repo_root)
+    req_states = []
+    if comms is not None:
+        try:
+            entries, _errs = comms.read_log(str(repo_root), "requests", archive=True)
+            req_states = comms.request_states(entries)
+        except Exception:
+            req_states = []
+    return {
+        "active_routes": active_routes,
+        "archived_routes": archived_routes,
+        "cat_ver": cat_ver,
+        "wroutes": wroutes,
+        "cph_map": cph_map,
+        "comms": comms,
+        "req_states": req_states,
+    }
+
+
+def scan_division_curation(repo_root, division_name, data="/srv/collective/data", now=None, shared=None):
     """Inspect one division's guidebook chapters on disk for cap bands and empirical drift."""
     now = time.time() if now is None else float(now)
     div = str(division_name).lower()
     gdir = Path(repo_root) / book.FOLDER / div
-    active_routes = _active_routes_map(repo_root)
-    archived_routes = _archived_routes_set(data)
-    cat_ver = latest_catalog_version(data)
+    active_routes = shared["active_routes"] if shared else _active_routes_map(repo_root)
+    archived_routes = shared["archived_routes"] if shared else _archived_routes_set(data)
+    cat_ver = shared["cat_ver"] if shared else latest_catalog_version(data)
     cat_vt = _ver_tuple(cat_ver)
     has_live_routes = len(active_routes) >= 5
 
@@ -318,16 +356,19 @@ def _load_comms(repo_root):
     return mod
 
 
-def open_requests_for(repo_root, member, now=None):
+def open_requests_for(repo_root, member, now=None, shared=None):
     now = time.time() if now is None else float(now)
-    comms = _load_comms(repo_root)
+    comms = shared["comms"] if shared else _load_comms(repo_root)
     if comms is None:
         return []
-    try:
-        entries, _errs = comms.read_log(str(repo_root), "requests", archive=True)
-        states = comms.request_states(entries)
-    except Exception:
-        return []
+    if shared is not None:
+        states = shared["req_states"]
+    else:
+        try:
+            entries, _errs = comms.read_log(str(repo_root), "requests", archive=True)
+            states = comms.request_states(entries)
+        except Exception:
+            return []
     out = []
     who_low = (member or "").lower()
     for state, req, ans in states:
@@ -352,7 +393,7 @@ def open_requests_for(repo_root, member, now=None):
     return out
 
 
-def compute_division_anchor(conn, repo_root, data="/srv/collective/data", division_name="mining", now=None):
+def compute_division_anchor(conn, repo_root, data="/srv/collective/data", division_name="mining", now=None, shared=None):
     """Build the complete zero-drift Live Division Anchor for one division."""
     now = time.time() if now is None else float(now)
     div = book.which(division_name)
@@ -360,7 +401,7 @@ def compute_division_anchor(conn, repo_root, data="/srv/collective/data", divisi
         div = "command"
     member = book.member_of(div)
     roles = sorted(r for r, m in division.ROLES.items() if m == member)
-    cat_ver = latest_catalog_version(data)
+    cat_ver = shared["cat_ver"] if shared else latest_catalog_version(data)
     stamp = time.strftime("%Y-%m-%d %H:%M UTC", time.gmtime(now))
 
     fleet_summary = {
@@ -504,15 +545,24 @@ def compute_division_anchor(conn, repo_root, data="/srv/collective/data", divisi
         if _has_table(conn, "stats_figures"):
             try:
                 import workclass
-                wroutes = workclass.load(str(Path(repo_root) / "game"))
             except Exception:
-                wroutes = {}
-            cph_map = {}
-            if _has_table(conn, "route_earnings"):
-                cph_map = {
-                    r[0]: (r[1], r[2])
-                    for r in conn.execute("SELECT route, kind, cph_24h FROM route_earnings")
-                }
+                workclass = None
+            if shared is not None:
+                wroutes, cph_map = shared["wroutes"], shared["cph_map"]
+            else:
+                try:
+                    import workclass
+                    wroutes = workclass.load(str(Path(repo_root) / "game"))
+                except Exception:
+                    wroutes = {}
+                cph_map = {}
+                if _has_table(conn, "route_hour"):
+                    cutoff = int(now) - 86400
+                    for rid, mins, cr in conn.execute(
+                        "SELECT route, SUM(read_minutes), SUM(credits) FROM route_hour WHERE hour >= ? GROUP BY route",
+                        (cutoff,),
+                    ):
+                        cph_map[rid] = ("", round(60.0 * cr / mins) if mins and mins >= 5 else None)
             xproutes = []
             for rid, val, n in conn.execute(
                 "SELECT subject, value, n FROM stats_figures WHERE view = 'xp' AND figure = 'route_xp_per_ship_hour' AND hours = 24.0"
@@ -551,8 +601,8 @@ def compute_division_anchor(conn, repo_root, data="/srv/collective/data", divisi
                     "ready_to_close": bool(ready),
                 })
 
-    curation = scan_division_curation(repo_root, div, data=data, now=now)
-    requests = open_requests_for(repo_root, member, now=now)
+    curation = scan_division_curation(repo_root, div, data=data, now=now, shared=shared)
+    requests = open_requests_for(repo_root, member, now=now, shared=shared)
 
     return {
         "division": div,
@@ -685,7 +735,8 @@ def main(argv=None):
 
     conn = open_ro_db(args.data)
     try:
-        anchors = [compute_division_anchor(conn, args.root, data=args.data, division_name=d) for d in divs]
+        shared = preload_shared_context(conn, args.root, data=args.data) if len(divs) > 1 else None
+        anchors = [compute_division_anchor(conn, args.root, data=args.data, division_name=d, shared=shared) for d in divs]
     finally:
         if conn is not None:
             conn.close()
