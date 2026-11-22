@@ -20,7 +20,7 @@ they store, the members by name and the treasury's balance. They are live
 data of the unit (the tools `hive` with `verb=empire`, `stock`, `ship`;
 `game/fleet/empire.py show`).
 
-Facts as of 2026-11-22T17:24:49Z.
+Facts as of 2026-11-22T19:52:39Z.
 
 ## 1. The Faction
 
@@ -33,7 +33,7 @@ Facts as of 2026-11-22T17:24:49Z.
 | Ships of the fleet in it | 99 of 246 |
 | Stations of our own | 0 of 5 a faction may hold |
 | Outposts | 1 of 8 |
-| Offices at stations | 5, rent 294 cr per cycle (25,284 cr a day) |
+| Offices at stations | 5, rent 372 cr per cycle (31,992 cr a day) |
 | Shared ships in garages | 0 |
 | At war | no |
 | Allies | none |
@@ -68,7 +68,7 @@ hold).
 | Faction Fuel Bunker | 1 | 443f0c5b2a1fbbcea95d13b76a797fe9 | `gsc_0044` | active | 0 |
 | Faction Lockbox | 1 | 443f0c5b2a1fbbcea95d13b76a797fe9 | `gsc_0044` | active | 0 |
 | Faction Lockbox | 1 | node_beta_industrial_station | `node_beta` | active | 69 |
-| Recruitment Center | 1 | node_beta_industrial_station | `node_beta` | active | 156 |
+| Recruitment Center | 1 | node_beta_industrial_station | `node_beta` | active | 234 |
 | Faction Lockbox | 1 | the_experiment_research_station | `the_experiment` | active | 69 |
 
 ## 4. Sites
