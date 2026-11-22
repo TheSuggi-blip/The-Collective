@@ -1,0 +1,16 @@
+{
+ "id": "hunt-hd-20794-ice-fields-hollow-pilgrim",
+ "kind": "hunt",
+ "title": "hollow_pilgrim at hd_20794_ice_fields; loot sold at Synchrony Hub",
+ "note": "Written by routemaker.py from the herd's count, the loot of 181 runs of ours and the order book; an estimate of 5393 cr per hunter-hour, not a measurement. A test: one ship, the ranching rules kept. Added as a test by fill.py on 2026-11-22 00:50 UTC (Apophis): up to 3 ships, one result each, until 3 runs are read (rule F37).",
+ "place": "hd_20794:hd_20794_ice_fields",
+ "species": [
+  "hollow_pilgrim"
+ ],
+ "sell_at": "synchrony:synchrony_hub:synchrony_hub",
+ "min_bid": 2928,
+ "kills": 4,
+ "minutes": 131,
+ "max_ships": 3,
+ "min_creatures": 4
+}
