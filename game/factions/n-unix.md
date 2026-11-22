@@ -39,7 +39,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
 | Halvin | Nexus Prime (`nexus_prime`) | 0 | absence |
-| Ritchie | Synchrony (`synchrony`) | 0 | recursion |
+| Ritchie | Nexus Prime (`nexus_prime`) | 0 | recursion |
 
 ## Standing History
 

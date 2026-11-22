@@ -15,7 +15,7 @@ updated: 2026-11-22
 # Ironlight Combine [IRLC]
 
 A player faction with 8 base(s) in 5 system(s); the nearest to Nexus Prime is 6 jump(s) away, in LHS 1140 (`lhs_1140`).
-Pilots of it in our space in the last 24 hours: 21.
+Pilots of it in our space in the last 24 hours: 20.
 
 ## Identity
 
@@ -48,8 +48,8 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
 | ILC Chute | Synchrony (`synchrony`) | 0 | junk_convoy |
-| ILC Clevis | The Experiment (`the_experiment`) | 0 | rock_eater |
-| ILC Constellation | Pherkad (`pherkad`) | 0 | concordia |
+| ILC Clevis | Synchrony (`synchrony`) | 0 | rock_eater |
+| ILC Cope | Synchrony (`synchrony`) | 0 | frankenhauler |
 | ILC Flange | Synchrony (`synchrony`) | 0 | syndicate |
 | ILC Gantry | Synchrony (`synchrony`) | 0 | syndicate |
 | ILC Gasket | Synchrony (`synchrony`) | 0 | syndicate |
@@ -60,11 +60,10 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | ILC Ladle | Synchrony (`synchrony`) | 0 | syndicate |
 | ILC Mallet | Synchrony (`synchrony`) | 0 | syndicate |
 | ILC Nonstop | Nexus Prime (`nexus_prime`) | 0 | concordia |
-| ILC Penalty | Pherkad (`pherkad`) | 0 | syndicate |
 | ILC Ratchet | Synchrony (`synchrony`) | 0 | syndicate |
 | ILC Retort | Synchrony (`synchrony`) | 0 | syndicate |
 | ILC Shank | Synchrony (`synchrony`) | 1 | syndicate |
-| ILC Solder | Node Gamma (`node_gamma`) | 1 | syndicate |
+| ILC Solder | Synchrony (`synchrony`) | 1 | syndicate |
 | ILC Tappet | Pherkad (`pherkad`) | 0 | rock_eater |
 | ILC Vagabond | Nexus Prime (`nexus_prime`) | 0 | concordia |
 | ILC Weir | Synchrony (`synchrony`) | 0 | junk_convoy |
