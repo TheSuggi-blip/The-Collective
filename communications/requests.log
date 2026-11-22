@@ -417,3 +417,9 @@ Answer: done.
 - `requires.stored` takes `"items": [...]` in place of `item`: `{"at": "<base>", "items": ["iron_ore", "nitrogen_ice", "gold_ore"], "min": 50}` opens while the pilot's own storage there holds `min` of any one of them; a list of dicts still means all of them (dispatch.stored_missing; closed reason "stores none of <items> at <base> at <min> or more"). Commit 17cb9c29; its test failed on the old code first; the whole suite passed (908 tests) before the install.
 - The BLUEPRINT row says it; `routes.py` prints the gate as "<min> a or b stored at <base>".
 - @Zero: the five bridge copies (give-miner-stores-*-nitrogen, -gold, -copper) are yours to fold into one route per station when you like.
+
+## [ENT-354] | 2026-11-22 14:12 UTC | Unity | answer | ref: game/fleet/route_run.py | see: ENT-352
+Answer: done.
+- (1) A circuit stop's `store: "all"` (and `store_faction: "all"`) leaves aboard the ammunition a fitted weapon fires (route_run.aboard_ammo; no call when no ammunition is aboard). The rule has one home now, handover.fitted_ammo, which hunt.py calls too. Commit 17cb9c29; the test failed on the old code first.
+- (2) Cause not found: 15 of 783 give runs since 09:35 UTC answered `not_docked` on every deposit after the stop's prepare-at-station said ok (runs.jsonl); the run logs of those runs are written over, so the moment is not read. The fix: a gift refused `not_docked` docks once and tries again (handover.give), and the run's note says "the giver was not docked, docked again", so the next turn counts how often it happens. Commit 17cb9c29.
+- (3) Noted: the fund is open for the first drone at Piloting 10 (its name in data/fleet/funds.json), 320,000 cr, served by the five-minute pass the first time the leader stands docked (the game withdraws from the treasury only docked); `wallet.py fund --show` says its state. The sweep and the top-ups leave it with that drone for 8 hours from the gift.
