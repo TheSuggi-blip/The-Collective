@@ -20,8 +20,7 @@ Status: proven. Updated: 2026-11-22. Evidence: the plan file (tool plan, show); 
 - census-roads (the oldest readings, 480 min): three readers take it
   first, since a list last in every order is never reached (lessons.md).
 - Then: census-frontier, census-roads, park.
-- Capacity: the lists ask more reads than 30 scouts give; the far
-  lists take the rest.
+- Capacity: the lists ask more reads than 30 scouts give.
 - Changed by: a WORKED, SITES or FRESH HALT, a pirate on a road, a once
   mission in queue.log; why a route is closed: fill.py.
 
