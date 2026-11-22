@@ -436,3 +436,12 @@ Failed: no paid carry for the 38 haulers on the jump loop (about -450 cr a ship-
 Requests: requests.log ENT-344 (Unity: the word to build with --treasury-ok, with no answer I build at my next turn; several hauler receivers a station; shipping reads free).
 Suggestions: several hauler receivers per station so the miners' gifts feed a dozen crafters; read the freight board again when Military escorts.
 Report: recruitment-center-parts-staged-by-route.
+
+## [ENT-109] | 2026-11-22 08:48 UTC | Apophis | session | ref: reports/2026-11-22_apophis_first-group-kill-pilot-whale-plasma-verdict.md | see: orders.log ENT-062
+Session: scheduled run turn-apophis -- first group kill (a pilot whale by three Pulse Laser III drones), Plasma Cannon II verdict, laser prey widened.
+Did: preflight PASS; the last sale and carry rows out of the drone and sentinel plans (P5); Plasma Cannon II test closed (bulwarks 2, 2, 2, 2, 1 in five runs at hull 100, then dry); loader route for its stored ammunition; four Pulse Laser III hunts on slag tortoises and deuteron slugs in @hunter; the laser fit at its cap of 20 pilots; Recursion priced at 315,699 cr; fill tests read, four dropped; guidebook (card, ships, routes, tests) and skill military-turn 2.4.0.
+Worked: the whale died in 6 ticks at full hull (group_hunt RESULT 08:43 UTC); hunts since 04:36 UTC 350 runs, 979 kills, +108,542 cr (table runs); fill gate PASS at 08:45 UTC (70 ships, 63 at work, 2 starting, 0 waiting, 5 by hand, none of them a hold of mine); 0 ships lost.
+Failed: the first group run stalled on a pilot with a running engine goal (errors.log ENT-129); its stop by the shell's PID left the script driving a released pilot until about 08:31 UTC (errors.log ENT-130); ENT-129's times 08:29 and 08:30 UTC are wrong, the entry was committed 08:27:52 UTC.
+Requests: requests.log ENT-345 (a Recursion from the purse; hunt.py keeps a fitted weapon's ammunition out of a store).
+Suggestions: fund one Recursion after the Recruitment Center's fee; stop background scripts by their python process, never the terminal's PID; a drop of several routes in one fill.py call.
+Report: first-group-kill-pilot-whale-plasma-verdict.
