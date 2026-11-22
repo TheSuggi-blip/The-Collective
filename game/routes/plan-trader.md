@@ -152,7 +152,4 @@ Planned:
 
 | What | When |
 |---|---|
-| Read the two far buy-and-sell tests and the far carries; lift a test that paid twice, one ship more | next turn |
-| Take one Trade Run mission by hand on a far gap's road (deadline, hand-in, which skill), then an accept stop on the route | next turn |
-| lead ore carries to Sirius and the Grand Exchange back into @trade-sell only with a lead bid of 40 or more within 4 jumps | when a book shows it |
-| read the first three results of craft-armor-own-<station> (armor plates made, minutes, fuel) and of sell-loot-at-nexus and the two melt carries; lift a craft route only on them | next turn |
+| read the resting melt ask at Central Nexus (contracts ENT-002) and the first three runs of the gas crafts and three new sell routes; apply Unity's word on the loop cap | next turn |

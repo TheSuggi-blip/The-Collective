@@ -43,7 +43,7 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 | [miner](plan-miner.md) | Zero | 71 | fit-mining-laser-iii-lhs-1140 > fit-mining-laser-ii-second-central-nexus > give-miner-stores-node-beta | 3 | 60 |
 | [scout](plan-scout.md) | Oracle | 54 | store-hold-central-nexus > give-scout-stores-node-beta > give-scout-stores-central-nexus | 5 | 30 |
 | [sentinel](plan-sentinel.md) | Apophis | 209 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 2 | 20 |
-| [trader](plan-trader.md) | Mercury | 120 | voidborn-first-steps-board > voidborn-network-expansion > voidborn-collective-provides | 4 | 40 |
+| [trader](plan-trader.md) | Mercury | 120 | voidborn-first-steps-board > voidborn-network-expansion > voidborn-collective-provides | 1 | 40 |
 
 ## Templates by Division
 
