@@ -45,12 +45,20 @@ function zoned(ms) {                               // the parts of a moment in h
   if (/^(GMT|UTC)/.test(p.timeZoneName || '')) p.timeZoneName = p.timeZoneName === 'GMT+2' ? 'CEST' : 'CET';
   return p;
 }
+const SHORT_MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 function clock(ms) { const p = zoned(ms); return p.hour + ':' + p.minute; }                                    // 06:28
-function clockZ(ms) { const p = zoned(ms); return p.hour + ':' + p.minute + ' ' + p.timeZoneName; }             // 06:28 CET
-function stampOf(ms) { const p = zoned(ms); return p.year + '-' + p.month + '-' + p.day + ' ' + p.hour + ':' + p.minute + ' ' + p.timeZoneName; }
-function stampCet(text) {                          // a UTC stamp as the files write it (2026-11-17 04:36 UTC, 2026-11-17T04:36:00Z) in his time; other text as it is
-  const m = /^(\d{4})-(\d\d)-(\d\d)[ T](\d\d):(\d\d)(?::(\d\d))?/.exec(String(text || ''));
-  return m ? stampOf(Date.UTC(+m[1], m[2] - 1, +m[3], +m[4], +m[5], +(m[6] || 0))) : String(text || '');
+function clockZ(ms) { const p = zoned(ms); return p.hour + ':' + p.minute; }                                   // concise HH:MM (zone implied)
+function stampOf(ms) {                                                                                          // concise '22 Nov 16:18'
+  const p = zoned(ms), mo = SHORT_MONTHS[Math.max(0, Math.min(11, (+p.month || 1) - 1))];
+  return (+p.day) + ' ' + mo + ' ' + p.hour + ':' + p.minute;
+}
+function stampCet(text) {                          // convert UTC ISO/file stamps to short local '22 Nov 16:18' or '22 Nov'
+  const s = String(text || '').trim();
+  const m = /^(\d{4})-(\d\d)-(\d\d)[ T](\d\d):(\d\d)(?::(\d\d))?/.exec(s);
+  if (m) return stampOf(Date.UTC(+m[1], m[2] - 1, +m[3], +m[4], +m[5], +(m[6] || 0)));
+  const d = /^(\d{4})-(\d\d)-(\d\d)$/.exec(s);
+  if (d) return (+d[3]) + ' ' + SHORT_MONTHS[Math.max(0, Math.min(11, +d[2] - 1))];
+  return s;
 }
 const pct = (a, b) => (b > 0 ? Math.max(0, Math.min(100, Math.round(100 * a / b))) : 0);
 const HEX = /^#[0-9a-fA-F]{6}$/;
@@ -656,6 +664,29 @@ function paint(t) {
       ctx.beginPath(); ctx.arc(x, y, ring, 0, 6.2832); ctx.stroke();
       ctx.strokeStyle = 'rgba(224,108,102,' + (0.5 * (1 - beat)).toFixed(2) + ')'; ctx.lineWidth = 1.4;
       ctx.beginPath(); ctx.arc(x, y, ring + 1 + beat * 11, 0, 6.2832); ctx.stroke();
+    }
+    if (rivalFocus && (rivalFocus.bases.has(s.id) || rivalFocus.systems.has(s.id))) {
+      const isRivalBase = rivalFocus.bases.has(s.id);
+      const beat = (Math.sin(t * 3.1) + 1) / 2, ring = (ours ? q + 7 : q + 9.5);
+      const rc = isRivalBase ? '#ff6b6b' : '#f0b45a';
+      ctx.save();
+      if (!isRivalBase) ctx.setLineDash([4, 3]);
+      ctx.strokeStyle = rc; ctx.lineWidth = isRivalBase ? 2.2 : 1.6;
+      ctx.beginPath(); ctx.arc(x, y, ring, 0, 6.2832); ctx.stroke();
+      ctx.setLineDash([]);
+      if (isRivalBase) {
+        ctx.strokeStyle = 'rgba(255,107,107,' + (0.42 * (1 - beat)).toFixed(2) + ')'; ctx.lineWidth = 2.0;
+        ctx.beginPath(); ctx.arc(x, y, ring + 1.5 + beat * 8, 0, 6.2832); ctx.stroke();
+      }
+      ctx.font = '600 9.5px ui-monospace, SFMono-Regular, Consolas, monospace';
+      const rtag = rivalFocus.tag + (isRivalBase ? ' BASE' : ' SEEN');
+      const tw = ctx.measureText(rtag).width + 10, rx = x - tw / 2, ry = y - ring - 17;
+      pill(rx, ry, tw, 14);
+      ctx.fillStyle = isRivalBase ? 'rgba(42,14,18,0.92)' : 'rgba(38,28,12,0.9)'; ctx.fill();
+      ctx.strokeStyle = rc; ctx.lineWidth = 1.1; ctx.stroke();
+      ctx.textBaseline = 'middle'; ctx.fillStyle = isRivalBase ? '#ffb3b3' : '#f7d494';
+      ctx.fillText(rtag, rx + 5, ry + 7.5);
+      ctx.restore();
     }
     if (layers.Names) {                                             // names are drawn after the systems: the important ones first, none over another
       const picked = s.id === selected || s.id === hover;
@@ -1397,72 +1428,336 @@ function renderPilot(panel, d) {
   panel.append(facts(rows));
 }
 
-let invMode = 'total', invItem = null;           // the Inventory tab: all we own by kind of item, or station by station; one item's card
-const INV_KINDS = { raw: 'raw', refined: 'refined', component: 'part', module: 'module', consumable: 'consumable', ammo: 'ammo', drone: 'drone', other: 'other', contraband: 'contraband', unknown: 'not in catalog' };
-function itemLink(id, name) { return linkButton(name, () => { invItem = id; render(); }, 'doclink'); }
+let invMode = 'total', invItem = null, invCat = 'all', invSort = 'worth', invQuery = '';
+const INV_KINDS = { raw: 'raw', refined: 'refined', component: 'part', module: 'module', consumable: 'consumable', ammo: 'ammo', drone: 'drone', other: 'other', contraband: 'contraband', unknown: 'other' };
+const INV_PILL = { raw: '', refined: 'info', component: 'good', module: 'warn', ammo: 'bad', consumable: 'info' };
+
+function itemLink(id, name) { return linkButton(name, () => { tab = 'Inventory'; invItem = id; render(); }, 'doclink'); }
+function kindPill(k) {
+  const lbl = INV_KINDS[k] || k || 'item';
+  return el('span', 'pill ' + (INV_PILL[k] || ''), lbl);
+}
 function recipeRows(rows) {
   const line = (pairs) => pairs.map((p) => fmt(p[1]) + ' ' + p[0]).join(', ');
-  return rows.map((r) => [r.doc ? linkButton(r.name || r.id, () => openDoc(r.doc), 'doclink') : (r.name || r.id), line(r.inputs), line(r.outputs), r.by_hand ? 'by hand' : 'facility']);
+  return rows.map((r) => [
+    r.doc ? linkButton(r.name || r.id, () => openDoc(r.doc), 'doclink') : (r.name || r.id),
+    line(r.inputs),
+    line(r.outputs),
+    el('span', 'pill ' + (r.by_hand ? 'good' : 'info'), r.by_hand ? 'ship craft' : 'facility'),
+  ]);
 }
+
 async function renderItem(panel, live) {
   const d = await get('/api/item?id=' + encodeURIComponent(invItem));
   if (!live()) return;
-  panel.append(linkButton('Back to the inventory', () => { invItem = null; render(); }));
+  const topBar = el('div', 'reader-bar');
+  const backBtn = el('button', 'subtab on', '<- Back to Inventory');
+  backBtn.type = 'button';
+  backBtn.addEventListener('click', () => { invItem = null; render(); });
+  topBar.append(backBtn);
+  panel.append(topBar);
   if (d.error) { panel.append(el('p', 'empty', 'The catalog does not hold this item.')); return; }
-  panel.append(el('h2', null, d.name), el('p', 'sub', d.description));
-  panel.append(facts([['We own', fmt(d.units) + ' units'], ['Kind', INV_KINDS[d.kind] || d.kind], ['Base value', fmt(d.value) + ' cr'], ['Size', d.size]]));
-  if (d.at.length) { panel.append(el('h3', null, 'Where ours lies')); panel.append(fitTable(table(['Place', 'Units'], d.at.map((a) => [a[0], fmt(a[1])]), [1]))); }
-  panel.append(el('h3', null, 'Made by'));
-  panel.append(d.made_by.length ? fitTable(table(['Recipe', 'Takes', 'Gives', 'Where'], recipeRows(d.made_by))) : el('p', 'empty', 'No recipe makes it: it is mined, hunted, found or bought.'));
-  panel.append(el('h3', null, 'Goes into' + (d.used_total > d.used_in.length ? ' (' + d.used_in.length + ' of ' + d.used_total + ' recipes)' : '')));
-  panel.append(d.used_in.length ? fitTable(table(['Recipe', 'Takes', 'Gives', 'Where'], recipeRows(d.used_in))) : el('p', 'empty', 'No recipe takes it.'));
-  panel.append(el('h3', null, 'Built with it' + (d.built_total > d.built.length ? ' (' + d.built.length + ' of ' + d.built_total + ')' : '')));
-  panel.append(d.built.length ? fitTable(table(['What', 'Kind', 'Units of it', 'Cost'], d.built.map((b) => [b.name, b.kind, fmt(b.units), fmt(b.cost)]), [2, 3]))
-    : el('p', 'empty', 'No facility and no hull is built with it.'));
+
+  const titleRow = el('div', 'ichead');
+  titleRow.append(el('h2', 'inline-h2', d.name), kindPill(d.kind));
+  panel.append(titleRow);
+  if (d.description) panel.append(el('p', 'sub', d.description));
+
+  const totalWorth = (d.units || 0) * (d.value || 0);
+  const kgrid = el('div', 'kpis');
+  const ikpi = (k, v, sub, cls) => { const b = el('div', 'kpi' + (cls ? ' ' + cls : '')); b.append(el('div', 'k', k), el('div', 'v', v)); if (sub) b.append(el('div', 's', sub)); kgrid.append(b); };
+  ikpi('Fleet stock', fmt(d.units) + ' units', d.at.length + ' location' + (d.at.length === 1 ? '' : 's'), d.units > 0 ? 'main pos' : '');
+  ikpi('Catalog worth', fmtCompact(totalWorth) + ' cr', fmt(d.value) + ' cr base value / unit', totalWorth > 0 ? 'pos' : '');
+  ikpi('Cargo volume', (d.size || 1) + ' vol / unit', fmt((d.units || 0) * (d.size || 1)) + ' total hold vol', '');
+  ikpi('Industrial uses', fmt((d.used_total || 0) + (d.built_total || 0)), fmt(d.used_total || 0) + ' recipes | ' + fmt(d.built_total || 0) + ' builds', '');
+  panel.append(kgrid);
+
+  if (d.at.length) {
+    panel.append(el('h3', null, 'Where our stock sits (' + d.at.length + ' places)'));
+    const maxU = Math.max(1, ...d.at.map((a) => a[1]));
+    const card = el('div', 'icard');
+    card.append(fitTable(table(['Station / Hold', 'Share', 'Units', 'Base Worth'],
+      d.at.map((a) => {
+        const pctShare = Math.round((100 * a[1]) / Math.max(1, d.units));
+        const barCell = el('div', 'progcell');
+        barCell.append(el('span', 'rmeta-sub', pctShare + '%'), pbar(a[1], maxU, pctShare >= 40 ? 'good' : ''));
+        return [a[0], barCell, fmt(a[1]), fmt(a[1] * (d.value || 0)) + ' cr'];
+      }), [2, 3])));
+    panel.append(card);
+  }
+
+  panel.append(el('h3', null, 'Crafted by (' + d.made_by.length + ')'));
+  if (d.made_by.length) {
+    const c1 = el('div', 'icard');
+    c1.append(fitTable(table(['Recipe', 'Inputs', 'Outputs', 'Method'], recipeRows(d.made_by))));
+    panel.append(c1);
+  } else {
+    panel.append(el('p', 'empty', 'Primary resource: mined, harvested, hunted or bought at stations.'));
+  }
+
+  panel.append(el('h3', null, 'Feeds into recipes' + (d.used_total > d.used_in.length ? ' (' + d.used_in.length + ' of ' + d.used_total + ')' : ' (' + d.used_in.length + ')')));
+  if (d.used_in.length) {
+    const c2 = el('div', 'icard');
+    c2.append(fitTable(table(['Recipe', 'Inputs', 'Outputs', 'Method'], recipeRows(d.used_in))));
+    panel.append(c2);
+  } else {
+    panel.append(el('p', 'empty', 'Not consumed as a crafting input.'));
+  }
+
+  panel.append(el('h3', null, 'Builds facilities & ship hulls' + (d.built_total > d.built.length ? ' (' + d.built.length + ' of ' + d.built_total + ')' : ' (' + d.built.length + ')')));
+  if (d.built.length) {
+    const c3 = el('div', 'icard');
+    c3.append(fitTable(table(['Target', 'Type', 'Qty Needed', 'Build Fee'],
+      d.built.map((b) => [b.name, el('span', 'pill ' + (b.kind === 'hull' ? 'info' : 'good'), b.kind), fmt(b.units), fmtCompact(b.cost) + ' cr']), [2, 3])));
+    panel.append(c3);
+  } else {
+    panel.append(el('p', 'empty', 'Not directly required in a hull or station facility blueprint.'));
+  }
 }
+
 async function renderInventory(panel, live) {
   if (invItem) return renderItem(panel, live);
-  const d = await get('/api/inventory');
+  const [d, ops] = await Promise.all([inventoryOf(), opsOf()]);
   if (!live()) return;
-  panel.append(el('h2', null, 'Inventory'));
-  const docs = el('div', 'chips');                // the recipes: where the fleet keeps what can be made and built
-  if (d.docs.master) docs.append(linkButton('Recipes: all ' + fmt(d.recipes) + ', by category', () => openDoc(d.docs.master)));
-  if (d.docs.facilities) docs.append(linkButton('Facilities', () => openDoc(d.docs.facilities)));
-  if (d.docs.modules) docs.append(linkButton('Modules', () => openDoc(d.docs.modules)));
-  panel.append(docs);
-  if (!d.written) { panel.append(el('p', 'empty', 'No storage book yet: the service that reads our storage has not written one.')); return; }
-  panel.append(el('p', 'sub', 'Everything our pilots hold in station storage and in their holds, added up. Click an item to see where it lies, what makes it and what it is built into.'));
-  const grid = el('div', 'kpis');
-  const kpi = (k, v, sub) => { const b = el('div', 'kpi'); b.append(el('div', 'k', k), el('div', 'v', v)); if (sub) b.append(el('div', 's', sub)); grid.append(b); };
+  if (!d || !d.written) {
+    panel.append(el('h2', null, 'Inventory & Supply Ledger'));
+    panel.append(el('p', 'empty', 'Waiting on first ledger storage pass...'));
+    return;
+  }
+
   const places = d.stations.filter((s) => s.base !== 'hold'), hold = d.stations.find((s) => s.base === 'hold');
-  kpi('Kinds of item', fmt(d.total.items), fmt(d.total.units) + ' units in all');
-  kpi('Worth at base value', fmt(d.total.worth), 'the catalog\'s value, not a price');
-  kpi('Stations with stock', fmt(places.length), places.length ? 'most at ' + places[0].name : '');
-  kpi('In the holds', hold ? fmt(hold.units) : '0', 'units our ships carry now');
+  const supList = (ops && ops.supply) || [];
+  const supOk = supList.filter((x) => x.state === 'OK').length;
+
+  panel.append(el('h2', null, 'Inventory, Vaults & Supply Chains'));
+  panel.append(el('p', 'sub', 'Unified material balance across sovereign bases, station lockboxes and active ship holds. Updated ' + stampCet(d.written) + ' across ' + fmt(d.pilots) + ' ships.'));
+
+  const grid = el('div', 'kpis');
+  const ikpi = (k, v, sub, cls) => { const b = el('div', 'kpi' + (cls ? ' ' + cls : '')); b.append(el('div', 'k', k), el('div', 'v', v)); if (sub) b.append(el('div', 's', sub)); grid.append(b); };
+  ikpi('Total catalog worth', fmtCompact(d.total.worth) + ' cr', fmt(d.total.items) + ' item types | ' + fmt(d.total.units) + ' total units', 'main pos');
+  ikpi('Station vaults', fmt(places.length) + ' stations', places.length ? 'top hub: ' + places[0].name : 'none', 'pos');
+  ikpi('In ship cargo holds', hold ? fmt(hold.units) + ' units' : '0 units', hold ? fmt(hold.items) + ' item types in flight' : 'holds clear', '');
+  ikpi('Supply buffers', supList.length ? supOk + ' / ' + supList.length + ' OK' : '--',
+    supList.length && supOk < supList.length ? (supList.length - supOk) + ' buffer(s) below keep target' : 'all tracked buffers stocked',
+    supList.length && supOk < supList.length ? 'warn' : 'pos');
   panel.append(grid);
-  const pick = el('div', 'winsel');
-  for (const [key, label] of [['total', 'All we own'], ['stations', 'By station']]) {
-    const b = el('button', key === invMode ? 'on' : null, label);
+
+  const subBar = el('div', 'subtabs');
+  const modes = [
+    ['total', 'All Stock (' + fmt(d.total.items) + ')'],
+    ['stations', 'By Station & Base (' + fmt(d.stations.length) + ')'],
+    ['supply', 'Supply & Build Stock'],
+    ['catalog', 'Recipes & Blueprints (' + fmt(d.recipes || 0) + ')'],
+  ];
+  for (const [key, label] of modes) {
+    const b = el('button', 'subtab' + (invMode === key ? ' on' : ''), label);
     b.type = 'button';
     b.addEventListener('click', () => { invMode = key; render(); });
-    pick.append(b);
+    subBar.append(b);
   }
-  panel.append(pick);
-  const head = (title, n, units, worth) => { const h = el('h3', null, title); h.append(el('span', 'invsum', fmt(n) + ' kinds, ' + fmt(units) + ' units, worth ' + fmt(worth))); return h; };
-  if (invMode === 'stations') {
-    for (const s of d.stations) {
-      panel.append(head(s.name, s.items, s.units, s.worth));
-      panel.append(fitTable(table(['Item', 'Kind', 'Units', 'Worth'], s.rows.map((r) => [itemLink(r.id, r.name), INV_KINDS[r.kind] || r.kind, fmt(r.units), fmt(r.worth)]), [2, 3])));
+  panel.append(subBar);
+
+  if (invMode === 'catalog') {
+    const cards = el('div', 'icards');
+    const cdefs = [
+      [d.docs && d.docs.master, 'Master Recipe & Craftbook Index', 'All ' + fmt(d.recipes || 0) + ' crafting & refining recipes organized by industrial discipline.', 'CRAFTBOOK'],
+      [d.docs && d.docs.facilities, 'Station & Sovereign Base Facilities', 'Build costs, input materials, upkeep rent and prerequisite chains for every facility.', 'FACILITIES'],
+      [d.docs && d.docs.modules, 'Ship Weapons, Harvesters & Utility Modules', 'Slot stats, CPU/power draw, skill requirements and crafting bills of materials.', 'MODULES'],
+      ['game/routes/master-index.md', 'Active Fleet Route & Plan Directory', 'Every mining, trade, hunt, mission and logistics circuit across all divisions.', 'ROUTES'],
+    ];
+    for (const [docPath, title, desc, badge] of cdefs) {
+      if (!docPath) continue;
+      const c = el('div', 'icard doc-card');
+      const h = el('div', 'ichead');
+      const btn = el('button', 'sysjump', title);
+      btn.type = 'button';
+      btn.addEventListener('click', () => openDoc(docPath));
+      h.append(btn, el('span', 'pill info', badge));
+      c.append(h, el('div', 'ibsub', desc));
+      cards.append(c);
     }
-  } else {
+    panel.append(cards);
+    return;
+  }
+
+  if (invMode === 'supply') {
+    const needs = (ops && ops.needs) || [];
+    panel.append(el('h3', null, 'Standing supply buffers (' + supList.length + ')'));
+    if (!supList.length) {
+      panel.append(el('p', 'empty', 'No supply chains configured.'));
+    } else {
+      const scard = el('div', 'icard');
+      scard.append(fitTable(table(['Chain', 'Item', 'Hub / Base', 'Buffer Progress', 'State'],
+        supList.map((s) => {
+          const pctFill = s.keep > 0 ? Math.min(100, Math.round((100 * s.stock) / s.keep)) : 0;
+          const pCell = el('div', 'progcell');
+          pCell.append(el('span', 'mono', fmt(s.stock) + ' / ' + fmt(s.keep)), pbar(pctFill, 100, s.state === 'OK' ? 'good' : 'warn'));
+          const isFull = s.state === 'OK' && pctFill >= 100;
+          return [
+            s.chain,
+            s.item ? itemLink(s.item, s.item.replace(/_/g, ' ')) : '--',
+            s.place || '--',
+            pCell,
+            el('span', 'pill ' + (s.state === 'OK' ? 'good' : s.state === 'SHORT' ? 'warn' : 'bad'), isFull ? 'STOCKED' : s.state),
+          ];
+        }))));
+      panel.append(scard);
+    }
+    panel.append(el('h3', null, 'Open priority build & upgrade needs (' + needs.length + ')'));
+    if (!needs.length) {
+      panel.append(el('p', 'empty', 'All priority build bills of materials are complete!'));
+    } else {
+      const ncards = el('div', 'icards');
+      for (const n of needs) {
+        const nc = el('div', 'icard' + (n.pct >= 99 ? ' ownbase' : ' sitecard'));
+        const nh = el('div', 'ichead');
+        nh.append(el('b', null, '[P' + n.priority + '] ' + n.id), el('span', 'rmeta-sub', n.division), el('span', 'pill ' + (n.pct >= 99 ? 'good' : 'warn'), n.pct.toFixed(1) + '%'));
+        nc.append(nh, pbar(n.pct, 100, n.pct >= 99 ? 'good' : 'warn'));
+        if (n.project) nc.append(el('div', 'ibsub', n.project));
+        if (n.short) nc.append(el('div', 'rmeta-sub', 'Remaining: ' + n.short));
+        ncards.append(nc);
+      }
+      panel.append(ncards);
+    }
+    return;
+  }
+
+  // Filter & Search toolbar for 'total' and 'stations'
+  const filterWrap = el('div', 'inv-toolbar');
+  const sRow = el('div', 'rsearch');
+  const sInp = el('input');
+  sInp.type = 'search';
+  sInp.placeholder = invMode === 'stations' ? 'Filter stations or items (e.g. silicon, node beta, polymer)...' : 'Search items (e.g. silicon, polymer, laser, fuel)...';
+  sInp.value = invQuery;
+  const clearBtn = el('button', 'rf', 'Clear');
+  clearBtn.type = 'button';
+  sRow.append(sInp, clearBtn);
+  filterWrap.append(sRow);
+
+  if (invMode === 'total') {
+    const cBar = el('div', 'sortbar');
+    const cats = [
+      ['all', 'All'],
+      ['raw', 'Raw Ores'],
+      ['refined', 'Refined'],
+      ['component', 'Components'],
+      ['module', 'Modules'],
+      ['ammo', 'Ammo & Fuel'],
+    ];
+    for (const [cid, clbl] of cats) {
+      const b = el('button', 'rf' + (invCat === cid ? ' on' : ''), clbl);
+      b.type = 'button';
+      b.addEventListener('click', () => { invCat = cid; render(); });
+      cBar.append(b);
+    }
+    cBar.append(el('span', 'sortlbl', ' | Sort:'));
+    for (const [sid, slbl] of [['worth', 'Worth'], ['units', 'Units'], ['held', 'In Holds']]) {
+      const b = el('button', 'rf' + (invSort === sid ? ' on' : ''), slbl);
+      b.type = 'button';
+      b.addEventListener('click', () => { invSort = sid; render(); });
+      cBar.append(b);
+    }
+    filterWrap.append(cBar);
+  }
+  panel.append(filterWrap);
+
+  const bodyBox = el('div');
+  panel.append(bodyBox);
+
+  const ownBaseIds = new Set((((ops && ops.empire && ops.empire.buildings) || []).map((b) => b.base).filter(Boolean)));
+  const ownSysByBase = new Map();
+  for (const b of ((ops && ops.empire && ops.empire.buildings) || [])) {
+    if (b.base && b.system) ownSysByBase.set(b.base, b.system);
+    if (b.at && b.system) ownSysByBase.set(b.at.toLowerCase(), b.system);
+  }
+
+  const drawInvBody = () => {
+    bodyBox.replaceChildren();
+    const q = invQuery.trim().toLowerCase();
+    if (invMode === 'stations') {
+      const cards = el('div', 'icards');
+      const ordered = [...d.stations].sort((a, b) => {
+        const aRank = a.base === 'hold' ? 2 : ownBaseIds.has(a.base) ? 0 : 1;
+        const bRank = b.base === 'hold' ? 2 : ownBaseIds.has(b.base) ? 0 : 1;
+        return aRank - bRank || b.worth - a.worth;
+      });
+      let shown = 0;
+      for (const s of ordered) {
+        const stMatch = !q || s.name.toLowerCase().includes(q) || (s.base || '').toLowerCase().includes(q);
+        const rows = stMatch ? s.rows : s.rows.filter((r) => r.name.toLowerCase().includes(q) || r.id.toLowerCase().includes(q));
+        if (!rows.length) continue;
+        shown++;
+        const isOurHub = ownBaseIds.has(s.base) || /cltv|outpost/i.test(s.name);
+        const isHold = s.base === 'hold';
+        const card = el('div', 'icard' + (isOurHub ? ' ownbase' : ''));
+        const ch = el('div', 'ichead');
+        const sysHit = ownSysByBase.get(s.base) || ownSysByBase.get((s.name || '').toLowerCase())
+          || [...stationsBy.entries()].find(([_sid, list]) => list.some((t) => t.name === s.name))?.[0];
+        if (sysHit && sys.has(sysHit)) {
+          const jb = el('button', 'sysjump', s.name);
+          jb.type = 'button';
+          jb.addEventListener('click', () => select(sysHit, true));
+          ch.append(jb);
+        } else {
+          ch.append(el('b', null, s.name));
+        }
+        ch.append(el('span', 'pill ' + (isOurHub ? 'good' : isHold ? 'info' : ''), isOurHub ? 'OUR HUB' : isHold ? 'IN FLIGHT' : 'STATION VAULT'));
+        card.append(ch);
+        card.append(el('div', 'icsub', fmt(rows.length) + ' item types | ' + fmt(s.units) + ' units | ~' + fmtCompact(s.worth) + ' cr base worth'));
+        card.append(fitTable(table(['Item', 'Category', 'Units', 'Base Worth'],
+          rows.map((r) => [itemLink(r.id, r.name), kindPill(r.kind), fmt(r.units), fmtCompact(r.worth) + ' cr']), [2, 3])));
+        cards.append(card);
+      }
+      if (!shown) bodyBox.append(el('p', 'empty', 'No station or item matches "' + invQuery + '".'));
+      else bodyBox.append(cards);
+      return;
+    }
+
+    // All Stock mode: flatten and filter cleanly
+    const flat = [];
     for (const g of d.groups) {
-      panel.append(head(g.title, g.items, g.units, g.worth));
-      panel.append(fitTable(table(['Item', 'Units', 'Stored', 'In holds', 'Value', 'Worth'],
-        g.rows.map((r) => [itemLink(r.id, r.name), fmt(r.units), fmt(r.stored), fmt(r.held), fmt(r.value), fmt(r.worth)]), [1, 2, 3, 4, 5])));
+      for (const r of g.rows) flat.push(r);
     }
-  }
-  panel.append(el('p', 'docnote', 'Storage read through each pilot about every 40 minutes; book written ' + (d.written ? stampCet(d.written) : '--') + ', ' + fmt(d.pilots) + ' pilots read, the oldest reading '
-    + (d.oldest ? stampCet(d.oldest) : '--') + '. Modules fitted on a ship and the ships themselves are not counted here.'));
+    const filtered = flat.filter((r) => {
+      if (invCat === 'ammo') {
+        if (r.kind !== 'ammo' && r.kind !== 'consumable' && !/fuel|cell|ammo/i.test(r.id)) return false;
+      } else if (invCat !== 'all' && r.kind !== invCat) {
+        return false;
+      }
+      if (q && !r.name.toLowerCase().includes(q) && !r.id.toLowerCase().includes(q)) return false;
+      return true;
+    });
+    const sorters = {
+      worth: (a, b) => b.worth - a.worth || b.units - a.units,
+      units: (a, b) => b.units - a.units || b.worth - a.worth,
+      held: (a, b) => b.held - a.held || b.units - a.units,
+    };
+    filtered.sort(sorters[invSort] || sorters.worth);
+
+    if (!filtered.length) {
+      bodyBox.append(el('p', 'empty', 'No items match the current filter.'));
+      return;
+    }
+    const card = el('div', 'icard');
+    const sumWorth = filtered.reduce((a, r) => a + (r.worth || 0), 0);
+    const sumUnits = filtered.reduce((a, r) => a + (r.units || 0), 0);
+    card.append(el('div', 'icsub', 'Showing ' + fmt(filtered.length) + ' item types | ' + fmt(sumUnits) + ' units | ~' + fmtCompact(sumWorth) + ' cr catalog worth'));
+    card.append(fitTable(table(['Item', 'Category', 'Total', 'In Vaults', 'In Holds', 'Unit Val', 'Worth'],
+      filtered.map((r) => [
+        itemLink(r.id, r.name),
+        kindPill(r.kind),
+        fmt(r.units),
+        fmt(r.stored),
+        r.held ? fmt(r.held) : '--',
+        fmt(r.value),
+        fmtCompact(r.worth) + ' cr',
+      ]), [2, 3, 4, 5, 6])));
+    bodyBox.append(card);
+  };
+
+  sInp.addEventListener('input', () => { invQuery = sInp.value; drawInvBody(); });
+  clearBtn.addEventListener('click', () => { invQuery = ''; sInp.value = ''; drawInvBody(); });
+  drawInvBody();
 }
 
 function setWide(on) {                          // a document gets a wide panel, the Metrics tab ('metrics') a wider one; the map is resized to what is left
@@ -1579,18 +1874,34 @@ function markdown(text, base, hard) {            // hard: every line is its own 
   }
   return out;
 }
-function logView(text, cut, base) {              // an append-only log as entry cards, newest first
+let docSub = 'Reports', docAuthor = 'all', docQuery = '', logQuery = '';
+let DOCSCACHE = { data: null, at: 0 };
+async function docsOf() {
+  if (Date.now() - DOCSCACHE.at < 30000 && DOCSCACHE.data) return DOCSCACHE.data;
+  try { DOCSCACHE = { data: await get('/api/docs'), at: Date.now() }; } catch (e) { return DOCSCACHE.data; }
+  return DOCSCACHE.data;
+}
+
+function logView(text, cut, base, filterText) {   // an append-only log as entry cards, newest first, with optional instant filter
   const out = el('div', 'entries'), parts = String(text).split(/^(?=## \[ENT-\d+\])/m);
   const entries = parts.filter((p) => p.startsWith('## [ENT-'));
   if (!entries.length) { out.append(markdown(text, base, true)); return out; }
-  for (const raw of entries.reverse()) {
+  const q = String(filterText || '').trim().toLowerCase();
+  const matched = q ? entries.filter((raw) => raw.toLowerCase().includes(q)) : entries;
+  if (!matched.length) {
+    out.append(el('p', 'empty', 'No log entry matches "' + filterText + '".'));
+    return out;
+  }
+  for (const raw of [...matched].reverse()) {
     const nl = raw.indexOf('\n'), head = (nl < 0 ? raw : raw.slice(0, nl)).replace(/^## /, '').split('|').map((s) => s.trim());
-    const card = el('div', 'entry'), top = el('div', 'entryhead'), who = head[2] || '';
-    const member = ((S && S.roster) || []).find((a) => a.name === who);
+    const card = el('div', 'entry icard-entry'), top = el('div', 'entryhead'), who = head[2] || '';
+    const member = ((S && S.roster) || []).find((a) => a.name === who || a.id === who.toLowerCase());
     const name = el('b', null, who || 'unknown');
     name.style.color = member ? (DIV[member.division] || DIV.Command) : 'var(--dim)';
     card.style.borderLeftColor = member ? (DIV[member.division] || DIV.Command) : 'var(--line2)';
-    top.append(name, el('span', 'tag', head[0].replace(/[[\]]/g, '')), el('span', 'tag' + (head[3] === 'error' ? ' bad' : ''), head[3] || ''), el('span', 'when', stampCet(head[1] || '')));
+    const kind = head[3] || '';
+    const kindCls = kind === 'error' ? 'bad' : kind === 'closed' || kind === 'report' ? 'good' : kind === 'request' ? 'warn' : 'info';
+    top.append(name, el('span', 'pill', head[0].replace(/[[\]]/g, '')), kind ? el('span', 'pill ' + kindCls, kind) : '', el('span', 'when', stampCet(head[1] || '')));
     const refs = head.slice(4).filter(Boolean);
     card.append(top);
     if (refs.length) card.append(inline(el('div', 'entryrefs'), refs.map((r) => r.replace(/^(ref|see):\s*(\S+)/, (m, k, v) => k + ': `' + v + '`')).join('   '), ''));
@@ -1606,46 +1917,237 @@ function docTitle(path) {                         // a file's short name: govern
 }
 
 async function renderDocs(panel, live) {
-  setWide(Boolean(docView));
+  setWide(docView ? 'wide' : 'metrics');
+  const d = await docsOf();
+  if (!live()) return;
+
   if (docView) {
-    panel.append(linkButton('Back to the list', () => { docView = null; render(); }), el('h2', null, docView.title || docTitle(docView.path)));
-    if (docView.loading) panel.append(el('p', 'empty', 'Loading...'));
-    else if (docView.error) panel.append(el('p', 'empty', docView.error));
-    else {
-      const isLog = docView.path.endsWith('.log');
-      if (docView.cut) panel.append(el('p', 'sub', isLog ? 'Long log: the newest part is shown.' : 'Long file: the first part is shown.'));
-      if (isLog) panel.append(el('p', 'sub', 'The time of each entry is shown in your time (' + clockZ(Date.now()).slice(6) + '). Times inside the texts are as the members wrote them, in UTC.'));
-      panel.append(isLog ? logView(docView.text, docView.cut, docView.path) : markdown(docView.text, docView.path, false));
+    const isLog = docView.path.endsWith('.log');
+    const bar = el('div', 'reader-bar');
+    const backBtn = el('button', 'subtab on', '<- Back to Docs');
+    backBtn.type = 'button';
+    backBtn.addEventListener('click', () => { docView = null; render(); });
+    bar.append(backBtn);
+    if (isLog && d && d.logs) {
+      for (const lg of d.logs) {
+        const active = lg.path === docView.path;
+        const lb = el('button', 'rf' + (active ? ' on' : ''), lg.name || docTitle(lg.path));
+        lb.type = 'button';
+        lb.addEventListener('click', () => { if (!active) openDoc(lg.path); });
+        bar.append(lb);
+      }
+    }
+    bar.append(el('span', 'rmeta-sub reader-path', docView.path));
+    panel.append(bar);
+    panel.append(el('h2', null, docView.title || docTitle(docView.path)));
+    if (docView.loading) { panel.append(el('p', 'empty', 'Loading document...')); return; }
+    if (docView.error) { panel.append(el('p', 'empty', docView.error)); return; }
+    if (docView.cut) panel.append(el('p', 'sub', isLog ? 'Showing newest entries from log tail.' : 'Showing first section of large file.'));
+
+    if (isLog) {
+      const sRow = el('div', 'rsearch');
+      const inp = el('input');
+      inp.type = 'search';
+      inp.placeholder = 'Filter log entries by @agent, ENT-#, or keyword...';
+      inp.value = logQuery;
+      const clr = el('button', 'rf', 'Clear');
+      clr.type = 'button';
+      sRow.append(inp, clr);
+      panel.append(sRow);
+      const wrap = el('div');
+      panel.append(wrap);
+      const redrawLog = () => { wrap.replaceChildren(logView(docView.text, docView.cut, docView.path, logQuery)); };
+      inp.addEventListener('input', () => { logQuery = inp.value; redrawLog(); });
+      clr.addEventListener('click', () => { logQuery = ''; inp.value = ''; redrawLog(); });
+      redrawLog();
+    } else {
+      const card = el('div', 'icard doc-reader-card');
+      card.append(markdown(docView.text, docView.path, false));
+      panel.append(card);
     }
     return;
   }
-  const d = await get('/api/docs');
-  if (!live()) return;
-  const row = (label, small, path) => { const b = linkButton(label, () => openDoc(path), 'rowlink'); if (small) b.append(el('small', null, small)); return b; };
-  const report = (r) => {                        // the author in its division's colour and the time it was written, then the title
-    const b = linkButton('', () => openDoc(r.path), 'rowlink report'), lead = el('span', 'lead'), who = el('b', 'who', r.author || 'unknown');
-    const member = ((S && S.roster) || []).find((a) => a.id === String(r.author || '').toLowerCase());
-    who.style.color = member ? (DIV[member.division] || DIV.Command) : 'var(--dim)';
-    lead.append(who, el('span', 'when', stampCet(r.at || r.date || '')));
-    b.append(lead, el('span', 'title', r.title));
-    b.title = (r.author || 'unknown') + ', ' + (stampCet(r.at || r.date || '') || 'no time') + ': ' + r.title;
-    return b;
+
+  if (!d) { panel.append(el('p', 'empty', 'Loading fleet archives...')); return; }
+  const reports = d.reports || [], logs = d.logs || [], gov = d.governance || [], know = d.knowledge || [];
+  const totalEntries = logs.reduce((a, x) => a + (x.entries || 0), 0);
+  const srcList = Object.entries((S && S.sources) || {});
+  const srcBad = srcList.filter(([_n, s]) => s.error).length;
+
+  panel.append(el('h2', null, 'Briefings, Command Logs & Reference'));
+  panel.append(el('p', 'sub', 'Turn briefings by Admiral, live coordination logs, constitutional rules and game reference manuals.'));
+
+  const kgrid = el('div', 'kpis');
+  const dkpi = (k, v, sub, cls) => { const b = el('div', 'kpi' + (cls ? ' ' + cls : '')); b.append(el('div', 'k', k), el('div', 'v', v)); if (sub) b.append(el('div', 's', sub)); kgrid.append(b); };
+  dkpi('Admiral briefings', fmt(d.reports_total || reports.length) + ' filed', reports[0] ? 'latest: ' + (reports[0].author || '') + ' ' + stampCet(reports[0].at || reports[0].date) : 'none yet', 'main pos');
+  dkpi('Coordination logs', fmt(logs.length) + ' active logs', fmt(totalEntries) + ' total ENT records', 'pos');
+  dkpi('Governance & guides', fmt(gov.length + know.length) + ' docs', fmt(gov.length) + ' charter | ' + fmt(know.length) + ' manuals', '');
+  dkpi('Station feeds', (srcList.length - srcBad) + ' / ' + srcList.length + ' OK', srcBad ? srcBad + ' feed error(s)' : 'all public feeds healthy', srcBad ? 'warn' : 'pos');
+  panel.append(kgrid);
+
+  const subBar = el('div', 'subtabs');
+  const tabs = [
+    ['Reports', 'Briefings (' + reports.length + ')'],
+    ['Logs', 'Command Logs (' + logs.length + ')'],
+    ['Governance', 'Governance (' + gov.length + ')'],
+    ['Reference', 'Manuals & Feeds (' + know.length + ')'],
+  ];
+  for (const [id, lbl] of tabs) {
+    const b = el('button', 'subtab' + (docSub === id ? ' on' : ''), lbl);
+    b.type = 'button';
+    b.addEventListener('click', () => { docSub = id; render(); });
+    subBar.append(b);
+  }
+  panel.append(subBar);
+
+  if (docSub === 'Logs') {
+    const cards = el('div', 'icards');
+    for (const lg of logs) {
+      const isErr = lg.name === 'errors';
+      const isOrd = lg.name === 'orders';
+      const card = el('div', 'icard doc-card' + (isOrd ? ' ownbase' : ''));
+      const ch = el('div', 'ichead');
+      const btn = el('button', 'sysjump', lg.title || lg.name);
+      btn.type = 'button';
+      btn.addEventListener('click', () => openDoc(lg.path));
+      ch.append(btn, el('span', 'pill ' + (isErr ? 'warn' : isOrd ? 'good' : 'info'), fmt(lg.entries) + ' entries'));
+      card.append(ch);
+      if (lg.desc) card.append(el('div', 'icsub', lg.desc));
+      if (lg.last) {
+        const meta = el('div', 'log-last');
+        meta.append(el('span', 'rtag', lg.last.ent), ' by ', el('b', null, lg.last.by), ' | ', el('span', 'mono', stampCet(lg.last.at)));
+        card.append(meta);
+        if (lg.last.preview) card.append(el('div', 'ibsub', lg.last.preview));
+      }
+      cards.append(card);
+    }
+    panel.append(cards);
+    return;
+  }
+
+  if (docSub === 'Governance') {
+    const cards = el('div', 'icards');
+    for (const g of gov) {
+      const fname = g.path.split('/').pop();
+      const card = el('div', 'icard doc-card' + (fname.includes('constitution') || fname.includes('empire') ? ' ownbase' : ''));
+      const ch = el('div', 'ichead');
+      const btn = el('button', 'sysjump', g.title);
+      btn.type = 'button';
+      btn.addEventListener('click', () => openDoc(g.path));
+      ch.append(btn, el('span', 'pill good', fname));
+      card.append(ch);
+      cards.append(card);
+    }
+    panel.append(cards);
+    return;
+  }
+
+  if (docSub === 'Reference') {
+    const sRow = el('div', 'rsearch');
+    const inp = el('input');
+    inp.type = 'search';
+    inp.placeholder = 'Filter manuals, route plans, guidebooks or rules...';
+    inp.value = docQuery;
+    const clr = el('button', 'rf', 'Clear');
+    clr.type = 'button';
+    sRow.append(inp, clr);
+    panel.append(sRow);
+
+    const refBox = el('div');
+    panel.append(refBox);
+    const drawRef = () => {
+      refBox.replaceChildren();
+      const q = docQuery.trim().toLowerCase();
+      const groups = new Map();
+      for (const k of know) {
+        if (q && !k.title.toLowerCase().includes(q) && !k.path.toLowerCase().includes(q)) continue;
+        const grp = k.group || 'Reference';
+        if (!groups.has(grp)) groups.set(grp, []);
+        groups.get(grp).push(k);
+      }
+      for (const [gname, items] of groups) {
+        refBox.append(el('h3', null, gname + ' (' + items.length + ')'));
+        const c = el('div', 'icard');
+        c.append(fitTable(table(['Document', 'Path'],
+          items.map((it) => [linkButton(it.title, () => openDoc(it.path), 'doclink'), el('span', 'rmeta-sub', it.path)]))));
+        refBox.append(c);
+      }
+      if (!groups.size) refBox.append(el('p', 'empty', 'No reference document matches "' + docQuery + '".'));
+    };
+    inp.addEventListener('input', () => { docQuery = inp.value; drawRef(); });
+    clr.addEventListener('click', () => { docQuery = ''; inp.value = ''; drawRef(); });
+    drawRef();
+
+    panel.append(el('h3', null, 'Station public feed health'));
+    const fcard = el('div', 'icard');
+    fcard.append(fitTable(table(['Feed', 'Freshness', 'Status'],
+      srcList.map(([n, s]) => [
+        n,
+        ago(s.age) + (s.age < 0 ? '' : ' ago'),
+        el('span', 'pill ' + (s.error ? 'bad' : 'good'), s.error ? s.error : 'OK'),
+      ]))));
+    panel.append(fcard);
+    return;
+  }
+
+  // Default sub-tab: Briefings & Reports
+  const aBar = el('div', 'sortbar');
+  const authors = ['all', 'Unity', 'Zero', 'Mercury', 'Apollo', 'Apophis', 'Oracle'];
+  for (const a of authors) {
+    const b = el('button', 'rf' + (docAuthor === a ? ' on' : ''), a === 'all' ? 'All Admirals' : a);
+    b.type = 'button';
+    b.addEventListener('click', () => { docAuthor = a; render(); });
+    aBar.append(b);
+  }
+  panel.append(aBar);
+
+  const sRow = el('div', 'rsearch');
+  const inp = el('input');
+  inp.type = 'search';
+  inp.placeholder = 'Search report titles (e.g. recruitment, strict classes, whale, hull)...';
+  inp.value = docQuery;
+  const clr = el('button', 'rf', 'Clear');
+  clr.type = 'button';
+  sRow.append(inp, clr);
+  panel.append(sRow);
+
+  const repBox = el('div');
+  panel.append(repBox);
+  const drawReports = () => {
+    repBox.replaceChildren();
+    const q = docQuery.trim().toLowerCase();
+    const shown = reports.filter((r) => {
+      if (docAuthor !== 'all' && String(r.author || '').toLowerCase() !== docAuthor.toLowerCase()) return false;
+      if (q && !String(r.title || '').toLowerCase().includes(q) && !String(r.author || '').toLowerCase().includes(q)) return false;
+      return true;
+    });
+    if (!shown.length) {
+      repBox.append(el('p', 'empty', 'No reports match this filter.'));
+      return;
+    }
+    const cards = el('div', 'icards');
+    for (const r of shown) {
+      const member = ((S && S.roster) || []).find((a) => a.id === String(r.author || '').toLowerCase() || a.name === r.author);
+      const divName = member ? member.division : 'Command';
+      const col = DIV[divName] || DIV.Command;
+      const card = el('div', 'icard doc-card report-card');
+      card.style.borderLeft = '3px solid ' + col;
+      const ch = el('div', 'ichead');
+      const whoEl = el('b', null, r.author || 'Unknown');
+      whoEl.style.color = col;
+      ch.append(whoEl, el('span', 'rmeta-sub', divName), el('span', 'pill', stampCet(r.at || r.date || '')));
+      card.append(ch);
+      const tBtn = el('button', 'sysjump report-jump', r.title);
+      tBtn.type = 'button';
+      tBtn.addEventListener('click', () => openDoc(r.path));
+      card.append(tBtn);
+      cards.append(card);
+    }
+    repBox.append(cards);
   };
-  panel.append(el('h3', null, 'Governance'));
-  (d.governance || []).forEach((g) => panel.append(row(g.title, '', g.path)));
-  panel.append(el('h3', null, 'Logs'));
-  (d.logs || []).forEach((g) => panel.append(row(g.title, g.entries ? g.entries + ' entries, last by ' + g.last.by + ', ' + stampCet(g.last.at) : 'no entries', g.path)));
-  panel.append(el('h3', null, 'Reports'));
-  const reports = d.reports || [], total = d.reports_total || reports.length;
-  if (reports.length) {
-    panel.append(el('p', 'docnote', (total > reports.length ? 'The ' + reports.length + ' newest of ' + total : 'All ' + total) + ', newest first. Times in your time (' + clockZ(Date.now()).slice(6) + ').'));
-    reports.forEach((r) => panel.append(report(r)));
-  } else panel.append(el('p', 'empty', 'No report yet. One is written at every session end.'));
-  panel.append(el('h3', null, 'Fleet knowledge'));
-  (d.knowledge || []).forEach((g) => panel.append(row(g.title, '', g.path)));
-  panel.append(el('h3', null, 'Station data sources'));
-  panel.append(table(['Source', 'Last good', 'Problem'],
-    Object.entries(S.sources).map(([n, s]) => [n, ago(s.age) + (s.age < 0 ? '' : ' ago'), s.error])));
+  inp.addEventListener('input', () => { docQuery = inp.value; drawReports(); });
+  clr.addEventListener('click', () => { docQuery = ''; inp.value = ''; drawReports(); });
+  drawReports();
 }
 
 function chart(label, series) {                  // series: [{ pts: [[t, value], ...], colour, name }] on one scale
@@ -1698,10 +2200,37 @@ function keepOrder(rows) {                       // a table that reorders under 
 }
 let INCOME = { routes: [], at: 0, key: '' };
 let OPS = { data: null, at: 0 };
+let DIPLO = { data: null, at: 0 };
+let empSub = 'Infrastructure', empSort = 'wealth', rivalFocus = null;
 async function opsOf() {
   if (Date.now() - OPS.at < 30000 && OPS.data) return OPS.data;
   try { OPS = { data: await get('/api/ops'), at: Date.now() }; } catch (e) { return OPS.data; }
   return OPS.data;
+}
+async function diploOf() {
+  if (Date.now() - DIPLO.at < 45000 && DIPLO.data) return DIPLO.data;
+  try { DIPLO = { data: await get('/api/diplomacy'), at: Date.now() }; } catch (e) { return DIPLO.data; }
+  return DIPLO.data;
+}
+function focusRivalOnMap(tag, name, baseSyss, sightSyss) {
+  const bSet = new Set((baseSyss || []).filter((id) => sys.has(id)));
+  const sSet = new Set((sightSyss || []).filter((id) => sys.has(id)));
+  if (!bSet.size && !sSet.size) return;
+  rivalFocus = { tag, name, bases: bSet, systems: sSet };
+  const pts = [...(bSet.size ? bSet : sSet)].map((id) => sys.get(id)).filter(Boolean);
+  if (pts.length === 1) {
+    flyTo(pts[0].x, pts[0].y, Math.max(view.k, 0.22));
+  } else if (pts.length > 1) {
+    let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+    pts.forEach((p) => { if (p.x < x0) x0 = p.x; if (p.x > x1) x1 = p.x; if (p.y < y0) y0 = p.y; if (p.y > y1) y1 = p.y; });
+    const wrap = $('mapwrap') || document.body;
+    const W = Math.max(360, (wrap.clientWidth || 900) - 80), H = Math.max(260, (wrap.clientHeight || 600) - 80);
+    const spanX = Math.max(180, x1 - x0), spanY = Math.max(180, y1 - y0);
+    const nk = Math.max(0.06, Math.min(0.32, Math.min(W / spanX, H / spanY) * 0.72));
+    flyTo((x0 + x1) / 2, (y0 + y1) / 2, nk);
+  }
+  renderAlerts();
+  draw();
 }
 async function loadOps() {
   await opsOf();
@@ -1728,6 +2257,11 @@ function renderAlerts() {
     b.addEventListener('click', go);
     chips.push(b);
   };
+  if (rivalFocus) {
+    const nb = rivalFocus.bases.size, ns = rivalFocus.systems.size;
+    addChip('info', 'RIVAL MAP: [' + rivalFocus.tag + '] ' + rivalFocus.name + ' (' + nb + ' base' + (nb === 1 ? '' : 's') + ', ' + ns + ' seen) [x]',
+      'Click to clear rival faction overlay on the map', () => { rivalFocus = null; renderAlerts(); draw(); });
+  }
   const ops = OPS.data;
   if (ops) {
     const sv = ops.services || {};
@@ -1988,19 +2522,73 @@ async function renderMetrics(panel, live) {
     chart('Credits, all wallets', [{ pts: rows.map((p) => [p[0], p[1]]), colour: '#dcae58' }]));
 }
 
+function fmtCompact(n) {
+  const v = Number(n || 0);
+  if (Math.abs(v) >= 1e9) return (v / 1e9).toFixed(2) + 'B';
+  if (Math.abs(v) >= 1e6) return (v / 1e6).toFixed(2) + 'M';
+  if (Math.abs(v) >= 1e4) return (v / 1e3).toFixed(1) + 'k';
+  return fmt(v);
+}
+
+function relPowerPill(rel) {
+  const map = {
+    US: ['good', 'OUR EMPIRE'],
+    Overwhelming: ['bad', 'OVERWHELMING'],
+    Superior: ['warn', 'SUPERIOR'],
+    Equivalent: ['info', 'EQUIVALENT'],
+    Inferior: ['good', 'INFERIOR'],
+    Pathetic: ['', 'PATHETIC'],
+  };
+  const [cls, lbl] = map[rel] || ['', rel || '--'];
+  return el('span', 'pill ' + cls, lbl);
+}
+
 async function renderEmpire(panel, live) {
-  const ops = await opsOf(), inv = await inventoryOf();
+  const [ops, inv, dip] = await Promise.all([opsOf(), inventoryOf(), diploOf()]);
   if (!live()) return;
   const emp = (ops && ops.empire) || { rent: {}, buildings: [], sites: [] };
   const fac = (ops && ops.readiness && ops.readiness.faction) || {};
   const bldgs = emp.buildings.length ? emp.buildings : ((S && S.holdings && S.holdings.buildings) || []);
+  const our = (dip && dip.our) || {};
+  const ranks = our.ranks || {};
+
+  panel.append(el('h2', null, 'Empire, Diplomacy & Galactic Standings'));
+  panel.append(el('p', 'sub', 'Grand-strategy command ledger: sovereign bases & buildings, galactic rival rankings, alliance blocs, active wars and external comms.'));
+
+  const subBar = el('div', 'subtabs');
+  const commsSum = (dip && dip.comms && dip.comms.summary) || {};
+  const subDefs = [
+    ['Infrastructure', 'Infrastructure (' + bldgs.length + ')'],
+    ['Rivals', 'Rivals & Rankings (' + ((dip && dip.total_factions) || 0) + ')'],
+    ['Diplomacy', 'Diplomacy & Wars (' + (((dip && dip.alliances) || []).length) + ' blocs)'],
+    ['Comms', 'Comms & Hails (' + ((commsSum.direct_human_in || 0) + '/' + (commsSum.local_human || 0)) + ')'],
+  ];
+  for (const [id, label] of subDefs) {
+    const b = el('button', 'subtab' + (empSub === id ? ' on' : ''), label);
+    b.type = 'button';
+    b.addEventListener('click', () => { empSub = id; render(); });
+    subBar.append(b);
+  }
+  panel.append(subBar);
+
+  if (empSub === 'Rivals') {
+    renderEmpireRivals(panel, dip);
+    return;
+  }
+  if (empSub === 'Diplomacy') {
+    renderEmpireDiplomacy(panel, dip);
+    return;
+  }
+  if (empSub === 'Comms') {
+    renderEmpireComms(panel, dip);
+    return;
+  }
+
+  // ---- Sub-tab 1: Infrastructure & Fleet Hulls ----
   const outposts = bldgs.filter((b) => b.kind === 'outpost'), stations = bldgs.filter((b) => b.kind === 'station');
   const facOnly = bldgs.filter((b) => b.kind !== 'outpost' && b.kind !== 'station');
   const bySys = new Map();
   for (const b of bldgs) { if (!bySys.has(b.system)) bySys.set(b.system, []); bySys.get(b.system).push(b); }
-
-  panel.append(el('h2', null, 'Empire & buildings'));
-  panel.append(el('p', 'sub', 'Every base, station building, lockbox, bunker and recruitment office we own across the galaxy, plus our planned expansion sites. Click any star system to fly the map camera there.'));
 
   const kgrid = el('div', 'kpis');
   const ekpi = (k, v, sub, cls) => { const d = el('div', 'kpi' + (cls ? ' ' + cls : '')); d.append(el('div', 'k', k), el('div', 'v', v)); if (sub) d.append(el('div', 's', sub)); kgrid.append(d); };
@@ -2008,10 +2596,22 @@ async function renderEmpire(panel, live) {
   ekpi('Station buildings', fmt(facOnly.length) + ' active', 'across ' + bySys.size + ' star systems', 'pos');
   const seatsOpen = Math.max(0, (fac.limit || 0) - (fac.members || 0));
   ekpi('Faction seats', fac.limit ? fmt(fac.members) + ' / ' + fmt(fac.limit) : '--',
-    seatsOpen ? seatsOpen + ' open badges ready to seat ships' : 'at seat cap', seatsOpen ? 'pos' : 'warn');
+    seatsOpen ? seatsOpen + ' open seats (Recruitment Center active)' : 'at seat cap', seatsOpen ? 'pos' : 'warn');
   ekpi('Facility rent / day', fmt((emp.rent && emp.rent.per_day) || 0) + ' cr',
     fmt((emp.rent && emp.rent.per_cycle) || 0) + ' cr/cycle at NPC stations (0 on our bases)', '');
   panel.append(kgrid);
+
+  if (our.hulls && our.hulls.length) {
+    panel.append(el('h3', null, 'Fleet hull lineage (' + fmt(our.fleet_ships || 246) + ' ships -- 100% Voidborn-born pilots)'));
+    panel.append(fitTable(table(['Hull class', 'Design empire', 'Tier', 'Role category', 'Ships'],
+      our.hulls.map((h) => [
+        h.class,
+        el('span', 'pill ' + (h.empire === 'voidborn' ? 'good' : 'warn'), h.empire),
+        'T' + h.tier,
+        h.category || '--',
+        fmt(h.count),
+      ]), [4])));
+  }
 
   panel.append(el('h3', null, 'Where our buildings stand (' + bySys.size + ' systems)'));
   if (!bySys.size) {
@@ -2101,22 +2701,289 @@ async function renderEmpire(panel, live) {
   }
 }
 
+function renderEmpireRivals(panel, dip) {
+  if (!dip) { panel.append(el('p', 'empty', 'Loading galactic faction intelligence...')); return; }
+  const our = dip.our || {}, ranks = our.ranks || {}, list = [...(dip.rivals || [])];
+  const topWealth = list.reduce((m, r) => (r.wealth > (m ? m.wealth : 0) ? r : m), null);
+
+  const kgrid = el('div', 'kpis');
+  const ekpi = (k, v, sub, cls) => { const d = el('div', 'kpi' + (cls ? ' ' + cls : '')); d.append(el('div', 'k', k), el('div', 'v', v)); if (sub) d.append(el('div', 's', sub)); kgrid.append(d); };
+  ekpi('Our galactic ranks',
+    'Members #' + (ranks.member_count || '--') + ' | Dmg #' + (ranks.damage_dealt || '--'),
+    'Facilities #' + (ranks.facility_investment || '--') + ' | Missions #' + (ranks.missions_completed || '--') + ' of ' + fmt(dip.total_factions) + ' factions',
+    'main pos');
+  ekpi('#1 Galactic superpower',
+    topWealth ? '[' + topWealth.tag + '] ' + fmtCompact(topWealth.wealth) + ' cr' : '--',
+    topWealth ? topWealth.name + ' (' + fmt(topWealth.members) + ' members, ' + topWealth.bases + ' bases)' : '',
+    'warn');
+  ekpi('Our tech & pilot level',
+    'Max Lv ' + (our.max_piloting || 0) + ' (Avg ' + (our.avg_piloting || 0) + ')',
+    'T2 unlocked | Voidborn >=1: ' + fmt(our.voidborn_skilled || 0) + '/' + fmt(our.fleet_ships || 246),
+    'pos');
+  ekpi('Head-start clock',
+    '7 days old',
+    fmt(our.fleet_ships || 246) + ' ships built vs rivals 60-280d old',
+    'pos');
+  panel.append(kgrid);
+
+  const sortBar = el('div', 'sortbar');
+  sortBar.append(el('span', 'sortlbl', 'Rank ledger by:'));
+  const sorts = [
+    ['wealth', 'Wealth / Earned'],
+    ['members', 'Members'],
+    ['bases', 'Sovereign Bases'],
+    ['kills', 'Combat Kills'],
+    ['tech', 'Observed Tech / Lv'],
+  ];
+  for (const [sid, slbl] of sorts) {
+    const b = el('button', 'rf' + (empSort === sid ? ' on' : ''), slbl);
+    b.type = 'button';
+    b.addEventListener('click', () => { empSort = sid; render(); });
+    sortBar.append(b);
+  }
+  if (rivalFocus) {
+    const clr = el('button', 'rf haswarn', 'Clear map overlay [' + rivalFocus.tag + ']');
+    clr.type = 'button';
+    clr.addEventListener('click', () => { rivalFocus = null; renderAlerts(); draw(); render(); });
+    sortBar.append(clr);
+  }
+  panel.append(sortBar);
+
+  const cmp = {
+    wealth: (a, b) => b.wealth - a.wealth || b.members - a.members,
+    members: (a, b) => b.members - a.members || b.wealth - a.wealth,
+    bases: (a, b) => b.bases - a.bases || b.wealth - a.wealth,
+    kills: (a, b) => b.kills - a.kills || b.kills_pvp - a.kills_pvp,
+    tech: (a, b) => b.max_tier - a.max_tier || b.avg_tier - a.avg_tier || b.sighted - a.sighted,
+  }[empSort] || ((a, b) => b.wealth - a.wealth);
+  list.sort(cmp);
+
+  const tbl = el('table', 'mtable rival-table');
+  const thead = el('thead'), trH = el('tr');
+  ['#', 'Faction', 'Rel. Power', 'Members', 'Bases', 'Wealth / Earned', 'Obs. Hull / Lv', 'Kills', 'Age', 'Map'].forEach((h, idx) => {
+    const th = el('th', [3, 4, 5, 7, 8].includes(idx) ? 'num' : null, h);
+    trH.append(th);
+  });
+  thead.append(trH);
+  tbl.append(thead);
+
+  const tbody = el('tbody');
+  list.slice(0, 35).forEach((r, idx) => {
+    const tr = el('tr', r.tag === 'CLTV' ? 'us-row' : (rivalFocus && rivalFocus.tag === r.tag ? 'focus-row' : null));
+    tr.append(el('td', 'mono', String(idx + 1)));
+
+    const fCell = el('td');
+    const fTop = el('div', 'rname');
+    fTop.append(el('span', 'rtag', '[' + r.tag + ']'), ' ', el('b', null, r.name));
+    fCell.append(fTop);
+    const metaBits = [];
+    if (r.empire && r.empire !== '--') metaBits.push(r.empire);
+    if (r.allies && r.allies.length) metaBits.push('allies: ' + r.allies.slice(0, 4).join(',') + (r.allies.length > 4 ? '+' + (r.allies.length - 4) : ''));
+    if (r.wars && r.wars.length) metaBits.push('AT WAR: ' + r.wars.join(','));
+    if (metaBits.length) fCell.append(el('div', 'rmeta-sub', metaBits.join(' | ')));
+    tr.append(fCell);
+
+    const pCell = el('td');
+    pCell.append(relPowerPill(r.rel_power));
+    tr.append(pCell);
+
+    const mTxt = r.tag === 'CLTV' && r.fleet_ships ? fmt(r.members) + ' (' + fmt(r.fleet_ships) + ')' : fmt(r.members);
+    tr.append(el('td', 'num', mTxt));
+    tr.append(el('td', 'num', r.bases ? fmt(r.bases) : '--'));
+
+    const wCell = el('td', 'num');
+    wCell.append(el('div', null, fmtCompact(r.wealth) + ' cr'));
+    wCell.append(el('div', 'rmeta-sub', r.wealth_src === 'net_worth' ? 'net worth' : r.wealth_src === 'purse' ? 'live purse' : 'lifetime earned'));
+    tr.append(wCell);
+
+    const tCell = el('td');
+    if (r.tag === 'CLTV') {
+      tCell.append(el('div', 'mono', 'T' + r.max_tier + ' | Lv ' + r.est_piloting));
+      tCell.append(el('div', 'rmeta-sub', 'avg Lv ' + (r.avg_piloting || 0)));
+    } else if (r.sighted > 0) {
+      tCell.append(el('div', 'mono', 'Max T' + r.max_tier + ' / Avg ' + r.avg_tier.toFixed(1)));
+      tCell.append(el('div', 'rmeta-sub', 'Lv ' + r.est_piloting + '+ (' + fmt(r.sighted) + ' seen)'));
+    } else {
+      tCell.append(el('span', 'rmeta-sub', 'unsighted'));
+    }
+    tr.append(tCell);
+
+    const kCell = el('td', 'num');
+    kCell.append(el('div', null, fmtCompact(r.kills)));
+    if (r.kills_pvp > 0) kCell.append(el('div', 'rmeta-sub', fmt(r.kills_pvp) + ' PvP'));
+    tr.append(kCell);
+
+    tr.append(el('td', 'num', r.age_days ? r.age_days + 'd' : '--'));
+
+    const mapCell = el('td');
+    const hasMap = (r.base_systems && r.base_systems.length) || (r.sight_systems && r.sight_systems.length);
+    if (hasMap) {
+      const isOn = rivalFocus && rivalFocus.tag === r.tag;
+      const mBtn = el('button', 'maploc' + (isOn ? ' on' : ''), isOn ? 'Shown' : 'Locate');
+      mBtn.type = 'button';
+      mBtn.title = 'Highlight ' + r.name + ' bases and sighted fleets on the Galaxy Map';
+      mBtn.addEventListener('click', () => {
+        if (rivalFocus && rivalFocus.tag === r.tag) { rivalFocus = null; renderAlerts(); draw(); render(); }
+        else { focusRivalOnMap(r.tag, r.name, r.base_systems, r.sight_systems); render(); }
+      });
+      mapCell.append(mBtn);
+    } else {
+      mapCell.append(el('span', 'rmeta-sub', '--'));
+    }
+    tr.append(mapCell);
+    tbody.append(tr);
+  });
+  tbl.append(tbody);
+  panel.append(fitTable(tbl));
+}
+
+function renderEmpireDiplomacy(panel, dip) {
+  if (!dip) { panel.append(el('p', 'empty', 'Loading diplomatic intelligence...')); return; }
+  const our = dip.our || {};
+  const alliances = dip.alliances || [], wars = dip.wars || [], rivalries = dip.rivalries || [], battles = dip.battles || [];
+
+  const kgrid = el('div', 'kpis');
+  const ekpi = (k, v, sub, cls) => { const d = el('div', 'kpi' + (cls ? ' ' + cls : '')); d.append(el('div', 'k', k), el('div', 'v', v)); if (sub) d.append(el('div', 's', sub)); kgrid.append(d); };
+  ekpi('Our posture', our.at_war ? 'AT WAR' : 'Armed Neutrality', 'Never fire first; diplomacy & war Suggi-reserved', our.at_war ? 'neg' : 'main pos');
+  ekpi('Our treaties & wars', (our.allies || []).length + ' allies | ' + (our.wars || []).length + ' wars', (our.enemies || []).length + ' marked enemies', 'pos');
+  ekpi('Galactic alliance blocs', fmt(alliances.length) + ' coalitions', 'multi-faction mutual defense / trade blocs', '');
+  ekpi('Active wars & rivalries', fmt(wars.length) + ' wars | ' + fmt(rivalries.length) + ' feuds', fmt(battles.length) + ' recent combat engagements logged', wars.length ? 'warn' : '');
+  panel.append(kgrid);
+
+  panel.append(el('h3', null, 'Major galactic alliance blocs & federations (' + alliances.length + ')'));
+  if (!alliances.length) {
+    panel.append(el('p', 'empty', 'No multi-faction alliances declared in the public registry.'));
+  } else {
+    const cards = el('div', 'icards');
+    for (const bloc of alliances.slice(0, 12)) {
+      const card = el('div', 'icard');
+      const head = el('div', 'ichead');
+      head.append(el('b', null, bloc.lead_name + ' Coalition (' + bloc.factions.length + ' factions)'));
+      if ((bloc.base_systems && bloc.base_systems.length) || (bloc.sight_systems && bloc.sight_systems.length)) {
+        const lBtn = el('button', 'maploc', 'Show bloc on map');
+        lBtn.type = 'button';
+        lBtn.addEventListener('click', () => {
+          focusRivalOnMap(bloc.lead_tag + '+', bloc.lead_name + ' Coalition', bloc.base_systems, bloc.sight_systems);
+        });
+        head.append(lBtn);
+      }
+      head.append(el('span', 'pill warn', fmt(bloc.total_members) + ' pilots | ' + bloc.total_bases + ' bases'));
+      card.append(head);
+      card.append(el('div', 'icsub', 'Combined wealth / earned: ~' + fmtCompact(bloc.total_wealth) + ' cr'));
+      const tagsWrap = el('div', 'bloc-members');
+      for (const m of bloc.factions) {
+        tagsWrap.append(el('span', 'pill', '[' + m.tag + '] ' + m.name + ' (' + m.members + (m.bases ? ', ' + m.bases + 'b' : '') + ')'));
+      }
+      card.append(tagsWrap);
+      cards.append(card);
+    }
+    panel.append(cards);
+  }
+
+  panel.append(el('h3', null, 'Declared faction wars & hostile markings'));
+  if (!wars.length && !rivalries.length) {
+    panel.append(el('p', 'empty', 'Zero formal faction-vs-faction wars or enemy markings active in the current feed.'));
+  } else {
+    const wrows = [];
+    for (const w of wars) {
+      wrows.push([el('span', 'pill bad', 'ACTIVE WAR'), '[' + w.a_tag + '] ' + w.a_name + ' (' + w.a_members + ')', '[' + w.b_tag + '] ' + w.b_name + ' (' + w.b_members + ')']);
+    }
+    for (const rv of rivalries) {
+      wrows.push([el('span', 'pill warn', 'ENEMY MARK'), '[' + rv.from_tag + '] ' + rv.from_name, '[' + rv.to_tag + '] ' + rv.to_name + ' (' + rv.to_members + ')']);
+    }
+    panel.append(fitTable(table(['State', 'Side A', 'Side B'], wrows)));
+  }
+
+  if (battles.length) {
+    panel.append(el('h3', null, 'Recent galaxy combat feed (' + battles.length + ')'));
+    panel.append(fitTable(table(['System', 'Type', 'State', 'Factions', 'Kills', 'Belligerents'],
+      battles.slice(0, 15).map((b) => [
+        sys.has(b.system) ? sysLink(b.system) : (b.system_name || b.system),
+        b.category || 'combat',
+        el('span', 'pill ' + (b.status === 'active' ? 'bad' : ''), b.status || '--'),
+        b.tags || '--',
+        fmt(b.destroyed || 0),
+        (b.pilots || '').slice(0, 56),
+      ]), [4])));
+  }
+}
+
+function renderEmpireComms(panel, dip) {
+  if (!dip || !dip.comms) { panel.append(el('p', 'empty', 'Loading communications ledger...')); return; }
+  const c = dip.comms, s = c.summary || {};
+
+  const kgrid = el('div', 'kpis');
+  const ekpi = (k, v, sub, cls) => { const d = el('div', 'kpi' + (cls ? ' ' + cls : '')); d.append(el('div', 'k', k), el('div', 'v', v)); if (sub) d.append(el('div', 's', sub)); kgrid.append(d); };
+  ekpi('Player hails to us', fmt(s.direct_human_in || 0), 'private DMs or @CLTV mentions from real players', s.direct_human_in ? 'warn' : 'main pos');
+  ekpi('Sent by our fleet', fmt(s.sent_by_us || 0), 'Rule F4 radio silence holds (Suggi-only outbound)', s.sent_by_us ? 'warn' : 'pos');
+  ekpi('Local pilot radio', fmt(s.local_human || 0), 'unique human messages heard near our ships', '');
+  ekpi('Authority notices', fmt(s.npc_notices || 0), 'shipyard builds, tax statements & salvage tows', '');
+  panel.append(kgrid);
+
+  panel.append(el('h3', null, 'Direct diplomatic hails -- received from & sent to players'));
+  if (!(c.direct_in || []).length && !(c.sent_out || []).length) {
+    panel.append(el('p', 'empty', 'Zero human private hails received and zero outbound player messages sent so far (' + fmt(s.total_logged || 0) + ' total radio frames audited by inbox service). Any player DM or @CLTV mention will surface here immediately.'));
+  } else {
+    const drows = [];
+    for (const m of (c.sent_out || [])) {
+      drows.push([el('span', 'pill warn', 'SENT'), stampCet(m.t), (m.tag ? '[' + m.tag + '] ' : '') + m.sender, m.channel, m.text]);
+    }
+    for (const m of (c.direct_in || [])) {
+      drows.push([el('span', 'pill good', 'RECEIVED'), stampCet(m.t), (m.tag ? '[' + m.tag + '] ' : '') + m.sender, m.channel, m.text]);
+    }
+    panel.append(fitTable(table(['Dir', 'When', 'Pilot', 'Channel', 'Message'], drows)));
+  }
+
+  panel.append(el('h3', null, 'Intercepted nearby pilot radio (' + (c.local_radio || []).length + ' newest)'));
+  if (!(c.local_radio || []).length) {
+    panel.append(el('p', 'empty', 'No nearby human local radio captured yet.'));
+  } else {
+    const feedWrap = el('div', 'icards');
+    for (const m of (c.local_radio || []).slice(0, 25)) {
+      const card = el('div', 'ibldg');
+      const bh = el('div', 'ibhead');
+      if (m.tag) bh.append(el('span', 'rtag', '[' + m.tag + ']'));
+      bh.append(el('b', null, m.sender || 'Unknown'));
+      if (m.system && sys.has(m.system)) bh.append(' in ', sysLink(m.system));
+      else if (m.system) bh.append(el('span', 'rmeta-sub', ' in ' + m.system));
+      bh.append(el('span', 'pill', (m.channel || 'local').toUpperCase()));
+      card.append(bh);
+      card.append(el('div', 'msg-body', m.text));
+      card.append(el('div', 'rmeta-sub', stampCet(m.t) + (m.poi ? ' | ' + m.poi : '')));
+      feedWrap.append(card);
+    }
+    panel.append(feedWrap);
+  }
+
+  if ((c.npc_notices || []).length) {
+    panel.append(el('h3', null, 'Station & authority dispatches to our ships (' + c.npc_notices.length + ' newest)'));
+    panel.append(fitTable(table(['When', 'Authority', 'Notice'],
+      c.npc_notices.slice(0, 12).map((m) => [stampCet(m.t), m.sender, m.text]))));
+  }
+}
+
 const TABS = { Selection: renderSelection, Empire: renderEmpire, Metrics: renderMetrics, Inventory: renderInventory, Docs: renderDocs };
 let renderSeq = 0, viewKey = '';
 function render() {
   const panel = $('panel'), mine = ++renderSeq, live = () => mine === renderSeq;
-  const key = [tab, selShip, selShip ? '' : selected, pilotCard ? pilotCard.name : '', docView ? docView.path : '', tab === 'Inventory' ? invMode + '/' + (invItem || '') : ''].join('|');
+  const key = [tab, selShip, selShip ? '' : selected, pilotCard ? pilotCard.name : '', docView ? docView.path : '',
+    tab === 'Inventory' ? invMode + '/' + (invItem || '') + '/' + invCat + '/' + invSort : '',
+    tab === 'Empire' ? empSub + '/' + empSort + '/' + (rivalFocus ? rivalFocus.tag : '') : '',
+    tab === 'Docs' && !docView ? docSub + '/' + docAuthor : ''].join('|');
   const same = key === viewKey, keep = same ? panel.scrollTop : 0;
   viewKey = key;
   document.querySelectorAll('nav button').forEach((b) => b.classList.toggle('on', b.textContent === tab));
   $('rail-right-label').textContent = tab;
   if (tab !== 'Docs') setWide(tab === 'Empire' || tab === 'Metrics' || tab === 'Inventory' ? 'metrics' : false);
-  if (tab === 'Metrics') {
-    metricsAt = Date.now();
-    if (!same) routeOrder.key = '';                // the tab was opened anew: the routes are sorted afresh
+  if (tab === 'Metrics' || tab === 'Empire') {
+    const fn = TABS[tab];
+    if (tab === 'Metrics') {
+      metricsAt = Date.now();
+      if (!same) routeOrder.key = '';              // the tab was opened anew: the routes are sorted afresh
+    }
     if (same && panel.childElementCount) {         // a refresh of the open tab: built aside and swapped in whole, so the page keeps its height, its place and its order
       const aside = document.createDocumentFragment();
-      Promise.resolve(renderMetrics(aside, live)).then(() => {
+      Promise.resolve(fn(aside, live)).then(() => {
         if (!live()) return;
         const at = panel.scrollTop;
         panel.replaceChildren(aside);

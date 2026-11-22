@@ -563,6 +563,85 @@ class NeedsAutoSatisfyAndLoopTests(unittest.TestCase):
         rows_real_gift = [dict(r, notes=["gift to trader-1 at central_nexus: 65 nitrogen_ice"]) for r in rows_bleed]
         self.assertIsNone(dispatch.stalled_reason("give-miner-stores-nitrogen", route, "miner-1", rows_real_gift, now))
 
+    def test_leader_fund_action_parks_undocked_and_holds_docked_leader(self):
+        import tempfile, dispatch
+        now = time.time()
+        dispatch.FUND_DOCK_WAIT.clear()
+        dispatch.FUND_TOLD.clear()
+        with tempfile.TemporaryDirectory() as td:
+            dpath = Path(td)
+            (dpath / "empire").mkdir()
+            (dpath / "fleet").mkdir()
+            (dpath / "empire" / "empire.json").write_text(json.dumps({"faction": {"leader": "Prime Directive"}}), encoding="utf-8")
+            (dpath / "fleet" / "funds.json").write_text(json.dumps([
+                {"pilot": "drone-1", "credits": 320000, "why": "Recursion", "at": int(now - 60), "state": "open"}
+            ]), encoding="utf-8")
+            routes = {"park": {"id": "park", "kind": "circuit", "park": True, "stops": [{"at": "nexus_prime:the_core:central_nexus"}]}}
+            # Undocked leader is routed to park first so wallet.py sweep can withdraw docked
+            act1, obj1 = dispatch.leader_fund_action("Prime Directive", {"docked": ""}, td, now, routes)
+            self.assertEqual(act1, "park")
+            self.assertEqual(obj1["id"], "park")
+            # Docked leader is held at dock up to FUND_HOLD_SECS
+            act2, _obj2 = dispatch.leader_fund_action("Prime Directive", {"docked": "central_nexus"}, td, now, routes)
+            self.assertEqual(act2, "hold")
+            # Once fund state becomes given, leader resumes normal work immediately
+            (dpath / "fleet" / "funds.json").write_text(json.dumps([
+                {"pilot": "drone-1", "credits": 320000, "why": "Recursion", "at": int(now - 60), "state": "given"}
+            ]), encoding="utf-8")
+            act3, _obj3 = dispatch.leader_fund_action("Prime Directive", {"docked": "central_nexus"}, td, now + 5, routes)
+            self.assertIsNone(act3)
+
+    def test_wallet_pick_unseated_and_serve_seats_between_runs(self):
+        import tempfile, wallet
+        now = time.time()
+        with tempfile.TemporaryDirectory() as td:
+            dpath = Path(td)
+            (dpath / "empire").mkdir()
+            (dpath / "fleet" / "orders").mkdir(parents=True)
+            (dpath / "empire" / "empire.json").write_text(json.dumps({
+                "faction": {"id": "fac_123", "leader": "Prime Directive", "member_count": 2, "members_limit": 5},
+                "members": [{"pilot": "Prime Directive", "role": "Leader"}, {"pilot": "miner-1", "role": "Member"}],
+            }), encoding="utf-8")
+            (dpath / "fleet" / "fleet.json").write_text(json.dumps({
+                "ships": [
+                    {"name": "Prime Directive", "credits": 50000, "division": "Command", "number": 0, "status": "connected"},
+                    {"name": "miner-1", "credits": 30000, "division": "Mining", "number": 1, "status": "connected"},
+                    {"name": "hauler-1", "credits": 30000, "division": "Logistics", "number": 1, "status": "connected"},
+                    {"name": "trader-1", "credits": 30000, "division": "Trade", "number": 1, "status": "connected"},
+                ]
+            }), encoding="utf-8")
+            picks = wallet.pick_unseated(td)
+            self.assertEqual(picks, ["hauler-1", "trader-1"])
+            wallet.add_seats(td, picks, now)
+            calls = []
+            orig_raw = wallet.faction_raw
+            try:
+                def fake_raw(pilot, action, params):
+                    calls.append((pilot, action, params))
+                    if action == "info":
+                        return 200, json.dumps({"structuredContent": {"id": "fac_123", "member_count": 2}})
+                    return 200, '{"ok":true}'
+                wallet.faction_raw = fake_raw
+                wallet.serve_seats(td, "Prime Directive", now, False)
+            finally:
+                wallet.faction_raw = orig_raw
+            rows = wallet.seat_rows(td)
+            self.assertEqual([r["state"] for r in rows], ["joined", "joined"])
+            self.assertIn(("Prime Directive", "invite", {"player_id": "hauler-1"}), calls)
+            self.assertIn(("hauler-1", "join", {"faction_id": "fac_123"}), calls)
+
+    def test_station_api_diplomacy_structure_and_ascii(self):
+        sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "station"))
+        import server
+        d = server.api_diplomacy()
+        self.assertIn("our", d)
+        self.assertIn("rivals", d)
+        self.assertIn("alliances", d)
+        self.assertIn("comms", d)
+        self.assertEqual(d["our"]["tag"], "CLTV")
+        encoded = json.dumps(d, ensure_ascii=False)
+        self.assertTrue(all(ord(ch) <= 127 for ch in encoded))
+
 
 if __name__ == "__main__":
     unittest.main()

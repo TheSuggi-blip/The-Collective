@@ -604,6 +604,11 @@ def serve_funds(data, leader, now, dry):
     pilot, credits = todo["pilot"], int(todo["credits"])
     if todo["state"] == "open":
         if not docked(data, leader):
+            run_marker = Path(data) / "fleet" / "host" / "running" / (leader + ".json")
+            if run_marker.exists():
+                stop_p = Path(data) / "fleet" / "host" / "stop" / leader
+                stop_p.parent.mkdir(parents=True, exist_ok=True)
+                stop_p.touch()
             print("FUND waits: %s %s cr: the leader %s is not docked (the game withdraws docked only)" % (pilot, format(credits, ","), leader))
             if changed:
                 write_funds(data, rows)
@@ -650,6 +655,185 @@ def serve_funds(data, leader, now, dry):
     return 0
 
 
+SEAT_BATCH = 20
+SEAT_BUDGET = 80
+
+
+def seats_file(data):
+    return Path(data) / "fleet" / "seats.json"
+
+
+def seat_rows(data):
+    rows = dispatch.read_json(seats_file(data), [])
+    return [r for r in rows if isinstance(r, dict)] if isinstance(rows, list) else []
+
+
+def write_seats(data, rows):
+    path = seats_file(data)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = "%s.%d.tmp" % (path, os.getpid())
+    with open(tmp, "w", encoding="utf-8") as handle:
+        json.dump(rows[-500:], handle, indent=1)
+    os.replace(tmp, path)
+
+
+def pick_unseated(data, limit=None):
+    """Rank unseated fleet ships by Rule F11 benefit: bring every division to >= 10 seated members first,
+    then prioritize outpost-working haulers, miners and traders, then sentinels, drones and scouts."""
+    emp = dispatch.read_json(Path(data) / "empire" / "empire.json", {}) or {}
+    fac = (emp.get("faction") or {}) if isinstance(emp, dict) else {}
+    seated = {str(m.get("pilot")) for m in (emp.get("members") or []) if isinstance(m, dict) and m.get("pilot")}
+    queued = {str(r.get("pilot")) for r in seat_rows(data) if r.get("state") == "open"}
+    fleet = ships(data)
+    named = dispatch.flagships(data)
+    div_counts = {}
+    for p in seated:
+        d = (fleet.get(p) or {}).get("division") or "Other"
+        div_counts[d] = div_counts.get(d, 0) + 1
+    role_rank = {"command": 0, "hauler": 1, "miner": 2, "trader": 3, "sentinel": 4, "drone": 5, "scout": 6}
+    cands = []
+    for name, s in sorted(fleet.items()):
+        if name in seated or name in queued:
+            continue
+        role = (named.get(name) or {}).get("role") or name.split("-", 1)[0]
+        div = s.get("division") or "Other"
+        cands.append((role_rank.get(role, 9), int(s.get("number") or 0), name, div))
+    cands.sort()
+    picked = []
+    # Pass 1: ensure every division reaches >= 10 seated members (Suggi standing floor)
+    rest = []
+    for item in cands:
+        _rr, _num, name, div = item
+        if div_counts.get(div, 0) < 10:
+            picked.append(name)
+            div_counts[div] = div_counts.get(div, 0) + 1
+        else:
+            rest.append(name)
+    picked.extend(rest)
+    if limit is None:
+        ml, mc = int(fac.get("members_limit") or 0), int(fac.get("member_count") or len(seated))
+        limit = max(0, ml - mc - len(queued)) if ml else len(picked)
+    return picked[:max(0, int(limit))]
+
+
+def add_seats(data, pilots, now):
+    rows = seat_rows(data)
+    emp = dispatch.read_json(Path(data) / "empire" / "empire.json", {}) or {}
+    seated = {str(m.get("pilot")) for m in (emp.get("members") or []) if isinstance(m, dict) and m.get("pilot")}
+    open_set = {str(r.get("pilot")) for r in rows if r.get("state") == "open"}
+    fleet = ships(data)
+    added = []
+    for p in pilots:
+        p = p.strip()
+        if not p or p in seated or p in open_set or p not in fleet:
+            continue
+        rows.append({"pilot": p, "state": "open", "at": int(now)})
+        open_set.add(p)
+        added.append(p)
+    if added:
+        write_seats(data, rows)
+    print("SEATS queued: %d added (%d open in queue); served automatically between runs by wallet.py sweep"
+          % (len(added), sum(1 for r in rows if r.get("state") == "open")))
+    return 0
+
+
+def faction_raw(pilot, action, params):
+    import gate
+    return gate.call("post", "/accounts/%s/raw" % gate.q(pilot),
+                     {"toolGroup": "spacemolt_faction", "action": action, "params": params}, timeout=90)
+
+
+def order_hold_path(data, pilot):
+    return Path(data) / "fleet" / "orders" / (pilot + ".json")
+
+
+def try_hold_sweep(data, pilot, now):
+    if division.order_of(pilot, data):
+        return False
+    p = order_hold_path(data, pilot)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(json.dumps({"pilot": pilot, "what": "hand sweep", "since": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(now))}), encoding="utf-8")
+    return division.order_of(pilot, data) == "hand sweep"
+
+
+def release_sweep(data, pilot):
+    if division.order_of(pilot, data) == "hand sweep":
+        try:
+            order_hold_path(data, pilot).unlink()
+        except OSError:
+            pass
+
+
+def serve_seats(data, leader, now, dry):
+    """Invite and join up to SEAT_BATCH idle queued pilots when both the leader and each target pilot stand free."""
+    rows = seat_rows(data)
+    todo = [r for r in rows if r.get("state") == "open"]
+    if not todo:
+        return 0
+    if dry:
+        print("would seat: %d pilots waiting in seats.json" % len(todo))
+        return 0
+    fleet = ships(data)
+    if fighting(fleet.get(leader) or {}) or not try_hold_sweep(data, leader, now):
+        if (Path(data) / "fleet" / "host" / "running" / (leader + ".json")).exists():
+            sp = Path(data) / "fleet" / "host" / "stop" / leader
+            sp.parent.mkdir(parents=True, exist_ok=True)
+            sp.touch()
+        print("SEATS waits: leader %s is on a run (%s)" % (leader, division.order_of(leader, data) or "fighting"))
+        return 0
+    joined = 0
+    t0 = time.time()
+    try:
+        emp = dispatch.read_json(Path(data) / "empire" / "empire.json", {}) or {}
+        fid = str(((emp.get("faction") or {}).get("id")) or "")
+        st_i, txt_i = faction_raw(leader, "info", {})
+        if st_i == 200 and "{" in txt_i:
+            try:
+                sc = (json.loads(txt_i[txt_i.find("{"):]).get("structuredContent")) or {}
+                fid = str(sc.get("id") or fid)
+            except ValueError:
+                pass
+        if not fid:
+            print("SEATS waits: faction id unread")
+            return 0
+        for r in todo[:SEAT_BATCH]:
+            if time.time() - t0 > SEAT_BUDGET:
+                break
+            p = str(r.get("pilot") or "")
+            if not p or fighting(fleet.get(p) or {}):
+                continue
+            if not try_hold_sweep(data, p, time.time()):
+                if (Path(data) / "fleet" / "host" / "running" / (p + ".json")).exists():
+                    sp = Path(data) / "fleet" / "host" / "stop" / p
+                    sp.parent.mkdir(parents=True, exist_ok=True)
+                    sp.touch()
+                continue
+            try:
+                st_a, txt_a = faction_raw(leader, "invite", {"player_id": p})
+                st_b, txt_b = faction_raw(p, "join", {"faction_id": fid})
+                comb = (txt_a + " " + txt_b).lower()
+                if "faction_full" in comb:
+                    faction_raw(leader, "withdraw_invite", {"player_id": p})
+                    r.update(state="full", note="faction_full")
+                    break
+                if (st_b == 200 and '"error"' not in txt_b[:240]) or "already_member" in comb or "already in" in comb:
+                    r.update(state="joined", joined_at=int(time.time()))
+                    joined += 1
+                elif "in_battle" in comb:
+                    break
+                else:
+                    r["note"] = txt_b[:160]
+            finally:
+                release_sweep(data, p)
+    finally:
+        release_sweep(data, leader)
+    write_seats(data, rows)
+    if joined:
+        print("SEATS joined: %d pilots added to CLTV (%d still open)"
+              % (joined, sum(1 for r in rows if r.get("state") == "open")))
+    return 0
+
+
 def add_fund(data, pilot, credits, why, hours, now):
     rows = funds(data)
     if any(r.get("pilot") == pilot and r.get("state") in ("open", "withdrawn", "unsure") for r in rows):
@@ -680,6 +864,7 @@ def sweep(data, now, dry):
         print("would settle: the deposit of %s cr sent at %s UTC" % (format(int(waiting.get("credits") or 0), ","), time.strftime("%H:%M", time.gmtime(waiting["at"]))))
     flying, unsettled = settle_gifts(data, "gift", now, dry)    # Q75: a gift a cut pass left `sent`, settled before any new one
     failed = serve_funds(data, leader, now, dry) or failed or unsettled   # orders ENT-063: the treasury pays one pilot for a buy
+    serve_seats(data, leader, now, dry)
     log = swept(data)
     battle = {r.get("from"): r["at"] for r in log if r.get("state") == "battle" and now - r["at"] < BATTLE_WAIT}
     held = [r for r in log if r.get("kind") == "deposit" and r.get("state") == "unsure" and now - r["at"] < UNSURE_HOLD]
@@ -788,8 +973,46 @@ def main(argv=None):
     if any(a in ("-h", "--help") for a in args):
         sys.exit(__doc__)
     data = args[args.index("--data") + 1] if "--data" in args else division.DATA
-    verb = "fund" if "fund" in args else "topup" if "topup" in args else "sweep" if "sweep" in args else "check"
+    verb = "seat" if "seat" in args else "fund" if "fund" in args else "topup" if "topup" in args else "sweep" if "sweep" in args else "check"
     now = time.time()
+    if verb == "seat":
+        if "--show" in args:
+            rows = seat_rows(data)
+            emp = dispatch.read_json(Path(data) / "empire" / "empire.json", {}) or {}
+            fac = (emp.get("faction") or {}) if isinstance(emp, dict) else {}
+            print("SEATS | faction %s/%s | queued open: %d | joined via queue: %d"
+                  % (fac.get("member_count", "?"), fac.get("members_limit", "?"),
+                     sum(1 for r in rows if r.get("state") == "open"),
+                     sum(1 for r in rows if r.get("state") == "joined")))
+            for r in rows[-30:]:
+                print("  %s | %s%s" % (r.get("pilot"), r.get("state"), (" | " + str(r["note"])) if r.get("note") else ""))
+            return 0
+        kind, who = division.member()
+        if "--dry-run" not in args and who != "Unity":
+            sys.exit("REFUSED: seating ships in the faction is the Fleet Admiral's (rule F11)")
+        rest = [a for a in args if a != "seat"]
+        if "--pick" in rest:
+            idx_p = rest.index("--pick")
+            lim = int(rest[idx_p + 1]) if idx_p + 1 < len(rest) and rest[idx_p + 1].isdigit() else None
+            picks = pick_unseated(data, lim)
+            if "--dry-run" in rest:
+                print("would queue %d pilots: %s" % (len(picks), ", ".join(picks[:25]) + (" ..." if len(picks) > 25 else "")))
+                return 0
+            return add_seats(data, picks, now)
+        pilots = []
+        for a in rest:
+            if a.startswith("--"):
+                continue
+            if a.startswith("@") and os.path.exists(a[1:]):
+                pilots.extend([l.strip() for l in open(a[1:], encoding="utf-8") if l.strip()])
+            else:
+                pilots.append(a)
+        if not pilots:
+            sys.exit("USAGE: wallet.py seat [--show | --pick [N] [--dry-run] | <pilot>... | @<file>]")
+        if "--dry-run" in rest:
+            print("would queue %d pilots: %s" % (len(pilots), ", ".join(pilots[:25])))
+            return 0
+        return add_seats(data, pilots, now)
     if verb == "fund":
         if "--show" in args:
             for r in funds(data):

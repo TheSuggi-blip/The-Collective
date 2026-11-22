@@ -585,11 +585,20 @@ def doc_title(rel, body=""):
 
 
 REPORT_ID = re.compile(r"(\d{4})(\d\d)(\d\d)T(\d\d)(\d\d)(\d\d)Z")
-REPORTS_SHOWN = 15
+REPORTS_SHOWN = 30
+LOG_ORDER = {"orders.log": 0, "queue.log": 1, "admirals.log": 2, "requests.log": 3, "errors.log": 4, "reports.log": 5}
+LOG_DESC = {
+    "orders.log": "Standing orders S1-S5, goals G1-G5 & Unity's current division directives",
+    "queue.log": "Live inter-agent coordination notices, build handoffs & turn announcements",
+    "admirals.log": "Peer-to-peer tactical coordination between the five Division Admirals",
+    "requests.log": "Division engineering requests to Unity and closed tool/gate answers",
+    "errors.log": "Operational faults, root-cause investigations & structural gate fixes",
+    "reports.log": "Append-only index of session-end division and fleet reports",
+}
 
 
 def api_docs():
-    """What Suggi reads on the page: governance, the logs, the reports (the 15 newest by the time they were
+    """What Suggi reads on the page: governance, the logs, the reports (the 30 newest by the time they were
     written: the `id:` of their frontmatter, UTC), and the fleet's own knowledge."""
     reports, logs = [], []
     try:
@@ -620,18 +629,40 @@ def api_docs():
         if not fn.endswith(".log") or not DOC_PATH.fullmatch("communications/" + fn):
             continue
         try:
-            entries = ENTRY.findall(repo_text("communications/" + fn, cap=3_000_000))
+            raw_log = repo_text("communications/" + fn, cap=3_000_000)
+            entries = ENTRY.findall(raw_log)
         except OSError:
             continue
         last = entries[-1] if entries else None
-        logs.append({"path": "communications/" + fn, "title": doc_title("communications/" + fn), "entries": len(entries),
-                     "last": {"ent": last[0], "at": last[1].strip()[:20], "by": last[2].strip()[:30]} if last else None})
-    listed = lambda *rels: [{"path": rel, "title": doc_title(rel)} for rel in rels if (REPO / rel).is_file()]
-    knowledge = (listed("game/routes/master-index.md")            # its links lead into every index-<group>.md and plan-<role>.md
-                 + [{"path": d["path"], "title": doc_title(d["path"])} for d in doc_list("game/routes/guidebook")]
-                 + [{"path": d["path"], "title": doc_title(d["path"])} for sub in sorted(p.name for p in (REPO / "game" / "routes" / "guidebook").glob("*") if p.is_dir())
-                    for d in doc_list("game/routes/guidebook/" + sub)]
-                 + listed("game/catalog/master-index.md", "game/fleet/index.md"))
+        preview = ""
+        if last:
+            idx = raw_log.rfind("## [" + last[0] + "]")
+            if idx >= 0:
+                for pline in raw_log[idx:].splitlines()[1:8]:
+                    ps = pline.strip()
+                    if ps and not ps.startswith("#"):
+                        preview = text(re.sub(r"[`*_]", "", ps), 150)
+                        break
+        logs.append({
+            "path": "communications/" + fn,
+            "name": fn[:-4],
+            "title": doc_title("communications/" + fn),
+            "desc": LOG_DESC.get(fn, "Append-only fleet log"),
+            "entries": len(entries),
+            "last": {"ent": last[0], "at": last[1].strip()[:20], "by": last[2].strip()[:30], "kind": last[3].strip()[:20] if len(last) > 3 else "", "preview": preview} if last else None,
+        })
+    logs.sort(key=lambda x: (LOG_ORDER.get(x["name"] + ".log", 99), x["path"]))
+    listed = lambda grp, *rels: [{"path": rel, "title": doc_title(rel), "group": grp} for rel in rels if (REPO / rel).is_file()]
+    knowledge = (
+        listed("Routes & Plans", "game/routes/master-index.md")
+        + listed("Catalog & Craftbook", "game/catalog/master-index.md", "game/catalog/facilities.md", "game/catalog/modules.md", "game/catalog/ships.md")
+        + listed("Fleet Engineering", "game/fleet/index.md", "game/handbook.md")
+        + [{"path": d["path"], "title": doc_title(d["path"]), "group": "Division Guidebooks"} for d in doc_list("game/routes/guidebook")]
+        + [{"path": d["path"], "title": doc_title(d["path"]), "group": "Division Guidebooks"}
+           for sub in sorted(p.name for p in (REPO / "game" / "routes" / "guidebook").glob("*") if p.is_dir())
+           for d in doc_list("game/routes/guidebook/" + sub)]
+        + [{"path": d["path"], "title": doc_title(d["path"]), "group": "Game Rules"} for d in doc_list("game/rules")]
+    )
     return {"reports": reports, "reports_total": total, "logs": logs,
             "governance": [{"path": d["path"], "title": doc_title(d["path"])} for d in doc_list("governance")], "knowledge": knowledge}
 
@@ -1559,6 +1590,498 @@ def api_ops():
     return out
 
 
+DIPLO = {"at": 0.0, "value": None}
+COMMS_MEM = {"mtime": 0.0, "size": 0, "value": None}
+
+ASCII_MAP = str.maketrans({
+    "\u2014": "--", "\u2013": "-", "\u2018": "'", "\u2019": "'",
+    "\u201c": '"', "\u201d": '"', "\u2026": "...", "\u2022": "*",
+    "\u00a0": " ",
+})
+
+
+def clean_ascii(val, limit=240):
+    if val is None:
+        return ""
+    s = " ".join(str(val).translate(ASCII_MAP).split())
+    s = "".join(ch if 32 <= ord(ch) <= 126 else "?" for ch in s)
+    return s[:limit]
+
+
+def read_comms_summary(our_pilots):
+    """Read /srv/collective/data/comms/messages.jsonl once per file change: separate real player hails,
+    outbound messages from our pilots, human local/system chatter, and NPC authority dispatches."""
+    msg_path = FLEET.parent / "comms" / "messages.jsonl"
+    if not msg_path.is_file():
+        return {"summary": {"total_logged": 0, "direct_human_in": 0, "sent_by_us": 0, "local_human": 0, "npc_notices": 0},
+                "direct_in": [], "sent_out": [], "local_radio": [], "npc_notices": []}
+    st = msg_path.stat()
+    if COMMS_MEM["value"] is not None and COMMS_MEM["mtime"] == st.st_mtime and COMMS_MEM["size"] == st.st_size:
+        return COMMS_MEM["value"]
+    direct_in, sent_out, local_radio, npc_notices = [], [], [], []
+    seen_local = set()
+    total = 0
+    try:
+        lines = msg_path.read_text(encoding="utf-8", errors="replace").splitlines()
+    except OSError:
+        lines = []
+    for ln in lines:
+        if not ln.strip():
+            continue
+        total += 1
+        try:
+            m = json.loads(ln)
+        except ValueError:
+            continue
+        if not isinstance(m, dict):
+            continue
+        sid = str(m.get("sender_id") or "")
+        snd = clean_ascii(m.get("sender") or "", 48)
+        ch = clean_ascii(m.get("channel") or "", 16)
+        tag = clean_ascii(m.get("tag") or "", 8)
+        sys_id = clean_ascii(m.get("system") or "", 40)
+        poi = clean_ascii(m.get("poi") or "", 48)
+        ts = clean_ascii(m.get("t") or m.get("seen_at") or "", 30)
+        msg_txt = clean_ascii(m.get("text") or "", 240)
+        is_npc = (sid in ("salvage_authority",) or sid.startswith("npc_")
+                  or snd.startswith("[CUSTOMS]") or snd.startswith("[POLICE]") or snd.startswith("[STATION]")
+                  or snd in ("Galactic Salvage Authority", "Interstellar Revenue Service", "Shipyard Authority"))
+        row = {"t": ts, "channel": ch, "sender": snd, "tag": tag, "system": sys_id, "poi": poi, "text": msg_txt}
+        if m.get("own") or snd in our_pilots:
+            if ch != "faction":
+                sent_out.append(row)
+            continue
+        if m.get("to_us") or ch == "private":
+            if is_npc:
+                npc_notices.append(row)
+            else:
+                direct_in.append(row)
+        elif ch in ("local", "system") and not is_npc:
+            dedup = (snd, msg_txt[:80])
+            if dedup not in seen_local:
+                seen_local.add(dedup)
+                local_radio.append(row)
+    direct_in.sort(key=lambda r: r["t"], reverse=True)
+    sent_out.sort(key=lambda r: r["t"], reverse=True)
+    local_radio.sort(key=lambda r: r["t"], reverse=True)
+    npc_notices.sort(key=lambda r: r["t"], reverse=True)
+    res = {
+        "summary": {
+            "total_logged": total,
+            "direct_human_in": len(direct_in),
+            "sent_by_us": len(sent_out),
+            "local_human": len(local_radio),
+            "npc_notices": len(npc_notices),
+        },
+        "direct_in": direct_in[:30],
+        "sent_out": sent_out[:30],
+        "local_radio": local_radio[:40],
+        "npc_notices": npc_notices[:25],
+    }
+    COMMS_MEM.update(mtime=st.st_mtime, size=st.st_size, value=res)
+    return res
+
+
+def api_diplomacy():
+    """Stellaris-style Galactic Contacts, Rival Power Standings, Alliance Blocs, Active Wars & External Comms."""
+    now = time.time()
+    if DIPLO["value"] is not None and now - DIPLO["at"] < 60.0:
+        return DIPLO["value"]
+
+    feed = VALUE.get("feed")
+    if not isinstance(feed, dict):
+        feed = read_json(DATA / "feed.json") or {}
+    factions_raw = (feed.get("factions") or {}) if isinstance(feed, dict) else {}
+    players_raw = (feed.get("players") or {}) if isinstance(feed, dict) else {}
+
+    # Aggregate all 16k+ players by faction tag for wealth/combat/empire/age intelligence
+    p_agg = {}
+    today_epoch = now
+    for p in (players_raw.values() if isinstance(players_raw, dict) else []):
+        if not isinstance(p, dict):
+            continue
+        ftag = clean_ascii(p.get("faction") or "", 8)
+        if not ftag:
+            continue
+        b = p_agg.setdefault(ftag, {
+            "pilots": 0, "earned": 0, "kills_pvp": 0, "kills_pve": 0, "lost": 0,
+            "ore": 0, "trades": 0, "explored": 0, "empires": {}, "oldest_ts": None,
+        })
+        b["pilots"] += 1
+        st = p.get("stats") or {}
+        b["earned"] += int(num(st.get("credits_earned")))
+        b["kills_pvp"] += int(num(st.get("ships_destroyed")))
+        b["kills_pve"] += int(num(st.get("pirates_destroyed")))
+        b["lost"] += int(num(st.get("ships_lost")))
+        b["ore"] += int(num(st.get("ore_mined")))
+        b["trades"] += int(num(st.get("trades_completed")))
+        b["explored"] += int(num(st.get("systems_explored")))
+        emp_name = clean_ascii(p.get("empire") or "", 16)
+        if emp_name:
+            b["empires"][emp_name] = b["empires"].get(emp_name, 0) + 1
+        cr = str(p.get("created") or "")[:10]
+        if len(cr) == 10 and cr[4] == "-" and cr[7] == "-":
+            if b["oldest_ts"] is None or cr < b["oldest_ts"]:
+                b["oldest_ts"] = cr
+
+    emp_state = read_json(FLEET.parent / "empire" / "empire.json") or {}
+    emp_fac = (emp_state.get("faction") or {}) if isinstance(emp_state, dict) else {}
+    emp_rel = (emp_state.get("relations") or {}) if isinstance(emp_state, dict) else {}
+    fl_state = read_json(FLEET / "fleet.json") or {}
+    fl_ships = (fl_state.get("ships") or []) if isinstance(fl_state, dict) else []
+    our_pilots = {str(s.get("name") or "") for s in fl_ships if isinstance(s, dict) and s.get("name")}
+    our_wallets = sum(int(num(s.get("credits"))) for s in fl_ships if isinstance(s, dict))
+    our_treasury = int(num(emp_fac.get("treasury")))
+
+    lb_wealth, lb_damage, lb_fac, lb_missions = {}, {}, {}, {}
+    cltv_ranks = {}
+    st_by_tag = {}
+    met_by_tag = {}
+    battles_out = []
+    our_hulls = []
+    our_avg_pilot = 0.0
+    our_max_pilot = 0
+    our_vb_skilled = 0
+
+    db_path = FLEET.parent / "store" / "read.db"
+    if db_path.is_file():
+        conn = None
+        try:
+            conn = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True, timeout=2.5)
+            conn.row_factory = sqlite3.Row
+            tables = {r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()}
+            if "leaderboards" in tables:
+                for r in conn.execute("SELECT board, rank, tag, value FROM leaderboards WHERE grp='factions' ORDER BY t ASC").fetchall():
+                    bd, tg, val, rk = str(r["board"] or ""), clean_ascii(r["tag"] or "", 8), int(num(r["value"])), int(num(r["rank"]))
+                    if tg == "CLTV" and rk > 0:
+                        cltv_ranks[bd] = rk
+                    if bd == "total_wealth" and tg:
+                        lb_wealth[tg] = val
+                    elif bd == "damage_dealt" and tg:
+                        lb_damage[tg] = val
+                    elif bd == "facility_investment" and tg:
+                        lb_fac[tg] = val
+                    elif bd == "missions_completed" and tg:
+                        lb_missions[tg] = val
+            if "stations" in tables:
+                for r in conn.execute(
+                    "SELECT tag, system, name, kind FROM stations WHERE tag IS NOT NULL AND tag != '' AND COALESCE(wrecked, 0) = 0"
+                ).fetchall():
+                    tg = clean_ascii(r["tag"], 8)
+                    sb = st_by_tag.setdefault(tg, {"count": 0, "systems": [], "names": []})
+                    sb["count"] += 1
+                    sy = clean_ascii(r["system"], 40)
+                    if sy and sy not in sb["systems"]:
+                        sb["systems"].append(sy)
+                    if len(sb["names"]) < 8:
+                        sb["names"].append(clean_ascii(r["name"], 48))
+            if "met" in tables and "hulls" in tables:
+                for r in conn.execute("""
+                    SELECT m.faction as tag, COUNT(DISTINCT m.name) as sighted,
+                           MAX(COALESCE(h.tier, 0)) as max_tier,
+                           ROUND(AVG(COALESCE(h.tier, 0)), 2) as avg_tier,
+                           MAX(COALESCE(h.piloting_required, 0)) as max_pilot_req,
+                           GROUP_CONCAT(DISTINCT m.system) as syss
+                    FROM met m
+                    LEFT JOIN hulls h ON LOWER(m.class) = LOWER(h.name) OR LOWER(m.class) = LOWER(h.id)
+                    WHERE m.faction IS NOT NULL AND m.faction != ''
+                    GROUP BY m.faction
+                """).fetchall():
+                    tg = clean_ascii(r["tag"], 8)
+                    syss = [clean_ascii(x, 40) for x in str(r["syss"] or "").split(",") if x][:14]
+                    met_by_tag[tg] = {
+                        "sighted": int(num(r["sighted"])),
+                        "max_tier": int(num(r["max_tier"])),
+                        "avg_tier": round(float(r["avg_tier"] or 0.0), 2),
+                        "est_piloting": int(num(r["max_pilot_req"])),
+                        "systems": syss,
+                    }
+            if "ships" in tables and "hulls" in tables:
+                for r in conn.execute("""
+                    SELECT s.class as cls, COALESCE(h.faction, s.empire, 'neutral') as hull_emp,
+                           COALESCE(h.tier, 0) as tier, COALESCE(h.category, '') as cat, COUNT(*) as n
+                    FROM ships s LEFT JOIN hulls h ON LOWER(s.class) = LOWER(h.name) OR LOWER(s.class) = LOWER(h.id)
+                    GROUP BY s.class ORDER BY n DESC
+                """).fetchall():
+                    our_hulls.append({
+                        "class": clean_ascii(r["cls"], 32),
+                        "empire": clean_ascii(r["hull_emp"] or "neutral", 20),
+                        "tier": int(num(r["tier"])),
+                        "category": clean_ascii(r["cat"], 24),
+                        "count": int(num(r["n"])),
+                    })
+            if "ship_skills" in tables:
+                sk = conn.execute("SELECT ROUND(AVG(level), 1) as avg_lv, MAX(level) as max_lv FROM ship_skills WHERE skill='piloting'").fetchone()
+                if sk:
+                    our_avg_pilot = float(sk["avg_lv"] or 0.0)
+                    our_max_pilot = int(num(sk["max_lv"]))
+                vb_r = conn.execute("SELECT COUNT(DISTINCT pilot) as c FROM ship_skills WHERE skill LIKE '%voidborn%' AND level >= 1").fetchone()
+                if vb_r:
+                    our_vb_skilled = int(num(vb_r["c"]))
+            if "public_battles" in tables:
+                for r in conn.execute("SELECT * FROM public_battles ORDER BY tick DESC LIMIT 25").fetchall():
+                    battles_out.append({
+                        "system": clean_ascii(r["system"], 40),
+                        "system_name": clean_ascii(r["system_name"], 48),
+                        "category": clean_ascii(r["category"], 20),
+                        "status": clean_ascii(r["status"], 20),
+                        "destroyed": int(num(r["destroyed"])),
+                        "lost": clean_ascii(r["lost"], 80),
+                        "pilots": clean_ascii(r["pilots"], 100),
+                        "tags": clean_ascii(r["tags"], 40),
+                        "ended_at": clean_ascii(r["ended_at"], 30),
+                    })
+        except sqlite3.Error:
+            pass
+        finally:
+            if conn is not None:
+                conn.close()
+
+    def age_days_of(iso_date):
+        if not iso_date or len(iso_date) < 10:
+            return None
+        ts = parse_iso_utc(iso_date + " 00:00:00")
+        return max(1, int((today_epoch - ts) // 86400)) if ts else None
+
+    our_bases_list = [clean_ascii(b.get("system"), 40) for b in (emp_state.get("bases") or []) if isinstance(b, dict) and b.get("system")]
+    our_ship_syss = []
+    for s in fl_ships:
+        sy = clean_ascii((s or {}).get("system") or "", 40)
+        if sy and sy not in our_ship_syss and len(our_ship_syss) < 12:
+            our_ship_syss.append(sy)
+
+    our_members = int(num(emp_fac.get("member_count") or 99))
+    our_limit = int(num(emp_fac.get("members_limit") or 200))
+    our_wealth = our_wallets + our_treasury
+    our_max_tier = max([h["tier"] for h in our_hulls] or [0])
+    our_avg_tier = round(sum(h["tier"] * h["count"] for h in our_hulls) / max(1, sum(h["count"] for h in our_hulls)), 2)
+
+    our_allies = [clean_ascii(x, 8) for x in (emp_rel.get("allies") or []) if clean_ascii(x, 8)]
+    our_enemies = [clean_ascii(x, 8) for x in (emp_rel.get("enemies") or []) if clean_ascii(x, 8)]
+    our_wars = [clean_ascii(x, 8) for x in (emp_rel.get("wars") or []) if clean_ascii(x, 8)]
+
+    def power_score(wealth_v, members_v, bases_v, kills_v, max_tier_v):
+        return (wealth_v / 1_000_000.0) + (members_v * 2.5) + (bases_v * 120.0) + (kills_v * 0.15) + (max_tier_v * 40.0)
+
+    pa_us = p_agg.get("CLTV") or {}
+    our_kills = int(pa_us.get("kills_pvp", 0) + pa_us.get("kills_pve", 0))
+    our_score = max(1.0, power_score(max(our_wealth, pa_us.get("earned", 0)), len(fl_ships) or our_members, len(our_bases_list), our_kills, our_max_tier))
+
+    all_rows = []
+    seen_tags = set()
+    all_tags = set(factions_raw.keys()) | {"CLTV"} | set(lb_wealth.keys()) | set(st_by_tag.keys())
+    for raw_tag in all_tags:
+        tg = clean_ascii(raw_tag, 8)
+        if not tg or tg in seen_tags:
+            continue
+        seen_tags.add(tg)
+        f = factions_raw.get(raw_tag) or factions_raw.get(tg) or {}
+        pa = p_agg.get(tg) or {}
+        st_inf = st_by_tag.get(tg) or {"count": 0, "systems": [], "names": []}
+        mt_inf = met_by_tag.get(tg) or {"sighted": 0, "max_tier": 0, "avg_tier": 0.0, "est_piloting": 0, "systems": []}
+
+        if tg == "CLTV":
+            members_v = our_members
+            bases_v = max(len(our_bases_list), st_inf["count"])
+            base_syss = our_bases_list or st_inf["systems"]
+            sight_syss = our_ship_syss
+            wealth_v = our_wealth
+            wealth_src = "purse"
+            max_t = our_max_tier
+            avg_t = our_avg_tier
+            est_lv = our_max_pilot
+            avg_lv = our_avg_pilot
+            age_d = age_days_of(str(emp_fac.get("created_at") or "2026-11-15")[:10]) or 7
+            dom_emp = "voidborn 100%"
+            fname = clean_ascii(emp_fac.get("name") or f.get("name") or "The Collective", 60)
+            fleader = clean_ascii(emp_fac.get("leader") or f.get("leader") or "Prime Directive", 40)
+            allies_l, enemies_l, wars_l = our_allies, our_enemies, our_wars
+        else:
+            members_v = int(num(f.get("members")) or pa.get("pilots") or 0)
+            bases_v = st_inf["count"]
+            base_syss = st_inf["systems"]
+            sight_syss = mt_inf["systems"]
+            if tg in lb_wealth:
+                wealth_v, wealth_src = lb_wealth[tg], "net_worth"
+            else:
+                wealth_v, wealth_src = int(pa.get("earned") or 0), "earned"
+            max_t = mt_inf["max_tier"]
+            avg_t = mt_inf["avg_tier"]
+            est_lv = mt_inf["est_piloting"]
+            avg_lv = None
+            age_d = age_days_of(pa.get("oldest_ts"))
+            emps = pa.get("empires") or {}
+            if emps:
+                top_e, top_n = max(emps.items(), key=lambda kv: kv[1])
+                pct = int(round(100.0 * top_n / max(1, sum(emps.values()))))
+                dom_emp = f"{top_e} {pct}%"
+            else:
+                dom_emp = "--"
+            fname = clean_ascii(f.get("name") or tg, 60)
+            fleader = clean_ascii(f.get("leader") or "--", 40)
+            allies_l = [clean_ascii(x, 8) for x in (f.get("allies") or []) if clean_ascii(x, 8)]
+            enemies_l = [clean_ascii(x, 8) for x in (f.get("enemies") or []) if clean_ascii(x, 8)]
+            wars_l = [clean_ascii(x, 8) for x in (f.get("wars") or []) if clean_ascii(x, 8)]
+
+        kills_v = int(pa.get("kills_pvp", 0) + pa.get("kills_pve", 0))
+        sc = power_score(wealth_v, members_v, bases_v, kills_v, max_t)
+        ratio = sc / our_score
+        if tg == "CLTV":
+            rel_pow = "US"
+            standing = "us"
+        else:
+            rel_pow = ("Overwhelming" if ratio >= 5.0 else "Superior" if ratio >= 1.75
+                       else "Equivalent" if ratio >= 0.55 else "Inferior" if ratio >= 0.2 else "Pathetic")
+            standing = ("war" if tg in our_wars else "hostile" if tg in our_enemies
+                        else "ally" if tg in our_allies else "neutral")
+
+        all_rows.append({
+            "tag": tg, "name": fname, "leader": fleader,
+            "members": members_v, "fleet_ships": len(fl_ships) if tg == "CLTV" else None,
+            "bases": bases_v, "base_systems": base_syss[:12], "base_names": st_inf["names"][:6],
+            "sighted": len(fl_ships) if tg == "CLTV" else mt_inf["sighted"],
+            "sight_systems": sight_syss[:12],
+            "wealth": wealth_v, "wealth_src": wealth_src,
+            "earned": int(pa.get("earned") or 0),
+            "kills": kills_v, "kills_pvp": int(pa.get("kills_pvp") or 0), "lost": int(pa.get("lost") or 0),
+            "ore": int(pa.get("ore") or 0), "trades": int(pa.get("trades") or 0),
+            "max_tier": max_t, "avg_tier": avg_t, "est_piloting": est_lv, "avg_piloting": avg_lv,
+            "age_days": age_d, "empire": dom_emp,
+            "rel_power": rel_pow, "power_score": round(sc, 1), "standing": standing,
+            "allies": allies_l[:15], "enemies": enemies_l[:15], "wars": wars_l[:15],
+            "damage_dealt": lb_damage.get(tg, 0), "facility_inv": lb_fac.get(tg, 0), "missions": lb_missions.get(tg, 0),
+        })
+
+    by_tag = {r["tag"]: r for r in all_rows}
+    keep_tags = {"CLTV"}
+    for key_fn, n_keep in (
+        (lambda r: r["wealth"], 30),
+        (lambda r: r["members"], 25),
+        (lambda r: r["bases"], 20),
+        (lambda r: r["kills"], 20),
+        (lambda r: (r["max_tier"], r["avg_tier"], r["sighted"]), 20),
+    ):
+        for r in sorted(all_rows, key=key_fn, reverse=True)[:n_keep]:
+            keep_tags.add(r["tag"])
+    rivals_out = sorted([by_tag[t] for t in keep_tags if t in by_tag], key=lambda r: r["wealth"], reverse=True)
+
+    # Compute Alliance Blocs (undirected connected components over non-empty ally edges)
+    adj = {}
+    for r in all_rows:
+        u = r["tag"]
+        for v in r["allies"]:
+            if v in by_tag and v != u:
+                adj.setdefault(u, set()).add(v)
+                adj.setdefault(v, set()).add(u)
+    visited = set()
+    alliances_out = []
+    for start in sorted(adj):
+        if start in visited:
+            continue
+        comp, stack = [], [start]
+        visited.add(start)
+        while stack:
+            cur = stack.pop()
+            comp.append(cur)
+            for nb in adj.get(cur, ()):
+                if nb not in visited:
+                    visited.add(nb)
+                    stack.append(nb)
+        if len(comp) >= 2:
+            comp_rows = sorted([by_tag[t] for t in comp], key=lambda x: (x["members"], x["wealth"]), reverse=True)
+            b_syss, s_syss = [], []
+            for cr in comp_rows:
+                for sy in cr["base_systems"]:
+                    if sy not in b_syss:
+                        b_syss.append(sy)
+                for sy in cr["sight_systems"]:
+                    if sy not in s_syss:
+                        s_syss.append(sy)
+            alliances_out.append({
+                "lead_tag": comp_rows[0]["tag"],
+                "lead_name": comp_rows[0]["name"],
+                "factions": [{"tag": x["tag"], "name": x["name"], "members": x["members"], "bases": x["bases"], "wealth": x["wealth"]} for x in comp_rows],
+                "total_members": sum(x["members"] for x in comp_rows),
+                "total_bases": sum(x["bases"] for x in comp_rows),
+                "total_wealth": sum(x["wealth"] for x in comp_rows),
+                "base_systems": b_syss[:18],
+                "sight_systems": s_syss[:18],
+            })
+    alliances_out.sort(key=lambda b: (b["total_bases"], b["total_members"], b["total_wealth"]), reverse=True)
+
+    # Active Wars & Marked Rivalries across all factions (non-empty tags only)
+    wars_seen, wars_out = set(), []
+    enemies_seen, rivalries_out = set(), []
+    for r in all_rows:
+        u = r["tag"]
+        for w in r["wars"]:
+            if not w or w == u:
+                continue
+            pair = tuple(sorted((u, w)))
+            if pair not in wars_seen:
+                wars_seen.add(pair)
+                other = by_tag.get(w) or {"tag": w, "name": w, "members": 0, "bases": 0}
+                wars_out.append({
+                    "a_tag": r["tag"], "a_name": r["name"], "a_members": r["members"], "a_bases": r["bases"],
+                    "b_tag": other["tag"], "b_name": other["name"], "b_members": other["members"], "b_bases": other["bases"],
+                })
+        for e in r["enemies"]:
+            if not e or e == u:
+                continue
+            pair = (u, e)
+            if pair not in enemies_seen:
+                enemies_seen.add(pair)
+                other = by_tag.get(e) or {"tag": e, "name": e, "members": 0}
+                rivalries_out.append({
+                    "from_tag": u, "from_name": r["name"], "to_tag": e, "to_name": other["name"], "to_members": other["members"],
+                })
+
+    wealth_sorted = sorted(all_rows, key=lambda x: x["wealth"], reverse=True)
+    computed_wealth_rank = next((i + 1 for i, x in enumerate(wealth_sorted) if x["tag"] == "CLTV"), None)
+
+    out = {
+        "total_factions": len(all_rows),
+        "total_pilots_galaxy": len(players_raw),
+        "our": {
+            "tag": "CLTV",
+            "name": clean_ascii(emp_fac.get("name") or "The Collective", 60),
+            "leader": clean_ascii(emp_fac.get("leader") or "Prime Directive", 40),
+            "members": our_members,
+            "members_limit": our_limit,
+            "open_seats": max(0, min(len(fl_ships) or our_limit, our_limit) - our_members),
+            "fleet_ships": len(fl_ships),
+            "treasury": our_treasury,
+            "wallets": our_wallets,
+            "total_purse": our_wealth,
+            "bases": len(our_bases_list),
+            "facilities": len(emp_state.get("facilities") or []),
+            "at_war": bool(emp_fac.get("at_war")),
+            "allies": our_allies,
+            "enemies": our_enemies,
+            "wars": our_wars,
+            "avg_piloting": our_avg_pilot,
+            "max_piloting": our_max_pilot,
+            "voidborn_skilled": our_vb_skilled,
+            "hulls": our_hulls,
+            "ranks": {
+                "member_count": cltv_ranks.get("member_count"),
+                "damage_dealt": cltv_ranks.get("damage_dealt"),
+                "facility_investment": cltv_ranks.get("facility_investment"),
+                "missions_completed": cltv_ranks.get("missions_completed"),
+                "wealth_est": computed_wealth_rank,
+            },
+        },
+        "rivals": rivals_out,
+        "alliances": alliances_out[:20],
+        "wars": wars_out[:25],
+        "rivalries": rivalries_out[:25],
+        "battles": battles_out,
+        "comms": read_comms_summary(our_pilots),
+    }
+    DIPLO["at"], DIPLO["value"] = now, out
+    return out
+
+
 def static_file(url_path):
     """The file of static/ behind a request path, or None. `/` is index.html; nothing outside static/."""
     rel = "index.html" if url_path == "/" else url_path.lstrip("/")
@@ -1612,6 +2135,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 "/api/group": lambda: api_group(after),
                 "/api/faction": lambda: api_faction(arg),
                 "/api/ops": api_ops,
+                "/api/diplomacy": api_diplomacy,
                 "/healthz": lambda: {"ok": True, "sources": sum(1 for s in STATUS.values() if s["ok_at"])},
             }
             if url.path not in handlers:

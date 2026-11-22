@@ -1207,7 +1207,7 @@ def show_eyes(data, who):
                 if ml and mc >= ml - 2:
                     cap_flag = " (AT CAP -- P1 recruitment-center; %d/%d fleet ships seated)" % (mc, tot_fl)
                 elif open_seats > 0:
-                    cap_flag = " (%d OPEN SEATS READY TO FILL -- %d/%d ships outside CLTV, rule F11)" % (open_seats, tot_fl - mc, tot_fl)
+                    cap_flag = " (%d OPEN SEATS READY NOW -- Recruitment Center ACTIVE; queue in 1s: wallet.py seat --pick %d)" % (open_seats, open_seats)
                 else:
                     cap_flag = ""
                 lines.append("  FACTION | seats %d/%d%s | treasury %s cr | bases %d%s%s"

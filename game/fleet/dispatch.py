@@ -1182,6 +1182,76 @@ def keep_rests(routes, rows, now, data, loss, late, dry_run):
 HELD_BACK = set()             # pilots already named as held back, so that a pass every 30 s names each once
 ORPHAN_MINUTES = 5            # an engine loop without a fresh order file this long belongs to no runner
 ORPHANS = {}                  # pilot -> when its loop was first seen without an order file
+FUND_DOCK_WAIT = {}           # (leader, fund_at) -> epoch first held docked for wallet.py sweep
+FUND_HOLD_SECS = 12 * 60      # two 5m passes max so the leader never freezes if sweep is off
+FUND_TOLD = set()             # keys already logged once while waiting at dock
+SEAT_HOLD_WAIT = {}           # pilot -> epoch first held idle for wallet.py sweep seat pass
+SEAT_HOLD_SECS = 7 * 60       # one 5m pass + margin for queued seat invite/join
+SEAT_BATCH_HOLD = 20          # max idle unseated pilots held per pass
+
+
+def leader_of_empire(data):
+    emp = read_json(Path(data) / "empire" / "empire.json", {}) or {}
+    fac = emp.get("faction") if isinstance(emp, dict) else {}
+    return str((fac or {}).get("leader") or "Prime Directive")
+
+
+def leader_fund_action(name, ship, data, now, routes):
+    """When an open treasury fund waits in data/fleet/funds.json, route the undocked leader to `park` once
+    or hold the docked leader up to FUND_HOLD_SECS so the 5-minute wallet sweep can withdraw docked."""
+    leader = leader_of_empire(data)
+    if name != leader:
+        return None, None
+    frows = read_json(Path(data) / "fleet" / "funds.json", [])
+    if not isinstance(frows, list):
+        return None, None
+    open_rows = [r for r in frows if isinstance(r, dict) and r.get("state") == "open" and now - float(r.get("at") or 0) < 24 * 3600]
+    active_keys = {(leader, int(r.get("at") or 0)) for r in open_rows}
+    for k in list(FUND_DOCK_WAIT):
+        if k not in active_keys:
+            FUND_DOCK_WAIT.pop(k, None)
+            FUND_TOLD.discard(k)
+    if not open_rows:
+        return None, None
+    todo = open_rows[0]
+    key = (leader, int(todo.get("at") or 0))
+    if ship.get("docked"):
+        since = FUND_DOCK_WAIT.setdefault(key, now)
+        if now - since < FUND_HOLD_SECS:
+            return "hold", todo
+        return None, None
+    if key not in FUND_DOCK_WAIT and isinstance(routes, dict) and "park" in routes:
+        return "park", routes["park"]
+    return None, None
+
+
+def seat_hold_needed(name, data, now):
+    """True when data/fleet/seats.json holds open seat picks and `name` (the leader or one of the next batch
+    of queued pilots) should wait idle up to SEAT_HOLD_SECS for wallet.py sweep to invite and join it."""
+    srows = read_json(Path(data) / "fleet" / "seats.json", [])
+    if not isinstance(srows, list) or not srows:
+        SEAT_HOLD_WAIT.clear()
+        return False
+    emp = read_json(Path(data) / "empire" / "empire.json", {}) or {}
+    fac = (emp.get("faction") or {}) if isinstance(emp, dict) else {}
+    mc, ml = int(fac.get("member_count") or 0), int(fac.get("members_limit") or 0)
+    if ml and mc >= ml:
+        SEAT_HOLD_WAIT.clear()
+        return False
+    open_pilots = [str(r.get("pilot")) for r in srows if isinstance(r, dict) and r.get("state") == "open"
+                   and r.get("pilot") and now - float(r.get("at") or 0) < 6 * 3600]
+    if not open_pilots:
+        SEAT_HOLD_WAIT.clear()
+        return False
+    leader = str(fac.get("leader") or "Prime Directive")
+    wanted = {leader} | set(open_pilots[:SEAT_BATCH_HOLD])
+    for p in list(SEAT_HOLD_WAIT):
+        if p not in wanted:
+            SEAT_HOLD_WAIT.pop(p, None)
+    if name not in wanted:
+        return False
+    since = SEAT_HOLD_WAIT.setdefault(name, now)
+    return (now - since) < SEAT_HOLD_SECS
 
 
 def orphans(fleet, orders, now, seen):
@@ -1267,7 +1337,19 @@ def one_pass(root, data, dry_run, children):
                 lines.append("%s held back: its last %d runs ended `stop 1 not reached`; it gets a route again %d minutes after the last of them" % (name, STUCK, STUCK_REST // 60))
             continue
         HELD_BACK.discard(name)
-        route, argument = pick(pilot, plan, routes, state)
+        f_act, f_obj = leader_fund_action(name, ship, data, now, routes)
+        if f_act == "hold":
+            fkey = (name, int(f_obj.get("at") or 0))
+            if fkey not in FUND_TOLD:
+                FUND_TOLD.add(fkey)
+                lines.append("%s held docked for open treasury fund (%s %s cr)" % (name, f_obj.get("pilot"), format(int(f_obj.get("credits") or 0), ",")))
+            continue
+        if seat_hold_needed(name, data, now):
+            continue
+        if f_act == "park" and f_obj is not None:
+            route, argument = f_obj, None
+        else:
+            route, argument = pick(pilot, plan, routes, state)
         if route is None:
             continue
         what = ("census " + argument) if route["kind"] == "census" else route["kind"] + " " + route["id"]
