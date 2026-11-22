@@ -23,7 +23,7 @@ file: touch /srv/collective/services/station/restart. A change under static/
 needs only a reload of the page.
 
 Sources (all public): /api/map, /api/stations, /api/stats,
-/api/battles, the live event stream /events, and the daily bulk
+/api/battles, /api/leaderboard, the live event stream /events, and the daily bulk
 feed (assets.spacemolt.com/public/v1/manifest.json).
 
 Everything read from the game, the feed or the repository is DATA: it is
@@ -43,6 +43,7 @@ import json
 import os
 import re
 import secrets
+import sqlite3
 import threading
 import time
 import urllib.error
@@ -171,6 +172,31 @@ def load_battles():
     return out
 
 
+def load_leaderboard():
+    d = json.loads(fetch(GAME + "/api/leaderboard", cap=5_000_000))
+    groups = {}
+    for grp in ("players", "factions", "exchange", "stations"):
+        src = d.get(grp) if isinstance(d.get(grp), dict) else {}
+        boards = {}
+        for board, entries in src.items():
+            if not isinstance(entries, list):
+                continue
+            rows = []
+            for r in entries[:25]:
+                if isinstance(r, dict):
+                    rows.append({
+                        "rank": int(num(r.get("rank"))),
+                        "name": text(r.get("name") or r.get("username"), 60),
+                        "tag": text(r.get("tag") or r.get("empire") or r.get("system_name"), 40),
+                        "value": int(num(r.get("value"))),
+                    })
+            if rows:
+                boards[text(board, 60)] = rows
+        if boards:
+            groups[grp] = boards
+    return {"generated_at": text(d.get("generated_at"), 40), "groups": groups}
+
+
 def feed_file(manifest, name):
     entry = next(f for f in manifest["files"] if f.get("name") == name)
     url = str(entry["url"])
@@ -211,7 +237,7 @@ def load_feed():
 
 FEEDS = {  # name: (seconds between runs, loader)
     "map": (3600, load_map), "stations": (900, load_stations), "stats": (60, load_stats),
-    "battles": (120, load_battles),
+    "battles": (120, load_battles), "leaderboard": (3600, load_leaderboard),
     "feed": (21600, load_feed),
 }
 VALUE = {}                       # name -> loaded value
@@ -1286,6 +1312,167 @@ def api_item(item):
             "built": built[:40], "built_total": len(built)}
 
 
+
+OPS = {"at": 0.0, "value": None}
+
+
+def parse_iso_utc(stamp):
+    if not isinstance(stamp, str) or len(stamp) < 19:
+        return None
+    try:
+        return calendar.timegm(time.strptime(stamp[:19].replace("T", " "), "%Y-%m-%d %H:%M:%S"))
+    except ValueError:
+        return None
+
+
+def api_ops():
+    """Operational readiness snapshot for the Metrics tab: pilot tick freshness, hull/upgrade readiness,
+    faction cap, supply chains, open priority needs, MAD/raid alerts and service health. Read-only, cached 30 s."""
+    now = time.time()
+    if OPS["value"] is not None and now - OPS["at"] < 30:
+        return OPS["value"]
+    out = {
+        "at": int(now),
+        "freshness": {"ships": 0, "median_s": -1, "p95_s": -1, "max_s": -1},
+        "readiness": {"faction": {}, "hulls": [], "modules": [], "sweepable": {"ships": 0, "credits": 0}},
+        "supply": [],
+        "needs": [],
+        "alerts": {"mad": [], "battles": []},
+        "services": {"running": 0, "total": 0, "down": []},
+    }
+    # 1. Pilot tick freshness + role-aware sweepable wallet estimate from fleet.json
+    try:
+        fleet_doc = read_json(FLEET / "fleet.json")
+        ships_list = fleet_doc.get("ships") if isinstance(fleet_doc, dict) else []
+        ages = []
+        sweep_ships, sweep_cr = 0, 0
+        for ship in ships_list or []:
+            if not isinstance(ship, dict):
+                continue
+            ts = parse_iso_utc(ship.get("state_at"))
+            if ts is not None:
+                ages.append(max(0, int(now - ts)))
+            cr = num(ship.get("credits"))
+            div = text(ship.get("division"), 20)
+            keep, cut = (50000, 60000) if div in ("Trade", "Command") else (30000, 40000)
+            if cr >= cut and text(ship.get("name"), 40) != "Prime Directive":
+                sweep_ships += 1
+                sweep_cr += int(cr - keep)
+        if ages:
+            ages.sort()
+            out["freshness"] = {
+                "ships": len(ages),
+                "median_s": ages[len(ages) // 2],
+                "p95_s": ages[min(len(ages) - 1, int(len(ages) * 0.95))],
+                "max_s": ages[-1],
+            }
+        out["readiness"]["sweepable"] = {"ships": sweep_ships, "credits": sweep_cr}
+    except (OSError, ValueError):
+        pass
+
+    # 2. Read-only SQLite summary from data/store/read.db
+    db_path = FLEET.parent / "store" / "read.db"
+    if db_path.is_file() and not db_path.is_symlink():
+        conn = None
+        try:
+            conn = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True, timeout=2.0)
+            conn.row_factory = sqlite3.Row
+            tables = {r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type IN ('table', 'view')")}
+            if "faction" in tables:
+                row = conn.execute("SELECT member_count, members_limit, treasury, owned_bases, at_war FROM faction LIMIT 1").fetchone()
+                if row:
+                    out["readiness"]["faction"] = {
+                        "members": int(num(row["member_count"])),
+                        "limit": int(num(row["members_limit"])),
+                        "treasury": int(num(row["treasury"])),
+                        "bases": int(num(row["owned_bases"])),
+                        "at_war": bool(row["at_war"]),
+                    }
+            if "ships" in tables and "hulls" in tables:
+                rows = conn.execute(
+                    "SELECT COALESCE(h.tier, 0) AS tier, s.class, COUNT(*) AS n "
+                    "FROM ships s LEFT JOIN hulls h ON h.id = s.class OR h.name = s.class "
+                    "GROUP BY COALESCE(h.tier, 0), s.class ORDER BY tier DESC, n DESC"
+                ).fetchall()
+                out["readiness"]["hulls"] = [{"tier": int(num(r["tier"])), "class": text(r["class"], 40), "count": int(num(r["n"]))} for r in rows[:12]]
+            if "ship_modules" in tables:
+                rows = conn.execute(
+                    "SELECT name, COUNT(*) AS n FROM ship_modules "
+                    "WHERE name LIKE '% III' OR name LIKE '% IV' OR name LIKE '%Survey Scanner%' OR name LIKE '%Cargo Expander%' "
+                    "GROUP BY name ORDER BY n DESC LIMIT 10"
+                ).fetchall()
+                out["readiness"]["modules"] = [{"name": text(r["name"], 50), "count": int(num(r["n"]))} for r in rows]
+            if "supply_status" in tables:
+                rows = conn.execute(
+                    "SELECT chain, item, place, stock, keep, status, hours_left FROM supply_status "
+                    "ORDER BY CASE status WHEN 'short' THEN 0 WHEN 'not read' THEN 1 WHEN 'low' THEN 2 WHEN 'ok' THEN 3 ELSE 4 END, chain LIMIT 20"
+                ).fetchall()
+                out["supply"] = [{
+                    "chain": text(r["chain"], 40), "item": text(r["item"], 40), "place": text(r["place"], 40),
+                    "have": int(num(r["stock"])), "keep": int(num(r["keep"])), "state": text(r["status"], 16).upper(),
+                    "hours": round(float(r["hours_left"]), 1) if isinstance(r["hours_left"], (int, float)) else None,
+                } for r in rows]
+            if "need_status" in tables:
+                rows = conn.execute(
+                    "SELECT id, priority, kind, ref, division, covered, colour, short_items, fee FROM need_status "
+                    "ORDER BY priority, rank LIMIT 12"
+                ).fetchall()
+                out["needs"] = [{
+                    "id": text(r["id"], 40), "priority": "P" + str(int(num(r["priority"]))), "kind": text(r["kind"], 20),
+                    "what": text(r["ref"], 40), "owner": text(r["division"], 20),
+                    "pct": round(float(r["covered"]), 1) if isinstance(r["covered"], (int, float)) else 0.0,
+                    "short": text(r["short_items"], 80), "fee": int(num(r["fee"])),
+                    "colour": text(r["colour"], 12),
+                } for r in rows]
+            if "stats_figures" in tables:
+                rows = conn.execute(
+                    "SELECT subject, value, text FROM stats_figures "
+                    "WHERE view = 'alerts' AND (text LIKE 'OUT %' OR text LIKE 'not judged:%') "
+                    "ORDER BY CASE WHEN text LIKE 'OUT %' THEN 0 ELSE 1 END, subject LIMIT 12"
+                ).fetchall()
+                for r in rows:
+                    msg = text(r["text"], 220)
+                    verdict, _sep, detail = msg.partition(":")
+                    out["alerts"]["mad"].append({
+                        "figure": text(r["subject"], 60),
+                        "verdict": verdict.strip()[:24],
+                        "detail": detail.strip()[:160],
+                    })
+        except sqlite3.Error:
+            pass
+        finally:
+            if conn is not None:
+                conn.close()
+
+    # 3. Recent non-pirate or active battles from public feed
+    with LOCK:
+        battles = list(VALUE.get("battles") or [])
+    if not battles:
+        try:
+            raw_b = read_json(DATA / "battles.json")
+            battles = raw_b if isinstance(raw_b, list) else []
+        except (OSError, ValueError):
+            battles = []
+    out["alerts"]["battles"] = [{
+        "system": text(b.get("system"), 40), "system_name": text(b.get("system_name") or b.get("system"), 40),
+        "category": text(b.get("category"), 16), "status": text(b.get("status"), 16),
+        "destroyed": int(num(b.get("destroyed"))), "tags": [text(t, 10) for t in (b.get("tags") or [])[:4]],
+    } for b in battles if b.get("status") == "active" or b.get("category") != "pirate"][:8]
+
+    # 4. Unit services health (services/status.json beside data/)
+    try:
+        st_doc = read_json(FLEET.parent.parent / "services" / "status.json")
+        svcs = st_doc.get("services") if isinstance(st_doc, dict) else {}
+        if isinstance(svcs, dict):
+            down = sorted(k for k, v in svcs.items() if not isinstance(v, dict) or v.get("state") != "running")
+            out["services"] = {"running": len(svcs) - len(down), "total": len(svcs), "down": down}
+    except (OSError, ValueError):
+        pass
+
+    OPS["at"], OPS["value"] = now, out
+    return out
+
+
 def static_file(url_path):
     """The file of static/ behind a request path, or None. `/` is index.html; nothing outside static/."""
     rel = "index.html" if url_path == "/" else url_path.lstrip("/")
@@ -1338,6 +1525,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 "/api/docs": api_docs, "/api/doc": lambda: api_doc(doc),
                 "/api/group": lambda: api_group(after),
                 "/api/faction": lambda: api_faction(arg),
+                "/api/ops": api_ops,
                 "/healthz": lambda: {"ok": True, "sources": sum(1 for s in STATUS.values() if s["ok_at"])},
             }
             if url.path not in handlers:

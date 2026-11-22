@@ -40,7 +40,7 @@ class SentGiftTests(unittest.TestCase):
         (self.data / "empire").mkdir()
         (self.data / "empire" / "empire.json").write_text(json.dumps({"faction": {"leader": LEADER, "treasury": 100000}, "members": []}))
         (self.data / "fleet" / "flagships.json").write_text(json.dumps({LEADER: {"admiral": "Unity", "division": "Command", "role": "command"}}))
-        self.wallets = {LEADER: 26000, "miner-1": 90000, "miner-2": 20000}
+        self.wallets = {LEADER: 26000, "miner-1": 70000, "miner-2": 20000}
         self.stamp = None                                        # the wallets' reading time in the fleet file (`state_at`); None: not said
         self.write()
         self.wallet = load()
@@ -89,13 +89,13 @@ class SentGiftTests(unittest.TestCase):
         self.assertEqual(self.calls, [("miner-1", LEADER, 40000)])
         sent = [r for r in self.rows("sweep.jsonl") if r["kind"] == "gift"]
         self.assertEqual([(r["from"], r["to"], r["credits"], r["state"], r["wallets"]) for r in sent],
-                         [("miner-1", LEADER, 40000, "sent", {"miner-1": 90000, LEADER: 26000})])      # on disk before the call
+                         [("miner-1", LEADER, 40000, "sent", {"miner-1": 70000, LEADER: 26000})])      # on disk before the call
         self.assertEqual((self.once(), self.rows("gifts.jsonl")), ([], []))
         at = sent[0]["at"]
         self.calls.clear()
         self.wallet.give = self.landing(cut=False)
         code, text = self.go("sweep")
-        self.assertEqual((code, self.calls), (0, []))                  # miner-1 holds 50,000 now: nothing to give, nothing given twice
+        self.assertEqual((code, self.calls), (0, []))                  # miner-1 holds 30,000 now (KEEP_WORK): nothing to give, nothing given twice
         self.assertIn("booked at the next pass: the gift miner-1 -> Prime Directive 40,000 cr sent at", text)
         self.assertEqual([r for r in self.once() if r[2] == "Wallet top-up"], [[at, "miner-1", "Wallet top-up", -40000], [at, LEADER, "Wallet top-up", 40000]])
         self.assertEqual([(g["at"], g["from"], g["to"], g["credits"]) for g in self.rows("gifts.jsonl")], [(at, "miner-1", LEADER, 40000)])

@@ -112,6 +112,30 @@ every faction of the game: tag, name, members, leader, allies, enemies, wars as 
 - Factions at war: `SELECT tag, name, wars FROM factions WHERE wars <> ''`
 - The owners of stations within 5 jumps: `SELECT DISTINCT f.tag, f.name, f.members FROM stations s JOIN systems y ON y.id = s.system JOIN factions f ON f.tag = s.tag WHERE y.jumps <= 5`
 
+## public_battles
+
+recent public battles across the galaxy: system, category (pirate/npc/pvp), status, ships lost, pilots and faction tags (station/battles.json)
+
+- Kind: snapshot
+- Columns: system, system_name, category, status, tick, destroyed, lost, pilots, tags, ended_at, t, src
+- Kept: the last reading of its file, replaced when the file changes; a missing or bad file keeps them (source.note says why)
+- Refreshed: the store's pass (every 60 s), when a file changed (size or mtime): loader `battles`, data/station/battles.json
+- Recent battles with ships destroyed: `SELECT system, category, status, destroyed, lost, tags FROM public_battles ORDER BY tick DESC LIMIT 15`
+- Battles by category: `SELECT category, COUNT(*), SUM(destroyed) FROM public_battles GROUP BY category ORDER BY 2 DESC`
+- Recent PvP or NPC battles near us: `SELECT b.system, y.jumps, b.category, b.tags, b.lost FROM public_battles b LEFT JOIN systems y ON y.id = b.system WHERE b.category != 'pirate' ORDER BY y.jumps`
+
+## leaderboards
+
+public galaxy leaderboards by group (players, factions, exchange, stations) and board: rank, name, tag/empire and value (station/leaderboard.json)
+
+- Kind: snapshot
+- Columns: grp, board, rank, name, tag, value, t, src
+- Kept: the last reading of its file, replaced when the file changes; a missing or bad file keeps them (source.note says why)
+- Refreshed: the store's pass (every 60 s), when a file changed (size or mtime): loader `leaderboards`, data/station/leaderboard.json
+- Top 10 factions by total wealth: `SELECT rank, name, tag, value FROM leaderboards WHERE grp = 'factions' AND board = 'total_wealth' ORDER BY rank LIMIT 10`
+- Top 10 factions by ships destroyed: `SELECT rank, name, tag, value FROM leaderboards WHERE grp = 'factions' AND board = 'ships_destroyed' ORDER BY rank LIMIT 10`
+- Available leaderboard groups and boards: `SELECT grp, board, COUNT(*) FROM leaderboards GROUP BY grp, board ORDER BY grp, board`
+
 ## met
 
 the pilots of OTHER players our ships met: faction, ship class, where last seen, first and last seen (t), times met (intel/met.json)

@@ -1506,6 +1506,12 @@ function keepOrder(rows) {                       // a table that reorders under 
   return rows.sort((a, b2) => routeOrder.rank.get(a.route) - routeOrder.rank.get(b2.route));
 }
 let INCOME = { routes: [], at: 0, key: '' };
+let OPS = { data: null, at: 0 };
+async function opsOf() {
+  if (Date.now() - OPS.at < 30000 && OPS.data) return OPS.data;
+  try { OPS = { data: await get('/api/ops'), at: Date.now() }; } catch (e) { return OPS.data; }
+  return OPS.data;
+}
 
 function fitTable(t) { const w = el('div', 'mtable'); w.append(t); return w; }   // a Metrics table that fits the panel
 
@@ -1591,6 +1597,74 @@ async function renderMetrics(panel, live) {
       .concat([moneyRow(el('b', null, 'Fleet'), fmt(t.working) + ' / ' + fmt(t.ships), w || {}).map((cell, i) => (i === 6 && w ? tint(purseNet(w)) : cell))]), [1, 2, 3, 4, 5, 6])));
   panel.append(el('p', 'sub', 'Per hour. Steady net = steady income - running costs. Net = steady net + paid once: what the division\'s wallets changed by, '
     + 'gifts between our own ships and deposits into the treasury left out. The fleet\'s net adds the treasury\'s own line: the divisions and the treasury add up to it.'));
+  const ops = await opsOf();
+  if (!live()) return;
+  if (ops) {
+    panel.append(el('h3', null, 'Fleet readiness & bottlenecks'));
+    const rgrid = el('div', 'kpis');
+    const rkpi = (k, v, sub, cls) => { const b = el('div', 'kpi' + (cls ? ' ' + cls : '')); b.append(el('div', 'k', k), el('div', 'v', v)); if (sub) b.append(el('div', 's', sub)); rgrid.append(b); };
+    const fac = (ops.readiness || {}).faction || {};
+    const capPct = fac.limit ? Math.round((fac.members / fac.limit) * 100) : 0;
+    rkpi('Faction cap', fac.limit ? fmt(fac.members) + ' / ' + fmt(fac.limit) : '--',
+      fac.limit ? (fac.members >= fac.limit - 2 ? 'at cap: recruitment center needed' : (fac.limit - fac.members) + ' slots open') : 'not read',
+      capPct >= 95 ? 'warn' : 'pos');
+    const fr = ops.freshness || {};
+    const frCls = fr.max_s < 0 ? '' : fr.max_s <= 35 ? 'pos' : fr.max_s <= 90 ? 'warn' : 'neg';
+    rkpi('Pilot tick lag', fr.ships ? fr.median_s + 's med' : '--',
+      fr.ships ? 'p95 ' + fr.p95_s + 's, max ' + fr.max_s + 's (' + fmt(fr.ships) + ' ships)' : 'no timestamps', frCls);
+    const hulls = (ops.readiness || {}).hulls || [];
+    const byTier = new Map();
+    hulls.forEach((h) => byTier.set(h.tier, (byTier.get(h.tier) || 0) + h.count));
+    const tierTxt = [...byTier.entries()].sort((x, y) => y[0] - x[0]).map(([tr, n]) => fmt(n) + ' T' + tr).join(', ') || '--';
+    const topHull = hulls.slice(0, 3).map((h) => h.class + ' (' + h.count + ')').join(', ');
+    rkpi('Hull tiers', tierTxt, topHull || 'no hull data', (byTier.get(0) || 0) > 200 ? 'warn' : '');
+    const sw = (ops.readiness || {}).sweepable || {};
+    rkpi('Sweepable wallets', fmt(sw.credits || 0) + ' cr',
+      fmt(sw.ships || 0) + ' ships above role cap (50k trade, 30k work)', (sw.credits || 0) >= 500000 ? 'warn' : '');
+    const sv = ops.services || {};
+    rkpi('Unit services', sv.total ? sv.running + ' / ' + sv.total : '--',
+      sv.down && sv.down.length ? 'down: ' + sv.down.join(', ') : 'all running', sv.down && sv.down.length ? 'neg' : 'pos');
+    const mods = (ops.readiness || {}).modules || [];
+    rkpi('High-tier modules', mods.length ? fmt(mods.reduce((acc, m) => acc + m.count, 0)) + ' fitted' : '0',
+      mods.length ? mods.slice(0, 3).map((m) => m.name + ': ' + m.count).join(', ') : 'no T3/scanner/expander fitted');
+    panel.append(rgrid);
+
+    const mad = (ops.alerts && ops.alerts.mad) || [], raids = (ops.alerts && ops.alerts.battles) || [];
+    panel.append(el('h3', null, 'Alerts & anomalies'));
+    if (mad.length || raids.length) {
+      if (mad.length) {
+        panel.append(fitTable(table(['Figure', 'Verdict', 'Detail'],
+          mad.map((m) => [m.figure, el('span', 'pill ' + (m.verdict.includes('LOW') || m.verdict.includes('HIGH') ? 'bad' : 'warn'), m.verdict), m.detail]))));
+      }
+      if (raids.length) {
+        panel.append(fitTable(table(['System', 'Kind', 'Status', 'Lost', 'Factions'],
+          raids.map((b) => [sys.has(b.system) ? sysLink(b.system) : b.system_name, b.category, b.status, fmt(b.destroyed), (b.tags || []).join(', ') || '--']), [3])));
+      }
+    } else {
+      panel.append(el('p', 'empty', 'No statistical anomalies (MAD) or active non-pirate battles.'));
+    }
+
+    const sup = ops.supply || [];
+    if (sup.length) {
+      panel.append(el('h3', null, 'Supply chains'));
+      panel.append(fitTable(table(['Chain', 'Item', 'Place', 'Have / Keep', 'Hours', 'State'],
+        sup.map((x) => {
+          const stCls = x.state === 'OK' ? 'good' : x.state === 'LOW' ? 'warn' : 'bad';
+          return [x.chain, x.item, x.place, fmt(x.have) + ' / ' + fmt(x.keep), x.hours === null ? '--' : x.hours + 'h', el('span', 'pill ' + stCls, x.state)];
+        }), [3, 4])));
+    }
+
+    const needs = ops.needs || [];
+    if (needs.length) {
+      panel.append(el('h3', null, 'Open priority needs'));
+      panel.append(fitTable(table(['P', 'Need', 'Owner', 'Covered', 'Missing / Fee'],
+        needs.map((n) => {
+          const stCls = n.colour === 'green' ? 'good' : n.colour === 'red' ? 'bad' : 'warn';
+          const gap = [n.short, n.fee ? fmt(n.fee) + ' cr fee' : ''].filter(Boolean).join(' | ') || 'ready';
+          return [n.priority, n.id, n.owner, el('span', 'pill ' + stCls, n.pct + '%'), gap];
+        }))));
+    }
+  }
   const waves = (F.waves || []).slice().reverse();     // many ships off the game at once: written down by the collector, newest first
   panel.append(el('h3', null, 'Ships off the game'));
   if (waves.length) {
@@ -1688,6 +1762,12 @@ function status() {
   item('Fleet data', fleetAgeText(), fleetLive() ? 'good' : 'bad');
   box.lastChild.querySelector('b').id = 'fleet-age';
   box.lastChild.title = 'How old the picture of our ships is. The collector reads the engine every 10 seconds, about once a game tick';
+  if (OPS.data && OPS.data.freshness && OPS.data.freshness.ships) {
+    const fr = OPS.data.freshness;
+    const cls = fr.max_s <= 35 ? 'good' : fr.max_s <= 90 ? 'warn' : 'bad';
+    item('Tick lag', fr.median_s + 's / ' + fr.max_s + 's', cls, cls === 'good' ? 'opt' : null);
+    box.lastChild.title = 'Pilot state_at age across ' + fmt(fr.ships) + ' ships: median ' + fr.median_s + 's, p95 ' + fr.p95_s + 's, max ' + fr.max_s + 's';
+  }
   item('Online', fmt(st.online_players));
   box.lastChild.title = 'Players in the game right now, by the game\'s own count; the station reads it every minute';
   item('Tick', fmt(st.tick), null, 'wide'); item('Game', st.version || '?', null, 'wide');

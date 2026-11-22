@@ -29,8 +29,8 @@ RULES:
     Military, Intel or Command), note.
   - Stock is what the storage book holds of the item at the place: at `fleet` every station storage and every hold
     added; at a base id the storage there; at a base name or a system id every base the census (places) or our
-    empire (bases) puts there. The book holds personal station storage and the holds only: faction storage and the
-    fuel bunker are not in it. A place the book holds nothing at (place_rows 0) has no reading, and its 0 is said to
+    empire (bases) puts there. Stock sums personal storage, ship holds, and faction storage (including outpost fuel
+    bunkers from faction_storage, deduplicated against holdings Faction rows). A place the book holds nothing at (place_rows 0) has no reading, and its 0 is said to
     be not measured.
   - Status: short below keep, low below twice keep, ok from twice keep; broken for a row with an error. The change
     over 24 hours is that of the store's hourly samples (newest sample against the newest one at least 24 hours
@@ -181,9 +181,13 @@ STATUS_VIEW = (
     "CREATE VIEW IF NOT EXISTS supply_status AS WITH "
     "spot(line, place) AS (SELECT line, place FROM supply_chains WHERE place IS NOT NULL AND place <> 'fleet' "
     "UNION SELECT c.line, p.base FROM supply_chains c JOIN places p ON p.base IS NOT NULL AND (p.system = c.place OR p.name = c.place) "
-    "UNION SELECT c.line, b.base FROM supply_chains c JOIN bases b ON b.base IS NOT NULL AND (b.system = c.place OR b.name = c.place)), "
+    "UNION SELECT c.line, b.base FROM supply_chains c JOIN bases b ON b.base IS NOT NULL AND (b.system = c.place OR b.name = c.place) "
+    "UNION SELECT c.line, fs.base FROM supply_chains c JOIN faction_storage fs ON fs.base IS NOT NULL AND fs.base_name = c.place), "
+    "all_stock(place, item, units) AS (SELECT place, item, units FROM holdings "
+    "UNION ALL SELECT fs.base, fs.item, fs.units FROM faction_storage fs "
+    "WHERE NOT EXISTS (SELECT 1 FROM holdings h2 WHERE h2.pilot = 'Faction' AND h2.place = fs.base AND h2.item = fs.item)), "
     "held(line, units, place_rows) AS (SELECT c.line, COALESCE(SUM(CASE WHEN h.item = c.item THEN h.units END), 0), COUNT(h.place) "
-    "FROM supply_chains c LEFT JOIN holdings h ON c.place = 'fleet' OR h.place IN (SELECT s.place FROM spot s WHERE s.line = c.line) GROUP BY c.line), "
+    "FROM supply_chains c LEFT JOIN all_stock h ON c.place = 'fleet' OR h.place IN (SELECT s.place FROM spot s WHERE s.line = c.line) GROUP BY c.line), "
     "newest(hour) AS (SELECT MAX(hour) FROM stock_hour), "
     "base(hour) AS (SELECT COALESCE((SELECT MAX(hour) FROM stock_hour WHERE hour <= (SELECT hour FROM newest) - 86400), (SELECT MIN(hour) FROM stock_hour))), "
     "flow(item, now_units, then_units) AS (SELECT c.item, (SELECT COALESCE(SUM(units), 0) FROM stock_hour WHERE item = c.item AND hour = (SELECT hour FROM newest)), "

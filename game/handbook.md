@@ -22,7 +22,7 @@ Read it in parts: `hive.py handbook [<topic>]` (MCP: the tool docs, view=handboo
 contents and how the data flows; a table's name, a subject or a word gives its sections. The store holds every file
 as kind `handbook` of the table docs, one row a section, every version in doc_versions.
 
-The store: 59 tables and 7 views (38 snapshot, 9 history, 9 statistics, 3 bookkeeping); the MCP tool `collective`: 22 tools.
+The store: 61 tables and 7 views (40 snapshot, 9 history, 9 statistics, 3 bookkeeping); the MCP tool `collective`: 22 tools.
 Kinds: snapshot = what a file says now (replaced when the file changes; it also carries `src`, the file its row came
 from; dropped and loaded again when its definition changes); history = rows kept over time (raw rows for days, sums
 as each table's Kept line says); statistics = computed by stats.py when due; view = a query over tables, computed when
@@ -37,7 +37,7 @@ the store's own marks. Columns come from a fresh empty schema; every example run
 - Routes and runs, `game/handbook/routes-and-runs.md`: routes, plan_routes, runs, route_hour, route_earnings, stats_route_author, missions
 - Money, `game/handbook/money.md`: stats_money_hour
 - Markets, `game/handbook/markets.md`: books, ladders, moves, market_hour
-- Map and intel, `game/handbook/map-and-intel.md`: systems, lanes, places, fields, herds, readings, reading_day, stations, factions, met, observations
+- Map and intel, `game/handbook/map-and-intel.md`: systems, lanes, places, fields, herds, readings, reading_day, stations, factions, public_battles, leaderboards, met, observations
 - Our faction, `game/handbook/our-faction.md`: faction, faction_members, bases, our_stations, faction_facilities, faction_storage, inventory_faction, territory, sites
 - Stock and reserve, `game/handbook/stock-and-reserve.md`: holdings, inventory, inventory_by_station, stock_hour, needs, need_status
 - The catalog, `game/handbook/the-catalog.md`: items, recipes, recipe_inputs, recipe_outputs, recipe_facilities, facilities, facility_materials, hulls, hull_materials, skills

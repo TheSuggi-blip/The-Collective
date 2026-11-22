@@ -1170,8 +1170,12 @@ def alert_row(subject, series, newest_hour, shown=num):
 
 def figures_alerts(conn, now):
     rows = []
-    money = {h: (net, idle) for h, net, idle in conn.execute("SELECT hour, net, idle FROM stats_money_hour WHERE division = 'Fleet' AND hour >= ?",
-                                                             (int(now) - 9 * DAY,))}
+    raw_money = conn.execute(
+        "SELECT hour, net, idle, ships, minutes FROM stats_money_hour WHERE division = 'Fleet' AND hour >= ?",
+        (int(now) - 9 * DAY,)).fetchall()
+    # Exclude paused zero-ship hours from the 7-day baseline so an idle pause cannot collapse MAD to 0.
+    money = {h: (net, idle) for h, net, idle, ships, minutes in raw_money
+             if (ships is None or ships > 0) and (minutes is None or minutes > 0)}
     if money:
         newest = max(money)
         rows.append(alert_row("Fleet steady net per hour", {h: v[0] for h, v in money.items()}, newest))

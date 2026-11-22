@@ -121,6 +121,12 @@ def fixture(data, root, now):
         "COLL": {"name": "The Collective", "members": 146, "leader": "Flag One", "allies": [], "enemies": ["ROGU"], "wars": [""]},
         "ROGU": {"name": "Rogues", "members": 12, "leader": "Boss", "allies": [], "enemies": [], "wars": ["COLL", "XYZ"]}},
         "players": {"someone": {"faction": "ROGU"}}})
+    write(data / "station" / "battles.json", [
+        {"system": "sys_b", "system_name": "Sys B", "category": "pirate", "status": "completed", "tick": 1234,
+         "destroyed": 1, "lost": ["Wreck-1"], "pilots": ["Other Pilot"], "tags": ["ROGU"], "ended_at": STAMP}])
+    write(data / "station" / "leaderboard.json", {
+        "generated_at": STAMP, "groups": {"factions": {"total_wealth": [
+            {"rank": 1, "name": "The Collective", "tag": "COLL", "value": 9000000}]}}})
     write(data / "empire" / "empire.json", {"written_at": STAMP, "unknown_key": 1,
                                             "faction": {"id": "f1", "name": "The Collective", "tag": "COLL", "leader": "Flag One", "member_count": 146,
                                                         "members_limit": 150, "treasury": None, "owned_bases": 1, "at_war": False, "created_at": "2026-11-14T00:00:00Z",
@@ -168,7 +174,7 @@ class SnapshotTests(unittest.TestCase):
     def test_each_loader_fills_its_tables_from_its_files(self):
         out = self.one()
         self.assertEqual(dict(out["snapshot"]["loaded"]), {"fleet": 1, "orders": 1, "ships": 3, "holdings": 1, "books": 2, "ladders": 1, "catalog": 1,
-                                                           "scouting": 1, "wildlife": 1, "missions": 1, "met": 1, "map": 1, "stations": 1, "factions": 1,
+                                                           "scouting": 1, "wildlife": 1, "missions": 1, "met": 1, "map": 1, "stations": 1, "factions": 1, "battles": 1, "leaderboards": 1,
                                                            "empire": 1, "routes": 2, "plans": 1})
         self.assertEqual(out["snapshot"]["problems"], [])
         self.assertEqual(self.read("SELECT pilot, member, division, role, system, docked, base, flies FROM ships ORDER BY pilot"),
@@ -250,7 +256,7 @@ class SnapshotTests(unittest.TestCase):
         store.load_json = lambda path: reads.append(Path(path).relative_to(self.data).as_posix()) or real(path)
         first = self.one()
         self.assertIn("market/base_a.json", reads)
-        self.assertEqual((len(reads), len(set(reads))), (17, 17))            # each JSON file a reader parses, once (orders and flagships: division.py)
+        self.assertEqual((len(reads), len(set(reads))), (19, 19))            # each JSON file a reader parses, once (orders and flagships: division.py)
         self.assertNotIn("catalog/0.1.0.json", reads)
         reads.clear()
         again = self.one()

@@ -20,7 +20,7 @@ the supply chains (game/supply/chains.tsv, kept by the Fleet Admiral with Logist
 
 view: each supply chain against what stands at its place now (holdings): stock, status (short below keep, low below twice keep, ok; broken), hours left at its need, the change over 24 hours (fleet only, stock_hour), its sources listed and known, our ships on them now (ships.flies), its sources in a role plan (plan_routes), place_rows (0: no reading of the place, its 0 is not measured): supply.py show
 
-- Kind: view over supply_chains, places, bases, holdings, stock_hour, routes, ships, plan_routes
+- Kind: view over supply_chains, places, bases, faction_storage, holdings, stock_hour, routes, ships, plan_routes
 - Columns: chain, item, place, keep, stock, status, need_per_hour, hours_left, change_24h, change_hours, sources, sources_listed, sources_known, ships, sources_planned, keeper, place_rows, note, line, error
 - Kept: nothing: a view stores no row
 - Refreshed: computed when asked, from its tables

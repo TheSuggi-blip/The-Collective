@@ -445,6 +445,8 @@ SNAPSHOT = (
     ("stations", "name TEXT, kind TEXT, system TEXT, tag TEXT, faction TEXT, empire TEXT, condition TEXT, services TEXT, wrecked INTEGER, "
                  "mobile INTEGER", ""),
     ("factions", "tag TEXT, name TEXT, members INTEGER, leader TEXT, allies TEXT, enemies TEXT, wars TEXT", "tag"),
+    ("public_battles", "system TEXT, system_name TEXT, category TEXT, status TEXT, tick INTEGER, destroyed INTEGER, lost TEXT, pilots TEXT, tags TEXT, ended_at TEXT, t INTEGER", ""),
+    ("leaderboards", "grp TEXT, board TEXT, rank INTEGER, name TEXT, tag TEXT, value INTEGER, t INTEGER", ""),
     ("faction", "id TEXT, name TEXT, tag TEXT, leader TEXT, member_count INTEGER, members_limit INTEGER, treasury INTEGER, owned_bases INTEGER, "
                 "at_war INTEGER, created INTEGER, t INTEGER", ""),
     ("faction_members", "pilot TEXT, role TEXT, t INTEGER", ""),
@@ -467,7 +469,7 @@ SNAPSHOT += needbook.SNAPSHOT                     # needs: the needs register, a
 COLUMNS = {name: [part.split()[0] for part in columns.split(", ")] for name, columns, _key in SNAPSHOT}
 LOOKUPS = (("ships", "system"), ("holdings", "item"), ("books", "item"), ("ladders", "item"), ("recipe_inputs", "item"),
            ("recipe_outputs", "item"), ("facility_materials", "item"), ("fields", "resource"), ("herds", "creature"), ("lanes", "a"),
-           ("stations", "system"), ("missions", "base"))
+           ("stations", "system"), ("missions", "base"), ("public_battles", "system"), ("leaderboards", "board"))
 
 
 def views():
@@ -874,6 +876,42 @@ def read_factions(path, ctx):
                          for tag, f in need(found.get("factions"), dict, "no object `factions`").items() if isinstance(f, dict)]}
 
 
+def read_battles(path, ctx):
+    """station/battles.json -> public_battles: recent galaxy-wide battles from the public /api/battles feed."""
+    found = load_json(path)
+    items = found.get("battles") if isinstance(found, dict) else found
+    read = mtime_of(path)
+    return {"public_battles": [{"system": text(b.get("system") or b.get("system_id")), "system_name": text(b.get("system_name")),
+                                "category": text(b.get("category")), "status": text(b.get("status")), "tick": number(b.get("tick") or b.get("start_tick")),
+                                "destroyed": number(b.get("destroyed") or b.get("ships_destroyed")), "lost": words(b.get("lost") or b.get("destroyed_names")),
+                                "pilots": words(b.get("pilots") or b.get("player_names")), "tags": words(b.get("tags")),
+                                "ended_at": text(b.get("ended_at")), "t": when(b.get("ended_at"), read)}
+                               for b in need(items, list, "no list of battles") if isinstance(b, dict)]}
+
+
+def read_leaderboards(path, ctx):
+    """station/leaderboard.json -> leaderboards: top players, factions, exchange and stations from /api/leaderboard."""
+    found = need(load_json(path), dict, "no object")
+    read = when(found.get("generated_at"), mtime_of(path))
+    groups = found.get("groups") if isinstance(found.get("groups"), dict) else {
+        k: found[k] for k in ("players", "factions", "exchange", "stations") if isinstance(found.get(k), dict)}
+    rows = []
+    for grp, boards in groups.items():
+        if not isinstance(boards, dict):
+            continue
+        for board, entries in boards.items():
+            if not isinstance(entries, list):
+                continue
+            for row in entries:
+                if not isinstance(row, dict):
+                    continue
+                rows.append({"grp": text(grp), "board": text(board), "rank": number(row.get("rank")),
+                             "name": text(row.get("name") or row.get("username")),
+                             "tag": text(row.get("tag") or row.get("empire") or row.get("system_name")),
+                             "value": number(row.get("value")), "t": read})
+    return {"leaderboards": rows}
+
+
 def read_empire(path, ctx):
     """empire/empire.json (our faction, its members, bases, facilities, territory and sites) -> faction, faction_members, bases,
     faction_facilities, faction_storage, territory, sites. Keys it does not know are left out; a list that is missing is an empty table.
@@ -954,6 +992,8 @@ LOADERS = (    # loader, the tables it fills, its files, whole (one file holds a
     ("map", ("systems", "lanes"), map_files, True),
     ("stations", ("stations",), data_file("station/stations.json", read_stations), True),
     ("factions", ("factions",), data_file("station/feed.json", read_factions), True),
+    ("battles", ("public_battles",), data_file("station/battles.json", read_battles), True),
+    ("leaderboards", ("leaderboards",), data_file("station/leaderboard.json", read_leaderboards), True),
     ("empire", ("faction", "faction_members", "bases", "faction_facilities", "faction_storage", "territory", "sites"),
      data_file("empire/empire.json", read_empire, "missing: our empire's collector has not written it yet"), True),
     ("routes", ("routes",), repo_files("routes", read_route, skip=("plan.json",)), False),
@@ -1544,6 +1584,8 @@ DESCRIPTIONS = {               # one line per table and view: what a row is and 
     "lanes": "the map: the jump lanes, one row per direction as the map lists them",
     "stations": "every station and outpost of the galaxy: kind, system, its owner's faction tag and name, condition, services (station/stations.json)",
     "factions": "every faction of the game: tag, name, members, leader, allies, enemies, wars as comma text (station/feed.json)",
+    "public_battles": "recent public battles across the galaxy: system, category (pirate/npc/pvp), status, ships lost, pilots and faction tags (station/battles.json)",
+    "leaderboards": "public galaxy leaderboards by group (players, factions, exchange, stations) and board: rank, name, tag/empire and value (station/leaderboard.json)",
     "faction": "our faction, one row: tag, leader, members and their limit, treasury, bases owned, at war (empire/empire.json)",
     "faction_members": "our faction's members and their roles (empire/empire.json)",
     "bases": "our faction's bases: base id, name, system, place, kind (empire/empire.json)",
@@ -1790,6 +1832,12 @@ EXAMPLES = {                   # three questions per table and view, as SQL (hiv
                         "SELECT route, kind, hours_since, runs_all, cph_all FROM route_earnings WHERE hours_since >= 12 ORDER BY hours_since"),
                        ("Routes that pay less now than over the day (a bid or a field that is running out)",
                         "SELECT route, cph_4h, cph_24h, runs_4h FROM route_earnings WHERE runs_4h >= 2 AND cph_4h < cph_24h ORDER BY cph_4h - cph_24h")),
+    "public_battles": (("Recent battles with ships destroyed", "SELECT system, category, status, destroyed, lost, tags FROM public_battles ORDER BY tick DESC LIMIT 15"),
+                       ("Battles by category", "SELECT category, COUNT(*), SUM(destroyed) FROM public_battles GROUP BY category ORDER BY 2 DESC"),
+                       ("Recent PvP or NPC battles near us", "SELECT b.system, y.jumps, b.category, b.tags, b.lost FROM public_battles b LEFT JOIN systems y ON y.id = b.system WHERE b.category != 'pirate' ORDER BY y.jumps")),
+    "leaderboards": (("Top 10 factions by total wealth", "SELECT rank, name, tag, value FROM leaderboards WHERE grp = 'factions' AND board = 'total_wealth' ORDER BY rank LIMIT 10"),
+                     ("Top 10 factions by ships destroyed", "SELECT rank, name, tag, value FROM leaderboards WHERE grp = 'factions' AND board = 'ships_destroyed' ORDER BY rank LIMIT 10"),
+                     ("Available leaderboard groups and boards", "SELECT grp, board, COUNT(*) FROM leaderboards GROUP BY grp, board ORDER BY grp, board")),
     "our_stations": (("Our stations and outposts", "SELECT name, kind, system, condition, base FROM our_stations"),
                      ("Our stations and their jumps from home", "SELECT o.name, o.system, y.jumps FROM our_stations o LEFT JOIN systems y ON y.id = o.system"),
                      ("Our stations that no base row of empire.json names", "SELECT name, system FROM our_stations WHERE base IS NULL")),

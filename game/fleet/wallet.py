@@ -80,8 +80,11 @@ MIN_GIFT = 1000                # a share smaller than this is not worth a call: 
 # treasury when it is convenient, a few ships a pass). It gives credits away by itself: off until the Fleet Admiral has
 # read `wallet.py sweep --dry-run` on the live data and switched it on.
 SWEEP_ENABLED = True    # on since 2026-11-17 20:20 UTC, after its dry run on live data
-SWEEP_AT = 60000               # a ship holding this much gives what it holds above KEEP_SHIP
-KEEP_SHIP = 50000              # what a ship keeps
+SWEEP_AT = 60000               # a trader/command ship holding this much gives what it holds above KEEP_SHIP
+KEEP_SHIP = 50000              # what a trader or command ship keeps (buys cargo/fittings)
+SWEEP_WORK = 40000             # a non-trading working ship holding this much gives what it holds above KEEP_WORK
+KEEP_WORK = 30000              # what a miner/hauler/scout/drone/sentinel keeps (>= top-up donor KEEP)
+FULL_PURSE_ROLES = frozenset(("trader", "command"))
 MIN_DEPOSIT = 20000            # the leader deposits once it holds this much above KEEP_SHIP
 PER_PASS = 4                   # gifts a sweep tries at most: each takes about half a minute (the gift, the receiver's read)
 LEADER = "Prime Directive"     # the faction's leader when empire.json names none
@@ -448,12 +451,25 @@ def settle_gifts(data, kind, now, dry=False):
     return waiting, failed
 
 
-def plan_sweep(fleet, leader, skip):
-    """[(pilot, credits to give)]: the ships at SWEEP_AT or more, the most above KEEP_SHIP first, at most PER_PASS; never the
-    leader, a pilot of `skip`, a ship not connected or one whose loop fails in a fight."""
-    found = sorted(((s["credits"] - KEEP_SHIP, name) for name, s in fleet.items()
-                    if s["credits"] >= SWEEP_AT and name != leader and name not in skip and s.get("status", "connected") == "connected" and not fighting(s)),
-                   reverse=True)
+def keep_for(name, named=None):
+    """(keep, sweep_at) by role: traders and command keep KEEP_SHIP (sweep at SWEEP_AT); other working roles keep KEEP_WORK
+    (sweep at SWEEP_WORK), keeping every ship at or above top-up donor KEEP while freeing excess cash for the treasury."""
+    if dispatch.role_of(name, named or {}) in FULL_PURSE_ROLES:
+        return KEEP_SHIP, SWEEP_AT
+    return KEEP_WORK, SWEEP_WORK
+
+
+def plan_sweep(fleet, leader, skip, named=None):
+    """[(pilot, credits to give)]: the ships at their role's sweep_at or more, the most above their keep first, at most
+    PER_PASS; never the leader, a pilot of `skip`, a ship not connected or one whose loop fails in a fight."""
+    found = []
+    for name, ship in fleet.items():
+        if name == leader or name in skip or ship.get("status", "connected") != "connected" or fighting(ship):
+            continue
+        keep, sweep_at = keep_for(name, named)
+        if ship["credits"] >= sweep_at:
+            found.append((ship["credits"] - keep, name))
+    found.sort(reverse=True)
     return [(name, int(part)) for part, name in found[:PER_PASS]]
 
 
@@ -505,21 +521,23 @@ def sweep(data, now, dry):
     held = [r for r in log if r.get("kind") == "deposit" and r.get("state") == "unsure" and now - r["at"] < UNSURE_HOLD]
     skip = {leader} | SKIP_PILOTS | builders(data)
     cool = dict(touched(data, now), **{name: at for name, at in flying.items() if name})
-    above = [(name, s["credits"]) for name, s in fleet.items() if s["credits"] >= SWEEP_AT and name != leader]
-    print("SWEEP | leader %s holds %s cr | %d ships at %s cr or more hold %s cr above %s | the treasury read %s"
-          % (leader, format(fleet[leader]["credits"], ","), len(above), format(SWEEP_AT, ","), format(sum(c - KEEP_SHIP for _n, c in above), ","),
-             format(KEEP_SHIP, ","), treasury_text(data)))
-    for name, _credits in sorted(above):
+    named = dispatch.flagships(data)
+    above = [(name, s["credits"], keep_for(name, named)[0]) for name, s in fleet.items()
+             if name != leader and s["credits"] >= keep_for(name, named)[1]]
+    print("SWEEP | leader %s holds %s cr | %d ships above role cap hold %s cr to sweep (traders/command keep %s, others %s) | the treasury read %s"
+          % (leader, format(fleet[leader]["credits"], ","), len(above), format(sum(c - k for _n, c, k in above), ","),
+             format(KEEP_SHIP, ","), format(KEEP_WORK, ","), treasury_text(data)))
+    for name, _credits, _keep in sorted(above):
         why = ("a builder: holds credits for a buy" if name in builders(data) else "in SKIP_PILOTS" if name in SKIP_PILOTS
                else "not connected" if fleet[name].get("status", "connected") != "connected" else "its loop fails in a fight" if fighting(fleet[name])
                else "refused for a fight %d min ago" % ((now - battle[name]) // 60) if name in battle
                else "gave or got a gift %d min ago" % ((now - cool[name]) // 60) if name in cool else "")
         if why:
             print("  left out: %s (%s cr): %s" % (name, format(fleet[name]["credits"], ","), why))
-    plan = plan_sweep(fleet, leader, skip | set(battle) | set(cool))
+    plan = plan_sweep(fleet, leader, skip | set(battle) | set(cool), named)
     for pilot, credits in plan:
         if dry:
-            print("would give: %s -> %s %s cr (keeps %s)" % (pilot, leader, format(credits, ","), format(KEEP_SHIP, ",")))
+            print("would give: %s -> %s %s cr (keeps %s)" % (pilot, leader, format(credits, ","), format(keep_for(pilot, named)[0], ",")))
             continue
         if time.time() - now > BUDGET:
             print("the pass's %d seconds are used up: %s waits for the next pass" % (BUDGET, pilot))

@@ -263,6 +263,58 @@ def stuck(name, rows, now=None):
     return now - ended < STUCK_REST
 
 
+STALL_RUNS = 3                 # short zero-credit runs in a row on one route: rest that (route, pilot) pair (requests ENT-317)
+STALL_MINUTES = 1.0            # runs shorter than this with 0 cr count as stalled loops
+STALL_REST = 30 * 60           # seconds of cooldown after a stalled loop or non-ask stop_on_failed_buy
+FAILED_BUY_CAUSES = (": wallet floor", ": refused", ": not bought")
+
+
+def run_end(row):
+    """Epoch second a run ended, or None when started is unreadable."""
+    try:
+        return calendar.timegm(time.strptime(row["started"], "%Y-%m-%dT%H:%M:%SZ")) + float(row.get("minutes") or 0) * 60
+    except (KeyError, TypeError, ValueError):
+        return None
+
+
+def circuit_systems(route):
+    """Unique star system ids named by mine or hunt steps of a circuit route, in stop order (errors.log ENT-117)."""
+    out, seen = [], set()
+    for stop in route.get("stops") or []:
+        if not isinstance(stop, dict):
+            continue
+        for key in ("mine", "hunt"):
+            for step in stop.get(key) or []:
+                if isinstance(step, dict) and step.get("at"):
+                    sys_id = str(step["at"]).split(":")[0]
+                    if sys_id and sys_id not in seen:
+                        seen.add(sys_id)
+                        out.append(sys_id)
+    return out
+
+
+def stalled_reason(rid, route, pilot_name, rows, now):
+    """Why (rid, pilot_name) rests after repeated zero-minute loops or non-ask stop_on_failed_buy (requests ENT-317), or None."""
+    if route.get("park") or route.get("kind") in ("census", "guard"):
+        return None
+    mine = [r for r in rows if r.get("route") == rid and r.get("pilot") == pilot_name]
+    if not mine:
+        return None
+    last = mine[-1]
+    ended = run_end(last)
+    if ended is None or now - ended >= STALL_REST:
+        return None
+    notes = [str(n) for n in (last.get("notes") or [])]
+    if any("run ended (stop_on_failed_buy)" in n for n in notes) and any(c in n for n in notes for c in FAILED_BUY_CAUSES):
+        return "rests after failed buy (wallet floor or refused)"
+    tail = mine[-STALL_RUNS:]
+    if len(tail) == STALL_RUNS and all(
+        float(r.get("minutes") or 0) < STALL_MINUTES and (r.get("delta") or 0) == 0 and not r.get("sold") for r in tail
+    ):
+        return "rests after %d short zero-credit runs" % STALL_RUNS
+    return None
+
+
 def done_once(route, rows):
     """A `once` route counts as done after a whole run that got what it came for, or after two tries. A run that found
     nothing to buy is neither: the route opens again for that pilot after a rest (waits_once). On a route that names a
@@ -510,6 +562,11 @@ def why_not(pilot, rid, route, state):
         reason = pirate_reason(str(route.get("place") or route.get("belt") or "").split(":")[0], state)
         if reason:
             return reason, None
+    elif route.get("kind") == "circuit":
+        for sys_id in circuit_systems(route):
+            reason = pirate_reason(sys_id, state)
+            if reason:
+                return reason, None
     lacks = [title for title in owed(route) if title not in (state.get("booked") or {}).get(pilot["name"], set())]
     if lacks:
         return "needs the reward `%s` first" % lacks[0], None
@@ -527,6 +584,9 @@ def why_not(pilot, rid, route, state):
             return ("rests after a run the board refused" if refused(mine[-1]) else
                     "rests after a run with every stop skipped" if empty(mine[-1]) else
                     "rests after a mine step its field left short" if short(mine[-1]) else "rests after a buy that found no offer"), None
+    stall = stalled_reason(rid, route, pilot["name"], state.get("rows") or [], state["now"])
+    if stall:
+        return stall, None
     mark = route["kind"] + " " + rid
     if route.get("max_pilots"):                   # at most this many different pilots ever: those that flew it and those on it now
         flew = {r.get("pilot") for r in state["rows"] if r.get("route") == rid} | {p for p, what in state["orders"].items() if what == mark}
