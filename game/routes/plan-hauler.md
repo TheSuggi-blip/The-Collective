@@ -85,3 +85,4 @@ Planned:
 | What | When |
 |---|---|
 | Read the first runs of craft-wiring-logistics-* and how many haulers left train-jumps-hauler; size max_ships by the queue | next turn |
+| Read the third run of craft-boards-crescent-moon (F37) and lift it to the receiver's silicon there; found Atria with found.py the hour a kit lands | next turn |
