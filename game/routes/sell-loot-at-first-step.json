@@ -51,5 +51,14 @@
    "at": "first_step:first_step_memorial_station:first_step_memorial_station",
    "store": "all"
   }
- ]
+ ],
+ "measured": {
+  "date": "2026-11-22",
+  "runs": 1,
+  "minutes": 26,
+  "credits_per_run": 17680,
+  "cph_per_ship": 40960,
+  "hours": 12,
+  "last_run": "2026-11-22T14:04:00Z"
+ }
 }
