@@ -377,6 +377,8 @@ def regains(seen):
     return seen["rates"]
 
 
+SALE_TRADES = "a sale circuit is Trade's work (orders P5): the goods go to a trader by gift"
+
 def carries(seen, route):
     """How many ships a route carries, from our own readings: {"ships": what it carries hour after hour (None: not
     measured), "extra": ships more for one turn while today's standing order or field holds, "text": what both rest
@@ -517,6 +519,10 @@ def read_role(seen, role, floor=500, tests=8):
             if rid not in plan:
                 closed.setdefault(other, []).append((value, rid))
                 refused.append((rid, other))
+            continue
+        if rid not in plan and role != "trader" and route.get("kind") == "circuit" and not route.get("once") and workclass.sells(route):
+            closed.setdefault(SALE_TRADES, []).append((value, rid))     # orders ENT-061 P5: never added to another class's plan, even with strict classes off
+            refused.append((rid, SALE_TRADES))
             continue
         danger = refusal(seen, rid, route) if rid not in plan else None
         if danger:                                                # Q75 (2): a place set off for danger is never offered

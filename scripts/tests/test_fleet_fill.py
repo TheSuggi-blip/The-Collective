@@ -115,6 +115,14 @@ class ReadTests(Tree):
         self.assertEqual(self.fill.verdict(seen, got)[0], False)
         self.assertIn("HALT: 1 ships of drone wait while 1 places of paying work and 0 tests stand open", self.fill.verdict(seen, got)[1])
 
+    def test_a_sale_circuit_is_never_added_to_another_class_s_plan(self):
+        # orders ENT-061 P5, Apollo (reports.log ENT-101): the hourly pass added sell circuits to miner, hauler and sentinel plans
+        sale = dict(ROUTES["freight"], id="sell-x", stops=[dict(HOME, sell=[{"item": "water_ice", "min_price": 1}])])
+        (self.root / "routes" / "sell-x.json").write_text(json.dumps(sale, indent=1) + "\n", encoding="ascii")
+        _seen, got = self.read("hauler")
+        self.assertNotIn("sell-x", [rid for rid, _value, _pilots in got["paying"]])
+        self.assertEqual(got["closed"].get(self.fill.SALE_TRADES), [(1500, "sell-x")])
+
     def test_work_outside_the_plan_is_offered_once_and_what_closes_the_rest_is_named(self):
         _seen, got = self.read("hauler")
         self.assertEqual(got["waiting"], ["hauler-1", "hauler-2", "hauler-3"])
@@ -406,7 +414,7 @@ class ReserveTests(Tree):
         seen["kept"] = {"armor_plate": 5931}
         got = self.fill.read_role(seen, "hauler")
         self.assertNotIn("freight", [rid for rid, _v, _p in got["paying"]])                      # a proven sale of a short item is not lent either
-        self.assertIn("freight", [rid for _v, rid in got["closed"].get(self.fill.RESERVE_SHORT, [])])
+        self.assertIn("freight", [rid for _v, rid in got["closed"].get(self.fill.SALE_TRADES, [])])          # a sale circuit closes to a hauler first by P5; the reserve rule stands for the mine route above
 
 
 class FallbackTests(Tree):
