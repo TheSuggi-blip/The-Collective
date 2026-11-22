@@ -223,6 +223,7 @@ class HostTests(Shelf):
         self.assertTrue(self.host.step(now))
         self.assertEqual((self.state()["accepting"], self.state()["runs"]), (True, 0))
         self.assertTrue(self.runhost.accepting(str(self.data), now + 5))
+        self.assertTrue(self.runhost.accepting(str(self.data), now - 5))     # state.json refreshed mid-pass is fresh, not dead
         self.assertFalse(self.runhost.accepting(str(self.data), now + self.runhost.ALIVE + 1))   # a host that stopped writing is away
 
     def test_a_new_host_frees_the_pilots_of_the_runs_a_dead_host_left(self):

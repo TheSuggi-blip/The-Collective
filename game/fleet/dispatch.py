@@ -1383,7 +1383,7 @@ def one_pass(root, data, dry_run, children):
     lines += pull.keep(root, data, now, dry_run, state)      # r21: the two switches of this pass, and with pull-on the reserve's levels
     logs = Path(data) / "routes" / "logs"
     kinds, cap = hosting(data)
-    hosted = runhost.load(data) if kinds and runhost.accepting(data, now) else None      # runs the host has; None: no host takes runs now
+    hosted = runhost.load(data) if kinds and runhost.accepting(data, time.time()) else None      # runs the host has; None: no host takes runs now
     for job in [] if dry_run else runhost.take_back(data, now):
         name, what, script = str(job.get("pilot")), str(job.get("what")), str(job.get("script"))
         if state["orders"].get(name) != what or script not in KINDS.values():

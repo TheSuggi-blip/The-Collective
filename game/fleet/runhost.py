@@ -101,7 +101,7 @@ def accepting(data, now=None):
     state = read_json(folder(data) / "state.json", {})
     at = state.get("at") if isinstance(state, dict) else None
     now = time.time() if now is None else now
-    return bool(isinstance(at, (int, float)) and 0 <= now - at <= ALIVE and state.get("accepting"))
+    return bool(isinstance(at, (int, float)) and -ALIVE <= now - at <= ALIVE and state.get("accepting"))
 
 
 def load(data):
