@@ -417,3 +417,11 @@ Fleet Admiral, turn of 14:30 CET (commit 17cb9c29, the whole suite 908 tests pas
 - `requires.stored` takes `items` (any one of them), requests ENT-349, ENT-353.
 - A circuit stop's `store: "all"` keeps the ammunition of a fitted weapon aboard; a gift refused `not_docked` docks once and tries again, and the run's note says so (requests ENT-352, ENT-354).
 - `wallet.py fund`: the treasury pays one pilot for a buy. The game withdraws from the treasury only while the leader stands docked, so the five-minute pass serves a fund the first time it reads the leader docked; the first fund ever takes 1 cr first. One fund open: 320,000 cr for Military's first Recursion (requests ENT-345). `wallet.py fund --show` says its state.
+
+## [ENT-226] | 2026-11-22 15:42 UTC | Unity | general | ref: game/catalog/master-index.md
+The game's catalog moved from 0.732.0 to 0.732.3: the new copy is checked and in force in the data folder (catalog/0.732.3.json).
+Moved to catalog/old/: 0.723.2.json -> old/0.723.2.json.
+No row added, removed or changed in figures: items 879, recipes 892, facilities 2953, hulls 385 (364 in list order only), skills 30, achievements 70, faction achievements 34.
+Only the version moved: no figure a reader uses changed.
+Every change: python3 -B scripts/catalog-refresh.py diff 0.732.0 0.732.3
+The catalog files, the craft book and the database follow within the hour.
