@@ -2,7 +2,7 @@
  "id": "trade-chemical-liner-beta-to-first-step",
  "kind": "circuit",
  "title": "Chemical liners bought at Node Beta for 620 cr or less, sold into First Step's bid at 720 or more: a trade test beyond the border",
- "note": "2026-11-21 23:50 UTC (Mercury, orders.log ENT-059 block MERCURY: trade beyond our borders). Node Beta asks chemical liner 607 x 600 (book of 23:3x UTC, table books); First Step Memorial Station (18 jumps, 11 lawless: scripts/map.py route node_beta first_step) bids 759 x 238 (book read 0.2 h before). Size 2 a unit: 32 to a Threshold, about 4,700 cr a load after the buyer's 1 percent; a freighter of 540 is bounded by its wallet (about 76 at 47,000 cr), about 10,400 cr (gaps.py, skill trade-books). A test: one ship (max_ships 1), an empty hold out of home, the buy gated by requires.ask (Node Beta's book within the hour), the sale by requires.bid; stop_on_failed_buy ends the run at Node Beta when the ask is gone. What the bid leaves is stored at First Step.",
+ "note": "2026-11-21 23:50 UTC (Mercury, orders.log ENT-059 block MERCURY: trade beyond our borders). Node Beta asks chemical liner 607 x 600 (book of 23:3x UTC, table books); First Step Memorial Station (18 jumps, 11 lawless: scripts/map.py route node_beta first_step) bids 759 x 238 (book read 0.2 h before). Size 2 a unit: 32 to a Threshold, about 4,700 cr a load after the buyer's 1 percent; a freighter of 540 is bounded by its wallet (about 76 at 47,000 cr), about 10,400 cr (gaps.py, skill trade-books). A test: one ship (max_ships 1), an empty hold out of home, the buy gated by requires.ask (Node Beta's book within the hour), the sale by requires.bid; stop_on_failed_buy ends the run at Node Beta when the ask is gone. What the bid leaves is stored at First Step. 2026-11-22 00:05 UTC (Mercury): buy qty 76 -> 32 (a Threshold load of size-2 units): the first run (00:04 UTC) bought nothing, 76 x 627 = 47,652 cr is more than the pilot's 46,130 cr less its 3,000 floor, and the runner refuses the whole buy, not part of it; stop_on_failed_buy ended the run at Node Beta, 0 cr lost.",
  "max_ships": 1,
  "min_credits": 25000,
  "requires": {
@@ -26,7 +26,7 @@
    "buy": [
     {
      "item": "chemical_liner",
-     "qty": 76,
+     "qty": 32,
      "max_price": 627
     }
    ],
