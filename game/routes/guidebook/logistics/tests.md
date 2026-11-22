@@ -1,12 +1,19 @@
 # Logistics guidebook -- Tests (tests.md)
 
 ### Open Tests
-Status: test. Updated: 2026-11-21. Evidence: the tests of 2026-11-17 and 2026-11-18 (route_run.py commits 85b14c83 and 6d69c52, queue.log ENT-187); requests.log ENT-281; faction_owned and the storage view 2026-11-21 19:50 UTC.
+Status: test. Updated: 2026-11-22. Evidence: the tests of 2026-11-17 and 2026-11-18 (route_run.py commits 85b14c83 and 6d69c52, queue.log ENT-187); requests.log ENT-281; faction_owned 2026-11-21 23:48 UTC; list_station_passengers 2026-11-21 23:52 UTC; the game's guides packages and passenger-lines (read 2026-11-22).
 
-- Open (2026-11-21): `supply-repair-gsc-0044-plate` (3 loads of 60) and `-boards` (60): whether the outpost rebuilds its damaged bunker and Lockbox by itself from the faction's storage there, and what get_base's repairs block asks (topic-bases.md); `train-jumps-hauler`: its cost a loop (`hive.py route train-jumps-hauler`) and the piloting it brings; `supply-bunker-gsc-0044` on `requires.reserve` below 4,000 (ENT-281) in place of `once` and `max_pilots` 3, closed while the gate is off; `buy-flex-ironlight-to-node-beta`, the loads into the faction store at Node Beta; which faction facilities an outpost takes (`facility types` category faction).
+- Open (2026-11-22): `supply-repair-gsc-0044-boards` on `requires.reserve` below 45 boards at the outpost, and `-plate` (three more loads of 60): the repair stock kept by itself (topic-bases.md); `supply-bunker-gsc-0044` on `requires.reserve` below 4,000 (gate on since 2026-11-21 21:20 UTC); `train-jumps-hauler`: its cost a loop (`hive.py route train-jumps-hauler`) against the piloting it brings.
 - Open: a Prayer bought and flown by one hauler (ships.md). `craft-steel-refine-node-beta` (refine_steel) was flown once; its use waits on the Fleet Admiral's word (requests.log ENT-200).
 - Open: the any-role steel routes of 2026-11-17 03:58 UTC (requests.log ENT-190): which divisions' ships fly them once they stand in every plan's list Then.
 - What the fleet owns and where: `python3 -I -B game/fleet/ledger.py show all`; a station's inputs: topic-station.md.
+
+### Carrying for pay: freight and passengers
+Status: test. Updated: 2026-11-22. Evidence: the game's guides packages and passenger-lines (read 2026-11-22); list_station_passengers 2026-11-21 23:52 UTC; needs passenger-cabin-test, transit-lounge.
+
+- Freight contracts (`shipping` list_all, accept, deliver; the game's packages guide: 400 cr + 200 a hop, probationary carriers up to 5,000 cr a package): the hauler's paid carrying beyond our borders, read first from one docked hauler.
+- Passenger lines (the game's passenger-lines guide): a Threshold has no berth; an Economy Passenger Cabin (12 seats, a utility slot) or a Fugue (Voidborn courier, 1 business seat, speed 4) first, on one ship. Boards of 2026-11-22: 0 to 2 waiting a Voidborn station, fares 3,125 and 5,500 to far stations (need passenger-cabin-test).
+- Why: the haulers outnumber the hauls at home (orders ENT-059); both pay for carrying itself, which is the hauler's class, and both reach beyond our borders.
 
 ### Tests done
 Status: proven. Updated: 2026-11-21. Evidence: RESULT lines and the tables faction_facilities and faction, 2026-11-17 to 18; topic-bases.md.

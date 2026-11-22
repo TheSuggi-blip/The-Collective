@@ -1,9 +1,9 @@
 # Logistics guidebook -- the Class Card (card.md)
 
 ### Class Card
-Status: proven. Updated: 2026-11-21. Evidence: catalog tables skills, hulls, facilities (catalog 0.723.2); the help of spacemolt_facility; table ship_skills; orders.log ENT-056.
+Status: proven. Updated: 2026-11-22. Evidence: catalog tables skills, hulls, facilities (catalog 0.732.0); the help of spacemolt_facility; table ship_skills; orders.log ENT-059; the game's guides (spacemolt.com/docs/guides).
 
-The hauler's class in short (rule F14): it carries, crafts and builds; gathering is Mining's (rule F23). Levels: the tool fleet, view=levels, member Apollo; XP per ship-hour: hive.py stats xp. Hulls: ships.md; work: routes.md; bases: topic-bases.md.
+The hauler's class in short (rule F14): it carries, crafts and builds; gathering is Mining's (rule F23). In the game's words (its guides base-builder, packages, passenger-lines, read 2026-11-22): the builder earns, builds faction facilities and keeps their stores full; cargo is king; freight contracts and passenger fares pay the carrying itself. Levels: the tool fleet, view=levels, member Apollo; XP per ship-hour: hive.py stats xp. Hulls: ships.md; work: routes.md; bases: topic-bases.md.
 
 ### Ships
 Status: proven. Updated: 2026-11-21. Evidence: table hulls; browse_ships 2026-11-17 00:23 UTC; table faction_members 2026-11-17; ships.md.
