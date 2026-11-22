@@ -1,29 +1,32 @@
 # Trade guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-22. Evidence: plan.py show; templates/trade.json (@trade-sell, @trade-craft); fill.py status trader; reservecheck.py --plan trader; hive.py route craft-armor-own-experiment.
+Status: proven. Updated: 2026-11-22. Evidence: plan.py show; templates/trade.json (@trade-sell, @trade-craft); fill.py status --why; reservecheck.py --plan trader; pull.py levels; contracts.log ENT-002.
 
-The plan file as set on 2026-11-22 at 15:41 UTC (orders ENT-064, P1,
+The plan file as set on 2026-11-22 at 19:48 UTC (orders ENT-065, P1,
 P5, standing order S5; strict classes on):
 
 - First, every ship: the once line (Voidborn chain, Federation and
   Confederacy once missions, three ships each, rule F37).
 - Own routes: a far test at the head of its ship's row, then for all
   `@trade-sell > @trade-craft`. `@trade-sell`: the loot where the
-  receivers store it, spike bids first (melt, ember gland), then curd
-  and noble into the stations' standing bids (`sell-curd-at-<station>`,
-  3 x base value), then older surplus.
-- `@trade-craft`: armor plate from own carapace, then liquid nitrogen
-  from own nitrogen ice (`craft-nitrogen-own-<station>`), both docked,
-  no jump; then steel.
-- Then: steel crafts, `train-trading-weapon-housing-node-alpha` (test:
-  Trading on a 3% NPC spread, docked), train-jumps-trader, park.
+  receivers store it into the stations' own spike bids (melt about
+  2,570 at Central Nexus, ember gland about 6,950 at Krynn: both come
+  back within the hour), then goods sold where they lie into standing
+  bids (curd, noble, methane, nitrogen bladder, exotic matter).
+- `@trade-craft`: docked, no jump, from own stores: armor plate, then
+  ionized neon and liquid hydrogen (`craft-neon-own-*`,
+  `craft-hydrogen-own-*`, outputs outside the reserve so the pull rule
+  never closes them), then nitrogen (closed while liquid nitrogen is
+  full), then steel.
+- Then: steel crafts, the Trading spread test, train-jumps-trader,
+  park.
 
-What it carries: one ship a station's bid; the crafts as many as hold
-the input there; the loop every ship left (25 of 40 at 15:43 UTC).
+What it carries: one ship a station's bid; a craft as many as hold the
+input there; the loop every ship left (29 of 40 at 19:51 UTC).
 
-What would change it: the curd, nitrogen and spread test's three
-results; a spike bid back; lumen oil handed over (bid 1,264 at Dheneb).
+What would change it: Unity's word on the loop's cap and on Bursar
+order steps (requests ENT-366); the resting melt ask's fill.
 ### Selling stores where they lie (`sell-<good>-at-<station>`, `carry-<good>-<from>-to-<to>`)
 Status: proven. Updated: 2026-11-22. Evidence: the sell and carry route files with their measured figures; sellgen.py of the skill trade-books.
 
