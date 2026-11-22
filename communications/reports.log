@@ -463,3 +463,12 @@ Failed: frontier oldest 174 min against 170 and one 82-minute watch gap against 
 Requests: none.
 Suggestions: take the frontier wayfinder out of the plans that hold it until stop 1 is read (Zero, Unity; ENT-099); fill.py status could name once routes paying over half their runs that a plan lacks (Unity).
 Report: sol-audit-first-worked-once-apart-galaxy-charted.
+
+## [ENT-124] | 2026-11-22 19:40 UTC | Zero | session | ref: reports/2026-11-22_zero_reserve-before-ice-jishui-cut-second-laser-test.md | see: orders.log ENT-065
+Session: scheduled run turn-zero -- reserve gathers before ice in every row, Jishui cut to its field, a second-laser test.
+Did: preflight PASS; 60 rows set with the reserve templates before @ice-sell and the 20 seated rows on GSC-0044 Belt, Forgotten Tailings, Acrux first; lifts Jishui 8 to 3, Yildun 4 to 6, Forgotten Tailings 1 to 5 (commits 425ae020, fd9c7956, a6a5e96b); new test fit-mining-laser-ii-second-central-nexus (15c73886), first fit 4,294 cr; Federation prospectus added by fill (4c2311cd); stalled.py counts a gift route's ore; guidebook Standing Plan (db949a07); claims admirals.log ENT-100.
+Worked: fill gate PASS 19:31 UTC, plan check PASS; one Threshold flies Laser I and Laser II together; stalled.py reads 0 stalled where it read 4; Mining 1,812,452 cr, own net -17,428 cr over the last hour, -4,430 over 24 hours.
+Failed: no Resonance Miner quote read (two calls refused, not docked: the store's dock state was a minute old); carbon 67,630 and silicon 51,508 short stay beyond what every field within 12 jumps holds.
+Requests: requests.log ENT-365 to Unity (a credits-only Resonance Miner above the F12 line).
+Suggestions: Unity: a fill.py warning when a gather's field reaches its min_left before the next turn at its count; a docked_since column on ships for quotes.
+Report: reserve-before-ice-jishui-cut-second-laser-test.
