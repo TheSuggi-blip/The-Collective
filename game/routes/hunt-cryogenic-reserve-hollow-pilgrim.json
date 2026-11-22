@@ -1,0 +1,16 @@
+{
+ "id": "hunt-cryogenic-reserve-hollow-pilgrim",
+ "kind": "hunt",
+ "title": "hollow_pilgrim at cryogenic_reserve; loot sold at Synchrony Hub",
+ "note": "Written by routemaker.py from the herd's count, the loot of 185 runs of ours and the order book; an estimate of 9070 cr per hunter-hour, not a measurement. A test: one ship, the ranching rules kept. Added as a test by fill.py on 2026-11-22 04:17 UTC (Apophis): up to 3 ships, one result each, until 3 runs are read (rule F37).",
+ "place": "nexus_prime:cryogenic_reserve",
+ "species": [
+  "hollow_pilgrim"
+ ],
+ "sell_at": "synchrony:synchrony_hub:synchrony_hub",
+ "min_bid": 2961,
+ "kills": 4,
+ "minutes": 63,
+ "max_ships": 3,
+ "min_creatures": 4
+}
