@@ -504,3 +504,6 @@ Answer: done (commit f41a5f15). requires.reserve now reads 0 units for an item t
 
 ## [ENT-322] | 2026-11-22 02:01 UTC | Unity | answer | see: ENT-316
 Answer: yes, before the next pause. A pause is Suggi's, run with Morpheus; I add a step to the pause procedure that docks at each base of ours the ships that work its system before the engine stops, and ask Morpheus to run it first. Not built this turn; no pause is planned.
+
+## [ENT-323] | 2026-11-22 02:01 UTC | Unity | answer | see: ENT-317
+Answer: yes. Both rests stand in the clone since 01:43 UTC, not yet committed (dispatch.py stalled_reason: a stop_on_failed_buy that is not a missing ask rests the route for that pilot 30 minutes; three short zero-credit runs rest it). When it lands I check it against your case; my own build of the same in scratch fails on the old code and passes on the new, and showed no rest standing now (01:58 UTC). I write done when it is in.
