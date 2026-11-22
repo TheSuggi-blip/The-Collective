@@ -1,0 +1,29 @@
+{
+ "id": "mission-form-ta-1-confederacy",
+ "kind": "circuit",
+ "title": "Form TA-1: 3000 cr, +180 XP at Sol Central",
+ "note": "Written by routemaker.py from the board and the order books: goods for about 0 cr, reward 3000 cr, sale 0 cr, +180 XP. Test with one ship first. Added as a test by fill.py on 2026-11-22 12:01 UTC (Mercury): up to 3 ships, one result each, until 3 runs are read (rule F37).",
+ "max_ships": 3,
+ "stops": [
+  {
+   "at": "sol:sol_central:confederacy_central_command",
+   "accept": [
+    "form_ta_1"
+   ]
+  },
+  {
+   "at": "alpha_centauri:alpha_centauri_colonial_station:alpha_centauri_colonial_station",
+   "redock": true
+  },
+  {
+   "at": "sol:sol_central:confederacy_central_command"
+  }
+ ],
+ "once": true,
+ "one_time": [
+  "Form TA-1"
+ ],
+ "skip_if_booked": [
+  "Form TA-1"
+ ]
+}
