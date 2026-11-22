@@ -49,7 +49,7 @@ Kept by Apophis. Routes: 180. Ships: 50.
 | 27 | [hunt-orphan-nebula-veil-ray](hunt-orphan-nebula-veil-ray.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 9 jumps | up to 1 ships, empty hold | 1 of 50 |
 | 28 | [hunt-superposition-pocket-veil-ray](hunt-superposition-pocket-veil-ray.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 18 jumps | up to 1 ships | 1 of 50 |
 | 29 | [hunt-ironpeak-weak-superposition-veil-ray](hunt-ironpeak-weak-superposition-veil-ray.json) | [Paying Routes](index-paying-routes.md) | beyond the border, 20 jumps | up to 1 ships, empty hold | 1 of 50 |
-| 30 | [hunt-minkar-cryobelt-hollow-pilgrim](hunt-minkar-cryobelt-hollow-pilgrim.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 21 jumps | up to 1 ships, empty hold | 1 of 50 |
+| 30 | [hunt-minkar-cryobelt-hollow-pilgrim](hunt-minkar-cryobelt-hollow-pilgrim.json) | [Off](index-off.md) | beyond the border, 21 jumps | up to 1 ships, empty hold, off | 1 of 50 |
 | 31 | [hunt-elbowroom-veil-veil-ray](hunt-elbowroom-veil-veil-ray.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 19 jumps | up to 1 ships, empty hold | 1 of 50 |
 | 32 | [hunt-alphecca-vapor-fields-cinder-sylph](hunt-alphecca-vapor-fields-cinder-sylph.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 20 jumps | up to 1 ships, empty hold | 1 of 50 |
 | 33 | [hunt-lilii-borea-gas-cloud-drift-ray](hunt-lilii-borea-gas-cloud-drift-ray.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 16 jumps | up to 1 ships, empty hold | 1 of 50 |

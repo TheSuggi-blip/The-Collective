@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 97.
+Routes: 96.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -72,7 +72,6 @@ Routes: 97.
 | [hunt-merope-dim-phase-pocket-veil-ray](hunt-merope-dim-phase-pocket-veil-ray.json) | hunt | beyond the border, 18 jumps | veil_ray at merope_dim_phase_pocket; loot sold at First Step Memorial Station | up to 1 ships, empty hold | 1 | 42 | -210 | -300 | 2026-11-21 |
 | [hunt-merope-gas-plume-cinder-sylph](hunt-merope-gas-plume-cinder-sylph.json) | hunt | beyond the border, 18 jumps | cinder_sylph at merope_gas_plume; loot sold at First Step Memorial Station | up to 1 ships, empty hold | 2 | 35 | -220 | -370 | 2026-11-21 |
 | [hunt-miaplacidus-frost-ring-hollow-pilgrim](hunt-miaplacidus-frost-ring-hollow-pilgrim.json) | hunt | beyond the border, 11 jumps | hollow_pilgrim at miaplacidus_frost_ring; loot sold at Sirius Observatory Station | up to 1 ships, empty hold | 4 | 24 | -370 | -930 | 2026-11-17 |
-| [hunt-minkar-cryobelt-hollow-pilgrim](hunt-minkar-cryobelt-hollow-pilgrim.json) | hunt | beyond the border, 21 jumps | hollow_pilgrim at minkar_cryobelt; loot sold at The Levy Customs Station | up to 1 ships, empty hold | 1 | 47 | 0 | 0 | 2026-11-21 |
 | [hunt-nightveil-haze-cinder-sylph](hunt-nightveil-haze-cinder-sylph.json) | hunt | beyond the border, 20 jumps | cinder_sylph at nightveil_haze; loot sold at War Citadel | up to 1 ships, empty hold | 3 | 59 | -4,950 | -5,810 | 2026-11-21 |
 | [hunt-orphan-nebula-veil-ray](hunt-orphan-nebula-veil-ray.json) | hunt | beyond the border, 9 jumps | veil_ray at orphan_nebula; loot sold at Nova Terra Central | up to 1 ships, empty hold | 2 | 45 | -290 | -380 | 2026-11-21 |
 | [hunt-pleione-ice-fields-hollow-pilgrim](hunt-pleione-ice-fields-hollow-pilgrim.json) | hunt | beyond the border, 18 jumps | hollow_pilgrim at pleione_ice_fields; loot sold at The Crucible Garrison | up to 1 ships, empty hold | 2 | 31 | -320 | -620 | 2026-11-21 |
