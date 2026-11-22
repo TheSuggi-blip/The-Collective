@@ -1,0 +1,40 @@
+{
+ "id": "supply-bunker-gsc-0044-own-cells",
+ "kind": "circuit",
+ "title": "Fuel for our outpost CLTV Outpost GSC-0044 from our own fuel cells: up to 65 cells taken from the pilot's storage at Node Beta (made there from hydrogen no bid takes), burnt into the tank at the outpost and the tank above 30 deposited into the faction's fuel reserve; members of the faction only",
+ "note": "Written by Apollo, 2026-11-22 04:05 UTC (orders.log ENT-061, block APOLLO: keep both outposts' bunkers by route; game/supply/chains.tsv outpost-fuel keeps 5,000, read SHORT at 4,519 at 03:51 UTC). 179 fuel cells stand in haulers' storage at Node Beta, made by craft-cells-hydrogen-node-beta from hydrogen gas no station bids for (reserve: keep fuel_cell all, for our own tanks and the bunker). supply-bunker-gsc-0044 buys 65 cells at The Experiment for about 6,600 cr a run (-5,050 measured); this one pays only the fuel of 12 jumps (Node Beta is 6 jumps from GSC-0044 by Node Alpha, Synchrony, The Experiment, Achernar, Cedarhold; about 1 unit a jump). requires.stored: only a pilot whose own storage at Node Beta holds 29 cells or more; requires.reserve: below 5,000, the chain's keep (the buying route stays the backup below 4,000). A test (rule F37): one ship, three runs, read before it is lifted.",
+ "max_ships": 1,
+ "standing": true,
+ "min_credits": 5000,
+ "requires": {
+  "empty_hold": true,
+  "stored": {
+   "at": "node_beta_industrial_station",
+   "item": "fuel_cell",
+   "min": 29
+  },
+  "reserve": {
+   "base": "443f0c5b2a1fbbcea95d13b76a797fe9",
+   "item": "fuel",
+   "below": 5000
+  }
+ },
+ "stops": [
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "withdraw": [
+    {
+     "item": "fuel_cell",
+     "qty": 65
+    }
+   ]
+  },
+  {
+   "at": "gsc_0044:da9de8c360c46ffee15dee4e7d1b8476:443f0c5b2a1fbbcea95d13b76a797fe9",
+   "refuel": false,
+   "bunker": {
+    "keep": 30
+   }
+  }
+ ]
+}

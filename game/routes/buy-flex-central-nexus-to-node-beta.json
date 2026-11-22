@@ -1,0 +1,40 @@
+{
+ "id": "buy-flex-central-nexus-to-node-beta",
+ "kind": "circuit",
+ "title": "Flex polymer for the Recruitment Center: up to 57 bought at Central Nexus (home, one jump) and put into the faction storage at Node Beta, where the upgrade takes its materials; members of the faction only",
+ "note": "Written by Apollo, 2026-11-22 04:05 UTC (orders.log ENT-061, block APOLLO: build the Recruitment Center when the purse holds its fee; need recruitment-center: 300 flex polymer, 186 in stock, 114 short, tool needs 03:51 UTC). Central Nexus asked 123 x 50 in its book of 03:49 UTC, Node Gamma 122 x 22, Ironlight Crossroads 144 x 300 (six jumps, lawless): the home book is the cheap and safe one. requires.ask: the best ask 129 or under with 20 units or more, read within 120 minutes; the buy limit 131 is 129 with the buyer's 1 percent; stop_on_failed_buy: an empty buy ends the run at Central Nexus. once, max_pilots 3: three loads at most (171 units, the 114 short and the Transit Lounge's 100 next); one ship at a time on the one book. The goods are booked as bought once (a build's input).",
+ "once": true,
+ "max_pilots": 3,
+ "max_ships": 1,
+ "min_credits": 15000,
+ "requires": {
+  "empty_hold": true,
+  "ask": {
+   "item": "flex_polymer",
+   "base": "central_nexus",
+   "max_price": 129,
+   "min_qty": 20,
+   "max_age_minutes": 120
+  }
+ },
+ "stops": [
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "buy": [
+    {
+     "item": "flex_polymer",
+     "qty": 57,
+     "max_price": 131,
+     "one_time": true
+    }
+   ],
+   "stop_on_failed_buy": true
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store_faction": [
+    "flex_polymer"
+   ]
+  }
+ ]
+}

@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 112.
+Routes: 113.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -57,6 +57,7 @@ Routes: 112.
 | [carry-lead-nexus-to-grand-exchange](carry-lead-nexus-to-grand-exchange.json) | circuit | beyond the border, 21 jumps | Stored lead ore carried from central_nexus to grand_exchange_station and sold into its bid at 200 cr or more | up to 1 ships, with 30 lead_ore stored at central_nexus, while grand_exchange_station bids 200 cr for lead_ore | TBD | TBD | TBD | TBD | -- |
 | [carry-liner-first-step-to-ramens](carry-liner-first-step-to-ramens.json) | circuit | beyond the border, 18 jumps | Stored chemical liners carried from First Step to Ramen's Rest and sold into its bid at 900 cr or more | up to 1 ships, with 6 chemical_liner stored at first_step_memorial_station, while ramens_rest bids 900 cr for chemical_liner | TBD | TBD | TBD | TBD | -- |
 | [outpost-kit-ironlight-to-experiment](outpost-kit-ironlight-to-experiment.json) | circuit | beyond the border, 6 jumps | The first outpost, step 1 of 3: one Outpost Kit bought at Ironlight Crossroads (LHS 1140, lawless) and stored at The Experiment Research Station, our border station two jumps from the site Mining and Intel name | up to 1 ships, 1 pilots in all, empty hold, from 155,000 cr | TBD | TBD | TBD | TBD | -- |
+| [outpost-kit-ironlight-to-node-beta](outpost-kit-ironlight-to-node-beta.json) | circuit | beyond the border, 6 jumps | The Atria outpost, step 1 of 3: one Outpost Kit bought at Ironlight Crossroads (LHS 1140, lawless) and stored at Node Beta, six jumps from Atria on the north road | up to 1 ships, 1 pilots in all, empty hold, from 152,000 cr, while 784309214f105860a16a0c100a70eb14 asks 148663 cr or less for outpost_kit | TBD | TBD | TBD | TBD | -- |
 | [sell-ember-experiment-dheneb](sell-ember-experiment-dheneb.json) | circuit | beyond the border, 11 jumps | Stored ember glands carried from The Experiment Research Station to the Hex Star bid (Dheneb, lawless) | up to 1 ships, with 6 ember_gland stored at the_experiment_research_station, while b495c6003fc83e18f6d8cecbe6929133 bids 2000 cr for ember_gland | TBD | TBD | TBD | TBD | -- |
 | [sell-ember-hexstar-first-step](sell-ember-hexstar-first-step.json) | circuit | beyond the border, 18 jumps | Stored ember glands carried from Hex Star (Dheneb) to the First Step Memorial Station bid | up to 1 ships, with 4 ember_gland stored at b495c6003fc83e18f6d8cecbe6929133, while first_step_memorial_station bids 5000 cr for ember_gland | TBD | TBD | TBD | TBD | -- |
 | [sell-melt-at-sirius](sell-melt-at-sirius.json) | circuit | beyond the border, 9 jumps | Crystal melt stored at Sirius Observatory sold into its bid | up to 1 ships, with 1 crystal_melt stored at sirius_observatory_station, while sirius_observatory_station bids 1000 cr for crystal_melt | TBD | TBD | TBD | TBD | -- |

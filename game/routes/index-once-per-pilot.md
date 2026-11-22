@@ -12,10 +12,11 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 44.
+Routes: 45.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
+| [buy-flex-central-nexus-to-node-beta](buy-flex-central-nexus-to-node-beta.json) | circuit | home space | Flex polymer for the Recruitment Center: up to 57 bought at Central Nexus (home, one jump) and put into the faction storage at Node Beta, where the upgrade takes its materials; members of the faction only | once per pilot, up to 1 ships, 3 pilots in all, empty hold, from 15,000 cr, while central_nexus asks 129 cr or less for flex_polymer | TBD | TBD | TBD | TBD | -- |
 | [mission-ghosts-in-the-cloud-node](mission-ghosts-in-the-cloud-node.json) | circuit | home space | Ghosts in the Cloud: 2000 cr at Node Alpha Processing Station | once per pilot, up to 1 ships | 149 | 3 | 80 | one-time | 2026-11-17 |
 | [mission-workshop-production-run-node-beta](mission-workshop-production-run-node-beta.json) | circuit | home space | Workshop Production Run: 3,500 cr, 25 crafting XP and 20 Piloting XP; accepted at Node Beta, five steel plates smelted there from the pilot's own stored iron, handed in there | once per pilot, up to 4 ships, with 60 iron_ore stored at node_beta_industrial_station | 138 | 5 | 3,210 | one-time | 2026-11-17 |
 | [voidborn-atmospheric-extraction](voidborn-atmospheric-extraction.json) | circuit | home space | Atmospheric Extraction: Setup: 2,000 cr once after The Collective Provides; a Gas Harvester I bought at Node Beta after the accept | once per pilot, up to 3 ships, without gas_harvester_i, from 6,000 cr, after the reward The Collective Provides | 18 | 8 | -130 | one-time | 2026-11-17 |

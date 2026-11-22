@@ -1,0 +1,43 @@
+{
+ "id": "give-hauler-stores-nova-terra",
+ "kind": "circuit",
+ "title": "A hauler gives its stored goods of Trade's class at Nova Terra Central to the trader named there: gases, ices, null matter, soma, loot and ores no reserve recipe takes (strict classes)",
+ "note": "Written by Apollo, 2026-11-22 04:05 UTC (orders.log ENT-061, P5: each class's activities its own, the sales left in a plan become gifts to Trade's receivers; rules F23, F24). Replaces in the hauler plan the sell and carry circuits of template stored-goods. The items: what haulers hold here that the reserve does not keep (stock view=reserve, 03:52 UTC: demand of null matter 20 of 6,922, water ice 80 of 34,174, argon 50 of 4,379); kept back: hydrogen gas and liquid hydrogen (our fuel cells), ores and parts a reserve recipe takes (tungsten, palladium, platinum, aluminum, carapace, energy crystal). The form of give-miner-stores-node-beta (Zero). A gift gives nothing while data/fleet/strict-classes-on is absent, so it stands off until the switch is on (requests.log ENT-332); then on. requires.stored: a pilot whose own storage here holds 50 argon_gas or more (the largest of these goods here, storage book 03:51 UTC: 1989 units of them in haulers' storage).",
+ "max_ships": 2,
+ "status": "off",
+ "requires": {
+  "stored": {
+   "at": "nova_terra_central",
+   "item": "argon_gas",
+   "min": 50
+  }
+ },
+ "stops": [
+  {
+   "at": "nova_terra:nova_terra_central:nova_terra_central",
+   "store": "all",
+   "gift": [
+    {
+     "to": "trader",
+     "items": [
+      "null_matter",
+      "neon_gas",
+      "argon_gas",
+      "plasma_gas",
+      "chlorine_gas",
+      "xenon_gas",
+      "nebula_gas",
+      "water_ice",
+      "nitrogen_ice",
+      "raw_xeno_meat",
+      "legacy_ore",
+      "sol_alloy_ore",
+      "voidborn_neural_soma",
+      "lead_ore"
+     ],
+     "source": "storage"
+    }
+   ]
+  }
+ ]
+}
