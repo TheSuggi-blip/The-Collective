@@ -51,7 +51,7 @@ class DispatchUpgradesTests(unittest.TestCase):
             ],
         }
         pilot = {"name": "miner-1", "role": "miner", "credits": 40000, "docked": True, "modules": [], "skills": {}, "goods": 0}
-        self.assertEqual(self.dispatch.circuit_systems(route), ["hot_sys"])
+        self.assertEqual(self.dispatch.circuit_systems(route), ["safe_sys", "hot_sys"])     # each stop's own system too (requests ENT-312)
         # Warned system blocks the circuit
         reason, _ = self.dispatch.why_not(pilot, "circuit-raid", route, self._state(now, pirates={"hot_sys": now - 60}))
         self.assertIsNotNone(reason)

@@ -278,11 +278,16 @@ def run_end(row):
 
 
 def circuit_systems(route):
-    """Unique star system ids named by mine or hunt steps of a circuit route, in stop order (errors.log ENT-117)."""
+    """Unique star system ids a circuit route names, in stop order: each stop's own system and those of its mine and
+    hunt steps (errors.log ENT-117, requests ENT-312)."""
     out, seen = [], set()
     for stop in route.get("stops") or []:
         if not isinstance(stop, dict):
             continue
+        own = str(stop.get("at") or "").split(":")[0]        # requests ENT-312: the stop's own system too
+        if own and own not in seen:
+            seen.add(own)
+            out.append(own)
         for key in ("mine", "hunt"):
             for step in stop.get(key) or []:
                 if isinstance(step, dict) and step.get("at"):

@@ -243,6 +243,8 @@ class SweepTests(unittest.TestCase):
         self.write()
         self.wallet = load(FLEET / "wallet.py", "wallet_sweep_test")
         self.wallet.SHOW_WAIT = 0
+        self.wallet.KEEP_WORK, self.wallet.SWEEP_WORK = self.wallet.KEEP_SHIP, self.wallet.SWEEP_AT   # one line for every role here: the
+        # sweep's mechanics; the lines by role (working ships keep 30,000) are tested in test_collective_upgrades.py
         self.calls = []
         self.wallet.refresh = lambda pilot: None
         self.wallet.treasury_read = lambda pilot: None             # no read of the treasury: the wallet check (a test sets one)
