@@ -2,7 +2,7 @@
  "id": "sell-noble-at-nova-terra",
  "kind": "circuit",
  "title": "Hunt loot stored by Trade's receiver at Nova Terra Central sold where it lies",
- "note": "2026-11-22 07:37 UTC (Mercury): orders ENT-062, block MERCURY and P5: a sell route at a station where our hunts hand their loot to Trade's receiver (data/fleet/receivers.json; hunt routes with gift_to trader and sell_at here). With strict classes on the hunt gives every good into the receiver's storage here; this route withdraws what sells and sells it at the floors, then stores what the bids left. Evidence: hunts with sell_at here sold 18 noble condensate for 12,420 cr in 24 h; book 2026-11-22 07:33 UTC: noble 690 x 32. requires.stored sends only a pilot whose own storage here holds 10 noble_condensate; requires.bid closes it while a book read within the hour shows no noble_condensate bid at 680. Floors at or near the standing NPC bids, never under a standing bid (F12); goods without a bid above 25 cr (carapace, raw xeno meat, crystallized biogas, fusion pearl, levity bladder) stay stored. Nothing is bought. A test: one ship (F37: three results decide).",
+ "note": "2026-11-22 07:37 UTC (Mercury): orders ENT-062, block MERCURY and P5: a sell route at a station where our hunts hand their loot to Trade's receiver (data/fleet/receivers.json; hunt routes with gift_to trader and sell_at here). With strict classes on the hunt gives every good into the receiver's storage here; this route withdraws what sells and sells it at the floors, then stores what the bids left. Evidence: hunts with sell_at here sold 18 noble condensate for 12,420 cr in 24 h; book 2026-11-22 07:33 UTC: noble 690 x 32. requires.stored sends only a pilot whose own storage here holds 10 noble_condensate; requires.bid closes it while a book read within the hour shows no noble_condensate bid at 680. Floors at or near the standing NPC bids, never under a standing bid (F12); goods without a bid above 25 cr (carapace, raw xeno meat, crystallized biogas, fusion pearl, levity bladder) stay stored. Nothing is bought. A test: one ship (F37: three results decide). 2026-11-22 07:40 UTC (Mercury): superfluid vial taken out of the sale: reservecheck.py holds it back for the recipe superfluid_winding (control_node); it stays stored with the receiver.",
  "max_ships": 1,
  "requires": {
   "stored": {
@@ -27,9 +27,6 @@
     },
     {
      "item": "verdigris_curd"
-    },
-    {
-     "item": "superfluid_vial"
     }
    ],
    "sell": [
@@ -40,10 +37,6 @@
     {
      "item": "verdigris_curd",
      "min_price": 300
-    },
-    {
-     "item": "superfluid_vial",
-     "min_price": 590
     }
    ]
   },
