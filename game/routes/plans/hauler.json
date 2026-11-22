@@ -62,6 +62,10 @@
   {
    "what": "Read the third run of craft-boards-crescent-moon (F37) and lift it to the receiver's silicon there; found Atria with found.py the hour a kit lands",
    "when": "next turn"
+  },
+  {
+   "what": "Hydrogen at Node Gamma (about 1,675 gas in four haulers' stores) into fuel cells for the bunker: a route that brings plate to it first",
+   "when": "when the wiring runs are read"
   }
  ],
  "ships": {
