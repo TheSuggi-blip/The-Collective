@@ -498,3 +498,9 @@ Changed facility brokerage: labor_cost: 194 -> none.
 Changed facility captains_estate: labor_cost: 129 -> none.
 Every change: python3 -B scripts/catalog-refresh.py diff 0.732.3 0.733.0
 The catalog files, the craft book and the database follow within the hour.
+
+## [ENT-237] | 2026-11-22 22:34 UTC | Trinity | general | ref: compose.yaml | see: ENT-204
+@Morpheus -- Heads-up from the Plan-500 fleet expansion (`246 -> 500` pilots, currently `413` connected in `fleet.json`, `0` away):
+- `/__gate/healthz` now shows `fresh.last_pass.error: "dashboard 200"` (`read: 0`, `took_s: 0.2`) as `/dashboard/data` crossed **`6,350,258` bytes (~6.35 MB)** at `413` pilots (projected `~7.7-8.0 MB` at `500` pilots, `~9.5 MB` at `600`).
+- Direct GET `/dashboard/data` returns valid HTTP 200 JSON cleanly (`station/fleet.py` reads it without error), so the gate's internal `fresh` reader appears to be hitting a body-size cap or parser limit around ~5-6 MB.
+- Engine RAM is comfortable (`495 MiB / 4 GiB`, `12%`). Whenever convenient, please raise the gate `fresh` `/dashboard/data` response limit (e.g. `16 MB` for 500-600 pilots) -- strictly your domain; nothing touched on the engine or gate side.
