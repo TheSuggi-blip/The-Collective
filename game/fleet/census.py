@@ -29,6 +29,14 @@ now (the order files) and not on this run; only while the tank holds the way
 there and home with room to spare. The order file names the system being read
 and each system gets its own row. Without `chain` nothing changes.
 
+Fuel: before it flies, the census weighs the tank against the way to the system and on to
+the nearest station that sells fuel (a station whose own read in data/scouting lists the
+service `refuel`; no pirate stronghold), by the chain's rule (1.5 a jump and 15 over); short,
+it takes fuel at the station nearest the ship first, and when even then the tank is short it
+writes a row `not flown` and ends. After the read, a ship in a system without a station whose
+tank is short of home takes fuel at the nearest station first (with --stay it ends docked
+there). A ship never ends a census in space on a tank that cannot leave (2026-11-22).
+
 Survey: a pilot whose live file (data/fleet/ships/<pilot>.json) lists a survey
 scanner among its modules runs `survey_system` once in each system it reads, on
 arrival and before `get_system`, so that a place the survey reveals is read in the
@@ -264,6 +272,81 @@ def next_system(route, here, lanes, data, busy, done, now, reach):
     return best[1] if best else None
 
 
+def fuel_stations(data):
+    """{system: (poi, base)} of the stations whose own census read (data/scouting/<system>.json) lists the
+    service `refuel`: where a scout can take on fuel. A broken file or a place without a base counts as none."""
+    out = {}
+    try:
+        files = sorted((Path(data) / 'scouting').glob('*.json'))
+    except OSError:
+        return out
+    for f in files:
+        try:
+            pois = json.loads(f.read_text(encoding='utf-8')).get('pois')
+        except (OSError, ValueError, AttributeError):
+            continue
+        for pid, read in (pois.items() if isinstance(pois, dict) else []):
+            if not isinstance(read, dict):
+                continue
+            base = read.get('base') if isinstance(read.get('base'), dict) else {}
+            poi = read.get('poi') if isinstance(read.get('poi'), dict) else {}
+            services = read.get('services') or base.get('services') or []
+            if isinstance(services, list) and 'refuel' in services and base.get('id'):
+                out.setdefault(f.stem, (poi.get('id') or pid, base['id']))
+    return out
+
+
+def nearest_fuel(lanes, src, stations):
+    """(jumps, system, poi, base) of the station with fuel (fuel_stations) nearest `src` by the chart's lanes,
+    the fewest jumps first, then by name; None when none can be reached on the chart."""
+    dist = jumps(lanes, src, 99)
+    best = None
+    for system, (poi, base) in stations.items():
+        if system in dist and (best is None or (dist[system], system) < best[:2]):
+            best = (dist[system], system, poi, base)
+    return best
+
+
+def fuel_short(tank, way):
+    """True when a tank of `tank` cannot fly `way` jumps with room to spare (the chain's rule: 1.5 a jump and
+    15 over). An unread tank or an unknown way is not judged: the engine decides, as before."""
+    if tank is None or way is None:
+        return False
+    return tank < 1.5 * way + 15
+
+
+def refuel_at(stop):
+    """Fly to the station `stop` (nearest_fuel) and take on fuel; True when the tank rose or stands full."""
+    before = fuel()
+    _, sid, poi, base = stop
+    goal('prepare-at-station', {'systemId': sid, 'poiId': poi, 'baseId': base, 'refuel': True})
+    after = fuel()
+    if after is not None and before is not None and after <= before:
+        raw('dock')                                     # the goal ended at the station undocked (seen 2026-11-22)
+        raw('refuel')
+        after = fuel()
+    say(f'fuel stop at {sid} ({base}): fuel {before} -> {after}')
+    return after
+
+
+def strongholds():
+    """The systems the chart flags `stronghold` (game/map/galaxy.tsv): no census takes fuel at a pirate's station."""
+    try:
+        rows = [line.rstrip('\n').split('\t') for line in open(REPO / 'map' / 'galaxy.tsv', encoding='utf-8') if not line.startswith('#')]
+    except OSError:
+        return set()
+    head = rows[0] if rows else []
+    return {cell['id'] for cell in (dict(zip(head, row)) for row in rows[1:]) if 'stronghold' in str(cell.get('flags') or '')}
+
+
+def ship_system():
+    """The system the pilot's live file (data/fleet/ships/<pilot>.json) places it in, or None."""
+    try:
+        return str(json.loads((DATA / 'fleet' / 'ships' / f'{pilot}.json').read_text(encoding='utf-8')).get('system') or '') or None
+    except (OSError, ValueError, AttributeError):
+        return None
+
+
 def chart():
     """({system: [lanes]}, {system: jumps from home}) from game/map/galaxy.tsv; empty when the file cannot be read."""
     lanes, home = {}, {}
@@ -399,7 +482,27 @@ places = creatures_total = 0
 last_station = None
 done, target, legs = set(), system_id, 0
 leg_started, leg_before = STARTED, WALLET_BEFORE
-LANES, HOME_JUMPS = chart() if CHAIN else ({}, {})
+LANES, HOME_JUMPS = chart()                    # the chain and the fuel check both fly by the chart
+FARS = strongholds()
+STATIONS = {s: v for s, v in fuel_stations(DATA).items() if s not in FARS}
+HERE = ship_system()
+ONWARD = nearest_fuel(LANES, system_id, STATIONS)          # where the ship takes fuel after its read
+WAY = jumps(LANES, HERE, 99).get(system_id) if HERE else None
+if WAY is not None:
+    WAY += ONWARD[0] if ONWARD else (HOME_JUMPS.get(system_id) or 0)
+TANK = fuel()
+if fuel_short(TANK, WAY):                     # never fly out on a tank that cannot take the ship on to fuel
+    STOP = nearest_fuel(LANES, HERE, STATIONS)
+    say(f'fuel {TANK} short of {1.5 * WAY + 15:.0f} for {system_id} and on to fuel: '
+        + (f'fuel stop at {STOP[1]} first' if STOP else 'no station with fuel on the chart'))
+    if STOP:
+        TANK = refuel_at(STOP)
+        WAY2 = jumps(LANES, STOP[1], 99).get(system_id)
+        WAY = None if WAY2 is None else WAY2 + (ONWARD[0] if ONWARD else (HOME_JUMPS.get(system_id) or 0))
+    if not STOP or fuel_short(TANK, WAY):
+        write_row(system_id, STARTED, WALLET_BEFORE, wallet(), 0, 0, [f'fuel {TANK} short for {system_id}: not flown'])
+        print(f'RESULT {pilot}: {system_id}: not flown, fuel {TANK} short of the way there and on to fuel', flush=True)
+        sys.exit(0)
 while True:
     if target != system_id:
         ORDER.write_text(json.dumps({'pilot': pilot, 'what': 'census ' + target, 'since': now()}), encoding='utf-8')
@@ -408,7 +511,7 @@ while True:
     places += n_places
     creatures_total += n_creatures
     last_station = station
-    nxt, why = None, ''
+    nxt, why = None, '' if ok else f'{target} not reached'     # a row that says why it read nothing
     if ok and legs < CHAIN:
         nxt = next_system(ROUTE, target, LANES, str(DATA), busy_systems(), done, time.time(), REACH)
         if nxt:
@@ -423,6 +526,11 @@ while True:
     leg_after = wallet()
     write_row(target, leg_started, leg_before, leg_after, n_places, n_creatures, [f'chain {legs + 1} of {CHAIN}: next {nxt}'])
     leg_started, leg_before, target, legs = time.time(), leg_after, nxt, legs + 1
+if not last_station and fuel_short(fuel(), HOME_JUMPS.get(target)):
+    STOP = nearest_fuel(LANES, target, STATIONS)  # no station here and a tank short of home: take fuel at the
+    if STOP:                                      # nearest station first, and with --stay end docked there (2026-11-22)
+        refuel_at(STOP)
+        last_station = STOP[3] if '--stay' in sys.argv else None
 if not ('--stay' in sys.argv and last_station):
     goal('prepare-at-station', HOME)
 WALLET_AFTER = wallet()

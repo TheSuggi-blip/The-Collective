@@ -113,6 +113,56 @@ class ChainTests(unittest.TestCase):
         self.assertIsNone(self.next_system({"systems": ["e"], "every_minutes": 60}, "zz", LANES, str(self.data), set(), set(), self.now, 2))
 
 
+class FuelTests(unittest.TestCase):
+    """A census never ends where its tank cannot take it on (2026-11-22: a ship read a system without a station
+    21 jumps out with 17 fuel and stood two hours in space, every next census refused for fuel). Which stations
+    sell fuel: the census files' own reads (services `refuel`); the nearest by the chart's lanes; short by the
+    chain's rule (1.5 a jump and 15 over)."""
+
+    def setUp(self):
+        self.jumps, self.fuel_stations, self.nearest_fuel, self.fuel_short = load(
+            "jumps", "fuel_stations", "nearest_fuel", "fuel_short")
+        self.tmp = tempfile.TemporaryDirectory()
+        self.data = Path(self.tmp.name)
+        (self.data / "scouting").mkdir()
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def scouting(self, system, pois):
+        (self.data / "scouting" / (system + ".json")).write_text(json.dumps({"system": {}, "pois": pois}), encoding="utf-8")
+
+    def station(self, poi, base, services):
+        return {"poi": {"id": poi, "type": "station", "base_id": base}, "base": {"id": base, "name": "x"}, "services": services}
+
+    def test_a_station_whose_read_lists_refuel_sells_fuel_and_one_without_does_not(self):
+        self.scouting("c", {"c_st": self.station("c_st", "base_c", ["market", "refuel", "storage"]),
+                            "c_belt": {"poi": {"id": "c_belt", "type": "asteroid_belt"}, "resources": []}})
+        self.scouting("d", {"d_st": self.station("d_st", "base_d", ["storage"])})       # a wrecked station: storage only
+        self.scouting("e", {"e_belt": {"poi": {"id": "e_belt", "type": "asteroid_belt"}}})
+        (self.data / "scouting" / "broken.json").write_text("{", encoding="utf-8")
+        self.assertEqual(self.fuel_stations(str(self.data)), {"c": ("c_st", "base_c")})
+
+    def test_no_scouting_folder_gives_no_station(self):
+        self.assertEqual(self.fuel_stations(str(self.data / "none")), {})
+
+    def test_the_nearest_station_with_fuel_by_lanes(self):
+        stations = {"a": ("a_st", "base_a"), "d": ("d_st", "base_d")}
+        self.assertEqual(self.nearest_fuel(LANES, "e", stations), (2, "a", "a_st", "base_a"))
+        self.assertEqual(self.nearest_fuel(LANES, "c", stations), (1, "d", "d_st", "base_d"))
+        self.assertEqual(self.nearest_fuel(LANES, "d", stations), (0, "d", "d_st", "base_d"))
+        self.assertIsNone(self.nearest_fuel(LANES, "e", {}))
+        self.assertIsNone(self.nearest_fuel(LANES, "zz", stations))                   # off the chart
+
+    def test_short_by_the_chains_rule_and_an_unread_tank_is_not_judged(self):
+        self.assertTrue(self.fuel_short(17, 21))          # the case of 2026-11-22: 21 jumps home on 17
+        self.assertFalse(self.fuel_short(95, 21))
+        self.assertTrue(self.fuel_short(40, 17))          # 1.5 x 17 + 15 = 40.5
+        self.assertFalse(self.fuel_short(41, 17))
+        self.assertFalse(self.fuel_short(None, 21))       # the engine gave no fuel: as before, the engine decides
+        self.assertFalse(self.fuel_short(17, None))       # no way known: as before
+
+
 class RemoteBookTests(unittest.TestCase):
     """Game 0.728.0: view_market takes base_id, so a docked census reads the books of other stations from afar.
     Which books: those of data/market that are station books, not the one it is docked at, older than the age,
