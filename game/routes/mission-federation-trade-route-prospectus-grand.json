@@ -1,0 +1,54 @@
+{
+ "id": "mission-federation-trade-route-prospectus-grand",
+ "kind": "circuit",
+ "title": "Federation Trade Route Prospectus: 4000 cr at Grand Exchange",
+ "note": "Written by routemaker.py from the board and the order books: goods for about 0 cr, reward 4000 cr. A test: one ship; whether the mission hands its goods out at the accept is not known until one accept with an empty hold. Added as a test by fill.py on 2026-11-22 03:26 UTC (Unity): up to 3 ships, one result each, until 3 runs are read (rule F37).",
+ "once": true,
+ "max_ships": 3,
+ "one_time": [
+  "Federation Trade Route Prospectus"
+ ],
+ "skip_if_booked": [
+  "Federation Trade Route Prospectus"
+ ],
+ "stops": [
+  {
+   "at": "haven:grand_exchange:grand_exchange_station",
+   "accept": [
+    "federation_trade_route_prospectus"
+   ]
+  },
+  {
+   "at": "market_prime:market_prime_exchange:market_prime_exchange",
+   "redock": true
+  },
+  {
+   "at": "cargo_lanes:cargo_lanes_freight_depot:cargo_lanes_freight_depot",
+   "redock": true
+  },
+  {
+   "at": "gold_run:gold_run_extraction_hub:gold_run_extraction_hub",
+   "redock": true
+  },
+  {
+   "at": "factory_belt:factory_belt_manufacturing_hub:factory_belt_manufacturing_hub",
+   "redock": true
+  },
+  {
+   "at": "traders_rest:traders_rest_resort_station:traders_rest_resort_station",
+   "redock": true
+  },
+  {
+   "at": "treasure_cache:treasure_cache_trading_post:treasure_cache_trading_post",
+   "redock": true
+  },
+  {
+   "at": "the_levy:the_levy_customs_station:the_levy_customs_station",
+   "redock": true
+  },
+  {
+   "at": "haven:grand_exchange:grand_exchange_station",
+   "redock": true
+  }
+ ]
+}

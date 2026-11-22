@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 40.
+Routes: 42.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -43,6 +43,8 @@ Routes: 40.
 | [mission-debris-field-reports-frontier](mission-debris-field-reports-frontier.json) | circuit | beyond the border, 18 jumps | Debris Field Reports: 4500 cr at Mobile Capital | once per pilot, up to 3 ships | 1 | 29 | 4,210 | one-time | 2026-11-22 |
 | [mission-deep-core-prospecting-first-step](mission-deep-core-prospecting-first-step.json) | circuit | beyond the border, 19 jumps | Deep Core Prospecting: 5,000 cr, 10 exotic matter and deep core mining XP; 20 platinum ore mined at Deep Range Mineral Fields, accepted and handed in at First Step Memorial Station | once per pilot, up to 2 ships, 12 pilots in all, empty hold | 12 | 65 | 2,580 | one-time | 2026-11-21 |
 | [mission-deep-core-prospecting-nova-terra](mission-deep-core-prospecting-nova-terra.json) | circuit | beyond the border, 9 jumps | Deep Core Prospecting: 5,000 cr, 10 exotic matter and deep core mining XP; 20 platinum ore mined at Markab Belt, accepted and handed in at Nova Terra Central | once per pilot, up to 1 ships, 16 pilots in all, empty hold | 10 | 53 | 3,120 | one-time | 2026-11-17 |
+| [mission-federation-market-analysis-market](mission-federation-market-analysis-market.json) | circuit | beyond the border, 23 jumps | Federation Market Analysis: 6000 cr at Market Prime Exchange | once per pilot, up to 3 ships | TBD | TBD | TBD | TBD | -- |
+| [mission-federation-trade-route-prospectus-grand](mission-federation-trade-route-prospectus-grand.json) | circuit | beyond the border, 24 jumps | Federation Trade Route Prospectus: 4000 cr at Grand Exchange | once per pilot, up to 3 ships | TBD | TBD | TBD | TBD | -- |
 | [mission-strategic-readiness-assessment-crimson](mission-strategic-readiness-assessment-crimson.json) | circuit | beyond the border, 21 jumps | Strategic Readiness Assessment: 4000 cr at War Citadel | once per pilot, up to 1 ships | 1 | 60 | -620 | one-time | 2026-11-21 |
 | [mission-voidborn-trajectory-unknown](mission-voidborn-trajectory-unknown.json) | circuit | beyond the border, 16 jumps | Voidborn Trajectory: 6000 cr at Unknown Edge Waystation | once per pilot, up to 3 ships | 2 | 50 | 2,600 | one-time | 2026-11-22 |
 | [voidborn-collective-provides](voidborn-collective-provides.json) | circuit | beyond the border, 10 jumps | The Collective Provides: 2,500 cr once, the link after Network Expansion; 20 nickel ore mined at Rotanev Daylight Seam, handed in at Central Nexus | once per pilot, up to 4 ships, empty hold, after the reward Network Expansion | 110 | 35 | 1,860 | one-time | 2026-11-21 |
