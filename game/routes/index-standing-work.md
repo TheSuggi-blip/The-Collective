@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 343.
+Routes: 346.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -191,10 +191,12 @@ Routes: 343.
 | [hunt-chara-gas-plume-drift-ray](hunt-chara-gas-plume-drift-ray.json) | hunt | beyond the border, 16 jumps | drift_ray at chara_gas_plume; loot sold at The Obsidian Well | up to 1 ships, empty hold, standing work | 16 | 22 | -20 | -40 | 2026-11-22 |
 | [hunt-coinflip-nebula-veil-ray](hunt-coinflip-nebula-veil-ray.json) | hunt | beyond the border, 11 jumps | veil_ray at coinflip_nebula; loot sold at Nova Terra Central | up to 1 ships, empty hold, standing work | 6 | 23 | -330 | -790 | 2026-11-22 |
 | [hunt-dawnbreak-frozen-drift-hollow-pilgrim](hunt-dawnbreak-frozen-drift-hollow-pilgrim.json) | hunt | beyond the border, 20 jumps | hollow_pilgrim at dawnbreak_frozen_drift; loot sold at The Levy Customs Station | up to 1 ships, empty hold, standing work | 4 | 53 | 0 | 0 | 2026-11-22 |
+| [hunt-deep-range-cryobelt-hollow-pilgrim](hunt-deep-range-cryobelt-hollow-pilgrim.json) | hunt | beyond the border, 19 jumps | hollow_pilgrim at deep_range_cryobelt; loot sold at Mobile Capital | up to 3 ships, standing work | 1 | 58 | 2,720 | 2,790 | 2026-11-22 |
 | [hunt-deepwell-haze-cinder-sylph](hunt-deepwell-haze-cinder-sylph.json) | hunt | beyond the border, 7 jumps | cinder_sylph at deepwell_haze; loot sold at Ironlight Crossroads | up to 1 ships, empty hold, standing work | 3 | 10 | -20 | -110 | 2026-11-22 |
 | [hunt-deepwell-haze-drift-ray](hunt-deepwell-haze-drift-ray.json) | hunt | beyond the border, 7 jumps | drift_ray at deepwell_haze; crystallized biogas for the reserve, loot to a trader receiver | up to 1 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [hunt-deepwell-volatile-ice-frost-moth](hunt-deepwell-volatile-ice-frost-moth.json) | hunt | beyond the border, 7 jumps | frost_moth at deepwell_volatile_ice; loot sold at Ironlight Crossroads | up to 1 ships, empty hold, standing work | 4 | 11 | -20 | -100 | 2026-11-22 |
 | [hunt-denebola-fractured-prism-veil-ray](hunt-denebola-fractured-prism-veil-ray.json) | hunt | beyond the border, 5 jumps | veil_ray at denebola_fractured_prism; loot sold at Node Beta Industrial Station | up to 1 ships, empty hold, standing work | 2 | 30 | -320 | -630 | 2026-11-22 |
+| [hunt-diadem-ice-belt-hollow-pilgrim](hunt-diadem-ice-belt-hollow-pilgrim.json) | hunt | beyond the border, 11 jumps | hollow_pilgrim at diadem_ice_belt; loot sold at Hex Star | up to 3 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [hunt-driftwood-ghost-resonance-veil-ray](hunt-driftwood-ghost-resonance-veil-ray.json) | hunt | beyond the border, 20 jumps | veil_ray at driftwood_ghost_resonance; loot sold at First Step Memorial Station | up to 1 ships, empty hold, standing work | 16 | 17 | -120 | -310 | 2026-11-22 |
 | [hunt-duskfield-cryobelt-hollow-pilgrim](hunt-duskfield-cryobelt-hollow-pilgrim.json) | hunt | beyond the border, 18 jumps | hollow_pilgrim at duskfield_cryobelt; loot sold at First Step Memorial Station | up to 1 ships, empty hold, standing work | 6 | 35 | -280 | -450 | 2026-11-22 |
 | [hunt-edasich-ice-halo-frost-moth](hunt-edasich-ice-halo-frost-moth.json) | hunt | beyond the border, 25 jumps | frost_moth at edasich_ice_halo; loot sold at Treasure Cache Trading Post | up to 1 ships, empty hold, standing work | 5 | 54 | -400 | -510 | 2026-11-22 |
@@ -278,6 +280,7 @@ Routes: 343.
 | [hunt-oxbow-ice-belt-frost-moth](hunt-oxbow-ice-belt-frost-moth.json) | hunt | beyond the border, 13 jumps | frost_moth at oxbow_ice_belt; loot sold at Node Beta Industrial Station | up to 1 ships, empty hold, standing work | 4 | 58 | -590 | -620 | 2026-11-22 |
 | [hunt-patience-field-patina-grazer](hunt-patience-field-patina-grazer.json) | hunt | beyond the border, 11 jumps | patina_grazer at patience_field; loot stored at Nova Terra Central | up to 1 ships, empty hold, standing work | 8 | 41 | -320 | -480 | 2026-11-22 |
 | [hunt-pleione-ice-fields-hollow-pilgrim](hunt-pleione-ice-fields-hollow-pilgrim.json) | hunt | beyond the border, 18 jumps | hollow_pilgrim at pleione_ice_fields; loot sold at The Crucible Garrison | up to 1 ships, empty hold, standing work | 4 | 31 | -320 | -610 | 2026-11-22 |
+| [hunt-propus-ice-belt-hollow-pilgrim](hunt-propus-ice-belt-hollow-pilgrim.json) | hunt | beyond the border, 15 jumps | hollow_pilgrim at propus_ice_belt; loot sold at Hex Star | up to 3 ships, empty hold, standing work | 2 | 18 | -100 | -310 | 2026-11-22 |
 | [hunt-proxima-centauri-frost-ring-hollow-pilgrim](hunt-proxima-centauri-frost-ring-hollow-pilgrim.json) | hunt | beyond the border, 18 jumps | hollow_pilgrim at proxima_centauri_frost_ring; loot sold at First Step Memorial Station | up to 1 ships, empty hold, standing work | 4 | 36 | -260 | -450 | 2026-11-22 |
 | [hunt-ran-haze-chlorophage](hunt-ran-haze-chlorophage.json) | hunt | beyond the border, 25 jumps | chlorophage at ran_haze; loot sold at Hex Star | up to 1 ships, empty hold, standing work | 4 | 56 | -290 | -310 | 2026-11-22 |
 | [hunt-rasalhague-ice-fields-hollow-pilgrim](hunt-rasalhague-ice-fields-hollow-pilgrim.json) | hunt | beyond the border, 10 jumps | hollow_pilgrim at rasalhague_ice_fields; loot sold at The Experiment Research Station | up to 1 ships, empty hold, standing work | 6 | 51 | 1,500 | 1,980 | 2026-11-22 |

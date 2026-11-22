@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 11.
+Routes: 10.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -23,7 +23,6 @@ Routes: 11.
 | [carry-melt-first-step-to-experiment](carry-melt-first-step-to-experiment.json) | circuit | beyond the border, 18 jumps | Stored crystal_melt carried from first_step_memorial_station to the the_experiment_research_station bid at 1000 cr or more | up to 1 ships, with 20 crystal_melt stored at first_step_memorial_station, while the_experiment_research_station bids 1000 cr for crystal_melt | 1 | 19 | -180 | -570 | 2026-11-22 |
 | [sell-ember-hexstar-krynn](sell-ember-hexstar-krynn.json) | circuit | beyond the border, 20 jumps | Stored ember glands carried from Hex Star (Dheneb) to the Crimson War Citadel (Krynn) bid | up to 1 ships, with 4 ember_gland stored at b495c6003fc83e18f6d8cecbe6929133, while crimson_war_citadel bids 5000 cr for ember_gland | 2 | 24 | -330 | -810 | 2026-11-22 |
 | [sell-ember-node-beta-krynn](sell-ember-node-beta-krynn.json) | circuit | beyond the border, 20 jumps | Stored ember glands carried from Node Beta to the Crimson War Citadel (Krynn) bid | up to 1 ships, with 4 ember_gland stored at node_beta_industrial_station, while crimson_war_citadel bids 5000 cr for ember_gland | 2 | 28 | -410 | -900 | 2026-11-22 |
-| [hunt-propus-ice-belt-hollow-pilgrim](hunt-propus-ice-belt-hollow-pilgrim.json) | hunt | beyond the border, 15 jumps | hollow_pilgrim at propus_ice_belt; loot sold at Hex Star | up to 3 ships, empty hold | 2 | 18 | -100 | -310 | 2026-11-22 |
 | [mine-ain-ice-belt](mine-ain-ice-belt.json) | mine | beyond the border, 16 jumps | Ain Ice Belt: water_ice; sold at Unknown Edge Waystation | up to 3 ships, needs ice_harvester_i, empty hold | 2 | 93 | -410 | -260 | 2026-11-22 |
 | [mine-altais-outer-ice](mine-altais-outer-ice.json) | mine | beyond the border, 17 jumps | Altais Outer Ice: water_ice, nitrogen_ice; sold at Unknown Edge Waystation | up to 3 ships, needs ice_harvester_i | 2 | 62 | -240 | -230 | 2026-11-22 |
 | [mine-gsc-0015-cryobelt](mine-gsc-0015-cryobelt.json) | mine | beyond the border, 16 jumps | GSC-0015 Cryobelt: water_ice; sold at Unknown Edge Waystation | up to 3 ships, needs ice_harvester_i, empty hold | 2 | 92 | -550 | -360 | 2026-11-22 |
