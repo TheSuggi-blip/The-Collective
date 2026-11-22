@@ -463,3 +463,12 @@ Failed: my give routes gated on iron alone left miners' ice, copper and gold sto
 Requests: requests.log ENT-349 (Unity: any-of stored gate), ENT-350 (Apollo: receivers at The Crescent Moon and Ramen's Rest); claims admirals.log ENT-092 releasing ENT-089.
 Suggestions: fill.py status could list, per role, stores at stations that no open give route reaches; the two iron figures (chain keep against the reserve) still disagree.
 Report: strict-classes-miners-gather-and-give-jump-loop-cut.
+
+## [ENT-112] | 2026-11-22 11:31 UTC | Oracle | session | ref: reports/2026-11-22_oracle_census-roads-given-ships-unflown-line.md | see: orders.log ENT-063
+Session: scheduled run turn-oracle -- census-roads given ships of its own, a check for lists no ship reaches.
+Did: preflight PASS; census-roads (no run since 00:55 UTC, 57 of 57 systems over 480 min, Sol 9,198) taken first by three readers; Silverpine and Taygeta to census-worked-far (5e59e79c); fill.py added five hunts and Federation Market Analysis (2cef3df3, 1a2f4e4f); UNFLOWN line in the turn check; 15 pirate lines filed; 34 battles in 6 h, no raid, no base of ours fought; version 0.732.0.
+Worked: 30 of 30 scouts at work, none lost; fill gate PASS (11:27 UTC); STUCK 0; Yildun 51, Atria 173, Oakridge 7 min; Ironlight Crossroads' book 13 min; no battle on the north road in the record.
+Failed: my fix of 07:25 UTC put the oldest readings on a list that never flew (errors.log ENT-133); a guidebook commit chained behind a pipe went in over its cap, trimmed by the next commit; census-worked-far 42 of 89 past 180 min; the faster hull at 360 cr a census run against 102.
+Requests: none.
+Suggestions: fill.py's dry run and write named different hunts (the class of errors.log ENT-131); judge a list by its runs, never by its place in a plan.
+Report: census-roads-given-ships-unflown-line.
