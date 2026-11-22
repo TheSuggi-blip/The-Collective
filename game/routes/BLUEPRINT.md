@@ -56,7 +56,7 @@ the scripts in `game/fleet/` fly them; nobody retypes a route into a chat.
 | `once` | true: each pilot flies it one time (a mission the game offers once) |
 | `max_ships` | At most this many pilots on it at one time |
 | `min_credits` | A pilot with fewer credits is not sent |
-| `requires.module` | Module id (or `{module_id: min_count}`): only a pilot carrying this module (at least `min_count` copies) is sent |
+| `requires.module` | Module id, a list of module ids (any one of them: `["mining_laser_i", "mining_laser_iii"]`, requests ENT-343), or `{module_id: min_count}` (every one, at least `min_count` copies): only a pilot carrying it is sent. `routes.py check` warns when a fit route that `replace`s a module stands in a plan beside a route that asks that module and not the new one |
 | `max_pilots` | At most this many different pilots ever fly it (those that flew it and those on it now): for a route that buys a tool not every ship needs |
 | `requires.without_module` | Module id (or `[module_id, ...]`): only a pilot carrying none of the named modules is sent |
 | `requires.modules_below` | `{module_id: target_count}`: open while the pilot carries fewer than `target_count` copies (for multi-slot fitting such as `"count": 2`) |

@@ -18,6 +18,7 @@ WHAT: the one hand-over the three runners share (route_run.py, mine.py, hunt.py)
       again, first, at its next pass (sides_first), so that the storage book neither loses a unit nor counts one twice.
         receivers                                    the receivers named, per role and station
         receivers set <role> <base|*> <pilot>        name one: a pilot of ours of that role, or a flagship
+        receivers add <role> <base|*> <pilot>        one more at that station: the givers are spread over them
         receivers drop <role> <base|*>               take one out
         dry-run <route id> [<giver>]                 per gift of the route: where, to whom (or why to nobody), and
                                                      with a giver what the storage book holds there and would go
@@ -56,6 +57,7 @@ from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import workclass                                  # noqa: E402  the switch data/fleet/strict-classes-on
+import zlib                                       # noqa: E402  requests ENT-344 (2): which receiver of several
 
 DATA = os.environ.get("FLEET_DATA_ROOT") or "/srv/collective/data"
 RECEIVERS = os.path.join("fleet", "receivers.json")
@@ -95,7 +97,7 @@ def role_of(name, data=None):
 
 
 def receivers(data=None):
-    """{role: {base id or "*": pilot}} of data/fleet/receivers.json."""
+    """{role: {base id or "*": pilot or [pilots]}} of data/fleet/receivers.json (a list: several receivers there)."""
     found = read_json(Path(data or DATA) / RECEIVERS, {})
     return {role: dict(table) for role, table in found.items() if role in ROLES and isinstance(table, dict)} if isinstance(found, dict) else {}
 
@@ -146,6 +148,9 @@ def receiver(to, base, data=None, giver=None):
     if to in ROLES:
         table = receivers(data).get(to) or {}
         name = table.get(base) or table.get("*")
+        if isinstance(name, list):                       # requests ENT-344 (2): several receivers, each giver always to the same one
+            names = [n for n in name if isinstance(n, str) and n and n != giver and n in ours(data)]
+            name = names[zlib.crc32(str(giver or "").encode("utf-8")) % len(names)] if names else None
         if not name:
             return None, "no %s named to receive at %s (handover.py receivers set %s %s <pilot>)" % (to, base, to, base)
     else:
@@ -348,12 +353,13 @@ def show_receivers(data):
         print("  none named: `handover.py receivers set <role> <base|*> <pilot>`")
     known = ours(data)
     for role in ROLES:
-        for base, name in sorted((table.get(role) or {}).items()):
-            print("  %-8s %-36s %s%s" % (role, base, name, "" if name in known else "   NOT a pilot of ours: a gift there is refused"))
+        for base, names in sorted((table.get(role) or {}).items()):
+            for name in names if isinstance(names, list) else [names]:
+                print("  %-8s %-36s %s%s" % (role, base, name, "" if name in known else "   NOT a pilot of ours: a gift there is refused"))
     return 0
 
 
-def set_receiver(data, role, base, name, drop=False):
+def set_receiver(data, role, base, name, drop=False, add=False):
     if role not in ROLES:
         print("REFUSED: `%s` is no role (%s)" % (role, ", ".join(ROLES)))
         return 1
@@ -372,6 +378,10 @@ def set_receiver(data, role, base, name, drop=False):
     table = found.setdefault(role, {})
     if drop:
         table.pop(base, None)
+    elif add:                                            # one more receiver at this station (requests ENT-344 (2))
+        now = table.get(base)
+        now = now if isinstance(now, list) else ([now] if now else [])
+        table[base] = now + [name] if name not in now else now
     else:
         table[base] = name
     found["what"] = "the receivers of gifts (handover.py): per role and station base (or *) the pilot of ours whose storage takes them"
@@ -433,6 +443,8 @@ def main(argv=None):
             return show_receivers(data)
         if words_[1] == "set" and len(words_) == 5:
             return set_receiver(data, words_[2], words_[3], words_[4])
+        if words_[1] == "add" and len(words_) == 5:
+            return set_receiver(data, words_[2], words_[3], words_[4], add=True)
         if words_[1] == "drop" and len(words_) == 4:
             return set_receiver(data, words_[2], words_[3], None, drop=True)
     if words_[:1] == ["dry-run"] and len(words_) in (2, 3):

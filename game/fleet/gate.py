@@ -47,7 +47,8 @@ READ = {'view', 'info', 'catalog', 'help', 'status', 'summary', 'log', 'list', '
         'completed_missions', 'view_completed_mission', 'inspect', 'find_route', 'search_systems', 'list_passengers',
         'list_station_passengers', 'list_missions', 'list_ships', 'commission_quote', 'commission_status', 'fit_preview',
         'tax_estimate', 'estimate_purchase', 'analyze_market', 'view_market', 'view_orders', 'view_ship_buy_orders', 'browse_ships',
-        'types', 'faction_list', 'faction_owned', 'owned', 'upgrades'}      # spacemolt_facility's cards (Apollo, reports 2026-11-17)
+        'types', 'faction_list', 'faction_owned', 'owned', 'upgrades',      # spacemolt_facility's cards (Apollo, reports 2026-11-17)
+        'list_all', 'profile', 'track', 'active'}   # spacemolt_shipping's reads (requests ENT-344; OpenAPI /shipping, read 2026-11-22: no other tool has them)
 
 
 def is_read(action):

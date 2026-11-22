@@ -269,8 +269,9 @@ def check(root):
             errors.append(where + "`requires.modules_below` must be {module_id: count >= 1}")
         if "any_module" in need and not (isinstance(need["any_module"], list) and need["any_module"] and all(isinstance(m, str) and m for m in need["any_module"])):
             errors.append(where + "`requires.any_module` must be a non-empty list of module ids")
-        if "module" in need and not ((isinstance(need["module"], str) and need["module"]) or pos_counts(need["module"])):
-            errors.append(where + "`requires.module` must be a module id or {module_id: count >= 1}")
+        if "module" in need and not ((isinstance(need["module"], str) and need["module"]) or pos_counts(need["module"])
+                                     or (isinstance(need["module"], list) and need["module"] and all(isinstance(m, str) and m for m in need["module"]))):
+            errors.append(where + "`requires.module` must be a module id, a non-empty list of module ids (any one of them) or {module_id: count >= 1}")
         if "without_module" in need and not ((isinstance(need["without_module"], str) and need["without_module"]) or (isinstance(need["without_module"], list) and need["without_module"] and all(isinstance(m, str) and m for m in need["without_module"]))):
             errors.append(where + "`requires.without_module` must be a module id or a non-empty list of module ids")
         if "reserve" in need:                          # requests ENT-266: the gate on a faction reserve (reserves.py)
@@ -437,6 +438,49 @@ def gives(route):
     return bool(route.get("kind") == "hunt" and route.get("gift_to")) or (route.get("kind") == "circuit" and workclass.work_class(route, None, True) == "deliver")
 
 
+def module_needs(route):
+    """{module id: True} of the modules a route's `requires.module` can be met by, or None when it asks none:
+    a word is that module, a list any one of them, a dict every module it names."""
+    need = (route.get("requires") or {}).get("module") if isinstance(route.get("requires"), dict) else None
+    if isinstance(need, str) and need:
+        return {need: True}
+    if isinstance(need, list) and need:
+        return {m: True for m in need if isinstance(m, str)}
+    if isinstance(need, dict) and need:
+        return {m: True for m in need}
+    return None
+
+
+def replaces(route):
+    """True for a circuit with a `fit` entry that names a module it `replace`s (a refit route)."""
+    return route.get("kind") == "circuit" and any(isinstance(w, dict) and w.get("replace") for s in route.get("stops") or [] if isinstance(s, dict)
+                                                  for w in (s.get("fit") if isinstance(s.get("fit"), list) else []))
+
+
+def fit_gate_warnings(root, routes):
+    """[(fit route, role, route, module)]: a fit route of a role's plan takes the place of module M (`replace`) while
+    another route of the same plan asks `requires.module` M and cannot be met by the module fitted instead: the refit
+    ship is refused that route (errors.log ENT-128, requests ENT-343: 17 Laser III miners shut out for three hours)."""
+    out = []
+    for path in sorted((Path(root) / "routes" / "plans").glob("*.json")):
+        try:
+            ids = [r for r in (read_json(path).get("routes") or []) if isinstance(r, str)]
+        except (OSError, ValueError, AttributeError):
+            continue
+        for fid in ids:
+            fit = routes.get(fid) or {}
+            for stop in fit.get("stops") or [] if fit.get("kind") == "circuit" else []:
+                for want in stop.get("fit") or [] if isinstance(stop, dict) and isinstance(stop.get("fit"), list) else []:
+                    old, new = (want.get("replace"), want.get("module")) if isinstance(want, dict) else (None, None)
+                    if not (isinstance(old, str) and old):
+                        continue
+                    for rid in ids:                  # another fit route asks the old module by design: it is the refit's alternative
+                        needs = module_needs(routes.get(rid) or {}) if rid != fid and not replaces(routes.get(rid) or {}) else None
+                        if needs and old in needs and new not in needs:
+                            out.append((fid, path.stem, rid, old))
+    return sorted(set(out))
+
+
 def sale_warnings(routes):
     """[(route id, its strict class, the roles it is closed to)] of the routes that sell outside Trade's class: with
     data/fleet/strict-classes-on the dispatcher refuses them to every pilot that is not a trader (workclass.sales)."""
@@ -528,7 +572,7 @@ def open_to(route):
     need = route.get("requires") or {}
     gate = ["the park route" if route.get("park") else "", "once per pilot" if route.get("once") else "",
             "up to %s ships" % route["max_ships"] if route.get("max_ships") else "", "%s pilots in all" % route["max_pilots"] if route.get("max_pilots") else "",
-            "needs %s" % need["module"] if need.get("module") else "", "without %s" % need["without_module"] if need.get("without_module") else "",
+            "needs %s" % (" or ".join(need["module"]) if isinstance(need["module"], list) else need["module"]) if need.get("module") else "", "without %s" % need["without_module"] if need.get("without_module") else "",
             "empty hold" if need.get("empty_hold") else "", "goods aboard" if need.get("hold") else "", "from %s cr" % format(route["min_credits"], ",") if route.get("min_credits") else "",
             "after the reward %s" % (need["booked"] if isinstance(need["booked"], str) else ", ".join(need["booked"])) if need.get("booked") else "",
             "from %s" % ", ".join("%s %s" % (k, v) for k, v in sorted(need["skills"].items())) if isinstance(need.get("skills"), dict) and need["skills"] else "",
@@ -1158,7 +1202,11 @@ def main():
         if warned and not workclass.strict_on():
             print("WARNING %d route files sell outside Trade's class: with data/fleet/strict-classes-on the dispatcher refuses them to every pilot "
                   "that is not a trader; the list: `python3 -B game/fleet/workclass.py sales`" % len(warned))
-        print("Errors: %d | Warnings: %d" % (len(errors), len(warned) if workclass.strict_on() else min(len(warned), 1)))
+        gated = fit_gate_warnings(args.root, routes_of(args.root)[0])     # requests ENT-343 (2): a refit the plan's gates refuse
+        for fid, role, rid, module in gated:
+            print("WARNING game/routes/%s.json: replaces %s in the %s plan, while %s asks `requires.module` %s: a refitted ship is refused it "
+                  "(a list of modules means any one of them)" % (fid, module, role, rid, module))
+        print("Errors: %d | Warnings: %d" % (len(errors), (len(warned) if workclass.strict_on() else min(len(warned), 1)) + len(gated)))
         return 1 if errors else 0
     if args.command == "idle":
         for line in idle(args.root, args.data):

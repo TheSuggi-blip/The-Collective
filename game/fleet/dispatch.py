@@ -674,6 +674,8 @@ def why_not(pilot, rid, route, state):
     need = req.get("module")
     if isinstance(need, str) and need and need not in p_mods:
         return "needs " + need, None
+    if isinstance(need, list) and need and not any(m_id in p_mods for m_id in need):     # requests ENT-343: a list is any one of them
+        return "needs one of " + ", ".join(str(m_id) for m_id in need), None
     if isinstance(need, dict):
         for m_id, min_n in need.items():
             if p_mods.count(m_id) < min_n:
