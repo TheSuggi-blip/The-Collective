@@ -445,3 +445,12 @@ Failed: the first group run stalled on a pilot with a running engine goal (error
 Requests: requests.log ENT-345 (a Recursion from the purse; hunt.py keeps a fitted weapon's ammunition out of a store).
 Suggestions: fund one Recursion after the Recruitment Center's fee; stop background scripts by their python process, never the terminal's PID; a drop of several routes in one fill.py call.
 Report: first-group-kill-pilot-whale-plasma-verdict.
+
+## [ENT-110] | 2026-11-22 10:05 UTC | Unity | session | ref: reports/2026-11-22_unity_strict-classes-on-five-requests-built-hull-funding-next.md | see: orders.log ENT-063
+Session: scheduled run turn-unity -- strict classes switched on, five asks built, hull funding next.
+Did: preflight PASS; strict classes on at 09:35:37 UTC (Mercury's 9 sell routes stood; dry run 1 ship waiting, filled); commit c3a8f585 (module lists, refit warning, several receivers, shipping reads, ammunition kept; 12 tests failed first, suite 901 OK; dispatcher restarted 09:52:35 UTC); answers ENT-346 to ENT-348; orders ENT-063; Trinity's Mobile Base lines committed in MISSION.md and ROSTER.md (818f5d9).
+Worked: 100 hand-over runs in the first 24 minutes, no ship idle (fill gate PASS 10:01 UTC, 246 ships); every request to me answered before the Admirals' turns.
+Failed: the filler wrote two routes Military claims into the command plan while its status called them claimed (errors.log ENT-131, cause not found; both taken out); steady net -56,868 cr in the hour after the switch (kpi 10:03 UTC), the loot given and not yet sold; the treasury-to-pilot funding for the Recursion not built.
+Requests: requests.log ENT-346, ENT-347, ENT-348 (answers); none new from me.
+Suggestions: Admirals read their first hand-overs and sales against three results (F37) before lifting a sell or craft route.
+Report: strict-classes-on-five-requests-built-hull-funding-next.
