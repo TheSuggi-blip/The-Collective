@@ -1,15 +1,15 @@
 # Logistics guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-21. Evidence: plan.py show --brief (applied 2026-11-21 20:17 UTC); fill.py check PASS 20:20 UTC; orders.log ENT-056 (block APOLLO); requests.log ENT-272, ENT-281; rules F8, F23.
+Status: proven. Updated: 2026-11-22. Evidence: plan.py show --brief (applied 2026-11-22 00:10 UTC); fill.py check PASS 00:16 UTC; orders.log ENT-059 (block APOLLO); requests.log ENT-314, ENT-315; rules F8, F23.
 
 The plan file (`plan.py show`): a free hauler takes the first route open to it of the list First, its own routes, the list Then. What each earns now: `hive.py route <id>`; route by route: the tool fleet, view=standing, member Apollo.
 
 - First: the once missions (`voidborn-*`, the first hunts, `mission-*`; rules F34, F35).
-- Own, member haulers (1 to 34): `@outpost-supply` (the repair loads of GSC-0044 while its bunker and Lockbox read damaged, then the bunker route under `requires.reserve` below 4,000), then `buy-flex-ironlight-to-node-beta` (5 rows) or `craft-boards-node-beta` (1 row).
-- Own, every hauler: `@stored-goods` (sell and carry on a bid of the last hour), `@craft-reserve` (steel from own iron, piping: closed while piping stands at its max), `@train-hauler` (train-jumps-hauler, up to 32: piloting toward the freighter, a cost of fuel).
+- Own, member haulers (1 to 34): `@outpost-supply` (GSC-0044's repair stock: boards under `requires.reserve` below 45, plate in loads of 60; then the bunker under 4,000), then `buy-flex-ironlight-to-node-beta` (5 rows, on `requires.ask`) or `craft-boards-node-beta` (1 row).
+- Own, every hauler: `@stored-goods` (sell and carry on a bid of the last hour), `@craft-reserve` (fuel cells from stored hydrogen gas, a test of 1; steel from own iron; piping), `@train-hauler` (train-jumps-hauler, up to 40: piloting toward the freighter, a cost of fuel).
 - Then: `park`, which no ship should reach. Haulers gather nothing (rule F23).
-- What would change it: the reserve gate switched on and the bunker repaired (the bunker route flies); sell bids read again by the loop's docks (stored goods first); the fleet's 24-hour steady net under zero (fewer on the loop).
+- What would change it: Atria's allocation paid (the kit route on); iron gifted to the hauler receivers (strict classes on: the steel crafts fill); a paid carry found (freight, passengers: tests.md) in place of the loop; the fleet's 24-hour steady net under zero (the loop weighed).
 
 ### Route Templates
 Status: proven. Updated: 2026-11-21. Evidence: game/routes/templates/logistics.json (2026-11-21); plan.py templates; Suggi 2026-11-16 and rule F22.
@@ -23,7 +23,7 @@ A template is a named list of routes in the order a ship tries them, with the sk
 | Put ships on one | `plan.py use <ships> <name>` |
 | Take one away | `plan.py template <name> none`, once no ship names it |
 
-The two: `stored-goods` (Trade's sell and carry routes of hydrogen, soma, null matter, palladium, plasma and liquid hydrogen; trading, navigation) and `craft-reserve` (four steel crafts, then piping; crafting, refining). `gas-harvest` and `gather-reserve` are gone (rule F23).
+The templates: `outpost-supply`, `train-hauler`, `stored-goods` (Trade's sell and carry routes of hydrogen, soma, null matter, palladium, plasma and liquid hydrogen; trading, navigation) and `craft-reserve` (fuel cells, four steel crafts, then piping; crafting, refining). `gas-harvest` and `gather-reserve` are gone (rule F23).
 
 No list of routes that did not pay (rule F22): a credits figure here is a dated reading, never a verdict.
 
