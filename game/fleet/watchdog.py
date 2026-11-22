@@ -36,6 +36,7 @@ CORE_SERVICES = (
     "inbox",
     "sight",
     "station",
+    "keeper",
 )
 STATE_REL = ("fleet", "watchdog.state.json")
 ENT_RE = re.compile(
@@ -155,7 +156,7 @@ def inspect(root, data, hours=4.0, now=None, save=False):
         })
 
     # 1. Services health
-    svc_path = data_dir / "services" / "status.json"
+    svc_path = (data_dir / "services" / "status.json") if (data_dir / "services" / "status.json").exists() else (data_dir.parent / "services" / "status.json")
     down_services = []
     running_services = 0
     if svc_path.exists():
@@ -276,7 +277,7 @@ def inspect(root, data, hours=4.0, now=None, save=False):
                         "net_cr": int(round(sum_cr)),
                         "pilots": int(r["pilots"] or 0),
                     })
-                elif n >= 3 and sum_cr < -2500.0:
+                elif n >= 3 and sum_cr < -2500.0 and not (r["route"] or "").startswith(("train-", "gather-", "fit-", "buy-", "build-", "found-", "give-", "haul-fuel-", "supply-")):
                     loss_loops.append({
                         "route": r["route"],
                         "runs": n,
@@ -333,7 +334,7 @@ def inspect(root, data, hours=4.0, now=None, save=False):
 
         steady_1h = steady_24h = None
         if "stats_figures" in tables:
-            for r in con.execute("SELECT hours, value FROM stats_figures WHERE view='kpi' AND figure='steady_net_per_hour' AND subject='fleet'"):
+            for r in con.execute("SELECT hours, value FROM stats_figures WHERE view='kpi' AND LOWER(subject)='fleet' AND figure IN ('net', 'steady_net_per_hour')"):
                 if int(round(float(r["hours"] or 0))) == 1:
                     steady_1h = float(r["value"] or 0.0)
                 elif int(round(float(r["hours"] or 0))) == 24:
