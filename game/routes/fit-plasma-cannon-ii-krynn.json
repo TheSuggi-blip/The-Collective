@@ -1,0 +1,26 @@
+{
+ "id": "fit-plasma-cannon-ii-krynn",
+ "kind": "circuit",
+ "title": "Swap the Pulse Laser I for a Plasma Cannon II at Crimson War Citadel, Krynn (fit with replace), one ship first",
+ "note": "2026-11-22 00:33 UTC (Apophis): a thermal weapon against creatures, one ship first (rule F17; orders ENT-059, block APOPHIS: weapons fitted). The game's docs (spacemolt.com/docs/wildlife, /docs/combat, read 2026-11-22 00:35 UTC): creatures have hull and armor but no shields; thermal bypasses 75 percent of armor, energy 25 percent. Catalog (game/catalog/tables/modules.tsv): Plasma Cannon II 38 thermal, cooldown 2, hull_damage_bonus_50, CPU 6, power 14 (with the mining laser and two Shield Booster I: CPU 12 of 16, power 27 of 30); Pulse Laser III 28 energy, cooldown 1, CPU 5, power 12. Asks: 9,244 cr x 2 at Crimson War Citadel (data/market/crimson_war_citadel.json) against 13,436 for a Pulse Laser III at LHS 1140. Its test hunt: hunt-test-acubens-bulwark-pc2, beside hunt-test-acubens-bulwark-pl3 on the same prey. Once per pilot, max_pilots 1 until its RESULT line is read.",
+ "once": true,
+ "max_ships": 1,
+ "max_pilots": 1,
+ "min_credits": 25000,
+ "requires": {
+  "module": "pulse_laser_i",
+  "without_module": "plasma_cannon_ii"
+ },
+ "stops": [
+  {
+   "at": "krynn:war_citadel:crimson_war_citadel",
+   "fit": [
+    {
+     "module": "plasma_cannon_ii",
+     "max_price": 9500,
+     "replace": "pulse_laser_i"
+    }
+   ]
+  }
+ ]
+}
