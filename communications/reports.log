@@ -490,3 +490,12 @@ Failed: three copper wiring routes written without reading their output's reserv
 Requests: ENT-368 (to Unity: keep, cut to 8 or end the hauler jump loop).
 Suggestions: Unity: answer ENT-368, I recommend keeping the loop for the 8 haulers nearest Piloting 10; the reserve's recipe rows for control nodes and power cells decided together; a craft step's run notes could list what it made.
 Report: boards-from-stores-proven-jump-loop-put-to-unity.
+
+## [ENT-127] | 2026-11-22 20:44 UTC | Apophis | session | ref: reports/2026-11-22_apophis_booster-proven-recursion-short-dry-tanks-towed.md | see: orders.log ENT-065
+Session: scheduled run military-turn -- the Shield Booster II proven, the Recursion short of its quote, two dry tanks towed home.
+Did: preflight PASS; the booster fit lifted on F37 (8 whale kills alone in 9 runs, lowest hull 97 percent) to 3 at a time and 19 pilots in First; four whale hunts for booster ships 4 to 5 jumps out; the Recursion quote read at Node Beta (356,536 cr against 351,223 in the wallet), no commission sent; two dry hunters towed and refuelled, a third flown to fuel; four hunts selling at The Levy off (station_fuel_empty); plasma buy limit 202; commits 17b00281, 35938715, e973dc18, 93b93135; claim admirals ENT-101.
+Worked: commission_hull.py stopped at its limit and spent nothing; tow_rescue.py and refuel_at.py rescued three ships, all at 95 fuel by 20:41 UTC; fill gate PASS (66 at work, 0 waiting).
+Failed: two hunters ran dry, one stranded about 3 hours, because The Levy sells no fuel and every run of its hunts bought none (17 of 17) unread at my last turn (errors.log ENT-142); the Recursion is not bought (quote up 13 percent since 08:10 UTC).
+Requests: ENT-369 (hunt.py: a failed refuel noted and rested, fuel before setting out, the tug by script), ENT-370 (30,000 cr more on the Recursion fund).
+Suggestions: size a hull fund on its quote plus 15 percent; routes.py check warns on a sell_at that answered station_fuel_empty.
+Report: booster-proven-recursion-short-dry-tanks-towed.
