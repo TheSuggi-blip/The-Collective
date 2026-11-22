@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 187.
+Routes: 189.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -197,9 +197,11 @@ Routes: 187.
 | [gather-izar-quantum-fragments](gather-izar-quantum-fragments.json) | mine | beyond the border, 15 jumps | A test: quantum fragments (with the iron and copper of the deposit) gathered at Tall Tale Nebula, Izar, into storage at Ramen's Rest, Last Light (two jumps) | up to 1 ships, empty hold, standing work | 1 | 123 | -580 | -280 | 2026-11-22 |
 | [gather-jadecove-nickel](gather-jadecove-nickel.json) | mine | beyond the border, 11 jumps | A test: nickel ore gathered at Long Errand Band (Jadecove, lawless) into storage at The Crescent Moon (Mebsuta, four jumps) | up to 1 ships, empty hold, standing work | 20 | 81 | -10 | -20 | 2026-11-22 |
 | [gather-jishui-plainrock-carbon](gather-jishui-plainrock-carbon.json) | mine | beyond the border, 11 jumps | A test: carbon ore gathered at Plainrock Field (Jishui, lawless) into storage at The Crescent Moon (Mebsuta, eight jumps) | up to 5 ships, empty hold, standing work | 2 | 159 | -140 | -50 | 2026-11-22 |
+| [gather-last-light-mineral-carbon](gather-last-light-mineral-carbon.json) | mine | beyond the border, 15 jumps | A test: carbon ore (with the aluminum and tungsten of the field) gathered at Last Light Mineral Fields into storage at Ramen's Rest, in the same system | up to 1 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [gather-okab-belt](gather-okab-belt.json) | mine | beyond the border, 4 jumps | Standing work, a test: iron and copper ore at Okab Belt (beyond the border, one jump past Hamal) into storage at Node Beta, where the craft-piping route makes them into steel plate and copper piping | up to 42 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [gather-ruchbah-broken-glass-veil](gather-ruchbah-broken-glass-veil.json) | mine | beyond the border, 4 jumps | Standing work, a test: iron at Ruchbah Broken Glass Veil (beyond the border, one jump from The Experiment) into storage at The Experiment | up to 6 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [gather-schedar-belt](gather-schedar-belt.json) | mine | beyond the border, 2 jumps | Standing work, a test: iron at Schedar Belt (beyond the border, one jump from Node Beta) into storage at Node Beta | up to 45 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [gather-subra-floodlight-flats-silicon](gather-subra-floodlight-flats-silicon.json) | mine | beyond the border, 12 jumps | A test: silicon ore (with iron and copper) gathered at Floodlight Flats (Subra, lawless) into storage at The Crescent Moon (Mebsuta, two jumps) | up to 1 ships, empty hold, standing work | 18 | 90 | -50 | -30 | 2026-11-22 |
 | [gather-tiaki-worldsend-nickel](gather-tiaki-worldsend-nickel.json) | mine | beyond the border, 18 jumps | A test: nickel ore gathered at Worldsend Field (Tiaki) into storage at The Crucible Garrison (six jumps) | up to 2 ships, empty hold, standing work | 4 | 92 | -620 | -400 | 2026-11-22 |
 | [gather-tidewater-quantum-fragments](gather-tidewater-quantum-fragments.json) | mine | beyond the border, 15 jumps | A test: quantum fragments (with the iron and copper of the deposit) gathered at Thin Breath Haze, Tidewater, into storage at Ramen's Rest, Last Light (one jump) | up to 1 ships, empty hold, standing work | 1 | 123 | -500 | -240 | 2026-11-22 |
+| [gather-yildun-neverworld-carbon](gather-yildun-neverworld-carbon.json) | mine | beyond the border, 15 jumps | A test: carbon ore gathered at Neverworld Carbon (Yildun) into storage at Ramen's Rest, Last Light (eight jumps) | up to 1 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |

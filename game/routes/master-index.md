@@ -21,17 +21,17 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 | [Paying Routes](index-paying-routes.md) | Work that repeats and whose runs of the last 12 hours measured above zero. | 49 | 11 | 38 | hunt-flintrock-vapor-fields-cinder-sylph: 72,890 cr per ship-hour |
 | [Tests](index-tests.md) | Work that repeats and has no measured figure: new, or no readable run in the last 12 hours. One ship until its first RESULT line is read. | 122 | 37 | 85 | not measured yet |
 | [Fitting](index-fitting.md) | A module bought and fitted: the tool a kind of work needs. | 14 | 10 | 4 | fit-ice-harvester-lhs-1140: -4,320 cr per ship-hour |
-| [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 187 | 51 | 136 | hunt-silverbend-emission-nebula-cinder-sylph: 23,630 cr per ship-hour |
+| [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 189 | 51 | 138 | hunt-silverbend-emission-nebula-cinder-sylph: 23,630 cr per ship-hour |
 | [Measured at a Loss](index-measured-at-a-loss.md) | Work that repeats and whose runs of the last 12 hours measured zero or below. | 85 | 15 | 70 | hunt-dawnbreak-frozen-drift-hollow-pilgrim: 0 cr per ship-hour |
 | [Off](index-off.md) | Written down, not flown. | 35 | 14 | 21 | hunt-violethall-gas-plume-cinder-sylph: 7,760 cr per ship-hour |
-| All | | 537 | 160 | 377 | |
+| All | | 539 | 160 | 379 | |
 
 ## Routes by Zone and Kind
 
 | Zone | Routes | census | circuit | guard | hunt | mine | Farthest system, jumps from home |
 |---|---|---|---|---|---|---|---|
 | home space | 160 | 1 | 131 | 1 | 14 | 13 | 3 |
-| beyond the border | 377 | 17 | 66 | 7 | 202 | 85 | 29 |
+| beyond the border | 379 | 17 | 66 | 7 | 202 | 87 | 29 |
 
 ## Plans by Role
 
