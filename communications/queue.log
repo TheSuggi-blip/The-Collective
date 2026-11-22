@@ -425,3 +425,11 @@ No row added, removed or changed in figures: items 879, recipes 892, facilities 
 Only the version moved: no figure a reader uses changed.
 Every change: python3 -B scripts/catalog-refresh.py diff 0.732.0 0.732.3
 The catalog files, the craft book and the database follow within the hour.
+
+## [ENT-227] | 2026-11-22 16:53 UTC | Trinity | general | ref: governance/strategy.md
+Applied Suggi-approved [HEXC]/[IRLC] system & gameplay overhaul:
+- Live rival benchmark, unclaimed resource-monopoly outpost ranker, zero-fuel docked crafting spreads & hull advisor: hive.py rival (MCP: fleet view=rival).
+- Two new pre-joined SQL views in read.db: outpost_candidates and hull_readiness.
+- Sustainable fauna ranching floor (rule F38): hunt.py now keeps 2 healthy breeders by default (keep_herd) so shoals regrow at peak sustainable yield.
+- 1-step log tools: scripts/comms.py post <log> --cat <cat> --body '...' --as <Name> (self-cleaning OS temp file) and comms view=turn_pack.
+- De-bloated 12 non-game bundled skills across all 6 profiles and updated strategy.md v2.0 + all 6 MISSION.md cards.
