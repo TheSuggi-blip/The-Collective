@@ -62,6 +62,7 @@
   "craft-steel-node-beta",
   "craft-steel-central-nexus",
   "craft-steel-synchrony-hub",
+  "train-jumps-trader",
   "park"
  ],
  "planned": [
@@ -134,6 +135,7 @@
   "craft-steel-node-beta": 40,
   "craft-steel-central-nexus": 40,
   "craft-steel-synchrony-hub": 40,
+  "train-jumps-trader": 40,
   "park": 40
  },
  "of": 40,
