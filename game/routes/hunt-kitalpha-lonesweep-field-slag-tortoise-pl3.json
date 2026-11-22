@@ -1,0 +1,23 @@
+{
+ "id": "hunt-kitalpha-lonesweep-field-slag-tortoise-pl3",
+ "kind": "hunt",
+ "title": "slag tortoise (90 hull) at lonesweep_field with a Pulse Laser III; ferrous nodules and carapace for the reserve",
+ "note": "Written by Apophis 2026-11-22 16:14 UTC (orders ENT-064, block APOPHIS: hunts with the fitted weapon; P1: XP at the least fuel; rule F23: work that brings two beats one). The Pulse Laser III kills slag tortoises at full hull (hunt-stormwatch-belt-slag-tortoise-pl3: 24 kills in 8 runs since 12:48 UTC, lowest hull 100 percent, table runs); 13 of the 21 laser ships fly prey of 45 to 60 hull because the tortoise hunts carry one ship each. Ferrous nodule is short in the reserve (tool stock, view reserve, 16:12 UTC: 28,249 short), creature carapace 20,366 short; both go to Logistics' receiver (gift_to hauler, P5). Herd: 4 slag tortoises, no pirate at 14:40 UTC (data/wildlife/kitalpha.json), 8 jumps from home; no hunt of ours at the place. One ship; it leaves for a pirate; standing work (F22: reserve and class-skill work never rests for its pay).",
+ "place": "kitalpha:lonesweep_field",
+ "species": [
+  "slag_tortoise"
+ ],
+ "sell_at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+ "min_bid": 5000,
+ "kills": 3,
+ "minutes": 40,
+ "max_ships": 1,
+ "min_creatures": 3,
+ "alone": "pirates",
+ "standing": true,
+ "requires": {
+  "module": "pulse_laser_iii",
+  "empty_hold": true
+ },
+ "gift_to": "hauler"
+}
