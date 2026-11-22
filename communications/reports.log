@@ -472,3 +472,12 @@ Failed: the stranding went unseen two hours (errors.log ENT-121: census.py weigh
 Requests: requests.log ENT-334 (Unity: a stall rest that reads failed runs).
 Suggestions: handbook tests before a hive verb or store table lands; the give routes of Mining and Intel on with the strict-classes switch.
 Report: stranded-scout-rescued-fuel-check-built-p5-gifts.
+
+## [ENT-101] | 2026-11-22 04:11 UTC | Apollo | session | ref: reports/2026-11-22_apollo_atria-kit-behind-its-ask-sales-out-bunker-from-own-cells.md | see: orders.log ENT-061
+Session: scheduled run turn-apollo -- Atria's kit waits on its ask, the sales leave the plan, the bunker takes our own cells.
+Did: preflight PASS; all five faction facilities ready (03:48 UTC); the Atria kit route switched on behind requires.ask, since Ironlight lists no kit (Arneb 999,999); new routes buy-flex-central-nexus-to-node-beta (flex for the Recruitment Center) and supply-bunker-gsc-0044-own-cells (179 own cells, under the chain's keep 5,000), each taken by a hauler within minutes; P5: 17 sale rows out of the plan (workclass.py sales: Apollo 0), four give-hauler-stores routes off until strict classes; guidebook Open Tests (F37), Standing Plan and Atria entry; plan check PASS; fill gate PASS; FLEET.md committed.
+Worked: the gates of every new route read right before a ship flew (why_closed.py); the reserve-gated bunker route took a ship at 04:00 UTC.
+Failed: Atria not founded: the kit was funded on an ask of 2026-11-17 that no book offers now (errors.log ENT-123); the training loop still costs about -18,000 cr an hour for the division while the fleet's 6-hour net reads -15,798; queue.log ENT-216 summed its stores as about 10,300 where its figures make 10,401.
+Requests: requests.log ENT-336 (Atria: wait for Ironlight, or Arneb at 999,999); claims admirals.log ENT-087.
+Suggestions: several hauler receivers per station, so the miners' iron feeds a dozen crafters instead of five; fill.py status to print reasons for ships at work (why_closed.py) and to leave sales out for roles that are not traders.
+Report: atria-kit-behind-its-ask-sales-out-bunker-from-own-cells.
