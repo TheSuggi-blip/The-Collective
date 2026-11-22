@@ -138,9 +138,13 @@ def flying_now(route, rid, orders):
     return sum(1 for what in orders.values() if what == str(route.get("kind", "")) + " " + rid)
 
 
+RESULTS = 3                    # rule F37 (Suggi, 2026-11-22): a test decides on three independent results, never on one
+
+
 def proven(route):
-    """True for a route measured above zero on two runs or more: one good run is a test result, not yet a route that pays."""
-    return (worth(route) or 0) > 0 and ((route.get("measured") or {}).get("runs") or 0) >= 2
+    """True for a route measured above zero on RESULTS runs or more (F37): fewer good runs are test results, not yet a
+    route that pays."""
+    return (worth(route) or 0) > 0 and ((route.get("measured") or {}).get("runs") or 0) >= RESULTS
 
 
 def buys(route):
@@ -620,8 +624,8 @@ def spare(seen, got, served=(), room=None):
             continue
         if not workclass.own(got["role"], route, rid):              # rule F23: never lifted for ships of another class
             continue
-        if not (seen["by_route"].get(rid) or ((route.get("measured") or {}).get("runs") or 0) >= 1):
-            seen.setdefault("unflown", {})[rid] = "not lifted: it has not flown yet, and a test keeps one ship until its first RESULT line (rules F8, F13; requests ENT-216)"
+        if max(len(seen["by_route"].get(rid) or []), (route.get("measured") or {}).get("runs") or 0) < RESULTS:
+            seen.setdefault("unflown", {})[rid] = "not lifted: a test until %d measured runs (rule F37; requests ENT-216)" % RESULTS
             continue
         limit = route.get("lift_to") if isinstance(route.get("lift_to"), int) and not isinstance(route.get("lift_to"), bool) else None
         if limit is None and routefiles.zone(route, systems, home)[0] != "home space":    # also a route whose systems the chart does not know
@@ -896,8 +900,9 @@ def main():
                 continue
             for rid, estimate, draft, _pilot in found:
                 if draft is not None:
-                    draft = dict(draft, max_ships=1)
-                    draft["note"] = (str(draft.get("note") or "") + " Added as a test by fill.py on %s (%s): one ship until its first RESULT line is read." % (stamp, who)).strip()
+                    draft = dict(draft, max_ships=RESULTS)
+                    draft["note"] = (str(draft.get("note") or "") + " Added as a test by fill.py on %s (%s): up to %d ships, one result each, until %d runs are read (rule F37)."
+                                     % (stamp, who, RESULTS, RESULTS)).strip()
                     files["routes/%s.json" % rid] = json.dumps(draft, indent=1) + "\n"
                     seen["routes"][rid] = draft
             edits = changes.setdefault(planfile.division_of(role), [])

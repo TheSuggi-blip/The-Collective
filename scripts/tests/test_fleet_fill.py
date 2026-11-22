@@ -222,7 +222,7 @@ class WriteTests(Tree):
         lists = json.loads((self.data / "plans" / "assign.json").read_text())["pilots"]          # each a ship's own route: the paying one to the ship it was open to
         self.assertEqual(sorted(lists.values()), [["once", "freight", "park"], ["once", "park"], ["once", "trade-x", "park"]])
         test = json.loads((self.root / "routes" / "trade-x.json").read_text())
-        self.assertEqual((test["max_ships"], "Added as a test by fill.py" in test["note"]), (1, True))
+        self.assertEqual((test["max_ships"], "Added as a test by fill.py" in test["note"]), (3, True))           # rule F37: three results at once
         self.assertEqual(self.git("status", "--porcelain"), "")
         self.assertEqual(self.git("log", "-1", "--format=%an"), "Apollo\n")
         self.assertEqual(sorted(self.git("show", "--name-only", "--format=", "HEAD").split()),
@@ -298,6 +298,10 @@ class WriteTests(Tree):
         self.assertEqual((len(got["starting"]), len(got["waiting"])), (1, 2))                     # one hauler gathers, two wait at its limit
         self.assertEqual(self.fill.spare(seen, got), [])                                          # requests ENT-216: never flown, a test keeps one ship
         self.assertIn("gather", seen.get("unflown") or {})
+        for _ in range(2):
+            self.flown("gather")
+        seen, got = self.read("hauler")
+        self.assertEqual(self.fill.spare(seen, got), [])                                          # rule F37: two results decide nothing
         self.flown("gather")
         seen, got = self.read("hauler")
         self.assertEqual(self.fill.spare(seen, got), [("gather", 1)])                             # 600 units above the floor carry two ships a turn: one place more
@@ -455,7 +459,8 @@ class FallbackTests(Tree):
         self.assertIn("committed", self.run_fill("apollo", "add", "gather").stdout)
         seen, got = self.read("hauler")
         self.assertEqual(self.fill.spare(seen, got), [])                                          # requests ENT-216: lift_to waits for the first RESULT line
-        self.flown("gather")
+        for _ in range(3):                                                                        # rule F37: three results
+            self.flown("gather")
         seen, got = self.read("hauler")
         chart = self.root / "map" / "galaxy.tsv"
         chart.write_text(chart.read_text(encoding="ascii").replace("far\tFar\t1\t0\tvoidborn", "far\tFar\t1\t0\t"), encoding="ascii")
@@ -628,7 +633,8 @@ class ClassRuleTests(Tree):
     def test_standing_work_of_another_class_is_not_lifted_for_the_waiting_ships(self):
         self.gather()
         self.assertIn("committed", self.run_fill("apollo", "add", "gather").stdout)
-        self.flown("gather")
+        for _ in range(3):                                                                        # rule F37: three results
+            self.flown("gather")
         seen, got = self.read("hauler")
         self.assertEqual((len(got["starting"]), len(got["waiting"])), (1, 2))                     # the class guard is off: one hauler gathers
         self.assertEqual(self.fill.spare(seen, got), [])                                          # until 2026-11-18 lifted for the waiting haulers
