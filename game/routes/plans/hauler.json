@@ -60,6 +60,10 @@
   {
    "what": "Found Atria with found.py the hour the builder's kit lands at Node Beta (the kit route flies only on an ask at Ironlight; no ask in any book 2026-11-22)",
    "when": "on the kit"
+  },
+  {
+   "what": "Weigh train-jumps-hauler (about -450 cr a ship-hour, Piloting 10 in 25 to 40 hours) against the fleet's 24-hour steady net; move ships to crafting as gifts give them inputs",
+   "when": "every turn"
   }
  ],
  "ships": {
