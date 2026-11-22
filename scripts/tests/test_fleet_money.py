@@ -323,6 +323,25 @@ class SweepTests(unittest.TestCase):
         self.assertIn("left out: miner-3 (75,000 cr): refused for a fight 0 min ago", text)
         self.assertIn("no deposit: the leader holds 65,000 cr, under 70,000", text)
 
+    def test_a_leader_holding_much_deposits_first_and_gives_after_a_fight_refused_it(self):
+        # r24: the gifts used up DEPOSIT_BY in every pass from 03:12 to 06:10 UTC and 1,240,781 cr stood in the leader's wallet
+        self.wallet.SWEEP_ENABLED = True
+        self.wallet.give, self.wallet.deposit = self.give, self.deposit
+        self.wallets[LEADER] = 1240781
+        self.write()
+        code, text = self.run_sweep()
+        self.assertEqual(self.calls, [("deposit", LEADER, 1190781)])
+        self.assertIn("the leader's deposit first: 1,190,781 cr above its line", text)
+        self.calls.clear()
+        self.wallets[LEADER] = 1240781
+        self.write()
+        self.wallet.deposit = lambda pilot, credits: (self.calls.append(("deposit", pilot, credits)), (False, '{"error":"in_battle: cannot perform this action while in combat"}'))[1]
+        self.run_sweep()                                                                   # refused for a fight: no gift this pass either
+        self.calls.clear()
+        code, text = self.run_sweep()                                                      # the next pass gives, then tries the deposit again
+        self.assertEqual([c[0] for c in self.calls][:1], ["give"])
+        self.assertNotIn("the leader's deposit first", text)
+
     def test_a_gift_the_wallet_does_not_show_and_a_refused_deposit_are_not_booked(self):
         self.wallet.SWEEP_ENABLED, self.wallet.PER_PASS = True, 1
         self.wallets[LEADER] = 95000

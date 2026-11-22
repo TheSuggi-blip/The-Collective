@@ -93,6 +93,8 @@ SKIP_PILOTS = set()            # pilots that never give in a sweep (one that hol
 SHOW_WAIT = 45                 # seconds the sweep waits for the giver's wallet to show the money gone before it books
 BATTLE_WAIT = 10 * 60          # a pilot refused `in_battle` is not asked again in this long
 UNSURE_HOLD = 60 * 60          # after a deposit the wallet did not show, no new deposit in this long
+DEPOSIT_FIRST = 100000         # the leader holding this much above KEEP_SHIP deposits before any gift of the pass: the gifts of
+                               # about 80 s each used up DEPOSIT_BY in every pass and 1.2 million cr stood in its wallet (r24)
 DEPOSIT_BY = 90                # seconds into a pass after which the deposit waits for the next pass: the job cuts a pass at
                                # 200 s, and a deposit's call, read and check take up to about 100 s (2026-11-21 21:08 UTC)
 DEPOSIT_TITLE = "Faction treasury: credits deposited (the Collective keeps them)"     # begins with routes.TREASURY
@@ -550,6 +552,11 @@ def sweep(data, now, dry):
         if why:
             print("  left out: %s (%s cr): %s" % (name, format(fleet[name]["credits"], ","), why))
     plan = plan_sweep(fleet, leader, skip | set(battle) | set(cool), named)
+    fought = [r for r in log if r.get("kind") == "deposit" and r.get("state") == "refused" and now - r["at"] < BATTLE_WAIT
+              and "in_battle" in str(r.get("text") or "").lower().replace(" ", "_")]
+    if plan and not held and not pending(log) and not fought and fleet[leader]["credits"] - KEEP_SHIP >= DEPOSIT_FIRST:
+        print("the leader's deposit first: %s cr above its line; the gifts wait for the next pass" % format(int(fleet[leader]["credits"] - KEEP_SHIP), ","))
+        plan = []
     for pilot, credits in plan:
         if dry:
             print("would give: %s -> %s %s cr (keeps %s)" % (pilot, leader, format(credits, ","), format(keep_for(pilot, named)[0], ",")))
