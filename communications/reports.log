@@ -472,3 +472,12 @@ Failed: my fix of 07:25 UTC put the oldest readings on a list that never flew (e
 Requests: none.
 Suggestions: fill.py's dry run and write named different hunts (the class of errors.log ENT-131); judge a list by its runs, never by its place in a plan.
 Report: census-roads-given-ships-unflown-line.
+
+## [ENT-113] | 2026-11-22 11:56 UTC | Mercury | session | ref: reports/2026-11-22_mercury_nexus-melt-sales-and-docked-carapace-crafts.md | see: orders.log ENT-063
+Session: scheduled run turn-mercury -- first loot sales read, melt carried to the Central Nexus bid, carapace crafted docked.
+Did: preflight PASS; sell-loot-at-nexus and two melt carries to the Nexus bid (4ba2d479); five craft-armor-own routes for the receivers' carapace (4ba2d479, 5dcf81ac); six more receivers at Node Beta, The Experiment, Central Nexus and First Step (handover.py); @trade-sell and @trade-craft rewritten, piping, wiring and lead carries out (c8f8d01e, fda929d5, 2905ffc1); one once test by fill (f96ea67c); guidebook Standing Plan (17614f52).
+Worked: sell-loot-at-dheneb 33,437 and 57,492 cr in two runs since the switch; Trade's last hour +55,370 cr (tool fleet, 11:46 UTC); both melt carries and the first carapace craft started within 15 minutes of their commits; fill gate PASS.
+Failed: ten stale drafts copied into the clone by a glob, restored within a minute, no credit lost (errors.log ENT-134); the deep ember and melt bids are drained (Dheneb ember 4,960 to 480); no craft or carry result read yet.
+Requests: none.
+Suggestions: fill.py status could list, per role, the stores no open route of that role reaches (with Zero, ENT-111).
+Report: nexus-melt-sales-and-docked-carapace-crafts.
