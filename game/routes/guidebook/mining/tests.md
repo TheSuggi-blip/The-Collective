@@ -58,6 +58,29 @@ Experiment (one jump), -165 cr (data/routes/runs.jsonl); no stranger in
 its notes. The field grew back about 520 iron an hour between reads with
 no ship of ours on it. Lifted to 5 ships at 23:25 UTC.
 
+### Newborn miners at home (Sol, Haven), 2026-11-22
+Status: test. Updated: 2026-11-22. Evidence: table fields 23:10 UTC; table books 23:05 UTC; table runs 23:15-23:19 UTC; commission_quote at Grand Exchange and Sol Central, 23:19 UTC.
+
+The birth wave's miners (orders P6) start at Sol Central (Solarian,
+Theoria: hold 70, 3 utility slots, one Mining Laser I) and the Grand
+Exchange (Nebula, Prospect). Both home regions read mined out by other
+players: Sol Main Belt, Nova Terra Industrial Belt, Haven Commerce
+Fields near 0; no silicon, uranium, thorium or nickel within 8 jumps.
+Ore bids there are 1 to 7 cr; uranium 600, lead 40 and plasma gas 25
+bid in depth, with no field of ours to feed them.
+- Deep Core Prospecting is not offered at Mining 0 (18 runs): the
+  routes ask Mining 3, a guess until a pilot reads the gate.
+- Welcome to Sol Central (15 iron, 1,000 cr once) is held by every
+  Solarian newborn: its route mines at Lacaille 9352 Deep Vein.
+- Mining-skill gathers one jump from a station: Lacaille Deep Vein into
+  Nova Terra, Khambalia Crystal Market into Factory Belt; three results
+  first (F37).
+- Tier-1 empire hulls, credits only: Bonanza (Nebula, hold 180, three
+  Laser I) 60,951 cr; Archimedes (Solarian, hold 80, 4 utility slots,
+  two Laser I) 34,519 cr. No Piloting asked.
+- Our outpost GSC-0044 lies 5 jumps from Sol, Acrux 4: seated Solarian
+  miners could fly its belts (requests ENT-378).
+
 ### Open Tests
 Status: test. Updated: 2026-11-22. Evidence: the runs of each route (hive.py route <id>); surplus.py reserve; table fields; rule F37.
 
@@ -70,13 +93,11 @@ only where each sells into its own bid.
 
 - Quantum fragments, three fields at once (Tidewater, Errai, Izar, into
   Ramen's Rest): the fragments' share of a load decides.
-- Silver at Errai Belt, platinum at Bunda Belt: one ship each.
-- `gather-jishui-plainrock-carbon` (one run: 212 carbon in 66 minutes)
-  and `gather-gsc-0049-reef-nickel` (two runs): two more runs each.
-- `mine-epsilon-eridani-ice-fields`: four runs, two sold well, two lost;
-  `mine-hd-20794-ice-fields` rests after three losses.
-- Yildun's carbon field: no station within reach docks us; it waits for
-  an outpost of ours on the north road.
+- A second Mining Laser II beside a Laser I: one gather result (Jishui,
+  1.7 ore a minute against 2.0 for a Laser III ship); two more.
+- At GSC-0044 Belt (no jump) a Laser III ship mined 12.3 ore a minute
+  over 10 runs, a Laser I ship 4.1 over 27 (table runs, 19:30-23:20 UTC).
+- Jishui carbon read 2,840 and falling: one ship, floor 2,000.
 - Silicon far fields (Stormward, Dark Beacon) lie by the Bellatrix
   stronghold: not flown.
-- Cargo Expander I, Flotation Cell, Mining Laser II: not tried.
+- Cargo Expander I, Flotation Cell: not tried.
