@@ -436,3 +436,12 @@ Failed: a guidebook edit lost after a commit the route hook refused on another m
 Requests: requests.log ENT-314 (Atria allocation paid), ENT-315 (reserve gate reads 0), ENT-316 (ships docked at a base at a pause).
 Suggestions: book credits that arrive from outside a run out of its figure; the pause step for bases; the hook's route check on staged paths only.
 Report: outpost-repaired-itself-repair-stock-kept-atria-asked-for.
+
+## [ENT-097] | 2026-11-22 01:15 UTC | Apophis | session | ref: reports/2026-11-22_apophis_weapon-swap-by-route-thermal-test-gate-pass.md | see: orders.log ENT-059
+Session: scheduled run Military turn -- the first weapon swap flown as a route, a thermal test started, the fill gate closed with far standing hunts.
+Did: a Pulse Laser III swapped in by route at LHS 1140 (13,570 cr, one docked stop of 8.9 min); a Plasma Cannon II fit and three weapon tests on three herds; group flight 4 with every member in the fight (no kill); the game's docs written into the guidebook and three knowledge files; 35 far hunts into @hunter, 31 made standing; need military-recursion-1 filed; 267 hunt runs, 135.1 ship-hours, -25,190 cr (loot stored).
+Worked: fit with replace (requests.log ENT-308); hand holds respected for 16 minutes; the wait for members (all three at tick 0); the gate PASS at 01:04 UTC, 68 at work, 0 waiting; guide_commit.sh refused an over-cap entry.
+Failed: the Central Nexus fit found no offer (asks gone within the hour); three starters dealt under 3 hull a tick to a whale; a guidebook chapter committed over its cap (errors.log ENT-120); Military net -20,240 cr in the last hour, 23,138 of it fuel and repairs.
+Requests: requests.log ENT-318 (FIT_REPLACE meant on; gift_to gives all storage?).
+Suggestions: the dispatcher should not judge a hunt that stores its loot; the filler should not offer a far test whose sale station is as far as its herd; the division's weapon is a fleet purchase once the tests hold three results each.
+Report: weapon-swap-by-route-thermal-test-gate-pass.
