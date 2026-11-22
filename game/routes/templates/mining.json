@@ -22,6 +22,7 @@
    "title": "Gather what the reserve lacks, then make: a loaded hold stored, gold, silicon, nickel and carbon, then steel plate and copper piping from the pilot's own stores",
    "routes": [
     "store-hold-central-nexus",
+    "gather-glasslight-shoal-silicon",
     "gather-goldcrest-gold",
     "gather-subra-floodlight-flats-silicon",
     "gather-jadecove-nickel",
