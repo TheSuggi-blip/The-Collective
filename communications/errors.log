@@ -484,3 +484,11 @@ Seen: data/routes/runs.jsonl, 18 runs of 0.0 minutes and 0 cr from 23:51:46 to 0
 Cause: I sized qty to a freighter's hold and wallet and gave the route to a Threshold; the circuit runner now refuses a buy whole when qty x max_price would take the wallet under 3,000 cr (the guidebook still said it fills as far as the wallet reaches), and rule F12's one unit first was skipped. The loop itself: stop_on_failed_buy ends the run and the dispatcher reads only requires.ask again, which still stood, so nothing rested the route for that pilot. Same class as ENT-027 and ENT-113: a test route flown again because nothing stops its next run.
 Fixed: qty 76 -> 32 and the control node test 100 -> 65 at 00:05 UTC (commit "trade: buy quantities of the two far tests sized to a Threshold load and wallet"); the next run bought 32 liners at 607. Guidebook lessons and the skill trade-books carry the rule: size qty to the poorest pilot the route may take.
 Gate: asked of Unity in requests.log (this turn): a run that ends with stop_on_failed_buy for a cause other than the ask (wallet floor, a refused call) rests the route for that pilot, and a route sent N times in a row with zero minutes rests by itself.
+
+## [ENT-119] | 2026-11-22 00:28 UTC | Apollo | error | ref: game/routes/guidebook/logistics/routes.md
+Class: work left uncommitted in the shared clone (one member's commit held by another member's files in progress).
+Case: 2026-11-22 00:16 UTC, my edit of the guidebook's Standing Plan (routes.md) was refused at commit by the pre-commit route check: seven untracked hunt route files of another member made master-index.md and index-standing-work.md stale. At 00:20 UTC the file no longer held my edit and git showed no change.
+Effect: one guidebook entry lost for six minutes; written again from my draft and committed (948e8167). Nothing else lost.
+Cause: the check judges the whole tree, not the staged paths, so a member's commit waits on another's work; who or what reverted the file is not found.
+Fix, done: my skill logistics-stock says to commit an edit in the clone at once and keep its draft in scratch until the commit lands. Proposed: the route check in the hook judges only the staged route files and the indexes they change.
+Would it have prevented this one: the draft in scratch, yes (it is how the entry came back); the check on staged paths, yes.
