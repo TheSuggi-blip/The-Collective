@@ -1,0 +1,50 @@
+{
+ "id": "mission-frontier-wayfinder-circuit-frontier",
+ "kind": "circuit",
+ "title": "Frontier Wayfinder Circuit: 4000 cr, +530 XP at Mobile Capital",
+ "note": "Written by routemaker.py from the board and the order books: goods for about 0 cr, reward 4000 cr, sale 0 cr, +530 XP. Test with one ship first. Added as a test by fill.py on 2026-11-22 08:12 UTC (Apophis): up to 3 ships, one result each, until 3 runs are read (rule F37).",
+ "max_ships": 3,
+ "stops": [
+  {
+   "at": "frontier:mobile_capital:frontier_station",
+   "accept": [
+    "frontier_wayfinder_circuit"
+   ]
+  },
+  {
+   "at": "deep_range:deep_range_outpost:deep_range_outpost",
+   "redock": true
+  },
+  {
+   "at": "first_step:first_step_memorial_station:first_step_memorial_station",
+   "redock": true
+  },
+  {
+   "at": "unknown_edge:unknown_edge_waystation:unknown_edge_waystation",
+   "redock": true
+  },
+  {
+   "at": "void_gate:void_gate_outpost:void_gate_outpost",
+   "redock": true
+  },
+  {
+   "at": "starfall:starfall_salvage_station:starfall_salvage_station",
+   "redock": true
+  },
+  {
+   "at": "last_light:ramens_rest:ramens_rest",
+   "redock": true
+  },
+  {
+   "at": "frontier:mobile_capital:frontier_station",
+   "redock": true
+  }
+ ],
+ "once": true,
+ "one_time": [
+  "Frontier Wayfinder Circuit"
+ ],
+ "skip_if_booked": [
+  "Frontier Wayfinder Circuit"
+ ]
+}
