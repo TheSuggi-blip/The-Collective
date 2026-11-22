@@ -8,7 +8,7 @@ author: Unity
 # index.md -- The Fleet's Scripts
 
 Built by `python3 -B scripts/fleet-index.py` from the docstring of every script in this
-folder; never edited by hand. Scripts listed: 56.
+folder; never edited by hand. Scripts listed: 57.
 
 - Run a script from the repository root: `python3 -I -B game/fleet/<script> <arguments>`,
   the arguments as listed under "How to Call Each".
@@ -45,6 +45,7 @@ folder; never edited by hand. Scripts listed: 56.
 | `factionbook.py` | The faction's storage in the storage book: the entry `Faction` of data/stock/storage.json, so that the tools stock, surplus.py and the table holdings count what lies in the Lockboxes and at our outposts. | By hand |
 | `fill.py` | Keep every ship of a division at work: say why ships wait, and fill the plan with the work that stands open. | By hand |
 | `fleetfile.py` | Write the roster into a member's own FLEET.md: one table, every ship of the member on one line with its kind, its hull and the task it is on now. | By hand |
+| `fuelplan.py` | Fuel before a flight: the chart's lanes, the stations that sell fuel, and whether a tank holds the way. | By hand |
 | `gate.py` | Small client for the fleet engine's gate, with the division's lock. | By hand |
 | `gauges.py` | What a ship or a side of ours can hunt: its firepower and its toughness against a creature (rule F9). | By hand |
 | `guard.py` | Keep one pilot at the place where another route's ship of ours works, for as long as that ship works there. | Runner (`guard` routes) |
@@ -342,6 +343,17 @@ fleetfile.py [<Member>|all] [--print] [--commit]
 --root <dir>      the repository's game/ folder (default: the parent of this file's folder)
 --data <dir>      the unit's data folder (default /srv/collective/data)
 --profiles <dir>  where the members' workspaces lie (default /opt/data/profiles): <profiles>/<name>/workspace-<name>/FLEET.md
+```
+
+### `fuelplan.py`
+
+Fuel before a flight: the chart's lanes, the stations that sell fuel, and whether a tank
+holds the way.
+
+Run by hand.
+
+```
+fuelplan.py <from system> <to system> [<then system>] [--tank N]
 ```
 
 ### `gate.py`

@@ -271,6 +271,8 @@ STALL_RUNS = 3                 # short zero-credit runs in a row on one route: r
 STALL_MINUTES = 1.0            # runs shorter than this with 0 cr count as stalled loops
 STALL_REST = 30 * 60           # seconds of cooldown after a stalled loop or non-ask stop_on_failed_buy
 FAILED_BUY_CAUSES = (": wallet floor", ": refused", ": not bought")
+NO_FUEL_AT_SELL = "no fuel at sell_at"   # hunt.py: the tank stood under half after the sell_at's refuel (requests ENT-369)
+FUEL_NOT_FLOWN = ": not flown (fuel)"    # hunt.py: the tank was short of the way there and on to sell_at, and no fuel stop filled it
 
 
 def run_end(row):
@@ -331,6 +333,8 @@ def stalled_reason(rid, route, pilot_name, rows, now):
     notes = [str(n) for n in (last.get("notes") or [])]
     if any("run ended (stop_on_failed_buy)" in n for n in notes) and any(c in n for n in notes for c in FAILED_BUY_CAUSES):
         return "rests after failed buy (wallet floor or refused)"
+    if any(NO_FUEL_AT_SELL in n or FUEL_NOT_FLOWN in n for n in notes):     # requests ENT-369: never set out again on a dry tank
+        return "rests after a run whose tank was not filled (its sell_at sold no fuel, or too short to set out)"
     tail = mine[-STALL_RUNS:]
     if len(tail) < STALL_RUNS:
         return None

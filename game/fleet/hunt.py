@@ -84,6 +84,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import division                                   # noqa: E402  the division's lock: own ships only, never a pilot another program flies
 division.require(pilot)
 import handover                                   # noqa: E402  r22: a hunt route's gift_to (behind data/fleet/strict-classes-on)
+import dispatch                                   # noqa: E402  the dispatcher's own words for a run it rests (requests ENT-369)
+import fuelplan                                   # noqa: E402  fuel before setting out: the chart, the stations with fuel, the way
 species = set(args[args.index('--species') + 1].split(',')) if '--species' in args else None
 max_kills = int(args[args.index('--kills') + 1]) if '--kills' in args else 5
 max_minutes = int(args[args.index('--minutes') + 1]) if '--minutes' in args else 40
@@ -193,6 +195,61 @@ def hull():
         return s.get('hull') or 0, s.get('max_hull') or 1
     except (OSError, ValueError):
         return 1, 1
+
+
+def tank():
+    """(fuel, max_fuel) of the ship now as the engine reports it, None for what it did not answer."""
+    ship = (call('GET', f'/accounts/{P}')[1].get('state') or {}).get('ship') or {}
+    fuel, size = ship.get('fuel'), ship.get('max_fuel')
+    return (fuel if isinstance(fuel, (int, float)) else None), (size if isinstance(size, (int, float)) else None)
+
+
+def ship_system():
+    """The system the pilot's live file places it in, or None."""
+    try:
+        return str(json.load(open(SHIPS + pilot + '.json', encoding='utf-8')).get('system') or '') or None
+    except (OSError, ValueError, AttributeError):
+        return None
+
+
+def fuel_first(game, data):
+    """Before a hunt sets out (requests ENT-369): the tank weighed against the way to the place and on from it to the
+    nearest station with fuel (sell_at when the chart knows none), by fuelplan's rule (1.5 a jump and 15 over); short,
+    the ship takes fuel at the station with fuel nearest it first, a station that gave none passed over once. A tank
+    at 90 percent or more flies as before. None when the tank holds the way (or is not read), else the run's note:
+    the hunt is not flown. 2026-11-22: two
+    hunters set out again from a station that sold no fuel and ran dry in space, one for three hours."""
+    lanes, _home = fuelplan.chart(game)
+    here = ship_system()
+    far = fuelplan.strongholds(game)
+    stations = {s: v for s, v in fuelplan.fuel_stations(data).items() if s not in far}
+    onward = fuelplan.nearest_fuel(lanes, system_id, stations)                  # after the hunt: the nearest fuel, as census.py weighs it
+    leg = onward[0] if onward else fuelplan.way(lanes, system_id, sell_at[0])
+    there = fuelplan.way(lanes, here, system_id)
+    way = None if there is None or leg is None else there + leg
+    fuel, size = tank()
+    if not fuelplan.fuel_short(fuel, way) or (size and fuel is not None and fuel >= 0.9 * size):
+        return None                                  # a tank about full flies as before: no stop could fill it more
+    tried = set()
+    for _ in range(2):                               # a station that answered with no fuel is passed over once
+        stop = fuelplan.nearest_fuel(lanes, here, stations, skip=tried) if here else None
+        if not stop:
+            break
+        say(f'fuel {fuel} short of the way to {system_id} and on to {sell_at[2]} ({way} jumps): fuel stop at {stop[1]} first')
+        goal('prepare-at-station', {'systemId': stop[1], 'poiId': stop[2], 'baseId': stop[3], 'refuel': True})
+        after = tank()[0]
+        if after is not None and fuel is not None and after <= fuel:
+            raw('dock')
+            raw('refuel')
+            after = tank()[0]
+        say(f'fuel stop at {stop[1]} ({stop[3]}): fuel {fuel} -> {after}')
+        tried.add(stop[3])
+        fuel, here = after, stop[1]
+        there = fuelplan.way(lanes, here, system_id)
+        way = None if there is None or leg is None else there + leg
+        if not fuelplan.fuel_short(fuel, way) or (size and fuel is not None and fuel >= 0.9 * size):
+            return None
+    return f'fuel {fuel} short for {system_id} and on to fuel ({way} jumps)' + dispatch.FUEL_NOT_FLOWN
 
 
 def cargo():
@@ -410,7 +467,11 @@ if not STEP:
     order('hunt ' + route_id)
     atexit.register(order_done)
 AMMO = ammo_ids()
-if goal('navigate-to-system', {'targetSystemId': system_id}) and goal('go-to-poi', {'targetPoiId': poi}):
+SHORT = None if STEP else fuel_first(GAME, os.path.dirname(os.path.dirname(MARKET)))   # requests ENT-369: never out on a dry tank
+if SHORT:
+    say(SHORT)
+    notes.append(SHORT)
+if not SHORT and goal('navigate-to-system', {'targetSystemId': system_id}) and goal('go-to-poi', {'targetPoiId': poi}):
     arrived = time.time()
     left = loot_own()                                # carcasses of ours from an earlier run, if any
     if left:
@@ -476,7 +537,17 @@ if STEP:
     print(f'STEP {pilot}: kills {kills} in {hunt_minutes:.0f} min at {poi} | goods {goods} | lowest hull {LOW[0]}% | {"; ".join(notes) or "no notes"}', flush=True)
     sys.exit(0)
 sold = {}
-if goal('prepare-at-station', {'systemId': sell_at[0], 'poiId': sell_at[1], 'baseId': sell_at[2], 'refuel': True}) and '--keep' not in args:
+DOCKED = not SHORT and goal('prepare-at-station', {'systemId': sell_at[0], 'poiId': sell_at[1], 'baseId': sell_at[2], 'refuel': True})
+if DOCKED:                                           # requests ENT-369: a sell_at that sold no fuel is said, and the dispatcher rests the pair
+    FUEL, SIZE = tank()
+    if fuelplan.refuelled_short(FUEL, SIZE):
+        raw('refuel')
+        time.sleep(11)
+        FUEL, SIZE = tank()
+    if fuelplan.refuelled_short(FUEL, SIZE):
+        say(f'{dispatch.NO_FUEL_AT_SELL} {sell_at[2]}: tank {FUEL}/{SIZE} after its refuel')
+        notes.append(f'{dispatch.NO_FUEL_AT_SELL} {sell_at[2]}: tank {FUEL}/{SIZE}')
+if DOCKED and '--keep' not in args:
     items = [i for i in (body(raw('view_market', group='spacemolt_market')).get('items') or []) if isinstance(i, dict)]
     if items:
         rows = [{k: i.get(k) for k in ('item_id', 'item_name', 'category', 'best_buy', 'best_buy_qty', 'buy_quantity', 'best_sell', 'best_sell_qty', 'sell_quantity')} for i in items]
