@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 330.
+Routes: 331.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -78,6 +78,7 @@ Routes: 330.
 | [give-scout-stores-synchrony](give-scout-stores-synchrony.json) | circuit | home space | A scout gives its stores at Synchrony Hub: building inputs to the haulers, everything else it holds to the traders (strict classes) | up to 2 ships, with 50 iron_ore stored at synchrony_hub, standing work | 13 | 5 | -60 | -570 | 2026-11-22 |
 | [load-plasma-ammo-experiment](load-plasma-ammo-experiment.json) | circuit | home space | Plasma ammunition back aboard: withdraw the stored dispersal plasma cell packs at The Experiment Research Station into the Plasma Cannon II ship's hold | up to 1 ships, 2 pilots in all, needs plasma_cannon_ii, with 1 dispersal_plasma_cell_pack stored at the_experiment_research_station, standing work | 1 | 5 | -50 | -630 | 2026-11-22 |
 | [park](park.json) | circuit | home space | Dock at Central Nexus and wait there: a docked ship costs nothing | the park route | 4 | 3 | 0 | 0 | 2026-11-22 |
+| [park-lockbox](park-lockbox.json) | circuit | home space | Dock at Node Beta Industrial Station (active Faction Lockbox) for treasury payout | the park route | TBD | TBD | TBD | TBD | -- |
 | [stock-rc-boards-node-beta](stock-rc-boards-node-beta.json) | circuit | home space | Circuit boards for the Recruitment Center: 500 boards of the pilot's own storage at Node Beta put into the faction store there, eight loads of 60 and one of 20; members of the faction only | once per pilot, up to 1 ships, 1 pilots in all, empty hold, from 3,000 cr, with 500 circuit_board stored at node_beta_industrial_station, standing work | 1 | 9 | -30 | one-time | 2026-11-22 |
 | [stock-rc-flex-carry-central-nexus](stock-rc-flex-carry-central-nexus.json) | circuit | home space | Flex polymer for the Recruitment Center: the pilot's own flex at Central Nexus carried to the faction store at Node Beta (one jump); members of the faction only | once per pilot, up to 1 ships, 1 pilots in all, empty hold, from 3,000 cr, with 10 flex_polymer stored at central_nexus, standing work | 1 | 4 | -30 | one-time | 2026-11-22 |
 | [stock-rc-plate-node-beta](stock-rc-plate-node-beta.json) | circuit | home space | Steel plate for the Recruitment Center: 120 plate of the pilot's own storage at Node Beta put into the faction store there, two loads of 60; members of the faction only | once per pilot, up to 3 ships, 9 pilots in all, empty hold, from 3,000 cr, with 120 steel_plate stored at node_beta_industrial_station, standing work | 9 | 5 | -30 | one-time | 2026-11-22 |

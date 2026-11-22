@@ -1,0 +1,12 @@
+{
+ "id": "park-lockbox",
+ "kind": "circuit",
+ "title": "Dock at Node Beta Industrial Station (active Faction Lockbox) for treasury payout",
+ "note": "Used automatically by dispatch.py when an open treasury fund waits in data/fleet/funds.json: treasury withdrawals require an active Faction Lockbox at the docked station.",
+ "park": true,
+ "stops": [
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station"
+  }
+ ]
+}

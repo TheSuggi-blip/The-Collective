@@ -1215,13 +1215,19 @@ def leader_fund_action(name, ship, data, now, routes):
         return None, None
     todo = open_rows[0]
     key = (leader, int(todo.get("at") or 0))
-    if ship.get("docked"):
+    emp_d = read_json(Path(data) / "empire" / "empire.json", {}) or {}
+    facs = (emp_d.get("facilities") or []) if isinstance(emp_d, dict) else []
+    lboxes = {str(f.get("base")) for f in facs if isinstance(f, dict) and f.get("type") == "faction_lockbox" and f.get("status") == "active" and f.get("base")}
+    dock_station = str(ship.get("docked") or "")
+    at_valid_dock = bool(dock_station) and (not lboxes or dock_station in lboxes)
+    if at_valid_dock:
         since = FUND_DOCK_WAIT.setdefault(key, now)
         if now - since < FUND_HOLD_SECS:
             return "hold", todo
         return None, None
-    if key not in FUND_DOCK_WAIT and isinstance(routes, dict) and "park" in routes:
-        return "park", routes["park"]
+    park_r = (routes.get("park-lockbox") or routes.get("park")) if isinstance(routes, dict) else None
+    if key not in FUND_DOCK_WAIT and park_r is not None:
+        return "park", park_r
     return None, None
 
 

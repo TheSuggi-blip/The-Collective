@@ -603,7 +603,11 @@ def serve_funds(data, leader, now, dry):
         return 0
     pilot, credits = todo["pilot"], int(todo["credits"])
     if todo["state"] == "open":
-        if not docked(data, leader):
+        emp_w = dispatch.read_json(Path(data) / "empire" / "empire.json", {}) or {}
+        facs_w = (emp_w.get("facilities") or []) if isinstance(emp_w, dict) else []
+        lboxes_w = {str(f.get("base")) for f in facs_w if isinstance(f, dict) and f.get("type") == "faction_lockbox" and f.get("status") == "active" and f.get("base")}
+        cur_dock = str((ships(data).get(leader) or {}).get("docked") or "")
+        if not cur_dock or (lboxes_w and cur_dock not in lboxes_w):
             run_marker = Path(data) / "fleet" / "host" / "running" / (leader + ".json")
             if run_marker.exists():
                 stop_p = Path(data) / "fleet" / "host" / "stop" / leader
@@ -619,7 +623,7 @@ def serve_funds(data, leader, now, dry):
             if changed:
                 write_funds(data, rows)
             return 0
-        if not any(r.get("state") in ("withdrawn", "given") or r.get("probed") for r in rows):     # rule F12: one unit first
+        if not any(r.get("state") in ("withdrawn", "given") or (isinstance(r.get("probed"), dict) and r["probed"].get("ok")) for r in rows):     # rule F12: one unit first
             ok, text = withdraw(leader, 1)
             time.sleep(FUND_READ)
             after = treasury_read(leader)
