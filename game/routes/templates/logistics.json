@@ -3,31 +3,17 @@
  "owner": "Apollo",
  "templates": {
   "stored-goods": {
-   "title": "Goods our haulers store, sold into a standing bid or carried to one: one ship a route, only the pilot that stores the good, only while a book of the last hour shows the bid",
+   "title": "Goods of Trade's class our haulers store, given to Trade's receivers at the station where they lie (P5); off until strict classes are on",
    "routes": [
-    "sell-hydrogen-at-node-beta",
-    "sell-hydrogen-at-node-gamma",
-    "sell-hydrogen-at-synchrony",
-    "carry-hydrogen-synchrony-to-experiment",
-    "sell-soma-at-node-beta",
-    "sell-soma-at-synchrony",
-    "sell-soma-at-experiment",
-    "carry-soma-beta-to-gamma",
-    "carry-soma-synchrony-to-alpha",
-    "carry-null-matter-beta-to-nexus",
-    "sell-null-matter-at-nexus",
-    "sell-plasma-node-beta",
-    "sell-palladium-at-node-gamma",
-    "carry-palladium-nexus-to-gamma",
-    "sell-liquid-hydrogen-central",
-    "sell-liquid-hydrogen-node-beta",
-    "carry-liquid-hydrogen-node-beta-central"
+    "give-hauler-stores-node-beta",
+    "give-hauler-stores-node-gamma",
+    "give-hauler-stores-nova-terra",
+    "give-hauler-stores-central-nexus"
    ],
    "trains": [
-    "trading",
     "navigation"
    ],
-   "note": "2026-11-17 20:05 UTC: Trade's sell and carry routes that its template trade-sell opens to every division (each pilot sells its own stores, rule F24): hydrogen at Synchrony Hub and palladium at Node Gamma added; the two null matter tests stay Trade's claim (admirals.log ENT-053). Gated by requires.stored and requires.bid; one ship a route."
+   "note": "2026-11-22 04:10 UTC: orders ENT-061 P5: the 17 sell and carry circuits of this template left the plan; the four give routes stand off until data/fleet/strict-classes-on (requests.log ENT-332); the hydrogen stays ours for fuel cells"
   },
   "craft-reserve": {
    "title": "Fuel cells from stored hydrogen gas, steel plate from each hauler's own stored iron at four workshops, then copper piping",
