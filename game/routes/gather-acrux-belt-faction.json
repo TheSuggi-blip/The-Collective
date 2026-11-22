@@ -2,12 +2,12 @@
  "id": "gather-acrux-belt-faction",
  "kind": "mine",
  "title": "A test: ore gathered at Acrux Belt (lithium, iron, copper) into the faction's storage at our outpost CLTV Outpost GSC-0044 (one jump); members of the faction only",
- "note": "Written by Zero, 2026-11-21 19:51 UTC (orders.log ENT-056, block ZERO: fly the outpost's belts with your faction miners; rules F3, F24). Acrux Belt read lithium 1,672 of 25,000 at richness 36, iron 74,875 (64), copper 99,873 (36) (table fields, 2026-11-21 19:34 UTC), one jump from GSC-0044 by the lanes; the reserve is short of 120 lithium ore and holds none (the tool stock, view=reserve, 19:34 UTC). A copy of gather-gsc-0044-belt-faction, whose runs stored 342 and 367 ore into the outpost's faction storage (2026-11-17/18): the outpost docks members only and has no personal storage, so this route stands only in the rows of miners seated in the faction, never in a template. No pirate observation at Acrux or GSC-0044 (observations). One ship with an empty hold until its first RESULT line (rule F3).",
+ "note": "Written by Zero, 2026-11-21 19:51 UTC (orders.log ENT-056, block ZERO: fly the outpost's belts with your faction miners; rules F3, F24). Acrux Belt read lithium 1,672 of 25,000 at richness 36, iron 74,875 (64), copper 99,873 (36) (table fields, 2026-11-21 19:34 UTC), one jump from GSC-0044 by the lanes; the reserve is short of 120 lithium ore and holds none (the tool stock, view=reserve, 19:34 UTC). A copy of gather-gsc-0044-belt-faction, whose runs stored 342 and 367 ore into the outpost's faction storage (2026-11-17/18): the outpost docks members only and has no personal storage, so this route stands only in the rows of miners seated in the faction, never in a template. No pirate observation at Acrux or GSC-0044 (observations). One ship with an empty hold until its first RESULT line (rule F3). 2026-11-22 11:11 UTC (fill.py, Zero): max_ships 1 -> 3.",
  "belt": "acrux:acrux_belt",
  "station": "gsc_0044:da9de8c360c46ffee15dee4e7d1b8476:443f0c5b2a1fbbcea95d13b76a797fe9",
  "deposit": "faction",
  "minutes": 45,
- "max_ships": 1,
+ "max_ships": 3,
  "standing": true,
  "min_left": {
   "iron_ore": 20000
