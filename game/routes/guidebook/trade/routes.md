@@ -1,27 +1,27 @@
 # Trade guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-22. Evidence: plan.py show; data/fleet/orders (03:51 UTC); fill.py status trader.
+Status: proven. Updated: 2026-11-22. Evidence: plan.py show; templates/trade.json (@trade-sell); handover.py dry-run; reservecheck.py --plan trader.
 
-The plan file as set on 2026-11-22 at 03:50 UTC (orders ENT-061 and
-standing order S5: every trader operating):
+The plan file as set on 2026-11-22 at 07:40 UTC (orders ENT-062, P5
+and standing order S5):
 
-- First, every ship: the once line (the Voidborn chain, with
-  voidborn-network-commerce after Signal Protocol), then the two
+- First, every ship: the once line (the Voidborn chain), then the two
   Federation once missions, three ships each (rule F37).
-- Own routes: a far test or carry at the head of the row of the ship
-  whose load or mission it is, then for all `@trade-sell > @trade-craft`.
-- Then: the three steel crafts, train-jumps-trader (standing: five jumps
-  through our stations for piloting and navigation, each dock reading
-  the home book), park.
+- Own routes: a far test or carry at the head of its ship's row, then
+  for all `@trade-sell > @trade-craft`. `@trade-sell` opens with the
+  hunts' loot where the hunts hand it to the receivers
+  (`sell-loot-at-<station>`, `sell-noble-at-<station>`, the ember and
+  melt carries), then the gift routes' goods (null matter, lead, curd,
+  soma, plasma, water ice, hydrogen), then older surplus.
+- Then: the three steel crafts, train-jumps-trader, park.
 
-What it carries: one ship a gap or far bid; three ships a once mission;
-the loop every ship left (34 of 40 at 03:51 UTC), at the fuel cost its
-route figure shows (`hive.py route train-jumps-trader`).
+What it carries: one ship a station's loot (only its receiver stores
+it); three a once mission; the loop every ship left.
 
-What would change it: the runner reading Trade Runs (requests ENT-335),
-the Federation missions paying (then every trader), strict classes on
-(the receivers sell what the others give), local work for a far ship.
+What would change it: strict classes on (the loot routes' first runs
+are their test); a hold-back gone (superfluid vial, trade crystal);
+a Trade Run near home for the runner's first flight.
 
 ### Selling stores where they lie (`sell-<good>-at-<station>`, `carry-<good>-<from>-to-<to>`)
 Status: proven. Updated: 2026-11-22. Evidence: the sell and carry route files with their measured figures; sellgen.py of the skill trade-books.
