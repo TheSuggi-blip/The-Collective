@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 121.
+Routes: 122.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -80,6 +80,7 @@ Routes: 121.
 | [hunt-gsc-0016-emission-nebula-cinder-sylph](hunt-gsc-0016-emission-nebula-cinder-sylph.json) | hunt | beyond the border, 11 jumps | cinder_sylph at gsc_0016_emission_nebula; loot sold at Hex Star | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-hollowcrest-frozen-drift-hollow-pilgrim](hunt-hollowcrest-frozen-drift-hollow-pilgrim.json) | hunt | beyond the border, 11 jumps | hollow_pilgrim at hollowcrest_frozen_drift; loot sold at Sirius Observatory Station | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-navi-ice-shelf-frost-moth](hunt-navi-ice-shelf-frost-moth.json) | hunt | beyond the border, 20 jumps | frost_moth at navi_ice_shelf; loot sold at Nova Terra Central | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
+| [hunt-propus-ice-belt-hollow-pilgrim](hunt-propus-ice-belt-hollow-pilgrim.json) | hunt | beyond the border, 15 jumps | hollow_pilgrim at propus_ice_belt; loot sold at Hex Star | up to 3 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-test-amberfall-sift-ray](hunt-test-amberfall-sift-ray.json) | hunt | beyond the border, 5 jumps | Yield test: sift_ray, chlorophage at amberfall_emission_nebula (lawless); what a kill drops and whether a bid takes it | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-test-atlas-halo-drifter](hunt-test-atlas-halo-drifter.json) | hunt | beyond the border, 6 jumps | Yield test: halo_drifter at atlas_gas_pocket (lawless); what a kill drops and whether a bid takes it | up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [hunt-test-atlas-patina-grazer](hunt-test-atlas-patina-grazer.json) | hunt | beyond the border, 6 jumps | Yield test: patina_grazer at gossamer_null (lawless); what a kill drops and whether a bid takes it | up to 1 ships, without piercing_railgun_i, empty hold | TBD | TBD | TBD | TBD | -- |
