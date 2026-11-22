@@ -439,3 +439,38 @@ APOPHIS, Military (drone- and sentinel- ships)
 Guard and escort our ships from our stations outward, never the first ring of outposts and its roads (rule F33), and fight the fleet's wars when Suggi declares one. Your hunts hand their loot to Trade now. Bring the fleet into fighting shape: hunts that pay, combat skills, weapons and armour fitted, one Recursion first (from the purse, requests ENT-348), and group hunts that kill. Pirates stay your call, a test first.
 ORACLE, Intel (scout- ships)
 Keep the readings the fleet plans on fresh, Ironlight Crossroads' book within three hours while Atria waits for its kit. Read the north road from Atria to Yildun and the pirate record of its choke point; watch Oakridge's neighbours, and read a site's raid record before any base goes south-east. Explore further out, beyond what we know, so Trade, Logistics and Mining find work where ours is saturated; hunt on the way.
+
+## [ENT-064] | 2026-11-22 14:17 UTC | Unity | order | ref: communications/errors.log | see: ENT-063
+Changed: claims hold for hunts again (errors.log ENT-136): no division fills a herd another claimed. The Recruitment Center is raised. The treasury pays one pilot for a buy (wallet.py fund); Military's Recursion waits for its fund.
+In force from this entry until a newer one.
+STANDING ORDERS (Suggi; set and changed by him alone)
+S1. Explore freely.
+S2. Command the most dominant fleet in the galaxy.
+S3. Dominate the galaxy and all other factions.
+S4. Build a galactic empire.
+S5. Never idle: all ships must always be kept operating.
+STANDING GOALS (Suggi; set and changed by him alone)
+G1. The empire: "Your goal as Unity is to build and command the biggest and strongest empire in the galaxy, The Collective, and to be the most powerful presence in the game as The Collective. Standing goal."
+G2. The grand fleet: "I want you to have the overall goal to get to the faction limit of 1,000, so we can build the grand fleet. This will take time: you have to do the levels 1, 2, 3, 4, 5 and so on."
+G3. The stations: "Explore the territory between the Frontier empire and our own. We build one or two stations in the area in between: maybe Yildun, and Aldebaran can be one too. That way we have two station locations. Also Hawthorne and Alchiba: that region can be another station. So in the medium to long term we expand to that region and keep the systems from our starting place to there all running with profitable routes and things to do."
+G4. Mastery: each member "has an overarching goal to improve, learn and master their class": Military all things military, Trade trading and all its aspects, Intel scouting, Mining and Logistics theirs, the Fleet Admiral the fleet as a whole.
+G5. Medium term: "While expanding, also grow the fleet roster to 500 and make sure we can get all in: more recruitment, also shipyards and the other buildings Apollo wants."
+PLAN (the Fleet Admiral's order to the fleet)
+P1. Pay for itself: steady net above zero over 24 hours, every ship on its own class's work (S5). Fuel takes nearly all we earn: train at the least fuel per XP; saturated work goes further out -- every Admiral.
+P2. Lean supply: the reserve made while short, stopped when full -- Apollo with Zero.
+P3. North first: Atria (its kit from Ironlight at the allocation), then Yildun, the north choke; Oakridge east, Felis south later -- Apollo builds, Oracle reads the roads, Unity chooses and pays.
+P4. Seats to 500: the Recruitment Center (200) is raised and builds; then 400 on our ground -- Apollo builds, Unity pays.
+P5. Each class's activities its own (strict classes, on): what others hand over, Trade sells and Logistics and Trade craft -- Mercury and Apollo.
+Watch: pirate packs at Minkar, Sargas, Merak and Felis.
+UNITY, Fleet Admiral (the command group)
+Serve Military's Recursion from the treasury (the fund waits for a docked leader) and close its request once given. Build what two Admirals asked twice: the stores no open route of a role reaches, and the goods each division hands over at their worth, so P1 reads what hunts and gathers enable. Then the warning on a once buy that is not standing work. Keep the money figures true. Answer every request before the Admirals' turns.
+ZERO, Mining (miner- ships)
+Gather what the reserve lacks, by its levels (silicon, carbon, gold and nickel now), then what buyers pay for, in our systems and beyond them; your loads go to the receivers by gift now, nothing is sold by a miner. Fly the outpost's belts with your faction miners. Fit the stronger lasers where three results prove them; a gate may now name any of several modules. Level mining and reach your next hulls.
+MERCURY, Trade (trader- ships)
+The hunts, gathers and gift routes hand their goods to your receivers now: sell them where they lie, at or above the standing bids, and read each sell route's first three results. Every trader operating (S5) at the least fuel per XP: sales, trade runs and missions that pay their skills before jump loops. Find buyers and trade that repeats, at home and beyond our borders.
+APOLLO, Logistics (hauler- ships)
+The Recruitment Center builds at Node Beta: read it to its end, then the seats fill by work with me. Atria waits for a kit at Ironlight Crossroads at its allocation. Name receivers where many give, and craft the reserve's parts docked where the goods lie rather than fly jump loops; the far stores test that first. Keep both outposts' bunkers and repair stock by route.
+APOPHIS, Military (drone- and sentinel- ships)
+Guard and escort our ships from our stations outward, never the first ring of outposts and its roads (rule F33), and fight the fleet's wars when Suggi declares one. Your hunts hand their loot to Trade now. Bring the fleet into fighting shape: hunts that pay, combat skills, weapons and armour fitted, one Recursion first (from the purse, requests ENT-348), and group hunts that kill. Pirates stay your call, a test first.
+ORACLE, Intel (scout- ships)
+Keep the readings the fleet plans on fresh, Ironlight Crossroads' book within three hours while Atria waits for its kit. Read the north road from Atria to Yildun and the pirate record of its choke point; watch Oakridge's neighbours, and read a site's raid record before any base goes south-east. Explore further out, beyond what we know, so Trade, Logistics and Mining find work where ours is saturated; hunt on the way.
