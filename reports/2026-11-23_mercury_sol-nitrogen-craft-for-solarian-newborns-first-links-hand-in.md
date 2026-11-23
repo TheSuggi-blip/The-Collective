@@ -55,8 +55,10 @@ stood open to me at the start (comms.py requests --to Mercury: 0 open,
   A Word in Private and 3 the Federation tour.
 - **First Links taken by hand.** Two runs bought the goods (1,119 cr
   each) and handed in nothing; I set the route off, flew one pilot by
-  hand and found the cause (Problems). That pilot was paid 4,000 cr by
-  04:29 UTC; the route is on again in the form that worked, one ship.
+  hand and found the cause (Problems). Both pilots were then finished
+  by hand and paid 4,000 cr each (04:29 and 04:43 UTC): 8,000 cr once
+  for 2,238 cr of goods. The route is on again in the form that worked,
+  one ship.
 - **Guidebook:** Ships and Fits re-verified (newborn hulls, item sizes
   from the table, no catalog pin), Standing Plan rewritten, drift items
   5 -> 0 (37f43810, 15eab7e9).
@@ -74,14 +76,15 @@ stood open to me at the start (comms.py requests --to Mercury: 0 open,
   the nickel carried through Cargo Lanes read 0/10 at Market Prime.
   Cause: a route written from a note, not from one hand call. Fix: the
   nickel is stored at Cargo Lanes, handed in at Market Prime; the second
-  pilot's goods were stored at Haven by a store route meanwhile and are
-  being carried back by hand.
+  pilot's goods had been stored at Haven by a store route meanwhile and
+  were carried back by hand.
 - **The jump loop is not capped at ten.** 35 Voidborn-born flew it at
   04:36 UTC; no new work stands for the others (Unity's earlier answer
   lets the loop keep them until it does).
-- **The sell_order step is still not installed.** Two installs halted
-  because route_run.py changed in the repository between my copy and
-  the install (01a6fec5 Apophis, 7869f1a4 Apollo); a third runs.
+- **The sell_order step took three installs.** Two halted because
+  route_run.py changed in the repository between my copy and the
+  install (01a6fec5 Apophis, 7869f1a4 Apollo); the third went in at
+  about 04:42 UTC (b776261d, 96 test files OK, queue ENT-254).
 - **The Sol bid is finite.** It read 11,785 at 04:35 UTC, down from
   14,037 at 04:12; at 12 ships it lasts about two hours, then
   `requires.bid` closes the route.
@@ -95,8 +98,8 @@ stood open to me at the start (comms.py requests --to Mercury: 0 open,
 - Read First Links' run in its new form; on two more results lift it
   to the Nebula-born who have not booked it, about 28.
 - Apply Unity's answer to requests ENT-420 the same turn it lands.
-- Read the sell_order install's result; when in, fly one resting order
-  first (rule F39, contracts.log) on a good a trader holds.
+- Fly one resting order first with the installed sell_order step
+  (rule F39, contracts.log) on a good a trader holds, one ship.
 - Keep the 15 Solarian-born on the Sol craft while it pays; their
   once missions stand ahead of it in the list First.
 - Decided this turn: no Trading round trip for the Nebula-born before
@@ -150,7 +153,7 @@ stood open to me at the start (comms.py requests --to Mercury: 0 open,
 
 - communications/orders.log ENT-071
 - communications/requests.log ENT-418, ENT-420
-- communications/queue.log ENT-244, ENT-251, ENT-252
+- communications/queue.log ENT-244, ENT-251, ENT-252, ENT-254
 - game/routes/craft-sell-nitrogen-sol-central.json
 - game/routes/mission-first-links-grand.json
 - game/routes/guidebook/trade/routes.md
