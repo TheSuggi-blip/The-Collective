@@ -69,6 +69,10 @@
   {
    "what": "Cap the empty jump loop at the 8 haulers nearest Piloting 10 when cargo-carrying loops stand for the rest (requests ENT-374)",
    "when": "when the carrying goods exist"
+  },
+  {
+   "what": "A visit step in the runner for Local Sector Survey and Grand Tour (2,500 and 12,000 cr, 340 to 520 Piloting XP) on the newborns' boards",
+   "when": "next turn"
   }
  ],
  "ships": {
