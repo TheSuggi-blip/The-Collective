@@ -409,3 +409,12 @@ Failed: requires.docked_at never matches (dispatch.py pilot_of reads no base fro
 Requests: requests.log ENT-443 (answer), ENT-447 (to Unity, dispatch.py docked_at).
 Suggestions: the station core's thorium and silicon can be bought, its uranium has no seller nor field in reach (Unity, P2); scorecard counts a market_poll watch as work once a route carries it.
 Report: rare-ores-answered-scanner-ii-fitted-docked-book-watch.
+
+## [ENT-154] | 2026-11-23 12:21 UTC | Zero | session | ref: reports/2026-11-23_zero_stored-iron-to-docked-steel-outpost-shuttle-found.md | see: orders.log ENT-082
+Session: scheduled run turn-zero -- miners' stored iron to Logistics' docked steel, newborn round trips capped, the outpost shuttle found.
+Did: give routes at Factory Belt and Grand Exchange plus a gift on the Khambalia gather for 15,342 iron and 14,726 copper in miners' storage (requests ENT-437 -> ENT-444); gifts on the three Node Beta gathers; Hamal 6 -> 11 ships within its carries; newborn store routes max_jumps 10; strip route gated by in_system after docked_at matched no pilot; guidebook lessons and Standing Plan; knowledge/iron-gathering.md.
+Worked: fill gate PASS at 11:20, 11:39, 11:44, 11:47 and 12:18 UTC (one ship between routes at 11:43 and 12:00); off-role starter modules 62 -> 49 ships (scorecard); Mining net -40,504 -> -38,238 cr/h last hour.
+Failed: a typed time in requests ENT-444, corrected in ENT-445 (errors.log ENT-157); tier-2 hulls 0 of 44, the orders' scarce-vein trigger unmet (Oracle ENT-443); the outpost's faction storage holds iron 100,000 and takes no more, so seated miners shuttle 65 iron to Central Nexus (118 runs, -19,446 cr in 4 h), kept as the cheapest class work open.
+Requests: requests.log ENT-444, ENT-445 (answers to Apollo), ENT-446 (Apollo: hauler receivers at Procyon, Cargo Lanes, Nova Terra), ENT-448 (Unity, cross-division: dispatch.pilot_of base for requires.docked_at).
+Suggestions: Logistics could withdraw the outpost's 100,000 faction-stored iron for docked steel (steel short 61,692); a total-credits column per route in the briefing's plan table would have shown the shuttle at once.
+Report: stored-iron-to-docked-steel-outpost-shuttle-found.
