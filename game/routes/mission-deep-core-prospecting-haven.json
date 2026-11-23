@@ -50,9 +50,9 @@
  },
  "measured": {
   "date": "2026-11-23",
-  "runs": 6,
-  "minutes": 39,
-  "credits_per_run": 3860,
-  "cph_per_ship": 5860
+  "runs": 13,
+  "minutes": 48,
+  "credits_per_run": 3520,
+  "cph_per_ship": 5160
  }
 }
