@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 154.
+Routes: 153.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -74,7 +74,6 @@ Routes: 154.
 | [carry-melt-nexus-to-frontier](carry-melt-nexus-to-frontier.json) | circuit | beyond the border, 17 jumps | Crystal melt stored by Trade at Central Nexus carried to the station bid at Frontier Station (Outer Rim, a moving station) and sold there | up to 1 ships, with 10 crystal_melt stored at central_nexus, while frontier_station bids 3500 cr for crystal_melt | TBD | TBD | TBD | TBD | -- |
 | [carry-melt-nexus-to-sol](carry-melt-nexus-to-sol.json) | circuit | beyond the border, 10 jumps | Crystal melt stored by Trade at Central Nexus carried to the station bid at Confederacy Central Command (Sol) and sold there | up to 1 ships, with 20 crystal_melt stored at central_nexus, while confederacy_central_command bids 4000 cr for crystal_melt | TBD | TBD | TBD | TBD | -- |
 | [carry-null-matter-nexus-to-crucible](carry-null-matter-nexus-to-crucible.json) | circuit | beyond the border, 18 jumps | Null matter stored by Trade at Central Nexus carried to the station bid at The Crucible Garrison and sold there | up to 1 ships, with 65 null_matter stored at central_nexus, while the_crucible_garrison bids 300 cr for null_matter | TBD | TBD | TBD | TBD | -- |
-| [carry-sac-beta-to-hex-star](carry-sac-beta-to-hex-star.json) | circuit | beyond the border, 11 jumps | Caustic sacs stored by Trade at Node Beta carried to the deep player bid at Hex Star (Dheneb) and sold there | up to 1 ships, with 30 caustic_sac stored at node_beta_industrial_station, while b495c6003fc83e18f6d8cecbe6929133 bids 1250 cr for caustic_sac | TBD | TBD | TBD | TBD | -- |
 | [home-frontier-station](home-frontier-station.json) | circuit | beyond the border, 17 jumps | Home to Frontier Station: an Outer Rim scout far from Altais docks at its capital, where its region's work is | up to 12 ships, empty hold, born outerrim | TBD | TBD | TBD | TBD | -- |
 | [outpost-kit-ironlight-to-experiment](outpost-kit-ironlight-to-experiment.json) | circuit | beyond the border, 6 jumps | The first outpost, step 1 of 3: one Outpost Kit bought at Ironlight Crossroads (LHS 1140, lawless) and stored at The Experiment Research Station, our border station two jumps from the site Mining and Intel name | up to 1 ships, 1 pilots in all, empty hold, from 155,000 cr | TBD | TBD | TBD | TBD | -- |
 | [outpost-kit-ironlight-to-node-beta](outpost-kit-ironlight-to-node-beta.json) | circuit | beyond the border, 6 jumps | The Atria outpost, step 1 of 3: one Outpost Kit bought at Ironlight Crossroads (LHS 1140, lawless) and stored at Node Beta, six jumps from Atria on the north road | up to 1 ships, 1 pilots in all, empty hold, from 152,000 cr, while 784309214f105860a16a0c100a70eb14 asks 148663 cr or less for outpost_kit | TBD | TBD | TBD | TBD | -- |
