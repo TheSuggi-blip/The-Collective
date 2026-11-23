@@ -22,6 +22,8 @@
    "title": "Gather what the reserve lacks: a loaded hold stored, then silicon, gold, carbon, nickel, quantum fragments and platinum",
    "routes": [
     "store-hold-central-nexus",
+    "gather-emberglow-elder-silicon",
+    "gather-gliese-876-belt-carbon",
     "gather-glasslight-shoal-silicon",
     "gather-goldcrest-gold",
     "gather-subra-floodlight-flats-silicon",
