@@ -186,6 +186,9 @@
   "sol-newborn": {
    "title": "Solarian-born drones and sentinels: hunts within 6 jumps of Sol and Sirius",
    "routes": [
+    "mission-form-ta-1-confederacy",
+    "mission-confederacy-infrastructure-audit-confederacy",
+    "mission-endorsements-alpha",
     "hunt-sol-jovian-extraction-zone-drift-ray",
     "hunt-nihal-gas-plume-drift-ray",
     "hunt-lacaille-9352-deep-vein-belt-grazer",
