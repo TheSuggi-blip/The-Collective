@@ -38,8 +38,8 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Brokk Deepdelve | Synchrony (`synchrony`) | 0 | theoria |
-| Gundar Rockfist | Synchrony (`synchrony`) | 0 | theoria |
+| Brokk Deepdelve | Pherkad (`pherkad`) | 0 | theoria |
+| Gundar Rockfist | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | Meph Addict | Nexus Prime (`nexus_prime`) | 0 | prospect |
 | Space Hulk | Node Alpha (`node_alpha`) | 0 | shard |
 

@@ -15,7 +15,7 @@ updated: 2026-11-23
 # Hive Swarm [HIVE]
 
 A player faction with 3 base(s) in 3 system(s); the nearest to Nexus Prime is 5 jump(s) away, in Antares (`antares`).
-Pilots of it in our space in the last 24 hours: 1.
+Pilots of it in our space in the last 24 hours: 9.
 
 ## Identity
 
@@ -42,7 +42,15 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| hiver | Acubens (`acubens`) | 0 | bonanza |
+| 395530a76c237308aaa5b1dc | Node Gamma (`node_gamma`) | 0 | workhorse |
+| 41f0a85ee5fe4d71232d03a8 | Node Gamma (`node_gamma`) | 0 | workhorse |
+| 5766f7c87c7f84b6893abd7e | Node Gamma (`node_gamma`) | 0 | workhorse |
+| 67194c43c43f74e1b9267ed5 | Node Gamma (`node_gamma`) | 0 | workhorse |
+| 706a154ccad49b2a57f5f914 | Acubens (`acubens`) | 0 | workhorse |
+| cb9f390ad124b910d6bb336c | Acubens (`acubens`) | 0 | workhorse |
+| dd23b0ca1cc14350d2b0b023 | Node Gamma (`node_gamma`) | 0 | workhorse |
+| f4fb0d5cfa446f5ef0f33b3f | Acubens (`acubens`) | 0 | workhorse |
+| f8c3f4c38ee48a37ee21926b | Node Gamma (`node_gamma`) | 0 | workhorse |
 
 ## Standing History
 

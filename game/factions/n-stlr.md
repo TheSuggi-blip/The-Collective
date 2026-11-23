@@ -40,10 +40,10 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| STLR-004-RIM | Acubens (`acubens`) | 0 | billhook |
+| STLR-004-RIM | Node Beta (`node_beta`) | 0 | billhook |
 | STLR-006-RIM | Nexus Prime (`nexus_prime`) | 0 | billhook |
 | STLR-041-NEB | GSC-0027 (`gsc_0027`) | 0 | prospect |
-| STLR-089-VOI | GSC-0027 (`gsc_0027`) | 0 | threshold |
+| STLR-056-VOI | Synchrony (`synchrony`) | 0 | threshold |
 | STLR-142-NEB | GSC-0027 (`gsc_0027`) | 0 | prospect |
 | STLR-164-NEB | GSC-0027 (`gsc_0027`) | 0 | prospect |
 | VMan | Node Beta (`node_beta`) | 0 | threshold |
