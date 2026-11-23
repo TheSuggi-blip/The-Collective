@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 457.
+Routes: 456.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -245,7 +245,6 @@ Routes: 457.
 | [hunt-avior-cryobelt-hollow-pilgrim](hunt-avior-cryobelt-hollow-pilgrim.json) | hunt | beyond the border, 12 jumps | hollow_pilgrim at avior_cryobelt; loot sold at Sirius Observatory Station | up to 1 ships, empty hold, standing work | 4 | 41 | -530 | -780 | 2026-11-22 |
 | [hunt-avior-gas-pocket-halo-drifter](hunt-avior-gas-pocket-halo-drifter.json) | hunt | beyond the border, 12 jumps | halo_drifter at avior_gas_pocket; loot sold at Node Beta Industrial Station | up to 1 ships, empty hold, standing work | 2 | 33 | -370 | -670 | 2026-11-23 |
 | [hunt-bd20-2457-ice-fields-rime-grazer](hunt-bd20-2457-ice-fields-rime-grazer.json) | hunt | beyond the border, 17 jumps | rime_grazer, pressblister at bd20_2457_ice_fields; loot to the trader at The Rampart Checkpoint (newborn region work, Krynn) | up to 1 ships, empty hold, standing work | 8 | 17 | -180 | -620 | 2026-11-23 |
-| [hunt-bd20-2457-slowcool-cluster-patina-grazer](hunt-bd20-2457-slowcool-cluster-patina-grazer.json) | hunt | beyond the border, 17 jumps | patina_grazer, belt_grazer at slowcool_cluster; loot to the trader at The Rampart Checkpoint (newborn region work, Krynn) | up to 1 ships, empty hold, standing work | 3 | 40 | -250 | -340 | 2026-11-23 |
 | [hunt-birchwood-vapor-fields-cinder-sylph](hunt-birchwood-vapor-fields-cinder-sylph.json) | hunt | beyond the border, 18 jumps | cinder_sylph at birchwood_vapor_fields; loot sold at The Crucible Garrison | up to 1 ships, empty hold, standing work | 4 | 56 | -510 | -560 | 2026-11-22 |
 | [hunt-botein-belt-carapace](hunt-botein-belt-carapace.json) | hunt | beyond the border, 7 jumps | belt-grazer, patina-grazer at botein belt; goods into storage at The Experiment Research Station | up to 1 ships, without piercing_railgun_i, empty hold, standing work | 7 | 24 | -120 | -330 | 2026-11-23 |
 | [hunt-botein-lampglint-rock-carapace](hunt-botein-lampglint-rock-carapace.json) | hunt | beyond the border, 7 jumps | belt-grazer, patina-grazer at lampglint rock; goods into storage at The Experiment Research Station | up to 1 ships, without piercing_railgun_i, empty hold, standing work | 7 | 36 | -130 | -310 | 2026-11-23 |

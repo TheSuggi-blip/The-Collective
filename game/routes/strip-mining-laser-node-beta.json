@@ -1,0 +1,29 @@
+{
+ "id": "strip-mining-laser-node-beta",
+ "kind": "circuit",
+ "title": "A Military ship in node_beta strips its off-role Mining Laser I (and an Ice Harvester I) docked at Node Beta Industrial Station into its storage there",
+ "note": "Written by Apophis 2026-11-23 12:19 UTC (orders ENT-082, block APOPHIS: strip mining lasers, F17: stripping off-role starters deploys at once in parallel batches; scorecard trigger Module Fit & Purity: 130 of 130 Military ships carry a mining_laser_i, 8 also an ice_harvester_i, table ship_modules 12:08 UTC). A drone or sentinel mines nothing (F23); the laser takes cpu 2 and power 5 (catalog 0.734.0) that a second Shield Booster II or an armor plate uses. The copy of Zero's strip-pulse-laser-central-nexus form: one docked stop, unfit then store all, gated by requires.in_system (requires.docked_at refuses every pilot today, requests.log ENT-447), so only a ship already in the system takes it. The stored lasers are offered to Mining (requests.log), whose strip route buys a Mining Laser I at about 1,616 cr.",
+ "once": true,
+ "max_ships": 10,
+ "max_pilots": 130,
+ "min_credits": 3000,
+ "requires": {
+  "any_module": [
+   "mining_laser_i",
+   "ice_harvester_i"
+  ],
+  "in_system": [
+   "node_beta"
+  ]
+ },
+ "stops": [
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "unfit": [
+    "mining_laser_i",
+    "ice_harvester_i"
+   ],
+   "store": "all"
+  }
+ ]
+}

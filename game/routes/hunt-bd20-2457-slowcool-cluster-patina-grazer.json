@@ -2,7 +2,7 @@
  "id": "hunt-bd20-2457-slowcool-cluster-patina-grazer",
  "kind": "hunt",
  "title": "patina_grazer, belt_grazer at slowcool_cluster; loot to the trader at The Rampart Checkpoint (newborn region work, Krynn)",
- "note": "Written by Apophis 2026-11-23 04:12 UTC for the newborn pilots of Military (orders ENT-071, P6: their class's work where they were born; the dispatcher sends a pilot of another empire no further than 6 jumps; this place stands 6 jumps from krynn). Herd by the census in table herds (read 21:20 UTC): patina_grazer 5, belt_grazer 5. Two animals are left of each species (rule F38): kills 5, min_creatures kills + 2. Species pass both gauges of one typical drone (gauges.py species). One hunter to the place. Docks and hands its loot to the trader receiver at The Rampart Checkpoint, 3 jumps away (strict classes, P5). Lawless or foreign space: alone against pirates, empty hold (F3). A test of three results (F37).",
+ "note": "Written by Apophis 2026-11-23 04:12 UTC for the newborn pilots of Military (orders ENT-071, P6: their class's work where they were born; the dispatcher sends a pilot of another empire no further than 6 jumps; this place stands 6 jumps from krynn). Herd by the census in table herds (read 21:20 UTC): patina_grazer 5, belt_grazer 5. Two animals are left of each species (rule F38): kills 5, min_creatures kills + 2. Species pass both gauges of one typical drone (gauges.py species). One hunter to the place. Docks and hands its loot to the trader receiver at The Rampart Checkpoint, 3 jumps away (strict classes, P5). Lawless or foreign space: alone against pirates, empty hold (F3). A test of three results (F37). 2026-11-23 12:19 UTC (Apophis): status off for danger (rule F9, skill military-turn step 6): its run of 08:51 UTC fell to 34 percent hull from a full 110 (table runs, lowest_hull_pct; 3 kills), under the 40 percent line; four other runs 94 to 99. It wakes when a bigger side or an armored hull is set on it.",
  "place": "bd20_2457:slowcool_cluster",
  "species": [
   "patina_grazer",
@@ -28,5 +28,6 @@
   "cph_per_ship": -340,
   "hours": 12,
   "last_run": "2026-11-23T09:45:42Z"
- }
+ },
+ "status": "off"
 }

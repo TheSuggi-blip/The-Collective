@@ -1,0 +1,38 @@
+{
+ "id": "fit-armor-plate-ii-krynn-test",
+ "kind": "circuit",
+ "title": "Test: one Crimson-born Military ship strips its Mining Laser I and fits an Armor Plate II into its empty defence slot at crimson_war_citadel",
+ "note": "Written by Apophis 2026-11-23 12:19 UTC (orders ENT-082, block APOPHIS: empire fits, strip mining lasers; O2: Crimson armor, Solarian accuracy; scorecard Module Fit & Purity). The Shard (hull 110, shield 40, armor 8, one defence slot empty on all 40). Armor Plate II: armor +10, cpu 2, power 0, speed penalty 1 (catalog 0.734.0); every starter hull has speed 1, and what a penalty does to it is not known: one ship first (F37, an unproven fit), its ship file read for speed and armor after the fit, then its hunts' lowest hull. Ask read 2026-11-23 about 11:27 UTC: 1,269 cr x 5 (table books). Paid from the pilot's own wallet (F12).",
+ "once": true,
+ "max_ships": 1,
+ "max_pilots": 1,
+ "min_credits": 5000,
+ "requires": {
+  "empire": "crimson",
+  "without_module": "armor_plate_ii",
+  "empty_hold": true,
+  "max_jumps": 4,
+  "ask": {
+   "item": "armor_plate_ii",
+   "base": "crimson_war_citadel",
+   "max_price": 1500,
+   "min_qty": 1,
+   "max_age_minutes": 180
+  }
+ },
+ "stops": [
+  {
+   "at": "krynn:war_citadel:crimson_war_citadel",
+   "unfit": [
+    "mining_laser_i"
+   ],
+   "fit": [
+    {
+     "module": "armor_plate_ii",
+     "max_price": 1500
+    }
+   ],
+   "store": "all"
+  }
+ ]
+}
