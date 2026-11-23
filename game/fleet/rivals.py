@@ -407,7 +407,10 @@ def _inspect_our_adoption(repo_root, data_dir, conn, tables):
     div_work_pct = {dv: round(100.0 * div_work.get(dv, 0) / max(1, cnt), 1) for dv, cnt in div_tot.items()}
 
     trade_net_24h = 0.0
+    trade_accrual_24h = 0.0
     steady_net_24h = 0.0
+    accrual_op_24h = 0.0
+    has_accrual_24h = False
     mining_ore_sh = 0.0
     intel_fresh_pct = 0.0
     if "stats_figures" in tables:
@@ -420,6 +423,20 @@ def _inspect_our_adoption(repo_root, data_dir, conn, tables):
             mining_ore_sh = _num(r3[0]) if r3 else 0.0
         except sqlite3.Error:
             pass
+    try:
+        import accounting as _acc_rv
+        _pnl_rv = _acc_rv.compute_pnl(conn, repo_root=str(repo_root), data_dir=str(data_dir), hours=24, now=now)
+        if isinstance(_pnl_rv, dict):
+            if _pnl_rv.get("raw_steady_h") or _pnl_rv.get("once_direct_h") or _pnl_rv.get("has_inventory_accrual"):
+                steady_net_24h = float(_pnl_rv.get("recurring_cash_h", steady_net_24h))
+                accrual_op_24h = float(_pnl_rv.get("accrual_operating_h", steady_net_24h))
+                has_accrual_24h = bool(_pnl_rv.get("has_inventory_accrual"))
+                _td = (_pnl_rv.get("by_division") or {}).get("Trade") or {}
+                if _td:
+                    trade_net_24h = float(_td.get("recurring_cash_h", trade_net_24h))
+                    trade_accrual_24h = float(_td.get("accrual_op_h", trade_net_24h))
+    except Exception:
+        pass
     if "runs" in tables and steady_net_24h == 0.0:
         try:
             r = conn.execute("SELECT COALESCE(SUM(CASE WHEN COALESCE(one_time,0)=0 THEN credits ELSE 0 END),0)/24.0 FROM runs WHERE t > strftime('%s','now') - 86400").fetchone()
@@ -464,7 +481,10 @@ def _inspect_our_adoption(repo_root, data_dir, conn, tables):
         "empire_ships": empire_ships,
         "div_work_pct": div_work_pct,
         "trade_net_24h": round(trade_net_24h, 0),
+        "trade_accrual_24h": round(trade_accrual_24h, 0),
         "steady_net_24h": round(steady_net_24h, 0),
+        "accrual_op_24h": round(accrual_op_24h, 0),
+        "has_accrual_24h": has_accrual_24h,
         "mining_ore_sh": round(mining_ore_sh, 1),
         "intel_fresh_pct": intel_fresh_pct,
         "endl_logged": endl_logged,
@@ -557,7 +577,7 @@ def _build_strategy_playbooks(our_adopt, leaders, market_edges):
                 _kpi("Sovereign bases/stations", "Command", f"{our_adopt['bases']}", ">=2", our_adopt["bases"] >= 2, "empire.json"),
                 _kpi("Tourism/hospitality modules", "Logistics", f"{our_adopt['tourism_facs']}", ">=1", our_adopt["tourism_facs"] >= 1, "empire.json"),
                 _kpi("Rival gourmet/luxury bids scanned", "Intel", f"{len(crafted_bids)}", ">=1", len(crafted_bids) >= 1, "read.db:books"),
-                _kpi("Active Trade net cashflow", "Trade", f"{_fmt_signed_cr(our_adopt['trade_net_24h'])}/h", ">0 cr/h", our_adopt["trade_net_24h"] > 0, "read.db:runs"),
+                _kpi("Trade recurring cash (matched)", "Trade", f"{_fmt_signed_cr(our_adopt['trade_net_24h'])}/h" + (f" (accrual {_fmt_signed_cr(our_adopt['trade_accrual_24h'])}/h)" if our_adopt.get("has_accrual_24h") else ""), ">0 cr/h", our_adopt["trade_net_24h"] > 0, "accounting.py"),
             ],
             our_adopt["tourism_facs"] > 0,
             f"ACTIVE ({our_adopt['tourism_facs']} tourism fac)",
@@ -599,7 +619,7 @@ def _build_strategy_playbooks(our_adopt, leaders, market_edges):
                 _kpi("5-empire hub presence", "Command", f"{empires_present}/5 empires", "5/5", empires_present >= 5, "fleet.json"),
                 _kpi("Active Bursar/exchange ships", "Trade", f"{our_adopt['active_bursar']}", ">=5", our_adopt["active_bursar"] >= 5, "fleet.json"),
                 _kpi("P2P contracts/orders logged", "Trade", f"{our_adopt['contracts_n']}", ">=5", our_adopt["contracts_n"] >= 5, "contracts.log"),
-                _kpi("Trade 24h steady net/h", "Trade", f"{_fmt_signed_cr(our_adopt['trade_net_24h'])}/h", ">0 cr/h", our_adopt["trade_net_24h"] > 0, "read.db:runs"),
+                _kpi("Trade 24h recurring cash/h", "Trade", f"{_fmt_signed_cr(our_adopt['trade_net_24h'])}/h" + (f" (accrual {_fmt_signed_cr(our_adopt['trade_accrual_24h'])}/h)" if our_adopt.get("has_accrual_24h") else ""), ">0 cr/h", our_adopt["trade_net_24h"] > 0, "accounting.py"),
             ],
             our_adopt["active_bursar"] >= 5,
             f"ACTIVE ({our_adopt['active_bursar']} Bursars)",
@@ -686,7 +706,7 @@ def _build_strategy_playbooks(our_adopt, leaders, market_edges):
                 _kpi("Live Outsource/Outsupply edges", "Intel", f"{len(all_bids) + len(raw_cheap)}", ">=3", (len(all_bids) + len(raw_cheap)) >= 3, "read.db:books"),
                 _kpi("Market books <3h fresh", "Intel", f"{our_adopt['intel_fresh_pct']:.0f}%", ">=70%", our_adopt["intel_fresh_pct"] >= 70.0, "read.db:books"),
                 _kpi("Logged P2P arbitrage contracts", "Trade", f"{our_adopt['contracts_n']}", ">=5", our_adopt["contracts_n"] >= 5, "contracts.log"),
-                _kpi("Fleet steady cashflow", "Command", f"{_fmt_signed_cr(our_adopt['steady_net_24h'])}/h", ">0 cr/h", our_adopt["steady_net_24h"] > 0, "read.db:runs"),
+                _kpi("Fleet recurring cashflow", "Command", f"{_fmt_signed_cr(our_adopt['steady_net_24h'])}/h" + (f" | IAS2 accrual {_fmt_signed_cr(our_adopt['accrual_op_24h'])}/h" if our_adopt.get("has_accrual_24h") else ""), ">0 cr/h", our_adopt["steady_net_24h"] > 0, "accounting.py"),
             ],
             our_adopt["contracts_n"] >= 5 and our_adopt["steady_net_24h"] > 0,
             f"ACTIVE ({our_adopt['contracts_n']} contracts)",

@@ -660,6 +660,7 @@ def api_ship(name):
     db_path = unit_data / "store" / "read.db"
     ship_name = ship.get("name") or name
     cls_name = str(ship.get("class") or "").strip()
+    _ship_base_map, _ship_bid_map = {}, {}
     if db_path.is_file() and not db_path.is_symlink():
         conn = None
         try:
@@ -684,19 +685,17 @@ def api_ship(name):
                         "speed": int(num(hr["speed"])), "armor": int(num(hr["armor"])),
                     }
             if "runs" in tables:
-                rr = conn.execute(
-                    "SELECT COUNT(*) AS n, ROUND(SUM(COALESCE(minutes,0)),1) AS mins, "
-                    "ROUND(SUM(COALESCE(credits,0))) AS cr, ROUND(SUM(COALESCE(one_time,0))) AS once "
-                    "FROM runs WHERE pilot=? AND t > strftime('%s','now') - 86400",
-                    (ship_name,),
-                ).fetchone()
-                if rr:
-                    ship["runs_24h"] = {
-                        "runs": int(num(rr["n"])), "minutes": float(rr["mins"] or 0.0),
-                        "credits": int(num(rr["cr"])), "one_time": int(num(rr["once"])),
-                    }
+                import sys as _ship_acc_sys
+                _fdir_s = str(REPO / "game" / "fleet")
+                if _fdir_s not in _ship_acc_sys.path:
+                    _ship_acc_sys.path.insert(0, _fdir_s)
+                import accounting as _ship_acc
+                ship["runs_24h"] = _ship_acc.ship_pnl_24h(
+                    conn, ship_name, repo_root=str(REPO), data_dir=str(unit_data)
+                )
+                _ship_base_map, _ship_bid_map, _ = _ship_acc._load_price_maps(conn)
         except sqlite3.Error:
-            pass
+            _ship_base_map, _ship_bid_map = {}, {}
         finally:
             if conn is not None:
                 conn.close()
@@ -715,22 +714,26 @@ def api_ship(name):
                 if not isinstance(im, dict) or not im:
                     continue
                 rows_b = []
-                tot_u, tot_w = 0, 0
+                tot_u, tot_w, tot_nrv = 0, 0, 0
                 for iid, qty in sorted(im.items(), key=lambda kv: -num(kv[1])):
                     q = int(num(qty))
                     if q <= 0:
                         continue
                     it = items_cat.get(iid) or {}
                     val = int(num(it.get("base_value")))
+                    mb = _ship_bid_map.get(iid)
+                    nrv_u = min(val, mb) if (mb is not None and mb > 0 and val > 0) else (mb if (mb is not None and mb > 0) else val)
                     w = q * val
+                    w_nrv = int(round(q * nrv_u))
                     tot_u += q
                     tot_w += w
-                    rows_b.append({"id": text(iid, 60), "name": text(it.get("name") or iid, 60), "kind": book.kind_of(it), "units": q, "worth": w})
+                    tot_nrv += w_nrv
+                    rows_b.append({"id": text(iid, 60), "name": text(it.get("name") or iid, 60), "kind": book.kind_of(it), "units": q, "worth": w, "worth_nrv": w_nrv})
                 if rows_b:
                     boxes.append({
                         "base": text(base_id, 60),
                         "name": text(book.place_name(str(unit_data), base_id), 80),
-                        "units": tot_u, "worth": tot_w, "items": rows_b[:40],
+                        "units": tot_u, "worth": tot_w, "worth_nrv": tot_nrv, "items": rows_b[:40],
                     })
             boxes.sort(key=lambda b: (-b["worth"], -b["units"]))
             ship["lockboxes"] = boxes
@@ -2127,6 +2130,7 @@ def _build_ops():
                 out["accounting"] = {
                     "24h": _acc2.compute_pnl(conn, repo_root=str(REPO), data_dir=str(_acc_data), fleet_json=_fj_acc, hours=24),
                     "6h": _acc2.compute_pnl(conn, repo_root=str(REPO), data_dir=str(_acc_data), fleet_json=_fj_acc, hours=6),
+                    "1h": _acc2.compute_pnl(conn, repo_root=str(REPO), data_dir=str(_acc_data), fleet_json=_fj_acc, hours=1),
                 }
             except Exception:
                 pass

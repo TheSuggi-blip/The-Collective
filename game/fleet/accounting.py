@@ -517,6 +517,103 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
     }
 
 
+def ship_pnl_24h(conn, pilot, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None):
+    """Compute GAAP/IFRS-aligned 24h KPIs for one individual ship (matching principle + IAS 2 handovers)."""
+    now = float(time.time() if now is None else now)
+    cut = now - 86400.0
+    all_once, fit_once, _mission_once = once_route_ids(repo_root)
+    base_map, max_bid_map, _bids = _load_price_maps(conn)
+
+    runs_n = 0
+    mins_tot = 0.0
+    raw_cr = 0.0
+    raw_ot = 0.0
+    rec_cr = 0.0
+    once_direct = 0.0
+    seed_matched = 0.0
+    capex_matched = 0.0
+
+    if conn is not None and _has_table(conn, "runs"):
+        for r in conn.execute(
+            "SELECT route, COALESCE(minutes, 0), COALESCE(credits, 0), COALESCE(one_time, 0), COALESCE(readable, 1) "
+            "FROM runs WHERE pilot = ? AND t >= ?",
+            (pilot, cut),
+        ):
+            runs_n += 1
+            rt = str(r[0] or "")
+            mins = _num(r[1])
+            cr = _num(r[2])
+            ot = _num(r[3])
+            rd = int(_num(r[4], 1))
+            mins_tot += mins
+            raw_ot += ot
+            if rd:
+                raw_cr += cr
+            if rt in all_once:
+                if rd:
+                    once_direct += cr
+                matched = (cr if rd else 0.0) + ot
+                if rt in fit_once:
+                    capex_matched += matched
+                else:
+                    seed_matched += matched
+            else:
+                if rd:
+                    rec_cr += cr
+                if ot < 0:
+                    capex_matched += ot
+                elif ot > 0:
+                    seed_matched += ot
+
+    ho_out = 0.0
+    ho_in = 0.0
+    ho_path = Path(data_dir) / "stock" / "handover.jsonl"
+    if ho_path.is_file():
+        try:
+            with open(ho_path, encoding="utf-8", errors="replace") as fh:
+                for line in fh:
+                    try:
+                        row = json.loads(line)
+                    except ValueError:
+                        continue
+                    if _num(row.get("at") or row.get("t")) < cut:
+                        continue
+                    frm = str(row.get("from") or "")
+                    to = str(row.get("to") or "")
+                    if frm != pilot and to != pilot:
+                        continue
+                    for it, u in (row.get("items") or {}).items():
+                        v = _num(u) * lcnrv_unit_price(str(it), base_map, max_bid_map)
+                        if v > 0:
+                            if frm == pilot:
+                                ho_out += v
+                            if to == pilot:
+                                ho_in += v
+        except OSError:
+            pass
+
+    rec_i = int(round(rec_cr))
+    seed_i = int(round(seed_matched))
+    capex_i = int(round(capex_matched))
+    ho_out_i = int(round(ho_out))
+    ho_in_i = int(round(ho_in))
+    return {
+        "runs": runs_n,
+        "minutes": round(mins_tot, 1),
+        "credits": int(round(raw_cr)),
+        "one_time": int(round(raw_ot)),
+        "recurring_cash": rec_i,
+        "once_direct": int(round(once_direct)),
+        "seed_matched": seed_i,
+        "capex_matched": capex_i,
+        "handovers_out_nrv": ho_out_i,
+        "handovers_in_nrv": ho_in_i,
+        "net_handovers_nrv": ho_out_i - ho_in_i,
+        "accrual_value_add": rec_i + ho_out_i - ho_in_i,
+        "total_wallet": rec_i + seed_i + capex_i,
+    }
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description="GAAP/IFRS vault valuation and Cash-to-Accrual P&L report.")
     ap.add_argument("--data", default=os.environ.get("COLLECTIVE_DATA", DATA_DEFAULT))

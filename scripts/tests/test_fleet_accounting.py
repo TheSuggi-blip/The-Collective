@@ -223,5 +223,29 @@ class TestFleetAccounting(unittest.TestCase):
             self.assertEqual(by_r["mission-zeta-seed"]["matched_net"], 4560000)
 
 
+    def test_ship_pnl_24h_matches_accounting_principles(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root, data, now = _build_fixture(tmp)
+            conn = sqlite3.connect(str(data / "store" / "read.db"))
+            try:
+                m_pnl = accounting.ship_pnl_24h(conn, "miner-1", repo_root=str(root), data_dir=str(data), now=now)
+                t_pnl = accounting.ship_pnl_24h(conn, "trader-1", repo_root=str(root), data_dir=str(data), now=now)
+                d_pnl = accounting.ship_pnl_24h(conn, "drone-1", repo_root=str(root), data_dir=str(data), now=now)
+            finally:
+                conn.close()
+            self.assertEqual(m_pnl["recurring_cash"], 0)
+            self.assertEqual(m_pnl["once_direct"], -240000)
+            self.assertEqual(m_pnl["seed_matched"], 4560000)
+            self.assertEqual(m_pnl["handovers_out_nrv"], 48000)
+            self.assertEqual(m_pnl["accrual_value_add"], 48000)
+            self.assertEqual(m_pnl["total_wallet"], m_pnl["credits"] + m_pnl["one_time"])
+            self.assertEqual(t_pnl["recurring_cash"], 450000)
+            self.assertEqual(t_pnl["handovers_in_nrv"], 48000)
+            self.assertEqual(t_pnl["accrual_value_add"], 402000)
+            self.assertEqual(d_pnl["recurring_cash"], 0)
+            self.assertEqual(d_pnl["capex_matched"], -96000)
+            self.assertEqual(d_pnl["total_wallet"], -96000)
+
+
 if __name__ == "__main__":
     unittest.main()

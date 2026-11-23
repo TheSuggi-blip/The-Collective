@@ -1981,7 +1981,14 @@ function renderShip(panel) {
   const skpi = (k, v, sTxt, c) => { const b = el('div', 'kpi' + (c ? ' ' + c : '')); b.append(el('div', 'k', k), el('div', 'v', v)); if (sTxt) b.append(el('div', 's', sTxt)); kgrid.append(b); };
   const tierLbl = hs ? 'T' + hs.tier + ' ' : '';
   skpi('Hull & Empire', tierLbl + (d.class || 'Threshold'), (d.empire || 'voidborn') + (hs ? ' | ' + hs.weapon_slots + 'W/' + hs.defense_slots + 'D/' + hs.utility_slots + 'U' : '') + (readyT2 ? ' | READY FOR T2' : ''), isUpgradedHull(d.class) ? 'main pos' : readyT2 ? 'warn' : '');
-  skpi('Pilot Wallet', fmt(d.credits) + ' cr', (r24 && r24.runs ? '24h: ' + signed((r24.credits || 0) + (r24.one_time || 0)) + ' cr (' + r24.runs + ' runs)' : (d.docked ? 'Docked: ' + d.docked : (d.system_name || d.system || 'in space'))), d.credits >= 30000 ? 'pos' : d.credits < 10000 ? 'warn' : '');
+  const sRec24 = r24 ? (r24.recurring_cash !== undefined ? r24.recurring_cash : (r24.credits || 0)) : 0;
+  const sAcc24 = r24 ? (r24.accrual_value_add !== undefined ? r24.accrual_value_add : sRec24) : 0;
+  const sTot24 = r24 ? (r24.total_wallet !== undefined ? r24.total_wallet : ((r24.credits || 0) + (r24.one_time || 0))) : 0;
+  skpi('Pilot Wallet', fmt(d.credits) + ' cr',
+    (r24 && r24.runs
+      ? '24h wallet ' + signed(sTot24) + ' | accrual ' + signed(sAcc24) + ' (' + r24.runs + ' runs)'
+      : (d.docked ? 'Docked: ' + d.docked : (d.system_name || d.system || 'in space'))),
+    d.credits >= 30000 ? 'pos' : d.credits < 10000 ? 'warn' : '');
   skpi('Piloting & Mastery', 'Piloting ' + pLv, (mastSk ? mastKey.replace(/_/g, ' ') + ' Lv ' + mastSk.level : (topSk ? topSk[0].replace(/_/g, ' ') + ' Lv ' + topSk[1].level : 'no specialty yet')), pLv >= 10 ? 'pos' : '');
   const orderTxt = d.order ? String(d.order).replace(/^(circuit|mine|hunt|census|guard)\s+/, '') : (d.loop && d.loop.type ? d.loop.type : what);
   const failN = d.loop_failures || 0;
@@ -2068,7 +2075,10 @@ function renderShip(panel) {
     const recRows = [
       ['Missions completed', fmt(d.missions_done || 0)],
       ['24h runs / time', r24 ? fmt(r24.runs) + ' runs (' + (r24.minutes / 60).toFixed(1) + 'h)' : '--'],
-      ['24h steady / once', r24 ? signed(r24.credits) + ' steady | ' + signed(r24.one_time) + ' once' : '--'],
+      ['24h Recur cash (matched)', r24 ? signed(sRec24) + ' cr (repeating routes, excl ' + signed(r24.once_direct || 0) + ' once-fuel)' : '--'],
+      ['24h Seed / CapEx', r24 ? signed(r24.seed_matched || 0) + ' seed | ' + signed(r24.capex_matched || 0) + ' CapEx' : '--'],
+      ['24h Handovers (IAS 2)', r24 ? ('+' + fmt(r24.handovers_out_nrv || 0) + ' out | -' + fmt(r24.handovers_in_nrv || 0) + ' in -> accrual ' + signed(sAcc24) + ' cr') : '--'],
+      ['24h Total wallet net', r24 ? signed(sTot24) + ' cr (Recur + Seed + CapEx)' : '--'],
     ];
     for (const [k, v] of Object.entries(d.stats || {})) recRows.push([k.replace(/_/g, ' '), fmt(v)]);
     rcard.append(facts(recRows));
@@ -3313,7 +3323,7 @@ function renderProgressionSubtab(panel, prData) {
     const wCard = el('div', 'icard');
     wCard.append(el('h3', null, 'Weekly Trajectory Ledger'), el('p', 'sub', 'Rolling ISO-week operating cashflow & peak purse (stats_money_hour)'));
     wCard.append(fitTable(table(
-      ['Week', 'Span', 'Hrs', 'Income', 'Costs', 'Steady Net', 'Once Net', 'Peak Purse'],
+      ['Week', 'Span', 'Hrs', 'Recur Inc', 'Costs', 'Cash Steady', 'Seed & CapEx', 'Peak Purse'],
       prData.weekly.map((w) => [w.period, w.span, fmt(w.active_hours), fmt(w.income), fmt(w.costs), (w.steady_net >= 0 ? '+' : '') + fmt(w.steady_net), (w.paid_once >= 0 ? '+' : '') + fmt(w.paid_once), fmt(w.peak_purse)]),
       [2, 3, 4, 5, 6, 7]
     )));
@@ -3864,31 +3874,55 @@ async function renderMetrics(panel, live) {
     pickRow.append(b);
   }
   panel.append(pickRow);
+  const ops = await opsOf();
+  if (!live()) return;
+  const acc = ops && ops.accounting && (ops.accounting[metricWin] || ops.accounting['24h'] || null);
   const span = w ? (w.minutes >= 120 ? Math.round(w.minutes / 60) + ' hours' : w.minutes + ' minutes') : '';
   panel.append(el('p', 'sub', w
-    ? 'All money over the last ' + span + '. Net is what the wallets changed by: steady money, which the fleet makes again and again, plus what the game paid once per pilot.'
-      + (w.seed && w.seed.pilots ? ' ' + fmt(w.seed.pilots) + ' new pilots joined in this stretch: their first wallets are left out.'
-        : '')
-      + (w.presence && (w.presence.left || w.presence.back) ? ' A ship the engine stopped listing, or lists again, is left out with its wallet.'
-        : w.ships_changed && !(w.seed && w.seed.pilots) ? ' The number of ships changed in this stretch and no record says how: the figures may be off by a ship\'s wallet.' : '')
-      + (w.transfers_moved_per_hour ? ' Gifts between our own ships are neither income nor costs.' : '')
+    ? 'GAAP / IFRS Cash-to-Accrual Ledger over the last ' + span + ': separates Recurring Cash (excl. once-mission fuel), IAS 2 Inventory/WIP Accrual, Non-Recurring Seed Missions, and Investing CapEx.'
+      + (w.seed && w.seed.pilots ? ' ' + fmt(w.seed.pilots) + ' newborn wallets excluded.' : '')
+      + (w.presence && (w.presence.left || w.presence.back) ? ' Disconnected/rejoining ship wallets excluded.' : '')
+      + (w.transfers_moved_per_hour ? ' Internal ship gifts & treasury transfers eliminated.' : '')
     : 'No figures for this stretch yet: the collector needs five minutes of samples.'));
   const grid = el('div', 'kpis');
   const kpi = (k, v, sub, cls) => { const b = el('div', 'kpi' + (cls ? ' ' + cls : '')); b.append(el('div', 'k', k), el('div', 'v', v)); if (sub) b.append(el('div', 's', sub)); grid.append(b); return b; };
   const tone = (n) => (n < 0 ? ' neg' : n > 0 ? ' pos' : '');
-  const whole = (y) => (y.total_per_hour !== undefined ? y.total_per_hour : (y.cph || 0) + (y.one_time_per_hour || 0));   // a fleet file of before 2026-11-17 has no total
+  const whole = (y) => (y.total_per_hour !== undefined ? y.total_per_hour : (y.cph || 0) + (y.one_time_per_hour || 0));
   const net = w ? purseNet(w) : 0, own = w && w.treasury_own_per_hour !== undefined;
-  kpi('Net / h', w ? signed(net) : '--', own ? 'everything: steady money, paid once and the treasury\'s own' : 'everything: steady money plus paid once', 'main' + (w ? tone(net) : ''));
-  kpi('Steady net / h', w ? signed(w.cph) : '--', 'income minus costs: what repeats', 'main' + (w ? tone(w.cph) : ''));
-  kpi('Paid once / h', w ? signed(w.one_time_per_hour) : '--', 'rewards once per pilot, less goods bought for them', w ? tone(w.one_time_per_hour).trim() : '');
-  kpi('Treasury, own / h', own ? signed(w.treasury_own_per_hour) : '--', own ? 'rent and buildings it paid, less money in besides our deposits' : 'not read at both ends of this stretch yet',
+  const recCash = acc ? acc.recurring_cash_h : (w ? w.cph : 0);
+  const invAcc = acc && acc.has_inventory_accrual ? acc.inventory_accrual_h : null;
+  const accOp = acc ? acc.accrual_operating_h : recCash;
+  const topB = acc && (acc.top_inv_builds || []).length
+    ? (acc.top_inv_builds || []).slice(0, 3).map((x) => x.item + ' +' + fmtCompact(x.value)).join(', ')
+    : '';
+  kpi('Purse cash flow / h', w ? signed(net) : '--',
+    acc ? 'Recurring ' + signed(acc.recurring_cash_h) + ' + Seed ' + signed(acc.seed_net_h) + ' + CapEx ' + signed(acc.capex_net_h) + (own ? ' + Treas ' + signed(w.treasury_own_per_hour) : '')
+      : (own ? 'everything: recurring, seed, CapEx & treasury own' : 'wallets net change / h'),
+    'main' + (w ? tone(net) : ''));
+  kpi('Recurring cash / h', w ? signed(recCash) : '--',
+    acc ? 'matched: raw ' + signed(acc.raw_steady_h) + ' excl ' + signed(acc.once_direct_h) + ' once-route fuel/salvage' : 'income minus running costs',
+    'main' + (w ? (recCash > 0 ? ' pos' : ' warn') : ''));
+  kpi('Accrual operating / h', acc ? signed(accOp) : '--',
+    acc && acc.has_inventory_accrual
+      ? 'Recurring cash + IAS 2 NRV inv ' + signed(invAcc) + '/h' + (topB ? ' (' + topB + ')' : '')
+      : 'awaiting stock_hour inventory snapshots',
+    'main' + (acc ? tone(accOp) : ''));
+  kpi('Seed missions / h', acc ? signed(acc.seed_net_h) : (w ? signed(w.one_time_per_hour) : '--'),
+    acc ? 'non-recurring: rewards +' + fmtCompact(acc.seed_rewards_h) + ' matched w/ fuel ' + signed(acc.once_mission_direct_h) : 'one-time rewards less one-time buys',
+    acc ? tone(acc.seed_net_h).trim() : (w ? tone(w.one_time_per_hour).trim() : ''));
+  kpi('Investing CapEx / h', acc ? signed(acc.capex_net_h) : '--',
+    acc ? 'hulls, modules & outpost kits bought once (gross ' + signed(acc.capex_gross_h) + ', fit salvage ' + signed(acc.capex_fit_direct_h) + ')' : 'capital equipment purchases',
+    '');
+  kpi('Treasury, own / h', own ? signed(w.treasury_own_per_hour) : '--',
+    own ? 'NPC rent & treasury-paid builds, excl. pilot deposits' : 'not read at both ends of this stretch yet',
     own ? tone(w.treasury_own_per_hour).trim() : '');
-  kpi('Steady income / h', w ? fmt(w.income_per_hour) : '--', w && w.income_per_hour < 0 ? 'below zero: a fault of the books' : 'sales and repeatable rewards',
+  kpi('Recurring income / h', w ? fmt(w.income_per_hour) : '--',
+    w && w.income_per_hour < 0 ? 'below zero: ledger anomaly' : 'trade sales, contracts & repeatable rewards',
     w && w.income_per_hour > 0 ? 'pos' : w && w.income_per_hour < 0 ? 'warn' : '');
   const metered = w && w.fuel_cr_per_hour !== undefined;
   const costSub = w && w.costs_per_hour < 0
-    ? 'below zero: uncounted inflow in wallets; read the longer stretch'
-    : (metered ? 'incl. fuel ' + fmtCompact(w.fuel_cr_per_hour) + '/h (' + fmt(w.fuel_units_per_hour) + 'u) + repairs ' + fmt(w.repair_cr_per_hour) + '/h + buys' : 'fuel, repairs, goods, modules');
+    ? 'below zero: uncounted inflow; read longer window'
+    : (metered ? 'fuel ' + fmtCompact(w.fuel_cr_per_hour) + '/h (' + fmt(w.fuel_units_per_hour) + 'u) + repairs ' + fmt(w.repair_cr_per_hour) + '/h' + (acc && acc.once_mission_direct_h ? ' (incl ' + fmtCompact(Math.abs(acc.once_mission_direct_h)) + '/h once-fuel)' : '') : 'fuel, repairs, buys');
   const costCard = kpi('Running costs / h', w ? fmt(w.costs_per_hour) : '--', costSub,
     w && w.costs_per_hour > 0 ? 'neg' : w && w.costs_per_hour < 0 ? 'warn' : '');
   if (w && w.spent_per_hour !== undefined) {
@@ -3896,34 +3930,30 @@ async function renderMetrics(panel, live) {
       + (metered ? ' (fuel ' + fmt(w.fuel_cr_per_hour) + ' cr/h, repairs ' + fmt(w.repair_cr_per_hour) + ' cr/h)' : '')
       + (w.unexplained_per_hour ? ' | uncounted wallet inflow/outflow: ' + signed(w.unexplained_per_hour) + ' cr/h' : '');
   }
-  kpi('Repairs / h', metered ? fmt(w.repair_cr_per_hour) : '--', metered ? fmt(w.hull_points_per_hour) + ' hull points' : 'not measured in this stretch yet', metered && w.repair_cr_per_hour > 0 ? 'neg' : '');
   kpi('Ships working', t.ships ? fmt(t.working) + ' of ' + fmt(t.ships) : '--',
     fmt(t.parked) + ' parked at a station' + (t.adrift ? ', ' + fmt(t.adrift) + ' in space without work' : ''));
   const purse = (S.holdings && S.holdings.treasury) || 0;
   const crCard = el('div', 'kpi main');
   crCard.append(
-    el('div', 'k', 'Credits'),
+    el('div', 'k', 'Liquid purse'),
     el('div', 'v', fmt((t.credits || 0) + purse)),
-    el('div', 'kpi-subnum', 'Purse ' + fmt(purse) + ' cr'),
+    el('div', 'kpi-subnum', 'Treasury ' + fmt(purse) + ' cr'),
     el('div', 's', 'ship wallets ' + fmt(t.credits) + ' cr')
   );
   grid.append(crCard);
   panel.append(grid);
-  if (w && w.wallets) {                           // the books close: the wallets at the start plus the net of the stretch are the wallets now
-    const made = w.wallets.end - w.wallets.start - (w.wallets.left_out || 0), check = el('p', 'sub', 'The books close: ' + fmt(w.wallets.start) + ' cr in the wallets ' + span + ' ago, ');
+  if (w && w.wallets) {
+    const made = w.wallets.end - w.wallets.start - (w.wallets.left_out || 0), check = el('p', 'sub', 'Cash reconciliation: ' + fmt(w.wallets.start) + ' cr in ship wallets ' + span + ' ago, ');
     check.append(tint(made), ' net in this stretch' + (w.wallets.left_out ? ', ' + signed(w.wallets.left_out) + ' with ships that joined or left' : '') + ', ' + fmt(w.wallets.end) + ' cr now.');
-    if (w.unexplained_per_hour !== undefined) {   // the game's own counters of credits earned and spent, set beside the wallets
+    if (w.unexplained_per_hour !== undefined) {
       const off = Object.entries(w.divisions || {}).filter(([, y]) => Math.abs(y.unexplained_per_hour || 0) >= 500).map(([d]) => d);
       check.append(Math.abs(w.unexplained_per_hour) < 500 && !off.length
-        ? ' The game\'s own counters of credits earned and spent agree with the wallets.'
-        : ' The game\'s own counters and the wallets differ by ' + fmt(Math.abs(w.unexplained_per_hour)) + ' cr an hour in this stretch' + (off.length ? ' (' + off.join(', ') + ')' : '')
-          + '. No record names the cause; it may be a wallet the engine had not read again after a gift between our ships. Income, costs and net of this stretch may be '
-          + 'off by that much; a longer stretch evens it out.');
+        ? ' Game counters agree with wallets.'
+        : ' Game counters differ by ' + fmt(Math.abs(w.unexplained_per_hour)) + ' cr/h' + (off.length ? ' (' + off.join(', ') + ')' : '') + ' (read longer window to even out).');
     }
-    if (w.treasury) {                              // the treasury's own books: its readings, our deposits between them, the rest its own
+    if (w.treasury) {
       const x = w.treasury;
-      check.append(' The treasury read ' + fmt(x.start) + ' cr at ' + stampOf(x.read_from * 1000) + ' and ' + fmt(x.end) + ' cr at ' + stampOf(x.read_to * 1000)
-        + ': ' + fmt(x.deposited) + ' cr deposited by our ships, ', tint(x.own), ' its own (rent, buildings, money paid out or in).');
+      check.append(' Treasury: ' + fmt(x.start) + ' -> ' + fmt(x.end) + ' cr (' + fmt(x.deposited) + ' cr pilot deposits, ', tint(x.own), ' own rent/builds).');
     }
     panel.append(check);
   }
@@ -3933,23 +3963,62 @@ async function renderMetrics(panel, live) {
     panel.append(facts([['Registered', b.registered + ' of ' + b.planned + (b.failed ? ', ' + b.failed + ' refused' : '')],
       ['Starter missions done', b.starter_done], ['Standing orders given', b.ordered], ['Stopped', b.stopped || 'no']]));
   }
-  panel.append(el('h3', null, 'By division'));
-  const div = t.divisions || {}, dw = (w || {}).divisions || {};
+  panel.append(el('h3', null, 'By division (GAAP/IFRS accrual & cash, ' + (acc ? acc.hours + 'h' : span || metricWin) + ')'));
+  const div = t.divisions || {}, dw = (w || {}).divisions || {}, dAcc = (acc && acc.by_division) || {};
   const order = (S ? S.roster : []).filter((a) => a.division !== 'Command' || div.Command).map((a) => [a.division, a.name]);
-  if (div.Unassigned || dw.Unassigned) order.push(['Unassigned', '']);   // station/fleet.py window: money no division holds
-  const moneyRow = (name, working, y) => [name, working, w ? shade(y.income_per_hour, 'pos') : '--', w ? shade(y.costs_per_hour, 'neg') : '--', w ? tint(y.cph || 0) : '--',
-    w ? tint(y.one_time_per_hour || 0) : '--', w ? tint(whole(y)) : '--'];
-  panel.append(fitTable(table(['Division', 'Working', 'Steady income', 'Running costs', 'Steady net', 'Paid once', 'Net / h'],
-    order.map(([d, adm]) => {
-      const x = div[d] || {}, y = dw[d] || {}, name = el('span', null, d);
-      name.style.color = DIV[d] || DIV.Unassigned; name.title = adm ? 'Admiral ' + adm : '';
-      return moneyRow(name, fmt(x.working) + ' / ' + fmt(x.ships), y);
-    }).concat(w && w.treasury_own_per_hour !== undefined ? [['Treasury, own', '', '', '', '', '', tint(w.treasury_own_per_hour)]] : [])
-      .concat([moneyRow(el('b', null, 'Fleet'), fmt(t.working) + ' / ' + fmt(t.ships), w || {}).map((cell, i) => (i === 6 && w ? tint(purseNet(w)) : cell))]), [1, 2, 3, 4, 5, 6])));
-  panel.append(el('p', 'sub', 'Per hour. Steady net = steady income - running costs. Net = steady net + paid once: what the division\'s wallets changed by, '
-    + 'gifts between our own ships and deposits into the treasury left out. The fleet\'s net adds the treasury\'s own line: the divisions and the treasury add up to it.'));
-  const ops = await opsOf();
-  if (!live()) return;
+  if (div.Unassigned || dw.Unassigned) order.push(['Unassigned', '']);
+  const divRows = order.map(([d, adm]) => {
+    const x = div[d] || {}, y = dw[d] || {}, da = dAcc[d] || null;
+    const name = el('span', null, d);
+    name.style.color = DIV[d] || DIV.Unassigned;
+    const tipBits = [adm ? 'Admiral ' + adm : d];
+    if (w) tipBits.push('Raw cash ' + signed(y.cph || 0) + '/h (inc ' + fmt(y.income_per_hour || 0) + ', cost ' + fmt(y.costs_per_hour || 0) + ') | Seed & CapEx ' + signed(y.one_time_per_hour || 0) + '/h');
+    if (da) tipBits.push('Once-route fuel/salvage carved out: ' + signed(da.once_direct_h || 0) + '/h | Handovers Out +' + fmt(da.tx_out_h || 0) + '/h, In -' + fmt(da.tx_in_h || 0) + '/h');
+    name.title = tipBits.join('\n');
+    const recCell = da ? tint(da.recurring_cash_h || 0) : (w ? tint(y.cph || 0) : '--');
+    const invCell = da && acc && acc.has_inventory_accrual ? tint(da.inv_accrual_h || 0) : '--';
+    const txNet = da ? (da.net_transfer_h !== undefined ? da.net_transfer_h : ((da.tx_out_h || 0) - (da.tx_in_h || 0))) : 0;
+    const txCell = da ? (txNet ? tint(txNet) : el('span', 'dim', '0')) : '--';
+    const accCell = da ? tint(da.accrual_op_h || 0) : (w ? tint(y.cph || 0) : '--');
+    const purseCell = w ? tint(whole(y)) : '--';
+    return [name, fmt(x.working) + '/' + fmt(x.ships), recCell, invCell, txCell, accCell, purseCell];
+  });
+  if (dAcc.Faction && (dAcc.Faction.inv_accrual_h || dAcc.Faction.accrual_op_h)) {
+    const fn = el('span', null, 'Faction Vault');
+    fn.style.color = DIV.Unassigned;
+    fn.title = 'Crafted reserves & ore stored directly in faction storage (IAS 2 NRV change)';
+    divRows.push([fn, '--', el('span', 'dim', '0'), tint(dAcc.Faction.inv_accrual_h || 0), el('span', 'dim', '0'), tint(dAcc.Faction.accrual_op_h || 0), el('span', 'dim', '0')]);
+  }
+  if (w && w.treasury_own_per_hour !== undefined) {
+    divRows.push([el('span', 'dim', 'Treasury (own)'), '--', '--', '--', '--', '--', tint(w.treasury_own_per_hour)]);
+  }
+  divRows.push([
+    el('b', null, 'Fleet Total'),
+    fmt(t.working) + '/' + fmt(t.ships),
+    acc ? tint(acc.recurring_cash_h) : (w ? tint(w.cph || 0) : '--'),
+    acc && acc.has_inventory_accrual ? tint(acc.inventory_accrual_h) : '--',
+    el('span', 'dim', '0'),
+    acc ? tint(acc.accrual_operating_h) : (w ? tint(w.cph || 0) : '--'),
+    w ? tint(purseNet(w)) : '--',
+  ]);
+  panel.append(fitTable(table(
+    ['Division', 'Work', 'Recur Cash/h', 'Inv Build/h', 'Transfers/h', 'Accrual Op/h', 'Purse Net/h'],
+    divRows, [1, 2, 3, 4, 5, 6]
+  )));
+  const scMap = (acc && acc.support_chains) || {};
+  const chainBits = [
+    ['Trade sales', scMap.trade_sales],
+    ['Mining', scMap.mining],
+    ['Military hunts', scMap.military_hunts],
+    ['Logistics/handovers', scMap.handovers_logistics],
+    ['Crafting', scMap.crafting],
+    ['Intel census', scMap.intel_census],
+    ['Jump loops', scMap.jump_loops],
+  ].filter(([, v]) => v && v.runs).map(([k, v]) => k + ' ' + signed(v.credits_per_hour) + '/h (' + v.ship_hours + 'sh)');
+  panel.append(el('p', 'sub',
+    'All figures per hour. Recur Cash/h excludes once-mission fuel; Inv Build/h is IAS 2 NRV vault delta; Transfers/h credits givers and debits receivers at IAS 2 NRV (eliminating to 0 at Fleet Total); '
+    + 'Accrual Op/h = Recur Cash + Inv Build + Transfers; Purse Net/h = wallets + Seed + CapEx + Treasury Own. Hover any division name for full breakdown.'
+    + (chainBits.length ? ' Activity cashflow: ' + chainBits.join(' | ') + '.' : '')));
   if (ops) {
     const sc = ops.scorecard || null;
     if (sc && sc.enterprise) {
@@ -4069,12 +4138,13 @@ async function renderMetrics(panel, live) {
         card.append(head);
 
         const cfRow = el('div', 'sc-dmeta');
-        const cfVal = Math.round(d.cashflow_24h || 0);
-        const cfSpan = el('span', cfVal > 0 ? 'pos' : cfVal < 0 ? 'neg' : '', signed(cfVal) + ' cr/h (24h)');
-        const cf6 = Math.round(d.cashflow_6h || 0);
+        const da24 = d.accounting_24h || null;
+        const accVal = da24 ? Math.round(da24.accrual_op_h || 0) : Math.round(d.cashflow_24h || 0);
+        const recVal = da24 ? Math.round(da24.recurring_cash_h || 0) : Math.round(d.cashflow_24h || 0);
+        const cfSpan = el('span', accVal > 0 ? 'pos' : accVal < 0 ? 'neg' : '', 'Accrual ' + signed(accVal) + '/h (24h)');
         cfRow.append(
           cfSpan,
-          el('span', 'sc-dmeta-sub', '6h ' + signed(cf6) + '/h | Playbook ' + Math.round((d.playbook && d.playbook.max_chapter_pct) || 0) + '%')
+          el('span', 'sc-dmeta-sub', 'Recur cash ' + signed(recVal) + '/h | Playbook ' + Math.round((d.playbook && d.playbook.max_chapter_pct) || 0) + '%')
         );
         card.append(cfRow);
 
@@ -4156,85 +4226,6 @@ async function renderMetrics(panel, live) {
     panel.append(el('h3', null, 'Fleet readiness & bottlenecks'));
     const rgrid = el('div', 'kpis');
     const rkpi = (k, v, sub, cls) => { const b = el('div', 'kpi' + (cls ? ' ' + cls : '')); b.append(el('div', 'k', k), el('div', 'v', v)); if (sub) b.append(el('div', 's', sub)); rgrid.append(b); };
-    const accWinKey = metricWin === '6h' ? '6h' : '24h';
-    const acc = ops.accounting && (ops.accounting[accWinKey] || ops.accounting['24h']);
-    if (acc) {
-      panel.insertBefore(el('h3', null, 'GAAP / IFRS Cash-to-Accrual P&L & Transfer-Priced Economics (' + acc.hours + 'h)'), panel.lastChild);
-      const agrid = el('div', 'kpis');
-      const akpi = (k, v, sub, cls) => { const d = el('div', 'kpi' + (cls ? ' ' + cls : '')); d.append(el('div', 'k', k), el('div', 'v', v)); if (sub) d.append(el('div', 's', sub)); agrid.append(d); };
-      akpi('Recurring cash / h', signed(acc.recurring_cash_h) + ' cr/h',
-        'matched: raw ' + signed(acc.raw_steady_h) + ' excl ' + signed(acc.once_direct_h) + ' once-route fuel/salvage',
-        acc.recurring_cash_h > 0 ? 'main pos' : 'main warn');
-      const topB = (acc.top_inv_builds || []).slice(0, 3).map((x) => x.item + ' +' + fmtCompact(x.value)).join(', ');
-      akpi('Inventory accrual / h', acc.has_inventory_accrual ? signed(acc.inventory_accrual_h) + ' cr/h' : '--',
-        acc.has_inventory_accrual ? ('IAS 2 lower of base/bid' + (topB ? ' | ' + topB : '')) : 'awaiting stock_hour snapshots',
-        acc.inventory_accrual_h > 0 ? 'pos' : (acc.inventory_accrual_h < 0 ? 'neg' : ''));
-      akpi('Accrual operating / h', signed(acc.accrual_operating_h) + ' cr/h',
-        'Recurring cash + IAS 2 WIP/vault build (true recurring economic profit)',
-        acc.accrual_operating_h > 0 ? 'main pos' : 'main neg');
-      akpi('Seed missions net / h', signed(acc.seed_net_h) + ' cr/h',
-        'non-recurring: rewards +' + fmtCompact(acc.seed_rewards_h) + ' matched w/ fuel ' + signed(acc.once_mission_direct_h),
-        acc.seed_net_h > 0 ? 'pos' : '');
-      akpi('Investing CapEx / h', signed(acc.capex_net_h) + ' cr/h',
-        'hulls, modules & outpost kits bought once (net of fit salvage)',
-        '');
-      akpi('Purse cash flow / h', signed(acc.purse_h) + ' cr/h',
-        'Recurring + Seed + CapEx' + (acc.treasury_own_h !== null && acc.treasury_own_h !== undefined ? ' + Treas ' + signed(acc.treasury_own_h) : ''),
-        acc.purse_h > 0 ? 'pos' : 'neg');
-      panel.insertBefore(agrid, panel.lastChild);
-
-      const dAcc = acc.by_division || {};
-      const accOrder = ['Mining', 'Trade', 'Logistics', 'Military', 'Intel', 'Command', 'Faction'];
-      const accRows = [];
-      let sRec = 0, sInv = 0, sOut = 0, sIn = 0, sOp = 0;
-      for (const dn of accOrder) {
-        const da = dAcc[dn];
-        if (!da) continue;
-        sRec += da.recurring_cash_h || 0;
-        sInv += da.inv_accrual_h || 0;
-        sOut += da.tx_out_h || 0;
-        sIn += da.tx_in_h || 0;
-        sOp += da.accrual_op_h || 0;
-        const lbl = el('span', null, dn);
-        lbl.style.color = DIV[dn] || DIV.Unassigned;
-        accRows.push([
-          lbl,
-          tint(da.recurring_cash_h || 0),
-          tint(da.inv_accrual_h || 0),
-          da.tx_out_h ? shade(da.tx_out_h, 'pos') : '--',
-          da.tx_in_h ? shade(-(da.tx_in_h || 0), 'neg') : '--',
-          tint(da.accrual_op_h || 0),
-        ]);
-      }
-      if (accRows.length) {
-        accRows.push([
-          el('b', null, 'Fleet Consolidated'),
-          tint(acc.recurring_cash_h),
-          tint(acc.inventory_accrual_h),
-          shade(sOut, 'pos'),
-          shade(-sIn, 'neg'),
-          tint(acc.accrual_operating_h),
-        ]);
-        panel.insertBefore(fitTable(table(
-          ['Division (IAS 2 Transfer-Priced)', 'Recurring Cash/h', 'Inv Build/h', 'Handovers Out/h', 'Handovers In/h', 'Accrual Value-Add/h'],
-          accRows, [1, 2, 3, 4, 5]
-        )), panel.lastChild);
-        const scMap = acc.support_chains || {};
-        const chainBits = [
-          ['Trade sales', scMap.trade_sales],
-          ['Mining', scMap.mining],
-          ['Military hunts', scMap.military_hunts],
-          ['Logistics/handovers', scMap.handovers_logistics],
-          ['Crafting', scMap.crafting],
-          ['Intel census', scMap.intel_census],
-          ['Jump loops', scMap.jump_loops],
-        ].filter(([, v]) => v && v.runs).map(([k, v]) => k + ' ' + signed(v.credits_per_hour) + '/h (' + v.ship_hours + 'sh)');
-        panel.insertBefore(el('p', 'sub',
-          'Intercompany handovers credit givers and debit receivers at IAS 2 NRV (eliminating to 0 at Fleet total; zero double-counting). '
-          + (chainBits.length ? 'Full-chain recurring cash by activity: ' + chainBits.join(' | ') + '.' : '')), panel.lastChild);
-      }
-    }
-
     const bs = ops.balance_sheet || null;
     if (bs) {
       panel.insertBefore(el('h3', null, 'Consolidated balance sheet & enterprise net worth'), panel.lastChild);
@@ -4322,7 +4313,7 @@ async function renderMetrics(panel, live) {
         pr.latest_milestone ? 'latest unlock: ' + pr.latest_milestone : '12-rung strategic ladder (Days -> Months)', 'pos');
       panel.append(pgrid);
       if ((pr.daily || []).length) {
-        panel.append(fitTable(table(['Day (UTC)', 'Ships', 'Steady Inc / h', 'Costs / h', 'Steady Net / h', 'Paid Once / h', 'Peak Purse'],
+        panel.append(fitTable(table(['Day (UTC)', 'Ships', 'Recur Inc/h', 'Costs/h', 'Cash Steady/h', 'Seed & CapEx/h', 'Peak Purse'],
           pr.daily.map((d) => [
             d.day, fmt(d.ships), shade(d.income_h, 'pos'), shade(d.costs_h, 'neg'),
             tint(d.steady_net_h), tint(d.paid_once_h), fmtCompact(d.peak_purse) + ' cr',
@@ -4402,10 +4393,10 @@ async function renderMetrics(panel, live) {
   }
   const routesBox = el('div'), graphs = el('div');
   panel.append(el('h3', null, 'Where the money comes from, last ' + routeHours + ' hours'), routesBox, el('h3', null, 'Last ' + graphHours + ' hours'), graphs);
-  panel.append(el('p', 'sub', 'How it is counted. Net: the change of the wallets. Steady income: the game\'s counter of credits earned, less the rewards paid once per pilot. '
-    + 'Running costs: everything spent, less what was bought for such a reward. Paid once: those rewards less those goods; a mission pays each pilot once, so this money ends. '
-    + 'Goods in storage are no money until they are sold: the Inventory tab holds them. Fuel and repairs: counted when a docked ship\'s tank or hull rises and its wallet falls. '
-    + 'A route\'s figure counts only runs that read a wallet.'));
+  const accFoot = el('p', 'sub', 'Accounting basis (GAAP / IFRS): Recurring Cash excludes fuel/salvage on one-time routes (IFRS 18 matching principle), matching them to Seed Missions and Investing CapEx so Recurring + Seed + CapEx + Treasury Own = Purse Cash Flow. '
+    + 'Vault inventory is carried at IAS 2 Lower of Base Cost or Best Bid (side-by-side with Catalog/Leaderboard and depth-capped liquidation), and cross-division handovers are transfer-priced at IAS 2 NRV (eliminating to 0 at Fleet Total). Full specification: ');
+  accFoot.append(linkButton('accounting-and-hud-blueprint.md', () => openDoc('governance/accounting-and-hud-blueprint.md'), 'doclink'), '.');
+  panel.append(accFoot);
   if (Date.now() - HIST.at > 30000 || HIST.key !== metricWin) {
     try { HIST = Object.assign(await get('/api/history?q=' + graphHours), { at: Date.now(), key: metricWin }); } catch (e) { HIST = { rows: [], at: Date.now(), key: metricWin }; }
     if (!live()) return;
