@@ -463,3 +463,12 @@ Failed: ten miners sent to a spent field, the floor blind on a census over 90 mi
 Requests: requests.log ENT-463, ENT-464, ENT-465, ENT-466.
 Suggestions: Unity: a floor that holds on an older census (ENT-465), the filler never adds unfit routes (ENT-466), and a decision on Mining's 43,000 cr/h of standing gathers above the reserve max (raise the iron max for steel while plate is short 52,338); Apollo: a hauler receiver at Alpha Centauri.
 Report: iron-handed-at-four-stations-third-laser-yildun-cut.
+
+## [ENT-160] | 2026-11-23 18:57 UTC | Oracle | session | ref: reports/2026-11-23_oracle_kit-herds-read-ranch-loss-found-hunt-guard.md | see: orders.log ENT-083
+Session: scheduled run turn-oracle -- the kit's five herds read with their pirates, a drone loss traced to a partner's ranch, hunt.py guarded.
+Did: preflight PASS; herds of mirror-skate, cauldronback, inkwyrm, magnet-barnacle, silica-borer read whole (admirals ENT-111); census-kit-herds (15 far systems, every 360 min, three scanner scouts; 187be299); hunt.py refuses tagged ranch animals (930c5cfd); ranch loss filed (admirals ENT-110, n-hexc.md); IRLC reply to Unity (queue ENT-273); 27 pirate lines; census-voidborn 4 -> 5 ships.
+Worked: place freshness 60.0% -> 64.9% (scorecard); fill gate PASS at 18:33:53 and 18:46:46 UTC; plan check PASS; guide check PASS; no scout lost.
+Failed: hive.py herds not installed: four installs halted (test_handbook mine and fixed; test_data_keeper and test_fleet_store under load; clone not clean twice), copy in scratch (queue ENT-274); hull upgrades 0 of 17 P10 scouts on tier 2.
+Requests: none.
+Suggestions: Unity: the Notice Board job names foil_scale and graphene_thread first, no known herd can give them under F38; Apophis: record the first kill's drop of each kit species; Unity: widen test_data_keeper's timing margin.
+Report: kit-herds-read-ranch-loss-found-hunt-guard.
