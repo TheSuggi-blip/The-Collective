@@ -59,27 +59,30 @@ its notes. The field grew back about 520 iron an hour between reads with
 no ship of ours on it. Lifted to 5 ships at 23:25 UTC.
 
 ### Newborn miners at home (Sol, Haven), 2026-11-22
-Status: test. Updated: 2026-11-22. Evidence: table fields 23:10 UTC; table books 23:05 UTC; table runs 23:15-23:19 UTC; commission_quote at Grand Exchange and Sol Central, 23:19 UTC.
+Status: test. Updated: 2026-11-23. Evidence: table fields 23:10 UTC; table runs 2026-11-23 00:03-02:48 UTC; table books 03:09 UTC; table hulls and the live catalog's items, 03:15 UTC.
 
-The birth wave's miners (orders P6) start at Sol Central (Solarian,
+The birth wave's miners (orders P6) start at Sol Central (Solarian
 Theoria: hold 70, 3 utility slots, one Mining Laser I) and the Grand
-Exchange (Nebula, Prospect). Both home regions read mined out by other
-players: Sol Main Belt, Nova Terra Industrial Belt, Haven Commerce
-Fields near 0; no silicon, uranium, thorium or nickel within 8 jumps.
-Ore bids there are 1 to 7 cr; uranium 600, lead 40 and plasma gas 25
-bid in depth, with no field of ours to feed them.
-- Deep Core Prospecting is not offered at Mining 0 (18 runs): the
-  routes ask Mining 3, a guess until a pilot reads the gate.
-- Welcome to Sol Central (15 iron, 1,000 cr once) is held by every
-  Solarian newborn: its route mines at Lacaille 9352 Deep Vein.
-- Mining-skill gathers one jump from a station: Lacaille Deep Vein into
-  Nova Terra, Khambalia Crystal Market into Factory Belt; three results
-  first (F37).
+Exchange (Nebula Prospect: hold 100, 2 utility slots). The capitals'
+belts read near 0, and ore bids there are 1 to 7 cr; iron and copper of
+35,000 to 100,000 lie 2 to 4 jumps out (Khambalia, Markab, Nihal,
+Lacaille 9352).
+- Paid once, mined at those fields: First Cargo, Copper Requisition and
+  Iron Supply Run at the Grand Exchange (4,300 cr a pilot, 15 runs), the
+  last two at Procyon (3,300 cr, 6 runs), at up to 630 cr of fuel.
+- Deep Core Prospecting is not offered at Mining 0 (18 runs) nor at
+  Mining 3 (4 runs): its gate is higher; the routes ask 5, a guess.
+- Mining-skill gathers one jump from a station take 30 to 38 minutes a
+  load at 150 to 180 cr of fuel and sell nothing: class work only.
+- Sol Central asks 2,500 cr for a Mining Laser II (power 12 against 5),
+  half the other Solarian stations: a fit route, one ship first.
+- Every newborn route carries `requires.empire`, so no Voidborn pilot
+  is sent 10 jumps for a starter mission it does not hold.
 - Tier-1 empire hulls, credits only: Bonanza (Nebula, hold 180, three
   Laser I) 60,951 cr; Archimedes (Solarian, hold 80, 4 utility slots,
   two Laser I) 34,519 cr. No Piloting asked.
-- Our outpost GSC-0044 lies 5 jumps from Sol, Acrux 4: seated Solarian
-  miners could fly its belts (requests ENT-378).
+- Our outpost GSC-0044 lies 5 jumps from Sol, inside the dispatcher's
+  reach for a foreign pilot: seated Solarian miners can fly its belts.
 
 ### Open Tests
 Status: test. Updated: 2026-11-22. Evidence: the runs of each route (hive.py route <id>); surplus.py reserve; table fields; rule F37.

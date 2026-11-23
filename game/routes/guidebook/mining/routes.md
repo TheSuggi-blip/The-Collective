@@ -1,26 +1,28 @@
 # Mining guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-22. Evidence: the plan file (tool plan, show); fill.py status miner; surplus.py reserve; table readings; hive.py route gather-gsc-0044-forgotten-tailings-faction.
+Status: proven. Updated: 2026-11-23. Evidence: the plan file (tool plan, show); fill.py status miner; surplus.py reserve; table runs; table fields.
 
-Turn of 2026-11-22 19:00 UTC (orders ENT-065: iron full by one figure,
-the reserve's short goods first, nothing sold by a miner). A free miner
-takes the list First, its own routes, then the list Then.
+Turn of 2026-11-23 03:00 UTC (orders ENT-071: the reserve's short goods,
+the newborns at home, strict classes). A free miner takes the list
+First, its own routes, then the list Then.
 
 | Route | Ships | For |
 |---|---|---|
-| `fit-mining-laser-iii-lhs-1140` | asks gone | the laser |
-| `fit-mining-laser-ii-second-central-nexus` | 1, a test | a second laser in the free slot |
+| fit routes (Laser III at Ironlight, Laser II at Sol for Solarians) | by asks | the laser |
 | `give-miner-stores-<station>`, any one good | 3 each | stores to the receivers |
 | once missions (Voidborn, Confederacy, Frontier, Federation) | by route | paid once per pilot |
 | seated rows: GSC-0044 Belt, Forgotten Tailings, Acrux | 10, 5, 3 | iron, copper to faction storage, no jump |
-| `@reserve-prism` / `@reserve-hamal` | 1 to 6 each | carbon (Yildun 6, Jishui 3), nickel, silicon, gold, quantum fragments |
+| Solarian rows: Welcome to Sol Central, Copper/Iron at Procyon, then Lacaille, Markab, Nihal gathers | 3, 6, 6 each | paid once, then the Mining skill |
+| Nebula rows: First Cargo, A Word in Private, then Bunda, Khambalia | 8, 5, 3, 6 | paid once, then the Mining skill |
+| `@reserve-prism` / `@reserve-hamal` | 1 to 6 each | carbon, nickel, silicon, quantum fragments; gold closed at its max |
 | `@ice-sell` with `gift`, after the reserve | 1 to 2 | ice to Trade, overflow only |
-| Then | shared | gives at The Crescent Moon and Ramen's Rest, far iron, `train-jumps-miner`, park |
+| Then | shared | gives at The Crescent Moon and Ramen's Rest, Pherkad Rift, `train-jumps-miner`, park |
 
-What would change it: the Laser II test's three gather runs; GSC-0044 Belt
-at its 20,000 floor (its ships go to Forgotten Tailings); Jishui at 1,000
-or Yildun under 8 hours of pull; a Resonance Miner bought (requests.log).
+What would change it: the Sol Laser II's three results; a newborn
+seated (its row takes the GSC-0044 belts, 5 jumps from Sol); Deep Core
+offered to a newborn (its gate is not read); a silicon field found (none
+of 2,000 units on record); a Resonance Miner bought (requests.log).
 
 ### Drains and carries of stored goods (kind `circuit`)
 Status: proven. Updated: 2026-11-21. Evidence: drain-methane-experiment and carry-null-matter-synchrony-nexus (hive.py route <id>).
