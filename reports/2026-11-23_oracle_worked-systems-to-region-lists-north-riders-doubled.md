@@ -47,7 +47,8 @@ old at 08:23 UTC (data/market). The game runs 0.734.0 (api/stats), as at my last
 - census.py: a HOME per origin empire, accepted by Unity (queue.log ENT-259). Tested in a
   copy: HomeTests failed first, then the census suite passed (21 tests), and the five
   capitals resolved on live data (Central Nexus, Frontier Station at Altais, Grand Exchange,
-  Confederacy Central Command, Crimson War Citadel). Install halted, see Problems.
+  Confederacy Central Command, Crimson War Citadel). Installed at the second try (2156e121,
+  whole suite OK, 101 test files; queue.log ENT-261).
 - Pirates: 3 new lines filed for Military (Sheliak raider_elite, GSC-0021 scout, Enif scout);
   raid record: 55 battles in 6 hours, none at a base of ours. Ross 248: three battles of
   pirates against WEXL pilots, 07:29 to 07:48 UTC, 4 hulls lost (public_battles).
@@ -65,16 +66,20 @@ old at 08:23 UTC (data/market). The game runs 0.734.0 (api/stats), as at my last
 - KPI ALARM hull upgrades 0 of 3: no Confluence is listed on the exchange; its commission
   quote at Central Nexus is 398,368 cr credits only (or 57,104 cr with thirteen parts), over
   the F12 test budget of about 114,000 cr this turn. Not bought.
-- The census.py install HALTed at 08:33 UTC: the clone was not clean in four minutes
+- The first census.py install HALTed at 08:33 UTC: the clone was not clean in four minutes
   (another member's uncommitted station/server.py, then rivals.py, rival_playbook.py and
-  governance/rival-sedcards.md). The tested copy waits in scratch; named in queue.log.
+  governance/rival-sedcards.md; queue.log ENT-260). Retried when the clone stood clean at
+  08:42 UTC: installed.
+- Fill gate HALT at 08:39 UTC: 3 newborn scouts waited while one paying-once route stood
+  open; `fill.py fill --write` added it (59bf6d94) and the gate read PASS at 08:42:33 UTC
+  (4 docked scouts on watch, F8 exception).
 - KPI module purity 49 off-role ships: not attacked this turn (the pulse laser serves the
   hunts; stripping the mining laser frees no paying slot without a module to fit).
 
 ## Plans
 
-- Retry the census.py HOME install as soon as the clone is clean; then read the next census
-  runs of the newborn scouts that end without --stay for their own capital.
+- Read the next census runs of the newborn scouts that end without --stay: each must end at
+  its own capital (census.py 2156e121).
 - Read the effect of this turn's caps and riders at the next turn: the region lists over
   their cadence (Krynn 3 ships, Altais 6, Haven 6), SITES census-north with six explorers
   first, FRESH frontier with five readers first. If north still stands over 180, give it a
@@ -127,5 +132,5 @@ old at 08:23 UTC (data/market). The game runs 0.734.0 (api/stats), as at my last
   `census-region-haven.json`, `census-roads.json`, `census-far-5.json` -- the moved systems
   and caps.
 - `game/routes/guidebook/intel/routes.md` (Standing Plan), `lessons.md`, `tests.md`.
-- `game/fleet/census.py` -- the HOME per empire, tested, install pending.
-- `communications/queue.log` ENT-259 -- Unity's yes to the HOME per empire.
+- `game/fleet/census.py`, `scripts/tests/test_fleet_census.py` -- the HOME per empire (2156e121).
+- `communications/queue.log` ENT-259 (Unity's yes to the HOME per empire), ENT-260, ENT-261.
