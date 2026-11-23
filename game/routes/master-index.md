@@ -23,15 +23,15 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 | [Fitting](index-fitting.md) | A module bought and fitted: the tool a kind of work needs. | 33 | 16 | 17 | strip-mining-laser-krynn: 1,170 cr per ship-hour |
 | [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 476 | 109 | 367 | hunt-gsc-0004-gas-pocket-cinder-sylph: 52,630 cr per ship-hour |
 | [Measured at a Loss](index-measured-at-a-loss.md) | Work that repeats and whose runs of the last 12 hours measured zero or below. | 18 | 6 | 12 | home-frontier-station: -20 cr per ship-hour |
-| [Off](index-off.md) | Written down, not flown. | 55 | 19 | 36 | voidborn-first-steps: 4,020 cr per ship-hour |
-| All | | 834 | 228 | 606 | |
+| [Off](index-off.md) | Written down, not flown. | 56 | 19 | 37 | voidborn-first-steps: 4,020 cr per ship-hour |
+| All | | 835 | 228 | 607 | |
 
 ## Routes by Zone and Kind
 
 | Zone | Routes | census | circuit | guard | hunt | mine | Farthest system, jumps from home |
 |---|---|---|---|---|---|---|---|
 | home space | 228 | 1 | 194 | 1 | 19 | 13 | 3 |
-| beyond the border | 606 | 24 | 196 | 7 | 276 | 103 | 29 |
+| beyond the border | 607 | 24 | 197 | 7 | 276 | 103 | 29 |
 
 ## Plans by Role
 

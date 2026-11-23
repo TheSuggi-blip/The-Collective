@@ -1,0 +1,112 @@
+{
+ "id": "craft-sell-nitrogen-krynn",
+ "kind": "circuit",
+ "title": "Liquid nitrogen made by hand docked at the Crimson War Citadel (Krynn) from nitrogen ice bought there, sold into its bid, the rest stored",
+ "note": "Written by Mercury, 2026-11-23 19:10 UTC (orders ENT-083, block MERCURY: the traders left at the capitals take standing work there, docked NPC-facility crafting; rules F8, F23, F24). In place of craft-sell-argon-krynn, whose purified argon the reserve needs. The Citadel's book (table books, 18:43 UTC): nitrogen ice asked at 1 cr x 71,458, liquid nitrogen bid 1 cr x 574 (the station's). process_nitrogen_ice by hand: 5 ice -> 4 liquid nitrogen; a run costs about 5.05 cr and sells for 4 cr while the bid holds. Liquid nitrogen stands above its reserve max (pull.json: 9,909 of max 232): its sale is surplus (F24). requires.docked_at keeps it to a ship docked there; no requires.bid: what the bid does not take is stored and the route stays open. The third craft stop keeps a 20-minute docked watch (0 fuel) to halve the burn. standing: XP work.",
+ "standing": true,
+ "far_ok": true,
+ "max_ships": 12,
+ "requires": {
+  "docked_at": "crimson_war_citadel",
+  "ask": {
+   "item": "nitrogen_ice",
+   "base": "crimson_war_citadel",
+   "max_price": 1,
+   "min_qty": 60
+  }
+ },
+ "stops": [
+  {
+   "at": "krynn:war_citadel:crimson_war_citadel",
+   "buy": [
+    {
+     "item": "nitrogen_ice",
+     "qty": 60,
+     "max_price": 2
+    }
+   ],
+   "stop_on_failed_buy": true,
+   "craft": [
+    {
+     "recipe": "process_nitrogen_ice",
+     "runs": 12,
+     "per_run": 4,
+     "makes": "liquid_nitrogen",
+     "inputs": [
+      "nitrogen_ice"
+     ]
+    }
+   ],
+   "sell": [
+    {
+     "item": "liquid_nitrogen",
+     "min_price": 1
+    }
+   ]
+  },
+  {
+   "at": "krynn:war_citadel:crimson_war_citadel",
+   "buy": [
+    {
+     "item": "nitrogen_ice",
+     "qty": 60,
+     "max_price": 2
+    }
+   ],
+   "stop_on_failed_buy": true,
+   "craft": [
+    {
+     "recipe": "process_nitrogen_ice",
+     "runs": 12,
+     "per_run": 4,
+     "makes": "liquid_nitrogen",
+     "inputs": [
+      "nitrogen_ice"
+     ]
+    }
+   ],
+   "sell": [
+    {
+     "item": "liquid_nitrogen",
+     "min_price": 1
+    }
+   ]
+  },
+  {
+   "at": "krynn:war_citadel:crimson_war_citadel",
+   "buy": [
+    {
+     "item": "nitrogen_ice",
+     "qty": 60,
+     "max_price": 2
+    }
+   ],
+   "stop_on_failed_buy": true,
+   "craft": [
+    {
+     "recipe": "process_nitrogen_ice",
+     "runs": 12,
+     "per_run": 4,
+     "makes": "liquid_nitrogen",
+     "inputs": [
+      "nitrogen_ice"
+     ]
+    }
+   ],
+   "sell": [
+    {
+     "item": "liquid_nitrogen",
+     "min_price": 1
+    }
+   ],
+   "watch_minutes": 20
+  },
+  {
+   "at": "krynn:war_citadel:crimson_war_citadel",
+   "store": [
+    "nitrogen_ice",
+    "liquid_nitrogen"
+   ]
+  }
+ ]
+}

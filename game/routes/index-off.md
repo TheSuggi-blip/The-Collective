@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 55.
+Routes: 56.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -41,6 +41,7 @@ Routes: 55.
 | [carry-hydrogen-beta-to-crucible](carry-hydrogen-beta-to-crucible.json) | circuit | beyond the border, 18 jumps | Stored hydrogen carried from Node Beta to The Crucible Garrison's bid at 33 cr or more: a test beyond the border | up to 1 ships, with 41 hydrogen_gas stored at node_beta_industrial_station, while the_crucible_garrison bids 33 cr for hydrogen_gas, off | TBD | TBD | TBD | TBD | -- |
 | [carry-hydrogen-beta-to-crucible-bulk](carry-hydrogen-beta-to-crucible-bulk.json) | circuit | beyond the border, 18 jumps | Stored hydrogen carried by a freighter from Node Beta to The Crucible Garrison's bid at 33 cr or more | up to 1 ships, without mining_laser_i, with 100 hydrogen_gas stored at node_beta_industrial_station, while the_crucible_garrison bids 33 cr for hydrogen_gas, off | TBD | TBD | TBD | TBD | -- |
 | [carry-sac-beta-to-hex-star](carry-sac-beta-to-hex-star.json) | circuit | beyond the border, 11 jumps | Caustic sacs stored by Trade at Node Beta carried to the deep player bid at Hex Star (Dheneb) and sold there | up to 1 ships, with 30 caustic_sac stored at node_beta_industrial_station, while b495c6003fc83e18f6d8cecbe6929133 bids 1250 cr for caustic_sac, off | TBD | TBD | TBD | TBD | -- |
+| [craft-sell-argon-krynn](craft-sell-argon-krynn.json) | circuit | beyond the border, 20 jumps | Purified argon made by hand docked at the Crimson War Citadel (Krynn) from argon bought there, sold into its bid, the rest stored | up to 12 ships, while crimson_war_citadel asks 1 cr or less for argon_gas, standing work, off | TBD | TBD | TBD | TBD | -- |
 | [join-rim-trader](join-rim-trader.json) | circuit | beyond the border, 17 jumps | A trader whose Solarian once line is booked joins the Outer Rim corridor: one trip to Frontier Station (Altais), where The Memorial and the Rim's once missions open to it | once per pilot, up to 3 ships, empty hold, standing work, off | 3 | 15 | -140 | one-time | 2026-11-23 |
 | [mission-first-links-grand](mission-first-links-grand.json) | circuit | beyond the border, 21 jumps | First Links: 4,000 cr once per pilot at Grand Exchange; 10 nickel ore bought at Market Prime for Cargo Lanes, 8 copper wiring bought at Cargo Lanes for Market Prime | once per pilot, up to 1 ships, from 4,300 cr, born nebula, off | 2 | 13 | -1,260 | one-time | 2026-11-23 |
 | [mission-scouting-the-lanes-grand](mission-scouting-the-lanes-grand.json) | circuit | beyond the border, 21 jumps | Scouting the Lanes: 1,500 cr and 25 Nebula Attunement once per pilot at Grand Exchange; a visit to Market Prime and back | once per pilot, up to 3 ships, born nebula, off | 3 | 3 | -100 | one-time | 2026-11-23 |
