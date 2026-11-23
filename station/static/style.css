@@ -783,3 +783,12 @@ button.member:hover .face-medallion { border-color: var(--c, var(--accent)); box
 .pc-pills { display: flex; flex-wrap: wrap; gap: 4px; }
 .pc-acts { display: flex; gap: 6px; margin-top: 3px; padding-top: 6px; border-top: 1px solid rgba(53, 65, 91, 0.55); }
 .pc-acts button { flex: 1; text-align: center; }
+
+/* ---- HUD v6.1: Credits purse subnum, clickable storage drawers & mission cards */
+.kpi .kpi-subnum { font: 12.5px/1.3 var(--mono); color: var(--dim); margin-top: 1px; font-weight: 600; }
+.clickable-card { cursor: pointer; transition: border-color 0.14s ease, background 0.14s ease; }
+.clickable-card:hover { border-color: var(--accent); background: rgba(164, 139, 224, 0.06); }
+.clickable-card.active-card { border-color: var(--accent); box-shadow: 0 0 0 1px rgba(164, 139, 224, 0.35); }
+.station-drawer { border-color: rgba(111, 168, 220, 0.55); background: rgba(17, 23, 34, 0.94); margin-top: 8px; }
+.mission-card .progcell { margin: 4px 0 6px; }
+.obj-done { color: var(--good); opacity: 0.85; }

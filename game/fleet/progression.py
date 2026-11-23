@@ -160,6 +160,7 @@ def compute_progression(repo_root, data="/srv/collective/data", now=None):
     leaderboard_ranks = {}
     top_rival_wealth = 0
     by_empire = {}
+    daily_rows = []
     weekly_rows = []
     monthly_rows = []
 
@@ -330,7 +331,7 @@ def compute_progression(repo_root, data="/srv/collective/data", now=None):
                     "MIN(date(hour, 'unixepoch')), MAX(date(hour, 'unixepoch')), "
                     "COUNT(DISTINCT hour), ROUND(SUM(income)), ROUND(SUM(costs)), ROUND(SUM(net)), ROUND(SUM(once)), "
                     "MAX(COALESCE(wallets_end, 0) + COALESCE(treasury, 0)) "
-                    "FROM stats_money_hour WHERE division = 'all' AND ships > 0 GROUP BY 1 ORDER BY 1 DESC LIMIT 12"
+                    "FROM stats_money_hour WHERE LOWER(division) IN ('fleet', 'all') AND ships > 0 GROUP BY 1 ORDER BY 1 DESC LIMIT 12"
                 )
                 for wk, d0, d1, hrs, inc, cst, snet, once, peak_p in conn.execute(w_sql):
                     weekly_rows.append({
@@ -344,13 +345,28 @@ def compute_progression(repo_root, data="/srv/collective/data", now=None):
                     "MIN(date(hour, 'unixepoch')), MAX(date(hour, 'unixepoch')), "
                     "COUNT(DISTINCT hour), ROUND(SUM(income)), ROUND(SUM(costs)), ROUND(SUM(net)), ROUND(SUM(once)), "
                     "MAX(COALESCE(wallets_end, 0) + COALESCE(treasury, 0)) "
-                    "FROM stats_money_hour WHERE division = 'all' AND ships > 0 GROUP BY 1 ORDER BY 1 DESC LIMIT 12"
+                    "FROM stats_money_hour WHERE LOWER(division) IN ('fleet', 'all') AND ships > 0 GROUP BY 1 ORDER BY 1 DESC LIMIT 12"
                 )
                 for mo, d0, d1, hrs, inc, cst, snet, once, peak_p in conn.execute(m_sql):
                     monthly_rows.append({
                         "period": mo, "span": "%s..%s" % (d0, d1), "active_hours": int(hrs or 0),
                         "income": int(inc or 0), "costs": int(cst or 0),
                         "steady_net": int(snet or 0), "paid_once": int(once or 0),
+                        "peak_purse": int(peak_p or 0),
+                    })
+                d_sql = (
+                    "SELECT date(hour, 'unixepoch') AS day, COUNT(DISTINCT hour), ROUND(AVG(ships)), "
+                    "ROUND(AVG(income)), ROUND(AVG(costs)), ROUND(AVG(net)), ROUND(AVG(once)), "
+                    "MAX(COALESCE(wallets_end, 0) + COALESCE(treasury, 0)) "
+                    "FROM stats_money_hour WHERE LOWER(division) IN ('fleet', 'all') AND ships > 0 "
+                    "GROUP BY 1 ORDER BY 1 DESC LIMIT 14"
+                )
+                for day, hrs, sh_avg, inc_h, cst_h, net_h, once_h, peak_p in conn.execute(d_sql):
+                    daily_rows.append({
+                        "day": day, "active_hours": int(hrs or 0), "avg_ships": int(sh_avg or 0),
+                        "income_h": int(inc_h or 0), "costs_h": int(cst_h or 0),
+                        "steady_net_h": int(net_h or 0), "paid_once_h": int(once_h or 0),
+                        "total_net_h": int((net_h or 0) + (once_h or 0)),
                         "peak_purse": int(peak_p or 0),
                     })
     finally:
@@ -440,9 +456,9 @@ def compute_progression(repo_root, data="/srv/collective/data", now=None):
     if steady_24h < 0:
         cashflow_pct = _clamp_pct(max(10.0, 75.0 + (steady_24h / 1000.0)))
 
-    # Dynamic armada horizon: 500 until 500 reached, then scales automatically to max_faction_cap (1,000)
-    armada_target = 500 if ships_total < 500 else max_faction_cap
-    armada_pct = _clamp_pct(100.0 * ships_total / max(1, armada_target))
+    # Standing armada target is 500 (current strategic plan; no unplanned growth above 500)
+    armada_target = max(500, ships_total)
+    armada_pct = _clamp_pct(100.0 * min(ships_total, 500) / 500.0)
 
     # Dynamic leaderboard string
     rank_bits = []
@@ -494,14 +510,16 @@ def compute_progression(repo_root, data="/srv/collective/data", now=None):
         # Horizon 2: Mid-Term (1-3 Weeks)
         {
             "id": "h2-seat-wave3", "horizon": "Weeks (1-3w)", "orders": "G2, O5",
-            "title": "Standing Fleet Faction Seating (%d Cap -> %s Max)" % (seats_cap, format(max_faction_cap, ",")),
+            "title": "Faction Seating (%d / %d Fleet, Cap %d)" % (seats_used, ships_total or 500, seats_cap),
             "pct": _clamp_pct(100.0 * seats_used / max(1, ships_total or seats_cap)),
-            "current": "%d / %d seated (%d open now) | %.1f%% of %s max faction | %d standing awaiting seats" % (
-                seats_used, seats_cap, open_seats, pct_max_faction, format(max_faction_cap, ","), unseated_ships,
+            "current": "%d / %d seated (cap %d, %d open now) | %d standing ships awaiting future cap upgrades" % (
+                seats_used, ships_total or 500, seats_cap, open_seats, unseated_ships,
             ),
-            "target": "%d / %d standing ships seated (unlock up to %s max cap)" % (ships_total, ships_total, format(max_faction_cap, ",")),
-            "bottleneck": "%d open seat(s) ready now | next cap: %s (%.0f%% stocked; %s)" % (
-                open_seats, _next_seat_building(seats_cap, max_faction_cap), guild_pct, _short_summary(guild_n, "needs cap upgrade facility"),
+            "target": "Seat all %d standing ships inside [CLTV] (current cap %d -> next: %s)" % (
+                ships_total or 500, seats_cap, _next_seat_building(seats_cap, max_faction_cap),
+            ),
+            "bottleneck": "%d open seat(s) in current %d cap | next cap facility: %s (%.0f%% stocked; %s)" % (
+                open_seats, seats_cap, _next_seat_building(seats_cap, max_faction_cap), guild_pct, _short_summary(guild_n, "needs cap upgrade facility"),
             ),
         },
         {
@@ -545,14 +563,13 @@ def compute_progression(repo_root, data="/srv/collective/data", now=None):
         },
         {
             "id": "h3-armada-500", "horizon": "Months (1-3m)", "orders": "G2, O5",
-            "title": "Grand Multi-Empire Standing Armada (%s Horizon)" % format(armada_target, ","),
+            "title": "Multi-Empire Standing Fleet Consolidation (%d Ships)" % armada_target,
             "pct": armada_pct,
-            "current": "%d / %s standing ships (%.1f%% of %s max faction cap) across %d empires" % (
-                ships_total, format(armada_target, ","), pct_fleet_vs_max, format(max_faction_cap, ","), len(by_empire) or 1,
+            "current": "%d / %d standing ships across %d empires | %d / %d seated (cap %d)" % (
+                ships_total, armada_target, len(by_empire) or 1, seats_used, ships_total or 500, seats_cap,
             ),
-            "target": "%s active multi-empire ships with positive fleetwide steady net/h" % format(armada_target, ","),
-            "bottleneck": ("%d ships left to %s target" % (max(0, armada_target - ships_total), format(armada_target, ",")))
-                          + ("; %d ship(s) reconnecting" % ships_away if ships_away else "; expand seating & multi-empire local routes"),
+            "target": "All %d multi-empire ships fully employed, seated, and steady-net positive" % armada_target,
+            "bottleneck": ("%d ship(s) reconnecting" % ships_away if ships_away else "Fill %d open seats in %d cap & scale regional T2 corridors" % (open_seats, seats_cap)),
         },
         {
             "id": "h3-passengers-t5", "horizon": "Months (1-3m)", "orders": "G2, O2",
@@ -627,6 +644,7 @@ def compute_progression(repo_root, data="/srv/collective/data", now=None):
         "summary": summary,
         "rungs": rungs,
         "milestones": milestones,
+        "daily": daily_rows,
         "weekly": weekly_rows,
         "monthly": monthly_rows,
     }
@@ -648,10 +666,9 @@ def render_auto_block(prog):
             format(s["enterprise_value"], ","), format(s["liquid_purse"], ","), format(s["treasury"], ","),
             format(s["vault_worth"], ","), format(s["facility_worth"], ","), format(s["fleet_book_worth"], ","),
         ),
-        "| Standing Fleet & Faction Size | %d / %s max (%.1f%%) | %d / %d seated (%.1f%% of %s max; %d open; %d awaiting seats) -- %s |" % (
-            s["ships_total"], format(s["max_faction_cap"], ","), s["pct_fleet_vs_max"],
-            s["seats_used"], s["seats_cap"], s["pct_max_faction"], format(s["max_faction_cap"], ","),
-            s["open_seats"], s["unseated_ships"], emp_txt,
+        "| Faction Seating & Standing Fleet | %d / %d (cap %d) | %d seated of %d standing ships (%d open in current cap; %d awaiting cap upgrades) -- %s |" % (
+            s["seats_used"], s["ships_total"], s["seats_cap"],
+            s["seats_used"], s["ships_total"], s["open_seats"], s["unseated_ships"], emp_txt,
         ),
         "| Hull Modernization | %d / %d upgraded (%.1f%%) | %d T0 starter hulls left (%d T1, %d T2+); %d pilots P10+ (max P%d) |" % (
             s["hulls_upgraded"], s["ships_synced"], s["hull_upgrade_pct"], s["t0_hulls"], s["t1_hulls"], s["t2_plus"],

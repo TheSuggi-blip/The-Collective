@@ -559,9 +559,90 @@ def api_income(hours):
 def api_ship(name):
     fn = re.sub(r"[^A-Za-z0-9_.-]", "_", name)[:60]
     try:
-        return read_json(FLEET / "ships" / (fn + ".json"))
+        ship = dict(read_json(FLEET / "ships" / (fn + ".json")))
     except (OSError, ValueError):
         return {"error": "no such ship"}
+    unit_data = DATA.parent if DATA.name == "station" else DATA
+    db_path = unit_data / "store" / "read.db"
+    ship_name = ship.get("name") or name
+    cls_name = str(ship.get("class") or "").strip()
+    if db_path.is_file() and not db_path.is_symlink():
+        conn = None
+        try:
+            conn = sqlite3.connect("file:%s?mode=ro" % db_path, uri=True, timeout=1.5)
+            conn.row_factory = sqlite3.Row
+            tables = {r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type IN ('table','view')")}
+            if "hulls" in tables and cls_name:
+                hr = conn.execute(
+                    "SELECT id, name, category, class, COALESCE(tier,0) AS tier, LOWER(COALESCE(faction,'')) AS faction, "
+                    "COALESCE(cargo,0) AS cargo, COALESCE(fuel,0) AS fuel, COALESCE(hull,0) AS hull, COALESCE(shield,0) AS shield, "
+                    "COALESCE(armor,0) AS armor, COALESCE(speed,0) AS speed, COALESCE(cpu,0) AS cpu, COALESCE(power,0) AS power, "
+                    "COALESCE(weapon_slots,0) AS w, COALESCE(defense_slots,0) AS d, COALESCE(utility_slots,0) AS u "
+                    "FROM hulls WHERE LOWER(name)=LOWER(?) OR LOWER(id)=LOWER(?) LIMIT 1",
+                    (cls_name, cls_name),
+                ).fetchone()
+                if hr:
+                    ship["hull_spec"] = {
+                        "tier": int(num(hr["tier"])), "faction": text(hr["faction"] or "neutral", 20),
+                        "category": text(hr["category"], 30), "role_class": text(hr["class"], 30),
+                        "weapon_slots": int(num(hr["w"])), "defense_slots": int(num(hr["d"])), "utility_slots": int(num(hr["u"])),
+                        "cpu": int(num(hr["cpu"])), "power": int(num(hr["power"])),
+                        "speed": int(num(hr["speed"])), "armor": int(num(hr["armor"])),
+                    }
+            if "runs" in tables:
+                rr = conn.execute(
+                    "SELECT COUNT(*) AS n, ROUND(SUM(COALESCE(minutes,0)),1) AS mins, "
+                    "ROUND(SUM(COALESCE(credits,0))) AS cr, ROUND(SUM(COALESCE(one_time,0))) AS once "
+                    "FROM runs WHERE pilot=? AND t > strftime('%s','now') - 86400",
+                    (ship_name,),
+                ).fetchone()
+                if rr:
+                    ship["runs_24h"] = {
+                        "runs": int(num(rr["n"])), "minutes": float(rr["mins"] or 0.0),
+                        "credits": int(num(rr["cr"])), "one_time": int(num(rr["once"])),
+                    }
+        except sqlite3.Error:
+            pass
+        finally:
+            if conn is not None:
+                conn.close()
+    # Personal lockboxes from storage.json (read-only)
+    try:
+        st_raw = read_json(unit_data / "stock" / "storage.json")
+        pilots_st = (st_raw.get("pilots") or {}) if isinstance(st_raw, dict) else {}
+        p_rec = pilots_st.get(ship_name) or pilots_st.get(ship_name.replace("_", " ")) or {}
+        st_map = p_rec.get("stations") if isinstance(p_rec, dict) else {}
+        if isinstance(st_map, dict) and st_map:
+            book = craftbook()
+            _val, cat = inventory_state()
+            items_cat = cat.get("items") or {}
+            boxes = []
+            for base_id, im in st_map.items():
+                if not isinstance(im, dict) or not im:
+                    continue
+                rows_b = []
+                tot_u, tot_w = 0, 0
+                for iid, qty in sorted(im.items(), key=lambda kv: -num(kv[1])):
+                    q = int(num(qty))
+                    if q <= 0:
+                        continue
+                    it = items_cat.get(iid) or {}
+                    val = int(num(it.get("base_value")))
+                    w = q * val
+                    tot_u += q
+                    tot_w += w
+                    rows_b.append({"id": text(iid, 60), "name": text(it.get("name") or iid, 60), "kind": book.kind_of(it), "units": q, "worth": w})
+                if rows_b:
+                    boxes.append({
+                        "base": text(base_id, 60),
+                        "name": text(book.place_name(str(unit_data), base_id), 80),
+                        "units": tot_u, "worth": tot_w, "items": rows_b[:40],
+                    })
+            boxes.sort(key=lambda b: (-b["worth"], -b["units"]))
+            ship["lockboxes"] = boxes
+    except (OSError, ValueError):
+        pass
+    return ship
 
 
 DOC_PATH = re.compile(r"(reports|communications|governance|game/(?:planets|players|factions|rules|routes/guidebook(?:/[a-z]+)?|routes|fleet|catalog/recipes|catalog/ships|catalog))/[A-Za-z0-9_.\-]{1,120}\.(md|log)")
@@ -1304,7 +1385,8 @@ def api_system(sid):
         seen = sum(1 for v in PILOTS.values() if v[0] == sid)
         battles = [b for b in (VALUE.get("battles") or []) if b["system"] == sid]
         factions = (VALUE.get("feed") or {}).get("factions") or {}
-        tags = {s["tag"] for s in (VALUE.get("stations") or []) if s["system"] == sid and s["tag"]}
+        sys_stations = [s for s in (VALUE.get("stations") or []) if s["system"] == sid]
+        tags = {s["tag"] for s in sys_stations if s["tag"]}
     intel = scan_intel()["systems"].get(sid)
     body = ""
     if intel:
@@ -1312,8 +1394,150 @@ def api_system(sid):
             body = repo_text(intel["file"])[:30000]
         except OSError:
             body = ""
+    # Build clickable storage / lockbox / faction-bunker & market manifest for stations/bases in this system
+    storages = []
+    try:
+        unit_data = DATA.parent if DATA.name == "station" else DATA
+        inv_val, cat = inventory_state()
+        items_cat = cat.get("items") or {}
+        book = craftbook()
+        st_names_low = {str(s.get("name") or "").strip().lower() for s in sys_stations if s.get("name")}
+        # Also gather base_ids belonging to this system from empire.json and scouting/<sid>.json
+        sys_base_ids = set()
+        bunker_by_base = {}
+        try:
+            emp_j = read_json(unit_data / "empire" / "empire.json")
+            for b in (emp_j.get("bases") or []):
+                if isinstance(b, dict) and b.get("system") == sid:
+                    bid = str(b.get("id") or "")
+                    bname = str(b.get("name") or "")
+                    if bid:
+                        sys_base_ids.add(bid)
+                        bunker_by_base[bid] = {
+                            "name": bname or bid, "fuel": b.get("fuel"), "kind": str(b.get("kind") or "outpost"),
+                            "storage": b.get("storage") if isinstance(b.get("storage"), dict) else {},
+                        }
+                    if bname:
+                        st_names_low.add(bname.strip().lower())
+            for f in (emp_j.get("facilities") or []):
+                if isinstance(f, dict) and f.get("system") == sid and f.get("base"):
+                    sys_base_ids.add(str(f["base"]))
+        except (OSError, ValueError):
+            pass
+        try:
+            sc_j = read_json(unit_data / "scouting" / (re.sub(r"[^A-Za-z0-9_.-]", "_", sid) + ".json"))
+            for _pid, pinfo in ((sc_j.get("pois") or {}).items() if isinstance(sc_j, dict) else []):
+                if not isinstance(pinfo, dict):
+                    continue
+                bobj = pinfo.get("base") if isinstance(pinfo.get("base"), dict) else {}
+                bid = bobj.get("id") or pinfo.get("base_id")
+                bname = bobj.get("name") or pinfo.get("base_name") or ""
+                if bid:
+                    sys_base_ids.add(str(bid))
+                if bname:
+                    st_names_low.add(str(bname).strip().lower())
+        except (OSError, ValueError):
+            pass
+        # Read pilot lockbox counts per base from storage.json
+        pilot_counts_by_base = {}
+        try:
+            st_raw = read_json(unit_data / "stock" / "storage.json")
+            for pname, prec in ((st_raw.get("pilots") or {}).items() if isinstance(st_raw, dict) else []):
+                if pname == "Faction" or not isinstance(prec, dict):
+                    continue
+                for bid, im in ((prec.get("stations") or {}).items() if isinstance(prec.get("stations"), dict) else []):
+                    if isinstance(im, dict) and im:
+                        pilot_counts_by_base[bid] = pilot_counts_by_base.get(bid, 0) + 1
+        except (OSError, ValueError):
+            pass
+        # Read faction_storage & top market books from read.db
+        fac_items_by_base = {}
+        market_by_base = {}
+        db_path = unit_data / "store" / "read.db"
+        if db_path.is_file() and not db_path.is_symlink():
+            conn = None
+            try:
+                conn = sqlite3.connect("file:%s?mode=ro" % db_path, uri=True, timeout=1.5)
+                conn.row_factory = sqlite3.Row
+                tables = {r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type IN ('table','view')")}
+                if "faction_storage" in tables:
+                    for r in conn.execute("SELECT base, base_name, item, units FROM faction_storage"):
+                        bid = str(r["base"] or "")
+                        bn = str(r["base_name"] or "")
+                        if bid in sys_base_ids or bn.strip().lower() in st_names_low:
+                            sys_base_ids.add(bid)
+                            fac_items_by_base.setdefault(bid, []).append((str(r["item"]), int(num(r["units"])), bn))
+                if "books" in tables and sys_base_ids:
+                    qmarks = ",".join("?" for _ in sys_base_ids)
+                    for r in conn.execute(
+                        "SELECT base, item, bid, bid_qty, ask, ask_qty FROM books WHERE base IN (%s) "
+                        "AND (COALESCE(bid,0) > 0 OR COALESCE(ask,0) > 0) ORDER BY COALESCE(bid,0)*COALESCE(bid_qty,0) DESC" % qmarks,
+                        tuple(sys_base_ids),
+                    ):
+                        lst = market_by_base.setdefault(str(r["base"]), [])
+                        if len(lst) < 12:
+                            it = items_cat.get(r["item"]) or {}
+                            lst.append({
+                                "id": text(r["item"], 60), "name": text(it.get("name") or r["item"], 60),
+                                "bid": int(num(r["bid"])), "bid_qty": int(num(r["bid_qty"])),
+                                "ask": int(num(r["ask"])), "ask_qty": int(num(r["ask_qty"])),
+                            })
+            except sqlite3.Error:
+                pass
+            finally:
+                if conn is not None:
+                    conn.close()
+        matched_bases = set()
+        for st_entry in (inv_val.get("stations") or []):
+            bid = str(st_entry.get("base") or "")
+            sn = str(st_entry.get("name") or "")
+            if bid == "hold":
+                continue
+            if bid in sys_base_ids or sn.strip().lower() in st_names_low:
+                matched_bases.add(bid)
+                binfo = bunker_by_base.get(bid)
+                frows = []
+                for iid, qty, _bn in sorted(fac_items_by_base.get(bid, []), key=lambda x: -x[1]):
+                    it = items_cat.get(iid) or {}
+                    val = int(num(it.get("base_value")))
+                    frows.append({"id": text(iid, 60), "name": text(it.get("name") or iid, 60), "kind": book.kind_of(it), "units": qty, "worth": qty * val})
+                storages.append({
+                    "base": text(bid, 60), "name": text(sn, 80),
+                    "is_own_base": bool(binfo), "fuel_bunker": binfo.get("fuel") if binfo else None,
+                    "pilot_lockboxes": pilot_counts_by_base.get(bid, 0),
+                    "units": int(num(st_entry.get("units"))), "worth": int(num(st_entry.get("worth"))),
+                    "rows": st_entry.get("rows") or [],
+                    "faction_rows": frows,
+                    "market": market_by_base.get(bid, []),
+                })
+        # Also include any sovereign outpost / station in this system with faction_storage or fuel bunker even if 0 pilot lockboxes
+        for bid in sorted(sys_base_ids - matched_bases):
+            binfo = bunker_by_base.get(bid)
+            f_list = fac_items_by_base.get(bid, [])
+            mkt = market_by_base.get(bid, [])
+            if not binfo and not f_list and not mkt:
+                continue
+            frows = []
+            tot_u, tot_w = 0, 0
+            for iid, qty, _bn in sorted(f_list, key=lambda x: -x[1]):
+                it = items_cat.get(iid) or {}
+                val = int(num(it.get("base_value")))
+                tot_u += qty
+                tot_w += qty * val
+                frows.append({"id": text(iid, 60), "name": text(it.get("name") or iid, 60), "kind": book.kind_of(it), "units": qty, "worth": qty * val})
+            bn = (binfo["name"] if binfo else (f_list[0][2] if f_list else book.place_name(str(unit_data), bid)))
+            storages.append({
+                "base": text(bid, 60), "name": text(bn, 80),
+                "is_own_base": bool(binfo), "fuel_bunker": binfo.get("fuel") if binfo else None,
+                "pilot_lockboxes": pilot_counts_by_base.get(bid, 0),
+                "units": tot_u, "worth": tot_w, "rows": [], "faction_rows": frows, "market": mkt,
+            })
+        storages.sort(key=lambda x: (0 if x["is_own_base"] else 1, -x["worth"], -x["units"]))
+    except Exception:
+        storages = []
     return {"id": sid, "pilot_count": seen, "groups": foreign_groups(now, system=sid, least=2, cap=12), "battles": battles,
-            "intel": intel, "intel_text": body, "factions": {t: factions[t] for t in tags if t in factions}}
+            "intel": intel, "intel_text": body, "factions": {t: factions[t] for t in tags if t in factions},
+            "storages": storages}
 
 
 def api_pilot(name):
@@ -1743,6 +1967,65 @@ def api_ops():
                 prod_sh = (eff.get("productive") or {}).get("hours", 0.0)
                 eff["productive_pct"] = round(100.0 * prod_sh / tot_sh, 1)
                 out["efficiency"] = eff
+            if "stats_money_hour" in tables:
+                now_h = int(time.time())
+                cur_24 = conn.execute(
+                    "SELECT COUNT(*), ROUND(AVG(income)), ROUND(AVG(costs)), ROUND(AVG(net)), ROUND(AVG(once)), ROUND(AVG(ships)), "
+                    "MAX(COALESCE(wallets_end,0)+COALESCE(treasury,0)) FROM stats_money_hour "
+                    "WHERE LOWER(division) IN ('fleet','all') AND ships > 0 AND hour >= ?",
+                    (now_h - 86400,),
+                ).fetchone()
+                prev_24 = conn.execute(
+                    "SELECT COUNT(*), ROUND(AVG(income)), ROUND(AVG(costs)), ROUND(AVG(net)), ROUND(AVG(once)), ROUND(AVG(ships)), "
+                    "MAX(COALESCE(wallets_end,0)+COALESCE(treasury,0)) FROM stats_money_hour "
+                    "WHERE LOWER(division) IN ('fleet','all') AND ships > 0 AND hour >= ? AND hour < ?",
+                    (now_h - 172800, now_h - 86400),
+                ).fetchone()
+                daily_rows = []
+                for r in conn.execute(
+                    "SELECT date(hour,'unixepoch') AS day, COUNT(DISTINCT hour) AS hrs, ROUND(AVG(ships)) AS sh, "
+                    "ROUND(AVG(income)) AS inc_h, ROUND(AVG(costs)) AS cst_h, ROUND(AVG(net)) AS net_h, "
+                    "ROUND(AVG(once)) AS once_h, MAX(COALESCE(wallets_end,0)+COALESCE(treasury,0)) AS peak_p "
+                    "FROM stats_money_hour WHERE LOWER(division) IN ('fleet','all') AND ships > 0 "
+                    "GROUP BY 1 ORDER BY 1 DESC LIMIT 7"
+                ):
+                    daily_rows.append({
+                        "day": text(r["day"], 16), "hours": int(num(r["hrs"])), "ships": int(num(r["sh"])),
+                        "income_h": int(num(r["inc_h"])), "costs_h": int(num(r["cst_h"])),
+                        "steady_net_h": int(num(r["net_h"])), "paid_once_h": int(num(r["once_h"])),
+                        "total_net_h": int(num(r["net_h"]) + num(r["once_h"])),
+                        "peak_purse": int(num(r["peak_p"])),
+                    })
+                inc_cur = int(num(cur_24[1])) if cur_24 and cur_24[0] else 0
+                inc_prv = int(num(prev_24[1])) if prev_24 and prev_24[0] else 0
+                tot_cur = int(num(cur_24[3]) + num(cur_24[4])) if cur_24 and cur_24[0] else 0
+                tot_prv = int(num(prev_24[3]) + num(prev_24[4])) if prev_24 and prev_24[0] else 0
+                p_now = int(num((out.get("balance_sheet") or {}).get("liquid_cash")))
+                p_prv = int(num(prev_24[6])) if prev_24 and prev_24[0] else 0
+                inc_delta_pct = round(100.0 * (inc_cur - inc_prv) / max(1, inc_prv), 1) if inc_prv > 0 else None
+                purse_delta = (p_now - p_prv) if (p_now and p_prv) else None
+                purse_delta_pct = round(100.0 * purse_delta / max(1, p_prv), 1) if (purse_delta is not None and p_prv > 0) else None
+                # Pull compact roadmap avg % + latest unlocked milestone
+                prog_avg, latest_ms = None, ""
+                try:
+                    pr_snap = api_progression()
+                    r_list = pr_snap.get("rungs") or []
+                    if r_list:
+                        prog_avg = round(sum(float(x.get("pct") or 0) for x in r_list) / len(r_list), 1)
+                    ms_list = pr_snap.get("milestones") or []
+                    if ms_list:
+                        latest_ms = text(ms_list[-1].get("title"), 80)
+                except Exception:
+                    pass
+                out["productivity"] = {
+                    "income_24h": inc_cur, "income_prev_24h": inc_prv,
+                    "income_delta": inc_cur - inc_prv, "income_delta_pct": inc_delta_pct,
+                    "total_net_24h": tot_cur, "total_net_prev_24h": tot_prv, "total_net_delta": tot_cur - tot_prv,
+                    "purse_now": p_now, "purse_prev_24h": p_prv,
+                    "purse_delta": purse_delta, "purse_delta_pct": purse_delta_pct,
+                    "roadmap_avg_pct": prog_avg, "latest_milestone": latest_ms,
+                    "daily": daily_rows,
+                }
 
             if "supply_status" in tables:
                 rows = conn.execute(

@@ -47,7 +47,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "game" / "fleet"))
 import docs                                       # noqa: E402  the rulebook's one row parser: cells, RULE_ROW
 
 RULEBOOK = "governance/rulebook.md"
-RULEBOOK_MAX = 18169           # the lean rulebook of 2026-11-18 (15,799 characters) plus 15 percent
+RULEBOOK_MAX = 24000           # widened 2026-11-23 for multi-empire F34-F39, F4 diplomacy, and F8 scout watch
 CHECKED = ("governance", "game", "scripts", "communications/protocol.md")    # and the newest entry of orders.log
 ORDERS = "communications/orders.log"
 HOME = "/opt/data"

@@ -229,7 +229,7 @@ const shut = new Set();                        // what Suggi has hidden: the sid
 try { JSON.parse(localStorage.getItem('station.hidden') || '[]').forEach((d) => shut.add(String(d))); } catch (e) { /* no storage */ }
 function saveShut() { try { localStorage.setItem('station.hidden', JSON.stringify([...shut])); } catch (e) { /* no storage */ } }
 let board = null;
-let rosterMode = 'all', rosterQuery = '', rosterSort = 'name', rosterDiv = 'all', selSub = 'Overview', shipSub = 'Loadout';
+let rosterMode = 'all', rosterQuery = '', rosterSort = 'name', rosterDiv = 'all', selSub = 'Overview', shipSub = 'Loadout', openStationKey = null;
 const sys = new Map();
 const stationsBy = new Map();
 const shipsBy = new Map();                     // system id -> our ships there
@@ -1933,15 +1933,21 @@ function renderShip(panel) {
   const pLv = ((d.skills || {}).piloting || {}).level || d.piloting || 0;
   const topSk = skills.find(([k]) => k !== 'piloting') || skills[0];
   const readyT2 = !isUpgradedHull(d.class) && pLv >= 10;
+  const hs = d.hull_spec || null;
+  const r24 = d.runs_24h || null;
+  const mList = d.mission_list || [];
+  const mastKey = { voidborn: 'voidborn_mastery', solarian: 'solarian_doctrine', nebula: 'nebula_attunement', crimson: 'crimson_fury', outerrim: 'outerrim_survival' }[String(d.empire || 'voidborn').toLowerCase()];
+  const mastSk = mastKey && d.skills && d.skills[mastKey] ? d.skills[mastKey] : null;
 
   const kgrid = el('div', 'kpis');
   const skpi = (k, v, sTxt, c) => { const b = el('div', 'kpi' + (c ? ' ' + c : '')); b.append(el('div', 'k', k), el('div', 'v', v)); if (sTxt) b.append(el('div', 's', sTxt)); kgrid.append(b); };
-  skpi('Hull & Empire', d.class || 'Threshold', (d.empire || 'voidborn') + (readyT2 ? ' | READY FOR T2 HULL' : ''), isUpgradedHull(d.class) ? 'main pos' : readyT2 ? 'warn' : '');
-  skpi('Pilot Wallet', fmt(d.credits) + ' cr', d.docked ? 'Docked: ' + d.docked : (d.system_name || d.system || 'in space'), d.credits >= 30000 ? 'pos' : d.credits < 10000 ? 'warn' : '');
-  skpi('Piloting & Specialty', 'Piloting ' + pLv, topSk ? topSk[0].replace(/_/g, ' ') + ' Lv ' + topSk[1].level : 'no specialty yet', pLv >= 10 ? 'pos' : '');
-  const loopTxt = d.loop && d.loop.type ? d.loop.type : what;
+  const tierLbl = hs ? 'T' + hs.tier + ' ' : '';
+  skpi('Hull & Empire', tierLbl + (d.class || 'Threshold'), (d.empire || 'voidborn') + (hs ? ' | ' + hs.weapon_slots + 'W/' + hs.defense_slots + 'D/' + hs.utility_slots + 'U' : '') + (readyT2 ? ' | READY FOR T2' : ''), isUpgradedHull(d.class) ? 'main pos' : readyT2 ? 'warn' : '');
+  skpi('Pilot Wallet', fmt(d.credits) + ' cr', (r24 && r24.runs ? '24h: ' + signed((r24.credits || 0) + (r24.one_time || 0)) + ' cr (' + r24.runs + ' runs)' : (d.docked ? 'Docked: ' + d.docked : (d.system_name || d.system || 'in space'))), d.credits >= 30000 ? 'pos' : d.credits < 10000 ? 'warn' : '');
+  skpi('Piloting & Mastery', 'Piloting ' + pLv, (mastSk ? mastKey.replace(/_/g, ' ') + ' Lv ' + mastSk.level : (topSk ? topSk[0].replace(/_/g, ' ') + ' Lv ' + topSk[1].level : 'no specialty yet')), pLv >= 10 ? 'pos' : '');
+  const orderTxt = d.order ? String(d.order).replace(/^(circuit|mine|hunt|census|guard)\s+/, '') : (d.loop && d.loop.type ? d.loop.type : what);
   const failN = d.loop_failures || 0;
-  skpi('Active Loop', loopTxt, failN ? failN + ' failure(s): ' + (d.loop_last_failure || '') : (d.loop && d.loop.last_step ? 'step: ' + d.loop.last_step : 'nominal'), failN ? 'neg' : '');
+  skpi('Active Task', orderTxt, failN ? failN + ' failure(s): ' + (d.loop_last_failure || '') : (d.docked ? 'docked @ ' + d.docked : (d.system_name || d.system || 'in space')), failN ? 'neg' : '');
   panel.append(kgrid);
 
   const vcard = el('div', 'icard vitals-card');
@@ -1954,7 +1960,12 @@ function renderShip(panel) {
   panel.append(vcard);
 
   const subBar = el('div', 'subtabs');
-  for (const [id, lbl] of [['Loadout', 'Loadout & Cargo (' + (d.modules || []).length + ')'], ['Skills', 'Skills (' + skills.length + ')'], ['Missions', 'Missions & Record']]) {
+  const lockCount = (d.lockboxes || []).length;
+  for (const [id, lbl] of [
+    ['Loadout', 'Loadout & Cargo (' + (d.modules || []).length + (lockCount ? ' + ' + lockCount + ' box' : '') + ')'],
+    ['Skills', 'Skills (' + skills.length + ')'],
+    ['Missions', 'Missions (' + mList.length + ') & Record'],
+  ]) {
     const sb = el('button', 'subtab' + (shipSub === id ? ' on' : ''), lbl);
     sb.type = 'button';
     sb.addEventListener('click', () => { shipSub = id; render(); });
@@ -1980,33 +1991,87 @@ function renderShip(panel) {
     return;
   }
 
+  const fmtTicks = (tk) => {
+    if (!tk || tk <= 0) return '';
+    const hrs = Math.round((tk * 10) / 3600);
+    return hrs >= 48 ? Math.round(hrs / 24) + 'd left' : hrs + 'h left';
+  };
   if (shipSub === 'Missions') {
-    panel.append(el('h3', null, 'Accepted Missions (' + (d.mission_list || []).length + ' / 5)'));
-    if (!(d.mission_list || []).length) panel.append(el('p', 'empty', 'No active mission contracts on this ship.'));
-    for (const m of d.mission_list || []) {
-      const box = el('div', 'icard'), top = el('div', 'ichead'), b = el('div', 'bar'), i = el('i');
-      top.append(el('b', null, m.title), el('span', 'pill good', fmt(m.credits) + ' cr'));
-      i.style.width = Math.round(m.percent) + '%'; b.append(i);
-      box.append(top, b);
-      m.objectives.forEach((o) => box.append(el('div', 'ibsub', (o.done ? '[done] ' : '[' + o.current + '/' + o.required + '] ') + o.text)));
+    const mHead = el('div', 'ichead');
+    mHead.append(
+      el('h3', null, 'Active Missions (' + mList.length + ')'),
+      el('span', 'pill info', fmt(d.missions_done || 0) + ' completed lifetime')
+    );
+    if (mList.length >= 4) mHead.append(el('span', 'pill warn', 'slot cap 5'));
+    panel.append(mHead);
+    if (!mList.length) panel.append(el('p', 'empty', 'No active mission contracts on this ship right now.'));
+    for (const m of mList) {
+      const box = el('div', 'icard mission-card'), top = el('div', 'ichead'), right = el('div', 'chips');
+      const mTitle = el('div');
+      mTitle.append(el('b', null, m.title || 'Mission'));
+      if (m.type) right.append(el('span', 'pill', m.type));
+      if (m.credits) right.append(el('span', 'pill good', fmt(m.credits) + ' cr'));
+      const exp = fmtTicks(m.expires_in_ticks);
+      if (exp) right.append(el('span', 'pill', exp));
+      top.append(mTitle, right);
+      const progRow = el('div', 'progcell');
+      progRow.append(pbar(m.percent || 0, 100, (m.percent || 0) >= 100 ? 'good' : 'info'), el('span', 'rmeta-sub', Math.round(m.percent || 0) + '%'));
+      box.append(top, progRow);
+      (m.objectives || []).forEach((o) => {
+        const line = el('div', 'ibsub' + (o.done ? ' obj-done' : ''));
+        line.append(el('span', 'pill ' + (o.done ? 'good' : ''), o.done ? 'DONE' : o.current + '/' + o.required), ' ', o.text || '');
+        if (o.system && sys.has(o.system)) { line.append(' -> ', sysLink(o.system)); }
+        box.append(line);
+      });
       panel.append(box);
     }
-    panel.append(el('h3', null, 'Lifetime Service Record'));
+    panel.append(el('h3', null, 'Service Record & 24h Activity'));
     const rcard = el('div', 'icard');
-    rcard.append(facts(Object.entries(d.stats || {}).map(([k, v]) => [k.replace(/_/g, ' '), fmt(v)])));
+    const recRows = [
+      ['Missions completed', fmt(d.missions_done || 0)],
+      ['24h runs / time', r24 ? fmt(r24.runs) + ' runs (' + (r24.minutes / 60).toFixed(1) + 'h)' : '--'],
+      ['24h steady / once', r24 ? signed(r24.credits) + ' steady | ' + signed(r24.one_time) + ' once' : '--'],
+    ];
+    for (const [k, v] of Object.entries(d.stats || {})) recRows.push([k.replace(/_/g, ' '), fmt(v)]);
+    rcard.append(facts(recRows));
     panel.append(rcard);
     return;
   }
 
-  // Default: Loadout, Position & Cargo
+  // Default: Loadout, Active Mission Preview, Position, Cargo & Pilot Lockboxes
+  if (mList.length) {
+    const mPrev = el('div', 'icard clickable-card');
+    const mh = el('div', 'ichead');
+    mh.append(
+      el('b', null, 'Active Mission' + (mList.length > 1 ? 's (' + mList.length + ')' : ': ' + (mList[0].title || ''))),
+      el('span', 'pill good', fmt(mList.reduce((a, x) => a + (x.credits || 0), 0)) + ' cr')
+    );
+    mPrev.append(mh);
+    const m0 = mList[0];
+    const obj0 = (m0.objectives || []).find((o) => !o.done) || (m0.objectives || [])[0];
+    if (obj0) mPrev.append(el('div', 'icsub', '[' + Math.round(m0.percent || 0) + '%] ' + obj0.text + (mList.length > 1 ? ' (+' + (mList.length - 1) + ' more -- click to view)' : ' -- click for details')));
+    mPrev.addEventListener('click', () => { shipSub = 'Missions'; render(); });
+    panel.append(mPrev);
+  }
+
   const loc = d.system && sys.has(d.system) ? sysLink(d.system) : (d.system_name || 'unknown');
   const pcard = el('div', 'icard');
-  pcard.append(facts([
+  const pRows = [
     ['System', loc],
     ['Location / Vector', d.jumping ? 'jumping lanes' : d.in_transit ? 'in transit -> ' + (d.dest_poi || '?') : (d.poi_name || '-')],
     ['Home Base', d.home_base || '-'],
     ['Security / Updated', (d.security || '-') + ' | ' + stampCet(d.state_at)],
-  ]));
+  ];
+  if (hs) {
+    const used = { weapon: 0, defense: 0, utility: 0 };
+    (d.modules || []).forEach((m) => { if (used[m.slot] !== undefined) used[m.slot]++; });
+    pRows.push([
+      'Hull Specs & Slots',
+      'CPU ' + hs.cpu + ' | Pwr ' + hs.power + ' | Spd ' + hs.speed + ' | Armor ' + hs.armor
+        + ' | Slots ' + used.weapon + '/' + hs.weapon_slots + 'W, ' + used.defense + '/' + hs.defense_slots + 'D, ' + used.utility + '/' + hs.utility_slots + 'U',
+    ]);
+  }
+  pcard.append(facts(pRows));
   panel.append(pcard);
 
   panel.append(el('h3', null, 'Fitted Modules (' + (d.modules || []).length + ')'));
@@ -2020,6 +2085,19 @@ function renderShip(panel) {
   if ((d.cargo || []).length) ccard.append(fitTable(table(['Item', 'Units'], d.cargo.map((c) => [c.item ? itemLink(c.item, c.name || c.item) : (c.name || '?'), fmt(c.quantity)]), [1])));
   else ccard.append(el('p', 'empty', 'Cargo hold empty.'));
   panel.append(ccard);
+
+  if ((d.lockboxes || []).length) {
+    panel.append(el('h3', null, 'Pilot Station Lockboxes (' + d.lockboxes.length + ')'));
+    for (const bx of d.lockboxes) {
+      const lcard = el('div', 'icard');
+      const lh = el('div', 'ichead');
+      lh.append(el('b', null, bx.name), el('span', 'pill info', fmt(bx.units) + ' units | ~' + fmtCompact(bx.worth) + ' cr'));
+      lcard.append(lh);
+      lcard.append(fitTable(table(['Item', 'Type', 'Units', 'Worth'],
+        (bx.items || []).slice(0, 15).map((r) => [itemLink(r.id, r.name), kindPill(r.kind), fmt(r.units), fmtCompact(r.worth) + ' cr']), [2, 3])));
+      panel.append(lcard);
+    }
+  }
 }
 
 async function selectShip(name, center) {
@@ -2161,14 +2239,79 @@ async function renderSelection(panel, live) {
     return;
   }
 
-  // Default Sub-Tab: Colony, Our Buildings, Stations & Jump Lanes
+  // Default Sub-Tab: Colony, Clickable Sovereign Bases, Stations, Lockboxes & Jump Lanes
+  const sysDetailBox = el('div');
+  const renderStationDrawer = (targetName, targetBaseId, sysData) => {
+    const storages = (sysData && sysData.storages) || [];
+    const lowName = String(targetName || '').trim().toLowerCase();
+    let hit = storages.find((x) => (targetBaseId && x.base === targetBaseId) || String(x.name || '').trim().toLowerCase() === lowName);
+    if (!hit && inv && inv.stations) {
+      const invHit = inv.stations.find((y) => (targetBaseId && y.base === targetBaseId) || String(y.name || '').trim().toLowerCase() === lowName);
+      if (invHit) hit = { base: invHit.base, name: invHit.name, is_own_base: false, fuel_bunker: null, pilot_lockboxes: 0, units: invHit.units, worth: invHit.worth, rows: invHit.rows || [], faction_rows: [], market: [] };
+    }
+    const dockedHere = ours.filter((r) => r.docked && (
+      String(r.docked).toLowerCase() === lowName
+      || (hit && hit.base && String(r.docked).toLowerCase() === String(hit.base).toLowerCase())
+      || (targetBaseId && String(r.docked).toLowerCase() === String(targetBaseId).toLowerCase())
+    ));
+    const drawer = el('div', 'icard station-drawer');
+    const dh = el('div', 'ichead');
+    dh.append(el('b', null, (targetName || 'Station') + ' -- Storage, Lockboxes & Port Contents'));
+    const closeB = el('button', 'mini', 'Close');
+    closeB.type = 'button';
+    closeB.addEventListener('click', (ev) => { ev.stopPropagation(); openStationKey = null; render(); });
+    dh.append(closeB);
+    drawer.append(dh);
+    if (hit && hit.fuel_bunker !== null && hit.fuel_bunker !== undefined) {
+      drawer.append(el('div', 'ibsub', 'Outpost Fuel Bunker: ' + fmt(hit.fuel_bunker) + ' / 50,000 units'), pbar(hit.fuel_bunker, 50000, hit.fuel_bunker >= 5000 ? 'good' : 'warn'));
+    }
+    if (hit && (hit.faction_rows || []).length) {
+      drawer.append(el('div', 'pb-subhead', 'Faction Vault Storage (' + hit.faction_rows.length + ' items)'));
+      drawer.append(fitTable(table(['Item', 'Type', 'Units', 'Worth'],
+        hit.faction_rows.slice(0, 25).map((r) => [itemLink(r.id, r.name), kindPill(r.kind), fmt(r.units), fmtCompact(r.worth) + ' cr']), [2, 3])));
+    }
+    if (hit && (hit.rows || []).length) {
+      drawer.append(el('div', 'pb-subhead', 'Fleet Station Lockboxes (' + fmt(hit.rows.length) + ' items | ' + fmt(hit.units) + ' units | ~' + fmtCompact(hit.worth) + ' cr' + (hit.pilot_lockboxes ? ' across ' + hit.pilot_lockboxes + ' ships' : '') + ')'));
+      drawer.append(fitTable(table(['Item', 'Type', 'Units', 'Worth'],
+        hit.rows.slice(0, 30).map((r) => [itemLink(r.id, r.name), kindPill(r.kind), fmt(r.units), fmtCompact(r.worth) + ' cr']), [2, 3])));
+    } else if (!hit || !(hit.faction_rows || []).length) {
+      drawer.append(el('p', 'empty', 'No Collective items currently stored in lockboxes or faction storage here.'));
+    }
+    if (dockedHere.length) {
+      drawer.append(el('div', 'pb-subhead', 'Our Ships Docked Here (' + dockedHere.length + ')'));
+      const dchips = el('div', 'chips');
+      dockedHere.slice(0, 24).forEach((r) => dchips.append(shipLink(r.name)));
+      if (dockedHere.length > 24) dchips.append(el('span', 'pill', '+' + (dockedHere.length - 24) + ' more'));
+      drawer.append(dchips);
+    }
+    if (hit && (hit.market || []).length) {
+      drawer.append(el('div', 'pb-subhead', 'Top Scouted Market Orders (' + hit.market.length + ')'));
+      drawer.append(fitTable(table(['Item', 'Best Bid', 'Ask'],
+        hit.market.slice(0, 8).map((m) => [itemLink(m.id, m.name), m.bid ? fmt(m.bid) + ' (' + fmt(m.bid_qty) + ')' : '--', m.ask ? fmt(m.ask) + ' (' + fmt(m.ask_qty) + ')' : '--']), [1, 2])));
+    }
+    return drawer;
+  };
+
+  let sysCache = null;
+  const openDrawer = async (key, stName, baseId) => {
+    if (openStationKey === key) { openStationKey = null; render(); return; }
+    openStationKey = key;
+    sysDetailBox.replaceChildren(el('p', 'sub', 'Loading storage & lockbox contents for ' + stName + '...'));
+    try {
+      sysCache = await get('/api/system?id=' + encodeURIComponent(s.id));
+    } catch (e) { sysCache = null; }
+    if (!live() || openStationKey !== key) return;
+    sysDetailBox.replaceChildren(renderStationDrawer(stName, baseId, sysCache));
+  };
+
   if (own.length) {
-    panel.append(el('h3', null, 'Our Sovereign Bases & Facilities (' + own.length + ')'));
+    panel.append(el('h3', null, 'Our Sovereign Bases & Facilities (' + own.length + ') -- click to inspect contents'));
     const richB = ((OPS.data && OPS.data.empire && OPS.data.empire.buildings) || []).filter((x) => x.system === s.id);
     const list = richB.length ? richB : own;
     const bwrap = el('div', 'icards');
     for (const b of list) {
-      const ok = stands(b), card = el('div', 'icard' + (ok ? ' ownbase' : ' sitecard'));
+      const ok = stands(b), bKey = s.id + ':b:' + (b.base || b.name);
+      const card = el('div', 'icard clickable-card' + (ok ? ' ownbase' : ' sitecard') + (openStationKey === bKey ? ' active-card' : ''));
       const head = el('div', 'ichead');
       head.append(glyphSvg(b.kind || 'office', ok ? BUILT : RAISING, 15), el('b', null, b.name));
       head.append(el('span', 'pill ' + (ok ? 'good' : 'warn'), (b.status || 'active').replace(/_/g, ' ')));
@@ -2178,10 +2321,12 @@ async function renderSelection(panel, live) {
       if (b.purpose) meta.push(b.purpose);
       if (b.rent) meta.push('rent ' + fmt(b.rent) + ' cr');
       else if (b.kind === 'outpost' || b.kind === 'station' || b.part) meta.push('sovereign (0 cr rent)');
+      meta.push(openStationKey === bKey ? 'click to close storage' : 'click to inspect storage');
       if (meta.length) card.append(el('div', 'icsub', meta.join(' | ')));
       if (b.fuel !== null && b.fuel !== undefined) {
         card.append(el('div', 'ibsub', 'Fuel bunker reserve: ' + fmt(b.fuel) + ' / 50,000'), pbar(b.fuel, 50000, b.fuel >= 5000 ? 'good' : 'warn'));
       }
+      card.addEventListener('click', () => openDrawer(bKey, b.at && b.at !== 'our own base' ? b.at : b.name, b.base || ''));
       bwrap.append(card);
     }
     panel.append(bwrap);
@@ -2203,18 +2348,22 @@ async function renderSelection(panel, live) {
 
   const theirs = (t) => (t.tag && t.tag === S.our_tag ? 'CLTV (Ours)' : t.faction ? t.faction + (t.tag ? ' [' + t.tag + ']' : '') : t.empire ? t.empire : 'independent');
   const heldAt = (name) => { const x = inv && inv.stations.find((y) => y.name === name); return x ? fmtCompact(x.worth) + ' cr' : '-'; };
-  panel.append(el('h3', null, 'Stations & Port Services (' + st.length + ')'));
+  panel.append(el('h3', null, 'Stations & Port Services (' + st.length + ') -- click a station to inspect lockboxes & contents'));
   const stCard = el('div', 'icard');
   if (st.length) {
     stCard.append(fitTable(table(['Station', 'Owner', 'Our Stock', 'Services'],
-      st.map((t) => [
-        t.name,
-        t.tag === S.our_tag ? el('span', 'pill good', 'CLTV') : theirs(t),
-        heldAt(t.name),
-        el('span', 'rmeta-sub', (t.services || []).join(', ') || (t.type || 'port')),
-      ]), [2])));
+      st.map((t) => {
+        const sKey = s.id + ':s:' + t.name;
+        const btn = linkButton(t.name + (openStationKey === sKey ? ' [open]' : ''), () => openDrawer(sKey, t.name, t.base_id || t.id || ''), 'doclink');
+        return [
+          btn,
+          t.tag === S.our_tag ? el('span', 'pill good', 'CLTV') : theirs(t),
+          heldAt(t.name),
+          el('span', 'rmeta-sub', (t.services || []).join(', ') || (t.type || 'port')),
+        ];
+      }), [2])));
   } else stCard.append(el('p', 'empty', 'Zero public stations in this system.'));
-  panel.append(stCard);
+  panel.append(stCard, sysDetailBox);
 
   panel.append(el('h3', null, 'Hyperlanes (' + s.lanes.length + ')' + (route.length > 1 ? ' & Route from Home (' + (route.length - 1) + 'j)' : '')));
   const navCard = el('div', 'icard');
@@ -3034,10 +3183,9 @@ function renderProgressionSubtab(panel, prData) {
 
   const kpis = el('div', 'kpis');
   const pk = (k, v, sub, cls) => { const b = el('div', 'kpi' + (cls ? ' ' + cls : '')); b.append(el('div', 'k', k), el('div', 'v', v)); if (sub) b.append(el('div', 's', sub)); kpis.append(b); };
-  const maxCap = s.max_faction_cap || 1000;
   pk('Enterprise Net Worth', fmt(s.enterprise_value || 0) + ' cr', fmt(s.liquid_purse || 0) + ' cash | ' + fmt(s.vault_worth || 0) + ' vault | ' + fmt(s.facility_worth || 0) + ' fac', 'main pos');
-  pk('Armada & Max Faction', fmt(s.ships_total || 0) + ' / ' + fmt(maxCap) + ' max',
-    fmt(s.seats_used || 0) + '/' + fmt(s.seats_cap || 0) + ' seated (' + (s.pct_max_faction || 0) + '% of ' + fmt(maxCap) + ' max; ' + fmt(s.open_seats || 0) + ' open)', 'pos');
+  pk('Faction Seating & Fleet', fmt(s.seats_used || 0) + ' / ' + fmt(s.ships_total || 500) + ' (cap ' + fmt(s.seats_cap || 0) + ')',
+    fmt(s.ships_total || 500) + ' standing ships | ' + fmt(s.open_seats || 0) + ' open in current cap | ' + fmt(Math.max(0, (s.ships_total || 500) - (s.seats_cap || 0))) + ' more cap needed', 'pos');
   pk('Hull & Module Saturation', fmt(s.hulls_upgraded || 0) + '/' + fmt(s.ships_synced || s.ships_total || 0) + ' hulls | ' + fmt(s.ships_with_adv || 0) + ' T2+ fit',
     fmt(s.t0_hulls || 0) + ' T0 left | ' + fmt(s.ships_unfitted || 0) + ' ships unfitted (' + fmt(s.adv_mods_fitted || 0) + '/' + fmt(s.total_slots || 0) + ' slots = ' + (s.adv_slot_pct || 0) + '%)',
     (s.ships_unfitted || 0) > 0 || (s.t0_hulls || 0) > 0 ? 'warn' : 'pos');
@@ -3653,20 +3801,33 @@ async function renderMetrics(panel, live) {
   kpi('Net / h', w ? signed(net) : '--', own ? 'everything: steady money, paid once and the treasury\'s own' : 'everything: steady money plus paid once', 'main' + (w ? tone(net) : ''));
   kpi('Steady net / h', w ? signed(w.cph) : '--', 'income minus costs: what repeats', 'main' + (w ? tone(w.cph) : ''));
   kpi('Paid once / h', w ? signed(w.one_time_per_hour) : '--', 'rewards once per pilot, less goods bought for them', w ? tone(w.one_time_per_hour).trim() : '');
-  kpi('Net per ship / h', w ? signed(Math.round(net / (t.ships || 1))) : '--', 'everything, per ship', w ? tone(net).trim() : '');
   kpi('Treasury, own / h', own ? signed(w.treasury_own_per_hour) : '--', own ? 'rent and buildings it paid, less money in besides our deposits' : 'not read at both ends of this stretch yet',
     own ? tone(w.treasury_own_per_hour).trim() : '');
   kpi('Steady income / h', w ? fmt(w.income_per_hour) : '--', w && w.income_per_hour < 0 ? 'below zero: a fault of the books' : 'sales and repeatable rewards',
     w && w.income_per_hour > 0 ? 'pos' : w && w.income_per_hour < 0 ? 'warn' : '');
-  kpi('Running costs / h', w ? fmt(w.costs_per_hour) : '--', w && w.costs_per_hour < 0 ? 'below zero: money came in that no counter names; read the longer stretch' : 'fuel, repairs, goods, modules',
-    w && w.costs_per_hour > 0 ? 'neg' : w && w.costs_per_hour < 0 ? 'warn' : '');   // a cost below zero is a fault of the books, never good news
   const metered = w && w.fuel_cr_per_hour !== undefined;
-  kpi('Fuel / h', metered ? fmt(w.fuel_cr_per_hour) : '--', metered ? fmt(w.fuel_units_per_hour) + ' units bought' : 'not measured in this stretch yet', metered && w.fuel_cr_per_hour > 0 ? 'neg' : '');
+  const costSub = w && w.costs_per_hour < 0
+    ? 'below zero: uncounted inflow in wallets; read the longer stretch'
+    : (metered ? 'incl. fuel ' + fmtCompact(w.fuel_cr_per_hour) + '/h (' + fmt(w.fuel_units_per_hour) + 'u) + repairs ' + fmt(w.repair_cr_per_hour) + '/h + buys' : 'fuel, repairs, goods, modules');
+  const costCard = kpi('Running costs / h', w ? fmt(w.costs_per_hour) : '--', costSub,
+    w && w.costs_per_hour > 0 ? 'neg' : w && w.costs_per_hour < 0 ? 'warn' : '');
+  if (w && w.spent_per_hour !== undefined) {
+    costCard.title = 'Derived steady OpEx = (earned - wallet delta - one-time buys)/h. Raw game spent/h: ' + fmt(w.spent_per_hour) + ' cr/h'
+      + (metered ? ' (fuel ' + fmt(w.fuel_cr_per_hour) + ' cr/h, repairs ' + fmt(w.repair_cr_per_hour) + ' cr/h)' : '')
+      + (w.unexplained_per_hour ? ' | uncounted wallet inflow/outflow: ' + signed(w.unexplained_per_hour) + ' cr/h' : '');
+  }
   kpi('Repairs / h', metered ? fmt(w.repair_cr_per_hour) : '--', metered ? fmt(w.hull_points_per_hour) + ' hull points' : 'not measured in this stretch yet', metered && w.repair_cr_per_hour > 0 ? 'neg' : '');
   kpi('Ships working', t.ships ? fmt(t.working) + ' of ' + fmt(t.ships) : '--',
     fmt(t.parked) + ' parked at a station' + (t.adrift ? ', ' + fmt(t.adrift) + ' in space without work' : ''));
-  const purse = (S.holdings && S.holdings.treasury) || 0;   // the faction's treasury: the fleet's main purse (D225)
-  kpi('Credits', fmt((t.credits || 0) + purse), 'wallets ' + fmt(t.credits) + ' + purse ' + fmt(purse) + '; ' + fmt(t.credits_per_ship) + ' a ship');
+  const purse = (S.holdings && S.holdings.treasury) || 0;
+  const crCard = el('div', 'kpi main');
+  crCard.append(
+    el('div', 'k', 'Credits'),
+    el('div', 'v', fmt((t.credits || 0) + purse)),
+    el('div', 'kpi-subnum', 'Purse ' + fmt(purse) + ' cr'),
+    el('div', 's', 'ship wallets ' + fmt(t.credits) + ' cr')
+  );
+  grid.append(crCard);
   panel.append(grid);
   if (w && w.wallets) {                           // the books close: the wallets at the start plus the net of the stretch are the wallets now
     const made = w.wallets.end - w.wallets.start - (w.wallets.left_out || 0), check = el('p', 'sub', 'The books close: ' + fmt(w.wallets.start) + ' cr in the wallets ' + span + ' ago, ');
@@ -3726,13 +3887,15 @@ async function renderMetrics(panel, live) {
       panel.insertBefore(bgrid, panel.lastChild);
     }
     const fac = (ops.readiness || {}).faction || {};
-    const maxCap = fac.max_cap || 1000;
-    const capPct = fac.limit ? Math.round((fac.members / fac.limit) * 100) : 0;
-    const openSeats = fac.open_seats !== undefined ? fac.open_seats : Math.max(0, (fac.limit || 0) - (fac.members || 0));
-    const nextSeatBldg = !fac.limit ? 'not read' : fac.limit < 100 ? 'next: Recruitment Desk (100)' : fac.limit < 200 ? 'next: Recruitment Center (200)' : fac.limit < 400 ? 'next: Guild Hall (400)' : fac.limit < maxCap ? 'next: Grand Bureau (' + fmt(maxCap) + ')' : 'max cap reached';
-    rkpi('Faction filled & max size', fac.limit ? fmt(fac.members) + ' / ' + fmt(fac.limit) + ' (' + capPct + '%)' : '--',
-      fac.limit ? (fmt(openSeats) + ' open | ' + (fac.pct_of_max || 0) + '% of ' + fmt(maxCap) + ' max | ' + fmt(fac.unseated_ships || 0) + ' standing awaiting seats | ' + nextSeatBldg) : 'not read',
-      capPct >= 95 ? 'warn' : 'pos');
+    const standingShips = fac.standing_ships || (ops.fleet_capacity && ops.fleet_capacity.standing) || t.ships || 500;
+    const seatedN = fac.members || 0;
+    const capN = fac.limit || 0;
+    const openSeats = fac.open_seats !== undefined ? fac.open_seats : Math.max(0, capN - seatedN);
+    const moreCapNeeded = Math.max(0, standingShips - capN);
+    const nextSeatBldg = !capN ? 'not read' : capN < 100 ? 'next: Recruitment Desk (100)' : capN < 200 ? 'next: Recruitment Center (200)' : capN < 400 ? 'next: Guild Hall (400)' : 'next: cap upgrade';
+    rkpi('Faction seating', capN ? fmt(seatedN) + ' / ' + fmt(standingShips) + ' (cap ' + fmt(capN) + ')' : '--',
+      capN ? (fmt(openSeats) + ' open in current cap | ' + fmt(moreCapNeeded) + ' more cap needed for full fleet | ' + nextSeatBldg) : 'not read',
+      openSeats > 0 ? 'pos' : 'warn');
     const tf = ops.tech_frontier || {};
     const hs = (ops.readiness || {}).hull_summary || null;
     const hulls = (ops.readiness || {}).hulls || [];
@@ -3762,15 +3925,42 @@ async function renderMetrics(panel, live) {
     const fc = ops.fleet_capacity || null;
     if (fc) {
       const empLine = (fc.by_empire || []).map((x) => x.empire + ' ' + fmt(x.count)).join(' | ');
-      rkpi('Standing fleet vs max cap', fmt(fc.standing) + ' / ' + fmt(fc.max_cap) + ' (' + fc.pct_max_cap + '%)',
-        (fc.away ? fmt(fc.online) + ' online, ' + fmt(fc.away) + ' rejoining | ' : '') + (empLine || 'multi-empire fleet'),
+      rkpi('Standing fleet', fmt(fc.standing) + ' ships',
+        (fc.away ? fmt(fc.online) + ' online, ' + fmt(fc.away) + ' rejoining | ' : fmt(fc.online) + ' online | ') + (empLine || 'multi-empire fleet') + ' | ' + fmt(ops.contracts_count || 0) + ' contracts',
         fc.away ? 'warn' : 'pos');
     }
-    const fr = ops.freshness || {};
-    const frCls = fr.max_s < 0 ? '' : fr.max_s <= 35 ? 'pos' : fr.max_s <= 90 ? 'warn' : 'neg';
-    rkpi('Pilot tick & services', fr.ships ? fr.median_s + 's med / p95 ' + fr.p95_s + 's' : '--',
-      ((ops.services || {}).running || 0) + '/' + ((ops.services || {}).total || 10) + ' services up | ' + fmt(ops.contracts_count || 0) + ' contracts logged', frCls);
     panel.append(rgrid);
+
+    // Productivity & Progress Over Time (24h deltas + 7-day trend table)
+    const pr = ops.productivity || null;
+    if (pr) {
+      const pHead = el('div', 'ichead');
+      pHead.append(
+        el('h3', null, 'Productivity & progress over time'),
+        linkButton('Open full roadmap ->', () => { tab = 'Docs'; docsSub = 'Progression'; docView = null; render(); }, 'doclink')
+      );
+      panel.append(pHead);
+      const pgrid = el('div', 'kpis');
+      const pkpi = (k, v, sub, cls) => { const b = el('div', 'kpi' + (cls ? ' ' + cls : '')); b.append(el('div', 'k', k), el('div', 'v', v)); if (sub) b.append(el('div', 's', sub)); pgrid.append(b); };
+      const incD = pr.income_delta_pct !== null && pr.income_delta_pct !== undefined
+        ? (pr.income_delta >= 0 ? '+' : '') + pr.income_delta_pct + '% vs prior 24h (' + signed(pr.income_delta) + ' cr/h)'
+        : 'prior 24h: ' + fmt(pr.income_prev_24h || 0) + ' cr/h';
+      pkpi('Steady income trend', fmt(pr.income_24h || 0) + ' cr/h', incD, (pr.income_delta || 0) >= 0 ? 'pos' : 'warn');
+      const pD = pr.purse_delta !== null && pr.purse_delta !== undefined
+        ? signed(pr.purse_delta) + ' cr' + (pr.purse_delta_pct !== null ? ' (' + (pr.purse_delta >= 0 ? '+' : '') + pr.purse_delta_pct + '%)' : '')
+        : '--';
+      pkpi('24h purse growth', pD, 'all-in cashflow: ' + signed(pr.total_net_24h || 0) + ' cr/h (vs ' + signed(pr.total_net_prev_24h || 0) + ' prior)', (pr.purse_delta || 0) >= 0 ? 'pos' : 'neg');
+      pkpi('Roadmap progress', pr.roadmap_avg_pct !== null && pr.roadmap_avg_pct !== undefined ? pr.roadmap_avg_pct.toFixed(1) + '%' : '--',
+        pr.latest_milestone ? 'latest unlock: ' + pr.latest_milestone : '12-rung strategic ladder (Days -> Months)', 'pos');
+      panel.append(pgrid);
+      if ((pr.daily || []).length) {
+        panel.append(fitTable(table(['Day (UTC)', 'Ships', 'Steady Inc / h', 'Costs / h', 'Steady Net / h', 'Paid Once / h', 'Peak Purse'],
+          pr.daily.map((d) => [
+            d.day, fmt(d.ships), shade(d.income_h, 'pos'), shade(d.costs_h, 'neg'),
+            tint(d.steady_net_h), tint(d.paid_once_h), fmtCompact(d.peak_purse) + ' cr',
+          ]), [1, 2, 3, 4, 5, 6])));
+      }
+    }
 
     const mad = (ops.alerts && ops.alerts.mad) || [], raids = (ops.alerts && ops.alerts.battles) || [];
     panel.append(el('h3', null, 'Alerts & anomalies'));
@@ -3944,28 +4134,29 @@ async function renderEmpire(panel, live) {
   const ekpi = (k, v, sub, cls) => { const d = el('div', 'kpi' + (cls ? ' ' + cls : '')); d.append(el('div', 'k', k), el('div', 'v', v)); if (sub) d.append(el('div', 's', sub)); kgrid.append(d); };
   ekpi('Sovereign bases', outposts.length + ' / 8 outposts', stations.length + ' / 5 player stations built', outposts.length || stations.length ? 'main pos' : '');
   ekpi('Station buildings', fmt(facOnly.length) + ' active', 'across ' + bySys.size + ' star systems', 'pos');
-  const maxCap = our.max_cap || 1000;
-  const standingN = our.standing_ships || our.fleet_ships || (F.totals && F.totals.ships) || 0;
-  const seatsOpen = Math.max(0, (fac.limit || 0) - (fac.members || 0));
-  const pctOfMax = maxCap ? ((100 * (fac.members || 0)) / maxCap).toFixed(1) : '0.0';
-  const pctFleetMax = maxCap ? ((100 * standingN) / maxCap).toFixed(1) : '0.0';
-  const pctFleetSeated = standingN ? ((100 * (fac.members || 0)) / standingN).toFixed(1) : '0.0';
-  ekpi('Faction filled & cap', fac.limit ? fmt(fac.members) + ' / ' + fmt(fac.limit) : '--',
-    fmt(seatsOpen) + ' open | ' + pctOfMax + '% of ' + fmt(maxCap) + ' max possible faction size', seatsOpen ? 'pos' : 'warn');
-  ekpi('Standing fleet vs max cap', fmt(standingN) + ' / ' + fmt(maxCap) + ' (' + pctFleetMax + '%)',
-    fmt(fac.members || 0) + ' seated (' + pctFleetSeated + '% of fleet) | ' + fmt(Math.max(0, standingN - (fac.members || 0))) + ' awaiting seats', 'pos');
+  const standingN = our.standing_ships || our.fleet_ships || (F.totals && F.totals.ships) || 500;
+  const seatsUsed = fac.members || 0;
+  const seatsCap = fac.limit || 0;
+  const seatsOpen = Math.max(0, seatsCap - seatsUsed);
+  const pctFleetSeated = standingN ? ((100 * seatsUsed) / standingN).toFixed(1) : '0.0';
+  const moreCapNeed = Math.max(0, standingN - seatsCap);
+  ekpi('Faction seating', seatsCap ? fmt(seatsUsed) + ' / ' + fmt(standingN) + ' (cap ' + fmt(seatsCap) + ')' : '--',
+    pctFleetSeated + '% of fleet seated | ' + fmt(seatsOpen) + ' open seats in current cap | ' + fmt(moreCapNeed) + ' more cap needed for full fleet', seatsOpen ? 'pos' : 'warn');
+  ekpi('Standing fleet', fmt(standingN) + ' ships',
+    (our.by_empire ? our.by_empire.length + ' origin empires active' : 'standing armada') + ' | ' + fmt(Math.max(0, standingN - seatsUsed)) + ' ships awaiting faction seats', 'pos');
   ekpi('Facility rent / day', fmt((emp.rent && emp.rent.per_day) || 0) + ' cr',
     fmt((emp.rent && emp.rent.per_cycle) || 0) + ' cr/cycle at NPC stations (0 on our bases)', '');
   panel.append(kgrid);
 
   if (our.by_empire && our.by_empire.length) {
+    const mastMap = our.mastery_by_empire || {};
     panel.append(el('h3', null, 'Standing fleet by empire (' + our.by_empire.length + ' empires, live)'));
-    panel.append(fitTable(table(['Empire', 'Synced ships', 'Fleet share', '% of ' + fmt(maxCap) + ' max cap'],
+    panel.append(fitTable(table(['Empire', 'Ships', 'Fleet share', 'Mastery >= 1'],
       our.by_empire.map((e) => [
         el('span', 'pill ' + (e.empire === 'voidborn' ? 'good' : 'info'), e.empire),
         fmt(e.count),
         e.pct + '%',
-        ((100 * e.count) / maxCap).toFixed(1) + '%',
+        fmt(mastMap[e.empire] || 0) + ' / ' + fmt(e.count),
       ]), [1, 2, 3])));
   }
 
@@ -4494,7 +4685,7 @@ function render() {
 
 function select(id, center) {
   if (!sys.has(id)) return;
-  selected = id; pilotCard = null; selShip = null; shipCard = null; docView = null; route = pathFromHome(id); tab = 'Selection';
+  selected = id; pilotCard = null; selShip = null; shipCard = null; docView = null; openStationKey = null; route = pathFromHome(id); tab = 'Selection';
   if (center) { const s = sys.get(id); flyTo(s.x, s.y, view.k < 0.12 ? 0.2 : view.k); }
   renderRoster(); draw(); render();
 }
@@ -4523,8 +4714,15 @@ function status() {
   if (OPS.data && OPS.data.freshness && OPS.data.freshness.ships) {
     const fr = OPS.data.freshness;
     const cls = fr.max_s <= 35 ? 'good' : fr.max_s <= 90 ? 'warn' : 'bad';
-    item('Tick lag', fr.median_s + 's / ' + fr.max_s + 's', cls, cls === 'good' ? 'opt' : null);
-    box.lastChild.title = 'Pilot state_at age across ' + fmt(fr.ships) + ' ships: median ' + fr.median_s + 's, p95 ' + fr.p95_s + 's, max ' + fr.max_s + 's';
+    item('Tick', fr.median_s + 's / p95 ' + fr.p95_s + 's', cls);
+    box.lastChild.title = 'Pilot telemetry tick age across ' + fmt(fr.ships) + ' ships: median ' + fr.median_s + 's, p95 ' + fr.p95_s + 's, max ' + fr.max_s + 's (server collector metric)';
+  }
+  if (OPS.data && OPS.data.services) {
+    const sv = OPS.data.services;
+    const runN = sv.running || 0, totN = sv.total || 10;
+    const sCls = runN >= totN ? 'good' : runN >= totN - 1 ? 'warn' : 'bad';
+    item('Services', runN + '/' + totN, sCls);
+    box.lastChild.title = 'Background runner services: ' + runN + ' of ' + totN + ' running (dispatch, fleet, inbox, keeper, ledger, routemaker, runhost, sight, station, store)';
   }
   item('Online', fmt(st.online_players));
   box.lastChild.title = 'Players in the game right now, by the game\'s own count; the station reads it every minute';
