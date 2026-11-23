@@ -2,7 +2,7 @@
  "id": "craft-sell-neon-krynn",
  "kind": "circuit",
  "title": "Ionized neon made by hand docked at the Crimson War Citadel (Krynn) from neon bought there, sold into its bid, the rest stored",
- "note": "Written by Mercury, 2026-11-23 18:57 UTC (orders ENT-083, block MERCURY: the traders left at the capitals after the once lines take standing work there, docked NPC-facility crafting; rules F8, F23, O1 zero empty burn). 34 traders wait docked at the Crimson War Citadel after Krynn's once lines (fill.py status trader 18:25 UTC: 64 trader waiting). The Citadel's book (table books, 18:43 UTC): neon_gas asked at 1 cr, ionized_neon bid at 1 cr x 880 (the station's). ionize_neon_gas by hand: 6 neon_gas -> 3 ionized_neon a run; a run costs about 6.1 cr and sells for 3 cr while the bid holds: crafting XP for about 3.1 cr a run, no fuel, no jump. requires.docked_at keeps it to a ship already docked there (no trip). No requires.bid: what the bid does not take is stored, so the route stays open when the 1 cr bid is drained; ionized_neon is no reserve good (game/reserve.tsv, needs.tsv). standing: XP work, never judged on its pay. Three crafts beside it (argon, neon, oxygen) split the 34 ships over three bids.",
+ "note": "Written by Mercury, 2026-11-23 18:57 UTC (orders ENT-083, block MERCURY: the traders left at the capitals after the once lines take standing work there, docked NPC-facility crafting; rules F8, F23, O1 zero empty burn). 34 traders wait docked at the Crimson War Citadel after Krynn's once lines (fill.py status trader 18:25 UTC: 64 trader waiting). The Citadel's book (table books, 18:43 UTC): neon_gas asked at 1 cr, ionized_neon bid at 1 cr x 880 (the station's). ionize_neon_gas by hand: 6 neon_gas -> 3 ionized_neon a run; a run costs about 6.1 cr and sells for 3 cr while the bid holds: crafting XP for about 3.1 cr a run, no fuel, no jump. requires.docked_at keeps it to a ship already docked there (no trip). No requires.bid: what the bid does not take is stored, so the route stays open when the 1 cr bid is drained; ionized_neon is no reserve good (game/reserve.tsv, needs.tsv). standing: XP work, never judged on its pay. Three crafts beside it (argon, neon, oxygen) split the 34 ships over three bids. 2026-11-23 19:07 UTC (Mercury): the third craft stop keeps the ship docked on desk watch for 20 minutes (watch_minutes, 0 fuel): a run of 24 to 36 crafts costs about 74 to 122 cr once the 1 cr bids are drained, so the watch halves the burn of the standing crafts while every ship stays at work (orders ENT-083 block MERCURY, P1 pay for itself); measured in flight (F37) and tuned next turn.",
  "standing": true,
  "far_ok": true,
  "max_ships": 12,
@@ -98,7 +98,8 @@
      "item": "ionized_neon",
      "min_price": 1
     }
-   ]
+   ],
+   "watch_minutes": 20
   },
   {
    "at": "krynn:war_citadel:crimson_war_citadel",
