@@ -16,7 +16,7 @@ means to do next. What a route earns now is not written here, because it changes
 hour: ask the tool `route` or `routes`, or the database (`hive.py sql`), which carry each
 figure with its age. Up: [master-index.md](master-index.md).
 
-Kept by Apophis. Routes: 311. Ships: 36.
+Kept by Apophis. Routes: 325. Ships: 36.
 
 | # | Route | Group | Zone | Open to | Ships planned |
 |---|---|---|---|---|---|
@@ -313,24 +313,38 @@ Kept by Apophis. Routes: 311. Ships: 36.
 | 291 | [hunt-groombridge-34-belt-belt-grazer](hunt-groombridge-34-belt-belt-grazer.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 8 jumps | up to 1 ships, empty hold, standing work | all 36 |
 | 292 | [hunt-coppervale-belt-belt-grazer](hunt-coppervale-belt-belt-grazer.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 9 jumps | up to 1 ships, empty hold, standing work | all 36 |
 | 293 | [hunt-elnath-belt-glintfin](hunt-elnath-belt-glintfin.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 9 jumps | up to 1 ships, empty hold, standing work | all 36 |
-| 294 | [craft-armor-military-experiment](craft-armor-military-experiment.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 6 ships, with 30 creature_carapace stored at the_experiment_research_station, standing work | all 36 |
-| 295 | [craft-armor-military-node-beta](craft-armor-military-node-beta.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 6 ships, with 30 creature_carapace stored at node_beta_industrial_station, standing work | all 36 |
-| 296 | [craft-armor-military-synchrony-hub](craft-armor-military-synchrony-hub.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 6 ships, with 30 creature_carapace stored at synchrony_hub, standing work | all 36 |
-| 297 | [craft-armor-military-central-nexus](craft-armor-military-central-nexus.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 6 ships, with 30 creature_carapace stored at central_nexus, standing work | all 36 |
-| 298 | [craft-steel-military-experiment](craft-steel-military-experiment.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 6 ships, with 100 iron_ore stored at the_experiment_research_station, standing work | all 36 |
-| 299 | [craft-steel-military-node-beta](craft-steel-military-node-beta.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 6 ships, with 100 iron_ore stored at node_beta_industrial_station, standing work | all 36 |
-| 300 | [craft-steel-military-synchrony-hub](craft-steel-military-synchrony-hub.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 6 ships, with 100 iron_ore stored at synchrony_hub, standing work | all 36 |
-| 301 | [craft-steel-military-central-nexus](craft-steel-military-central-nexus.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 6 ships, with 100 iron_ore stored at central_nexus, standing work | all 36 |
-| 302 | [craft-piping-node-beta](craft-piping-node-beta.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 14 ships, with 300 iron_ore stored at node_beta_industrial_station, 180 copper_ore stored at node_beta_industrial_station, standing work | all 36 |
-| 303 | [join-corridor-solarian](join-corridor-solarian.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | once per pilot, up to 6 ships, born solarian, standing work | 5 of 36 |
-| 304 | [join-corridor-crimson](join-corridor-crimson.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | once per pilot, up to 6 ships, born crimson, standing work | 11 of 36 |
-| 305 | [guard-ironhollow-fading-signal](guard-ironhollow-fading-signal.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 4 jumps | up to 1 ships, empty hold, standing work | all 36 |
-| 306 | [guard-schedar-belt](guard-schedar-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 2 jumps | up to 1 ships, empty hold, standing work | all 36 |
-| 307 | [guard-ironhollow-echo-ejecta](guard-ironhollow-echo-ejecta.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 4 jumps | up to 1 ships, empty hold, standing work | all 36 |
-| 308 | [guard-garnet-belt](guard-garnet-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 5 jumps | up to 1 ships, empty hold, standing work | all 36 |
-| 309 | [guard-achernar-belt](guard-achernar-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 4 jumps | up to 1 ships, empty hold, standing work | all 36 |
-| 310 | [guard-marfik-emission-nebula](guard-marfik-emission-nebula.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 6 jumps | up to 1 ships, empty hold, standing work | all 36 |
-| 311 | [park](park.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | the park route | all 36 |
+| 294 | [hunt-acubens-shadow-pocket-belt-grazer](hunt-acubens-shadow-pocket-belt-grazer.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 18 jumps | up to 1 ships, empty hold, standing work | all 36 |
+| 295 | [hunt-saclateni-ice-shelf-pressblister](hunt-saclateni-ice-shelf-pressblister.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 18 jumps | up to 1 ships, empty hold, standing work | all 36 |
+| 296 | [hunt-frontier-drifters-haze-drift-ray](hunt-frontier-drifters-haze-drift-ray.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 18 jumps | up to 1 ships, empty hold, standing work | all 36 |
+| 297 | [hunt-last-light-nebula-drift-ray](hunt-last-light-nebula-drift-ray.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 18 jumps | up to 1 ships, empty hold, standing work | all 36 |
+| 298 | [hunt-deep-range-vapor-fields-drift-ray](hunt-deep-range-vapor-fields-drift-ray.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 18 jumps | up to 1 ships, empty hold, standing work | all 36 |
+| 299 | [hunt-garnet-belt-glitterback-crab](hunt-garnet-belt-glitterback-crab.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 18 jumps | up to 1 ships, empty hold, standing work | all 36 |
+| 300 | [hunt-markab-alloy-seam-glitterback-crab](hunt-markab-alloy-seam-glitterback-crab.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 18 jumps | up to 1 ships, empty hold, standing work | all 36 |
+| 301 | [hunt-first-step-colony-debris-field-belt-grazer](hunt-first-step-colony-debris-field-belt-grazer.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 18 jumps | up to 1 ships, empty hold, standing work | all 36 |
+| 302 | [hunt-harborlight-gas-cloud-drift-ray](hunt-harborlight-gas-cloud-drift-ray.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 18 jumps | up to 1 ships, empty hold, standing work | all 36 |
+| 303 | [hunt-sulafat-haze-drift-ray](hunt-sulafat-haze-drift-ray.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 18 jumps | up to 1 ships, empty hold, standing work | all 36 |
+| 304 | [hunt-rigel-cold-forge-seam-belt-grazer](hunt-rigel-cold-forge-seam-belt-grazer.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 18 jumps | up to 1 ships, empty hold, standing work | all 36 |
+| 305 | [hunt-atlas-belt-belt-grazer](hunt-atlas-belt-belt-grazer.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 18 jumps | up to 1 ships, empty hold, standing work | all 36 |
+| 306 | [hunt-adhafera-vapor-fields-drift-ray](hunt-adhafera-vapor-fields-drift-ray.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 18 jumps | up to 1 ships, empty hold, standing work | all 36 |
+| 307 | [hunt-okab-low-charge-glint-sift-ray](hunt-okab-low-charge-glint-sift-ray.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 18 jumps | up to 1 ships, empty hold, standing work | all 36 |
+| 308 | [craft-armor-military-experiment](craft-armor-military-experiment.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 6 ships, with 30 creature_carapace stored at the_experiment_research_station, standing work | all 36 |
+| 309 | [craft-armor-military-node-beta](craft-armor-military-node-beta.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 6 ships, with 30 creature_carapace stored at node_beta_industrial_station, standing work | all 36 |
+| 310 | [craft-armor-military-synchrony-hub](craft-armor-military-synchrony-hub.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 6 ships, with 30 creature_carapace stored at synchrony_hub, standing work | all 36 |
+| 311 | [craft-armor-military-central-nexus](craft-armor-military-central-nexus.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 6 ships, with 30 creature_carapace stored at central_nexus, standing work | all 36 |
+| 312 | [craft-steel-military-experiment](craft-steel-military-experiment.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 6 ships, with 100 iron_ore stored at the_experiment_research_station, standing work | all 36 |
+| 313 | [craft-steel-military-node-beta](craft-steel-military-node-beta.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 6 ships, with 100 iron_ore stored at node_beta_industrial_station, standing work | all 36 |
+| 314 | [craft-steel-military-synchrony-hub](craft-steel-military-synchrony-hub.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 6 ships, with 100 iron_ore stored at synchrony_hub, standing work | all 36 |
+| 315 | [craft-steel-military-central-nexus](craft-steel-military-central-nexus.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 6 ships, with 100 iron_ore stored at central_nexus, standing work | all 36 |
+| 316 | [craft-piping-node-beta](craft-piping-node-beta.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 14 ships, with 300 iron_ore stored at node_beta_industrial_station, 180 copper_ore stored at node_beta_industrial_station, standing work | all 36 |
+| 317 | [join-corridor-solarian](join-corridor-solarian.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | once per pilot, up to 6 ships, born solarian, standing work | 5 of 36 |
+| 318 | [join-corridor-crimson](join-corridor-crimson.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | once per pilot, up to 6 ships, born crimson, standing work | 11 of 36 |
+| 319 | [guard-ironhollow-fading-signal](guard-ironhollow-fading-signal.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 4 jumps | up to 1 ships, empty hold, standing work | all 36 |
+| 320 | [guard-schedar-belt](guard-schedar-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 2 jumps | up to 1 ships, empty hold, standing work | all 36 |
+| 321 | [guard-ironhollow-echo-ejecta](guard-ironhollow-echo-ejecta.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 4 jumps | up to 1 ships, empty hold, standing work | all 36 |
+| 322 | [guard-garnet-belt](guard-garnet-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 5 jumps | up to 1 ships, empty hold, standing work | all 36 |
+| 323 | [guard-achernar-belt](guard-achernar-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 4 jumps | up to 1 ships, empty hold, standing work | all 36 |
+| 324 | [guard-marfik-emission-nebula](guard-marfik-emission-nebula.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 6 jumps | up to 1 ships, empty hold, standing work | all 36 |
+| 325 | [park](park.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | the park route | all 36 |
 
 Templates its ships fly (a ship's own routes name one as `@<name>`):
 
