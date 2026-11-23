@@ -1,0 +1,18 @@
+{
+ "id": "home-sol-central",
+ "kind": "circuit",
+ "title": "Home to Sol Central: a Solarian-born miner far from Sol docks at its capital, where its region's gathers are",
+ "note": "Written by Zero, 2026-11-23 05:31 UTC (orders ENT-076 P6: newborns work where they were born, far only by a route's far_ok; rule F8). A Solarian miner stood docked at Node Beta Industrial Station, 8 to 10 jumps from Sol, every route of its list closed by the newborn guard ('work in its own region first') or full (fill.py status miner --why, 05:28 UTC). far_ok lifts the guard for this one stop home; it stands in the list Then before the jump loop, so a ship at home takes its region's gathers first. The same as Oracle's home-frontier-station. requires.empire solarian, an empty hold.",
+ "far_ok": true,
+ "max_ships": 6,
+ "standing": true,
+ "requires": {
+  "empire": "solarian",
+  "empty_hold": true
+ },
+ "stops": [
+  {
+   "at": "sol:sol_central:confederacy_central_command"
+  }
+ ]
+}

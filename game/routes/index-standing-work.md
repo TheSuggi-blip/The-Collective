@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 423.
+Routes: 424.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -153,6 +153,7 @@ Routes: 423.
 | [give-hauler-stores-nova-terra](give-hauler-stores-nova-terra.json) | circuit | beyond the border, 8 jumps | A hauler gives its stored goods of Trade's class at Nova Terra Central to the trader named there: gases, ices, null matter, soma, loot and ores no reserve recipe takes (strict classes) | up to 2 ships, with 50 argon_gas stored at nova_terra_central, standing work | TBD | TBD | TBD | TBD | -- |
 | [give-miner-stores-crescent-moon](give-miner-stores-crescent-moon.json) | circuit | beyond the border, 11 jumps | A miner gives its stores at The Crescent Moon (Mebsuta): the reserve's ores and building inputs to the hauler Logistics named there (strict classes) | up to 2 ships, with 50 carbon_ore or silicon_ore or nickel_ore or quantum_fragments or iron_ore or copper_ore or gold_ore or platinum_ore stored at ec315132a710a7d0fbc68cca05073154, standing work | 20 | 13 | -10 | -50 | 2026-11-22 |
 | [give-miner-stores-ramens-rest](give-miner-stores-ramens-rest.json) | circuit | beyond the border, 15 jumps | A miner gives its stores at Ramen's Rest (Last Light): the reserve's ores and building inputs to the hauler Logistics named there (strict classes) | up to 2 ships, with 50 carbon_ore or silicon_ore or nickel_ore or quantum_fragments or iron_ore or copper_ore or gold_ore or platinum_ore stored at ramens_rest, standing work | 16 | 15 | -150 | -770 | 2026-11-22 |
+| [home-sol-central](home-sol-central.json) | circuit | beyond the border, 10 jumps | Home to Sol Central: a Solarian-born miner far from Sol docks at its capital, where its region's gathers are | up to 6 ships, empty hold, born solarian, standing work | TBD | TBD | TBD | TBD | -- |
 | [load-plasma-ammo-nova-terra](load-plasma-ammo-nova-terra.json) | circuit | beyond the border, 8 jumps | Plasma ammunition back aboard: withdraw the stored dispersal plasma cell packs at Nova Terra Central into the Plasma Cannon II ship's hold | up to 1 ships, 2 pilots in all, needs plasma_cannon_ii, with 1 dispersal_plasma_cell_pack stored at nova_terra_central, standing work | TBD | TBD | TBD | TBD | -- |
 | [store-hold-frontier-station](store-hold-frontier-station.json) | circuit | beyond the border, 17 jumps | A ship a run left loaded docks at Frontier Station, Altais, and stores its hold | up to 12 ships, goods aboard, born outerrim, standing work | 2 | 1 | 0 | 0 | 2026-11-23 |
 | [store-hold-grand-exchange](store-hold-grand-exchange.json) | circuit | beyond the border, 21 jumps | A newborn miner a run left loaded docks at Grand Exchange Station, Haven and stores its hold | up to 20 ships, goods aboard, born nebula, standing work | 30 | 4 | 380 | 5,460 | 2026-11-23 |
