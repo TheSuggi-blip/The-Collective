@@ -211,6 +211,7 @@
   "hunt-wasat-glazeknot-cluster-belt-grazer",
   "hunt-angetenar-belt-belt-grazer",
   "hunt-tureis-belt-belt-grazer",
+  "store-hold-krynn-war-citadel",
   "hunt-gsc-0034-gas-plume-drift-ray",
   "hunt-saiph-emission-nebula-drift-ray",
   "hunt-lilii-borea-gas-cloud-drift-ray",
@@ -278,6 +279,7 @@
   "craft-steel-military-synchrony-hub",
   "craft-steel-military-central-nexus",
   "craft-piping-node-beta",
+  "join-corridor-crimson",
   "park"
  ],
  "ships": {
@@ -489,6 +491,7 @@
   "hunt-wasat-glazeknot-cluster-belt-grazer": 10,
   "hunt-angetenar-belt-belt-grazer": 10,
   "hunt-tureis-belt-belt-grazer": 10,
+  "store-hold-krynn-war-citadel": 10,
   "hunt-gsc-0034-gas-plume-drift-ray": 35,
   "hunt-saiph-emission-nebula-drift-ray": 35,
   "hunt-lilii-borea-gas-cloud-drift-ray": 35,
@@ -556,6 +559,7 @@
   "craft-steel-military-synchrony-hub": 35,
   "craft-steel-military-central-nexus": 35,
   "craft-piping-node-beta": 35,
+  "join-corridor-crimson": 10,
   "park": 35
  },
  "of": 35,
