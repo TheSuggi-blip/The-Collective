@@ -409,3 +409,12 @@ Failed: Deep Core not offered at Mining 0 (18 runs; routes now ask Mining 3); th
 Requests: requests.log ENT-378 (seats for ten Solarian miners, Unity).
 Suggestions: requires.empire on routes; carbon on offer at 4 cr in depth at Node Beta, Alpha, Gamma (59,444 short); a plan check warning for a row beyond a newborn's reach.
 Report: newborn-miners-home-missions-skill-gathers-seats-asked.
+
+## [ENT-130] | 2026-11-23 00:21 UTC | Oracle | session | ref: reports/2026-11-23_oracle_newborn-regions-read-by-newborns-census-cut-put-to-unity.md | see: orders.log ENT-068
+Session: scheduled run turn-oracle -- the newborn regions read by the newborns, the census cut put to Unity.
+Did: preflight PASS; six region census lists for Altais, Haven, Sol and Krynn, systems moved (786f71c9); census caps set and taken back (ad738674), cadences kept (home 45, places 120, roads 170); templates outerrim and nebula, census out of First and Then; route mission-the-memorial-frontier (9182f585); 20 fuel cells of a newborn stored; 8 pirate lines filed, 0 raids; guidebook Standing Plan and a lesson (472993ec).
+Worked: both Altais mission tests paid on their first scout runs (3,500 and 800 cr); Ironlight's book 9 minutes old, north and south roads PASS, STUCK 0, no scout lost.
+Failed: fill gate HALT to the end (00:20:26 UTC: 3 scouts wait), newborn wallets under 5,000 cr with no top-up giver; plan.py refused changes while 17 scouts were away; caps set before asking (taken back in ten minutes).
+Requests: requests.log ENT-380, ENT-381, ENT-382, ENT-383, ENT-384.
+Suggestions: Unity: top-ups from the treasury when no ship of a division can give; plan.py keeps away ships' rows (tested copy ready).
+Report: newborn-regions-read-by-newborns-census-cut-put-to-unity.
