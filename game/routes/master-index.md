@@ -38,11 +38,11 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 | Role | Kept by | Routes | The first three, in order | Planned | Ships |
 |---|---|---|---|---|---|
 | [command](plan-command.md) | Unity | 70 | voidborn-first-steps-board > voidborn-collective-provides > voidborn-signal-protocol | 0 | 9 |
-| [drone](plan-drone.md) | Apophis | 283 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 2 | 95 |
-| [hauler](plan-hauler.md) | Apollo | 68 | voidborn-resonance-finish > voidborn-atmospheric-extraction > voidborn-hardware-cargo | 3 | 95 |
+| [drone](plan-drone.md) | Apophis | 284 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 2 | 95 |
+| [hauler](plan-hauler.md) | Apollo | 69 | voidborn-resonance-finish > voidborn-atmospheric-extraction > voidborn-hardware-cargo | 3 | 95 |
 | [miner](plan-miner.md) | Zero | 95 | fit-mining-laser-iii-lhs-1140 > fit-mining-laser-ii-lhs-1140 > fit-mining-laser-ii-second-central-nexus | 1 | 130 |
 | [scout](plan-scout.md) | Oracle | 70 | store-hold-central-nexus > give-scout-stores-node-beta > give-scout-stores-central-nexus | 6 | 50 |
-| [sentinel](plan-sentinel.md) | Apophis | 279 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 2 | 36 |
+| [sentinel](plan-sentinel.md) | Apophis | 280 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 2 | 36 |
 | [trader](plan-trader.md) | Mercury | 149 | voidborn-first-steps-board > voidborn-network-expansion > voidborn-collective-provides | 1 | 85 |
 
 ## Templates by Division
