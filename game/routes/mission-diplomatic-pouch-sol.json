@@ -1,0 +1,51 @@
+{
+ "id": "mission-diplomatic-pouch-sol",
+ "kind": "circuit",
+ "title": "The Diplomatic Pouch: 3,000 cr once at Sol Central, five gold ore bought there and delivered to Central Nexus",
+ "note": "Written by Mercury, 2026-11-23 09:33 UTC (orders ENT-081, block MERCURY: far_ok to the main corridors; rules F34 tier 4, F37). Sol Central's board (data/missions/confederacy_central_command.json, read 09:17 UTC): The Diplomatic Pouch, deliver 5 gold ore to Central Nexus, 3,000 cr, 220 Piloting XP, 20 Trading XP, 15 Navigation XP. Sol's book (table books 09:29 UTC) asks gold ore at 30 x 43: five cost about 152 cr. The way home of a Voidborn trader that joined the Solarian corridor (join-sol-trader): ten jumps it flies anyway, now paid. Only for a ship within 3 jumps of Sol (requires.max_jumps). Gated on the ask (requires.ask, stop_on_failed_buy). A test: three ships, one result each (rule F37: the goods are a read ask, the road the Form TA-1 road).",
+ "far_ok": true,
+ "once": true,
+ "max_ships": 3,
+ "one_time": [
+  "The Diplomatic Pouch"
+ ],
+ "skip_if_booked": [
+  "The Diplomatic Pouch"
+ ],
+ "requires": {
+  "empire": "voidborn",
+  "ask": {
+   "item": "gold_ore",
+   "base": "confederacy_central_command",
+   "max_price": 30,
+   "min_qty": 5
+  },
+  "max_jumps": 3
+ },
+ "stops": [
+  {
+   "at": "sol:sol_central:confederacy_central_command",
+   "accept": [
+    "the_diplomatic_pouch"
+   ]
+  },
+  {
+   "at": "sol:sol_central:confederacy_central_command",
+   "only_if_active": [
+    "The Diplomatic Pouch"
+   ],
+   "buy": [
+    {
+     "item": "gold_ore",
+     "qty": 5,
+     "max_price": 31,
+     "one_time": true
+    }
+   ],
+   "stop_on_failed_buy": true
+  },
+  {
+   "at": "nexus_prime:the_core:central_nexus"
+  }
+ ]
+}

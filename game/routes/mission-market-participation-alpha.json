@@ -1,0 +1,64 @@
+{
+ "id": "mission-market-participation-alpha",
+ "kind": "circuit",
+ "title": "Market Participation: Buying and Selling at Alpha Centauri: 1,000 cr each, once per pilot; ten copper ore bought and sold back there",
+ "note": "Written by Mercury, 2026-11-23 09:33 UTC (orders ENT-081, P6 and block MERCURY: the newborns' starter missions on their own board; rules F34 tier 2, F35). Alpha Centauri's board (table missions, 09:12 UTC) offers Market Participation: Buying (buy 10 units of any item on the exchange) and Selling (sell 10 units), 1,000 cr each; its book (09:27 UTC) asks copper ore at 4 x 102 and bids 1 x 35,762: ten units cost about 41 cr and bring about 10 back, for 2,000 cr once. A copy of Apollo's mission-market-participation-grand (50 runs, +1,950 a run). No Solarian-born trader has booked it (table runs). One ship first: a board is one pilot's (trade-books pitfall), its first run read. min_credits 3,200: the runner's buy floor of 3,000 and the ore.",
+ "once": true,
+ "max_ships": 1,
+ "min_credits": 3200,
+ "one_time": [
+  "Market Participation: Buying",
+  "Market Participation: Selling"
+ ],
+ "skip_if_booked": [
+  "Market Participation: Buying",
+  "Market Participation: Selling"
+ ],
+ "requires": {
+  "bid": {
+   "item": "copper_ore",
+   "base": "alpha_centauri_colonial_station",
+   "min_price": 1,
+   "min_qty": 10
+  }
+ },
+ "stops": [
+  {
+   "at": "alpha_centauri:alpha_centauri_colonial_station:alpha_centauri_colonial_station",
+   "accept": [
+    "market_participation_buying",
+    "market_participation_selling"
+   ]
+  },
+  {
+   "at": "alpha_centauri:alpha_centauri_colonial_station:alpha_centauri_colonial_station",
+   "only_if_active": [
+    "Market Participation: Buying"
+   ],
+   "buy": [
+    {
+     "item": "copper_ore",
+     "qty": 10,
+     "max_price": 6,
+     "one_time": true
+    }
+   ]
+  },
+  {
+   "at": "alpha_centauri:alpha_centauri_colonial_station:alpha_centauri_colonial_station",
+   "only_if_active": [
+    "Market Participation: Selling"
+   ],
+   "sell": [
+    {
+     "item": "copper_ore",
+     "min_price": 1,
+     "all": true
+    }
+   ]
+  },
+  {
+   "at": "alpha_centauri:alpha_centauri_colonial_station:alpha_centauri_colonial_station"
+  }
+ ]
+}

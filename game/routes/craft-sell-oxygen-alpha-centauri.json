@@ -1,0 +1,125 @@
+{
+ "id": "craft-sell-oxygen-alpha-centauri",
+ "kind": "circuit",
+ "title": "Liquid oxygen made by hand at Alpha Centauri from oxygen gas bought there and sold into the station's bid, docked, no jump",
+ "note": "Written by Mercury, 2026-11-23 09:33 UTC (orders ENT-081, block MERCURY: docked crafting, no trader waits docked; rules F8, F23 (a trader crafts for sale), F12). Alpha Centauri's book (table books, 09:27 UTC): oxygen gas asked at 1 cr x 36,869, liquid oxygen bid 5 cr x 1,480 (the station's). liquefy_oxygen by hand: 8 gas -> 3 liquid oxygen, time 0.54. A batch costs 8.08 cr with the tax and sells for 15: about +6.9 cr, Crafting XP, no fuel; three cycles of 64 gas (8 batches, a Threshold's hold) a run, about +165 cr. The form of craft-sell-nitrogen-sol-central (125 runs, +310 a run). A test: one ship, its first runs read (rule F12: a new spread); only for a ship within 2 jumps (requires.max_jumps); closes by itself on the bid's depth (requires.bid) and the ask (requires.ask, stop_on_failed_buy); the last stop sells again and stores what is left.",
+ "standing": true,
+ "max_ships": 1,
+ "requires": {
+  "ask": {
+   "item": "oxygen_gas",
+   "base": "alpha_centauri_colonial_station",
+   "max_price": 1,
+   "min_qty": 64
+  },
+  "bid": {
+   "item": "liquid_oxygen",
+   "base": "alpha_centauri_colonial_station",
+   "min_price": 5,
+   "min_qty": 24
+  },
+  "max_jumps": 2
+ },
+ "stops": [
+  {
+   "at": "alpha_centauri:alpha_centauri_colonial_station:alpha_centauri_colonial_station",
+   "sell": [
+    {
+     "item": "liquid_oxygen",
+     "min_price": 5
+    }
+   ],
+   "buy": [
+    {
+     "item": "oxygen_gas",
+     "qty": 64,
+     "max_price": 2
+    }
+   ],
+   "stop_on_failed_buy": true,
+   "craft": [
+    {
+     "recipe": "liquefy_oxygen",
+     "runs": 8,
+     "per_run": 3,
+     "makes": "liquid_oxygen",
+     "inputs": [
+      "oxygen_gas"
+     ]
+    }
+   ]
+  },
+  {
+   "at": "alpha_centauri:alpha_centauri_colonial_station:alpha_centauri_colonial_station",
+   "sell": [
+    {
+     "item": "liquid_oxygen",
+     "min_price": 5
+    }
+   ],
+   "buy": [
+    {
+     "item": "oxygen_gas",
+     "qty": 64,
+     "max_price": 2
+    }
+   ],
+   "stop_on_failed_buy": true,
+   "craft": [
+    {
+     "recipe": "liquefy_oxygen",
+     "runs": 8,
+     "per_run": 3,
+     "makes": "liquid_oxygen",
+     "inputs": [
+      "oxygen_gas"
+     ]
+    }
+   ]
+  },
+  {
+   "at": "alpha_centauri:alpha_centauri_colonial_station:alpha_centauri_colonial_station",
+   "sell": [
+    {
+     "item": "liquid_oxygen",
+     "min_price": 5
+    }
+   ],
+   "buy": [
+    {
+     "item": "oxygen_gas",
+     "qty": 64,
+     "max_price": 2
+    }
+   ],
+   "stop_on_failed_buy": true,
+   "craft": [
+    {
+     "recipe": "liquefy_oxygen",
+     "runs": 8,
+     "per_run": 3,
+     "makes": "liquid_oxygen",
+     "inputs": [
+      "oxygen_gas"
+     ]
+    }
+   ]
+  },
+  {
+   "at": "alpha_centauri:alpha_centauri_colonial_station:alpha_centauri_colonial_station",
+   "sell": [
+    {
+     "item": "liquid_oxygen",
+     "min_price": 5
+    }
+   ]
+  },
+  {
+   "at": "alpha_centauri:alpha_centauri_colonial_station:alpha_centauri_colonial_station",
+   "store": [
+    "oxygen_gas",
+    "liquid_oxygen"
+   ]
+  }
+ ]
+}
