@@ -2,7 +2,7 @@
  "id": "bursar-null-matter-synchrony",
  "kind": "circuit",
  "title": "Station Bursar: one resting sell order of the pilot's own null matter at synchrony_hub, kept at 340 (floor 300)",
- "note": "2026-11-23 06:25 UTC (Mercury): orders ENT-078, block MERCURY (Bursar orders) and rule F39; a Station Bursar test, one of three stations at once (F37: three books, no shared buyer). Null matter: Trade holds about 7,900 (surplus, no need names it; table holdings 06:10 UTC); no home station bids for it, The Crucible's station bid is 359 x 114, 18 jumps out (view_market 06:11 UTC). Docked, no fuel: the pilot lists up to 50 of its own null matter at 340, never under 300 or the best bid; fills settle later at the station. A test: one ship.",
+ "note": "2026-11-23 06:25 UTC (Mercury): orders ENT-078, block MERCURY (Bursar orders) and rule F39; a Station Bursar test, one of three stations at once (F37: three books, no shared buyer). Null matter: Trade holds about 7,900 (surplus, no need names it; table holdings 06:10 UTC); no home station bids for it, The Crucible's station bid is 359 x 114, 18 jumps out (view_market 06:11 UTC). Docked, no fuel: the pilot lists up to 50 of its own null matter at 340, never under 300 or the best bid; fills settle later at the station. A test: one ship. 2026-11-23 06:29 UTC (Mercury): max_pilots 1: one order at this book until its fill is read.",
  "max_ships": 1,
  "requires": {
   "stored": {
@@ -23,5 +23,6 @@
     }
    ]
   }
- ]
+ ],
+ "max_pilots": 1
 }
