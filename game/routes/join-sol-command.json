@@ -1,0 +1,16 @@
+{
+ "id": "join-sol-command",
+ "kind": "circuit",
+ "title": "A flagship whose home boards and near herds are spent joins the Solarian corridor: one trip to Sol Central, where the Solarian once missions open to it",
+ "note": "Written by Unity, 2026-11-23 11:20 UTC (orders ENT-082, block UNITY: flagships fly paid-once missions in their regions; rules F23, F34 tier 4, F35, F8). A copy of Trade's join-sol-trader (Mercury, 09:33 UTC: 62 runs, 352,480 cr paid once at Sol against 14,418 cr of fuel by 10:30 UTC) for the command group, standing as Military's join corridors are (Apophis, 67e1c20a): the trip itself earns nothing, so the loss stop would rest it (fill.py status command 11:15 UTC: join-sol-trader `at a loss: 62 runs`). At Sol the guard opens Form TA-1, the Audit, Endorsements and the Five Capitals circuit. Two ships at most, once per pilot.",
+ "far_ok": true,
+ "once": true,
+ "standing": true,
+ "max_ships": 2,
+ "stops": [
+  {
+   "at": "sol:sol_central:confederacy_central_command",
+   "store": "all"
+  }
+ ]
+}
