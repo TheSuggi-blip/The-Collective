@@ -88,7 +88,7 @@ def forbidden(group, action):
         return ''
     if group == 'spacemolt_auth':
         return 'the auth tools are the Fleet Admiral\'s: a new pilot is Suggi\'s word (orders F5)'
-    if group == 'spacemolt_faction' and not is_read(action):
+    if group in ('spacemolt_faction', 'spacemolt_faction_admin') and not is_read(action):
         return 'the faction is the Fleet Admiral\'s, on Suggi\'s word (orders F11)'
     if action in SPEAKS:
         return 'a word to another player is the Fleet Admiral\'s, on Suggi\'s word (orders F4)'

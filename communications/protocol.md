@@ -28,7 +28,7 @@ wrong.
 | `queue.log` | Notices: general fleet work, changes to the repository and the systems, and what is asked of Morpheus, who keeps the box | Every member |
 | `errors.log` | Errors, scars and fixes | Every member |
 | `admirals.log` | The Admirals among themselves: a movement, an offer, a warning, an exchange of goods, and claims for a route or a place a division means to fill | Every member |
-| `contracts.log` | Standing Station Bursar buy orders, Notice Board procurement contracts, fills and expiries executed within `orders.log` escrow caps | Trade Admiral (Mercury) and Fleet Admiral |
+| `contracts.log` | All 4 P2P trade channels: Station Bursar buy/sell orders, Faction Notice/Mission Board contracts, `spacemolt_shipping` freight, and bilateral partner swaps (`partner: [TAG]|open`, `channel: exchange|notice_board|shipping|direct_trade`) within `orders.log` escrow caps | Trade Admiral (Mercury), Logistics Admiral (Apollo) and Fleet Admiral |
 
 ## Directory Structure
 

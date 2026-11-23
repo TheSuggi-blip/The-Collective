@@ -8,7 +8,7 @@ author: Unity
 # index.md -- The Fleet's Scripts
 
 Built by `python3 -B scripts/fleet-index.py` from the docstring of every script in this
-folder; never edited by hand. Scripts listed: 60.
+folder; never edited by hand. Scripts listed: 61.
 
 - Run a script from the repository root: `python3 -I -B game/fleet/<script> <arguments>`,
   the arguments as listed under "How to Call Each".
@@ -33,7 +33,7 @@ folder; never edited by hand. Scripts listed: 60.
 | `claimwatch.py` | Find a pilot the engine holds claimed and free it by an engine restart, without a hand. | By hand |
 | `collective_mcp.py` | The collective MCP server: the fleet's knowledge and the door to its ships, as tools for every member. | By hand |
 | `comms_guard.py` | CaMeL + Microsoft Spotlighting security firewall for untrusted external player messages and outbound OpSec. | By hand |
-| `contracts.py` | CLTV Procurement Contracts, Station Bursar order-book advisor & rival contract arbitrage. | By hand |
+| `contracts.py` | CLTV 4-Channel P2P Trade, Procurement Contracts, Station Bursars & Partner Supply Arbitrage. | By hand |
 | `craftbook.py` | Answer what can be made, fitted and built: a recipe, everything a thing takes, and what our stored goods can become. | By hand |
 | `diplomacy.py` | Sole authorized, OpSec-scrubbed diplomatic DM airlock and Neutrality Pact ledger (Rule F4, O10). | By hand |
 | `dispatch.py` | Keep every pilot at work: give each free pilot the next task of its role. | Service |
@@ -76,6 +76,7 @@ folder; never edited by hand. Scripts listed: 60.
 | `routes.py` | Check the route files, write their index, and attach what the runs measured. | By hand |
 | `routes_hygiene.py` | Automated structural legacy-route cleanliness (strictly honoring Rule F22). | By hand |
 | `runhost.py` | One program that flies the runs the dispatcher starts, each run as a thread instead of a process. | Service |
+| `shipping.py` | Read-only galaxy-wide freight/courier contract board reader for spacemolt_shipping (Channel 3, Rule F39). | By hand |
 | `sight.py` | What our ships see where they are: the pilots they meet, and a first read of a system nobody read. | Service |
 | `stash.py` | Store what a docked pilot carries in its own storage at that station, so that its hold is free for the next route. | By hand |
 | `stats.py` | The fleet's statistics, computed by the store into tables of its own: the fleet as one purse, what each division gives the whole, class capacity, where the ship-hours go, the reserve's days of supply, refill and regrowth, XP per ship-hour, the next upgrade of each ship, gather against buy, and control-chart alerts. | By hand |
@@ -169,8 +170,8 @@ game/fleet/comms_guard.py [--data /srv/collective/data] [--last 25] [--quarantin
 
 ### `contracts.py`
 
-CLTV Procurement Contracts, Station Bursar order-book advisor & rival contract
-arbitrage.
+CLTV 4-Channel P2P Trade, Procurement Contracts, Station Bursars & Partner Supply
+Arbitrage.
 
 Run by hand.
 
@@ -846,6 +847,20 @@ A service: it runs by itself and is never started a second time.
 runhost.py              run forever (the service `runhost`)
 --fleet <dir>   the folder of the runners (default: this file's folder)
 --data <dir>    the unit's data folder (default /srv/collective/data)
+```
+
+### `shipping.py`
+
+Read-only galaxy-wide freight/courier contract board reader for spacemolt_shipping
+(Channel 3, Rule F39).
+
+Run by hand.
+
+```
+shipping.py list [--pilot NAME] [--sort reward|distance|age] [--shipper TAG_OR_NAME] [--limit N] [--data DIR]
+shipping.py active [--pilot NAME] [--data DIR]
+shipping.py profile [--pilot NAME] [--data DIR]
+shipping.py track --id CONTRACT_ID [--pilot NAME] [--data DIR]
 ```
 
 ### `sight.py`

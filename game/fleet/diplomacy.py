@@ -212,7 +212,7 @@ def last_inbound_from(data, handle):
     return best
 
 
-def pick_envoy_scout(data, member_name, requested="", preferred_pilot=""):
+def pick_envoy_scout(data, member_name, requested="", preferred_pilot="", prefer_flagship=False):
     """Pick or validate an envoy pilot: Oracle scout- ships by default (Unity may also explicitly pick Prime Directive)."""
     fleet = read_json(Path(data) / "fleet" / "fleet.json", {})
     ships = [s for s in (fleet.get("ships") or []) if isinstance(s, dict) and s.get("name")]
@@ -232,6 +232,13 @@ def pick_envoy_scout(data, member_name, requested="", preferred_pilot=""):
         if connected and requested not in connected:
             return "", "requested envoy %s is not connected in fleet.json" % requested
         return requested, ""
+
+    if prefer_flagship and member_name == "Unity":
+        if "Prime Directive" in connected and division.owner("Prime Directive", str(data)) == "Unity":
+            return "Prime Directive", ""
+        flagships = sorted(n for n in connected if not n.startswith("scout-") and division.owner(n, str(data)) == "Unity")
+        if flagships:
+            return flagships[0], ""
 
     if preferred_pilot and preferred_pilot in connected and preferred_pilot.startswith("scout-"):
         return preferred_pilot, ""
@@ -383,7 +390,8 @@ def send_diplomatic_dm(data, root, to_handle, message, pilot="", dry_run=False, 
         replied_before = last_reply > float(f_state.get("last_sent_ts") or 0) and bool(f_state.get("sent_count"))
         if not replied_before and unanswered_before > 0 and f_state.get("beacon_message") and cleaned != f_state.get("beacon_message"):
             return False, "REFUSED: unanswered follow-up hails (2/3, 3/3) must be byte-for-byte identical to Hail 1/3 (the inbox robotic beacon auto-repeats Hail 1/3 at exact +24h/+48h)"
-        envoy, p_err = pick_envoy_scout(data, member, requested=pilot, preferred_pilot=f_state.get("envoy") or "")
+        established = (f_state.get("status") in ("neutrality_agreed", "trade_active", "info_sharing_active"))
+        envoy, p_err = pick_envoy_scout(data, member, requested=pilot, preferred_pilot=f_state.get("envoy") or "", prefer_flagship=(member == "Unity" and established))
         if p_err:
             return False, "REFUSED (envoy): " + p_err
         attempt_num = 0 if replied_before else (unanswered_before + 1)

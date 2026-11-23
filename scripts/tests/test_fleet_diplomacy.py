@@ -317,5 +317,27 @@ class DiplomacyAirlockTests(unittest.TestCase):
         self.assertEqual([x["tag"] for x in st["hostile"]], ["VEIL"])
         self.assertEqual(st["allied"], [])
 
+    def test_unity_auto_selects_prime_directive_on_established_neutral_partner(self):
+        self.set_member("unity")
+        sent = []
+        def fake_send(pilot, target_id, content):
+            sent.append((pilot, target_id, content))
+            return True, "srv-pd-1", "delivered"
+
+        ok_s, _ = diplomacy.update_status(str(self.data), str(ROOT), "IRLC", "neutrality_agreed", "Mutual NAP agreed")
+        self.assertTrue(ok_s)
+        msg = (
+            "ILC Comptroller, The Collective [CLTV] confirms our standing buy order for 500 silica_lens at 140 cr "
+            "at Node Beta and can fill Ironlight supply contracts at Ironlight Crossroads. Please share any belts "
+            "you claim so our miners give them berth. -- Unity"
+        )
+        ok_a, _, reasons = comms_guard.audit_outbound(msg)
+        self.assertTrue(ok_a, f"Expected P2P trade/deconfliction DM to pass OpSec, got {reasons}")
+        ok, out = diplomacy.send_diplomatic_dm(str(self.data), str(ROOT), "ILC Comptroller", msg, sender_fn=fake_send, now=1795450000.0)
+        self.assertTrue(ok, out)
+        self.assertEqual(out["pilot"], "Prime Directive")
+        self.assertEqual(sent[0][0], "Prime Directive")
+        self.assertIn("Prime Directive", diplomacy.load_envoys(str(self.data)))
+
 if __name__ == "__main__":
     unittest.main()

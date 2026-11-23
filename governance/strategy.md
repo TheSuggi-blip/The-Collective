@@ -238,6 +238,7 @@ amendment adds a row below.
 | 2.1 | 2026-11-22 | Trinity (approved by Suggi) | Upgraded to three-tier anchored Orders hierarchy (`G1-G5` Strategic Goals + `O1-O9` Operational Subgoals + Unity `PLAN`) and added Principle 12 (enterprise-wide income/extraction optimization, maximal base footprint placement, and empire-specific ship min-maxing). |
 | 2.2 | 2026-11-23 | Trinity (approved by Suggi) | Added Operational Subgoal `O10` (autonomous scout diplomacy and Neutrality / Non-Aggression / info-sharing pacts directed by Unity and executed by Oracle via `game/fleet/diplomacy.py`, capped at Neutrality max). |
 | 2.3 | 2026-11-23 | Trinity (approved by Suggi) | Expanded `O10` with Phase-2 Neutral Partner Engagement (surplus stock catalog, constant raw-material supply chains, outpost/station build trade, and open needs/wishes dialogue under strict Neutrality max) and added Diplomatic Standing & Relations registry (`governance/rulebook.md` Section 14). |
+| 2.4 | 2026-11-23 | Trinity (approved by Suggi) | Opened all 4 SpaceMolt P2P trade channels (`F39`: Exchange orders, Faction Notice/Mission Boards, `spacemolt_shipping` freight, atomic `trade_offer`), enabled `Prime Directive` flagship diplomacy for Unity on neutral/established partners with Oracle ambassador scout coordination (`F4`), and codified explicit P2P diplomacy/trade/deconfliction/war roles across `ROSTER.md` and all 6 `MISSION.md` role cards (`F16`). |
 
 ## VIII. Sources
 
