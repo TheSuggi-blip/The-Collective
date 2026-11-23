@@ -1,0 +1,18 @@
+{
+ "id": "store-hold-krynn-war-citadel",
+ "kind": "circuit",
+ "title": "A Crimson-born drone a run left loaded docks at Crimson War Citadel, Krynn and stores its hold",
+ "note": "Written by Apophis, 2026-11-23 05:55 UTC (orders ENT-078, P6 and O1; rule F8). At 05:49 UTC twelve Crimson-born drones and sentinels waited, most with 6 to 17 units aboard (table ships): every hunt of their rows asks an empty hold. The same work as store-hold-sol-central for the Crimson rows, at their capital's station; requires.empire crimson keeps every other pilot off it.",
+ "standing": true,
+ "max_ships": 12,
+ "requires": {
+  "hold": true,
+  "empire": "crimson"
+ },
+ "stops": [
+  {
+   "at": "krynn:war_citadel:crimson_war_citadel",
+   "store": "all"
+  }
+ ]
+}

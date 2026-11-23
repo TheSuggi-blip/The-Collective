@@ -1,0 +1,18 @@
+{
+ "id": "join-corridor-solarian",
+ "kind": "circuit",
+ "title": "A Solarian-born drone whose home herds are all taken joins the main corridor: one trip to Central Nexus",
+ "note": "Written by Apophis, 2026-11-23 05:55 UTC (orders ENT-078, P6 and O5: own empire missions and paying home work first, then the Admirals set far_ok to join the main Collective corridors; rule F35, F8). Last in the Solarian-born rows, after their empire's missions, their home hunts and @hunter: a ship takes it only when every route before it is full or closed. Sol to Nexus Prime is 10 jumps (fuelplan.chart), 1.5 fuel a jump against a 90 to 100 tank. Once per pilot: at Central Nexus the guard (dispatch.FOREIGN_REACH, 6 jumps from where the ship stands) opens the home hunts of @hunter to it. Empty hold (rule F3: the road crosses lawless space; store-hold-krynn-war-citadel and store-hold-sol-central empty the hold first). A test: three ships at once, one result each, share no herd or bid (F37); the road was flown by our Crimson-born hunters already working in Voidborn space (table ships 05:49 UTC).",
+ "far_ok": true,
+ "once": true,
+ "max_ships": 3,
+ "requires": {
+  "empire": "solarian",
+  "empty_hold": true
+ },
+ "stops": [
+  {
+   "at": "nexus_prime:the_core:central_nexus"
+  }
+ ]
+}

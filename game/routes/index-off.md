@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 46.
+Routes: 47.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -49,6 +49,7 @@ Routes: 46.
 | [hunt-dimming-pocket-veil-ray](hunt-dimming-pocket-veil-ray.json) | hunt | beyond the border, 4 jumps | veil_ray at dimming_pocket; loot sold at Node Beta Industrial Station | up to 1 ships, empty hold, off | TBD | TBD | TBD | TBD | -- |
 | [hunt-dustfall-emission-nebula-cinder-sylph](hunt-dustfall-emission-nebula-cinder-sylph.json) | hunt | beyond the border, 27 jumps | cinder_sylph at dustfall_emission_nebula; loot sold at First Step Memorial Station | up to 1 ships, empty hold, standing work, off | TBD | TBD | TBD | TBD | -- |
 | [hunt-edgeward-glow-veil-ray](hunt-edgeward-glow-veil-ray.json) | hunt | beyond the border, 21 jumps | veil_ray at edgeward_glow; loot sold at The Levy Customs Station | up to 1 ships, empty hold, standing work, off | 13 | 33 | 0 | 0 | 2026-11-22 |
+| [hunt-enif-ice-belt-hollow-pilgrim](hunt-enif-ice-belt-hollow-pilgrim.json) | hunt | beyond the border, 25 jumps | hollow_pilgrim at enif_ice_belt; loot sold at First Step Memorial Station | up to 1 ships, empty hold, standing work, off | 4 | 40 | -340 | -500 | 2026-11-22 |
 | [hunt-felis-frost-ring-hollow-pilgrim](hunt-felis-frost-ring-hollow-pilgrim.json) | hunt | beyond the border, 7 jumps | hollow_pilgrim at felis_frost_ring; loot sold at The Experiment Research Station | up to 1 ships, without piercing_railgun_i, empty hold, while sirius_observatory_station bids 1000 cr for crystal_melt, standing work, off | TBD | TBD | TBD | TBD | -- |
 | [hunt-gliese-876-stillwork-belt-slag-tortoise-pl3](hunt-gliese-876-stillwork-belt-slag-tortoise-pl3.json) | hunt | beyond the border, 7 jumps | slag tortoise (90 hull) at stillwork_belt with a Pulse Laser III; ferrous nodules and carapace for the reserve | up to 1 ships, needs pulse_laser_iii, empty hold, standing work, off | TBD | TBD | TBD | TBD | -- |
 | [hunt-larawag-ice-belt-hollow-pilgrim](hunt-larawag-ice-belt-hollow-pilgrim.json) | hunt | beyond the border, 20 jumps | hollow_pilgrim at larawag_ice_belt; loot sold at The Levy Customs Station | up to 1 ships, empty hold, standing work, off | 8 | 36 | 0 | 0 | 2026-11-22 |
