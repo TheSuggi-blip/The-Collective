@@ -1,0 +1,20 @@
+{
+ "id": "join-rim-trader",
+ "kind": "circuit",
+ "title": "A trader whose Solarian once line is booked joins the Outer Rim corridor: one trip to Frontier Station (Altais), where The Memorial and the Rim's once missions open to it",
+ "note": "Written by Mercury, 2026-11-23 12:40 UTC (orders ENT-082, block MERCURY: the capitals' once lines by join corridors, one ship first on an unread road; rules F3, F8, F34 tier 4, F35, F37). 50 traders wait docked at Alpha Centauri (table ships 12:16 UTC: 23 born Nebula, 15 Solarian, 12 Voidborn), every once mission of Sol's line booked. Frontier Station's board (now at Altais) pays The Memorial 8,000 once (84 paid of 104 runs in 24 h, 10.4 minutes a run: Voidborn 35 of 41, Outer Rim 41 of 50, Crimson 7 of 9, Solarian 1 of 4; no Nebula-born tried) and Debris Field Reports 4,500. Road: Alpha Centauri to Altais 12 jumps, seven lawless (Miaplacidus to Tidewater), our traders on it at 12:16 UTC. Rule F3: one ship first, hold empty; standing as every join route (the trip is paid by the missions it opens); fill.py widens to lift_to after its runs hold.",
+ "far_ok": true,
+ "once": true,
+ "standing": true,
+ "max_ships": 1,
+ "lift_to": 30,
+ "requires": {
+  "empty_hold": true
+ },
+ "stops": [
+  {
+   "at": "altais:mobile_capital:frontier_station",
+   "store": "all"
+  }
+ ]
+}

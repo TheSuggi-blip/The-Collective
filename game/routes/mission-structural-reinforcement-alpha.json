@@ -1,0 +1,35 @@
+{
+ "id": "mission-structural-reinforcement-alpha",
+ "kind": "circuit",
+ "title": "Structural Reinforcement: 3,000 cr once at Alpha Centauri, pre-fabricated materials picked up at Nova Terra and delivered back (a test)",
+ "note": "Written by Mercury, 2026-11-23 12:40 UTC (orders ENT-082, block MERCURY: no trader waits docked, the capitals' once lines; rules F8, F34 tier 2, F37). The live boards of three traders docked at Alpha Centauri (boards.py, 12:24 UTC: one born Solarian, one Nebula, one Voidborn) all offer Structural Reinforcement (template structural_reinforcement): dock at Nova Terra Central to pick up the pre-fabricated materials, deliver 12 steel plate and 6 titanium alloy to Alpha Centauri; 3,000 cr, 80 Piloting XP, 20 Trading XP, 15 Engineering XP; booked by no pilot of the fleet. Whether the pickup hands out the goods is not known: a test with one ship and an empty hold (F34), no buy. Road: Alpha Centauri - Sol - Sirius - Nova Terra, 3 jumps each way, all Solarian. fill.py may widen it to lift_to after its run holds.",
+ "once": true,
+ "max_ships": 1,
+ "lift_to": 20,
+ "one_time": [
+  "Structural Reinforcement"
+ ],
+ "skip_if_booked": [
+  "Structural Reinforcement"
+ ],
+ "requires": {
+  "empty_hold": true,
+  "max_jumps": 3
+ },
+ "stops": [
+  {
+   "at": "alpha_centauri:alpha_centauri_colonial_station:alpha_centauri_colonial_station",
+   "accept": [
+    "structural_reinforcement"
+   ]
+  },
+  {
+   "at": "nova_terra:nova_terra_central:nova_terra_central",
+   "redock": true
+  },
+  {
+   "at": "alpha_centauri:alpha_centauri_colonial_station:alpha_centauri_colonial_station",
+   "redock": true
+  }
+ ]
+}

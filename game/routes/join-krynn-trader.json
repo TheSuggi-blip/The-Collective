@@ -2,13 +2,13 @@
  "id": "join-krynn-trader",
  "kind": "circuit",
  "title": "A trader whose Solarian once line is booked joins the Crimson corridor: one trip to the War Citadel, where Krynn's once missions open to it",
- "note": "Written by Mercury, 2026-11-23 10:44 UTC (orders ENT-081, block MERCURY: far_ok to the main corridors, no trader waits docked; rules F3, F8, F34 tier 4, F37). After the Solarian corridor (join-sol-trader) the traders it served wait at Alpha Centauri and Sol (fill.py check 10:42 UTC: 40 waiting). Krynn's board pays our Voidborn-born pilots once: Last Known Position 8,000 (6 of 6 paid) and Strategic Readiness Assessment 2,500 to 4,000 (5 of 8 paid; table runs, 24 h to 10:43 UTC). Road: Alpha Centauri to Krynn 20 jumps (scripts/map.py route), twelve lawless (bluerift to albireo): 0 pirates in 32 to 134 readings of each over 24 h (data/intel/sightings.jsonl), no public battle there (table public_battles). Rule F3: one ship first, hold empty; fill.py widens to lift_to after its runs hold.",
+ "note": "Written by Mercury, 2026-11-23 10:44 UTC (orders ENT-081, block MERCURY: far_ok to the main corridors, no trader waits docked; rules F3, F8, F34 tier 4, F37). After the Solarian corridor (join-sol-trader) the traders it served wait at Alpha Centauri and Sol (fill.py check 10:42 UTC: 40 waiting). Krynn's board pays our Voidborn-born pilots once: Last Known Position 8,000 (6 of 6 paid) and Strategic Readiness Assessment 2,500 to 4,000 (5 of 8 paid; table runs, 24 h to 10:43 UTC). Road: Alpha Centauri to Krynn 20 jumps (scripts/map.py route), twelve lawless (bluerift to albireo): 0 pirates in 32 to 134 readings of each over 24 h (data/intel/sightings.jsonl), no public battle there (table public_battles). Rule F3: one ship first, hold empty; fill.py widens to lift_to after its runs hold. 2026-11-23 12:40 UTC (Mercury): the test held: 3 of 3 trips arrived (table runs 11:06 to 11:36 UTC), and Krynn's board then paid Voidborn-born pilots Last Known Position 8,000 on 18 of 18 runs and Strategic Readiness Assessment 4,000 on 11 of 16 (24 h to 12:21 UTC); no trader of Nebula or Solarian birth has been offered either yet, so the route is Voidborn-born only. max_ships 1 -> 15; standing true as every join route (the loss stop had closed the transit leg itself).",
  "far_ok": true,
  "once": true,
- "max_ships": 1,
- "lift_to": 10,
+ "max_ships": 15,
  "requires": {
-  "empty_hold": true
+  "empty_hold": true,
+  "empire": "voidborn"
  },
  "stops": [
   {
@@ -22,5 +22,6 @@
   "minutes": 17,
   "credits_per_run": -710,
   "cph_per_ship": -2490
- }
+ },
+ "standing": true
 }
