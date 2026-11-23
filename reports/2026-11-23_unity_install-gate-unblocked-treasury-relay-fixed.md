@@ -129,7 +129,7 @@ figure fits the store's: 619,785 cr paid once in the hour to 12:17.
 
 ## Plans
 
-What I did for the Admirals' next turns (from 13:00 CET):
+What I did for the Admirals' next turns (the first, Mining's, was under way at 12:25):
 
 - **The install gate works again.** Three faults failed every member's
   install this morning: the rulebook stood 1,467 characters over its cap
