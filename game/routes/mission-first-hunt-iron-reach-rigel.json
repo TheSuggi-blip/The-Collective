@@ -2,7 +2,7 @@
  "id": "mission-first-hunt-iron-reach-rigel",
  "kind": "circuit",
  "title": "First Hunt: Belt-Grazers: 1,000 cr once; three belt_grazer at rigel_cold_forge_seam (lawless, 5 jumps), accepted and handed in at Iron Reach Mining Colony",
- "note": "Written by Apophis 2026-11-23 00:50 UTC: the Frostfeld belts the first two First Hunt routes use read 2 belt-grazers each after our hunters (data/wildlife/frostfeld.json 00:23-00:24 UTC), and 19 newborn drones waited on `herd below 5`. rigel:rigel_cold_forge_seam read 12 belt-grazers, no pirate line in public_battles (table herds, census 147 min old). Rigel is lawless (rule F3): `alone` true and an empty hold; a test of three results (F37), one ship at a time. Orders ENT-068, P6.",
+ "note": "Written by Apophis 2026-11-23 00:50 UTC: the Frostfeld belts the first two First Hunt routes use read 2 belt-grazers each after our hunters (data/wildlife/frostfeld.json 00:23-00:24 UTC), and 19 newborn drones waited on `herd below 5`. rigel:rigel_cold_forge_seam read 12 belt-grazers, no pirate line in public_battles (table herds, census 147 min old). Rigel is lawless (rule F3): `alone` true and an empty hold; a test of three results (F37), one ship at a time. Orders ENT-068, P6. 2026-11-23 04:46 UTC (Apophis): hunt step alone true -> 'pirates' (commit a771bdc0 makes a step keep that rule): runs at last_sigh_vent ended 'left: a ship that is not ours was at the place' with 0 kills (runs.jsonl 02:26 to 04:02 UTC).",
  "once": true,
  "max_ships": 1,
  "one_time": [
@@ -28,7 +28,7 @@
      "for": [
       "First Hunt: Belt-Grazers"
      ],
-     "alone": true,
+     "alone": "pirates",
      "min_creatures": 5
     }
    ]
