@@ -729,6 +729,10 @@ def verdict(seen, got):
     if seen["list_age"] > STALE:
         return False, ("HALT: %d ships of %s wait and the route maker's list is %s old, so no test can be named: its service fails; write to the Fleet Admiral in requests.log"
                        % (waiting, got["role"], "%d minutes" % (seen["list_age"] // 60) if seen["list_age"] != float("inf") else "missing or not dated"))
+    if got["role"] == "scout":
+        w_pilots = ((seen.get("crews") or {}).get("scout") or {}).get("waiting") or []
+        if w_pilots and len(w_pilots) == waiting and all(bool(p.get("docked")) for p in w_pilots):
+            return True, ("PASS: %d docked scout(s) on watch with no due census or open scout work (rule F8 docked-watch exception, ENT-381/398)" % waiting)
     return False, ("HALT: %d ships of %s wait and nothing that pays is open to them: the plan lacks standing work for them (a route that trains or gathers, each "
                    "sized by what its place carries: the skill fleet-play, `Plan a Division`); what closes each route is listed by `fill.py status %s`"
                    % (waiting, got["role"], got["role"]))

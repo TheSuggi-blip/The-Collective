@@ -132,5 +132,23 @@ class SmartMissionReachTests(unittest.TestCase):
         self.assertIsNotNone(dispatch.newborn_reason(make_pilot("solarian", "nexus_prime"), "voidborn-first-steps", VB_ONCE))
 
 
+    def test_fill_verdict_scout_docked_watch_exception_F8(self):
+        import fill
+        seen_docked = {"list_age": 10, "crews": {"scout": {"waiting": [{"name": "scout-1", "docked": "central_nexus"}]}}}
+        got_docked = {"role": "scout", "waiting": ["scout-1"], "paying": [], "tests": [], "park": []}
+        ok, line = fill.verdict(seen_docked, got_docked)
+        self.assertTrue(ok)
+        self.assertIn("docked-watch exception", line)
+        # Adrift scout (not docked) MUST still HALT
+        seen_adrift = {"list_age": 10, "crews": {"scout": {"waiting": [{"name": "scout-1", "docked": ""}]}}}
+        ok2, _ = fill.verdict(seen_adrift, got_docked)
+        self.assertFalse(ok2)
+        # Docked miner MUST still HALT (exception is scouts only)
+        seen_miner = {"list_age": 10, "crews": {"miner": {"waiting": [{"name": "miner-1", "docked": "central_nexus"}]}}}
+        got_miner = {"role": "miner", "waiting": ["miner-1"], "paying": [], "tests": [], "park": []}
+        ok3, _ = fill.verdict(seen_miner, got_miner)
+        self.assertFalse(ok3)
+
+
 if __name__ == "__main__":
     unittest.main()
