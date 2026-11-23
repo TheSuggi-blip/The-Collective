@@ -343,19 +343,55 @@ def _detect_war_state(conn, tables, data_dir, now):
 def _load_diplomacy_pending(data_dir):
     doc = _load_json(Path(data_dir) / "comms" / "diplomacy.json", {})
     factions = doc.get("factions") if isinstance(doc, dict) else {}
-    pending_replies = 0
     neutral_count = 0
-    for rec in (factions or {}).values():
+    last_out_by_tag = {}
+    leader_to_tag = {}
+    legacy_pending = set()
+    for tag, rec in (factions or {}).items():
         if not isinstance(rec, dict):
             continue
+        t_up = str(rec.get("tag") or tag or "").upper()
         st = (rec.get("status") or "").lower()
         if st in ("neutrality_agreed", "trade_active", "info_sharing_active"):
             neutral_count += 1
-        in_ts = str(rec.get("last_inbound_at") or "")
-        out_ts = str(rec.get("last_outbound_at") or "")
-        if in_ts and in_ts > out_ts:
-            pending_replies += 1
-    return neutral_count, pending_replies
+        out_ts = str(rec.get("last_sent_at") or rec.get("last_outbound_at") or "")[:19]
+        if t_up:
+            last_out_by_tag[t_up] = out_ts
+            ldr = str(rec.get("leader") or "").strip().lower()
+            if ldr:
+                leader_to_tag[ldr] = t_up
+        in_ts = str(rec.get("last_inbound_at") or "")[:19]
+        if in_ts and in_ts > out_ts and t_up:
+            legacy_pending.add(t_up)
+
+    # Scan messages.jsonl for newer private inbound replies from tracked diplomatic partners
+    latest_in = {}
+    msg_p = Path(data_dir) / "comms" / "messages.jsonl"
+    if msg_p.is_file() and last_out_by_tag:
+        try:
+            with open(msg_p, encoding="utf-8", errors="replace") as fh:
+                for line in fh:
+                    try:
+                        m = json.loads(line)
+                    except ValueError:
+                        continue
+                    if m.get("own") or str(m.get("channel") or "").lower() != "private":
+                        continue
+                    mtag = str(m.get("tag") or "").upper()
+                    if mtag not in last_out_by_tag:
+                        mtag = leader_to_tag.get(str(m.get("sender") or "").strip().lower(), "")
+                    if mtag and mtag in last_out_by_tag:
+                        ts = str(m.get("t") or m.get("seen_at") or "")[:19]
+                        if ts and ts > latest_in.get(mtag, ""):
+                            latest_in[mtag] = ts
+        except OSError:
+            pass
+
+    pending_tags = set(legacy_pending)
+    for t_up, in_ts in latest_in.items():
+        if in_ts > last_out_by_tag.get(t_up, ""):
+            pending_tags.add(t_up)
+    return neutral_count, len(pending_tags), sorted(pending_tags)
 
 
 def _load_fleet_live(data_dir):
@@ -451,7 +487,7 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
 
     live_div, live_totals, fleet_ts = _load_fleet_live(data_dir)
     wd_deltas = _load_watchdog_deltas(data_dir)
-    neutral_cnt, diplo_pending = _load_diplomacy_pending(data_dir)
+    neutral_cnt, diplo_pending, diplo_pending_tags = _load_diplomacy_pending(data_dir)
     open_req_items = _parse_open_requests(repo_root)
     open_reqs = len(open_req_items)
     war_state = _detect_war_state(conn, tables, data_dir, now)
@@ -731,7 +767,17 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
     purse_now = wallets_now + treasury_now
     surplus_worth = int(_num(kpi_live.get(("surplus_worth", 24)), 0))
 
-    cf_sign = "POSITIVE" if steady_24h > 0 else "NEGATIVE"
+    once_direct_24h = int(acc_24["once_direct_h"]) if isinstance(acc_24, dict) else 0
+    recurring_cash_24h = round(steady_24h - once_direct_24h, 1)
+    inv_accrual_24h = int(acc_24["inventory_accrual_h"]) if isinstance(acc_24, dict) else 0
+    accrual_op_24h = round(recurring_cash_24h + inv_accrual_24h, 1)
+    once_direct_6h = int(acc_6["once_direct_h"]) if isinstance(acc_6, dict) else 0
+    recurring_cash_6h = round(steady_6h - once_direct_6h, 1)
+    inv_accrual_6h = int(acc_6["inventory_accrual_h"]) if isinstance(acc_6, dict) else 0
+    accrual_op_6h = round(recurring_cash_6h + inv_accrual_6h, 1)
+    has_accrual_24h = bool(acc_24.get("has_inventory_accrual")) if isinstance(acc_24, dict) else False
+
+    cf_sign = "POSITIVE" if recurring_cash_24h > 0 else "NEGATIVE"
     cf_dir_24h, cf_delta_24h = _classify_trend(steady_tiled_24h, steady_prev_24h, min_abs=3000.0)
     cf_dir_6h, cf_delta_6h = _classify_trend(fl_m.get("net_6h", steady_6h), steady_prev_6h, min_abs=3000.0)
 
@@ -770,7 +816,7 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
     # Dynamic Posture Auto-Selection (WAR_ALERT > CASHFLOW_RECOVERY > PEACETIME_GROWTH)
     if war_state["at_war"]:
         posture = "WAR_ALERT"
-    elif steady_24h <= 0:
+    elif recurring_cash_24h <= 0:
         posture = "CASHFLOW_RECOVERY"
     else:
         posture = "PEACETIME_GROWTH"
@@ -787,16 +833,6 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
             "action": "Shift fleet to war footing: escort all hauls, surge combat hulls/fits (Military), hold sub-1h hostile intel (Intel), stock repair/fuel bunkers (Logistics)",
             "tier": "P0", "weight": 100, "effort": 1, "score": 100, "source": "WAR",
         })
-    once_direct_24h = int(acc_24["once_direct_h"]) if isinstance(acc_24, dict) else 0
-    recurring_cash_24h = round(steady_24h - once_direct_24h, 1)
-    inv_accrual_24h = int(acc_24["inventory_accrual_h"]) if isinstance(acc_24, dict) else 0
-    accrual_op_24h = round(recurring_cash_24h + inv_accrual_24h, 1)
-    once_direct_6h = int(acc_6["once_direct_h"]) if isinstance(acc_6, dict) else 0
-    recurring_cash_6h = round(steady_6h - once_direct_6h, 1)
-    inv_accrual_6h = int(acc_6["inventory_accrual_h"]) if isinstance(acc_6, dict) else 0
-    accrual_op_6h = round(recurring_cash_6h + inv_accrual_6h, 1)
-    has_accrual_24h = bool(acc_24.get("has_inventory_accrual")) if isinstance(acc_24, dict) else False
-
     if recurring_cash_24h <= 0:
         sev = "ALARM" if (cf_dir_24h == "WORSENING" or recurring_cash_24h < -20000) else "WARN"
         acc_note = f" | IAS2 accrual {_fmt_cr(accrual_op_24h)}/h" if has_accrual_24h else ""
@@ -847,7 +883,7 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
             "action": "Strip off-role starter modules (`unfit`) and fill open slots with role-matched T2+ modules (O2)",
         })
     _ent_gaps = {
-        "CASHFLOW_NEGATIVE": min(1.0, abs(steady_24h) / 100000.0) if steady_24h < 0 else 0.3,
+        "CASHFLOW_NEGATIVE": min(1.0, abs(recurring_cash_24h) / 100000.0) if recurring_cash_24h < 0 else 0.3,
         "PRODUCTIVE_EFFICIENCY": max(0.0, (TARGET_COMPLETION_PCT - prod_pct) / TARGET_COMPLETION_PCT),
         "FLEET_IDLE": max(0.0, (90.0 - eff_emp_pct) / 90.0),
         "OPEN_SEATS": max(0.0, (TARGET_COMPLETION_PCT - seat_cap_pct) / TARGET_COMPLETION_PCT),
@@ -904,11 +940,14 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
         off_role_pct = round(100.0 * md["off_role_ships"] / max(1, tot), 1)
         mod_sev = "ALARM" if (slot_pct < 60.0 or off_role_pct > 25.0) else ("WARN" if (slot_pct < 80.0 or md["off_role_ships"] > 0) else "OK")
 
-        # Division cashflow trend
+        # Division cashflow trend & GAAP/IFRS transfer-priced accrual
         d_net24 = dm.get("net_24h", 0.0)
         d_prev24 = dm.get("net_prev24h")
         d_net6 = dm.get("net_6h", 0.0)
         d_trend, d_delta24 = _classify_trend(d_net24, d_prev24, min_abs=1500.0)
+        _d_acc = ((acc_24 or {}).get("by_division") or {}).get(div) or {}
+        d_rec24 = float(_d_acc.get("recurring_cash_h", d_net24)) if _d_acc else d_net24
+        d_acc24 = float(_d_acc.get("accrual_op_h", d_rec24)) if _d_acc else d_rec24
 
         # Playbook cap check
         pb_pct = _num(pb.get("max_chapter_pct"))
@@ -969,18 +1008,19 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
                 })
         elif div == "Trade":
             sell_cph = round(_num(contrib_24h.get(("Trade", "sell_cph"))), 0)
-            tr_status = "OK" if (d_net24 > 0 and d_trend != "WORSENING") else ("WARN" if d_net24 > 0 else "ALARM")
+            tr_status = "OK" if (d_rec24 > 0 and d_trend != "WORSENING") else ("WARN" if d_rec24 > 0 else "ALARM")
+            tr_acc_s = f" | accrual {_fmt_cr(d_acc24)}/h" if has_accrual_24h else ""
             role_kpi = {
-                "name": "Trade Steady Net & Sales",
-                "value": f"{_fmt_cr(d_net24)} cr/h (6h {_fmt_cr(d_net6)}) | sell {_fmt_cr(sell_cph)}/h",
-                "pct": 100.0 if d_net24 > 0 else 0.0,
+                "name": "Trade Recurring Cash & Accrual",
+                "value": f"{_fmt_cr(d_rec24)}/h recur{tr_acc_s} | sell {_fmt_cr(sell_cph)}/h",
+                "pct": 100.0 if d_rec24 > 0 else 0.0,
                 "status": tr_status,
-                "cashflow_24h": round(d_net24, 1),
+                "cashflow_24h": round(d_rec24, 1),
             }
-            if d_net24 <= 0 or d_trend == "WORSENING":
+            if d_rec24 <= 0 or d_trend == "WORSENING":
                 triggers.append({
-                    "severity": "ALARM" if d_net24 <= 0 else "WARN", "code": "TRADE_NET", "metric": "Trade Steady Cashflow",
-                    "actual": f"{_fmt_cr(d_net24)} cr/h ({d_trend} vs {_fmt_cr(d_prev24)} prior)",
+                    "severity": "ALARM" if d_rec24 <= 0 else "WARN", "code": "TRADE_NET", "metric": "Trade Recurring Cashflow",
+                    "actual": f"{_fmt_cr(d_rec24)} cr/h matched ({d_trend} vs {_fmt_cr(d_prev24)} prior{tr_acc_s})",
                     "target": ">0 cr/h & improving", "direction": d_trend,
                     "action": "Cap empty jump loops, liquidate surplus @ bid, expand Station Bursar orders & Ch1-Ch4 P2P trade (F39)",
                 })
@@ -1014,18 +1054,19 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
             cxp = round(_num(contrib_24h.get(("Military", "combat_xp_per_ship_hour"))), 1)
             kills = int(_num(contrib_24h.get(("Military", "kills"))))
             lost = int(_num(contrib_24h.get(("Military", "ships_lost"))))
-            mil_sev = "ALARM" if lost > 0 else ("WARN" if (cxp < 15.0 or d_net24 < -25000) else "OK")
+            mil_fin_drag = (d_acc24 < -25000) if has_accrual_24h else (d_rec24 < -25000)
+            mil_sev = "ALARM" if lost > 0 else ("WARN" if (cxp < 15.0 or mil_fin_drag) else "OK")
             role_kpi = {
                 "name": "Combat XP, Kills & Losses",
                 "value": f"{cxp:.1f} XP/ship-h | {kills} kills/24h | {lost} lost",
                 "pct": 0.0 if lost > 0 else min(100.0, round(cxp / 25.0 * 100.0, 1)),
                 "status": mil_sev,
-                "cashflow_24h": round(d_net24, 1),
+                "cashflow_24h": round(d_rec24, 1),
             }
             if mil_sev != "OK":
                 triggers.append({
                     "severity": mil_sev, "code": "MILITARY_PERF", "metric": "Combat Readiness & Losses",
-                    "actual": role_kpi["value"] + f" | net {_fmt_cr(d_net24)}/h",
+                    "actual": role_kpi["value"] + (f" | accrual {_fmt_cr(d_acc24)}/h" if has_accrual_24h else f" | recur {_fmt_cr(d_rec24)}/h"),
                     "target": "0 lost, >=15 XP/ship-h", "direction": d_trend,
                     "action": "Validate T2 Recursion & pair hunts (F37), fit combat weapons, protect lines with zero unescorted losses (F2/O8)",
                 })
@@ -1048,20 +1089,21 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
                     "action": "Prioritize worked corridors, Ironlight book (<3h), and newborn regions; keep excess scouts on docked watch (F8/O7)",
                 })
             if diplo_pending > 0:
+                p_lbl = (" [" + ", ".join(diplo_pending_tags[:4]) + "]") if diplo_pending_tags else ""
                 triggers.append({
                     "severity": "WARN", "code": "DIPLO_PENDING", "metric": "Unanswered Partner Comms",
-                    "actual": f"{diplo_pending} inbound diplomatic reply(ies) awaiting response",
+                    "actual": f"{diplo_pending} inbound diplomatic reply(ies) awaiting response{p_lbl}",
                     "target": "0 unanswered", "direction": "FLAT",
                     "action": "Check diplomacy.py threads & coordinate Unity (Prime Directive) / Oracle envoy response (F4/O10)",
                 })
         else:  # Command
-            cmd_sev = "ALARM" if (steady_24h <= 0 or (open_seats > 0 and seat_cap_pct < 60.0)) else ("WARN" if (open_reqs > 0 or seat_cap_pct < 80.0) else "OK")
+            cmd_sev = "ALARM" if (recurring_cash_24h <= 0 or (open_seats > 0 and seat_cap_pct < 60.0)) else ("WARN" if (open_reqs > 0 or seat_cap_pct < 80.0) else "OK")
             role_kpi = {
                 "name": "Enterprise Capital & Seating",
                 "value": f"seats {fac_members}/{fac_limit} ({seat_cap_pct:.0f}%) | {open_reqs} open reqs | roadmap {roadmap_avg:.1f}%",
                 "pct": seat_cap_pct if fac_limit else roadmap_avg,
                 "status": cmd_sev,
-                "cashflow_24h": round(steady_24h, 1),
+                "cashflow_24h": round(recurring_cash_24h, 1),
             }
             if open_reqs > 0:
                 triggers.append({
@@ -1212,7 +1254,6 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
 
         div_triage.sort(key=_triage_sort_key)
 
-        _d_acc = ((acc_24 or {}).get("by_division") or {}).get(div) or {}
         divisions_out[div] = {
             "division": div,
             "admiral": adm,
@@ -1362,10 +1403,13 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
     # -----------------------------------------------------------------------
     advancing = []
     drags = []
-    if steady_24h > 0 or cf_dir_24h == "IMPROVING":
-        advancing.append("steady cashflow")
+    if recurring_cash_24h > 0 or cf_dir_24h == "IMPROVING":
+        advancing.append("recurring cashflow")
+    elif has_accrual_24h and accrual_op_24h > 0:
+        advancing.append(f"IAS2 accrual {_fmt_cr(accrual_op_24h)}/h")
+        drags.append(f"recurring cash {_fmt_cr(recurring_cash_24h)}/h (cash conversion drag; IAS2 accrual {_fmt_cr(accrual_op_24h)}/h)")
     else:
-        drags.append(f"steady net {_fmt_cr(steady_24h)}/h ({cf_dir_24h} 24h)")
+        drags.append(f"recurring cash {_fmt_cr(recurring_cash_24h)}/h ({cf_dir_24h} 24h)")
     if (wd_deltas["money_delta"] is not None and wd_deltas["money_delta"] > 0) or all_in_24h > 0:
         advancing.append(f"purse ({_fmt_cr(wd_deltas['money_delta'] or all_in_24h)})")
     else:
@@ -1384,9 +1428,9 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
         drags.append(f"efficiency {prod_pct:.0f}% / idle {total_idle}")
 
     ent_alarms = sum(1 for t in ent_triggers if t["severity"] == "ALARM")
-    if steady_24h > 0 and len(advancing) >= 3 and ent_alarms == 0:
+    if recurring_cash_24h > 0 and len(advancing) >= 3 and ent_alarms == 0:
         verdict = "COMPOUNDING"
-    elif (steady_24h <= 0 and cf_dir_24h == "WORSENING" and (wd_deltas["p10_delta"] or 0) <= 0 and (wd_deltas["money_delta"] or 0) <= 0):
+    elif (recurring_cash_24h <= 0 and (not has_accrual_24h or accrual_op_24h <= 0) and cf_dir_24h == "WORSENING" and (wd_deltas["p10_delta"] or 0) <= 0 and (wd_deltas["money_delta"] or 0) <= 0):
         verdict = "STAGNATING"
     elif (cf_dir_24h == "WORSENING" and cf_dir_6h == "WORSENING" and len(advancing) <= 2):
         verdict = "SLOWING"
@@ -1394,7 +1438,13 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
         verdict = "GROWING_WITH_DRAG"
 
     # Dynamic Context-Adaptive Enterprise Readiness Score (0..100)
-    _cf_sub = 100.0 if steady_24h > 0 else (65.0 if (cf_dir_24h == "IMPROVING" or steady_1h > 0) else max(0.0, 50.0 + steady_24h / 2000.0))
+    # Liquidity (65% matched recurring cash) + Accrual Profitability (35% IAS 2 accrual op when available)
+    _liq_sub = 100.0 if recurring_cash_24h > 0 else (65.0 if (cf_dir_24h == "IMPROVING" or steady_1h > 0) else max(0.0, 50.0 + recurring_cash_24h / 2000.0))
+    if has_accrual_24h:
+        _acc_sub = 100.0 if accrual_op_24h > 0 else max(0.0, 50.0 + accrual_op_24h / 2000.0)
+        _cf_sub = 0.65 * _liq_sub + 0.35 * _acc_sub
+    else:
+        _cf_sub = _liq_sub
     _cf_eff_score = 0.55 * _cf_sub + 0.45 * min(100.0, prod_pct)
     _upg_ent_score = 0.60 * min(100.0, fleet_hull_elig_pct) + 0.40 * min(100.0, fleet_slot_pct)
     _seat_req_score = max(0.0, min(100.0, seat_cap_pct) - open_reqs * 6.0)
@@ -1420,11 +1470,12 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
     ent_seen = {x["code"] for x in ent_triage}
     if diplo_pending > 0 and "DIPLO_PENDING" not in ent_seen:
         ent_seen.add("DIPLO_PENDING")
+        _ep_lbl = (" [" + ", ".join(diplo_pending_tags[:4]) + "]") if diplo_pending_tags else ""
         ent_triage.append({
             "severity": "WARN", "tier": "P0", "weight": 90, "effort": 1,
             "score": _wsjf_score(90, gap_ratio=0.8, effort=1, direction="FLAT"),
             "source": "KPI", "code": "DIPLO_PENDING", "metric": "Unanswered Partner Comms",
-            "actual": f"{diplo_pending} inbound reply(ies) pending", "target": "0 unanswered", "direction": "FLAT",
+            "actual": f"{diplo_pending} inbound reply(ies) pending{_ep_lbl}", "target": "0 unanswered", "direction": "FLAT",
             "action": "Check diplomacy.py threads & reply via Prime Directive / scout envoy (F4/O10)",
         })
     for req in open_req_items[:3]:
@@ -1558,8 +1609,8 @@ def render_briefing(sc, who="all"):
     p_delta = f" | 6h purse {_fmt_cr(e['purse_delta_6h'])}" if e["purse_delta_6h"] is not None else ""
     p10_d = f" (+{e['p10_delta_6h']} P10+)" if (e["p10_delta_6h"] or 0) > 0 else ""
     lines.append(
-        f"  ENTERPRISE | {e['verdict']} | Posture {e.get('posture','CASHFLOW_RECOVERY')} | Score {e['weighted_score']:.1f}/100 | steady cashflow {e['cashflow_sign']} "
-        f"({_fmt_cr(e['steady_24h'])}/h 24h, {_fmt_cr(e['steady_6h'])}/h 6h, 24h {e['cashflow_trend_24h']}, 6h {e['cashflow_trend_6h']}){p_delta}"
+        f"  ENTERPRISE | {e['verdict']} | Posture {e.get('posture','CASHFLOW_RECOVERY')} | Score {e['weighted_score']:.1f}/100 | recurring cash {e['cashflow_sign']} "
+        f"({_fmt_cr(e.get('recurring_cash_24h', e['steady_24h']))}/h 24h, {_fmt_cr(e.get('recurring_cash_6h', e['steady_6h']))}/h 6h, 24h {e['cashflow_trend_24h']}, 6h {e['cashflow_trend_6h']}){p_delta}"
     )
     if e.get("has_inventory_accrual") or e.get("once_direct_24h"):
         lines.append(

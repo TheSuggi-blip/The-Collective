@@ -247,5 +247,32 @@ class TestFleetAccounting(unittest.TestCase):
             self.assertEqual(d_pnl["total_wallet"], -96000)
 
 
+    def test_scorecard_uses_matched_drags_and_detects_diplo_reply(self):
+        import scorecard
+        with tempfile.TemporaryDirectory() as tmp:
+            root, data, now = _build_fixture(tmp)
+            (data / "comms").mkdir(parents=True, exist_ok=True)
+            (data / "comms" / "diplomacy.json").write_text(json.dumps({
+                "factions": {
+                    "IRLC": {"tag": "IRLC", "leader": "ILC Comptroller", "status": "neutrality_agreed", "last_sent_at": "2026-11-23T05:03:11Z"},
+                    "HEXC": {"tag": "HEXC", "leader": "HexCogitoAI", "status": "neutrality_agreed", "last_sent_at": "2026-11-23T05:03:11Z"},
+                }
+            }), encoding="ascii")
+            (data / "comms" / "messages.jsonl").write_text(
+                json.dumps({"t": "2026-11-23T03:35:10Z", "channel": "private", "sender": "HexCogitoAI", "tag": "HEXC", "own": False, "text": "ok"}) + "\n"
+                + json.dumps({"t": "2026-11-23T14:24:13Z", "channel": "private", "sender": "ILC Comptroller", "tag": "IRLC", "own": False, "text": "trade on exchange"}) + "\n",
+                encoding="ascii",
+            )
+            neutral_n, pend_n, pend_tags = scorecard._load_diplomacy_pending(str(data))
+            self.assertEqual(neutral_n, 2)
+            self.assertEqual(pend_n, 1)
+            self.assertEqual(pend_tags, ["IRLC"])
+
+            sc = scorecard.compute_scorecard(str(root), str(data), now=now)
+            drags_txt = " | ".join(sc["enterprise"]["drags"])
+            self.assertIn("recurring cash", drags_txt)
+            self.assertNotIn("steady net", drags_txt)
+
+
 if __name__ == "__main__":
     unittest.main()
