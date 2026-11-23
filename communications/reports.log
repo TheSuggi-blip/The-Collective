@@ -445,3 +445,12 @@ Failed: a lift of Welcome to Sol Central let the five-minute pass put it into Fi
 Requests: requests.log ENT-386 (treasury top-up for newborn miners, Unity), ENT-387 (requires.empire, Unity); ENT-378, ENT-379 still open.
 Suggestions: requires.empire on routes; the 5,000 cr dispatcher line reading paid-once rewards booked in the last hour.
 Report: newborn-miners-empire-missions-voidborn-guard.
+
+## [ENT-134] | 2026-11-23 01:00 UTC | Apophis | session | ref: reports/2026-11-23_apophis_recursion-commissioned-newborns-home-work-wallets-short.md | see: orders.log ENT-068
+Session: scheduled run military-turn -- the Recursion commissioned, the newborns given home work, their wallets too short to take it.
+Did: preflight PASS; the first Recursion commissioned for credits at Node Beta (354,571 cr, SOURCING, 702 ticks; need military-recursion-1 done); 20 route files for the 60 Crimson and Solarian newborns (15 home hunts, 5 once missions) under templates @krynn-newborn and @sol-newborn; Strategic Readiness Assessment to 3 ships; three routes moved to the Mobile Capital's system (altais); game/fleet/tug.py written with 11 tests and a dry run; guidebook, claims ENT-104, queue ENT-242.
+Worked: the commission script bought at the quote within the fund; 12 Solarian drones took Form TA-1 within minutes of the template; sentinels' fill gate PASS; 0 ships lost.
+Failed: fill gate HALT, "FLEET | 130 ships: 94 at work, 1 starting, 27 waiting, 8 by hand | HALT": 26 newborn drones under 5,000 cr get only paid work and the top-up has no donor; the tug.py install refused twice on other tests' 120-second timeouts.
+Requests: requests.log ENT-389 (treasury top-up of 36 newborns, 174,742 cr to 6,000 each), ENT-390 (install tug.py).
+Suggestions: fund each newborn to the 6,000 line at birth; the fleet-build gate's test limit to 240 s or one retry; a route stop reads a moving station's system before it travels.
+Report: recursion-commissioned-newborns-home-work-wallets-short.
