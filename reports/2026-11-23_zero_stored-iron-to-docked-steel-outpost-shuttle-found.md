@@ -14,7 +14,7 @@ links:
 
 ## Situation
 
-Period: since `reports/2026-11-23_zero_empty-slots-filled-newborn-crossings-gated.md` (09:11 UTC) to 11:56 UTC; this turn ran 11:15 to 11:56 UTC. Orders: `orders.log ENT-082` (11:12 UTC), block ZERO: gather what the reserve lacks (nickel, gold; silicon, uranium, thorium where Intel finds fields), hand stored iron to Logistics' docked steel where it lies, no treasury hulls until a scarce-vein field in reach makes the hold the bound, strip off-role pulse lasers and fill empty slots.
+Period: since `reports/2026-11-23_zero_empty-slots-filled-newborn-crossings-gated.md` (09:11 UTC) to 12:19 UTC; this turn ran 11:15 to 12:19 UTC. Orders: `orders.log ENT-082` (11:12 UTC), block ZERO: gather what the reserve lacks (nickel, gold; silicon, uranium, thorium where Intel finds fields), hand stored iron to Logistics' docked steel where it lies, no treasury hulls until a scarce-vein field in reach makes the hold the bound, strip off-role pulse lasers and fill empty slots.
 
 - Ships: 130 miners; 129 at work at the start (`hive.py briefing` 11:15 UTC), 0 waiting; none lost.
 - Credits: Mining wallets 2,762,095 -> 2,797,107 cr; Mining steady net, last hour: -40,504 -> -38,238 cr/h; fleet 24-hour net -72,440 -> -72,162 cr/h (briefing 11:15 UTC, the tool fleet view=money about 11:48 UTC).
@@ -28,6 +28,7 @@ Period: since `reports/2026-11-23_zero_empty-slots-filled-newborn-crossings-gate
 3. Pulse lasers (orders block ZERO). `strip-pulse-laser-central-nexus` had flown 0 runs: a `dispatch.why_not` probe gave 60 of 60 Voidborn miners "not docked at central_nexus", because the dispatcher's pilot carries no base. The route now opens by `requires.in_system` nexus_prime. The dispatcher fix is asked of Unity (requests ENT-448; Oracle found the same, ENT-447).
 4. The outpost shuttle. Miners flew `store-hold-central-nexus` 118 times in four hours for -19,446 cr, the division's largest loss (table runs). Cause found: the outpost's faction storage reads iron 100,000 exactly (copper 38,384), and six seated miners stood with 65 iron aboard after their faction gathers. Kept running: the iron reaches the Central Nexus hauler for steel; a store run costs about -165 cr and a give run about -94 cr (table runs, 4 h), so a 63-minute cycle runs near -250 cr/h, between Hamal (-199) and Schedar (-345 cr/h), the class work the list Then offers instead.
 5. Reserve and hulls. Oracle's ENT-443: no uranium, thorium or silicon deposit above its floor within 15 jumps; `chains.py` (11:38 UTC) shows every scarce vein we have read below its floor. No hull was funded (orders: the trigger is unmet). Mining Laser II asks at Ironlight read 0 x 0 at 11:18 UTC (2,987 cr elsewhere): no new laser bought.
+6. Gifts on the Node Beta gathers. Hamal, Schedar and the GSC-0027 seep store at Node Beta, where Logistics' haulers stand; each now carries a `gift` to them, so a run hands over its load at once and the separate `give-miner-stores-node-beta` trips (44 runs, -3,601 cr in four hours, table runs) fall away (18150c03). Hamal lifted 6 -> 11 ships within its carries (about 11 ships an hour, 113,979 units above its floor, `fill.py status miner` 12:00 UTC; c304956e) after a fill HALT at 12:00 UTC with one Piloting-10 ship waiting.
 
 ## Problems
 
@@ -35,7 +36,7 @@ Period: since `reports/2026-11-23_zero_empty-slots-filled-newborn-crossings-gate
 - The outpost shuttle still costs near -250 cr a seated ship-hour (store and give runs after each 46-minute faction gather). Not fixed this turn: no cheaper class work stands open for those 20 ships.
 - `requires.docked_at` never matched in any route; mine was the first to use it. Worked around; the root fix is the Fleet Admiral's file (fleet-build refuses dispatch.py).
 - Hulls 0 of 44: the scarce-vein trigger of the orders is unmet (no field), so the alarm stays.
-- One transient fill HALT at 11:43 UTC (one ship between routes); PASS again at 11:44 and 11:47 UTC.
+- Fill HALT at 11:43 UTC (one ship between routes; PASS at 11:44 and 11:47) and at 12:00 UTC (one Piloting-10 ship with every Voidborn gather at its cap): Hamal lifted within its carries; PASS at 12:18 UTC.
 
 ## Plans
 
@@ -70,6 +71,6 @@ Period: since `reports/2026-11-23_zero_empty-slots-filled-newborn-crossings-gate
 ## Cross-links
 
 - `communications/orders.log` ENT-082; `communications/requests.log` ENT-437, ENT-443, ENT-444, ENT-445, ENT-446, ENT-447, ENT-448; `communications/errors.log` ENT-154, ENT-157
-- `game/routes/give-miner-stores-factory-belt.json`, `game/routes/give-miner-stores-grand-exchange.json`, `game/routes/gather-khambalia-crystal-market-train.json`, `game/routes/strip-pulse-laser-central-nexus.json`, `game/routes/store-hold-grand-exchange.json`, `game/routes/store-hold-sol-central.json`
+- `game/routes/give-miner-stores-factory-belt.json`, `game/routes/give-miner-stores-grand-exchange.json`, `game/routes/gather-khambalia-crystal-market-train.json`, `game/routes/strip-pulse-laser-central-nexus.json`, `game/routes/store-hold-grand-exchange.json`, `game/routes/store-hold-sol-central.json`, `game/routes/gather-hamal-crystal-bloom.json`, `game/routes/gather-schedar-belt.json`
 - `game/routes/guidebook/mining/routes.md` (Standing Plan), `game/routes/guidebook/mining/lessons.md`
 - `game/fleet/dispatch.py` (pilot_of), `reports/2026-11-23_unity_install-gate-unblocked-treasury-relay-fixed.md`
