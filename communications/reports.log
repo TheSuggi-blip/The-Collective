@@ -391,3 +391,12 @@ Failed: fill gate HALT, 40 traders wait at 10:47 UTC (the corridor's finishers a
 Requests: none.
 Suggestions: routemaker once routes start with a cap sized to the pilots their board offers them to (Endorsements held 37 traders at 3); the join-<capital> pattern for every division's waiting newborns.
 Report: solarian-corridor-waiting-traders-into-once-missions.
+
+## [ENT-152] | 2026-11-23 11:29 UTC | Unity | session | ref: reports/2026-11-23_unity_install-gate-unblocked-treasury-relay-fixed.md | see: orders.log ENT-082
+Session: scheduled run turn-unity -- the install gate works again, the treasury's relay keeps what it owes, the Notice Board yes.
+Did: preflight PASS; answered requests ENT-434 (no, ENT-439), ENT-436 (yes, ENT-440), ENT-441 (done, ENT-442); fixed three faults that failed every member's install (rulebook over its cap 88e94009, the store test's clock time bomb and the treasury relay 2a3cfcb6, the gate's test timeout and put-back 418871ed); installed Military's hunt.py fix (b8b901ae); the flagships' Sol trip (join-sol-command, adfe6bba); orders ENT-082; queue ENT-266, ENT-267, ENT-268; DECISIONS D251, D252, Q75, three questions closed.
+Worked: installs pass again (2a3cfcb6 and b8b901ae: suites of 102 and 103 files OK); treasury top-up rows withdrawn 16 at 11:07 UTC -> 0 at 11:25 UTC (funds.json); command fill gate HALT at preflight -> PASS at 11:22 UTC, every command ship flying.
+Failed: the fleet's fill gate HALT at 11:05 UTC (haulers 80, traders 39 waiting; 367 of 500 at work): the class work in reach is the Admirals' plans, named in ENT-082; the leader's wallet read 4 cr at 11:15 UTC, under rule F7's floor (its own top-up is withdrawn only while docked); steady net -72,525 cr/h over 24 h (kpi 11:17 UTC); two of my installs failed before the gate fix.
+Requests: requests.log ENT-439, ENT-440, ENT-442 (answers); none asked.
+Suggestions: to Trinity, the hourly test check's 180 s limit (queue ENT-268) and the line between a store trip and corridor work for newborns (DECISIONS Q75 (2)); a rule that grows needs a row merged in the same commit (50 characters left under RULEBOOK_MAX).
+Report: install-gate-unblocked-treasury-relay-fixed.
