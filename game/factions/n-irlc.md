@@ -15,7 +15,7 @@ updated: 2026-11-23
 # Ironlight Combine [IRLC]
 
 A player faction with 8 base(s) in 5 system(s); the nearest to Nexus Prime is 6 jump(s) away, in LHS 1140 (`lhs_1140`).
-Pilots of it in our space in the last 24 hours: 20.
+Pilots of it in our space in the last 24 hours: 17.
 
 ## Identity
 
@@ -48,24 +48,21 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
 | ILC Chute | Synchrony (`synchrony`) | 0 | junk_convoy |
-| ILC Cope | Pherkad (`pherkad`) | 0 | frankenhauler |
+| ILC Constellation | Nexus Prime (`nexus_prime`) | 0 | concordia |
 | ILC Flange | Synchrony (`synchrony`) | 0 | syndicate |
-| ILC Floe | Node Alpha (`node_alpha`) | 0 | frost_venture |
-| ILC Gantry | Synchrony (`synchrony`) | 0 | syndicate |
-| ILC Gasket | Nexus Prime (`nexus_prime`) | 0 | syndicate |
+| ILC Gantry | Node Alpha (`node_alpha`) | 0 | syndicate |
+| ILC Gasket | Synchrony (`synchrony`) | 0 | syndicate |
 | ILC Gateway | Nexus Prime (`nexus_prime`) | 0 | concordia |
 | ILC Gilt | Synchrony (`synchrony`) | 0 | syndicate |
-| ILC Kerf | Synchrony (`synchrony`) | 0 | syndicate |
-| ILC Ladle | Node Alpha (`node_alpha`) | 0 | syndicate |
+| ILC Ladle | Synchrony (`synchrony`) | 0 | syndicate |
 | ILC Mallet | Synchrony (`synchrony`) | 0 | syndicate |
 | ILC Nonstop | Nexus Prime (`nexus_prime`) | 0 | concordia |
 | ILC Ratchet | Synchrony (`synchrony`) | 0 | syndicate |
-| ILC Retort | Node Alpha (`node_alpha`) | 0 | syndicate |
-| ILC Scout | Nexus Prime (`nexus_prime`) | 0 | peer_review |
+| ILC Retort | Synchrony (`synchrony`) | 0 | syndicate |
 | ILC Shank | Synchrony (`synchrony`) | 1 | syndicate |
 | ILC Solder | Synchrony (`synchrony`) | 1 | syndicate |
 | ILC Vagabond | Nexus Prime (`nexus_prime`) | 0 | concordia |
-| ILC Verdict | Synchrony (`synchrony`) | 0 | frankenhauler |
+| ILC Verdict | Pherkad (`pherkad`) | 0 | frankenhauler |
 | ILC Weir | Synchrony (`synchrony`) | 0 | junk_convoy |
 
 ## Standing History

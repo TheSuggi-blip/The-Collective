@@ -47,7 +47,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | STLR-142-NEB | GSC-0027 (`gsc_0027`) | 0 | prospect |
 | STLR-163-NEB | GSC-0027 (`gsc_0027`) | 0 | prospect |
 | STLR-164-NEB | GSC-0027 (`gsc_0027`) | 0 | prospect |
-| VMan | GSC-0027 (`gsc_0027`) | 0 | threshold |
+| VMan | Node Beta (`node_beta`) | 0 | threshold |
 
 ## Standing History
 

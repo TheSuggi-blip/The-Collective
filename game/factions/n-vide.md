@@ -15,7 +15,7 @@ updated: 2026-11-23
 # Culte du Vide [VIDE]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 1.
+Pilots of it in our space in the last 24 hours: 0.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 1.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 14 | Public event stream |
+| Pilots carrying the tag on the public event stream | 13 | Public event stream |
 
 ## Bases
 
@@ -36,9 +36,7 @@ None on the public record.
 
 Pilots carrying this tag whose last known system is one of ours (public event stream, last 24 hours).
 
-| Pilot | System | Player ships destroyed | Ship when one of ours met it |
-|---|---|---|---|
-| Ellara | Nexus Prime (`nexus_prime`) | 0 | threshold |
+None in the last 24 hours.
 
 ## Standing History
 
