@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 438.
+Routes: 440.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -89,6 +89,8 @@ Routes: 438.
 | [give-scout-stores-experiment](give-scout-stores-experiment.json) | circuit | home space | A scout gives its stores at The Experiment: building inputs to the haulers, everything else it holds to the traders (strict classes) | up to 2 ships, with 50 iron_ore stored at the_experiment_research_station, standing work | 1 | 3 | -20 | -530 | 2026-11-22 |
 | [give-scout-stores-node-beta](give-scout-stores-node-beta.json) | circuit | home space | A scout gives its stores at Node Beta Industrial Station: building inputs to the haulers, everything else it holds to the traders (strict classes) | up to 2 ships, with 50 iron_ore stored at node_beta_industrial_station, standing work | TBD | TBD | TBD | TBD | -- |
 | [give-scout-stores-synchrony](give-scout-stores-synchrony.json) | circuit | home space | A scout gives its stores at Synchrony Hub: building inputs to the haulers, everything else it holds to the traders (strict classes) | up to 2 ships, with 50 iron_ore stored at synchrony_hub, standing work | 2 | 1 | -60 | -6,000 | 2026-11-23 |
+| [join-corridor-crimson](join-corridor-crimson.json) | circuit | home space | A Crimson-born drone whose home herds are all taken joins the main corridor: one trip to Central Nexus | once per pilot, up to 6 ships, born crimson, standing work | 4 | 22 | -350 | one-time | 2026-11-23 |
+| [join-corridor-solarian](join-corridor-solarian.json) | circuit | home space | A Solarian-born drone whose home herds are all taken joins the main corridor: one trip to Central Nexus | once per pilot, up to 6 ships, born solarian, standing work | 2 | 18 | -440 | one-time | 2026-11-23 |
 | [load-plasma-ammo-experiment](load-plasma-ammo-experiment.json) | circuit | home space | Plasma ammunition back aboard: withdraw the stored dispersal plasma cell packs at The Experiment Research Station into the Plasma Cannon II ship's hold | up to 1 ships, 2 pilots in all, needs plasma_cannon_ii, with 1 dispersal_plasma_cell_pack stored at the_experiment_research_station, standing work | TBD | TBD | TBD | TBD | -- |
 | [park](park.json) | circuit | home space | Dock at Central Nexus and wait there: a docked ship costs nothing | the park route | 59 | 2 | -180 | -1,210 | 2026-11-23 |
 | [park-lockbox](park-lockbox.json) | circuit | home space | Dock at Node Beta Industrial Station (active Faction Lockbox) for treasury payout | the park route | 4 | 13 | -1,390 | -6,480 | 2026-11-23 |

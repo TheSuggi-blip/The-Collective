@@ -305,8 +305,8 @@ Kept by Apophis. Routes: 288. Ships: 36.
 | 283 | [craft-steel-military-synchrony-hub](craft-steel-military-synchrony-hub.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 6 ships, with 100 iron_ore stored at synchrony_hub, standing work | all 36 |
 | 284 | [craft-steel-military-central-nexus](craft-steel-military-central-nexus.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 6 ships, with 100 iron_ore stored at central_nexus, standing work | all 36 |
 | 285 | [craft-piping-node-beta](craft-piping-node-beta.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 14 ships, with 300 iron_ore stored at node_beta_industrial_station, 180 copper_ore stored at node_beta_industrial_station, standing work | all 36 |
-| 286 | [join-corridor-solarian](join-corridor-solarian.json) | [Once per Pilot](index-once-per-pilot.md) | home space | once per pilot, up to 6 ships, born solarian | 5 of 36 |
-| 287 | [join-corridor-crimson](join-corridor-crimson.json) | [Once per Pilot](index-once-per-pilot.md) | home space | once per pilot, up to 6 ships, born crimson | 11 of 36 |
+| 286 | [join-corridor-solarian](join-corridor-solarian.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | once per pilot, up to 6 ships, born solarian, standing work | 5 of 36 |
+| 287 | [join-corridor-crimson](join-corridor-crimson.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | once per pilot, up to 6 ships, born crimson, standing work | 11 of 36 |
 | 288 | [park](park.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | the park route | all 36 |
 
 Templates its ships fly (a ship's own routes name one as `@<name>`):
