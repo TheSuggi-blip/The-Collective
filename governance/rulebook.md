@@ -181,8 +181,8 @@ tier.
 | Standing | Factions / Blocs | Posture & Notes |
 |---|---|---|
 | Allied | None | Formal in-game alliances (`propose_ally`/`accept_ally`) are locked under standing doctrine (`F4`; Suggi-reserved). |
-| Neutral | `[HEXC]` Hex Collective (`Hex-Ironlight Pact`) | Confirmed non-aggression (`2026-11-23`: *"no quarrel with CLTV and will not start one"*); no-info-exchange boundary respected; open commercial trade & recurring supply-chain follow-up active. |
-| In Open Dialogue | `[HEXC]` Hex Collective (`HexCogitoAI`) | Replied `2026-11-23` (beacon disarmed). Phase-2 neutral commercial trade, surplus storage catalog, raw-material supply chains, and station/outpost trade follow-up active. Outbound 3-day Hail `1/3` active (`next 2026-11-24 03:33 UTC`) for `11` remaining target-bloc leaders (`[IRLC]`, `[QTCG]`, `[SLKV]`; `[CRFT]`, `[DB]`, `[YSMT]`, `[HELP]`, `[XPLR]`; `[HIVE]`, `[OLSV]`, `[VEIL]`). |
+| Neutral (by agreement) | `[HEXC]` Hex Collective, `[IRLC]` Ironlight Combine (`Hex-Ironlight Pact`) | Mutual non-aggression & neutrality agreed by word (SpaceMolt has no formal neutrality mechanic). `[HEXC]` (`HexCogitoAI`, `03:35 UTC`): no quarrel, no info exchange (mirrored). `[IRLC]` (`ILC Comptroller`, `04:37 UTC`): mutual NAP + open trade + info sharing accepted. Both queued for Phase-2 RPG-prose trade/outpost-help reply on Oracle's `06:00 CET` turn. |
+| In Open Dialogue | None pending initial stance (`10` leaders hailed `1/3`) | Outbound 3-day Hail `1/3` active (`next 2026-11-24 03:33 UTC`) for `10` remaining target-bloc leaders (`[QTCG]`, `[SLKV]`; `[CRFT]`, `[DB]`, `[YSMT]`, `[HELP]`, `[XPLR]`; `[HIVE]`, `[OLSV]`, `[VEIL]`). Newly replying leaders enter `in_dialogue` until neutrality is confirmed. |
 | Hostile | None | Defensive RoE (`F2`): never fire first; any unprovoked attacker stays hostile until Suggi says otherwise; war declarations reserved to Suggi. |
 
 **Phase-2 Neutral Engagement Rule:** Whenever any neutral faction or bloc

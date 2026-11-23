@@ -722,7 +722,7 @@ def print_standings(data, root):
     print("DIPLOMATIC STANDINGS | policy=%s | targets=%d | rule=F4 (Section 14)" % (snap["policy"], snap["targets_total"]))
     tiers = (
         ("ALLIED", st["allied"]),
-        ("NEUTRAL", st["neutral"]),
+        ("NEUTRAL (BY AGREEMENT)", st["neutral"]),
         ("IN OPEN DIALOGUE", st["in_dialogue"]),
         ("HAILED (AWAITING REPLY)", st["hailed"]),
         ("HOSTILE", st["hostile"]),

@@ -4476,7 +4476,8 @@ function renderEmpireDiplomacy(panel, dip) {
   const kgrid = el('div', 'kpis');
   const ekpi = (k, v, sub, cls) => { const d = el('div', 'kpi' + (cls ? ' ' + cls : '')); d.append(el('div', 'k', k), el('div', 'v', v)); if (sub) d.append(el('div', 's', sub)); kgrid.append(d); };
   ekpi('Our posture', our.at_war ? 'AT WAR' : 'Armed Neutrality', 'Never fire first; O10 Neutrality max (alliances & war Suggi-reserved)', our.at_war ? 'neg' : 'main pos');
-  ekpi('Our treaties & wars', (our.allies || []).length + ' allies | ' + (our.wars || []).length + ' wars', (our.enemies || []).length + ' marked enemies', 'pos');
+  const neutAgreed = (((dip.comms && dip.comms.pacts && dip.comms.pacts.standings) || {}).neutral || []).length;
+  ekpi('Our treaties & wars', (our.allies || []).length + ' allies | ' + neutAgreed + ' neutral (agreed)', (our.wars || []).length + ' wars | ' + (our.enemies || []).length + ' marked enemies (neutrality by word)', 'pos');
   ekpi('Galactic alliance blocs', fmt(alliances.length) + ' coalitions', fmt(getPolities().filter((p) => p.kind === 'bloc').length) + ' major blocs mapped on galaxy view', '');
   ekpi('Active wars & rivalries', fmt(wars.length) + ' wars | ' + fmt(rivalries.length) + ' feuds', fmt(battles.length) + ' recent combat engagements logged', wars.length ? 'warn' : '');
   panel.append(kgrid);
@@ -4585,7 +4586,7 @@ function renderEmpireComms(panel, dip) {
     const fmtList = (arr) => (arr && arr.length) ? arr.map((x) => '[' + x.tag + '] ' + x.faction).join(', ') : 'None';
     const srows = [
       [el('span', 'pill good', 'ALLIED'), String((stg.allied || []).length), fmtList(stg.allied), 'Locked under standing doctrine (F4; Suggi-reserved)'],
-      [el('span', 'pill good', 'NEUTRAL'), String((stg.neutral || []).length), fmtList(stg.neutral), 'Confirmed non-aggression / trade / info-sharing partners'],
+      [el('span', 'pill good', 'NEUTRAL (BY AGREEMENT)'), String((stg.neutral || []).length), fmtList(stg.neutral), 'Non-aggression / neutrality agreed by word (no formal game mechanic); open trade & dialogue active'],
       [el('span', 'pill warn', 'IN OPEN DIALOGUE'), String((stg.in_dialogue || []).length), fmtList(stg.in_dialogue), 'Active two-way thread (Phase-2 neutral trade & supply chains)'],
       [el('span', 'pill', 'HAILED / PENDING'), String((stg.hailed || []).length), fmtList(stg.hailed), '3-day exact-24h robotic hail beacon active'],
       [el('span', 'pill bad', 'HOSTILE'), String((stg.hostile || []).length), fmtList(stg.hostile), 'Defensive RoE (F2); war declarations Suggi-reserved'],
@@ -4597,7 +4598,8 @@ function renderEmpireComms(panel, dip) {
     panel.append(el('h3', null, 'Neutrality outreach roster -- 3 target blocs (' + p.rows.length + ' leaders, 3-day exact-24h cadence, O10)'));
     const statusPill = (r) => {
       const st = r.status;
-      if (st === 'neutrality_agreed' || st === 'trade_active' || st === 'info_sharing_active') return el('span', 'pill good', st.replace(/_/g, ' ').toUpperCase());
+      if (st === 'neutrality_agreed') return el('span', 'pill good', 'NEUTRAL (AGREED)');
+      if (st === 'trade_active' || st === 'info_sharing_active') return el('span', 'pill good', st.replace(/_/g, ' ').toUpperCase());
       if (st === 'in_dialogue') return el('span', 'pill warn', 'IN DIALOGUE');
       if (st === 'hailed') return el('span', 'pill warn', 'HAILED ' + (r.unanswered_hails || 1) + '/' + (r.max_unanswered || 3));
       if (st === 'no_response') return el('span', 'pill', 'NO RESPONSE (3/3)');
