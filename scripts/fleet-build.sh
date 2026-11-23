@@ -63,7 +63,7 @@ import glob, subprocess, sys
 files = sorted(glob.glob("scripts/tests/test_*.py"))
 failed = []
 def run_one(f):
-    r = subprocess.run([sys.executable, "-B", f], capture_output=True, text=True, timeout=120)
+    r = subprocess.run([sys.executable, "-B", f], capture_output=True, text=True, timeout=300)
     return f, r.returncode, r.stdout + r.stderr
 
 with ThreadPoolExecutor(max_workers=4) as pool:

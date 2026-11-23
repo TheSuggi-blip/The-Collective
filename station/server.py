@@ -1564,10 +1564,15 @@ def api_ops():
             synced_ships = 0
             emp_rows = []
             if "ships" in tables:
-                emp_rows = conn.execute(
-                    "SELECT LOWER(COALESCE(NULLIF(empire,''), 'voidborn')) AS emp, COUNT(*) AS n FROM ships GROUP BY 1 ORDER BY 2 DESC"
-                ).fetchall()
-                synced_ships = sum(int(num(r["n"])) for r in emp_rows)
+                ship_cols = {c[1] for c in conn.execute("PRAGMA table_info(ships)").fetchall()}
+                if "empire" in ship_cols:
+                    emp_rows = conn.execute(
+                        "SELECT LOWER(COALESCE(NULLIF(empire,''), 'voidborn')) AS emp, COUNT(*) AS n FROM ships GROUP BY 1 ORDER BY 2 DESC"
+                    ).fetchall()
+                    synced_ships = sum(int(num(r["n"])) for r in emp_rows)
+                else:
+                    synced_ships = int(num(conn.execute("SELECT COUNT(*) FROM ships").fetchone()[0]))
+                    emp_rows = [{"emp": "voidborn", "n": synced_ships}] if synced_ships else []
             standing_ships = max(synced_ships, online_count + away_count)
             if "faction" in tables:
                 row = conn.execute("SELECT member_count, members_limit, treasury, owned_bases, at_war FROM faction LIMIT 1").fetchone()
@@ -2658,9 +2663,14 @@ def api_diplomacy(_allow_snapshot=False):
                         "category": clean_ascii(r["cat"], 24),
                         "count": int(num(r["n"])),
                     })
-                emp_cnts = conn.execute(
-                    "SELECT LOWER(COALESCE(NULLIF(empire,''), 'voidborn')) AS emp, COUNT(*) AS n FROM ships GROUP BY 1 ORDER BY 2 DESC"
-                ).fetchall()
+                ship_cols = {c[1] for c in conn.execute("PRAGMA table_info(ships)").fetchall()}
+                if "empire" in ship_cols:
+                    emp_cnts = conn.execute(
+                        "SELECT LOWER(COALESCE(NULLIF(empire,''), 'voidborn')) AS emp, COUNT(*) AS n FROM ships GROUP BY 1 ORDER BY 2 DESC"
+                    ).fetchall()
+                else:
+                    cnt_s = int(num(conn.execute("SELECT COUNT(*) FROM ships").fetchone()[0]))
+                    emp_cnts = [{"emp": "voidborn", "n": cnt_s}] if cnt_s else []
                 emp_tot = sum(int(num(x["n"])) for x in emp_cnts) or 1
                 our_by_empire = [
                     {"empire": clean_ascii(x["emp"], 20), "count": int(num(x["n"])), "pct": round(100.0 * int(num(x["n"])) / emp_tot, 1)}
