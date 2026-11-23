@@ -45,7 +45,12 @@
   "mission-a-word-in-private-grand",
   "mission-first-cargo-haven",
   "mission-the-proposal-frontier",
+  "mission-who-buys-old-charts-frontier",
+  "mission-endorsements-alpha",
+  "store-hold-grand-exchange",
   "mission-deep-core-prospecting-haven",
+  "store-hold-sol-central",
+  "fit-mining-laser-ii-sol-central",
   "mission-copper-iron-procyon",
   "mission-deep-core-prospecting-sol",
   "gather-lacaille-deep-vein-train",
@@ -68,6 +73,7 @@
   "gather-goldcrest-gold",
   "gather-bunda-belt-platinum",
   "gather-khambalia-crystal-market-train",
+  "gather-alrakis-commerce-vein-train",
   "gather-izar-quantum-fragments",
   "gather-errai-quantum-fragments",
   "gather-tidewater-quantum-fragments",
@@ -89,27 +95,7 @@
  ],
  "planned": [
   {
-   "what": "Read the Laser II second-slot test's fit and three gather runs against Laser I ships of the same route; lift max_pilots on a 3-result gain next turn",
-   "when": "--"
-  },
-  {
-   "what": "Read Forgotten Tailings at 5 ships and GSC-0044 Belt against its 20,000 floor; Jishui carbon at 3 ships against 1,000 min_left next turn",
-   "when": "--"
-  },
-  {
-   "what": "Read Unity's answer to requests ENT-365 (Resonance Miner budget); on yes, quote and commission one hull next turn",
-   "when": "--"
-  },
-  {
-   "what": "Read the first three results of Welcome to Sol Central and the two Mining-skill gathers of the newborns; lift what holds (F37)",
-   "when": "next turn"
-  },
-  {
-   "what": "Seat answer (requests ENT-378): put the outpost belts into the rows of the seated Solarian miners",
-   "when": "on Unity's answer"
-  },
-  {
-   "what": "Read the Mining level at which the boards offer Deep Core Prospecting to a newborn; correct requires.skills",
+   "what": "Read the Sol Laser II, Alrakis and store-hold results; size Khambalia again; put the GSC-0044 belts in the rows of seated Solarian miners",
    "when": "next turn"
   }
  ],
@@ -156,7 +142,12 @@
   "mission-a-word-in-private-grand": 130,
   "mission-first-cargo-haven": 130,
   "mission-the-proposal-frontier": 130,
+  "mission-who-buys-old-charts-frontier": 130,
+  "mission-endorsements-alpha": 130,
+  "store-hold-grand-exchange": 35,
   "mission-deep-core-prospecting-haven": 35,
+  "store-hold-sol-central": 35,
+  "fit-mining-laser-ii-sol-central": 35,
   "mission-copper-iron-procyon": 35,
   "mission-deep-core-prospecting-sol": 35,
   "gather-lacaille-deep-vein-train": 35,
@@ -179,6 +170,7 @@
   "gather-goldcrest-gold": 130,
   "gather-bunda-belt-platinum": 130,
   "gather-khambalia-crystal-market-train": 35,
+  "gather-alrakis-commerce-vein-train": 35,
   "gather-izar-quantum-fragments": 130,
   "gather-errai-quantum-fragments": 130,
   "gather-tidewater-quantum-fragments": 130,

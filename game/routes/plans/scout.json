@@ -34,8 +34,10 @@
   "mission-form-ta-1-confederacy",
   "mission-confederacy-infrastructure-audit-confederacy",
   "mission-federation-trade-route-prospectus-grand",
+  "store-hold-grand-exchange",
   "census-region-haven",
   "census-region-haven-ring",
+  "store-hold-frontier-station",
   "mission-the-objection-deep",
   "mission-the-memorial-frontier",
   "mission-who-buys-old-charts-frontier",
@@ -82,6 +84,18 @@
   {
    "what": "Cut the census burn by a third as Unity answers requests ENT-381",
    "when": "after her answer"
+  },
+  {
+   "what": "Finish Federation Trade Route Prospectus by hand for two Nebula scouts holding it at 75 and 100 percent (Levy dock, return to Grand Exchange)",
+   "when": "next turn"
+  },
+  {
+   "what": "Census-region-altais to 6 ships and the newborn templates' far lists, once game/routes takes writes again (queue ENT-248)",
+   "when": "next turn"
+  },
+  {
+   "what": "Read the envoy's replies through diplomacy.py threads; the beacon repeats Hail 2/3 at T+24h",
+   "when": "every turn"
   }
  ],
  "ships": {
@@ -116,8 +130,10 @@
   "mission-form-ta-1-confederacy": 50,
   "mission-confederacy-infrastructure-audit-confederacy": 50,
   "mission-federation-trade-route-prospectus-grand": 50,
+  "store-hold-grand-exchange": 8,
   "census-region-haven": 8,
   "census-region-haven-ring": 8,
+  "store-hold-frontier-station": 12,
   "mission-the-objection-deep": 1,
   "mission-the-memorial-frontier": 12,
   "mission-who-buys-old-charts-frontier": 12,
@@ -129,34 +145,34 @@
   "census-far-5": 2,
   "hunt-alnilam-frozen-drift-hollow-pilgrim": 1,
   "hunt-gsc-0021-ice-fields-hollow-pilgrim": 1,
-  "census-far-1": 4,
+  "census-far-1": 16,
   "mission-the-expeditionary-mandate-first": 1,
   "hunt-intercrus-ice-fields-hollow-pilgrim": 1,
-  "census-far-4": 3,
-  "census-far-3": 3,
+  "census-far-4": 11,
+  "census-far-3": 11,
   "census-region-sol": 3,
   "hunt-test-homam-frost-moth": 1,
   "hunt-atlas-gas-pocket": 2,
   "hunt-achernar-frost-ring-hollow-pilgrim": 1,
-  "census-far-2": 3,
+  "census-far-2": 11,
   "hunt-birchwood-vapor-fields-cinder-sylph": 1,
   "hunt-amberfall-chlorophage-sac": 1,
-  "census-roads": 33,
-  "census-voidborn": 23,
-  "census-watch-gsc-0044": 23,
-  "census-worked": 23,
-  "census-frontier": 33,
-  "census-worked-far": 33,
-  "census-north": 33,
-  "census-east": 33,
-  "census-south": 33,
+  "census-roads": 50,
+  "census-voidborn": 20,
+  "census-watch-gsc-0044": 20,
+  "census-worked": 20,
+  "census-frontier": 30,
+  "census-worked-far": 30,
+  "census-north": 30,
+  "census-east": 42,
+  "census-south": 30,
   "park": 50
  },
  "of": 50,
  "derived": "Written by game/fleet/plan.py from the division's plan file (data/plans/plan-intel.md), never by hand.",
  "templates": {
   "explorer": 10,
-  "reader": 23,
+  "reader": 20,
   "outerrim": 12,
   "nebula": 8
  }
