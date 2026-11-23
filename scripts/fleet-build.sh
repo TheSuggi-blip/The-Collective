@@ -33,6 +33,11 @@ verb=${1:-}; T=${2:-}
 usage() { sed -n '2,29p' "$0" | sed 's/^# \{0,1\}//'; exit 2; }
 [ -n "$verb" ] && [ -n "$T" ] || usage
 
+gitr() {                                            # a git call that another member's commit may hold (index.lock): up to 6 tries
+  local i
+  for i in 1 2 3 4 5 6; do git "$@" && return 0; sleep 2; done
+  return 1
+}
 who() { python3 -I -B -c "
 import sys
 sys.path.insert(0, '$R/game/fleet')
@@ -63,7 +68,10 @@ import glob, subprocess, sys
 files = sorted(glob.glob("scripts/tests/test_*.py"))
 failed = []
 def run_one(f):
-    r = subprocess.run([sys.executable, "-B", f], capture_output=True, text=True, timeout=300)
+    try:                                             # a slow file under load is no failure: 600 s each (2026-11-23: test_fleet_store.py passed 300 s twice)
+        r = subprocess.run([sys.executable, "-B", f], capture_output=True, text=True, timeout=600)
+    except subprocess.TimeoutExpired:
+        return f, 124, "timed out after 600 s"
     return f, r.returncode, r.stdout + r.stderr
 
 with ThreadPoolExecutor(max_workers=4) as pool:
@@ -128,8 +136,8 @@ install)
     [ -n "$WATCH" ] && kill -TERM "$WATCH" 2>/dev/null
     rm -f "${TMPDIR:-/tmp}/fleet-build.$$"           # the log of gates that were stopped
     echo "HALT: $1 -- putting the paths back"
-    git reset -q -- "${PATHS[@]}" 2>/dev/null
-    for p in "${PATHS[@]}"; do if git cat-file -e "HEAD:$p" 2>/dev/null; then git checkout -q HEAD -- "$p"; else rm -f -- "$p"; fi; done
+    gitr reset -q -- "${PATHS[@]}" 2>/dev/null
+    for p in "${PATHS[@]}"; do if git cat-file -e "HEAD:$p" 2>/dev/null; then gitr checkout -q HEAD -- "$p" || echo "HALT: $p could not be put back: git checkout HEAD -- $p"; else rm -f -- "$p"; fi; done
     echo "status after: [$(git status --short)]"; exit 1
   }
   trap 'undo "stopped (INT)"' INT; trap 'undo "stopped (TERM)"' TERM; trap 'undo "stopped (HUP)"' HUP
@@ -140,8 +148,8 @@ install)
   gates "" & GATES=$!                                # in the background: a signal is taken at once, not after the suite
   wait "$GATES" || undo "a gate failed"
   GATES=
-  git add -- "${PATHS[@]}" || undo "git add"
-  git -c user.name="$NAME" -c user.email="$(printf '%s' "$NAME" | tr 'A-Z' 'a-z')@suggi-workspace.dev" commit -q -m "$MSG" -- "${PATHS[@]}" || undo "git commit"
+  gitr add -- "${PATHS[@]}" || undo "git add"
+  gitr -c user.name="$NAME" -c user.email="$(printf '%s' "$NAME" | tr 'A-Z' 'a-z')@suggi-workspace.dev" commit -q -m "$MSG" -- "${PATHS[@]}" || undo "git commit"
   trap - INT TERM HUP; kill -TERM "$WATCH" 2>/dev/null   # committed: nothing to put back any more
   git log -1 --format='committed %h %an %s' | cut -c1-120
   echo "status after: [$(git status --short)] | now one line in queue.log: what changed, for whom, and its test"
