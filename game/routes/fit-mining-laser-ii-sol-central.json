@@ -1,0 +1,38 @@
+{
+ "id": "fit-mining-laser-ii-sol-central",
+ "kind": "circuit",
+ "title": "Swap the Mining Laser I for a Mining Laser II at Confederacy Central Command, Sol (fit with replace), Solarian-born miners, one at a time",
+ "note": "Written by Zero, 2026-11-23 03:09 UTC (orders ENT-071, O2 and block ZERO: the stronger lasers; rules F12, F17, F37). Confederacy Central Command at Sol asks 2,500 cr for a Mining Laser II, 7 on offer (table books, a read under 6 minutes old at 03:09 UTC), where the other Solarian stations ask 5,283 to 5,500 and a Laser III 18,565. Power 12 against the Laser I's 5: more ore and more Mining XP an hour on every gather and mission of the Solarian newborns, whose rows dock at Sol. A Laser II flies on one of our ships already. One ship first (F12 one unit, F17), three results before a lift (F37); max_pilots 7 = the asks; min_credits 6,000 keeps the pilot above the F7 floor after the buy. requires.empire solarian.",
+ "once": true,
+ "max_ships": 1,
+ "max_pilots": 7,
+ "min_credits": 6000,
+ "requires": {
+  "module": "mining_laser_i",
+  "without_module": [
+   "mining_laser_ii",
+   "mining_laser_iii"
+  ],
+  "empty_hold": true,
+  "empire": "solarian",
+  "ask": {
+   "item": "mining_laser_ii",
+   "base": "confederacy_central_command",
+   "max_price": 2600,
+   "min_qty": 1,
+   "max_age_minutes": 240
+  }
+ },
+ "stops": [
+  {
+   "at": "sol:sol_central:confederacy_central_command",
+   "fit": [
+    {
+     "module": "mining_laser_ii",
+     "max_price": 2600,
+     "replace": "mining_laser_i"
+    }
+   ]
+  }
+ ]
+}
