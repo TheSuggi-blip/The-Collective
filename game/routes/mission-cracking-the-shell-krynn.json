@@ -2,7 +2,7 @@
  "id": "mission-cracking-the-shell-krynn",
  "kind": "circuit",
  "title": "Cracking the Shell: 1,500 cr once; three pressblister at ironhearth_ice_ring, accepted and handed in at War Citadel",
- "note": "Written by Apophis 2026-11-23 00:14 UTC for the newborn Crimson pilots of Military (orders ENT-068, P6: their empire's missions first, rule F34: hunts are Military's). Board of War Citadel read in table missions this turn: 'Cracking the Shell', 1,500 cr once, objective 'Hunt 3 Pressblisters at an ice field'. Herd by the census in table herds; two animals left (F38). A test of three results (F37); one at a place.",
+ "note": "Written by Apophis 2026-11-23 00:14 UTC for the newborn Crimson pilots of Military (orders ENT-068, P6: their empire's missions first, rule F34: hunts are Military's). Board of War Citadel read in table missions this turn: 'Cracking the Shell', 1,500 cr once, objective 'Hunt 3 Pressblisters at an ice field'. Herd by the census in table herds; two animals left (F38). A test of three results (F37); one at a place. 2026-11-23 00:51 UTC (Apophis): `empty_hold` taken out: the place is policed Crimson space (rule F3 asks it beyond policed space only), and 6 newborn drones in space carry the 10 argon gas they were born with (fill.py status: hold not empty 6).",
  "once": true,
  "max_ships": 1,
  "one_time": [
@@ -39,7 +39,6 @@
   }
  ],
  "requires": {
-  "empty_hold": true,
   "booked": "First Hunt: Belt-Grazers"
  }
 }
