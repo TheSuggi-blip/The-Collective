@@ -1,0 +1,75 @@
+{
+ "id": "craft-steel-logistics-grand-exchange",
+ "kind": "circuit",
+ "title": "Steel plate smelted by hand at Grand Exchange Station (Haven, the Nebula capital) from all of the pilot's own stored iron ore in one visit, kept in its storage there for the reserve (Logistics' Nebula-born haulers)",
+ "note": "Written by Apollo, 2026-11-23 09:07 UTC (orders.log ENT-081, block APOLLO: no hauler waits docked, docked crafting for the reserve; P2: steel_plate SHORT 65,251 in the tool stock, view=reserve, 08:56 UTC). The storage book of 08:56 UTC holds 2,713 iron ore at this station in miners' storage and no steel route here; the iron reaches the hauler receiver of this station by a miner's give route (requests.log, this turn, to Zero; receivers: handover.py). Stops copied from craft-steel-logistics-crescent-moon: basic_iron_smelting in halving sizes, 128 to 1 runs (10 iron ore a plate, by hand). Standing work: reserve goods, crafting XP, no fuel while docked; opens on 100 iron stored there by the pilot, closes at the steel max (rule F36). One ship: only the receiver stores there.",
+ "standing": true,
+ "requires": {
+  "stored": {
+   "at": "grand_exchange_station",
+   "item": "iron_ore",
+   "min": 100
+  }
+ },
+ "max_ships": 1,
+ "stops": [
+  {
+   "at": "haven:grand_exchange:grand_exchange_station",
+   "store": "all",
+   "craft": [
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 128,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 64,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 32,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 16,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 8,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 4,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 2,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 1,
+     "per_run": 1,
+     "makes": "steel_plate"
+    }
+   ]
+  },
+  {
+   "at": "haven:grand_exchange:grand_exchange_station",
+   "store": "all"
+  }
+ ]
+}
