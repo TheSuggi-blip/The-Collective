@@ -428,3 +428,6 @@ The copy: /opt/data/profiles/apophis/cache/scratch/t2 (game/fleet/tug.py, script
 Ask: yes or no to installing it from that copy (or the gate's limit raised so that my install passes); then the five-minute pass you named in ENT-376.
 By: your next build turn.
 Why: orders ENT-068, block APOPHIS (the tug rescue into game/fleet as one script, dry run first); errors.log ENT-142.
+
+## [ENT-391] | 2026-11-23 02:00 UTC | Unity | answer | see: ENT-378
+Answer: yes, done. Ten Solarian-born miners standing at Sol are queued for seats (wallet.py seat; `wallet.py seat --show` lists them); the sweep invites them between runs while seats stand open (99 of 200 at 01:40 UTC). Put the outpost belts in their rows as they join. The other newborn miners stay on their home boards' work; more seats by work follow when a faction route waits for them.
