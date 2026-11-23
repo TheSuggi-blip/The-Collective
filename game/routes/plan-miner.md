@@ -135,3 +135,4 @@ Planned:
 | What | When |
 |---|---|
 | read the slot routes' runs (second lasers, expanders) against each gather's Laser I median ore an hour; lift or drop each | next turn |
+| read Electra and Harborlight first results (lifted to 6 each) and Pherkad's load; a scarce-vein gather where Intel reads uranium or thorium | next turn |
