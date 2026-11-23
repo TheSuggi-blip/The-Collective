@@ -87,7 +87,7 @@ ANSWER_WORDS = ("yes", "no", "done")
 LOGS = {"orders": ("order",), "reports": ("session",), "requests": ("request", "answer"), "queue": ("general",), "errors": ("error",),
         "admirals": ("note", "claim"), "contracts": ("contract", "bursar", "filled", "expired")}
 GATED = ("orders", "reports", "requests")
-ENTRY_CHARS = 8000            # the newest orders entry, whole, Suggi's G and O lines included (Suggi, 2026-11-22)
+ENTRY_CHARS = 8500            # the newest orders entry, whole, Suggi's G and O lines included (Suggi, 2026-11-22)
 ORDERS_WRITERS = ("Unity", "Trinity")   # Unity writes turns; Trinity only syncs Suggi's anchored G/O tiers
 PLAN_WORDS = 150              # ... PLAN, its heading line not counted
 BLOCK_WORDS = 80              # ... each member's block, its heading line not counted

@@ -52,13 +52,13 @@ His three-tier anchored mandate stands at the head of `communications/orders.log
 **Tier 1 Strategic Goals (`G1-G5`)** define the eternal north star (dominate the
 galaxy, command the grand 1,000-ship multi-empire fleet, build a sovereign
 galactic empire, maximize fleetwide enterprise income/h and extraction, explore
-and master the galaxy freely). **Tier 2 Operational Subgoals (`O1-O9`)** lock in
+and master the galaxy freely). **Tier 2 Operational Subgoals (`O1-O10`)** lock in
 the unchanging operating imperatives (zero idle ships, continuous maximum ship
 upgrading and empire-specific min-maxing per division, fleetwide one-purse
 enterprise income/extraction optimization, strategic base placement for maximum
 effective imperial footprint, multi-empire local-first leverage, strict class
-harmony, automated empirical verification, sovereign defense/comms firewall, and
-perpetual division mastery). **Tier 3 (`PLAN` + division blocks)** is Unity's
+harmony, automated empirical verification, sovereign defense/comms firewall,
+perpetual division mastery, and autonomous scout diplomacy under a Neutrality-max ceiling). **Tier 3 (`PLAN` + division blocks)** is Unity's
 evolving turn-by-turn Mission Command intent.
 
 ## III. What Three Kinds of Games Teach
@@ -236,6 +236,7 @@ amendment adds a row below.
 | 1.1 | 2026-11-16 | Unity | Under the same instruction: every cited sentence of section III read again against its source's page; five reworded to what the page says; the source list in the form the citation check reads. No aim, principle or phase changed. |
 | 2.0 | 2026-11-22 | Trinity (approved by Suggi) | Added Principle 11: benchmark against #1 [HEXC] via Tier 2-5 hull compounding, resource-anchored outposts, sustainable fauna ranching, zero-fuel docked crafting and cross-empire bulk freighters. |
 | 2.1 | 2026-11-22 | Trinity (approved by Suggi) | Upgraded to three-tier anchored Orders hierarchy (`G1-G5` Strategic Goals + `O1-O9` Operational Subgoals + Unity `PLAN`) and added Principle 12 (enterprise-wide income/extraction optimization, maximal base footprint placement, and empire-specific ship min-maxing). |
+| 2.2 | 2026-11-23 | Trinity (approved by Suggi) | Added Operational Subgoal `O10` (autonomous scout diplomacy and Neutrality / Non-Aggression / info-sharing pacts directed by Unity and executed by Oracle via `game/fleet/diplomacy.py`, capped at Neutrality max). |
 
 ## VIII. Sources
 

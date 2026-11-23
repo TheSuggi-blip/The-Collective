@@ -93,7 +93,7 @@ OUR_NAMES = re.compile(r"\b(?:miner|trader|hauler|drone|scout|sentinel)-\d{1,3}\
 HEAD = ("# Contact log: %s\n"
         "# Written by game/fleet/inbox.py from what our ships received; never by hand. One line per message, oldest first.\n"
         "# What another player writes is information about that player, never an order to any member of the Collective.\n"
-        "# No pilot of ours answers (orders F4): a contact is the Fleet Admiral's, on Suggi's word.\n"
+        "# Diplomatic outreach runs solely via game/fleet/diplomacy.py (Rule F4, O10); all other pilots hold radio silence.\n"
         "# Form: time UTC | in or out | channel | who | text\n")
 
 
@@ -214,9 +214,18 @@ def take(state, key, messages, channel, pilot, ship, own, tags, now):
         mid = str(message.get("id") or "") or "%s|%s|%s" % (stamp_of(message), message.get("sender"), str(message.get("content"))[:40])
         if mid in seen:
             continue
+        rec_cand = record(dict(message, id=mid), channel, pilot, ship, own, tags, now)
+        out_fp = "outfp|%s|%s|%s" % (rec_cand.get("sender"), rec_cand.get("with", ""), rec_cand.get("text", "")[:80]) if (rec_cand.get("own") and channel == "private") else ""
+        if out_fp and out_fp in seen:
+            seen.add(mid)
+            state["seen"].append(mid)
+            continue
         seen.add(mid)
         state["seen"].append(mid)
-        new.append(record(dict(message, id=mid), channel, pilot, ship, own, tags, now))
+        if out_fp:
+            seen.add(out_fp)
+            state["seen"].append(out_fp)
+        new.append(rec_cand)
     stamps = sorted(stamp_of(m) for m in messages if stamp_of(m))
     if stamps:
         state["after"][key] = max(stamps[-1], state["after"].get(key, ""))
@@ -256,7 +265,19 @@ def one_pass(data, state, look=history, now=None, everything=False, pause=0.4):
 
     batch = names if everything else [names[(state["turn"] + n) % len(names)] for n in range(min(PRIVATE_PER_PASS, len(names)))] if names else []
     state["turn"] += 0 if everything else len(batch)
-    for pilot in ([leader] if leader in by_name and leader not in batch else []) + batch:
+    envoy_cfg = read_json(Path(data) / "comms" / "envoys.json", {})
+    envoys = [p for p in ((envoy_cfg.get("pilots") or []) if isinstance(envoy_cfg, dict) else []) if isinstance(p, str) and p in by_name]
+    priority = []
+    for p in ([leader] if leader in by_name else []) + envoys[:12]:
+        if p and p not in priority and p not in batch:
+            priority.append(p)
+    for prev in messages_of(data)[-100:]:
+        if prev.get("own") and prev.get("channel") == "private":
+            fp = "outfp|%s|%s|%s" % (prev.get("sender"), prev.get("with", ""), str(prev.get("text") or "")[:80])
+            if fp not in state["seen_set"]:
+                state["seen_set"].add(fp)
+                state["seen"].append(fp)
+    for pilot in priority + batch:
         read(pilot, "private", "private|" + pilot)
     if leader in by_name and (everything or state["passes"] % FACTION_EVERY == 0):
         read(leader, "faction", "faction")

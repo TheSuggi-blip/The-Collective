@@ -4370,28 +4370,56 @@ function renderEmpireDiplomacy(panel, dip) {
 
 function renderEmpireComms(panel, dip) {
   if (!dip || !dip.comms) { panel.append(el('p', 'empty', 'Loading communications ledger...')); return; }
-  const c = dip.comms, s = c.summary || {};
+  const c = dip.comms, s = c.summary || {}, p = c.pacts || { rows: [], counts: {} };
+  const agreed = ((p.counts || {}).neutrality_agreed || 0) + ((p.counts || {}).info_sharing_active || 0);
+  const hailed = ((p.counts || {}).hailed || 0) + ((p.counts || {}).in_dialogue || 0);
 
   const kgrid = el('div', 'kpis');
   const ekpi = (k, v, sub, cls) => { const d = el('div', 'kpi' + (cls ? ' ' + cls : '')); d.append(el('div', 'k', k), el('div', 'v', v)); if (sub) d.append(el('div', 's', sub)); kgrid.append(d); };
-  ekpi('Player hails to us', fmt(s.direct_human_in || 0), 'private DMs or @CLTV mentions from real players', s.direct_human_in ? 'warn' : 'main pos');
-  ekpi('Sent by our fleet', fmt(s.sent_by_us || 0), 'Rule F4 radio silence holds (Suggi-only outbound)', s.sent_by_us ? 'warn' : 'pos');
-  ekpi('Local pilot radio', fmt(s.local_human || 0), 'unique human messages heard near our ships', '');
-  ekpi('Comms firewall', 'CaMeL + Nonce', 'prompt-injection quarantine active (Rule F4) + contracts.log', 'pos');
+  ekpi('Neutrality pacts', agreed + '/' + (p.targets_total || 0), hailed + ' hailed/in dialogue | Neutrality max (O10)', agreed ? 'main pos' : 'main');
+  ekpi('Scout hails sent', fmt(s.sent_by_us || 0), '24h quota ' + (p.sent_24h || 0) + '/' + (p.cap_24h || 15) + ' via diplomacy.py airlock (F4)', s.sent_by_us ? 'pos' : '');
+  ekpi('Player hails to us', fmt(s.direct_human_in || 0), 'private DMs or @CLTV mentions from real players', s.direct_human_in ? 'warn' : '');
+  ekpi('Comms firewall', 'CaMeL + Nonce', 'OpSec outbound scrubber + ' + fmt(s.quarantined || 0) + ' quarantined inbound', (s.quarantined || 0) ? 'warn' : 'pos');
   panel.append(kgrid);
+
+  if ((p.rows || []).length) {
+    panel.append(el('h3', null, 'Neutrality outreach roster -- 3 target blocs (' + p.rows.length + ' leaders, O10)'));
+    const statusPill = (st) => {
+      if (st === 'neutrality_agreed' || st === 'info_sharing_active') return el('span', 'pill good', st.replace(/_/g, ' ').toUpperCase());
+      if (st === 'in_dialogue' || st === 'hailed') return el('span', 'pill warn', st.replace(/_/g, ' ').toUpperCase());
+      if (st === 'declined' || st === 'paused') return el('span', 'pill bad', st.toUpperCase());
+      return el('span', 'pill', 'UNCONTACTED');
+    };
+    const prows = p.rows.map((r) => [
+      r.bloc,
+      '[' + r.tag + '] ' + r.faction,
+      r.leader,
+      statusPill(r.status),
+      r.envoy || '-',
+      r.last_reply_at ? stampCet(r.last_reply_at) : (r.last_sent_at ? 'sent ' + stampCet(r.last_sent_at) : '-'),
+      r.last_stance && r.last_stance !== 'none' ? r.last_stance.replace(/_/g, ' ') : (r.note || '-'),
+    ]);
+    panel.append(fitTable(table(['Bloc', 'Faction', 'Leader', 'Status', 'Scout Envoy', 'Last Activity', 'Stance / Note'], prows)));
+  }
 
   panel.append(el('h3', null, 'Direct diplomatic hails -- received from & sent to players'));
   if (!(c.direct_in || []).length && !(c.sent_out || []).length) {
-    panel.append(el('p', 'empty', 'Zero human private hails received and zero outbound player messages sent so far (' + fmt(s.total_logged || 0) + ' total radio frames audited by inbox service). Any player DM or @CLTV mention will surface here immediately.'));
+    panel.append(el('p', 'empty', 'Zero human private hails received and zero outbound scout hails sent yet (' + fmt(s.total_logged || 0) + ' total radio frames audited by inbox service). Unity and Oracle scout hails and replies will appear here automatically.'));
   } else {
-    const drows = [];
-    for (const m of (c.sent_out || [])) {
-      drows.push([el('span', 'pill warn', 'SENT'), stampCet(m.t), (m.tag ? '[' + m.tag + '] ' : '') + m.sender, m.channel, m.text]);
-    }
-    for (const m of (c.direct_in || [])) {
-      drows.push([el('span', 'pill good', 'RECEIVED'), stampCet(m.t), (m.tag ? '[' + m.tag + '] ' : '') + m.sender, m.channel, m.text]);
-    }
-    panel.append(fitTable(table(['Dir', 'When', 'Pilot', 'Channel', 'Message'], drows)));
+    const merged = [
+      ...(c.sent_out || []).map((m) => ({ ...m, _dir: 'OUT' })),
+      ...(c.direct_in || []).map((m) => ({ ...m, _dir: 'IN' })),
+    ].sort((a, b) => String(b.t || '').localeCompare(String(a.t || '')));
+    const drows = merged.slice(0, 40).map((m) => {
+      const isOut = m._dir === 'OUT';
+      const dirEl = el('span', isOut ? 'pill warn' : (m.risk === 'quarantined' ? 'pill bad' : 'pill good'), isOut ? 'SENT' : (m.risk === 'quarantined' ? 'QUARANTINED' : 'RECEIVED'));
+      const party = isOut
+        ? (m.sender + (m.to ? ' -> ' + (m.tag ? '[' + m.tag + '] ' : '') + m.to : ''))
+        : ((m.tag ? '[' + m.tag + '] ' : '') + m.sender + (m.pilot ? ' -> ' + m.pilot : ''));
+      const meta = isOut ? (m.diplomat ? m.diplomat + ' / ' + m.channel : m.channel) : ((m.stance && m.stance !== 'none') ? m.stance.replace(/_/g, ' ') : m.channel);
+      return [dirEl, stampCet(m.t), party, meta, m.text];
+    });
+    panel.append(fitTable(table(['Dir', 'When', 'Thread', 'Stance / Channel', 'Message'], drows)));
   }
 
   panel.append(el('h3', null, 'Intercepted nearby pilot radio (' + (c.local_radio || []).length + ' newest)'));

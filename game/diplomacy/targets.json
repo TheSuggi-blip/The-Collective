@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "policy": "neutrality_max",
+  "scope": "Non-Aggression, Neutrality, and Information Sharing / Mutual Cooperation only. No formal in-game alliances (propose_ally/accept_ally) or war declarations without explicit Owner unlock.",
+  "blocs": [
+    {
+      "id": "hex-ironlight",
+      "name": "Hex-Ironlight Pact",
+      "targets": [
+        {"tag": "HEXC", "faction": "Hex Collective", "leader": "HexCogitoAI", "tier": "anchor"},
+        {"tag": "IRLC", "faction": "Ironlight Combine", "leader": "ILC Comptroller", "tier": "anchor"},
+        {"tag": "QTCG", "faction": "The Quiet Cartographers", "leader": "Drifter Gale", "tier": "partner"},
+        {"tag": "SLKV", "faction": "Silkroad Vanguard", "leader": "Vanguard_Ultron", "tier": "partner"}
+      ]
+    },
+    {
+      "id": "crafting-ysmt",
+      "name": "Crafting-YSMT Pact",
+      "targets": [
+        {"tag": "CRFT", "faction": "Crafting Collective", "leader": "craft_boss", "tier": "anchor"},
+        {"tag": "DB", "faction": "Data Bots", "leader": "databot", "tier": "anchor"},
+        {"tag": "YSMT", "faction": "You Sexy Mother Truckers", "leader": "smt_boss", "tier": "partner"},
+        {"tag": "HELP", "faction": "Shipside Assistance Helpers", "leader": "shipside_assist_nexus", "tier": "partner"},
+        {"tag": "XPLR", "faction": "Explorers Guild", "leader": "Atlas 'Astro' Anderson", "tier": "partner"}
+      ]
+    },
+    {
+      "id": "hive-olsv",
+      "name": "Hive-OLSV Swarm",
+      "targets": [
+        {"tag": "HIVE", "faction": "Hive Swarm", "leader": "hive leader", "tier": "anchor"},
+        {"tag": "OLSV", "faction": "Our Lord And Savior", "leader": "OLS Polaris", "tier": "anchor"},
+        {"tag": "VEIL", "faction": "The Veil", "leader": "Wight", "tier": "partner"}
+      ]
+    }
+  ]
+}

@@ -76,11 +76,14 @@ def hold_file(pilot):
 
 SPEAKS = {'chat', 'petition', 'set_status', 'forum_create_thread', 'forum_reply', 'forum_edit_thread', 'forum_edit_reply',
           'forum_delete_thread', 'forum_delete_reply', 'forum_upvote'}      # a word to other players
+RESERVED_DIPLO = {'propose_ally', 'accept_ally', 'declare_war', 'set_enemy'}  # closed under standing Neutrality-max doctrine (F4, O10)
 
 
 def forbidden(group, action):
-    """Why an Admiral's hand may not send this command; '' when it may."""
+    """Why a member's hand may not send this command; '' when it may."""
     kind, name = division.member()
+    if action in RESERVED_DIPLO and kind != 'service' and os.environ.get('SUGGI_DIPLO_UNLOCK') != '1':
+        return 'formal alliances and war declarations are closed under standing Neutrality-max doctrine (orders F4, O10): Suggi\'s explicit unlock is required'
     if kind == 'service' or name == 'Unity':
         return ''
     if group == 'spacemolt_auth':

@@ -369,7 +369,7 @@ class OrdersSizeTests(Tree):
         parts = {part: count for part, count, _limit, _name in comms.orders_words(comms.parse(text)[0][0])}
         self.assertEqual(parts, {"the `Changed:` line": comms.CHANGED_WORDS, "PLAN": comms.PLAN_WORDS,
                                  "block UNITY": comms.BLOCK_WORDS, "block ZERO": comms.BLOCK_WORDS})
-        self.assertEqual((comms.ENTRY_CHARS, comms.PLAN_WORDS, comms.BLOCK_WORDS, comms.CHANGED_WORDS), (8000, 150, 80, 60))
+        self.assertEqual((comms.ENTRY_CHARS, comms.PLAN_WORDS, comms.BLOCK_WORDS, comms.CHANGED_WORDS), (8500, 150, 80, 60))
 
     def test_each_part_over_its_limit_halts_alone_and_names_its_count(self):
         self.assertEqual(self.errors_for(self.entry(changed=comms.CHANGED_WORDS + 1)),
@@ -419,7 +419,7 @@ class OrdersSizeTests(Tree):
             self.skipTest("orders.log ENT-054 is not in this tree")
         self.write("orders", COMMENT + "\n".join([old[0]["head"]] + old[0]["body"]) + "\n")
         found = comms.check(str(self.root))
-        self.assertIn("orders.log ENT-054: the entry is 24,857 characters, more than ENTRY_CHARS 8,000", found)
+        self.assertIn("orders.log ENT-054: the entry is 24,857 characters, more than ENTRY_CHARS 8,500", found)
         self.assertIn("orders.log ENT-054: PLAN is 1,166 words, more than PLAN_WORDS 150", found)
         for member in ("UNITY", "ZERO", "MERCURY", "APOLLO", "APOPHIS", "ORACLE"):
             self.assertTrue(any(line.startswith("orders.log ENT-054: block %s is " % member) for line in found), member)

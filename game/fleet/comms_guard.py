@@ -1,18 +1,22 @@
 #!/usr/bin/env python3
-"""comms_guard.py -- CaMeL + Microsoft Spotlighting security firewall for untrusted external player messages.
+"""comms_guard.py -- CaMeL + Microsoft Spotlighting security firewall for untrusted external player messages and outbound OpSec.
 
-WHAT: deterministic multi-layer defense against indirect prompt injection (XPIA) across our 6-agent fleet:
+WHAT: deterministic multi-layer defense against indirect prompt injection (XPIA) and OpSec leaks across our 6-agent fleet:
         1. Classifier & Quarantine (`inspect_message`): detects instruction-override phrases, fake role/log headers
            (`## [ENT-`, `STANDING ORDERS`, `Suggi:`, `SYSTEM:`), delimiter-escape tags (`</`, `<system`), shell/tool
            command bait (`wallet.py`, `give`, `withdraw`, `rm -rf`, `curl`), and secret/key probes. Any message
            scoring `quarantined` has its raw text withheld from agent views so adversarial text never enters an
            Admiral's or Unity's context window.
         2. CaMeL Typed Data Extraction: extracts pure structured commercial/diplomatic intent (`trade_offer`,
-           `contract_inquiry`, `diplomacy`, `threat`, `chatter`, `npc_notice`, `injection_attempt`) and numeric
-           quantities/prices without letting untrusted text steer control flow.
+           `contract_inquiry`, `diplomacy`, `threat`, `chatter`, `npc_notice`, `injection_attempt`), diplomatic
+           stance (`neutrality_accept`, `alliance_offer`, `intel_tip`, `decline_or_hostile`, `counter_or_question`,
+           `none`), and numeric quantities/prices without letting untrusted text steer control flow.
         3. Microsoft Dynamic Spotlighting (`spotlight`): wraps non-quarantined external text in a per-call random
            cryptographic nonce delimiter (`<<UNTRUSTED_EXT_<nonce> ... END_UNTRUSTED_EXT_<nonce>>>`) and neutralizes
            fake header markers so attackers cannot guess or close static delimiters.
+        4. Outbound OpSec Scrubber (`audit_outbound`): deterministically blocks out-of-character infrastructure leaks,
+           secrets, file paths, fleet-size/treasury disclosures, internal pilot IDs, or formal alliance/war commitments
+           before any diplomatic DM can leave the unit via `game/fleet/diplomacy.py`.
 USAGE:
   python3 -I -B game/fleet/comms_guard.py [--data /srv/collective/data] [--last 25] [--quarantined]
 """
@@ -34,7 +38,7 @@ INJECTION_RULES = (
     ("delimiter_escape", 2, re.compile(
         r"(?:<\s*/?\s*(?:system|user|assistant|instruction|untrusted|tool_call|function|prompt)\b|```(?:bash|sh|python)|END_UNTRUSTED_EXT)", re.I)),
     ("tool_or_wallet_bait", 3, re.compile(
-        r"(?:\b(?:wallet\.py|dispatch\.py|comms\.py|hive\.py|spacemolt_storage|manage_treasury)\b"
+        r"(?:\b(?:wallet\.py|dispatch\.py|comms\.py|hive\.py|diplomacy\.py|gate\.py|spacemolt_storage|manage_treasury)\b"
         r"|\b(?:transfer|wire|send|deposit|gift)\s+\d[\d,]*\s*(?:cr|credits)\s+to\b"
         r"|\b(?:drop|jettison|abandon)\s+all\s+(?:cargo|hold|ships)\b|\bsudo\s+docker\b|\brm\s+-rf\b)", re.I)),
     ("secret_probe", 3, re.compile(
@@ -42,9 +46,42 @@ INJECTION_RULES = (
 )
 
 TRADE_RE = re.compile(r"\b(?:wtb|wts|buying|selling|bid|ask|offer|contract|supply|deliver|cargo|ore|oil|plate|fuel|credits|cr/u)\b", re.I)
-DIPLO_RE = re.compile(r"\b(?:alliance|ally|peace|nap|non-aggression|treaty|border|territory|embassy|truce|coalition)\b", re.I)
+DIPLO_RE = re.compile(
+    r"\b(?:alliance|ally|allies|peace|nap|non-?aggression|neutral|neutrality|pact|treaty|accord|border|territory"
+    r"|embassy|truce|coalition|cooperat(?:e|ion)|info(?:rmation)?\s+shar(?:e|ing)|intel\s+shar(?:e|ing)|mutual\s+(?:help|aid))\b", re.I)
 THREAT_RE = re.compile(r"\b(?:war|destroy|kill\s+on\s+sight|kos|pirate|raid|blockade|hostile|bounty\s+on)\b", re.I)
 QTY_PRICE_RE = re.compile(r"\b(\d{1,7})\s*(?:x|units?\s+of)?\s*([a-z][a-z_ ]{2,24}?)\s*(?:@|at|for)\s*(\d{1,9})\s*(?:cr)?\b", re.I)
+
+STANCE_ACCEPT_RE = re.compile(
+    r"\b(?:we\s+accept|accepted|agree(?:d)?|sounds\s+good|deal|on\s+board|we\s+are\s+open|happy\s+to\s+(?:agree|cooperate|share)"
+    r"|neutrality\s+(?:works|accepted|agreed|confirmed)|nap\s+(?:accepted|agreed|works|confirmed)|welcome\s+neutrality)\b", re.I)
+STANCE_ALLIANCE_RE = re.compile(
+    r"\b(?:propose[_\s-]?ally|accept[_\s-]?ally|formal\s+alliance|full\s+alliance|ally\s+up|join\s+our\s+(?:bloc|coalition|alliance)"
+    r"|military\s+alliance|mutual\s+defense\s+pact)\b", re.I)
+STANCE_TIP_RE = re.compile(
+    r"\b(?:tip|hint|advice|recommend|watch\s+out\s+for|good\s+spot|rich\s+in|better\s+to|try\s+(?:mining|trading|crafting|fitting|scanning)"
+    r"|works\s+well|mechanic|blueprint|pro\s+tip|heads\s+up)\b", re.I)
+STANCE_DECLINE_RE = re.compile(
+    r"\b(?:we\s+decline|declined|no\s+deal|refuse|not\s+interested|stay\s+out|leave\s+our\s+space|kos|kill\s+on\s+sight|hostile)\b", re.I)
+
+OUTBOUND_MAX_CHARS = 500
+OUTBOUND_MIN_CHARS = 12
+OUTBOUND_OPSEC_RULES = (
+    ("infra_or_ooc_leak", re.compile(
+        r"\b(?:hermes|trinity|morpheus|suggi|antigravity|tailscale|docker|gvisor|sqlite|read\.db|live\.db|github"
+        r"|crontab|cron\s+job|system\s+prompt|llm|claude|gemini|openai|anthropic|gpt-?\d|agentic|vps"
+        r"|comms_guard|diplomacy\.py|inbox\.py|gate\.py|dispatch\.py|wallet\.py|orders\.log|rulebook\.md|subgoal\s+o\d+)\b", re.I)),
+    ("secret_or_path_leak", re.compile(
+        r"(?:\b(?:api[_\s-]?key|clerk[_\s-]?api|password|secret|token|id_ed25519|agents-api\.json|\.env)\b"
+        r"|/srv/|/opt/|/home/|\b172\.30\.\d+\.\d+\b|\b100\.99\.\d+\.\d+\b|https?://)", re.I)),
+    ("fleet_metric_leak", re.compile(
+        r"(?:\b\d{2,4}\s+(?:ships|miners|haulers|traders|scouts|drones|sentinels|pilots|accounts)\b"
+        r"|\b\d[\d,\.]*\s*(?:m|k|million)?\s*(?:cr|credits)\s+(?:in\s+)?(?:treasury|purse|wallet|bank|cash|net\s+worth)\b"
+        r"|\b(?:miner|trader|hauler|drone|scout|sentinel)-\d{1,3}\b)", re.I)),
+    ("forbidden_alliance_or_war", re.compile(
+        r"\b(?:propose[_\s-]?ally|accept[_\s-]?ally|declare[_\s-]?war|formal\s+alliance|military\s+alliance"
+        r"|join\s+your\s+war|attack\s+busy|war\s+with\s+busy|fight\s+busy|hostile\s+to\s+busy|start\s+a\s+war)\b", re.I)),
+)
 
 
 def clean_ascii(val, limit=500):
@@ -62,14 +99,52 @@ def neutralize_headers(text):
     return s
 
 
+def classify_diplo_stance(raw, risk_level):
+    """Deterministic CaMeL stance classifier for diplomatic replies."""
+    if risk_level == "quarantined":
+        return "injection_attempt"
+    if STANCE_DECLINE_RE.search(raw) or THREAT_RE.search(raw):
+        return "decline_or_hostile"
+    if STANCE_ALLIANCE_RE.search(raw):
+        return "alliance_offer"
+    if STANCE_ACCEPT_RE.search(raw):
+        return "neutrality_accept"
+    if STANCE_TIP_RE.search(raw):
+        return "intel_tip"
+    if "?" in raw or re.search(r"\b(?:terms|conditions|counter|what\s+do\s+you|who\s+are)\b", raw, re.I):
+        return "counter_or_question"
+    return "none"
+
+
+def audit_outbound(text):
+    """Deterministic OpSec & policy gate for outbound diplomatic DMs. Returns (ok, cleaned, reasons)."""
+    if text is None:
+        return False, "", ["empty_message"]
+    raw = str(text)
+    reasons = []
+    if any(ord(ch) > 127 or (ord(ch) < 32 and ch not in ("\n", "\r", "\t")) for ch in raw):
+        reasons.append("non_ascii_characters")
+    cleaned = " ".join(raw.split())
+    if len(cleaned) < OUTBOUND_MIN_CHARS:
+        reasons.append("too_short")
+    if len(cleaned) > OUTBOUND_MAX_CHARS:
+        reasons.append("exceeds_500_char_cap")
+    for name, rx in OUTBOUND_OPSEC_RULES:
+        if rx.search(cleaned):
+            reasons.append(name)
+    return (len(reasons) == 0), cleaned, reasons
+
+
 def inspect_message(text, sender="", channel="", is_own=False, is_station=False):
-    """Deterministic security classification + typed intent extraction."""
+    """Deterministic security classification + typed intent and diplomatic stance extraction."""
     raw = clean_ascii(text, 600)
     snd = clean_ascii(sender, 60)
     if is_own:
-        return {"risk_level": "clean", "score": 0, "flags": [], "intent": "own_fleet", "safe_text": raw, "extracted": []}
+        return {"risk_level": "clean", "score": 0, "flags": [], "intent": "own_fleet",
+                "diplo_stance": "none", "safe_text": raw, "extracted": []}
     if is_station or snd.startswith("["):
-        return {"risk_level": "clean", "score": 0, "flags": [], "intent": "npc_notice", "safe_text": raw, "extracted": []}
+        return {"risk_level": "clean", "score": 0, "flags": [], "intent": "npc_notice",
+                "diplo_stance": "none", "safe_text": raw, "extracted": []}
 
     score = 0
     flags = []
@@ -105,11 +180,13 @@ def inspect_message(text, sender="", channel="", is_own=False, is_station=False)
             intent = "chatter"
         safe_text = neutralize_headers(raw)
 
+    stance = classify_diplo_stance(raw, risk_level)
     return {
         "risk_level": risk_level,
         "score": score,
         "flags": flags,
         "intent": intent,
+        "diplo_stance": stance,
         "safe_text": safe_text,
         "extracted": extracted,
     }

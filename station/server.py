@@ -1939,19 +1939,36 @@ def clean_ascii(val, limit=240):
     return s[:limit]
 
 
+def read_diplomacy_pacts():
+    """Read Neutrality Pact roster + live status snapshot from game/fleet/diplomacy.py."""
+    try:
+        import sys as _sys
+        if str(REPO / "game/fleet") not in _sys.path:
+            _sys.path.insert(0, str(REPO / "game/fleet"))
+        import diplomacy as _dp
+        return _dp.build_roster_snapshot(str(FLEET.parent), str(REPO))
+    except Exception:
+        return {"policy": "neutrality_max", "targets_total": 0, "sent_24h": 0, "cap_24h": 15, "envoys": [], "counts": {}, "rows": []}
+
+
 def read_comms_summary(our_pilots):
-    """Read /srv/collective/data/comms/messages.jsonl once per file change: separate real player hails,
-    outbound messages from our pilots, human local/system chatter, and NPC authority dispatches."""
+    """Read /srv/collective/data/comms/messages.jsonl + diplomacy ledger: separate real player hails,
+    outbound diplomatic scout hails, human local/system chatter, NPC dispatches, and Neutrality Pact status."""
     msg_path = FLEET.parent / "comms" / "messages.jsonl"
+    dip_path = FLEET.parent / "comms" / "diplomacy.json"
+    pacts = read_diplomacy_pacts()
     if not msg_path.is_file():
-        return {"summary": {"total_logged": 0, "direct_human_in": 0, "sent_by_us": 0, "local_human": 0, "npc_notices": 0},
-                "direct_in": [], "sent_out": [], "local_radio": [], "npc_notices": []}
+        return {"summary": {"total_logged": 0, "direct_human_in": 0, "sent_by_us": 0, "local_human": 0, "npc_notices": 0, "quarantined": 0},
+                "direct_in": [], "sent_out": [], "local_radio": [], "npc_notices": [], "pacts": pacts}
     st = msg_path.stat()
-    if COMMS_MEM["value"] is not None and COMMS_MEM["mtime"] == st.st_mtime and COMMS_MEM["size"] == st.st_size:
+    dip_mtime = dip_path.stat().st_mtime if dip_path.is_file() else 0.0
+    cache_key = (st.st_mtime, st.st_size, dip_mtime)
+    if COMMS_MEM["value"] is not None and COMMS_MEM.get("key") == cache_key:
         return COMMS_MEM["value"]
     direct_in, sent_out, local_radio, npc_notices = [], [], [], []
     seen_local = set()
     total = 0
+    quarantined = 0
     try:
         lines = msg_path.read_text(encoding="utf-8", errors="replace").splitlines()
     except OSError:
@@ -1973,7 +1990,10 @@ def read_comms_summary(our_pilots):
         sys_id = clean_ascii(m.get("system") or "", 40)
         poi = clean_ascii(m.get("poi") or "", 48)
         ts = clean_ascii(m.get("t") or m.get("seen_at") or "", 30)
-        msg_txt = clean_ascii(m.get("text") or "", 240)
+        to_who = clean_ascii(m.get("with") or "", 48)
+        via_pilot = clean_ascii(m.get("pilot") or "", 32)
+        diplomat = clean_ascii(m.get("diplomat") or "", 16)
+        msg_txt = clean_ascii(m.get("text") or "", 320)
         is_npc = (sid in ("salvage_authority",) or sid.startswith("npc_")
                   or snd.startswith("[CUSTOMS]") or snd.startswith("[POLICE]") or snd.startswith("[STATION]")
                   or snd in ("Galactic Salvage Authority", "Interstellar Revenue Service", "Shipyard Authority"))
@@ -1983,12 +2003,14 @@ def read_comms_summary(our_pilots):
                 _sys.path.insert(0, str(REPO / "game/fleet"))
             import comms_guard as _cg
             _g = _cg.inspect_message(msg_txt, snd, ch, bool(m.get("own") or snd in our_pilots), is_npc)
-            risk_lvl, intent_lbl = _g["risk_level"], _g["intent"]
+            risk_lvl, intent_lbl, stance_lbl = _g["risk_level"], _g["intent"], _g.get("diplo_stance", "none")
             if risk_lvl == "quarantined":
+                quarantined += 1
                 msg_txt = _g["safe_text"]
         except Exception:
-            risk_lvl, intent_lbl = "clean", "chatter"
-        row = {"t": ts, "channel": ch, "sender": snd, "tag": tag, "system": sys_id, "poi": poi, "text": msg_txt}
+            risk_lvl, intent_lbl, stance_lbl = "clean", "chatter", "none"
+        row = {"t": ts, "channel": ch, "sender": snd, "to": to_who, "pilot": via_pilot, "diplomat": diplomat,
+               "tag": tag, "system": sys_id, "poi": poi, "risk": risk_lvl, "intent": intent_lbl, "stance": stance_lbl, "text": msg_txt}
         if m.get("own") or snd in our_pilots:
             if ch != "faction":
                 sent_out.append(row)
@@ -2014,13 +2036,15 @@ def read_comms_summary(our_pilots):
             "sent_by_us": len(sent_out),
             "local_human": len(local_radio),
             "npc_notices": len(npc_notices),
+            "quarantined": quarantined,
         },
         "direct_in": direct_in[:30],
         "sent_out": sent_out[:30],
         "local_radio": local_radio[:40],
         "npc_notices": npc_notices[:25],
+        "pacts": pacts,
     }
-    COMMS_MEM.update(mtime=st.st_mtime, size=st.st_size, value=res)
+    COMMS_MEM.update(mtime=st.st_mtime, size=st.st_size, key=cache_key, value=res)
     return res
 
 
