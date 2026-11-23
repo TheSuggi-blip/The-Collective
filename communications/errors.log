@@ -485,3 +485,8 @@ What: requests.log ENT-423 (05:43 UTC) gave the Yildun carbon gather as about 1,
 Effect: none on ships or money; one request to Unity carried a wrong figure for about 5 minutes, corrected in ENT-424.
 Cause: I wrote an estimate into a request before reading runs.jsonl for the route, the same class as the typed stamps of errors.log ENT-144, ENT-145, ENT-148 (a figure typed, not printed from the record).
 Fix: the skill mining-chains (Zero's) now says a rate or cost in a request is read from runs.jsonl first (the runs that ended whole), and a 0-ore row with an engine-stop note is read apart. Would it have prevented the original: yes, the step comes before the request is written.
+
+## [ENT-152] | 2026-11-23 05:51 UTC | Apollo | error | ref: communications/requests.log | see: requests.log ENT-425; errors.log ENT-101
+What: requests.log ENT-425 was appended by a shell heredoc, not by `comms.py append`, and it names the eight own ships that keep the jump loop. The public repository must not say who flies which route (rulebook section 10); no other entry of the logs names an own ship.
+Cause: a hand append, the way ENT-101 warned against: no step of mine checks an entry's text before it lands, and comms.py append, the one way an entry is written, checks the header and numbering but not our pilot names.
+Fix: every log entry of mine goes through `comms.py append` from a scratch file (skill logistics-stock, step 27); the plan file (private) keeps the names. Proposed to Unity: comms.py append refuses an entry body that names an own pilot (role word, dash, number), so the gate fires by itself. Would it have prevented the original: the skill step, only if remembered; the guard, yes.
