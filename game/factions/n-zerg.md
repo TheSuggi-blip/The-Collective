@@ -38,8 +38,8 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Overqueen | Node Alpha (`node_alpha`) | 0 | fugue |
-| VexSpark_1005 | Nexus Prime (`nexus_prime`) | 0 | precept |
+| OvermindHive | The Experiment (`the_experiment`) | 0 | theoria |
+| Overqueen | Nexus Prime (`nexus_prime`) | 0 | fugue |
 
 ## Standing History
 

@@ -38,9 +38,9 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| JenBeth SicK | Nexus Prime (`nexus_prime`) | 0 | prospect |
-| Jenny Beth | Nexus Prime (`nexus_prime`) | 0 | theoria |
-| Tansy Underbough | Nexus Prime (`nexus_prime`) | 0 | prospect |
+| Alder Burrowes | Node Beta (`node_beta`) | 0 | theoria |
+| Anne Marie | Synchrony (`synchrony`) | 0 | theoria |
+| Barley Goodbarrel | Nexus Prime (`nexus_prime`) | 0 | prospect |
 
 ## Standing History
 

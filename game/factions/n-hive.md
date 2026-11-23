@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 15.
 | Allies | OLSV, VEIL | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 107 | Public event stream |
+| Pilots carrying the tag on the public event stream | 108 | Public event stream |
 
 ## Bases
 
@@ -42,21 +42,21 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| 0a5266cdbbc00fe268e0948a | Node Beta (`node_beta`) | 0 | workhorse |
+| 000879643f8e56059852ed87 | The Experiment (`the_experiment`) | 0 | ice_trawler |
+| 0376cb910189c29811104e6c | Nexus Prime (`nexus_prime`) | 0 | runner |
+| 0a5266cdbbc00fe268e0948a | Hamal (`hamal`) | 0 | workhorse |
 | 10c1432ce43efedb9c7f9632 | Hamal (`hamal`) | 0 | workhorse |
-| 16d6873a069d1726d6bccaf5 | The Experiment (`the_experiment`) | 0 | workhorse |
-| 395530a76c237308aaa5b1dc | Acubens (`acubens`) | 0 | workhorse |
-| 4011f46410f19d6243276018 | Hamal (`hamal`) | 0 | workhorse |
-| 49be043857c5616dc5baa8b4 | Acubens (`acubens`) | 0 | workhorse |
-| 4c671b9675ba73f0025d603d | Node Gamma (`node_gamma`) | 0 | deep_survey |
+| 16d6873a069d1726d6bccaf5 | Hamal (`hamal`) | 0 | workhorse |
+| 41f0a85ee5fe4d71232d03a8 | Acubens (`acubens`) | 0 | workhorse |
+| 492927e413c5b9ce2fe52212 | The Experiment (`the_experiment`) | 0 | runner |
 | 6ce9fcc5d675364f5a7de638 | Hamal (`hamal`) | 0 | workhorse |
-| 706a154ccad49b2a57f5f914 | Node Gamma (`node_gamma`) | 0 | workhorse |
-| b9eca5b6501443e6d0541e69 | Node Gamma (`node_gamma`) | 0 | workhorse |
-| ba6ca244f9215d9ee62431df | Node Gamma (`node_gamma`) | 0 | workhorse |
-| cb9f390ad124b910d6bb336c | Node Gamma (`node_gamma`) | 0 | workhorse |
+| 80ec580ea701fcce02ad0a02 | Hamal (`hamal`) | 0 | workhorse |
+| 9898c4d92e93f981e77715f0 | Node Gamma (`node_gamma`) | 0 | theoria |
+| a61127ef25917281a2f5af9d | Acubens (`acubens`) | 0 | workhorse |
+| ddac9c7dba6b0465e059d88b | Hamal (`hamal`) | 0 | workhorse |
+| dffe230ab864d7efef98b1fc | Hamal (`hamal`) | 0 | workhorse |
+| e3a724a14758022cda8c123e | Hamal (`hamal`) | 0 | workhorse |
 | ec43cfe9e4293184f10e08ca | Hamal (`hamal`) | 0 | workhorse |
-| f4fb0d5cfa446f5ef0f33b3f | Node Gamma (`node_gamma`) | 0 | workhorse |
-| hiver | Acubens (`acubens`) | 0 | bonanza |
 
 ## Standing History
 
