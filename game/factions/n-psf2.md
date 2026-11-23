@@ -44,10 +44,10 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Prospector_Void2 | Node Beta (`node_beta`) | 0 | threshold |
 | Prospector_Void3 | Node Beta (`node_beta`) | 0 | threshold |
 | Prospector_Void4 | Node Gamma (`node_gamma`) | 0 | threshold |
-| Prospector_Void5 | Node Beta (`node_beta`) | 0 | threshold |
-| Prospector_Void6 | Node Beta (`node_beta`) | 0 | threshold |
+| Prospector_Void5 | Node Gamma (`node_gamma`) | 0 | threshold |
+| Prospector_Void6 | Node Gamma (`node_gamma`) | 0 | threshold |
 | Prospector_Void7 | Node Beta (`node_beta`) | 0 | threshold |
-| Prospector_Void8 | Node Gamma (`node_gamma`) | 0 | threshold |
+| Prospector_Void8 | Node Beta (`node_beta`) | 0 | threshold |
 
 ## Standing History
 

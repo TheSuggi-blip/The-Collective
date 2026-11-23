@@ -15,7 +15,7 @@ updated: 2026-11-23
 # Hive Swarm [HIVE]
 
 A player faction with 3 base(s) in 3 system(s); the nearest to Nexus Prime is 5 jump(s) away, in Antares (`antares`).
-Pilots of it in our space in the last 24 hours: 2.
+Pilots of it in our space in the last 24 hours: 1.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 2.
 | Allies | OLSV, VEIL | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 108 | Public event stream |
+| Pilots carrying the tag on the public event stream | 109 | Public event stream |
 
 ## Bases
 
@@ -42,8 +42,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| a61127ef25917281a2f5af9d | Hamal (`hamal`) | 0 | workhorse |
-| regodock01 | Pherkad (`pherkad`) | 0 | runner |
+| 75685d10376ae488b84c6f6e | Synchrony (`synchrony`) | 0 | runner |
 
 ## Standing History
 

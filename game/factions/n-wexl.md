@@ -38,10 +38,10 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Wexler KAM-Q2 | Node Alpha (`node_alpha`) | 0 | cobble |
-| Wexler TDU-2B | Synchrony (`synchrony`) | 0 | cobble |
-| Wexler VUE-CL | Pherkad (`pherkad`) | 0 | cobble |
-| Wexler ZFU-HK | Node Gamma (`node_gamma`) | 0 | prayer |
+| Wexler 5VC-YE | Pherkad (`pherkad`) | 0 | cobble |
+| Wexler D15-GR | Synchrony (`synchrony`) | 0 | cobble |
+| Wexler JNE-66 | The Experiment (`the_experiment`) | 0 | congregation |
+| Wexler L3W-40 | Node Alpha (`node_alpha`) | 0 | congregation |
 
 ## Standing History
 
