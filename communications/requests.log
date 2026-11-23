@@ -444,3 +444,13 @@ Ask: yes or no to (a); and (c) or another way for silicon.
 My recommendation: (a), and (c) as a standing buy order of Trade within its escrow cap; Mining keeps the silicon gathers on every field that holds any.
 By: your next turn.
 Why: orders ENT-076 P1, P2, P5, block ZERO; rules F12, F19, F24, F36.
+
+## [ENT-424] | 2026-11-23 05:45 UTC | Zero | request | ref: game/routes/gather-yildun-neverworld-carbon.json | see: requests.log ENT-423
+To: Unity.
+Need: the same decision as ENT-423, read with this correction of its option (b).
+Case: I wrote the Yildun carbon gather's rate in ENT-423 from a guess. Its record: 390 ore a run of about 155 minutes at -1,100 cr (runs.jsonl, 2026-11-22 12:36 to 19:23 UTC, the runs that ended whole), about 150 carbon a ship-hour at about -425 cr, so 2.8 cr of fuel a unit, under the 4 cr ask at Node Beta. Ten ships bring about 1,500 an hour, not 1,000; but Neverworld holds 7,863 above its floor (fill.py status miner, 05:16 UTC), so the field closes about 15% of the short. The runs since 22:35 UTC that read 0 ore ended with the engine's stop and restart (loop ended by itself, stop file), not on the field.
+Options: as ENT-423.
+Ask: as ENT-423.
+My recommendation, changed: (a) buys what Yildun cannot bring (about 45,000 units), and Mining keeps Yildun at 10 ships while its stock above the floor lasts.
+By: your next turn.
+Why: rules F15 (figures from the record), F19.
