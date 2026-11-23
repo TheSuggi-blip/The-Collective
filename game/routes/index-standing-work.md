@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 387.
+Routes: 388.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -396,6 +396,7 @@ Routes: 387.
 | [gather-khambalia-crystal-market-train](gather-khambalia-crystal-market-train.json) | mine | beyond the border, 23 jumps | A test: Mining-skill work for Nebula-born miners: ore of Khambalia Crystal Market into storage at Factory Belt Manufacturing Hub (one jump) | up to 1 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [gather-lacaille-deep-vein-train](gather-lacaille-deep-vein-train.json) | mine | beyond the border, 9 jumps | A test: Mining-skill work for Solarian-born miners: ore of Lacaille 9352 Deep Vein into storage at Nova Terra Central (one jump) | up to 1 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [gather-last-light-mineral-carbon](gather-last-light-mineral-carbon.json) | mine | beyond the border, 15 jumps | A test: carbon ore (with the aluminum and tungsten of the field) gathered at Last Light Mineral Fields into storage at Ramen's Rest, in the same system | up to 1 ships, empty hold, standing work | 7 | 122 | -300 | -180 | 2026-11-22 |
+| [gather-markab-alloy-seam-train](gather-markab-alloy-seam-train.json) | mine | beyond the border, 9 jumps | A test: Mining-skill work for Solarian-born miners: ore of Markab Alloy Seam into storage at Procyon Colonial Station (one jump) | up to 1 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [gather-okab-belt](gather-okab-belt.json) | mine | beyond the border, 4 jumps | Standing work, a test: iron and copper ore at Okab Belt (beyond the border, one jump past Hamal) into storage at Node Beta, where the craft-piping route makes them into steel plate and copper piping | up to 42 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [gather-ruchbah-broken-glass-veil](gather-ruchbah-broken-glass-veil.json) | mine | beyond the border, 4 jumps | Standing work, a test: iron at Ruchbah Broken Glass Veil (beyond the border, one jump from The Experiment) into storage at The Experiment | up to 6 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [gather-schedar-belt](gather-schedar-belt.json) | mine | beyond the border, 2 jumps | Standing work, a test: iron at Schedar Belt (beyond the border, one jump from Node Beta) into storage at Node Beta | up to 45 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
