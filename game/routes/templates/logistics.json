@@ -66,16 +66,13 @@
     "mission-who-buys-old-charts-frontier",
     "mission-the-proposal-frontier",
     "mission-debris-field-reports-frontier",
-    "mission-frontier-wayfinder-circuit-frontier",
-    "mission-shipyard-titanium-alloy-deep-range",
-    "mission-shipyard-engine-core-deep-range",
-    "mission-shipyard-fuel-tank-deep-range"
+    "mission-frontier-wayfinder-circuit-frontier"
    ],
    "trains": [
     "piloting",
     "exploration"
    ],
-   "note": "2026-11-23 00:07 UTC Apollo: the 30 Outer Rim-born haulers start at Frontier Station; the shared once routes of its board, each capped by its own test (F37); no buy (the newborns hold 100 to 25,000 cr, the runner buys nothing under 3,000)"
+   "note": "2026-11-23 19:08 UTC Apollo: the three Deep Range shipyard procurement routes left the template: Shipyard Supply: Titanium Alloy bought twice (24,364 cr each) and not offered at Deep Range (runs 17:53 and 18:10 UTC); Fuel Tank and Engine Core rest at a loss. The bought alloy is reserve stock (titanium_alloy short)."
   },
   "newborn-nebula": {
    "title": "Nebula-born haulers: the once missions of Grand Exchange, their home board (orders ENT-068 P6)",
