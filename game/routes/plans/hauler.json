@@ -74,6 +74,7 @@
   "craft-steel-logistics-synchrony-hub",
   "craft-steel-logistics-central-nexus",
   "craft-piping-plate-node-beta",
+  "join-sol-hauler",
   "train-jumps-hauler",
   "park"
  ],
@@ -175,6 +176,7 @@
   "craft-steel-logistics-synchrony-hub": 40,
   "craft-steel-logistics-central-nexus": 40,
   "craft-piping-plate-node-beta": 40,
+  "join-sol-hauler": 8,
   "train-jumps-hauler": 8,
   "park": 95
  },
