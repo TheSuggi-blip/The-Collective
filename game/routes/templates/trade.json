@@ -77,6 +77,13 @@
     "craft-armor-own-central-nexus",
     "craft-armor-own-first-step",
     "craft-armor-own-synchrony",
+    "craft-armor-own-nova-terra",
+    "craft-armor-own-sirius",
+    "craft-biogas-own-node-beta",
+    "craft-biogas-own-central-nexus",
+    "craft-biogas-own-experiment",
+    "craft-biogas-own-synchrony",
+    "craft-biogas-own-first-step",
     "craft-neon-own-node-beta",
     "craft-neon-own-node-gamma",
     "craft-neon-own-nova-terra",
@@ -93,6 +100,7 @@
     "craft-steel-own-node-beta",
     "craft-steel-own-experiment",
     "craft-steel-own-central-nexus",
+    "craft-steel-own-synchrony",
     "craft-steel-node-beta",
     "craft-steel-central-nexus",
     "craft-steel-synchrony-hub"
@@ -101,7 +109,7 @@
     "crafting",
     "refining"
    ],
-   "note": "2026-11-22 (Mercury, orders ENT-063 P1 and P5): docked crafting trains Crafting at no fuel; armor plate is short for the reserve and the hunts hand Trade's receivers about 1,900 carapace an hour (data/stock/handover.jsonl, 09:37-11:37 UTC). Piping and wiring out: the reserve holds 35,484 piping for 26,400 asked and 11,480 wiring for 266 (the tool stock, view=reserve, 11:34 UTC; rule F36)."
+   "note": "2026-11-23 00:20 UTC (Mercury, orders ENT-068 block MERCURY): docked crafts from own stores before the jump loop: armor plate from carapace (reserve open), fuel cells from biogas (the reserve keeps them whole), ionized neon and liquid hydrogen (no reserve good), steel from small iron stacks (min 20). Nitrogen crafts stand closed at liquid nitrogen's max."
   },
   "trade-train-nav": {
    "title": "Navigation trained to 3 on a loop of our five stations, for Signal Fragments (7,000 cr once)",
