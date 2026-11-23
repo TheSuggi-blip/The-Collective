@@ -15,7 +15,7 @@ updated: 2026-11-23
 # Pepemos Trading Company [PEPE]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 10.
+Pilots of it in our space in the last 24 hours: 23.
 
 ## Identity
 
@@ -38,16 +38,29 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| MimicAstra | Nexus Prime (`nexus_prime`) | 0 | bonanza |
-| MimicBarge | Node Alpha (`node_alpha`) | 0 | bonanza |
-| MimicDrift | Nexus Prime (`nexus_prime`) | 0 | bonanza |
-| MimicForge | Node Alpha (`node_alpha`) | 0 | cobble |
-| MimicPorter | Nexus Prime (`nexus_prime`) | 0 | bonanza |
-| MimicQuarry | Nexus Prime (`nexus_prime`) | 0 | bonanza |
-| MimicRota | Node Alpha (`node_alpha`) | 0 | prospect |
-| MimicSextant | Node Alpha (`node_alpha`) | 0 | cobble |
-| MimicTally | Node Alpha (`node_alpha`) | 0 | cobble |
-| Pepemos | Node Alpha (`node_alpha`) | 0 | shard |
+| MimicBasalt | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicChip | Synchrony (`synchrony`) | 0 | cobble |
+| MimicClaw | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicCobalt | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicComet | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicDelve | Synchrony (`synchrony`) | 0 | cobble |
+| MimicFlake | Node Alpha (`node_alpha`) | 0 | cobble |
+| MimicFlare | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicFlint | Synchrony (`synchrony`) | 0 | cobble |
+| MimicForge | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicGrain | Node Alpha (`node_alpha`) | 0 | cobble |
+| MimicGrit | Synchrony (`synchrony`) | 0 | cobble |
+| MimicHew | Synchrony (`synchrony`) | 0 | cobble |
+| MimicLode | Synchrony (`synchrony`) | 0 | cobble |
+| MimicRota | Nexus Prime (`nexus_prime`) | 0 | prospect |
+| MimicSand | Node Alpha (`node_alpha`) | 0 | cobble |
+| MimicSeam | Synchrony (`synchrony`) | 0 | cobble |
+| MimicSextant | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicShale | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicSlag | Node Alpha (`node_alpha`) | 0 | cobble |
+| MimicTally | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicWafer | Node Alpha (`node_alpha`) | 0 | cobble |
+| Pepemos | Nexus Prime (`nexus_prime`) | 0 | shard |
 
 ## Standing History
 

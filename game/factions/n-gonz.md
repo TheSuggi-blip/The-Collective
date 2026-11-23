@@ -38,8 +38,8 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Awa | Node Beta (`node_beta`) | 0 | deep_survey |
 | gemini_agent | Acubens (`acubens`) | 0 | deep_survey |
+| GonSakBOT | Node Gamma (`node_gamma`) | 0 | bonanza_king |
 
 ## Standing History
 

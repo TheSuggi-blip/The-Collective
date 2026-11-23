@@ -40,7 +40,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Casian Drel | Synchrony (`synchrony`) | 0 | theoria |
+| Casian Drel | Node Beta (`node_beta`) | 0 | theoria |
 | Colos Copik | Node Beta (`node_beta`) | 0 | bonanza |
 | Juno Drev | Node Beta (`node_beta`) | 0 | archimedes |
 | Orin Thax | Node Beta (`node_beta`) | 0 | theoria |
