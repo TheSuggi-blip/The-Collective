@@ -1,0 +1,44 @@
+{
+ "id": "mission-first-hunt-ironhearth",
+ "kind": "circuit",
+ "title": "First Hunt: Belt-Grazers: 1,000 cr once; three belt_grazer at frostfeld_thermal_vent, accepted and handed in at Ironhearth Station",
+ "note": "Written by Apophis 2026-11-23 00:14 UTC for the newborn Crimson pilots of Military (orders ENT-068, P6: their empire's missions first, rule F34: hunts are Military's). Board of Ironhearth Station read in table missions this turn: 'First Hunt: Belt-Grazers', 1,000 cr once, objective 'Hunt 3 Belt-Grazers at an asteroid belt'. Herd by the census in table herds; two animals left (F38). A test of three results (F37); one at a place.",
+ "once": true,
+ "max_ships": 1,
+ "one_time": [
+  "First Hunt: Belt-Grazers"
+ ],
+ "skip_if_booked": [
+  "First Hunt: Belt-Grazers"
+ ],
+ "stops": [
+  {
+   "at": "ironhearth:ironhearth_station:ironhearth_station",
+   "accept": [
+    "first_hunt_belt_grazers"
+   ],
+   "hunt": [
+    {
+     "at": "frostfeld:frostfeld_thermal_vent",
+     "species": [
+      "belt_grazer"
+     ],
+     "kills": 3,
+     "minutes": 35,
+     "for": [
+      "First Hunt: Belt-Grazers"
+     ],
+     "alone": "pirates",
+     "min_creatures": 5
+    }
+   ]
+  },
+  {
+   "at": "ironhearth:ironhearth_station:ironhearth_station",
+   "store": "all"
+  }
+ ],
+ "requires": {
+  "empty_hold": true
+ }
+}

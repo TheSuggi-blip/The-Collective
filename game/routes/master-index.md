@@ -17,21 +17,21 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 
 | Group | What it holds | Routes | Home space | Beyond the border | Best measured |
 |---|---|---|---|---|---|
-| [Once per Pilot](index-once-per-pilot.md) | Missions and rewards the game pays once per pilot: a new pilot's first work, and seed money. | 59 | 23 | 36 | voidborn-conductive-lattice: 7,580 cr a run |
+| [Once per Pilot](index-once-per-pilot.md) | Missions and rewards the game pays once per pilot: a new pilot's first work, and seed money. | 64 | 23 | 41 | voidborn-conductive-lattice: 7,580 cr a run |
 | [Paying Routes](index-paying-routes.md) | Work that repeats and whose runs of the last 12 hours measured above zero. | 25 | 14 | 11 | sell-loot-at-nexus: 258,470 cr per ship-hour |
 | [Tests](index-tests.md) | Work that repeats and has no measured figure: new, or no readable run in the last 12 hours. One ship until its first RESULT line is read. | 136 | 38 | 98 | not measured yet |
 | [Fitting](index-fitting.md) | A module bought and fitted: the tool a kind of work needs. | 16 | 11 | 5 | fit-ice-harvester-lhs-1140: -4,320 cr per ship-hour |
-| [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 371 | 101 | 270 | hunt-ancha-haze-halo-drifter: 2,370 cr per ship-hour |
+| [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 386 | 101 | 285 | hunt-ancha-haze-halo-drifter: 2,370 cr per ship-hour |
 | [Measured at a Loss](index-measured-at-a-loss.md) | Work that repeats and whose runs of the last 12 hours measured zero or below. | 9 | 4 | 5 | mine-dheneb-cryobelt: -160 cr per ship-hour |
 | [Off](index-off.md) | Written down, not flown. | 46 | 20 | 26 | voidborn-first-steps: 4,020 cr per ship-hour |
-| All | | 662 | 211 | 451 | |
+| All | | 682 | 211 | 471 | |
 
 ## Routes by Zone and Kind
 
 | Zone | Routes | census | circuit | guard | hunt | mine | Farthest system, jumps from home |
 |---|---|---|---|---|---|---|---|
 | home space | 211 | 1 | 180 | 1 | 16 | 13 | 3 |
-| beyond the border | 451 | 23 | 100 | 7 | 223 | 98 | 29 |
+| beyond the border | 471 | 23 | 105 | 7 | 238 | 98 | 29 |
 
 ## Plans by Role
 

@@ -1,0 +1,23 @@
+{
+ "id": "hunt-ironhearth-ice-ring-rime-grazer",
+ "kind": "hunt",
+ "title": "rime_grazer, pressblister at ironhearth_ice_ring; loot to the trader at War Citadel (newborn region work)",
+ "note": "Written by Apophis 2026-11-23 00:14 UTC for the newborn pilots of Military (orders ENT-068, P6: their class's work where they were born; the dispatcher sends a pilot of another empire no further than 6 jumps, dispatch.FOREIGN_REACH). Herd by the census in table herds read this turn; two animals are left (rule F38: kills = count - 2, min_creatures = kills + 2). One hunter to the place. Loot to the trader receiver at War Citadel (strict classes, P5). A test of three results (F37).",
+ "place": "ironhearth:ironhearth_ice_ring",
+ "species": [
+  "rime_grazer",
+  "pressblister"
+ ],
+ "sell_at": "krynn:war_citadel:crimson_war_citadel",
+ "min_bid": 50,
+ "kills": 5,
+ "minutes": 40,
+ "max_ships": 1,
+ "min_creatures": 7,
+ "alone": "pirates",
+ "requires": {
+  "empty_hold": true
+ },
+ "gift_to": "trader",
+ "standing": true
+}
