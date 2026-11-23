@@ -1,0 +1,19 @@
+{
+ "id": "join-krynn-trader",
+ "kind": "circuit",
+ "title": "A trader whose Solarian once line is booked joins the Crimson corridor: one trip to the War Citadel, where Krynn's once missions open to it",
+ "note": "Written by Mercury, 2026-11-23 10:44 UTC (orders ENT-081, block MERCURY: far_ok to the main corridors, no trader waits docked; rules F3, F8, F34 tier 4, F37). After the Solarian corridor (join-sol-trader) the traders it served wait at Alpha Centauri and Sol (fill.py check 10:42 UTC: 40 waiting). Krynn's board pays our Voidborn-born pilots once: Last Known Position 8,000 (6 of 6 paid) and Strategic Readiness Assessment 2,500 to 4,000 (5 of 8 paid; table runs, 24 h to 10:43 UTC). Road: Alpha Centauri to Krynn 20 jumps (scripts/map.py route), twelve lawless (bluerift to albireo): 0 pirates in 32 to 134 readings of each over 24 h (data/intel/sightings.jsonl), no public battle there (table public_battles). Rule F3: one ship first, hold empty; fill.py widens to lift_to after its runs hold.",
+ "far_ok": true,
+ "once": true,
+ "max_ships": 1,
+ "lift_to": 10,
+ "requires": {
+  "empty_hold": true
+ },
+ "stops": [
+  {
+   "at": "krynn:war_citadel:crimson_war_citadel",
+   "store": "all"
+  }
+ ]
+}
