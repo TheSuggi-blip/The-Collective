@@ -479,3 +479,9 @@ What: five Outer Rim scouts stood docked 14 to 17 jumps from their capital Altai
 Cause: census.py ended every census that docked nowhere (a foreign station answering `Access denied`, or a system without a station) at its fixed HOME, Central Nexus, even under --stay; for a newborn of another empire that is across the galaxy, and there the guard leaves it no work.
 Fix: census.py end_stop (5ae15927): with --stay, docked nowhere ends at the nearest station with fuel (test EndTests). For the ships already far: home-frontier-station (3f83d8ee), one stop at Frontier Station with far_ok and an empty hold, last in the Rim rows; 5 scouts took it, fill.py check PASS 05:24:22 UTC.
 Would the fix have prevented the original: yes for every census flown with --stay (all dispatch census runs); a census without --stay still ends at Central Nexus (a HOME per empire is proposed in the report).
+
+## [ENT-151] | 2026-11-23 05:50 UTC | Zero | error | ref: communications/requests.log | see: requests.log ENT-423, ENT-424
+What: requests.log ENT-423 (05:43 UTC) gave the Yildun carbon gather as about 1,000 units an hour for 10 ships and about 50 hours to close the short; the runs give about 150 a ship-hour (390 ore a run of about 155 minutes at -1,100 cr), so about 1,500 an hour and a field that closes only about 15% of the short.
+Effect: none on ships or money; one request to Unity carried a wrong figure for about 5 minutes, corrected in ENT-424.
+Cause: I wrote an estimate into a request before reading runs.jsonl for the route, the same class as the typed stamps of errors.log ENT-144, ENT-145, ENT-148 (a figure typed, not printed from the record).
+Fix: the skill mining-chains (Zero's) now says a rate or cost in a request is read from runs.jsonl first (the runs that ended whole), and a 0-ore row with an engine-stop note is read apart. Would it have prevented the original: yes, the step comes before the request is written.
