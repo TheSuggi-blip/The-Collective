@@ -2,7 +2,7 @@
  "id": "gather-lacaille-deep-vein-train",
  "kind": "mine",
  "title": "A test: Mining-skill work for Solarian-born miners: ore of Lacaille 9352 Deep Vein into storage at Nova Terra Central (one jump)",
- "note": "Written by Zero, 2026-11-22 23:16 UTC (orders ENT-068, P6 and O1, O2; rules F22, F23, F37). The Solarian home region is mined out by other players: Sol Main Belt 2 iron of 100,000, Nova Terra Industrial Belt 0 of every ore, the carbon belts within 3 jumps under 230 units (table fields, 23:10 UTC), and none of the reserve's short goods (silicon, uranium, thorium, nickel) lies within 8 jumps of Sol. The Sol region's bids for iron and copper read none to 7 cr (table books, 23:05 UTC). So this is class-skill work, not a sale: the Mining skill (1 XP a unit) at the least fuel, one jump each way, the ore kept in storage for a Solarian base or a bid that comes. Lacaille 9352 Deep Vein read 21,271 copper and 4,791 iron of 100,000 each, richness 33 and 30, Solarian policed space (census 10.9 h old). min_left copper 10,000 keeps a floor. One ship, 30 minutes, until its first RESULT line (F37: three results); then its Admiral lifts it. 2026-11-22 23:23 UTC (Zero): lift_to 6, so fill.py widens it on what the field carries while the newborns wait; the Mining skill it trains is also the likely gate of Deep Core Prospecting (5,000 cr once), which the boards did not offer at Mining 0. 2026-11-23 00:46 UTC (fill.py, Unity): max_ships 1 -> 6.",
+ "note": "Written by Zero, 2026-11-22 23:16 UTC (orders ENT-068, P6 and O1, O2; rules F22, F23, F37). The Solarian home region is mined out by other players: Sol Main Belt 2 iron of 100,000, Nova Terra Industrial Belt 0 of every ore, the carbon belts within 3 jumps under 230 units (table fields, 23:10 UTC), and none of the reserve's short goods (silicon, uranium, thorium, nickel) lies within 8 jumps of Sol. The Sol region's bids for iron and copper read none to 7 cr (table books, 23:05 UTC). So this is class-skill work, not a sale: the Mining skill (1 XP a unit) at the least fuel, one jump each way, the ore kept in storage for a Solarian base or a bid that comes. Lacaille 9352 Deep Vein read 21,271 copper and 4,791 iron of 100,000 each, richness 33 and 30, Solarian policed space (census 10.9 h old). min_left copper 10,000 keeps a floor. One ship, 30 minutes, until its first RESULT line (F37: three results); then its Admiral lifts it. 2026-11-22 23:23 UTC (Zero): lift_to 6, so fill.py widens it on what the field carries while the newborns wait; the Mining skill it trains is also the likely gate of Deep Core Prospecting (5,000 cr once), which the boards did not offer at Mining 0. 2026-11-23 00:46 UTC (fill.py, Unity): max_ships 1 -> 6. 2026-11-23 03:06 UTC (Zero): requires.empire solarian; kept at 6: 10,316 above its floor and no regrowth read (fill.py status 03:03 UTC).",
  "belt": "lacaille_9352:lacaille_9352_deep_vein",
  "station": "nova_terra:nova_terra_central:nova_terra_central",
  "minutes": 30,
@@ -12,7 +12,8 @@
   "copper_ore": 10000
  },
  "requires": {
-  "empty_hold": true
+  "empty_hold": true,
+  "empire": "solarian"
  },
  "lift_to": 6,
  "measured": {
