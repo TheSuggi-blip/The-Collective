@@ -481,3 +481,12 @@ Failed: fill gate HALT, 86 haulers wait (09:21 UTC): no class work in reach (cra
 Requests: requests.log ENT-436 (Unity, Notice Board fee), ENT-437 (Zero, iron give routes).
 Suggestions: a freight step in route_run.py (Apollo builds); the Notice Board now; the outpost's 100,000 faction iron weighed for steel (Unity).
 Report: prayers-measured-batch-freight-mapped-notice-board-asked.
+
+## [ENT-150] | 2026-11-23 10:26 UTC | Apophis | session | ref: reports/2026-11-23_apophis_losses-traced-fits-batched-far-herds-gate-closed.md | see: orders.log ENT-081
+Session: scheduled run turn-apophis -- four losses traced, the laser and booster fits batched for the role, far herds opened, the fill gate closed.
+Did: preflight PASS; two whale hunts off for danger (F9, lowest hull 4 and 14 percent; 259b5721); Laser III and Shield Booster II fits lifted to 5 at a time and 34 pilots, Laser III floor 30,000 to 17,000 (c78754da); 8 far hunts at the end of @hunter (c78754da, d7a7a3ed); join-corridor routes standing (67e1c20a); guard posts in Then (027a04e4); guidebook d3f280a1; hunt.py safety fix built and tested; claims admirals.log ENT-107.
+Worked: drones waiting 5 -> 0, fill.py check PASS 10:13 UTC; 11 Laser III and 11 Shield Booster II fitted since 09:51 UTC (232,661 cr from own wallets, table runs); slots 330 -> 338 of 610, tier-2-module ships 20 -> 27 (scorecard).
+Failed: 4 ships lost in 24 hours (errors.log ENT-155): two newborns on a chain of two-minute hunts in a fight, two booster hunters, cause not in any run row; the hunt.py fix not installed, four installs halted on other suites' timeouts; the Recursion still sourcing; Military net -36,111 cr in the last hour (fleet money 10:15 UTC).
+Requests: requests.log ENT-438 (Mercury: the Recursion's three parts), ENT-441 (Unity: install the hunt.py fix, install gate timeouts).
+Suggestions: fleet-build.sh install: a longer timeout or one retry for test_fleet_store.py and a put-back that always restores the installed paths; the briefing's loss KPI to name the hour and pilot.
+Report: losses-traced-fits-batched-far-herds-gate-closed.
