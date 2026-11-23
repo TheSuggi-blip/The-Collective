@@ -65,4 +65,4 @@ Append-only, newest last.
 
 ## Notes
 
-None.
+- Ranch at Aspidiske (`aspidiske`, beside its outpost Copperbelt Range): its grazers carry the tag in their name, "[HEXC] Patina-Grazer" (our hunt run 2026-11-23 16:44 to 16:51 UTC; observation kind ranch, subject aspidiske). When a drone of ours killed one, the HEXC pilot VoltBot2 (Opus Magna hull) joined the battle on the creature's side and destroyed the drone at 16:51:27 UTC (public_battles, pvp). Since commit 930c5cfd hunt.py never takes a creature carrying another faction's tag (admirals.log ENT-110).
