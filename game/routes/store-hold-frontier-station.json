@@ -1,0 +1,18 @@
+{
+ "id": "store-hold-frontier-station",
+ "kind": "circuit",
+ "title": "A ship a run left loaded docks at Frontier Station, Altais, and stores its hold",
+ "note": "Written by Oracle, 2026-11-23 03:58 UTC (orders.log ENT-071, P6; rule F8). At 03:19 UTC six Outer Rim scouts at Altais waited with 20 fuel cells aboard, a once mission's reward (one more scout held 20 fuel cells after its Who Buys Old Charts run, 03:46 UTC; where the cells come from is not read yet), so every census of theirs, which wants an empty hold, was closed to them (fill.py status: hold not empty). The third time a hold idled scouts (LEARNINGS.md 2026-11-16 twice). One stop, store all, at the newborns' capital Altais (Frontier Station): the goods go into the pilot's own storage there. Standing work at the head of the newborns' rows; a ship that carries nothing passes it by. The same as store-hold-central-nexus and Zero's store-hold-grand-exchange (Mining, 2026-11-23); requires.empire outerrim keeps every other pilot off it.",
+ "standing": true,
+ "max_ships": 12,
+ "requires": {
+  "hold": true,
+  "empire": "outerrim"
+ },
+ "stops": [
+  {
+   "at": "altais:mobile_capital:frontier_station",
+   "store": "all"
+  }
+ ]
+}
