@@ -63,12 +63,13 @@ Board missions of the hauler's class (rule F34: deliveries, crafting, station ne
 - Not flown: Procyon Station Upgrade (10 boards for 1,960 cr; boards are reserve); the smuggling deliveries of Central Nexus, 20 to 42 jumps.
 
 ### Missions That Pay Once
-Status: proven. Updated: 2026-11-21. Evidence: RESULT lines and routes.py measure, 2026-11-15 23:28 UTC to 2026-11-16 13:03 UTC; requests.log ENT-071, ENT-149.
+Status: proven. Updated: 2026-11-23. Evidence: RESULT lines and routes.py measure, 2026-11-15 23:28 UTC to 2026-11-16 13:03 UTC; requests.log ENT-071, ENT-149; mission-market-participation-frontier RESULT 2026-11-23 00:21 UTC.
 
 The Voidborn missions each new pilot flies once (list First):
 - `voidborn-signal-protocol` (3,500 cr): needs The Collective Provides.
 - `voidborn-hardware-cargo` (1,500) and `voidborn-atmospheric-extraction` (2,000): a Cargo Expander I or a Gas Harvester I held in the HOLD at the hand-in (`have_item`): a fitted module does not count (four runs, -4,216 cr, ENT-149): hand in first, fit after (`handin_module.py`).
 - `voidborn-resonance-finish` (about 15,000 less 15 energy crystals bought at Central Nexus).
-- `voidborn-precedence` (4,000: Node Beta, Synchrony Hub, Node Alpha), `voidborn-selling` (1,000: ten units sold), `voidborn-first-hunt-nexus` (1,000, 50 Weapons XP: three belt-grazers with the Pulse Laser I), `voidborn-first-steps` (1,000: 15 carbon at Acubens Belt).
+- `voidborn-precedence` (4,000: Node Beta, Synchrony Hub, Node Alpha), `voidborn-selling` (1,000: ten units sold), `voidborn-first-hunt-nexus` (1,000, 50 Weapons XP: three belt-grazers with the Pulse Laser I), `voidborn-first-steps-board` (1,000: 15 carbon at Acubens Belt, taken from the Central Nexus board).
 - `voidborn-concurrent` (3,000) and `voidborn-substrate`: the soma they need are handed over at the accept, so nothing is bought; Crystal Delivery hands nothing: read the hold after an accept.
 - `voidborn-missions-1` (Synchrony Relay Run and Crystal Delivery, 8 jumps), `voidborn-mining-missions` (1,500 and 1,800).
+- Haulers born in another empire fly their home board's once missions, never the Voidborn ones (rule F35): templates `@newborn-rim` (Frontier Station) and `@newborn-nebula` (Grand Exchange). `mission-market-participation-frontier` and `-grand`: Buying and Selling, 1,000 cr each, ten copper ore bought and sold back (first run +1,960 cr in 1 minute); `min_credits` 3,200, since the runner buys nothing under 3,000.
