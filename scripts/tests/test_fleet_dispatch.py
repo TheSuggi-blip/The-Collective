@@ -1097,6 +1097,22 @@ if __name__ == "__main__":
     unittest.main()
 
 
+class DockedAtTests(Tree):
+    """requests ENT-447 (Oracle), ENT-448 (Zero): the fleet file names the station a ship is docked at in `docked`
+    (a string, empty in space) and carries no `base`; requires.docked_at matched no pilot."""
+
+    def test_a_pilot_docked_by_the_fleet_file_passes_docked_at_its_station_only(self):
+        pilot = self.dispatch.pilot_of({"name": "scout-1", "docked": "central_nexus", "system": "nexus_prime"}, {}, str(self.data), set())
+        self.assertEqual((pilot["docked"], pilot["base"]), (True, "central_nexus"))
+        desk = {"id": "watch", "kind": "circuit", "stops": [{"at": "nexus_prime:a:central_nexus"}], "requires": {"docked_at": "central_nexus"}}
+        pilot.update(role="scout", credits=20000, modules=[], skills={})
+        self.assertIsNone(self.dispatch.why_not(pilot, "watch", desk, self.state())[0])
+        other = dict(desk, requires={"docked_at": "ramens_rest"})
+        self.assertEqual(self.dispatch.why_not(pilot, "watch", other, self.state())[0], "not docked at ramens_rest")
+        away = self.dispatch.pilot_of({"name": "scout-2", "docked": "", "system": "nexus_prime"}, {}, str(self.data), set())
+        self.assertEqual((away["docked"], away["base"]), (False, ""))
+
+
 class TurnT2130Tests(Tree):
     """The turn of 2026-11-17 21:30 UTC: a once run its field left short is no try (Mining ENT-096); a heavy pirate
     pack closes its system a day (requests ENT-250); a mine route may store into the faction's storage."""

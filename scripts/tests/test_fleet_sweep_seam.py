@@ -70,6 +70,17 @@ class SweepSeamTests(unittest.TestCase):
         self.books(gifts, [dict(SWEPT, at=g["at"], credits=g["credits"], **{"from": name, "text": text}) for g in gifts])
         self.assertEqual(self.routes.earned(run), 17686)
 
+    def test_a_gift_kept_unsure_that_landed_in_the_run_is_taken_out_of_it(self):
+        # requests ENT-456 (Mercury): trader-10's train-jumps-trader run of 11:31:33 UTC, 14.8 minutes, read -63,397 cr; the
+        # relay's gift of 63,282 cr to the leader at 11:44:08 UTC landed (moves.jsonl) but wallet.py kept it unsure (0 cr)
+        gift = {"at": 1795434248, "from": "trader-10", "to": "Prime Directive", "credits": 0, "unsure": 63282}
+        run = {"route": "train-jumps-trader", "kind": "circuit", "pilot": "trader-10", "started": "2026-11-23T11:31:33Z", "minutes": 14.8,
+               "credits_before": 113282, "credits_after": 49885, "delta": -63397, "one_time": 0, "notes": []}
+        self.books([gift], [])
+        self.assertEqual((self.routes.moved(run), self.routes.earned(run)), (63282, -115))
+        flat = dict(run, credits_after=113167, delta=-115)                                              # a gift that did not land: nothing taken
+        self.assertEqual((self.routes.moved(flat), self.routes.earned(flat)), (0, -115))
+
     def test_without_the_sweep_s_row_or_with_another_wallet_the_seam_rule_stays_as_it_was(self):
         self.books([GIFT], [])
         self.assertEqual(self.routes.moved(HUNT), 0)                                                     # no row: the old test of the seam

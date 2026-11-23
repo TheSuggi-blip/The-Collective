@@ -306,7 +306,7 @@ class WatchdogTests(unittest.TestCase):
             con.executescript(
                 """
                 CREATE TABLE ships (pilot TEXT, division TEXT, role TEXT, class TEXT, status TEXT, activity TEXT, flies TEXT, credits INTEGER, t INTEGER);
-                CREATE TABLE runs (pilot TEXT, route TEXT, kind TEXT, t INTEGER, minutes REAL, credits REAL);
+                CREATE TABLE runs (pilot TEXT, route TEXT, kind TEXT, t INTEGER, minutes REAL, credits REAL, one_time REAL);
                 CREATE TABLE faction (treasury INTEGER, member_count INTEGER, members_limit INTEGER, owned_bases INTEGER);
                 CREATE TABLE faction_facilities (id TEXT);
                 CREATE TABLE places (system TEXT, poi TEXT);
@@ -320,7 +320,7 @@ class WatchdogTests(unittest.TestCase):
             con.execute("INSERT INTO ships VALUES ('trader-1','trade','trader','Threshold','active','docked','bad-loop',55000,?)", (int(now - 10),))
             con.execute("INSERT INTO ships VALUES ('miner-1','mining','miner','Prospect','active','mining','mine-iron',40000,?)", (int(now - 12),))
             for i in range(5):
-                con.execute("INSERT INTO runs VALUES ('trader-1','bad-loop','circuit',?,0.4,0.0)", (int(now - 600 + i * 60),))
+                con.execute("INSERT INTO runs VALUES ('trader-1','bad-loop','circuit',?,0.4,0.0,0.0)", (int(now - 600 + i * 60),))
             con.execute("INSERT INTO faction VALUES (2500000, 99, 100, 2)")
             con.execute("INSERT INTO faction_facilities VALUES ('fac-1')")
             con.execute("INSERT INTO places VALUES ('SYS-1','POI-1')")

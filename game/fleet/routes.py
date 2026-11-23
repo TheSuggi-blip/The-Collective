@@ -870,7 +870,7 @@ PLAYER = re.compile(r'"player":\{[^{}]*?"username":"([^"]*)"[^{}]*?"credits":(-?
 
 def gifts(data=None):
     """[(epoch, giver, taker, credits, loose)] of the wallet guard's top-ups (wallet.py: data/fleet/gifts.jsonl); loose:
-    the row's time is not the gift's own to the second. The file lies beside the tax record, so what points that
+    the row's time is not the gift's own to the second, or the gift was kept unsure (credits 0, its sum in `unsure`). The file lies beside the tax record, so what points that
     record elsewhere (FLEET_TAXES, a test) points this one there too."""
     path = Path(taxes.record_file(data)).with_name("gifts.jsonl")
     try:
@@ -888,6 +888,12 @@ def gifts(data=None):
                     except ValueError:
                         continue
                     if isinstance(row, dict) and all(isinstance(row.get(key), (int, float)) and not isinstance(row.get(key), bool) for key in ("at", "credits")):
+                        doubt = row.get("unsure")
+                        if not row["credits"] and isinstance(doubt, (int, float)) and not isinstance(doubt, bool) and doubt > 0:
+                            # kept unsure by wallet.py (its answer and the wallets did not show it): a loose candidate, taken
+                            # out of a run only where the run's change shows it (requests ENT-456: 63,282 cr read as a loss)
+                            rows.append((row["at"], str(row.get("from") or ""), str(row.get("to") or ""), doubt, True))
+                            continue
                         rows.append((row["at"], str(row.get("from") or ""), str(row.get("to") or ""), row["credits"], bool(row.get("loose"))))
         except OSError:
             return []

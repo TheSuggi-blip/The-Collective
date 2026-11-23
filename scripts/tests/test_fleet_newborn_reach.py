@@ -45,6 +45,16 @@ class NewbornReachTests(unittest.TestCase):
         self.assertIsNone(dispatch.newborn_reason(pilot("nebula", "sol"), FAR_STANDING["id"], FAR_STANDING))
         self.assertIsNone(dispatch.newborn_reason(pilot("solarian", "sol"), FAR_STANDING["id"], FAR_STANDING))
 
+    def test_a_once_mission_in_the_pilot_s_own_empire_is_open_however_far_it_stands(self):
+        # 2026-11-23 14:00 UTC: 36 haulers born nebula and outerrim docked at Alpha Centauri (solarian) after its once
+        # missions, every mission of their own empire 11 to 20 jumps away closed by the reach fence: they could not go home
+        saved = dispatch.LANES_CACHE.get("empires")
+        dispatch.LANES_CACHE["empires"] = {"home": "nebula", "sol": "solarian", "sirius": "solarian"}
+        self.addCleanup(dispatch.LANES_CACHE.__setitem__, "empires", saved)
+        self.assertIsNone(dispatch.newborn_reason(pilot("nebula", "sol"), FAR_ONCE["id"], FAR_ONCE))         # home work, 8 jumps
+        self.assertIn("jumps", dispatch.newborn_reason(pilot("solarian", "sol"), FAR_ONCE["id"], FAR_ONCE))  # another empire's: fenced
+        self.assertIn("jumps", dispatch.newborn_reason(pilot("outerrim", "sol"), FAR_ONCE["id"], FAR_ONCE))
+
     def test_a_voidborn_pilot_far_from_home_is_judged_as_before(self):
         self.assertIsNone(dispatch.newborn_reason(pilot("voidborn", "sol"), FAR_ONCE["id"], FAR_ONCE))
         self.assertIsNone(dispatch.newborn_reason(pilot(None, "sol"), FAR_ONCE["id"], FAR_ONCE))

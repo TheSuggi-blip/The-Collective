@@ -51,6 +51,24 @@ class LocateTests(unittest.TestCase):
             (Path(tmp) / "station" / "stations.json").write_text("not json", encoding="ascii")
             self.assertEqual(mobile.locate("frontier", "mobile_capital", "frontier_station", tmp), ("frontier", "mobile_capital", ""))
 
+    def test_station_arrived_before_its_census_is_followed_by_name(self):
+        # the station list names the new system; that system's census predates the arrival; an older census named its poi
+        with tempfile.TemporaryDirectory() as tmp:
+            world(Path(tmp), [dict(CAPITAL, system="distant_light")], {"altais": ALTAIS, "distant_light": [{"id": "rigel_minor_star"}]})
+            system, poi, line = mobile.locate("altais", "mobile_capital", "frontier_station", tmp)
+            self.assertEqual((system, poi), ("distant_light", "mobile_capital"))
+            self.assertIn("distant_light:mobile_capital", line)
+
+    def test_station_by_name_needs_a_census_that_named_its_poi(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            world(Path(tmp), [dict(CAPITAL, system="distant_light")], {"distant_light": [{"id": "rigel_minor_star"}]})
+            self.assertEqual(mobile.locate("altais", "mobile_capital", "frontier_station", tmp), ("altais", "mobile_capital", ""))
+
+    def test_base_whose_id_is_no_station_name_is_unchanged(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            world(Path(tmp), [dict(CAPITAL, system="distant_light")], {"altais": ALTAIS})
+            self.assertEqual(mobile.locate("altais", "mobile_capital", "a1b2c3", tmp), ("altais", "mobile_capital", ""))
+
     def test_wrecked_mobile_station_is_not_followed(self):
         with tempfile.TemporaryDirectory() as tmp:
             world(Path(tmp), [dict(CAPITAL, wrecked=True)], {"altais": ALTAIS})

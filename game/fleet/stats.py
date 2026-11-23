@@ -83,6 +83,7 @@ import retention                                  # noqa: E402  r22: how long st
 HOUR, DAY = 3600, 86400
 TIME_EVERY = 600               # seconds between two samples of where the ships are (stats_time)
 FIGURES_EVERY = 600            # seconds between two computations of the figures (the heavy part: about 2 s)
+SETTLE = 30 * 60                                   # seconds after an hour's end in which bookings still land in it (taxes, rewards)
 KEEP = {"stats_time": 30, "stats_pilot_hour": 8}     # days a sample table keeps; stats_money_hour, stats_supply_hour: retention.py RETAIN
 WINDOWS = (1, 6, 24, 72)       # hours of the kpi
 MIN_N = 24                     # hours of history an alert needs; a rate from fewer events says so
@@ -336,14 +337,18 @@ def money_rows(rule, piece, records, hour, now, treasury):
 
 
 def sample_money(conn, data, root, now):
-    """Every whole hour history.json spans and stats_money_hour lacks (a backfill on the first run): its rows."""
+    """Every whole hour history.json spans and stats_money_hour lacks (a backfill on the first run): its rows; an hour
+    written less than SETTLE after its end is written once more after that (2026-11-23: the weekly tax of 12:57 UTC was
+    booked at 13:07 UTC, after the 12:00 UTC hour was written, and that hour read -932,716 cr steady net)."""
     history = read_json(Path(data) / "fleet" / "history.json", [])
     history = [h for h in history if isinstance(h, list) and len(h) >= 8 and isinstance(h[0], (int, float))] if isinstance(history, list) else []
     if len(history) < 2:
         return 0
     done = {h for (h,) in conn.execute("SELECT DISTINCT hour FROM stats_money_hour")}
+    early = {h for (h,) in conn.execute("SELECT DISTINCT hour FROM stats_money_hour WHERE division = 'Fleet' AND t < hour + ? AND ? >= hour + ?",
+                                         (HOUR + SETTLE, int(now), HOUR + SETTLE))}
     last = int(history[-1][0]) // HOUR * HOUR
-    todo = [h for h in range(int(history[0][0]) // HOUR * HOUR, last, HOUR) if h not in done and h + HOUR <= history[-1][0]]
+    todo = [h for h in range(int(history[0][0]) // HOUR * HOUR, last, HOUR) if (h not in done or h in early) and h + HOUR <= history[-1][0]]
     if not todo:
         return 0
     rule = collector(root)

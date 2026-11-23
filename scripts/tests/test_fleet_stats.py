@@ -121,6 +121,23 @@ class StatsTests(unittest.TestCase):
         self.assertEqual(got["n"], 2)
         self.assertIsNone(stats.hour_slice(history, T0 + 5 * H))                           # no samples: no hour
 
+    def test_an_hour_written_before_its_bookings_settled_is_written_once_more(self):
+        # 2026-11-23: the weekly tax of 12:57 UTC was booked at 13:07 UTC, after the 12:00 UTC hour was written (13:00:36);
+        # the hour read -932,716 cr steady net for good and fired the alert and the trend
+        history = []
+        for n in range(14):
+            t = T0 - 60 + n * 600
+            credits, earned = 50_000 + 1_000 * n, 2_000 * n
+            history.append([t, credits, 2, earned, 0, 0, 0, {"Mining": [2, credits, earned, 0, 0, 0]}, {"w": [2, 0, 0]}])
+        (self.data / "fleet" / "history.json").write_text(json.dumps(history))
+        self.assertEqual(stats.sample_money(self.conn, str(self.data), str(ROOT), T0 + H + 120), 4)
+        first = self.conn.execute("SELECT t FROM stats_money_hour WHERE division = 'Fleet' AND hour = ?", (T0,)).fetchone()[0]
+        self.assertEqual(stats.sample_money(self.conn, str(self.data), str(ROOT), T0 + H + 600), 0)    # not settled yet: kept
+        self.assertEqual(stats.sample_money(self.conn, str(self.data), str(ROOT), T0 + 3 * H), 4)      # settled: written once more
+        again = self.conn.execute("SELECT t FROM stats_money_hour WHERE division = 'Fleet' AND hour = ?", (T0,)).fetchone()[0]
+        self.assertEqual((first, again), (T0 + H + 120, T0 + 3 * H))
+        self.assertEqual(stats.sample_money(self.conn, str(self.data), str(ROOT), T0 + 4 * H), 0)      # and never again
+
     def test_a_fleet_with_no_ship_is_computed_and_every_view_says_not_measured(self):
         read = self.data / "store" / "read.db"
         conn = sqlite3.connect(str(read), isolation_level=None)

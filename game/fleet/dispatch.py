@@ -662,7 +662,8 @@ def newborn_reason(pilot, rid, route):
     generalized to all 5 empires, rule F35; standing-work corridor unlock, Suggi 2026-11-23).
     1. An empire-prefixed mission (`<empire>-*`) belongs strictly to pilots born in that empire (rule F35: permanent
        Empire Mastery trains only from own-empire missions).
-    2. Foreign `once` missions > FOREIGN_REACH jumps away wait for regional work unless `far_ok` is set.
+    2. Foreign `once` missions > FOREIGN_REACH jumps away wait for regional work unless `far_ok` is set; a mission in
+       the pilot's own empire is never foreign (a pilot that left its region for once work may always go home).
     3. Standing non-`once` class work (gather, craft, sell, buy, fit, haul, hunt, supply, standing circuits) flows
        automatically by plan order so newborns finish local home work first and then seamlessly join main Collective
        corridors without idling on manual `far_ok` stamps."""
@@ -686,6 +687,8 @@ def newborn_reason(pilot, rid, route):
     place = route_place(route)
     if not place:
         return None
+    if system_empires().get(place, "") == empire:
+        return None                             # its own empire's work is home work, however far the pilot stands (2026-11-23)
     reach = jumps_between(LANES_CACHE["lanes"], pilot["system"], place)
     if reach is not None and reach > FOREIGN_REACH:
         return "%d jumps from the pilot, born %s: work in its own region first (`far_ok` lifts it)" % (reach, empire)
@@ -1118,7 +1121,8 @@ def pilot_of(ship, named, data, ammo):
     detail = read_json(Path(data) / "fleet" / "ships" / ship_file(name), {})
     return {"name": name, "role": role_of(name, named), "credits": ship.get("credits", 0), "docked": bool(ship.get("docked")),
             "empire": ship.get("empire") or detail.get("empire"), "system": ship.get("system") or detail.get("system"),
-            "base": ship.get("base") or detail.get("base") or detail.get("docked_at") or "",
+            "base": ship.get("base") or detail.get("base") or detail.get("docked_at")
+            or (ship.get("docked") if isinstance(ship.get("docked"), str) else "") or "",     # requests ENT-447/448: fleet.json names the station in `docked`
             "hull": ship.get("class") or detail.get("class") or detail.get("ship_class") or "",
             "hull_tier": int(ship.get("tier") if ship.get("tier") is not None else (detail.get("tier") or 0)),
             "speed": int(ship.get("speed") or detail.get("speed") or 0),
