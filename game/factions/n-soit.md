@@ -9,13 +9,13 @@ faction: Soit
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-22
+updated: 2026-11-23
 ---
 
 # Soit [SOIT]
 
 A player faction with 1 base(s) in 1 system(s); the nearest to Nexus Prime is 24 jump(s) away, in Longshore (`longshore`).
-Pilots of it in our space in the last 24 hours: 5.
+Pilots of it in our space in the last 24 hours: 4.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 5.
 | Allies | AURC, NVPT, OKLM, SGC., SOLS | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 8 | Public event stream |
+| Pilots carrying the tag on the public event stream | 7 | Public event stream |
 
 ## Bases
 
@@ -40,8 +40,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| BipBip | Node Alpha (`node_alpha`) | 0 | prospect |
-| Casian Drel | Node Beta (`node_beta`) | 0 | theoria |
+| Casian Drel | Synchrony (`synchrony`) | 0 | theoria |
 | Colos Copik | Node Beta (`node_beta`) | 0 | bonanza |
 | Juno Drev | Node Beta (`node_beta`) | 0 | archimedes |
 | Orin Thax | Node Beta (`node_beta`) | 0 | theoria |

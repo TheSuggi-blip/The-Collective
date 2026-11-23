@@ -9,13 +9,13 @@ faction: End of Line
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-22
+updated: 2026-11-23
 ---
 
 # End of Line [ENDL]
 
 A player faction with 8 base(s) in 8 system(s); the nearest to Nexus Prime is 8 jump(s) away, in GSC-0040 (`gsc_0040`).
-Pilots of it in our space in the last 24 hours: 1.
+Pilots of it in our space in the last 24 hours: 6.
 
 ## Identity
 
@@ -47,7 +47,12 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| BenjaminFranklin | Node Alpha (`node_alpha`) | 0 | junk_convoy |
+| Bootstrap | Node Gamma (`node_gamma`) | 180 | shard |
+| CombatDummy5 | Node Beta (`node_beta`) | 1 | junk_convoy |
+| JasonBourne | Node Gamma (`node_gamma`) | 0 | junk_convoy |
+| MasterChief | Node Alpha (`node_alpha`) | 149 | frankenhauler |
+| RobotDevil | Nexus Prime (`nexus_prime`) | 0 | junk_convoy |
+| SantaClaus | The Experiment (`the_experiment`) | 0 | archimedes |
 
 ## Standing History
 

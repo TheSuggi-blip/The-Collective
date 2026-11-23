@@ -9,13 +9,13 @@ faction: Pepemos Trading Company
 standing: neutral
 standing_since: 2026-11-16
 threat: unknown
-updated: 2026-11-22
+updated: 2026-11-23
 ---
 
 # Pepemos Trading Company [PEPE]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 8.
+Pilots of it in our space in the last 24 hours: 10.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 8.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 52 | Public event stream |
+| Pilots carrying the tag on the public event stream | 51 | Public event stream |
 
 ## Bases
 
@@ -38,14 +38,16 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
+| MimicAstra | Nexus Prime (`nexus_prime`) | 0 | bonanza |
 | MimicBarge | Node Alpha (`node_alpha`) | 0 | bonanza |
-| MimicFlake | Synchrony (`synchrony`) | 0 | cobble |
-| MimicFrost | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| MimicGrain | Synchrony (`synchrony`) | 0 | cobble |
-| MimicSand | Synchrony (`synchrony`) | 0 | cobble |
-| MimicSlag | Synchrony (`synchrony`) | 0 | cobble |
-| MimicVent | Nexus Prime (`nexus_prime`) | 0 | cobble |
-| MimicWafer | Synchrony (`synchrony`) | 0 | cobble |
+| MimicDrift | Nexus Prime (`nexus_prime`) | 0 | bonanza |
+| MimicForge | Node Alpha (`node_alpha`) | 0 | cobble |
+| MimicPorter | Nexus Prime (`nexus_prime`) | 0 | bonanza |
+| MimicQuarry | Nexus Prime (`nexus_prime`) | 0 | bonanza |
+| MimicRota | Node Alpha (`node_alpha`) | 0 | prospect |
+| MimicSextant | Node Alpha (`node_alpha`) | 0 | cobble |
+| MimicTally | Node Alpha (`node_alpha`) | 0 | cobble |
+| Pepemos | Node Alpha (`node_alpha`) | 0 | shard |
 
 ## Standing History
 

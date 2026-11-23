@@ -9,7 +9,7 @@ faction: The Veil
 standing: neutral
 standing_since: 2026-11-22
 threat: unknown
-updated: 2026-11-22
+updated: 2026-11-23
 ---
 
 # The Veil [VEIL]
@@ -38,7 +38,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Wraith | The Experiment (`the_experiment`) | 0 | meridian_freighter |
+| Wight | Pherkad (`pherkad`) | 0 | junk_convoy |
 
 ## Standing History
 
