@@ -4,7 +4,8 @@
 Status: proven. Updated: 2026-11-23. Evidence: the plan file (tool plan, show); hive.py briefing (MY STANDING FLEET); fill.py check; workclass.py sales; intel turn check (WORKED, SITES, WATCH, ROADS, UNFLOWN).
 
 - First, every scout: store-hold-central-nexus, give-scout-stores-*
-  (requires.strict: open when strict classes go on), the missions paid
+  (requires.strict: open when strict classes go on), the Survey Scanner
+  II fit (one scanner scout, a test: tests.md), the missions paid
   once and the Voidborn chain (F34, F35); the Sol audit last (paid 24
   of 25). No census in First or Then: a census is open to a pilot of
   another empire wherever it reads (dispatch.newborn_reason).
@@ -29,10 +30,9 @@ Status: proven. Updated: 2026-11-23. Evidence: the plan file (tool plan, show); 
 - census-roads (960 min, four ships): two readers take it first. The
   census cut: no never-read system left, nobody works there (F8 watch).
 - Then: park alone.
-- Capacity: the home-side lists ask more reads than the Voidborn scouts
+- Capacity: the home lists ask more reads than the Voidborn scouts
   give; a newborn region keeps fewer readers busy than it has newborns
-  (an estimate from its cadence and a read's minutes; fill.py names
-  the rest).
+  (fill.py names the rest).
 - Changed by: a WORKED, SITES or FRESH HALT, a pirate on a road, a once
   mission in queue.log; why a route is closed: fill.py.
 

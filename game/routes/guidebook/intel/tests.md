@@ -24,30 +24,33 @@ Status: test. Updated: 2026-11-21. Evidence: admirals.log ENT-063; reports/2026-
 - Open: the ranking is named again on the reads since 2026-11-21.
 
 ### Uranium, thorium and seam glass
-Status: test. Updated: 2026-11-21. Evidence: intel turn check LEADS; tables fields; catalog items (uranium_ore, rad harvester).
+Status: test. Updated: 2026-11-23. Evidence: tables fields, stats_refill (kind field), books (asks); intel turn check LEADS; requests.log ENT-435, ENT-443.
 
-- Our six books bid for uranium ore and none sells it (LEADS); every
-  deposit read stood at 0 of 5,000 but Markeb Belt (38, 19 jumps), and
-  Acubens Belt showed no regrowth over twelve reads in six hours
-  (2026-11-17). Thorium: a few hundred units at GSC-0032. Seam glass: no
-  field read holds it. Uranium and thorium are mined with a Rad
-  Harvester, carried by none of ours.
-- After the 90-hour pause Acubens and Stillwater still read 0 of 5,000
-  (2026-11-21): no regrowth seen. Open: the far deposits (Markeb,
-  HD 20794, Khambalia, Mirfak), read 2026-11-17, wait on the far lists.
+- Every uranium and thorium deposit read stands at or near 0 of its
+  max (7 each, 2 to 26 jumps); they come back at under 1 unit an hour
+  and others take them as fast (stats_refill: Acubens 20 recovery
+  events in 178 hours). Uranium: no ask in any book we read; our books
+  bid for it (LEADS). Thorium: asks at Grand Exchange and Ironlight
+  Crossroads. Silicon over 2,000 units: Emberglow only (19 jumps).
+- A short ore is answered from the fields and from the asks: the
+  books (table books) name a seller where no field has units.
+- Seam glass: no field read holds it. Uranium and thorium are mined
+  with a Rad Harvester, carried by none of ours.
+- Open: a hidden deposit behind the faint signatures (next entry).
 
 ### Survey beyond the border
-Status: test. Updated: 2026-11-21. Evidence: scouting/<system>.json `survey`; wildlife/history.jsonl `surveyed`; observations kind survey.
+Status: test. Updated: 2026-11-23. Evidence: scouting/<system>.json `survey`; route fit-survey-scanner-ii-central-nexus; craftbook.py item survey_scanner_ii.
 
-- Survey Scanner I (survey power 30) revealed no hidden deposit in 52
-  surveys; Homam and The Telescope answered "1 faint signature(s) that
-  your scanner cannot resolve".
-- Next: a probe step in census.py (use_item mining_survey_probe, +30
-  survey power for 10 ticks, then survey_system) on a route that names
-  it, one scanner scout at Homam first; or Survey Scanner II.
-- From 2026-11-21 the six scanner scouts fly the far lists first: the
-  far systems were never surveyed. Their finds (scouting/<system>.json
-  `survey`, faint signatures, deposits) decide the need survey-scanner-i.
+- Survey Scanner I (survey power 30) revealed no hidden deposit; 20
+  systems answer "1 faint signature(s) that your scanner cannot
+  resolve" (Hamal, 3 jumps, the nearest; 2026-11-22 to 23).
+- Under test (2026-11-23): one scanner scout fits a Survey Scanner II
+  (special rare_ore_detection; Central Nexus asks one at a time) in
+  place of its off-role Mining Laser I; census.py surveys with it. Its
+  surveys of faint-signature systems decide a second one; a find goes
+  to Mining in queue.log.
+- Next if it resolves nothing: a probe step in census.py (use_item
+  mining_survey_probe, +30 survey power for 10 ticks, then survey).
 
 ### A tier-1 hull for the scouts
 Status: proven. Updated: 2026-11-23. Evidence: catalog table hulls; browse_ships all_stations (2026-11-21, 2026-11-23); commission_quote confluence (2026-11-23); table runs (kind census, scout pilots, minutes over 0; the hull by pilot; windows 07:30 to 11:30 and from 11:30 UTC, 2026-11-22).

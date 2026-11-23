@@ -174,3 +174,13 @@ Status: proven. Updated: 2026-11-23. Evidence: intel turn check WORKED 08:17 UTC
   so each read pulls a home reader 10 to 17 jumps. Move the system to
   the region list of the capital nearest it by lanes; the check's
   `WORKED to` line names that list.
+
+### A field asked for is answered with the books too
+Status: proven. Updated: 2026-11-23. Evidence: requests.log ENT-435, ENT-443; tables fields, stats_refill, books.
+
+- Mining asked for uranium, thorium and silicon fields. Every deposit
+  read stood near 0 and regrew under 1 unit an hour, taken as fast by
+  others, while the asks named thorium and silicon for sale. Answer a
+  request for a field with what is left, what comes back an hour, the
+  pirates, and the asks of the same good: buying is Trade's (F23), but
+  only Intel reads every book.
