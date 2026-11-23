@@ -418,3 +418,12 @@ Failed: a guessed Yildun rate in requests.log ENT-423, corrected in ENT-424 one 
 Requests: requests.log ENT-423, ENT-424 (to Unity: buy carbon at Node Beta at 4 cr; silicon needs reviewed or a Bursar order).
 Suggestions: ROSTER.md stands at 127% of its size cap (size-guard), Unity's file; the docked-at-home route counts as work under F8, Unity's call whether it should.
 Report: waiting-miners-to-copper-gathers-lasers-where-cheap.
+
+## [ENT-143] | 2026-11-23 05:54 UTC | Apollo | session | ref: reports/2026-11-23_apollo_jump-loop-capped-at-eight-docked-steel-freight-closed.md | see: orders.log ENT-076
+Session: scheduled run turn-apollo -- the empty jump loop capped at eight, docked steel for two receivers, freight closed to our holds.
+Did: train-jumps-hauler max_ships 40 -> 8 (commit 301d63d0), the other Voidborn rows end at @craft-reserve; two docked steel routes for 13,682 and 9,424 stored iron (steel SHORT 67,527); give-miner-stores-synchrony for three by fill; freight board read, 164 contracts; guidebook lesson and Standing Plan; plan.py check PASS.
+Worked: the loop at 8 of 8 (05:51 UTC); Logistics' net -43,051 -> -12,994 cr an hour (tool fleet, view=money); the Rim fuel-tank carry at 7,309 cr a ship-hour in the 05:00 hour.
+Failed: fill.py check HALT, 73 haulers wait with nothing that pays (05:51 UTC); the cap came turns late; ENT-425 appended by hand and named own ships in a public log (errors.log ENT-152).
+Requests: requests.log ENT-425 (to Unity, with ENT-421 still open).
+Suggestions: a pilot-name guard in comms.py append; a one-hull freighter test (100 cargo) for the freight board; docked counts as operating for haulers without class work.
+Report: jump-loop-capped-at-eight-docked-steel-freight-closed.
