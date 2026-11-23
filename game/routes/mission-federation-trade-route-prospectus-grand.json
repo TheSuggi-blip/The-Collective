@@ -2,9 +2,9 @@
  "id": "mission-federation-trade-route-prospectus-grand",
  "kind": "circuit",
  "title": "Federation Trade Route Prospectus: 4000 cr at Grand Exchange",
- "note": "Written by routemaker.py from the board and the order books: goods for about 0 cr, reward 4000 cr. A test: one ship; whether the mission hands its goods out at the accept is not known until one accept with an empty hold. Added as a test by fill.py on 2026-11-22 03:26 UTC (Unity): up to 3 ships, one result each, until 3 runs are read (rule F37). 2026-11-23 00:23 UTC (fill.py, Mercury): max_ships 3 -> 10.",
+ "note": "Written by routemaker.py from the board and the order books: goods for about 0 cr, reward 4000 cr. A test: one ship; whether the mission hands its goods out at the accept is not known until one accept with an empty hold. Added as a test by fill.py on 2026-11-22 03:26 UTC (Unity): up to 3 ships, one result each, until 3 runs are read (rule F37). 2026-11-23 00:23 UTC (fill.py, Mercury): max_ships 3 -> 10. 2026-11-23 00:29 UTC (fill.py, Mercury): max_ships 10 -> 25.",
  "once": true,
- "max_ships": 10,
+ "max_ships": 25,
  "one_time": [
   "Federation Trade Route Prospectus"
  ],
