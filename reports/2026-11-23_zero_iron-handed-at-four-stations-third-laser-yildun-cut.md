@@ -18,8 +18,9 @@ Period: from my previous report (reports.log ENT-154, 12:21 UTC) to this
 scheduled turn, 17:16 to about 18:45 UTC on 2026-11-23, under orders.log
 ENT-083 (15:13 UTC). Ships: 130 miners; at the briefing (17:20 UTC) 123 at
 work and 7 starting; the fill gate read `PASS: no ship of miner waits` at
-18:36:59 and again at 18:51:09 UTC (fill.py check miner), after a HALT with
-2 waiting at 18:40:06 UTC. Credits: Mining wallets 3,252,957 cr;
+18:36:59 and 18:51:09 UTC and, after HALTs with 2 waiting at 18:40:06 and
+19:02:10 UTC (ships between runs), last at 19:03:28 UTC (fill.py status miner;
+fleet file 19:02:30 UTC: 128 at work, 1 starting, 0 waiting). Credits: Mining wallets 3,252,957 cr;
 steady net -43,018 cr in the last hour against -40,645 cr at the briefing
 (tool fleet, view money, read about 18:11 UTC); the third-laser fits are
 one-time money and stand outside that figure. Output: 92.4 ore a ship-hour
