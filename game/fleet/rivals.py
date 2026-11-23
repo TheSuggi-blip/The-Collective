@@ -425,7 +425,7 @@ def _inspect_our_adoption(repo_root, data_dir, conn, tables):
             pass
     try:
         import accounting as _acc_rv
-        _pnl_rv = _acc_rv.compute_pnl(conn, repo_root=str(repo_root), data_dir=str(data_dir), hours=24, now=now)
+        _pnl_rv = _acc_rv.compute_pnl(conn, repo_root=str(repo_root), data_dir=str(data_dir), hours=24)
         if isinstance(_pnl_rv, dict):
             if _pnl_rv.get("raw_steady_h") or _pnl_rv.get("once_direct_h") or _pnl_rv.get("has_inventory_accrual"):
                 steady_net_24h = float(_pnl_rv.get("recurring_cash_h", steady_net_24h))
