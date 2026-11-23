@@ -42,6 +42,10 @@
   "mission-federation-market-analysis-market",
   "mission-form-ta-1-confederacy",
   "mission-frontier-wayfinder-circuit-frontier",
+  "hunt-sol-jovian-extraction-zone-drift-ray",
+  "hunt-nihal-gas-plume-drift-ray",
+  "hunt-lacaille-9352-deep-vein-belt-grazer",
+  "hunt-procyon-gas-cloud-drift-ray",
   "mission-first-hunt-iron-reach",
   "mission-first-hunt-ironhearth",
   "mission-cracking-the-shell-krynn",
@@ -289,6 +293,10 @@
   "mission-federation-market-analysis-market": 95,
   "mission-form-ta-1-confederacy": 95,
   "mission-frontier-wayfinder-circuit-frontier": 95,
+  "hunt-sol-jovian-extraction-zone-drift-ray": 15,
+  "hunt-nihal-gas-plume-drift-ray": 15,
+  "hunt-lacaille-9352-deep-vein-belt-grazer": 15,
+  "hunt-procyon-gas-cloud-drift-ray": 15,
   "mission-first-hunt-iron-reach": 30,
   "mission-first-hunt-ironhearth": 30,
   "mission-cracking-the-shell-krynn": 30,
@@ -490,6 +498,7 @@
  "derived": "Written by game/fleet/plan.py from the division's plan file (data/plans/plan-military.md), never by hand.",
  "templates": {
   "hunter": 95,
-  "krynn-newborn": 30
+  "krynn-newborn": 30,
+  "sol-newborn": 15
  }
 }
