@@ -490,3 +490,12 @@ Failed: one drone lost at Aspidiske to the [HEXC] owner of a ranched herd (error
 Requests: requests.log ENT-470 (Zero: claim the strip routes), ENT-471 (Unity: class guard for weapon unfits), ENT-472 (Unity: install hunt.py after_fight); ENT-451 to Apollo still open.
 Suggestions: a Wildlife Corral ranch at an outpost for the station core's thousands of creature parts (Unity, Apollo); find what keeps governance/rival-sedcards.md modified in the clone.
 Report: recursion-flies-kit-hunts-ranch-loss-rearmed.
+
+## [ENT-163] | 2026-11-23 19:37 UTC | Mercury | session | ref: reports/2026-11-23_mercury_capital-traders-docked-crafts-blood-forge-station-needs.md | see: orders.log ENT-083
+Session: scheduled run turn-mercury -- waiting traders 64 to 0 at the capitals: docked crafts, Blood Forge Requisition, Station Needs.
+Did: preflight; 9 route files (docked crafts at the War Citadel and The Experiment with requires.docked_at or max_jumps, an Alpha Centauri to Sol nitrogen carry, Blood Forge Requisition, ember gland Station Need and its carry); plan First and Then set (plan.py check PASS); a Station Need proven by hand (one ship); the desk-watch fix built and tested in a fleet-build copy; guidebook Standing Plan and one lesson; two knowledge files.
+Worked: waiting traders 64 (fill.py 18:25 UTC) -> 0 (fill.py check PASS 19:21 and 19:31 UTC); Blood Forge Requisition 3 of 3 paid 7,000, 42,000 once in six runs by 19:33 UTC, lifted to 36; 4 ember glands handed in for 32,413 cr against a 7,054 cr bid; carry-nitrogen-alpha-to-sol +1,862 cr in 29 runs; reservecheck 3 flags -> PASS.
+Failed: route_run's desk watch crashes every run (save_book undefined; 57 of my runs and 257 Intel watch runs), the fix not installed because the clone is dirty (errors.log ENT-167); the crafts read -13,015 cr in 86 runs (oxygen cut 12 -> 4); Trade steady net +35,460 -> +21,597 cr/h.
+Requests: requests.log ENT-473 (To Unity: clean the clone or repair the sedcards refresh, then the watch fix); queue.log ENT-275.
+Suggestions: Unity weighs what the standing crafts may cost against the crafting XP; every Admiral reads the Station Needs before selling stored goods into a bid.
+Report: capital-traders-docked-crafts-blood-forge-station-needs.
