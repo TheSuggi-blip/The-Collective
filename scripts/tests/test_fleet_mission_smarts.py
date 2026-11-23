@@ -105,5 +105,20 @@ class SmartMissionReachTests(unittest.TestCase):
         self.assertFalse(pure_visit_tail([]))
 
 
+    def test_refused_skill_gated_once_route_obeys_waits_once_cooldown(self):
+        aborted = {
+            "route": "mission-skill-gated-example", "pilot": "miner-1",
+            "started": "2026-11-23T02:20:00Z", "minutes": 1.0, "stops": 1, "of": 3,
+            "notes": ["skill_mission not offered", dispatch.EARLY_UNOFFERED],
+        }
+        skill_route = {"once": True, "requires": {"skills": {"mining": 5}}, "retry_minutes": 60}
+        self.assertFalse(dispatch.done_once(skill_route, [aborted]))
+        # 2026-11-23T02:21:00Z == 1795395660 -> 10 min later still waiting, 65 min later free
+        import calendar, time
+        ended = calendar.timegm(time.strptime("2026-11-23T02:20:00Z", "%Y-%m-%dT%H:%M:%SZ")) + 60
+        self.assertTrue(dispatch.waits_once(skill_route, [aborted], ended + 10 * 60))
+        self.assertFalse(dispatch.waits_once(skill_route, [aborted], ended + 65 * 60))
+
+
 if __name__ == "__main__":
     unittest.main()

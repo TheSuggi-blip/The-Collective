@@ -67,5 +67,28 @@ class SettleTests(unittest.TestCase):
         self.assertEqual(tug.settle({"at": 100}, ship(), 100 + 16 * 60, 15), "give up")
 
 
+    def test_safe_stations_excludes_pirate_strongholds(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "map").mkdir(parents=True)
+            (root / "map/galaxy.tsv").write_text(
+                "id\tflags\npublic_sys\tsafe\npirate_sys\tstronghold\n",
+                encoding="utf-8",
+            )
+            (root / "scouting").mkdir(parents=True)
+            (root / "scouting/public_sys.json").write_text(
+                '{"pois":{"p1":{"base":{"id":"pub_base"},"services":["refuel"]}}}',
+                encoding="utf-8",
+            )
+            (root / "scouting/pirate_sys.json").write_text(
+                '{"pois":{"p2":{"base":{"id":"pir_base"},"services":["refuel"]}}}',
+                encoding="utf-8",
+            )
+            got = tug.safe_stations(root, root)
+            self.assertIn("public_sys", got)
+            self.assertNotIn("pirate_sys", got)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -71,6 +71,12 @@ def settle(row, ship, now, wait=WAIT):
     return "give up" if now - float(row.get("at") or 0) > wait * 60 else "wait"
 
 
+def safe_stations(data, repo=REPO):
+    """Fuel stations excluding pirate strongholds: a ship near only a pirate station still needs the tug."""
+    far = fuelplan.strongholds(repo)
+    return {s: v for s, v in fuelplan.fuel_stations(data).items() if s not in far}
+
+
 def ships(data):
     out = {}
     for path in sorted((Path(data) / "fleet" / "ships").glob("*.json")):
@@ -122,7 +128,7 @@ def main(argv):
     data, now, mark = division.DATA, time.time(), division.hand_mark()
     fleet = ships(data)
     lanes = fuelplan.chart(REPO)[0]
-    stations = fuelplan.fuel_stations(data)
+    stations = safe_stations(data, REPO)
     state = load_state(data)
     done = 0
     for pilot, row in sorted(state.items()):

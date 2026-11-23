@@ -426,8 +426,9 @@ def done_once(route, rows):
 
 
 def waits_once(route, rows, now):
-    """True while a `once` route rests for a pilot: its last run found nothing to buy less than retry_minutes (default 60) ago."""
-    if not rows or not (unfinished(rows[-1]) or empty(rows[-1]) or short(rows[-1]) or cut(rows[-1]) or (owed(route) and refused(rows[-1]))):
+    """True while a `once` route rests for a pilot: its last run found nothing to buy, was cut, or hit a gated refusal less than retry_minutes (default 60) ago."""
+    gated = owed(route) or bool((route.get("requires") or {}).get("skills"))
+    if not rows or not (unfinished(rows[-1]) or empty(rows[-1]) or short(rows[-1]) or cut(rows[-1]) or (gated and refused(rows[-1]))):
         return False
     try:
         ended = calendar.timegm(time.strptime(rows[-1]["started"], "%Y-%m-%dT%H:%M:%SZ")) + rows[-1].get("minutes", 0) * 60
