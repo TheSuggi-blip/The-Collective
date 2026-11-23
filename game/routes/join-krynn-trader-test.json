@@ -1,0 +1,24 @@
+{
+ "id": "join-krynn-trader-test",
+ "kind": "circuit",
+ "title": "A trader born Nebula or Solarian whose Solarian once line is booked joins the Crimson corridor: one trip to the War Citadel, a test of whether Krynn's once missions are offered to its empire",
+ "note": "Written by Mercury, 2026-11-23 13:02 UTC (orders ENT-082, block MERCURY: the capitals' once lines by join corridors; rules F3, F8, F34 tier 4, F37). About 37 traders born Nebula and Solarian wait docked at Alpha Centauri with Sol's once line booked; the Rim corridor is off while Frontier Station's move breaks its runs (errors.log ENT-158). Krynn's Last Known Position (8,000) and Strategic Readiness Assessment (4,000) paid pilots born Crimson and Voidborn (table runs, 24 h to 12:21 UTC); none born Nebula or Solarian has tried. The road is the Voidborn wave's (join-krynn-trader, 15 ships on it at 12:58 UTC): Alpha Centauri to Krynn 20 jumps. Two ships in parallel, one result each (F37); standing as every join route.",
+ "far_ok": true,
+ "once": true,
+ "standing": true,
+ "max_ships": 2,
+ "lift_to": 30,
+ "requires": {
+  "empty_hold": true,
+  "empire": [
+   "nebula",
+   "solarian"
+  ]
+ },
+ "stops": [
+  {
+   "at": "krynn:war_citadel:crimson_war_citadel",
+   "store": "all"
+  }
+ ]
+}
