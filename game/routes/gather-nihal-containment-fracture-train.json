@@ -2,11 +2,11 @@
  "id": "gather-nihal-containment-fracture-train",
  "kind": "mine",
  "title": "A test: Mining-skill work for Solarian-born miners: ore of Nihal Containment Fracture into storage at Procyon Colonial Station (one jump)",
- "note": "Written by Zero, 2026-11-23 00:44 UTC (orders ENT-068, P6 and O1, O2; rules F22, F23, F37). A second field for the Solarian newborns beside gather-markab-alloy-seam-train, since a test on one field takes one ship (F37) and four of them stood docked at Sol above 5,000 cr. Nihal Containment Fracture read 74,618 copper and 61,790 iron, richness 26 and 27 (census about 00:14 UTC; 84,803 and 72,875 at a read 11 hours before, so others mine it too), 3 jumps from Sol and one from Procyon Colonial Station (table lanes, stations); no pirate line for Nihal or Procyon in data/intel/sightings.jsonl (read 00:43 UTC). Class-skill work: the Mining skill at one jump each way, the ore kept in storage. min_left iron 20,000 keeps a floor. One ship until three results (F37); lift_to 6 after that. 2026-11-23 03:06 UTC (Zero): max_ships 1 -> 6: two full runs, 34 min at -170 cr each (table runs 00:51, 02:26 UTC), one cut at the start; the same work as Markab beside it, which met F37; 41,790 iron above the floor (fill.py status 03:03 UTC). requires.empire solarian.",
+ "note": "Written by Zero, 2026-11-23 00:44 UTC (orders ENT-068, P6 and O1, O2; rules F22, F23, F37). A second field for the Solarian newborns beside gather-markab-alloy-seam-train, since a test on one field takes one ship (F37) and four of them stood docked at Sol above 5,000 cr. Nihal Containment Fracture read 74,618 copper and 61,790 iron, richness 26 and 27 (census about 00:14 UTC; 84,803 and 72,875 at a read 11 hours before, so others mine it too), 3 jumps from Sol and one from Procyon Colonial Station (table lanes, stations); no pirate line for Nihal or Procyon in data/intel/sightings.jsonl (read 00:43 UTC). Class-skill work: the Mining skill at one jump each way, the ore kept in storage. min_left iron 20,000 keeps a floor. One ship until three results (F37); lift_to 6 after that. 2026-11-23 03:06 UTC (Zero): max_ships 1 -> 6: two full runs, 34 min at -170 cr each (table runs 00:51, 02:26 UTC), one cut at the start; the same work as Markab beside it, which met F37; 41,790 iron above the floor (fill.py status 03:03 UTC). requires.empire solarian. 2026-11-23 05:23 UTC (fill.py, Zero): max_ships 6 -> 12.",
  "belt": "nihal:nihal_containment_fracture",
  "station": "procyon:procyon_colonial_station:procyon_colonial_station",
  "minutes": 30,
- "max_ships": 6,
+ "max_ships": 12,
  "standing": true,
  "min_left": {
   "iron_ore": 20000
