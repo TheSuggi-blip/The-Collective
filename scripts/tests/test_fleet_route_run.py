@@ -33,11 +33,40 @@ def rebound(path):
     return sorted(functions & stored)
 
 
+def unbound_calls(path):
+    """The names a script calls as a function that nothing in it binds (no def, import, assignment, argument) and no
+    builtin is: each one a NameError when its line runs."""
+    import builtins
+    tree = ast.parse(path.read_text(encoding="ascii"))
+    bound = set(dir(builtins))
+    called = set()
+    for node in ast.walk(tree):
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            bound.add(node.name)
+        elif isinstance(node, ast.Name) and isinstance(node.ctx, (ast.Store, ast.Del)):
+            bound.add(node.id)
+        elif isinstance(node, ast.arg):
+            bound.add(node.arg)
+        elif isinstance(node, (ast.Import, ast.ImportFrom)):
+            bound.update((a.asname or a.name).split(".")[0] for a in node.names)
+        elif isinstance(node, ast.ExceptHandler) and node.name:
+            bound.add(node.name)
+        elif isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
+            called.add(node.func.id)
+    return sorted(called - bound)
+
+
 class ModuleLevelTests(unittest.TestCase):
     def test_no_step_gives_a_functions_name_another_value(self):
         # 2026-11-16: the accept step bound `offer`, the function the buy and fit steps call; every run with a buy after an accept crashed
         for script in ("route_run.py", "hunt.py"):
             self.assertEqual(rebound(FLEET / script), [], script)
+
+    def test_every_function_called_is_defined(self):
+        # 2026-11-23: the desk watch (watch_minutes) called save_book and save_board, which no line defines: every
+        # docked craft or Bursar run with a watch crashed at its first poll (NameError, line 947; runs.jsonl)
+        for script in ("route_run.py", "hunt.py"):
+            self.assertEqual(unbound_calls(FLEET / script), [], script)
 
     def test_a_run_that_crashes_still_writes_its_row(self):
         source = (FLEET / "route_run.py").read_text(encoding="ascii")

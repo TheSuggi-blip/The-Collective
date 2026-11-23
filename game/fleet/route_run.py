@@ -944,9 +944,7 @@ for n, stop in enumerate(ROUTE['stops']):
                 pass
             if time.time() >= next_poll and time.time() < until and not stop_reason():
                 next_poll = time.time() + every_s
-                book = save_book(base) or book
-                if stop.get('market_poll'):
-                    save_board(base)
+                book = save_station(base, system)[0] or book   # the book and the board saved; save_book/save_board never existed (NameError)
                 for want in stop.get('sell_order') or []:
                     mine = own_sell_orders(want['item'])
                     have = cargo().get(want['item'], 0) + stored(base).get(want['item'], 0)
