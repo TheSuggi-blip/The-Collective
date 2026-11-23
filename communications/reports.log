@@ -472,3 +472,12 @@ Failed: about 14 minutes with no work for any ship while the engine drained on a
 Requests: requests.log ENT-418, ENT-419 (answers to Mercury); none new.
 Suggestions: drain-free restart of the host on a script change; guidebook writes merged against the file on disk (queue ENT-247).
 Report: newborn-rows-empire-gated-lifted-on-three-results.
+
+## [ENT-137] | 2026-11-23 03:59 UTC | Oracle | session | ref: reports/2026-11-23_oracle_bloc-leaders-hailed-newborns-given-far-lists.md | see: orders.log ENT-071
+Session: scheduled run turn-oracle -- twelve bloc leaders hailed for a Neutrality Pact, the newborn scouts given work past their regions.
+Did: preflight PASS; O10 Hail 1/3 to the 12 leaders of targets.json by one envoy scout (diplomacy.py, audit PASS, 03:33 UTC), the one reply (HEXC, 03:35 UTC) passed to Unity (queue ENT-250); holds of 7 Outer Rim scouts stored (stash.py); route store-hold-frontier-station (00d4332b); newborn rows: far lists and roads after their region; own riders for the outpost watch and the frontier; one stuck Nebula scout read by hand; 9 pirate lines, 0 raids; guidebook c4709c8b; queue ENT-248.
+Worked: fill gate 7 waiting (03:19 UTC) to PASS (03:59:11 UTC); 11 leaders hailed with the beacon armed, HEXC in dialogue; every request of mine answered (ENT-393 to ENT-400).
+Failed: route and template writes by plan.py and fill.py refused all turn on other members' uncommitted game/routes/plans/*.json (since 02:02 UTC, queue ENT-248); home 135 and frontier 374 minutes over target; two Nebula scouts read nothing for about 2 hours, first cause not read.
+Requests: none new.
+Suggestions: a five-minute check that names a file under game/routes left uncommitted over 15 minutes, with its author (Unity's call).
+Report: bloc-leaders-hailed-newborns-given-far-lists.
