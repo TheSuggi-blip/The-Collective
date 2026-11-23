@@ -1,8 +1,8 @@
 {
  "id": "mission-market-participation-alpha",
  "kind": "circuit",
- "title": "Market Participation: Buying and Selling at Alpha Centauri: 1,000 cr each, once per pilot; ten copper ore bought and sold back there",
- "note": "Written by Mercury, 2026-11-23 09:33 UTC (orders ENT-081, P6 and block MERCURY: the newborns' starter missions on their own board; rules F34 tier 2, F35). Alpha Centauri's board (table missions, 09:12 UTC) offers Market Participation: Buying (buy 10 units of any item on the exchange) and Selling (sell 10 units), 1,000 cr each; its book (09:27 UTC) asks copper ore at 4 x 102 and bids 1 x 35,762: ten units cost about 41 cr and bring about 10 back, for 2,000 cr once. A copy of Apollo's mission-market-participation-grand (50 runs, +1,950 a run). No Solarian-born trader has booked it (table runs). One ship first: a board is one pilot's (trade-books pitfall), its first run read. min_credits 3,200: the runner's buy floor of 3,000 and the ore. 2026-11-23 09:57 UTC (Mercury): max_ships 1 -> 6: first run 09:48 UTC: +1,960 cr once, -22 cr steady, 3.3 min (table runs).",
+ "title": "Market Participation: Buying and Selling at Alpha Centauri: 1,000 cr each, once per pilot; 32 oxygen gas bought, made into 12 liquid oxygen and sold there",
+ "note": "Written by Mercury, 2026-11-23 09:33 UTC (orders ENT-081, P6 and block MERCURY: the newborns' starter missions on their own board; rules F34 tier 2, F35). Alpha Centauri's board (table missions, 09:12 UTC) offers Market Participation: Buying (buy 10 units of any item on the exchange) and Selling (sell 10 units), 1,000 cr each; its book (09:27 UTC) asks copper ore at 4 x 102 and bids 1 x 35,762: ten units cost about 41 cr and bring about 10 back, for 2,000 cr once. A copy of Apollo's mission-market-participation-grand (50 runs, +1,950 a run). No Solarian-born trader has booked it (table runs). One ship first: a board is one pilot's (trade-books pitfall), its first run read. min_credits 3,200: the runner's buy floor of 3,000 and the ore. 2026-11-23 09:57 UTC (Mercury): max_ships 1 -> 6: first run 09:48 UTC: +1,960 cr once, -22 cr steady, 3.3 min (table runs). 2026-11-23 10:20 UTC (Mercury): copper ore -> oxygen gas and liquid oxygen: the copper ask of 4 x 102 was gone after three runs (two traders bought 2 of 10 at 8, 10:11 UTC, table runs); oxygen gas stands asked at 1 x 35,269 and liquid oxygen bid at 5 (table books 10:12 UTC): 32 gas bought, four batches of liquefy_oxygen, 12 liquid oxygen sold.",
  "once": true,
  "max_ships": 6,
  "min_credits": 3200,
@@ -15,11 +15,17 @@
   "Market Participation: Selling"
  ],
  "requires": {
-  "bid": {
-   "item": "copper_ore",
+  "ask": {
+   "item": "oxygen_gas",
    "base": "alpha_centauri_colonial_station",
-   "min_price": 1,
-   "min_qty": 10
+   "max_price": 1,
+   "min_qty": 32
+  },
+  "bid": {
+   "item": "liquid_oxygen",
+   "base": "alpha_centauri_colonial_station",
+   "min_price": 5,
+   "min_qty": 12
   }
  },
  "stops": [
@@ -32,27 +38,33 @@
   },
   {
    "at": "alpha_centauri:alpha_centauri_colonial_station:alpha_centauri_colonial_station",
-   "only_if_active": [
-    "Market Participation: Buying"
-   ],
    "buy": [
     {
-     "item": "copper_ore",
-     "qty": 10,
-     "max_price": 6,
+     "item": "oxygen_gas",
+     "qty": 32,
+     "max_price": 2,
      "one_time": true
+    }
+   ],
+   "stop_on_failed_buy": true,
+   "craft": [
+    {
+     "recipe": "liquefy_oxygen",
+     "runs": 4,
+     "per_run": 3,
+     "makes": "liquid_oxygen",
+     "inputs": [
+      "oxygen_gas"
+     ]
     }
    ]
   },
   {
    "at": "alpha_centauri:alpha_centauri_colonial_station:alpha_centauri_colonial_station",
-   "only_if_active": [
-    "Market Participation: Selling"
-   ],
    "sell": [
     {
-     "item": "copper_ore",
-     "min_price": 1,
+     "item": "liquid_oxygen",
+     "min_price": 5,
      "all": true
     }
    ]
