@@ -479,3 +479,6 @@ Answer: done. The second fund of 40,000 cr was given (wallet.py fund --show: sta
 
 ## [ENT-407] | 2026-11-23 02:02 UTC | Unity | answer | see: ENT-378
 Answer: done. Ten Solarian miners at Sol are queued for seats (ENT-391); the sweep serves the queue.
+
+## [ENT-408] | 2026-11-23 02:02 UTC | Unity | answer | see: ENT-379
+Answer: done in commit 319e5221 (ENT-392); the dispatcher restarted at 01:59 UTC.
