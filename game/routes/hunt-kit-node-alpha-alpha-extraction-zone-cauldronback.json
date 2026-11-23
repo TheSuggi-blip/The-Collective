@@ -1,0 +1,27 @@
+{
+ "id": "hunt-kit-node-alpha-alpha-extraction-zone-cauldronback",
+ "kind": "hunt",
+ "title": "cauldronback at alpha_extraction_zone for the Atria outpost kit; one Laser III ship with a Shield Booster II; parts to a hauler at Node Beta",
+ "note": "Written by Apophis 2026-11-23 18:27 UTC (orders ENT-083, P3 and block APOPHIS: hunt the Atria kit's creature parts, handed to Logistics, P5). Need atria-outpost-kit (needs show, 18:07 UTC) is short alloy_scale 240; no station asks it (table books 18:11 UTC: bids only). Herd: 3 cauldronbacks at node_alpha:alpha_extraction_zone, 1 jump from home (table herds, census 17:42 UTC). Rule F9 (gauges.py species): cauldronback hull 120 weighs above this fit's toughness gauge (102.5), so this is the F9 test of one side; under 60 percent hull it flees (2026-11-17: one starter failed on a cauldronback). One Pulse Laser III ship with a Shield Booster II (gauges.py ship: kills up to 231 hull, stands up to 102.5). Rule F38: keep_herd 2 (hunt.py default), so a herd of 3 gives one kill a run. gift_to hauler at Node Beta, where the kit is assembled (data/fleet/receivers.json). A test (F37): three runs, then the kills a run and the parts a kill decide.",
+ "place": "node_alpha:alpha_extraction_zone",
+ "species": [
+  "cauldronback"
+ ],
+ "sell_at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+ "min_bid": 5000,
+ "kills": 1,
+ "minutes": 40,
+ "max_ships": 1,
+ "min_creatures": 3,
+ "max_prey_hull": 120,
+ "alone": "pirates",
+ "requires": {
+  "module": {
+   "pulse_laser_iii": 1,
+   "shield_booster_ii": 1
+  },
+  "empty_hold": true
+ },
+ "gift_to": "hauler",
+ "standing": true
+}

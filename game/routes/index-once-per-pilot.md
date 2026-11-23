@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 82.
+Routes: 83.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -40,6 +40,7 @@ Routes: 82.
 | [voidborn-signal-protocol](voidborn-signal-protocol.json) | circuit | home space | The Signal Protocol: 3,500 cr once, the voidborn mastery line after The Collective Provides; docks at Node Beta and Node Gamma, handed in at Central Nexus | once per pilot, up to 20 ships, after the reward The Collective Provides | 212 | 14 | 3,430 | one-time | 2026-11-23 |
 | [voidborn-substrate](voidborn-substrate.json) | circuit | home space | Substrate Delivery: two neural soma bought at Central Nexus, the mission taken at Node Alpha and handed in at Central Nexus; 2 jumps | once per pilot, from 3,000 cr | 221 | 8 | 2,020 | one-time | 2026-11-16 |
 | [buy-flex-ironlight-to-node-beta](buy-flex-ironlight-to-node-beta.json) | circuit | beyond the border, 6 jumps | Flex polymer for the Recruitment Center: 57 bought at Ironlight Crossroads (LHS 1140, lawless, six jumps) and put into the faction's storage at Node Beta, where the upgrade takes its materials; members of the faction only | once per pilot, up to 2 ships, 5 pilots in all, empty hold, from 15,000 cr, while 784309214f105860a16a0c100a70eb14 asks 123 cr or less for flex_polymer | 6 | 17 | -3,570 | one-time | 2026-11-21 |
+| [give-mining-laser-sol-central](give-mining-laser-sol-central.json) | circuit | beyond the border, 10 jumps | A Military ship in sol gives the Mining Laser I it stored at Confederacy Central Command to a miner receiver there | once per pilot, up to 5 ships, 40 pilots in all, from 3,000 cr, with 1 mining_laser_i stored at confederacy_central_command | TBD | TBD | TBD | TBD | -- |
 | [go-ironlight-trader](go-ironlight-trader.json) | circuit | beyond the border, 6 jumps | One trader docks at Ironlight Crossroads with an empty hold, for the freighter test: a Prayer (540 cargo, speed 3) bought there by hand | once per pilot, up to 1 ships, 1 pilots in all, empty hold, from 20,000 cr | 1 | 8 | -10 | one-time | 2026-11-21 |
 | [mission-a-word-in-private-grand](mission-a-word-in-private-grand.json) | circuit | beyond the border, 24 jumps | A Word in Private: 500 cr, +165 XP at Grand Exchange | once per pilot, up to 5 ships, born nebula | 81 | 11 | 470 | one-time | 2026-11-23 |
 | [mission-confederacy-infrastructure-audit-confederacy](mission-confederacy-infrastructure-audit-confederacy.json) | circuit | beyond the border, 11 jumps | Confederacy Infrastructure Audit: 4000 cr, +500 XP at Sol Central | once per pilot, up to 90 ships | 282 | 27 | 3,280 | one-time | 2026-11-23 |

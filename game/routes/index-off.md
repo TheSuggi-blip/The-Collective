@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 54.
+Routes: 55.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -49,6 +49,7 @@ Routes: 54.
 | [trade-silver-bar-alpha-to-arneb](trade-silver-bar-alpha-to-arneb.json) | circuit | beyond the border, 16 jumps | Silver bars bought at Node Alpha for 420 cr or less, sold into the Obsidian Well's bid at Arneb at 480 or more: a trade test beyond the border | up to 1 ships, 1 pilots in all, empty hold, from 30,000 cr, while cca9e51e6eaf8dada77f698ccc4a09c7 bids 480 cr for silver_bar, off | TBD | TBD | TBD | TBD | -- |
 | [voidborn-first-hunt-schedar](voidborn-first-hunt-schedar.json) | circuit | beyond the border, 2 jumps | First Hunt: Belt-Grazers: 1,000 cr once and 50 Weapons XP; three belt-grazers at Schedar Belt (lawless, one jump past GSC-0027) | once per pilot, up to 1 ships, empty hold, off | 27 | 10 | 20 | one-time | 2026-11-16 |
 | [hunt-achernar-gas-pocket-pilot-whale-sb2](hunt-achernar-gas-pocket-pilot-whale-sb2.json) | hunt | beyond the border, 4 jumps | Pilot whales at achernar_gas_pocket, one Pulse Laser III ship with a Shield Booster II, alone; loot to a trader receiver | up to 1 ships, needs shield_booster_ii, empty hold, standing work, off | 2 | 20 | -330 | -970 | 2026-11-23 |
+| [hunt-aspidiske-belt-patina-grazer](hunt-aspidiske-belt-patina-grazer.json) | hunt | beyond the border, 12 jumps | patina_grazer at aspidiske_belt; loot stored at Nova Terra Central | up to 1 ships, empty hold, standing work, off | 5 | 2 | -150 | -620 | 2026-11-23 |
 | [hunt-bd20-2457-slowcool-cluster-patina-grazer](hunt-bd20-2457-slowcool-cluster-patina-grazer.json) | hunt | beyond the border, 17 jumps | patina_grazer, belt_grazer at slowcool_cluster; loot to the trader at The Rampart Checkpoint (newborn region work, Krynn) | up to 1 ships, empty hold, standing work, off | 4 | 41 | -300 | -420 | 2026-11-23 |
 | [hunt-biham-ice-shelf-hollow-pilgrim](hunt-biham-ice-shelf-hollow-pilgrim.json) | hunt | beyond the border, 18 jumps | hollow_pilgrim at biham_ice_shelf; loot sold at The Crucible Garrison | up to 1 ships, empty hold, standing work, off | TBD | TBD | TBD | TBD | -- |
 | [hunt-dawnbreak-frozen-drift-hollow-pilgrim](hunt-dawnbreak-frozen-drift-hollow-pilgrim.json) | hunt | beyond the border, 20 jumps | hollow_pilgrim at dawnbreak_frozen_drift; loot sold at The Levy Customs Station | up to 1 ships, empty hold, standing work, off | TBD | TBD | TBD | TBD | -- |

@@ -1,0 +1,27 @@
+{
+ "id": "hunt-kit-nexus-prime-null-matter-anomaly-silica-borer",
+ "kind": "hunt",
+ "title": "silica_borer at null_matter_anomaly for the Atria outpost kit; one Laser III ship with a Shield Booster II; parts to a hauler at Node Beta",
+ "note": "Written by Apophis 2026-11-23 18:27 UTC (orders ENT-083, P3 and block APOPHIS: hunt the Atria kit's creature parts, handed to Logistics, P5). Need atria-outpost-kit (needs show, 18:07 UTC) is short silica_lens 16; no station asks it (table books 18:11 UTC: bids only). Herd: 3 silica-borers at nexus_prime:null_matter_anomaly, home (table herds, census 17:36 UTC). Rule F9 (gauges.py species): silica-borer hull 80: one typical drone fails toughness, this fit passes both gauges. One Pulse Laser III ship with a Shield Booster II (gauges.py ship: kills up to 231 hull, stands up to 102.5). Rule F38: keep_herd 2 (hunt.py default), so a herd of 3 gives one kill a run. gift_to hauler at Node Beta, where the kit is assembled (data/fleet/receivers.json). A test (F37): three runs, then the kills a run and the parts a kill decide.",
+ "place": "nexus_prime:null_matter_anomaly",
+ "species": [
+  "silica_borer"
+ ],
+ "sell_at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+ "min_bid": 5000,
+ "kills": 1,
+ "minutes": 40,
+ "max_ships": 1,
+ "min_creatures": 3,
+ "max_prey_hull": 80,
+ "alone": "pirates",
+ "requires": {
+  "module": {
+   "pulse_laser_iii": 1,
+   "shield_booster_ii": 1
+  },
+  "empty_hold": true
+ },
+ "gift_to": "hauler",
+ "standing": true
+}

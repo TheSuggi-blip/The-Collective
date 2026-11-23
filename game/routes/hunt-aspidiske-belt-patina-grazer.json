@@ -2,7 +2,7 @@
  "id": "hunt-aspidiske-belt-patina-grazer",
  "kind": "hunt",
  "title": "patina_grazer at aspidiske_belt; loot stored at Nova Terra Central",
- "note": "2026-11-22 00:16 UTC (Apophis): standing work beyond the border for drones the home herds do not employ (rule F23: work saturated at home goes further out; fill.py status 00:05 UTC: 10 drones waiting, every home herd at one hunter). Patina grazer: hull 60, one ship passes both gauges (gauges.py species). From routemaker.py: patina_grazer at aspidiske_belt; loot sold at Nova Terra Central | estimate +79 cr per ship-hour, +43 cr a run of 33 minutes | new rests on: {\"place\": \"aspidiske:aspidiske_belt\", \"herd\": 12, \"hull\": 60, \"loot_a_kill\": {\"creature_carapace\": 1.5, \"raw_xeno_meat\": 1.0}, \"learned_from_runs\": 3, \"sold_at\": \"nova_terra_central\", \"jumps\": 4, \"four_kills\": [\"raw_xeno_meat 4.0 units for 196 cr (depth at the best price)\"]} ! the herd's count is stale (read 2026-11-17T20:02:52Z) ! lawless space: no police at aspidiske A test (rule F3): one ship, an empty hold, it leaves for a pirate (`alone` pirates). Loot stored (min_bid 5000): carapace and meat; gift_to trader for strict classes (queue.log ENT-200, ENT-201).",
+ "note": "2026-11-22 00:16 UTC (Apophis): standing work beyond the border for drones the home herds do not employ (rule F23: work saturated at home goes further out; fill.py status 00:05 UTC: 10 drones waiting, every home herd at one hunter). Patina grazer: hull 60, one ship passes both gauges (gauges.py species). From routemaker.py: patina_grazer at aspidiske_belt; loot sold at Nova Terra Central | estimate +79 cr per ship-hour, +43 cr a run of 33 minutes | new rests on: {\"place\": \"aspidiske:aspidiske_belt\", \"herd\": 12, \"hull\": 60, \"loot_a_kill\": {\"creature_carapace\": 1.5, \"raw_xeno_meat\": 1.0}, \"learned_from_runs\": 3, \"sold_at\": \"nova_terra_central\", \"jumps\": 4, \"four_kills\": [\"raw_xeno_meat 4.0 units for 196 cr (depth at the best price)\"]} ! the herd's count is stale (read 2026-11-17T20:02:52Z) ! lawless space: no police at aspidiske A test (rule F3): one ship, an empty hold, it leaves for a pirate (`alone` pirates). Loot stored (min_bid 5000): carapace and meat; gift_to trader for strict classes (queue.log ENT-200, ENT-201). 2026-11-23 18:27 UTC (Apophis): OFF for danger. A drone was destroyed here at 16:51:27 UTC 2026-11-23 (public_battles pvp, lost 1; admirals.log ENT-110): the grazers at this belt are ranched by [HEXC] (named \"[HEXC] Patina-Grazer\", observation kind ranch), Aspidiske is a [HEXC] base system, and their pilot joined the fight on the herd's side. hunt.py leaves tagged creatures alone since 930c5cfd; this place stays out of the plans (errors.log).",
  "place": "aspidiske:aspidiske_belt",
  "species": [
   "patina_grazer"
@@ -28,5 +28,6 @@
   "cph_per_ship": -620,
   "hours": 12,
   "last_run": "2026-11-23T07:22:26Z"
- }
+ },
+ "status": "off"
 }
