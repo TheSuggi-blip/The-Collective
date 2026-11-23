@@ -30,5 +30,12 @@
    "at": "alpha_centauri:alpha_centauri_colonial_station:alpha_centauri_colonial_station",
    "redock": true
   }
- ]
+ ],
+ "measured": {
+  "date": "2026-11-23",
+  "runs": 21,
+  "minutes": 11,
+  "credits_per_run": 2850,
+  "cph_per_ship": 14820
+ }
 }

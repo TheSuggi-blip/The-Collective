@@ -44,10 +44,10 @@
   "Five Capitals Diplomatic Circuit"
  ],
  "measured": {
-  "date": "2026-11-22",
-  "runs": 3,
-  "minutes": 36,
-  "credits_per_run": -380,
-  "cph_per_ship": -600
+  "date": "2026-11-23",
+  "runs": 6,
+  "minutes": 42,
+  "credits_per_run": -570,
+  "cph_per_ship": -690
  }
 }
