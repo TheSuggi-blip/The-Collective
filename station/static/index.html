@@ -48,6 +48,7 @@
     <canvas id="map"></canvas>
     <div id="tip" class="tip" hidden></div>
     <div id="fleetpop" class="fleetpop" hidden></div>
+    <div id="politycard" class="politycard" hidden></div>
     <div id="notice" class="notice" hidden></div>
     <div id="alertbar" class="alertbar" hidden></div>
     <div id="helpcard" class="helpcard" hidden></div>
@@ -58,6 +59,13 @@
           <span class="boxname">Layers</span><span class="boxfold">&minus;</span>
         </button>
         <div class="boxbody" id="layers"></div>
+      </div>
+      <div class="powers box" id="powers-box">
+        <button class="boxhead" type="button" id="powers-toggle" data-box="powers" aria-expanded="true">
+          <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><polygon points="8,1.6 13.8,5 13.8,11 8,14.4 2.2,11 2.2,5" fill="none" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="8" r="2" fill="currentColor"/></svg>
+          <span class="boxname">Empires &amp; Blocs</span><span class="boxfold">&minus;</span>
+        </button>
+        <div class="boxbody" id="powers"></div>
       </div>
       <div class="legend box" id="legend-box">
         <button class="boxhead" type="button" id="legend-toggle" data-box="legend" aria-expanded="true">

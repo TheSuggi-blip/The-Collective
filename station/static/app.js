@@ -246,6 +246,7 @@ const battleSystems = new Set();                    // system id -> the larger g
 let groupHits = [], infraHits = [];            // foreign tags and our own building/site pills as drawn
 let pop = null, hoverBadge = null, badgeHits = [];   // the open fleet card {system, kind}; the marker under the pointer; the markers drawn
 let hoverPolity = null, lockPolity = null, polityLabelHits = [], polityZones = [], empActiveOnly = false;
+let tipTimer = 0, tipTargetKey = '', tipOpen = false, tipClosedAt = 0;
 let cam = null, raf = 0, pulse = 0;                  // an eased move of the view; the frame that is asked for; the timer of the next quiet frame
 
 const canvas = $('map'), ctx = canvas.getContext('2d');
@@ -1162,18 +1163,185 @@ function politiesInSystem(sysId) {
   return out;
 }
 
+function hideTipNow() {
+  if (tipTimer) { clearTimeout(tipTimer); tipTimer = 0; }
+  tipTargetKey = '';
+  const tip = $('tip');
+  if (tip && !tip.hidden) {
+    tip.hidden = true;
+    tip.classList.remove('vis', 'polity-tip');
+    tip.style.borderLeft = '';
+    tipOpen = false;
+    tipClosedAt = Date.now();
+  }
+}
+
+function scheduleTip(key, mx, my, fillFn) {
+  const tip = $('tip');
+  if (!tip) return;
+  const place = () => {
+    tip.hidden = false;
+    const tw = tip.offsetWidth || 240, th = tip.offsetHeight || 96;
+    const left = mx + 16 + tw > W - 10 ? Math.max(8, mx - tw - 14) : mx + 16;
+    const top = my + 14 + th > H - 10 ? Math.max(8, my - th - 12) : my + 14;
+    tip.style.left = Math.round(left) + 'px';
+    tip.style.top = Math.round(top) + 'px';
+    tip.classList.add('vis');
+    tipOpen = true;
+  };
+  if (tipOpen && key === tipTargetKey) {
+    place();
+    return;
+  }
+  if (tipTimer) { clearTimeout(tipTimer); tipTimer = 0; }
+  tipTargetKey = key;
+  // Hover-intent delay (220ms) ignores casual mouse sweeps; active inspection skip-delay (40ms) keeps switching snappy
+  const activeInspect = tipOpen || (Date.now() - tipClosedAt < 450);
+  const delay = activeInspect ? 40 : 220;
+  tipTimer = setTimeout(() => {
+    tipTimer = 0;
+    if (tipTargetKey !== key) return;
+    tip.classList.remove('polity-tip');
+    tip.style.borderLeft = '';
+    fillFn(tip);
+    place();
+  }, delay);
+}
+
+function renderPolityCard() {
+  const box = $('politycard');
+  if (!box) return;
+  const p = lockPolity;
+  if (!p) { box.hidden = true; box.replaceChildren(); return; }
+  // Refresh pointer from latest DIPLO data if refreshed in background
+  const fresh = getPolities().find((x) => x.id === p.id) || p;
+  lockPolity = fresh;
+
+  box.replaceChildren();
+  const col = HEX.test(fresh.color || '') ? fresh.color : (fresh.kind === 'us' ? '#6ea862' : '#aa915b');
+  box.style.borderTop = '2px solid ' + col;
+
+  const hd = el('div', 'pc-head');
+  const tWrap = el('div', 'pc-title');
+  const sw = el('i', 'tip-swatch');
+  sw.style.background = col;
+  tWrap.append(sw, el('b', null, fresh.name));
+  const close = el('button', 'pc-close', 'x');
+  close.type = 'button'; close.title = 'Close (Esc)';
+  close.addEventListener('click', () => focusPolityOnMap(null, false));
+  hd.append(tWrap, close);
+  box.append(hd);
+
+  const pills = el('div', 'pc-pills');
+  const kLbl = fresh.kind === 'us' ? 'OUR EMPIRE' : fresh.kind === 'bloc' ? 'COALITION BLOC' : 'SOLO POWER';
+  pills.append(el('span', 'pill ' + (fresh.kind === 'us' ? 'good' : fresh.kind === 'bloc' ? 'warn' : 'info'), kLbl));
+  if (fresh.activity_state === 'live') pills.append(el('span', 'pill good', 'LIVE'));
+  else if (fresh.activity_state === 'quiet') pills.append(el('span', 'pill', 'QUIET'));
+  if (fresh.rel_power && fresh.rel_power !== 'US') pills.append(relPowerPill(fresh.rel_power));
+  if (fresh.wars && fresh.wars.length) pills.append(el('span', 'pill bad', 'WAR: ' + fresh.wars.join(',')));
+  box.append(pills);
+
+  if (fresh.members_breakdown && fresh.members_breakdown.length > 1) {
+    const mrow = el('div', 'tip-members');
+    for (const m of fresh.members_breakdown.slice(0, 6)) {
+      mrow.append(el('span', 'tip-mpill', '[' + m.tag + '] ' + fmt(m.members) + 'm' + (m.bases ? ' ' + m.bases + 'b' : '')));
+    }
+    box.append(mrow);
+  } else if (fresh.dominant_empire && fresh.dominant_empire !== '--') {
+    box.append(el('div', 'tip-sub', '[' + (fresh.tags || [fresh.id]).join(',') + '] | ' + fresh.dominant_empire + (fresh.age_days ? ' | ' + fresh.age_days + 'd old' : '')));
+  }
+
+  const gr = el('div', 'tip-grid');
+  const kv = (k, v) => { const c = el('div', 'tip-cell'); c.append(el('span', null, k), el('b', null, String(v))); gr.append(c); };
+  kv('Fleet / Members', fresh.kind === 'us'
+    ? fmt(fresh.standing_ships || fresh.total_members) + ' ships (' + fmt(fresh.total_members) + ' fac)'
+    : fmt(fresh.total_members) + ' members');
+  kv('Live Active', fmt(fresh.active_1h || 0) + ' (1h) / ' + fmt(fresh.active_24h || 0) + ' (24h)');
+  const terrN = (fresh.territory_systems || []).length;
+  kv('Bases / Space', fmt(fresh.healthy_bases || 0) + 'b' + (terrN ? ' (' + terrN + ' sys 2J)' : '') + (fresh.nearest_jumps != null && fresh.kind !== 'us' ? ' | ' + fresh.nearest_jumps + 'j' : ''));
+  const techTxt = fresh.max_tier > 0
+    ? 'T' + fresh.max_tier + ' / avg ' + (fresh.avg_tier || 0).toFixed(1) + (fresh.est_piloting ? ' (Lv' + fresh.est_piloting + '+)' : '')
+    : (fresh.kind === 'us' ? 'T' + (fresh.max_tier || 1) + ' (Lv' + (fresh.est_piloting || 0) + ')' : 'unsighted');
+  kv('Upgrade / Tech', techTxt);
+  kv('Total Wealth', fmtCompact(fresh.wealth || 0) + ' cr');
+  const incTxt = fresh.est_income_h
+    ? (fresh.est_income_h > 0 ? '+' : '') + fmtCompact(fresh.est_income_h) + '/h' + (fresh.est_income_src ? ' (' + fresh.est_income_src + ')' : '')
+    : '--';
+  kv('Est. Income/h', incTxt);
+  if (fresh.ore_h > 0 || fresh.crafted_h > 0) {
+    kv('Live Industry', (fresh.ore_h > 0 ? '+' + fmtCompact(fresh.ore_h) + ' ore/h' : '') + (fresh.ore_h > 0 && fresh.crafted_h > 0 ? ' | ' : '') + (fresh.crafted_h > 0 ? '+' + fmt(fresh.crafted_h) + ' crf/h' : ''));
+  }
+  if (fresh.kills > 0 || fresh.kills_pvp > 0) {
+    kv('Combat Kills', fmtCompact(fresh.kills || 0) + (fresh.kills_pvp ? ' (' + fmt(fresh.kills_pvp) + ' PvP)' : ''));
+  }
+  box.append(gr);
+
+  const wBits = [];
+  if (fresh.storage_value > 0) wBits.push('Vault ' + fmtCompact(fresh.storage_value));
+  if (fresh.ship_value > 0) wBits.push('Ships ' + fmtCompact(fresh.ship_value));
+  if (fresh.facility_inv > 0) wBits.push('Fac ' + fmtCompact(fresh.facility_inv));
+  if (wBits.length) box.append(el('div', 'tip-sub', wBits.join('  |  ')));
+
+  const acts = el('div', 'pc-acts');
+  const zBtn = el('button', 'rf', 'Fit on Map');
+  zBtn.type = 'button';
+  zBtn.addEventListener('click', () => {
+    const ids = [...new Set([...(fresh.territory_systems || fresh.core_systems || []), ...(fresh.concentration_systems || []).map((c) => c.system)])];
+    const pts = ids.map((id) => sys.get(id)).filter(Boolean);
+    if (pts.length) fit(pts, 520, false);
+  });
+  const eBtn = el('button', 'rf', 'Open Empire Ledger');
+  eBtn.type = 'button';
+  eBtn.addEventListener('click', () => {
+    tab = 'Empire';
+    empSub = fresh.kind === 'bloc' ? 'Diplomacy' : 'Rivals';
+    render();
+  });
+  acts.append(zBtn, eBtn);
+  box.append(acts);
+  box.hidden = false;
+}
+
+function renderPolityMiniTip(tip, p) {
+  tip.replaceChildren();
+  const col = HEX.test(p.color || '') ? p.color : (p.kind === 'us' ? '#6ea862' : '#aa915b');
+  tip.style.borderLeft = '3px solid ' + col;
+  const hd = el('div', 'tip-head');
+  const tWrap = el('div', 'tip-ptitle');
+  const sw = el('i', 'tip-swatch');
+  sw.style.background = col;
+  tWrap.append(sw, el('span', 'tip-title', p.name));
+  hd.append(tWrap, el('span', 'pill ' + (p.kind === 'us' ? 'good' : p.kind === 'bloc' ? 'warn' : 'info'), p.kind === 'us' ? 'US' : p.kind === 'bloc' ? 'BLOC' : 'SOLO'));
+  const bits = [];
+  if (p.kind === 'us') bits.push(fmt(p.standing_ships || p.total_members) + ' ships');
+  else bits.push(fmt(p.total_members) + 'm');
+  if (p.healthy_bases > 0) bits.push(p.healthy_bases + ' bases');
+  bits.push(fmt(p.active_1h || 0) + ' live');
+  bits.push(fmtCompact(p.wealth || 0) + ' cr');
+  tip.append(hd, el('div', 'tip-sub', bits.join('  |  ')), el('div', 'tip-foot', 'Click nameplate to inspect & isolate'));
+}
+
+// Keep renderPolityTip alias cleanly mapped for backwards compatibility
+function renderPolityTip(tip, p) { renderPolityMiniTip(tip, p); }
+
 function focusPolityOnMap(p, doFit) {
-  if (!p) { lockPolity = null; realmVer++; renderAlerts(); draw(); renderLegend(); return; }
+  if (!p) {
+    lockPolity = null;
+    realmVer++;
+    renderPolityCard(); renderPowers(); renderAlerts(); draw();
+    return;
+  }
   if (lockPolity && lockPolity.id === p.id) {
     lockPolity = null;
     realmVer++;
-    renderAlerts(); draw(); renderLegend();
+    renderPolityCard(); renderPowers(); renderAlerts(); draw();
     return;
   }
   lockPolity = p;
   realmVer++;
+  renderPolityCard();
+  renderPowers();
   renderAlerts();
-  renderLegend();
   if (doFit) {
     const ids = [...new Set([...(p.territory_systems || p.core_systems || []), ...(p.concentration_systems || []).map((c) => c.system)])];
     const pts = ids.map((id) => sys.get(id)).filter(Boolean);
@@ -1181,79 +1349,6 @@ function focusPolityOnMap(p, doFit) {
   }
   draw();
 }
-
-function renderPolityTip(tip, p, overlaps, viaLegend) {
-  tip.replaceChildren();
-  tip.classList.add('polity-tip');
-  const col = p.kind === 'us' ? OURS : (HEX.test(p.color || '') ? p.color : '#e8c35a');
-  tip.style.borderLeft = '3px solid ' + col;
-
-  const hd = el('div', 'tip-head');
-  const titleWrap = el('div', 'tip-ptitle');
-  const sw = el('i', 'tip-swatch');
-  sw.style.background = col;
-  titleWrap.append(sw, el('span', 'tip-title', p.name));
-  const bgs = el('div', 'tip-badges');
-  const kLbl = p.kind === 'us' ? 'OUR EMPIRE' : p.kind === 'bloc' ? 'COALITION BLOC' : 'SOLO POWER';
-  bgs.append(el('span', 'pill ' + (p.kind === 'us' ? 'good' : p.kind === 'bloc' ? 'warn' : 'info'), kLbl));
-  if (p.activity_state === 'live') bgs.append(el('span', 'pill good', 'LIVE'));
-  else if (p.activity_state === 'quiet') bgs.append(el('span', 'pill', 'QUIET'));
-  if (p.rel_power && p.rel_power !== 'US') bgs.append(relPowerPill(p.rel_power));
-  hd.append(titleWrap, bgs);
-  tip.append(hd);
-
-  // Coalition members or solo identity strip
-  if (p.members_breakdown && p.members_breakdown.length > 1) {
-    const mrow = el('div', 'tip-members');
-    for (const m of p.members_breakdown.slice(0, 6)) {
-      mrow.append(el('span', 'tip-mpill', '[' + m.tag + '] ' + fmt(m.members) + 'm' + (m.bases ? ' ' + m.bases + 'b' : '')));
-    }
-    tip.append(mrow);
-  } else if (p.dominant_empire && p.dominant_empire !== '--') {
-    tip.append(el('div', 'tip-sub', '[' + (p.tags || [p.id]).join(',') + '] | ' + p.dominant_empire + (p.age_days ? ' | ' + p.age_days + 'd old' : '')));
-  }
-
-  const gr = el('div', 'tip-grid');
-  const kv = (k, v) => { const c = el('div', 'tip-cell'); c.append(el('span', null, k), el('b', null, String(v))); gr.append(c); };
-  kv('Fleet / Members', p.kind === 'us'
-    ? fmt(p.standing_ships || p.total_members) + ' ships (' + fmt(p.total_members) + ' fac)'
-    : fmt(p.total_members) + ' members');
-  kv('Live Active', fmt(p.active_1h || 0) + ' (1h) / ' + fmt(p.active_24h || 0) + ' (24h)');
-  const baseTxt = fmt(p.healthy_bases || 0) + ' healthy' + (p.nearest_jumps != null && p.kind !== 'us' ? ' (' + p.nearest_jumps + 'j)' : '');
-  kv('Sovereign Bases', baseTxt);
-  const techTxt = p.max_tier > 0
-    ? 'T' + p.max_tier + ' / avg ' + (p.avg_tier || 0).toFixed(1) + (p.est_piloting ? ' (Lv' + p.est_piloting + '+)' : '')
-    : (p.kind === 'us' ? 'T' + (p.max_tier || 1) + ' (Lv' + (p.est_piloting || 0) + ')' : 'unsighted');
-  kv('Upgrade / Tech', techTxt);
-  kv('Total Wealth', fmtCompact(p.wealth || 0) + ' cr');
-  const incTxt = p.est_income_h
-    ? (p.est_income_h > 0 ? '+' : '') + fmtCompact(p.est_income_h) + '/h' + (p.est_income_src ? ' (' + p.est_income_src + ')' : '')
-    : '--';
-  kv('Est. Income/h', incTxt);
-  if (p.ore_h > 0 || p.crafted_h > 0) {
-    kv('Live Industry', (p.ore_h > 0 ? '+' + fmtCompact(p.ore_h) + ' ore/h' : '') + (p.ore_h > 0 && p.crafted_h > 0 ? ' | ' : '') + (p.crafted_h > 0 ? '+' + fmt(p.crafted_h) + ' crf/h' : ''));
-  }
-  if (p.kills > 0 || p.kills_pvp > 0) {
-    kv('Combat Kills', fmtCompact(p.kills || 0) + (p.kills_pvp ? ' (' + fmt(p.kills_pvp) + ' PvP)' : ''));
-  }
-  tip.append(gr);
-
-  // Wealth composition sub-bar (Vault / Ships / Facilities)
-  const wBits = [];
-  if (p.storage_value > 0) wBits.push('Vault ' + fmtCompact(p.storage_value));
-  if (p.ship_value > 0) wBits.push('Ships ' + fmtCompact(p.ship_value));
-  if (p.facility_inv > 0) wBits.push('Facilities ' + fmtCompact(p.facility_inv));
-  if (wBits.length) tip.append(el('div', 'tip-sub', wBits.join('  |  ')));
-
-  if (overlaps && overlaps.length) {
-    tip.append(el('div', 'tip-overlap', 'Overlaps here: ' + overlaps.slice(0, 4).map((x) => x.label).join(', ')));
-  }
-  const foot = el('div', 'tip-foot');
-  foot.append(el('span', null, viaLegend ? 'Click legend row to isolate & zoom' : 'Click nameplate to lock & zoom'));
-  if (p.wars && p.wars.length) foot.append(el('span', 'neg', 'AT WAR: ' + p.wars.join(',')));
-  tip.append(foot);
-}
-
 function groupAt(mx, my) {
   for (let i = groupHits.length - 1; i >= 0; i--) {
     const b = groupHits[i];
@@ -3405,6 +3500,8 @@ async function diploOf(force) {
   try {
     DIPLO = { data: await get('/api/diplomacy'), at: Date.now() };
     realmVer++;
+    renderPowers();
+    renderPolityCard();
     renderLegend();
     draw();
   } catch (e) { return DIPLO.data; }
@@ -4631,6 +4728,61 @@ function initChat() {
 
 // ---------------------------------------------------------------- loading
 
+function politySwatch(p) {
+  const col = HEX.test(p.color || '') ? p.color : (p.kind === 'us' ? '#6ea862' : '#aa915b');
+  const i = el('i', 'swatch');
+  i.style.borderColor = rgba(col, 0.88);
+  i.style.background = rgba(col, 0.22);
+  if (p.border_style === 'double') { i.style.borderStyle = 'double'; i.style.borderWidth = '3px'; }
+  else if (p.border_style === 'dashed' || p.border_style === 'dash-long' || p.border_style === 'dash-dot') i.style.borderStyle = 'dashed';
+  else if (p.border_style === 'dotted') i.style.borderStyle = 'dotted';
+  return i;
+}
+
+function renderPowers() {
+  const box = $('powers');
+  if (!box) return;
+  box.replaceChildren();
+  const polities = getPolities();
+  if (!polities.length) {
+    box.append(el('div', 'pow-empty', 'Loading galactic powers...'));
+    return;
+  }
+  // Order cleanly: The Collective FIRST at top, then Coalition Blocs, then Solo Powers
+  const us = polities.filter((p) => p.kind === 'us');
+  const blocs = polities.filter((p) => p.kind === 'bloc');
+  const solos = polities.filter((p) => p.kind === 'solo');
+
+  const addGroup = (title, items) => {
+    if (!items.length) return;
+    if (title) box.append(el('div', 'pow-head', title));
+    for (const p of items) {
+      const isOn = lockPolity && lockPolity.id === p.id;
+      const btn = el('button', 'lpol' + (p.kind === 'us' ? ' us' : '') + (isOn ? ' on' : ''));
+      btn.type = 'button';
+      const meta = p.kind === 'us'
+        ? fmt(p.standing_ships || p.total_members) + ' ships'
+        : ((p.healthy_bases ? p.healthy_bases + 'b ' : '') + (p.active_1h ? p.active_1h + ' live' : fmt(p.total_members) + 'm'));
+      btn.append(politySwatch(p), el('span', 'lpol-n', p.name), el('span', 'lpol-m', meta));
+      // Gentle border spotlight on hover ONLY -- zero annoying cursor popup! Click to select & open profile card.
+      btn.addEventListener('mouseenter', () => {
+        hoverPolity = p;
+        realmVer++;
+        draw();
+      });
+      btn.addEventListener('mouseleave', () => {
+        if (hoverPolity && hoverPolity.id === p.id) { hoverPolity = null; realmVer++; draw(); }
+      });
+      btn.addEventListener('click', () => focusPolityOnMap(p, true));
+      box.append(btn);
+    }
+  };
+
+  addGroup('', us);
+  addGroup('Coalition Blocs', blocs);
+  addGroup('Solo Powers', solos);
+}
+
 function renderLegend() {
   const legend = $('legend');
   if (!legend || !S) return;
@@ -4639,50 +4791,11 @@ function renderLegend() {
   const row = (icon, words, wide) => { const span = el('span', wide ? 'lrow full' : 'lrow'); span.append(icon, words); legend.append(span); };
   const swatch = (edge, fill) => { const i = el('i', 'swatch'); i.style.borderColor = edge; i.style.background = fill; return i; };
 
-  const polities = getPolities();
-  if (polities.length) {
-    head('Galactic Powers (hover / click)');
-    for (const p of polities) {
-      const col = p.kind === 'us' ? OURS : (HEX.test(p.color || '') ? p.color : '#e8c35a');
-      const btn = el('button', 'lpol' + (lockPolity && lockPolity.id === p.id ? ' on' : ''));
-      btn.type = 'button';
-      const sw = swatch(rgba(col, 0.85), rgba(col, 0.20));
-      if (p.border_style === 'double') { sw.style.borderStyle = 'double'; sw.style.borderWidth = '3px'; }
-      else if (p.border_style === 'dashed' || p.border_style === 'dash-long' || p.border_style === 'dash-dot') sw.style.borderStyle = 'dashed';
-      else if (p.border_style === 'dotted') sw.style.borderStyle = 'dotted';
-      const meta = p.kind === 'us'
-        ? fmt(p.standing_ships || p.total_members) + ' ships'
-        : ((p.healthy_bases ? p.healthy_bases + 'b ' : '') + (p.active_1h ? p.active_1h + ' live' : fmt(p.total_members) + 'm'));
-      btn.append(sw, el('span', 'lpol-n', p.label), el('span', 'lpol-m', meta));
-      btn.addEventListener('mouseenter', (ev) => {
-        hoverPolity = p;
-        realmVer++;
-        draw();
-        const tip = $('tip');
-        renderPolityTip(tip, p, [], true);
-        tip.hidden = false;
-        const mr = canvas.getBoundingClientRect();
-        const br = btn.getBoundingClientRect();
-        const left = Math.min(W - (tip.offsetWidth || 320) - 10, Math.max(12, br.right - mr.left + 12));
-        const top = Math.min(H - (tip.offsetHeight || 180) - 10, Math.max(10, br.top - mr.top));
-        tip.style.left = Math.round(left) + 'px';
-        tip.style.top = Math.round(top) + 'px';
-      });
-      btn.addEventListener('mouseleave', () => {
-        if (hoverPolity && hoverPolity.id === p.id) { hoverPolity = null; realmVer++; draw(); }
-        const tip = $('tip');
-        tip.hidden = true; tip.classList.remove('polity-tip'); tip.style.borderLeft = '';
-      });
-      btn.addEventListener('click', () => focusPolityOnMap(p, true));
-      legend.append(btn);
-    }
-    row(swatch('rgba(200,210,235,0.65)', 'rgba(200,210,235,0.10)'), '2J merged borders around bases (style per bloc) | dotted ring: fleet hub', true);
-  }
-
-  head('Starting Empires (backdrop)');
+  head('Borders & Backdrop');
+  row(swatch('rgba(200,210,235,0.65)', 'rgba(200,210,235,0.10)'), '2J merged base borders (unique style per bloc) | dotted ring: fleet hub', true);
   for (const [name, c] of Object.entries(S.empires || {})) {
     const colour = HEX.test(c) ? c : LAWLESS;
-    row(swatch(rgba(colour, 0.45), rgba(colour, 0.12)), name === 'outerrim' ? 'outer rim' : name);
+    row(swatch(rgba(colour, 0.40), rgba(colour, 0.10)), name === 'outerrim' ? 'outer rim' : name);
   }
   const free = el('i'); free.style.background = LAWLESS;
   row(free, 'lawless');
@@ -4714,7 +4827,6 @@ function renderLegend() {
   const seen = el('i', 'seen');
   row(seen, 'traffic in the last hour', true);
 }
-
 async function loadState() {
   S = await get('/api/state');
   sys.clear(); stationsBy.clear();
@@ -4765,6 +4877,7 @@ const SHUTTERS = {                               // name: [the element that fold
   right: ['main-right', 'hide-right', 'Hide the right panel', 'Show the right panel'],
   dock: ['chat-dock', 'dock-toggle', 'Hide the messages', 'Show the messages'],
   layers: ['layers-box', 'layers-toggle', 'Hide the layers', 'Show the layers'],
+  powers: ['powers-box', 'powers-toggle', 'Hide Empires & Blocs', 'Show Empires & Blocs'],
   legend: ['legend-box', 'legend-toggle', 'Hide the legend', 'Show the legend'],
 };
 function applyShut(name) {
@@ -4809,152 +4922,145 @@ function init() {
     nav.append(b);
   }
   let drag = null, moved = false;
-  canvas.addEventListener('mousedown', (e) => { cam = null; drag = [e.clientX, e.clientY, view.x, view.y]; moved = false; canvas.classList.add('drag'); });
+  canvas.addEventListener('mousedown', (e) => { hideTipNow(); cam = null; drag = [e.clientX, e.clientY, view.x, view.y]; moved = false; canvas.classList.add('drag'); });
   window.addEventListener('mouseup', () => { drag = null; canvas.classList.remove('drag'); });
   const dragTo = (e) => {
-    if (Math.abs(e.clientX - drag[0]) + Math.abs(e.clientY - drag[1]) > 3) moved = true;
+    if (Math.abs(e.clientX - drag[0]) + Math.abs(e.clientY - drag[1]) > 3) { moved = true; hideTipNow(); }
     view.x = drag[2] - (e.clientX - drag[0]) / view.k; view.y = drag[3] - (e.clientY - drag[1]) / view.k;
     draw();
   };
-  window.addEventListener('mousemove', (e) => { if (drag && e.target !== canvas) dragTo(e); });   // a drag goes on over the boxes on the map
+  window.addEventListener('mousemove', (e) => { if (drag && e.target !== canvas) dragTo(e); });
   canvas.addEventListener('mousemove', (e) => {
     const r = canvas.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top;
     if (drag) { dragTo(e); return; }
     const infraAt = (px, py) => infraHits.find((h) => px >= h.x && px <= h.x + h.w && py >= h.y && py <= h.y + h.h);
-    const tip = $('tip');
-    tip.classList.remove('polity-tip');
-    tip.style.borderLeft = '';
     const badge = S && badgeAt(mx, my);
     const inf = !badge && S && infraAt(mx, my);
     const grp = !badge && !inf && S && groupAt(mx, my);
     const plab = !badge && !inf && !grp && S && polityLabelAt(mx, my);
     const s = !badge && !inf && !grp && !plab && S && nearest(mx, my);
-    const preg = !badge && !inf && !grp && !plab && !s && S && polityRegionAt(mx, my);
-    hover = inf ? inf.system : s ? s.id : null; hoverBadge = badge || null;
-    const nextPol = plab || (preg ? preg.primary : null);
+    hover = inf ? inf.system : s ? s.id : null;
+    hoverBadge = badge || null;
+    // Highlight polity borders ONLY when hovering its deliberate nameplate (never flickering wildly across empty space!)
+    const nextPol = plab || null;
     if ((hoverPolity ? hoverPolity.id : '') !== (nextPol ? nextPol.id : '')) {
       hoverPolity = nextPol;
       realmVer++;
     }
     canvas.style.cursor = badge || inf || grp || plab ? 'pointer' : '';
     const placeName = (b) => { const o = sys.get(b.system); return o ? o.name : b.system; };
-    const placeTip = () => {
-      tip.hidden = false;
-      const tw = tip.offsetWidth || 250, th = tip.offsetHeight || 110;
-      const left = mx + 16 + tw > W - 10 ? Math.max(8, mx - tw - 14) : mx + 16;
-      const top = my + 14 + th > H - 10 ? Math.max(8, my - th - 12) : my + 14;
-      tip.style.left = Math.round(left) + 'px';
-      tip.style.top = Math.round(top) + 'px';
-    };
     const tipKV = (grid, k, v) => { const c = el('div', 'tip-cell'); c.append(el('span', null, k), el('b', null, String(v))); grid.append(c); };
+
     if (badge) {
       const at = sys.get(badge.system) || {};
-      tip.replaceChildren();
-      const hd = el('div', 'tip-head'), bgs = el('div', 'tip-badges');
-      bgs.append(el('span', 'pill good', badge.count + (badge.count === 1 ? ' ship' : ' ships')), el('span', 'pill info', at.empire || 'lawless'));
-      hd.append(el('span', 'tip-title', placeName(badge)), bgs);
-      tip.append(hd, el('div', 'tip-own', badge.parts), el('div', 'tip-foot', 'Click marker for live fleet card'));
-      placeTip();
+      const key = 'badge:' + badge.system + ':' + badge.kind;
+      scheduleTip(key, mx, my, (tip) => {
+        tip.replaceChildren();
+        const hd = el('div', 'tip-head'), bgs = el('div', 'tip-badges');
+        bgs.append(el('span', 'pill ' + (at.empire ? 'info' : 'warn'), at.empire || 'lawless'));
+        if (at.jumps >= 0) bgs.append(el('span', 'pill', at.jumps + 'j'));
+        hd.append(el('span', 'tip-title', placeName(badge)), bgs);
+        const gr = el('div', 'tip-grid');
+        tipKV(gr, 'Group', badge.kind);
+        tipKV(gr, 'Ships', badge.ships.length);
+        tipKV(gr, 'Working', badge.ships.filter(isWorking).length + '/' + badge.ships.length);
+        tipKV(gr, 'Credits', fmtCompact(badge.ships.reduce((a, x) => a + (x.credits || 0), 0)) + ' cr');
+        tip.append(hd, gr, el('div', 'tip-foot', 'Click for full ship breakdown'));
+      });
     } else if (inf) {
-      tip.replaceChildren();
-      const hd = el('div', 'tip-head');
-      hd.append(el('span', 'tip-title', placeName(inf)), el('span', 'pill good', 'CLTV INFRA'));
-      tip.append(hd);
-      if (inf.own.length) {
-        const lst = el('div', 'tip-list');
-        inf.own.forEach((b) => lst.append(el('div', 'tip-own', b.name + (b.at && !b.part ? ' @ ' + b.at : '') + (stands(b) ? '' : ' [' + b.status + ']'))));
-        tip.append(lst);
-      }
-      if (inf.site && inf.site.status !== 'built' && inf.site.status !== 'dropped') {
-        const pctTxt = inf.siteInfo && inf.siteInfo.need_pct !== null ? ' -- ' + inf.siteInfo.need_pct + '% kit ready' : '';
-        tip.append(el('div', 'tip-site', 'Planned site: ' + inf.site.status.toUpperCase() + pctTxt));
-      }
-      tip.append(el('div', 'tip-foot', 'Click to inspect buildings & stock'));
-      placeTip();
+      const key = 'inf:' + inf.system + ':' + (inf.label || '');
+      scheduleTip(key, mx, my, (tip) => {
+        tip.replaceChildren();
+        const hd = el('div', 'tip-head');
+        hd.append(el('span', 'tip-title', placeName(inf)), el('span', 'pill good', inf.kind === 'site' ? 'Expansion site' : 'CLTV holding'));
+        tip.append(hd, el('div', 'tip-own', inf.tip || inf.label || 'Sovereign infrastructure'), el('div', 'tip-foot', 'Click to open Selection'));
+      });
     } else if (grp) {
       const g = grp.group;
-      tip.replaceChildren();
-      const hd = el('div', 'tip-head');
-      hd.append(el('span', 'tip-title', '[' + g.tag + '] ' + (g.name || 'Foreign Group')),
-        el('span', 'pill ' + (g.standing === 'hostile' ? 'bad' : g.standing === 'ally' ? 'good' : 'warn'), g.standing));
-      const gr = el('div', 'tip-grid');
-      tipKV(gr, 'System', placeName(grp));
-      tipKV(gr, 'Pilots (1h)', g.count);
-      tip.append(hd, gr, el('div', 'tip-foot', 'Click for pilot & hull intel'));
-      placeTip();
-    } else if (s) {
-      const ours = shipsBy.get(s.id) || [], own = holdBy.get(s.id) || [], site = sitesBy.get(s.id), st = stationsBy.get(s.id) || [];
-      tip.replaceChildren();
-      const hd = el('div', 'tip-head'), bgs = el('div', 'tip-badges');
-      if (s.stronghold) bgs.append(el('span', 'pill bad', 'stronghold'));
-      bgs.append(el('span', 'pill ' + (s.empire ? 'info' : 'warn'), s.empire || 'lawless'));
-      if (s.jumps >= 0) bgs.append(el('span', 'pill', s.jumps + 'j'));
-      hd.append(el('span', 'tip-title', s.name), bgs);
-      tip.append(hd);
-      if (own.length) {
-        tip.append(el('div', 'tip-own', 'CLTV: ' + own.map((b) => b.name + (stands(b) ? '' : ' (' + String(b.status).replace(/_/g, ' ') + ')')).join(', ')));
-      }
-      if (site && site.status !== 'dropped' && site.status !== 'built') {
-        const sr = ((OPS.data && OPS.data.empire && OPS.data.empire.sites) || []).find((x) => x.system === s.id);
-        tip.append(el('div', 'tip-site', 'Expansion site: ' + site.status.toUpperCase() + (sr && sr.need_pct != null ? ' (' + sr.need_pct + '%)' : '')));
-      }
-      const gr = el('div', 'tip-grid');
-      tipKV(gr, 'Our ships', ours.length ? ours.length + ' active' : '0');
-      tipKV(gr, 'Stations', st.length);
-      tipKV(gr, 'Traffic 1h', (L.hour[s.id] || 0) + ' pilots');
-      tipKV(gr, 'Traffic 24h', (L.day[s.id] || 0) + ' pilots');
-      if (INVCACHE.value && st.length) {
-        const sNames = new Set(st.map((t) => t.name));
-        const stWorth = INVCACHE.value.stations.filter((x) => sNames.has(x.name)).reduce((a, x) => a + (x.worth || 0), 0);
-        if (stWorth > 0) tipKV(gr, 'Our stock', fmtCompact(stWorth) + ' cr');
-      }
-      tip.append(gr);
-      const pHere = politiesInSystem(s.id);
-      if (pHere.length) {
-        const prow = el('div', 'tip-members');
-        for (const item of pHere.slice(0, 5)) {
-          const mp = el('span', 'tip-mpill');
-          const c = item.p.kind === 'us' ? OURS : (HEX.test(item.p.color || '') ? item.p.color : '#e8c35a');
-          mp.style.borderColor = rgba(c, 0.72);
-          mp.style.color = c;
-          mp.textContent = item.p.label + (item.kind === 'core' ? ' [BASE]' : item.kind === 'terr' ? ' [2J]' : ' [FLEET]');
-          prow.append(mp);
-        }
-        tip.append(prow);
-      }
-      const ft = el('div', 'tip-foot');
-      ft.append(el('span', null, 'Click to open Selection'));
-      if (S.intel.systems[s.id] && S.intel.systems[s.id].threat && S.intel.systems[s.id].threat !== 'none') {
-        ft.append(el('span', null, 'threat: ' + S.intel.systems[s.id].threat));
-      }
-      tip.append(ft);
-      placeTip();
+      const key = 'grp:' + grp.system + ':' + g.tag;
+      scheduleTip(key, mx, my, (tip) => {
+        tip.replaceChildren();
+        const hd = el('div', 'tip-head');
+        hd.append(el('span', 'tip-title', '[' + g.tag + '] ' + (g.name || 'Foreign Group')),
+          el('span', 'pill ' + (g.standing === 'hostile' ? 'bad' : g.standing === 'ally' ? 'good' : 'warn'), g.standing));
+        const gr = el('div', 'tip-grid');
+        tipKV(gr, 'System', placeName(grp));
+        tipKV(gr, 'Pilots (1h)', g.count);
+        tip.append(hd, gr, el('div', 'tip-foot', 'Click for pilot & hull intel'));
+      });
     } else if (plab) {
-      renderPolityTip(tip, plab, [], false);
-      placeTip();
-    } else if (preg) {
-      renderPolityTip(tip, preg.primary, preg.overlaps, false);
-      placeTip();
-    } else tip.hidden = true;
+      scheduleTip('plab:' + plab.id, mx, my, (tip) => renderPolityMiniTip(tip, plab));
+    } else if (s) {
+      scheduleTip('sys:' + s.id, mx, my, (tip) => {
+        const ours = shipsBy.get(s.id) || [], own = holdBy.get(s.id) || [], site = sitesBy.get(s.id), st = stationsBy.get(s.id) || [];
+        tip.replaceChildren();
+        const hd = el('div', 'tip-head'), bgs = el('div', 'tip-badges');
+        if (s.stronghold) bgs.append(el('span', 'pill bad', 'stronghold'));
+        bgs.append(el('span', 'pill ' + (s.empire ? 'info' : 'warn'), s.empire || 'lawless'));
+        if (s.jumps >= 0) bgs.append(el('span', 'pill', s.jumps + 'j'));
+        hd.append(el('span', 'tip-title', s.name), bgs);
+        tip.append(hd);
+        if (own.length) {
+          tip.append(el('div', 'tip-own', 'CLTV: ' + own.map((b) => b.name + (stands(b) ? '' : ' (' + String(b.status).replace(/_/g, ' ') + ')')).join(', ')));
+        }
+        if (site && site.status !== 'dropped' && site.status !== 'built') {
+          const sr = ((OPS.data && OPS.data.empire && OPS.data.empire.sites) || []).find((x) => x.system === s.id);
+          tip.append(el('div', 'tip-site', 'Expansion site: ' + site.status.toUpperCase() + (sr && sr.need_pct != null ? ' (' + sr.need_pct + '%)' : '')));
+        }
+        const gr = el('div', 'tip-grid');
+        tipKV(gr, 'Our ships', ours.length ? ours.length + ' active' : '0');
+        tipKV(gr, 'Stations', st.length);
+        tipKV(gr, 'Traffic 1h', (L.hour[s.id] || 0) + ' pilots');
+        tipKV(gr, 'Traffic 24h', (L.day[s.id] || 0) + ' pilots');
+        if (INVCACHE.value && st.length) {
+          const sNames = new Set(st.map((t) => t.name));
+          const stWorth = INVCACHE.value.stations.filter((x) => sNames.has(x.name)).reduce((a, x) => a + (x.worth || 0), 0);
+          if (stWorth > 0) tipKV(gr, 'Our stock', fmtCompact(stWorth) + ' cr');
+        }
+        tip.append(gr);
+        const pHere = politiesInSystem(s.id);
+        if (pHere.length) {
+          const prow = el('div', 'tip-members');
+          for (const item of pHere.slice(0, 4)) {
+            const mp = el('span', 'tip-mpill');
+            const c = HEX.test(item.p.color || '') ? item.p.color : (item.p.kind === 'us' ? '#6ea862' : '#aa915b');
+            mp.style.borderColor = rgba(c, 0.72);
+            mp.style.color = c;
+            mp.textContent = item.p.name + (item.kind === 'core' ? ' [BASE]' : item.kind === 'terr' ? ' [2J]' : ' [FLEET]');
+            prow.append(mp);
+          }
+          tip.append(prow);
+        }
+        const ft = el('div', 'tip-foot');
+        ft.append(el('span', null, 'Click to open Selection'));
+        if (S.intel.systems[s.id] && S.intel.systems[s.id].threat && S.intel.systems[s.id].threat !== 'none') {
+          ft.append(el('span', null, 'threat: ' + S.intel.systems[s.id].threat));
+        }
+        tip.append(ft);
+      });
+    } else {
+      hideTipNow();
+    }
     draw();
   });
-  canvas.addEventListener('mouseleave', () => { const t = $('tip'); t.hidden = true; t.classList.remove('polity-tip'); t.style.borderLeft = ''; hover = null; hoverBadge = null; if (hoverPolity) { hoverPolity = null; realmVer++; } draw(); });
+  canvas.addEventListener('mouseleave', () => { hideTipNow(); hover = null; hoverBadge = null; if (hoverPolity) { hoverPolity = null; realmVer++; } draw(); });
   canvas.addEventListener('click', (e) => {
     if (moved || !S) return;
     const r = canvas.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top, badge = badgeAt(mx, my);
-    if (badge) { $('tip').hidden = true; select(badge.system, false); openPop(badge.system, badge.kind); return; }   // our ships stand in the system's own place: the system is picked and their card opens
+    if (badge) { hideTipNow(); select(badge.system, false); openPop(badge.system, badge.kind); return; }   // our ships stand in the system's own place: the system is picked and their card opens
     const inf = infraHits.find((h) => mx >= h.x && mx <= h.x + h.w && my >= h.y && my <= h.y + h.h);
-    if (inf) { $('tip').hidden = true; if (pop) closePop(); select(inf.system, false); return; }
+    if (inf) { hideTipNow(); if (pop) closePop(); select(inf.system, false); return; }
     const grp = groupAt(mx, my);
-    if (grp) { $('tip').hidden = true; openGroup(grp.system, grp.group); return; }
+    if (grp) { hideTipNow(); openGroup(grp.system, grp.group); return; }
     const plab = polityLabelAt(mx, my);
-    if (plab) { $('tip').hidden = true; focusPolityOnMap(plab, true); return; }
+    if (plab) { hideTipNow(); focusPolityOnMap(plab, true); return; }
     const s = nearest(mx, my);
     if (pop) closePop();
     if (s) select(s.id, false);
   });
   canvas.addEventListener('wheel', (e) => {
     e.preventDefault();
+    hideTipNow();
     const r = canvas.getBoundingClientRect(), mx = e.clientX - r.left - W / 2, my = e.clientY - r.top - H / 2;
     const k = Math.max(minZoom(), Math.min(3, view.k * (e.deltaY < 0 ? 1.2 : 1 / 1.2)));
     cam = null;
