@@ -87,6 +87,10 @@
   {
    "what": "Strip a scout's off-role Mining Laser I once its origin-empire missions that mine are done (F35 keeps it until then); weigh its hand-over to Mining",
    "when": "when the Mastery mining missions close"
+  },
+  {
+   "what": "Weigh one T2 Confluence for a Piloting-10 scout by fuel per read, funded under F12",
+   "when": "once a T2 hull's fuel per jump is on record"
   }
  ],
  "ships": {
