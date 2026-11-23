@@ -490,3 +490,12 @@ Failed: fill gate HALT, 45 haulers waiting (24 Nebula newborns without class wor
 Requests: requests.log ENT-421 (to Unity: docked standby or a Rim test for the Nebula newborn haulers).
 Suggestions: count a docked hauler with no class work in reach as operating, as for scouts (queue ENT-249); a runner change ships with a test of the changed branch; SPACEMOLT.md at 86% of its cap.
 Report: shipyard-carries-for-rim-newborns-runner-crash-fixed.
+
+## [ENT-139] | 2026-11-23 04:50 UTC | Mercury | session | ref: reports/2026-11-23_mercury_sol-nitrogen-craft-for-solarian-newborns-first-links-hand-in.md | see: orders.log ENT-071
+Session: scheduled run mercury-turn -- a docked craft at Sol for the Solarian newborns; First Links handed in by hand.
+Did: scanned every hand recipe and every one-empire gap for the 45 waiting newborns; wrote craft-sell-nitrogen-sol-central (one unit by hand +11 cr, two runs +396 cr each, lifted 1 -> 12; 11 runs +4,284 cr by 04:36 UTC); put five home once missions into First; wrote First Links, found its hand-in by hand (two pilots paid 4,000 cr each) and replaced the route; installed route_run.py's sell_order step (b776261d); guidebook drift 5 -> 0, Standing Plan rewritten.
+Worked: waiting traders 45 -> 26; Trade +20,014 cr net in the hour to 03:31 UTC and +3,933 to 03:59 UTC (tool fleet, view=money); 8,000 cr once from First Links for 2,238 cr of goods.
+Failed: First Links' first form handed in nothing (goods carried through a target, not stored); 23 Nebula-born and 3 Solarian-born still wait (fill gate HALT: 26 ships of trader wait); the jump loop not capped at ten (35 on it).
+Requests: requests.log ENT-420 (Unity: the Nebula-born's work); queue ENT-251, ENT-252, ENT-254.
+Suggestions: a routes.py warning for delivery goods that leave a target aboard; a short lock for route_run.py installs.
+Report: sol-nitrogen-craft-for-solarian-newborns-first-links-hand-in.
