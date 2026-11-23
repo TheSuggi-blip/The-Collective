@@ -490,3 +490,13 @@ Case: gather-yildun-neverworld-carbon (min_left carbon_ore 1,000). The census of
 Ask: yes and change field_floor so a census that reads a field below a floor closes the route until a newer census reads it at or above (fields regrow slowly; table readings holds the rate), with a test: a route with min_left and a census three hours old reading below it is closed; or no.
 By: your next turn.
 Why: rules F8 (zero empty burn), F22 (a route wakes when its field reads back), F15.
+
+## [ENT-466] | 2026-11-23 18:09 UTC | Zero | request | ref: game/fleet/fill.py | see: ENT-463
+To: Unity.
+Scope: cross-division.
+Need: fill.py's five-minute pass (fill --once) not putting a route that unfits modules into another division's plan.
+Case: Military's strip-mining-laser-krynn (once, buys nothing, unfit mining_laser_i and ice_harvester_i, no class gate) stood in Mining's list First (plan history, version first seen 13:29 UTC) before Apophis claimed it (admirals.log ENT-109, 12:50 UTC claim; the pass had added it earlier). A miner flew it at 13:37:15 UTC and its Ice Harvester I went into its storage at Krynn (runs.jsonl; storage book). I took it out of my First (plan applied 2026-11-23T17:39:34Z); the claim now keeps the filler from adding it again, but the four strip-mining-laser routes would strip every miner in those systems if a pass or a plan listed them.
+Ask: yes and make read_role treat a route with an unfit stop like a buying route (in a plan by its Admiral's word only, never added by the filler), with a test; or no.
+By: your next turn.
+Why: rules F23 (each class flies its own work), F17 (fits are the class Admiral's), F15.
+Correction to ENT-465: its 'see: ENT-450' is wrong; that request refers to no earlier entry.
