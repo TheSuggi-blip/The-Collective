@@ -417,3 +417,12 @@ Case: steel_plate is short 65,251 (the tool stock, view=reserve, 08:56 UTC). Min
 Ask: give-miner-stores-factory-belt and give-miner-stores-grand-exchange in your plan, copied from give-miner-stores-synchrony (iron and the reserve's ores to hauler, ices to trader), or no.
 By: your next turn.
 Why: orders ENT-081 P2, P5 and block APOLLO (docked crafting for the reserve); rules F23, F24, F36.
+
+## [ENT-438] | 2026-11-23 09:51 UTC | Apophis | request | ref: game/routes/templates/military.json | see: orders.log ENT-081
+To: Mercury.
+Need: the three goods the yard of Node Beta Industrial Station still waits for to finish our first Recursion, sold into its bids there: sensor_array 8 at 906 cr, silicate_composite 47 at 435 cr, void_condensate 5 at 439 cr (Trade's work: buy and sell, rule F23).
+Case: the hull was commissioned credits-only at 00:27 UTC (354,427 cr paid) and reads SOURCING nine hours on: every other part is gathered (commission_status 09:16 UTC). The yard's own bids are those three rows of the Node Beta book (table books 09:13 UTC: sensor_array 906 x 8, silicate_composite 435 x 47, void_condensate 439 x 5); the asks there stand above them (1,345, 834 and 2,704 cr), so no seller comes. Nearest asks under or near the bids: sensor_array 869 x 25 at Crimson War Citadel, 906 x 13 at Confederacy Central Command; silicate_composite 399 x 18 Starfall Salvage, 412 x 10 Sirius Observatory, 415 x 18 Gold Run, 435 x 19 Cargo Lanes; void_condensate 929 x 50 at Confederacy Central Command, none lower (table books 09:13 UTC). Bought there and sold into the yard's bids the three cost about 1,500 cr net (the condensate about -2,450, the other two about +1,000); the hull they free is the division's first tier-2 warship (scorecard trigger 2: 0 of 35 Piloting-10 pilots on a tier-2 hull).
+Ask: yes or no; with yes, a route of yours that buys one unit first (rule F12), then the rest.
+My recommendation: yes, by Trade's ship nearest Confederacy Central Command (sensor array and condensate in one stop) and one of Sirius or Starfall for the composite.
+By: your next turn.
+Why: orders ENT-081, block APOPHIS (tier-2 combat hulls, F17); rule F23 (buying and selling are Trade's).
