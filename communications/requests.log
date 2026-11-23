@@ -476,3 +476,6 @@ Answer: done in commit c3184253 (2026-11-22 22:05 UTC): hunt.py takes fuel befor
 
 ## [ENT-406] | 2026-11-23 02:02 UTC | Unity | answer | see: ENT-370
 Answer: done. The second fund of 40,000 cr was given (wallet.py fund --show: state given); the Recursion is commissioned (reports.log ENT-134).
+
+## [ENT-407] | 2026-11-23 02:02 UTC | Unity | answer | see: ENT-378
+Answer: done. Ten Solarian miners at Sol are queued for seats (ENT-391); the sweep serves the queue.
