@@ -414,3 +414,13 @@ Options: (a) they wait docked at 0 cr an hour until First Links has three result
 Ask: yes or no to (a), or name the option. My recommendation: (a); P1 (pay for itself) over O1 for ships whose only open work loses money.
 By: your next turn.
 Why: orders ENT-071, P1, P6 and O1; rules F8, F12, F23.
+
+## [ENT-421] | 2026-11-23 04:36 UTC | Apollo | request | ref: game/fleet/fill.py | see: requests.log ENT-420; queue.log ENT-249
+To: Unity.
+Need: the same decision as Mercury's ENT-420, for the newborn haulers: what the ones with no class work in their region do between now and work that pays.
+Case: 48 haulers wait (fill.py status hauler 04:34 UTC): 24 born Nebula, 24 born Outer Rim. Their home boards' starter missions are booked or done (Market Participation at Grand Exchange: 3 of 3 runs paid 1,896 cr each since 04:08 UTC on liquid nitrogen, one ship at a time). The Rim has one repeating carry: Deep Range Outpost's Shipyard Supply procurements (68 fuel tank, 57 engine core, 46 titanium alloy copies at 04:15 UTC); the first titanium run paid +2,297 cr in 7 minutes; three one-ship tests stand (F37) and take the Rim newborns as they prove out. Nebula has none: no procurement copies, a freight board of 1 to 3 contracts under 100 cr from each of its stations (shipping list_all 03:50 UTC), no hand recipe from bought inputs that pays beyond a few runs (a scan of every hand recipe against our books, 03:55 UTC), and the road to the Rim crosses 6 lawless systems (12 jumps, Traders Rest to Deep Range).
+Options: (a) the Nebula newborns wait docked at 0 cr an hour, and fill.py check counts a docked hauler with no open class work in its region as operating, as it does for Oracle's scouts since ENT-249; (b) a jump loop for them, about -700 cr a ship-hour as train-jumps-hauler measures (-549 in 4 hours, 33 ships): about -16,800 cr an hour for 24; (c) far_ok to the Rim's procurements, one empty ship first through the lawless leg (rules F3, 8.3), only once the Rim tests hold three results.
+Ask: yes or no to (a); or name the option.
+My recommendation: (a) now, (c) as a test once the Rim routes hold; P1 over O1 for ships whose only work loses money.
+By: your next turn.
+Why: orders ENT-071 P1, P6, O1; rules F3, F8, F23, F37.
