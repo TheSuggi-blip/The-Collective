@@ -3,7 +3,7 @@ name: system-architecture
 id: 20261122T015958Z
 tier: governance
 author: Trinity
-updated: 2026-11-22
+updated: 2026-11-23
 links:
   - governance/the-collective-constitution.md
   - governance/strategy.md
@@ -11,6 +11,8 @@ links:
   - governance/agents-and-orchestration.md
   - governance/knowledge-and-memory-loop.md
   - governance/progression-roadmap.md
+  - governance/kpi-and-strategy-system.md
+  - governance/accounting-and-hud-blueprint.md
   - game/handbook.md
   - communications/protocol.md
 ---
@@ -116,9 +118,13 @@ Lock-free Readers (immutable read.db):
 3. **Pull-based reserve & class guard (`pull.py`, `needs.py`, `workclass.py`):**
    - Open projects in `game/needs.tsv` define the fleet reserve (`F24`, `F36`). Extraction/crafting routes gated on reserve levels run while short and close automatically when full; goods above the reserve surface in `surplus.py` for Trade to sell.
    - `workclass.py` maps each route to its division class (`F23`) and tracks remaining non-trader sales (`workclass.py sales`) for `strict-classes-on`.
-4. **Role-aware treasury sweep (`wallet.py sweep`, `F7`):**
-   - Automatically sweeps surplus ship cash via the flagship into the faction treasury: `trader` and `command` ships keep `50,000 cr` (sweep `>= 60,000 cr`), while `miner`, `hauler`, `scout`, `drone`, and `sentinel` ships keep `30,000 cr` (sweep `>= 40,000 cr`), skipping designated builders and ships in combat.
-5. **Cross-turn Velocity & Loop Watchdog (`game/fleet/watchdog.py`):**
+4. **Role-aware treasury sweep, autonomous division funding & clean stops (`wallet.py`, `build.py`, `stop_pilot.py`, `F7`/`F12`/`F16`):**
+   - Automatically sweeps surplus ship cash via the flagship into the faction treasury (`50k` Trade/Command, `30k` working roles). Admirals fund their own division ships autonomously (`wallet.py fund`, `<=400k`/pilot, `<=750k`/24h, `>=500k` floor) and Logistics builds routine facilities (`build.py <=500k` above `500k` floor). Per-pilot/per-route clean stops (`stop_pilot.py` / MCP `stop`) cancel individual runners cleanly without halting peers.
+   - Combat pirate-farming routes may explicitly opt in via `"pirates_ok": true` (`dispatch.py`, `F9`/`F27`) while non-combat routes remain strictly blocked from pirate zones.
+5. **GAAP/IFRS Accounting, Adaptive KPI Scorecard & Watchdog (`accounting.py`, `scorecard.py`, `watchdog.py`):**
+   - Full financial architecture (IAS 2 NRV vault valuation, Matching Principle on `once` routes, CapEx isolation, Intercompany Transfer Pricing, and HUD data map) lives in `governance/accounting-and-hud-blueprint.md`.
+   - Dynamic Posture (`WAR_ALERT` / `CASHFLOW_RECOVERY` / `PEACETIME_GROWTH`), MAUT x WSJF triage scoring, shared faction KPIs, and 8 Strategy-Pinned Copy/Counter Playbooks live in `governance/kpi-and-strategy-system.md`.
+6. **Cross-turn Velocity & Loop Watchdog (`game/fleet/watchdog.py`):**
    - Evaluates 7 deterministic dimensions (`OK / WARN / STUCK`): (1) `10/10` service & `p95` tick lag health; (2) `S5` idle ship compliance; (3) fast `<= 0 cr` run loops (`FAST_ZERO_LOOP`), pilot churn, and commercial `ROUTE_BLEED`; (4) `P1/P2` need coverage velocity across snapshots (`watchdog.state.json`), `NEED_READY_NOW` (`>= 99.95%` stocked + `treasury >= fee`), `FACTION_CAP_NEAR`, and `OPEN_FACTION_SEATS` (`F11`); (5) `Piloting >= 10/20` Tier-0 hull upgrade backlog; (6) `P5` `strict-classes` countdown; (7) critical `< 25%` supply shortages, MAD `OUT` alerts, and `requests.log` items open `> 4.5h`.
 
 ## 5. Turn-Start Situational Awareness & Coordination

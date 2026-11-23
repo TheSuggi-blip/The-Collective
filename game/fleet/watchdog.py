@@ -273,7 +273,8 @@ def inspect(root, data, hours=4.0, now=None, save=False):
             route_rows = con.execute(
                 """
                 SELECT route, kind, COUNT(*) AS n, AVG(minutes) AS avg_m,
-                       SUM(credits) AS sum_cr, COUNT(DISTINCT pilot) AS pilots
+                       SUM(credits) AS sum_cr, SUM(COALESCE(one_time, 0)) AS sum_ot,
+                       COUNT(DISTINCT pilot) AS pilots
                 FROM runs
                 WHERE t >= ? AND kind NOT IN ('census', 'guard')
                 GROUP BY route, kind
@@ -284,21 +285,24 @@ def inspect(root, data, hours=4.0, now=None, save=False):
                 n = int(r["n"] or 0)
                 avg_m = float(r["avg_m"] or 0.0)
                 sum_cr = float(r["sum_cr"] or 0.0)
-                if n >= 4 and avg_m < 1.5 and sum_cr <= 0.0:
+                sum_ot = float(r["sum_ot"] or 0.0)
+                # Matching principle: once=true mission fuel is matched against its one_time reward
+                matched_cr = sum_cr + sum_ot
+                if n >= 4 and avg_m < 1.5 and matched_cr <= 0.0:
                     fast_loops.append({
                         "route": r["route"],
                         "kind": r["kind"],
                         "runs": n,
                         "avg_min": round(avg_m, 2),
-                        "net_cr": int(round(sum_cr)),
+                        "net_cr": int(round(matched_cr)),
                         "pilots": int(r["pilots"] or 0),
                     })
-                elif n >= 3 and sum_cr < -2500.0 and not (r["route"] or "").startswith(("train-", "gather-", "fit-", "buy-", "build-", "found-", "give-", "haul-fuel-", "supply-")):
+                elif n >= 3 and matched_cr < -2500.0 and not (r["route"] or "").startswith(("train-", "gather-", "fit-", "buy-", "build-", "found-", "give-", "haul-fuel-", "supply-")):
                     loss_loops.append({
                         "route": r["route"],
                         "runs": n,
                         "avg_min": round(avg_m, 2),
-                        "net_cr": int(round(sum_cr)),
+                        "net_cr": int(round(matched_cr)),
                     })
 
             pilot_rows = con.execute(
@@ -358,8 +362,24 @@ def inspect(root, data, hours=4.0, now=None, save=False):
                     steady_1h = float(r["value"] or 0.0)
                 elif int(round(float(r["hours"] or 0))) == 24:
                     steady_24h = float(r["value"] or 0.0)
+        pnl_24 = None
+        try:
+            import accounting as _acc_wd
+            pnl_24 = _acc_wd.compute_pnl(con, repo_root=str(root), data_dir=str(data), hours=24, now=now)
+        except Exception:
+            pnl_24 = None
         if steady_24h is not None and steady_24h < 0:
-            add_finding("STUCK", "economy", "NEGATIVE_STEADY_24H", "24h steady net/h is negative (%s cr/h)" % format(int(round(steady_24h)), ","))
+            if isinstance(pnl_24, dict):
+                rec_h = int(pnl_24.get("recurring_cash_h", round(steady_24h)))
+                acc_h = int(pnl_24.get("accrual_operating_h", rec_h))
+                if rec_h < 0:
+                    add_finding(
+                        "STUCK", "economy", "NEGATIVE_STEADY_24H",
+                        "24h recurring cash net/h is negative (%s cr/h matched; raw %s cr/h; IAS 2 accrual op %s cr/h)"
+                        % (format(rec_h, ","), format(int(round(steady_24h)), ","), format(acc_h, "+,")),
+                    )
+            else:
+                add_finding("STUCK", "economy", "NEGATIVE_STEADY_24H", "24h steady net/h is negative (%s cr/h)" % format(int(round(steady_24h)), ","))
 
         open_needs = []
         if "need_status" in tables:

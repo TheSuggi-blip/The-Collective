@@ -137,6 +137,8 @@ def compute_progression(repo_root, data="/srv/collective/data", now=None):
     treasury = 0
     wallets = 0
     vault_worth = 0
+    vault_catalog = 0
+    vault_liquid = 0
     facility_worth = 0
     fleet_book_worth = 0
     outposts_count = 0
@@ -280,9 +282,21 @@ def compute_progression(repo_root, data="/srv/collective/data", now=None):
                     "FROM faction_facilities ff LEFT JOIN facilities c ON c.id = ff.type"
                 ).fetchone()
                 facility_worth = int((fac_row[0] if fac_row else 0) or 0)
-            if _has_table(conn, "inventory"):
+            vault_catalog = 0
+            vault_liquid = 0
+            if _has_table(conn, "holdings") and _has_table(conn, "items"):
+                try:
+                    import accounting as _acc
+                    _vv = _acc.vault_valuation(conn)
+                    vault_worth = int(_vv["nrv"])
+                    vault_catalog = int(_vv["catalog"])
+                    vault_liquid = int(_vv["liquid"])
+                except Exception:
+                    pass
+            if not vault_worth and _has_table(conn, "inventory"):
                 vrow = conn.execute("SELECT COALESCE(SUM(worth), 0) FROM inventory").fetchone()
                 vault_worth = int((vrow[0] if vrow else 0) or 0)
+                vault_catalog = vault_worth
             if _has_table(conn, "systems"):
                 srow = conn.execute("SELECT COUNT(*) FROM systems").fetchone()
                 systems_charted = int((srow[0] if srow else 0) or 0)
@@ -609,6 +623,9 @@ def compute_progression(repo_root, data="/srv/collective/data", now=None):
         "liquid_purse": liquid_purse,
         "treasury": treasury,
         "vault_worth": vault_worth,
+        "vault_catalog": vault_catalog or vault_worth,
+        "vault_liquid": vault_liquid,
+        "enterprise_value_catalog": wallets + treasury + (vault_catalog or vault_worth) + facility_worth + fleet_book_worth,
         "facility_worth": facility_worth,
         "fleet_book_worth": fleet_book_worth,
         "enterprise_value": enterprise_value,

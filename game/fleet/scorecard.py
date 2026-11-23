@@ -478,6 +478,8 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
     supply_ok, supply_tot, supply_short = 0, 0, []
     needs_open = []
     places_tot, places_fresh = 0, 0
+    acc_24 = None
+    acc_6 = None
     fac_members, fac_limit, fac_treasury = 0, 0, 0
 
     try:
@@ -680,6 +682,24 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
                 if pr:
                     places_tot = int(_num(pr["tot"]))
                     places_fresh = int(_num(pr["fr"]))
+
+            # GAAP/IFRS Cash-to-Accrual P&L & Transfer-Priced Division Attribution
+            acc_24 = None
+            acc_6 = None
+            try:
+                import accounting as _acc_sc
+                _fj_sc = None
+                _fp_sc = Path(data_dir) / "fleet" / "fleet.json"
+                if _fp_sc.is_file():
+                    try:
+                        _fj_sc = json.loads(_fp_sc.read_text(encoding="utf-8", errors="replace"))
+                    except (OSError, ValueError):
+                        _fj_sc = None
+                acc_24 = _acc_sc.compute_pnl(conn, repo_root=str(repo_root), data_dir=str(data_dir), fleet_json=_fj_sc, hours=24, now=now)
+                acc_6 = _acc_sc.compute_pnl(conn, repo_root=str(repo_root), data_dir=str(data_dir), fleet_json=_fj_sc, hours=6, now=now)
+            except Exception:
+                acc_24 = None
+                acc_6 = None
     finally:
         if conn is not None:
             conn.close()
@@ -767,13 +787,24 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
             "action": "Shift fleet to war footing: escort all hauls, surge combat hulls/fits (Military), hold sub-1h hostile intel (Intel), stock repair/fuel bunkers (Logistics)",
             "tier": "P0", "weight": 100, "effort": 1, "score": 100, "source": "WAR",
         })
-    if steady_24h <= 0:
-        sev = "ALARM" if (cf_dir_24h == "WORSENING" or steady_24h < -20000) else "WARN"
+    once_direct_24h = int(acc_24["once_direct_h"]) if isinstance(acc_24, dict) else 0
+    recurring_cash_24h = round(steady_24h - once_direct_24h, 1)
+    inv_accrual_24h = int(acc_24["inventory_accrual_h"]) if isinstance(acc_24, dict) else 0
+    accrual_op_24h = round(recurring_cash_24h + inv_accrual_24h, 1)
+    once_direct_6h = int(acc_6["once_direct_h"]) if isinstance(acc_6, dict) else 0
+    recurring_cash_6h = round(steady_6h - once_direct_6h, 1)
+    inv_accrual_6h = int(acc_6["inventory_accrual_h"]) if isinstance(acc_6, dict) else 0
+    accrual_op_6h = round(recurring_cash_6h + inv_accrual_6h, 1)
+    has_accrual_24h = bool(acc_24.get("has_inventory_accrual")) if isinstance(acc_24, dict) else False
+
+    if recurring_cash_24h <= 0:
+        sev = "ALARM" if (cf_dir_24h == "WORSENING" or recurring_cash_24h < -20000) else "WARN"
+        acc_note = f" | IAS2 accrual {_fmt_cr(accrual_op_24h)}/h" if has_accrual_24h else ""
         ent_triggers.append({
-            "severity": sev, "code": "CASHFLOW_NEGATIVE", "metric": "Fleet Steady Cashflow",
-            "actual": f"{_fmt_cr(steady_24h)} cr/h (6h {_fmt_cr(steady_6h)})",
-            "target": ">0 cr/h", "direction": f"24h {cf_dir_24h} / 6h {cf_dir_6h}",
-            "action": "Cut empty jump loops & census burn; shift idle/unprofitable ships to paying cargo, crafts & P2P contracts (P1/F8/F39)",
+            "severity": sev, "code": "CASHFLOW_NEGATIVE", "metric": "Fleet Recurring Cashflow",
+            "actual": f"{_fmt_cr(recurring_cash_24h)} cr/h matched (raw {_fmt_cr(steady_24h)}/h, 6h {_fmt_cr(recurring_cash_6h)}/h{acc_note})",
+            "target": ">0 cr/h recurring cash", "direction": f"24h {cf_dir_24h} / 6h {cf_dir_6h}",
+            "action": "Convert surplus vault stock to cash & cut empty jump loops; keep profitable once-missions & reserve crafts running (P1/F8/F39)",
         })
     if prod_pct < TARGET_COMPLETION_PCT and fuel_sinks["total_h"] > 0:
         ent_triggers.append({
@@ -1181,6 +1212,7 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
 
         div_triage.sort(key=_triage_sort_key)
 
+        _d_acc = ((acc_24 or {}).get("by_division") or {}).get(div) or {}
         divisions_out[div] = {
             "division": div,
             "admiral": adm,
@@ -1189,6 +1221,14 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
             "cashflow_24h": round(d_net24, 1),
             "cashflow_prev24h": d_prev24,
             "cashflow_6h": round(d_net6, 1),
+            "accounting_24h": {
+                "recurring_cash_h": int(_d_acc.get("recurring_cash_h", round(d_net24))),
+                "once_direct_h": int(_d_acc.get("once_direct_h", 0)),
+                "inv_accrual_h": int(_d_acc.get("inv_accrual_h", 0)),
+                "tx_out_h": int(_d_acc.get("tx_out_h", 0)),
+                "tx_in_h": int(_d_acc.get("tx_in_h", 0)),
+                "accrual_op_h": int(_d_acc.get("accrual_op_h", round(d_net24))),
+            },
             "employment": {
                 "working": wrk, "effective_working": eff_wrk, "idle": tot - eff_wrk,
                 "docked_watch": 0,
@@ -1454,6 +1494,16 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
             "steady_1h": steady_1h,
             "steady_6h": steady_6h,
             "steady_24h": steady_24h,
+            "recurring_cash_24h": recurring_cash_24h,
+            "once_direct_24h": once_direct_24h,
+            "inventory_accrual_24h": inv_accrual_24h,
+            "accrual_operating_24h": accrual_op_24h,
+            "recurring_cash_6h": recurring_cash_6h,
+            "inventory_accrual_6h": inv_accrual_6h,
+            "accrual_operating_6h": accrual_op_6h,
+            "has_inventory_accrual": has_accrual_24h,
+            "seed_net_24h": int(acc_24["seed_net_h"]) if isinstance(acc_24, dict) else 0,
+            "capex_net_24h": int(acc_24["capex_net_h"]) if isinstance(acc_24, dict) else 0,
             "steady_prev_24h": steady_prev_24h,
             "all_in_24h": all_in_24h,
             "purse_now": purse_now,
@@ -1511,6 +1561,12 @@ def render_briefing(sc, who="all"):
         f"  ENTERPRISE | {e['verdict']} | Posture {e.get('posture','CASHFLOW_RECOVERY')} | Score {e['weighted_score']:.1f}/100 | steady cashflow {e['cashflow_sign']} "
         f"({_fmt_cr(e['steady_24h'])}/h 24h, {_fmt_cr(e['steady_6h'])}/h 6h, 24h {e['cashflow_trend_24h']}, 6h {e['cashflow_trend_6h']}){p_delta}"
     )
+    if e.get("has_inventory_accrual") or e.get("once_direct_24h"):
+        lines.append(
+            f"  GAAP P&L   | Recurring Cash {_fmt_cr(e.get('recurring_cash_24h', e['steady_24h']))}/h (excl {_fmt_cr(e.get('once_direct_24h', 0))}/h once-fuel) "
+            f"+ IAS2 Inv {_fmt_cr(e.get('inventory_accrual_24h', 0))}/h = Accrual Op {_fmt_cr(e.get('accrual_operating_24h', 0))}/h "
+            f"| Seed Net {_fmt_cr(e.get('seed_net_24h', 0))}/h | CapEx {_fmt_cr(e.get('capex_net_24h', 0))}/h"
+        )
     lines.append(
         f"  PULSE      | eff {e['productive_pct']:.1f}% (jumps {e['jump_loop_pct']:.1f}%) | "
         f"working {e['working_ships']}/{e['total_ships']} ({e['effective_employment_pct']:.1f}% eff) | "
@@ -1537,6 +1593,12 @@ def render_briefing(sc, who="all"):
             f"playbook {d['playbook']['max_chapter_pct']:.0f}%"
         )
         lines.append(f"    Role KPI : {d['role_kpi']['name']} = {d['role_kpi']['value']} [{d['role_kpi']['status']}]")
+        da = d.get("accounting_24h")
+        if da and (da.get("inv_accrual_h") or da.get("tx_out_h") or da.get("tx_in_h") or da.get("once_direct_h")):
+            lines.append(
+                f"    Accrual  : recurring cash {_fmt_cr(da['recurring_cash_h'])}/h | inv {_fmt_cr(da['inv_accrual_h'])}/h | "
+                f"transfers out {_fmt_cr(da['tx_out_h'])}/h / in {_fmt_cr(-da['tx_in_h'])}/h -> value-add {_fmt_cr(da['accrual_op_h'])}/h"
+            )
         if d.get("playbooks"):
             pb_s = " | ".join(f"{p['short_name']} {p['matched_count']}/{p['total_count']} ({p['readiness_pct']:.0f}% {p['status_code']})" for p in d["playbooks"][:4])
             lines.append(f"    Playbooks: {pb_s}")

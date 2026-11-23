@@ -552,34 +552,69 @@ def api_history(hours):
 
 
 def api_income(hours):
-    """What each route earned in the last hours, from the rows the runners write: steady credits and
-    credits per ship-hour (runs that read a wallet only), one-time money apart, and the ships flying it now."""
+    """What each route earned in the last hours: primary source is read.db:runs (exact routes.earned()
+    with wallet transfers and taxes removed, zero file-tail truncation), falling back to runs.jsonl only
+    if read.db is unavailable. Loads ALL route metadata files (no 400-file truncation) and reports both
+    steady credits and matched net (credits + one_time)."""
     since, by = time.time() - hours * 3600, {}
-    path = FLEET.parent / "routes" / "runs.jsonl"
-    try:
-        with open(path, "rb") as fh:
-            fh.seek(max(0, path.stat().st_size - 4_000_000))
-            lines = fh.read().decode("utf-8", "replace").splitlines()
-    except OSError:
-        lines = []
-    for line in lines:
+    unit_data = DATA.parent if DATA.name == "station" else DATA
+    db_path = unit_data / "store" / "read.db"
+    used_db = False
+    if db_path.is_file() and not db_path.is_symlink():
+        conn = None
         try:
-            r = json.loads(line)
-            started = calendar.timegm(time.strptime(r["started"], "%Y-%m-%dT%H:%M:%SZ"))
-        except (ValueError, KeyError, TypeError):
-            continue
-        if started < since:
-            continue
-        e = by.setdefault(text(r.get("route"), 60), {"runs": 0, "minutes": 0.0, "credits": 0, "one_time": 0})
-        e["runs"] += 1
-        e["one_time"] += num(r.get("one_time"))
-        if num(r.get("credits_before")) > 0 and r.get("credits_after") != 0:          # a wallet read as 0 is no reading
-            minutes = r.get("minutes")
-            e["minutes"] += float(minutes) if isinstance(minutes, (int, float)) else 0.0
-            e["credits"] += num(r.get("delta")) - num(r.get("one_time"))
+            conn = sqlite3.connect("file:%s?mode=ro" % db_path, uri=True, timeout=2.0)
+            has_runs = conn.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='runs'").fetchone()
+            if has_runs:
+                used_db = True
+                for row in conn.execute(
+                    "SELECT route, COUNT(*), "
+                    "SUM(CASE WHEN readable=1 THEN COALESCE(minutes, 0) ELSE 0 END), "
+                    "SUM(CASE WHEN readable=1 THEN COALESCE(credits, 0) ELSE 0 END), "
+                    "SUM(COALESCE(one_time, 0)) "
+                    "FROM runs WHERE t >= ? GROUP BY route",
+                    (since,),
+                ):
+                    rid = text(row[0], 60)
+                    if not rid:
+                        continue
+                    by[rid] = {
+                        "runs": int(num(row[1])),
+                        "minutes": float(num(row[2])),
+                        "credits": int(round(num(row[3]))),
+                        "one_time": int(round(num(row[4]))),
+                    }
+        except sqlite3.Error:
+            used_db = False
+        finally:
+            if conn is not None:
+                conn.close()
+    if not used_db:
+        path = FLEET.parent / "routes" / "runs.jsonl"
+        try:
+            with open(path, "rb") as fh:
+                fh.seek(max(0, path.stat().st_size - 16_000_000))
+                lines = fh.read().decode("utf-8", "replace").splitlines()
+        except OSError:
+            lines = []
+        for line in lines:
+            try:
+                r = json.loads(line)
+                started = calendar.timegm(time.strptime(r["started"], "%Y-%m-%dT%H:%M:%SZ"))
+            except (ValueError, KeyError, TypeError):
+                continue
+            if started < since:
+                continue
+            e = by.setdefault(text(r.get("route"), 60), {"runs": 0, "minutes": 0.0, "credits": 0, "one_time": 0})
+            e["runs"] += 1
+            e["one_time"] += num(r.get("one_time"))
+            if num(r.get("credits_before")) > 0 and r.get("credits_after") != 0:          # a wallet read as 0 is no reading
+                minutes = r.get("minutes")
+                e["minutes"] += float(minutes) if isinstance(minutes, (int, float)) else 0.0
+                e["credits"] += num(r.get("delta")) - num(r.get("one_time"))
     routes = {}
     try:
-        names = sorted(os.listdir(REPO / "game" / "routes"))[:400]
+        names = sorted(os.listdir(REPO / "game" / "routes"))
     except OSError:
         names = []
     for fn in names:
@@ -605,10 +640,14 @@ def api_income(hours):
     for rid in sorted(set(by) | set(flying)):
         e, route = by.get(rid) or {"runs": 0, "minutes": 0.0, "credits": 0, "one_time": 0}, routes.get(rid)
         route = route if isinstance(route, dict) else {}
+        matched = int(round(e["credits"] + e["one_time"]))
         out.append({"route": rid, "title": text(route.get("title"), 140), "once": bool(route.get("once")), "runs": e["runs"],
-                    "ship_hours": round(e["minutes"] / 60, 1), "credits": e["credits"], "one_time": e["one_time"],
-                    "per_ship_hour": round(60 * e["credits"] / e["minutes"]) if e["minutes"] >= 5 else None, "flying": flying.get(rid, 0)})
-    return {"hours": hours, "routes": out}
+                    "ship_hours": round(e["minutes"] / 60, 1), "credits": int(round(e["credits"])),
+                    "one_time": int(round(e["one_time"])), "matched_net": matched,
+                    "per_ship_hour": round(60 * e["credits"] / e["minutes"]) if e["minutes"] >= 5 else None,
+                    "matched_per_ship_hour": round(60 * matched / e["minutes"]) if e["minutes"] >= 5 else None,
+                    "flying": flying.get(rid, 0)})
+    return {"hours": hours, "source": "read.db" if used_db else "runs.jsonl", "routes": out}
 
 
 def api_ship(name):
@@ -1990,11 +2029,13 @@ def _build_ops():
                     "p10": p10, "p20": p20, "p30": p30, "p50": p50, "next_milestone": ft_next,
                 }
             if "holdings" in tables and "items" in tables:
-                vw_r = conn.execute(
-                    "SELECT COALESCE(SUM(h.units * COALESCE((SELECT MAX(b.bid) FROM books b WHERE b.item = h.item AND b.bid > 0 AND b.bid_qty > 0), i.base_value, 0)), 0) "
-                    "FROM holdings h LEFT JOIN items i ON i.id = h.item"
-                ).fetchone()
-                vault_worth = int(num(vw_r[0])) if vw_r else 0
+                import sys as _acc_sys
+                _fdir = str(REPO / "game" / "fleet")
+                if _fdir not in _acc_sys.path:
+                    _acc_sys.path.insert(0, _fdir)
+                import accounting as _acc
+                _vv = _acc.vault_valuation(conn)
+                vault_worth = int(_vv["nrv"])
                 item_cols = {c[1] for c in conn.execute("PRAGMA table_info(items)")}
                 item_val_id = {}
                 item_val_lname = {}
@@ -2047,8 +2088,15 @@ def _build_ops():
                 ).fetchone() if "leaderboards" in tables else None
                 out["balance_sheet"] = {
                     "liquid_cash": wal_cr + tr_cr, "wallets": wal_cr, "treasury": tr_cr,
-                    "vault_worth": vault_worth, "fleet_book": fl_book, "facility_invested": fac_inv,
+                    "vault_worth": vault_worth,
+                    "vault_nrv": int(_vv["nrv"]),
+                    "vault_catalog": int(_vv["catalog"]),
+                    "vault_liquid": int(_vv["liquid"]),
+                    "vault_unbounded_bid": int(_vv["unbounded_bid"]),
+                    "vault_top_gaps": _vv["top_gaps"],
+                    "fleet_book": fl_book, "facility_invested": fac_inv,
                     "net_worth": wal_cr + tr_cr + vault_worth + fl_book + fac_inv,
+                    "net_worth_catalog": wal_cr + tr_cr + int(_vv["catalog"]) + fl_book + fac_inv,
                     "handed_over_24h": int(num(ho_r[0])) if ho_r else 0,
                     "hexc_wealth": int(num(hexc_r[0])) if hexc_r else 0,
                 }
@@ -2064,6 +2112,24 @@ def _build_ops():
                 prod_sh = (eff.get("productive") or {}).get("hours", 0.0)
                 eff["productive_pct"] = round(100.0 * prod_sh / tot_sh, 1)
                 out["efficiency"] = eff
+            try:
+                import sys as _acc2_sys
+                _fdir2 = str(REPO / "game" / "fleet")
+                if _fdir2 not in _acc2_sys.path:
+                    _acc2_sys.path.insert(0, _fdir2)
+                import accounting as _acc2
+                _fj_acc = None
+                try:
+                    _fj_acc = read_json(FLEET / "fleet.json")
+                except (OSError, ValueError):
+                    _fj_acc = None
+                _acc_data = DATA.parent if DATA.name == "station" else DATA
+                out["accounting"] = {
+                    "24h": _acc2.compute_pnl(conn, repo_root=str(REPO), data_dir=str(_acc_data), fleet_json=_fj_acc, hours=24),
+                    "6h": _acc2.compute_pnl(conn, repo_root=str(REPO), data_dir=str(_acc_data), fleet_json=_fj_acc, hours=6),
+                }
+            except Exception:
+                pass
             if "stats_money_hour" in tables:
                 now_h = int(time.time())
                 cur_24 = conn.execute(

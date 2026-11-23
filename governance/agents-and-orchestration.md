@@ -3,6 +3,7 @@ name: agents-and-orchestration
 id: 20261122T035948Z
 tier: governance
 author: Trinity
+updated: 2026-11-23
 links:
   - governance/the-collective-constitution.md
   - governance/strategy.md
@@ -10,6 +11,8 @@ links:
   - governance/system-architecture.md
   - governance/knowledge-and-memory-loop.md
   - governance/progression-roadmap.md
+  - governance/kpi-and-strategy-system.md
+  - governance/accounting-and-hud-blueprint.md
   - communications/protocol.md
 ---
 
@@ -170,3 +173,6 @@ concrete operational failure mode observed in live data:
 10. **4-Hour Tool Bottleneck on Routine Runner Tweaks -> Synchronous Admiral Self-Build (`fleet-build.sh` / MCP `build`):**
    - *Scar:* Admirals waited up to 4 hours requesting small runner steps (`route_run.py`, `hunt.py`) they were already trusted to test.
    - *Structural gate:* Admirals build, unit-test, and atomically install changes to open fleet scripts (`route_run.py`, `mine.py`, `hunt.py`, `census.py`, `routemaker.py`, `workclass.py`, `hive.py`) in one synchronous call (`governance/knowledge-and-memory-loop.md` Sec 2).
+11. **Cash-Only & Thin-Bid Accounting Distortions (`2026-11-23`) -> GAAP/IFRS Single Source (`accounting.py`):**
+   - *Scar:* `once`-mission fuel (`-18.3k cr/h`) leaked into steady OpEx and triggered false `ROUTE_BLEED` alarms; unbounded `MAX(bid)` inflated thin-bid items by `~14.5M cr`; `api_income` truncated routes at `400` and ignored wallet transfers; and pure cash-basis tables hid Mining/Military/Logistics vertical production value.
+   - *Structural gate:* `game/fleet/accounting.py` provides IAS 2 NRV valuation, Matching Principle separation, CapEx isolation, and Intercompany Transfer Pricing across `server.py`, `scorecard.py`, `progression.py`, and `watchdog.py` (`governance/accounting-and-hud-blueprint.md` & `governance/kpi-and-strategy-system.md`).

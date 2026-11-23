@@ -171,3 +171,24 @@ first, then built.
 
 Write its section here first (says, formula, window and n, sources, follows, caveats), then build it in
 `game/fleet/stats.py` from the function that already computes its parts, with a test, and its view in `hive.py stats`.
+
+## accounting -- GAAP/IFRS reconciliation, IAS 2 valuation & transfer pricing
+
+- Says: bridges the fleet's pure cash-basis ledger (`station/fleet.py`) to standard US GAAP / IFRS financial
+  statements (`game/fleet/accounting.py`, exposed in `/api/ops`, `scorecard.py`, `progression.py`, and `watchdog.py`):
+  1. **Matching Principle (IFRS 18):** direct fuel, inputs, and fit-salvage recorded on `once: true` routes are
+     carved out of raw steady cashflow and matched to their non-recurring mission rewards (`seed_net_h`) or
+     capital upgrade purchases (`capex_net_h`). True recurring operating cashflow is `recurring_cash_h = raw_steady_h - once_direct_h`.
+  2. **Investing CapEx Isolation (IAS 7):** one-time hull, module, and outpost-kit purchases (`bought_once`, net of
+     fit-upgrade salvage) sit in `capex_net_h`, separate from both recurring operations and seed mission rewards.
+     Exact cash reconciliation identity: `recurring_cash_h + seed_net_h + capex_net_h + treasury_own_h = purse_h`.
+  3. **IAS 2 / ASC 330 Inventory Valuation & Accrual:** vault inventory is carried at Lower of Cost (`base_value`)
+     or Net Realizable Value (`best_bid`) -- `min(base_value, best_bid)` when both exist -- preventing both thin-bid
+     outlier markups and overpriced illiquid catalog book values. Catalog value (SpaceMolt leaderboard parity) and
+     depth-capped immediate liquidation (`bid_qty` capped) are reported alongside NRV. Accrual Operating Income is
+     `accrual_operating_h = recurring_cash_h + inventory_accrual_h` (computed from `stock_hour` over the window).
+  4. **Intercompany Transfer Pricing:** cross-division handovers (`data/stock/handover.jsonl`) credit the giving
+     division and debit the receiving division at IAS 2 NRV so Mining, Military, Logistics, and Trade display true
+     economic value-added while consolidating identically to zero at the Fleet total (zero double-counting).
+- Sources: `game/fleet/accounting.py`, `read.db` (`runs`, `holdings`, `items`, `books`, `stock_hour`, `ships`),
+  `fleet/fleet.json`, `data/stock/handover.jsonl`, `game/routes/*.json`.

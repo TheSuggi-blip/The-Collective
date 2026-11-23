@@ -8,7 +8,7 @@ author: Unity
 # index.md -- The Fleet's Scripts
 
 Built by `python3 -B scripts/fleet-index.py` from the docstring of every script in this
-folder; never edited by hand. Scripts listed: 65.
+folder; never edited by hand. Scripts listed: 66.
 
 - Run a script from the repository root: `python3 -I -B game/fleet/<script> <arguments>`,
   the arguments as listed under "How to Call Each".
@@ -27,6 +27,7 @@ folder; never edited by hand. Scripts listed: 65.
 
 | Script | What it does | How it is run |
 |---|---|---|
+| `accounting.py` | GAAP/IFRS-aligned bookkeeping, IAS 2 NRV inventory valuation, and transfer-priced accrual P&L. | By hand |
 | `basewatch.py` | An alert while a base of ours reads wrecked or a facility of ours damaged or offline. | By hand |
 | `board.py` | The board of a division: what each of its ships does now, its plan, what is planned, and what its runs earned. | By hand |
 | `census.py` | Read one system whole with one pilot: every place's deposits and creatures, and the station's order book and mission board. | Runner (`census` routes) |
@@ -94,6 +95,17 @@ folder; never edited by hand. Scripts listed: 65.
 | `workclass.py` | Whose work a route is: the work class of every route and the classes each role flies | By hand |
 
 ## How to Call Each
+
+### `accounting.py`
+
+GAAP/IFRS-aligned bookkeeping, IAS 2 NRV inventory valuation, and transfer-priced
+accrual P&L.
+
+Run by hand.
+
+```
+accounting.py [--hours 24] [--json] [--data <dir>] [--root <dir>]
+```
 
 ### `basewatch.py`
 
