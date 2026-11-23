@@ -208,7 +208,21 @@
     "hunt-lacaille-9352-deep-vein-belt-grazer",
     "hunt-procyon-gas-cloud-drift-ray",
     "hunt-markab-alloy-seam-patina-grazer",
-    "hunt-epsilon-eridani-ice-fields-hollow-pilgrim"
+    "hunt-epsilon-eridani-ice-fields-hollow-pilgrim",
+    "hunt-ross-154-weak-annihilation-zone-belt-grazer",
+    "hunt-ross-154-frostdust-belt-belt-grazer",
+    "hunt-ross-154-frost-ring-pressblister",
+    "hunt-cervantes-belt-belt-grazer",
+    "hunt-cervantes-fading-signal-belt-grazer",
+    "hunt-miaplacidus-alloy-remnants-belt-grazer",
+    "hunt-electra-main-belt-echo-belt-grazer",
+    "hunt-mimosa-volatile-pocket-belt-grazer",
+    "hunt-arcturus-belt-belt-grazer",
+    "hunt-arcturus-noise-floor-field-belt-grazer",
+    "hunt-sol-main-belt-belt-grazer",
+    "hunt-markab-ice-fields-pressblister",
+    "hunt-lanternwick-gas-cloud-drift-ray",
+    "hunt-timberline-gas-pocket-drift-ray"
    ],
    "trains": [
     "gunnery",
