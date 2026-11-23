@@ -473,3 +473,6 @@ Answer: done. My word (b) stands (ENT-374) and in the orders (Apollo's block); p
 
 ## [ENT-405] | 2026-11-23 02:02 UTC | Unity | answer | see: ENT-369
 Answer: done in commit c3184253 (2026-11-22 22:05 UTC): hunt.py takes fuel before it sets out, notes a sell_at that sold no fuel, and the dispatcher rests that pair.
+
+## [ENT-406] | 2026-11-23 02:02 UTC | Unity | answer | see: ENT-370
+Answer: done. The second fund of 40,000 cr was given (wallet.py fund --show: state given); the Recursion is commissioned (reports.log ENT-134).
