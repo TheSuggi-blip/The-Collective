@@ -1,0 +1,33 @@
+{
+ "id": "mission-crimson-wreckage-synchrony",
+ "kind": "circuit",
+ "title": "Crimson Wreckage: 8000 cr, +425 XP at Synchrony Hub",
+ "note": "Written by routemaker.py from the board and the order books: goods for about 0 cr, reward 8000 cr, sale 0 cr, +425 XP. Test with one ship first. Added as a test by fill.py on 2026-11-23 05:20 UTC (Unity): up to 3 ships, one result each, until 3 runs are read (rule F37).",
+ "max_ships": 3,
+ "stops": [
+  {
+   "at": "synchrony:synchrony_hub:synchrony_hub",
+   "accept": [
+    "crimson_wreckage"
+   ]
+  },
+  {
+   "at": "the_rampart:the_rampart_checkpoint:the_rampart_checkpoint",
+   "redock": true
+  },
+  {
+   "at": "the_crucible:the_crucible_garrison:the_crucible_garrison",
+   "redock": true
+  },
+  {
+   "at": "synchrony:synchrony_hub:synchrony_hub"
+  }
+ ],
+ "once": true,
+ "one_time": [
+  "Crimson Wreckage"
+ ],
+ "skip_if_booked": [
+  "Crimson Wreckage"
+ ]
+}

@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 74.
+Routes: 75.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -47,6 +47,7 @@ Routes: 74.
 | [mission-cracking-the-shell-achernar](mission-cracking-the-shell-achernar.json) | circuit | beyond the border, 4 jumps | Cracking the Shell: 1,500 cr once; three pressblisters at Achernar Frost Ring (lawless), accepted and handed in at Central Nexus | once per pilot, up to 1 ships, empty hold, after the reward First Hunt: Belt-Grazers | 32 | 19 | -230 | one-time | 2026-11-22 |
 | [mission-cracking-the-shell-central](mission-cracking-the-shell-central.json) | circuit | beyond the border, 7 jumps | Cracking the Shell: 1,500 cr once; three pressblisters at Intercrus Ice Fields, accepted and handed in at Central Nexus | once per pilot, up to 1 ships, empty hold, after the reward First Hunt: Belt-Grazers | 63 | 14 | 60 | one-time | 2026-11-23 |
 | [mission-cracking-the-shell-krynn](mission-cracking-the-shell-krynn.json) | circuit | beyond the border, 21 jumps | Cracking the Shell: 1,500 cr once; three pressblister at ironhearth_ice_ring, accepted and handed in at War Citadel | once per pilot, up to 1 ships, after the reward First Hunt: Belt-Grazers | 2 | 24 | -280 | one-time | 2026-11-23 |
+| [mission-crimson-wreckage-synchrony](mission-crimson-wreckage-synchrony.json) | circuit | beyond the border, 18 jumps | Crimson Wreckage: 8000 cr, +425 XP at Synchrony Hub | once per pilot, up to 3 ships | TBD | TBD | TBD | TBD | -- |
 | [mission-debris-field-reports-frontier](mission-debris-field-reports-frontier.json) | circuit | beyond the border, 18 jumps | Debris Field Reports: 4500 cr at Mobile Capital | once per pilot, up to 3 ships | 179 | 3 | 240 | one-time | 2026-11-23 |
 | [mission-deep-core-prospecting-first-step](mission-deep-core-prospecting-first-step.json) | circuit | beyond the border, 19 jumps | Deep Core Prospecting: 5,000 cr, 10 exotic matter and deep core mining XP; 20 platinum ore mined at Deep Range Mineral Fields, accepted and handed in at First Step Memorial Station | once per pilot, up to 2 ships, 12 pilots in all, empty hold | 12 | 65 | 2,580 | one-time | 2026-11-21 |
 | [mission-deep-core-prospecting-haven](mission-deep-core-prospecting-haven.json) | circuit | beyond the border, 21 jumps | Deep Core Prospecting from the Grand Exchange (Haven): 5,000 cr, 10 exotic matter, deep core mining XP; 20 platinum ore mined at Bunda Belt (3 jumps) | once per pilot, up to 3 ships, 30 pilots in all, from mining 5, born nebula | TBD | TBD | TBD | TBD | -- |

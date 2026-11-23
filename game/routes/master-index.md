@@ -17,27 +17,27 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 
 | Group | What it holds | Routes | Home space | Beyond the border | Best measured |
 |---|---|---|---|---|---|
-| [Once per Pilot](index-once-per-pilot.md) | Missions and rewards the game pays once per pilot: a new pilot's first work, and seed money. | 74 | 23 | 51 | mission-last-known-position-crimson: 7,870 cr a run |
+| [Once per Pilot](index-once-per-pilot.md) | Missions and rewards the game pays once per pilot: a new pilot's first work, and seed money. | 75 | 23 | 52 | mission-last-known-position-crimson: 7,870 cr a run |
 | [Paying Routes](index-paying-routes.md) | Work that repeats and whose runs of the last 12 hours measured above zero. | 16 | 7 | 9 | sell-loot-at-nexus: 118,650 cr per ship-hour |
 | [Tests](index-tests.md) | Work that repeats and has no measured figure: new, or no readable run in the last 12 hours. One ship until its first RESULT line is read. | 148 | 46 | 102 | not measured yet |
 | [Fitting](index-fitting.md) | A module bought and fitted: the tool a kind of work needs. | 17 | 11 | 6 | fit-ice-harvester-lhs-1140: -4,320 cr per ship-hour |
 | [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 423 | 102 | 321 | store-hold-grand-exchange: 5,460 cr per ship-hour |
 | [Measured at a Loss](index-measured-at-a-loss.md) | Work that repeats and whose runs of the last 12 hours measured zero or below. | 9 | 3 | 6 | mine-dheneb-cryobelt: -160 cr per ship-hour |
 | [Off](index-off.md) | Written down, not flown. | 46 | 19 | 27 | voidborn-first-steps: 4,020 cr per ship-hour |
-| All | | 733 | 211 | 522 | |
+| All | | 734 | 211 | 523 | |
 
 ## Routes by Zone and Kind
 
 | Zone | Routes | census | circuit | guard | hunt | mine | Farthest system, jumps from home |
 |---|---|---|---|---|---|---|---|
 | home space | 211 | 1 | 180 | 1 | 16 | 13 | 3 |
-| beyond the border | 522 | 23 | 124 | 7 | 267 | 101 | 29 |
+| beyond the border | 523 | 23 | 125 | 7 | 267 | 101 | 29 |
 
 ## Plans by Role
 
 | Role | Kept by | Routes | The first three, in order | Planned | Ships |
 |---|---|---|---|---|---|
-| [command](plan-command.md) | Unity | 61 | voidborn-first-steps-board > voidborn-collective-provides > voidborn-signal-protocol | 0 | 10 |
+| [command](plan-command.md) | Unity | 62 | voidborn-first-steps-board > voidborn-collective-provides > voidborn-signal-protocol | 0 | 10 |
 | [drone](plan-drone.md) | Apophis | 280 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 2 | 95 |
 | [hauler](plan-hauler.md) | Apollo | 64 | voidborn-resonance-finish > voidborn-atmospheric-extraction > voidborn-hardware-cargo | 4 | 95 |
 | [miner](plan-miner.md) | Zero | 89 | fit-mining-laser-iii-lhs-1140 > fit-mining-laser-ii-second-central-nexus > give-miner-stores-node-beta | 1 | 130 |
