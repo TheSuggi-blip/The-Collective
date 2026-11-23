@@ -1,0 +1,45 @@
+{
+ "id": "carry-melt-nexus-to-cargo-lanes",
+ "kind": "circuit",
+ "title": "Crystal melt stored by Trade at Central Nexus carried to the station bid at Cargo Lanes Freight Depot (Nebula) and sold there",
+ "note": "2026-11-23 06:07 UTC (Mercury): orders ENT-078, block MERCURY and P5. Cargo Lanes Freight Depot's own station bid for crystal melt: 2,122 x 43 (view_market, 06:06 UTC); Central Nexus bids 54. Trade's own storage at Central Nexus holds 235 melt (table holdings). 20 jumps (scripts/map.py route). The carrier withdraws 43, sells at 2,000 or better, stores what is left at Cargo Lanes. requires.bid closes it while Cargo Lanes shows no bid at 2,000. Nothing is bought. A test: one ship (F37).",
+ "max_ships": 1,
+ "requires": {
+  "stored": {
+   "at": "central_nexus",
+   "item": "crystal_melt",
+   "min": 30
+  },
+  "bid": {
+   "item": "crystal_melt",
+   "base": "cargo_lanes_freight_depot",
+   "min_price": 2000,
+   "min_qty": 5
+  }
+ },
+ "stops": [
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "crystal_melt",
+     "qty": 43
+    }
+   ]
+  },
+  {
+   "at": "cargo_lanes:cargo_lanes_freight_depot:cargo_lanes_freight_depot",
+   "sell": [
+    {
+     "item": "crystal_melt",
+     "min_price": 2000
+    }
+   ]
+  },
+  {
+   "at": "cargo_lanes:cargo_lanes_freight_depot:cargo_lanes_freight_depot",
+   "store": "all"
+  }
+ ]
+}

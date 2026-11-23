@@ -1,0 +1,45 @@
+{
+ "id": "carry-melt-nexus-to-frontier",
+ "kind": "circuit",
+ "title": "Crystal melt stored by Trade at Central Nexus carried to the station bid at Frontier Station (Outer Rim, a moving station) and sold there",
+ "note": "2026-11-23 06:07 UTC (Mercury): orders ENT-078, block MERCURY and P5. Frontier Station's own station bid for crystal melt: 3,787 x 13 (view_market, 06:06 UTC); Central Nexus bids 54. 17 jumps to altais (scripts/map.py route); the stop at the moving station is sent where it stands now (mobile.py, queue ENT-255). The carrier withdraws 13, sells at 3,500 or better, stores the rest there. Nothing is bought. A test: one ship (F37).",
+ "max_ships": 1,
+ "requires": {
+  "stored": {
+   "at": "central_nexus",
+   "item": "crystal_melt",
+   "min": 10
+  },
+  "bid": {
+   "item": "crystal_melt",
+   "base": "frontier_station",
+   "min_price": 3500,
+   "min_qty": 5
+  }
+ },
+ "stops": [
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "crystal_melt",
+     "qty": 13
+    }
+   ]
+  },
+  {
+   "at": "altais:mobile_capital:frontier_station",
+   "sell": [
+    {
+     "item": "crystal_melt",
+     "min_price": 3500
+    }
+   ]
+  },
+  {
+   "at": "altais:mobile_capital:frontier_station",
+   "store": "all"
+  }
+ ]
+}
