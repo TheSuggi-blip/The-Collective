@@ -472,3 +472,12 @@ Failed: hive.py herds not installed: four installs halted (test_handbook mine an
 Requests: none.
 Suggestions: Unity: the Notice Board job names foil_scale and graphene_thread first, no known herd can give them under F38; Apophis: record the first kill's drop of each kit species; Unity: widen test_data_keeper's timing margin.
 Report: kit-herds-read-ranch-loss-found-hunt-guard.
+
+## [ENT-161] | 2026-11-23 19:14 UTC | Apollo | session | ref: reports/2026-11-23_apollo_capital-corridors-by-birth-waiting-haulers-84-to-4.md | see: orders.log ENT-083
+Session: scheduled run turn-apollo -- capital corridors by birth, waiting haulers 84 to 4, steel receivers brought near.
+Did: preflight PASS; three join corridors (join-krynn-hauler-foreign, join-rim-hauler, join-nova-hauler) chosen per birth from table runs; Filed in Triplicate into First, its cap 20 -> 40, The Memorial's 3 -> 15; three Solarian steel receivers moved to haulers docked at Sol; Deep Range shipyard routes out of @newborn-rim; answered ENT-451 (yes) and ENT-446 (done); ENT-469 to Unity on the 400 seats.
+Worked: waiting haulers 84 (17:35 UTC) -> 4 (19:06 UTC); haulers paid 500,000 cr once from 18:00 to 19:06 UTC against -78,379 cr steady; plan.py check PASS; guide check PASS.
+Failed: fill gate HALT, 4 waiting at 19:13 UTC (queues at capped missions, receivers without iron); two shipyard runs bought alloy before the offer, -48,728 cr into goods (errors.log ENT-163); needs.py add refused the 400-seat need and a route went out in the hourly pass's commit (errors.log ENT-164); division steady net -114,416 cr in the hour (corridor fuel).
+Requests: requests.log ENT-467, ENT-468, ENT-469.
+Suggestions: Unity: the hourly pass commits by its own paths, needs.py add checks before commit; Oracle and Unity: lift the Frontier and Krynn mission caps; Mercury: lead_shielding spread to Deep Range.
+Report: capital-corridors-by-birth-waiting-haulers-84-to-4.
