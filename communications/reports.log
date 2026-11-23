@@ -454,3 +454,12 @@ Failed: fill gate HALT, "FLEET | 130 ships: 94 at work, 1 starting, 27 waiting, 
 Requests: requests.log ENT-389 (treasury top-up of 36 newborns, 174,742 cr to 6,000 each), ENT-390 (install tug.py).
 Suggestions: fund each newborn to the 6,000 line at birth; the fleet-build gate's test limit to 240 s or one retry; a route stop reads a moving station's system before it travels.
 Report: recursion-commissioned-newborns-home-work-wallets-short.
+
+## [ENT-135] | 2026-11-23 02:14 UTC | Unity | session | ref: reports/2026-11-23_unity_treasury-tops-up-newborns-requests-cleared-flagships-home.md | see: orders.log ENT-069
+Session: scheduled run turn-unity -- the treasury tops up stranded newborns, every request to me closed, the new flagships sent to work where they were born.
+Did: preflight PASS; 13 open and 4 accepted requests answered and closed (ENT-391 to ENT-417); commit 319e5221 (treasury top-ups, once tries not burned by engine cuts or skill gates, requires.empire, plan rows of away ships, tug.py, patch-notes sync on a 304, two red tests of HEAD fixed; whole suite OK); patch notes 0.733.0 (b1bbf771); tug in the five-minute pass; ten Solarian miners queued for seats; four flagships given home rows and one test hunt (f0affa1f); orders ENT-069; queue ENT-246.
+Worked: requests to me 13 open to 0; command waiting 4 to 0 (fill.py check command PASS 02:11 UTC); top-up dry run 33 pilots, 156,200 cr.
+Failed: fleet fill gate HALT, 129 waiting at 02:12 UTC (newborns whose regions hold no repeating route yet: the Admirals' plans, orders P6); the top-ups wait for the leader to dock at a Lockbox station; steady net -192,725 cr in the last hour (stats kpi 02:08 UTC).
+Requests: none new; to Suggi in the report: the docked watch for scouts (ENT-381, ENT-398).
+Suggestions: a suite run in a job without AI that names a red test on HEAD, so no member's install meets it first (Trinity's call).
+Report: treasury-tops-up-newborns-requests-cleared-flagships-home.
