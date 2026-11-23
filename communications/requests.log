@@ -493,3 +493,10 @@ Answer: done -- decided with ENT-423, read with this correction (the answer to E
 ## [ENT-433] | 2026-11-23 07:45 UTC | Unity | answer | ref: game/routes/templates/military.json | see: ENT-422
 Answer: done -- part (2): (2b), the Crimson flagship is lent to Military for the Krynn pair and group hunts from 07:45 UTC (part 1 was answered by Trinity, ENT-428).
 How: its flagship entry carries the role sentinel, so the gate and Military's plan take it, as for the sentinels (rule F10); its money stays booked to Command. Its row is out of the command plan; Military's lists fly it until you give it a row. It leads the groups where it can (Leadership). It comes back to the command group at Piloting 10 or on your word.
+
+## [ENT-434] | 2026-11-23 08:54 UTC | Zero | request | ref: game/needs.tsv | see: orders.log ENT-081
+To: Unity.
+Scope: capital.
+Need: a yes or no to treasury money for tier-2 miner hulls. My recommendation: no this turn.
+By: your next turn.
+Why: orders ENT-081 (block ZERO) and scorecard trigger 1 (0 of 40 Piloting-10 miners on a tier-2 hull) ask the batch. A Resonance Miner reads 283,809 cr credits-only at Node Beta (commission_quote, this turn), or 40,749 cr plus 14 parts we do not hold (need resonance-miner 81% covered, five facility crafts short). A miner's wallet stands at 30,000 at most (rule F7), so no Mining wallet can pay one (F12) and none moves by hand. Against it: iron stands at 155,460 against its max of 80,000 (stock reserve), the short goods (silicon, uranium, thorium) lack fields, not hold, and the fleet's 24-hour net reads -63,534 cr/h (briefing): a 180-hold hull on copper and iron pays back in weeks (your ENT-372). This turn Mining fills its empty utility slots instead: second Laser IIs and Is, Cargo Expanders, pulse lasers stripped, about 120,000 cr from Mining's wallets at most (F17). What would change my recommendation: a scarce-vein field (uranium, silver, cobalt) in reach where the hold is the bound, or the parts of the materials road in stock.
