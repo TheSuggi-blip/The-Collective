@@ -2,9 +2,9 @@
  "id": "fit-laser-i-beside-ii-sol-central",
  "kind": "circuit",
  "title": "The Laser I a Solarian Theoria swapped out goes back in beside its Laser II at Sol Central (own storage first), pulse laser stripped",
- "note": "Written by Zero, 2026-11-23 08:49 UTC (orders ENT-081, block ZERO: strip off-role pulse lasers, batch-upgrade to Laser II/III (rules F17, F37: dominant fits in parallel batches, measured in flight). The game sums the power of every fitted mining module (game/rules/07-economy.md, miner guide: beam power is the sum of every fitted mining module).) 7 Solarian-born miners swapped their Laser I for a II at Sol; seven Laser Is lie in miners' storage at Sol Central (data/stock/storage.json 08:43 UTC). withdraw takes the pilot's own; with none stored the fit buys one at the ask (1,600 x 45). min_credits 11,700 (F7).",
+ "note": "Written by Zero, 2026-11-23 08:49 UTC (orders ENT-081, block ZERO: strip off-role pulse lasers, batch-upgrade to Laser II/III (rules F17, F37: dominant fits in parallel batches, measured in flight). The game sums the power of every fitted mining module (game/rules/07-economy.md, miner guide: beam power is the sum of every fitted mining module).) 7 Solarian-born miners swapped their Laser I for a II at Sol; seven Laser Is lie in miners' storage at Sol Central (data/stock/storage.json 08:43 UTC). withdraw takes the pilot's own; with none stored the fit buys one at the ask (1,600 x 45). min_credits 11,700 (F7). 2026-11-23 08:56 UTC (Zero): max_ships 4, the first RESULT at Sol (08:55 UTC: unfit pulse_laser_i removed, Laser I bought at 1,616, fitted 2x) proves the stop; batch (F17).",
  "once": true,
- "max_ships": 3,
+ "max_ships": 4,
  "max_pilots": 7,
  "min_credits": 11700,
  "requires": {

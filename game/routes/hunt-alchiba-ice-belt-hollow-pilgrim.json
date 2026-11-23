@@ -19,12 +19,12 @@
  },
  "measured": {
   "date": "2026-11-23",
-  "runs": 3,
-  "minutes": 35,
-  "credits_per_run": -480,
-  "cph_per_ship": -800,
+  "runs": 2,
+  "minutes": 36,
+  "credits_per_run": -570,
+  "cph_per_ship": -960,
   "hours": 12,
-  "last_run": "2026-11-22T23:26:32Z"
+  "last_run": "2026-11-23T04:09:04Z"
  },
  "gift_to": "trader"
 }

@@ -2,9 +2,9 @@
  "id": "fit-second-laser-i-sol-central",
  "kind": "circuit",
  "title": "A second Mining Laser I into a free utility slot of a Laser-I-only Solarian Theoria at Sol Central, pulse laser stripped",
- "note": "Written by Zero, 2026-11-23 08:49 UTC (orders ENT-081, block ZERO: strip off-role pulse lasers, batch-upgrade to Laser II/III (rules F17, F37: dominant fits in parallel batches, measured in flight). The game sums the power of every fitted mining module (game/rules/07-economy.md, miner guide: beam power is the sum of every fitted mining module).) 28 Solarian-born miners carry one Laser I in three utility slots (table ship_modules 08:43 UTC). Sol Central asks 1,600 cr x 45 for the Laser I (table books 08:43 UTC); its Laser II is bought out. Two Laser Is give 10 power, near the Laser II's 12 that proved 1.35 to 1.7x on these loops (guidebook ships.md). count 2. min_credits 11,700 (F7).",
+ "note": "Written by Zero, 2026-11-23 08:49 UTC (orders ENT-081, block ZERO: strip off-role pulse lasers, batch-upgrade to Laser II/III (rules F17, F37: dominant fits in parallel batches, measured in flight). The game sums the power of every fitted mining module (game/rules/07-economy.md, miner guide: beam power is the sum of every fitted mining module).) 28 Solarian-born miners carry one Laser I in three utility slots (table ship_modules 08:43 UTC). Sol Central asks 1,600 cr x 45 for the Laser I (table books 08:43 UTC); its Laser II is bought out. Two Laser Is give 10 power, near the Laser II's 12 that proved 1.35 to 1.7x on these loops (guidebook ships.md). count 2. min_credits 11,700 (F7). 2026-11-23 08:56 UTC (Zero): max_ships 8, the first RESULT at Sol (08:55 UTC: unfit pulse_laser_i removed, Laser I bought at 1,616, fitted 2x) proves the stop; batch (F17).",
  "once": true,
- "max_ships": 3,
+ "max_ships": 8,
  "max_pilots": 28,
  "min_credits": 11700,
  "requires": {
@@ -40,5 +40,12 @@
     }
    ]
   }
- ]
+ ],
+ "measured": {
+  "date": "2026-11-23",
+  "runs": 1,
+  "minutes": 6,
+  "credits_per_run": -1670,
+  "cph_per_ship": -17580
+ }
 }

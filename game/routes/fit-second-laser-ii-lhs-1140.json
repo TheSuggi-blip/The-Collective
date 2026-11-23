@@ -2,9 +2,9 @@
  "id": "fit-second-laser-ii-lhs-1140",
  "kind": "circuit",
  "title": "A Mining Laser II into the empty second utility slot of a Laser-III-only Threshold at Ironlight Crossroads, LHS 1140, pulse laser stripped",
- "note": "Written by Zero, 2026-11-23 08:49 UTC (orders ENT-081, block ZERO: strip off-role pulse lasers, batch-upgrade to Laser II/III (rules F17, F37: dominant fits in parallel batches, measured in flight). The game sums the power of every fitted mining module (game/rules/07-economy.md, miner guide: beam power is the sum of every fitted mining module).) 16 Voidborn miners carry a Laser III and nothing else in their two utility slots (table ship_modules 08:43 UTC). Ironlight asks 2,404 cr x 20 for the Laser II (table books 08:43 UTC), the cheapest anywhere. LHS 1140 is lawless, six jumps, a public station of the Ironlight Combine: an empty hold (rule F3). min_credits 14,000 keeps the wallet above the top-up line after the buy (F7). The stripped pulse laser goes into the pilot's storage there (unfit), kept as a module of the reserve.",
+ "note": "Written by Zero, 2026-11-23 08:49 UTC (orders ENT-081, block ZERO: strip off-role pulse lasers, batch-upgrade to Laser II/III (rules F17, F37: dominant fits in parallel batches, measured in flight). The game sums the power of every fitted mining module (game/rules/07-economy.md, miner guide: beam power is the sum of every fitted mining module).) 16 Voidborn miners carry a Laser III and nothing else in their two utility slots (table ship_modules 08:43 UTC). Ironlight asks 2,404 cr x 20 for the Laser II (table books 08:43 UTC), the cheapest anywhere. LHS 1140 is lawless, six jumps, a public station of the Ironlight Combine: an empty hold (rule F3). min_credits 14,000 keeps the wallet above the top-up line after the buy (F7). The stripped pulse laser goes into the pilot's storage there (unfit), kept as a module of the reserve. 2026-11-23 08:56 UTC (Zero): max_ships 6, the first RESULT at Sol (08:55 UTC: unfit pulse_laser_i removed, Laser I bought at 1,616, fitted 2x) proves the stop; batch (F17).",
  "once": true,
- "max_ships": 3,
+ "max_ships": 6,
  "max_pilots": 16,
  "min_credits": 14000,
  "requires": {
