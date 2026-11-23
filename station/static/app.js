@@ -4224,9 +4224,11 @@ async function renderEmpire(panel, live) {
 
   const subBar = el('div', 'subtabs');
   const commsSum = (dip && dip.comms && dip.comms.summary) || {};
+  const scCards = (ops && ops.rivals && ops.rivals.sedcards) || [];
   const subDefs = [
     ['Infrastructure', 'Infrastructure (' + bldgs.length + ')'],
     ['Rivals', 'Rivals & Rankings (' + ((dip && dip.total_factions) || 0) + ')'],
+    ['Sedcards', 'Rival Sedcards (' + scCards.length + ')'],
     ['Diplomacy', 'Diplomacy & Wars (' + (((dip && dip.alliances) || []).length) + ' blocs)'],
     ['Comms', 'Comms & Hails (' + ((commsSum.direct_human_in || 0) + '/' + (commsSum.local_human || 0)) + ')'],
   ];
@@ -4240,6 +4242,10 @@ async function renderEmpire(panel, live) {
 
   if (empSub === 'Rivals') {
     renderEmpireRivals(panel, dip);
+    return;
+  }
+  if (empSub === 'Sedcards') {
+    renderEmpireSedcards(panel, ops && ops.rivals);
     return;
   }
   if (empSub === 'Diplomacy') {
@@ -4415,6 +4421,86 @@ function renderFreshnessStrip(panel, dip) {
   ];
   bar.textContent = 'Auto-gathered telemetry  |  ' + bits.join('  |  ');
   panel.append(bar);
+}
+
+
+function renderEmpireSedcards(panel, rv) {
+  if (!rv || !(rv.sedcards || []).length) {
+    panel.append(el('p', 'empty', 'No rival sedcard data available yet (waiting on rival_snapshots in read.db).'));
+    return;
+  }
+  const cards = rv.sedcards || [];
+  panel.append(el('h3', null, 'Adopted rival doctrines by division (F40 -- auto-synced hourly to governance/rival-sedcards.md)'));
+  const tricks = rv.tricks_by_division || {};
+  const tGrid = el('div', 'sed-tricks');
+  for (const dn of ['Logistics', 'Trade', 'Mining', 'Military', 'Intel', 'Command']) {
+    const arr = tricks[dn] || [];
+    if (!arr.length) continue;
+    const box = el('div', 'sed-tbox');
+    const hd = el('div', 'sed-thead');
+    const nm = el('span', null, dn);
+    nm.style.color = DIV[dn] || 'var(--accent)';
+    hd.append(nm);
+    box.append(hd);
+    for (const tr of arr) box.append(el('div', 'sed-titem', '- ' + tr));
+    tGrid.append(box);
+  }
+  panel.append(tGrid);
+
+  if ((rv.tourism_top || []).length) {
+    panel.append(el('h3', null, 'Station tourism revenue benchmark'));
+    panel.append(fitTable(table(
+      ['Rank', 'Station', 'System', 'Tourism Revenue'],
+      rv.tourism_top.map((x) => ['#' + x.rank, x.name, x.system, fmtCompact(x.revenue) + ' cr']),
+      [3]
+    )));
+  }
+
+  panel.append(el('h3', null, 'Top rival faction sedcards (' + cards.length + ' tracked | velocity window ' + (rv.span_hours || 0).toFixed(1) + 'h)'));
+  const grid = el('div', 'sed-grid');
+  for (const c of cards) {
+    const card = el('div', 'sed-card' + (c.threat === 'high' ? ' danger' : c.standing === 'NEUTRAL' ? ' neutral' : ''));
+    const top = el('div', 'sed-top');
+    const title = el('b', null, '[' + c.tag + '] ' + c.name);
+    const stCls = c.standing === 'NEUTRAL' ? 'good' : c.threat === 'high' ? 'bad' : 'warn';
+    top.append(title, el('span', 'pill ' + stCls, c.standing), el('span', 'pill', c.archetype));
+    card.append(top);
+
+    const vel = c.wealth_vel_h !== null && c.wealth_vel_h !== undefined
+      ? (c.wealth_vel_h >= 0 ? '+' : '') + fmtCompact(c.wealth_vel_h) + '/h'
+      : '--';
+    card.append(el('div', 'sed-meta',
+      'Wealth ' + fmtCompact(c.wealth) + ' cr (' + vel + ') | ' + fmtCompact(c.wealth_per_ship) + '/sh | ' +
+      fmt(c.members) + ' ships | ' + fmt(c.bases) + ' bases | Avg T' + (c.avg_tier || 0).toFixed(2) + ' (max T' + (c.max_tier || 0) + ') | PvP ' + fmt(c.kills_pvp)
+    ));
+
+    const hullsTxt = (c.spotted_hulls || []).length
+      ? c.spotted_hulls.slice(0, 4).map((h) => h.name + ' [T' + h.tier + '/P' + h.piloting + '/' + h.cargo + 'c] x' + h.pilots).join(', ')
+      : 'Not yet spotted by our scouts';
+    const sysTxt = (c.spotted_systems || []).length
+      ? c.spotted_systems.slice(0, 4).map((s) => s.system + '(' + s.pilots + ')').join(', ')
+      : 'Unspotted';
+    const bidTxt = (c.top_bids || []).length
+      ? c.top_bids.slice(0, 3).map((b) => b.item + ' @' + fmt(b.price) + ' x' + fmt(b.qty)).join(', ')
+      : 'None scanned';
+    const askTxt = (c.top_asks || []).length
+      ? c.top_asks.slice(0, 3).map((a) => a.item + ' @' + fmt(a.price) + ' x' + fmt(a.qty)).join(', ')
+      : 'None scanned';
+
+    card.append(
+      el('div', 'sed-row', 'Hulls: ' + hullsTxt),
+      el('div', 'sed-row', 'Space: ' + sysTxt + ((c.allies || []).length ? ' | Allies: ' + c.allies.join(', ') : '')),
+      el('div', 'sed-row', 'Buys: ' + bidTxt + ' | Sells: ' + askTxt)
+    );
+    if (c.verified_notes) {
+      card.append(el('div', 'sed-row', 'Verified claims/needs: ' + c.verified_notes));
+    } else if ((c.comms_signals || []).length) {
+      card.append(el('div', 'sed-row', 'Inbound comms (verify): ' + c.comms_signals[0].excerpt));
+    }
+    card.append(el('div', 'sed-adopt', 'Adopt / Counter: ' + (c.counter_play || '--')));
+    grid.append(card);
+  }
+  panel.append(grid);
 }
 
 function renderEmpireRivals(panel, dip) {

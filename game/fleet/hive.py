@@ -1397,6 +1397,7 @@ def show_briefing(root, data, now, who, hours):
     __import__("needs").briefing(root, data, now, who)               # Suggi, 2026-11-21: the division's open needs, how many are red
     show_eyes(data, who)
     __import__("scorecard").briefing(root, data, now, who)          # Suggi, 2026-11-23: <80% completion triggers, cashflow trend & stagnation
+    __import__("rivals").briefing(root, data, now, who)             # Suggi, 2026-11-23: automated rival sedcards & adopted tactics (F40)
     print("=== THE FLEET'S MONEY")
     show_fleet(root, data, now)
     print("=== MY STANDING FLEET")
@@ -1684,6 +1685,12 @@ def main():
         _kind, me = division.member()
         who_u = rest[0] if rest else (me if me in division.MEMBERS else "all")
         print(__import__("upgrades").render_upgrades(str(Path(root).parent if Path(root).name == "game" else root), data, who=who_u, now=now))
+        return 0
+    if verb == "rivals":
+        _kind, me = division.member()
+        tgt = rest[0] if rest else "all"
+        repo_r = str(Path(root).parent if Path(root).name == "game" else root)
+        print(__import__("rivals").render_cli(__import__("rivals").compute_sedcards(repo_r, data, top_n=12, now=now), target=tgt))
         return 0
     if verb == "store":
         return show_store(data, now, float(value("--hours", "24")), rest)

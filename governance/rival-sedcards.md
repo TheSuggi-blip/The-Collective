@@ -69,7 +69,7 @@ Every Admiral uses this dossier together with `hive.py scorecard` and `hive.py u
 - **Standing / Bloc:** RIVAL (allies: BEIN, DEAD, MOON; threat: medium; leader: `LimaTango1428`)
 - **Scale & Output:** 1249 ships, 6 bases, wealth 10.10B (+277.39M/h) (8.08M/sh), ore 442.55M, crafted 10.34M, avg hull T1.55 (max T5), PvP 71 / PvE 8448
 - **Observed Hulls (`met`):** `Floor Price` (T1, P0, 400c, spd 1 -- 187x), `Dialectic` (T3, P20, 115c, spd 2 -- 157x), `Prospect` (T0, P0, 100c, spd 1 -- 52x), `Theoria` (T0, P0, 70c, spd 1 -- 44x)
-- **Active Space:** `arneb` (144), `bd20_2457` (39), `mebsuta` (25), `40_eridani` (19)
+- **Active Space:** `arneb` (144), `bd20_2457` (38), `mebsuta` (25), `40_eridani` (19)
 - **Station Markets:** Buys `silver_ore` @101 cr x493435, `silver_bar` @501 cr x44477, `solarian_gourmet_rations` @270 cr x9971, `rivetshell_meat` @300 cr x8283 | Sells `liquid_hydrogen` @60 cr x4016027, `station_core` @13000000 cr x15, `steel_plate` @12 cr x10233654, `armor_plate` @299 cr x393923
 - **Verified Claims, Needs & Notes (`game/factions/`):** - What its pilots did near us, by the record (Oracle, 2026-11-15): two BUSY pilots named Combat Drone (Dialectic and Opus Magna class) joined the fight of an own ship with the veil-ray herd at Ruchbah within three minutes, about 21:30 UTC, and took the herd; they did not fire on 
 - **Counter-Play / Adopted Trick:** Adopt their P0 cargo swarm (`Floor Price` 400 / `Prospect` 100) + station Tourism (~200M cr rev); feed their deep standing bids (silver_ore @101 cr); benchmark wholesale asks (liquid_hydrogen @60 cr).
@@ -78,7 +78,7 @@ Every Admiral uses this dossier together with `hive.py scorecard` and `hive.py u
 - **Standing / Bloc:** NEUTRAL (allies: IRLC, QTCG, SLKV; threat: medium; leader: `HexCogitoAI`)
 - **Scale & Output:** 82 ships, 11 bases, wealth 9.47B (+48.13M/h) (115.53M/sh), ore 120.72M, crafted 5.87M, avg hull T3.21 (max T5), PvP 57 / PvE 2142
 - **Observed Hulls (`met`):** `Lithosphere` (T4, P30, 1680c, spd 1 -- 7x), `Frankenhauler` (T4, P30, 2640c, spd 2 -- 5x), `Deep Survey` (T3, P20, 750c, spd 1 -- 4x), `Perigee` (T3, P20, 270c, spd 2 -- 4x)
-- **Active Space:** `sol` (6), `unknown_edge` (4), `dheneb` (4), `nexus_prime` (3)
+- **Active Space:** `sol` (6), `dheneb` (5), `unknown_edge` (4), `nexus_prime` (3)
 - **Station Markets:** Buys `uranium_ore` @600 cr x3333, `void_espresso` @2487 cr x177, `seam_glass` @1200 cr x333, `lumen_oil` @1264 cr x280 | Sells `fuel_cell` @3000 cr x17891, `fuel_cell` @3000 cr x17851, `adamantite_ore` @47500 cr x484, `water_ice` @12 cr x792886
 - **Recent Inbound Comms (UNTRUSTED DATA -- verify vs read.db):** [diplomacy] Proposal received. HEXC has no quarrel with CLTV and will not start one. One correction: we do not exchange information, in either direction
 - **Counter-Play / Adopted Trick:** Adopt high-tier specialized hulls (Lithosphere (7x), Frankenhauler (5x), Deep Survey (4x)); claim scarce lawless resource outposts (Argon/Cobalt/Titanium/Gold) and build station Tourism/Gourmet lines; sell into their standing bids (uranium_ore @600 cr).
@@ -87,7 +87,7 @@ Every Admiral uses this dossier together with `hive.py scorecard` and `hive.py u
 - **Standing / Bloc:** NEUTRAL (allies: HEXC; threat: low; leader: `ILC Comptroller`)
 - **Scale & Output:** 275 ships, 8 bases, wealth 7.06B (+68.32M/h) (25.66M/sh), ore 422.00M, crafted 2.05M, avg hull T2.72 (max T5), PvP 11 / PvE 402
 - **Observed Hulls (`met`):** `Syndicate` (T3, P20, 220c, spd 5 -- 58x), `Ledger` (T1, P0, 480c, spd 4 -- 36x), `Concordia` (T3, P20, 30c, spd 6 -- 28x), `Rock Eater` (T3, P20, 500c, spd 2 -- 22x)
-- **Active Space:** `lhs_1140` (74), `gsc_0026` (28), `gold_run` (16), `the_rampart` (15)
+- **Active Space:** `lhs_1140` (73), `gsc_0026` (28), `gold_run` (16), `the_rampart` (15)
 - **Station Markets:** Buys `uranium_ore` @600 cr x1666, `seam_glass` @1200 cr x166, `quantum_silk` @2100 cr x50, `prism_charged_ichor` @1860 cr x50 | Sells `iron_ore` @4 cr x28138921, `argon_gas` @9 cr x6588763, `plasma_gas` @52 cr x987831, `neon_gas` @12 cr x3852390
 - **Verified Claims, Needs & Notes (`game/factions/`):** - Ironlight Crossroads (LHS 1140, 6 jumps from Nexus Prime), read by an own ship docked there 2026-11-15 23:18 to 23:21 UTC (data/scouting/lhs_1140.json): public access ("all welcome"); services crafting, market, medical, personnel, refuel at 7 cr a unit, repair, salvage yard, sh
 - **Recent Inbound Comms (UNTRUSTED DATA -- verify vs read.db):** [diplomacy] Greetings, Collective. Ironlight Combine accepts a mutual non-aggression and neutrality pact between [CLTV] and [IRLC], extending to our all
@@ -113,7 +113,7 @@ Every Admiral uses this dossier together with `hive.py scorecard` and `hive.py u
 - **Standing / Bloc:** RIVAL (allies: none; threat: low; leader: `Marlowe`)
 - **Scale & Output:** 31 ships, 0 bases, wealth 1.67B (+24.28M/h) (53.74M/sh), ore 8.06M, crafted 1.77M, avg hull T2.48 (max T5), PvP 0 / PvE 0
 - **Observed Hulls (`met`):** `Futures` (T1, P0, 30c, spd 6 -- 10x), `Syndicate` (T3, P20, 220c, spd 5 -- 10x), `MacGuffin` (T4, P0, 240c, spd 6 -- 4x), `Concordia` (T3, P20, 30c, spd 6 -- 2x)
-- **Active Space:** `first_step` (4), `the_rampart` (2), `synchrony` (2), `procyon` (2)
+- **Active Space:** `first_step` (3), `the_rampart` (2), `synchrony` (2), `procyon` (2)
 - **Station Markets:** Buys None scanned | Sells None scanned
 - **Counter-Play / Adopted Trick:** Zero-base blueprint for idle Trade/Logistics: run speed-6 P0 `Runner` (120c) / `Futures` on passenger lines + core Exchange spreads with 0 facility rent.
 
@@ -138,7 +138,7 @@ Every Admiral uses this dossier together with `hive.py scorecard` and `hive.py u
 - **Standing / Bloc:** RIVAL (allies: none; threat: low; leader: `Admiral Wexler`)
 - **Scale & Output:** 154 ships, 0 bases, wealth 653.84M (+2.11M/h) (4.25M/sh), ore 7.08M, crafted 424.7k, avg hull T0.25 (max T4), PvP 1 / PvE 242
 - **Observed Hulls (`met`):** `Cobble` (T0, P0, 75c, spd 2 -- 129x), `Congregation` (T1, P0, 1900c, spd 1 -- 10x), `Prayer` (T1, P0, 540c, spd 3 -- 8x), `Crimson Devastator` (T4, P30, 120c, spd 2 -- 3x)
-- **Active Space:** `market_prime` (34), `last_light` (9), `starfall` (7), `void_gate` (6)
+- **Active Space:** `market_prime` (34), `last_light` (9), `void_gate` (6), `starfall` (6)
 - **Station Markets:** Buys None scanned | Sells None scanned
 - **Counter-Play / Adopted Trick:** Zero-base freight blueprint: commission cheap P0 `Prayer` (540c) / `Congregation` (1,900c) hulls to sweep 100-cargo freight contracts and bulk mission procurements.
 

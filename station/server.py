@@ -2207,6 +2207,8 @@ def api_ops():
             _sys.path.insert(0, _fl_dir)
         import scorecard as _sc
         out["scorecard"] = _sc.compute_scorecard(str(REPO), str(FLEET.parent), now=now)
+        import rivals as _rv
+        out["rivals"] = _rv.compute_sedcards(str(REPO), str(FLEET.parent), top_n=12, now=now)
     except Exception:
         out["scorecard"] = None
     OPS["at"], OPS["value"] = now, out

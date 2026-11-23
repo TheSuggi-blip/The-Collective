@@ -806,3 +806,17 @@ button.member:hover .face-medallion { border-color: var(--c, var(--accent)); box
 .sc-trig { background: rgba(12, 16, 24, 0.78); border: 1px solid var(--line); border-radius: var(--r); padding: 6px 9px; font-size: 11.5px; line-height: 1.45; }
 .sc-trig .pill { margin-right: 7px; }
 .sc-trig .sc-act { color: var(--dim); }
+
+/* ---- 2026-11-23: Rival Faction Sedcards & Adopted Tactics */
+.sed-tricks { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 8px; margin: 8px 0 12px; }
+.sed-tbox { background: rgba(12, 16, 24, 0.78); border: 1px solid var(--line); border-radius: var(--r); padding: 8px 10px; }
+.sed-thead { font: 600 11.5px/1.2 var(--mono); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 5px; }
+.sed-titem { font-size: 11.5px; color: var(--dim); line-height: 1.4; margin-bottom: 4px; }
+.sed-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 9px; margin: 8px 0 14px; }
+.sed-card { background: rgba(12, 16, 24, 0.84); border: 1px solid var(--line); border-radius: var(--r); padding: 9px 11px; display: flex; flex-direction: column; gap: 4px; }
+.sed-card.neutral { border-color: rgba(134, 214, 91, 0.45); }
+.sed-card.danger { border-color: rgba(235, 95, 95, 0.55); }
+.sed-top { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 12.5px; }
+.sed-meta { font: 11px/1.35 var(--mono); color: var(--accent); }
+.sed-row { font-size: 11.5px; color: var(--dim); line-height: 1.38; word-break: break-word; }
+.sed-adopt { font-size: 11.5px; color: var(--text); border-top: 1px solid var(--line); padding-top: 4px; margin-top: 2px; line-height: 1.38; }
