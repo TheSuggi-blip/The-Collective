@@ -13,8 +13,9 @@ Status: proven. Updated: 2026-11-23. Evidence: the plan file (tool plan, show); 
   Sol and Krynn (180 min) go to Voidborn readers, Krynn three.
 - The kit's herds (orders P3): census-kit-herds (360 min, three ships)
   reads the far places of the five species; the near ones stand on
-  the region lists. Live counts: store tables herds and reading_day
-  (the verb hive.py herds waits for its install: queue.log).
+  the region lists. Live counts: hive.py herds <species,...>; a place
+  reading 3 or more goes to Military in admirals.log the same turn,
+  and every tagged herd is filed as kind ranch (file_ranches.py).
 - Readers (@reader): census-voidborn (home, 45 min, five), the outpost
   watch (50 min), census-worked (120 min), census-frontier (170 min),
   census-worked-far (180 min), the roads.

@@ -1,14 +1,11 @@
 # Intel guidebook -- Lessons (lessons.md)
 
 ### How this guidebook is kept
-Status: proven. Updated: 2026-11-21. Evidence: rule F14; scripts/guide.py check intel.
+Status: proven. Updated: 2026-11-23. Evidence: rule F14; scripts/guide.py check intel.
 
-Kept by Oracle, read by every member: what the Intel division learned,
-so that a scout born later starts where the others stand. A figure is
-named by the call that prints it (hive.py levels Oracle, hive.py route
-<id>, the intel turn check), never copied; a number no record holds is
-`not measured`. Caps: card 3,000, a chapter 8,000, an entry 1,500
-characters; an outdated entry is retired, then `guide.py tidy intel`.
+Kept by Oracle for every member. A figure is named by the call that
+prints it, never copied; a number no record holds is `not measured`.
+Caps: rule F14; an outdated entry is retired, then `guide.py tidy intel`.
 
 ### How the Census Is Dispatched
 Status: proven. Updated: 2026-11-21. Evidence: game/fleet/dispatch.py (pick, stalest_system); errors.log ENT-065.
@@ -27,10 +24,8 @@ Status: proven. Updated: 2026-11-21. Evidence: game/fleet/dispatch.py (pick, sta
 Status: proven. Updated: 2026-11-22. Evidence: intel turn check ROADS, OFFLIST, UNFLOWN; data/routes/runs.jsonl (2026-11-16 23:21 to 2026-11-17 07:30 UTC); hive.py route census-roads; data/scouting/sol.json.
 
 - ROADS HALTs under four hours of first visits: widen a list, nearest
-  first, strongholds out, before the plan is committed.
-- ROADS END (no never-read system a list can take, since 2026-11-17):
-  rotate explorers onto the lists they flew least (each pilot's own first
-  visits) and onto census-worked-far.
+  first. ROADS END (every system read but strongholds, since 2026-11-17):
+  rotate explorers onto the lists they flew least.
 - A system read once by hand and left on no list that is on (an `off`
   list counts as none) grows into the oldest reading of the galaxy
   unseen: on 2026-11-22 Sol and six more stood 718 to 8,958 minutes old.
@@ -43,10 +38,9 @@ Status: proven. Updated: 2026-11-22. Evidence: intel turn check ROADS, OFFLIST, 
 ### Read every place the orders name against its cadence
 Status: proven. Updated: 2026-11-21. Evidence: intel turn check SITES; reports.log ENT-083.
 
-- Atria, named the north outpost, stood 571 minutes unread on the
-  8-hour explorer list while the orders asked for three hours. SITES
-  names every system of the ORACLE block on no list read within 180
-  minutes: HALT means move it onto a road list before the commit.
+- Atria, the north outpost's site, stood 571 minutes unread on an
+  8-hour list. SITES names every system of the ORACLE block on no list
+  read within 180 minutes: move it onto a road list before the commit.
 
 ### Read where the fleet works now
 Status: proven. Updated: 2026-11-22. Evidence: intel turn check WORKED (2026-11-21 19:40 UTC, 2026-11-22 19:27 UTC); game/routes/census-worked-far.json.
@@ -107,8 +101,6 @@ Status: proven. Updated: 2026-11-21. Evidence: requests.log ENT-310; admirals.lo
   offset to the time asked and filter in code, one call a second.
 - The faction's own log: get_action_log with `faction_id` (category
   faction: deposits, refuels, repairs) dates when a base last worked.
-- The daily bulk feed's battle file stopped at 2026-11-15 04:22 UTC
-  though rebuilt each night: read the live list for anything newer.
 - Our outpost stood wrecked three days before any member read it: a
   question about the past goes to these records first, the census after.
 
@@ -120,14 +112,10 @@ Status: proven. Updated: 2026-11-21. Evidence: game/fleet/gate.py; the game's he
   ship's own system whatever system_id says.
 - The stance is the raw action `default_stance` `{"stance": "flee"}` in
   group spacemolt_battle (scripts/set_stance.py); a new scout gets it once.
-- A shell heredoc whose text holds the word for a gate's stop is refused
-  by the shell's blocklist: write such text with the file tools.
 - First Steps in the Void leaves 13 to 38 ore aboard: stash.py stores
   it, or every empty-hold route stays closed to the scout (HOLDS line).
-- fleet-build.sh install waits up to four minutes for a clean clone, then
-  runs the whole test suite (over eight minutes on 2026-11-21): run it in
-  the background and poll it; a call cut between copy and commit leaves
-  the change live and ungated in the clone (errors.log ENT-115).
+- fleet-build.sh install: run it in the background and poll it to its
+  last line (errors.log ENT-115; seven minutes on 2026-11-23).
 
 ### A gate on a fresh read is open on an old one
 Status: proven. Updated: 2026-11-22. Evidence: route mission-cracking-the-shell-central (its runs); data/wildlife/gsc_0041.json; admirals.log ENT-095.
@@ -145,12 +133,9 @@ Status: proven. Updated: 2026-11-22. Evidence: table runs (census, 24 h to 23:25
 - Census fuel follows the ship-hours that read, not the cadences: while
   the lists ask more reads than the scouts give, a longer cadence only
   moves reads from fresh places to old ones, at the same burn.
-- So a burn cut means fewer scouts reading. The fill gate counts a
-  scout docked without an open route as waiting, and F8 names no
-  zero-fuel work a scout has. Ask before capping, never after.
-- A newborn region's minutes a read were no shorter than the home
-  side's (worked-far reads at Altais and Haven, 16 to 17 minutes against
-  25), likely since a census ends docked where it last read.
+- So a burn cut means fewer scouts reading: since 2026-11-23 a scout
+  docked with no due read counts as on watch (F8 exception). Ask
+  before capping, never after.
 
 ### A newborn's hold closes its own census
 Status: proven. Updated: 2026-11-23. Evidence: fill.py status scout (03:19 UTC: 'hold not empty' 6); stash.py (03:40 UTC: 20 fuel cells stored from each of 6 Outer Rim scouts).
@@ -184,12 +169,13 @@ Status: proven. Updated: 2026-11-23. Evidence: requests.log ENT-435, ENT-443; ta
   only Intel reads every book.
 
 ### A creature that carries a faction's tag is that faction's livestock
-Status: proven. Updated: 2026-11-23. Evidence: observation kind ranch (aspidiske); public_battles 16:51 UTC; admirals.log ENT-110; commit 930c5cfd.
+Status: proven. Updated: 2026-11-23. Evidence: observations kind ranch (seven lines, 2026-11-23); public_battles 16:51 UTC; admirals.log ENT-110, ENT-113; commit 930c5cfd; game/fleet/store.py read_wildlife.
 
-A ranch (patch 0.732.1) tames a species at a place and its animals
-carry the owner's tag in their name ("[HEXC] Patina-Grazer"). A drone
-of ours killed one at a partner's base; the owner's pilot joined the
-fight on the animal's side and destroyed the drone. The census files
-keep species, not names, so the tag shows only in get_nearby and the
-run log, and the run log is cleared by the pilot's next run: a fact
-read there is filed (observe.py) the same turn.
+A ranch (patch 0.732.1) tames a species at a place; its animals carry
+the owner's tag in their name ("[HEXC] Patina-Grazer"). A drone of ours
+killed one at a partner's base and the owner's pilot destroyed it.
+The census files keep every name with its tag (wildlife/<system>.json),
+but the store's table herds keeps one name a place and species, the
+first animal's: read the files, not the table, for ranches. A turn
+files each tagged herd as kind ranch by script (file_ranches.py of the
+intel-turn skill); hunt.py leaves tagged animals alone.
