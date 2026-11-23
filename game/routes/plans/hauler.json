@@ -153,7 +153,7 @@
   "craft-steel-logistics-synchrony-hub": 40,
   "craft-steel-logistics-central-nexus": 40,
   "craft-piping-plate-node-beta": 40,
-  "train-jumps-hauler": 12,
+  "train-jumps-hauler": 8,
   "park": 95
  },
  "of": 95,
@@ -162,7 +162,7 @@
   "stored-goods": 40,
   "craft-reserve": 40,
   "outpost-supply": 34,
-  "train-hauler": 12,
+  "train-hauler": 8,
   "newborn-rim": 30,
   "newborn-nebula": 25
  }

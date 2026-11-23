@@ -84,7 +84,7 @@ Kept by Apollo. Routes: 66. Ships: 95.
 | 62 | [craft-steel-logistics-synchrony-hub](craft-steel-logistics-synchrony-hub.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 3 ships, with 100 iron_ore stored at synchrony_hub, standing work | 40 of 95 |
 | 63 | [craft-steel-logistics-central-nexus](craft-steel-logistics-central-nexus.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 3 ships, with 100 iron_ore stored at central_nexus, standing work | 40 of 95 |
 | 64 | [craft-piping-plate-node-beta](craft-piping-plate-node-beta.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 6 ships, with 130 steel_plate stored at node_beta_industrial_station, 180 copper_ore stored at node_beta_industrial_station, standing work | 40 of 95 |
-| 65 | [train-jumps-hauler](train-jumps-hauler.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 40 ships, from 5,000 cr, under navigation 6, piloting 10, standing work | 12 of 95 |
+| 65 | [train-jumps-hauler](train-jumps-hauler.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 40 ships, from 5,000 cr, under navigation 6, piloting 10, standing work | 8 of 95 |
 | 66 | [park](park.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | the park route | all 95 |
 
 Templates its ships fly (a ship's own routes name one as `@<name>`):
@@ -94,7 +94,7 @@ Templates its ships fly (a ship's own routes name one as `@<name>`):
 | [stored-goods](templates-logistics.md) | 40 |
 | [craft-reserve](templates-logistics.md) | 40 |
 | [outpost-supply](templates-logistics.md) | 34 |
-| [train-hauler](templates-logistics.md) | 12 |
+| [train-hauler](templates-logistics.md) | 8 |
 | [newborn-rim](templates-logistics.md) | 30 |
 | [newborn-nebula](templates-logistics.md) | 25 |
 
