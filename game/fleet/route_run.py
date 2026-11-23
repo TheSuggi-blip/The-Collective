@@ -83,6 +83,7 @@ FLOOR = 3000                                 # credits every pilot keeps (orders
 pilot, route_arg = sys.argv[1], sys.argv[2]
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import division                                   # noqa: E402  the division's lock: own ships only, never a pilot another program flies
+import mobile                                     # noqa: E402  a stop at a moving station goes where the station stands now (queue.log ENT-246)
 division.require(pilot)
 verbose = '--verbose' in sys.argv
 route_path = pathlib.Path(route_arg) if route_arg.endswith('.json') else pathlib.Path(__file__).resolve().parent.parent / 'routes' / f'{route_arg}.json'
@@ -675,6 +676,9 @@ sys.excepthook = crashed
 atexit.register(finish)                              # after order_done, so it runs before it: the row first, then the order file goes
 for n, stop in enumerate(ROUTE['stops']):
     system, poi, base = stop['at'].split(':')
+    system, poi, moved = mobile.locate(system, poi, base, DATA)
+    if moved and n >= first:
+        say(f'stop {n + 1}: {moved}')
     if n < first:
         reached += 1
         continue

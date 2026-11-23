@@ -86,11 +86,13 @@ division.require(pilot)
 import handover                                   # noqa: E402  r22: a hunt route's gift_to (behind data/fleet/strict-classes-on)
 import dispatch                                   # noqa: E402  the dispatcher's own words for a run it rests (requests ENT-369)
 import fuelplan                                   # noqa: E402  fuel before setting out: the chart, the stations with fuel, the way
+import mobile                                     # noqa: E402  a sell_at at a moving station: where it stands now (queue.log ENT-246)
 species = set(args[args.index('--species') + 1].split(',')) if '--species' in args else None
 max_kills = int(args[args.index('--kills') + 1]) if '--kills' in args else 5
 max_minutes = int(args[args.index('--minutes') + 1]) if '--minutes' in args else 40
 min_bid = int(args[args.index('--min-bid') + 1]) if '--min-bid' in args else 50
 sell_at = args[args.index('--sell-at') + 1].split(':') if '--sell-at' in args else ['nexus_prime', 'the_core', 'central_nexus']
+sell_at[0], sell_at[1], MOVED = mobile.locate(sell_at[0], sell_at[1], sell_at[2], '/srv/collective/data')
 route_id = args[args.index('--route') + 1] if '--route' in args else 'hunt-' + poi
 GIFT_TO = args[args.index('--gift-to') + 1] if '--gift-to' in args else ''   # r22: a hunt route's `gift_to`, the hand-over instead of the sale
 STEP = '--step' in args                      # a step of a circuit: the order file, the station and the row are the circuit's
@@ -537,6 +539,8 @@ if STEP:
     print(f'STEP {pilot}: kills {kills} in {hunt_minutes:.0f} min at {poi} | goods {goods} | lowest hull {LOW[0]}% | {"; ".join(notes) or "no notes"}', flush=True)
     sys.exit(0)
 sold = {}
+if MOVED:
+    say(MOVED)
 DOCKED = not SHORT and goal('prepare-at-station', {'systemId': sell_at[0], 'poiId': sell_at[1], 'baseId': sell_at[2], 'refuel': True})
 if DOCKED:                                           # requests ENT-369: a sell_at that sold no fuel is said, and the dispatcher rests the pair
     FUEL, SIZE = tank()

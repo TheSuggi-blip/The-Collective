@@ -8,7 +8,7 @@ author: Unity
 # index.md -- The Fleet's Scripts
 
 Built by `python3 -B scripts/fleet-index.py` from the docstring of every script in this
-folder; never edited by hand. Scripts listed: 59.
+folder; never edited by hand. Scripts listed: 60.
 
 - Run a script from the repository root: `python3 -I -B game/fleet/<script> <arguments>`,
   the arguments as listed under "How to Call Each".
@@ -59,6 +59,7 @@ folder; never edited by hand. Scripts listed: 59.
 | `ledger.py` | Keep the fleet's books: what we own and where it lies, and how every order book moved. | Service |
 | `loot_own.py` | Loot every carcass and wreck at the pilot's place that the pilot itself killed. | By hand |
 | `mine.py` | One pilot mines at one field for a set time, through the engine's mining loop. | Runner (`mine` routes) |
+| `mobile.py` | Where a moving station stands now, for a route stop that names the system it stood in when written. | By hand |
 | `needs.py` | The fleet's needs register: what each division needs for its upgrades and for the empire, one row a need in game/needs.tsv, written by this script alone; the open needs are the reserve's targets, covered by stock in priority order. | By hand |
 | `observe.py` | A member writes down what it saw in the game (a scan far away, a price at a station we read no book of, a fight with a species) as one checked line of its division's own record; the store makes the lines one SQL table, `observations`. | By hand |
 | `passive_sense.py` | Zero-fuel opportunistic market & herd freshness updates when any fleet ship docks or works. | By hand |
@@ -585,6 +586,18 @@ A runner: the dispatcher starts it for a route of the kind `mine`; by hand only 
 ```
 mine.py <pilot> <system:poi> <system:poi:base> [--minutes M] [--sell-items item:min_price,...] [--route ID] [--deposit faction]
         [--gift <JSON>]
+```
+
+### `mobile.py`
+
+Where a moving station stands now, for a route stop that names the system it stood in
+when written.
+
+Run by hand.
+
+```
+game/fleet/mobile.py <base> [<system> <poi>]    # where the base stands now, or `unchanged`
+from mobile import locate; system, poi, line = locate(system, poi, base, data_dir)
 ```
 
 ### `needs.py`
