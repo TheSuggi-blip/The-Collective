@@ -1,0 +1,19 @@
+{
+ "id": "watch-book-deep-range",
+ "kind": "circuit",
+ "title": "Zero-fuel docked watch: a scout already docked at Deep Range Outpost (Outer Rim) saves its order book and mission board every 5 minutes for 30 minutes",
+ "note": "Kept by Oracle; written 2026-11-23 23:16 UTC (orders ENT-084, block ORACLE: the newborns' home regions; rule F8). The newborn scouts of this region stand docked here between their region reads; this watch gives them zero-fuel work with an output: fresh book readings (bid and ask refill, table stats_refill) and the mission board for Trade and Logistics. A copy of watch-book-the-levy: one ship a station, since a second reads the same book; only a scout already in this system takes it (requires.in_system). Standing work, never judged on its pay (F22).",
+ "standing": true,
+ "max_ships": 1,
+ "requires": {
+  "in_system": "deep_range"
+ },
+ "stops": [
+  {
+   "at": "deep_range:deep_range_outpost:deep_range_outpost",
+   "market_poll": true,
+   "watch_minutes": 30,
+   "watch_interval_minutes": 5
+  }
+ ]
+}
