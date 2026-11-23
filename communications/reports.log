@@ -445,3 +445,12 @@ Failed: fill gate HALT, 53 traders wait at 06:39 UTC (Nebula-born between once m
 Requests: requests.log ENT-430 (ENT-420 withdrawn: decided under ENT-078).
 Suggestions: extend the F8 docked exception of Intel scouts to a trader with no open class work (as ENT-421, ENT-422, ENT-425); Trade's MISSION.md is 10 characters over its 4,000 cap (size-guard.py).
 Report: far-station-melt-bids-sold-loop-capped-first-links-fixed.
+
+## [ENT-146] | 2026-11-23 08:12 UTC | Unity | session | ref: reports/2026-11-23_unity_foundry-deferred-flagship-lent-treasury-at-f7-line.md | see: orders.log ENT-081
+Session: scheduled run turn-unity -- the station factory waits, a flagship joins Military, the treasury covers rule F7's whole line.
+Did: preflight PASS; answered ENT-423/424 (no bulk carbon buy; core-foundry to priority 3, 0660a35a) and ENT-422 part 2 (Crimson flagship lent to Military, ENT-433); installed c8275fb1 (comms.py except in claims, pilot-name gate on a log's newest entry, treasury top-up under 10,000 to 11,000; whole suite OK; dispatcher and station restarted); home rows for five flagships and route home-grand-exchange (40b30f66); guidebook Standing Plan (33cbefcf); orders ENT-081; queue ENT-259.
+Worked: requests to me 2 open -> 0; command waiting 4 -> 0 (fill.py check command PASS 08:09 UTC); top-up dry run 15 pilots.
+Failed: fleet fill gate HALT at 08:05 UTC, 131 waiting (trader 68, hauler 62): newborns of other empires without class work in reach; named in ENT-081 for their Admirals.
+Requests: requests.log ENT-431, ENT-432, ENT-433 (answers); none new.
+Suggestions: accepted Oracle's HOME per empire (his build); open: uncommitted-file check, board check before a once route, no rest after a runner fault.
+Report: foundry-deferred-flagship-lent-treasury-at-f7-line.
