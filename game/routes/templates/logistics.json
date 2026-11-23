@@ -62,6 +62,7 @@
   "newborn-rim": {
    "title": "Outer Rim-born haulers: the once missions of Frontier Station, their home board (orders ENT-068 P6)",
    "routes": [
+    "mission-market-participation-frontier",
     "mission-who-buys-old-charts-frontier",
     "mission-the-proposal-frontier",
     "mission-debris-field-reports-frontier",
