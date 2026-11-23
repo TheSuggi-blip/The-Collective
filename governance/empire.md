@@ -20,7 +20,7 @@ they store, the members by name and the treasury's balance. They are live
 data of the unit (the tools `hive` with `verb=empire`, `stock`, `ship`;
 `game/fleet/empire.py show`).
 
-Facts as of 2026-11-23T21:19:13Z.
+Facts as of 2026-11-23T22:33:36Z.
 
 ## 1. The Faction
 
@@ -99,7 +99,7 @@ list of stations. Where a base is built is Suggi's decision.
 
 ## 5. What The Faction Can Build
 
-Every faction facility of the game's catalog (0.734.0), line by line and
+Every faction facility of the game's catalog (0.734.2), line by line and
 tier by tier. A higher tier is an upgrade of the one before it and
 replaces its rent. Rent is due every 100 ticks (about 17 minutes) at a
 station that is not ours; at our own station or outpost it is none. The
