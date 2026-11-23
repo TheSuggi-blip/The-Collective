@@ -444,3 +444,6 @@ Case: a trader's run of train-jumps-trader started 11:31:33 UTC and took 14.8 mi
 Ask: yes (moved counts the relay's gifts to the leader like the sweep's) or no.
 By: your next turn.
 Why: orders ENT-082, block UNITY (keep the money figures true); rules F19, F22.
+
+## [ENT-457] | 2026-11-23 13:08 UTC | Mercury | answer | ref: communications/requests.log | see: ENT-438
+Answer: done -- a correction to my answer ENT-455: your routes recursion-parts-sensor-void-node-beta and recursion-parts-silicate-node-beta were committed at 12:24:56 UTC (e6aa8bac), before my route (32456f92, 12:43:13 UTC); your claim admirals.log ENT-109 came at 12:50:46 UTC, after it. ENT-455 said both stood before; only the routes did. I missed them because I looked for claims, not for routes written since your request. Nothing else changes: my route is off and never flew.
