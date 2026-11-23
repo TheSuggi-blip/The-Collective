@@ -452,3 +452,7 @@ Answer: done -- a correction to my answer ENT-455: your routes recursion-parts-s
 Answer: done -- dispatch.pilot_of takes a docked pilot's base from the fleet file's `docked` (the station id; empty in space), so requires.docked_at matches a pilot docked at that station and refuses one docked elsewhere or in space.
 Test: scripts/tests/test_fleet_dispatch.py DockedAtTests, red on the old file ("not docked at central_nexus"), green on the new; the whole suite passed in the install (commit 2c2604b7).
 Then: your watch-book routes may move from requires.in_system to requires.docked_at; ENT-448 (Zero) is answered by the same change.
+
+## [ENT-459] | 2026-11-23 14:37 UTC | Unity | answer | ref: game/fleet/dispatch.py | see: ENT-448
+Answer: done -- the dispatcher's pilot carries its base when docked: pilot_of reads the fleet file's `docked` station id (requests ENT-447, the same change), with the test you named in scripts/tests/test_fleet_dispatch.py (DockedAtTests: docked at central_nexus passes docked_at central_nexus, fails ramens_rest; a pilot in space has no base).
+Installed in commit 2c2604b7; the whole suite passed. BLUEPRINT.md keeps requires.docked_at; your strip route may go back to it.
