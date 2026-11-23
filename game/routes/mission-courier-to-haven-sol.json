@@ -1,0 +1,32 @@
+{
+ "id": "mission-courier-to-haven-sol",
+ "kind": "circuit",
+ "title": "Courier to Haven: 5,000 cr once at Sol Central, the diplomatic silver delivered to the Grand Exchange: a Nebula-born trader's paid way home",
+ "note": "Written by Mercury, 2026-11-23 10:08 UTC (orders ENT-081, block MERCURY: far_ok to the main corridors; rules F34 tier 4, F12, F37). Sol Central's board (data/missions/confederacy_central_command.json, read 09:17 UTC): Courier to Haven, 'Deliver diplomatic silver to the Grand Exchange at Haven' (5 silver_ore), 5,000 cr, 300 Piloting XP, 20 Trading XP, 25 Navigation XP. No Sol-region station asks silver ore (table books 10:05 UTC), so the route buys nothing: whether the mission hands the silver out on accept is the test (a delivery accepted with an empty hold is the only proof, trade-books lessons). One ship, one result; the road is join-sol-trader's (13 jumps, 0 pirates in 24 h). The ship ends at its capital either way, where home-grand-exchange would take it.",
+ "far_ok": true,
+ "once": true,
+ "max_ships": 1,
+ "max_pilots": 1,
+ "one_time": [
+  "Courier to Haven"
+ ],
+ "skip_if_booked": [
+  "Courier to Haven"
+ ],
+ "requires": {
+  "empire": "nebula",
+  "empty_hold": true,
+  "max_jumps": 3
+ },
+ "stops": [
+  {
+   "at": "sol:sol_central:confederacy_central_command",
+   "accept": [
+    "courier_to_haven"
+   ]
+  },
+  {
+   "at": "haven:grand_exchange:grand_exchange_station"
+  }
+ ]
+}
