@@ -1,5 +1,5 @@
 # Every facility of the game: what it makes or gives, and what building it takes.
-# Source: the game's public catalog, version 0.733.0 | Rows: 2953
+# Source: the game's public catalog, version 0.734.0 | Rows: 2954
 # Written by scripts/catalog-index.py. Do not edit by hand.
 id	name	category	level	upgrades_from	recipe	build_cost	build_time	labor_cost	materials	power_draw	life_support_draw	gives	needs_service	empire	notes
 abyss_solidification_engine	Abyss Solidification Engine	production	4	void_crystallization_plant	crystallize_void_essence	12705000	540	15	steel_plate x 8150; copper_piping x 5150; reinforced_frame x 4600; control_node x 1650; heat_sink x 11100; plasma_injector x 4350; coolant_loop x 8200	6	1				
@@ -2381,6 +2381,7 @@ scrap_armor_manufacturing_complex	Scrap Armor Manufacturing Complex	production	4
 scrap_armor_production_plant	Scrap Armor Production Plant	production	3	scrap_armor_assembly_works	build_outer_rim_scrap_armor	2174000	330	33	steel_plate x 1200; copper_piping x 600; reinforced_frame x 400; quantum_control_core x 200; shield_emitter x 900; shield_matrix x 550; coolant_loop x 350	4	1				
 scrap_cartridge_shop	Scrap Cartridge Shop	production	1		hammer_scrap_rounds	0	0	10		2					pirate_base_only
 scrap_flak_battery	Scrap Flak Battery	defense	2			200000	100	20	steel_plate x 600; circuit_board x 40	3					pirate_base_only
+scrap_grinder	Scrap Grinder	production	1		grind_scrap_metal	60000	100	5	steel_plate x 1200; circuit_board x 100	1					
 scrap_ordnance_shed	Scrap Ordnance Shed	production	1		weld_scrap_missiles	0	0	15		3					pirate_base_only
 scrap_reactor	Scrap Reactor	infrastructure	1			80000	120	30	steel_plate x 40; salvage_metal x 30						player_station_buildable, power_supply=10
 scrap_torpedo_slip	Scrap Torpedo Slip	production	1		weld_scrap_torpedoes	0	0	20		4					pirate_base_only

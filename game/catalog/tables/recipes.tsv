@@ -1,5 +1,5 @@
 # Every recipe of the game: what it makes, from what, and where.
-# Source: the game's public catalog, version 0.733.0 | Rows: 892
+# Source: the game's public catalog, version 0.734.0 | Rows: 893
 # Written by scripts/catalog-index.py. Do not edit by hand.
 id	name	category	makes	from	time	by_hand	facilities	notes
 accelerate_bioluminescent_algae_growth	Accelerate Bioluminescent Algae Growth	Hydroponic Farming	bioluminescent_algae x 3	purified_water x 2; liquid_nitrogen x 1; carbon_dioxide_ice x 1	2.02	no	algae_cultivation_array, bioluminescent_production_greenhouse, automated_algae_synthesis_plant	
@@ -632,6 +632,7 @@ griddle_ranchers_breakfast	Griddle Rancher's Breakfast	Cooking	ranchers_breakfas
 grill_leviathan_tail_thermidor	Grill Leviathan Tail Thermidor	Cooking	leviathan_tail_thermidor x 2	leviathan_meat x 3; vatflesh_curd x 1; cinderspice x 1; sunspindle x 1	3.5	yes	leviathan_tail_thermidor_galley	no_recycle
 grind_laser_focusing_lens	Grind Laser Focusing Lens	Crystal Growing & Glasswork	laser_focusing_lens x 1	reinforced_glass x 4; silver_wiring x 1	4.5	yes	optical_grinding_station, automated_lens_grinder, precision_optics_line, high_precision_lens_fabricator	
 grind_precision_optic	Grind Precision Optic	Crystal Growing & Glasswork	precision_optic x 1	solarian_composite x 1; reinforced_glass x 1	15	no	precision_optic_grinding_line, precision_optic_grinding_plant, precision_optic_grinding_works, precision_optics_manufactory	no_recycle
+grind_scrap_metal	Grind Scrap Metal	Scrap Reclamation	salvage_metal x 6	steel_plate x 1	0.27	no	scrap_grinder	no_recycle
 grow_crystalline_lattice	Grow Crystalline Lattice	Crystal Growing & Glasswork	crystalline_lattice x 1	focused_crystal x 3; silicon_ore x 5; synthetic_compound x 2	75	no	crystal_garden, crystal_growth_chamber, crystalline_synthesis_plant, quantum_lattice_cultivator	no_recycle
 grow_diamond_lattice	Grow Diamond Lattice	Crystal Growing & Glasswork	crystalline_lattice x 1	focused_crystal x 3; synthetic_diamond x 3; synthetic_compound x 5	75	no	crystal_lattice_furnace, automated_lattice_refinery, industrial_lattice_synthesis_plant, precision_lattice_manufacturing_complex	no_recycle
 grow_driftkale	Grow Driftkale	Hydroponic Farming	driftkale x 200	purified_water x 300; liquid_nitrogen x 30	360	yes	driftkale_bay	no_recycle

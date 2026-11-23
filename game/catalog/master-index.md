@@ -7,9 +7,9 @@ author: Unity
 
 # master-index.md -- The Game's Catalog
 
-Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.733.0; never edited by hand.
+Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.734.0; never edited by hand.
 Start here: every name below is a link into one of the sub-indexes of this folder.
-Recipes: 892. Facilities: 2953. Hulls: 385. Modules: 270. Items: 879. Skills: 30.
+Recipes: 893. Facilities: 2954. Hulls: 385. Modules: 270. Items: 879. Skills: 30.
 
 - Ask a question instead of reading a table: `python3 -I -B game/fleet/craftbook.py` from the
   repository root. `item <text>` finds an item, how it is made and what uses it; `needs <item>
@@ -46,7 +46,7 @@ Recipes: 892. Facilities: 2953. Hulls: 385. Modules: 270. Items: 879. Skills: 30
 | [Fold Engineering](recipes/fold-engineering.md) | 22 | 1 | 21 |
 | [Packing & Crating](recipes/packing-crating.md) | 22 | 1 | 21 |
 | [Pharmaceutical Compounding](recipes/pharmaceutical-compounding.md) | 22 | 5 | 17 |
-| [Scrap Reclamation](recipes/scrap-reclamation.md) | 21 | 15 | 6 |
+| [Scrap Reclamation](recipes/scrap-reclamation.md) | 22 | 15 | 7 |
 | [Plasma & Void Forging](recipes/plasma-void-forging.md) | 16 | 0 | 16 |
 | [Cloak & Jammer Rigging](recipes/cloak-jammer-rigging.md) | 15 | 11 | 4 |
 | [Engine & Hold Fitting](recipes/engine-hold-fitting.md) | 15 | 13 | 2 |
@@ -69,7 +69,7 @@ Recipes: 892. Facilities: 2953. Hulls: 385. Modules: 270. Items: 879. Skills: 30
 | [Personal](facilities.md#personal) | 13 | drone_control, quarters, trader_office, workshop |
 | [Ranch](facilities.md#ranch) | 3 | -- |
 | [Service](facilities.md#service) | 97 | crafting, marine_training, market, medical, missions, personnel, refuel, repair, salvage_yard, shipyard, storage |
-| [Production](facilities.md#production) | 2666 | one recipe each; the full list is `tables/facilities.tsv` |
+| [Production](facilities.md#production) | 2667 | one recipe each; the full list is `tables/facilities.tsv` |
 
 ## Hulls by Empire
 
@@ -102,8 +102,8 @@ Tab-separated, one row per thing, a header row under three comment lines: for a 
 
 | Table | Rows | Columns |
 |---|---|---|
-| `tables/facilities.tsv` | 2953 | id, name, category, level, upgrades_from, recipe, build_cost, build_time, labor_cost, materials, power_draw, life_support_draw, gives, needs_service, empire, notes |
+| `tables/facilities.tsv` | 2954 | id, name, category, level, upgrades_from, recipe, build_cost, build_time, labor_cost, materials, power_draw, life_support_draw, gives, needs_service, empire, notes |
 | `tables/items.tsv` | 879 | id, name, category, rarity, size, base_value, made_by, used_in_recipes, used_in_builds, extracted_by |
 | `tables/modules.tsv` | 270 | id, name, type, slot, cpu, power, size, base_value, damage, reach, cooldown, effect, special |
-| `tables/recipes.tsv` | 892 | id, name, category, makes, from, time, by_hand, facilities, notes |
+| `tables/recipes.tsv` | 893 | id, name, category, makes, from, time, by_hand, facilities, notes |
 | `tables/ships.tsv` | 385 | id, name, empire, class, category, tier, piloting_required, shipyard_tier, hull, shield, armor, speed, fuel, cargo, cpu, power, weapon_slots, defense_slots, utility_slots, crew, build_time, build_materials, default_modules, notes |

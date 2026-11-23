@@ -1,6 +1,6 @@
 # Bases and Facilities
 
-Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.733.0; never edited by hand.
+Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.734.0; never edited by hand.
 Up: [master-index.md](master-index.md). What a facility's materials take down to the ore: `python3 -I -B game/fleet/craftbook.py build <facility id>`.
 
 ## Founding a Base
@@ -331,5 +331,5 @@ The part a founding needs, the recipe that makes it and the facility that runs t
 
 ## Production
 
-2666 production lines (level 1: 823, level 2: 630, level 3: 600, level 4: 596, level 5: 17). Each runs one recipe: the recipe's row in `recipes/` names its
+2667 production lines (level 1: 824, level 2: 630, level 3: 600, level 4: 596, level 5: 17). Each runs one recipe: the recipe's row in `recipes/` names its
 lines; a line's cost and materials are in `tables/facilities.tsv` and in `craftbook.py build <facility id>`.

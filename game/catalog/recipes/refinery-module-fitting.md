@@ -1,6 +1,6 @@
 # Refinery Module Fitting -- Recipes
 
-Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.733.0; never edited by hand.
+Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.734.0; never edited by hand.
 Up: [master-index.md](../master-index.md). Recipes: 27; by hand: 5; in a facility only: 22.
 
 | Recipe | Makes | From | Where | Time |

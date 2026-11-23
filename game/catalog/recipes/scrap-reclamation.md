@@ -1,7 +1,7 @@
 # Scrap Reclamation -- Recipes
 
-Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.733.0; never edited by hand.
-Up: [master-index.md](../master-index.md). Recipes: 21; by hand: 15; in a facility only: 6.
+Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.734.0; never edited by hand.
+Up: [master-index.md](../master-index.md). Recipes: 22; by hand: 15; in a facility only: 7.
 
 | Recipe | Makes | From | Where | Time |
 |---|---|---|---|---|
@@ -13,6 +13,7 @@ Up: [master-index.md](../master-index.md). Recipes: 21; by hand: 15; in a facili
 | `field_hull_patch` | hull_patch x 2 | salvage_metal x 6 | by hand | 1.95 |
 | `forge_scrap_armor` | armor_plate x 2 | salvage_metal x 20; salvage_components x 6 | by hand, or in: scrap_armor_forge | 13.5 |
 | `forge_weapon_housings` | weapon_housing x 3 | salvage_metal x 15; salvage_components x 4 | by hand, or in: weapons_salvage_bench | 9.45 |
+| `grind_scrap_metal` | salvage_metal x 6 | steel_plate x 1 | in: scrap_grinder | 0.27 |
 | `hammer_scrap_rounds` | scrap_rounds x 5 | salvage_metal x 2 | in: scrap_cartridge_shop | 1 |
 | `hammer_scrap_shot` | scrap_shot x 5 | salvage_metal x 2 | in: scrap_ammo_works | 1 |
 | `rebuild_power_cells` | power_cell x 1 | rare_salvage x 2; salvage_components x 3 | in a facility | 6.75 |

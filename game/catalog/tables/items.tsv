@@ -1,5 +1,5 @@
 # Every item of the game: its kind, its size, its base value, how often it is made and used.
-# Source: the game's public catalog, version 0.733.0 | Rows: 879
+# Source: the game's public catalog, version 0.734.0 | Rows: 879
 # Written by scripts/catalog-index.py. Do not edit by hand.
 id	name	category	rarity	size	base_value	made_by	used_in_recipes	used_in_builds	extracted_by
 adamant_tooth	Adamant Tooth	misc	legendary	1	1300		1	0	
@@ -97,7 +97,7 @@ chrome_scale	Chrome Scale	misc	uncommon	1	200		2	0
 chromium_ore	Chromium Ore	ore	uncommon	1	20		1	0	mining
 chromium_plate	Chromium Plate	refined	uncommon	1	65	chrome_scale_pressing, smelt_chromium_plate	1	0	
 cinderspice	Cinderspice	refined	uncommon	1	110	blend_cinderspice	9	0	
-circuit_board	Circuit Board	refined	common	1	200	carbon_arc_circuit_etching, chlorine_circuit_etching, fabricate_carbon_nanotube_circuit_boards, fabricate_circuit_boards, fabricate_gold_circuit_boards, fabricate_silver_circuit_boards	224	279	
+circuit_board	Circuit Board	refined	common	1	200	carbon_arc_circuit_etching, chlorine_circuit_etching, fabricate_carbon_nanotube_circuit_boards, fabricate_circuit_boards, fabricate_gold_circuit_boards, fabricate_silver_circuit_boards	224	280	
 citadel_security_grid	Citadel Security Grid	module		10	48000	build_citadel_security_grid	0	0	
 clarity_stim	Clarity Stim	consumable	exotic	1	600		0	0	
 cloaking_charge	Cloaking Charge	consumable	rare	1	8500	build_cloak_charge	0	0	
@@ -661,7 +661,7 @@ rivetshell_meat	Rivetshell Meat	refined	common	1	45		2	0
 salvage_components	Salvage Components	component	uncommon	2	80		16	38	
 salvage_drone	Salvage Drone	drone	uncommon	5	4200	build_salvage_drone	0	0	
 salvage_enhancer	Salvage Enhancer	consumable	uncommon	1	420	assemble_salvage_enhancer	0	0	
-salvage_metal	Salvage Metal	component	common	1	20		13	37	
+salvage_metal	Salvage Metal	component	common	1	3	grind_scrap_metal	13	37	
 salvage_module	Salvage Module	module		10	2000	build_salvage_module	0	0	
 scout_drone	Scout Drone	drone	uncommon	4	2200	build_scout_drone	0	0	
 scrap_harpoon	Scrap Harpoon	module		10	1500	build_scrap_harpoon	0	0	
@@ -755,7 +755,7 @@ station_reactor	Station Reactor	component	exotic	5	37000	build_station_reactor	1
 station_reactor_core	Station Reactor Core	component	exotic	15	8000	build_station_reactor_core	1	76	
 station_seltzer	Station Seltzer	consumable	common	1	30	carbonate_station_seltzer	0	0	
 steamed_rivetshell	Steamed Rivetshell	consumable	common	1	130	steam_rivetshell	0	0	
-steel_plate	Steel Plate	refined	common	1	18	basic_iron_smelting, ferrous_nodule_smelting, forge_vanadium_steel, reclaim_steel_from_scrap, refine_steel, sinter_tungsten_steel	92	3033	
+steel_plate	Steel Plate	refined	common	1	18	basic_iron_smelting, ferrous_nodule_smelting, forge_vanadium_steel, reclaim_steel_from_scrap, refine_steel, sinter_tungsten_steel	93	3034	
 stellar_observation_deck	Stellar Observation Deck	module		10	140000	build_stellar_observation_deck	0	0	
 stellar_plasma_cell_pack	Stellar Plasma Cell Pack	ammo	exotic	1	550	manufacture_stellar_plasma_cells	0	0	
 stellar_telescope	Stellar Telescope	module		10	75000	build_stellar_telescope	1	0	
