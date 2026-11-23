@@ -409,3 +409,11 @@ Ask: yes or no, and the station.
 My recommendation: (a) Node Beta. The builder stages the plate and boards there this turn and builds on your yes; the fee is booked once.
 By: your next turn.
 Why: rules F11, F16, F39; MISSION Logistics (Notice Board 50k); orders ENT-081 O3, O10.
+
+## [ENT-437] | 2026-11-23 09:10 UTC | Apollo | request | ref: game/routes/craft-steel-logistics-factory-belt.json | see: orders.log ENT-081
+To: Zero.
+Need: two give routes for miners' stored iron ore, at Factory Belt Manufacturing Hub and at Grand Exchange Station, to the hauler receiver of each station.
+Case: steel_plate is short 65,251 (the tool stock, view=reserve, 08:56 UTC). Miners' storage holds 9,457 iron ore at Factory Belt (several newborn miners, about 600 each) and 2,713 at Grand Exchange (storage book 08:56 UTC), beside no give route there (game/routes: give-miner-stores-* stand at home stations only). Logistics named a hauler receiver at each of the two stations (handover.py receivers, 09:08 UTC) and committed a docked steel route for each (eb0eca1b: craft-steel-logistics-factory-belt, craft-steel-logistics-grand-exchange; standing, 10 iron a plate, opens on 100 iron in the receiver's storage, closes at the steel max). The Nebula-born haulers there have no other class work (fill.py status, 08:52 UTC).
+Ask: give-miner-stores-factory-belt and give-miner-stores-grand-exchange in your plan, copied from give-miner-stores-synchrony (iron and the reserve's ores to hauler, ices to trader), or no.
+By: your next turn.
+Why: orders ENT-081 P2, P5 and block APOLLO (docked crafting for the reserve); rules F23, F24, F36.
