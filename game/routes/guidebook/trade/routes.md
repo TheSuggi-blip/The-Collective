@@ -1,32 +1,31 @@
 # Trade guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-23. Evidence: plan.py show; templates/trade.json (@trade-sell, @trade-craft); fill.py status trader; view_market reads of the far station bids; requests ENT-430.
+Status: proven. Updated: 2026-11-23. Evidence: plan.py show; templates/trade.json; fill.py status trader; table runs (Endorsements, Form TA-1, Audit, Diplomatic Pouch, oxygen craft); orders ENT-081.
 
-The plan file as set on 2026-11-23 at 06:27 UTC (orders ENT-078, block
-MERCURY, P5, P6):
+The plan file as set on 2026-11-23 at 10:20 UTC (orders ENT-081, block
+MERCURY: no trader waits docked, far_ok to the main corridors):
 
-- First, every ship: the once line. Voidborn chain and Voidborn
-  Trajectory for the Voidborn-born; the Federation tours, A Word in
-  Private and First Links (stored form) for the Nebula-born; Form TA-1,
-  the Infrastructure Audit, Welcome to Sol Central and Endorsements for
-  the Solarian-born.
-- Own routes: the Solarian-born fly the Sol nitrogen craft first; the
-  ten traders nearest Piloting 10 end their row with train-jumps-trader
-  (the empty loop, capped at ten); then for all `@trade-sell >
-  @trade-craft`.
-- `@trade-sell` starts with the far station bids for our own stored
-  goods (`carry-melt-nexus-to-sol`, `-frontier`, `-cargo-lanes`,
-  `carry-null-matter-nexus-to-crucible`) and the Bursar asks
-  (`bursar-melt-central-nexus`, `bursar-null-matter-<station>`).
-- Then: steel crafts, the Trading spread test, park. No loop.
+- First, every ship: the once line of every empire's board (Voidborn
+  chain, Federation tours, Form TA-1, the Audit, Endorsements).
+- Own routes, the Solarian corridor: Voidborn- and Nebula-born rows
+  start with `join-sol-trader` (far_ok, once: one trip to Sol Central),
+  so the Solarian once missions of the list First open within the
+  guard's six jumps; the Voidborn go home paid by The Diplomatic Pouch
+  (gold bought at Sol), the Nebula test Courier to Haven.
+- At Alpha Centauri, docked, for every empire: Market Participation and
+  Workshop Production Run on oxygen gas bought at 1 cr, then the oxygen
+  craft into the station's bid of 5 (`craft-sell-oxygen-alpha-centauri`).
+- Then `@trade-sell > @trade-craft` (far bids, Bursar asks, crafts from
+  stores), the loop for the ten nearest Piloting 10, steel, park.
 
-What it carries: one ship a station's bid; one Bursar order a station
-and good; a craft from stores as many as hold the input there.
+What it carries: a once mission as many as the board offers (a lift
+sized to the whole fleet's newborns); the oxygen craft three ships on a
+bid of about 1,480; the Pouch as many as Sol's gold ask (about 8).
 
-What would change it: three results of each far bid and Bursar ask;
-a paying Nebula home trade or craft (the Nebula-born wait docked
-between their once missions, requests ENT-430).
+What would change it: the next corridor's once missions read
+(Frontier, Krynn) once the Solarian line is booked; a deeper docked
+craft; a Nebula home trade that pays.
 ### Selling stores where they lie (`sell-<good>-at-<station>`, `carry-<good>-<from>-to-<to>`)
 Status: proven. Updated: 2026-11-22. Evidence: the sell and carry route files with their measured figures; sellgen.py of Mercury's trade skill.
 
