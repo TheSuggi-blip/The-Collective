@@ -157,5 +157,14 @@ class StrictClassTests(unittest.TestCase):
         self.assertEqual(workclass.work_class(pax), "haul")
         self.assertEqual(workclass.roles_for(pax), ("hauler",))
 
+    def test_buy_order_is_trader_and_market_poll_is_scout(self):
+        bid_desk = {"id": "bursar-buy-carbon", "kind": "circuit", "stops": [{"at": "s", "buy_order": [{"item": "carbon_ore", "qty": 500, "price": 4, "ceiling": 5}]}]}
+        poll_desk = {"id": "watch-arneb-book", "kind": "circuit", "stops": [{"at": "s", "market_poll": True, "watch_minutes": 30}]}
+        workclass.STRICT = True
+        self.assertEqual(workclass.work_class(bid_desk), "trade")
+        self.assertEqual(workclass.roles_for(bid_desk), ("trader",))
+        self.assertEqual(workclass.work_class(poll_desk), "census")
+        self.assertEqual(workclass.roles_for(poll_desk), ("scout",))
+
 if __name__ == "__main__":
     unittest.main()

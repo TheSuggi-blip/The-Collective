@@ -286,6 +286,13 @@ def check(root):
             errors.append(where + "`requires.empire` must be an empire (%s) or a non-empty list of them" % ", ".join(sorted(EMPIRES)))
         if "strict" in need and not isinstance(need["strict"], bool):     # requests ENT-332: dispatch.why_not reads true or false only
             errors.append(where + "`requires.strict` must be true (open only while strict classes are on) or false (only while off)")
+        for _nk in ("min_cargo", "max_cargo", "min_piloting", "max_piloting", "min_speed", "min_hull_tier", "max_hull_tier", "max_jumps"):
+            if _nk in need and not (isinstance(need[_nk], int) and not isinstance(need[_nk], bool) and need[_nk] >= 0):
+                errors.append(where + "`requires.%s` must be a non-negative integer" % _nk)
+        if "posture" in need:
+            _ps = need["posture"] if isinstance(need["posture"], list) else [need["posture"]]
+            if not _ps or not all(isinstance(x, str) and x.lower() in ("war", "peace") for x in _ps):
+                errors.append(where + "`requires.posture` must be `war` or `peace` (or a list of them)")
         floors = [("`min_left`", route.get("min_left"))] + [("stop %d: the `min_left` of a `mine` step" % n, step.get("min_left"))
                                                              for n, stop in enumerate(route.get("stops") or [], 1) if isinstance(stop, dict)
                                                              for step in stop.get("mine") or [] if isinstance(step, dict)]

@@ -163,7 +163,7 @@ def work_class(route, rid=None, strict=None):
         return "fit"
     if strict and "craft" in keys:
         return "craft"
-    if "buy" in keys:
+    if keys & {"buy", "buy_order"}:
         return "trade"
     if "craft" in keys:
         return "craft"
@@ -171,6 +171,8 @@ def work_class(route, rid=None, strict=None):
         return "sell"
     if strict and "gift" in keys and keys <= DELIVER_KEYS:
         return "deliver"
+    if "market_poll" in keys:
+        return "census"
     return "other"
 
 

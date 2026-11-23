@@ -597,8 +597,8 @@ def one_line(text):
 
 
 def _match_attr(term, ship, role, row, detail_fn):
-    """Match a declarative selector term: empire:X, hull:X, cargo>=N, cargo<N, piloting>=N, piloting<N, role:X."""
-    m = re.match(r"^(empire|hull|role):(.+)$", term, flags=re.I)
+    """Match a declarative selector term: empire:X, hull:X, role:X, system:X, docked:true|false, idle:true|false, cargo/piloting/speed/tier >=|<=|>|<|= N."""
+    m = re.match(r"^(empire|hull|role|system|docked|idle):(.+)$", term, flags=re.I)
     if m:
         k, v = m.group(1).lower(), m.group(2).strip().lower()
         if k == "role":
@@ -609,11 +609,25 @@ def _match_attr(term, ship, role, row, detail_fn):
         if k == "hull":
             h = str(row.get("class") or detail_fn(ship).get("class") or "").lower()
             return h == v or v in h
-    m2 = re.match(r"^(cargo|piloting)(>=|<=|>|<|==|=)(\d+)$", term, flags=re.I)
+        if k == "system":
+            sy = str(row.get("system") or detail_fn(ship).get("system") or "").lower()
+            return sy == v
+        if k == "docked":
+            dk = bool(row.get("docked") if "docked" in row else detail_fn(ship).get("docked"))
+            return dk == (v in ("true", "1", "yes"))
+        if k == "idle":
+            st = str(row.get("status") or "").lower()
+            is_idle = (st != "working") and not bool(row.get("order"))
+            return is_idle == (v in ("true", "1", "yes"))
+    m2 = re.match(r"^(cargo|piloting|speed|tier)(>=|<=|>|<|==|=)(\d+)$", term, flags=re.I)
     if m2:
         k, op, val = m2.group(1).lower(), m2.group(2), int(m2.group(3))
         if k == "cargo":
             cur = int(row.get("cargo_capacity") or detail_fn(ship).get("cargo_capacity") or 0)
+        elif k == "speed":
+            cur = int(row.get("speed") or detail_fn(ship).get("speed") or 0)
+        elif k == "tier":
+            cur = int(row.get("tier") if row.get("tier") is not None else (detail_fn(ship).get("tier") or 0))
         else:
             sk = detail_fn(ship).get("skills") or {}
             pv = sk.get("piloting") if isinstance(sk, dict) else 0

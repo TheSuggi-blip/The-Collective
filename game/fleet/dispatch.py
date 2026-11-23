@@ -772,6 +772,47 @@ def jumps_between(lanes, src, dst):
     return DIST_CACHE[key].get(dst)
 
 
+def live_posture(state):
+    """Auto-detect live war vs peace posture (cached per pass in state) so routes with requires.posture react within 30s."""
+    if "_posture" in state:
+        return state["_posture"]
+    data = state.get("data")
+    at_war = False
+    if data:
+        emp = read_json(Path(data) / "empire" / "empire.json", {})
+        if isinstance(emp, dict):
+            fac = emp.get("faction") if isinstance(emp.get("faction"), dict) else {}
+            rel = emp.get("relations") if isinstance(emp.get("relations"), dict) else {}
+            if fac.get("at_war") or (rel.get("wars") or []):
+                at_war = True
+        dip = read_json(Path(data) / "comms" / "diplomacy.json", {})
+        if isinstance(dip, dict):
+            for rec in (dip.get("factions") or {}).values():
+                if isinstance(rec, dict) and str(rec.get("status") or "").lower() in ("war", "at_war"):
+                    at_war = True
+                    break
+    pos = "war" if at_war else "peace"
+    state["_posture"] = pos
+    return pos
+
+
+def route_hops(pilot, route):
+    """BFS hop distance from pilot's current system to route's primary system, or None if unknown."""
+    cur = pilot.get("system")
+    place = route_place(route)
+    if not cur or not place:
+        return None
+    if cur == place:
+        return 0
+    if "lanes" not in LANES_CACHE:
+        try:
+            import fuelplan
+            LANES_CACHE["lanes"] = fuelplan.chart(Path(__file__).resolve().parent.parent)[0]
+        except Exception:
+            LANES_CACHE["lanes"] = {}
+    return jumps_between(LANES_CACHE["lanes"], cur, place)
+
+
 def why_not(pilot, rid, route, state):
     """(why the route is closed to the pilot now, or None when it is open; for an open census the system to read).
     The one rule: pick() and fill.py both use it."""
@@ -935,6 +976,56 @@ def why_not(pilot, rid, route, state):
         no_h = [str(x).lower() for x in (wo_hull if isinstance(wo_hull, (list, tuple)) else [wo_hull]) if x]
         if p_hull and p_hull in no_h:
             return "hull %s excluded" % p_hull, None
+    max_cargo = req.get("max_cargo")
+    if isinstance(max_cargo, (int, float)) and max_cargo > 0:
+        cap = int(pilot.get("cargo_capacity") or 0)
+        if cap > int(max_cargo):
+            return "cargo %d above max_cargo %d" % (cap, int(max_cargo)), None
+    min_spd = req.get("min_speed")
+    if isinstance(min_spd, (int, float)) and min_spd > 0:
+        spd = int(pilot.get("speed") or 0)
+        if spd < int(min_spd):
+            return "speed %d below min_speed %d" % (spd, int(min_spd)), None
+    min_tier = req.get("min_hull_tier")
+    if isinstance(min_tier, (int, float)) and min_tier > 0:
+        ht = int(pilot.get("hull_tier") or 0)
+        if ht < int(min_tier):
+            return "hull tier %d below %d" % (ht, int(min_tier)), None
+    max_tier = req.get("max_hull_tier")
+    if isinstance(max_tier, (int, float)) and max_tier >= 0:
+        ht = int(pilot.get("hull_tier") or 0)
+        if ht > int(max_tier):
+            return "hull tier %d above %d" % (ht, int(max_tier)), None
+    in_sys = req.get("in_system")
+    if in_sys:
+        p_sys = str(pilot.get("system") or "").lower()
+        want_sys = [str(x).lower() for x in (in_sys if isinstance(in_sys, (list, tuple)) else [in_sys]) if x]
+        if want_sys and p_sys not in want_sys:
+            return "system %s not in %s" % (p_sys or "?", ",".join(want_sys)), None
+    dock_at = req.get("docked_at")
+    if dock_at:
+        p_base = str(pilot.get("base") or "").lower()
+        want_b = [str(x).lower() for x in (dock_at if isinstance(dock_at, (list, tuple)) else [dock_at]) if x]
+        if not pilot.get("docked") or (want_b and p_base not in want_b):
+            return "not docked at %s" % ",".join(want_b), None
+    req_pos = req.get("posture")
+    if req_pos:
+        cur_pos = live_posture(state)
+        want_pos = [str(x).lower() for x in (req_pos if isinstance(req_pos, (list, tuple)) else [req_pos]) if x]
+        if want_pos and cur_pos not in want_pos:
+            return "posture %s not in %s" % (cur_pos, ",".join(want_pos)), None
+    max_j = req.get("max_jumps")
+    if isinstance(max_j, (int, float)) and max_j >= 0:
+        dist = route_hops(pilot, route)
+        if dist is not None and dist > int(max_j):
+            return "%d jumps exceeds max_jumps %d" % (dist, int(max_j)), None
+    cd_min = route.get("cooldown_minutes")
+    if isinstance(cd_min, (int, float)) and cd_min > 0:
+        prev_runs = pairs(state.get("rows") or []).get((rid, pilot["name"])) or ()
+        if prev_runs:
+            last_end = max(int(r.get("ended_at") or r.get("t") or 0) for r in prev_runs if isinstance(r, dict))
+            if last_end and state["now"] < last_end + float(cd_min) * 60.0:
+                return "cooldown %dm active" % int(cd_min), None
     any_mod = req.get("any_module")
     if isinstance(any_mod, list) and any_mod and not any(m_id in p_mods for m_id in any_mod):
         return "no target module to strip", None
@@ -973,14 +1064,48 @@ def own_lists(data):
     return {str(name): [str(rid) for rid in ids] for name, ids in pilots.items() if isinstance(ids, list)} if isinstance(pilots, dict) else {}
 
 
+def _utility_score(pilot, route):
+    """RTS Proximity-Weighted Utility Score for routes sharing a `utility_group`: higher pay/weight & closer wins."""
+    meas = route.get("measured") if isinstance(route.get("measured"), dict) else {}
+    cph = meas.get("cph_per_ship")
+    pay = float(cph) if isinstance(cph, (int, float)) and cph > 0 else 500.0
+    wt = float(route.get("priority_weight") or 1.0)
+    hops = route_hops(pilot, route)
+    dist_div = 1.0 + float(hops if hops is not None else 3.0)
+    return (max(100.0, pay) * max(0.1, wt)) / dist_div
+
+
 def pick(pilot, plan, routes, state):
-    """(route, argument) for the first route open to the pilot, or (None, None): of its own list (`pilots` of the
-    plan, from its division's plan file), or of its role's list when it has none."""
+    """(route, argument) for the first route open to the pilot, or (None, None).
+    Routes without `utility_group` stay strictly deterministic top-to-bottom.
+    Contiguous routes sharing the same `utility_group` compete by proximity-weighted RTS Utility."""
     role = pilot.get("role") or pilot["name"].split("-")[0]
-    for rid in (plan.get("pilots") or {}).get(pilot["name"]) or (plan.get("roles") or {}).get(role) or []:
-        reason, argument = why_not(pilot, rid, routes.get(rid), state)
-        if reason is None:
-            return routes[rid], argument
+    rids = (plan.get("pilots") or {}).get(pilot["name"]) or (plan.get("roles") or {}).get(role) or []
+    i = 0
+    while i < len(rids):
+        rid = rids[i]
+        rt = routes.get(rid)
+        ug = rt.get("utility_group") if isinstance(rt, dict) else None
+        if not ug:
+            reason, argument = why_not(pilot, rid, rt, state)
+            if reason is None:
+                return rt, argument
+            i += 1
+            continue
+        # Evaluate contiguous utility_group and pick highest proximity-weighted utility open candidate
+        best = None
+        while i < len(rids):
+            r2 = routes.get(rids[i])
+            if not isinstance(r2, dict) or r2.get("utility_group") != ug:
+                break
+            reason, argument = why_not(pilot, rids[i], r2, state)
+            if reason is None:
+                sc = _utility_score(pilot, r2)
+                if best is None or sc > best[0]:
+                    best = (sc, r2, argument)
+            i += 1
+        if best is not None:
+            return best[1], best[2]
     return None, None
 
 
@@ -990,7 +1115,10 @@ def pilot_of(ship, named, data, ammo):
     detail = read_json(Path(data) / "fleet" / "ships" / ship_file(name), {})
     return {"name": name, "role": role_of(name, named), "credits": ship.get("credits", 0), "docked": bool(ship.get("docked")),
             "empire": ship.get("empire") or detail.get("empire"), "system": ship.get("system") or detail.get("system"),
+            "base": ship.get("base") or detail.get("base") or detail.get("docked_at") or "",
             "hull": ship.get("class") or detail.get("class") or detail.get("ship_class") or "",
+            "hull_tier": int(ship.get("tier") if ship.get("tier") is not None else (detail.get("tier") or 0)),
+            "speed": int(ship.get("speed") or detail.get("speed") or 0),
             "cargo_capacity": int(ship.get("cargo_capacity") or detail.get("cargo_capacity") or 0),
             "modules": [m.get("type") or m.get("type_id") for m in detail.get("modules") or [] if isinstance(m, dict)],
             "skills": {str(k): int((v or {}).get("level") or 0) if isinstance(v, dict) else int(v or 0)

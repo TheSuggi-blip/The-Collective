@@ -1056,6 +1056,26 @@ class RouteGateTests(Tree):
         self.assertIn("hull", self.dispatch.why_not(p10_done, "fit-t2-upgrade", t2_upg, state)[0])
 
 
+    def test_dof_posture_locality_speed_tier_and_utility_group_pick(self):
+        state = {"orders": {}, "done": {}, "tries": {}, "booked": set(), "now": 1000, "rest": {}, "pair_rest": {}, "losing": set(), "lately_losing": set(), "rest_book": {}, "routes": {}, "data": "", "rows": [], "census": {}, "pirates": {}, "stock": {}, "_posture": "peace"}
+        war_only = {"id": "escort-war", "kind": "circuit", "stops": [{"at": "sol:a:b"}], "requires": {"posture": "war"}}
+        desk = {"id": "bursar-local", "kind": "circuit", "stops": [{"at": "sol:a:sol_central", "sell_order": [{"item": "x", "qty": 1, "price": 10}]}], "requires": {"docked_at": "sol_central", "min_speed": 4, "max_hull_tier": 1}}
+        p_tr = {"name": "trader-1", "role": "trader", "credits": 5000, "docked": True, "system": "sol", "base": "sol_central", "speed": 5, "hull_tier": 1, "skills": {}}
+        self.assertIn("posture", self.dispatch.why_not(p_tr, "escort-war", war_only, state)[0])
+        state["_posture"] = "war"
+        self.assertIsNone(self.dispatch.why_not(p_tr, "escort-war", war_only, state)[0])
+        self.assertIsNone(self.dispatch.why_not(p_tr, "bursar-local", desk, state)[0])
+        p_slow = dict(p_tr, speed=2)
+        self.assertIn("min_speed", self.dispatch.why_not(p_slow, "bursar-local", desk, state)[0])
+        p_t2 = dict(p_tr, hull_tier=2)
+        self.assertIn("hull tier", self.dispatch.why_not(p_t2, "bursar-local", desk, state)[0])
+        # Utility group picks nearer/higher-paying route over farther first route
+        r_far = {"id": "r-far", "kind": "circuit", "utility_group": "g1", "stops": [{"at": "far_sys:a:b"}], "measured": {"cph_per_ship": 1000}}
+        r_near = {"id": "r-near", "kind": "circuit", "utility_group": "g1", "stops": [{"at": "sol:a:b"}], "measured": {"cph_per_ship": 1000}}
+        self.dispatch.LANES_CACHE["lanes"] = {"sol": ["mid"], "mid": ["sol", "far_sys"], "far_sys": ["mid"]}
+        picked, _arg = self.dispatch.pick(p_tr, {"pilots": {"trader-1": ["r-far", "r-near"]}}, {"r-far": r_far, "r-near": r_near}, state)
+        self.assertEqual(picked["id"], "r-near")
+
 if __name__ == "__main__":
     unittest.main()
 

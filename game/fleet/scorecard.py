@@ -690,11 +690,13 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None):
     total_ships = sum(live_div[d]["total"] for d in DIVISIONS) or sum(hulls_by_div[d]["total"] for d in DIVISIONS) or 500
     total_working = sum(live_div[d]["working"] for d in DIVISIONS)
     total_idle = sum(live_div[d]["idle"] for d in DIVISIONS)
-    intel_watch = live_div["Intel"]["docked_waiting"]
-    # Effective operational employment (respecting Intel's F8 docked-watch exception for fleetwide count)
-    eff_working = total_working + min(intel_watch, live_div["Intel"]["idle"])
+    intel_watch = 0
+    # Strict Zero-Idle Accounting (Suggi 2026-11-23): only ships with an active task/order
+    # (including docked crafting, Bursar desk duty, or market_poll watch) count as working.
+    # Unassigned parked ships are genuinely IDLE in every division.
+    eff_working = total_working
     emp_pct = round(100.0 * total_working / max(1, total_ships), 1)
-    eff_emp_pct = round(100.0 * eff_working / max(1, total_ships), 1)
+    eff_emp_pct = emp_pct
 
     fl_m = money_by_div.get("Fleet", {})
     steady_1h = round(_num(kpi_live.get(("net", 1)), fl_m.get("net_6h", 0.0)), 1)
@@ -844,8 +846,8 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None):
         tot = ld["total"] or hd["total"]
         wrk = ld["working"]
         idl = ld["idle"]
-        # Intel docked watch exception (F8)
-        eff_wrk = wrk + ld["docked_waiting"] if div == "Intel" else wrk
+        # Strict Zero-Idle Accounting: parked without an active order is always IDLE
+        eff_wrk = wrk
         div_emp_pct = round(100.0 * eff_wrk / max(1, tot), 1)
         raw_emp_pct = round(100.0 * wrk / max(1, tot), 1)
 
@@ -1189,7 +1191,7 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None):
             "cashflow_6h": round(d_net6, 1),
             "employment": {
                 "working": wrk, "effective_working": eff_wrk, "idle": tot - eff_wrk,
-                "docked_watch": ld["docked_waiting"] if div == "Intel" else 0,
+                "docked_watch": 0,
                 "total": tot, "pct": div_emp_pct, "raw_pct": raw_emp_pct, "status": emp_sev,
             },
             "hulls": {

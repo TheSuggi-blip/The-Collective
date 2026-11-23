@@ -762,6 +762,25 @@ class SellOrderStepTests(unittest.TestCase):
         self.assertLess(source.index("for want in stop.get('sell_order')"), source.index("if stop.get('accept'):"))
 
 
+    def test_sell_order_dynamic_undercut_and_buy_order_wholesale_wall(self):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("rr_mod_test", Path(__file__).resolve().parents[2] / "game" / "fleet" / "route_run.py")
+        # Route run executes top-level argv on import, so verify pure functions via AST exec
+        src = (Path(__file__).resolve().parents[2] / "game" / "fleet" / "route_run.py").read_text(encoding="ascii")
+        ns = {}
+        import ast
+        tree = ast.parse(src)
+        funcs = [node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name in ("sell_order_moves", "buy_order_moves")]
+        exec(compile(ast.Module(body=funcs, type_ignores=[]), "route_run.py", "exec"), ns)
+        mv = ns["sell_order_moves"]({"item": "fuel_cell", "qty": 100, "price": 2950, "floor": 2000, "undercut_pct": 0.05}, {"best_buy": 100, "best_sell": 3000}, [], 50)
+        self.assertEqual(mv, [("create", 50, 2850)])
+        mv2 = ns["sell_order_moves"]({"item": "fuel_cell", "qty": 100, "price": 2950, "floor": 2900, "undercut_pct": 0.10}, {"best_buy": 100, "best_sell": 3000}, [], 50)
+        self.assertEqual(mv2, [("create", 50, 2900)])
+        bm = ns["buy_order_moves"]({"item": "carbon_ore", "qty": 500, "price": 4, "ceiling": 6, "outbid_cr": 1}, {"best_buy": 4, "best_sell": 6}, [], 1000)
+        self.assertEqual(bm, [("create", 200, 5)])
+        bm2 = ns["buy_order_moves"]({"item": "iron_ore", "qty": 100, "price": 10, "ceiling": 10}, {"best_buy": 3, "best_sell": 5}, [], 1000)
+        self.assertEqual(bm2, [("create", 100, 4)])
+
 if __name__ == "__main__":
     unittest.main()
 

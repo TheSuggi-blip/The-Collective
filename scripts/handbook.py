@@ -128,7 +128,7 @@ ASKS = {        # MCP tool -> {view, action or ask (or '' for every other value)
     "fleet": {"money": "Money", "history": "Money", "forecast": "Money", "levels": "Ships and pilots", "board": "Ships and pilots",
               "capacity": "Routes and runs", "standing": "Routes and runs", "tasks": "Routes and runs", "refill": "Statistics",
               "kpi": "Statistics", "contribution": "Statistics", "classes": "Statistics", "time": "Statistics", "supply": "Statistics",
-              "xp": "Statistics", "upgrades": "Statistics", "alerts": "Statistics", "watchdog": "Statistics", "rival": "Map and intel", "contracts": "Markets", "progression": "Our faction"},
+              "xp": "Statistics", "upgrades": "Statistics", "alerts": "Statistics", "watchdog": "Statistics", "rival": "Map and intel", "rivals": "Map and intel", "contracts": "Markets", "shipping": "Markets", "progression": "Our faction", "scorecard": "Statistics", "upgrade_plan": "Ships and pilots"},
     "ship": {"": "Ships and pilots"}, "routes": {"": "Routes and runs"}, "route": {"": "Routes and runs"}, "candidates": {"": "Routes and runs"},
     "market": {"": "Markets"}, "stock": {"": "Stock and reserve"}, "catalog": {"": "The catalog"}, "base_plan": {"": "Our faction"},
     "system": {"": "Map and intel"}, "comms": {"contacts": "Map and intel", "safe_comms": "Map and intel", "": "Written knowledge"}, "search": {"": "Written knowledge"},

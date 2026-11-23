@@ -146,10 +146,11 @@ class TestFleetScorecard(unittest.TestCase):
             self.assertEqual(trade["trend_24h"], "IMPROVING")
             self.assertEqual(trade["hulls"]["mode"], "piloting_to_t2")
 
-            # Intel: docked waiting scout counts as docked watch (F8) -> 100% effective employment, 50% freshness ALARM
+            # Intel: unassigned parked scout counts honestly as IDLE (0% working -> DIV_IDLE + INTEL_FRESHNESS)
             intel = sc["divisions"]["Intel"]
-            self.assertEqual(intel["employment"]["pct"], 100.0)
+            self.assertEqual(intel["employment"]["pct"], 0.0)
             i_codes = {t["code"] for t in intel["triggers"]}
+            self.assertIn("DIV_IDLE", i_codes)
             self.assertIn("INTEL_FRESHNESS", i_codes)
 
     def test_render_briefing_for_admiral_and_unity(self):

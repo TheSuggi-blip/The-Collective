@@ -400,19 +400,60 @@ def sell_into_bid(want, book):
 
 def sell_order_moves(want, row, mine, have):
     """The calls a stop's `sell_order` entry makes for one good: [("modify", order_id, price) | ("create", units,
-    price)]. `row`: the good's row of the book just read; `mine`: the pilot's own resting sell orders of the good here
-    ({order_id, remaining, price_each}); `have`: the units it holds here (hold and storage, the listed ones left out).
-    The price is the entry's, never under its `floor` and never under the best bid (an ask under the bid fills at the
-    bid at once; rule F12: nothing sold under a standing bid); every own order at another price is repriced to it, and
-    what is held is listed until `qty` units stand listed in all (requests.log ENT-373, orders ENT-068 block MERCURY)."""
+    price)]. Supports optional dynamic rival undercutting (`undercut_pct` e.g. 0.05 and/or `undercut_cr`) against the
+    live competing `best_sell` ask, while NEVER listing below `floor` or `best_buy` (rule F12/F39/F40)."""
     bid = row.get('best_buy') if isinstance(row.get('best_buy'), (int, float)) else 0
-    price = max(int(want['price']), int(want.get('floor') or 0), int(bid or 0))
+    ask = row.get('best_sell') if isinstance(row.get('best_sell'), (int, float)) else 0
+    target = int(want['price'])
+    u_pct = float(want.get('undercut_pct') or 0.0)
+    u_cr = int(want.get('undercut_cr') or 0)
+    if ask > 0 and (u_pct > 0.0 or u_cr > 0):
+        undercut_p = int(round(ask * max(0.5, 1.0 - min(0.5, u_pct)))) - max(0, u_cr)
+        if undercut_p < ask:
+            target = min(target, undercut_p) if target > 0 else undercut_p
+    price = max(target, int(want.get('floor') or 0), int(bid or 0))
     moves = [('modify', o['order_id'], price) for o in mine if int(o.get('price_each') or 0) != price]
     listed = sum(int(o.get('remaining') or 0) for o in mine)
     more = min(int(want['qty']) - listed, int(have or 0))
     if more > 0:
         moves.append(('create', more, price))
     return moves
+
+
+def buy_order_moves(want, row, mine, cash_avail):
+    """The calls a stop's `buy_order` entry makes for one good: [("modify", order_id, price) | ("create", units, price)].
+    Places a standing wholesale buy wall at `price` (optional `outbid_pct`/`outbid_cr` above competing `best_buy`),
+    strictly <= `ceiling` and strictly < `best_sell` (so it rests as a standing bid without overpaying at ask),
+    sized to remaining `qty` and `cash_avail` (wallet above FLOOR)."""
+    bid = row.get('best_buy') if isinstance(row.get('best_buy'), (int, float)) else 0
+    ask = row.get('best_sell') if isinstance(row.get('best_sell'), (int, float)) else 0
+    ceiling = int(want.get('ceiling') or want['price'])
+    target = int(want['price'])
+    o_pct = float(want.get('outbid_pct') or 0.0)
+    o_cr = int(want.get('outbid_cr') or 0)
+    if bid > 0 and (o_pct > 0.0 or o_cr > 0):
+        step_p = int(round(bid * (1.0 + min(0.5, o_pct)))) + max(0, o_cr)
+        target = max(target, step_p)
+    price = min(target, ceiling)
+    if ask > 1 and price >= int(ask):
+        price = int(ask) - 1
+    if price < 1:
+        return []
+    moves = [('modify', o['order_id'], price) for o in mine if int(o.get('price_each') or 0) != price]
+    listed = sum(int(o.get('remaining') or 0) for o in mine)
+    need_qty = max(0, int(want['qty']) - listed)
+    afford = int(max(0, cash_avail) // price) if price > 0 else 0
+    more = min(need_qty, afford)
+    if more > 0:
+        moves.append(('create', more, price))
+    return moves
+
+
+def own_buy_orders(item):
+    """[{order_id, remaining, price_each}] of the pilot's own buy orders of `item` at the station where it is docked."""
+    rows = body(raw('view_orders', {}, group='spacemolt_market')).get('orders') or []
+    return [o for o in rows if isinstance(o, dict) and o.get('item_id') == item and (o.get('side') or o.get('order_type')) == 'buy'
+            and int(o.get('remaining') or 0) > 0]
 
 
 def own_sell_orders(item):
@@ -842,6 +883,58 @@ for n, stop in enumerate(ROUTE['stops']):
                 said += f' refused: {str(d.get("error"))[:100]}'
             say(said)
             notes.append(said)
+    for want in stop.get('buy_order') or []:             # rule F39: standing wholesale buy wall at <= ceiling
+        mine = own_buy_orders(want['item'])
+        avail = max(0, credits() - FLOOR)
+        for move in buy_order_moves(want, (book or {}).get(want['item']) or {}, mine, avail):
+            if move[0] == 'modify':
+                d = raw('modify_order', {'order_id': move[1], 'new_price': move[2]}, group='spacemolt_market')
+                said = f'buy order {want["item"]}: repriced to {move[2]}'
+            else:
+                d = raw('create_buy_order', {'item_id': want['item'], 'quantity': move[1], 'price_each': move[2]}, group='spacemolt_market')
+                said = f'buy order {want["item"]}: {move[1]} bid at {move[2]}'
+            time.sleep(11)
+            if 'error' in d:
+                said += f' refused: {str(d.get("error"))[:100]}'
+            say(said)
+            notes.append(said)
+    watch_m = float(stop.get('watch_minutes') or 0)
+    has_desk_work = bool(stop.get('sell_order') or stop.get('buy_order') or stop.get('craft') or stop.get('market_poll'))
+    if watch_m > 0 and has_desk_work and not ROUTE.get('park'):
+        watch_m = min(120.0, watch_m)
+        every_s = max(120.0, float(stop.get('watch_interval_minutes') or 5) * 60.0)
+        until = time.time() + watch_m * 60.0
+        next_poll = time.time() + every_s
+        say(f'active docked desk watch at {base} for {watch_m:.0f}m (poll every {every_s/60.0:.0f}m, 0 fuel)')
+        while time.time() < until and not (DATA / 'fleet' / 'STOP').exists():
+            time.sleep(min(30.0, max(1.0, until - time.time())))
+            try:
+                os.utime(ORDER)
+            except OSError:
+                pass
+            if time.time() >= next_poll and time.time() < until and not (DATA / 'fleet' / 'STOP').exists():
+                next_poll = time.time() + every_s
+                book = save_book(base) or book
+                if stop.get('market_poll'):
+                    save_board(base)
+                for want in stop.get('sell_order') or []:
+                    mine = own_sell_orders(want['item'])
+                    have = cargo().get(want['item'], 0) + stored(base).get(want['item'], 0)
+                    for move in sell_order_moves(want, (book or {}).get(want['item']) or {}, mine, have):
+                        if move[0] == 'modify':
+                            raw('modify_order', {'order_id': move[1], 'new_price': move[2]}, group='spacemolt_market')
+                        else:
+                            raw('create_sell_order', {'item_id': want['item'], 'quantity': move[1], 'price_each': move[2]}, group='spacemolt_market')
+                        time.sleep(11)
+                for want in stop.get('buy_order') or []:
+                    mine = own_buy_orders(want['item'])
+                    avail = max(0, credits() - FLOOR)
+                    for move in buy_order_moves(want, (book or {}).get(want['item']) or {}, mine, avail):
+                        if move[0] == 'modify':
+                            raw('modify_order', {'order_id': move[1], 'new_price': move[2]}, group='spacemolt_market')
+                        else:
+                            raw('create_buy_order', {'item_id': want['item'], 'quantity': move[1], 'price_each': move[2]}, group='spacemolt_market')
+                        time.sleep(11)
     did_unfit = False
     for umod in stop.get('unfit') or []:                 # strip off-role starter modules before fitting slots
         did_unfit = True

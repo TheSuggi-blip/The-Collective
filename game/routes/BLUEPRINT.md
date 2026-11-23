@@ -167,3 +167,24 @@ in their order, then the recurring ones. What the first 55 pilots did
 by hand and by the birth script is written down as routes so that the
 next wave needs no hand: `first-survey` (off until tested as a route
 file) and `voidborn-missions-1`.
+
+## Declarative Degrees of Freedom & Active Zero-Fuel Desk Duty (2026-11-23)
+
+All 500 ships reconcile every 30s against division plans (`plan-<division>.md` + `@templates`) using these declarative knobs:
+
+- **Capability & Posture Gates (`requires`):**
+  - `min_cargo` / `max_cargo`: cargo hold capacity bounds (e.g. `100` for `spacemolt_shipping` freighters).
+  - `min_piloting` / `max_piloting`: automatic skill gating (e.g. `min_piloting: 10` triggers T2 upgrades within 30s).
+  - `min_speed`: matches fast hulls (`Runner`/`Futures` speed 6) for express passenger/courier wings.
+  - `hull` / `without_hull` & `min_hull_tier` / `max_hull_tier`: targets specific hulls or un-upgraded T0 starters (`max_hull_tier: 0`).
+  - `empire`, `in_system`, `docked_at`, `max_jumps`: regional & zero-fuel station locality affinity.
+  - `posture`: `"war"` or `"peace"` -- automatically activates war defense/escorts or pauses unescorted risky routes within 30s when faction war starts/ends.
+- **Rate Limits & Proximity Utility:**
+  - `cooldown_minutes`: per-pilot cooldown between runs.
+  - `utility_group` (plus optional `priority_weight`): contiguous routes sharing a `utility_group` compete by proximity-weighted RTS Utility (`pay * weight / (1 + hops)`) so ships automatically pick the nearest high-pay open field/trade.
+- **Active Zero-Fuel Docked Work (`route_run.py`, counts honestly as `working`, unlike `park` which is strictly IDLE):**
+  - `sell_order`: supports dynamic rival undercutting (`undercut_pct`, `undercut_cr`) while respecting `floor` & `best_buy`.
+  - `buy_order`: automated wholesale buy walls (`item`, `qty`, `price`, `ceiling`, optional `outbid_pct`/`outbid_cr`, strictly `< best_sell`).
+  - `watch_minutes` (`<=120`) + `watch_interval_minutes` (default `5`) + `market_poll: true`: keeps docked Bursars, crafters, and hub market-watchers actively tending books/orders at 0 fuel burn (never allowed on `park`).
+- **Declarative Wing Selectors (`plan.py set` / MCP `plan`):**
+  - Select entire wings in one call: `empire:nebula`, `hull:Prayer`, `cargo>=100`, `piloting>=10`, `speed>=5`, `tier>=1`, `system:sol`, `docked:true`, `idle:true` (combine with `+` for AND, `,` for OR).

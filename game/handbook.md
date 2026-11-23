@@ -93,6 +93,7 @@ per question, from the tools' own texts (collective_mcp.TOOLS) and hive.py's usa
 |---|---|---|
 | pilots' levels, XP an hour, hours to the next hull tier. | fleet view=levels | hive.py levels |
 | a member's ships one line each, with their orders and last runs. | fleet view=board | board.py |
+| empire-specialized T1/T2 parallel batch upgrade sheet. | fleet view=upgrade_plan | upgrades.py all |
 | one ship: place, hull, fuel, hold, modules, wallet, order, skills | ship pilot=<pilot> | hive.py ship <pilot> |
 | what a ship or a side of ours can hunt: its firepower and its toughness against a creature (rule F9). | hive verb=gauges | hive.py gauges |
 
@@ -122,6 +123,7 @@ per question, from the tools' own texts (collective_mcp.TOOLS) and hive.py's usa
 | What it answers | MCP | Shell |
 |---|---|---|
 | bottleneck procurement candidates for Station Bursars, rival board supply contracts & contracts.log. | fleet view=contracts | hive.py contracts |
+| live spacemolt_shipping freight contracts. | fleet view=shipping | shipping.py list |
 | The last moves of one item's best bid and best ask at the stations whose order books our ships read... | market item=<item> | ledger.py prices <item> |
 | one item's lowest and highest best bid and best ask per station over a window | hive verb=store args=[price, <item>] | hive.py store price <item> |
 
@@ -130,6 +132,7 @@ per question, from the tools' own texts (collective_mcp.TOOLS) and hive.py's usa
 | What it answers | MCP | Shell |
 |---|---|---|
 | live benchmark vs #1 [HEXC], unclaimed resource-monopoly outpost sites, zero-fuel docked crafting... | fleet view=rival | hive.py rival |
+| rival faction sedcards & live Outsupply/Outsource/Undercut board. | fleet view=rivals | rivals.py all |
 | one system: chart, places, what is left in its fields, its herds, its market, who was met, our ships | system id=<id> | hive.py system <id> |
 | messages other players wrote to our ships. | comms view=contacts | inbox.py show --to-us |
 | player hails through the CaMeL + dynamic spotlighting injection firewall. | comms view=safe_comms | comms_guard.py |
@@ -185,6 +188,7 @@ per question, from the tools' own texts (collective_mcp.TOOLS) and hive.py's usa
 | What it answers | MCP | Shell |
 |---|---|---|
 | what comes back per hour between our readings: bids, fields, herds. | fleet view=refill | hive.py refill |
+| MAUTxWSJF weighted triage queue (P0>P1>P2>P3) & live WAR/CASHFLOW/GROWTH posture. | fleet view=scorecard | scorecard.py --who all |
 | the fleet as one purse over 1, 6, 24 and 72 hours: throughput, operating expense, steady net, paid... | fleet view=kpi | hive.py stats kpi |
 | per division its own net, the income its route files enabled for every division, its service. | fleet view=contribution | hive.py stats contribution |
 | per role the places of its own class work open now against its ships, and the spill. | fleet view=classes | hive.py stats classes |
@@ -242,12 +246,3 @@ per question, from the tools' own texts (collective_mcp.TOOLS) and hive.py's usa
 |---|---|---|
 | every table and view of the store with what a row is and its columns; with a table's name its columns... | sql | hive.py schema |
 | one SELECT or WITH statement on the store's read copy (store.py query: read only, one statement, a... | sql query=<query> | hive.py sql <query> |
-
-### Other
-
-| What it answers | MCP | Shell |
-|---|---|---|
-| rival faction sedcards & live Outsupply/Outsource/Undercut board. | fleet view=rivals | rivals.py all |
-| MAUTxWSJF weighted triage queue (P0>P1>P2>P3) & live WAR/CASHFLOW/GROWTH posture. | fleet view=scorecard | scorecard.py --who all |
-| live spacemolt_shipping freight contracts. | fleet view=shipping | shipping.py list |
-| empire-specialized T1/T2 parallel batch upgrade sheet. | fleet view=upgrade_plan | upgrades.py all |
