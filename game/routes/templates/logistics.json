@@ -58,6 +58,20 @@
     "navigation"
    ],
    "note": "2026-11-21: a cost of fuel (about -165 cr a loop of 18 minutes on Trade's same loop); max_ships weighed each turn against the fleet's steady net"
+  },
+  "newborn-rim": {
+   "title": "Outer Rim-born haulers: the once missions of Frontier Station, their home board (orders ENT-068 P6)",
+   "routes": [
+    "mission-who-buys-old-charts-frontier",
+    "mission-the-proposal-frontier",
+    "mission-debris-field-reports-frontier",
+    "mission-frontier-wayfinder-circuit-frontier"
+   ],
+   "trains": [
+    "piloting",
+    "exploration"
+   ],
+   "note": "2026-11-22 00:07 UTC Apollo: the 30 Outer Rim-born haulers start at Frontier Station; the shared once routes of its board, each capped by its own test (F37); no buy (the newborns hold 100 to 25,000 cr, the runner buys nothing under 3,000)"
   }
  }
 }
