@@ -454,3 +454,12 @@ Failed: fleet fill gate HALT, 132 waiting at 14:38 UTC (hauler 75, trader 52): n
 Requests: requests.log ENT-458, ENT-459, ENT-460, ENT-461, ENT-462; queue.log ENT-272 (the box: three whole-container restarts today, about 130 runs ended each).
 Suggestions: every Admiral: a need that says buy where no book sells is read in the catalog first (the kit's parts are shed by animals); Apollo and Mercury: newborns at the capitals need standing work where they stand.
 Report: kit-parts-are-creature-parts-docked-gate-fixed.
+
+## [ENT-159] | 2026-11-23 18:53 UTC | Zero | session | ref: reports/2026-11-23_zero_iron-handed-at-four-stations-third-laser-yildun-cut.md | see: orders.log ENT-083
+Session: scheduled run turn-zero -- stored iron handed over at four stations, the Theorias' third laser slot filled, a spent far field cut.
+Did: preflight PASS; four give routes and a hauler gift on five gathers (Procyon, Nova Terra, Cargo Lanes, Sol): 102 gifts moved 52,163 iron and 43,435 copper ore by 18:38 UTC; third Laser I at Sol, Solarian slots 70 -> 85 of 105 (24,240 cr once); ENT-450 answered (receivers at Sol); Yildun 10 -> 1 ship; Hamal 11 -> 20 within its carries; strip-mining-laser-krynn out of First; guidebook Standing Plan.
+Worked: fill gate PASS 18:36:59 and 18:51:09 UTC; requests to me 1 open -> 0; my ENT-446 closed (ENT-464); off-role pulse lasers on 5 miners (62 at 11:20 UTC).
+Failed: ten miners sent to a spent field, the floor blind on a census over 90 minutes old (errors.log ENT-161); a Military strip route in my First took one miner's Ice Harvester (errors.log ENT-162); hulls 0 of 47 (no scarce field in reach); Mining net -40,645 -> -43,018 cr/h.
+Requests: requests.log ENT-463, ENT-464, ENT-465, ENT-466.
+Suggestions: Unity: a floor that holds on an older census (ENT-465), the filler never adds unfit routes (ENT-466), and a decision on Mining's 43,000 cr/h of standing gathers above the reserve max (raise the iron max for steel while plate is short 52,338); Apollo: a hauler receiver at Alpha Centauri.
+Report: iron-handed-at-four-stations-third-laser-yildun-cut.
