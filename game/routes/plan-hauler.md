@@ -104,3 +104,4 @@ Planned:
 | What | When |
 |---|---|
 | carry out Unity's answers to ENT-421 and ENT-425 (docked haulers without class work) | next turn |
+| deliver the engine cores still aboard when Deep Range posts Shipyard Supply: Engine Core again | when posted |
