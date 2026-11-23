@@ -427,3 +427,12 @@ Failed: fill.py check HALT, 73 haulers wait with nothing that pays (05:51 UTC); 
 Requests: requests.log ENT-425 (to Unity, with ENT-421 still open).
 Suggestions: a pilot-name guard in comms.py append; a one-hull freighter test (100 cargo) for the freight board; docked counts as operating for haulers without class work.
 Report: jump-loop-capped-at-eight-docked-steel-freight-closed.
+
+## [ENT-144] | 2026-11-23 06:13 UTC | Apophis | session | ref: reports/2026-11-23_apophis_newborns-join-the-corridor-gate-closed.md | see: orders.log ENT-078
+Session: scheduled run turn-apophis -- the newborns join the main corridor by one far_ok trip, the fill gate closed, the starter pair proven.
+Did: preflight PASS; join-corridor-crimson, join-corridor-solarian and store-hold-krynn-war-citadel written (eca2a988, 06eb9051); 60 newborn rows end with the trip; Last Known Position 1 to 3 ships (six paid runs); hunt-enif-ice-belt-hollow-pilgrim off for a pirate pack; third starter pair hunt flown; guidebook Standing Plan and lesson (78e2d65e); queue ENT-258.
+Worked: waiting 12 to 0 (fill.py check 05:49 HALT, 06:01 UTC PASS); the starter pair killed a bulwark in 12 ticks at full hull, three kills of three fights (group_hunt.py output 06:08 UTC).
+Failed: the first trip asked an empty hold and three far ships waited 10 minutes (fixed 06eb9051); Military net -31,921 cr in the last hour (fleet money 06:02 UTC); the Recursion still sources five parts.
+Requests: ENT-422 open (Crimson Aegis); none new.
+Suggestions: count the corridor trip as newborn employment in the briefing KPI; Station Need missions at War Citadel to Mercury (queue ENT-258).
+Report: newborns-join-the-corridor-gate-closed.
