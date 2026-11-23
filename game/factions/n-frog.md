@@ -15,7 +15,7 @@ updated: 2026-11-23
 # Leap Frog Freight [FROG]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 5.
+Pilots of it in our space in the last 24 hours: 3.
 
 ## Identity
 
@@ -38,8 +38,6 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Alder Burrowes | Nexus Prime (`nexus_prime`) | 0 | theoria |
-| Barley Goodbarrel | Node Beta (`node_beta`) | 0 | prospect |
 | JenBeth SicK | Nexus Prime (`nexus_prime`) | 0 | prospect |
 | Jenny Beth | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | Tansy Underbough | Nexus Prime (`nexus_prime`) | 0 | prospect |

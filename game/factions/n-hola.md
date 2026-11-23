@@ -22,7 +22,7 @@ Pilots of it in our space in the last 24 hours: 0.
 | Field | Value | Source |
 |---|---|---|
 | Leader | Skolto-1 | Daily feed, factions |
-| Members | 17 | Daily feed, factions |
+| Members | 20 | Daily feed, factions |
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |

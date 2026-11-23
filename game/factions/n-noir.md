@@ -38,9 +38,9 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Arbuckle | Nexus Prime (`nexus_prime`) | 0 | syndicate |
-| Cook | The Experiment (`the_experiment`) | 0 | futures |
-| Speke | Nexus Prime (`nexus_prime`) | 0 | futures |
+| Arbiter73 | Synchrony (`synchrony`) | 0 | syndicate |
+| Cook | Node Gamma (`node_gamma`) | 0 | futures |
+| Speke | Node Alpha (`node_alpha`) | 0 | futures |
 
 ## Standing History
 

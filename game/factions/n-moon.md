@@ -15,7 +15,7 @@ updated: 2026-11-23
 # Rise and Fall of Goldcrest Moon [MOON]
 
 A player faction with 4 base(s) in 4 system(s); the nearest to Nexus Prime is 11 jump(s) away, in Mebsuta (`mebsuta`).
-Pilots of it in our space in the last 24 hours: 1.
+Pilots of it in our space in the last 24 hours: 0.
 
 ## Identity
 
@@ -41,9 +41,7 @@ Pilots of it in our space in the last 24 hours: 1.
 
 Pilots carrying this tag whose last known system is one of ours (public event stream, last 24 hours).
 
-| Pilot | System | Player ships destroyed | Ship when one of ours met it |
-|---|---|---|---|
-| Kessa Vorr | Pherkad (`pherkad`) | 0 | blind_spot |
+None in the last 24 hours.
 
 ## Standing History
 
