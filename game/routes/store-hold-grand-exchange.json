@@ -1,0 +1,18 @@
+{
+ "id": "store-hold-grand-exchange",
+ "kind": "circuit",
+ "title": "A newborn miner a run left loaded docks at Grand Exchange Station, Haven and stores its hold",
+ "note": "Written by Zero, 2026-11-23 03:19 UTC (orders ENT-071, P6 and O1; rule F8). At 03:18 UTC newborn miners waited with 5 to 41 units aboard (iron, copper, starter goods): every gather of their rows asks an empty hold (fill.py status miner: hold not empty). The same work as store-hold-central-nexus for the Nebula-born rows, at their capital's station; requires.empire nebula keeps every other pilot off it.",
+ "standing": true,
+ "max_ships": 20,
+ "requires": {
+  "hold": true,
+  "empire": "nebula"
+ },
+ "stops": [
+  {
+   "at": "haven:grand_exchange:grand_exchange_station",
+   "store": "all"
+  }
+ ]
+}
