@@ -874,3 +874,74 @@ button.member:hover .face-medallion { border-color: var(--c, var(--accent)); box
 .ps-v { color: var(--text); font-weight: 500; }
 .rdoc-hint { color: var(--faint); font-style: italic; }
 .maploc-row { display: flex; gap: 4px; flex-wrap: wrap; }
+
+/* ---- 2026-11-23 HUD v7: Spacious Non-Overlapping Topbar (2x3 Admiral Stack + 2-Row Status) & Pinned Strategy KPIs */
+.topbar { height: 60px; align-items: stretch; overflow: visible; }
+.brand { gap: 8px; padding: 0 12px 0 11px; flex: none; }
+.brand-txt .word { font-size: 12px; letter-spacing: 0.13em; }
+.purse { gap: 10px; padding: 0 11px; flex: none; }
+.purse .pcol.ent { padding-left: 10px; }
+.purse .v { font-size: 15px; line-height: 1.2; }
+.purse .s { font-size: 10px; }
+
+.members { display: flex; align-items: stretch; flex: none; border-right: 1px solid var(--line); }
+.members-grid { display: grid; grid-template-columns: repeat(3, minmax(92px, auto)); grid-template-rows: 1fr 1fr;
+  align-items: stretch; }
+.members-grid .member { gap: 5px; padding: 0 7px; height: 29px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line);
+  font-size: 11.5px; }
+.members-grid .member:nth-child(n+4) { border-bottom: 0; }
+.members-grid .member .face-medallion { width: 20px; height: 20px; border-radius: 5px; }
+.members-grid .member .who .n { font-size: 11px; font-weight: 600; line-height: 1.1; }
+.members-grid .member .c { font-size: 11px; font-weight: 650; margin-left: auto; padding-left: 4px; }
+.member.total { flex-direction: column; justify-content: center; align-items: center; gap: 1px;
+  padding: 0 10px; min-width: 62px; border-right: 0; background: rgba(164, 139, 224, 0.06); }
+.member.total .c { font-size: 15px; font-weight: 700; color: var(--text); line-height: 1.15; }
+.member.total .d { font: 500 9.5px/1.1 var(--mono); color: var(--good); white-space: nowrap; }
+
+.search { flex: 1 1 200px; min-width: 155px; max-width: 340px; padding: 0 10px; margin-left: auto; overflow: visible !important; }
+.search input { padding: 5px 11px; font-size: 12px; }
+.topbar.tight .search { min-width: 155px; overflow: visible; }
+
+.status { display: flex; flex-direction: column; justify-content: center; gap: 3px; padding: 0 11px;
+  flex: none; overflow: visible; white-space: nowrap; font-size: 11px; border-left: 1px solid var(--line); }
+.status .st-row { display: flex; align-items: center; gap: 10px; line-height: 1.2; }
+.status .st-item { display: inline-flex; align-items: center; gap: 3px; color: var(--dim); }
+.status .st-item .dot { width: 6px; height: 6px; margin-right: 2px; }
+.status .st-item b { color: var(--text); font-weight: 600; }
+
+@media (max-width: 1500px) {
+  .brand .word { display: block; }
+  .brand small { display: none; }
+  .status .wide { display: none; }
+}
+@media (max-width: 1360px) {
+  .brand .word { display: none; }
+  .purse .pcol.ent { display: none; }
+  .members-grid { grid-template-columns: repeat(3, minmax(82px, auto)); }
+  .search { min-width: 120px; }
+}
+@media (max-width: 1120px) {
+  .status { display: flex; }
+  .members-grid .member .c { display: inline; }
+  .purse .pcol .s { display: none; }
+}
+@media (max-width: 960px) {
+  .status { display: none; }
+}
+
+/* Strategy-Pinned Playbook KPIs (Metrics Division Cards + Empire Playbook Matrix) */
+.sc-dpbs { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin-top: 4px; padding-top: 4px; border-top: 1px dashed var(--line); }
+.sc-pb-btn { cursor: pointer; background: rgba(14, 20, 32, 0.9); font-size: 10px; padding: 1px 6px; }
+.sc-pb-btn:hover { background: var(--raise); }
+.pb-emp { color: var(--info); border-color: rgba(111, 168, 220, 0.45); background: rgba(111, 168, 220, 0.08); }
+.pb-chain { font: 10.5px/1.3 var(--mono); color: var(--dim); }
+.pb-kpis { display: grid; grid-template-columns: 1fr; gap: 3px; margin: 2px 0; }
+.pb-kpi { display: grid; grid-template-columns: 36px minmax(0, 1fr) auto; align-items: center; gap: 6px;
+  padding: 3px 6px; border-radius: 4px; font-size: 11px; background: rgba(18, 25, 38, 0.72); border: 1px solid var(--line); }
+.pb-kpi.ok { border-color: rgba(88, 192, 140, 0.35); }
+.pb-kpi.miss { border-color: rgba(220, 174, 88, 0.35); }
+.pb-kbadge { font: 700 9.5px/1.2 var(--mono); text-align: center; border-radius: 3px; padding: 1px 3px; }
+.pb-kpi.ok .pb-kbadge { background: rgba(88, 192, 140, 0.18); color: var(--good); }
+.pb-kpi.miss .pb-kbadge { background: rgba(220, 174, 88, 0.18); color: var(--warn); }
+.pb-kname { color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pb-kval { font: 600 10.5px/1.2 var(--mono); color: var(--accent); white-space: nowrap; }

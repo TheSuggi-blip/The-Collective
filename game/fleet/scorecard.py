@@ -438,7 +438,7 @@ def _load_watchdog_deltas(data_dir):
     }
 
 
-def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None):
+def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, rivals_doc=None):
     """Compute complete enterprise & per-division KPI scorecard + alert triggers."""
     now = float(now if now is not None else time.time())
     db_path = Path(data_dir) / "store" / "read.db"
@@ -1215,7 +1215,32 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None):
             "triage": div_triage[:8],
             "alarm_count": sum(1 for t in triggers if t["severity"] == "ALARM"),
             "warn_count": sum(1 for t in triggers if t["severity"] == "WARN"),
+            "playbooks": [],
         }
+
+    # Attach live Strategy-Pinned Playbook KPI readiness per division (single source of truth in rivals.py)
+    try:
+        rv_doc = rivals_doc
+        if rv_doc is None:
+            import rivals as _rv
+            rv_doc = _rv.compute_sedcards(repo_root, data_dir, top_n=12, now=now)
+        for p in (rv_doc or {}).get("strategy_playbooks") or []:
+            summary = {
+                "id": p.get("id", ""),
+                "name": p.get("name", ""),
+                "short_name": p.get("short_name") or p.get("name", ""),
+                "status_code": p.get("status_code", "PARTIAL"),
+                "readiness_pct": p.get("readiness_pct", 0.0),
+                "matched_count": p.get("matched_count", 0),
+                "total_count": p.get("total_count", 4),
+                "empires": [e.get("name", "") for e in (p.get("empires") or [])],
+                "blocker": p.get("blocker", ""),
+            }
+            for dv in (p.get("divisions") or []):
+                if dv in divisions_out:
+                    divisions_out[dv]["playbooks"].append(summary)
+    except Exception:
+        pass
 
     # -----------------------------------------------------------------------
     # 4. Stagnation & Momentum Verdict (5-Pillar Synthesis)
@@ -1433,6 +1458,9 @@ def render_briefing(sc, who="all"):
             f"playbook {d['playbook']['max_chapter_pct']:.0f}%"
         )
         lines.append(f"    Role KPI : {d['role_kpi']['name']} = {d['role_kpi']['value']} [{d['role_kpi']['status']}]")
+        if d.get("playbooks"):
+            pb_s = " | ".join(f"{p['short_name']} {p['matched_count']}/{p['total_count']} ({p['readiness_pct']:.0f}% {p['status_code']})" for p in d["playbooks"][:4])
+            lines.append(f"    Playbooks: {pb_s}")
         q_div = d.get("triage") or d.get("triggers") or []
         if q_div:
             lines.append("  ACTIVE TRIGGERS & WEIGHTED TRIAGE QUEUE (strict order: P0>P1>P2>P3; score=MAUTxWSJF):")

@@ -374,6 +374,67 @@ def _inspect_our_adoption(repo_root, data_dir, conn, tables):
         except OSError:
             contracts_n = 0
 
+    # Live empire ship counts, division working %, T2+ by division, and read.db KPI drivers
+    empire_ships = {}
+    div_tot = {}
+    div_work = {}
+    t2_mining = 0
+    t2_combat = 0
+    hull_tier_map = {}
+    if "hulls" in tables:
+        try:
+            for hr in conn.execute("SELECT LOWER(id), LOWER(COALESCE(name,'')), COALESCE(tier,0) FROM hulls"):
+                if hr[0]:
+                    hull_tier_map[hr[0]] = int(_num(hr[2]))
+                if hr[1]:
+                    hull_tier_map[hr[1]] = int(_num(hr[2]))
+        except sqlite3.Error:
+            pass
+    for s in ships:
+        em = str(s.get("empire") or "voidborn").lower()
+        empire_ships[em] = empire_ships.get(em, 0) + 1
+        dv = str(s.get("division") or "Unassigned")
+        div_tot[dv] = div_tot.get(dv, 0) + 1
+        act = s.get("activity") if isinstance(s.get("activity"), dict) else {}
+        if act.get("kind") and act.get("kind") != "idle":
+            div_work[dv] = div_work.get(dv, 0) + 1
+        tr = hull_tier_map.get(str(s.get("class") or "").lower(), 0)
+        if tr >= 2:
+            if dv == "Mining":
+                t2_mining += 1
+            elif dv == "Military":
+                t2_combat += 1
+    div_work_pct = {dv: round(100.0 * div_work.get(dv, 0) / max(1, cnt), 1) for dv, cnt in div_tot.items()}
+
+    trade_net_24h = 0.0
+    steady_net_24h = 0.0
+    mining_ore_sh = 0.0
+    intel_fresh_pct = 0.0
+    if "stats_figures" in tables:
+        try:
+            r = conn.execute("SELECT COALESCE(SUM(value),0) FROM stats_figures WHERE view='contribution' AND figure='own_net' AND hours=24 AND LOWER(subject)='trade'").fetchone()
+            trade_net_24h = _num(r[0]) if r else 0.0
+            r2 = conn.execute("SELECT COALESCE(SUM(value),0) FROM stats_figures WHERE view='contribution' AND figure='own_net' AND hours=24").fetchone()
+            steady_net_24h = _num(r2[0]) if r2 else 0.0
+            r3 = conn.execute("SELECT COALESCE(MAX(value),0) FROM stats_figures WHERE view='contribution' AND figure='ore_per_ship_hour' AND hours=24").fetchone()
+            mining_ore_sh = _num(r3[0]) if r3 else 0.0
+        except sqlite3.Error:
+            pass
+    if "runs" in tables and steady_net_24h == 0.0:
+        try:
+            r = conn.execute("SELECT COALESCE(SUM(CASE WHEN COALESCE(one_time,0)=0 THEN credits ELSE 0 END),0)/24.0 FROM runs WHERE t > strftime('%s','now') - 86400").fetchone()
+            steady_net_24h = _num(r[0]) if r else 0.0
+        except sqlite3.Error:
+            pass
+    if "books" in tables:
+        try:
+            rb = conn.execute("SELECT COUNT(DISTINCT system) AS tot, COUNT(DISTINCT CASE WHEN t > strftime('%s','now') - 10800 THEN system END) AS fr FROM books").fetchone()
+            if rb and rb[0]:
+                intel_fresh_pct = round(100.0 * int(rb[1] or 0) / max(1, int(rb[0])), 1)
+        except sqlite3.Error:
+            pass
+    endl_logged = (Path(repo_root) / "game" / "factions" / "h-endl.md").is_file()
+
     return {
         "bases": len(bases),
         "tourism_facs": tourism_facs,
@@ -383,13 +444,21 @@ def _inspect_our_adoption(repo_root, data_dir, conn, tables):
         "freight_routes": freight_routes, "active_freight": active_freight, "bulk_hulls": bulk_hulls,
         "hunt_routes": hunt_routes, "escort_routes": escort_routes, "active_hunt": active_hunt,
         "scarce_routes": scarce_routes, "active_scarce": active_scarce, "t2p_hulls": t2p_hulls,
+        "t2_mining": t2_mining, "t2_combat": t2_combat,
         "contracts_n": contracts_n,
+        "empire_ships": empire_ships,
+        "div_work_pct": div_work_pct,
+        "trade_net_24h": round(trade_net_24h, 0),
+        "steady_net_24h": round(steady_net_24h, 0),
+        "mining_ore_sh": round(mining_ore_sh, 1),
+        "intel_fresh_pct": intel_fresh_pct,
+        "endl_logged": endl_logged,
     }
 
 
 def _build_strategy_playbooks(our_adopt, leaders, market_edges):
-    """Build the 8-Strategy Adopted Playbook Matrix: every proven SpaceMolt tactic with live proof,
-    our real-time adoption status, exact COPY recipe (tools/hulls/plans), and exact COUNTER move."""
+    """Build the 8-Strategy Adopted Playbook Matrix with automated Strategy-Pinned KPI Driver Trees,
+    required SpaceMolt empires, cross-division handoff chains, and Copy/Counter blueprints."""
     t1 = (leaders.get("tourism_revenue") or [{}])[0]
     t2 = (leaders.get("tourism_revenue") or [{}, {}])[1] if len(leaders.get("tourism_revenue") or []) > 1 else {}
     ex1 = (leaders.get("exchange_sellers") or [{}])[0]
@@ -406,24 +475,8 @@ def _build_strategy_playbooks(our_adopt, leaders, market_edges):
     cap_cheap = market_edges.get("capital_cheap") or []
     undercut = market_edges.get("undercut_targets") or []
     all_bids = market_edges.get("outsupply_bids") or []
-
-    def _st(active_n, partial_n, label_active, label_partial, label_gap):
-        if active_n > 0:
-            return "ACTIVE", label_active
-        if partial_n > 0:
-            return "PARTIAL", label_partial
-        return "GAP", label_gap
-
-    s1_code, s1_lbl = _st(our_adopt["tourism_facs"], our_adopt["bases"], f"ACTIVE ({our_adopt['tourism_facs']} tourism fac)", f"PARTIAL ({our_adopt['bases']} base, 0 tourism fac)", "GAP (0 bases / 0 tourism fac)")
-    s2_code, s2_lbl = _st(our_adopt["active_craft"], our_adopt["craft_routes"], f"ACTIVE ({our_adopt['active_craft']} ships, {our_adopt['craft_routes']} routes)", f"PARTIAL ({our_adopt['craft_routes']} routes, 0 active now)", "GAP (no docked craft wing)")
-    s3_code, s3_lbl = _st(our_adopt["active_bursar"], our_adopt["bursar_routes"], f"ACTIVE ({our_adopt['active_bursar']} ships, {our_adopt['bursar_routes']} routes)", f"PARTIAL ({our_adopt['bursar_routes']} routes, 0 active now)", "GAP (no Bursar market-maker wing)")
-    s4_code, s4_lbl = _st(our_adopt["active_pass"], our_adopt["fast_hulls"] + our_adopt["passenger_routes"], f"ACTIVE ({our_adopt['active_pass']} ships, {our_adopt['fast_hulls']} fast hulls)", f"PARTIAL ({our_adopt['fast_hulls']} fast hulls, {our_adopt['passenger_routes']} routes)", "GAP (no express passenger wing)")
-    s5_code, s5_lbl = _st(our_adopt["active_freight"], our_adopt["bulk_hulls"] + our_adopt["freight_routes"], f"ACTIVE ({our_adopt['active_freight']} ships, {our_adopt['bulk_hulls']} bulk hulls)", f"PARTIAL ({our_adopt['bulk_hulls']} bulk hulls, {our_adopt['freight_routes']} routes)", "GAP (no bulk freight/mission wing)")
-    s6_code, s6_lbl = _st(our_adopt["active_scarce"], our_adopt["t2p_hulls"] + our_adopt["scarce_routes"], f"ACTIVE ({our_adopt['active_scarce']} scarce ships, {our_adopt['t2p_hulls']} T2+ hulls)", f"PARTIAL ({our_adopt['t2p_hulls']} T2+ hulls, {our_adopt['scarce_routes']} scarce routes)", "GAP (no scarce-vein wing)")
-    s7_code, s7_lbl = _st(our_adopt["contracts_n"], len(all_bids) + len(raw_cheap), f"ACTIVE ({our_adopt['contracts_n']} logged contracts)", "PARTIAL (live market edges ready, 0 contracts logged)", "GAP (no wholesale arbitrage active)")
-    s8_code, s8_lbl = _st(our_adopt["active_hunt"], our_adopt["hunt_routes"] + our_adopt["escort_routes"], f"ACTIVE ({our_adopt['active_hunt']} combat ships, {our_adopt['hunt_routes']} hunt/{our_adopt['escort_routes']} escort routes)", f"PARTIAL ({our_adopt['hunt_routes']} hunt routes, 0 active now)", "GAP (no PvE hunting wing)")
-
     crafted_bids = market_edges.get("crafted_bids") or []
+
     bid_ex = f"{all_bids[0]['item']} @{all_bids[0]['price']} cr ({all_bids[0]['tag']}@{all_bids[0]['system']})" if all_bids else "rival hub bids"
     gourmet_ex = f"{crafted_bids[0]['item']} @{crafted_bids[0]['price']} cr ({crafted_bids[0]['tag']}@{crafted_bids[0]['system']})" if crafted_bids else bid_ex
     raw_bid_ex = f"{raw_bids[0]['item']} @{raw_bids[0]['price']} cr ({raw_bids[0]['tag']}@{raw_bids[0]['system']})" if raw_bids else "uranium_ore/silver_ore bids"
@@ -431,106 +484,213 @@ def _build_strategy_playbooks(our_adopt, leaders, market_edges):
     cap_ch_ex = f"{cap_cheap[0]['item']} @{_fmt_cr(cap_cheap[0]['price'])} cr ({cap_cheap[0]['tag']}@{cap_cheap[0]['system']})" if cap_cheap else "station_core ~13M"
     uc_ex = f"{undercut[0]['item']} @{undercut[0]['price']} cr ({undercut[0]['tag']}@{undercut[0]['system']})" if undercut else "inflated rival asks"
 
-    return [
-        {
-            "id": "tourism_hub",
-            "name": "1. Sovereign Tourism & Gourmet Hub",
-            "divisions": ["Command", "Logistics", "Trade"],
-            "proven_by": (
-                f"[BUSY] {t1.get('name', 'The Obsidian Well')} ({_fmt_cr(t1.get('value', 0))} cr)"
-                + (f", [HEXC] {t2.get('name', 'Hex Star')} ({_fmt_cr(t2.get('value', 0))} cr)" if t2.get("name") else "")
-            ),
-            "status_code": s1_code,
-            "our_status": s1_lbl,
-            "how_it_works": "Player stations with high Tourism Appeal + stocked Gourmet food/drinks print passive 50M-215M+ cr revenue without fuel burn.",
-            "how_to_copy": "Command+Logistics: build high-appeal Tourism modules on our sovereign stations once Atria/Yildun bases stand; Trade stocks Gourmet rations & specialty drinks.",
-            "how_to_counter": f"Trade: feed rival Tourism hubs' gourmet/drink standing bids ({gourmet_ex}, `solarian_gourmet_rations`, `void_espresso`) to capture their tourism cashflow today.",
-        },
-        {
-            "id": "docked_factory",
-            "name": "2. Zero-Fuel Docked NPC-Facility Factory",
-            "divisions": ["Trade", "Logistics"],
-            "proven_by": (
-                f"[MIN9] 7.0M crafted ({fc1.get('name', 'SpaceMiner99')} {_fmt_cr(fc1.get('value', 0))} fac-prod), "
-                f"[BEAT] 4.6M crafted (0 bases, 53.8M/sh), {cr1.get('name', 'LT1428')} {_fmt_cr(cr1.get('value', 0))} crafted"
-            ),
-            "status_code": s2_code,
-            "our_status": s2_lbl,
-            "how_it_works": "Zero-base factions park ships permanently docked at public NPC industrial stations, buying cheap inputs and crafting high-margin goods at 0 fuel & 0 rent.",
-            "how_to_copy": "Trade+Logistics: add `docked_at` / `min_cargo` plan entries (`plan.py`) running zero-fuel `craft` + `sell_order --undercut-pct 5` at public refinery/factory hubs; zero ships parked idle.",
-            "how_to_counter": f"Trade: outbid their raw inputs with Bursar `buy_order` walls and undercut their finished Exchange listings by 5% ({uc_ex}).",
-        },
-        {
-            "id": "exchange_bursar",
-            "name": "3. Multi-Hub Exchange Market-Making (Bursar)",
-            "divisions": ["Trade", "Command"],
-            "proven_by": (
-                f"[NOIR] +20.4M/h (0 bases), {ex1.get('name', 'Truus Taal')} {_fmt_cr(ex1.get('value', 0))} listed, "
-                f"{eo1.get('name', 'Vex Nebulon')} {int(_num(eo1.get('value'))):,d} active orders"
-            ),
-            "status_code": s3_code,
-            "our_status": s3_lbl,
-            "how_it_works": "Stationed Bursar ships sit across all 5 empire exchanges maintaining continuous buy walls and 5%-undercut sell ladders with zero jump fuel burn.",
-            "how_to_copy": "Trade: seat 1+ Bursar per empire hub (`plan.py` `docked_at:` + `route_run.py` `sell_order --undercut-pct 5`, `buy_order`, `watch_minutes` desk duty) and log deals in `contracts.log`.",
-            "how_to_counter": f"Trade: undercut overpriced rival station asks ({uc_ex}) by 5-10% and sweep stale vault inventory (>250k cr) directly into live bids.",
-        },
-        {
-            "id": "express_passenger",
-            "name": "4. Zero-Base Express Passenger & Courier",
-            "divisions": ["Logistics", "Trade"],
-            "proven_by": f"[NOIR] Futures/Syndicate/Concordia (53.8M/sh), {ps1.get('name', 'LimaTango1428')} {int(_num(ps1.get('value'))):,d} passengers delivered",
-            "status_code": s4_code,
-            "our_status": s4_lbl,
-            "how_it_works": "Speed 4-6 low-cargo hulls (`Runner` P0 spd 6, `Futures` P0, `Concordia`/`Syndicate` T3) chain fast passenger & express courier runs with near-zero capital overhead.",
-            "how_to_copy": "Logistics: batch-commission P0 `Runner` (120c, spd 6) & `Futures` (P0), tag `plan.py` selector `speed>=4` onto `passenger-` express routes (`hive.py upgrades logistics`).",
-            "how_to_counter": "Logistics: saturate high-pay core empire passenger corridors first so rivals face thinner mission boards while earning instant liquid credits.",
-        },
-        {
-            "id": "bulk_freight_missions",
-            "name": "5. Bulk Freight & Mission Swarm",
-            "divisions": ["Logistics", "Trade"],
-            "proven_by": f"[WEXL] 132.8k missions (Prayer 540c / Congregation 1900c), [IRLC] 36x Ledger (480c), {ms1.get('name', 'ENDL')} {int(_num(ms1.get('value'))):,d} missions",
-            "status_code": s5_code,
-            "our_status": s5_lbl,
-            "how_it_works": "P0/T1 bulk cargo hulls (`Ledger` 480c, `Prayer` 540c, `Congregation` 1,900c) sweep 100c+ `spacemolt_shipping` freight contracts and bulk delivery missions in parallel.",
-            "how_to_copy": "Logistics: run `hive.py shipping` (MCP `view=shipping`), assign `plan.py` `cargo>=400` / `utility_group` proximity-matched haulers to `freight-` & `mission-` routes.",
-            "how_to_counter": "Logistics+Trade: pre-stage cheap hub buffers so our haulers claim high-reward `spacemolt_shipping` contracts faster than single-hub rivals.",
-        },
-        {
-            "id": "scarce_vein_monopoly",
-            "name": "6. Lawless Scarce-Vein Monopoly Extraction",
-            "divisions": ["Mining", "Command", "Intel"],
-            "proven_by": f"[HEXC] 11 bases 115.5M/sh (avg T3.2 Lithosphere/Deep Survey), [IRLC] {or1.get('name', 'ILC Vent')} {_fmt_cr(or1.get('value', 0))} ore",
-            "status_code": s6_code,
-            "our_status": s6_lbl,
-            "how_it_works": "High-tier industrial hulls (`Workhorse` -> `Lithosphere`/`Tellurian`) anchor near lawless rare belts (Uranium/Silver/Cobalt/Argon/Gold) instead of competing on 1-4 cr iron/copper.",
-            "how_to_copy": f"Mining: target high-bid scarce veins ({raw_bid_ex}) with `--jettison-gangue`, batch-upgrade lasers & hulls (`hive.py upgrades mining`), and use `plan.py` `min_piloting`/`max_jumps` selectors.",
-            "how_to_counter": f"Mining+Trade: STOP mining cheap bulk ores available wholesale below fuel cost ({raw_ch_ex}); buy rival dumps and redirect our lasers to 100-600 cr scarce veins.",
-        },
-        {
-            "id": "wholesale_arbitrage",
-            "name": "7. Wholesale Capital Arbitrage (Outsource & Outsupply)",
-            "divisions": ["Trade", "Logistics", "Command"],
-            "proven_by": f"Live rival books: {cap_ch_ex}, {raw_ch_ex} vs {bid_ex}",
-            "status_code": s7_code,
-            "our_status": s7_lbl,
-            "how_it_works": "Rival mega-factions dump surplus ores, steel plates, and even `station_core`s below our self-build cost while posting huge standing bids on bottlenecks.",
-            "how_to_copy": f"Command+Trade+Logistics: always check `hive.py rivals` Outsource/Outsupply board before spending foundry/mining hours -- buy cheap ({cap_ch_ex}, {raw_ch_ex}) and sell high ({bid_ex}).",
-            "how_to_counter": "Command+Trade: convert rivals' overproduction into cheaper Collective stations/hulls while draining their treasury via their own standing bids.",
-        },
-        {
-            "id": "pve_combat_escort",
-            "name": "8. PvE Herd Farming & Armed Escort Projection",
-            "divisions": ["Military", "Intel"],
-            "proven_by": f"[BUSY] {int(_num(pv1.get('value', 8454))):,d} pirates (157x Dialectic), [HEXC] 2,142 pirates; Threat: [ENDL] 1,527 PvP kills",
-            "status_code": s8_code,
-            "our_status": s8_lbl,
-            "how_it_works": "Dedicated T2/T3 combat wings (`Dialectic`, `Broadaxe`, `Recursion`) earn bounties + salvage loot while deterring PvP raiders (`[ENDL]`) on lawless trade corridors.",
-            "how_to_copy": "Military: run parallel `hunt-` PvE herd wings (handing loot to Trade, F9) + paired T2+ `escort-` wings using `plan.py` `posture:WAR_ALERT` readiness & `min_hull_tier:2`.",
-            "how_to_counter": "Military+Intel: track [ENDL] hot systems in `h-endl.md`, enforce strict defensive RoE (F2) around Neutral [HEXC]/[IRLC], and escalate posture automatically if faction war starts.",
-        },
-    ]
+    emp_map = our_adopt.get("empire_ships") or {}
+    dwork = our_adopt.get("div_work_pct") or {}
+    emp_labels = {"voidborn": "Voidborn", "nebula": "Nebula", "solarian": "Solarian", "crimson": "Crimson", "outerrim": "Outer Rim"}
 
+    def _emps(*keys):
+        return [{"id": k, "name": emp_labels.get(k, k.title()), "ships": int(emp_map.get(k, 0))} for k in keys]
+
+    def _kpi(name, owner, current, target, matched, source):
+        return {"name": name, "owner": owner, "current": str(current), "target": str(target), "matched": bool(matched), "source": source}
+
+    def _pack(pid, name, short_name, divisions, empires, handoff_chain, proven_by, kpis, core_active, active_lbl, partial_lbl, gap_lbl, how_it_works, how_to_copy, how_to_counter):
+        m_cnt = sum(1 for k in kpis if k["matched"])
+        tot = max(1, len(kpis))
+        rpct = round(100.0 * m_cnt / tot, 1)
+        if core_active and m_cnt >= 3:
+            scode, slbl = "ACTIVE", active_lbl
+        elif core_active or m_cnt >= 2:
+            scode, slbl = "PARTIAL", partial_lbl if not core_active else f"{active_lbl} ({m_cnt}/{tot} KPIs)"
+        else:
+            scode, slbl = "GAP", gap_lbl
+        missing = [k for k in kpis if not k["matched"]]
+        blocker = f"{missing[0]['name']} ({missing[0]['owner']}: {missing[0]['current']} vs {missing[0]['target']})" if missing else "All strategy KPIs matched"
+        return {
+            "id": pid,
+            "name": name,
+            "short_name": short_name,
+            "divisions": divisions,
+            "empires": empires,
+            "handoff_chain": handoff_chain,
+            "proven_by": proven_by,
+            "status_code": scode,
+            "our_status": slbl,
+            "kpis": kpis,
+            "matched_count": m_cnt,
+            "total_count": tot,
+            "readiness_pct": rpct,
+            "blocker": blocker,
+            "how_it_works": how_it_works,
+            "how_to_copy": how_to_copy,
+            "how_to_counter": how_to_counter,
+        }
+
+    trade_log_work = round((dwork.get("Trade", 0.0) + dwork.get("Logistics", 0.0)) / 2.0, 1)
+    empires_present = sum(1 for k in ("voidborn", "nebula", "solarian", "crimson", "outerrim") if emp_map.get(k, 0) > 0)
+
+    return [
+        _pack(
+            "tourism_hub", "1. Sovereign Tourism & Gourmet Hub", "Tourism Hub",
+            ["Command", "Logistics", "Trade"],
+            _emps("voidborn", "solarian", "nebula"),
+            "Command (station) -> Logistics (tourism fac) -> Trade (gourmet supply) <- Intel (hub bids)",
+            f"[BUSY] {t1.get('name', 'The Obsidian Well')} ({_fmt_cr(t1.get('value', 0))} cr)" + (f", [HEXC] {t2.get('name', 'Hex Star')} ({_fmt_cr(t2.get('value', 0))} cr)" if t2.get("name") else ""),
+            [
+                _kpi("Sovereign bases/stations", "Command", f"{our_adopt['bases']}", ">=2", our_adopt["bases"] >= 2, "empire.json"),
+                _kpi("Tourism/hospitality modules", "Logistics", f"{our_adopt['tourism_facs']}", ">=1", our_adopt["tourism_facs"] >= 1, "empire.json"),
+                _kpi("Rival gourmet/luxury bids scanned", "Intel", f"{len(crafted_bids)}", ">=1", len(crafted_bids) >= 1, "read.db:books"),
+                _kpi("Active Trade net cashflow", "Trade", f"{_fmt_signed_cr(our_adopt['trade_net_24h'])}/h", ">0 cr/h", our_adopt["trade_net_24h"] > 0, "read.db:runs"),
+            ],
+            our_adopt["tourism_facs"] > 0,
+            f"ACTIVE ({our_adopt['tourism_facs']} tourism fac)",
+            f"PARTIAL ({our_adopt['bases']} base, 0 tourism fac)",
+            "GAP (0 tourism fac)",
+            "Player stations with high Tourism Appeal + stocked Gourmet food/drinks print passive 50M-215M+ cr revenue without fuel burn.",
+            "Command+Logistics: build high-appeal Tourism modules on our sovereign stations once Atria/Yildun bases stand; Trade stocks Gourmet rations & specialty drinks.",
+            f"Trade: feed rival Tourism hubs' gourmet/drink standing bids ({gourmet_ex}, `solarian_gourmet_rations`, `void_espresso`) to capture their tourism cashflow today.",
+        ),
+        _pack(
+            "docked_factory", "2. Zero-Fuel Docked NPC-Facility Factory", "Docked Factory",
+            ["Trade", "Logistics"],
+            _emps("nebula", "solarian", "voidborn", "outerrim"),
+            "Intel (NPC spreads) -> Trade/Logistics (docked craft + sell_order) -> Zero fuel burn",
+            f"[MIN9] 7.0M crafted ({fc1.get('name', 'SpaceMiner99')} {_fmt_cr(fc1.get('value', 0))} fac-prod), [BEAT] 4.6M crafted (0 bases, 53.8M/sh), {cr1.get('name', 'LT1428')} {_fmt_cr(cr1.get('value', 0))} crafted",
+            [
+                _kpi("Verified craft/smelt routes", "Trade", f"{our_adopt['craft_routes']}", ">=5", our_adopt["craft_routes"] >= 5, "game/routes"),
+                _kpi("Active docked craft ships", "Trade", f"{our_adopt['active_craft']}", ">=5", our_adopt["active_craft"] >= 5, "fleet.json"),
+                _kpi("Trade+Logistics employment", "Logistics", f"{trade_log_work:.0f}%", ">=80%", trade_log_work >= 80.0, "fleet.json"),
+                _kpi("Cheap wholesale inputs scanned", "Intel", f"{len(raw_cheap) + len(cap_cheap)}", ">=3", (len(raw_cheap) + len(cap_cheap)) >= 3, "read.db:books"),
+            ],
+            our_adopt["active_craft"] >= 5,
+            f"ACTIVE ({our_adopt['active_craft']} craft ships)",
+            f"PARTIAL ({our_adopt['active_craft']} active, {our_adopt['craft_routes']} routes)",
+            "GAP (no docked craft wing)",
+            "Zero-base factions park ships permanently docked at public NPC industrial stations, buying cheap inputs and crafting high-margin goods at 0 fuel & 0 rent.",
+            "Trade+Logistics: add `docked_at` / `min_cargo` plan entries (`plan.py`) running zero-fuel `craft` + `sell_order --undercut-pct 5` at public refinery/factory hubs; zero ships parked idle.",
+            f"Trade: outbid their raw inputs with Bursar `buy_order` walls and undercut their finished Exchange listings by 5% ({uc_ex}).",
+        ),
+        _pack(
+            "exchange_bursar", "3. Multi-Hub Exchange Market-Making (Bursar)", "Exchange Bursar",
+            ["Trade", "Command"],
+            _emps("nebula", "solarian", "voidborn", "crimson", "outerrim"),
+            "Intel (<3h books) -> Trade (5-empire Bursar buy/sell ladders) -> Command (contracts.log)",
+            f"[NOIR] +20.4M/h (0 bases), {ex1.get('name', 'Truus Taal')} {_fmt_cr(ex1.get('value', 0))} listed, {eo1.get('name', 'Vex Nebulon')} {int(_num(eo1.get('value'))):,d} active orders",
+            [
+                _kpi("5-empire hub presence", "Command", f"{empires_present}/5 empires", "5/5", empires_present >= 5, "fleet.json"),
+                _kpi("Active Bursar/exchange ships", "Trade", f"{our_adopt['active_bursar']}", ">=5", our_adopt["active_bursar"] >= 5, "fleet.json"),
+                _kpi("P2P contracts/orders logged", "Trade", f"{our_adopt['contracts_n']}", ">=5", our_adopt["contracts_n"] >= 5, "contracts.log"),
+                _kpi("Trade 24h steady net/h", "Trade", f"{_fmt_signed_cr(our_adopt['trade_net_24h'])}/h", ">0 cr/h", our_adopt["trade_net_24h"] > 0, "read.db:runs"),
+            ],
+            our_adopt["active_bursar"] >= 5,
+            f"ACTIVE ({our_adopt['active_bursar']} Bursars)",
+            f"PARTIAL ({our_adopt['active_bursar']} active, {our_adopt['bursar_routes']} routes)",
+            "GAP (no Bursar wing)",
+            "Stationed Bursar ships sit across all 5 empire exchanges maintaining continuous buy walls and 5%-undercut sell ladders with zero jump fuel burn.",
+            "Trade: seat 1+ Bursar per empire hub (`plan.py` `docked_at:` + `route_run.py` `sell_order --undercut-pct 5`, `buy_order`, `watch_minutes` desk duty) and log deals in `contracts.log`.",
+            f"Trade: undercut overpriced rival station asks ({uc_ex}) by 5-10% and sweep stale vault inventory (>250k cr) directly into live bids.",
+        ),
+        _pack(
+            "express_passenger", "4. Zero-Base Express Passenger & Courier", "Express Pax",
+            ["Logistics", "Trade"],
+            _emps("outerrim", "nebula", "solarian"),
+            "Logistics (Runner/Futures speed>=4 hulls) -> Passenger/courier boards <- Intel (hubs)",
+            f"[NOIR] Futures/Syndicate/Concordia (53.8M/sh), {ps1.get('name', 'LimaTango1428')} {int(_num(ps1.get('value'))):,d} passengers delivered",
+            [
+                _kpi("Fast hulls (Runner/Futures/Concordia)", "Logistics", f"{our_adopt['fast_hulls']}", ">=5", our_adopt["fast_hulls"] >= 5, "fleet.json"),
+                _kpi("Express passenger/courier routes", "Logistics", f"{our_adopt['passenger_routes']}", ">=2", our_adopt["passenger_routes"] >= 2, "game/routes"),
+                _kpi("Active express ships", "Logistics", f"{our_adopt['active_pass']}", ">=3", our_adopt["active_pass"] >= 3, "fleet.json"),
+                _kpi("Outer Rim + Nebula ships seated", "Command", f"{emp_map.get('outerrim',0) + emp_map.get('nebula',0)}", ">=40", (emp_map.get("outerrim", 0) + emp_map.get("nebula", 0)) >= 40, "fleet.json"),
+            ],
+            our_adopt["active_pass"] >= 3,
+            f"ACTIVE ({our_adopt['active_pass']} express ships)",
+            f"PARTIAL ({our_adopt['fast_hulls']} fast hulls, {our_adopt['passenger_routes']} routes)",
+            "GAP (0 fast hulls / 0 routes)",
+            "Speed 4-6 low-cargo hulls (`Runner` P0 spd 6, `Futures` P0, `Concordia`/`Syndicate` T3) chain fast passenger & express courier runs with near-zero capital overhead.",
+            "Logistics: batch-commission P0 `Runner` (120c, spd 6) & `Futures` (P0), tag `plan.py` selector `speed>=4` onto `passenger-` express routes (`hive.py upgrades logistics`).",
+            "Logistics: saturate high-pay core empire passenger corridors first so rivals face thinner mission boards while earning instant liquid credits.",
+        ),
+        _pack(
+            "bulk_freight_missions", "5. Bulk Freight & Mission Swarm", "Bulk Freight",
+            ["Logistics", "Trade"],
+            _emps("nebula", "solarian", "outerrim"),
+            "Logistics (Prayer/Ledger/Congregation cargo>=400) -> spacemolt_shipping + bulk missions",
+            f"[WEXL] 132.8k missions (Prayer 540c / Congregation 1900c), [IRLC] 36x Ledger (480c), {ms1.get('name', 'ENDL')} {int(_num(ms1.get('value'))):,d} missions",
+            [
+                _kpi("Bulk cargo hulls (Prayer/Ledger/Workhorse)", "Logistics", f"{our_adopt['bulk_hulls']}", ">=10", our_adopt["bulk_hulls"] >= 10, "fleet.json"),
+                _kpi("Active freight/mission ships", "Logistics", f"{our_adopt['active_freight']}", ">=20", our_adopt["active_freight"] >= 20, "fleet.json"),
+                _kpi("Freight/mission routes", "Logistics", f"{our_adopt['freight_routes']}", ">=10", our_adopt["freight_routes"] >= 10, "game/routes"),
+                _kpi("Logistics employment", "Logistics", f"{dwork.get('Logistics', 0.0):.0f}%", ">=80%", dwork.get("Logistics", 0.0) >= 80.0, "fleet.json"),
+            ],
+            our_adopt["active_freight"] >= 20,
+            f"ACTIVE ({our_adopt['active_freight']} freight ships)",
+            f"PARTIAL ({our_adopt['active_freight']} active, {our_adopt['bulk_hulls']} bulk hulls)",
+            "GAP (no bulk freight wing)",
+            "P0/T1 bulk cargo hulls (`Ledger` 480c, `Prayer` 540c, `Congregation` 1,900c) sweep 100c+ `spacemolt_shipping` freight contracts and bulk delivery missions in parallel.",
+            "Logistics: run `hive.py shipping` (MCP `view=shipping`), assign `plan.py` `cargo>=400` / `utility_group` proximity-matched haulers to `freight-` & `mission-` routes.",
+            "Logistics+Trade: pre-stage cheap hub buffers so our haulers claim high-reward `spacemolt_shipping` contracts faster than single-hub rivals.",
+        ),
+        _pack(
+            "scarce_vein_monopoly", "6. Lawless Scarce-Vein Monopoly Extraction", "Scarce Veins",
+            ["Mining", "Command", "Intel"],
+            _emps("solarian", "voidborn", "nebula"),
+            "Intel (belts/bids) -> Mining (T2+ scarce veins) -> Logistics (vault haul) -> Trade (sell)",
+            f"[HEXC] 11 bases 115.5M/sh (avg T3.2 Lithosphere/Deep Survey), [IRLC] {or1.get('name', 'ILC Vent')} {_fmt_cr(or1.get('value', 0))} ore",
+            [
+                _kpi("T2+ industrial mining hulls", "Mining", f"{our_adopt['t2_mining']}", ">=5", our_adopt["t2_mining"] >= 5, "read.db:ships"),
+                _kpi("Active scarce-vein miners", "Mining", f"{our_adopt['active_scarce']}", ">=10", our_adopt["active_scarce"] >= 10, "fleet.json"),
+                _kpi("High-bid scarce raw veins tracked", "Intel", f"{len(raw_bids)}", ">=2", len(raw_bids) >= 2, "read.db:books"),
+                _kpi("Mining extraction yield", "Mining", f"{our_adopt['mining_ore_sh']:.0f} ore/sh-h", ">=80", our_adopt["mining_ore_sh"] >= 80.0, "read.db:stats"),
+            ],
+            our_adopt["active_scarce"] >= 10 and our_adopt["t2_mining"] >= 5,
+            f"ACTIVE ({our_adopt['active_scarce']} scarce, {our_adopt['t2_mining']} T2+)",
+            f"PARTIAL ({our_adopt['active_scarce']} scarce ships, {our_adopt['t2_mining']} T2+ hulls)",
+            "GAP (no scarce-vein wing)",
+            "High-tier industrial hulls (`Workhorse` -> `Lithosphere`/`Tellurian`) anchor near lawless rare belts (Uranium/Silver/Cobalt/Argon/Gold) instead of competing on 1-4 cr iron/copper.",
+            f"Mining: target high-bid scarce veins ({raw_bid_ex}) with `--jettison-gangue`, batch-upgrade lasers & hulls (`hive.py upgrades mining`), and use `plan.py` `min_piloting`/`max_jumps` selectors.",
+            f"Mining+Trade: STOP mining cheap bulk ores available wholesale below fuel cost ({raw_ch_ex}); buy rival dumps and redirect our lasers to 100-600 cr scarce veins.",
+        ),
+        _pack(
+            "wholesale_arbitrage", "7. Wholesale Capital Arbitrage (Outsource & Outsupply)", "Arbitrage",
+            ["Trade", "Logistics", "Command"],
+            _emps("voidborn", "nebula", "solarian", "crimson", "outerrim"),
+            "Intel (<3h rival books) -> Trade/Logistics (buy cheap / sell high) -> Command (capex gate)",
+            f"Live rival books: {cap_ch_ex}, {raw_ch_ex} vs {bid_ex}",
+            [
+                _kpi("Live Outsource/Outsupply edges", "Intel", f"{len(all_bids) + len(raw_cheap)}", ">=3", (len(all_bids) + len(raw_cheap)) >= 3, "read.db:books"),
+                _kpi("Market books <3h fresh", "Intel", f"{our_adopt['intel_fresh_pct']:.0f}%", ">=70%", our_adopt["intel_fresh_pct"] >= 70.0, "read.db:books"),
+                _kpi("Logged P2P arbitrage contracts", "Trade", f"{our_adopt['contracts_n']}", ">=5", our_adopt["contracts_n"] >= 5, "contracts.log"),
+                _kpi("Fleet steady cashflow", "Command", f"{_fmt_signed_cr(our_adopt['steady_net_24h'])}/h", ">0 cr/h", our_adopt["steady_net_24h"] > 0, "read.db:runs"),
+            ],
+            our_adopt["contracts_n"] >= 5 and our_adopt["steady_net_24h"] > 0,
+            f"ACTIVE ({our_adopt['contracts_n']} contracts)",
+            f"PARTIAL ({our_adopt['contracts_n']} contracts, steady {_fmt_signed_cr(our_adopt['steady_net_24h'])}/h)",
+            "GAP (no wholesale arbitrage)",
+            "Rival mega-factions dump surplus ores, steel plates, and even `station_core`s below our self-build cost while posting huge standing bids on bottlenecks.",
+            f"Command+Trade+Logistics: always check `hive.py rivals` Outsource/Outsupply board before spending foundry/mining hours -- buy cheap ({cap_ch_ex}, {raw_ch_ex}) and sell high ({bid_ex}).",
+            "Command+Trade: convert rivals' overproduction into cheaper Collective stations/hulls while draining their treasury via their own standing bids.",
+        ),
+        _pack(
+            "pve_combat_escort", "8. PvE Herd Farming & Armed Escort Projection", "PvE & Escort",
+            ["Military", "Intel"],
+            _emps("crimson", "solarian", "voidborn"),
+            "Intel (herds & [ENDL] sightings) -> Military (T2+ hunt & escort) -> Trade (loot sales)",
+            f"[BUSY] {int(_num(pv1.get('value', 8454))):,d} pirates (157x Dialectic), [HEXC] 2,142 pirates; Threat: [ENDL] 1,527 PvP kills",
+            [
+                _kpi("Active PvE/escort combat ships", "Military", f"{our_adopt['active_hunt']}", ">=40", our_adopt["active_hunt"] >= 40, "fleet.json"),
+                _kpi("T2+ warships (Broadaxe/Recursion/Dialectic)", "Military", f"{our_adopt['t2_combat']}", ">=5", our_adopt["t2_combat"] >= 5, "read.db:ships"),
+                _kpi("Armed escort routes ready", "Military", f"{our_adopt['escort_routes']}", ">=5", our_adopt["escort_routes"] >= 5, "game/routes"),
+                _kpi("Military employment + [ENDL] dossier", "Military", f"{dwork.get('Military', 0.0):.0f}% / {'OK' if our_adopt['endl_logged'] else 'MISS'}", ">=80% + OK", dwork.get("Military", 0.0) >= 80.0 and our_adopt["endl_logged"], "fleet.json+factions"),
+            ],
+            our_adopt["active_hunt"] >= 40,
+            f"ACTIVE ({our_adopt['active_hunt']} combat ships)",
+            f"PARTIAL ({our_adopt['active_hunt']} combat, {our_adopt['t2_combat']} T2+)",
+            "GAP (no PvE/escort wing)",
+            "Dedicated T2/T3 combat wings (`Dialectic`, `Broadaxe`, `Recursion`) earn bounties + salvage loot while deterring PvP raiders (`[ENDL]`) on lawless trade corridors.",
+            "Military: run parallel `hunt-` PvE herd wings (handing loot to Trade, F9) + paired T2+ `escort-` wings using `plan.py` `posture:WAR_ALERT` readiness & `min_hull_tier:2`.",
+            "Military+Intel: track [ENDL] hot systems in `h-endl.md`, enforce strict defensive RoE (F2) around Neutral [HEXC]/[IRLC], and escalate posture automatically if faction war starts.",
+        ),
+    ]
 
 def compute_sedcards(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, top_n=12, now=None):
     """Build complete live Rival Sedcards, 8-Strategy Playbook Matrix, Leaderboards & Adopted Division Tricks."""
@@ -951,8 +1111,12 @@ def render_briefing(doc, who="all"):
     if pbs:
         lines.append(f"  PLAYBOOKS ({target_div} -- decide to COPY or COUNTER using `plan.py` / `route_run.py`):")
         for p in pbs[:4 if target_div != "Command" else 8]:
-            lines.append(f"    [{p['status_code']:7s}] {p['name']} ({p['our_status']}) | Proven: {p['proven_by']}")
+            emp_s = ", ".join(f"{e['name']}({e['ships']})" for e in (p.get("empires") or [])[:4])
+            lines.append(f"    [{p['status_code']:7s} {p['matched_count']}/{p['total_count']} KPIs {p['readiness_pct']:3.0f}%] {p['name']} | Empires: {emp_s} | Next: {p['blocker']}")
             if target_div != "Command":
+                ok_s = ", ".join(f"{k['name']}={k['current']}" for k in (p.get("kpis") or []) if k["matched"]) or "none"
+                nd_s = ", ".join(f"{k['name']}({k['owner']}: {k['current']} vs {k['target']})" for k in (p.get("kpis") or []) if not k["matched"]) or "all matched"
+                lines.append(f"              KPIs   : OK [{ok_s}] | NEED [{nd_s}]")
                 lines.append(f"              COPY   : {p['how_to_copy']}")
                 lines.append(f"              COUNTER: {p['how_to_counter']}")
     tricks = (doc.get("tricks_by_division") or {}).get(target_div) or []
@@ -968,9 +1132,13 @@ def render_cli(doc, target="all"):
     if t_low in ("playbooks", "playbook", "strategies", "matrix"):
         lines = ["THE COLLECTIVE 8-STRATEGY PLAYBOOK MATRIX (Live from read.db + fleet.json, F40)"]
         for p in doc.get("strategy_playbooks") or []:
-            lines.append(f"\n[{p['status_code']}] {p['name']} | Owner: {', '.join(p['divisions'])} | CLTV: {p['our_status']}")
+            emp_s = ", ".join(f"{e['name']}({e['ships']})" for e in (p.get("empires") or []))
+            lines.append(f"\n[{p['status_code']} {p['matched_count']}/{p['total_count']} KPIs {p['readiness_pct']:.0f}%] {p['name']} | Owners: {', '.join(p['divisions'])}")
+            lines.append(f"  Empires: {emp_s} | Chain: {p.get('handoff_chain', '--')}")
             lines.append(f"  Proven : {p['proven_by']}")
-            lines.append(f"  Engine : {p['how_it_works']}")
+            for k in p.get("kpis") or []:
+                mk = "OK  " if k["matched"] else "NEED"
+                lines.append(f"    [{mk}] {k['name']} ({k['owner']}): {k['current']} / {k['target']} [{k['source']}]")
             lines.append(f"  COPY   : {p['how_to_copy']}")
             lines.append(f"  COUNTER: {p['how_to_counter']}")
         return "\n".join(lines)
@@ -1043,11 +1211,15 @@ def render_markdown(doc):
         "|:--|:--|:--|:--|",
     ]
     for p in doc.get("strategy_playbooks") or []:
-        lines.append(f"| **{p['name']}** | {', '.join(p['divisions'])} | `{p['status_code']}` ({p['our_status']}) | {p['proven_by']} |")
+        lines.append(f"| **{p['name']}** | {', '.join(p['divisions'])} | `{p['status_code']}` {p['matched_count']}/{p['total_count']} KPIs ({p['readiness_pct']:.0f}%) | {p['proven_by']} |")
     lines.append("")
     for p in doc.get("strategy_playbooks") or []:
-        lines.append(f"### {p['name']} (`{p['status_code']}` -- {', '.join(p['divisions'])})")
+        emp_s = ", ".join(f"{e['name']} ({e['ships']} sh)" for e in (p.get("empires") or []))
+        lines.append(f"### {p['name']} (`{p['status_code']}` {p['matched_count']}/{p['total_count']} KPIs -- {', '.join(p['divisions'])})")
+        lines.append(f"- **Empires & Chain:** {emp_s} | `{p.get('handoff_chain', '--')}`")
         lines.append(f"- **How It Works:** {p['how_it_works']}")
+        kpi_bits = [f"{'[OK]' if k['matched'] else '[NEED]'} {k['name']} ({k['owner']}: {k['current']} vs {k['target']})" for k in (p.get("kpis") or [])]
+        lines.append("- **Automated Pinned KPIs:** " + " ; ".join(kpi_bits))
         lines.append(f"- **How To COPY:** {p['how_to_copy']}")
         lines.append(f"- **How To COUNTER:** {p['how_to_counter']}")
         lines.append("")

@@ -1643,25 +1643,26 @@ function renderMembers() {                       // the top bar: dual purse (Liq
   purse.append(cCol, eCol);
 
   F.ships.forEach((r) => { if (!by.has(r.division)) by.set(r.division, []); by.get(r.division).push(r); });
+  const grid = el('div', 'members-grid');
   for (const a of (S ? S.roster : [])) {
     const list = by.get(a.division) || [], c = DIV[a.division] || DIV.Unassigned, b = el('button', 'member');
     const working = list.filter(isWorking).length, who = el('div', 'who');
     b.type = 'button';
     const med = el('span', 'face-medallion');
-    med.append(faceSvg(a.id, a.division, c, 30));
-    who.append(el('div', 'n', a.name), el('div', 'd', a.division));
+    med.append(faceSvg(a.id, a.division, c, 18));
+    who.append(el('div', 'n', a.name));
     const cnt = el('div', 'c', String(list.length));
     if (working < list.length) cnt.classList.add('has-idle');
     b.append(med, who, cnt);
     b.style.setProperty('--c', c);
     b.title = a.name + ' (' + a.rank + ' -- ' + a.division + '): ' + working + '/' + list.length + ' active | Click to message ' + a.name;
     b.addEventListener('click', () => openCommsFor(a.id));
-    box.append(b);
+    grid.append(b);
   }
-  const t = F.totals || {}, all = el('div', 'member total'), who = el('div', 'who');
-  who.append(el('div', 'n', 'Fleet'), el('div', 'd', t.ships ? (t.working || 0) + ' active' : 'no data'));
-  all.append(who, el('div', 'c', fmt(t.ships)));
-  all.title = 'Total Fleet: ' + fmt(t.working) + ' active, ' + fmt(t.parked) + ' docked, ' + fmt(t.adrift) + ' adrift';
+  box.append(grid);
+  const t = F.totals || {}, all = el('div', 'member total');
+  all.append(el('div', 'c', fmt(t.ships)), el('div', 'd', t.ships ? (t.working || 0) + ' act' : 'no data'));
+  all.title = 'Total Fleet: ' + fmt(t.ships) + ' ships (' + fmt(t.working) + ' active, ' + fmt(t.parked) + ' docked, ' + fmt(t.adrift) + ' adrift)';
   box.append(all);
 }
 
@@ -4084,6 +4085,19 @@ async function renderMetrics(panel, live) {
           el('span', 'sc-drkpi-v', (d.role_kpi && d.role_kpi.value) || '--')
         );
         card.append(rk);
+        if (d.playbooks && d.playbooks.length) {
+          const pwrap = el('div', 'sc-dpbs');
+          pwrap.append(el('span', 'sc-drkpi-k', 'Playbook KPIs: '));
+          for (const pb of d.playbooks) {
+            const pcls = pb.status_code === 'ACTIVE' ? 'good' : pb.status_code === 'GAP' ? 'bad' : 'warn';
+            const btn = el('button', 'pill sc-pb-btn ' + pcls, (pb.short_name || pb.name) + ' ' + pb.matched_count + '/' + pb.total_count);
+            btn.type = 'button';
+            btn.title = pb.name + ' (' + pb.readiness_pct + '% KPIs matched | Empires: ' + (pb.empires || []).join(', ') + ')\nNext blocker: ' + (pb.blocker || '--') + '\nClick to inspect Strategy Playbook Matrix.';
+            btn.addEventListener('click', () => { sedFocusTag = ''; tab = 'Empire'; empSub = 'Sedcards'; render(); });
+            pwrap.append(btn);
+          }
+          card.append(pwrap);
+        }
 
         const qList = ((d.triage && d.triage.length) ? d.triage : (d.triggers || [])).slice(0, 2);
         const qBox = el('div', 'sc-dqueue');
@@ -4577,19 +4591,44 @@ function renderEmpireSedcards(panel, rv) {
     for (const p of playbooks) {
       const sc = p.status_code || 'PARTIAL';
       const cls = sc === 'ACTIVE' ? 'good' : sc === 'GAP' ? 'bad' : 'warn';
+      const rpct = Number(p.readiness_pct || 0);
       const card = el('div', 'pb-card pb-' + sc.toLowerCase());
       const hd = el('div', 'pb-head');
-      hd.append(el('b', null, p.name), el('span', 'pill ' + cls, p.our_status || sc));
+      hd.append(el('b', null, p.name), el('span', 'pill ' + cls, sc + ' ' + (p.matched_count || 0) + '/' + (p.total_count || 4) + ' KPIs (' + Math.round(rpct) + '%)'));
       card.append(hd);
+
+      const bar = el('div', 'pr-bar');
+      const fill = el('div', 'pr-bar-fill ' + (sc === 'ACTIVE' ? 'good' : sc === 'GAP' ? 'bad' : 'low'));
+      fill.style.width = Math.min(100, Math.max(0, rpct)).toFixed(1) + '%';
+      bar.append(fill);
+      card.append(bar);
+
       const owners = el('div', 'pb-owners');
       for (const dn of (p.divisions || [])) {
         const tg = el('span', 'pill', dn);
         if (DIV[dn]) tg.style.borderColor = DIV[dn];
         owners.append(tg);
       }
+      for (const em of (p.empires || [])) {
+        owners.append(el('span', 'pill pb-emp', em.name + ' (' + fmt(em.ships || 0) + ')'));
+      }
       card.append(owners);
+      if (p.handoff_chain) card.append(el('div', 'pb-chain', 'Chain: ' + p.handoff_chain));
       card.append(el('div', 'sed-meta', 'Proven by: ' + (p.proven_by || '--')));
-      card.append(el('div', 'sed-row', p.how_it_works || ''));
+      if (p.kpis && p.kpis.length) {
+        const klist = el('div', 'pb-kpis');
+        for (const k of p.kpis) {
+          const krow = el('div', 'pb-kpi ' + (k.matched ? 'ok' : 'miss'));
+          krow.append(
+            el('span', 'pb-kbadge', k.matched ? 'OK' : 'NEED'),
+            el('span', 'pb-kname', k.name + ' (' + k.owner + ')'),
+            el('span', 'pb-kval', k.current + ' / ' + k.target)
+          );
+          krow.title = 'Auto-fed live from ' + (k.source || 'read.db');
+          klist.append(krow);
+        }
+        card.append(klist);
+      }
       card.append(el('div', 'pb-copy', 'COPY: ' + (p.how_to_copy || '--')));
       card.append(el('div', 'pb-counter', 'COUNTER: ' + (p.how_to_counter || '--')));
       pbGrid.append(card);
@@ -5220,41 +5259,41 @@ async function showPilot(name) {
 function status() {
   const box = $('status'), st = L.stats || {};
   box.replaceChildren();
-  // kind 'wide' or 'opt': shown in a very wide window only, so that the top bar is never cut; a state that is not good always shows,
-  // and the box's tooltip names all of them
-  const item = (label, value, cls, kind) => { const s = el('span', kind || null); if (cls) s.append(el('i', 'dot ' + cls)); s.append(label + ' '); s.append(el('b', null, value)); box.append(s); };
-  item('Time', clockZ(Date.now()));
-  box.lastChild.querySelector('b').id = 'clock';
-  box.lastChild.title = 'Your time (' + ZONE + '). Every time on this page is shown in it; the logs and the data keep UTC';
-  item('Fleet data', fleetAgeText(), fleetLive() ? 'good' : 'bad');
-  box.lastChild.querySelector('b').id = 'fleet-age';
-  box.lastChild.title = 'How old the picture of our ships is. The collector reads the engine every 10 seconds, about once a game tick';
+  const row1 = el('div', 'st-row'), row2 = el('div', 'st-row');
+  const addItem = (row, label, value, cls, kind, tip, bId) => {
+    const s = el('span', 'st-item' + (kind ? ' ' + kind : ''));
+    if (cls) s.append(el('i', 'dot ' + cls));
+    s.append(label + ' ');
+    const b = el('b', null, value);
+    if (bId) b.id = bId;
+    s.append(b);
+    if (tip) s.title = tip;
+    row.append(s);
+  };
+  addItem(row1, 'Time', clockZ(Date.now()), null, null, 'Your time (' + ZONE + '). Logs and data keep UTC.', 'clock');
+  addItem(row1, 'Fleet', fleetAgeText(), fleetLive() ? 'good' : 'bad', null, 'Age of live fleet snapshot (collector reads every 10s).', 'fleet-age');
   if (OPS.data && OPS.data.freshness && OPS.data.freshness.ships) {
     const fr = OPS.data.freshness;
     const cls = fr.max_s <= 35 ? 'good' : fr.max_s <= 90 ? 'warn' : 'bad';
-    item('Tick', fr.median_s + 's / p95 ' + fr.p95_s + 's', cls);
-    box.lastChild.title = 'Pilot telemetry tick age across ' + fmt(fr.ships) + ' ships: median ' + fr.median_s + 's, p95 ' + fr.p95_s + 's, max ' + fr.max_s + 's (server collector metric)';
+    addItem(row1, 'Tick', fr.median_s + 's/p95 ' + fr.p95_s + 's', cls, null, 'Pilot state age across ' + fmt(fr.ships) + ' ships: median ' + fr.median_s + 's, p95 ' + fr.p95_s + 's, max ' + fr.max_s + 's.');
   }
   if (OPS.data && OPS.data.services) {
     const sv = OPS.data.services;
     const runN = sv.running || 0, totN = sv.total || 10;
     const sCls = runN >= totN ? 'good' : runN >= totN - 1 ? 'warn' : 'bad';
-    item('Services', runN + '/' + totN, sCls);
-    box.lastChild.title = 'Background runner services: ' + runN + ' of ' + totN + ' running (dispatch, fleet, inbox, keeper, ledger, routemaker, runhost, sight, station, store)';
+    addItem(row2, 'Services', runN + '/' + totN, sCls, null, 'Background runner services: ' + runN + ' of ' + totN + ' running.');
   }
-  item('Online', fmt(st.online_players));
-  box.lastChild.title = 'Players in the game right now, by the game\'s own count; the station reads it every minute';
-  item('Tick', fmt(st.tick), null, 'wide'); item('Game', st.version || '?', null, 'wide');
+  addItem(row2, 'Online', fmt(st.online_players), 'good', null, 'Players online in SpaceMolt right now (refreshed every minute).');
+  addItem(row2, 'Game', st.version || '?', null, 'wide', 'Live SpaceMolt server version & tick ' + fmt(st.tick) + '.');
   const liveStream = L.stream || {}, streams = Boolean(liveStream.connected && liveStream.age < 60);
-  item('Stream', streams ? 'live' : 'down', streams ? 'good' : 'bad', streams ? 'opt' : null);
+  if (!streams) addItem(row2, 'Stream', 'down', 'bad', null, 'Live SSE galaxy stream is disconnected.');
   if (S) {
     const bad = Object.entries(S.sources).filter(([, s]) => s.error || s.age < 0).map(([n]) => n);
-    item('Sources', bad.length ? 'problem: ' + bad.join(', ') : 'good', bad.length ? 'warn' : 'good', bad.length ? null : 'opt');
+    if (bad.length) addItem(row2, 'Sources', 'err:' + bad.length, 'warn', null, 'Source issues: ' + bad.join(', '));
   }
-  box.title = [...box.children].map((s) => s.textContent).join(' | ');
-  const bar = box.parentElement;                 // the status box is never cut: where it would be, the search field gives way
-  bar.classList.remove('tight');
-  if (box.scrollWidth > box.clientWidth + 1) bar.classList.add('tight');
+  box.append(row1, row2);
+  box.title = [...box.querySelectorAll('.st-item')].map((s) => s.textContent).join(' | ');
+  if (box.parentElement) box.parentElement.classList.remove('tight');
 }
 
 // ---------------------------------------------------------------- comms: one conversation with all six members

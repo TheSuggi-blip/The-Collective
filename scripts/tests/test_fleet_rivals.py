@@ -84,6 +84,11 @@ class TestFleetRivals(unittest.TestCase):
             pb_cli = rivals.render_cli(doc, target="playbooks")
             self.assertIn("8-STRATEGY PLAYBOOK MATRIX", pb_cli)
             self.assertIn("1. Sovereign Tourism & Gourmet Hub", md)
+            pb0 = doc["strategy_playbooks"][0]
+            self.assertIn("handoff_chain", pb0)
+            self.assertEqual(len(pb0["kpis"]), 4)
+            self.assertIn("readiness_pct", pb0)
+            self.assertTrue(len(pb0["empires"]) >= 1)
 
 
 if __name__ == "__main__":
