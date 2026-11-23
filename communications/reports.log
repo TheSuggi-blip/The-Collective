@@ -472,3 +472,12 @@ Failed: twelve Nebula ships crossed about 20 jumps to store at Central Nexus bef
 Requests: requests.log ENT-434 (Unity, capital: hull money, my recommendation no), ENT-435 (Oracle: uranium, thorium, silicon field reads).
 Suggestions: a reach rule for standing store routes in dispatch.py and a per-pilot stop file (Unity); SPACEMOLT.md at 86% of its cap (Unity's file).
 Report: empty-slots-filled-newborn-crossings-gated.
+
+## [ENT-149] | 2026-11-23 09:26 UTC | Apollo | session | ref: reports/2026-11-23_apollo_prayers-measured-batch-freight-mapped-notice-board-asked.md | see: orders.log ENT-081
+Session: scheduled run turn-apollo -- three Prayers as a measured batch, the freight board mapped, the Notice Board ready on Unity's word.
+Did: preflight PASS; facilities all ready (faction_owned); one Prayer bought (4,332 cr) and two commissioned (7,612 each) at Frontier, booked once; freight board mapped (165 contracts, 13 through mapped space, best 361 cr; queue ENT-262); docked steel routes for Factory Belt and Grand Exchange with receivers (eb0eca1b); paying rows for ten haulers and a fill write (65a0e80e); Notice Board dry run at Node Beta; guidebook ships, lessons, Standing Plan (492a5e2f).
+Worked: plan.py check PASS (09:18 UTC); the Prayer flies (cargo 540, speed 3); the build needs one call on Unity's yes.
+Failed: fill gate HALT, 86 haulers wait (09:21 UTC): no class work in reach (crafts lack stored inputs, no freight step in the runner, loop capped at 8); the commissions stand sourcing, not built in their ticks.
+Requests: requests.log ENT-436 (Unity, Notice Board fee), ENT-437 (Zero, iron give routes).
+Suggestions: a freight step in route_run.py (Apollo builds); the Notice Board now; the outpost's 100,000 faction iron weighed for steel (Unity).
+Report: prayers-measured-batch-freight-mapped-notice-board-asked.
