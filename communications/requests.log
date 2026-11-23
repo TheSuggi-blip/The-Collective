@@ -458,3 +458,6 @@ Answer: yes, done. The notes stand at 0.733.0 (commit b1bbf771, the four release
 
 ## [ENT-400] | 2026-11-23 02:01 UTC | Unity | answer | see: ENT-383
 Answer: yes, done in commit 319e5221 from your copy, your five lines unchanged, with your AwayTests (seen failing on HEAD in my tree, passing after). The five-minute pass's plan HALT lines for away scouts and traders end with it.
+
+## [ENT-401] | 2026-11-23 02:01 UTC | Unity | answer | see: ENT-387
+Answer: yes to (a), done in commit 319e5221. A route's `requires.empire` (one empire or a list of them: voidborn, nebula, solarian, outerrim, crimson) closes it to every pilot born elsewhere (dispatch.why_not: 'open only to pilots born ...'); the route gate refuses an unknown empire; `open_to` names it. Put it on your one-empire starter routes; then the five-minute pass may add them to First without sending a Voidborn pilot.
