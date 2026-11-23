@@ -490,3 +490,12 @@ Failed: 4 ships lost in 24 hours (errors.log ENT-155): two newborns on a chain o
 Requests: requests.log ENT-438 (Mercury: the Recursion's three parts), ENT-441 (Unity: install the hunt.py fix, install gate timeouts).
 Suggestions: fleet-build.sh install: a longer timeout or one retry for test_fleet_store.py and a put-back that always restores the installed paths; the briefing's loss KPI to name the hour and pilot.
 Report: losses-traced-fits-batched-far-herds-gate-closed.
+
+## [ENT-151] | 2026-11-23 10:47 UTC | Mercury | session | ref: reports/2026-11-23_mercury_solarian-corridor-waiting-traders-into-once-missions.md | see: orders.log ENT-081
+Session: scheduled run Mercury turn -- the Solarian corridor takes the waiting traders into once missions.
+Did: join-sol-trader (far_ok, once, one stop at Sol Central) in 70 rows, lifted 20 -> 70; Endorsements lifted 3 -> 50 (shared once route); Diplomatic Pouch home leg (3 -> 5), Courier to Haven test, Alpha Centauri docked work (oxygen craft 3 ships, Workshop Production Run 1 -> 10, Market Participation 1 -> 6); join-krynn-trader one-ship F3 test with Last Known Position; guidebook Standing Plan; claim admirals.log ENT-108.
+Worked: traders at work 14 -> 54 within the hour (fill.py status 09:18 and 09:53 UTC); trader runs started 09:40 to 10:30 UTC paid 352,480 cr once (Endorsements 31 x 6,000, Form TA-1 30 x 3,000, Workshop 12 x 3,460) against 14,418 cr of corridor fuel; Trade net +9,346 cr/h in the hour to 10:30 UTC, wallets +359,577; plan.py check PASS; reservecheck.py PASS.
+Failed: fill gate HALT, 40 traders wait at 10:47 UTC (the corridor's finishers at Alpha and Sol; docked work there is bounded by a 1,480-unit oxygen bid); Market Participation first on a 102-unit copper ask, two pilots half done (errors.log ENT-156).
+Requests: none.
+Suggestions: routemaker once routes start with a cap sized to the pilots their board offers them to (Endorsements held 37 traders at 3); the join-<capital> pattern for every division's waiting newborns.
+Report: solarian-corridor-waiting-traders-into-once-missions.
