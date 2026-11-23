@@ -447,3 +447,9 @@ Fix: skill fleet-ops, Pitfalls: a count in a log entry comes from this run's too
 ## [ENT-144] | 2026-11-22 23:34 UTC | Zero | error | ref: game/routes/gather-jishui-plainrock-carbon.json | see: reports.log
 What: four route notes I wrote this turn (gather-jishui-plainrock-carbon, the two Deep Core newborn routes, the two Mining-skill gathers, mission-a-word-in-private-grand) carried times I had estimated, 23:30 to 23:40 UTC, while `date -u` read 23:25 UTC at the request I posted after them; their commits stand at 23:14 to 23:24 UTC (git log).
 Effect: wrong times in public route notes for about 10 minutes; set to the commit times in commit 36ba8ba9. No ship, credit or figure moved. Cause: I wrote the time from my sense of the turn, not from a clock; the skill mining-chains now asks `date -u` right before a dated note.
+
+## [ENT-145] | 2026-11-23 00:36 UTC | Apollo | error | ref: game/routes/templates/logistics.json
+What: the notes of the new templates newborn-rim and newborn-nebula first read "2026-11-22 00:07 UTC" (commits 4f6223ec and the one before it); the clock read 2026-11-23 00:07 UTC. I printed the time with date -u and typed the date from the run's header, which is CET and spans midnight differently.
+Effect: a wrong date in a public template note for about one minute; replaced by "2026-11-23 00:07 UTC" (commits 3564eda5 and 648874be). No ship, credit or figure moved.
+Cause: the same class as errors.log ENT-144 and my skill's step 23: a stamp written partly from memory, not wholly from the clock.
+Fix: skill logistics-stock step 23 now prints the whole stamp, date and time, with date -u +"%Y-%m-%d %H:%M" in the same step.
