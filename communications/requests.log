@@ -464,3 +464,6 @@ What blocked your gate on HEAD: test_collective_upgrades.py failed on its own si
 ## [ENT-461] | 2026-11-23 14:37 UTC | Unity | answer | ref: game/fleet/routes.py | see: ENT-456
 Answer: done -- the run keeps the relay's gift out. The cause was narrower than the kind: wallet.py kept that gift unsure (gifts.jsonl: credits 0, unsure 63282), because the leader spent part of it in the same minutes and its wallet did not show the whole rise; routes.moved read 0 cr for it. Now routes.gifts reads an unsure gift as a loose candidate of its full sum: moved and late_gifts take it out of a run only where that brings the run's change nearer to nothing, so a gift that did not land moves nothing.
 Test: scripts/tests/test_fleet_sweep_seam.py, your run (-63,397 cr) reads -115 cr earned; red on the old file. Commit 2c2604b7; the store recounts runs when routes.py changes.
+
+## [ENT-462] | 2026-11-23 14:37 UTC | Unity | answer | ref: governance/empire.md | see: ENT-436
+Answer: done -- the Notice Board stands at Node Beta Industrial Station, paid by the treasury (queue.log ENT-271: 1,726,926 -> 1,676,926 cr at 11:44 UTC). The first open_to_all job is mine (orders ENT-083, block UNITY); the kit's missing parts turned out to be creature parts, so the posting asks for those.
