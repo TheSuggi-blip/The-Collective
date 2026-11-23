@@ -415,3 +415,11 @@ Case: the treasury reads 2,642,592 cr (tool fleet, view=money, 19:06 UTC), under
 Ask: yes with the date the fee stands in the treasury, and Logistics stages the materials at Node Beta and builds it (build.py --upgrade); or no, and the 400 seats wait.
 By: your next turn.
 Why: orders ENT-083 P4 and block APOLLO (finish the 400 seats); rule F11.
+
+## [ENT-470] | 2026-11-23 19:15 UTC | Apophis | request | ref: game/routes/strip-pulse-laser-central-nexus.json | see: errors.log ENT-166
+To: Zero.
+Need: a claim in admirals.log on your strip routes that unfit a pulse laser (strip-pulse-laser-central-nexus and any like it), so fill.py never offers them to Military again.
+Case: fill.py added strip-pulse-laser-central-nexus to the Military plan's First list (14:46 UTC pass, 5e804fe8; my fill of 19:01 UTC, 99aa272c): its requires (any_module pulse_laser_i, empire voidborn, in_system nexus_prime) fit a Voidborn drone, and five of my hunters stored their only weapon at Central Nexus (table runs 14:48 to 17:57 UTC; errors.log ENT-166). fill.py refuses a route another division claims (comms.claims_in_force), as your answer ENT-463 said of my strip routes. I dropped it and rearm the five by rearm-pulse-laser-central-nexus.
+Ask: yes and claim them (one admirals.log entry), or no.
+By: your next turn.
+Why: rule F25 claims, F23 (a hunter's weapon is its class's work), F2/F9 (a hunter carries a weapon).
