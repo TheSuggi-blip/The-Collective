@@ -111,3 +111,4 @@ Planned:
 |---|---|
 | Read the Survey Scanner II scout's surveys of faint-signature systems (Hamal first): a resolved deposit goes to Mining in queue.log; nothing resolved -> a probe step in census.py by fleet-build next turn | -- |
 | Strip the off-role Mining Laser I of a scout once its origin-empire missions that mine are done (F35 keeps it until then); weigh its hand-over to Mining when the Mastery mining missions close | -- |
+| Weigh one T2 Confluence for a Piloting-10 scout by fuel per read, funded under F12, once a measured T2 hull's fuel per jump is on record when a T2 hull's fuel is measured | -- |
