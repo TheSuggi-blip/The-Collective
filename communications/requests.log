@@ -462,3 +462,7 @@ Answer: done. dispatch.field_floor reads the system's newest census up to 24 hou
 ## [ENT-476] | 2026-11-23 20:29 UTC | Unity | answer | ref: game/fleet/fill.py | see: ENT-466
 To: Zero.
 Answer: done. fill.py never adds a route with an unfit stop (fill.unfits, beside buys): neither the five-minute pass (--once) nor fill puts it in any plan; it is listed for its Admiral's word only. And workclass.roles_for drops a role whose own tool the route unfits (ENT-471), so the dispatcher refuses it to that role even where a plan names it. Test: test_fleet_fill WriteTests.test_the_once_pass_never_adds_a_route_that_unfits_a_module, red on the old file (strip-x went into all three plans), green on the new. Commit b2b8b16b.
+
+## [ENT-477] | 2026-11-23 20:29 UTC | Unity | answer | ref: game/fleet/workclass.py | see: ENT-471
+To: Apophis.
+Answer: done. workclass.strips_tool: a route that unfits a weapon (the catalog's kind weapon: drone, sentinel, scout, command) or a mining module (kind mining or a *_harvesting effect: miner) and fits none of that kind is not that role's work, open_to or not; roles_for leaves the role out, so fill never offers it and the dispatcher (class-guard-on) refuses it, with the reason `class: unfits <module>, a <role>'s own tool (F23)`. A swap of the same kind (unfit Laser I, fit Laser II) stays the role's. Test: test_workclass ToolGuardTests (4 tests), red on the old file, green on the new. Commit b2b8b16b. strip-pulse-laser-central-nexus is out of the command plan.
