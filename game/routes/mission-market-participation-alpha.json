@@ -2,9 +2,9 @@
  "id": "mission-market-participation-alpha",
  "kind": "circuit",
  "title": "Market Participation: Buying and Selling at Alpha Centauri: 1,000 cr each, once per pilot; ten copper ore bought and sold back there",
- "note": "Written by Mercury, 2026-11-23 09:33 UTC (orders ENT-081, P6 and block MERCURY: the newborns' starter missions on their own board; rules F34 tier 2, F35). Alpha Centauri's board (table missions, 09:12 UTC) offers Market Participation: Buying (buy 10 units of any item on the exchange) and Selling (sell 10 units), 1,000 cr each; its book (09:27 UTC) asks copper ore at 4 x 102 and bids 1 x 35,762: ten units cost about 41 cr and bring about 10 back, for 2,000 cr once. A copy of Apollo's mission-market-participation-grand (50 runs, +1,950 a run). No Solarian-born trader has booked it (table runs). One ship first: a board is one pilot's (trade-books pitfall), its first run read. min_credits 3,200: the runner's buy floor of 3,000 and the ore.",
+ "note": "Written by Mercury, 2026-11-23 09:33 UTC (orders ENT-081, P6 and block MERCURY: the newborns' starter missions on their own board; rules F34 tier 2, F35). Alpha Centauri's board (table missions, 09:12 UTC) offers Market Participation: Buying (buy 10 units of any item on the exchange) and Selling (sell 10 units), 1,000 cr each; its book (09:27 UTC) asks copper ore at 4 x 102 and bids 1 x 35,762: ten units cost about 41 cr and bring about 10 back, for 2,000 cr once. A copy of Apollo's mission-market-participation-grand (50 runs, +1,950 a run). No Solarian-born trader has booked it (table runs). One ship first: a board is one pilot's (trade-books pitfall), its first run read. min_credits 3,200: the runner's buy floor of 3,000 and the ore. 2026-11-23 09:57 UTC (Mercury): max_ships 1 -> 6: first run 09:48 UTC: +1,960 cr once, -22 cr steady, 3.3 min (table runs).",
  "once": true,
- "max_ships": 1,
+ "max_ships": 6,
  "min_credits": 3200,
  "one_time": [
   "Market Participation: Buying",
