@@ -1,7 +1,7 @@
 # Military guidebook -- Ships and Fits (ships.md)
 
 ### Ships and Fits
-Status: proven. Updated: 2026-11-22. Evidence: get_ship 2026-11-17 00:19 UTC; game/catalog/tables/modules.tsv (0.732.0); the tool market (pulse_laser_ii, pulse_laser_iii, shield_booster_i).
+Status: proven. Updated: 2026-11-22. Evidence: get_ship 2026-11-17 00:19 UTC; game/catalog/tables/modules.tsv (the live catalog); the tool market (pulse_laser_ii, pulse_laser_iii, shield_booster_i).
 
 The Threshold: 1 weapon, 2 defence, 2 utility slots, CPU 16, power 30,
 hull 75, shield 80, armor 3, speed 1. A Mining Laser I (CPU 2, power 5) and

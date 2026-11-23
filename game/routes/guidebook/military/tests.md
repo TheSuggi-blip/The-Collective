@@ -1,13 +1,14 @@
 # Military guidebook -- Tests (tests.md)
 
 ### Open Tests
-Status: test. Updated: 2026-11-22. Evidence: hive.py route hunt-test-siphon-pilot-whale-sb2; table runs (*-pl3, *-pilot-whale-sb2); data/fleet/funds.json; observations kinds group_hunt, fit_test.
+Status: test. Updated: 2026-11-23. Evidence: hive.py route hunt-test-siphon-pilot-whale-sb2; table runs (*-pl3, *-pilot-whale-sb2); data/fleet/funds.json; observations kinds group_hunt, fit_test.
 
 - Shield Booster II: proven (F37), see Weapon fits. Whale hunts for the
   booster ships at four herds 4 to 5 jumps out (`*-pilot-whale-sb2`).
 - The Recursion (tier 2, 3 weapons, hull 150, shield 150; table hulls):
-  one ship first (F17), credits only at Node Beta, built in 702 ticks by
-  its quote; then its three results (F37). Script commission_hull.py.
+  one commissioned for credits at Node Beta on 2026-11-23 (commission_hull.py,
+  observations kind fit_test), 702 ticks by its quote; the switch once
+  commission_status says ready, then its three results (F37).
 - Pulse Laser III hunts: tortoises at six belts, deuteron slugs at three
   ice fields; reserve goods (ferrous nodule, carapace).
 - Cloudwhales (20 jumps out): a group sets out only on a census under
@@ -40,7 +41,7 @@ docks for repair, releases all.
   running group with `stop_script.sh`, never a kill of the shell's PID.
 
 ### Weapon fits
-Status: proven. Updated: 2026-11-22. Evidence: table runs, routes hunt-test-keid-ice-shelf-deuteron-slug-pl3, hunt-test-gsc-0035-belt-b-slag-tortoise-pl3, hunt-test-acubens-bulwark-pl3, hunt-test-acubens-bulwark-pc2, fit-pulse-laser-iii-lhs-1140; tool stock (dispersal_plasma_cell_pack); catalog 0.732.0 (plasma_cannon_ii); spacemolt.com/docs/wildlife.
+Status: proven. Updated: 2026-11-22. Evidence: table runs, routes hunt-test-keid-ice-shelf-deuteron-slug-pl3, hunt-test-gsc-0035-belt-b-slag-tortoise-pl3, hunt-test-acubens-bulwark-pl3, hunt-test-acubens-bulwark-pc2, fit-pulse-laser-iii-lhs-1140; tool stock (dispersal_plasma_cell_pack); the live catalog (plasma_cannon_ii); spacemolt.com/docs/wildlife.
 
 - Creatures have hull and armor, no shields (the game's docs): thermal
   bypasses 75% of armor, energy 25%.

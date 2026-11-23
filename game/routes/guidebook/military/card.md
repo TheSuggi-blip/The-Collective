@@ -1,7 +1,7 @@
 # Military guidebook -- the Class Card (card.md)
 
 ### Class Card
-Status: proven. Updated: 2026-11-22. Evidence: hive.py levels Apophis; hive.py stats upgrades --member Apophis; table hulls (catalog 0.723.2).
+Status: proven. Updated: 2026-11-22. Evidence: hive.py levels Apophis; hive.py stats upgrades --member Apophis; table hulls (the live catalog).
 
 The Military class in short (rule F14): 50 drones and 20 sentinels lent by
 the Fleet Admiral until Piloting 20 (rule F10). The role (MISSION.md): the
