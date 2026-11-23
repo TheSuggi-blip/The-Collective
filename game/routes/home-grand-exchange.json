@@ -1,0 +1,18 @@
+{
+ "id": "home-grand-exchange",
+ "kind": "circuit",
+ "title": "Home to Grand Exchange: a Nebula-born ship far from Haven docks at its capital, where its region's work is",
+ "note": "Written by Unity, 2026-11-23 08:02 UTC (orders ENT-081 P6: newborns work where they were born, far only by a route's far_ok; rule F8). The Nebula-born flagship stood docked at Central Nexus, about 19 jumps from Haven, every route of its list closed by the newborn guard ('work in its own region first') or full (fill.py status command, 08:00 UTC). far_ok lifts the guard for this one stop home, as Zero's home-sol-central and Oracle's home-frontier-station do. requires.empire nebula, an empty hold.",
+ "far_ok": true,
+ "max_ships": 6,
+ "standing": true,
+ "requires": {
+  "empire": "nebula",
+  "empty_hold": true
+ },
+ "stops": [
+  {
+   "at": "haven:grand_exchange:grand_exchange_station"
+  }
+ ]
+}
