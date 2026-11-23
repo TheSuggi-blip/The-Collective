@@ -376,6 +376,28 @@ def call(method, path, body=None, timeout=900):
     LOG.append([action, params])
     if action == "get_active_missions":
         return 200, {"result": ""}
+    if action == "view_orders":                                       # the pilot's own orders at this station
+        return 200, {"structuredContent": {"orders": [dict(o) for o in WORLD.get("orders") or []]}}
+    if action == "create_sell_order":                                 # escrow from the hold first, then storage
+        want, got = params["quantity"], 0
+        for where in ("cargo", "storage"):
+            take = min(want - got, WORLD[where].get(params["item_id"], 0))
+            WORLD[where][params["item_id"]] = WORLD[where].get(params["item_id"], 0) - take
+            got += take
+        if not got:
+            return 200, {"error": {"code": "insufficient_items"}}
+        orders = WORLD.setdefault("orders", [])
+        same = next((o for o in orders if o["item_id"] == params["item_id"] and o["price_each"] == params["price_each"]), None)
+        if same:
+            same["remaining"] += got
+        else:
+            orders.append({"order_id": "o%d" % (len(orders) + 1), "side": "sell", "item_id": params["item_id"], "remaining": got, "price_each": params["price_each"]})
+        return 200, {}
+    if action == "modify_order":
+        for o in WORLD.get("orders") or []:
+            if o["order_id"] == params["order_id"]:
+                o["price_each"] = params["new_price"]
+        return 200, {}
     if action == "view_market":
         return 200, {"structuredContent": {"items": [dict(row, item_id=k) for k, row in sorted(WORLD["book"].items())]}}
     if action == "get_missions":
@@ -684,6 +706,60 @@ class MineStepStopTests(unittest.TestCase):
         tree = ast.parse((FLEET / "route_run.py").read_text(encoding="ascii"))
         ends = ["\n".join(ast.unparse(line) for line in node.finalbody) for node in ast.walk(tree) if isinstance(node, ast.Try) and node.finalbody]
         self.assertTrue(any("DELETE" in text and "/loop" in text for text in ends), ends)
+
+
+ORDER_STOP = {"at": "home:core:base", "sell_order": [{"item": "crystal_melt", "qty": 5, "price": 2900, "floor": 2600}]}
+ORDER_ROUTE = {"id": "made-up", "kind": "circuit", "title": "t", "stops": [ORDER_STOP]}
+
+
+class SellOrderStepTests(unittest.TestCase):
+    # orders.log ENT-066 to ENT-068 (block MERCURY: build the order steps yourself, one order first), requests.log ENT-373,
+    # rule F39: a stop keeps one resting sell order of a good the pilot holds here, at its price, never under its floor.
+    def moves(self, want, row, mine, have):
+        return functions("sell_order_moves")["sell_order_moves"](want, row, mine, have)
+
+    def test_nothing_listed_lists_what_is_held_up_to_qty(self):
+        self.assertEqual(self.moves({"item": "m", "qty": 5, "price": 2900}, {}, [], 3), [("create", 3, 2900)])
+        self.assertEqual(self.moves({"item": "m", "qty": 5, "price": 2900}, {}, [], 9), [("create", 5, 2900)])
+
+    def test_a_listed_order_at_the_price_is_topped_up_and_never_past_qty(self):
+        mine = [{"order_id": "a", "remaining": 2, "price_each": 2900}]
+        self.assertEqual(self.moves({"item": "m", "qty": 5, "price": 2900}, {}, mine, 9), [("create", 3, 2900)])
+        mine = [{"order_id": "a", "remaining": 5, "price_each": 2900}]
+        self.assertEqual(self.moves({"item": "m", "qty": 5, "price": 2900}, {}, mine, 9), [])
+
+    def test_an_order_at_another_price_is_repriced_first(self):
+        mine = [{"order_id": "a", "remaining": 2, "price_each": 3100}]
+        self.assertEqual(self.moves({"item": "m", "qty": 2, "price": 2900}, {}, mine, 0), [("modify", "a", 2900)])
+
+    def test_the_price_never_goes_under_the_floor_and_rises_to_a_higher_bid(self):
+        self.assertEqual(self.moves({"item": "m", "qty": 1, "price": 2500, "floor": 2600}, {}, [], 1), [("create", 1, 2600)])
+        # a bid above the price: the ask would fill at the bid at once; it is listed at the bid instead, never under it (F12)
+        self.assertEqual(self.moves({"item": "m", "qty": 1, "price": 2900}, {"best_buy": 3000}, [], 1), [("create", 1, 3000)])
+
+    def test_nothing_held_and_nothing_listed_does_nothing(self):
+        self.assertEqual(self.moves({"item": "m", "qty": 5, "price": 2900}, {}, [], 0), [])
+
+    def test_a_stop_lists_the_stored_good_and_the_run_row_says_so(self):
+        log, world, row, out = fly(ORDER_ROUTE, {"storage": {"crystal_melt": 8}})
+        acts = [(a, p) for a, p in log if a in ("view_orders", "create_sell_order", "modify_order")]
+        self.assertEqual(acts[0][0], "view_orders")
+        self.assertEqual(acts[1], ("create_sell_order", {"item_id": "crystal_melt", "quantity": 5, "price_each": 2900}))
+        self.assertEqual(world["orders"], [{"order_id": "o1", "side": "sell", "item_id": "crystal_melt", "remaining": 5, "price_each": 2900}])
+        self.assertEqual(world["storage"]["crystal_melt"], 3)
+        self.assertIn("sell order crystal_melt: 5 listed at 2900", row["notes"], out)
+
+    def test_a_second_run_reprices_and_lists_nothing_more(self):
+        world = {"storage": {"crystal_melt": 3}, "orders": [{"order_id": "o1", "side": "sell", "item_id": "crystal_melt", "remaining": 5, "price_each": 3200}]}
+        log, world, row, out = fly(ORDER_ROUTE, world)
+        acts = [(a, p) for a, p in log if a in ("create_sell_order", "modify_order")]
+        self.assertEqual(acts, [("modify_order", {"order_id": "o1", "new_price": 2900})], out)
+        self.assertEqual(world["storage"]["crystal_melt"], 3)
+
+    def test_the_order_step_runs_after_the_craft_and_before_the_accept(self):
+        source = (FLEET / "route_run.py").read_text(encoding="ascii")
+        self.assertLess(source.index("for job in stop.get('craft')"), source.index("for want in stop.get('sell_order')"))
+        self.assertLess(source.index("for want in stop.get('sell_order')"), source.index("if stop.get('accept'):"))
 
 
 if __name__ == "__main__":

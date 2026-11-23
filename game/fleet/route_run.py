@@ -37,6 +37,13 @@ which pilot flies it, and where a pilot is, stays in the unit's data folder:
                                               into storage and counted there; what was made comes into the hold and
                                               the stop's `sell` runs once more for it. No inputs, a fee that would take
                                               the wallet under FLOOR, or no `makes`: nothing is made, the run goes on
+              "sell_order": [{"item": "...", "qty": N, "price": N, "floor": N}],
+                                              after the craft: one resting sell order of the good here (spacemolt_market,
+                                              rule F39), kept at `price` (never under `floor` or under the best bid, which
+                                              an ask under it would fill at once): an own order at another price is
+                                              repriced (modify_order), and what the pilot holds here (hold, then storage)
+                                              is listed up to `qty` units in all (create_sell_order). Fills come later, at
+                                              the station, outside the run's credits
               "unfit":  ["module_id", ...],   before `fit`: strips every fitted copy of each named off-role module
                                               and deposits it in station storage so slots, CPU and power open up
               "fit":    [{"module": "...", "max_price": N, "count": 2, "replace": "..."}],
@@ -54,7 +61,7 @@ which pilot flies it, and where a pilot is, stays in the unit's data folder:
                                               `minutes`; ore that fills the hold goes into storage at the stop
 At every stop, in this order: dock and refuel; hand in every mission whose
 objectives are all done; redock; hand in again; store; store_faction; burn_cells; bunker; withdraw; sell; buy; craft (then sell what
-it made); accept; save the station's order book and mission board (data/market, data/missions).
+it made); sell_order; accept; save the station's order book and mission board (data/market, data/missions).
 --from N starts at stop N (1 is the first). A goal the engine is still carrying
 out for the pilot is waited for, up to ten minutes. While the run lasts the pilot
 carries an order file (data/fleet/orders/<pilot>.json) so the station shows it at
@@ -389,6 +396,30 @@ def sell_into_bid(want, book):
         say(f'sold {units} {want["item"]} into a bid of {bid}: {credits() - c0:+d} cr')
     elif have:
         say(f'{want["item"]}: bid {bid} x {depth} is under {want["min_price"]}: kept')
+
+
+def sell_order_moves(want, row, mine, have):
+    """The calls a stop's `sell_order` entry makes for one good: [("modify", order_id, price) | ("create", units,
+    price)]. `row`: the good's row of the book just read; `mine`: the pilot's own resting sell orders of the good here
+    ({order_id, remaining, price_each}); `have`: the units it holds here (hold and storage, the listed ones left out).
+    The price is the entry's, never under its `floor` and never under the best bid (an ask under the bid fills at the
+    bid at once; rule F12: nothing sold under a standing bid); every own order at another price is repriced to it, and
+    what is held is listed until `qty` units stand listed in all (requests.log ENT-373, orders ENT-068 block MERCURY)."""
+    bid = row.get('best_buy') if isinstance(row.get('best_buy'), (int, float)) else 0
+    price = max(int(want['price']), int(want.get('floor') or 0), int(bid or 0))
+    moves = [('modify', o['order_id'], price) for o in mine if int(o.get('price_each') or 0) != price]
+    listed = sum(int(o.get('remaining') or 0) for o in mine)
+    more = min(int(want['qty']) - listed, int(have or 0))
+    if more > 0:
+        moves.append(('create', more, price))
+    return moves
+
+
+def own_sell_orders(item):
+    """[{order_id, remaining, price_each}] of the pilot's own sell orders of `item` at the station where it is docked."""
+    rows = body(raw('view_orders', {}, group='spacemolt_market')).get('orders') or []
+    return [o for o in rows if isinstance(o, dict) and o.get('item_id') == item and (o.get('side') or o.get('order_type')) == 'sell'
+            and int(o.get('remaining') or 0) > 0]
 
 
 TICK = 11                    # seconds a game tick takes, with a margin: the waits of this runner and of craftchain.py
@@ -796,6 +827,21 @@ for n, stop in enumerate(ROUTE['stops']):
                 say(f'withdraw {item}: nothing to take after the craft (stored, hold or bid)')
         for want in [s for s in stop.get('sell') or [] if s.get('item') in made]:
             sell_into_bid(want, book)
+    for want in stop.get('sell_order') or []:           # rule F39: one resting sell order of a good held here, kept at its price
+        mine = own_sell_orders(want['item'])
+        have = cargo().get(want['item'], 0) + stored(base).get(want['item'], 0)
+        for move in sell_order_moves(want, (book or {}).get(want['item']) or {}, mine, have):
+            if move[0] == 'modify':
+                d = raw('modify_order', {'order_id': move[1], 'new_price': move[2]}, group='spacemolt_market')
+                said = f'sell order {want["item"]}: repriced to {move[2]}'
+            else:
+                d = raw('create_sell_order', {'item_id': want['item'], 'quantity': move[1], 'price_each': move[2]}, group='spacemolt_market')
+                said = f'sell order {want["item"]}: {move[1]} listed at {move[2]}'
+            time.sleep(11)                               # one order call a tick (the game's rate limit)
+            if 'error' in d:
+                said += f' refused: {str(d.get("error"))[:100]}'
+            say(said)
+            notes.append(said)
     did_unfit = False
     for umod in stop.get('unfit') or []:                 # strip off-role starter modules before fitting slots
         did_unfit = True
