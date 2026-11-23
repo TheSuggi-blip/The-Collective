@@ -189,4 +189,4 @@ Planned:
 
 | What | When |
 |---|---|
-| install the sell_order step and fly the melt Bursar test; cap the jump loop at ten once order keeping and crafts hold the rest; home-region trade for the Nebula and Solarian newborns | next turn |
+| read the Solarian corridor's results (Endorsements, Audit, TA-1, Pouch, Courier test, Workshop); chain the next corridor's once missions for the traders it leaves at Alpha and Sol; test Exotic Crystal Synthesis (8,000) at Central Nexus from stored exotic matter next turn | -- |
