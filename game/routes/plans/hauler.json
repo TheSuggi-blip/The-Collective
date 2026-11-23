@@ -36,6 +36,9 @@
   "mission-a-word-in-private-grand",
   "mission-endorsements-alpha",
   "mission-scraping-by-frontier",
+  "mission-last-known-position-crimson",
+  "mission-strategic-readiness-assessment-crimson",
+  "craft-steel-logistics-cargo-lanes",
   "craft-steel-logistics-grand-exchange",
   "craft-steel-logistics-factory-belt",
   "mission-market-participation-grand",
@@ -50,9 +53,14 @@
   "mission-shipyard-titanium-alloy-deep-range",
   "mission-shipyard-engine-core-deep-range",
   "mission-shipyard-fuel-tank-deep-range",
+  "join-sol-hauler-nexus",
+  "join-sol-hauler-rim",
   "craft-steel-logistics-ramens-rest",
   "craft-boards-crescent-moon",
   "craft-steel-logistics-crescent-moon",
+  "craft-steel-logistics-procyon",
+  "craft-steel-logistics-confederacy",
+  "craft-steel-logistics-nova-terra",
   "give-miner-stores-synchrony",
   "mission-cracking-the-shell-krynn",
   "mission-filed-in-triplicate-nova",
@@ -75,33 +83,30 @@
   "craft-steel-logistics-central-nexus",
   "craft-piping-plate-node-beta",
   "join-sol-hauler",
+  "join-krynn-hauler",
   "train-jumps-hauler",
   "park"
  ],
  "planned": [
   {
-   "what": "switch the two commissioned Prayers at Frontier Station into service when the yard delivers; measure fuel a jump and minutes a run against the Cobble",
-   "when": "next turn"
+   "what": "read the Frontier road test (join-sol-hauler-rim, one ship) and lift it to the Rim ships at Frontier and Altais when its run holds / next turn",
+   "when": "--"
   },
   {
-   "what": "build the Notice Board at Node Beta on the Fleet Admiral's yes (requests ENT-436)",
-   "when": "on her answer"
+   "what": "bring the Sol joiners home or onward when their Solarian once missions are paid: a paid way back (cargo or a board mission) before any empty return / next turn",
+   "when": "--"
   },
   {
-   "what": "a freight step in the circuit runner (accept, pick up, deliver) before the freighter batch grows",
-   "when": "next turns"
+   "what": "a freight step in the circuit runner (accept, pick up, deliver) for the Prayers / next turns",
+   "when": "--"
   },
   {
-   "what": "found Atria when an Outpost Kit is listed at Ironlight",
-   "when": "when listed"
+   "what": "found Atria when an Outpost Kit is listed at Ironlight / when listed",
+   "when": "--"
   },
   {
-   "what": "one-ship test of the Rim board's survey missions (Local Sector Survey, Deep Space Cartography) once the runner can visit a system without a station",
-   "when": "next turns"
-  },
-  {
-   "what": "if the two Prayer commissions still read sourcing, sell the yard the parts it bids for (15 aluminum sheet, 3 fuel tank, 1 hull plating each; fuel tanks are held) to start the build",
-   "when": "next turn"
+   "what": "read the four new docked steel routes (Procyon, Nova Terra, Cargo Lanes, Confederacy) once Zero's give routes hand the iron over / next turn",
+   "when": "--"
   }
  ],
  "ships": {
@@ -138,6 +143,9 @@
   "mission-a-word-in-private-grand": 95,
   "mission-endorsements-alpha": 95,
   "mission-scraping-by-frontier": 95,
+  "mission-last-known-position-crimson": 95,
+  "mission-strategic-readiness-assessment-crimson": 95,
+  "craft-steel-logistics-cargo-lanes": 1,
   "craft-steel-logistics-grand-exchange": 1,
   "craft-steel-logistics-factory-belt": 1,
   "mission-market-participation-grand": 25,
@@ -152,9 +160,14 @@
   "mission-shipyard-titanium-alloy-deep-range": 30,
   "mission-shipyard-engine-core-deep-range": 30,
   "mission-shipyard-fuel-tank-deep-range": 30,
+  "join-sol-hauler-nexus": 29,
+  "join-sol-hauler-rim": 29,
   "craft-steel-logistics-ramens-rest": 1,
   "craft-boards-crescent-moon": 1,
   "craft-steel-logistics-crescent-moon": 1,
+  "craft-steel-logistics-procyon": 1,
+  "craft-steel-logistics-confederacy": 1,
+  "craft-steel-logistics-nova-terra": 1,
   "give-miner-stores-synchrony": 13,
   "mission-cracking-the-shell-krynn": 1,
   "mission-filed-in-triplicate-nova": 1,
@@ -176,7 +189,8 @@
   "craft-steel-logistics-synchrony-hub": 40,
   "craft-steel-logistics-central-nexus": 40,
   "craft-piping-plate-node-beta": 40,
-  "join-sol-hauler": 19,
+  "join-sol-hauler": 50,
+  "join-krynn-hauler": 16,
   "train-jumps-hauler": 8,
   "park": 95
  },
