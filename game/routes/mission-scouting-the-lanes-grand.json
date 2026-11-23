@@ -2,7 +2,7 @@
  "id": "mission-scouting-the-lanes-grand",
  "kind": "circuit",
  "title": "Scouting the Lanes: 1,500 cr and 25 Nebula Attunement once per pilot at Grand Exchange; a visit to Market Prime and back",
- "note": "2026-11-23 06:14 UTC (Mercury): orders ENT-078, P6 and rule F35 (own-empire storyline and Mastery first; F34 tier 1). Grand Exchange's board (data/missions/grand_exchange_station.json, read 06:06 UTC): Scouting the Lanes, template scouting_the_lanes, 1,500 cr, exploration 25, navigation 15, nebula_attunement 25, Piloting 40 XP; objectives: visit the Market Prime system, return to the Grand Exchange. No goods. The same form as mission-a-word-in-private-grand (a redock at the far station, the hand-in on docking home). requires.empire nebula. A test: three ships (F37: once per pilot, no shared buyer).",
+ "note": "2026-11-23 06:14 UTC (Mercury): orders ENT-078, P6 and rule F35 (own-empire storyline and Mastery first; F34 tier 1). Grand Exchange's board (data/missions/grand_exchange_station.json, read 06:06 UTC): Scouting the Lanes, template scouting_the_lanes, 1,500 cr, exploration 25, navigation 15, nebula_attunement 25, Piloting 40 XP; objectives: visit the Market Prime system, return to the Grand Exchange. No goods. The same form as mission-a-word-in-private-grand (a redock at the far station, the hand-in on docking home). requires.empire nebula. A test: three ships (F37: once per pilot, no shared buyer). 2026-11-23 06:24 UTC (Mercury): set off: four runs 06:15 to 06:16 UTC, all 'scouting_the_lanes not offered' (runs.jsonl); the board file is one pilot's and the link that opens it is not known. Back on after one hand read of a Nebula pilot's board names the link (requires.booked).",
  "max_ships": 3,
  "once": true,
  "one_time": [
@@ -34,5 +34,6 @@
     "Scouting the Lanes"
    ]
   }
- ]
+ ],
+ "status": "off"
 }

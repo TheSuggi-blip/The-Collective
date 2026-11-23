@@ -53,7 +53,7 @@ Kept by Mercury. Routes: 143. Ships: 85.
 | 31 | [mission-the-proposal-frontier](mission-the-proposal-frontier.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 19 jumps | once per pilot, up to 3 ships | all 85 |
 | 32 | [mission-welcome-sol-central](mission-welcome-sol-central.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 10 jumps | once per pilot, up to 3 ships, born solarian | all 85 |
 | 33 | [mission-a-word-in-private-grand](mission-a-word-in-private-grand.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 24 jumps | once per pilot, up to 5 ships, born nebula | all 85 |
-| 34 | [mission-scouting-the-lanes-grand](mission-scouting-the-lanes-grand.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 21 jumps | once per pilot, up to 3 ships, born nebula | all 85 |
+| 34 | [mission-scouting-the-lanes-grand](mission-scouting-the-lanes-grand.json) | [Off](index-off.md) | beyond the border, 21 jumps | once per pilot, up to 3 ships, born nebula, off | all 85 |
 | 35 | [mission-first-links-store-grand](mission-first-links-store-grand.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 21 jumps | once per pilot, up to 3 ships, from 4,300 cr, born nebula | all 85 |
 | 36 | [mission-market-participation-grand](mission-market-participation-grand.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 21 jumps | once per pilot, up to 3 ships, from 3,200 cr, while grand_exchange_station bids 1 cr for liquid_nitrogen | all 85 |
 | 37 | [mission-endorsements-alpha](mission-endorsements-alpha.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 11 jumps | once per pilot, up to 3 ships | all 85 |
