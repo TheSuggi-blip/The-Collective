@@ -1,0 +1,38 @@
+{
+ "id": "fit-mining-laser-ii-lhs-1140",
+ "kind": "circuit",
+ "title": "Swap the Mining Laser I for a Mining Laser II at Ironlight Crossroads, LHS 1140 (fit with replace), Voidborn-born miners, three at a time",
+ "note": "Written by Zero, 2026-11-23 05:26 UTC (orders ENT-076, block ZERO: fit the stronger lasers where three results prove them; rules F3, F7, F12, F17, F37). The Laser II is proven on three results and more: 10 gather runs by 7 Solarian ships after their fit at Sol (runs.jsonl 03:10 to 05:15 UTC) mined 404 ore an hour at Lacaille against 234 for a Laser I (27 runs), 361 against 267 at Markab, 338 against 200 at Nihal. Ironlight Crossroads asks 2,404 cr x 20 for it (table books, read 05:23 UTC), the cheapest in the galaxy; Sol Central's 2,500 is bought out. For the Voidborn miners that the Laser III route (10 asks at 5,731) does not reach. LHS 1140 is lawless, six jumps from home, a public station of the Ironlight Combine: an empty hold (rule F3). Only the Laser I is replaced; an Ice Harvester stays. max_pilots 20 = the asks; min_credits 12,000 keeps the pilot above the wallet top-up line after the buy (F7). requires.empire voidborn: the other empires' newborns stay home (P6). The ask gate stops it when the asks are gone.",
+ "once": true,
+ "max_ships": 3,
+ "max_pilots": 20,
+ "min_credits": 12000,
+ "requires": {
+  "module": "mining_laser_i",
+  "without_module": [
+   "mining_laser_ii",
+   "mining_laser_iii"
+  ],
+  "empty_hold": true,
+  "empire": "voidborn",
+  "ask": {
+   "item": "mining_laser_ii",
+   "base": "784309214f105860a16a0c100a70eb14",
+   "max_price": 2600,
+   "min_qty": 1,
+   "max_age_minutes": 240
+  }
+ },
+ "stops": [
+  {
+   "at": "lhs_1140:0321b3e4406021575337b7be26e53dd7:784309214f105860a16a0c100a70eb14",
+   "fit": [
+    {
+     "module": "mining_laser_ii",
+     "max_price": 2600,
+     "replace": "mining_laser_i"
+    }
+   ]
+  }
+ ]
+}
