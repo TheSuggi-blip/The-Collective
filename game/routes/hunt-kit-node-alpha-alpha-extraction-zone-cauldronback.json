@@ -2,7 +2,7 @@
  "id": "hunt-kit-node-alpha-alpha-extraction-zone-cauldronback",
  "kind": "hunt",
  "title": "cauldronback at alpha_extraction_zone for the Atria outpost kit; one Laser III ship with a Shield Booster II; parts to a hauler at Node Beta",
- "note": "Written by Apophis 2026-11-23 18:27 UTC (orders ENT-083, P3 and block APOPHIS: hunt the Atria kit's creature parts, handed to Logistics, P5). Need atria-outpost-kit (needs show, 18:07 UTC) is short alloy_scale 240; no station asks it (table books 18:11 UTC: bids only). Herd: 3 cauldronbacks at node_alpha:alpha_extraction_zone, 1 jump from home (table herds, census 17:42 UTC). Rule F9 (gauges.py species): cauldronback hull 120 weighs above this fit's toughness gauge (102.5), so this is the F9 test of one side; under 60 percent hull it flees (2026-11-17: one starter failed on a cauldronback). One Pulse Laser III ship with a Shield Booster II (gauges.py ship: kills up to 231 hull, stands up to 102.5). Rule F38: keep_herd 2 (hunt.py default), so a herd of 3 gives one kill a run. gift_to hauler at Node Beta, where the kit is assembled (data/fleet/receivers.json). A test (F37): three runs, then the kills a run and the parts a kill decide.",
+ "note": "Written by Apophis 2026-11-23 18:27 UTC (orders ENT-083, P3 and block APOPHIS: hunt the Atria kit's creature parts, handed to Logistics, P5). Need atria-outpost-kit (needs show, 18:07 UTC) is short alloy_scale 240; no station asks it (table books 18:11 UTC: bids only). Herd: 3 cauldronbacks at node_alpha:alpha_extraction_zone, 1 jump from home (table herds, census 17:42 UTC). Rule F9 (gauges.py species): cauldronback hull 120 weighs above this fit's toughness gauge (102.5), so this is the F9 test of one side; under 60 percent hull it flees (2026-11-17: one starter failed on a cauldronback). One Pulse Laser III ship with a Shield Booster II (gauges.py ship: kills up to 231 hull, stands up to 102.5). Rule F38: keep_herd 2 (hunt.py default), so a herd of 3 gives one kill a run. gift_to hauler at Node Beta, where the kit is assembled (data/fleet/receivers.json). A test (F37): three runs, then the kills a run and the parts a kill decide. 2026-11-23 18:39 UTC (Apophis): the Recursion only (shield_recharger_ii is fitted on no other ship of ours, table ship_modules 18:39 UTC): it passes both gauges (gauges.py ship 18:39 UTC: firepower 52.2, kills up to 365 hull; toughness 350, stands up to 175), so the cauldronback is no F9 test for it; it is the first of the Recursion's three test runs (F37).",
  "place": "node_alpha:alpha_extraction_zone",
  "species": [
   "cauldronback"
@@ -17,8 +17,8 @@
  "alone": "pirates",
  "requires": {
   "module": {
-   "pulse_laser_iii": 1,
-   "shield_booster_ii": 1
+   "shield_booster_ii": 1,
+   "shield_recharger_ii": 1
   },
   "empty_hold": true
  },
