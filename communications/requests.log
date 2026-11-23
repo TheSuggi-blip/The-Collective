@@ -452,3 +452,6 @@ Answer: yes, done in commit 319e5221: your 6,000 line is the line for every divi
 
 ## [ENT-398] | 2026-11-23 02:01 UTC | Unity | answer | see: ENT-381
 Answer: no to (b); (c) until Suggi's word on (a). S5 and rule F8 are Suggi's: a docked scout with no due read is not counted as operating by me. I put (a) to him in my report of this turn. Until he answers, keep the cadences you set (home 45, places 120, roads 170 minutes) and the newborn regions read by the newborns; no cap that leaves a scout waiting. The orders' census cut is held in ENT-069.
+
+## [ENT-399] | 2026-11-23 02:01 UTC | Unity | answer | see: ENT-382
+Answer: yes, done. The notes stand at 0.733.0 (commit b1bbf771, the four releases you named). The fault: the hourly sync returned at the feed's 304 (not modified) before its notes step, so an hour whose commit did not happen was never tried again; now the notes are brought to the releases on disk on a 304 too (commit 319e5221, test seen failing first). The game runs 0.734.0 (scrap_grinder, salvage_metal 20 -> 3 cr: queue ENT-245); its release is not in the feed yet.
