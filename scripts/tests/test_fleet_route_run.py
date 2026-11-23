@@ -714,3 +714,23 @@ class AcceptByTitleTests(unittest.TestCase):
         step = source[source.index("if stop.get('accept'):"):source.index("for step in stop.get('mine') or []:")]
         self.assertIn("posted_mission(board,", step)
         self.assertIn("entry.get('title')", step)
+
+
+class EmptyTourAbortTests(unittest.TestCase):
+    """2026-11-23: the empty-tour abort of the accept step read a name `index` the stop loop never binds (`for n, stop in
+    enumerate(...)`): every run whose accept took nothing crashed with a NameError (125 runs of every division by 04:25 UTC)."""
+
+    def test_the_accept_step_names_only_the_stop_loops_own_counter(self):
+        source = (FLEET / "route_run.py").read_text(encoding="ascii")
+        loop = source.index("for n, stop in enumerate(ROUTE['stops']):")
+        step = source[source.index("if stop.get('accept'):", loop):source.index("for step in stop.get('mine') or []:", loop)]
+        self.assertNotIn("[index:]", step)
+        self.assertNotIn("{index}", step)
+        self.assertIn("pure_visit_tail(ROUTE['stops'][n + 1:])", step)   # the stops after this one: this one holds `accept`
+
+    def test_a_tail_of_visits_only_is_pure_and_a_tail_with_work_is_not(self):
+        tail = functions("pure_visit_tail")["pure_visit_tail"]
+        stops = [{"at": "a:b:c", "accept": ["m"]}, {"at": "d:e:f"}, {"at": "d:e:f", "redock": True}]
+        self.assertTrue(tail(stops[1:]))
+        self.assertFalse(tail(stops))
+        self.assertFalse(tail([]))

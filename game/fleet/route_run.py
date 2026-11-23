@@ -895,8 +895,8 @@ for n, stop in enumerate(ROUTE['stops']):
                 else:
                     notes.append(f'{template} not accepted')
         route_titles = set(ROUTE.get('one_time') or []) | set(ROUTE.get('skip_if_booked') or [])
-        if accepted_or_held == 0 and not (have & route_titles) and pure_visit_tail(ROUTE['stops'][index:]):
-            say(f'aborting empty tour: none of {len(stop["accept"])} mission(s) offered/accepted at stop {index}')
+        if accepted_or_held == 0 and not (have & route_titles) and pure_visit_tail(ROUTE['stops'][n + 1:]):
+            say(f'aborting empty tour: none of {len(stop["accept"])} mission(s) offered/accepted at stop {n + 1}')
             notes.append('mission not offered: skipped empty tour')
             break
     for step in stop.get('mine') or []:
