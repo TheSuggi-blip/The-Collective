@@ -137,6 +137,10 @@ class StatsTests(unittest.TestCase):
         again = self.conn.execute("SELECT t FROM stats_money_hour WHERE division = 'Fleet' AND hour = ?", (T0,)).fetchone()[0]
         self.assertEqual((first, again), (T0 + H + 120, T0 + 3 * H))
         self.assertEqual(stats.sample_money(self.conn, str(self.data), str(ROOT), T0 + 4 * H), 0)      # and never again
+        self.conn.execute("UPDATE stats_money_hour SET t = hour + 3720")                               # both hours written a minute after their end
+        self.assertEqual(stats.sample_money(self.conn, str(self.data), str(ROOT), T0 + 5 * H), 2)      # only the hour that ended within 3 hours
+        kept = self.conn.execute("SELECT t FROM stats_money_hour WHERE division = 'Fleet' AND hour = ?", (T0,)).fetchone()[0]
+        self.assertEqual(kept, T0 + 3720)                                                               # an older hour keeps its figures
 
     def test_a_fleet_with_no_ship_is_computed_and_every_view_says_not_measured(self):
         read = self.data / "store" / "read.db"

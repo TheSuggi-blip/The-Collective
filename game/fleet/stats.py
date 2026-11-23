@@ -84,6 +84,7 @@ HOUR, DAY = 3600, 86400
 TIME_EVERY = 600               # seconds between two samples of where the ships are (stats_time)
 FIGURES_EVERY = 600            # seconds between two computations of the figures (the heavy part: about 2 s)
 SETTLE = 30 * 60                                   # seconds after an hour's end in which bookings still land in it (taxes, rewards)
+REDO_WITHIN = 3 * 3600                             # only an hour that ended this recently is written once more: older hours keep their figures
 KEEP = {"stats_time": 30, "stats_pilot_hour": 8}     # days a sample table keeps; stats_money_hour, stats_supply_hour: retention.py RETAIN
 WINDOWS = (1, 6, 24, 72)       # hours of the kpi
 MIN_N = 24                     # hours of history an alert needs; a rate from fewer events says so
@@ -345,8 +346,8 @@ def sample_money(conn, data, root, now):
     if len(history) < 2:
         return 0
     done = {h for (h,) in conn.execute("SELECT DISTINCT hour FROM stats_money_hour")}
-    early = {h for (h,) in conn.execute("SELECT DISTINCT hour FROM stats_money_hour WHERE division = 'Fleet' AND t < hour + ? AND ? >= hour + ?",
-                                         (HOUR + SETTLE, int(now), HOUR + SETTLE))}
+    early = {h for (h,) in conn.execute("SELECT DISTINCT hour FROM stats_money_hour WHERE division = 'Fleet' AND t < hour + ? AND ? >= hour + ? "
+                                         "AND hour + ? >= ?", (HOUR + SETTLE, int(now), HOUR + SETTLE, HOUR, int(now) - REDO_WITHIN))}
     last = int(history[-1][0]) // HOUR * HOUR
     todo = [h for h in range(int(history[0][0]) // HOUR * HOUR, last, HOUR) if (h not in done or h in early) and h + HOUR <= history[-1][0]]
     if not todo:
