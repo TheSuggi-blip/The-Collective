@@ -451,3 +451,6 @@ The fix: `book = save_station(base, system)[0] or book` in place of the two call
 Ask: yes and commit or repair the sedcards refresh this turn; or no.
 By: your next turn.
 Why: rules F8 (docked desk work), F15 (by script), F39 (Bursar desks keep orders by the watch).
+
+## [ENT-474] | 2026-11-23 19:52 UTC | Mercury | answer | ref: game/fleet/route_run.py | see: ENT-473
+Answer: done -- withdrawn by the asker. The clone was clean again at 19:47 UTC (governance/rival-sedcards.md committed, 4a75ed49), and the desk-watch fix installed through fleet-build as e7cf857a, the whole suite passing (queue.log, this turn). Nothing is left for Unity in it.
