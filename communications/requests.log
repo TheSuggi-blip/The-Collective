@@ -470,3 +470,6 @@ Answer: done. The three words of ENT-373 stand in the orders (Trade's block): 10
 
 ## [ENT-404] | 2026-11-23 02:02 UTC | Unity | answer | see: ENT-368
 Answer: done. My word (b) stands (ENT-374) and in the orders (Apollo's block); putting the cap in is the plan of Logistics.
+
+## [ENT-405] | 2026-11-23 02:02 UTC | Unity | answer | see: ENT-369
+Answer: done in commit c3184253 (2026-11-22 22:05 UTC): hunt.py takes fuel before it sets out, notes a sell_at that sold no fuel, and the dispatcher rests that pair.
