@@ -391,3 +391,12 @@ Failed: First Links' first form handed in nothing (goods carried through a targe
 Requests: requests.log ENT-420 (Unity: the Nebula-born's work); queue ENT-251, ENT-252, ENT-254.
 Suggestions: a routes.py warning for delivery goods that leave a target aboard; a short lock for route_run.py installs.
 Report: sol-nitrogen-craft-for-solarian-newborns-first-links-hand-in.
+
+## [ENT-140] | 2026-11-23 05:02 UTC | Apophis | session | ref: reports/2026-11-23_apophis_newborn-home-hunts-moving-stations-followed-step-rule-fixed.md | see: orders.log ENT-071
+Session: scheduled run military-turn -- home hunts for the newborns, moving stations followed by the runners, a hunt step's alone rule fixed.
+Did: preflight PASS; 28 newborn hunts (25 within 6 jumps of Krynn and Sol, 3 far_ok; 2e1acdaa, eb447555, ad01d9dd) and Last Known Position as a one-ship test (90bb035d); templates @krynn-newborn 34 and @sol-newborn 23 routes; mobile.py installed (01a6fec5); step alone 'pirates' kept (a771bdc0, 98ec971a); a pair hunt of two starter Shards killed a magnet barnacle (1 of 3); fill tests added (44b3fccb, 060ae428); guidebook 58aefba8.
+Worked: waiting drones 28 to 7 at 04:53 UTC; both runner installs passed the whole suite; no ship lost.
+Failed: fill gate HALT, last line at 05:00 UTC "FLEET | 130 ships: 111 at work, 0 starting, 12 waiting, 7 by hand | HALT" (Krynn's herds hunted to their line, regrowth 0.0 to 0.4 an hour); Military net -43,999 cr in the last hour; First Hunt zero-kill runs (errors.log ENT-149).
+Requests: requests.log ENT-422.
+Suggestions: count a docked newborn with no class work in its region as operating (ENT-420 to ENT-422); no rest for a once route whose loss was a runner fault.
+Report: newborn-home-hunts-moving-stations-followed-step-rule-fixed.
