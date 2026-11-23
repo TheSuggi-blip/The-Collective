@@ -73,6 +73,10 @@
   {
    "what": "A visit step in the runner for Local Sector Survey and Grand Tour (2,500 and 12,000 cr, 340 to 520 Piloting XP) on the newborns' boards",
    "when": "next turn"
+  },
+  {
+   "what": "Found Atria the hour an Outpost Kit is read at Ironlight",
+   "when": "on the kit"
   }
  ],
  "ships": {
