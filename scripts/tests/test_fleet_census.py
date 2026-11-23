@@ -163,6 +163,35 @@ class FuelTests(unittest.TestCase):
         self.assertFalse(self.fuel_short(17, None))       # no way known: as before
 
 
+class EndTests(unittest.TestCase):
+    """Where a census ends when it docked nowhere (2026-11-23: a scout born far from Central Nexus was refused
+    by a foreign station at the system it read, `Access denied`, and was sent home across the galaxy to Central
+    Nexus). With --stay it ends at the nearest station that sells fuel; without it, home as before, unless the
+    tank is short of home (then the nearest fuel first)."""
+
+    def setUp(self):
+        (self.end_stop,) = load("end_stop")
+
+    def test_docked_where_it_read_ends_there(self):
+        self.assertEqual(self.end_stop(True, "base_x", False, (1, "d", "d_st", "base_d")), ("stay", None))
+        self.assertEqual(self.end_stop(True, "base_x", True, (1, "d", "d_st", "base_d")), ("stay", None))
+
+    def test_stay_and_no_station_docked_ends_at_the_nearest_fuel(self):
+        stop = (1, "d", "d_st", "base_d")
+        self.assertEqual(self.end_stop(True, None, False, stop), ("fuel", stop))
+        self.assertEqual(self.end_stop(True, None, True, stop), ("fuel", stop))
+
+    def test_without_stay_home_unless_short_of_it(self):
+        stop = (1, "d", "d_st", "base_d")
+        self.assertEqual(self.end_stop(False, None, False, stop), ("home", None))
+        self.assertEqual(self.end_stop(False, None, True, stop), ("fuel-home", stop))
+        self.assertEqual(self.end_stop(False, "base_x", False, stop), ("home", None))
+
+    def test_no_station_on_the_chart_goes_home(self):
+        self.assertEqual(self.end_stop(True, None, False, None), ("home", None))
+        self.assertEqual(self.end_stop(False, None, True, None), ("home", None))
+
+
 class RemoteBookTests(unittest.TestCase):
     """Game 0.728.0: view_market takes base_id, so a docked census reads the books of other stations from afar.
     Which books: those of data/market that are station books, not the one it is docked at, older than the age,

@@ -7,7 +7,8 @@ Flies to the system, lists its places (`get_system`), visits every belt, ice
 field, gas cloud and nebula (`get_poi`: what is left of each resource;
 `get_nearby`: creatures by species, pirates, other pilots), then docks at each
 station of the system and saves its order book and mission board. Ends docked
-at Central Nexus, or with --stay at the system's last station.
+at Central Nexus, or with --stay at the system's last station (docked nowhere: at the
+nearest station with fuel, end_stop).
 
 Writes, in the unit's data folder (never the repository):
   scouting/<system>.json   the system and each place's deposits
@@ -35,7 +36,9 @@ service `refuel`; no pirate stronghold), by the chain's rule (1.5 a jump and 15 
 it takes fuel at the station nearest the ship first, and when even then the tank is short it
 writes a row `not flown` and ends. After the read, a ship in a system without a station whose
 tank is short of home takes fuel at the nearest station first (with --stay it ends docked
-there). A ship never ends a census in space on a tank that cannot leave (2026-11-22).
+there). A ship never ends a census in space on a tank that cannot leave (2026-11-22). With
+--stay a ship docked nowhere (a foreign station refused it) ends at the nearest station with
+fuel, never sent across the galaxy to Central Nexus (2026-11-23).
 
 Survey: a pilot whose live file (data/fleet/ships/<pilot>.json) lists a survey
 scanner among its modules runs `survey_system` once in each system it reads, on
@@ -329,6 +332,18 @@ def refuel_at(stop):
     return after
 
 
+def end_stop(stay, last_station, short, stop):
+    """Where a census ends: ('stay', None) docked where it last read (--stay); ('fuel', stop) with --stay and
+    docked nowhere, at the nearest station with fuel (2026-11-23: a scout refused by a foreign station, `Access
+    denied`, was sent across the galaxy to Central Nexus); ('fuel-home', stop) without --stay and a tank short
+    of home, fuel first and then home; else ('home', None). `stop` is nearest_fuel's answer or None."""
+    if stay and last_station:
+        return 'stay', None
+    if not last_station and stop and (stay or short):
+        return ('fuel' if stay else 'fuel-home'), stop
+    return 'home', None
+
+
 def strongholds():
     """The systems the chart flags `stronghold` (game/map/galaxy.tsv): no census takes fuel at a pirate's station."""
     try:
@@ -526,12 +541,13 @@ while True:
     leg_after = wallet()
     write_row(target, leg_started, leg_before, leg_after, n_places, n_creatures, [f'chain {legs + 1} of {CHAIN}: next {nxt}'])
     leg_started, leg_before, target, legs = time.time(), leg_after, nxt, legs + 1
-if not last_station and fuel_short(fuel(), HOME_JUMPS.get(target)):
-    STOP = nearest_fuel(LANES, target, STATIONS)  # no station here and a tank short of home: take fuel at the
-    if STOP:                                      # nearest station first, and with --stay end docked there (2026-11-22)
-        refuel_at(STOP)
-        last_station = STOP[3] if '--stay' in sys.argv else None
-if not ('--stay' in sys.argv and last_station):
+STAY = '--stay' in sys.argv
+END, STOP = end_stop(STAY, last_station, not last_station and fuel_short(fuel(), HOME_JUMPS.get(target)),
+                     None if last_station else nearest_fuel(LANES, target, STATIONS))
+if END in ('fuel', 'fuel-home'):                  # docked nowhere: the nearest station with fuel, and with --stay
+    refuel_at(STOP)                               # end docked there, never sent home across the galaxy (2026-11-23)
+    last_station = STOP[3] if END == 'fuel' else None
+if END in ('home', 'fuel-home'):
     goal('prepare-at-station', HOME)
 WALLET_AFTER = wallet()
 write_row(target, leg_started, leg_before, WALLET_AFTER, n_places, n_creatures, ([why] if why else []) + ([f'chain {legs} of {CHAIN}: last'] if legs else []))
