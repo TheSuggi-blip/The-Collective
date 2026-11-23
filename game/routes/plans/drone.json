@@ -294,6 +294,12 @@
   "craft-piping-node-beta",
   "join-corridor-solarian",
   "join-corridor-crimson",
+  "guard-ironhollow-fading-signal",
+  "guard-schedar-belt",
+  "guard-ironhollow-echo-ejecta",
+  "guard-garnet-belt",
+  "guard-achernar-belt",
+  "guard-marfik-emission-nebula",
   "park"
  ],
  "planned": [
@@ -598,6 +604,12 @@
   "craft-piping-node-beta": 95,
   "join-corridor-solarian": 15,
   "join-corridor-crimson": 30,
+  "guard-ironhollow-fading-signal": 95,
+  "guard-schedar-belt": 95,
+  "guard-ironhollow-echo-ejecta": 95,
+  "guard-garnet-belt": 95,
+  "guard-achernar-belt": 95,
+  "guard-marfik-emission-nebula": 95,
   "park": 95
  },
  "of": 95,
