@@ -274,15 +274,15 @@ class TreasuryTopupTests(FundTests):
         w.refresh = lambda pilot: None
         self.topup()                                                                              # no donor: rows, no call
         rows = [r for r in w.funds(str(self.data)) if r.get("kind") == "topup"]
-        self.assertEqual(sorted((r["pilot"], r["credits"]) for r in rows), [("drone-60", 5900), ("drone-61", 5750)])   # 7,000 is above the line
+        self.assertEqual(sorted((r["pilot"], r["credits"]) for r in rows), [("drone-60", 10900), ("drone-61", 10750), ("drone-62", 4000)])   # rule F7's line
         self.assertEqual(self.calls, [])
         self.topup()                                                                              # never a second row a pilot
-        self.assertEqual(len([r for r in w.funds(str(self.data)) if r.get("kind") == "topup"]), 2)
+        self.assertEqual(len([r for r in w.funds(str(self.data)) if r.get("kind") == "topup"]), 3)
         self.put(docked=True)
         self.assertEqual(w.serve_topups(str(self.data), "Prime Directive", now, False), 0)
         withdrawals = [c for c in self.calls if c[0] == "withdraw"]
-        self.assertEqual(withdrawals[-1], ("withdraw", "Prime Directive", 11650))                # one withdrawal for both
-        self.assertEqual(sorted(c[2:] for c in self.calls if c[0] == "give"), [("drone-60", 5900), ("drone-61", 5750)])
+        self.assertEqual(withdrawals[-1], ("withdraw", "Prime Directive", 25650))                # one withdrawal for all three
+        self.assertEqual(sorted(c[2:] for c in self.calls if c[0] == "give"), [("drone-60", 10900), ("drone-61", 10750), ("drone-62", 4000)])
         self.assertEqual({r["state"] for r in w.funds(str(self.data)) if r.get("kind") == "topup"}, {"given"})
         self.assertEqual(w.funded(str(self.data), time.time()), {})                               # a top-up is no fund the sweep keeps
         self.assertEqual(w.withdrawn(str(self.data)), 0)
@@ -292,9 +292,9 @@ class TreasuryTopupTests(FundTests):
         w.TREASURY_TOPUP = False
         self.topup()
         self.assertEqual([r for r in w.funds(str(self.data)) if r.get("kind") == "topup"], [])  # switched off: nothing
-        w.TREASURY_TOPUP, w.TREASURY_DAY = True, 6000
+        w.TREASURY_TOPUP, w.TREASURY_DAY = True, 11000
         self.topup()
-        self.assertEqual([r["pilot"] for r in w.funds(str(self.data)) if r.get("kind") == "topup"], ["drone-60"])   # 5,900 fits, 5,750 more does not
+        self.assertEqual([r["pilot"] for r in w.funds(str(self.data)) if r.get("kind") == "topup"], ["drone-60"])   # 10,900 fits, 10,750 more does not
 
     def test_a_withdrawal_waits_for_a_docked_leader_and_keeps_the_floor(self):
         w, now = self.wallet, time.time()
@@ -303,9 +303,9 @@ class TreasuryTopupTests(FundTests):
         self.assertEqual(w.serve_topups(str(self.data), "Prime Directive", now, False), 0)
         self.assertEqual(self.calls, [])                                                          # not docked
         self.put(docked=True)
-        self.treasury[0] = w.FUND_FLOOR + 6000
+        self.treasury[0] = w.FUND_FLOOR + 11000
         self.assertEqual(w.serve_topups(str(self.data), "Prime Directive", now, False), 0)
-        self.assertEqual([c for c in self.calls if c[0] == "withdraw"][-1], ("withdraw", "Prime Directive", 5900))     # what the floor allows
+        self.assertEqual([c for c in self.calls if c[0] == "withdraw"][-1], ("withdraw", "Prime Directive", 10900))     # what the floor allows
 
 
 if __name__ == "__main__":

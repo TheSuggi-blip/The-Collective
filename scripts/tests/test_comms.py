@@ -448,5 +448,54 @@ class OrdersSizeTests(Tree):
         self.assertEqual(comms.check(str(self.root)), [])
 
 
+
+class ClaimsExceptTests(Tree):
+    """queue ENT-251: a Claims: line that excepts a route must not claim it."""
+    def setUp(self):
+        super().setUp()
+        folder = self.root / "game" / "routes"
+        folder.mkdir(parents=True)
+        for rid in ("mine-a", "mission-b", "mission-c", "hunt-d"):
+            (folder / (rid + ".json")).write_text("{}", encoding="ascii")
+
+    def test_routes_after_except_are_not_claimed(self):
+        line = "everything ENT-102 claimed, except mission-b and mission-c; and mine-a for 3 ships"
+        self.assertEqual(comms.claimed_routes(str(self.root), line), ["mine-a"])
+
+    def test_except_to_the_end_of_the_line(self):
+        self.assertEqual(comms.claimed_routes(str(self.root), "hunt-d for 2 ships, except mission-b"), ["hunt-d"])
+
+    def test_the_except_list_ends_at_the_first_word_that_is_no_route(self):
+        line = "everything ENT-102 claimed, except mission-b and mission-c, with these sizes: mine-a (8, was 3) and hunt-d (6)"
+        self.assertEqual(comms.claimed_routes(str(self.root), line), ["hunt-d", "mine-a"])
+        self.assertEqual(comms.claimed_routes(str(self.root), "except mission-b, mission-c, and hunt-d; mine-a"), ["mine-a"])
+
+    def test_a_line_without_except_is_read_as_before(self):
+        self.assertEqual(comms.claimed_routes(str(self.root), "mine-a and mission-b, 2 ships"), ["mine-a", "mission-b"])
+
+
+class PilotNameGateTests(Tree):
+    """errors.log ENT-152: a hand-appended entry that names a pilot of ours is caught by the gate the commit runs."""
+    def test_the_newest_entry_naming_a_pilot_fails(self):
+        self.write("requests", REQUESTS + "\n## [ENT-008] | 2026-01-01 16:00 UTC | Apollo | request\nTo: Unity.\nScope: cross-division\nNeed: hauler-7 and hauler-9 keep the loop.\n")
+        found = comms.check(str(self.root))
+        self.assertEqual(len(found), 1, found)
+        self.assertIn("requests.log ENT-008: names a pilot of ours (hauler-7, hauler-9)", found[0])
+
+    def test_any_log_is_read_for_its_newest_entry(self):
+        self.write("queue", COMMENT + "## [ENT-001] | 2026-01-01 09:00 UTC | Zero | general\nminer-3 stands at the field.\n")
+        found = comms.check(str(self.root))
+        self.assertEqual(len(found), 1, found)
+        self.assertIn("queue.log ENT-001: names a pilot of ours (miner-3)", found[0])
+
+    def test_an_older_entry_is_history(self):
+        self.write("requests", REQUESTS.replace("Need: one guard at the field of the route.", "Need: drone-4 guards the field."))
+        self.assertEqual(comms.check(str(self.root)), [])
+
+    def test_a_flagship_name_is_left_to_the_writer(self):
+        self.write("queue", COMMENT + "## [ENT-001] | 2026-01-01 09:00 UTC | Unity | general\nThe flagship Prime Directive docks.\n")
+        self.assertEqual(comms.check(str(self.root)), [])
+
+
 if __name__ == "__main__":
     unittest.main()

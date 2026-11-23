@@ -120,8 +120,8 @@ FUND_TITLE = "Treasury fund: credits withdrawn from the faction treasury for a b
 # ENT-385, ENT-386, ENT-389: the newborns of 2026-11-22 were born with 100 to 250 cr while the sweep keeps every working
 # ship at its line). The figures are the Fleet Admiral's (rule F7).
 TREASURY_TOPUP = True          # on since 2026-11-23 after its dry run on live data (Unity's turn of 02:30 CET)
-TREASURY_UNDER = 5000          # a stranded pilot under this (the dispatcher's paying-only line) is topped up ...
-TREASURY_LINE = 6000           # ... to this, from the treasury
+TREASURY_UNDER = LOW           # a stranded pilot under rule F7's line is topped up ... (5,000 until 2026-11-23 08:50 CET: the
+TREASURY_LINE = 11000          # ... to this, from the treasury; the pilots between 5,000 and 10,000 HALTed every pass, Unity)
 TREASURY_DAY = 400000          # at most this much from the treasury for top-ups in 24 hours
 TREASURY_EVERY = 6 * 3600      # a pilot is topped up from the treasury at most once in this many seconds
 TREASURY_BUDGET = 100          # seconds of a sweep pass the top-ups' gifts may take; the rest waits for the next pass

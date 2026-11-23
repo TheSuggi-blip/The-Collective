@@ -94,6 +94,9 @@ BLOCK_WORDS = 80              # ... each member's block, its heading line not co
 CHANGED_WORDS = 60            # ... the `Changed:` line
 STALE_DAYS = 3                # r22: a request not closed whose newest entry is older than this is marked STALE (never closed)
 MEMBER_BLOCK = re.compile(r"^([A-Z]{3,}), ")      # a member's block heading: `UNITY, Fleet Admiral (...)`, as members() reads it
+ROUTE_ID = r"[a-z0-9]+(?:-[a-z0-9]+)+"
+EXCEPT = re.compile(r"\bexcept\s+%s(?:(?:\s*,\s*(?:(?:and|or)\s+)?|\s+(?:and|or)\s+)%s)*" % (ROUTE_ID, ROUTE_ID), re.IGNORECASE)
+# `except <id>, <id> and <id>`: the route ids an except names, joined by commas, `and` or `or` (queue ENT-251)
 DRAFT = re.compile(r"^## \[ENT-NEXT\] \| NOW \| ([A-Za-z][A-Za-z0-9_-]*) \| ([a-z]+)((?: \| (?:ref|see): [^|]+)*)$")
 
 
@@ -326,6 +329,7 @@ def claimed_routes(root, text):
     """The route ids a `Claims:` line names: its hyphenated words that are route files of game/routes/. A place written
     in words (an ask, a bid, a field by its name) is no route id and is not compared."""
     folder = Path(root) / "game" / "routes"
+    text = EXCEPT.sub(" ", str(text))                          # queue ENT-251: what a claim excepts it does not claim
     return sorted({word for word in re.findall(r"[a-z0-9]+(?:-[a-z0-9]+)+", text) if (folder / (word + ".json")).is_file()})
 
 
@@ -471,6 +475,14 @@ def check(root):
                 errors.append(where + "category must be `request` or `answer` (found `%s`)" % entry["category"])
         if name == "orders" and entries:
             errors += orders_size(entries[-1])             # the newest entry only: an older one is history
+    for name in LOGS:                                      # errors.log ENT-152: a hand append that names a pilot of ours
+        if not (Path(root) / "communications" / (name + ".log")).is_file():
+            continue
+        entries, _bad = read_log(root, name)
+        named = pilots_named("\n".join(entries[-1]["body"])) if entries else []
+        if named:                                          # the newest entry only: the next entry ends it, history stays
+            errors.append("%s.log ENT-%03d: names a pilot of ours (%s): the repository is public (rulebook section 10); "
+                          "write the division and a count, and append through `comms.py append`" % (name, entries[-1]["num"], ", ".join(named[:5])))
     return errors
 
 
