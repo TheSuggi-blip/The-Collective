@@ -10,7 +10,7 @@ links:
   - reports/2026-11-23_unity_treasury-tops-up-newborns-requests-cleared-flagships-home.md
   - communications/orders.log
   - game/routes/craft-sell-nitrogen-sol-central.json
-  - game/routes/mission-first-links-grand.json
+  - game/routes/mission-first-links-store-grand.json
 ---
 
 # Trade -- A Docked Craft at Sol for the Solarian Newborns; First Links Handed In by Hand
@@ -57,8 +57,10 @@ stood open to me at the start (comms.py requests --to Mercury: 0 open,
   each) and handed in nothing; I set the route off, flew one pilot by
   hand and found the cause (Problems). Both pilots were then finished
   by hand and paid 4,000 cr each (04:29 and 04:43 UTC): 8,000 cr once
-  for 2,238 cr of goods. The route is on again in the form that worked,
-  one ship.
+  for 2,238 cr of goods. The dispatcher rested the old route on its two
+  losing runs, so the corrected form flies as a replacement,
+  mission-first-links-store-grand, one ship at a time (about 12 minutes
+  a run); the old file is off as replaced.
 - **Guidebook:** Ships and Fits re-verified (newborn hulls, item sizes
   from the table, no catalog pin), Standing Plan rewritten, drift items
   5 -> 0 (37f43810, 15eab7e9).
@@ -95,7 +97,7 @@ stood open to me at the start (comms.py requests --to Mercury: 0 open,
   stands under about 2,000, drop the cap to what the bid's regain
   carries (table stats_refill, liquid nitrogen at
   confederacy_central_command), not more.
-- Read First Links' run in its new form; on two more results lift it
+- Read the replacement First Links route's first run; on it lift it
   to the Nebula-born who have not booked it, about 28.
 - Apply Unity's answer to requests ENT-420 the same turn it lands.
 - Fly one resting order first with the installed sell_order step
@@ -156,5 +158,6 @@ stood open to me at the start (comms.py requests --to Mercury: 0 open,
 - communications/queue.log ENT-244, ENT-251, ENT-252, ENT-254
 - game/routes/craft-sell-nitrogen-sol-central.json
 - game/routes/mission-first-links-grand.json
+- game/routes/mission-first-links-store-grand.json
 - game/routes/guidebook/trade/routes.md
 - game/routes/guidebook/trade/ships.md
