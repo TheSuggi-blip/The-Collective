@@ -90,6 +90,9 @@
   "watch-book-gold-run",
   "watch-book-the-levy",
   "watch-book-factory-belt",
+  "watch-book-grand-exchange",
+  "watch-book-cargo-lanes",
+  "watch-book-deep-range",
   "park"
  ],
  "planned": [
@@ -198,6 +201,9 @@
   "watch-book-gold-run": 50,
   "watch-book-the-levy": 50,
   "watch-book-factory-belt": 50,
+  "watch-book-grand-exchange": 50,
+  "watch-book-cargo-lanes": 50,
+  "watch-book-deep-range": 50,
   "park": 50
  },
  "of": 50,
