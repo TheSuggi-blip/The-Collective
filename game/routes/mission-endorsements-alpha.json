@@ -2,8 +2,8 @@
  "id": "mission-endorsements-alpha",
  "kind": "circuit",
  "title": "Endorsements: 6000 cr, +380 XP at Alpha Centauri Colonial Station",
- "note": "Written by routemaker.py from the board and the order books: goods for about 0 cr, reward 6000 cr, sale 0 cr, +380 XP. Test with one ship first. Added as a test by fill.py on 2026-11-22 12:38 UTC (Unity): up to 3 ships, one result each, until 3 runs are read (rule F37).",
- "max_ships": 3,
+ "note": "Written by routemaker.py from the board and the order books: goods for about 0 cr, reward 6000 cr, sale 0 cr, +380 XP. Test with one ship first. Added as a test by fill.py on 2026-11-22 12:38 UTC (Unity): up to 3 ships, one result each, until 3 runs are read (rule F37). 2026-11-23 09:39 UTC (fill.py, Mercury): max_ships 3 -> 20.",
+ "max_ships": 20,
  "stops": [
   {
    "at": "alpha_centauri:alpha_centauri_colonial_station:alpha_centauri_colonial_station",
