@@ -41,14 +41,5 @@
    "at": "sol:sol_central:confederacy_central_command",
    "store": "all"
   }
- ],
- "measured": {
-  "date": "2026-11-23",
-  "runs": 1,
-  "minutes": 15,
-  "credits_per_run": 105900,
-  "cph_per_ship": 432250,
-  "hours": 12,
-  "last_run": "2026-11-23T06:31:11Z"
- }
+ ]
 }

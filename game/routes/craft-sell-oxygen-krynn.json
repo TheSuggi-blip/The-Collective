@@ -110,5 +110,14 @@
     "liquid_oxygen"
    ]
   }
- ]
+ ],
+ "measured": {
+  "date": "2026-11-23",
+  "runs": 30,
+  "minutes": 9,
+  "credits_per_run": -160,
+  "cph_per_ship": -1110,
+  "hours": 12,
+  "last_run": "2026-11-23T19:33:47Z"
+ }
 }

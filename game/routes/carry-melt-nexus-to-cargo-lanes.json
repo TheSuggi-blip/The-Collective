@@ -41,5 +41,14 @@
    "at": "cargo_lanes:cargo_lanes_freight_depot:cargo_lanes_freight_depot",
    "store": "all"
   }
- ]
+ ],
+ "measured": {
+  "date": "2026-11-23",
+  "runs": 1,
+  "minutes": 38,
+  "credits_per_run": -430,
+  "cph_per_ship": -680,
+  "hours": 12,
+  "last_run": "2026-11-23T18:08:09Z"
+ }
 }

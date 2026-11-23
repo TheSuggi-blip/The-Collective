@@ -1,26 +1,33 @@
 {
-  "id": "join-rim-hauler",
-  "kind": "circuit",
-  "title": "A hauler born Voidborn or Nebula without The Memorial joins the Outer Rim corridor: one trip to Frontier Station, where The Memorial and Debris Field Reports open to it",
-  "note": "Written by Apollo, 2026-11-23 18:08 UTC (orders ENT-083 block APOLLO: haulers left at the capitals after the once lines take work where they stand or a corridor; P6; rules F8, F34 tier 4, F35, F37). Frontier Station's The Memorial (8,000 once) paid pilots born Voidborn 62 of 68 and Nebula 3 of 3, Debris Field Reports (4,500) Voidborn 61 of 176 and Nebula 5 of 5 (table runs, 24 h to 18:03 UTC); of our 65 haulers born Voidborn and Nebula, 2 hold The Memorial. Distances by table lanes: Alpha Centauri 12, Nova Terra 11, Nexus Prime 17, Krynn 29 jumps to Distant Light, where the mobile station stands (mobile.py follows it). Stop copied from home-frontier-station. skip_if_booked The Memorial. Standing: a one-way trip judged by the missions it opens, never by its own pay.",
-  "far_ok": true,
-  "once": true,
-  "standing": true,
-  "max_ships": 15,
-  "skip_if_booked": [
-    "The Memorial"
-  ],
-  "requires": {
-    "empty_hold": true,
-    "empire": [
-      "voidborn",
-      "nebula"
-    ]
-  },
-  "stops": [
-    {
-      "at": "altais:mobile_capital:frontier_station",
-      "store": "all"
-    }
+ "id": "join-rim-hauler",
+ "kind": "circuit",
+ "title": "A hauler born Voidborn or Nebula without The Memorial joins the Outer Rim corridor: one trip to Frontier Station, where The Memorial and Debris Field Reports open to it",
+ "note": "Written by Apollo, 2026-11-23 18:08 UTC (orders ENT-083 block APOLLO: haulers left at the capitals after the once lines take work where they stand or a corridor; P6; rules F8, F34 tier 4, F35, F37). Frontier Station's The Memorial (8,000 once) paid pilots born Voidborn 62 of 68 and Nebula 3 of 3, Debris Field Reports (4,500) Voidborn 61 of 176 and Nebula 5 of 5 (table runs, 24 h to 18:03 UTC); of our 65 haulers born Voidborn and Nebula, 2 hold The Memorial. Distances by table lanes: Alpha Centauri 12, Nova Terra 11, Nexus Prime 17, Krynn 29 jumps to Distant Light, where the mobile station stands (mobile.py follows it). Stop copied from home-frontier-station. skip_if_booked The Memorial. Standing: a one-way trip judged by the missions it opens, never by its own pay.",
+ "far_ok": true,
+ "once": true,
+ "standing": true,
+ "max_ships": 15,
+ "skip_if_booked": [
+  "The Memorial"
+ ],
+ "requires": {
+  "empty_hold": true,
+  "empire": [
+   "voidborn",
+   "nebula"
   ]
+ },
+ "stops": [
+  {
+   "at": "altais:mobile_capital:frontier_station",
+   "store": "all"
+  }
+ ],
+ "measured": {
+  "date": "2026-11-23",
+  "runs": 47,
+  "minutes": 15,
+  "credits_per_run": -200,
+  "cph_per_ship": -560
+ }
 }

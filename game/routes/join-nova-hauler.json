@@ -1,23 +1,30 @@
 {
-  "id": "join-nova-hauler",
-  "kind": "circuit",
-  "title": "A Voidborn-born hauler without Filed in Triplicate joins the Solarian corridor at Nova Terra Central, where Filed in Triplicate opens to it",
-  "note": "Written by Apollo, 2026-11-23 18:08 UTC (orders ENT-083 block APOLLO, P6; rules F8, F34 tier 4, F37). Filed in Triplicate (5,000 once, Nova Terra Central) paid pilots born Voidborn 56 of 67, Nebula 23 of 24, Outer Rim 11 of 11, Solarian 49 of 49 (table runs, 24 h to 18:03 UTC); none of our 95 haulers holds it. The mission route has no far_ok, so a Voidborn hauler at Nexus Prime (8 jumps) or Krynn (18) is fenced from it; this trip puts it at the station. join-sol-hauler is once per pilot and spent. skip_if_booked Filed in Triplicate. Standing: a one-way trip judged by the mission it opens.",
-  "far_ok": true,
-  "once": true,
-  "standing": true,
-  "max_ships": 15,
-  "skip_if_booked": [
-    "Filed in Triplicate"
-  ],
-  "requires": {
-    "empty_hold": true,
-    "empire": "voidborn"
-  },
-  "stops": [
-    {
-      "at": "nova_terra:nova_terra_central:nova_terra_central",
-      "store": "all"
-    }
-  ]
+ "id": "join-nova-hauler",
+ "kind": "circuit",
+ "title": "A Voidborn-born hauler without Filed in Triplicate joins the Solarian corridor at Nova Terra Central, where Filed in Triplicate opens to it",
+ "note": "Written by Apollo, 2026-11-23 18:08 UTC (orders ENT-083 block APOLLO, P6; rules F8, F34 tier 4, F37). Filed in Triplicate (5,000 once, Nova Terra Central) paid pilots born Voidborn 56 of 67, Nebula 23 of 24, Outer Rim 11 of 11, Solarian 49 of 49 (table runs, 24 h to 18:03 UTC); none of our 95 haulers holds it. The mission route has no far_ok, so a Voidborn hauler at Nexus Prime (8 jumps) or Krynn (18) is fenced from it; this trip puts it at the station. join-sol-hauler is once per pilot and spent. skip_if_booked Filed in Triplicate. Standing: a one-way trip judged by the mission it opens.",
+ "far_ok": true,
+ "once": true,
+ "standing": true,
+ "max_ships": 15,
+ "skip_if_booked": [
+  "Filed in Triplicate"
+ ],
+ "requires": {
+  "empty_hold": true,
+  "empire": "voidborn"
+ },
+ "stops": [
+  {
+   "at": "nova_terra:nova_terra_central:nova_terra_central",
+   "store": "all"
+  }
+ ],
+ "measured": {
+  "date": "2026-11-23",
+  "runs": 36,
+  "minutes": 14,
+  "credits_per_run": -270,
+  "cph_per_ship": -1220
+ }
 }

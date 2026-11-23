@@ -26,5 +26,14 @@
   "gsc_0003",
   "bnki",
   "zubenelhakrabi"
- ]
+ ],
+ "measured": {
+  "date": "2026-11-23",
+  "runs": 9,
+  "minutes": 21,
+  "credits_per_run": -230,
+  "cph_per_ship": -670,
+  "hours": 12,
+  "last_run": "2026-11-23T19:30:00Z"
+ }
 }
