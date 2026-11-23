@@ -65,5 +65,12 @@
     "First Links"
    ]
   }
- ]
+ ],
+ "measured": {
+  "date": "2026-11-23",
+  "runs": 1,
+  "minutes": 15,
+  "credits_per_run": -1280,
+  "cph_per_ship": -5130
+ }
 }

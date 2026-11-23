@@ -40,10 +40,10 @@
   "Confederacy Infrastructure Audit"
  ],
  "measured": {
-  "date": "2026-11-22",
-  "runs": 43,
-  "minutes": 38,
-  "credits_per_run": 3350,
-  "cph_per_ship": 5520
+  "date": "2026-11-23",
+  "runs": 282,
+  "minutes": 27,
+  "credits_per_run": 3280,
+  "cph_per_ship": 6700
  }
 }

@@ -16,5 +16,14 @@
  "min_creatures": 6,
  "alone": "pirates",
  "gift_to": "trader",
- "standing": true
+ "standing": true,
+ "measured": {
+  "date": "2026-11-23",
+  "runs": 1,
+  "minutes": 14,
+  "credits_per_run": -100,
+  "cph_per_ship": -420,
+  "hours": 12,
+  "last_run": "2026-11-23T04:06:33Z"
+ }
 }

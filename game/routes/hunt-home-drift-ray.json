@@ -14,13 +14,13 @@
  "max_ships": 1,
  "min_creatures": 5,
  "measured": {
-  "date": "2026-11-22",
-  "runs": 31,
-  "minutes": 12,
-  "credits_per_run": -120,
-  "cph_per_ship": -510,
+  "date": "2026-11-23",
+  "runs": 2,
+  "minutes": 2,
+  "credits_per_run": 0,
+  "cph_per_ship": 0,
   "hours": 12,
-  "last_run": "2026-11-22T05:30:13Z"
+  "last_run": "2026-11-22T23:35:37Z"
  },
  "standing": true,
  "gift_to": "trader"
