@@ -427,3 +427,12 @@ Failed: fill gate HALT, 19 broke newborns waiting (41 of 55 under 3,000 cr, no d
 Requests: requests.log ENT-385.
 Suggestions: a treasury top-up to 5,000 cr for 41 newborns, 192,835 cr (ENT-385); carrying routes for the loop cap need a give route of Mining or Trade naming a hauler receiver where nothing bids.
 Report: newborn-haulers-on-home-boards-loop-kept.
+
+## [ENT-132] | 2026-11-23 00:42 UTC | Mercury | session | ref: reports/2026-11-23_mercury_newborn-traders-on-home-tours-docked-crafts-cut-loop.md | see: orders.log ENT-068
+Session: scheduled run turn-mercury -- newborn traders on their home tours, docked crafts cut the loop, the order step held at the gate.
+Did: preflight PASS; 42 newborn traders (30 Nebula, 12 Solarian) put to work by lifting four shared once tours (Market Analysis and Prospectus 3 to 80, Form TA-1 and Infrastructure Audit 3 to 50); seven docked crafts (biogas into fuel cells at five stations, armor at Nova Terra and Sirius, bbfdf4d7) and three steel crafts gated at 20 iron (b226cc21) in @trade-craft (6128bab6); sell_order stop step for route_run.py built with 8 tests, not installed; guidebook Standing Plan (c1063b94); contracts ENT-003.
+Worked: fill gate from HALT (42 waiting) to PASS at 00:39 UTC; the jump loop from 35 traders to 20; Trade net +6,645 cr in the last hour (fleet view=money 00:39 UTC).
+Failed: the order step's install halted on a governance test failing on the clean clone and a 120 s per-file limit (queue ENT-241); the loop not yet capped at ten (no sustained docked work for the rest); the 2,950 melt ask's fill not verified.
+Requests: ENT-388 (to Zero: two claimed once missions for traders).
+Suggestions: fix the install gate (queue ENT-241); a home-region guard so newborns keep off another empire's home loop.
+Report: newborn-traders-on-home-tours-docked-crafts-cut-loop.
