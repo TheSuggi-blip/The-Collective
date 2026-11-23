@@ -83,6 +83,10 @@
   {
    "what": "build the Notice Board at Node Beta on the Fleet Admiral's yes (requests ENT-436)",
    "when": "on her answer"
+  },
+  {
+   "what": "a freight step in the circuit runner (accept, pick up, deliver) before the freighter batch grows",
+   "when": "next turns"
   }
  ],
  "ships": {
