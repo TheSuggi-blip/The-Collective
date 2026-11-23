@@ -131,6 +131,41 @@ class PickTests(Tree):
         self.assertEqual(why(rows=[turned] * 4, booked=held), "done once")                        # the board keeps refusing: enough
         self.assertEqual(self.dispatch.why_not(pilot, "missions", routes["missions"], self.state(rows=[turned]))[0], "done once")   # no reward named: a refusal ends it
 
+    def test_a_run_the_engine_cut_is_no_try_of_a_once_route(self):
+        # requests ENT-379: an outage of sign-ins cut runs after one stop with the wallet unread
+        routes = self.dispatch.load_routes(self.root)
+        cut = {"route": "missions", "pilot": "drone-1", "stops": 0, "of": 1, "notes": ["stop 1 not reached", "wallet not read"]}
+        self.assertFalse(self.dispatch.done_once(routes["missions"], [cut, dict(cut), dict(cut)]))
+        broken = {"route": "missions", "pilot": "drone-1", "stops": 0, "of": 1}
+        self.assertTrue(self.dispatch.done_once(routes["missions"], [broken, broken]))     # a plain failed try still counts
+
+    def test_a_board_refusal_below_the_skill_gate_is_no_try(self):
+        # requests ENT-379: Deep Core Prospecting is not offered at Mining 0; the route asks Mining 3
+        routes = self.dispatch.load_routes(self.root)
+        shell = dict(routes["missions"], requires={"skills": {"mining": 3}})
+        turned = {"route": "missions", "pilot": "miner-1", "stops": 1, "of": 1, "notes": ["deep_core not offered"]}
+        self.assertFalse(self.dispatch.done_once(shell, [turned, dict(turned)]))
+        self.assertTrue(self.dispatch.done_once(shell, [turned] * 4))                         # the board keeps refusing: enough
+        self.assertTrue(self.dispatch.done_once(routes["missions"], [turned]))                # no gate named: a refusal ends it
+
+    def test_a_route_can_name_the_empires_of_its_pilots(self):
+        # requests ENT-387: a starter mission of one empire is never sent to a Voidborn pilot
+        routes = self.dispatch.load_routes(self.root)
+        shell = dict(routes["missions"], requires={"empire": ["solarian"]})
+        pilot = {"name": "drone-1", "credits": 20000, "modules": [], "docked": True, "empire": "voidborn"}
+        self.assertIn("open only to pilots born solarian", self.dispatch.why_not(pilot, "missions", shell, self.state())[0])
+        self.assertIn("not read", self.dispatch.why_not(dict(pilot, empire=None), "missions", shell, self.state())[0])
+        self.assertIsNone(self.dispatch.why_not(dict(pilot, empire="solarian"), "missions", shell, self.state())[0])
+        one = dict(routes["missions"], requires={"empire": "nebula"})
+        self.assertIsNone(self.dispatch.why_not(dict(pilot, empire="nebula"), "missions", one, self.state())[0])
+        self.assertIn("born nebula", self.routes.open_to(one))
+        path = self.root / "routes" / "missions.json"
+        spec = json.loads(path.read_text())
+        path.write_text(json.dumps(dict(spec, requires={"empire": ["martian"]})), encoding="ascii")
+        self.assertTrue(any("`requires.empire`" in e for e in self.routes.check(str(self.root))[0]))   # the gate names an unknown empire
+        path.write_text(json.dumps(dict(spec, requires={"empire": ["solarian", "nebula"]})), encoding="ascii")
+        self.assertFalse(any("`requires.empire`" in e for e in self.routes.check(str(self.root))[0]))
+
     def test_a_route_can_name_the_skill_levels_a_pilot_must_hold(self):
         routes = self.dispatch.load_routes(self.root)
         shell = dict(routes["missions"], requires={"skills": {"navigation": 3}})

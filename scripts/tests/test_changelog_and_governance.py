@@ -60,6 +60,36 @@ class ChangelogAndGovernanceTests(unittest.TestCase):
             txt = md.read_text(encoding="ascii")
             self.assertIn("| 0.733.0 | Added Tier-3 refinery recipes -- faster smelting. Fixed wormhole scan range. |", txt)
 
+    def test_an_unchanged_feed_still_brings_the_notes_to_the_releases_on_disk(self):
+        # requests ENT-382: the feed answered 304 every hour after a commit that did not happen; the notes stood behind
+        import subprocess
+        import types
+        import urllib.error
+        cl = load_mod("changelog_refresh_304", REPO / "scripts" / "changelog-refresh.py")
+        with tempfile.TemporaryDirectory() as tmp:
+            root, data = Path(tmp) / "repo", Path(tmp) / "data"
+            (root / "game" / "rules").mkdir(parents=True)
+            (data / "catalog").mkdir(parents=True)
+            md = root / "game" / "rules" / "15-patch-notes.md"
+            md.write_text("# Rules 15 -- Patch Notes\n\n| Version | Change |\n|---|---|\n| 0.732.3 | Fixed corral pen capacity. |\n", encoding="ascii")
+            subprocess.run(["git", "init", "-q", str(root)], check=True)
+            subprocess.run(["git", "-C", str(root), "add", "-A"], check=True)
+            subprocess.run(["git", "-C", str(root), "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "-m", "init"], check=True)
+            rels = [{"version": "0.733.0", "sort_key": "00000.00733.00000", "pub_date": "Mon, 23 Nov 2026", "summary": "Shipping claims.", "bullets": ["Shipping claims."]},
+                    {"version": "0.732.3", "sort_key": "00000.00732.00003", "pub_date": "Sun, 22 Nov 2026", "summary": "Corral fix", "bullets": ["Corral fix"]}]
+            (data / "catalog" / "releases.json").write_text(json.dumps({"latest": "0.733.0", "releases": rels}), encoding="ascii")
+            (data / "catalog" / "releases-state.json").write_text(json.dumps({"etag": "x"}), encoding="ascii")
+
+            def not_modified(req, timeout=None):
+                raise urllib.error.HTTPError(req.full_url, 304, "Not Modified", {}, None)
+            self.addCleanup(setattr, cl.urllib.request, "urlopen", cl.urllib.request.urlopen)   # the module is shared: put it back
+            cl.urllib.request.urlopen = not_modified
+            args = types.SimpleNamespace(data=str(data), root=str(root), rss_url="https://example.invalid/rss.xml", commit=True)
+            self.assertEqual(cl.cmd_refresh(args), 0)
+            self.assertIn("| 0.733.0 |", md.read_text(encoding="ascii"))
+            log = subprocess.run(["git", "-C", str(root), "log", "--format=%s"], capture_output=True, text=True).stdout
+            self.assertIn("0.733.0", log)
+
     def test_store_loads_game_releases_into_sqlite(self):
         import store
         with tempfile.TemporaryDirectory() as tmp:

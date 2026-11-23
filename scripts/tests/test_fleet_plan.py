@@ -216,6 +216,25 @@ class PlanTests(Tree):
         self.assertEqual(self.assign()["pilots"]["miner-7"][2], "ice-a")
 
 
+class AwayTests(Tree):
+    """2026-11-22 23:33 UTC: the engine signed 17 scouts out (fleet.json `away`); every plan change of their division
+    then failed on their rows ("no ship of the intel division has this name") and would have dropped them on write."""
+
+    def test_a_ship_the_engine_holds_away_keeps_its_row_and_the_plan_still_changes(self):
+        self.run_plan("zero", "apply")
+        self.run_plan("zero", "set", "miner-6", "ice-a")
+        fleet = json.loads((self.data / "fleet" / "fleet.json").read_text())
+        fleet["ships"] = [ship for ship in fleet["ships"] if ship["name"] != "miner-6"]
+        fleet["away"] = [{"division": "Mining", "name": "miner-6"}, {"division": "Military", "name": "sentinel-9"}]
+        (self.data / "fleet" / "fleet.json").write_text(json.dumps(fleet))
+        out = self.run_plan("zero", "set", "miner-1", "gather")
+        self.assertEqual(out.returncode, 0, out.stdout)
+        text = self.file("mining").read_text()
+        self.assertIn("| miner-6 |", text)
+        self.assertEqual(self.assign()["pilots"]["miner-6"][2], "ice-a")
+        self.assertNotIn("sentinel-9", text)
+
+
 class FreePartTests(Tree):
     """Requests ENT-263 (Oracle): Planned and Notes are written by the script like every other part, never by hand; a
     `## ` heading twice at a line start fails the check (three plan files carried every heading twice on 2026-11-17)."""

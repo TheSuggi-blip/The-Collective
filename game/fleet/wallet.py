@@ -116,6 +116,17 @@ FUND_HOURS = 6                 # a funded pilot keeps its fund this long from th
 FUND_WAIT = 24                 # hours an open fund waits for a docked leader before it ends by itself
 FUND_READ = 12                 # seconds between a withdrawal's call and the treasury's read after it (about one tick)
 FUND_TITLE = "Treasury fund: credits withdrawn from the faction treasury for a buy"   # never begins with routes.TREASURY
+# The treasury tops up a pilot no ship of its division or of the command group can give to (requests ENT-380, ENT-384,
+# ENT-385, ENT-386, ENT-389: the newborns of 2026-11-22 were born with 100 to 250 cr while the sweep keeps every working
+# ship at its line). The figures are the Fleet Admiral's (rule F7).
+TREASURY_TOPUP = True          # on since 2026-11-23 after its dry run on live data (Unity's turn of 02:30 CET)
+TREASURY_UNDER = 5000          # a stranded pilot under this (the dispatcher's paying-only line) is topped up ...
+TREASURY_LINE = 6000           # ... to this, from the treasury
+TREASURY_DAY = 400000          # at most this much from the treasury for top-ups in 24 hours
+TREASURY_EVERY = 6 * 3600      # a pilot is topped up from the treasury at most once in this many seconds
+TREASURY_BUDGET = 100          # seconds of a sweep pass the top-ups' gifts may take; the rest waits for the next pass
+TOPUP_WHY = "top-up from the treasury: no donor in the division (rule F7)"
+TOPUP_TITLE = "Treasury fund: credits withdrawn from the faction treasury for top-ups"  # never begins with routes.TREASURY
 
 
 def wallets(data):
@@ -549,7 +560,7 @@ def write_funds(data, rows):
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = "%s.%d.tmp" % (path, os.getpid())
     with open(tmp, "w", encoding="utf-8") as handle:
-        json.dump(rows[-200:], handle, indent=1)
+        json.dump(rows[-1000:], handle, indent=1)          # top-up rows too: bounded by the fleet size a day
     os.replace(tmp, path)
 
 
@@ -557,7 +568,7 @@ def funded(data, now):
     """{pilot: credits} the sweep and the top-ups leave with a pilot: each fund given within its hours."""
     out = {}
     for r in funds(data):
-        if r.get("state") == "given" and now - (r.get("given_at") or 0) < float(r.get("hours") or FUND_HOURS) * 3600:
+        if r.get("kind") != "topup" and r.get("state") == "given" and now - (r.get("given_at") or 0) < float(r.get("hours") or FUND_HOURS) * 3600:
             out[r["pilot"]] = out.get(r["pilot"], 0) + int(r.get("credits") or 0)
     return out
 
@@ -590,11 +601,12 @@ def serve_funds(data, leader, now, dry):
     the treasury keeps FUND_FLOOR, then given to its pilot. 0, or 1 when a call failed."""
     rows, changed = funds(data), False
     for r in rows:                                              # an open fund ends by itself after FUND_WAIT hours
-        if r.get("state") == "open" and now - (r.get("at") or 0) > FUND_WAIT * 3600:
+        if r.get("state") == "open" and r.get("kind") != "topup" and now - (r.get("at") or 0) > FUND_WAIT * 3600:
             r.update(state="ended", note="no docked leader within %d hours" % FUND_WAIT)
             changed = True
             print("FUND ended: %s %s cr: the leader stood docked at no pass within %d hours" % (r["pilot"], format(int(r["credits"]), ","), FUND_WAIT))
-    todo = next((r for r in rows if r.get("state") == "withdrawn"), None) or next((r for r in rows if r.get("state") == "open"), None)
+    todo = (next((r for r in rows if r.get("state") == "withdrawn" and r.get("kind") != "topup"), None)
+            or next((r for r in rows if r.get("state") == "open" and r.get("kind") != "topup"), None))
     if not todo or dry:
         if todo:
             print("would fund: %s %s cr from the treasury (%s), state %s" % (todo["pilot"], format(int(todo["credits"]), ","), todo.get("why"), todo["state"]))
@@ -657,6 +669,121 @@ def serve_funds(data, leader, now, dry):
     write_funds(data, rows)
     print("FUND given: %s -> %s %s cr (%s); the sweep leaves it for %s hours" % (leader, pilot, format(credits, ","), todo.get("why"), todo.get("hours") or FUND_HOURS))
     return 0
+
+
+def treasury_topups(data, stranded, now, dry):
+    """{pilot} with a top-up from the treasury open or given now: each stranded pilot (no ship of its division or of
+    the command group can give) under TREASURY_UNDER gets one row of data/fleet/funds.json (kind `topup`, the credits
+    up to TREASURY_LINE), served by the sweep (serve_topups); never a second open row a pilot, never twice in
+    TREASURY_EVERY, never more than TREASURY_DAY in 24 hours. Nothing while TREASURY_TOPUP is off."""
+    rows = funds(data)
+    tops = [r for r in rows if r.get("kind") == "topup"]
+    busy = {r["pilot"] for r in tops if r.get("state") in ("open", "withdrawn", "unsure")}
+    late = {r["pilot"] for r in tops if r.get("state") == "given" and now - (r.get("given_at") or 0) < TREASURY_EVERY}
+    if not TREASURY_TOPUP:
+        return set()
+    spent = sum(int(r.get("credits") or 0) for r in tops if r.get("state") != "ended" and now - (r.get("at") or 0) < 86400)
+    out, added = set(busy | late), []
+    for name, credits in sorted(stranded, key=lambda pc: pc[1]):
+        if credits >= TREASURY_UNDER or name in out:
+            continue
+        need = TREASURY_LINE - int(credits)
+        if spent + need > TREASURY_DAY:
+            print("HALT: %s is under %s cr; the treasury's top-ups reached their %s cr of 24 hours (wallet.py TREASURY_DAY, the Fleet Admiral's line)"
+                  % (name, format(TREASURY_UNDER, ","), format(TREASURY_DAY, ",")))
+            continue
+        spent += need
+        out.add(name)
+        added.append({"pilot": name, "credits": need, "why": TOPUP_WHY, "hours": 0, "at": int(now), "state": "open", "kind": "topup"})
+        print("%s: %s %s cr from the treasury (it holds %s cr, line %s)" % ("would fund" if dry else "FUND open", name, format(need, ","),
+                                                                             format(int(credits), ","), format(TREASURY_LINE, ",")))
+    if added and not dry:
+        write_funds(data, funds(data) + added)
+    return out
+
+
+def leader_ready(data, leader):
+    """True when the leader stands docked where the game lets it withdraw (at a Faction Lockbox's base when we keep one);
+    else its run is asked to stop at its next stop (the run host's stop file) and False."""
+    emp = dispatch.read_json(Path(data) / "empire" / "empire.json", {}) or {}
+    facs = (emp.get("facilities") or []) if isinstance(emp, dict) else []
+    boxes = {str(f.get("base")) for f in facs if isinstance(f, dict) and f.get("type") == "faction_lockbox" and f.get("status") == "active" and f.get("base")}
+    dock = str((ships(data).get(leader) or {}).get("docked") or "")
+    if dock and (not boxes or dock in boxes):
+        return True
+    marker = Path(data) / "fleet" / "host" / "running" / (leader + ".json")
+    if marker.exists():
+        stop = Path(data) / "fleet" / "host" / "stop" / leader
+        stop.parent.mkdir(parents=True, exist_ok=True)
+        stop.touch()
+    return False
+
+
+def serve_topups(data, leader, now, dry):
+    """The treasury's top-ups (kind `topup` of funds.json): the open rows in one withdrawal while the leader stands docked
+    and the treasury keeps FUND_FLOOR, then each given within TREASURY_BUDGET seconds (a gift needs no dock; what is left
+    stays `withdrawn`, out of the leader's deposit, and goes at the next pass). 0, or 1 when a call failed."""
+    rows, start = funds(data), time.time()
+    for r in rows:
+        if r.get("kind") == "topup" and r.get("state") == "open" and now - (r.get("at") or 0) > FUND_WAIT * 3600:
+            r.update(state="ended", note="no docked leader within %d hours" % FUND_WAIT)
+    todo = [r for r in rows if r.get("kind") == "topup" and r.get("state") == "open"]
+    if dry:
+        if todo:
+            print("would withdraw for top-ups: %s cr for %d pilots" % (format(sum(int(r["credits"]) for r in todo), ","), len(todo)))
+        return 0
+    if todo and leader_ready(data, leader):
+        before = treasury_read(leader)
+        take, total = [], 0
+        for r in todo:
+            if before is not None and before - (total + int(r["credits"])) >= FUND_FLOOR:
+                take.append(r)
+                total += int(r["credits"])
+        if take:
+            if not any(r.get("state") in ("withdrawn", "given") or (isinstance(r.get("probed"), dict) and r["probed"].get("ok")) for r in rows):
+                ok, text = withdraw(leader, 1)                  # rule F12: one unit first
+                time.sleep(FUND_READ)
+                after = treasury_read(leader)
+                take[0]["probed"] = {"ok": ok, "text": text, "before": before, "after": after}
+                write_funds(data, rows)
+                if not ok or after is None or before - after < 1:
+                    print("HALT: TOP-UP probe: 1 cr from the treasury was not taken (%s; the treasury %s -> %s)" % (text, before, after))
+                    return 1
+                gate_book(leader, TOPUP_TITLE + " (the 1 cr probe)", 1)
+                before = after
+            ok, text = withdraw(leader, total)
+            time.sleep(FUND_READ)
+            after = treasury_read(leader)
+            if not (after is not None and before - after >= total * 0.9):
+                for r in take:
+                    r.update(state="open" if ok is False else "unsure", note="withdraw: %s; the treasury %s -> %s" % (text, before, after))
+                write_funds(data, rows)
+                print("HALT: TOP-UP withdrawal of %s cr %s (the treasury %s -> %s)" % (format(total, ","), ("was refused: " + text) if ok is False else "does not show", before, after))
+                return 1
+            gate_book(leader, "%s: %d pilots" % (TOPUP_TITLE, len(take)), total)
+            for r in take:
+                r.update(state="withdrawn", withdrawn_at=int(time.time()))
+            write_funds(data, rows)
+            print("TOP-UP withdrawn: %s cr from the treasury by %s for %d pilots (the treasury %s -> %s)" % (format(total, ","), leader, len(take), before, after))
+        else:
+            print("TOP-UP waits: %d pilots, the treasury reads %s, it keeps %s" % (len(todo), before, format(FUND_FLOOR, ",")))
+    elif todo:
+        print("TOP-UP waits: %d pilots: the leader %s is not docked (the game withdraws docked only)" % (len(todo), leader))
+    failed = 0
+    for r in [r for r in rows if r.get("kind") == "topup" and r.get("state") == "withdrawn"]:
+        if time.time() - start > TREASURY_BUDGET:
+            break
+        ok, text = give(leader, r["pilot"], int(r["credits"]))
+        if not ok:
+            r["note"] = "gift: %s" % text
+            failed = 1
+            print("HALT: TOP-UP gift %s -> %s %s cr refused: %s; the leader keeps it and gives at the next pass" % (leader, r["pilot"], format(int(r["credits"]), ","), text))
+            continue
+        book(data, [(leader, r["pilot"], int(r["credits"]))], time.time())
+        r.update(state="given", given_at=int(time.time()))
+        print("TOP-UP given: %s -> %s %s cr from the treasury" % (leader, r["pilot"], format(int(r["credits"]), ",")))
+    write_funds(data, rows)
+    return failed
 
 
 SEAT_BATCH = 20
@@ -868,6 +995,7 @@ def sweep(data, now, dry):
         print("would settle: the deposit of %s cr sent at %s UTC" % (format(int(waiting.get("credits") or 0), ","), time.strftime("%H:%M", time.gmtime(waiting["at"]))))
     flying, unsettled = settle_gifts(data, "gift", now, dry)    # Q75: a gift a cut pass left `sent`, settled before any new one
     failed = serve_funds(data, leader, now, dry) or failed or unsettled   # orders ENT-063: the treasury pays one pilot for a buy
+    failed = serve_topups(data, leader, now, dry) or failed     # requests ENT-380 ff.: the treasury tops up pilots no ship can give to
     serve_seats(data, leader, now, dry)
     log = swept(data)
     battle = {r.get("from"): r["at"] for r in log if r.get("state") == "battle" and now - r["at"] < BATTLE_WAIT}
@@ -1090,9 +1218,10 @@ def main(argv=None):
         print("given: %s -> %s %s cr" % (donor, pilot, format(credits, ",")))
     for donor, pilot, text in failed:
         print("HALT: the gift %s -> %s failed: %s" % (donor, pilot, text))
-    stranded = [name for name, credits, _o in low if name not in {p for _d, p, _c in gifts}]
-    for name in stranded:
-        if name not in recent(data, now):
+    stranded = [(name, credits) for name, credits, _o in low if name not in {p for _d, p, _c in gifts}]
+    lent = treasury_topups(data, [(n, c) for n, c in stranded if n not in given], now, "--dry-run" in args)   # requests ENT-380 ff.: the treasury, when no ship can give
+    for name, _credits in stranded:
+        if name not in recent(data, now) and name not in lent:
             print("HALT: %s is under %s cr and no ship of its division or of the command group can give without going under %s" % (name, format(LOW, ","), format(KEEP, ",")))
     return 1 if failed or unsettled else 0
 

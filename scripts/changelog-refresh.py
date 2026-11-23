@@ -150,6 +150,23 @@ def update_patch_notes_md(repo_root, releases):
     return [r["version"] for r in missing]
 
 
+def sync_md(args, releases):
+    """game/rules/15-patch-notes.md brought to the releases given and committed by path as Unity, when the file stands
+    clean in the clone; the list of versions added (none when current or when another hand's change is in it)."""
+    dirty = subprocess.run(["git", "-C", args.root, "status", "--porcelain", "--", "game/rules/15-patch-notes.md"], capture_output=True, text=True)
+    if dirty.returncode != 0 or dirty.stdout.strip() or not releases:
+        return []
+    patched = update_patch_notes_md(args.root, releases)
+    if patched:
+        subprocess.run(["git", "-C", args.root, "add", "--", "game/rules/15-patch-notes.md"], check=False)
+        subprocess.run([
+            "git", "-C", args.root, "-c", "user.name=Unity", "-c", "user.email=unity@suggi-workspace.dev",
+            "commit", "-q", "-m", "rules: auto-sync patch notes %s from changelog RSS" % (", ".join(patched)),
+            "--", "game/rules/15-patch-notes.md"
+        ], check=False)
+    return patched
+
+
 def cmd_refresh(args):
     folder = Path(args.data) / "catalog"
     folder.mkdir(parents=True, exist_ok=True)
@@ -170,7 +187,9 @@ def cmd_refresh(args):
             xml_bytes = resp.read(4_000_000)
             etag = resp.headers.get("ETag") or ""
     except urllib.error.HTTPError as e:
-        if e.code == 304:
+        if e.code == 304:                       # the feed did not change: the notes may still lag the releases on disk
+            if args.commit:                     # (an hour whose commit failed was never tried again: requests ENT-382)
+                sync_md(args, load_releases(args.data))
             return 0
         print("changelog-refresh: HTTP %s from %s" % (e.code, args.rss_url))
         return 1
@@ -200,16 +219,7 @@ def cmd_refresh(args):
     os.replace(state_tmp, state_path)
     added = [r["version"] for r in releases if r["version"] not in before]
     if args.commit:
-        dirty = subprocess.run(["git", "-C", args.root, "status", "--porcelain", "--", "game/rules/15-patch-notes.md"], capture_output=True, text=True)
-        if dirty.returncode == 0 and not dirty.stdout.strip():
-            patched = update_patch_notes_md(args.root, releases)
-            if patched:
-                subprocess.run(["git", "-C", args.root, "add", "--", "game/rules/15-patch-notes.md"], check=False)
-                subprocess.run([
-                    "git", "-C", args.root, "-c", "user.name=Unity", "-c", "user.email=unity@suggi-workspace.dev",
-                    "commit", "-q", "-m", "rules: auto-sync patch notes %s from changelog RSS" % (", ".join(patched)),
-                    "--", "game/rules/15-patch-notes.md"
-                ], check=False)
+        sync_md(args, releases)
     if added:
         print("changelog-refresh: synced %d release(s), newest %s (added: %s)" % (len(releases), releases[0]["version"], ", ".join(added[:8])))
     return 0

@@ -253,5 +253,60 @@ class FundTests(unittest.TestCase):
         self.assertEqual([c[0] for c in self.calls].count("withdraw"), 2)                            # the probe and one withdrawal
 
 
+class TreasuryTopupTests(FundTests):
+    """Requests ENT-380, ENT-384, ENT-385, ENT-386, ENT-389 (2026-11-23): newborns born with 100 to 250 cr and no ship of
+    their division above the sweep's line to give: the treasury tops them up to TREASURY_LINE, many pilots in one
+    withdrawal, within TREASURY_DAY a day, each pilot at most once in TREASURY_EVERY."""
+
+    def put(self, docked, drone=20000):
+        ships = [{"name": "Prime Directive", "credits": 30500, "docked": docked}, {"name": "drone-4", "credits": drone},
+                 {"name": "drone-60", "credits": 100}, {"name": "drone-61", "credits": 250}, {"name": "drone-62", "credits": 7000}]
+        (self.data / "fleet" / "fleet.json").write_text(json.dumps({"ships": ships}))
+
+    def topup(self):
+        os.environ["HERMES_SESSION_PROFILE"] = "unity"
+        self.addCleanup(os.environ.pop, "HERMES_SESSION_PROFILE", None)
+        return self.wallet.main(["topup", "--data", str(self.data)])
+
+    def test_stranded_pilots_under_the_line_are_funded_from_the_treasury_in_one_withdrawal(self):
+        w, now = self.wallet, time.time()
+        w.TREASURY_TOPUP = True
+        w.refresh = lambda pilot: None
+        self.topup()                                                                              # no donor: rows, no call
+        rows = [r for r in w.funds(str(self.data)) if r.get("kind") == "topup"]
+        self.assertEqual(sorted((r["pilot"], r["credits"]) for r in rows), [("drone-60", 5900), ("drone-61", 5750)])   # 7,000 is above the line
+        self.assertEqual(self.calls, [])
+        self.topup()                                                                              # never a second row a pilot
+        self.assertEqual(len([r for r in w.funds(str(self.data)) if r.get("kind") == "topup"]), 2)
+        self.put(docked=True)
+        self.assertEqual(w.serve_topups(str(self.data), "Prime Directive", now, False), 0)
+        withdrawals = [c for c in self.calls if c[0] == "withdraw"]
+        self.assertEqual(withdrawals[-1], ("withdraw", "Prime Directive", 11650))                # one withdrawal for both
+        self.assertEqual(sorted(c[2:] for c in self.calls if c[0] == "give"), [("drone-60", 5900), ("drone-61", 5750)])
+        self.assertEqual({r["state"] for r in w.funds(str(self.data)) if r.get("kind") == "topup"}, {"given"})
+        self.assertEqual(w.funded(str(self.data), time.time()), {})                               # a top-up is no fund the sweep keeps
+        self.assertEqual(w.withdrawn(str(self.data)), 0)
+
+    def test_the_day_cap_and_the_switch_hold(self):
+        w = self.wallet
+        w.TREASURY_TOPUP = False
+        self.topup()
+        self.assertEqual([r for r in w.funds(str(self.data)) if r.get("kind") == "topup"], [])  # switched off: nothing
+        w.TREASURY_TOPUP, w.TREASURY_DAY = True, 6000
+        self.topup()
+        self.assertEqual([r["pilot"] for r in w.funds(str(self.data)) if r.get("kind") == "topup"], ["drone-60"])   # 5,900 fits, 5,750 more does not
+
+    def test_a_withdrawal_waits_for_a_docked_leader_and_keeps_the_floor(self):
+        w, now = self.wallet, time.time()
+        w.TREASURY_TOPUP = True
+        self.topup()
+        self.assertEqual(w.serve_topups(str(self.data), "Prime Directive", now, False), 0)
+        self.assertEqual(self.calls, [])                                                          # not docked
+        self.put(docked=True)
+        self.treasury[0] = w.FUND_FLOOR + 6000
+        self.assertEqual(w.serve_topups(str(self.data), "Prime Directive", now, False), 0)
+        self.assertEqual([c for c in self.calls if c[0] == "withdraw"][-1], ("withdraw", "Prime Directive", 5900))     # what the floor allows
+
+
 if __name__ == "__main__":
     unittest.main()

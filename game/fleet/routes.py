@@ -76,6 +76,7 @@ import division                                   # noqa: E402  the plan files a
 import workclass                                  # noqa: E402  r22: whose work a route is, the sale rule's switch
 import taxes                                      # noqa: E402  the weekly tax a run in flight carried
 
+EMPIRES = frozenset(("voidborn", "nebula", "solarian", "outerrim", "crimson"))   # the five empires of the game (requires.empire)
 KINDS = {"circuit": ("stops",), "hunt": ("place", "sell_at"), "census": ("systems",), "mine": ("belt", "station"), "guard": ("guards", "station")}
 PLACES = {"mine": "belt", "hunt": "place"}       # the kinds that work at one place, and the field that names it: what a guard keeps
 FRONT = "---\nname: %s\nid: %s\ntier: intel\nauthor: Unity\n---\n\n"
@@ -280,6 +281,9 @@ def check(root):
             errors += [where + line for line in ask_faults(need["ask"])]
         if "held_below" in need:                       # Q75 (1), errors.log ENT-111: what the division holds (heldgate.py)
             errors += [where + line for line in __import__("heldgate").faults(need["held_below"])]
+        if "empire" in need and not ((isinstance(need["empire"], str) and need["empire"] in EMPIRES)
+                                     or (isinstance(need["empire"], list) and need["empire"] and all(e in EMPIRES for e in need["empire"]))):
+            errors.append(where + "`requires.empire` must be an empire (%s) or a non-empty list of them" % ", ".join(sorted(EMPIRES)))
         if "strict" in need and not isinstance(need["strict"], bool):     # requests ENT-332: dispatch.why_not reads true or false only
             errors.append(where + "`requires.strict` must be true (open only while strict classes are on) or false (only while off)")
         floors = [("`min_left`", route.get("min_left"))] + [("stop %d: the `min_left` of a `mine` step" % n, step.get("min_left"))
@@ -602,6 +606,7 @@ def open_to(route):
             "empty hold" if need.get("empty_hold") else "", "goods aboard" if need.get("hold") else "", "from %s cr" % format(route["min_credits"], ",") if route.get("min_credits") else "",
             "after the reward %s" % (need["booked"] if isinstance(need["booked"], str) else ", ".join(need["booked"])) if need.get("booked") else "",
             "from %s" % ", ".join("%s %s" % (k, v) for k, v in sorted(need["skills"].items())) if isinstance(need.get("skills"), dict) and need["skills"] else "",
+            "born %s" % (need["empire"] if isinstance(need["empire"], str) else ", ".join(need["empire"])) if need.get("empire") else "",
             "with %s" % ", ".join("%s %s stored at %s" % (w.get("min", 1), " or ".join(map(str, w["items"])) if isinstance(w.get("items"), list) else w.get("item"), w.get("at")) for w in ([need["stored"]] if isinstance(need["stored"], dict) else need["stored"]) if isinstance(w, dict)) if need.get("stored") else "",
             "while %s" % ", ".join("%s bids %s cr for %s" % (b.get("base"), b.get("min_price", 1), b.get("item")) for b in ([need["bid"]] if isinstance(need["bid"], dict) else need["bid"]) if isinstance(b, dict)) if need.get("bid") else "",
             "while %s" % ", ".join("%s asks %s cr or less for %s" % (a.get("base"), a.get("max_price"), a.get("item")) for a in ([need["ask"]] if isinstance(need["ask"], dict) else need["ask"]) if isinstance(a, dict)) if isinstance(need.get("ask"), (dict, list)) and need["ask"] else "",

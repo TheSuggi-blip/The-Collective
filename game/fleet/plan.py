@@ -136,6 +136,11 @@ def crew_of(data, name):
     roles = roles_of(name)
     found = [(str(ship.get("name")), dispatch.role_of(str(ship.get("name")), named), ship)
              for ship in (fleet.get("ships") or [] if isinstance(fleet, dict) else []) if isinstance(ship, dict) and ship.get("name")]
+    listed = {row[0] for row in found}                # a ship the engine holds signed out (`away`) keeps its row: it flies again
+    found += [(str(ship["name"]), dispatch.role_of(str(ship["name"]), named), {"name": ship["name"], "away": True,   # when signed in
+                                                                                 "number": int(re.sub(r"\D", "", str(ship["name"])) or 0)})
+              for ship in (fleet.get("away") or [] if isinstance(fleet, dict) else [])
+              if isinstance(ship, dict) and ship.get("name") and str(ship["name"]) not in listed]
     return sorted((row for row in found if row[1] in roles), key=lambda r: (roles.index(r[1]), r[2].get("number") or 0, r[0]))
 
 

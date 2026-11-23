@@ -73,7 +73,7 @@ class PairsTests(unittest.TestCase):
         self.addCleanup(setattr, self.dispatch.workclass, "DATA", keep)
         with tempfile.TemporaryDirectory() as data:
             (Path(data) / "fleet").mkdir()
-            state = {"data": data, "rows": [], "orders": {}, "now": 1_800_000_000}
+            state = {"data": data, "rows": [], "orders": {}, "now": 1_800_000_000, "rest": {}, "booked": {}, "loss": {}, "late": {}}   # the whole state why_not reads since the floor left (c9d78f7c)
             pilot = {"name": "miner-1", "role": "miner", "docked": True}
             on = {"kind": "circuit", "requires": {"strict": True}, "stops": []}
             off = {"kind": "circuit", "requires": {"strict": False}, "stops": []}

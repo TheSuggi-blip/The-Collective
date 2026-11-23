@@ -243,7 +243,16 @@ def unfinished(row):
 
 
 NOT_OFFERED = " not offered"
-REFUSALS = 3                   # runs a board may refuse on a route with `requires.booked` before the route counts as done for the pilot
+REFUSALS = 3                   # runs a board may refuse on a route with `requires.booked` or `requires.skills` before the route counts as done for the pilot
+CUT = "wallet not read"        # route_run.py: the run ended before it read the wallet at its end
+
+
+def cut(row):
+    """A run the engine cut before its end: a stop not reached and the wallet unread (an outage of the engine's
+    sign-ins, 2026-11-22 23:15 UTC: requests ENT-379). No try of a `once` route; a run of them rests the route
+    (failed_run) so a lasting outage is never hammered."""
+    notes = [str(n) for n in row.get("notes") or []]
+    return (row.get("stops") or 0) < (row.get("of") or 0) and CUT in notes and any(n.endswith("not reached") for n in notes)
 
 
 def refused(row):
@@ -401,10 +410,12 @@ def done_once(route, rows):
     """A `once` route counts as done after a whole run that got what it came for, or after two tries. A run that found
     nothing to buy is neither: the route opens again for that pilot after a rest (waits_once). On a route that names a
     reward the pilot must hold first (`requires.booked`), a run the board refused is no try either, up to REFUSALS times:
-    the pilot flew it before it held that reward. Without `requires.booked` a refusal stays a finished run: a mission
-    done once is never offered again."""
-    rows = [r for r in rows if not unfinished(r) and not empty(r) and not short(r)]
-    if owed(route) and sum(1 for r in rows if refused(r)) <= REFUSALS:
+    the pilot flew it before it held that reward; the same on a route with `requires.skills` (a board that offers it
+    only from a skill level). Without either a refusal stays a finished run: a mission done once is never offered
+    again. A run the engine cut (cut: wallet unread, a stop not reached) is no try."""
+    rows = [r for r in rows if not unfinished(r) and not empty(r) and not short(r) and not cut(r)]
+    gated = owed(route) or bool((route.get("requires") or {}).get("skills"))     # requests ENT-379: refused below a skill gate
+    if gated and sum(1 for r in rows if refused(r)) <= REFUSALS:
         rows = [r for r in rows if not refused(r)]
     if not rows:
         return False
@@ -414,7 +425,7 @@ def done_once(route, rows):
 
 def waits_once(route, rows, now):
     """True while a `once` route rests for a pilot: its last run found nothing to buy less than retry_minutes (default 60) ago."""
-    if not rows or not (unfinished(rows[-1]) or empty(rows[-1]) or short(rows[-1]) or (owed(route) and refused(rows[-1]))):
+    if not rows or not (unfinished(rows[-1]) or empty(rows[-1]) or short(rows[-1]) or cut(rows[-1]) or (owed(route) and refused(rows[-1]))):
         return False
     try:
         ended = calendar.timegm(time.strptime(rows[-1]["started"], "%Y-%m-%dT%H:%M:%SZ")) + rows[-1].get("minutes", 0) * 60
@@ -692,6 +703,11 @@ def why_not(pilot, rid, route, state):
     born = newborn_reason(pilot, rid, route)                     # queue.log ENT-234: pilots of other empires stay in their region
     if born:
         return born, None
+    empires = (route.get("requires") or {}).get("empire")        # requests ENT-387: a route of one empire's pilots
+    if empires:
+        allowed = [empires] if isinstance(empires, str) else [str(e) for e in empires]
+        if pilot.get("empire") not in allowed:
+            return "open only to pilots born %s (the pilot: %s)" % (", ".join(allowed), pilot.get("empire") or "not read"), None
     strict = (route.get("requires") or {}).get("strict")          # requests ENT-332: open only in one state of data/fleet/strict-classes-on
     if isinstance(strict, bool):
         workclass.follow(state.get("data"))
