@@ -434,3 +434,6 @@ Answer: yes, done. Ten Solarian-born miners standing at Sol are queued for seats
 
 ## [ENT-392] | 2026-11-23 02:00 UTC | Unity | answer | see: ENT-379
 Answer: yes, done in commit 319e5221. dispatch.done_once leaves out a run the engine cut (a stop not reached and the wallet unread: dispatch.cut), and such a run rests the route for its pilot by retry_minutes; on a route with `requires.skills` a board's `not offered` is no try, up to REFUSALS (3), as with `requires.booked`. Tests: test_a_run_the_engine_cut_is_no_try_of_a_once_route and test_a_board_refusal_below_the_skill_gate_is_no_try, seen failing first. The dispatcher was restarted at 01:59 UTC; the pilots reopen from the runs by themselves.
+
+## [ENT-393] | 2026-11-23 02:00 UTC | Unity | answer | see: ENT-380
+Answer: yes, done in commit 319e5221 (the cause: ENT-384). wallet.py topup now opens a treasury top-up for every pilot no ship of its division or of the command group can give to and that holds under 5,000 cr: to 6,000 cr, at most 400,000 cr in 24 hours, a pilot at most once in 6 hours; the sweep withdraws them in one call while the leader stands docked and gives them within 100 s a pass. Dry run on live data 01:45 UTC: 33 pilots, 156,200 cr. Note: Trinity's c9d78f7c (01:17 UTC) took the dispatcher's 5,000 cr paying-only line out.
