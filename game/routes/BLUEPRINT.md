@@ -13,6 +13,21 @@ so that every ship, and every ship born later, can do it again. The
 route files are the fleet's memory of how to earn and how to level;
 the scripts in `game/fleet/` fly them; nobody retypes a route into a chat.
 
+
+## Quick-Start Plan & Wing Recipes (Read Before Editing Plans or Routes)
+
+Each division keeps one standing plan (`/srv/collective/data/plans/plan-<division>.md`) reconciled every **30s** by `dispatch.py`:
+- **Execution order:** `First` (global one-time missions, upgrades, war overrides) -> ship's `Own routes` / `@templates` -> `Then` (shared paying wings & zero-fuel active desks) -> `park` (true IDLE emergency fallback only).
+- **Mass wing assignment (1 command via MCP `plan action=set` or CLI `plan.py set`):**
+  - `plan.py set "cargo>=100" "@freight-shipping > @craft-reserve"` (all 100c+ freighters)
+  - `plan.py set "empire:nebula+speed>=5" "@express-pax > @bursar-desk"` (fast Nebula couriers)
+  - `plan.py set "idle:true" "@docked-craft > @bursar-desk"` (immediately put idle ships onto zero-fuel active work)
+- **Copy-paste route patterns:**
+  - *Auto-mobilizing War Defense (`First`):* `"requires": {"posture": "war", "min_hull_tier": 1}`
+  - *Proximity Utility Cluster (`Then`):* set `"utility_group": "regional-mine"` + `"requires": {"max_jumps": 6}` on regional routes so each ship auto-picks the closest high-paying unsaturated field.
+  - *Active Zero-Fuel Bursar Desk (registers `working`, not `parked`):* `"requires": {"docked_at": "central_nexus"}`, stop with `"sell_order": [{"item": "fuel_cell", "qty": 50, "price": 2900, "floor": 2200, "undercut_pct": 0.05}]`, `"buy_order": [{"item": "carbon_ore", "qty": 500, "price": 4, "ceiling": 5}]`, and `"watch_minutes": 30`.
+  - *Zero-Fuel Hub Market Watch (Intel `scout` only):* `"requires": {"docked_at": "arneb_hub"}`, stop with `"market_poll": true, "watch_minutes": 30`.
+
 ## 1. What Is Automatic
 
 | Part | Does |

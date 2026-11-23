@@ -369,7 +369,7 @@ def render(data, name, plan, crew):
              "`@<name>` for a template of the division, `plan.py templates`), then run",
              "`python3 -I -B game/fleet/plan.py apply` (the tool plan, action=apply). The other",
              "columns and the form of this file are the script's; a file that fails the check",
-             "changes nothing. Planned and Notes: `plan.py planned` and `plan.py note`.", "",
+             "changes nothing. Planned and Notes: `plan.py planned` and `plan.py note`. Plan & DoF manual: `game/routes/BLUEPRINT.md` (wing selectors, `requires.posture/max_jumps/min_cargo`, `utility_group`, zero-fuel `buy_order`/`sell_order` undercut/`watch_minutes`).", "",
              "## First, for Every Ship", ""]
     lines += ["%d. %s" % (n, rid) for n, rid in enumerate(plan["first"], 1)] or ["None."]
     lines += ["", "## Ships", "", "| " + " | ".join(HEAD) + " |", "|" + "---|" * len(HEAD)]
