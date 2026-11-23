@@ -98,6 +98,7 @@ GIFT_TO = args[args.index('--gift-to') + 1] if '--gift-to' in args else ''   # r
 STEP = '--step' in args                      # a step of a circuit: the order file, the station and the row are the circuit's
 ALONE = '--alone' in args                    # no fight where a ship that is not ours stands
 LOW = [100]                                  # our hull at its lowest in this run, percent
+FLED = ['']                                  # why the last fight was fled: 'ship' when a ship not a creature joined it
 max_prey_hull = int(args[args.index('--max-prey-hull') + 1]) if '--max-prey-hull' in args else 100
 MARKET = '/srv/collective/data/market/'
 ORDER = f'/srv/collective/data/fleet/orders/{pilot}.json'
@@ -422,6 +423,15 @@ def in_battle():
     return bool(body(st).get('is_participant')), text(st)
 
 
+def after_fight(fled_for):
+    """(stop, note) once a fight ended: a ship that joined our fight (a pilot or an NPC ship, not a creature) ends the
+    hunt at this place for the run. 2026-11-23 16:44 to 16:51 UTC: a hunter fled when a pilot joined its fight, came
+    back to the same herd within two minutes, and was destroyed in the second battle (admirals.log ENT-110)."""
+    if fled_for == 'ship':
+        return True, 'left: a ship joined the fight'
+    return False, ''
+
+
 def fight():
     """Drive the running battle to its end: close in, fire, flee in time. True when it ended."""
     for tick in range(90):                           # at most 15 minutes for one fight
@@ -449,6 +459,7 @@ def fight():
             # a pilot or an NPC ship is in this fight: the posture toward them is HOLD
             say('not a hunt any more (a ship is in the fight): fleeing | ' + ' / '.join(row for row in t.splitlines() if '\t' in row)[:300])
             raw('stance', {'stance': 'flee'}, group='spacemolt_battle')
+            FLED[0] = 'ship'
         else:
             # close in: a battle starts at distance 6 and a Pulse Laser I reaches 3
             reach = re.search(r'Max weapon reach: (\d+)', t)
@@ -545,7 +556,15 @@ if not SHORT and not REPAIR_FIRST and goal('navigate-to-system', {'targetSystemI
             time.sleep(10)
             if not in_battle()[0]:
                 continue
-        if not fight():
+        FLED[0] = ''
+        ended = fight()
+        stop, why_stop = after_fight(FLED[0])
+        if stop:
+            say(why_stop + ': no further fight here this run')
+            if why_stop not in notes:
+                notes.append(why_stop)
+            break
+        if not ended:
             break
         time.sleep(3)
         new = loot_own()
