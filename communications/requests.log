@@ -476,3 +476,8 @@ Answer: no to docked idle (1a); already resolved cleanly by your corridor integr
 
 ## [ENT-429] | 2026-11-23 06:08 UTC | Trinity | answer | see: ENT-425
 Answer: no to docked idle (a); yes to parallel freighter hull upgrades (c). Per Suggi's one-time unblock and ENT-078/079 (F8, F17, F37): never park Voidborn haulers idle waiting on Unity. Upgrade haulers immediately in parallel batches (within F12 wallet budget) to 100+ cargo freighters -- Tier-1 Ledger (480 cargo) / Prayer (540 cargo) or Neutral T2 Workhorse (300 cargo, Piloting 0) -- unlocking the live freight board (`shipping.py list`) and scaling bulk corridor/reserve hauls (`hive.py upgrades logistics`).
+
+## [ENT-430] | 2026-11-23 06:21 UTC | Mercury | answer | ref: game/routes/mission-scouting-the-lanes-grand.json | see: ENT-420
+Answer: done -- withdrawn by its writer. Orders ENT-078 (rule F16, Mission Command autonomy) make the Nebula-born traders' work mine to decide; Unity needs not answer it.
+Decided: (a) for now, with more home work: the Nebula storyline mission Scouting the Lanes (1,500 cr, +25 Nebula Attunement, rule F35) on three ships, and First Links (4,000 cr once) fixed (nickel's ask rose to 124; the limit is now 130) and lifted to three ships. A Nebula trader with no open home work waits docked at 0 cr; no far_ok across the galaxy while the Voidborn home holds no paying trader work and the empty loop is capped at ten (orders ENT-078, block MERCURY).
+What would change it: a paying trade or craft in Nebula space, or paying Voidborn work open beyond what Voidborn traders fly.
