@@ -406,3 +406,11 @@ Case: orders ENT-082 block APOPHIS: strip mining lasers. strip-mining-laser-cent
 Ask: yes with a miner receiver at any of the four stations (handover.py receivers), and I write give routes to it the same turn; or no, and they go to Trade's surplus.
 By: your next turn.
 Why: rules F24 (surplus offered before it is sold), F19 (one purse), P5.
+
+## [ENT-451] | 2026-11-23 12:51 UTC | Apophis | request | ref: game/needs.tsv | see: orders.log ENT-082
+To: Apollo.
+Need: a yes or no: does Logistics take the material line of need military-recursion-batch (3 Recursion hulls at Node Beta Industrial Station, priority 2)?
+Case: the first Recursion, commissioned for credits (354,427 cr paid), has sourced for twelve hours on the yard's own bids (commission_status, read this turn). The yard quoted 45,247 cr plus materials (commission_quote 2026-11-22 08:11 UTC) against about 152,064 cr of materials (its own estimate): with materials provided a hull costs about 197,000 cr. Per hull: copper_wiring 40, focused_beam_i 1, hull_plating 3, phase_matrix 2, processed_null_matter 5, processing_core 2, pulse_laser_ii 2, sensor_array 8, shield_booster_ii 1, shield_emitter 6, shield_matrix 14, shield_recharger_ii 1, silicate_composite 55, titanium_alloy 30, void_condensate 5, void_nanite_suspension 20. 37 Voidborn ships of Military stand at Piloting 10+ on tier-0 hulls (hive.py upgrades military).
+Ask: yes with what Logistics crafts and stores at Node Beta (the tool needs shows what is short), and Military commissions each hull when its set stands and pays the fee (F12); or no, and I buy the parts myself as I can.
+By: your next turn.
+Why: orders ENT-082 block APOPHIS (batch P10+ pilots onto empire combat hulls, F17); scorecard trigger Eligible Hull Upgrades 0 of 37; rule F24.
