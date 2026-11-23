@@ -42,11 +42,11 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| 10c1432ce43efedb9c7f9632 | Node Beta (`node_beta`) | 0 | workhorse |
-| 4011f46410f19d6243276018 | Node Beta (`node_beta`) | 0 | workhorse |
+| 0637bfdf8ba6a997093332c9 | Nexus Prime (`nexus_prime`) | 0 | futures |
 | 4c671b9675ba73f0025d603d | Hamal (`hamal`) | 0 | deep_survey |
-| 6ce9fcc5d675364f5a7de638 | Node Beta (`node_beta`) | 0 | workhorse |
-| ec43cfe9e4293184f10e08ca | Node Beta (`node_beta`) | 0 | workhorse |
+| dd23b0ca1cc14350d2b0b023 | Hamal (`hamal`) | 0 | workhorse |
+| e039279d45eefa288b1c7717 | Nexus Prime (`nexus_prime`) | 0 | futures |
+| hiver | Acubens (`acubens`) | 0 | bonanza |
 
 ## Standing History
 

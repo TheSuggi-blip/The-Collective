@@ -9,7 +9,7 @@ faction: Pay Now Inc
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-22
+updated: 2026-11-23
 ---
 
 # Pay Now Inc [PAYN]
@@ -39,7 +39,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
 | Stoleas | Nexus Prime (`nexus_prime`) | 0 | paradox |
-| VedaFlux | Synchrony (`synchrony`) | 0 | threshold |
+| VedaFlux | The Experiment (`the_experiment`) | 0 | threshold |
 
 ## Standing History
 

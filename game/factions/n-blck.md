@@ -15,7 +15,7 @@ updated: 2026-11-23
 # The Black Flag [BLCK]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 0.
+Pilots of it in our space in the last 24 hours: 7.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 0.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 9 | Public event stream |
+| Pilots carrying the tag on the public event stream | 20 | Public event stream |
 
 ## Bases
 
@@ -36,7 +36,15 @@ None on the public record.
 
 Pilots carrying this tag whose last known system is one of ours (public event stream, last 24 hours).
 
-None in the last 24 hours.
+| Pilot | System | Player ships destroyed | Ship when one of ours met it |
+|---|---|---|---|
+| Dakkamek Wazgrub | Node Alpha (`node_alpha`) | 0 | theoria |
+| Gargrim Slagheap | Nexus Prime (`nexus_prime`) | 0 | prospect |
+| Gorbash Gritfang | Nexus Prime (`nexus_prime`) | 0 | theoria |
+| Grimzag Bludnob | Nexus Prime (`nexus_prime`) | 0 | shard |
+| Rustjaw Mekkrak | Node Alpha (`node_alpha`) | 0 | cobble |
+| Wartok Scrapjaw | Synchrony (`synchrony`) | 0 | threshold |
+| Zagstruk Rotfist | Nexus Prime (`nexus_prime`) | 0 | not met |
 
 ## Standing History
 

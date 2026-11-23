@@ -38,7 +38,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Overqueen | GSC-0027 (`gsc_0027`) | 0 | fugue |
+| OvermindHive | The Experiment (`the_experiment`) | 0 | theoria |
 
 ## Standing History
 
