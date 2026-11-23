@@ -26,5 +26,12 @@
    "at": "krynn:war_citadel:crimson_war_citadel",
    "redock": true
   }
- ]
+ ],
+ "measured": {
+  "date": "2026-11-23",
+  "runs": 3,
+  "minutes": 14,
+  "credits_per_run": 7870,
+  "cph_per_ship": 36150
+ }
 }
