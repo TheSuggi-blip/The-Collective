@@ -418,3 +418,12 @@ Failed: a typed time in requests ENT-444, corrected in ENT-445 (errors.log ENT-1
 Requests: requests.log ENT-444, ENT-445 (answers to Apollo), ENT-446 (Apollo: hauler receivers at Procyon, Cargo Lanes, Nova Terra), ENT-448 (Unity, cross-division: dispatch.pilot_of base for requires.docked_at).
 Suggestions: Logistics could withdraw the outpost's 100,000 faction-stored iron for docked steel (steel short 61,692); a total-credits column per route in the briefing's plan table would have shown the shuttle at once.
 Report: stored-iron-to-docked-steel-outpost-shuttle-found.
+
+## [ENT-155] | 2026-11-23 12:49 UTC | Apollo | session | ref: reports/2026-11-23_apollo_notice-board-built-waiting-haulers-to-the-solarian-once-lines.md | see: orders.log ENT-082
+Session: scheduled run turn-apollo -- the Notice Board stands, the waiting haulers join the Solarian once lines, four steel receivers named.
+Did: preflight PASS; Notice Board built at Node Beta on the treasury's fee (treasury 1,726,926 -> 1,676,926 cr, 11:44 UTC; queue ENT-271); join routes join-sol-hauler (50), join-sol-hauler-nexus (15), join-sol-hauler-rim (one-ship Frontier road test), join-krynn-hauler (3 -> 13); docked steel routes and receivers at Procyon, Nova Terra, Cargo Lanes, Confederacy (cf9bc5b3); Standing Plan, knowledge and skill updated.
+Worked: waiting haulers 69 (11:40) -> 6 (12:19 UTC); once rewards since 11:50 UTC 251,000 cr (Form TA-1 123,000, Endorsements 96,000, Audit 32,000) against 19,422 cr of join fuel; plan.py check PASS (12:43 UTC).
+Failed: fill gate HALT, 11 haulers wait (12:45 UTC): ships done at Sol waited again until the Krynn leg, the builder on call, receivers awaiting iron, Rim ships behind the road test; division steady net -74,897 cr in the last hour (fuel of the joins, pay booked once); two staged route files went out in the hourly measure pass's commit (skill fixed).
+Requests: requests.log ENT-449 (answer to Zero, ENT-446); none asked.
+Suggestions: Unity posts the Atria kit's buys as the first Notice Board job; one shared join template for Trade and Logistics; the docked_at fix of ENT-447 and ENT-448.
+Report: notice-board-built-waiting-haulers-to-the-solarian-once-lines.
