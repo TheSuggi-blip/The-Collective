@@ -665,6 +665,33 @@ class HostingTests(PassTests):
         self.assertEqual((sorted(self.inbox()), self.spawned), (["miner-9"], []))
 
 
+    def test_runs_that_must_be_processes_stop_at_spawn_most_and_the_rest_wait_without_an_order(self):
+        self.idle("miner-1", "miner-2")                                      # the route `mine` takes two ships
+        self.hosting(kinds=["mine"])
+        self.host(accepting=False)                                           # the host drains: every run would be a process
+        self.dispatch.SPAWN_MOST, self.dispatch.runner_processes = 1, lambda: 0
+        lines, children = self.real_pass()
+        self.assertEqual(([argv[4] for argv, _log, _env in self.spawned], len(children)), (["miner-1"], 1))
+        self.assertFalse((self.data / "fleet" / "orders" / "miner-2.json").exists())
+        self.assertIn("1 free pilot(s) wait for a later pass", lines[-1])
+
+    def test_runners_already_running_count_and_hosted_runs_do_not(self):
+        self.idle("miner-1", "miner-2")
+        self.hosting(kinds=["mine"])
+        self.dispatch.SPAWN_MOST, self.dispatch.runner_processes = 2, lambda: 2
+        self.host(accepting=False)
+        self.real_pass()
+        self.assertEqual(self.spawned, [])                                   # two run already: none more
+        for pilot in ("miner-1", "miner-2"):
+            (self.data / "fleet" / "orders" / (pilot + ".json")).unlink(missing_ok=True)
+        self.host()                                                          # a host that takes runs: the cap does not apply
+        self.real_pass()
+        self.assertEqual((sorted(self.inbox()), self.spawned), (["miner-1", "miner-2"], []))
+
+    def test_runner_processes_counts_the_runner_scripts_of_this_container(self):
+        self.assertIsInstance(self.dispatch.runner_processes(), int)
+
+
 class RouteGateTests(Tree):
     def setUp(self):
         super().setUp()                                                                           # the gate's tree has a plan without the unknown route

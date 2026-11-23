@@ -121,6 +121,11 @@ import routes as routefiles                       # noqa: E402  what standing wo
 import taxes                                      # noqa: E402  the weekly tax a run in flight carried is no loss of its route
 
 EVERY = 30                   # seconds between two passes
+SPAWN_MOST = 30              # runners running as processes of their own at once, at most (about 60 MB each of the
+                             # runner container's 6 GB): while the run host takes no runs (a drain on a changed
+                             # script) every run was a process, 235 in one ten-minute drain on 2026-11-23, and the
+                             # container was killed out of memory 12 times that day with every run in flight.
+                             # Above it a free pilot waits for a later pass.
 ORDER_FRESH = 20 * 60        # an order file not touched for this long is dead
 CENSUS_FRESH = 90 * 60       # a census older than this says nothing about a herd
 FLOOR_HOLD = 24 * 3600      # a census that read a field below its floor closes the route this long, or until a newer one reads it back (requests ENT-465)
@@ -1677,6 +1682,23 @@ def hosting(data):
     return {str(k) for k in kinds if str(k) in KINDS}, cap if isinstance(cap, int) and not isinstance(cap, bool) and cap > 0 else 10 ** 6
 
 
+def runner_processes():
+    """How many runners (the scripts of KINDS) run as processes of their own in this container now, from /proc."""
+    scripts = set(KINDS.values())
+    count = 0
+    for entry in os.scandir("/proc"):
+        if not entry.name.isdigit():
+            continue
+        try:
+            with open("/proc/%s/cmdline" % entry.name, "rb") as handle:
+                argv = handle.read().split(b"\0")
+        except OSError:
+            continue
+        if any(os.path.basename(a.decode("ascii", "replace")) in scripts for a in argv[1:5]):
+            count += 1
+    return count
+
+
 def spawn(argv, log_path, env):
     """A runner as a process of its own, its output in the pilot's log."""
     with open(log_path, "w", encoding="utf-8") as log:
@@ -1704,6 +1726,7 @@ def one_pass(root, data, dry_run, children):
     lines += pull.keep(root, data, now, dry_run, state)      # r21: the two switches of this pass, and with pull-on the reserve's levels
     logs = Path(data) / "routes" / "logs"
     kinds, cap = hosting(data)
+    alone, waiting = (0 if dry_run else runner_processes()), 0      # runners running as processes; free pilots held back
     hosted = runhost.load(data) if kinds and runhost.accepting(data, time.time()) else None      # runs the host has; None: no host takes runs now
     for job in [] if dry_run else runhost.take_back(data, now):
         name, what, script = str(job.get("pilot")), str(job.get("what")), str(job.get("script"))
@@ -1714,6 +1737,7 @@ def one_pass(root, data, dry_run, children):
         mark = dict(os.environ, FLEET_MEMBER=os.environ.get("FLEET_MEMBER") or "dispatch", FLEET_HOLD=what)
         children.append(spawn([sys.executable, "-I", "-B", os.path.join(str(Path(root) / "fleet"), script)] + [str(a) for a in job.get("argv") or []],
                               logs / (name + ".log"), mark))
+        alone += 1
         lines.append("%s: `%s` started as a process: the host did not take it within a minute" % (name, what))
     for name in orphans(fleet, state["orders"], now, ORPHANS):
         if dry_run:
@@ -1748,6 +1772,9 @@ def one_pass(root, data, dry_run, children):
             route, argument = pick(pilot, plan, routes, state)
         if route is None:
             continue
+        if not dry_run and not (hosted is not None and route["kind"] in kinds and hosted < cap) and alone >= SPAWN_MOST:
+            waiting += 1             # its run would be one more process: it waits for a later pass, no order is written
+            continue
         what = ("census " + argument) if route["kind"] == "census" else route["kind"] + " " + route["id"]
         state["orders"][name] = what
         lines.append("%s -> %s" % (name, what))
@@ -1769,6 +1796,10 @@ def one_pass(root, data, dry_run, children):
             hosted += 1
         else:
             children.append(spawn(argv, logs / (name + ".log"), dict(os.environ, **mark)))
+            alone += 1
+    if waiting:
+        lines.append("%d free pilot(s) wait for a later pass: %d runners run as processes of their own (SPAWN_MOST %d) and the run host "
+                     "takes no more now" % (waiting, alone, SPAWN_MOST))
     children[:] = [c for c in children if c.poll() is None]          # reap the runners that ended
     return lines
 
