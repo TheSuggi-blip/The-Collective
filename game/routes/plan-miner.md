@@ -16,7 +16,7 @@ means to do next. What a route earns now is not written here, because it changes
 hour: ask the tool `route` or `routes`, or the database (`hive.py sql`), which carry each
 figure with its age. Up: [master-index.md](master-index.md).
 
-Kept by Zero. Routes: 78. Ships: 130.
+Kept by Zero. Routes: 79. Ships: 130.
 
 | # | Route | Group | Zone | Open to | Ships planned |
 |---|---|---|---|---|---|
@@ -66,38 +66,39 @@ Kept by Zero. Routes: 78. Ships: 130.
 | 44 | [gather-gsc-0044-belt-faction](gather-gsc-0044-belt-faction.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 6 jumps | up to 10 ships, empty hold, standing work | 20 of 130 |
 | 45 | [gather-gsc-0044-forgotten-tailings-faction](gather-gsc-0044-forgotten-tailings-faction.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 6 jumps | up to 5 ships, empty hold, standing work | 20 of 130 |
 | 46 | [gather-acrux-belt-faction](gather-acrux-belt-faction.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 7 jumps | up to 3 ships, empty hold, standing work | 20 of 130 |
-| 47 | [store-hold-central-nexus](store-hold-central-nexus.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 40 ships, goods aboard, standing work | all 130 |
-| 48 | [gather-acubens-belt-carbon](gather-acubens-belt-carbon.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 1 ships, empty hold, standing work | all 130 |
-| 49 | [gather-jishui-plainrock-carbon](gather-jishui-plainrock-carbon.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 11 jumps | up to 1 ships, empty hold, standing work | all 130 |
-| 50 | [gather-last-light-mineral-carbon](gather-last-light-mineral-carbon.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 15 jumps | up to 1 ships, empty hold, standing work | all 130 |
-| 51 | [gather-yildun-neverworld-carbon](gather-yildun-neverworld-carbon.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 15 jumps | up to 6 ships, empty hold, standing work | all 130 |
-| 52 | [gather-jadecove-nickel](gather-jadecove-nickel.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 11 jumps | up to 1 ships, empty hold, standing work | all 130 |
-| 53 | [gather-tiaki-worldsend-nickel](gather-tiaki-worldsend-nickel.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 18 jumps | up to 2 ships, empty hold, standing work | all 130 |
-| 54 | [gather-gsc-0049-reef-nickel](gather-gsc-0049-reef-nickel.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 5 jumps | up to 1 ships, empty hold, standing work | all 130 |
-| 55 | [gather-glasslight-shoal-silicon](gather-glasslight-shoal-silicon.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 10 jumps | up to 1 ships, empty hold, standing work | all 130 |
-| 56 | [gather-subra-floodlight-flats-silicon](gather-subra-floodlight-flats-silicon.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 12 jumps | up to 1 ships, empty hold, standing work | all 130 |
-| 57 | [gather-goldcrest-gold](gather-goldcrest-gold.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 7 jumps | up to 6 ships, empty hold, standing work | all 130 |
-| 58 | [gather-lacaille-deep-vein-train](gather-lacaille-deep-vein-train.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 9 jumps | up to 1 ships, empty hold, standing work | 35 of 130 |
-| 59 | [gather-bunda-belt-platinum](gather-bunda-belt-platinum.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 19 jumps | up to 3 ships, empty hold, standing work | all 130 |
-| 60 | [gather-khambalia-crystal-market-train](gather-khambalia-crystal-market-train.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 23 jumps | up to 1 ships, empty hold, standing work | 35 of 130 |
-| 61 | [gather-izar-quantum-fragments](gather-izar-quantum-fragments.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 15 jumps | up to 1 ships, empty hold, standing work | all 130 |
-| 62 | [gather-errai-quantum-fragments](gather-errai-quantum-fragments.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 15 jumps | up to 2 ships, empty hold, standing work | all 130 |
-| 63 | [gather-tidewater-quantum-fragments](gather-tidewater-quantum-fragments.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 15 jumps | up to 1 ships, empty hold, standing work | all 130 |
-| 64 | [mine-epsilon-eridani-ice-fields](mine-epsilon-eridani-ice-fields.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 9 jumps | up to 1 ships, needs ice_harvester_i, empty hold | 1 of 130 |
-| 65 | [mine-hd-20794-ice-fields](mine-hd-20794-ice-fields.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 21 jumps | up to 1 ships, needs ice_harvester_i, empty hold | 2 of 130 |
-| 66 | [mine-dheneb-cryobelt](mine-dheneb-cryobelt.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 11 jumps | up to 2 ships, needs ice_harvester_i, empty hold | 5 of 130 |
-| 67 | [mine-cryogenic-reserve](mine-cryogenic-reserve.json) | [Tests](index-tests.md) | home space | up to 1 ships, needs ice_harvester_i, while central_nexus bids 25 cr for water_ice | all 130 |
-| 68 | [mine-achernar-frost-ring-nexus](mine-achernar-frost-ring-nexus.json) | [Tests](index-tests.md) | beyond the border, 4 jumps | up to 2 ships, needs ice_harvester_i, empty hold, while central_nexus bids 25 cr for water_ice | all 130 |
-| 69 | [mine-ruchbah-ice-belt-nexus](mine-ruchbah-ice-belt-nexus.json) | [Tests](index-tests.md) | beyond the border, 4 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while central_nexus bids 25 cr for water_ice | all 130 |
-| 70 | [mine-wolf-1061-frozen-drift-nexus](mine-wolf-1061-frozen-drift-nexus.json) | [Tests](index-tests.md) | beyond the border, 4 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while central_nexus bids 25 cr for water_ice | all 130 |
-| 71 | [mine-nova-terra-ice-shelf](mine-nova-terra-ice-shelf.json) | [Tests](index-tests.md) | beyond the border, 8 jumps | up to 1 ships, needs ice_harvester_i, while central_nexus bids 25 cr for water_ice | all 130 |
-| 72 | [mine-wolf-1061-vent](mine-wolf-1061-vent.json) | [Tests](index-tests.md) | beyond the border, 4 jumps | up to 1 ships, needs nitrogen_vent, empty hold, while synchrony_hub bids 25 cr for water_ice | all 130 |
-| 73 | [give-miner-stores-crescent-moon](give-miner-stores-crescent-moon.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 11 jumps | up to 2 ships, with 50 carbon_ore or silicon_ore or nickel_ore or quantum_fragments or iron_ore or copper_ore or gold_ore or platinum_ore stored at ec315132a710a7d0fbc68cca05073154, standing work | all 130 |
-| 74 | [give-miner-stores-ramens-rest](give-miner-stores-ramens-rest.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 15 jumps | up to 2 ships, with 50 carbon_ore or silicon_ore or nickel_ore or quantum_fragments or iron_ore or copper_ore or gold_ore or platinum_ore stored at ramens_rest, standing work | all 130 |
-| 75 | [gather-gsc-0027-spacetime-seep](gather-gsc-0027-spacetime-seep.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 50 ships, standing work | all 130 |
-| 76 | [mine-pherkad-rift](mine-pherkad-rift.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 125 ships, standing work | all 130 |
-| 77 | [train-jumps-miner](train-jumps-miner.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 25 ships, from 5,000 cr, under navigation 6, piloting 10, standing work | all 130 |
-| 78 | [park](park.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | the park route | all 130 |
+| 47 | [mission-the-objection-deep](mission-the-objection-deep.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 19 jumps | once per pilot, up to 3 ships | 1 of 130 |
+| 48 | [store-hold-central-nexus](store-hold-central-nexus.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 40 ships, goods aboard, standing work | all 130 |
+| 49 | [gather-acubens-belt-carbon](gather-acubens-belt-carbon.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 1 ships, empty hold, standing work | all 130 |
+| 50 | [gather-jishui-plainrock-carbon](gather-jishui-plainrock-carbon.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 11 jumps | up to 1 ships, empty hold, standing work | all 130 |
+| 51 | [gather-last-light-mineral-carbon](gather-last-light-mineral-carbon.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 15 jumps | up to 1 ships, empty hold, standing work | all 130 |
+| 52 | [gather-yildun-neverworld-carbon](gather-yildun-neverworld-carbon.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 15 jumps | up to 6 ships, empty hold, standing work | all 130 |
+| 53 | [gather-jadecove-nickel](gather-jadecove-nickel.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 11 jumps | up to 1 ships, empty hold, standing work | all 130 |
+| 54 | [gather-tiaki-worldsend-nickel](gather-tiaki-worldsend-nickel.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 18 jumps | up to 2 ships, empty hold, standing work | all 130 |
+| 55 | [gather-gsc-0049-reef-nickel](gather-gsc-0049-reef-nickel.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 5 jumps | up to 1 ships, empty hold, standing work | all 130 |
+| 56 | [gather-glasslight-shoal-silicon](gather-glasslight-shoal-silicon.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 10 jumps | up to 1 ships, empty hold, standing work | all 130 |
+| 57 | [gather-subra-floodlight-flats-silicon](gather-subra-floodlight-flats-silicon.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 12 jumps | up to 1 ships, empty hold, standing work | all 130 |
+| 58 | [gather-goldcrest-gold](gather-goldcrest-gold.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 7 jumps | up to 6 ships, empty hold, standing work | all 130 |
+| 59 | [gather-lacaille-deep-vein-train](gather-lacaille-deep-vein-train.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 9 jumps | up to 1 ships, empty hold, standing work | 35 of 130 |
+| 60 | [gather-bunda-belt-platinum](gather-bunda-belt-platinum.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 19 jumps | up to 3 ships, empty hold, standing work | all 130 |
+| 61 | [gather-khambalia-crystal-market-train](gather-khambalia-crystal-market-train.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 23 jumps | up to 1 ships, empty hold, standing work | 35 of 130 |
+| 62 | [gather-izar-quantum-fragments](gather-izar-quantum-fragments.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 15 jumps | up to 1 ships, empty hold, standing work | all 130 |
+| 63 | [gather-errai-quantum-fragments](gather-errai-quantum-fragments.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 15 jumps | up to 2 ships, empty hold, standing work | all 130 |
+| 64 | [gather-tidewater-quantum-fragments](gather-tidewater-quantum-fragments.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 15 jumps | up to 1 ships, empty hold, standing work | all 130 |
+| 65 | [mine-epsilon-eridani-ice-fields](mine-epsilon-eridani-ice-fields.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 9 jumps | up to 1 ships, needs ice_harvester_i, empty hold | 1 of 130 |
+| 66 | [mine-hd-20794-ice-fields](mine-hd-20794-ice-fields.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 21 jumps | up to 1 ships, needs ice_harvester_i, empty hold | 2 of 130 |
+| 67 | [mine-dheneb-cryobelt](mine-dheneb-cryobelt.json) | [Measured at a Loss](index-measured-at-a-loss.md) | beyond the border, 11 jumps | up to 2 ships, needs ice_harvester_i, empty hold | 5 of 130 |
+| 68 | [mine-cryogenic-reserve](mine-cryogenic-reserve.json) | [Tests](index-tests.md) | home space | up to 1 ships, needs ice_harvester_i, while central_nexus bids 25 cr for water_ice | all 130 |
+| 69 | [mine-achernar-frost-ring-nexus](mine-achernar-frost-ring-nexus.json) | [Tests](index-tests.md) | beyond the border, 4 jumps | up to 2 ships, needs ice_harvester_i, empty hold, while central_nexus bids 25 cr for water_ice | all 130 |
+| 70 | [mine-ruchbah-ice-belt-nexus](mine-ruchbah-ice-belt-nexus.json) | [Tests](index-tests.md) | beyond the border, 4 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while central_nexus bids 25 cr for water_ice | all 130 |
+| 71 | [mine-wolf-1061-frozen-drift-nexus](mine-wolf-1061-frozen-drift-nexus.json) | [Tests](index-tests.md) | beyond the border, 4 jumps | up to 1 ships, needs ice_harvester_i, empty hold, while central_nexus bids 25 cr for water_ice | all 130 |
+| 72 | [mine-nova-terra-ice-shelf](mine-nova-terra-ice-shelf.json) | [Tests](index-tests.md) | beyond the border, 8 jumps | up to 1 ships, needs ice_harvester_i, while central_nexus bids 25 cr for water_ice | all 130 |
+| 73 | [mine-wolf-1061-vent](mine-wolf-1061-vent.json) | [Tests](index-tests.md) | beyond the border, 4 jumps | up to 1 ships, needs nitrogen_vent, empty hold, while synchrony_hub bids 25 cr for water_ice | all 130 |
+| 74 | [give-miner-stores-crescent-moon](give-miner-stores-crescent-moon.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 11 jumps | up to 2 ships, with 50 carbon_ore or silicon_ore or nickel_ore or quantum_fragments or iron_ore or copper_ore or gold_ore or platinum_ore stored at ec315132a710a7d0fbc68cca05073154, standing work | all 130 |
+| 75 | [give-miner-stores-ramens-rest](give-miner-stores-ramens-rest.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 15 jumps | up to 2 ships, with 50 carbon_ore or silicon_ore or nickel_ore or quantum_fragments or iron_ore or copper_ore or gold_ore or platinum_ore stored at ramens_rest, standing work | all 130 |
+| 76 | [gather-gsc-0027-spacetime-seep](gather-gsc-0027-spacetime-seep.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 50 ships, standing work | all 130 |
+| 77 | [mine-pherkad-rift](mine-pherkad-rift.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 125 ships, standing work | all 130 |
+| 78 | [train-jumps-miner](train-jumps-miner.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 25 ships, from 5,000 cr, under navigation 6, piloting 10, standing work | all 130 |
+| 79 | [park](park.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | the park route | all 130 |
 
 Templates its ships fly (a ship's own routes name one as `@<name>`):
 
