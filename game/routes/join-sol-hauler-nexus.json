@@ -2,13 +2,16 @@
  "id": "join-sol-hauler-nexus",
  "kind": "circuit",
  "title": "An Outer Rim-born hauler standing at Nexus Prime with no work joins the Solarian corridor by the proven road: one trip to Sol Central",
- "note": "Written by Apollo, 2026-11-23 12:10 UTC (orders ENT-082, block APOLLO: the capitals' once lines by join corridors). At 12:07 UTC 13 Outer Rim-born haulers waited at Nexus Prime (table ships), not at Frontier: their road to Sol is the proven one of join-sol-hauler (Nexus Prime to Sol 10 jumps, lawless gsc_0041, antares, homam: 0 pirates in 52 to 152 readings each over 24 h, sightings 11:44 UTC; 204 Form TA-1 runs of ours). At Sol, Form TA-1, the Audit and Endorsements open to them (no Rim-born hauler paid any, table runs). Gated on the system so that a Rim ship at Frontier takes the one-ship road test join-sol-hauler-rim instead. Standing for the reason of join-sol-hauler; once per pilot, only in the Rim rows.",
+ "note": "Written by Apollo, 2026-11-23 12:10 UTC (orders ENT-082, block APOLLO: the capitals' once lines by join corridors). At 12:07 UTC 13 Outer Rim-born haulers waited at Nexus Prime (table ships), not at Frontier: their road to Sol is the proven one of join-sol-hauler (Nexus Prime to Sol 10 jumps, lawless gsc_0041, antares, homam: 0 pirates in 52 to 152 readings each over 24 h, sightings 11:44 UTC; 204 Form TA-1 runs of ours). At Sol, Form TA-1, the Audit and Endorsements open to them (no Rim-born hauler paid any, table runs). Gated on the system so that a Rim ship at Frontier takes the one-ship road test join-sol-hauler-rim instead. Standing for the reason of join-sol-hauler; once per pilot, only in the Rim rows. 2026-11-23 12:18 UTC (Apollo): Synchrony added: its way to Sol is the same proven road (synchrony, pherkad, gsc_0041, antares, homam, furud, nova_terra, sirius; fuelplan chart).",
  "far_ok": true,
  "once": true,
  "standing": true,
  "max_ships": 15,
  "requires": {
-  "in_system": "nexus_prime",
+  "in_system": [
+   "nexus_prime",
+   "synchrony"
+  ],
   "empire": "outerrim"
  },
  "stops": [
