@@ -223,6 +223,9 @@ Why: <the fact behind it, with its number>.
 Answer: <yes | no | done>. <what will be done and by when; why not; or what was done>.
 ```
 
+
+**Unity Escalation Gate (`Scope:`, Suggi 2026-11-23, F16):** Any `request` from an Admiral addressed `To: Unity` MUST include a `Scope:` line set to one of `capital | seating | flagship-loan | diplomacy | cross-division`. `scripts/comms.py` mechanically rejects division-internal routing, newborn placement (`far_ok`), docked-idle exemptions, and routine `F12`-funded hull/module upgrade requests -- Admirals decide and execute those autonomously.
+
 ## The Admirals' Log
 
 `admirals.log` is where the Admirals coordinate among themselves

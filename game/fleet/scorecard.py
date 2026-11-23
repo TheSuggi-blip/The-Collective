@@ -417,7 +417,7 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None):
                             "off_role_ships": int(_num(r["off_role_ships"])),
                         }
 
-            # Playbook caps
+            # Playbook caps (compute exact live chapter cap % matching guide.py drift; fallback to division_playbooks)
             if "division_playbooks" in tables:
                 for r in conn.execute("SELECT division, max_chapter_pct, open_needs, ready_needs FROM division_playbooks").fetchall():
                     pb_by_div[str(r["division"] or "").lower()] = {
@@ -425,6 +425,27 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None):
                         "open_needs": int(_num(r["open_needs"])),
                         "ready_needs": int(_num(r["ready_needs"])),
                     }
+            try:
+                import guidebook as _gb
+                gb_root = Path(repo_root) / "game" / "routes" / "guidebook"
+                if gb_root.is_dir():
+                    for d_low in ("command", "mining", "trade", "logistics", "military", "intel"):
+                        d_dir = gb_root / d_low
+                        if not d_dir.is_dir():
+                            continue
+                        mx_p = 0.0
+                        for md in d_dir.glob("*.md"):
+                            cap = float(_gb.CARD_MAX if md.stem == "card" else _gb.CHAPTER_MAX)
+                            body = md.read_text(encoding="ascii", errors="replace")
+                            # Sum characters from first ### entry onward (exact guidebook.chapter_chars semantics)
+                            pos = body.find("\n### ")
+                            used = len(body) - pos if pos >= 0 else len(body)
+                            pct = round(100.0 * used / max(1.0, cap), 1)
+                            if pct > mx_p:
+                                mx_p = pct
+                        pb_by_div.setdefault(d_low, {})["max_chapter_pct"] = mx_p
+            except Exception:
+                pass
 
             # Fuel sinks / Productive efficiency (24h)
             if "fuel_sinks" in tables:
@@ -578,7 +599,7 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None):
             "metric": "Eligible Hull Upgrades (P10+ -> T2+)",
             "actual": f"{fleet_upg_elig}/{fleet_elig_p10} ({fleet_hull_elig_pct:.1f}%)",
             "target": ">=80% of eligible", "direction": "IMPROVING" if (wd_deltas["t2_delta"] or 0) > 0 else "FLAT",
-            "action": "Validate T2 Recursion/Resonance 3-run ROI (F37) and scale empire-matched T2+ hull upgrades for P10+ pilots (O2)",
+            "action": "Parallel batch-upgrade P10+ pilots & P0 cargo freighters (Ledger/Prayer/Workhorse) via `hive.py upgrades` (F17/F37/O2)",
         })
     if fleet_slot_pct < TARGET_COMPLETION_PCT:
         ent_triggers.append({
@@ -659,7 +680,7 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None):
                 "severity": hull_sev, "code": "DIV_HULL_UPGRADE", "metric": "Eligible Hull Upgrades",
                 "actual": hull_label, "target": ">=80% of P10+ upgraded",
                 "direction": "IMPROVING" if (wd_deltas["t2_delta"] or 0) > 0 else "FLAT",
-                "action": f"Upgrade P10+ {div} pilots to empire-matched T2+ hulls once 3-run ROI (F37) clears (O2)",
+                "action": f"Parallel batch-upgrade P10+ {div} pilots to empire-specialized T2 hulls & measure in flight (`hive.py upgrades`, F17/F37)",
             })
         elif hull_sev == "WARN" and elig_p10 == 0:
             triggers.append({

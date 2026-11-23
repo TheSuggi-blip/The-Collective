@@ -895,6 +895,30 @@ def release_sweep(data, pilot):
             pass
 
 
+def auto_queue_seats(data, now, dry=False):
+    """Automatically queue unseated fleet ships up to open faction cap (Rule F11) so open seats
+    never wait 6 hours for Unity's AI turn. Uses pick_unseated() benefit ranking."""
+    emp = dispatch.read_json(Path(data) / "empire" / "empire.json", {}) or {}
+    fac = (emp.get("faction") or {}) if isinstance(emp, dict) else {}
+    ml = int(fac.get("members_limit") or 0)
+    mc = int(fac.get("member_count") or 0)
+    if ml <= 0 or mc >= ml:
+        return 0
+    rows = seat_rows(data)
+    open_now = sum(1 for r in rows if r.get("state") == "open")
+    need = max(0, (ml - mc) - open_now)
+    if need <= 0:
+        return 0
+    picks = pick_unseated(data, limit=need)
+    if not picks:
+        return 0
+    if dry:
+        print("would auto-queue seats: %d pilots (%d/%d cap, %d already queued)" % (len(picks), mc, ml, open_now))
+        return len(picks)
+    add_seats(data, picks, now)
+    return len(picks)
+
+
 def serve_seats(data, leader, now, dry):
     """Invite and join up to SEAT_BATCH idle queued pilots when both the leader and each target pilot stand free."""
     rows = seat_rows(data)
@@ -905,13 +929,10 @@ def serve_seats(data, leader, now, dry):
         print("would seat: %d pilots waiting in seats.json" % len(todo))
         return 0
     fleet = ships(data)
-    if fighting(fleet.get(leader) or {}) or not try_hold_sweep(data, leader, now):
-        if (Path(data) / "fleet" / "host" / "running" / (leader + ".json")).exists():
-            sp = Path(data) / "fleet" / "host" / "stop" / leader
-            sp.parent.mkdir(parents=True, exist_ok=True)
-            sp.touch()
-        print("SEATS waits: leader %s is on a run (%s)" % (leader, division.order_of(leader, data) or "fighting"))
+    if fighting(fleet.get(leader) or {}):
+        print("SEATS waits: leader %s is in combat" % leader)
         return 0
+    held_leader = try_hold_sweep(data, leader, now)
     joined = 0
     t0 = time.time()
     try:
@@ -933,12 +954,7 @@ def serve_seats(data, leader, now, dry):
             p = str(r.get("pilot") or "")
             if not p or fighting(fleet.get(p) or {}):
                 continue
-            if not try_hold_sweep(data, p, time.time()):
-                if (Path(data) / "fleet" / "host" / "running" / (p + ".json")).exists():
-                    sp = Path(data) / "fleet" / "host" / "stop" / p
-                    sp.parent.mkdir(parents=True, exist_ok=True)
-                    sp.touch()
-                continue
+            held_p = try_hold_sweep(data, p, time.time())
             try:
                 st_a, txt_a = faction_raw(leader, "invite", {"player_id": p})
                 st_b, txt_b = faction_raw(p, "join", {"faction_id": fid})
@@ -955,9 +971,11 @@ def serve_seats(data, leader, now, dry):
                 else:
                     r["note"] = txt_b[:160]
             finally:
-                release_sweep(data, p)
+                if held_p:
+                    release_sweep(data, p)
     finally:
-        release_sweep(data, leader)
+        if held_leader:
+            release_sweep(data, leader)
     write_seats(data, rows)
     if joined:
         print("SEATS joined: %d pilots added to CLTV (%d still open)"
@@ -996,6 +1014,7 @@ def sweep(data, now, dry):
     flying, unsettled = settle_gifts(data, "gift", now, dry)    # Q75: a gift a cut pass left `sent`, settled before any new one
     failed = serve_funds(data, leader, now, dry) or failed or unsettled   # orders ENT-063: the treasury pays one pilot for a buy
     failed = serve_topups(data, leader, now, dry) or failed     # requests ENT-380 ff.: the treasury tops up pilots no ship can give to
+    auto_queue_seats(data, now, dry)
     serve_seats(data, leader, now, dry)
     log = swept(data)
     battle = {r.get("from"): r["at"] for r in log if r.get("state") == "battle" and now - r["at"] < BATTLE_WAIT}

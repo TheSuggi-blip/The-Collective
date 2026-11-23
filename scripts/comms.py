@@ -97,6 +97,52 @@ MEMBER_BLOCK = re.compile(r"^([A-Z]{3,}), ")      # a member's block heading: `U
 DRAFT = re.compile(r"^## \[ENT-NEXT\] \| NOW \| ([A-Za-z][A-Za-z0-9_-]*) \| ([a-z]+)((?: \| (?:ref|see): [^|]+)*)$")
 
 
+
+UNITY_ALLOWED_SCOPES = ("capital", "seating", "flagship-loan", "diplomacy", "cross-division")
+ADMIRAL_NAMES = ("Zero", "Mercury", "Apollo", "Apophis", "Oracle")
+FORBIDDEN_ESCALATION_PATTERNS = (
+    (re.compile(r"\b(counts? as operating|count(?:ed)? as operating|wait docked|docked (?:hauler|trader|drone|miner|newborn)[^.\n]{0,40}operating)\b", re.I),
+     "docked-idle exemption for non-scouts is forbidden (rule F8: only excess Intel scouts on watch are exempt; upgrade hulls or integrate into main corridors)"),
+    (re.compile(r"\b(far_ok|own region first|standing work at home|no (?:trader|hauler|drone|miner|class) work (?:stands|in their region)|newborn[^.\n]{0,60}(?:at home|wait docked|region))\b", re.I),
+     "newborn regional vs main-corridor routing is your own division decision (rules F16, F35, O5, P6; standing corridors auto-open past home Mastery)"),
+    (re.compile(r"\b(may take a hull for a test|permission to (?:upgrade|buy|fit|test) (?:a )?(?:hull|module|route)|one[- ]hull test)\b", re.I),
+     "hull/module upgrades within F12 wallet budget are your own autonomous batch decision (rules F17, F37, O2; run `hive.py upgrades`)"),
+)
+
+
+def check_request_autonomy(writer, text):
+    """Structural anti-escalation gate (Suggi, 2026-11-23; F16/F17/F35/F37):
+    Prevents Admirals from drifting back into asking Unity for division-internal routing,
+    newborn placement, docked-idle exemptions, or routine hull/module upgrades.
+    Applies only to new `request` appends from Admirals addressed `To: Unity`."""
+    if writer not in ADMIRAL_NAMES:
+        return None
+    to_val = ""
+    scope_val = ""
+    for ln in text.splitlines():
+        low = ln.strip().lower()
+        if low.startswith("to:"):
+            to_val = ln.split(":", 1)[1].strip().rstrip(".").lower()
+        elif low.startswith("scope:"):
+            scope_val = ln.split(":", 1)[1].strip().rstrip(".").lower()
+    if to_val != "unity":
+        return None
+    if scope_val not in UNITY_ALLOWED_SCOPES:
+        return (
+            "AUTONOMY GATE (F16): Admiral requests To: Unity MUST include a `Scope:` line set to one of: "
+            + ", ".join(UNITY_ALLOWED_SCOPES)
+            + ". Decide division routing, newborn integration, hull/fit upgrades (F17/F37), and script fixes (fleet-build) yourself."
+        )
+    body_only = "\n".join(text.splitlines()[1:])
+    for pat, why in FORBIDDEN_ESCALATION_PATTERNS:
+        if pat.search(body_only):
+            # Allow genuine F10 flagship loans or capital funding even if newborn context is mentioned
+            if scope_val in ("flagship-loan", "capital", "seating", "diplomacy"):
+                continue
+            return "AUTONOMY GATE (F16): " + why
+    return None
+
+
 def parse(text):
     """(entries, errors) of one log's text. An entry: num, when, by, category, ref, see, head, body."""
     entries, errors = [], []
@@ -470,6 +516,10 @@ def append(root, log, entry_file, name, commit=True):
             problems.append("the entry names %s as its writer, the append is made as %s" % (draft.group(1), name))
         if draft.group(2) not in LOGS[log]:
             problems.append("category `%s` does not belong in %s.log (it takes: %s)" % (draft.group(2), log, ", ".join(LOGS[log])))
+    if log == "requests" and draft is not None and draft.group(2) == "request":
+        blocked = check_request_autonomy(name, "\n".join(lines))
+        if blocked:
+            problems.append(blocked)
     if log == "orders" and name not in ORDERS_WRITERS:
         problems.append("orders.log is written by the Fleet Admiral (or Trinity for Suggi mandate sync) only")
     if any(line.startswith("## [ENT-") for line in lines[1:]):

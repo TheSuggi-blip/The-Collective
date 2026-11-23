@@ -659,9 +659,13 @@ EMPIRE_PREFIXES = ("voidborn", "solarian", "nebula", "crimson", "outerrim")
 
 def newborn_reason(pilot, rid, route):
     """Why a route is closed to a pilot based on empire origin and regional reach, or None (Plan-500 wave, ENT-234;
-    generalized to all 5 empires, rule F35). An empire-prefixed mission (`<empire>-*`) belongs strictly to pilots born
-    in that empire (rule F35: permanent Empire Mastery trains only from own-empire missions). For non-Voidborn pilots,
-    routes starting > FOREIGN_REACH jumps away wait for regional work unless `far_ok` is set."""
+    generalized to all 5 empires, rule F35; standing-work corridor unlock, Suggi 2026-11-23).
+    1. An empire-prefixed mission (`<empire>-*`) belongs strictly to pilots born in that empire (rule F35: permanent
+       Empire Mastery trains only from own-empire missions).
+    2. Foreign `once` missions > FOREIGN_REACH jumps away wait for regional work unless `far_ok` is set.
+    3. Standing non-`once` class work (gather, craft, sell, buy, fit, haul, hunt, supply, standing circuits) flows
+       automatically by plan order so newborns finish local home work first and then seamlessly join main Collective
+       corridors without idling on manual `far_ok` stamps."""
     empire = str(pilot.get("empire") or "").strip().lower()
     if not empire:
         return None
@@ -672,6 +676,9 @@ def newborn_reason(pilot, rid, route):
     if empire == "voidborn":
         return None
     if route.get("far_ok") or route.get("kind") == "census" or not pilot.get("system"):
+        return None
+    # Standing non-once class work integrates into main Collective corridors automatically once earlier home rows fill
+    if not (route.get("once") or is_once_mission(rid, route)):
         return None
     if LANES_CACHE["lanes"] is None:
         import fuelplan

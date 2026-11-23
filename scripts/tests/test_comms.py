@@ -55,6 +55,7 @@ Answer: yes. One drone from the next turn on.
 
 ## [ENT-003] | 2026-01-01 09:20 UTC | Mercury | request
 To: Unity.
+Scope: cross-division
 Need: leave to sell stored ore under 2 cr.
 By: 2026-01-02 08:00 UTC.
 
@@ -237,7 +238,7 @@ class AppendTests(Tree):
         self.assertEqual(code, 1)
         self.assertIn("NOT APPENDED: the entry names a pilot of ours (scout-10, miner-3)", printed)
         self.assertEqual(self.log("requests"), before)
-        free = "## [ENT-NEXT] | NOW | Zero | request\nTo: Unity.\nNeed: the log of one scout; the miner- ships, sentinel-<n>, 30 drones and Prime Directive wait.\n"
+        free = "## [ENT-NEXT] | NOW | Zero | request\nTo: Unity.\nScope: cross-division\nNeed: the log of one scout; the miner- ships, sentinel-<n>, 30 drones and Prime Directive wait.\n"
         code, _printed = self.run_command(comms.append, "requests", self.draft(free), "Zero")
         self.assertEqual(code, 0)                                                              # a role word, a placeholder and a flagship are no pilot's name
 
@@ -252,7 +253,7 @@ class AppendTests(Tree):
 
     def test_an_old_fault_in_a_log_does_not_block_a_good_entry(self):
         self.write("requests", REQUESTS.replace("To: Unity.\n", ""))                          # ENT-003 was written without its To: line
-        code, _text = self.run_command(comms.append, "requests", self.draft("## [ENT-NEXT] | NOW | Zero | request\nTo: Unity.\nNeed: x.\n"), "Zero")
+        code, _text = self.run_command(comms.append, "requests", self.draft("## [ENT-NEXT] | NOW | Zero | request\nTo: Unity.\nScope: cross-division\nNeed: x.\n"), "Zero")
         self.assertEqual(code, 0)
         self.assertIn("## [ENT-008] | ", self.log("requests"))
 
@@ -316,7 +317,7 @@ class AppendTests(Tree):
         git("-c", "user.name=Seed", "-c", "user.email=seed@example.invalid", "commit", "-q", "-m", "seed")
         (self.root / "communications" / "errors.log").write_text(COMMENT + "another member's work in progress\n", encoding="ascii")
         git("add", "communications/errors.log")                                              # staged by someone else: not ours to commit
-        draft = self.draft("## [ENT-NEXT] | NOW | Zero | request\nTo: Unity.\nNeed: x.\n")
+        draft = self.draft("## [ENT-NEXT] | NOW | Zero | request\nTo: Unity.\nScope: cross-division\nNeed: x.\n")
         code, text = self.run_command(comms.append, "requests", draft, "Zero")
         self.assertEqual(code, 0, text)
         self.assertRegex(text.strip(), r"^appended ENT-008 to communications/requests.log, committed [0-9a-f]{7,} as Zero$")

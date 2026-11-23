@@ -8,7 +8,7 @@ author: Unity
 # index.md -- The Fleet's Scripts
 
 Built by `python3 -B scripts/fleet-index.py` from the docstring of every script in this
-folder; never edited by hand. Scripts listed: 62.
+folder; never edited by hand. Scripts listed: 63.
 
 - Run a script from the repository root: `python3 -I -B game/fleet/<script> <arguments>`,
   the arguments as listed under "How to Call Each".
@@ -86,6 +86,7 @@ folder; never edited by hand. Scripts listed: 62.
 | `surplus.py` | Say per item what the fleet holds beyond what its build targets reserve: the surplus a trader may sell, where it lies and its best bid. | By hand |
 | `taxes.py` | Keeps each pilot's weekly tax apart, so that no run and no hour reads it as a loss. | By hand |
 | `tug.py` | A ship of ours stranded in space with a tank that cannot reach fuel is towed to a station by the game's tug and refuelled. | By hand |
+| `upgrades.py` | Live Empire-Specialized Hull & Module Upgrade Planner (rules F17, F37, O2). | By hand |
 | `wallet.py` | No ship of ours goes broke: a ship whose wallet runs low is given credits by a rich ship of its division. | By hand |
 | `watchdog.py` | Check whether the fleet is advancing across turns or stuck in loops, bottlenecks, or idle states. | By hand |
 | `workclass.py` | Whose work a route is: the work class of every route and the classes each role flies | By hand |
@@ -990,6 +991,16 @@ Run by hand.
 
 ```
 tug.py [--dry-run] [--below 25] [--limit 3] [--wait 15] [--pilot <name>]
+```
+
+### `upgrades.py`
+
+Live Empire-Specialized Hull & Module Upgrade Planner (rules F17, F37, O2).
+
+Run by hand.
+
+```
+game/fleet/upgrades.py [--who all|Unity|Zero|Mercury|Apollo|Apophis|Oracle]
 ```
 
 ### `wallet.py`
