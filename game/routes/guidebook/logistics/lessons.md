@@ -74,3 +74,10 @@ Status: proven. Updated: 2026-11-21. Evidence: plan.py and fill.py, 2026-11-16 t
 - A buying route loops while open: aim it at a level by `once` and `max_pilots`, or `requires.reserve` (ENT-281); fill never adds one.
 - `max_price` counts the 1% tax: write the allocation x 1.01 (a kit refused, 2026-11-17).
 - A `comms.py append` file carries the turn's time in its name, appended only after the write answered `verified` (errors.log ENT-101). Logs name places by data file, never per-pilot cargo.
+
+### Freight on the shipping board
+Status: proven. Updated: 2026-11-23. Evidence: shipping list_all, 164 contracts read 05:48 UTC; game/rules/07-economy.md, row Packages; table stations (empire pirates).
+
+- A freight package is always 100 cargo units: no Threshold (65) or Cobble (75) carries one; the board opens to us with a hull of 100 cargo or more.
+- Read the ends before the reward: the largest rewards (3,500 to 13,100 cr) start or end at pirate stations (100 of 164); on our roads and in Nebula space a contract pays 225 to 1,245 cr.
+- The read: `FULL=1 gate.py raw <docked pilot> list_all '{"eligible_as":"player","include_ineligible":true,"page":N}' shipping` (20 a page); without FULL the answer is cut at 3,000 characters.
