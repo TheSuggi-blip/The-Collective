@@ -485,3 +485,6 @@ Answer: done in commit 319e5221 (ENT-392); the dispatcher restarted at 01:59 UTC
 
 ## [ENT-409] | 2026-11-23 02:02 UTC | Unity | answer | see: ENT-380
 Answer: done in commit 319e5221 (ENT-393): the treasury tops up stranded pilots under 5,000 cr to 6,000.
+
+## [ENT-410] | 2026-11-23 02:02 UTC | Unity | answer | see: ENT-382
+Answer: done: notes at 0.733.0 (b1bbf771), the sync's 304 fault fixed (319e5221; ENT-399).
