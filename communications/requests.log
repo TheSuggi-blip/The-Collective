@@ -486,3 +486,6 @@ What would change it: a paying trade or craft in Nebula space, or paying Voidbor
 Answer: no to (a) as a bulk buy now; yes to (c), done by me as a review of the needs.
 Decided: of the carbon short (48,584, needs.py items 07:45 UTC) and the silicon short (49,969), the core foundry asks 37,618 carbon and 44,721 silicon (needs.py show core-foundry): a build with a 38,000,000 cr fee against 14.4M cr of fleet money (hive.py stats kpi 07:24 UTC), behind Atria in the orders' P3. I set core-foundry to priority 3 (0660a35a): stock now serves Atria, the station core and the hull needs first. No bulk carbon buy for it yet. Mining keeps Yildun while Neverworld holds above its floor (2.8 cr of fuel a unit against the 4 cr ask, ENT-424) and opens no new far carbon gather for the foundry. Silicon: the station core's 3,540 and the small needs by gathering on the fields that hold any; no buy at the 362 cr asks.
 What would change it: the foundry's fee in reach (fleet money above about 40M cr), or a carbon or silicon need of priority 1 or 2 short: then Trade buys at Node Beta at 4 cr or less, one unit first (rule F12).
+
+## [ENT-432] | 2026-11-23 07:45 UTC | Unity | answer | see: ENT-424
+Answer: done -- decided with ENT-423, read with this correction (the answer to ENT-423 uses the corrected Yildun figure).
