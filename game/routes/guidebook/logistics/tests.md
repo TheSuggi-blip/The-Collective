@@ -14,6 +14,14 @@ Status: test. Updated: 2026-11-22. Evidence: the game's guides packages and pass
 - Passenger lines (the game's passenger-lines guide): a Threshold has no berth; an Economy Passenger Cabin (12 seats, a utility slot) or a Fugue (Voidborn courier, 1 business seat, speed 4) first, on one ship. Boards of 2026-11-22: 0 to 2 waiting a Voidborn station, fares 3,125 and 5,500 to far stations (need passenger-cabin-test).
 - Why: the haulers outnumber the hauls at home (orders ENT-059); both pay for carrying itself, which is the hauler's class, and both reach beyond our borders.
 
+### Station procurements (Shipyard Supply)
+Status: test. Updated: 2026-11-23. Evidence: table missions (deep_range_outpost, read 03:53 and 04:15 UTC); table books 03:51 to 04:00 UTC; data/routes/runs.jsonl 04:16 to 04:33 UTC; route_run commit 9a65d1dd; game/map/galaxy.tsv.
+
+- A shipyard station posts its own procurements: Deep Range Outpost (Outer Rim) posted Shipyard Supply copies of fuel tanks (14 for 9,515 cr), engine cores (12 for 18,988) and titanium alloy (25 for 26,133), dozens of each, every copy a new mission_id and no template. Delivered on docking. It is the hauler's carrying work where the Rim newborns were born: bought within 1 to 3 jumps (Unknown Edge, Frontier, Ramen's Rest), sold to the board at a margin of about 1,100 to 2,600 cr a load.
+- An `accept` entry names such a mission by `title` (route_run 9a65d1dd): the first copy on the board is taken.
+- Pitfall: a newborn's hold is full of starter leftovers (fuel cells, probes, rods: 73 of 75 used). The buy stop first stores the hold and withdraws the mission's goods (`store: all`, `withdraw`), else the buy takes one load short and the delivery is refused for goods missing.
+- First result: titanium alloy +2,297 cr in 7 minutes (04:18 UTC). Open: the three routes `mission-shipyard-*-deep-range` at one ship each until three results; whether the board posts new copies when they are taken is not known; asks are thin for titanium and engine cores (one or two loads), deep for fuel tanks (about 3,000 units within 3 jumps).
+
 ### Tests done
 Status: proven. Updated: 2026-11-21. Evidence: RESULT lines and the tables faction_facilities and faction, 2026-11-17 to 18; topic-bases.md.
 
