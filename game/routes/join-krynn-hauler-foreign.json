@@ -1,0 +1,26 @@
+{
+  "id": "join-krynn-hauler-foreign",
+  "kind": "circuit",
+  "title": "A hauler born Nebula or Outer Rim, done with the Solarian once lines, joins the Crimson corridor: one trip to Krynn War Citadel, where Last Known Position and Strategic Readiness Assessment open to it",
+  "note": "Written by Apollo, 2026-11-23 17:57 UTC (orders ENT-083 block APOLLO: no hauler waits docked; haulers left at the capitals after the once lines take work where they stand or a corridor; P6; rules F8, F34 tier 4, F35, F37). 45 haulers born Nebula and Outer Rim stand docked at Alpha Centauri and 4 at Sol with the Solarian lines booked (table ships 17:38 UTC). Krynn's Last Known Position (8,000) and Strategic Readiness Assessment (4,000) paid pilots born Nebula 19 of 19 and 16 of 24, born Outer Rim 1 of 1 and 1 of 1 (table runs, 14 h to 17:40 UTC; Trade's join-krynn-trader-test flew the road 24 times). Copied from join-krynn-hauler (Voidborn only). skip_if_booked Last Known Position: a pilot already paid there is not sent. Standing: a one-way trip judged by the missions it opens, never by its own pay. max_ships 25 against the two missions' caps of 15 each at Krynn.",
+  "far_ok": true,
+  "once": true,
+  "standing": true,
+  "max_ships": 25,
+  "skip_if_booked": [
+    "Last Known Position"
+  ],
+  "requires": {
+    "empty_hold": true,
+    "empire": [
+      "nebula",
+      "outerrim"
+    ]
+  },
+  "stops": [
+    {
+      "at": "krynn:war_citadel:crimson_war_citadel",
+      "store": "all"
+    }
+  ]
+}
