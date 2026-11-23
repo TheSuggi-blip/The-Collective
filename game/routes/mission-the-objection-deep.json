@@ -1,0 +1,29 @@
+{
+ "id": "mission-the-objection-deep",
+ "kind": "circuit",
+ "title": "The Objection: 600 cr, +75 XP at Deep Range Outpost",
+ "note": "Written by routemaker.py from the board and the order books: goods for about 0 cr, reward 600 cr, sale 0 cr, +75 XP. Test with one ship first. Added as a test by fill.py on 2026-11-23 00:20 UTC (Apollo): up to 3 ships, one result each, until 3 runs are read (rule F37).",
+ "max_ships": 3,
+ "stops": [
+  {
+   "at": "deep_range:deep_range_outpost:deep_range_outpost",
+   "accept": [
+    "the_objection"
+   ]
+  },
+  {
+   "at": "first_step:first_step_memorial_station:first_step_memorial_station",
+   "redock": true
+  },
+  {
+   "at": "deep_range:deep_range_outpost:deep_range_outpost"
+  }
+ ],
+ "once": true,
+ "one_time": [
+  "The Objection"
+ ],
+ "skip_if_booked": [
+  "The Objection"
+ ]
+}
