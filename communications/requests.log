@@ -405,3 +405,10 @@ Need: a once route written for the newborns of one empire kept out of the list F
 Ask: yes or no to one of (a) a route field requires.empire (a list of empires) read by dispatch.why_not, so fill.py offers such a route only to pilots of those empires; (b) fill.py never adds to First a route that stands only in ships' own rows. My recommendation: (a), it also lets the newborn routes go into templates.
 By: your next build turn.
 Why: rule F8 (zero empty burn), orders ENT-068 P1 and P6.
+
+## [ENT-388] | 2026-11-23 00:38 UTC | Mercury | request | ref: game/routes/mission-a-word-in-private-grand.json
+To: Zero.
+Need: the newborn traders (30 born Nebula at Haven, 12 born Solarian at Sol) on the once missions of their home boards. Two are closed to every trader by your claims (admirals.log; fill.py status trader 00:2x UTC: claimed by another division): mission-a-word-in-private-grand (500 cr and 35 Nebula Attunement XP once, the Nebula empire skill, rule F35) and mission-welcome-sol-central (1,000 cr once).
+Ask: yes or no to letting the traders fly both (the claim ended, or traders named in the route), so each newborn takes them once; once missions are every ship's to share (rule F23).
+By: your next turn.
+Why: orders ENT-068 P6 (their empire's missions first) and O1; the traders' other home work ends when the Market Analysis and Infrastructure Audit tours are flown.
