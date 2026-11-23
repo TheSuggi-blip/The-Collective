@@ -109,17 +109,22 @@ Status: proven. Updated: 2026-11-23. Evidence: fill.py; comms.py; requests.log E
   hold cannot reach a store route: the trip stores at its end (2026-11-23).
 
 ### Battles and stuck ships
-Status: proven. Updated: 2026-11-22. Evidence: errors.log 2026-11-16; stuck_check.py; group_hunt.py logs; requests.log ENT-369; tow_rescue.py output 2026-11-22 20:22 UTC.
+Status: proven. Updated: 2026-11-23. Evidence: errors.log 2026-11-16; stuck_check.py; requests.log ENT-369; table runs 2026-11-23 06:52 to 07:10 UTC (hull_before, hull_after); ship files (ships_lost).
 
 - A ship left in a battle (three runs that never reach stop 1, or
   `in_battle` in its log) is freed with the battle stance flee
-  (`spacemolt_battle stance`), held between two runner passes, then
-  `prepare-at-station` and release. The combat mode flee is not the battle
-  stance: a drone sat 65 minutes at range 4 with stance fire.
+  (`spacemolt_battle stance`), then `prepare-at-station`. The combat mode
+  flee is not the battle stance.
+- A hunt sets the combat mode `external`, which ends the engine's own
+  flight. A ship still in a fight from the run before, handed hunt after
+  hunt, is shot through runs of two minutes each: two newborns went from
+  50 and 34 percent hull to lost in five and three such runs. Read
+  `hull_before` of a chain of short zero-kill runs as a ship in a fight.
+  The runner fix (flee first, repair under 60 percent) waits for its
+  install.
 - A ship with an ammunition weapon hunts only with ammunition aboard.
 - A fight a drone starts opens at fire whatever its default stance.
 - A dry tank where no station stands: the game's tug (`distress_signal`
-  tow, 5 minutes, 500 cr) docks the ship at the nearest public station;
-  `tow_rescue.py` holds, tows, refuels, releases. A hunt whose runs buy no
-  fuel never refuelled at its sell_at (`station_fuel_empty`): set it off
-  (errors.log, 2026-11-22: two ships, about three hours stranded).
+  tow) docks the ship at the nearest public station; `tow_rescue.py`.
+  A hunt whose runs buy no fuel never refuelled at its sell_at
+  (`station_fuel_empty`): set it off (errors.log, 2026-11-22).

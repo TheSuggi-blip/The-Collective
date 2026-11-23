@@ -1,23 +1,24 @@
 # Military guidebook -- Tests (tests.md)
 
 ### Open Tests
-Status: test. Updated: 2026-11-23. Evidence: hive.py route hunt-test-siphon-pilot-whale-sb2; table runs (*-pl3, *-pilot-whale-sb2); data/fleet/funds.json; observations kinds group_hunt, fit_test.
+Status: test. Updated: 2026-11-23. Evidence: table runs (*-pilot-whale-sb2, lowest_hull_pct); ship files (ships_lost, modules); commission_status; table books (node_beta_industrial_station); requests.log ENT-438.
 
-- Shield Booster II: proven (F37), see Weapon fits. Whale hunts for the
-  booster ships at four herds 4 to 5 jumps out (`*-pilot-whale-sb2`).
-- The Recursion (tier 2, 3 weapons, hull 150, shield 150; table hulls):
-  one commissioned for credits at Node Beta on 2026-11-23 (commission_hull.py,
-  observations kind fit_test), 702 ticks by its quote; the switch once
-  commission_status says ready, then its three results (F37).
-- Pulse Laser III hunts: tortoises at six belts, deuteron slugs at three
-  ice fields; reserve goods (ferrous nodule, carapace).
+- Whale hunts alone with a Shield Booster II: the siphon herd held
+  (lowest hull 56 to 100 percent); two other herds took ships to 4 and 14
+  percent and are off for danger (F9); two booster ships were lost the
+  same night, their deaths in no run row. A whale alone stays a test;
+  the proven way is a group of three Laser III ships.
+- The Recursion (tier 2, 3 weapons, hull 150, shield 150): commissioned
+  for credits at Node Beta on 2026-11-23, SOURCING nine hours on. The
+  yard waits for three goods; its own bids at Node Beta stand under the
+  asks there, so no seller comes. Trade is asked to fill them. Lesson: a
+  credits-only commission is only as fast as the yard's bids fill.
+- Pulse Laser III hunts: tortoises, deuteron slugs, bulwarks; reserve
+  goods (ferrous nodule, carapace).
 - Cloudwhales (20 jumps out): a group sets out only on a census under
   120 minutes (`--census-minutes`).
-- Shields and Armor: no ship holds either skill. Open.
-- Answered: one Pulse Laser I kills no slag tortoise; the laser III kills
-  85 to 95 hull alone, a pilot whale in a side of three, or alone with a
-  Shield Booster II.
-
+- Shields and Armor: no ship holds either skill. Armor plates (defence
+  slot) not yet tried.
 ### Group hunts
 Status: proven. Updated: 2026-11-23. Evidence: observations kind group_hunt (2026-11-17 to 2026-11-23 04:46 UTC); errors.log ENT-129, ENT-130; spacemolt.com/docs/combat; skill military-turn group_hunt.py.
 

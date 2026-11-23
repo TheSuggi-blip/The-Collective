@@ -1,28 +1,25 @@
 # Military guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-23. Evidence: the tool plan (show, templates); hive.py briefing (column carries); dispatch.newborn_reason; fill.py status drone; the tool fill (check); table runs joined with stats_pilot_hour (cr per XP by prey, scratch).
+Status: proven. Updated: 2026-11-23. Evidence: the tool plan (show, templates); hive.py briefing (column carries); fill.py status drone; the tool fill (check); dispatch.judged; table herds.
 
-What the division flies between two turns (orders ENT-068, P1, P5, P6
-and block APOPHIS): hunts at the least fuel per XP, fits, a group that kills;
-no sale, carry or craft of their own (P5). No guard in the first ring
-(F33). One hunter to a herd (column carries).
+What the division flies between two turns (orders ENT-081, P1, P5, P6
+and block APOPHIS): hunts at the least fuel per XP, fits, a group that
+kills; no sale, carry or craft of its own (P5). No guard in the first
+ring (F33). One hunter to a herd (column carries).
 
 | Order | Routes | Ships | Why |
 |---|---|---|---|
-| First | the once line; the laser and booster fits; plasma loaders; `give-drone-stores-*` | each under its limit | F35; fits; P5 |
-| Own | a cheap near hunt first on the costliest ships; far herds; the filler's tests | 1 each | P1; tests |
-| `@krynn-newborn`, `@sol-newborn` | pilots born Crimson or Solarian: their empire's once missions (First Hunt, Cracking the Shell, Strategic Readiness, Last Known Position, Form TA-1), then one hunt a herd within 6 jumps of where they stand (the dispatcher's reach), a few with `far_ok` 7 to 9 jumps out once those are hunted to their line; loot to the trader at the nearest station without an owner | 1 each | P6; F38 |
-| `@hunter` | `*-pl3`/`pc2` (module-gated: tortoises, slugs, bulwarks), near drift-ray hunts, hollow pilgrims, carapace, drift rays, chlorophage, veil rays | 1 each | combat XP; ferrous nodule, carapace, biogas short |
-| Last in the newborn rows | `store-hold-krynn-war-citadel` before `@hunter`; `join-corridor-crimson` / `-solarian` after it: once per pilot, `far_ok`, one trip to Central Nexus, where the 6-jump reach opens `@hunter` | 6 each | P6, O5: home full, join the corridor |
-| Then | `park` behind the crafts (closed to drones under P5) | -- | never reached |
+| First | the once line; the Laser III and Shield Booster II fits (lifted for the role, F17); plasma loaders; `give-drone-stores-*` | each under its limit | F35; F17; P5 |
+| Own | a cheap near hunt first; far herds; the filler's tests | 1 each | P1; tests |
+| `@krynn-newborn`, `@sol-newborn` | their empire's once missions, then one hunt a herd within 6 jumps of where they stand, a few `far_ok` 7 to 9 jumps out | 1 each | P6; F38 |
+| `@hunter` | module-gated hunts (`*-pl3`, `pc2`, whale `sb2` where the hull held), near drift rays, pilgrims, carapace, veil rays; at its end belt and glintfin herds 6 to 9 jumps out, written when every home herd was taken | 1 each | combat XP; F23 |
+| Last in the newborn rows | `store-hold-krynn-war-citadel` before `@hunter`; `join-corridor-crimson` / `-solarian` after it: once, `far_ok`, `standing` (a positioning trip is not judged for pay), one trip to Central Nexus | 6 each | P6, O5 |
+| Then | the guard posts beyond the border (not GSC-0044: first ring), then `park` | 1 each | F8, F33 |
 
-Fuel per XP by prey since 12:00 UTC, 2026-11-22, at 410 to 640 XP an
-hour alike: drift ray 0.32 cr, carapace 0.53, veil ray 0.59, hollow
-pilgrim 0.83, cinder sylph 0.91, halo drifter 0.96. Every hunt carries
-`gift_to`. What changes it: a reserve good filled or short (the tool
-stock, view=reserve), more laser ships, a pirate at the place.
-
+Every hunt carries `gift_to`. What changes it: a herd read back
+(table herds), a pirate at a place (`pirate_places.py`), a reserve good
+short (the tool stock, view=reserve), more laser ships.
 ### Hunts of grazers (`hunt.py`)
 Status: proven. Updated: 2026-11-21. Evidence: game/fleet/hunt.py; skill military-turn hunt_figures.py; routes.md entry versions of 2026-11-17 (--history).
 
