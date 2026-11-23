@@ -120,8 +120,12 @@ Status: proven. Updated: 2026-11-23. Evidence: errors.log 2026-11-16; stuck_chec
   hunt, is shot through runs of two minutes each: two newborns went from
   50 and 34 percent hull to lost in five and three such runs. Read
   `hull_before` of a chain of short zero-kill runs as a ship in a fight.
-  The runner fix (flee first, repair under 60 percent) waits for its
-  install.
+  The runner fix (flee first, repair under 60 percent) is installed
+  (b8b901ae).
+- A moving station (table stations, `mobile`) can stand in a system whose
+  census predates its arrival: runs to it fail at stop 1 ("It's called a
+  Mobile Capital"). mobile.py then takes the station list's system and the
+  poi an older census named.
 - A ship with an ammunition weapon hunts only with ammunition aboard.
 - A fight a drone starts opens at fire whatever its default stance.
 - A dry tank where no station stands: the game's tug (`distress_signal`

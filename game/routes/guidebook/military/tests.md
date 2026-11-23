@@ -1,24 +1,27 @@
 # Military guidebook -- Tests (tests.md)
 
 ### Open Tests
-Status: test. Updated: 2026-11-23. Evidence: table runs (*-pilot-whale-sb2, lowest_hull_pct); ship files (ships_lost, modules); commission_status; table books (node_beta_industrial_station); requests.log ENT-438.
+Status: test. Updated: 2026-11-23. Evidence: table runs (lowest_hull_pct); commission_status; table books (node_beta_industrial_station, LHS 1140); catalog 0.734.0 (armor_plate_ii); routes fit-armor-plate-ii-*-test, recursion-parts-*.
 
-- Whale hunts alone with a Shield Booster II: the siphon herd held
-  (lowest hull 56 to 100 percent); two other herds took ships to 4 and 14
-  percent and are off for danger (F9); two booster ships were lost the
-  same night, their deaths in no run row. A whale alone stays a test;
-  the proven way is a group of three Laser III ships.
-- The Recursion (tier 2, 3 weapons, hull 150, shield 150): commissioned
-  for credits at Node Beta on 2026-11-23, SOURCING nine hours on. The
-  yard waits for three goods; its own bids at Node Beta stand under the
-  asks there, so no seller comes. Trade is asked to fill them. Lesson: a
-  credits-only commission is only as fast as the yard's bids fill.
+- Whale hunts alone with a Shield Booster II: the siphon and Antares herds
+  hold (lowest hull 52 to 100 percent); two other herds took ships to 4 and
+  14 percent and are off for danger (F9). The proven way stays a group of
+  three Laser III ships.
+- The Recursion: commissioned for credits at Node Beta, SOURCING since
+  00:27 UTC; the yard waits on its own bids there for three goods. Two
+  once routes buy them at Ironlight Crossroads and sell them into those
+  bids (about 5,000 cr lost against a hull already paid). Lesson: a
+  credits-only commission is only as fast as the yard's bids fill; the
+  next hulls go by materials provided (needs military-recursion-batch).
+- Armor Plate II (armor +10, speed penalty 1) on a Crimson and a Solarian
+  starter, one ship each: what the penalty does to a hull of speed 1 is
+  read from its ship file, then its hunts' lowest hull.
 - Pulse Laser III hunts: tortoises, deuteron slugs, bulwarks; reserve
   goods (ferrous nodule, carapace).
 - Cloudwhales (20 jumps out): a group sets out only on a census under
   120 minutes (`--census-minutes`).
-- Shields and Armor: no ship holds either skill. Armor plates (defence
-  slot) not yet tried.
+- Pirate formations (F27): the next build is a group form of
+  pirate_test.py (three Laser III ships on one lone weak pirate).
 ### Group hunts
 Status: proven. Updated: 2026-11-23. Evidence: observations kind group_hunt (2026-11-17 to 2026-11-23 04:46 UTC); errors.log ENT-129, ENT-130; spacemolt.com/docs/combat; skill military-turn group_hunt.py.
 

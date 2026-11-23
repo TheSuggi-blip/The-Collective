@@ -1,34 +1,40 @@
 # Military guidebook -- the Class Card (card.md)
 
 ### Class Card
-Status: proven. Updated: 2026-11-22. Evidence: hive.py levels Apophis; hive.py stats upgrades --member Apophis; table hulls (the live catalog).
+Status: proven. Updated: 2026-11-23. Evidence: hive.py upgrades military; table ship_modules; table hulls (catalog 0.734.0); MISSION.md.
 
-The Military class in short (rule F14): 50 drones and 20 sentinels lent by
-the Fleet Admiral until Piloting 20 (rule F10). The role (MISSION.md): the
-fleet's fighting arm. It guards and escorts from our stations outward,
-fights the wars Suggi declares and pirates after a test, and brings the
-fleet into fighting shape: hunts, weapons, groups, hulls. Levels now: the
-tool fleet, view=levels, member Apophis. Hulls and fits: ships.md; work:
-routes.md; tests: tests.md; pirates, raids, guards: topic-pirates.md.
+The Military class in short (rule F14): the `drone-` ships of three birth
+empires (Voidborn, Crimson, Solarian; the counts: hive.py upgrades
+military) and the `sentinel-` ships the Fleet Admiral lends until Piloting
+20 (rule F10). The role (MISSION.md): the fleet's fighting arm. It guards
+and escorts from our stations outward, hunts wildlife, farms NPC pirates in
+formations (F9, F27), fights the wars Suggi declares, and brings the fleet
+into fighting shape: weapons, fits, groups, hulls. Levels: the tool fleet,
+view=levels, member Apophis. Hulls and fits: ships.md; work: routes.md;
+tests: tests.md; pirates, raids, guards: topic-pirates.md.
 
 ### Ships
-Status: proven. Updated: 2026-11-22. Evidence: table hulls; catalog spacemolt_catalog (pulse_laser_i/ii/iii); ships.md; tests.md entry Weapon fits; table runs (hunt-test-*-pl3).
+Status: proven. Updated: 2026-11-23. Evidence: table hulls; table ship_modules; catalog 0.734.0 (modules); ships.md; tests.md entry Weapon fits.
 
-- Tier 0, every ship now: the Threshold, hull 75, shield 80, CPU 16, power
-  30; 1 weapon, 2 defence, 2 utility slots; a Pulse Laser I and a Mining
-  Laser I. Six drones carry one or two Shield Booster I; the Pulse Laser
-  III is the division's weapon, fitted by route (tests.md, Weapon fits).
-- Tier 1 (no Piloting gate): Vigil (2 weapons), Paradox. Tier 2 at Piloting
-  10: Recursion (3 weapons, speed 4), Dualism, Census. Tier 3 at 20:
-  Annihilation, Voidborn Singularity.
-- Fit order: the Pulse Laser III first (proven on 85 to 95 hull), then
-  two Shield Booster I; three of them kill a pilot whale (tests.md). The gauges (rule F9, gauges.py): one
-  Pulse Laser I kills about 78 hull and stands about 77 weight; prey above
-  that waits for a better weapon, boosters or a group.
-- Style: one hunter to a herd; never the first shot at a player or an
-  empire's ship (F2); flee under 60 percent hull or when a stranger joins;
-  default battle stance flee, set by script. Guards and escorts only from
-  our stations outward, never in the first ring (F33).
+- Tier 0 by birth empire, speed 1 each: Voidborn Threshold (hull 75,
+  shield 80, 1 weapon, 2 defence, 2 utility); Crimson Shard (110 / 40,
+  armor 8, 2 weapons, 1 defence, 1 utility); Solarian Theoria (100 / 55,
+  1 weapon, 1 defence, 3 utility). Each starts with Pulse Laser I and a
+  Mining Laser I, which a hunter never uses: stripped by route
+  (strip-mining-laser-*).
+- Fit order: the Pulse Laser III first (proven on 85 to 95 hull), then a
+  Shield Booster II in a free defence slot (proven: one kills a pilot whale
+  alone). Armor plates carry a speed penalty: one ship tests first.
+- Tier 2 at Piloting 10: Voidborn Recursion (3 weapons, speed 4), Crimson
+  Broadaxe and Halberd (4 weapons), Solarian Theorem (3 weapons). The
+  credits-only commission waits on its yard's bids; materials provided cost
+  less (ships.md).
+- The gauges (rule F9, gauges.py): prey above one ship's firepower or
+  toughness waits for a better weapon, boosters or a group.
+- Style: one hunter to a herd, two animals left (F38); never the first
+  shot at a player or an empire's ship (F2); flee under 60 percent hull or
+  when a stranger joins; guards and escorts only from our stations outward,
+  never in the first ring (F33).
 
 ### Skills
 Status: proven. Updated: 2026-11-21. Evidence: catalog table skills; hive.py levels Apophis; hive.py stats xp --member Apophis.
