@@ -1,19 +1,18 @@
 # Logistics guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-23. Evidence: plan.py show --brief (applied 2026-11-23 09:14 UTC); fill.py check and status hauler; orders.log ENT-065 (block APOLLO, P1, P2); rule F8 (zero empty burn); data/fleet/receivers.json; the tool stock, view=reserve.
+Status: proven. Updated: 2026-11-23. Evidence: plan.py show (applied 2026-11-23 12:30 UTC); fill.py status hauler 11:40 to 12:25 UTC; orders.log ENT-082 (block APOLLO); table runs; data/fleet/receivers.json.
 
 A free hauler takes the first open route of First, its own routes, Then (`plan.py show`). Earnings: the tool fleet, view=standing, member Apollo.
 
-- First: the once missions (`voidborn-*`, first hunts, `mission-*`; F34, F35); a mission test whose runs reach none of its stops leaves the list.
-- Own, members: `@outpost-supply` (GSC-0044's repair stock; the bunker bought under the chain's keep); the builder first `outpost-kit-ironlight-to-node-beta`; the receiver at The Crescent Moon first `craft-boards-crescent-moon`.
-- Own, every hauler: `@stored-goods`, `@craft-reserve` (boards, gold wiring, cells, steel, piping: docked, each opens on the pilot's own stored inputs and closes at its reserve max, F36); `@train-hauler` (empty jumps, a cost of fuel) last only for the eight nearest Piloting 10, its `max_ships` 8 (orders ENT-076, block APOLLO); the receivers at The Crescent Moon and Ramen's Rest smelt their stored iron there (`craft-steel-logistics-*`).
-- Newborns (P6): born Outer Rim `store-hold-frontier-station` then `@newborn-rim` (Frontier's starter missions, then the Shipyard Supply carries to Deep Range, tests.md); born Nebula `@newborn-nebula` (Grand Exchange's starter missions), and the receivers at Factory Belt and Grand Exchange smelt the iron miners give them there (`craft-steel-logistics-factory-belt`, `-grand-exchange`; the give routes asked of Mining, requests.log ENT-437); no Voidborn mission (F35) and nothing beyond 6 jumps without `far_ok`.
-- Hulls (F17): a first batch of Prayers (540 cargo, speed 3) flies the Rim rows; the batch grows once a freight step stands in the runner (lessons.md, Freight on the shipping board).
-- Receivers: several haulers a station where many give (`handover.py receivers`). Silicon binds the boards.
+- First: the once missions (`voidborn-*`, first hunts, `mission-*`, the Solarian and Krynn lines; F34, F35).
+- Own: `@outpost-supply` (GSC-0044's repair stock, the bunker under its keep); the builder `outpost-kit-ironlight-to-node-beta`; `@stored-goods`, `@craft-reserve` (docked crafts on the pilot's own inputs, closed at the reserve max, F36); `@train-hauler` for eight near Piloting 10 (orders cap).
+- Docked steel where the miners' iron lies: one receiver a station named in `handover.py receivers`, its `craft-steel-logistics-<station>` first in its row (The Crescent Moon, Ramen's Rest, Factory Belt, Grand Exchange, Procyon, Nova Terra, Cargo Lanes, Confederacy); Mining's give routes hand the iron over.
+- Join corridors (Trade's pattern, `far_ok`, once, standing): a hauler with no work left at home takes `join-sol-hauler` last in its row (Nebula and Voidborn), Rim-born at Nexus Prime or Synchrony `join-sol-hauler-nexus`; at Sol the Solarian once missions open; then `join-krynn-hauler` (a test) for the Voidborn done there. An unflown road starts with one ship (`join-sol-hauler-rim`, Frontier). Read the rewards paid per pilot before giving a join (topic: knowledge once missions).
+- Newborns (P6): Rim `store-hold-frontier-station` then `@newborn-rim`; Nebula `@newborn-nebula`; joins after both.
+- Hulls (F17): Prayers wait for a freight step in the runner (lessons.md).
 - Then: `park`, which none should reach.
-- What would change it: a kit at Ironlight; Piloting 10; silicon given in quantity; a paid carry (tests.md) in place of the loop.
-
+- What would change it: a kit at Ironlight; Piloting 10; a freight step; jobs on our Notice Board.
 ### Route Templates
 Status: proven. Updated: 2026-11-21. Evidence: game/routes/templates/logistics.json (2026-11-21); plan.py templates; Suggi 2026-11-16 and rule F22.
 
