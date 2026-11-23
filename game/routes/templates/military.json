@@ -182,6 +182,25 @@
     "piloting"
    ],
    "note": "P6 (orders ENT-068): newborns work where born; the dispatcher reaches 6 jumps (FOREIGN_REACH). Loot to the trader at War Citadel."
+  },
+  "sol-newborn": {
+   "title": "Solarian-born drones and sentinels: hunts within 6 jumps of Sol and Sirius",
+   "routes": [
+    "hunt-sol-jovian-extraction-zone-drift-ray",
+    "hunt-nihal-gas-plume-drift-ray",
+    "hunt-lacaille-9352-deep-vein-belt-grazer",
+    "hunt-procyon-gas-cloud-drift-ray",
+    "hunt-markab-alloy-seam-patina-grazer",
+    "hunt-epsilon-eridani-ice-fields-hollow-pilgrim"
+   ],
+   "trains": [
+    "gunnery",
+    "weapons",
+    "tactics",
+    "xenobiology",
+    "piloting"
+   ],
+   "note": "P6 (orders ENT-068): newborns work where born; the dispatcher reaches 6 jumps. Loot to the trader at Sirius Observatory Station. Wallets under 5,000 cr open only paying work: requests.log (top-up)."
   }
  }
 }
