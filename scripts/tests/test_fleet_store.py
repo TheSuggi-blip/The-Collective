@@ -291,7 +291,8 @@ class StoreTests(unittest.TestCase):
         command = [sys.executable, "-I", "-B", str(SCRIPT)]
         done = subprocess.run(command + ["status", "--data", str(self.data)], capture_output=True, text=True, timeout=60)
         self.assertIn("no read copy yet", done.stdout)
-        done = subprocess.run(command + ["once", "--data", str(self.data)], capture_output=True, text=True, timeout=60)
+        done = subprocess.run(command + ["once", "--data", str(self.data), "--keep-days", "3650"],     # the test's rows are of 2026-11-16:
+                              capture_output=True, text=True, timeout=60)                              # 7 days of the clock pruned them
         self.assertEqual(done.returncode, 0, done.stderr)
         self.assertIn("routes/runs.jsonl +4", done.stdout)
         self.assertFalse((self.data / "store" / "writer.lease").exists())

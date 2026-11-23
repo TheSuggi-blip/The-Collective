@@ -57,6 +57,9 @@ RULES:
         pilot as every gift is; for FUND_HOURS (or --hours) from its gift the sweep and top-ups leave the funded
         credits with the pilot, then the row ends by itself. A withdrawal whose gift failed stays withdrawn and
         is given at the next pass.
+  - Credits withdrawn for a fund or a top-up and not given yet are no donor's to give (`owed`), and a pilot with a
+    treasury top-up row standing gets no second gift. A top-up row whose pilot was topped since ends (the leader's
+    deposit takes the credits back); one the leader can no longer pay ends, and a new row asks the treasury again.
 WHY:  Suggi, 2026-11-16: "No ships can go broke, this is important." Standing work costs fuel and earns nothing, and
       the weekly tax takes a share of every wallet in one moment.
 
@@ -587,6 +590,22 @@ def withdrawn(data):
     return sum(int(r.get("credits") or 0) for r in funds(data) if r.get("state") == "withdrawn")
 
 
+def owed(data):
+    """{withdrawer: credits} it holds for a fund or a top-up withdrawn and not given yet: no donor's to give (a top-up
+    is withdrawn by the leader; 2026-11-23 the top-up pass gave 182,310 cr withdrawn for 44 named pilots to others)."""
+    leader, out = leader_of(data), {}
+    for r in funds(data):
+        if r.get("state") == "withdrawn":
+            actor = str(r.get("withdrawer") or leader)
+            out[actor] = out.get(actor, 0) + int(r.get("credits") or 0)
+    return out
+
+
+def awaiting_treasury(data):
+    """{pilot} with a top-up row open, withdrawn or unsure: the treasury serves it, no ship gives it twice."""
+    return {r.get("pilot") for r in funds(data) if r.get("kind") == "topup" and r.get("state") in ("open", "withdrawn", "unsure")}
+
+
 def withdraw(leader, credits):
     """(True, text) when the game took a withdrawal of credits from the treasury into the leader's wallet."""
     import gate
@@ -827,10 +846,28 @@ def serve_topups(data, leader, now, dry):
     elif todo:
         print("TOP-UP waits: %d pilots: the leader %s is not docked (the game withdraws docked only)" % (len(todo), leader))
     failed = 0
+    wallets_now = {name: int(row.get("credits") or 0) for name, row in ships(data).items()}
     for r in [r for r in rows if r.get("kind") == "topup" and r.get("state") == "withdrawn"]:
         if time.time() - start > TREASURY_BUDGET:
             break
+        if r["pilot"] == leader:                                # the leader's own top-up: the withdrawal itself landed with it ...
+            if wallets_now.get(leader, 0) >= TREASURY_UNDER or (r.get("withdrawn_at") or 0) >= start - 60:
+                r.update(state="given", given_at=int(time.time()), note="the leader's own top-up: given by the withdrawal")
+                print("TOP-UP given: %s %s cr from the treasury, by its own withdrawal" % (leader, format(int(r["credits"]), ",")))
+            else:                                               # ... unless it went elsewhere since: a new row asks again
+                r.update(state="ended", note="the leader holds %s cr: the withdrawal went elsewhere; a new row asks again" % format(wallets_now.get(leader, 0), ","))
+                print("TOP-UP ended: the leader %s holds %s cr; a new row asks the treasury again" % (leader, format(wallets_now.get(leader, 0), ",")))
+            continue
+        if wallets_now.get(r["pilot"], 0) >= TREASURY_UNDER:    # topped up by another gift since: the credits go back with the deposit
+            r.update(state="ended", note="the pilot holds %s cr: topped up since; the leader's deposit takes the credits back" % format(wallets_now[r["pilot"]], ","))
+            print("TOP-UP ended: %s holds %s cr now; %s cr go back with the leader's deposit" % (r["pilot"], format(wallets_now[r["pilot"]], ","), format(int(r["credits"]), ",")))
+            continue
         ok, text = give(leader, r["pilot"], int(r["credits"]))
+        if not ok and "insufficient_funds" in text:             # the leader no longer holds it: the row ends, the pilot is asked for anew
+            r.update(state="ended", note="gift: %s" % text[:160])
+            print("TOP-UP ended: %s cannot pay %s %s cr (%s); a new row asks the treasury again"
+                  % (leader, r["pilot"], format(int(r["credits"]), ","), text[:120]))
+            continue
         if not ok:
             r["note"] = "gift: %s" % text
             failed = 1
@@ -1319,8 +1356,9 @@ def main(argv=None):
         sys.exit("REFUSED: a real top-up is the Fleet Admiral's or the five-minute job's; use --dry-run")
     flying, unsettled = settle_gifts(data, "topup", now, "--dry-run" in args)    # Q75: a top-up a cut pass left `sent`, settled first
     given = dict(recent(data, now), **{name: at for name, at in flying.items() if name})
-    held = funded(data, now)                                    # a fund for a buy is no donor's to give
-    gifts = [(d, p, c) for d, p, c in plan_gifts([(n, c - held.get(n, 0), o) for n, c, o in rows], given) if d not in flying]
+    given.update({name: now for name in awaiting_treasury(data) if name and name not in given})   # the treasury serves it
+    held, owes = funded(data, now), owed(data)                  # a fund for a buy, and credits withdrawn for others, are no donor's to give
+    gifts = [(d, p, c) for d, p, c in plan_gifts([(n, c - held.get(n, 0) - owes.get(n, 0), o) for n, c, o in rows], given) if d not in flying]
     done, failed = [], []
     for donor, pilot, credits in gifts:
         if "--dry-run" in args:

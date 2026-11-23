@@ -307,6 +307,64 @@ class TreasuryTopupTests(FundTests):
         self.assertEqual(w.serve_topups(str(self.data), "Prime Directive", now, False), 0)
         self.assertEqual([c for c in self.calls if c[0] == "withdraw"][-1], ("withdraw", "Prime Directive", 10900))     # what the floor allows
 
+    def withdrawn_rows(self, *pilots):
+        rows = [{"pilot": p, "credits": c, "why": "t", "at": int(time.time()) - 600, "hours": 0, "state": "withdrawn",
+                 "withdrawn_at": int(time.time()) - 300, "kind": "topup"} for p, c in pilots]
+        self.wallet.write_funds(str(self.data), rows)
+
+    def test_credits_withdrawn_for_named_pilots_are_no_donors_to_give(self):
+        # 2026-11-23 06:32-09:40 UTC: the leader held 182,310 cr withdrawn for 44 named pilots; the top-up pass took it
+        # for the richest donor of the command group and gave it away to others, the named pilots' gifts then failed
+        # (`insufficient_funds`, the leader 861 cr) and the leader stood under rule F7's floor.
+        w = self.wallet
+        w.TREASURY_TOPUP = True
+        w.refresh = lambda pilot: None
+        ships = [{"name": "Prime Directive", "credits": 30500 + 21650, "docked": False}, {"name": "drone-4", "credits": 20000},
+                 {"name": "drone-60", "credits": 100}, {"name": "drone-61", "credits": 250}, {"name": "drone-70", "credits": 100}]
+        (self.data / "fleet" / "fleet.json").write_text(json.dumps({"ships": ships}))
+        self.withdrawn_rows(("drone-60", 10900), ("drone-61", 10750))
+        self.topup()
+        self.assertEqual([c for c in self.calls if c[0] == "give"], [])                          # the leader keeps what it owes
+        rows = [r for r in w.funds(str(self.data)) if r.get("kind") == "topup"]
+        self.assertEqual(sorted((r["pilot"], r["state"]) for r in rows),
+                         [("drone-60", "withdrawn"), ("drone-61", "withdrawn"), ("drone-70", "open")])   # each pilot once
+
+    def test_a_withdrawn_top_up_whose_pilot_was_topped_since_ends_and_goes_back_with_the_deposit(self):
+        w, now = self.wallet, time.time()
+        self.put(docked=False, drone=20000)
+        self.withdrawn_rows(("drone-4", 10900), ("drone-60", 10900))
+        self.assertEqual(w.serve_topups(str(self.data), "Prime Directive", now, False), 0)
+        self.assertEqual([c[2:] for c in self.calls if c[0] == "give"], [("drone-60", 10900)])   # drone-4 holds 20,000 now
+        states = {r["pilot"]: r["state"] for r in w.funds(str(self.data))}
+        self.assertEqual(states, {"drone-4": "ended", "drone-60": "given"})
+        self.assertEqual(w.withdrawn(str(self.data)), 0)                                          # the leader deposits it again
+
+    def test_a_gift_the_leader_cannot_pay_ends_its_row_and_the_pilot_is_asked_again(self):
+        w, now = self.wallet, time.time()
+        self.put(docked=False)
+        self.withdrawn_rows(("drone-60", 10900))
+        w.give = lambda donor, pilot, credits: (False, '{"error":"API call failed: insufficient_funds: You only have 861 credits."}')
+        self.assertEqual(w.serve_topups(str(self.data), "Prime Directive", now, False), 0)       # no HALT every pass
+        row = w.funds(str(self.data))[0]
+        self.assertEqual(row["state"], "ended")
+        self.assertIn("insufficient_funds", row["note"])
+        w.TREASURY_TOPUP = True
+        self.assertEqual(w.treasury_topups(str(self.data), [("drone-60", 100)], now, False), {"drone-60"})   # a new row
+        self.assertEqual([r["state"] for r in w.funds(str(self.data)) if r["pilot"] == "drone-60"], ["ended", "open"])
+
+    def test_the_leaders_own_top_up_is_given_by_the_withdrawal(self):
+        w, now = self.wallet, time.time()
+        self.put(docked=True)
+        self.withdrawn_rows(("Prime Directive", 9000))
+        self.assertEqual(w.serve_topups(str(self.data), "Prime Directive", now, False), 0)
+        self.assertEqual([c for c in self.calls if c[0] == "give"], [])                          # no gift to itself
+        self.assertEqual(w.funds(str(self.data))[0]["state"], "given")
+        ships = [{"name": "Prime Directive", "credits": 1384, "docked": False}]                  # an old row, its money gone
+        (self.data / "fleet" / "fleet.json").write_text(json.dumps({"ships": ships}))
+        self.withdrawn_rows(("Prime Directive", 9000))
+        self.assertEqual(w.serve_topups(str(self.data), "Prime Directive", now, False), 0)
+        self.assertEqual(w.funds(str(self.data))[0]["state"], "ended")                           # a new row asks again
+
 
 class AdmiralSelfFundingTests(FundTests):
     """Autonomous division treasury access (Suggi, 2026-11-23; rule F12): Admirals fund own division up to
