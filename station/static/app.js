@@ -1673,7 +1673,7 @@ function tickAges() {                          // every second: the one age labe
 }
 
 function isUpgradedHull(clsName) {
-  return Boolean(clsName && !/^threshold$/i.test(String(clsName).trim()));
+  return Boolean(clsName && !/^(threshold|theoria|prospect|cobble|shard)$/i.test(String(clsName).trim()));
 }
 
 function shipRow(r) {
@@ -2836,8 +2836,9 @@ function renderPlaybooksSubtab(panel, pbData, live) {
 
   const pKpis = el('div', 'kpis');
   const pk = (k, v, sub, cls) => { const b = el('div', 'kpi' + (cls ? ' ' + cls : '')); b.append(el('div', 'k', k), el('div', 'v', v)); if (sub) b.append(el('div', 's', sub)); pKpis.append(b); };
-  const hullSummary = (fl.hulls || []).slice(0, 2).map((h) => h.class + ' (T' + h.tier + ') x' + h.count).join(', ') || 'no hulls';
-  pk('Live Fleet & Hulls', fmt(fl.ships_total || 0) + ' ships', (fl.flying || 0) + ' flying, ' + (fl.docked || 0) + ' docked | ' + hullSummary, 'pos');
+  const empSummary = (fl.empires || []).map((e) => e.empire + ' x' + e.ships).join(', ');
+  const hullSummary = (fl.hulls || []).slice(0, 4).map((h) => h.class + ' (T' + h.tier + ') x' + h.count).join(', ') || 'no hulls';
+  pk('Live Fleet & Hulls', fmt(fl.ships_total || 0) + ' ships', (empSummary ? empSummary + ' | ' : '') + hullSummary, 'pos');
   pk('Tier 2+ Readiness', fmt(fl.ready_pilots || 0) + ' ready', 'Piloting avg ' + (fl.avg_piloting != null ? fl.avg_piloting.toFixed(1) : '0') + ' | max ' + fmt(fl.max_piloting || 0), (fl.ready_pilots || 0) > 0 ? 'warn' : '');
   pk('Open Priorities & Reqs', fmt((active.open_needs || []).length) + ' needs | ' + fmt((active.open_requests || []).length) + ' reqs', readyNeeds ? readyNeeds + ' priority 100% stocked (ready)' : 'live from needs.tsv & requests.log', readyNeeds ? 'pos' : '');
   pk('Guidebook Cap Health', (cur.max_pct != null ? cur.max_pct.toFixed(0) : '0') + '% peak', fmt(totalEntries) + ' entries (' + fmt(totalChars) + ' chars) | ' + drifts.length + ' drift check(s)', cur.over_count ? 'neg' : (cur.near_count || drifts.length ? 'warn' : 'pos'));
@@ -2858,10 +2859,13 @@ function renderPlaybooksSubtab(panel, pbData, live) {
     buildCard.append(el('p', 'empty', 'No ships in this division.'));
   }
   if ((fl.next_unlocks || []).length) {
-    buildCard.append(el('div', 'pb-subhead', 'Catalog Upgrade Ladder (Tier 1-3)'), fitTable(table(
-      ['Catalog Hull', 'Tier', 'Piloting', 'Hold', 'Slots'],
-      fl.next_unlocks.slice(0, 4).map((u) => [u.name, 'T' + u.tier, 'P' + u.piloting_req, fmt(u.cargo), u.slots]),
-      [2, 3]
+    buildCard.append(el('div', 'pb-subhead', 'Multi-Empire Ship Catalog Ladder (Tier 1-3)'), fitTable(table(
+      ['Empire', 'Catalog Hull', 'Tier', 'Piloting', 'Hold', 'Slots'],
+      fl.next_unlocks.slice(0, 14).map((u) => [
+        el('span', 'pill ' + (u.faction === 'voidborn' ? 'good' : 'info'), u.faction || 'neutral'),
+        u.name, 'T' + u.tier, 'P' + u.piloting_req, fmt(u.cargo), u.slots,
+      ]),
+      [3, 4]
     )));
   }
   twoCol.append(buildCard);

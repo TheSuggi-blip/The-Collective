@@ -654,18 +654,23 @@ def route_place(route):
     return None
 
 
+EMPIRE_PREFIXES = ("voidborn", "solarian", "nebula", "crimson", "outerrim")
+
+
 def newborn_reason(pilot, rid, route):
-    """Why a route is closed to a pilot born in another empire, or None (the Plan-500 wave of 2026-11-22, queue.log
-    ENT-234: 250 pilots born at Sol, Haven, Altais and Krynn, 10 to 21 jumps from our home, lawless space between).
-    A Voidborn empire mission is never theirs (rule F35: a pilot's empire skill comes from its own empire's missions);
-    a route whose first place lies more than FOREIGN_REACH jumps from where the pilot stands waits for its Admiral to
-    write work in the pilot's own region, unless the route says `far_ok`. A Voidborn pilot, or one whose empire or
-    place is not read, is judged as before."""
-    empire = pilot.get("empire")
-    if not empire or empire == "voidborn":
+    """Why a route is closed to a pilot based on empire origin and regional reach, or None (Plan-500 wave, ENT-234;
+    generalized to all 5 empires, rule F35). An empire-prefixed mission (`<empire>-*`) belongs strictly to pilots born
+    in that empire (rule F35: permanent Empire Mastery trains only from own-empire missions). For non-Voidborn pilots,
+    routes starting > FOREIGN_REACH jumps away wait for regional work unless `far_ok` is set."""
+    empire = str(pilot.get("empire") or "").strip().lower()
+    if not empire:
         return None
-    if str(rid).startswith("voidborn-"):
-        return "a Voidborn empire mission: the pilot was born %s (rule F35)" % empire
+    rid_low = str(rid or "").lower()
+    for emp_p in EMPIRE_PREFIXES:
+        if rid_low.startswith(emp_p + "-") and empire != emp_p:
+            return "a %s empire mission: the pilot was born %s (rule F35)" % (emp_p.capitalize(), empire)
+    if empire == "voidborn":
+        return None
     if route.get("far_ok") or route.get("kind") == "census" or not pilot.get("system"):
         return None
     if LANES_CACHE["lanes"] is None:

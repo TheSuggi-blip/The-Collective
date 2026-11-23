@@ -19,3 +19,16 @@ Status: proven. Updated: 2026-11-21. Evidence: data/fleet/ships/; catalog tables
 - Fuel beyond the border is cheaper than at home (Hive Antares,
   Ironlight Crossroads; tool market, item fuel).
 - A new module or hull is tried on one scout first (rule F17).
+
+### Multi-Empire Ship Catalog (Voidborn, Outer Rim, Nebula)
+Status: proven. Updated: 2026-11-23. Evidence: table hulls; game/catalog/ships/voidborn.md; game/catalog/ships/outerrim.md; game/catalog/ships/nebula.md; hive.py guide intel.
+
+Intel scouts operate across Voidborn, Outer Rim, and Nebula space. Outer Rim (`Cobble` 120f) and Nebula (`Prospect` 130f) starters carry larger fuel tanks than `Threshold` (95f), cutting refuel stops on long census loops (`game/catalog/ships/<empire>.md`; `hive.py stats upgrades --member Oracle`):
+
+| Empire | T0 Starter (hold / fuel / slots / CPU / pwr) | T1 Recon / Scout Hulls (Piloting 0) | T2 Recon / Explorer Hulls (Piloting 10) |
+|---|---|---|---|
+| Voidborn | Threshold (65c / 95f / 1W 2D 2U / 16 / 30) | Eigenstate scout (30c, 2D 3U), Qualia explorer (30c, 2D 3U), Fugue courier (55c, 2U) | Confluence explorer (120c, 1W 2D 4U), Interstice covert recon (40c, 3D 4U), Parallax (40c, 1W 3D 3U) |
+| Outer Rim | Cobble (75c / 120f / 1W 1D 2U / 12 / 24) | Warranty Void explorer (40c, 1W 2U), Technically Legal courier (50c, 2U) | Dust Devil blockade runner (95c, 1W 1D 3U), Terms and Conditions smuggler (120c, 1W 1D 3U) |
+| Nebula | Prospect (100c / 130f / 1W 1D 2U / 13 / 26) | Venture explorer (80c, 1W 1D 2U), Futures courier (30c, 2U), Margin (70c, 2U) | Prospectus scout (80c, 1W 1D 3U), Arbitrage covert (145c, 1W 1D 3U) |
+
+- Fitting rules: strip `mining_laser_i` and `pulse_laser_i` on T0 scouts (`Threshold`, `Cobble`, `Prospect` all carry 2U slots) to mount `survey_scanner_ii` + mobility/cloak mods. Use high-fuel `Prospect`/`Cobble` hulls on deep frontier census legs and diplomatic envoy relays.

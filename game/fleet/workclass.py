@@ -10,7 +10,7 @@ WHAT: one answer, used by every script that gives ships work (the dispatcher's r
         trade    buying for the fleet or for a price gap (a circuit that buys)            trader, hauler
         haul     supplying our bases (a bunker or faction-storage stop, outpost- and       hauler
                  supply- circuits)
-        once     a mission the game pays once per pilot (voidborn-, mission-, first-;      every role
+        once     a mission the game pays once per pilot (5-empire, mission-, first-;     every role
                  `once` or `one_time` in the file)
         sell, craft, fit, other                                                          every role
                  a ship sells its own stores, here or at a far buyer (storage is the pilot's own), crafts from its
@@ -76,7 +76,7 @@ STRICT_SHARED = ("once", "deliver", "fit", "other")
 STRICT_ROLES = dict(OFF_ROLES, trade=("trader",), sell=("trader",), craft=("hauler", "trader"))
 KEEPERS = {"miner": "Zero", "trader": "Mercury", "hauler": "Apollo", "drone": "Apophis", "sentinel": "Apophis", "scout": "Oracle",
            "command": "Unity"}               # division.ROLES: who commands each role (this file imports nothing of the fleet)
-ONCE_PREFIXES = ("voidborn-", "mission-", "first-")
+ONCE_PREFIXES = ("voidborn-", "solarian-", "nebula-", "crimson-", "outerrim-", "mission-", "first-")
 HAUL_PREFIXES = ("outpost-", "supply-")
 DELIVER_KEYS = {"at", "gift", "store", "withdraw", "refuel", "redock", "skip_if_hold", "only_if_active", "burn_cells"}
 SWITCH = os.path.join("fleet", "strict-classes-on")  # under the data folder: the strict classes and the sale rule act while it exists

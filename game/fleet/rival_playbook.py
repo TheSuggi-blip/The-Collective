@@ -128,9 +128,11 @@ def show(data="/srv/collective/data"):
                   % (label, tag, (m_r["name"] if m_r else tag)[:20], fmt_compact(wv), fmt_compact(wv / max(1, mv)), mv,
                      bv, fmt_compact(fv), fmt_compact(cv), num(t_r["mt"]) if t_r else 0, float(t_r["at"] or 0) if t_r else 0.0))
         our_sk = conn.execute("SELECT ROUND(AVG(level),1) as al, MAX(level) as ml FROM ship_skills WHERE skill='piloting'").fetchone()
-        print("  OUR FLEET [CLTV] %-20s | purse  %8s (%8s/ship, %3d ships) | bases %2d | piloting avg %s / max %s | 0 idle"
+        idle_r = conn.execute("SELECT SUM(CASE WHEN COALESCE(flies, '') = '' OR flies LIKE '%park%' THEN 1 ELSE 0 END) FROM ships").fetchone()
+        our_idle = num(idle_r[0]) if idle_r else 0
+        print("  OUR FLEET [CLTV] %-20s | purse  %8s (%8s/ship, %3d ships) | bases %2d | piloting avg %s / max %s | %d idle"
               % ("The Collective", fmt_compact(our_purse), fmt_compact(our_purse / max(1, our_ships)), our_ships,
-                 our_bases, our_sk["al"] if our_sk else "?", our_sk["ml"] if our_sk else "?"))
+                 our_bases, our_sk["al"] if our_sk else "?", our_sk["ml"] if our_sk else "?", our_idle))
 
         # 2. Resource-Monopoly Outpost Candidates (HEXC pattern)
         print("\n=== 2. UNCLAIMED RESOURCE-MONOPOLY OUTPOST SITES (lawless, 0 stations, 1-7 jumps)")
@@ -198,7 +200,7 @@ def show(data="/srv/collective/data"):
                   % (mode, rid[:28], out_str[:22], fmt(rev), str(top_st)[:22], fmt(net), b_held))
 
         # 4. Hull Promotion & Cross-Empire Exchange Targets
-        print("\n=== 4. HULL UPGRADE READINESS & BEST-IN-SLOT TARGETS (Voidborn native + Secondhand Exchange)")
+        print("\n=== 4. HULL UPGRADE READINESS & BEST-IN-SLOT TARGETS (All 5 Empires Native + Secondhand Exchange)")
         rdy = conn.execute("""
             SELECT s.division, s.role,
                    SUM(CASE WHEN sk.level >= 10 AND COALESCE(h.tier, 0) < 2 THEN 1 ELSE 0 END) as p10_under_t2,
@@ -212,8 +214,13 @@ def show(data="/srv/collective/data"):
         for r in rdy:
             print("  %-10s (%-8s) | Piloting >=10 below T2: %2d | >=20 below T3: %2d | max Piloting: %2d"
                   % (r["division"], r["role"], num(r["p10_under_t2"]), num(r["p20_under_t3"]), num(r["max_p"])))
-        print("  Target hulls: Voidborn native [T1 Liminal 75c/half-vol ore, Qualia scout | T2 Resonance Miner 180c/4u, Recursion 3w/150sh] "
-              "+ Secondhand Exchange bulk haulers [T1 Ledger 480c (neutral), Prayer 1900c (outerrim), Bonanza 180c (nebula) | T2 Junk Convoy 850c | T3 Syndicate]")
+        print("  Target hulls across our 5 empires (full specs: game/catalog/ships/<empire>.md):")
+        print("    Voidborn: T1 Liminal (75c/3U), Qualia | T2 Resonance Miner (180c/4U), Recursion (3W/2D), Apophenia (240c)")
+        print("    Solarian: T1 Archimedes (80c/4U), Axiom (2W/2U) | T2 Excavation (200c/3U), Meridian Freighter (265c/3U), Theorem (3W/3U)")
+        print("    Nebula:   T1 Bonanza (180c/3U), Floor Price (400c), Dividend (220c) | T2 Motherlode (200c), Caravan (540c/3U), Prospectus")
+        print("    Crimson:  T1 Cleaver (3W/1D), Flail (2W/80c) | T2 Halberd (4W/2D), Broadaxe (4W/1D), War Wagon (1200c/8U)")
+        print("    OuterRim: T1 Prayer (540c), Worship (1100c), Congregation (1900c), Warranty Void | T2 Junk Convoy (850c/6U), Dust Devil")
+        print("    Neutral:  T1 Ledger (480c), Runner (120c) | T2 Workhorse (300c/4U), Lone Star (240c)")
     finally:
         conn.close()
     return 0

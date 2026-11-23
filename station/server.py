@@ -2589,6 +2589,8 @@ def api_diplomacy(_allow_snapshot=False):
     our_avg_pilot = 0.0
     our_max_pilot = 0
     our_vb_skilled = 0
+    our_mastery_skilled = 0
+    our_mastery_by_emp = {}
     our_claimed_syss = []
     our_vault_worth = 0
     our_fleet_book = 0
@@ -2731,6 +2733,14 @@ def api_diplomacy(_allow_snapshot=False):
                 vb_r = conn.execute("SELECT COUNT(DISTINCT pilot) as c FROM ship_skills WHERE skill LIKE '%voidborn%' AND level >= 1").fetchone()
                 if vb_r:
                     our_vb_skilled = int(num(vb_r["c"]))
+                for sk_emp, sk_id in (
+                    ("voidborn", "voidborn_mastery"), ("solarian", "solarian_doctrine"),
+                    ("nebula", "nebula_attunement"), ("crimson", "crimson_fury"), ("outerrim", "outerrim_survival"),
+                ):
+                    mr = conn.execute("SELECT COUNT(DISTINCT pilot) as c FROM ship_skills WHERE skill=? AND level >= 1", (sk_id,)).fetchone()
+                    cnt_m = int(num(mr["c"])) if mr else 0
+                    our_mastery_by_emp[sk_emp] = cnt_m
+                    our_mastery_skilled += cnt_m
             if "public_battles" in tables:
                 for r in conn.execute("SELECT * FROM public_battles ORDER BY tick DESC LIMIT 25").fetchall():
                     battles_out.append({
@@ -3458,6 +3468,8 @@ def api_diplomacy(_allow_snapshot=False):
             "avg_piloting": our_avg_pilot,
             "max_piloting": our_max_pilot,
             "voidborn_skilled": our_vb_skilled,
+            "empire_mastery_skilled": our_mastery_skilled,
+            "mastery_by_empire": our_mastery_by_emp,
             "hulls": our_hulls,
             "ranks": {
                 "member_count": cltv_ranks.get("member_count"),

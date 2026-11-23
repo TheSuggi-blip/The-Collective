@@ -1,7 +1,7 @@
 # Mining guidebook -- Ships and Fits (ships.md)
 
 ### Ships and Fits
-Status: proven. Updated: 2026-11-21. Evidence: table hulls of the live catalog (re-read 2026-11-23 03:15 UTC, figures unchanged); commission_quote 2026-11-17 11:06 UTC; the tool catalog, ask=build.
+Status: proven. Updated: 2026-11-21. Evidence: table hulls (catalog 0.723.2); commission_quote 2026-11-17 11:06 UTC; the tool catalog, ask=build.
 
 - Threshold (tier 0): 2 utility slots, cpu 16, power 30, hold 65. The
   ice miner fits Mining Laser I and Ice Harvester I, a Pulse Laser I in
@@ -21,7 +21,7 @@ Status: proven. Updated: 2026-11-21. Evidence: table hulls of the live catalog (
   brings an hour, so the hold is the class's first upgrade.
 
 ### Mining tools and filters
-Status: proven. Updated: 2026-11-22. Evidence: table items of the live catalog (re-read 2026-11-23 03:15 UTC); docs/guides/miner.md (read 2026-11-21); hive.py route gather-gsc-0027-spacetime-seep (the runs with ore, 2026-11-21 22:00 to 2026-11-22 03:00 UTC); route fit-mining-laser-iii-lhs-1140.
+Status: proven. Updated: 2026-11-22. Evidence: catalog 0.732.0 items; docs/guides/miner.md (read 2026-11-21); hive.py route gather-gsc-0027-spacetime-seep (the runs with ore, 2026-11-21 22:00 to 2026-11-22 03:00 UTC); route fit-mining-laser-iii-lhs-1140.
 
 - Laser power: I 5, II 12, III 22, IV 40 (cpu 2, 4, 6, 10). A III fits
   a Threshold ice miner beside its Ice Harvester. Proven (F37): ore an
@@ -64,3 +64,17 @@ Status: proven. Updated: 2026-11-22. Evidence: errors.log ENT-026; the fit runs 
 - Goods from one of our pilots to another at one station: `deposit`
   (spacemolt_storage) with `source` storage and `target` the other
   pilot; `give.py` flies it there and reads both storages.
+
+### Multi-Empire Ship Catalog (Voidborn, Solarian, Nebula)
+Status: proven. Updated: 2026-11-23. Evidence: table hulls; game/catalog/ships/voidborn.md; game/catalog/ships/solarian.md; game/catalog/ships/nebula.md; hive.py guide mining.
+
+Mining operates across three origin empires. Starter hulls differ in hold, fuel, and utility slots, and each empire unlocks distinct T1/T2 mining, ice, and gas hulls (full live tables: `game/catalog/ships/<empire>.md` and `hive.py stats upgrades --member Zero`):
+
+| Empire | T0 Starter (hold / fuel / slots / CPU / pwr) | T1 Role Hulls (Piloting 0) | T2 Role Hulls (Piloting 10) |
+|---|---|---|---|
+| Voidborn | Threshold (65c / 95f / 1W 2D 2U / 16 / 30) | Liminal (75c half-vol ore, 3U), Rime (65c ice, 3U), Accretion (65c gas, 4U) | Resonance Miner (180c, 4U), Hoarfrost (170c, 3U), Nebulous (175c, 4U) |
+| Solarian | Theoria (70c / 100f / 1W 1D 3U / 16 / 28) | Archimedes (80c, 1W 4U), Glacius (55c ice, 3U), Aether (70c gas, 3U) | Excavation (200c, 1W 3U), Absolute Zero (175c ice, 4U), Nebulae (170c gas, 2U) |
+| Nebula | Prospect (100c / 130f / 1W 1D 2U / 13 / 26) | Bonanza (180c, 3U), Frost Dividend (95c ice, 2U), Yield (85c gas, 2U) | Motherlode (200c, 3U), Cold Storage (180c ice, 3U), Revenue (180c gas, 3U) |
+
+- Fitting rules: strip `pulse_laser_i` on T0 miners to unlock full utility slots (`Theoria` carries 3U at T0; `Prospect` carries 100c base hold). `Bonanza` (Nebula T1, 180c/3U) and `Archimedes` (Solarian T1, 4U) are major Piloting-0 upgrades before Piloting 10.
+- Neutral exchange: `Workhorse` (T2 multirole, 300c, 4U, Piloting 0) in `game/catalog/ships/pirate-and-other.md`.

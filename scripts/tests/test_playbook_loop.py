@@ -125,5 +125,51 @@ class PlaybookLoopTests(unittest.TestCase):
                 server.PLAYBOOKS_CACHE.update(old_cache)
 
 
+    def test_multi_empire_anchor_surfaces_all_active_division_empires_and_hulls(self):
+        with tempfile.TemporaryDirectory(prefix="pb-multi-") as tmp:
+            root = Path(tmp) / "repo"
+            data = Path(tmp) / "data"
+            (root / "game" / "routes" / "guidebook" / "mining").mkdir(parents=True)
+            for ch in book.CHAPTERS:
+                (root / "game" / "routes" / "guidebook" / "mining" / (ch + ".md")).write_text(
+                    "# Mining -- %s\n\n### Entry\nStatus: proven. Updated: 2026-11-23. Evidence: live.\n\nBody.\n" % ch,
+                    encoding="ascii",
+                )
+            store.one_pass(str(data), now=1795377600.0, root=str(root / "game"))
+            conn = sqlite3.connect(str(data / "store" / "read.db"))
+            try:
+                conn.executemany(
+                    "INSERT INTO ships (pilot, member, division, role, number, class, empire, docked, flies, t, src) VALUES (?, 'Zero', 'Mining', 'miner', ?, ?, ?, 0, 'mine-x', 1, 't')",
+                    [
+                        ("miner-1", 1, "Threshold", "voidborn"),
+                        ("miner-61", 61, "Theoria", "solarian"),
+                        ("miner-96", 96, "Prospect", "nebula"),
+                    ],
+                )
+                conn.executemany(
+                    "INSERT INTO hulls (id, name, category, class, tier, faction, cargo, fuel, weapon_slots, defense_slots, utility_slots, cpu, power, piloting_required, src) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 't')",
+                    [
+                        ("threshold", "Threshold", "Civilian", "Starter", 0, "voidborn", 65, 95, 1, 2, 2, 16, 30, 0),
+                        ("theoria", "Theoria", "Civilian", "Starter", 0, "solarian", 70, 100, 1, 1, 3, 16, 28, 0),
+                        ("prospect", "Prospect", "Civilian", "Starter", 0, "nebula", 100, 130, 1, 1, 2, 13, 26, 0),
+                        ("liminal", "Liminal", "Industrial", "Miner", 1, "voidborn", 75, 100, 0, 2, 3, 18, 34, 0),
+                        ("archimedes", "Archimedes", "Industrial", "Miner", 1, "solarian", 80, 100, 1, 1, 4, 18, 34, 0),
+                        ("bonanza", "Bonanza", "Industrial", "Miner", 1, "nebula", 180, 130, 0, 1, 3, 12, 24, 0),
+                    ],
+                )
+                conn.commit()
+                anc = playbook_anchor.compute_division_anchor(conn, str(root), data=str(data), division_name="mining", now=1795377600.0)
+                emps = {e["empire"] for e in anc["fleet"]["empires"]}
+                self.assertEqual(emps, {"voidborn", "solarian", "nebula"})
+                unlock_names = {u["name"] for u in anc["fleet"]["next_unlocks"]}
+                self.assertTrue({"Liminal", "Archimedes", "Bonanza"}.issubset(unlock_names))
+                lines_txt = "\n".join(playbook_anchor.anchor_lines(anc))
+                self.assertIn("solarian", lines_txt)
+                self.assertIn("Bonanza", lines_txt)
+                self.assertIn("Archimedes", lines_txt)
+            finally:
+                conn.close()
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -41,3 +41,16 @@ Status: proven. Updated: 2026-11-22. Evidence: commission_quote Central Nexus 20
   group at 20.
 - The pirate hulls `small_claims` (240 hull, 3 weapons) and `larder` (460
   hull, 3 weapons) name no Piloting gate.
+
+### Multi-Empire Ship Catalog (Voidborn, Crimson, Solarian)
+Status: proven. Updated: 2026-11-23. Evidence: table hulls; game/catalog/ships/voidborn.md; game/catalog/ships/crimson.md; game/catalog/ships/solarian.md; hive.py guide military.
+
+Military operates across Voidborn, Crimson, and Solarian fleets. Starter slot geometry differs sharply by empire (`Shard` starts with 2 weapon slots and 1 utility slot), so fit routes must respect hull slots (`game/catalog/ships/<empire>.md`; `hive.py stats upgrades --member Apophis`):
+
+| Empire | T0 Starter (hull / shd / slots / CPU / pwr) | T1 Combat Hulls (Piloting 0) | T2 Combat Hulls (Piloting 10) |
+|---|---|---|---|
+| Voidborn | Threshold (75h / 80s / 1W 2D 2U / 16 / 30) | Paradox fighter (2W 2D 1U), Vigil patrol (2W 2D 2U) | Recursion fighter (3W 2D 2U), Dualism heavy (2W 3D 2U), Census patrol (2W 2D 3U) |
+| Crimson | Shard (110h / 40s / 2W 1D 1U / 12 / 28) | Cleaver fighter (3W 1D 0U), Flail raider (2W 1D 1U, 80c), Mandate patrol (2W 1D 2U) | Halberd assault (4W 2D 1U), Broadaxe heavy (4W 1D 2U), Gauntlet (3W 2D 1U), Trebuchet monitor (2W 6D 2U) |
+| Solarian | Theoria (100h / 55s / 1W 1D 3U / 16 / 28) | Axiom fighter (2W 1D 2U, 30c), Corollary fighter (2W 1D 2U), Precept patrol (1W 1D 3U) | Theorem heavy fighter (3W 2D 3U), Postulate drone carrier (1W 2D 4U), Scrutiny patrol (1W 2D 3U) |
+
+- Fitting rules: `Shard` has 2W / 1D / 1U (hull-heavy, low shield: prioritize armor and second weapon, never require 2U mods). `Theoria` has 1W / 1D / 3U (high utility/CPU). Match weapon damage types to each pilot's origin Mastery bonus (`F35`).

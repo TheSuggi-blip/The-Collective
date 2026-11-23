@@ -428,7 +428,7 @@ def inspect(root, data, hours=4.0, now=None, save=False):
                 "WARN",
                 "upgrades",
                 "T0_HULL_BACKLOG",
-                "%d/%d ships on T2+ hulls; %d Piloting>=10 (%d with >=45k cr, %d Piloting>=20) still fly Tier-0 Threshold"
+                "%d/%d ships on T2+ hulls; %d Piloting>=10 (%d with >=45k cr, %d Piloting>=20) still fly Tier-0 starter hulls"
                 % (t2_hulls, total_ships, p10_threshold, p10_funded, p20_threshold),
             )
 

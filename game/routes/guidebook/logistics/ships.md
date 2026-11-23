@@ -22,3 +22,17 @@ Status: proven. Updated: 2026-11-21. Evidence: browse_ships, all charted station
 
 - A freighter without slots carries no mining laser. Buying a listed ship stores the pilot's present ship at that station.
 - Ledger (480): a prestige hull; `commission_quote` answers `achievement_required` (the faction must have earned the "Syndicate" achievement; Central Nexus, 2026-11-22 20:08 UTC). Apophenia (240, Piloting 10): 433,072 cr credits only, or 60,444 cr with eleven parts we lack (shield emitters, void nanite suspension, phase matrix ...), same quote. Listings: `browse_ships` (group spacemolt_ship, free) with `all_stations`, `class_id`, `can_fly` true.
+
+### Multi-Empire Ship Catalog (Voidborn, Outer Rim, Nebula)
+Status: proven. Updated: 2026-11-23. Evidence: table hulls; game/catalog/ships/voidborn.md; game/catalog/ships/outerrim.md; game/catalog/ships/nebula.md; hive.py guide logistics.
+
+Logistics operates across Voidborn, Outer Rim, and Nebula yards, giving native access to the galaxy's largest T1/T2 bulk haulers (`game/catalog/ships/<empire>.md`; `hive.py stats upgrades --member Apollo`):
+
+| Empire | T0 Starter (hold / fuel / slots / CPU / pwr) | T1 Hauler / Utility Hulls (Piloting 0) | T2 Hauler / Utility Hulls (Piloting 10) |
+|---|---|---|---|
+| Voidborn | Threshold (65c / 95f / 1W 2D 2U / 16 / 30) | Residuum salvager (100c, 3U), Fugue courier (55c, 2U) | Apophenia freighter (240c, 2U), Entropy salvager (240c, 4U) |
+| Outer Rim | Cobble (75c / 120f / 1W 1D 2U / 12 / 24) | Prayer (540c), Worship (1,100c), Congregation (1,900c) -- all 0 slots | Junk Convoy bulk hauler (850c, 6U), Baling Wire (275c, 2U), Chop Shop (280c, 3U) |
+| Nebula | Prospect (100c / 130f / 1W 1D 2U / 13 / 26) | Floor Price (400c, 1U), Dividend (220c, 2U), Appraisal (150c, 2U) | Caravan bulk hauler (540c, 3U), Bulk Terms (350c, 2U), Reclaim (280c, 3U) |
+| Neutral | Secondhand / multi-empire exchange | Ledger freighter (480c, 0 slots), Runner courier (120c, 2U) | Workhorse multirole (300c, 4U), Canteen (260c, 4U) |
+
+- Fitting rules: strip off-role starter lasers on T0 haulers (`Prospect` 100c/130f, `Cobble` 75c/120f, `Threshold` 65c/95f) to fit `cargo_expander_ii/iii`. `Prayer`/`Worship`/`Congregation`/`Ledger` have 0 slots and require `requires.without_module` separation from fitted haulers.

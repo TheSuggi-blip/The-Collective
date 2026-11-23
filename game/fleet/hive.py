@@ -1199,9 +1199,23 @@ def show_eyes(data, who):
                 ).fetchall()
                 hulls_txt = " | hulls: " + (", ".join("%d T%d" % (n, tr) for tr, n in tiers) or "none")
             if "ship_skills" in tables and "ships" in tables:
-                vb = conn.execute("SELECT COUNT(DISTINCT pilot) FROM ship_skills WHERE skill LIKE '%voidborn%' AND level >= 1").fetchone()[0]
+                emp_sk = (
+                    ("voidborn", "VB", "voidborn_mastery"),
+                    ("solarian", "SOL", "solarian_doctrine"),
+                    ("nebula", "NEB", "nebula_attunement"),
+                    ("crimson", "CRM", "crimson_fury"),
+                    ("outerrim", "RIM", "outerrim_survival"),
+                )
                 tot_s = conn.execute("SELECT COUNT(*) FROM ships").fetchone()[0]
-                vb_txt = " | Voidborn >=1: %d/%d" % (vb, tot_s)
+                emp_tots = dict(conn.execute("SELECT LOWER(COALESCE(NULLIF(empire,''),'voidborn')), COUNT(*) FROM ships GROUP BY 1").fetchall())
+                sk_tots = dict(conn.execute(
+                    "SELECT k.skill, COUNT(DISTINCT k.pilot) FROM ship_skills k "
+                    "WHERE k.skill IN ('voidborn_mastery','solarian_doctrine','nebula_attunement','crimson_fury','outerrim_survival') "
+                    "AND k.level >= 1 GROUP BY 1"
+                ).fetchall())
+                parts_m = ["%s %d/%d" % (lbl, sk_tots.get(sk, 0), emp_tots.get(emp, 0)) for emp, lbl, sk in emp_sk if emp_tots.get(emp, 0)]
+                tot_m = sum(sk_tots.get(sk, 0) for _e, _l, sk in emp_sk)
+                vb_txt = " | Mastery >=1: %d/%d (%s)" % (tot_m, tot_s, ", ".join(parts_m))
             if fac:
                 mc, ml, trs, ob = fac[0] or 0, fac[1] or 0, fac[2] or 0, fac[3] or 0
                 tot_fl = conn.execute("SELECT COUNT(*) FROM ships").fetchone()[0] if "ships" in tables else mc
@@ -1255,23 +1269,29 @@ def show_eyes(data, who):
                             "WHERE s.division=? AND m.module IN (%s)" % q_marks,
                             (div_name,) + off_mods,
                         ).fetchone()[0]
-                        u_under2 = conn.execute(
-                            "SELECT COUNT(*) FROM ships s WHERE s.division=? AND "
-                            "(SELECT COUNT(*) FROM ship_modules m WHERE m.pilot=s.pilot AND m.slot='utility' AND m.module NOT IN (%s)) < 2" % q_marks,
+                        u_under = conn.execute(
+                            "SELECT COUNT(*) FROM ships s LEFT JOIN hulls h ON LOWER(s.class)=LOWER(h.name) OR LOWER(s.class)=LOWER(h.id) "
+                            "WHERE s.division=? AND COALESCE(h.utility_slots, 2) > 0 AND "
+                            "(SELECT COUNT(*) FROM ship_modules m WHERE m.pilot=s.pilot AND m.slot='utility' AND m.module NOT IN (%s)) < COALESCE(h.utility_slots, 2)" % q_marks,
                             (div_name,) + off_mods,
                         ).fetchone()[0]
-                        hold65 = conn.execute("SELECT COUNT(*) FROM ships WHERE division=? AND cargo_capacity <= 65", (div_name,)).fetchone()[0]
-                        if off_ships or u_under2:
+                        t0_unexp = conn.execute(
+                            "SELECT COUNT(*) FROM ships s LEFT JOIN hulls h ON LOWER(s.class)=LOWER(h.name) OR LOWER(s.class)=LOWER(h.id) "
+                            "WHERE s.division=? AND COALESCE(h.tier, 0)=0 AND NOT EXISTS "
+                            "(SELECT 1 FROM ship_modules m WHERE m.pilot=s.pilot AND m.module LIKE 'cargo_expander%%')",
+                            (div_name,),
+                        ).fetchone()[0]
+                        if off_ships or u_under:
                             hint = {
-                                "Mining": "Threshold fits 2x mining_laser_iii (44 pwr=2.0x) + shield_booster_i once pulse_laser_i (-5 pwr) is stripped, or laser_iii + cargo_expander_iii (165 hold)",
-                                "Trade": "Threshold 2U slots fit 2x cargo_expander_ii/iii -> 165-265 hold (2.5x-4.1x/trip) once starter mods are stripped",
-                                "Logistics": "Threshold 2U slots fit 2x cargo_expander_ii/iii -> 165-265 hold (2.5x-4.1x/trip) once starter/harvester mods are stripped",
-                                "Military": "Stripping mining_laser_i/harvesters frees +5 pwr & 2U slots for 2x shield_booster_ii + afterburner/web/expander",
-                                "Intel": "Stripping mining_laser_i + pulse_laser_i frees +10 pwr & 2U slots for survey_scanner_ii + afterburner/cloak",
+                                "Mining": "Fill all hull U-slots (Threshold 2U/65c, Prospect 2U/100c, Theoria 3U/70c): strip pulse_laser_i for 2x-3x mining_laser_ii/iii or laser + cargo_expander; check empire T1/T2 hulls (Liminal, Bonanza 180c, Archimedes 4U)",
+                                "Trade": "Fill all hull U-slots (Threshold 2U/65c, Prospect 2U/100c, Theoria 3U/70c) with cargo_expander_ii/iii once starter lasers are stripped; check empire T1/T2 freighters (Floor Price 400c, Dividend 220c, Ledger 480c)",
+                                "Logistics": "Fill all hull U-slots (Threshold 2U/65c, Cobble 2U/75c, Prospect 2U/100c) with cargo_expander_ii/iii; check empire bulk haulers (Prayer 540c, Worship 1100c, Floor Price 400c, Ledger 480c)",
+                                "Military": "Strip mining_laser_i/harvesters to fill combat slots (Threshold 1W/2D/2U, Shard 2W/1D/1U, Theoria 1W/1D/3U): shield_booster_ii + weapons; check empire fighters (Cleaver 3W, Broadaxe/Halberd 4W, Recursion 3W, Theorem 3W)",
+                                "Intel": "Strip mining_laser_i + pulse_laser_i on Threshold/Cobble/Prospect (2U) for survey_scanner_ii + afterburner/cloak; check empire scouts (Qualia, Venture, Warranty Void)",
                             }.get(div_name, "")
                             lines.append(
-                                "  SLOT & LOADOUT MULTIPLIER (%s) | %d/%d ships carry off-role starter mods | %d/%d have <2 role utility mods (%d at <=65 hold) | use stop `unfit` + `fit` (`count: 2`, `requires.modules_below`/`any_module`): %s"
-                                % (div_name, off_ships, drow[0], u_under2, drow[0], hold65, hint)
+                                "  SLOT & LOADOUT MULTIPLIER (%s) | %d/%d ships carry off-role starter mods | %d/%d have empty role utility slots (%d T0 unexpanded hold) | use stop `unfit` + `fit` (`count: 2`, `requires.modules_below`/`any_module`): %s"
+                                % (div_name, off_ships, drow[0], u_under, drow[0], t0_unexp, hint)
                             )
         if "need_status" in tables:
             nrows = conn.execute(

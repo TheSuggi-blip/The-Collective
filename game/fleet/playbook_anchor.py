@@ -53,22 +53,34 @@ ROUTE_TOKEN = re.compile(
 )
 CATALOG_VER_RE = re.compile(r"\bcatalog\s+(0\.\d+(?:\.\d+)?)\b", re.I)
 
+EMPIRE_CATALOG_DOC = {
+    "voidborn": "game/catalog/ships/voidborn.md",
+    "solarian": "game/catalog/ships/solarian.md",
+    "nebula": "game/catalog/ships/nebula.md",
+    "crimson": "game/catalog/ships/crimson.md",
+    "outerrim": "game/catalog/ships/outerrim.md",
+    "neutral": "game/catalog/ships/pirate-and-other.md",
+}
+EMPIRE_MASTERY_SKILLS = (
+    "voidborn_mastery", "solarian_doctrine", "nebula_attunement", "crimson_fury", "outerrim_survival",
+)
+
 DIV_ROLE_HULL_CATS = {
-    "command": ("combat", "fighter", "cruiser", "command", "support", "explorer"),
-    "mining": ("mining", "industrial", "barge", "harvester"),
-    "trade": ("freighter", "hauler", "transport", "industrial", "trade", "cargo"),
-    "logistics": ("freighter", "hauler", "transport", "industrial", "cargo"),
-    "military": ("combat", "fighter", "interceptor", "corvette", "frigate", "cruiser", "gunship"),
-    "intel": ("explorer", "scout", "recon", "covert", "survey"),
+    "command": ("combat", "fighter", "cruiser", "command", "support", "explorer", "freighter", "multirole"),
+    "mining": ("mining", "miner", "harvester", "barge"),
+    "trade": ("freighter", "bulk hauler", "hauler", "courier", "transport", "commercial", "trade", "cargo"),
+    "logistics": ("freighter", "bulk hauler", "hauler", "transport", "salvager", "cargo", "logistics"),
+    "military": ("combat", "fighter", "heavy fighter", "assault", "raider", "interceptor", "corvette", "frigate", "cruiser", "gunship", "monitor", "patrol"),
+    "intel": ("explorer", "scout", "recon", "covert", "survey", "research", "blockade runner"),
 }
 
 DIV_KEY_SKILLS = {
-    "command": ("piloting", "leadership", "tactics", "weapons", "shields", "navigation"),
-    "mining": ("mining", "deep_core_mining", "piloting", "navigation", "refining", "crafting"),
-    "trade": ("trading", "piloting", "navigation", "crafting", "refining", "mining"),
-    "logistics": ("piloting", "navigation", "crafting", "refining", "trading"),
-    "military": ("weapons", "piloting", "shields", "tactics", "armor", "navigation"),
-    "intel": ("exploration", "piloting", "navigation", "scanning", "cloaking"),
+    "command": ("piloting", "leadership", "tactics", "weapons", "shields", "navigation") + EMPIRE_MASTERY_SKILLS,
+    "mining": ("mining", "deep_core_mining", "piloting", "navigation", "refining", "crafting") + EMPIRE_MASTERY_SKILLS,
+    "trade": ("trading", "piloting", "navigation", "crafting", "refining", "mining") + EMPIRE_MASTERY_SKILLS,
+    "logistics": ("piloting", "navigation", "crafting", "refining", "trading") + EMPIRE_MASTERY_SKILLS,
+    "military": ("weapons", "piloting", "shields", "tactics", "armor", "navigation") + EMPIRE_MASTERY_SKILLS,
+    "intel": ("exploration", "piloting", "navigation", "scanning", "cloaking") + EMPIRE_MASTERY_SKILLS,
 }
 
 SCHEMA = (
@@ -406,8 +418,8 @@ def compute_division_anchor(conn, repo_root, data="/srv/collective/data", divisi
 
     fleet_summary = {
         "ships_total": 0, "flying": 0, "docked": 0, "on_route": 0,
-        "hulls": [], "ready_pilots": 0, "max_piloting": 0, "avg_piloting": 0.0,
-        "next_unlocks": [],
+        "empires": [], "hulls": [], "ready_pilots": 0, "max_piloting": 0, "avg_piloting": 0.0,
+        "next_unlocks": [], "empire_catalog": [],
     }
     ship_builds = []
     empty_slots = {"weapon": 0, "defense": 0, "utility": 0}
@@ -415,10 +427,13 @@ def compute_division_anchor(conn, repo_root, data="/srv/collective/data", divisi
     open_needs = []
 
     if conn is not None and _has_table(conn, "ships"):
+        ship_cols = {r[1] for r in conn.execute("PRAGMA table_info(ships)").fetchall()}
+        emp_expr = "LOWER(COALESCE(NULLIF(s.empire, ''), 'voidborn'))" if "empire" in ship_cols else "'voidborn'"
         srows = conn.execute(
             "SELECT s.pilot, s.role, s.class, COALESCE(s.docked, 0), COALESCE(s.flies, ''), "
             "COALESCE(h.tier, 0), COALESCE(h.cargo, s.cargo_capacity, 0), "
-            "COALESCE(h.weapon_slots, 0), COALESCE(h.defense_slots, 0), COALESCE(h.utility_slots, 0) "
+            "COALESCE(h.weapon_slots, 0), COALESCE(h.defense_slots, 0), COALESCE(h.utility_slots, 0), "
+            + emp_expr + " "
             "FROM ships s LEFT JOIN hulls h ON LOWER(s.class) = LOWER(h.name) OR LOWER(s.class) = LOWER(h.id) "
             "WHERE LOWER(s.division) = ? ORDER BY s.number, s.pilot",
             (div,),
@@ -427,6 +442,11 @@ def compute_division_anchor(conn, repo_root, data="/srv/collective/data", divisi
         fleet_summary["docked"] = sum(1 for r in srows if r[3])
         fleet_summary["flying"] = len(srows) - fleet_summary["docked"]
         fleet_summary["on_route"] = sum(1 for r in srows if r[4])
+        emp_counts = Counter(r[10] for r in srows)
+        fleet_summary["empires"] = [
+            {"empire": e, "ships": cnt}
+            for e, cnt in sorted(emp_counts.items(), key=lambda kv: (-kv[1], kv[0]))
+        ]
 
         hull_counts = Counter((r[2] or "Unknown", int(r[5] or 0), int(r[6] or 0), int(r[9] or 0), int(r[7] or 0)) for r in srows)
         fleet_summary["hulls"] = [
@@ -488,27 +508,67 @@ def compute_division_anchor(conn, repo_root, data="/srv/collective/data", divisi
 
         if _has_table(conn, "hulls"):
             cats = DIV_ROLE_HULL_CATS.get(div, ())
+            hull_cols = {r[1] for r in conn.execute("PRAGMA table_info(hulls)").fetchall()}
+            fuel_c = "COALESCE(fuel, 0)" if "fuel" in hull_cols else "0"
+            cpu_c = "COALESCE(cpu, 0)" if "cpu" in hull_cols else "0"
+            pwr_c = "COALESCE(power, 0)" if "power" in hull_cols else "0"
             hrows = conn.execute(
-                "SELECT name, tier, COALESCE(piloting_required, 0), COALESCE(cargo, 0), "
+                "SELECT name, COALESCE(tier, 0), COALESCE(piloting_required, 0), COALESCE(cargo, 0), "
                 "COALESCE(weapon_slots, 0), COALESCE(defense_slots, 0), COALESCE(utility_slots, 0), "
-                "LOWER(COALESCE(category, '')), LOWER(COALESCE(class, '')), LOWER(COALESCE(faction, '')) "
-                "FROM hulls WHERE COALESCE(tier, 0) IN (1, 2, 3)"
+                "LOWER(COALESCE(category, '')), LOWER(COALESCE(class, '')), LOWER(COALESCE(faction, '')), "
+                "%s, %s, %s FROM hulls WHERE COALESCE(tier, 0) IN (0, 1, 2, 3)" % (fuel_c, cpu_c, pwr_c)
             ).fetchall()
-            picked = []
+            starters_by_emp = {}
+            by_emp = {}
             for hr in hrows:
+                fac = hr[9] or "neutral"
+                if fac in ("any", ""):
+                    fac = "neutral"
+                tier_v = int(hr[1] or 0)
+                if tier_v == 0:
+                    starters_by_emp[fac] = {
+                        "name": hr[0], "tier": 0, "cargo": int(hr[3] or 0), "fuel": int(hr[10] or 0),
+                        "slots": "%dW/%dD/%dU" % (hr[4], hr[5], hr[6]),
+                        "cpu": int(hr[11] or 0), "power": int(hr[12] or 0), "faction": fac,
+                    }
+                    continue
                 hay_c = hr[7] + " " + hr[8] + " " + hr[0].lower()
                 if any(k in hay_c for k in cats):
-                    fac = hr[9] or "any"
-                    # Prioritize Voidborn & neutral Tier 2 -> Tier 3 -> Tier 1 hulls matching our empire
-                    emp_rank = 0 if "voidborn" in fac else (1 if fac in ("any", "neutral", "") else 2)
-                    tier_rank = {2: 0, 3: 1, 1: 2}.get(int(hr[1] or 0), 3)
-                    picked.append((emp_rank, tier_rank, -int(hr[3] or 0), {
-                        "name": hr[0], "tier": int(hr[1] or 0), "piloting_req": int(hr[2] or 0),
+                    tier_rank = {2: 0, 1: 1, 3: 2}.get(tier_v, 3)
+                    score_key = (-int(hr[4] or 0), -int(hr[5] or 0), -int(hr[3] or 0)) if div == "military" else (-int(hr[3] or 0), -int(hr[6] or 0))
+                    by_emp.setdefault(fac, []).append((tier_rank, score_key, {
+                        "name": hr[0], "tier": tier_v, "piloting_req": int(hr[2] or 0),
                         "cargo": int(hr[3] or 0), "slots": "%dW/%dD/%dU" % (hr[4], hr[5], hr[6]),
-                        "faction": fac,
+                        "faction": fac, "role_class": hr[8] or hr[7],
                     }))
-            picked.sort(key=lambda x: (x[0], x[1], x[2]))
-            fleet_summary["next_unlocks"] = [x[3] for x in picked[:6]]
+            for fac in by_emp:
+                by_emp[fac].sort(key=lambda x: (x[0], x[1]))
+            active_emps = [e["empire"] for e in fleet_summary["empires"]] or ["voidborn"]
+            emp_ship_map = {e["empire"]: e["ships"] for e in fleet_summary["empires"]}
+            catalog_emps = list(active_emps)
+            if div in ("trade", "logistics", "mining") and "neutral" in by_emp and "neutral" not in catalog_emps:
+                catalog_emps.append("neutral")
+            emp_cat_out = []
+            unlocks_out = []
+            for fac in catalog_emps:
+                pool = [x[2] for x in by_emp.get(fac, ())]
+                chosen = []
+                for want_t, cap_t in ((1, 2), (2, 2), (3, 1)):
+                    got_t = [u for u in pool if u["tier"] == want_t][:cap_t]
+                    chosen.extend(got_t)
+                if not chosen:
+                    chosen = pool[:4]
+                emp_cat_out.append({
+                    "empire": fac,
+                    "ships": emp_ship_map.get(fac, 0),
+                    "catalog_doc": EMPIRE_CATALOG_DOC.get(fac, "game/catalog/master-index.md"),
+                    "starter": starters_by_emp.get(fac),
+                    "upgrades": chosen,
+                })
+                limit_u = 3 if fac in active_emps else 2
+                unlocks_out.extend(chosen[:limit_u])
+            fleet_summary["empire_catalog"] = emp_cat_out
+            fleet_summary["next_unlocks"] = unlocks_out[:16]
 
         if _has_table(conn, "ship_skills"):
             xp_rates = {}
@@ -534,7 +594,7 @@ def compute_division_anchor(conn, repo_root, data="/srv/collective/data", divisi
                 key_order.index(r[0]) if r[0] in key_order else 99,
                 -(r[3] or 0),
             ))
-            for sk_id, sk_name, cnt, avg_l, min_l, max_l in sk_rows[:8]:
+            for sk_id, sk_name, cnt, avg_l, min_l, max_l in sk_rows[:10]:
                 xpr = xp_rates.get(sk_id)
                 leveling["skills"].append({
                     "id": sk_id, "name": sk_name, "pilots": int(cnt or 0),
@@ -627,20 +687,31 @@ def anchor_lines(anchor):
     es = anchor["empty_slots"]
     lines = []
     hulls_txt = ", ".join("%s (T%d) x%d" % (h["class"], h["tier"], h["count"]) for h in fl["hulls"]) or "none"
+    emps_txt = ", ".join("%s x%d" % (e["empire"], e["ships"]) for e in (fl.get("empires") or [])) or "voidborn"
     lines.append(
-        "  Fleet & Hulls (live read.db, catalog %s): %d ships (%d flying, %d docked, %d on route) | %s | "
+        "  Fleet & Hulls (live read.db, catalog %s): %d ships (%d flying, %d docked, %d on route) | Empires: %s | %s | "
         "Piloting avg %.1f / max %d (%d ready for Tier 2+)"
         % (anchor["catalog_version"], fl["ships_total"], fl["flying"], fl["docked"], fl["on_route"],
-           hulls_txt, fl["avg_piloting"], fl["max_piloting"], fl["ready_pilots"])
+           emps_txt, hulls_txt, fl["avg_piloting"], fl["max_piloting"], fl["ready_pilots"])
     )
     if anchor["ship_builds"]:
-        btxt = "; ".join("%s [%s] x%d" % (b["hull"], b["loadout"], b["ships"]) for b in anchor["ship_builds"][:4])
+        btxt = "; ".join("%s [%s] x%d" % (b["hull"], b["loadout"], b["ships"]) for b in anchor["ship_builds"][:6])
         lines.append(
             "  Active Ship Builds (table ship_modules; empty slots %dW/%dD/%dU): %s"
             % (es["weapon"], es["defense"], es["utility"], btxt)
         )
-    if fl["next_unlocks"]:
-        utxt = "; ".join("%s (T%d, P%d, hold %d, %s)" % (u["name"], u["tier"], u["piloting_req"], u["cargo"], u["slots"]) for u in fl["next_unlocks"][:4])
+    if fl.get("empire_catalog"):
+        lines.append("  Multi-Empire Ship Catalog (table hulls; full specs in game/catalog/ships/<empire>.md):")
+        for ec in fl["empire_catalog"]:
+            st = ec.get("starter")
+            st_txt = "T0 %s (%dc/%df, %s)" % (st["name"], st["cargo"], st["fuel"], st["slots"]) if st else "neutral exchange"
+            up_txt = "; ".join(
+                "%s (T%d, P%d, %dc, %s)" % (u["name"], u["tier"], u["piloting_req"], u["cargo"], u["slots"])
+                for u in (ec.get("upgrades") or [])[:5]
+            ) or "none"
+            lines.append("    - %s (%d ships, %s): %s -> %s" % (ec["empire"], ec["ships"], ec["catalog_doc"], st_txt, up_txt))
+    elif fl["next_unlocks"]:
+        utxt = "; ".join("%s [%s] (T%d, P%d, hold %d, %s)" % (u["name"], u.get("faction", "?"), u["tier"], u["piloting_req"], u["cargo"], u["slots"]) for u in fl["next_unlocks"][:8])
         lines.append("  Catalog Hull Ladder (table hulls): " + utxt)
     if anchor["leveling"]["skills"]:
         stxt = "; ".join(
@@ -648,7 +719,7 @@ def anchor_lines(anchor):
                 s["name"], s["avg"], s["min"], s["max"],
                 ", %.1f XP/h" % s["xp_per_ship_h"] if s["xp_per_ship_h"] is not None else "",
             )
-            for s in anchor["leveling"]["skills"][:6]
+            for s in anchor["leveling"]["skills"][:9]
         )
         lines.append("  Skill Rungs (table ship_skills): " + stxt)
     if anchor["open_needs"]:

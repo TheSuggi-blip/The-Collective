@@ -120,5 +120,17 @@ class SmartMissionReachTests(unittest.TestCase):
         self.assertFalse(dispatch.waits_once(skill_route, [aborted], ended + 65 * 60))
 
 
+    def test_symmetric_5_empire_prefix_guard_and_workclass(self):
+        import workclass
+        for emp in ("voidborn", "solarian", "nebula", "crimson", "outerrim"):
+            rid = emp + "-first-steps"
+            self.assertEqual(workclass.work_class({"kind": "circuit", "once": True}, rid), "once")
+        why = dispatch.newborn_reason(make_pilot("voidborn", "sol"), "solarian-first-steps", SOL_ONCE)
+        self.assertIsNotNone(why)
+        self.assertIn("Solarian empire mission", why)
+        self.assertIsNone(dispatch.newborn_reason(make_pilot("solarian", "sol"), "solarian-first-steps", SOL_ONCE))
+        self.assertIsNotNone(dispatch.newborn_reason(make_pilot("solarian", "nexus_prime"), "voidborn-first-steps", VB_ONCE))
+
+
 if __name__ == "__main__":
     unittest.main()
