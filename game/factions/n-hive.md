@@ -15,7 +15,7 @@ updated: 2026-11-23
 # Hive Swarm [HIVE]
 
 A player faction with 3 base(s) in 3 system(s); the nearest to Nexus Prime is 5 jump(s) away, in Antares (`antares`).
-Pilots of it in our space in the last 24 hours: 5.
+Pilots of it in our space in the last 24 hours: 7.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 5.
 | Allies | OLSV, VEIL | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 108 | Public event stream |
+| Pilots carrying the tag on the public event stream | 107 | Public event stream |
 
 ## Bases
 
@@ -42,11 +42,13 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| 0637bfdf8ba6a997093332c9 | Nexus Prime (`nexus_prime`) | 0 | futures |
-| 4c671b9675ba73f0025d603d | Hamal (`hamal`) | 0 | deep_survey |
-| dd23b0ca1cc14350d2b0b023 | Hamal (`hamal`) | 0 | workhorse |
-| e039279d45eefa288b1c7717 | Nexus Prime (`nexus_prime`) | 0 | futures |
-| hiver | Acubens (`acubens`) | 0 | bonanza |
+| 395530a76c237308aaa5b1dc | Node Gamma (`node_gamma`) | 0 | workhorse |
+| 67194c43c43f74e1b9267ed5 | Node Gamma (`node_gamma`) | 0 | workhorse |
+| a2b005c64a75e5188f89b67b | Pherkad (`pherkad`) | 0 | runner |
+| ac55ba07be5a48456875b4ff | Hamal (`hamal`) | 0 | workhorse |
+| ddac9c7dba6b0465e059d88b | Node Gamma (`node_gamma`) | 0 | workhorse |
+| f4fb0d5cfa446f5ef0f33b3f | Hamal (`hamal`) | 0 | workhorse |
+| fdd4d2a524b48e0478b85d38 | Hamal (`hamal`) | 0 | workhorse |
 
 ## Standing History
 

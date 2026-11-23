@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 5.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 96 | Public event stream |
+| Pilots carrying the tag on the public event stream | 99 | Public event stream |
 
 ## Bases
 
@@ -47,11 +47,11 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Calculon | Node Alpha (`node_alpha`) | 0 | junk_convoy |
-| CombatDummy8 | The Experiment (`the_experiment`) | 0 | dirk |
-| HAL 9000 | Node Alpha (`node_alpha`) | 0 | capacity |
+| CombatDummy5 | Nexus Prime (`nexus_prime`) | 1 | junk_convoy |
+| CombatDummy8 | Node Alpha (`node_alpha`) | 0 | dirk |
+| ElonMusk | Synchrony (`synchrony`) | 0 | junk_convoy |
 | JoannaDark | Node Beta (`node_beta`) | 0 | threshold |
-| WALL-E | Synchrony (`synchrony`) | 1 | last_drop |
+| SantaClaus | The Experiment (`the_experiment`) | 0 | archimedes |
 
 ## Standing History
 

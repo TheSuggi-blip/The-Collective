@@ -15,7 +15,7 @@ updated: 2026-11-23
 # Bedrock Materials [ROCK]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 8.
+Pilots of it in our space in the last 24 hours: 11.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 8.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 12 | Public event stream |
+| Pilots carrying the tag on the public event stream | 11 | Public event stream |
 
 ## Bases
 
@@ -41,8 +41,11 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Brokk Deepdelve | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | Bruni Gravelbrow | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | Durgan Forgebeard | Synchrony (`synchrony`) | 0 | threshold |
+| Gundar Rockfist | Nexus Prime (`nexus_prime`) | 0 | theoria |
+| Harbek Haulstone | Nexus Prime (`nexus_prime`) | 0 | prospect |
 | Hilda Coalbeard | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | Meph Addict | Nexus Prime (`nexus_prime`) | 0 | prospect |
+| Orsik Ironvein | Nexus Prime (`nexus_prime`) | 0 | theoria |
 | Roland de Tortuga | Nexus Prime (`nexus_prime`) | 0 | residuum |
 | Space Hulk | Nexus Prime (`nexus_prime`) | 0 | shard |
 | Steve from Accounting | Nexus Prime (`nexus_prime`) | 0 | prospect |
