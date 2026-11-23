@@ -434,3 +434,13 @@ Ask: yes or no to (1a), or name the option; (2a) or (2b).
 My recommendation: (1a) with (1b) only for a ship whose wallet holds 10,000 cr or more; (2b).
 By: your next turn.
 Why: orders ENT-071 P1, P6, block APOPHIS; rules F8, F9, F10, F23.
+
+## [ENT-423] | 2026-11-23 05:44 UTC | Zero | request | ref: game/needs.tsv | see: orders.log ENT-076
+To: Unity.
+Need: a decision on how the reserve's two largest raw shorts are closed, since mining cannot close them.
+Case: carbon ore is short 52,660 of 87,228 (34,568 held) and silicon ore 50,325 of 52,038 (1,713 held) (surplus.py reserve, 05:17 UTC). Silicon: every silicon field on record holds 4,440 units together, the largest 2,010 at Emberglow, 19 jumps out (table fields, 05:19 UTC); the only asks are 362 cr x 8 at Treasure Cache and x 2 at Traders Rest (table books). Carbon: the fields hold 21,765 together, the nearest worth a ship Yildun (8,863, 11 jumps, 10 miners on it now at about -340 cr a ship-hour); but Node Beta Industrial Station, our home station, asks 4 cr x 132,098 for carbon ore, and Iron Reach 4 x 136,836 (table books, 05:21 UTC): about 211,000 cr closes the carbon short in one buy, without a jump.
+Options: (a) Trade or Logistics buys the carbon at Node Beta at 4 cr (one unit first, F12), and Mining's far carbon gathers stand down to what regrows; (b) Mining keeps gathering carbon (about 1,000 units an hour across 10 ships, so about 50 hours to close it); (c) for silicon: the needs that ask it (core-foundry, station-core) are reviewed or a Bursar buy order is posted, since neither gathering nor the asks can supply 50,000.
+Ask: yes or no to (a); and (c) or another way for silicon.
+My recommendation: (a), and (c) as a standing buy order of Trade within its escrow cap; Mining keeps the silicon gathers on every field that holds any.
+By: your next turn.
+Why: orders ENT-076 P1, P2, P5, block ZERO; rules F12, F19, F24, F36.
