@@ -1,7 +1,7 @@
 # Intel guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-23. Evidence: the plan file (tool plan, show); hive.py briefing (MY STANDING FLEET); fill.py check; hive.py herds; intel turn check (WORKED, SITES, WATCH, ROADS, UNFLOWN).
+Status: proven. Updated: 2026-11-23. Evidence: the plan file (tool plan, show); hive.py briefing (MY STANDING FLEET); fill.py check; store table herds; intel turn check (WORKED, SITES, WATCH, ROADS, UNFLOWN).
 
 - First, every scout: store-hold-central-nexus, give-scout-stores-*,
   the Survey Scanner II fit (one ship, tests.md), the missions paid
@@ -13,7 +13,8 @@ Status: proven. Updated: 2026-11-23. Evidence: the plan file (tool plan, show); 
   Sol and Krynn (180 min) go to Voidborn readers, Krynn three.
 - The kit's herds (orders P3): census-kit-herds (360 min, three ships)
   reads the far places of the five species; the near ones stand on
-  the region lists. The hunters read them live: hive.py herds.
+  the region lists. Live counts: store tables herds and reading_day
+  (the verb hive.py herds waits for its install: queue.log).
 - Readers (@reader): census-voidborn (home, 45 min, five), the outpost
   watch (50 min), census-worked (120 min), census-frontier (170 min),
   census-worked-far (180 min), the roads.
