@@ -2,7 +2,7 @@
  "id": "hunt-hd-20794-ice-fields-rime-grazer",
  "kind": "hunt",
  "title": "rime_grazer, pressblister at hd_20794_ice_fields; loot to the trader at War Citadel (flagship region work)",
- "note": "Written by Unity 2026-11-23 02:00 UTC for the command group's flagship born Crimson (orders ENT-068, P6: work where it was born; rule F10: flagships hunt). Herd by the census of data/wildlife (3 rime grazers, 3 pressblisters, read 2026-11-23); two animals are left (rule F38: kills = count - 2, min_creatures = kills + 2). One hunter to the place, no route of another division on these species here. Loot to the trader receiver at War Citadel (strict classes, P5). A test of three results (F37).",
+ "note": "Written by Unity 2026-11-23 02:00 UTC for the command group's flagship born Crimson (orders ENT-068, P6: work where it was born; rule F10: flagships hunt). Herd by the census of data/wildlife (3 rime grazers, 3 pressblisters, read 2026-11-23); two animals are left (rule F38: kills = count - 2, min_creatures = kills + 2). One hunter to the place, no route of another division on these species here. Loot to the trader receiver at War Citadel (strict classes, P5). A test of three results (F37). No empty-hold gate: policed Crimson space (rule F3 asks it beyond policed space only), the flagship's starter cargo leaves 46 of 60 free.",
  "place": "hd_20794:hd_20794_ice_fields",
  "species": [
   "rime_grazer",
@@ -15,9 +15,6 @@
  "max_ships": 1,
  "min_creatures": 6,
  "alone": "pirates",
- "requires": {
-  "empty_hold": true
- },
  "gift_to": "trader",
  "standing": true
 }
