@@ -1,29 +1,30 @@
 # Mining guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-23. Evidence: the plan file (tool plan, show); fill.py status miner; surplus.py reserve; table runs; table fields.
+Status: proven. Updated: 2026-11-23. Evidence: the plan file (tool plan, show); fill.py status miner; pull.py levels; table runs; table fields.
 
-Turn of 2026-11-23 03:00 UTC (orders ENT-071: the reserve's short goods,
-the newborns at home, strict classes). A free miner takes the list
+Turn of 2026-11-23 05:43 UTC (orders ENT-076). A free miner takes the list
 First, its own routes, then the list Then.
 
 | Route | Ships | For |
 |---|---|---|
-| fit routes (Laser III at Ironlight, Laser II at Sol for Solarians) | by asks | the laser |
+| fit routes: Laser III and Laser II at Ironlight (Voidborn), Laser II at Sol (Solarian) | by asks | the laser |
 | `give-miner-stores-<station>`, any one good | 3 each | stores to the receivers |
 | once missions (Voidborn, Confederacy, Frontier, Federation) | by route | paid once per pilot |
-| seated rows: GSC-0044 Belt, Forgotten Tailings, Acrux | 10, 5, 3 | iron, copper to faction storage, no jump |
+| seated rows: GSC-0044 Belt, Forgotten Tailings, Acrux | 10, 5, 3 | iron, copper to faction storage |
 | newborn rows first: store-hold at Sol Central or the Grand Exchange | 20 each | a loaded hold stored |
-| Solarian rows: Welcome to Sol Central, Copper/Iron at Procyon, then Lacaille, Markab, Nihal gathers | 3, 6, 6 each | paid once, then the Mining skill |
-| Nebula rows: First Cargo, A Word in Private, then Bunda, Khambalia, Alrakis (test) | 8, 5, 3, 18, 1 | paid once, then the Mining skill |
-| `@reserve-prism` / `@reserve-hamal` | 1 to 6 each | carbon, nickel, silicon, quantum fragments; gold closed at its max |
-| `@ice-sell` with `gift`, after the reserve | 1 to 2 | ice to Trade, overflow only |
-| Then | shared | gives at The Crescent Moon and Ramen's Rest, Pherkad Rift, `train-jumps-miner`, park |
+| Solarian rows: Welcome, Copper/Iron at Procyon, then Lacaille, Markab, Nihal, Harborlight and Electra (tests) | 3, 6, 6, 6, 12, 1, 1 | paid once, then the Mining skill |
+| Nebula rows: First Cargo, A Word in Private, then Bunda, Khambalia, Alrakis | 8, 5, 3, 18, 14 | paid once, then the Mining skill |
+| `@reserve-prism` / `@reserve-hamal` | 1 to 10 each | carbon (Yildun 10), nickel, silicon, quantum fragments; gold closed at its max |
+| `@ice-sell` with `gift` | 1 to 2 | ice to Trade, overflow only |
+| Then | shared | gives, GSC-0027 seep, Pherkad, Schedar and Hamal copper-iron (4 each), home-sol-central, `train-jumps-miner`, park |
 
-What would change it: the Sol Laser II's three results; a newborn
-seated (its row takes the GSC-0044 belts, 5 jumps from Sol); Deep Core
-offered to a newborn (its gate is not read); a silicon field found (none
-of 2,000 units on record); a Resonance Miner bought (requests.log).
+Copper ore is no good of the reserve, so a copper-iron gather stays open
+while iron stands full (pull.py): the Mining skill's work before the jump
+loop. What would change it: the Harborlight and Electra results; a newborn
+seated; Deep Core offered (its gate is not read); a silicon field (all
+known fields hold 4,440 together); carbon bought at Node Beta (4 cr) in
+place of far gathers; a Resonance Miner bought.
 
 ### Drains and carries of stored goods (kind `circuit`)
 Status: proven. Updated: 2026-11-21. Evidence: drain-methane-experiment and carry-null-matter-synchrony-nexus (hive.py route <id>).

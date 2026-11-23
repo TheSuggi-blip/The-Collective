@@ -21,15 +21,19 @@ Status: proven. Updated: 2026-11-21. Evidence: table hulls of the live catalog (
   brings an hour, so the hold is the class's first upgrade.
 
 ### Mining tools and filters
-Status: proven. Updated: 2026-11-22. Evidence: the live catalog items (laser powers and cpu re-read 2026-11-23 03:15 UTC); docs/guides/miner.md (read 2026-11-21); hive.py route gather-gsc-0027-spacetime-seep (the runs with ore, 2026-11-21 22:00 to 2026-11-22 03:00 UTC); route fit-mining-laser-iii-lhs-1140.
+Status: proven. Updated: 2026-11-23. Evidence: the live catalog items (laser powers and cpu re-read 2026-11-23 03:15 UTC); docs/guides/miner.md (read 2026-11-21); hive.py route gather-gsc-0027-spacetime-seep (the runs with ore, 2026-11-21 22:00 to 2026-11-22 03:00 UTC); route fit-mining-laser-iii-lhs-1140.
 
 - Laser power: I 5, II 12, III 22, IV 40 (cpu 2, 4, 6, 10). A III fits
   a Threshold ice miner beside its Ice Harvester. Proven (F37): ore an
   hour, III against I, runs of 2026-11-22 03:00 to 11:00 UTC (runs.jsonl
   by module): GSC-0044 belt 1,328 (12 runs) to 467 (52), seep 446 to
   213; far Jishui 176 to 164. It pays near storage; a far shuttle is
-  bound by its hold. `fit-mining-laser-iii-lhs-1140`: its ask was bought
-  out on 2026-11-22 (tool market, item mining_laser_iii).
+  bound by its hold. `fit-mining-laser-iii-lhs-1140` buys where Ironlight
+  asks (tool market, item mining_laser_iii).
+- Laser II proven (F37, 2026-11-23): 10 gather runs of 7 Theorias after the
+  fit, ore an hour against a Laser I: Lacaille 404 to 234, Markab 361 to
+  267, Nihal 338 to 200 (runs.jsonl). Cheapest at Ironlight (2,404 cr,
+  `fit-mining-laser-ii-lhs-1140`); 5,400 cr elsewhere is weighed first.
 - P x F over 20 can lock: under a quarter of capacity a deposit refuses
   the fit below P x 20 / 4 (110 units for a III); 20 or less never locks.
 - Cargo Expander I: +20 hold (cpu 1, power 1); not tried yet.
