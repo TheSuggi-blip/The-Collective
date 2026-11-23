@@ -1,18 +1,26 @@
 # Military guidebook -- Tests (tests.md)
 
 ### Open Tests
-Status: test. Updated: 2026-11-23. Evidence: table runs (lowest_hull_pct); commission_status; table books (node_beta_industrial_station, LHS 1140); catalog 0.734.0 (armor_plate_ii); routes fit-armor-plate-ii-*-test, recursion-parts-*.
+Status: test. Updated: 2026-11-23. Evidence: table runs (lowest_hull_pct); list_ships and switch_ship (switch_hull.py RESULT); gauges.py ship; table herds; admirals.log ENT-111; routes fit-armor-plate-ii-*-test, recursion-parts-*, hunt-kit-*.
 
 - Whale hunts alone with a Shield Booster II: the siphon and Antares herds
   hold (lowest hull 52 to 100 percent); two other herds took ships to 4 and
   14 percent and are off for danger (F9). The proven way stays a group of
   three Laser III ships.
-- The Recursion: commissioned for credits at Node Beta, SOURCING twelve
-  hours on the yard's own bids; two once routes bought the three goods at
-  Ironlight Crossroads and sold them into those bids (35,209 cr out,
-  31,184 back, table runs), and it went BUILDING at once
-  (commission_status). Lesson: fill a credits-only yard's bids yourself;
-  the next hulls go by materials provided (needs military-recursion-batch).
+- The Recursion: commissioned for credits at Node Beta; the yard's own
+  bids filled by our once routes took it from SOURCING to BUILDING. It
+  came with two Pulse Laser II, a Focused Beam I, a Shield Booster II and
+  a Shield Recharger II (hull 150, shield 200, speed 4; list_ships).
+  switch_hull.py moved its pilot in (the Threshold stays stored there):
+  firepower 52 and toughness 350 by the gauges, so prey of up to 175
+  weight passes alone. Its first runs: a kit hunt (cauldronback, magnet-
+  barnacle), then the whale hunts; three results decide the batch.
+- The Atria kit's creature parts (orders P3): hunts of silica-borer,
+  cauldronback and magnet-barnacle (hunt-kit-*, gift to a hauler at Node
+  Beta). The wild herds are small (one to four a place) and F38 keeps
+  two, so a place gives one kill a run at most; mirror-skate and inkwyrm
+  herds are never huntable (two animals a place). The parts a kill drops
+  are not measured yet.
 - Armor Plate II (armor +10, speed penalty 1): fitted on a Crimson Shard
   (armor 8 -> 18) and a Solarian Theoria (5 -> 15); speed stays 1 (ship
   files). Lifted for the role (F17); its hunts' lowest hull is read next.

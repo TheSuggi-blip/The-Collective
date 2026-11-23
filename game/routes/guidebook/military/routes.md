@@ -3,14 +3,14 @@
 ### Standing Plan
 Status: proven. Updated: 2026-11-23. Evidence: the tool plan (show, templates); hive.py briefing (column carries); fill.py status drone; the tool fill (check); dispatch.judged; table herds.
 
-What the division flies between two turns (orders ENT-082, P1, P5, P6
-and block APOPHIS): hunts at the least fuel per XP, fits, a group that
+What the division flies between two turns (orders ENT-083, P1, P3, P5,
+P6 and block APOPHIS): hunts at the least fuel per XP, fits, a group that
 kills; no sale, carry or craft of its own (P5). No guard in the first
 ring (F33). One hunter to a herd (column carries).
 
 | Order | Routes | Ships | Why |
 |---|---|---|---|
-| First | the once line; `recursion-parts-*` (the yard's bids, once); the Laser III and Shield Booster II fits (lifted for the role, F17); the Armor Plate II tests; `strip-mining-laser-*` (docked, in the system already); plasma loaders; `give-drone-stores-*` | each under its limit | F35; F17; P5 |
+| First | `rearm-pulse-laser-*` (a hunter without a weapon); the once line; `recursion-parts-*` (the yard's bids, once); the Laser III and Shield Booster II fits (lifted for the role, F17); the Armor Plate II tests; `strip-mining-laser-*` (docked, in the system already) and the Sol lasers to the miners; plasma loaders; `give-drone-stores-*`; last the Atria kit hunts (`hunt-kit-*`, booster ships and the Recursion) | each under its limit | F35; F17; P3; P5 |
 | Own | a cheap near hunt first; far herds; the filler's tests | 1 each | P1; tests |
 | `@krynn-newborn`, `@sol-newborn` | their empire's once missions, then one hunt a herd within 6 jumps of where they stand, a few `far_ok` 7 to 9 jumps out | 1 each | P6; F38 |
 | `@hunter` | module-gated hunts (`*-pl3`, `pc2`, whale `sb2` where the hull held), near drift rays, pilgrims, carapace, veil rays; at its end belt and glintfin herds 6 to 9 jumps out, written when every home herd was taken | 1 each | combat XP; F23 |

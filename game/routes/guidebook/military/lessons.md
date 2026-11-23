@@ -86,7 +86,7 @@ Status: proven. Updated: 2026-11-21. Evidence: reserve_hunts.py; loot_bids.py; d
   iron after the order ended it (errors.log ENT-108).
 
 ### Plans, fills and claims
-Status: proven. Updated: 2026-11-23. Evidence: fill.py; comms.py; requests.log ENT-158; dispatch.newborn_reason; 2026-11-17, 2026-11-21 and 2026-11-23 turns.
+Status: proven. Updated: 2026-11-23. Evidence: fill.py; comms.py; requests.log ENT-158; table runs (strip-pulse-laser-central-nexus); dispatch.newborn_reason; 2026-11-17, 2026-11-21 and 2026-11-23 turns.
 
 - The fill gate judges a route by its all-time figure: a hunt whose bid or
   herd is gone gets `status: off` with the record, never put back.
@@ -107,9 +107,13 @@ Status: proven. Updated: 2026-11-23. Evidence: fill.py; comms.py; requests.log E
   its capital: one `far_ok` trip into our corridor (`join-corridor-*`,
   last in the row) opens every home hunt to it. A far ship with a loaded
   hold cannot reach a store route: the trip stores at its end (2026-11-23).
+- Another division's strip route (`unfit` of a pulse laser) is fitting,
+  open to every class: in the First list it disarmed five hunters, and
+  `fill write=true` put it back. Read every route fill adds for an
+  `unfit` of a weapon and drop it; rearm by `rearm-pulse-laser-*`.
 
 ### Battles and stuck ships
-Status: proven. Updated: 2026-11-23. Evidence: errors.log 2026-11-16; stuck_check.py; requests.log ENT-369; table runs 2026-11-23 06:52 to 07:10 UTC (hull_before, hull_after); ship files (ships_lost).
+Status: proven. Updated: 2026-11-23. Evidence: errors.log 2026-11-16; admirals.log ENT-110; observation kind ranch (aspidiske); stuck_check.py; requests.log ENT-369; table runs 2026-11-23 06:52 to 07:10 UTC (hull_before, hull_after); ship files (ships_lost).
 
 - A ship left in a battle (three runs that never reach stop 1, or
   `in_battle` in its log) is freed with the battle stance flee
@@ -125,7 +129,12 @@ Status: proven. Updated: 2026-11-23. Evidence: errors.log 2026-11-16; stuck_chec
 - A moving station (table stations, `mobile`) can stand in a system whose
   census predates its arrival: runs to it fail at stop 1 ("It's called a
   Mobile Capital"). The fix (the station list's system, the poi an older
-  census named) waits for its install (requests.log ENT-452).
+  census named) is installed (2c2604b7).
+- A creature named with another faction's tag ("[HEXC] Patina-Grazer") is
+  that faction's ranched livestock: its owner joins the fight. A hunter
+  that fled such a pilot and came back to the herd was lost (2026-11-23,
+  admirals.log ENT-110). hunt.py leaves tagged creatures alone
+  (930c5cfd); a ship that joins our fight ends the hunt at that place.
 - A ship with an ammunition weapon hunts only with ammunition aboard.
 - A fight a drone starts opens at fire whatever its default stance.
 - A dry tank where no station stands: the game's tug (`distress_signal`
