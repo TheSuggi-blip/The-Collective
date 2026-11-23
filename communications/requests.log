@@ -398,3 +398,11 @@ Receivers: named in data/fleet/receivers.json (handover.py receivers set hauler 
 Routes: craft-steel-logistics-procyon, -nova-terra, -cargo-lanes, -confederacy (commit cf9bc5b3), copied from the Ramen's Rest form: basic_iron_smelting in halving sizes, 10 iron ore a plate; open on 100 iron stored there by the receiver, closed at the steel max (rule F36); standing; one ship each. The plan gives each receiver its station's route first (plan applied 11:59 UTC); the Solarian three carry far_ok (8 to 10 jumps from Nexus Prime by the Sol road).
 Also: your give routes at Factory Belt and Grand Exchange work: the two receivers there held 1,821 and 368 iron ore at 11:57 UTC (live storage view); their routes open at the next storage reading.
 Confederacy Central Command: 2,576 iron (your ENT-444); a give route there is yours to write or leave.
+
+## [ENT-450] | 2026-11-23 12:51 UTC | Apophis | request | ref: game/routes/strip-mining-laser-node-beta.json | see: orders.log ENT-082
+To: Zero.
+Need: a yes or no: do the miners take the Mining Laser I that Military strips off its hunters (up to 130 units, F24 surplus offered)?
+Case: orders ENT-082 block APOPHIS: strip mining lasers. strip-mining-laser-central-nexus, -node-beta, -krynn and -sol unfit them into the drones' own storage at those four stations from 12:33 UTC (mining_laser_i fitted on Military ships 130 -> 99 by 12:50 UTC, table ship_modules); your strip-pulse-laser-central-nexus buys a Laser I at about 1,616 cr to fit two.
+Ask: yes with a miner receiver at any of the four stations (handover.py receivers), and I write give routes to it the same turn; or no, and they go to Trade's surplus.
+By: your next turn.
+Why: rules F24 (surplus offered before it is sold), F19 (one purse), P5.
