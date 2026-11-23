@@ -1,0 +1,43 @@
+{
+ "id": "rearm-pulse-laser-central-nexus",
+ "kind": "circuit",
+ "title": "A Military ship without a weapon takes the Pulse Laser I it stored at Central Nexus out of storage and fits it again",
+ "note": "Written by Apophis 2026-11-23 18:34 UTC (rule F2/F9: a hunter carries a weapon; F17: fitting is every class's own work). The miners' route strip-pulse-laser-central-nexus (Zero, for Voidborn miners) stood in the Military plan's First list, and five Voidborn hunters at Nexus Prime flew it between 14:48 and 17:57 UTC 2026-11-23 (table runs): each stored its only weapon there; two had no module left at all (ship files 18:30 UTC). One docked stop: withdraw the stored laser, fit it (the fit takes the copy aboard before any buy, max_price for the case none is aboard). requires.stored opens it only to a pilot whose storage there holds one; without_module only to a ship with no weapon. Once per pilot.",
+ "once": true,
+ "max_ships": 5,
+ "max_pilots": 20,
+ "min_credits": 3000,
+ "requires": {
+  "stored": {
+   "at": "central_nexus",
+   "item": "pulse_laser_i",
+   "min": 1
+  },
+  "without_module": [
+   "pulse_laser_i",
+   "pulse_laser_ii",
+   "pulse_laser_iii",
+   "focused_beam_i",
+   "plasma_cannon_ii",
+   "piercing_railgun_i"
+  ]
+ },
+ "stops": [
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "withdraw": [
+    {
+     "item": "pulse_laser_i",
+     "qty": 1
+    }
+   ],
+   "fit": [
+    {
+     "module": "pulse_laser_i",
+     "max_price": 1500,
+     "count": 1
+    }
+   ]
+  }
+ ]
+}

@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 32.
+Routes: 33.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -28,6 +28,7 @@ Routes: 32.
 | [fit-shield-booster-pirate-group](fit-shield-booster-pirate-group.json) | circuit | home space | Fit a Shield Booster I at Central Nexus: the first step of the drone group against pirates | once per pilot, up to 2 ships, 5 pilots in all, without shield_booster_i, from 8,000 cr, from gunnery 3 | 5 | 6 | -3,030 | one-time | 2026-11-17 |
 | [fit-survey-scanner-central-nexus](fit-survey-scanner-central-nexus.json) | circuit | home space | Test: fit one Survey Scanner I at Central Nexus, so that one scout can survey_system (hidden places, deep core deposits, the scanning skill) | once per pilot, up to 1 ships, 7 pilots in all, without survey_scanner_i, from 12,000 cr | 9 | 1 | -3,280 | one-time | 2026-11-21 |
 | [fit-survey-scanner-ii-central-nexus](fit-survey-scanner-ii-central-nexus.json) | circuit | home space | Test: one Survey Scanner II at Central Nexus for a scanner scout, the off-role mining laser stripped, so its census surveys resolve faint signatures and rare ores | once per pilot, up to 1 ships, 1 pilots in all, needs survey_scanner_i, without ['survey_scanner_ii'], from 18,000 cr, while central_nexus asks 14000 cr or less for survey_scanner_ii | 1 | 6 | -14,180 | one-time | 2026-11-23 |
+| [rearm-pulse-laser-central-nexus](rearm-pulse-laser-central-nexus.json) | circuit | home space | A Military ship without a weapon takes the Pulse Laser I it stored at Central Nexus out of storage and fits it again | once per pilot, up to 5 ships, 20 pilots in all, without ['pulse_laser_i', 'pulse_laser_ii', 'pulse_laser_iii', 'focused_beam_i', 'plasma_cannon_ii', 'piercing_railgun_i'], from 3,000 cr, with 1 pulse_laser_i stored at central_nexus | TBD | TBD | TBD | TBD | -- |
 | [strip-mining-laser-central-nexus](strip-mining-laser-central-nexus.json) | circuit | home space | A Military ship in nexus_prime strips its off-role Mining Laser I (and an Ice Harvester I) docked at Central Nexus into its storage there | once per pilot, up to 10 ships, 130 pilots in all, from 3,000 cr | 4 | 1 | -40 | one-time | 2026-11-23 |
 | [strip-mining-laser-node-beta](strip-mining-laser-node-beta.json) | circuit | home space | A Military ship in node_beta strips its off-role Mining Laser I (and an Ice Harvester I) docked at Node Beta Industrial Station into its storage there | once per pilot, up to 10 ships, 130 pilots in all, from 3,000 cr | 24 | 1 | -10 | one-time | 2026-11-23 |
 | [strip-pulse-laser-central-nexus](strip-pulse-laser-central-nexus.json) | circuit | home space | A Voidborn miner docked at Central Nexus strips its off-role Pulse Laser I into its storage there (no fuel: docked_at) | once per pilot, up to 10 ships, 130 pilots in all, from 3,000 cr, born voidborn | 78 | 1 | 10 | one-time | 2026-11-23 |

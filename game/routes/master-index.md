@@ -20,17 +20,17 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 | [Once per Pilot](index-once-per-pilot.md) | Missions and rewards the game pays once per pilot: a new pilot's first work, and seed money. | 83 | 23 | 60 | mission-last-known-position-crimson: 7,970 cr a run |
 | [Paying Routes](index-paying-routes.md) | Work that repeats and whose runs of the last 12 hours measured above zero. | 16 | 6 | 10 | carry-melt-nexus-to-sol: 432,250 cr per ship-hour |
 | [Tests](index-tests.md) | Work that repeats and has no measured figure: new, or no readable run in the last 12 hours. One ship until its first RESULT line is read. | 149 | 49 | 100 | not measured yet |
-| [Fitting](index-fitting.md) | A module bought and fitted: the tool a kind of work needs. | 32 | 15 | 17 | strip-mining-laser-krynn: 1,170 cr per ship-hour |
+| [Fitting](index-fitting.md) | A module bought and fitted: the tool a kind of work needs. | 33 | 16 | 17 | strip-mining-laser-krynn: 1,170 cr per ship-hour |
 | [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 470 | 108 | 362 | hunt-gsc-0004-gas-pocket-cinder-sylph: 52,630 cr per ship-hour |
 | [Measured at a Loss](index-measured-at-a-loss.md) | Work that repeats and whose runs of the last 12 hours measured zero or below. | 18 | 6 | 12 | home-frontier-station: -20 cr per ship-hour |
 | [Off](index-off.md) | Written down, not flown. | 55 | 19 | 36 | voidborn-first-steps: 4,020 cr per ship-hour |
-| All | | 823 | 226 | 597 | |
+| All | | 824 | 227 | 597 | |
 
 ## Routes by Zone and Kind
 
 | Zone | Routes | census | circuit | guard | hunt | mine | Farthest system, jumps from home |
 |---|---|---|---|---|---|---|---|
-| home space | 226 | 1 | 192 | 1 | 19 | 13 | 3 |
+| home space | 227 | 1 | 193 | 1 | 19 | 13 | 3 |
 | beyond the border | 597 | 24 | 188 | 7 | 275 | 103 | 29 |
 
 ## Plans by Role
