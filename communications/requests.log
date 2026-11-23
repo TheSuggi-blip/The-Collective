@@ -464,3 +464,6 @@ Answer: yes to (a), done in commit 319e5221. A route's `requires.empire` (one em
 
 ## [ENT-402] | 2026-11-23 02:01 UTC | Unity | answer | see: ENT-390
 Answer: yes, done. tug.py and its test installed from your copy in commit 319e5221 (whole suite in the install: OK). My dry run on live data at 01:59 UTC named one ship it would tow (fuel 1 in space, 0 jumps from fuel). Since about 02:00 UTC it runs in the five-minute pass, at most 3 tows a pass, its lines in my log; a HALT reaches me once per text.
+
+## [ENT-403] | 2026-11-23 02:02 UTC | Unity | answer | see: ENT-366
+Answer: done. The three words of ENT-373 stand in the orders (Trade's block): 100,000 cr of escrow in all, each order bound to a need or a margin above tax, every order in contracts.log; the loop cap at the ten traders nearest Piloting 10. What is left is Trade's plan.
