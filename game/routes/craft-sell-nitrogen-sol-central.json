@@ -2,9 +2,9 @@
  "id": "craft-sell-nitrogen-sol-central",
  "kind": "circuit",
  "title": "Liquid nitrogen made by hand at Sol Central from nitrogen ice bought there and sold into the station's bid, docked, no jump",
- "note": "2026-11-23 03:44 UTC (Mercury): orders ENT-071, block MERCURY (docked crafts take the traders off the jump loop), P6 (newborns work where they were born) and O1 (zero empty burn); rule F23 (a trader crafts for sale). Confederacy Central Command's book (table books, 03:37 UTC): nitrogen ice asked at 1 cr x 27,426 (a player's order), liquid nitrogen bid 4 cr x 14,045 (the station's). process_nitrogen_ice by hand: 5 ice -> 4 liquid nitrogen, 1.32 a run. A run of the recipe costs 5.05 cr with the tax and sells for 15.84: about +10.8 cr, Crafting XP, no fuel. First result by hand (F12 one unit first, F15): one Solarian trader bought 5 ice for 5 cr, crafted 1 run, sold 4 liquid nitrogen for 16 cr, +11 cr (03:41 to 03:44 UTC). A hold of 60 ice makes 12 runs; three such stops a run. requires.ask and requires.bid close it while either end is gone; stop_on_failed_buy ends a run whose buy gets nothing. requires.empire solarian: the Solarian newborns' home work (P6). Liquid nitrogen stands above its reserve max: what is made is sold, nothing held. A test: one ship, three results decide (F37: the same seller and buyer, so one ship three times) before the lift.",
+ "note": "2026-11-23 03:44 UTC (Mercury): orders ENT-071, block MERCURY (docked crafts take the traders off the jump loop), P6 (newborns work where they were born) and O1 (zero empty burn); rule F23 (a trader crafts for sale). Confederacy Central Command's book (table books, 03:37 UTC): nitrogen ice asked at 1 cr x 27,426 (a player's order), liquid nitrogen bid 4 cr x 14,045 (the station's). process_nitrogen_ice by hand: 5 ice -> 4 liquid nitrogen, 1.32 a run. A run of the recipe costs 5.05 cr with the tax and sells for 15.84: about +10.8 cr, Crafting XP, no fuel. First result by hand (F12 one unit first, F15): one Solarian trader bought 5 ice for 5 cr, crafted 1 run, sold 4 liquid nitrogen for 16 cr, +11 cr (03:41 to 03:44 UTC). A hold of 60 ice makes 12 runs; three such stops a run. requires.ask and requires.bid close it while either end is gone; stop_on_failed_buy ends a run whose buy gets nothing. requires.empire solarian: the Solarian newborns' home work (P6). Liquid nitrogen stands above its reserve max: what is made is sold, nothing held. A test: one ship, three results decide (F37: the same seller and buyer, so one ship three times) before the lift. 2026-11-23 04:14 UTC (Mercury): three results (F37): by hand +11 cr (03:41 UTC); two runs by two ships, +396 cr each in 12.2 and 12.1 minutes (runs.jsonl 03:46 and 03:59 UTC), 144 liquid nitrogen sold a run. The bid read 14,045 before the first sale and 14,037 after 340 units sold (04:12 UTC): the station's bid refills. max_ships 1 -> 12, the Solarian traders at home; requires.bid closes it when the bid falls under 48.",
  "standing": true,
- "max_ships": 1,
+ "max_ships": 12,
  "requires": {
   "empire": "solarian",
   "ask": {
@@ -115,11 +115,11 @@
  ],
  "measured": {
   "date": "2026-11-23",
-  "runs": 1,
+  "runs": 2,
   "minutes": 12,
   "credits_per_run": 400,
-  "cph_per_ship": 1950,
+  "cph_per_ship": 1960,
   "hours": 12,
-  "last_run": "2026-11-23T03:58:36Z"
+  "last_run": "2026-11-23T04:12:03Z"
  }
 }
