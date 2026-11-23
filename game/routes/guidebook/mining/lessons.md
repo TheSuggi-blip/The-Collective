@@ -57,7 +57,7 @@ Status: proven. Updated: 2026-11-21. Evidence: spacemolt.com/docs/guides/miner.m
 - Mining XP is one point a unit mined, plus mission XP.
 
 ### Runs, holds and the dispatcher
-Status: proven. Updated: 2026-11-23. Evidence: errors.log ENT-032; route store-hold-central-nexus (2026-11-23 08:31 UTC); dispatch.py stored_missing; the runners' notes; data/fleet/gifts.jsonl; data/stock/storage.json of 2026-11-21 19:34 UTC.
+Status: proven. Updated: 2026-11-23. Evidence: errors.log ENT-032; route store-hold-central-nexus (2026-11-23 08:31 UTC); dispatch.py stored_missing, pilot_of; table faction_storage and table runs (2026-11-23 11:25 UTC); the runners' notes; data/stock/storage.json.
 
 - More than five units aboard close every `empty_hold` route to a ship:
   read a waiting miner's `cargo` before calling it idle; dock and store,
@@ -77,9 +77,15 @@ Status: proven. Updated: 2026-11-23. Evidence: errors.log ENT-032; route store-h
   or a chain on stored goods reads short until every pilot is read again
   (89 of 246 pilots and no miner 10 minutes after the resume of
   2026-11-21).
-- `requires.stored` names one item, a list all of them: a give route
-  gated on iron never sends a miner whose storage holds only ice or
-  copper; gate a copy on the station's main other good (2026-11-22).
+- `requires.stored` with `items` opens on any one of them: gate a give
+  route on every good its gifts move, no more.
+- `requires.docked_at` never matches: the dispatcher's pilot has no base
+  (fleet.json keeps it in `docked`); gate a docked stop by `in_system`
+  (a strip route flew 0 runs in four hours, 2026-11-23).
+- A full item in faction storage turns a faction gather into a shuttle:
+  the outpost held iron 100,000 and seated miners ended each run with
+  65 iron aboard, then flew it to Central Nexus (118 store runs,
+  -19,446 cr in 4 h). Read table faction_storage before a lift.
 - Standing work has no empire reach: a newborn whose own store is full
   takes the next open one, 20 jumps away (twelve Nebula ships,
   2026-11-23). Cap each empire's store at its rows and put
