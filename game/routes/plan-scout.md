@@ -107,3 +107,4 @@ Planned:
 |---|---|
 | Read the effect of this turn's caps and riders: region lists over cadence (Krynn 3, Altais 6, Haven 6), SITES census-north with six explorers first, FRESH frontier with five riders first | next turn |
 | Read the newborn scouts' census runs without --stay: each ends at its own capital (census.py HOME per empire, installed) | next turn |
+| Weigh one T2 scout hull for the three Piloting-10 scouts by fuel per read: Confluence quoted 398,368 cr credits only at Central Nexus, over the F12 test budget of a turn | when the division's credits allow |
