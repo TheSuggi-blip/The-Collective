@@ -21,17 +21,17 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 | [Paying Routes](index-paying-routes.md) | Work that repeats and whose runs of the last 12 hours measured above zero. | 15 | 7 | 8 | sell-loot-at-nexus: 150,950 cr per ship-hour |
 | [Tests](index-tests.md) | Work that repeats and has no measured figure: new, or no readable run in the last 12 hours. One ship until its first RESULT line is read. | 150 | 45 | 105 | not measured yet |
 | [Fitting](index-fitting.md) | A module bought and fitted: the tool a kind of work needs. | 17 | 11 | 6 | fit-ice-harvester-lhs-1140: -4,320 cr per ship-hour |
-| [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 420 | 102 | 318 | store-hold-grand-exchange: 7,720 cr per ship-hour |
+| [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 423 | 102 | 321 | store-hold-grand-exchange: 7,720 cr per ship-hour |
 | [Measured at a Loss](index-measured-at-a-loss.md) | Work that repeats and whose runs of the last 12 hours measured zero or below. | 8 | 4 | 4 | mine-dheneb-cryobelt: -160 cr per ship-hour |
 | [Off](index-off.md) | Written down, not flown. | 45 | 19 | 26 | voidborn-first-steps: 4,020 cr per ship-hour |
-| All | | 728 | 211 | 517 | |
+| All | | 731 | 211 | 520 | |
 
 ## Routes by Zone and Kind
 
 | Zone | Routes | census | circuit | guard | hunt | mine | Farthest system, jumps from home |
 |---|---|---|---|---|---|---|---|
 | home space | 211 | 1 | 180 | 1 | 16 | 13 | 3 |
-| beyond the border | 517 | 23 | 122 | 7 | 264 | 101 | 29 |
+| beyond the border | 520 | 23 | 122 | 7 | 267 | 101 | 29 |
 
 ## Plans by Role
 
