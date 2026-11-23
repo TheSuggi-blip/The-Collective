@@ -87,6 +87,10 @@
   {
    "what": "a freight step in the circuit runner (accept, pick up, deliver) before the freighter batch grows",
    "when": "next turns"
+  },
+  {
+   "what": "found Atria when an Outpost Kit is listed at Ironlight",
+   "when": "when listed"
   }
  ],
  "ships": {
