@@ -128,8 +128,7 @@ def show(data="/srv/collective/data"):
                   % (label, tag, (m_r["name"] if m_r else tag)[:20], fmt_compact(wv), fmt_compact(wv / max(1, mv)), mv,
                      bv, fmt_compact(fv), fmt_compact(cv), num(t_r["mt"]) if t_r else 0, float(t_r["at"] or 0) if t_r else 0.0))
         our_sk = conn.execute("SELECT ROUND(AVG(level),1) as al, MAX(level) as ml FROM ship_skills WHERE skill='piloting'").fetchone()
-        idle_r = conn.execute("SELECT SUM(CASE WHEN COALESCE(flies, '') = '' OR flies LIKE '%park%' THEN 1 ELSE 0 END) FROM ships").fetchone()
-        our_idle = num(idle_r[0]) if idle_r else 0
+        our_idle = sum(1 for s in ships if not str((s or {}).get("order") or "").strip() or "park" in str((s or {}).get("order") or ""))
         print("  OUR FLEET [CLTV] %-20s | purse  %8s (%8s/ship, %3d ships) | bases %2d | piloting avg %s / max %s | %d idle"
               % ("The Collective", fmt_compact(our_purse), fmt_compact(our_purse / max(1, our_ships)), our_ships,
                  our_bases, our_sk["al"] if our_sk else "?", our_sk["ml"] if our_sk else "?", our_idle))
