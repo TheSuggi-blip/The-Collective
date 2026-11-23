@@ -1,0 +1,76 @@
+{
+ "id": "craft-steel-logistics-procyon",
+ "kind": "circuit",
+ "title": "Steel plate smelted by hand at Procyon Colonial Station from all of the pilot's own stored iron ore in one visit, kept in its storage there for the reserve (Logistics' haulers)",
+ "note": "Written by Apollo, 2026-11-23 11:58 UTC (requests.log ENT-446, Zero: a hauler receiver with a docked steel route where the miners' iron lies; orders ENT-082 block APOLLO: docked steel where the miners' iron lies; P2: steel_plate short 61,692, surplus.py reserve 11:20 UTC). Miners' storage holds 14,619 iron ore and 10,480 copper ore of 35 Solarian-born miners there (storage book 11:20 UTC, ENT-446); Zero's give route hands it to the hauler receiver of this station (handover.py receivers). Stops copied from craft-steel-logistics-ramens-rest: basic_iron_smelting in halving sizes, 128 to 1 runs (10 iron ore a plate, by hand). Standing work: reserve goods, crafting and refining XP, no fuel while docked; opens on 100 iron stored there by the pilot, closes at the steel max (rule F36). One ship: only the receiver stores there. far_ok: the receiver is Voidborn-born and the station lies in Solarian space, 8 to 10 jumps from Nexus Prime by the road our ships fly to Sol (0 pirates in 24 h, sightings 11:44 UTC).",
+ "standing": true,
+ "requires": {
+  "stored": {
+   "at": "procyon_colonial_station",
+   "item": "iron_ore",
+   "min": 100
+  }
+ },
+ "max_ships": 1,
+ "stops": [
+  {
+   "at": "procyon:procyon_colonial_station:procyon_colonial_station",
+   "store": "all",
+   "craft": [
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 128,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 64,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 32,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 16,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 8,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 4,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 2,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 1,
+     "per_run": 1,
+     "makes": "steel_plate"
+    }
+   ]
+  },
+  {
+   "at": "procyon:procyon_colonial_station:procyon_colonial_station",
+   "store": "all"
+  }
+ ],
+ "far_ok": true
+}
