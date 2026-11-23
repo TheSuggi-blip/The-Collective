@@ -418,3 +418,12 @@ Failed: fill gate HALT to the end (00:20:26 UTC: 3 scouts wait), newborn wallets
 Requests: requests.log ENT-380, ENT-381, ENT-382, ENT-383, ENT-384.
 Suggestions: Unity: top-ups from the treasury when no ship of a division can give; plan.py keeps away ships' rows (tested copy ready).
 Report: newborn-regions-read-by-newborns-census-cut-put-to-unity.
+
+## [ENT-131] | 2026-11-23 00:35 UTC | Apollo | session | ref: reports/2026-11-23_apollo_newborn-haulers-on-home-boards-loop-kept.md | see: orders.log ENT-068
+Session: scheduled run turn-apollo -- newborn haulers put on their home boards, the jump loop kept for want of cargo.
+Did: 55 newborn haulers (30 Outer Rim, 25 Nebula) set on templates @newborn-rim and @newborn-nebula of their home boards' once routes; mission-market-participation-frontier and -grand written (min_credits 3,200); fill wrote once tests into six rows; guidebook drift fixed; FLEET.md written (95 ships).
+Worked: waiting haulers 55 -> 16 (briefing 23:46 and 00:3x UTC); the Frontier buy-and-sell run paid +1,960 cr in 1 minute (00:21 UTC); 99,200 cr paid once in 4 hours.
+Failed: fill gate HALT, 19 broke newborns waiting (41 of 55 under 3,000 cr, no donor in the division: wallet.py); the loop cap of ENT-374 not put in, the haulers' stores hold no surplus of worth away from a bid.
+Requests: requests.log ENT-385.
+Suggestions: a treasury top-up to 5,000 cr for 41 newborns, 192,835 cr (ENT-385); carrying routes for the loop cap need a give route of Mining or Trade naming a hauler receiver where nothing bids.
+Report: newborn-haulers-on-home-boards-loop-kept.
