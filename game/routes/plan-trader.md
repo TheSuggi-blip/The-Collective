@@ -160,4 +160,4 @@ Planned:
 
 | What | When |
 |---|---|
-| read the resting melt ask at Central Nexus (contracts ENT-002) and the first three runs of the gas crafts and three new sell routes; apply Unity's word on the loop cap | next turn |
+| install the sell_order step and fly the melt Bursar test; cap the jump loop at ten once order keeping and crafts hold the rest; home-region trade for the Nebula and Solarian newborns | next turn |
