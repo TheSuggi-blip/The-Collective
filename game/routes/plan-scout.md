@@ -106,3 +106,4 @@ Planned:
 | What | When |
 |---|---|
 | Read the effect of this turn's caps and riders: region lists over cadence (Krynn 3, Altais 6, Haven 6), SITES census-north with six explorers first, FRESH frontier with five riders first | next turn |
+| Read the newborn scouts' census runs without --stay: each ends at its own capital (census.py HOME per empire, installed) | next turn |
