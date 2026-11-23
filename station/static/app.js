@@ -233,7 +233,7 @@ let rosterMode = 'all', rosterQuery = '', rosterSort = 'name', rosterDiv = 'all'
 const sys = new Map();
 const stationsBy = new Map();
 const shipsBy = new Map();                     // system id -> our ships there
-const layers = { Regions: true, 'Our space': true, Lanes: true, Traffic: true, Stations: true, 'Our bases': true, Strongholds: true, Intel: true, Factions: true, Fleet: true, Names: true };
+const layers = { Regions: true, 'Our space': true, 'Blocs & Empires': true, 'Fleet zones': true, Lanes: true, Traffic: true, Stations: true, 'Our bases': true, Strongholds: true, Intel: true, Factions: true, Fleet: true, Names: true };
 const sitesBy = new Map();                     // system id -> a site named for a base of ours (game/map/sites.tsv)
 const holdBy = new Map();                      // system id -> the buildings of ours there (what the faction owns, read from the game)
 try { localStorage.removeItem('station.sphere'); } catch (e) { /* no storage */ }   // the last-hour space of round 3, no longer drawn
@@ -245,6 +245,7 @@ const groupsBy = new Map();
 const battleSystems = new Set();                    // system id -> the larger groups of one foreign faction seen there
 let groupHits = [], infraHits = [];            // foreign tags and our own building/site pills as drawn
 let pop = null, hoverBadge = null, badgeHits = [];   // the open fleet card {system, kind}; the marker under the pointer; the markers drawn
+let hoverPolity = null, lockPolity = null, polityLabelHits = [], polityZones = [], empActiveOnly = false;
 let cam = null, raf = 0, pulse = 0;                  // an eased move of the view; the frame that is asked for; the timer of the next quiet frame
 
 const canvas = $('map'), ctx = canvas.getContext('2d');
@@ -408,28 +409,61 @@ function lineHome(from) {                             // the systems on the shor
   }
   return [sys.get(from)].filter(Boolean);
 }
-function ourSpace() {                                // our space: home (our empire's space) and a line out to each building of ours beyond it
-  const home = homeEmpire ? S.systems.filter((s) => s.empire === homeEmpire) : [];
-  const far = [...holdBy.keys()].map((id) => sys.get(id)).filter((s) => s && s.empire !== homeEmpire);
-  return { home, far, lines: far.map((s) => lineHome(s.id)) };
+function getPolities() {
+  return (DIPLO.data && Array.isArray(DIPLO.data.territories)) ? DIPLO.data.territories : [];
 }
+
+function liveOurSpace() {
+  // 100% dynamic Collective territory: sovereign bases + claimed territory + active multi-empire fleet hubs
+  const coreIds = new Set([...holdBy.keys()]);
+  const cltvPol = getPolities().find((p) => p.kind === 'us');
+  if (cltvPol) {
+    (cltvPol.core_systems || []).forEach((id) => coreIds.add(id));
+  }
+  const shipCounts = new Map();
+  for (const [id, list] of shipsBy) {
+    shipCounts.set(id, list.length);
+    if (list.length >= 10) coreIds.add(id);
+  }
+  const core = [...coreIds].map((id) => sys.get(id)).filter(Boolean);
+  const conc = [...shipCounts.entries()]
+    .filter(([id, cnt]) => cnt >= 3 && !coreIds.has(id) && sys.has(id))
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 16)
+    .map(([id, cnt]) => ({ s: sys.get(id), count: cnt }));
+  const bridges = (cltvPol && cltvPol.core_bridges) ? cltvPol.core_bridges.map((p) => p.map((id) => sys.get(id)).filter(Boolean)).filter((p) => p.length >= 2) : [];
+  return { core, conc, bridges, pol: cltvPol || null };
+}
+
+function polityFocusId() {
+  return (hoverPolity && hoverPolity.id) || (lockPolity && lockPolity.id) || '';
+}
+
 function paintTerritory(k) {
   const d = window.devicePixelRatio || 1, R = regionRadius(k);
-  const key = [view.x.toFixed(1), view.y.toFixed(1), k.toFixed(5), canvas.width, canvas.height, layers.Regions, layers['Our space'], realmVer].join('|');
+  const focusId = polityFocusId();
+  const key = [
+    view.x.toFixed(1), view.y.toFixed(1), k.toFixed(5), canvas.width, canvas.height,
+    layers.Regions, layers['Our space'], layers['Blocs & Empires'], layers['Fleet zones'],
+    focusId, realmVer,
+  ].join('|');
   if (key !== realmKey) {
     realmKey = key;
-    for (const c of [ground, realm]) { if (c.width !== canvas.width || c.height !== canvas.height) { c.width = canvas.width; c.height = canvas.height; } }
-    rctx.setTransform(1, 0, 0, 1, 0, 0); rctx.clearRect(0, 0, realm.width, realm.height);
-    const area = (list, colour, fill, edge, radius) => {
+    polityZones = [];
+    for (const c of [ground, realm]) {
+      if (c.width !== canvas.width || c.height !== canvas.height) { c.width = canvas.width; c.height = canvas.height; }
+    }
+    rctx.setTransform(1, 0, 0, 1, 0, 0);
+    rctx.clearRect(0, 0, realm.width, realm.height);
+
+    const area = (list, colour, fill, edge, radius, lineW) => {
       if (!list.length) return;
-      const half = radius * 0.75, line = 1.4, inside = new Set(list.map((s) => s.id)), at = new Map(list.map((s) => [s.id, toScreen(s)]));
-      // only the part of the view the region covers is painted and laid down: a region off the view costs nothing
+      const half = radius * 0.72, line = lineW || 1.4, inside = new Set(list.map((s) => s.id)), at = new Map(list.map((s) => [s.id, toScreen(s)]));
       let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
       for (const [x, y] of at.values()) { x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
-      x0 = Math.max(0, Math.floor(x0 - radius - 2)); x1 = Math.min(W, Math.ceil(x1 + radius + 2)); y0 = Math.max(0, Math.floor(y0 - radius - 2)); y1 = Math.min(H, Math.ceil(y1 + radius + 2));
+      x0 = Math.max(0, Math.floor(x0 - radius - 3)); x1 = Math.min(W, Math.ceil(x1 + radius + 3));
+      y0 = Math.max(0, Math.floor(y0 - radius - 3)); y1 = Math.min(H, Math.ceil(y1 + radius + 3));
       if (x1 <= x0 || y1 <= y0) return;
-      // The shape: a disc per system, a band along each lane between two systems of the region, and the triangles and
-      // squares its lanes close, so that a region has no hole. All of it is one path, filled once.
       const spans = [], faces = [];
       for (const s of list) {
         const p = at.get(s.id), near = s.lanes.filter((id) => id > s.id && inside.has(id));
@@ -445,7 +479,7 @@ function paintTerritory(k) {
       }
       const outline = (rad, wide) => {
         const path = new Path2D();
-        const face = (pts) => {                                   // every part runs the same way round as a disc: parts that overlap add up and never cancel
+        const face = (pts) => {
           let turn = 0;
           for (let i = 0; i < pts.length; i++) { const p = pts[i], q = pts[(i + 1) % pts.length]; turn += p[0] * q[1] - q[0] * p[1]; }
           if (turn < 0) pts = pts.slice().reverse();
@@ -454,7 +488,7 @@ function paintTerritory(k) {
           path.closePath();
         };
         for (const [x, y] of at.values()) { path.moveTo(x + rad, y); path.arc(x, y, rad, 0, 6.2832); }
-        for (const [p, q] of spans) {                             // the band along a lane: its ends lie inside the two discs
+        for (const [p, q] of spans) {
           const len = Math.hypot(q[0] - p[0], q[1] - p[1]) || 1, nx = -(q[1] - p[1]) / len * wide, ny = (q[0] - p[0]) / len * wide;
           face([[p[0] + nx, p[1] + ny], [q[0] + nx, q[1] + ny], [q[0] - nx, q[1] - ny], [p[0] - nx, p[1] - ny]]);
         }
@@ -466,25 +500,219 @@ function paintTerritory(k) {
       gctx.clearRect(x0 - 1, y0 - 1, x1 - x0 + 2, y1 - y0 + 2);
       gctx.fillStyle = colour;
       gctx.fill(outline(radius, half));
-      gctx.globalCompositeOperation = 'destination-out'; gctx.globalAlpha = 1 - fill / edge;   // the inside is thinned to the fill; what stays whole is the border
-      gctx.fill(outline(radius - line, half - line));
+      gctx.globalCompositeOperation = 'destination-out'; gctx.globalAlpha = Math.max(0, Math.min(1, 1 - fill / Math.max(0.01, edge)));
+      gctx.fill(outline(Math.max(1, radius - line), Math.max(1, half - line)));
       gctx.globalCompositeOperation = 'source-over'; gctx.globalAlpha = 1;
-      rctx.globalAlpha = edge; rctx.drawImage(ground, box[0], box[1], box[2], box[3], box[0], box[1], box[2], box[3]);
+      rctx.globalAlpha = edge;
+      rctx.drawImage(ground, box[0], box[1], box[2], box[3], box[0], box[1], box[2], box[3]);
     };
+
+    const concRing = (s, colour, rad, fillA, strokeA, focused) => {
+      const [x, y] = toScreen(s);
+      if (x < -rad - 4 || x > W + rad + 4 || y < -rad - 4 || y > H + rad + 4) return;
+      rctx.save();
+      rctx.setTransform(d, 0, 0, d, 0, 0);
+      rctx.globalAlpha = 1;
+      const grad = rctx.createRadialGradient(x, y, rad * 0.15, x, y, rad);
+      grad.addColorStop(0, rgba(colour, fillA * 1.4));
+      grad.addColorStop(1, rgba(colour, fillA * 0.25));
+      rctx.fillStyle = grad;
+      rctx.beginPath(); rctx.arc(x, y, rad, 0, 6.2832); rctx.fill();
+      rctx.strokeStyle = rgba(colour, strokeA);
+      rctx.lineWidth = focused ? 1.8 : 1.15;
+      rctx.setLineDash([4, 3]);
+      rctx.beginPath(); rctx.arc(x, y, rad, 0, 6.2832); rctx.stroke();
+      rctx.setLineDash([]);
+      rctx.restore();
+    };
+
+    // 1. Subtle matte backdrop for the 5 NPC starting empires (calm, non-pungent!)
     if (layers.Regions) {
       const realms = new Map();
       for (const s of S.systems) { if (s.empire) { if (!realms.has(s.empire)) realms.set(s.empire, []); realms.get(s.empire).push(s); } }
-      for (const [empire, list] of realms) { if (!(layers['Our space'] && empire === homeEmpire)) area(list, color(list[0]), 0.1, 0.5, R); }   // our home is drawn as our space
+      for (const [_empire, list] of realms) {
+        area(list, color(list[0]), 0.036, 0.17, R * 0.98, 1.0);
+      }
     }
+
+    const polities = getPolities();
+
+    // 2. Major Galactic Blocs & Solo Powers (Stellaris borders anchored to sovereign bases + dashed fleet concentration zones)
+    if (layers['Blocs & Empires'] || layers['Fleet zones']) {
+      // Draw unfocused first, focused polity last on top so overlaps stay crystal-clear
+      const ordered = polities.filter((p) => p.kind !== 'us').sort((a, b) => {
+        if (a.id === focusId) return 1;
+        if (b.id === focusId) return -1;
+        return (a.healthy_bases || 0) - (b.healthy_bases || 0);
+      });
+      for (const p of ordered) {
+        const isFoc = focusId && p.id === focusId;
+        const dim = focusId && !isFoc ? 0.32 : 1.0;
+        const col = HEX.test(p.color || '') ? p.color : '#e8c35a';
+        const coreSys = (p.core_systems || []).map((id) => sys.get(id)).filter(Boolean);
+        const coreRad = R * (isFoc ? 1.14 : 1.04);
+        if (layers['Blocs & Empires'] && coreSys.length) {
+          area(coreSys, col, (isFoc ? 0.17 : 0.09) * dim, (isFoc ? 0.95 : 0.68) * dim, coreRad, isFoc ? 2.1 : 1.5);
+          for (const br of (p.core_bridges || [])) {
+            const blist = br.map((id) => sys.get(id)).filter(Boolean);
+            if (blist.length >= 2) area(blist, col, (isFoc ? 0.10 : 0.05) * dim, (isFoc ? 0.62 : 0.36) * dim, R * 0.34, 1.0);
+          }
+          for (const s of coreSys) {
+            const [sx, sy] = toScreen(s);
+            polityZones.push({ p, kind: 'core', system: s.id, x: sx, y: sy, r: coreRad });
+          }
+        }
+        const concList = (p.concentration_systems || []);
+        if ((layers['Fleet zones'] || isFoc) && concList.length) {
+          for (const c of concList) {
+            const cs = sys.get(c.system);
+            if (!cs) continue;
+            const scale = Math.min(1.0, 0.54 + Math.log2(Math.max(2, c.count || 2)) * 0.10);
+            const crad = Math.max(10, R * scale);
+            concRing(cs, col, crad, (isFoc ? 0.13 : 0.055) * dim, (isFoc ? 0.88 : 0.48) * dim, isFoc);
+            const [sx, sy] = toScreen(cs);
+            polityZones.push({ p, kind: 'fleet', system: cs.id, count: c.count || 0, x: sx, y: sy, r: crad });
+          }
+        }
+      }
+    }
+
+    // 3. Dynamic Collective Territory ("Our space" -- live bases + high-density fleet cores + multi-empire operational hubs)
     if (layers['Our space']) {
-      const ours = ourSpace();
-      area(ours.home, OURS, 0.1, 0.6, R);
-      for (const line of ours.lines) area(line, OURS, 0.16, 0.8, R * 0.36);   // the lines going out, along the lanes
-      for (const s of ours.far) area([s], OURS, 0.18, 0.85, R * 0.75);
+      const ours = liveOurSpace();
+      const isFoc = focusId === 'CLTV';
+      const dim = focusId && !isFoc ? 0.42 : 1.0;
+      const coreRad = R * (isFoc ? 1.14 : 1.04);
+      if (ours.core.length) {
+        area(ours.core, OURS, (isFoc ? 0.18 : 0.11) * dim, (isFoc ? 0.96 : 0.78) * dim, coreRad, isFoc ? 2.2 : 1.6);
+        for (const br of ours.bridges) {
+          area(br, OURS, (isFoc ? 0.11 : 0.06) * dim, (isFoc ? 0.65 : 0.42) * dim, R * 0.34, 1.0);
+        }
+        if (ours.pol) {
+          for (const s of ours.core) {
+            const [sx, sy] = toScreen(s);
+            polityZones.push({ p: ours.pol, kind: 'core', system: s.id, x: sx, y: sy, r: coreRad });
+          }
+        }
+      }
+      if ((layers['Fleet zones'] || isFoc) && ours.conc.length) {
+        for (const item of ours.conc) {
+          const scale = Math.min(0.95, 0.50 + Math.log2(Math.max(2, item.count)) * 0.09);
+          const crad = Math.max(9, R * scale);
+          concRing(item.s, OURS, crad, (isFoc ? 0.12 : 0.055) * dim, (isFoc ? 0.85 : 0.48) * dim, isFoc);
+          if (ours.pol) {
+            const [sx, sy] = toScreen(item.s);
+            polityZones.push({ p: ours.pol, kind: 'fleet', system: item.s.id, count: item.count, x: sx, y: sy, r: crad });
+          }
+        }
+      }
     }
     rctx.globalAlpha = 1;
   }
   ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(realm, 0, 0); ctx.restore();
+}
+
+function polityAnchor(p) {
+  // Compute a clean Stellaris label centroid on the largest/primary cluster of the polity
+  const coreSys = (p.core_systems || []).map((id) => sys.get(id)).filter(Boolean);
+  const concSys = (p.concentration_systems || []).map((c) => sys.get(c.system)).filter(Boolean);
+  const pool = coreSys.length ? coreSys : concSys;
+  if (!pool.length) return null;
+  if (pool.length === 1) return { x: pool[0].x, y: pool[0].y, topY: pool[0].y };
+  // Pick the densest local cluster (most neighbors within median cluster distance) so far outliers don't pull label into empty space
+  let best = pool[0], bestScore = -1;
+  const rad = terrR * 6.5;
+  for (const a of pool) {
+    let sc = 0;
+    for (const b of pool) {
+      const dist = Math.hypot(a.x - b.x, a.y - b.y);
+      if (dist <= rad) sc += 1 / (1 + dist / (terrR * 2));
+    }
+    if (sc > bestScore) { bestScore = sc; best = a; }
+  }
+  const cluster = pool.filter((b) => Math.hypot(best.x - b.x, best.y - b.y) <= rad);
+  const cx = cluster.reduce((sum, s) => sum + s.x, 0) / cluster.length;
+  const cy = cluster.reduce((sum, s) => sum + s.y, 0) / cluster.length;
+  const topY = Math.min(...cluster.map((s) => s.y));
+  return { x: cx, y: cy, topY };
+}
+
+function drawPolityLabels(k) {
+  polityLabelHits = [];
+  if (!layers['Blocs & Empires'] && !layers['Our space'] && !layers['Fleet zones']) return;
+  const polities = getPolities();
+  if (!polities.length || k > 0.36) return;
+  const focusId = polityFocusId();
+  const fade = k > 0.24 ? Math.max(0.25, (0.36 - k) / 0.12) : 1.0;
+  const fontSize = Math.max(9.5, Math.min(13.5, 9 + k * 24));
+  const subSize = Math.max(8, fontSize - 2.2);
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  const placed = [];
+
+  for (const p of polities) {
+    if (p.kind === 'us' && !layers['Our space']) continue;
+    if (p.kind !== 'us') {
+      const hasCore = layers['Blocs & Empires'] && (p.core_systems || []).length > 0;
+      const hasConc = layers['Fleet zones'] && (p.concentration_systems || []).length > 0;
+      if (!hasCore && !hasConc && p.id !== focusId) continue;
+    }
+    const anc = polityAnchor(p);
+    if (!anc) continue;
+    let [sx, sy] = toScreen({ x: anc.x, y: anc.topY });
+    sy -= Math.min(26, regionRadius(k) * 0.55 + 8);
+    if (sx < -90 || sx > W + 90 || sy < -30 || sy > H + 30) continue;
+
+    const isFoc = focusId && p.id === focusId;
+    const col = p.kind === 'us' ? OURS : (HEX.test(p.color || '') ? p.color : '#e8c35a');
+    const title = String(p.label || p.name || p.id).toUpperCase();
+    const subBits = [];
+    if (p.kind === 'us') subBits.push(fmt(p.standing_ships || p.total_members) + ' ships');
+    else {
+      if (p.healthy_bases > 0) subBits.push(p.healthy_bases + 'b');
+      if (p.active_1h > 0) subBits.push(p.active_1h + ' live');
+      else subBits.push(fmt(p.total_members) + 'm');
+    }
+    const sub = subBits.join(' | ');
+
+    ctx.font = '700 ' + fontSize.toFixed(1) + 'px system-ui, sans-serif';
+    const tw = Math.max(ctx.measureText(title).width, 46);
+    const pw = tw + 14, ph = sub ? fontSize + subSize + 10 : fontSize + 8;
+
+    // Gentle vertical nudge to avoid label-on-label overlap
+    for (let tries = 0; tries < 5; tries++) {
+      const clash = placed.find((b) => Math.abs(b.cx - sx) < (b.w + pw) * 0.48 && Math.abs(b.cy - sy) < (b.h + ph) * 0.55);
+      if (!clash) break;
+      sy = clash.cy + (sy >= clash.cy ? (clash.h + ph) * 0.58 : -(clash.h + ph) * 0.58);
+    }
+
+    const alpha = (isFoc ? 1.0 : (focusId ? 0.35 : 0.86)) * fade;
+    const bx = sx - pw / 2, by = sy - ph / 2;
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = isFoc ? 'rgba(14, 20, 32, 0.94)' : 'rgba(11, 15, 24, 0.78)';
+    ctx.strokeStyle = rgba(col, isFoc ? 0.95 : 0.62);
+    ctx.lineWidth = isFoc ? 1.6 : 1.0;
+    ctx.beginPath();
+    if (ctx.roundRect) ctx.roundRect(bx, by, pw, ph, 5);
+    else ctx.rect(bx, by, pw, ph);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = col;
+    ctx.font = '700 ' + fontSize.toFixed(1) + 'px system-ui, sans-serif';
+    ctx.fillText(title, sx, by + fontSize * 0.65 + 2);
+    if (sub) {
+      ctx.fillStyle = 'rgba(218, 226, 242, 0.82)';
+      ctx.font = '500 ' + subSize.toFixed(1) + 'px ui-monospace, monospace';
+      ctx.fillText(sub, sx, by + fontSize + subSize * 0.6 + 3);
+    }
+    ctx.restore();
+    placed.push({ cx: sx, cy: sy, w: pw, h: ph });
+    polityLabelHits.push({ p, x: bx, y: by, w: pw, h: ph });
+  }
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'alphabetic';
 }
 
 function paint(t) {
@@ -496,19 +724,19 @@ function paint(t) {
     ctx.fillStyle = 'rgba(186,198,232,' + a.toFixed(2) + ')';
     ctx.fillRect((((u * W + px) % W) + W) % W, (((v * H + py) % H) + H) % H, size, size);
   }
-  if (layers.Regions || layers['Our space']) paintTerritory(k);
-  if (layers.Regions && k < 0.24) {                                 // each empire's name across its space, large and faint; it fades as the view comes close
-    const size = Math.max(11, Math.min(22, 250 * k)), fade = Math.min(1, (0.24 - k) / 0.08), gap = size * 0.42, reach = regionRadius(k) + size * 0.9;
+  if (layers.Regions || layers['Our space'] || layers['Blocs & Empires'] || layers['Fleet zones']) paintTerritory(k);
+  if (layers.Regions && k < 0.22) {                                 // quiet matte NPC empire backdrop names
+    const size = Math.max(10, Math.min(18, 210 * k)), fade = Math.min(1, (0.22 - k) / 0.08), gap = size * 0.42, reach = regionRadius(k) + size * 0.9;
     const dots = S.systems.map(toScreen);
     ctx.font = '600 ' + size.toFixed(1) + 'px system-ui, sans-serif'; ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
     for (const n of realmNames) {
       const x = (n.x - view.x) * k + W / 2, letters = [...n.word], widths = letters.map((ch) => ctx.measureText(ch).width);
       const total = widths.reduce((a, b) => a + b, 0) + gap * (letters.length - 1);
-      const under = (n.y1 - view.y) * k + H / 2 + reach, over = (n.y0 - view.y) * k + H / 2 - reach;   // just outside the region, below or above it: where fewer systems stand
+      const under = (n.y1 - view.y) * k + H / 2 + reach, over = (n.y0 - view.y) * k + H / 2 - reach;
       const crowd = (yy) => dots.reduce((m, q) => m + (Math.abs(q[0] - x) < total / 2 + 8 && Math.abs(q[1] - yy) < size * 0.8 + 5 ? 1 : 0), 0);
       const y = crowd(under) <= crowd(over) ? under : over;
       if (x < -total || x > W + total || y < -30 || y > H + 30) continue;
-      ctx.fillStyle = rgba(n.home && layers['Our space'] ? OURS : n.colour, (0.55 * fade).toFixed(2));
+      ctx.fillStyle = rgba(n.colour, (0.26 * fade).toFixed(2));
       let at = x - total / 2;
       letters.forEach((ch, i) => { ctx.fillText(ch, at, y); at += widths[i] + gap; });
     }
@@ -762,7 +990,133 @@ function paint(t) {
     ctx.fillStyle = l.bold ? '#f1f3f9' : '#a9b0c9';
     ctx.fillText(l.name, at, l.y + 4);
   }
+  drawPolityLabels(k);
   placePop();
+}
+
+function polityLabelAt(mx, my) {
+  for (let i = polityLabelHits.length - 1; i >= 0; i--) {
+    const h = polityLabelHits[i];
+    if (mx >= h.x && mx <= h.x + h.w && my >= h.y && my <= h.y + h.h) return h.p;
+  }
+  return null;
+}
+
+function polityRegionAt(mx, my) {
+  if (!polityZones.length) return null;
+  const hits = new Map();
+  for (const z of polityZones) {
+    const d = Math.hypot(mx - z.x, my - z.y);
+    if (d <= z.r) {
+      const score = (z.kind === 'core' ? 0 : 1000) + d;
+      const cur = hits.get(z.p.id);
+      if (!cur || score < cur.score) hits.set(z.p.id, { p: z.p, kind: z.kind, score });
+    }
+  }
+  if (!hits.size) return null;
+  const arr = [...hits.values()].sort((a, b) => a.score - b.score);
+  return { primary: arr[0].p, kind: arr[0].kind, overlaps: arr.slice(1).map((x) => x.p) };
+}
+
+function politiesInSystem(sysId) {
+  const out = [];
+  for (const p of getPolities()) {
+    if ((p.core_systems || []).includes(sysId)) out.push({ p, kind: 'core' });
+    else if ((p.concentration_systems || []).some((c) => c.system === sysId)) out.push({ p, kind: 'fleet' });
+  }
+  return out;
+}
+
+function focusPolityOnMap(p, doFit) {
+  if (!p) { lockPolity = null; realmVer++; renderAlerts(); draw(); renderLegend(); return; }
+  if (lockPolity && lockPolity.id === p.id) {
+    lockPolity = null;
+    realmVer++;
+    renderAlerts(); draw(); renderLegend();
+    return;
+  }
+  lockPolity = p;
+  realmVer++;
+  renderAlerts();
+  renderLegend();
+  if (doFit) {
+    const ids = [...new Set([...(p.core_systems || []), ...(p.concentration_systems || []).map((c) => c.system)])];
+    const pts = ids.map((id) => sys.get(id)).filter(Boolean);
+    if (pts.length) fit(pts, 520, false);
+  }
+  draw();
+}
+
+function renderPolityTip(tip, p, overlaps, viaLegend) {
+  tip.replaceChildren();
+  tip.classList.add('polity-tip');
+  const col = p.kind === 'us' ? OURS : (HEX.test(p.color || '') ? p.color : '#e8c35a');
+  tip.style.borderLeft = '3px solid ' + col;
+
+  const hd = el('div', 'tip-head');
+  const titleWrap = el('div', 'tip-ptitle');
+  const sw = el('i', 'tip-swatch');
+  sw.style.background = col;
+  titleWrap.append(sw, el('span', 'tip-title', p.name));
+  const bgs = el('div', 'tip-badges');
+  const kLbl = p.kind === 'us' ? 'OUR EMPIRE' : p.kind === 'bloc' ? 'COALITION BLOC' : 'SOLO POWER';
+  bgs.append(el('span', 'pill ' + (p.kind === 'us' ? 'good' : p.kind === 'bloc' ? 'warn' : 'info'), kLbl));
+  if (p.activity_state === 'live') bgs.append(el('span', 'pill good', 'LIVE'));
+  else if (p.activity_state === 'quiet') bgs.append(el('span', 'pill', 'QUIET'));
+  if (p.rel_power && p.rel_power !== 'US') bgs.append(relPowerPill(p.rel_power));
+  hd.append(titleWrap, bgs);
+  tip.append(hd);
+
+  // Coalition members or solo identity strip
+  if (p.members_breakdown && p.members_breakdown.length > 1) {
+    const mrow = el('div', 'tip-members');
+    for (const m of p.members_breakdown.slice(0, 6)) {
+      mrow.append(el('span', 'tip-mpill', '[' + m.tag + '] ' + fmt(m.members) + 'm' + (m.bases ? ' ' + m.bases + 'b' : '')));
+    }
+    tip.append(mrow);
+  } else if (p.dominant_empire && p.dominant_empire !== '--') {
+    tip.append(el('div', 'tip-sub', '[' + (p.tags || [p.id]).join(',') + '] | ' + p.dominant_empire + (p.age_days ? ' | ' + p.age_days + 'd old' : '')));
+  }
+
+  const gr = el('div', 'tip-grid');
+  const kv = (k, v) => { const c = el('div', 'tip-cell'); c.append(el('span', null, k), el('b', null, String(v))); gr.append(c); };
+  kv('Fleet / Members', p.kind === 'us'
+    ? fmt(p.standing_ships || p.total_members) + ' ships (' + fmt(p.total_members) + ' fac)'
+    : fmt(p.total_members) + ' members');
+  kv('Live Active', fmt(p.active_1h || 0) + ' (1h) / ' + fmt(p.active_24h || 0) + ' (24h)');
+  const baseTxt = fmt(p.healthy_bases || 0) + ' healthy' + (p.nearest_jumps != null && p.kind !== 'us' ? ' (' + p.nearest_jumps + 'j)' : '');
+  kv('Sovereign Bases', baseTxt);
+  const techTxt = p.max_tier > 0
+    ? 'T' + p.max_tier + ' / avg ' + (p.avg_tier || 0).toFixed(1) + (p.est_piloting ? ' (Lv' + p.est_piloting + '+)' : '')
+    : (p.kind === 'us' ? 'T' + (p.max_tier || 1) + ' (Lv' + (p.est_piloting || 0) + ')' : 'unsighted');
+  kv('Upgrade / Tech', techTxt);
+  kv('Total Wealth', fmtCompact(p.wealth || 0) + ' cr');
+  const incTxt = p.est_income_h
+    ? (p.est_income_h > 0 ? '+' : '') + fmtCompact(p.est_income_h) + '/h' + (p.est_income_src ? ' (' + p.est_income_src + ')' : '')
+    : '--';
+  kv('Est. Income/h', incTxt);
+  if (p.ore_h > 0 || p.crafted_h > 0) {
+    kv('Live Industry', (p.ore_h > 0 ? '+' + fmtCompact(p.ore_h) + ' ore/h' : '') + (p.ore_h > 0 && p.crafted_h > 0 ? ' | ' : '') + (p.crafted_h > 0 ? '+' + fmt(p.crafted_h) + ' crf/h' : ''));
+  }
+  if (p.kills > 0 || p.kills_pvp > 0) {
+    kv('Combat Kills', fmtCompact(p.kills || 0) + (p.kills_pvp ? ' (' + fmt(p.kills_pvp) + ' PvP)' : ''));
+  }
+  tip.append(gr);
+
+  // Wealth composition sub-bar (Vault / Ships / Facilities)
+  const wBits = [];
+  if (p.storage_value > 0) wBits.push('Vault ' + fmtCompact(p.storage_value));
+  if (p.ship_value > 0) wBits.push('Ships ' + fmtCompact(p.ship_value));
+  if (p.facility_inv > 0) wBits.push('Facilities ' + fmtCompact(p.facility_inv));
+  if (wBits.length) tip.append(el('div', 'tip-sub', wBits.join('  |  ')));
+
+  if (overlaps && overlaps.length) {
+    tip.append(el('div', 'tip-overlap', 'Overlaps here: ' + overlaps.slice(0, 4).map((x) => x.label).join(', ')));
+  }
+  const foot = el('div', 'tip-foot');
+  foot.append(el('span', null, viaLegend ? 'Click legend row to isolate & zoom' : 'Click nameplate to lock & zoom'));
+  if (p.wars && p.wars.length) foot.append(el('span', 'neg', 'AT WAR: ' + p.wars.join(',')));
+  tip.append(foot);
 }
 
 function groupAt(mx, my) {
@@ -2911,11 +3265,17 @@ async function opsOf() {
   try { OPS = { data: await get('/api/ops'), at: Date.now() }; } catch (e) { return OPS.data; }
   return OPS.data;
 }
-async function diploOf() {
-  if (Date.now() - DIPLO.at < 45000 && DIPLO.data) return DIPLO.data;
-  try { DIPLO = { data: await get('/api/diplomacy'), at: Date.now() }; } catch (e) { return DIPLO.data; }
+async function diploOf(force) {
+  if (!force && Date.now() - DIPLO.at < 45000 && DIPLO.data) return DIPLO.data;
+  try {
+    DIPLO = { data: await get('/api/diplomacy'), at: Date.now() };
+    realmVer++;
+    renderLegend();
+    draw();
+  } catch (e) { return DIPLO.data; }
   return DIPLO.data;
 }
+async function loadDiplo() { return diploOf(true); }
 function focusRivalOnMap(tag, name, baseSyss, sightSyss) {
   const bSet = new Set((baseSyss || []).filter((id) => sys.has(id)));
   const sSet = new Set((sightSyss || []).filter((id) => sys.has(id)));
@@ -2961,6 +3321,10 @@ function renderAlerts() {
     b.addEventListener('click', go);
     chips.push(b);
   };
+  if (lockPolity) {
+    addChip('info', 'TERRITORY LOCK: ' + lockPolity.label + ' (' + (lockPolity.healthy_bases || 0) + 'b, ' + fmt(lockPolity.active_1h || 0) + ' live) [x]',
+      'Click to clear territory highlight', () => focusPolityOnMap(null, false));
+  }
   if (rivalFocus) {
     const nb = rivalFocus.bases.size, ns = rivalFocus.systems.size;
     addChip('info', 'RIVAL MAP: [' + rivalFocus.tag + '] ' + rivalFocus.name + ' (' + nb + ' base' + (nb === 1 ? '' : 's') + ', ' + ns + ' seen) [x]',
@@ -3471,39 +3835,74 @@ async function renderEmpire(panel, live) {
   }
 }
 
+function fmtAgeShort(sec) {
+  if (sec == null || sec < 0) return '--';
+  if (sec < 90) return sec + 's';
+  if (sec < 5400) return Math.round(sec / 60) + 'm';
+  return (sec / 3600).toFixed(1) + 'h';
+}
+
+function actStatePill(st) {
+  if (st === 'live') return el('span', 'pill good', 'LIVE');
+  if (st === 'quiet') return el('span', 'pill warn', 'QUIET');
+  return el('span', 'pill', 'DORMANT');
+}
+
+function renderFreshnessStrip(panel, dip) {
+  const fr = (dip && dip.freshness) || null;
+  if (!fr) return;
+  const bar = el('div', 'fresh-strip');
+  const bits = [
+    'SSE live: ' + fmtAgeShort(fr.sse_age_s) + ' ago',
+    'Leaderboards: ' + fmtAgeShort(fr.leaderboard_age_s) + ' ago',
+    'Stations: ' + fmtAgeShort(fr.stations_age_s) + ' ago',
+    'Daily feed: ' + (fr.feed_built_at ? fr.feed_built_at.slice(0, 16).replace('T', ' ') + 'Z' : fmtAgeShort(fr.feed_age_s) + ' ago'),
+    'History: ' + fmt(fr.snapshots_count || 0) + ' snap' + ((fr.snapshots_count || 0) === 1 ? '' : 's') + (fr.velocity_window_h ? ' (' + fr.velocity_window_h + 'h window)' : ''),
+  ];
+  bar.textContent = 'Auto-gathered telemetry  |  ' + bits.join('  |  ');
+  panel.append(bar);
+}
+
 function renderEmpireRivals(panel, dip) {
   if (!dip) { panel.append(el('p', 'empty', 'Loading galactic faction intelligence...')); return; }
-  const our = dip.our || {}, ranks = our.ranks || {}, list = [...(dip.rivals || [])];
-  const topWealth = list.reduce((m, r) => (r.wealth > (m ? m.wealth : 0) ? r : m), null);
+  renderFreshnessStrip(panel, dip);
+  const our = dip.our || {}, ranks = our.ranks || {};
+  let list = [...(dip.rivals || [])];
+  if (empActiveOnly) list = list.filter((r) => r.tag === 'CLTV' || r.activity_state !== 'dormant');
+  const topWealth = (dip.rivals || []).reduce((m, r) => (r.wealth > (m ? m.wealth : 0) ? r : m), null);
+  const topLive = (dip.rivals || []).filter((r) => r.tag !== 'CLTV').reduce((m, r) => ((r.active_1h || 0) > (m ? (m.active_1h || 0) : 0) ? r : m), null);
+  const shipsTot = our.standing_ships || our.fleet_ships || 0;
 
   const kgrid = el('div', 'kpis');
   const ekpi = (k, v, sub, cls) => { const d = el('div', 'kpi' + (cls ? ' ' + cls : '')); d.append(el('div', 'k', k), el('div', 'v', v)); if (sub) d.append(el('div', 's', sub)); kgrid.append(d); };
   ekpi('Our galactic ranks',
     'Members #' + (ranks.member_count || '--') + ' | Dmg #' + (ranks.damage_dealt || '--'),
-    'Facilities #' + (ranks.facility_investment || '--') + ' | Missions #' + (ranks.missions_completed || '--') + ' of ' + fmt(dip.total_factions) + ' factions',
+    'Facilities #' + (ranks.facility_investment || '--') + ' | Missions #' + (ranks.missions_completed || '--') + ' | Wealth est #' + (ranks.wealth_est || '--'),
     'main pos');
   ekpi('#1 Galactic superpower',
     topWealth ? '[' + topWealth.tag + '] ' + fmtCompact(topWealth.wealth) + ' cr' : '--',
-    topWealth ? topWealth.name + ' (' + fmt(topWealth.members) + ' members, ' + topWealth.bases + ' bases)' : '',
+    topWealth ? topWealth.name + ' (' + fmt(topWealth.members) + 'm, ' + topWealth.bases + 'b, ' + fmt(topWealth.active_1h || 0) + ' live 1h)' : '',
     'warn');
-  ekpi('Our tech & pilot level',
-    'Max Lv ' + (our.max_piloting || 0) + ' (Avg ' + (our.avg_piloting || 0) + ')',
-    'T2 unlocked | Voidborn >=1: ' + fmt(our.voidborn_skilled || 0) + '/' + fmt(our.fleet_ships || 246),
-    'pos');
+  ekpi('Highest live tempo (1h)',
+    topLive ? '[' + topLive.tag + '] ' + fmt(topLive.active_1h || 0) + ' ships' : '--',
+    topLive ? topLive.name + ' (' + fmt(topLive.members) + 'm, ' + (topLive.age_days || '?') + 'd old)' : '',
+    'warn');
   ekpi('Head-start clock',
-    '7 days old',
-    fmt(our.fleet_ships || 246) + ' ships built vs rivals 60-280d old',
+    (our.age_days || 8) + ' days old',
+    fmt(shipsTot) + ' ships (' + fmtCompact(our.net_worth || our.total_purse || 0) + ' cr net worth) vs rivals 60-285d old',
     'pos');
   panel.append(kgrid);
 
   const sortBar = el('div', 'sortbar');
-  sortBar.append(el('span', 'sortlbl', 'Rank ledger by:'));
+  sortBar.append(el('span', 'sortlbl', 'Rank by:'));
   const sorts = [
-    ['wealth', 'Wealth / Earned'],
+    ['wealth', 'Wealth'],
+    ['active', 'Live (1h)'],
+    ['income', 'Est. Income/h'],
     ['members', 'Members'],
-    ['bases', 'Sovereign Bases'],
-    ['kills', 'Combat Kills'],
-    ['tech', 'Observed Tech / Lv'],
+    ['bases', 'Bases'],
+    ['kills', 'Kills'],
+    ['tech', 'Tech / Lv'],
   ];
   for (const [sid, slbl] of sorts) {
     const b = el('button', 'rf' + (empSort === sid ? ' on' : ''), slbl);
@@ -3511,6 +3910,11 @@ function renderEmpireRivals(panel, dip) {
     b.addEventListener('click', () => { empSort = sid; render(); });
     sortBar.append(b);
   }
+  const actBtn = el('button', 'rf' + (empActiveOnly ? ' on' : ''), empActiveOnly ? 'Active Only: ON' : 'Hide Dormant');
+  actBtn.type = 'button';
+  actBtn.title = 'Filter out dormant ghost empires with 0 live activity in 24h';
+  actBtn.addEventListener('click', () => { empActiveOnly = !empActiveOnly; render(); });
+  sortBar.append(actBtn);
   if (rivalFocus) {
     const clr = el('button', 'rf haswarn', 'Clear map overlay [' + rivalFocus.tag + ']');
     clr.type = 'button';
@@ -3520,34 +3924,38 @@ function renderEmpireRivals(panel, dip) {
   panel.append(sortBar);
 
   const cmp = {
-    wealth: (a, b) => b.wealth - a.wealth || b.members - a.members,
-    members: (a, b) => b.members - a.members || b.wealth - a.wealth,
-    bases: (a, b) => b.bases - a.bases || b.wealth - a.wealth,
-    kills: (a, b) => b.kills - a.kills || b.kills_pvp - a.kills_pvp,
-    tech: (a, b) => b.max_tier - a.max_tier || b.avg_tier - a.avg_tier || b.sighted - a.sighted,
-  }[empSort] || ((a, b) => b.wealth - a.wealth);
+    wealth: (a, b) => (b.wealth || 0) - (a.wealth || 0) || (b.members || 0) - (a.members || 0),
+    active: (a, b) => (b.active_1h || 0) - (a.active_1h || 0) || (b.active_24h || 0) - (a.active_24h || 0),
+    income: (a, b) => (b.est_income_h || 0) - (a.est_income_h || 0) || (b.wealth || 0) - (a.wealth || 0),
+    members: (a, b) => (b.members || 0) - (a.members || 0) || (b.wealth || 0) - (a.wealth || 0),
+    bases: (a, b) => (b.bases || 0) - (a.bases || 0) || (b.wealth || 0) - (a.wealth || 0),
+    kills: (a, b) => (b.kills || 0) - (a.kills || 0) || (b.kills_pvp || 0) - (a.kills_pvp || 0),
+    tech: (a, b) => (b.max_tier || 0) - (a.max_tier || 0) || (b.avg_tier || 0) - (a.avg_tier || 0) || (b.sighted || 0) - (a.sighted || 0),
+  }[empSort] || ((a, b) => (b.wealth || 0) - (a.wealth || 0));
   list.sort(cmp);
 
   const tbl = el('table', 'mtable rival-table');
   const thead = el('thead'), trH = el('tr');
-  ['#', 'Faction', 'Rel. Power', 'Members', 'Bases', 'Wealth / Earned', 'Obs. Hull / Lv', 'Kills', 'Age', 'Map'].forEach((h, idx) => {
-    const th = el('th', [3, 4, 5, 7, 8].includes(idx) ? 'num' : null, h);
+  ['#', 'Faction', 'Power', 'Members', 'Live 1h/24h', 'Bases', 'Wealth / Mix', 'Est. Income/h', 'Tech / Lv', 'Map'].forEach((h, idx) => {
+    const th = el('th', [3, 4, 5, 6, 7].includes(idx) ? 'num' : null, h);
     trH.append(th);
   });
   thead.append(trH);
   tbl.append(thead);
 
   const tbody = el('tbody');
-  list.slice(0, 35).forEach((r, idx) => {
-    const tr = el('tr', r.tag === 'CLTV' ? 'us-row' : (rivalFocus && rivalFocus.tag === r.tag ? 'focus-row' : null));
+  list.slice(0, 40).forEach((r, idx) => {
+    const tr = el('tr', r.tag === 'CLTV' ? 'us-row' : (rivalFocus && rivalFocus.tag === r.tag ? 'focus-row' : (r.activity_state === 'dormant' ? 'dormant-row' : null)));
     tr.append(el('td', 'mono', String(idx + 1)));
 
     const fCell = el('td');
     const fTop = el('div', 'rname');
-    fTop.append(el('span', 'rtag', '[' + r.tag + ']'), ' ', el('b', null, r.name));
+    fTop.append(el('span', 'rtag', '[' + r.tag + ']'), ' ', el('b', null, r.name), ' ', actStatePill(r.activity_state));
     fCell.append(fTop);
     const metaBits = [];
     if (r.empire && r.empire !== '--') metaBits.push(r.empire);
+    if (r.age_days) metaBits.push(r.age_days + 'd');
+    if (r.nearest_jumps != null && r.tag !== 'CLTV') metaBits.push(r.nearest_jumps + 'j away');
     if (r.allies && r.allies.length) metaBits.push('allies: ' + r.allies.slice(0, 4).join(',') + (r.allies.length > 4 ? '+' + (r.allies.length - 4) : ''));
     if (r.wars && r.wars.length) metaBits.push('AT WAR: ' + r.wars.join(','));
     if (metaBits.length) fCell.append(el('div', 'rmeta-sub', metaBits.join(' | ')));
@@ -3557,33 +3965,55 @@ function renderEmpireRivals(panel, dip) {
     pCell.append(relPowerPill(r.rel_power));
     tr.append(pCell);
 
+    const mCell = el('td', 'num');
     const mTxt = r.tag === 'CLTV' && r.fleet_ships ? fmt(r.members) + ' (' + fmt(r.fleet_ships) + ')' : fmt(r.members);
-    tr.append(el('td', 'num', mTxt));
-    tr.append(el('td', 'num', r.bases ? fmt(r.bases) : '--'));
+    mCell.append(el('div', null, mTxt));
+    if (r.delta_members) mCell.append(el('div', 'rmeta-sub ' + (r.delta_members > 0 ? 'pos' : 'neg'), (r.delta_members > 0 ? '+' : '') + fmt(r.delta_members)));
+    tr.append(mCell);
+
+    const aCell = el('td', 'num');
+    aCell.append(el('div', 'mono', fmt(r.active_1h || 0)));
+    aCell.append(el('div', 'rmeta-sub', fmt(r.active_24h || 0) + ' / 24h'));
+    tr.append(aCell);
+
+    const bCell = el('td', 'num');
+    bCell.append(el('div', null, r.bases ? fmt(r.bases) : '--'));
+    if (r.wrecked_bases > 0) bCell.append(el('div', 'rmeta-sub neg', r.wrecked_bases + ' wrecked'));
+    tr.append(bCell);
 
     const wCell = el('td', 'num');
     wCell.append(el('div', null, fmtCompact(r.wealth) + ' cr'));
-    wCell.append(el('div', 'rmeta-sub', r.wealth_src === 'net_worth' ? 'net worth' : r.wealth_src === 'purse' ? 'live purse' : 'lifetime earned'));
+    const mix = [];
+    if (r.storage_value > 0) mix.push('V:' + fmtCompact(r.storage_value));
+    if (r.ship_value > 0) mix.push('S:' + fmtCompact(r.ship_value));
+    if (r.facility_inv > 0) mix.push('F:' + fmtCompact(r.facility_inv));
+    wCell.append(el('div', 'rmeta-sub', mix.length ? mix.slice(0, 2).join(' ') : (r.wealth_src === 'net_worth' ? 'net worth' : 'lifetime earned')));
     tr.append(wCell);
+
+    const incCell = el('td', 'num');
+    if (r.est_income_h) {
+      incCell.append(el('div', r.est_income_h > 0 ? 'pos' : 'neg', (r.est_income_h > 0 ? '+' : '') + fmtCompact(r.est_income_h) + '/h'));
+      const subBits = [];
+      if (r.est_income_src) subBits.push(r.est_income_src);
+      if (r.delta_crafted_h > 0) subBits.push('+' + fmt(r.delta_crafted_h) + ' crf/h');
+      else if (r.delta_ore_h > 0) subBits.push('+' + fmtCompact(r.delta_ore_h) + ' ore/h');
+      incCell.append(el('div', 'rmeta-sub', subBits.join(' | ')));
+    } else {
+      incCell.append(el('span', 'rmeta-sub', '--'));
+    }
+    tr.append(incCell);
 
     const tCell = el('td');
     if (r.tag === 'CLTV') {
       tCell.append(el('div', 'mono', 'T' + r.max_tier + ' | Lv ' + r.est_piloting));
       tCell.append(el('div', 'rmeta-sub', 'avg Lv ' + (r.avg_piloting || 0)));
     } else if (r.sighted > 0) {
-      tCell.append(el('div', 'mono', 'Max T' + r.max_tier + ' / Avg ' + r.avg_tier.toFixed(1)));
-      tCell.append(el('div', 'rmeta-sub', 'Lv ' + r.est_piloting + '+ (' + fmt(r.sighted) + ' seen)'));
+      tCell.append(el('div', 'mono', 'T' + r.max_tier + ' / avg ' + (r.avg_tier || 0).toFixed(1)));
+      tCell.append(el('div', 'rmeta-sub', 'Lv' + r.est_piloting + '+ (' + fmt(r.sighted) + ')' + (r.kills_pvp > 0 ? ' | ' + fmt(r.kills_pvp) + ' PvP' : '')));
     } else {
-      tCell.append(el('span', 'rmeta-sub', 'unsighted'));
+      tCell.append(el('span', 'rmeta-sub', r.kills_pvp > 0 ? fmt(r.kills_pvp) + ' PvP' : 'unsighted'));
     }
     tr.append(tCell);
-
-    const kCell = el('td', 'num');
-    kCell.append(el('div', null, fmtCompact(r.kills)));
-    if (r.kills_pvp > 0) kCell.append(el('div', 'rmeta-sub', fmt(r.kills_pvp) + ' PvP'));
-    tr.append(kCell);
-
-    tr.append(el('td', 'num', r.age_days ? r.age_days + 'd' : '--'));
 
     const mapCell = el('td');
     const hasMap = (r.base_systems && r.base_systems.length) || (r.sight_systems && r.sight_systems.length);
@@ -3609,16 +4039,29 @@ function renderEmpireRivals(panel, dip) {
 
 function renderEmpireDiplomacy(panel, dip) {
   if (!dip) { panel.append(el('p', 'empty', 'Loading diplomatic intelligence...')); return; }
+  renderFreshnessStrip(panel, dip);
   const our = dip.our || {};
-  const alliances = dip.alliances || [], wars = dip.wars || [], rivalries = dip.rivalries || [], battles = dip.battles || [];
+  const alliances = dip.alliances || [], wars = dip.wars || [], rivalries = dip.rivalries || [], battles = dip.battles || [], wire = dip.intel_wire || [];
+  const polByLead = new Map(getPolities().map((p) => [p.id, p]));
 
   const kgrid = el('div', 'kpis');
   const ekpi = (k, v, sub, cls) => { const d = el('div', 'kpi' + (cls ? ' ' + cls : '')); d.append(el('div', 'k', k), el('div', 'v', v)); if (sub) d.append(el('div', 's', sub)); kgrid.append(d); };
   ekpi('Our posture', our.at_war ? 'AT WAR' : 'Armed Neutrality', 'Never fire first; diplomacy & war Suggi-reserved', our.at_war ? 'neg' : 'main pos');
   ekpi('Our treaties & wars', (our.allies || []).length + ' allies | ' + (our.wars || []).length + ' wars', (our.enemies || []).length + ' marked enemies', 'pos');
-  ekpi('Galactic alliance blocs', fmt(alliances.length) + ' coalitions', 'multi-faction mutual defense / trade blocs', '');
+  ekpi('Galactic alliance blocs', fmt(alliances.length) + ' coalitions', fmt(getPolities().filter((p) => p.kind === 'bloc').length) + ' major blocs mapped on galaxy view', '');
   ekpi('Active wars & rivalries', fmt(wars.length) + ' wars | ' + fmt(rivalries.length) + ' feuds', fmt(battles.length) + ' recent combat engagements logged', wars.length ? 'warn' : '');
   panel.append(kgrid);
+
+  if (wire.length) {
+    panel.append(el('h3', null, 'Automated Galactic Intel Wire'));
+    const wlist = el('div', 'wire-list');
+    for (const item of wire) {
+      const wr = el('div', 'wire-item wire-' + (item.kind || 'info'));
+      wr.append(el('span', 'pill ' + (item.kind === 'surge' ? 'warn' : item.kind === 'dormant' ? '' : 'good'), (item.kind || 'intel').toUpperCase()), ' ', el('span', null, item.text));
+      wlist.append(wr);
+    }
+    panel.append(wlist);
+  }
 
   panel.append(el('h3', null, 'Major galactic alliance blocs & federations (' + alliances.length + ')'));
   if (!alliances.length) {
@@ -3626,23 +4069,38 @@ function renderEmpireDiplomacy(panel, dip) {
   } else {
     const cards = el('div', 'icards');
     for (const bloc of alliances.slice(0, 12)) {
+      const pol = polByLead.get('BLOC:' + bloc.lead_tag) || null;
       const card = el('div', 'icard');
+      if (pol && HEX.test(pol.color || '')) card.style.borderLeft = '3px solid ' + pol.color;
       const head = el('div', 'ichead');
-      head.append(el('b', null, bloc.lead_name + ' Coalition (' + bloc.factions.length + ' factions)'));
-      if ((bloc.base_systems && bloc.base_systems.length) || (bloc.sight_systems && bloc.sight_systems.length)) {
-        const lBtn = el('button', 'maploc', 'Show bloc on map');
+      head.append(el('b', null, bloc.lead_name + ' Coalition (' + bloc.factions.length + ' factions)'), ' ', actStatePill(bloc.activity_state));
+      if (pol) {
+        const isLocked = lockPolity && lockPolity.id === pol.id;
+        const lBtn = el('button', 'maploc' + (isLocked ? ' on' : ''), isLocked ? 'Locked on map' : 'Focus bloc');
+        lBtn.type = 'button';
+        lBtn.addEventListener('click', () => { focusPolityOnMap(pol, true); render(); });
+        head.append(lBtn);
+      } else if ((bloc.base_systems && bloc.base_systems.length) || (bloc.sight_systems && bloc.sight_systems.length)) {
+        const lBtn = el('button', 'maploc', 'Locate');
         lBtn.type = 'button';
         lBtn.addEventListener('click', () => {
           focusRivalOnMap(bloc.lead_tag + '+', bloc.lead_name + ' Coalition', bloc.base_systems, bloc.sight_systems);
         });
         head.append(lBtn);
       }
-      head.append(el('span', 'pill warn', fmt(bloc.total_members) + ' pilots | ' + bloc.total_bases + ' bases'));
+      head.append(el('span', 'pill warn', fmt(bloc.total_members) + 'm | ' + bloc.total_bases + 'b | ' + fmt(bloc.active_1h || 0) + ' live'));
       card.append(head);
-      card.append(el('div', 'icsub', 'Combined wealth / earned: ~' + fmtCompact(bloc.total_wealth) + ' cr'));
+      const subBits = [
+        'Wealth: ' + fmtCompact(bloc.total_wealth) + ' cr',
+        bloc.est_income_h ? ('Est ' + (bloc.est_income_h > 0 ? '+' : '') + fmtCompact(bloc.est_income_h) + '/h' + (bloc.est_income_src ? ' (' + bloc.est_income_src + ')' : '')) : null,
+        bloc.nearest_jumps != null ? ('Nearest base: ' + bloc.nearest_jumps + 'j') : null,
+        bloc.total_facility_inv > 0 ? ('Facilities: ' + fmtCompact(bloc.total_facility_inv)) : null,
+        bloc.max_tier > 0 ? ('Tech: Max T' + bloc.max_tier + ' / avg ' + (bloc.avg_tier || 0).toFixed(1)) : null,
+      ].filter(Boolean);
+      card.append(el('div', 'icsub', subBits.join('  |  ')));
       const tagsWrap = el('div', 'bloc-members');
       for (const m of bloc.factions) {
-        tagsWrap.append(el('span', 'pill', '[' + m.tag + '] ' + m.name + ' (' + m.members + (m.bases ? ', ' + m.bases + 'b' : '') + ')'));
+        tagsWrap.append(el('span', 'pill', '[' + m.tag + '] ' + m.name + ' (' + fmt(m.members) + 'm' + (m.bases ? ', ' + m.bases + 'b' : '') + (m.active_1h ? ', ' + m.active_1h + ' live' : '') + ')'));
       }
       card.append(tagsWrap);
       cards.append(card);
@@ -3738,7 +4196,7 @@ function render() {
   const panel = $('panel'), mine = ++renderSeq, live = () => mine === renderSeq;
   const key = [tab, selShip, selShip ? '' : selected, pilotCard ? pilotCard.name : '', docView ? docView.path : '',
     tab === 'Inventory' ? invMode + '/' + (invItem || '') + '/' + invCat + '/' + invSort : '',
-    tab === 'Empire' ? empSub + '/' + empSort + '/' + (rivalFocus ? rivalFocus.tag : '') : '',
+    tab === 'Empire' ? empSub + '/' + empSort + '/' + (empActiveOnly ? '1' : '0') + '/' + (rivalFocus ? rivalFocus.tag : '') + '/' + (lockPolity ? lockPolity.id : '') : '',
     tab === 'Docs' && !docView ? docSub + '/' + docAuthor : ''].join('|');
   const same = key === viewKey, keep = same ? panel.scrollTop : 0;
   viewKey = key;
@@ -4038,6 +4496,83 @@ function initChat() {
 
 // ---------------------------------------------------------------- loading
 
+function renderLegend() {
+  const legend = $('legend');
+  if (!legend || !S) return;
+  legend.replaceChildren();
+  const head = (words) => legend.append(el('span', 'lhead', words));
+  const row = (icon, words, wide) => { const span = el('span', wide ? 'lrow full' : 'lrow'); span.append(icon, words); legend.append(span); };
+  const swatch = (edge, fill) => { const i = el('i', 'swatch'); i.style.borderColor = edge; i.style.background = fill; return i; };
+
+  const polities = getPolities();
+  if (polities.length) {
+    head('Galactic Powers (hover / click)');
+    for (const p of polities) {
+      const col = p.kind === 'us' ? OURS : (HEX.test(p.color || '') ? p.color : '#e8c35a');
+      const btn = el('button', 'lpol' + (lockPolity && lockPolity.id === p.id ? ' on' : ''));
+      btn.type = 'button';
+      const sw = swatch(rgba(col, 0.95), rgba(col, 0.24));
+      if (!p.healthy_bases && p.kind !== 'us') sw.style.borderStyle = 'dashed';
+      const meta = p.kind === 'us'
+        ? fmt(p.standing_ships || p.total_members) + ' ships'
+        : ((p.healthy_bases ? p.healthy_bases + 'b ' : '') + (p.active_1h ? p.active_1h + ' live' : fmt(p.total_members) + 'm'));
+      btn.append(sw, el('span', 'lpol-n', p.label), el('span', 'lpol-m', meta));
+      btn.addEventListener('mouseenter', (ev) => {
+        hoverPolity = p;
+        realmVer++;
+        draw();
+        const tip = $('tip');
+        renderPolityTip(tip, p, [], true);
+        tip.hidden = false;
+        const mr = canvas.getBoundingClientRect();
+        const br = btn.getBoundingClientRect();
+        const left = Math.min(W - (tip.offsetWidth || 320) - 10, Math.max(12, br.right - mr.left + 12));
+        const top = Math.min(H - (tip.offsetHeight || 180) - 10, Math.max(10, br.top - mr.top));
+        tip.style.left = Math.round(left) + 'px';
+        tip.style.top = Math.round(top) + 'px';
+      });
+      btn.addEventListener('mouseleave', () => {
+        if (hoverPolity && hoverPolity.id === p.id) { hoverPolity = null; realmVer++; draw(); }
+        const tip = $('tip');
+        tip.hidden = true; tip.classList.remove('polity-tip'); tip.style.borderLeft = '';
+      });
+      btn.addEventListener('click', () => focusPolityOnMap(p, true));
+      legend.append(btn);
+    }
+    row(swatch('rgba(200,210,235,0.75)', 'rgba(200,210,235,0.12)'), 'solid border: sovereign bases | dashed halo: fleet concentration', true);
+  }
+
+  head('Starting Empires (backdrop)');
+  for (const [name, c] of Object.entries(S.empires || {})) {
+    const colour = HEX.test(c) ? c : LAWLESS;
+    row(swatch(rgba(colour, 0.45), rgba(colour, 0.12)), name === 'outerrim' ? 'outer rim' : name);
+  }
+  const free = el('i'); free.style.background = LAWLESS;
+  row(free, 'lawless');
+  head('Our fleet');
+  row(tokenSvg(), 'our ships: a slice per division, their number inside; outer ring: whose space', true);
+  for (const kind of KINDS.slice(0, 6)) {
+    const span = el('span', 'lrow kind');
+    span.append(shipSvg(kind === 'Command' ? 'Flagship' : kind, DIV[kind], 13), kind === 'Command' ? 'command group' : kind.toLowerCase());
+    legend.append(span);
+  }
+  head('Ours');
+  row(glyphSvg('outpost', BUILT, 13), 'outpost');
+  row(glyphSvg('station', BUILT, 13), 'station');
+  row(glyphSvg('storage', BUILT, 13), 'shared storage');
+  row(glyphSvg('fuel', BUILT, 13), 'fuel bunker');
+  row(glyphSvg('recruit', BUILT, 13), 'hiring office');
+  row(glyphSvg('foundry', BUILT, 13), 'foundry / shipyard');
+  row(glyphSvg('office', BUILT, 13), 'other office');
+  row(glyphSvg('storage', RAISING, 13), 'amber: building / damaged');
+  row(glyphSvg('flag', '#e8c35a', 13), 'next chosen build site');
+  row(glyphSvg('flag', rgba(OURS, 0.7), 13, true), 'candidate site');
+  head('Others');
+  row(glyphSvg('pip', '#aeb5cc', 12), 'station');
+  row(glyphSvg('pip', '#e8c35a', 12), 'a player faction\'s base');
+  row(glyphSvg('cross', '#e06c66', 12), 'pirate stronghold');
+}
+
 async function loadState() {
   S = await get('/api/state');
   sys.clear(); stationsBy.clear();
@@ -4058,42 +4593,7 @@ async function loadState() {
   realmNames = [...spaces].map(([name, list]) => ({ word: (name === 'outerrim' ? 'outer rim' : name).toUpperCase(), colour: color(list[0]), home: name === homeEmpire,
     x: list.reduce((a, o) => a + o.x, 0) / list.length, y0: Math.min(...list.map((o) => o.y)), y1: Math.max(...list.map((o) => o.y)) }));
   realmVer++;
-  const legend = $('legend');
-  legend.replaceChildren();
-  const head = (words) => legend.append(el('span', 'lhead', words));
-  const row = (icon, words, wide) => { const span = el('span', wide ? 'lrow full' : 'lrow'); span.append(icon, words); legend.append(span); };
-  const swatch = (edge, fill) => { const i = el('i', 'swatch'); i.style.borderColor = edge; i.style.background = fill; return i; };
-  head('Regions');
-  for (const [name, c] of Object.entries(S.empires)) {
-    const colour = HEX.test(c) ? c : LAWLESS;
-    if (name === homeEmpire) row(swatch(rgba(OURS, 0.9), rgba(OURS, 0.2)), name + ': our home, drawn in our green');
-    else row(swatch(rgba(colour, 0.75), rgba(colour, 0.22)), name === 'outerrim' ? 'outer rim' : name);
-  }
-  const free = el('i'); free.style.background = LAWLESS;
-  row(free, 'lawless');
-  row(swatch(rgba(OURS, 0.9), rgba(OURS, 0.16)), 'our space: our home and the lines out along the lanes to our bases beyond the border', true);
-  head('Our fleet');
-  row(tokenSvg(), 'our ships: a slice per division, their number inside; outer ring: whose space', true);
-  for (const kind of KINDS.slice(0, 6)) {            // the silhouette of each kind, as in the roster
-    const span = el('span', 'lrow kind');
-    span.append(shipSvg(kind === 'Command' ? 'Flagship' : kind, DIV[kind], 13), kind === 'Command' ? 'command group' : kind.toLowerCase());
-    legend.append(span);
-  }
-  head('Ours');
-  row(glyphSvg('outpost', BUILT, 13), 'outpost');
-  row(glyphSvg('station', BUILT, 13), 'station');
-  row(glyphSvg('storage', BUILT, 13), 'shared storage');
-  row(glyphSvg('fuel', BUILT, 13), 'fuel bunker');
-  row(glyphSvg('recruit', BUILT, 13), 'hiring office');
-  row(glyphSvg('foundry', BUILT, 13), 'foundry / shipyard');
-  row(glyphSvg('office', BUILT, 13), 'other office');
-  row(glyphSvg('storage', RAISING, 13), 'amber: building / damaged');
-  row(glyphSvg('flag', '#e8c35a', 13), 'next chosen build site');
-  row(glyphSvg('flag', rgba(OURS, 0.7), 13, true), 'candidate site');
-  head('Others');
-  row(glyphSvg('pip', '#aeb5cc', 12), 'station');
-  row(glyphSvg('pip', '#e8c35a', 12), 'a player faction\'s base');
-  row(glyphSvg('cross', '#e06c66', 12), 'pirate stronghold');
+  renderLegend();
   row(glyphSvg('threat', '#dcae58', 12), 'danger by our intel');
   row(glyphSvg('threat', '#e06c66', 12), 'high danger');
   row(el('span', 'ltag', 'TAG 5'), 'foreign faction, its pilots in the last hour', true);
@@ -4184,9 +4684,22 @@ function init() {
     const r = canvas.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top;
     if (drag) { dragTo(e); return; }
     const infraAt = (px, py) => infraHits.find((h) => px >= h.x && px <= h.x + h.w && py >= h.y && py <= h.y + h.h);
-    const tip = $('tip'), badge = S && badgeAt(mx, my), inf = !badge && S && infraAt(mx, my), grp = !badge && !inf && S && groupAt(mx, my), s = !badge && !inf && !grp && S && nearest(mx, my);
+    const tip = $('tip');
+    tip.classList.remove('polity-tip');
+    tip.style.borderLeft = '';
+    const badge = S && badgeAt(mx, my);
+    const inf = !badge && S && infraAt(mx, my);
+    const grp = !badge && !inf && S && groupAt(mx, my);
+    const plab = !badge && !inf && !grp && S && polityLabelAt(mx, my);
+    const s = !badge && !inf && !grp && !plab && S && nearest(mx, my);
+    const preg = !badge && !inf && !grp && !plab && !s && S && polityRegionAt(mx, my);
     hover = inf ? inf.system : s ? s.id : null; hoverBadge = badge || null;
-    canvas.style.cursor = badge || inf || grp ? 'pointer' : '';
+    const nextPol = plab || (preg ? preg.primary : null);
+    if ((hoverPolity ? hoverPolity.id : '') !== (nextPol ? nextPol.id : '')) {
+      hoverPolity = nextPol;
+      realmVer++;
+    }
+    canvas.style.cursor = badge || inf || grp || plab ? 'pointer' : '';
     const placeName = (b) => { const o = sys.get(b.system); return o ? o.name : b.system; };
     const placeTip = () => {
       tip.hidden = false;
@@ -4259,6 +4772,19 @@ function init() {
         if (stWorth > 0) tipKV(gr, 'Our stock', fmtCompact(stWorth) + ' cr');
       }
       tip.append(gr);
+      const pHere = politiesInSystem(s.id);
+      if (pHere.length) {
+        const prow = el('div', 'tip-members');
+        for (const item of pHere.slice(0, 5)) {
+          const mp = el('span', 'tip-mpill');
+          const c = item.p.kind === 'us' ? OURS : (HEX.test(item.p.color || '') ? item.p.color : '#e8c35a');
+          mp.style.borderColor = rgba(c, 0.72);
+          mp.style.color = c;
+          mp.textContent = item.p.label + (item.kind === 'core' ? ' [CORE]' : ' [FLEET]');
+          prow.append(mp);
+        }
+        tip.append(prow);
+      }
       const ft = el('div', 'tip-foot');
       ft.append(el('span', null, 'Click to open Selection'));
       if (S.intel.systems[s.id] && S.intel.systems[s.id].threat && S.intel.systems[s.id].threat !== 'none') {
@@ -4266,10 +4792,16 @@ function init() {
       }
       tip.append(ft);
       placeTip();
+    } else if (plab) {
+      renderPolityTip(tip, plab, [], false);
+      placeTip();
+    } else if (preg) {
+      renderPolityTip(tip, preg.primary, preg.overlaps, false);
+      placeTip();
     } else tip.hidden = true;
     draw();
   });
-  canvas.addEventListener('mouseleave', () => { $('tip').hidden = true; hover = null; hoverBadge = null; draw(); });
+  canvas.addEventListener('mouseleave', () => { const t = $('tip'); t.hidden = true; t.classList.remove('polity-tip'); t.style.borderLeft = ''; hover = null; hoverBadge = null; if (hoverPolity) { hoverPolity = null; realmVer++; } draw(); });
   canvas.addEventListener('click', (e) => {
     if (moved || !S) return;
     const r = canvas.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top, badge = badgeAt(mx, my);
@@ -4278,6 +4810,8 @@ function init() {
     if (inf) { $('tip').hidden = true; if (pop) closePop(); select(inf.system, false); return; }
     const grp = groupAt(mx, my);
     if (grp) { $('tip').hidden = true; openGroup(grp.system, grp.group); return; }
+    const plab = polityLabelAt(mx, my);
+    if (plab) { $('tip').hidden = true; focusPolityOnMap(plab, true); return; }
     const s = nearest(mx, my);
     if (pop) closePop();
     if (s) select(s.id, false);
@@ -4328,6 +4862,8 @@ function init() {
     const tag = (document.activeElement && document.activeElement.tagName) || '';
     if (e.key === 'Escape') {
       if (pop) closePop();
+      if (lockPolity) focusPolityOnMap(null, false);
+      if (rivalFocus) { rivalFocus = null; renderAlerts(); draw(); }
       toggleHelp(false);
       if (tag === 'INPUT' || tag === 'TEXTAREA') document.activeElement.blur();
       return;
@@ -4372,12 +4908,13 @@ function fitBases(jump) {
   await loadFleet();
   fitFleet(true);
   await loadLive();
-  await loadOps();
+  await Promise.all([loadOps(), loadDiplo()]);
   render();
   initChat();
   setInterval(loadLive, 5000);
   setInterval(loadFleet, 5000);
   setInterval(loadOps, 30000);
+  setInterval(loadDiplo, 60000);
   setInterval(tickAges, 1000);
   setInterval(async () => { await loadState(); draw(); if (tab === 'Docs' && !docView) render(); }, 120000);
 })().catch((e) => { $('panel').replaceChildren(el('p', 'empty', 'The station could not load its data: ' + e.message)); });

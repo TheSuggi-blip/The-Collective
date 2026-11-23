@@ -44,6 +44,7 @@ MB = 1_000_000
 RECORDS = {                    # record: (cut when above this many MB, lines of this many MB stay)
     "market/history.jsonl": (8, 4),
     "wildlife/history.jsonl": (8, 4),
+    "intel/rival_history.jsonl": (8, 4),
 }
 KEEP = 5                       # archives kept per record
 EVERY = 600                    # seconds between two passes

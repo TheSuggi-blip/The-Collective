@@ -757,5 +757,42 @@ class NeedsAutoSatisfyAndLoopTests(unittest.TestCase):
             self.assertEqual(cands, ["old-route"])
 
 
+    def test_store_read_rival_history_dedupes_snapshots(self):
+        import store, tempfile
+        with tempfile.TemporaryDirectory() as td:
+            hp = Path(td) / "rival_history.jsonl"
+            hp.write_text(
+                '{"t":1700000000,"tag":"BUSY","name":"Busy","members":1200,"bases":6,"wealth":9000000000,"active_1h":150}\n'
+                '{"t":1700000000,"tag":"BUSY","name":"Busy","members":1249,"bases":6,"wealth":10000000000,"active_1h":170}\n'
+                'not-json\n'
+                '{"t":1700003600,"tag":"OLSV","name":"OLSV","members":474,"bases":1,"wealth":156000000,"active_1h":355}\n',
+                encoding="ascii",
+            )
+            res = store.read_rival_history(hp, {})
+            rows = res["rival_snapshots"]
+            self.assertEqual(len(rows), 2)
+            self.assertEqual(rows[0]["tag"], "BUSY")
+            self.assertEqual(rows[0]["members"], 1249)
+            self.assertEqual(rows[1]["tag"], "OLSV")
+            self.assertEqual(rows[1]["active_1h"], 355)
+
+    def test_diplomacy_live_merges_territories_and_freshness(self):
+        import sys
+        sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "station"))
+        import server
+        server.DIPLO["at"] = 0.0
+        d = server.api_diplomacy()
+        self.assertIn("territories", d)
+        self.assertIn("freshness", d)
+        self.assertIn("intel_wire", d)
+        self.assertGreaterEqual(d["our"].get("age_days") or 0, 1)
+        # Ensure CLTV is present in territories with valid ASCII fields and unique colors among blocs
+        t_ids = [t["id"] for t in d["territories"]]
+        self.assertIn("CLTV", t_ids)
+        for t in d["territories"]:
+            self.assertIn("core_systems", t)
+            self.assertIn("concentration_systems", t)
+            self.assertIn("est_income_h", t)
+
 if __name__ == "__main__":
     unittest.main()

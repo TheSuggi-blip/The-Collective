@@ -472,11 +472,12 @@ SNAPSHOT += (("birth_plans", "cohort_id TEXT, plan_scope TEXT, wave INTEGER, wav
               "wing TEXT, empire TEXT, ships INTEGER, flagship_hulls TEXT, gate TEXT, note TEXT", "cohort_id"),
              ("player_comms", "id TEXT, t TEXT, channel TEXT, system TEXT, sender TEXT, tag TEXT, to_us INTEGER, own INTEGER, "
               "intent TEXT, risk_level TEXT, risk_flags TEXT, extracted TEXT, safe_text TEXT", "id"),
-             ("game_releases", "version TEXT, sort_key TEXT, pub_date TEXT, summary TEXT, bullets TEXT", "version"),)
+             ("game_releases", "version TEXT, sort_key TEXT, pub_date TEXT, summary TEXT, bullets TEXT", "version"),
+             ("rival_snapshots", "t INTEGER, tag TEXT, name TEXT, members INTEGER, bases INTEGER, wrecked INTEGER, wealth INTEGER, ship_value INTEGER, storage_value INTEGER, facility_inv INTEGER, ore_mined INTEGER, items_crafted INTEGER, missions INTEGER, damage_dealt INTEGER, kills_pve INTEGER, kills_pvp INTEGER, active_1h INTEGER, active_24h INTEGER, max_tier INTEGER, avg_tier REAL, allies TEXT, base_systems TEXT", "t, tag"),)
 COLUMNS = {name: [part.split()[0] for part in columns.split(", ")] for name, columns, _key in SNAPSHOT}
 LOOKUPS = (("ships", "system"), ("holdings", "item"), ("books", "item"), ("ladders", "item"), ("recipe_inputs", "item"),
            ("recipe_outputs", "item"), ("facility_materials", "item"), ("fields", "resource"), ("herds", "creature"), ("lanes", "a"),
-           ("stations", "system"), ("missions", "base"), ("public_battles", "system"), ("leaderboards", "board"))
+           ("stations", "system"), ("missions", "base"), ("public_battles", "system"), ("leaderboards", "board"), ("rival_snapshots", "tag"))
 
 
 def views():
@@ -1091,9 +1092,62 @@ def player_comms_files(data, root):
     return [("comms/messages.jsonl", path, read_player_comms, True, "")] if path.is_file() else []
 
 
+def read_rival_history(path, ctx):
+    """data/intel/rival_history.jsonl -> rival_snapshots: hourly rival faction & bloc metrics over time."""
+    seen = {}
+    with open(path, encoding="utf-8", errors="replace") as f:
+        for raw in f:
+            raw = raw.strip()
+            if not raw:
+                continue
+            try:
+                obj = json.loads(raw)
+            except ValueError:
+                continue
+            if not isinstance(obj, dict):
+                continue
+            t = int(obj.get("t") or 0)
+            tag = str(obj.get("tag") or "").strip()[:12]
+            if not t or not tag:
+                continue
+            seen[(t, tag)] = {
+                "t": t,
+                "tag": tag,
+                "name": str(obj.get("name") or tag)[:60],
+                "members": int(obj.get("members") or 0),
+                "bases": int(obj.get("bases") or 0),
+                "wrecked": int(obj.get("wrecked") or 0),
+                "wealth": int(obj.get("wealth") or 0),
+                "ship_value": int(obj.get("ship_value") or 0),
+                "storage_value": int(obj.get("storage_value") or 0),
+                "facility_inv": int(obj.get("facility_inv") or 0),
+                "ore_mined": int(obj.get("ore_mined") or 0),
+                "items_crafted": int(obj.get("items_crafted") or 0),
+                "missions": int(obj.get("missions") or 0),
+                "damage_dealt": int(obj.get("damage_dealt") or 0),
+                "kills_pve": int(obj.get("kills_pve") or 0),
+                "kills_pvp": int(obj.get("kills_pvp") or 0),
+                "active_1h": int(obj.get("active_1h") or 0),
+                "active_24h": int(obj.get("active_24h") or 0),
+                "max_tier": int(obj.get("max_tier") or 0),
+                "avg_tier": round(float(obj.get("avg_tier") or 0.0), 2),
+                "allies": json.dumps(obj.get("allies") or [], ensure_ascii=True),
+                "base_systems": json.dumps(obj.get("base_systems") or [], ensure_ascii=True),
+            }
+    rows = [seen[k] for k in sorted(seen)]
+    return {"rival_snapshots": rows}
+
+
+def rival_history_files(data, root):
+    """data/intel/rival_history.jsonl: hourly rival & bloc snapshots recorded automatically by station/server.py."""
+    path = Path(data) / "intel" / "rival_history.jsonl"
+    return [("intel/rival_history.jsonl", path, read_rival_history, True, "")] if path.is_file() else []
+
+
 LOADERS += (("birth_plans", ("birth_plans",), birth_plan_files, False),
             ("player_comms", ("player_comms",), player_comms_files, True),
-            ("game_releases", ("game_releases",), game_release_files, True),)
+            ("game_releases", ("game_releases",), game_release_files, True),
+            ("rival_snapshots", ("rival_snapshots",), rival_history_files, True),)
 FED = dict([(table, ("fleet", "orders")) for table in ("ships",)] + [(table, (loader,)) for loader, tables, _f, _w in LOADERS for table in tables])
 BAD = (OSError, ValueError, TypeError, KeyError, AttributeError, IndexError, RecursionError)
 
@@ -1707,6 +1761,7 @@ DESCRIPTIONS = {               # one line per table and view: what a row is and 
     "hull_readiness": "view: pilots at Piloting >= 10 still flying below Tier 2 hulls, with division, role, wallet credits and dock",
     "player_comms": "external and fleet chat messages classified and sanitized by comms_guard.py (quarantining prompt-injection attempts and extracting typed trade/contract intent)",
     "game_releases": "SpaceMolt official release notes and patch changes from catalog/releases.json (synced automatically by scripts/changelog-refresh.py)",
+    "rival_snapshots": "hourly time-series snapshots of rival factions and blocs (members, bases, all 11 leaderboard metrics, live SSE active_1h/24h, hull tiers, alliances) recorded automatically into intel/rival_history.jsonl",
     "fuel_sinks": "view: trailing 24-hour runs, ship-hours and net credits grouped into productive work vs jump_loops, census and handovers",
     "contract_candidates": "view: open priority needs with missing items where Station Bursars or Notice Board contracts can source bottlenecks",
     "route_earnings": "view: what each route earned per ship-hour (steady credits) over the last 4, 12 and 24 hours and over all hours kept, the runs behind each "
@@ -1946,6 +2001,12 @@ EXAMPLES = {                   # three questions per table and view, as SQL (hiv
     "outpost_candidates": (("Unclaimed lawless systems within 5 jumps with resource fields", "SELECT system, name, jumps, fields, resources, grazers FROM outpost_candidates WHERE jumps <= 5 AND fields > 0 ORDER BY fields DESC, jumps"),
                            ("Unclaimed lawless systems holding cobalt, argon or silicon", "SELECT system, name, jumps, resources FROM outpost_candidates WHERE resources LIKE '%cobalt%' OR resources LIKE '%argon%' OR resources LIKE '%silicon%' ORDER BY jumps"),
                            ("Unclaimed lawless systems with grazer herds", "SELECT system, name, jumps, grazers, resources FROM outpost_candidates WHERE grazers > 0 ORDER BY grazers DESC")),
+    "rival_snapshots": (("Latest snapshot per top faction by wealth",
+                         "SELECT tag, name, members, bases, wealth, active_1h, datetime(t, 'unixepoch') AS at FROM rival_snapshots WHERE t = (SELECT MAX(t) FROM rival_snapshots) ORDER BY wealth DESC LIMIT 15"),
+                        ("Wealth and member deltas across earliest vs latest stored snapshots",
+                         "SELECT a.tag, b.members - a.members AS d_members, b.wealth - a.wealth AS d_wealth, b.bases - a.bases AS d_bases FROM rival_snapshots a JOIN rival_snapshots b ON a.tag = b.tag WHERE a.t = (SELECT MIN(t) FROM rival_snapshots) AND b.t = (SELECT MAX(t) FROM rival_snapshots) ORDER BY d_wealth DESC LIMIT 15"),
+                        ("Count of stored hourly snapshots and distinct factions tracked",
+                         "SELECT COUNT(DISTINCT t) AS snapshots, COUNT(DISTINCT tag) AS factions FROM rival_snapshots")),
     "game_releases": (("Newest 10 SpaceMolt releases and patch summaries", "SELECT version, pub_date, summary FROM game_releases ORDER BY sort_key DESC LIMIT 10"),
                       ("Releases mentioning recipes, hulls or storms", "SELECT version, pub_date, summary FROM game_releases WHERE summary LIKE '%recipe%' OR summary LIKE '%hull%' OR summary LIKE '%storm%' ORDER BY sort_key DESC"),
                       ("Count of synced releases and latest version", "SELECT COUNT(*) AS releases, MAX(version) AS max_ver FROM game_releases")),

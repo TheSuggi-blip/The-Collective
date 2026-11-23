@@ -737,3 +737,21 @@ button.member:hover .face-medallion { border-color: var(--c, var(--accent)); box
 .pr-mile { padding: 6px 9px; background: rgba(14, 21, 33, 0.75); border: 1px solid var(--line); border-radius: 6px; }
 .pr-mile-top { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 3px; font-size: 12.5px; }
 .pr-mile-det { font-size: 12px; color: var(--dim); line-height: 1.4; }
+
+/* Stellaris Galactic Polity Profile Card, Interactive Power Legend & Intel Wire */
+.tip.polity-tip { max-width: 365px; min-width: 280px; }
+.tip-ptitle { display: inline-flex; align-items: center; gap: 6px; min-width: 0; }
+.tip-swatch { display: inline-block; width: 9px; height: 9px; border-radius: 3px; flex: none; }
+.tip-members { display: flex; flex-wrap: wrap; gap: 4px; margin: 5px 0 4px; }
+.tip-mpill { font: 10px/1.3 var(--mono); padding: 1px 5px; border-radius: 4px; border: 1px solid rgba(130, 148, 184, 0.35); background: rgba(18, 25, 38, 0.85); color: var(--text); }
+.tip-sub { font-size: 10.5px; color: var(--dim); margin-top: 4px; font-family: var(--mono); }
+.tip-overlap { margin-top: 5px; padding: 3px 6px; border-radius: 4px; background: rgba(232, 195, 90, 0.10); border: 1px solid rgba(232, 195, 90, 0.35); color: #f0d78c; font-size: 10.5px; }
+.legend .lpol { grid-column: 1 / -1; display: flex; align-items: center; gap: 6px; width: 100%; text-align: left; padding: 2px 5px; border-radius: 4px; border: 1px solid transparent; background: transparent; color: var(--text); font: 11px/1.35 inherit; cursor: pointer; }
+.legend .lpol:hover { background: rgba(255, 255, 255, 0.06); border-color: rgba(140, 160, 200, 0.25); }
+.legend .lpol.on { background: rgba(134, 214, 91, 0.12); border-color: rgba(134, 214, 91, 0.45); }
+.legend .lpol-n { font-weight: 600; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.legend .lpol-m { font: 10px/1.2 var(--mono); color: var(--dim); flex: none; }
+.fresh-strip { font: 10.5px/1.35 var(--mono); color: var(--dim); background: rgba(16, 22, 34, 0.72); border: 1px solid var(--line); border-radius: 6px; padding: 5px 9px; margin: 4px 0 10px; }
+.wire-list { display: flex; flex-direction: column; gap: 5px; margin: 6px 0 14px; }
+.wire-item { display: flex; align-items: center; gap: 7px; padding: 5px 8px; border-radius: 6px; background: rgba(17, 23, 35, 0.78); border: 1px solid var(--line); font-size: 11.5px; color: var(--text); }
+.rival-table tr.dormant-row { opacity: 0.58; }
