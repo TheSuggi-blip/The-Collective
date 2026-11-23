@@ -1,0 +1,19 @@
+{
+ "id": "mission-70d9950c762ac17eeedfc9a292ed07ac-central",
+ "kind": "circuit",
+ "title": "Wreck Recovery: Fugue in Algol: 2465 cr, +50 XP at The Core",
+ "note": "Written by routemaker.py from the board and the order books: goods for about 0 cr, reward 2465 cr, sale 0 cr, +50 XP. Test with one ship first. Added as a test by fill.py on 2026-11-23 21:18 UTC (Unity): up to 3 ships, one result each, until 3 runs are read (rule F37).",
+ "max_ships": 3,
+ "stops": [
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "accept": [
+    "70d9950c762ac17eeedfc9a292ed07ac"
+   ]
+  },
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "redock": true
+  }
+ ]
+}
