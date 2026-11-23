@@ -12,11 +12,12 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 9.
+Routes: 10.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
 | [buy-plasma-ammo-central-nexus](buy-plasma-ammo-central-nexus.json) | circuit | home space | Plasma ammunition for the Plasma Cannon II test: four dispersal plasma cell packs at Central Nexus | up to 1 ships, 2 pilots in all, needs plasma_cannon_ii, from 15,000 cr, while central_nexus asks 200 cr or less for dispersal_plasma_cell_pack | 1 | 6 | -580 | -5,560 | 2026-11-22 |
+| [carry-melt-beta-to-nexus](carry-melt-beta-to-nexus.json) | circuit | home space | Crystal melt stored by Trade at Node Beta carried to the Central Nexus bid and sold there | up to 1 ships, with 10 crystal_melt stored at node_beta_industrial_station, while central_nexus bids 2000 cr for crystal_melt | 1 | 4 | -30 | -390 | 2026-11-23 |
 | [carry-melt-experiment-to-nexus](carry-melt-experiment-to-nexus.json) | circuit | home space | Crystal melt stored by Trade at The Experiment carried to the Central Nexus bid and sold there | up to 1 ships, with 10 crystal_melt stored at the_experiment_research_station, while central_nexus bids 2000 cr for crystal_melt | 6 | 11 | -150 | -580 | 2026-11-22 |
 | [sell-curd-at-experiment](sell-curd-at-experiment.json) | circuit | home space | Verdigris curd and noble condensate stored by Trade's receivers at The Experiment sold where they lie into the standing NPC bids | up to 1 ships, with 20 verdigris_curd stored at the_experiment_research_station, while the_experiment_research_station bids 300 cr for verdigris_curd | 1 | 4 | -50 | -740 | 2026-11-22 |
 | [sell-curd-at-node-beta](sell-curd-at-node-beta.json) | circuit | home space | Verdigris curd and noble condensate stored by Trade's receivers at Node Beta sold where they lie into the standing NPC bids | up to 1 ships, with 20 verdigris_curd stored at node_beta_industrial_station, while node_beta_industrial_station bids 300 cr for verdigris_curd | 1 | 30 | -310 | -620 | 2026-11-22 |

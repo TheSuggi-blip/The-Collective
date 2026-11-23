@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 136.
+Routes: 137.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -34,6 +34,7 @@ Routes: 136.
 | [sell-hydrogen-at-synchrony](sell-hydrogen-at-synchrony.json) | circuit | home space | Stored hydrogen_gas sold where it lies, at synchrony_hub, at 30 cr or more | up to 1 ships, with 1 hydrogen_gas stored at synchrony_hub, while synchrony_hub bids 30 cr for hydrogen_gas | TBD | TBD | TBD | TBD | -- |
 | [sell-liquid-hydrogen-central](sell-liquid-hydrogen-central.json) | circuit | home space | Stored liquid hydrogen sold where it lies, at Central Nexus, into the station's bid | up to 1 ships, with 5 liquid_hydrogen stored at central_nexus, while central_nexus bids 100 cr for liquid_hydrogen | TBD | TBD | TBD | TBD | -- |
 | [sell-liquid-hydrogen-node-beta](sell-liquid-hydrogen-node-beta.json) | circuit | home space | Stored liquid hydrogen sold where it lies, at Node Beta, into the station's bid | up to 1 ships, with 5 liquid_hydrogen stored at node_beta_industrial_station, while node_beta_industrial_station bids 95 cr for liquid_hydrogen | TBD | TBD | TBD | TBD | -- |
+| [sell-loot-at-node-beta](sell-loot-at-node-beta.json) | circuit | home space | Hunt loot stored by Trade's receiver at Node Beta sold where it lies | up to 1 ships, with 5 noble_condensate stored at node_beta_industrial_station, while node_beta_industrial_station bids 680 cr for noble_condensate | TBD | TBD | TBD | TBD | -- |
 | [sell-null-matter-at-nexus](sell-null-matter-at-nexus.json) | circuit | home space | Stored null matter sold where it lies, at Central Nexus, at 200 cr or more | up to 1 ships, with 1 null_matter stored at central_nexus, while central_nexus bids 200 cr for null_matter | TBD | TBD | TBD | TBD | -- |
 | [sell-palladium-at-node-gamma](sell-palladium-at-node-gamma.json) | circuit | home space | Stored palladium_ore sold where it lies, at node_gamma_relay_station, at 300 cr or more | up to 1 ships, with 1 palladium_ore stored at node_gamma_relay_station, while node_gamma_relay_station bids 270 cr for palladium_ore | TBD | TBD | TBD | TBD | -- |
 | [sell-plate-node-beta](sell-plate-node-beta.json) | circuit | home space | Stored armor plate sold where it lies, at Node Beta, into the station's plate bid | up to 1 ships, with 1 armor_plate stored at node_beta_industrial_station, while node_beta_industrial_station bids 300 cr for armor_plate | TBD | TBD | TBD | TBD | -- |
