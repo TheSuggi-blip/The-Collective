@@ -166,5 +166,42 @@ class StrictClassTests(unittest.TestCase):
         self.assertEqual(workclass.work_class(poll_desk), "census")
         self.assertEqual(workclass.roles_for(poll_desk), ("scout",))
 
+class ToolGuardTests(unittest.TestCase):
+    """Requests ENT-466, ENT-471 (2026-11-23): a miners' strip route took five hunters' only weapon, a Military strip
+    route a miner's Ice Harvester. A route that unfits a role's own tool is never that role's work."""
+
+    def setUp(self):
+        prev = workclass.STRICT
+        workclass.STRICT = True
+        self.addCleanup(setattr, workclass, "STRICT", prev)
+
+    def test_a_route_that_unfits_a_weapon_is_not_a_hunters(self):
+        strip = {"kind": "circuit", "once": True, "stops": [{"at": "a:b:c", "unfit": ["pulse_laser_i"], "store": "all"}]}
+        roles = workclass.roles_for(strip, "strip-pulse-laser-x")
+        self.assertIn("miner", roles)
+        for role in ("drone", "sentinel", "scout", "command"):
+            self.assertNotIn(role, roles)
+            self.assertFalse(workclass.own(role, strip, "strip-pulse-laser-x"))
+        self.assertEqual(workclass.strips_tool("drone", strip), "pulse_laser_i")
+
+    def test_a_route_that_unfits_a_mining_module_is_not_a_miners(self):
+        strip = {"kind": "circuit", "once": True, "stops": [{"at": "a:b:c", "unfit": ["mining_laser_i", "ice_harvester_i"]}]}
+        self.assertNotIn("miner", workclass.roles_for(strip, "strip-mining-laser-x"))
+        self.assertIn("drone", workclass.roles_for(strip, "strip-mining-laser-x"))
+        self.assertEqual(workclass.module_kind("ice_harvester_i"), "mining")
+        self.assertEqual(workclass.module_kind("pulse_laser_i"), "weapon")
+
+    def test_an_upgrade_of_the_same_kind_stays_the_roles_work(self):
+        swap = {"kind": "circuit", "once": True, "stops": [{"at": "a:b:c", "unfit": ["mining_laser_i"], "fit": [{"module": "mining_laser_ii", "count": 2}]}]}
+        self.assertIn("miner", workclass.roles_for(swap, "fit-laser-ii-x"))
+        miners_fit = {"kind": "circuit", "stops": [{"at": "a:b:c", "unfit": ["pulse_laser_i"], "fit": [{"module": "mining_laser_i", "count": 2}]}]}
+        self.assertIn("miner", workclass.roles_for(miners_fit, "fit-second-laser-x"))
+        self.assertNotIn("drone", workclass.roles_for(miners_fit, "fit-second-laser-x"))
+
+    def test_open_to_does_not_reopen_a_stripped_tool(self):
+        strip = {"kind": "circuit", "once": True, "open_to": ["drone"], "stops": [{"at": "a:b:c", "unfit": ["pulse_laser_i"]}]}
+        self.assertNotIn("drone", workclass.roles_for(strip, "strip-x"))
+
+
 if __name__ == "__main__":
     unittest.main()

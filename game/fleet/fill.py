@@ -56,7 +56,8 @@ RULES:
     group, and each Admiral chooses the tests of its ships (2026-11-17: tests the job put on miners, haulers and drones
     were taken off by their Admirals turn after turn).
   - `fill --once` adds only missions that pay once and buy nothing: the five-minute job runs it for every role, so a
-    new once route reaches every plan without waiting for a turn (requests ENT-144).
+    new once route reaches every plan without waiting for a turn (requests ENT-144). A route that unfits a module is
+    never added by this script, once or not: a fit is its Admiral's word (requests ENT-466).
   - A list of the route maker older than an hour is no ground for PASS while ships wait: the gate says so. A list
     older than OFFER_STALE (a day) offers no test at all: its figures are from before (Zero, Apophis, 2026-11-21: after
     the pause the filler offered tests from a list 5,429 minutes old; DECISIONS Q75 (2)).
@@ -151,6 +152,14 @@ def proven(route):
 def buys(route):
     """True for a route with a stop that buys goods: such a route is never added as a test by itself."""
     return any(isinstance(stop, dict) and stop.get("buy") for stop in route.get("stops") or [])
+
+
+def unfits(route):
+    """True for a route with a stop that unfits a module: such a route is in a plan by its Admiral's word only, never
+    added by this script (Zero, requests ENT-466: the five-minute pass put Military's strip route into the miners' list
+    First and a miner lost its Ice Harvester; Apophis, errors.log ENT-166: the miners' strip route took five hunters'
+    weapons)."""
+    return any(isinstance(stop, dict) and stop.get("unfit") for stop in route.get("stops") or [])
 
 
 def hunts(route):
@@ -532,7 +541,7 @@ def read_role(seen, role, floor=500, tests=8):
         if danger:                                                # Q75 (2): a place set off for danger is never offered
             refused.append((rid, danger))
             continue
-        if buys(route):                                           # it buys goods: in a plan by its Admiral's word only, never by this script
+        if buys(route) or unfits(route):                          # it buys goods or unfits a module: in a plan by its Admiral's word only, never by this script
             if rid not in plan:
                 by_hand.append((value, rid))
             continue
@@ -575,7 +584,7 @@ def read_role(seen, role, floor=500, tests=8):
             continue
         if route.get("once") and refused_to(seen, rid, role):
             continue
-        if buys(route):                                           # a gap is flown once by hand, with one load (errors.log ENT-027)
+        if buys(route) or unfits(route):                          # a gap is flown once by hand, with one load (errors.log ENT-027); a fit change is its Admiral's (ENT-466)
             by_hand.append((cand["per_ship_hour"], rid))
             continue
         if sells_short(seen, route):                              # a test that sells what the reserve lacks is no test of ours (ENT-213)

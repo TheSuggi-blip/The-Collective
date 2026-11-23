@@ -355,6 +355,16 @@ class WriteTests(Tree):
         self.assertEqual((self.git("log", "-1", "--format=%an"), self.git("status", "--porcelain")), ("Unity\n", ""))
         self.assertIn("nothing to add", self.run_fill("unity", "fill", "all", "--once", "--write").stdout)
 
+    def test_the_once_pass_never_adds_a_route_that_unfits_a_module(self):
+        # requests ENT-466 (Zero), errors.log ENT-166 (Apophis): the pass put a strip route into another division's First
+        self.commit_route(dict(ROUTES["once"], id="strip-x", measured=MEASURED(6000),
+                               stops=[{"at": "home:core:base", "unfit": ["pulse_laser_i"], "store": "all"}]))
+        done = self.run_fill("unity", "fill", "all", "--once", "--write")
+        plans = {role: json.loads((self.root / "routes" / "plans" / (role + ".json")).read_text())["routes"] for role in PLANS}
+        self.assertTrue(all("strip-x" not in ids for ids in plans.values()), (plans, done.stdout))
+        _seen, got = self.read("hauler")
+        self.assertIn("strip-x", [rid for _v, rid in got["by_hand"]])                            # listed for its Admiral's word, never added
+
     def test_a_member_changes_its_own_plans_only_and_never_a_tree_in_work(self):
         done = self.run_fill("zero", "fill", "hauler", "--write")
         self.assertEqual((done.returncode, "REFUSED: the hauler plan is kept by Apollo" in done.stdout), (1, True))

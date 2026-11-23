@@ -29,7 +29,9 @@ WHAT: one answer, used by every script that gives ships work (the dispatcher's r
       that is not a trader: `sells: Trade's work (F23); give the goods to a trader with `gift``. A mission that pays
       once keeps its sale. The goods reach a trader by gift (handover.py).
       A route file may add roles by `open_to` (a list of roles): its Admiral's word that another class may fly it,
-      with the reason in its note. `open_to` lifts no sale rule.
+      with the reason in its note. `open_to` lifts no sale rule. A route that unfits a role's own tool (a weapon:
+      drone, sentinel, scout, command; a mining module: miner) and fits none of its kind is never that role's work,
+      `open_to` or not (strips_tool; requests ENT-466, ENT-471).
 RULES:
   - Gathering is the miners' work (Suggi, 2026-11-18: "Ore is miners job, its not something everyone does"). Every
     division flies the work of its own class; work every role shares is a mission, selling or crafting its own stores,
@@ -85,6 +87,14 @@ STRICT = None                 # None: the switch file decides; True or False: a 
 LOOK = 1.0                    # seconds one look at the switch file holds: a pass that asks thousands of times reads the disk once a second
 SEEN = {}                     # data folder -> (monotonic clock of the look, the file existed)
 SALE = "sells: Trade's work (F23); give the goods to a trader with `gift`"
+TOOL_ROLES = {"weapon": ("drone", "sentinel", "scout", "command"), "mining": ("miner",)}   # whose own tool a module kind is
+MINING_PREFIXES = ("mining_laser", "hyper_mining_laser", "modulated_mining_laser", "strip_miner", "deep_core_extractor",
+                   "damped_mining_head", "kinetic_core_drill", "percussive_mining_array", "plasma_fracturing_torch",
+                   "crystal_mining_probe", "ice_harvester", "gas_harvester", "rad_harvester")
+WEAPON_PREFIXES = ("pulse_laser", "heavy_pulse_laser", "focused_beam", "plasma_cannon", "plasma_repeater", "piercing_railgun",
+                   "railgun", "siege_railgun", "autocannon", "ion_cannon", "ion_blaster", "mass_driver", "heavy_mass_driver",
+                   "missile_launcher", "flak_cannon", "void_lance", "graviton_beam", "emp_cannon", "scrapgun", "jury_rigged_cannon")
+KINDS = {}                    # module id -> weapon | mining | other, read once from game/catalog/tables/modules.tsv
 
 
 def follow(data):
@@ -176,15 +186,61 @@ def work_class(route, rid=None, strict=None):
     return "other"
 
 
+def module_kind(module):
+    """weapon, mining or other: the kind of a module id by the game's catalog (game/catalog/tables/modules.tsv: its
+    kind column, and a harvester's `*_harvesting` effect); without the table, by the id's prefix."""
+    if not KINDS:
+        try:
+            for line in (ROOT / "catalog" / "tables" / "modules.tsv").read_text(encoding="ascii", errors="replace").splitlines():
+                cells = line.split("\t")
+                if len(cells) < 4 or line.startswith("#") or cells[0] == "id":
+                    continue
+                effect = cells[-1] if len(cells) > 4 else ""
+                KINDS[cells[0]] = "weapon" if cells[2] == "weapon" else "mining" if cells[2] == "mining" or effect.endswith("_harvesting") else "other"
+        except OSError:
+            KINDS["-"] = "other"                              # no table: the prefixes below answer
+    module = str(module or "")
+    if module in KINDS:
+        return KINDS[module]
+    if module.startswith(MINING_PREFIXES):
+        return "mining"
+    if module.startswith(WEAPON_PREFIXES):
+        return "weapon"
+    return "other"
+
+
+def _fitted(stop):
+    fits = stop.get("fit") or []
+    fits = fits if isinstance(fits, list) else [fits]
+    return [str(f.get("module") if isinstance(f, dict) else f) for f in fits]
+
+
+def strips_tool(role, route):
+    """The module a route unfits that is the role's own tool (a weapon for the hunting roles, a mining module for the
+    miners) when the route fits none of that kind in its place, or None. Such a route is never the role's work
+    (Apophis and Zero, requests ENT-466, ENT-471: a miners' strip route took five hunters' only weapon, a Military
+    strip route a miner's Ice Harvester)."""
+    unfit = [str(m) for stop in _stops(route) for m in (stop.get("unfit") or []) if m]
+    if not unfit:
+        return None
+    fitted_kinds = {module_kind(m) for stop in _stops(route) for m in _fitted(stop)}
+    for module in unfit:
+        kind = module_kind(module)
+        if role in TOOL_ROLES.get(kind, ()) and kind not in fitted_kinds:
+            return module
+    return None
+
+
 def roles_for(route, rid=None, strict=None):
-    """The roles whose work the route is: its class's roles plus its file's `open_to`."""
+    """The roles whose work the route is: its class's roles plus its file's `open_to`, less every role whose own tool
+    the route unfits (strips_tool)."""
     strict = _strict(strict)
     cls = work_class(route, rid, strict)
     roles = list(ALL if cls in shared(strict) else class_roles(strict).get(cls, ()))
     for role in route.get("open_to") or []:
         if role in ALL and role not in roles:
             roles.append(role)
-    return tuple(roles)
+    return tuple(role for role in roles if not strips_tool(role, route))
 
 
 def own(role, route, rid=None, strict=None):

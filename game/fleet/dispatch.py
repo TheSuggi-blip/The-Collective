@@ -123,6 +123,7 @@ import taxes                                      # noqa: E402  the weekly tax a
 EVERY = 30                   # seconds between two passes
 ORDER_FRESH = 20 * 60        # an order file not touched for this long is dead
 CENSUS_FRESH = 90 * 60       # a census older than this says nothing about a herd
+FLOOR_HOLD = 24 * 3600      # a census that read a field below its floor closes the route this long, or until a newer one reads it back (requests ENT-465)
 KINDS = {"circuit": "route_run.py", "hunt": "hunt.py", "census": "census.py", "mine": "mine.py", "guard": "guard.py"}
 
 
@@ -485,15 +486,18 @@ def field_left(data, place, now, fresh=CENSUS_FRESH):
 
 def field_floor(data, route, now):
     """Why a route is closed by a field floor (`min_left`: {resource: units}; on a mine route for its `belt`, on a `mine`
-    step of a circuit for the step's place), or None: the place's fresh census reads less of the resource. The route
-    opens again by itself when a census reads the field grown back. Mercury, requests ENT-148: a mission mined a reef
+    step of a circuit for the step's place), or None: the place's newest census (up to FLOOR_HOLD old) reads less of
+    the resource. The route opens again by itself when a newer census reads the field grown back. Mercury, requests ENT-148: a mission mined a reef
     that read 0 and pilots kept flying to it; and standing work leaves its field enough to regrow."""
     steps = [route] if route.get("kind") == "mine" else [step for stop in route.get("stops") or [] if isinstance(stop, dict) for step in stop.get("mine") or []]
     for step in steps:
         if not isinstance(step, dict) or not isinstance(step.get("min_left"), dict):
             continue
         place = step.get("belt") or step.get("at") or ""
-        left = field_left(data, place, now) if len(str(place).split(":")) == 2 else None
+        # the system's newest census, up to FLOOR_HOLD old: a field read below its floor stays closed until a newer
+        # census reads it at or above (Zero, requests ENT-465: ten miners flew 11 jumps to a field that read 2 carbon
+        # three hours before; a 90-minute window let every far field open again between two census reads)
+        left = field_left(data, place, now, fresh=FLOOR_HOLD) if len(str(place).split(":")) == 2 else None
         if left is None:
             continue
         for item, units in sorted(step["min_left"].items()):

@@ -8,7 +8,7 @@ author: Unity
 # index.md -- The Fleet's Scripts
 
 Built by `python3 -B scripts/fleet-index.py` from the docstring of every script in this
-folder; never edited by hand. Scripts listed: 66.
+folder; never edited by hand. Scripts listed: 67.
 
 - Run a script from the repository root: `python3 -I -B game/fleet/<script> <arguments>`,
   the arguments as listed under "How to Call Each".
@@ -50,6 +50,7 @@ folder; never edited by hand. Scripts listed: 66.
 | `fuelplan.py` | Fuel before a flight: the chart's lanes, the stations that sell fuel, and whether a tank holds the way. | By hand |
 | `gate.py` | Small client for the fleet engine's gate, with the division's lock. | By hand |
 | `gauges.py` | What a ship or a side of ours can hunt: its firepower and its toughness against a creature (rule F9). | By hand |
+| `gitcommit.py` | Commit files a script wrote into the clone by path, and never leave them uncommitted there. | By hand |
 | `guard.py` | Keep one pilot at the place where another route's ship of ours works, for as long as that ship works there. | Runner (`guard` routes) |
 | `guidebook.py` | The divisions' guidebooks as capped chapters of small entries: their form and caps, one store section an entry, and the reader. | By hand |
 | `handover.py` | Goods given into the storage of another pilot of ours: a circuit stop's `gift`, a mine route's `gift`, a hunt route's `gift_to`. | By hand |
@@ -431,6 +432,19 @@ gauges.py species [--role <role>]     every species seen: hull, weight, whether 
                                       both gauges, the smallest group that does (default: drone, the hunting role;
                                       `--role all`: the whole fleet's typical ship)
 --data <dir>                          the unit's data folder (default /srv/collective/data)
+```
+
+### `gitcommit.py`
+
+Commit files a script wrote into the clone by path, and never leave them uncommitted
+there.
+
+Run by hand.
+
+```
+import gitcommit
+ok, text = gitcommit.commit_paths(repo, ["governance/rival-sedcards.md"], "governance: ...", "Unity")
+game/fleet/gitcommit.py <repo> <message> <who> <path> [<path> ...]
 ```
 
 ### `guard.py`

@@ -40,6 +40,9 @@ import sys
 import time
 from pathlib import Path
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import gitcommit                                  # noqa: E402  commit by path; a failed commit leaves the clone clean
+
 ROADMAP_REL = "governance/progression-roadmap.md"
 BEGIN_MARK = "<!-- PROGRESSION-AUTO:BEGIN -->"
 END_MARK = "<!-- PROGRESSION-AUTO:END -->"
@@ -781,19 +784,11 @@ def write_roadmap(repo_root, data="/srv/collective/data", commit=False, now=None
         return "unchanged"
     roadmap.write_text(updated, encoding="ascii")
     if commit:
-        try:
-            subprocess.run(["git", "-C", str(repo_p), "add", "--", ROADMAP_REL], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-            subprocess.run(
-                [
-                    "git", "-C", str(repo_p),
-                    "-c", "user.name=Progression Engine", "-c", "user.email=progression@the-collective.local",
-                    "commit", "-m", "governance: hourly progression-roadmap.md refresh (progression.py)", "--", ROADMAP_REL,
-                ],
-                check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-            )
-            return "committed"
-        except subprocess.CalledProcessError:
-            return "written"
+        # by path, again while another git holds the index lock; a failed commit takes the file back, so the clone
+        # stays clean for every member's install (requests ENT-472, ENT-473)
+        ok, text = gitcommit.commit_paths(repo_p, [ROADMAP_REL], "governance: hourly progression-roadmap.md refresh (progression.py)",
+                                          "Progression Engine", email="progression@the-collective.local")
+        return "committed" if ok else "NOT COMMITTED (" + text + ")"
     return "written"
 
 
@@ -825,7 +820,7 @@ def main(argv=None):
     if args.cmd == "write":
         st = write_roadmap(args.root, data=args.data, commit=args.commit)
         print("progression-roadmap.md: %s" % st)
-        return 0
+        return 1 if st.startswith("NOT COMMITTED") else 0
     prog = compute_progression(args.root, data=args.data)
     if args.json:
         print(json.dumps(prog, indent=2))

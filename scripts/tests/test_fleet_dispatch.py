@@ -236,7 +236,11 @@ class PickTests(Tree):
         read(5000, 20)                                                                             # grown back: open again by itself
         self.assertIsNone(self.dispatch.why_not(pilot, "open", gather, self.state())[0])
         self.assertIsNone(self.dispatch.why_not(pilot, "missions", circuit, self.state())[0])
-        read(10, 0, ago=2 * 3600)                                                                  # an old census says nothing
+        read(10, 0, ago=3 * 3600)                                                                  # ENT-465: a census hours old that read the field below its floor still closes it
+        self.assertEqual(self.dispatch.why_not(pilot, "open", gather, self.state())[0], "field below 5,000 iron_ore at far:rift")
+        read(6000, 30, ago=3 * 3600)                                                               # the same age reading the field above its floor: open
+        self.assertIsNone(self.dispatch.why_not(pilot, "open", gather, self.state())[0])
+        read(10, 0, ago=self.dispatch.FLOOR_HOLD + 3600)                                           # older than the hold says nothing
         self.assertIsNone(self.dispatch.why_not(pilot, "open", gather, self.state())[0])
         for wrong in (dict(routes["open"], min_left=5000), dict(routes["open"], requires={"skills_below": ["navigation"]})):
             (self.root / "routes" / "open.json").write_text(json.dumps(wrong), encoding="ascii")

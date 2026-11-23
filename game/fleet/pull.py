@@ -141,6 +141,9 @@ def class_reason(role, route, rid):
     """Why a route is not a ship of `role`'s own work (rule F23), or None: `class: gather is miners' work`."""
     if workclass.own(role, route, rid):
         return None
+    tool = workclass.strips_tool(role, route)
+    if tool:
+        return "class: unfits %s, a %s's own tool (F23)" % (tool, role)
     return "class: %s is %s' work" % (workclass.work_class(route, rid), role_words(workclass.roles_for(route, rid)))
 
 

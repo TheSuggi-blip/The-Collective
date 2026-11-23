@@ -25,6 +25,9 @@ import sys
 import time
 from pathlib import Path
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import gitcommit                                  # noqa: E402  commit by path; a failed commit leaves the clone clean
+
 DATA_DEFAULT = "/srv/collective/data"
 REPO_DEFAULT = "/srv/collective/the-collective"
 SEDCARD_REL = "governance/rival-sedcards.md"
@@ -1377,15 +1380,12 @@ def write_sedcards(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, commit=False, 
         return 0
     out_path.write_text(md, encoding="ascii")
     if commit:
-        try:
-            subprocess.run(["git", "-C", str(repo_root), "add", SEDCARD_REL], check=True)
-            subprocess.run(
-                ["git", "-C", str(repo_root), "-c", "user.name=Unity", "-c", "user.email=unity@the-collective.local",
-                 "commit", "-q", "-m", "governance: hourly rival-sedcards.md refresh (rivals.py)", "--", SEDCARD_REL],
-                check=False,
-            )
-        except Exception:
-            pass
+        # by path, again while another git holds the index lock; a failed commit takes the file back, so the clone
+        # stays clean for every member's install (requests ENT-472, ENT-473: it stood uncommitted 16:29 to 19:38 UTC)
+        ok, text = gitcommit.commit_paths(repo_root, [SEDCARD_REL], "governance: hourly rival-sedcards.md refresh (rivals.py)", "Unity")
+        if not ok:
+            print("rival-sedcards.md: " + text)
+            return 1
     return 0
 
 
