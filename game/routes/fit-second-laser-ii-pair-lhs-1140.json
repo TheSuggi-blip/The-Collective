@@ -1,0 +1,45 @@
+{
+ "id": "fit-second-laser-ii-pair-lhs-1140",
+ "kind": "circuit",
+ "title": "Two Mining Laser IIs in the two utility slots of a Threshold carrying one Laser II or no laser, at Ironlight Crossroads, pulse laser stripped",
+ "note": "Written by Zero, 2026-11-23 08:49 UTC (orders ENT-081, block ZERO: strip off-role pulse lasers, batch-upgrade to Laser II/III (rules F17, F37: dominant fits in parallel batches, measured in flight). The game sums the power of every fitted mining module (game/rules/07-economy.md, miner guide: beam power is the sum of every fitted mining module).) 5 Voidborn miners carry one Laser II and an empty second slot, one carries no mining module at all (table ship_modules 08:43 UTC). Ironlight asks 2,404 x 20. count 2: the runner buys and fits until two stand. min_credits 15,000: a bare hull buys two (F7). Empty hold, lawless (F3).",
+ "once": true,
+ "max_ships": 2,
+ "max_pilots": 6,
+ "min_credits": 15000,
+ "requires": {
+  "modules_below": {
+   "mining_laser_ii": 2
+  },
+  "without_module": [
+   "ice_harvester_i",
+   "mining_laser_iii",
+   "mining_laser_i",
+   "cargo_expander_i"
+  ],
+  "empty_hold": true,
+  "empire": "voidborn",
+  "ask": {
+   "item": "mining_laser_ii",
+   "base": "784309214f105860a16a0c100a70eb14",
+   "max_price": 2450,
+   "min_qty": 1,
+   "max_age_minutes": 240
+  }
+ },
+ "stops": [
+  {
+   "at": "lhs_1140:0321b3e4406021575337b7be26e53dd7:784309214f105860a16a0c100a70eb14",
+   "unfit": [
+    "pulse_laser_i"
+   ],
+   "fit": [
+    {
+     "module": "mining_laser_ii",
+     "max_price": 2450,
+     "count": 2
+    }
+   ]
+  }
+ ]
+}

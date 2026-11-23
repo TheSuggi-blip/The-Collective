@@ -1,0 +1,40 @@
+{
+ "id": "fit-cargo-expander-factory-belt",
+ "kind": "circuit",
+ "title": "A Cargo Expander I into the empty second utility slot of a Nebula Prospect at Factory Belt Manufacturing Hub, pulse laser stripped",
+ "note": "Written by Zero, 2026-11-23 08:49 UTC (orders ENT-081, block ZERO: strip off-role pulse lasers, batch-upgrade to Laser II/III (rules F17, F37: dominant fits in parallel batches, measured in flight). The game sums the power of every fitted mining module (game/rules/07-economy.md, miner guide: beam power is the sum of every fitted mining module).) 35 Nebula-born miners carry one Mining Laser I and an empty second slot (table ship_modules 08:43 UTC); their Khambalia gather stores at Factory Belt, one jump. Factory Belt asks 352 cr x 38 for the Cargo Expander I (+20 hold, cpu 1, power 1; table books 08:43 UTC); no Laser II or III is asked in the Nebula region. On a copper and iron shuttle bid 1 to 4 cr the hold cuts the jumps per unit (fuel, orders P1) where a second laser would raise the burn an hour. min_credits 10,500 (F7).",
+ "once": true,
+ "max_ships": 3,
+ "max_pilots": 35,
+ "min_credits": 10500,
+ "requires": {
+  "module": "mining_laser_i",
+  "without_module": [
+   "cargo_expander_i"
+  ],
+  "empty_hold": true,
+  "empire": "nebula",
+  "ask": {
+   "item": "cargo_expander_i",
+   "base": "factory_belt_manufacturing_hub",
+   "max_price": 380,
+   "min_qty": 1,
+   "max_age_minutes": 240
+  }
+ },
+ "stops": [
+  {
+   "at": "factory_belt:factory_belt_manufacturing_hub:factory_belt_manufacturing_hub",
+   "unfit": [
+    "pulse_laser_i"
+   ],
+   "fit": [
+    {
+     "module": "cargo_expander_i",
+     "max_price": 380,
+     "count": 1
+    }
+   ]
+  }
+ ]
+}

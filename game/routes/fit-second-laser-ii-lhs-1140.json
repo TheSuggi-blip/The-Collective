@@ -1,0 +1,43 @@
+{
+ "id": "fit-second-laser-ii-lhs-1140",
+ "kind": "circuit",
+ "title": "A Mining Laser II into the empty second utility slot of a Laser-III-only Threshold at Ironlight Crossroads, LHS 1140, pulse laser stripped",
+ "note": "Written by Zero, 2026-11-23 08:49 UTC (orders ENT-081, block ZERO: strip off-role pulse lasers, batch-upgrade to Laser II/III (rules F17, F37: dominant fits in parallel batches, measured in flight). The game sums the power of every fitted mining module (game/rules/07-economy.md, miner guide: beam power is the sum of every fitted mining module).) 16 Voidborn miners carry a Laser III and nothing else in their two utility slots (table ship_modules 08:43 UTC). Ironlight asks 2,404 cr x 20 for the Laser II (table books 08:43 UTC), the cheapest anywhere. LHS 1140 is lawless, six jumps, a public station of the Ironlight Combine: an empty hold (rule F3). min_credits 14,000 keeps the wallet above the top-up line after the buy (F7). The stripped pulse laser goes into the pilot's storage there (unfit), kept as a module of the reserve.",
+ "once": true,
+ "max_ships": 3,
+ "max_pilots": 16,
+ "min_credits": 14000,
+ "requires": {
+  "module": "mining_laser_iii",
+  "without_module": [
+   "ice_harvester_i",
+   "mining_laser_ii",
+   "mining_laser_i",
+   "cargo_expander_i"
+  ],
+  "empty_hold": true,
+  "empire": "voidborn",
+  "ask": {
+   "item": "mining_laser_ii",
+   "base": "784309214f105860a16a0c100a70eb14",
+   "max_price": 2450,
+   "min_qty": 1,
+   "max_age_minutes": 240
+  }
+ },
+ "stops": [
+  {
+   "at": "lhs_1140:0321b3e4406021575337b7be26e53dd7:784309214f105860a16a0c100a70eb14",
+   "unfit": [
+    "pulse_laser_i"
+   ],
+   "fit": [
+    {
+     "module": "mining_laser_ii",
+     "max_price": 2450,
+     "count": 1
+    }
+   ]
+  }
+ ]
+}

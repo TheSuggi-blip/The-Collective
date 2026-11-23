@@ -65,7 +65,7 @@ Kept by Apophis. Routes: 280. Ships: 36.
 | 43 | [mission-the-proposal-frontier](mission-the-proposal-frontier.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 19 jumps | once per pilot, up to 3 ships | all 36 |
 | 44 | [mission-who-buys-old-charts-frontier](mission-who-buys-old-charts-frontier.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 19 jumps | once per pilot, up to 3 ships | all 36 |
 | 45 | [mission-welcome-sol-central](mission-welcome-sol-central.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 10 jumps | once per pilot, up to 3 ships, born solarian | all 36 |
-| 46 | [store-hold-sol-central](store-hold-sol-central.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 10 jumps | up to 20 ships, goods aboard, born solarian, standing work | 5 of 36 |
+| 46 | [store-hold-sol-central](store-hold-sol-central.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 10 jumps | up to 35 ships, goods aboard, born solarian, standing work | 5 of 36 |
 | 47 | [mission-endorsements-alpha](mission-endorsements-alpha.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 11 jumps | once per pilot, up to 3 ships | 5 of 36 |
 | 48 | [hunt-sol-jovian-extraction-zone-drift-ray](hunt-sol-jovian-extraction-zone-drift-ray.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 10 jumps | up to 1 ships, empty hold, standing work | 5 of 36 |
 | 49 | [hunt-nihal-gas-plume-drift-ray](hunt-nihal-gas-plume-drift-ray.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 9 jumps | up to 1 ships, empty hold, standing work | 5 of 36 |

@@ -20,18 +20,18 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 | [Once per Pilot](index-once-per-pilot.md) | Missions and rewards the game pays once per pilot: a new pilot's first work, and seed money. | 77 | 25 | 52 | voidborn-conductive-lattice: 7,580 cr a run |
 | [Paying Routes](index-paying-routes.md) | Work that repeats and whose runs of the last 12 hours measured above zero. | 17 | 7 | 10 | carry-melt-nexus-to-sol: 432,250 cr per ship-hour |
 | [Tests](index-tests.md) | Work that repeats and has no measured figure: new, or no readable run in the last 12 hours. One ship until its first RESULT line is read. | 150 | 46 | 104 | not measured yet |
-| [Fitting](index-fitting.md) | A module bought and fitted: the tool a kind of work needs. | 18 | 11 | 7 | fit-ice-harvester-lhs-1140: -4,320 cr per ship-hour |
+| [Fitting](index-fitting.md) | A module bought and fitted: the tool a kind of work needs. | 24 | 12 | 12 | fit-ice-harvester-lhs-1140: -4,320 cr per ship-hour |
 | [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 429 | 102 | 327 | store-hold-krynn-war-citadel: 2,860 cr per ship-hour |
 | [Measured at a Loss](index-measured-at-a-loss.md) | Work that repeats and whose runs of the last 12 hours measured zero or below. | 16 | 8 | 8 | bursar-melt-central-nexus: 0 cr per ship-hour |
 | [Off](index-off.md) | Written down, not flown. | 49 | 19 | 30 | voidborn-first-steps: 4,020 cr per ship-hour |
-| All | | 756 | 218 | 538 | |
+| All | | 762 | 219 | 543 | |
 
 ## Routes by Zone and Kind
 
 | Zone | Routes | census | circuit | guard | hunt | mine | Farthest system, jumps from home |
 |---|---|---|---|---|---|---|---|
-| home space | 218 | 1 | 187 | 1 | 16 | 13 | 3 |
-| beyond the border | 538 | 23 | 138 | 7 | 267 | 103 | 29 |
+| home space | 219 | 1 | 188 | 1 | 16 | 13 | 3 |
+| beyond the border | 543 | 23 | 143 | 7 | 267 | 103 | 29 |
 
 ## Plans by Role
 
