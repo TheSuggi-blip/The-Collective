@@ -1,0 +1,30 @@
+{
+ "id": "mission-last-known-position-crimson",
+ "kind": "circuit",
+ "title": "Last Known Position: 8000 cr, +115 XP at War Citadel (Crimson board)",
+ "note": "Written by Apophis 2026-11-23 04:16 UTC from the board of Crimson War Citadel (table missions: 'Travel to the Ironhearth system; Dock at Ironhearth Station to investigate', reward 8000) after the pattern of mission-strategic-readiness-assessment-crimson (dock stops with redock; hand_in at every dock). For the Crimson-born newborns (orders ENT-071, P6: their empire's missions first; F34 tier 2, within 6 jumps). A test: one ship until its first RESULT line is read (F34), then three results (F37).",
+ "once": true,
+ "max_ships": 1,
+ "one_time": [
+  "Last Known Position"
+ ],
+ "skip_if_booked": [
+  "Last Known Position"
+ ],
+ "stops": [
+  {
+   "at": "krynn:war_citadel:crimson_war_citadel",
+   "accept": [
+    "last_known_position"
+   ]
+  },
+  {
+   "at": "ironhearth:ironhearth_station:ironhearth_station",
+   "redock": true
+  },
+  {
+   "at": "krynn:war_citadel:crimson_war_citadel",
+   "redock": true
+  }
+ ]
+}
