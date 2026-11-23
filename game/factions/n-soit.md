@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 1.
 | Allies | AURC, NVPT, OKLM, SGC., SOLS | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 3 | Public event stream |
+| Pilots carrying the tag on the public event stream | 2 | Public event stream |
 
 ## Bases
 
@@ -40,7 +40,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Casian Drel | Node Gamma (`node_gamma`) | 0 | theoria |
+| Casian Drel | Node Beta (`node_beta`) | 0 | theoria |
 
 ## Standing History
 

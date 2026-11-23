@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 2.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 4 | Public event stream |
+| Pilots carrying the tag on the public event stream | 3 | Public event stream |
 
 ## Bases
 

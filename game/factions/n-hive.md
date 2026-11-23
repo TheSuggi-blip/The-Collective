@@ -42,20 +42,20 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| 0a5266cdbbc00fe268e0948a | Hamal (`hamal`) | 0 | workhorse |
-| 10c1432ce43efedb9c7f9632 | Node Beta (`node_beta`) | 0 | workhorse |
-| 4011f46410f19d6243276018 | Node Beta (`node_beta`) | 0 | workhorse |
-| 41f0a85ee5fe4d71232d03a8 | Acubens (`acubens`) | 0 | workhorse |
-| 5766f7c87c7f84b6893abd7e | Acubens (`acubens`) | 0 | workhorse |
-| 636c1957c2349e4e27ec7db0 | Acubens (`acubens`) | 0 | deep_survey |
-| 6ce9fcc5d675364f5a7de638 | Node Beta (`node_beta`) | 0 | workhorse |
-| 6d3e8d906d454ef5c87b6e4c | Pherkad (`pherkad`) | 0 | workhorse |
-| 8054dbcf8fff7c0f8c4f0165 | Acubens (`acubens`) | 0 | workhorse |
-| a61127ef25917281a2f5af9d | Acubens (`acubens`) | 0 | workhorse |
-| ba6ca244f9215d9ee62431df | Acubens (`acubens`) | 0 | workhorse |
-| ddac9c7dba6b0465e059d88b | Hamal (`hamal`) | 0 | workhorse |
-| ec43cfe9e4293184f10e08ca | Node Beta (`node_beta`) | 0 | workhorse |
-| fdd4d2a524b48e0478b85d38 | Hamal (`hamal`) | 0 | workhorse |
+| 0a5266cdbbc00fe268e0948a | Synchrony (`synchrony`) | 0 | workhorse |
+| 10c1432ce43efedb9c7f9632 | Node Gamma (`node_gamma`) | 0 | workhorse |
+| 4011f46410f19d6243276018 | Synchrony (`synchrony`) | 0 | workhorse |
+| 404cabdaa14cd583b3a3cc98 | Synchrony (`synchrony`) | 0 | workhorse |
+| 636c1957c2349e4e27ec7db0 | Node Gamma (`node_gamma`) | 0 | deep_survey |
+| 67194c43c43f74e1b9267ed5 | Synchrony (`synchrony`) | 0 | workhorse |
+| 706a154ccad49b2a57f5f914 | Synchrony (`synchrony`) | 0 | workhorse |
+| b9eca5b6501443e6d0541e69 | Synchrony (`synchrony`) | 0 | workhorse |
+| dd23b0ca1cc14350d2b0b023 | Synchrony (`synchrony`) | 0 | workhorse |
+| ddac9c7dba6b0465e059d88b | Synchrony (`synchrony`) | 0 | workhorse |
+| e3a724a14758022cda8c123e | Synchrony (`synchrony`) | 0 | workhorse |
+| ec43cfe9e4293184f10e08ca | Node Gamma (`node_gamma`) | 0 | workhorse |
+| f5736d218d41c0675a22c3d6 | Synchrony (`synchrony`) | 0 | workhorse |
+| f8c3f4c38ee48a37ee21926b | Synchrony (`synchrony`) | 0 | workhorse |
 
 ## Standing History
 

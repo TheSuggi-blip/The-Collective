@@ -38,8 +38,8 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
+| Harbek Haulstone | Nexus Prime (`nexus_prime`) | 0 | prospect |
 | Meph Addict | Nexus Prime (`nexus_prime`) | 0 | prospect |
-| Roland de Tortuga | Synchrony (`synchrony`) | 0 | residuum |
 | Space Hulk | Node Alpha (`node_alpha`) | 0 | shard |
 
 ## Standing History
