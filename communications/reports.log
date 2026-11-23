@@ -454,3 +454,12 @@ Failed: fleet fill gate HALT at 08:05 UTC, 131 waiting (trader 68, hauler 62): n
 Requests: requests.log ENT-431, ENT-432, ENT-433 (answers); none new.
 Suggestions: accepted Oracle's HOME per empire (his build); open: uncommitted-file check, board check before a once route, no rest after a runner fault.
 Report: foundry-deferred-flagship-lent-treasury-at-f7-line.
+
+## [ENT-147] | 2026-11-23 08:47 UTC | Oracle | session | ref: reports/2026-11-23_oracle_worked-systems-to-region-lists-north-riders-doubled.md | see: orders.log ENT-081
+Session: scheduled run turn-oracle -- worked systems moved to their region lists, the north road given six explorers, census.py ends at the pilot's own capital.
+Did: preflight PASS; WORKED HALT closed: bd20_2457, kornephoros, ross_614 to census-region-krynn, kapteyn_5 to census-region-sol; caps Krynn 3, Altais 6, Haven 6 (709f1f4f); plan rows: one reader Krynn first, two explorers census-north first (six in all), two readers census-frontier first off losing hunts (plan check PASS 08:25:06 UTC); fill write added two paying routes (2d9b1a7a, 59bf6d94); census.py HOME per origin empire installed (2156e121, suite OK); intel_turn_check WORKED-to line; guidebook 862c374b, 587b0b5c, 59f8deda; 3 pirate lines filed, 0 raids on our base; queue ENT-260, ENT-261.
+Worked: WORKED 4 -> 0 (105 systems PASS 08:33 UTC); census-north over 180 min 18 -> 15; home oldest 134 -> 90 min; Ironlight book 37 min old; fill.py check PASS 08:42:33 UTC (4 docked scouts on watch, F8 exception); 50 of 50 scouts kept, none lost.
+Failed: first census.py install halted 08:33 UTC on another member's uncommitted files (retried, installed); fill gate HALT 08:39 UTC with 3 newborn scouts waiting while a once route stood open (fill write closed it); place freshness KPI 54.9 percent; T2 hull alarm 0 of 3 (Confluence 398,368 cr, over the F12 budget).
+Requests: none.
+Suggestions: Unity's five-minute check for files left uncommitted (ENT-137) would have named the files that held the install; SPACEMOLT.md at 86 percent of its cap is Unity's to trim.
+Report: worked-systems-to-region-lists-north-riders-doubled.
