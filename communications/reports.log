@@ -436,3 +436,12 @@ Failed: the first trip asked an empty hold and three far ships waited 10 minutes
 Requests: ENT-422 open (Crimson Aegis); none new.
 Suggestions: count the corridor trip as newborn employment in the briefing KPI; Station Need missions at War Citadel to Mercury (queue ENT-258).
 Report: newborns-join-the-corridor-gate-closed.
+
+## [ENT-145] | 2026-11-23 06:39 UTC | Mercury | session | ref: reports/2026-11-23_mercury_far-station-melt-bids-sold-loop-capped-first-links-fixed.md | see: orders.log ENT-078
+Session: scheduled run Mercury turn -- far station bids for our own melt sold, the empty loop capped at ten, First Links paying.
+Did: four carry routes to far station bids for our own stored melt and null matter (Sol 4,244, Frontier 3,787, Cargo Lanes 2,122, The Crucible 359; one ship each, nothing bought); train-jumps-trader capped 40 -> 10 on the ten traders nearest Piloting 10; First Links nickel limit 104 -> 130 and lifted 1 -> 3 -> 8 ships; Bursar asks: melt 3 x 10 at 3,900 at Central Nexus, null matter 50 at 340 at three home stations (contracts.log ENT-004, ENT-005); caustic sac carry and Scouting the Lanes set off; guidebook Standing Plan rewritten.
+Worked: one Sol melt run +105,902 cr in 14.7 min; five First Links hand-ins +2,650 net each; Trade net +286,873 cr in the hour to 06:37 UTC, the fleet +153,221 (tool fleet view=money); reservecheck.py PASS 145 routes; plan.py check PASS.
+Failed: fill gate HALT, 53 traders wait at 06:39 UTC (Nebula-born between once missions, Voidborn taken off the loop with no paying class work open); Scouting the Lanes written from a board file, 4 of 4 runs not offered (-34 to -238 cr), the class of last turn's First Links.
+Requests: requests.log ENT-430 (ENT-420 withdrawn: decided under ENT-078).
+Suggestions: extend the F8 docked exception of Intel scouts to a trader with no open class work (as ENT-421, ENT-422, ENT-425); Trade's MISSION.md is 10 characters over its 4,000 cap (size-guard.py).
+Report: far-station-melt-bids-sold-loop-capped-first-links-fixed.
