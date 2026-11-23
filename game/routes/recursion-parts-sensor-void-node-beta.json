@@ -1,0 +1,72 @@
+{
+ "id": "recursion-parts-sensor-void-node-beta",
+ "kind": "circuit",
+ "title": "Once: buy 8 sensor arrays and 5 void condensate at Ironlight Crossroads and sell them into the Recursion yard's bids at Node Beta",
+ "note": "Written by Apophis 2026-11-23 12:23 UTC. Our first Recursion (paid 354,427 cr at Node Beta, commission c95483bc, SOURCING since 00:27 UTC) waits only on its yard's own bids there: sensor_array 8 at 906, silicate_composite 47 at 435, void_condensate 5 at 439 (commission_status and table books 12:21 UTC). The asks at Ironlight Crossroads, LHS 1140, read 12:18 UTC: sensor_array 816 x 300, silicate_composite 494 x 300, void_condensate 1,023 x 244. Asked of Trade at 09:51 UTC (requests.log ENT-438), unanswered through its turn of 10:47 UTC. open_to drone and sentinel (rule F23, the Admiral's exception): the class guard reads a buy and a sale as trade, but these are the materials of our own hull commission sold into the yard's own sourcing bids (fitting, orders ENT-082 block APOPHIS: batch P10+ pilots onto empire combat hulls, F17); once, one ship, every buy booked once. Expected loss about 5,000 cr against a hull already paid. This route: the sensor arrays and the void condensate (about 11,650 cr out, 9,443 back).",
+ "once": true,
+ "max_ships": 1,
+ "max_pilots": 1,
+ "min_credits": 16000,
+ "open_to": [
+  "drone",
+  "sentinel"
+ ],
+ "requires": {
+  "empty_hold": true,
+  "max_jumps": 8,
+  "ask": {
+   "item": "sensor_array",
+   "base": "784309214f105860a16a0c100a70eb14",
+   "max_price": 900,
+   "min_qty": 8,
+   "max_age_minutes": 120
+  },
+  "bid": [
+   {
+    "item": "sensor_array",
+    "base": "node_beta_industrial_station",
+    "min_price": 850,
+    "min_qty": 8
+   },
+   {
+    "item": "void_condensate",
+    "base": "node_beta_industrial_station",
+    "min_price": 400,
+    "min_qty": 5
+   }
+  ]
+ },
+ "stops": [
+  {
+   "at": "lhs_1140:0321b3e4406021575337b7be26e53dd7:784309214f105860a16a0c100a70eb14",
+   "buy": [
+    {
+     "item": "sensor_array",
+     "qty": 8,
+     "max_price": 910,
+     "one_time": true
+    },
+    {
+     "item": "void_condensate",
+     "qty": 5,
+     "max_price": 1100,
+     "one_time": true
+    }
+   ],
+   "stop_on_failed_buy": true
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "sell": [
+    {
+     "item": "sensor_array",
+     "min_price": 850
+    },
+    {
+     "item": "void_condensate",
+     "min_price": 400
+    }
+   ]
+  }
+ ]
+}
