@@ -510,10 +510,12 @@ def compute_progression(repo_root, data="/srv/collective/data", now=None):
         # Horizon 2: Mid-Term (1-3 Weeks)
         {
             "id": "h2-seat-wave3", "horizon": "Weeks (1-3w)", "orders": "G2, O5",
-            "title": "Faction Seating (%d / %d Fleet, Cap %d)" % (seats_used, ships_total or 500, seats_cap),
+            "title": "Faction Seating (%d / %d Fleet, %.1f%%, Cap %d)" % (
+                seats_used, ships_total or 500, _clamp_pct(100.0 * seats_used / max(1, ships_total or seats_cap)), seats_cap,
+            ),
             "pct": _clamp_pct(100.0 * seats_used / max(1, ships_total or seats_cap)),
-            "current": "%d / %d seated (cap %d, %d open now) | %d standing ships awaiting future cap upgrades" % (
-                seats_used, ships_total or 500, seats_cap, open_seats, unseated_ships,
+            "current": "%d / %d seated (%.1f%%, cap %d, %d open now) | %d standing ships awaiting future cap upgrades" % (
+                seats_used, ships_total or 500, _clamp_pct(100.0 * seats_used / max(1, ships_total or seats_cap)), seats_cap, open_seats, unseated_ships,
             ),
             "target": "Seat all %d standing ships inside [CLTV] (current cap %d -> next: %s)" % (
                 ships_total or 500, seats_cap, _next_seat_building(seats_cap, max_faction_cap),
@@ -565,8 +567,9 @@ def compute_progression(repo_root, data="/srv/collective/data", now=None):
             "id": "h3-armada-500", "horizon": "Months (1-3m)", "orders": "G2, O5",
             "title": "Multi-Empire Standing Fleet Consolidation (%d Ships)" % armada_target,
             "pct": armada_pct,
-            "current": "%d / %d standing ships across %d empires | %d / %d seated (cap %d)" % (
-                ships_total, armada_target, len(by_empire) or 1, seats_used, ships_total or 500, seats_cap,
+            "current": "%d / %d standing ships across %d empires | %d / %d seated (%.1f%%, cap %d)" % (
+                ships_total, armada_target, len(by_empire) or 1, seats_used, ships_total or 500,
+                _clamp_pct(100.0 * seats_used / max(1, ships_total or seats_cap)), seats_cap,
             ),
             "target": "All %d multi-empire ships fully employed, seated, and steady-net positive" % armada_target,
             "bottleneck": ("%d ship(s) reconnecting" % ships_away if ships_away else "Fill %d open seats in %d cap & scale regional T2 corridors" % (open_seats, seats_cap)),
@@ -666,8 +669,8 @@ def render_auto_block(prog):
             format(s["enterprise_value"], ","), format(s["liquid_purse"], ","), format(s["treasury"], ","),
             format(s["vault_worth"], ","), format(s["facility_worth"], ","), format(s["fleet_book_worth"], ","),
         ),
-        "| Faction Seating & Standing Fleet | %d / %d (cap %d) | %d seated of %d standing ships (%d open in current cap; %d awaiting cap upgrades) -- %s |" % (
-            s["seats_used"], s["ships_total"], s["seats_cap"],
+        "| Faction Seating & Standing Fleet | %d / %d (%.1f%%, cap %d) | %d seated of %d standing ships (%d open in current cap; %d awaiting cap upgrades) -- %s |" % (
+            s["seats_used"], s["ships_total"], _clamp_pct(100.0 * s["seats_used"] / max(1, s["ships_total"] or s["seats_cap"])), s["seats_cap"],
             s["seats_used"], s["ships_total"], s["open_seats"], s["unseated_ships"], emp_txt,
         ),
         "| Hull Modernization | %d / %d upgraded (%.1f%%) | %d T0 starter hulls left (%d T1, %d T2+); %d pilots P10+ (max P%d) |" % (

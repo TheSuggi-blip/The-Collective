@@ -58,7 +58,7 @@ upgrading and empire-specific min-maxing per division, fleetwide one-purse
 enterprise income/extraction optimization, strategic base placement for maximum
 effective imperial footprint, multi-empire local-first leverage, strict class
 harmony, automated empirical verification, sovereign defense/comms firewall,
-perpetual division mastery, and autonomous scout diplomacy under a Neutrality-max ceiling). **Tier 3 (`PLAN` + division blocks)** is Unity's
+perpetual division mastery, and autonomous scout diplomacy under a Neutrality-max ceiling with Phase-2 neutral commercial trade & constant supply chains, tracked in `rulebook.md` Section 14). **Tier 3 (`PLAN` + division blocks)** is Unity's
 evolving turn-by-turn Mission Command intent.
 
 ## III. What Three Kinds of Games Teach
@@ -237,6 +237,7 @@ amendment adds a row below.
 | 2.0 | 2026-11-22 | Trinity (approved by Suggi) | Added Principle 11: benchmark against #1 [HEXC] via Tier 2-5 hull compounding, resource-anchored outposts, sustainable fauna ranching, zero-fuel docked crafting and cross-empire bulk freighters. |
 | 2.1 | 2026-11-22 | Trinity (approved by Suggi) | Upgraded to three-tier anchored Orders hierarchy (`G1-G5` Strategic Goals + `O1-O9` Operational Subgoals + Unity `PLAN`) and added Principle 12 (enterprise-wide income/extraction optimization, maximal base footprint placement, and empire-specific ship min-maxing). |
 | 2.2 | 2026-11-23 | Trinity (approved by Suggi) | Added Operational Subgoal `O10` (autonomous scout diplomacy and Neutrality / Non-Aggression / info-sharing pacts directed by Unity and executed by Oracle via `game/fleet/diplomacy.py`, capped at Neutrality max). |
+| 2.3 | 2026-11-23 | Trinity (approved by Suggi) | Expanded `O10` with Phase-2 Neutral Partner Engagement (surplus stock catalog, constant raw-material supply chains, outpost/station build trade, and open needs/wishes dialogue under strict Neutrality max) and added Diplomatic Standing & Relations registry (`governance/rulebook.md` Section 14). |
 
 ## VIII. Sources
 

@@ -3184,8 +3184,9 @@ function renderProgressionSubtab(panel, prData) {
   const kpis = el('div', 'kpis');
   const pk = (k, v, sub, cls) => { const b = el('div', 'kpi' + (cls ? ' ' + cls : '')); b.append(el('div', 'k', k), el('div', 'v', v)); if (sub) b.append(el('div', 's', sub)); kpis.append(b); };
   pk('Enterprise Net Worth', fmt(s.enterprise_value || 0) + ' cr', fmt(s.liquid_purse || 0) + ' cash | ' + fmt(s.vault_worth || 0) + ' vault | ' + fmt(s.facility_worth || 0) + ' fac', 'main pos');
-  pk('Faction Seating & Fleet', fmt(s.seats_used || 0) + ' / ' + fmt(s.ships_total || 500) + ' (cap ' + fmt(s.seats_cap || 0) + ')',
-    fmt(s.ships_total || 500) + ' standing ships | ' + fmt(s.open_seats || 0) + ' open in current cap | ' + fmt(Math.max(0, (s.ships_total || 500) - (s.seats_cap || 0))) + ' more cap needed', 'pos');
+  const progSeatPct = (s.ships_total || 500) ? ((100 * (s.seats_used || 0)) / (s.ships_total || 500)).toFixed(1) : '0.0';
+  pk('Faction Seating & Fleet', fmt(s.seats_used || 0) + ' / ' + fmt(s.ships_total || 500) + ' (' + progSeatPct + '%, cap ' + fmt(s.seats_cap || 0) + ')',
+    fmt(s.open_seats || 0) + ' open in current cap | ' + fmt(Math.max(0, (s.ships_total || 500) - (s.seats_cap || 0))) + ' more cap needed for 100% seating', 'pos');
   pk('Hull & Module Saturation', fmt(s.hulls_upgraded || 0) + '/' + fmt(s.ships_synced || s.ships_total || 0) + ' hulls | ' + fmt(s.ships_with_adv || 0) + ' T2+ fit',
     fmt(s.t0_hulls || 0) + ' T0 left | ' + fmt(s.ships_unfitted || 0) + ' ships unfitted (' + fmt(s.adv_mods_fitted || 0) + '/' + fmt(s.total_slots || 0) + ' slots = ' + (s.adv_slot_pct || 0) + '%)',
     (s.ships_unfitted || 0) > 0 || (s.t0_hulls || 0) > 0 ? 'warn' : 'pos');
@@ -3892,8 +3893,9 @@ async function renderMetrics(panel, live) {
     const capN = fac.limit || 0;
     const openSeats = fac.open_seats !== undefined ? fac.open_seats : Math.max(0, capN - seatedN);
     const moreCapNeeded = Math.max(0, standingShips - capN);
+    const pctSeatedM = standingShips ? ((100 * seatedN) / standingShips).toFixed(1) : '0.0';
     const nextSeatBldg = !capN ? 'not read' : capN < 100 ? 'next: Recruitment Desk (100)' : capN < 200 ? 'next: Recruitment Center (200)' : capN < 400 ? 'next: Guild Hall (400)' : 'next: cap upgrade';
-    rkpi('Faction seating', capN ? fmt(seatedN) + ' / ' + fmt(standingShips) + ' (cap ' + fmt(capN) + ')' : '--',
+    rkpi('Faction seating', capN ? fmt(seatedN) + ' / ' + fmt(standingShips) + ' (' + pctSeatedM + '%, cap ' + fmt(capN) + ')' : '--',
       capN ? (fmt(openSeats) + ' open in current cap | ' + fmt(moreCapNeeded) + ' more cap needed for full fleet | ' + nextSeatBldg) : 'not read',
       openSeats > 0 ? 'pos' : 'warn');
     const tf = ops.tech_frontier || {};
@@ -4140,8 +4142,8 @@ async function renderEmpire(panel, live) {
   const seatsOpen = Math.max(0, seatsCap - seatsUsed);
   const pctFleetSeated = standingN ? ((100 * seatsUsed) / standingN).toFixed(1) : '0.0';
   const moreCapNeed = Math.max(0, standingN - seatsCap);
-  ekpi('Faction seating', seatsCap ? fmt(seatsUsed) + ' / ' + fmt(standingN) + ' (cap ' + fmt(seatsCap) + ')' : '--',
-    pctFleetSeated + '% of fleet seated | ' + fmt(seatsOpen) + ' open seats in current cap | ' + fmt(moreCapNeed) + ' more cap needed for full fleet', seatsOpen ? 'pos' : 'warn');
+  ekpi('Faction seating', seatsCap ? fmt(seatsUsed) + ' / ' + fmt(standingN) + ' (' + pctFleetSeated + '%, cap ' + fmt(seatsCap) + ')' : '--',
+    fmt(seatsOpen) + ' open seats in current cap | ' + fmt(moreCapNeed) + ' more cap needed for full fleet', seatsOpen ? 'pos' : 'warn');
   ekpi('Standing fleet', fmt(standingN) + ' ships',
     (our.by_empire ? our.by_empire.length + ' origin empires active' : 'standing armada') + ' | ' + fmt(Math.max(0, standingN - seatsUsed)) + ' ships awaiting faction seats', 'pos');
   ekpi('Facility rent / day', fmt((emp.rent && emp.rent.per_day) || 0) + ' cr',
@@ -4473,7 +4475,7 @@ function renderEmpireDiplomacy(panel, dip) {
 
   const kgrid = el('div', 'kpis');
   const ekpi = (k, v, sub, cls) => { const d = el('div', 'kpi' + (cls ? ' ' + cls : '')); d.append(el('div', 'k', k), el('div', 'v', v)); if (sub) d.append(el('div', 's', sub)); kgrid.append(d); };
-  ekpi('Our posture', our.at_war ? 'AT WAR' : 'Armed Neutrality', 'Never fire first; diplomacy & war Suggi-reserved', our.at_war ? 'neg' : 'main pos');
+  ekpi('Our posture', our.at_war ? 'AT WAR' : 'Armed Neutrality', 'Never fire first; O10 Neutrality max (alliances & war Suggi-reserved)', our.at_war ? 'neg' : 'main pos');
   ekpi('Our treaties & wars', (our.allies || []).length + ' allies | ' + (our.wars || []).length + ' wars', (our.enemies || []).length + ' marked enemies', 'pos');
   ekpi('Galactic alliance blocs', fmt(alliances.length) + ' coalitions', fmt(getPolities().filter((p) => p.kind === 'bloc').length) + ' major blocs mapped on galaxy view', '');
   ekpi('Active wars & rivalries', fmt(wars.length) + ' wars | ' + fmt(rivalries.length) + ' feuds', fmt(battles.length) + ' recent combat engagements logged', wars.length ? 'warn' : '');
@@ -4566,7 +4568,7 @@ function renderEmpireDiplomacy(panel, dip) {
 function renderEmpireComms(panel, dip) {
   if (!dip || !dip.comms) { panel.append(el('p', 'empty', 'Loading communications ledger...')); return; }
   const c = dip.comms, s = c.summary || {}, p = c.pacts || { rows: [], counts: {} };
-  const agreed = ((p.counts || {}).neutrality_agreed || 0) + ((p.counts || {}).info_sharing_active || 0);
+  const agreed = ((p.counts || {}).neutrality_agreed || 0) + ((p.counts || {}).trade_active || 0) + ((p.counts || {}).info_sharing_active || 0);
   const hailed = ((p.counts || {}).hailed || 0) + ((p.counts || {}).in_dialogue || 0);
 
   const kgrid = el('div', 'kpis');
@@ -4577,15 +4579,29 @@ function renderEmpireComms(panel, dip) {
   ekpi('Comms firewall', 'CaMeL + Nonce', 'OpSec outbound scrubber + ' + fmt(s.quarantined || 0) + ' quarantined inbound', (s.quarantined || 0) ? 'warn' : 'pos');
   panel.append(kgrid);
 
+  const stg = p.standings || null;
+  if (stg) {
+    panel.append(el('h3', null, 'Diplomatic standing & relations (Rule F4 / Rulebook Section 14)'));
+    const fmtList = (arr) => (arr && arr.length) ? arr.map((x) => '[' + x.tag + '] ' + x.faction).join(', ') : 'None';
+    const srows = [
+      [el('span', 'pill good', 'ALLIED'), String((stg.allied || []).length), fmtList(stg.allied), 'Locked under standing doctrine (F4; Suggi-reserved)'],
+      [el('span', 'pill good', 'NEUTRAL'), String((stg.neutral || []).length), fmtList(stg.neutral), 'Confirmed non-aggression / trade / info-sharing partners'],
+      [el('span', 'pill warn', 'IN OPEN DIALOGUE'), String((stg.in_dialogue || []).length), fmtList(stg.in_dialogue), 'Active two-way thread (Phase-2 neutral trade & supply chains)'],
+      [el('span', 'pill', 'HAILED / PENDING'), String((stg.hailed || []).length), fmtList(stg.hailed), '3-day exact-24h robotic hail beacon active'],
+      [el('span', 'pill bad', 'HOSTILE'), String((stg.hostile || []).length), fmtList(stg.hostile), 'Defensive RoE (F2); war declarations Suggi-reserved'],
+    ];
+    panel.append(fitTable(table(['Standing', 'Count', 'Factions / Blocs', 'Posture'], srows, [1])));
+  }
+
   if ((p.rows || []).length) {
     panel.append(el('h3', null, 'Neutrality outreach roster -- 3 target blocs (' + p.rows.length + ' leaders, 3-day exact-24h cadence, O10)'));
     const statusPill = (r) => {
       const st = r.status;
-      if (st === 'neutrality_agreed' || st === 'info_sharing_active') return el('span', 'pill good', st.replace(/_/g, ' ').toUpperCase());
+      if (st === 'neutrality_agreed' || st === 'trade_active' || st === 'info_sharing_active') return el('span', 'pill good', st.replace(/_/g, ' ').toUpperCase());
       if (st === 'in_dialogue') return el('span', 'pill warn', 'IN DIALOGUE');
       if (st === 'hailed') return el('span', 'pill warn', 'HAILED ' + (r.unanswered_hails || 1) + '/' + (r.max_unanswered || 3));
       if (st === 'no_response') return el('span', 'pill', 'NO RESPONSE (3/3)');
-      if (st === 'declined' || st === 'paused') return el('span', 'pill bad', st.toUpperCase());
+      if (st === 'hostile' || st === 'declined' || st === 'paused') return el('span', 'pill bad', st.toUpperCase());
       return el('span', 'pill', 'UNCONTACTED');
     };
     const prows = p.rows.map((r) => [

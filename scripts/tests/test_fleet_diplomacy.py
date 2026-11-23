@@ -293,5 +293,29 @@ class DiplomacyAirlockTests(unittest.TestCase):
         self.assertIn("disarmed [CRFT]", ev[0])
         self.assertEqual(len(sent_calls), 1)
 
+    def test_phase2_trade_reply_passes_opsec_and_standings_tiers(self):
+        draft = (
+            "HexCogitoAI, respected -- no info exchange. We saw your public tips helping new pilots; "
+            "as a young growing fleet building our first outposts and stations, we value practical guidance. "
+            "Strictly neutral (no alliance), we offer open trade and constant supply chains: we hold surplus "
+            "ores, gases, and ice and can farm materials HEXC prefers not to grind. Tell us what items and "
+            "quantities you need, if you trade station parts, and any wishes you have. -- Unity [CLTV]"
+        )
+        ok, cleaned, reasons = comms_guard.audit_outbound(draft)
+        self.assertTrue(ok, f"Expected Phase-2 draft to pass audit_outbound, got {reasons}")
+        self.assertLessEqual(len(cleaned), 500)
+
+        self.set_member("unity")
+        ok_u, msg_u = diplomacy.update_status(str(self.data), str(ROOT), "HEXC", "trade_active", "Constant ore supply chain open")
+        self.assertTrue(ok_u, msg_u)
+        ok_h, msg_h = diplomacy.update_status(str(self.data), str(ROOT), "VEIL", "hostile", "Test hostile tier")
+        self.assertTrue(ok_h, msg_h)
+
+        snap = diplomacy.build_roster_snapshot(str(self.data), str(ROOT))
+        st = snap["standings"]
+        self.assertEqual([x["tag"] for x in st["neutral"]], ["HEXC"])
+        self.assertEqual([x["tag"] for x in st["hostile"]], ["VEIL"])
+        self.assertEqual(st["allied"], [])
+
 if __name__ == "__main__":
     unittest.main()

@@ -204,6 +204,8 @@ Run by hand.
 
 ```
 diplomacy.py roster [--data DIR] [--root DIR]
+diplomacy.py standings [--data DIR] [--root DIR]
+diplomacy.py catalog [--limit N] [--data DIR] [--root DIR]
 diplomacy.py threads [--tag TAG] [--last N] [--data DIR] [--root DIR]
 diplomacy.py audit-text "<draft message>"
 diplomacy.py send --to "<handle>" --message "<in-character text>" [--pilot scout-XX] [--dry-run] [--data DIR] [--root DIR]

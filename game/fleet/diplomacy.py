@@ -19,6 +19,8 @@ WHAT: enforces Suggi's standing diplomatic boundaries in code so Unity (Command)
 
 USAGE:
   diplomacy.py roster [--data DIR] [--root DIR]
+  diplomacy.py standings [--data DIR] [--root DIR]
+  diplomacy.py catalog [--limit N] [--data DIR] [--root DIR]
   diplomacy.py threads [--tag TAG] [--last N] [--data DIR] [--root DIR]
   diplomacy.py audit-text "<draft message>"
   diplomacy.py send --to "<handle>" --message "<in-character text>" [--pilot scout-XX] [--dry-run] [--data DIR] [--root DIR]
@@ -53,9 +55,11 @@ VALID_STATUSES = (
     "hailed",
     "in_dialogue",
     "neutrality_agreed",
+    "trade_active",
     "info_sharing_active",
     "no_response",
     "declined",
+    "hostile",
     "paused",
 )
 UNANSWERED_COOLDOWN = 24 * 3600       # exact 24h spacing between robotic unanswered hails
@@ -406,7 +410,7 @@ def send_diplomatic_dm(data, root, to_handle, message, pilot="", dry_run=False, 
         envoys = register_envoy(data, envoy)
         append_outbound_message(data, server_id, envoy, canonical, tag, member, cleaned, now)
         cur_status = f_state.get("status") or "uncontacted"
-        if replied_before or cur_status in ("in_dialogue", "neutrality_agreed", "info_sharing_active"):
+        if replied_before or cur_status in ("in_dialogue", "neutrality_agreed", "trade_active", "info_sharing_active"):
             next_status = "in_dialogue" if cur_status in ("uncontacted", "hailed", "no_response") else cur_status
             unanswered_after = 0
             anchor_ts = 0
@@ -641,8 +645,127 @@ def build_roster_snapshot(data, root, now=None):
         "cap_24h": MAX_GLOBAL_24H,
         "envoys": envoys,
         "counts": counts,
+        "standings": build_standings(rows, data),
         "rows": rows,
     }
+
+
+def _read_cltv_relations(data):
+    """Read CLTV formal allies/enemies/wars from data/store/read.db if present."""
+    import sqlite3
+    db_path = Path(data) / "store" / "read.db"
+    out = {"allies": [], "enemies": [], "wars": []}
+    if not db_path.is_file():
+        return out
+    try:
+        con = sqlite3.connect("file:%s?mode=ro" % db_path, uri=True)
+        row = con.execute("SELECT allies, enemies, wars FROM factions WHERE UPPER(tag)='CLTV' LIMIT 1").fetchone()
+        con.close()
+        if row:
+            for k, v in zip(("allies", "enemies", "wars"), row):
+                out[k] = [norm_tag(x) for x in str(v or "").split(",") if norm_tag(x)]
+    except Exception:
+        pass
+    return out
+
+
+def build_standings(rows, data):
+    """Group factions into top-level diplomatic tiers: allied, neutral, in_dialogue, hailed, hostile, other."""
+    rel = _read_cltv_relations(data)
+    allied = [{"tag": t, "faction": t, "bloc": "Formal Ally", "leader": "", "status": "allied", "note": "In-game ally"} for t in rel["allies"]]
+    neutral = []
+    in_dialogue = []
+    hailed = []
+    hostile = []
+    other = []
+    seen_hostile = set()
+
+    for r in rows:
+        st = r.get("status") or "uncontacted"
+        item = {
+            "tag": r["tag"],
+            "faction": r["faction"],
+            "bloc": r["bloc"],
+            "leader": r["leader"],
+            "status": st,
+            "note": r.get("note") or "",
+        }
+        if st == "hostile" or r["tag"] in rel["enemies"] or r["tag"] in rel["wars"]:
+            hostile.append(item)
+            seen_hostile.add(r["tag"])
+        elif st in ("neutrality_agreed", "trade_active", "info_sharing_active"):
+            neutral.append(item)
+        elif st == "in_dialogue":
+            in_dialogue.append(item)
+        elif st == "hailed":
+            hailed.append(item)
+        else:
+            other.append(item)
+
+    for t in sorted(set(rel["enemies"] + rel["wars"])):
+        if t and t not in seen_hostile:
+            hostile.append({"tag": t, "faction": t, "bloc": "In-Game Hostile", "leader": "", "status": "hostile", "note": "In-game enemy/war"})
+
+    return {
+        "allied": allied,
+        "neutral": neutral,
+        "in_dialogue": in_dialogue,
+        "hailed": hailed,
+        "hostile": hostile,
+        "other": other,
+    }
+
+
+def print_standings(data, root):
+    snap = build_roster_snapshot(data, root)
+    st = snap.get("standings") or build_standings(snap["rows"], data)
+    print("DIPLOMATIC STANDINGS | policy=%s | targets=%d | rule=F4 (Section 14)" % (snap["policy"], snap["targets_total"]))
+    tiers = (
+        ("ALLIED", st["allied"]),
+        ("NEUTRAL", st["neutral"]),
+        ("IN OPEN DIALOGUE", st["in_dialogue"]),
+        ("HAILED (AWAITING REPLY)", st["hailed"]),
+        ("HOSTILE", st["hostile"]),
+        ("NO RESPONSE / OTHER", st["other"]),
+    )
+    for label, items in tiers:
+        if not items:
+            print("  %-24s : none" % label)
+            continue
+        tags = ", ".join("[%s] %s (%s)" % (x["tag"], x["faction"], x["status"]) for x in items)
+        print("  %-24s (%d): %s" % (label, len(items), tags))
+
+
+def print_trade_catalog(data, root, limit=15):
+    """Print an OpSec-safe list of surplus tradeable goods & gatherable materials we can offer neutral partners."""
+    items = []
+    source = "surplus.py"
+    try:
+        import surplus as _surplus
+        res = _surplus.surplus(str(data), str(root))
+        for row in (res.get("rows") or []):
+            qty = int(row.get("surplus") or 0)
+            if qty > 0:
+                items.append((
+                    qty,
+                    str(row.get("name") or row.get("id") or ""),
+                    str(row.get("id") or ""),
+                    str(row.get("kind") or "item"),
+                ))
+    except Exception:
+        items = []
+
+    items.sort(key=lambda x: (-x[0], x[1]))
+    print("OPSEC-SAFE TRADEABLE SURPLUS CATALOG (%s) | items_available=%d" % (source, len(items)))
+    print("NOTE: Tradeable surplus beyond build reserves only (never disclose treasury, ship counts, or reserve deficits).")
+    if not items:
+        print("  (no surplus items recorded yet; offer custom raw-ore, ice, and gas gathering on request)")
+        return
+    top = items[:max(1, int(limit))]
+    for qty, name, item_id, kind in top:
+        print("  %-28s [%-9s] (%-24s) : %s units ready" % (name[:28], kind[:9], item_id[:24], format(qty, ",")))
+    brief = ", ".join("%s (%s)" % (nm, ("%dk" % (q // 1000)) if q >= 1000 else str(q)) for q, nm, _id, _k in top[:8])
+    print("COMPACT OFFER LINE: %s" % brief)
 
 
 def update_status(data, root, tag, status, note=""):
@@ -751,6 +874,14 @@ def main(argv=None):
             print("  %-20s %-5s %-22s %-22s %-16s %-5s %-10s %-16s %s" % (
                 r["bloc"][:20], r["tag"], r["faction"][:22], r["leader"][:22], r["status"], hails_lbl,
                 (r["envoy"] or "-")[:10], (r["next_hail_at"] or "-")[:16], r["last_stance"]))
+        return 0
+
+    if verb == "standings":
+        print_standings(data, root)
+        return 0
+
+    if verb == "catalog":
+        print_trade_catalog(data, root, limit=int(val("--limit", "15")))
         return 0
 
     if verb == "threads":
