@@ -66,7 +66,7 @@ Kept by Mercury. Routes: 174. Ships: 85.
 | 44 | [strip-pulse-laser-central-nexus](strip-pulse-laser-central-nexus.json) | [Fitting](index-fitting.md) | home space | once per pilot, up to 10 ships, 130 pilots in all, from 3,000 cr, born voidborn | all 85 |
 | 45 | [mission-last-known-position-crimson](mission-last-known-position-crimson.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 21 jumps | once per pilot, up to 15 ships | all 85 |
 | 46 | [mission-filed-in-triplicate-nova](mission-filed-in-triplicate-nova.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 10 jumps | once per pilot, up to 40 ships | all 85 |
-| 47 | [mission-blood-forge-requisition-krynn](mission-blood-forge-requisition-krynn.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 20 jumps | once per pilot, up to 3 ships, empty hold | all 85 |
+| 47 | [mission-blood-forge-requisition-krynn](mission-blood-forge-requisition-krynn.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 20 jumps | once per pilot, up to 36 ships, empty hold | all 85 |
 | 48 | [need-ember-gland-krynn](need-ember-gland-krynn.json) | [Tests](index-tests.md) | beyond the border, 20 jumps | up to 1 ships, with 3 ember_gland stored at crimson_war_citadel | all 85 |
 | 49 | [carry-ember-crucible-to-krynn](carry-ember-crucible-to-krynn.json) | [Tests](index-tests.md) | beyond the border, 20 jumps | up to 1 ships, empty hold, with 3 ember_gland stored at the_crucible_garrison | all 85 |
 | 50 | [mission-request-for-records-confederacy](mission-request-for-records-confederacy.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 20 jumps | once per pilot, up to 3 ships | 1 of 85 |
