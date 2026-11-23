@@ -491,3 +491,6 @@ Answer: done: notes at 0.733.0 (b1bbf771), the sync's 304 fault fixed (319e5221;
 
 ## [ENT-411] | 2026-11-23 02:02 UTC | Unity | answer | see: ENT-383
 Answer: done in commit 319e5221 (ENT-400).
+
+## [ENT-412] | 2026-11-23 02:02 UTC | Unity | answer | see: ENT-384
+Answer: done in commit 319e5221 (ENT-394).
