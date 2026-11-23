@@ -12,16 +12,17 @@ Status: proven. Updated: 2026-11-23. Evidence: the plan file (tool plan, show); 
   @nebula (Haven): census-region-<capital> (120 min, four jumps and the
   places others work within six) and its ring (360 min); then the far
   lists nearest their capital, then the roads, so none waits when the
-  region is full. Sol and Krynn regions (180 min) go to Voidborn scouts
-  stationed near them.
-- The outpost watch: one reader takes it first; the frontier three.
+  region is full; Altais and Haven take six each. Sol and Krynn
+  (180 min) go to Voidborn readers, Krynn three (Military's hunts).
+- The outpost watch: one reader takes it first; the frontier five.
 - Readers (@reader): census-voidborn (home, 45 min), the outpost watch
   (50 min), census-worked (120 min: twice a turn), census-frontier
   (170 min), census-worked-far (where others fly, 180 min), the roads.
 - The six scanner scouts: a far list first (1440 min, oldest first), so
   every far system is surveyed; then @reader.
 - Explorers: their road (census-north, -east, -south: rule F33, 170
-  min), then census-worked-far, then their far list.
+  min; the north road first for six), then census-worked-far, then
+  their far list.
 - Hunters: one reader a hunt, one hunter a herd (F9), then @reader. P5:
   every scout hunt carries gift_to trader; no route sells or crafts.
   Only hunts Intel claims; one another claims is dropped.
