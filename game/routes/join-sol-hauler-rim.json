@@ -1,0 +1,20 @@
+{
+ "id": "join-sol-hauler-rim",
+ "kind": "circuit",
+ "title": "An Outer Rim-born hauler with no work at Frontier joins the Solarian corridor: one trip to Sol Central (a test, one ship, empty hold)",
+ "note": "Written by Apollo, 2026-11-23 11:48 UTC (orders ENT-082, block APOLLO: no hauler waits docked; the capitals' once lines by join corridors, Trade's pattern join-sol-trader; rules F8, F34 tier 4, F35, F37). 69 of 95 haulers waited docked at 11:40 UTC (fill.py status hauler): their docked crafts lack inputs in their own storage, the newborns' home boards are booked. At Sol the Solarian once missions of the list First stand within the 6-jump guard: Form TA-1 3,000, Confederacy Infrastructure Audit 4,000, Endorsements 6,000 at Alpha Centauri (table runs: 39 haulers paid TA-1 or the Audit, none of them Endorsements but one; no Nebula-born hauler paid any). Road: Distant Light to Sol 12 jumps through lawless gsc_0046, sabik, aldhibah, oakridge, gienah, ridgecrest: 0 pirates in 3 to 90 readings each over 24 h (data/intel/sightings.jsonl 11:44 UTC; gienah 3 readings), never flown by a ship of ours: one ship first, hold empty (rule F3), lifted when its run holds. Standing for the same reason as join-sol-hauler. Once per pilot, only in the Rim rows.",
+ "far_ok": true,
+ "once": true,
+ "standing": true,
+ "max_ships": 1,
+ "requires": {
+  "empty_hold": true,
+  "empire": "outerrim"
+ },
+ "stops": [
+  {
+   "at": "sol:sol_central:confederacy_central_command",
+   "store": "all"
+  }
+ ]
+}

@@ -68,5 +68,12 @@
    "at": "alpha_centauri:alpha_centauri_colonial_station:alpha_centauri_colonial_station",
    "store": "all"
   }
- ]
+ ],
+ "measured": {
+  "date": "2026-11-23",
+  "runs": 41,
+  "minutes": 2,
+  "credits_per_run": 1290,
+  "cph_per_ship": 49660
+ }
 }
