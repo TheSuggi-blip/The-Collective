@@ -22,31 +22,33 @@ Period: from my report of 09:12 CET to this turn, 10:30 to about 12:30 CET
 on 2026-11-23 (all times CET). Orders in force at the start: orders.log
 ENT-081; at the end ENT-082 (this turn).
 
-- **The purse** (`hive.py stats kpi`, 10:41): wallets 12,968,613 cr plus the
-  faction treasury 1,733,872 cr = 14,702,485 cr. Steady money (what repeats:
-  sales and rewards that come again, minus fuel and repairs) is negative:
-  -99,784 cr an hour over the last hour, -48,176 over 6 hours, -68,619 over
-  24 hours. Money paid once (mission rewards each pilot earns one time)
-  ran +301,871 cr an hour in the last hour, so the wallets still grew: the
-  net of everything read +202,087 cr an hour (1 h), +201,326 (24 h).
-- **Ships** (500): at 10:44, 302 at work and 183 waiting (`fill.py status
-  all`); at 12:05, 367 at work and 125 waiting (`fill.py check all`).
-- **Divisions**, own steady net over 24 hours (`hive.py stats contribution`,
-  10:41): Command -3,499 cr/h; Mining -22,529; Logistics -24,582; Trade
-  +40,221; Military -31,383; Intel -26,926.
-- **Services**: all ten running (`/srv/collective/services/status.json`,
-  10:44). My five-minute job printed one HALT at 09:26 (four treasury
-  top-ups refused: the leader's wallet held 861 cr); the hourly job printed
-  nothing. Two notes from other pilots in the inbox were the game's own
-  shipyard telling Logistics that two commissioned Prayer freighters are
-  built.
+- **The purse** (tool fleet, view=kpi, computed 12:17): wallets 13,677,655
+  cr plus the faction treasury 1,728,042 cr = 15,405,697 cr. Steady money
+  (what repeats: sales and rewards that come again, minus fuel and repairs)
+  is negative: -93,865 cr an hour over the last hour, -47,795 over 6 hours,
+  -72,525 over 24 hours. Money paid once (mission rewards each pilot earns
+  one time) ran +619,785 cr in the last hour and +301,794 an hour over 24
+  hours, so the wallets still grew: the net of everything read +525,920 cr
+  an hour (1 h), +229,269 (24 h).
+- **Ships** (500): at 12:05, 367 at work, 6 starting, 125 waiting, 2 held
+  by hand (`fill.py check all`).
+- **Divisions**, own steady net over 24 hours (view=contribution, 12:17):
+  Command -3,534 cr/h; Mining -24,212; Logistics -23,873; Trade +38,422;
+  Military -32,507; Intel -26,821.
+- **Services and jobs**: all ten services running, each started 11:54
+  (`/srv/collective/services/status.json`). My five-minute job printed one
+  HALT at 09:26 (four treasury top-ups refused: the leader's wallet held
+  861 cr), fixed below. My hourly job printed a test-suite HALT at 11:46
+  for the code of before my fixes: 5 of 102 test files failed; two are
+  fixed this turn, one passed twice when run again, and three were cut by
+  the check's own 180 s limit under load. `inbox.py new` printed nothing.
 
 ## Strategy
 
 Suggi's standing goals G1 to G5 and his operational subgoals O1 to O10
 stand unchanged, word for word, at the head of ENT-082. Trinity installed
-three changes on Suggi's word this morning (queue.log ENT-263, commit
-77d36968): each Admiral may now fund its own division's ships from the
+three changes on Suggi's word this morning (queue.log ENT-263, commits
+f4b42ec0 and 77d36968): each Admiral may now fund its own division's ships from the
 treasury (up to 400,000 cr a ship, 750,000 cr a division a day, the
 treasury keeping 500,000) and Logistics may build routine facilities
 without asking me; any Admiral can stop one ship's run (`stop_pilot.py`);
@@ -123,7 +125,7 @@ every division -- **accepted**, now in Apollo's block.
 
 Thread check: ENT-081 said no trader or hauler waits docked. Traders
 improved (71 -> 39 waiting), haulers did not (73 -> 80). Mercury's paid-once
-figure agrees with the store: paid once ran +301,871 cr an hour at 10:41.
+figure fits the store's: 619,785 cr paid once in the hour to 12:17.
 
 ## Plans
 
@@ -138,12 +140,19 @@ What I did for the Admirals' next turns (from 13:00 CET):
   files back while another member committed (fixed in 418871ed).
 - **The treasury's relay** (2a3cfcb6): money the leader withdraws for named
   pilots is no longer given away to others first; old top-up rows whose
-  pilots were served another way end. 17 such rows ended by 12:05.
+  pilots were served another way end: 17 had ended by 12:07, and at
+  12:25 none stood withdrawn (34 ended, 32 given; funds.json).
 - **Military's runner fix** (ships still in a fight flee first; under 60%
   hull they go to repair): installed for Apophis (b8b901ae, requests
   ENT-442).
-- **Flagships**: five waited at 10:44; three got paid-once missions and
-  flew them, the last two got the Sol corridor (`plan.py`, 12:05).
+- **Flagships**: three waited at the turn's start (FLEET.md, briefing).
+  The last two waiting got the flagships' own one-stop trip to Sol's
+  paid-once missions (`join-sol-command`, adfe6bba), standing so that the
+  loss stop does not rest a trip that earns nothing itself; at 12:22 every
+  command ship flies (`fill.py check command` PASS).
+- **The hourly test check** stops a file at 180 s; one store test alone
+  ran 190 s in my copy. Its author is Trinity: the limit is put to him
+  (queue.log ENT-268), with the gate's 600 s as the measure.
 
 Next turn (14:30 CET): the open builds of DECISIONS Q75 -- the rulebook lean
 pass, the uncommitted-files check, top-up withdrawals by any docked
@@ -173,8 +182,8 @@ meanwhile.
 - **Credits held for someone are no one else's to give.** The leader held
   226,852 cr withdrawn for named pilots; the top-up pass treated it as free
   money and gave it away, the named gifts then failed and the leader fell
-  under the 3,000 cr floor. Record: funds.json, onetime.json, sweep.jsonl;
-  the routes-index HALT of 09:26. Change: owed credits are subtracted from
+  under the 3,000 cr floor. Record: funds.json (withdrawals of 07:32 and
+  09:48 for 44 and 19 pilots); the routes-index HALT of 09:26. Change: owed credits are subtracted from
   every donor (2a3cfcb6). Kept in: knowledge/money-figures.md. Takeaway: a
   relay wallet is two purses in one; the code must name both.
 - **A shared gate runs under everyone's load.** A 300 s test limit and a
@@ -194,6 +203,6 @@ meanwhile.
 - `reports/2026-11-23_mercury_solarian-corridor-waiting-traders-into-once-missions.md` -- Trade.
 - `communications/orders.log` ENT-082 -- the orders now in force.
 - `communications/requests.log` ENT-439, ENT-440, ENT-442 -- my answers (ENT-441 Military's ask).
-- `communications/queue.log` ENT-263 (Trinity), ENT-266 (the gate faults), ENT-267 (wallet, store test, hunt fix).
+- `communications/queue.log` ENT-263 (Trinity), ENT-266 (the gate faults), ENT-267 (wallet, store test, hunt fix), ENT-268 (the hourly test check, to Trinity).
 - `governance/rulebook.md` -- rows F9, F16, F27, F39 and section 14 reworded.
 - `governance/strategy.md` -- phase 1, income, unchanged.
