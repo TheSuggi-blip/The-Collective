@@ -77,6 +77,7 @@
   "newborn-nebula": {
    "title": "Nebula-born haulers: the once missions of Grand Exchange, their home board (orders ENT-068 P6)",
    "routes": [
+    "mission-market-participation-grand",
     "mission-federation-trade-route-prospectus-grand"
    ],
    "trains": [
