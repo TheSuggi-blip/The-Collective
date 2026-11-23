@@ -7,15 +7,15 @@ Status: test. Updated: 2026-11-23. Evidence: table runs (lowest_hull_pct); commi
   hold (lowest hull 52 to 100 percent); two other herds took ships to 4 and
   14 percent and are off for danger (F9). The proven way stays a group of
   three Laser III ships.
-- The Recursion: commissioned for credits at Node Beta, SOURCING since
-  00:27 UTC; the yard waits on its own bids there for three goods. Two
-  once routes buy them at Ironlight Crossroads and sell them into those
-  bids (about 5,000 cr lost against a hull already paid). Lesson: a
-  credits-only commission is only as fast as the yard's bids fill; the
-  next hulls go by materials provided (needs military-recursion-batch).
-- Armor Plate II (armor +10, speed penalty 1) on a Crimson and a Solarian
-  starter, one ship each: what the penalty does to a hull of speed 1 is
-  read from its ship file, then its hunts' lowest hull.
+- The Recursion: commissioned for credits at Node Beta, SOURCING twelve
+  hours on the yard's own bids; two once routes bought the three goods at
+  Ironlight Crossroads and sold them into those bids (35,209 cr out,
+  31,184 back, table runs), and it went BUILDING at once
+  (commission_status). Lesson: fill a credits-only yard's bids yourself;
+  the next hulls go by materials provided (needs military-recursion-batch).
+- Armor Plate II (armor +10, speed penalty 1): fitted on a Crimson Shard
+  (armor 8 -> 18) and a Solarian Theoria (5 -> 15); speed stays 1 (ship
+  files). Lifted for the role (F17); its hunts' lowest hull is read next.
 - Pulse Laser III hunts: tortoises, deuteron slugs, bulwarks; reserve
   goods (ferrous nodule, carapace).
 - Cloudwhales (20 jumps out): a group sets out only on a census under
