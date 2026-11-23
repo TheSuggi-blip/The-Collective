@@ -21,7 +21,9 @@ results prove them; P6: newborns work where they were born, their empire's missi
 
 Ships: 130 miners, 60 Voidborn and 70 newborns (35 Solarian, 35 Nebula; table ships). At the
 briefing of 00:07 UTC 63 miners waited and the fill gate read HALT; at 00:49 UTC the gate read
-`PASS: no ship of miner waits` (fill.py status: 126 at work, 0 waiting, 4 by hand). Credits:
+`PASS: no ship of miner waits` (fill.py status: 126 at work, 0 waiting, 4 by hand). Its last line, at
+00:53 UTC: `HALT: 2 ships of miner wait while 0 places of paying work and 1 tests stand open`. By then
+33 of the 70 newborns held under 3,000 cr, after the fuel of their paid-once circuits (queue.log ENT-243). Credits:
 1,988,694 cr in Mining's wallets (tool fleet, view=money, 00:50 UTC). Steady money, last hour:
 Mining net -29,431 cr an hour, income 8,968, costs 38,399; the fleet's 24-hour net -37,566 cr an
 hour (same call). The newborns' fuel is most of the rise in costs: they flew from about 00:30 UTC.
