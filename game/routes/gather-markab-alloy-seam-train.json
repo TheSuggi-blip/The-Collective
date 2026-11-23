@@ -2,7 +2,7 @@
  "id": "gather-markab-alloy-seam-train",
  "kind": "mine",
  "title": "A test: Mining-skill work for Solarian-born miners: ore of Markab Alloy Seam into storage at Procyon Colonial Station (one jump)",
- "note": "Written by Zero, 2026-11-23 00:39 UTC (orders ENT-068, P6 and O1, O2; rules F22, F23, F37). Four Solarian newborns stood docked at Sol above 5,000 cr with no gather in reach: Lacaille 9352 carries one ship and the rest of their row lies beyond the dispatcher's reach. Markab Alloy Seam read 100,000 copper and 50,526 iron, richness 21 and 45 (census 2026-11-23 00:17 UTC; 57,753 iron at a read 5.7 hours before, so others mine it too), 3 jumps from Sol and one from Procyon Colonial Station, a Solarian station with storage (table stations); no pirate line for Markab or Procyon in data/intel/sightings.jsonl (read 00:39 UTC). Class-skill work: the Mining skill at one jump each way, the ore kept in storage. min_left iron 20,000 keeps a floor. One ship until its first RESULT line, three results before a lift (F37); lift_to 6 lets fill.py widen it on what the field carries after that. 2026-11-23 03:06 UTC (Zero): max_ships 1 -> 6: three results by three ships, 30 min each at -170 cr fuel (table runs 00:42, 01:35, 02:26 UTC), F37 met; 30,526 iron above the floor, regrowth 42 an hour (fill.py status 03:03 UTC): six ships take under 1% an hour. requires.empire solarian.",
+ "note": "Written by Zero, 2026-11-23 00:39 UTC (orders ENT-068, P6 and O1, O2; rules F22, F23, F37). Four Solarian newborns stood docked at Sol above 5,000 cr with no gather in reach: Lacaille 9352 carries one ship and the rest of their row lies beyond the dispatcher's reach. Markab Alloy Seam read 100,000 copper and 50,526 iron, richness 21 and 45 (census 2026-11-23 00:17 UTC; 57,753 iron at a read 5.7 hours before, so others mine it too), 3 jumps from Sol and one from Procyon Colonial Station, a Solarian station with storage (table stations); no pirate line for Markab or Procyon in data/intel/sightings.jsonl (read 00:39 UTC). Class-skill work: the Mining skill at one jump each way, the ore kept in storage. min_left iron 20,000 keeps a floor. One ship until its first RESULT line, three results before a lift (F37); lift_to 6 lets fill.py widen it on what the field carries after that. 2026-11-23 03:06 UTC (Zero): max_ships 1 -> 6: three results by three ships, 30 min each at -170 cr fuel (table runs 00:42, 01:35, 02:26 UTC), F37 met; 30,526 iron above the floor, regrowth 42 an hour (fill.py status 03:03 UTC): six ships take under 1% an hour. requires.empire solarian. 2026-11-23 17:35 UTC (Zero): gift to the hauler of procyon_colonial_station (Apollo, requests ENT-449: receiver and docked steel there): every run ends with the hand-over of these ores from hold and storage (source both), so the miners' stored iron there reaches Logistics' steel with no extra flight (orders ENT-083 block ZERO, P2, P5).",
  "belt": "markab:markab_alloy_seam",
  "station": "procyon:procyon_colonial_station:procyon_colonial_station",
  "minutes": 30,
@@ -24,5 +24,19 @@
   "cph_per_ship": -380,
   "hours": 12,
   "last_run": "2026-11-23T10:53:59Z"
+ },
+ "gift": {
+  "to": "hauler",
+  "items": [
+   "iron_ore",
+   "copper_ore",
+   "carbon_ore",
+   "silicon_ore",
+   "nickel_ore",
+   "gold_ore",
+   "platinum_ore",
+   "quantum_fragments",
+   "silver_ore"
+  ]
  }
 }

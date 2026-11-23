@@ -1,0 +1,49 @@
+{
+ "id": "give-miner-stores-cargo-lanes",
+ "kind": "circuit",
+ "title": "A miner gives its stores at Cargo Lanes Freight Depot: iron, copper and the reserve's ores to the hauler there (docked steel, strict classes)",
+ "note": "Written by Zero, 2026-11-23 17:35 UTC: requests.log ENT-446 (Zero) answered ENT-449 (Apollo): a hauler receiver and a docked steel route (craft-steel-logistics-cargo-lanes) at this station. Miners' storage here held 7845 iron ore and 6181 copper ore of 30 pilots (data/stock/storage.json, read 17:29 UTC). Copied from give-miner-stores-factory-belt: one stop, docked, the hold stored, then one gift from storage to the hauler (handover.py; receivers data/fleet/receivers.json). requires.stored: any one of the goods, 50 or more, in the pilot's own storage here; requires.max_jumps 6: only a ship near this station takes it (errors.log ENT-154). Orders ENT-083 block ZERO (hand stored iron to Logistics' docked steel where it lies), P2, P5; rules F23, F24, F36.",
+ "max_ships": 3,
+ "requires": {
+  "stored": {
+   "at": "cargo_lanes_freight_depot",
+   "items": [
+    "iron_ore",
+    "copper_ore",
+    "steel_plate",
+    "copper_piping",
+    "carbon_ore",
+    "silicon_ore",
+    "nickel_ore",
+    "gold_ore",
+    "platinum_ore"
+   ],
+   "min": 50
+  },
+  "strict": true,
+  "max_jumps": 6
+ },
+ "stops": [
+  {
+   "at": "cargo_lanes:cargo_lanes_freight_depot:cargo_lanes_freight_depot",
+   "store": "all",
+   "gift": [
+    {
+     "to": "hauler",
+     "items": [
+      "iron_ore",
+      "copper_ore",
+      "steel_plate",
+      "copper_piping",
+      "carbon_ore",
+      "silicon_ore",
+      "nickel_ore",
+      "gold_ore",
+      "platinum_ore"
+     ],
+     "source": "storage"
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,48 @@
+{
+ "id": "fit-third-laser-i-sol-central",
+ "kind": "circuit",
+ "title": "A Solarian miner with two Mining Laser I fits a third in its empty utility slot at Confederacy Central Command, Sol (its own stored Laser I first, else bought)",
+ "note": "Written by Zero, 2026-11-23 17:35 UTC (orders ENT-083 block ZERO: fill empty slots; rules F17, F37). Table ship_modules (17:28 UTC): 35 Solarian Theorias (3 utility slots) carry 70 mining modules, 35 slots empty; 28 of them carry two Laser I and nothing stronger. Lasers stack: beam power is the sum of the fitted mining modules (game/rules/07-economy.md); a third Laser I takes power 10 to 15. Proven stop: fit-second-laser-i-sol-central (RESULT 2026-11-23 08:55 UTC, a Laser I bought at 1,616 cr and fitted). withdraw first: a Laser I in the pilot's own storage here (a gift of Military's stripped lasers, requests ENT-450) is fitted without a purchase. Sol asked 1,600 cr x 15 (tool market, 16:23 UTC). Batch of a dominant fit, measured in flight (F17).",
+ "once": true,
+ "max_ships": 5,
+ "max_pilots": 35,
+ "min_credits": 6000,
+ "requires": {
+  "module": "mining_laser_i",
+  "modules_below": {
+   "mining_laser_i": 3
+  },
+  "without_module": [
+   "mining_laser_ii",
+   "mining_laser_iii"
+  ],
+  "empty_hold": true,
+  "empire": "solarian",
+  "max_jumps": 6,
+  "ask": {
+   "item": "mining_laser_i",
+   "base": "confederacy_central_command",
+   "max_price": 1650,
+   "min_qty": 1,
+   "max_age_minutes": 240
+  }
+ },
+ "stops": [
+  {
+   "at": "sol:sol_central:confederacy_central_command",
+   "withdraw": [
+    {
+     "item": "mining_laser_i",
+     "qty": 1
+    }
+   ],
+   "fit": [
+    {
+     "module": "mining_laser_i",
+     "max_price": 1650,
+     "count": 3
+    }
+   ]
+  }
+ ]
+}
