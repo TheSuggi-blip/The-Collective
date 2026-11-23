@@ -105,3 +105,4 @@ Planned:
 | What | When |
 |---|---|
 | Read the effect of this turn's caps and riders: region lists over cadence (Krynn 3, Altais 6, Haven 6), SITES census-north with six explorers first, FRESH frontier with five riders first next turn | -- |
+| Build a HOME per origin empire in census.py (Unity's yes, queue ENT-259): a census without --stay ends at the pilot's own capital this turn or next | -- |
