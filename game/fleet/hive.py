@@ -15,6 +15,8 @@ WHAT: reads the unit's data folder (fleet/, routes/runs.jsonl, market/, scouting
         base outpost|station  what founding one takes, down to the ore: credits, parts, the facility that makes the part,
                               what we hold, what is missing and where our readings show it
         system <id>           one system: chart, places, what is left in its fields, its herds, its market, who was met, our ships
+        herds <species,...>   every place our census ever counted a species: animals now, the most counted, the read's age,
+                              jumps, law, pirates met there, and whether a hunt may take one now (herds.py, rule F38)
         learnings             per member: its newest report, and the knowledge files and learning questions it wrote or
                               changed in the last hours (from the git history of its workspace)
         standing              the standing fleet of a member: its plan route by route with the credits per ship-hour of each
@@ -1655,6 +1657,8 @@ def main():
         return show_base(root, data, now, rest[0])
     if verb == "system" and rest:
         return show_system(root, data, now, rest[0])
+    if verb == "herds" and rest:                      # where a species grazes, with the law and the pirates (herds.py)
+        return __import__("herds").main(args[args.index(verb) + 1:] + ["--data", data])
     if verb == "learnings":
         return show_learnings(root, data, now, float(value("--hours", "8")))
     if verb == "standing":

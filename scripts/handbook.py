@@ -144,6 +144,7 @@ VERBS = {       # hive.py verbs that no tool reaches as hive.py <verb> (the tool
 }
 VERBS["needs"] = None                              # the tool needs gives the same answers (needs.py)
 VERBS["watchdog"] = None                           # the tool fleet view=watchdog gives the same answer (watchdog.py)
+VERBS["herds"] = "Map and intel"                  # where a species grazes, with the law and the pirates (herds.py)
 READERS = {     # docs.py kind -> the readers beside `docs doc=<kind>` (hive.py docs <kind>) that answer it
     "orders": "comms view=orders", "log": "comms view=requests, view=digest", "plan": "plan action=show; docs view=division",
     "metrics": "fleet view=<figure>", "handbook": "docs view=handbook (hive.py handbook)", "member": "docs view=division",

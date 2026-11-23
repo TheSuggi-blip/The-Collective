@@ -137,6 +137,7 @@ per question, from the tools' own texts (collective_mcp.TOOLS) and hive.py's usa
 | one system: chart, places, what is left in its fields, its herds, its market, who was met, our ships | system id=<id> | hive.py system <id> |
 | messages other players wrote to our ships. | comms view=contacts | inbox.py show --to-us |
 | player hails through the CaMeL + dynamic spotlighting injection firewall. | comms view=safe_comms | comms_guard.py |
+| every place our census ever counted a species: animals now, the most counted, the read's age, jumps... | hive verb=herds <species or ...> | hive.py herds <species,...> |
 
 ### Our faction
 

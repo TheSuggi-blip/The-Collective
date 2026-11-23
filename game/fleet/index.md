@@ -8,7 +8,7 @@ author: Unity
 # index.md -- The Fleet's Scripts
 
 Built by `python3 -B scripts/fleet-index.py` from the docstring of every script in this
-folder; never edited by hand. Scripts listed: 67.
+folder; never edited by hand. Scripts listed: 68.
 
 - Run a script from the repository root: `python3 -I -B game/fleet/<script> <arguments>`,
   the arguments as listed under "How to Call Each".
@@ -55,6 +55,7 @@ folder; never edited by hand. Scripts listed: 67.
 | `guidebook.py` | The divisions' guidebooks as capped chapters of small entries: their form and caps, one store section an entry, and the reader. | By hand |
 | `handover.py` | Goods given into the storage of another pilot of ours: a circuit stop's `gift`, a mine route's `gift`, a hunt route's `gift_to`. | By hand |
 | `heldgate.py` | The gate `requires.held_below` of a route: open only while a division holds fewer units of a good than a number. | By hand |
+| `herds.py` | Every place a species was ever counted by our census, with its count now, the age of the read, the law there and the pirate record, for the hunters. | By hand |
 | `hive.py` | The fleet's figures from its own readings: money, routes and their history, levels, what the work carries, what a base takes, a system. | By hand |
 | `hunt.py` | Hunt grazers at one place, loot the carcasses and sell what the kills bring. | Runner (`hunt` routes) |
 | `inbox.py` | Read what other pilots write to our ships and say near them, keep every message once, and file the ones that are for us. | Service |
@@ -499,6 +500,19 @@ Run by hand.
 heldgate.py show [--root <dir>] [--data <dir>]
 --root <dir>   the repository's game/ folder (default: the parent of this file's folder)
 --data <dir>   the unit's data folder (default /srv/collective/data)
+```
+
+### `herds.py`
+
+Every place a species was ever counted by our census, with its count now, the age of the
+read, the law there and the pirate record, for the hunters.
+
+Run by hand.
+
+```
+hive.py herds <species>[,<species>...] [--hours 72] [--keep 2]
+herds.py <species>[,<species>...] [--hours 72] [--keep 2] [--data <data folder>]
+e.g. hive.py herds mirror_skate,cauldronback,inkwyrm,magnet_barnacle,silica_borer
 ```
 
 ### `hive.py`
