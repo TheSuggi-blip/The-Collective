@@ -1,0 +1,44 @@
+{
+ "id": "mission-first-hunt-ironhearth-rigel",
+ "kind": "circuit",
+ "title": "First Hunt: Belt-Grazers: 1,000 cr once; three belt_grazer at last_sigh_vent (lawless, 5 jumps), accepted and handed in at Ironhearth Station",
+ "note": "Written by Apophis 2026-11-23 00:50 UTC: the Frostfeld belts the first two First Hunt routes use read 2 belt-grazers each after our hunters (data/wildlife/frostfeld.json 00:23-00:24 UTC), and 19 newborn drones waited on `herd below 5`. rigel:last_sigh_vent read 12 belt-grazers, no pirate line in public_battles (table herds, census 147 min old). Rigel is lawless (rule F3): `alone` true and an empty hold; a test of three results (F37), one ship at a time. Orders ENT-068, P6.",
+ "once": true,
+ "max_ships": 1,
+ "one_time": [
+  "First Hunt: Belt-Grazers"
+ ],
+ "skip_if_booked": [
+  "First Hunt: Belt-Grazers"
+ ],
+ "stops": [
+  {
+   "at": "ironhearth:ironhearth_station:ironhearth_station",
+   "accept": [
+    "first_hunt_belt_grazers"
+   ],
+   "hunt": [
+    {
+     "at": "rigel:last_sigh_vent",
+     "species": [
+      "belt_grazer"
+     ],
+     "kills": 3,
+     "minutes": 35,
+     "for": [
+      "First Hunt: Belt-Grazers"
+     ],
+     "alone": true,
+     "min_creatures": 5
+    }
+   ]
+  },
+  {
+   "at": "ironhearth:ironhearth_station:ironhearth_station",
+   "store": "all"
+  }
+ ],
+ "requires": {
+  "empty_hold": true
+ }
+}

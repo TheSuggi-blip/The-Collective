@@ -2,9 +2,9 @@
  "id": "mission-strategic-readiness-assessment-crimson",
  "kind": "circuit",
  "title": "Strategic Readiness Assessment: 4000 cr at War Citadel",
- "note": "Written by routemaker.py from the board and the order books: goods for about 0 cr, reward 4000 cr. A test: one ship; whether the mission hands its goods out at the accept is not known until one accept with an empty hold. Added as a test by fill.py on 2026-11-21 19:57 UTC (Apophis): one ship until its first RESULT line is read.",
+ "note": "Written by routemaker.py from the board and the order books: goods for about 0 cr, reward 4000 cr. A test: one ship; whether the mission hands its goods out at the accept is not known until one accept with an empty hold. Added as a test by fill.py on 2026-11-21 19:57 UTC (Apophis): one ship until its first RESULT line is read. 2026-11-23 00:50 UTC (Apophis): max_ships 1 -> 3: a board mission, no herd or bid shared, so three newborn pilots give three independent results at once (F37); 24 newborn Crimson drones waited for paid work.",
  "once": true,
- "max_ships": 1,
+ "max_ships": 3,
  "one_time": [
   "Strategic Readiness Assessment"
  ],
