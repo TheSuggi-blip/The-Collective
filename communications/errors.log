@@ -468,3 +468,8 @@ What: two route notes written 03:51 and 03:53 UTC carried typed times, 03:52 and
 Effect: none on ships or figures; a third stamp of this class in one day (ENT-144, ENT-145).
 Cause: the skill's rule (print the stamp with date -u in the same step) was kept for the date and broken for the minute: I typed the stamp into the edit script by hand.
 Fix: the stamp is now made inside the edit script itself (datetime.now(timezone.utc)), never typed; skill logistics-stock step 23 says so. The later edits of this turn (04:14, 04:16, 04:33 UTC) were stamped that way.
+
+## [ENT-149] | 2026-11-23 04:53 UTC | Apophis | error | ref: game/fleet/hunt.py | see: queue.log
+What: a circuit's hunt step with `alone: "pirates"` was judged as `alone: true` (hunt.py: ALONE_MODE 'strangers' for every --step). The First Hunt routes of the Crimson newborns at Frostfeld and Rigel ended 'left: a ship that is not ours was at the place' with 0 kills (runs.jsonl 02:26 to 04:02 UTC), and three of them now rest after two losing runs each.
+Cause: hunt.py read the rule only from the route file's top level, which a circuit does not carry; route_run.py passed --alone and nothing more.
+Fix: commit a771bdc0: route_run.py passes --alone-mode pirates for such a step and hunt.py keeps it; the two Rigel steps changed from alone true to 'pirates' (98ec971a). Would it have prevented the failure: yes; the test reads both lines.
