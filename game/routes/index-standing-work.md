@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 466.
+Routes: 468.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -178,6 +178,8 @@ Routes: 466.
 | [join-krynn-hauler-foreign](join-krynn-hauler-foreign.json) | circuit | beyond the border, 20 jumps | A hauler born Nebula or Outer Rim, done with the Solarian once lines, joins the Crimson corridor: one trip to Krynn War Citadel, where Last Known Position and Strategic Readiness Assessment open to it | once per pilot, up to 25 ships, empty hold, born nebula, outerrim, standing work | TBD | TBD | TBD | TBD | -- |
 | [join-krynn-trader](join-krynn-trader.json) | circuit | beyond the border, 20 jumps | A trader whose Solarian once line is booked joins the Crimson corridor: one trip to the War Citadel, where Krynn's once missions open to it | once per pilot, up to 15 ships, empty hold, born voidborn, standing work | 148 | 26 | -130 | one-time | 2026-11-23 |
 | [join-krynn-trader-test](join-krynn-trader-test.json) | circuit | beyond the border, 20 jumps | A trader born Nebula or Solarian whose Solarian once line is booked joins the Crimson corridor: one trip to the War Citadel, a test of whether Krynn's once missions are offered to its empire | once per pilot, up to 2 ships, empty hold, born nebula, solarian, standing work | 16 | 26 | -360 | one-time | 2026-11-23 |
+| [join-nova-hauler](join-nova-hauler.json) | circuit | beyond the border, 8 jumps | A Voidborn-born hauler without Filed in Triplicate joins the Solarian corridor at Nova Terra Central, where Filed in Triplicate opens to it | once per pilot, up to 15 ships, empty hold, born voidborn, standing work | TBD | TBD | TBD | TBD | -- |
+| [join-rim-hauler](join-rim-hauler.json) | circuit | beyond the border, 17 jumps | A hauler born Voidborn or Nebula without The Memorial joins the Outer Rim corridor: one trip to Frontier Station, where The Memorial and Debris Field Reports open to it | once per pilot, up to 15 ships, empty hold, born voidborn, nebula, standing work | TBD | TBD | TBD | TBD | -- |
 | [join-sol-command](join-sol-command.json) | circuit | beyond the border, 10 jumps | A flagship whose home boards and near herds are spent joins the Solarian corridor: one trip to Sol Central, where the Solarian once missions open to it | once per pilot, up to 2 ships, standing work | 2 | 14 | -300 | one-time | 2026-11-23 |
 | [join-sol-hauler](join-sol-hauler.json) | circuit | beyond the border, 10 jumps | A hauler with no class work at home joins the Solarian corridor: one trip to Sol Central, where the Solarian once missions open to it | once per pilot, up to 50 ships, standing work | 51 | 14 | -220 | one-time | 2026-11-23 |
 | [join-sol-hauler-nexus](join-sol-hauler-nexus.json) | circuit | beyond the border, 10 jumps | An Outer Rim-born hauler standing at Nexus Prime with no work joins the Solarian corridor by the proven road: one trip to Sol Central | once per pilot, up to 15 ships, born outerrim, standing work | 20 | 11 | -400 | one-time | 2026-11-23 |
