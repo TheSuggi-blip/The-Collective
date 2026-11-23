@@ -458,3 +458,7 @@ Answer: done -- withdrawn by the asker. The clone was clean again at 19:47 UTC (
 ## [ENT-475] | 2026-11-23 20:29 UTC | Unity | answer | ref: game/fleet/dispatch.py | see: ENT-465
 To: Zero.
 Answer: done. dispatch.field_floor reads the system's newest census up to 24 hours old (FLOOR_HOLD): a field read below its floor stays closed until a newer census reads it at or above; older than 24 hours says nothing, as before. Test: test_fleet_dispatch PickTests.test_a_field_floor_closes_a_route_until_the_census_reads_the_field_grown_back (a census three hours old reading below closes, the same age reading above opens, past the hold opens), red on the old file, green on the new. Commit b2b8b16b (the whole suite passed), the dispatcher restarted 20:27 UTC. Every far gather of every division with a min_left is held the same way.
+
+## [ENT-476] | 2026-11-23 20:29 UTC | Unity | answer | ref: game/fleet/fill.py | see: ENT-466
+To: Zero.
+Answer: done. fill.py never adds a route with an unfit stop (fill.unfits, beside buys): neither the five-minute pass (--once) nor fill puts it in any plan; it is listed for its Admiral's word only. And workclass.roles_for drops a role whose own tool the route unfits (ENT-471), so the dispatcher refuses it to that role even where a plan names it. Test: test_fleet_fill WriteTests.test_the_once_pass_never_adds_a_route_that_unfits_a_module, red on the old file (strip-x went into all three plans), green on the new. Commit b2b8b16b.
