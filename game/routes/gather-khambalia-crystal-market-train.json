@@ -19,12 +19,12 @@
  "lift_to": 18,
  "measured": {
   "date": "2026-11-23",
-  "runs": 110,
+  "runs": 227,
   "minutes": 34,
-  "credits_per_run": -140,
-  "cph_per_ship": -250,
+  "credits_per_run": -130,
+  "cph_per_ship": -230,
   "hours": 12,
-  "last_run": "2026-11-23T09:48:09Z"
+  "last_run": "2026-11-23T16:13:08Z"
  },
  "gift": {
   "to": "hauler",
