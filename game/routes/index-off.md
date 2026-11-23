@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 46.
+Routes: 45.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -40,7 +40,6 @@ Routes: 46.
 | [census-watch-clearwater](census-watch-clearwater.json) | census | beyond the border, 10 jumps | Read Clearwater every hour while Logistics measures what Glasslight Shoal grows back (its silicon ore) | up to 1 ships, empty hold, off | TBD | TBD | TBD | TBD | -- |
 | [carry-hydrogen-beta-to-crucible](carry-hydrogen-beta-to-crucible.json) | circuit | beyond the border, 18 jumps | Stored hydrogen carried from Node Beta to The Crucible Garrison's bid at 33 cr or more: a test beyond the border | up to 1 ships, with 41 hydrogen_gas stored at node_beta_industrial_station, while the_crucible_garrison bids 33 cr for hydrogen_gas, off | TBD | TBD | TBD | TBD | -- |
 | [carry-hydrogen-beta-to-crucible-bulk](carry-hydrogen-beta-to-crucible-bulk.json) | circuit | beyond the border, 18 jumps | Stored hydrogen carried by a freighter from Node Beta to The Crucible Garrison's bid at 33 cr or more | up to 1 ships, without mining_laser_i, with 100 hydrogen_gas stored at node_beta_industrial_station, while the_crucible_garrison bids 33 cr for hydrogen_gas, off | TBD | TBD | TBD | TBD | -- |
-| [mission-first-links-grand](mission-first-links-grand.json) | circuit | beyond the border, 21 jumps | First Links: 4,000 cr once per pilot at Grand Exchange; 10 nickel ore bought at Market Prime for Cargo Lanes, 8 copper wiring bought at Cargo Lanes for Market Prime | once per pilot, up to 1 ships, from 4,300 cr, born nebula, off | 1 | 15 | -1,280 | one-time | 2026-11-23 |
 | [mission-the-forge-tax-crucible](mission-the-forge-tax-crucible.json) | circuit | beyond the border, 21 jumps | The Forge Tax: 5,000 cr, mining 20 XP; 20 cobalt ore mined at Hearsay Cobalt (Sargas), accepted and handed in at The Crucible Garrison | once per pilot, up to 3 ships, 20 pilots in all, empty hold, off | 16 | 68 | 3,490 | one-time | 2026-11-21 |
 | [trade-silver-bar-alpha-to-arneb](trade-silver-bar-alpha-to-arneb.json) | circuit | beyond the border, 16 jumps | Silver bars bought at Node Alpha for 420 cr or less, sold into the Obsidian Well's bid at Arneb at 480 or more: a trade test beyond the border | up to 1 ships, 1 pilots in all, empty hold, from 30,000 cr, while cca9e51e6eaf8dada77f698ccc4a09c7 bids 480 cr for silver_bar, off | TBD | TBD | TBD | TBD | -- |
 | [voidborn-first-hunt-schedar](voidborn-first-hunt-schedar.json) | circuit | beyond the border, 2 jumps | First Hunt: Belt-Grazers: 1,000 cr once and 50 Weapons XP; three belt-grazers at Schedar Belt (lawless, one jump past GSC-0027) | once per pilot, up to 1 ships, empty hold, off | 27 | 10 | 20 | one-time | 2026-11-16 |
