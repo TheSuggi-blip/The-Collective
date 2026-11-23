@@ -26,10 +26,8 @@ Status: proven. Updated: 2026-11-21. Evidence: game/fleet/dispatch.py (pick, sta
 ### Keep the explorers' lists ahead of them
 Status: proven. Updated: 2026-11-22. Evidence: intel turn check ROADS, OFFLIST, UNFLOWN; data/routes/runs.jsonl (2026-11-16 23:21 to 2026-11-17 07:30 UTC); hive.py route census-roads; data/scouting/sol.json.
 
-- Ten explorers read 28 never-read systems in about an hour and a half,
-  and 18 more in about an hour; then 24 of 30 scouts gathered for three
-  hours. ROADS HALTs under four hours of first visits: widen a list,
-  nearest first, strongholds out, before the plan is committed.
+- ROADS HALTs under four hours of first visits: widen a list, nearest
+  first, strongholds out, before the plan is committed.
 - ROADS END (no never-read system a list can take, since 2026-11-17):
   rotate explorers onto the lists they flew least (each pilot's own first
   visits) and onto census-worked-far.
@@ -184,3 +182,14 @@ Status: proven. Updated: 2026-11-23. Evidence: requests.log ENT-435, ENT-443; ta
   request for a field with what is left, what comes back an hour, the
   pirates, and the asks of the same good: buying is Trade's (F23), but
   only Intel reads every book.
+
+### A creature that carries a faction's tag is that faction's livestock
+Status: proven. Updated: 2026-11-23. Evidence: observation kind ranch (aspidiske); public_battles 16:51 UTC; admirals.log ENT-110; commit 930c5cfd.
+
+A ranch (patch 0.732.1) tames a species at a place and its animals
+carry the owner's tag in their name ("[HEXC] Patina-Grazer"). A drone
+of ours killed one at a partner's base; the owner's pilot joined the
+fight on the animal's side and destroyed the drone. The census files
+keep species, not names, so the tag shows only in get_nearby and the
+run log, and the run log is cleared by the pilot's next run: a fact
+read there is filed (observe.py) the same turn.

@@ -1,40 +1,33 @@
 # Intel guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-23. Evidence: the plan file (tool plan, show); hive.py briefing (MY STANDING FLEET); fill.py check; workclass.py sales; intel turn check (WORKED, SITES, WATCH, ROADS, UNFLOWN).
+Status: proven. Updated: 2026-11-23. Evidence: the plan file (tool plan, show); hive.py briefing (MY STANDING FLEET); fill.py check; hive.py herds; intel turn check (WORKED, SITES, WATCH, ROADS, UNFLOWN).
 
-- First, every scout: store-hold-central-nexus, give-scout-stores-*
-  (requires.strict: open when strict classes go on), the Survey Scanner
-  II fit (one scanner scout, a test: tests.md), the missions paid
-  once and the Voidborn chain (F34, F35); the Sol audit last (paid 24
-  of 25). No census in First or Then: a census is open to a pilot of
-  another empire wherever it reads (dispatch.newborn_reason).
+- First, every scout: store-hold-central-nexus, give-scout-stores-*,
+  the Survey Scanner II fit (one ship, tests.md), the missions paid
+  once and the Voidborn chain (F34, F35). No census in First or Then: a
+  census is open to a pilot of another empire wherever it reads.
 - Newborn scouts: their capital's region only, @outerrim (Altais) and
-  @nebula (Haven): census-region-<capital> (120 min, four jumps and the
-  places others work within six) and its ring (360 min); then the far
-  lists nearest their capital, then the roads, so none waits when the
-  region is full; Altais and Haven take six each. Sol and Krynn
-  (180 min) go to Voidborn readers, Krynn three (Military's hunts).
-- The outpost watch: one reader takes it first; the frontier five.
-- Readers (@reader): census-voidborn (home, 45 min), the outpost watch
-  (50 min), census-worked (120 min: twice a turn), census-frontier
-  (170 min), census-worked-far (where others fly, 180 min), the roads.
-- The six scanner scouts: a far list first (1440 min, oldest first), so
-  every far system is surveyed; then @reader.
-- Explorers: their road (census-north, -east, -south: rule F33, 170
-  min; the north road first for six), then census-worked-far, then
-  their far list.
-- Hunters: one reader a hunt, one hunter a herd (F9), then @reader;
-  every scout hunt gifts to a trader (P5); hunts another claims drop.
-- census-roads (960 min, four ships): two readers take it first. The
-  census cut: no never-read system left, nobody works there (F8 watch).
-- Then: the docked book watch (watch-book-*, market_poll, one scout a
-  station, 0 fuel), then park.
-- Capacity: the home lists ask more reads than the Voidborn scouts
-  give; a newborn region keeps fewer readers busy than it has newborns
-  (fill.py names the rest).
+  @nebula (Haven): census-region-<capital> (120 min) and its ring
+  (360 min), then the far lists nearest their capital, then the roads.
+  Sol and Krynn (180 min) go to Voidborn readers, Krynn three.
+- The kit's herds (orders P3): census-kit-herds (360 min, three ships)
+  reads the far places of the five species; the near ones stand on
+  the region lists. The hunters read them live: hive.py herds.
+- Readers (@reader): census-voidborn (home, 45 min, five), the outpost
+  watch (50 min), census-worked (120 min), census-frontier (170 min),
+  census-worked-far (180 min), the roads.
+- The scanner scouts: a far list first (1440 min), then @reader.
+- Explorers: their road (census-north, -east, -south, 170 min; the
+  north road first for six), census-worked-far, their far list.
+- Hunters: one reader a hunt, one hunter a herd (F9), every scout hunt
+  gifts to a trader (P5); a hunt another claims drops; a herd that
+  carries a faction's tag is never prey (hunt.py).
+- census-roads (960 min, four ships): no never-read system is left.
+- Then: the docked book watch (watch-book-*, one scout a station, 0
+  fuel), then park.
 - Changed by: a WORKED, SITES or FRESH HALT, a road pirate, a once
-  mission (queue.log); a closed route: fill.py.
+  mission (queue.log), an order naming herds or places.
 
 ### Census lists
 Status: proven. Updated: 2026-11-21. Evidence: game/routes/census-*.json; dispatch.py (pick, stalest_system); intel turn check (OVERLAP, ROADS, WORKED).
