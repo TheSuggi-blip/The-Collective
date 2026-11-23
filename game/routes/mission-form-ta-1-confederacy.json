@@ -2,8 +2,8 @@
  "id": "mission-form-ta-1-confederacy",
  "kind": "circuit",
  "title": "Form TA-1: 3000 cr, +180 XP at Sol Central",
- "note": "Written by routemaker.py from the board and the order books: goods for about 0 cr, reward 3000 cr, sale 0 cr, +180 XP. Test with one ship first. Added as a test by fill.py on 2026-11-22 12:01 UTC (Mercury): up to 3 ships, one result each, until 3 runs are read (rule F37). 2026-11-23 00:26 UTC (fill.py, Mercury): max_ships 3 -> 6. 2026-11-23 00:30 UTC (fill.py, Mercury): max_ships 6 -> 14.",
- "max_ships": 14,
+ "note": "Written by routemaker.py from the board and the order books: goods for about 0 cr, reward 3000 cr, sale 0 cr, +180 XP. Test with one ship first. Added as a test by fill.py on 2026-11-22 12:01 UTC (Mercury): up to 3 ships, one result each, until 3 runs are read (rule F37). 2026-11-23 00:26 UTC (fill.py, Mercury): max_ships 3 -> 6. 2026-11-23 00:30 UTC (fill.py, Mercury): max_ships 6 -> 14. 2026-11-23 00:35 UTC (fill.py, Mercury): max_ships 14 -> 50.",
+ "max_ships": 50,
  "stops": [
   {
    "at": "sol:sol_central:confederacy_central_command",
