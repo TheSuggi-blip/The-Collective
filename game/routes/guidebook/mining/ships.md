@@ -76,5 +76,5 @@ Mining operates across three origin empires. Starter hulls differ in hold, fuel,
 | Solarian | Theoria (70c / 100f / 1W 1D 3U / 16 / 28) | Archimedes (80c, 1W 4U), Glacius (55c ice, 3U), Aether (70c gas, 3U) | Excavation (200c, 1W 3U), Absolute Zero (175c ice, 4U), Nebulae (170c gas, 2U) |
 | Nebula | Prospect (100c / 130f / 1W 1D 2U / 13 / 26) | Bonanza (180c, 3U), Frost Dividend (95c ice, 2U), Yield (85c gas, 2U) | Motherlode (200c, 3U), Cold Storage (180c ice, 3U), Revenue (180c gas, 3U) |
 
-- Fitting rules: strip `pulse_laser_i` on T0 miners to unlock full utility slots (`Theoria` carries 3U at T0; `Prospect` carries 100c base hold). `Bonanza` (Nebula T1, 180c/3U) and `Archimedes` (Solarian T1, 4U) are major Piloting-0 upgrades before Piloting 10.
+- Fitting rules: stripping `pulse_laser_i` (it sits in the weapon slot) frees cpu and power for the utility modules, no utility slot (`Theoria` carries 3U at T0; `Prospect` carries 100c base hold). `Bonanza` (Nebula T1, 180c/3U) and `Archimedes` (Solarian T1, 4U) are major Piloting-0 upgrades before Piloting 10.
 - Neutral exchange: `Workhorse` (T2 multirole, 300c, 4U, Piloting 0) in `game/catalog/ships/pirate-and-other.md`.
