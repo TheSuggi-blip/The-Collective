@@ -91,6 +91,10 @@
   {
    "what": "Weigh one T2 Confluence for a Piloting-10 scout by fuel per read, funded under F12",
    "when": "once a T2 hull's fuel per jump is on record"
+  },
+  {
+   "what": "Read the envoy's replies through diplomacy.py threads; the beacon repeats Hail 2/3 at 2026-11-24 03:33 UTC",
+   "when": "every turn"
   }
  ],
  "ships": {
