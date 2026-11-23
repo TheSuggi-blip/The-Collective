@@ -38,10 +38,10 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Arbiter47 | Node Alpha (`node_alpha`) | 0 | macguffin |
-| Arbiter59 | Synchrony (`synchrony`) | 0 | syndicate |
-| Bickle | Synchrony (`synchrony`) | 0 | macguffin |
+| Arbiter67 | Node Gamma (`node_gamma`) | 0 | macguffin |
+| Arbiter71 | Synchrony (`synchrony`) | 0 | syndicate |
 | Cook | Node Alpha (`node_alpha`) | 0 | futures |
+| Harlan | The Experiment (`the_experiment`) | 0 | macguffin |
 | Speke | Node Gamma (`node_gamma`) | 0 | futures |
 
 ## Standing History
