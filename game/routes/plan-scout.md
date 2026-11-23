@@ -106,6 +106,3 @@ Planned:
 | What | When |
 |---|---|
 | Read the effect of this turn's caps and riders: region lists over cadence (Krynn 3, Altais 6, Haven 6), SITES census-north with six explorers first, FRESH frontier with five riders first | next turn |
-| Build a HOME per origin empire in census.py (Unity's yes, queue ENT-259): a census without --stay ends at the pilot's own capital | this turn or next |
-| Weigh one T2 scout hull for the three Piloting-10 scouts by fuel per read: Confluence quoted 398,368 cr credits only at Central Nexus, over the F12 test budget of a turn | when the division's credits allow |
-| Read the envoy's replies through diplomacy.py threads; the beacon repeats Hail 2/3 at 2026-11-24 03:33 UTC | every turn |
