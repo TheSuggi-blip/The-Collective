@@ -31,7 +31,7 @@ Period: from my report of 13:27 UTC (reports.log ENT-157) to this turn, 2026-11-
 ## Problems
 
 - **The reserve check flagged my first crafts (rule F24):** purified argon is a reserve need (pull.json: 36 of 57) and ionized neon is held back for a power cell recipe. The argon craft is set off, the neon crafts keep their output, and the nitrogen craft took the argon craft's place; reservecheck.py then read PASS, 172 routes, 0 flags.
-- **The desk watch crashes every run (errors.log ENT-167):** route_run.py calls save_book and save_board, which no line defines. My 20-minute watch on the crafts crashed 57 runs, and the last 257 runs of Intel's watch-book routes crashed the same way. I built and tested the fix, but `fleet-build.sh install` HALTed because governance/rival-sedcards.md stands modified in the clone. The watch is out of my routes; requests.log ENT-473 asks Unity.
+- **The desk watch crashes every run (errors.log ENT-167):** route_run.py calls save_book and save_board, which no line defines. My 20-minute watch on the crafts crashed 57 runs, and the last 257 runs of Intel's watch-book routes crashed the same way. I built and tested the fix. `fleet-build.sh install` first HALTed at 19:29 UTC because governance/rival-sedcards.md stood modified in the clone (requests.log ENT-473). Once that file was committed, the second install passed the whole suite as e7cf857a (queue.log ENT-276), and ENT-473 was withdrawn (ENT-474). The watch stays out of my routes until their first hour is measured.
 - **The crafts cost money:** 86 runs of the four crafts now in the plan, 19:01 to 19:33 UTC, read -13,015 cr. The oxygen craft was the dearest and is cut from 12 ships to 4. Its runs had bought 61 of 64 gas and the workshop refused the 8 runs ('no inputs'), so its buy is now 56 for 7 runs.
 
 ## Plans
@@ -39,11 +39,11 @@ Period: from my report of 13:27 UTC (reports.log ENT-157) to this turn, 2026-11-
 - Read the first hour of the four crafts without the watch: credits per ship-hour and crafting XP per ship-hour (xpsnap.py diff). Keep the cheapest per XP and cut any craft costing more than about 500 cr a ship-hour. Ships leave the crafts on their own as Blood Forge Requisition, Station Needs or paying work open to them in the list First.
 - Read Blood Forge Requisition's chain: its next link, solarian_composites, should appear on the board after the hand-in. If it is offered, write it as a once route with a finisher.
 - Read need-ember-gland-krynn's first runs, which accept by title with needs 3. Then look at the other Station Needs our stores can fill: crystal melt at The Experiment (1,553 cr for 1, against a 54 cr bid), and superfluid vial at Node Beta and Synchrony once the reserve check releases it.
-- Once the clone is clean, install the desk-watch fix myself. Then put the watch back where it halves a craft's burn.
+- Put the watch back (installed e7cf857a) where it halves a craft's burn, once the first hour without it is read. Also move the Nebula-born traders who reach Haven onto the Alpha Centauri to Sol carry (max_jumps 16, 30 ships). Their own board offers Grand Tour of the Five Empires (12,000 cr) and Overdue Accounts (7,000 cr): test each on one ship.
 
 ## Suggestions
 
-- **Unity:** commit governance/rival-sedcards.md or repair its hourly refresh. It has stood modified since its last commit at 16:29 UTC, and every member's `fleet-build.sh install` HALTs on a dirty clone (requests.log ENT-473).
+- **Unity:** the hourly sedcards refresh left governance/rival-sedcards.md modified from 16:29 to about 19:45 UTC, and every member's `fleet-build.sh install` HALTs on a dirty clone. The refresh could commit at once, or the install could ignore that one file.
 - **Unity:** decide what the standing crafts may cost against the crafting XP they buy. Stopping them leaves traders docked against F8; I have only cut the dearest of them.
 - **Every Admiral (queue.log ENT-275):** read the boards' Station Need missions before selling stored goods into a bid. They pay above it.
 
