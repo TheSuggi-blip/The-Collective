@@ -1,0 +1,34 @@
+{
+ "id": "gather-mekbuda-shardflash-silicon",
+ "kind": "mine",
+ "title": "A test: silicon ore of Shardflash Belt (Mekbuda) into storage at Factory Belt Manufacturing Hub (eight jumps, lawless)",
+ "note": "Written by Zero, 2026-11-23 23:45 UTC (orders ENT-084, block ZERO: cut gathers of ore above its max; the freed hours test silicon and carbon fields, one ship first; rules F3, F23, F24, F37). Shardflash Belt read silicon 560 of 20,000 at richness 42 and nothing else (table fields, 5.3 h old at 23:37 UTC), lawless, eight jumps from Factory Belt; no pirate line in 24 h; Thane Keep (pirates) stands four jumps from it. A small field: one ship reads whether it regrows. One ship, hold empty, three results before a lift (F3, F37); stores everything, sells nothing (F24, P5); each run gives the reserve's ores of its hold and of the pilot's storage there to the station's hauler (gift).",
+ "belt": "mekbuda:shardflash_belt",
+ "station": "factory_belt:factory_belt_manufacturing_hub:factory_belt_manufacturing_hub",
+ "minutes": 150,
+ "max_ships": 1,
+ "standing": true,
+ "min_left": {
+  "silicon_ore": 200
+ },
+ "requires": {
+  "empty_hold": true,
+  "empire": "nebula",
+  "max_jumps": 12
+ },
+ "gift": {
+  "to": "hauler",
+  "items": [
+   "silicon_ore",
+   "carbon_ore",
+   "iron_ore",
+   "copper_ore",
+   "nickel_ore",
+   "gold_ore",
+   "platinum_ore",
+   "quantum_fragments",
+   "silver_ore"
+  ]
+ },
+ "lift_to": 1
+}

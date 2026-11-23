@@ -1,0 +1,34 @@
+{
+ "id": "gather-gsc-0007-dark-beacon-silicon",
+ "kind": "mine",
+ "title": "A test: silicon ore of Dark Beacon Cluster (GSC-0007) into storage at Cargo Lanes Freight Depot (13 jumps, lawless)",
+ "note": "Written by Zero, 2026-11-23 23:45 UTC (orders ENT-084, block ZERO: cut gathers of ore above its max; the freed hours test silicon and carbon fields, one ship first; rules F3, F23, F24, F37). Dark Beacon Cluster read silicon 3,754 of 20,000 (richness 23) and neodymium 1,877 (14) (table fields, 1.3 h old at 23:37 UTC), lawless, 13 jumps from Cargo Lanes, the Edasich road on by Netherwick and Redmarsh; no pirate line on it in 24 h; Crix Stronghold (pirates) stands two jumps from the field. Silicon short and dear as above. One ship, hold empty, three results before a lift (F3, F37); stores everything, sells nothing (F24, P5); each run gives the reserve's ores of its hold and of the pilot's storage there to the station's hauler (gift).",
+ "belt": "gsc_0007:dark_beacon_cluster",
+ "station": "cargo_lanes:cargo_lanes_freight_depot:cargo_lanes_freight_depot",
+ "minutes": 180,
+ "max_ships": 1,
+ "standing": true,
+ "min_left": {
+  "silicon_ore": 1000
+ },
+ "requires": {
+  "empty_hold": true,
+  "empire": "nebula",
+  "max_jumps": 16
+ },
+ "gift": {
+  "to": "hauler",
+  "items": [
+   "silicon_ore",
+   "carbon_ore",
+   "iron_ore",
+   "copper_ore",
+   "nickel_ore",
+   "gold_ore",
+   "platinum_ore",
+   "quantum_fragments",
+   "silver_ore"
+  ]
+ },
+ "lift_to": 1
+}

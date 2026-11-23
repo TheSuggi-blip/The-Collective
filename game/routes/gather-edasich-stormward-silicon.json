@@ -1,0 +1,34 @@
+{
+ "id": "gather-edasich-stormward-silicon",
+ "kind": "mine",
+ "title": "A test: silicon ore of Stormward Silicon (Edasich) into storage at Cargo Lanes Freight Depot (eleven jumps, lawless)",
+ "note": "Written by Zero, 2026-11-23 23:45 UTC (orders ENT-084, block ZERO: cut gathers of ore above its max; the freed hours test silicon and carbon fields, one ship first; rules F3, F23, F24, F37). Stormward Silicon read silicon 1,626 of 20,000 at richness 37 and nothing else (table fields, 1.4 h old at 23:37 UTC), lawless, eleven jumps from Cargo Lanes by Alrakis, GSC-0051, Segin, Nekkar, Silvermark, Upsilon Andromedae, Lalande 21185, Jabbah, GSC-0047 and Alsuhail; no pirate line on that road in 24 h; Crix Stronghold (pirates) stands four jumps from the field. Silicon is short 48,780 for the reserve and bid 386 to 539 cr a unit (tool market, 23:34 UTC). A Nebula Prospect (hold 100) flies it. One ship, hold empty, three results before a lift (F3, F37); stores everything, sells nothing (F24, P5); each run gives the reserve's ores of its hold and of the pilot's storage there to the station's hauler (gift).",
+ "belt": "edasich:stormward_silicon",
+ "station": "cargo_lanes:cargo_lanes_freight_depot:cargo_lanes_freight_depot",
+ "minutes": 150,
+ "max_ships": 1,
+ "standing": true,
+ "min_left": {
+  "silicon_ore": 500
+ },
+ "requires": {
+  "empty_hold": true,
+  "empire": "nebula",
+  "max_jumps": 14
+ },
+ "gift": {
+  "to": "hauler",
+  "items": [
+   "silicon_ore",
+   "carbon_ore",
+   "iron_ore",
+   "copper_ore",
+   "nickel_ore",
+   "gold_ore",
+   "platinum_ore",
+   "quantum_fragments",
+   "silver_ore"
+  ]
+ },
+ "lift_to": 1
+}
