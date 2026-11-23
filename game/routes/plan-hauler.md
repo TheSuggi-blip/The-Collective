@@ -94,3 +94,4 @@ Planned:
 | What | When |
 |---|---|
 | Market Participation at Grand Exchange for the 25 Nebula-born haulers once their top-up lands (requests ENT-385) | next turn |
+| Cap the empty jump loop at the 8 haulers nearest Piloting 10 when cargo-carrying loops stand for the rest (requests ENT-374) | when the carrying goods exist |
