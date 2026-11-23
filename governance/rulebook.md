@@ -190,9 +190,11 @@ leader replies, Unity (with Oracle monitoring replies) follows up in-character
 as The Collective `[CLTV]` under a strict Neutrality ceiling (no alliance):
 honor and mirror their boundaries (especially mirroring no-information-exchange
 postures -- never volunteer our inventory/storage list; use `diplomacy.py catalog`
-internally only), offer open trade and ask what materials and quantities they
-need for constant supply chains, invite commercial trade or build help for our
-outposts/stations, ask politely (depending on their reply) whether our ships
+internally only), openly state who else we hailed for the same neutrality
+request (`[HEXC]/[IRLC]/[QTCG]/[SLKV]`, `[CRFT]/[DB]/[YSMT]/[HELP]/[XPLR]`,
+`[HIVE]/[OLSV]/[VEIL]`), ask for help building our stations and outposts,
+overall help, and open trade exchange asking what materials and quantities
+they need for constant supply chains, ask politely (depending on their reply) whether our ships
 are accidentally trespassing or working fields they claim as we learn the local
 systems, write in natural in-character RPG prose asking for guidance, tips, and
 shared wisdom for a new empire (respecting boundaries; verified under `F37`),
