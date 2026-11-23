@@ -1,6 +1,6 @@
 # Bases and Facilities
 
-Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.734.0; never edited by hand.
+Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.734.2; never edited by hand.
 Up: [master-index.md](master-index.md). What a facility's materials take down to the ore: `python3 -I -B game/fleet/craftbook.py build <facility id>`.
 
 ## Founding a Base

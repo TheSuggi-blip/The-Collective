@@ -1,5 +1,5 @@
 # Every facility of the game: what it makes or gives, and what building it takes.
-# Source: the game's public catalog, version 0.734.0 | Rows: 2954
+# Source: the game's public catalog, version 0.734.2 | Rows: 2954
 # Written by scripts/catalog-index.py. Do not edit by hand.
 id	name	category	level	upgrades_from	recipe	build_cost	build_time	labor_cost	materials	power_draw	life_support_draw	gives	needs_service	empire	notes
 abyss_solidification_engine	Abyss Solidification Engine	production	4	void_crystallization_plant	crystallize_void_essence	12705000	540	15	steel_plate x 8150; copper_piping x 5150; reinforced_frame x 4600; control_node x 1650; heat_sink x 11100; plasma_injector x 4350; coolant_loop x 8200	6	1				

@@ -1,5 +1,5 @@
 # Every item of the game: its kind, its size, its base value, how often it is made and used.
-# Source: the game's public catalog, version 0.734.0 | Rows: 879
+# Source: the game's public catalog, version 0.734.2 | Rows: 879
 # Written by scripts/catalog-index.py. Do not edit by hand.
 id	name	category	rarity	size	base_value	made_by	used_in_recipes	used_in_builds	extracted_by
 adamant_tooth	Adamant Tooth	misc	legendary	1	1300		1	0	
