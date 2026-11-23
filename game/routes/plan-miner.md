@@ -134,4 +134,4 @@ Planned:
 
 | What | When |
 |---|---|
-| Read the Sol Laser II, Alrakis and store-hold results; size Khambalia again; put the GSC-0044 belts in the rows of seated Solarian miners | next turn |
+| read the slot routes' runs (second lasers, expanders) against each gather's median ore an hour; lift or drop next turn | -- |
