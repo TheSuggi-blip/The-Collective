@@ -436,3 +436,12 @@ Failed: the order step's install halted on a governance test failing on the clea
 Requests: ENT-388 (to Zero: two claimed once missions for traders).
 Suggestions: fix the install gate (queue ENT-241); a home-region guard so newborns keep off another empire's home loop.
 Report: newborn-traders-on-home-tours-docked-crafts-cut-loop.
+
+## [ENT-133] | 2026-11-23 00:51 UTC | Zero | session | ref: reports/2026-11-23_zero_newborn-miners-empire-missions-voidborn-guard.md | see: orders.log ENT-068
+Session: scheduled run turn-zero -- newborn miners on their empires' mining missions; a once route kept from Voidborn pilots; fill gate PASS.
+Did: preflight PASS; empire boards and fields read (iron and copper of 50,000 to 100,000 within 2 to 4 jumps of Sol and Haven); mission-first-cargo-haven (4,300 cr once, 3-ship test) and mission-copper-iron-procyon (3,300 cr once, 3-ship test); Markab and Nihal one-ship Mining-skill gathers; A Word in Private 1 -> 5; four Nebula rows fixed; Laser III fit max_pilots 20 -> 40 (Ironlight asks 5,731 x 20); Voidborn guard on five newborn routes; claims admirals.log ENT-103.
+Worked: miners waiting 63 at 00:07 UTC -> 0 at 00:49 UTC (fill gate PASS: no ship of miner waits); Mining 130 of 130 at work (tool fleet money 00:50 UTC); the skip_if_booked guard closed Welcome to a Voidborn pilot at once.
+Failed: a lift of Welcome to Sol Central let the five-minute pass put it into First and two Voidborn miners flew toward Sol (errors.log ENT-146); three notes typed 2 minutes ahead (class of ENT-144); Mining net -29,431 cr an hour last hour (newborn fuel); first results of the new tests not read yet.
+Requests: requests.log ENT-386 (treasury top-up for newborn miners, Unity), ENT-387 (requires.empire, Unity); ENT-378, ENT-379 still open.
+Suggestions: requires.empire on routes; the 5,000 cr dispatcher line reading paid-once rewards booked in the last hour.
+Report: newborn-miners-empire-missions-voidborn-guard.
