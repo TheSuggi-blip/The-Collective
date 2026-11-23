@@ -103,7 +103,4 @@ Planned:
 
 | What | When |
 |---|---|
-| Market Participation at Grand Exchange for the 25 Nebula-born haulers once their top-up lands (requests ENT-385) | next turn |
-| Cap the empty jump loop at the 8 haulers nearest Piloting 10 when cargo-carrying loops stand for the rest (requests ENT-374) | when the carrying goods exist |
-| A visit step in the runner for Local Sector Survey and Grand Tour (2,500 and 12,000 cr, 340 to 520 Piloting XP) on the newborns' boards | next turn |
-| Found Atria the hour an Outpost Kit is read at Ironlight | on the kit |
+| carry out Unity's answers to ENT-421 and ENT-425 (docked haulers without class work) | next turn |
