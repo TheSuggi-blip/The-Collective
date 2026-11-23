@@ -215,7 +215,7 @@ def take(state, key, messages, channel, pilot, ship, own, tags, now):
         if mid in seen:
             continue
         rec_cand = record(dict(message, id=mid), channel, pilot, ship, own, tags, now)
-        out_fp = "outfp|%s|%s|%s" % (rec_cand.get("sender"), rec_cand.get("with", ""), rec_cand.get("text", "")[:80]) if (rec_cand.get("own") and channel == "private") else ""
+        out_fp = "outfp|%s|%s|%s|%s" % (str(rec_cand.get("t") or rec_cand.get("seen_at") or "")[:10], rec_cand.get("sender"), rec_cand.get("with", ""), rec_cand.get("text", "")[:80]) if (rec_cand.get("own") and channel == "private") else ""
         if out_fp and out_fp in seen:
             seen.add(mid)
             state["seen"].append(mid)
@@ -273,7 +273,7 @@ def one_pass(data, state, look=history, now=None, everything=False, pause=0.4):
             priority.append(p)
     for prev in messages_of(data)[-100:]:
         if prev.get("own") and prev.get("channel") == "private":
-            fp = "outfp|%s|%s|%s" % (prev.get("sender"), prev.get("with", ""), str(prev.get("text") or "")[:80])
+            fp = "outfp|%s|%s|%s|%s" % (str(prev.get("t") or prev.get("seen_at") or "")[:10], prev.get("sender"), prev.get("with", ""), str(prev.get("text") or "")[:80])
             if fp not in state["seen_set"]:
                 state["seen_set"].add(fp)
                 state["seen"].append(fp)
@@ -518,6 +518,13 @@ def main():
                 answer = file_contacts(data, root, True)
                 print(now_text(), answer, flush=True)
                 state["filed_at"], state["unfiled"] = time.time() - (FILE_EVERY - RETRY_EVERY if LEFT in answer else 0), answer.startswith("HALT")
+            if kind == "service" and not once:
+                try:
+                    import diplomacy as _diplo
+                    for ev in _diplo.beacon_tick(data, root):
+                        print(now_text(), "diplomacy:", ev, flush=True)
+                except Exception as dip_err:
+                    print(now_text(), "diplomacy beacon_tick failed: %s: %s" % (type(dip_err).__name__, dip_err), flush=True)
             save_state(data, state)
         except Exception as error:                             # a lost gate or a bad file must not end the service
             print(now_text(), "pass failed: %s: %s" % (type(error).__name__, error), flush=True)

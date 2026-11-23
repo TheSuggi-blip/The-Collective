@@ -203,5 +203,95 @@ class DiplomacyAirlockTests(unittest.TestCase):
             self.assertIn("Neutrality-max", done.stdout)
 
 
+
+    def test_exact_24h_three_day_robotic_beacon_and_hard_stop_at_three(self):
+        self.set_member("oracle")
+        sent_calls = []
+
+        def fake_send(pilot, target_id, content):
+            sent_calls.append((pilot, target_id, content))
+            return True, f"srv-b-{len(sent_calls)}", "delivered"
+
+        t0 = 1795400000.0
+        hail = "Transmission from The Collective [CLTV], led by Unity. We propose a Non-Aggression and Neutrality Pact and welcome mutual information sharing."
+
+        # Day 1 (Hail 1/3) by Oracle scout
+        ok1, res1 = diplomacy.send_diplomatic_dm(str(self.data), str(ROOT), "ILC Comptroller", hail, sender_fn=fake_send, now=t0)
+        self.assertTrue(ok1, res1)
+        self.assertEqual(res1["unanswered_hails"], 1)
+        self.assertEqual(res1["next_hail_at"], diplomacy.now_utc(t0 + 86400))
+
+        # Before +24h -> beacon_tick does nothing
+        self.assertEqual(diplomacy.beacon_tick(str(self.data), str(ROOT), sender_fn=fake_send, now=t0 + 86399), [])
+        self.assertEqual(len(sent_calls), 1)
+
+        # Manual Day 2 send with altered wording is refused (must stay identical across all 3 hails!)
+        ok_diff, err_diff = diplomacy.send_diplomatic_dm(str(self.data), str(ROOT), "ILC Comptroller", "Different wording on day two from The Collective.", sender_fn=fake_send, now=t0 + 86410)
+        self.assertFalse(ok_diff)
+        self.assertIn("byte-for-byte identical", err_diff)
+
+        # Day 2 at exact +24h (+15s service tick jitter) -> fires Hail 2/3, anchors Day 3 to exact t0 + 2*86400 (zero drift!)
+        ev2 = diplomacy.beacon_tick(str(self.data), str(ROOT), sender_fn=fake_send, now=t0 + 86415)
+        self.assertEqual(len(ev2), 1)
+        self.assertIn("beacon 2/3 sent", ev2[0])
+        self.assertEqual(len(sent_calls), 2)
+        snap2 = diplomacy.build_roster_snapshot(str(self.data), str(ROOT), now=t0 + 86415)
+        irlc2 = next(r for r in snap2["rows"] if r["tag"] == "IRLC")
+        self.assertEqual(irlc2["unanswered_hails"], 2)
+        self.assertEqual(irlc2["next_hail_at"], diplomacy.now_utc(t0 + 2 * 86400))
+
+        # Day 3 at exact +48h -> fires Hail 3/3 (final hail!), byte-for-byte identical across all 3 days
+        ev3 = diplomacy.beacon_tick(str(self.data), str(ROOT), sender_fn=fake_send, now=t0 + 2 * 86400 + 5)
+        self.assertEqual(len(ev3), 1)
+        self.assertIn("beacon 3/3 sent", ev3[0])
+        self.assertEqual(len(sent_calls), 3)
+        self.assertEqual(sent_calls[0][2], sent_calls[1][2])
+        self.assertEqual(sent_calls[1][2], sent_calls[2][2])
+        self.assertEqual(sent_calls[0][0], sent_calls[1][0])
+        self.assertEqual(sent_calls[1][0], sent_calls[2][0])
+
+        # Manual 4th unanswered send even after 48h more is REFUSED
+        ok4, err4 = diplomacy.send_diplomatic_dm(str(self.data), str(ROOT), "ILC Comptroller", hail, sender_fn=fake_send, now=t0 + 4 * 86400)
+        self.assertFalse(ok4)
+        self.assertIn("maximum 3 unanswered hails", err4)
+
+        # Day 4 (+72h) -> beacon_tick auto-closes target to no_response and sends NOTHING
+        ev4 = diplomacy.beacon_tick(str(self.data), str(ROOT), sender_fn=fake_send, now=t0 + 3 * 86400 + 10)
+        self.assertEqual(len(ev4), 1)
+        self.assertIn("no_response", ev4[0])
+        self.assertEqual(len(sent_calls), 3)
+        snap4 = diplomacy.build_roster_snapshot(str(self.data), str(ROOT), now=t0 + 3 * 86400 + 10)
+        irlc4 = next(r for r in snap4["rows"] if r["tag"] == "IRLC")
+        self.assertEqual(irlc4["status"], "no_response")
+        self.assertFalse(irlc4["beacon_active"])
+
+    def test_beacon_disarms_immediately_when_leader_replies(self):
+        self.set_member("oracle")
+        sent_calls = []
+
+        def fake_send(pilot, target_id, content):
+            sent_calls.append((pilot, target_id, content))
+            return True, f"srv-r-{len(sent_calls)}", "delivered"
+
+        t0 = 1795400000.0
+        hail = "Transmission from The Collective [CLTV], led by Unity. We propose a Non-Aggression and Neutrality Pact and welcome mutual information sharing."
+        ok1, _ = diplomacy.send_diplomatic_dm(str(self.data), str(ROOT), "craft_boss", hail, sender_fn=fake_send, now=t0)
+        self.assertTrue(ok1)
+
+        # Leader replies 4h later
+        reply_row = {
+            "id": "srv-crft-1", "t": diplomacy.now_utc(t0 + 14400), "seen_at": diplomacy.now_utc(t0 + 14400),
+            "channel": "private", "sender": "craft_boss", "tag": "CRFT", "own": False, "to_us": True,
+            "with": "craft_boss", "pilot": "scout-32", "text": "Sounds good, we accept neutrality!"
+        }
+        with open(self.data / "comms" / "messages.jsonl", "a", encoding="ascii") as fh:
+            fh.write(json.dumps(reply_row) + "\n")
+
+        # Beacon tick disarms immediately -> zero Day-2 spam!
+        ev = diplomacy.beacon_tick(str(self.data), str(ROOT), sender_fn=fake_send, now=t0 + 86400 + 10)
+        self.assertEqual(len(ev), 1)
+        self.assertIn("disarmed [CRFT]", ev[0])
+        self.assertEqual(len(sent_calls), 1)
+
 if __name__ == "__main__":
     unittest.main()

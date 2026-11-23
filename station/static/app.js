@@ -4377,16 +4377,19 @@ function renderEmpireComms(panel, dip) {
   const kgrid = el('div', 'kpis');
   const ekpi = (k, v, sub, cls) => { const d = el('div', 'kpi' + (cls ? ' ' + cls : '')); d.append(el('div', 'k', k), el('div', 'v', v)); if (sub) d.append(el('div', 's', sub)); kgrid.append(d); };
   ekpi('Neutrality pacts', agreed + '/' + (p.targets_total || 0), hailed + ' hailed/in dialogue | Neutrality max (O10)', agreed ? 'main pos' : 'main');
-  ekpi('Scout hails sent', fmt(s.sent_by_us || 0), '24h quota ' + (p.sent_24h || 0) + '/' + (p.cap_24h || 15) + ' via diplomacy.py airlock (F4)', s.sent_by_us ? 'pos' : '');
+  ekpi('Scout hails sent', fmt(s.sent_by_us || 0), '24h quota ' + (p.sent_24h || 0) + '/' + (p.cap_24h || 24) + ' | exact 24h x3 robotic cadence', s.sent_by_us ? 'pos' : '');
   ekpi('Player hails to us', fmt(s.direct_human_in || 0), 'private DMs or @CLTV mentions from real players', s.direct_human_in ? 'warn' : '');
   ekpi('Comms firewall', 'CaMeL + Nonce', 'OpSec outbound scrubber + ' + fmt(s.quarantined || 0) + ' quarantined inbound', (s.quarantined || 0) ? 'warn' : 'pos');
   panel.append(kgrid);
 
   if ((p.rows || []).length) {
-    panel.append(el('h3', null, 'Neutrality outreach roster -- 3 target blocs (' + p.rows.length + ' leaders, O10)'));
-    const statusPill = (st) => {
+    panel.append(el('h3', null, 'Neutrality outreach roster -- 3 target blocs (' + p.rows.length + ' leaders, 3-day exact-24h cadence, O10)'));
+    const statusPill = (r) => {
+      const st = r.status;
       if (st === 'neutrality_agreed' || st === 'info_sharing_active') return el('span', 'pill good', st.replace(/_/g, ' ').toUpperCase());
-      if (st === 'in_dialogue' || st === 'hailed') return el('span', 'pill warn', st.replace(/_/g, ' ').toUpperCase());
+      if (st === 'in_dialogue') return el('span', 'pill warn', 'IN DIALOGUE');
+      if (st === 'hailed') return el('span', 'pill warn', 'HAILED ' + (r.unanswered_hails || 1) + '/' + (r.max_unanswered || 3));
+      if (st === 'no_response') return el('span', 'pill', 'NO RESPONSE (3/3)');
       if (st === 'declined' || st === 'paused') return el('span', 'pill bad', st.toUpperCase());
       return el('span', 'pill', 'UNCONTACTED');
     };
@@ -4394,12 +4397,12 @@ function renderEmpireComms(panel, dip) {
       r.bloc,
       '[' + r.tag + '] ' + r.faction,
       r.leader,
-      statusPill(r.status),
+      statusPill(r),
       r.envoy || '-',
-      r.last_reply_at ? stampCet(r.last_reply_at) : (r.last_sent_at ? 'sent ' + stampCet(r.last_sent_at) : '-'),
+      r.last_reply_at ? ('reply ' + stampCet(r.last_reply_at)) : (r.next_hail_at ? ('next ' + stampCet(r.next_hail_at)) : (r.last_sent_at ? ('sent ' + stampCet(r.last_sent_at)) : '-')),
       r.last_stance && r.last_stance !== 'none' ? r.last_stance.replace(/_/g, ' ') : (r.note || '-'),
     ]);
-    panel.append(fitTable(table(['Bloc', 'Faction', 'Leader', 'Status', 'Scout Envoy', 'Last Activity', 'Stance / Note'], prows)));
+    panel.append(fitTable(table(['Bloc', 'Faction', 'Leader', 'Status', 'Scout Envoy', 'Cadence / Activity', 'Stance / Note'], prows)));
   }
 
   panel.append(el('h3', null, 'Direct diplomatic hails -- received from & sent to players'));

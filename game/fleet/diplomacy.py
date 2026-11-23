@@ -54,13 +54,15 @@ VALID_STATUSES = (
     "in_dialogue",
     "neutrality_agreed",
     "info_sharing_active",
+    "no_response",
     "declined",
     "paused",
 )
-UNANSWERED_COOLDOWN = 24 * 3600       # 1 unanswered hail per recipient per 24h
+UNANSWERED_COOLDOWN = 24 * 3600       # exact 24h spacing between robotic unanswered hails
+MAX_UNANSWERED_HAILS = 3              # hard stop after 3 consecutive unanswered hails (3 days at exact same UTC time)
 REPLY_COOLDOWN = 30 * 60              # 30m minimum spacing even during active dialogue
 MAX_PER_TARGET_24H = 4                # hard anti-spam cap per leader per 24h
-MAX_GLOBAL_24H = 15                   # hard fleetwide anti-spam cap per 24h
+MAX_GLOBAL_24H = 24                   # hard fleetwide anti-spam cap per 24h (12 daily beacons + replies)
 MAX_ACTIVE_ENVOYS = 12                # priority scouts polled every pass by inbox.py
 DAY = 24 * 3600
 
@@ -240,8 +242,15 @@ def pick_envoy_scout(data, member_name, requested="", preferred_pilot=""):
     return scouts[0], ""
 
 
-def check_rate_limits(ledger, target_handle, last_reply_ts, now):
-    """Return error string if rate limit would be violated, else ''."""
+def count_unanswered_streak(sent_log, target_handle, last_reply_ts):
+    """Count consecutive outbound hails to target_handle sent after last_reply_ts (0 if they replied after our last hail)."""
+    low = target_handle.lower()
+    sends = sorted(float(r.get("ts") or 0) for r in (sent_log or []) if str(r.get("to") or "").lower() == low)
+    return sum(1 for ts in sends if ts >= last_reply_ts)
+
+
+def check_rate_limits(ledger, target_handle, last_reply_ts, now, min_unanswered_gap=UNANSWERED_COOLDOWN):
+    """Return error string if rate limit or 3x unanswered cap would be violated, else ''."""
     sent = ledger.get("sent_log") or []
     recent_global = [r for r in sent if now - float(r.get("ts") or 0) < DAY]
     if len(recent_global) >= MAX_GLOBAL_24H:
@@ -256,9 +265,14 @@ def check_rate_limits(ledger, target_handle, last_reply_ts, now):
     if all_target:
         last_sent = max(float(r.get("ts") or 0) for r in all_target)
         replied_since = last_reply_ts > last_sent
-        if not replied_since and (now - last_sent) < UNANSWERED_COOLDOWN:
-            wait_m = int((UNANSWERED_COOLDOWN - (now - last_sent)) / 60) + 1
-            return "already hailed %s with no reply yet (24h anti-spam cooldown: %d min left)" % (target_handle, wait_m)
+        if not replied_since:
+            unanswered = count_unanswered_streak(sent, target_handle, last_reply_ts)
+            if unanswered >= MAX_UNANSWERED_HAILS:
+                return "maximum %d unanswered hails reached for %s (3-day cadence complete; silent unless they reply)" % (
+                    MAX_UNANSWERED_HAILS, target_handle)
+            if (now - last_sent) < min_unanswered_gap:
+                wait_m = int((min_unanswered_gap - (now - last_sent)) / 60) + 1
+                return "already hailed %s with no reply yet (24h anti-spam cooldown: %d min left)" % (target_handle, wait_m)
         if replied_since and (now - last_sent) < REPLY_COOLDOWN:
             wait_m = int((REPLY_COOLDOWN - (now - last_sent)) / 60) + 1
             return "dialogue cooldown active for %s (%d min left)" % (target_handle, wait_m)
@@ -354,13 +368,21 @@ def send_diplomatic_dm(data, root, to_handle, message, pilot="", dry_run=False, 
             return False, "REFUSED: diplomacy with [%s] is paused in ledger" % tag
 
         last_reply = last_inbound_from(data, canonical)
+        if f_state.get("status") == "no_response" and last_reply <= float(f_state.get("last_sent_ts") or 0):
+            return False, "REFUSED: [%s] (%s) reached max 3 unanswered hails (no_response); silent unless they reply" % (tag, canonical)
+
         rate_err = check_rate_limits(ledger, canonical, last_reply, now)
         if rate_err:
             return False, "REFUSED (rate limit): " + rate_err
 
+        unanswered_before = count_unanswered_streak(ledger.get("sent_log"), canonical, last_reply)
+        replied_before = last_reply > float(f_state.get("last_sent_ts") or 0) and bool(f_state.get("sent_count"))
+        if not replied_before and unanswered_before > 0 and f_state.get("beacon_message") and cleaned != f_state.get("beacon_message"):
+            return False, "REFUSED: unanswered follow-up hails (2/3, 3/3) must be byte-for-byte identical to Hail 1/3 (the inbox robotic beacon auto-repeats Hail 1/3 at exact +24h/+48h)"
         envoy, p_err = pick_envoy_scout(data, member, requested=pilot, preferred_pilot=f_state.get("envoy") or "")
         if p_err:
             return False, "REFUSED (envoy): " + p_err
+        attempt_num = 0 if replied_before else (unanswered_before + 1)
 
         payload_preview = {
             "dry_run": dry_run,
@@ -371,6 +393,8 @@ def send_diplomatic_dm(data, root, to_handle, message, pilot="", dry_run=False, 
             "bloc": target["bloc_name"],
             "chars": len(cleaned),
             "content": cleaned,
+            "hail_attempt": attempt_num,
+            "max_unanswered": MAX_UNANSWERED_HAILS,
         }
         if dry_run:
             return True, payload_preview
@@ -382,7 +406,23 @@ def send_diplomatic_dm(data, root, to_handle, message, pilot="", dry_run=False, 
         envoys = register_envoy(data, envoy)
         append_outbound_message(data, server_id, envoy, canonical, tag, member, cleaned, now)
         cur_status = f_state.get("status") or "uncontacted"
-        next_status = "hailed" if cur_status == "uncontacted" else ("in_dialogue" if last_reply > 0 and cur_status == "hailed" else cur_status)
+        if replied_before or cur_status in ("in_dialogue", "neutrality_agreed", "info_sharing_active"):
+            next_status = "in_dialogue" if cur_status in ("uncontacted", "hailed", "no_response") else cur_status
+            unanswered_after = 0
+            anchor_ts = 0
+            next_hail_ts = 0
+            beacon_active = False
+        else:
+            next_status = "hailed"
+            unanswered_after = unanswered_before + 1
+            anchor_ts = int(f_state.get("beacon_anchor_ts") or int(now))
+            if unanswered_after < MAX_UNANSWERED_HAILS:
+                next_hail_ts = anchor_ts + unanswered_after * UNANSWERED_COOLDOWN
+                beacon_active = True
+            else:
+                next_hail_ts = 0
+                beacon_active = False
+
         f_state.update({
             "tag": tag,
             "faction": target["faction"],
@@ -391,8 +431,17 @@ def send_diplomatic_dm(data, root, to_handle, message, pilot="", dry_run=False, 
             "status": next_status,
             "envoy": envoy,
             "last_sent_at": now_utc(now),
+            "last_sent_ts": int(now),
             "last_sent_by": member,
             "sent_count": int(f_state.get("sent_count") or 0) + 1,
+            "unanswered_hails": unanswered_after,
+            "beacon_active": beacon_active,
+            "beacon_anchor_ts": anchor_ts,
+            "next_hail_ts": next_hail_ts,
+            "next_hail_at": now_utc(next_hail_ts) if next_hail_ts else "",
+            "beacon_target": canonical if beacon_active else f_state.get("beacon_target", canonical),
+            "beacon_message": cleaned if beacon_active else "",
+            "beacon_diplomat": member if beacon_active else f_state.get("beacon_diplomat", member),
         })
         ledger["factions"][tag] = f_state
         ledger["sent_log"].append({
@@ -404,12 +453,133 @@ def send_diplomatic_dm(data, root, to_handle, message, pilot="", dry_run=False, 
             "diplomat": member,
             "chars": len(cleaned),
             "msg_id": server_id,
+            "hail_attempt": unanswered_after,
         })
         save_ledger(data, ledger)
         payload_preview["status"] = next_status
         payload_preview["msg_id"] = server_id
         payload_preview["envoys_polled"] = len(envoys)
+        payload_preview["unanswered_hails"] = unanswered_after
+        payload_preview["next_hail_at"] = f_state["next_hail_at"]
         return True, payload_preview
+
+
+def beacon_tick(data, root, sender_fn=call_gate_chat, now=None):
+    """Exact-24h robotic follow-up pass (called by service `inbox` every 30s).
+    For every target with an armed Unity/Oracle hail beacon (`status == 'hailed'`, `unanswered_hails < 3`):
+      - If the target has replied since our last hail: disarm beacon immediately and advance to `in_dialogue`.
+      - If `now >= next_hail_ts`: resend their exact OpSec-verified in-character hail via the assigned scout envoy
+        at exact `beacon_anchor_ts + n * 86400` (zero clock drift across Day 1 -> Day 2 -> Day 3).
+      - Once 3 hails have gone unanswered for 24h (`now >= last_sent_ts + 86400`), auto-mark `no_response` and stop.
+    Returns list of event strings describing actions taken."""
+    if (Path(data) / "fleet" / "STOP").exists():
+        return []
+    now = time.time() if now is None else float(now)
+    _cfg, by_tag, _by_handle = load_targets(root)
+    lock_path = Path(data) / "comms" / "diplomacy.lock"
+    lock_path.parent.mkdir(parents=True, exist_ok=True)
+    events = []
+    with open(lock_path, "w", encoding="ascii") as lock_fh:
+        fcntl.flock(lock_fh, fcntl.LOCK_EX)
+        ledger = load_ledger(data)
+        dirty = False
+        for tag, f_state in sorted(ledger["factions"].items()):
+            if tag not in by_tag:
+                continue
+            status = f_state.get("status") or "uncontacted"
+            if status != "hailed":
+                continue
+            canonical = str(f_state.get("beacon_target") or f_state.get("leader") or by_tag[tag]["leader"])
+            last_sent_ts = float(f_state.get("last_sent_ts") or 0)
+            last_reply = last_inbound_from(data, canonical)
+
+            # 1. Instant disarm if they replied
+            if last_reply > last_sent_ts:
+                f_state["status"] = "in_dialogue"
+                f_state["beacon_active"] = False
+                f_state["next_hail_ts"] = 0
+                f_state["next_hail_at"] = ""
+                f_state["beacon_message"] = ""
+                f_state["unanswered_hails"] = 0
+                dirty = True
+                events.append("disarmed [%s] (%s): reply received -> in_dialogue" % (tag, canonical))
+                continue
+
+            unanswered = int(f_state.get("unanswered_hails") or 0)
+            # 2. Auto-close to no_response 24h after the 3rd unanswered hail
+            if unanswered >= MAX_UNANSWERED_HAILS:
+                f_state["beacon_active"] = False
+                f_state["next_hail_ts"] = 0
+                f_state["next_hail_at"] = ""
+                f_state["beacon_message"] = ""
+                if last_sent_ts and (now - last_sent_ts) >= UNANSWERED_COOLDOWN:
+                    f_state["status"] = "no_response"
+                    dirty = True
+                    events.append("closed [%s] (%s): 3/3 unanswered after 72h -> no_response" % (tag, canonical))
+                continue
+
+            # 3. Fire exact +24h / +48h robotic follow-up using agent's own verified message
+            if not f_state.get("beacon_active"):
+                continue
+            next_ts = float(f_state.get("next_hail_ts") or 0)
+            msg = str(f_state.get("beacon_message") or "")
+            if not next_ts or not msg or now < next_ts:
+                continue
+            ok_text, cleaned, _reasons = comms_guard.audit_outbound(msg)
+            if not ok_text:
+                f_state["beacon_active"] = False
+                dirty = True
+                events.append("disarmed [%s]: stored beacon failed OpSec re-audit" % tag)
+                continue
+            rate_err = check_rate_limits(ledger, canonical, last_reply, now, min_unanswered_gap=UNANSWERED_COOLDOWN - 120)
+            if rate_err:
+                continue
+            diplomat = str(f_state.get("beacon_diplomat") or "Oracle")
+            envoy, p_err = pick_envoy_scout(data, diplomat, requested="", preferred_pilot=f_state.get("envoy") or "")
+            if p_err:
+                events.append("deferred [%s]: %s" % (tag, p_err))
+                continue
+            ok_send, server_id, detail = sender_fn(envoy, canonical, cleaned)
+            if not ok_send:
+                events.append("retry-later [%s] via %s: %s" % (tag, envoy, detail))
+                continue
+
+            register_envoy(data, envoy)
+            append_outbound_message(data, server_id, envoy, canonical, tag, diplomat, cleaned, now)
+            unanswered_after = unanswered + 1
+            anchor_ts = int(f_state.get("beacon_anchor_ts") or int(now))
+            more = unanswered_after < MAX_UNANSWERED_HAILS
+            next_hail_ts = (anchor_ts + unanswered_after * UNANSWERED_COOLDOWN) if more else 0
+            f_state.update({
+                "envoy": envoy,
+                "last_sent_at": now_utc(now),
+                "last_sent_ts": int(now),
+                "last_sent_by": diplomat + " (beacon)",
+                "sent_count": int(f_state.get("sent_count") or 0) + 1,
+                "unanswered_hails": unanswered_after,
+                "beacon_active": more,
+                "next_hail_ts": next_hail_ts,
+                "next_hail_at": now_utc(next_hail_ts) if next_hail_ts else "",
+                "beacon_message": cleaned if more else "",
+            })
+            ledger["sent_log"].append({
+                "ts": int(now),
+                "at": now_utc(now),
+                "to": canonical,
+                "tag": tag,
+                "pilot": envoy,
+                "diplomat": diplomat + " (beacon)",
+                "chars": len(cleaned),
+                "msg_id": server_id,
+                "hail_attempt": unanswered_after,
+            })
+            dirty = True
+            events.append("beacon %d/%d sent [%s] (%s) via %s%s" % (
+                unanswered_after, MAX_UNANSWERED_HAILS, tag, canonical, envoy,
+                (" | next " + f_state["next_hail_at"]) if more else " | final hail (stops unless reply)"))
+        if dirty:
+            save_ledger(data, ledger)
+    return events
 
 
 def build_roster_snapshot(data, root, now=None):
@@ -454,6 +624,10 @@ def build_roster_snapshot(data, root, now=None):
                 "status": status,
                 "envoy": st.get("envoy") or "",
                 "sent_count": int(st.get("sent_count") or 0),
+                "unanswered_hails": int(st.get("unanswered_hails") or 0),
+                "max_unanswered": MAX_UNANSWERED_HAILS,
+                "beacon_active": bool(st.get("beacon_active")),
+                "next_hail_at": st.get("next_hail_at") or "",
                 "last_sent_at": st.get("last_sent_at") or "",
                 "last_reply_at": inbound["t"] if inbound else "",
                 "last_stance": inbound["stance"] if inbound else "none",
@@ -571,11 +745,12 @@ def main(argv=None):
         snap = build_roster_snapshot(data, root)
         print("DIPLOMACY ROSTER (policy=%s) | targets=%d | sent_24h=%d/%d | envoys=%s" % (
             snap["policy"], snap["targets_total"], snap["sent_24h"], snap["cap_24h"], ",".join(snap["envoys"]) or "none"))
-        print("  %-20s %-5s %-24s %-22s %-19s %-10s %-16s %s" % ("BLOC", "TAG", "FACTION", "LEADER", "STATUS", "ENVOY", "LAST_SENT", "STANCE"))
+        print("  %-20s %-5s %-22s %-22s %-16s %-5s %-10s %-16s %s" % ("BLOC", "TAG", "FACTION", "LEADER", "STATUS", "HAILS", "ENVOY", "NEXT_BEACON", "STANCE"))
         for r in snap["rows"]:
-            print("  %-20s %-5s %-24s %-22s %-19s %-10s %-16s %s" % (
-                r["bloc"][:20], r["tag"], r["faction"][:24], r["leader"][:22], r["status"],
-                (r["envoy"] or "-")[:10], (r["last_sent_at"] or "-")[:16], r["last_stance"]))
+            hails_lbl = "%d/%d" % (r["unanswered_hails"], r["max_unanswered"]) if r["status"] in ("hailed", "no_response") else str(r["sent_count"])
+            print("  %-20s %-5s %-22s %-22s %-16s %-5s %-10s %-16s %s" % (
+                r["bloc"][:20], r["tag"], r["faction"][:22], r["leader"][:22], r["status"], hails_lbl,
+                (r["envoy"] or "-")[:10], (r["next_hail_at"] or "-")[:16], r["last_stance"]))
         return 0
 
     if verb == "threads":
@@ -590,6 +765,16 @@ def main(argv=None):
 
     if verb == "envoys":
         print("PRIORITY DIPLOMATIC ENVOYS:", ", ".join(load_envoys(data)) or "(none yet)")
+        return 0
+
+    if verb == "beacon-tick":
+        kind, member = division.member()
+        if kind != "service" and member != "Unity":
+            print("REFUSED: beacon-tick runs from the inbox service or Unity only")
+            return 1
+        events = beacon_tick(data, root)
+        for ev in events:
+            print(ev)
         return 0
 
     if verb == "send":
