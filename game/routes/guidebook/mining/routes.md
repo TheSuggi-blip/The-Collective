@@ -1,28 +1,28 @@
 # Mining guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-23. Evidence: the plan file (tool plan, show); fill.py status miner; table runs; table faction_storage; data/stock/storage.json; handover.py receivers.
+Status: proven. Updated: 2026-11-23. Evidence: the plan file (tool plan, show; applied 2026-11-23T17:39:34Z); fill.py check miner; table runs; table ship_modules; table faction_storage; data/stock/storage.json; handover.py receivers.
 
-Turn of 2026-11-23 11:35 UTC (orders ENT-082). A free miner takes the list
+Turn of 2026-11-23 17:39 UTC (orders ENT-083). A free miner takes the list
 First, its own routes, then the list Then.
 
 | Route | Ships | For |
 |---|---|---|
-| slot routes: second Laser II at Ironlight (sold out 11:18 UTC), second Laser I at Sol, Cargo Expander at Factory Belt; strip-only in Nexus Prime | by asks | every utility slot filled |
+| slot routes: Laser II and III at Ironlight, second and third Laser I at Sol (own stored Laser I first), Cargo Expander at Factory Belt; strip-only in Nexus Prime | by asks | every utility slot filled |
 | `give-miner-stores-<station>` | 3 each | stores to the receivers |
 | once missions | by route | paid once per pilot |
 | seated rows: GSC-0044 Belt, Forgotten Tailings, Acrux | 10, 5, 3 | iron to Central Nexus while faction storage holds 100,000 iron |
 | newborn rows first: store-hold at Sol Central or the Grand Exchange (10 jumps at most) | 35 each | a loaded hold stored at home |
-| Solarian rows: missions, then Lacaille, Markab, Nihal, Harborlight, Electra | 6, 6, 12, 6, 6 | the Mining skill |
-| Nebula rows: gives at Factory Belt and Grand Exchange, missions, then Bunda, Khambalia (gift to the hauler at Factory Belt), Alrakis | 3, 3, 3, 18, 14 | iron to docked steel; the Mining skill |
+| Solarian rows: gives at Procyon, Nova Terra, Confederacy, missions, then Lacaille, Markab, Nihal, Harborlight (gift to the hauler where they store), Electra | 6, 6, 12, 6, 6 | iron to docked steel; the Mining skill |
+| Nebula rows: gives at Factory Belt, Grand Exchange, Cargo Lanes, missions, then Bunda, Khambalia, Alrakis (both with gift to the hauler) | 3, 18, 14 | iron to docked steel; the Mining skill |
 | `@reserve-prism` / `@reserve-hamal` | 1 to 10 each | carbon, nickel, silicon, quantum fragments; the home store within 14 jumps |
 | `@ice-sell` with `gift` | 1 to 2 | ice to Trade, overflow only |
 | Then | shared | gives, GSC-0027 seep, Pherkad, Schedar, Hamal, home-sol-central, `train-jumps-miner`, park |
 
-What would change it: a hauler receiver at Procyon, Cargo Lanes or Nova
-Terra (requests ENT-446); a uranium, thorium or silicon field above its
-floor; Laser II asks back at Ironlight; a newborn seated.
-
+What would change it: a hauler receiver at Alpha Centauri (Electra's
+store); the outpost's iron drawn below 100,000 (an officer seat, orders
+ENT-083 block UNITY); a uranium, thorium or silicon field above its floor;
+Laser II asks back at Ironlight; a newborn seated.
 ### Drains and carries of stored goods (kind `circuit`)
 Status: proven. Updated: 2026-11-21. Evidence: drain-methane-experiment and carry-null-matter-synchrony-nexus (hive.py route <id>).
 
