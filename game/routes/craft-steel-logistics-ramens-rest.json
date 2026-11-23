@@ -71,5 +71,14 @@
    "at": "last_light:ramens_rest:ramens_rest",
    "store": "all"
   }
- ]
+ ],
+ "measured": {
+  "date": "2026-11-23",
+  "runs": 1,
+  "minutes": 12,
+  "credits_per_run": 0,
+  "cph_per_ship": 0,
+  "hours": 12,
+  "last_run": "2026-11-23T06:52:24Z"
+ }
 }

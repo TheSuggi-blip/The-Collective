@@ -41,5 +41,14 @@
    "at": "the_crucible:the_crucible_garrison:the_crucible_garrison",
    "store": "all"
   }
- ]
+ ],
+ "measured": {
+  "date": "2026-11-23",
+  "runs": 1,
+  "minutes": 37,
+  "credits_per_run": -350,
+  "cph_per_ship": -580,
+  "hours": 12,
+  "last_run": "2026-11-23T07:09:02Z"
+ }
 }
