@@ -1,0 +1,45 @@
+{
+ "id": "carry-null-matter-nexus-to-crucible",
+ "kind": "circuit",
+ "title": "Null matter stored by Trade at Central Nexus carried to the station bid at The Crucible Garrison and sold there",
+ "note": "2026-11-23 06:11 UTC (Mercury): orders ENT-078, block MERCURY and P5; the route maker's candidate trade-null-matter-central-the. The Crucible Garrison's own station bid for null matter: 359 x 114 (view_market by a docked trader, 06:11 UTC); Central Nexus, Node Beta and Synchrony bid nothing. Trade's own storage holds 7,900 null matter, 1,724 of it at Central Nexus (table holdings 06:10 UTC; surplus, no need names it). 18 jumps, 13 of them lawless (scripts/map.py route; no pirate on the road in sightings.jsonl since 2026-11-22 06:00 UTC). The carrier withdraws 65 (one Threshold hold), sells at 300 or better, stores the rest at The Crucible. requires.bid closes it while The Crucible shows no bid at 300. Nothing is bought. A test: one ship (F3, F37).",
+ "max_ships": 1,
+ "requires": {
+  "stored": {
+   "at": "central_nexus",
+   "item": "null_matter",
+   "min": 65
+  },
+  "bid": {
+   "item": "null_matter",
+   "base": "the_crucible_garrison",
+   "min_price": 300,
+   "min_qty": 20
+  }
+ },
+ "stops": [
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "null_matter",
+     "qty": 65
+    }
+   ]
+  },
+  {
+   "at": "the_crucible:the_crucible_garrison:the_crucible_garrison",
+   "sell": [
+    {
+     "item": "null_matter",
+     "min_price": 300
+    }
+   ]
+  },
+  {
+   "at": "the_crucible:the_crucible_garrison:the_crucible_garrison",
+   "store": "all"
+  }
+ ]
+}
