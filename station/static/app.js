@@ -8,10 +8,45 @@ function el(tag, cls, text) {
   if (text !== undefined && text !== null) e.textContent = String(text);
   return e;
 }
-async function get(path) {
-  const r = await fetch(path, { cache: 'no-store' });
-  if (!r.ok) throw new Error(path + ' -> ' + r.status);
-  return r.json();
+const _inflight = new Map();
+const _apiErr = { ops: '', diplo: '', inventory: '', docs: '' };
+function get(path) {
+  if (_inflight.has(path)) return _inflight.get(path);
+  const p = (async () => {
+    let lastErr = null;
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+      const timer = ctrl ? setTimeout(() => ctrl.abort(), 15000) : 0;
+      try {
+        const r = await fetch(path, { cache: 'no-store', signal: ctrl ? ctrl.signal : undefined });
+        if (timer) clearTimeout(timer);
+        if (!r.ok) {
+          const err = new Error(path + ' -> ' + r.status);
+          if (r.status >= 500 && attempt === 0) { lastErr = err; await new Promise((ok) => setTimeout(ok, 400)); continue; }
+          throw err;
+        }
+        return await r.json();
+      } catch (e) {
+        if (timer) clearTimeout(timer);
+        lastErr = e && e.name === 'AbortError' ? new Error(path + ' timed out (15s)') : e;
+        if (attempt === 0) { await new Promise((ok) => setTimeout(ok, 400)); continue; }
+      }
+    }
+    throw lastErr || new Error(path + ' failed');
+  })();
+  _inflight.set(path, p);
+  p.finally(() => { if (_inflight.get(path) === p) _inflight.delete(path); });
+  return p;
+}
+function renderRetryCard(panel, heading, detail, onRetry) {
+  const box = el('div', 'retry-card');
+  box.append(el('div', 'retry-title', heading));
+  if (detail) box.append(el('div', 'retry-sub', detail));
+  const btn = el('button', 'rf on', 'Retry now');
+  btn.type = 'button';
+  btn.addEventListener('click', () => { onRetry(); });
+  box.append(btn);
+  panel.append(box);
 }
 async function post(path, body) {
   for (let attempt = 0; attempt < 2; attempt++) {
@@ -2120,9 +2155,15 @@ async function selectShip(name, center) {
 // ---------------------------------------------------------------- right panel
 
 let INVCACHE = { at: 0, value: null };
-async function inventoryOf() {
-  if (Date.now() - INVCACHE.at < 60000 && INVCACHE.value) return INVCACHE.value;
-  try { INVCACHE = { at: Date.now(), value: await get('/api/inventory') }; } catch (e) { return INVCACHE.value; }
+async function inventoryOf(force) {
+  if (!force && Date.now() - INVCACHE.at < 60000 && INVCACHE.value) return INVCACHE.value;
+  try {
+    INVCACHE = { at: Date.now(), value: await get('/api/inventory') };
+    _apiErr.inventory = '';
+  } catch (e) {
+    _apiErr.inventory = (e && e.message) ? e.message : 'inventory fetch failed';
+    return INVCACHE.value;
+  }
   return INVCACHE.value;
 }
 async function renderSelection(panel, live) {
@@ -2498,7 +2539,12 @@ async function renderInventory(panel, live) {
   if (invItem) return renderItem(panel, live);
   const [d, ops] = await Promise.all([inventoryOf(), opsOf()]);
   if (!live()) return;
-  if (!d || !d.written) {
+  if (!d) {
+    panel.append(el('h2', null, 'Inventory & Supply Ledger'));
+    renderRetryCard(panel, 'Inventory feed temporarily unavailable', _apiErr.inventory || 'Station server did not return inventory data.', () => { inventoryOf(true).then(() => render()); });
+    return;
+  }
+  if (!d.written) {
     panel.append(el('h2', null, 'Inventory & Supply Ledger'));
     panel.append(el('p', 'empty', 'Waiting on first ledger storage pass...'));
     return;
@@ -2874,9 +2920,15 @@ let docSub = 'Reports', docAuthor = 'all', docQuery = '', logQuery = '', logAuth
 let DOCSCACHE = { data: null, at: 0 };
 let playbookDiv = 'mining', playbookChap = 'card', PLAYBOOKS = { at: 0, data: null };
 let progHorizon = 'all', PROGCACHE = { at: 0, data: null };
-async function docsOf() {
-  if (Date.now() - DOCSCACHE.at < 30000 && DOCSCACHE.data) return DOCSCACHE.data;
-  try { DOCSCACHE = { data: await get('/api/docs'), at: Date.now() }; } catch (e) { return DOCSCACHE.data; }
+async function docsOf(force) {
+  if (!force && Date.now() - DOCSCACHE.at < 30000 && DOCSCACHE.data) return DOCSCACHE.data;
+  try {
+    DOCSCACHE = { data: await get('/api/docs'), at: Date.now() };
+    _apiErr.docs = '';
+  } catch (e) {
+    _apiErr.docs = (e && e.message) ? e.message : 'docs fetch failed';
+    return DOCSCACHE.data;
+  }
   return DOCSCACHE.data;
 }
 
@@ -3642,25 +3694,40 @@ function keepOrder(rows) {                       // a table that reorders under 
 let INCOME = { routes: [], at: 0, key: '' };
 let OPS = { data: null, at: 0 };
 let DIPLO = { data: null, at: 0 };
-let empSub = 'Infrastructure', empSort = 'wealth', rivalFocus = null;
-async function opsOf() {
-  if (Date.now() - OPS.at < 30000 && OPS.data) return OPS.data;
-  try { OPS = { data: await get('/api/ops'), at: Date.now() }; } catch (e) { return OPS.data; }
+let empSub = 'Infrastructure', empSort = 'wealth', rivalFocus = null, sedFocusTag = '';
+async function opsOf(force) {
+  if (!force && Date.now() - OPS.at < 30000 && OPS.data) return OPS.data;
+  try {
+    OPS = { data: await get('/api/ops'), at: Date.now() };
+    _apiErr.ops = '';
+  } catch (e) {
+    _apiErr.ops = (e && e.message) ? e.message : 'ops fetch failed';
+    return OPS.data;
+  }
   return OPS.data;
 }
 async function diploOf(force) {
   if (!force && Date.now() - DIPLO.at < 45000 && DIPLO.data) return DIPLO.data;
   try {
     DIPLO = { data: await get('/api/diplomacy'), at: Date.now() };
+    _apiErr.diplo = '';
     realmVer++;
     renderPowers();
     renderPolityCard();
     renderLegend();
     draw();
-  } catch (e) { return DIPLO.data; }
+  } catch (e) {
+    _apiErr.diplo = (e && e.message) ? e.message : 'diplomacy fetch failed';
+    return DIPLO.data;
+  }
   return DIPLO.data;
 }
-async function loadDiplo() { return diploOf(true); }
+async function loadDiplo() {
+  const had = Boolean(DIPLO.data);
+  const res = await diploOf(true);
+  if (res && tab === 'Empire' && (!had || empSub === 'Rivals' || empSub === 'Diplomacy' || empSub === 'Comms')) render();
+  return res;
+}
 function focusRivalOnMap(tag, name, baseSyss, sightSyss) {
   const bSet = new Set((baseSyss || []).filter((id) => sys.has(id)));
   const sSet = new Set((sightSyss || []).filter((id) => sys.has(id)));
@@ -3682,12 +3749,14 @@ function focusRivalOnMap(tag, name, baseSyss, sightSyss) {
   draw();
 }
 async function loadOps() {
-  await opsOf();
+  const had = Boolean(OPS.data);
+  await opsOf(true);
   battleSystems.clear();
   ((OPS.data && OPS.data.alerts && OPS.data.alerts.battles) || []).forEach((b) => { if (b.system) battleSystems.add(b.system); });
   if (S) { status(); renderMembers(); }
   renderAlerts();
   draw();
+  if (OPS.data && (!had && (tab === 'Empire' || tab === 'Metrics' || tab === 'Inventory'))) render();
 }
 function pbar(val, max, cls) {
   const w = el('span', 'pbar ' + (cls || '')), fill = el('i');
@@ -4125,7 +4194,7 @@ async function renderMetrics(panel, live) {
       const pHead = el('div', 'ichead');
       pHead.append(
         el('h3', null, 'Productivity & progress over time'),
-        linkButton('Open full roadmap ->', () => { tab = 'Docs'; docsSub = 'Progression'; docView = null; render(); }, 'doclink')
+        linkButton('Open full roadmap ->', () => { tab = 'Docs'; docSub = 'Progression'; docView = null; render(); }, 'doclink')
       );
       panel.append(pHead);
       const pgrid = el('div', 'kpis');
@@ -4301,8 +4370,14 @@ async function renderEmpire(panel, live) {
   }
   panel.append(subBar);
 
+  if (!ops && !dip) {
+    renderRetryCard(panel, 'Empire & Diplomacy telemetry temporarily unavailable', (_apiErr.ops || _apiErr.diplo || 'Station server did not respond.'), () => {
+      Promise.all([opsOf(true), diploOf(true)]).then(() => render());
+    });
+    return;
+  }
   if (empSub === 'Rivals') {
-    renderEmpireRivals(panel, dip);
+    renderEmpireRivals(panel, dip, ops);
     return;
   }
   if (empSub === 'Sedcards') {
@@ -4487,11 +4562,42 @@ function renderFreshnessStrip(panel, dip) {
 
 function renderEmpireSedcards(panel, rv) {
   if (!rv || !(rv.sedcards || []).length) {
-    panel.append(el('p', 'empty', 'No rival sedcard data available yet (waiting on rival_snapshots in read.db).'));
+    if (_apiErr.ops) {
+      renderRetryCard(panel, 'Rival Sedcards feed temporarily unavailable', _apiErr.ops, () => { opsOf(true).then(() => render()); });
+    } else {
+      panel.append(el('p', 'empty', 'No rival sedcard data available yet (waiting on rival_snapshots in read.db).'));
+    }
     return;
   }
   const cards = rv.sedcards || [];
-  panel.append(el('h3', null, 'Adopted rival doctrines by division (F40 -- auto-synced hourly to governance/rival-sedcards.md)'));
+  const playbooks = rv.strategy_playbooks || [];
+  if (playbooks.length) {
+    panel.append(el('h3', null, 'The Collective 8-Strategy Playbook Matrix (Copy vs Counter -- live fleet status, F40)'));
+    const pbGrid = el('div', 'pb-grid');
+    for (const p of playbooks) {
+      const sc = p.status_code || 'PARTIAL';
+      const cls = sc === 'ACTIVE' ? 'good' : sc === 'GAP' ? 'bad' : 'warn';
+      const card = el('div', 'pb-card pb-' + sc.toLowerCase());
+      const hd = el('div', 'pb-head');
+      hd.append(el('b', null, p.name), el('span', 'pill ' + cls, p.our_status || sc));
+      card.append(hd);
+      const owners = el('div', 'pb-owners');
+      for (const dn of (p.divisions || [])) {
+        const tg = el('span', 'pill', dn);
+        if (DIV[dn]) tg.style.borderColor = DIV[dn];
+        owners.append(tg);
+      }
+      card.append(owners);
+      card.append(el('div', 'sed-meta', 'Proven by: ' + (p.proven_by || '--')));
+      card.append(el('div', 'sed-row', p.how_it_works || ''));
+      card.append(el('div', 'pb-copy', 'COPY: ' + (p.how_to_copy || '--')));
+      card.append(el('div', 'pb-counter', 'COUNTER: ' + (p.how_to_counter || '--')));
+      pbGrid.append(card);
+    }
+    panel.append(pbGrid);
+  }
+
+  panel.append(el('h3', null, 'Role-filtered Copy & Counter orders by division (auto-synced hourly to governance/rival-sedcards.md)'));
   const tricks = rv.tricks_by_division || {};
   const tGrid = el('div', 'sed-tricks');
   for (const dn of ['Logistics', 'Trade', 'Mining', 'Military', 'Intel', 'Command']) {
@@ -4508,16 +4614,6 @@ function renderEmpireSedcards(panel, rv) {
   }
   panel.append(tGrid);
 
-  if ((rv.tourism_top || []).length) {
-    panel.append(el('h3', null, 'Station tourism revenue benchmark'));
-    panel.append(fitTable(table(
-      ['Rank', 'Station', 'System', 'Tourism Revenue'],
-      rv.tourism_top.map((x) => ['#' + x.rank, x.name, x.system, fmtCompact(x.revenue) + ' cr']),
-      [3]
-    )));
-  }
-
-  panel.append(el('h3', null, 'Top rival faction sedcards (' + cards.length + ' tracked | velocity window ' + (rv.span_hours || 0).toFixed(1) + 'h)'));
   const me = rv.market_edges || {};
   if ((me.outsupply_bids || []).length || (me.outsource_cheap || []).length || (me.undercut_targets || []).length) {
     panel.append(el('h3', null, 'Live Outsupply / Outsource / Undercut board (500-ship multi-wing portfolio)'));
@@ -4536,22 +4632,36 @@ function renderEmpireSedcards(panel, rv) {
     addEdge('UNDERCUT (Inflated Rival Asks)', '#e8c35a', me.undercut_targets, (x) => x.item + ' @ ' + fmt(x.price) + ' cr x' + fmt(x.qty) + ' ([' + x.tag + ']@' + x.system + ')');
     panel.append(egrid);
   }
+
+  panel.append(el('h3', null, 'Top rival faction sedcards (' + cards.length + ' tracked | velocity window ' + (rv.span_hours || 0).toFixed(1) + 'h)'));
   const grid = el('div', 'sed-grid');
   for (const c of cards) {
-    const card = el('div', 'sed-card' + (c.threat === 'high' ? ' danger' : c.standing === 'NEUTRAL' ? ' neutral' : ''));
+    const isFocus = sedFocusTag && sedFocusTag === c.tag;
+    const card = el('div', 'sed-card' + (c.threat === 'high' ? ' danger' : c.standing === 'NEUTRAL' ? ' neutral' : '') + (isFocus ? ' sed-focus' : ''));
+    card.dataset.sedTag = c.tag;
     const top = el('div', 'sed-top');
     const title = el('b', null, '[' + c.tag + '] ' + c.name);
     const stCls = c.standing === 'NEUTRAL' ? 'good' : c.threat === 'high' ? 'bad' : 'warn';
     top.append(title, el('span', 'pill ' + stCls, c.standing), el('span', 'pill', c.archetype));
+    for (const od of (c.owner_divisions || []).slice(0, 3)) {
+      const ob = el('span', 'pill', od);
+      if (DIV[od]) ob.style.borderColor = DIV[od];
+      top.append(ob);
+    }
     card.append(top);
 
     const vel = c.wealth_vel_h !== null && c.wealth_vel_h !== undefined
       ? (c.wealth_vel_h >= 0 ? '+' : '') + fmtCompact(c.wealth_vel_h) + '/h'
       : '--';
+    const cm = c.capital_mix || {};
     card.append(el('div', 'sed-meta',
       'Wealth ' + fmtCompact(c.wealth) + ' cr (' + vel + ') | ' + fmtCompact(c.wealth_per_ship) + '/sh | ' +
-      fmt(c.members) + ' ships | ' + fmt(c.bases) + ' bases | Avg T' + (c.avg_tier || 0).toFixed(2) + ' (max T' + (c.max_tier || 0) + ') | PvP ' + fmt(c.kills_pvp)
+      fmt(c.members) + ' sh (' + (c.util_pct || 0).toFixed(0) + '% live) | ' + fmt(c.bases) + 'b | Mix V:' + (cm.storage_pct || 0).toFixed(0) + '% S:' + (cm.ships_pct || 0).toFixed(0) + '% F:' + (cm.facility_pct || 0).toFixed(0) + '% | Avg T' + (c.avg_tier || 0).toFixed(2) + ' | PvP ' + fmt(c.kills_pvp) + ' / PvE ' + fmt(c.kills_pve)
     ));
+
+    if (c.how_they_play) {
+      card.append(el('div', 'sed-engine', 'How they play: ' + c.how_they_play));
+    }
 
     const hullsTxt = (c.spotted_hulls || []).length
       ? c.spotted_hulls.slice(0, 4).map((h) => h.name + ' [T' + h.tier + '/P' + h.piloting + '/' + h.cargo + 'c] x' + h.pilots).join(', ')
@@ -4571,21 +4681,36 @@ function renderEmpireSedcards(panel, rv) {
       el('div', 'sed-row', 'Space: ' + sysTxt + ((c.allies || []).length ? ' | Allies: ' + c.allies.join(', ') : '')),
       el('div', 'sed-row', 'Buys: ' + bidTxt + ' | Sells: ' + askTxt)
     );
+    if ((c.unscanned_bases || []).length) {
+      card.append(el('div', 'sed-gap', 'Intel gap -- ' + c.unscanned_bases.length + ' unscanned base(s): ' + c.unscanned_bases.slice(0, 5).join(', ')));
+    }
     if (c.verified_notes) {
       card.append(el('div', 'sed-row', 'Verified claims/needs: ' + c.verified_notes));
     } else if ((c.comms_signals || []).length) {
       card.append(el('div', 'sed-row', 'Inbound comms (verify): ' + c.comms_signals[0].excerpt));
     }
-    card.append(el('div', 'sed-adopt', 'Adopt / Counter: ' + (c.counter_play || '--')));
+    if (c.copy_play) {
+      card.append(el('div', 'sed-copy', 'COPY: ' + c.copy_play));
+    }
+    card.append(el('div', 'sed-counter', 'COUNTER: ' + (c.counter_play || '--')));
     grid.append(card);
   }
   panel.append(grid);
 }
 
-function renderEmpireRivals(panel, dip) {
-  if (!dip) { panel.append(el('p', 'empty', 'Loading galactic faction intelligence...')); return; }
+function renderEmpireRivals(panel, dip, ops) {
+  if (!dip) {
+    if (_apiErr.diplo) {
+      renderRetryCard(panel, 'Galactic faction intelligence unavailable', _apiErr.diplo, () => { diploOf(true).then(() => render()); });
+    } else {
+      panel.append(el('p', 'empty', 'Loading galactic faction intelligence...'));
+    }
+    return;
+  }
   renderFreshnessStrip(panel, dip);
   const our = dip.our || {}, ranks = our.ranks || {};
+  const rv = (ops && ops.rivals) || {};
+  const sedByTag = new Map(((rv && rv.sedcards) || []).map((c) => [c.tag, c]));
   let list = [...(dip.rivals || [])];
   if (empActiveOnly) list = list.filter((r) => r.tag === 'CLTV' || r.activity_state !== 'dormant');
   const topWealth = (dip.rivals || []).reduce((m, r) => (r.wealth > (m ? m.wealth : 0) ? r : m), null);
@@ -4611,6 +4736,30 @@ function renderEmpireRivals(panel, dip) {
     fmt(shipsTot) + ' ships (' + fmtCompact(our.net_worth || our.total_purse || 0) + ' cr net worth) vs rivals 60-285d old',
     'pos');
   panel.append(kgrid);
+
+  const pl = (rv && rv.playstyle_leaders) || {};
+  const psSpecs = [
+    ['Tourism #1', pl.tourism_revenue, (x) => x.name + ' (' + fmtCompact(x.value) + ' cr)'],
+    ['Exchange Book #1', pl.exchange_sellers, (x) => x.name + ' (' + fmtCompact(x.value) + ' cr)'],
+    ['Express Pax #1', pl.passengers_top, (x) => x.name + ' (' + fmt(x.value) + ' pax)'],
+    ['Docked Craft #1', pl.crafted_top, (x) => x.name + ' (' + fmtCompact(x.value) + ')'],
+    ['Missions #1', pl.missions_top, (x) => '[' + x.tag + '] ' + fmt(x.value)],
+    ['PvE Combat #1', pl.pve_top, (x) => '[' + x.tag + '] ' + fmt(x.value) + ' kills'],
+  ];
+  const psItems = psSpecs.filter((s) => s[1] && s[1].length);
+  if (psItems.length) {
+    const strip = el('div', 'ps-strip');
+    for (const [lbl, arr, fn] of psItems) {
+      const chip = el('div', 'ps-chip');
+      chip.append(el('span', 'ps-k', lbl), el('span', 'ps-v', fn(arr[0])));
+      strip.append(chip);
+    }
+    const pbBtn = el('button', 'rf on', 'Open 8-Strategy Playbooks ->');
+    pbBtn.type = 'button';
+    pbBtn.addEventListener('click', () => { sedFocusTag = ''; empSub = 'Sedcards'; render(); });
+    strip.append(pbBtn);
+    panel.append(strip);
+  }
 
   const sortBar = el('div', 'sortbar');
   sortBar.append(el('span', 'sortlbl', 'Rank by:'));
@@ -4655,7 +4804,7 @@ function renderEmpireRivals(panel, dip) {
 
   const tbl = el('table', 'mtable rival-table');
   const thead = el('thead'), trH = el('tr');
-  ['#', 'Faction', 'Power', 'Members', 'Live 1h/24h', 'Bases', 'Wealth / Mix', 'Est. Income/h', 'Tech / Lv', 'Map'].forEach((h, idx) => {
+  ['#', 'Faction & Playstyle', 'Power', 'Members', 'Live 1h/24h', 'Bases', 'Wealth / Mix', 'Est. Income/h', 'Tech / Lv', 'Actions'].forEach((h, idx) => {
     const th = el('th', [3, 4, 5, 6, 7].includes(idx) ? 'num' : null, h);
     trH.append(th);
   });
@@ -4664,12 +4813,16 @@ function renderEmpireRivals(panel, dip) {
 
   const tbody = el('tbody');
   list.slice(0, 40).forEach((r, idx) => {
+    const sed = sedByTag.get(r.tag) || null;
     const tr = el('tr', r.tag === 'CLTV' ? 'us-row' : (rivalFocus && rivalFocus.tag === r.tag ? 'focus-row' : (r.activity_state === 'dormant' ? 'dormant-row' : null)));
     tr.append(el('td', 'mono', String(idx + 1)));
 
     const fCell = el('td');
     const fTop = el('div', 'rname');
     fTop.append(el('span', 'rtag', '[' + r.tag + ']'), ' ', el('b', null, r.name), ' ', actStatePill(r.activity_state));
+    if (sed && sed.archetype) {
+      fTop.append(' ', el('span', 'pill ' + (sed.threat === 'high' ? 'bad' : 'info'), sed.archetype));
+    }
     fCell.append(fTop);
     const metaBits = [];
     if (r.empire && r.empire !== '--') metaBits.push(r.empire);
@@ -4678,6 +4831,9 @@ function renderEmpireRivals(panel, dip) {
     if (r.allies && r.allies.length) metaBits.push('allies: ' + r.allies.slice(0, 4).join(',') + (r.allies.length > 4 ? '+' + (r.allies.length - 4) : ''));
     if (r.wars && r.wars.length) metaBits.push('AT WAR: ' + r.wars.join(','));
     if (metaBits.length) fCell.append(el('div', 'rmeta-sub', metaBits.join(' | ')));
+    if (sed && sed.how_they_play) {
+      fCell.append(el('div', 'rmeta-sub rdoc-hint', sed.how_they_play.slice(0, 118) + (sed.how_they_play.length > 118 ? '...' : '')));
+    }
     tr.append(fCell);
 
     const pCell = el('td');
@@ -4735,6 +4891,7 @@ function renderEmpireRivals(panel, dip) {
     tr.append(tCell);
 
     const mapCell = el('td');
+    const actRow = el('div', 'maploc-row');
     const hasMap = (r.base_systems && r.base_systems.length) || (r.sight_systems && r.sight_systems.length);
     if (hasMap) {
       const isOn = rivalFocus && rivalFocus.tag === r.tag;
@@ -4745,17 +4902,23 @@ function renderEmpireRivals(panel, dip) {
         if (rivalFocus && rivalFocus.tag === r.tag) { rivalFocus = null; renderAlerts(); draw(); render(); }
         else { focusRivalOnMap(r.tag, r.name, r.base_systems, r.sight_systems); render(); }
       });
-      mapCell.append(mBtn);
-    } else {
-      mapCell.append(el('span', 'rmeta-sub', '--'));
+      actRow.append(mBtn);
     }
+    if (sed) {
+      const dBtn = el('button', 'maploc', 'Dossier');
+      dBtn.type = 'button';
+      dBtn.title = 'Open Copy / Counter Strategy Sedcard for [' + r.tag + ']';
+      dBtn.addEventListener('click', () => { sedFocusTag = r.tag; empSub = 'Sedcards'; render(); });
+      actRow.append(dBtn);
+    }
+    if (!actRow.childElementCount) actRow.append(el('span', 'rmeta-sub', '--'));
+    mapCell.append(actRow);
     tr.append(mapCell);
     tbody.append(tr);
   });
   tbl.append(tbody);
   panel.append(fitTable(tbl));
 }
-
 function renderEmpireDiplomacy(panel, dip) {
   if (!dip) { panel.append(el('p', 'empty', 'Loading diplomatic intelligence...')); return; }
   renderFreshnessStrip(panel, dip);
@@ -4982,37 +5145,59 @@ function renderEmpireComms(panel, dip) {
 }
 
 const TABS = { Selection: renderSelection, Empire: renderEmpire, Metrics: renderMetrics, Inventory: renderInventory, Docs: renderDocs };
+const ASYNC_TABS = new Set(['Empire', 'Metrics', 'Inventory', 'Docs']);
 let renderSeq = 0, viewKey = '';
 function render() {
   const panel = $('panel'), mine = ++renderSeq, live = () => mine === renderSeq;
   const key = [tab, selShip, selShip ? '' : selected, pilotCard ? pilotCard.name : '', docView ? docView.path : '',
     tab === 'Inventory' ? invMode + '/' + (invItem || '') + '/' + invCat + '/' + invSort : '',
-    tab === 'Empire' ? empSub + '/' + empSort + '/' + (empActiveOnly ? '1' : '0') + '/' + (rivalFocus ? rivalFocus.tag : '') + '/' + (lockPolity ? lockPolity.id : '') : '',
+    tab === 'Empire' ? empSub + '/' + empSort + '/' + (empActiveOnly ? '1' : '0') + '/' + (rivalFocus ? rivalFocus.tag : '') + '/' + (lockPolity ? lockPolity.id : '') + '/' + sedFocusTag : '',
     tab === 'Docs' && !docView ? docSub + '/' + docAuthor : ''].join('|');
   const same = key === viewKey, keep = same ? panel.scrollTop : 0;
   viewKey = key;
   document.querySelectorAll('nav button').forEach((b) => b.classList.toggle('on', b.textContent === tab));
   $('rail-right-label').textContent = tab;
   if (tab !== 'Docs') setWide(tab === 'Empire' || tab === 'Metrics' || tab === 'Inventory' ? 'metrics' : false);
-  if (tab === 'Metrics' || tab === 'Empire') {
-    const fn = TABS[tab];
-    if (tab === 'Metrics') {
-      metricsAt = Date.now();
-      if (!same) routeOrder.key = '';              // the tab was opened anew: the routes are sorted afresh
+  const fn = TABS[tab];
+  if (tab === 'Metrics') {
+    metricsAt = Date.now();
+    if (!same) routeOrder.key = '';
+  }
+  if (ASYNC_TABS.has(tab)) {
+    const hadContent = same && panel.childElementCount > 0 && !panel.querySelector('.loading-box');
+    if (!hadContent) {
+      panel.replaceChildren(el('div', 'loading-box', 'Loading ' + tab + ' telemetry...'));
     }
-    if (same && panel.childElementCount) {         // a refresh of the open tab: built aside and swapped in whole, so the page keeps its height, its place and its order
-      const aside = document.createDocumentFragment();
-      Promise.resolve(fn(aside, live)).then(() => {
-        if (!live()) return;
-        const at = panel.scrollTop;
-        panel.replaceChildren(aside);
-        panel.scrollTop = at;
-      }).catch(() => { /* the last picture stays */ });
-      return;
-    }
+    const aside = document.createDocumentFragment();
+    Promise.resolve(fn(aside, live)).then(() => {
+      if (!live()) return;
+      if (!aside.childElementCount) {
+        if (!hadContent) {
+          panel.replaceChildren();
+          renderRetryCard(panel, tab + ' returned no view', 'The data feed was empty or interrupted.', () => render());
+        }
+        return;
+      }
+      const at = hadContent ? panel.scrollTop : keep;
+      panel.replaceChildren(aside);
+      panel.scrollTop = at;
+      if (tab === 'Empire' && empSub === 'Sedcards' && sedFocusTag) {
+        const hit = panel.querySelector('[data-sed-tag="' + sedFocusTag + '"]');
+        if (hit && hit.scrollIntoView) hit.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }).catch((e) => {
+      if (!live()) return;
+      if (!hadContent) {
+        panel.replaceChildren();
+        renderRetryCard(panel, 'Could not render ' + tab, (e && e.message) ? e.message : 'Unexpected error', () => render());
+      }
+    });
+    return;
   }
   panel.replaceChildren();
-  Promise.resolve(TABS[tab](panel, live)).catch((e) => { if (live()) panel.append(el('p', 'empty', e.message)); });
+  Promise.resolve(fn(panel, live)).catch((e) => {
+    if (live()) renderRetryCard(panel, 'Could not render ' + tab, (e && e.message) ? e.message : 'Unexpected error', () => render());
+  });
   panel.scrollTop = keep;
 }
 

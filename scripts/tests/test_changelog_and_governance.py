@@ -146,5 +146,15 @@ class ChangelogAndGovernanceTests(unittest.TestCase):
             self.assertTrue(ops["game_version"]["in_sync"])
 
 
+    def test_station_all_docs_links_open_cleanly(self):
+        srv = load_mod("station_srv_docs_test", REPO / "station" / "server.py")
+        srv.DOCS_CACHE["at"] = 0.0
+        srv.DOCS_CACHE["value"] = None
+        d = srv.api_docs()
+        paths = [x["path"] for grp in ("reports", "logs", "governance", "knowledge") for x in (d.get(grp) or [])]
+        self.assertIn("game/handbook.md", paths)
+        broken = [(p, srv.api_doc(p).get("error")) for p in paths if "error" in srv.api_doc(p)]
+        self.assertEqual(broken, [], f"Broken api_docs() links: {broken}")
+
 if __name__ == "__main__":
     unittest.main()

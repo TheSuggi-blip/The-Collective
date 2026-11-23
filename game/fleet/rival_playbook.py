@@ -64,26 +64,29 @@ def benchmark_line(data="/srv/collective/data"):
         conn = None
         try:
             conn = sqlite3.connect("file:%s?mode=ro" % db_p, uri=True, timeout=2.0)
-            r = conn.execute(
-                "SELECT value FROM leaderboards WHERE grp='factions' AND board='total_wealth' AND tag='HEXC' ORDER BY t DESC LIMIT 1"
+            top = conn.execute(
+                "SELECT tag, value FROM leaderboards WHERE grp='factions' AND board='total_wealth' AND UPPER(tag) != 'CLTV' ORDER BY value DESC LIMIT 1"
             ).fetchone()
-            if r:
-                hexc_wealth = num(r[0])
-            r2 = conn.execute("SELECT members FROM factions WHERE tag='HEXC' LIMIT 1").fetchone()
+            top_tag = str(top[0]).upper() if top and top[0] else "HEXC"
+            if top:
+                hexc_wealth = num(top[1])
+            r2 = conn.execute("SELECT members FROM factions WHERE UPPER(tag)=? LIMIT 1", (top_tag,)).fetchone()
             if r2 and r2[0]:
                 hexc_ships = num(r2[0])
-            r3 = conn.execute("SELECT COUNT(*) FROM stations WHERE tag='HEXC' AND COALESCE(wrecked,0)=0").fetchone()
+            r3 = conn.execute("SELECT COUNT(*) FROM stations WHERE UPPER(tag)=? AND COALESCE(wrecked,0)=0", (top_tag,)).fetchone()
             if r3:
                 hexc_bases = num(r3[0])
         except sqlite3.Error:
-            pass
+            top_tag = "HEXC"
         finally:
             if conn:
                 conn.close()
+    else:
+        top_tag = "HEXC"
     if not hexc_wealth:
         return ""
-    return ("  RIVAL #1 BENCHMARK [HEXC] | wealth %s cr (%s/ship across %d T3-T5 ships, %d bases) vs CLTV %s cr (%s/ship across %d ships, %d base) -- close gap via T2+ hulls, docked crafting & resource outposts (`hive.py rival`)"
-            % (fmt_compact(hexc_wealth), fmt_compact(hexc_wealth / max(1, hexc_ships)), hexc_ships, hexc_bases,
+    return ("  RIVAL #1 BENCHMARK [%s] | wealth %s cr (%s/ship across %d ships, %d bases) vs CLTV %s cr (%s/ship across %d ships, %d bases) -- inspect 8 adoptable rival playbooks via `hive.py rivals playbooks`"
+            % (top_tag, fmt_compact(hexc_wealth), fmt_compact(hexc_wealth / max(1, hexc_ships)), hexc_ships, hexc_bases,
                fmt_compact(our_purse), fmt_compact(our_purse / max(1, our_ships)), our_ships, our_bases))
 
 

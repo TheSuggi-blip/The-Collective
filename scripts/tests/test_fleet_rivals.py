@@ -75,6 +75,16 @@ class TestFleetRivals(unittest.TestCase):
             self.assertEqual(doc["market_edges"]["undercut_targets"][0]["item"], "fuel_cell")
             self.assertIn("Live Undercut / Outsource / Outsupply Board", md)
 
+            # 8-Strategy Playbook Matrix & empirical Copy/Counter per rival
+            self.assertEqual(len(doc["strategy_playbooks"]), 8)
+            self.assertIn("how_they_play", by_tag["HEXC"])
+            self.assertIn("copy_play", by_tag["HEXC"])
+            self.assertIn("capital_mix", by_tag["HEXC"])
+            self.assertIn("PLAYBOOKS (Trade", br)
+            pb_cli = rivals.render_cli(doc, target="playbooks")
+            self.assertIn("8-STRATEGY PLAYBOOK MATRIX", pb_cli)
+            self.assertIn("1. Sovereign Tourism & Gourmet Hub", md)
+
 
 if __name__ == "__main__":
     unittest.main()

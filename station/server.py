@@ -91,6 +91,61 @@ HEADERS = {
 PILOT_MAX_AGE = 86400      # a pilot's last jump older than this is dropped
 PILOT_CAP = 40000
 LOCK = threading.Lock()
+DOCS_CACHE = {"at": 0.0, "value": None}
+DOCS_LOCK = threading.Lock()
+PLAYBOOKS_LOCK = threading.Lock()
+PROGRESSION_LOCK = threading.Lock()
+OPS_LOCK = threading.Lock()
+DIPLO_LOCK = threading.Lock()
+COMMS_LOCK = threading.Lock()
+
+
+def _swr_refresh_async(cache, val_key, lock, builder):
+    """Trigger a single-flight background refresh for an SWR cache (no-op in OFFLINE/test mode)."""
+    if OFFLINE or cache.get("_refreshing"):
+        return
+    def _worker():
+        try:
+            with lock:
+                val = builder()
+                cache[val_key] = val
+                cache["at"] = time.time()
+        except Exception:
+            pass
+        finally:
+            cache["_refreshing"] = False
+    with lock:
+        if cache.get("_refreshing"):
+            return
+        cache["_refreshing"] = True
+    threading.Thread(target=_worker, daemon=True).start()
+
+
+def _swr_get(cache, val_key, ttl, lock, builder, force=False):
+    """Stale-While-Revalidate single-flight cache: serve warm/stale value instantly (<1ms),
+    refresh asynchronously in background, and deduplicate cold misses under per-cache lock."""
+    now = time.time()
+    val = cache.get(val_key)
+    if not force and val is not None:
+        if now - cache.get("at", 0.0) < ttl:
+            return val
+        if not OFFLINE:
+            _swr_refresh_async(cache, val_key, lock, builder)
+            return val
+    with lock:
+        now2 = time.time()
+        val2 = cache.get(val_key)
+        if not force and val2 is not None and now2 - cache.get("at", 0.0) < ttl:
+            return val2
+        try:
+            new_val = builder()
+            cache[val_key] = new_val
+            cache["at"] = time.time()
+            return new_val
+        except Exception:
+            if val2 is not None:
+                return val2
+            raise
 
 
 def fetch(url, cap=40_000_000, timeout=60):
@@ -282,7 +337,7 @@ def poller():
                 st["ok_at"], st["error"] = time.time(), ""
                 save(name, value)
                 if name in ("leaderboard", "stations", "feed"):
-                    DIPLO["at"] = 0.0
+                    _swr_refresh_async(DIPLO, "value", DIPLO_LOCK, lambda: _build_diplomacy(False))
                     maybe_record_rival_snapshot()
             except Exception as e:           # a failed source keeps its last good value
                 st["error"] = (type(e).__name__ + ": " + str(e))[:200]
@@ -645,7 +700,7 @@ def api_ship(name):
     return ship
 
 
-DOC_PATH = re.compile(r"(reports|communications|governance|game/(?:planets|players|factions|rules|routes/guidebook(?:/[a-z]+)?|routes|fleet|catalog/recipes|catalog/ships|catalog))/[A-Za-z0-9_.\-]{1,120}\.(md|log)")
+DOC_PATH = re.compile(r"(?:game/handbook\.md|(?:reports|communications|governance|game/(?:planets|players|factions|rules|handbook|routes/guidebook(?:/[a-z]+)?|routes|fleet|catalog/recipes|catalog/ships|catalog))/[A-Za-z0-9_.\-]{1,120}\.(?:md|log))")
 ENTRY = re.compile(r"^## \[(ENT-\d+)\] \| ([^|\n]+) \| ([^|\n]+) \|", re.M)
 
 
@@ -686,7 +741,11 @@ LOG_DESC = {
 
 def api_docs():
     """What Suggi reads on the page: governance, the logs, the reports (the 30 newest by the time they were
-    written: the `id:` of their frontmatter, UTC), and the fleet's own knowledge."""
+    written: the `id:` of their frontmatter, UTC), and the fleet's own knowledge. SWR-cached 30s."""
+    return _swr_get(DOCS_CACHE, "value", 30.0, DOCS_LOCK, _build_docs)
+
+
+def _build_docs():
     reports, logs = [], []
     try:
         names = sorted(os.listdir(REPO / "reports"), reverse=True)[:300]
@@ -741,9 +800,10 @@ def api_docs():
     logs.sort(key=lambda x: (LOG_ORDER.get(x["name"] + ".log", 99), x["path"]))
     listed = lambda grp, *rels: [{"path": rel, "title": doc_title(rel), "group": grp} for rel in rels if (REPO / rel).is_file()]
     knowledge = (
-        listed("Routes & Plans", "game/routes/master-index.md")
+        listed("Routes & Plans", "game/routes/master-index.md", "game/routes/BLUEPRINT.md")
         + listed("Catalog & Craftbook", "game/catalog/master-index.md", "game/catalog/facilities.md", "game/catalog/modules.md", "game/catalog/ships.md")
         + listed("Fleet Engineering", "game/fleet/index.md", "game/handbook.md")
+        + [{"path": d["path"], "title": doc_title(d["path"]), "group": "Store Handbook"} for d in doc_list("game/handbook")]
         + [{"path": d["path"], "title": doc_title(d["path"]), "group": "Division Guidebooks"} for d in doc_list("game/routes/guidebook")]
         + [{"path": d["path"], "title": doc_title(d["path"]), "group": "Division Guidebooks"}
            for sub in sorted(p.name for p in (REPO / "game" / "routes" / "guidebook").glob("*") if p.is_dir())
@@ -758,13 +818,14 @@ PLAYBOOKS_CACHE = {"at": 0.0, "data": None}
 
 
 def api_playbooks():
-    """Live Anchor-and-Delta Division Playbooks (cached 30s, strictly read-only): combines real-time read.db ship
+    """Live Anchor-and-Delta Division Playbooks (SWR-cached 30s, strictly read-only): combines real-time read.db ship
     builds, skill leveling rungs, open needs, and open requests with capped guidebook chapter metrics and drift alerts."""
+    return _swr_get(PLAYBOOKS_CACHE, "data", 30.0, PLAYBOOKS_LOCK, _build_playbooks)
+
+
+def _build_playbooks():
     import sys
     now = time.time()
-    cached = PLAYBOOKS_CACHE.get("data")
-    if cached is not None and now - PLAYBOOKS_CACHE.get("at", 0.0) < 30.0:
-        return cached
     fleet_dir = str(Path(__file__).resolve().parents[1] / "game" / "fleet")
     if fleet_dir not in sys.path:
         sys.path.insert(0, fleet_dir)
@@ -797,12 +858,13 @@ PROGRESSION_CACHE = {"at": 0.0, "data": None}
 
 
 def api_progression():
-    """Live 3-Horizon Enterprise Progression Roadmap & Milestone Chronicle (cached 30s, strictly read-only)."""
+    """Live 3-Horizon Enterprise Progression Roadmap & Milestone Chronicle (SWR-cached 30s, strictly read-only)."""
+    return _swr_get(PROGRESSION_CACHE, "data", 30.0, PROGRESSION_LOCK, _build_progression)
+
+
+def _build_progression():
     import sys
     now = time.time()
-    cached = PROGRESSION_CACHE.get("data")
-    if cached is not None and now - PROGRESSION_CACHE.get("at", 0.0) < 30.0:
-        return cached
     fleet_dir = str(Path(__file__).resolve().parents[1] / "game" / "fleet")
     if fleet_dir not in sys.path:
         sys.path.insert(0, fleet_dir)
@@ -1588,9 +1650,13 @@ def inventory_state():
     key = tuple((p.name, p.stat().st_mtime_ns, p.stat().st_size) for p in files if p.is_file())
     with INVENTORY_LOCK:
         if INVENTORY["key"] != key:
-            book = craftbook()
-            cat = book.load(str(data)) or {"version": "none", "items": {}, "recipes": {}, "facilities": {}, "ships": {}, "makers": {}, "users": {}, "built": {}}
-            INVENTORY.update(key=key, value=book.inventory(str(data), cat), cat=cat)
+            try:
+                book = craftbook()
+                cat = book.load(str(data)) or {"version": "none", "items": {}, "recipes": {}, "facilities": {}, "ships": {}, "makers": {}, "users": {}, "built": {}}
+                INVENTORY.update(key=key, value=book.inventory(str(data), cat), cat=cat)
+            except Exception:
+                if INVENTORY["value"] is None:
+                    raise
         return INVENTORY["value"], INVENTORY["cat"]
 
 
@@ -1721,10 +1787,12 @@ def parse_iso_utc(stamp):
 
 def api_ops():
     """Operational readiness snapshot for the Metrics tab: pilot tick freshness, hull/upgrade readiness,
-    faction cap, supply chains, open priority needs, MAD/raid alerts and service health. Read-only, cached 30 s."""
+    faction cap, supply chains, open priority needs, MAD/raid alerts and service health. Read-only, SWR-cached 30 s."""
+    return _swr_get(OPS, "value", 30.0, OPS_LOCK, _build_ops)
+
+
+def _build_ops():
     now = time.time()
-    if OPS["value"] is not None and now - OPS["at"] < 30:
-        return OPS["value"]
     out = {
         "at": int(now),
         "freshness": {"ships": 0, "median_s": -1, "p95_s": -1, "max_s": -1},
@@ -1927,14 +1995,43 @@ def api_ops():
                     "FROM holdings h LEFT JOIN items i ON i.id = h.item"
                 ).fetchone()
                 vault_worth = int(num(vw_r[0])) if vw_r else 0
-                mod_w = conn.execute(
-                    "SELECT COALESCE(SUM(COALESCE(i.base_value, 0)), 0) FROM ship_modules sm LEFT JOIN items i ON LOWER(i.name) = LOWER(sm.name)"
-                ).fetchone() if "ship_modules" in tables else (0,)
-                hull_w = conn.execute(
-                    "SELECT COALESCE(SUM(COALESCE(hm.units, 0) * COALESCE(i.base_value, 0)), 0) "
-                    "FROM ships s JOIN hulls h ON LOWER(h.id) = LOWER(s.class) OR LOWER(h.name) = LOWER(s.class) "
-                    "JOIN hull_materials hm ON hm.hull = h.id LEFT JOIN items i ON i.id = hm.item"
-                ).fetchone() if "hull_materials" in tables else (0,)
+                item_cols = {c[1] for c in conn.execute("PRAGMA table_info(items)")}
+                item_val_id = {}
+                item_val_lname = {}
+                q_items = "SELECT id, name, COALESCE(base_value, 0) FROM items" if "name" in item_cols else "SELECT id, NULL, COALESCE(base_value, 0) FROM items"
+                for ir in conn.execute(q_items):
+                    iv = int(num(ir[2]))
+                    if ir[0]:
+                        item_val_id[str(ir[0])] = iv
+                    if ir[1]:
+                        ln = str(ir[1]).lower()
+                        item_val_lname[ln] = item_val_lname.get(ln, 0) + iv
+                mod_total = 0
+                if "ship_modules" in tables:
+                    for mr in conn.execute("SELECT name FROM ship_modules"):
+                        if mr[0]:
+                            mod_total += item_val_lname.get(str(mr[0]).lower(), 0)
+                mod_w = (mod_total,)
+                hull_total = 0
+                if "hull_materials" in tables and "hulls" in tables and "ships" in tables:
+                    hm_cost = {}
+                    for hmr in conn.execute("SELECT hull, item, COALESCE(units, 0) FROM hull_materials"):
+                        hid = str(hmr[0] or "")
+                        if hid:
+                            hm_cost[hid] = hm_cost.get(hid, 0) + int(num(hmr[2])) * item_val_id.get(str(hmr[1] or ""), 0)
+                    hull_by_key = {}
+                    for hr in conn.execute("SELECT id, name FROM hulls"):
+                        hid = str(hr[0] or "")
+                        if not hid:
+                            continue
+                        for k in {hid.lower(), str(hr[1] or "").lower()}:
+                            if k:
+                                hull_by_key.setdefault(k, set()).add(hid)
+                    for sr in conn.execute("SELECT class FROM ships"):
+                        sc = str(sr[0] or "").lower()
+                        for hid in hull_by_key.get(sc, ()):
+                            hull_total += hm_cost.get(hid, 0)
+                hull_w = (hull_total,)
                 fac_inv_r = conn.execute(
                     "SELECT COALESCE(MAX(value), 0) FROM leaderboards WHERE grp = 'factions' AND board = 'facility_investment' AND tag = 'CLTV'"
                 ).fetchone() if "leaderboards" in tables else (0,)
@@ -2216,9 +2313,17 @@ def api_ops():
 
 
 DIPLO = {"at": 0.0, "value": None}
-COMMS_MEM = {"mtime": 0.0, "size": 0, "value": None}
+COMMS_MEM = {
+    "ino": 0, "offset": 0, "dip_mtime": 0.0, "pacts": None,
+    "total": 0, "quarantined": 0,
+    "direct_in": [], "sent_out": [], "local_radio": [], "npc_notices": [],
+    "seen_local": set(), "value": None,
+}
 
+_CTRL_MAP = {c: " " for c in range(32)}
+_CTRL_MAP[127] = "?"
 ASCII_MAP = str.maketrans({
+    **_CTRL_MAP,
     "\u2014": "--", "\u2013": "-", "\u2018": "'", "\u2019": "'",
     "\u201c": '"', "\u201d": '"', "\u2026": "...", "\u2022": "*",
     "\u00a0": " ",
@@ -2228,9 +2333,14 @@ ASCII_MAP = str.maketrans({
 def clean_ascii(val, limit=240):
     if val is None:
         return ""
-    s = " ".join(str(val).translate(ASCII_MAP).split())
-    s = "".join(ch if 32 <= ord(ch) <= 126 else "?" for ch in s)
-    return s[:limit]
+    s = str(val)
+    if not s:
+        return ""
+    if s.isascii():
+        s = s.translate(_CTRL_MAP)
+    else:
+        s = s.translate(ASCII_MAP).encode("ascii", "replace").decode("ascii")
+    return " ".join(s.split())[:limit]
 
 
 def read_diplomacy_pacts():
@@ -2246,100 +2356,132 @@ def read_diplomacy_pacts():
 
 
 def read_comms_summary(our_pilots):
-    """Read /srv/collective/data/comms/messages.jsonl + diplomacy ledger: separate real player hails,
-    outbound diplomatic scout hails, human local/system chatter, NPC dispatches, and Neutrality Pact status."""
+    """Incrementally read /srv/collective/data/comms/messages.jsonl + diplomacy ledger: only newly appended
+    bytes are parsed on each call (slashes ~3-10s full-file rescan to <5ms)."""
     msg_path = FLEET.parent / "comms" / "messages.jsonl"
     dip_path = FLEET.parent / "comms" / "diplomacy.json"
-    pacts = read_diplomacy_pacts()
-    if not msg_path.is_file():
-        return {"summary": {"total_logged": 0, "direct_human_in": 0, "sent_by_us": 0, "local_human": 0, "npc_notices": 0, "quarantined": 0},
-                "direct_in": [], "sent_out": [], "local_radio": [], "npc_notices": [], "pacts": pacts}
-    st = msg_path.stat()
-    dip_mtime = dip_path.stat().st_mtime if dip_path.is_file() else 0.0
-    cache_key = (st.st_mtime, st.st_size, dip_mtime)
-    if COMMS_MEM["value"] is not None and COMMS_MEM.get("key") == cache_key:
-        return COMMS_MEM["value"]
-    direct_in, sent_out, local_radio, npc_notices = [], [], [], []
-    seen_local = set()
-    total = 0
-    quarantined = 0
-    try:
-        lines = msg_path.read_text(encoding="utf-8", errors="replace").splitlines()
-    except OSError:
-        lines = []
-    for ln in lines:
-        if not ln.strip():
-            continue
-        total += 1
+    with COMMS_LOCK:
+        dip_mtime = dip_path.stat().st_mtime if dip_path.is_file() else 0.0
+        if COMMS_MEM["pacts"] is None or dip_mtime != COMMS_MEM["dip_mtime"]:
+            COMMS_MEM["pacts"] = read_diplomacy_pacts()
+            COMMS_MEM["dip_mtime"] = dip_mtime
+        pacts = COMMS_MEM["pacts"]
+        if not msg_path.is_file():
+            return {"summary": {"total_logged": 0, "direct_human_in": 0, "sent_by_us": 0, "local_human": 0, "npc_notices": 0, "quarantined": 0},
+                    "direct_in": [], "sent_out": [], "local_radio": [], "npc_notices": [], "pacts": pacts}
+        st = msg_path.stat()
+        if COMMS_MEM["value"] is not None and st.st_ino == COMMS_MEM["ino"] and st.st_size == COMMS_MEM["offset"]:
+            if COMMS_MEM["value"].get("pacts") is not pacts:
+                COMMS_MEM["value"] = dict(COMMS_MEM["value"], pacts=pacts)
+            return COMMS_MEM["value"]
+        if st.st_ino != COMMS_MEM["ino"] or st.st_size < COMMS_MEM["offset"]:
+            COMMS_MEM.update(
+                ino=st.st_ino, offset=0, total=0, quarantined=0,
+                direct_in=[], sent_out=[], local_radio=[], npc_notices=[], seen_local=set(),
+            )
+        new_lines = []
         try:
-            m = json.loads(ln)
-        except ValueError:
-            continue
-        if not isinstance(m, dict):
-            continue
-        sid = str(m.get("sender_id") or "")
-        snd = clean_ascii(m.get("sender") or "", 48)
-        ch = clean_ascii(m.get("channel") or "", 16)
-        tag = clean_ascii(m.get("tag") or "", 8)
-        sys_id = clean_ascii(m.get("system") or "", 40)
-        poi = clean_ascii(m.get("poi") or "", 48)
-        ts = clean_ascii(m.get("t") or m.get("seen_at") or "", 30)
-        to_who = clean_ascii(m.get("with") or "", 48)
-        via_pilot = clean_ascii(m.get("pilot") or "", 32)
-        diplomat = clean_ascii(m.get("diplomat") or "", 16)
-        msg_txt = clean_ascii(m.get("text") or "", 2000)
-        is_npc = (sid in ("salvage_authority",) or sid.startswith("npc_")
-                  or snd.startswith("[CUSTOMS]") or snd.startswith("[POLICE]") or snd.startswith("[STATION]")
-                  or snd in ("Galactic Salvage Authority", "Interstellar Revenue Service", "Shipyard Authority"))
-        try:
-            import sys as _sys
-            if str(REPO / "game/fleet") not in _sys.path:
-                _sys.path.insert(0, str(REPO / "game/fleet"))
-            import comms_guard as _cg
-            _g = _cg.inspect_message(msg_txt, snd, ch, bool(m.get("own") or snd in our_pilots), is_npc)
-            risk_lvl, intent_lbl, stance_lbl = _g["risk_level"], _g["intent"], _g.get("diplo_stance", "none")
-            if risk_lvl == "quarantined":
-                quarantined += 1
-                msg_txt = _g["safe_text"]
-        except Exception:
+            with open(msg_path, "rb") as fh:
+                fh.seek(COMMS_MEM["offset"])
+                chunk = fh.read()
+            last_nl = chunk.rfind(b"\n")
+            if last_nl >= 0:
+                COMMS_MEM["offset"] += last_nl + 1
+                new_lines = chunk[:last_nl + 1].decode("utf-8", errors="replace").splitlines()
+        except OSError:
+            new_lines = []
+        _cg = None
+        if new_lines:
+            try:
+                import sys as _sys
+                _fl = str(REPO / "game/fleet")
+                if _fl not in _sys.path:
+                    _sys.path.insert(0, _fl)
+                import comms_guard as _cg
+            except Exception:
+                _cg = None
+        direct_in = COMMS_MEM["direct_in"]
+        sent_out = COMMS_MEM["sent_out"]
+        local_radio = COMMS_MEM["local_radio"]
+        npc_notices = COMMS_MEM["npc_notices"]
+        seen_local = COMMS_MEM["seen_local"]
+        for ln in new_lines:
+            if not ln.strip():
+                continue
+            COMMS_MEM["total"] += 1
+            try:
+                m = json.loads(ln)
+            except ValueError:
+                continue
+            if not isinstance(m, dict):
+                continue
+            sid = str(m.get("sender_id") or "")
+            snd = clean_ascii(m.get("sender") or "", 48)
+            ch = clean_ascii(m.get("channel") or "", 16)
+            is_own = bool(m.get("own") or snd in our_pilots)
+            is_npc = (sid in ("salvage_authority",) or sid.startswith("npc_")
+                      or snd.startswith("[CUSTOMS]") or snd.startswith("[POLICE]") or snd.startswith("[STATION]")
+                      or snd in ("Galactic Salvage Authority", "Interstellar Revenue Service", "Shipyard Authority"))
+            # Fast skip: non-private NPC local/system chatter and own faction chat never appear in any bucket
+            if is_own and ch == "faction":
+                continue
+            if not is_own and not (m.get("to_us") or ch == "private") and (is_npc or ch not in ("local", "system")):
+                continue
+            tag = clean_ascii(m.get("tag") or "", 8)
+            sys_id = clean_ascii(m.get("system") or "", 40)
+            poi = clean_ascii(m.get("poi") or "", 48)
+            ts = clean_ascii(m.get("t") or m.get("seen_at") or "", 30)
+            to_who = clean_ascii(m.get("with") or "", 48)
+            via_pilot = clean_ascii(m.get("pilot") or "", 32)
+            diplomat = clean_ascii(m.get("diplomat") or "", 16)
+            msg_txt = clean_ascii(m.get("text") or "", 2000)
             risk_lvl, intent_lbl, stance_lbl = "clean", "chatter", "none"
-        row = {"t": ts, "channel": ch, "sender": snd, "to": to_who, "pilot": via_pilot, "diplomat": diplomat,
-               "tag": tag, "system": sys_id, "poi": poi, "risk": risk_lvl, "intent": intent_lbl, "stance": stance_lbl, "text": msg_txt}
-        if m.get("own") or snd in our_pilots:
-            if ch != "faction":
+            if _cg is not None:
+                try:
+                    _g = _cg.inspect_message(msg_txt, snd, ch, is_own, is_npc)
+                    risk_lvl, intent_lbl, stance_lbl = _g["risk_level"], _g["intent"], _g.get("diplo_stance", "none")
+                    if risk_lvl == "quarantined":
+                        COMMS_MEM["quarantined"] += 1
+                        msg_txt = _g["safe_text"]
+                except Exception:
+                    pass
+            row = {"t": ts, "channel": ch, "sender": snd, "to": to_who, "pilot": via_pilot, "diplomat": diplomat,
+                   "tag": tag, "system": sys_id, "poi": poi, "risk": risk_lvl, "intent": intent_lbl, "stance": stance_lbl, "text": msg_txt}
+            if is_own:
                 sent_out.append(row)
-            continue
-        if m.get("to_us") or ch == "private":
-            if is_npc:
-                npc_notices.append(row)
-            else:
-                direct_in.append(row)
-        elif ch in ("local", "system") and not is_npc:
-            dedup = (snd, msg_txt[:80])
-            if dedup not in seen_local:
-                seen_local.add(dedup)
-                local_radio.append(row)
-    direct_in.sort(key=lambda r: r["t"], reverse=True)
-    sent_out.sort(key=lambda r: r["t"], reverse=True)
-    local_radio.sort(key=lambda r: r["t"], reverse=True)
-    npc_notices.sort(key=lambda r: r["t"], reverse=True)
-    res = {
-        "summary": {
-            "total_logged": total,
-            "direct_human_in": len(direct_in),
-            "sent_by_us": len(sent_out),
-            "local_human": len(local_radio),
-            "npc_notices": len(npc_notices),
-            "quarantined": quarantined,
-        },
-        "direct_in": direct_in[:30],
-        "sent_out": sent_out[:30],
-        "local_radio": local_radio[:40],
-        "npc_notices": npc_notices[:25],
-        "pacts": pacts,
-    }
-    COMMS_MEM.update(mtime=st.st_mtime, size=st.st_size, key=cache_key, value=res)
-    return res
+                continue
+            if m.get("to_us") or ch == "private":
+                if is_npc:
+                    npc_notices.append(row)
+                else:
+                    direct_in.append(row)
+            elif ch in ("local", "system") and not is_npc:
+                dedup = (snd, msg_txt[:80])
+                if dedup not in seen_local:
+                    seen_local.add(dedup)
+                    local_radio.append(row)
+        if new_lines or COMMS_MEM["value"] is None:
+            direct_in.sort(key=lambda r: r["t"], reverse=True)
+            sent_out.sort(key=lambda r: r["t"], reverse=True)
+            local_radio.sort(key=lambda r: r["t"], reverse=True)
+            npc_notices.sort(key=lambda r: r["t"], reverse=True)
+        res = {
+            "summary": {
+                "total_logged": COMMS_MEM["total"],
+                "direct_human_in": len(direct_in),
+                "sent_by_us": len(sent_out),
+                "local_human": len(local_radio),
+                "npc_notices": len(npc_notices),
+                "quarantined": COMMS_MEM["quarantined"],
+            },
+            "direct_in": direct_in[:30],
+            "sent_out": sent_out[:30],
+            "local_radio": local_radio[:40],
+            "npc_notices": npc_notices[:25],
+            "pacts": pacts,
+        }
+        COMMS_MEM["value"] = res
+        return res
 
 
 RIVAL_HIST_LOCK = threading.Lock()
@@ -2709,10 +2851,12 @@ def _lane_bridges(core_ids, adj_map, max_hops=3):
 
 
 def api_diplomacy(_allow_snapshot=False):
-    """Stellaris-style Galactic Contacts, Live & Historical Rival Power Standings, Blocs, Territories & Comms."""
+    """Stellaris-style Galactic Contacts, Live & Historical Rival Power Standings, Blocs, Territories & Comms. SWR-cached 45s."""
+    return _swr_get(DIPLO, "value", 45.0, DIPLO_LOCK, lambda: _build_diplomacy(_allow_snapshot), force=bool(_allow_snapshot))
+
+
+def _build_diplomacy(_allow_snapshot=False):
     now = time.time()
-    if not _allow_snapshot and DIPLO["value"] is not None and now - DIPLO["at"] < 60.0:
-        return DIPLO["value"]
 
     if not OFFLINE:
         _seed_rival_history_from_backup()
@@ -3817,9 +3961,12 @@ class Handler(http.server.BaseHTTPRequestHandler):
             self.send_header("Content-Encoding", "gzip")
         for key, value in HEADERS.items():
             self.send_header(key, value)
-        self.end_headers()
-        if not head_only:
-            self.wfile.write(body)
+        try:
+            self.end_headers()
+            if not head_only:
+                self.wfile.write(body)
+        except (BrokenPipeError, ConnectionResetError, ConnectionAbortedError, TimeoutError):
+            return
 
     def route(self, head_only):
         url = urllib.parse.urlsplit(self.path)
@@ -3889,10 +4036,42 @@ class Handler(http.server.BaseHTTPRequestHandler):
         self.route(True)
 
 
+def cache_warmer():
+    """Pre-warm heavy read-only caches at startup and keep them hot asynchronously so browser clicks
+    never hit a cold build stall."""
+    warmers = [
+        ("inventory", lambda: inventory_state()),
+        ("progression", lambda: _swr_get(PROGRESSION_CACHE, "data", 30.0, PROGRESSION_LOCK, _build_progression, force=True)),
+        ("docs", lambda: _swr_get(DOCS_CACHE, "value", 30.0, DOCS_LOCK, _build_docs, force=True)),
+        ("ops", lambda: _swr_get(OPS, "value", 30.0, OPS_LOCK, _build_ops, force=True)),
+        ("diplomacy", lambda: _swr_get(DIPLO, "value", 45.0, DIPLO_LOCK, lambda: _build_diplomacy(False), force=True)),
+        ("playbooks", lambda: _swr_get(PLAYBOOKS_CACHE, "data", 30.0, PLAYBOOKS_LOCK, _build_playbooks, force=True)),
+    ]
+    for _name, fn in warmers:
+        try:
+            fn()
+        except Exception:
+            pass
+    cycle = 0
+    while True:
+        time.sleep(25)
+        cycle += 1
+        _swr_refresh_async(OPS, "value", OPS_LOCK, _build_ops)
+        _swr_refresh_async(DIPLO, "value", DIPLO_LOCK, lambda: _build_diplomacy(False))
+        if cycle % 2 == 0:
+            _swr_refresh_async(PROGRESSION_CACHE, "data", PROGRESSION_LOCK, _build_progression)
+            _swr_refresh_async(DOCS_CACHE, "value", DOCS_LOCK, _build_docs)
+            _swr_refresh_async(PLAYBOOKS_CACHE, "data", PLAYBOOKS_LOCK, _build_playbooks)
+            try:
+                inventory_state()
+            except Exception:
+                pass
+
+
 def main():
     DATA.mkdir(parents=True, exist_ok=True)
     restore()
-    for target in (() if OFFLINE else (poller, stream, housekeeping, group_import)):
+    for target in (() if OFFLINE else (poller, stream, housekeeping, group_import, cache_warmer)):
         threading.Thread(target=target, daemon=True).start()
     server = http.server.ThreadingHTTPServer(("0.0.0.0", PORT), Handler)
     server.daemon_threads = True
