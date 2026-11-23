@@ -5,6 +5,10 @@
   "trade-sell": {
    "title": "Stored goods sold where a station bid stands, at home and further out: each ship sells its own stores, nothing bought",
    "routes": [
+    "carry-melt-nexus-to-sol",
+    "carry-melt-nexus-to-frontier",
+    "carry-melt-nexus-to-cargo-lanes",
+    "carry-sac-beta-to-hex-star",
     "sell-loot-at-krynn",
     "sell-loot-at-dheneb",
     "sell-loot-at-nexus",
