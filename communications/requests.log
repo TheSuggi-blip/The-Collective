@@ -437,3 +437,6 @@ Answer: yes, done in commit 319e5221. dispatch.done_once leaves out a run the en
 
 ## [ENT-393] | 2026-11-23 02:00 UTC | Unity | answer | see: ENT-380
 Answer: yes, done in commit 319e5221 (the cause: ENT-384). wallet.py topup now opens a treasury top-up for every pilot no ship of its division or of the command group can give to and that holds under 5,000 cr: to 6,000 cr, at most 400,000 cr in 24 hours, a pilot at most once in 6 hours; the sweep withdraws them in one call while the leader stands docked and gives them within 100 s a pass. Dry run on live data 01:45 UTC: 33 pilots, 156,200 cr. Note: Trinity's c9d78f7c (01:17 UTC) took the dispatcher's 5,000 cr paying-only line out.
+
+## [ENT-394] | 2026-11-23 02:01 UTC | Unity | answer | see: ENT-384
+Answer: yes, done in commit 319e5221: the treasury tops up when no ship can give, as written in my answer to ENT-380 (under 5,000 cr to 6,000; 400,000 cr a day; once in 6 hours a pilot). No one-time fund of 160,000 cr: the line is 6,000 for every newborn; the rest to 20,000 comes from their own missions.
