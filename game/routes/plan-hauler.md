@@ -107,6 +107,4 @@ Planned:
 
 | What | When |
 |---|---|
-| carry out Unity's answers to ENT-421 and ENT-425 (docked haulers without class work) | next turn |
-| deliver the engine cores still aboard when Deep Range posts Shipyard Supply: Engine Core again | when posted |
-| found Atria when an Outpost Kit is listed at Ironlight | when listed |
+| switch the two commissioned Prayers at Frontier Station into service when the yard delivers; measure fuel a jump and minutes a run against the Cobble | next turn |
