@@ -15,7 +15,7 @@ updated: 2026-11-23
 # Hive Swarm [HIVE]
 
 A player faction with 3 base(s) in 3 system(s); the nearest to Nexus Prime is 5 jump(s) away, in Antares (`antares`).
-Pilots of it in our space in the last 24 hours: 1.
+Pilots of it in our space in the last 24 hours: 13.
 
 ## Identity
 
@@ -42,7 +42,19 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| 75685d10376ae488b84c6f6e | Synchrony (`synchrony`) | 0 | runner |
+| 395530a76c237308aaa5b1dc | Node Gamma (`node_gamma`) | 0 | workhorse |
+| 49be043857c5616dc5baa8b4 | Acubens (`acubens`) | 0 | workhorse |
+| 5766f7c87c7f84b6893abd7e | Hamal (`hamal`) | 0 | workhorse |
+| 636c1957c2349e4e27ec7db0 | Synchrony (`synchrony`) | 0 | deep_survey |
+| 6a73495396afc7768a08118f | Hamal (`hamal`) | 0 | workhorse |
+| 8054dbcf8fff7c0f8c4f0165 | Acubens (`acubens`) | 0 | workhorse |
+| 907a7ad5fc57ac61d6e57ad4 | Node Gamma (`node_gamma`) | 0 | workhorse |
+| a61127ef25917281a2f5af9d | Hamal (`hamal`) | 0 | workhorse |
+| c560f1f71312e41fa9c0f091 | Synchrony (`synchrony`) | 0 | deep_survey |
+| cb9f390ad124b910d6bb336c | Node Gamma (`node_gamma`) | 0 | workhorse |
+| dd23b0ca1cc14350d2b0b023 | Acubens (`acubens`) | 0 | workhorse |
+| f8c3f4c38ee48a37ee21926b | Node Gamma (`node_gamma`) | 0 | workhorse |
+| hiver | Hamal (`hamal`) | 0 | bonanza |
 
 ## Standing History
 
