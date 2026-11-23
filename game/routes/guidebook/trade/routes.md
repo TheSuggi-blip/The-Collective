@@ -114,12 +114,12 @@ Status: proven. Updated: 2026-11-21. Evidence: data/fleet/onetime.json; the void
 
 The `once` routes head every plan's list First; a pilot flies each one
 time and a route skips a pilot that booked its reward
-(data/fleet/onetime.json; `oncecheck.py`, `boards.py` of the skill
-trade-books). What they taught:
+(data/fleet/onetime.json; `oncecheck.py`, `boards.py` of Mercury's
+trade skill). What they taught:
 
 - A board mission is accepted at the route's first stop: a route without
   the accept serves only pilots that hold the mission and counts every
-  other pilot as done (voidborn-first-steps, 2026-11-16).
+  other pilot as done (the first First Steps route, retired; 2026-11-16).
 - One accept with an empty hold decides whether a delivery hands out its
   goods: Concurrent Approval, Final Calibration and Neural Matrix Delivery
   do; Conductive Lattice, Resonance Substrate and The Crimson Resonance do
