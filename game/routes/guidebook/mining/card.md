@@ -8,23 +8,25 @@ economy; every deposit is shared, depletes and regrows slowly; a pull's
 yield rises with the module's mining power, the deposit's richness and
 the Mining skill. Ours (MISSION.md): gather into storage what the
 reserve lacks, then what buyers pay for, no field worked harder than it
-regains. 60 miners; levels: the tool fleet, view=levels, member Zero.
+regains. The miners and their levels: the tool fleet, view=levels, member Zero.
 Hulls and fits: ships.md; work and limits: routes.md; calls: topic-scripts.md.
 
 ### Ships
-Status: proven. Updated: 2026-11-21. Evidence: table hulls (catalog 0.723.2); commission_quote 2026-11-17 11:06 UTC; ships.md.
+Status: proven. Updated: 2026-11-23. Evidence: table hulls of the live catalog (read 2026-11-23 03:15 UTC); commission_quote 2026-11-17 11:06 UTC; ships.md.
 
-- Tier 0, 59 miners: the Threshold (hold 65, 2 utility slots). Ice
-  miner: Mining Laser I and Ice Harvester I; laser miner: Mining Laser I;
-  both a Pulse Laser I in the weapon slot and the default stance flee.
+- Tier 0, the starter hull of each empire: Voidborn Threshold (hold 65,
+  2 utility slots); Solarian Theoria (hold 70, 3 utility slots); Nebula
+  Prospect (hold 100, 2 utility slots). Each carries a Mining Laser I and
+  a Pulse Laser I in the weapon slot; an ice miner adds an Ice Harvester I;
+  the default stance is flee. A Theoria has a utility slot free at birth.
 - Tier 1, no Piloting asked: the Liminal (Voidborn Miner), hold 75 with
   ore at half volume (about 150 ore a load), speed 2, 3 utility slots, no
-  weapon slot. One miner flies it since 2026-11-17; a second only on its
-  gold runs against a Threshold's. For ice: the Rime.
+  weapon slot. For ice: the Rime.
 - Tier 2, Piloting 10: the Resonance Miner (hold 180, 4 utility slots);
-  for ice the Hoarfrost.
+  for ice the Hoarfrost (hold 170, 3 utility slots).
 - Fit: the laser is the first lever: a Mining Laser III (power 22)
-  mines 2.1x a Laser I (5) on one loop; its fit route since 2026-11-22.
+  mines 2.1x a Laser I (5) on one loop; a Laser II (12) where a III is
+  far or dear. Fit routes by station: ships.md.
 - Style: a gather shuttle to a station of ours, every field with a
   floor; ice and gas sold only as far as a bid regains; every new field,
   hull or fit first on one ship.

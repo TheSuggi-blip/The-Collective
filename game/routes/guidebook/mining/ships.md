@@ -1,7 +1,7 @@
 # Mining guidebook -- Ships and Fits (ships.md)
 
 ### Ships and Fits
-Status: proven. Updated: 2026-11-21. Evidence: table hulls (catalog 0.723.2); commission_quote 2026-11-17 11:06 UTC; the tool catalog, ask=build.
+Status: proven. Updated: 2026-11-21. Evidence: table hulls of the live catalog (re-read 2026-11-23 03:15 UTC, figures unchanged); commission_quote 2026-11-17 11:06 UTC; the tool catalog, ask=build.
 
 - Threshold (tier 0): 2 utility slots, cpu 16, power 30, hold 65. The
   ice miner fits Mining Laser I and Ice Harvester I, a Pulse Laser I in
@@ -21,7 +21,7 @@ Status: proven. Updated: 2026-11-21. Evidence: table hulls (catalog 0.723.2); co
   brings an hour, so the hold is the class's first upgrade.
 
 ### Mining tools and filters
-Status: proven. Updated: 2026-11-22. Evidence: catalog 0.732.0 items; docs/guides/miner.md (read 2026-11-21); hive.py route gather-gsc-0027-spacetime-seep (the runs with ore, 2026-11-21 22:00 to 2026-11-22 03:00 UTC); route fit-mining-laser-iii-lhs-1140.
+Status: proven. Updated: 2026-11-22. Evidence: table items of the live catalog (re-read 2026-11-23 03:15 UTC); docs/guides/miner.md (read 2026-11-21); hive.py route gather-gsc-0027-spacetime-seep (the runs with ore, 2026-11-21 22:00 to 2026-11-22 03:00 UTC); route fit-mining-laser-iii-lhs-1140.
 
 - Laser power: I 5, II 12, III 22, IV 40 (cpu 2, 4, 6, 10). A III fits
   a Threshold ice miner beside its Ice Harvester. Proven (F37): ore an
