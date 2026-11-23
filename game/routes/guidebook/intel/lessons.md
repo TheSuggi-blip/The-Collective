@@ -165,3 +165,12 @@ Status: proven. Updated: 2026-11-23. Evidence: fill.py status scout (03:19 UTC: 
   for a newborn of another empire (a foreign station: `Access denied`);
   with --stay it now ends at the nearest station with fuel (census.py
   end_stop, 2026-11-23).
+
+### A worked system goes to the list of the capital nearest it
+Status: proven. Updated: 2026-11-23. Evidence: intel turn check WORKED 08:17 UTC (4 systems at 960 and 1440 min); table lanes (5 to 6 jumps from Krynn or Sol, 10 to 17 from home); commit 709f1f4f; WORKED PASS 08:33 UTC (105 systems).
+
+- Where other divisions work far from home (the newborns' hunts and
+  gathers), census-worked-far is the wrong list: it is flown from home,
+  so each read pulls a home reader 10 to 17 jumps. Move the system to
+  the region list of the capital nearest it by lanes; the check's
+  `WORKED to` line names that list.
