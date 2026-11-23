@@ -76,10 +76,12 @@ the patch notes at 0.733.0.
 
 ## Plans
 
-- Next turn, once game/routes takes writes again: a store-hold route at
-  Altais and at Haven at the head of @outerrim and @nebula, so a kit left
-  aboard is stored without a hand; census-region-altais to 6 ships; the
-  far lists and roads into the two templates, the ship rows back to the
+- Done at 03:57 UTC, after a seventh scout waited with fuel cells: a new
+  route store-hold-frontier-station (Altais, commit 00d4332b) heads the
+  Outer Rim rows, and Mining's store-hold-grand-exchange (Zero, for
+  Nebula-born pilots) heads the Nebula rows; a kit left aboard is stored
+  without a hand. Next turn, once game/routes takes writes again: the far
+  lists and roads into the two templates, the ship rows back to the
   templates alone.
 - The census cut (P1): Suggi approved the docked watch during this turn
   (rule F8 exception, commit 24b20cb2 at 03:37 UTC), and the gate's
