@@ -464,6 +464,20 @@ KEEP_HERD = int(args[args.index('--keep-herd') + 1]) if '--keep-herd' in args el
 HOSTILE = hostile_names(os.path.join(GAME, 'players')) if ALONE_MODE == 'pirates' else set()
 if ALONE:
     say('alone: leaves for ' + ('a pirate or a pilot of the hostile list (%d filed)' % len(HOSTILE) if ALONE_MODE == 'pirates' else 'every ship that is not ours'))
+if in_battle()[0]:                           # 2026-11-23: 'external' ends the engine's flight from a fight the run before left
+    say('in a battle at the start: fleeing before anything else')
+    raw('stance', {'stance': 'flee'}, group='spacemolt_battle')
+    for _ in range(30):                      # up to 5 minutes, a tick each
+        time.sleep(10)
+        if not in_battle()[0]:
+            break
+    else:
+        sys.exit('still in a battle after 5 minutes of flight: no hunt (combat mode left at flee)')
+START_HULL = hull()                          # two newborns lost 2026-11-23: five two-minute runs from 50 to 3 percent hull
+REPAIR_FIRST = START_HULL[0] < START_HULL[1] * 0.6
+if REPAIR_FIRST:
+    notes.append(f'hull {START_HULL[0]}/{START_HULL[1]} at the start: no hunt, to the station for repair')
+    say(notes[-1])
 if not combat_mode('external'):
     sys.exit('the engine did not take the combat mode; no hunt')
 kills, started, hunt_minutes = 0, time.time(), 0.0
@@ -475,7 +489,7 @@ SHORT = None if STEP else fuel_first(GAME, os.path.dirname(os.path.dirname(MARKE
 if SHORT:
     say(SHORT)
     notes.append(SHORT)
-if not SHORT and goal('navigate-to-system', {'targetSystemId': system_id}) and goal('go-to-poi', {'targetPoiId': poi}):
+if not SHORT and not REPAIR_FIRST and goal('navigate-to-system', {'targetSystemId': system_id}) and goal('go-to-poi', {'targetPoiId': poi}):
     arrived = time.time()
     left = loot_own()                                # carcasses of ours from an earlier run, if any
     if left:
