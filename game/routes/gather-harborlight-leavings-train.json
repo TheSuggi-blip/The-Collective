@@ -1,0 +1,19 @@
+{
+ "id": "gather-harborlight-leavings-train",
+ "kind": "mine",
+ "title": "A test: Mining-skill work for Solarian-born miners: ore of Harborlight Prospector's Leavings into storage at Procyon Colonial Station (two jumps, by Markab)",
+ "note": "Written by Zero, 2026-11-23 05:39 UTC (orders ENT-076, P1 and P6, block ZERO; rules F3, F8, F22, F23, F37). Harborlight Prospector's Leavings read 100,000 copper and 99,999 iron, richness 22 and 35 (table fields, 04:06 UTC), unclaimed space beside Markab, two jumps from Procyon. Six Solarian miners fell through to home-sol-central at 2026-11-23 05:39 UTC with gather-lacaille-deep-vein-train full at 6 (7,728 above its floor), gather-nihal-containment-fracture-train full at 12 and gather-markab-alloy-seam-train closed under its iron floor (fill.py status miner --why). The Solarian fields one jump from a Solarian station are those three; this field is two jumps from one. No pirate line for it or the way in data/intel/sightings.jsonl (read 2026-11-23 05:39 UTC). Iron and copper are full in the reserve, but copper is no good of the reserve (pull.py levels 05:37 UTC): Mining-skill work, the ore stored. A new field: one ship until three results (F37), lift_to 6 lets fill.py widen it after that. requires.empire solarian, an empty hold.",
+ "belt": "harborlight:harborlight_prospectors_leavings",
+ "station": "procyon:procyon_colonial_station:procyon_colonial_station",
+ "minutes": 40,
+ "max_ships": 1,
+ "standing": true,
+ "min_left": {
+  "iron_ore": 20000
+ },
+ "requires": {
+  "empty_hold": true,
+  "empire": "solarian"
+ },
+ "lift_to": 6
+}
