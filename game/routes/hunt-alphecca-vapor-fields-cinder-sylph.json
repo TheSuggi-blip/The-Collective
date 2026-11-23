@@ -18,13 +18,13 @@
   "empty_hold": true
  },
  "measured": {
-  "date": "2026-11-22",
-  "runs": 4,
-  "minutes": 34,
-  "credits_per_run": -530,
-  "cph_per_ship": -940,
+  "date": "2026-11-23",
+  "runs": 2,
+  "minutes": 26,
+  "credits_per_run": -540,
+  "cph_per_ship": -1250,
   "hours": 12,
-  "last_run": "2026-11-22T18:46:01Z"
+  "last_run": "2026-11-23T12:15:33Z"
  },
  "gift_to": "trader"
 }
