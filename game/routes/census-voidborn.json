@@ -2,7 +2,7 @@
  "id": "census-voidborn",
  "kind": "census",
  "title": "Read one Voidborn system whole: deposits, creatures, order book, mission board",
- "note": "Keeps data/scouting, data/wildlife, data/market and data/missions fresh; the stalest system is read first. every_minutes 30 holds the hour: from 19:20 to 21:48 UTC on 2026-11-15, 40 gaps between two reads of one system, 34 to 48 minutes, none over 60 (runs.jsonl). max_ships 3 counts only the census orders of this route's systems since dispatch.py fa17b9c (2026-11-15 21:32 UTC); it stood at 7 from 21:20 to 21:57 UTC while every census order of the fleet counted against it. max_ships 3 -> 4 at 2026-11-16 23:21 UTC: 58 gaps of the four hours to 23:17 UTC on 2026-11-16 had a median of 38 minutes and two over 60 (76 and 91), so the hour failed twice with three ships (intel_turn_check.py GAPS). 2026-11-22 23:30 UTC (Oracle, orders ENT-068: newborn regions first, then the census burn cut by a third, the lists the plans rest on kept closest): every_minutes 30 -> 45, max_ships 4 -> 2. 2026-11-22 23:40 UTC (Oracle): every_minutes 45 -> 45, max_ships 2 -> 4: the caps of 23:30 UTC taken back, since a scout they leave docked has no work rule F8 counts as operating (Unity, requests ENT-373, ENT-374: the loop keeps the rest until such work stands); the census cut waits for that work (requests.log).",
+ "note": "Keeps data/scouting, data/wildlife, data/market and data/missions fresh; the stalest system is read first. every_minutes 30 holds the hour: from 19:20 to 21:48 UTC on 2026-11-15, 40 gaps between two reads of one system, 34 to 48 minutes, none over 60 (runs.jsonl). max_ships 3 counts only the census orders of this route's systems since dispatch.py fa17b9c (2026-11-15 21:32 UTC); it stood at 7 from 21:20 to 21:57 UTC while every census order of the fleet counted against it. max_ships 3 -> 4 at 2026-11-16 23:21 UTC: 58 gaps of the four hours to 23:17 UTC on 2026-11-16 had a median of 38 minutes and two over 60 (76 and 91), so the hour failed twice with three ships (intel_turn_check.py GAPS). 2026-11-22 23:30 UTC (Oracle, orders ENT-068: newborn regions first, then the census burn cut by a third, the lists the plans rest on kept closest): every_minutes 30 -> 45, max_ships 4 -> 2. 2026-11-22 23:40 UTC (Oracle): every_minutes 45 -> 45, max_ships 2 -> 4: the caps of 23:30 UTC taken back, since a scout they leave docked has no work rule F8 counts as operating (Unity, requests ENT-373, ENT-374: the loop keeps the rest until such work stands); the census cut waits for that work (requests.log). 2026-11-23 17:36 UTC (Oracle): max_ships 4 -> 5: the turn check's GAPS line read a median gap of 58 minutes against the 45-minute cadence over 4 hours (45 gaps, 18 over 60 minutes); a fifth reader at home burns one or two jumps a read.",
  "systems": [
   "nexus_prime",
   "node_alpha",
@@ -16,7 +16,7 @@
   "pherkad"
  ],
  "every_minutes": 45,
- "max_ships": 4,
+ "max_ships": 5,
  "measured": {
   "date": "2026-11-22",
   "runs": 190,

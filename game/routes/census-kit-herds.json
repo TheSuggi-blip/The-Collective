@@ -1,0 +1,30 @@
+{
+ "id": "census-kit-herds",
+ "kind": "census",
+ "title": "Read the herds of the Atria kit's five species (mirror-skate, cauldronback, inkwyrm, magnet-barnacle, silica-borer) that stand beyond the region lists, every six hours, with the pirates met there",
+ "note": "Kept by Oracle; written 2026-11-23 17:35 UTC for orders ENT-083 (P3, block ORACLE): the kit's last parts are creature parts; Intel reads the herds of the five species first, with each system's pirate record, for Military. These 15 systems held one of the five species in a census (store table reading_day) and stood on the far lists (every 1,440 minutes) or census-roads (960): moved here, never copied. The herds near home stand on their region lists (census-region-sol, -krynn, -altais, -haven, -haven-ring), read every 170 to 360 minutes. Live table for the hunters: hive.py herds mirror_skate,cauldronback,inkwyrm,magnet_barnacle,silica_borer. Lawless space (rule F3): read and leave, hold empty; pirates met at netherwick, redmarsh, muphrid (observations kind pirate).",
+ "every_minutes": 360,
+ "max_ships": 3,
+ "chain": 3,
+ "chain_jumps": 2,
+ "requires": {
+  "empty_hold": true
+ },
+ "systems": [
+  "redmarsh",
+  "undercliff",
+  "netherwick",
+  "gsc_0007",
+  "gsc_0011",
+  "tegmine",
+  "coalridge",
+  "muphrid",
+  "hadar",
+  "mekbuda",
+  "ashmark",
+  "emberglow",
+  "gsc_0003",
+  "bnki",
+  "zubenelhakrabi"
+ ]
+}
