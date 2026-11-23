@@ -2,8 +2,8 @@
  "id": "mission-filed-in-triplicate-nova",
  "kind": "circuit",
  "title": "Filed in Triplicate: 5000 cr, +220 XP at Nova Terra Central",
- "note": "Written by routemaker.py from the board and the order books: goods for about 0 cr, reward 5000 cr, sale 0 cr, +220 XP. Test with one ship first. Added as a test by fill.py on 2026-11-23 04:07 UTC (Unity): up to 3 ships, one result each, until 3 runs are read (rule F37). 2026-11-23 13:06 UTC (fill.py, Mercury): max_ships 3 -> 6. 2026-11-23 13:23 UTC (fill.py, Mercury): max_ships 6 -> 20.",
- "max_ships": 20,
+ "note": "Written by routemaker.py from the board and the order books: goods for about 0 cr, reward 5000 cr, sale 0 cr, +220 XP. Test with one ship first. Added as a test by fill.py on 2026-11-23 04:07 UTC (Unity): up to 3 ships, one result each, until 3 runs are read (rule F37). 2026-11-23 13:06 UTC (fill.py, Mercury): max_ships 3 -> 6. 2026-11-23 13:23 UTC (fill.py, Mercury): max_ships 6 -> 20. 2026-11-23 18:32 UTC (fill.py, Apollo): max_ships 20 -> 40.",
+ "max_ships": 40,
  "stops": [
   {
    "at": "nova_terra:nova_terra_central:nova_terra_central",
