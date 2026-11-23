@@ -83,8 +83,7 @@ def run_head_suite(repo, out_path, timeout=180, verbose=False):
         try:
             op.parent.mkdir(parents=True, exist_ok=True)
             tmp_out = op.with_suffix(".json.%d.tmp" % os.getpid())
-            tmp_out.write_text(json.dumps(payload, indent=1) + "
-", encoding="ascii")
+            tmp_out.write_text(json.dumps(payload, indent=1) + "\n", encoding="ascii")
             os.replace(tmp_out, op)
         except OSError:
             pass
