@@ -417,8 +417,9 @@ button.member:hover { background: var(--raise); box-shadow: inset 0 -2px 0 var(-
 /* ---- metrics tables fit the panel: tight cells, numbers right, long route names wrap */
 .mtable { max-width: 100%; overflow-x: auto; }
 .mtable table { font-size: 12px; }
-.mtable td, .mtable th { padding: 3px 0 3px 8px; }
+.mtable td, .mtable th { padding: 4px 6px 4px 6px; overflow-wrap: break-word; }
 .mtable td:first-child, .mtable th:first-child { padding-left: 0; overflow-wrap: anywhere; }
+.twoline { display: flex; flex-direction: column; gap: 2px; line-height: 1.25; }
 .mtable th { font-size: 11px; line-height: 1.25; vertical-align: bottom; }
 .mtable td.n { white-space: nowrap; }
 

@@ -4477,7 +4477,7 @@ function renderEmpireDiplomacy(panel, dip) {
   const ekpi = (k, v, sub, cls) => { const d = el('div', 'kpi' + (cls ? ' ' + cls : '')); d.append(el('div', 'k', k), el('div', 'v', v)); if (sub) d.append(el('div', 's', sub)); kgrid.append(d); };
   ekpi('Our posture', our.at_war ? 'AT WAR' : 'Armed Neutrality', 'Never fire first; O10 Neutrality max (alliances & war Suggi-reserved)', our.at_war ? 'neg' : 'main pos');
   const neutAgreed = (((dip.comms && dip.comms.pacts && dip.comms.pacts.standings) || {}).neutral || []).length;
-  ekpi('Our treaties & wars', (our.allies || []).length + ' allies | ' + neutAgreed + ' neutral (agreed)', (our.wars || []).length + ' wars | ' + (our.enemies || []).length + ' marked enemies (neutrality by word)', 'pos');
+  ekpi('Our treaties & wars', (our.allies || []).length + ' allies | ' + neutAgreed + ' neutral', (our.wars || []).length + ' wars | ' + (our.enemies || []).length + ' enemies | neutral by agreement', 'pos');
   ekpi('Galactic alliance blocs', fmt(alliances.length) + ' coalitions', fmt(getPolities().filter((p) => p.kind === 'bloc').length) + ' major blocs mapped on galaxy view', '');
   ekpi('Active wars & rivalries', fmt(wars.length) + ' wars | ' + fmt(rivalries.length) + ' feuds', fmt(battles.length) + ' recent combat engagements logged', wars.length ? 'warn' : '');
   panel.append(kgrid);
@@ -4582,40 +4582,54 @@ function renderEmpireComms(panel, dip) {
 
   const stg = p.standings || null;
   if (stg) {
-    panel.append(el('h3', null, 'Diplomatic standing & relations (Rule F4 / Rulebook Section 14)'));
-    const fmtList = (arr) => (arr && arr.length) ? arr.map((x) => '[' + x.tag + '] ' + x.faction).join(', ') : 'None';
+    panel.append(el('h3', null, 'Diplomatic standing & relations (Rule F4 / Sec 14)'));
+    const fmtList = (arr) => {
+      if (!arr || !arr.length) return 'None';
+      if (arr.length <= 4) return arr.map((x) => '[' + x.tag + '] ' + x.faction).join(', ');
+      return arr.map((x) => '[' + x.tag + ']').join(' ');
+    };
     const srows = [
-      [el('span', 'pill good', 'ALLIED'), String((stg.allied || []).length), fmtList(stg.allied), 'Locked under standing doctrine (F4; Suggi-reserved)'],
-      [el('span', 'pill good', 'NEUTRAL (BY AGREEMENT)'), String((stg.neutral || []).length), fmtList(stg.neutral), 'Non-aggression / neutrality agreed by word (no formal game mechanic); open trade & dialogue active'],
-      [el('span', 'pill warn', 'IN OPEN DIALOGUE'), String((stg.in_dialogue || []).length), fmtList(stg.in_dialogue), 'Active two-way thread (Phase-2 neutral trade & supply chains)'],
-      [el('span', 'pill', 'HAILED / PENDING'), String((stg.hailed || []).length), fmtList(stg.hailed), '3-day exact-24h robotic hail beacon active'],
-      [el('span', 'pill bad', 'HOSTILE'), String((stg.hostile || []).length), fmtList(stg.hostile), 'Defensive RoE (F2); war declarations Suggi-reserved'],
+      [el('span', 'pill good', 'ALLIED'), String((stg.allied || []).length), fmtList(stg.allied), 'Locked (Suggi only)'],
+      [el('span', 'pill good', 'NEUTRAL'), String((stg.neutral || []).length), fmtList(stg.neutral), 'By agreement (word only)'],
+      [el('span', 'pill warn', 'IN DIALOGUE'), String((stg.in_dialogue || []).length), fmtList(stg.in_dialogue), 'Open reply thread'],
+      [el('span', 'pill', 'HAILED'), String((stg.hailed || []).length), fmtList(stg.hailed), '3-day hail beacon'],
+      [el('span', 'pill bad', 'HOSTILE'), String((stg.hostile || []).length), fmtList(stg.hostile), 'Defensive RoE (F2)'],
     ];
-    panel.append(fitTable(table(['Standing', 'Count', 'Factions / Blocs', 'Posture'], srows, [1])));
+    panel.append(fitTable(table(['Standing', '#', 'Factions', 'Note'], srows, [1])));
   }
 
   if ((p.rows || []).length) {
-    panel.append(el('h3', null, 'Neutrality outreach roster -- 3 target blocs (' + p.rows.length + ' leaders, 3-day exact-24h cadence, O10)'));
+    panel.append(el('h3', null, 'Neutrality outreach roster -- 3 target blocs (' + p.rows.length + ' leaders, O10)'));
     const statusPill = (r) => {
       const st = r.status;
-      if (st === 'neutrality_agreed') return el('span', 'pill good', 'NEUTRAL (AGREED)');
-      if (st === 'trade_active' || st === 'info_sharing_active') return el('span', 'pill good', st.replace(/_/g, ' ').toUpperCase());
+      if (st === 'neutrality_agreed') return el('span', 'pill good', 'NEUTRAL');
+      if (st === 'trade_active') return el('span', 'pill good', 'TRADE');
+      if (st === 'info_sharing_active') return el('span', 'pill good', 'NEUTRAL+INFO');
       if (st === 'in_dialogue') return el('span', 'pill warn', 'IN DIALOGUE');
       if (st === 'hailed') return el('span', 'pill warn', 'HAILED ' + (r.unanswered_hails || 1) + '/' + (r.max_unanswered || 3));
-      if (st === 'no_response') return el('span', 'pill', 'NO RESPONSE (3/3)');
+      if (st === 'no_response') return el('span', 'pill', 'NO REPLY');
       if (st === 'hostile' || st === 'declined' || st === 'paused') return el('span', 'pill bad', st.toUpperCase());
       return el('span', 'pill', 'UNCONTACTED');
     };
-    const prows = p.rows.map((r) => [
-      r.bloc,
-      '[' + r.tag + '] ' + r.faction,
-      r.leader,
-      statusPill(r),
-      r.envoy || '-',
-      r.last_reply_at ? ('reply ' + stampCet(r.last_reply_at)) : (r.next_hail_at ? ('next ' + stampCet(r.next_hail_at)) : (r.last_sent_at ? ('sent ' + stampCet(r.last_sent_at)) : '-')),
-      r.last_stance && r.last_stance !== 'none' ? r.last_stance.replace(/_/g, ' ') : (r.note || '-'),
-    ]);
-    panel.append(fitTable(table(['Bloc', 'Faction', 'Leader', 'Status', 'Scout Envoy', 'Cadence / Activity', 'Stance / Note'], prows)));
+    const twoLine = (top, sub) => {
+      const box = el('div', 'twoline');
+      box.append(el('div', null, top));
+      if (sub) box.append(el('div', 'rmeta-sub', sub));
+      return box;
+    };
+    const prows = p.rows.map((r) => {
+      const act = r.last_reply_at
+        ? ('reply ' + stampCet(r.last_reply_at))
+        : (r.next_hail_at ? ('next ' + stampCet(r.next_hail_at)) : (r.last_sent_at ? ('sent ' + stampCet(r.last_sent_at)) : '-'));
+      const stance = r.last_stance && r.last_stance !== 'none' ? r.last_stance.replace(/_/g, ' ') : '-';
+      return [
+        twoLine('[' + r.tag + '] ' + r.faction, r.bloc),
+        twoLine(r.leader, r.envoy ? ('via ' + r.envoy) : ''),
+        statusPill(r),
+        twoLine(act, stance !== '-' ? stance : ''),
+      ];
+    });
+    panel.append(fitTable(table(['Faction / Bloc', 'Leader', 'Status', 'Activity'], prows)));
   }
 
   panel.append(el('h3', null, 'Direct diplomatic hails -- received from & sent to players'));
@@ -4628,14 +4642,19 @@ function renderEmpireComms(panel, dip) {
     ].sort((a, b) => String(b.t || '').localeCompare(String(a.t || '')));
     const drows = merged.slice(0, 40).map((m) => {
       const isOut = m._dir === 'OUT';
-      const dirEl = el('span', isOut ? 'pill warn' : (m.risk === 'quarantined' ? 'pill bad' : 'pill good'), isOut ? 'SENT' : (m.risk === 'quarantined' ? 'QUARANTINED' : 'RECEIVED'));
+      const dirWrap = el('div', 'twoline');
+      dirWrap.append(el('span', isOut ? 'pill warn' : (m.risk === 'quarantined' ? 'pill bad' : 'pill good'), isOut ? 'SENT' : (m.risk === 'quarantined' ? 'QUARANTINED' : 'RECEIVED')));
+      dirWrap.append(el('div', 'rmeta-sub', stampCet(m.t)));
       const party = isOut
         ? (m.sender + (m.to ? ' -> ' + (m.tag ? '[' + m.tag + '] ' : '') + m.to : ''))
         : ((m.tag ? '[' + m.tag + '] ' : '') + m.sender + (m.pilot ? ' -> ' + m.pilot : ''));
-      const meta = isOut ? (m.diplomat ? m.diplomat + ' / ' + m.channel : m.channel) : ((m.stance && m.stance !== 'none') ? m.stance.replace(/_/g, ' ') : m.channel);
-      return [dirEl, stampCet(m.t), party, meta, m.text];
+      const meta = isOut ? (m.diplomat ? m.diplomat : m.channel) : ((m.stance && m.stance !== 'none') ? m.stance.replace(/_/g, ' ') : m.channel);
+      const thr = el('div', 'twoline');
+      thr.append(el('div', null, party));
+      thr.append(el('div', 'rmeta-sub', meta));
+      return [dirWrap, thr, m.text];
     });
-    panel.append(fitTable(table(['Dir', 'When', 'Thread', 'Stance / Channel', 'Message'], drows)));
+    panel.append(fitTable(table(['Status', 'Thread', 'Message'], drows)));
   }
 
   panel.append(el('h3', null, 'Intercepted nearby pilot radio (' + (c.local_radio || []).length + ' newest)'));
