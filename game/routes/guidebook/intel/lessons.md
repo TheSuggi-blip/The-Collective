@@ -153,3 +153,11 @@ Status: proven. Updated: 2026-11-22. Evidence: table runs (census, 24 h to 23:25
 - A newborn region's minutes a read were no shorter than the home
   side's (worked-far reads at Altais and Haven, 16 to 17 minutes against
   25), likely since a census ends docked where it last read.
+
+### A newborn's hold closes its own census
+Status: proven. Updated: 2026-11-23. Evidence: fill.py status scout (03:19 UTC: 'hold not empty' 6); stash.py (03:40 UTC: 20 fuel cells stored from each of 6 Outer Rim scouts).
+
+- The region lists carry `requires.empty_hold`; a mission reward or kit
+  left aboard (fuel cells, probes) closes every census to its scout, and
+  the gate names it waiting. The HOLDS line lists them: store what lies
+  aboard (stash.py) the same turn; a ship in space is docked first.

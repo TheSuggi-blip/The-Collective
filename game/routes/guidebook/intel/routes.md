@@ -1,7 +1,7 @@
 # Intel guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-22. Evidence: the plan file (tool plan, show); hive.py briefing (MY STANDING FLEET); fill.py check; workclass.py sales; intel turn check (WORKED, SITES, WATCH, ROADS).
+Status: proven. Updated: 2026-11-23. Evidence: the plan file (tool plan, show); hive.py briefing (MY STANDING FLEET); fill.py check; workclass.py sales; intel turn check (WORKED, SITES, WATCH, ROADS, UNFLOWN).
 
 - First, every scout: store-hold-central-nexus, give-scout-stores-*
   (requires.strict: open when strict classes go on), the missions paid
@@ -10,8 +10,11 @@ Status: proven. Updated: 2026-11-22. Evidence: the plan file (tool plan, show); 
   another empire wherever it reads (dispatch.newborn_reason).
 - Newborn scouts: their capital's region only, @outerrim (Altais) and
   @nebula (Haven): census-region-<capital> (120 min, four jumps and the
-  places others work within six) and its ring (360 min). Sol and Krynn
-  regions (180 min) go to Voidborn scouts stationed near them.
+  places others work within six) and its ring (360 min); then the far
+  lists nearest their capital, then the roads, so none waits when the
+  region is full. Sol and Krynn regions (180 min) go to Voidborn scouts
+  stationed near them.
+- The outpost watch and the frontier: one reader each takes it first.
 - Readers (@reader): census-voidborn (home, 45 min), the outpost watch
   (50 min), census-worked (120 min: twice a turn), census-frontier
   (170 min), census-worked-far (where others fly, 180 min), the roads.
