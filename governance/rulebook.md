@@ -188,9 +188,12 @@ tier.
 **Phase-2 Neutral Engagement Rule:** Whenever any neutral faction or bloc
 leader replies, Unity (with Oracle monitoring replies) follows up in-character
 as The Collective `[CLTV]` under a strict Neutrality ceiling (no alliance):
-honor their boundaries, present our tradeable surplus stock (`diplomacy.py catalog`),
-ask what materials and quantities they need for constant supply chains, invite
-commercial trade or build help for our outposts/stations, ask politely
-(depending on their reply) whether our ships are accidentally trespassing or
-working fields they claim as we learn the local systems, welcome guidance
-where offered (verified under `F37`), and ask for their suggestions and wishes.
+honor and mirror their boundaries (especially mirroring no-information-exchange
+postures -- never volunteer our inventory/storage list; use `diplomacy.py catalog`
+internally only), offer open trade and ask what materials and quantities they
+need for constant supply chains, invite commercial trade or build help for our
+outposts/stations, ask politely (depending on their reply) whether our ships
+are accidentally trespassing or working fields they claim as we learn the local
+systems, write in natural in-character RPG prose asking for guidance, tips, and
+shared wisdom for a new empire (respecting boundaries; verified under `F37`),
+and invite their suggestions, needs, and wishes.
