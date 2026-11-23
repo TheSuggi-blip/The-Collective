@@ -1,0 +1,63 @@
+{
+ "id": "mission-market-participation-frontier",
+ "kind": "circuit",
+ "title": "Market Participation: Buying and Selling at Frontier Station: 1,000 cr each, once per pilot; ten copper ore bought and sold back there",
+ "note": "Written by Apollo, 2026-11-23 00:15 UTC (orders.log ENT-068, P6: the newborns' starter missions on their own board; rule F34). Frontier Station's board (data/missions, 23:46 UTC) offers Market Participation: Buying (buy 10 units of any item on the exchange) and Selling (sell 10 units of any item), 1,000 cr and 15 Trading XP each. Frontier Station's book of 23:53 UTC: copper ore asked at 8 x 120, bid 4 x 2,018: ten units cost about 81 cr and bring about 40 back, for 2,000 cr once. The pattern of voidborn-selling (157 runs). A pilot holding neither mission and with both booked is not sent (skip_if_booked); a stop whose mission is closed is passed (only_if_active). The runner buys nothing under 3,000 cr (route_run FLOOR), so only the newborns above it fly it until their top-up (requests.log ENT-385). One ship first (F12: one unit of goods first is the runner's ask check; F37: one ship three times, the same seller and buyer).",
+ "once": true,
+ "max_ships": 1,
+ "one_time": [
+  "Market Participation: Buying",
+  "Market Participation: Selling"
+ ],
+ "skip_if_booked": [
+  "Market Participation: Buying",
+  "Market Participation: Selling"
+ ],
+ "requires": {
+  "bid": {
+   "item": "copper_ore",
+   "base": "frontier_station",
+   "min_price": 1,
+   "min_qty": 10
+  }
+ },
+ "stops": [
+  {
+   "at": "altais:mobile_capital:frontier_station",
+   "accept": [
+    "market_participation_buying",
+    "market_participation_selling"
+   ]
+  },
+  {
+   "at": "altais:mobile_capital:frontier_station",
+   "only_if_active": [
+    "Market Participation: Buying"
+   ],
+   "buy": [
+    {
+     "item": "copper_ore",
+     "qty": 10,
+     "max_price": 10,
+     "one_time": true
+    }
+   ]
+  },
+  {
+   "at": "altais:mobile_capital:frontier_station",
+   "only_if_active": [
+    "Market Participation: Selling"
+   ],
+   "sell": [
+    {
+     "item": "copper_ore",
+     "min_price": 1,
+     "all": true
+    }
+   ]
+  },
+  {
+   "at": "altais:mobile_capital:frontier_station"
+  }
+ ]
+}
