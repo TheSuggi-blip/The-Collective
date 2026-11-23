@@ -17,21 +17,21 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 
 | Group | What it holds | Routes | Home space | Beyond the border | Best measured |
 |---|---|---|---|---|---|
-| [Once per Pilot](index-once-per-pilot.md) | Missions and rewards the game pays once per pilot: a new pilot's first work, and seed money. | 79 | 23 | 56 | voidborn-conductive-lattice: 7,580 cr a run |
-| [Paying Routes](index-paying-routes.md) | Work that repeats and whose runs of the last 12 hours measured above zero. | 18 | 7 | 11 | carry-melt-nexus-to-sol: 432,250 cr per ship-hour |
+| [Once per Pilot](index-once-per-pilot.md) | Missions and rewards the game pays once per pilot: a new pilot's first work, and seed money. | 80 | 23 | 57 | voidborn-conductive-lattice: 7,580 cr a run |
+| [Paying Routes](index-paying-routes.md) | Work that repeats and whose runs of the last 12 hours measured above zero. | 17 | 7 | 10 | carry-melt-nexus-to-sol: 432,250 cr per ship-hour |
 | [Tests](index-tests.md) | Work that repeats and has no measured figure: new, or no readable run in the last 12 hours. One ship until its first RESULT line is read. | 146 | 46 | 100 | not measured yet |
-| [Fitting](index-fitting.md) | A module bought and fitted: the tool a kind of work needs. | 24 | 12 | 12 | fit-ice-harvester-lhs-1140: -4,320 cr per ship-hour |
-| [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 440 | 104 | 336 | store-hold-krynn-war-citadel: 2,860 cr per ship-hour |
-| [Measured at a Loss](index-measured-at-a-loss.md) | Work that repeats and whose runs of the last 12 hours measured zero or below. | 19 | 8 | 11 | bursar-melt-central-nexus: 0 cr per ship-hour |
+| [Fitting](index-fitting.md) | A module bought and fitted: the tool a kind of work needs. | 24 | 12 | 12 | fit-laser-i-beside-ii-sol-central: -740 cr per ship-hour |
+| [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 440 | 104 | 336 | store-hold-krynn-war-citadel: 2,260 cr per ship-hour |
+| [Measured at a Loss](index-measured-at-a-loss.md) | Work that repeats and whose runs of the last 12 hours measured zero or below. | 20 | 8 | 12 | bursar-melt-central-nexus: 0 cr per ship-hour |
 | [Off](index-off.md) | Written down, not flown. | 51 | 19 | 32 | voidborn-first-steps: 4,020 cr per ship-hour |
-| All | | 777 | 219 | 558 | |
+| All | | 778 | 219 | 559 | |
 
 ## Routes by Zone and Kind
 
 | Zone | Routes | census | circuit | guard | hunt | mine | Farthest system, jumps from home |
 |---|---|---|---|---|---|---|---|
 | home space | 219 | 1 | 188 | 1 | 16 | 13 | 3 |
-| beyond the border | 558 | 23 | 150 | 7 | 275 | 103 | 29 |
+| beyond the border | 559 | 23 | 151 | 7 | 275 | 103 | 29 |
 
 ## Plans by Role
 
