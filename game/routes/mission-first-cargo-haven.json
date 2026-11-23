@@ -1,0 +1,46 @@
+{
+ "id": "mission-first-cargo-haven",
+ "kind": "circuit",
+ "title": "First Cargo, Copper Requisition and Iron Supply Run: 4,300 cr once; accept at Grand Exchange, mine at Khambalia Crystal Market (2 jumps), hand in at Grand Exchange",
+ "note": "Written by Zero, 2026-11-23 00:17 UTC (orders ENT-068, P6: newborns do their class's work where they were born, their empire's missions first; rules F34, F35, F37). The Grand Exchange board (data/missions, read 00:00 UTC) offers three mining missions a Nebula-born miner has not flown: First Cargo (mine 15 copper ore, 1,000 cr, mining 20 XP, nebula_attunement 15 XP), Copper Requisition (25 copper ore, 1,800 cr) and Iron Supply Run (30 iron ore, 1,500 cr); the objectives count units mined, so 25 copper and 30 iron do all three (55 units, a Threshold-class hold takes them). Khambalia Crystal Market read 37,915 copper and 35,014 iron, richness 35 and 36 (table fields, census 11.5 h old), 2 jumps from Haven (table lanes); 55 units a pilot is under 0.2% of it. A paid-once route is open to a newborn under 5,000 cr, where the gathers are not. Only in the rows of Nebula-born miners, never in First or a template. max_ships 3: each pilot's own missions, so the three runs share no buyer and do not contend for the field (F37). Whether the board offers them at Mining 0 is not known: the first three results tell.",
+ "once": true,
+ "max_ships": 3,
+ "one_time": [
+  "First Cargo",
+  "Copper Requisition",
+  "Iron Supply Run"
+ ],
+ "skip_if_booked": [
+  "Iron Supply Run",
+  "first_cargo+copper_requisition+iron_supply_run"
+ ],
+ "stops": [
+  {
+   "at": "haven:grand_exchange:grand_exchange_station",
+   "store": "all",
+   "accept": [
+    "first_cargo",
+    "copper_requisition",
+    "iron_supply_run"
+   ],
+   "mine": [
+    {
+     "at": "khambalia:khambalia_crystal_market",
+     "for": [
+      "First Cargo",
+      "Copper Requisition",
+      "Iron Supply Run"
+     ],
+     "minutes": 40,
+     "min_left": {
+      "iron_ore": 10000
+     }
+    }
+   ]
+  },
+  {
+   "at": "haven:grand_exchange:grand_exchange_station",
+   "store": "all"
+  }
+ ]
+}
