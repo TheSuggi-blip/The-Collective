@@ -287,10 +287,19 @@ def compute_progression(repo_root, data="/srv/collective/data", now=None):
             if _has_table(conn, "holdings") and _has_table(conn, "items"):
                 try:
                     import accounting as _acc
-                    _vv = _acc.vault_valuation(conn)
-                    vault_worth = int(_vv["nrv"])
-                    vault_catalog = int(_vv["catalog"])
-                    vault_liquid = int(_vv["liquid"])
+                    _fj_pr = fobj if "fobj" in locals() and isinstance(fobj, dict) else None
+                    _bs_pr = _acc.compute_balance_sheet(conn, fleet_json=_fj_pr)
+                    vault_worth = int(_bs_pr["vault_worth"])
+                    vault_catalog = int(_bs_pr["vault_catalog"])
+                    vault_liquid = int(_bs_pr["vault_liquid"])
+                    if _bs_pr.get("fleet_book"):
+                        fleet_book_worth = int(_bs_pr["fleet_book"])
+                    if _bs_pr.get("facility_invested"):
+                        facility_worth = max(facility_worth, int(_bs_pr["facility_invested"]))
+                    if _bs_pr.get("wallets"):
+                        wallets = int(_bs_pr["wallets"])
+                    if _bs_pr.get("treasury"):
+                        treasury = int(_bs_pr["treasury"])
                 except Exception:
                     pass
             if not vault_worth and _has_table(conn, "inventory"):

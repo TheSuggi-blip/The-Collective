@@ -2037,72 +2037,12 @@ def _build_ops():
                 if _fdir not in _acc_sys.path:
                     _acc_sys.path.insert(0, _fdir)
                 import accounting as _acc
-                _vv = _acc.vault_valuation(conn)
-                vault_worth = int(_vv["nrv"])
-                item_cols = {c[1] for c in conn.execute("PRAGMA table_info(items)")}
-                item_val_id = {}
-                item_val_lname = {}
-                q_items = "SELECT id, name, COALESCE(base_value, 0) FROM items" if "name" in item_cols else "SELECT id, NULL, COALESCE(base_value, 0) FROM items"
-                for ir in conn.execute(q_items):
-                    iv = int(num(ir[2]))
-                    if ir[0]:
-                        item_val_id[str(ir[0])] = iv
-                    if ir[1]:
-                        ln = str(ir[1]).lower()
-                        item_val_lname[ln] = item_val_lname.get(ln, 0) + iv
-                mod_total = 0
-                if "ship_modules" in tables:
-                    for mr in conn.execute("SELECT name FROM ship_modules"):
-                        if mr[0]:
-                            mod_total += item_val_lname.get(str(mr[0]).lower(), 0)
-                mod_w = (mod_total,)
-                hull_total = 0
-                if "hull_materials" in tables and "hulls" in tables and "ships" in tables:
-                    hm_cost = {}
-                    for hmr in conn.execute("SELECT hull, item, COALESCE(units, 0) FROM hull_materials"):
-                        hid = str(hmr[0] or "")
-                        if hid:
-                            hm_cost[hid] = hm_cost.get(hid, 0) + int(num(hmr[2])) * item_val_id.get(str(hmr[1] or ""), 0)
-                    hull_by_key = {}
-                    for hr in conn.execute("SELECT id, name FROM hulls"):
-                        hid = str(hr[0] or "")
-                        if not hid:
-                            continue
-                        for k in {hid.lower(), str(hr[1] or "").lower()}:
-                            if k:
-                                hull_by_key.setdefault(k, set()).add(hid)
-                    for sr in conn.execute("SELECT class FROM ships"):
-                        sc = str(sr[0] or "").lower()
-                        for hid in hull_by_key.get(sc, ()):
-                            hull_total += hm_cost.get(hid, 0)
-                hull_w = (hull_total,)
-                fac_inv_r = conn.execute(
-                    "SELECT COALESCE(MAX(value), 0) FROM leaderboards WHERE grp = 'factions' AND board = 'facility_investment' AND tag = 'CLTV'"
-                ).fetchone() if "leaderboards" in tables else (0,)
-                wal_cr = int(num(conn.execute("SELECT COALESCE(SUM(credits), 0) FROM ships").fetchone()[0]))
-                tr_cr = int(num((out["readiness"].get("faction") or {}).get("treasury")))
-                fl_book = int(num(mod_w[0])) + int(num(hull_w[0]))
-                fac_inv = int(num(fac_inv_r[0])) or 3400000
-                ho_r = conn.execute(
-                    "SELECT COALESCE(SUM(value), 0) FROM stats_figures WHERE view = 'contribution' AND figure = 'handed_over_worth' AND hours = 24"
-                ).fetchone() if "stats_figures" in tables else None
-                hexc_r = conn.execute(
-                    "SELECT value FROM leaderboards WHERE grp = 'factions' AND board = 'total_wealth' AND tag = 'HEXC' ORDER BY t DESC LIMIT 1"
-                ).fetchone() if "leaderboards" in tables else None
-                out["balance_sheet"] = {
-                    "liquid_cash": wal_cr + tr_cr, "wallets": wal_cr, "treasury": tr_cr,
-                    "vault_worth": vault_worth,
-                    "vault_nrv": int(_vv["nrv"]),
-                    "vault_catalog": int(_vv["catalog"]),
-                    "vault_liquid": int(_vv["liquid"]),
-                    "vault_unbounded_bid": int(_vv["unbounded_bid"]),
-                    "vault_top_gaps": _vv["top_gaps"],
-                    "fleet_book": fl_book, "facility_invested": fac_inv,
-                    "net_worth": wal_cr + tr_cr + vault_worth + fl_book + fac_inv,
-                    "net_worth_catalog": wal_cr + tr_cr + int(_vv["catalog"]) + fl_book + fac_inv,
-                    "handed_over_24h": int(num(ho_r[0])) if ho_r else 0,
-                    "hexc_wealth": int(num(hexc_r[0])) if hexc_r else 0,
-                }
+                _fj_bs = None
+                try:
+                    _fj_bs = read_json(FLEET / "fleet.json")
+                except (OSError, ValueError):
+                    _fj_bs = None
+                out["balance_sheet"] = _acc.compute_balance_sheet(conn, fleet_json=_fj_bs)
             if "runs" in tables:
                 fs_rows = conn.execute(
                     "SELECT CASE WHEN route LIKE 'train-jumps-%' THEN 'jump_loops' WHEN kind = 'census' THEN 'census' "
@@ -3094,6 +3034,7 @@ def _build_diplomacy(_allow_snapshot=False):
     met_24h_by_tag = {}
     battles_out = []
     our_hulls = []
+    our_docked_hulls = []
     our_avg_pilot = 0.0
     our_max_pilot = 0
     our_vb_skilled = 0
@@ -3183,12 +3124,23 @@ def _build_diplomacy(_allow_snapshot=False):
                     mb["n"] += cnt
                     if sy:
                         mb["sys"][sy] = mb["sys"].get(sy, 0) + cnt
+            our_docked_hulls = []
             if "ships" in tables and "hulls" in tables:
+                pilot_cls_map = {}
+                for r in conn.execute("SELECT pilot, class FROM ships"):
+                    if r["pilot"]:
+                        pilot_cls_map[str(r["pilot"])] = str(r["class"] or "")
+                hull_meta = {}
+                for hr in conn.execute("SELECT id, name, COALESCE(faction, 'neutral') as fac, COALESCE(tier, 0) as tier, COALESCE(category, '') as cat FROM hulls"):
+                    rec_h = {"class": clean_ascii(hr["name"] or hr["id"], 32), "empire": clean_ascii(hr["fac"] or "neutral", 20), "tier": int(num(hr["tier"])), "category": clean_ascii(hr["cat"], 24)}
+                    for k in (str(hr["name"] or "").lower(), str(hr["id"] or "").lower()):
+                        if k:
+                            hull_meta[k] = rec_h
                 for r in conn.execute("""
                     SELECT s.class as cls, COALESCE(h.faction, s.empire, 'neutral') as hull_emp,
                            COALESCE(h.tier, 0) as tier, COALESCE(h.category, '') as cat, COUNT(*) as n
                     FROM ships s LEFT JOIN hulls h ON LOWER(s.class) = LOWER(h.name) OR LOWER(s.class) = LOWER(h.id)
-                    GROUP BY s.class ORDER BY n DESC
+                    GROUP BY s.class ORDER BY tier DESC, n DESC
                 """).fetchall():
                     our_hulls.append({
                         "class": clean_ascii(r["cls"], 32),
@@ -3197,6 +3149,36 @@ def _build_diplomacy(_allow_snapshot=False):
                         "category": clean_ascii(r["cat"], 24),
                         "count": int(num(r["n"])),
                     })
+                # Auto-detect commissioned hulls built & docked in pilot hangars awaiting switch_ship
+                msg_p = FLEET.parent / "comms" / "messages.jsonl"
+                if msg_p.is_file():
+                    built_re = re.compile(r"Your commissioned ([A-Za-z0-9 _-]+?) is built and docked at ([^.]+)\.")
+                    seen_built = {}
+                    try:
+                        with open(msg_p, encoding="utf-8", errors="replace") as mfh:
+                            for mline in mfh:
+                                if "Shipyard Authority" not in mline or "is built and docked" not in mline:
+                                    continue
+                                try:
+                                    mj = json.loads(mline)
+                                except ValueError:
+                                    continue
+                                txt_m = str(mj.get("text") or "")
+                                m_hit = built_re.search(txt_m)
+                                if not m_hit:
+                                    continue
+                                h_cls = m_hit.group(1).strip()
+                                st_nm = clean_ascii(m_hit.group(2).strip(), 48)
+                                p_nm = clean_ascii(mj.get("to") or mj.get("pilot") or mj.get("recipient") or "", 32)
+                                if p_nm and pilot_cls_map.get(p_nm, "").lower() != h_cls.lower():
+                                    hm = hull_meta.get(h_cls.lower()) or {"class": clean_ascii(h_cls, 32), "empire": "neutral", "tier": 2, "category": ""}
+                                    seen_built[(p_nm, hm["class"])] = {
+                                        "class": hm["class"], "empire": hm["empire"], "tier": hm["tier"],
+                                        "category": hm["category"], "pilot": p_nm, "station": st_nm,
+                                    }
+                    except OSError:
+                        pass
+                    our_docked_hulls = sorted(seen_built.values(), key=lambda x: (-x["tier"], x["class"], x["pilot"]))
                 ship_cols = {c[1] for c in conn.execute("PRAGMA table_info(ships)").fetchall()}
                 if "empire" in ship_cols:
                     emp_cnts = conn.execute(
@@ -3210,22 +3192,19 @@ def _build_diplomacy(_allow_snapshot=False):
                     {"empire": clean_ascii(x["emp"], 20), "count": int(num(x["n"])), "pct": round(100.0 * int(num(x["n"])) / emp_tot, 1)}
                     for x in emp_cnts
                 ]
-            if not our_fleet_book and "ships" in tables and "hulls" in tables and "items" in tables:
-                mod_w = conn.execute(
-                    "SELECT COALESCE(SUM(COALESCE(i.base_value, 0)), 0) FROM ship_modules sm LEFT JOIN items i ON LOWER(i.name) = LOWER(sm.name)"
-                ).fetchone() if "ship_modules" in tables else (0,)
-                hull_w = conn.execute(
-                    "SELECT COALESCE(SUM(COALESCE(hm.units, 0) * COALESCE(i.base_value, 0)), 0) "
-                    "FROM ships s JOIN hulls h ON LOWER(h.id) = LOWER(s.class) OR LOWER(h.name) = LOWER(s.class) "
-                    "JOIN hull_materials hm ON hm.hull = h.id LEFT JOIN items i ON i.id = hm.item"
-                ).fetchone() if "hull_materials" in tables else (0,)
-                our_fleet_book = int(num(mod_w[0])) + int(num(hull_w[0]))
-            if not our_vault_worth and "holdings" in tables and "items" in tables:
-                vw = conn.execute(
-                    "SELECT COALESCE(SUM(COALESCE(h.units, 0) * COALESCE(i.base_value, 0)), 0) "
-                    "FROM holdings h LEFT JOIN items i ON i.id = h.item"
-                ).fetchone()
-                our_vault_worth = int(num(vw[0])) if vw else 0
+            if (not our_fleet_book or not our_vault_worth) and "holdings" in tables and "items" in tables:
+                import sys as _dip_acc_sys
+                _fdir_d = str(REPO / "game" / "fleet")
+                if _fdir_d not in _dip_acc_sys.path:
+                    _dip_acc_sys.path.insert(0, _fdir_d)
+                import accounting as _dip_acc
+                _bs_d = _dip_acc.compute_balance_sheet(conn)
+                if not our_vault_worth:
+                    our_vault_worth = int(_bs_d["vault_worth"])
+                if not our_fleet_book:
+                    our_fleet_book = int(_bs_d["fleet_book"])
+                if not our_fac_inv:
+                    our_fac_inv = int(_bs_d["facility_invested"])
             if "facilities" in tables:
                 mc_r = conn.execute(
                     "SELECT COALESCE(MAX(faction_cap), 1000) FROM facilities "
@@ -3979,6 +3958,7 @@ def _build_diplomacy(_allow_snapshot=False):
             "empire_mastery_skilled": our_mastery_skilled,
             "mastery_by_empire": our_mastery_by_emp,
             "hulls": our_hulls,
+        "docked_hulls": our_docked_hulls,
             "ranks": {
                 "member_count": cltv_ranks.get("member_count"),
                 "damage_dealt": cltv_ranks.get("damage_dealt"),

@@ -3720,6 +3720,7 @@ async function opsOf(force) {
   try {
     OPS = { data: await get('/api/ops'), at: Date.now() };
     _apiErr.ops = '';
+    if (F && F.totals) renderMembers();
   } catch (e) {
     _apiErr.ops = (e && e.message) ? e.message : 'ops fetch failed';
     return OPS.data;
@@ -4545,15 +4546,26 @@ async function renderEmpire(panel, live) {
   if (our.hulls && our.hulls.length) {
     const hullSum = our.hulls.reduce((a, h) => a + (h.count || 0), 0);
     const upgSum = our.hulls.filter((h) => (h.tier || 0) >= 1).reduce((a, h) => a + (h.count || 0), 0);
-    panel.append(el('h3', null, 'Active fleet hull lineage (' + fmt(hullSum) + ' synced ships -- ' + fmt(upgSum) + ' upgraded, ' + fmt(Math.max(0, hullSum - upgSum)) + ' T0 starter)'));
-    panel.append(fitTable(table(['Hull class', 'Design empire', 'Tier', 'Role category', 'Ships'],
-      our.hulls.map((h) => [
-        h.class,
-        el('span', 'pill ' + (h.empire === 'voidborn' ? 'good' : 'warn'), h.empire),
-        'T' + h.tier,
-        h.category || '--',
-        fmt(h.count),
-      ]), [4])));
+    const dockedList = our.docked_hulls || [];
+    const dockedNote = dockedList.length ? ' + ' + fmt(dockedList.length) + ' built in hangar' : '';
+    panel.append(el('h3', null, 'Active fleet hull lineage (' + fmt(hullSum) + ' synced ships -- ' + fmt(upgSum) + ' active upgraded, ' + fmt(Math.max(0, hullSum - upgSum)) + ' T0 starter' + dockedNote + ')'));
+    const hullRows = our.hulls.map((h) => [
+      h.class,
+      el('span', 'pill ' + (h.empire === 'voidborn' ? 'good' : 'warn'), h.empire),
+      'T' + h.tier,
+      h.category || '--',
+      fmt(h.count),
+    ]);
+    for (const dh of dockedList) {
+      hullRows.unshift([
+        dh.class + ' (hangar: ' + dh.pilot + ' @ ' + dh.station + ')',
+        el('span', 'pill ' + (dh.empire === 'voidborn' ? 'good' : 'info'), dh.empire),
+        el('span', 'pill good', 'T' + dh.tier + ' BUILT'),
+        dh.category || '--',
+        '1 (ready)',
+      ]);
+    }
+    panel.append(fitTable(table(['Hull class', 'Design empire', 'Tier', 'Role category', 'Ships'], hullRows, [4])));
   }
 
   panel.append(el('h3', null, 'Where our buildings stand (' + bySys.size + ' systems)'));

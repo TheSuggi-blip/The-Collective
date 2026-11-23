@@ -196,6 +196,128 @@ def vault_valuation(conn):
     }
 
 
+def compute_balance_sheet(conn, fleet_json=None):
+    """Single source of truth for Consolidated Balance Sheet & Enterprise Net Worth across /api/ops, /api/progression, and /api/diplomacy."""
+    vv = vault_valuation(conn)
+    wallets = 0
+    treasury = 0
+    fleet_book = 0
+    facility_invested = 0
+    handed_over_24h = 0
+    hexc_wealth = 0
+
+    if isinstance(fleet_json, dict):
+        fl_ships = [s for s in (fleet_json.get("ships") or []) if isinstance(s, dict)]
+        if fl_ships:
+            wallets = int(round(sum(_num(s.get("credits")) for s in fl_ships)))
+
+    if conn is not None:
+        if not wallets and _has_table(conn, "ships"):
+            r = conn.execute("SELECT COALESCE(SUM(credits), 0) FROM ships").fetchone()
+            wallets = int(round(_num(r[0]))) if r else 0
+        if _has_table(conn, "faction"):
+            r = conn.execute("SELECT COALESCE(treasury, 0) FROM faction LIMIT 1").fetchone()
+            treasury = int(round(_num(r[0]))) if r else 0
+
+        # Fleet book value = fitted ship_modules + active hull_materials at catalog base_value
+        item_val_id = {}
+        item_val_lname = {}
+        if _has_table(conn, "items"):
+            item_cols = {c[1] for c in conn.execute("PRAGMA table_info(items)")}
+            q_items = (
+                "SELECT id, name, COALESCE(base_value, 0) FROM items"
+                if "name" in item_cols else
+                "SELECT id, NULL, COALESCE(base_value, 0) FROM items"
+            )
+            for ir in conn.execute(q_items):
+                iv = int(round(_num(ir[2])))
+                if ir[0]:
+                    item_val_id[str(ir[0])] = iv
+                if ir[1]:
+                    ln = str(ir[1]).lower()
+                    if ln not in item_val_lname:
+                        item_val_lname[ln] = iv
+        mod_total = 0
+        if _has_table(conn, "ship_modules"):
+            for mr in conn.execute("SELECT name FROM ship_modules"):
+                if mr[0]:
+                    mod_total += item_val_lname.get(str(mr[0]).lower(), 0)
+        hull_total = 0
+        if _has_table(conn, "hull_materials") and _has_table(conn, "hulls") and _has_table(conn, "ships"):
+            hm_cost = {}
+            for hmr in conn.execute("SELECT hull, item, COALESCE(units, 0) FROM hull_materials"):
+                hid = str(hmr[0] or "")
+                if hid:
+                    hm_cost[hid] = hm_cost.get(hid, 0) + int(round(_num(hmr[2]))) * item_val_id.get(str(hmr[1] or ""), 0)
+            hull_by_key = {}
+            for hr in conn.execute("SELECT id, name FROM hulls"):
+                hid = str(hr[0] or "")
+                if not hid:
+                    continue
+                for k in {hid.lower(), str(hr[1] or "").lower()}:
+                    if k:
+                        hull_by_key.setdefault(k, set()).add(hid)
+            for sr in conn.execute("SELECT class FROM ships"):
+                sc = str(sr[0] or "").lower()
+                for hid in hull_by_key.get(sc, ()):
+                    hull_total += hm_cost.get(hid, 0)
+        fleet_book = int(mod_total + hull_total)
+
+        # Fallback only if hull_materials table is absent in minimal test fixtures
+        if not fleet_book and _has_table(conn, "ships") and _has_table(conn, "hulls"):
+            for tier, cnt in conn.execute(
+                "SELECT COALESCE(h.tier, 0), COUNT(*) FROM ships s "
+                "LEFT JOIN hulls h ON LOWER(h.id) = LOWER(s.class) OR LOWER(h.name) = LOWER(s.class) GROUP BY 1"
+            ):
+                fleet_book += int(_num(cnt)) * ({0: 5000, 1: 65000, 2: 350000, 3: 1500000, 4: 6000000, 5: 25000000}.get(int(_num(tier)), 5000))
+
+        fac_lb = 0
+        fac_sum = 0
+        if _has_table(conn, "leaderboards"):
+            r = conn.execute(
+                "SELECT COALESCE(MAX(value), 0) FROM leaderboards WHERE grp = 'factions' AND board = 'facility_investment' AND tag = 'CLTV'"
+            ).fetchone()
+            fac_lb = int(round(_num(r[0]))) if r else 0
+            hr = conn.execute(
+                "SELECT value FROM leaderboards WHERE grp = 'factions' AND board = 'total_wealth' AND tag = 'HEXC' ORDER BY t DESC LIMIT 1"
+            ).fetchone()
+            hexc_wealth = int(round(_num(hr[0]))) if hr else 0
+        if _has_table(conn, "faction_facilities") and _has_table(conn, "facilities"):
+            r = conn.execute(
+                "SELECT COALESCE(SUM(COALESCE(c.build_cost, 0)), 0) "
+                "FROM faction_facilities ff LEFT JOIN facilities c ON c.id = ff.type"
+            ).fetchone()
+            fac_sum = int(round(_num(r[0]))) if r else 0
+        facility_invested = max(fac_lb, fac_sum)
+
+        if _has_table(conn, "stats_figures"):
+            r = conn.execute(
+                "SELECT COALESCE(SUM(value), 0) FROM stats_figures WHERE view = 'contribution' AND figure = 'handed_over_worth' AND hours = 24"
+            ).fetchone()
+            handed_over_24h = int(round(_num(r[0]))) if r else 0
+
+    liquid_cash = wallets + treasury
+    vault_nrv = int(vv["nrv"])
+    vault_cat = int(vv["catalog"])
+    return {
+        "liquid_cash": liquid_cash,
+        "wallets": wallets,
+        "treasury": treasury,
+        "vault_worth": vault_nrv,
+        "vault_nrv": vault_nrv,
+        "vault_catalog": vault_cat,
+        "vault_liquid": int(vv["liquid"]),
+        "vault_unbounded_bid": int(vv["unbounded_bid"]),
+        "vault_top_gaps": vv["top_gaps"],
+        "fleet_book": fleet_book,
+        "facility_invested": facility_invested,
+        "net_worth": liquid_cash + vault_nrv + fleet_book + facility_invested,
+        "net_worth_catalog": liquid_cash + vault_cat + fleet_book + facility_invested,
+        "handed_over_24h": handed_over_24h,
+        "hexc_wealth": hexc_wealth,
+    }
+
+
 def once_route_ids(repo_root):
     """Return (all_once, fit_once, mission_once) route ID sets scanning ALL game/routes/*.json."""
     all_once, fit_once, mission_once = set(), set(), set()
