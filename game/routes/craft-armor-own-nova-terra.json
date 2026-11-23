@@ -1,0 +1,75 @@
+{
+ "id": "craft-armor-own-nova-terra",
+ "kind": "circuit",
+ "title": "Armor plate made by hand at Nova Terra Central from the trader's own stored creature carapace, docked, kept in its storage for the reserve",
+ "note": "2026-11-23 00:09 UTC (Mercury): orders ENT-068 block MERCURY (docked crafts take the traders off the empty jump loop), rule F8, F23, F24, F36. A receiver of Trade stores 341 (1 trader) of creature carapace here (table holdings, 2026-11-22 23:37 UTC); armor plate is open in the reserve (pull.py levels 23:38 UTC: held 2,212, min 5,346, max 5,940) and carapace is its input (carapace_plating: 6 carapace into 1 plate, by hand, 0 cr). The same stops as craft-armor-own-node-beta. Standing work; closes under 30 carapace stored here, and by the pull rule at the plate's max. A test: three results decide (F37).",
+ "standing": true,
+ "requires": {
+  "stored": {
+   "at": "nova_terra_central",
+   "item": "creature_carapace",
+   "min": 30
+  }
+ },
+ "max_ships": 1,
+ "stops": [
+  {
+   "at": "nova_terra:nova_terra_central:nova_terra_central",
+   "store": "all",
+   "craft": [
+    {
+     "recipe": "carapace_plating",
+     "runs": 128,
+     "per_run": 1,
+     "makes": "armor_plate"
+    },
+    {
+     "recipe": "carapace_plating",
+     "runs": 64,
+     "per_run": 1,
+     "makes": "armor_plate"
+    },
+    {
+     "recipe": "carapace_plating",
+     "runs": 32,
+     "per_run": 1,
+     "makes": "armor_plate"
+    },
+    {
+     "recipe": "carapace_plating",
+     "runs": 16,
+     "per_run": 1,
+     "makes": "armor_plate"
+    },
+    {
+     "recipe": "carapace_plating",
+     "runs": 8,
+     "per_run": 1,
+     "makes": "armor_plate"
+    },
+    {
+     "recipe": "carapace_plating",
+     "runs": 4,
+     "per_run": 1,
+     "makes": "armor_plate"
+    },
+    {
+     "recipe": "carapace_plating",
+     "runs": 2,
+     "per_run": 1,
+     "makes": "armor_plate"
+    },
+    {
+     "recipe": "carapace_plating",
+     "runs": 1,
+     "per_run": 1,
+     "makes": "armor_plate"
+    }
+   ]
+  },
+  {
+   "at": "nova_terra:nova_terra_central:nova_terra_central",
+   "store": "all"
+  }
+ ]
+}

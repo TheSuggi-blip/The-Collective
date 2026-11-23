@@ -1,0 +1,81 @@
+{
+ "id": "craft-biogas-own-first-step",
+ "kind": "circuit",
+ "title": "Fuel cells made by hand at First Step from the trader's own stored crystallized biogas, docked, no jump",
+ "note": "2026-11-23 00:09 UTC (Mercury): orders ENT-068, O1 and block MERCURY (cap the empty jump loop in the same turn that docked crafts take the other traders), rule F8 (docked zero-fuel crafting before jump loops) and F23 (every ship crafts its own stores). Trade's receivers store 52 (2 traders) of crystallized biogas here (table holdings, 2026-11-22 23:37 UTC); no bid at home takes it. biogas_fuel_synthesis: 1 biogas into 2 fuel cells, by hand, 0 cr. Fuel cells are kept whole by the reserve (game/reserve.tsv: keep fuel_cell all, fuel for our own ships beyond the border) and have no pull level, so the pull rule does not close this route. The craft list asks the recipe in halving sizes (256 down to 1): a size the stores cannot fill makes nothing and the next is asked. Nothing is bought or sold; the cells stay in the pilot's storage. Standing work; closes by itself under 10 biogas stored here. A test: three results decide (F37).",
+ "standing": true,
+ "requires": {
+  "stored": {
+   "at": "first_step_memorial_station",
+   "item": "crystallized_biogas",
+   "min": 10
+  }
+ },
+ "max_ships": 2,
+ "stops": [
+  {
+   "at": "first_step:first_step_memorial_station:first_step_memorial_station",
+   "store": "all",
+   "craft": [
+    {
+     "recipe": "biogas_fuel_synthesis",
+     "runs": 256,
+     "per_run": 2,
+     "makes": "fuel_cell"
+    },
+    {
+     "recipe": "biogas_fuel_synthesis",
+     "runs": 128,
+     "per_run": 2,
+     "makes": "fuel_cell"
+    },
+    {
+     "recipe": "biogas_fuel_synthesis",
+     "runs": 64,
+     "per_run": 2,
+     "makes": "fuel_cell"
+    },
+    {
+     "recipe": "biogas_fuel_synthesis",
+     "runs": 32,
+     "per_run": 2,
+     "makes": "fuel_cell"
+    },
+    {
+     "recipe": "biogas_fuel_synthesis",
+     "runs": 16,
+     "per_run": 2,
+     "makes": "fuel_cell"
+    },
+    {
+     "recipe": "biogas_fuel_synthesis",
+     "runs": 8,
+     "per_run": 2,
+     "makes": "fuel_cell"
+    },
+    {
+     "recipe": "biogas_fuel_synthesis",
+     "runs": 4,
+     "per_run": 2,
+     "makes": "fuel_cell"
+    },
+    {
+     "recipe": "biogas_fuel_synthesis",
+     "runs": 2,
+     "per_run": 2,
+     "makes": "fuel_cell"
+    },
+    {
+     "recipe": "biogas_fuel_synthesis",
+     "runs": 1,
+     "per_run": 2,
+     "makes": "fuel_cell"
+    }
+   ]
+  },
+  {
+   "at": "first_step:first_step_memorial_station:first_step_memorial_station",
+   "store": "all"
+  }
+ ]
+}
