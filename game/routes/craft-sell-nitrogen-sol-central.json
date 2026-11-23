@@ -1,0 +1,116 @@
+{
+ "id": "craft-sell-nitrogen-sol-central",
+ "kind": "circuit",
+ "title": "Liquid nitrogen made by hand at Sol Central from nitrogen ice bought there and sold into the station's bid, docked, no jump",
+ "note": "2026-11-23 03:44 UTC (Mercury): orders ENT-071, block MERCURY (docked crafts take the traders off the jump loop), P6 (newborns work where they were born) and O1 (zero empty burn); rule F23 (a trader crafts for sale). Confederacy Central Command's book (table books, 03:37 UTC): nitrogen ice asked at 1 cr x 27,426 (a player's order), liquid nitrogen bid 4 cr x 14,045 (the station's). process_nitrogen_ice by hand: 5 ice -> 4 liquid nitrogen, 1.32 a run. A run of the recipe costs 5.05 cr with the tax and sells for 15.84: about +10.8 cr, Crafting XP, no fuel. First result by hand (F12 one unit first, F15): one Solarian trader bought 5 ice for 5 cr, crafted 1 run, sold 4 liquid nitrogen for 16 cr, +11 cr (03:41 to 03:44 UTC). A hold of 60 ice makes 12 runs; three such stops a run. requires.ask and requires.bid close it while either end is gone; stop_on_failed_buy ends a run whose buy gets nothing. requires.empire solarian: the Solarian newborns' home work (P6). Liquid nitrogen stands above its reserve max: what is made is sold, nothing held. A test: one ship, three results decide (F37: the same seller and buyer, so one ship three times) before the lift.",
+ "standing": true,
+ "max_ships": 1,
+ "requires": {
+  "empire": "solarian",
+  "ask": {
+   "item": "nitrogen_ice",
+   "base": "confederacy_central_command",
+   "max_price": 1,
+   "min_qty": 60
+  },
+  "bid": {
+   "item": "liquid_nitrogen",
+   "base": "confederacy_central_command",
+   "min_price": 4,
+   "min_qty": 48
+  }
+ },
+ "stops": [
+  {
+   "at": "sol:sol_central:confederacy_central_command",
+   "sell": [
+    {
+     "item": "liquid_nitrogen",
+     "min_price": 4
+    }
+   ],
+   "buy": [
+    {
+     "item": "nitrogen_ice",
+     "qty": 60,
+     "max_price": 2
+    }
+   ],
+   "stop_on_failed_buy": true,
+   "craft": [
+    {
+     "recipe": "process_nitrogen_ice",
+     "runs": 12,
+     "per_run": 4,
+     "makes": "liquid_nitrogen",
+     "inputs": [
+      "nitrogen_ice"
+     ]
+    }
+   ]
+  },
+  {
+   "at": "sol:sol_central:confederacy_central_command",
+   "sell": [
+    {
+     "item": "liquid_nitrogen",
+     "min_price": 4
+    }
+   ],
+   "buy": [
+    {
+     "item": "nitrogen_ice",
+     "qty": 60,
+     "max_price": 2
+    }
+   ],
+   "stop_on_failed_buy": true,
+   "craft": [
+    {
+     "recipe": "process_nitrogen_ice",
+     "runs": 12,
+     "per_run": 4,
+     "makes": "liquid_nitrogen",
+     "inputs": [
+      "nitrogen_ice"
+     ]
+    }
+   ]
+  },
+  {
+   "at": "sol:sol_central:confederacy_central_command",
+   "sell": [
+    {
+     "item": "liquid_nitrogen",
+     "min_price": 4
+    }
+   ],
+   "buy": [
+    {
+     "item": "nitrogen_ice",
+     "qty": 60,
+     "max_price": 2
+    }
+   ],
+   "stop_on_failed_buy": true,
+   "craft": [
+    {
+     "recipe": "process_nitrogen_ice",
+     "runs": 12,
+     "per_run": 4,
+     "makes": "liquid_nitrogen",
+     "inputs": [
+      "nitrogen_ice"
+     ]
+    }
+   ]
+  },
+  {
+   "at": "sol:sol_central:confederacy_central_command",
+   "store": [
+    "nitrogen_ice",
+    "liquid_nitrogen"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,69 @@
+{
+ "id": "mission-first-links-grand",
+ "kind": "circuit",
+ "title": "First Links: 4,000 cr once per pilot at Grand Exchange; 10 nickel ore bought at Market Prime for Cargo Lanes, 8 copper wiring bought at Cargo Lanes for Market Prime",
+ "note": "2026-11-23 03:44 UTC (Mercury): orders ENT-071, P6 (newborns: their empire's missions first, then work that repeats there) and rule F34 tier 2 (home-region paid-once bootstrap, under 6 jumps). Grand Exchange's board (data/missions, 03:41 UTC): First Links, 4,000 cr, 25 Trading and 15 Navigation XP, 60 Piloting XP: deliver 8 copper wiring to Market Prime Exchange and 10 nickel ore to Cargo Lanes Freight Depot; the board gives no goods. Books (table books, 03:34 to 03:43 UTC): nickel ore asked at Market Prime 101 x 77, copper wiring at Cargo Lanes 13 x 4,125: about 1,130 cr of goods with the tax. Haven, Market Prime and Cargo Lanes are Nebula systems 1 and 2 jumps apart (scripts/map.py). Each delivery target is docked with its goods aboard and docked again (redock); the runner hands in a mission whose objectives are done at every stop. requires.empire nebula: the Nebula newborns' home work. min_credits 4,300: the runner buys nothing under 3,000 cr. A test: one ship first (F34, F12); three results decide (F37).",
+ "once": true,
+ "max_ships": 1,
+ "min_credits": 4300,
+ "one_time": [
+  "First Links"
+ ],
+ "skip_if_booked": [
+  "First Links"
+ ],
+ "requires": {
+  "empire": "nebula"
+ },
+ "stops": [
+  {
+   "at": "haven:grand_exchange:grand_exchange_station",
+   "accept": [
+    "first_links"
+   ]
+  },
+  {
+   "at": "market_prime:market_prime_exchange:market_prime_exchange",
+   "only_if_active": [
+    "First Links"
+   ],
+   "buy": [
+    {
+     "item": "nickel_ore",
+     "qty": 10,
+     "max_price": 104,
+     "one_time": true
+    }
+   ],
+   "stop_on_failed_buy": true
+  },
+  {
+   "at": "cargo_lanes:cargo_lanes_freight_depot:cargo_lanes_freight_depot",
+   "only_if_active": [
+    "First Links"
+   ],
+   "buy": [
+    {
+     "item": "copper_wiring",
+     "qty": 8,
+     "max_price": 15,
+     "one_time": true
+    }
+   ],
+   "redock": true
+  },
+  {
+   "at": "market_prime:market_prime_exchange:market_prime_exchange",
+   "only_if_active": [
+    "First Links"
+   ],
+   "redock": true
+  },
+  {
+   "at": "haven:grand_exchange:grand_exchange_station",
+   "only_if_active": [
+    "First Links"
+   ]
+  }
+ ]
+}
