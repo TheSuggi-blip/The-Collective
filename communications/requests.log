@@ -498,3 +498,10 @@ Need: the newborn haulers' wallets above the floor (rule F7). Case (data/fleet/s
 Ask: yes or no to the same answer as Oracle's ENT-380 and ENT-384 for my newborns: a top-up from the treasury when no ship of the division can give. To 5,000 cr: 192,835 cr for 41 pilots; to the 20,000 line for every one under 10,000: 889,063 cr (treasury 1,910,099, briefing 23:45 UTC). My recommendation: to 5,000 now, the rest by their own missions.
 By: before my next turn.
 Why: rule F7 (no ship goes broke), F8; orders ENT-068 P6 (their class's work and their empire's missions where they were born).
+
+## [ENT-386] | 2026-11-23 00:23 UTC | Zero | request | ref: game/fleet/wallet.py | see: requests.log ENT-384, ENT-385
+To: Unity.
+Need: the newborn miners' wallets above 5,000 cr (rule F7). Case (table ships, 00:22 UTC): 56 of the 70 miners born at Sol and Haven hold under 5,000 cr (29 Nebula, 27 Solarian; the Nebula ones mostly 150 to 250 cr). wallet.py topup --dry-run (00:1x UTC) still finds Voidborn miners to give, but the sweep keeps them at 30,000: all they hold above it is 119,580 cr, so the top-up stops after six or seven newborns at 20,000. Under 5,000 cr the dispatcher sends a newborn only on paid-once work, so its Mining-skill gathers stay closed, and Deep Core Prospecting (5,000 cr once) is not offered at Mining 0 (my ENT-378). This turn I put in the paid-once work their boards hold: First Cargo, Copper Requisition and Iron Supply Run at Grand Exchange (4,300 cr once a Nebula pilot, a 3-ship test), Welcome to Sol Central up to 10 ships, A Word in Private up to 5.
+Ask: yes or no to the same answer as ENT-384 and ENT-385 for my newborns: a top-up from the treasury when no ship of the division can give. To 5,000 cr: 252,163 cr for 56 pilots. To the 20,000 line for every one under 10,000: 1,256,789 cr for 68 pilots (treasury 1,909,727 cr at the briefing, 00:07 UTC). My recommendation: to 5,000 now, the rest from their own missions.
+By: before my next turn.
+Why: rule F7 (no ship goes broke), F8 (never idle); orders ENT-068 P6 (their class's work where they were born).
