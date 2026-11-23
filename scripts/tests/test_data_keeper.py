@@ -111,9 +111,9 @@ class DataKeeperTests(unittest.TestCase):
         threads = [threading.Thread(target=writer)]
         threads[0].start()
         try:
-            deadline = time.time() + 1.5
+            deadline, hard = time.time() + 1.5, time.time() + 20      # under load three cuts can take longer than 1.5 s (Oracle, reports.log ENT-160)
             cuts = 0
-            while time.time() < deadline:
+            while (time.time() < deadline or cuts <= 2) and time.time() < hard:
                 if self.trim(limit=40_000, stay=15_000, keep=10_000):
                     cuts += 1
         finally:
