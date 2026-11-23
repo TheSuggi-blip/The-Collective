@@ -192,6 +192,33 @@ class EndTests(unittest.TestCase):
         self.assertEqual(self.end_stop(False, None, True, None), ("home", None))
 
 
+class HomeTests(unittest.TestCase):
+    """Home is the pilot's own capital (2026-11-23, queue.log ENT-259: a census without --stay sent newborns of
+    other empires to Central Nexus, across the galaxy): the live file's `home_base`, placed by the station read
+    that lists fuel; Central Nexus when the file names none or no read places it."""
+
+    NEXUS = {"systemId": "nexus_prime", "poiId": "the_core", "baseId": "central_nexus", "refuel": True}
+    STATIONS = {"nexus_prime": ("the_core", "central_nexus"), "altais": ("frontier_poi", "frontier_station"),
+                "haven": ("haven_poi", "grand_exchange_station")}
+
+    def setUp(self):
+        (self.home_of,) = load("home_of")
+
+    def test_the_pilots_own_home_base_where_a_read_places_it(self):
+        got = self.home_of({"home_base": "frontier_station"}, self.STATIONS, self.NEXUS)
+        self.assertEqual(got, {"systemId": "altais", "poiId": "frontier_poi", "baseId": "frontier_station",
+                               "refuel": True})
+        self.assertEqual(self.home_of({"home_base": "central_nexus"}, self.STATIONS, self.NEXUS), self.NEXUS)
+
+    def test_no_home_base_an_unread_one_or_a_broken_file_is_central_nexus(self):
+        for ship in ({}, {"home_base": ""}, {"home_base": "krynn_war_citadel"}, None, "x", {"home_base": 3}):
+            got = self.home_of(ship, self.STATIONS, self.NEXUS)
+            self.assertEqual(got, self.NEXUS)
+            self.assertIsNot(got, self.NEXUS)                  # a copy: the default is never changed
+        self.assertEqual(self.home_of({"home_base": "frontier_station"}, {}, self.NEXUS), self.NEXUS)
+        self.assertEqual(self.home_of({"home_base": "frontier_station"}, None, self.NEXUS), self.NEXUS)
+
+
 class RemoteBookTests(unittest.TestCase):
     """Game 0.728.0: view_market takes base_id, so a docked census reads the books of other stations from afar.
     Which books: those of data/market that are station books, not the one it is docked at, older than the age,

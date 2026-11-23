@@ -7,7 +7,8 @@ Flies to the system, lists its places (`get_system`), visits every belt, ice
 field, gas cloud and nebula (`get_poi`: what is left of each resource;
 `get_nearby`: creatures by species, pirates, other pilots), then docks at each
 station of the system and saves its order book and mission board. Ends docked
-at Central Nexus, or with --stay at the system's last station (docked nowhere: at the
+at the pilot's home base (its empire's capital, home_of; Central Nexus when no read
+places it), or with --stay at the system's last station (docked nowhere: at the
 nearest station with fuel, end_stop).
 
 Writes, in the unit's data folder (never the repository):
@@ -344,6 +345,20 @@ def end_stop(stay, last_station, short, stop):
     return 'home', None
 
 
+def home_of(ship, stations, default):
+    """The station a census without --stay ends at (a dict for the goal prepare-at-station): the pilot's own home
+    base, the station of the capital its empire gave it (live file `home_base`), placed by the station read that
+    lists fuel (`stations`, fuel_stations); a copy of `default`, Central Nexus, when the file names none or no read
+    places it (2026-11-23, queue.log ENT-259: a census without --stay sent newborns of other empires home across
+    the galaxy to Central Nexus)."""
+    base = ship.get('home_base') if isinstance(ship, dict) else None
+    if isinstance(base, str) and base and isinstance(stations, dict):
+        for system, place in stations.items():
+            if isinstance(place, (tuple, list)) and len(place) == 2 and place[1] == base:
+                return {'systemId': system, 'poiId': place[0], 'baseId': base, 'refuel': True}
+    return dict(default)
+
+
 def strongholds():
     """The systems the chart flags `stronghold` (game/map/galaxy.tsv): no census takes fuel at a pirate's station."""
     try:
@@ -500,6 +515,12 @@ leg_started, leg_before = STARTED, WALLET_BEFORE
 LANES, HOME_JUMPS = chart()                    # the chain and the fuel check both fly by the chart
 FARS = strongholds()
 STATIONS = {s: v for s, v in fuel_stations(DATA).items() if s not in FARS}
+try:                                                           # home: the pilot's own capital, not ours for all
+    HOME = home_of(json.loads((DATA / 'fleet' / 'ships' / f'{pilot}.json').read_text(encoding='utf-8')), STATIONS, HOME)
+except (OSError, ValueError):
+    pass
+if HOME['systemId'] != 'nexus_prime':                          # the way home counts to that capital
+    HOME_JUMPS = jumps(LANES, HOME['systemId'], 99)
 HERE = ship_system()
 ONWARD = nearest_fuel(LANES, system_id, STATIONS)          # where the ship takes fuel after its read
 WAY = jumps(LANES, HERE, 99).get(system_id) if HERE else None
