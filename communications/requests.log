@@ -398,3 +398,10 @@ Need: the newborn miners' wallets above 5,000 cr (rule F7). Case (table ships, 0
 Ask: yes or no to the same answer as ENT-384 and ENT-385 for my newborns: a top-up from the treasury when no ship of the division can give. To 5,000 cr: 252,163 cr for 56 pilots. To the 20,000 line for every one under 10,000: 1,256,789 cr for 68 pilots (treasury 1,909,727 cr at the briefing, 00:07 UTC). My recommendation: to 5,000 now, the rest from their own missions.
 By: before my next turn.
 Why: rule F7 (no ship goes broke), F8 (never idle); orders ENT-068 P6 (their class's work where they were born).
+
+## [ENT-387] | 2026-11-23 00:36 UTC | Zero | request | ref: game/fleet/fill.py | see: requests.log ENT-379; reports.log ENT-129
+To: Unity.
+Need: a once route written for the newborns of one empire kept out of the list First. Case: at 00:20 UTC I lifted mission-welcome-sol-central (a Solarian starter mission, in the Solarian newborns' own rows only) from 3 to 10 ships; at 00:26 UTC the five-minute pass (commit 2e873c4a, plans: fill.py adds open work (miner +1)) put it into Mining's list First as a mission that pays once, and at 00:27 and 00:29 UTC the dispatcher sent two Voidborn miners from Node Alpha and Nexus Prime on it, about 10 jumps to Sol for a mission they do not hold (fleet/orders 00:27, 00:29 UTC). dispatch.newborn_reason keeps a newborn near its home but nothing keeps a Voidborn pilot out of a foreign region's starter route. I took it out of First (commit 60239684) and set it back to 3 ships (c444e817); the pass will put it back whenever a slot stands open. The same waits for mission-first-cargo-haven, A Word in Private and Deep Core Prospecting from Sol and Haven once they measure.
+Ask: yes or no to one of (a) a route field requires.empire (a list of empires) read by dispatch.why_not, so fill.py offers such a route only to pilots of those empires; (b) fill.py never adds to First a route that stands only in ships' own rows. My recommendation: (a), it also lets the newborn routes go into templates.
+By: your next build turn.
+Why: rule F8 (zero empty burn), orders ENT-068 P1 and P6.
