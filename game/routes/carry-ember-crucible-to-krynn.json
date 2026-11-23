@@ -1,0 +1,33 @@
+{
+ "id": "carry-ember-crucible-to-krynn",
+ "kind": "circuit",
+ "title": "Ember glands stored at The Crucible Garrison carried two jumps to the War Citadel (Krynn), where its bid and Station Need pay",
+ "note": "Written by Mercury, 2026-11-23 18:57 UTC (orders ENT-083, block MERCURY: sell handed goods at or above the bids). Ember glands bid 480 cr at The Crucible and 7,054 cr x 2 at the War Citadel, whose Station Need missions pay about 8,100 cr a gland (need-ember-gland-krynn). A trader stores 7 glands at The Crucible (holdings, storage book 18:29 UTC). The Crucible to Krynn: 2 jumps through Iron Reach, Crimson policed space (scripts/map.py route), no pirate in 97 to 212 readings (data/intel/sightings.jsonl). It carries them and stores them there for need-ember-gland-krynn and sell-loot-at-krynn. requires.stored: only a pilot whose own storage at The Crucible holds 3 glands; max_jumps 3 keeps it to a ship near. One ship.",
+ "max_ships": 1,
+ "far_ok": true,
+ "requires": {
+  "stored": {
+   "at": "the_crucible_garrison",
+   "item": "ember_gland",
+   "min": 3
+  },
+  "max_jumps": 3,
+  "empty_hold": true
+ },
+ "stops": [
+  {
+   "at": "the_crucible:the_crucible_garrison:the_crucible_garrison",
+   "withdraw": [
+    {
+     "item": "ember_gland"
+    }
+   ]
+  },
+  {
+   "at": "krynn:war_citadel:crimson_war_citadel",
+   "store": [
+    "ember_gland"
+   ]
+  }
+ ]
+}

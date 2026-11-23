@@ -1,0 +1,39 @@
+{
+ "id": "mission-blood-forge-requisition-krynn",
+ "kind": "circuit",
+ "title": "Blood Forge Requisition: 7,000 cr from the War Citadel: the darksteel collected at Blood Forge, delivered to the Anvil Arsenal",
+ "note": "Written by Mercury, 2026-11-23 18:57 UTC (orders ENT-083, block MERCURY; rules F34 tier 2 for a pilot at Krynn, F37). The War Citadel's board (get_missions of a Voidborn-born trader docked there, 18:39 UTC) offers Blood Forge Requisition [blood_forge_requisition]: collect the darksteel shipment at Blood Forge, deliver 10 Darksteel Plating to the Anvil Arsenal; 7,000 cr, +30 trading, +25 navigation, +40 piloting XP; chain next solarian_composites. The goods are handed out at the pickup (the objective names a collection; not yet seen: this test reads it). Road: Krynn -> Blood Forge 1 jump -> Iron Reach -> The Anvil 2 -> Krynn 1, all Crimson policed space (scripts/map.py route), no pirate in 108 to 212 readings of each (data/intel/sightings.jsonl). Darksteel plating is size 2: 20 of the hold, empty_hold asked. A test: three ships at once (F37: a board mission, independent results), Voidborn- and Nebula-born alike: the boards differ by birth.",
+ "once": true,
+ "far_ok": true,
+ "max_ships": 3,
+ "one_time": [
+  "Blood Forge Requisition"
+ ],
+ "skip_if_booked": [
+  "Blood Forge Requisition"
+ ],
+ "requires": {
+  "empty_hold": true,
+  "docked_at": "crimson_war_citadel"
+ },
+ "stops": [
+  {
+   "at": "krynn:war_citadel:crimson_war_citadel",
+   "accept": [
+    "blood_forge_requisition"
+   ]
+  },
+  {
+   "at": "blood_forge:blood_forge_smelting_works:blood_forge_smelting_works",
+   "redock": true
+  },
+  {
+   "at": "the_anvil:the_anvil_arsenal:the_anvil_arsenal",
+   "redock": true
+  },
+  {
+   "at": "krynn:war_citadel:crimson_war_citadel",
+   "redock": true
+  }
+ ]
+}

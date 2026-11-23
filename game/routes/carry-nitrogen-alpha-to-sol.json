@@ -1,0 +1,63 @@
+{
+ "id": "carry-nitrogen-alpha-to-sol",
+ "kind": "circuit",
+ "title": "Nitrogen ice bought at Alpha Centauri, made into liquid nitrogen there by hand, sold into Sol Central's deep bid one jump on",
+ "note": "Written by Mercury, 2026-11-23 18:57 UTC (orders ENT-083, block MERCURY and P6: the traders left at the capitals take standing work where they stand; rule F8, O1: a cargo run, no empty burn out). 15 Solarian-born traders wait at Nova Terra and Alpha Centauri after the once lines (fill.py status trader 18:25 UTC). Books (table books, 18:43 UTC): Alpha Centauri Colonial Station asks nitrogen ice at 1 cr x 290,725; Confederacy Central Command (Sol) bids liquid nitrogen 4 cr x 8,672, the station's bid, which refilled after 340 units sold (craft-sell-nitrogen-sol-central, 2026-11-23 04:12 UTC); Sol's own ice ask fell to 3 cr x 85, which closed that route. process_nitrogen_ice: 5 ice -> 4 liquid nitrogen. A Theoria (72) takes 70 ice: 14 runs, 56 liquid nitrogen, about +153 cr a load before fuel; Alpha Centauri to Sol is 1 jump (scripts/map.py route). requires.ask and requires.bid close it while either end is gone. A trade of the class (F23) that trains crafting and trading; one route of the plan's order, no hand. Liquid nitrogen above its reserve max: all that is made is sold, nothing stored.",
+ "standing": true,
+ "far_ok": true,
+ "max_ships": 15,
+ "requires": {
+  "max_jumps": 4,
+  "ask": {
+   "item": "nitrogen_ice",
+   "base": "alpha_centauri_colonial_station",
+   "max_price": 1,
+   "min_qty": 70
+  },
+  "bid": {
+   "item": "liquid_nitrogen",
+   "base": "confederacy_central_command",
+   "min_price": 4,
+   "min_qty": 120
+  }
+ },
+ "stops": [
+  {
+   "at": "alpha_centauri:alpha_centauri_colonial_station:alpha_centauri_colonial_station",
+   "buy": [
+    {
+     "item": "nitrogen_ice",
+     "qty": 70,
+     "max_price": 2
+    }
+   ],
+   "stop_on_failed_buy": true,
+   "craft": [
+    {
+     "recipe": "process_nitrogen_ice",
+     "runs": 14,
+     "per_run": 4,
+     "makes": "liquid_nitrogen",
+     "inputs": [
+      "nitrogen_ice"
+     ]
+    }
+   ]
+  },
+  {
+   "at": "sol:sol_central:confederacy_central_command",
+   "sell": [
+    {
+     "item": "liquid_nitrogen",
+     "min_price": 4
+    }
+   ]
+  },
+  {
+   "at": "sol:sol_central:confederacy_central_command",
+   "store": [
+    "nitrogen_ice"
+   ]
+  }
+ ]
+}

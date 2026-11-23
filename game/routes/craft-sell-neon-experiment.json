@@ -1,0 +1,110 @@
+{
+ "id": "craft-sell-neon-experiment",
+ "kind": "circuit",
+ "title": "Ionized neon made by hand docked at The Experiment from neon bought there, sold into its bid, the rest stored",
+ "note": "Written by Mercury, 2026-11-23 18:57 UTC (orders ENT-083, block MERCURY: docked crafting, no trader waits docked; rules F8, F23). The traders waiting at home (10 at Central Nexus, fill.py status trader 18:25 UTC) have no stores for @trade-craft. The Experiment's book (table books, 18:49 UTC): neon gas asked at 1 cr x 117,822, ionized neon bid 2 cr x 127 (the station's); Central Nexus to The Experiment 3 jumps: ionize_neon_gas 6 -> 3, a run costs 6.06 cr and sells for 6 cr: crafting XP at about nothing while the bid holds; then the rest is stored (ionized neon is no reserve good). requires.max_jumps 3 keeps it to the home ships. standing: XP work.",
+ "standing": true,
+ "max_ships": 8,
+ "requires": {
+  "max_jumps": 3,
+  "ask": {
+   "item": "neon_gas",
+   "base": "the_experiment_research_station",
+   "max_price": 1,
+   "min_qty": 60
+  }
+ },
+ "stops": [
+  {
+   "at": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+   "buy": [
+    {
+     "item": "neon_gas",
+     "qty": 60,
+     "max_price": 2
+    }
+   ],
+   "stop_on_failed_buy": true,
+   "craft": [
+    {
+     "recipe": "ionize_neon_gas",
+     "runs": 10,
+     "per_run": 3,
+     "makes": "ionized_neon",
+     "inputs": [
+      "neon_gas"
+     ]
+    }
+   ],
+   "sell": [
+    {
+     "item": "ionized_neon",
+     "min_price": 2
+    }
+   ]
+  },
+  {
+   "at": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+   "buy": [
+    {
+     "item": "neon_gas",
+     "qty": 60,
+     "max_price": 2
+    }
+   ],
+   "stop_on_failed_buy": true,
+   "craft": [
+    {
+     "recipe": "ionize_neon_gas",
+     "runs": 10,
+     "per_run": 3,
+     "makes": "ionized_neon",
+     "inputs": [
+      "neon_gas"
+     ]
+    }
+   ],
+   "sell": [
+    {
+     "item": "ionized_neon",
+     "min_price": 2
+    }
+   ]
+  },
+  {
+   "at": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+   "buy": [
+    {
+     "item": "neon_gas",
+     "qty": 60,
+     "max_price": 2
+    }
+   ],
+   "stop_on_failed_buy": true,
+   "craft": [
+    {
+     "recipe": "ionize_neon_gas",
+     "runs": 10,
+     "per_run": 3,
+     "makes": "ionized_neon",
+     "inputs": [
+      "neon_gas"
+     ]
+    }
+   ],
+   "sell": [
+    {
+     "item": "ionized_neon",
+     "min_price": 2
+    }
+   ]
+  },
+  {
+   "at": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+   "store": [
+    "neon_gas",
+    "ionized_neon"
+   ]
+  }
+ ]
+}

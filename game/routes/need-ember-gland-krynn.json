@@ -1,0 +1,43 @@
+{
+ "id": "need-ember-gland-krynn",
+ "kind": "circuit",
+ "title": "Station Need: Ember Gland at the War Citadel (Krynn) filled from the pilot's own glands stored there, about 8,100 cr a gland",
+ "note": "Written by Mercury, 2026-11-23 18:57 UTC (orders ENT-083, block MERCURY: sell handed goods at or above the bids; rule F12 nothing sold under a standing bid). The War Citadel posts Station Need: Ember Gland missions: 2 glands for 16,189 cr and 1 for 8,112 cr twice (get_missions 18:39 UTC), about 8,100 cr a gland against the 7,054 cr bid (2 deep) that sell-loot-at-krynn sells into. Proof by hand (F15, one ship, 18:39 to 18:43 UTC): a trader docked there withdrew its 4 stored glands, accepted the three copies by mission id and handed them in: +8,112, +16,189, +8,112 cr, 32,413 cr for 4 glands (wallet read after each). The runner accepts by title the first copy posted; needs 3 makes every copy seen (1 to 3 glands) completable before it is taken; the redock hands it in; what is left is stored for the next copy or the bid. Before sell-loot-at-krynn in the plan. One ship: the copies are few (three at a time).",
+ "max_ships": 1,
+ "far_ok": true,
+ "requires": {
+  "stored": {
+   "at": "crimson_war_citadel",
+   "item": "ember_gland",
+   "min": 3
+  },
+  "max_jumps": 2
+ },
+ "stops": [
+  {
+   "at": "krynn:war_citadel:crimson_war_citadel",
+   "withdraw": [
+    {
+     "item": "ember_gland",
+     "qty": 3
+    }
+   ],
+   "accept": [
+    {
+     "title": "Station Need: Ember Gland",
+     "needs": {
+      "ember_gland": 3
+     }
+    }
+   ]
+  },
+  {
+   "at": "krynn:war_citadel:crimson_war_citadel",
+   "redock": true
+  },
+  {
+   "at": "krynn:war_citadel:crimson_war_citadel",
+   "store": "all"
+  }
+ ]
+}
