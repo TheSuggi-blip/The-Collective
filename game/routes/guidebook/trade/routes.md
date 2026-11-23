@@ -1,31 +1,32 @@
 # Trade guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-23. Evidence: plan.py show; templates/trade.json (@trade-sell, @trade-craft); fill.py status trader; runs.jsonl of craft-sell-nitrogen-sol-central; requests ENT-420.
+Status: proven. Updated: 2026-11-23. Evidence: plan.py show; templates/trade.json (@trade-sell, @trade-craft); fill.py status trader; view_market reads of the far station bids; requests ENT-430.
 
-The plan file as set on 2026-11-23 at 04:15 UTC (orders ENT-071, block
-MERCURY, P6; strict classes on):
+The plan file as set on 2026-11-23 at 06:27 UTC (orders ENT-078, block
+MERCURY, P5, P6):
 
-- First, every ship: the once line. Voidborn chain for the Voidborn-born;
-  the Federation tours and A Word in Private (`requires.empire nebula`)
-  for the Nebula-born; Form TA-1, the Infrastructure Audit, Welcome to
-  Sol Central and Endorsements for the Solarian-born. Once routes shared
-  by every division: `max_ships` sized to all divisions' newborns.
-- Own routes: the Solarian-born fly craft-sell-nitrogen-sol-central
-  first (docked at Sol: nitrogen ice bought, liquid nitrogen crafted and
-  sold into the station's bid, no jump); the far tests head their
-  ship's row; then for all `@trade-sell > @trade-craft`.
-- `@trade-craft`: docked, no jump, from own stores (armor plate, fuel
-  cells, ionized neon, liquid hydrogen, steel from 20 iron up).
-- Then: steel crafts, the Trading spread test, train-jumps-trader, park.
+- First, every ship: the once line. Voidborn chain and Voidborn
+  Trajectory for the Voidborn-born; the Federation tours, A Word in
+  Private and First Links (stored form) for the Nebula-born; Form TA-1,
+  the Infrastructure Audit, Welcome to Sol Central and Endorsements for
+  the Solarian-born.
+- Own routes: the Solarian-born fly the Sol nitrogen craft first; the
+  ten traders nearest Piloting 10 end their row with train-jumps-trader
+  (the empty loop, capped at ten); then for all `@trade-sell >
+  @trade-craft`.
+- `@trade-sell` starts with the far station bids for our own stored
+  goods (`carry-melt-nexus-to-sol`, `-frontier`, `-cargo-lanes`,
+  `carry-null-matter-nexus-to-crucible`) and the Bursar asks
+  (`bursar-melt-central-nexus`, `bursar-null-matter-<station>`).
+- Then: steel crafts, the Trading spread test, park. No loop.
 
-What it carries: one ship a station's bid; a craft from stores as many
-as hold the input there; the Sol craft the Solarian-born at home while
-its bid stands (`requires.bid`); the loop the Voidborn-born left.
+What it carries: one ship a station's bid; one Bursar order a station
+and good; a craft from stores as many as hold the input there.
 
-What would change it: the `sell_order` step installed (Bursar order
-keeping); a hand-in step for deliveries to another station (First
-Links); Unity's answer on the Nebula-born's work (requests ENT-420).
+What would change it: three results of each far bid and Bursar ask;
+a paying Nebula home trade or craft (the Nebula-born wait docked
+between their once missions, requests ENT-430).
 ### Selling stores where they lie (`sell-<good>-at-<station>`, `carry-<good>-<from>-to-<to>`)
 Status: proven. Updated: 2026-11-22. Evidence: the sell and carry route files with their measured figures; sellgen.py of Mercury's trade skill.
 
@@ -49,6 +50,9 @@ Status: proven. Updated: 2026-11-22. Evidence: the sell and carry route files wi
   1,200 cr stood a day unfilled at Node Beta (2026-11-16 to 17).
 - Readings: `hive.py route <id>` (sell-null-matter-at-nexus,
   sell-soma-at-node-beta, carry-soma-beta-to-gamma).
+- Station-sourced bids of other empires regain (Sol melt 2 to 24 at
+  4,244 in hours); read every far book from home with view_market and
+  carry own stores there, one ship a bid.
 
 ### Route Templates
 Status: proven. Updated: 2026-11-21. Evidence: game/routes/templates/trade.json; plan.py templates.

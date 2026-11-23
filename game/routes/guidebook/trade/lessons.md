@@ -97,6 +97,9 @@ Status: proven. Updated: 2026-11-21. Evidence: errors.log ENT-035, ENT-039, ENT-
 - Each turn the reserve first: a target met between turns kept 27 traders
   gathering for two hours (errors.log ENT-106).
 - Read the plan file's `## ` headings once a turn.
+- A mission board file (data/missions) is one pilot's: before a once
+  route is written from it, read `get_missions` of one pilot of the
+  route's empire (Scouting the Lanes: 4 of 4 runs not offered).
 
 ### Money, calls and the runner
 Status: proven. Updated: 2026-11-22. Evidence: errors.log ENT-047, ENT-066, ENT-067, ENT-090, ENT-107; requests.log ENT-176; the skill trade-books.
