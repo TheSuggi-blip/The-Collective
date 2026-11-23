@@ -2,7 +2,7 @@
  "id": "mission-shipyard-engine-core-deep-range",
  "kind": "circuit",
  "title": "Shipyard Supply: Engine Core at Deep Range Outpost: 12 bought at Unknown Edge Waystation, delivered for 18,988 cr (Outer Rim haulers)",
- "note": "Written by Apollo, 2026-11-23 04:16 UTC (orders.log ENT-071, P6; rule F23: carrying is the hauler's). The form of mission-shipyard-fuel-tank-deep-range: Deep Range Outpost's board posts the station's procurement Shipyard Supply: Engine Core (12 units, 18,988 cr, 20 Piloting XP; 57 copies at 04:15 UTC; size 3, 36 of the hold), accepted by title (route_run 9a65d1dd). Unknown Edge Waystation's book asks 1350 x 23 (data/market, about 04:00 UTC): 12 units cost about 16,362 cr with the 1 percent, about +2,626 cr a run before fuel; 3 jumps to Deep Range (game/map/galaxy.tsv). requires.ask closes it when the offer runs out (a thin ask: one or two loads). One ship first (F12, F37); requires.empire outerrim.",
+ "note": "Written by Apollo, 2026-11-23 04:16 UTC (orders.log ENT-071, P6; rule F23: carrying is the hauler's). The form of mission-shipyard-fuel-tank-deep-range: Deep Range Outpost's board posts the station's procurement Shipyard Supply: Engine Core (12 units, 18,988 cr, 20 Piloting XP; 57 copies at 04:15 UTC; size 3, 36 of the hold), accepted by title (route_run 9a65d1dd). Unknown Edge Waystation's book asks 1350 x 23 (data/market, about 04:00 UTC): 12 units cost about 16,362 cr with the 1 percent, about +2,626 cr a run before fuel; 3 jumps to Deep Range (game/map/galaxy.tsv). requires.ask closes it when the offer runs out (a thin ask: one or two loads). One ship first (F12, F37); requires.empire outerrim. 2026-11-23 04:33 UTC (Apollo): the buy stop first stores the whole hold and takes back up to 12 engine core from storage there: the first runs (04:16 and 04:18 UTC) got 13 of 14 tanks and 11 of 12 cores, the newborns' holds carrying 20 fuel cells and mission leftovers (73 of 75 used), and the delivery was refused for goods missing.",
  "max_ships": 1,
  "min_credits": 19862,
  "requires": {
@@ -21,6 +21,13 @@
    "skip_if_hold": {
     "engine_core": 12
    },
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "engine_core",
+     "qty": 12
+    }
+   ],
    "buy": [
     {
      "item": "engine_core",

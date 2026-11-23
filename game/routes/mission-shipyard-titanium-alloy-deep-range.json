@@ -2,7 +2,7 @@
  "id": "mission-shipyard-titanium-alloy-deep-range",
  "kind": "circuit",
  "title": "Shipyard Supply: Titanium Alloy at Deep Range Outpost: 25 bought at Frontier Station, delivered for 26,133 cr (Outer Rim haulers)",
- "note": "Written by Apollo, 2026-11-23 04:16 UTC (orders.log ENT-071, P6; rule F23: carrying is the hauler's). The form of mission-shipyard-fuel-tank-deep-range: Deep Range Outpost's board posts the station's procurement Shipyard Supply: Titanium Alloy (25 units, 26,133 cr, 20 Piloting XP; 46 copies at 04:15 UTC, others take them), accepted by title (route_run 9a65d1dd). Frontier Station's book asks 945 x 46 (data/market, about 04:00 UTC): 25 units cost about 23,861 cr with the 1 percent, about +2,272 cr a run before fuel; 2 jumps to Deep Range (game/map/galaxy.tsv). requires.ask closes it when the offer runs out (a thin ask: one or two loads). One ship first (F12, F37); requires.empire outerrim.",
+ "note": "Written by Apollo, 2026-11-23 04:16 UTC (orders.log ENT-071, P6; rule F23: carrying is the hauler's). The form of mission-shipyard-fuel-tank-deep-range: Deep Range Outpost's board posts the station's procurement Shipyard Supply: Titanium Alloy (25 units, 26,133 cr, 20 Piloting XP; 46 copies at 04:15 UTC, others take them), accepted by title (route_run 9a65d1dd). Frontier Station's book asks 945 x 46 (data/market, about 04:00 UTC): 25 units cost about 23,861 cr with the 1 percent, about +2,272 cr a run before fuel; 2 jumps to Deep Range (game/map/galaxy.tsv). requires.ask closes it when the offer runs out (a thin ask: one or two loads). One ship first (F12, F37); requires.empire outerrim. 2026-11-23 04:33 UTC (Apollo): the buy stop first stores the whole hold and takes back up to 25 titanium alloy from storage there: the first runs (04:16 and 04:18 UTC) got 13 of 14 tanks and 11 of 12 cores, the newborns' holds carrying 20 fuel cells and mission leftovers (73 of 75 used), and the delivery was refused for goods missing.",
  "max_ships": 1,
  "min_credits": 27361,
  "requires": {
@@ -21,6 +21,13 @@
    "skip_if_hold": {
     "titanium_alloy": 25
    },
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "titanium_alloy",
+     "qty": 25
+    }
+   ],
    "buy": [
     {
      "item": "titanium_alloy",
