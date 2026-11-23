@@ -1,0 +1,22 @@
+{
+ "id": "hunt-okab-low-charge-glint-sift-ray",
+ "kind": "hunt",
+ "title": "sift_ray at low_charge_glint, one hunter, loot to a trader receiver at node_beta_industrial_station",
+ "note": "Written by Apophis 2026-11-23 19:22 UTC (rule F8: six drones waited, fill.py status drone 19:19 UTC, every home herd at one hunter; rule F23: hunts for experience where the ships stand; orders ENT-083 P1, P6). Herd: 7 sift_ray at seginus:seginus_haze (table herds, census 2026-11-23 18:07 UTC), 3 jumps from node_beta; hull 45, one typical drone passes both gauges (gauges.py species). Not a partner base system, not in the orders Watch, no pirate observation in 24 h. kills 4 leave 2 (F38). gift_to trader at node_beta_industrial_station, 3 jumps (P5). One ship; standing work.",
+ "place": "seginus:seginus_haze",
+ "species": [
+  "sift_ray"
+ ],
+ "sell_at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+ "min_bid": 5000,
+ "kills": 4,
+ "minutes": 45,
+ "max_ships": 1,
+ "min_creatures": 3,
+ "alone": "pirates",
+ "requires": {
+  "empty_hold": true
+ },
+ "gift_to": "trader",
+ "standing": true
+}
