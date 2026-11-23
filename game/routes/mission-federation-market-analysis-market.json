@@ -2,9 +2,9 @@
  "id": "mission-federation-market-analysis-market",
  "kind": "circuit",
  "title": "Federation Market Analysis: 6000 cr at Market Prime Exchange",
- "note": "Written by routemaker.py from the board and the order books: goods for about 0 cr, reward 6000 cr. A test: one ship; whether the mission hands its goods out at the accept is not known until one accept with an empty hold. Added as a test by fill.py on 2026-11-22 03:26 UTC (Unity): up to 3 ships, one result each, until 3 runs are read (rule F37). 2026-11-23 00:23 UTC (fill.py, Mercury): max_ships 3 -> 10. 2026-11-23 00:29 UTC (fill.py, Mercury): max_ships 10 -> 25.",
+ "note": "Written by routemaker.py from the board and the order books: goods for about 0 cr, reward 6000 cr. A test: one ship; whether the mission hands its goods out at the accept is not known until one accept with an empty hold. Added as a test by fill.py on 2026-11-22 03:26 UTC (Unity): up to 3 ships, one result each, until 3 runs are read (rule F37). 2026-11-23 00:23 UTC (fill.py, Mercury): max_ships 3 -> 10. 2026-11-23 00:29 UTC (fill.py, Mercury): max_ships 10 -> 25. 2026-11-23 00:34 UTC (fill.py, Mercury): max_ships 25 -> 80.",
  "once": true,
- "max_ships": 25,
+ "max_ships": 80,
  "one_time": [
   "Federation Market Analysis"
  ],
