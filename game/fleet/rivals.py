@@ -698,10 +698,10 @@ def _build_strategy_playbooks(our_adopt, leaders, market_edges):
             posture_weights={"WAR_ALERT": 84, "CASHFLOW_RECOVERY": 94, "PEACETIME_GROWTH": 85}, effort=1,
         ),
         _pack(
-            "pve_combat_escort", "8. PvE Herd Farming & Armed Escort Projection", "PvE & Escort",
+            "pve_combat_escort", "8. PvE Herd, Pirate Formation Farming & Escorts", "PvE, Pirates & Escort",
             ["Military", "Intel"],
             _emps("crimson", "solarian", "voidborn"),
-            "Intel (herds & [ENDL] sightings) -> Military (T2+ hunt & escort) -> Trade (loot sales)",
+            "Intel (herds, pirate packs & [ENDL]) -> Military (solo & 3/5/10/20+ formation pirate/PvE wings + escorts) -> Trade (loot sales)",
             f"[BUSY] {int(_num(pv1.get('value', 8454))):,d} pirates (157x Dialectic), [HEXC] 2,142 pirates; Threat: [ENDL] 1,527 PvP kills",
             [
                 _kpi("Active PvE/escort combat ships", "Military", f"{our_adopt['active_hunt']}", ">=40", our_adopt["active_hunt"] >= 40, "fleet.json"),
@@ -714,7 +714,7 @@ def _build_strategy_playbooks(our_adopt, leaders, market_edges):
             f"PARTIAL ({our_adopt['active_hunt']} combat, {our_adopt['t2_combat']} T2+)",
             "GAP (no PvE/escort wing)",
             "Dedicated T2/T3 combat wings (`Dialectic`, `Broadaxe`, `Recursion`) earn bounties + salvage loot while deterring PvP raiders (`[ENDL]`) on lawless trade corridors.",
-            "Military: run parallel `hunt-` PvE herd wings (handing loot to Trade, F9) + paired T2+ `escort-` wings using `plan.py` `posture:WAR_ALERT` readiness & `min_hull_tier:2`.",
+            "Military: engage & farm NPC pirates/packs/bounties (`pirates_ok: true`, F27) AND PvE herds (`hunt-`, F9) solo or in scalable formations (3/5/10/20+ ships, size up to Apophis; loot to Trade) + paired T2+ `escort-` wings (`posture:WAR_ALERT`, `min_hull_tier:2`).",
             "Military+Intel: track [ENDL] hot systems in `h-endl.md`, enforce strict defensive RoE (F2) around Neutral [HEXC]/[IRLC], and escalate posture automatically if faction war starts.",
             posture_weights={"WAR_ALERT": 100, "CASHFLOW_RECOVERY": 70, "PEACETIME_GROWTH": 80}, effort=2,
         ),
@@ -1100,7 +1100,7 @@ def compute_sedcards(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, top_n=12, no
                 f"COUNTER (Avoid Cheap Bulk Dumps): DO NOT waste mining hours on bulk ores rivals dump below fuel cost ({raw_cheap_str}) -- let Trade/Logistics buy those wholesale while Mining feeds P1/P2 reserves & high-margin scarce veins.",
             ],
             "Military": [
-                "COPY (PvE Herd Farming + Escort Projection): run T2/T3 combat wings (`Broadaxe`, `Dialectic`, `Recursion` like [BUSY] 8,454 kills & [HEXC] 2,142 kills) harvesting bounties + loot for Trade (F9) + paired lawless escorts (`min_hull_tier:2`).",
+                "COPY (Pirate Formation Farming + PvE Herds + Escorts): actively farm NPC pirate packs/bounties/strongholds (`pirates_ok: true`, F27) and PvE herds solo or in scalable 3/5/10/20+ ship formations (size up to Apophis; like [BUSY] 8,454 & [HEXC] 2,142 pirate kills) on T2/T3 hulls (`Broadaxe`, `Dialectic`, `Recursion`), gifting loot to Trade + paired lawless escorts.",
                 "COUNTER (Threat Containment): watch [ENDL] (1,527 PvP kills -- log in `h-endl.md`), maintain `posture:WAR_ALERT` readiness in `plan.py`, hold strict defensive RoE (F2) around Neutral [HEXC]/[IRLC], and train `sentinel-` Royal Guard.",
             ],
             "Intel": [

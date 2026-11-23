@@ -261,6 +261,11 @@ def check(root):
                     errors += [where + "stop %d: " % n + line for line in fit_faults(want)]
         levels = lambda value: isinstance(value, dict) and all(isinstance(v, int) and not isinstance(v, bool) for v in value.values())
         pos_counts = lambda value: isinstance(value, dict) and bool(value) and all(isinstance(k, str) and k and isinstance(v, int) and not isinstance(v, bool) and v >= 1 for k, v in value.items())
+        if "pirates_ok" in route:
+            if not isinstance(route["pirates_ok"], bool):
+                errors.append(where + "`pirates_ok` must be true or false")
+            elif route["pirates_ok"] and kind not in ("hunt", "guard", "circuit"):
+                errors.append(where + "`pirates_ok` is allowed only on combat hunt, guard or circuit routes (rule F27)")
         need = route.get("requires") if isinstance(route.get("requires"), dict) else {}
         if need.get("hold") and need.get("empty_hold"):
             errors.append(where + "`requires.hold` and `requires.empty_hold` together close the route to every pilot")

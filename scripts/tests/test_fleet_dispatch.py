@@ -105,6 +105,23 @@ class PirateTests(Tree):
                                                                  + "not json\n")
         self.assertEqual(set(self.dispatch.pirates(str(self.data), self.now)), {"far"})              # a member's line counts; a summary by its last fight
 
+    def test_pirates_ok_unlocks_combat_roles_only_and_keeps_civilians_protected(self):
+        self.sightings({"at": self.stamp(1), "system": "far", "poi": "nebula", "pilots": [], "pirates": 3, "creatures": 3})
+        seen = self.dispatch.pirates(str(self.data), self.now)
+        routes = self.dispatch.load_routes(self.root)
+        state = dict(self.state(), pirates=seen, root=str(self.root))
+        pirate_hunt = dict(routes["rays"], pirates_ok=True)
+        pirate_mine = dict(routes["mine"], pirates_ok=True)
+        drone = {"name": "drone-1", "role": "drone", "credits": 20000, "modules": [], "docked": True}
+        sentinel = {"name": "sentinel-1", "role": "sentinel", "credits": 20000, "modules": [], "docked": True}
+        miner = {"name": "miner-1", "role": "miner", "credits": 20000, "modules": [], "docked": True}
+        trader = {"name": "trader-1", "role": "trader", "credits": 20000, "modules": [], "docked": True}
+        self.assertNotIn("pirates seen", str(self.dispatch.why_not(drone, "rays", pirate_hunt, state)[0] or ""))
+        self.assertNotIn("pirates seen", str(self.dispatch.why_not(sentinel, "rays", pirate_hunt, state)[0] or ""))
+        self.assertIn("pirates seen in far", str(self.dispatch.why_not(miner, "rays", pirate_hunt, state)[0] or ""))
+        self.assertIn("pirates seen in far", str(self.dispatch.why_not(trader, "rays", pirate_hunt, state)[0] or ""))
+        self.assertIn("pirates seen in far", str(self.dispatch.why_not(drone, "mine", pirate_mine, state)[0] or ""))
+
 
 class PickTests(Tree):
     def test_a_once_route_comes_first_and_is_not_flown_again(self):

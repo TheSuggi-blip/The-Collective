@@ -857,11 +857,12 @@ def why_not(pilot, rid, route, state):
         return "its last %d runs each lost money: %s cr" % (late[0], format(late[1], ",")), None
     if set(route.get("skip_if_booked") or []) & (state.get("booked") or {}).get(pilot["name"], set()):
         return "its reward is booked", None
-    if route.get("kind") in ("hunt", "mine"):
+    p_opt = combat_pirates_ok(pilot, route)
+    if route.get("kind") in ("hunt", "mine") and not p_opt:
         reason = pirate_reason(str(route.get("place") or route.get("belt") or "").split(":")[0], state)
         if reason:
             return reason, None
-    elif route.get("kind") == "circuit":
+    elif route.get("kind") == "circuit" and not p_opt:
         for sys_id in circuit_systems(route):
             reason = pirate_reason(sys_id, state)
             if reason:
@@ -910,18 +911,20 @@ def why_not(pilot, rid, route, state):
             ship = read_json(Path(state["data"]) / "fleet" / "ships" / ship_file(flyers[0]), {}) if state.get("data") else {}
             spot = ":".join(str(ship.get(key) or "") for key in ("system", "poi")) if isinstance(ship, dict) and ship.get("system") else ""
             place = {"place": spot or str(route.get("place") or ":".join(str(route.get("station") or "").split(":")[:2])), "follow": flyers[0]}
-            reason = pirate_reason(place["place"].split(":")[0], state)
-            if reason:
-                return reason, None
+            if not p_opt:
+                reason = pirate_reason(place["place"].split(":")[0], state)
+                if reason:
+                    return reason, None
         else:
             place = routefiles.guarded_place(route, guarded)
             if place is None:
                 return "guards `%s`: no mine, hunt or circuit route file" % route.get("guards"), None
             if guarded["kind"] + " " + str(route["guards"]) not in state["orders"].values():
                 return "nobody flies %s" % route["guards"], None
-            reason = pirate_reason(str(place).split(":")[0], state)
-            if reason:
-                return reason, None
+            if not p_opt:
+                reason = pirate_reason(str(place).split(":")[0], state)
+                if reason:
+                    return reason, None
     if pilot.get("credits", 0) < route.get("min_credits", 0):
         return "wallet below %s cr" % route["min_credits"], None
     if FLOOR > 0 and pilot.get("credits", 0) < FLOOR and not (route.get("park") or routefiles.stage(route) in ("once", "paying")):
@@ -1216,6 +1219,18 @@ def pirates(data, now):
         if weight >= PIRATE_HEAVY:
             note(system, stamp, PIRATE_HEAVY_HOURS)
     return seen
+
+
+COMBAT_ROLES = frozenset(("drone", "sentinel", "command"))
+
+
+def combat_pirates_ok(pilot, route):
+    """True when a combat ship (drone/sentinel/command) is flying an explicit Military pirate-opt-in route (rule F27).
+    Civilian miners/traders/haulers and `mine` routes never bypass the 6-hour pirate avoidance gate."""
+    if not route.get("pirates_ok") or route.get("kind") not in ("hunt", "guard", "circuit"):
+        return False
+    role = str(pilot.get("role") or division.role_of(str(pilot.get("name") or "")) or "")
+    return role in COMBAT_ROLES
 
 
 def pirate_reason(system, state):
