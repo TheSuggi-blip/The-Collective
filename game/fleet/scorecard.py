@@ -322,7 +322,7 @@ def _detect_war_state(conn, tables, data_dir, now):
         if "public_battles" in tables:
             try:
                 row = conn.execute(
-                    "SELECT COUNT(*) FROM public_battles WHERE UPPER(COALESCE(tags,'')) LIKE '%CLTV%' AND (? - COALESCE(t,0)) <= 21600",
+                    "SELECT COUNT(*) FROM public_battles WHERE UPPER(COALESCE(tags,'')) LIKE '%CLTV%' AND LOWER(COALESCE(category,'')) IN ('pvp','faction','faction_war','war') AND (? - COALESCE(t,0)) <= 21600",
                     (int(now),),
                 ).fetchone()
                 if row:
