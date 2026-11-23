@@ -50,6 +50,8 @@
    "title": "Gather what the reserve lacks, the other order so the division is spread: carbon first, then nickel, silicon, gold, platinum, quantum fragments",
    "routes": [
     "store-hold-central-nexus",
+    "gather-gliese-876-belt-carbon",
+    "gather-emberglow-elder-silicon",
     "gather-acubens-belt-carbon",
     "gather-jishui-plainrock-carbon",
     "gather-last-light-mineral-carbon",
