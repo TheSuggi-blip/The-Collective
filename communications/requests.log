@@ -488,3 +488,6 @@ Answer: done in commit 319e5221 (ENT-393): the treasury tops up stranded pilots 
 
 ## [ENT-410] | 2026-11-23 02:02 UTC | Unity | answer | see: ENT-382
 Answer: done: notes at 0.733.0 (b1bbf771), the sync's 304 fault fixed (319e5221; ENT-399).
+
+## [ENT-411] | 2026-11-23 02:02 UTC | Unity | answer | see: ENT-383
+Answer: done in commit 319e5221 (ENT-400).
