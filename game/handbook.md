@@ -22,7 +22,7 @@ Read it in parts: `hive.py handbook [<topic>]` (MCP: the tool docs, view=handboo
 contents and how the data flows; a table's name, a subject or a word gives its sections. The store holds every file
 as kind `handbook` of the table docs, one row a section, every version in doc_versions.
 
-The store: 65 tables and 12 views (44 snapshot, 9 history, 9 statistics, 3 bookkeeping); the MCP tool `collective`: 24 tools.
+The store: 65 tables and 13 views (44 snapshot, 9 history, 9 statistics, 3 bookkeeping); the MCP tool `collective`: 24 tools.
 Kinds: snapshot = what a file says now (replaced when the file changes; it also carries `src`, the file its row came
 from; dropped and loaded again when its definition changes); history = rows kept over time (raw rows for days, sums
 as each table's Kept line says); statistics = computed by stats.py when due; view = a query over tables, computed when
@@ -46,6 +46,7 @@ the store's own marks. Columns come from a fresh empty schema; every example run
 - Written knowledge, `game/handbook/written-knowledge.md`: docs, doc_versions, division_playbooks and the kinds
 - Plans and the door, `game/handbook/plans-and-the-door.md`: birth_plans
 - The store itself, `game/handbook/the-store-itself.md`: source, cursor, meta
+- Other, `game/handbook/other.md`: division_pnl_24h
 
 ## How the data flows
 
@@ -114,7 +115,7 @@ per question, from the tools' own texts (collective_mcp.TOOLS) and hive.py's usa
 
 | What it answers | MCP | Shell |
 |---|---|---|
-| credits and steady money per hour (income, costs, net; rewards paid once left out) over 1, 6 and 24... | fleet view=money | hive.py fleet |
+| credits, Net Purse/h (steady + paid once), matched Recurring Cash/h, and transfer-priced IAS2 Accrual... | fleet view=money | hive.py fleet |
 | credits hour by hour per division. | fleet view=history | hive.py history |
 | the hours ahead per division: every route with the ships on it now, what a ship-hour on it measured... | fleet view=forecast | hive.py forecast |
 | Draw credits from the shared faction treasury for one or more pilots of your division (rule F12: up... | fund | wallet.py fund --show |
@@ -192,7 +193,7 @@ per question, from the tools' own texts (collective_mcp.TOOLS) and hive.py's usa
 | what comes back per hour between our readings: bids, fields, herds. | fleet view=refill | hive.py refill |
 | MAUTxWSJF weighted triage queue (P0>P1>P2>P3) & live WAR/CASHFLOW/GROWTH posture. | fleet view=scorecard | scorecard.py --who all |
 | the fleet as one purse over 1, 6, 24 and 72 hours: throughput, operating expense, steady net, paid... | fleet view=kpi | hive.py stats kpi |
-| per division its own net, the income its route files enabled for every division, its service. | fleet view=contribution | hive.py stats contribution |
+| per division its Net Purse/h (6h/24h), matched Recurring Cash/h, IAS2 Accrual Value-Add/h, raw steady... | fleet view=contribution | hive.py stats contribution |
 | per role the places of its own class work open now against its ships, and the spill. | fleet view=classes | hive.py stats classes |
 | where the ship-hours went: own work, another class's, once, shared, docked or in space without work... | fleet view=time | hive.py stats time |
 | per reserve good held, needed, min and max, change an hour, days of supply, the routes and ships that... | fleet view=supply | hive.py stats supply |
