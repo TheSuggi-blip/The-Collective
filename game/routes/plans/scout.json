@@ -82,6 +82,10 @@
   {
    "what": "Build a HOME per origin empire in census.py (Unity's yes, queue ENT-259): a census without --stay ends at the pilot's own capital",
    "when": "this turn or next"
+  },
+  {
+   "what": "Weigh one T2 scout hull for the three Piloting-10 scouts by fuel per read: Confluence quoted 398,368 cr credits only at Central Nexus, over the F12 test budget of a turn",
+   "when": "when the division's credits allow"
   }
  ],
  "ships": {
