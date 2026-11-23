@@ -1,0 +1,87 @@
+{
+ "id": "craft-steel-own-synchrony",
+ "kind": "circuit",
+ "title": "Steel plate smelted by hand at Synchrony Hub from the trader's own stored iron ore, docked, kept in its storage for the reserve",
+ "note": "2026-11-23 00:16 UTC (Mercury): orders ENT-068 block MERCURY (docked crafts take the traders off the empty jump loop), rules F8, F23, F24, F36. 32 traders store 2,031 iron ore at Synchrony Hub in stacks of 24 to 97 (table holdings, 2026-11-22 23:37 UTC); iron ore stands FULL (146,163 of max 80,000) and steel plate open (held 53,681 of min 49,243, max 54,714; pull.py levels 23:38 UTC). basic_iron_smelting: 10 iron ore into 1 steel plate, by hand, 0 cr. The stops of craft-steel-own-central-nexus. Standing work; closes under 20 iron ore stored here, and by the pull rule at steel plate's max. A test: three results decide (F37); max_ships 6.",
+ "standing": true,
+ "requires": {
+  "stored": {
+   "at": "synchrony_hub",
+   "item": "iron_ore",
+   "min": 20
+  }
+ },
+ "max_ships": 6,
+ "stops": [
+  {
+   "at": "synchrony:synchrony_hub:synchrony_hub",
+   "store": "all",
+   "craft": [
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 512,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 256,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 128,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 64,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 32,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 16,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 8,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 4,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 2,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 1,
+     "per_run": 1,
+     "makes": "steel_plate"
+    }
+   ]
+  },
+  {
+   "at": "synchrony:synchrony_hub:synchrony_hub",
+   "store": "all"
+  }
+ ]
+}
