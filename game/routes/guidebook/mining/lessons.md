@@ -57,7 +57,7 @@ Status: proven. Updated: 2026-11-21. Evidence: spacemolt.com/docs/guides/miner.m
 - Mining XP is one point a unit mined, plus mission XP.
 
 ### Runs, holds and the dispatcher
-Status: proven. Updated: 2026-11-22. Evidence: errors.log ENT-032; dispatch.py stored_missing; the runners' notes; data/fleet/gifts.jsonl; data/stock/storage.json of 2026-11-21 19:34 UTC.
+Status: proven. Updated: 2026-11-23. Evidence: errors.log ENT-032; route store-hold-central-nexus (2026-11-23 08:31 UTC); dispatch.py stored_missing; the runners' notes; data/fleet/gifts.jsonl; data/stock/storage.json of 2026-11-21 19:34 UTC.
 
 - More than five units aboard close every `empty_hold` route to a ship:
   read a waiting miner's `cargo` before calling it idle; dock and store,
@@ -80,6 +80,10 @@ Status: proven. Updated: 2026-11-22. Evidence: errors.log ENT-032; dispatch.py s
 - `requires.stored` names one item, a list all of them: a give route
   gated on iron never sends a miner whose storage holds only ice or
   copper; gate a copy on the station's main other good (2026-11-22).
+- Standing work has no empire reach: a newborn whose own store is full
+  takes the next open one, 20 jumps away (twelve Nebula ships,
+  2026-11-23). Cap each empire's store at its rows and put
+  `requires.max_jumps` on every shared store and far gather.
 
 ### Writing to the repository
 Status: proven. Updated: 2026-11-21. Evidence: errors.log ENT-021; requests.log ENT-078; the skill mining-chains.

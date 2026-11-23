@@ -21,7 +21,7 @@ Status: proven. Updated: 2026-11-21. Evidence: table hulls of the live catalog (
   brings an hour, so the hold is the class's first upgrade.
 
 ### Mining tools and filters
-Status: proven. Updated: 2026-11-23. Evidence: the live catalog items (laser powers and cpu re-read 2026-11-23 03:15 UTC); docs/guides/miner.md (read 2026-11-21); hive.py route gather-gsc-0027-spacetime-seep (the runs with ore, 2026-11-21 22:00 to 2026-11-22 03:00 UTC); route fit-mining-laser-iii-lhs-1140.
+Status: proven. Updated: 2026-11-23. Evidence: the live catalog items (laser powers and cpu re-read 2026-11-23 03:15 UTC); docs/guides/miner.md (read 2026-11-21); game/rules/07-economy.md (beam power); hive.py route gather-gsc-0027-spacetime-seep; route fit-mining-laser-iii-lhs-1140; route fit-second-laser-i-sol-central (RESULT 2026-11-23 08:55 UTC).
 
 - Laser power: I 5, II 12, III 22, IV 40 (cpu 2, 4, 6, 10). A III fits
   a Threshold ice miner beside its Ice Harvester. Proven (F37): ore an
@@ -36,7 +36,14 @@ Status: proven. Updated: 2026-11-23. Evidence: the live catalog items (laser pow
   `fit-mining-laser-ii-lhs-1140`); 5,400 cr elsewhere is weighed first.
 - P x F over 20 can lock: under a quarter of capacity a deposit refuses
   the fit below P x 20 / 4 (110 units for a III); 20 or less never locks.
-- Cargo Expander I: +20 hold (cpu 1, power 1); not tried yet.
+- Lasers stack: beam power is the sum of every fitted mining module
+  (07-economy.md). An empty utility slot is a lost laser. One stop
+  strips the weapon-slot Pulse Laser I (`unfit`, into storage) and
+  fits (`count`), proven 2026-11-23: a Theoria took a second Laser I
+  at Sol for 1,616 cr. Slot routes by empire: `fit-second-laser-*`,
+  `fit-cargo-expander-factory-belt`, `strip-pulse-laser-central-nexus`.
+- Cargo Expander I: +20 hold (cpu 1, power 1), 180 to 350 cr: on a
+  cheap-ore shuttle the hold cuts fuel per unit, a laser adds burn.
 - Ice Harvester I (power 8) ice; Gas Harvester I gas; a laser takes no
   ice. Nitrogen Vent in place of the laser lifted water from 59% to 83%
   of an ice load (2026-11-16).
