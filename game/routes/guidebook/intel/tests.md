@@ -50,7 +50,7 @@ Status: test. Updated: 2026-11-21. Evidence: scouting/<system>.json `survey`; wi
   `survey`, faint signatures, deposits) decide the need survey-scanner-i.
 
 ### A tier-1 hull for the scouts
-Status: proven. Updated: 2026-11-22. Evidence: catalog table hulls; browse_ships all_stations (2026-11-21); table runs (kind census, scout pilots, minutes over 0; the hull by pilot; windows 07:30 to 11:30 and from 11:30 UTC, 2026-11-22).
+Status: proven. Updated: 2026-11-23. Evidence: catalog table hulls; browse_ships all_stations (2026-11-21, 2026-11-23); commission_quote confluence (2026-11-23); table runs (kind census, scout pilots, minutes over 0; the hull by pilot; windows 07:30 to 11:30 and from 11:30 UTC, 2026-11-22).
 
 - Tier 1 needs no Piloting. Qualia (explorer): speed 3 against the
   Threshold's 1, tank 130, three utility slots, no weapon slot (no
@@ -63,6 +63,11 @@ Status: proven. Updated: 2026-11-22. Evidence: catalog table hulls; browse_ships
   read costs over three times the fuel, and fuel is the fleet's cost
   (orders P1). The one bought keeps reading. The next hull step for a
   scout is tier 2 at Piloting 10, judged by fuel a read the same way.
+- Tier 2 (2026-11-23): no Confluence listed on the exchange
+  (browse_ships, all stations); commission_quote at Central Nexus
+  398,368 cr credits only, or 57,104 cr with thirteen parts (shield
+  matrix, phase matrix, sensor array ...): one hull is over a turn's
+  test budget (F12, 10%).
 
 ### How a scout test gets three results
 Status: proven. Updated: 2026-11-22. Evidence: rule F37; queue.log ENT-203.
