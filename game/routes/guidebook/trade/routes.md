@@ -1,33 +1,31 @@
 # Trade guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-23. Evidence: plan.py show; templates/trade.json (@trade-sell, @trade-craft); fill.py status trader; pull.py levels; requests ENT-373; queue ENT-241.
+Status: proven. Updated: 2026-11-23. Evidence: plan.py show; templates/trade.json (@trade-sell, @trade-craft); fill.py status trader; runs.jsonl of craft-sell-nitrogen-sol-central; requests ENT-420.
 
-The plan file as set on 2026-11-23 at 00:20 UTC (orders ENT-068, block
+The plan file as set on 2026-11-23 at 04:15 UTC (orders ENT-071, block
 MERCURY, P6; strict classes on):
 
 - First, every ship: the once line. Voidborn chain for the Voidborn-born;
-  the Federation tours (Market Analysis, Trade Route Prospectus) carry
-  the Nebula-born at Haven, Form TA-1 and the Infrastructure Audit the
-  Solarian-born at Sol. Once routes shared by every division: their
-  `max_ships` sized to the newborns of all divisions, not to ours.
-- Own routes: a far test at the head of its ship's row, then for all
-  `@trade-sell > @trade-craft`. `@trade-sell`: loot into the stations'
-  own spike bids, then goods sold where they lie.
-- `@trade-craft`: docked, no jump, from own stores: armor plate
-  (reserve open), fuel cells from biogas (`craft-biogas-own-*`, the
-  reserve keeps cells whole), ionized neon and liquid hydrogen (no
-  reserve good), nitrogen (closed at liquid nitrogen's max), steel
-  from stacks of 20 iron up.
-- Then: steel crafts, the Trading spread test, train-jumps-trader,
-  park.
+  the Federation tours and A Word in Private (`requires.empire nebula`)
+  for the Nebula-born; Form TA-1, the Infrastructure Audit, Welcome to
+  Sol Central and Endorsements for the Solarian-born. Once routes shared
+  by every division: `max_ships` sized to all divisions' newborns.
+- Own routes: the Solarian-born fly craft-sell-nitrogen-sol-central
+  first (docked at Sol: nitrogen ice bought, liquid nitrogen crafted and
+  sold into the station's bid, no jump); the far tests head their
+  ship's row; then for all `@trade-sell > @trade-craft`.
+- `@trade-craft`: docked, no jump, from own stores (armor plate, fuel
+  cells, ionized neon, liquid hydrogen, steel from 20 iron up).
+- Then: steel crafts, the Trading spread test, train-jumps-trader, park.
 
-What it carries: one ship a station's bid; a craft as many as hold the
-input there; the loop every ship left, about half of the Voidborn-born
-once the crafts open (`SELECT flies, COUNT(*) FROM ships`).
+What it carries: one ship a station's bid; a craft from stores as many
+as hold the input there; the Sol craft the Solarian-born at home while
+its bid stands (`requires.bid`); the loop the Voidborn-born left.
 
 What would change it: the `sell_order` step installed (Bursar order
-keeping, queue ENT-241); home-region trade work for the newborns.
+keeping); a hand-in step for deliveries to another station (First
+Links); Unity's answer on the Nebula-born's work (requests ENT-420).
 ### Selling stores where they lie (`sell-<good>-at-<station>`, `carry-<good>-<from>-to-<to>`)
 Status: proven. Updated: 2026-11-22. Evidence: the sell and carry route files with their measured figures; sellgen.py of Mercury's trade skill.
 
