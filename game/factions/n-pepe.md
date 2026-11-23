@@ -46,18 +46,18 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | MimicDray | Node Alpha (`node_alpha`) | 0 | worship |
 | MimicFlake | Nexus Prime (`nexus_prime`) | 0 | cobble |
 | MimicFlare | Synchrony (`synchrony`) | 0 | cobble |
-| MimicForge | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicForge | The Experiment (`the_experiment`) | 0 | cobble |
 | MimicFrost | Node Beta (`node_beta`) | 0 | threshold |
 | MimicGrain | Nexus Prime (`nexus_prime`) | 0 | cobble |
 | MimicNeb | Nexus Prime (`nexus_prime`) | 0 | worship |
-| MimicRota | Nexus Prime (`nexus_prime`) | 0 | prospect |
+| MimicRota | The Experiment (`the_experiment`) | 0 | prospect |
 | MimicSand | Nexus Prime (`nexus_prime`) | 0 | cobble |
 | MimicShale | Synchrony (`synchrony`) | 0 | cobble |
 | MimicSlag | Nexus Prime (`nexus_prime`) | 0 | cobble |
-| MimicTally | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicTally | The Experiment (`the_experiment`) | 0 | cobble |
 | MimicVent | Node Beta (`node_beta`) | 0 | cobble |
 | MimicWafer | Nexus Prime (`nexus_prime`) | 0 | cobble |
-| Pepemos | Nexus Prime (`nexus_prime`) | 0 | shard |
+| Pepemos | The Experiment (`the_experiment`) | 0 | shard |
 
 ## Standing History
 

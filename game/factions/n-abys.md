@@ -38,8 +38,8 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Coldreef | Node Alpha (`node_alpha`) | 0 | cobble |
-| Coldshade | Synchrony (`synchrony`) | 0 | threshold |
+| Coldshade | Node Alpha (`node_alpha`) | 0 | threshold |
+| Coldtill | Node Gamma (`node_gamma`) | 0 | shard |
 
 ## Standing History
 

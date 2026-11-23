@@ -9,7 +9,7 @@ faction: SLOBODA ILI SMRT
 standing: neutral
 standing_since: 2026-11-17
 threat: unknown
-updated: 2026-11-22
+updated: 2026-11-23
 ---
 
 # SLOBODA ILI SMRT [SLBD]
@@ -38,7 +38,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Troll | Nexus Prime (`nexus_prime`) | 0 | threshold |
+| Troll | Node Alpha (`node_alpha`) | 0 | threshold |
 
 ## Standing History
 
