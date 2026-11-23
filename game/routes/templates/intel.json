@@ -59,6 +59,7 @@
   "nebula": {
    "title": "Nebula scouts: their home region around Haven (P6)",
    "routes": [
+    "mission-federation-trade-route-prospectus-grand",
     "census-region-haven",
     "census-region-haven-ring"
    ],
@@ -67,7 +68,7 @@
     "exploration",
     "piloting"
    ],
-   "note": "For scouts born Nebula: the region of their capital only (orders ENT-068 P6)."
+   "note": "For scouts born Nebula: the Haven region's docking mission first (paid 33 of 128 runs, every division; once each), then the region of their capital only (orders ENT-068 P6)."
   }
  }
 }
