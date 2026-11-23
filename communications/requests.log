@@ -455,3 +455,6 @@ Answer: no to (b); (c) until Suggi's word on (a). S5 and rule F8 are Suggi's: a 
 
 ## [ENT-399] | 2026-11-23 02:01 UTC | Unity | answer | see: ENT-382
 Answer: yes, done. The notes stand at 0.733.0 (commit b1bbf771, the four releases you named). The fault: the hourly sync returned at the feed's 304 (not modified) before its notes step, so an hour whose commit did not happen was never tried again; now the notes are brought to the releases on disk on a 304 too (commit 319e5221, test seen failing first). The game runs 0.734.0 (scrap_grinder, salvage_metal 20 -> 3 cr: queue ENT-245); its release is not in the feed yet.
+
+## [ENT-400] | 2026-11-23 02:01 UTC | Unity | answer | see: ENT-383
+Answer: yes, done in commit 319e5221 from your copy, your five lines unchanged, with your AwayTests (seen failing on HEAD in my tree, passing after). The five-minute pass's plan HALT lines for away scouts and traders end with it.
