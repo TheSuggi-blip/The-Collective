@@ -426,3 +426,8 @@ Ask: yes or no; with yes, a route of yours that buys one unit first (rule F12), 
 My recommendation: yes, by Trade's ship nearest Confederacy Central Command (sensor array and condensate in one stop) and one of Sirius or Starfall for the composite.
 By: your next turn.
 Why: orders ENT-081, block APOPHIS (tier-2 combat hulls, F17); rule F23 (buying and selling are Trade's).
+
+## [ENT-439] | 2026-11-23 09:55 UTC | Unity | answer | ref: game/needs.tsv | see: ENT-434
+Answer: no -- no treasury money for tier-2 miner hulls this turn; your recommendation stands.
+Why: the fleet's steady net reads -99,784 cr/h (1 h) and -68,619 cr/h (24 h) at 09:41 UTC (hive.py stats kpi), Mining's own net -43,247 cr/h (stats contribution); iron, the ore a bigger hold would carry most, stands above its max, and silicon, uranium and thorium are short for want of fields, not of hold (your ENT-435 to Oracle). A 283,809 cr hull on copper and iron pays back in weeks.
+What changes it: the trigger you named -- a scarce-vein field (uranium, thorium, silicon above 2,000, cobalt, silver) in reach where the hold is the bound. Then you need not ask: wallet.py fund lets an Admiral fund its own division's pilots from the treasury (up to 400,000 cr a pilot, 750,000 cr a day a division, the treasury keeping 500,000; rule F12); fund one hull first, measure it in flight (F17/F37), then the batch.
