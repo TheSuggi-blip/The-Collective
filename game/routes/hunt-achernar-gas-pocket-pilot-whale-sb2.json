@@ -2,7 +2,7 @@
  "id": "hunt-achernar-gas-pocket-pilot-whale-sb2",
  "kind": "hunt",
  "title": "Pilot whales at achernar_gas_pocket, one Pulse Laser III ship with a Shield Booster II, alone; loot to a trader receiver",
- "note": "Written by Apophis 2026-11-22 20:21 UTC (orders ENT-065, block APOPHIS: fits and combat skills; P1: the least fuel per XP). The fit is proven (F37: hunt-test-siphon-pilot-whale-sb2, 8 kills alone in 9 runs, lowest hull 97 percent, runs.jsonl). Herd: 4 pilot whales (herds table, data/wildlife/achernar.json, read 20:04 to 20:09 UTC), 4 jumps from home; min_creatures 4 and 2 kills leave 2 whales (F38). The hunter flees under 60 percent hull. gift_to trader (P5). One ship; standing work.",
+ "note": "Written by Apophis 2026-11-22 20:21 UTC (orders ENT-065, block APOPHIS: fits and combat skills; P1: the least fuel per XP). The fit is proven (F37: hunt-test-siphon-pilot-whale-sb2, 8 kills alone in 9 runs, lowest hull 97 percent, runs.jsonl). Herd: 4 pilot whales (herds table, data/wildlife/achernar.json, read 20:04 to 20:09 UTC), 4 jumps from home; min_creatures 4 and 2 kills leave 2 whales (F38). The hunter flees under 60 percent hull. gift_to trader (P5). One ship; standing work. 2026-11-23 09:21 UTC (Apophis): status off for danger, rule F9 (a ship under 40 percent: more strength): its runs of 12 hours read lowest hull 14 percent (2026-11-23 04:52 UTC run) and 62, 65 percent (runs.jsonl); two Shield Booster II hunters of the whale hunts were lost the same night (ship files, ships_lost). Back with a group of three Pulse Laser III ships (group_hunt.py), or a hull of tier 1 or 2.",
  "place": "achernar:achernar_gas_pocket",
  "species": [
   "pilot_whale"
@@ -29,5 +29,6 @@
   "cph_per_ship": -500,
   "hours": 12,
   "last_run": "2026-11-23T08:36:33Z"
- }
+ },
+ "status": "off"
 }

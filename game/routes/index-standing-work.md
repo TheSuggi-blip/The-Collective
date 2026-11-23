@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 431.
+Routes: 429.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -178,7 +178,6 @@ Routes: 431.
 | [hunt-achernar-belt-carapace](hunt-achernar-belt-carapace.json) | hunt | beyond the border, 4 jumps | Belt-grazers and patina-grazers at Achernar Belt; creature carapace into storage at The Experiment | up to 1 ships, without piercing_railgun_i, empty hold, standing work | 7 | 23 | -140 | -360 | 2026-11-22 |
 | [hunt-achernar-frost-ring-hollow-pilgrim](hunt-achernar-frost-ring-hollow-pilgrim.json) | hunt | beyond the border, 9 jumps | hollow_pilgrim at achernar_frost_ring; loot sold at Sirius Observatory Station | up to 1 ships, empty hold, standing work | 3 | 11 | -190 | -990 | 2026-11-22 |
 | [hunt-achernar-gas-pocket-drift-ray](hunt-achernar-gas-pocket-drift-ray.json) | hunt | beyond the border, 4 jumps | drift_ray at achernar_gas_pocket; crystallized biogas for the reserve, loot to a trader receiver | up to 1 ships, empty hold, standing work | 21 | 14 | -80 | -300 | 2026-11-23 |
-| [hunt-achernar-gas-pocket-pilot-whale-sb2](hunt-achernar-gas-pocket-pilot-whale-sb2.json) | hunt | beyond the border, 4 jumps | Pilot whales at achernar_gas_pocket, one Pulse Laser III ship with a Shield Booster II, alone; loot to a trader receiver | up to 1 ships, needs shield_booster_ii, empty hold, standing work | 8 | 25 | -210 | -500 | 2026-11-23 |
 | [hunt-achird-belt-carapace](hunt-achird-belt-carapace.json) | hunt | beyond the border, 5 jumps | Belt-grazers and patina-grazers at Achird Belt (Achird); creature carapace into storage at Node Beta Industrial Station | up to 1 ships, without piercing_railgun_i, empty hold, standing work | 13 | 48 | -170 | -250 | 2026-11-22 |
 | [hunt-acrab-belt-carapace](hunt-acrab-belt-carapace.json) | hunt | beyond the border, 6 jumps | Belt-grazers and patina-grazers at Acrab Belt (Acrab); creature carapace into storage at Node Beta Industrial Station | up to 1 ships, without piercing_railgun_i, empty hold, standing work | 12 | 49 | -190 | -250 | 2026-11-22 |
 | [hunt-acrab-thinspace-rubble-carapace](hunt-acrab-thinspace-rubble-carapace.json) | hunt | beyond the border, 6 jumps | Belt-grazers and patina-grazers at Thinspace Rubble (Acrab); creature carapace into storage at Node Beta Industrial Station | up to 1 ships, without piercing_railgun_i, empty hold, standing work | 9 | 49 | -270 | -370 | 2026-11-23 |
@@ -339,7 +338,6 @@ Routes: 431.
 | [hunt-nihal-gas-plume-drift-ray](hunt-nihal-gas-plume-drift-ray.json) | hunt | beyond the border, 9 jumps | drift_ray at nihal_gas_plume; loot to the trader at Sirius Observatory Station (newborn region work) | up to 1 ships, empty hold, standing work | 13 | 19 | -80 | -330 | 2026-11-23 |
 | [hunt-okab-belt-carapace](hunt-okab-belt-carapace.json) | hunt | beyond the border, 4 jumps | Belt-grazers and patina-grazers at Okab Belt (Okab); creature carapace into storage at Node Beta Industrial Station | up to 1 ships, without piercing_railgun_i, empty hold, standing work | 14 | 36 | -160 | -290 | 2026-11-23 |
 | [hunt-okab-haze-drift-ray](hunt-okab-haze-drift-ray.json) | hunt | beyond the border, 4 jumps | drift_ray and bell_jelly at okab_haze; crystallized biogas for the reserve, loot to a trader receiver | up to 1 ships, empty hold, standing work | 22 | 22 | -140 | -380 | 2026-11-23 |
-| [hunt-okab-haze-pilot-whale-sb2](hunt-okab-haze-pilot-whale-sb2.json) | hunt | beyond the border, 4 jumps | Pilot whales at okab_haze, one Pulse Laser III ship with a Shield Booster II, alone; loot to a trader receiver | up to 1 ships, needs shield_booster_ii, empty hold, standing work | 9 | 21 | -150 | -350 | 2026-11-23 |
 | [hunt-orphan-nebula-veil-ray](hunt-orphan-nebula-veil-ray.json) | hunt | beyond the border, 9 jumps | veil_ray at orphan_nebula; loot sold at Nova Terra Central | up to 1 ships, empty hold, standing work | 13 | 46 | -590 | -790 | 2026-11-22 |
 | [hunt-oxbow-ice-belt-frost-moth](hunt-oxbow-ice-belt-frost-moth.json) | hunt | beyond the border, 13 jumps | frost_moth at oxbow_ice_belt; loot sold at Node Beta Industrial Station | up to 1 ships, empty hold, standing work | 2 | 16 | -310 | -1,150 | 2026-11-23 |
 | [hunt-patience-field-patina-grazer](hunt-patience-field-patina-grazer.json) | hunt | beyond the border, 11 jumps | patina_grazer at patience_field; loot stored at Nova Terra Central | up to 1 ships, empty hold, standing work | 4 | 2 | -60 | -270 | 2026-11-23 |

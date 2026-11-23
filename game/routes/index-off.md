@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 49.
+Routes: 51.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -46,6 +46,7 @@ Routes: 49.
 | [mission-the-forge-tax-crucible](mission-the-forge-tax-crucible.json) | circuit | beyond the border, 21 jumps | The Forge Tax: 5,000 cr, mining 20 XP; 20 cobalt ore mined at Hearsay Cobalt (Sargas), accepted and handed in at The Crucible Garrison | once per pilot, up to 3 ships, 20 pilots in all, empty hold, off | 16 | 68 | 3,490 | one-time | 2026-11-21 |
 | [trade-silver-bar-alpha-to-arneb](trade-silver-bar-alpha-to-arneb.json) | circuit | beyond the border, 16 jumps | Silver bars bought at Node Alpha for 420 cr or less, sold into the Obsidian Well's bid at Arneb at 480 or more: a trade test beyond the border | up to 1 ships, 1 pilots in all, empty hold, from 30,000 cr, while cca9e51e6eaf8dada77f698ccc4a09c7 bids 480 cr for silver_bar, off | TBD | TBD | TBD | TBD | -- |
 | [voidborn-first-hunt-schedar](voidborn-first-hunt-schedar.json) | circuit | beyond the border, 2 jumps | First Hunt: Belt-Grazers: 1,000 cr once and 50 Weapons XP; three belt-grazers at Schedar Belt (lawless, one jump past GSC-0027) | once per pilot, up to 1 ships, empty hold, off | 27 | 10 | 20 | one-time | 2026-11-16 |
+| [hunt-achernar-gas-pocket-pilot-whale-sb2](hunt-achernar-gas-pocket-pilot-whale-sb2.json) | hunt | beyond the border, 4 jumps | Pilot whales at achernar_gas_pocket, one Pulse Laser III ship with a Shield Booster II, alone; loot to a trader receiver | up to 1 ships, needs shield_booster_ii, empty hold, standing work, off | 8 | 25 | -210 | -500 | 2026-11-23 |
 | [hunt-biham-ice-shelf-hollow-pilgrim](hunt-biham-ice-shelf-hollow-pilgrim.json) | hunt | beyond the border, 18 jumps | hollow_pilgrim at biham_ice_shelf; loot sold at The Crucible Garrison | up to 1 ships, empty hold, standing work, off | TBD | TBD | TBD | TBD | -- |
 | [hunt-dawnbreak-frozen-drift-hollow-pilgrim](hunt-dawnbreak-frozen-drift-hollow-pilgrim.json) | hunt | beyond the border, 20 jumps | hollow_pilgrim at dawnbreak_frozen_drift; loot sold at The Levy Customs Station | up to 1 ships, empty hold, standing work, off | TBD | TBD | TBD | TBD | -- |
 | [hunt-dimming-pocket-veil-ray](hunt-dimming-pocket-veil-ray.json) | hunt | beyond the border, 4 jumps | veil_ray at dimming_pocket; loot sold at Node Beta Industrial Station | up to 1 ships, empty hold, off | TBD | TBD | TBD | TBD | -- |
@@ -57,6 +58,7 @@ Routes: 49.
 | [hunt-larawag-ice-belt-hollow-pilgrim](hunt-larawag-ice-belt-hollow-pilgrim.json) | hunt | beyond the border, 20 jumps | hollow_pilgrim at larawag_ice_belt; loot sold at The Levy Customs Station | up to 1 ships, empty hold, standing work, off | TBD | TBD | TBD | TBD | -- |
 | [hunt-merak-dim-phase-pocket-veil-ray](hunt-merak-dim-phase-pocket-veil-ray.json) | hunt | beyond the border, 18 jumps | veil_ray at merak_dim_phase_pocket; loot sold at First Step Memorial Station | up to 1 ships, empty hold, off | TBD | TBD | TBD | TBD | -- |
 | [hunt-minkar-cryobelt-hollow-pilgrim](hunt-minkar-cryobelt-hollow-pilgrim.json) | hunt | beyond the border, 21 jumps | hollow_pilgrim at minkar_cryobelt; loot sold at The Levy Customs Station | up to 1 ships, empty hold, standing work, off | TBD | TBD | TBD | TBD | -- |
+| [hunt-okab-haze-pilot-whale-sb2](hunt-okab-haze-pilot-whale-sb2.json) | hunt | beyond the border, 4 jumps | Pilot whales at okab_haze, one Pulse Laser III ship with a Shield Booster II, alone; loot to a trader receiver | up to 1 ships, needs shield_booster_ii, empty hold, standing work, off | 9 | 21 | -150 | -350 | 2026-11-23 |
 | [hunt-seginus-haze-cinder-sylph](hunt-seginus-haze-cinder-sylph.json) | hunt | beyond the border, 20 jumps | cinder_sylph at seginus_haze; loot sold at The Levy Customs Station | up to 1 ships, empty hold, standing work, off | TBD | TBD | TBD | TBD | -- |
 | [hunt-sheliak-weak-superposition-veil-ray](hunt-sheliak-weak-superposition-veil-ray.json) | hunt | beyond the border, 18 jumps | veil_ray at sheliak_weak_superposition; loot sold at First Step Memorial Station | up to 1 ships, empty hold, off | TBD | TBD | TBD | TBD | -- |
 | [hunt-test-amberfall-chlorophage](hunt-test-amberfall-chlorophage.json) | hunt | beyond the border, 5 jumps | Yield test: chlorophage at Amberfall Emission Nebula (lawless); does a kill drop caustic sac | up to 1 ships, empty hold, off | TBD | TBD | TBD | TBD | -- |
