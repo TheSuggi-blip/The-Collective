@@ -1,7 +1,7 @@
 # Military guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-23. Evidence: the tool plan (show, templates); hive.py briefing (column carries); dispatch.newborn_reason; the tool fill (check); table runs joined with stats_pilot_hour (cr per XP by prey, scratch).
+Status: proven. Updated: 2026-11-23. Evidence: the tool plan (show, templates); hive.py briefing (column carries); dispatch.newborn_reason; fill.py status drone; the tool fill (check); table runs joined with stats_pilot_hour (cr per XP by prey, scratch).
 
 What the division flies between two turns (orders ENT-068, P1, P5, P6
 and block APOPHIS): hunts at the least fuel per XP, fits, a group that kills;
@@ -12,7 +12,7 @@ no sale, carry or craft of their own (P5). No guard in the first ring
 |---|---|---|---|
 | First | the once line; the laser and booster fits; plasma loaders; `give-drone-stores-*` | each under its limit | F35; fits; P5 |
 | Own | a cheap near hunt first on the costliest ships; far herds; the filler's tests | 1 each | P1; tests |
-| `@krynn-newborn`, `@sol-newborn` | pilots born Crimson or Solarian: their empire's once missions (First Hunt, Cracking the Shell, Form TA-1), then hunts within 6 jumps of where they stand (the dispatcher's reach for another empire's pilot; `far_ok` lifts it); loot to the trader at War Citadel or Sirius | 1 each | P6; a wallet under 5,000 cr opens only the missions |
+| `@krynn-newborn`, `@sol-newborn` | pilots born Crimson or Solarian: their empire's once missions (First Hunt, Cracking the Shell, Strategic Readiness, Last Known Position, Form TA-1), then one hunt a herd within 6 jumps of where they stand (the dispatcher's reach), a few with `far_ok` 7 to 9 jumps out once those are hunted to their line; loot to the trader at the nearest station without an owner | 1 each | P6; F38 |
 | `@hunter` | `*-pl3`/`pc2` (module-gated: tortoises, slugs, bulwarks), near drift-ray hunts, hollow pilgrims, carapace, drift rays, chlorophage, veil rays | 1 each | combat XP; ferrous nodule, carapace, biogas short |
 | Then | `park` behind the crafts (closed to drones under P5) | -- | never reached |
 

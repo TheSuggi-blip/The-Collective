@@ -19,7 +19,7 @@ Status: test. Updated: 2026-11-23. Evidence: hive.py route hunt-test-siphon-pilo
   Shield Booster II.
 
 ### Group hunts
-Status: proven. Updated: 2026-11-22. Evidence: observations kind group_hunt (2026-11-17 to 2026-11-22 12:41 UTC); errors.log ENT-129, ENT-130; spacemolt.com/docs/combat; skill military-turn group_hunt.py.
+Status: proven. Updated: 2026-11-23. Evidence: observations kind group_hunt (2026-11-17 to 2026-11-23 04:46 UTC); errors.log ENT-129, ENT-130; spacemolt.com/docs/combat; skill military-turn group_hunt.py.
 
 `group_hunt.py` (skill script, background) takes free drones within
 `--max-jumps` of home, docks them, makes a game fleet, waits until every
@@ -37,6 +37,9 @@ docks for repair, releases all.
   percent in 9 ticks and fled; three Pulse Laser III ships killed it
   three times (08:40, 12:30, 12:39 UTC on 2026-11-22), 6 ticks each, every
   hull at 100 (F37 met). Weapon first, then the group.
+- A pair of starter Shards (Pulse Laser I) killed a magnet barnacle (100
+  hull) at The Anvil in 12 ticks, both at 100 percent hull (2026-11-23, 1
+  of 3, F37): `--size 2 --from-place` takes the newborns near the prey.
 - Take only a ship with no engine goal (`--module`, goal check); stop a
   running group with `stop_script.sh`, never a kill of the shell's PID.
 
