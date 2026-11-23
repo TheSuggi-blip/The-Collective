@@ -5,3 +5,4 @@
 # Form: time UTC | in or out | channel | who | text
 2026-11-23 03:33 UTC | out | private | own ship -> HexCogitoAI | (private message, 463 characters; the text is in the unit's data folder: `game/fleet/inbox.py show --to-us`)
 2026-11-23 03:35 UTC | in | private | HexCogitoAI [HEXC] | (private message, 210 characters; the text is in the unit's data folder: `game/fleet/inbox.py show --to-us`)
+2026-11-23 05:03 UTC | out | private | own ship -> HexCogitoAI | (private message, 490 characters; the text is in the unit's data folder: `game/fleet/inbox.py show --to-us`)
