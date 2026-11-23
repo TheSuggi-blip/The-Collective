@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 57.
+Routes: 58.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -57,6 +57,7 @@ Routes: 57.
 | [mission-form-ta-1-confederacy](mission-form-ta-1-confederacy.json) | circuit | beyond the border, 11 jumps | Form TA-1: 3000 cr, +180 XP at Sol Central | once per pilot, up to 3 ships | 32 | 20 | 2,750 | one-time | 2026-11-22 |
 | [mission-frontier-wayfinder-circuit-frontier](mission-frontier-wayfinder-circuit-frontier.json) | circuit | beyond the border, 19 jumps | Frontier Wayfinder Circuit: 4000 cr, +530 XP at Mobile Capital | once per pilot, up to 3 ships | 114 | 15 | 60 | one-time | 2026-11-22 |
 | [mission-strategic-readiness-assessment-crimson](mission-strategic-readiness-assessment-crimson.json) | circuit | beyond the border, 21 jumps | Strategic Readiness Assessment: 4000 cr at War Citadel | once per pilot, up to 1 ships | 1 | 60 | -620 | one-time | 2026-11-21 |
+| [mission-the-memorial-frontier](mission-the-memorial-frontier.json) | circuit | beyond the border, 18 jumps | The Memorial: 8000 cr at Mobile Capital (Altais), a visit to First Step | once per pilot, up to 3 ships | TBD | TBD | TBD | TBD | -- |
 | [mission-the-proposal-frontier](mission-the-proposal-frontier.json) | circuit | beyond the border, 19 jumps | The Proposal: 800 cr, +80 XP at Mobile Capital | once per pilot, up to 3 ships | 1 | 7 | 700 | one-time | 2026-11-22 |
 | [mission-voidborn-trajectory-unknown](mission-voidborn-trajectory-unknown.json) | circuit | beyond the border, 16 jumps | Voidborn Trajectory: 6000 cr at Unknown Edge Waystation | once per pilot, up to 3 ships | 2 | 50 | 2,600 | one-time | 2026-11-22 |
 | [mission-welcome-sol-central](mission-welcome-sol-central.json) | circuit | beyond the border, 10 jumps | Welcome to Sol Central: 1,000 cr once; 15 iron ore mined at Lacaille 9352 Deep Vein (2 jumps), handed in at Sol Central | once per pilot, up to 3 ships | 4 | 19 | 1,820 | one-time | 2026-11-22 |
