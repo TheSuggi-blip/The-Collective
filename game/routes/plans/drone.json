@@ -283,6 +283,7 @@
   "craft-steel-military-synchrony-hub",
   "craft-steel-military-central-nexus",
   "craft-piping-node-beta",
+  "join-corridor-solarian",
   "join-corridor-crimson",
   "park"
  ],
@@ -341,7 +342,7 @@
   "mission-the-memorial-frontier": 95,
   "mission-the-proposal-frontier": 95,
   "mission-who-buys-old-charts-frontier": 95,
-  "store-hold-sol-central": 13,
+  "store-hold-sol-central": 15,
   "mission-endorsements-alpha": 15,
   "hunt-sol-jovian-extraction-zone-drift-ray": 15,
   "hunt-nihal-gas-plume-drift-ray": 15,
@@ -577,6 +578,7 @@
   "craft-steel-military-synchrony-hub": 95,
   "craft-steel-military-central-nexus": 95,
   "craft-piping-node-beta": 95,
+  "join-corridor-solarian": 15,
   "join-corridor-crimson": 30,
   "park": 95
  },
