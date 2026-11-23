@@ -1,0 +1,22 @@
+{
+ "id": "hunt-nembus-belt-belt-grazer",
+ "kind": "hunt",
+ "title": "belt_grazer at nembus_belt; loot to the trader where it docks (Voidborn drones, home herds full)",
+ "note": "Written by Apophis 2026-11-23 09:31 UTC (orders ENT-081, block APOPHIS; rule F23: the home herds are all taken, fill.py status drone reads max_ships reached or herd below on every home hunt, so the class takes its work further out). Herd by the census (table herds, read 07:04 UTC): belt_grazer 7. Two animals left of each species (rule F38): kills 5, min_creatures kills + 2. Every species passes both gauges of one typical drone (gauges.py species). One hunter a place. 9 jumps from home; it docks at the station nearest the place where our hunts already dock (4 jumps) and hands its loot to the trader receiver (strict classes, P5). Lawless or foreign space: alone against pirates, an empty hold (F3). Standing work for experience; a test of three results (F37).",
+ "place": "nembus:nembus_belt",
+ "species": [
+  "belt_grazer"
+ ],
+ "sell_at": "nova_terra:nova_terra_central:nova_terra_central",
+ "min_bid": 50,
+ "kills": 5,
+ "minutes": 40,
+ "max_ships": 1,
+ "min_creatures": 7,
+ "alone": "pirates",
+ "requires": {
+  "empty_hold": true
+ },
+ "gift_to": "trader",
+ "standing": true
+}
