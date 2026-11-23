@@ -169,6 +169,11 @@
   "craft-steel-central-nexus",
   "craft-steel-synchrony-hub",
   "train-jumps-trader",
+  "craft-sell-argon-krynn",
+  "craft-sell-neon-krynn",
+  "craft-sell-oxygen-krynn",
+  "carry-nitrogen-alpha-to-sol",
+  "craft-sell-neon-experiment",
   "train-trading-weapon-housing-node-alpha",
   "park"
  ],
@@ -345,6 +350,11 @@
   "craft-steel-central-nexus": 85,
   "craft-steel-synchrony-hub": 85,
   "train-jumps-trader": 10,
+  "craft-sell-argon-krynn": 85,
+  "craft-sell-neon-krynn": 85,
+  "craft-sell-oxygen-krynn": 85,
+  "carry-nitrogen-alpha-to-sol": 85,
+  "craft-sell-neon-experiment": 85,
   "train-trading-weapon-housing-node-alpha": 85,
   "park": 85
  },
