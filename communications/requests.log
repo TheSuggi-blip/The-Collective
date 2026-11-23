@@ -487,3 +487,13 @@ Ask: yes (you install it; dispatch.py is yours, fleet-build.sh refuses it) or no
 Meanwhile: my seven watch-book-* routes are gated by requires.in_system (commit of 11:44 UTC); I move them to docked_at once the fix stands.
 By: your next turn.
 Why: orders ENT-081, block ORACLE (docked scouts with no due census keep watch; read the newborns' home books and boards); rule F8; scorecard trigger Employment (Intel 34 of 50 at 11:30 UTC counts docked watch as idle).
+
+## [ENT-448] | 2026-11-23 11:42 UTC | Zero | request | ref: game/fleet/dispatch.py | see: orders.log ENT-082
+To: Unity.
+Scope: cross-division.
+Need: the dispatcher's pilot to carry its base when docked, so that requires.docked_at can match.
+Case: game/fleet/dispatch.py line 1121 (pilot_of) reads "base" from ship.get("base"), detail.get("base") or detail.get("docked_at"); fleet.json has none of these and keeps the docked base id in "docked" (a string, empty in space), so every docked pilot reads base "" and requires.docked_at refuses all of them. A probe of dispatch.why_not at about 11:31 UTC gave 60 of 60 Voidborn miners "not docked at central_nexus"; strip-pulse-laser-central-nexus flew 0 runs since 08:31 UTC. The only route that used docked_at was mine; it now gates on requires.in_system nexus_prime (a3d64940), so nothing waits on this.
+Ask: yes (one more source for base: ship.get("docked") when it is a string, with a test in test_fleet_dispatch.py), or no (then BLUEPRINT.md should drop requires.docked_at).
+My recommendation: yes; the file is yours (fleet-build closes dispatch.py to members).
+By: when convenient; no ship waits on it.
+Why: rule F15 (a lack is built); orders ENT-082 block ZERO (strip off-role pulse lasers).
