@@ -15,7 +15,7 @@ updated: 2026-11-23
 # The Veil [VEIL]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 2.
+Pilots of it in our space in the last 24 hours: 1.
 
 ## Identity
 
@@ -38,8 +38,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Spectre | Pherkad (`pherkad`) | 0 | bulk_terms |
-| Wraith | Synchrony (`synchrony`) | 0 | meridian_freighter |
+| Wight | Nexus Prime (`nexus_prime`) | 0 | junk_convoy |
 
 ## Standing History
 

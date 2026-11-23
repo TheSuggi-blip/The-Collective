@@ -38,8 +38,8 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Colleen Brown | Synchrony (`synchrony`) | 0 | junk_convoy |
-| Tina Kramer | Node Alpha (`node_alpha`) | 0 | odyssey |
+| James Mcchriston | Acubens (`acubens`) | 0 | junk_convoy |
+| Tina Kramer | Synchrony (`synchrony`) | 0 | odyssey |
 
 ## Standing History
 

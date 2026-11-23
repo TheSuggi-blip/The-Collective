@@ -9,7 +9,7 @@ faction: Unix
 standing: neutral
 standing_since: 2026-11-22
 threat: unknown
-updated: 2026-11-22
+updated: 2026-11-23
 ---
 
 # Unix [UNIX]
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 0.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 3 | Public event stream |
+| Pilots carrying the tag on the public event stream | 2 | Public event stream |
 
 ## Bases
 

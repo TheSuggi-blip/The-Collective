@@ -15,7 +15,7 @@ updated: 2026-11-23
 # Busy Being Dead [BUSY]
 
 A player faction with 6 base(s) in 6 system(s); the nearest to Nexus Prime is 14 jump(s) away, in 40 Eridani (`40_eridani`).
-Pilots of it in our space in the last 24 hours: 6.
+Pilots of it in our space in the last 24 hours: 4.
 
 ## Identity
 
@@ -45,11 +45,9 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Combat Drone 009 | Node Gamma (`node_gamma`) | 0 | opus_magna |
-| Combat Drone 132 | Synchrony (`synchrony`) | 0 | dialectic |
-| Combat Drone 135 | Pherkad (`pherkad`) | 0 | dialectic |
-| Combat Drone 139 | The Experiment (`the_experiment`) | 0 | dialectic |
-| Combat Drone 158 | Node Beta (`node_beta`) | 0 | dialectic |
+| Combat Drone 016 | Node Beta (`node_beta`) | 0 | opus_magna |
+| Combat Drone 200 | The Experiment (`the_experiment`) | 0 | dialectic |
+| Combat Drone 219 | Node Beta (`node_beta`) | 0 | dialectic |
 | Scout Drone 82511 | Node Gamma (`node_gamma`) | 0 | not met |
 
 ## Standing History

@@ -15,7 +15,7 @@ updated: 2026-11-23
 # Pepemos Trading Company [PEPE]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 10.
+Pilots of it in our space in the last 24 hours: 16.
 
 ## Identity
 
@@ -40,14 +40,20 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 |---|---|---|---|
 | Mimic | Pherkad (`pherkad`) | 0 | cobble |
 | MimicBasalt | Synchrony (`synchrony`) | 0 | cobble |
-| MimicClaw | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicClaw | Synchrony (`synchrony`) | 0 | cobble |
 | MimicCobalt | Synchrony (`synchrony`) | 0 | cobble |
-| MimicComet | Nexus Prime (`nexus_prime`) | 0 | cobble |
-| MimicFlare | Nexus Prime (`nexus_prime`) | 0 | cobble |
-| MimicFrost | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| MimicNeb | Nexus Prime (`nexus_prime`) | 0 | worship |
-| MimicShale | Node Alpha (`node_alpha`) | 0 | cobble |
-| MimicVent | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicComet | Synchrony (`synchrony`) | 0 | cobble |
+| MimicFlake | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicFlare | Synchrony (`synchrony`) | 0 | cobble |
+| MimicForge | The Experiment (`the_experiment`) | 0 | cobble |
+| MimicGrain | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicRota | The Experiment (`the_experiment`) | 0 | prospect |
+| MimicSand | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicShale | Synchrony (`synchrony`) | 0 | cobble |
+| MimicSlag | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicTally | The Experiment (`the_experiment`) | 0 | cobble |
+| MimicWafer | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| Pepemos | The Experiment (`the_experiment`) | 0 | shard |
 
 ## Standing History
 

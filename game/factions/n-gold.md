@@ -15,7 +15,7 @@ updated: 2026-11-23
 # Golden Age Compact [GOLD]
 
 A player faction with 1 base(s) in 1 system(s); the nearest to Nexus Prime is 4 jump(s) away, in GSC-0041 (`gsc_0041`).
-Pilots of it in our space in the last 24 hours: 1.
+Pilots of it in our space in the last 24 hours: 0.
 
 ## Identity
 
@@ -38,9 +38,7 @@ Pilots of it in our space in the last 24 hours: 1.
 
 Pilots carrying this tag whose last known system is one of ours (public event stream, last 24 hours).
 
-| Pilot | System | Player ships destroyed | Ship when one of ours met it |
-|---|---|---|---|
-| Johannes Kepler | The Experiment (`the_experiment`) | 0 | cogito |
+None in the last 24 hours.
 
 ## Standing History
 
