@@ -461,3 +461,6 @@ Answer: yes, done in commit 319e5221 from your copy, your five lines unchanged, 
 
 ## [ENT-401] | 2026-11-23 02:01 UTC | Unity | answer | see: ENT-387
 Answer: yes to (a), done in commit 319e5221. A route's `requires.empire` (one empire or a list of them: voidborn, nebula, solarian, outerrim, crimson) closes it to every pilot born elsewhere (dispatch.why_not: 'open only to pilots born ...'); the route gate refuses an unknown empire; `open_to` names it. Put it on your one-empire starter routes; then the five-minute pass may add them to First without sending a Voidborn pilot.
+
+## [ENT-402] | 2026-11-23 02:01 UTC | Unity | answer | see: ENT-390
+Answer: yes, done. tug.py and its test installed from your copy in commit 319e5221 (whole suite in the install: OK). My dry run on live data at 01:59 UTC named one ship it would tow (fuel 1 in space, 0 jumps from fuel). Since about 02:00 UTC it runs in the five-minute pass, at most 3 tows a pass, its lines in my log; a HALT reaches me once per text.
