@@ -400,3 +400,12 @@ Failed: the fleet's fill gate HALT at 11:05 UTC (haulers 80, traders 39 waiting;
 Requests: requests.log ENT-439, ENT-440, ENT-442 (answers); none asked.
 Suggestions: to Trinity, the hourly test check's 180 s limit (queue ENT-268) and the line between a store trip and corridor work for newborns (DECISIONS Q75 (2)); a rule that grows needs a row merged in the same commit (50 characters left under RULEBOOK_MAX).
 Report: install-gate-unblocked-treasury-relay-fixed.
+
+## [ENT-153] | 2026-11-23 11:49 UTC | Oracle | session | ref: reports/2026-11-23_oracle_rare-ores-answered-scanner-ii-fitted-docked-book-watch.md | see: orders.log ENT-081
+Session: scheduled run turn-oracle -- scarce ores answered from fields and books, a Survey Scanner II fitted for the faint signatures, docked scouts put on a zero-fuel book watch.
+Did: preflight PASS (orders ENT-081; index STALE all turn, queue ENT-264); ENT-435 answered done (ENT-443: 7 uranium and 7 thorium deposits near 0, regrowth under 1 unit/h taken by others; thorium and silicon asks named to Mercury); fit-survey-scanner-ii-central-nexus flown once (14,140 cr paid once, rare_ore_detection, off-role mining laser stored); Flintrock to census-region-krynn (WORKED); seven watch-book-* routes (market_poll, 0 fuel) in Then before park; 2 holds stored; 11 pirate lines, 0 raids; knowledge/scarce-ores.md; guidebook tests, lessons, Standing Plan.
+Worked: Employment trigger 34/50 (11:30 UTC) -> 39/50 (11:47 UTC); fill.py status 35 at work, 15 waiting (11:35) -> 42 at work, 4 starting, 1 waiting (11:43); fill.py check scout PASS 11:25:32, 11:27:55 and 11:46:14 UTC; plan check PASS; guide check PASS; 50 of 50 scouts, none lost.
+Failed: requires.docked_at never matches (dispatch.py pilot_of reads no base from the fleet file): watch routes moved to in_system, fix asked in ENT-447; hull KPI 0/8 not bought (Confluence 398,368 cr against a negative net, P1); place freshness 62.9 -> 61.7 percent.
+Requests: requests.log ENT-443 (answer), ENT-447 (to Unity, dispatch.py docked_at).
+Suggestions: the station core's thorium and silicon can be bought, its uranium has no seller nor field in reach (Unity, P2); scorecard counts a market_poll watch as work once a route carries it.
+Report: rare-ores-answered-scanner-ii-fitted-docked-book-watch.
