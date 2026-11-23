@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 64.
+Routes: 65.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -54,6 +54,7 @@ Routes: 64.
 | [mission-endorsements-alpha](mission-endorsements-alpha.json) | circuit | beyond the border, 11 jumps | Endorsements: 6000 cr, +380 XP at Alpha Centauri Colonial Station | once per pilot, up to 3 ships | 1 | 30 | -400 | one-time | 2026-11-22 |
 | [mission-federation-market-analysis-market](mission-federation-market-analysis-market.json) | circuit | beyond the border, 23 jumps | Federation Market Analysis: 6000 cr at Market Prime Exchange | once per pilot, up to 3 ships | 73 | 44 | 5,290 | one-time | 2026-11-22 |
 | [mission-federation-trade-route-prospectus-grand](mission-federation-trade-route-prospectus-grand.json) | circuit | beyond the border, 24 jumps | Federation Trade Route Prospectus: 4000 cr at Grand Exchange | once per pilot, up to 3 ships | 89 | 60 | 1,350 | one-time | 2026-11-22 |
+| [mission-first-cargo-haven](mission-first-cargo-haven.json) | circuit | beyond the border, 22 jumps | First Cargo, Copper Requisition and Iron Supply Run: 4,300 cr once; accept at Grand Exchange, mine at Khambalia Crystal Market (2 jumps), hand in at Grand Exchange | once per pilot, up to 3 ships | TBD | TBD | TBD | TBD | -- |
 | [mission-first-hunt-iron-reach](mission-first-hunt-iron-reach.json) | circuit | beyond the border, 21 jumps | First Hunt: Belt-Grazers: 1,000 cr once; three belt_grazer at smiths_detour, accepted and handed in at Iron Reach Mining Colony | once per pilot, up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [mission-first-hunt-ironhearth](mission-first-hunt-ironhearth.json) | circuit | beyond the border, 21 jumps | First Hunt: Belt-Grazers: 1,000 cr once; three belt_grazer at frostfeld_thermal_vent, accepted and handed in at Ironhearth Station | once per pilot, up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [mission-five-capitals-diplomatic-circuit-confederacy](mission-five-capitals-diplomatic-circuit-confederacy.json) | circuit | beyond the border, 21 jumps | Five Capitals Diplomatic Circuit: 15000 cr, +505 XP at Sol Central | once per pilot, up to 3 ships | 3 | 36 | -380 | one-time | 2026-11-22 |
