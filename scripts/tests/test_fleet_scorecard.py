@@ -212,5 +212,50 @@ class TestFleetScorecard(unittest.TestCase):
             self.assertEqual(sc["divisions"]["Military"]["triage"][0]["code"], "ACTIVE_WAR")
 
 
+    def test_strategy_kpis_auto_integrate_rank_and_drop_on_completion_or_removal(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root, data = _make_fixture(tmp)
+            rv_mock = {
+                "strategy_playbooks": [
+                    {
+                        "id": "express_passenger", "name": "4. Express Pax", "short_name": "Express Pax",
+                        "divisions": ["Logistics"], "status_code": "GAP", "readiness_pct": 25.0,
+                        "matched_count": 1, "total_count": 4, "empires": [{"name": "Outer Rim", "ships": 43}],
+                        "effort": 1, "posture_weights": {"WAR_ALERT": 40, "CASHFLOW_RECOVERY": 92, "PEACETIME_GROWTH": 84},
+                        "how_to_copy": "Commission Runner hulls", "blocker": "Fast hulls",
+                        "kpis": [
+                            {"name": "Fast hulls", "owner": "Logistics", "current": "0", "target": ">=5", "matched": False, "source": "fleet.json"},
+                            {"name": "Supply chain: outpost-fuel", "owner": "Logistics", "current": "100/5000", "target": ">=5000", "matched": False, "source": "read.db:supply"},
+                        ],
+                    },
+                    {
+                        "id": "pve_combat", "name": "8. PvE & Escort", "short_name": "PvE & Escort",
+                        "divisions": ["Military"], "status_code": "PARTIAL", "readiness_pct": 50.0,
+                        "matched_count": 2, "total_count": 4, "empires": [{"name": "Crimson", "ships": 41}],
+                        "effort": 2, "posture_weights": {"WAR_ALERT": 100, "CASHFLOW_RECOVERY": 60, "PEACETIME_GROWTH": 80},
+                        "how_to_copy": "Field T2 combat hulls", "blocker": "T2 warships",
+                        "kpis": [
+                            {"name": "T2 warships", "owner": "Military", "current": "0", "target": ">=5", "matched": False, "source": "read.db:ships"},
+                        ],
+                    },
+                ]
+            }
+            sc1 = scorecard.compute_scorecard(root, data, now=107200, rivals_doc=rv_mock)
+            log_codes_1 = [x["code"] for x in sc1["divisions"]["Logistics"]["triage"]]
+            self.assertTrue(any(c.startswith("STRAT_express_passenger_") for c in log_codes_1))
+            self.assertTrue(any(x["source"] == "SUPPLY" for x in sc1["divisions"]["Logistics"]["triage"]))
+            # Under CASHFLOW_RECOVERY, Express Pax (wt 92, eff 1) outranks PvE Combat (wt 60, eff 2)
+            self.assertEqual(rv_mock["strategy_playbooks"][0]["id"], "express_passenger")
+
+            # Mark both Logistics KPIs completed & remove pve_combat strategy -> both auto-drop from triage!
+            for k in rv_mock["strategy_playbooks"][0]["kpis"]:
+                k["matched"] = True
+            rv_mock["strategy_playbooks"][0]["readiness_pct"] = 100.0
+            rv_mock["strategy_playbooks"][0]["matched_count"] = 2
+            rv_mock["strategy_playbooks"] = [rv_mock["strategy_playbooks"][0]]
+            sc2 = scorecard.compute_scorecard(root, data, now=107200, rivals_doc=rv_mock)
+            self.assertFalse(any(x["source"] in ("STRATEGY", "SUPPLY") for x in sc2["divisions"]["Logistics"]["triage"]))
+            self.assertEqual(sc2["divisions"]["Military"]["playbooks"], [])
+
 if __name__ == "__main__":
     unittest.main()

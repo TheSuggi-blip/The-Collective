@@ -434,8 +434,23 @@ def _inspect_our_adoption(repo_root, data_dir, conn, tables):
         except sqlite3.Error:
             pass
     endl_logged = (Path(repo_root) / "game" / "factions" / "h-endl.md").is_file()
+    supply_short = []
+    supply_total = 0
+    if "supply" in tables:
+        try:
+            for sr in conn.execute("SELECT chain, state, have, keep FROM supply"):
+                supply_total += 1
+                if str(sr["state"] or "").upper() == "SHORT":
+                    hv, kp = int(_num(sr["have"])), int(_num(sr["keep"]))
+                    # Anti-thrashing hysteresis: only escalate supply chains meaningfully below target (<85% of keep)
+                    if kp <= 0 or hv == 0 or hv < int(kp * 0.85):
+                        supply_short.append({"chain": str(sr["chain"] or ""), "have": hv, "keep": kp})
+        except sqlite3.Error:
+            pass
 
     return {
+        "supply_short": supply_short,
+        "supply_total": supply_total,
         "bases": len(bases),
         "tourism_facs": tourism_facs,
         "bursar_routes": bursar_routes, "active_bursar": active_bursar,
@@ -494,7 +509,7 @@ def _build_strategy_playbooks(our_adopt, leaders, market_edges):
     def _kpi(name, owner, current, target, matched, source):
         return {"name": name, "owner": owner, "current": str(current), "target": str(target), "matched": bool(matched), "source": source}
 
-    def _pack(pid, name, short_name, divisions, empires, handoff_chain, proven_by, kpis, core_active, active_lbl, partial_lbl, gap_lbl, how_it_works, how_to_copy, how_to_counter):
+    def _pack(pid, name, short_name, divisions, empires, handoff_chain, proven_by, kpis, core_active, active_lbl, partial_lbl, gap_lbl, how_it_works, how_to_copy, how_to_counter, posture_weights=None, effort=2):
         m_cnt = sum(1 for k in kpis if k["matched"])
         tot = max(1, len(kpis))
         rpct = round(100.0 * m_cnt / tot, 1)
@@ -521,6 +536,8 @@ def _build_strategy_playbooks(our_adopt, leaders, market_edges):
             "total_count": tot,
             "readiness_pct": rpct,
             "blocker": blocker,
+            "effort": int(effort),
+            "posture_weights": dict(posture_weights or {"WAR_ALERT": 60, "CASHFLOW_RECOVERY": 70, "PEACETIME_GROWTH": 70}),
             "how_it_works": how_it_works,
             "how_to_copy": how_to_copy,
             "how_to_counter": how_to_counter,
@@ -549,6 +566,7 @@ def _build_strategy_playbooks(our_adopt, leaders, market_edges):
             "Player stations with high Tourism Appeal + stocked Gourmet food/drinks print passive 50M-215M+ cr revenue without fuel burn.",
             "Command+Logistics: build high-appeal Tourism modules on our sovereign stations once Atria/Yildun bases stand; Trade stocks Gourmet rations & specialty drinks.",
             f"Trade: feed rival Tourism hubs' gourmet/drink standing bids ({gourmet_ex}, `solarian_gourmet_rations`, `void_espresso`) to capture their tourism cashflow today.",
+            posture_weights={"WAR_ALERT": 35, "CASHFLOW_RECOVERY": 55, "PEACETIME_GROWTH": 92}, effort=3,
         ),
         _pack(
             "docked_factory", "2. Zero-Fuel Docked NPC-Facility Factory", "Docked Factory",
@@ -569,6 +587,7 @@ def _build_strategy_playbooks(our_adopt, leaders, market_edges):
             "Zero-base factions park ships permanently docked at public NPC industrial stations, buying cheap inputs and crafting high-margin goods at 0 fuel & 0 rent.",
             "Trade+Logistics: add `docked_at` / `min_cargo` plan entries (`plan.py`) running zero-fuel `craft` + `sell_order --undercut-pct 5` at public refinery/factory hubs; zero ships parked idle.",
             f"Trade: outbid their raw inputs with Bursar `buy_order` walls and undercut their finished Exchange listings by 5% ({uc_ex}).",
+            posture_weights={"WAR_ALERT": 70, "CASHFLOW_RECOVERY": 92, "PEACETIME_GROWTH": 82}, effort=1,
         ),
         _pack(
             "exchange_bursar", "3. Multi-Hub Exchange Market-Making (Bursar)", "Exchange Bursar",
@@ -589,6 +608,7 @@ def _build_strategy_playbooks(our_adopt, leaders, market_edges):
             "Stationed Bursar ships sit across all 5 empire exchanges maintaining continuous buy walls and 5%-undercut sell ladders with zero jump fuel burn.",
             "Trade: seat 1+ Bursar per empire hub (`plan.py` `docked_at:` + `route_run.py` `sell_order --undercut-pct 5`, `buy_order`, `watch_minutes` desk duty) and log deals in `contracts.log`.",
             f"Trade: undercut overpriced rival station asks ({uc_ex}) by 5-10% and sweep stale vault inventory (>250k cr) directly into live bids.",
+            posture_weights={"WAR_ALERT": 65, "CASHFLOW_RECOVERY": 95, "PEACETIME_GROWTH": 86}, effort=1,
         ),
         _pack(
             "express_passenger", "4. Zero-Base Express Passenger & Courier", "Express Pax",
@@ -609,6 +629,7 @@ def _build_strategy_playbooks(our_adopt, leaders, market_edges):
             "Speed 4-6 low-cargo hulls (`Runner` P0 spd 6, `Futures` P0, `Concordia`/`Syndicate` T3) chain fast passenger & express courier runs with near-zero capital overhead.",
             "Logistics: batch-commission P0 `Runner` (120c, spd 6) & `Futures` (P0), tag `plan.py` selector `speed>=4` onto `passenger-` express routes (`hive.py upgrades logistics`).",
             "Logistics: saturate high-pay core empire passenger corridors first so rivals face thinner mission boards while earning instant liquid credits.",
+            posture_weights={"WAR_ALERT": 40, "CASHFLOW_RECOVERY": 88, "PEACETIME_GROWTH": 84}, effort=1,
         ),
         _pack(
             "bulk_freight_missions", "5. Bulk Freight & Mission Swarm", "Bulk Freight",
@@ -621,6 +642,9 @@ def _build_strategy_playbooks(our_adopt, leaders, market_edges):
                 _kpi("Active freight/mission ships", "Logistics", f"{our_adopt['active_freight']}", ">=20", our_adopt["active_freight"] >= 20, "fleet.json"),
                 _kpi("Freight/mission routes", "Logistics", f"{our_adopt['freight_routes']}", ">=10", our_adopt["freight_routes"] >= 10, "game/routes"),
                 _kpi("Logistics employment", "Logistics", f"{dwork.get('Logistics', 0.0):.0f}%", ">=80%", dwork.get("Logistics", 0.0) >= 80.0, "fleet.json"),
+            ] + [
+                _kpi(f"Supply chain: {sc['chain']}", "Logistics", f"{sc['have']}/{sc['keep']}", f">={sc['keep']}", False, "read.db:supply")
+                for sc in (our_adopt.get("supply_short") or [])[:2]
             ],
             our_adopt["active_freight"] >= 20,
             f"ACTIVE ({our_adopt['active_freight']} freight ships)",
@@ -629,6 +653,7 @@ def _build_strategy_playbooks(our_adopt, leaders, market_edges):
             "P0/T1 bulk cargo hulls (`Ledger` 480c, `Prayer` 540c, `Congregation` 1,900c) sweep 100c+ `spacemolt_shipping` freight contracts and bulk delivery missions in parallel.",
             "Logistics: run `hive.py shipping` (MCP `view=shipping`), assign `plan.py` `cargo>=400` / `utility_group` proximity-matched haulers to `freight-` & `mission-` routes.",
             "Logistics+Trade: pre-stage cheap hub buffers so our haulers claim high-reward `spacemolt_shipping` contracts faster than single-hub rivals.",
+            posture_weights={"WAR_ALERT": 72, "CASHFLOW_RECOVERY": 90, "PEACETIME_GROWTH": 82}, effort=1,
         ),
         _pack(
             "scarce_vein_monopoly", "6. Lawless Scarce-Vein Monopoly Extraction", "Scarce Veins",
@@ -649,6 +674,7 @@ def _build_strategy_playbooks(our_adopt, leaders, market_edges):
             "High-tier industrial hulls (`Workhorse` -> `Lithosphere`/`Tellurian`) anchor near lawless rare belts (Uranium/Silver/Cobalt/Argon/Gold) instead of competing on 1-4 cr iron/copper.",
             f"Mining: target high-bid scarce veins ({raw_bid_ex}) with `--jettison-gangue`, batch-upgrade lasers & hulls (`hive.py upgrades mining`), and use `plan.py` `min_piloting`/`max_jumps` selectors.",
             f"Mining+Trade: STOP mining cheap bulk ores available wholesale below fuel cost ({raw_ch_ex}); buy rival dumps and redirect our lasers to 100-600 cr scarce veins.",
+            posture_weights={"WAR_ALERT": 68, "CASHFLOW_RECOVERY": 76, "PEACETIME_GROWTH": 90}, effort=2,
         ),
         _pack(
             "wholesale_arbitrage", "7. Wholesale Capital Arbitrage (Outsource & Outsupply)", "Arbitrage",
@@ -669,6 +695,7 @@ def _build_strategy_playbooks(our_adopt, leaders, market_edges):
             "Rival mega-factions dump surplus ores, steel plates, and even `station_core`s below our self-build cost while posting huge standing bids on bottlenecks.",
             f"Command+Trade+Logistics: always check `hive.py rivals` Outsource/Outsupply board before spending foundry/mining hours -- buy cheap ({cap_ch_ex}, {raw_ch_ex}) and sell high ({bid_ex}).",
             "Command+Trade: convert rivals' overproduction into cheaper Collective stations/hulls while draining their treasury via their own standing bids.",
+            posture_weights={"WAR_ALERT": 84, "CASHFLOW_RECOVERY": 94, "PEACETIME_GROWTH": 85}, effort=1,
         ),
         _pack(
             "pve_combat_escort", "8. PvE Herd Farming & Armed Escort Projection", "PvE & Escort",
@@ -689,6 +716,7 @@ def _build_strategy_playbooks(our_adopt, leaders, market_edges):
             "Dedicated T2/T3 combat wings (`Dialectic`, `Broadaxe`, `Recursion`) earn bounties + salvage loot while deterring PvP raiders (`[ENDL]`) on lawless trade corridors.",
             "Military: run parallel `hunt-` PvE herd wings (handing loot to Trade, F9) + paired T2+ `escort-` wings using `plan.py` `posture:WAR_ALERT` readiness & `min_hull_tier:2`.",
             "Military+Intel: track [ENDL] hot systems in `h-endl.md`, enforce strict defensive RoE (F2) around Neutral [HEXC]/[IRLC], and escalate posture automatically if faction war starts.",
+            posture_weights={"WAR_ALERT": 100, "CASHFLOW_RECOVERY": 70, "PEACETIME_GROWTH": 80}, effort=2,
         ),
     ]
 

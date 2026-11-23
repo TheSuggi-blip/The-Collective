@@ -4594,7 +4594,12 @@ function renderEmpireSedcards(panel, rv) {
       const rpct = Number(p.readiness_pct || 0);
       const card = el('div', 'pb-card pb-' + sc.toLowerCase());
       const hd = el('div', 'pb-head');
-      hd.append(el('b', null, p.name), el('span', 'pill ' + cls, sc + ' ' + (p.matched_count || 0) + '/' + (p.total_count || 4) + ' KPIs (' + Math.round(rpct) + '%)'));
+      const rankTag = p.priority_rank ? el('span', 'pill info', 'Rank #' + p.priority_rank + ' | Wt ' + (p.dynamic_weight || 0)) : null;
+      hd.append(el('b', null, p.name));
+      const hdRight = el('div', 'sc-dbadges');
+      if (rankTag) hdRight.append(rankTag);
+      hdRight.append(el('span', 'pill ' + cls, sc + ' ' + (p.matched_count || 0) + '/' + (p.total_count || 4) + ' KPIs (' + Math.round(rpct) + '%)'));
+      hd.append(hdRight);
       card.append(hd);
 
       const bar = el('div', 'pr-bar');

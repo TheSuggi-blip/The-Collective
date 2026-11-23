@@ -1218,13 +1218,40 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
             "playbooks": [],
         }
 
-    # Attach live Strategy-Pinned Playbook KPI readiness per division (single source of truth in rivals.py)
+    # Dynamically integrate, rank by active posture weight, and self-adjust Strategy-Pinned KPIs into
+    # division & enterprise triage queues. Completed KPIs (matched=True), recovered supply chains, and
+    # removed strategies automatically drop out of the queues with zero manual edits.
+    ent_strategy_triage = []
     try:
         rv_doc = rivals_doc
         if rv_doc is None:
             import rivals as _rv
             rv_doc = _rv.compute_sedcards(repo_root, data_dir, top_n=12, now=now)
-        for p in (rv_doc or {}).get("strategy_playbooks") or []:
+        pbs_raw = list((rv_doc or {}).get("strategy_playbooks") or [])
+        ranked_pbs = []
+        for p in pbs_raw:
+            pw_map = p.get("posture_weights") or {}
+            base_wt = int(_num(pw_map.get(posture), 70))
+            eff = max(1, int(_num(p.get("effort"), 2)))
+            rpct = float(_num(p.get("readiness_pct"), 0.0))
+            kpis = list(p.get("kpis") or [])
+            unmatched = [k for k in kpis if not k.get("matched")]
+            if not unmatched or rpct >= 100.0:
+                dyn_score = 0
+                p_tier = "P3"
+            else:
+                quick_finish = (rpct >= 70.0)
+                gap_ratio = 0.90 if quick_finish else max(0.35, (100.0 - rpct) / 100.0)
+                dyn_score = _wsjf_score(base_wt, gap_ratio=gap_ratio, effort=eff, direction="FLAT")
+                p_tier = "P1" if (p.get("status_code") == "GAP" or quick_finish or (posture == "WAR_ALERT" and base_wt >= 80)) else "P2"
+            p["dynamic_weight"] = dyn_score
+            p["active_posture"] = posture
+            p["posture_base_weight"] = base_wt
+            ranked_pbs.append((dyn_score, p_tier, base_wt, eff, p, unmatched))
+
+        ranked_pbs.sort(key=lambda x: (-x[0], -x[2], str(x[4].get("id") or "")))
+        for rank_idx, (dyn_score, p_tier, base_wt, eff, p, unmatched) in enumerate(ranked_pbs, 1):
+            p["priority_rank"] = rank_idx
             summary = {
                 "id": p.get("id", ""),
                 "name": p.get("name", ""),
@@ -1235,10 +1262,58 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
                 "total_count": p.get("total_count", 4),
                 "empires": [e.get("name", "") for e in (p.get("empires") or [])],
                 "blocker": p.get("blocker", ""),
+                "dynamic_weight": dyn_score,
+                "priority_rank": rank_idx,
+                "posture": posture,
             }
             for dv in (p.get("divisions") or []):
                 if dv in divisions_out:
                     divisions_out[dv]["playbooks"].append(summary)
+            # Emit weighted triage items ONLY for unmatched KPIs (completed KPIs auto-drop!)
+            if unmatched and dyn_score > 0:
+                top_k = unmatched[0]
+                ent_strategy_triage.append({
+                    "severity": "WARN" if p_tier == "P1" else "OK",
+                    "tier": p_tier, "weight": base_wt, "effort": eff, "score": dyn_score,
+                    "source": "STRATEGY", "code": f"STRAT_{p.get('id', 'x')}",
+                    "metric": f"Strategy #{rank_idx} {p.get('short_name') or p.get('name')}: {top_k.get('name')}",
+                    "actual": f"{p.get('matched_count', 0)}/{p.get('total_count', 4)} KPIs ({top_k.get('owner')}: {top_k.get('current')})",
+                    "target": str(top_k.get("target") or "matched"), "direction": "FLAT",
+                    "action": str(p.get("how_to_copy") or p.get("blocker") or "")[:115],
+                })
+                emitted_owners = set()
+                # Anti-metric-fatigue: emit at most ONE primary blocker per strategy per owner division (supply emergencies first)
+                ordered_unmatched = sorted(unmatched, key=lambda x: (0 if str(x.get("source") or "") == "read.db:supply" else 1))
+                for k in ordered_unmatched:
+                    owner = str(k.get("owner") or "")
+                    if owner not in divisions_out or owner in emitted_owners:
+                        continue
+                    emitted_owners.add(owner)
+                    t_list = divisions_out[owner]["triage"]
+                    code = f"STRAT_{p.get('id', 'x')}_{owner.lower()}"
+                    if any(x.get("code") == code for x in t_list):
+                        continue
+                    is_sup = str(k.get("source") or "") == "read.db:supply"
+                    t_list.append({
+                        "severity": "WARN" if (p_tier == "P1" or is_sup) else "OK",
+                        "tier": "P1" if is_sup else p_tier,
+                        "weight": min(95, base_wt + (8 if is_sup else 0)),
+                        "effort": 1 if is_sup else eff,
+                        "score": min(100, dyn_score + (6 if is_sup else 0)),
+                        "source": "SUPPLY" if is_sup else "STRATEGY",
+                        "code": code,
+                        "metric": f"Strategy ({p.get('short_name') or p.get('name')}): {k.get('name')}",
+                        "actual": f"{k.get('current')} (vs {k.get('target')}; {p.get('matched_count', 0)}/{p.get('total_count', 4)} matched)",
+                        "target": str(k.get("target") or "matched"), "direction": "FLAT",
+                        "action": str(p.get("how_to_copy") or p.get("blocker") or "")[:115],
+                    })
+        # Re-rank strategy_playbooks in rv_doc + re-sort every division's playbooks & triage queue by live weight
+        if isinstance(rv_doc, dict) and ranked_pbs:
+            rv_doc["strategy_playbooks"] = [x[4] for x in ranked_pbs]
+        for dv_obj in divisions_out.values():
+            dv_obj["playbooks"].sort(key=lambda x: (-x.get("dynamic_weight", 0), x.get("priority_rank", 99)))
+            dv_obj["triage"].sort(key=_triage_sort_key)
+            dv_obj["triage"] = dv_obj["triage"][:10]
     except Exception:
         pass
 
@@ -1359,6 +1434,10 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
                     "actual": f"{rpct:.1f}%", "target": "100%", "direction": "FLAT",
                     "action": str(rg.get("bottleneck") or "Advance H1 milestone")[:96],
                 })
+    for st_item in ent_strategy_triage[:2]:
+        if st_item["code"] not in ent_seen:
+            ent_seen.add(st_item["code"])
+            ent_triage.append(st_item)
     ent_triage.sort(key=_triage_sort_key)
 
     return {
