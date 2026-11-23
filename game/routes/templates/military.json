@@ -153,6 +153,35 @@
     "navigation"
    ],
    "note": "2026-11-17 08:16 UTC: one drone at each field beyond the border where ships of ours gather (Schedar Belt up to 45, Ironhollow's two belts up to 20 and 25, Garnet Belt up to 10: admirals.log ENT-017); each opens only while a ship of ours flies the guarded route and never fires. Garnet is the outpost site Mining and Intel name: its guard is the first reading of the place Military will guard."
+  },
+  "krynn-newborn": {
+   "title": "Crimson-born drones and sentinels: home missions, then hunts within 6 jumps of Krynn",
+   "routes": [
+    "mission-first-hunt-iron-reach",
+    "mission-first-hunt-ironhearth",
+    "mission-cracking-the-shell-krynn",
+    "hunt-krynn-furnace-vents-drift-ray",
+    "hunt-krynn-war-materials-belt-grazer",
+    "hunt-frostfeld-smiths-detour-belt-grazer",
+    "hunt-frostfeld-thermal-vent-belt-grazer",
+    "hunt-ironhearth-ice-ring-rime-grazer",
+    "hunt-ironhearth-thermal-vents-bell-jelly",
+    "hunt-hd-20794-gas-plume-drift-ray",
+    "hunt-hd-20794-ice-fields-hollow-pilgrim",
+    "hunt-stillwater-emission-nebula-drift-ray",
+    "hunt-trappist-1-gas-pocket-drift-ray",
+    "hunt-trappist-1-frost-ring-rime-grazer",
+    "hunt-trappist-1-banked-coal-reef-belt-grazer",
+    "hunt-windmere-emission-nebula-drift-ray"
+   ],
+   "trains": [
+    "gunnery",
+    "weapons",
+    "tactics",
+    "xenobiology",
+    "piloting"
+   ],
+   "note": "P6 (orders ENT-068): newborns work where born; the dispatcher reaches 6 jumps (FOREIGN_REACH). Loot to the trader at War Citadel."
   }
  }
 }
