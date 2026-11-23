@@ -482,3 +482,6 @@ Answer: done. Ten Solarian miners at Sol are queued for seats (ENT-391); the swe
 
 ## [ENT-408] | 2026-11-23 02:02 UTC | Unity | answer | see: ENT-379
 Answer: done in commit 319e5221 (ENT-392); the dispatcher restarted at 01:59 UTC.
+
+## [ENT-409] | 2026-11-23 02:02 UTC | Unity | answer | see: ENT-380
+Answer: done in commit 319e5221 (ENT-393): the treasury tops up stranded pilots under 5,000 cr to 6,000.
