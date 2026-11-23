@@ -185,9 +185,31 @@ def survey(root, data, now=None):
     routes = dispatch.load_routes(root)
     own = dispatch.own_lists(data)                      # each pilot's own list, as its division's plan file was applied
     rows = dispatch.run_rows(data)
-    state = {"now": now, "data": data, "rows": rows, "orders": dispatch.fresh_orders(data, now), "rest": dispatch.resting(routes, rows, now),
-             "booked": dispatch.booked(data), "loss": dispatch.losing(routes, rows, now),
-             "late": dispatch.lately_losing(routes, rows, now), "pirates": dispatch.pirates(data, now)}
+    import pull as _pull
+    import taxes as _taxes
+    _ecache = {}
+    with _taxes.batch_cache(), routefiles.batch_cache(rows=rows, data=data):
+        _loss = dispatch.losing(routes, rows, now, earned_cache=_ecache)
+        _late = dispatch.lately_losing(routes, rows, now, earned_cache=_ecache)
+    _orders = dispatch.fresh_orders(data, now)
+    state = {"now": now, "data": data, "rows": rows, "orders": _orders, "rest": dispatch.resting(routes, rows, now),
+             "booked": dispatch.booked(data), "loss": _loss, "late": _late, "pirates": dispatch.pirates(data, now)}
+    state["class_guard"] = _pull.guard_on(state)
+    state["pull"] = _pull.pull_record(state)
+    _sc_mt = {}
+    _sc_dir = Path(data) / "scouting"
+    if _sc_dir.is_dir():
+        try:
+            with os.scandir(_sc_dir) as _it:
+                for _e in _it:
+                    if _e.name.endswith(".json"):
+                        try:
+                            _sc_mt[_e.name[:-5]] = _e.stat().st_mtime
+                        except OSError:
+                            pass
+        except OSError:
+            pass
+    state["_scouting_mtimes"] = _sc_mt
     by_route = {}
     for row in rows:
         by_route.setdefault(row.get("route"), []).append(row)
@@ -197,6 +219,27 @@ def survey(root, data, now=None):
     blank = lambda: {"ships": 0, "work": [], "hand": [], "away": [], "starting": [], "waiting": [], "standing": [], "next": [], "park": [], "reasons": {}}
     crews = {role: blank() for role in roles}
     played = dict(state["orders"])                     # the orders as they stand after the dispatcher's next pass
+    played_counts = Counter(played.values())
+    census_counts = Counter(w.split(" ", 1)[1] for w in played.values() if isinstance(w, str) and w.startswith("census "))
+    census_busy = {k for k, v in census_counts.items() if v > 0}
+
+    def _set_played(key, val):
+        old_w = played.get(key)
+        if old_w:
+            played_counts[old_w] -= 1
+            if old_w.startswith("census "):
+                _cs = old_w.split(" ", 1)[1]
+                census_counts[_cs] -= 1
+                if census_counts[_cs] <= 0:
+                    census_busy.discard(_cs)
+        played[key] = val
+        if val:
+            played_counts[val] += 1
+            if val.startswith("census "):
+                _cs = val.split(" ", 1)[1]
+                census_counts[_cs] += 1
+                census_busy.add(_cs)
+    why_state = dict(state, orders=played, _order_counts=played_counts, _census_counts=census_counts, _census_busy=census_busy)
     for ship in fleet.get("ships") or [] if isinstance(fleet, dict) else []:
         name = ship.get("name") or ""
         role = dispatch.role_of(name, named)
@@ -216,9 +259,9 @@ def survey(root, data, now=None):
                     if rid == flown.get("id"):
                         crew["standing"].append(pilot)                 # nothing ahead of its standing work is open: free for what pays
                         break
-                    reason, argument = dispatch.why_not(pilot, rid, routes.get(rid), dict(state, orders=played, rows=by_route.get(rid, [])))
+                    reason, argument = dispatch.why_not(pilot, rid, routes.get(rid), why_state)
                     if reason is None:                                 # its own list sends it there when this run ends: the place is its own
-                        played[name + " (next)"] = mark_of(routes[rid], argument)
+                        _set_played(name + " (next)", mark_of(routes[rid], argument))
                         crew["next"].append((name, rid))
                         break
         elif (ship.get("activity") or {}).get("kind") != "idle":
@@ -226,9 +269,9 @@ def survey(root, data, now=None):
         else:
             pilot, why = dispatch.pilot_of(ship, named, data, ammo), []
             for rid in own.get(name) or roles.get(role) or []:
-                reason, argument = dispatch.why_not(pilot, rid, routes.get(rid), dict(state, orders=played, rows=by_route.get(rid, [])))
+                reason, argument = dispatch.why_not(pilot, rid, routes.get(rid), why_state)
                 if reason is None:
-                    played[name] = mark_of(routes[rid], argument)
+                    _set_played(name, mark_of(routes[rid], argument))
                     crew["starting"].append((name, rid))
                     break
                 why.append((rid, reason))

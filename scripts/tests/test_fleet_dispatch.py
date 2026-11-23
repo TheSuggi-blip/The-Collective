@@ -1124,9 +1124,6 @@ class RouteGateTests(Tree):
         picked, _arg = self.dispatch.pick(p_tr, {"pilots": {"trader-1": ["r-far", "r-near"]}}, {"r-far": r_far, "r-near": r_near}, state)
         self.assertEqual(picked["id"], "r-near")
 
-if __name__ == "__main__":
-    unittest.main()
-
 
 class DockedAtTests(Tree):
     """requests ENT-447 (Oracle), ENT-448 (Zero): the fleet file names the station a ship is docked at in `docked`
@@ -1294,3 +1291,7 @@ class StrictClassesTests(Tree):
             "game/routes/give-b.json: stop 1: a gift's `source` is one of storage, cargo, both",
             "game/routes/give-c.json: `gift` with `deposit` faction: the faction's storage gives nothing without manage_treasury; gift from personal storage",
             "game/routes/give-d.json: a gift to `Somebody`: neither a role (miner, trader, hauler, drone, sentinel, scout, command) nor a flagship of ours: a gift to a stranger is a loss"])
+
+
+if __name__ == "__main__":
+    unittest.main()

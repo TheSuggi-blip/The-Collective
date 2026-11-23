@@ -252,7 +252,7 @@ def fund_plan(a):
 
 TOOLS = {
     "fleet": {
-        "text": "The fleet in figures. view=money: credits and steady money per hour (income, costs, net; rewards paid once left out) over 1, 6 and 24 hours, per division. "
+        "text": "The fleet in figures. view=money: credits, Net Purse/h (steady + paid once), matched Recurring Cash/h, and transfer-priced IAS2 Accrual Value-Add/h over 1, 6 and 24 hours, per division. "
                 "view=history: credits hour by hour per division. view=levels: pilots' levels, XP an hour, hours to the next hull tier. view=capacity: what mining, hunting "
                 "and the once-missions carry (bids, what is left in the fields, herds, tools) and how many ships that employs. view=board: a member's ships one line each, "
                 "with their orders and last runs. view=standing: the standing fleet of a member: its plan route by route with the credits per ship-hour of each, and "
@@ -262,7 +262,7 @@ TOOLS = {
                 "The statistics the store computes by itself (definitions: game/metrics.md; every figure with its window and n, `not measured` "
                 "where no record holds it): view=kpi: the fleet as one purse over 1, 6, 24 and 72 hours: throughput, operating expense, steady "
                 "net, paid once, net of everything, net per ship-hour, the trend, the reserve and the surplus at the best bid. view=contribution: "
-                "per division its own net, the income its route files enabled for every division, its service. view=classes: per role the "
+                "per division its Net Purse/h (6h/24h), matched Recurring Cash/h, IAS2 Accrual Value-Add/h, raw steady net, enabled income, and service. view=classes: per role the "
                 "places of its own class work open now against its ships, and the spill. view=time: where the ship-hours went: own work, "
                 "another class's, once, shared, docked or in space without work, offline. view=supply: per reserve good held, needed, min "
                 "and max, change an hour, days of supply, the routes and ships that feed it, and gather against buy. view=xp: XP per "
@@ -288,9 +288,12 @@ TOOLS = {
                  "hours": arg(I, "the window of the runs, default 4")},
         "plan": lambda a: [("game/fleet/hive.py", ["routes"] + flag(a, "group") + flag(a, "kind") + flag(a, "zone") + flag(a, "hours"))]},
     "route": {
-        "text": "One route in full: its file's facts, who flies it now, its last twelve runs with credits and notes, and its credits per ship-hour hour by hour over 24 hours.",
-        "args": {"id": arg(S, "the route id, e.g. mine-ruchbah-ice-belt")}, "required": ["id"],
-        "plan": lambda a: [("game/fleet/hive.py", ["route", a["id"]])]},
+        "text": "One route in full: its file's facts, who flies it now, last twelve runs and 24h hourly rates. Set why=true to diagnose why pilots are open or closed to this route (`hive.py why <id>`).",
+        "args": {"id": arg(S, "the route id, e.g. mine-ruchbah-ice-belt"),
+                 "why": arg(B, "when true: run hive.py why <id> to group open/closed reasons across pilots"),
+                 "member": arg(S, "optional member or role filter when why=true", MEMBERS)},
+        "required": ["id"],
+        "plan": lambda a: [("game/fleet/hive.py", ["why", a["id"]] + ([a["member"]] if a.get("member") else []))] if a.get("why") else [("game/fleet/hive.py", ["route", a["id"]])]},
     "fill": {
         "text": "Keep every ship at work (orders F8). action=status: per role how many ships work, start and wait, why each route of the plan is closed to the waiting "
                 "pilots, and what work stands open outside the plan. action=check: the gate, PASS or HALT. action=fill: put the open paying routes and tests into your "

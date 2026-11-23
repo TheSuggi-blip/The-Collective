@@ -342,6 +342,21 @@ def show_fleet(root, data, now):
                  " | weekly tax %s from %d pilots (once a week; kept out of the steady money)" % (num(sum(tax)), len(tax)) if tax else "",
                  " | into the faction's treasury %s in %d deposits (a move between two purses of ours)" % (num(sum(kept)), len(kept)) if kept else ""))
     hour = (windows.get("1h") or {}).get("divisions") or {}
+    day = (windows.get("24h") or {}).get("divisions") or {}
+    acc_div = {}
+    try:
+        import sqlite3 as _sq
+        import accounting as _acc
+        dbp = Path(data) / "store" / "read.db"
+        if dbp.is_file():
+            _con = _sq.connect("file:%s?mode=ro" % dbp, uri=True)
+            try:
+                _repo_r = str(Path(root).resolve().parent if Path(root).name == "game" else root)
+                acc_div = (_acc.compute_pnl(_con, repo_root=_repo_r, data_dir=data, fleet_json=fleet, hours=24, now=now).get("by_division") or {})
+            finally:
+                _con.close()
+    except Exception:
+        acc_div = {}
     print("  %-10s %5s %8s %8s %12s %10s %10s %10s %10s %10s" % ("division", "ships", "at work", "docked", "credits", "net/h", "income/h", "costs/h", "metered/h", "gifts/h"))
     for name, row in sorted((totals.get("divisions") or {}).items()):
         w = hour.get(name) or {}
@@ -350,6 +365,19 @@ def show_fleet(root, data, now):
                                                                    num(w.get("metered_per_hour")), num(w.get("transfers_per_hour"))))
     print("  the last hour; metered/h: fuel and repairs the collector saw bought; gifts/h: what our own gifts put into the division (+) or took out (-),"
           " left out of its income and costs")
+    if acc_div or day:
+        print("  24h GAAP/IFRS BY DIVISION (Net Purse/h = Recur/h + Once/h; Accrual/h = Recur/h + IAS2 Inv + Transfers):")
+        print("  %-15s %11s %11s %11s %11s %11s" % ("pnl_division", "1h purse/h", "24h purse/h", "24h recur/h", "24h once/h", "24h accrual"))
+        for name in sorted((totals.get("divisions") or {}).keys()):
+            w = hour.get(name) or {}
+            w24 = day.get(name) or {}
+            da = acc_div.get(name) or {}
+            p1 = (w.get("cph") or 0) + (w.get("one_time_per_hour") or 0) if w else None
+            p24 = da.get("purse_h") if da else (((w24.get("cph") or 0) + (w24.get("one_time_per_hour") or 0)) if w24 else None)
+            r24 = da.get("recurring_cash_h") if da else (w24.get("cph") if w24 else None)
+            o24 = da.get("once_net_h") if da else (w24.get("one_time_per_hour") if w24 else None)
+            a24 = da.get("accrual_op_h") if da else None
+            print("  [24h] %-9s %11s %11s %11s %11s %11s" % (name, num(p1), num(p24), num(r24), num(o24), num(a24)))
     print("  why ships are docked and what would give them work: fill.py (tool fill_status)")
     return 0
 
@@ -370,15 +398,17 @@ def treasury_line(data, wallets, now):
 
 def window_stats(rows, since):
     """{route: [runs, credits earned, minutes, paid once]} of the runs started since a time that read a wallet."""
+    import taxes as _taxes
     out = defaultdict(lambda: [0, 0.0, 0.0, 0])
-    for row in rows:
-        if epoch(row.get("started")) >= since:
-            entry = out[row.get("route")]
-            entry[0] += 1
-            entry[3] += row.get("one_time") or 0
-            if routefiles.readable(row):
-                entry[1] += routefiles.earned(row) - (row.get("one_time") or 0)
-                entry[2] += row.get("minutes") or 0
+    with _taxes.batch_cache(), routefiles.batch_cache(rows=rows):
+        for row in rows:
+            if epoch(row.get("started")) >= since:
+                entry = out[row.get("route")]
+                entry[0] += 1
+                entry[3] += row.get("one_time") or 0
+                if routefiles.readable(row):
+                    entry[1] += routefiles.earned(row) - (row.get("one_time") or 0)
+                    entry[2] += row.get("minutes") or 0
     return out
 
 
@@ -920,16 +950,22 @@ def show_refill(root, data, now):
 
 def pilot_stats(rows, since):
     """{pilot or route: [runs, steady credits, minutes that read a wallet, paid once, minutes flown]} of the runs started since a time."""
+    import taxes as _taxes
     by_pilot, by_route = defaultdict(lambda: [0, 0.0, 0.0, 0, 0.0]), defaultdict(lambda: [0, 0.0, 0.0, 0, 0.0])
-    for row in rows:
-        if epoch(row.get("started")) >= since:
-            for entry in (by_pilot[row.get("pilot")], by_route[row.get("route")]):
-                entry[0] += 1
-                entry[3] += row.get("one_time") or 0
-                entry[4] += row.get("minutes") or 0
-                if routefiles.readable(row):
-                    entry[1] += routefiles.earned(row) - (row.get("one_time") or 0)
-                    entry[2] += row.get("minutes") or 0
+    with _taxes.batch_cache(), routefiles.batch_cache(rows=rows):
+        for row in rows:
+            if epoch(row.get("started")) >= since:
+                ot = row.get("one_time") or 0
+                mins = row.get("minutes") or 0
+                rd = routefiles.readable(row)
+                cr = (routefiles.earned(row) - ot) if rd else 0.0
+                for entry in (by_pilot[row.get("pilot")], by_route[row.get("route")]):
+                    entry[0] += 1
+                    entry[3] += ot
+                    entry[4] += mins
+                    if rd:
+                        entry[1] += cr
+                        entry[2] += mins
     return by_pilot, by_route
 
 
@@ -1032,15 +1068,18 @@ def forecast(routes, on, by_route, cands, hours):
     return sorted(found, key=lambda row: (-(row[4] + row[5]), row[0]))
 
 
-def show_forecast(root, data, now, who, hours):
-    routes, rows = dispatch.load_routes(root), dispatch.run_rows(data)
-    orders = dispatch.fresh_orders(data, now)
-    _by_pilot, by_route = pilot_stats(rows, now - hours * 3600)
+def show_forecast(root, data, now, who, hours, seen=None, by_route=None):
+    routes = seen["routes"] if seen else dispatch.load_routes(root)
+    rows = seen["state"]["rows"] if seen else dispatch.run_rows(data)
+    orders = seen["state"]["orders"] if seen else dispatch.fresh_orders(data, now)
+    if by_route is None:
+        _by_pilot, by_route = pilot_stats(rows, now - hours * 3600)
     book = read(Path(data) / "routes" / "opportunities.json", {})
     cands = {c["route"]["id"]: c["per_ship_hour"] for c in (book.get("candidates") if isinstance(book, dict) else None) or []
              if isinstance(c, dict) and isinstance(c.get("route"), dict) and c["route"].get("id") and isinstance(c.get("per_ship_hour"), (int, float))}
     titles = {key: title for key, title, _text in routefiles.STAGES}
-    crew, fleet = pilots(data)
+    fleet = (seen.get("fleet") if seen else None) or read(Path(data) / "fleet" / "fleet.json", {})
+    crew = [(ship, {}) for ship in (fleet.get("ships") or [] if isinstance(fleet, dict) else [])]
     members = [m for m in division.MEMBERS if who in ("all", m)]
     if not members:
         print("no member `%s`: %s or all" % (who, ", ".join(division.MEMBERS)))
@@ -1094,9 +1133,10 @@ def show_forecast(root, data, now, who, hours):
     return 0
 
 
-def show_standing(root, data, now, who, hours):
+def show_standing(root, data, now, who, hours, seen=None):
     import fill                                    # the dispatcher's next pass played through for every free pilot
-    seen = fill.survey(root, data, now)
+    if seen is None:
+        seen = fill.survey(root, data, now)
     routes, state = seen["routes"], seen["state"]
     by_pilot, by_route = pilot_stats(state["rows"], now - hours * 3600)
     titles = {key: title for key, title, _text in routefiles.STAGES}
@@ -1121,17 +1161,18 @@ def show_standing(root, data, now, who, hours):
               "plan file (`plan.py show`, the tool plan) and takes the first one open to it" % (role, len(plan), role))
         print("  carries: the ships a route keeps busy hour after hour by what its bid, its field or its herd regains (`?` not measured), and `+N` more for one turn "
               "while today's standing order or field holds; never more ships than that on it (fill.py lift refuses)")
-        print("  %2s %-40s %-8s %-16s %10s %9s %9s | %4s %9s %13s %9s" % ("#", "route", "kind", "group", "measured/h", "ships/cap", "carries", "runs", "credits", "per ship-hour", "paid once"))
+        print("  %2s %-40s %-8s %-16s %10s %9s %9s | %4s %9s %9s %13s %9s" % ("#", "route", "kind", "group", "measured/h", "ships/cap", "carries", "runs", "credits", "tot cr/h", "per ship-hour", "paid once"))
         for n, rid in enumerate(plan, 1):
             route = routes.get(rid)
             if not route:
                 print("  %2d %-40s no route file" % (n, rid[:40]))
                 continue
             runs, credits, minutes, once, _flown = by_route.get(rid, [0, 0.0, 0.0, 0, 0.0])
-            print("  %2d %-40s %-8s %-16s %10s %9s %9s | %4d %9s %13s %9s" % (n, rid[:40], route["kind"], titles[routefiles.stage(route)][:16], routefiles.figure(route),
+            print("  %2d %-40s %-8s %-16s %10s %9s %9s | %4d %9s %9s %13s %9s" % (n, rid[:40], route["kind"], titles[routefiles.stage(route)][:16], routefiles.figure(route),
                                                                           "%d/%s" % (fill.flying_now(route, rid, state["orders"]), route.get("max_ships") or "-"),
                                                                           fill.carried(fill.carries(seen, route)), runs,
-                                                                          num(credits) if runs else "--", per_hour(credits, minutes), num(once) if once else "--"))
+                                                                          num(credits) if runs else "--", num(credits / hours) if runs and hours else "--",
+                                                                          per_hour(credits, minutes), num(once) if once else "--"))
         waiting = {p["name"]: p for p in crew.get("waiting") or []}
         starting = dict(crew.get("starting") or [])
         ranked = sorted(((worth(routes[rid]) or 0, rid) for rid in plan if rid in routes and not routes[rid].get("once") and (worth(routes[rid]) or 0) > 0), reverse=True)
@@ -1366,6 +1407,71 @@ def show_eyes(data, who):
         conn.close()
 
 
+def show_why(root, data, now, rid, who="all"):
+    """Explain across all matching pilots why `rid` is open or closed (grouped dispatch.why_not counts + samples)."""
+    import pull as _pull
+    import taxes as _taxes
+    routes = dispatch.load_routes(root)
+    route = routes.get(rid)
+    if not route:
+        print("WHY ROUTE %s: no route file in game/routes/" % rid)
+        return 1
+    roles_keep = None
+    if who and who != "all":
+        if who in division.ROLES:
+            roles_keep = {who}
+        else:
+            roles_keep = {r for r, m in division.ROLES.items() if m.lower() == str(who).lower()}
+            if not roles_keep:
+                print("WHY ROUTE %s: unknown member or role `%s`" % (rid, who))
+                return 1
+    rows = dispatch.run_rows(data)
+    orders = dispatch.fresh_orders(data, now)
+    ec = {}
+    with _taxes.batch_cache(), routefiles.batch_cache(rows=rows, data=data):
+        loss = dispatch.losing({rid: route}, rows, now, earned_cache=ec)
+        late = dispatch.lately_losing({rid: route}, rows, now, earned_cache=ec)
+    oc = Counter(orders.values())
+    cc = Counter(w.split(" ", 1)[1] for w in orders.values() if isinstance(w, str) and w.startswith("census "))
+    state = {"now": now, "data": data, "rows": rows, "orders": orders, "rest": dispatch.resting({rid: route}, rows, now),
+             "booked": dispatch.booked(data), "loss": loss, "late": late, "pirates": dispatch.pirates(data, now),
+             "_order_counts": oc, "_census_counts": cc, "_census_busy": set(cc.keys())}
+    state["class_guard"] = _pull.guard_on(state)
+    state["pull"] = _pull.pull_record(state)
+    named = dispatch.flagships(data)
+    ammo = set(read(Path(data) / "catalog" / "ammo.json", []) or [])
+    fleet = read(Path(data) / "fleet" / "fleet.json", {})
+    mark = route["kind"] + " " + rid
+    flying = sorted(p for p, what in state["orders"].items() if what == mark)
+    reasons = defaultdict(list)
+    open_pilots = []
+    checked = 0
+    r_state = state
+    for ship in fleet.get("ships") or [] if isinstance(fleet, dict) else []:
+        name = ship.get("name") or ""
+        role = dispatch.role_of(name, named)
+        if roles_keep is not None and role not in roles_keep:
+            continue
+        checked += 1
+        if ship.get("status") != "connected":
+            reasons["not connected"].append(name)
+            continue
+        pilot = dispatch.pilot_of(ship, named, data, ammo)
+        reason, _arg = dispatch.why_not(pilot, rid, route, r_state)
+        if reason is None:
+            open_pilots.append(name)
+        else:
+            reasons[str(reason)].append(name)
+    print("WHY ROUTE %s | kind %s | status %s | max_ships %s | flying %d | scope %s (%d ships checked)"
+          % (rid, route.get("kind"), route.get("status", "on"), route.get("max_ships", "-"), len(flying), who or "all", checked))
+    if flying:
+        print("  FLYING (%d): %s" % (len(flying), ", ".join(flying[:10]) + (" ..." if len(flying) > 10 else "")))
+    print("  OPEN   (%d): %s" % (len(open_pilots), ", ".join(open_pilots[:10]) + (" ..." if len(open_pilots) > 10 else "") if open_pilots else "none"))
+    for reason, names_r in sorted(reasons.items(), key=lambda kv: (-len(kv[1]), kv[0])):
+        print("  CLOSED (%3d): %-58s | e.g. %s" % (len(names_r), reason[:58], ", ".join(names_r[:5])))
+    return 0
+
+
 def show_briefing(root, data, now, who, hours):
     """A session's start in one answer (Suggi, 2026-11-16: the orders and the overview loaded at preflight): the orders in
     force, the requests not closed that are addressed to the member, the fleet's money, the member's standing fleet
@@ -1398,24 +1504,29 @@ def show_briefing(root, data, now, who, hours):
     __import__("guidebook").briefing(root, data, now, who)           # Suggi, 2026-11-18: the own class card, and what stands over its cap
     __import__("needs").briefing(root, data, now, who)               # Suggi, 2026-11-21: the division's open needs, how many are red
     show_eyes(data, who)
-    __import__("scorecard").briefing(root, data, now, who)          # Suggi, 2026-11-23: <80% completion triggers, cashflow trend & stagnation
-    __import__("rivals").briefing(root, data, now, who)             # Suggi, 2026-11-23: automated rival sedcards & adopted tactics (F40)
+    rv_doc = None
+    try:
+        rv_doc = __import__("rivals").compute_sedcards(str(repo), data, top_n=12, now=now)
+    except Exception:
+        rv_doc = None
+    __import__("scorecard").briefing(root, data, now, who, rivals_doc=rv_doc)   # Suggi, 2026-11-23: <80% triggers, cashflow & stagnation
+    __import__("rivals").briefing(str(repo), data, now, who, doc=rv_doc)        # Suggi, 2026-11-23: reuse sedcards (no 2nd compute)
     print("=== THE FLEET'S MONEY")
     show_fleet(root, data, now)
+    seen = fill.survey(root, data, now)                                         # compute once; reuse in STANDING + FILL GATE
     print("=== MY STANDING FLEET")
-    code = show_standing(root, data, now, who, hours)
+    code = show_standing(root, data, now, who, hours, seen=seen)
     print("=== THE FORECAST (the SUM line of what the routes flown now bring; every route: `hive.py forecast`)")
     import contextlib                                               # Oracle, 2026-11-16: the orders ask for this line before and after a plan change
     import io
     lines = io.StringIO()
     with contextlib.redirect_stdout(lines):
-        show_forecast(root, data, now, who if who in division.MEMBERS else "all", hours)
+        show_forecast(root, data, now, who if who in division.MEMBERS else "all", hours, seen=seen)
     print("\n".join(line for line in lines.getvalue().splitlines() if line.lstrip().startswith("SUM")) or "  not read")
     print("=== MY PLAN FILE (every ship with its own routes; I change it and the dispatcher sends the ships by it)")
     import plan as planfile
     planfile.show(root, data, sorted(planfile.DIVISIONS) if who in ("all", "Unity") and who != planfile.DIVISIONS["command"] else [planfile.division_of(who)] if planfile.division_of(who) else [], True)
     print("=== THE FILL GATE (no ship is idle)")
-    seen = fill.survey(root, data, now)
     for role in sorted(r for r in seen["roles"] if who in ("all", r, division.ROLES.get(r))):
         print(fill.verdict(seen, fill.read_role(seen, role))[1])
     print("=== THE HANDBOOK: how the data flows, where to ask what, every table and view with its columns and examples: "
@@ -1641,6 +1752,10 @@ def main():
         return show_routes(root, data, now, value, args)
     if verb == "route" and rest:
         return show_route(root, data, now, rest[0])
+    if verb == "why" and rest:
+        _kind, me = division.member()
+        scope = rest[1] if len(rest) > 1 else (me if me in division.MEMBERS and me != "Unity" else "all")
+        return show_why(root, data, now, rest[0], scope)
     if verb == "history":
         return show_history(data, now, float(value("--hours", "12")))
     if verb == "ship" and rest:

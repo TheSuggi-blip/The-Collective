@@ -868,11 +868,54 @@ SWEEP_MATCH = 60              # seconds between a gift's booking (gifts.jsonl) a
 PLAYER = re.compile(r'"player":\{[^{}]*?"username":"([^"]*)"[^{}]*?"credits":(-?\d+)')     # the giver's wallet in the gift's answer
 
 
+_BATCH_DEPTH = 0
+_BATCH_STORE = {"gifts": {}, "sweeps": {}, "deposits": {}, "runs": {}, "events": {}}
+
+
+class _BatchCache:
+    def __init__(self, rows=None, data=None):
+        self._rows = rows
+        self._data = data
+        self._seeded = False
+
+    def __enter__(self):
+        global _BATCH_DEPTH
+        _BATCH_DEPTH += 1
+        if self._rows is not None and _BATCH_DEPTH == 1:
+            folder = Path(taxes.record_file(self._data)).parent.parent if self._data is None else Path(self._data)
+            rkey = str(folder / "routes" / "runs.jsonl")
+            if rkey not in _BATCH_STORE["runs"]:
+                spans = {}
+                for one in self._rows:
+                    when = taxes.span(one) if isinstance(one, dict) else None
+                    if when and one.get("pilot"):
+                        spans.setdefault(str(one["pilot"]), []).append((when[0], when[1], one.get("credits_before"), one.get("credits_after")))
+                _BATCH_STORE["runs"][rkey] = spans
+                self._seeded = True
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        global _BATCH_DEPTH
+        _BATCH_DEPTH = max(0, _BATCH_DEPTH - 1)
+        if _BATCH_DEPTH == 0:
+            for d in _BATCH_STORE.values():
+                d.clear()
+        return False
+
+
+def batch_cache(rows=None, data=None):
+    """Freeze stat/JSONL reads inside one batch pass; optionally seed run_spans from in-memory rows."""
+    return _BatchCache(rows=rows, data=data)
+
+
 def gifts(data=None):
     """[(epoch, giver, taker, credits, loose)] of the wallet guard's top-ups (wallet.py: data/fleet/gifts.jsonl); loose:
     the row's time is not the gift's own to the second, or the gift was kept unsure (credits 0, its sum in `unsure`). The file lies beside the tax record, so what points that
     record elsewhere (FLEET_TAXES, a test) points this one there too."""
     path = Path(taxes.record_file(data)).with_name("gifts.jsonl")
+    pkey = str(path)
+    if _BATCH_DEPTH > 0 and pkey in _BATCH_STORE["gifts"]:
+        return _BATCH_STORE["gifts"][pkey]
     try:
         found = path.stat()
     except OSError:
@@ -898,6 +941,8 @@ def gifts(data=None):
         except OSError:
             return []
         GIFTS.update(path=str(path), stamp=stamp, rows=rows)
+    if _BATCH_DEPTH > 0:
+        _BATCH_STORE["gifts"][pkey] = GIFTS["rows"]
     return GIFTS["rows"]
 
 
@@ -906,6 +951,9 @@ def sweep_walls(data=None):
     (wallet.py sweep: data/fleet/sweep.jsonl, kind gift, state booked): the gift's answer names the giver's credits
     after it, the sweep's keep (50,000). A row whose answer names no wallet of the giver is left out."""
     path = Path(taxes.record_file(data)).with_name("sweep.jsonl")
+    pkey = str(path)
+    if _BATCH_DEPTH > 0 and pkey in _BATCH_STORE["sweeps"]:
+        return _BATCH_STORE["sweeps"][pkey]
     try:
         found = path.stat()
     except OSError:
@@ -929,6 +977,8 @@ def sweep_walls(data=None):
         except OSError:
             return []
         SWEEPS.update(path=str(path), stamp=stamp, rows=rows)
+    if _BATCH_DEPTH > 0:
+        _BATCH_STORE["sweeps"][pkey] = SWEEPS["rows"]
     return SWEEPS["rows"]
 
 
@@ -943,6 +993,9 @@ def deposits(data=None):
     onetime.json whose title begins with TREASURY (gate.book_onetime, wallet.py sweep), the giver's side of a move
     whose other side is the Collective's own purse (requests ENT-231). Read beside the gifts, as one more giver."""
     path = Path(taxes.record_file(data)).with_name("onetime.json")
+    pkey = str(path)
+    if _BATCH_DEPTH > 0 and pkey in _BATCH_STORE["deposits"]:
+        return _BATCH_STORE["deposits"][pkey]
     try:
         found = path.stat()
     except OSError:
@@ -961,6 +1014,8 @@ def deposits(data=None):
                 elif str(one[2]).startswith(TREASURY_FUND) and one[3] > 0:
                     rows.append((one[0], "", str(one[1]), one[3], False))
         DEPOSITS.update(path=str(path), stamp=stamp, rows=rows)
+    if _BATCH_DEPTH > 0:
+        _BATCH_STORE["deposits"][pkey] = DEPOSITS["rows"]
     return DEPOSITS["rows"]
 
 
@@ -969,6 +1024,9 @@ def run_spans(data=None):
     again only when the file changed. Asked only for a gift booked just before a run's span (late_gifts)."""
     folder = Path(taxes.record_file(data)).parent.parent if data is None else Path(data)
     path = folder / "routes" / "runs.jsonl"
+    pkey = str(path)
+    if _BATCH_DEPTH > 0 and pkey in _BATCH_STORE["runs"]:
+        return _BATCH_STORE["runs"][pkey]
     try:
         found = path.stat()
     except OSError:
@@ -989,6 +1047,8 @@ def run_spans(data=None):
         except OSError:
             return {}
         RUNS.update(path=str(path), stamp=stamp, spans=spans)
+    if _BATCH_DEPTH > 0:
+        _BATCH_STORE["runs"][pkey] = RUNS["spans"]
     return RUNS["spans"]
 
 
@@ -1028,6 +1088,8 @@ _PILOT_EVENTS = {"g_id": None, "d_id": None, "g_len": -1, "d_len": -1, "by_pilot
 
 def _indexed_events(data=None):
     """Per-pilot sorted (gifts + deposits) and taker-only gifts, rebuilt only when gifts(data) or deposits(data) change."""
+    if _BATCH_DEPTH > 0 and data in _BATCH_STORE["events"]:
+        return _BATCH_STORE["events"][data]
     g = gifts(data)
     d = deposits(data)
     if (_PILOT_EVENTS["g_id"] is not g or _PILOT_EVENTS["d_id"] is not d
@@ -1051,7 +1113,10 @@ def _indexed_events(data=None):
         for lst in by_p.values():
             lst.sort()
         _PILOT_EVENTS.update(g_id=g, d_id=d, g_len=len(g), d_len=len(d), by_pilot=by_p, gifts_by_taker=by_t)
-    return _PILOT_EVENTS["by_pilot"], _PILOT_EVENTS["gifts_by_taker"]
+    res = (_PILOT_EVENTS["by_pilot"], _PILOT_EVENTS["gifts_by_taker"])
+    if _BATCH_DEPTH > 0:
+        _BATCH_STORE["events"][data] = res
+    return res
 
 
 def _gifts_for(pilot, data=None):

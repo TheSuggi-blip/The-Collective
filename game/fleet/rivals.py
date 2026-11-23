@@ -1389,9 +1389,10 @@ def write_sedcards(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, commit=False, 
     return 0
 
 
-def briefing(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, who="all"):
+def briefing(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, who="all", doc=None):
     try:
-        doc = compute_sedcards(repo_root, data_dir, top_n=12, now=now)
+        if doc is None:
+            doc = compute_sedcards(repo_root, data_dir, top_n=12, now=now)
         txt = render_briefing(doc, who=who)
         if txt:
             print(txt)

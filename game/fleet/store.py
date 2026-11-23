@@ -540,8 +540,26 @@ EXTRA_VIEWS = (
     "SELECT ns.id AS need_id, ns.priority AS priority, ns.division AS division, ns.ref AS target_ref, "
     "ROUND(ns.covered, 1) AS covered_pct, ns.short_items AS short_items, ns.fee AS fee "
     "FROM need_status ns WHERE COALESCE(ns.short_items, '') != '' ORDER BY ns.priority, ns.rank;\n"
+    "CREATE VIEW IF NOT EXISTS division_pnl_24h AS "
+    "SELECT division, "
+    "SUM(CASE WHEN hour >= (SELECT MAX(hour) FROM stats_money_hour) - 82800 THEN 1 ELSE 0 END) AS hrs_24h, "
+    "ROUND(SUM(CASE WHEN hour >= (SELECT MAX(hour) FROM stats_money_hour) - 82800 THEN net * minutes ELSE 0 END) / "
+    "NULLIF(SUM(CASE WHEN hour >= (SELECT MAX(hour) FROM stats_money_hour) - 82800 THEN minutes ELSE 0 END), 0)) AS steady_24h, "
+    "ROUND(SUM(CASE WHEN hour >= (SELECT MAX(hour) FROM stats_money_hour) - 82800 THEN once * minutes ELSE 0 END) / "
+    "NULLIF(SUM(CASE WHEN hour >= (SELECT MAX(hour) FROM stats_money_hour) - 82800 THEN minutes ELSE 0 END), 0)) AS once_24h, "
+    "ROUND(SUM(CASE WHEN hour >= (SELECT MAX(hour) FROM stats_money_hour) - 82800 THEN total * minutes ELSE 0 END) / "
+    "NULLIF(SUM(CASE WHEN hour >= (SELECT MAX(hour) FROM stats_money_hour) - 82800 THEN minutes ELSE 0 END), 0)) AS purse_24h, "
+    "ROUND(SUM(CASE WHEN hour >= (SELECT MAX(hour) FROM stats_money_hour) - 82800 THEN fuel * minutes ELSE 0 END) / "
+    "NULLIF(SUM(CASE WHEN hour >= (SELECT MAX(hour) FROM stats_money_hour) - 82800 THEN minutes ELSE 0 END), 0)) AS fuel_24h, "
+    "ROUND(SUM(CASE WHEN hour >= (SELECT MAX(hour) FROM stats_money_hour) - 18000 THEN net * minutes ELSE 0 END) / "
+    "NULLIF(SUM(CASE WHEN hour >= (SELECT MAX(hour) FROM stats_money_hour) - 18000 THEN minutes ELSE 0 END), 0)) AS steady_6h, "
+    "ROUND(SUM(CASE WHEN hour >= (SELECT MAX(hour) FROM stats_money_hour) - 18000 THEN once * minutes ELSE 0 END) / "
+    "NULLIF(SUM(CASE WHEN hour >= (SELECT MAX(hour) FROM stats_money_hour) - 18000 THEN minutes ELSE 0 END), 0)) AS once_6h, "
+    "ROUND(SUM(CASE WHEN hour >= (SELECT MAX(hour) FROM stats_money_hour) - 18000 THEN total * minutes ELSE 0 END) / "
+    "NULLIF(SUM(CASE WHEN hour >= (SELECT MAX(hour) FROM stats_money_hour) - 18000 THEN minutes ELSE 0 END), 0)) AS purse_6h "
+    "FROM stats_money_hour GROUP BY division;\n"
 )
-VIEWS = ("inventory", "inventory_by_station", "inventory_faction", "fleet_positions", "our_stations", "route_earnings", "outpost_candidates", "hull_readiness", "fuel_sinks", "contract_candidates")
+VIEWS = ("inventory", "inventory_by_station", "inventory_faction", "fleet_positions", "our_stations", "route_earnings", "outpost_candidates", "hull_readiness", "fuel_sinks", "contract_candidates", "division_pnl_24h")
 VIEWS += supplychains.VIEWS                       # supply_status: each supply chain against what stands at its place (supply.py)
 
 
@@ -1763,6 +1781,7 @@ DESCRIPTIONS = {               # one line per table and view: what a row is and 
     "game_releases": "SpaceMolt official release notes and patch changes from catalog/releases.json (synced automatically by scripts/changelog-refresh.py)",
     "rival_snapshots": "hourly time-series snapshots of rival factions and blocs (members, bases, all 11 leaderboard metrics, live SSE active_1h/24h, hull tiers, alliances) recorded automatically into intel/rival_history.jsonl",
     "fuel_sinks": "view: trailing 24-hour runs, ship-hours and net credits grouped into productive work vs jump_loops, census and handovers",
+    "division_pnl_24h": "view: trailing 24h and 6h division cashflow per hour (steady, once, total Net Purse/h, and fuel) from stats_money_hour",
     "contract_candidates": "view: open priority needs with missing items where Station Bursars or Notice Board contracts can source bottlenecks",
     "route_earnings": "view: what each route earned per ship-hour (steady credits) over the last 4, 12 and 24 hours and over all hours kept, the runs behind each "
                       "figure, and the hours since it last flew: ask here what a route earns now; an empty cph_4h means it did not fly, not that it does not pay",
@@ -2013,6 +2032,11 @@ EXAMPLES = {                   # three questions per table and view, as SQL (hiv
     "player_comms": (("Sanitized messages addressed to us by commercial or diplomatic intent", "SELECT t, channel, sender, tag, intent, risk_level, safe_text FROM player_comms WHERE to_us = 1 AND own = 0 ORDER BY t DESC LIMIT 20"),
                      ("Quarantined or suspicious prompt-injection attempts blocked by comms_guard", "SELECT t, channel, sender, tag, risk_level, risk_flags, safe_text FROM player_comms WHERE risk_level != 'clean' ORDER BY t DESC"),
                      ("Extracted item/price trade offers from player chat", "SELECT t, sender, tag, system, extracted, safe_text FROM player_comms WHERE extracted != '' ORDER BY t DESC LIMIT 20")),
+    "division_pnl_24h": (
+        ("24h and 6h Net Purse/h, steady, once and fuel per division", "SELECT * FROM division_pnl_24h ORDER BY purse_24h DESC"),
+        ("Divisions with negative 24h steady cashflow vs positive Net Purse/h", "SELECT division, steady_24h, once_24h, purse_24h FROM division_pnl_24h WHERE steady_24h < 0 ORDER BY purse_24h DESC"),
+        ("Trailing 6h vs 24h Net Purse/h momentum per division", "SELECT division, purse_6h, purse_24h, fuel_24h FROM division_pnl_24h WHERE division != 'Fleet' ORDER BY purse_6h DESC"),
+    ),
     "fuel_sinks": (("24h ship-hours and net credits across productive work vs jump loops, census and handovers", "SELECT * FROM fuel_sinks ORDER BY ship_hours_24h DESC"),
                    ("Share of fleet ship-hours spent on empty jump loops", "SELECT category, ship_hours_24h, net_credits_24h FROM fuel_sinks WHERE category = 'jump_loops'"),
                    ("Productive vs non-productive 24h credit balance", "SELECT CASE WHEN category = 'productive' THEN 'productive' ELSE 'overhead' END AS grp, SUM(ship_hours_24h), SUM(net_credits_24h) FROM fuel_sinks GROUP BY 1")),

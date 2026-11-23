@@ -637,6 +637,17 @@ def figures_kpi(conn, data, root, now):
                      "wallets + treasury at the end of the hour to %s against %d hours before" % (stamp(end), hours) if purse is not None else
                      "not measured: the treasury is read at both ends only once stats_money_hour holds a treasury reading %d hours apart "
                      "(empire.json, one reading at a time)" % hours))
+        if hours in (1, 6, 24):
+            try:
+                import accounting as _acc
+                repo_r = str(Path(root).resolve().parent if Path(root).name == "game" else root)
+                pnl = _acc.compute_pnl(conn, repo_root=repo_r, data_dir=data, fleet_json=fleet, hours=hours, now=now)
+                rows.append(("Fleet", "recurring_cash", hours, pnl.get("recurring_cash_h"), pnl.get("span_hours"),
+                             "GAAP/IFRS matched recurring cash/h (excludes once-route fuel/CapEx, accounting.py)"))
+                rows.append(("Fleet", "accrual_op", hours, pnl.get("accrual_operating_h"), pnl.get("inv_span_hours"),
+                             "GAAP/IFRS accrual operating net/h (recurring cash + IAS 2 NRV vault delta, accounting.py)"))
+            except Exception:
+                pass
     totals = fleet.get("totals") if isinstance(fleet.get("totals"), dict) else {}
     state = read_json(Path(data) / "empire" / "empire.json", {})
     faction = state.get("faction") if isinstance(state, dict) and isinstance(state.get("faction"), dict) else {}
@@ -727,11 +738,26 @@ def figures_contribution(conn, data, root, now, hours):
     since = int(now - hours * HOUR)
     rows = []
     names = [division_of(m) for m in division.MEMBERS]
+    acc_div = {}
+    try:
+        import accounting as _acc
+        repo_r = str(Path(root).resolve().parent if Path(root).name == "game" else root)
+        acc_div = (_acc.compute_pnl(conn, repo_root=repo_r, data_dir=data, fleet_json=fleet, hours=24, now=now).get("by_division") or {})
+    except Exception:
+        acc_div = {}
     for name in names:
         for w in (1, 6, 24):
             f = ((windows.get("%dh" % w) or {}).get("divisions") or {}).get(name)
-            rows.append((name, "own_net", w, f.get("cph") if f else None, (windows.get("%dh" % w) or {}).get("minutes"),
+            mins_w = (windows.get("%dh" % w) or {}).get("minutes")
+            rows.append((name, "own_net", w, f.get("cph") if f else None, mins_w,
                          "fleet.json (station/fleet.py rates), steady net per hour" if f else "not measured: no window in fleet.json"))
+            p_val = ((f.get("cph") or 0) + (f.get("one_time_per_hour") or 0)) if f else None
+            rows.append((name, "own_purse", w, p_val, mins_w,
+                         "fleet.json (steady + paid once), Net Purse/h for this division" if f else "not measured: no window in fleet.json"))
+        ad = acc_div.get(name)
+        if ad:
+            rows.append((name, "recur_24h", 24, ad.get("recurring_cash_h"), 24, "GAAP/IFRS matched recurring cash/h (accounting.py)"))
+            rows.append((name, "accrual_24h", 24, ad.get("accrual_op_h"), 24, "GAAP/IFRS transfer-priced accrual value-add/h (accounting.py)"))
         rows.append((name, "own_net", 72, None, 0, "not measured: the collector's window() over one hour does not add up per division (a move "
                      "between our purses whose sides fall into different hours), so whole hours cannot be summed per division; 72 h needs one "
                      "window over 72 h of samples (history.json holds about 48)"))
@@ -1392,7 +1418,9 @@ def show_kpi(conn, data, now, args):
         return 0
     print("  %-34s %14s %14s %14s %14s" % ("per hour, last", "1 h", "6 h", "24 h", "72 h"))
     for key, title in (("income", "throughput (income)"), ("costs", "operating expense (costs)"), ("fuel", "  of it fuel (metered)"),
-                       ("repair", "  of it repairs (metered)"), ("net", "steady net"), ("once", "paid once (rewards - bought)"),
+                       ("repair", "  of it repairs (metered)"), ("net", "steady net (raw)"),
+                       ("recurring_cash", "recurring cash (matched)"), ("accrual_op", "accrual operating net (IAS2)"),
+                       ("once", "paid once (rewards - bought)"),
                        ("total", "net of everything (wallets)"), ("purse", "net of the purse (+ treasury)"),
                        ("per_ship", "net per ship-hour"), ("net_tiled", "steady net, whole hours"),
                        ("net_before", "  the window before (trend)")):
@@ -1419,17 +1447,25 @@ def show_contribution(conn, data, now, args):
     hours = float(args.get("hours", 24))
     head("contribution", "what each division gives the whole fleet: its own net, the income its route files enabled, its service", at, data, now)
     names = [division_of(m) for m in division.MEMBERS if args.get("member") in (None, m)]
-    print("  %-10s %12s %12s %12s %12s | %14s %18s %6s" % ("division", "own net 1h", "6h", "24h", "72h", "enabled 24h", "of it for others", "routes"))
+    print("  %-10s %11s %11s %11s %11s %11s | %12s %14s %6s" % (
+        "division", "purse 6h", "purse 24h", "recur 24h", "accrual 24h", "steady 24h", "enabled 24h", "for others", "routes"))
     for name in names + [n for n in ("none", "not read") if n in rows and not args.get("member")]:
         r = rows.get(name) or {}
-        print("  %-10s %12s %12s %12s %12s | %14s %18s %6s" % (name, *(cell(r.get(("own_net", float(h)))) for h in WINDOWS),
-                                                         cell(r.get(("enabled", 24.0))), cell(r.get(("enabled_others", 24.0))),
-                                                         num((r.get(("enabled", 24.0)) or (0, 0))[1])))
-    print("  own net: credits an hour (fleet.json, stats_money_hour); enabled: steady credits in the window of every ship on the routes the division wrote "
-          "first (git log), whoever flew them")
+        print("  %-10s %11s %11s %11s %11s %11s | %12s %14s %6s" % (
+            name,
+            cell(r.get(("own_purse", 6.0))),
+            cell(r.get(("own_purse", 24.0))),
+            cell(r.get(("recur_24h", 24.0))),
+            cell(r.get(("accrual_24h", 24.0))),
+            cell(r.get(("own_net", 24.0))),
+            cell(r.get(("enabled", 24.0))),
+            cell(r.get(("enabled_others", 24.0))),
+            num((r.get(("enabled", 24.0)) or (0, 0))[1])))
+    print("  purse: total Net Purse/h (steady + paid once); recur: matched recurring cash/h; accrual: transfer-priced value-add/h (IAS2); "
+          "steady: raw steady cash/h; enabled: steady credits of all ships on routes this division wrote first (git log)")
     for name in names:
         r = rows.get(name) or {}
-        service = [(f, h, v) for (f, h), v in sorted(r.items()) if f not in ("own_net", "enabled", "enabled_others")]
+        service = [(f, h, v) for (f, h), v in sorted(r.items()) if f not in ("own_net", "own_purse", "recur_24h", "accrual_24h", "enabled", "enabled_others")]
         for figure, h, (value, n, text) in service:
             shown = "not measured" if value is None else ("%.0f%%" % (100 * value) if "share" in figure or "at_keep" in figure else
                                                           "%.1f" % value if abs(value) < 100 else num(value))

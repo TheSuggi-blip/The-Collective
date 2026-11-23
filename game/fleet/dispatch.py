@@ -628,18 +628,24 @@ def stored_missing(data, route, pilot, rows):
     return None
 
 
-def stalest_system(data, route, orders, now):
+def stalest_system(data, route, orders, now, mtimes=None, busy=None):
     """The system of a census route read longest ago and not being read now; None when all are fresh."""
-    busy = {what.split(" ", 1)[1] for what in orders.values() if what.startswith("census ")}
+    if busy is None:
+        busy = {what.split(" ", 1)[1] for what in orders.values() if what.startswith("census ")}
     best = None
+    every = route.get("every_minutes", 60) * 60
     for system in route.get("systems") or []:
         if system in busy:
             continue
-        try:
-            age = now - (Path(data) / "scouting" / (system + ".json")).stat().st_mtime
-        except OSError:
-            age = float("inf")
-        if age >= route.get("every_minutes", 60) * 60 and (best is None or age > best[0]):
+        if mtimes is not None:
+            mt = mtimes.get(system)
+            age = (now - mt) if mt is not None else float("inf")
+        else:
+            try:
+                age = now - (Path(data) / "scouting" / (system + ".json")).stat().st_mtime
+            except OSError:
+                age = float("inf")
+        if age >= every and (best is None or age > best[0]):
             best = (age, system)
     return best[1] if best else None
 
@@ -904,9 +910,16 @@ def why_not(pilot, rid, route, state):
         flew = _row_indexes(state["rows"])[1].get(rid, set()) | {p for p, what in state["orders"].items() if what == mark}
         if pilot["name"] not in flew and len(flew) >= route["max_pilots"]:
             return "max_pilots %s reached" % route["max_pilots"], None
+    oc = state.get("_order_counts")
     if route["kind"] == "census":                 # a census order names its system: it counts for the route that lists that system
         systems = set(route.get("systems") or [])
-        flying = sum(1 for what in state["orders"].values() if what.startswith("census ") and what.split(" ", 1)[1] in systems)
+        cc = state.get("_census_counts")
+        if cc is not None:
+            flying = sum(cc.get(s, 0) for s in systems)
+        else:
+            flying = sum(1 for what in state["orders"].values() if what.startswith("census ") and what.split(" ", 1)[1] in systems)
+    elif oc is not None:
+        flying = oc.get(mark, 0)
     else:
         flying = sum(1 for what in state["orders"].values() if what == mark)
     limit = route.get("max_ships", 1 if route["kind"] == "guard" else 10 ** 6)     # one guard to a place unless its file says more
@@ -915,12 +928,12 @@ def why_not(pilot, rid, route, state):
     place = None
     if route["kind"] == "guard":                  # it keeps a place only while a pilot of ours flies the route it guards (requests ENT-070)
         folder = Path(state.get("root") or Path(__file__).resolve().parent.parent) / "routes"      # fill.py's state names no root: the default one
-        guarded = read_json(folder / (str(route.get("guards")) + ".json"), None)
+        guarded = _read_cached_json(folder / (str(route.get("guards")) + ".json"), None)
         if isinstance(guarded, dict) and guarded.get("kind") == "circuit":       # an escort: it follows the pilot of ours on the circuit (ENT-217)
             flyers = sorted(p for p, what in state["orders"].items() if what == "circuit " + str(route["guards"]))
             if not flyers:
                 return "nobody flies %s" % route["guards"], None
-            ship = read_json(Path(state["data"]) / "fleet" / "ships" / ship_file(flyers[0]), {}) if state.get("data") else {}
+            ship = _read_cached_json(Path(state["data"]) / "fleet" / "ships" / ship_file(flyers[0]), {}) if state.get("data") else {}
             spot = ":".join(str(ship.get(key) or "") for key in ("system", "poi")) if isinstance(ship, dict) and ship.get("system") else ""
             place = {"place": spot or str(route.get("place") or ":".join(str(route.get("station") or "").split(":")[:2])), "follow": flyers[0]}
             if not p_opt:
@@ -1063,7 +1076,7 @@ def why_not(pilot, rid, route, state):
         if count is not None and count < route.get("min_creatures", 1):
             return "herd below %s" % route.get("min_creatures", 1), None
     if route["kind"] == "census":
-        system = stalest_system(state["data"], route, state["orders"], state["now"])
+        system = stalest_system(state["data"], route, state["orders"], state["now"], mtimes=state.get("_scouting_mtimes"), busy=state.get("_census_busy"))
         if system is None:
             return "every system read", None
         return None, system
@@ -1270,29 +1283,38 @@ def faulted(row):
     return any(str(note).startswith(RUNNER_FAULT) for note in row.get("notes") or [])
 
 
-def losing(routes, rows, now):
+def losing(routes, rows, now, earned_cache=None):
     """{route id: (runs, credits)} of the routes that lost money over their runs of the last LOSS_HOURS: two runs or
     more that read a wallet, negative in sum. A repeating route is summed without the money booked once (a reward, a
     tool); a route that pays once is summed with it, since its reward is its pay. Such a route is closed to every
     pilot until the window moves on: no route flies at a loss unattended (orders F8). A run the runner failed (its
     load not sold because the ship did not dock, a crash) is not counted: it would close a route for the runner's fault."""
     sums = {}
-    for row in rows:
-        if faulted(row):
-            continue
-        before, after = row.get("credits_before"), row.get("credits_after")
-        if not all(isinstance(v, (int, float)) and not isinstance(v, bool) for v in (before, after)) or not (before > 0 and after > 0):
-            continue                                              # the run read no wallet at one end: it says nothing about credits
-        try:
-            started = taxes.parse_utc(row.get("started") or "")
-        except ValueError:
-            continue
-        route = routes.get(row.get("route"))
-        if route is None or started < now - LOSS_HOURS * 3600 or not judged(route):
-            continue
-        entry = sums.setdefault(route["id"], [0, 0])
-        entry[0] += 1
-        entry[1] += earned_by(row, route)
+    cutoff = now - LOSS_HOURS * 3600
+    with taxes.batch_cache(), routefiles.batch_cache(rows=rows):
+        for row in rows:
+            if faulted(row):
+                continue
+            before, after = row.get("credits_before"), row.get("credits_after")
+            if not all(isinstance(v, (int, float)) and not isinstance(v, bool) for v in (before, after)) or not (before > 0 and after > 0):
+                continue                                              # the run read no wallet at one end: it says nothing about credits
+            try:
+                started = taxes.parse_utc(row.get("started") or "")
+            except ValueError:
+                continue
+            route = routes.get(row.get("route"))
+            if route is None or started < cutoff or not judged(route):
+                continue
+            rk = id(row)
+            if earned_cache is not None and rk in earned_cache:
+                ev = earned_cache[rk]
+            else:
+                ev = earned_by(row, route)
+                if earned_cache is not None:
+                    earned_cache[rk] = ev
+            entry = sums.setdefault(route["id"], [0, 0])
+            entry[0] += 1
+            entry[1] += ev
     return {rid: (runs, int(total)) for rid, (runs, total) in sums.items() if runs >= 2 and total < 0}
 
 
@@ -1307,14 +1329,16 @@ def earned_by(row, route):
 RECENT = 3                   # a repeating route whose last RECENT runs each lost money is closed, whatever its six-hour sum
 
 
-def lately_losing(routes, rows, now):
+def lately_losing(routes, rows, now, earned_cache=None):
     """{route id: (runs, credits)} of the repeating routes whose last RECENT runs that read a wallet, all inside the last
     LOSS_HOURS, each lost money (the money booked once left out). The six-hour sum of `losing` still held the good runs
     from before a bid left: the veil-ray hunts flew 23 runs at a loss after the curd bid left every station, and 36 mine
     runs stored their ice after the near bids emptied (errors ENT-046; the reports of Zero, Apophis and Mercury of
     2026-11-16). Once routes are judged by `losing` alone: their reward is their pay. Closed until the oldest of the
     three leaves the window, or a newer run pays."""
-    last = {}
+    # Only evaluate earned_by() on the most recent RECENT runs per repeating route inside the window!
+    cand = {}
+    cutoff = now - LOSS_HOURS * 3600
     for row in rows:
         if faulted(row):
             continue
@@ -1328,12 +1352,25 @@ def lately_losing(routes, rows, now):
             started = taxes.parse_utc(row.get("started") or "")
         except ValueError:
             continue
-        last.setdefault(route["id"], []).append((started, earned_by(row, route)))
+        cand.setdefault(route["id"], []).append((started, row, route))
     out = {}
-    for rid, runs in last.items():
-        recent = sorted(runs)[-RECENT:]
-        if len(recent) == RECENT and recent[0][0] >= now - LOSS_HOURS * 3600 and all(delta < 0 for _t, delta in recent):
-            out[rid] = (RECENT, int(sum(delta for _t, delta in recent)))
+    with taxes.batch_cache(), routefiles.batch_cache(rows=rows):
+        for rid, items in cand.items():
+            recent = sorted(items, key=lambda x: x[0])[-RECENT:]
+            if len(recent) < RECENT or recent[0][0] < cutoff:
+                continue
+            deltas = []
+            for _t, row, route in recent:
+                rk = id(row)
+                if earned_cache is not None and rk in earned_cache:
+                    ev = earned_cache[rk]
+                else:
+                    ev = earned_by(row, route)
+                    if earned_cache is not None:
+                        earned_cache[rk] = ev
+                deltas.append(ev)
+            if all(delta < 0 for delta in deltas):
+                out[rid] = (RECENT, int(sum(deltas)))
     return out
 
 
@@ -1713,8 +1750,31 @@ def one_pass(root, data, dry_run, children):
     plan = {"roles": division.load_plan(root)[0], "pilots": own_lists(data)}
     routes = load_routes(root)
     rows = run_rows(data)
-    state = {"now": now, "data": data, "rows": rows, "orders": fresh_orders(data, now), "rest": resting(routes, rows, now), "booked": booked(data),
-             "loss": losing(routes, rows, now), "late": lately_losing(routes, rows, now), "root": root, "pirates": pirates(data, now)}
+    _ec = {}
+    with taxes.batch_cache(), routefiles.batch_cache(rows=rows, data=data):
+        _loss = losing(routes, rows, now, earned_cache=_ec)
+        _late = lately_losing(routes, rows, now, earned_cache=_ec)
+    _orders = fresh_orders(data, now)
+    from collections import Counter as _Ctr
+    _oc = _Ctr(_orders.values())
+    _cc = _Ctr(w.split(" ", 1)[1] for w in _orders.values() if isinstance(w, str) and w.startswith("census "))
+    _cb = set(_cc.keys())
+    _sc_mt = {}
+    _sc_dir = Path(data) / "scouting"
+    if _sc_dir.is_dir():
+        try:
+            with os.scandir(_sc_dir) as _it:
+                for _e in _it:
+                    if _e.name.endswith(".json"):
+                        try:
+                            _sc_mt[_e.name[:-5]] = _e.stat().st_mtime
+                        except OSError:
+                            pass
+        except OSError:
+            pass
+    state = {"now": now, "data": data, "rows": rows, "orders": _orders, "rest": resting(routes, rows, now), "booked": booked(data),
+             "loss": _loss, "late": _late, "root": root, "pirates": pirates(data, now),
+             "_order_counts": _oc, "_census_counts": _cc, "_census_busy": _cb, "_scouting_mtimes": _sc_mt}
     named = flagships(data)
     ammo = set(read_json(Path(data) / "catalog" / "ammo.json", []) or [])      # written by routemaker.py from the game's catalog
     lines = []
@@ -1777,6 +1837,11 @@ def one_pass(root, data, dry_run, children):
             continue
         what = ("census " + argument) if route["kind"] == "census" else route["kind"] + " " + route["id"]
         state["orders"][name] = what
+        _oc[what] += 1
+        if what.startswith("census "):
+            _cs = what.split(" ", 1)[1]
+            _cc[_cs] += 1
+            _cb.add(_cs)
         lines.append("%s -> %s" % (name, what))
         if dry_run:
             continue

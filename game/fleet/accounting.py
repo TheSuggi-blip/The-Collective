@@ -318,25 +318,42 @@ def compute_balance_sheet(conn, fleet_json=None):
     }
 
 
+_ONCE_CACHE = {}
+
+
 def once_route_ids(repo_root):
-    """Return (all_once, fit_once, mission_once) route ID sets scanning ALL game/routes/*.json."""
-    all_once, fit_once, mission_once = set(), set(), set()
+    """Return (all_once, fit_once, mission_once) route ID sets scanning ALL game/routes/*.json (dir-mtime cached)."""
     rdir = Path(repo_root) / "game" / "routes"
     if not rdir.is_dir():
-        return all_once, fit_once, mission_once
-    for p in rdir.glob("*.json"):
+        return set(), set(), set()
+    try:
+        key = str(rdir.resolve())
+        st = rdir.stat()
+        files = list(rdir.glob("*.json"))
+        stamp = (st.st_mtime_ns, len(files))
+    except OSError:
+        return set(), set(), set()
+    hit = _ONCE_CACHE.get(key)
+    if hit is not None and hit[0] == stamp:
+        return hit[1]
+    all_once, fit_once, mission_once = set(), set(), set()
+    for fp in files:
         try:
-            d = json.loads(p.read_text(encoding="utf-8", errors="replace"))
+            d = json.loads(fp.read_text(encoding="utf-8", errors="replace"))
         except (OSError, ValueError):
             continue
         if isinstance(d, dict) and d.get("once"):
-            rid = p.stem
+            rid = fp.stem
             all_once.add(rid)
             if rid.startswith(FIT_PREFIXES):
                 fit_once.add(rid)
             else:
                 mission_once.add(rid)
-    return all_once, fit_once, mission_once
+    res = (all_once, fit_once, mission_once)
+    if len(_ONCE_CACHE) > 16:
+        _ONCE_CACHE.clear()
+    _ONCE_CACHE[key] = (stamp, res)
+    return res
 
 
 def _support_bucket(route, kind, all_once):
@@ -361,7 +378,7 @@ def _support_bucket(route, kind, all_once):
     return "other_recurring"
 
 
-def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=None, hours=24, now=None):
+def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=None, hours=24, now=None, price_maps=None):
     """Compute GAAP/IFRS Cash-to-Accrual P&L, Matching Principle separation, and Transfer-Priced Division Value-Add."""
     now = float(time.time() if now is None else now)
     hours = max(1, int(hours))
@@ -390,6 +407,8 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
     treasury_own_h = None
     purse_h = None
     div_raw_cash = {}
+    div_raw_once = {}
+    div_purse = {}
     win_minutes = 0.0
 
     if isinstance(w, dict) and w:
@@ -407,7 +426,11 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
             purse_h = _num(w.get("total_per_hour"))
         for d, dv in (w.get("divisions") or {}).items():
             if isinstance(dv, dict):
-                div_raw_cash[d] = _num(dv.get("cph"))
+                cph_d = _num(dv.get("cph"))
+                once_d = _num(dv.get("one_time_per_hour"))
+                div_raw_cash[d] = cph_d
+                div_raw_once[d] = once_d
+                div_purse[d] = _num(dv.get("total_per_hour"), cph_d + once_d)
     elif conn is not None and _has_table(conn, "stats_money_hour"):
         cut_m = int(now) - hours * 3600
         rows_m = conn.execute(
@@ -426,12 +449,14 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
             purse_h = sum(_num(r[7]) * _num(r[0]) for r in rows_m) / tot_m
         for d in DIVISIONS:
             dm = conn.execute(
-                "SELECT minutes, net FROM stats_money_hour WHERE division = ? AND ships > 0 AND hour >= ?",
+                "SELECT minutes, net, once, total FROM stats_money_hour WHERE division = ? AND ships > 0 AND hour >= ?",
                 (d, cut_m),
             ).fetchall()
             dm_m = sum(_num(r[0]) for r in dm)
             if dm_m > 0:
                 div_raw_cash[d] = sum(_num(r[1]) * _num(r[0]) for r in dm) / dm_m
+                div_raw_once[d] = sum(_num(r[2]) * _num(r[0]) for r in dm) / dm_m
+                div_purse[d] = sum(_num(r[3]) * _num(r[0]) for r in dm) / dm_m
 
     span_h = max(1.0 / 12.0, (win_minutes / 60.0) if win_minutes >= 5.0 else float(hours))
 
@@ -441,7 +466,7 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
         for r in conn.execute("SELECT pilot, division FROM ships"):
             if r[0] and r[1]:
                 pilot_div[str(r[0])] = str(r[1])
-    base_map, max_bid_map, _bids = _load_price_maps(conn)
+    base_map, max_bid_map = price_maps if price_maps is not None else _load_price_maps(conn)[:2]
 
     # 3. Matching Principle: extract direct steady-side credits (fuel/inputs/salvage) on once=true routes
     once_mission_direct_cr = 0.0
@@ -585,15 +610,21 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
     by_division = {}
     for d in ALL_ACC_DIVS:
         rc = div_raw_cash.get(d, 0.0)
+        ro = div_raw_once.get(d, 0.0)
         od = once_direct_by_div.get(d, 0.0) / span_h
         mc = rc - od
+        on = ro + od
+        ph = div_purse.get(d, rc + ro)
         iv = (inv_nrv_div.get(d, 0.0) / inv_span_h) if has_inv_accrual else 0.0
         xo = tx_out_div.get(d, 0.0) / ho_span_h
         xi = tx_in_div.get(d, 0.0) / ho_span_h
         by_division[d] = {
             "raw_cash_h": int(round(rc)),
+            "raw_once_h": int(round(ro)),
             "once_direct_h": int(round(od)),
+            "once_net_h": int(round(on)),
             "recurring_cash_h": int(round(mc)),
+            "purse_h": int(round(ph)),
             "inv_accrual_h": int(round(iv)),
             "tx_out_h": int(round(xo)),
             "tx_in_h": int(round(xi)),

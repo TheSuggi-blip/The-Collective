@@ -364,7 +364,19 @@ def _load_diplomacy_pending(data_dir):
         if in_ts and in_ts > out_ts and t_up:
             legacy_pending.add(t_up)
 
-    # Scan messages.jsonl for newer private inbound replies from tracked diplomatic partners
+    _CLOSING_ACKS = (
+        "likewise", "see you on the exchange", "see you out there", "fair lanes",
+        "good trade", "good fortune", "safe travels", "thank you", "thanks",
+        "understood", "noted", "sounds good", "glad to hear", "fly safe",
+    )
+    agreed_tags = set()
+    for tag, rec in (factions or {}).items():
+        if isinstance(rec, dict):
+            t_up = str(rec.get("tag") or tag or "").upper()
+            st = (rec.get("status") or "").lower()
+            if t_up and st in ("neutrality_agreed", "trade_active", "info_sharing_active"):
+                agreed_tags.add(t_up)
+
     latest_in = {}
     msg_p = Path(data_dir) / "comms" / "messages.jsonl"
     if msg_p.is_file() and last_out_by_tag:
@@ -382,15 +394,23 @@ def _load_diplomacy_pending(data_dir):
                         mtag = leader_to_tag.get(str(m.get("sender") or "").strip().lower(), "")
                     if mtag and mtag in last_out_by_tag:
                         ts = str(m.get("t") or m.get("seen_at") or "")[:19]
-                        if ts and ts > latest_in.get(mtag, ""):
-                            latest_in[mtag] = ts
+                        body = str(m.get("body") or m.get("text") or m.get("message") or "").strip()
+                        if ts and ts > (latest_in.get(mtag) or ("", ""))[0]:
+                            latest_in[mtag] = (ts, body)
         except OSError:
             pass
 
     pending_tags = set(legacy_pending)
-    for t_up, in_ts in latest_in.items():
-        if in_ts > last_out_by_tag.get(t_up, ""):
-            pending_tags.add(t_up)
+    for t_up, (in_ts, body) in latest_in.items():
+        out_ts = last_out_by_tag.get(t_up, "")
+        if in_ts > out_ts:
+            low_b = body.lower()
+            is_closing = (
+                t_up in agreed_tags and bool(out_ts) and len(body) <= 180
+                and "?" not in body.replace(" ? ", " ") and any(k in low_b for k in _CLOSING_ACKS)
+            )
+            if not is_closing:
+                pending_tags.add(t_up)
     return neutral_count, len(pending_tags), sorted(pending_tags)
 
 
@@ -613,7 +633,11 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
                     WITH per_ship AS (
                         SELECT s.pilot, s.division,
                                MAX(1, COALESCE(h.weapon_slots, 1) + COALESCE(h.defense_slots, 1) + COALESCE(h.utility_slots, 1)) AS max_slots,
-                               COUNT(m.module) AS fitted,
+                               SUM(CASE WHEN m.module IS NOT NULL AND NOT (
+                                         (s.division='Mining' AND m.module='pulse_laser_i')
+                                         OR (s.division IN ('Trade','Logistics','Intel') AND m.module IN ('mining_laser_i','ice_harvester_i','gas_harvester_i','pulse_laser_i'))
+                                         OR (s.division='Military' AND m.module IN ('mining_laser_i','ice_harvester_i','gas_harvester_i'))
+                                        ) THEN 1 ELSE 0 END) AS fitted,
                                SUM(CASE WHEN m.module LIKE '%_ii' OR m.module LIKE '%_iii' OR m.module LIKE '%_iv'
                                          OR m.module LIKE '%_v' OR m.module LIKE '%_mk2%' THEN 1 ELSE 0 END) AS t2_mods,
                                SUM(CASE WHEN (s.division='Mining' AND m.module='pulse_laser_i')
@@ -690,7 +714,7 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
                 for r in conn.execute("SELECT chain, item, status, stock, keep FROM supply_status").fetchall():
                     supply_tot += 1
                     st = str(r["status"] or "").upper()
-                    if st == "OK":
+                    if st in ("OK", "LOW"):
                         supply_ok += 1
                     else:
                         supply_short.append(f"{r['chain']}({int(_num(r['stock']))}/{int(_num(r['keep']))})")
@@ -1262,9 +1286,12 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
             "cashflow_24h": round(d_net24, 1),
             "cashflow_prev24h": d_prev24,
             "cashflow_6h": round(d_net6, 1),
+            "purse_24h": int(_d_acc.get("purse_h", round(d_net24))),
             "accounting_24h": {
                 "recurring_cash_h": int(_d_acc.get("recurring_cash_h", round(d_net24))),
                 "once_direct_h": int(_d_acc.get("once_direct_h", 0)),
+                "once_net_h": int(_d_acc.get("once_net_h", 0)),
+                "purse_h": int(_d_acc.get("purse_h", round(d_net24))),
                 "inv_accrual_h": int(_d_acc.get("inv_accrual_h", 0)),
                 "tx_out_h": int(_d_acc.get("tx_out_h", 0)),
                 "tx_in_h": int(_d_acc.get("tx_in_h", 0)),
@@ -1545,6 +1572,7 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
             "steady_1h": steady_1h,
             "steady_6h": steady_6h,
             "steady_24h": steady_24h,
+            "purse_24h": int(acc_24["purse_h"]) if isinstance(acc_24, dict) else int(round(all_in_24h or 0)),
             "recurring_cash_24h": recurring_cash_24h,
             "once_direct_24h": once_direct_24h,
             "inventory_accrual_24h": inv_accrual_24h,
@@ -1614,9 +1642,9 @@ def render_briefing(sc, who="all"):
     )
     if e.get("has_inventory_accrual") or e.get("once_direct_24h"):
         lines.append(
-            f"  GAAP P&L   | Recurring Cash {_fmt_cr(e.get('recurring_cash_24h', e['steady_24h']))}/h (excl {_fmt_cr(e.get('once_direct_24h', 0))}/h once-fuel) "
-            f"+ IAS2 Inv {_fmt_cr(e.get('inventory_accrual_24h', 0))}/h = Accrual Op {_fmt_cr(e.get('accrual_operating_24h', 0))}/h "
-            f"| Seed Net {_fmt_cr(e.get('seed_net_24h', 0))}/h | CapEx {_fmt_cr(e.get('capex_net_24h', 0))}/h"
+            f"  GAAP P&L   | Purse Net {_fmt_cr(e.get('purse_24h', 0))}/h | Recurring {_fmt_cr(e.get('recurring_cash_24h', e['steady_24h']))}/h "
+            f"(excl {_fmt_cr(e.get('once_direct_24h', 0))}/h once-fuel) + IAS2 Inv {_fmt_cr(e.get('inventory_accrual_24h', 0))}/h = "
+            f"Accrual Op {_fmt_cr(e.get('accrual_operating_24h', 0))}/h | Seed {_fmt_cr(e.get('seed_net_24h', 0))}/h | CapEx {_fmt_cr(e.get('capex_net_24h', 0))}/h"
         )
     lines.append(
         f"  PULSE      | eff {e['productive_pct']:.1f}% (jumps {e['jump_loop_pct']:.1f}%) | "
@@ -1634,8 +1662,13 @@ def render_briefing(sc, who="all"):
 
     if target_div and target_div in sc["divisions"]:
         d = sc["divisions"][target_div]
+        da = d.get("accounting_24h") or {}
+        d_purse = da.get("purse_h", d.get("purse_24h", d["cashflow_24h"]))
+        d_recur = da.get("recurring_cash_h", d["cashflow_24h"])
+        d_accop = da.get("accrual_op_h", d_recur)
         lines.append(
-            f"  MY DIVISION ({d['division']} / {d['admiral']}) | Score {d['health_score']:.1f}/100 | state={d['status']} | 24h cashflow {_fmt_cr(d['cashflow_24h'])}/h ({d['trend_24h']})"
+            f"  MY DIVISION ({d['division']} / {d['admiral']}) | Score {d['health_score']:.1f}/100 | state={d['status']} | "
+            f"24h Purse {_fmt_cr(d_purse)}/h | Recur {_fmt_cr(d_recur)}/h ({d['trend_24h']}) | Accrual {_fmt_cr(d_accop)}/h"
         )
         lines.append(
             f"    Readiness: work {d['employment']['effective_working']}/{d['employment']['total']} ({d['employment']['pct']:.1f}%) | "
@@ -1644,11 +1677,10 @@ def render_briefing(sc, who="all"):
             f"playbook {d['playbook']['max_chapter_pct']:.0f}%"
         )
         lines.append(f"    Role KPI : {d['role_kpi']['name']} = {d['role_kpi']['value']} [{d['role_kpi']['status']}]")
-        da = d.get("accounting_24h")
-        if da and (da.get("inv_accrual_h") or da.get("tx_out_h") or da.get("tx_in_h") or da.get("once_direct_h")):
+        if da:
             lines.append(
-                f"    Accrual  : recurring cash {_fmt_cr(da['recurring_cash_h'])}/h | inv {_fmt_cr(da['inv_accrual_h'])}/h | "
-                f"transfers out {_fmt_cr(da['tx_out_h'])}/h / in {_fmt_cr(-da['tx_in_h'])}/h -> value-add {_fmt_cr(da['accrual_op_h'])}/h"
+                f"    Finance  : Purse {_fmt_cr(d_purse)}/h (Recur {_fmt_cr(d_recur)} + Once {_fmt_cr(da.get('once_net_h', 0))}) | "
+                f"Inv {_fmt_cr(da.get('inv_accrual_h', 0))}/h | Xfer out {_fmt_cr(da.get('tx_out_h', 0))} / in {_fmt_cr(-da.get('tx_in_h', 0))} -> Accrual {_fmt_cr(d_accop)}/h"
             )
         if d.get("playbooks"):
             pb_s = " | ".join(f"{p['short_name']} {p['matched_count']}/{p['total_count']} ({p['readiness_pct']:.0f}% {p['status_code']})" for p in d["playbooks"][:4])
@@ -1662,14 +1694,17 @@ def render_briefing(sc, who="all"):
             lines.append("  ACTIVE TRIGGERS: none (all division KPIs >=80% target)")
     else:
         # Unity / fleetwide view: compact 6-division scorecard table + top fleet alarms
-        lines.append("  DIVISIONS  | Division   Score  State  Work%   Hull-Upg  Slot%  24h Net/h (Trend)   Role KPI")
+        lines.append("  DIVISIONS  | Division   Score  State  Work%   Hull-Upg  Slot%   Purse/h   Recur/h  Accrual/h  Role KPI")
         for div in DIVISIONS:
             d = sc["divisions"][div]
+            da = d.get("accounting_24h") or {}
             h_txt = f"{d['hulls']['pct']:4.0f}%" + ("*" if d["hulls"]["mode"] == "piloting_to_t2" else " ")
             lines.append(
                 f"             | {div:10s} {d['health_score']:5.1f}  {d['status']:5s}  {d['employment']['pct']:5.1f}%  {h_txt:>7s}  "
                 f"{d['modules']['slot_pct']:5.1f}%  "
-                f"{_fmt_cr(d['cashflow_24h']):>9s} ({d['trend_24h'][:4]:4s})  {d['role_kpi']['value'][:54]}"
+                f"{_fmt_cr(da.get('purse_h', d.get('purse_24h', d['cashflow_24h']))):>8s}  "
+                f"{_fmt_cr(da.get('recurring_cash_h', d['cashflow_24h'])):>8s}  "
+                f"{_fmt_cr(da.get('accrual_op_h', d['cashflow_24h'])):>9s}  {d['role_kpi']['value'][:46]}"
             )
         lines.append("             (* = 0 P10+ pilots yet; % shows avg Piloting progress toward T2 unlock)")
         q_ent = e.get("triage") or e.get("triggers") or []
@@ -1680,10 +1715,13 @@ def render_briefing(sc, who="all"):
     return "\n".join(lines)
 
 
-def briefing(root, data, now, who="all"):
+def briefing(root, data, now, who="all", rivals_doc=None):
     """Print startup scorecard block safely (never aborts briefing on transient read errors)."""
     try:
-        sc = compute_scorecard(repo_root=Path(root).resolve().parent if Path(root).name == "game" else root, data_dir=data, now=now)
+        sc = compute_scorecard(
+            repo_root=Path(root).resolve().parent if Path(root).name == "game" else root,
+            data_dir=data, now=now, rivals_doc=rivals_doc,
+        )
         print(render_briefing(sc, who=who))
     except Exception as err:
         print(f"=== KPI SCORECARD: unavailable ({type(err).__name__}: {err})")

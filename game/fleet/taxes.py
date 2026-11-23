@@ -78,19 +78,49 @@ def load(path, default):
     return value if isinstance(value, type(default)) else default
 
 
+_BATCH_DEPTH = 0
+_BATCH_BY_PILOT = {}
+
+
+class _BatchCache:
+    def __enter__(self):
+        global _BATCH_DEPTH
+        _BATCH_DEPTH += 1
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        global _BATCH_DEPTH
+        _BATCH_DEPTH = max(0, _BATCH_DEPTH - 1)
+        if _BATCH_DEPTH == 0:
+            _BATCH_BY_PILOT.clear()
+        return False
+
+
+def batch_cache():
+    """Freeze per-path stat/read results for the duration of a single batch pass (zero staleness outside)."""
+    return _BatchCache()
+
+
 def by_pilot(data=None):
     """{pilot: [(epoch, credits paid), ...]} of the record, read again only when the file changed."""
     path = record_file(data)
+    if _BATCH_DEPTH > 0 and path in _BATCH_BY_PILOT:
+        return _BATCH_BY_PILOT[path]
     try:
         stamp = os.stat(path).st_mtime_ns
     except OSError:
+        if _BATCH_DEPTH > 0:
+            _BATCH_BY_PILOT[path] = {}
         return {}
     if CACHE["path"] != path or CACHE["stamp"] != stamp:
         found = {}
         for pilot, entries in load(path, {}).items():
             found[pilot] = [(int(e[0]), e[1]) for e in entries if isinstance(e, list) and len(e) == 2 and all(isinstance(v, (int, float)) for v in e)]
         CACHE.update(path=path, stamp=stamp, by_pilot=found)
-    return CACHE["by_pilot"]
+    res = CACHE["by_pilot"]
+    if _BATCH_DEPTH > 0:
+        _BATCH_BY_PILOT[path] = res
+    return res
 
 
 def paid(pilot, start, end, data=None):

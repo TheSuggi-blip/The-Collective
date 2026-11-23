@@ -257,5 +257,54 @@ class TestFleetScorecard(unittest.TestCase):
             self.assertFalse(any(x["source"] in ("STRATEGY", "SUPPLY") for x in sc2["divisions"]["Logistics"]["triage"]))
             self.assertEqual(sc2["divisions"]["Military"]["playbooks"], [])
 
+    def test_supply_low_at_keep_offrole_slot_and_closing_diplo_filter(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root, data = _make_fixture(tmp)
+            # Add supply_status with LOW (stock >= keep) and verify it counts as OK at keep
+            con = sqlite3.connect(str(data / "store" / "read.db"))
+            con.execute("CREATE TABLE IF NOT EXISTS supply_status (chain TEXT, item TEXT, status TEXT, stock REAL, keep REAL)")
+            con.execute("DELETE FROM supply_status")
+            con.execute("INSERT INTO supply_status VALUES ('outpost-fuel', 'fuel', 'low', 5480, 5000)")
+            con.execute("INSERT INTO supply_status VALUES ('iron-ore', 'iron_ore', 'ok', 100000, 60000)")
+            # Add a military ship with 1 role-matched weapon + 1 off-role mining_laser_i
+            con.execute("INSERT OR REPLACE INTO hulls (id, name, tier, weapon_slots, defense_slots, utility_slots) VALUES ('shard', 'Shard', 0, 2, 1, 1)")
+            con.execute("INSERT OR REPLACE INTO ships (pilot, division, class) VALUES ('drone-99', 'Military', 'Shard')")
+            con.execute("DELETE FROM ship_modules WHERE pilot = 'drone-99'")
+            con.execute("INSERT INTO ship_modules (pilot, module) VALUES ('drone-99', 'pulse_laser_i')")
+            con.execute("INSERT INTO ship_modules (pilot, module) VALUES ('drone-99', 'mining_laser_i')")
+            con.commit()
+            con.close()
+
+            # Add tracked neutral partner IRLC with a polite closing ack containing sanitized em-dash " ? "
+            (data / "comms").mkdir(parents=True, exist_ok=True)
+            (data / "comms" / "diplomacy.json").write_text(json.dumps({
+                "factions": {
+                    "IRLC": {
+                        "tag": "IRLC", "leader": "ILC Comptroller", "status": "neutrality_agreed",
+                        "last_sent_at": "2026-11-23T20:17:04Z",
+                    }
+                }
+            }))
+            (data / "comms" / "messages.jsonl").write_text(json.dumps({
+                "t": "2026-11-23T20:26:50Z", "channel": "private", "own": False,
+                "sender": "ILC Comptroller", "tag": "IRLC",
+                "text": "Likewise, Unity. The Crossroads book is open ? see you on the exchange. ? Comptroller",
+            }) + "\n")
+
+            sc = scorecard.compute_scorecard(root, data, now=107200, rivals_doc={"strategy_playbooks": []})
+            # 1) LOW supply chain (5480/5000) satisfies keep -> 2/2 OK (100%), no SUPPLY_CHAINS trigger
+            self.assertIn("chains 2/2 OK", sc["divisions"]["Logistics"]["role_kpi"]["value"])
+            self.assertFalse(any(t["code"] == "SUPPLY_CHAINS" for t in sc["divisions"]["Logistics"]["triggers"]))
+            # 2) Closing ack from neutral partner does NOT trigger DIPLO_PENDING
+            self.assertEqual(sc["enterprise"].get("diplo_pending", 0), 0)
+            # 3) Off-role mining_laser_i on drone-99 is excluded from fitted_slots while still counted in off_role_ships
+            mil_mods = sc["divisions"]["Military"]["modules"]
+            self.assertGreaterEqual(mil_mods["off_role_ships"], 1)
+            # 4) Unified 3-metric strip renders Purse/h, Recur/h, Accrual/h
+            txt = scorecard.render_briefing(sc, "Unity")
+            self.assertIn("Purse/h", txt)
+            self.assertIn("Recur/h", txt)
+            self.assertIn("Accrual/h", txt)
+
 if __name__ == "__main__":
     unittest.main()
