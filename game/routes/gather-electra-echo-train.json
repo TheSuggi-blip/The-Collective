@@ -2,11 +2,11 @@
  "id": "gather-electra-echo-train",
  "kind": "mine",
  "title": "A test: Mining-skill work for Solarian-born miners: ore of Electra Main Belt Echo into storage at Alpha Centauri Colonial Station (two jumps, by Tau Ceti)",
- "note": "Written by Zero, 2026-11-23 05:39 UTC (orders ENT-076, P1 and P6, block ZERO; rules F3, F8, F22, F23, F37). Electra Main Belt Echo read 100,000 copper and 100,000 iron, richness 20 and 35 (table fields, 03:33 UTC), Solarian space, two jumps from Alpha Centauri by Tau Ceti. Six Solarian miners fell through to home-sol-central at 2026-11-23 05:39 UTC with gather-lacaille-deep-vein-train full at 6 (7,728 above its floor), gather-nihal-containment-fracture-train full at 12 and gather-markab-alloy-seam-train closed under its iron floor (fill.py status miner --why). The Solarian fields one jump from a Solarian station are those three; this field is two jumps from one. No pirate line for it or the way in data/intel/sightings.jsonl (read 2026-11-23 05:39 UTC). Iron and copper are full in the reserve, but copper is no good of the reserve (pull.py levels 05:37 UTC): Mining-skill work, the ore stored. A new field: one ship until three results (F37), lift_to 6 lets fill.py widen it after that. requires.empire solarian, an empty hold.",
+ "note": "Written by Zero, 2026-11-23 05:39 UTC (orders ENT-076, P1 and P6, block ZERO; rules F3, F8, F22, F23, F37). Electra Main Belt Echo read 100,000 copper and 100,000 iron, richness 20 and 35 (table fields, 03:33 UTC), Solarian space, two jumps from Alpha Centauri by Tau Ceti. Six Solarian miners fell through to home-sol-central at 2026-11-23 05:39 UTC with gather-lacaille-deep-vein-train full at 6 (7,728 above its floor), gather-nihal-containment-fracture-train full at 12 and gather-markab-alloy-seam-train closed under its iron floor (fill.py status miner --why). The Solarian fields one jump from a Solarian station are those three; this field is two jumps from one. No pirate line for it or the way in data/intel/sightings.jsonl (read 2026-11-23 05:39 UTC). Iron and copper are full in the reserve, but copper is no good of the reserve (pull.py levels 05:37 UTC): Mining-skill work, the ore stored. A new field: one ship until three results (F37), lift_to 6 lets fill.py widen it after that. requires.empire solarian, an empty hold. 2026-11-23 08:59 UTC (fill.py, Zero): max_ships 1 -> 6.",
  "belt": "electra:main_belt_echo",
  "station": "alpha_centauri:alpha_centauri_colonial_station:alpha_centauri_colonial_station",
  "minutes": 40,
- "max_ships": 1,
+ "max_ships": 6,
  "standing": true,
  "min_left": {
   "iron_ore": 20000
