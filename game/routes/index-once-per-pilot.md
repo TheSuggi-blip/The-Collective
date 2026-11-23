@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 70.
+Routes: 71.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -60,6 +60,7 @@ Routes: 70.
 | [mission-first-hunt-iron-reach-rigel](mission-first-hunt-iron-reach-rigel.json) | circuit | beyond the border, 19 jumps | First Hunt: Belt-Grazers: 1,000 cr once; three belt_grazer at rigel_cold_forge_seam (lawless, 5 jumps), accepted and handed in at Iron Reach Mining Colony | once per pilot, up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
 | [mission-first-hunt-ironhearth](mission-first-hunt-ironhearth.json) | circuit | beyond the border, 21 jumps | First Hunt: Belt-Grazers: 1,000 cr once; three belt_grazer at frostfeld_thermal_vent, accepted and handed in at Ironhearth Station | once per pilot, up to 1 ships | 1 | 8 | -90 | one-time | 2026-11-23 |
 | [mission-first-hunt-ironhearth-rigel](mission-first-hunt-ironhearth-rigel.json) | circuit | beyond the border, 21 jumps | First Hunt: Belt-Grazers: 1,000 cr once; three belt_grazer at last_sigh_vent (lawless, 5 jumps), accepted and handed in at Ironhearth Station | once per pilot, up to 1 ships, empty hold | TBD | TBD | TBD | TBD | -- |
+| [mission-first-links-grand](mission-first-links-grand.json) | circuit | beyond the border, 21 jumps | First Links: 4,000 cr once per pilot at Grand Exchange; 10 nickel ore bought at Market Prime for Cargo Lanes, 8 copper wiring bought at Cargo Lanes for Market Prime | once per pilot, up to 1 ships, from 4,300 cr, born nebula | TBD | TBD | TBD | TBD | -- |
 | [mission-five-capitals-diplomatic-circuit-confederacy](mission-five-capitals-diplomatic-circuit-confederacy.json) | circuit | beyond the border, 21 jumps | Five Capitals Diplomatic Circuit: 15000 cr, +505 XP at Sol Central | once per pilot, up to 3 ships | 3 | 36 | -380 | one-time | 2026-11-22 |
 | [mission-form-ta-1-confederacy](mission-form-ta-1-confederacy.json) | circuit | beyond the border, 11 jumps | Form TA-1: 3000 cr, +180 XP at Sol Central | once per pilot, up to 50 ships | 111 | 15 | 2,810 | one-time | 2026-11-23 |
 | [mission-frontier-wayfinder-circuit-frontier](mission-frontier-wayfinder-circuit-frontier.json) | circuit | beyond the border, 19 jumps | Frontier Wayfinder Circuit: 4000 cr, +530 XP at Mobile Capital | once per pilot, up to 3 ships | 114 | 15 | 60 | one-time | 2026-11-22 |

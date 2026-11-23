@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 393.
+Routes: 394.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -146,6 +146,7 @@ Routes: 393.
 | [craft-hydrogen-own-nova-terra](craft-hydrogen-own-nova-terra.json) | circuit | beyond the border, 8 jumps | Liquid hydrogen made by hand at Nova Terra from the trader's own stored hydrogen gas, docked, no jump | up to 3 ships, with 80 hydrogen_gas stored at nova_terra_central, standing work | 4 | 11 | -150 | -1,010 | 2026-11-22 |
 | [craft-neon-own-nova-terra](craft-neon-own-nova-terra.json) | circuit | beyond the border, 8 jumps | Ionized neon made by hand at Nova Terra from the trader's own stored neon gas, docked, no jump | up to 1 ships, with 60 neon_gas stored at nova_terra_central, standing work | 1 | 25 | 0 | 0 | 2026-11-22 |
 | [craft-nitrogen-own-dheneb](craft-nitrogen-own-dheneb.json) | circuit | beyond the border, 11 jumps | Liquid nitrogen made by hand at the player's station in Dheneb from the trader's own stored nitrogen ice, docked, no jump | up to 1 ships, with 100 nitrogen_ice stored at b495c6003fc83e18f6d8cecbe6929133, standing work | 1 | 68 | -100 | -80 | 2026-11-22 |
+| [craft-sell-nitrogen-sol-central](craft-sell-nitrogen-sol-central.json) | circuit | beyond the border, 10 jumps | Liquid nitrogen made by hand at Sol Central from nitrogen ice bought there and sold into the station's bid, docked, no jump | up to 1 ships, born solarian, while confederacy_central_command bids 4 cr for liquid_nitrogen, while confederacy_central_command asks 1 cr or less for nitrogen_ice, standing work | TBD | TBD | TBD | TBD | -- |
 | [give-drone-stores-crucible](give-drone-stores-crucible.json) | circuit | beyond the border, 18 jumps | A drone or sentinel gives its loot stored at The Crucible Garrison to the trader named there (strict classes) | up to 1 ships, with 2 ember_gland stored at the_crucible_garrison, standing work | TBD | TBD | TBD | TBD | -- |
 | [give-drone-stores-first-step](give-drone-stores-first-step.json) | circuit | beyond the border, 18 jumps | A drone or sentinel gives its loot stored at First Step Memorial Station to the trader named there (strict classes) | up to 1 ships, with 20 creature_carapace stored at first_step_memorial_station, standing work | 13 | 22 | -150 | -480 | 2026-11-22 |
 | [give-drone-stores-hexstar](give-drone-stores-hexstar.json) | circuit | beyond the border, 11 jumps | A drone or sentinel gives its loot stored at Hex Star (Dheneb) to the trader named there (strict classes) | up to 1 ships, with 2 ember_gland stored at b495c6003fc83e18f6d8cecbe6929133, standing work | TBD | TBD | TBD | TBD | -- |
