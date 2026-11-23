@@ -17,21 +17,21 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 
 | Group | What it holds | Routes | Home space | Beyond the border | Best measured |
 |---|---|---|---|---|---|
-| [Once per Pilot](index-once-per-pilot.md) | Missions and rewards the game pays once per pilot: a new pilot's first work, and seed money. | 58 | 23 | 35 | voidborn-conductive-lattice: 7,580 cr a run |
+| [Once per Pilot](index-once-per-pilot.md) | Missions and rewards the game pays once per pilot: a new pilot's first work, and seed money. | 59 | 23 | 36 | voidborn-conductive-lattice: 7,580 cr a run |
 | [Paying Routes](index-paying-routes.md) | Work that repeats and whose runs of the last 12 hours measured above zero. | 25 | 14 | 11 | sell-loot-at-nexus: 258,470 cr per ship-hour |
 | [Tests](index-tests.md) | Work that repeats and has no measured figure: new, or no readable run in the last 12 hours. One ship until its first RESULT line is read. | 136 | 38 | 98 | not measured yet |
 | [Fitting](index-fitting.md) | A module bought and fitted: the tool a kind of work needs. | 16 | 11 | 5 | fit-ice-harvester-lhs-1140: -4,320 cr per ship-hour |
 | [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 371 | 101 | 270 | hunt-ancha-haze-halo-drifter: 2,370 cr per ship-hour |
 | [Measured at a Loss](index-measured-at-a-loss.md) | Work that repeats and whose runs of the last 12 hours measured zero or below. | 9 | 4 | 5 | mine-dheneb-cryobelt: -160 cr per ship-hour |
 | [Off](index-off.md) | Written down, not flown. | 46 | 20 | 26 | voidborn-first-steps: 4,020 cr per ship-hour |
-| All | | 661 | 211 | 450 | |
+| All | | 662 | 211 | 451 | |
 
 ## Routes by Zone and Kind
 
 | Zone | Routes | census | circuit | guard | hunt | mine | Farthest system, jumps from home |
 |---|---|---|---|---|---|---|---|
 | home space | 211 | 1 | 180 | 1 | 16 | 13 | 3 |
-| beyond the border | 450 | 23 | 99 | 7 | 223 | 98 | 29 |
+| beyond the border | 451 | 23 | 100 | 7 | 223 | 98 | 29 |
 
 ## Plans by Role
 
@@ -41,7 +41,7 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 | [drone](plan-drone.md) | Apophis | 220 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 2 | 95 |
 | [hauler](plan-hauler.md) | Apollo | 52 | voidborn-resonance-finish > voidborn-atmospheric-extraction > voidborn-hardware-cargo | 3 | 95 |
 | [miner](plan-miner.md) | Zero | 77 | fit-mining-laser-iii-lhs-1140 > fit-mining-laser-ii-second-central-nexus > give-miner-stores-node-beta | 6 | 130 |
-| [scout](plan-scout.md) | Oracle | 64 | store-hold-central-nexus > give-scout-stores-node-beta > give-scout-stores-central-nexus | 3 | 50 |
+| [scout](plan-scout.md) | Oracle | 65 | store-hold-central-nexus > give-scout-stores-node-beta > give-scout-stores-central-nexus | 3 | 50 |
 | [sentinel](plan-sentinel.md) | Apophis | 216 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 2 | 35 |
 | [trader](plan-trader.md) | Mercury | 120 | voidborn-first-steps-board > voidborn-network-expansion > voidborn-collective-provides | 1 | 85 |
 
