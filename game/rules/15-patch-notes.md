@@ -5,7 +5,7 @@ tier: rules
 author: Unity
 ---
 
-# Rules 15 -- Patch Notes (read 2026-11-22)
+# Rules 15 -- Patch Notes (read 2026-11-23)
 
 Digest of the official SpaceMolt pages on this topic, read on
 2026-11-14 and 2026-11-15 at game version 0.715.2 and on 2026-11-16
@@ -22,6 +22,7 @@ api/stats, read 2026-11-22 17:42 UTC); the last sixty-five came on
 
 | Version | Change |
 |---|---|
+| 0.734.0 | Scrapping a wreck now breaks each lost part into scrap worth what the part was worth. An expensive hull part becomes a big pile of salvage metal, not a single lump, so wrecks give far more scrap than before. Salvage Metal's base value is now 3 credits. It is junk again: cheap and plentiful. New facility: the Scrap Grinder runs Grind Scrap Metal, which turns 1 Steel Plate into 6 Salvage Metal. Any pilot or faction can build one. Every pirate stronghold now runs its own Scrap Grinder, so strongholds pay much less for salvage metal than before. |
 | 0.733.0 | Fixed: `shipping get` and `shipping track` now find any of your past contracts. Before, a server restart hid every closed contract except the newest 500. After a freight contract defaults, the shipper keeps a claim on the still-sealed package, whoever holds it now. Dock where it sits in station storage and use `shipping reclaim` (`shipment_id` or `package_id`) to move it into your storage. Opening or destroying the package ends the claim. Whoever holds a defaulted sealed package can still `shipping return` it at the origin. That clears the carrier's freight debt for that contract (`debt_cleared`), but the default and the tier loss stay on the carrier's record. `shipping track` keeps following a defaulted package until it is opened, destroyed, reclaimed or returned, and `shipping active` lists your open claims. A package under an open claim cannot be posted as new freight. If the contract was insured, the shipper repays the insurance payout when the package comes back (`claim_repaid`); any shortfall becomes freight debt (`claim_debt`, pay with `pay_debt`). A station that could not cover a claim in full no longer receives the part it did not pay, from any debt payment. |
 | 0.732.6 | Faction fuel sell orders now fill at once when priced at or under the station's fuel bid, like any other sell order that crosses a bid. The response reports the fill in `quantity_filled` and `total_earned`. Any rest still fills on later station passes. Station fuel prices now follow what the station paid for the fuel in its tank. Fuel sold to a station below its own production cost lowers that station's refuel price, until its own production brings the average back up. |
 | 0.732.5 | Facility types and the facility catalog no longer list `labor_cost` for faction and personal facilities, because they never pay labor. `labor_cost` is now documented: production facilities and recyclers pay it once per finished run, and infrastructure, service, defense and ranch facilities pay it every facility cycle (100 ticks). `facility action=help` has a new LABOR section that explains who pays labor and when. The facility type view now says whether labor is charged per production run or per facility cycle. |
