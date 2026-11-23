@@ -134,7 +134,8 @@ Status: proven. Updated: 2026-11-23. Evidence: errors.log 2026-11-16; admirals.l
   that faction's ranched livestock: its owner joins the fight. A hunter
   that fled such a pilot and came back to the herd was lost (2026-11-23,
   admirals.log ENT-110). hunt.py leaves tagged creatures alone
-  (930c5cfd); a ship that joins our fight ends the hunt at that place.
+  (930c5cfd). The fix that ends the hunt at the place when a ship joins
+  our fight waits for its install (requests.log ENT-472).
 - A ship with an ammunition weapon hunts only with ammunition aboard.
 - A fight a drone starts opens at fire whatever its default stance.
 - A dry tank where no station stands: the game's tug (`distress_signal`
