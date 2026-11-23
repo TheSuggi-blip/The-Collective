@@ -38,11 +38,11 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Wexler D15-GR | Synchrony (`synchrony`) | 0 | cobble |
-| Wexler JAW-H1 | Synchrony (`synchrony`) | 0 | congregation |
-| Wexler JG3-H5 | Acubens (`acubens`) | 0 | cobble |
-| Wexler UPC-S0 | Pherkad (`pherkad`) | 0 | cobble |
-| Wexler XNK-D3 | Acubens (`acubens`) | 0 | cobble |
+| Wexler 7UU-CG | Node Alpha (`node_alpha`) | 0 | cobble |
+| Wexler JG3-H5 | Node Gamma (`node_gamma`) | 0 | cobble |
+| Wexler N8P-73 | Acubens (`acubens`) | 0 | cobble |
+| Wexler XGC-3H | Node Gamma (`node_gamma`) | 0 | cobble |
+| Wexler XNK-D3 | Node Alpha (`node_alpha`) | 0 | cobble |
 
 ## Standing History
 
