@@ -1,0 +1,17 @@
+{
+ "id": "home-frontier-station",
+ "kind": "circuit",
+ "title": "Home to Frontier Station: an Outer Rim scout far from Altais docks at its capital, where its region's work is",
+ "note": "Written by Oracle, 2026-11-23 05:22 UTC (orders ENT-076 P6: newborns work where they were born, far only by a route's far_ok; rule F8). Before census.py end_stop (5ae15927) a census that docked nowhere sent its ship to Central Nexus; five Outer Rim scouts stood docked 14 to 17 jumps from Altais at 05:19 UTC and waited, every route of their list closed by the newborn guard ('work in its own region first') or full (fill.py status scout). far_ok lifts the guard for this one stop home; last in the Rim rows, so a ship at home with work never takes it. Empty hold (rule F3).",
+ "far_ok": true,
+ "max_ships": 12,
+ "requires": {
+  "empire": "outerrim",
+  "empty_hold": true
+ },
+ "stops": [
+  {
+   "at": "altais:mobile_capital:frontier_station"
+  }
+ ]
+}
