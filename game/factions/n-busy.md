@@ -15,7 +15,7 @@ updated: 2026-11-23
 # Busy Being Dead [BUSY]
 
 A player faction with 6 base(s) in 6 system(s); the nearest to Nexus Prime is 14 jump(s) away, in 40 Eridani (`40_eridani`).
-Pilots of it in our space in the last 24 hours: 5.
+Pilots of it in our space in the last 24 hours: 6.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 5.
 | Allies | BEIN, DEAD, MOON | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 488 | Public event stream |
+| Pilots carrying the tag on the public event stream | 487 | Public event stream |
 
 ## Bases
 
@@ -45,11 +45,12 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Cargo Drone 061 | Pherkad (`pherkad`) | 0 | prospect |
-| Combat Drone 010 | Synchrony (`synchrony`) | 1 | opus_magna |
-| Combat Drone 015 | Synchrony (`synchrony`) | 0 | opus_magna |
-| Combat Drone 019 | Synchrony (`synchrony`) | 1 | opus_magna |
-| Combat Drone 163 | Node Gamma (`node_gamma`) | 0 | dialectic |
+| Cargo Drone 057 | Synchrony (`synchrony`) | 0 | floor_price |
+| Combat Drone 006 | Pherkad (`pherkad`) | 0 | opus_magna |
+| Combat Drone 019 | Node Gamma (`node_gamma`) | 1 | opus_magna |
+| Combat Drone 139 | The Experiment (`the_experiment`) | 0 | dialectic |
+| Combat Drone 190 | Pherkad (`pherkad`) | 0 | dialectic |
+| Combat Drone 200 | The Experiment (`the_experiment`) | 0 | dialectic |
 
 ## Standing History
 

@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 1.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 16 | Public event stream |
+| Pilots carrying the tag on the public event stream | 15 | Public event stream |
 
 ## Bases
 
@@ -38,7 +38,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Tina Kramer | Nexus Prime (`nexus_prime`) | 0 | odyssey |
+| Tina Kramer | Node Alpha (`node_alpha`) | 0 | odyssey |
 
 ## Standing History
 

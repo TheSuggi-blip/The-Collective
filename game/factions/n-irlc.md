@@ -47,24 +47,24 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| ILC Chute | Synchrony (`synchrony`) | 0 | junk_convoy |
-| ILC Cope | Synchrony (`synchrony`) | 0 | frankenhauler |
+| ILC Chute | Node Alpha (`node_alpha`) | 0 | junk_convoy |
+| ILC Constellation | Node Alpha (`node_alpha`) | 0 | concordia |
 | ILC Flange | Synchrony (`synchrony`) | 0 | syndicate |
 | ILC Gantry | Synchrony (`synchrony`) | 0 | syndicate |
 | ILC Gasket | Synchrony (`synchrony`) | 0 | syndicate |
 | ILC Gateway | Nexus Prime (`nexus_prime`) | 0 | concordia |
+| ILC Geyser | Node Beta (`node_beta`) | 0 | accumulator |
 | ILC Gilt | Synchrony (`synchrony`) | 0 | syndicate |
-| ILC Ladle | Synchrony (`synchrony`) | 0 | syndicate |
+| ILC Kerf | Synchrony (`synchrony`) | 0 | syndicate |
+| ILC Ladle | Node Beta (`node_beta`) | 0 | syndicate |
 | ILC Mallet | Synchrony (`synchrony`) | 0 | syndicate |
 | ILC Nonstop | Nexus Prime (`nexus_prime`) | 0 | concordia |
-| ILC Penalty | Synchrony (`synchrony`) | 0 | syndicate |
 | ILC Ratchet | Synchrony (`synchrony`) | 0 | syndicate |
 | ILC Retort | Synchrony (`synchrony`) | 0 | syndicate |
 | ILC Shank | Synchrony (`synchrony`) | 1 | syndicate |
 | ILC Solder | Synchrony (`synchrony`) | 1 | syndicate |
-| ILC Trommel | Pherkad (`pherkad`) | 0 | rock_eater |
 | ILC Vagabond | Nexus Prime (`nexus_prime`) | 0 | concordia |
-| ILC Weir | Synchrony (`synchrony`) | 0 | junk_convoy |
+| ILC Weir | Node Gamma (`node_gamma`) | 0 | junk_convoy |
 
 ## Standing History
 

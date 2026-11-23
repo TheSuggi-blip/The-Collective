@@ -9,7 +9,7 @@ faction: Solaris Syndicate
 standing: neutral
 standing_since: 2026-11-17
 threat: unknown
-updated: 2026-11-22
+updated: 2026-11-23
 ---
 
 # Solaris Syndicate [SOLS]
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 3.
 | Allies | AURC, NVPT, OKLM, SGC., SOIT | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 5 | Public event stream |
+| Pilots carrying the tag on the public event stream | 4 | Public event stream |
 
 ## Bases
 
