@@ -1,0 +1,27 @@
+{
+ "id": "hunt-kit-frontier-pioneer-fields-magnet-barnacle",
+ "kind": "hunt",
+ "title": "magnet_barnacle at pioneer_fields (Frontier, Outer Rim) for the Atria outpost kit; the Recursion alone; parts to a hauler at Node Beta",
+ "note": "Written by Apophis 2026-11-23 18:55 UTC (orders ENT-083, P3 and block APOPHIS: hunt the kit's creature parts, handed to Logistics, P5; F17/F37: the first Recursion measured in flight). Need atria-outpost-kit short anchor_plate 30 (needs show 18:07 UTC); no station asks it, First Step Memorial bids 600 x 771 (table books 18:11 UTC). Herd: 4 magnet-barnacles at frontier:pioneer_fields (table herds, census 16:56 UTC), one of the two huntable places of the species (admirals.log ENT-111, Oracle); 18 jumps from home (systems table), Outer Rim policed space. The Recursion only (shield_recharger_ii: no other ship of ours carries one): gauges.py ship 18:39 UTC firepower 52.2 (kills up to 365 hull), toughness 350 (stands up to 175); a magnet-barnacle has hull 100, so both gauges pass (F9). kills 2 leave 2 (F38). The parts a kill drops are not measured (no kill of the species on our record): three runs decide (F37). gift_to hauler at Node Beta.",
+ "place": "frontier:pioneer_fields",
+ "species": [
+  "magnet_barnacle"
+ ],
+ "sell_at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+ "min_bid": 5000,
+ "kills": 2,
+ "minutes": 60,
+ "max_ships": 1,
+ "min_creatures": 4,
+ "max_prey_hull": 100,
+ "alone": "pirates",
+ "requires": {
+  "module": {
+   "shield_booster_ii": 1,
+   "shield_recharger_ii": 1
+  },
+  "empty_hold": true
+ },
+ "gift_to": "hauler",
+ "standing": true
+}

@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 470.
+Routes: 471.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -353,6 +353,7 @@ Routes: 470.
 | [hunt-kapteyn-5-weak-annihilation-zone-patina-grazer](hunt-kapteyn-5-weak-annihilation-zone-patina-grazer.json) | hunt | beyond the border, 10 jumps | patina_grazer at kapteyn_5_weak_annihilation_zone; loot stored at Nova Terra Central | up to 1 ships, empty hold, standing work | 6 | 12 | -190 | -1,170 | 2026-11-23 |
 | [hunt-keid-belt-carapace](hunt-keid-belt-carapace.json) | hunt | beyond the border, 5 jumps | Belt-grazers and patina-grazers at Keid Belt; creature carapace into storage at Node Beta | up to 1 ships, without piercing_railgun_i, empty hold, standing work | 13 | 32 | -150 | -300 | 2026-11-23 |
 | [hunt-keid-fractured-prism-veil-ray](hunt-keid-fractured-prism-veil-ray.json) | hunt | beyond the border, 5 jumps | veil_ray at keid_fractured_prism; loot sold at Node Beta Industrial Station | up to 1 ships, without piercing_railgun_i, empty hold, standing work | 9 | 31 | -230 | -450 | 2026-11-22 |
+| [hunt-kit-frontier-pioneer-fields-magnet-barnacle](hunt-kit-frontier-pioneer-fields-magnet-barnacle.json) | hunt | beyond the border, 18 jumps | magnet_barnacle at pioneer_fields (Frontier, Outer Rim) for the Atria outpost kit; the Recursion alone; parts to a hauler at Node Beta | up to 1 ships, needs {'shield_booster_ii': 1, 'shield_recharger_ii': 1}, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [hunt-kitalpha-lonesweep-field-slag-tortoise-pl3](hunt-kitalpha-lonesweep-field-slag-tortoise-pl3.json) | hunt | beyond the border, 8 jumps | slag tortoise (90 hull) at lonesweep_field with a Pulse Laser III; ferrous nodules and carapace for the reserve | up to 1 ships, needs pulse_laser_iii, empty hold, standing work | 4 | 27 | -320 | -710 | 2026-11-23 |
 | [hunt-kornephoros-frost-ring-rime-grazer](hunt-kornephoros-frost-ring-rime-grazer.json) | hunt | beyond the border, 17 jumps | rime_grazer at kornephoros_frost_ring; loot to the trader at The Rampart Checkpoint (newborn region work, Krynn) | up to 1 ships, empty hold, standing work | 5 | 13 | -240 | -750 | 2026-11-23 |
 | [hunt-krynn-furnace-vents-drift-ray](hunt-krynn-furnace-vents-drift-ray.json) | hunt | beyond the border, 20 jumps | drift_ray, bell_jelly at furnace_vents; loot to the trader at War Citadel (newborn region work) | up to 1 ships, empty hold, standing work | 14 | 15 | -160 | -550 | 2026-11-23 |
