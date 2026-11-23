@@ -2,9 +2,9 @@
  "id": "mission-the-memorial-frontier",
  "kind": "circuit",
  "title": "The Memorial: 8000 cr at Mobile Capital (Altais), a visit to First Step",
- "note": "Written by Oracle 2026-11-23 00:05 UTC from the board of Frontier Station (data/missions/frontier_station.json, read 2026-11-22 22:06 UTC): objectives visit_system first_step, dock_at_base first_step; reward 8000 cr; no goods. Stops as mission-who-buys-old-charts-frontier, which paid 3500 cr on its first scout run at 23:46 UTC (table runs): accept at the station where it stands now (altais), dock at First Step Memorial Station, hand in at Altais. For the Outer Rim scouts born at Altais (orders ENT-068 P6: their empire's missions first, F34: visits are Intel's). A test: up to 3 ships, one result each, until 3 runs are read (rule F37).",
+ "note": "Written by Oracle 2026-11-23 00:05 UTC from the board of Frontier Station (data/missions/frontier_station.json, read 2026-11-22 22:06 UTC): objectives visit_system first_step, dock_at_base first_step; reward 8000 cr; no goods. Stops as mission-who-buys-old-charts-frontier, which paid 3500 cr on its first scout run at 23:46 UTC (table runs): accept at the station where it stands now (altais), dock at First Step Memorial Station, hand in at Altais. For the Outer Rim scouts born at Altais (orders ENT-068 P6: their empire's missions first, F34: visits are Intel's). A test: up to 3 ships, one result each, until 3 runs are read (rule F37). 2026-11-23 18:29 UTC (fill.py, Apollo): max_ships 3 -> 15.",
  "once": true,
- "max_ships": 3,
+ "max_ships": 15,
  "one_time": [
   "The Memorial"
  ],
