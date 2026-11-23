@@ -78,7 +78,7 @@ Status: proven. Updated: 2026-11-21. Evidence: errors.log ENT-016, ENT-028; the 
   ask" came from one 52 cr buy, where rounding explains it too.
 
 ### Routes, plans and the clone
-Status: proven. Updated: 2026-11-21. Evidence: errors.log ENT-035, ENT-039, ENT-106; requests.log ENT-148, ENT-216; the skill trade-books.
+Status: proven. Updated: 2026-11-23. Evidence: errors.log ENT-035, ENT-039, ENT-106; requests.log ENT-148, ENT-216, ENT-457; sell-loot-at-krynn; the skill trade-books.
 
 - A file in the clone is live before it is committed, and the hourly
   measure pass commits a modified route under its own name: draft in
@@ -100,6 +100,11 @@ Status: proven. Updated: 2026-11-21. Evidence: errors.log ENT-035, ENT-039, ENT-
 - A mission board file (data/missions) is one pilot's: before a once
   route is written from it, read `get_missions` of one pilot of the
   route's empire (Scouting the Lanes: 4 of 4 runs not offered).
+- A request answered by a route: first `git log --since=<request> --
+  game/routes` for a route the asker wrote meanwhile, then admirals.log
+  (a Recursion parts route duplicated one written 18 minutes before).
+- Within one stop the runner stores before it sells: a sale and a
+  `store: all` go in two stops at the same base.
 
 ### Money, calls and the runner
 Status: proven. Updated: 2026-11-22. Evidence: errors.log ENT-047, ENT-066, ENT-067, ENT-090, ENT-107; requests.log ENT-176; the skill trade-books.

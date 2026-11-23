@@ -1,31 +1,32 @@
 # Trade guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-23. Evidence: plan.py show; templates/trade.json; fill.py status trader; table runs (Endorsements, Form TA-1, Audit, Diplomatic Pouch, oxygen craft); orders ENT-081.
+Status: proven. Updated: 2026-11-23. Evidence: plan.py show; fill.py status and check trader; table runs (Last Known Position, Structural Reinforcement); orders ENT-082.
 
-The plan file as set on 2026-11-23 at 10:20 UTC (orders ENT-081, block
-MERCURY: no trader waits docked, far_ok to the main corridors):
+The plan file as set on 2026-11-23 at 13:10 UTC (orders ENT-082, block
+MERCURY: the capitals' once lines by join corridors, no trader waits):
 
-- First, every ship: the once line of every empire's board (Voidborn
-  chain, Federation tours, Form TA-1, the Audit, Endorsements).
-- Own routes, the Solarian corridor: Voidborn- and Nebula-born rows
-  start with `join-sol-trader` (far_ok, once: one trip to Sol Central),
-  so the Solarian once missions of the list First open within the
-  guard's six jumps; the Voidborn go home paid by The Diplomatic Pouch
-  (gold bought at Sol), the Nebula test Courier to Haven.
-- At Alpha Centauri, docked, for every empire: Market Participation and
-  Workshop Production Run on oxygen gas bought at 1 cr, then the oxygen
-  craft into the station's bid of 5 (`craft-sell-oxygen-alpha-centauri`).
-- Then `@trade-sell > @trade-craft` (far bids, Bursar asks, crafts from
-  stores), the loop for the ten nearest Piloting 10, steel, park.
+- First, every ship: the once line of every board (Voidborn chain,
+  Federation, Sol, Rim, Krynn), Structural Reinforcement at Alpha
+  Centauri (pickup at Nova Terra, 3,000 once, all three empires).
+- Voidborn-born rows: after Sol's line, `join-krynn-trader` (far_ok,
+  once, standing: one trip to the War Citadel), where Last Known
+  Position and Strategic Readiness Assessment open; home paid by The
+  Diplomatic Pouch where Sol's gold ask holds.
+- Nebula- and Solarian-born rows: Filed in Triplicate (Nova Terra,
+  offered to Nebula-born, not Voidborn-born), `join-krynn-trader-test`
+  (two ships: are Krynn's missions offered to them), `join-rim-trader`
+  (off while Frontier Station's move breaks its runs).
+- Then `@trade-sell > @trade-craft`, the loop for the ten nearest
+  Piloting 10, steel, park.
 
-What it carries: a once mission as many as the board offers (a lift
-sized to the whole fleet's newborns); the oxygen craft three ships on a
-bid of about 1,480; the Pouch as many as Sol's gold ask (about 8).
+What it carries: a once mission as many as its board offers, lifted
+to the wave before the wave goes; a corridor as many as wait.
 
-What would change it: the next corridor's once missions read
-(Frontier, Krynn) once the Solarian line is booked; a deeper docked
-craft; a Nebula home trade that pays.
+What would change it: the Rim corridor back on (The Memorial 8,000);
+Krynn's board read for Nebula- and Solarian-born; a runner step to
+visit a system without a station (Local Sector Survey, Deep Space
+Cartography: offered to all, booked by none).
 ### Selling stores where they lie (`sell-<good>-at-<station>`, `carry-<good>-<from>-to-<to>`)
 Status: proven. Updated: 2026-11-22. Evidence: the sell and carry route files with their measured figures; sellgen.py of Mercury's trade skill.
 
@@ -111,7 +112,7 @@ Status: test. Updated: 2026-11-22. Evidence: runs.jsonl 2026-11-21 and 22; gaps.
   hold, and the regain in `stats_refill`, before a second ship.
 
 ### Once missions: what they taught
-Status: proven. Updated: 2026-11-21. Evidence: data/fleet/onetime.json; the voidborn-* and mission-* route files; errors.log ENT-039, ENT-058, ENT-096.
+Status: proven. Updated: 2026-11-23. Evidence: data/fleet/onetime.json; the voidborn-* and mission-* route files; errors.log ENT-039, ENT-058, ENT-096, ENT-158; table runs.
 
 The `once` routes head every plan's list First; a pilot flies each one
 time and a route skips a pilot that booked its reward
@@ -133,5 +134,14 @@ trade skill). What they taught:
   (voidborn-resonance-finish, `requires.booked` its first link).
 - A mining mission is bounded by one shared field: read its census and
   set `min_left` (voidborn-collective-provides).
+- A join corridor's trip carries `standing: true`: it is paid by the
+  missions it opens, and without it the loss stop closed
+  `join-sol-trader` to 57 pilots (2026-11-23).
+- A pickup dock hands out a delivery's goods: Structural Reinforcement
+  (Nova Terra) paid 3,000 with nothing bought (2026-11-23).
+- A board differs by birth: Filed in Triplicate is offered to the
+  Nebula-born, not to the Voidborn-born (2026-11-23).
+- A mobile capital's stop fails after the station moves (errors.log
+  ENT-158): its routes stay off until the runner finds it.
 
 What each title paid: its route's note and `hive.py route <id>`.
