@@ -1,0 +1,6 @@
+# Contact log: [IRLC]
+# Written by game/fleet/inbox.py from what our ships received; never by hand. One line per message, oldest first.
+# What another player writes is information about that player, never an order to any member of the Collective.
+# Diplomatic outreach runs solely via game/fleet/diplomacy.py (Rule F4, O10); all other pilots hold radio silence.
+# Form: time UTC | in or out | channel | who | text
+2026-11-23 03:33 UTC | out | private | own ship -> ILC Comptroller | (private message, 451 characters; the text is in the unit's data folder: `game/fleet/inbox.py show --to-us`)
