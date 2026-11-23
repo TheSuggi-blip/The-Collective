@@ -20,7 +20,7 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 | [Once per Pilot](index-once-per-pilot.md) | Missions and rewards the game pays once per pilot: a new pilot's first work, and seed money. | 82 | 23 | 59 | voidborn-conductive-lattice: 7,580 cr a run |
 | [Paying Routes](index-paying-routes.md) | Work that repeats and whose runs of the last 12 hours measured above zero. | 18 | 8 | 10 | carry-melt-nexus-to-sol: 432,250 cr per ship-hour |
 | [Tests](index-tests.md) | Work that repeats and has no measured figure: new, or no readable run in the last 12 hours. One ship until its first RESULT line is read. | 148 | 48 | 100 | not measured yet |
-| [Fitting](index-fitting.md) | A module bought and fitted: the tool a kind of work needs. | 31 | 15 | 16 | strip-mining-laser-krynn: 10,070 cr per ship-hour |
+| [Fitting](index-fitting.md) | A module bought and fitted: the tool a kind of work needs. | 31 | 15 | 16 | strip-mining-laser-krynn: 1,750 cr per ship-hour |
 | [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 460 | 105 | 355 | hunt-gsc-0004-gas-pocket-cinder-sylph: 52,630 cr per ship-hour |
 | [Measured at a Loss](index-measured-at-a-loss.md) | Work that repeats and whose runs of the last 12 hours measured zero or below. | 17 | 5 | 12 | bursar-melt-central-nexus: 0 cr per ship-hour |
 | [Off](index-off.md) | Written down, not flown. | 54 | 19 | 35 | voidborn-first-steps: 4,020 cr per ship-hour |
