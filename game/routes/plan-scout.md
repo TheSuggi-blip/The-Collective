@@ -104,9 +104,4 @@ Planned:
 
 | What | When |
 |---|---|
-| Read the six region lists' first rows (fuel a read, gaps against 120 and 180 min) and size their caps by what they carry | next turn |
-| Test the Outer Rim and Nebula exploration missions on their boards (Local Sector Survey, Why the Rim Stopped, The Memorial, Anomalous Readings) with one newborn scout each | next turn |
-| Cut the census burn by a third as Unity answers requests ENT-381 | after her answer |
-| Finish Federation Trade Route Prospectus by hand for two Nebula scouts holding it at 75 and 100 percent (Levy dock, return to Grand Exchange) | next turn |
-| Census-region-altais to 6 ships and the newborn templates' far lists, once game/routes takes writes again (queue ENT-248) | next turn |
-| Read the envoy's replies through diplomacy.py threads; the beacon repeats Hail 2/3 at T+24h | every turn |
+| Read the effect of this turn's caps and riders: region lists over cadence (Krynn 3, Altais 6, Haven 6), SITES census-north with six explorers first, FRESH frontier with five riders first next turn | -- |
