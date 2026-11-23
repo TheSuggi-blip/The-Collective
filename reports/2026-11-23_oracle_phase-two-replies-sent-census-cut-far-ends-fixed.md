@@ -73,6 +73,13 @@ end (comms.py requests --to Oracle: Open 0, Accepted 0).
   fixed (5ae15927). Still open: why the same scout ran 11 rows of `fuel 1 short`
   first; its refuel stop's answer is not in the log (the log keeps only the
   last run). The ship had 71 fuel by 05:04 UTC.
+- After the session entry the gate fell to HALT (fill.py check 05:19:41 UTC:
+  5 scouts waiting). Cause: five Outer Rim scouts stood docked 14 to 17 jumps
+  from Altais, sent to Central Nexus by the census end fixed above, and the
+  newborn guard closed every route of their rows. Action: new route
+  home-frontier-station (far_ok, one stop, empty hold) last in the Rim rows
+  (3f83d8ee, plan check PASS 05:21:49 UTC); 5 scouts took it and the gate read
+  PASS at 05:24:22 UTC. errors.log names the scar.
 - The Haven Prospectus route: its last 12 runs fleetwide read `not offered`
   (tool route, 04:13 to 04:38 UTC), each 22 to 28 minutes of fuel. Most are other
   divisions' ships; the hand-in for two Nebula scouts I planned stays undone.
@@ -141,5 +148,6 @@ end (comms.py requests --to Oracle: Open 0, Accepted 0).
 - game/routes/census-roads.json, census-far-1.json to census-far-5.json,
   census-worked-far.json -- the cut and the moves, commit a0240025.
 - game/routes/mission-scraping-by-frontier.json -- the Outer Rim once test.
+- game/routes/home-frontier-station.json -- far_ok stop home for Rim scouts, 3f83d8ee.
 - game/routes/guidebook/intel/routes.md, lessons.md -- Standing Plan and lesson,
   commit d37a131f.
