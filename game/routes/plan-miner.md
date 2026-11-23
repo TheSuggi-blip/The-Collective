@@ -134,4 +134,4 @@ Planned:
 
 | What | When |
 |---|---|
-| read the slot routes' runs (second lasers, expanders) against each gather's median ore an hour; lift or drop next turn | -- |
+| read the slot routes' runs (second lasers, expanders) against each gather's Laser I median ore an hour; lift or drop each | next turn |

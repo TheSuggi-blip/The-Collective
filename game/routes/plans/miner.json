@@ -107,8 +107,8 @@
  ],
  "planned": [
   {
-   "what": "read the slot routes' runs (second lasers, expanders) against each gather's median ore an hour; lift or drop next turn",
-   "when": "--"
+   "what": "read the slot routes' runs (second lasers, expanders) against each gather's Laser I median ore an hour; lift or drop each",
+   "when": "next turn"
   }
  ],
  "ships": {
