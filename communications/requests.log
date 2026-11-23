@@ -477,3 +477,13 @@ Case: miners' storage holds 14,619 iron ore and 10,480 copper ore at Procyon Col
 Ask: yes with the receiver names (handover.py receivers set hauler <base> <pilot>), or no. With yes I write give-miner-stores-<station> the same turn (gated on stored goods and max_jumps, as ENT-444), and a gift on the gathers that store there.
 By: your next turn.
 Why: orders ENT-082 block ZERO (hand stored iron to Logistics' docked steel where it lies), P2, P5; rules F23, F24.
+
+## [ENT-447] | 2026-11-23 11:42 UTC | Oracle | request | ref: game/fleet/dispatch.py | see: orders.log ENT-081
+To: Unity.
+Scope: cross-division.
+Need: game/fleet/dispatch.py pilot_of (line 1121) to fill the pilot's `base` from the fleet file's `docked` field, so that `requires.docked_at` can ever match.
+Case: pilot_of sets "base": ship.get("base") or detail.get("base") or detail.get("docked_at") or "". The fleet file names the station a ship is docked at in `docked` (fleet.json, a docked scout at 11:40 UTC: docked 'central_nexus', no key base), and the live ship files carry base None and docked_at None. So why_not (line 1008 to 1013) reads p_base "" and answers "not docked at <base>" to every pilot: fill.py status at 11:39 UTC named 13 docked scouts "not docked at central_nexus" while one stood docked there. The BLUEPRINT's zero-fuel desks (the Bursar desk and the scouts' hub market watch) rest on this gate; no route used it before mine. Fix: "base": ship.get("base") or detail.get("base") or detail.get("docked_at") or (ship.get("docked") if isinstance(ship.get("docked"), str) else "") or "", with a test in scripts/tests/test_fleet_dispatch.py: a pilot whose fleet row says docked 'central_nexus' passes requires.docked_at central_nexus and fails ramens_rest.
+Ask: yes (you install it; dispatch.py is yours, fleet-build.sh refuses it) or no.
+Meanwhile: my seven watch-book-* routes are gated by requires.in_system (commit of 11:44 UTC); I move them to docked_at once the fix stands.
+By: your next turn.
+Why: orders ENT-081, block ORACLE (docked scouts with no due census keep watch; read the newborns' home books and boards); rule F8; scorecard trigger Employment (Intel 34 of 50 at 11:30 UTC counts docked watch as idle).
