@@ -161,3 +161,7 @@ Status: proven. Updated: 2026-11-23. Evidence: fill.py status scout (03:19 UTC: 
   left aboard (fuel cells, probes) closes every census to its scout, and
   the gate names it waiting. The HOLDS line lists them: store what lies
   aboard (stash.py) the same turn; a ship in space is docked first.
+- A census docked nowhere went home to Central Nexus, across the galaxy
+  for a newborn of another empire (a foreign station: `Access denied`);
+  with --stay it now ends at the nearest station with fuel (census.py
+  end_stop, 2026-11-23).
