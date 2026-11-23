@@ -13,6 +13,7 @@ A free hauler takes the first open route of First, its own routes, Then (`plan.p
 - Hulls (F17): Prayers wait for a freight step in the runner (lessons.md).
 - Then: `park`, which none should reach.
 - What would change it: a kit at Ironlight; Piloting 10; a freight step; jobs on our Notice Board.
+
 ### Route Templates
 Status: proven. Updated: 2026-11-21. Evidence: game/routes/templates/logistics.json (2026-11-21); plan.py templates; Suggi 2026-11-16 and rule F22.
 
