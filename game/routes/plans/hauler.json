@@ -79,6 +79,10 @@
   {
    "what": "switch the two commissioned Prayers at Frontier Station into service when the yard delivers; measure fuel a jump and minutes a run against the Cobble",
    "when": "next turn"
+  },
+  {
+   "what": "build the Notice Board at Node Beta on the Fleet Admiral's yes (requests ENT-436)",
+   "when": "on her answer"
   }
  ],
  "ships": {

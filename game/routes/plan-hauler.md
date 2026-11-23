@@ -108,3 +108,4 @@ Planned:
 | What | When |
 |---|---|
 | switch the two commissioned Prayers at Frontier Station into service when the yard delivers; measure fuel a jump and minutes a run against the Cobble | next turn |
+| build the Notice Board at Node Beta on the Fleet Admiral's yes (requests ENT-436) | on her answer |
