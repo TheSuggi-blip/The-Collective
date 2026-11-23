@@ -123,7 +123,7 @@ the patch notes at 0.733.0.
 - Lesson: a kit left aboard closes every empty-hold census, so a newborn
   waits beside its own work. Record: `fill.py status scout` 03:19 UTC,
   `stash.py` 03:40 UTC. Change: a store-hold route at each newborn
-  capital, next turn. Kept in: LEARNINGS.md (unpromoted) and guidebook
+  capital heads its rows (done this turn). Kept in: LEARNINGS.md (unpromoted) and guidebook
   lessons.md. Fleet takeaway: every division with newborns meets it.
 - Lesson: a hail's allies come from the factions feed, never the bloc
   name: the blocs are not symmetric. Kept in: the intel-turn skill.
