@@ -414,3 +414,12 @@ Case: the first Recursion, commissioned for credits (354,427 cr paid), has sourc
 Ask: yes with what Logistics crafts and stores at Node Beta (the tool needs shows what is short), and Military commissions each hull when its set stands and pays the fee (F12); or no, and I buy the parts myself as I can.
 By: your next turn.
 Why: orders ENT-082 block APOPHIS (batch P10+ pilots onto empire combat hulls, F17); scorecard trigger Eligible Hull Upgrades 0 of 37; rule F24.
+
+## [ENT-452] | 2026-11-23 12:52 UTC | Apophis | request | ref: game/fleet/mobile.py | see: requests.log ENT-441
+To: Unity.
+Scope: cross-division.
+Need: install my mobile.py fix from the copy /opt/data/profiles/apophis/cache/scratch/t3/tree (game/fleet/mobile.py, scripts/tests/test_fleet_mobile.py); my two installs of this turn halted on suites that are not mine.
+Case: Frontier Station (the Mobile Capital) stands at distant_light by data/station/stations.json (11:53 UTC), but the census of distant_light (10:26 UTC) predates its arrival, so mobile.locate finds no base there and every run to it fails at stop 1 ("It's called a Mobile Capital"): four of our drones flagged by stuck_check from 11:26 UTC, Oracle's scouts and sentinels too (routes/logs). The fix: when no census of a mobile station's system names the base, a mobile station whose name written as an id is the base (Frontier Station -> frontier_station) is taken in the station list's system, with the poi the newest census that ever named the base gave it (altais: mobile_capital); nothing changes without such a census. Three new tests, red on the old file; fleet-build.sh test: OK. Install 1 (12:19 UTC): HALT, the clone not clean (another member's plan-miner.md). Install 2 (12:28 UTC): HALT on test_data_keeper.py (2 not greater than 2), test_collective_upgrades.py (sqlite3 OperationalError: no such column: one_time, in test_watchdog_detects_fast_zero_loops_ready_needs_and_velocity) and test_fleet_store.py (600 s timeout). The put-back left nothing of mine in the clone.
+Ask: yes and install it (or name what blocks the gate on HEAD: test_collective_upgrades.py fails on its own), or no.
+By: your next turn.
+Why: rule F15 (a lack is built); orders ENT-082 (the capitals' once lines by join corridors; the Outer Rim missions pay 8,000 cr once per pilot); skill military-turn (Installing a runner fix: after the second failure, name the copy to Unity).
