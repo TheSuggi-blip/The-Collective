@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 24.
+Routes: 25.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -27,6 +27,7 @@ Routes: 24.
 | [fit-mining-laser-ii-second-central-nexus](fit-mining-laser-ii-second-central-nexus.json) | circuit | home space | A test: a Mining Laser II into the empty second utility slot of a laser-only Threshold at Central Nexus (one ship, one unit) | once per pilot, up to 1 ships, 1 pilots in all, needs mining_laser_i, without ['mining_laser_ii', 'mining_laser_iii', 'ice_harvester_i'], empty hold, from 20,000 cr, while central_nexus asks 4300 cr or less for mining_laser_ii | 1 | 1 | -4,290 | one-time | 2026-11-22 |
 | [fit-shield-booster-pirate-group](fit-shield-booster-pirate-group.json) | circuit | home space | Fit a Shield Booster I at Central Nexus: the first step of the drone group against pirates | once per pilot, up to 2 ships, 5 pilots in all, without shield_booster_i, from 8,000 cr, from gunnery 3 | 5 | 6 | -3,030 | one-time | 2026-11-17 |
 | [fit-survey-scanner-central-nexus](fit-survey-scanner-central-nexus.json) | circuit | home space | Test: fit one Survey Scanner I at Central Nexus, so that one scout can survey_system (hidden places, deep core deposits, the scanning skill) | once per pilot, up to 1 ships, 7 pilots in all, without survey_scanner_i, from 12,000 cr | 9 | 1 | -3,280 | one-time | 2026-11-21 |
+| [fit-survey-scanner-ii-central-nexus](fit-survey-scanner-ii-central-nexus.json) | circuit | home space | Test: one Survey Scanner II at Central Nexus for a scanner scout, the off-role mining laser stripped, so its census surveys resolve faint signatures and rare ores | once per pilot, up to 1 ships, 1 pilots in all, needs survey_scanner_i, without ['survey_scanner_ii'], from 18,000 cr, while central_nexus asks 14000 cr or less for survey_scanner_ii | TBD | TBD | TBD | TBD | -- |
 | [strip-pulse-laser-central-nexus](strip-pulse-laser-central-nexus.json) | circuit | home space | A Voidborn miner docked at Central Nexus strips its off-role Pulse Laser I into its storage there (no fuel: docked_at) | once per pilot, up to 10 ships, 130 pilots in all, from 3,000 cr, born voidborn | TBD | TBD | TBD | TBD | -- |
 | [fit-cargo-expander-factory-belt](fit-cargo-expander-factory-belt.json) | circuit | beyond the border, 23 jumps | A Cargo Expander I into the empty second utility slot of a Nebula Prospect at Factory Belt Manufacturing Hub, pulse laser stripped | once per pilot, up to 8 ships, 35 pilots in all, needs mining_laser_i, without ['cargo_expander_i'], empty hold, from 10,500 cr, born nebula, while factory_belt_manufacturing_hub asks 380 cr or less for cargo_expander_i | 20 | 1 | -370 | one-time | 2026-11-23 |
 | [fit-ice-harvester-lhs-1140](fit-ice-harvester-lhs-1140.json) | circuit | beyond the border, 6 jumps | Fit an Ice Harvester I at Ironlight Crossroads (LHS 1140), beyond the border: a test with one miner | once per pilot, up to 5 ships, 20 pilots in all, without ice_harvester_i, empty hold, from 6,000 cr | 19 | 9 | -690 | one-time | 2026-11-16 |

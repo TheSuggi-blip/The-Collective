@@ -1,0 +1,38 @@
+{
+ "id": "fit-survey-scanner-ii-central-nexus",
+ "kind": "circuit",
+ "title": "Test: one Survey Scanner II at Central Nexus for a scanner scout, the off-role mining laser stripped, so its census surveys resolve faint signatures and rare ores",
+ "note": "Kept by Oracle; written 2026-11-23 11:20 UTC (orders ENT-081, block ORACLE: explore where it opens work for the others; requests.log ENT-435/ENT-443: no uranium or thorium deposit with units left within 15 jumps). Survey Scanner I (survey power 30) answered '1 faint signature(s) that your scanner cannot resolve. Try a more powerful survey scanner.' in 20 systems (scouting/<system>.json survey, 2026-11-22 14:15 to 2026-11-23 11:07 UTC; Hamal, 3 jumps, the nearest). Survey Scanner II: utility, cpu 5, power 7, special ore_quality_detection and rare_ore_detection (craftbook.py item). Central Nexus asks 14,000 x 1 (table books 11:09 UTC); max_price 14,200 with the buyer's 1 percent. The Threshold's two utility slots hold Mining Laser I and Survey Scanner I: the off-role mining laser (a scout never gathers, F23) is unfitted for the new scanner. census.py surveys every system a ship with a survey scanner reads. One ship first (F12, F37): its next surveys of a faint-signature system decide whether more scouts get one; a hidden deposit found goes to Mining in queue.log.",
+ "once": true,
+ "max_ships": 1,
+ "max_pilots": 1,
+ "min_credits": 18000,
+ "requires": {
+  "module": "survey_scanner_i",
+  "without_module": [
+   "survey_scanner_ii"
+  ],
+  "ask": {
+   "item": "survey_scanner_ii",
+   "base": "central_nexus",
+   "max_price": 14000,
+   "min_qty": 1,
+   "max_age_minutes": 240
+  }
+ },
+ "stops": [
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "unfit": [
+    "mining_laser_i"
+   ],
+   "fit": [
+    {
+     "module": "survey_scanner_ii",
+     "max_price": 14200,
+     "count": 1
+    }
+   ]
+  }
+ ]
+}
