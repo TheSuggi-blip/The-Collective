@@ -413,26 +413,91 @@ function getPolities() {
   return (DIPLO.data && Array.isArray(DIPLO.data.territories)) ? DIPLO.data.territories : [];
 }
 
-function liveOurSpace() {
-  // 100% dynamic Collective territory: sovereign bases + claimed territory + active multi-empire fleet hubs
-  const coreIds = new Set([...holdBy.keys()]);
-  const cltvPol = getPolities().find((p) => p.kind === 'us');
-  if (cltvPol) {
-    (cltvPol.core_systems || []).forEach((id) => coreIds.add(id));
+const PAT_CACHE = new Map();
+function makePattern(ctxRef, kind, colour, alpha) {
+  const key = kind + '|' + colour + '|' + alpha.toFixed(3);
+  if (PAT_CACHE.has(key)) return PAT_CACHE.get(key);
+  const tile = document.createElement('canvas');
+  const tc = tile.getContext('2d');
+  if (kind === 'hatch45' || kind === 'hatch-45') {
+    tile.width = 12; tile.height = 12;
+    tc.strokeStyle = rgba(colour, alpha);
+    tc.lineWidth = 1;
+    tc.beginPath();
+    if (kind === 'hatch45') {
+      tc.moveTo(-2, 10); tc.lineTo(10, -2);
+      tc.moveTo(2, 14); tc.lineTo(14, 2);
+    } else {
+      tc.moveTo(2, -2); tc.lineTo(14, 10);
+      tc.moveTo(-2, 2); tc.lineTo(10, 14);
+    }
+    tc.stroke();
+  } else if (kind === 'stipple') {
+    tile.width = 12; tile.height = 12;
+    tc.fillStyle = rgba(colour, alpha * 1.4);
+    tc.beginPath();
+    tc.arc(3, 3, 0.95, 0, 6.2832);
+    tc.arc(9, 9, 0.95, 0, 6.2832);
+    tc.fill();
+  } else if (kind === 'scan') {
+    tile.width = 8; tile.height = 8;
+    tc.strokeStyle = rgba(colour, alpha);
+    tc.lineWidth = 1;
+    tc.beginPath(); tc.moveTo(0, 4); tc.lineTo(8, 4); tc.stroke();
+  } else if (kind === 'mask-dash-long') {
+    tile.width = 18; tile.height = 18;
+    tc.fillStyle = '#fff';
+    for (let o = -18; o <= 18; o += 18) {
+      tc.beginPath();
+      tc.moveTo(o, 0); tc.lineTo(o + 11, 0); tc.lineTo(o - 7, 18); tc.lineTo(o - 18, 18);
+      tc.closePath(); tc.fill();
+    }
+  } else if (kind === 'mask-dash-dot') {
+    tile.width = 20; tile.height = 20;
+    tc.fillStyle = '#fff';
+    for (let o = -20; o <= 20; o += 20) {
+      tc.beginPath();
+      tc.moveTo(o, 0); tc.lineTo(o + 9, 0); tc.lineTo(o - 11, 20); tc.lineTo(o - 20, 20);
+      tc.closePath(); tc.fill();
+      tc.beginPath();
+      tc.moveTo(o + 13, 0); tc.lineTo(o + 16, 0); tc.lineTo(o - 4, 20); tc.lineTo(o - 7, 20);
+      tc.closePath(); tc.fill();
+    }
+  } else if (kind === 'mask-dashed') {
+    tile.width = 12; tile.height = 12;
+    tc.fillStyle = '#fff';
+    for (let o = -12; o <= 12; o += 12) {
+      tc.beginPath();
+      tc.moveTo(o, 0); tc.lineTo(o + 6.5, 0); tc.lineTo(o - 5.5, 12); tc.lineTo(o - 12, 12);
+      tc.closePath(); tc.fill();
+    }
   }
+  const pat = ctxRef.createPattern(tile, 'repeat');
+  if (PAT_CACHE.size > 96) PAT_CACHE.clear();
+  PAT_CACHE.set(key, pat);
+  return pat;
+}
+
+function liveOurSpace() {
+  // 100% dynamic 2-jump Collective territory: sovereign bases/claims + live >=10-ship hubs
+  const cltvPol = getPolities().find((p) => p.kind === 'us');
+  const terrIds = new Set(cltvPol && cltvPol.territory_systems ? cltvPol.territory_systems : []);
+  const coreIds = new Set([...holdBy.keys()]);
+  if (cltvPol) (cltvPol.core_systems || []).forEach((id) => coreIds.add(id));
   const shipCounts = new Map();
   for (const [id, list] of shipsBy) {
     shipCounts.set(id, list.length);
-    if (list.length >= 10) coreIds.add(id);
+    if (list.length >= 10) { coreIds.add(id); terrIds.add(id); }
   }
+  if (!terrIds.size) coreIds.forEach((id) => terrIds.add(id));
+  const terr = [...terrIds].map((id) => sys.get(id)).filter(Boolean);
   const core = [...coreIds].map((id) => sys.get(id)).filter(Boolean);
   const conc = [...shipCounts.entries()]
-    .filter(([id, cnt]) => cnt >= 3 && !coreIds.has(id) && sys.has(id))
+    .filter(([id, cnt]) => cnt >= 3 && !terrIds.has(id) && sys.has(id))
     .sort((a, b) => b[1] - a[1])
-    .slice(0, 16)
+    .slice(0, 14)
     .map(([id, cnt]) => ({ s: sys.get(id), count: cnt }));
-  const bridges = (cltvPol && cltvPol.core_bridges) ? cltvPol.core_bridges.map((p) => p.map((id) => sys.get(id)).filter(Boolean)).filter((p) => p.length >= 2) : [];
-  return { core, conc, bridges, pol: cltvPol || null };
+  return { terr, core, conc, pol: cltvPol || null };
 }
 
 function polityFocusId() {
@@ -456,14 +521,19 @@ function paintTerritory(k) {
     rctx.setTransform(1, 0, 0, 1, 0, 0);
     rctx.clearRect(0, 0, realm.width, realm.height);
 
-    const area = (list, colour, fill, edge, radius, lineW) => {
+    // Unified organic territory renderer: merges all systems + shared lanes + triangles/quads into ONE seamless empire border
+    // Supports border styles (solid, double, dash-long, dash-dot, dashed) + clipped interior cartographic hatching
+    const areaStyled = (list, colour, fill, edge, radius, lineW, bStyle, hatchKind) => {
       if (!list.length) return;
-      const half = radius * 0.72, line = lineW || 1.4, inside = new Set(list.map((s) => s.id)), at = new Map(list.map((s) => [s.id, toScreen(s)]));
+      const half = radius * 0.78, line = lineW || 1.4;
+      const inside = new Set(list.map((s) => s.id));
+      const at = new Map(list.map((s) => [s.id, toScreen(s)]));
       let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
       for (const [x, y] of at.values()) { x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
-      x0 = Math.max(0, Math.floor(x0 - radius - 3)); x1 = Math.min(W, Math.ceil(x1 + radius + 3));
-      y0 = Math.max(0, Math.floor(y0 - radius - 3)); y1 = Math.min(H, Math.ceil(y1 + radius + 3));
+      x0 = Math.max(0, Math.floor(x0 - radius - 4)); x1 = Math.min(W, Math.ceil(x1 + radius + 4));
+      y0 = Math.max(0, Math.floor(y0 - radius - 4)); y1 = Math.min(H, Math.ceil(y1 + radius + 4));
       if (x1 <= x0 || y1 <= y0) return;
+
       const spans = [], faces = [];
       for (const s of list) {
         const p = at.get(s.id), near = s.lanes.filter((id) => id > s.id && inside.has(id));
@@ -478,6 +548,7 @@ function paintTerritory(k) {
         }
       }
       const outline = (rad, wide) => {
+        const rSafe = Math.max(1, rad), wSafe = Math.max(1, wide);
         const path = new Path2D();
         const face = (pts) => {
           let turn = 0;
@@ -487,24 +558,71 @@ function paintTerritory(k) {
           for (let i = 1; i < pts.length; i++) path.lineTo(pts[i][0], pts[i][1]);
           path.closePath();
         };
-        for (const [x, y] of at.values()) { path.moveTo(x + rad, y); path.arc(x, y, rad, 0, 6.2832); }
+        for (const [x, y] of at.values()) { path.moveTo(x + rSafe, y); path.arc(x, y, rSafe, 0, 6.2832); }
         for (const [p, q] of spans) {
-          const len = Math.hypot(q[0] - p[0], q[1] - p[1]) || 1, nx = -(q[1] - p[1]) / len * wide, ny = (q[0] - p[0]) / len * wide;
+          const len = Math.hypot(q[0] - p[0], q[1] - p[1]) || 1, nx = -(q[1] - p[1]) / len * wSafe, ny = (q[0] - p[0]) / len * wSafe;
           face([[p[0] + nx, p[1] + ny], [q[0] + nx, q[1] + ny], [q[0] - nx, q[1] - ny], [p[0] - nx, p[1] - ny]]);
         }
         faces.forEach(face);
         return path;
       };
+
       const box = [Math.floor(x0 * d), Math.floor(y0 * d), Math.ceil((x1 - x0) * d), Math.ceil((y1 - y0) * d)];
-      gctx.setTransform(d, 0, 0, d, 0, 0); gctx.globalCompositeOperation = 'source-over'; gctx.globalAlpha = 1;
-      gctx.clearRect(x0 - 1, y0 - 1, x1 - x0 + 2, y1 - y0 + 2);
-      gctx.fillStyle = colour;
-      gctx.fill(outline(radius, half));
-      gctx.globalCompositeOperation = 'destination-out'; gctx.globalAlpha = Math.max(0, Math.min(1, 1 - fill / Math.max(0.01, edge)));
-      gctx.fill(outline(Math.max(1, radius - line), Math.max(1, half - line)));
-      gctx.globalCompositeOperation = 'source-over'; gctx.globalAlpha = 1;
-      rctx.globalAlpha = edge;
-      rctx.drawImage(ground, box[0], box[1], box[2], box[3], box[0], box[1], box[2], box[3]);
+      const outerPath = outline(radius, half);
+      const innerPath = outline(radius - line, half - line);
+
+      // Pass 1: Soft desaturated interior fill + optional cartographic hatching clipped strictly inside territory
+      if (fill > 0.002) {
+        gctx.setTransform(d, 0, 0, d, 0, 0); gctx.globalCompositeOperation = 'source-over'; gctx.globalAlpha = 1;
+        gctx.clearRect(x0 - 2, y0 - 2, x1 - x0 + 4, y1 - y0 + 4);
+        gctx.fillStyle = colour;
+        gctx.fill(innerPath);
+        rctx.globalAlpha = fill;
+        rctx.drawImage(ground, box[0], box[1], box[2], box[3], box[0], box[1], box[2], box[3]);
+        if (hatchKind) {
+          gctx.globalCompositeOperation = 'source-in';
+          const hpat = makePattern(gctx, hatchKind, colour, 1.0);
+          if (hpat) {
+            gctx.fillStyle = hpat;
+            gctx.fillRect(x0 - 2, y0 - 2, x1 - x0 + 4, y1 - y0 + 4);
+            rctx.globalAlpha = Math.min(0.24, fill * 0.85);
+            rctx.drawImage(ground, box[0], box[1], box[2], box[3], box[0], box[1], box[2], box[3]);
+          }
+        }
+      }
+
+      // Pass 2: Seamless merged outer border ribbon (styled per polity: solid / double / dash-long / dash-dot / dashed)
+      if (edge > 0.01) {
+        gctx.setTransform(d, 0, 0, d, 0, 0); gctx.globalCompositeOperation = 'source-over'; gctx.globalAlpha = 1;
+        gctx.clearRect(x0 - 2, y0 - 2, x1 - x0 + 4, y1 - y0 + 4);
+        gctx.fillStyle = colour;
+        gctx.fill(outerPath);
+        gctx.globalCompositeOperation = 'destination-out';
+        gctx.fill(innerPath);
+        if (bStyle === 'dash-long' || bStyle === 'dash-dot' || bStyle === 'dashed') {
+          gctx.globalCompositeOperation = 'destination-in';
+          const mpat = makePattern(gctx, 'mask-' + bStyle, '#ffffff', 1.0);
+          if (mpat) { gctx.fillStyle = mpat; gctx.fillRect(x0 - 2, y0 - 2, x1 - x0 + 4, y1 - y0 + 4); }
+        }
+        gctx.globalCompositeOperation = 'source-over';
+        rctx.globalAlpha = edge;
+        rctx.drawImage(ground, box[0], box[1], box[2], box[3], box[0], box[1], box[2], box[3]);
+
+        // Twin inner sovereign rail for `double` borders (CLTV & Federated Blocs)
+        if (bStyle === 'double' && radius > 12) {
+          const inset = Math.min(5.0, Math.max(3.2, line * 2.4));
+          const railW = Math.max(0.85, line * 0.55);
+          gctx.setTransform(d, 0, 0, d, 0, 0); gctx.globalCompositeOperation = 'source-over'; gctx.globalAlpha = 1;
+          gctx.clearRect(x0 - 2, y0 - 2, x1 - x0 + 4, y1 - y0 + 4);
+          gctx.fillStyle = colour;
+          gctx.fill(outline(radius - inset, half - inset));
+          gctx.globalCompositeOperation = 'destination-out';
+          gctx.fill(outline(radius - inset - railW, half - inset - railW));
+          gctx.globalCompositeOperation = 'source-over';
+          rctx.globalAlpha = edge * 0.62;
+          rctx.drawImage(ground, box[0], box[1], box[2], box[3], box[0], box[1], box[2], box[3]);
+        }
+      }
     };
 
     const concRing = (s, colour, rad, fillA, strokeA, focused) => {
@@ -514,52 +632,60 @@ function paintTerritory(k) {
       rctx.setTransform(d, 0, 0, d, 0, 0);
       rctx.globalAlpha = 1;
       const grad = rctx.createRadialGradient(x, y, rad * 0.15, x, y, rad);
-      grad.addColorStop(0, rgba(colour, fillA * 1.4));
-      grad.addColorStop(1, rgba(colour, fillA * 0.25));
+      grad.addColorStop(0, rgba(colour, fillA * 1.3));
+      grad.addColorStop(1, rgba(colour, fillA * 0.15));
       rctx.fillStyle = grad;
       rctx.beginPath(); rctx.arc(x, y, rad, 0, 6.2832); rctx.fill();
       rctx.strokeStyle = rgba(colour, strokeA);
-      rctx.lineWidth = focused ? 1.8 : 1.15;
-      rctx.setLineDash([4, 3]);
+      rctx.lineWidth = focused ? 1.5 : 1.0;
+      rctx.setLineDash([2.5, 4]);
       rctx.beginPath(); rctx.arc(x, y, rad, 0, 6.2832); rctx.stroke();
       rctx.setLineDash([]);
       rctx.restore();
     };
 
-    // 1. Subtle matte backdrop for the 5 NPC starting empires (calm, non-pungent!)
+    // 1. Ultra-quiet matte backdrop for the 5 NPC starting empires (never competes with player territories!)
     if (layers.Regions) {
       const realms = new Map();
       for (const s of S.systems) { if (s.empire) { if (!realms.has(s.empire)) realms.set(s.empire, []); realms.get(s.empire).push(s); } }
       for (const [_empire, list] of realms) {
-        area(list, color(list[0]), 0.036, 0.17, R * 0.98, 1.0);
+        areaStyled(list, color(list[0]), 0.024, 0.11, R * 0.96, 0.9, 'solid', '');
       }
     }
 
     const polities = getPolities();
 
-    // 2. Major Galactic Blocs & Solo Powers (Stellaris borders anchored to sovereign bases + dashed fleet concentration zones)
+    // 2. Dynamic 2-Jump Merged Sovereign Territories for Major Blocs & Serious Solo Empires
     if (layers['Blocs & Empires'] || layers['Fleet zones']) {
-      // Draw unfocused first, focused polity last on top so overlaps stay crystal-clear
       const ordered = polities.filter((p) => p.kind !== 'us').sort((a, b) => {
         if (a.id === focusId) return 1;
         if (b.id === focusId) return -1;
-        return (a.healthy_bases || 0) - (b.healthy_bases || 0);
+        return ((b.territory_systems || []).length) - ((a.territory_systems || []).length);
       });
       for (const p of ordered) {
         const isFoc = focusId && p.id === focusId;
-        const dim = focusId && !isFoc ? 0.32 : 1.0;
-        const col = HEX.test(p.color || '') ? p.color : '#e8c35a';
-        const coreSys = (p.core_systems || []).map((id) => sys.get(id)).filter(Boolean);
-        const coreRad = R * (isFoc ? 1.14 : 1.04);
-        if (layers['Blocs & Empires'] && coreSys.length) {
-          area(coreSys, col, (isFoc ? 0.17 : 0.09) * dim, (isFoc ? 0.95 : 0.68) * dim, coreRad, isFoc ? 2.1 : 1.5);
-          for (const br of (p.core_bridges || [])) {
-            const blist = br.map((id) => sys.get(id)).filter(Boolean);
-            if (blist.length >= 2) area(blist, col, (isFoc ? 0.10 : 0.05) * dim, (isFoc ? 0.62 : 0.36) * dim, R * 0.34, 1.0);
-          }
-          for (const s of coreSys) {
+        const dim = focusId && !isFoc ? 0.22 : 1.0;
+        const col = HEX.test(p.color || '') ? p.color : '#aa915b';
+        const terrIds = (p.territory_systems && p.territory_systems.length) ? p.territory_systems : (p.core_systems || []);
+        const terrSys = terrIds.map((id) => sys.get(id)).filter(Boolean);
+        const coreSet = new Set(p.core_systems || []);
+        const terrRad = R * (isFoc ? 1.02 : 0.94);
+
+        if (layers['Blocs & Empires'] && terrSys.length) {
+          const baseFill = p.kind === 'bloc' ? 0.062 : 0.048;
+          const baseEdge = p.kind === 'bloc' ? 0.48 : 0.40;
+          areaStyled(
+            terrSys, col,
+            (isFoc ? 0.13 : baseFill) * dim,
+            (isFoc ? 0.90 : baseEdge) * dim,
+            terrRad,
+            isFoc ? 2.0 : (p.kind === 'bloc' ? 1.45 : 1.2),
+            p.border_style || (p.kind === 'bloc' ? 'solid' : 'dashed'),
+            p.hatch || ''
+          );
+          for (const s of terrSys) {
             const [sx, sy] = toScreen(s);
-            polityZones.push({ p, kind: 'core', system: s.id, x: sx, y: sy, r: coreRad });
+            polityZones.push({ p, kind: coreSet.has(s.id) ? 'core' : 'terr', system: s.id, x: sx, y: sy, r: terrRad });
           }
         }
         const concList = (p.concentration_systems || []);
@@ -567,9 +693,9 @@ function paintTerritory(k) {
           for (const c of concList) {
             const cs = sys.get(c.system);
             if (!cs) continue;
-            const scale = Math.min(1.0, 0.54 + Math.log2(Math.max(2, c.count || 2)) * 0.10);
-            const crad = Math.max(10, R * scale);
-            concRing(cs, col, crad, (isFoc ? 0.13 : 0.055) * dim, (isFoc ? 0.88 : 0.48) * dim, isFoc);
+            const scale = Math.min(0.88, 0.48 + Math.log2(Math.max(2, c.count || 2)) * 0.08);
+            const crad = Math.max(9, R * scale);
+            concRing(cs, col, crad, (isFoc ? 0.11 : 0.042) * dim, (isFoc ? 0.80 : 0.36) * dim, isFoc);
             const [sx, sy] = toScreen(cs);
             polityZones.push({ p, kind: 'fleet', system: cs.id, count: c.count || 0, x: sx, y: sy, r: crad });
           }
@@ -577,29 +703,36 @@ function paintTerritory(k) {
       }
     }
 
-    // 3. Dynamic Collective Territory ("Our space" -- live bases + high-density fleet cores + multi-empire operational hubs)
+    // 3. Dynamic Collective Territory ("Our space" -- 2J merged around bases/claims + 1J around >=10-ship hubs, double rail)
     if (layers['Our space']) {
       const ours = liveOurSpace();
       const isFoc = focusId === 'CLTV';
-      const dim = focusId && !isFoc ? 0.42 : 1.0;
-      const coreRad = R * (isFoc ? 1.14 : 1.04);
-      if (ours.core.length) {
-        area(ours.core, OURS, (isFoc ? 0.18 : 0.11) * dim, (isFoc ? 0.96 : 0.78) * dim, coreRad, isFoc ? 2.2 : 1.6);
-        for (const br of ours.bridges) {
-          area(br, OURS, (isFoc ? 0.11 : 0.06) * dim, (isFoc ? 0.65 : 0.42) * dim, R * 0.34, 1.0);
-        }
+      const dim = focusId && !isFoc ? 0.32 : 1.0;
+      const ourCol = (ours.pol && HEX.test(ours.pol.color || '')) ? ours.pol.color : '#6ea862';
+      const terrRad = R * (isFoc ? 1.04 : 0.96);
+      const coreSet = new Set(ours.core.map((s) => s.id));
+      if (ours.terr.length) {
+        areaStyled(
+          ours.terr, ourCol,
+          (isFoc ? 0.14 : 0.072) * dim,
+          (isFoc ? 0.92 : 0.56) * dim,
+          terrRad,
+          isFoc ? 2.1 : 1.5,
+          'double',
+          ''
+        );
         if (ours.pol) {
-          for (const s of ours.core) {
+          for (const s of ours.terr) {
             const [sx, sy] = toScreen(s);
-            polityZones.push({ p: ours.pol, kind: 'core', system: s.id, x: sx, y: sy, r: coreRad });
+            polityZones.push({ p: ours.pol, kind: coreSet.has(s.id) ? 'core' : 'terr', system: s.id, x: sx, y: sy, r: terrRad });
           }
         }
       }
       if ((layers['Fleet zones'] || isFoc) && ours.conc.length) {
         for (const item of ours.conc) {
-          const scale = Math.min(0.95, 0.50 + Math.log2(Math.max(2, item.count)) * 0.09);
+          const scale = Math.min(0.85, 0.46 + Math.log2(Math.max(2, item.count)) * 0.08);
           const crad = Math.max(9, R * scale);
-          concRing(item.s, OURS, crad, (isFoc ? 0.12 : 0.055) * dim, (isFoc ? 0.85 : 0.48) * dim, isFoc);
+          concRing(item.s, ourCol, crad, (isFoc ? 0.10 : 0.042) * dim, (isFoc ? 0.78 : 0.38) * dim, isFoc);
           if (ours.pol) {
             const [sx, sy] = toScreen(item.s);
             polityZones.push({ p: ours.pol, kind: 'fleet', system: item.s.id, count: item.count, x: sx, y: sy, r: crad });
@@ -613,13 +746,12 @@ function paintTerritory(k) {
 }
 
 function polityAnchor(p) {
-  // Compute a clean Stellaris label centroid on the largest/primary cluster of the polity
+  // Place Stellaris nameplate cleanly on the densest base cluster of the polity
   const coreSys = (p.core_systems || []).map((id) => sys.get(id)).filter(Boolean);
   const concSys = (p.concentration_systems || []).map((c) => sys.get(c.system)).filter(Boolean);
   const pool = coreSys.length ? coreSys : concSys;
   if (!pool.length) return null;
   if (pool.length === 1) return { x: pool[0].x, y: pool[0].y, topY: pool[0].y };
-  // Pick the densest local cluster (most neighbors within median cluster distance) so far outliers don't pull label into empty space
   let best = pool[0], bestScore = -1;
   const rad = terrR * 6.5;
   for (const a of pool) {
@@ -641,11 +773,11 @@ function drawPolityLabels(k) {
   polityLabelHits = [];
   if (!layers['Blocs & Empires'] && !layers['Our space'] && !layers['Fleet zones']) return;
   const polities = getPolities();
-  if (!polities.length || k > 0.36) return;
+  if (!polities.length || k > 0.34) return;
   const focusId = polityFocusId();
-  const fade = k > 0.24 ? Math.max(0.25, (0.36 - k) / 0.12) : 1.0;
-  const fontSize = Math.max(9.5, Math.min(13.5, 9 + k * 24));
-  const subSize = Math.max(8, fontSize - 2.2);
+  const fade = k > 0.22 ? Math.max(0.22, (0.34 - k) / 0.12) : 1.0;
+  const fontSize = Math.max(9.5, Math.min(13.0, 9 + k * 22));
+  const subSize = Math.max(7.8, fontSize - 2.3);
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   const placed = [];
@@ -653,18 +785,18 @@ function drawPolityLabels(k) {
   for (const p of polities) {
     if (p.kind === 'us' && !layers['Our space']) continue;
     if (p.kind !== 'us') {
-      const hasCore = layers['Blocs & Empires'] && (p.core_systems || []).length > 0;
-      const hasConc = layers['Fleet zones'] && (p.concentration_systems || []).length > 0;
-      if (!hasCore && !hasConc && p.id !== focusId) continue;
+      const hasTerr = layers['Blocs & Empires'] && ((p.territory_systems || p.core_systems || []).length > 0);
+      const hasConc = layers['Fleet zones'] && ((p.concentration_systems || []).length > 0);
+      if (!hasTerr && !hasConc && p.id !== focusId) continue;
     }
     const anc = polityAnchor(p);
     if (!anc) continue;
     let [sx, sy] = toScreen({ x: anc.x, y: anc.topY });
-    sy -= Math.min(26, regionRadius(k) * 0.55 + 8);
-    if (sx < -90 || sx > W + 90 || sy < -30 || sy > H + 30) continue;
+    sy -= Math.min(24, regionRadius(k) * 0.50 + 8);
+    if (sx < -100 || sx > W + 100 || sy < -30 || sy > H + 30) continue;
 
     const isFoc = focusId && p.id === focusId;
-    const col = p.kind === 'us' ? OURS : (HEX.test(p.color || '') ? p.color : '#e8c35a');
+    const col = HEX.test(p.color || '') ? p.color : (p.kind === 'us' ? '#6ea862' : '#aa915b');
     const title = String(p.label || p.name || p.id).toUpperCase();
     const subBits = [];
     if (p.kind === 'us') subBits.push(fmt(p.standing_ships || p.total_members) + ' ships');
@@ -675,37 +807,39 @@ function drawPolityLabels(k) {
     }
     const sub = subBits.join(' | ');
 
-    ctx.font = '700 ' + fontSize.toFixed(1) + 'px system-ui, sans-serif';
-    const tw = Math.max(ctx.measureText(title).width, 46);
-    const pw = tw + 14, ph = sub ? fontSize + subSize + 10 : fontSize + 8;
+    ctx.font = '650 ' + fontSize.toFixed(1) + 'px system-ui, sans-serif';
+    const tw = Math.max(ctx.measureText(title).width, 48);
+    const pw = tw + 14, ph = sub ? fontSize + subSize + 9 : fontSize + 8;
 
-    // Gentle vertical nudge to avoid label-on-label overlap
     for (let tries = 0; tries < 5; tries++) {
-      const clash = placed.find((b) => Math.abs(b.cx - sx) < (b.w + pw) * 0.48 && Math.abs(b.cy - sy) < (b.h + ph) * 0.55);
+      const clash = placed.find((b) => Math.abs(b.cx - sx) < (b.w + pw) * 0.48 && Math.abs(b.cy - sy) < (b.h + ph) * 0.56);
       if (!clash) break;
-      sy = clash.cy + (sy >= clash.cy ? (clash.h + ph) * 0.58 : -(clash.h + ph) * 0.58);
+      sy = clash.cy + (sy >= clash.cy ? (clash.h + ph) * 0.60 : -(clash.h + ph) * 0.60);
     }
 
-    const alpha = (isFoc ? 1.0 : (focusId ? 0.35 : 0.86)) * fade;
+    const alpha = (isFoc ? 0.98 : (focusId ? 0.28 : 0.80)) * fade;
     const bx = sx - pw / 2, by = sy - ph / 2;
     ctx.save();
     ctx.globalAlpha = alpha;
-    ctx.fillStyle = isFoc ? 'rgba(14, 20, 32, 0.94)' : 'rgba(11, 15, 24, 0.78)';
-    ctx.strokeStyle = rgba(col, isFoc ? 0.95 : 0.62);
-    ctx.lineWidth = isFoc ? 1.6 : 1.0;
+    ctx.fillStyle = isFoc ? 'rgba(13, 18, 28, 0.93)' : 'rgba(11, 15, 23, 0.72)';
+    ctx.strokeStyle = rgba(col, isFoc ? 0.90 : 0.48);
+    ctx.lineWidth = isFoc ? 1.5 : 1.0;
+    if (p.border_style === 'dashed' || p.border_style === 'dash-long') ctx.setLineDash([5, 3]);
+    else if (p.border_style === 'dotted') ctx.setLineDash([2, 3]);
     ctx.beginPath();
     if (ctx.roundRect) ctx.roundRect(bx, by, pw, ph, 5);
     else ctx.rect(bx, by, pw, ph);
     ctx.fill();
     ctx.stroke();
+    ctx.setLineDash([]);
 
     ctx.fillStyle = col;
-    ctx.font = '700 ' + fontSize.toFixed(1) + 'px system-ui, sans-serif';
+    ctx.font = '650 ' + fontSize.toFixed(1) + 'px system-ui, sans-serif';
     ctx.fillText(title, sx, by + fontSize * 0.65 + 2);
     if (sub) {
-      ctx.fillStyle = 'rgba(218, 226, 242, 0.82)';
+      ctx.fillStyle = 'rgba(204, 214, 232, 0.78)';
       ctx.font = '500 ' + subSize.toFixed(1) + 'px ui-monospace, monospace';
-      ctx.fillText(sub, sx, by + fontSize + subSize * 0.6 + 3);
+      ctx.fillText(sub, sx, by + fontSize + subSize * 0.58 + 3);
     }
     ctx.restore();
     placed.push({ cx: sx, cy: sy, w: pw, h: ph });
@@ -726,7 +860,7 @@ function paint(t) {
   }
   if (layers.Regions || layers['Our space'] || layers['Blocs & Empires'] || layers['Fleet zones']) paintTerritory(k);
   if (layers.Regions && k < 0.22) {                                 // quiet matte NPC empire backdrop names
-    const size = Math.max(10, Math.min(18, 210 * k)), fade = Math.min(1, (0.22 - k) / 0.08), gap = size * 0.42, reach = regionRadius(k) + size * 0.9;
+    const size = Math.max(10, Math.min(17, 195 * k)), fade = Math.min(1, (0.22 - k) / 0.08), gap = size * 0.42, reach = regionRadius(k) + size * 0.9;
     const dots = S.systems.map(toScreen);
     ctx.font = '600 ' + size.toFixed(1) + 'px system-ui, sans-serif'; ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
     for (const n of realmNames) {
@@ -736,7 +870,7 @@ function paint(t) {
       const crowd = (yy) => dots.reduce((m, q) => m + (Math.abs(q[0] - x) < total / 2 + 8 && Math.abs(q[1] - yy) < size * 0.8 + 5 ? 1 : 0), 0);
       const y = crowd(under) <= crowd(over) ? under : over;
       if (x < -total || x > W + total || y < -30 || y > H + 30) continue;
-      ctx.fillStyle = rgba(n.colour, (0.26 * fade).toFixed(2));
+      ctx.fillStyle = rgba(n.colour, (0.20 * fade).toFixed(2));
       let at = x - total / 2;
       letters.forEach((ch, i) => { ctx.fillText(ch, at, y); at += widths[i] + gap; });
     }
@@ -1008,7 +1142,7 @@ function polityRegionAt(mx, my) {
   for (const z of polityZones) {
     const d = Math.hypot(mx - z.x, my - z.y);
     if (d <= z.r) {
-      const score = (z.kind === 'core' ? 0 : 1000) + d;
+      const score = (z.kind === 'core' ? 0 : z.kind === 'terr' ? 300 : 1000) + d;
       const cur = hits.get(z.p.id);
       if (!cur || score < cur.score) hits.set(z.p.id, { p: z.p, kind: z.kind, score });
     }
@@ -1022,6 +1156,7 @@ function politiesInSystem(sysId) {
   const out = [];
   for (const p of getPolities()) {
     if ((p.core_systems || []).includes(sysId)) out.push({ p, kind: 'core' });
+    else if ((p.territory_systems || []).includes(sysId)) out.push({ p, kind: 'terr' });
     else if ((p.concentration_systems || []).some((c) => c.system === sysId)) out.push({ p, kind: 'fleet' });
   }
   return out;
@@ -1040,7 +1175,7 @@ function focusPolityOnMap(p, doFit) {
   renderAlerts();
   renderLegend();
   if (doFit) {
-    const ids = [...new Set([...(p.core_systems || []), ...(p.concentration_systems || []).map((c) => c.system)])];
+    const ids = [...new Set([...(p.territory_systems || p.core_systems || []), ...(p.concentration_systems || []).map((c) => c.system)])];
     const pts = ids.map((id) => sys.get(id)).filter(Boolean);
     if (pts.length) fit(pts, 520, false);
   }
@@ -4073,7 +4208,7 @@ function renderEmpireDiplomacy(panel, dip) {
       const card = el('div', 'icard');
       if (pol && HEX.test(pol.color || '')) card.style.borderLeft = '3px solid ' + pol.color;
       const head = el('div', 'ichead');
-      head.append(el('b', null, bloc.lead_name + ' Coalition (' + bloc.factions.length + ' factions)'), ' ', actStatePill(bloc.activity_state));
+      head.append(el('b', null, (bloc.bloc_name || (bloc.lead_name + ' Coalition')) + ' (' + bloc.factions.length + ' factions)'), ' ', actStatePill(bloc.activity_state));
       if (pol) {
         const isLocked = lockPolity && lockPolity.id === pol.id;
         const lBtn = el('button', 'maploc' + (isLocked ? ' on' : ''), isLocked ? 'Locked on map' : 'Focus bloc');
@@ -4511,8 +4646,10 @@ function renderLegend() {
       const col = p.kind === 'us' ? OURS : (HEX.test(p.color || '') ? p.color : '#e8c35a');
       const btn = el('button', 'lpol' + (lockPolity && lockPolity.id === p.id ? ' on' : ''));
       btn.type = 'button';
-      const sw = swatch(rgba(col, 0.95), rgba(col, 0.24));
-      if (!p.healthy_bases && p.kind !== 'us') sw.style.borderStyle = 'dashed';
+      const sw = swatch(rgba(col, 0.85), rgba(col, 0.20));
+      if (p.border_style === 'double') { sw.style.borderStyle = 'double'; sw.style.borderWidth = '3px'; }
+      else if (p.border_style === 'dashed' || p.border_style === 'dash-long' || p.border_style === 'dash-dot') sw.style.borderStyle = 'dashed';
+      else if (p.border_style === 'dotted') sw.style.borderStyle = 'dotted';
       const meta = p.kind === 'us'
         ? fmt(p.standing_ships || p.total_members) + ' ships'
         : ((p.healthy_bases ? p.healthy_bases + 'b ' : '') + (p.active_1h ? p.active_1h + ' live' : fmt(p.total_members) + 'm'));
@@ -4539,7 +4676,7 @@ function renderLegend() {
       btn.addEventListener('click', () => focusPolityOnMap(p, true));
       legend.append(btn);
     }
-    row(swatch('rgba(200,210,235,0.75)', 'rgba(200,210,235,0.12)'), 'solid border: sovereign bases | dashed halo: fleet concentration', true);
+    row(swatch('rgba(200,210,235,0.65)', 'rgba(200,210,235,0.10)'), '2J merged borders around bases (style per bloc) | dotted ring: fleet hub', true);
   }
 
   head('Starting Empires (backdrop)');
@@ -4571,6 +4708,11 @@ function renderLegend() {
   row(glyphSvg('pip', '#aeb5cc', 12), 'station');
   row(glyphSvg('pip', '#e8c35a', 12), 'a player faction\'s base');
   row(glyphSvg('cross', '#e06c66', 12), 'pirate stronghold');
+  row(glyphSvg('threat', '#dcae58', 12), 'danger by our intel');
+  row(glyphSvg('threat', '#e06c66', 12), 'high danger');
+  row(el('span', 'ltag', 'TAG 5'), 'foreign faction, its pilots in the last hour', true);
+  const seen = el('i', 'seen');
+  row(seen, 'traffic in the last hour', true);
 }
 
 async function loadState() {
@@ -4594,11 +4736,6 @@ async function loadState() {
     x: list.reduce((a, o) => a + o.x, 0) / list.length, y0: Math.min(...list.map((o) => o.y)), y1: Math.max(...list.map((o) => o.y)) }));
   realmVer++;
   renderLegend();
-  row(glyphSvg('threat', '#dcae58', 12), 'danger by our intel');
-  row(glyphSvg('threat', '#e06c66', 12), 'high danger');
-  row(el('span', 'ltag', 'TAG 5'), 'foreign faction, its pilots in the last hour', true);
-  const seen = el('i', 'seen');
-  row(seen, 'traffic in the last hour', true);
 }
 async function loadLive() {
   try { L = await get('/api/live'); } catch (e) { L.stream = { connected: false, age: -1 }; }
@@ -4610,7 +4747,7 @@ async function loadFleet() {
   try { F = await get('/api/fleet'); fetchedAt = Date.now(); } catch (e) { F = Object.assign({}, F, { age: -1 }); }
   shipsBy.clear();
   F.ships.forEach((r) => { if (r.system) { if (!shipsBy.has(r.system)) shipsBy.set(r.system, []); shipsBy.get(r.system).push(r); } });
-  renderMembers(); renderRoster(); renderNotice(); tickAges(); renderPop(); draw();
+  realmVer++; renderMembers(); renderRoster(); renderNotice(); tickAges(); renderPop(); draw();
   if (tab === 'Metrics' && Date.now() - metricsAt >= 30000) render();   // not at every poll: the page under the reader stays still
   if (selShip) {
     const name = selShip;
@@ -4780,7 +4917,7 @@ function init() {
           const c = item.p.kind === 'us' ? OURS : (HEX.test(item.p.color || '') ? item.p.color : '#e8c35a');
           mp.style.borderColor = rgba(c, 0.72);
           mp.style.color = c;
-          mp.textContent = item.p.label + (item.kind === 'core' ? ' [CORE]' : ' [FLEET]');
+          mp.textContent = item.p.label + (item.kind === 'core' ? ' [BASE]' : item.kind === 'terr' ? ' [2J]' : ' [FLEET]');
           prow.append(mp);
         }
         tip.append(prow);

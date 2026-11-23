@@ -2023,23 +2023,108 @@ RIVAL_HIST_LOCK = threading.Lock()
 RIVAL_HIST_META = {"last_write": 0.0, "seeded": False}
 RIVAL_SNAP_EVERY = 3000.0  # append hourly snapshot at most once every 50 min
 
-# Luminous dark-mode-safe Stellaris territory palette (CLTV green #86d65b reserved for us)
+# Muted, desaturated Endless-Space-2 / Stellaris dark-mode cartographic palette
+# (high saturation reserved for alerts/hover; dusty Collective sage #6ea862 reserved for us)
 POLITY_PALETTE = (
-    "#ef5b6c",  # crimson coral
-    "#f0b24a",  # electric amber gold
-    "#b07cf7",  # royal amethyst violet
-    "#38c9e0",  # vivid cyan aqua
-    "#f27d42",  # warm tangerine
-    "#e864b8",  # rose magenta
-    "#5b9bff",  # sky cobalt
-    "#3fd4a5",  # seafoam mint
-    "#d99c52",  # antique ochre
-    "#7e8ef7",  # indigo periwinkle
-    "#f07c92",  # salmon rose
-    "#c4d94f",  # chartreuse gold
-    "#47b8e0",  # glacier blue
-    "#e08a66",  # terracotta
+    "#53948d",  # muted verdigris teal
+    "#b2745e",  # dusty terracotta clay
+    "#9475ab",  # muted imperial plum
+    "#5e82ad",  # desaturated steel blue
+    "#ab6a7b",  # muted rose clay
+    "#aa915b",  # antique sandstone brass
+    "#5c91a4",  # faded glacial slate
+    "#8c9b57",  # muted moss olive
+    "#a57c56",  # weathered copper
+    "#7582ae",  # muted indigo slate
+    "#a4748b",  # dusty mauve
+    "#689879",  # muted pine
 )
+BLOC_STYLES = (
+    ("solid", "hatch45"),
+    ("double", "hatch-45"),
+    ("dash-long", "stipple"),
+    ("dash-dot", "scan"),
+)
+
+
+def _short_fac_word(name, tag):
+    """Clean short brand token from a faction name for dynamic coalition naming."""
+    words = [w for w in re.split(r"[^A-Za-z0-9]+", str(name or "")) if w]
+    stop = {"the", "of", "and", "in", "for", "a", "an", "to", "our", "rise", "fall"}
+    core = [w for w in words if w.lower() not in stop]
+    if not core:
+        return tag
+    first = core[0]
+    if len(first) <= 2 and len(core) > 1:
+        return core[1][:12]
+    return first[:12]
+
+
+def _bloc_display_name(comp_rows):
+    """Derive a clean, human-readable galactic coalition name dynamically from member factions."""
+    if not comp_rows:
+        return "Alliance Bloc", "BLOC"
+    tot_mem = sum(x["members"] for x in comp_rows)
+    tot_wlth = sum(x["wealth"] for x in comp_rows) or 1
+    tot_bas = sum(x["bases"] for x in comp_rows)
+    # 1. Shared leading word stem across >= half of members (e.g. Busy Being Dead / Deadz / Deads)
+    first_words = [str(x["name"] or "").split()[0] for x in comp_rows if str(x["name"] or "").strip()]
+    if first_words:
+        cnts = collections.Counter(w.lower() for w in first_words)
+        stem_l, stem_n = cnts.most_common(1)[0]
+        if stem_n >= max(2, (len(comp_rows) + 1) // 2) and len(stem_l) >= 3:
+            stem = next(w for w in first_words if w.lower() == stem_l)
+            suffix = "Mega-Federation" if tot_mem >= 1000 else "Federation"
+            return f"{stem} {suffix}", f"{stem.upper()} {suffix.upper()}"
+    # 2. Dominant dual-anchor coalition (top 2 carry >= 75% of wealth or members, second >= 18%)
+    ranked = sorted(comp_rows, key=lambda x: (x["wealth"], x["members"]), reverse=True)
+    if len(ranked) >= 2:
+        a, b = ranked[0], ranked[1]
+        a_sh = max(a["wealth"] / tot_wlth, a["members"] / max(1, tot_mem))
+        b_sh = max(b["wealth"] / tot_wlth, b["members"] / max(1, tot_mem))
+        if b_sh >= 0.18 and (a_sh + b_sh) >= 0.72:
+            wa = _short_fac_word(a["name"], a["tag"])
+            wb = _short_fac_word(b["name"], b["tag"])
+            if wa.lower() == wb.lower():
+                wa, wb = a["tag"], b["tag"]
+            # Prefer tag if name is overly long or generic phrase (e.g. Our Lord And Savior -> OLSV)
+            if len(str(a["name"]).split()) >= 4:
+                wa = a["tag"]
+            if len(str(b["name"]).split()) >= 4:
+                wb = b["tag"]
+            combined_names = (str(a["name"]) + " " + str(b["name"])).lower()
+            noun = "Swarm" if "swarm" in combined_names or "hive" in combined_names else "Pact"
+            return f"{wa}-{wb} {noun}", f"{wa.upper()}-{wb.upper()} {noun.upper()}"
+    # 3. Single flagship coalition (leader owns most bases/wealth)
+    lead = ranked[0]
+    lname = lead["name"] if len(lead["name"]) <= 22 else _short_fac_word(lead["name"], lead["tag"])
+    if tot_bas > 0 and lead["bases"] / float(tot_bas) >= 0.65:
+        return f"{lname} Bloc", f"{lname.upper()} BLOC"
+    return f"{lname} Coalition", f"{lname.upper()} COALITION"
+
+
+def _expand_territory(seeds, adj_map, emp_map, hops=2, keep_npc_seeds=True):
+    """Expand sovereign base seeds outward by `hops` hyperlane jumps across lawless space for organic 2J borders."""
+    out = {}
+    q = collections.deque()
+    for s in seeds:
+        if s in adj_map:
+            if keep_npc_seeds or not emp_map.get(s):
+                out[s] = 0
+                q.append((s, 0))
+    while q:
+        cur, d = q.popleft()
+        if d >= hops:
+            continue
+        for nb in adj_map.get(cur, ()):
+            if nb in out:
+                continue
+            # Do not spill across protected NPC empire borders unless already a seed
+            if emp_map.get(nb):
+                continue
+            out[nb] = d + 1
+            q.append((nb, d + 1))
+    return sorted(out.keys(), key=lambda s: (out[s], s))
 
 
 def _rival_history_path():
@@ -2321,11 +2406,13 @@ def api_diplomacy(_allow_snapshot=False):
         mp = read_json(DATA / "map.json") or {}
     sys_jumps = {}
     sys_adj = {}
+    sys_emp = {}
     for sy in (mp.get("systems") or []):
         if isinstance(sy, dict) and sy.get("id"):
             sid = clean_ascii(sy["id"], 40)
             sys_jumps[sid] = int(num(sy.get("jumps"))) if sy.get("jumps") is not None else -1
             sys_adj[sid] = [clean_ascii(x, 40) for x in (sy.get("lanes") or []) if x]
+            sys_emp[sid] = clean_ascii(sy.get("empire") or "", 20)
 
     # Live SSE pilot sightings (in-memory PILOTS first, pilots.json fallback)
     with LOCK:
@@ -3016,26 +3103,33 @@ def api_diplomacy(_allow_snapshot=False):
 
     # Dynamic Stellaris Galactic Territories (100% data-driven, zero hardcoded tags!)
     territories_out = []
-    used_colors = {"#86d65b"}
+    used_colors = {"#6ea862"}
 
-    # 1. Our Collective Dynamic Territory
+    # 1. Our Collective Dynamic Territory (2J sovereign expansion from bases/claims + 1J around >=10-ship hubs)
     cltv_row = by_tag.get("CLTV")
     if cltv_row:
-        our_core = list(dict.fromkeys(
-            our_bases_list + our_claimed_syss + [sy for sy, cnt in sorted(our_ship_density.items(), key=lambda kv: kv[1], reverse=True) if cnt >= 10][:10]
+        our_sovereign = list(dict.fromkeys(our_bases_list + our_claimed_syss))
+        our_hubs = [sy for sy, cnt in sorted(our_ship_density.items(), key=lambda kv: kv[1], reverse=True) if cnt >= 10][:10]
+        our_core = list(dict.fromkeys(our_sovereign + our_hubs))
+        our_terr = list(dict.fromkeys(
+            _expand_territory(our_sovereign, sys_adj, sys_emp, hops=2, keep_npc_seeds=True)
+            + _expand_territory(our_hubs, sys_adj, sys_emp, hops=1, keep_npc_seeds=True)
         ))
-        our_core_set = set(our_core)
+        our_terr_set = set(our_terr)
         our_conc = [
             {"system": sy, "count": cnt}
             for sy, cnt in sorted(our_ship_density.items(), key=lambda kv: kv[1], reverse=True)
-            if cnt >= 3 and sy not in our_core_set
-        ][:16]
+            if cnt >= 3 and sy not in our_terr_set
+        ][:14]
         territories_out.append({
             "id": "CLTV",
             "kind": "us",
             "name": cltv_row["name"],
             "label": "THE COLLECTIVE",
-            "color": "#86d65b",
+            "color": "#6ea862",
+            "border_style": "double",
+            "hatch": "",
+            "territory_systems": our_terr,
             "tags": ["CLTV"],
             "members_breakdown": [{
                 "tag": "CLTV", "name": cltv_row["name"], "members": our_members,
@@ -3077,6 +3171,7 @@ def api_diplomacy(_allow_snapshot=False):
         })
 
     # 2. Serious Coalition Blocs (dynamic: >=2 bases, OR >=1 base with real scale/activity, OR major active wealth bloc)
+    bloc_idx = 0
     for b in alliances_out:
         is_serious = (
             b["total_bases"] >= 2
@@ -3088,14 +3183,19 @@ def api_diplomacy(_allow_snapshot=False):
         tags_l = [m["tag"] for m in b["factions"]]
         bloc_member_tags.update(tags_l)
         col = _polity_color(b["lead_tag"], used_colors)
+        b_style, b_hatch = BLOC_STYLES[bloc_idx % len(BLOC_STYLES)]
+        bloc_idx += 1
+        comp_full = [by_tag[t] for t in tags_l if t in by_tag]
+        b_name, b_label = _bloc_display_name(comp_full)
+        b["bloc_name"] = b_name
         core_syss = list(dict.fromkeys(b["base_systems"]))
-        core_set = set(core_syss)
+        terr_syss = _expand_territory(core_syss, sys_adj, sys_emp, hops=2, keep_npc_seeds=True)
+        terr_set = set(terr_syss)
         conc = [
             {"system": sy, "count": cnt}
             for sy, cnt in sorted(b["_sys_density"].items(), key=lambda kv: kv[1], reverse=True)
-            if cnt >= 5 and sy not in core_set
-        ][:6]
-        top_tags = "+".join(tags_l[:2]) + (f"+{len(tags_l)-2}" if len(tags_l) > 2 else "")
+            if cnt >= 5 and sy not in terr_set
+        ][:5]
         b_score = power_score(b["total_wealth"], b["total_members"], b["total_bases"], b["total_kills"], b["max_tier"])
         bratio = b_score / our_score
         brel = ("Overwhelming" if bratio >= 5.0 else "Superior" if bratio >= 1.75
@@ -3105,9 +3205,12 @@ def api_diplomacy(_allow_snapshot=False):
         territories_out.append({
             "id": "BLOC:" + b["lead_tag"],
             "kind": "bloc",
-            "name": b["lead_name"] + " Coalition",
-            "label": top_tags + " BLOC",
+            "name": b_name,
+            "label": b_label,
             "color": col,
+            "border_style": b_style,
+            "hatch": b_hatch,
+            "territory_systems": terr_syss,
             "tags": tags_l,
             "members_breakdown": b["factions"][:8],
             "total_members": b["total_members"],
@@ -3159,21 +3262,26 @@ def api_diplomacy(_allow_snapshot=False):
     for r in solo_cands[:10]:
         col = _polity_color(r["tag"], used_colors)
         core_syss = list(dict.fromkeys(r["base_systems"]))
-        core_set = set(core_syss)
+        terr_syss = _expand_territory(core_syss, sys_adj, sys_emp, hops=2, keep_npc_seeds=True) if core_syss else []
+        terr_set = set(terr_syss)
         min_conc = 4 if core_syss else 2
         conc = [
             {"system": sy, "count": cnt}
             for sy, cnt in sorted(r["_sys_density"].items(), key=lambda kv: kv[1], reverse=True)
-            if cnt >= min_conc and sy not in core_set
-        ][:5]
-        if not core_syss and not conc:
+            if cnt >= min_conc and sy not in terr_set
+        ][:4]
+        if not terr_syss and not conc:
             continue
+        s_label = r["name"].upper() if len(r["name"]) <= 16 else r["tag"]
         territories_out.append({
             "id": "SOLO:" + r["tag"],
             "kind": "solo",
             "name": r["name"],
-            "label": r["tag"] + " (" + r["name"][:14].upper() + ")" if len(r["name"]) <= 14 else r["tag"],
+            "label": s_label,
             "color": col,
+            "border_style": "dashed" if terr_syss else "dotted",
+            "hatch": "",
+            "territory_systems": terr_syss,
             "tags": [r["tag"]],
             "members_breakdown": [{
                 "tag": r["tag"], "name": r["name"], "members": r["members"],
