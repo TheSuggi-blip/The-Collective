@@ -71,6 +71,9 @@ class TestFleetRivals(unittest.TestCase):
             br = rivals.render_briefing(doc, who="Mercury")
             self.assertIn("ADOPT (Trade)", br)
             self.assertIn("Hex Star", br)
+            self.assertIn("market_edges", doc)
+            self.assertEqual(doc["market_edges"]["undercut_targets"][0]["item"], "fuel_cell")
+            self.assertIn("Live Undercut / Outsource / Outsupply Board", md)
 
 
 if __name__ == "__main__":

@@ -142,5 +142,20 @@ class StrictClassTests(unittest.TestCase):
         self.assertIn("miner     gather, once, sell, craft, fit, other", done.stdout)
 
 
+    def test_bursar_sell_order_is_trader_and_freight_passenger_are_hauler(self):
+        bursar = {"id": "bursar-melt-nexus", "kind": "circuit", "stops": [{"at": "s", "sell_order": [{"item": "melt", "qty": 100, "price": 500}]}]}
+        freight = {"id": "freight-rim-courier", "kind": "circuit", "stops": [{"at": "s", "refuel": True}]}
+        pax = {"id": "passenger-nebula-express", "kind": "circuit", "stops": [{"at": "s", "refuel": True}]}
+        workclass.STRICT = True
+        self.assertEqual(workclass.work_class(bursar), "sell")
+        self.assertEqual(workclass.roles_for(bursar), ("trader",))
+        self.assertTrue(workclass.sells(bursar))
+        self.assertEqual(workclass.sale_refused({"name": "hauler-1", "role": "hauler"}, "bursar-melt-nexus", bursar, {}), workclass.SALE)
+        self.assertIsNone(workclass.sale_refused({"name": "trader-1", "role": "trader"}, "bursar-melt-nexus", bursar, {}))
+        self.assertEqual(workclass.work_class(freight), "haul")
+        self.assertEqual(workclass.roles_for(freight), ("hauler",))
+        self.assertEqual(workclass.work_class(pax), "haul")
+        self.assertEqual(workclass.roles_for(pax), ("hauler",))
+
 if __name__ == "__main__":
     unittest.main()

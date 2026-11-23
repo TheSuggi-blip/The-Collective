@@ -3883,9 +3883,12 @@ async function renderMetrics(panel, live) {
       };
       const [vCls, vLbl] = vMap[se.verdict] || ['warn', se.verdict || 'UNKNOWN'];
       const scHead = el('div', 'sc-head');
+      const wScore = se.weighted_score !== undefined ? Number(se.weighted_score) : null;
+      const wCls = wScore === null ? '' : (wScore >= 80 ? 'good' : wScore >= 60 ? 'warn' : 'bad');
       scHead.append(
-        el('h3', null, 'Enterprise momentum & stagnation watch'),
-        el('span', 'pill ' + vCls, vLbl)
+        el('h3', null, 'Enterprise momentum & weighted triage'),
+        el('span', 'pill ' + vCls, vLbl),
+        wScore !== null ? el('span', 'pill ' + wCls, 'Score ' + wScore.toFixed(1) + '/100') : null
       );
       panel.append(scHead);
 
@@ -3932,66 +3935,117 @@ async function renderMetrics(panel, live) {
         panel.append(el('p', 'sub sc-drag', 'Active drags: ' + se.drags.join(' | ')));
       }
 
-      panel.append(el('h3', null, 'Division KPI scorecards & alert triggers (<80% targets)'));
+      panel.append(el('h3', null, 'Division KPI scorecards & weighted health (<80% targets)'));
       const divList = ['Command', 'Mining', 'Trade', 'Logistics', 'Military', 'Intel'];
       const sevCls = (s) => (s === 'OK' ? 'good' : s === 'WARN' ? 'warn' : 'bad');
+      const tierCls = (t) => (t === 'P0' ? 'bad' : t === 'P1' ? 'warn' : '');
       const trendPill = (tr) => {
         const cls = tr === 'IMPROVING' ? 'good' : tr === 'WORSENING' ? 'bad' : '';
-        const lbl = tr === 'IMPROVING' ? 'UP' : tr === 'WORSENING' ? 'DOWN' : 'FLAT';
+        const lbl = tr === 'IMPROVING' ? '24h UP' : tr === 'WORSENING' ? '24h DOWN' : '24h FLAT';
         return el('span', 'pill' + (cls ? ' ' + cls : ''), lbl);
       };
-      const gaugeCell = (pct, sub, st) => {
-        const c = el('div', 'progcell');
-        c.append(el('span', null, sub), pbar(Math.min(100, Math.max(0, pct || 0)), 100, sevCls(st)));
-        return c;
+      const meterRow = (label, pct, sub, st) => {
+        const wrap = el('div', 'sc-mrow');
+        const top = el('div', 'sc-mtop');
+        top.append(el('span', 'sc-mlbl', label), el('span', 'sc-mval', sub));
+        const bar = el('div', 'pr-bar');
+        const fill = el('div', 'pr-bar-fill ' + (st === 'OK' ? 'good' : st === 'WARN' ? 'low' : 'bad'));
+        fill.style.width = Math.min(100, Math.max(0, pct || 0)).toFixed(1) + '%';
+        bar.append(fill);
+        wrap.append(top, bar);
+        return wrap;
       };
-      const rows = divList.filter((dn) => sc.divisions && sc.divisions[dn]).map((dn) => {
+      const dgrid = el('div', 'sc-div-grid');
+      for (const dn of divList) {
+        if (!sc.divisions || !sc.divisions[dn]) continue;
         const d = sc.divisions[dn];
-        const nm = el('span', null, dn);
-        nm.style.color = DIV[dn] || DIV.Unassigned;
-        nm.title = 'Admiral ' + d.admiral;
-        const stCell = el('div', 'sc-stcell');
-        stCell.append(el('span', 'pill ' + sevCls(d.status), d.status), trendPill(d.trend_24h));
+        const col = DIV[dn] || DIV.Unassigned;
+        const card = el('div', 'sc-div-card' + (d.status === 'OK' ? ' ok' : d.status === 'ALARM' ? ' alarm' : ' warn'));
+        card.style.borderLeftColor = col;
+
+        const dSc = d.health_score !== undefined ? Number(d.health_score) : 0;
+        const dScCls = dSc >= 80 ? 'good' : dSc >= 60 ? 'warn' : 'bad';
+        const head = el('div', 'sc-dhead');
+        const titleWrap = el('div', 'sc-dtitle');
+        const nm = el('b', null, dn);
+        nm.style.color = col;
+        titleWrap.append(nm, el('span', 'sc-dadm', d.admiral));
+        const badges = el('div', 'sc-dbadges');
+        badges.append(
+          el('span', 'pill ' + dScCls, 'Score ' + dSc.toFixed(0)),
+          el('span', 'pill ' + sevCls(d.status), d.status),
+          trendPill(d.trend_24h)
+        );
+        head.append(titleWrap, badges);
+        card.append(head);
+
+        const cfRow = el('div', 'sc-dmeta');
+        const cfVal = Math.round(d.cashflow_24h || 0);
+        const cfSpan = el('span', cfVal > 0 ? 'pos' : cfVal < 0 ? 'neg' : '', signed(cfVal) + ' cr/h (24h)');
+        const cf6 = Math.round(d.cashflow_6h || 0);
+        cfRow.append(
+          cfSpan,
+          el('span', 'sc-dmeta-sub', '6h ' + signed(cf6) + '/h | Playbook ' + Math.round((d.playbook && d.playbook.max_chapter_pct) || 0) + '%')
+        );
+        card.append(cfRow);
+
         const empSub = d.employment.effective_working + '/' + d.employment.total + ' (' + d.employment.pct.toFixed(0) + '%)';
         const hullSub = d.hulls.mode === 'eligible_t2'
-          ? d.hulls.upgraded_eligible + '/' + d.hulls.eligible_p10 + ' (' + d.hulls.pct.toFixed(0) + '%)'
-          : 'P' + d.hulls.max_piloting + ' (' + d.hulls.pct.toFixed(0) + '%*)';
-        const modSub = d.modules.slot_pct.toFixed(0) + '% (' + d.modules.t2_mod_ships + ' T2+)';
-        const topT = (d.triggers && d.triggers.length)
-          ? 'Trigger: ' + d.triggers[0].metric + ' -- ' + d.triggers[0].actual
-          : 'All >=80% targets met';
-        const kpiCell = el('div', 'sc-kpicell');
-        kpiCell.append(
-          el('div', 'sc-kpi-val', (d.role_kpi && d.role_kpi.value) || '--'),
-          el('div', 'sc-trig-cell', topT)
+          ? d.hulls.upgraded_eligible + '/' + d.hulls.eligible_p10 + ' P10+ T2 (' + d.hulls.pct.toFixed(0) + '%)'
+          : 'P' + d.hulls.max_piloting + ' -> T2 (' + d.hulls.pct.toFixed(0) + '%*)';
+        const modSub = d.modules.slot_pct.toFixed(0) + '% (' + d.modules.t2_mod_ships + ' T2+, ' + d.modules.off_role_ships + ' off-role)';
+        const meters = el('div', 'sc-meters');
+        meters.append(
+          meterRow('Working', d.employment.pct, empSub, d.employment.status),
+          meterRow('Hulls', d.hulls.pct, hullSub, d.hulls.status),
+          meterRow('Slots', d.modules.slot_pct, modSub, d.modules.status)
         );
-        return [
-          nm,
-          stCell,
-          gaugeCell(d.employment.pct, empSub, d.employment.status),
-          gaugeCell(d.hulls.pct, hullSub, d.hulls.status),
-          gaugeCell(d.modules.slot_pct, modSub, d.modules.status),
-          tint(Math.round(d.cashflow_24h || 0)),
-          kpiCell,
-        ];
-      });
-      panel.append(fitTable(
-        table(['Division', 'State / 24h', 'Working', 'Hulls', 'Slots', 'Net / h', 'Role KPI & Top Trigger'], rows, [5])
-      ));
-      panel.append(el('p', 'sub', '* = 0 pilots at Piloting 10+ yet (bar tracks avg Piloting progress toward T2 unlock). Triggers fire WARN <80% and ALARM <60%, mirrored in every Admiral\'s startup briefing (`hive.py briefing`).'));
+        card.append(meters);
 
-      // Compact actionable enterprise trigger cards
-      const activeT = (se.triggers || []).slice(0, 6);
+        const rk = el('div', 'sc-drkpi');
+        rk.append(
+          el('span', 'sc-drkpi-k', ((d.role_kpi && d.role_kpi.name) || 'Role KPI') + ': '),
+          el('span', 'sc-drkpi-v', (d.role_kpi && d.role_kpi.value) || '--')
+        );
+        card.append(rk);
+
+        const qList = ((d.triage && d.triage.length) ? d.triage : (d.triggers || [])).slice(0, 2);
+        const qBox = el('div', 'sc-dqueue');
+        if (qList.length) {
+          for (const it of qList) {
+            const qr = el('div', 'sc-dqrow');
+            qr.append(
+              el('span', 'pill ' + tierCls(it.tier || 'P2'), (it.tier || 'P2') + ' ' + Math.round(it.score || 0)),
+              el('span', 'sc-dqsrc', it.source || 'KPI'),
+              el('span', 'sc-dqtxt', it.metric + ': ' + it.actual)
+            );
+            qBox.append(qr);
+          }
+        } else {
+          qBox.append(el('div', 'sc-dqok', 'All >=80% targets met'));
+        }
+        card.append(qBox);
+        dgrid.append(card);
+      }
+      panel.append(dgrid);
+      panel.append(el('p', 'sub', '* = 0 pilots at Piloting 10+ yet (bar tracks avg Piloting progress toward T2 unlock). Weighted Health = 30% Working + 30% Role KPI + 25% Upgrades + 15% Trend/Hygiene; mirrored in hive.py briefing.'));
+
+      // Sleek MAUT+WSJF weighted enterprise triage queue (KPI + REQ + NEED + ROADMAP)
+      const activeT = ((se.triage && se.triage.length) ? se.triage : (se.triggers || [])).slice(0, 8);
       if (activeT.length) {
+        panel.append(el('h3', null, 'Weighted triage queue (strict order: P0 > P1 > P2 > P3; score = MAUT x WSJF)'));
         const tbox = el('div', 'sc-trig-list');
         for (const tr of activeT) {
-          const row = el('div', 'sc-trig');
-          row.append(
-            el('span', 'pill ' + sevCls(tr.severity), tr.severity),
-            el('b', null, tr.metric + ': '),
-            el('span', null, tr.actual + ' (target ' + tr.target + ') -- '),
-            el('span', 'sc-act', tr.action)
+          const tTier = tr.tier || 'P2';
+          const row = el('div', 'sc-trig tier-' + tTier.toLowerCase());
+          const left = el('div', 'sc-trig-head');
+          left.append(
+            el('span', 'pill ' + tierCls(tTier), tTier + ' ' + Math.round(tr.score || 0)),
+            el('span', 'pill ' + sevCls(tr.severity || 'WARN'), tr.source || tr.severity),
+            el('b', null, tr.metric),
+            el('span', 'sc-trig-val', tr.actual)
           );
+          row.append(left, el('div', 'sc-act', tr.action));
           tbox.append(row);
         }
         panel.append(tbox);
@@ -4457,6 +4511,24 @@ function renderEmpireSedcards(panel, rv) {
   }
 
   panel.append(el('h3', null, 'Top rival faction sedcards (' + cards.length + ' tracked | velocity window ' + (rv.span_hours || 0).toFixed(1) + 'h)'));
+  const me = rv.market_edges || {};
+  if ((me.outsupply_bids || []).length || (me.outsource_cheap || []).length || (me.undercut_targets || []).length) {
+    panel.append(el('h3', null, 'Live Outsupply / Outsource / Undercut board (500-ship multi-wing portfolio)'));
+    const egrid = el('div', 'sed-tricks');
+    const addEdge = (title, col, items, fmtFn) => {
+      if (!items || !items.length) return;
+      const box = el('div', 'sed-tbox');
+      const h = el('div', 'sed-thead', title);
+      h.style.color = col;
+      box.append(h);
+      for (const x of items.slice(0, 5)) box.append(el('div', 'sed-titem', fmtFn(x)));
+      egrid.append(box);
+    };
+    addEdge('OUTSUPPLY (Deep Rival Bids)', '#86d65b', me.outsupply_bids, (x) => x.item + ' @ ' + fmt(x.price) + ' cr x' + fmt(x.qty) + ' ([' + x.tag + ']@' + x.system + ')');
+    addEdge('OUTSOURCE (Cheap Wholesale Asks)', '#6fa8dc', me.outsource_cheap, (x) => x.item + ' @ ' + fmtCompact(x.price) + ' cr x' + fmt(x.qty) + ' ([' + x.tag + ']@' + x.system + ')');
+    addEdge('UNDERCUT (Inflated Rival Asks)', '#e8c35a', me.undercut_targets, (x) => x.item + ' @ ' + fmt(x.price) + ' cr x' + fmt(x.qty) + ' ([' + x.tag + ']@' + x.system + ')');
+    panel.append(egrid);
+  }
   const grid = el('div', 'sed-grid');
   for (const c of cards) {
     const card = el('div', 'sed-card' + (c.threat === 'high' ? ' danger' : c.standing === 'NEUTRAL' ? ' neutral' : ''));

@@ -167,5 +167,30 @@ class TestFleetScorecard(unittest.TestCase):
             self.assertIn("Logistics", out_unity)
 
 
+    def test_weighted_triage_ranks_p0_before_p3_and_includes_reqs_and_quick_needs(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root, data = _make_fixture(tmp)
+            sc = scorecard.compute_scorecard(root, data, now=1795410000)
+            ent = sc["enterprise"]
+            self.assertGreaterEqual(ent["weighted_score"], 0.0)
+            self.assertLessEqual(ent["weighted_score"], 100.0)
+            self.assertTrue(ent["triage"])
+            ranks = [(scorecard.TIER_RANK[x["tier"]], -x["score"]) for x in ent["triage"]]
+            self.assertEqual(ranks, sorted(ranks))
+            ent_codes = {x["code"] for x in ent["triage"]}
+            cmd_codes = {x["code"] for x in sc["divisions"]["Command"]["triage"]}
+            self.assertIn("REQ_ENT-001", ent_codes)
+            self.assertIn("REQ_ENT-001", cmd_codes)
+            log_triage = sc["divisions"]["Logistics"]["triage"]
+            atria = [x for x in log_triage if x["code"] == "NEED_atria-outpost-kit"]
+            self.assertEqual(len(atria), 1)
+            self.assertEqual(atria[0]["tier"], "P1")
+            self.assertEqual(atria[0]["effort"], 1)
+            self.assertGreaterEqual(atria[0]["score"], 85)
+            m_triage = sc["divisions"]["Mining"]["triage"]
+            m_idx = {x["code"]: i for i, x in enumerate(m_triage)}
+            self.assertLess(m_idx["DIV_IDLE"], m_idx["PLAYBOOK_CAP"])
+
+
 if __name__ == "__main__":
     unittest.main()

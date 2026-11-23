@@ -69,8 +69,94 @@ DIV_TO_ADMIRAL = {
 DIV_KEY_LOWER = {d: d.lower() for d in DIVISIONS}
 
 SEVERITY_RANK = {"ALARM": 0, "WARN": 1, "OK": 2}
+TIER_RANK = {"P0": 0, "P1": 1, "P2": 2, "P3": 3}
 TARGET_COMPLETION_PCT = 80.0
 HYSTERESIS_PCT = 5.0
+
+# Transparent MAUT Composite Weights (sum to 100)
+ENTERPRISE_WEIGHTS = {
+    "cashflow_eff": 30,
+    "employment": 25,
+    "upgrades": 20,
+    "roadmap": 15,
+    "seating_reqs": 10,
+}
+DIVISION_WEIGHTS = {
+    "employment": 30,
+    "role_kpi": 30,
+    "upgrades": 25,
+    "hygiene": 15,
+}
+
+# MAUT + WSJF Triage Specs: code -> (alarm_tier, warn_tier, alarm_weight, warn_weight, effort 1..3)
+# effort: 1 = quick route/config/batch fix (1.12x WSJF boost), 2 = standard ops (1.00x), 3 = multi-turn capital/XP (0.88x)
+TRIAGE_SPECS = {
+    "CASHFLOW_NEGATIVE": ("P0", "P1", 96, 78, 2),
+    "TRADE_NET": ("P0", "P1", 94, 76, 2),
+    "MILITARY_PERF": ("P0", "P1", 98, 72, 1),
+    "DIV_IDLE": ("P0", "P1", 92, 76, 1),
+    "FLEET_IDLE": ("P0", "P1", 92, 76, 1),
+    "DIPLO_PENDING": ("P0", "P0", 90, 88, 1),
+    "OPEN_REQUESTS": ("P0", "P1", 88, 76, 1),
+    "SUPPLY_CHAINS": ("P0", "P1", 88, 76, 2),
+    "PRODUCTIVE_EFFICIENCY": ("P1", "P1", 84, 72, 1),
+    "SURPLUS_BACKLOG": ("P1", "P1", 82, 76, 1),
+    "MINING_YIELD": ("P1", "P1", 82, 72, 2),
+    "DIV_HULL_UPGRADE": ("P1", "P1", 80, 70, 2),
+    "HULL_UPGRADE_LAG": ("P1", "P1", 80, 70, 2),
+    "OPEN_SEATS": ("P1", "P1", 76, 68, 1),
+    "INTEL_FRESHNESS": ("P1", "P2", 80, 62, 1),
+    "DIV_MODULE_FIT": ("P2", "P2", 60, 50, 2),
+    "MODULE_FIT_SATURATION": ("P2", "P2", 60, 50, 2),
+    "DIV_SKILL_TO_T2": ("P2", "P2", 52, 46, 3),
+    "PLAYBOOK_CAP": ("P3", "P3", 30, 22, 1),
+}
+
+# Primary owning division for progression.py roadmap rungs
+RUNG_OWNER = {
+    "h1-productive-cashflow": "Trade",
+    "h1-first-t2-hulls": "Mining",
+    "h1-atria-outpost": "Logistics",
+    "h1-intel-coverage": "Intel",
+    "h2-seat-wave3": "Command",
+    "h2-t2-standardization": "Command",
+    "h2-outpost-ring": "Logistics",
+    "h2-bursar-contracts": "Trade",
+    "h3-yildun-station": "Command",
+    "h3-armada-500": "Command",
+    "h3-passengers-t5": "Logistics",
+    "h3-galactic-top3": "Command",
+}
+
+
+def _wsjf_score(base_weight, gap_ratio=0.5, effort=2, direction="FLAT"):
+    """MAUT x WSJF priority score clamped to 1..100 (quick wins & worsening trends bubble up)."""
+    g = max(0.0, min(1.0, float(gap_ratio)))
+    gap_mult = 0.72 + 0.44 * g
+    eff_mult = {1: 1.12, 2: 1.00, 3: 0.88}.get(int(effort), 1.00)
+    d = str(direction or "FLAT").upper()
+    trend_adj = 10.0 if "WORSEN" in d else (-6.0 if "IMPROV" in d else 0.0)
+    return max(1, min(100, int(round(float(base_weight) * gap_mult * eff_mult + trend_adj))))
+
+
+def _annotate_trigger(t, gap_ratio=0.5):
+    """Attach MAUT+WSJF tier, weight, effort, score, source to a trigger dict in-place."""
+    code = t.get("code", "")
+    sev = t.get("severity", "WARN")
+    a_tier, w_tier, a_wt, w_wt, eff = TRIAGE_SPECS.get(code, ("P1", "P2", 75, 55, 2))
+    tier = a_tier if sev == "ALARM" else w_tier
+    base_wt = a_wt if sev == "ALARM" else w_wt
+    score = _wsjf_score(base_wt, gap_ratio=gap_ratio, effort=eff, direction=t.get("direction", "FLAT"))
+    t["tier"] = tier
+    t["weight"] = base_wt
+    t["effort"] = eff
+    t["score"] = score
+    t["source"] = "KPI"
+    return t
+
+
+def _triage_sort_key(item):
+    return (TIER_RANK.get(item.get("tier", "P3"), 9), -int(item.get("score", 0)), SEVERITY_RANK.get(item.get("severity", "OK"), 9))
 
 
 def _num(v, default=0.0):
@@ -127,23 +213,45 @@ def _severity_pct(pct, alarm_below=60.0, warn_below=80.0):
     return "OK"
 
 
-def _count_open_requests(repo_root):
+def _parse_open_requests(repo_root):
+    """Parse open requests from communications/requests.log with sender, recipient, and need."""
     p = Path(repo_root) / "communications" / "requests.log"
     if not p.is_file():
-        return 0
+        return []
     try:
         text = p.read_text(encoding="utf-8", errors="replace")
     except OSError:
-        return 0
-    # Count ENT blocks of type 'request' that have no later answer/close referencing them
-    requests = set(re.findall(r"^## \[(ENT-\d+)\][^\n]*\|\s*request\b", text, flags=re.M))
-    answered = set(re.findall(r"\bsee:\s*[^\n]*?(ENT-\d+)", text))
-    # Also scan explicit answers that cite multiple ENTs in see:
-    for ln in text.splitlines():
-        if ln.startswith("## [ENT-") and ("| answer" in ln or "| close" in ln or "| done" in ln):
-            for ent in re.findall(r"ENT-\d+", ln.split("see:", 1)[-1] if "see:" in ln else ""):
-                answered.add(ent)
-    return len(requests - answered)
+        return []
+    blocks = re.split(r"(?m)^(?=## \[ENT-\d+\])", text)
+    reqs = {}
+    answered = set()
+    for blk in blocks:
+        blk = blk.strip()
+        if not blk.startswith("## [ENT-"):
+            continue
+        first = blk.splitlines()[0]
+        m = re.match(r"^## \[(ENT-\d+)\]\s*\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*([^|]+?)(?:\||$)", first)
+        if not m:
+            continue
+        ent, ts_s, sender, kind = m.group(1), m.group(2).strip(), m.group(3).strip(), m.group(4).strip().lower()
+        if kind in ("answer", "close", "done", "withdraw", "withdrawn"):
+            see_part = first.split("see:", 1)[-1] if "see:" in first else ""
+            for ref in re.findall(r"ENT-\d+", see_part):
+                answered.add(ref)
+            for ref in re.findall(r"(?im)^(?:see|closes|answers):\s*([^\n]+)", blk):
+                for e2 in re.findall(r"ENT-\d+", ref):
+                    answered.add(e2)
+        elif kind == "request":
+            m_to = re.search(r"(?im)^To:\s*([^.\n]+)", blk)
+            m_nd = re.search(r"(?im)^Need:\s*([^\n]+)", blk)
+            recip = m_to.group(1).strip() if m_to else "Unity"
+            need = (m_nd.group(1).strip() if m_nd else "open request")[:96]
+            reqs[ent] = {"ent": ent, "ts": ts_s, "sender": sender, "to": recip, "need": need}
+    return [v for k, v in sorted(reqs.items()) if k not in answered]
+
+
+def _count_open_requests(repo_root):
+    return len(_parse_open_requests(repo_root))
 
 
 def _load_json(path, default):
@@ -268,7 +376,8 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None):
     live_div, live_totals, fleet_ts = _load_fleet_live(data_dir)
     wd_deltas = _load_watchdog_deltas(data_dir)
     neutral_cnt, diplo_pending = _load_diplomacy_pending(data_dir)
-    open_reqs = _count_open_requests(repo_root)
+    open_req_items = _parse_open_requests(repo_root)
+    open_reqs = len(open_req_items)
 
     # Progression snapshot (roadmap %, milestones, seating)
     prog = {}
@@ -609,7 +718,17 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None):
             "target": ">=80% slots, 0 off-role", "direction": "FLAT",
             "action": "Strip off-role starter modules (`unfit`) and fill open slots with role-matched T2+ modules (O2)",
         })
-    ent_triggers.sort(key=lambda x: SEVERITY_RANK.get(x["severity"], 9))
+    _ent_gaps = {
+        "CASHFLOW_NEGATIVE": min(1.0, abs(steady_24h) / 100000.0) if steady_24h < 0 else 0.3,
+        "PRODUCTIVE_EFFICIENCY": max(0.0, (TARGET_COMPLETION_PCT - prod_pct) / TARGET_COMPLETION_PCT),
+        "FLEET_IDLE": max(0.0, (90.0 - eff_emp_pct) / 90.0),
+        "OPEN_SEATS": max(0.0, (TARGET_COMPLETION_PCT - seat_cap_pct) / TARGET_COMPLETION_PCT),
+        "HULL_UPGRADE_LAG": max(0.0, (TARGET_COMPLETION_PCT - fleet_hull_elig_pct) / TARGET_COMPLETION_PCT),
+        "MODULE_FIT_SATURATION": max(0.0, (TARGET_COMPLETION_PCT - fleet_slot_pct) / TARGET_COMPLETION_PCT),
+    }
+    for _t in ent_triggers:
+        _annotate_trigger(_t, gap_ratio=_ent_gaps.get(_t["code"], 0.5))
+    ent_triggers.sort(key=_triage_sort_key)
 
     # -----------------------------------------------------------------------
     # 3. Per-Division Scorecards
@@ -827,8 +946,115 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None):
                 "action": f"Compress bloated playbook chapters (`hive.py guide {div.lower()}`) below 85% cap (F14)",
             })
 
-        triggers.sort(key=lambda x: SEVERITY_RANK.get(x["severity"], 9))
+        _div_gaps = {
+            "DIV_IDLE": max(0.0, (emp_warn_cut - div_emp_pct) / max(1.0, emp_warn_cut)),
+            "DIV_HULL_UPGRADE": max(0.0, (TARGET_COMPLETION_PCT - hull_pct) / TARGET_COMPLETION_PCT),
+            "DIV_SKILL_TO_T2": max(0.0, (TARGET_COMPLETION_PCT - hull_pct) / TARGET_COMPLETION_PCT),
+            "DIV_MODULE_FIT": max(0.0, (TARGET_COMPLETION_PCT - slot_pct) / TARGET_COMPLETION_PCT),
+            "MINING_YIELD": max(0.0, (100.0 - _num(role_kpi.get("pct"))) / 100.0),
+            "TRADE_NET": 0.9 if d_net24 <= 0 else 0.4,
+            "SURPLUS_BACKLOG": min(1.0, surplus_worth / 1000000.0),
+            "SUPPLY_CHAINS": max(0.0, (TARGET_COMPLETION_PCT - _num(role_kpi.get("pct"))) / TARGET_COMPLETION_PCT),
+            "MILITARY_PERF": 1.0 if (div == "Military" and int(_num(contrib_24h.get(("Military", "ships_lost")))) > 0) else 0.5,
+            "INTEL_FRESHNESS": max(0.0, (TARGET_COMPLETION_PCT - _num(role_kpi.get("pct"))) / TARGET_COMPLETION_PCT),
+            "DIPLO_PENDING": min(1.0, 0.6 + 0.2 * diplo_pending),
+            "OPEN_REQUESTS": min(1.0, open_reqs / 5.0),
+            "PLAYBOOK_CAP": max(0.0, (pb_pct - 85.0) / 15.0),
+        }
+        for _t in triggers:
+            _annotate_trigger(_t, gap_ratio=_div_gaps.get(_t["code"], 0.5))
+        triggers.sort(key=_triage_sort_key)
         div_status = triggers[0]["severity"] if triggers else "OK"
+
+        # Weighted Division Health Score (0..100: 30% employment, 30% role KPI, 25% upgrades, 15% trend/hygiene)
+        _upg_score = 0.60 * min(100.0, hull_pct) + 0.40 * min(100.0, slot_pct)
+        _hyg_score = (100.0 if pb_pct < 85.0 else max(0.0, 100.0 - (pb_pct - 85.0) * 5.0))
+        if d_trend == "WORSENING":
+            _hyg_score = max(0.0, _hyg_score - 30.0)
+        elif d_trend == "IMPROVING":
+            _hyg_score = min(100.0, _hyg_score + 10.0)
+        div_health = round(
+            0.30 * min(100.0, div_emp_pct)
+            + 0.30 * min(100.0, max(0.0, _num(role_kpi.get("pct"))))
+            + 0.25 * _upg_score
+            + 0.15 * _hyg_score,
+            1,
+        )
+
+        # Unified Division Triage Queue (KPI triggers + routed open Requests + P1/P2 Needs + top Roadmap rung)
+        div_triage = [dict(x) for x in triggers]
+        seen_codes = {x["code"] for x in div_triage}
+
+        for req in open_req_items:
+            rto = req["to"].lower()
+            if adm.lower() in rto or div.lower() in rto:
+                rc = f"REQ_{req['ent']}"
+                if rc not in seen_codes:
+                    seen_codes.add(rc)
+                    r_tier = "P0" if (div == "Command" and open_reqs >= 3) else "P1"
+                    r_wt = 88 if r_tier == "P0" else 78
+                    div_triage.append({
+                        "severity": "ALARM" if r_tier == "P0" else "WARN",
+                        "tier": r_tier, "weight": r_wt, "effort": 1,
+                        "score": _wsjf_score(r_wt, gap_ratio=0.75, effort=1, direction="FLAT"),
+                        "source": "REQ", "code": rc,
+                        "metric": f"Request {req['ent']} ({req['sender']}->{req['to']})",
+                        "actual": req["need"], "target": "answered", "direction": "FLAT",
+                        "action": f"Answer {req['ent']} in requests.log via comms.py (F16)",
+                    })
+
+        for nd in needs_open:
+            nd_div = nd["division"] or "logistics"
+            if nd_div == div.lower() or (div == "Logistics" and nd_div in ("", "base", "all")):
+                nc = f"NEED_{nd['id']}"
+                if nc not in seen_codes:
+                    seen_codes.add(nc)
+                    is_p1 = nd["priority"] == 1
+                    quick = nd["pct"] >= 80.0
+                    eff = 1 if quick else (2 if nd["pct"] >= 40.0 else 3)
+                    n_tier = "P1" if is_p1 else "P2"
+                    n_wt = (86 if quick else 76) if is_p1 else (62 if quick else 50)
+                    rem_ratio = (0.90 if quick else max(0.25, (100.0 - nd["pct"]) / 100.0))
+                    div_triage.append({
+                        "severity": "WARN" if is_p1 else "OK",
+                        "tier": n_tier, "weight": n_wt, "effort": eff,
+                        "score": _wsjf_score(n_wt, gap_ratio=rem_ratio, effort=eff, direction="FLAT"),
+                        "source": "NEED", "code": nc,
+                        "metric": f"P{nd['priority']} Need: {nd['id']}",
+                        "actual": f"{nd['pct']:.1f}% stocked" + (f" (short: {nd['short'][:48]})" if nd["short"] else ""),
+                        "target": "100% stocked", "direction": "FLAT",
+                        "action": f"Close remaining {100.0 - nd['pct']:.1f}% gap (quick-finish WSJF priority)" if quick else f"Feed short inputs for {nd['id']} via reserve/wholesale",
+                    })
+
+        if isinstance(prog, dict):
+            best_rung = None
+            for rg in (prog.get("rungs") or []):
+                rpct = _num(rg.get("pct"))
+                if rpct >= 100.0:
+                    continue
+                rid = str(rg.get("id") or "")
+                if RUNG_OWNER.get(rid) != div:
+                    continue
+                hor = str(rg.get("horizon") or "")
+                r_tier = "P1" if "Days" in hor else ("P2" if "Weeks" in hor else "P3")
+                quick = rpct >= 75.0
+                eff = 1 if quick else (2 if "Days" in hor else 3)
+                r_wt = (82 if quick else 72) if r_tier == "P1" else ((64 if quick else 54) if r_tier == "P2" else 36)
+                r_sc = _wsjf_score(r_wt, gap_ratio=(0.85 if quick else (100.0 - rpct) / 100.0), effort=eff, direction="FLAT")
+                cand = {
+                    "severity": "WARN" if r_tier == "P1" else "OK",
+                    "tier": r_tier, "weight": r_wt, "effort": eff, "score": r_sc,
+                    "source": "ROADMAP", "code": f"RUNG_{rid}",
+                    "metric": f"Roadmap: {str(rg.get('title') or rid)[:44]}",
+                    "actual": f"{rpct:.1f}% ({hor})", "target": "100%", "direction": "FLAT",
+                    "action": str(rg.get("bottleneck") or "Advance roadmap rung")[:100],
+                }
+                if best_rung is None or _triage_sort_key(cand) < _triage_sort_key(best_rung):
+                    best_rung = cand
+            if best_rung is not None and best_rung["code"] not in seen_codes:
+                div_triage.append(best_rung)
+
+        div_triage.sort(key=_triage_sort_key)
 
         divisions_out[div] = {
             "division": div,
@@ -858,7 +1084,10 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None):
                 "max_chapter_pct": pb_pct, "status": pb_sev,
             },
             "role_kpi": role_kpi,
+            "health_score": div_health,
+            "weights": dict(DIVISION_WEIGHTS),
             "triggers": triggers,
+            "triage": div_triage[:8],
             "alarm_count": sum(1 for t in triggers if t["severity"] == "ALARM"),
             "warn_count": sum(1 for t in triggers if t["severity"] == "WARN"),
         }
@@ -898,6 +1127,81 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None):
         verdict = "SLOWING"
     else:
         verdict = "GROWING_WITH_DRAG"
+
+    # Weighted Enterprise Readiness Score (0..100)
+    _cf_sub = 100.0 if steady_24h > 0 else (65.0 if (cf_dir_24h == "IMPROVING" or steady_1h > 0) else max(0.0, 50.0 + steady_24h / 2000.0))
+    _cf_eff_score = 0.55 * _cf_sub + 0.45 * min(100.0, prod_pct)
+    _upg_ent_score = 0.60 * min(100.0, fleet_hull_elig_pct) + 0.40 * min(100.0, fleet_slot_pct)
+    _seat_req_score = max(0.0, min(100.0, seat_cap_pct) - open_reqs * 6.0)
+    ent_weighted_score = round(
+        0.30 * _cf_eff_score
+        + 0.25 * min(100.0, eff_emp_pct)
+        + 0.20 * _upg_ent_score
+        + 0.15 * min(100.0, roadmap_avg)
+        + 0.10 * _seat_req_score,
+        1,
+    )
+
+    # Enterprise Unified Triage Queue (KPIs + Open Requests + top P1 quick-finish Need + top H1 Roadmap rung)
+    ent_triage = [dict(x) for x in ent_triggers]
+    ent_seen = {x["code"] for x in ent_triage}
+    if diplo_pending > 0 and "DIPLO_PENDING" not in ent_seen:
+        ent_seen.add("DIPLO_PENDING")
+        ent_triage.append({
+            "severity": "WARN", "tier": "P0", "weight": 90, "effort": 1,
+            "score": _wsjf_score(90, gap_ratio=0.8, effort=1, direction="FLAT"),
+            "source": "KPI", "code": "DIPLO_PENDING", "metric": "Unanswered Partner Comms",
+            "actual": f"{diplo_pending} inbound reply(ies) pending", "target": "0 unanswered", "direction": "FLAT",
+            "action": "Check diplomacy.py threads & reply via Prime Directive / scout envoy (F4/O10)",
+        })
+    for req in open_req_items[:3]:
+        rc = f"REQ_{req['ent']}"
+        if rc not in ent_seen:
+            ent_seen.add(rc)
+            rt = "P0" if open_reqs >= 3 else "P1"
+            rw = 88 if rt == "P0" else 78
+            ent_triage.append({
+                "severity": "ALARM" if rt == "P0" else "WARN", "tier": rt, "weight": rw, "effort": 1,
+                "score": _wsjf_score(rw, gap_ratio=0.75, effort=1, direction="FLAT"),
+                "source": "REQ", "code": rc, "metric": f"Request {req['ent']} ({req['sender']}->{req['to']})",
+                "actual": req["need"], "target": "answered", "direction": "FLAT",
+                "action": f"Answer {req['ent']} before next Admiral wave (F16)",
+            })
+    for nd in [n for n in needs_open if n["priority"] == 1][:2]:
+        nc = f"NEED_{nd['id']}"
+        if nc not in ent_seen:
+            ent_seen.add(nc)
+            quick = nd["pct"] >= 80.0
+            eff = 1 if quick else 2
+            nw = 86 if quick else 76
+            ent_triage.append({
+                "severity": "WARN", "tier": "P1", "weight": nw, "effort": eff,
+                "score": _wsjf_score(nw, gap_ratio=(0.90 if quick else (100.0 - nd["pct"]) / 100.0), effort=eff, direction="FLAT"),
+                "source": "NEED", "code": nc, "metric": f"P1 Need: {nd['id']} ({nd['division'] or 'fleet'})",
+                "actual": f"{nd['pct']:.1f}% stocked" + (f" (short: {nd['short'][:44]})" if nd["short"] else ""),
+                "target": "100% stocked", "direction": "FLAT",
+                "action": f"Finish final {100.0 - nd['pct']:.1f}% to unlock milestone (WSJF quick-finish)" if quick else f"Supply short inputs for {nd['id']}",
+            })
+    if isinstance(prog, dict):
+        h1_rungs = [rg for rg in (prog.get("rungs") or []) if _num(rg.get("pct")) < 100.0 and "Days" in str(rg.get("horizon") or "")]
+        if h1_rungs:
+            h1_rungs.sort(key=lambda r: -_num(r.get("pct")))
+            rg = h1_rungs[0]
+            rc = f"RUNG_{rg.get('id')}"
+            if rc not in ent_seen:
+                rpct = _num(rg.get("pct"))
+                quick = rpct >= 75.0
+                eff = 1 if quick else 2
+                rw = 82 if quick else 72
+                ent_triage.append({
+                    "severity": "WARN", "tier": "P1", "weight": rw, "effort": eff,
+                    "score": _wsjf_score(rw, gap_ratio=(0.85 if quick else (100.0 - rpct) / 100.0), effort=eff, direction="FLAT"),
+                    "source": "ROADMAP", "code": rc,
+                    "metric": f"Roadmap H1: {str(rg.get('title') or rg.get('id'))[:42]}",
+                    "actual": f"{rpct:.1f}%", "target": "100%", "direction": "FLAT",
+                    "action": str(rg.get("bottleneck") or "Advance H1 milestone")[:96],
+                })
+    ent_triage.sort(key=_triage_sort_key)
 
     return {
         "at": int(now),
@@ -946,7 +1250,10 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None):
             "open_requests": open_reqs,
             "neutral_partners": neutral_cnt,
             "diplo_pending": diplo_pending,
+            "weighted_score": ent_weighted_score,
+            "weights": dict(ENTERPRISE_WEIGHTS),
             "triggers": ent_triggers,
+            "triage": ent_triage[:10],
             "alarm_count": ent_alarms,
             "warn_count": sum(1 for t in ent_triggers if t["severity"] == "WARN"),
         },
@@ -961,7 +1268,7 @@ def render_briefing(sc, who="all"):
     p_delta = f" | 6h purse {_fmt_cr(e['purse_delta_6h'])}" if e["purse_delta_6h"] is not None else ""
     p10_d = f" (+{e['p10_delta_6h']} P10+)" if (e["p10_delta_6h"] or 0) > 0 else ""
     lines.append(
-        f"  ENTERPRISE | {e['verdict']} | steady cashflow {e['cashflow_sign']} "
+        f"  ENTERPRISE | {e['verdict']} | Score {e['weighted_score']:.1f}/100 | steady cashflow {e['cashflow_sign']} "
         f"({_fmt_cr(e['steady_24h'])}/h 24h, {_fmt_cr(e['steady_6h'])}/h 6h, 24h {e['cashflow_trend_24h']}, 6h {e['cashflow_trend_6h']}){p_delta}"
     )
     lines.append(
@@ -981,7 +1288,7 @@ def render_briefing(sc, who="all"):
     if target_div and target_div in sc["divisions"]:
         d = sc["divisions"][target_div]
         lines.append(
-            f"  MY DIVISION ({d['division']} / {d['admiral']}) | state={d['status']} | 24h cashflow {_fmt_cr(d['cashflow_24h'])}/h ({d['trend_24h']})"
+            f"  MY DIVISION ({d['division']} / {d['admiral']}) | Score {d['health_score']:.1f}/100 | state={d['status']} | 24h cashflow {_fmt_cr(d['cashflow_24h'])}/h ({d['trend_24h']})"
         )
         lines.append(
             f"    Readiness: work {d['employment']['effective_working']}/{d['employment']['total']} ({d['employment']['pct']:.1f}%) | "
@@ -990,28 +1297,30 @@ def render_briefing(sc, who="all"):
             f"playbook {d['playbook']['max_chapter_pct']:.0f}%"
         )
         lines.append(f"    Role KPI : {d['role_kpi']['name']} = {d['role_kpi']['value']} [{d['role_kpi']['status']}]")
-        if d["triggers"]:
-            lines.append("  ACTIVE TRIGGERS (fix ALARM first):")
-            for t in d["triggers"][:6]:
-                lines.append(f"    [{t['severity']:5s}] {t['metric']}: {t['actual']} (target {t['target']}) -> {t['action']}")
+        q_div = d.get("triage") or d.get("triggers") or []
+        if q_div:
+            lines.append("  ACTIVE TRIGGERS & WEIGHTED TRIAGE QUEUE (strict order: P0>P1>P2>P3; score=MAUTxWSJF):")
+            for i, t in enumerate(q_div[:6], 1):
+                lines.append(f"    #{i} [{t.get('tier','P2')} {int(t.get('score',0)):3d}|{t.get('source','KPI'):7s}|{t['severity']:5s}] {t['metric']}: {t['actual']} -> {t['action']}")
         else:
             lines.append("  ACTIVE TRIGGERS: none (all division KPIs >=80% target)")
     else:
         # Unity / fleetwide view: compact 6-division scorecard table + top fleet alarms
-        lines.append("  DIVISIONS  | Division   State  Work%   Hull-Upg  Slot%  OffRole  24h Net/h (Trend)     Role KPI")
+        lines.append("  DIVISIONS  | Division   Score  State  Work%   Hull-Upg  Slot%  24h Net/h (Trend)   Role KPI")
         for div in DIVISIONS:
             d = sc["divisions"][div]
             h_txt = f"{d['hulls']['pct']:4.0f}%" + ("*" if d["hulls"]["mode"] == "piloting_to_t2" else " ")
             lines.append(
-                f"             | {div:10s} {d['status']:5s}  {d['employment']['pct']:5.1f}%  {h_txt:>7s}  "
-                f"{d['modules']['slot_pct']:5.1f}%  {d['modules']['off_role_ships']:>7d}  "
-                f"{_fmt_cr(d['cashflow_24h']):>9s} ({d['trend_24h'][:4]:4s})  {d['role_kpi']['value'][:58]}"
+                f"             | {div:10s} {d['health_score']:5.1f}  {d['status']:5s}  {d['employment']['pct']:5.1f}%  {h_txt:>7s}  "
+                f"{d['modules']['slot_pct']:5.1f}%  "
+                f"{_fmt_cr(d['cashflow_24h']):>9s} ({d['trend_24h'][:4]:4s})  {d['role_kpi']['value'][:54]}"
             )
         lines.append("             (* = 0 P10+ pilots yet; % shows avg Piloting progress toward T2 unlock)")
-        if e["triggers"]:
-            lines.append("  TOP FLEET TRIGGERS:")
-            for t in e["triggers"][:6]:
-                lines.append(f"    [{t['severity']:5s}] {t['metric']}: {t['actual']} (target {t['target']}) -> {t['action']}")
+        q_ent = e.get("triage") or e.get("triggers") or []
+        if q_ent:
+            lines.append("  TOP FLEET TRIGGERS & WEIGHTED TRIAGE QUEUE (strict P0>P1>P2>P3; score=MAUTxWSJF):")
+            for i, t in enumerate(q_ent[:6], 1):
+                lines.append(f"    #{i} [{t.get('tier','P2')} {int(t.get('score',0)):3d}|{t.get('source','KPI'):7s}|{t['severity']:5s}] {t['metric']}: {t['actual']} -> {t['action']}")
     return "\n".join(lines)
 
 

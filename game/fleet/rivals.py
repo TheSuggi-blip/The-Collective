@@ -386,37 +386,100 @@ def compute_sedcards(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, top_n=12, no
                 ).fetchall()
             ]
 
-        # Build live Division-Scoped Adoptable Tricks directly from observed rival data
+        # Live Undercut / Outsource / Outsupply Market Edge Scan from books + stations
+        outsource_cheap = []
+        undercut_targets = []
+        if "stations" in tables and "books" in tables:
+            seen_cheap = set()
+            for r in conn.execute("""
+                SELECT UPPER(s.tag) AS tag, b.system, b.item, ROUND(b.ask, 1) AS price, SUM(b.ask_qty) AS qty
+                FROM books b JOIN stations s ON LOWER(b.system)=LOWER(s.system)
+                WHERE s.tag IS NOT NULL AND s.tag != '' AND UPPER(s.tag) != 'CLTV'
+                  AND b.ask > 0 AND b.ask_qty >= 5
+                  AND (
+                      (b.item LIKE '%_ore' AND b.ask <= 25)
+                      OR (b.item IN ('steel_plate','iron_ingot','carbon_plate','silicon_wafer','copper_wiring','wiring','aluminum_sheet','hull_plating','piping') AND b.ask <= 40)
+                      OR (b.item = 'station_core' AND b.ask <= 25000000)
+                  )
+                GROUP BY UPPER(s.tag), b.system, b.item, price
+                ORDER BY CASE WHEN b.item='station_core' THEN 0 ELSE 1 END, price ASC, qty DESC
+                LIMIT 40
+            """).fetchall():
+                it = str(r["item"])
+                if it in seen_cheap:
+                    continue
+                seen_cheap.add(it)
+                outsource_cheap.append({
+                    "tag": str(r["tag"]), "system": str(r["system"]), "item": it,
+                    "price": int(round(_num(r["price"]))), "qty": int(_num(r["qty"])),
+                })
+                if len(outsource_cheap) >= 8:
+                    break
+            seen_uc = set()
+            for r in conn.execute("""
+                SELECT UPPER(s.tag) AS tag, b.system, b.item, ROUND(b.ask, 0) AS price, SUM(b.ask_qty) AS qty,
+                       ROUND(b.ask * SUM(b.ask_qty), 0) AS val
+                FROM books b JOIN stations s ON LOWER(b.system)=LOWER(s.system)
+                WHERE s.tag IS NOT NULL AND s.tag != '' AND UPPER(s.tag) != 'CLTV'
+                  AND b.ask >= 500 AND b.ask_qty >= 10 AND b.item != 'station_core'
+                GROUP BY UPPER(s.tag), b.system, b.item, price
+                ORDER BY val DESC LIMIT 40
+            """).fetchall():
+                it = str(r["item"])
+                if it in seen_uc:
+                    continue
+                seen_uc.add(it)
+                undercut_targets.append({
+                    "tag": str(r["tag"]), "system": str(r["system"]), "item": it,
+                    "price": int(_num(r["price"])), "qty": int(_num(r["qty"])), "val": int(_num(r["val"])),
+                })
+                if len(undercut_targets) >= 8:
+                    break
+
         all_bids_top.sort(key=lambda x: -x["val"])
+        out["market_edges"] = {
+            "outsupply_bids": all_bids_top[:8],
+            "outsource_cheap": outsource_cheap[:8],
+            "undercut_targets": undercut_targets[:8],
+        }
+
+        # Build live Division-Scoped Adoptable Tricks (OUTSUPPLY / OUTSOURCE / UNDERCUT)
         top_bid_str = ", ".join(
-            f"{b['item']} @{b['price']} cr ({b['tag']}@{b['system']})" for b in all_bids_top[:4]
+            f"{b['item']} @{b['price']} cr ({b['tag']}@{b['system']})" for b in all_bids_top[:3]
         ) or "uranium_ore/silver_ore/gourmet food at rival hubs"
+        cheap_str = ", ".join(
+            f"{c['item']} @{_fmt_cr(c['price'])} ({c['tag']}@{c['system']})" for c in outsource_cheap[:4]
+        ) or "cheap wholesale ore/plates at rival mega-hubs"
+        undercut_str = ", ".join(
+            f"{u['item']} @{u['price']} cr ({u['tag']}@{u['system']})" for u in undercut_targets[:3]
+        ) or "inflated rival fuel_cell/refined asks"
+
         out["tricks_by_division"] = {
             "Logistics": [
-                "Break the 100-cargo freight wall at Piloting 0 like [IRLC] (36x Ledger), [HIVE] (31x Runner), and [WEXL]/[CRFT] (Prayer/Congregation): batch-build Prayer (540c for 15 aluminum_sheet + 3 fuel_tank + 1 hull_plating), Ledger (480c, spd 4), or Runner (120c, spd 6, 2U) to unlock spacemolt_shipping contracts (`shipping.py list`).",
-                "Adopt [NOIR] (+26.7M/h, 0 bases) & [IRLC] (28x Concordia) express passenger/courier lines using speed-6 Runner/Futures hulls.",
-                "Benchmark cheap wholesale inputs at rival mega-hubs (e.g. [IRLC]@lhs_1140 iron_ore @ 4 cr, [BUSY]@arneb steel_plate @ 12 cr & station_core @ 13M cr vs 38M foundry fee) before hauling low-margin raw ore.",
+                f"PORTFOLIO (500-SHIP SCALE -- STACK ALL WINGS): do not lock into one tactic; run parallel Logistics wings simultaneously -- (1) OUTSOURCE cheap wholesale inputs ({cheap_str}), (2) docked zero-fuel reserve smelting, (3) 100c+ `spacemolt_shipping` freight (`Prayer`/`Ledger` like [IRLC]/[HIVE]), and (4) express passenger lines (`Runner`/`Concordia` like [NOIR]/[IRLC]).",
+                "FREIGHT & PASSENGER WALL: batch-build P0 cargo/speed hulls (`Prayer` 540c, `Ledger` 480c, `Runner` 120c spd 6) so every hauler flies paying cargo, freight, passengers, or zero-fuel smelting.",
+                "BASE FOOTPRINT: prioritize quick-finish WSJF build kits (e.g. Atria Outpost #2) & widest non-overlapping 5-station / 8-outpost footprint.",
             ],
             "Trade": [
-                f"Feed deep rival standing bids with crafted/handed goods instead of empty loops -- live top bids: {top_bid_str}.",
-                "Adopt [MIN9] (1.02B cr, 29 ships, 0 bases) & [BEAT] (2.42B cr, 45 ships, 0 bases) zero-fuel NPC-facility manufacturing: park idle traders docked at public industrial NPC stations crafting high-margin components into Exchange sell_orders.",
-                "Adopt [BUSY] (187x Floor Price 400c, P0) & [NOIR] (+26.7M/h) Exchange market-making + gourmet food supply lines fueling rival Tourism stations (200M cr tourism market).",
+                f"PORTFOLIO (500-SHIP SCALE -- STACK ALL WINGS): split traders across ALL winning commercial doctrines at once -- (1) OUTSUPPLY deep rival standing bids ({top_bid_str}), (2) UNDERCUT inflated rival asks by 5-10% via Bursar `sell_order` ({undercut_str}), (3) zero-fuel docked NPC-facility crafting ([MIN9]/[BEAT]), and (4) OUTSOURCE cheap wholesale inputs ({cheap_str}) + gourmet food for rival Tourism hubs.",
+                "MARKET-MAKING SCALE: run zero-fuel Bursars across all 5 empire hubs (`Floor Price` 400c / `Ledger` / `Syndicate`) and log every active order/deal in `contracts.log`.",
+                "ARBITRAGE & LIQUIDATION: clear vault surplus >250k cr immediately into live standing bids or Bursar asks; zero empty jump loops.",
             ],
             "Mining": [
-                "Adopt [BUSY]/[HIVE] P0 industrial hulls (`Prospect` 100c T0, `Workhorse` 300c T2 P0) and [HEXC] endgame `Lithosphere` (1,680c, 8U) / `Deep Survey` (750c, 5U) path for P10->P30 miners.",
-                f"Target high-bid scarce ores/gases demanded by rival hubs ({top_bid_str}) plus scarce lawless belts (Argon, Cobalt, Uranium, Silver) alongside our P1/P2 reserve needs.",
+                f"PORTFOLIO (500-SHIP SCALE -- STACK ALL WINGS): run parallel extraction wings -- (1) SCARCE HIGH-BID VEINS feeding rival hubs ({top_bid_str}; Uranium, Silver, Cobalt, Argon) while Trade/Logistics OUTSOURCE cheap bulk ores ({cheap_str}), (2) P1/P2 reserve ores/ices/gases where mining beats wholesale ask, and (3) multi-empire T2/T4 industrial hulls (`Workhorse` -> `Lithosphere`/`Tellurian`/`Eldorado`).",
+                "YIELD & FLOOR DISCIPLINE: parallel-upgrade lasers/hulls (`hive.py upgrades mining`), use `--jettison-gangue` on scarce veins, respect belt floors & verified partner boundaries.",
             ],
             "Military": [
-                "Watch [ENDL] (1,527 PvP kills -- #1 PvP threat in galaxy); keep defensive RoE (F2) on Neutral [HEXC]/[IRLC] and escort high-value trade/freight through lawless legs.",
-                "Adopt [BUSY] Solarian combat path (`Dialectic` 5W/3D/3U T3, `Axiomata` 6W/4D/5U T4) alongside Voidborn `Recursion` and Crimson `Broadaxe`/`Halberd` (4W) in parallel batches (F17/F37).",
+                "PORTFOLIO (500-SHIP SCALE -- STACK ALL WINGS): run parallel combat wings -- (1) profitable PvE herd hunting (`F9`, loot -> Trade), (2) lawless convoy escorts protecting high-value Outsupply/Outsource hauls, and (3) empire-matched T2+ warships (Crimson `Broadaxe`/`Annihilator`, Voidborn `Recursion` EWAR, Solarian `Dialectic`/`Axiomata`).",
+                "DEFENSIVE ROE & THREAT WATCH: watch [ENDL] (top PvP threat); hold strict defensive RoE (F2) on Neutral [HEXC]/[IRLC] and train `sentinel-` Royal Guard.",
             ],
             "Intel": [
-                "Track dark super-earners (`[BEAT]`, `[MIN9]`, `[STRG]` -- 0 sightings in our `met` table yet!) and keep rival station books fresh (`lhs_1140`, `dheneb`, `arneb`, `zosma`) so Trade & Logistics catch wholesale asks and deep standing bids.",
-                "Refresh `game/factions/sedcards.md` (`governance/rival-sedcards.md`) hourly via intel-pass.sh and watch `rival_snapshots` velocity spikes (>10M/h) for emerging tricks.",
+                "PORTFOLIO (500-SHIP SCALE -- STACK ALL WINGS): run parallel recon wings -- (1) <3h corridor & rival market-book refreshes (`lhs_1140`, `dheneb`, `arneb`, `zosma`, `alzirr`) powering Outsupply/Outsource/Undercut, (2) deep frontier & wormhole mapping, and (3) `scout-` ambassador envoys (`diplomacy.py`) + tracking dark super-earners (`[BEAT]`, `[MIN9]`, `[STRG]`).",
+                "VERIFIED INTEL PROPAGATION: watch `rival_snapshots` >10M/h spikes for new rival tricks and file verified partner claims/needs in `game/factions/n-<tag>.md`.",
             ],
             "Command": [
-                "Station Tourism Engine: [BUSY] The Obsidian Well (213.9M cr) & [HEXC] Hex Star (197.9M cr, appeal 54) prove player stations with gourmet food + tourism facilities print massive passive revenue -- prioritize our first sovereign Station Core & Tourism wing.",
-                "Benchmark [BUSY]@arneb wholesale `station_core` asks (~13M cr) against our Core Foundry 38M cr fee; enforce F40 KPI trigger closure (<80% targets) across all 6 divisions every turn.",
+                f"PORTFOLIO (500-SHIP SCALE -- NEVER ONE-TRICK): rivals specialize in 1 archetype; with 500 ships across 5 empires we saturate ALL profitable strategies in parallel -- sovereign Stations + Tourism engines ([BUSY]/[HEXC]), wholesale capital arbitrage ({cheap_str}), 4-channel P2P trade, and multi-wing divisions.",
+                "WEIGHTED TRIAGE & CAPITAL: enforce F40 MAUTxWSJF triage (`P0>P1>P2>P3`) across all 6 divisions, compare wholesale rival asks (e.g. `station_core` ~13M vs 38M foundry) before committing capital, and drive full fleet seating.",
             ],
         }
         return out
@@ -515,9 +578,27 @@ def render_markdown(doc):
             lines.append(f"- {tr}")
         lines.append("")
 
+    me = doc.get("market_edges") or {}
+    if any(me.get(k) for k in ("outsupply_bids", "outsource_cheap", "undercut_targets")):
+        lines.append("## 2. Live Undercut / Outsource / Outsupply Board")
+        lines.append("")
+        if me.get("outsupply_bids"):
+            lines.append("- **OUTSUPPLY (Deep Rival Standing Bids -- sell into these):** " + ", ".join(
+                f"`{x['item']}` @{x['price']} cr x{x['qty']} (`[{x['tag']}]`@{x['system']})" for x in me["outsupply_bids"][:5]
+            ))
+        if me.get("outsource_cheap"):
+            lines.append("- **OUTSOURCE (Cheap Wholesale Rival Asks -- buy below gather/craft cost):** " + ", ".join(
+                f"`{x['item']}` @{_fmt_cr(x['price'])} cr x{x['qty']} (`[{x['tag']}]`@{x['system']})" for x in me["outsource_cheap"][:6]
+            ))
+        if me.get("undercut_targets"):
+            lines.append("- **UNDERCUT (Inflated Rival Asks -- list Bursar `sell_order` 5-10% lower):** " + ", ".join(
+                f"`{x['item']}` @{x['price']} cr x{x['qty']} (`[{x['tag']}]`@{x['system']})" for x in me["undercut_targets"][:5]
+            ))
+        lines.append("")
+
     t_top = doc.get("tourism_top") or []
     if t_top:
-        lines.append("## 2. Galactic Station Tourism & Exchange Benchmarks")
+        lines.append("## 3. Galactic Station Tourism & Exchange Benchmarks")
         lines.append("")
         lines.append("| Rank | Station | System | Tourism Revenue |")
         lines.append("|:--|:--|:--|--:|")
@@ -525,7 +606,7 @@ def render_markdown(doc):
             lines.append(f"| {x['rank']} | {x['name']} | {x['system']} | {_fmt_cr(x['revenue'])} cr |")
         lines.append("")
 
-    lines.append("## 3. Top Rival Faction Sedcards")
+    lines.append("## 4. Top Rival Faction Sedcards")
     lines.append("")
     lines.append("| Tag | Faction | Standing | Archetype | Ships | Bases | Wealth | Velocity | W/Ship | AvgT | PvP |")
     lines.append("|:--|:--|:--|:--|--:|--:|--:|--:|--:|--:|--:|")

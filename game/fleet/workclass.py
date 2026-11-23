@@ -77,7 +77,7 @@ STRICT_ROLES = dict(OFF_ROLES, trade=("trader",), sell=("trader",), craft=("haul
 KEEPERS = {"miner": "Zero", "trader": "Mercury", "hauler": "Apollo", "drone": "Apophis", "sentinel": "Apophis", "scout": "Oracle",
            "command": "Unity"}               # division.ROLES: who commands each role (this file imports nothing of the fleet)
 ONCE_PREFIXES = ("voidborn-", "solarian-", "nebula-", "crimson-", "outerrim-", "mission-", "first-")
-HAUL_PREFIXES = ("outpost-", "supply-")
+HAUL_PREFIXES = ("outpost-", "supply-", "freight-", "passenger-")
 DELIVER_KEYS = {"at", "gift", "store", "withdraw", "refuel", "redock", "skip_if_hold", "only_if_active", "burn_cells"}
 SWITCH = os.path.join("fleet", "strict-classes-on")  # under the data folder: the strict classes and the sale rule act while it exists
 DATA = os.environ.get("FLEET_DATA_ROOT") or "/srv/collective/data"
@@ -167,7 +167,7 @@ def work_class(route, rid=None, strict=None):
         return "trade"
     if "craft" in keys:
         return "craft"
-    if "sell" in keys or route.get("sell"):
+    if keys & {"sell", "sell_order"} or route.get("sell"):
         return "sell"
     if strict and "gift" in keys and keys <= DELIVER_KEYS:
         return "deliver"
@@ -206,7 +206,7 @@ def sells(route):
     if kind == "hunt":
         return not route.get("gift_to")
     if kind == "circuit":
-        return any(stop.get("sell") for stop in _stops(route))
+        return any(stop.get("sell") or stop.get("sell_order") for stop in _stops(route))
     return False
 
 
