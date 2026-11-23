@@ -232,7 +232,7 @@ def run_sizes(root, which):
           % (which or "all", docs.num(book.CARD_MAX), docs.num(book.CHAPTER_MAX), docs.num(book.ENTRY_MAX)))
     print("  %-10s %-15s %7s %8s %7s %6s %13s %8s" % ("division", "chapter", "entries", "chars", "cap", "over", "entries over", "largest"))
     for name, chapter, count, chars, cap, over, largest in rows:
-        flag = "OVER" if chars > cap else ("NEAR" if chars >= int(cap * getattr(book, "HIGH_WATERMARK", 0.85)) else "")
+        flag = "OVER" if chars > cap else ("NEAR" if chars >= int(cap * getattr(book, "HIGH_WATERMARK", 0.90)) else "")
         print("  %-10s %-15s %7d %8s %7s %6s %13d %8s" % (name, chapter, count, docs.num(chars), docs.num(cap), flag, over, docs.num(largest)))
     print("  %d chapters, %d over their cap; %d entries, %d over theirs" % (len(rows), sum(1 for r in rows if r[3] > r[4]), sum(r[2] for r in rows), sum(r[5] for r in rows)))
     return 0
@@ -544,14 +544,14 @@ def run_drift(root, data, which):
         near = [c for c in cur["chapters"] if c["band"] in ("near", "over")]
         total_near += len(near)
         total_drift += len(cur["drift_warnings"])
-        print("DRIFT %s | max %.1f%% of cap | near/over (>=85%%): %s | empirical drift items: %d" % (
+        print("DRIFT %s | max %.1f%% of cap | near/over (>=90%%): %s | empirical drift items: %d" % (
             name, cur["max_pct"],
             ", ".join("%s.md %.1f%%" % (c["chapter"], c["pct"]) for c in near) or "none",
             len(cur["drift_warnings"]),
         ))
         for w in cur["drift_warnings"]:
             print("  WARN %s/%s.md `%s` [%s]: %s" % (name, w["chapter"], w["entry"][:50], w["kind"], w["detail"]))
-    print("GUIDE DRIFT | %s | %d chapter(s) >= 85%% cap, %d drift item(s)" % (which or "all", total_near, total_drift))
+    print("GUIDE DRIFT | %s | %d chapter(s) >= 90%% cap, %d drift item(s)" % (which or "all", total_near, total_drift))
     return 0
 
 

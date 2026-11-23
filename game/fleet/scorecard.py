@@ -881,7 +881,7 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
 
         # Playbook cap check
         pb_pct = _num(pb.get("max_chapter_pct"))
-        pb_sev = "ALARM" if pb_pct >= 95.0 else ("WARN" if pb_pct >= 85.0 else "OK")
+        pb_sev = "ALARM" if pb_pct >= 95.0 else ("WARN" if pb_pct >= 90.0 else "OK")
 
         # Role-specific primary success KPI
         triggers = []
@@ -1043,9 +1043,9 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
         if pb_sev != "OK":
             triggers.append({
                 "severity": pb_sev, "code": "PLAYBOOK_CAP", "metric": "Playbook Chapter Cap",
-                "actual": f"{pb_pct:.1f}% of cap", "target": "<85% cap (F14)",
+                "actual": f"{pb_pct:.1f}% of cap", "target": "<90% cap (F14)",
                 "direction": "FLAT",
-                "action": f"Compress bloated playbook chapters (`hive.py guide {div.lower()}`) below 85% cap (F14)",
+                "action": f"Compress bloated playbook chapters (`hive.py guide {div.lower()}`) below 90% cap (F14)",
             })
 
         _div_gaps = {
@@ -1061,7 +1061,7 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
             "INTEL_FRESHNESS": max(0.0, (TARGET_COMPLETION_PCT - _num(role_kpi.get("pct"))) / TARGET_COMPLETION_PCT),
             "DIPLO_PENDING": min(1.0, 0.6 + 0.2 * diplo_pending),
             "OPEN_REQUESTS": min(1.0, open_reqs / 5.0),
-            "PLAYBOOK_CAP": max(0.0, (pb_pct - 85.0) / 15.0),
+            "PLAYBOOK_CAP": max(0.0, (pb_pct - 90.0) / 10.0),
         }
         for _t in triggers:
             _annotate_trigger(_t, gap_ratio=_div_gaps.get(_t["code"], 0.5))
@@ -1093,7 +1093,7 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
 
         # Weighted Division Health Score (0..100: 30% employment, 30% role KPI, 25% upgrades, 15% trend/hygiene)
         _upg_score = 0.60 * min(100.0, hull_pct) + 0.40 * min(100.0, slot_pct)
-        _hyg_score = (100.0 if pb_pct < 85.0 else max(0.0, 100.0 - (pb_pct - 85.0) * 5.0))
+        _hyg_score = (100.0 if pb_pct < 90.0 else max(0.0, 100.0 - (pb_pct - 90.0) * 10.0))
         if d_trend == "WORSENING":
             _hyg_score = max(0.0, _hyg_score - 30.0)
         elif d_trend == "IMPROVING":

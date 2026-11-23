@@ -37,7 +37,7 @@ One live summary row per division combining active ships, Piloting-10+ hull read
 - Kept: nothing: a view stores no row
 - Refreshed: computed when asked, from its tables
 - All 6 divisions' live fleet readiness, open priorities, and guidebook cap utilization: `SELECT * FROM division_playbooks ORDER BY division`
-- Divisions with chapters near or over the 85% curation watermark: `SELECT division, guide_chapters, guide_entries, guide_chars, max_chapter_pct FROM division_playbooks WHERE max_chapter_pct >= 85.0`
+- Divisions with chapters near or over the 90% curation watermark: `SELECT division, guide_chapters, guide_entries, guide_chars, max_chapter_pct FROM division_playbooks WHERE max_chapter_pct >= 90.0`
 - Divisions with 100%-stocked priorities ready to execute or mark done: `SELECT division, open_needs, ready_needs FROM division_playbooks WHERE ready_needs > 0`
 
 ## The kinds

@@ -22,7 +22,7 @@ Read it in parts: `hive.py handbook [<topic>]` (MCP: the tool docs, view=handboo
 contents and how the data flows; a table's name, a subject or a word gives its sections. The store holds every file
 as kind `handbook` of the table docs, one row a section, every version in doc_versions.
 
-The store: 65 tables and 12 views (44 snapshot, 9 history, 9 statistics, 3 bookkeeping); the MCP tool `collective`: 22 tools.
+The store: 65 tables and 12 views (44 snapshot, 9 history, 9 statistics, 3 bookkeeping); the MCP tool `collective`: 24 tools.
 Kinds: snapshot = what a file says now (replaced when the file changes; it also carries `src`, the file its row came
 from; dropped and loaded again when its definition changes); history = rows kept over time (raw rows for days, sums
 as each table's Kept line says); statistics = computed by stats.py when due; view = a query over tables, computed when
@@ -117,6 +117,7 @@ per question, from the tools' own texts (collective_mcp.TOOLS) and hive.py's usa
 | credits and steady money per hour (income, costs, net; rewards paid once left out) over 1, 6 and 24... | fleet view=money | hive.py fleet |
 | credits hour by hour per division. | fleet view=history | hive.py history |
 | the hours ahead per division: every route with the ships on it now, what a ship-hour on it measured... | fleet view=forecast | hive.py forecast |
+| Draw credits from the shared faction treasury for one or more pilots of your division (rule F12: up... | fund | wallet.py fund --show |
 
 ### Markets
 
@@ -238,6 +239,9 @@ per question, from the tools' own texts (collective_mcp.TOOLS) and hive.py's usa
 | Send one game command to one or many of your ships through the engine's gate, at once (up to 40... | command pilots=[<pilots>] action=<action> | gate.py raw <pilots> <action> {} |
 | Give one of your ships an engine goal: a task the engine carries out by itself over many ticks... | goal pilot=<pilot> type=<type> | gate.py goal <pilot> <type> {} |
 | Take one of your ships by hand (the dispatcher gives it no route) or, with release=true, give it back... | hold pilot=<pilot> | gate.py hold <pilot> |
+| Stop one or more in-flight ships of your division cleanly (or every active run of your division on a... | stop | stop_pilot.py --list |
+| Stop one or more in-flight ships of your division cleanly (or every active run of your division on a... | stop pilot=<pilot> | stop_pilot.py <pilot> |
+| Stop one or more in-flight ships of your division cleanly (or every active run of your division on a... | stop route=<route> | stop_pilot.py --route <route> |
 | a session's start in one answer: the orders in force, the requests addressed to the member (and how... | hive verb=briefing | hive.py briefing |
 
 ### The store itself

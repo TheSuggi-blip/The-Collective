@@ -44,14 +44,19 @@ RULES:
     has no reading after the call, and kept unsure after SENT_KEEP. Its pilots are on cooldown while it stands
     open, so a gift is never given twice and never booked twice.
   - The sweep acts only while SWEEP_ENABLED is on; `sweep --dry-run` says what it would do in any case.
-  - A fund (orders ENT-063: one Recursion for Military from the purse) is the Fleet Admiral's alone: a row of
-    data/fleet/funds.json, served at the start of a sweep pass, one at a time, while the leader stands docked (the
-    game takes a treasury withdrawal docked only: storage `deposit` of credits, source `faction`, target `self`,
-    2026-11-22) and the treasury keeps FUND_FLOOR after it. The first fund ever withdraws 1 cr first and reads the
-    treasury (rule F12). The withdrawal is booked once in onetime.json (FUND_TITLE, plus for the leader: money paid
-    once, never steady income), the gift to the pilot as every gift is; for FUND_HOURS (or --hours) from its gift the
-    sweep and the top-ups leave the funded credits with the pilot, then the row ends by itself. A withdrawal whose gift
-    failed is given at the next pass and the leader keeps it from the deposit meanwhile.
+  - A fund (orders ENT-063; autonomous division access Suggi 2026-11-23, rule F12) draws credits from the shared
+    faction treasury for a pilot's buy (hull, fit, working capital):
+      * Unity (Fleet Admiral) may fund any pilot, uncapped above FUND_FLOOR.
+      * Division Admirals (Zero, Mercury, Apollo, Apophis, Oracle) may autonomously fund pilots of their own
+        division up to ADMIRAL_MAX_SINGLE (400,000 cr) per pilot and ADMIRAL_DAY_CAP (750,000 cr) per division
+        per rolling 24 hours, always keeping treasury >= FUND_FLOOR (500,000 cr) -- no waiting on Unity.
+      * Served at the start of every 5-minute sweep pass, up to FUND_BATCH (10) open funds in one batched
+        withdrawal while the leader (or any Officer/treasurer role docked at an active Faction Lockbox) stands
+        docked. The first fund ever withdraws 1 cr first and reads the treasury (rule F12). The withdrawal is
+        booked once in onetime.json (FUND_TITLE, plus for the withdrawer: never steady income), the gift to each
+        pilot as every gift is; for FUND_HOURS (or --hours) from its gift the sweep and top-ups leave the funded
+        credits with the pilot, then the row ends by itself. A withdrawal whose gift failed stays withdrawn and
+        is given at the next pass.
 WHY:  Suggi, 2026-11-16: "No ships can go broke, this is important." Standing work costs fuel and earns nothing, and
       the weekly tax takes a share of every wallet in one moment.
 
@@ -59,10 +64,10 @@ USAGE:
   wallet.py [check]            every wallet against the floors; HALT for a pilot under 3,000 cr
   wallet.py topup [--dry-run]  give each pilot under LOW credits up to TARGET from a rich ship of its division
   wallet.py sweep [--dry-run]  the part above KEEP_SHIP of the richest ships to the leader, the leader's into the treasury
-  wallet.py fund <pilot> <credits> --why "<text>" [--hours H]
-                               the treasury pays one pilot for a buy: the next pass the leader stands docked withdraws the
-                               credits and gives them; the sweep and the top-ups leave that much with the pilot for H hours
-  wallet.py fund --show        the funds on record and their state
+  wallet.py fund <pilot[,pilot2...]> <credits> --why "<text>" [--hours H]
+                               the treasury pays one or more pilots for a buy (own division for Admirals, up to 400k/pilot
+                               and 750k/24h keeping 500k treasury floor; any pilot for Unity); served every 5 min
+  wallet.py fund --show        the funds on record, their state, and rolling 24h division autonomous budgets
   --data <dir>                 the unit's data folder (default: the fleet's)
 
 Stdlib only. ASCII only.
@@ -116,6 +121,10 @@ FUND_HOURS = 6                 # a funded pilot keeps its fund this long from th
 FUND_WAIT = 24                 # hours an open fund waits for a docked leader before it ends by itself
 FUND_READ = 12                 # seconds between a withdrawal's call and the treasury's read after it (about one tick)
 FUND_TITLE = "Treasury fund: credits withdrawn from the faction treasury for a buy"   # never begins with routes.TREASURY
+ADMIRAL_MAX_SINGLE = 400000    # rule F12 (Suggi, 2026-11-23): max single autonomous fund per pilot by a Division Admiral
+ADMIRAL_DAY_CAP = 750000       # rule F12: max rolling 24h autonomous treasury draw per Division Admiral
+FUND_BATCH = 10                # max open funds withdrawn in a single batched pass
+FUND_BUDGET = 100              # seconds of a sweep pass fund gifts may take; any remaining withdrawn rows go next pass
 # The treasury tops up a pilot no ship of its division or of the command group can give to (requests ENT-380, ENT-384,
 # ENT-385, ENT-386, ENT-389: the newborns of 2026-11-22 were born with 100 to 250 cr while the sweep keeps every working
 # ship at its line). The figures are the Fleet Admiral's (rule F7).
@@ -596,79 +605,127 @@ def gate_book(pilot, title, amount):
     gate.book_onetime(pilot, title, amount)
 
 
+def withdrawers(data, leader):
+    """Ordered list of faction members with manage_treasury rights: leader first, then any Officer/treasurer in empire.json."""
+    out = [leader]
+    emp = dispatch.read_json(Path(data) / "empire" / "empire.json", {}) or {}
+    for m in (emp.get("members") or []) if isinstance(emp, dict) else []:
+        if not isinstance(m, dict):
+            continue
+        p = str(m.get("pilot") or "").strip()
+        role = str(m.get("role") or "").strip().lower()
+        if p and p not in out and (role in ("leader", "officer") or "treasur" in role):
+            out.append(p)
+    return out
+
+
+def ready_withdrawer(data, leader):
+    """Return a docked treasury-authorized pilot (leader preferred, else any docked Officer/treasurer at an active lockbox),
+    or '' after asking the leader's in-flight run to stop so it docks."""
+    emp = dispatch.read_json(Path(data) / "empire" / "empire.json", {}) or {}
+    facs = (emp.get("facilities") or []) if isinstance(emp, dict) else []
+    boxes = {str(f.get("base")) for f in facs if isinstance(f, dict) and f.get("type") == "faction_lockbox" and f.get("status") == "active" and f.get("base")}
+    fleet = ships(data)
+    for actor in withdrawers(data, leader):
+        dock = str((fleet.get(actor) or {}).get("docked") or "")
+        if dock and (not boxes or dock in boxes):
+            return actor
+    run_marker = Path(data) / "fleet" / "host" / "running" / (leader + ".json")
+    if run_marker.exists():
+        stop_p = Path(data) / "fleet" / "host" / "stop" / leader
+        stop_p.parent.mkdir(parents=True, exist_ok=True)
+        stop_p.touch()
+    return ""
+
+
 def serve_funds(data, leader, now, dry):
-    """One fund a pass (a withdrawn one first, else the oldest open one): withdrawn while the leader stands docked and
-    the treasury keeps FUND_FLOOR, then given to its pilot. 0, or 1 when a call failed."""
-    rows, changed = funds(data), False
+    """Serve open and withdrawn treasury funds: up to FUND_BATCH open funds withdrawn in one batched withdrawal
+    while the leader (or a docked Officer/treasurer) stands docked and treasury keeps FUND_FLOOR, then gifted
+    to each pilot within FUND_BUDGET seconds. Returns 0, or 1 when a call failed."""
+    rows, changed, start = funds(data), False, time.time()
     for r in rows:                                              # an open fund ends by itself after FUND_WAIT hours
         if r.get("state") == "open" and r.get("kind") != "topup" and now - (r.get("at") or 0) > FUND_WAIT * 3600:
             r.update(state="ended", note="no docked leader within %d hours" % FUND_WAIT)
             changed = True
             print("FUND ended: %s %s cr: the leader stood docked at no pass within %d hours" % (r["pilot"], format(int(r["credits"]), ","), FUND_WAIT))
-    todo = (next((r for r in rows if r.get("state") == "withdrawn" and r.get("kind") != "topup"), None)
-            or next((r for r in rows if r.get("state") == "open" and r.get("kind") != "topup"), None))
-    if not todo or dry:
-        if todo:
-            print("would fund: %s %s cr from the treasury (%s), state %s" % (todo["pilot"], format(int(todo["credits"]), ","), todo.get("why"), todo["state"]))
-        elif changed:
+    pending_give = [r for r in rows if r.get("state") == "withdrawn" and r.get("kind") != "topup"]
+    pending_open = [r for r in rows if r.get("state") == "open" and r.get("kind") != "topup"]
+    if (not pending_give and not pending_open) or dry:
+        for r in pending_give + pending_open[:FUND_BATCH]:
+            print("would fund: %s %s cr from the treasury (%s), state %s" % (r["pilot"], format(int(r["credits"]), ","), r.get("why"), r["state"]))
+        if changed and not dry:
             write_funds(data, rows)
         return 0
-    pilot, credits = todo["pilot"], int(todo["credits"])
-    if todo["state"] == "open":
-        emp_w = dispatch.read_json(Path(data) / "empire" / "empire.json", {}) or {}
-        facs_w = (emp_w.get("facilities") or []) if isinstance(emp_w, dict) else []
-        lboxes_w = {str(f.get("base")) for f in facs_w if isinstance(f, dict) and f.get("type") == "faction_lockbox" and f.get("status") == "active" and f.get("base")}
-        cur_dock = str((ships(data).get(leader) or {}).get("docked") or "")
-        if not cur_dock or (lboxes_w and cur_dock not in lboxes_w):
-            run_marker = Path(data) / "fleet" / "host" / "running" / (leader + ".json")
-            if run_marker.exists():
-                stop_p = Path(data) / "fleet" / "host" / "stop" / leader
-                stop_p.parent.mkdir(parents=True, exist_ok=True)
-                stop_p.touch()
-            print("FUND waits: %s %s cr: the leader %s is not docked (the game withdraws docked only)" % (pilot, format(credits, ","), leader))
+    if pending_open and not pending_give:
+        actor = ready_withdrawer(data, leader)
+        if not actor:
+            first = pending_open[0]
+            print("FUND waits: %d open (%s %s cr first): %s is not docked at a lockbox (the game withdraws docked only)"
+                  % (len(pending_open), first["pilot"], format(int(first["credits"]), ","), leader))
             if changed:
                 write_funds(data, rows)
             return 0
-        before = treasury_read(leader)
-        if before is None or before - credits < FUND_FLOOR:
-            print("FUND waits: %s %s cr: the treasury reads %s, it keeps %s" % (pilot, format(credits, ","), before, format(FUND_FLOOR, ",")))
+        before = treasury_read(actor)
+        take, total = [], 0
+        for r in pending_open[:FUND_BATCH]:
+            amt = int(r["credits"])
+            if before is not None and before - (total + amt) >= FUND_FLOOR:
+                take.append(r)
+                total += amt
+        if not take:
+            first = pending_open[0]
+            print("FUND waits: %s %s cr: the treasury reads %s, it keeps %s" % (first["pilot"], format(int(first["credits"]), ","), before, format(FUND_FLOOR, ",")))
             if changed:
                 write_funds(data, rows)
             return 0
         if not any(r.get("state") in ("withdrawn", "given") or (isinstance(r.get("probed"), dict) and r["probed"].get("ok")) for r in rows):     # rule F12: one unit first
-            ok, text = withdraw(leader, 1)
+            ok, text = withdraw(actor, 1)
             time.sleep(FUND_READ)
-            after = treasury_read(leader)
-            todo["probed"] = {"ok": ok, "text": text, "before": before, "after": after}
+            after = treasury_read(actor)
+            take[0]["probed"] = {"ok": ok, "text": text, "before": before, "after": after}
             write_funds(data, rows)
             if not ok or after is None or before - after < 1:
                 print("HALT: FUND probe: 1 cr from the treasury was not taken (%s; the treasury %s -> %s): no fund is withdrawn" % (text, before, after))
                 return 1
-            gate_book(leader, FUND_TITLE + " (the 1 cr probe)", 1)
+            gate_book(actor, FUND_TITLE + " (the 1 cr probe)", 1)
             before = after
-        ok, text = withdraw(leader, credits)
+        ok, text = withdraw(actor, total)
         time.sleep(FUND_READ)
-        after = treasury_read(leader)
-        if not (after is not None and before - after >= credits * 0.9):
-            todo.update(state="open" if ok is False else "unsure", note="withdraw: %s; the treasury %s -> %s" % (text, before, after))
+        after = treasury_read(actor)
+        if not (after is not None and before - after >= total * 0.9):
+            for r in take:
+                r.update(state="open" if ok is False else "unsure", note="withdraw: %s; the treasury %s -> %s" % (text, before, after))
             write_funds(data, rows)
-            print("HALT: FUND %s %s cr: the withdrawal %s (the treasury %s -> %s)" % (pilot, format(credits, ","), ("was refused: " + text) if ok is False else "does not show", before, after))
+            print("HALT: FUND %d pilot(s) %s cr: the withdrawal %s (the treasury %s -> %s)"
+                  % (len(take), format(total, ","), ("was refused: " + text) if ok is False else "does not show", before, after))
             return 1
-        gate_book(leader, "%s: %s" % (FUND_TITLE, todo.get("why") or pilot), credits)
-        todo.update(state="withdrawn", withdrawn_at=int(time.time()), treasury=[before, after])
+        label = take[0].get("why") or take[0]["pilot"] if len(take) == 1 else ("%d pilots" % len(take))
+        gate_book(actor, "%s: %s" % (FUND_TITLE, label), total)
+        for r in take:
+            r.update(state="withdrawn", withdrawn_at=int(time.time()), withdrawer=actor, treasury=[before, after])
         write_funds(data, rows)
-        print("FUND withdrawn: %s cr from the treasury by %s for %s (the treasury %s -> %s)" % (format(credits, ","), leader, pilot, before, after))
-    ok, text = give(leader, pilot, credits)
-    if not ok:
-        todo["note"] = "gift: %s" % text
-        write_funds(data, rows)
-        print("HALT: FUND gift %s -> %s %s cr refused: %s; the leader keeps it and gives at the next pass" % (leader, pilot, format(credits, ","), text))
-        return 1
-    book(data, [(leader, pilot, credits)], time.time())
-    todo.update(state="given", given_at=int(time.time()))
+        print("FUND withdrawn: %s cr from the treasury by %s for %d pilot(s) (the treasury %s -> %s)"
+              % (format(total, ","), actor, len(take), before, after))
+        pending_give = take
+    failed = 0
+    for r in pending_give:
+        if time.time() - start > FUND_BUDGET:
+            break
+        actor = str(r.get("withdrawer") or leader)
+        pilot, credits = r["pilot"], int(r["credits"])
+        ok, text = give(actor, pilot, credits)
+        if not ok:
+            r["note"] = "gift: %s" % text
+            failed = 1
+            print("HALT: FUND gift %s -> %s %s cr refused: %s; %s keeps it and gives at the next pass"
+                  % (actor, pilot, format(credits, ","), text, actor))
+            continue
+        book(data, [(actor, pilot, credits)], time.time())
+        r.update(state="given", given_at=int(time.time()))
+        print("FUND given: %s -> %s %s cr (%s); the sweep leaves it for %s hours"
+              % (actor, pilot, format(credits, ","), r.get("why"), r.get("hours") or FUND_HOURS))
     write_funds(data, rows)
-    print("FUND given: %s -> %s %s cr (%s); the sweep leaves it for %s hours" % (leader, pilot, format(credits, ","), todo.get("why"), todo.get("hours") or FUND_HOURS))
-    return 0
+    return failed
 
 
 def treasury_topups(data, stranded, now, dry):
@@ -983,7 +1040,18 @@ def serve_seats(data, leader, now, dry):
     return 0
 
 
-def add_fund(data, pilot, credits, why, hours, now):
+def division_fund_spent(data, who, now):
+    """Rolling 24h non-topup, non-ended credits funded by `who`."""
+    return sum(int(r.get("credits") or 0) for r in funds(data)
+               if r.get("kind") != "topup" and r.get("state") != "ended"
+               and str(r.get("by") or "") == who and now - (r.get("at") or 0) < 86400)
+
+
+def add_fund(data, pilot, credits, why, hours, now, who="Unity"):
+    credits = int(credits)
+    if credits <= 0:
+        print("REFUSED: credits must be positive")
+        return 1
     rows = funds(data)
     if any(r.get("pilot") == pilot and r.get("state") in ("open", "withdrawn", "unsure") for r in rows):
         print("REFUSED: %s has a fund open already" % pilot)
@@ -991,9 +1059,33 @@ def add_fund(data, pilot, credits, why, hours, now):
     if pilot not in ships(data):
         print("REFUSED: %s holds no wallet reading in the fleet file" % pilot)
         return 1
-    rows.append({"pilot": pilot, "credits": int(credits), "why": why, "hours": hours, "at": int(now), "state": "open"})
+    admiral = bool(who and who != "Unity" and who in division.MEMBERS)
+    if admiral:
+        owner = division.owner(pilot, data)
+        if owner != who:
+            print("REFUSED: %s belongs to %s, not %s (rule F12: own division only)" % (pilot, owner, who))
+            return 1
+        if credits > ADMIRAL_MAX_SINGLE:
+            print("REFUSED: %s cr exceeds autonomous single-pilot cap of %s cr (rule F12); escalate to Unity (Scope: capital)"
+                  % (format(credits, ","), format(ADMIRAL_MAX_SINGLE, ",")))
+            return 1
+        spent = division_fund_spent(data, who, now)
+        if spent + credits > ADMIRAL_DAY_CAP:
+            print("REFUSED: %s autonomous 24h treasury budget exceeded (%s + %s > %s cr, rule F12); escalate to Unity (Scope: capital)"
+                  % (who, format(spent, ","), format(credits, ","), format(ADMIRAL_DAY_CAP, ",")))
+            return 1
+        emp = dispatch.read_json(Path(data) / "empire" / "empire.json", {}) or {}
+        tr_now = (emp.get("faction") or {}).get("treasury") if isinstance(emp, dict) else None
+        if isinstance(tr_now, (int, float)):
+            open_sum = sum(int(r.get("credits") or 0) for r in rows if r.get("kind") != "topup" and r.get("state") == "open")
+            if int(tr_now) - open_sum - credits < FUND_FLOOR:
+                print("REFUSED: treasury %s cr minus %s cr open funds minus %s cr would fall below %s cr floor (rule F12)"
+                      % (format(int(tr_now), ","), format(open_sum, ","), format(credits, ","), format(FUND_FLOOR, ",")))
+                return 1
+    rows.append({"pilot": pilot, "credits": credits, "why": why, "hours": hours, "at": int(now), "state": "open", "by": who or "Unity"})
     write_funds(data, rows)
-    print("FUND open: %s %s cr (%s); served at the next pass the leader stands docked" % (pilot, format(int(credits), ","), why))
+    print("FUND open: %s %s cr by %s (%s); served at the next 5m pass while docked at a lockbox"
+          % (pilot, format(credits, ","), who or "Unity", why))
     return 0
 
 
@@ -1166,20 +1258,40 @@ def main(argv=None):
         return add_seats(data, pilots, now)
     if verb == "fund":
         if "--show" in args:
+            emp = dispatch.read_json(Path(data) / "empire" / "empire.json", {}) or {}
+            tr_now = (emp.get("faction") or {}).get("treasury") if isinstance(emp, dict) else None
+            print("TREASURY | balance: %s cr | floor: %s cr | Admiral cap: %s cr/pilot, %s cr/24h"
+                  % (format(int(tr_now), ",") if isinstance(tr_now, (int, float)) else "?",
+                     format(FUND_FLOOR, ","), format(ADMIRAL_MAX_SINGLE, ","), format(ADMIRAL_DAY_CAP, ",")))
+            for m in ("Zero", "Mercury", "Apollo", "Apophis", "Oracle"):
+                used = division_fund_spent(data, m, now)
+                if used:
+                    print("  24h budget %-8s: %s / %s cr used" % (m, format(used, ","), format(ADMIRAL_DAY_CAP, ",")))
             for r in funds(data):
-                print("FUND %s %s cr | %s | %s | opened %s UTC%s" % (r.get("pilot"), format(int(r.get("credits") or 0), ","), r.get("state"), r.get("why"),
-                      time.strftime("%Y-%m-%d %H:%M", time.gmtime(r.get("at") or 0)), (" | " + str(r["note"])) if r.get("note") else ""))
+                by_s = (" | by " + str(r["by"])) if r.get("by") else ""
+                print("FUND %s %s cr | %s%s | %s | opened %s UTC%s"
+                      % (r.get("pilot"), format(int(r.get("credits") or 0), ","), r.get("state"), by_s, r.get("why"),
+                         time.strftime("%Y-%m-%d %H:%M", time.gmtime(r.get("at") or 0)),
+                         (" | " + str(r["note"])) if r.get("note") else ""))
             return 0
         kind, who = division.member()
-        if who != "Unity":
-            sys.exit("REFUSED: a fund from the treasury is the Fleet Admiral's alone (rule F11: the purse)")
+        if kind == "member" and who not in division.MEMBERS:
+            sys.exit("REFUSED: unknown member %r cannot fund from the treasury" % (who,))
+        caller = who if kind == "member" else "Unity"
         rest = [a for a in args if a != "fund"]
         why = rest[rest.index("--why") + 1] if "--why" in rest else ""
         hours = float(rest[rest.index("--hours") + 1]) if "--hours" in rest else FUND_HOURS
         plain = [a for i, a in enumerate(rest) if not a.startswith("--") and (i == 0 or rest[i - 1] not in ("--why", "--hours", "--data"))]
         if len(plain) != 2 or not plain[1].isdigit() or not why:
-            sys.exit('USAGE: wallet.py fund <pilot> <credits> --why "<text>" [--hours H]')
-        return add_fund(data, plain[0], int(plain[1]), why, hours, now)
+            sys.exit('USAGE: wallet.py fund <pilot[,pilot2...]> <credits> --why "<text>" [--hours H]')
+        pilots_in = [p.strip() for p in plain[0].split(",") if p.strip()]
+        if not pilots_in:
+            sys.exit('USAGE: wallet.py fund <pilot[,pilot2...]> <credits> --why "<text>" [--hours H]')
+        rc = 0
+        for p_one in pilots_in:
+            if add_fund(data, p_one, int(plain[1]), why, hours, now, who=caller) != 0:
+                rc = 1
+        return rc
     if verb == "sweep":
         dry = "--dry-run" in args
         if not dry and not SWEEP_ENABLED:

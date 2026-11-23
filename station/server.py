@@ -846,7 +846,7 @@ def _build_playbooks():
     divisions.sort(key=lambda x: order.index(x["division"]) if x["division"] in order else 99)
     out = {
         "updated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(now)),
-        "caps": {"card": book.CARD_MAX, "chapter": book.CHAPTER_MAX, "entry": book.ENTRY_MAX, "high_watermark_pct": 85},
+        "caps": {"card": book.CARD_MAX, "chapter": book.CHAPTER_MAX, "entry": book.ENTRY_MAX, "high_watermark_pct": 90},
         "divisions": divisions,
     }
     PLAYBOOKS_CACHE["at"] = now

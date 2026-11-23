@@ -744,9 +744,39 @@ def finish():
           f'({after - before:+d}; one-time {onetime[0]}) | {"; ".join(notes) or "no notes"}', flush=True)
 
 
+def pilot_stop_paths():
+    safe = re.sub(r'[^A-Za-z0-9_.-]', '_', pilot)[:60] or 'pilot'
+    paths = [DATA / 'fleet' / 'stop' / pilot]
+    if safe != pilot:
+        paths.append(DATA / 'fleet' / 'stop' / safe)
+    return paths
+
+
+def stop_reason():
+    """Return why this run must stop now (global STOP or per-pilot stop file), auto-consuming a standalone per-pilot stop file."""
+    if (DATA / 'fleet' / 'STOP').exists():
+        return 'STOP file'
+    for sp in pilot_stop_paths():
+        if sp.exists():
+            try:
+                sp.unlink()
+            except OSError:
+                pass
+            return 'stopped by per-pilot stop file'
+    return ''
+
+
 sys.excepthook = crashed
 atexit.register(finish)                              # after order_done, so it runs before it: the row first, then the order file goes
 for n, stop in enumerate(ROUTE['stops']):
+  try:
+    time.sleep(0)                                    # wake immediately if runhost set our stop event during a blocking goal
+    why_stop = stop_reason()
+    if why_stop:
+        say(f'told to stop ({why_stop}): ending circuit before stop {n + 1}')
+        if why_stop not in notes:
+            notes.append(why_stop)
+        break
     system, poi, base = stop['at'].split(':')
     system, poi, moved = mobile.locate(system, poi, base, DATA)
     if moved and n >= first:
@@ -906,13 +936,13 @@ for n, stop in enumerate(ROUTE['stops']):
         until = time.time() + watch_m * 60.0
         next_poll = time.time() + every_s
         say(f'active docked desk watch at {base} for {watch_m:.0f}m (poll every {every_s/60.0:.0f}m, 0 fuel)')
-        while time.time() < until and not (DATA / 'fleet' / 'STOP').exists():
+        while time.time() < until and not stop_reason():
             time.sleep(min(30.0, max(1.0, until - time.time())))
             try:
                 os.utime(ORDER)
             except OSError:
                 pass
-            if time.time() >= next_poll and time.time() < until and not (DATA / 'fleet' / 'STOP').exists():
+            if time.time() >= next_poll and time.time() < until and not stop_reason():
                 next_poll = time.time() + every_s
                 book = save_book(base) or book
                 if stop.get('market_poll'):
@@ -1059,7 +1089,7 @@ for n, stop in enumerate(ROUTE['stops']):
             continue
         until = time.time() + float(step.get('minutes', 25)) * 60
         try:
-            while left and time.time() < until and not (DATA / 'fleet' / 'STOP').exists():
+            while left and time.time() < until and not stop_reason():
                 time.sleep(30)
                 try:
                     os.utime(ORDER)
@@ -1100,11 +1130,17 @@ for n, stop in enumerate(ROUTE['stops']):
             print(answer.rstrip(), flush=True)
             said = step_said(answer)
             left = {title for title, _mid, finished in active() if not finished} & wanted
-            if not left or 'left: a ship' in answer or (DATA / 'fleet' / 'STOP').exists():
+            if not left or 'left: a ship' in answer or stop_reason():
                 break
         say(f'hunt at {hunt_poi}: ' + ('objectives done' if not left else f'stopped, still open: {sorted(left)}'))
         if left:
             notes.append(f'hunt {hunt_poi}: objectives not done; the step said: {said}; the ship stood at {where_now()}')
     if verbose:
         active()
+  except SystemExit as leave:                        # told to stop (runhost per-pilot stop file or signal): record reason cleanly
+    stopped = leave.code if isinstance(leave.code, str) and leave.code else 'stopped'
+    if stopped not in notes:
+        notes.append(stopped)
+    say(f'told to stop ({stopped}): ending circuit cleanly')
+    break
 finish()

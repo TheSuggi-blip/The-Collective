@@ -11,7 +11,7 @@ Status: proven. Updated: 2026-11-21. Evidence: books of 2026-11-15 21:26 UTC; or
 Status: proven. Updated: 2026-11-21. Evidence: rules F16, F33; orders.log ENT-056 (block APOLLO); errors.log ENT-086; build.py 2026-11-17 12:19 to 20:25 UTC.
 
 Logistics is the fleet's base builder (rule F16): the Fleet Admiral chooses each site and allocates its credits and materials (rule F33); the build, its supply and its upkeep are ours. Now (ENT-059): Atria once GSC-0044 runs by itself (it does since 2026-11-21 23:48 UTC); the Recruitment Center when the purse holds its fee; the buildings G5 asks stand in the needs register.
-- `build.py --treasury-ok` is her word that the TREASURY pays: it stops when the treasury holds less than the fee, as the game would take it all from the wallet. A wallet fee is booked once.
+- Autonomous builds (Suggi, 2026-11-23; F11/F12): `build.py` pays routine facility fees (`<= 500,000 cr`, e.g. Notice Board 50k, Lockbox 200k, Bunker) directly from the shared faction treasury whenever `treasury - fee >= 500,000` (`FUND_FLOOR`), without waiting for Unity. Mega-capital builds (`> 500,000 cr`) still require `--treasury-ok` (Unity's `Scope: capital` approval); wallet fees are booked once.
 - The goods go into the faction store first (`deposit` target faction, source storage, one unit first, no hold needed).
 
 ### What the game says

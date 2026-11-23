@@ -228,6 +228,28 @@ def goal_plan(a):
     return [("game/fleet/gate.py", ["goal", a["pilot"], a["type"], json.dumps(a.get("options") or {})] + flag(a, "one_time"))]
 
 
+def stop_plan(a):
+    if a.get("list"):
+        argv = ["--list"]
+    elif a.get("route"):
+        argv = ["--route", str(a["route"])]
+    elif a.get("pilot"):
+        argv = [str(a["pilot"])]
+    else:
+        argv = ["--list"]
+    return [("game/fleet/stop_pilot.py", argv + (["--dry-run"] if a.get("dry_run") else []))]
+
+
+def fund_plan(a):
+    if a.get("show") or (not a.get("pilot") and a.get("credits") is None and not a.get("why")):
+        return [("game/fleet/wallet.py", ["fund", "--show"])]
+    need(a, "pilot", "credits", "why")
+    argv = ["fund", str(a["pilot"]), str(a["credits"]), "--why", str(a["why"])]
+    if a.get("hours") is not None:
+        argv += ["--hours", str(a["hours"])]
+    return [("game/fleet/wallet.py", argv)]
+
+
 TOOLS = {
     "fleet": {
         "text": "The fleet in figures. view=money: credits and steady money per hour (income, costs, net; rewards paid once left out) over 1, 6 and 24 hours, per division. "
@@ -378,6 +400,25 @@ TOOLS = {
                 "longer drive: a held ship earns nothing.",
         "args": {"pilot": arg(S, "the pilot's name"), "release": arg(B, "true: give it back to the dispatcher")}, "required": ["pilot"],
         "plan": lambda a: [("game/fleet/gate.py", ["release" if a.get("release") else "hold", a["pilot"]])], "door": True},
+    "stop": {
+        "text": "Stop one or more in-flight ships of your division cleanly (or every active run of your division on a named route) without touching global fleet/STOP. "
+                "Use list=true to view running ships in your division first.",
+        "args": {"pilot": arg(S, "pilot name or comma-separated pilot names to stop"),
+                 "route": arg(S, "stop every active run of your division currently flying this route id"),
+                 "list": arg(B, "true: list active runs in your division without stopping any"),
+                 "dry_run": arg(B, "true: preview which pilots would be stopped without writing stop files")},
+        "plan": stop_plan,
+        "door": True},
+    "fund": {
+        "text": "Draw credits from the shared faction treasury for one or more pilots of your division (rule F12: up to 400,000 cr/pilot and 750,000 cr/division per 24h, "
+                "keeping 500,000 cr treasury floor; uncapped for Unity), served every 5 minutes. Use show=true to view open funds and 24h division budgets.",
+        "args": {"pilot": arg(S, "pilot name or comma-separated pilot names in your division"),
+                 "credits": arg(I, "credits to fund each pilot"),
+                 "why": arg(S, "short reason (e.g. hull upgrade, fittings, working capital)"),
+                 "hours": arg(I, "hours sweep leaves funded credits with the pilot (default 6)"),
+                 "show": arg(B, "true: show open/recent funds and 24h division autonomous budgets")},
+        "plan": fund_plan,
+        "door": True},
     "supply": {
         "text": "The supply chains: the goods the fleet must never run out of (iron, fuel for our outpost's bunker, later food and power), each at its "
                 "place (game/supply/chains.tsv, kept by the Fleet Admiral with Logistics), against what stands there now. view=show: every chain with "
@@ -444,7 +485,7 @@ TOOLS["docs"]["args"]["topic"] = arg(S, "for handbook: a table's or view's name 
 TOOLS["docs"]["plan"] = (lambda plan: lambda a: [("game/fleet/hive.py", ["handbook"] + ([str(a["topic"])] if a.get("topic") else []))]
                          if a.get("view") == "handbook" else plan(a))(TOOLS["docs"]["plan"])
 
-WRITES = ("fill", "plan", "command", "goal", "hold")      # every other tool only reads
+WRITES = ("fill", "plan", "command", "goal", "hold", "stop", "fund")      # every other tool only reads
 WRITES += ("needs",)                              # needs.py writes the member's own division's needs (action add, set, done, drop)
 
 

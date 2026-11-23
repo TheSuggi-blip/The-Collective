@@ -6,7 +6,7 @@ WHAT: separates volatile ground-truth state (ship counts, hull tiers, fitted mod
       Follows the Anchor-and-Delta loop design:
         - Live Division Anchor: deterministically computed at read time from read.db, catalog, and requests.log so
           hull builds, skill ladders, open priorities, and open requests never go stale or bloat chapter prose.
-        - High-Watermark Curation (>= 85% of chapter cap): warns Admirals before a chapter hits its hard ceiling so
+        - High-Watermark Curation (>= 90% of chapter cap): warns Admirals before a chapter hits its hard ceiling so
           they merge overlapping rules or mark superseded entries `Status: retired` for hourly eviction into doc_versions.
         - Empirical Drift Scanner: checks active (`proven` and `test`) entries against live game/routes/*.json and
           the active catalog version, flagging archived/disabled route citations, unresolved `test` entries (> 3 days),
@@ -44,7 +44,7 @@ import board                                      # noqa: E402
 import division                                   # noqa: E402
 import guidebook as book                          # noqa: E402
 
-HIGH_WATERMARK = 0.85
+HIGH_WATERMARK = 0.90
 STALE_TEST_DAYS = 3
 OPERATIONAL_CHAPTERS = frozenset(("card", "ships", "levelling", "routes", "tests"))
 ROUTE_TOKEN = re.compile(
@@ -143,8 +143,8 @@ EXAMPLES = {
     "division_playbooks": (
         ("All 6 divisions' live fleet readiness, open priorities, and guidebook cap utilization",
          "SELECT * FROM division_playbooks ORDER BY division"),
-        ("Divisions with chapters near or over the 85% curation watermark",
-         "SELECT division, guide_chapters, guide_entries, guide_chars, max_chapter_pct FROM division_playbooks WHERE max_chapter_pct >= 85.0"),
+        ("Divisions with chapters near or over the 90% curation watermark",
+         "SELECT division, guide_chapters, guide_entries, guide_chars, max_chapter_pct FROM division_playbooks WHERE max_chapter_pct >= 90.0"),
         ("Divisions with 100%-stocked priorities ready to execute or mark done",
          "SELECT division, open_needs, ready_needs FROM division_playbooks WHERE ready_needs > 0"),
     ),
@@ -749,7 +749,7 @@ def anchor_lines(anchor):
     near = [c for c in cur["chapters"] if c["band"] in ("near", "over")]
     if near:
         lines.append(
-            "  High-Watermark Chapters (>= 85% cap -- merge or mark outdated entries Status: retired): "
+            "  High-Watermark Chapters (>= 90% cap -- merge or mark outdated entries Status: retired): "
             + ", ".join("%s.md %.1f%% (%d/%d)" % (c["chapter"], c["pct"], c["chars"], c["cap"]) for c in near)
         )
     if cur["drift_warnings"]:
@@ -791,7 +791,7 @@ def main(argv=None):
             return 0
         total_w = sum(len(v["drift_warnings"]) for v in payload.values())
         total_n = sum(v["near_count"] + v["over_count"] for v in payload.values())
-        print("PLAYBOOK DRIFT & CAP HEALTH | %s | %d chapter(s) >= 85%% cap, %d drift item(s)" % (target, total_n, total_w))
+        print("PLAYBOOK DRIFT & CAP HEALTH | %s | %d chapter(s) >= 90%% cap, %d drift item(s)" % (target, total_n, total_w))
         for d in divs:
             cur = payload[d]
             near = [c for c in cur["chapters"] if c["band"] in ("near", "over")]

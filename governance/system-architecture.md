@@ -132,7 +132,7 @@ Lock-free Readers (immutable read.db):
 
 ## 6. Memory, Search & Opus 5.5+ Context Hygiene
 
-- **Anchor-and-Delta memory tiers (`governance/knowledge-and-memory-loop.md`):** (1) `read.db` (`hive.py`, `playbook_anchor.py` / SQL `division_playbooks`, `progression.py`) for zero-drift live telemetry; (2) capped chapter guidebooks (`85%` soft curation watermark, `100%` pre-commit gate, hourly `guide.py tidy --commit` eviction into `doc_versions`, `guide.py drift` empirical scanner) + universal workspace `size-guard.py` across all 6 profiles + `docs.py` (`blueprint` indexing of all `governance/*.md`); (3) Hindsight (`private-<agent>` + `collective-shared`) for cross-turn episodes and scars.
+- **Anchor-and-Delta memory tiers (`governance/knowledge-and-memory-loop.md`):** (1) `read.db` (`hive.py`, `playbook_anchor.py` / SQL `division_playbooks`, `progression.py`) for zero-drift live telemetry; (2) capped chapter guidebooks (`90%` soft curation watermark, `100%` pre-commit gate, hourly `guide.py tidy --commit` eviction into `doc_versions`, `guide.py drift` empirical scanner) + universal workspace `size-guard.py` across all 6 profiles + `docs.py` (`blueprint` indexing of all `governance/*.md`); (3) Hindsight (`private-<agent>` + `collective-shared`) for cross-turn episodes and scars.
 - **Lean skill catalogs:** Shared lifecycle/play skills in `/opt/data/.agents/skills/` (`0444`) and `governance/template-reports.md` are compressed (`-55%` byte volume) to crisp checklists, and 29 unrelated default consumer/macOS/video/office skills are disabled in `/opt/data/profiles/*/config.yaml` (`skills.disabled`), keeping `31` focused skills for Unity and `26` for each Admiral.
 
 ## 7. Command Station HUD (`:8445`)

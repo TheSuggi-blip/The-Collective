@@ -81,7 +81,7 @@ CARD_MAX = 4500                # characters of card.md's entries: read whole at 
 CHAPTER_MAX = 12000             # characters of the entries of every other chapter
 ENTRY_MAX = 2250               # characters of one entry (its status line and its body); aim at about 1,800
 HEAD_MAX = 450                 # characters a chapter may hold between its title line and its first entry
-HIGH_WATERMARK = 0.85          # soft curation trigger (85% of cap): merge or mark outdated entries retired before overflow
+HIGH_WATERMARK = 0.90          # soft curation trigger (90% of cap): merge or mark outdated entries retired before overflow
 STATUSES = ("proven", "test", "retired")
 NAMES = {"card": "the Class Card", "ships": "Ships and Fits", "levelling": "Levelling", "routes": "Routes",
          "tests": "Tests", "lessons": "Lessons"}                                # a chapter's title, after its division's name
@@ -296,7 +296,7 @@ def over_lines(name, chapters, most=12):
 
 
 def near_caps(chapters):
-    """[(chapter, size, cap, pct)] for chapters at >= HIGH_WATERMARK (85%) up to 100% of their cap."""
+    """[(chapter, size, cap, pct)] for chapters at >= HIGH_WATERMARK (90%) up to 100% of their cap."""
     out = []
     for chapter, rows in chapters.items():
         cap = cap_of(chapter)
@@ -312,7 +312,7 @@ def near_lines(name, chapters):
     if not found:
         return []
     return [
-        "  NEAR ITS CAP (>= 85%%), %s: curate proactively (merge overlapping rules or mark superseded entries `Status: retired` for hourly tidy): %s"
+        "  NEAR ITS CAP (>= 90%%), %s: curate proactively (merge overlapping rules or mark superseded entries `Status: retired` for hourly tidy): %s"
         % (name.capitalize(), ", ".join("%s.md %s/%s (%.0f%%)" % (c, num(s), num(cap), pct) for c, s, cap, pct in found))
     ]
 

@@ -134,7 +134,7 @@ ASKS = {        # MCP tool -> {view, action or ask (or '' for every other value)
     "system": {"": "Map and intel"}, "comms": {"contacts": "Map and intel", "safe_comms": "Map and intel", "": "Written knowledge"}, "search": {"": "Written knowledge"},
     "docs": {"": "Written knowledge"}, "supply": {"": "Supply"}, "sql": {"": "The store itself"},
     "fill": {"": "Plans and the door"}, "plan": {"": "Plans and the door"}, "command": {"": "Plans and the door"},
-    "goal": {"": "Plans and the door"}, "hold": {"": "Plans and the door"},
+    "goal": {"": "Plans and the door"}, "hold": {"": "Plans and the door"}, "stop": {"": "Plans and the door"}, "fund": {"": "Money"},
 }
 ASKS["needs"] = {"": "Stock and reserve"}          # the needs register (needs.py): its table, need_status and the tool
 VERBS = {       # hive.py verbs that no tool reaches as hive.py <verb> (the tool `hive` passes them): subject; None: a tool gives

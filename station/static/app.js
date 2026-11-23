@@ -3032,7 +3032,7 @@ function renderPlaybooksSubtab(panel, pbData, live) {
   );
   banner.append(
     bTop,
-    el('p', 'sub', 'Anchor-and-Delta loop: ship builds, skill rungs, open priorities and open requests below update automatically from read.db; curated guidebook chapters stay capped (card ' + fmt(caps.card || 4500) + ', chapter ' + fmt(caps.chapter || 12000) + ', warn >=85%) and archive retired entries into doc_versions.')
+    el('p', 'sub', 'Anchor-and-Delta loop: ship builds, skill rungs, open priorities and open requests below update automatically from read.db; curated guidebook chapters stay capped (card ' + fmt(caps.card || 4500) + ', chapter ' + fmt(caps.chapter || 12000) + ', warn >=90%) and archive retired entries into doc_versions.')
   );
   panel.append(banner);
 
@@ -3135,7 +3135,7 @@ function renderPlaybooksSubtab(panel, pbData, live) {
   const capCard = el('div', 'icard');
   capCard.append(
     el('h3', null, 'Capped Guidebook Chapters & Drift Guard (' + chaps.length + ' chapters)'),
-    el('p', 'sub', 'Click any chapter below to inspect its curated tactical entries inline. Chapters >=85% trigger proactive curation; retired entries archive to doc_versions.')
+    el('p', 'sub', 'Click any chapter below to inspect its curated tactical entries inline. Chapters >=90% trigger proactive curation; retired entries archive to doc_versions.')
   );
   if (drifts.length) {
     const dBox = el('div', 'pb-driftbox');

@@ -8,7 +8,7 @@ author: Unity
 # index.md -- The Fleet's Scripts
 
 Built by `python3 -B scripts/fleet-index.py` from the docstring of every script in this
-folder; never edited by hand. Scripts listed: 64.
+folder; never edited by hand. Scripts listed: 65.
 
 - Run a script from the repository root: `python3 -I -B game/fleet/<script> <arguments>`,
   the arguments as listed under "How to Call Each".
@@ -82,6 +82,7 @@ folder; never edited by hand. Scripts listed: 64.
 | `sight.py` | What our ships see where they are: the pilots they meet, and a first read of a system nobody read. | Service |
 | `stash.py` | Store what a docked pilot carries in its own storage at that station, so that its hold is free for the next route. | By hand |
 | `stats.py` | The fleet's statistics, computed by the store into tables of its own: the fleet as one purse, what each division gives the whole, class capacity, where the ship-hours go, the reserve's days of supply, refill and regrowth, XP per ship-hour, the next upgrade of each ship, gather against buy, and control-chart alerts. | By hand |
+| `stop_pilot.py` | Stop one or more in-flight ships of your division cleanly without touching global fleet/STOP. | By hand |
 | `store.py` | Keeps the fleet's history and its current state in one SQLite file: the runs, the price moves and the census readings with their sums by hour and by day, the members' own observations, and beside them what the fleet's own files say now. | Service |
 | `supply.py` | The supply chains: the goods the fleet must never run out of, each at its place against what stands there now, with the ships on duty for it. | By hand |
 | `surplus.py` | Say per item what the fleet holds beyond what its build targets reserve: the surplus a trader may sell, where it lies and its best bid. | By hand |
@@ -929,6 +930,20 @@ stats.py <view> [--hours N] [--member <Member>] [--data <dir>]    the same
 --data <dir>   the unit's data folder (default /srv/collective/data)
 ```
 
+### `stop_pilot.py`
+
+Stop one or more in-flight ships of your division cleanly without touching global
+fleet/STOP.
+
+Run by hand.
+
+```
+stop_pilot.py --list [--data <dir>]                         list active runs in your division (or all for Unity)
+stop_pilot.py <pilot> [<pilot2> ...] [--dry-run]            stop named pilot(s) (also accepts comma-separated names)
+stop_pilot.py --route <route_id> [--dry-run]                stop all active runs of your division on <route_id>
+--data <dir>                                                the unit's data folder (default /srv/collective/data)
+```
+
 ### `store.py`
 
 Keeps the fleet's history and its current state in one SQLite file: the runs, the price
@@ -1027,10 +1042,10 @@ Run by hand.
 wallet.py [check]            every wallet against the floors; HALT for a pilot under 3,000 cr
 wallet.py topup [--dry-run]  give each pilot under LOW credits up to TARGET from a rich ship of its division
 wallet.py sweep [--dry-run]  the part above KEEP_SHIP of the richest ships to the leader, the leader's into the treasury
-wallet.py fund <pilot> <credits> --why "<text>" [--hours H]
-                             the treasury pays one pilot for a buy: the next pass the leader stands docked withdraws the
-                             credits and gives them; the sweep and the top-ups leave that much with the pilot for H hours
-wallet.py fund --show        the funds on record and their state
+wallet.py fund <pilot[,pilot2...]> <credits> --why "<text>" [--hours H]
+                             the treasury pays one or more pilots for a buy (own division for Admirals, up to 400k/pilot
+                             and 750k/24h keeping 500k treasury floor; any pilot for Unity); served every 5 min
+wallet.py fund --show        the funds on record, their state, and rolling 24h division autonomous budgets
 --data <dir>                 the unit's data folder (default: the fleet's)
 ```
 

@@ -308,5 +308,66 @@ class TreasuryTopupTests(FundTests):
         self.assertEqual([c for c in self.calls if c[0] == "withdraw"][-1], ("withdraw", "Prime Directive", 10900))     # what the floor allows
 
 
+class AdmiralSelfFundingTests(FundTests):
+    """Autonomous division treasury access (Suggi, 2026-11-23; rule F12): Admirals fund own division up to
+    400k/pilot and 750k/24h keeping 500k floor; serve_funds batches up to FUND_BATCH and uses docked Officers."""
+
+    def put_empire(self, treasury=1800000, officer=None):
+        (self.data / "empire").mkdir(exist_ok=True)
+        members = [{"pilot": "Prime Directive", "role": "Leader"}]
+        if officer:
+            members.append({"pilot": officer, "role": "Officer"})
+        (self.data / "empire" / "empire.json").write_text(
+            json.dumps({
+                "faction": {"leader": "Prime Directive", "treasury": treasury},
+                "members": members,
+                "facilities": [{"type": "faction_lockbox", "base": "node_beta_industrial_station", "status": "active"}],
+            }),
+            encoding="ascii",
+        )
+
+    def put_fleet(self, extra=None):
+        ships = [
+            {"name": "Prime Directive", "credits": 50000, "docked": ""},
+            {"name": "Zero Point", "credits": 50000, "docked": "node_beta_industrial_station"},
+            {"name": "miner-1", "credits": 25000},
+            {"name": "miner-2", "credits": 25000},
+            {"name": "miner-3", "credits": 25000},
+            {"name": "trader-1", "credits": 25000},
+        ]
+        if extra:
+            ships.extend(extra)
+        (self.data / "fleet" / "fleet.json").write_text(json.dumps({"ships": ships}), encoding="ascii")
+
+    def test_admiral_funds_own_division_within_caps_and_rejects_foreign_or_over_cap(self):
+        w, now = self.wallet, time.time()
+        self.put_empire(treasury=1800000)
+        self.put_fleet()
+        self.assertEqual(w.add_fund(str(self.data), "miner-1", 300000, "Resonance Miner", 6, now, who="Zero"), 0)
+        self.assertEqual(w.add_fund(str(self.data), "miner-2", 300000, "Resonance Miner", 6, now, who="Zero"), 0)
+        self.assertEqual(w.add_fund(str(self.data), "trader-1", 100000, "wrong div", 6, now, who="Zero"), 1)
+        self.assertEqual(w.add_fund(str(self.data), "miner-3", 450000, "too large", 6, now, who="Zero"), 1)
+        self.assertEqual(w.add_fund(str(self.data), "miner-3", 200000, "over 24h cap", 6, now, who="Zero"), 1)
+        self.assertEqual(w.add_fund(str(self.data), "miner-3", 150000, "fits cap", 6, now, who="Zero"), 0)
+        self.put_empire(treasury=1300000)
+        self.assertEqual(w.add_fund(str(self.data), "trader-1", 100000, "floor test", 6, now, who="Mercury"), 1)
+
+    def test_serve_funds_batches_open_rows_and_uses_docked_officer_when_leader_undocked(self):
+        w, now = self.wallet, time.time()
+        self.put_empire(treasury=1800000, officer="Zero Point")
+        self.put_fleet()
+        self.treasury[0] = 1800000
+        self.assertEqual(w.add_fund(str(self.data), "miner-1", 200000, "batch 1", 6, now, who="Zero"), 0)
+        self.assertEqual(w.add_fund(str(self.data), "miner-2", 250000, "batch 2", 6, now, who="Zero"), 0)
+        self.assertEqual(w.serve_funds(str(self.data), "Prime Directive", now, False), 0)
+        self.assertEqual(self.calls, [
+            ("withdraw", "Zero Point", 1),
+            ("withdraw", "Zero Point", 450000),
+            ("give", "Zero Point", "miner-1", 200000),
+            ("give", "Zero Point", "miner-2", 250000),
+        ])
+        self.assertEqual([r["state"] for r in w.funds(str(self.data))], ["given", "given"])
+
+
 if __name__ == "__main__":
     unittest.main()

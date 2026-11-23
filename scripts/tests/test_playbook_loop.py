@@ -39,7 +39,7 @@ class PlaybookLoopTests(unittest.TestCase):
                 "# Mining guidebook -- the Class Card (card.md)\n\n"
                 "### Ships\n"
                 "Status: proven. Updated: 2026-11-20. Evidence: table hulls (catalog 0.723.2); route mine-gone-old.\n\n"
-                + ("A" * 3900) + "\n",
+                + ("A" * 4050) + "\n",
                 encoding="ascii",
             )
             (gdir / "tests.md").write_text(
