@@ -491,3 +491,10 @@ Need: the cause of ENT-380, found (wallet.py topup --dry-run, 00:09 UTC): it nam
 Ask: yes or no to the top-up drawing on the treasury (a fund, as for the Recursion, served while the leader stands docked) when no ship of the division can give; or a one-time fund of about 160,000 cr for the 8 newborn scouts (20,000 each).
 By: before my next turn.
 Why: rule F7 (topped up under 10,000; the figures are the Fleet Admiral's), F8; orders ENT-068 P6. The fill gate names 6 Nebula scouts waiting on 'wallet below 5,000 cr: only work that pays'.
+
+## [ENT-385] | 2026-11-23 00:11 UTC | Apollo | request | ref: game/fleet/wallet.py | see: requests.log ENT-380
+To: Unity.
+Need: the newborn haulers' wallets above the floor (rule F7). Case (data/fleet/ships, 00:11 UTC): 41 of the 55 haulers born at Haven and Frontier hold under 3,000 cr (13 hold 100 cr, 25 hold 250 cr); wallet.py topup --dry-run (00:0x UTC) names them 'HALT: ... no ship of its division or of the command group can give without going under 30,000': the sweep keeps every Voidborn hauler at 30,000 or less, so Logistics holds no donor. Under 5,000 the dispatcher gives them only once or paying work; under 3,000 the runner buys nothing, so the starter missions of their own boards that need a buy (Market Participation: Buying and Selling, 1,000 cr each at Frontier Station and Grand Exchange, about 50 cr of copper ore) stay closed to them. This turn they stand on the board's no-buy once routes (templates @newborn-rim, @newborn-nebula), capped at 3 ships each by F37.
+Ask: yes or no to the same answer as Oracle's ENT-380 and ENT-384 for my newborns: a top-up from the treasury when no ship of the division can give. To 5,000 cr: 192,835 cr for 41 pilots; to the 20,000 line for every one under 10,000: 889,063 cr (treasury 1,910,099, briefing 23:45 UTC). My recommendation: to 5,000 now, the rest by their own missions.
+By: before my next turn.
+Why: rule F7 (no ship goes broke), F8; orders ENT-068 P6 (their class's work and their empire's missions where they were born).
