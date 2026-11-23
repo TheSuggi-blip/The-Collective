@@ -1,0 +1,20 @@
+{
+ "id": "join-krynn-hauler",
+ "kind": "circuit",
+ "title": "A Voidborn hauler done with the Solarian once lines joins the Crimson corridor: one trip to Krynn War Citadel, where Last Known Position and Strategic Readiness Assessment open to it (a test, three ships)",
+ "note": "Written by Apollo, 2026-11-23 12:29 UTC (orders ENT-082, block APOLLO: the capitals' once lines by join corridors, Trade's pattern join-krynn-trader; rules F3, F8, F34 tier 4, F37). After join-sol-hauler the Voidborn haulers that were paid Endorsements wait at Alpha Centauri and Sirius (table ships 12:27 UTC: 13 waiting). Krynn's board pays our Voidborn-born once: Last Known Position 8,000 (table runs: 54 runs, 416,000 cr paid once) and Strategic Readiness Assessment 2,500 to 4,000 (Trade's join note). Road: Alpha Centauri to Krynn 20 jumps, Sol to Krynn 19 (fuelplan chart, tank 45 of 95), flown by Trade's join-krynn-trader three times (table runs, last 11:36 UTC). A parallel test of three ships, empty hold (rule F3, F37): lifted when their runs hold. Standing for the reason of join-sol-hauler (a one-way trip judged by the missions it opens, not its own pay). Voidborn only; once per pilot; only in the rows Logistics gives it.",
+ "far_ok": true,
+ "once": true,
+ "standing": true,
+ "max_ships": 3,
+ "requires": {
+  "empty_hold": true,
+  "empire": "voidborn"
+ },
+ "stops": [
+  {
+   "at": "krynn:war_citadel:crimson_war_citadel",
+   "store": "all"
+  }
+ ]
+}
