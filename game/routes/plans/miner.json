@@ -91,6 +91,7 @@
   "give-miner-stores-ramens-rest",
   "gather-gsc-0027-spacetime-seep",
   "mine-pherkad-rift",
+  "home-sol-central",
   "train-jumps-miner",
   "park"
  ],
@@ -189,6 +190,7 @@
   "give-miner-stores-ramens-rest": 130,
   "gather-gsc-0027-spacetime-seep": 130,
   "mine-pherkad-rift": 130,
+  "home-sol-central": 130,
   "train-jumps-miner": 130,
   "park": 130
  },
