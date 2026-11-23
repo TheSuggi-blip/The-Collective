@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 83.
+Routes: 84.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -73,6 +73,7 @@ Routes: 83.
 | [mission-market-participation-alpha](mission-market-participation-alpha.json) | circuit | beyond the border, 11 jumps | Market Participation: Buying and Selling at Alpha Centauri: 1,000 cr each, once per pilot; 32 oxygen gas bought, made into 12 liquid oxygen and sold there | once per pilot, up to 6 ships, from 3,200 cr, while alpha_centauri_colonial_station bids 5 cr for liquid_oxygen, while alpha_centauri_colonial_station asks 1 cr or less for oxygen_gas | 28 | 2 | 790 | one-time | 2026-11-23 |
 | [mission-market-participation-frontier](mission-market-participation-frontier.json) | circuit | beyond the border, 17 jumps | Market Participation: Buying and Selling at Frontier Station: 1,000 cr each, once per pilot; ten copper ore bought and sold back there | once per pilot, up to 3 ships, from 3,200 cr, while frontier_station bids 1 cr for copper_ore | 66 | 0 | 350 | one-time | 2026-11-23 |
 | [mission-market-participation-grand](mission-market-participation-grand.json) | circuit | beyond the border, 21 jumps | Market Participation: Buying and Selling at Grand Exchange: 1,000 cr each, once per pilot; ten liquid nitrogen bought and sold back there | once per pilot, up to 3 ships, from 3,200 cr, while grand_exchange_station bids 1 cr for liquid_nitrogen | 50 | 1 | 1,950 | one-time | 2026-11-23 |
+| [mission-request-for-records-confederacy](mission-request-for-records-confederacy.json) | circuit | beyond the border, 20 jumps | Request for Records: 6000 cr, +610 XP at Sol Central | once per pilot, up to 3 ships | TBD | TBD | TBD | TBD | -- |
 | [mission-scraping-by-frontier](mission-scraping-by-frontier.json) | circuit | beyond the border, 17 jumps | Scraping By: 1,000 cr once and Outer Rim Survival XP; accept at Frontier Station, mine 15 copper ore at The Telescope (one jump), hand in at Frontier Station | once per pilot, up to 1 ships, empty hold, born outerrim | 49 | 2 | 240 | one-time | 2026-11-23 |
 | [mission-strategic-readiness-assessment-crimson](mission-strategic-readiness-assessment-crimson.json) | circuit | beyond the border, 21 jumps | Strategic Readiness Assessment: 4000 cr at War Citadel | once per pilot, up to 15 ships | 152 | 32 | 2,760 | one-time | 2026-11-23 |
 | [mission-structural-reinforcement-alpha](mission-structural-reinforcement-alpha.json) | circuit | beyond the border, 11 jumps | Structural Reinforcement: 3,000 cr once at Alpha Centauri, pre-fabricated materials picked up at Nova Terra and delivered back (a test) | once per pilot, up to 20 ships, empty hold | 222 | 12 | 2,780 | one-time | 2026-11-23 |
