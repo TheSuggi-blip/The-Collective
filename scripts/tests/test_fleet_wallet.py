@@ -158,10 +158,13 @@ class WalletTests(unittest.TestCase):
                 "measured": {"date": "d", "runs": 3, "minutes": 30, "credits_per_run": 500, "cph_per_ship": 1000}}
         gather = {"id": "gather", "kind": "mine", "belt": "a:b", "station": "a:b:c", "standing": True}
         test = {"id": "test", "kind": "circuit", "stops": [{"at": "a:b:c"}]}
+        self.assertEqual(dispatch.FLOOR, 0)
         self.assertIsNone(dispatch.why_not(pilot, "ice", pays, state)[0])
-        self.assertEqual(dispatch.why_not(pilot, "gather", gather, state)[0], "wallet below 5,000 cr: only work that pays")
-        self.assertEqual(dispatch.why_not(pilot, "test", test, state)[0], "wallet below 5,000 cr: only work that pays")
-        self.assertIsNone(dispatch.why_not(dict(pilot, credits=5000), "gather", gather, state)[0])
+        self.assertIsNone(dispatch.why_not(pilot, "gather", gather, state)[0])
+        self.assertIsNone(dispatch.why_not(pilot, "test", test, state)[0])
+        needs_cash = dict(test, min_credits=5000)
+        self.assertEqual(dispatch.why_not(pilot, "test", needs_cash, state)[0], "wallet below 5000 cr")
+        self.assertIsNone(dispatch.why_not(dict(pilot, credits=5000), "test", needs_cash, state)[0])
 
 
 class FundTests(unittest.TestCase):

@@ -20,8 +20,8 @@ RULES:
     for it, and it carries no fresh order file (data/fleet/orders/<pilot>.json:
     written by every runner, so two programs never drive one pilot).
   - The file data/fleet/STOP halts every start.
-  - A pilot under 5,000 cr is sent only on work that pays (a mission that pays once, a route measured paying, park);
-    wallet.py tops its wallet up from a rich ship of its division.
+  - No global wallet floor grounds newborns (FLOOR = 0, Suggi 2026-11-23); routes needing purchase cash set their own
+    min_credits, while wallet.py still tops up low wallets from division donors.
   - A pilot with no open route is left where it is. Every plan ends with the
     `park` route (dock at home and wait): it is given to a pilot in space and
     never to a docked one, so a fleet without paying work costs nothing.
@@ -500,7 +500,7 @@ def skills_reached(route, pilot):
 
 
 BID_FRESH = 60 * 60          # a book older than this says nothing about a bid
-FLOOR = 5000                 # a pilot under this many credits is sent only on work that pays (Suggi: no ship goes broke)
+FLOOR = 0                    # removed 5,000 cr wall (Suggi 2026-11-23): newborns fly natural routes; routes set min_credits when needed
 
 
 def read_time(text):
@@ -785,8 +785,8 @@ def why_not(pilot, rid, route, state):
                 return reason, None
     if pilot.get("credits", 0) < route.get("min_credits", 0):
         return "wallet below %s cr" % route["min_credits"], None
-    if pilot.get("credits", 0) < FLOOR and not (route.get("park") or routefiles.stage(route) in ("once", "paying")):
-        return "wallet below %s cr: only work that pays" % format(FLOOR, ","), None     # no ship goes broke (wallet.py tops it up)
+    if FLOOR > 0 and pilot.get("credits", 0) < FLOOR and not (route.get("park") or routefiles.stage(route) in ("once", "paying")):
+        return "wallet below %s cr: only work that pays" % format(FLOOR, ","), None
     p_mods = pilot.get("modules") or []
     req = route.get("requires") or {}
     need = req.get("module")
