@@ -2,12 +2,13 @@
  "id": "store-hold-grand-exchange",
  "kind": "circuit",
  "title": "A newborn miner a run left loaded docks at Grand Exchange Station, Haven and stores its hold",
- "note": "Written by Zero, 2026-11-23 03:19 UTC (orders ENT-071, P6 and O1; rule F8). At 03:18 UTC newborn miners waited with 5 to 41 units aboard (iron, copper, starter goods): every gather of their rows asks an empty hold (fill.py status miner: hold not empty). The same work as store-hold-central-nexus for the Nebula-born rows, at their capital's station; requires.empire nebula keeps every other pilot off it. 2026-11-23 08:49 UTC (Zero): max_ships 20 -> 35, every row of its empire, so a loaded newborn always finds its own store and never falls through to store-hold-central-nexus (20 jumps away).",
+ "note": "Written by Zero, 2026-11-23 03:19 UTC (orders ENT-071, P6 and O1; rule F8). At 03:18 UTC newborn miners waited with 5 to 41 units aboard (iron, copper, starter goods): every gather of their rows asks an empty hold (fill.py status miner: hold not empty). The same work as store-hold-central-nexus for the Nebula-born rows, at their capital's station; requires.empire nebula keeps every other pilot off it. 2026-11-23 08:49 UTC (Zero): max_ships 20 -> 35, every row of its empire, so a loaded newborn always finds its own store and never falls through to store-hold-central-nexus (20 jumps away). 2026-11-23 11:34 UTC (Zero): requires.max_jumps 10: at about 11:33 UTC (fleet.json) five Nebula ships stood 12 to 16 jumps out (Nembus, Garnet, Kitalpha) on their way back here to store holds gathered at Hamal and Schedar; a loaded newborn that far stores at Central Nexus instead (store-hold-central-nexus, its template, max_jumps 14) and its goods go to the hauler there (P1: no empty burn; errors.log ENT-154).",
  "standing": true,
  "max_ships": 35,
  "requires": {
   "hold": true,
-  "empire": "nebula"
+  "empire": "nebula",
+  "max_jumps": 10
  },
  "stops": [
   {

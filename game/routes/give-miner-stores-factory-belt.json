@@ -1,0 +1,71 @@
+{
+ "id": "give-miner-stores-factory-belt",
+ "kind": "circuit",
+ "title": "A miner gives its stores at Factory Belt Manufacturing Hub: iron, copper and the reserve's ores to the haulers (docked steel), ices and the rest to the traders (strict classes)",
+ "note": "2026-11-23 11:24 UTC (Zero): requests.log ENT-437 (Apollo): steel_plate short 61,692 (surplus.py reserve, 11:20 UTC) while 11,474 iron ore and 11,197 copper ore of 35 miners (storage book 11:20 UTC), receiver hauler of this station named by Apollo lie in miners' storage here beside Logistics' docked steel route craft-steel-logistics-factory-belt. Copied from give-miner-stores-synchrony: one stop, docked, the hold stored, then two gifts from storage (handover.py; receivers data/fleet/receivers.json). requires.stored: any one of the goods the stop gives, 50 or more, in the pilot's own storage here; requires.max_jumps 6: only a ship near this station takes it (errors.log ENT-154: no far crossing to hand over a few hundred units). Orders ENT-082 block ZERO (hand stored iron to Logistics' docked steel where it lies), P2, P5; rules F23, F24, F36.",
+ "max_ships": 3,
+ "requires": {
+  "stored": {
+   "at": "factory_belt_manufacturing_hub",
+   "items": [
+    "iron_ore",
+    "copper_ore",
+    "steel_plate",
+    "copper_piping",
+    "carbon_ore",
+    "silicon_ore",
+    "nickel_ore",
+    "gold_ore",
+    "platinum_ore",
+    "water_ice",
+    "nitrogen_ice",
+    "deuterium_ice",
+    "helium_ice",
+    "null_matter",
+    "lead_ore",
+    "voidborn_neural_soma",
+    "exotic_matter"
+   ],
+   "min": 50
+  },
+  "strict": true,
+  "max_jumps": 6
+ },
+ "stops": [
+  {
+   "at": "factory_belt:factory_belt_manufacturing_hub:factory_belt_manufacturing_hub",
+   "store": "all",
+   "gift": [
+    {
+     "to": "hauler",
+     "items": [
+      "iron_ore",
+      "copper_ore",
+      "steel_plate",
+      "copper_piping",
+      "carbon_ore",
+      "silicon_ore",
+      "nickel_ore",
+      "gold_ore",
+      "platinum_ore"
+     ],
+     "source": "storage"
+    },
+    {
+     "to": "trader",
+     "items": [
+      "water_ice",
+      "nitrogen_ice",
+      "deuterium_ice",
+      "helium_ice",
+      "null_matter",
+      "lead_ore",
+      "voidborn_neural_soma",
+      "exotic_matter"
+     ],
+     "source": "storage"
+    }
+   ]
+  }
+ ]
+}

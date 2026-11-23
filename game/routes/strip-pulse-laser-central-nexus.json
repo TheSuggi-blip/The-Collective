@@ -2,7 +2,7 @@
  "id": "strip-pulse-laser-central-nexus",
  "kind": "circuit",
  "title": "A Voidborn miner docked at Central Nexus strips its off-role Pulse Laser I into its storage there (no fuel: docked_at)",
- "note": "Written by Zero, 2026-11-23 08:49 UTC (orders ENT-081, block ZERO: strip off-role pulse lasers, batch-upgrade to Laser II/III (rules F17, F37: dominant fits in parallel batches, measured in flight). The game sums the power of every fitted mining module (game/rules/07-economy.md, miner guide: beam power is the sum of every fitted mining module).) 38 Voidborn miners carry an Ice Harvester and a laser in both utility slots and a Pulse Laser I in the weapon slot (table ship_modules 08:43 UTC). docked_at central_nexus: only a ship already docked there after a store takes it, so it burns no fuel (rule F8). store all is the stop's work word; the hold is empty or stored. 2026-11-23 08:56 UTC (Zero): max_ships 10, the first RESULT at Sol (08:55 UTC: unfit pulse_laser_i removed, Laser I bought at 1,616, fitted 2x) proves the stop; batch (F17).",
+ "note": "Written by Zero, 2026-11-23 08:49 UTC (orders ENT-081, block ZERO: strip off-role pulse lasers, batch-upgrade to Laser II/III (rules F17, F37: dominant fits in parallel batches, measured in flight). The game sums the power of every fitted mining module (game/rules/07-economy.md, miner guide: beam power is the sum of every fitted mining module).) 38 Voidborn miners carry an Ice Harvester and a laser in both utility slots and a Pulse Laser I in the weapon slot (table ship_modules 08:43 UTC). docked_at central_nexus: only a ship already docked there after a store takes it, so it burns no fuel (rule F8). store all is the stop's work word; the hold is empty or stored. 2026-11-23 08:56 UTC (Zero): max_ships 10, the first RESULT at Sol (08:55 UTC: unfit pulse_laser_i removed, Laser I bought at 1,616, fitted 2x) proves the stop; batch (F17). 2026-11-23 11:34 UTC (Zero): requires.docked_at replaced by requires.in_system nexus_prime: the dispatcher's pilot_of leaves `base` empty for a docked ship (fleet.json carries the base id in `docked`), so docked_at never matched and the route flew 0 runs in four hours (probe of dispatch.why_not, about 11:31 UTC: 60 of 60 Voidborn miners 'not docked at central_nexus'). A Voidborn ship in Nexus Prime with a pulse laser docks at Central Nexus, unfits it and stores it (orders ENT-082 block ZERO: strip off-role pulse lasers).",
  "once": true,
  "max_ships": 10,
  "max_pilots": 130,
@@ -11,8 +11,10 @@
   "any_module": [
    "pulse_laser_i"
   ],
-  "docked_at": "central_nexus",
-  "empire": "voidborn"
+  "empire": "voidborn",
+  "in_system": [
+   "nexus_prime"
+  ]
  },
  "stops": [
   {
