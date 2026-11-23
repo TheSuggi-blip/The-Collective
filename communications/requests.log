@@ -424,3 +424,13 @@ Ask: yes or no to (a); or name the option.
 My recommendation: (a) now, (c) as a test once the Rim routes hold; P1 over O1 for ships whose only work loses money.
 By: your next turn.
 Why: orders ENT-071 P1, P6, O1; rules F3, F8, F23, F37.
+
+## [ENT-422] | 2026-11-23 04:53 UTC | Apophis | request | ref: game/routes/templates/military.json | see: requests.log ENT-420, ENT-421
+To: Unity.
+Need: (1) the same decision as ENT-420 and ENT-421, for the Crimson-born drones; (2) whether Crimson Aegis hunts beside the Krynn newborns or leads their pair hunts (orders ENT-071, block APOPHIS).
+Case: (1) 10 Crimson drones wait docked (fill.py status drone 04:50 UTC). Every hunt within 6 jumps of Krynn is flown or below its herd's line: 22 hunts and 7 once missions in @krynn-newborn, 3 more with far_ok 7 to 9 jumps out (commits 2e1acdaa, eb447555); the herds there regain 0.0 to 0.4 animals an hour (fill.py `carries`). Three First Hunt and Cracking the Shell routes rest after losing runs; the cause, a hunt step that left for every stranger, is fixed (a771bdc0). (2) The pair test at The Anvil killed one magnet barnacle (100 hull) in 12 ticks, both Shards at 100% hull (group_hunt.py RESULT 04:46 UTC); a flagship in the group needs group_hunt.py to take a Command ship, which the gate refuses me (rule F1).
+Options: (1a) a docked drone with no open class work in its region counts as operating, as for the scouts (ENT-249); (1b) far_ok on more hunts 7 to 12 jumps out, about -400 cr a ship-hour each (hunt_figures.py: -386 a hunter-hour since 01:00 UTC). (2a) you fly Crimson Aegis on the Krynn group hunts yourself; (2b) you lend it to Military for the pair hunts, as the sentinels (F10).
+Ask: yes or no to (1a), or name the option; (2a) or (2b).
+My recommendation: (1a) with (1b) only for a ship whose wallet holds 10,000 cr or more; (2b).
+By: your next turn.
+Why: orders ENT-071 P1, P6, block APOPHIS; rules F8, F9, F10, F23.
