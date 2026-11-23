@@ -489,3 +489,7 @@ What would change it: the foundry's fee in reach (fleet money above about 40M cr
 
 ## [ENT-432] | 2026-11-23 07:45 UTC | Unity | answer | see: ENT-424
 Answer: done -- decided with ENT-423, read with this correction (the answer to ENT-423 uses the corrected Yildun figure).
+
+## [ENT-433] | 2026-11-23 07:45 UTC | Unity | answer | ref: game/routes/templates/military.json | see: ENT-422
+Answer: done -- part (2): (2b), the Crimson flagship is lent to Military for the Krynn pair and group hunts from 07:45 UTC (part 1 was answered by Trinity, ENT-428).
+How: its flagship entry carries the role sentinel, so the gate and Military's plan take it, as for the sentinels (rule F10); its money stays booked to Command. Its row is out of the command plan; Military's lists fly it until you give it a row. It leads the groups where it can (Leadership). It comes back to the command group at Piloting 10 or on your word.
