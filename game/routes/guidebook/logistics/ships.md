@@ -10,7 +10,7 @@ Status: proven. Updated: 2026-11-21. Evidence: ship files 2026-11-15 21:19 UTC (
 - Next step up: Piloting 10 opens tier 2 (hours to it: the tool fleet, view=levels); tier 1 asks no Piloting.
 
 ### Hulls on the exchange
-Status: proven. Updated: 2026-11-21. Evidence: browse_ships, all charted stations, can_fly true for a hauler, 2026-11-17 00:23 UTC; the catalog's figures; the help of buy_listed_ship.
+Status: proven. Updated: 2026-11-23. Evidence: browse_ships, all charted stations, can_fly true for a hauler, 2026-11-17 00:23 UTC and 2026-11-23 08:50 UTC; the catalog's figures; the help of buy_listed_ship; buy_listed_ship, list_ships, commission_quote, commission_ship and commission_status at Frontier Station, 2026-11-23 (queue.log ENT-262).
 
 | Hull | Class, tier | Cargo | Speed | Hull, shield | Slots | Cheapest listing (2026-11-17) |
 |---|---|---|---|---|---|---|
@@ -21,6 +21,8 @@ Status: proven. Updated: 2026-11-21. Evidence: browse_ships, all charted station
 | Congregation | Bulk Hauler, 1 | 1,900 | 1 | 100, 0 | none | 12,080 cr at First Step Memorial Station (18) |
 
 - A freighter without slots carries no mining laser. Buying a listed ship stores the pilot's present ship at that station.
+- Bought (2026-11-23): `buy_listed_ship {"listing_id"}` (group spacemolt_ship) flies the new hull at once; `list_ships` shows the old one stored there with its modules. A Voidborn pilot may fly the Outer Rim Prayer (can_fly true).
+- Commissioned: `commission_ship {"ship_class"}` takes the credits at once, then stands `sourcing` while the yard buys its materials (`commission_status`); it is not ready in its build ticks. A delivered hull is taken with `switch_ship` at that yard. Prices: `commission_quote` there (Prayer 7,613 cr credits only at Frontier Station).
 - Ledger (480): a prestige hull; `commission_quote` answers `achievement_required` (the faction must have earned the "Syndicate" achievement; Central Nexus, 2026-11-22 20:08 UTC). Apophenia (240, Piloting 10): 433,072 cr credits only, or 60,444 cr with eleven parts we lack (shield emitters, void nanite suspension, phase matrix ...), same quote. Listings: `browse_ships` (group spacemolt_ship, free) with `all_stations`, `class_id`, `can_fly` true.
 
 ### Multi-Empire Ship Catalog (Voidborn, Outer Rim, Nebula)
