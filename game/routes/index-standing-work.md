@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 460.
+Routes: 459.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -171,7 +171,6 @@ Routes: 460.
 | [home-sol-central](home-sol-central.json) | circuit | beyond the border, 10 jumps | Home to Sol Central: a Solarian-born miner far from Sol docks at its capital, where its region's gathers are | up to 6 ships, empty hold, born solarian, standing work | 7 | 14 | -180 | -970 | 2026-11-23 |
 | [join-krynn-hauler](join-krynn-hauler.json) | circuit | beyond the border, 20 jumps | A Voidborn hauler done with the Solarian once lines joins the Crimson corridor: one trip to Krynn War Citadel, where Last Known Position and Strategic Readiness Assessment open to it (a test, three ships) | once per pilot, up to 13 ships, empty hold, born voidborn, standing work | TBD | TBD | TBD | TBD | -- |
 | [join-krynn-trader](join-krynn-trader.json) | circuit | beyond the border, 20 jumps | A trader whose Solarian once line is booked joins the Crimson corridor: one trip to the War Citadel, where Krynn's once missions open to it | once per pilot, up to 15 ships, empty hold, born voidborn, standing work | 2 | 17 | -710 | one-time | 2026-11-23 |
-| [join-rim-trader](join-rim-trader.json) | circuit | beyond the border, 17 jumps | A trader whose Solarian once line is booked joins the Outer Rim corridor: one trip to Frontier Station (Altais), where The Memorial and the Rim's once missions open to it | once per pilot, up to 3 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [join-sol-command](join-sol-command.json) | circuit | beyond the border, 10 jumps | A flagship whose home boards and near herds are spent joins the Solarian corridor: one trip to Sol Central, where the Solarian once missions open to it | once per pilot, up to 2 ships, standing work | 2 | 14 | -300 | one-time | 2026-11-23 |
 | [join-sol-hauler](join-sol-hauler.json) | circuit | beyond the border, 10 jumps | A hauler with no class work at home joins the Solarian corridor: one trip to Sol Central, where the Solarian once missions open to it | once per pilot, up to 50 ships, standing work | TBD | TBD | TBD | TBD | -- |
 | [join-sol-hauler-nexus](join-sol-hauler-nexus.json) | circuit | beyond the border, 10 jumps | An Outer Rim-born hauler standing at Nexus Prime with no work joins the Solarian corridor by the proven road: one trip to Sol Central | once per pilot, up to 15 ships, born outerrim, standing work | TBD | TBD | TBD | TBD | -- |
