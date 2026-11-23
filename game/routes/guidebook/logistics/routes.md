@@ -1,18 +1,18 @@
 # Logistics guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-23. Evidence: plan.py show (applied 2026-11-23 12:30 UTC); fill.py status hauler 11:40 to 12:25 UTC; orders.log ENT-082 (block APOLLO); table runs; data/fleet/receivers.json.
+Status: proven. Updated: 2026-11-23. Evidence: plan.py show (applied 2026-11-23 18:25 UTC); fill.py status hauler 17:35 and 19:06 UTC; orders.log ENT-083 (block APOLLO); table runs; data/fleet/receivers.json.
 
 A free hauler takes the first open route of First, its own routes, Then (`plan.py show`). Earnings: the tool fleet, view=standing, member Apollo.
 
-- First: the once missions (`voidborn-*`, first hunts, `mission-*`, the Solarian and Krynn lines; F34, F35).
-- Own: `@outpost-supply` (GSC-0044's repair stock, the bunker under its keep); the builder `outpost-kit-ironlight-to-node-beta`; `@stored-goods`, `@craft-reserve` (docked crafts on the pilot's own inputs, closed at the reserve max, F36); `@train-hauler` for eight near Piloting 10 (orders cap).
-- Docked steel where the miners' iron lies: one receiver a station named in `handover.py receivers`, its `craft-steel-logistics-<station>` first in its row (The Crescent Moon, Ramen's Rest, Factory Belt, Grand Exchange, Procyon, Nova Terra, Cargo Lanes, Confederacy); Mining's give routes hand the iron over.
-- Join corridors (Trade's pattern, `far_ok`, once, standing): a hauler with no work left at home takes `join-sol-hauler` last in its row (Nebula and Voidborn), Rim-born at Nexus Prime or Synchrony `join-sol-hauler-nexus`; at Sol the Solarian once missions open; then `join-krynn-hauler` (a test) for the Voidborn done there. An unflown road starts with one ship (`join-sol-hauler-rim`, Frontier). Read the rewards paid per pilot before giving a join (topic: knowledge once missions).
-- Newborns (P6): Rim `store-hold-frontier-station` then `@newborn-rim`; Nebula `@newborn-nebula`; joins after both.
+- First: the once missions (`voidborn-*`, first hunts, `mission-*` of the five capitals, Filed in Triplicate included; F34, F35).
+- Own: `@outpost-supply`; the builder `outpost-kit-ironlight-to-node-beta`; `@stored-goods`, `@craft-reserve` (docked crafts on own inputs, closed at the reserve max, F36); `@train-hauler` (orders cap 8).
+- Docked steel where the miners' iron lies: one receiver a station (`handover.py receivers`) standing within a few jumps, its `craft-steel-logistics-<station>` first in its row; Mining's give routes hand the iron over.
+- Capital corridors (`far_ok`, once, standing, `skip_if_booked` the reward they open): Voidborn `join-nova-hauler` (Nova Terra) and `join-rim-hauler` (Frontier); Nebula `join-rim-hauler` then `join-krynn-hauler-foreign`; Rim `join-krynn-hauler-foreign`. At the station the First list's missions open (distance 0). Read the rewards paid per birth (table runs by ships.empire) before a corridor.
+- Newborns (P6): Rim `@newborn-rim` (Frontier's board, no buy routes); Nebula `@newborn-nebula`.
 - Hulls (F17): Prayers wait for a freight step in the runner (lessons.md).
 - Then: `park`, which none should reach.
-- What would change it: a kit at Ironlight; Piloting 10; a freight step; jobs on our Notice Board.
+- What would change it: the capitals' lines all booked (then home and docked crafts); an officer seat on the outpost's iron; a freight step; jobs on our Notice Board.
 
 ### Route Templates
 Status: proven. Updated: 2026-11-21. Evidence: game/routes/templates/logistics.json (2026-11-21); plan.py templates; Suggi 2026-11-16 and rule F22.
