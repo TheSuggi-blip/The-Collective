@@ -47,7 +47,7 @@ data/routes/runs.jsonl under the id given by --route (default hunt-<poi>).
 --alone: before every fight it looks who is at the place; where a ship that
 is not ours or a pirate stands it does not fight and leaves (beyond policed
 space a herd is shared with whoever comes: orders F2, never first, flee).
-A route file with `"alone": "pirates"` leaves only where a pirate or a pilot
+A route file with `"alone": "pirates"` (a circuit's hunt step: --alone-mode pirates) leaves only where a pirate or a pilot
 filed hostile (game/players/h-*.md) stands, and hunts beside other strangers
 (rule F13: its Admiral lifts the limit once its runs hold); a stranger who
 joins the fight still makes it flee.
@@ -458,6 +458,8 @@ before_credits, before_cargo = credits(), cargo()
 HULL_BEFORE, OWN, notes = hull()[0], own_names(), []
 GAME = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ALONE_MODE = alone_mode(os.path.join(GAME, 'routes', route_id + '.json')) if ALONE and not STEP else 'strangers'
+if ALONE and STEP and '--alone-mode' in args and args[args.index('--alone-mode') + 1] == 'pirates':
+    ALONE_MODE = 'pirates'                   # 2026-11-23: a circuit's hunt step with alone 'pirates' (First Hunt left for strangers)
 KEEP_HERD = int(args[args.index('--keep-herd') + 1]) if '--keep-herd' in args else ranch_keep(os.path.join(GAME, 'routes', route_id + '.json'), 2)
 HOSTILE = hostile_names(os.path.join(GAME, 'players')) if ALONE_MODE == 'pirates' else set()
 if ALONE:

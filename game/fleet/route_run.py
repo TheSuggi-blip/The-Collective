@@ -996,6 +996,7 @@ for n, stop in enumerate(ROUTE['stops']):
                    '--kills', str(step.get('kills', 3)), '--minutes', str(step.get('minutes', 30)), '--route', ROUTE['id']]
         command += ['--species', ','.join(step['species'])] if step.get('species') else []
         command += ['--alone'] if step.get('alone') else []
+        command += ['--alone-mode', 'pirates'] if step.get('alone') == 'pirates' else []   # the step's own rule, as a hunt route's
         for _ in range(2):                               # a grazer that fled keeps its damage: a second go ends it
             try:
                 answer = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
