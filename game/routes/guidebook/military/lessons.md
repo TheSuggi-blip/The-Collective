@@ -86,7 +86,7 @@ Status: proven. Updated: 2026-11-21. Evidence: reserve_hunts.py; loot_bids.py; d
   iron after the order ended it (errors.log ENT-108).
 
 ### Plans, fills and claims
-Status: proven. Updated: 2026-11-21. Evidence: fill.py; comms.py; requests.log ENT-158; 2026-11-17 and 2026-11-21 turns.
+Status: proven. Updated: 2026-11-23. Evidence: fill.py; comms.py; requests.log ENT-158; dispatch.newborn_reason; 2026-11-17, 2026-11-21 and 2026-11-23 turns.
 
 - The fill gate judges a route by its all-time figure: a hunt whose bid or
   herd is gone gets `status: off` with the record, never put back.
@@ -103,6 +103,10 @@ Status: proven. Updated: 2026-11-21. Evidence: fill.py; comms.py; requests.log E
   alone by the loss stop.
 - Count the holders of each once link each turn: a missing first link kept
   Voidborn Mastery at 0 for every drone.
+- The newborn reach (6 jumps) counts from where a ship stands, not from
+  its capital: one `far_ok` trip into our corridor (`join-corridor-*`,
+  last in the row) opens every home hunt to it. A far ship with a loaded
+  hold cannot reach a store route: the trip stores at its end (2026-11-23).
 
 ### Battles and stuck ships
 Status: proven. Updated: 2026-11-22. Evidence: errors.log 2026-11-16; stuck_check.py; group_hunt.py logs; requests.log ENT-369; tow_rescue.py output 2026-11-22 20:22 UTC.

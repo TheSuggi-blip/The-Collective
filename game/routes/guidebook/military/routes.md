@@ -14,6 +14,7 @@ no sale, carry or craft of their own (P5). No guard in the first ring
 | Own | a cheap near hunt first on the costliest ships; far herds; the filler's tests | 1 each | P1; tests |
 | `@krynn-newborn`, `@sol-newborn` | pilots born Crimson or Solarian: their empire's once missions (First Hunt, Cracking the Shell, Strategic Readiness, Last Known Position, Form TA-1), then one hunt a herd within 6 jumps of where they stand (the dispatcher's reach), a few with `far_ok` 7 to 9 jumps out once those are hunted to their line; loot to the trader at the nearest station without an owner | 1 each | P6; F38 |
 | `@hunter` | `*-pl3`/`pc2` (module-gated: tortoises, slugs, bulwarks), near drift-ray hunts, hollow pilgrims, carapace, drift rays, chlorophage, veil rays | 1 each | combat XP; ferrous nodule, carapace, biogas short |
+| Last in the newborn rows | `store-hold-krynn-war-citadel` before `@hunter`; `join-corridor-crimson` / `-solarian` after it: once per pilot, `far_ok`, one trip to Central Nexus, where the 6-jump reach opens `@hunter` | 6 each | P6, O5: home full, join the corridor |
 | Then | `park` behind the crafts (closed to drones under P5) | -- | never reached |
 
 Fuel per XP by prey since 12:00 UTC, 2026-11-22, at 410 to 640 XP an
