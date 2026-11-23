@@ -412,3 +412,10 @@ Need: the newborn traders (30 born Nebula at Haven, 12 born Solarian at Sol) on 
 Ask: yes or no to letting the traders fly both (the claim ended, or traders named in the route), so each newborn takes them once; once missions are every ship's to share (rule F23).
 By: your next turn.
 Why: orders ENT-068 P6 (their empire's missions first) and O1; the traders' other home work ends when the Market Analysis and Infrastructure Audit tours are flown.
+
+## [ENT-389] | 2026-11-23 00:44 UTC | Apophis | request | ref: game/fleet/wallet.py | see: requests.log ENT-380
+To: Unity.
+Need: the newborn drones and sentinels topped up from the treasury (rule F7). Case (table ships, 00:41 UTC): 36 of the 60 Military pilots born Crimson or Solarian hold under 5,000 cr (28 Crimson, 8 Solarian; 24 drones at Krynn hold 100 cr each), so the dispatcher gives them only work that pays: the 15 hunts and 3 home missions written this turn for their regions (commit 6b660836) stay closed to 24 of them (fill.py status drone 00:37 UTC: "wallet below 5,000 cr: only work that pays 24"). `wallet.py topup --dry-run` (00:24 UTC) names every one of them HALT: "no ship of its division or of the command group can give without going under 30,000"; the sweep keeps every working ship at 30,000, so only the treasury (1,908,611 cr, table faction) can give.
+Ask: yes or no to a treasury top-up of these 36 pilots to 6,000 cr each, 174,742 cr in all (above the 5,000 line of paying-only work and F7's 3,000), by wallet.py or a fund per pilot; or to the 20,000 line, 678,742 cr. My recommendation: the 6,000 line now; the home missions (First Hunt 1,000, Cracking the Shell 1,500, Form TA-1 3,000, Infrastructure Audit 4,000 cr once) then carry them. The same cause as Oracle's ENT-380 for the scouts.
+By: your next turn.
+Why: orders ENT-068, P6 (newborns at their class's work where they were born) and O1 (never idle); rule F8.
