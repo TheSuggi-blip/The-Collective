@@ -1,13 +1,13 @@
 {
  "id": "hunt-angetenar-belt-belt-grazer",
  "kind": "hunt",
- "title": "belt_grazer at angetenar_belt; loot to the trader at Hex Star (newborn region work, Krynn, far_ok)",
- "note": "Written by Apophis 2026-11-23 04:47 UTC for the newborn pilots of Military (orders ENT-071, P6: their class's work where they were born; the home region within 6 jumps is hunted to its herds' line (fill.py status 04:47 UTC: herd below, the place rests), so this route carries far_ok (rule F23: a class saturated at home goes further; orders P6: far only by far_ok); this place stands 8 jumps from krynn). Herd by the census in table herds (read 22:09 UTC): belt_grazer 8. Two animals are left of each species (rule F38): kills 5, min_creatures kills + 2. Species pass both gauges of one typical drone (gauges.py species). One hunter to the place. Docks and hands its loot to the trader receiver at Hex Star, 10 jumps away, where the hunts of this system already dock (strict classes, P5). Lawless or foreign space: alone against pirates, empty hold (F3). A test of three results (F37).",
+ "title": "belt_grazer at angetenar_belt; loot to the trader at The Rampart Checkpoint (newborn region work, Krynn, far_ok)",
+ "note": "Written by Apophis 2026-11-23 04:47 UTC for the newborn pilots of Military (orders ENT-071, P6: their class's work where they were born; the home region within 6 jumps is hunted to its herds' line (fill.py status 04:47 UTC: herd below, the place rests), so this route carries far_ok (rule F23: a class saturated at home goes further; orders P6: far only by far_ok); this place stands 8 jumps from krynn). Herd by the census in table herds (read 22:09 UTC): belt_grazer 8. Two animals are left of each species (rule F38): kills 5, min_creatures kills + 2. Species pass both gauges of one typical drone (gauges.py species). One hunter to the place. Docks and hands its loot to the trader receiver at The Rampart Checkpoint, 5 jumps away, the nearest station without an owner (strict classes, P5). Lawless or foreign space: alone against pirates, empty hold (F3). A test of three results (F37).",
  "place": "angetenar:angetenar_belt",
  "species": [
   "belt_grazer"
  ],
- "sell_at": "dheneb:98eba8b1a7ad0520d6a7c8ea44b2d6aa:b495c6003fc83e18f6d8cecbe6929133",
+ "sell_at": "the_rampart:the_rampart_checkpoint:the_rampart_checkpoint",
  "min_bid": 50,
  "kills": 5,
  "minutes": 40,
