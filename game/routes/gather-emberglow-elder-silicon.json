@@ -2,7 +2,7 @@
  "id": "gather-emberglow-elder-silicon",
  "kind": "mine",
  "title": "A test: silicon ore of Elder Silicon Beds (Emberglow) into storage at Ramen's Rest (six jumps, lawless)",
- "note": "Written by Zero, 2026-11-23 23:45 UTC (orders ENT-084, block ZERO: cut gathers of ore above its max; the freed hours test silicon and carbon fields, one ship first; rules F3, F23, F24, F37). Elder Silicon Beds read silicon 2,616 of 20,000 (richness 43) beside iron 99,999 (40), copper 100,000 (31) and neodymium 1,459 (table fields, 4.6 h old at 23:37 UTC), lawless, six jumps from Ramen's Rest by Ain, Tarazed, GSC-0015, Winterhold and Tabit; no pirate line on that road in 24 h. Silicon is short 48,780 for the reserve (P2 needs: station core 1,832, Recursion batch 828, Resonance Miner 300) and stations bid 386 to 539 cr a unit for it (tool market, 21:22 to 23:34 UTC). The silicon share of a load on this mixed field is what the test measures; a Voidborn veteran with a Laser III flies it. One ship, hold empty, three results before a lift (F3, F37); stores everything, sells nothing (F24, P5); each run gives the reserve's ores of its hold and of the pilot's storage there to the station's hauler (gift).",
+ "note": "Written by Zero, 2026-11-23 23:45 UTC (orders ENT-084, block ZERO: cut gathers of ore above its max; the freed hours test silicon and carbon fields, one ship first; rules F3, F23, F24, F37). Elder Silicon Beds read silicon 2,616 of 20,000 (richness 43) beside iron 99,999 (40), copper 100,000 (31) and neodymium 1,459 (table fields, 4.6 h old at 23:37 UTC), lawless, six jumps from Ramen's Rest by Ain, Tarazed, GSC-0015, Winterhold and Tabit; no pirate line on that road in 24 h. Silicon is short 48,780 for the reserve (P2 needs: station core 1,832, Recursion batch 828, Resonance Miner 300) and stations bid 386 to 539 cr a unit for it (tool market, 21:22 to 23:34 UTC). The silicon share of a load on this mixed field is what the test measures; a Voidborn veteran with a Laser III flies it. One ship, hold empty, three results before a lift (F3, F37); stores everything, sells nothing (F24, P5); each run gives the reserve's ores of its hold and of the pilot's storage there to the station's hauler (gift). 2026-11-23 23:55 UTC (Zero): requires.max_jumps 14 -> 22: the Voidborn veterans stand at Node Beta, 19 jumps from the field (fill.py status miner), and the test needs one of them.",
  "belt": "emberglow:elder_silicon_beds",
  "station": "last_light:ramens_rest:ramens_rest",
  "minutes": 150,
@@ -14,7 +14,7 @@
  "requires": {
   "empty_hold": true,
   "empire": "voidborn",
-  "max_jumps": 14
+  "max_jumps": 22
  },
  "gift": {
   "to": "hauler",
