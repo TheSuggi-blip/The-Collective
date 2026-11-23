@@ -1,0 +1,27 @@
+{
+ "id": "bursar-melt-central-nexus",
+ "kind": "circuit",
+ "title": "Station Bursar: one resting sell order of the pilot's own crystal melt at Central Nexus, kept at 3,900 (floor 3,500)",
+ "note": "2026-11-23 06:19 UTC (Mercury): orders ENT-078, block MERCURY (Bursar orders, the order steps built: route_run sell_order, b776261d) and rule F39; Station Bursar test 2 of 3 (F37; test 1: contracts.log ENT-002/003, an ask of 1 at 2,950 at Central Nexus was gone from the book within 15 minutes). Central Nexus bids 54 for melt; the station bids elsewhere stand at 4,244 (Sol, 32 deep), 3,787 (Frontier, 13) and 2,122 (Cargo Lanes, 43) (view_market 06:05 to 06:06 UTC), so a home ask at 3,900 sits under the best far bid and above every home bid. Trade's own storage at Central Nexus holds 235 melt (table holdings 06:05 UTC; surplus). Docked, no fuel: the pilot lists up to 10 of its own melt, never under 3,500 or the best bid; fills settle later at the station. A test: one ship.",
+ "max_ships": 1,
+ "requires": {
+  "stored": {
+   "at": "central_nexus",
+   "item": "crystal_melt",
+   "min": 10
+  }
+ },
+ "stops": [
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "sell_order": [
+    {
+     "item": "crystal_melt",
+     "qty": 10,
+     "price": 3900,
+     "floor": 3500
+    }
+   ]
+  }
+ ]
+}

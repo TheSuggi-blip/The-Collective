@@ -12,10 +12,11 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 153.
+Routes: 154.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
+| [bursar-melt-central-nexus](bursar-melt-central-nexus.json) | circuit | home space | Station Bursar: one resting sell order of the pilot's own crystal melt at Central Nexus, kept at 3,900 (floor 3,500) | up to 1 ships, with 10 crystal_melt stored at central_nexus | TBD | TBD | TBD | TBD | -- |
 | [carry-hydrogen-synchrony-to-experiment](carry-hydrogen-synchrony-to-experiment.json) | circuit | home space | Stored hydrogen_gas carried from synchrony_hub to the the_experiment_research_station bid at 30 cr or more | up to 1 ships, with 1 hydrogen_gas stored at synchrony_hub, while the_experiment_research_station bids 30 cr for hydrogen_gas | TBD | TBD | TBD | TBD | -- |
 | [carry-ice-experiment-nexus](carry-ice-experiment-nexus.json) | circuit | home space | Stored water ice carried from the_experiment_research_station to the Central Nexus bid (3 jumps) | up to 3 ships, with 65 water_ice stored at the_experiment_research_station, while central_nexus bids 25 cr for water_ice | TBD | TBD | TBD | TBD | -- |
 | [carry-ice-node-alpha-nexus](carry-ice-node-alpha-nexus.json) | circuit | home space | Stored water ice carried from node_alpha_processing_station to the Central Nexus bid (1 jumps) | up to 3 ships, with 65 water_ice stored at node_alpha_processing_station, while central_nexus bids 25 cr for water_ice | TBD | TBD | TBD | TBD | -- |
