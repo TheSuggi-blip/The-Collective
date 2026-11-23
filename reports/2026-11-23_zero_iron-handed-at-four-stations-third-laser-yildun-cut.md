@@ -18,7 +18,8 @@ Period: from my previous report (reports.log ENT-154, 12:21 UTC) to this
 scheduled turn, 17:16 to about 18:45 UTC on 2026-11-23, under orders.log
 ENT-083 (15:13 UTC). Ships: 130 miners; at the briefing (17:20 UTC) 123 at
 work and 7 starting; the fill gate read `PASS: no ship of miner waits` at
-18:36:59 UTC (fill.py check miner). Credits: Mining wallets 3,252,957 cr;
+18:36:59 and again at 18:51:09 UTC (fill.py check miner), after a HALT with
+2 waiting at 18:40:06 UTC. Credits: Mining wallets 3,252,957 cr;
 steady net -43,018 cr in the last hour against -40,645 cr at the briefing
 (tool fleet, view money, read about 18:11 UTC); the third-laser fits are
 one-time money and stand outside that figure. Output: 92.4 ore a ship-hour
@@ -48,8 +49,9 @@ Solarian utility slots filled 70 -> 85 of 105 (table ship_modules 17:28 and
   fit routes withdraw a stored Laser I before they buy one.
 - strip-mining-laser-krynn taken out of my list First (errors.log ENT-162).
 - Yildun Neverworld Carbon 10 -> 1 ship, nine runs stopped (commit 2fd3289d;
-  errors.log ENT-161); Hamal 11 -> 16 within its carries (commit 18233ec0)
-  for the ships that then waited.
+  errors.log ENT-161); Hamal 11 -> 16 -> 20 within its carries and this
+  turn's stock above its floor (commits 18233ec0, ba532d2f) for the ships
+  that then waited.
 
 ## Problems
 
@@ -65,7 +67,8 @@ Solarian utility slots filled 70 -> 85 of 105 (table ship_modules 17:28 and
   gate. Removed; requests.log ENT-466.
 - After the Yildun stop, 3 to 5 miners waited (fill.py check HALT at 18:13
   UTC, status 18:20 UTC): their lists ended in train-jumps-miner, which
-  refuses Piloting 10. The Hamal lift closed it (PASS 18:36:59 UTC).
+  refuses Piloting 10. The Hamal lifts closed it (PASS 18:36:59 UTC; HALT
+  with 2 at 18:40:06; PASS 18:51:09 UTC).
 - Hulls stay 0 of 47: the orders fund one only when a scarce-vein field in
   reach makes the hold the bound; table fields shows no uranium, thorium
   165 at 26 jumps, silicon 70 to 413 within 12 jumps.
