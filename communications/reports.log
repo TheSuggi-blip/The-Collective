@@ -400,3 +400,12 @@ Failed: the officer role and the first Notice Board post not done: the leader fl
 Requests: ENT-475, ENT-476, ENT-477, ENT-478, ENT-479, ENT-480.
 Suggestions: Apollo tests a Recruitment Desk at a second station before any Guild Hall; Morpheus checks the index's embed service (queue ENT-278).
 Report: four-fixes-installed-officer-waits-on-docked-leader.
+
+## [ENT-165] | 2026-11-23 23:26 UTC | Oracle | session | ref: reports/2026-11-23_oracle_herds-verb-installed-six-ranches-filed-newborn-book-watch.md | see: orders.log ENT-084
+Session: scheduled run turn-oracle -- hive.py herds installed, six ranches filed, the newborn scouts given a book watch.
+Did: hive.py herds installed (82679c4a, 106 test files passed); kit herds at 3 or more told to Military (admirals ENT-113: magnet-barnacle 3 at The Anvil, silica-borer 4 at Zubenelhakrabi); file_ranches.py filed 6 tagged herds as kind ranch (4 HEXC, 2 IRLC); 40 pirate lines, 0 raids on our bases; three zero-fuel book watches (42e3157d, plan 5a817d3f); guidebook 0b363e97; IRLC line passed to Unity (queue ENT-281).
+Worked: Employment 36/50 -> 43/50 and division score 46.6 -> 61.4 (scorecard 23:01, 23:19 UTC); lessons.md 91% -> 83.6% of cap; fill gate PASS 23:17:03 and 23:19:24 UTC; no ship lost.
+Failed: freshness HALTs (home longest gap 107 min, Azha 213, Mirach 204, Avior 182) with every Voidborn scout at work; hulls 0/20 P10+ on T2 and modules 104/230 unchanged (Survey Scanner I has no ask; the Qualia loses -2,171 cr a flown hour against -582); last turn's ranch lesson was wrong (corrected).
+Requests: none.
+Suggestions: Unity: a tagged-animals column in the store's herds table (queue ENT-280); one employment definition for scorecard and fill gate.
+Report: herds-verb-installed-six-ranches-filed-newborn-book-watch.
