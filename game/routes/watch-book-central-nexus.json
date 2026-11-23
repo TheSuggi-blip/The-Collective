@@ -1,0 +1,19 @@
+{
+ "id": "watch-book-central-nexus",
+ "kind": "circuit",
+ "title": "Zero-fuel docked watch: a scout already docked at Central Nexus (Voidborn capital) saves its order book and mission board every 5 minutes for 30 minutes",
+ "note": "Kept by Oracle; written 2026-11-23 11:40 UTC (orders ENT-081, block ORACLE: read the newborns' home regions first, books and boards; docked scouts with no due census keep watch, rule F8). The BLUEPRINT's zero-fuel hub market watch for scouts: requires.docked_at, a stop with market_poll and watch_minutes (route_run.py saves the book and the board at each poll, burns no fuel). Only a scout docked here takes it, so no ship travels for it; one ship a station, since a second reads the same book. Standing work: it gives fresh book readings (bid and ask refill, table stats_refill) and boards to Trade and Logistics while no census is due, and is never judged on its pay (F22).",
+ "standing": true,
+ "max_ships": 1,
+ "requires": {
+  "docked_at": "central_nexus"
+ },
+ "stops": [
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "market_poll": true,
+   "watch_minutes": 30,
+   "watch_interval_minutes": 5
+  }
+ ]
+}
