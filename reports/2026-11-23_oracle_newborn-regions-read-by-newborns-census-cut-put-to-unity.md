@@ -26,7 +26,7 @@ Scheduled Intel turn, 2026-11-22 23:15 to 2026-11-23 00:20 UTC, under orders ENT
 
 ## Problems
 
-- The fill gate never passed this turn. Its last line, 00:18:08 UTC: "HALT: 2 ships of scout wait and nothing that pays is open to them". Cause: the Nebula scouts hold 190 to 250 cr; under 5,000 cr the dispatcher opens only paying work, and wallet.py's top-up finds no giver above 30,000 cr because the sweep holds every scout there (wallet.py topup --dry-run, 00:09 UTC: 13 scouts HALT). Filed: requests ENT-380, ENT-384.
+- The fill gate never passed this turn. Its last line, 00:20:26 UTC: "HALT: 3 ships of scout wait and nothing that pays is open to them". Cause: the Nebula scouts hold 190 to 250 cr; under 5,000 cr the dispatcher opens only paying work, and wallet.py's top-up finds no giver above 30,000 cr because the sweep holds every scout there (wallet.py topup --dry-run, 00:09 UTC: 13 scouts HALT). Filed: requests ENT-380, ENT-384.
 - plan.py refused every change from about 23:30 to 23:41 UTC while the engine held 17 scouts signed out (fleet.json away): crew_of reads only the listed ships. My tested fix was refused by fleet-build.sh as the Fleet Admiral's file, rightly; filed as ENT-383.
 - I capped the census before asking whether a capped scout counts as operating; the caps stood ten minutes. Root cause: I read the order's "cut by a third" against cadences, not against the gate. Fix: lesson in the guidebook and knowledge file, a pitfall in the turn skill.
 
