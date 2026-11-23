@@ -1,32 +1,30 @@
 # Trade guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-23. Evidence: plan.py show; fill.py status and check trader; table runs (Last Known Position, Structural Reinforcement); orders ENT-082.
+Status: proven. Updated: 2026-11-23. Evidence: plan.py show; fill.py status trader 18:25 and 19:03 UTC; table books 18:43 UTC; reservecheck.py 19:11 UTC; orders ENT-083.
 
-The plan file as set on 2026-11-23 at 13:10 UTC (orders ENT-082, block
-MERCURY: the capitals' once lines by join corridors, no trader waits):
+The plan file as set on 2026-11-23 at 19:11 UTC (orders ENT-083, block
+MERCURY: the traders left at the capitals take standing work there):
 
 - First, every ship: the once line of every board (Voidborn chain,
-  Federation, Sol, Rim, Krynn), Structural Reinforcement at Alpha
-  Centauri (pickup at Nova Terra, 3,000 once, all three empires).
-- Voidborn-born rows: after Sol's line, `join-krynn-trader` (far_ok,
-  once, standing: one trip to the War Citadel), where Last Known
-  Position and Strategic Readiness Assessment open; home paid by The
-  Diplomatic Pouch where Sol's gold ask holds.
-- Nebula- and Solarian-born rows: Filed in Triplicate (Nova Terra,
-  offered to Nebula-born, not Voidborn-born), `join-krynn-trader-test`
-  (two ships: are Krynn's missions offered to them), `join-rim-trader`
-  (off while Frontier Station's move breaks its runs).
-- Then `@trade-sell > @trade-craft`, the loop for the ten nearest
-  Piloting 10, steel, park.
+  Federation, Sol, Rim, Krynn, Nova Terra, Alpha Centauri); Blood Forge
+  Requisition at Krynn (7,000 once, a test of three); the ember gland
+  Station Need at Krynn and its carry from The Crucible.
+- Own rows: the join corridors, the capitals' lines, `@trade-sell >
+  @trade-craft`, as before.
+- Then, every ship, each route gated to where the ship stands: docked
+  crafts at the War Citadel (`docked_at`: nitrogen sold into the 1 cr
+  bid, neon kept, oxygen sold), the nitrogen carry Alpha Centauri ->
+  Sol (`max_jumps` 4), neon kept at The Experiment for the home ships
+  (`max_jumps` 3), steel, the loop, park.
 
-What it carries: a once mission as many as its board offers, lifted
-to the wave before the wave goes; a corridor as many as wait.
+What it carries: a craft of bought gas as many as the station's ask
+holds; the 1 cr bids drain, then the output is stored; the third craft
+stop keeps a 20-minute docked watch to halve the burn.
 
-What would change it: the Rim corridor back on (The Memorial 8,000);
-Krynn's board read for Nebula- and Solarian-born; a runner step to
-visit a system without a station (Local Sector Survey, Deep Space
-Cartography: offered to all, booked by none).
+What would change it: a paying trade or mission at a capital; the
+runner choosing a Station Need copy by its size; a good the reserve
+holds back (reservecheck FLAG) is never sold by a craft.
 ### Selling stores where they lie (`sell-<good>-at-<station>`, `carry-<good>-<from>-to-<to>`)
 Status: proven. Updated: 2026-11-22. Evidence: the sell and carry route files with their measured figures; sellgen.py of Mercury's trade skill.
 

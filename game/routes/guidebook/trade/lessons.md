@@ -136,3 +136,17 @@ on a bid sold out, took the home training loop and flew home with an
 empty hold through the lawless west. A far ship's row holds local work
 first and a local fallback (a carry or a loop of the stations where it
 lies), so no ship crosses a lawless road for training alone.
+
+### Station Need missions pay above the bid
+Status: test. Updated: 2026-11-23. Evidence: get_missions, accept_mission and complete_mission of one trader docked at the War Citadel, 18:39 to 18:43 UTC (wallet read after each); route need-ember-gland-krynn.
+
+Stations post `Station Need: <good>` missions (ember gland, caustic
+sac, superfluid vial, crystal melt ...), copies of 1 to 20 units, each
+its own mission id (`creature_<base>_<good>~<hash>`, no template). They
+pay above the standing bid: at the War Citadel 8,112 cr for 1 ember
+gland and 16,189 for 2 against a 7,054 cr bid; one trader handed in 4
+glands for 32,413 cr (withdraw, accept by id, complete). The runner
+accepts by title the first copy posted (`accept: [{title, needs}]`):
+`needs` at the largest copy seen makes any copy completable. Read the
+boards (table missions) for stored goods before a sell route; a
+reservecheck FLAG still holds a good back.
