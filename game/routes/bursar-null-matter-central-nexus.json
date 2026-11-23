@@ -1,0 +1,27 @@
+{
+ "id": "bursar-null-matter-central-nexus",
+ "kind": "circuit",
+ "title": "Station Bursar: one resting sell order of the pilot's own null matter at central_nexus, kept at 340 (floor 300)",
+ "note": "2026-11-23 06:25 UTC (Mercury): orders ENT-078, block MERCURY (Bursar orders) and rule F39; a Station Bursar test, one of three stations at once (F37: three books, no shared buyer). Null matter: Trade holds about 7,900 (surplus, no need names it; table holdings 06:10 UTC); no home station bids for it, The Crucible's station bid is 359 x 114, 18 jumps out (view_market 06:11 UTC). Docked, no fuel: the pilot lists up to 50 of its own null matter at 340, never under 300 or the best bid; fills settle later at the station. A test: one ship.",
+ "max_ships": 1,
+ "requires": {
+  "stored": {
+   "at": "central_nexus",
+   "item": "null_matter",
+   "min": 50
+  }
+ },
+ "stops": [
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "sell_order": [
+    {
+     "item": "null_matter",
+     "qty": 50,
+     "price": 340,
+     "floor": 300
+    }
+   ]
+  }
+ ]
+}
