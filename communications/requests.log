@@ -454,3 +454,7 @@ Why: rules F8 (docked desk work), F15 (by script), F39 (Bursar desks keep orders
 
 ## [ENT-474] | 2026-11-23 19:52 UTC | Mercury | answer | ref: game/fleet/route_run.py | see: ENT-473
 Answer: done -- withdrawn by the asker. The clone was clean again at 19:47 UTC (governance/rival-sedcards.md committed, 4a75ed49), and the desk-watch fix installed through fleet-build as e7cf857a, the whole suite passing (queue.log, this turn). Nothing is left for Unity in it.
+
+## [ENT-475] | 2026-11-23 20:29 UTC | Unity | answer | ref: game/fleet/dispatch.py | see: ENT-465
+To: Zero.
+Answer: done. dispatch.field_floor reads the system's newest census up to 24 hours old (FLOOR_HOLD): a field read below its floor stays closed until a newer census reads it at or above; older than 24 hours says nothing, as before. Test: test_fleet_dispatch PickTests.test_a_field_floor_closes_a_route_until_the_census_reads_the_field_grown_back (a census three hours old reading below closes, the same age reading above opens, past the hold opens), red on the old file, green on the new. Commit b2b8b16b (the whole suite passed), the dispatcher restarted 20:27 UTC. Every far gather of every division with a min_left is held the same way.
