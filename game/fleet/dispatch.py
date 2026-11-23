@@ -256,8 +256,10 @@ def cut(row):
 
 
 def refused(row):
-    """A run that went all the way round while the board did not offer its mission."""
-    return row.get("stops") == row.get("of") and any(str(note).endswith(NOT_OFFERED) for note in row.get("notes") or [])
+    """A run whose mission was not offered on the board (either full loop or early-aborted empty tour at stop 1)."""
+    notes = [str(note) for note in row.get("notes") or []]
+    has_unoffered = any(note.endswith(NOT_OFFERED) for note in notes)
+    return has_unoffered and (row.get("stops") == row.get("of") or EARLY_UNOFFERED in notes)
 
 
 def owed(route):
@@ -419,7 +421,7 @@ def done_once(route, rows):
         rows = [r for r in rows if not refused(r)]
     if not rows:
         return False
-    whole = [r for r in rows if r.get("stops") == r.get("of")]          # it went all the way round
+    whole = [r for r in rows if r.get("stops") == r.get("of") or (refused(r) and not gated)]  # full run or ungated unoffered abort
     return bool(whole) or len(rows) >= 2
 
 
@@ -633,6 +635,8 @@ def stalest_system(data, route, orders, now):
 
 
 FOREIGN_REACH = 6               # jumps: how far from where it stands a pilot of another empire is sent (queue.log ENT-234)
+ONCE_MISSION_REACH = 6          # jumps: max reach for foreign once-missions for ANY pilot unless far_ok (rules F34, F35)
+EARLY_UNOFFERED = "mission not offered: skipped empty tour"  # route_run.py: aborted empty tour at Stop 1 when board had no offer
 LANES_CACHE = {"lanes": None}
 
 
@@ -675,6 +679,68 @@ def newborn_reason(pilot, rid, route):
     return None
 
 
+def system_empires():
+    """{system_id: empire} cached from game/map/galaxy.tsv ('' for lawless/unclaimed frontier)."""
+    cached = LANES_CACHE.get("empires")
+    if cached is not None:
+        return cached
+    empires = {}
+    tsv = Path(__file__).resolve().parent.parent / "map" / "galaxy.tsv"
+    try:
+        for line in tsv.read_text(encoding="ascii", errors="replace").splitlines():
+            if not line or line.startswith("#") or line.startswith("id	"):
+                continue
+            parts = line.split("	")
+            if len(parts) >= 5:
+                emp = parts[4].strip().lower()
+                empires[parts[0].strip()] = "" if emp in ("", "-") else emp
+    except OSError:
+        pass
+    LANES_CACHE["empires"] = empires
+    return empires
+
+
+def is_once_mission(rid, route):
+    """True for one-time board/storyline mission routes (excludes fit-*, stock-*, buy-*, and standing work)."""
+    if not route or not route.get("once"):
+        return False
+    if str(rid).startswith("mission-"):
+        return True
+    return any(isinstance(stop, dict) and bool(stop.get("accept")) for stop in (route.get("stops") or []))
+
+
+def mission_reach_reason(pilot, rid, route):
+    """Smart mission guard (rules F34, F35): own-empire storyline/Mastery chains stay open to native pilots anywhere;
+    foreign/frontier `once` board missions stay local (<= ONCE_MISSION_REACH jumps) unless `far_ok` or explicit
+    `requires.empire` opts in. Prevents fitted Voidborn industrial ships from abandoning outposts/corridors for
+    low-yield cross-galaxy tourism with zero Mastery XP."""
+    if not is_once_mission(rid, route) or route.get("far_ok"):
+        return None
+    empire = pilot.get("empire")
+    cur_sys = pilot.get("system")
+    if not empire or not cur_sys:
+        return None
+    req_emp = (route.get("requires") or {}).get("empire")
+    if req_emp:
+        allowed = [req_emp] if isinstance(req_emp, str) else [str(e) for e in req_emp]
+        if empire in allowed:
+            return None
+    place = route_place(route)
+    if not place:
+        return None
+    route_emp = system_empires().get(place, "")
+    if route_emp and route_emp == empire:
+        return None
+    if LANES_CACHE["lanes"] is None:
+        import fuelplan
+        LANES_CACHE["lanes"] = fuelplan.chart(Path(__file__).resolve().parent.parent)[0]
+    reach = jumps_between(LANES_CACHE["lanes"], cur_sys, place)
+    if reach is not None and reach > ONCE_MISSION_REACH:
+        label = route_emp or "frontier"
+        return "%d jumps to foreign once-mission (%s at %s): stay on own-empire Mastery and standing work unless `far_ok` (rules F34, F35)" % (reach, label, place)
+    return None
+
+
 DIST_CACHE = {}
 
 
@@ -708,6 +774,9 @@ def why_not(pilot, rid, route, state):
         allowed = [empires] if isinstance(empires, str) else [str(e) for e in empires]
         if pilot.get("empire") not in allowed:
             return "open only to pilots born %s (the pilot: %s)" % (", ".join(allowed), pilot.get("empire") or "not read"), None
+    far_mission = mission_reach_reason(pilot, rid, route)         # rules F34, F35: keep foreign once-missions local unless far_ok
+    if far_mission:
+        return far_mission, None
     strict = (route.get("requires") or {}).get("strict")          # requests ENT-332: open only in one state of data/fleet/strict-classes-on
     if isinstance(strict, bool):
         workclass.follow(state.get("data"))

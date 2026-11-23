@@ -174,6 +174,12 @@ def goal(kind, options, tries=3):
     return False, str(d.get('message') or d.get('error') or '')
 
 
+def pure_visit_tail(stops):
+    """True when every remaining stop only visits/redocks (no buy/sell/craft/give/fit/mine/hunt/store/accept)."""
+    work_keys = {'buy', 'sell', 'sell_all', 'craft', 'give', 'gift', 'fit', 'mine', 'hunt', 'withdraw', 'deposit', 'store', 'accept'}
+    return bool(stops) and all(isinstance(s, dict) and not (set(s.keys()) & work_keys) for s in stops)
+
+
 def step_said(answer):
     """The hunt step's own last word, for the run row (requests ENT-092): its STEP line without the pilot's name, else
     its last line. Without it a hunt that ended with no kill left only `objectives not done`, and the pilot's log is
@@ -848,6 +854,7 @@ for n, stop in enumerate(ROUTE['stops']):
                 break
     if stop.get('accept'):
         have = {title for title, _mid, _fin in active()}
+        accepted_or_held = 0
         for entry in stop['accept']:
             template, needs = (entry, {}) if isinstance(entry, str) else (entry['template'], entry.get('needs') or {})
             hold = cargo()
@@ -862,12 +869,20 @@ for n, stop in enumerate(ROUTE['stops']):
                 notes.append(f'{template} not offered')
             elif posted.get('title') in have:
                 say(f'{template}: already accepted')
+                accepted_or_held += 1
             else:
                 target_mid = posted.get('mission_id') or posted.get('template_id') or template
                 ok, msg = goal('accept-mission', {'missionId': target_mid}, tries=1)
                 say(f'accept {template}: {ok} {msg[:100]}')
-                if not ok:
+                if ok:
+                    accepted_or_held += 1
+                else:
                     notes.append(f'{template} not accepted')
+        route_titles = set(ROUTE.get('one_time') or []) | set(ROUTE.get('skip_if_booked') or [])
+        if accepted_or_held == 0 and not (have & route_titles) and pure_visit_tail(ROUTE['stops'][index:]):
+            say(f'aborting empty tour: none of {len(stop["accept"])} mission(s) offered/accepted at stop {index}')
+            notes.append('mission not offered: skipped empty tour')
+            break
     for step in stop.get('mine') or []:
         wanted = set(step.get('for') or [])
         left = {title for title, _mid, finished in active() if not finished} & wanted
