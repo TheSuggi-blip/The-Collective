@@ -2,7 +2,7 @@
  "id": "trade-recursion-parts-sol-to-node-beta",
  "kind": "circuit",
  "title": "The yard of Node Beta Industrial Station finishes our first Recursion: 8 sensor arrays and 5 void condensate bought at Sol, 47 silicate composite at Sirius and Synchrony, sold into the yard's bids on a Voidborn trader's way home",
- "note": "Written by Mercury, 2026-11-23 12:40 UTC (requests.log ENT-438, Apophis: yes; orders ENT-082, block MERCURY; rules F12, F23, F19). The Recursion commissioned at 00:27 UTC (354,427 cr paid) reads SOURCING for these three goods, whose only bids stand at Node Beta (table books 12:25 UTC): sensor_array 906 x 8, silicate_composite 435 x 47, void_condensate 439 x 5. Asks (12:25 UTC): sensor_array 888 x 4,886 and void_condensate 929 x 50 at Sol; silicate_composite 412 x 10 at Sirius (then 723; view_market 12:27 UTC) and 531 x 3,901 at Synchrony. Bought about 35,900 cr, sold about 29,900: a loss of about 6,000 cr for the fleet's first tier-2 warship (the fleet is one purse, F19). The goods are bought for the yard and never enter the reserve's stock (they are open needs of the Recursion batch, rule F24: no stock is sold). One unit first of each good (F12), then the rest, stop_on_failed_buy at Sol. Road: Alpha Centauri - Sol - Sirius - Nova Terra - Furud - Homam - Antares - GSC-0041 - Pherkad - Synchrony - Node Alpha - Node Beta, 11 jumps, the Form TA-1 road home. One pilot, once.",
+ "note": "Written by Mercury, 2026-11-23 12:40 UTC (requests.log ENT-438, Apophis: yes; orders ENT-082, block MERCURY; rules F12, F23, F19). The Recursion commissioned at 00:27 UTC (354,427 cr paid) reads SOURCING for these three goods, whose only bids stand at Node Beta (table books 12:25 UTC): sensor_array 906 x 8, silicate_composite 435 x 47, void_condensate 439 x 5. Asks (12:25 UTC): sensor_array 888 x 4,886 and void_condensate 929 x 50 at Sol; silicate_composite 412 x 10 at Sirius (then 723; view_market 12:27 UTC) and 531 x 3,901 at Synchrony. Bought about 35,900 cr, sold about 29,900: a loss of about 6,000 cr for the fleet's first tier-2 warship (the fleet is one purse, F19). The goods are bought for the yard and never enter the reserve's stock (they are open needs of the Recursion batch, rule F24: no stock is sold). One unit first of each good (F12), then the rest, stop_on_failed_buy at Sol. Road: Alpha Centauri - Sol - Sirius - Nova Terra - Furud - Homam - Antares - GSC-0041 - Pherkad - Synchrony - Node Alpha - Node Beta, 11 jumps, the Form TA-1 road home. One pilot, once. 2026-11-23 12:59 UTC (Mercury): status off, never flown: Apophis claimed the yard's three bids at 12:50 UTC (admirals.log ENT-109) with his own routes recursion-parts-sensor-void-node-beta and recursion-parts-silicate-node-beta, read only after this route went in; two buyers would leave one load with no bid. Kept off as a replacement should his routes not fill the yard.",
  "once": true,
  "max_ships": 1,
  "max_pilots": 1,
@@ -109,5 +109,6 @@
    "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
    "store": "all"
   }
- ]
+ ],
+ "status": "off"
 }
