@@ -137,7 +137,7 @@ def audit_outbound(text):
 
 def inspect_message(text, sender="", channel="", is_own=False, is_station=False):
     """Deterministic security classification + typed intent and diplomatic stance extraction."""
-    raw = clean_ascii(text, 600)
+    raw = clean_ascii(text, 2000)
     snd = clean_ascii(sender, 60)
     if is_own:
         return {"risk_level": "clean", "score": 0, "flags": [], "intent": "own_fleet",

@@ -846,7 +846,7 @@ def print_threads(data, root, tag_filter="", last_n=25):
     for m, other, mtag in matched[-last_n:]:
         ts = str(m.get("t") or m.get("seen_at") or "")[:19]
         if m.get("own"):
-            txt = comms_guard.clean_ascii(m.get("text") or "", 300)
+            txt = comms_guard.clean_ascii(m.get("text") or "", 2000)
             print("  %s | OUT | %-10s -> %-22s [%-4s] | %s" % (ts, str(m.get("pilot") or m.get("sender") or "")[:10], other[:22], mtag or "-", txt))
         else:
             info = comms_guard.inspect_message(m.get("text") or "", other, "private", False, bool(m.get("station")))

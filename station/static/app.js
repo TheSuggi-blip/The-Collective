@@ -4640,21 +4640,27 @@ function renderEmpireComms(panel, dip) {
       ...(c.sent_out || []).map((m) => ({ ...m, _dir: 'OUT' })),
       ...(c.direct_in || []).map((m) => ({ ...m, _dir: 'IN' })),
     ].sort((a, b) => String(b.t || '').localeCompare(String(a.t || '')));
-    const drows = merged.slice(0, 40).map((m) => {
+    const wrap = el('div', 'icards');
+    for (const m of merged.slice(0, 40)) {
       const isOut = m._dir === 'OUT';
-      const dirWrap = el('div', 'twoline');
-      dirWrap.append(el('span', isOut ? 'pill warn' : (m.risk === 'quarantined' ? 'pill bad' : 'pill good'), isOut ? 'SENT' : (m.risk === 'quarantined' ? 'QUARANTINED' : 'RECEIVED')));
-      dirWrap.append(el('div', 'rmeta-sub', stampCet(m.t)));
+      const card = el('div', 'ibldg');
+      const head = el('div', 'ibhead');
+      head.append(el('span', isOut ? 'pill warn' : (m.risk === 'quarantined' ? 'pill bad' : 'pill good'), isOut ? 'SENT' : (m.risk === 'quarantined' ? 'QUARANTINED' : 'RECEIVED')));
       const party = isOut
         ? (m.sender + (m.to ? ' -> ' + (m.tag ? '[' + m.tag + '] ' : '') + m.to : ''))
         : ((m.tag ? '[' + m.tag + '] ' : '') + m.sender + (m.pilot ? ' -> ' + m.pilot : ''));
+      head.append(el('b', null, party));
       const meta = isOut ? (m.diplomat ? m.diplomat : m.channel) : ((m.stance && m.stance !== 'none') ? m.stance.replace(/_/g, ' ') : m.channel);
-      const thr = el('div', 'twoline');
-      thr.append(el('div', null, party));
-      thr.append(el('div', 'rmeta-sub', meta));
-      return [dirWrap, thr, m.text];
-    });
-    panel.append(fitTable(table(['Status', 'Thread', 'Message'], drows)));
+      if (meta) head.append(el('span', 'pill', meta));
+      card.append(head);
+      const body = el('div', 'msg-body', m.text);
+      body.style.whiteSpace = 'pre-wrap';
+      body.style.overflowWrap = 'anywhere';
+      card.append(body);
+      card.append(el('div', 'rmeta-sub', stampCet(m.t)));
+      wrap.append(card);
+    }
+    panel.append(wrap);
   }
 
   panel.append(el('h3', null, 'Intercepted nearby pilot radio (' + (c.local_radio || []).length + ' newest)'));

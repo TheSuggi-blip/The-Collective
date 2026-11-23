@@ -2276,7 +2276,7 @@ def read_comms_summary(our_pilots):
         to_who = clean_ascii(m.get("with") or "", 48)
         via_pilot = clean_ascii(m.get("pilot") or "", 32)
         diplomat = clean_ascii(m.get("diplomat") or "", 16)
-        msg_txt = clean_ascii(m.get("text") or "", 320)
+        msg_txt = clean_ascii(m.get("text") or "", 2000)
         is_npc = (sid in ("salvage_authority",) or sid.startswith("npc_")
                   or snd.startswith("[CUSTOMS]") or snd.startswith("[POLICE]") or snd.startswith("[STATION]")
                   or snd in ("Galactic Salvage Authority", "Interstellar Revenue Service", "Shipyard Authority"))
