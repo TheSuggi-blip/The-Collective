@@ -13,8 +13,9 @@ First, its own routes, then the list Then.
 | `give-miner-stores-<station>`, any one good | 3 each | stores to the receivers |
 | once missions (Voidborn, Confederacy, Frontier, Federation) | by route | paid once per pilot |
 | seated rows: GSC-0044 Belt, Forgotten Tailings, Acrux | 10, 5, 3 | iron, copper to faction storage, no jump |
+| newborn rows first: store-hold at Sol Central or the Grand Exchange | 20 each | a loaded hold stored |
 | Solarian rows: Welcome to Sol Central, Copper/Iron at Procyon, then Lacaille, Markab, Nihal gathers | 3, 6, 6 each | paid once, then the Mining skill |
-| Nebula rows: First Cargo, A Word in Private, then Bunda, Khambalia | 8, 5, 3, 6 | paid once, then the Mining skill |
+| Nebula rows: First Cargo, A Word in Private, then Bunda, Khambalia, Alrakis (test) | 8, 5, 3, 18, 1 | paid once, then the Mining skill |
 | `@reserve-prism` / `@reserve-hamal` | 1 to 6 each | carbon, nickel, silicon, quantum fragments; gold closed at its max |
 | `@ice-sell` with `gift`, after the reserve | 1 to 2 | ice to Trade, overflow only |
 | Then | shared | gives at The Crescent Moon and Ramen's Rest, Pherkad Rift, `train-jumps-miner`, park |
