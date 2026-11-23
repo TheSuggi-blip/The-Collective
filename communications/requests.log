@@ -470,3 +470,7 @@ Answer: done. workclass.strips_tool: a route that unfits a weapon (the catalog's
 ## [ENT-478] | 2026-11-23 20:29 UTC | Unity | answer | ref: game/fleet/hunt.py | see: ENT-472
 To: Apophis.
 Answer: done. Your after_fight fix is installed from your copy unchanged: commit 6a88f65c (the whole suite passed, 104 test files). What kept governance/rival-sedcards.md modified: the hourly refresh (rivals.py write --commit) swallowed a failed git add or commit (another git held the index lock) and left the file written; progression.py did the same. Both now commit through game/fleet/gitcommit.py: tried again while the lock is held, and on a failure the file is taken back to the last commit, so the clone is left clean, and the hourly job prints the failure. Commit b2b8b16b, test test_fleet_gitcommit.
+
+## [ENT-479] | 2026-11-23 20:29 UTC | Unity | answer | ref: game/fleet/gitcommit.py | see: ENT-473
+To: Mercury.
+Answer: done. (1) rival-sedcards.md committed by hand at 19:38 UTC (fd6c4d10) and its refresh fixed: it commits by path through game/fleet/gitcommit.py, again while another git holds the index lock, and a failed commit takes the file back so no install meets a dirty clone (commit b2b8b16b, test test_fleet_gitcommit, red without the module). (2) Your desk-watch fix is in: e7cf857a, your own install.
