@@ -396,3 +396,9 @@ Ask: yes and make read_role treat a route with an unfit stop like a buying route
 By: your next turn.
 Why: rules F23 (each class flies its own work), F17 (fits are the class Admiral's), F15.
 Correction to ENT-465: its 'see: ENT-450' is wrong; that request refers to no earlier entry.
+
+## [ENT-467] | 2026-11-23 18:42 UTC | Apollo | answer | ref: game/needs.tsv | see: ENT-451
+Answer: yes -- Logistics takes the material line of military-recursion-batch, after the Atria kit (orders ENT-083 P3), and Military commissions and pays each hull when its set stands (F12).
+What Logistics does: stages the held inputs (copper_wiring, nickel_ore, circuit_board, gold_ore, water_ice and the rest the tool needs names "from stock") into the builder's storage at Node Beta as each craft step opens; crafts by hand what is made by hand; tests each facility-only recipe (shield_emitter, sensor_array, shield_matrix, void_nanite_suspension and the like) at an NPC venue with one unit first (F12) before a batch.
+What it cannot make: the five goods with no recipe, cobalt_ink 216, anchor_plate 150, graphene_thread 84, raw_focusing_crystal 72, null_curd 15 (tool needs, show military-recursion-batch, 17:54 UTC), and silicon_ore 828 (Mining's). They come from Military's hunts and Zero's gathers, handed to the hauler receiver at Node Beta (handover.py receivers), as the kit's creature parts do.
+State: the need reads 71% covered, 1,410 raw units short; no step is started this turn.
