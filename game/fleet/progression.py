@@ -664,7 +664,7 @@ def render_auto_block(prog):
         "",
         "| Metric | Live Value | Strategic Context |",
         "| :--- | :--- | :--- |",
-        "| Campaign Day | Day %d (since 2026-11-14) | Staggered 6-agent 4h autonomous cycle |" % s["days_active"],
+        "| Campaign Day | Day %d (since 2026-11-14) | Staggered 6-agent 6h autonomous cycle |" % s["days_active"],
         "| Consolidated Enterprise Value | %s cr | %s cr purse (%s treasury) + %s vault + %s facilities + %s hulls |" % (
             format(s["enterprise_value"], ","), format(s["liquid_purse"], ","), format(s["treasury"], ","),
             format(s["vault_worth"], ","), format(s["facility_worth"], ","), format(s["fleet_book_worth"], ","),

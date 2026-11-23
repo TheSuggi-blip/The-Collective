@@ -45,7 +45,7 @@ The Collective enforces a strict two-plane **Puppeteer Model**:
      accounts, adding a new Admiral, war/alliances/external words, locked core
      files).
    - **Trinity (Chief Architect & Watchdog):** Operates outside the game container
-     on Suggi's PC. Audits gameplay progression every 4 hours (`watchdog.py`),
+     on Suggi's PC. Audits gameplay progression every 6 hours (`watchdog.py`),
      maintains the `:8445` Command Station HUD, refines bootstrap/skill hygiene,
      and builds deterministic fleet plumbing with Suggi.
    - **Hard Non-Interference Rule:** Neither Suggi nor Trinity sends tactical
@@ -71,9 +71,9 @@ cripple naive LLM agent groups -- and how The Collective eliminates each:
 
 | Failure Mode in Naive Multi-Agent Swarms | The Collective's Structural Solution |
 | :-- | :-- |
-| **Inner-loop latency & token burn:** Models called per tick cannot manage hundreds of ships on 10s ticks and get trapped in repetitive tool loops. | **PIANO Two-Speed Split:** 10 deterministic `runner` services handle 10s state polling, 30s dispatch, 30s book tracking, 60s SQLite rollups, and 30m stall/pirate breakers; Opus 5.5+ agents deliberate every 4 hours on policy (`plan-<division>.md`) and route design. |
+| **Inner-loop latency & token burn:** Models called per tick cannot manage hundreds of ships on 10s ticks and get trapped in repetitive tool loops. | **PIANO Two-Speed Split:** 10 deterministic `runner` services handle 10s state polling, 30s dispatch, 30s book tracking, 60s SQLite rollups, and 30m stall/pirate breakers; Opus 5.5+ agents deliberate every 6 hours (`00:00/06:00/12:00/18:00` CET) on policy (`plan-<division>.md`) and route design. |
 | **Siloed sub-optimization:** Independent "profit-maximizing" agents hoard cash, starve base-building reserves, or compete for the same thin bid/field. | **One Purse + Pull Reserve + Claim Locks:** Profit is judged fleet-wide (`F19`). `needs.tsv -> need_status` pulls required inputs into the reserve (`F24`, `F36`), `surplus.py` releases excess to Trade, `wallet.py` sweeps idle ship cash to treasury (`F7`), and `admirals.log` locks claimed fields/bids. |
-| **Prose drift & invisible stagnation:** Agents write optimistic summaries while ships sit parked, repeat 0-credit buys, or stall at `99%` of a critical facility. | **Voyager Executable Library + Velocity Watchdog:** Verified routes live as JSON programs indexed by measured 12h credits/ship-hour (`F22`); `hive.py briefing` injects `EYES & EARS` at turn start; `watchdog.py` diffs 4h snapshots to flag `FAST_ZERO_LOOP`, `P1_NEED_STALLED`, and `NEED_READY_NOW`. |
+| **Prose drift & invisible stagnation:** Agents write optimistic summaries while ships sit parked, repeat 0-credit buys, or stall at `99%` of a critical facility. | **Voyager Executable Library + Velocity Watchdog:** Verified routes live as JSON programs indexed by measured 12h credits/ship-hour (`F22`); `hive.py briefing` injects `EYES & EARS` at turn start; `watchdog.py` diffs 6h snapshots to flag `FAST_ZERO_LOOP`, `P1_NEED_STALLED`, and `NEED_READY_NOW`. |
 
 ## 3. Six-Agent Role, Bootstrap & Skill Matrix
 
@@ -160,7 +160,7 @@ concrete operational failure mode observed in live data:
    - *Structural gate:* `.githooks/pre-commit` scopes route/index checks to staged paths, and multi-file code builds test in `/tmp/` scratch copies before atomic explicit-path commits.
 7. **Point-in-Time Dashboards Hiding Multi-Turn Stalls -> `watchdog.py` + `EYES & EARS`:**
    - *Scar:* High ship assignment can mask a `P1` build stuck at `99.3%` for 12 hours, unflipped `P5` class switches, or open faction seats sitting unfilled after an office upgrade.
-   - *Structural gate:* `hive.py briefing` front-loads `EYES & EARS` on every turn, and `game/fleet/watchdog.py` tracks 4-hour velocity deltas across turns so both the autonomous fleet and the external Watchdog see real progression vs. stagnation immediately.
+   - *Structural gate:* `hive.py briefing` front-loads `EYES & EARS` on every turn, and `game/fleet/watchdog.py` tracks 6-hour velocity deltas across turns so both the autonomous fleet and the external Watchdog see real progression vs. stagnation immediately.
 8. **Treasury Withdrawal & Handover Blindness -> Consolidated Enterprise Accounting (`station/fleet.py`, `routes.py`, `stats.py`):**
    - *Scar:* `Treasury fund` withdrawals looked like external cost spikes (`unexplained_per_hour`), while non-selling extraction/combat divisions showed negative wallets after handing loot/ore to Trade.
    - *Structural gate:* Symmetric internal transfer elimination (`unexplained_per_hour = 0`) + `handed_over_worth` valuation at live bid depth + 4-pillar Consolidated Enterprise Net Worth.

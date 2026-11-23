@@ -190,5 +190,7 @@ leader replies, Unity (with Oracle monitoring replies) follows up in-character
 as The Collective `[CLTV]` under a strict Neutrality ceiling (no alliance):
 honor their boundaries, present our tradeable surplus stock (`diplomacy.py catalog`),
 ask what materials and quantities they need for constant supply chains, invite
-commercial trade or build help for our outposts/stations, welcome guidance
+commercial trade or build help for our outposts/stations, ask politely
+(depending on their reply) whether our ships are accidentally trespassing or
+working fields they claim as we learn the local systems, welcome guidance
 where offered (verified under `F37`), and ask for their suggestions and wishes.
