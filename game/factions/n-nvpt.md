@@ -15,7 +15,7 @@ updated: 2026-11-23
 # Nova Pact [NVPT]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 4.
+Pilots of it in our space in the last 24 hours: 3.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 4.
 | Allies | AURC, OKLM, SGC., SOIT, SOLS | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 6 | Public event stream |
+| Pilots carrying the tag on the public event stream | 5 | Public event stream |
 
 ## Bases
 
@@ -38,7 +38,6 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Crex Nullyn | Node Beta (`node_beta`) | 0 | archimedes |
 | Torra Selvex | Node Beta (`node_beta`) | 0 | archimedes |
 | Wren Calyx | Node Beta (`node_beta`) | 0 | archimedes |
 | Zara Vexyn | Node Beta (`node_beta`) | 0 | archimedes |

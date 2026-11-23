@@ -9,7 +9,7 @@ faction: Prospector Fleet
 standing: neutral
 standing_since: 2026-11-16
 threat: unknown
-updated: 2026-11-22
+updated: 2026-11-23
 ---
 
 # Prospector Fleet [PSF2]
@@ -40,13 +40,13 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Prospector_Void10 | Node Gamma (`node_gamma`) | 0 | threshold |
-| Prospector_Void2 | Node Gamma (`node_gamma`) | 0 | threshold |
-| Prospector_Void3 | Node Gamma (`node_gamma`) | 0 | threshold |
+| Prospector_Void10 | Node Beta (`node_beta`) | 0 | threshold |
+| Prospector_Void2 | Node Beta (`node_beta`) | 0 | threshold |
+| Prospector_Void3 | Node Beta (`node_beta`) | 0 | threshold |
 | Prospector_Void4 | Node Gamma (`node_gamma`) | 0 | threshold |
-| Prospector_Void5 | Node Gamma (`node_gamma`) | 0 | threshold |
-| Prospector_Void6 | Node Gamma (`node_gamma`) | 0 | threshold |
-| Prospector_Void7 | Node Gamma (`node_gamma`) | 0 | threshold |
+| Prospector_Void5 | Node Beta (`node_beta`) | 0 | threshold |
+| Prospector_Void6 | Node Beta (`node_beta`) | 0 | threshold |
+| Prospector_Void7 | Node Beta (`node_beta`) | 0 | threshold |
 | Prospector_Void8 | Node Gamma (`node_gamma`) | 0 | threshold |
 
 ## Standing History
