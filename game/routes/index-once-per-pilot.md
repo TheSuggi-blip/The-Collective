@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 73.
+Routes: 74.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -68,6 +68,7 @@ Routes: 73.
 | [mission-last-known-position-crimson](mission-last-known-position-crimson.json) | circuit | beyond the border, 21 jumps | Last Known Position: 8000 cr, +115 XP at War Citadel (Crimson board) | once per pilot, up to 1 ships | TBD | TBD | TBD | TBD | -- |
 | [mission-market-participation-frontier](mission-market-participation-frontier.json) | circuit | beyond the border, 17 jumps | Market Participation: Buying and Selling at Frontier Station: 1,000 cr each, once per pilot; ten copper ore bought and sold back there | once per pilot, up to 3 ships, from 3,200 cr, while frontier_station bids 1 cr for copper_ore | 24 | 1 | 970 | one-time | 2026-11-23 |
 | [mission-market-participation-grand](mission-market-participation-grand.json) | circuit | beyond the border, 21 jumps | Market Participation: Buying and Selling at Grand Exchange: 1,000 cr each, once per pilot; ten liquid nitrogen bought and sold back there | once per pilot, up to 3 ships, from 3,200 cr, while grand_exchange_station bids 1 cr for liquid_nitrogen | 12 | 1 | 790 | one-time | 2026-11-23 |
+| [mission-scraping-by-frontier](mission-scraping-by-frontier.json) | circuit | beyond the border, 17 jumps | Scraping By: 1,000 cr once and Outer Rim Survival XP; accept at Frontier Station, mine 15 copper ore at The Telescope (one jump), hand in at Frontier Station | once per pilot, up to 1 ships, empty hold, born outerrim | TBD | TBD | TBD | TBD | -- |
 | [mission-strategic-readiness-assessment-crimson](mission-strategic-readiness-assessment-crimson.json) | circuit | beyond the border, 21 jumps | Strategic Readiness Assessment: 4000 cr at War Citadel | once per pilot, up to 3 ships | 9 | 36 | 2,550 | one-time | 2026-11-23 |
 | [mission-the-expeditionary-mandate-first](mission-the-expeditionary-mandate-first.json) | circuit | beyond the border, 18 jumps | The Expeditionary Mandate: 10000 cr, +360 XP at First Step Memorial Station | once per pilot, up to 3 ships | 3 | 38 | -690 | one-time | 2026-11-23 |
 | [mission-the-memorial-frontier](mission-the-memorial-frontier.json) | circuit | beyond the border, 18 jumps | The Memorial: 8000 cr at Mobile Capital (Altais), a visit to First Step | once per pilot, up to 3 ships | 31 | 9 | 7,420 | one-time | 2026-11-23 |

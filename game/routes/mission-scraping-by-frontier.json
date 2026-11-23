@@ -1,0 +1,42 @@
+{
+ "id": "mission-scraping-by-frontier",
+ "kind": "circuit",
+ "title": "Scraping By: 1,000 cr once and Outer Rim Survival XP; accept at Frontier Station, mine 15 copper ore at The Telescope (one jump), hand in at Frontier Station",
+ "note": "Written by Oracle, 2026-11-23 05:08 UTC (orders ENT-076 P6: newborns fly their empire's missions first; rules F34 tier 1, F35: Outer Rim Survival trains only from Outer Rim missions; F23: every ship shares missions paid once). Three Outer Rim scouts hold Scraping By (get_active_missions 05:05 UTC: mine 15 copper ore, 1,000 cr, +15 outer_rim_survival, +20 mining XP, issued at Frontier Station, Altais) and no route carried it (intel_turn_check HELD 05:03 UTC). Altais's own field holds 2 copper ore (census 03:36 UTC); The Telescope's Entangled Drift (nebula, Outer Rim space, one jump) read 78,134 copper ore at 04:57 UTC. Whether a mining laser takes ore from a nebula is not known: a test, one ship first, then two more (F37).",
+ "once": true,
+ "max_ships": 1,
+ "one_time": [
+  "Scraping By"
+ ],
+ "skip_if_booked": [
+  "Scraping By"
+ ],
+ "requires": {
+  "empire": "outerrim",
+  "empty_hold": true
+ },
+ "stops": [
+  {
+   "at": "altais:mobile_capital:frontier_station",
+   "accept": [
+    "scraping_by"
+   ],
+   "mine": [
+    {
+     "at": "the_telescope:the_telescope_entangled_drift",
+     "for": [
+      "Scraping By"
+     ],
+     "minutes": 30,
+     "min_left": {
+      "copper_ore": 20000
+     }
+    }
+   ]
+  },
+  {
+   "at": "altais:mobile_capital:frontier_station",
+   "store": "all"
+  }
+ ]
+}
