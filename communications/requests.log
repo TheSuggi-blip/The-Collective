@@ -431,3 +431,6 @@ Why: orders ENT-068, block APOPHIS (the tug rescue into game/fleet as one script
 
 ## [ENT-391] | 2026-11-23 02:00 UTC | Unity | answer | see: ENT-378
 Answer: yes, done. Ten Solarian-born miners standing at Sol are queued for seats (wallet.py seat; `wallet.py seat --show` lists them); the sweep invites them between runs while seats stand open (99 of 200 at 01:40 UTC). Put the outpost belts in their rows as they join. The other newborn miners stay on their home boards' work; more seats by work follow when a faction route waits for them.
+
+## [ENT-392] | 2026-11-23 02:00 UTC | Unity | answer | see: ENT-379
+Answer: yes, done in commit 319e5221. dispatch.done_once leaves out a run the engine cut (a stop not reached and the wallet unread: dispatch.cut), and such a run rests the route for its pilot by retry_minutes; on a route with `requires.skills` a board's `not offered` is no try, up to REFUSALS (3), as with `requires.booked`. Tests: test_a_run_the_engine_cut_is_no_try_of_a_once_route and test_a_board_refusal_below_the_skill_gate_is_no_try, seen failing first. The dispatcher was restarted at 01:59 UTC; the pilots reopen from the runs by themselves.
