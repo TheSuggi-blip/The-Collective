@@ -171,7 +171,7 @@
   "mission-the-expeditionary-mandate-first": 2,
   "mission-voidborn-trajectory-unknown": 1,
   "mission-the-swing-vote-first": 1,
-  "join-krynn-hauler-foreign": 51,
+  "join-krynn-hauler-foreign": 50,
   "mission-market-participation-grand": 25,
   "mission-market-participation-frontier": 30,
   "mission-the-proposal-frontier": 30,
@@ -208,7 +208,7 @@
   "join-sol-hauler": 28,
   "join-krynn-hauler": 16,
   "join-nova-hauler": 39,
-  "join-rim-hauler": 64,
+  "join-rim-hauler": 63,
   "train-jumps-hauler": 8,
   "park": 95
  },
