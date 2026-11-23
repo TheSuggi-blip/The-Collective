@@ -326,6 +326,15 @@ def ammo_ids():
     return fitted_ammo(body(raw('get_ship')).get('modules') or [], catalog_items(os.path.join(os.path.dirname(os.path.dirname(MARKET)), 'catalog')))
 
 
+def foreign_ranched(c):
+    """A creature another faction ranches carries that faction's tag in its name
+    ('[HEXC] Patina-Grazer'): its owner's livestock, never our prey (2026-11-23: a
+    drone hunted a partner's ranched grazers at the partner's base and was destroyed
+    by their pilot). Our own tag stays huntable."""
+    name = str(c.get('name') or '')
+    return name.startswith('[') and not name.startswith('[CLTV]')
+
+
 def ranch_keep(route_file, default=2):
     """Minimum healthy breeders left alive in a shoal so natural regrowth stays at maximum sustainable yield (rule F38)."""
     try:
@@ -511,10 +520,14 @@ if not SHORT and not REPAIR_FIRST and goal('navigate-to-system', {'targetSystemI
                 say(why[0] + ': no fight, leaving')
                 notes.append(why[1])
                 break
+            ranched = [c for c in near.get('creatures') or [] if isinstance(c, dict) and foreign_ranched(c)]
             prey = [c for c in near.get('creatures') or [] if isinstance(c, dict) and c.get('role') == 'grazer' and not c.get('in_combat')
+                    and not foreign_ranched(c)
                     and (species is None or c.get('species') in species) and (c.get('max_hull') or c.get('hull') or 0) <= max_prey_hull]
             if not prey:
-                say(f'no free grazer here (creatures listed: {near.get("creature_count")})')
+                say(f'no free grazer here (creatures listed: {near.get("creature_count")}; another faction ranches {len(ranched)})')
+                if ranched and 'foreign ranch left alone' not in notes:
+                    notes.append('foreign ranch left alone')
                 break
             hurt = [c for c in prey if (c.get('hull') or 0) < (c.get('max_hull') or c.get('hull') or 0)]
             if not hurt and KEEP_HERD > 0 and len(prey) <= KEEP_HERD:

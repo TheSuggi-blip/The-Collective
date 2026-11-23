@@ -153,5 +153,23 @@ class KeptGoodsTests(unittest.TestCase):
         self.sys.modules["surplus"].surplus = broken
         self.assertEqual(self.kept_goods("/nowhere", "/nowhere"), {})
 
+class ForeignRanchTests(unittest.TestCase):
+    """A creature another faction ranches carries its tag in its name: never prey (2026-11-23,
+    a drone hunted '[HEXC] Patina-Grazer' at a partner's base and was destroyed by its owner)."""
+
+    def setUp(self):
+        self.foreign_ranched = load("foreign_ranched")
+
+    def test_a_creature_with_another_faction_tag_is_foreign_ranched(self):
+        self.assertTrue(self.foreign_ranched({"name": "[HEXC] Patina-Grazer", "species": "patina_grazer"}))
+        self.assertTrue(self.foreign_ranched({"name": "[IRLC] Belt-Grazer"}))
+
+    def test_a_wild_creature_and_one_of_ours_are_not(self):
+        self.assertFalse(self.foreign_ranched({"name": "Patina-Grazer", "species": "patina_grazer"}))
+        self.assertFalse(self.foreign_ranched({"name": "[CLTV] Belt-Grazer"}))
+        self.assertFalse(self.foreign_ranched({"species": "belt_grazer"}))
+        self.assertFalse(self.foreign_ranched({"name": None}))
+
+
 if __name__ == "__main__":
     unittest.main()
