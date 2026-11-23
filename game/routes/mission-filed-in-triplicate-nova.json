@@ -1,0 +1,29 @@
+{
+ "id": "mission-filed-in-triplicate-nova",
+ "kind": "circuit",
+ "title": "Filed in Triplicate: 5000 cr, +220 XP at Nova Terra Central",
+ "note": "Written by routemaker.py from the board and the order books: goods for about 0 cr, reward 5000 cr, sale 0 cr, +220 XP. Test with one ship first. Added as a test by fill.py on 2026-11-23 04:07 UTC (Unity): up to 3 ships, one result each, until 3 runs are read (rule F37).",
+ "max_ships": 3,
+ "stops": [
+  {
+   "at": "nova_terra:nova_terra_central:nova_terra_central",
+   "accept": [
+    "filed_in_triplicate"
+   ]
+  },
+  {
+   "at": "sol:sol_central:confederacy_central_command",
+   "redock": true
+  },
+  {
+   "at": "nova_terra:nova_terra_central:nova_terra_central"
+  }
+ ],
+ "once": true,
+ "one_time": [
+  "Filed in Triplicate"
+ ],
+ "skip_if_booked": [
+  "Filed in Triplicate"
+ ]
+}

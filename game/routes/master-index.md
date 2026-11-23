@@ -17,33 +17,33 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 
 | Group | What it holds | Routes | Home space | Beyond the border | Best measured |
 |---|---|---|---|---|---|
-| [Once per Pilot](index-once-per-pilot.md) | Missions and rewards the game pays once per pilot: a new pilot's first work, and seed money. | 71 | 23 | 48 | voidborn-conductive-lattice: 7,580 cr a run |
+| [Once per Pilot](index-once-per-pilot.md) | Missions and rewards the game pays once per pilot: a new pilot's first work, and seed money. | 72 | 23 | 49 | voidborn-conductive-lattice: 7,580 cr a run |
 | [Paying Routes](index-paying-routes.md) | Work that repeats and whose runs of the last 12 hours measured above zero. | 15 | 7 | 8 | sell-loot-at-nexus: 150,950 cr per ship-hour |
 | [Tests](index-tests.md) | Work that repeats and has no measured figure: new, or no readable run in the last 12 hours. One ship until its first RESULT line is read. | 147 | 45 | 102 | not measured yet |
 | [Fitting](index-fitting.md) | A module bought and fitted: the tool a kind of work needs. | 17 | 11 | 6 | fit-ice-harvester-lhs-1140: -4,320 cr per ship-hour |
 | [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 395 | 102 | 293 | store-hold-grand-exchange: 7,720 cr per ship-hour |
 | [Measured at a Loss](index-measured-at-a-loss.md) | Work that repeats and whose runs of the last 12 hours measured zero or below. | 8 | 4 | 4 | mine-dheneb-cryobelt: -160 cr per ship-hour |
 | [Off](index-off.md) | Written down, not flown. | 45 | 19 | 26 | voidborn-first-steps: 4,020 cr per ship-hour |
-| All | | 698 | 211 | 487 | |
+| All | | 699 | 211 | 488 | |
 
 ## Routes by Zone and Kind
 
 | Zone | Routes | census | circuit | guard | hunt | mine | Farthest system, jumps from home |
 |---|---|---|---|---|---|---|---|
 | home space | 211 | 1 | 180 | 1 | 16 | 13 | 3 |
-| beyond the border | 487 | 23 | 117 | 7 | 239 | 101 | 29 |
+| beyond the border | 488 | 23 | 118 | 7 | 239 | 101 | 29 |
 
 ## Plans by Role
 
 | Role | Kept by | Routes | The first three, in order | Planned | Ships |
 |---|---|---|---|---|---|
-| [command](plan-command.md) | Unity | 59 | voidborn-first-steps-board > voidborn-collective-provides > voidborn-signal-protocol | 0 | 10 |
-| [drone](plan-drone.md) | Apophis | 247 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 2 | 95 |
+| [command](plan-command.md) | Unity | 61 | voidborn-first-steps-board > voidborn-collective-provides > voidborn-signal-protocol | 0 | 10 |
+| [drone](plan-drone.md) | Apophis | 249 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 2 | 95 |
 | [hauler](plan-hauler.md) | Apollo | 59 | voidborn-resonance-finish > voidborn-atmospheric-extraction > voidborn-hardware-cargo | 4 | 95 |
 | [miner](plan-miner.md) | Zero | 83 | fit-mining-laser-iii-lhs-1140 > fit-mining-laser-ii-second-central-nexus > give-miner-stores-node-beta | 6 | 130 |
 | [scout](plan-scout.md) | Oracle | 66 | store-hold-central-nexus > give-scout-stores-node-beta > give-scout-stores-central-nexus | 3 | 50 |
-| [sentinel](plan-sentinel.md) | Apophis | 243 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 2 | 35 |
-| [trader](plan-trader.md) | Mercury | 135 | voidborn-first-steps-board > voidborn-network-expansion > voidborn-collective-provides | 1 | 85 |
+| [sentinel](plan-sentinel.md) | Apophis | 245 | voidborn-signal-fragments > voidborn-first-steps-board > voidborn-network-expansion | 2 | 35 |
+| [trader](plan-trader.md) | Mercury | 136 | voidborn-first-steps-board > voidborn-network-expansion > voidborn-collective-provides | 1 | 85 |
 
 ## Templates by Division
 

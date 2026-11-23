@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 71.
+Routes: 72.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -55,6 +55,7 @@ Routes: 71.
 | [mission-endorsements-alpha](mission-endorsements-alpha.json) | circuit | beyond the border, 11 jumps | Endorsements: 6000 cr, +380 XP at Alpha Centauri Colonial Station | once per pilot, up to 3 ships | 22 | 15 | 5,510 | one-time | 2026-11-23 |
 | [mission-federation-market-analysis-market](mission-federation-market-analysis-market.json) | circuit | beyond the border, 23 jumps | Federation Market Analysis: 6000 cr at Market Prime Exchange | once per pilot, up to 80 ships | 172 | 44 | 5,300 | one-time | 2026-11-23 |
 | [mission-federation-trade-route-prospectus-grand](mission-federation-trade-route-prospectus-grand.json) | circuit | beyond the border, 24 jumps | Federation Trade Route Prospectus: 4000 cr at Grand Exchange | once per pilot, up to 80 ships | 283 | 34 | 660 | one-time | 2026-11-23 |
+| [mission-filed-in-triplicate-nova](mission-filed-in-triplicate-nova.json) | circuit | beyond the border, 10 jumps | Filed in Triplicate: 5000 cr, +220 XP at Nova Terra Central | once per pilot, up to 3 ships | TBD | TBD | TBD | TBD | -- |
 | [mission-first-cargo-haven](mission-first-cargo-haven.json) | circuit | beyond the border, 22 jumps | First Cargo, Copper Requisition and Iron Supply Run: 4,300 cr once; accept at Grand Exchange, mine at Khambalia Crystal Market (2 jumps), hand in at Grand Exchange | once per pilot, up to 8 ships, born nebula | 25 | 22 | 3,950 | one-time | 2026-11-23 |
 | [mission-first-hunt-iron-reach](mission-first-hunt-iron-reach.json) | circuit | beyond the border, 21 jumps | First Hunt: Belt-Grazers: 1,000 cr once; three belt_grazer at smiths_detour, accepted and handed in at Iron Reach Mining Colony | once per pilot, up to 1 ships | 2 | 10 | -100 | one-time | 2026-11-23 |
 | [mission-first-hunt-iron-reach-rigel](mission-first-hunt-iron-reach-rigel.json) | circuit | beyond the border, 19 jumps | First Hunt: Belt-Grazers: 1,000 cr once; three belt_grazer at rigel_cold_forge_seam (lawless, 5 jumps), accepted and handed in at Iron Reach Mining Colony | once per pilot, up to 1 ships, empty hold | 2 | 16 | -130 | one-time | 2026-11-23 |
