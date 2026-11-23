@@ -29,7 +29,7 @@ once the crafts open (`SELECT flies, COUNT(*) FROM ships`).
 What would change it: the `sell_order` step installed (Bursar order
 keeping, queue ENT-241); home-region trade work for the newborns.
 ### Selling stores where they lie (`sell-<good>-at-<station>`, `carry-<good>-<from>-to-<to>`)
-Status: proven. Updated: 2026-11-22. Evidence: the sell and carry route files with their measured figures; sellgen.py of the skill trade-books.
+Status: proven. Updated: 2026-11-22. Evidence: the sell and carry route files with their measured figures; sellgen.py of Mercury's trade skill.
 
 - The starter hull, nothing bought; trains trading. Each ship sells its
   own stores; the routes are open to every division (rule F24).
@@ -40,7 +40,7 @@ Status: proven. Updated: 2026-11-22. Evidence: the sell and carry route files wi
   hour); a route opens again by itself when a docked ship reads the bid
   back.
 - Floor: above the cheapest ask of the good in depth elsewhere, set again
-  each turn beside `sellgen.py scan` (skill trade-books): soma's deep ask
+  each turn beside `sellgen.py scan` (Mercury's trade skill): soma's deep ask
   fell from 323 to 292 cr overnight and five routes stood closed by their
   own floor (2026-11-17).
 - A route whose runs last minutes is judged by credits a run times the
@@ -91,7 +91,7 @@ bought; they train crafting and refining.
 - The calls behind a craft step: lessons.md, `Crafting by Hand: the Calls`.
 
 ### Trade beyond the border
-Status: test. Updated: 2026-11-22. Evidence: runs.jsonl 2026-11-21 and 22; gaps.py (skill trade-books) on table books; view_market base_id read from home 2026-11-21 23:53 UTC.
+Status: test. Updated: 2026-11-22. Evidence: runs.jsonl 2026-11-21 and 22; gaps.py (Mercury's trade skill) on table books; view_market base_id read from home 2026-11-21 23:53 UTC.
 
 - A docked ship reads any charted station's book for free (view_market
   with `base_id`, game 0.728.0; `FULL=1 gate.py raw`): eight far
