@@ -24,17 +24,17 @@ Status: proven. Updated: 2026-11-23. Evidence: the plan file (tool plan, show); 
 - Explorers: their road (census-north, -east, -south: rule F33, 170
   min; the north road first for six), then census-worked-far, then
   their far list.
-- Hunters: one reader a hunt, one hunter a herd (F9), then @reader. P5:
-  every scout hunt carries gift_to trader; no route sells or crafts.
-  Only hunts Intel claims; one another claims is dropped.
+- Hunters: one reader a hunt, one hunter a herd (F9), then @reader;
+  every scout hunt gifts to a trader (P5); hunts another claims drop.
 - census-roads (960 min, four ships): two readers take it first. The
   census cut: no never-read system left, nobody works there (F8 watch).
-- Then: park alone.
+- Then: the docked book watch (watch-book-*, market_poll, one scout a
+  station, 0 fuel), then park.
 - Capacity: the home lists ask more reads than the Voidborn scouts
   give; a newborn region keeps fewer readers busy than it has newborns
   (fill.py names the rest).
-- Changed by: a WORKED, SITES or FRESH HALT, a pirate on a road, a once
-  mission in queue.log; why a route is closed: fill.py.
+- Changed by: a WORKED, SITES or FRESH HALT, a road pirate, a once
+  mission (queue.log); a closed route: fill.py.
 
 ### Census lists
 Status: proven. Updated: 2026-11-21. Evidence: game/routes/census-*.json; dispatch.py (pick, stalest_system); intel turn check (OVERLAP, ROADS, WORKED).
