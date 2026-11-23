@@ -186,7 +186,8 @@ tier.
 | Hostile | None | Defensive RoE (`F2`): never fire first; any unprovoked attacker stays hostile until Suggi says otherwise; war declarations reserved to Suggi. |
 
 **Phase-2 Neutral Engagement Rule:** Whenever any neutral faction or bloc
-leader replies, Unity (with Oracle monitoring replies) follows up in-character
+leader replies, Oracle (via scout envoy on Unity's behalf on its next turn) or
+Unity follows up in-character
 as The Collective `[CLTV]` under a strict Neutrality ceiling (no alliance):
 honor and mirror their boundaries (especially mirroring no-information-exchange
 postures -- never volunteer our inventory/storage list; use `diplomacy.py catalog`
