@@ -355,6 +355,34 @@ class WithdrawStepTests(unittest.TestCase):
         self.assertIn("'withdraw', {'item_id': want['item'], 'quantity': units, 'target': 'self'}, group='spacemolt_storage'", source)
 
 
+class FactionWithdrawStepTests(unittest.TestCase):
+    # orders ENT-083 block UNITY: the outpost's faction storage holds 100,000 iron ore (table faction_storage, 2026-11-23
+    # 20:34 UTC) while 59 haulers waited for iron to smelt; a withdraw entry with "from": "faction" takes it into the hold
+    # of a pilot whose faction role carries manage_treasury, leaving `keep` units there.
+    def test_the_units_respect_keep_qty_and_the_free_hold(self):
+        units = functions("faction_withdraw_units")["faction_withdraw_units"]
+        self.assertEqual(units({"item": "iron_ore", "keep": 1000}, 5000, 300), 300)
+        self.assertEqual(units({"item": "iron_ore", "keep": 1000}, 1200, 300), 200)
+        self.assertEqual(units({"item": "iron_ore", "keep": 1000}, 900, 300), 0)
+        self.assertEqual(units({"item": "iron_ore", "qty": 50}, 5000, 300), 50)
+        self.assertEqual(units({"item": "lead_ore"}, 5000, 301, 2), 150)
+
+    def test_a_faction_withdraw_moves_faction_goods_into_the_hold(self):
+        route = {"id": "made-up", "kind": "circuit", "title": "t",
+                 "stops": [{"at": "wild:outpost:base", "withdraw": [{"item": "iron_ore", "from": "faction", "keep": 1000, "qty": 40}]}]}
+        log, world, row, out = fly(route, {"faction": {"iron_ore": 5000}})
+        calls = [params for action, params in log if action == "withdraw"]
+        self.assertEqual(calls, [{"item_id": "iron_ore", "quantity": 40, "target": "self", "source": "faction"}], out)
+        self.assertEqual((world["cargo"].get("iron_ore"), world["faction"]["iron_ore"]), (40, 4960), out)
+
+    def test_a_refused_faction_withdraw_is_noted_and_nothing_moves(self):
+        route = {"id": "made-up", "kind": "circuit", "title": "t",
+                 "stops": [{"at": "wild:outpost:base", "withdraw": [{"item": "iron_ore", "from": "faction", "qty": 40}]}]}
+        log, world, row, out = fly(route, {"faction": {"iron_ore": 5000}, "no_permission": True})
+        self.assertEqual(world["faction"]["iron_ore"], 5000)
+        self.assertTrue(any("faction withdraw" in str(n) for n in row.get("notes") or []), (row, out))
+
+
 # The whole runner on a made-up route, its module level run as it stands: `call` (the only way to the engine) is taken
 # out and a fake gate answers instead, DATA is a temporary folder, the clock is counted, not waited, and no program is
 # started. The fake keeps a wallet, a hold, a storage, a book and the workshop's jobs: a job delivers into storage after
@@ -454,9 +482,15 @@ def call(method, path, body=None, timeout=900):
         WORLD["fuel"] = min(WORLD["max_fuel"], WORLD["fuel"] + 20 * n)   # a cell burnt into less room loses the rest
         return 200, {}
     if action == "view" and params.get("target") == "faction":
-        return 200, {"structuredContent": {"faction_fuel_reserve": WORLD.get("reserve", 0), "faction_fuel_capacity": 50000, "items": []}}
+        return 200, {"structuredContent": {"faction_fuel_reserve": WORLD.get("reserve", 0), "faction_fuel_capacity": 50000,
+                                           "items": items("faction") if WORLD.get("faction") else []}}
     if action == "deposit":
         move("cargo", "storage", params["item_id"], params["quantity"])
+    if action == "withdraw" and params.get("source") == "faction":     # faction storage -> hold (an officer's manage_treasury)
+        if WORLD.get("no_permission"):
+            return 200, {"error": {"code": "no_permission", "message": "manage_treasury required"}}
+        move("faction", "cargo", params["item_id"], params["quantity"])
+        return 200, {}
     if action == "withdraw":
         move("storage", "cargo", params["item_id"], params["quantity"])
     if action == "view":

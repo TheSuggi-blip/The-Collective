@@ -23,7 +23,9 @@ which pilot flies it, and where a pilot is, stays in the unit's data folder:
               "bunker": {"keep": N},          an outpost of ours: the cells aboard burnt into the tank and the tank above
                                               N deposited into the faction's fuel reserve here, until no cell is left
               "withdraw": [{"item": "...", "qty": N}],   personal storage here -> hold, at most qty and the free
-                                              hold; when the stop sells the item too, at most what its bid takes
+                                              hold; when the stop sells the item too, at most what its bid takes;
+                                              with "from": "faction" (and "keep": N) the faction's storage here
+                                              -> hold, leaving N there: needs a faction role with manage_treasury
               "sell":   [{"item": "...", "min_price": N}],
               "buy":    [{"item": "...", "qty": N, "max_price": N, "one_time": true}],   max_price: the most a unit may cost, tax included
                                               qty = units wanted in the hold; one_time: goods for a
@@ -348,6 +350,26 @@ def withdraw_units(want, stored, free, sell, row, aboard, size=1):
             return 0
         units = min(units, int(depth or 0) - int(aboard or 0))
     return max(units, 0)
+
+
+def faction_withdraw_units(want, held, free, size=1):
+    """Units a `withdraw` entry with "from": "faction" takes from the faction's storage here into the hold: at most what
+    the faction holds above the entry's `keep` (default 0), what the free hold takes at the item's `size` and its `qty`.
+    Only a pilot whose faction role carries manage_treasury may (game/rules/09-factions.md, row Treasury, storage)."""
+    above = int(held or 0) - int(want.get('keep') or 0)
+    units = min(above, max(int(free or 0), 0) // max(int(size or 1), 1), int(want.get('qty') or 10 ** 9))
+    return max(units, 0)
+
+
+def faction_stored(base):
+    """{item_id: units} of the faction's storage at the station or outpost where the pilot is docked."""
+    d = raw('view', {'target': 'faction', 'station_id': base}, group='spacemolt_storage')
+    sc = body(d) or (body(d['result']) if isinstance(d.get('result'), dict) else {})
+    items = sc.get('items') or []
+    for i in items or []:
+        if isinstance(i, dict) and i.get('item_id') and i.get('size'):
+            SIZES[i['item_id']] = int(i.get('size') or 1)
+    return {i.get('item_id'): int(i.get('quantity') or 0) for i in items or [] if isinstance(i, dict) and i.get('item_id')}
 
 
 SIZES = {}                   # item -> units of hold space a piece, as the storage view names it (`size`)
@@ -833,6 +855,20 @@ for n, stop in enumerate(ROUTE['stops']):
             notes.append('bunker: deposit refused')
     book, board = save_station(base, system)
     for want in stop.get('withdraw') or []:              # own storage -> hold: sold here into the bid, or carried on
+        if want.get('from') == 'faction':                # the faction's storage here -> hold (orders ENT-083: the outpost's iron)
+            held = faction_stored(base).get(want['item'], 0)
+            units = faction_withdraw_units(want, held, room(), SIZES.get(want['item'], 1))
+            if units:
+                d = raw('withdraw', {'item_id': want['item'], 'quantity': units, 'target': 'self', 'source': 'faction'}, group='spacemolt_storage')
+                time.sleep(11)
+                if 'error' in d:
+                    say(f'faction withdraw {units} {want["item"]}: refused: {str(d.get("error"))[:120]}')
+                    notes.append(f'faction withdraw {want["item"]}: refused')
+                else:
+                    say(f'withdrew {units} {want["item"]} from the faction storage here ({held} held, keep {want.get("keep") or 0})')
+            else:
+                say(f'faction withdraw {want["item"]}: nothing to take ({held} held, keep {want.get("keep") or 0}, or no room)')
+            continue
         sale = next((s for s in stop.get('sell') or [] if s.get('item') == want['item']), None)
         here = stored(base)
         units = withdraw_units(want, here.get(want['item'], 0), room(), sale, book.get(want['item']) or {}, cargo().get(want['item'], 0),
