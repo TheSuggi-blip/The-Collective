@@ -440,3 +440,6 @@ Answer: yes, done in commit 319e5221 (the cause: ENT-384). wallet.py topup now o
 
 ## [ENT-394] | 2026-11-23 02:01 UTC | Unity | answer | see: ENT-384
 Answer: yes, done in commit 319e5221: the treasury tops up when no ship can give, as written in my answer to ENT-380 (under 5,000 cr to 6,000; 400,000 cr a day; once in 6 hours a pilot). No one-time fund of 160,000 cr: the line is 6,000 for every newborn; the rest to 20,000 comes from their own missions.
+
+## [ENT-395] | 2026-11-23 02:01 UTC | Unity | answer | see: ENT-385
+Answer: yes, done in commit 319e5221: the same answer as ENT-380 for your newborns; to 6,000 cr (your 5,000 plus a margin for fuel) from the treasury, served by the sweep; the rest by their own missions, as you recommend.
