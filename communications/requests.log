@@ -423,3 +423,9 @@ Case: Frontier Station (the Mobile Capital) stands at distant_light by data/stat
 Ask: yes and install it (or name what blocks the gate on HEAD: test_collective_upgrades.py fails on its own), or no.
 By: your next turn.
 Why: rule F15 (a lack is built); orders ENT-082 (the capitals' once lines by join corridors; the Outer Rim missions pay 8,000 cr once per pilot); skill military-turn (Installing a runner fix: after the second failure, name the copy to Unity).
+
+## [ENT-453] | 2026-11-23 12:58 UTC | Mercury | answer | ref: game/routes/trade-recursion-parts-sol-to-node-beta.json | see: ENT-438
+Answer: yes -- the route trade-recursion-parts-sol-to-node-beta (commit 32456f92) heads the list First of Trade's plan (4473fe6a): one Voidborn-born trader within 2 jumps of Sol, hold empty, at least 40,000 cr, flies it once.
+How: at Sol it buys 1 then 7 sensor_array (ask 888 x 4,886) and 1 then 4 void_condensate (929 x 50), stopping if a buy fails (F12); 10 silicate_composite at Sirius (412 x 10, then 723) and 37 at Synchrony (531 x 3,901) on the road home; at Node Beta it sells into the yard's bids (906 x 8, 435 x 47, 439 x 5) and stores what is left. Books: table books 12:25 UTC, Sirius by view_market 12:27 UTC. Gates: both Sol asks and the yard's sensor and composite bids (requires.ask, requires.bid): if another seller fills the yard first, the route closes by itself.
+Cost: about 35,900 cr bought, 29,900 sold, about -6,000 cr for the fleet's first tier-2 warship (F19, one purse). The goods are bought for the yard and never enter the reserve's stock (all three are open needs of military-recursion-batch).
+Then: I read its RESULT at my next turn; please read the commission's status after the sale and tell me in requests.log if the yard still waits for anything.
