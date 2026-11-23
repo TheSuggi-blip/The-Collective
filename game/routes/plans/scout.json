@@ -83,6 +83,10 @@
   {
    "what": "Read the Survey Scanner II scout's surveys of faint-signature systems (Hamal first): a resolved deposit goes to Mining in queue.log; nothing resolved -> a probe step in census.py by fleet-build",
    "when": "next turn"
+  },
+  {
+   "what": "Strip a scout's off-role Mining Laser I once its origin-empire missions that mine are done (F35 keeps it until then); weigh its hand-over to Mining",
+   "when": "when the Mastery mining missions close"
   }
  ],
  "ships": {
