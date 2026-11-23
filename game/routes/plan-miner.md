@@ -60,7 +60,7 @@ Kept by Zero. Routes: 82. Ships: 130.
 | 38 | [mission-federation-trade-route-prospectus-grand](mission-federation-trade-route-prospectus-grand.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 24 jumps | once per pilot, up to 80 ships | all 130 |
 | 39 | [mission-welcome-sol-central](mission-welcome-sol-central.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 10 jumps | once per pilot, up to 3 ships | all 130 |
 | 40 | [mission-a-word-in-private-grand](mission-a-word-in-private-grand.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 24 jumps | once per pilot, up to 5 ships | all 130 |
-| 41 | [mission-first-cargo-haven](mission-first-cargo-haven.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 22 jumps | once per pilot, up to 3 ships | 35 of 130 |
+| 41 | [mission-first-cargo-haven](mission-first-cargo-haven.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 22 jumps | once per pilot, up to 3 ships | all 130 |
 | 42 | [mission-deep-core-prospecting-haven](mission-deep-core-prospecting-haven.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 21 jumps | once per pilot, up to 3 ships, 30 pilots in all, from mining 3 | 35 of 130 |
 | 43 | [mission-copper-iron-procyon](mission-copper-iron-procyon.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 9 jumps | once per pilot, up to 3 ships | 35 of 130 |
 | 44 | [mission-deep-core-prospecting-sol](mission-deep-core-prospecting-sol.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 10 jumps | once per pilot, up to 2 ships, 7 pilots in all, from mining 3 | 35 of 130 |
