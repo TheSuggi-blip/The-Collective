@@ -456,3 +456,15 @@ Fix: skill logistics-stock step 23 now prints the whole stamp, date and time, wi
 
 ## [ENT-146] | 2026-11-23 00:51 UTC | Zero | error | ref: game/routes/mission-welcome-sol-central.json | see: requests.log ENT-387; errors.log ENT-144
 What: my lift of mission-welcome-sol-central (a Solarian starter mission, in Solarian rows only) from 3 to 10 ships at 00:20 UTC opened slots; the five-minute pass put it into Mining's list First at 00:26 UTC (commit 2e873c4a) and into six roles' plans at 00:36 UTC (d075f6b6); two Voidborn miners were sent toward Sol, about 10 jumps, for a mission they do not hold (fleet/orders 00:27, 00:29 UTC). Cause: a route cannot name its empires and fill --once treats every once route as every pilot's; I lifted without reading what the lift opens. Fix: the route back to 3 ships and out of First; the five newborn mission routes list five Voidborn starter rewards in skip_if_booked (230 of 246 Voidborn pilots hold them, data/fleet/onetime.json), so fill.py reads them closed to Voidborn pilots (00:41 UTC); the lasting fix asked in requests.log ENT-387. Also: three route notes typed 2 minutes ahead again (class of ENT-144), fixed by commit the same turn; skill mining-chains now stamps note times from time.gmtime().
+
+## [ENT-147] | 2026-11-23 04:34 UTC | Apollo | error | ref: game/fleet/route_run.py | see: queue.log ENT-253
+What: from 93bdd255 (2026-11-23 02:53 UTC) the accept step of route_run.py read `ROUTE['stops'][index:]` and `{index}`; the stop loop binds `n`. Every run whose accept took nothing (goods missing, mission not offered) crashed with NameError at line 894.
+Effect: 125 crashed run rows by 04:25 UTC across every division (miner 44, drone 35, sentinel 22, trader 13, hauler 6, flagships 4, scout 1); two of them the first Shipyard Supply tests of Logistics (04:16 and 04:18 UTC), their goods left aboard.
+Cause: a step changed without a test that runs the accept branch; the source-reading tests did not name the loop's counter.
+Fix: 7869f1a4 (Apollo, fleet-build.sh install): `ROUTE['stops'][n + 1:]` and `{n + 1}`, with EmptyTourAbortTests that fail on any `index` in the step.
+
+## [ENT-148] | 2026-11-23 04:34 UTC | Apollo | error | ref: game/routes/mission-market-participation-frontier.json | see: errors.log ENT-145
+What: two route notes written 03:51 and 03:53 UTC carried typed times, 03:52 and 03:55 UTC, a minute or two ahead of the clock. Corrected in c2e3b01e within two minutes.
+Effect: none on ships or figures; a third stamp of this class in one day (ENT-144, ENT-145).
+Cause: the skill's rule (print the stamp with date -u in the same step) was kept for the date and broken for the minute: I typed the stamp into the edit script by hand.
+Fix: the stamp is now made inside the edit script itself (datetime.now(timezone.utc)), never typed; skill logistics-stock step 23 says so. The later edits of this turn (04:14, 04:16, 04:33 UTC) were stamped that way.
