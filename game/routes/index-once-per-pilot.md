@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 67.
+Routes: 68.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -43,6 +43,7 @@ Routes: 67.
 | [go-ironlight-trader](go-ironlight-trader.json) | circuit | beyond the border, 6 jumps | One trader docks at Ironlight Crossroads with an empty hold, for the freighter test: a Prayer (540 cargo, speed 3) bought there by hand | once per pilot, up to 1 ships, 1 pilots in all, empty hold, from 20,000 cr | 1 | 8 | -10 | one-time | 2026-11-21 |
 | [mission-a-word-in-private-grand](mission-a-word-in-private-grand.json) | circuit | beyond the border, 24 jumps | A Word in Private: 500 cr, +165 XP at Grand Exchange | once per pilot, up to 5 ships | 2 | 10 | 380 | one-time | 2026-11-22 |
 | [mission-confederacy-infrastructure-audit-confederacy](mission-confederacy-infrastructure-audit-confederacy.json) | circuit | beyond the border, 11 jumps | Confederacy Infrastructure Audit: 4000 cr, +500 XP at Sol Central | once per pilot, up to 50 ships | 43 | 38 | 3,350 | one-time | 2026-11-22 |
+| [mission-copper-iron-procyon](mission-copper-iron-procyon.json) | circuit | beyond the border, 9 jumps | Copper Requisition and Iron Supply Run: 3,300 cr once; accept at Procyon Colonial Station, mine at Nihal Containment Fracture (one jump), hand in at Procyon | once per pilot, up to 3 ships | TBD | TBD | TBD | TBD | -- |
 | [mission-cracking-the-shell-achernar](mission-cracking-the-shell-achernar.json) | circuit | beyond the border, 4 jumps | Cracking the Shell: 1,500 cr once; three pressblisters at Achernar Frost Ring (lawless), accepted and handed in at Central Nexus | once per pilot, up to 1 ships, empty hold, after the reward First Hunt: Belt-Grazers | 32 | 19 | -230 | one-time | 2026-11-22 |
 | [mission-cracking-the-shell-central](mission-cracking-the-shell-central.json) | circuit | beyond the border, 7 jumps | Cracking the Shell: 1,500 cr once; three pressblisters at Intercrus Ice Fields, accepted and handed in at Central Nexus | once per pilot, up to 1 ships, empty hold, after the reward First Hunt: Belt-Grazers | 61 | 14 | 20 | one-time | 2026-11-22 |
 | [mission-cracking-the-shell-krynn](mission-cracking-the-shell-krynn.json) | circuit | beyond the border, 21 jumps | Cracking the Shell: 1,500 cr once; three pressblister at ironhearth_ice_ring, accepted and handed in at War Citadel | once per pilot, up to 1 ships, empty hold, after the reward First Hunt: Belt-Grazers | TBD | TBD | TBD | TBD | -- |
