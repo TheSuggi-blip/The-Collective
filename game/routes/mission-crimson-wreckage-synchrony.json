@@ -29,5 +29,12 @@
  ],
  "skip_if_booked": [
   "Crimson Wreckage"
- ]
+ ],
+ "measured": {
+  "date": "2026-11-23",
+  "runs": 1,
+  "minutes": 3,
+  "credits_per_run": -80,
+  "cph_per_ship": -1420
+ }
 }

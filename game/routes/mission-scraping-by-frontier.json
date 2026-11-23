@@ -38,5 +38,12 @@
    "at": "altais:mobile_capital:frontier_station",
    "store": "all"
   }
- ]
+ ],
+ "measured": {
+  "date": "2026-11-23",
+  "runs": 1,
+  "minutes": 18,
+  "credits_per_run": 770,
+  "cph_per_ship": 2550
+ }
 }

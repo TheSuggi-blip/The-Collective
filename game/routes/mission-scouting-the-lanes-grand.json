@@ -35,5 +35,12 @@
    ]
   }
  ],
- "status": "off"
+ "status": "off",
+ "measured": {
+  "date": "2026-11-23",
+  "runs": 3,
+  "minutes": 3,
+  "credits_per_run": -100,
+  "cph_per_ship": -1950
+ }
 }

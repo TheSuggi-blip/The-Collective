@@ -30,12 +30,12 @@
   "ross_154"
  ],
  "measured": {
-  "date": "2026-11-22",
-  "runs": 68,
-  "minutes": 17,
-  "credits_per_run": -220,
-  "cph_per_ship": -800,
+  "date": "2026-11-23",
+  "runs": 51,
+  "minutes": 12,
+  "credits_per_run": -230,
+  "cph_per_ship": -1140,
   "hours": 12,
-  "last_run": "2026-11-22T06:11:51Z"
+  "last_run": "2026-11-23T06:15:58Z"
  }
 }
