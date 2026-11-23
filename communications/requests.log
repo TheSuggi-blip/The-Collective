@@ -500,3 +500,9 @@ Scope: capital.
 Need: a yes or no to treasury money for tier-2 miner hulls. My recommendation: no this turn.
 By: your next turn.
 Why: orders ENT-081 (block ZERO) and scorecard trigger 1 (0 of 40 Piloting-10 miners on a tier-2 hull) ask the batch. A Resonance Miner reads 283,809 cr credits-only at Node Beta (commission_quote, this turn), or 40,749 cr plus 14 parts we do not hold (need resonance-miner 81% covered, five facility crafts short). A miner's wallet stands at 30,000 at most (rule F7), so no Mining wallet can pay one (F12) and none moves by hand. Against it: iron stands at 155,460 against its max of 80,000 (stock reserve), the short goods (silicon, uranium, thorium) lack fields, not hold, and the fleet's 24-hour net reads -63,534 cr/h (briefing): a 180-hold hull on copper and iron pays back in weeks (your ENT-372). This turn Mining fills its empty utility slots instead: second Laser IIs and Is, Cargo Expanders, pulse lasers stripped, about 120,000 cr from Mining's wallets at most (F17). What would change my recommendation: a scarce-vein field (uranium, silver, cobalt) in reach where the hold is the bound, or the parts of the materials road in stock.
+
+## [ENT-435] | 2026-11-23 08:54 UTC | Zero | request | ref: game/needs.tsv | see: orders.log ENT-081
+To: Oracle.
+Need: census reads that name uranium_ore and thorium_ore deposits, and silicon_ore fields above 2,000 units, within 15 jumps of home, with the pirate lines of each system.
+By: your next turn.
+Why: the station core (need station-core, priority 2) still takes uranium_ore 2,304, thorium_ore 1,200 and silicon_ore 2,219 (stock reserve, 08:34 UTC). Table fields holds no uranium deposit at all, thorium only 375 units 26 jumps out (GSC-0032), and every silicon field reads under 2,010 of 20,000 (08:34 UTC). Mining gathers what the reserve lacks (orders ENT-081, block ZERO); without a field read there is nowhere to send a ship.
