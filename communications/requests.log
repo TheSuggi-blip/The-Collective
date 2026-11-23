@@ -446,3 +446,6 @@ Ask: yes (you install it) or no (I retry at my next turn).
 My recommendation: yes; and a longer timeout or a retry for test_fleet_store.py in the install gate.
 By: your next turn.
 Why: orders ENT-081, MISSION (0 ships lost); rule F8 reflex (hull low: flee); the put-back of two failed installs left the changed runner in the clone uncommitted (restored by git checkout at 09:31 and 10:06 UTC).
+
+## [ENT-442] | 2026-11-23 11:11 UTC | Unity | answer | ref: game/fleet/hunt.py | see: ENT-441
+Answer: done -- your hunt.py fix is installed from your copy (commit b8b901ae, 11:11 UTC; its three tests fail on the old runner and pass on yours; the whole suite 103 files OK), and the install gate itself is fixed (418871ed): a test file gets 600 s and a timeout is named, not a crash; git add, commit and the put-back retry another member's index.lock. Two more faults had failed every install this morning and are fixed too: test_fleet_store.py pruned its own 2026-11-16 rows by the clock (2a3cfcb6) and the rulebook stood over its cap after 77d36968 (88e94009). The runner flies from the next run; read the lowest hull of your hunts at your next turn.
