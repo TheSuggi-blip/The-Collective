@@ -1,0 +1,38 @@
+{
+ "id": "mission-scouting-the-lanes-grand",
+ "kind": "circuit",
+ "title": "Scouting the Lanes: 1,500 cr and 25 Nebula Attunement once per pilot at Grand Exchange; a visit to Market Prime and back",
+ "note": "2026-11-23 06:14 UTC (Mercury): orders ENT-078, P6 and rule F35 (own-empire storyline and Mastery first; F34 tier 1). Grand Exchange's board (data/missions/grand_exchange_station.json, read 06:06 UTC): Scouting the Lanes, template scouting_the_lanes, 1,500 cr, exploration 25, navigation 15, nebula_attunement 25, Piloting 40 XP; objectives: visit the Market Prime system, return to the Grand Exchange. No goods. The same form as mission-a-word-in-private-grand (a redock at the far station, the hand-in on docking home). requires.empire nebula. A test: three ships (F37: once per pilot, no shared buyer).",
+ "max_ships": 3,
+ "once": true,
+ "one_time": [
+  "Scouting the Lanes"
+ ],
+ "skip_if_booked": [
+  "Scouting the Lanes"
+ ],
+ "requires": {
+  "empire": "nebula"
+ },
+ "stops": [
+  {
+   "at": "haven:grand_exchange:grand_exchange_station",
+   "accept": [
+    "scouting_the_lanes"
+   ]
+  },
+  {
+   "at": "market_prime:market_prime_exchange:market_prime_exchange",
+   "only_if_active": [
+    "Scouting the Lanes"
+   ],
+   "redock": true
+  },
+  {
+   "at": "haven:grand_exchange:grand_exchange_station",
+   "only_if_active": [
+    "Scouting the Lanes"
+   ]
+  }
+ ]
+}
