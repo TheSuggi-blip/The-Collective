@@ -2200,6 +2200,15 @@ def api_ops():
         }
     except OSError:
         out["game_version"] = {"live": "", "catalog": "", "latest_patch": "", "in_sync": False}
+    try:
+        import sys as _sys
+        _fl_dir = str(REPO / "game" / "fleet")
+        if _fl_dir not in _sys.path:
+            _sys.path.insert(0, _fl_dir)
+        import scorecard as _sc
+        out["scorecard"] = _sc.compute_scorecard(str(REPO), str(FLEET.parent), now=now)
+    except Exception:
+        out["scorecard"] = None
     OPS["at"], OPS["value"] = now, out
     return out
 

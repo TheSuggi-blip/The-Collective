@@ -1396,6 +1396,7 @@ def show_briefing(root, data, now, who, hours):
     __import__("guidebook").briefing(root, data, now, who)           # Suggi, 2026-11-18: the own class card, and what stands over its cap
     __import__("needs").briefing(root, data, now, who)               # Suggi, 2026-11-21: the division's open needs, how many are red
     show_eyes(data, who)
+    __import__("scorecard").briefing(root, data, now, who)          # Suggi, 2026-11-23: <80% completion triggers, cashflow trend & stagnation
     print("=== THE FLEET'S MONEY")
     show_fleet(root, data, now)
     print("=== MY STANDING FLEET")
@@ -1675,6 +1676,10 @@ def main():
     if verb == "briefing":
         _kind, me = division.member()
         return show_briefing(root, data, now, rest[0] if rest else (me if me in division.MEMBERS else "all"), float(value("--hours", str(TURN))))
+    if verb == "scorecard":
+        _kind, me = division.member()
+        __import__("scorecard").briefing(root, data, now, rest[0] if rest else (me if me in division.MEMBERS else "all"))
+        return 0
     if verb == "store":
         return show_store(data, now, float(value("--hours", "24")), rest)
     if verb == "empire":

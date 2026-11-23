@@ -32,7 +32,7 @@ CONTRACT_HINTS = (
 
 def _load_neutral_tags(data_dir):
     tags = {}
-    p = Path(data_dir) / "fleet" / "diplomacy.json"
+    p = Path(data_dir) / "comms" / "diplomacy.json"
     if not p.is_file():
         return tags
     try:

@@ -31,7 +31,7 @@ DATA_DEFAULT = "/srv/collective/data"
 
 def load_neutral_tags(data_dir):
     tags = {}
-    p = Path(data_dir) / "fleet" / "diplomacy.json"
+    p = Path(data_dir) / "comms" / "diplomacy.json"
     if not p.is_file():
         return tags
     try:
@@ -119,27 +119,34 @@ def format_list(body, neutral_tags, limit=25):
         return "\n".join(lines)
 
     ranked = []
-    for sh in shipments:
+    for raw_sh in shipments:
+        sh = raw_sh.get("contract") if isinstance(raw_sh, dict) and isinstance(raw_sh.get("contract"), dict) else raw_sh
+        if not isinstance(sh, dict):
+            continue
         blob = json.dumps(sh, sort_keys=True).lower()
         ptag = None
         for tag, name in neutral_tags.items():
             if f"[{tag.lower()}]" in blob or name.lower() in blob or str(sh.get("shipper_tag") or "").upper() == tag:
                 ptag = tag
                 break
-        reward = float(sh.get("reward") or sh.get("payout") or sh.get("fee") or 0)
-        ranked.append((0 if ptag else 1, -reward, ptag, sh))
+        reward = float(sh.get("base_reward") or sh.get("reward_escrow") or sh.get("reward") or sh.get("payout") or sh.get("fee") or 0)
+        ranked.append((0 if ptag else 1, -reward, ptag, sh, raw_sh if isinstance(raw_sh, dict) else {}))
     ranked.sort(key=lambda x: (x[0], x[1]))
 
-    for _, _, ptag, sh in ranked[:limit]:
-        cid = str(sh.get("id") or sh.get("contract_id") or "?")[:14]
-        orig = str(sh.get("origin_name") or sh.get("origin") or sh.get("pickup_station") or "?")
-        dest = str(sh.get("destination_name") or sh.get("destination") or sh.get("delivery_station") or "?")
-        rew = int(round(float(sh.get("reward") or sh.get("payout") or sh.get("fee") or 0)))
-        col = int(round(float(sh.get("collateral") or sh.get("liability") or 0)))
-        vol = sh.get("volume") or sh.get("cargo_size") or sh.get("units") or "?"
+    for _, _, ptag, sh, wrap in ranked[:limit]:
+        cid = str(sh.get("id") or sh.get("contract_id") or "?")[:12]
+        shipper = sh.get("shipper") if isinstance(sh.get("shipper"), dict) else {}
+        recip = sh.get("recipient") if isinstance(sh.get("recipient"), dict) else {}
+        orig = str(shipper.get("name") or sh.get("origin_name") or sh.get("origin_base_id") or sh.get("origin") or "?")
+        dest = str(recip.get("name") or sh.get("destination_name") or sh.get("destination_base_id") or sh.get("destination") or "?")
+        rew = int(round(float(sh.get("base_reward") or sh.get("reward_escrow") or sh.get("reward") or sh.get("payout") or 0)))
+        exp = int(round(float(sh.get("reserved_exposure") or sh.get("appraised_value") or sh.get("collateral") or sh.get("liability") or 0)))
+        hops = sh.get("route_hops")
+        hop_s = f"{hops}j" if hops is not None else f"vol={sh.get('volume') or '?'}"
         vis = str(sh.get("visibility") or "public")
+        elig = "" if wrap.get("eligible", True) else " [INELIG]"
         prefix = f"[PARTNER:{ptag}] " if ptag else ""
-        lines.append(f"  {prefix}{cid:14s} | {rew:>8,d} cr (col {col:,d}) | vol={vol} | {vis:7s} | {orig} -> {dest}")
+        lines.append(f"  {prefix}{cid:12s} | {rew:>8,d} cr (exp {exp:,d}) | {hop_s:>4s} | {vis:7s}{elig} | {orig} -> {dest}")
     return "\n".join(lines)
 
 

@@ -793,3 +793,16 @@ button.member:hover .face-medallion { border-color: var(--c, var(--accent)); box
 .station-drawer { border-color: rgba(111, 168, 220, 0.55); background: rgba(17, 23, 34, 0.94); margin-top: 8px; }
 .mission-card .progcell { margin: 4px 0 6px; }
 .obj-done { color: var(--good); opacity: 0.85; }
+
+/* ---- 2026-11-23: Enterprise Momentum & Division KPI Scorecard Triggers */
+.sc-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+.sc-head h3 { margin: 0; }
+.sc-drag { color: var(--warn); margin-top: 4px; }
+.sc-stcell { display: flex; align-items: center; gap: 4px; flex-wrap: nowrap; }
+.sc-kpicell { display: flex; flex-direction: column; gap: 2px; white-space: normal; min-width: 190px; }
+.sc-kpi-val { font-size: 11.5px; color: var(--text); line-height: 1.3; }
+.sc-trig-cell { font-size: 10.5px; color: var(--dim); line-height: 1.3; }
+.sc-trig-list { display: flex; flex-direction: column; gap: 5px; margin: 8px 0 12px; }
+.sc-trig { background: rgba(12, 16, 24, 0.78); border: 1px solid var(--line); border-radius: var(--r); padding: 6px 9px; font-size: 11.5px; line-height: 1.45; }
+.sc-trig .pill { margin-right: 7px; }
+.sc-trig .sc-act { color: var(--dim); }

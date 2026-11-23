@@ -3872,6 +3872,131 @@ async function renderMetrics(panel, live) {
   const ops = await opsOf();
   if (!live()) return;
   if (ops) {
+    const sc = ops.scorecard || null;
+    if (sc && sc.enterprise) {
+      const se = sc.enterprise;
+      const vMap = {
+        COMPOUNDING: ['good', 'COMPOUNDING'],
+        GROWING_WITH_DRAG: ['warn', 'GROWING WITH DRAG'],
+        SLOWING: ['bad', 'SLOWING'],
+        STAGNATING: ['bad', 'STAGNATING'],
+      };
+      const [vCls, vLbl] = vMap[se.verdict] || ['warn', se.verdict || 'UNKNOWN'];
+      const scHead = el('div', 'sc-head');
+      scHead.append(
+        el('h3', null, 'Enterprise momentum & stagnation watch'),
+        el('span', 'pill ' + vCls, vLbl)
+      );
+      panel.append(scHead);
+
+      const sgrid = el('div', 'kpis');
+      const skpi = (k, v, sub, cls) => {
+        const d = el('div', 'kpi' + (cls ? ' ' + cls : ''));
+        d.append(el('div', 'k', k), el('div', 'v', v));
+        if (sub) d.append(el('div', 's', sub));
+        sgrid.append(d);
+      };
+      const cfSignCls = se.steady_24h > 0 ? 'pos' : (se.cashflow_trend_24h === 'IMPROVING' ? 'warn' : 'neg');
+      skpi(
+        'Steady cashflow (' + se.cashflow_sign + ')',
+        signed(Math.round(se.steady_24h || 0)) + ' cr/h',
+        '24h ' + se.cashflow_trend_24h + ' | 6h ' + signed(Math.round(se.steady_6h || 0)) + '/h (' + se.cashflow_trend_6h + ')',
+        cfSignCls
+      );
+      const effCls = (se.productive_pct || 0) >= 80 ? 'pos' : (se.productive_pct || 0) >= 60 ? 'warn' : 'neg';
+      skpi(
+        'Fleet efficiency & idle',
+        (se.productive_pct || 0).toFixed(1) + '% productive',
+        'working ' + fmt(se.working_ships) + '/' + fmt(se.total_ships) + ' (' + (se.effective_employment_pct || 0).toFixed(1) + '% eff) | jumps ' + (se.jump_loop_pct || 0).toFixed(1) + '%',
+        effCls
+      );
+      const upgCls = (se.hull_eligible_pct || 0) >= 80 && (se.slot_fit_pct || 0) >= 80 ? 'pos' : 'neg';
+      skpi(
+        'Upgrades (<80% target)',
+        (se.hull_eligible_pct || 0).toFixed(0) + '% P10+ hulls | ' + (se.slot_fit_pct || 0).toFixed(0) + '% slots',
+        se.upgraded_eligible + '/' + se.eligible_p10 + ' P10+ on T2+' + (se.p10_delta_6h ? ' (+' + se.p10_delta_6h + ' P10+ in ' + (se.dt_h || 6).toFixed(0) + 'h)' : '') + ' | ' + fmt(se.off_role_ships) + ' off-role',
+        upgCls
+      );
+      const pDeltaTxt = se.purse_delta_6h !== null && se.purse_delta_6h !== undefined
+        ? '6h purse ' + signed(se.purse_delta_6h) + ' cr | '
+        : '';
+      skpi(
+        'Milestone & roadmap velocity',
+        (se.roadmap_avg_pct || 0).toFixed(1) + '% (' + (se.milestones_done || 0) + '/' + (se.milestones_total || 0) + ' rungs)',
+        pDeltaTxt + (se.latest_milestone ? 'latest: ' + se.latest_milestone.slice(0, 44) : 'open requests: ' + fmt(se.open_requests)),
+        (se.roadmap_avg_pct || 0) >= 60 ? 'pos' : 'warn'
+      );
+      panel.append(sgrid);
+
+      if ((se.drags || []).length) {
+        panel.append(el('p', 'sub sc-drag', 'Active drags: ' + se.drags.join(' | ')));
+      }
+
+      panel.append(el('h3', null, 'Division KPI scorecards & alert triggers (<80% targets)'));
+      const divList = ['Command', 'Mining', 'Trade', 'Logistics', 'Military', 'Intel'];
+      const sevCls = (s) => (s === 'OK' ? 'good' : s === 'WARN' ? 'warn' : 'bad');
+      const trendPill = (tr) => {
+        const cls = tr === 'IMPROVING' ? 'good' : tr === 'WORSENING' ? 'bad' : '';
+        const lbl = tr === 'IMPROVING' ? 'UP' : tr === 'WORSENING' ? 'DOWN' : 'FLAT';
+        return el('span', 'pill' + (cls ? ' ' + cls : ''), lbl);
+      };
+      const gaugeCell = (pct, sub, st) => {
+        const c = el('div', 'progcell');
+        c.append(el('span', null, sub), pbar(Math.min(100, Math.max(0, pct || 0)), 100, sevCls(st)));
+        return c;
+      };
+      const rows = divList.filter((dn) => sc.divisions && sc.divisions[dn]).map((dn) => {
+        const d = sc.divisions[dn];
+        const nm = el('span', null, dn);
+        nm.style.color = DIV[dn] || DIV.Unassigned;
+        nm.title = 'Admiral ' + d.admiral;
+        const stCell = el('div', 'sc-stcell');
+        stCell.append(el('span', 'pill ' + sevCls(d.status), d.status), trendPill(d.trend_24h));
+        const empSub = d.employment.effective_working + '/' + d.employment.total + ' (' + d.employment.pct.toFixed(0) + '%)';
+        const hullSub = d.hulls.mode === 'eligible_t2'
+          ? d.hulls.upgraded_eligible + '/' + d.hulls.eligible_p10 + ' (' + d.hulls.pct.toFixed(0) + '%)'
+          : 'P' + d.hulls.max_piloting + ' (' + d.hulls.pct.toFixed(0) + '%*)';
+        const modSub = d.modules.slot_pct.toFixed(0) + '% (' + d.modules.t2_mod_ships + ' T2+)';
+        const topT = (d.triggers && d.triggers.length)
+          ? 'Trigger: ' + d.triggers[0].metric + ' -- ' + d.triggers[0].actual
+          : 'All >=80% targets met';
+        const kpiCell = el('div', 'sc-kpicell');
+        kpiCell.append(
+          el('div', 'sc-kpi-val', (d.role_kpi && d.role_kpi.value) || '--'),
+          el('div', 'sc-trig-cell', topT)
+        );
+        return [
+          nm,
+          stCell,
+          gaugeCell(d.employment.pct, empSub, d.employment.status),
+          gaugeCell(d.hulls.pct, hullSub, d.hulls.status),
+          gaugeCell(d.modules.slot_pct, modSub, d.modules.status),
+          tint(Math.round(d.cashflow_24h || 0)),
+          kpiCell,
+        ];
+      });
+      panel.append(fitTable(
+        table(['Division', 'State / 24h', 'Working', 'Hulls', 'Slots', 'Net / h', 'Role KPI & Top Trigger'], rows, [5])
+      ));
+      panel.append(el('p', 'sub', '* = 0 pilots at Piloting 10+ yet (bar tracks avg Piloting progress toward T2 unlock). Triggers fire WARN <80% and ALARM <60%, mirrored in every Admiral\'s startup briefing (`hive.py briefing`).'));
+
+      // Compact actionable enterprise trigger cards
+      const activeT = (se.triggers || []).slice(0, 6);
+      if (activeT.length) {
+        const tbox = el('div', 'sc-trig-list');
+        for (const tr of activeT) {
+          const row = el('div', 'sc-trig');
+          row.append(
+            el('span', 'pill ' + sevCls(tr.severity), tr.severity),
+            el('b', null, tr.metric + ': '),
+            el('span', null, tr.actual + ' (target ' + tr.target + ') -- '),
+            el('span', 'sc-act', tr.action)
+          );
+          tbox.append(row);
+        }
+        panel.append(tbox);
+      }
+    }
     panel.append(el('h3', null, 'Fleet readiness & bottlenecks'));
     const rgrid = el('div', 'kpis');
     const rkpi = (k, v, sub, cls) => { const b = el('div', 'kpi' + (cls ? ' ' + cls : '')); b.append(el('div', 'k', k), el('div', 'v', v)); if (sub) b.append(el('div', 's', sub)); rgrid.append(b); };
