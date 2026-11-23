@@ -1,0 +1,75 @@
+{
+ "id": "craft-steel-logistics-ramens-rest",
+ "kind": "circuit",
+ "title": "Steel plate smelted by hand at Ramen's Rest from all of the pilot's own stored iron ore in one visit, kept in its storage there for the reserve (Logistics' haulers)",
+ "note": "Written by Apollo, 2026-11-23 05:37 UTC (orders.log ENT-076, block APOLLO: the empty jump loop capped at eight, the others to cargo and docked work; P2: steel_plate SHORT 67,527 in the tool stock, view=reserve, 05:35 UTC). The storage book of 05:34 UTC holds 9,424 iron ore at Ramen's Rest in the receiver's storage, beside no steel route there. Stops copied from craft-steel-logistics-central-nexus: basic_iron_smelting in halving sizes, 128 to 1 runs (10 iron ore a plate, by hand). Standing work: reserve goods, crafting and refining XP, no fuel while docked; opens on 100 iron stored there by the pilot, closes at the steel max (rule F36). One ship: only the receiver stores there.",
+ "standing": true,
+ "requires": {
+  "stored": {
+   "at": "ramens_rest",
+   "item": "iron_ore",
+   "min": 100
+  }
+ },
+ "max_ships": 1,
+ "stops": [
+  {
+   "at": "last_light:ramens_rest:ramens_rest",
+   "store": "all",
+   "craft": [
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 128,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 64,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 32,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 16,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 8,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 4,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 2,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 1,
+     "per_run": 1,
+     "makes": "steel_plate"
+    }
+   ]
+  },
+  {
+   "at": "last_light:ramens_rest:ramens_rest",
+   "store": "all"
+  }
+ ]
+}

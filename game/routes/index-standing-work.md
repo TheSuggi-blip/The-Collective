@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 424.
+Routes: 426.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -147,6 +147,8 @@ Routes: 424.
 | [craft-neon-own-nova-terra](craft-neon-own-nova-terra.json) | circuit | beyond the border, 8 jumps | Ionized neon made by hand at Nova Terra from the trader's own stored neon gas, docked, no jump | up to 1 ships, with 60 neon_gas stored at nova_terra_central, standing work | 1 | 25 | 0 | 0 | 2026-11-22 |
 | [craft-nitrogen-own-dheneb](craft-nitrogen-own-dheneb.json) | circuit | beyond the border, 11 jumps | Liquid nitrogen made by hand at the player's station in Dheneb from the trader's own stored nitrogen ice, docked, no jump | up to 1 ships, with 100 nitrogen_ice stored at b495c6003fc83e18f6d8cecbe6929133, standing work | TBD | TBD | TBD | TBD | -- |
 | [craft-sell-nitrogen-sol-central](craft-sell-nitrogen-sol-central.json) | circuit | beyond the border, 10 jumps | Liquid nitrogen made by hand at Sol Central from nitrogen ice bought there and sold into the station's bid, docked, no jump | up to 12 ships, born solarian, while confederacy_central_command bids 4 cr for liquid_nitrogen, while confederacy_central_command asks 1 cr or less for nitrogen_ice, standing work | 57 | 12 | 390 | 1,880 | 2026-11-23 |
+| [craft-steel-logistics-crescent-moon](craft-steel-logistics-crescent-moon.json) | circuit | beyond the border, 11 jumps | Steel plate smelted by hand at The Crescent Moon (Mebsuta, lawless, a player's station) from all of the pilot's own stored iron ore in one visit, kept in its storage there for the reserve (Logistics' haulers) | up to 1 ships, with 100 iron_ore stored at ec315132a710a7d0fbc68cca05073154, standing work | TBD | TBD | TBD | TBD | -- |
+| [craft-steel-logistics-ramens-rest](craft-steel-logistics-ramens-rest.json) | circuit | beyond the border, 15 jumps | Steel plate smelted by hand at Ramen's Rest from all of the pilot's own stored iron ore in one visit, kept in its storage there for the reserve (Logistics' haulers) | up to 1 ships, with 100 iron_ore stored at ramens_rest, standing work | TBD | TBD | TBD | TBD | -- |
 | [give-drone-stores-crucible](give-drone-stores-crucible.json) | circuit | beyond the border, 18 jumps | A drone or sentinel gives its loot stored at The Crucible Garrison to the trader named there (strict classes) | up to 1 ships, with 2 ember_gland stored at the_crucible_garrison, standing work | TBD | TBD | TBD | TBD | -- |
 | [give-drone-stores-first-step](give-drone-stores-first-step.json) | circuit | beyond the border, 18 jumps | A drone or sentinel gives its loot stored at First Step Memorial Station to the trader named there (strict classes) | up to 1 ships, with 20 creature_carapace stored at first_step_memorial_station, standing work | TBD | TBD | TBD | TBD | -- |
 | [give-drone-stores-hexstar](give-drone-stores-hexstar.json) | circuit | beyond the border, 11 jumps | A drone or sentinel gives its loot stored at Hex Star (Dheneb) to the trader named there (strict classes) | up to 1 ships, with 2 ember_gland stored at b495c6003fc83e18f6d8cecbe6929133, standing work | TBD | TBD | TBD | TBD | -- |
