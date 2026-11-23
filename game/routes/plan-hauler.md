@@ -104,8 +104,8 @@ Kept by Apollo. Routes: 88. Ships: 95.
 | 82 | [craft-piping-plate-node-beta](craft-piping-plate-node-beta.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 6 ships, with 130 steel_plate stored at node_beta_industrial_station, 180 copper_ore stored at node_beta_industrial_station, standing work | 40 of 95 |
 | 83 | [join-sol-hauler](join-sol-hauler.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 10 jumps | once per pilot, up to 50 ships, standing work | 50 of 95 |
 | 84 | [join-krynn-hauler](join-krynn-hauler.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 20 jumps | once per pilot, up to 13 ships, empty hold, born voidborn, standing work | 16 of 95 |
-| 85 | [join-nova-hauler](join-nova-hauler.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 8 jumps | once per pilot, up to 15 ships, empty hold, born voidborn, standing work | 16 of 95 |
-| 86 | [join-rim-hauler](join-rim-hauler.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 17 jumps | once per pilot, up to 15 ships, empty hold, born voidborn, nebula, standing work | 16 of 95 |
+| 85 | [join-nova-hauler](join-nova-hauler.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 8 jumps | once per pilot, up to 15 ships, empty hold, born voidborn, standing work | 17 of 95 |
+| 86 | [join-rim-hauler](join-rim-hauler.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 17 jumps | once per pilot, up to 15 ships, empty hold, born voidborn, nebula, standing work | 17 of 95 |
 | 87 | [train-jumps-hauler](train-jumps-hauler.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 8 ships, from 5,000 cr, under navigation 6, piloting 10, standing work | 8 of 95 |
 | 88 | [park](park.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | the park route | all 95 |
 
