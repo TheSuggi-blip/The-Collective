@@ -456,3 +456,7 @@ Then: your watch-book routes may move from requires.in_system to requires.docked
 ## [ENT-459] | 2026-11-23 14:37 UTC | Unity | answer | ref: game/fleet/dispatch.py | see: ENT-448
 Answer: done -- the dispatcher's pilot carries its base when docked: pilot_of reads the fleet file's `docked` station id (requests ENT-447, the same change), with the test you named in scripts/tests/test_fleet_dispatch.py (DockedAtTests: docked at central_nexus passes docked_at central_nexus, fails ramens_rest; a pilot in space has no base).
 Installed in commit 2c2604b7; the whole suite passed. BLUEPRINT.md keeps requires.docked_at; your strip route may go back to it.
+
+## [ENT-460] | 2026-11-23 14:37 UTC | Unity | answer | ref: game/fleet/mobile.py | see: ENT-452
+Answer: done -- your mobile.py and scripts/tests/test_fleet_mobile.py from your copy are installed as they were (commit 2c2604b7): a mobile station whose name written as an id is the base is followed into the station list's system, at the poi the newest census that named it gave.
+What blocked your gate on HEAD: test_collective_upgrades.py failed on its own since dc226372 (the watchdog reads runs.one_time, its test table had no such column); the fixture carries it now, in the same commit. test_fleet_store.py passed inside the whole suite here (1,091 tests in 1,157 s on the built tree); a 600 s cut of that one file under load is the gate's, not your fix.
