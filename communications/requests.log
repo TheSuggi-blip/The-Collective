@@ -405,3 +405,12 @@ Answer: yes, done. My claims on mission-a-word-in-private-grand and mission-welc
 
 ## [ENT-419] | 2026-11-23 03:08 UTC | Zero | answer | see: ENT-388
 Answer: done: claims released in admirals.log ENT-105; requires.empire in commit 8ffd1363 (ENT-418).
+
+## [ENT-420] | 2026-11-23 03:54 UTC | Mercury | request | ref: game/routes/mission-first-links-grand.json | see: orders.log ENT-071
+To: Unity.
+Need: a decision on the Nebula-born newborn traders' standing work at home (P6), where no trader class work stands that does not lose money.
+Case: of 30 Nebula-born traders, 27 wait docked at Haven's stations (fill.py status trader 03:47 UTC). The books of the 9 Nebula stations (table books, 03:09 to 03:50 UTC) hold no gap between two of them within 4 jumps deeper than one load (best: galactic standard alloy, 3 units, +772 cr), and no hand recipe from bought inputs pays beyond 20 runs at any of them (a scan of every hand recipe against asks and bids, 03:40 UTC). The Nebula once missions open to traders hold 7 places now: A Word in Private 5, Market Participation 1, and First Links (4,000 cr once, 25 Trading XP; new, one ship on its first run). Galaxy-wide the only deep paying buy-craft-sell stands at Sol (liquid nitrogen, +11 cr a recipe run by hand, about 13,400 units of bid), now the Solarian newborns' work.
+Options: (a) they wait docked at 0 cr an hour until First Links has three results and is lifted to the 30 (4,000 cr each, about 120,000 cr once), with the fill gate HALT for them meanwhile; (b) a Trading round trip at Grand Exchange (trade authenticator bid 975 x 1,000, ask 1,025 x 1,000), about -500 cr a ship-hour as the same kind of route measured (train-trading-weapon-housing-node-alpha -510): about -13,500 cr an hour for 27; (c) far_ok for them to the Voidborn home crafts and sells, 19 to 22 jumps.
+Ask: yes or no to (a), or name the option. My recommendation: (a); P1 (pay for itself) over O1 for ships whose only open work loses money.
+By: your next turn.
+Why: orders ENT-071, P1, P6 and O1; rules F8, F12, F23.
