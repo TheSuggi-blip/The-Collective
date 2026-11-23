@@ -688,3 +688,29 @@ class MineStepStopTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class AcceptByTitleTests(unittest.TestCase):
+    """A station's procurement missions carry no template and a fresh mission_id each (Shipyard Supply at a shipyard):
+    an `accept` entry may name the title, and the first posted copy not yet held is taken."""
+
+    BOARD = [{"template_id": None, "mission_id": "procurement_a_fuel_tank", "title": "Shipyard Supply: Fuel Tank"},
+             {"template_id": None, "mission_id": "procurement_b_fuel_tank", "title": "Shipyard Supply: Fuel Tank"},
+             {"template_id": "market_participation_buying", "mission_id": "m1", "title": "Market Participation: Buying"}]
+
+    def test_a_template_entry_finds_its_mission_as_before(self):
+        find = functions("posted_mission")["posted_mission"]
+        self.assertEqual(find(self.BOARD, "market_participation_buying")["mission_id"], "m1")
+        self.assertEqual(find(self.BOARD, "procurement_b_fuel_tank")["mission_id"], "procurement_b_fuel_tank")
+        self.assertIsNone(find(self.BOARD, "nothing_posted"))
+
+    def test_a_title_entry_takes_the_first_copy_on_the_board(self):
+        find = functions("posted_mission")["posted_mission"]
+        self.assertEqual(find(self.BOARD, None, "Shipyard Supply: Fuel Tank")["mission_id"], "procurement_a_fuel_tank")
+        self.assertIsNone(find(self.BOARD, None, "Shipyard Supply: Engine Core"))
+
+    def test_the_accept_step_reads_the_title_of_an_entry(self):
+        source = (FLEET / "route_run.py").read_text(encoding="ascii")
+        step = source[source.index("if stop.get('accept'):"):source.index("for step in stop.get('mine') or []:")]
+        self.assertIn("posted_mission(board,", step)
+        self.assertIn("entry.get('title')", step)

@@ -43,7 +43,10 @@ which pilot flies it, and where a pilot is, stays in the unit's data folder:
                                               after `unfit`: buys and fits up to `count` copies (default 1; max_price
                                               with tax, booked as a tool bought once); `replace` swaps an old module out
               "accept": ["template_id", {"template": "...", "needs": {"item_id": N}}],
-                                              needs: accept only with these goods in the hold
+                                              needs: accept only with these goods in the hold;
+                                              {"title": "..."} instead of template: the first posted
+                                              copy of that title (a station's procurement missions
+                                              carry no template and a new mission_id each)
               "mine":   [{"at": "system:poi", "for": ["Mission Title"], "minutes": 25}]}, ...]}
                                               after the station's work: mine at that place with the engine's
                                               mining loop until every named mission that is open has its
@@ -178,6 +181,14 @@ def pure_visit_tail(stops):
     """True when every remaining stop only visits/redocks (no buy/sell/craft/give/fit/mine/hunt/store/accept)."""
     work_keys = {'buy', 'sell', 'sell_all', 'craft', 'give', 'gift', 'fit', 'mine', 'hunt', 'withdraw', 'deposit', 'store', 'accept'}
     return bool(stops) and all(isinstance(s, dict) and not (set(s.keys()) & work_keys) for s in stops)
+
+
+def posted_mission(board, template, title=None):
+    """The mission of the board an `accept` entry names: by template_id or mission_id, or, given a title, the first
+    copy posted under that title (Shipyard Supply and the other procurements: no template, a new mission_id each)."""
+    if title:
+        return next((m for m in board if m.get('title') == title), None)
+    return next((m for m in board if m.get('template_id') == template or m.get('mission_id') == template), None)
 
 
 def step_said(answer):
@@ -856,14 +867,15 @@ for n, stop in enumerate(ROUTE['stops']):
         have = {title for title, _mid, _fin in active()}
         accepted_or_held = 0
         for entry in stop['accept']:
-            template, needs = (entry, {}) if isinstance(entry, str) else (entry['template'], entry.get('needs') or {})
+            template, needs = (entry, {}) if isinstance(entry, str) else (entry.get('template') or entry.get('title'), entry.get('needs') or {})
+            title = None if isinstance(entry, str) else entry.get('title')
             hold = cargo()
             short = {i: n for i, n in needs.items() if hold.get(i, 0) < n}
             if short:
                 say(f'{template}: not accepted, the hold lacks {short}')
                 notes.append(f'{template}: goods missing')
                 continue
-            posted = next((m for m in board if m.get('template_id') == template or m.get('mission_id') == template), None)   # never `offer`: that is the function the buy and fit steps call
+            posted = posted_mission(board, template, title)   # never `offer`: that is the function the buy and fit steps call
             if posted is None:
                 say(f'{template}: not on the board of {base}')
                 notes.append(f'{template} not offered')
