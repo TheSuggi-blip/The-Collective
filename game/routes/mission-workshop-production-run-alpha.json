@@ -2,9 +2,9 @@
  "id": "mission-workshop-production-run-alpha",
  "kind": "circuit",
  "title": "Workshop Production Run at Alpha Centauri: 3,500 cr once; five batches of liquid oxygen made by hand from oxygen gas bought there, sold into the station's bid",
- "note": "Written by Mercury, 2026-11-23 10:13 UTC (orders ENT-081, P6 and block MERCURY: the newborns' starter missions on their own board, docked crafting; rules F34 tier 2, F12). Alpha Centauri's board (table missions, 09:12 UTC) offers Workshop Production Run: craft 5 items using any recipe, 3,500 cr. The form of Apollo's mission-workshop-production-run-node-beta (138 runs, +3,210 a run), with the recipe of craft-sell-oxygen-alpha-centauri (first run +168 cr, 09:48 UTC): 40 oxygen gas at 1 cr (ask 1 x 35,269, table books 10:12 UTC), five batches of liquefy_oxygen (8 gas -> 3 liquid), 15 liquid oxygen sold into the bid of 5 (938 left). A test: one ship, its first run read (the Node Beta board does not offer it to pilots of other empires: 'not offered', table runs 04:51 to 06:58 UTC).",
+ "note": "Written by Mercury, 2026-11-23 10:13 UTC (orders ENT-081, P6 and block MERCURY: the newborns' starter missions on their own board, docked crafting; rules F34 tier 2, F12). Alpha Centauri's board (table missions, 09:12 UTC) offers Workshop Production Run: craft 5 items using any recipe, 3,500 cr. The form of Apollo's mission-workshop-production-run-node-beta (138 runs, +3,210 a run), with the recipe of craft-sell-oxygen-alpha-centauri (first run +168 cr, 09:48 UTC): 40 oxygen gas at 1 cr (ask 1 x 35,269, table books 10:12 UTC), five batches of liquefy_oxygen (8 gas -> 3 liquid), 15 liquid oxygen sold into the bid of 5 (938 left). A test: one ship, its first run read (the Node Beta board does not offer it to pilots of other empires: 'not offered', table runs 04:51 to 06:58 UTC). 2026-11-23 10:25 UTC (Mercury): max_ships 1 -> 10: two runs 10:18 and 10:21 UTC, each +3,460 once and +75 steady in about 2 minutes (table runs).",
  "once": true,
- "max_ships": 1,
+ "max_ships": 10,
  "min_credits": 3200,
  "one_time": [
   "Workshop Production Run"
