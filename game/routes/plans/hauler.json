@@ -79,6 +79,10 @@
   {
    "what": "deliver the engine cores still aboard when Deep Range posts Shipyard Supply: Engine Core again",
    "when": "when posted"
+  },
+  {
+   "what": "found Atria when an Outpost Kit is listed at Ironlight",
+   "when": "when listed"
   }
  ],
  "ships": {
