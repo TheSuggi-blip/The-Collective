@@ -95,6 +95,10 @@
   {
    "what": "one-ship test of the Rim board's survey missions (Local Sector Survey, Deep Space Cartography) once the runner can visit a system without a station",
    "when": "next turns"
+  },
+  {
+   "what": "if the two Prayer commissions still read sourcing, sell the yard the parts it bids for (15 aluminum sheet, 3 fuel tank, 1 hull plating each; fuel tanks are held) to start the build",
+   "when": "next turn"
   }
  ],
  "ships": {

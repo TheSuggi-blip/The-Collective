@@ -112,3 +112,4 @@ Planned:
 | a freight step in the circuit runner (accept, pick up, deliver) before the freighter batch grows | next turns |
 | found Atria when an Outpost Kit is listed at Ironlight | when listed |
 | one-ship test of the Rim board's survey missions (Local Sector Survey, Deep Space Cartography) once the runner can visit a system without a station | next turns |
+| if the two Prayer commissions still read sourcing, sell the yard the parts it bids for (15 aluminum sheet, 3 fuel tank, 1 hull plating each; fuel tanks are held) to start the build | next turn |
