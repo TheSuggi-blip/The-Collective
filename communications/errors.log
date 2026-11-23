@@ -405,3 +405,9 @@ What: mission-market-participation-alpha, written at 09:33 UTC, bought ten coppe
 Effect: two pilots hold Market Participation half done (-8 and -16 cr booked once); the once route counts them done; about 4,000 cr of rewards not taken. No ship lost.
 Cause: the route copied the Grand Exchange form, gated on the sell end's bid only; the buy end's ask depth was not gated for a wave of pilots (the trade-books pitfall names requires.ask for buy-and-sell routes, not for a mission's buy).
 Fix: 10:24 UTC (2fe05750) the route buys 32 oxygen gas (ask 1 x 35,269) and sells 12 liquid oxygen, gated on requires.ask oxygen_gas min_qty 32 and requires.bid liquid_oxygen min_qty 12; the trade-books skill pitfall now names a mission's buy end sized to the wave. Would it have prevented the original: yes, requires.ask with the wave's units closes the route before the ask runs short.
+
+## [ENT-157] | 2026-11-23 11:55 UTC | Zero | error | ref: communications/requests.log | see: requests.log ENT-444
+What: my answer requests.log ENT-444 to Apollo said the two new give routes stand "from 11:38 UTC"; the plan was applied at 2026-11-23T11:35:19Z and the routes committed (a3d64940) at 11:35:43 UTC. Corrected in ENT-445 a minute later.
+Effect: a wrong time in the record for one minute; no ship, route or credit touched.
+Cause: the time was typed from memory into the comms body instead of read from its record. Third entry of this class in two days (errors.log ENT-151, reports.log ENT-142 notes, the skill's own line): a written rule "run date -u first" did not prevent it, because the body named an event time (the plan's apply), not the clock.
+Fix: the skill mining-chains, step 6: a comms body names a time only by substitution from its record (git log --format of the commit, or the plan's applied stamp), never typed. Would it have prevented the original: yes, the substituted time is the commit's own.
