@@ -1,0 +1,22 @@
+{
+ "id": "hunt-lanternwick-gas-cloud-drift-ray",
+ "kind": "hunt",
+ "title": "drift_ray at lanternwick_gas_cloud; loot to the trader at Nova Terra Central (newborn region work, Sol)",
+ "note": "Written by Apophis 2026-11-23 04:12 UTC for the newborn pilots of Military (orders ENT-071, P6: their class's work where they were born; the dispatcher sends a pilot of another empire no further than 6 jumps; this place stands 5 jumps from alpha_centauri). Herd by the census in table herds (read 03:42 UTC): drift_ray 12. Two animals are left of each species (rule F38): kills 5, min_creatures kills + 2. Species pass both gauges of one typical drone (gauges.py species). One hunter to the place. Docks and hands its loot to the trader receiver at Nova Terra Central, 3 jumps away (strict classes, P5). Lawless or foreign space: alone against pirates, empty hold (F3). A test of three results (F37).",
+ "place": "lanternwick:lanternwick_gas_cloud",
+ "species": [
+  "drift_ray"
+ ],
+ "sell_at": "nova_terra:nova_terra_central:nova_terra_central",
+ "min_bid": 50,
+ "kills": 5,
+ "minutes": 40,
+ "max_ships": 1,
+ "min_creatures": 7,
+ "alone": "pirates",
+ "requires": {
+  "empty_hold": true
+ },
+ "gift_to": "trader",
+ "standing": true
+}

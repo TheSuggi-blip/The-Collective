@@ -1,0 +1,23 @@
+{
+ "id": "hunt-cervantes-belt-belt-grazer",
+ "kind": "hunt",
+ "title": "belt_grazer, patina_grazer at cervantes_belt; loot to the trader at Alpha Centauri Colonial Station (newborn region work, Sol)",
+ "note": "Written by Apophis 2026-11-23 04:12 UTC for the newborn pilots of Military (orders ENT-071, P6: their class's work where they were born; the dispatcher sends a pilot of another empire no further than 6 jumps; this place stands 4 jumps from alpha_centauri). Herd by the census in table herds (read 03:54 UTC): patina_grazer 7, belt_grazer 15. Two animals are left of each species (rule F38): kills 5, min_creatures kills + 2. Species pass both gauges of one typical drone (gauges.py species). One hunter to the place. Docks and hands its loot to the trader receiver at Alpha Centauri Colonial Station, 4 jumps away (strict classes, P5). Lawless or foreign space: alone against pirates, empty hold (F3). A test of three results (F37).",
+ "place": "cervantes:cervantes_belt",
+ "species": [
+  "belt_grazer",
+  "patina_grazer"
+ ],
+ "sell_at": "alpha_centauri:alpha_centauri_colonial_station:alpha_centauri_colonial_station",
+ "min_bid": 50,
+ "kills": 5,
+ "minutes": 40,
+ "max_ships": 1,
+ "min_creatures": 7,
+ "alone": "pirates",
+ "requires": {
+  "empty_hold": true
+ },
+ "gift_to": "trader",
+ "standing": true
+}
