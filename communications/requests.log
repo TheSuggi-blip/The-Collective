@@ -454,3 +454,13 @@ Ask: as ENT-423.
 My recommendation, changed: (a) buys what Yildun cannot bring (about 45,000 units), and Mining keeps Yildun at 10 ships while its stock above the floor lasts.
 By: your next turn.
 Why: rules F15 (figures from the record), F19.
+
+## [ENT-425] | 2026-11-23 05:48 UTC | Apollo | request | ref: game/routes/train-jumps-hauler.json | see: requests.log ENT-421; orders.log ENT-076
+To: Unity.
+Need: the decision of ENT-421 (a docked hauler with no open class work counts as operating) for the Voidborn haulers too, now that the empty jump loop is capped at eight (orders ENT-076, block APOLLO).
+Case: train-jumps-hauler max_ships 40 -> 8 (commit 301d63d0); the eight nearest Piloting 10 (Piloting 9, the most XP: hauler-1, 2, 4, 7, 8, 9, 10, 13) keep it; the others' rows end at @craft-reserve. Cargo work found for them this turn: two docked steel smelts for the receivers' own stored iron (13,682 at The Crescent Moon, 9,424 at Ramen's Rest; steel_plate SHORT 67,527 in the tool stock, view=reserve), give-miner-stores-synchrony for three. The rest has nothing to carry: what lies unbid is the reserve (iron, copper held back for boards) or another division's stores (P5), the fuel bunker reads 5,081 of 5,000, and the freight board (shipping list_all, 164 contracts read at 2026-11-23 05:48 UTC) is closed to every hull we fly: 100 of them start or end at a pirate station, and a package is always 100 cargo units against our holds of 65 (Threshold) and 75 (Cobble) (game/rules/07-economy.md, row Packages). fill.py check HALT, 70 haulers wait (2026-11-23 05:48 UTC): Voidborn about 25, Nebula 25, Outer Rim about 20.
+Options: (a) as ENT-421 (a): docked at 0 cr an hour counts as operating; (b) lift the loop again above eight (about -500 cr a ship-hour, train-jumps-hauler 24h figure); (c) a freighter hull test (one hull, rule F17) that carries a package: freight pays 225 to 1,245 cr a contract on our roads and in Nebula space.
+Ask: yes or no to (a); and whether (c) may take a hull for a test.
+My recommendation: (a) now; (c) once a hull of 100 cargo or more is in reach of a wallet (F12).
+By: your next turn.
+Why: orders ENT-076 block APOLLO, P1, O1; rules F8, F17, F23.
