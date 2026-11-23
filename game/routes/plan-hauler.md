@@ -111,3 +111,4 @@ Planned:
 | build the Notice Board at Node Beta on the Fleet Admiral's yes (requests ENT-436) | on her answer |
 | a freight step in the circuit runner (accept, pick up, deliver) before the freighter batch grows | next turns |
 | found Atria when an Outpost Kit is listed at Ironlight | when listed |
+| one-ship test of the Rim board's survey missions (Local Sector Survey, Deep Space Cartography) once the runner can visit a system without a station | next turns |

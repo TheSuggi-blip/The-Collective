@@ -91,6 +91,10 @@
   {
    "what": "found Atria when an Outpost Kit is listed at Ironlight",
    "when": "when listed"
+  },
+  {
+   "what": "one-ship test of the Rim board's survey missions (Local Sector Survey, Deep Space Cartography) once the runner can visit a system without a station",
+   "when": "next turns"
   }
  ],
  "ships": {
